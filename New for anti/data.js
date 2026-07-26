@@ -4,20 +4,19 @@
 
 // 1. 공통 국가 좌표 [longitude, latitude]
 const COUNTRIES = {
-    "Australia": [151.7817, -32.9283], // Newcastle Port
-    "Indonesia": [106.8828, -6.1039], // Tanjung Priok (Jakarta)
-    "Russia": [132.8933, 42.8105], // Nakhodka (East)
-    "USA": [-94.9774, 29.6848], // Houston Port
-    "South Africa": [32.0436, -28.7942], // Richards Bay
-    "China": [121.9426, 30.8653], // Yangshan (Shanghai)
-    "India": [72.9490, 18.9496], // Nhava Sheva (Mumbai)
-    "Japan": [139.7753, 35.6171], // Tokyo Port
-    "South Korea": [129.0833, 35.1028], // Busan Port
-    "Colombia": [-74.2255, 11.2404], // Santa Marta
-    "Ethiopia": [41.8387, 11.5950], // Djibouti (Port for Ethiopia)
-    "Uganda": [39.6682, -4.0435], // Mombasa (Port for Uganda)
-    "UAE": [56.3414, 25.1666], // Fujairah
-
+    "Australia": [133.7751, -25.2744],
+    "Indonesia": [113.9213, -0.7893],
+    "Russia": [105.3188, 61.5240],
+    "USA": [-95.7129, 37.0902],
+    "South Africa": [22.9375, -30.5595],
+    "China": [104.1954, 35.8617],
+    "India": [78.9629, 20.5937],
+    "Japan": [138.2529, 36.2048],
+    "South Korea": [127.7669, 35.9078],
+    "Colombia": [-74.2973, 4.5709],
+    "Ethiopia": [39.7823, 9.1450],
+    "Uganda": [32.2903, 1.3733],
+    "UAE": [53.8478, 23.4241],
     
     // Regions for Climate Model
     "Mato Grosso (Brazil)": [-56.9211, -12.6819],
@@ -27,88 +26,47 @@ const COUNTRIES = {
     "Sumatra (Indonesia)": [101.6865, -0.5897],
     "Germany": [10.4515, 51.1657],
     "Netherlands": [5.2913, 52.1326],
-    "Brazil": [-46.2973, -23.9717], // Santos Port
-    "Saudi Arabia": [50.1584, 26.6575], // Ras Tanura
-    "Canada": [-123.1162, 49.2827], // Vancouver
-    "Switzerland": [8.5417, 47.3769], // Zurich (Inland)
-    "UK": [1.2950, 51.9540], // Felixstowe
-    "Peru": [-77.1466, -12.0528], // Callao
-    "Chile": [-71.6214, -33.0472], // Valparaiso
-    "Argentina": [-58.3772, -34.6037], // Buenos Aires
-    "Vietnam": [106.7381, 10.7590] // Ho Chi Minh (Cat Lai)
+    "Brazil": [-51.9253, -14.2350],
+    "Saudi Arabia": [45.0792, 23.8859],
+    "Canada": [-106.3468, 56.1304],
+    "Switzerland": [8.2275, 46.8182],
+    "UK": [-3.4360, 55.3781],
+    "Peru": [-75.0152, -9.1900],
+    "Chile": [-71.5429, -35.6751],
+    "Argentina": [-63.6167, -38.4161],
+    "Vietnam": [108.2772, 14.0583]
 };
 
-// 2. 주요 항구 다중 좌표 (항구 중심 무역)
-const PORTS = {
-    "Australia": [
-        {name: "Newcastle", coord: [151.7817, -32.9283]},
-        {name: "Port Hedland", coord: [118.5755, -20.3138]},
-        {name: "Brisbane", coord: [153.1670, -27.3820]}
-    ],
-    "South Korea": [
-        {name: "Busan", coord: [129.0833, 35.1028]},
-        {name: "Incheon", coord: [126.6025, 37.4562]},
-        {name: "Yeosu", coord: [127.7669, 34.7604]} 
-    ],
-    "China": [
-        {name: "Shanghai", coord: [121.9426, 30.8653]},
-        {name: "Ningbo", coord: [121.8540, 29.9328]},
-        {name: "Qingdao", coord: [120.3200, 36.0691]}
-    ],
-    "USA": [
-        {name: "Houston", coord: [-94.9774, 29.6848]},
-        {name: "Los Angeles", coord: [-118.2590, 33.7292]},
-        {name: "New York", coord: [-74.0060, 40.7128]}
-    ],
-    "Japan": [
-        {name: "Tokyo", coord: [139.7753, 35.6171]},
-        {name: "Yokohama", coord: [139.6542, 35.4526]},
-        {name: "Kobe", coord: [135.2167, 34.6667]}
-    ],
-    "Brazil": [
-        {name: "Santos", coord: [-46.2973, -23.9717]},
-        {name: "Paranagua", coord: [-48.5139, -25.5033]}
-    ]
-};
-
-// 3. 유틸리티 함수 (랜덤 모의 데이터 생성)
+// 2. 유틸리티 함수 (랜덤 모의 데이터 생성)
 const generateMockArcs = (sources, targets, minVol, maxVol, colorType) => {
     const arcs = [];
     sources.forEach(source => {
         targets.forEach(target => {
             if(source === target) return;
-            
-            const sourcePorts = PORTS[source] || [{name: "Main", coord: COUNTRIES[source]}];
-            const targetPorts = PORTS[target] || [{name: "Main", coord: COUNTRIES[target]}];
-            
-            sourcePorts.forEach(sPort => {
-                targetPorts.forEach(tPort => {
-                    // 랜덤하게 연결 생성 (확률 조정)
-                    if(Math.random() > 0.6) {
-                        const vol = Math.floor(Math.random() * (maxVol - minVol)) + minVol;
-                        
-                        // Color preset
-                        let sColor, tColor;
-                        if(colorType === 'energy') { sColor = [239, 68, 68]; tColor = [248, 113, 113]; }
-                        else if(colorType === 'precious') { sColor = [250, 204, 21]; tColor = [253, 224, 71]; }
-                        else if(colorType === 'metals') { sColor = [14, 165, 233]; tColor = [56, 189, 248]; }
-                        else if(colorType === 'agri') { sColor = [34, 197, 94]; tColor = [74, 222, 128]; }
-                        else { sColor = [255, 140, 0]; tColor = [250, 204, 21]; } // Default
+            // 랜덤하게 연결 생성 (50% 확률)
+            if(Math.random() > 0.5) {
+                const vol = Math.floor(Math.random() * (maxVol - minVol)) + minVol;
+                
+                // Color preset
+                let sColor, tColor;
+                if(colorType === 'energy') { sColor = [239, 68, 68]; tColor = [248, 113, 113]; }
+                else if(colorType === 'precious') { sColor = [250, 204, 21]; tColor = [253, 224, 71]; }
+                else if(colorType === 'metals') { sColor = [14, 165, 233]; tColor = [56, 189, 248]; }
+                else if(colorType === 'agri') { sColor = [34, 197, 94]; tColor = [74, 222, 128]; }
+                else { sColor = [255, 140, 0]; tColor = [250, 204, 21]; } // Default
 
-                        arcs.push({
-                            sourceName: sPort.name === "Main" ? source : `${source} (${sPort.name})`,
-                            targetName: tPort.name === "Main" ? target : `${target} (${tPort.name})`,
-                            sourcePosition: sPort.coord,
-                            targetPosition: tPort.coord,
-                            volume: vol,
-                            percentage: Math.floor(Math.random() * 40) + 10,
-                            typeName: "General",
-                            sourceColor: sColor,
-                            targetColor: tColor
-                        });
-                    }
+                arcs.push({
+                    sourceName: source,
+                    targetName: target,
+                    sourcePosition: COUNTRIES[source],
+                    targetPosition: COUNTRIES[target],
+                    volume: vol,
+                    percentage: Math.floor(Math.random() * 40) + 10,
+                    typeName: "General",
+                    sourceColor: sColor,
+                    targetColor: tColor
                 });
-            });
+            }
         });
     });
     return arcs;

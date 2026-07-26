@@ -1,5 +1,5 @@
 // Application Logic for Global Trade Dashboard
-const { DeckGL, ArcLayer, ScatterplotLayer } = deck;
+const { DeckGL, LineLayer, ScatterplotLayer, GeoJsonLayer } = deck;
 
 // DOM Elements
 const tooltipEl = document.getElementById('tooltip');
@@ -67,7 +67,7 @@ const deckgl = new DeckGL({
         longitude: 0,
         latitude: 20,
         zoom: 1.5,
-        pitch: 45,
+        pitch: 0,
         bearing: 0
     },
     controller: true,
@@ -275,31 +275,30 @@ const generateNodeData = (arcs) => {
             }
         });
         
-        // Scale radius differently based on commodity to keep dots visible
-        let scaleFactor = 4000;
-        if(currentCommodity === 'gold' || currentCommodity === 'silver') scaleFactor = 500;
-        else if (currentCommodity === 'oil') scaleFactor = 40000;
-        
+        const scaleFactor = (currentCommodity === 'gold') ? 50 : 20; // Reduced base scale
         return {
             name: country,
             coordinates: window.CountriesData[country],
-            radius: Math.max(100000, totalTrade * scaleFactor)
+            radius: Math.max(30000, totalTrade * scaleFactor), // Drastically reduced base radius
+            totalTrade
         };
+    });
+};
+
 const renderMapLayers = (arcs) => {
     // Filter out trades < 1%
     const filteredArcs = arcs.filter(arc => arc.percentage >= 1);
     
     const nodeData = generateNodeData(filteredArcs);
 
-    const arcLayer = new ArcLayer({
-        id: `arc-layer-${currentCommodity}`,
+    const lineLayer = new LineLayer({
+        id: `line-layer-${currentCommodity}`,
         data: filteredArcs,
         pickable: true,
-        getWidth: d => Math.max(2, d.volume / 6), // 3D Arcs with slightly increased thickness
+        getWidth: d => Math.min(Math.max(1.5, d.volume / 15), 8),
         getSourcePosition: d => d.sourcePosition,
         getTargetPosition: d => d.targetPosition,
-        getSourceColor: d => d.sourceColor,
-        getTargetColor: d => d.targetColor,
+        getColor: d => d.sourceColor, // LineLayer uses getColor, but we can pass sourceColor. If we want gradient, LineLayer doesn't support it natively like ArcLayer, but we can just use sourceColor for the whole line.
         onHover: handleHover,
         onClick: handleLineClick,
         autoHighlight: true,
@@ -314,8 +313,8 @@ const renderMapLayers = (arcs) => {
         stroked: true,
         filled: true,
         radiusScale: 1,
-        radiusMinPixels: 2,
-        radiusMaxPixels: 12,
+        radiusMinPixels: 4,
+        radiusMaxPixels: 30,
         lineWidthMinPixels: 1,
         getPosition: d => d.coordinates,
         getRadius: d => d.radius,
@@ -324,34 +323,36 @@ const renderMapLayers = (arcs) => {
         onClick: handleNodeClick
     });
 
-    deckgl.setProps({ layers: [arcLayer, scatterLayer] });
+    const countriesLayer = new GeoJsonLayer({
+        id: 'countries-layer',
+        data: 'https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json',
+        stroked: true,
+        filled: false,
+        lineWidthMinPixels: 1,
+        getLineColor: [255, 255, 255, 80], // Bright contrast for borders
+        pickable: false
+    });
+
+    deckgl.setProps({ layers: [countriesLayer, lineLayer, scatterLayer] });
 };
 
-// View Switcher Logic
 const togglePanels = ({ macro = false, countryStats = false, news = false, forecast = false, left = true, chart = false, map = true }) => {
+    const leftPaneContainer = document.getElementById('left-pane'); // Target the whole container
     const commodityInfoPanel = document.getElementById('commodity-info-panel');
-    const leftPane = document.getElementById('left-pane');
     
     macro ? macroPanelEl.classList.remove('hidden') : macroPanelEl.classList.add('hidden');
     countryStats ? countryStatsPanelEl.classList.remove('hidden') : countryStatsPanelEl.classList.add('hidden');
     news ? newsPanelEl.classList.remove('hidden') : newsPanelEl.classList.add('hidden');
     forecast ? forecastPanelEl.classList.remove('hidden') : forecastPanelEl.classList.add('hidden');
-    left ? commodityInfoPanel.classList.remove('hidden') : commodityInfoPanel.classList.add('hidden');
     
-    // Hide the entire left pane if all its children are hidden
-    if (!news && !forecast && !left) {
-        leftPane.classList.add('hidden');
+    if (left) {
+        leftPaneContainer.style.display = 'flex'; // Show the whole container
+        commodityInfoPanel.classList.remove('hidden'); // Show info content
     } else {
-        leftPane.classList.remove('hidden');
+        leftPaneContainer.style.display = 'none'; // Hide the whole left pane
+        commodityInfoPanel.classList.add('hidden');
     }
-
-    const rightPane = document.getElementById('right-pane');
-    if (!macro && !countryStats) {
-        if (rightPane) rightPane.classList.add('hidden');
-    } else {
-        if (rightPane) rightPane.classList.remove('hidden');
-    }
-
+    
     chart ? chartView.classList.remove('hidden') : chartView.classList.add('hidden');
     mapContainer.style.display = map ? 'block' : 'none';
 };
@@ -369,7 +370,7 @@ const setView = (target) => {
     if (target === 'home') {
         // Initial empty state
         currentCommodity = null;
-        togglePanels({ macro: false, left: false }); // Home screen should be map only
+        togglePanels({ macro: true, left: false });
         
         // Render map with no data layers
         deckgl.setProps({ layers: [] });
@@ -451,10 +452,10 @@ const setView = (target) => {
                 opacity: 0.8,
                 stroked: true,
                 filled: true,
-                radiusScale: 2,
-                radiusMinPixels: 5,
-                radiusMaxPixels: 15,
-                lineWidthMinPixels: 1,
+                radiusScale: 4,
+                radiusMinPixels: 10,
+                radiusMaxPixels: 40,
+                lineWidthMinPixels: 2,
                 getPosition: d => d.coordinates,
                 getRadius: d => d.radius,
                 getFillColor: [74, 222, 128, 200], // Green
