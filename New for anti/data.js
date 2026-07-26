@@ -38,36 +38,77 @@ const COUNTRIES = {
     "Vietnam": [106.7381, 10.7590] // Ho Chi Minh (Cat Lai)
 };
 
-// 2. 유틸리티 함수 (랜덤 모의 데이터 생성)
+// 2. 주요 항구 다중 좌표 (항구 중심 무역)
+const PORTS = {
+    "Australia": [
+        {name: "Newcastle", coord: [151.7817, -32.9283]},
+        {name: "Port Hedland", coord: [118.5755, -20.3138]},
+        {name: "Brisbane", coord: [153.1670, -27.3820]}
+    ],
+    "South Korea": [
+        {name: "Busan", coord: [129.0833, 35.1028]},
+        {name: "Incheon", coord: [126.6025, 37.4562]},
+        {name: "Yeosu", coord: [127.7669, 34.7604]} 
+    ],
+    "China": [
+        {name: "Shanghai", coord: [121.9426, 30.8653]},
+        {name: "Ningbo", coord: [121.8540, 29.9328]},
+        {name: "Qingdao", coord: [120.3200, 36.0691]}
+    ],
+    "USA": [
+        {name: "Houston", coord: [-94.9774, 29.6848]},
+        {name: "Los Angeles", coord: [-118.2590, 33.7292]},
+        {name: "New York", coord: [-74.0060, 40.7128]}
+    ],
+    "Japan": [
+        {name: "Tokyo", coord: [139.7753, 35.6171]},
+        {name: "Yokohama", coord: [139.6542, 35.4526]},
+        {name: "Kobe", coord: [135.2167, 34.6667]}
+    ],
+    "Brazil": [
+        {name: "Santos", coord: [-46.2973, -23.9717]},
+        {name: "Paranagua", coord: [-48.5139, -25.5033]}
+    ]
+};
+
+// 3. 유틸리티 함수 (랜덤 모의 데이터 생성)
 const generateMockArcs = (sources, targets, minVol, maxVol, colorType) => {
     const arcs = [];
     sources.forEach(source => {
         targets.forEach(target => {
             if(source === target) return;
-            // 랜덤하게 연결 생성 (50% 확률)
-            if(Math.random() > 0.5) {
-                const vol = Math.floor(Math.random() * (maxVol - minVol)) + minVol;
-                
-                // Color preset
-                let sColor, tColor;
-                if(colorType === 'energy') { sColor = [239, 68, 68]; tColor = [248, 113, 113]; }
-                else if(colorType === 'precious') { sColor = [250, 204, 21]; tColor = [253, 224, 71]; }
-                else if(colorType === 'metals') { sColor = [14, 165, 233]; tColor = [56, 189, 248]; }
-                else if(colorType === 'agri') { sColor = [34, 197, 94]; tColor = [74, 222, 128]; }
-                else { sColor = [255, 140, 0]; tColor = [250, 204, 21]; } // Default
+            
+            const sourcePorts = PORTS[source] || [{name: "Main", coord: COUNTRIES[source]}];
+            const targetPorts = PORTS[target] || [{name: "Main", coord: COUNTRIES[target]}];
+            
+            sourcePorts.forEach(sPort => {
+                targetPorts.forEach(tPort => {
+                    // 랜덤하게 연결 생성 (확률 조정)
+                    if(Math.random() > 0.6) {
+                        const vol = Math.floor(Math.random() * (maxVol - minVol)) + minVol;
+                        
+                        // Color preset
+                        let sColor, tColor;
+                        if(colorType === 'energy') { sColor = [239, 68, 68]; tColor = [248, 113, 113]; }
+                        else if(colorType === 'precious') { sColor = [250, 204, 21]; tColor = [253, 224, 71]; }
+                        else if(colorType === 'metals') { sColor = [14, 165, 233]; tColor = [56, 189, 248]; }
+                        else if(colorType === 'agri') { sColor = [34, 197, 94]; tColor = [74, 222, 128]; }
+                        else { sColor = [255, 140, 0]; tColor = [250, 204, 21]; } // Default
 
-                arcs.push({
-                    sourceName: source,
-                    targetName: target,
-                    sourcePosition: COUNTRIES[source],
-                    targetPosition: COUNTRIES[target],
-                    volume: vol,
-                    percentage: Math.floor(Math.random() * 40) + 10,
-                    typeName: "General",
-                    sourceColor: sColor,
-                    targetColor: tColor
+                        arcs.push({
+                            sourceName: sPort.name === "Main" ? source : `${source} (${sPort.name})`,
+                            targetName: tPort.name === "Main" ? target : `${target} (${tPort.name})`,
+                            sourcePosition: sPort.coord,
+                            targetPosition: tPort.coord,
+                            volume: vol,
+                            percentage: Math.floor(Math.random() * 40) + 10,
+                            typeName: "General",
+                            sourceColor: sColor,
+                            targetColor: tColor
+                        });
+                    }
                 });
-            }
+            });
         });
     });
     return arcs;

@@ -1,5 +1,5 @@
 // Application Logic for Global Trade Dashboard
-const { DeckGL, GreatCircleLayer, ScatterplotLayer } = deck;
+const { DeckGL, ArcLayer, ScatterplotLayer } = deck;
 
 // DOM Elements
 const tooltipEl = document.getElementById('tooltip');
@@ -41,9 +41,9 @@ const mapStyle = {
         "carto-dark": {
             "type": "raster",
             "tiles": [
-                "https://a.basemaps.cartocdn.com/light_all/{z}/{x}/{y}@2x.png",
-                "https://b.basemaps.cartocdn.com/light_all/{z}/{x}/{y}@2x.png",
-                "https://c.basemaps.cartocdn.com/light_all/{z}/{x}/{y}@2x.png"
+                "https://a.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}@2x.png",
+                "https://b.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}@2x.png",
+                "https://c.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}@2x.png"
             ],
             "tileSize": 256
         }
@@ -67,7 +67,7 @@ const deckgl = new DeckGL({
         longitude: 0,
         latitude: 20,
         zoom: 1.5,
-        pitch: 0,
+        pitch: 45,
         bearing: 0
     },
     controller: true,
@@ -291,11 +291,11 @@ const renderMapLayers = (arcs) => {
     
     const nodeData = generateNodeData(filteredArcs);
 
-    const arcLayer = new GreatCircleLayer({
+    const arcLayer = new ArcLayer({
         id: `arc-layer-${currentCommodity}`,
         data: filteredArcs,
         pickable: true,
-        getWidth: d => Math.max(3, d.volume / 4), // Much thicker based on volume
+        getWidth: d => Math.max(2, d.volume / 6), // 3D Arcs with slightly increased thickness
         getSourcePosition: d => d.sourcePosition,
         getTargetPosition: d => d.targetPosition,
         getSourceColor: d => d.sourceColor,
