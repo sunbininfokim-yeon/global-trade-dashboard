@@ -1,5 +1,5 @@
 // Application Logic for Global Trade Dashboard
-const { DeckGL, LineLayer, ScatterplotLayer } = deck;
+const { DeckGL, PathLayer, ScatterplotLayer } = deck;
 
 // DOM Elements
 const tooltipEl = document.getElementById('tooltip');
@@ -288,20 +288,67 @@ const generateNodeData = (arcs) => {
     });
 };
 
+// Generate a curved sea route (bezier curve) that mimics avoiding land
+const generateSeaRoute = (source, target) => {
+    // Hardcoded mock sea routes for demonstration
+    // Australia to Japan
+    if (source[0] > 130 && source[1] < -20 && target[0] > 130 && target[1] > 30) {
+        return [
+            source,
+            [155, -15], // Coral Sea
+            [145, 10],  // Philippine Sea
+            target
+        ];
+    }
+    // Indonesia to China
+    if (source[0] > 100 && source[0] < 120 && source[1] < 10 && target[0] > 100 && target[1] > 30) {
+        return [
+            source,
+            [115, 15], // South China Sea
+            [125, 25], // East China Sea
+            target
+        ];
+    }
+    // Default Quadratic Bezier Curve to mimic ocean path (bend east/west)
+    const midX = (source[0] + target[0]) / 2;
+    const midY = (source[1] + target[1]) / 2;
+    // Bend outward based on distance
+    const dx = target[0] - source[0];
+    const dy = target[1] - source[1];
+    const bendFactor = 0.3;
+    const controlPoint = [midX - dy * bendFactor, midY + dx * bendFactor];
+
+    const path = [];
+    for (let t = 0; t <= 1; t += 0.1) {
+        const x = (1 - t) * (1 - t) * source[0] + 2 * (1 - t) * t * controlPoint[0] + t * t * target[0];
+        const y = (1 - t) * (1 - t) * source[1] + 2 * (1 - t) * t * controlPoint[1] + t * t * target[1];
+        path.push([x, y]);
+    }
+    return path;
+};
+
 const renderMapLayers = (arcs) => {
     // Filter out trades < 1%
     const filteredArcs = arcs.filter(arc => arc.percentage >= 1);
     
+    // Attach generated sea routes
+    filteredArcs.forEach(arc => {
+        if (!arc.path) {
+            arc.path = generateSeaRoute(arc.sourcePosition, arc.targetPosition);
+        }
+    });
+
     const nodeData = generateNodeData(filteredArcs);
 
-    const lineLayer = new LineLayer({
-        id: `line-layer-${currentCommodity}`,
+    const pathLayer = new PathLayer({
+        id: `path-layer-${currentCommodity}`,
         data: filteredArcs,
         pickable: true,
+        widthScale: 1,
+        widthMinPixels: 2,
+        getPath: d => d.path,
+        getColor: d => d.sourceColor,
         getWidth: d => Math.min(Math.max(1.5, d.volume / 15), 8),
-        getSourcePosition: d => d.sourcePosition,
-        getTargetPosition: d => d.targetPosition,
-        getColor: d => d.sourceColor, // LineLayer uses getColor, but we can pass sourceColor. If we want gradient, LineLayer doesn't support it natively like ArcLayer, but we can just use sourceColor for the whole line.
         onHover: handleHover,
         onClick: handleLineClick,
         autoHighlight: true,
@@ -316,8 +363,8 @@ const renderMapLayers = (arcs) => {
         stroked: true,
         filled: true,
         radiusScale: 1,
-        radiusMinPixels: 4,
-        radiusMaxPixels: 30,
+        radiusMinPixels: 2,
+        radiusMaxPixels: 12,
         lineWidthMinPixels: 1,
         getPosition: d => d.coordinates,
         getRadius: d => d.radius,
@@ -326,17 +373,27 @@ const renderMapLayers = (arcs) => {
         onClick: handleNodeClick
     });
 
-    deckgl.setProps({ layers: [lineLayer, scatterLayer] });
+    deckgl.setProps({ layers: [pathLayer, scatterLayer] });
 };
 
 // View Switcher Logic
 const togglePanels = ({ macro = false, countryStats = false, news = false, forecast = false, left = true, chart = false, map = true }) => {
     const commodityInfoPanel = document.getElementById('commodity-info-panel');
+    const leftPane = document.getElementById('left-pane');
+    
     macro ? macroPanelEl.classList.remove('hidden') : macroPanelEl.classList.add('hidden');
     countryStats ? countryStatsPanelEl.classList.remove('hidden') : countryStatsPanelEl.classList.add('hidden');
     news ? newsPanelEl.classList.remove('hidden') : newsPanelEl.classList.add('hidden');
     forecast ? forecastPanelEl.classList.remove('hidden') : forecastPanelEl.classList.add('hidden');
     left ? commodityInfoPanel.classList.remove('hidden') : commodityInfoPanel.classList.add('hidden');
+    
+    // Hide the entire left pane if all its children are hidden
+    if (!news && !forecast && !left) {
+        leftPane.classList.add('hidden');
+    } else {
+        leftPane.classList.remove('hidden');
+    }
+
     chart ? chartView.classList.remove('hidden') : chartView.classList.add('hidden');
     mapContainer.style.display = map ? 'block' : 'none';
 };
@@ -436,10 +493,10 @@ const setView = (target) => {
                 opacity: 0.8,
                 stroked: true,
                 filled: true,
-                radiusScale: 4,
-                radiusMinPixels: 10,
-                radiusMaxPixels: 40,
-                lineWidthMinPixels: 2,
+                radiusScale: 2,
+                radiusMinPixels: 5,
+                radiusMaxPixels: 15,
+                lineWidthMinPixels: 1,
                 getPosition: d => d.coordinates,
                 getRadius: d => d.radius,
                 getFillColor: [74, 222, 128, 200], // Green
