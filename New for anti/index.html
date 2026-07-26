@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>글로벌 트레이드</title>
+    <title>Global Trade</title>
     
     <!-- MapLibre & Deck.gl -->
     <script src="https://unpkg.com/deck.gl@latest/dist.min.js"></script>
@@ -20,7 +20,7 @@
     <div id="app">
         <!-- Top Navigation -->
         <header class="top-nav">
-            <div class="logo" id="home-logo" style="cursor: pointer;">글로벌 트레이드</div>
+            <div class="logo" id="home-logo" style="cursor: pointer;">Global Trade</div>
             <nav class="main-menu">
                 <div class="menu-item">
                     <span>에너지</span>
@@ -78,48 +78,33 @@
             </div>
         </header>
 
-        <!-- Main Content Area -->
-        <main class="content-area">
-            
-            <!-- Left Panel (News/Details) - Hidden by default -->
-            <div class="left-panel panel hidden" id="left-panel">
-                <div class="panel-header">
-                    <h2 id="current-view-title">글로벌 원자재: 석탄</h2>
-                    <p id="current-view-desc">전 세계 석탄 수출입 무역 흐름</p>
-                </div>
-                
-                <div class="stats-container">
-                    <div class="stat-box">
-                        <span class="stat-label">글로벌 무역량</span>
-                        <span class="stat-value" id="total-volume">1,245 Mt</span>
-                    </div>
-                    <div class="stat-box">
-                        <span class="stat-label">최대 수출국</span>
-                        <span class="stat-value" id="top-exporter">호주</span>
-                    </div>
-                </div>
-
-                <div class="news-panel" id="news-panel">
-                    <p class="section-title">주요 지역 뉴스 (국가 선택)</p>
-                    <div id="news-content" class="news-content">
-                        <p class="empty-state">지도에서 국가나 무역 흐름을 클릭하면 관련 뉴스가 표시됩니다.</p>
-                    </div>
-                </div>
-
-                <!-- Climate Forecast Panel (Hidden by default) -->
-                <div class="news-panel hidden" id="climate-forecast-panel">
-                    <p class="section-title" id="forecast-country-title">지역 기후 예측</p>
-                    <div id="forecast-content" class="news-content">
-                        <p class="empty-state">지도에서 국가(예: 미국, 브라질)를 클릭하면 AI 기반 기후 및 작황 예측 정보가 표시됩니다.</p>
-                    </div>
+        <!-- Ticker -->
+        <div class="ticker-wrapper">
+            <div class="ticker-label">속보</div>
+            <div class="ticker-overflow">
+                <div class="ticker-content" id="ticker-content">
+                    <!-- Ticker items injected by JS -->
+                    <span class="ticker-item"><span class="ticker-hl">[WTI 원유]</span> 배럴당 78.93 달러 마감 (-1.48%)</span>
+                    <span class="ticker-divider">·</span>
+                    <span class="ticker-item"><span class="ticker-hl">[농산물]</span> 브라질 마토 그로소 지역 강수량 부족으로 대두 수확량 우려</span>
+                    <span class="ticker-divider">·</span>
+                    <span class="ticker-item"><span class="ticker-hl">[거시경제]</span> 연준 대차대조표 전주 대비 120억 달러 축소</span>
+                    <span class="ticker-divider">·</span>
+                    <span class="ticker-item"><span class="ticker-hl">[석탄]</span> 호주 수출 물동량 전년 동기 대비 5% 증가</span>
+                    <span class="ticker-divider">·</span>
+                    <span class="ticker-item"><span class="ticker-hl">[구리]</span> LME 구리 재고량 3주 연속 하락세</span>
                 </div>
             </div>
+        </div>
 
-            <!-- Center Map Container -->
-            <div class="center-map">
+        <!-- Main Content Area -->
+        <main class="content-area split-layout">
+            
+            <!-- Left Pane: Map -->
+            <div class="map-pane">
                 <div id="map"></div>
                 
-                <!-- Coal Legend (Hidden by default) -->
+                <!-- Coal Legend -->
                 <div id="coal-legend" class="map-legend hidden">
                     <h4>석탄 종류</h4>
                     <div class="legend-item">
@@ -141,11 +126,30 @@
                 </div>
             </div>
 
-            <!-- Right Panel (Financial Indicators & Country Stats) -->
-            <div class="right-panel panel">
+            <!-- Right Pane: Unified Feed/Data -->
+            <aside class="right-pane" id="right-pane">
                 
+                <!-- Commodity Overview (Always top when a commodity is selected) -->
+                <div class="panel-section hidden" id="left-panel">
+                    <div class="panel-header">
+                        <h2 id="current-view-title">글로벌 원자재: 석탄</h2>
+                        <p id="current-view-desc">전 세계 석탄 수출입 무역 흐름</p>
+                    </div>
+                    
+                    <div class="stats-container">
+                        <div class="stat-box">
+                            <span class="stat-label">글로벌 무역량</span>
+                            <span class="stat-value" id="total-volume">1,245 Mt</span>
+                        </div>
+                        <div class="stat-box">
+                            <span class="stat-label">최대 수출국</span>
+                            <span class="stat-value" id="top-exporter">호주</span>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Macro Indicators Panel (Only visible on Home) -->
-                <div id="macro-panel">
+                <div class="panel-section" id="macro-panel">
                     <div class="panel-header">
                         <h2>핵심 거시 지표</h2>
                         <p>실시간 글로벌 금융 상황</p>
@@ -194,20 +198,34 @@
                     </div>
                 </div>
                 
-                <!-- Country Stats Panel (Visible when a country node is clicked in a specific commodity view) -->
-                <div id="country-stats-panel" class="hidden">
+                <!-- Country Stats Panel -->
+                <div class="panel-section hidden" id="country-stats-panel">
                     <div class="panel-header" style="margin-bottom: 20px;">
                         <h2 id="country-stats-title">국가명</h2>
                         <p id="country-stats-desc">세부 산업 지표</p>
                     </div>
-                    
                     <div class="indicators-list" id="country-stats-content">
                         <!-- Content will be injected by app.js -->
                     </div>
                 </div>
 
-            </div>
+                <!-- News Panel -->
+                <div class="panel-section hidden" id="news-panel">
+                    <p class="section-title">주요 지역 뉴스 (국가 선택)</p>
+                    <div id="news-content" class="news-content">
+                        <p class="empty-state">지도에서 국가나 무역 흐름을 클릭하면 관련 뉴스가 표시됩니다.</p>
+                    </div>
+                </div>
 
+                <!-- Climate Forecast Panel -->
+                <div class="panel-section hidden" id="climate-forecast-panel">
+                    <p class="section-title" id="forecast-country-title">지역 기후 예측</p>
+                    <div id="forecast-content" class="news-content">
+                        <p class="empty-state">지도에서 국가(예: 미국, 브라질)를 클릭하면 AI 기반 기후 및 작황 예측 정보가 표시됩니다.</p>
+                    </div>
+                </div>
+
+            </aside>
         </main>
 
         <!-- Tooltip -->

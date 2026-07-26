@@ -41,9 +41,9 @@ const mapStyle = {
         "carto-dark": {
             "type": "raster",
             "tiles": [
-                "https://a.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}@2x.png",
-                "https://b.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}@2x.png",
-                "https://c.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}@2x.png"
+                "https://a.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}@2x.png",
+                "https://b.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}@2x.png",
+                "https://c.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}@2x.png"
             ],
             "tileSize": 256
         }
@@ -298,7 +298,7 @@ const renderMapLayers = (arcs) => {
         id: `arc-layer-${currentCommodity}`,
         data: filteredArcs,
         pickable: true,
-        getWidth: d => Math.min(Math.max(2, d.volume / 10), 12),
+        getWidth: d => Math.min(Math.max(0.5, d.volume / 30), 4),
         getSourcePosition: d => d.sourcePosition,
         getTargetPosition: d => d.targetPosition,
         getSourceColor: d => d.sourceColor,

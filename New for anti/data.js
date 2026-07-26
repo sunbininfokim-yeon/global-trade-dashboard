@@ -157,8 +157,8 @@ window.TradeData = {
         news: {
             ...defaultNews("Crude Oil"),
             "Saudi Arabia": [
-                { title: "Saudi Arabia considering production hike amid global demand surge", date: "4 hours ago", source: "Reuters", url: "https://www.reuters.com/business/energy" },
-                { title: "Aramco reports strong quarterly earnings driven by crude oil prices", date: "Yesterday", source: "Bloomberg", url: "https://www.bloomberg.com/markets/commodities" }
+                { title: "[리스크 경보] 이란 타격 여파로 사우디 주요 원유 생산 시설 가동 중단 우려 확산", date: "2시간 전", source: "Reuters", url: "https://www.reuters.com/business/energy" },
+                { title: "중동 지정학적 리스크 고조... 브렌트유(Brent) 배럴당 85달러 돌파", date: "어제", source: "Bloomberg", url: "https://www.bloomberg.com/markets/commodities" }
             ],
             "USA": [
                 { title: "US crude oil exports reach record high to Europe", date: "2 days ago", source: "Wall Street Journal", url: "https://www.wsj.com/news/business/energy-oil-gas" }
