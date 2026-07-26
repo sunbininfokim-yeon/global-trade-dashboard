@@ -1,5 +1,5 @@
 // Application Logic for Global Trade Dashboard
-const { DeckGL, PathLayer, ScatterplotLayer } = deck;
+const { DeckGL, GreatCircleLayer, ScatterplotLayer } = deck;
 
 // DOM Elements
 const tooltipEl = document.getElementById('tooltip');
@@ -41,9 +41,9 @@ const mapStyle = {
         "carto-dark": {
             "type": "raster",
             "tiles": [
-                "https://a.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}@2x.png",
-                "https://b.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}@2x.png",
-                "https://c.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}@2x.png"
+                "https://a.basemaps.cartocdn.com/light_all/{z}/{x}/{y}@2x.png",
+                "https://b.basemaps.cartocdn.com/light_all/{z}/{x}/{y}@2x.png",
+                "https://c.basemaps.cartocdn.com/light_all/{z}/{x}/{y}@2x.png"
             ],
             "tileSize": 256
         }
@@ -285,70 +285,21 @@ const generateNodeData = (arcs) => {
             coordinates: window.CountriesData[country],
             radius: Math.max(100000, totalTrade * scaleFactor)
         };
-    });
-};
-
-// Generate a curved sea route (bezier curve) that mimics avoiding land
-const generateSeaRoute = (source, target) => {
-    // Hardcoded mock sea routes for demonstration
-    // Australia to Japan
-    if (source[0] > 130 && source[1] < -20 && target[0] > 130 && target[1] > 30) {
-        return [
-            source,
-            [155, -15], // Coral Sea
-            [145, 10],  // Philippine Sea
-            target
-        ];
-    }
-    // Indonesia to China
-    if (source[0] > 100 && source[0] < 120 && source[1] < 10 && target[0] > 100 && target[1] > 30) {
-        return [
-            source,
-            [115, 15], // South China Sea
-            [125, 25], // East China Sea
-            target
-        ];
-    }
-    // Default Quadratic Bezier Curve to mimic ocean path (bend east/west)
-    const midX = (source[0] + target[0]) / 2;
-    const midY = (source[1] + target[1]) / 2;
-    // Bend outward based on distance
-    const dx = target[0] - source[0];
-    const dy = target[1] - source[1];
-    const bendFactor = 0.3;
-    const controlPoint = [midX - dy * bendFactor, midY + dx * bendFactor];
-
-    const path = [];
-    for (let t = 0; t <= 1; t += 0.1) {
-        const x = (1 - t) * (1 - t) * source[0] + 2 * (1 - t) * t * controlPoint[0] + t * t * target[0];
-        const y = (1 - t) * (1 - t) * source[1] + 2 * (1 - t) * t * controlPoint[1] + t * t * target[1];
-        path.push([x, y]);
-    }
-    return path;
-};
-
 const renderMapLayers = (arcs) => {
     // Filter out trades < 1%
     const filteredArcs = arcs.filter(arc => arc.percentage >= 1);
     
-    // Attach generated sea routes
-    filteredArcs.forEach(arc => {
-        if (!arc.path) {
-            arc.path = generateSeaRoute(arc.sourcePosition, arc.targetPosition);
-        }
-    });
-
     const nodeData = generateNodeData(filteredArcs);
 
-    const pathLayer = new PathLayer({
-        id: `path-layer-${currentCommodity}`,
+    const arcLayer = new GreatCircleLayer({
+        id: `arc-layer-${currentCommodity}`,
         data: filteredArcs,
         pickable: true,
-        widthScale: 1,
-        widthMinPixels: 2,
-        getPath: d => d.path,
-        getColor: d => d.sourceColor,
-        getWidth: d => Math.min(Math.max(1.5, d.volume / 15), 8),
+        getWidth: d => Math.max(3, d.volume / 4), // Much thicker based on volume
+        getSourcePosition: d => d.sourcePosition,
+        getTargetPosition: d => d.targetPosition,
+        getSourceColor: d => d.sourceColor,
+        getTargetColor: d => d.targetColor,
         onHover: handleHover,
         onClick: handleLineClick,
         autoHighlight: true,
@@ -373,7 +324,7 @@ const renderMapLayers = (arcs) => {
         onClick: handleNodeClick
     });
 
-    deckgl.setProps({ layers: [pathLayer, scatterLayer] });
+    deckgl.setProps({ layers: [arcLayer, scatterLayer] });
 };
 
 // View Switcher Logic

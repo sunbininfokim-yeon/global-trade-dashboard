@@ -4,19 +4,20 @@
 
 // 1. 공통 국가 좌표 [longitude, latitude]
 const COUNTRIES = {
-    "Australia": [133.7751, -25.2744],
-    "Indonesia": [113.9213, -0.7893],
-    "Russia": [105.3188, 61.5240],
-    "USA": [-95.7129, 37.0902],
-    "South Africa": [22.9375, -30.5595],
-    "China": [104.1954, 35.8617],
-    "India": [78.9629, 20.5937],
-    "Japan": [138.2529, 36.2048],
-    "South Korea": [127.7669, 35.9078],
-    "Colombia": [-74.2973, 4.5709],
-    "Ethiopia": [39.7823, 9.1450],
-    "Uganda": [32.2903, 1.3733],
-    "UAE": [53.8478, 23.4241],
+    "Australia": [151.7817, -32.9283], // Newcastle Port
+    "Indonesia": [106.8828, -6.1039], // Tanjung Priok (Jakarta)
+    "Russia": [132.8933, 42.8105], // Nakhodka (East)
+    "USA": [-94.9774, 29.6848], // Houston Port
+    "South Africa": [32.0436, -28.7942], // Richards Bay
+    "China": [121.9426, 30.8653], // Yangshan (Shanghai)
+    "India": [72.9490, 18.9496], // Nhava Sheva (Mumbai)
+    "Japan": [139.7753, 35.6171], // Tokyo Port
+    "South Korea": [129.0833, 35.1028], // Busan Port
+    "Colombia": [-74.2255, 11.2404], // Santa Marta
+    "Ethiopia": [41.8387, 11.5950], // Djibouti (Port for Ethiopia)
+    "Uganda": [39.6682, -4.0435], // Mombasa (Port for Uganda)
+    "UAE": [56.3414, 25.1666], // Fujairah
+
     
     // Regions for Climate Model
     "Mato Grosso (Brazil)": [-56.9211, -12.6819],
@@ -26,15 +27,15 @@ const COUNTRIES = {
     "Sumatra (Indonesia)": [101.6865, -0.5897],
     "Germany": [10.4515, 51.1657],
     "Netherlands": [5.2913, 52.1326],
-    "Brazil": [-51.9253, -14.2350],
-    "Saudi Arabia": [45.0792, 23.8859],
-    "Canada": [-106.3468, 56.1304],
-    "Switzerland": [8.2275, 46.8182],
-    "UK": [-3.4360, 55.3781],
-    "Peru": [-75.0152, -9.1900],
-    "Chile": [-71.5429, -35.6751],
-    "Argentina": [-63.6167, -38.4161],
-    "Vietnam": [108.2772, 14.0583]
+    "Brazil": [-46.2973, -23.9717], // Santos Port
+    "Saudi Arabia": [50.1584, 26.6575], // Ras Tanura
+    "Canada": [-123.1162, 49.2827], // Vancouver
+    "Switzerland": [8.5417, 47.3769], // Zurich (Inland)
+    "UK": [1.2950, 51.9540], // Felixstowe
+    "Peru": [-77.1466, -12.0528], // Callao
+    "Chile": [-71.6214, -33.0472], // Valparaiso
+    "Argentina": [-58.3772, -34.6037], // Buenos Aires
+    "Vietnam": [106.7381, 10.7590] // Ho Chi Minh (Cat Lai)
 };
 
 // 2. 유틸리티 함수 (랜덤 모의 데이터 생성)
