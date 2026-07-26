@@ -1,5 +1,5 @@
 // Application Logic for Global Trade Dashboard
-const { DeckGL, ArcLayer, ScatterplotLayer } = deck;
+const { DeckGL, LineLayer, ScatterplotLayer } = deck;
 
 // DOM Elements
 const tooltipEl = document.getElementById('tooltip');
@@ -64,10 +64,10 @@ const deckgl = new DeckGL({
     container: 'map',
     mapStyle: mapStyle,
     initialViewState: {
-        longitude: 110,
+        longitude: 0,
         latitude: 20,
-        zoom: 2,
-        pitch: 45,
+        zoom: 1.5,
+        pitch: 0,
         bearing: 0
     },
     controller: true,
@@ -294,15 +294,14 @@ const renderMapLayers = (arcs) => {
     
     const nodeData = generateNodeData(filteredArcs);
 
-    const arcLayer = new ArcLayer({
-        id: `arc-layer-${currentCommodity}`,
+    const lineLayer = new LineLayer({
+        id: `line-layer-${currentCommodity}`,
         data: filteredArcs,
         pickable: true,
-        getWidth: d => Math.min(Math.max(0.5, d.volume / 30), 4),
+        getWidth: d => Math.min(Math.max(1.5, d.volume / 15), 8),
         getSourcePosition: d => d.sourcePosition,
         getTargetPosition: d => d.targetPosition,
-        getSourceColor: d => d.sourceColor,
-        getTargetColor: d => d.targetColor,
+        getColor: d => d.sourceColor, // LineLayer uses getColor, but we can pass sourceColor. If we want gradient, LineLayer doesn't support it natively like ArcLayer, but we can just use sourceColor for the whole line.
         onHover: handleHover,
         onClick: handleLineClick,
         autoHighlight: true,
@@ -327,17 +326,17 @@ const renderMapLayers = (arcs) => {
         onClick: handleNodeClick
     });
 
-    deckgl.setProps({ layers: [arcLayer, scatterLayer] });
+    deckgl.setProps({ layers: [lineLayer, scatterLayer] });
 };
 
 // View Switcher Logic
 const togglePanels = ({ macro = false, countryStats = false, news = false, forecast = false, left = true, chart = false, map = true }) => {
-    const leftPanel = document.getElementById('left-panel');
+    const commodityInfoPanel = document.getElementById('commodity-info-panel');
     macro ? macroPanelEl.classList.remove('hidden') : macroPanelEl.classList.add('hidden');
     countryStats ? countryStatsPanelEl.classList.remove('hidden') : countryStatsPanelEl.classList.add('hidden');
     news ? newsPanelEl.classList.remove('hidden') : newsPanelEl.classList.add('hidden');
     forecast ? forecastPanelEl.classList.remove('hidden') : forecastPanelEl.classList.add('hidden');
-    left ? leftPanel.classList.remove('hidden') : leftPanel.classList.add('hidden');
+    left ? commodityInfoPanel.classList.remove('hidden') : commodityInfoPanel.classList.add('hidden');
     chart ? chartView.classList.remove('hidden') : chartView.classList.add('hidden');
     mapContainer.style.display = map ? 'block' : 'none';
 };

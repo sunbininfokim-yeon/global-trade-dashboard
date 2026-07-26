@@ -231,10 +231,42 @@ body {
 }
 
 /* === SPLIT LAYOUT === */
+.split-layout {
+    display: flex;
+    flex-direction: row;
+    height: calc(100vh - 60px); /* Fill remaining space below header */
+    width: 100vw;
+    overflow: hidden;
+}
+
+/* 3-Pane Layout */
+.left-pane, .right-pane {
+    width: 380px; /* Fixed width for both side panes */
+    flex-shrink: 0;
+    height: 100%;
+    background: #0f172a;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    z-index: 10;
+}
+
+.left-pane::-webkit-scrollbar, .right-pane::-webkit-scrollbar { width: 6px; }
+.left-pane::-webkit-scrollbar-track, .right-pane::-webkit-scrollbar-track { background: transparent; }
+.left-pane::-webkit-scrollbar-thumb, .right-pane::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 10px; }
+
+.left-pane {
+    border-right: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.right-pane {
+    border-left: 1px solid rgba(255, 255, 255, 0.1);
+}
+
 .map-pane {
-    flex: 1;
+    flex-grow: 1; /* Map takes all remaining central space */
     position: relative;
-    min-width: 0;
+    height: 100%;
 }
 
 #map {
@@ -245,21 +277,7 @@ body {
     height: 100%;
 }
 
-.right-pane {
-    width: 450px;
-    flex-shrink: 0;
-    background: var(--bg-dark);
-    border-left: 1px solid var(--border);
-    display: flex;
-    flex-direction: column;
-    overflow-y: auto;
-    z-index: 10;
-    box-shadow: -4px 0 15px rgba(0,0,0,0.5);
-}
 
-.right-pane::-webkit-scrollbar { width: 6px; }
-.right-pane::-webkit-scrollbar-track { background: transparent; }
-.right-pane::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 10px; }
 
 .panel-section {
     padding: 24px;
