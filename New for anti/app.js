@@ -345,6 +345,13 @@ const togglePanels = ({ macro = false, countryStats = false, news = false, forec
         leftPane.classList.remove('hidden');
     }
 
+    const rightPane = document.getElementById('right-pane');
+    if (!macro && !countryStats) {
+        if (rightPane) rightPane.classList.add('hidden');
+    } else {
+        if (rightPane) rightPane.classList.remove('hidden');
+    }
+
     chart ? chartView.classList.remove('hidden') : chartView.classList.add('hidden');
     mapContainer.style.display = map ? 'block' : 'none';
 };
@@ -362,7 +369,7 @@ const setView = (target) => {
     if (target === 'home') {
         // Initial empty state
         currentCommodity = null;
-        togglePanels({ macro: true, left: false });
+        togglePanels({ macro: false, left: false }); // Home screen should be map only
         
         // Render map with no data layers
         deckgl.setProps({ layers: [] });
