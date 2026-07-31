@@ -249,6 +249,7 @@ export async function onRequest(context) {
         "Netherlands": [5.2913, 52.1326],
         "Brazil": [-51.9253, -14.2350],
         "Saudi Arabia": [45.0792, 23.8859],
+        "Qatar": [51.1839, 25.3548],
         "Canada": [-106.3468, 56.1304],
         "Switzerland": [8.2275, 46.8182],
         "UK": [-3.4360, 55.3781],

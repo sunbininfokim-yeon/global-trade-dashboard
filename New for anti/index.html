@@ -74,8 +74,15 @@
                 </div>
             </nav>
             <div class="date-picker-container">
-                <input type="date" id="historical-date" class="historical-date-picker" value="2026-07-26" max="2026-07-26" min="2021-01-01">
+                <input type="date" id="historical-date" class="historical-date-picker" min="2021-01-01">
             </div>
+            <script>
+                // Set the historical date picker to today's date dynamically
+                const dateInput = document.getElementById('historical-date');
+                const todayStr = new Date().toISOString().split('T')[0];
+                dateInput.value = todayStr;
+                dateInput.max = todayStr;
+            </script>
         </header>
 
         <!-- Ticker -->
