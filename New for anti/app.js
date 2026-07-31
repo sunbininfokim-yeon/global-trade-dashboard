@@ -28,13 +28,92 @@ let selectedCountry = null;
 let currentCommodity = null; // 'coal', 'oil', 'gold', 'climate'
 let forecastData = {};
 
-// Fetch forecast data
-fetch('cloudflare_crop_forecast.json')
-    .then(response => response.json())
-    .then(data => { forecastData = data; })
-    .catch(err => console.error("Forecast data load error:", err));
+// Check for KRX API Key Expiration Alert
+const checkApiExpiration = () => {
+    const today = new Date();
+    const alertDate = new Date('2027-07-20');
+    if (today >= alertDate) {
+        // Create an alert toast
+        const alertEl = document.createElement('div');
+        alertEl.style.position = 'fixed';
+        alertEl.style.top = '20px';
+        alertEl.style.right = '20px';
+        alertEl.style.backgroundColor = 'rgba(239, 68, 68, 0.9)'; // Red with opacity
+        alertEl.style.color = '#fff';
+        alertEl.style.padding = '15px 20px';
+        alertEl.style.borderRadius = '8px';
+        alertEl.style.boxShadow = '0 4px 12px rgba(0,0,0,0.5)';
+        alertEl.style.zIndex = '9999';
+        alertEl.style.fontWeight = '600';
+        alertEl.style.border = '1px solid #f87171';
+        alertEl.innerHTML = '⚠️ KRX API 인증키가 곧 만료됩니다 (7월 30일 만료).<br/><span style="font-size: 0.85em; font-weight: 400;">KRX Data Marketplace에서 인증키를 갱신해 주세요.</span>';
+        
+        const closeBtn = document.createElement('span');
+        closeBtn.innerHTML = ' &times;';
+        closeBtn.style.cursor = 'pointer';
+        closeBtn.style.marginLeft = '20px';
+        closeBtn.style.fontSize = '1.2em';
+        closeBtn.onclick = () => alertEl.remove();
+        
+        alertEl.appendChild(closeBtn);
+        document.body.appendChild(alertEl);
+    }
+};
 
-// Mock Data is loaded from data.js
+// Fetch real-time data from Cloudflare Pages Function (API)
+fetch('/api/data')
+    .then(response => response.json())
+    .then(data => { 
+        window.CountriesData = data.CountriesData;
+        window.TradeData = data.TradeData;
+        forecastData = data.ForecastData; 
+        if (data.MacroData) {
+            updateMacroPanel(data.MacroData);
+        }
+    })
+    .catch(err => console.error("API data load error:", err))
+    .finally(() => checkApiExpiration());
+
+// Update Macro Panel with FRED Data
+const updateMacroPanel = (macro) => {
+    const formatVal = (id, val) => {
+        if (!val || val === "N/A") return "N/A";
+        const num = parseFloat(val);
+        if (id === "EUR/USD" || id === "USD/JPY") return num.toFixed(4);
+        if (id === "NASDAQ") return num.toLocaleString();
+        if (id === "KOSPI") {
+            if (isNaN(num)) return val;
+            return num.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+        }
+        if (id === "WTI_OIL") {
+            if (isNaN(num)) return val;
+            return `$${num.toFixed(2)}`;
+        }
+        if (id === "FED_BS") return `$${(num / 1000000).toFixed(2)} Trillion`;
+        if (id === "TGA") return `$${(num / 1000).toFixed(0)} Billion`;
+        return val;
+    };
+
+    if(macro["EUR/USD"]) document.getElementById('macro-eur-usd').innerText = formatVal("EUR/USD", macro["EUR/USD"].value);
+    if(macro["USD/JPY"]) document.getElementById('macro-usd-jpy').innerText = formatVal("USD/JPY", macro["USD/JPY"].value);
+    if(macro["NASDAQ"]) document.getElementById('macro-nasdaq').innerText = formatVal("NASDAQ", macro["NASDAQ"].value);
+    if(macro["KOSPI"]) document.getElementById('macro-kospi').innerText = formatVal("KOSPI", macro["KOSPI"].value);
+    if(macro["WTI_OIL"]) {
+        const el = document.getElementById('macro-wti');
+        if (el) el.innerText = formatVal("WTI_OIL", macro["WTI_OIL"].value);
+    }
+    
+    if(macro["FED_BS"]) {
+        document.getElementById('macro-fed-bs').innerText = formatVal("FED_BS", macro["FED_BS"].value);
+        document.getElementById('macro-fed-bs-date').innerText = `최근 업데이트: ${macro["FED_BS"].date}`;
+    }
+    if(macro["TGA"]) {
+        document.getElementById('macro-tga').innerText = formatVal("TGA", macro["TGA"].value);
+        document.getElementById('macro-tga-date').innerText = `최근 업데이트: ${macro["TGA"].date}`;
+    }
+};
+
+// Deck.GL Map Initialization
 const mapStyle = {
     "version": 8,
     "sources": {
@@ -653,8 +732,8 @@ document.getElementById('historical-date').addEventListener('change', (e) => {
         // In a real app, this would fetch data from Cloudflare D1/KV via an API endpoint.
         const randomFactor = 0.5 + Math.random(); // 0.5 to 1.5
         
-        if (TradeData[currentCommodity] && TradeData[currentCommodity].arcs) {
-            TradeData[currentCommodity].arcs.forEach(arc => {
+        if (window.TradeData[currentCommodity] && window.TradeData[currentCommodity].arcs) {
+            window.TradeData[currentCommodity].arcs.forEach(arc => {
                 arc.volume = Math.round(arc.volume * randomFactor);
             });
             // Re-render the map if we are on a commodity view

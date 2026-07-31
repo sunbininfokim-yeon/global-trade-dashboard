@@ -1,7 +1,10 @@
-name = "global-trade-api"
-main = "cloudflare_worker.js"
-compatibility_date = "2024-03-20"
+name = "global-trade-dashboard"
+compatibility_date = "2024-03-01"
 
-# 매일 한국 시간 오전 7시 (UTC 시간 오후 10시) 자동 실행 설정
-[triggers]
-crons = ["0 22 * * *"]
+pages_build_output_dir = "."
+
+# Bind the Cloudflare KV namespace for background data storage
+[[kv_namespaces]]
+binding = "AGRI_DATA_KV"
+# TODO: Replace with the actual KV namespace ID from the Cloudflare Dashboard
+id = "INSERT_KV_NAMESPACE_ID_HERE"

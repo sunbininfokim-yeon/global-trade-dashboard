@@ -14,7 +14,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
     <!-- Custom Styles -->
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css?v=2">
 </head>
 <body>
     <div id="app">
@@ -178,41 +178,52 @@
                         <div class="indicator-item">
                             <div class="ind-header">
                                 <span class="ind-title">EUR / USD</span>
-                                <span class="ind-trend up">▲ 0.12%</span>
                             </div>
-                            <div class="ind-value">1.0845</div>
+                            <div class="ind-value" id="macro-eur-usd">불러오는 중...</div>
                         </div>
                         
                         <div class="indicator-item">
                             <div class="ind-header">
                                 <span class="ind-title">USD / JPY</span>
-                                <span class="ind-trend down">▼ -0.34%</span>
                             </div>
-                            <div class="ind-value">150.23</div>
+                            <div class="ind-value" id="macro-usd-jpy">불러오는 중...</div>
                         </div>
                         
                         <div class="indicator-item">
                             <div class="ind-header">
                                 <span class="ind-title">NASDAQ 지수</span>
-                                <span class="ind-trend up">▲ 1.45%</span>
                             </div>
-                            <div class="ind-value">16,245.88</div>
+                            <div class="ind-value" id="macro-nasdaq">불러오는 중...</div>
                         </div>
 
                         <div class="indicator-item">
                             <div class="ind-header">
-                                <span class="ind-title">FED 대차대조표 (B/S)</span>
+                                <span class="ind-title">KOSPI 지수 (KRX)</span>
                             </div>
-                            <div class="ind-value" style="color: #cbd5e1; font-size: 18px;">$7.48 Trillion</div>
-                            <p class="ind-sub">지난주 대비 -$12 Billion (QT 진행중)</p>
+                            <div class="ind-value" id="macro-kospi" style="font-size: 16px;">불러오는 중...</div>
+                        </div>
+
+                        <div class="indicator-item">
+                            <div class="ind-header">
+                                <span class="ind-title">WTI 원유 (EIA)</span>
+                            </div>
+                            <div class="ind-value" id="macro-wti" style="font-size: 16px;">불러오는 중...</div>
+                        </div>
+
+                        <div class="indicator-item">
+                            <div class="ind-header">
+                                <span class="ind-title">FED 대차대조표 (총자산)</span>
+                            </div>
+                            <div class="ind-value" id="macro-fed-bs" style="color: #cbd5e1; font-size: 18px;">불러오는 중...</div>
+                            <p class="ind-sub" id="macro-fed-bs-date"></p>
                         </div>
 
                         <div class="indicator-item">
                             <div class="ind-header">
                                 <span class="ind-title">TGA (재무부 일반계정)</span>
                             </div>
-                            <div class="ind-value" style="color: #cbd5e1; font-size: 18px;">$750 Billion</div>
-                            <p class="ind-sub">안정적 유동성 유지 중</p>
+                            <div class="ind-value" id="macro-tga" style="color: #cbd5e1; font-size: 18px;">불러오는 중...</div>
+                            <p class="ind-sub" id="macro-tga-date"></p>
                         </div>
                     </div>
                 </div>
@@ -248,7 +259,6 @@
     </div>
 
     <!-- Data and App Logic -->
-    <script src="data.js"></script>
-    <script src="app.js"></script>
+    <script src="app.js?v=3"></script>
 </body>
 </html>
