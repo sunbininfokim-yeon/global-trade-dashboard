@@ -60,19 +60,16 @@ const checkApiExpiration = () => {
     }
 };
 
-// Fetch real-time data from Cloudflare Pages Function (API)
-fetch('/api/data')
-    .then(response => response.json())
-    .then(data => { 
-        window.CountriesData = data.CountriesData;
-        window.TradeData = data.TradeData;
-        forecastData = data.ForecastData; 
-        if (data.MacroData) {
-            updateMacroPanel(data.MacroData);
-        }
-    })
-    .catch(err => console.error("API data load error:", err))
-    .finally(() => checkApiExpiration());
+window.initApp = function() {
+    forecastData = window.ForecastData || {};
+    if (window.MacroData) {
+        updateMacroPanel(window.MacroData);
+    }
+};
+
+if (window.MacroData) {
+    window.initApp();
+}
 
 // Update Macro Panel with FRED Data
 const updateMacroPanel = (macro) => {
@@ -95,6 +92,8 @@ const updateMacroPanel = (macro) => {
         }
         if (id === "FED_BS") return `$${(num / 1000000).toFixed(2)} Trillion`;
         if (id === "TGA") return `$${(num / 1000).toFixed(0)} Billion`;
+        if (id === "KRW_USD") return `${num.toLocaleString(undefined, {minimumFractionDigits: 1, maximumFractionDigits: 1})} 원`;
+        if (id === "BOK_RATE") return `${num.toFixed(2)}%`;
         return val;
     };
 
@@ -112,6 +111,8 @@ const updateMacroPanel = (macro) => {
         document.getElementById('macro-tga').innerText = formatVal("TGA", macro["TGA"].value);
         document.getElementById('macro-tga-date').innerText = `최근 업데이트: ${macro["TGA"].date}`;
     }
+    if(macro["KRW_USD"]) document.getElementById('macro-krw-usd').innerText = formatVal("KRW_USD", macro["KRW_USD"].value);
+    if(macro["BOK_RATE"]) document.getElementById('macro-bok-rate').innerText = formatVal("BOK_RATE", macro["BOK_RATE"].value);
 };
 
 // Deck.GL Map Initialization
