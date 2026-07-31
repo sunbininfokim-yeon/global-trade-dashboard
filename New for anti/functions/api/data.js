@@ -25,6 +25,46 @@ export async function onRequest(context) {
             id: "wheat",
             name_ko: "밀",
             aliases: ["wheat", "trigo", "밀", "1001", "밀 (wheat)"]
+        },
+        "gas": {
+            id: "gas",
+            name_ko: "천연가스",
+            aliases: ["gas", "natural gas", "천연가스", "lng", "2711"]
+        },
+        "gold": {
+            id: "gold",
+            name_ko: "금",
+            aliases: ["gold", "금", "7108"]
+        },
+        "silver": {
+            id: "silver",
+            name_ko: "은",
+            aliases: ["silver", "은", "7106"]
+        },
+        "copper": {
+            id: "copper",
+            name_ko: "구리",
+            aliases: ["copper", "구리", "동", "7403"]
+        },
+        "zinc": {
+            id: "zinc",
+            name_ko: "아연",
+            aliases: ["zinc", "아연", "7901"]
+        },
+        "aluminum": {
+            id: "aluminum",
+            name_ko: "알루미늄",
+            aliases: ["aluminum", "알루미늄", "7601"]
+        },
+        "sugar": {
+            id: "sugar",
+            name_ko: "설탕",
+            aliases: ["sugar", "설탕", "원당", "1701"]
+        },
+        "coffee": {
+            id: "coffee",
+            name_ko: "커피",
+            aliases: ["coffee", "커피", "원두", "0901"]
         }
     };
 
@@ -121,12 +161,13 @@ export async function onRequest(context) {
         // Fetch Daily WTI Spot Price
         const eiaUrl = `https://api.eia.gov/v2/petroleum/pri/spt/data/?api_key=${EIA_API_KEY}&frequency=daily&data%5B0%5D=value&facets%5Bseries%5D%5B%5D=RWTC&sort%5B0%5D%5Bcolumn%5D=period&sort%5B0%5D%5Bdirection%5D=desc&length=1`;
         
-        const eiaRes = await fetch(eiaUrl, {
-            cf: {
-                cacheTtl: 86400, // 24-hour cache
-                cacheEverything: true 
-            }
-        });
+        // Fetch Daily Henry Hub Natural Gas Spot Price
+        const eiaGasUrl = `https://api.eia.gov/v2/natural-gas/pri/spt/data/?api_key=${EIA_API_KEY}&frequency=daily&data%5B0%5D=value&facets%5Bseries%5D%5B%5D=RNWHHD&sort%5B0%5D%5Bcolumn%5D=period&sort%5B0%5D%5Bdirection%5D=desc&length=1`;
+
+        const [eiaRes, eiaGasRes] = await Promise.all([
+            fetch(eiaUrl, { cf: { cacheTtl: 86400, cacheEverything: true } }),
+            fetch(eiaGasUrl, { cf: { cacheTtl: 86400, cacheEverything: true } })
+        ]);
         
         if (eiaRes.ok) {
             const eiaData = await eiaRes.json();
@@ -142,9 +183,25 @@ export async function onRequest(context) {
         } else {
             macroData["WTI_OIL"] = { value: "API 연결 실패", date: new Date().toISOString() + " (UTC 00:00 Normalized)" };
         }
+
+        if (eiaGasRes.ok) {
+            const gasData = await eiaGasRes.json();
+            if (gasData.response && gasData.response.data && gasData.response.data.length > 0) {
+                const natGasData = gasData.response.data[0];
+                macroData["NAT_GAS"] = { 
+                    value: natGasData.value, 
+                    date: natGasData.period + " (UTC 00:00 Normalized)" 
+                };
+            } else {
+                macroData["NAT_GAS"] = { value: "데이터 없음", date: new Date().toISOString() + " (UTC 00:00 Normalized)" };
+            }
+        } else {
+            macroData["NAT_GAS"] = { value: "API 연결 실패", date: new Date().toISOString() + " (UTC 00:00 Normalized)" };
+        }
     } catch(e) {
         console.error("EIA API Error:", e);
         macroData["WTI_OIL"] = { value: "N/A", date: "N/A" };
+        macroData["NAT_GAS"] = { value: "N/A", date: "N/A" };
     }
 
     // 1. Fetch real-time weather from Open-Meteo
@@ -313,6 +370,28 @@ export async function onRequest(context) {
                 "Saudi Arabia": { production: "10.5M bpd", import: "0M bpd", consumption: "3.2M bpd", price: "$82.50 / bbl (Export)" },
                 "USA": { production: "13.2M bpd", import: "6.5M bpd", consumption: "19.8M bpd", price: "$78.20 / bbl (WTI)" },
                 "China": { production: "4.2M bpd", import: "11.3M bpd", consumption: "15.0M bpd", price: "N/A" },
+                "default": { production: "N/A", import: "N/A", consumption: "N/A", price: "N/A" }
+            }
+        },
+        gas: {
+            title: "글로벌 에너지: 천연가스 (Natural Gas)",
+            desc: "전 세계 주요 LNG 및 파이프라인 가스 물동량 흐름",
+            totalVolume: "4.04 Trillion cubic meters",
+            topExporter: "미국 / 카타르",
+            arcs: generateMockArcs(["USA", "Qatar", "Russia", "Australia"], ["China", "Japan", "South Korea", "Germany", "UK"], 20, 200, 'energy'),
+            news: {
+                ...defaultNews("Natural Gas"),
+                "USA": [
+                    { title: "Henry Hub gas futures plummet as mild weather limits heating demand", date: "1 hour ago", source: "Bloomberg", url: "https://www.bloomberg.com" }
+                ],
+                "Qatar": [
+                    { title: "Qatar signs new 20-year LNG supply deal with Asian buyers", date: "어제", source: "Reuters", url: "https://www.reuters.com" }
+                ]
+            },
+            countryStats: {
+                "USA": { production: "1032 Bcm", import: "79 Bcm", consumption: "881 Bcm", price: "Refer to Macro Panel" },
+                "Qatar": { production: "178 Bcm", import: "0 Bcm", consumption: "38 Bcm", price: "N/A" },
+                "Russia": { production: "702 Bcm", import: "8 Bcm", consumption: "474 Bcm", price: "N/A" },
                 "default": { production: "N/A", import: "N/A", consumption: "N/A", price: "N/A" }
             }
         },
@@ -602,14 +681,14 @@ export async function onRequest(context) {
         console.error("USDA NASS API Error:", e);
     }
 
-    // 4.5 Fetch Background CONAB Data from KV Namespace
+    // 4.5 Fetch Background Brazil Agri Data from KV Namespace (CONAB, CEPEA, IBGE)
     try {
         if (context.env && context.env.AGRI_DATA_KV) {
-            const conabStr = await context.env.AGRI_DATA_KV.get("conab_latest");
-            if (conabStr) {
-                const conabData = JSON.parse(conabStr);
-                if (conabData.regions) {
-                    for (const [region, data] of Object.entries(conabData.regions)) {
+            const brazilStr = await context.env.AGRI_DATA_KV.get("brazil_agri_latest");
+            if (brazilStr) {
+                const brazilData = JSON.parse(brazilStr);
+                if (brazilData.regions) {
+                    for (const [region, data] of Object.entries(brazilData.regions)) {
                         if (forecastData[region]) {
                             // Merge crops
                             data.crops.forEach(kvCrop => {
@@ -618,21 +697,28 @@ export async function onRequest(context) {
                                 if (idx !== -1) {
                                     forecastData[region].crops[idx].pred_yield = `${kvCrop.pred_yield} (LIVE KV)`;
                                     forecastData[region].crops[idx].change_pct = kvCrop.change_pct;
+                                    // Inject CEPEA & IBGE data if present
+                                    if (kvCrop.cepea_price_usd) forecastData[region].crops[idx].cepea_price_usd = kvCrop.cepea_price_usd;
+                                    if (kvCrop.cepea_trend) forecastData[region].crops[idx].cepea_trend = kvCrop.cepea_trend;
+                                    if (kvCrop.ibge_top_municipalities) forecastData[region].crops[idx].ibge_top_municipalities = kvCrop.ibge_top_municipalities;
                                 } else {
                                     forecastData[region].crops.push({
                                         name: kvCrop.name,
                                         avg_yield: kvCrop.avg_yield,
                                         pred_yield: `${kvCrop.pred_yield} (LIVE KV)`,
-                                        change_pct: kvCrop.change_pct
+                                        change_pct: kvCrop.change_pct,
+                                        cepea_price_usd: kvCrop.cepea_price_usd,
+                                        cepea_trend: kvCrop.cepea_trend,
+                                        ibge_top_municipalities: kvCrop.ibge_top_municipalities
                                     });
                                 }
                             });
-                            forecastData[region].climate_status += ` | 🇧🇷 CONAB 봇 연동됨`;
+                            forecastData[region].climate_status += ` | 🇧🇷 통합봇 연동됨`;
                         } else {
                             forecastData[region] = {
-                                climate_status: `🇧🇷 CONAB 봇 연동됨`,
+                                climate_status: `🇧🇷 통합봇 연동됨`,
                                 gdd_total: "N/A", precip_anomaly_mm: "N/A", soil_moisture: "N/A",
-                                last_updated: conabData.last_updated,
+                                last_updated: brazilData.last_updated,
                                 crops: data.crops.map(c => ({
                                     ...c,
                                     pred_yield: `${c.pred_yield} (LIVE KV)`

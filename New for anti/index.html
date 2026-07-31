@@ -26,7 +26,7 @@
                     <span>에너지</span>
                     <div class="dropdown">
                         <a href="#" data-target="oil">원유</a>
-                        <a href="#" data-target="gas" class="disabled">천연가스</a>
+                        <a href="#" data-target="gas">천연가스</a>
                         <a href="#" data-target="thermal_coal">석탄 (연료탄)</a>
                         <a href="#" data-target="met_coal">석탄 (원료탄)</a>
                     </div>
@@ -60,16 +60,16 @@
                 <div class="menu-item">
                     <span>금융/제조</span>
                     <div class="dropdown">
-                        <a href="#" data-target="fed_bs" class="disabled">FED B/S</a>
-                        <a href="#" data-target="tga" class="disabled">TGA 잔고</a>
-                        <a href="#" data-target="semi_dram" class="disabled">반도체 DRAM</a>
+                        <a href="#" data-target="fed_bs">FED B/S</a>
+                        <a href="#" data-target="tga">TGA 잔고</a>
+                        <a href="#" data-target="semi_dram">반도체 DRAM</a>
                     </div>
                 </div>
                 <div class="menu-item" style="margin-left: 20px;">
                     <span style="color: #cbd5e1;">주요 기관</span>
                     <div class="dropdown">
-                        <a href="#" data-target="inst_intl" class="disabled">국제 기구 (UN, USDA 등)</a>
-                        <a href="#" data-target="inst_country" class="disabled">국가별 출처 (CONAB 등)</a>
+                        <a href="#" data-target="inst_intl">국제 기구 (UN, USDA 등)</a>
+                        <a href="#" data-target="inst_country">국가별 출처 (CONAB 등)</a>
                     </div>
                 </div>
             </nav>
@@ -177,21 +177,21 @@
                     <div class="indicators-list">
                         <div class="indicator-item">
                             <div class="ind-header">
-                                <span class="ind-title">EUR / USD</span>
+                                <span class="ind-title">EUR / USD (FRED)</span>
                             </div>
                             <div class="ind-value" id="macro-eur-usd">불러오는 중...</div>
                         </div>
                         
                         <div class="indicator-item">
                             <div class="ind-header">
-                                <span class="ind-title">USD / JPY</span>
+                                <span class="ind-title">USD / JPY (FRED)</span>
                             </div>
                             <div class="ind-value" id="macro-usd-jpy">불러오는 중...</div>
                         </div>
                         
                         <div class="indicator-item">
                             <div class="ind-header">
-                                <span class="ind-title">NASDAQ 지수</span>
+                                <span class="ind-title">NASDAQ 지수 (FRED)</span>
                             </div>
                             <div class="ind-value" id="macro-nasdaq">불러오는 중...</div>
                         </div>
@@ -212,7 +212,14 @@
 
                         <div class="indicator-item">
                             <div class="ind-header">
-                                <span class="ind-title">FED 대차대조표 (총자산)</span>
+                                <span class="ind-title">천연가스 (EIA Henry Hub)</span>
+                            </div>
+                            <div class="ind-value" id="macro-natgas" style="font-size: 16px;">불러오는 중...</div>
+                        </div>
+
+                        <div class="indicator-item">
+                            <div class="ind-header">
+                                <span class="ind-title">FED 대차대조표 (FRED)</span>
                             </div>
                             <div class="ind-value" id="macro-fed-bs" style="color: #cbd5e1; font-size: 18px;">불러오는 중...</div>
                             <p class="ind-sub" id="macro-fed-bs-date"></p>
@@ -220,7 +227,7 @@
 
                         <div class="indicator-item">
                             <div class="ind-header">
-                                <span class="ind-title">TGA (재무부 일반계정)</span>
+                                <span class="ind-title">TGA 재무부 일반계정 (FRED)</span>
                             </div>
                             <div class="ind-value" id="macro-tga" style="color: #cbd5e1; font-size: 18px;">불러오는 중...</div>
                             <p class="ind-sub" id="macro-tga-date"></p>

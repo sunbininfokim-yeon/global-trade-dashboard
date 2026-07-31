@@ -89,6 +89,10 @@ const updateMacroPanel = (macro) => {
             if (isNaN(num)) return val;
             return `$${num.toFixed(2)}`;
         }
+        if (id === "NAT_GAS") {
+            if (isNaN(num)) return val;
+            return `$${num.toFixed(3)}`; // Natural Gas prices are typically quoted to 3 decimal places (e.g. $2.145)
+        }
         if (id === "FED_BS") return `$${(num / 1000000).toFixed(2)} Trillion`;
         if (id === "TGA") return `$${(num / 1000).toFixed(0)} Billion`;
         return val;
@@ -98,11 +102,8 @@ const updateMacroPanel = (macro) => {
     if(macro["USD/JPY"]) document.getElementById('macro-usd-jpy').innerText = formatVal("USD/JPY", macro["USD/JPY"].value);
     if(macro["NASDAQ"]) document.getElementById('macro-nasdaq').innerText = formatVal("NASDAQ", macro["NASDAQ"].value);
     if(macro["KOSPI"]) document.getElementById('macro-kospi').innerText = formatVal("KOSPI", macro["KOSPI"].value);
-    if(macro["WTI_OIL"]) {
-        const el = document.getElementById('macro-wti');
-        if (el) el.innerText = formatVal("WTI_OIL", macro["WTI_OIL"].value);
-    }
-    
+    if(macro["WTI_OIL"]) document.getElementById('macro-wti').innerText = formatVal("WTI_OIL", macro["WTI_OIL"].value);
+    if(macro["NAT_GAS"]) document.getElementById('macro-natgas').innerText = formatVal("NAT_GAS", macro["NAT_GAS"].value);
     if(macro["FED_BS"]) {
         document.getElementById('macro-fed-bs').innerText = formatVal("FED_BS", macro["FED_BS"].value);
         document.getElementById('macro-fed-bs-date').innerText = `최근 업데이트: ${macro["FED_BS"].date}`;
@@ -313,6 +314,36 @@ const updateForecastPanel = (regionName) => {
             const sign = isCropGood ? '+' : '';
             const color = isCropGood ? '#4ade80' : '#fca5a5';
             
+            // CEPEA Price UI
+            let cepeaHtml = '';
+            if (crop.cepea_price_usd) {
+                const trendColor = crop.cepea_trend.startsWith('-') ? '#fca5a5' : '#4ade80';
+                cepeaHtml = `
+                <div style="margin-top: 10px; padding-top: 10px; border-top: 1px dashed rgba(255,255,255,0.1);">
+                    <span style="font-size:12px; color: #94a3b8;">CEPEA 현물 가격지수</span>
+                    <div style="display: flex; justify-content: space-between; align-items: baseline;">
+                        <span style="font-size: 15px; color: #facc15;">$${crop.cepea_price_usd} <span style="font-size: 11px; color:#64748b;">(R$${crop.cepea_price_brl || '-'})</span></span>
+                        <span style="font-size: 13px; color: ${trendColor};">${crop.cepea_trend}</span>
+                    </div>
+                </div>`;
+            }
+
+            // IBGE Municipalities UI
+            let ibgeHtml = '';
+            if (crop.ibge_top_municipalities && crop.ibge_top_municipalities.length > 0) {
+                let muniList = crop.ibge_top_municipalities.map((m, idx) => `
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 2px;">
+                        <span style="color: #cbd5e1;">${idx + 1}. ${m.city}</span>
+                        <span style="color: #94a3b8;">${m.production_tonnes} 톤</span>
+                    </div>
+                `).join('');
+                ibgeHtml = `
+                <div style="margin-top: 10px; padding: 8px; background: rgba(0,0,0,0.2); border-radius: 6px;">
+                    <div style="font-size:11px; color: #94a3b8; margin-bottom: 6px;">IBGE 주요 생산 시정촌 랭킹</div>
+                    <div style="font-size:12px;">${muniList}</div>
+                </div>`;
+            }
+
             cropHtml += `
             <div class="indicator-item" style="cursor: default; transform: none; border-color: rgba(255,255,255,0.1);">
                 <div class="ind-header"><span class="ind-title">${crop.name}</span></div>
@@ -329,6 +360,8 @@ const updateForecastPanel = (regionName) => {
                 <div style="text-align: right; font-size: 13px; margin-top:4px; color: ${color};">
                     전망: ${sign}${crop.change_pct}%
                 </div>
+                ${cepeaHtml}
+                ${ibgeHtml}
             </div>`;
         });
         
@@ -552,7 +585,7 @@ const setView = (target) => {
         
         // Update Panel Info
         currentViewTitle.textContent = data.title;
-        currentViewDesc.textContent = data.desc;
+        currentViewDesc.textContent = data.desc + " (데이터 출처: UN Comtrade API)";
         totalVolumeEl.textContent = data.totalVolume;
         topExporterEl.textContent = data.topExporter;
 
