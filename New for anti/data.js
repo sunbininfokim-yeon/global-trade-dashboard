@@ -129,7 +129,7 @@
         // Use yesterday's date or today's date formatted as YYYYMMDD for base date (basDd)
         const d = new Date();
         const basDd = d.toISOString().split('T')[0].replace(/-/g, '');
-        const krxUrl = `http://data-dbg.krx.co.kr/svc/apis/idx/kospi_dd_trd?basDd=${basDd}`;
+        const krxUrl = `https://data-dbg.krx.co.kr/svc/apis/idx/kospi_dd_trd?basDd=${basDd}`;
         
         const krxRes = await fetch(krxUrl, {
             headers: {
@@ -539,7 +539,6 @@
         }
     };
 
-    const constCountriesData = COUNTRIES;
 
     // 3. Base Forecast Data
     let forecastData = {
@@ -602,16 +601,29 @@
         }
     };
 
-    // 4. Inject real-time weather into forecast
-    if (weatherMap["Mato Grosso (Brazil)"]) {
-        const w = weatherMap["Mato Grosso (Brazil)"];
-        forecastData["Mato Grosso (Brazil)"].climate_status = `실시간 날씨: 🌡️ ${w.temperature}°C, 🌬️ ${w.windspeed}km/h (기후 API 연동 중)`;
-        forecastData["Mato Grosso (Brazil)"].last_updated = new Date().toISOString();
-    }
-    if (weatherMap["Iowa (USA)"]) {
-        const w = weatherMap["Iowa (USA)"];
-        forecastData["Iowa (USA)"].climate_status = `실시간 날씨: 🌡️ ${w.temperature}°C, 🌬️ ${w.windspeed}km/h (기후 API 연동 중)`;
-        forecastData["Iowa (USA)"].last_updated = new Date().toISOString();
+    // ★★★ CRITICAL: Set globals FIRST before any async API calls ★★★
+    // This ensures the app works even if external APIs fail (CORS, timeout, etc.)
+    const constCountriesData = COUNTRIES;
+    window.CountriesData = constCountriesData;
+    window.TradeData = TradeData;
+    window.ForecastData = forecastData;
+    console.log('[data.js] TradeData and CountriesData set successfully.');
+
+    // Now try to enhance data with live API calls (non-blocking)
+    try {
+        // 4. Inject real-time weather into forecast
+        if (weatherMap["Mato Grosso (Brazil)"]) {
+            const w = weatherMap["Mato Grosso (Brazil)"];
+            forecastData["Mato Grosso (Brazil)"].climate_status = `실시간 날씨: 🌡️ ${w.temperature}°C, 🌬️ ${w.windspeed}km/h (기후 API 연동 중)`;
+            forecastData["Mato Grosso (Brazil)"].last_updated = new Date().toISOString();
+        }
+        if (weatherMap["Iowa (USA)"]) {
+            const w = weatherMap["Iowa (USA)"];
+            forecastData["Iowa (USA)"].climate_status = `실시간 날씨: 🌡️ ${w.temperature}°C, 🌬️ ${w.windspeed}km/h (기후 API 연동 중)`;
+            forecastData["Iowa (USA)"].last_updated = new Date().toISOString();
+        }
+    } catch(e) {
+        console.warn('[data.js] Weather injection skipped:', e.message);
     }
 
     // 3. Fetch UN Comtrade Data for Coal (M49 Codes) with Edge Caching
@@ -745,12 +757,6 @@
             ]
         };
     }
-
-    // Set globals for app.js
-    window.CountriesData = constCountriesData;
-    window.TradeData = TradeData;
-    window.ForecastData = forecastData;
-
-    // Load macro data
+    // Load macro data (async, non-blocking)
     window.loadMacroData();
 })();
