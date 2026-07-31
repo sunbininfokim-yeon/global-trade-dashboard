@@ -85,6 +85,7 @@
         }
         return str;
     };
+    const normalizeCommodity = window.normalizeCommodity;
     // ===========================================
 
     window.loadMacroData = async function() {
@@ -162,7 +163,7 @@
         const BOK_API_KEY = "FVWGV3AMWEKW403AQAEK";
         const bokUrl = `https://ecos.bok.or.kr/api/KeyStatisticList/${BOK_API_KEY}/json/kr/1/100/`;
         
-        const bokRes = await fetch(bokUrl, { cf: { cacheTtl: 86400, cacheEverything: true } });
+        const bokRes = await fetch(bokUrl);
         
         if (bokRes.ok) {
             const bokData = await bokRes.json();
@@ -206,8 +207,8 @@
         const eiaGasUrl = `https://api.eia.gov/v2/natural-gas/pri/spt/data/?api_key=${EIA_API_KEY}&frequency=daily&data%5B0%5D=value&facets%5Bseries%5D%5B%5D=RNWHHD&sort%5B0%5D%5Bcolumn%5D=period&sort%5B0%5D%5Bdirection%5D=desc&length=1`;
 
         const [eiaRes, eiaGasRes] = await Promise.all([
-            fetch(eiaUrl, { cf: { cacheTtl: 86400, cacheEverything: true } }),
-            fetch(eiaGasUrl, { cf: { cacheTtl: 86400, cacheEverything: true } })
+            fetch(eiaUrl),
+            fetch(eiaGasUrl)
         ]);
         
         if (eiaRes.ok) {
@@ -623,11 +624,6 @@
         const comtradeRes = await fetch(comtradeUrl, {
             headers: {
                 "Ocp-Apim-Subscription-Key": COMTRADE_KEY
-            },
-            cf: {
-                // Cache at Cloudflare Edge for 24 hours (86400 seconds) to comply with Fair Usage
-                cacheTtl: 86400,
-                cacheEverything: true 
             }
         });
 
@@ -666,19 +662,7 @@
                     const commId = normalizeCommodity("2701");
                     if (TradeData[commId]) {
                         TradeData[commId].arcs = newArcs;
-                        
-                        // 2. Commodities: Golden Source + Statistical Discrepancy
-                        // Inject a dummy "Unallocated" node to absorb future discrepancies between UN and Local Customs data
-                        TradeData[commId].nodes.push({
-                            coordinates: [0, 0], // Center of the map (Equator/Prime Meridian)
-                            name: "Unallocated (통계적 오차)",
-                            type: "importer",
-                            volume: 30 // Example discrepancy volume
-                        });
-
-                        TradeData[commId].news.unshift({
-                            headline: "[LIVE] UN Comtrade 2023년 석탄 무역 물동량 데이터 업데이트 완료 (Taxonomy Mapped)", source: "UN Comtrade", time: "방금"
-                        });
+                        console.log(`[Comtrade] ${commId} arcs updated with ${newArcs.length} live trade flows.`);
                     }
                 }
             }
@@ -692,12 +676,7 @@
         const USDA_KEY = "C6B5137E-275B-38DB-879F-BC0B73ECE540";
         const usdaUrl = `https://quickstats.nass.usda.gov/api/api_GET/?key=${USDA_KEY}&commodity_desc=SOYBEANS&year__GE=2023&state_alpha=IA&statisticcat_desc=YIELD&agg_level_desc=STATE&format=JSON`;
         
-        const usdaRes = await fetch(usdaUrl, {
-            cf: {
-                cacheTtl: 86400,
-                cacheEverything: true 
-            }
-        });
+        const usdaRes = await fetch(usdaUrl);
 
         if (usdaRes.ok) {
             const usdaData = await usdaRes.json();
