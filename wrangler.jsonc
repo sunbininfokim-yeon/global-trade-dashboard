@@ -1,0 +1,18 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "global-trade-dashboard",
+  "compatibility_date": "2026-07-26",
+  "compatibility_flags": ["nodejs_compat"],
+  "observability": {
+    "enabled": true
+  },
+  // Entry point for the Worker script. Without this, Cloudflare treats the
+  // deployment as static-assets-only and _worker.js never runs, so every
+  // /api/* route 404s and Variables/Secrets can't even be added in the
+  // dashboard ("Worker that only has static assets").
+  "main": "_worker.js",
+  "assets": {
+    "directory": "New for anti",
+    "binding": "ASSETS"
+  }
+}
