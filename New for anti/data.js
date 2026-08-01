@@ -89,8 +89,7 @@
     // ===========================================
 
     window.loadMacroData = async function() {
-    // 0. Fetch real-time Macro Data from FRED
-    const FRED_API_KEY = "8df9ffcd105642b69c8adf0bb7463236";
+    // 0. Fetch real-time Macro Data from FRED (key lives server-side in the Worker)
     const series = [
         { id: "DEXUSEU", name: "EUR/USD" },
         { id: "DEXJPUS", name: "USD/JPY" },
@@ -101,7 +100,7 @@
     let macroData = {};
     try {
         const fredPromises = series.map(async (s) => {
-            const url = `https://api.stlouisfed.org/fred/series/observations?series_id=${s.id}&api_key=${FRED_API_KEY}&file_type=json&sort_order=desc&limit=1`;
+            const url = `/api/macro?source=fred&series_id=${s.id}`;
             const res = await fetch(url);
             const data = await res.json();
             if (data.observations && data.observations.length > 0) {
@@ -123,45 +122,12 @@
         console.error("FRED API Error:", e);
     }
 
-    // 0.5 Fetch real-time Macro Data from KRX (KOSPI)
-    try {
-        const KRX_API_KEY = "B8ED50419BB0406C9C9D0A0819451B165A2125A3";
-        // Use yesterday's date or today's date formatted as YYYYMMDD for base date (basDd)
-        const d = new Date();
-        const basDd = d.toISOString().split('T')[0].replace(/-/g, '');
-        const krxUrl = `https://data-dbg.krx.co.kr/svc/apis/idx/kospi_dd_trd?basDd=${basDd}`;
-        
-        const krxRes = await fetch(krxUrl, {
-            headers: {
-                "AUTH_KEY": KRX_API_KEY
-            }
-        });
-        
-        if (krxRes.ok) {
-            const krxData = await krxRes.json();
-            // Typical KRX JSON returns OutBlock_1 array for index lists
-            if (krxData && krxData.OutBlock_1 && krxData.OutBlock_1.length > 0) {
-                const kospiValue = krxData.OutBlock_1[0].CLSPRC_IDX || krxData.OutBlock_1[0].idxV; // Support different potential key names
-                if (kospiValue) {
-                    macroData["KOSPI"] = { value: kospiValue, date: (krxData.OutBlock_1[0].BAS_DD || basDd) + " (UTC 00:00 Normalized)" };
-                } else {
-                    macroData["KOSPI"] = { value: "API 파싱 오류", date: basDd + " (UTC 00:00 Normalized)" };
-                }
-            } else {
-                macroData["KOSPI"] = { value: "데이터 없음(주말/승인대기)", date: basDd + " (UTC 00:00 Normalized)" };
-            }
-        } else {
-            macroData["KOSPI"] = { value: "API 연결 실패", date: basDd + " (UTC 00:00 Normalized)" };
-        }
-    } catch(e) {
-        console.error("KRX API Error:", e);
-        macroData["KOSPI"] = { value: "N/A", date: "N/A" };
-    }
+    // 0.5 KRX (KOSPI) removed: the KRX Data Marketplace key returned
+    // 401 "Unauthorized API Call" on every request, so the tile never had data.
 
     // 0.55 Fetch real-time Macro Data from BOK (Bank of Korea ECOS)
     try {
-        const BOK_API_KEY = "FVWGV3AMWEKW403AQAEK";
-        const bokUrl = `https://ecos.bok.or.kr/api/KeyStatisticList/${BOK_API_KEY}/json/kr/1/100/`;
+        const bokUrl = `/api/macro?source=bok`;
         
         const bokRes = await fetch(bokUrl);
         
@@ -199,12 +165,11 @@
 
     // 0.6 Fetch real-time Macro Data from EIA (WTI Crude Oil Price)
     try {
-        const EIA_API_KEY = "0G9Rico6ytGYGKwMm97mUJJPOhdel3GNF5pzfySM";
         // Fetch Daily WTI Spot Price
-        const eiaUrl = `https://api.eia.gov/v2/petroleum/pri/spt/data/?api_key=${EIA_API_KEY}&frequency=daily&data%5B0%5D=value&facets%5Bseries%5D%5B%5D=RWTC&sort%5B0%5D%5Bcolumn%5D=period&sort%5B0%5D%5Bdirection%5D=desc&length=1`;
+        const eiaUrl = `/api/macro?source=eia&route=petroleum/pri/spt/data/&seriesId=RWTC`;
         
         // Fetch Daily Henry Hub Natural Gas Spot Price
-        const eiaGasUrl = `https://api.eia.gov/v2/natural-gas/pri/spt/data/?api_key=${EIA_API_KEY}&frequency=daily&data%5B0%5D=value&facets%5Bseries%5D%5B%5D=RNWHHD&sort%5B0%5D%5Bcolumn%5D=period&sort%5B0%5D%5Bdirection%5D=desc&length=1`;
+        const eiaGasUrl = `/api/macro?source=eia&route=natural-gas/pri/spt/data/&seriesId=RNWHHD`;
 
         const [eiaRes, eiaGasRes] = await Promise.all([
             fetch(eiaUrl),
@@ -273,66 +238,41 @@
 
     // 2. Base Trade Data
     const COUNTRIES = {
-        "Australia": [133.7751, -25.2744],
-        "Indonesia": [113.9213, -0.7893],
-        "Russia": [105.3188, 61.5240],
-        "USA": [-95.7129, 37.0902],
-        "South Africa": [22.9375, -30.5595],
-        "China": [104.1954, 35.8617],
-        "India": [78.9629, 20.5937],
-        "Japan": [138.2529, 36.2048],
-        "South Korea": [127.7669, 35.9078],
-        "Colombia": [-74.2973, 4.5709],
-        "Ethiopia": [39.7823, 9.1450],
-        "Uganda": [32.2903, 1.3733],
-        "UAE": [53.8478, 23.4241],
-        "Mato Grosso (Brazil)": [-56.9211, -12.6819],
-        "Rio Grande do Sul (Brazil)": [-53.2000, -30.0346],
-        "Iowa (USA)": [-93.0977, 41.8780],
-        "Pampas (Argentina)": [-62.0000, -35.0000],
-        "Sumatra (Indonesia)": [101.6865, -0.5897],
-        "Germany": [10.4515, 51.1657],
-        "Netherlands": [5.2913, 52.1326],
-        "Brazil": [-51.9253, -14.2350],
-        "Saudi Arabia": [45.0792, 23.8859],
-        "Qatar": [51.1839, 25.3548],
-        "Canada": [-106.3468, 56.1304],
-        "Switzerland": [8.2275, 46.8182],
-        "UK": [-3.4360, 55.3781],
-        "Peru": [-75.0152, -9.1900],
-        "Chile": [-71.5429, -35.6751],
-        "Argentina": [-63.6167, -38.4161],
-        "Vietnam": [108.2772, 14.0583],
-        "Norway": [8.4689, 60.4720],
-        "Iraq": [43.6793, 33.2232],
-        "Nigeria": [8.6753, 9.0820],
-        "Hong Kong": [114.1694, 22.3193],
-        "Congo DR": [21.7587, -4.0383],
-        "Mexico": [-102.5528, 23.6345],
-        "Thailand": [100.9925, 15.8700],
-        "Egypt": [30.8025, 26.8206],
-        "Turkey": [35.2433, 38.9637],
-        "Spain": [-3.7492, 40.4637],
-        "Italy": [12.5674, 41.8719],
-        "France": [2.2137, 46.2276],
-        "Belgium": [4.4699, 50.5039],
-        "Philippines": [121.7740, 12.8797],
-        "Malaysia": [101.9758, 4.2105],
-        "Taiwan": [120.9605, 23.6978]
+        "USA": [-95.7129, 37.0902], "China": [104.1954, 35.8617], "Brazil": [-51.9253, -14.2350],
+        "Argentina": [-63.6167, -38.4161], "Russia": [105.3188, 61.5240], "Ukraine": [31.1656, 48.3794],
+        "India": [78.9629, 20.5937], "Canada": [-106.3468, 56.1304], "Australia": [133.7751, -25.2744],
+        "France": [2.2137, 46.2276], "Germany": [10.4515, 51.1657], "Indonesia": [113.9213, -0.7893],
+        "Malaysia": [101.9758, 4.2105], "Thailand": [100.9925, 15.8700], "Vietnam": [108.2772, 14.0583],
+        "Egypt": [30.8025, 26.8206], "Mexico": [-102.5528, 23.6345], "Japan": [138.2529, 36.2048],
+        "South Korea": [127.7669, 35.9078], "UK": [-3.4360, 55.3781], "Italy": [12.5674, 41.8719],
+        "Spain": [-3.7492, 40.4637], "Turkey": [35.2433, 38.9637], "Saudi Arabia": [45.0792, 23.8859],
+        "UAE": [53.8478, 23.4241], "South Africa": [22.9375, -30.5595], "Nigeria": [8.6753, 9.0820],
+        "Pakistan": [69.3451, 30.3753], "Bangladesh": [90.3563, 23.6850], "Philippines": [121.7740, 12.8797],
+        "Iran": [53.6880, 32.4279], "Algeria": [1.6596, 28.0339], "Morocco": [-7.0926, 31.7917],
+        "Poland": [19.1451, 51.9194], "Netherlands": [5.2913, 52.1326], "Belgium": [4.4699, 50.5039],
+        "Switzerland": [8.2275, 46.8182], "Colombia": [-74.2973, 4.5709], "Peru": [-75.0152, -9.1900],
+        "Chile": [-71.5429, -35.6751], "New Zealand": [174.8860, -40.9006], "Kazakhstan": [66.9237, 48.0196],
+        "Romania": [24.9668, 45.9432], "Hungary": [19.5033, 47.1625], "Belarus": [27.9534, 53.7098],
+        "Paraguay": [-58.4438, -23.4425], "Uruguay": [-55.7658, -32.5228], "Ethiopia": [39.7823, 9.1450],
+        "Uganda": [32.2903, 1.3733], "Qatar": [51.1839, 25.3548], "Norway": [8.4689, 60.4720],
+        "Iraq": [43.6793, 33.2232], "Hong Kong": [114.1694, 22.3193], "Congo DR": [21.7587, -4.0383],
+        "Taiwan": [120.9605, 23.6978], "Kenya": [37.9062, -0.0236], "Tanzania": [34.8888, -6.3690],
+        "Myanmar": [95.9560, 21.9162], "Cambodia": [104.9910, 12.5657], "Ivory Coast": [-5.5471, 7.5400],
+        "Ghana": [-1.0232, 7.9465], "Senegal": [-14.4524, 14.4974], "Uzbekistan": [64.5853, 41.3775]
     };
 
     const M49_MAP = {
-        36: "Australia", 32: "Argentina", 76: "Brazil", 124: "Canada",
-        152: "Chile", 156: "China", 170: "Colombia", 180: "Congo DR",
-        276: "Germany", 344: "Hong Kong", 356: "India", 360: "Indonesia",
-        368: "Iraq", 392: "Japan", 410: "South Korea", 484: "Mexico",
-        528: "Netherlands", 566: "Nigeria", 578: "Norway", 604: "Peru",
-        608: "Philippines", 634: "Qatar", 643: "Russia", 682: "Saudi Arabia",
-        710: "South Africa", 756: "Switzerland", 764: "Thailand",
-        784: "UAE", 818: "Egypt", 826: "UK", 840: "USA",
-        231: "Ethiopia", 800: "Uganda", 704: "Vietnam", 792: "Turkey",
-        724: "Spain", 380: "Italy", 250: "France", 56: "Belgium",
-        158: "Taiwan", 458: "Malaysia"
+        840: "USA", 156: "China", 76: "Brazil", 32: "Argentina", 643: "Russia", 804: "Ukraine",
+        356: "India", 124: "Canada", 36: "Australia", 250: "France", 276: "Germany", 360: "Indonesia",
+        458: "Malaysia", 764: "Thailand", 704: "Vietnam", 818: "Egypt", 484: "Mexico", 392: "Japan",
+        410: "South Korea", 826: "UK", 380: "Italy", 724: "Spain", 792: "Turkey", 682: "Saudi Arabia",
+        784: "UAE", 710: "South Africa", 566: "Nigeria", 586: "Pakistan", 50: "Bangladesh", 608: "Philippines",
+        364: "Iran", 12: "Algeria", 504: "Morocco", 616: "Poland", 528: "Netherlands", 56: "Belgium",
+        756: "Switzerland", 170: "Colombia", 604: "Peru", 152: "Chile", 554: "New Zealand", 398: "Kazakhstan",
+        642: "Romania", 348: "Hungary", 112: "Belarus", 600: "Paraguay", 858: "Uruguay", 231: "Ethiopia",
+        800: "Uganda", 634: "Qatar", 578: "Norway", 368: "Iraq", 344: "Hong Kong", 180: "Congo DR",
+        158: "Taiwan", 404: "Kenya", 834: "Tanzania", 104: "Myanmar", 116: "Cambodia", 384: "Ivory Coast",
+        288: "Ghana", 686: "Senegal", 860: "Uzbekistan"
     };
 
     const ALL_M49_CODES = Object.keys(M49_MAP).join(",");
@@ -425,37 +365,109 @@
                 return [];
             }
 
-            const arcs = [];
+            // Use a map to deduplicate arcs and combine X (Export) and M (Import) 'Mirror Data'
+            const arcMap = {};
+
             json.data.forEach(row => {
                 const reporterName = M49_MAP[row.reporterCode];
                 const partnerName = M49_MAP[row.partnerCode];
                 if (!reporterName || !partnerName) return;
                 if (!COUNTRIES[reporterName] || !COUNTRIES[partnerName]) return;
+                if (reporterName === partnerName) return; // Ignore domestic trade
 
                 const tradeValue = row.primaryValue || 0;  // USD
                 const netWeight = row.netWgt || 0;          // kg
                 if (tradeValue <= 0) return;
 
-                arcs.push({
-                    sourceName: reporterName,
-                    targetName: partnerName,
-                    sourcePosition: COUNTRIES[reporterName],
-                    targetPosition: COUNTRIES[partnerName],
-                    volume: Math.round(tradeValue / 1000000),  // Convert to millions USD
-                    netWeightMt: Math.round(netWeight / 1000000000 * 100) / 100, // Convert kg to Mt (million tonnes)
-                    percentage: 0,
-                    typeName: config.hsCode,
-                    sourceColor: config.colorScheme.source,
-                    targetColor: config.colorScheme.target,
-                    usdValue: tradeValue,
-                    dataSource: "UN Comtrade (comtradeapi.un.org)"
-                });
+                let sourceName, targetName;
+                if (row.flowCode === "M") {
+                    sourceName = partnerName; // Exporter
+                    targetName = reporterName; // Importer
+                } else {
+                    sourceName = reporterName;
+                    targetName = partnerName;
+                }
+
+                const arcKey = `${sourceName}-${targetName}`;
+                const volume = Math.round(tradeValue / 1000000); // Millions USD
+                const netWeightMt = Math.round(netWeight / 1000000000 * 100) / 100;
+
+                if (!arcMap[arcKey] || arcMap[arcKey].usdValue < tradeValue) {
+                    arcMap[arcKey] = {
+                        sourceName,
+                        targetName,
+                        sourcePosition: COUNTRIES[sourceName],
+                        targetPosition: COUNTRIES[targetName],
+                        volume,
+                        netWeightMt,
+                        percentage: 0,
+                        typeName: config.hsCode,
+                        sourceColor: config.colorScheme.source,
+                        targetColor: config.colorScheme.target,
+                        usdValue: tradeValue,
+                        dataSource: "UN Comtrade (comtradeapi.un.org)"
+                    };
+                }
             });
 
-            // Calculate percentages
+            // === HYBRID OVERRIDE: Merge with live high-res data if available ===
+            try {
+                const liveRes = await fetch('/public/data/live_override.json');
+                if (liveRes.ok) {
+                    const liveData = await liveRes.json();
+                    
+                    // 1. Override Brazil Soybean Exports
+                    if (commodityKey === 'soybeans' && liveData.comexstat && liveData.comexstat.brazil_soybean_exports_2024) {
+                        liveData.comexstat.brazil_soybean_exports_2024.forEach(row => {
+                            // Basic mapping. NO_PAIS should match our COUNTRIES keys
+                            let targetCountry = row.NO_PAIS;
+                            // Add some normalizations if needed (e.g. "China" is usually matching)
+                            
+                            if (COUNTRIES[targetCountry]) {
+                                const arcKey = `Brazil-${targetCountry}`;
+                                const overrideVolume = Math.round(row.VL_FOB / 1000000); // M USD
+                                const overrideNetWeight = Math.round(row.KG_LIQUIDO / 10000000) / 100; // M Tonnes
+
+                                if (arcMap[arcKey]) {
+                                    arcMap[arcKey].volume = overrideVolume;
+                                    arcMap[arcKey].netWeightMt = overrideNetWeight;
+                                    arcMap[arcKey].dataSource = "Brazil Comex Stat (Live Monthly)";
+                                    // Highlight the line to show it's live data
+                                    arcMap[arcKey].isLiveData = true;
+                                } else {
+                                    arcMap[arcKey] = {
+                                        sourceName: "Brazil",
+                                        targetName: targetCountry,
+                                        sourcePosition: COUNTRIES["Brazil"],
+                                        targetPosition: COUNTRIES[targetCountry],
+                                        volume: overrideVolume,
+                                        netWeightMt: overrideNetWeight,
+                                        percentage: 0,
+                                        typeName: config.hsCode,
+                                        sourceColor: config.colorScheme.source,
+                                        targetColor: config.colorScheme.target,
+                                        usdValue: row.VL_FOB,
+                                        dataSource: "Brazil Comex Stat (Live Monthly)",
+                                        isLiveData: true
+                                    };
+                                }
+                            }
+                        });
+                    }
+                }
+            } catch (err) {
+                console.warn("[Comtrade] Could not load live_override.json (maybe not generated yet)", err);
+            }
+
+            const arcs = Object.values(arcMap);
+
+            // Calculate percentages.
+            // Keep one decimal: trade is dominated by a few mega-routes (Brazil->China
+            // alone is ~71% of soybeans), so Math.round() collapsed every remaining
+            // route to 0 and the map's `percentage >= 1` filter then dropped ~95% of them.
             const totalVol = arcs.reduce((sum, a) => sum + a.volume, 0);
             arcs.forEach(a => {
-                a.percentage = totalVol > 0 ? Math.round((a.volume / totalVol) * 100) : 0;
+                a.percentage = totalVol > 0 ? Math.round((a.volume / totalVol) * 1000) / 10 : 0;
             });
 
             // Sort by volume descending
@@ -754,67 +766,13 @@
         console.warn('[data.js] Weather injection skipped:', e.message);
     }
 
-    // 3. Fetch UN Comtrade Data for Coal (M49 Codes) with Edge Caching
-    try {
-        const COMTRADE_KEY = "82e21c24672d4610815c5e45f92f5fca";
-        // reporter: Aus(36), Indo(360), Rus(643), USA(840)
-        // partner: Chn(156), Ind(356), Jpn(392), Kor(410)
-        const comtradeUrl = "https://comtradeapi.un.org/data/v1/get/C/A/HS?reporterCode=36,360,643,840&period=2023&partnerCode=156,356,392,410&cmdCode=2701&flowCode=X";
-        
-        const comtradeRes = await fetch(comtradeUrl, {
-            headers: {
-                "Ocp-Apim-Subscription-Key": COMTRADE_KEY
-            }
-        });
-
-        if (comtradeRes.ok) {
-            const comtradeData = await comtradeRes.json();
-            if (comtradeData && comtradeData.data && comtradeData.data.length > 0) {
-                const m49Map = {
-                    36: { name: "Australia", coords: [133.7751, -25.2744] },
-                    360: { name: "Indonesia", coords: [113.9213, -0.7893] },
-                    643: { name: "Russia", coords: [105.3188, 61.5240] },
-                    840: { name: "United States", coords: [-95.7129, 37.0902] },
-                    156: { name: "China", coords: [104.1954, 35.8617] },
-                    356: { name: "India", coords: [78.9629, 20.5937] },
-                    392: { name: "Japan", coords: [138.2529, 36.2048] },
-                    410: { name: "South Korea", coords: [127.7669, 35.9078] }
-                };
-
-                const newArcs = [];
-                comtradeData.data.forEach(row => {
-                    const src = m49Map[row.reporterCode];
-                    const tgt = m49Map[row.partnerCode];
-                    if (src && tgt && row.primaryValue) {
-                        newArcs.push({
-                            source: src.coords,
-                            target: tgt.coords,
-                            // Scale down primaryValue (which is USD $) for visual rendering
-                            volume: Math.max(20, Math.min(200, row.primaryValue / 10000000)),
-                            sourceName: src.name,
-                            targetName: tgt.name,
-                            usdValue: row.primaryValue
-                        });
-                    }
-                });
-
-                if (newArcs.length > 0) {
-                    const commId = normalizeCommodity("2701");
-                    if (TradeData[commId]) {
-                        TradeData[commId].arcs = newArcs;
-                        console.log(`[Comtrade] ${commId} arcs updated with ${newArcs.length} live trade flows.`);
-                    }
-                }
-            }
-        }
-    } catch(e) {
-        console.error("Comtrade API Error:", e);
-    }
+    // 3. UN Comtrade Data for Coal (HS 2701) is lazy-loaded on demand via
+    //    window.fetchComtradeArcs(), which goes through the /api/comtrade proxy
+    //    (see app.js:622) — no separate fetch needed here.
 
     // 4. Fetch USDA NASS Data for Iowa Soybeans Yield with Edge Caching
     try {
-        const USDA_KEY = "C6B5137E-275B-38DB-879F-BC0B73ECE540";
-        const usdaUrl = `https://quickstats.nass.usda.gov/api/api_GET/?key=${USDA_KEY}&commodity_desc=SOYBEANS&year__GE=2023&state_alpha=IA&statisticcat_desc=YIELD&agg_level_desc=STATE&format=JSON`;
+        const usdaUrl = `/api/usda-nass?commodity_desc=SOYBEANS&year__GE=2023&state_alpha=IA&statisticcat_desc=YIELD&agg_level_desc=STATE&format=JSON`;
         
         const usdaRes = await fetch(usdaUrl);
 

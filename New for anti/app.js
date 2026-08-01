@@ -28,38 +28,6 @@ let selectedCountry = null;
 let currentCommodity = null; // 'coal', 'oil', 'gold', 'climate'
 let forecastData = {};
 
-// Check for KRX API Key Expiration Alert
-const checkApiExpiration = () => {
-    const today = new Date();
-    const alertDate = new Date('2027-07-20');
-    if (today >= alertDate) {
-        // Create an alert toast
-        const alertEl = document.createElement('div');
-        alertEl.style.position = 'fixed';
-        alertEl.style.top = '20px';
-        alertEl.style.right = '20px';
-        alertEl.style.backgroundColor = 'rgba(239, 68, 68, 0.9)'; // Red with opacity
-        alertEl.style.color = '#fff';
-        alertEl.style.padding = '15px 20px';
-        alertEl.style.borderRadius = '8px';
-        alertEl.style.boxShadow = '0 4px 12px rgba(0,0,0,0.5)';
-        alertEl.style.zIndex = '9999';
-        alertEl.style.fontWeight = '600';
-        alertEl.style.border = '1px solid #f87171';
-        alertEl.innerHTML = '⚠️ KRX API 인증키가 곧 만료됩니다 (7월 30일 만료).<br/><span style="font-size: 0.85em; font-weight: 400;">KRX Data Marketplace에서 인증키를 갱신해 주세요.</span>';
-        
-        const closeBtn = document.createElement('span');
-        closeBtn.innerHTML = ' &times;';
-        closeBtn.style.cursor = 'pointer';
-        closeBtn.style.marginLeft = '20px';
-        closeBtn.style.fontSize = '1.2em';
-        closeBtn.onclick = () => alertEl.remove();
-        
-        alertEl.appendChild(closeBtn);
-        document.body.appendChild(alertEl);
-    }
-};
-
 window.initApp = function() {
     forecastData = window.ForecastData || {};
     if (window.MacroData) {
@@ -78,10 +46,6 @@ const updateMacroPanel = (macro) => {
         const num = parseFloat(val);
         if (id === "EUR/USD" || id === "USD/JPY") return num.toFixed(4);
         if (id === "NASDAQ") return num.toLocaleString();
-        if (id === "KOSPI") {
-            if (isNaN(num)) return val;
-            return num.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
-        }
         if (id === "WTI_OIL") {
             if (isNaN(num)) return val;
             return `$${num.toFixed(2)}`;
@@ -100,7 +64,6 @@ const updateMacroPanel = (macro) => {
     if(macro["EUR/USD"]) document.getElementById('macro-eur-usd').innerText = formatVal("EUR/USD", macro["EUR/USD"].value);
     if(macro["USD/JPY"]) document.getElementById('macro-usd-jpy').innerText = formatVal("USD/JPY", macro["USD/JPY"].value);
     if(macro["NASDAQ"]) document.getElementById('macro-nasdaq').innerText = formatVal("NASDAQ", macro["NASDAQ"].value);
-    if(macro["KOSPI"]) document.getElementById('macro-kospi').innerText = formatVal("KOSPI", macro["KOSPI"].value);
     if(macro["WTI_OIL"]) document.getElementById('macro-wti').innerText = formatVal("WTI_OIL", macro["WTI_OIL"].value);
     if(macro["NAT_GAS"]) document.getElementById('macro-natgas').innerText = formatVal("NAT_GAS", macro["NAT_GAS"].value);
     if(macro["FED_BS"]) {
@@ -208,32 +171,58 @@ const handleLineClick = (info) => {
     }
 };
 
-const updateCountryStatsPanel = (countryName) => {
+const updateCountryStatsPanel = async (countryName) => {
     if (!currentCommodity || !window.TradeData[currentCommodity]) return;
     
     const commodityData = window.TradeData[currentCommodity];
-    const statsData = commodityData.countryStats ? 
+    let statsData = commodityData.countryStats ? 
         (commodityData.countryStats[countryName] || commodityData.countryStats['default']) : 
-        { production: "N/A", import: "N/A", consumption: "N/A", price: "N/A" };
+        { production: "N/A", import: "N/A", consumption: "N/A", price: "N/A", endingStocks: "N/A" };
+        
+    // --- LIVE OVERRIDE FOR CHINA (USDA PSD) ---
+    let dataSourceText = "UN FAO / World Bank (Mock)";
+    if (countryName === "China" && currentCommodity === "soybeans") {
+        try {
+            const res = await fetch('/public/data/live_override.json');
+            if (res.ok) {
+                const liveData = await res.json();
+                if (liveData.usda_psd && liveData.usda_psd.china_soybean) {
+                    const usdaRecords = liveData.usda_psd.china_soybean;
+                    
+                    const endingStocks = usdaRecords.find(r => r.attribute === "estoque_final")?.value || "N/A";
+                    const imports = usdaRecords.find(r => r.attribute === "importacao")?.value || "N/A";
+                    
+                    statsData.endingStocks = endingStocks !== "N/A" ? `${endingStocks.toLocaleString()} k MT` : "N/A";
+                    statsData.import = imports !== "N/A" ? `${imports.toLocaleString()} k MT` : "N/A";
+                    dataSourceText = "USDA PSD API (Live Data)";
+                }
+            }
+        } catch (e) {
+            console.warn("Could not load live_override.json for China stats");
+        }
+    }
         
     countryStatsTitleEl.textContent = countryName;
     
     countryStatsContentEl.innerHTML = `
+        <div style="font-size: 11px; color: #00d2ff; margin-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 5px;">
+            <i class="fas fa-database"></i> Source: ${dataSourceText}
+        </div>
         <div class="indicator-item">
             <div class="ind-header"><span class="ind-title">생산량 (Production)</span></div>
             <div class="ind-value" style="font-size: 20px;">${statsData.production}</div>
         </div>
         <div class="indicator-item">
             <div class="ind-header"><span class="ind-title">수입량 (Import)</span></div>
-            <div class="ind-value" style="font-size: 20px;">${statsData.import}</div>
+            <div class="ind-value" style="font-size: 20px; color: ${statsData.import !== 'N/A' ? '#ff3366' : 'white'};">${statsData.import}</div>
         </div>
         <div class="indicator-item">
             <div class="ind-header"><span class="ind-title">소비량 (Consumption)</span></div>
             <div class="ind-value" style="font-size: 20px;">${statsData.consumption}</div>
         </div>
         <div class="indicator-item">
-            <div class="ind-header"><span class="ind-title">소비자/수출 가격</span></div>
-            <div class="ind-value" style="font-size: 20px;">${statsData.price}</div>
+            <div class="ind-header"><span class="ind-title" style="color: #00d2ff;">식량 안보 (기말 재고량)</span></div>
+            <div class="ind-value" style="font-size: 20px; color: #00d2ff; font-weight: bold;">${statsData.endingStocks || 'N/A'}</div>
         </div>
     `;
     
@@ -398,10 +387,17 @@ const generateNodeData = (arcs) => {
     });
 };
 
+// Cap on rendered routes. A global commodity query returns 300+ valid routes;
+// this keeps the map readable without silently hiding mid-sized trade flows.
+const MAX_RENDERED_ARCS = 250;
+
 const renderMapLayers = (arcs) => {
-    // Filter out trades < 1%
-    const filteredArcs = arcs.filter(arc => arc.percentage >= 1);
-    
+    // Drop only empty routes, then cap by size. The old `percentage >= 1` filter
+    // discarded ~95% of real routes because one mega-route dominates each commodity.
+    const filteredArcs = arcs
+        .filter(arc => arc.volume > 0)
+        .slice(0, MAX_RENDERED_ARCS);
+
     const nodeData = generateNodeData(filteredArcs);
 
     const lineLayer = new LineLayer({
@@ -648,29 +644,45 @@ const closeModal = document.getElementById('close-modal');
 const modalTitle = document.getElementById('modal-chart-title');
 let macroChartInstance = null;
 
-// Generate 5-year mock data
-const generateMockChartData = (baseValue, volatility) => {
-    const labels = [];
-    const data = [];
-    let currentVal = baseValue;
-    
-    // Monthly data for 5 years = 60 points
-    for (let i = 60; i >= 0; i--) {
-        const d = new Date();
-        d.setMonth(d.getMonth() - i);
-        labels.push(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`);
-        
-        currentVal = currentVal * (1 + (Math.random() * volatility * 2 - volatility));
-        data.push(currentVal);
-    }
-    return { labels, data };
-};
-
-const openChartModal = (indicatorTitle, baseValue, volatility) => {
-    modalTitle.textContent = `${indicatorTitle} (최근 5년)`;
+const openChartModal = async (indicatorTitle) => {
+    modalTitle.textContent = `${indicatorTitle} (최근 5년 실데이터)`;
     chartModal.classList.remove('hidden');
     
-    const { labels, data } = generateMockChartData(baseValue, volatility);
+    // Map indicator title to Yahoo Finance Symbol
+    let symbol = "";
+    if (indicatorTitle.includes('KRW/USD')) symbol = "KRW=X";
+    else if (indicatorTitle.includes('WTI')) symbol = "CL=F";
+    else if (indicatorTitle.includes('NAT GAS')) symbol = "NG=F";
+    else if (indicatorTitle.includes('EUR')) symbol = "EUR=X";
+    else if (indicatorTitle.includes('JPY')) symbol = "JPY=X";
+    else if (indicatorTitle.includes('NASDAQ')) symbol = "^IXIC";
+    else symbol = "^GSPC"; // default S&P 500
+
+    let labels = [];
+    let data = [];
+
+    try {
+        const res = await fetch(`/api/macro?source=yfinance&symbol=${symbol}`);
+        const result = await res.json();
+        
+        if (result.chart && result.chart.result && result.chart.result[0]) {
+            const chartData = result.chart.result[0];
+            const timestamps = chartData.timestamp || [];
+            const closePrices = chartData.indicators.quote[0].close || [];
+            
+            for (let i = 0; i < timestamps.length; i++) {
+                if (closePrices[i] !== null) {
+                    const d = new Date(timestamps[i] * 1000);
+                    labels.push(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`);
+                    data.push(closePrices[i]);
+                }
+            }
+        }
+    } catch (e) {
+        console.error("Failed to load real chart data", e);
+        modalTitle.textContent = `${indicatorTitle} (데이터 연동 실패)`;
+        return; // Don't chart on error
+    }
     
     // Find High and Low
     const maxVal = Math.max(...data);
@@ -752,16 +764,7 @@ chartModal.addEventListener('click', (e) => {
 document.querySelectorAll('.indicator-item').forEach(item => {
     item.addEventListener('click', () => {
         const title = item.querySelector('.ind-title').textContent;
-        // Mock base values and volatility based on title
-        let baseVal = 100;
-        let vol = 0.02;
-        if (title.includes('EUR')) { baseVal = 1.1; vol = 0.01; }
-        else if (title.includes('JPY')) { baseVal = 140; vol = 0.015; }
-        else if (title.includes('NASDAQ')) { baseVal = 12000; vol = 0.03; }
-        else if (title.includes('FED')) { baseVal = 8.0; vol = 0.005; }
-        else if (title.includes('TGA')) { baseVal = 500; vol = 0.05; }
-        
-        openChartModal(title, baseVal, vol);
+        openChartModal(title);
     });
 });
 
