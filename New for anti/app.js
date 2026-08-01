@@ -586,13 +586,40 @@ const setView = (target) => {
         
         // Update Panel Info
         currentViewTitle.textContent = data.title;
-        currentViewDesc.textContent = data.desc + " (데이터 출처: UN Comtrade API)";
         totalVolumeEl.textContent = data.totalVolume;
         topExporterEl.textContent = data.topExporter;
 
         // Reset news and map
         updateNewsPanel('Global Market');
-        renderMapLayers(data.arcs);
+
+        // Lazy Loading: if arcs are empty, fetch real data from UN Comtrade
+        if (data.arcs.length === 0 && window.fetchComtradeArcs) {
+            currentViewDesc.textContent = "📡 UN Comtrade API에서 실시간 무역 데이터 로딩 중...";
+            
+            // Show loading spinner on map
+            deckgl.setProps({ layers: [] });
+
+            window.fetchComtradeArcs(target).then(arcs => {
+                // Check if user hasn't navigated away
+                if (currentCommodity !== target) return;
+                
+                if (arcs.length > 0) {
+                    data.arcs = arcs; // Cache for future clicks
+                    currentViewDesc.textContent = data.desc + ` (데이터 출처: UN Comtrade API | ${arcs.length}개 무역 루트)`;
+                    renderMapLayers(data.arcs);
+                } else {
+                    currentViewDesc.textContent = data.desc + " (UN Comtrade 데이터 로딩 실패 — 재시도 필요)";
+                }
+            }).catch(err => {
+                if (currentCommodity !== target) return;
+                currentViewDesc.textContent = data.desc + " (API 연결 오류: " + err.message + ")";
+                console.error('[Comtrade] Lazy load error:', err);
+            });
+        } else {
+            // Already have data (cached from previous click or hardcoded)
+            currentViewDesc.textContent = data.desc + ` (데이터 출처: UN Comtrade API | ${data.arcs.length}개 무역 루트)`;
+            renderMapLayers(data.arcs);
+        }
 
     } else {
         // Unsupported/Placeholder view

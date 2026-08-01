@@ -302,32 +302,172 @@
         "Peru": [-75.0152, -9.1900],
         "Chile": [-71.5429, -35.6751],
         "Argentina": [-63.6167, -38.4161],
-        "Vietnam": [108.2772, 14.0583]
+        "Vietnam": [108.2772, 14.0583],
+        "Norway": [8.4689, 60.4720],
+        "Iraq": [43.6793, 33.2232],
+        "Nigeria": [8.6753, 9.0820],
+        "Hong Kong": [114.1694, 22.3193],
+        "Congo DR": [21.7587, -4.0383],
+        "Mexico": [-102.5528, 23.6345],
+        "Thailand": [100.9925, 15.8700],
+        "Egypt": [30.8025, 26.8206],
+        "Turkey": [35.2433, 38.9637],
+        "Spain": [-3.7492, 40.4637],
+        "Italy": [12.5674, 41.8719],
+        "France": [2.2137, 46.2276],
+        "Belgium": [4.4699, 50.5039],
+        "Philippines": [121.7740, 12.8797],
+        "Malaysia": [101.9758, 4.2105],
+        "Taiwan": [120.9605, 23.6978]
     };
 
-    const generateMockArcs = (sources, targets, minVol, maxVol, colorType) => {
-        const arcs = [];
-        sources.forEach(source => {
-            targets.forEach(target => {
-                if(source === target) return;
-                if(Math.random() > 0.5) {
-                    const vol = Math.floor(Math.random() * (maxVol - minVol)) + minVol;
-                    let sColor, tColor;
-                    if(colorType === 'energy') { sColor = [239, 68, 68]; tColor = [248, 113, 113]; }
-                    else if(colorType === 'precious') { sColor = [250, 204, 21]; tColor = [253, 224, 71]; }
-                    else if(colorType === 'metals') { sColor = [14, 165, 233]; tColor = [56, 189, 248]; }
-                    else if(colorType === 'agri') { sColor = [34, 197, 94]; tColor = [74, 222, 128]; }
-                    else { sColor = [255, 140, 0]; tColor = [250, 204, 21]; }
-                    arcs.push({
-                        sourceName: source, targetName: target,
-                        sourcePosition: COUNTRIES[source], targetPosition: COUNTRIES[target],
-                        volume: vol, percentage: Math.floor(Math.random() * 40) + 10,
-                        typeName: "General", sourceColor: sColor, targetColor: tColor
-                    });
-                }
+    const M49_MAP = {
+        36: "Australia", 32: "Argentina", 76: "Brazil", 124: "Canada",
+        152: "Chile", 156: "China", 170: "Colombia", 180: "Congo DR",
+        276: "Germany", 344: "Hong Kong", 356: "India", 360: "Indonesia",
+        368: "Iraq", 392: "Japan", 410: "South Korea", 484: "Mexico",
+        528: "Netherlands", 566: "Nigeria", 578: "Norway", 604: "Peru",
+        608: "Philippines", 634: "Qatar", 643: "Russia", 682: "Saudi Arabia",
+        710: "South Africa", 756: "Switzerland", 764: "Thailand",
+        784: "UAE", 818: "Egypt", 826: "UK", 840: "USA",
+        231: "Ethiopia", 800: "Uganda", 704: "Vietnam", 792: "Turkey",
+        724: "Spain", 380: "Italy", 250: "France", 56: "Belgium",
+        158: "Taiwan", 458: "Malaysia"
+    };
+
+    const ALL_M49_CODES = Object.keys(M49_MAP).join(",");
+
+    // === Commodity API Configuration (HS Codes + Major Traders) ===
+    // 출처: UN Comtrade (comtradeapi.un.org), HS Classification
+    const COMMODITY_API_CONFIG = {
+        oil: {
+            hsCode: "2709",
+            colorScheme: { source: [239, 68, 68], target: [248, 113, 113] }
+        },
+        gas: {
+            hsCode: "2711",
+            colorScheme: { source: [239, 68, 68], target: [248, 113, 113] }
+        },
+        thermal_coal: {
+            hsCode: "2701",
+            colorScheme: { source: [255, 140, 0], target: [250, 204, 21] }
+        },
+        met_coal: {
+            hsCode: "2704",
+            colorScheme: { source: [255, 140, 0], target: [250, 204, 21] }
+        },
+        gold: {
+            hsCode: "7108",
+            colorScheme: { source: [250, 204, 21], target: [253, 224, 71] }
+        },
+        silver: {
+            hsCode: "7106",
+            colorScheme: { source: [250, 204, 21], target: [253, 224, 71] }
+        },
+        copper: {
+            hsCode: "7403",
+            colorScheme: { source: [14, 165, 233], target: [56, 189, 248] }
+        },
+        zinc: {
+            hsCode: "7901",
+            colorScheme: { source: [14, 165, 233], target: [56, 189, 248] }
+        },
+        aluminum: {
+            hsCode: "7601",
+            colorScheme: { source: [14, 165, 233], target: [56, 189, 248] }
+        },
+        wheat: {
+            hsCode: "1001",
+            colorScheme: { source: [34, 197, 94], target: [74, 222, 128] }
+        },
+        corn: {
+            hsCode: "1005",
+            colorScheme: { source: [34, 197, 94], target: [74, 222, 128] }
+        },
+        soybeans: {
+            hsCode: "1201",
+            colorScheme: { source: [34, 197, 94], target: [74, 222, 128] }
+        },
+        sugar: {
+            hsCode: "1701",
+            colorScheme: { source: [34, 197, 94], target: [74, 222, 128] }
+        },
+        coffee: {
+            hsCode: "0901",
+            colorScheme: { source: [34, 197, 94], target: [74, 222, 128] }
+        }
+    };
+
+    // === Fetch Real Trade Data from UN Comtrade via CORS Proxy ===
+    // 출처: UN Comtrade API (comtradeapi.un.org) → Cloudflare Pages Function 프록시 경유
+    window.fetchComtradeArcs = async function(commodityKey) {
+        const config = COMMODITY_API_CONFIG[commodityKey];
+        if (!config) {
+            console.warn(`[Comtrade] No API config for commodity: ${commodityKey}`);
+            return [];
+        }
+
+        console.log(`[Comtrade] Fetching real trade data for ${commodityKey} (HS ${config.hsCode})...`);
+
+        try {
+            // ALL_M49_CODES contains 40+ countries allowing for dynamic mapping of global trade routes
+            const proxyUrl = `/api/comtrade?hs=${config.hsCode}&reporters=${ALL_M49_CODES}&partners=${ALL_M49_CODES}&period=2023`;
+            const res = await fetch(proxyUrl);
+
+            if (!res.ok) {
+                console.warn(`[Comtrade] Proxy returned ${res.status} for ${commodityKey}`);
+                return [];
+            }
+
+            const json = await res.json();
+            if (!json.data || json.data.length === 0) {
+                console.warn(`[Comtrade] No data returned for ${commodityKey}`);
+                return [];
+            }
+
+            const arcs = [];
+            json.data.forEach(row => {
+                const reporterName = M49_MAP[row.reporterCode];
+                const partnerName = M49_MAP[row.partnerCode];
+                if (!reporterName || !partnerName) return;
+                if (!COUNTRIES[reporterName] || !COUNTRIES[partnerName]) return;
+
+                const tradeValue = row.primaryValue || 0;  // USD
+                const netWeight = row.netWgt || 0;          // kg
+                if (tradeValue <= 0) return;
+
+                arcs.push({
+                    sourceName: reporterName,
+                    targetName: partnerName,
+                    sourcePosition: COUNTRIES[reporterName],
+                    targetPosition: COUNTRIES[partnerName],
+                    volume: Math.round(tradeValue / 1000000),  // Convert to millions USD
+                    netWeightMt: Math.round(netWeight / 1000000000 * 100) / 100, // Convert kg to Mt (million tonnes)
+                    percentage: 0,
+                    typeName: config.hsCode,
+                    sourceColor: config.colorScheme.source,
+                    targetColor: config.colorScheme.target,
+                    usdValue: tradeValue,
+                    dataSource: "UN Comtrade (comtradeapi.un.org)"
+                });
             });
-        });
-        return arcs;
+
+            // Calculate percentages
+            const totalVol = arcs.reduce((sum, a) => sum + a.volume, 0);
+            arcs.forEach(a => {
+                a.percentage = totalVol > 0 ? Math.round((a.volume / totalVol) * 100) : 0;
+            });
+
+            // Sort by volume descending
+            arcs.sort((a, b) => b.volume - a.volume);
+
+            console.log(`[Comtrade] ✅ ${commodityKey}: ${arcs.length} trade flows loaded (Total: $${totalVol}M)`);
+            return arcs;
+
+        } catch (e) {
+            console.warn(`[Comtrade] ❌ Failed to fetch ${commodityKey}:`, e.message);
+            return [];
+        }
     };
 
     const defaultNews = (commodityName, country="Global") => ({
@@ -347,15 +487,7 @@
             desc: "전 세계 발전용 연료탄 수출입 무역 흐름",
             totalVolume: "980 Mt",
             topExporter: "인도네시아",
-            arcs: [
-                { sourceName: "Australia", targetName: "Japan", sourcePosition: COUNTRIES["Australia"], targetPosition: COUNTRIES["Japan"], volume: 80, percentage: 25, typeName: '연료탄 (Thermal)', sourceColor: [255, 140, 0], targetColor: [250, 204, 21] },
-                { sourceName: "Indonesia", targetName: "India", sourcePosition: COUNTRIES["Indonesia"], targetPosition: COUNTRIES["India"], volume: 120, percentage: 28, typeName: '연료탄 (Thermal)', sourceColor: [255, 140, 0], targetColor: [250, 204, 21] },
-                { sourceName: "Russia", targetName: "China", sourcePosition: COUNTRIES["Russia"], targetPosition: COUNTRIES["China"], volume: 30, percentage: 15, typeName: '연료탄 (Thermal)', sourceColor: [255, 140, 0], targetColor: [250, 204, 21] },
-                { sourceName: "South Africa", targetName: "India", sourcePosition: COUNTRIES["South Africa"], targetPosition: COUNTRIES["India"], volume: 40, percentage: 12, typeName: '연료탄 (Thermal)', sourceColor: [255, 140, 0], targetColor: [250, 204, 21] },
-                { sourceName: "South Africa", targetName: "UAE", sourcePosition: COUNTRIES["South Africa"], targetPosition: COUNTRIES["UAE"], volume: 15, percentage: 4, typeName: '연료탄 (Thermal)', sourceColor: [255, 140, 0], targetColor: [250, 204, 21] },
-                { sourceName: "Colombia", targetName: "Netherlands", sourcePosition: COUNTRIES["Colombia"], targetPosition: COUNTRIES["Netherlands"], volume: 20, percentage: 6, typeName: '연료탄 (Thermal)', sourceColor: [255, 140, 0], targetColor: [250, 204, 21] },
-                { sourceName: "Indonesia", targetName: "South Korea", sourcePosition: COUNTRIES["Indonesia"], targetPosition: COUNTRIES["South Korea"], volume: 35, percentage: 10, typeName: '연료탄 (Thermal)', sourceColor: [255, 140, 0], targetColor: [250, 204, 21] }
-            ],
+            arcs: [],  // Lazy loaded from UN Comtrade API (HS 2701)
             news: {
                 "Indonesia": [{ title: "Indonesia sets new monthly thermal coal benchmark price higher", date: "1 day ago", source: "Jakarta Post", url: "https://www.thejakartapost.com/business/2026/07/25/coal-benchmark.html" }],
                 "Australia": [{ title: "Thermal coal prices stabilize as Newcastle port clears backlog", date: "1 week ago", source: "Bloomberg", url: "https://www.bloomberg.com/news/articles/2026-07-20/newcastle-coal-port" }],
@@ -379,11 +511,7 @@
             desc: "제철용 원료탄(코킹콜) 수출입 무역 흐름",
             totalVolume: "310 Mt",
             topExporter: "호주",
-            arcs: [
-                { sourceName: "Australia", targetName: "China", sourcePosition: COUNTRIES["Australia"], targetPosition: COUNTRIES["China"], volume: 55, percentage: 16, typeName: '원료탄 (Metallurgical)', sourceColor: [147, 51, 234], targetColor: [236, 72, 153] },
-                { sourceName: "USA", targetName: "Netherlands", sourcePosition: COUNTRIES["USA"], targetPosition: COUNTRIES["Netherlands"], volume: 15, percentage: 18, typeName: '원료탄 (Metallurgical)', sourceColor: [147, 51, 234], targetColor: [236, 72, 153] },
-                { sourceName: "Brazil", targetName: "China", sourcePosition: COUNTRIES["Brazil"], targetPosition: COUNTRIES["China"], volume: 5, percentage: 50, typeName: '원료탄 (Metallurgical)', sourceColor: [147, 51, 234], targetColor: [236, 72, 153] }
-            ],
+            arcs: [],  // Lazy loaded from UN Comtrade API (HS 2704)
             news: {
                 "Australia": [{ title: "BHP ramps up metallurgical coal exports", date: "2 days ago", source: "Australian Financial Review", url: "https://www.afr.com/companies/mining" }],
                 "Brazil": [{ title: "Vale looks to expand metallurgical coal exports to Asian markets", date: "1 week ago", source: "Valor Econômico", url: "https://valor.globo.com" }],
@@ -402,7 +530,7 @@
             desc: "전 세계 주요 산유국 및 소비국 간 원유 물동량 흐름",
             totalVolume: "98.5 Million bpd",
             topExporter: "사우디아라비아",
-            arcs: generateMockArcs(["Saudi Arabia", "USA", "Russia", "Brazil"], ["China", "India", "Japan", "South Korea", "Germany"], 10, 100, 'energy'),
+            arcs: [],  // Lazy loaded from UN Comtrade API (HS 2709)
             news: {
                 ...defaultNews("Crude Oil"),
                 "Saudi Arabia": [
@@ -425,7 +553,7 @@
             desc: "전 세계 주요 LNG 및 파이프라인 가스 물동량 흐름",
             totalVolume: "4.04 Trillion cubic meters",
             topExporter: "미국 / 카타르",
-            arcs: generateMockArcs(["USA", "Qatar", "Russia", "Australia"], ["China", "Japan", "South Korea", "Germany", "UK"], 20, 200, 'energy'),
+            arcs: [],  // Lazy loaded from UN Comtrade API (HS 2711)
             news: {
                 ...defaultNews("Natural Gas"),
                 "USA": [
@@ -447,7 +575,7 @@
             desc: "스위스 정련소 및 주요 소비국 간의 금 무역 흐름",
             totalVolume: "4,741 Tonnes",
             topExporter: "스위스",
-            arcs: generateMockArcs(["Switzerland", "UK", "USA", "Australia"], ["China", "India", "UAE", "Germany"], 50, 300, 'precious'),
+            arcs: [],  // Lazy loaded from UN Comtrade API (HS 7108)
             news: defaultNews("Gold")
         },
         silver: {
@@ -455,7 +583,7 @@
             desc: "산업용 및 투자용 은 글로벌 무역 흐름",
             totalVolume: "32,000 Tonnes",
             topExporter: "멕시코 / 페루",
-            arcs: generateMockArcs(["Peru", "Chile", "China"], ["USA", "Japan", "South Korea", "Germany"], 100, 500, 'precious'),
+            arcs: [],  // Lazy loaded from UN Comtrade API (HS 7106)
             news: defaultNews("Silver")
         },
         copper: {
@@ -463,7 +591,7 @@
             desc: "전기차/인프라 핵심 소재인 구리의 물동량 (정광 및 제련)",
             totalVolume: "26.5 Million Tonnes",
             topExporter: "칠레",
-            arcs: generateMockArcs(["Chile", "Peru", "Australia"], ["China", "USA", "Japan", "South Korea"], 500, 2000, 'metals'),
+            arcs: [],  // Lazy loaded from UN Comtrade API (HS 7403)
             news: defaultNews("Copper")
         },
         zinc: {
@@ -471,7 +599,7 @@
             desc: "도금용 주요 소재 아연 무역 흐름",
             totalVolume: "13.2 Million Tonnes",
             topExporter: "호주",
-            arcs: generateMockArcs(["Australia", "Peru", "USA"], ["China", "South Korea", "Germany"], 200, 1000, 'metals'),
+            arcs: [],  // Lazy loaded from UN Comtrade API (HS 7901)
             news: defaultNews("Zinc")
         },
         aluminum: {
@@ -479,7 +607,7 @@
             desc: "경량화 핵심 소재 알루미늄 무역 흐름",
             totalVolume: "68.9 Million Tonnes",
             topExporter: "중국 (가공품)",
-            arcs: generateMockArcs(["China", "Russia", "Canada"], ["USA", "Japan", "Germany", "South Korea"], 300, 1500, 'metals'),
+            arcs: [],  // Lazy loaded from UN Comtrade API (HS 7601)
             news: defaultNews("Aluminum")
         },
         wheat: {
@@ -487,7 +615,7 @@
             desc: "글로벌 주요 식량 자원인 밀의 무역 흐름",
             totalVolume: "215 Million Tonnes",
             topExporter: "러시아",
-            arcs: generateMockArcs(["Russia", "USA", "Australia", "Canada"], ["China", "Brazil", "Japan"], 1000, 5000, 'agri'),
+            arcs: [],  // Lazy loaded from UN Comtrade API (HS 1001)
             news: defaultNews("Wheat")
         },
         corn: {
@@ -495,7 +623,7 @@
             desc: "사료 및 바이오연료용 옥수수 무역 흐름",
             totalVolume: "190 Million Tonnes",
             topExporter: "미국",
-            arcs: generateMockArcs(["USA", "Brazil", "Argentina"], ["China", "Japan", "South Korea"], 1500, 6000, 'agri'),
+            arcs: [],  // Lazy loaded from UN Comtrade API (HS 1005)
             news: defaultNews("Corn")
         },
         soybeans: {
@@ -503,7 +631,7 @@
             desc: "단백질 사료 및 식용유의 핵심, 대두 무역 흐름",
             totalVolume: "172 Million Tonnes",
             topExporter: "브라질",
-            arcs: generateMockArcs(["Brazil", "USA", "Argentina"], ["China", "Netherlands", "Japan"], 2000, 8000, 'agri'),
+            arcs: [],  // Lazy loaded from UN Comtrade API (HS 1201)
             news: defaultNews("Soybeans")
         },
         sugar: {
@@ -511,7 +639,7 @@
             desc: "사탕수수 기반 설탕 수출입 무역 흐름",
             totalVolume: "64 Million Tonnes",
             topExporter: "브라질",
-            arcs: generateMockArcs(["Brazil", "India"], ["USA", "China", "Indonesia"], 500, 2500, 'agri'),
+            arcs: [],  // Lazy loaded from UN Comtrade API (HS 1701)
             news: defaultNews("Sugar")
         },
         coffee: {
@@ -519,7 +647,7 @@
             desc: "전 세계 원두(아라비카/로부스타) 수출입 무역 흐름",
             totalVolume: "140 Million Bags",
             topExporter: "브라질 / 에티오피아",
-            arcs: generateMockArcs(["Brazil", "Vietnam", "Indonesia", "Ethiopia", "Uganda", "Colombia"], ["USA", "Germany", "Japan", "South Korea", "UAE"], 200, 1200, 'agri'),
+            arcs: [],  // Lazy loaded from UN Comtrade API (HS 0901)
             news: {
                 ...defaultNews("Coffee"),
                 "Ethiopia": [
