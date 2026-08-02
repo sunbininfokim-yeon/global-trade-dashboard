@@ -26,5 +26,11 @@
       "binding": "API_CACHE",
       "id": "35315eb44cfc4cd480c25794c0623c04"
     }
-  ]
+  ],
+  // Nightly at 18:00 UTC (03:00 KST) the Worker's scheduled() handler
+  // re-fetches every commodity into API_CACHE, so visitors never pay for a
+  // cold UN Comtrade query.
+  "triggers": {
+    "crons": ["0 18 * * *"]
+  }
 }

@@ -356,7 +356,10 @@
 
         try {
             // ALL_M49_CODES contains 40+ countries allowing for dynamic mapping of global trade routes
-            const proxyUrl = `/api/comtrade?hs=${config.hsCode}&reporters=${ALL_M49_CODES}&partners=${ALL_M49_CODES}&period=2023`;
+            // Reporter/partner list intentionally omitted: the Worker supplies
+            // its own canonical list, so this request lands on exactly the
+            // cache key the nightly warm-up wrote.
+            const proxyUrl = `/api/comtrade?hs=${config.hsCode}&period=2023`;
             const res = await fetch(proxyUrl);
 
             if (!res.ok) {

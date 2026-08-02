@@ -24,8 +24,49 @@ export default {
 
         // Default: Serve Static Assets
         return env.ASSETS.fetch(request);
+    },
+
+    // Cron-driven cache warm-up (see "triggers" in wrangler.jsonc).
+    // Without this the first visitor to open each commodity pays the full
+    // UN Comtrade round trip -- several seconds on a 40+ country query. This
+    // refreshes every commodity overnight so every real visit is a cache hit.
+    async scheduled(event, env, ctx) {
+        ctx.waitUntil(warmComtradeCache(env));
     }
 };
+
+async function warmComtradeCache(env) {
+    if (!env.COMTRADE_API_KEY || !env.API_CACHE) {
+        console.log('[warm] skipped: COMTRADE_API_KEY or API_CACHE binding missing');
+        return;
+    }
+
+    let ok = 0, failed = 0;
+
+    // Sequential on purpose: firing 14 heavy queries at once risks tripping
+    // Comtrade's rate limiting, and the cron run has no deadline pressure.
+    for (const hs of Object.keys(COMTRADE_TTL)) {
+        try {
+            const result = await fetchComtrade(env, hs, DEFAULT_M49_CODES, DEFAULT_M49_CODES, COMTRADE_PERIOD);
+            if (!result.ok) {
+                failed++;
+                console.log(`[warm] ${hs} upstream ${result.status}`);
+                continue;
+            }
+            await env.API_CACHE.put(
+                comtradeCacheKey(hs, DEFAULT_M49_CODES, DEFAULT_M49_CODES, COMTRADE_PERIOD),
+                JSON.stringify(result.body),
+                { expirationTtl: COMTRADE_TTL[hs] }
+            );
+            ok++;
+        } catch (err) {
+            failed++;
+            console.log(`[warm] ${hs} error: ${err.message}`);
+        }
+    }
+
+    console.log(`[warm] done: ${ok} cached, ${failed} failed`);
+}
 
 const JSON_HEADERS = {
     "Content-Type": "application/json",
@@ -72,45 +113,77 @@ async function kvCachedJson(env, cacheKey, ttlSeconds, doFetch) {
 
     const json = JSON.stringify(result.body);
     if (kv) {
-        await kv.put(cacheKey, json, { expirationTtl: ttlSeconds });
+        // Never let a cache write failure take down a request that already has
+        // its data -- serve the response and just skip caching this time.
+        try {
+            await kv.put(cacheKey, json, { expirationTtl: ttlSeconds });
+        } catch (err) {
+            console.log(`[cache] put failed for ${cacheKey}: ${err.message}`);
+        }
     }
     return new Response(json, { headers: { ...JSON_HEADERS, "X-Cache": "MISS" } });
 }
 
-async function handleComtrade(request, env, ctx) {
-    const url = new URL(request.url);
-    const hs = url.searchParams.get('hs') || '2709';
-    const reporters = url.searchParams.get('reporters') || 'all';
-    const partners = url.searchParams.get('partners') || 'all';
-    const period = url.searchParams.get('period') || '2023';
+// Canonical reporter/partner list, mirroring M49_MAP in data.js.
+// The Worker owns this rather than the browser so the scheduled warm-up and a
+// live page request build byte-identical cache keys -- if the two lists ever
+// drifted, every "warmed" entry would be a key nobody reads.
+// 842 is the US: Comtrade reports US trade as "USA, PR and USVI" (842), and
+// querying the plain geographic code 840 returns zero rows.
+const DEFAULT_M49_CODES = "842,840,156,76,32,643,804,356,124,36,250,276,360,458,764,704,818,484,392,410,826,380,724,792,682,784,710,566,586,50,608,364,12,504,616,528,56,756,170,604,152,554,398,642,348,112,600,858,231,800,634,578,368,344,180,158,404,834,104,116,384,288,686,860";
 
-    const COMTRADE_KEY = env.COMTRADE_API_KEY;
-    if (!COMTRADE_KEY) return missingKey('COMTRADE_API_KEY');
+// Every commodity the dashboard can show, keyed by HS code -> cache TTL.
+// Doubles as the work list for the scheduled cache warm-up.
+const COMTRADE_TTL = {
+    "2709": 172800,  // Oil: 48h
+    "2711": 172800,  // Gas: 48h
+    "2701": 604800,  // Thermal coal: weekly
+    "2704": 604800,  // Met coal: weekly
+    "7108": 86400,   // Gold: 24h
+    "7106": 86400,   // Silver: 24h
+    "7403": 86400,   // Copper: 24h
+    "7901": 604800,  // Zinc: weekly
+    "7601": 604800,  // Aluminum: weekly
+    "1001": 1209600, // Wheat: 14 days
+    "1005": 1209600, // Corn: 14 days
+    "1201": 1209600, // Soybeans: 14 days
+    "1701": 1209600, // Sugar: 14 days
+    "0901": 1209600  // Coffee: 14 days
+};
 
-    // Cache TTL by commodity -- how often each is worth re-querying.
-    const CACHE_TTL = {
-        "2709": 172800,  // Oil: 48h
-        "2711": 172800,  // Gas: 48h
-        "7108": 86400,   // Gold: 24h
-        "7106": 86400,   // Silver: 24h
-        "7403": 86400,   // Copper: 24h
-        "1001": 1209600, // Wheat: 14 days
-        "1005": 1209600, // Corn: 14 days
-        "1201": 1209600, // Soybeans: 14 days
-        "1701": 1209600, // Sugar: 14 days
-        "0901": 1209600  // Coffee: 14 days
+const COMTRADE_PERIOD = "2023";
+
+function comtradeCacheKey(hs, reporters, partners, period) {
+    return `comtrade:${hs}:${reporters}:${partners}:${period}`;
+}
+
+// Comtrade returns 47 fields per row; the map only ever reads these five.
+// Keeping the rest ballooned a 64-country query past what the Worker could
+// parse, stringify and hand to KV in one request -- it threw (error 1101) and
+// every trade line vanished. Slimming here cuts the payload to ~10% and keeps
+// the limit far away as the country list grows.
+const COMTRADE_FIELDS = ["reporterCode", "partnerCode", "flowCode", "primaryValue", "netWgt"];
+
+function slimComtradeBody(body) {
+    const rows = Array.isArray(body?.data) ? body.data : [];
+    return {
+        count: rows.length,
+        data: rows.map(row => {
+            const slim = {};
+            for (const f of COMTRADE_FIELDS) slim[f] = row[f];
+            return slim;
+        })
     };
-    const cacheTtl = CACHE_TTL[hs] || 604800; // Default: weekly
+}
 
-    const cacheKey = `comtrade:${hs}:${reporters}:${partners}:${period}`;
+async function fetchComtrade(env, hs, reporters, partners, period) {
+    // X = Exports, M = Imports (mirror data, so non-reporting countries still appear)
+    const comtradeUrl = `https://comtradeapi.un.org/data/v1/get/C/A/HS?reporterCode=${reporters}&period=${period}&partnerCode=${partners}&cmdCode=${hs}&flowCode=X,M`;
 
-    return kvCachedJson(env, cacheKey, cacheTtl, async () => {
-        // Build UN Comtrade API URL (X = Exports, M = Imports for Mirror Data)
-        const comtradeUrl = `https://comtradeapi.un.org/data/v1/get/C/A/HS?reporterCode=${reporters}&period=${period}&partnerCode=${partners}&cmdCode=${hs}&flowCode=X,M`;
-
+    try {
         const comtradeRes = await fetch(comtradeUrl, {
             headers: {
-                "Ocp-Apim-Subscription-Key": COMTRADE_KEY,
+                "Ocp-Apim-Subscription-Key": env.COMTRADE_API_KEY,
                 "Accept": "application/json"
             }
         });
@@ -118,8 +191,28 @@ async function handleComtrade(request, env, ctx) {
         if (!comtradeRes.ok) {
             return { ok: false, status: comtradeRes.status, statusText: comtradeRes.statusText };
         }
-        return { ok: true, body: await comtradeRes.json() };
-    });
+        return { ok: true, body: slimComtradeBody(await comtradeRes.json()) };
+    } catch (err) {
+        // A throw here (bad JSON, upstream timeout, oversized payload) must not
+        // escape as an unhandled exception -- that returns Cloudflare's opaque
+        // error 1101 and the page renders an empty map with no explanation.
+        return { ok: false, status: 502, statusText: err.message };
+    }
+}
+
+async function handleComtrade(request, env, ctx) {
+    const url = new URL(request.url);
+    const hs = url.searchParams.get('hs') || '2709';
+    const reporters = url.searchParams.get('reporters') || DEFAULT_M49_CODES;
+    const partners = url.searchParams.get('partners') || DEFAULT_M49_CODES;
+    const period = url.searchParams.get('period') || COMTRADE_PERIOD;
+
+    if (!env.COMTRADE_API_KEY) return missingKey('COMTRADE_API_KEY');
+
+    const cacheTtl = COMTRADE_TTL[hs] || 604800; // Default: weekly
+
+    return kvCachedJson(env, comtradeCacheKey(hs, reporters, partners, period), cacheTtl,
+        () => fetchComtrade(env, hs, reporters, partners, period));
 }
 
 async function handleUsdaNass(request, env, ctx) {
