@@ -498,6 +498,26 @@
         }
     };
 
+    // === US Corn Belt yield forecast (statistical model, refreshed weekly) ===
+    // Written by scripts/yield_model/run_forecast.py. Unlike the hardcoded
+    // forecastData below, every number here is model output over real weather.
+    let yieldForecastCache = null;
+    window.loadYieldForecast = async function() {
+        if (yieldForecastCache !== null) return yieldForecastCache;
+        try {
+            const res = await fetch('/public/data/yield_forecast.json');
+            if (!res.ok) { yieldForecastCache = false; return false; }
+            yieldForecastCache = await res.json();
+            console.log(`[Yield] ${yieldForecastCache.season} forecast loaded ` +
+                `(generated ${yieldForecastCache.generated_at})`);
+            return yieldForecastCache;
+        } catch (err) {
+            console.warn('[Yield] forecast unavailable', err);
+            yieldForecastCache = false;
+            return false;
+        }
+    };
+
     const defaultNews = (commodityName, country="Global") => ({
         "default": [
             { title: `Global ${commodityName} prices see fluctuation amid supply chain adjustments`, date: "Today", source: "Bloomberg", url: "https://www.bloomberg.com/markets/commodities" },

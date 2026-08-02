@@ -211,7 +211,8 @@ const handleNodeClick = (info) => {
     if (info.object) {
         selectedCountry = info.object.name;
         if (currentCommodity === 'climate') {
-            updateForecastPanel(selectedCountry);
+            updateForecastPanel(selectedCountry).catch(err =>
+                console.error('[Forecast] panel update failed', err));
         } else {
             updateNewsPanel(selectedCountry);
             updateCountryStatsPanel(selectedCountry);
@@ -223,7 +224,8 @@ const handleLineClick = (info) => {
     if (info.object) {
         selectedCountry = info.object.sourceName;
         if (currentCommodity === 'climate') {
-            updateForecastPanel(selectedCountry);
+            updateForecastPanel(selectedCountry).catch(err =>
+                console.error('[Forecast] panel update failed', err));
         } else {
             updateNewsPanel(selectedCountry);
             updateCountryStatsPanel(selectedCountry);
@@ -314,10 +316,105 @@ const updateNewsPanel = (countryName) => {
     `).join('');
 };
 
-const updateForecastPanel = (regionName) => {
+// Renders the statistical yield forecast for the US Corn Belt.
+// Kept separate from the hardcoded forecastData panels: these numbers come
+// from a model fitted on 33 seasons of NASA POWER weather and USDA NASS
+// yields, so the panel also shows how much of the season is actually
+// observed and how the model scored out of sample.
+const renderYieldForecast = async (regionName) => {
+    if (regionName !== 'US Corn Belt') return false;
+
+    const fc = await window.loadYieldForecast?.();
+    if (!fc || !fc.crops) return false;
+
+    const names = { corn: '옥수수 (Corn)', soybeans: '대두 (Soybeans)' };
+    let html = '';
+
+    for (const [crop, d] of Object.entries(fc.crops)) {
+        const vsLast = d.point - d.last_actual.yield;
+        const color = d.weather_effect < 0 ? '#fca5a5' : '#4ade80';
+        const pct = Math.round(d.season_progress.observed_share * 100);
+
+        html += `
+        <div class="indicator-item" style="cursor:default; transform:none; border-color:rgba(255,255,255,0.1);">
+            <div class="ind-header"><span class="ind-title">${names[crop] || crop}</span></div>
+            <div style="display:flex; justify-content:space-between; margin-top:8px;">
+                <div>
+                    <span style="font-size:12px; color:#94a3b8;">${d.last_actual.year} 실적</span>
+                    <div style="font-size:15px;">${d.last_actual.yield.toFixed(1)} ${d.unit}</div>
+                </div>
+                <div style="text-align:right;">
+                    <span style="font-size:12px; color:#94a3b8;">${fc.season} 예상</span>
+                    <div style="font-size:20px; font-weight:bold; color:${color};">${d.point} ${d.unit}</div>
+                </div>
+            </div>
+            <div style="text-align:right; font-size:13px; margin-top:4px; color:${vsLast >= 0 ? '#4ade80' : '#fca5a5'};">
+                전년 대비 ${vsLast >= 0 ? '+' : ''}${vsLast.toFixed(1)} ${d.unit}
+            </div>
+            <div style="margin-top:10px; padding-top:10px; border-top:1px dashed rgba(255,255,255,0.1); font-size:12px;">
+                <div style="display:flex; justify-content:space-between; color:#cbd5e1;">
+                    <span>68% 신뢰구간</span><span>${d.range_68[0]} – ${d.range_68[1]}</span>
+                </div>
+                <div style="display:flex; justify-content:space-between; color:#94a3b8; margin-top:2px;">
+                    <span>95% 신뢰구간</span><span>${d.range_95[0]} – ${d.range_95[1]}</span>
+                </div>
+                <div style="display:flex; justify-content:space-between; color:#94a3b8; margin-top:6px;">
+                    <span>기술 추세</span><span>${d.trend} ${d.unit}</span>
+                </div>
+                <div style="display:flex; justify-content:space-between; color:${color}; margin-top:2px;">
+                    <span>기상 효과</span><span>${d.weather_effect >= 0 ? '+' : ''}${d.weather_effect}</span>
+                </div>
+            </div>
+            <div style="margin-top:10px; padding:8px; background:rgba(0,0,0,0.2); border-radius:6px; font-size:11px; color:#94a3b8;">
+                7~8월 관측 진행률 <strong style="color:#cbd5e1;">${pct}%</strong>
+                (나머지는 예보·평년값)<br>
+                모델 검증: 추세 대비 오차 <strong style="color:#cbd5e1;">${(d.skill.skill_vs_trend_only * 100).toFixed(0)}%</strong> 감소,
+                학습 ${d.trained_years[0]}–${d.trained_years[1]}
+            </div>
+        </div>`;
+    }
+
+    const enso = fc.enso.oni_growing_season;
+    forecastCountryTitle.textContent = `미국 콘벨트 작황 예측 (${fc.season})`;
+    forecastContentEl.innerHTML = `
+        <div class="forecast-box">
+            <div class="forecast-item">
+                <span class="forecast-label">엘니뇨/라니냐 (ONI)</span>
+                <span class="forecast-val">${enso === null ? 'N/A' : enso.toFixed(2)} · ${fc.enso.state}</span>
+            </div>
+            <div class="forecast-item">
+                <span class="forecast-label">대상 지역</span>
+                <span class="forecast-val" style="font-size:12px;">8개 주 생산량 가중</span>
+            </div>
+            <div class="forecast-good" style="margin-top:16px;">
+                <strong>추세수확량 + 기상편차 통계모델</strong><br>
+                <span style="font-size:11px; font-weight:400;">
+                기술 추세가 품종·비료·경영 개선을 흡수하고, 기상은 추세로부터의 편차를 설명합니다.
+                </span>
+            </div>
+        </div>
+        <p style="font-size:11px; color:#94a3b8; text-align:right; margin-bottom:4px;">
+            갱신: ${new Date(fc.generated_at).toLocaleString()}
+        </p>
+        <p style="font-size:11px; color:#64748b; text-align:right;">
+            출처: USDA NASS(수확량) · NASA POWER(기상) · NOAA CPC(ONI) · Open-Meteo(예보)
+        </p>`;
+
+    countryStatsTitleEl.textContent = '미국 콘벨트';
+    document.getElementById('country-stats-desc').textContent =
+        '추세수확량 + 기상편차 회귀 (Thompson / Schlenker-Roberts / Lobell 방법론)';
+    countryStatsContentEl.innerHTML = html;
+    macroPanelEl.classList.add('hidden');
+    countryStatsPanelEl.classList.remove('hidden');
+    return true;
+};
+
+const updateForecastPanel = async (regionName) => {
+    if (await renderYieldForecast(regionName)) return;
+
     const data = forecastData[regionName];
     forecastCountryTitle.textContent = `지역 기상 및 기후 요인: ${regionName}`;
-    
+
     if (!data) {
         forecastContentEl.innerHTML = `<p class="empty-state">해당 지역의 상세 기상 예측 데이터가 없습니다. 지도에서 활성화된 지역(예: Mato Grosso)을 선택해주세요.</p>`;
         // Clear right panel
@@ -356,7 +453,9 @@ const updateForecastPanel = (regionName) => {
     // Right panel: Multi-crop predictions
     if (data.crops && data.crops.length > 0) {
         countryStatsTitleEl.textContent = `${regionName}`;
-        document.getElementById('country-stats-desc').textContent = "AI 다중 작물 산출량 예측 (XGBoost Model)";
+        // These regional figures are still hardcoded reference values, not model
+        // output -- the label says so rather than claiming an AI forecast.
+        document.getElementById('country-stats-desc').textContent = "지역 참고 작황 데이터 (기관 발표 기준값)";
         
         let cropHtml = '';
         data.crops.forEach(crop => {
@@ -619,9 +718,9 @@ const setView = (target) => {
         togglePanels({ forecast: true, left: true });
         
         currentViewTitle.textContent = "AI 작황 예측 (주요 산지별 다중 작물)";
-        currentViewDesc.textContent = "지역별 실시간 기후 데이터와 XGBoost 알고리즘을 통한 멀티 작황 모니터링";
-        totalVolumeEl.textContent = "AI Model Active";
-        topExporterEl.textContent = "XGBoost Regressor";
+        currentViewDesc.textContent = "미국 콘벨트는 통계 작황 모델 예측, 그 외 지역은 기관 발표 참고값";
+        totalVolumeEl.textContent = "US Corn Belt Model";
+        topExporterEl.textContent = "Trend + Weather Anomaly";
         
         updateForecastPanel('Global');
         
@@ -633,6 +732,7 @@ const setView = (target) => {
                 data: [
                     {name: 'Mato Grosso (Brazil)', coordinates: window.CountriesData['Mato Grosso (Brazil)'], radius: 100000},
                     {name: 'Rio Grande do Sul (Brazil)', coordinates: window.CountriesData['Rio Grande do Sul (Brazil)'], radius: 100000},
+                    {name: 'US Corn Belt', coordinates: [-91.0, 41.5], radius: 160000},
                     {name: 'Iowa (USA)', coordinates: window.CountriesData['Iowa (USA)'], radius: 100000},
                     {name: 'Pampas (Argentina)', coordinates: window.CountriesData['Pampas (Argentina)'], radius: 100000},
                     {name: 'Sumatra (Indonesia)', coordinates: window.CountriesData['Sumatra (Indonesia)'], radius: 100000}
