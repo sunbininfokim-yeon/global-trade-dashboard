@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-02T09:34:21.960769+00:00",
+  "generated_at": "2026-08-02T13:58:41.308940+00:00",
   "season": 2026,
   "region": "US Corn Belt",
   "region_note": "8 states, production-weighted: IA IL NE MN IN OH MO SD",
@@ -9,24 +9,25 @@
   },
   "crops": {
     "corn": {
+      "label_ko": "\uc625\uc218\uc218",
       "unit": "bu/acre",
-      "point": 191.6,
+      "point": 189.6,
       "range_68": [
-        186.1,
-        197.1
+        184.1,
+        195.1
       ],
       "range_95": [
-        180.9,
-        202.4
+        178.8,
+        200.4
       ],
       "trend": 198.5,
-      "weather_effect": -6.9,
+      "weather_effect": -8.9,
       "last_actual": {
         "year": 2025,
         "yield": 200.19999999999996
       },
       "season_progress": {
-        "julaug_days": {
+        "critical_days": {
           "observed": 240,
           "forecast": 144,
           "climatology": 112
@@ -38,7 +39,9 @@
         "skill_vs_trend_only": 0.693,
         "detrended_r2": 0.906,
         "sigma_used": 5.5,
-        "model_sigma": 4.37
+        "model_sigma": 4.37,
+        "train_window_years": null,
+        "low_confidence": false
       },
       "trained_years": [
         1992,
@@ -46,24 +49,25 @@
       ]
     },
     "soybeans": {
+      "label_ko": "\ub300\ub450",
       "unit": "bu/acre",
-      "point": 57.0,
+      "point": 56.4,
       "range_68": [
-        54.4,
-        59.7
+        53.8,
+        59.0
       ],
       "range_95": [
-        51.9,
-        62.2
+        51.2,
+        61.6
       ],
       "trend": 57.6,
-      "weather_effect": -0.6,
+      "weather_effect": -1.2,
       "last_actual": {
         "year": 2025,
         "yield": 58.7625
       },
       "season_progress": {
-        "julaug_days": {
+        "critical_days": {
           "observed": 240,
           "forecast": 144,
           "climatology": 112
@@ -75,12 +79,277 @@
         "skill_vs_trend_only": 0.186,
         "detrended_r2": 0.201,
         "sigma_used": 2.63,
-        "model_sigma": 2.09
+        "model_sigma": 2.09,
+        "train_window_years": null,
+        "low_confidence": true
       },
       "trained_years": [
         1992,
         2025
       ]
+    },
+    "winter_wheat": {
+      "label_ko": "\uaca8\uc6b8\ubc00",
+      "unit": "bu/acre",
+      "point": 39.0,
+      "range_68": [
+        35.4,
+        42.6
+      ],
+      "range_95": [
+        31.9,
+        46.1
+      ],
+      "trend": 41.5,
+      "weather_effect": -2.5,
+      "last_actual": {
+        "year": 2025,
+        "yield": 44.54
+      },
+      "season_progress": {
+        "critical_days": {
+          "observed": 366,
+          "forecast": 0,
+          "climatology": 0
+        },
+        "observed_share": 1.0
+      },
+      "skill": {
+        "method": "forward-chaining, trend refit inside each fold",
+        "skill_vs_trend_only": 0.313,
+        "detrended_r2": 0.521,
+        "sigma_used": 3.63,
+        "model_sigma": 3.63,
+        "train_window_years": null,
+        "low_confidence": false
+      },
+      "trained_years": [
+        1992,
+        2025
+      ]
+    },
+    "spring_wheat": {
+      "label_ko": "\ubd04\ubc00",
+      "unit": "bu/acre",
+      "point": 48.5,
+      "range_68": [
+        42.4,
+        54.6
+      ],
+      "range_95": [
+        36.5,
+        60.4
+      ],
+      "trend": 49.1,
+      "weather_effect": -0.6,
+      "last_actual": {
+        "year": 2025,
+        "yield": 50.86000000000001
+      },
+      "season_progress": {
+        "critical_days": {
+          "observed": 120,
+          "forecast": 72,
+          "climatology": 56
+        },
+        "observed_share": 0.484
+      },
+      "skill": {
+        "method": "forward-chaining, trend refit inside each fold",
+        "skill_vs_trend_only": 0.134,
+        "detrended_r2": 0.247,
+        "sigma_used": 6.1,
+        "model_sigma": 4.85,
+        "train_window_years": 20,
+        "low_confidence": true
+      },
+      "trained_years": [
+        1992,
+        2025
+      ]
+    }
+  },
+  "regions": {
+    "corn_belt": {
+      "label": "US Corn Belt",
+      "label_ko": "\ucf58\ubca8\ud2b8",
+      "note": "8 states, production-weighted: IA IL NE MN IN OH MO SD",
+      "crops": {
+        "corn": {
+          "label_ko": "\uc625\uc218\uc218",
+          "unit": "bu/acre",
+          "point": 189.6,
+          "range_68": [
+            184.1,
+            195.1
+          ],
+          "range_95": [
+            178.8,
+            200.4
+          ],
+          "trend": 198.5,
+          "weather_effect": -8.9,
+          "last_actual": {
+            "year": 2025,
+            "yield": 200.19999999999996
+          },
+          "season_progress": {
+            "critical_days": {
+              "observed": 240,
+              "forecast": 144,
+              "climatology": 112
+            },
+            "observed_share": 0.484
+          },
+          "skill": {
+            "method": "forward-chaining, trend refit inside each fold",
+            "skill_vs_trend_only": 0.693,
+            "detrended_r2": 0.906,
+            "sigma_used": 5.5,
+            "model_sigma": 4.37,
+            "train_window_years": null,
+            "low_confidence": false
+          },
+          "trained_years": [
+            1992,
+            2025
+          ]
+        },
+        "soybeans": {
+          "label_ko": "\ub300\ub450",
+          "unit": "bu/acre",
+          "point": 56.4,
+          "range_68": [
+            53.8,
+            59.0
+          ],
+          "range_95": [
+            51.2,
+            61.6
+          ],
+          "trend": 57.6,
+          "weather_effect": -1.2,
+          "last_actual": {
+            "year": 2025,
+            "yield": 58.7625
+          },
+          "season_progress": {
+            "critical_days": {
+              "observed": 240,
+              "forecast": 144,
+              "climatology": 112
+            },
+            "observed_share": 0.484
+          },
+          "skill": {
+            "method": "forward-chaining, trend refit inside each fold",
+            "skill_vs_trend_only": 0.186,
+            "detrended_r2": 0.201,
+            "sigma_used": 2.63,
+            "model_sigma": 2.09,
+            "train_window_years": null,
+            "low_confidence": true
+          },
+          "trained_years": [
+            1992,
+            2025
+          ]
+        }
+      }
+    },
+    "great_plains": {
+      "label": "US Great Plains (winter wheat)",
+      "label_ko": "\ub300\ud3c9\uc6d0 (\uaca8\uc6b8\ubc00)",
+      "note": "KS OK TX CO NE MT, production-weighted",
+      "crops": {
+        "winter_wheat": {
+          "label_ko": "\uaca8\uc6b8\ubc00",
+          "unit": "bu/acre",
+          "point": 39.0,
+          "range_68": [
+            35.4,
+            42.6
+          ],
+          "range_95": [
+            31.9,
+            46.1
+          ],
+          "trend": 41.5,
+          "weather_effect": -2.5,
+          "last_actual": {
+            "year": 2025,
+            "yield": 44.54
+          },
+          "season_progress": {
+            "critical_days": {
+              "observed": 366,
+              "forecast": 0,
+              "climatology": 0
+            },
+            "observed_share": 1.0
+          },
+          "skill": {
+            "method": "forward-chaining, trend refit inside each fold",
+            "skill_vs_trend_only": 0.313,
+            "detrended_r2": 0.521,
+            "sigma_used": 3.63,
+            "model_sigma": 3.63,
+            "train_window_years": null,
+            "low_confidence": false
+          },
+          "trained_years": [
+            1992,
+            2025
+          ]
+        }
+      }
+    },
+    "northern_plains": {
+      "label": "US Northern Plains (spring wheat)",
+      "label_ko": "\ubd81\ubd80\ub300\ud3c9\uc6d0 (\ubd04\ubc00)",
+      "note": "ND MT MN SD, production-weighted",
+      "crops": {
+        "spring_wheat": {
+          "label_ko": "\ubd04\ubc00",
+          "unit": "bu/acre",
+          "point": 48.5,
+          "range_68": [
+            42.4,
+            54.6
+          ],
+          "range_95": [
+            36.5,
+            60.4
+          ],
+          "trend": 49.1,
+          "weather_effect": -0.6,
+          "last_actual": {
+            "year": 2025,
+            "yield": 50.86000000000001
+          },
+          "season_progress": {
+            "critical_days": {
+              "observed": 120,
+              "forecast": 72,
+              "climatology": 56
+            },
+            "observed_share": 0.484
+          },
+          "skill": {
+            "method": "forward-chaining, trend refit inside each fold",
+            "skill_vs_trend_only": 0.134,
+            "detrended_r2": 0.247,
+            "sigma_used": 6.1,
+            "model_sigma": 4.85,
+            "train_window_years": 20,
+            "low_confidence": true
+          },
+          "trained_years": [
+            1992,
+            2025
+          ]
+        }
+      }
     }
   }
 }

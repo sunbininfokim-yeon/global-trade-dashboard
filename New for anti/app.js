@@ -321,23 +321,34 @@ const updateNewsPanel = (countryName) => {
 // from a model fitted on 33 seasons of NASA POWER weather and USDA NASS
 // yields, so the panel also shows how much of the season is actually
 // observed and how the model scored out of sample.
+const US_REGION_KEYS = {
+    'US Corn Belt': 'corn_belt',
+    'US Great Plains': 'great_plains',
+    'US Northern Plains': 'northern_plains',
+};
+
 const renderYieldForecast = async (regionName) => {
-    if (regionName !== 'US Corn Belt') return false;
+    const regionKey = US_REGION_KEYS[regionName];
+    if (!regionKey) return false;
 
     const fc = await window.loadYieldForecast?.();
-    if (!fc || !fc.crops) return false;
+    if (!fc || !fc.regions || !fc.regions[regionKey]) return false;
 
-    const names = { corn: '옥수수 (Corn)', soybeans: '대두 (Soybeans)' };
+    const region = fc.regions[regionKey];
     let html = '';
 
-    for (const [crop, d] of Object.entries(fc.crops)) {
+    for (const [crop, d] of Object.entries(region.crops)) {
         const vsLast = d.point - d.last_actual.yield;
         const color = d.weather_effect < 0 ? '#fca5a5' : '#4ade80';
         const pct = Math.round(d.season_progress.observed_share * 100);
 
         html += `
         <div class="indicator-item" style="cursor:default; transform:none; border-color:rgba(255,255,255,0.1);">
-            <div class="ind-header"><span class="ind-title">${names[crop] || crop}</span></div>
+            <div class="ind-header">
+                <span class="ind-title">${d.label_ko || crop}</span>
+                ${d.skill.low_confidence ? `<span style="font-size:10px; padding:2px 6px;
+                   border-radius:4px; background:rgba(251,191,36,0.15); color:#fbbf24;">신뢰도 낮음</span>` : ''}
+            </div>
             <div style="display:flex; justify-content:space-between; margin-top:8px;">
                 <div>
                     <span style="font-size:12px; color:#94a3b8;">${d.last_actual.year} 실적</span>
@@ -366,16 +377,16 @@ const renderYieldForecast = async (regionName) => {
                 </div>
             </div>
             <div style="margin-top:10px; padding:8px; background:rgba(0,0,0,0.2); border-radius:6px; font-size:11px; color:#94a3b8;">
-                7~8월 관측 진행률 <strong style="color:#cbd5e1;">${pct}%</strong>
+                생육 결정기 관측률 <strong style="color:#cbd5e1;">${pct}%</strong>
                 (나머지는 예보·평년값)<br>
                 모델 검증: 추세 대비 오차 <strong style="color:#cbd5e1;">${(d.skill.skill_vs_trend_only * 100).toFixed(0)}%</strong> 감소,
-                학습 ${d.trained_years[0]}–${d.trained_years[1]}
+                학습 ${d.trained_years[0]}–${d.trained_years[1]}${d.skill.train_window_years ? ` · 최근 ${d.skill.train_window_years}년 이동창` : ''}
             </div>
         </div>`;
     }
 
     const enso = fc.enso.oni_growing_season;
-    forecastCountryTitle.textContent = `미국 콘벨트 작황 예측 (${fc.season})`;
+    forecastCountryTitle.textContent = `${region.label_ko} 작황 예측 (${fc.season})`;
     forecastContentEl.innerHTML = `
         <div class="forecast-box">
             <div class="forecast-item">
@@ -384,7 +395,7 @@ const renderYieldForecast = async (regionName) => {
             </div>
             <div class="forecast-item">
                 <span class="forecast-label">대상 지역</span>
-                <span class="forecast-val" style="font-size:12px;">8개 주 생산량 가중</span>
+                <span class="forecast-val" style="font-size:11px;">${region.note}</span>
             </div>
             <div class="forecast-good" style="margin-top:16px;">
                 <strong>추세수확량 + 기상편차 통계모델</strong><br>
@@ -400,7 +411,7 @@ const renderYieldForecast = async (regionName) => {
             출처: USDA NASS(수확량) · NASA POWER(기상) · NOAA CPC(ONI) · Open-Meteo(예보)
         </p>`;
 
-    countryStatsTitleEl.textContent = '미국 콘벨트';
+    countryStatsTitleEl.textContent = region.label_ko;
     document.getElementById('country-stats-desc').textContent =
         '추세수확량 + 기상편차 회귀 (Thompson / Schlenker-Roberts / Lobell 방법론)';
     countryStatsContentEl.innerHTML = html;
@@ -426,8 +437,16 @@ const CLIMATE_COUNTRIES = {
         iso: 'USA',
         view: { longitude: -96.0, latitude: 39.5, zoom: 3.6 },
         summaryKey: 'us',
+        // Each entry maps to a region key in yield_forecast.json. Wheat sits
+        // apart from the Corn Belt because it is a different geography with
+        // its own states and weights.
         regions: [
-            { name: 'US Corn Belt', label: '콘벨트 (옥수수·대두)', coordinates: [-91.0, 41.5] },
+            { name: 'US Corn Belt', label: '콘벨트 (옥수수·대두)',
+              coordinates: [-91.0, 41.5], regionKey: 'corn_belt' },
+            { name: 'US Great Plains', label: '대평원 (겨울밀)',
+              coordinates: [-99.0, 38.0], regionKey: 'great_plains' },
+            { name: 'US Northern Plains', label: '북부대평원 (봄밀)',
+              coordinates: [-100.5, 47.0], regionKey: 'northern_plains' },
         ],
     },
     'Brazil': {
@@ -778,17 +797,23 @@ const renderCountryPanel = async (cfg) => {
     let rows = '';
     if (cfg.summaryKey === 'us') {
         const fc = await window.loadYieldForecast?.();
-        if (fc && fc.crops) {
-            rows = Object.entries(fc.crops).map(([crop, d]) => {
-                const nm = { corn: '옥수수', soybeans: '대두' }[crop] || crop;
-                const diff = d.point - d.last_actual.yield;
-                return `<div class="forecast-item" style="display:flex; justify-content:space-between;">
-                    <span>${nm}</span>
-                    <span><strong style="color:#e2e8f0;">${d.point}</strong>
-                    <span style="color:${diff >= 0 ? '#4ade80' : '#fca5a5'}; font-size:12px;">
-                    ${diff >= 0 ? '+' : ''}${diff.toFixed(1)}</span>
-                    <span style="color:#64748b; font-size:11px;"> ${d.unit}</span></span>
-                </div>`;
+        if (fc && fc.regions) {
+            // Grouped by region so wheat is not read as part of the Corn Belt.
+            rows = Object.values(fc.regions).map(region => {
+                const crops = Object.values(region.crops).map(d => {
+                    const diff = d.point - d.last_actual.yield;
+                    return `<div class="forecast-item" style="display:flex; justify-content:space-between;">
+                        <span style="font-size:12px;">${d.label_ko}${d.skill.low_confidence
+                            ? ' <span style="color:#fbbf24; font-size:10px;">(신뢰도 낮음)</span>' : ''}</span>
+                        <span><strong style="color:#e2e8f0;">${d.point}</strong>
+                        <span style="color:${diff >= 0 ? '#4ade80' : '#fca5a5'}; font-size:12px;">
+                        ${diff >= 0 ? '+' : ''}${diff.toFixed(1)}</span>
+                        <span style="color:#64748b; font-size:11px;"> ${d.unit}</span></span>
+                    </div>`;
+                }).join('');
+                return `<div style="margin-bottom:8px;">
+                    <div style="font-size:11px; color:#64748b; margin:6px 0 2px;">${region.label_ko}</div>
+                    ${crops}</div>`;
             }).join('');
         }
     } else if (cfg.summaryKey === 'brazil') {
