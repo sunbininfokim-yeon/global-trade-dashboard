@@ -12,6 +12,11 @@ export default {
             return await handleUsdaNass(request, env, ctx);
         }
 
+        // API Route: USDA FAS PSD (Production, Supply & Distribution) Proxy
+        if (url.pathname.startsWith('/api/usda-fas')) {
+            return await handleUsdaFas(request, env, ctx);
+        }
+
         // API Route: Macro Financial Data Proxy (FRED, BOK, EIA, Yahoo Finance)
         if (url.pathname.startsWith('/api/macro')) {
             return await handleMacro(request, env, ctx);
@@ -22,6 +27,56 @@ export default {
     }
 };
 
+const JSON_HEADERS = {
+    "Content-Type": "application/json",
+    "Access-Control-Allow-Origin": "*"
+};
+
+function missingKey(name) {
+    return new Response(
+        JSON.stringify({ error: `Server misconfiguration: ${name} is not set.` }),
+        { status: 500, headers: JSON_HEADERS }
+    );
+}
+
+// Shared response cache backed by the AGRI_DATA_KV namespace.
+//
+// A Cache-Control header on a Response the Worker returns only tells the
+// *visitor's browser* it may reuse that response -- Cloudflare does not
+// automatically cache Worker output at the edge just because the header is set.
+// Without KV, every visitor arrives with an empty browser cache and triggers a
+// fresh upstream call, so API usage scales with visitor count. That matters for
+// keys like USDA FAS, capped at 50 requests/day per IP -- and every visitor
+// shares this Worker's egress IP, so that cap applies to the whole site at once.
+// Storing responses in KV makes them genuinely shared across all visitors.
+//
+// `doFetch` must resolve to { ok, status, statusText, body }, where `body` is
+// the already-parsed JSON to cache.
+async function kvCachedJson(env, cacheKey, ttlSeconds, doFetch) {
+    const kv = env.AGRI_DATA_KV;
+
+    if (kv) {
+        const cached = await kv.get(cacheKey);
+        if (cached !== null) {
+            return new Response(cached, { headers: { ...JSON_HEADERS, "X-Cache": "HIT" } });
+        }
+    }
+
+    const result = await doFetch();
+    if (!result.ok) {
+        return new Response(
+            JSON.stringify({ error: `Upstream error: ${result.status}${result.statusText ? ' ' + result.statusText : ''}` }),
+            { status: 502, headers: JSON_HEADERS }
+        );
+    }
+
+    const json = JSON.stringify(result.body);
+    if (kv) {
+        await kv.put(cacheKey, json, { expirationTtl: ttlSeconds });
+    }
+    return new Response(json, { headers: { ...JSON_HEADERS, "X-Cache": "MISS" } });
+}
+
 async function handleComtrade(request, env, ctx) {
     const url = new URL(request.url);
     const hs = url.searchParams.get('hs') || '2709';
@@ -30,11 +85,9 @@ async function handleComtrade(request, env, ctx) {
     const period = url.searchParams.get('period') || '2023';
 
     const COMTRADE_KEY = env.COMTRADE_API_KEY;
-    if (!COMTRADE_KEY) {
-        return new Response("Server misconfiguration: COMTRADE_API_KEY is not set.", { status: 500 });
-    }
+    if (!COMTRADE_KEY) return missingKey('COMTRADE_API_KEY');
 
-    // Set Cache TTL based on commodity type
+    // Cache TTL by commodity -- how often each is worth re-querying.
     const CACHE_TTL = {
         "2709": 172800,  // Oil: 48h
         "2711": 172800,  // Gas: 48h
@@ -49,10 +102,12 @@ async function handleComtrade(request, env, ctx) {
     };
     const cacheTtl = CACHE_TTL[hs] || 604800; // Default: weekly
 
-    // Build UN Comtrade API URL (X = Exports, M = Imports for Mirror Data)
-    const comtradeUrl = `https://comtradeapi.un.org/data/v1/get/C/A/HS?reporterCode=${reporters}&period=${period}&partnerCode=${partners}&cmdCode=${hs}&flowCode=X,M`;
+    const cacheKey = `comtrade:${hs}:${reporters}:${partners}:${period}`;
 
-    try {
+    return kvCachedJson(env, cacheKey, cacheTtl, async () => {
+        // Build UN Comtrade API URL (X = Exports, M = Imports for Mirror Data)
+        const comtradeUrl = `https://comtradeapi.un.org/data/v1/get/C/A/HS?reporterCode=${reporters}&period=${period}&partnerCode=${partners}&cmdCode=${hs}&flowCode=X,M`;
+
         const comtradeRes = await fetch(comtradeUrl, {
             headers: {
                 "Ocp-Apim-Subscription-Key": COMTRADE_KEY,
@@ -61,82 +116,78 @@ async function handleComtrade(request, env, ctx) {
         });
 
         if (!comtradeRes.ok) {
-            return new Response(`Comtrade API Error: ${comtradeRes.status} ${comtradeRes.statusText}`, { status: 502 });
+            return { ok: false, status: comtradeRes.status, statusText: comtradeRes.statusText };
         }
-
-        const data = await comtradeRes.json();
-
-        // Return the data with aggressive Edge Caching and CORS headers
-        return new Response(JSON.stringify(data), {
-            headers: {
-                "Content-Type": "application/json",
-                "Access-Control-Allow-Origin": "*",
-                "Cache-Control": `public, max-age=${cacheTtl}, s-maxage=${cacheTtl}`,
-                "Cloudflare-CDN-Cache-Control": `max-age=${cacheTtl}`
-            }
-        });
-    } catch (err) {
-        return new Response(`Proxy Error: ${err.message}`, { status: 500 });
-    }
+        return { ok: true, body: await comtradeRes.json() };
+    });
 }
 
 async function handleUsdaNass(request, env, ctx) {
     const url = new URL(request.url);
 
     const NASS_KEY = env.USDA_NASS_API_KEY;
-    if (!NASS_KEY) {
-        return new Response("Server misconfiguration: USDA_NASS_API_KEY is not set.", { status: 500 });
-    }
+    if (!NASS_KEY) return missingKey('USDA_NASS_API_KEY');
 
-    // Forward all incoming query params except our own, then attach the key server-side.
+    // Forward the caller's query params, then attach the key server-side.
     const nassParams = new URLSearchParams(url.searchParams);
     nassParams.set('key', NASS_KEY);
     nassParams.set('format', nassParams.get('format') || 'JSON');
 
-    const nassUrl = `https://quickstats.nass.usda.gov/api/api_GET/?${nassParams.toString()}`;
+    // Cache key is built from the caller's params only, never the secret.
+    const cacheKey = `usda-nass:${new URLSearchParams(url.searchParams).toString()}`;
 
-    try {
+    return kvCachedJson(env, cacheKey, 86400, async () => {
+        const nassUrl = `https://quickstats.nass.usda.gov/api/api_GET/?${nassParams.toString()}`;
         const nassRes = await fetch(nassUrl, { headers: { "Accept": "application/json" } });
 
         if (!nassRes.ok) {
-            return new Response(`USDA NASS API Error: ${nassRes.status} ${nassRes.statusText}`, { status: 502 });
+            return { ok: false, status: nassRes.status, statusText: nassRes.statusText };
         }
-
-        const data = await nassRes.json();
-
-        return new Response(JSON.stringify(data), {
-            headers: {
-                "Content-Type": "application/json",
-                "Access-Control-Allow-Origin": "*",
-                "Cache-Control": "public, max-age=86400, s-maxage=86400",
-                "Cloudflare-CDN-Cache-Control": "max-age=86400"
-            }
-        });
-    } catch (err) {
-        return new Response(`Proxy Error: ${err.message}`, { status: 500 });
-    }
+        return { ok: true, body: await nassRes.json() };
+    });
 }
 
-// Upstream routes that /api/macro?source=eia is allowed to proxy. Without this
-// allowlist the `route` param would let a caller aim our API key at any EIA path.
+async function handleUsdaFas(request, env, ctx) {
+    const url = new URL(request.url);
+
+    const FAS_KEY = env.USDA_FAS_API_KEY;
+    if (!FAS_KEY) return missingKey('USDA_FAS_API_KEY');
+
+    const commodityCode = url.searchParams.get('commodityCode');
+    const countryCode = url.searchParams.get('countryCode');
+    const year = url.searchParams.get('year');
+
+    // These become URL path segments below, so restrict them to a safe charset
+    // (this also stops anyone using the proxy to reach an arbitrary FAS path).
+    const SAFE = /^[A-Za-z0-9]+$/;
+    if (!commodityCode || !countryCode || !year || ![commodityCode, countryCode, year].every(v => SAFE.test(v))) {
+        return new Response(
+            JSON.stringify({ error: "commodityCode, countryCode and year (alphanumeric) are required" }),
+            { status: 400, headers: JSON_HEADERS }
+        );
+    }
+
+    // FAS allows 30 requests/hour and 50/day per IP, shared by the whole site.
+    // PSD figures are only revised monthly, so a 24h shared cache is plenty.
+    const cacheKey = `usda-fas:${commodityCode}:${countryCode}:${year}`;
+
+    return kvCachedJson(env, cacheKey, 86400, async () => {
+        const fasUrl = `https://api.fas.usda.gov/api/psd/commodity/${commodityCode}/country/${countryCode}/year/${year}`;
+        const fasRes = await fetch(fasUrl, { headers: { "X-Api-Key": FAS_KEY, "Accept": "application/json" } });
+
+        if (!fasRes.ok) {
+            return { ok: false, status: fasRes.status, statusText: fasRes.statusText };
+        }
+        return { ok: true, body: await fasRes.json() };
+    });
+}
+
+// Upstream routes /api/macro?source=eia may proxy. Without this allowlist the
+// `route` param would let a caller aim our API key at any EIA endpoint.
 const EIA_ROUTES = {
     "petroleum/pri/spt/data/": true,
     "natural-gas/pri/spt/data/": true
 };
-
-const JSON_HEADERS = {
-    "Content-Type": "application/json",
-    "Access-Control-Allow-Origin": "*",
-    // Macro series update at most daily; cache at the edge for an hour.
-    "Cache-Control": "public, max-age=3600, s-maxage=3600"
-};
-
-function missingKey(name) {
-    return new Response(
-        JSON.stringify({ error: `Server misconfiguration: ${name} is not set.` }),
-        { status: 500, headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" } }
-    );
-}
 
 async function handleMacro(request, env, ctx) {
     const url = new URL(request.url);
@@ -148,28 +199,24 @@ async function handleMacro(request, env, ctx) {
             const FRED_KEY = env.FRED_API_KEY;
             if (!FRED_KEY) return missingKey('FRED_API_KEY');
 
-            const fredUrl = `https://api.stlouisfed.org/fred/series/observations?series_id=${encodeURIComponent(series_id)}&api_key=${FRED_KEY}&file_type=json&sort_order=desc&limit=1`;
-
-            const res = await fetch(fredUrl);
-            if (!res.ok) {
-                return new Response(JSON.stringify({ error: `FRED API Error: ${res.status}` }), { status: 502, headers: JSON_HEADERS });
-            }
-            const data = await res.json();
-            return new Response(JSON.stringify(data), { headers: JSON_HEADERS });
+            return kvCachedJson(env, `fred:${series_id}`, 3600, async () => {
+                const fredUrl = `https://api.stlouisfed.org/fred/series/observations?series_id=${encodeURIComponent(series_id)}&api_key=${FRED_KEY}&file_type=json&sort_order=desc&limit=1`;
+                const res = await fetch(fredUrl);
+                if (!res.ok) return { ok: false, status: res.status };
+                return { ok: true, body: await res.json() };
+            });
         }
 
         if (source === 'bok') {
             const BOK_KEY = env.BOK_API_KEY;
             if (!BOK_KEY) return missingKey('BOK_API_KEY');
 
-            const bokUrl = `https://ecos.bok.or.kr/api/KeyStatisticList/${BOK_KEY}/json/kr/1/100/`;
-
-            const res = await fetch(bokUrl);
-            if (!res.ok) {
-                return new Response(JSON.stringify({ error: `BOK API Error: ${res.status}` }), { status: 502, headers: JSON_HEADERS });
-            }
-            const data = await res.json();
-            return new Response(JSON.stringify(data), { headers: JSON_HEADERS });
+            return kvCachedJson(env, 'bok:keystats', 3600, async () => {
+                const bokUrl = `https://ecos.bok.or.kr/api/KeyStatisticList/${BOK_KEY}/json/kr/1/100/`;
+                const res = await fetch(bokUrl);
+                if (!res.ok) return { ok: false, status: res.status };
+                return { ok: true, body: await res.json() };
+            });
         }
 
         if (source === 'eia') {
@@ -182,44 +229,36 @@ async function handleMacro(request, env, ctx) {
                 return new Response(JSON.stringify({ error: "Unsupported EIA route" }), { status: 400, headers: JSON_HEADERS });
             }
 
-            const eiaUrl = `https://api.eia.gov/v2/${route}?api_key=${EIA_KEY}&frequency=daily&data[0]=value&facets[series][]=${encodeURIComponent(seriesId)}&sort[0][column]=period&sort[0][direction]=desc&offset=0&length=1`;
-
-            const res = await fetch(eiaUrl);
-            if (!res.ok) {
-                return new Response(JSON.stringify({ error: `EIA API Error: ${res.status}` }), { status: 502, headers: JSON_HEADERS });
-            }
-            const data = await res.json();
-            return new Response(JSON.stringify(data), { headers: JSON_HEADERS });
+            return kvCachedJson(env, `eia:${route}:${seriesId}`, 3600, async () => {
+                const eiaUrl = `https://api.eia.gov/v2/${route}?api_key=${EIA_KEY}&frequency=daily&data[0]=value&facets[series][]=${encodeURIComponent(seriesId)}&sort[0][column]=period&sort[0][direction]=desc&offset=0&length=1`;
+                const res = await fetch(eiaUrl);
+                if (!res.ok) return { ok: false, status: res.status };
+                return { ok: true, body: await res.json() };
+            });
         }
 
         if (source === 'yfinance') {
             const symbol = url.searchParams.get('symbol');
-            // Fetch 5 years of monthly data
-            const period1 = Math.floor(new Date().setFullYear(new Date().getFullYear() - 5) / 1000);
-            const period2 = Math.floor(Date.now() / 1000);
-            const yfUrl = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}?period1=${period1}&period2=${period2}&interval=1mo`;
 
-            const res = await fetch(yfUrl, {
-                headers: { "User-Agent": "Mozilla/5.0", "Accept": "application/json" }
+            return kvCachedJson(env, `yfinance:${symbol}`, 3600, async () => {
+                // Fetch 5 years of monthly data
+                const period1 = Math.floor(new Date().setFullYear(new Date().getFullYear() - 5) / 1000);
+                const period2 = Math.floor(Date.now() / 1000);
+                const yfUrl = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}?period1=${period1}&period2=${period2}&interval=1mo`;
+
+                const res = await fetch(yfUrl, {
+                    headers: { "User-Agent": "Mozilla/5.0", "Accept": "application/json" }
+                });
+                // Yahoo rate-limits datacenter IPs and answers 429 with plain
+                // text, so res.json() must not be called blindly.
+                if (!res.ok) return { ok: false, status: res.status };
+                return { ok: true, body: await res.json() };
             });
-            // Yahoo rate-limits datacenter IPs and answers 429 with plain text,
-            // so res.json() must not be called blindly.
-            if (!res.ok) {
-                return new Response(
-                    JSON.stringify({ error: `Yahoo Finance unavailable (${res.status})` }),
-                    { status: 502, headers: JSON_HEADERS }
-                );
-            }
-            const data = await res.json();
-            return new Response(JSON.stringify(data), { headers: JSON_HEADERS });
         }
 
         return new Response(JSON.stringify({ error: "Invalid macro source" }), { status: 400, headers: JSON_HEADERS });
 
     } catch (err) {
-        return new Response(JSON.stringify({ error: err.message }), { 
-            status: 500, 
-            headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" }
-        });
+        return new Response(JSON.stringify({ error: err.message }), { status: 500, headers: JSON_HEADERS });
     }
 }

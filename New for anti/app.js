@@ -1,5 +1,5 @@
 // Application Logic for Global Trade Dashboard
-const { DeckGL, LineLayer, ScatterplotLayer, GeoJsonLayer } = deck;
+const { DeckGL, LineLayer, ArcLayer, ScatterplotLayer, GeoJsonLayer, _GlobeView, MapView } = deck;
 
 // DOM Elements
 const tooltipEl = document.getElementById('tooltip');
@@ -103,19 +103,77 @@ const mapStyle = {
     ]
 };
 
+// Home globe zoom. Higher = the sphere fills more of the viewport, so the
+// horizon curve reads as a gentle bend rather than a small ball in space.
+const GLOBE_ZOOM = 2.5;
+
+let currentViewState = {
+    longitude: 0,
+    latitude: 20,
+    zoom: GLOBE_ZOOM,
+    pitch: 0,
+    bearing: 0
+};
+
+let autoRotate = true;
+let rotationAnimation = null;
+let resumeRotationTimer = null;
+
+// One animation frame of spin. Never call directly -- go through startRotation()
+// so we can't end up with several chains running at once.
+const rotationStep = () => {
+    if (!autoRotate || currentCommodity !== 'home') {
+        rotationAnimation = null;
+        return;
+    }
+    currentViewState = {
+        ...currentViewState,
+        longitude: currentViewState.longitude + 0.05 // 서서히 자전
+    };
+    deckgl.setProps({ viewState: currentViewState });
+    rotationAnimation = requestAnimationFrame(rotationStep);
+};
+
+const startRotation = () => {
+    // Bail if a chain is already live. onViewStateChange fires on every frame of
+    // a drag, so without this one drag would spawn dozens of parallel loops and
+    // the globe would spin faster and faster.
+    if (rotationAnimation !== null) return;
+    autoRotate = true;
+    rotationAnimation = requestAnimationFrame(rotationStep);
+};
+
+const stopRotation = () => {
+    autoRotate = false;
+    if (rotationAnimation !== null) {
+        cancelAnimationFrame(rotationAnimation);
+        rotationAnimation = null;
+    }
+};
+
 // Initialize DeckGL Map
 const deckgl = new DeckGL({
     container: 'map',
     mapStyle: mapStyle,
-    initialViewState: {
-        longitude: 0,
-        latitude: 20,
-        zoom: 1.5,
-        pitch: 0,
-        bearing: 0
-    },
+    initialViewState: currentViewState,
     controller: true,
-    layers: []
+    views: [new _GlobeView({ id: 'globe', resolution: 2 })], // Start with GlobeView
+    layers: [],
+    onViewStateChange: ({ viewState, interactionState }) => {
+        currentViewState = viewState;
+        deckgl.setProps({ viewState: currentViewState });
+
+        // 사용자가 지도를 건드리면 잠시 회전 멈춤.
+        // Debounced: this fires once per drag frame, so re-arm a single timer
+        // rather than queueing one per frame.
+        if (interactionState.isDragging || interactionState.isZooming || interactionState.isPanning) {
+            stopRotation();
+            clearTimeout(resumeRotationTimer);
+            resumeRotationTimer = setTimeout(() => {
+                if (currentCommodity === 'home') startRotation();
+            }, 2000);
+        }
+    }
 });
 
 // Tooltip handler
@@ -391,6 +449,10 @@ const generateNodeData = (arcs) => {
 // this keeps the map readable without silently hiding mid-sized trade flows.
 const MAX_RENDERED_ARCS = 250;
 
+// Framing for the flat commodity map. The globe runs at GLOBE_ZOOM, which is far
+// too tight for a world map, so the view has to be reset on the way in.
+const FLAT_VIEW_STATE = { longitude: 0, latitude: 20, zoom: 1.5, pitch: 0, bearing: 0 };
+
 const renderMapLayers = (arcs) => {
     // Drop only empty routes, then cap by size. The old `percentage >= 1` filter
     // discarded ~95% of real routes because one mega-route dominates each commodity.
@@ -400,14 +462,15 @@ const renderMapLayers = (arcs) => {
 
     const nodeData = generateNodeData(filteredArcs);
 
-    const lineLayer = new LineLayer({
-        id: `line-layer-${currentCommodity}`,
+    const arcLayer = new ArcLayer({
+        id: `arc-layer-${currentCommodity}`,
         data: filteredArcs,
         pickable: true,
         getWidth: d => Math.min(Math.max(1.5, d.volume / 15), 8),
         getSourcePosition: d => d.sourcePosition,
         getTargetPosition: d => d.targetPosition,
-        getColor: d => d.sourceColor, // LineLayer uses getColor, but we can pass sourceColor. If we want gradient, LineLayer doesn't support it natively like ArcLayer, but we can just use sourceColor for the whole line.
+        getSourceColor: d => d.sourceColor,
+        getTargetColor: d => [56, 189, 248, 255], // Light blue target
         onHover: handleHover,
         onClick: handleLineClick,
         autoHighlight: true,
@@ -442,7 +505,10 @@ const renderMapLayers = (arcs) => {
         pickable: false
     });
 
-    deckgl.setProps({ layers: [countriesLayer, lineLayer, scatterLayer] });
+    deckgl.setProps({
+        views: [new MapView({ id: 'mapview' })],
+        layers: [countriesLayer, arcLayer, scatterLayer]
+    });
 };
 
 const togglePanels = ({ macro = false, countryStats = false, news = false, forecast = false, left = true, chart = false, map = true }) => {
@@ -478,11 +544,32 @@ const setView = (target) => {
 
     if (target === 'home') {
         // Initial empty state
-        currentCommodity = null;
+        currentCommodity = 'home';
         togglePanels({ macro: true, left: false });
         
-        // Render map with no data layers
-        deckgl.setProps({ layers: [] });
+        // Render map with Globe view and empty layers (or a basic geojson layer for aesthetics)
+        const countriesLayer = new GeoJsonLayer({
+            id: 'countries-layer-home',
+            data: 'https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json',
+            stroked: true,
+            filled: true,
+            lineWidthMinPixels: 1,
+            getFillColor: [15, 23, 42],
+            getLineColor: [56, 189, 248, 80], // Neon blue border
+            pickable: false
+        });
+        
+        // Reset to the framing that keeps the curve gentle rather than ball-like
+        currentViewState = { ...currentViewState, zoom: GLOBE_ZOOM, pitch: 0, bearing: 0 };
+
+        deckgl.setProps({
+            views: [new _GlobeView({ id: 'globe', resolution: 2 })],
+            viewState: currentViewState,
+            layers: [countriesLayer]
+        });
+
+        // Restart rotation
+        startRotation();
 
     } else if (target === 'inst_intl' || target === 'inst_country') {
         currentCommodity = target;
@@ -592,8 +679,26 @@ const setView = (target) => {
         if (data.arcs.length === 0 && window.fetchComtradeArcs) {
             currentViewDesc.textContent = "📡 UN Comtrade API에서 실시간 무역 데이터 로딩 중...";
             
-            // Show loading spinner on map
-            deckgl.setProps({ layers: [] });
+            // Leaving the globe behind: commodity views are always the flat map.
+            // Switch immediately so the user sees the map while data loads,
+            // instead of staring at a spinning globe for several seconds.
+            stopRotation();
+            currentViewState = { ...FLAT_VIEW_STATE };
+            deckgl.setProps({
+                views: [new MapView({ id: 'mapview' })],
+                viewState: currentViewState,
+                layers: [
+                    new GeoJsonLayer({
+                        id: 'countries-layer',
+                        data: 'https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json',
+                        stroked: true,
+                        filled: false,
+                        lineWidthMinPixels: 1,
+                        getLineColor: [255, 255, 255, 80],
+                        pickable: false
+                    })
+                ]
+            });
 
             window.fetchComtradeArcs(target).then(arcs => {
                 // Check if user hasn't navigated away
@@ -613,6 +718,9 @@ const setView = (target) => {
             });
         } else {
             // Already have data (cached from previous click or hardcoded)
+            stopRotation();
+            currentViewState = { ...FLAT_VIEW_STATE };
+            deckgl.setProps({ viewState: currentViewState });
             currentViewDesc.textContent = data.desc + ` (데이터 출처: UN Comtrade API | ${data.arcs.length}개 무역 루트)`;
             renderMapLayers(data.arcs);
         }
