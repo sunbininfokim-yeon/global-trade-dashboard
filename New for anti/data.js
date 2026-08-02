@@ -169,7 +169,7 @@
         const eiaUrl = `/api/macro?source=eia&route=petroleum/pri/spt/data/&seriesId=RWTC`;
         
         // Fetch Daily Henry Hub Natural Gas Spot Price
-        const eiaGasUrl = `/api/macro?source=eia&route=natural-gas/pri/spt/data/&seriesId=RNWHHD`;
+        const eiaGasUrl = `/api/macro?source=eia&route=natural-gas/pri/spt/data/&seriesId=RNGWHHD`;
 
         const [eiaRes, eiaGasRes] = await Promise.all([
             fetch(eiaUrl),
