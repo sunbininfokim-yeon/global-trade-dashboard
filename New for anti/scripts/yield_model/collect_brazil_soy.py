@@ -33,6 +33,21 @@ FAOSTAT_ZIP = (
 )
 ONI_URL = "https://www.cpc.ncep.noaa.gov/data/indices/oni.ascii.txt"
 ARCHIVE_URL = "https://archive-api.open-meteo.com/v1/archive"
+POWER_URL = "https://power.larc.nasa.gov/api/temporal/daily/point"
+
+# Soil moisture comes from NASA POWER, not Open-Meteo, on purpose.
+#
+# Open-Meteo's soil_moisture_0_to_7cm_mean has a level shift starting in 2025:
+# at Goias, Jan-Feb 2024 and Jan-Feb 2025 both recorded 348 mm of rain, yet
+# its soil moisture fell 0.463 -> 0.351 (-24%), which cannot follow from
+# identical rainfall. NASA POWER's root-zone wetness over the same two
+# seasons goes 0.716 -> 0.754, i.e. slightly wetter -- consistent with 2025
+# being a record Brazilian crop.
+#
+# Soil moisture was the model's two strongest features, so training on
+# Open-Meteo values and then predicting on post-2025 values pushed the
+# features 5+ standard deviations out of distribution and produced an
+# 800 kg/ha underforecast. POWER is one continuous series from 1981.
 
 # Soybean-producing states with approximate production centroids and their
 # share of the national crop. Weather is averaged across these, weighted by
@@ -47,8 +62,11 @@ REGIONS = [
     {"name": "Bahia",              "lat": -12.0, "lon": -45.5, "weight": 0.07},
 ]
 
-START_YEAR = 1981   # first harvest year (needs Sep 1980 weather)
+# NASA POWER's record starts 1981-01-01, and each season needs the previous
+# September, so 1982 is the first harvest year with complete coverage.
+START_YEAR = 1982
 END_YEAR = 2024
+POWER_EPOCH = "19810101"
 
 # Growth stages, as (month, year-offset) windows. Offset -1 = previous
 # calendar year. Pod fill is the water-stress-critical window for soybeans.
@@ -156,18 +174,10 @@ def load_region_weather(region):
         f"{ARCHIVE_URL}?latitude={region['lat']}&longitude={region['lon']}"
         f"&start_date={START_YEAR - 1}-09-01&end_date={END_YEAR}-12-31"
         "&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,"
-        "soil_moisture_0_to_7cm_mean,et0_fao_evapotranspiration&timezone=UTC"
+        "et0_fao_evapotranspiration&timezone=UTC"
     )
     log(f"weather[{region['name']}]: downloading {START_YEAR - 1}-{END_YEAR}")
-    for attempt in range(3):
-        try:
-            data = json.loads(fetch(url))
-            break
-        except Exception as e:  # noqa: BLE001 - retry any transport failure
-            if attempt == 2:
-                raise
-            log(f"  retry {attempt + 1} after {e}")
-            time.sleep(10)
+    data = retry_json(url)
 
     d = data["daily"]
     df = pd.DataFrame({
@@ -175,11 +185,50 @@ def load_region_weather(region):
         "tmax": d["temperature_2m_max"],
         "tmin": d["temperature_2m_min"],
         "precip": d["precipitation_sum"],
-        "soil": d["soil_moisture_0_to_7cm_mean"],
         "et0": d["et0_fao_evapotranspiration"],
     })
+
+    df = df.merge(load_region_soil(region), on="date", how="left")
     df.to_csv(cached, index=False)
-    log(f"weather[{region['name']}]: {len(df):,} days")
+    log(f"weather[{region['name']}]: {len(df):,} days, "
+        f"soil missing {int(df.soil.isna().sum())}")
+    return df
+
+
+def retry_json(url, attempts=3, timeout=300):
+    for attempt in range(attempts):
+        try:
+            return json.loads(fetch(url, timeout=timeout))
+        except Exception as e:  # noqa: BLE001 - retry any transport failure
+            if attempt == attempts - 1:
+                raise
+            log(f"  retry {attempt + 1} after {e}")
+            time.sleep(10)
+
+
+def load_region_soil(region):
+    """NASA POWER root-zone soil wetness (GWETROOT), one continuous series."""
+    slug = region["name"].lower().replace(" ", "_")
+    cached = os.path.join(CACHE, f"soil_{slug}.csv")
+    if os.path.exists(cached):
+        return pd.read_csv(cached, parse_dates=["date"])
+
+    url = (
+        f"{POWER_URL}?parameters=GWETROOT&community=AG"
+        f"&longitude={region['lon']}&latitude={region['lat']}"
+        f"&start={POWER_EPOCH}&end={END_YEAR}1231&format=JSON"
+    )
+    log(f"soil[{region['name']}]: downloading NASA POWER")
+    data = retry_json(url)
+
+    series = data["properties"]["parameter"]["GWETROOT"]
+    rows = [
+        {"date": pd.to_datetime(k, format="%Y%m%d"), "soil": v}
+        for k, v in series.items()
+        if v is not None and v > -100  # POWER uses -999 as its fill value
+    ]
+    df = pd.DataFrame(rows).sort_values("date").reset_index(drop=True)
+    df.to_csv(cached, index=False)
     return df
 
 

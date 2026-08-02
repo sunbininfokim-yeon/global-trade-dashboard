@@ -1,0 +1,113 @@
+{
+  "crop": "corn",
+  "region": "US Corn Belt (8 states, production-weighted)",
+  "unit": "bu/acre",
+  "trained_years": [
+    1992,
+    2024
+  ],
+  "n_seasons": 33,
+  "trend": {
+    "slope_per_year": 2.275676804812778,
+    "intercept": -4412.528342245872
+  },
+  "features": [
+    "july_edd_anom",
+    "julaug_edd_anom",
+    "julaug_vpd_anom",
+    "julaug_precip_anom",
+    "preseason_precip_anom",
+    "julaug_soil_anom",
+    "oni_growing"
+  ],
+  "scaler": {
+    "mean": [
+      0.03608536473158366,
+      -0.006044328692245805,
+      -0.03439959734518907,
+      0.06986603586274391,
+      0.021551096744344835,
+      0.11335588186391213,
+      0.021818181818181796
+    ],
+    "scale": [
+      1.0938429403210022,
+      0.9514316087143134,
+      0.9304335251212249,
+      0.7787437264743665,
+      0.7748707727948242,
+      0.9996358156023171,
+      0.6255914754972898
+    ]
+  },
+  "ridge": {
+    "alpha": 0.24244620170823283,
+    "coef": [
+      -2.9113780191908645,
+      -12.100319707999887,
+      2.0952606977028316,
+      4.180814387391477,
+      1.2815042053254626,
+      -12.657669034218904,
+      -0.7372652569300555
+    ],
+    "intercept": -3.992713296170753e-12
+  },
+  "uncertainty": {
+    "sigma": 4.497607556649958,
+    "basis": "out-of-sample forward-chaining RMSE"
+  },
+  "validation": {
+    "all_loo": {
+      "rmse": 8.438426524403301,
+      "baseline_rmse": 12.377846097868629,
+      "skill_vs_trend": 0.318263738482228,
+      "detrended_r2": 0.5352356395288678,
+      "detrended_r": 0.7353875271641495,
+      "n": 33
+    },
+    "all_forward": {
+      "rmse": 10.061957785424518,
+      "baseline_rmse": 14.724323198228944,
+      "skill_vs_trend": 0.3166437838966494,
+      "detrended_r2": 0.53299140521091,
+      "detrended_r": 0.7766456591314849,
+      "n": 13,
+      "years": [
+        2012,
+        2024
+      ]
+    },
+    "core_loo": {
+      "rmse": 6.8833440197799876,
+      "baseline_rmse": 12.377846097868629,
+      "skill_vs_trend": 0.44389807682572113,
+      "detrended_r2": 0.6907506309451702,
+      "detrended_r": 0.8338515340897625,
+      "n": 33
+    },
+    "core_forward": {
+      "rmse": 4.497607556649958,
+      "baseline_rmse": 14.724323198228944,
+      "skill_vs_trend": 0.6945457189372932,
+      "detrended_r2": 0.9066911133753213,
+      "detrended_r": 0.9695183886508238,
+      "n": 13,
+      "years": [
+        2012,
+        2024
+      ]
+    }
+  },
+  "methodology": {
+    "trend": "Thompson (1969, 1986) via FAO review: regression on time absorbs technology (genetics, management, fertiliser); weather is related to deviations from that trend.",
+    "heat": "Schlenker & Roberts (2009): nonlinear damage, entered as extreme degree days above the crop threshold rather than counts of hot days.",
+    "vpd": "Urban et al. (2015), Roberts et al. (2012), Lobell et al. (2014): vapour pressure deficit as a combined heat/dryness predictor.",
+    "anomalies": "All weather features are anomalies against a trailing 20-year climatology, so multi-decade climate drift is not read as a yield signal."
+  },
+  "sources": {
+    "yield": "USDA NASS Quick Stats (state, SURVEY, annual)",
+    "weather": "NASA POWER daily, 1981-",
+    "enso": "NOAA CPC ONI"
+  }
+}

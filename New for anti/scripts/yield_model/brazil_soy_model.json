@@ -1,0 +1,110 @@
+{
+  "crop": "soybeans",
+  "region": "Brazil (national)",
+  "trained_years": [
+    1982,
+    2024
+  ],
+  "n_seasons": 43,
+  "trend": {
+    "slope_kg_ha_per_year": 43.61602234974347,
+    "intercept": -84870.23927816408
+  },
+  "features": [
+    "podfill_soil",
+    "vegetative_soil",
+    "podfill_hotdays",
+    "vegetative_hotdays",
+    "podfill_wbal",
+    "oni_season"
+  ],
+  "scaler": {
+    "mean": [
+      0.7060198040198479,
+      0.6866246191177424,
+      0.30835486649440136,
+      0.513924777490669,
+      188.66078093597474,
+      0.04869767441860467
+    ],
+    "scale": [
+      0.04416705087650507,
+      0.0397064654128418,
+      0.5922245505827033,
+      0.8960933326883058,
+      74.55656800903112,
+      1.0150059121120913
+    ]
+  },
+  "ridge": {
+    "alpha": 11.93776641714437,
+    "coef": [
+      9.482781463504342,
+      0.34738211364223986,
+      -63.06265673971109,
+      -29.327541417893638,
+      -2.344887739141095,
+      -15.656467022371425
+    ],
+    "intercept": 9.019979836618542e-12
+  },
+  "uncertainty": {
+    "sigma_kg_ha": 215.97636207497152,
+    "interval_68": [
+      -215.97636207497152,
+      215.97636207497152
+    ],
+    "interval_95": [
+      -423.3136696669442,
+      423.3136696669442
+    ],
+    "basis": "out-of-sample forward-chaining RMSE"
+  },
+  "validation": {
+    "all_loo": {
+      "rmse": 203.67599954761343,
+      "mae": 153.13327371843633,
+      "r2": 0.8730639730879266,
+      "skill_vs_trend": -0.05564200723886081,
+      "baseline_rmse": 192.94040797064218,
+      "n": 43
+    },
+    "all_forward": {
+      "rmse": 255.35358921204067,
+      "mae": 189.8642325131898,
+      "r2": 0.4518698428745592,
+      "skill_vs_trend": -0.13619716996221998,
+      "baseline_rmse": 224.74408136444444,
+      "n": 23,
+      "years": [
+        2002,
+        2024
+      ]
+    },
+    "core_loo": {
+      "rmse": 166.26882086413698,
+      "mae": 127.12822330029066,
+      "r2": 0.91540848131641,
+      "skill_vs_trend": 0.1382374350040949,
+      "baseline_rmse": 192.94040797064218,
+      "n": 43
+    },
+    "core_forward": {
+      "rmse": 215.97636207497152,
+      "mae": 175.69698082740527,
+      "r2": 0.6078861280099537,
+      "skill_vs_trend": 0.039012014181833865,
+      "baseline_rmse": 224.74408136444444,
+      "n": 23,
+      "years": [
+        2002,
+        2024
+      ]
+    }
+  },
+  "sources": {
+    "yield": "FAOSTAT (Production_Crops_Livestock, Brazil, Soya beans, Yield)",
+    "weather": "Open-Meteo ERA5 archive, 6 producing states, production-weighted",
+    "enso": "NOAA CPC ONI"
+  }
+}
