@@ -17,6 +17,11 @@ export default {
             return await handleUsdaFas(request, env, ctx);
         }
 
+        // API Route: USDA FAS ESR (weekly US export sales by destination)
+        if (url.pathname.startsWith('/api/usda-esr')) {
+            return await handleUsdaEsr(request, env, ctx);
+        }
+
         // API Route: Macro Financial Data Proxy (FRED, BOK, EIA, Yahoo Finance)
         if (url.pathname.startsWith('/api/macro')) {
             return await handleMacro(request, env, ctx);
@@ -158,6 +163,99 @@ const COMTRADE_TTL = {
 };
 
 const COMTRADE_PERIOD = "2023";
+
+// USDA FAS Export Sales Report: weekly US export sales by destination country.
+// This is US-only -- it answers "who bought from the US this week", not who
+// bought from Brazil. Its value over Comtrade is freshness: Comtrade's annual
+// feed lags by a year, ESR lands weekly.
+async function fetchEsrCountries(env) {
+    // Country list is effectively static; cache it hard so the weekly export
+    // pull doesn't burn two calls against the 50/day FAS quota every time.
+    const cached = env.API_CACHE ? await env.API_CACHE.get('esr:countries', 'json').catch(() => null) : null;
+    if (cached) return cached;
+
+    const res = await fetch('https://api.fas.usda.gov/api/esr/countries', {
+        headers: { "X-Api-Key": env.USDA_FAS_API_KEY, "Accept": "application/json" }
+    });
+    if (!res.ok) return null;
+
+    const map = {};
+    for (const c of await res.json()) {
+        map[c.countryCode] = {
+            // FAS pads these to fixed width; trim so they render cleanly.
+            name: (c.countryDescription || c.countryName || '').trim(),
+            iso3: c.gencCode || null
+        };
+    }
+    if (env.API_CACHE) {
+        await env.API_CACHE.put('esr:countries', JSON.stringify(map), { expirationTtl: 2592000 }).catch(() => {});
+    }
+    return map;
+}
+
+async function handleUsdaEsr(request, env, ctx) {
+    const url = new URL(request.url);
+
+    if (!env.USDA_FAS_API_KEY) return missingKey('USDA_FAS_API_KEY');
+
+    const commodityCode = url.searchParams.get('commodityCode') || '801'; // 801 = Soybeans
+    const marketYear = url.searchParams.get('marketYear') || '2025';
+
+    const SAFE = /^[0-9]+$/;
+    if (!SAFE.test(commodityCode) || !SAFE.test(marketYear)) {
+        return new Response(
+            JSON.stringify({ error: "commodityCode and marketYear must be numeric" }),
+            { status: 400, headers: JSON_HEADERS }
+        );
+    }
+
+    // ESR publishes once a week, so a 24h cache is plenty and keeps us well
+    // inside the 30/hour, 50/day per-IP FAS limit that the whole site shares.
+    return kvCachedJson(env, `usda-esr:${commodityCode}:${marketYear}`, 86400, async () => {
+        try {
+            const res = await fetch(
+                `https://api.fas.usda.gov/api/esr/exports/commodityCode/${commodityCode}/allCountries/marketYear/${marketYear}`,
+                { headers: { "X-Api-Key": env.USDA_FAS_API_KEY, "Accept": "application/json" } }
+            );
+            if (!res.ok) return { ok: false, status: res.status, statusText: res.statusText };
+
+            const rows = await res.json();
+            if (!Array.isArray(rows) || rows.length === 0) {
+                return { ok: true, body: { weekEndingDate: null, count: 0, data: [] } };
+            }
+
+            // The feed is one row per country per week for the whole season.
+            // Only the most recent week is useful for a map, and returning just
+            // that keeps the payload ~200 rows instead of ~2,600.
+            let latest = '';
+            for (const r of rows) {
+                if (r.weekEndingDate > latest) latest = r.weekEndingDate;
+            }
+
+            const countries = await fetchEsrCountries(env);
+
+            const data = [];
+            for (const r of rows) {
+                if (r.weekEndingDate !== latest) continue;
+                const meta = countries ? countries[r.countryCode] : null;
+                data.push({
+                    countryCode: r.countryCode,
+                    countryName: meta ? meta.name : null,
+                    iso3: meta ? meta.iso3 : null,
+                    weeklyExports: r.weeklyExports,
+                    accumulatedExports: r.accumulatedExports,
+                    outstandingSales: r.outstandingSales,
+                    currentMYTotalCommitment: r.currentMYTotalCommitment
+                });
+            }
+            data.sort((a, b) => (b.accumulatedExports || 0) - (a.accumulatedExports || 0));
+
+            return { ok: true, body: { weekEndingDate: latest, count: data.length, data } };
+        } catch (err) {
+            return { ok: false, status: 502, statusText: err.message };
+        }
+    });
+}
 
 // KV keys are capped at 512 bytes. Embedding the country lists verbatim put a
 // 64-country key at 518 bytes, so kv.get() threw before any fetch ran -- the
