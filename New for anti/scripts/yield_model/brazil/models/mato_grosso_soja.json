@@ -1,0 +1,384 @@
+{
+  "key": "mato_grosso_soja",
+  "label": "Mato Grosso soybeans",
+  "crop": "soja",
+  "states": [
+    [
+      "MT",
+      1.0
+    ]
+  ],
+  "doc": "Regions/브라질/마투그로수/대두/대두_상세분석_및_수식.md",
+  "caveat": "NDVI_Peak_Value from §3B is omitted: MODIS starts in 2000 and would cut the record from 43 seasons to 25.",
+  "non_weather_drivers": "",
+  "trained_years": [
+    1985,
+    2024
+  ],
+  "n_seasons": 40,
+  "regime_start": null,
+  "trend": {
+    "log_poly_coef": [
+      -0.00030714994720728336,
+      1.2439421974265823,
+      -1251.3633917567383
+    ],
+    "degree": 2,
+    "form": "deg2",
+    "window": null,
+    "space": "log(kg/ha)"
+  },
+  "features": [
+    "days_late",
+    "precip_veg",
+    "precip_rep",
+    "oni_season"
+  ],
+  "feature_set": "core",
+  "trend_form": "deg2",
+  "scaler": {
+    "mean": [
+      7.2700000000000005,
+      456.6414,
+      535.2262000000001,
+      0.01575000000000002
+    ],
+    "scale": [
+      6.212736917011696,
+      99.46808172167593,
+      117.74265820958858,
+      1.0677308298443011
+    ]
+  },
+  "ridge": {
+    "alpha": 34.551072945922215,
+    "coef": [
+      -0.006644200437506459,
+      0.0008357672866303027,
+      -0.0003447024558071456,
+      -0.010184046419339744
+    ],
+    "intercept": -8.93374981802755e-13
+  },
+  "beats_trend": false,
+  "recent_skill_vs_trend": -0.09423734861856148,
+  "skill_vs_best_trend": -0.006875150227305893,
+  "best_trend_baseline_rmse": 200.8550904055202,
+  "weather_skill": -0.09423734861856148,
+  "non_weather_features": [],
+  "trend_plus_lags_rmse": null,
+  "recent_trend_bias_kg_ha": -151.56921684773647,
+  "recent_folds": 10,
+  "uncertainty": {
+    "sigma_kg_ha": 234.1965119458141,
+    "basis": "trend-only baseline RMSE over the last 10 folds (model showed no skill)"
+  },
+  "validation": {
+    "all_deg1_loo": {
+      "rmse": 177.53662658222802,
+      "mae": 147.60509777465919,
+      "detrended_r2": 0.18492409684714595,
+      "skill_vs_trend": 0.09726627415650269,
+      "baseline_rmse": 196.66555208884122,
+      "recent_rmse": 157.05859403225915,
+      "recent_baseline_rmse": 226.62629767657,
+      "recent_trend_bias": 96.72527769675563,
+      "n": 40,
+      "years": [
+        1985,
+        2024
+      ],
+      "degree": 1,
+      "window": null,
+      "trend_form": "deg1"
+    },
+    "all_deg1_forward": {
+      "rmse": 219.5792201651405,
+      "mae": 180.44551418885885,
+      "detrended_r2": -0.6829196025784403,
+      "skill_vs_trend": 0.10767381030119993,
+      "baseline_rmse": 246.07505943455305,
+      "recent_rmse": 215.52468884837702,
+      "recent_baseline_rmse": 262.0624891727369,
+      "recent_trend_bias": 165.55794815952723,
+      "n": 18,
+      "years": [
+        2007,
+        2024
+      ],
+      "degree": 1,
+      "window": null,
+      "trend_form": "deg1"
+    },
+    "all_deg2_loo": {
+      "rmse": 179.20525129708068,
+      "mae": 139.21413206838366,
+      "detrended_r2": -0.040528992350488124,
+      "skill_vs_trend": -0.019656399608788178,
+      "baseline_rmse": 175.7506267462612,
+      "recent_rmse": 231.3872849753067,
+      "recent_baseline_rmse": 232.24994284470588,
+      "recent_trend_bias": -19.519839432430626,
+      "n": 40,
+      "years": [
+        1985,
+        2024
+      ],
+      "degree": 2,
+      "window": null,
+      "trend_form": "deg2"
+    },
+    "all_deg2_forward": {
+      "rmse": 210.82020061861374,
+      "mae": 174.83350553311416,
+      "detrended_r2": -0.3282132491426417,
+      "skill_vs_trend": 0.0019281637859730472,
+      "baseline_rmse": 211.22748179962204,
+      "recent_rmse": 263.7991415987901,
+      "recent_baseline_rmse": 263.6400636508324,
+      "recent_trend_bias": -151.56921684773647,
+      "n": 18,
+      "years": [
+        2007,
+        2024
+      ],
+      "degree": 2,
+      "window": null,
+      "trend_form": "deg2"
+    },
+    "all_recent20_loo": {
+      "rmse": 202.75109335587487,
+      "mae": 173.99553270296093,
+      "detrended_r2": 0.049378211331161825,
+      "skill_vs_trend": 0.042347151531330396,
+      "baseline_rmse": 211.71669220227673,
+      "recent_rmse": 203.27443972405104,
+      "recent_baseline_rmse": 220.92210045528873,
+      "recent_trend_bias": 2.7076858431858453,
+      "n": 40,
+      "years": [
+        1985,
+        2024
+      ],
+      "degree": 1,
+      "window": 20,
+      "trend_form": "recent20"
+    },
+    "all_recent20_forward": {
+      "rmse": 244.661186390858,
+      "mae": 210.92536243262919,
+      "detrended_r2": -0.5123987218138482,
+      "skill_vs_trend": -0.21809801233762438,
+      "baseline_rmse": 200.8550904055202,
+      "recent_rmse": 310.1209310967672,
+      "recent_baseline_rmse": 234.1965119458141,
+      "recent_trend_bias": -44.554929193386805,
+      "n": 18,
+      "years": [
+        2007,
+        2024
+      ],
+      "degree": 1,
+      "window": 20,
+      "trend_form": "recent20"
+    },
+    "all_recent10_loo": {
+      "rmse": 193.9005262610815,
+      "mae": 157.62494400289506,
+      "detrended_r2": 0.13271852356430114,
+      "skill_vs_trend": 0.14873032265685204,
+      "baseline_rmse": 227.77802548571213,
+      "recent_rmse": 229.21381943959912,
+      "recent_baseline_rmse": 259.97198716992483,
+      "recent_trend_bias": 10.014492163733985,
+      "n": 40,
+      "years": [
+        1985,
+        2024
+      ],
+      "degree": 1,
+      "window": 10,
+      "trend_form": "recent10"
+    },
+    "all_recent10_forward": {
+      "rmse": 419.6438994956856,
+      "mae": 377.1058131252036,
+      "detrended_r2": -2.5017338382558467,
+      "skill_vs_trend": -0.858256819882991,
+      "baseline_rmse": 225.82664301595804,
+      "recent_rmse": 409.4759510801634,
+      "recent_baseline_rmse": 261.0090717063031,
+      "recent_trend_bias": -7.534165931987763,
+      "n": 18,
+      "years": [
+        2007,
+        2024
+      ],
+      "degree": 1,
+      "window": 10,
+      "trend_form": "recent10"
+    },
+    "core_deg1_loo": {
+      "rmse": 192.73988780789205,
+      "mae": 154.19435025028693,
+      "detrended_r2": 0.039349682550693044,
+      "skill_vs_trend": 0.019961117944925166,
+      "baseline_rmse": 196.66555208884122,
+      "recent_rmse": 207.63268259335956,
+      "recent_baseline_rmse": 226.62629767657,
+      "recent_trend_bias": 96.72527769675563,
+      "n": 40,
+      "years": [
+        1985,
+        2024
+      ],
+      "degree": 1,
+      "window": null,
+      "trend_form": "deg1"
+    },
+    "core_deg1_forward": {
+      "rmse": 240.73906786062508,
+      "mae": 194.52345702510598,
+      "detrended_r2": -1.0228982636280932,
+      "skill_vs_trend": 0.021684406319719463,
+      "baseline_rmse": 246.07505943455305,
+      "recent_rmse": 251.8002830891009,
+      "recent_baseline_rmse": 262.0624891727369,
+      "recent_trend_bias": 165.55794815952723,
+      "n": 18,
+      "years": [
+        2007,
+        2024
+      ],
+      "degree": 1,
+      "window": null,
+      "trend_form": "deg1"
+    },
+    "core_deg2_loo": {
+      "rmse": 170.55049260361292,
+      "mae": 129.7691185332415,
+      "detrended_r2": 0.057549219922905404,
+      "skill_vs_trend": 0.02958813996240206,
+      "baseline_rmse": 175.7506267462612,
+      "recent_rmse": 215.60307089783257,
+      "recent_baseline_rmse": 232.24994284470588,
+      "recent_trend_bias": -19.519839432430626,
+      "n": 40,
+      "years": [
+        1985,
+        2024
+      ],
+      "degree": 2,
+      "window": null,
+      "trend_form": "deg2"
+    },
+    "core_deg2_forward": {
+      "rmse": 202.23599932597728,
+      "mae": 165.96791186404874,
+      "detrended_r2": -0.22225069898406158,
+      "skill_vs_trend": 0.04256776815705454,
+      "baseline_rmse": 211.22748179962204,
+      "recent_rmse": 256.2665702873029,
+      "recent_baseline_rmse": 263.6400636508324,
+      "recent_trend_bias": -151.56921684773647,
+      "n": 18,
+      "years": [
+        2007,
+        2024
+      ],
+      "degree": 2,
+      "window": null,
+      "trend_form": "deg2"
+    },
+    "core_recent20_loo": {
+      "rmse": 210.00971747936418,
+      "mae": 177.0046621919279,
+      "detrended_r2": -0.019905974712184804,
+      "skill_vs_trend": 0.008062541999672268,
+      "baseline_rmse": 211.71669220227673,
+      "recent_rmse": 222.09853186319017,
+      "recent_baseline_rmse": 220.92210045528873,
+      "recent_trend_bias": 2.7076858431858453,
+      "n": 40,
+      "years": [
+        1985,
+        2024
+      ],
+      "degree": 1,
+      "window": 20,
+      "trend_form": "recent20"
+    },
+    "core_recent20_forward": {
+      "rmse": 234.3781034582978,
+      "mae": 192.29522012248674,
+      "detrended_r2": -0.387938485805545,
+      "skill_vs_trend": -0.16690148596729948,
+      "baseline_rmse": 200.8550904055202,
+      "recent_rmse": 295.69535076694973,
+      "recent_baseline_rmse": 234.1965119458141,
+      "recent_trend_bias": -44.554929193386805,
+      "n": 18,
+      "years": [
+        2007,
+        2024
+      ],
+      "degree": 1,
+      "window": 20,
+      "trend_form": "recent20"
+    },
+    "core_recent10_loo": {
+      "rmse": 203.090538733031,
+      "mae": 157.26782818682608,
+      "detrended_r2": 0.04855984102092181,
+      "skill_vs_trend": 0.1083839703151247,
+      "baseline_rmse": 227.77802548571213,
+      "recent_rmse": 253.63119264532233,
+      "recent_baseline_rmse": 259.97198716992483,
+      "recent_trend_bias": 10.014492163733985,
+      "n": 40,
+      "years": [
+        1985,
+        2024
+      ],
+      "degree": 1,
+      "window": 10,
+      "trend_form": "recent10"
+    },
+    "core_recent10_forward": {
+      "rmse": 414.98028559921397,
+      "mae": 358.78075879789526,
+      "detrended_r2": -2.4243349259014177,
+      "skill_vs_trend": -0.8376055192472989,
+      "baseline_rmse": 225.82664301595804,
+      "recent_rmse": 407.3417491980555,
+      "recent_baseline_rmse": 261.0090717063031,
+      "recent_trend_bias": -7.534165931987763,
+      "n": 18,
+      "years": [
+        2007,
+        2024
+      ],
+      "degree": 1,
+      "window": 10,
+      "trend_form": "recent10"
+    }
+  },
+  "forward": {
+    "rmse": 202.23599932597728,
+    "mae": 165.96791186404874,
+    "detrended_r2": -0.22225069898406158,
+    "skill_vs_trend": 0.04256776815705454,
+    "baseline_rmse": 211.22748179962204,
+    "recent_rmse": 256.2665702873029,
+    "recent_baseline_rmse": 263.6400636508324,
+    "recent_trend_bias": -151.56921684773647,
+    "n": 18,
+    "years": [
+      2007,
+      2024
+    ],
+    "degree": 2,
+    "window": null,
+    "trend_form": "deg2"
+  }
+}

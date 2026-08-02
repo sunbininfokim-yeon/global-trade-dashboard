@@ -518,6 +518,31 @@
         }
     };
 
+    // === Brazil regional yield forecast (statistical model, refreshed weekly) ===
+    // Written by scripts/yield_model/brazil/run_forecast.py. Keyed by
+    // region-crop rather than by crop alone, because the nine models are built
+    // per region from separate methodologies. Each entry carries
+    // skill.beats_trend; where that is false the weather features did not beat
+    // a trend-only baseline out of sample and the number should be presented
+    // as a trend extrapolation, not a weather-driven forecast.
+    let brazilForecastCache = null;
+    window.loadBrazilYieldForecast = async function() {
+        if (brazilForecastCache !== null) return brazilForecastCache;
+        try {
+            const res = await fetch('/public/data/brazil_yield_forecast.json');
+            if (!res.ok) { brazilForecastCache = false; return false; }
+            brazilForecastCache = await res.json();
+            const n = Object.keys(brazilForecastCache.regions || {}).length;
+            console.log(`[Yield BR] ${brazilForecastCache.season} forecast loaded, ` +
+                `${n} region-crops (generated ${brazilForecastCache.generated_at})`);
+            return brazilForecastCache;
+        } catch (err) {
+            console.warn('[Yield BR] forecast unavailable', err);
+            brazilForecastCache = false;
+            return false;
+        }
+    };
+
     const defaultNews = (commodityName, country="Global") => ({
         "default": [
             { title: `Global ${commodityName} prices see fluctuation amid supply chain adjustments`, date: "Today", source: "Bloomberg", url: "https://www.bloomberg.com/markets/commodities" },

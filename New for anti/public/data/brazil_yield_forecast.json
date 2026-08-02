@@ -1,0 +1,345 @@
+{
+  "generated_at": "2026-08-02T13:21:50.213006+00:00",
+  "season": 2026,
+  "country": "Brazil",
+  "source_note": "Yields: IBGE SIDRA (PAM tables 1612/1613), state level. Weather: NASA POWER daily, production-weighted across each region's growing points, ET0 by FAO-56 Penman-Monteith. ENSO: NOAA CPC ONI.",
+  "methodology_note": "One model per region-crop, each implementing the derived variables of its own guide in Regions/브라질. Yield is a log technology trend plus a weather deviation; only the deviation is modelled. Skill is measured by forward chaining with the trend refit inside every fold, scored over the most recent folds.",
+  "regions": {
+    "mato_grosso_soja": {
+      "label": "Mato Grosso soybeans",
+      "crop": "soja",
+      "states": [
+        "MT"
+      ],
+      "unit": "kg/ha",
+      "point": 3273.8,
+      "range_68": [
+        3039.6,
+        3508.0
+      ],
+      "range_95": [
+        2814.8,
+        3732.9
+      ],
+      "trend": 3335.9,
+      "weather_effect_pct": -1.86,
+      "last_actual": {
+        "year": 2024,
+        "yield": 3109.0
+      },
+      "enso": {
+        "state": "neutral",
+        "oni_growing_season": -0.4
+      },
+      "skill": {
+        "method": "forward chaining, trend refit inside each fold, scored on the most recent folds",
+        "skill_vs_trend_only": -0.094,
+        "beats_trend": false,
+        "sigma_kg_ha": 234.2
+      },
+      "provenance": {
+        "guide": "Regions/브라질/마투그로수/대두/대두_상세분석_및_수식.md",
+        "caveat": "NDVI_Peak_Value from §3B is omitted: MODIS starts in 2000 and would cut the record from 43 seasons to 25.",
+        "non_weather_drivers": "",
+        "weather_through": "2026-07-28",
+        "notes": []
+      }
+    },
+    "mato_grosso_milho": {
+      "label": "Mato Grosso corn (safrinha)",
+      "crop": "milho",
+      "states": [
+        "MT"
+      ],
+      "unit": "kg/ha",
+      "point": 6846.0,
+      "range_68": [
+        6431.4,
+        7260.7
+      ],
+      "range_95": [
+        6033.3,
+        7658.7
+      ],
+      "trend": 7377.7,
+      "weather_effect_pct": -7.21,
+      "last_actual": {
+        "year": 2024,
+        "yield": 6698.0
+      },
+      "enso": {
+        "state": "neutral",
+        "oni_growing_season": -0.4
+      },
+      "skill": {
+        "method": "forward chaining, trend refit inside each fold, scored on the most recent folds",
+        "skill_vs_trend_only": 0.404,
+        "beats_trend": true,
+        "sigma_kg_ha": 414.6
+      },
+      "provenance": {
+        "guide": "Regions/브라질/마투그로수/옥수수/옥수수_상세분석_및_수식.md",
+        "caveat": "Planting date is derived from the modelled soy onset plus a fixed 125-day soy cycle, not observed. SIDRA reports one combined corn figure, but in Mato Grosso safrinha is the great majority of it.",
+        "non_weather_drivers": "",
+        "weather_through": "2026-07-28",
+        "notes": []
+      }
+    },
+    "parana_soja": {
+      "label": "Paraná + Rio Grande do Sul soybeans",
+      "crop": "soja",
+      "states": [
+        "PR",
+        "RS"
+      ],
+      "unit": "kg/ha",
+      "point": 2991.5,
+      "range_68": [
+        2723.2,
+        3259.7
+      ],
+      "range_95": [
+        2465.6,
+        3517.3
+      ],
+      "trend": 3297.1,
+      "weather_effect_pct": -9.27,
+      "last_actual": {
+        "year": 2024,
+        "yield": 3023.0
+      },
+      "enso": {
+        "state": "neutral",
+        "oni_growing_season": -0.4
+      },
+      "skill": {
+        "method": "forward chaining, trend refit inside each fold, scored on the most recent folds",
+        "skill_vs_trend_only": 0.49,
+        "beats_trend": true,
+        "sigma_kg_ha": 268.3
+      },
+      "provenance": {
+        "guide": "Regions/브라질/남부지방_파라나/대두/대두_상세분석_및_수식.md",
+        "caveat": "",
+        "non_weather_drivers": "",
+        "weather_through": "2026-07-28",
+        "notes": []
+      }
+    },
+    "parana_milho": {
+      "label": "Paraná + Rio Grande do Sul corn",
+      "crop": "milho",
+      "states": [
+        "PR",
+        "RS"
+      ],
+      "unit": "kg/ha",
+      "point": 5197.1,
+      "range_68": [
+        4253.0,
+        6141.2
+      ],
+      "range_95": [
+        3346.7,
+        7047.6
+      ],
+      "trend": 6279.2,
+      "weather_effect_pct": -17.23,
+      "last_actual": {
+        "year": 2024,
+        "yield": 5536.7
+      },
+      "enso": {
+        "state": "unknown",
+        "oni_growing_season": null
+      },
+      "skill": {
+        "method": "forward chaining, trend refit inside each fold, scored on the most recent folds",
+        "skill_vs_trend_only": -0.028,
+        "beats_trend": false,
+        "sigma_kg_ha": 944.1
+      },
+      "provenance": {
+        "guide": "Regions/브라질/남부지방_파라나/옥수수/옥수수_상세분석_및_수식.md",
+        "caveat": "The SIDRA target mixes first-season and safrinha corn, which in Paraná are both large. The guide's methodology addresses the summer crop only, so the signal is diluted by construction.",
+        "non_weather_drivers": "SIDRA publishes one combined corn figure per state. In Paraná the first-season and safrinha crops are both large and their area split shifts with soybean and corn prices, so part of the year-to-year movement in this target is an acreage-mix decision rather than anything the weather did.",
+        "weather_through": "2026-07-28",
+        "notes": []
+      }
+    },
+    "matopiba_soja": {
+      "label": "MATOPIBA soybeans",
+      "crop": "soja",
+      "states": [
+        "BA",
+        "MA",
+        "PI",
+        "TO"
+      ],
+      "unit": "kg/ha",
+      "point": 3334.3,
+      "range_68": [
+        2872.4,
+        3796.3
+      ],
+      "range_95": [
+        2428.9,
+        4239.8
+      ],
+      "trend": 3424.9,
+      "weather_effect_pct": -2.65,
+      "last_actual": {
+        "year": 2024,
+        "yield": 3484.75
+      },
+      "enso": {
+        "state": "unknown",
+        "oni_growing_season": null
+      },
+      "skill": {
+        "method": "forward chaining, trend refit inside each fold, scored on the most recent folds",
+        "skill_vs_trend_only": -0.177,
+        "beats_trend": false,
+        "sigma_kg_ha": 462.0
+      },
+      "provenance": {
+        "guide": "Regions/브라질/MATOPIBA/대두/대두_상세분석_및_수식.md",
+        "caveat": "CWSI is replaced by a Tmax/VPD stress proxy -- satellite canopy temperature needs a thermal-infrared feed. Sand fraction is one regional constant rather than a joined soil map, so Effective_Water_Capacity rescales rainfall uniformly here.",
+        "non_weather_drivers": "",
+        "weather_through": "2026-07-28",
+        "notes": []
+      }
+    },
+    "matopiba_algodao": {
+      "label": "MATOPIBA cotton",
+      "crop": "algodao",
+      "states": [
+        "BA",
+        "MA",
+        "PI",
+        "TO"
+      ],
+      "unit": "kg/ha",
+      "point": 4507.7,
+      "range_68": [
+        4181.1,
+        4834.2
+      ],
+      "range_95": [
+        3867.6,
+        5147.7
+      ],
+      "trend": 4671.7,
+      "weather_effect_pct": -3.51,
+      "last_actual": {
+        "year": 2024,
+        "yield": 4320.44
+      },
+      "enso": {
+        "state": "unknown",
+        "oni_growing_season": null
+      },
+      "skill": {
+        "method": "forward chaining, trend refit inside each fold, scored on the most recent folds",
+        "skill_vs_trend_only": 0.112,
+        "beats_trend": true,
+        "sigma_kg_ha": 326.5
+      },
+      "provenance": {
+        "guide": "Regions/브라질/MATOPIBA/면화/면화_상세분석_및_수식.md",
+        "caveat": "Yield only. The guide's second target -- fibre quality/Micronaire -- has no open data series, so the two-output structure collapses to one. The NDVI classifier that would date flowering is replaced by the degree-day threshold from the same guide. Training starts in 2000: the pre-2000 smallholder crop is a different system.",
+        "non_weather_drivers": "The 1999-2000 jump is a change of production system -- irrigation, seed, fertiliser and scale -- not a good weather year. Input intensity continues to drive much of the residual movement inside the modern era too, and none of it is observable from climate.",
+        "weather_through": "2026-07-28",
+        "notes": []
+      }
+    },
+    "sp_cana": {
+      "label": "São Paulo sugarcane",
+      "crop": "cana",
+      "states": [
+        "SP"
+      ],
+      "unit": "kg/ha",
+      "point": 75257.6,
+      "range_68": [
+        73071.0,
+        77444.1
+      ],
+      "range_95": [
+        70971.9,
+        79543.2
+      ],
+      "trend": 74881.0,
+      "weather_effect_pct": 0.5,
+      "last_actual": {
+        "year": 2024,
+        "yield": 77532.0
+      },
+      "enso": {
+        "state": "unknown",
+        "oni_growing_season": null
+      },
+      "skill": {
+        "method": "forward chaining, trend refit inside each fold, scored on the most recent folds",
+        "skill_vs_trend_only": 0.082,
+        "beats_trend": true,
+        "sigma_kg_ha": 2186.6
+      },
+      "provenance": {
+        "guide": "Regions/브라질/상파울루/사탕수수/사탕수수_상세분석_및_수식.md",
+        "caveat": "Stage 1 of the guide is DSSAT-CANEGRO, which is not runnable without the simulator and its calibrated genetic coefficients. Y_sim is therefore absent and the technology trend carries the baseline instead; WS_photo is a bucket-balance surrogate. The guide's NDVI_Max is also absent (MODIS starts in 2000). This is the largest departure from any guide in the set.",
+        "non_weather_drivers": "Sugarcane is a ratoon crop, replanted only every five to seven years, so much of any season's yield is the age profile of the standing crop -- how much of São Paulo's area is first-cut versus fifth-cut. That is set by replanting investment, variety turnover and mill economics, none of which is weather and none of which appears in any weather feed. Detrended yield moves only about 3% a year across the whole record (2.7% in 1985-99, 3.1% in 2013-24), and the age profile plausibly accounts for more of that than rainfall does. lag1 is carried to represent stand persistence, but it is a proxy for management, not a climate signal.",
+        "weather_through": "2026-07-28",
+        "notes": [
+          "lag for 2025 uses this model's own forecast"
+        ]
+      }
+    },
+    "sp_cafe": {
+      "label": "Minas Gerais + São Paulo coffee (Arabica)",
+      "crop": "cafe",
+      "states": [
+        "MG",
+        "SP"
+      ],
+      "unit": "kg/ha",
+      "point": 1609.6,
+      "range_68": [
+        1397.1,
+        1822.1
+      ],
+      "range_95": [
+        1193.1,
+        2026.1
+      ],
+      "trend": 1591.8,
+      "weather_effect_pct": 1.12,
+      "last_actual": {
+        "year": 2024,
+        "yield": 1591.0
+      },
+      "enso": {
+        "state": "unknown",
+        "oni_growing_season": null
+      },
+      "skill": {
+        "method": "forward chaining, trend refit inside each fold, scored on the most recent folds",
+        "skill_vs_trend_only": 0.086,
+        "beats_trend": true,
+        "sigma_kg_ha": 212.5
+      },
+      "provenance": {
+        "guide": "Regions/브라질/상파울루/커피/커피_상세분석_및_수식.md",
+        "caveat": "The guide's stratified high-/low-yield split is replaced by the autoregressive form from the same guide (§3A). With ~43 seasons, training two stratified models on ~21 rows each would fit noise.",
+        "non_weather_drivers": "Biennial bearing is physiological, not meteorological: a heavy crop exhausts the tree and the next year is light regardless of weather. lag1 and lag2 carry that cycle, and they are the model's strongest features -- so much of this model's skill is biological memory, not climate. Replanting rates and the arabica/robusta area mix are also outside any weather feed.",
+        "weather_through": "2026-07-28",
+        "notes": [
+          "lag for 2025 uses this model's own forecast"
+        ]
+      }
+    }
+  },
+  "skipped": {
+    "parana_trigo": "features unavailable: fhb_rh_days, fhb_rain_events, fhb_warm_days, harvest_rain_penalty, precip_anthesis, oni_season"
+  }
+}

@@ -1,0 +1,8 @@
+# Raw upstream downloads: ~25 MB, and every one is reproducible by re-running
+# collect.py. The training tables and model JSONs are the artefacts worth
+# tracking, not the bytes they were derived from.
+cache/
+
+# Date-stamped live pulls from predict.py, one per point per run day.
+cache/live_*.csv
+__pycache__/
