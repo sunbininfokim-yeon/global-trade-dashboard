@@ -1,0 +1,33 @@
+name: Daily Brazil Agri Data Extractor
+
+on:
+  schedule:
+    # Runs at 18:00 UTC every day (03:00 KST)
+    - cron: '0 18 * * *'
+  workflow_dispatch: # Allows manual trigger from the GitHub Actions UI
+
+jobs:
+  run-bot:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install requests structlog pandas openpyxl
+
+      - name: Run Brazil Agri Nightly Bot
+        env:
+          # These secrets must be added in GitHub repo Settings -> Secrets
+          CF_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
+          CF_KV_NAMESPACE_ID: ${{ secrets.CF_KV_NAMESPACE_ID }}
+          CF_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+        run: |
+          python "New for anti/scripts/brazil_agri_bot.py"
