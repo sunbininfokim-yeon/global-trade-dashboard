@@ -140,6 +140,24 @@ there, not on cotton or cane.
   system (741 kg/ha, 30% scatter) and fitting across the break corrupted the
   trend, the scaling and the coefficients at once.
 
+## Operating it
+
+`.github/workflows/brazil_yield_forecast.yml` runs weekly (Mondays 09:30 UTC).
+Each run refreshes the forecast, and checks whether IBGE has published a season
+newer than the one the models were trained on; if so it re-collects, retrains
+and re-forecasts in the same run. Nothing needs to be remembered in September.
+
+The season is derived, never pinned. Summer crops roll over to the next harvest
+year in September; wheat rolls with the calendar. `current_season(cfg)` is the
+single place that decides. The SIDRA yield cache expires after 30 days so a
+newly published PAM release is actually seen.
+
+Every published figure carries `critical_window_observed`: the share of the
+months that actually decide that crop's yield which have already happened. At
+100% the weather is settled and only the model error remains; below that the
+number is partly a projection off climatology, and the site shows a progress
+bar rather than presenting the two as the same thing.
+
 ## Wheat
 
 `parana_trigo` declines to forecast the current season until its September

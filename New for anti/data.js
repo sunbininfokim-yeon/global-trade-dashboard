@@ -238,6 +238,11 @@
 
     // 2. Base Trade Data
     const COUNTRIES = {
+        // Sub-national growing regions carried by the Brazil yield models.
+        // MATOPIBA is the Bahia/Maranhão/Piauí/Tocantins frontier; the São
+        // Paulo point sits in the Ribeirão Preto cane and coffee belt.
+        "MATOPIBA (Brazil)": [-45.5, -10.5],
+        "Sao Paulo (Brazil)": [-47.8, -21.4],
         "USA": [-95.7129, 37.0902], "China": [104.1954, 35.8617], "Brazil": [-51.9253, -14.2350],
         "Argentina": [-63.6167, -38.4161], "Russia": [105.3188, 61.5240], "Ukraine": [31.1656, 48.3794],
         "India": [78.9629, 20.5937], "Canada": [-106.3468, 56.1304], "Australia": [133.7751, -25.2744],

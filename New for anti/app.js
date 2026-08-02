@@ -413,9 +413,46 @@ const renderYieldForecast = async (regionName) => {
 // One region shows several crops because the models are built per region-crop:
 // Mato Grosso soy and safrinha corn are separate methodologies over the same
 // ground, and the southern states carry three crops on one weather history.
+// === Climate view: country -> producing region drill-down ===
+//
+// The climate map is two levels. Level 1 shows the world with modelled
+// countries outlined; level 2 zooms into one country and marks its producing
+// regions. Only countries that actually have a fitted model appear -- putting
+// a marker on a country with no model would imply a forecast that does not
+// exist.
+const CLIMATE_COUNTRIES = {
+    'United States': {
+        label: '미국',
+        iso: 'USA',
+        view: { longitude: -96.0, latitude: 39.5, zoom: 3.6 },
+        summaryKey: 'us',
+        regions: [
+            { name: 'US Corn Belt', label: '콘벨트 (옥수수·대두)', coordinates: [-91.0, 41.5] },
+        ],
+    },
+    'Brazil': {
+        label: '브라질',
+        iso: 'BRA',
+        view: { longitude: -52.0, latitude: -13.0, zoom: 3.6 },
+        summaryKey: 'brazil',
+        regions: [
+            { name: 'Mato Grosso (Brazil)', label: '마투그로수 (대두·옥수수)' },
+            { name: 'Rio Grande do Sul (Brazil)', label: '파라나·히우그란지두술' },
+            { name: 'MATOPIBA (Brazil)', label: 'MATOPIBA (대두·면화)' },
+            { name: 'Sao Paulo (Brazil)', label: '상파울루 (사탕수수·커피)' },
+        ],
+    },
+};
+
+// Which level the climate view is currently showing.
+let climateLevel = 'world';
+let climateCountry = null;
+
 const BRAZIL_REGION_MODELS = {
     'Mato Grosso (Brazil)': ['mato_grosso_soja', 'mato_grosso_milho'],
     'Rio Grande do Sul (Brazil)': ['parana_soja', 'parana_milho', 'parana_trigo'],
+    'MATOPIBA (Brazil)': ['matopiba_soja', 'matopiba_algodao'],
+    'Sao Paulo (Brazil)': ['sp_cana', 'sp_cafe'],
 };
 
 // Korean copy for the "not weather" callout. The model artifacts carry the
@@ -480,6 +517,13 @@ const renderBrazilYieldForecast = async (regionName) => {
         // present that as a weather forecast.
         const skilled = d.skill.weather_driven;
         const color = d.weather_effect_pct < 0 ? '#fca5a5' : '#4ade80';
+        // How much of the yield-deciding window has actually been observed.
+        // Without this a mid-season projection off climatology looks identical
+        // to a settled post-harvest number.
+        const obsPct = d.provenance.critical_window_observed === null
+            || d.provenance.critical_window_observed === undefined
+            ? null
+            : Math.round(d.provenance.critical_window_observed * 100);
 
         let badge;
         if (skilled) {
@@ -532,6 +576,19 @@ const renderBrazilYieldForecast = async (regionName) => {
                 <strong style="color:#fbbf24;">날씨가 아닌 요인</strong><br>${
                     BRAZIL_NON_WEATHER_KO[key] || d.provenance.non_weather_drivers}
             </div>` : ''}
+            ${obsPct === null ? '' : `
+            <div style="margin-top:10px; font-size:11px; color:#94a3b8;">
+                <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
+                    <span>${d.provenance.season_complete
+                        ? '수확기 종료 · 생육기 기상 확정'
+                        : '생육 진행 중 · 결정 구간 관측률'}</span>
+                    <span style="color:#cbd5e1;">${obsPct}%</span>
+                </div>
+                <div style="height:4px; background:rgba(255,255,255,0.08); border-radius:2px;">
+                    <div style="height:100%; width:${obsPct}%; border-radius:2px;
+                                background:${d.provenance.season_complete ? '#4ade80' : '#60a5fa'};"></div>
+                </div>
+            </div>`}
             <div style="margin-top:8px; padding:8px; background:rgba(0,0,0,0.2); border-radius:6px;
                         font-size:11px; color:#94a3b8;">
                 기상 관측 ${d.provenance.weather_through}까지 · 방법론
@@ -582,6 +639,194 @@ const renderBrazilYieldForecast = async (regionName) => {
     countryStatsPanelEl.classList.remove('hidden');
     return true;
 };
+
+// Level 1 -- the world, with modelled countries picked out.
+// Countries without a fitted model are drawn but not clickable, so the map
+// never suggests a forecast exists where it does not.
+const showClimateWorld = () => {
+    climateLevel = 'world';
+    climateCountry = null;
+
+    const modelled = new Set(Object.values(CLIMATE_COUNTRIES).map(c => c.iso));
+
+    currentViewTitle.textContent = '기후·작황 예측';
+    currentViewDesc.textContent = '모델이 있는 국가를 클릭하면 해당 국가의 산지로 들어갑니다';
+
+    deckgl.setProps({
+        views: [new MapView({ id: 'mapview' })],
+        viewState: { longitude: 0, latitude: 20, zoom: 1.5, pitch: 0, bearing: 0 },
+        layers: [
+            new GeoJsonLayer({
+                id: 'climate-countries',
+                data: 'https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json',
+                stroked: true,
+                filled: true,
+                lineWidthMinPixels: 1,
+                getFillColor: f => modelled.has(f.id)
+                    ? [56, 189, 248, 90]      // modelled: highlighted
+                    : [30, 41, 59, 40],       // everything else: context only
+                getLineColor: f => modelled.has(f.id)
+                    ? [56, 189, 248, 220]
+                    : [255, 255, 255, 45],
+                pickable: true,
+                autoHighlight: true,
+                highlightColor: [56, 189, 248, 160],
+                onClick: info => {
+                    const entry = Object.entries(CLIMATE_COUNTRIES)
+                        .find(([, c]) => c.iso === info.object?.id);
+                    if (entry) showClimateCountry(entry[0]);
+                },
+            }),
+        ],
+    });
+
+    renderClimateWorldPanel(modelled);
+};
+
+const renderClimateWorldPanel = () => {
+    forecastCountryTitle.textContent = '기후·작황 예측';
+    forecastContentEl.innerHTML = `
+        <div class="forecast-box">
+            <div style="font-size:12px; color:#cbd5e1; line-height:1.7;">
+                지도에서 <strong style="color:#38bdf8;">파란색으로 표시된 국가</strong>를
+                클릭하면 해당 국가의 주요 산지와 올해 작황 전망을 볼 수 있습니다.
+            </div>
+            <div style="margin-top:14px;">
+                ${Object.entries(CLIMATE_COUNTRIES).map(([k, c]) => `
+                <div class="forecast-item" style="display:flex; justify-content:space-between; cursor:pointer;"
+                     onclick="showClimateCountry('${k}')">
+                    <span>${c.label}</span>
+                    <span style="color:#94a3b8; font-size:12px;">${c.regions.length}개 산지 →</span>
+                </div>`).join('')}
+            </div>
+        </div>
+        <p style="font-size:11px; color:#64748b; text-align:right; margin-top:8px;">
+            모델이 검증된 국가만 표시됩니다
+        </p>`;
+    macroPanelEl.classList.add('hidden');
+    countryStatsPanelEl.classList.add('hidden');
+};
+
+// Level 2 -- one country, with its producing regions marked.
+// The world layer stays underneath so the country is seen in context rather
+// than floating on an empty canvas.
+const showClimateCountry = async (countryName) => {
+    const cfg = CLIMATE_COUNTRIES[countryName];
+    if (!cfg) return;
+
+    climateLevel = 'country';
+    climateCountry = countryName;
+
+    const points = cfg.regions.map(r => ({
+        ...r,
+        coordinates: r.coordinates || window.CountriesData[r.name],
+    })).filter(r => r.coordinates);
+
+    currentViewTitle.textContent = `${cfg.label} 작황 예측`;
+    currentViewDesc.textContent = '산지를 클릭하면 전년 실적·올해 전망·모델 성능을 확인할 수 있습니다';
+
+    deckgl.setProps({
+        views: [new MapView({ id: 'mapview' })],
+        viewState: { ...cfg.view, pitch: 0, bearing: 0 },
+        layers: [
+            new GeoJsonLayer({
+                id: 'climate-countries',
+                data: 'https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json',
+                stroked: true,
+                filled: true,
+                lineWidthMinPixels: 1,
+                // The selected country is lifted out of the background rather
+                // than the rest being hidden, so it reads as "zoomed in on the
+                // world map", not "a different map".
+                getFillColor: f => f.id === cfg.iso ? [56, 189, 248, 55] : [30, 41, 59, 70],
+                getLineColor: f => f.id === cfg.iso ? [56, 189, 248, 230] : [255, 255, 255, 35],
+                pickable: false,
+            }),
+            new ScatterplotLayer({
+                id: 'climate-regions',
+                data: points,
+                pickable: true,
+                stroked: true,
+                filled: true,
+                opacity: 0.9,
+                radiusMinPixels: 9,
+                radiusMaxPixels: 26,
+                lineWidthMinPixels: 2,
+                getPosition: d => d.coordinates,
+                getRadius: 90000,
+                getFillColor: [250, 204, 21, 220],
+                getLineColor: [255, 255, 255],
+                autoHighlight: true,
+                highlightColor: [255, 255, 255, 220],
+                onClick: info => {
+                    if (info.object) updateForecastPanel(info.object.name);
+                },
+            }),
+        ],
+    });
+
+    renderCountryPanel(cfg);
+};
+window.showClimateCountry = showClimateCountry;
+
+const renderCountryPanel = async (cfg) => {
+    forecastCountryTitle.textContent = `${cfg.label} 주요 산지`;
+
+    let rows = '';
+    if (cfg.summaryKey === 'us') {
+        const fc = await window.loadYieldForecast?.();
+        if (fc && fc.crops) {
+            rows = Object.entries(fc.crops).map(([crop, d]) => {
+                const nm = { corn: '옥수수', soybeans: '대두' }[crop] || crop;
+                const diff = d.point - d.last_actual.yield;
+                return `<div class="forecast-item" style="display:flex; justify-content:space-between;">
+                    <span>${nm}</span>
+                    <span><strong style="color:#e2e8f0;">${d.point}</strong>
+                    <span style="color:${diff >= 0 ? '#4ade80' : '#fca5a5'}; font-size:12px;">
+                    ${diff >= 0 ? '+' : ''}${diff.toFixed(1)}</span>
+                    <span style="color:#64748b; font-size:11px;"> ${d.unit}</span></span>
+                </div>`;
+            }).join('');
+        }
+    } else if (cfg.summaryKey === 'brazil') {
+        const fc = await window.loadBrazilYieldForecast?.();
+        if (fc && fc.regions) {
+            rows = Object.values(fc.regions).map(d => {
+                const diff = d.point - d.last_actual.yield;
+                return `<div class="forecast-item" style="display:flex; justify-content:space-between;">
+                    <span style="font-size:12px;">${d.label}</span>
+                    <span><strong style="color:#e2e8f0;">${Math.round(d.point).toLocaleString()}</strong>
+                    <span style="color:${diff >= 0 ? '#4ade80' : '#fca5a5'}; font-size:12px;">
+                    ${diff >= 0 ? '+' : ''}${Math.round(diff)}</span></span>
+                </div>`;
+            }).join('');
+        }
+    }
+
+    forecastContentEl.innerHTML = `
+        <div class="forecast-box">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                <span style="font-size:12px; color:#94a3b8;">국가 전체 요약</span>
+                <span style="font-size:11px; color:#38bdf8; cursor:pointer;"
+                      onclick="showClimateWorld()">← 세계 지도</span>
+            </div>
+            ${rows || '<p class="empty-state">요약 데이터를 불러오지 못했습니다.</p>'}
+        </div>
+        <div style="margin-top:14px;">
+            <div style="font-size:12px; color:#94a3b8; margin-bottom:6px;">산지 목록</div>
+            ${cfg.regions.map(r => `
+            <div class="forecast-item" style="display:flex; justify-content:space-between; cursor:pointer;"
+                 onclick="updateForecastPanel('${r.name}')">
+                <span style="font-size:12px;">${r.label}</span>
+                <span style="color:#94a3b8; font-size:11px;">상세 →</span>
+            </div>`).join('')}
+        </div>
+        <p style="font-size:11px; color:#64748b; text-align:right; margin-top:10px;">
+            노란 점을 클릭해도 동일합니다
+        </p>`;
+    macroPanelEl.classList.add('hidden');
+};
+window.showClimateWorld = showClimateWorld;
 
 const updateForecastPanel = async (regionName) => {
     if (await renderYieldForecast(regionName)) return;
@@ -897,36 +1142,7 @@ const setView = (target) => {
         totalVolumeEl.textContent = "US Corn Belt Model";
         topExporterEl.textContent = "Trend + Weather Anomaly";
         
-        updateForecastPanel('Global');
-        
-        // Render a generic map highlighting key agricultural regions
-        const climateArcs = []; // No lines for climate view
-        deckgl.setProps({ layers: [
-            new ScatterplotLayer({
-                id: `scatter-layer-climate`,
-                data: [
-                    {name: 'Mato Grosso (Brazil)', coordinates: window.CountriesData['Mato Grosso (Brazil)'], radius: 100000},
-                    {name: 'Rio Grande do Sul (Brazil)', coordinates: window.CountriesData['Rio Grande do Sul (Brazil)'], radius: 100000},
-                    {name: 'US Corn Belt', coordinates: [-91.0, 41.5], radius: 160000},
-                    {name: 'Iowa (USA)', coordinates: window.CountriesData['Iowa (USA)'], radius: 100000},
-                    {name: 'Pampas (Argentina)', coordinates: window.CountriesData['Pampas (Argentina)'], radius: 100000},
-                    {name: 'Sumatra (Indonesia)', coordinates: window.CountriesData['Sumatra (Indonesia)'], radius: 100000}
-                ],
-                pickable: true,
-                opacity: 0.8,
-                stroked: true,
-                filled: true,
-                radiusScale: 4,
-                radiusMinPixels: 10,
-                radiusMaxPixels: 40,
-                lineWidthMinPixels: 2,
-                getPosition: d => d.coordinates,
-                getRadius: d => d.radius,
-                getFillColor: [74, 222, 128, 200], // Green
-                getLineColor: [255, 255, 255],
-                onClick: handleNodeClick
-            })
-        ]});
+        showClimateWorld();
 
     } else if (window.TradeData[target]) {
         // Render a supported commodity map
@@ -1189,6 +1405,10 @@ document.getElementById('historical-date').addEventListener('change', (e) => {
         
     }, 500); // 500ms mock network delay
 });
+
+// Panels render clickable region lists, so these need to be reachable
+// from inline handlers.
+window.updateForecastPanel = updateForecastPanel;
 
 // Initialize home view
 setView('home');

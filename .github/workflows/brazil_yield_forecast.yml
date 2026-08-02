@@ -33,10 +33,35 @@ jobs:
         run: |
           python -m brazil.run_forecast
 
+      # IBGE publishes PAM once a year. When a new season lands, the training
+      # tables and models have to be rebuilt or the pipeline keeps forecasting
+      # against a record that stopped growing. Cheap to detect, so check every
+      # run rather than relying on someone remembering in September.
+      - name: Rebuild models if IBGE published a new season
+        working-directory: "New for anti/scripts/yield_model"
+        run: |
+          set -e
+          LATEST_TRAINED=$(python -c "import pandas as pd; d=pd.read_csv('brazil/training/parana_soja.csv').dropna(subset=['yield_kg_ha']); print(int(d.year.max()))")
+          LATEST_PUBLISHED=$(python -c "
+          import brazil.sidra as s
+          print(int(s.state_yield('soja','PR').year.max()))
+          ")
+          echo "trained through $LATEST_TRAINED, IBGE published through $LATEST_PUBLISHED"
+          if [ "$LATEST_PUBLISHED" -gt "$LATEST_TRAINED" ]; then
+            echo "new season published -- rebuilding training tables and models"
+            python -m brazil.collect
+            python -m brazil.train
+            python -m brazil.run_forecast
+          else
+            echo "no new season; keeping existing models"
+          fi
+
       - name: Commit and Push Changes
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add "New for anti/public/data/brazil_yield_forecast.json"
+          git add "New for anti/public/data/brazil_yield_forecast.json" \
+                  "New for anti/scripts/yield_model/brazil/training" \
+                  "New for anti/scripts/yield_model/brazil/models"
           git commit -m "chore: weekly Brazil regional yield forecast refresh" || exit 0
           git push
