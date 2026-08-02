@@ -47,14 +47,14 @@ async function warmComtradeCache(env) {
     // Comtrade's rate limiting, and the cron run has no deadline pressure.
     for (const hs of Object.keys(COMTRADE_TTL)) {
         try {
-            const result = await fetchComtrade(env, hs, DEFAULT_M49_CODES, DEFAULT_M49_CODES, COMTRADE_PERIOD);
+            const result = await fetchComtrade(env, hs, DEFAULT_M49_CODES, DEFAULT_M49_CODES, COMTRADE_PERIOD, 'A');
             if (!result.ok) {
                 failed++;
                 console.log(`[warm] ${hs} upstream ${result.status}`);
                 continue;
             }
             await env.API_CACHE.put(
-                comtradeCacheKey(hs, DEFAULT_M49_CODES, DEFAULT_M49_CODES, COMTRADE_PERIOD),
+                comtradeCacheKey(hs, DEFAULT_M49_CODES, DEFAULT_M49_CODES, COMTRADE_PERIOD, 'A'),
                 JSON.stringify(result.body),
                 { expirationTtl: COMTRADE_TTL[hs] }
             );
@@ -175,11 +175,11 @@ function shortHash(str) {
     return h.toString(36);
 }
 
-function comtradeCacheKey(hs, reporters, partners, period) {
+function comtradeCacheKey(hs, reporters, partners, period, freq) {
     const scope = (reporters === DEFAULT_M49_CODES && partners === DEFAULT_M49_CODES)
         ? 'default'
         : shortHash(`${reporters}|${partners}`);
-    return `comtrade:${hs}:${period}:${scope}`;
+    return `comtrade:${freq}:${hs}:${period}:${scope}`;
 }
 
 // Comtrade returns 47 fields per row; the map only ever reads these five.
@@ -187,7 +187,9 @@ function comtradeCacheKey(hs, reporters, partners, period) {
 // parse, stringify and hand to KV in one request -- it threw (error 1101) and
 // every trade line vanished. Slimming here cuts the payload to ~10% and keeps
 // the limit far away as the country list grows.
-const COMTRADE_FIELDS = ["reporterCode", "partnerCode", "flowCode", "primaryValue", "netWgt"];
+// "period" is carried so monthly rows stay distinguishable (e.g. 202403);
+// on annual queries it is just the year and costs almost nothing.
+const COMTRADE_FIELDS = ["reporterCode", "partnerCode", "flowCode", "primaryValue", "netWgt", "period"];
 
 function slimComtradeBody(body) {
     const rows = Array.isArray(body?.data) ? body.data : [];
@@ -208,9 +210,10 @@ function slimComtradeBody(body) {
 // the previous chunk's full response be collected before the next arrives.
 const REPORTER_CHUNK_SIZE = 16;
 
-async function fetchComtradeChunk(env, hs, reporters, partners, period) {
+async function fetchComtradeChunk(env, hs, reporters, partners, period, freq) {
+    // freq A = annual (period "2023"), M = monthly (period "202403").
     // X = Exports, M = Imports (mirror data, so non-reporting countries still appear)
-    const comtradeUrl = `https://comtradeapi.un.org/data/v1/get/C/A/HS?reporterCode=${reporters}&period=${period}&partnerCode=${partners}&cmdCode=${hs}&flowCode=X,M`;
+    const comtradeUrl = `https://comtradeapi.un.org/data/v1/get/C/${freq}/HS?reporterCode=${reporters}&period=${period}&partnerCode=${partners}&cmdCode=${hs}&flowCode=X,M`;
 
     const res = await fetch(comtradeUrl, {
         headers: {
@@ -226,14 +229,14 @@ async function fetchComtradeChunk(env, hs, reporters, partners, period) {
     return { ok: true, rows: slimComtradeBody(await res.json()).data };
 }
 
-async function fetchComtrade(env, hs, reporters, partners, period) {
+async function fetchComtrade(env, hs, reporters, partners, period, freq) {
     const codes = reporters.split(',').filter(Boolean);
     const merged = [];
 
     try {
         for (let i = 0; i < codes.length; i += REPORTER_CHUNK_SIZE) {
             const chunk = codes.slice(i, i + REPORTER_CHUNK_SIZE).join(',');
-            const result = await fetchComtradeChunk(env, hs, chunk, partners, period);
+            const result = await fetchComtradeChunk(env, hs, chunk, partners, period, freq);
 
             // One bad chunk shouldn't discard the countries that did come back.
             if (!result.ok) {
@@ -258,14 +261,16 @@ async function handleComtrade(request, env, ctx) {
     const hs = url.searchParams.get('hs') || '2709';
     const reporters = url.searchParams.get('reporters') || DEFAULT_M49_CODES;
     const partners = url.searchParams.get('partners') || DEFAULT_M49_CODES;
-    const period = url.searchParams.get('period') || COMTRADE_PERIOD;
+    // freq=M returns monthly rows (period must then look like "202403").
+    const freq = url.searchParams.get('freq') === 'M' ? 'M' : 'A';
+    const period = url.searchParams.get('period') || (freq === 'M' ? '202403' : COMTRADE_PERIOD);
 
     if (!env.COMTRADE_API_KEY) return missingKey('COMTRADE_API_KEY');
 
     const cacheTtl = COMTRADE_TTL[hs] || 604800; // Default: weekly
 
-    return kvCachedJson(env, comtradeCacheKey(hs, reporters, partners, period), cacheTtl,
-        () => fetchComtrade(env, hs, reporters, partners, period));
+    return kvCachedJson(env, comtradeCacheKey(hs, reporters, partners, period, freq), cacheTtl,
+        () => fetchComtrade(env, hs, reporters, partners, period, freq));
 }
 
 async function handleUsdaNass(request, env, ctx) {
