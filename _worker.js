@@ -39,7 +39,7 @@ function missingKey(name) {
     );
 }
 
-// Shared response cache backed by the AGRI_DATA_KV namespace.
+// Shared response cache backed by the API_CACHE KV namespace.
 //
 // A Cache-Control header on a Response the Worker returns only tells the
 // *visitor's browser* it may reuse that response -- Cloudflare does not
@@ -53,7 +53,7 @@ function missingKey(name) {
 // `doFetch` must resolve to { ok, status, statusText, body }, where `body` is
 // the already-parsed JSON to cache.
 async function kvCachedJson(env, cacheKey, ttlSeconds, doFetch) {
-    const kv = env.AGRI_DATA_KV;
+    const kv = env.API_CACHE;
 
     if (kv) {
         const cached = await kv.get(cacheKey);

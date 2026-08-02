@@ -16,13 +16,15 @@
     "binding": "ASSETS"
   },
   // Shared response cache for the /api/* proxies. Without this binding
-  // env.AGRI_DATA_KV is undefined and every visitor triggers their own
-  // upstream API call -- which blows through per-IP quotas like USDA FAS's
-  // 50 requests/day, since all visitors share this Worker's egress IP.
+  // env.API_CACHE is undefined and every visitor triggers their own upstream
+  // API call -- which blows through per-IP quotas like USDA FAS's 50
+  // requests/day, since all visitors share this Worker's egress IP.
+  // Kept separate from the brazil_agri namespace, which the nightly Python
+  // bot owns.
   "kv_namespaces": [
     {
-      "binding": "AGRI_DATA_KV",
-      "id": "8f828278cb654cf4bb709f9fcf7bbe1e"
+      "binding": "API_CACHE",
+      "id": "35315eb44cfc4cd480c25794c0623c04"
     }
   ]
 }
