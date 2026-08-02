@@ -435,11 +435,14 @@ const CLIMATE_COUNTRIES = {
         iso: 'BRA',
         view: { longitude: -52.0, latitude: -13.0, zoom: 3.6 },
         summaryKey: 'brazil',
+        // Coordinates are stated here rather than looked up in CountriesData:
+        // that map is built for trade routes and is missing several of these
+        // producing regions, which silently dropped their markers.
         regions: [
-            { name: 'Mato Grosso (Brazil)', label: '마투그로수 (대두·옥수수)' },
-            { name: 'Rio Grande do Sul (Brazil)', label: '파라나·히우그란지두술' },
-            { name: 'MATOPIBA (Brazil)', label: 'MATOPIBA (대두·면화)' },
-            { name: 'Sao Paulo (Brazil)', label: '상파울루 (사탕수수·커피)' },
+            { name: 'Mato Grosso (Brazil)', label: '마투그로수 (대두·옥수수)', coordinates: [-55.4, -12.6] },
+            { name: 'Rio Grande do Sul (Brazil)', label: '파라나·히우그란지두술', coordinates: [-52.3, -27.0] },
+            { name: 'MATOPIBA (Brazil)', label: 'MATOPIBA (대두·면화)', coordinates: [-45.5, -10.5] },
+            { name: 'Sao Paulo (Brazil)', label: '상파울루 (사탕수수·커피)', coordinates: [-47.8, -21.4] },
         ],
     },
 };
