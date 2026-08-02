@@ -97,9 +97,15 @@ async function kvCachedJson(env, cacheKey, ttlSeconds, doFetch) {
     const kv = env.API_CACHE;
 
     if (kv) {
-        const cached = await kv.get(cacheKey);
-        if (cached !== null) {
-            return new Response(cached, { headers: { ...JSON_HEADERS, "X-Cache": "HIT" } });
+        // A cache read must never be able to fail the request -- an over-long
+        // key or a KV hiccup should degrade to a live fetch, not a 500.
+        try {
+            const cached = await kv.get(cacheKey);
+            if (cached !== null) {
+                return new Response(cached, { headers: { ...JSON_HEADERS, "X-Cache": "HIT" } });
+            }
+        } catch (err) {
+            console.log(`[cache] get failed for ${cacheKey}: ${err.message}`);
         }
     }
 
@@ -153,8 +159,27 @@ const COMTRADE_TTL = {
 
 const COMTRADE_PERIOD = "2023";
 
+// KV keys are capped at 512 bytes. Embedding the country lists verbatim put a
+// 64-country key at 518 bytes, so kv.get() threw before any fetch ran -- the
+// request died as Cloudflare error 1101 in ~250ms and the map lost every line.
+// (62 countries came to 502 bytes and worked, which is why the break looked
+// like a country-count limit.) Hash any non-default list instead so the key
+// stays short no matter how long the list grows.
+function shortHash(str) {
+    // FNV-1a, 32-bit -- short, stable, and enough to separate cache entries.
+    let h = 0x811c9dc5;
+    for (let i = 0; i < str.length; i++) {
+        h ^= str.charCodeAt(i);
+        h = Math.imul(h, 0x01000193) >>> 0;
+    }
+    return h.toString(36);
+}
+
 function comtradeCacheKey(hs, reporters, partners, period) {
-    return `comtrade:${hs}:${reporters}:${partners}:${period}`;
+    const scope = (reporters === DEFAULT_M49_CODES && partners === DEFAULT_M49_CODES)
+        ? 'default'
+        : shortHash(`${reporters}|${partners}`);
+    return `comtrade:${hs}:${period}:${scope}`;
 }
 
 // Comtrade returns 47 fields per row; the map only ever reads these five.
