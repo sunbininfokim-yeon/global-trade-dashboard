@@ -418,54 +418,19 @@
                 }
             });
 
-            // === HYBRID OVERRIDE: Merge with live high-res data if available ===
-            try {
-                const liveRes = await fetch('/public/data/live_override.json');
-                if (liveRes.ok) {
-                    const liveData = await liveRes.json();
-                    
-                    // 1. Override Brazil Soybean Exports
-                    if (commodityKey === 'soybeans' && liveData.comexstat && liveData.comexstat.brazil_soybean_exports_2024) {
-                        liveData.comexstat.brazil_soybean_exports_2024.forEach(row => {
-                            // Basic mapping. NO_PAIS should match our COUNTRIES keys
-                            let targetCountry = row.NO_PAIS;
-                            // Add some normalizations if needed (e.g. "China" is usually matching)
-                            
-                            if (COUNTRIES[targetCountry]) {
-                                const arcKey = `Brazil-${targetCountry}`;
-                                const overrideVolume = Math.round(row.VL_FOB / 1000000); // M USD
-                                const overrideNetWeight = Math.round(row.KG_LIQUIDO / 10000000) / 100; // M Tonnes
-
-                                if (arcMap[arcKey]) {
-                                    arcMap[arcKey].volume = overrideVolume;
-                                    arcMap[arcKey].netWeightMt = overrideNetWeight;
-                                    arcMap[arcKey].dataSource = "Brazil Comex Stat (Live Monthly)";
-                                    // Highlight the line to show it's live data
-                                    arcMap[arcKey].isLiveData = true;
-                                } else {
-                                    arcMap[arcKey] = {
-                                        sourceName: "Brazil",
-                                        targetName: targetCountry,
-                                        sourcePosition: COUNTRIES["Brazil"],
-                                        targetPosition: COUNTRIES[targetCountry],
-                                        volume: overrideVolume,
-                                        netWeightMt: overrideNetWeight,
-                                        percentage: 0,
-                                        typeName: config.hsCode,
-                                        sourceColor: config.colorScheme.source,
-                                        targetColor: config.colorScheme.target,
-                                        usdValue: row.VL_FOB,
-                                        dataSource: "Brazil Comex Stat (Live Monthly)",
-                                        isLiveData: true
-                                    };
-                                }
-                            }
-                        });
-                    }
-                }
-            } catch (err) {
-                console.warn("[Comtrade] Could not load live_override.json (maybe not generated yet)", err);
-            }
+            // No Comex Stat override here any more.
+            //
+            // This used to try to rewrite Brazil's arcs from live_override.json,
+            // reading row.NO_PAIS / VL_FOB / KG_LIQUIDO. agrobr never returns
+            // those fields -- its Comex Stat export feed is keyed by Brazilian
+            // state of origin (uf), with no destination country at all, so
+            // COUNTRIES[undefined] was falsy and all 222 rows were skipped every
+            // time. The block never once had an effect, but it did label arcs
+            // "Brazil Comex Stat (Live Monthly)" as if it had.
+            //
+            // Destination-level Brazil trade already comes from Comtrade above.
+            // The Comex Stat feed is genuinely useful as a monthly national
+            // total instead -- see window.loadBrazilMonthlyExports().
 
             const arcs = Object.values(arcMap);
 
@@ -487,6 +452,49 @@
         } catch (e) {
             console.warn(`[Comtrade] ❌ Failed to fetch ${commodityKey}:`, e.message);
             return [];
+        }
+    };
+
+    // === Brazil monthly soybean exports (Comex Stat, via live_override.json) ===
+    // The feed is one row per Brazilian state per month, with no destination
+    // country -- so it cannot produce trade routes, only a national total.
+    // Summing the states gives a monthly export series that lines up with
+    // reality (2024: ~98.8 Mt / ~$42.9B).
+    let brazilMonthlyCache = null;
+    window.loadBrazilMonthlyExports = async function() {
+        if (brazilMonthlyCache) return brazilMonthlyCache;
+
+        try {
+            const res = await fetch('/public/data/live_override.json');
+            if (!res.ok) return null;
+
+            const live = await res.json();
+            const rows = live?.comexstat?.brazil_soybean_exports_2024;
+            if (!Array.isArray(rows) || rows.length === 0) return null;
+
+            const byMonth = {};
+            for (const row of rows) {
+                const m = row.mes;
+                if (!byMonth[m]) byMonth[m] = { month: m, volumeTon: 0, valueUsd: 0 };
+                byMonth[m].volumeTon += row.volume_ton || 0;
+                byMonth[m].valueUsd += row.valor_fob_usd || 0;
+            }
+
+            const months = Object.values(byMonth).sort((a, b) => a.month - b.month);
+            brazilMonthlyCache = {
+                year: rows[0].ano,
+                months,
+                totalVolumeTon: months.reduce((s, m) => s + m.volumeTon, 0),
+                totalValueUsd: months.reduce((s, m) => s + m.valueUsd, 0),
+                dataSource: "Brazil Comex Stat (monthly, national total)"
+            };
+            console.log(`[ComexStat] Brazil ${brazilMonthlyCache.year}: ` +
+                `${(brazilMonthlyCache.totalVolumeTon / 1e6).toFixed(1)} Mt / ` +
+                `$${(brazilMonthlyCache.totalValueUsd / 1e9).toFixed(1)}B across ${months.length} months`);
+            return brazilMonthlyCache;
+        } catch (err) {
+            console.warn("[ComexStat] Could not load live_override.json", err);
+            return null;
         }
     };
 

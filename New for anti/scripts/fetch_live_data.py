@@ -28,20 +28,38 @@ async def main():
         print("Error fetching USDA data:", e)
 
     # 2. Fetch Comex Stat Data for Brazil Exports (Soybeans)
+    #
+    # NOTE: this feed is broken down by Brazilian state of origin (uf), NOT by
+    # destination country -- agrobr's exportacao() takes no destination
+    # argument. It therefore cannot produce trade routes; destination-level
+    # Brazil trade comes from UN Comtrade. What it is good for is a monthly
+    # national export total, so emit that aggregate alongside the raw rows.
     try:
         print("Fetching Comex Stat Export data for Brazil (Soybeans, 2024)...")
-        # 'soja' is the commodity.
         df_comex = await comex_api.exportacao("soja", ano=2024, agregacao="mensal")
-        
-        # Aggregate the data by destination country (CO_PAIS or NO_PAIS)
-        # In Comex Stat, usually the columns include NO_PAIS (Country Name), SG_UF_NCM (State), VL_FOB (Value), KG_LIQUIDO (Weight)
+
         if not df_comex.empty:
-            # Group by Country and sum the values
-            # The exact column names depend on the parsed CSV, usually 'CO_PAIS', 'VL_FOB', 'KG_LIQUIDO'
-            # Let's save the raw grouped data
             comex_records = df_comex.to_dict(orient="records")
             output_data["comexstat"]["brazil_soybean_exports_2024"] = comex_records
             print(f"Successfully fetched {len(comex_records)} Comex Stat records.")
+
+            monthly = (
+                df_comex.groupby("mes", as_index=False)[["volume_ton", "valor_fob_usd"]]
+                .sum()
+                .sort_values("mes")
+            )
+            output_data["comexstat"]["brazil_soybean_monthly_2024"] = {
+                "year": 2024,
+                "months": monthly.to_dict(orient="records"),
+                "total_volume_ton": float(monthly["volume_ton"].sum()),
+                "total_value_usd": float(monthly["valor_fob_usd"].sum()),
+                "data_source": "Brazil Comex Stat (monthly, national total)",
+            }
+            print(
+                "Aggregated to national monthly totals: "
+                f"{monthly['volume_ton'].sum() / 1e6:.1f} Mt / "
+                f"${monthly['valor_fob_usd'].sum() / 1e9:.1f}B"
+            )
     except Exception as e:
         print("Error fetching Comex Stat data:", e)
 
