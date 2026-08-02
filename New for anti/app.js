@@ -327,6 +327,46 @@ const US_REGION_KEYS = {
     'US Northern Plains': 'northern_plains',
 };
 
+// Why each region's model is shaped the way it is, and which finding drove it.
+// Written per region rather than once for the country: the three share a
+// skeleton (trend + weather anomaly + ridge) but differ in the physics that
+// actually moves yield, and a single blurb would hide that.
+const US_REGION_METHOD = {
+    corn_belt: {
+        headline: '추세수확량 + 기상편차 회귀',
+        refs: 'Thompson (1969, 1986) · Schlenker & Roberts (2009) · Lobell / Urban / Roberts',
+        notes: [
+            '추세가 품종·비료·경영 개선을 흡수하고, 기상은 추세로부터의 편차만 설명합니다 (FAO 작황예측 리뷰).',
+            '고온은 일수 카운트가 아니라 임계 초과분 적산(EDD)으로 넣습니다 — 손상이 비선형이기 때문입니다 (옥수수 −8.2%/°C, 대두 −5.7%/°C).',
+            'VPD로 고온·건조 복합 스트레스를, 파종전 강수(9~6월)로 토양수분 충전을 봅니다.',
+        ],
+        finding: '데이터가 뽑아낸 상위 변수(7월 기온 r=−0.635, 7월 EDD −0.632, VPD −0.536)가 '
+               + '40년 전 논문이 지목한 시기·변수와 그대로 일치했습니다.',
+    },
+    great_plains: {
+        headline: '추세수확량 + 기상편차 회귀 (겨울밀)',
+        refs: 'Kansas State (hot-dry-windy) · 대평원 겨울밀 모델링 가이드',
+        notes: [
+            '가을 파종 → 월동 → 초여름 수확. 생육창이 해를 넘기므로 전년 9월부터 봅니다.',
+            '반건조 지대라 물이 지배합니다: 봄철 토양수분(r=+0.732), 겨울 토양수분(+0.654), 봄 강수(+0.565).',
+        ],
+        finding: '참고 가이드가 강조한 춘화처리·동해·서리 패널티는 신호가 없었습니다 '
+               + '(r=+0.020 / −0.104 / −0.071). 서리 최다 3개년 중 2019년은 오히려 증수라 방향도 '
+               + '엇갈립니다. 공식대로 구현했으나 이 지역·이 기간에서는 지배 요인이 아니었습니다.',
+    },
+    northern_plains: {
+        headline: '추세수확량 + 기상편차 회귀 (봄밀, 20년 이동창)',
+        refs: 'Lanning et al. (2010), Crop Science',
+        notes: [
+            '봄 파종 → 늦여름 수확. 생육창이 짧아 개화기가 한여름 폭염과 겹칩니다.',
+            '밀은 옥수수보다 고온에 취약해 EDD 임계를 28°C로 낮춰 잡았습니다.',
+        ],
+        finding: '고정 계수로는 추세만 쓰는 것보다 나빴습니다(−1.0%). 봄밀이 조기 파종·조기출수 '
+               + '품종으로 7월 더위를 회피하도록 적응해와서, "고온→감수" 관계 자체가 약해졌기 '
+               + '때문입니다. 최근 20년만 재적합해 +13.4%로 돌렸습니다 — 다만 여전히 낮습니다.',
+    },
+};
+
 const renderYieldForecast = async (regionName) => {
     const regionKey = US_REGION_KEYS[regionName];
     if (!regionKey) return false;
@@ -335,6 +375,7 @@ const renderYieldForecast = async (regionName) => {
     if (!fc || !fc.regions || !fc.regions[regionKey]) return false;
 
     const region = fc.regions[regionKey];
+    const method = US_REGION_METHOD[regionKey] || US_REGION_METHOD.corn_belt;
     let html = '';
 
     for (const [crop, d] of Object.entries(region.crops)) {
@@ -398,13 +439,26 @@ const renderYieldForecast = async (regionName) => {
                 <span class="forecast-val" style="font-size:11px;">${region.note}</span>
             </div>
             <div class="forecast-good" style="margin-top:16px;">
-                <strong>추세수확량 + 기상편차 통계모델</strong><br>
+                <strong>${method.headline}</strong><br>
                 <span style="font-size:11px; font-weight:400;">
                 기술 추세가 품종·비료·경영 개선을 흡수하고, 기상은 추세로부터의 편차를 설명합니다.
                 </span>
             </div>
         </div>
-        <p style="font-size:11px; color:#94a3b8; text-align:right; margin-bottom:4px;">
+
+        <div style="margin-top:14px; padding:10px; background:rgba(0,0,0,0.2); border-radius:6px;">
+            <div style="font-size:11px; color:#94a3b8; margin-bottom:6px;">모델 설계 근거</div>
+            <div style="font-size:11px; color:#64748b; margin-bottom:8px;">${method.refs}</div>
+            <ul style="margin:0; padding-left:16px; font-size:11px; color:#cbd5e1; line-height:1.7;">
+                ${method.notes.map(n => `<li>${n}</li>`).join('')}
+            </ul>
+            <div style="margin-top:10px; padding-top:8px; border-top:1px dashed rgba(255,255,255,0.1);
+                        font-size:11px; color:#94a3b8; line-height:1.7;">
+                <strong style="color:#cbd5e1;">검증에서 확인된 것</strong><br>${method.finding}
+            </div>
+        </div>
+
+        <p style="font-size:11px; color:#94a3b8; text-align:right; margin-top:10px; margin-bottom:4px;">
             갱신: ${new Date(fc.generated_at).toLocaleString()}
         </p>
         <p style="font-size:11px; color:#64748b; text-align:right;">
@@ -412,8 +466,7 @@ const renderYieldForecast = async (regionName) => {
         </p>`;
 
     countryStatsTitleEl.textContent = region.label_ko;
-    document.getElementById('country-stats-desc').textContent =
-        '추세수확량 + 기상편차 회귀 (Thompson / Schlenker-Roberts / Lobell 방법론)';
+    document.getElementById('country-stats-desc').textContent = method.refs;
     countryStatsContentEl.innerHTML = html;
     macroPanelEl.classList.add('hidden');
     countryStatsPanelEl.classList.remove('hidden');
