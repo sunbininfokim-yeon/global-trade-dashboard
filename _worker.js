@@ -176,28 +176,56 @@ function slimComtradeBody(body) {
     };
 }
 
-async function fetchComtrade(env, hs, reporters, partners, period) {
+// Reporters per upstream request. A single 64-reporter query returns ~2 MB of
+// JSON, and parsing that in one go blew a Worker limit -- the isolate was killed
+// before any catch could run (opaque Cloudflare error 1101), so /api/comtrade
+// 500'd and every trade line vanished. Chunking keeps each parse small and lets
+// the previous chunk's full response be collected before the next arrives.
+const REPORTER_CHUNK_SIZE = 16;
+
+async function fetchComtradeChunk(env, hs, reporters, partners, period) {
     // X = Exports, M = Imports (mirror data, so non-reporting countries still appear)
     const comtradeUrl = `https://comtradeapi.un.org/data/v1/get/C/A/HS?reporterCode=${reporters}&period=${period}&partnerCode=${partners}&cmdCode=${hs}&flowCode=X,M`;
 
-    try {
-        const comtradeRes = await fetch(comtradeUrl, {
-            headers: {
-                "Ocp-Apim-Subscription-Key": env.COMTRADE_API_KEY,
-                "Accept": "application/json"
-            }
-        });
-
-        if (!comtradeRes.ok) {
-            return { ok: false, status: comtradeRes.status, statusText: comtradeRes.statusText };
+    const res = await fetch(comtradeUrl, {
+        headers: {
+            "Ocp-Apim-Subscription-Key": env.COMTRADE_API_KEY,
+            "Accept": "application/json"
         }
-        return { ok: true, body: slimComtradeBody(await comtradeRes.json()) };
-    } catch (err) {
-        // A throw here (bad JSON, upstream timeout, oversized payload) must not
-        // escape as an unhandled exception -- that returns Cloudflare's opaque
-        // error 1101 and the page renders an empty map with no explanation.
-        return { ok: false, status: 502, statusText: err.message };
+    });
+
+    if (!res.ok) {
+        return { ok: false, status: res.status, statusText: res.statusText };
     }
+    // Slim immediately so only the five needed fields per row are retained.
+    return { ok: true, rows: slimComtradeBody(await res.json()).data };
+}
+
+async function fetchComtrade(env, hs, reporters, partners, period) {
+    const codes = reporters.split(',').filter(Boolean);
+    const merged = [];
+
+    try {
+        for (let i = 0; i < codes.length; i += REPORTER_CHUNK_SIZE) {
+            const chunk = codes.slice(i, i + REPORTER_CHUNK_SIZE).join(',');
+            const result = await fetchComtradeChunk(env, hs, chunk, partners, period);
+
+            // One bad chunk shouldn't discard the countries that did come back.
+            if (!result.ok) {
+                if (merged.length === 0) return result;
+                console.log(`[comtrade] ${hs} chunk ${i} failed: ${result.status}`);
+                continue;
+            }
+            for (const row of result.rows) merged.push(row);
+        }
+    } catch (err) {
+        // Catchable failures (bad JSON, network) surface as a labelled 502
+        // rather than an opaque 1101 with an empty map behind it.
+        if (merged.length === 0) return { ok: false, status: 502, statusText: err.message };
+        console.log(`[comtrade] ${hs} partial result after error: ${err.message}`);
+    }
+
+    return { ok: true, body: { count: merged.length, data: merged } };
 }
 
 async function handleComtrade(request, env, ctx) {
