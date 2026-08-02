@@ -262,7 +262,12 @@
     };
 
     const M49_MAP = {
-        840: "USA", 156: "China", 76: "Brazil", 32: "Argentina", 643: "Russia", 804: "Ukraine",
+        // UN Comtrade reports US trade under 842 ("USA, PR and USVI"), not the
+        // plain geographic M49 code 840 -- querying 840 returns zero rows for
+        // every commodity and every year, which is why the US was missing from
+        // the map entirely. 840 is kept mapped so any legacy rows still resolve.
+        842: "USA", 840: "USA",
+        156: "China", 76: "Brazil", 32: "Argentina", 643: "Russia", 804: "Ukraine",
         356: "India", 124: "Canada", 36: "Australia", 250: "France", 276: "Germany", 360: "Indonesia",
         458: "Malaysia", 764: "Thailand", 704: "Vietnam", 818: "Egypt", 484: "Mexico", 392: "Japan",
         410: "South Korea", 826: "UK", 380: "Italy", 724: "Spain", 792: "Turkey", 682: "Saudi Arabia",

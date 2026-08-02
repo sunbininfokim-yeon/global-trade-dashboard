@@ -163,10 +163,12 @@ const deckgl = new DeckGL({
         currentViewState = viewState;
         deckgl.setProps({ viewState: currentViewState });
 
-        // 사용자가 지도를 건드리면 잠시 회전 멈춤.
-        // Debounced: this fires once per drag frame, so re-arm a single timer
-        // rather than queueing one per frame.
-        if (interactionState.isDragging || interactionState.isZooming || interactionState.isPanning) {
+        // 드래그로 지구를 직접 잡고 있을 때만 회전 멈춤.
+        // Zooming is deliberately excluded: scrolling to resize the globe should
+        // not stop the spin, and rotationStep preserves whatever zoom the user
+        // lands on. Debounced -- this fires once per interaction frame, so
+        // re-arm a single timer instead of queueing one per frame.
+        if (interactionState.isDragging) {
             stopRotation();
             clearTimeout(resumeRotationTimer);
             resumeRotationTimer = setTimeout(() => {
@@ -547,25 +549,16 @@ const setView = (target) => {
         currentCommodity = 'home';
         togglePanels({ macro: true, left: false });
         
-        // Render map with Globe view and empty layers (or a basic geojson layer for aesthetics)
-        const countriesLayer = new GeoJsonLayer({
-            id: 'countries-layer-home',
-            data: 'https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json',
-            stroked: true,
-            filled: true,
-            lineWidthMinPixels: 1,
-            getFillColor: [15, 23, 42],
-            getLineColor: [56, 189, 248, 80], // Neon blue border
-            pickable: false
-        });
-        
-        // Reset to the framing that keeps the curve gentle rather than ball-like
+        // No GeoJson globe layer here: filled countries with a neon-blue outline
+        // rendered as a distinct blue sphere sitting on top of the carto-dark
+        // basemap, so the home screen showed two overlapping worlds. The
+        // basemap alone already gives the rotating dark map we want.
         currentViewState = { ...currentViewState, zoom: GLOBE_ZOOM, pitch: 0, bearing: 0 };
 
         deckgl.setProps({
             views: [new _GlobeView({ id: 'globe', resolution: 2 })],
             viewState: currentViewState,
-            layers: [countriesLayer]
+            layers: []
         });
 
         // Restart rotation
