@@ -71,7 +71,7 @@ STATES = [
 ]
 
 START_YEAR = 1982      # NASA POWER starts 1981-01-01; need the prior September
-END_YEAR = 2024
+END_YEAR = 2025
 POWER_EPOCH = "19810101"
 
 # Trailing window for the climatology that anomalies are measured against.
