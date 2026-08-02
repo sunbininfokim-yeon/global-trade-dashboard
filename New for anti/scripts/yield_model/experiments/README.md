@@ -10,5 +10,6 @@
 | `pheno_test.py` | 파종지연 / 수분기 정렬 창 | 수분기 창은 명확히 악화. 파종지연은 대두만 개선하나 2012년 의존 |
 | `ndvi_test.py` | MODIS NDVI 추가 | 단독 상관은 최강(r=+0.80)이나 EDD/VPD와 정보 중복 → 악화 |
 | `diagnose.py` | 오차 원인 진단 (학습곡선·과적합·잔차구조) | 옥수수는 기후 한계 도달, 대두는 데이터 부족 |
+| `wheat_nonstationarity.py` | 봄밀 이동창/지수가중, 겨울밀 풍속 | 봄밀 20년 이동창 채택(-1.0%→+13.4%). 지수가중은 열등 |
 
 실행: `USDA_NASS_API_KEY=... python3 experiments/<script>.py`

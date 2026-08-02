@@ -22,6 +22,7 @@ import pandas as pd
 from . import climate as C
 from .collect import (
     END_YEAR,
+    current_season,
     ONI_SUMMER,
     ONI_WINDOW,
     POWER_FILL,
@@ -171,6 +172,21 @@ def predict_one(cfg, year, oni, predicted):
 
     last = history.dropna(subset=["yield_kg_ha"]).iloc[-1]
 
+    # How much of the yield-deciding window has actually happened. A figure
+    # published while the critical months are still ahead is a projection off
+    # climatology, not a read on this season, and the site should say which.
+    observed = total = 0
+    for month, offset in cfg.critical_window:
+        m_start = pd.Timestamp(year=year + offset, month=month, day=1)
+        m_end = m_start + pd.offsets.MonthEnd(0)
+        days = (m_end - m_start).days + 1
+        total += days
+        if coverage >= m_end:
+            observed += days
+        elif coverage >= m_start:
+            observed += (coverage - m_start).days + 1
+    share = (observed / total) if total else None
+
     return {
         "key": cfg.key,
         "label": cfg.label,
@@ -184,9 +200,13 @@ def predict_one(cfg, year, oni, predicted):
         "sigma": sigma,
         "beats_trend": model["beats_trend"],
         "skill_vs_trend": model["recent_skill_vs_trend"],
+        "weather_skill": model.get("weather_skill", model["recent_skill_vs_trend"]),
+        "non_weather_features": model.get("non_weather_features", []),
         "last_actual": {"year": int(last.year), "yield": float(last.yield_kg_ha)},
         "features": {f: float(feats[f]) for f in model["features"]},
         "weather_through": str(coverage.date()),
+        "critical_window_observed": share,
+        "season_complete": bool(share is not None and share >= 0.999),
         "doc": model["doc"],
         "caveat": model["caveat"],
         "non_weather_drivers": model.get("non_weather_drivers", ""),
@@ -196,7 +216,7 @@ def predict_one(cfg, year, oni, predicted):
 
 def main():
     args = [a for a in sys.argv[1:]]
-    year = END_YEAR + 1
+    year = None
     if "--year" in args:
         i = args.index("--year")
         year = int(args[i + 1])
@@ -209,17 +229,19 @@ def main():
     # when SIDRA has not caught up.
     predicted = {}
     results = []
-    for target in (year - 1, year):
+    for offset in (-1, 0):
         for cfg in configs:
+            target = (year or current_season(cfg)) + offset
             r = predict_one(cfg, target, oni, predicted)
             if r and "error" not in r:
                 predicted[target] = r["point"]
-                if target == year:
+                if offset == 0:
                     results.append(r)
-            elif r and target == year:
+            elif r and offset == 0:
                 results.append(r)
 
-    log(f"season {year}  (SIDRA actuals end 2024, so this is unseen)")
+    log(f"season {year or 'per-crop (' + str(current_season()) + ')'}"
+        "  -- beyond the last published SIDRA actual, so genuinely unseen")
     log("")
     for r in sorted(results, key=lambda x: -x.get("skill_vs_trend", -9)):
         if "error" in r:
@@ -234,6 +256,9 @@ def main():
         log(f"  last actual      {r['last_actual']['yield']:,.0f} "
             f"({r['last_actual']['year']})")
         log(f"  weather through  {r['weather_through']}")
+        if r.get("critical_window_observed") is not None:
+            log(f"  critical window  {r['critical_window_observed']:.0%} observed"
+                + ("" if r["season_complete"] else "  <-- season still running"))
         for n in r["notes"]:
             log(f"  note: {n}")
         log("")

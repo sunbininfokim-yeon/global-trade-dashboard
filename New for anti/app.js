@@ -409,8 +409,183 @@ const renderYieldForecast = async (regionName) => {
     return true;
 };
 
+// Which model keys belong to each clickable Brazilian region on the map.
+// One region shows several crops because the models are built per region-crop:
+// Mato Grosso soy and safrinha corn are separate methodologies over the same
+// ground, and the southern states carry three crops on one weather history.
+const BRAZIL_REGION_MODELS = {
+    'Mato Grosso (Brazil)': ['mato_grosso_soja', 'mato_grosso_milho'],
+    'Rio Grande do Sul (Brazil)': ['parana_soja', 'parana_milho', 'parana_trigo'],
+};
+
+// Korean copy for the "not weather" callout. The model artifacts carry the
+// canonical English in provenance.non_weather_drivers; this is the display
+// layer, so the translation lives here rather than being duplicated into the
+// JSON the pipeline writes.
+const BRAZIL_NON_WEATHER_KO = {
+    parana_milho:
+        'SIDRA는 주별 옥수수를 1기작·2기작 합산 단일 수치로 발표합니다. 파라나는 두 작기가 모두 크고 ' +
+        '재배 면적 배분이 대두·옥수수 가격에 따라 해마다 바뀌므로, 이 목표값의 연간 변동 중 일부는 ' +
+        '날씨가 아니라 면적 배분 의사결정입니다.',
+    sp_cana:
+        '사탕수수는 5~7년에 한 번만 갱신하는 ratoon(그루터기) 작물이라, 특정 해의 수확량은 상당 부분 ' +
+        '식재 연차 구성(상파울루 면적 중 1번지기 대 5번지기 비율)에 좌우됩니다. 이는 갱신 투자·품종 ' +
+        '교체·제당공장 경제성이 정하는 값이며 어떤 기상 데이터에도 나타나지 않습니다. ' +
+        '이건 이 모델의 한계가 아니라 학계의 정설입니다 — Dias & Sentelhas(2017)가 표준 시뮬레이터 ' +
+        '3종(FAO-AZM·DSSAT/CANEGRO·APSIM)을 브라질 상업 포장에 적용했을 때 MAE 29 t/ha 초과, ' +
+        'R² 0.54 미만이었고, 원인을 "경영을 반영하는 계수의 부재"로 지목했습니다. 그루터기 감퇴 ' +
+        '계수(kdec)를 넣자 MAE 13~15 t/ha, R² 0.58~0.72로 개선됐습니다. 기후만으로는 누구도 이 ' +
+        '작물을 예측하지 못합니다.',
+    sp_cafe:
+        '해걸이(격년결실)는 기상이 아니라 생리 현상입니다. 많이 열린 해에 나무가 소진되면 이듬해는 ' +
+        '날씨와 무관하게 적게 열립니다. lag1·lag2가 이 주기를 담고 있고 이 둘이 모델의 최강 피처이므로, ' +
+        '이 모델 성능의 상당 부분은 기후가 아니라 생물학적 기억입니다.',
+    matopiba_algodao:
+        '1999→2000년의 도약은 세하두 이전·신품종·규모화·경영의 생산 체계 전환이지 기상 호조가 ' +
+        '아닙니다(관개가 아닙니다 — 브라질 면화 재배면적의 약 92%가 천수답이며, 천수답 섬유 단수 ' +
+        '세계 1위입니다). 현대 체계 내부의 최대 비기상 요인은 목화바구미로, 최대 70%까지 감수를 ' +
+        '일으키지만 그 압력은 파종기 조율과 방제 프로그램에 달려 있지 기후에 달려 있지 않습니다. ' +
+        'MODIS NDVI가 면화 단수 모델에서 추세선 대비 거의 기여하지 못한다는 연구(Johnson, ORNL)도 ' +
+        '있어, 위성 식생지수로 이 공백을 메우기는 어렵습니다.',
+};
+
+// Renders the Brazil regional yield forecasts.
+//
+// Deliberately shows the models that failed validation alongside the ones that
+// passed, because hiding them would leave the reader assuming every number is
+// weather-driven. Where `beats_trend` is false the figure is a trend
+// extrapolation and is labelled as one; where a crop is moved mainly by
+// something that is not weather at all -- cane's ratoon age profile, coffee's
+// biennial bearing -- that reason is printed rather than left to be guessed at
+// from a low score.
+const renderBrazilYieldForecast = async (regionName) => {
+    const keys = BRAZIL_REGION_MODELS[regionName];
+    if (!keys) return false;
+
+    const fc = await window.loadBrazilYieldForecast?.();
+    if (!fc || !fc.regions) return false;
+
+    const shown = keys.map(k => [k, fc.regions[k]]).filter(([, d]) => d);
+    if (!shown.length) return false;
+
+    const fmt = n => Math.round(n).toLocaleString();
+    let html = '';
+
+    for (const [key, d] of shown) {
+        const vsLast = d.point - d.last_actual.yield;
+        // The badge keys off weather skill, not the headline number. A model
+        // can beat the trend on the strength of its lagged-yield features
+        // while adding nothing meteorological -- São Paulo cane scores +8.2%
+        // overall and -3.1% on weather alone -- and a climate panel must not
+        // present that as a weather forecast.
+        const skilled = d.skill.weather_driven;
+        const color = d.weather_effect_pct < 0 ? '#fca5a5' : '#4ade80';
+
+        let badge;
+        if (skilled) {
+            badge = `<span style="font-size:10px; padding:2px 6px; border-radius:4px;
+                 background:rgba(74,222,128,0.15); color:#4ade80;">검증 통과 · 기상 기여
+                 ${(d.skill.weather_skill * 100).toFixed(0)}%</span>`;
+        } else if (d.skill.beats_trend) {
+            badge = `<span style="font-size:10px; padding:2px 6px; border-radius:4px;
+                 background:rgba(148,163,184,0.18); color:#cbd5e1;">추세는 이기나 기상 기여는 없음
+                 (${(d.skill.non_weather_features || []).join(', ') || '비기상 요인'} 기여)</span>`;
+        } else {
+            badge = `<span style="font-size:10px; padding:2px 6px; border-radius:4px;
+                 background:rgba(251,191,36,0.15); color:#fbbf24;">기상 신호 없음 · 추세 외삽값</span>`;
+        }
+
+        html += `
+        <div class="indicator-item" style="cursor:default; transform:none; border-color:rgba(255,255,255,0.1);">
+            <div class="ind-header"><span class="ind-title">${d.label}</span></div>
+            <div style="margin-top:6px;">${badge}</div>
+            <div style="display:flex; justify-content:space-between; margin-top:8px;">
+                <div>
+                    <span style="font-size:12px; color:#94a3b8;">${d.last_actual.year} 실적</span>
+                    <div style="font-size:15px;">${fmt(d.last_actual.yield)} ${d.unit}</div>
+                </div>
+                <div style="text-align:right;">
+                    <span style="font-size:12px; color:#94a3b8;">${fc.season} 예상</span>
+                    <div style="font-size:20px; font-weight:bold; color:${skilled ? color : '#cbd5e1'};">
+                        ${fmt(d.point)} ${d.unit}</div>
+                </div>
+            </div>
+            <div style="text-align:right; font-size:13px; margin-top:4px; color:${vsLast >= 0 ? '#4ade80' : '#fca5a5'};">
+                전년 대비 ${vsLast >= 0 ? '+' : ''}${fmt(vsLast)} ${d.unit}
+            </div>
+            <div style="margin-top:10px; padding-top:10px; border-top:1px dashed rgba(255,255,255,0.1); font-size:12px;">
+                <div style="display:flex; justify-content:space-between; color:#cbd5e1;">
+                    <span>68% 신뢰구간</span><span>${fmt(d.range_68[0])} – ${fmt(d.range_68[1])}</span>
+                </div>
+                <div style="display:flex; justify-content:space-between; color:#94a3b8; margin-top:6px;">
+                    <span>기술 추세</span><span>${fmt(d.trend)} ${d.unit}</span>
+                </div>
+                <div style="display:flex; justify-content:space-between; color:${color}; margin-top:2px;">
+                    <span>기상 효과</span>
+                    <span>${d.weather_effect_pct >= 0 ? '+' : ''}${d.weather_effect_pct.toFixed(1)}%</span>
+                </div>
+            </div>
+            ${d.provenance.non_weather_drivers ? `
+            <div style="margin-top:8px; padding:8px; background:rgba(251,191,36,0.08);
+                        border-left:2px solid rgba(251,191,36,0.5); border-radius:4px;
+                        font-size:11px; color:#cbd5e1; line-height:1.5;">
+                <strong style="color:#fbbf24;">날씨가 아닌 요인</strong><br>${
+                    BRAZIL_NON_WEATHER_KO[key] || d.provenance.non_weather_drivers}
+            </div>` : ''}
+            <div style="margin-top:8px; padding:8px; background:rgba(0,0,0,0.2); border-radius:6px;
+                        font-size:11px; color:#94a3b8;">
+                기상 관측 ${d.provenance.weather_through}까지 · 방법론
+                <span style="color:#cbd5e1;">${d.provenance.guide.split('/').slice(-2, -1)}</span>
+            </div>
+        </div>`;
+    }
+
+    const skippedNote = Object.entries(fc.skipped || {})
+        .filter(([k]) => keys.includes(k))
+        .map(([k]) => k);
+
+    forecastCountryTitle.textContent = `브라질 지역 작황 예측 (${fc.season})`;
+    forecastContentEl.innerHTML = `
+        <div class="forecast-box">
+            <div class="forecast-item">
+                <span class="forecast-label">대상 지역</span>
+                <span class="forecast-val" style="font-size:12px;">${regionName.replace(' (Brazil)', '')}</span>
+            </div>
+            <div class="forecast-item">
+                <span class="forecast-label">작물 수</span>
+                <span class="forecast-val">${shown.length}개 모델</span>
+            </div>
+            <div class="forecast-good" style="margin-top:16px;">
+                <strong>지역별 개별 방법론 + 추세·기상편차 분해</strong><br>
+                <span style="font-size:11px; font-weight:400;">
+                지역마다 다른 수식을 씁니다. 마투그로수는 우기 시작일(Liebmann 이상누적),
+                남부는 SPI·엘니뇨, 사프리냐 옥수수는 FAO-56 물수지입니다.
+                </span>
+            </div>
+            ${skippedNote.length ? `
+            <p style="font-size:11px; color:#fbbf24; margin-top:10px;">
+                ${skippedNote.join(', ')}: 해당 생육 단계가 아직 도래하지 않아 예측하지 않음
+            </p>` : ''}
+        </div>
+        <p style="font-size:11px; color:#94a3b8; text-align:right; margin-bottom:4px;">
+            갱신: ${new Date(fc.generated_at).toLocaleString()}
+        </p>
+        <p style="font-size:11px; color:#64748b; text-align:right;">
+            출처: IBGE SIDRA(주별 수확량) · NASA POWER(기상) · NOAA CPC(ONI)
+        </p>`;
+
+    countryStatsTitleEl.textContent = regionName.replace(' (Brazil)', '');
+    document.getElementById('country-stats-desc').textContent =
+        '기후 모델링 문서(Regions/브라질) 지역별 수식 구현 · log 추세 + 기상편차';
+    countryStatsContentEl.innerHTML = html;
+    macroPanelEl.classList.add('hidden');
+    countryStatsPanelEl.classList.remove('hidden');
+    return true;
+};
+
 const updateForecastPanel = async (regionName) => {
     if (await renderYieldForecast(regionName)) return;
+    if (await renderBrazilYieldForecast(regionName)) return;
 
     const data = forecastData[regionName];
     forecastCountryTitle.textContent = `지역 기상 및 기후 요인: ${regionName}`;

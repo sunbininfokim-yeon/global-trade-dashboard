@@ -27,6 +27,7 @@ import json
 import os
 import time
 import urllib.request
+from datetime import datetime, timedelta
 
 import pandas as pd
 
@@ -34,6 +35,11 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 CACHE = os.path.join(HERE, "cache")
 
 SIDRA = "https://apisidra.ibge.gov.br/values"
+
+# How long a cached yield series is trusted. IBGE publishes PAM once a year, so
+# a permanent cache would mean the models never see a newly released season --
+# the pipeline would keep forecasting against a record that stopped growing.
+CACHE_MAX_AGE = timedelta(days=30)
 
 # variable 112 = Rendimento médio da produção (kg/ha)
 YIELD_VAR = "112"
@@ -91,7 +97,10 @@ def state_yield(crop, uf):
     os.makedirs(CACHE, exist_ok=True)
     cached = os.path.join(CACHE, f"sidra_{crop}_{uf}.csv")
     if os.path.exists(cached):
-        return pd.read_csv(cached)
+        age = datetime.now() - datetime.fromtimestamp(os.path.getmtime(cached))
+        if age < CACHE_MAX_AGE:
+            return pd.read_csv(cached)
+        log(f"{crop}/{uf}: cache {age.days}d old, refreshing")
 
     spec = CROPS[crop]
     url = (f"{SIDRA}/t/{spec['table']}/n3/{UF[uf]}/v/{YIELD_VAR}"

@@ -57,6 +57,14 @@ class RegionCrop:
     # Training years required before forward chaining will make a call. Lowered
     # only where a regime restriction leaves a short record.
     min_train: int = 0
+    # True for a crop sown and harvested inside one calendar year. The summer
+    # crops here span the year boundary, so their season rolls over in
+    # September; wheat rolls with the calendar.
+    calendar_year_crop: bool = False
+    # The months whose weather actually decides the yield, as (month, offset).
+    # Used to report how much of the deciding window has already happened, so a
+    # figure published mid-season is not read as a settled harvest number.
+    critical_window: list = field(default_factory=list)
     # Known drivers of this crop's year-to-year yield that are NOT weather and
     # that no weather model can reach. Stated per config and carried through to
     # the published forecast, so a weak result is read as "weather is not what
@@ -95,6 +103,7 @@ def _mt_soja(daily, y):
 
 
 MATO_GROSSO_SOJA = RegionCrop(
+    critical_window=[(11, -1), (12, -1), (1, 0), (2, 0)],
     key="mato_grosso_soja",
     label="Mato Grosso soybeans",
     crop="soja",
@@ -145,6 +154,7 @@ def _mt_milho(daily, y):
 
 
 MATO_GROSSO_MILHO = RegionCrop(
+    critical_window=[(3, 0), (4, 0), (5, 0), (6, 0)],
     key="mato_grosso_milho",
     label="Mato Grosso corn (safrinha)",
     crop="milho",
@@ -187,6 +197,7 @@ def _south_soja(daily, y):
 
 
 SOUTH_SOJA = RegionCrop(
+    critical_window=[(12, -1), (1, 0), (2, 0)],
     key="parana_soja",
     label="Paraná + Rio Grande do Sul soybeans",
     crop="soja",
@@ -218,6 +229,7 @@ def _south_milho(daily, y):
 
 
 SOUTH_MILHO = RegionCrop(
+    critical_window=[(11, -1), (12, -1), (1, 0)],
     key="parana_milho",
     label="Paraná + Rio Grande do Sul corn",
     crop="milho",
@@ -262,6 +274,8 @@ def _south_trigo(daily, y):
 
 
 SOUTH_TRIGO = RegionCrop(
+    calendar_year_crop=True,
+    critical_window=[(8, 0), (9, 0), (10, 0), (11, 0)],
     key="parana_trigo",
     label="Paraná + Rio Grande do Sul wheat",
     crop="trigo",
@@ -312,6 +326,7 @@ def _matopiba_soja(daily, y):
 
 
 MATOPIBA_SOJA = RegionCrop(
+    critical_window=[(12, -1), (1, 0), (2, 0)],
     key="matopiba_soja",
     label="MATOPIBA soybeans",
     crop="soja",
@@ -360,6 +375,7 @@ def _matopiba_algodao(daily, y):
 
 
 MATOPIBA_ALGODAO = RegionCrop(
+    critical_window=[(2, 0), (3, 0), (4, 0), (7, 0), (8, 0)],
     key="matopiba_algodao",
     label="MATOPIBA cotton",
     crop="algodao",
@@ -377,10 +393,16 @@ MATOPIBA_ALGODAO = RegionCrop(
     regime_start=2000,
     min_train=15,
     non_weather_drivers=(
-        "The 1999-2000 jump is a change of production system -- irrigation, "
-        "seed, fertiliser and scale -- not a good weather year. Input "
-        "intensity continues to drive much of the residual movement inside "
-        "the modern era too, and none of it is observable from climate."),
+        "The 1999-2000 jump is a change of production system -- relocation to "
+        "the Cerrado, new cultivars, scale and management -- not a good "
+        "weather year. Note it is not irrigation: about 92% of Brazil's cotton "
+        "area is rainfed, and Brazil leads the world in rainfed lint yield. "
+        "The largest single non-weather driver inside the modern era is the "
+        "boll weevil, which can take up to 70% of a crop and whose pressure "
+        "depends on planting-date coordination and control programmes rather "
+        "than on climate. Published work also finds MODIS NDVI adds little to "
+        "upland cotton yield models over a trend baseline (Johnson, ORNL), so "
+        "satellite greenness is unlikely to recover what is missing here."),
     caveat="Yield only. The guide's second target -- fibre quality/Micronaire "
            "-- has no open data series, so the two-output structure collapses "
            "to one. The NDVI classifier that would date flowering is replaced "
@@ -455,6 +477,7 @@ def _sp_cana(daily, y):
 
 
 SP_CANA = RegionCrop(
+    critical_window=[(10, -1), (11, -1), (12, -1), (1, 0), (2, 0), (3, 0)],
     key="sp_cana",
     label="São Paulo sugarcane",
     crop="cana",
@@ -476,12 +499,20 @@ SP_CANA = RegionCrop(
         "years, so much of any season's yield is the age profile of the "
         "standing crop -- how much of São Paulo's area is first-cut versus "
         "fifth-cut. That is set by replanting investment, variety turnover "
-        "and mill economics, none of which is weather and none of which "
-        "appears in any weather feed. Detrended yield moves only about 3% a "
-        "year across the whole record (2.7% in 1985-99, 3.1% in 2013-24), and "
-        "the age profile plausibly accounts for more of that than rainfall "
-        "does. lag1 is carried to represent stand persistence, but it is a "
-        "proxy for management, not a climate signal."),
+        "and mill economics, none of which appears in any weather feed. "
+        "Detrended yield moves only about 3% a year across the whole record "
+        "(2.7% in 1985-99, 3.1% in 2013-24). "
+        "This is the published finding, not a shortcoming of this model: "
+        "Dias & Sentelhas (Field Crops Research, 2017) ran all three standard "
+        "simulators -- FAO-AZM, DSSAT/CANEGRO and APSIM-Sugarcane, including "
+        "the CANEGRO this guide asks for -- against commercial Brazilian "
+        "fields and got MAE above 29 t/ha with R2 below 0.54, attributing the "
+        "failure to 'the lack of coefficients accounting for crop "
+        "management'. Adding a ratoon-decline management factor (kdec) moved "
+        "them to MAE 13-15 t/ha and R2 0.58-0.72. Climate alone does not "
+        "forecast this crop for anyone. lag1 is carried here to represent "
+        "stand persistence, but it is a proxy for management, not a climate "
+        "signal."),
 )
 
 
@@ -517,6 +548,7 @@ def _sp_cafe(daily, y):
 
 
 SP_CAFE = RegionCrop(
+    critical_window=[(9, -1), (10, -1), (1, 0), (2, 0)],
     key="sp_cafe",
     label="Minas Gerais + São Paulo coffee (Arabica)",
     crop="cafe",

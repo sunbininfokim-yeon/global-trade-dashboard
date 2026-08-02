@@ -16,6 +16,7 @@ import os
 import sys
 import time
 import urllib.request
+from datetime import date
 
 import pandas as pd
 
@@ -41,7 +42,26 @@ POWER_PARAMS = ("T2M_MAX,T2M_MIN,T2M,PRECTOTCORR,RH2M,T2MDEW,"
 
 POWER_START = "19810101"
 POWER_FILL = -900          # POWER writes -999 for missing
-END_YEAR = 2025
+
+# Last season the training tables try to build. Derived, not pinned: a literal
+# year here silently freezes the pipeline -- the site would go on publishing a
+# 2026 forecast in 2027 with no error anywhere.
+END_YEAR = date.today().year
+
+
+# The Brazilian summer crops run across the calendar boundary: a "2026" soybean
+# season is sown from September 2025 and harvested by May 2026. So the season
+# now under way rolls over in September, not in January. Wheat is a winter crop
+# sown and harvested inside one calendar year and rolls with it.
+SEASON_ROLLOVER_MONTH = 9
+
+
+def current_season(cfg=None, today=None):
+    """The harvest year a forecast should be aimed at right now."""
+    today = today or date.today()
+    if cfg is not None and getattr(cfg, "calendar_year_crop", False):
+        return today.year
+    return today.year + (1 if today.month >= SEASON_ROLLOVER_MONTH else 0)
 
 # ONI seasons spanning each crop's growing window. Summer crops take the
 # austral wet season; wheat is a winter crop and takes the austral winter.
