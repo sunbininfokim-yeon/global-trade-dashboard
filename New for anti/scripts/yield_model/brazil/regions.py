@@ -247,7 +247,15 @@ SOUTH_MILHO = RegionCrop(
         "first-season and safrinha crops are both large and their area split "
         "shifts with soybean and corn prices, so part of the year-to-year "
         "movement in this target is an acreage-mix decision rather than "
-        "anything the weather did."),
+        "anything the weather did. This is not 'weather does not move corn' -- "
+        "the direction is the same as soy. Detrended log yields for Paraná "
+        "corn and soy correlate at +0.70 across the shared record, and corn's "
+        "own weather features move it the agronomically expected way "
+        "(VPD_peak -0.52, SPI3_Jan +0.42 against corn's own yield). But those "
+        "same weather features correlate even more strongly with soy's yield "
+        "(-0.61, +0.59) than with corn's own recorded yield -- evidence that "
+        "the corn target carries real weather signal plus extra non-weather "
+        "noise on top, not that weather fails to reach this crop."),
 )
 
 
@@ -407,7 +415,18 @@ MATOPIBA_ALGODAO = RegionCrop(
            "-- has no open data series, so the two-output structure collapses "
            "to one. The NDVI classifier that would date flowering is replaced "
            "by the degree-day threshold from the same guide. Training starts "
-           "in 2000: the pre-2000 smallholder crop is a different system.",
+           "in 2000: the pre-2000 smallholder crop is a different system. "
+           "Untested hypothesis, not a finding: this model carries no soil-"
+           "moisture or root-zone water-storage feature for cotton at all -- "
+           "only rainfall, heat and VPD. MATOPIBA's Cerrado soils are sandy "
+           "(the soybean guide's own Effective_Water_Capacity logic assumes "
+           "this, but that treatment was only applied to soy here, never to "
+           "cotton), which is exactly where plant-available water can diverge "
+           "sharply from rainfall received. NASA POWER's root-zone wetness "
+           "parameter (GWETROOT) -- used by the earlier brazil_soy_model but "
+           "never fetched by this package -- would test this at zero added "
+           "cost. Satellite soil moisture or GRACE total water storage would "
+           "extend it further.",
     core=["flowering_heat_penalty", "boll_heat_penalty",
           "harvest_rainfall"],
 )
@@ -512,7 +531,19 @@ SP_CANA = RegionCrop(
         "them to MAE 13-15 t/ha and R2 0.58-0.72. Climate alone does not "
         "forecast this crop for anyone. lag1 is carried here to represent "
         "stand persistence, but it is a proxy for management, not a climate "
-        "signal."),
+        "signal. "
+        "This is a different kind of perennial problem from oil palm or "
+        "coffee, not the same one. Palm oil's multi-year sensitivity is a "
+        "fixed physiological lag -- drought forces sex differentiation in "
+        "flowers up to 24 months before the fruit they become is harvested, "
+        "so a properly lagged weather index (12-24mo cumulative deficit) can "
+        "recover the signal, and this is standard practice. Cane's dominant "
+        "variance driver, ratoon age, has no such weather-lag mechanism at "
+        "all -- it is a replanting-investment decision. This model already "
+        "tried the multi-year-weather approach the guide itself asks for "
+        "(12-18mo cumulative deficit, SPI-12) and weather-only skill stayed "
+        "negative (-3.1%): more lag months did not help, because the missing "
+        "driver was never weather-shaped to begin with."),
 )
 
 
@@ -569,7 +600,15 @@ SP_CAFE = RegionCrop(
         "lag1 and lag2 carry that cycle, and they are the model's strongest "
         "features -- so much of this model's skill is biological memory, not "
         "climate. Replanting rates and the arabica/robusta area mix are also "
-        "outside any weather feed."),
+        "outside any weather feed. "
+        "Isolating the weather features alone (holding out lag1/lag2) leaves "
+        "only +1.6% skill, against +8.6% with the lags included: a real "
+        "climate mechanism exists here (frost, flowering-stage water deficit "
+        "-- both in the guide and both physically well documented) but at "
+        "annual, state-level resolution the biennial cycle dominates the "
+        "variance that mechanism produces. Adding multi-year memory to a "
+        "model does not by itself guarantee weather wins that competition -- "
+        "coffee is the clearest example of that in this set."),
 )
 
 

@@ -538,7 +538,13 @@ const BRAZIL_NON_WEATHER_KO = {
     parana_milho:
         'SIDRA는 주별 옥수수를 1기작·2기작 합산 단일 수치로 발표합니다. 파라나는 두 작기가 모두 크고 ' +
         '재배 면적 배분이 대두·옥수수 가격에 따라 해마다 바뀌므로, 이 목표값의 연간 변동 중 일부는 ' +
-        '날씨가 아니라 면적 배분 의사결정입니다.',
+        '날씨가 아니라 면적 배분 의사결정입니다. ' +
+        '다만 "옥수수엔 날씨가 안 통한다"는 뜻은 아닙니다 — 방향은 대두와 같습니다. 같은 지역 ' +
+        '탈추세 로그수확량으로 옥수수·대두 상관을 재보면 +0.70이고, 옥수수 자체 기상 피처(VPD_peak ' +
+        '−0.52, SPI3_Jan +0.42)도 농학적으로 맞는 방향으로 옥수수 수확량을 움직입니다. 그런데 ' +
+        '같은 기상 변수가 옥수수 자기 수확량보다 대두 수확량과 더 강하게 상관됩니다(−0.61, +0.59). ' +
+        '즉 옥수수 목표값엔 진짜 날씨 신호가 있고, 그 위에 비기상 잡음이 얹혀 있는 것이지, 날씨가 ' +
+        '이 작물을 안 움직이는 게 아닙니다.',
     sp_cana:
         '사탕수수는 5~7년에 한 번만 갱신하는 ratoon(그루터기) 작물이라, 특정 해의 수확량은 상당 부분 ' +
         '식재 연차 구성(상파울루 면적 중 1번지기 대 5번지기 비율)에 좌우됩니다. 이는 갱신 투자·품종 ' +
@@ -547,11 +553,22 @@ const BRAZIL_NON_WEATHER_KO = {
         '3종(FAO-AZM·DSSAT/CANEGRO·APSIM)을 브라질 상업 포장에 적용했을 때 MAE 29 t/ha 초과, ' +
         'R² 0.54 미만이었고, 원인을 "경영을 반영하는 계수의 부재"로 지목했습니다. 그루터기 감퇴 ' +
         '계수(kdec)를 넣자 MAE 13~15 t/ha, R² 0.58~0.72로 개선됐습니다. 기후만으로는 누구도 이 ' +
-        '작물을 예측하지 못합니다.',
+        '작물을 예측하지 못합니다. ' +
+        '팜유·커피 같은 다른 다년생 작물과는 성격이 다른 문제입니다. 팜유의 다년성은 고정된 생리 ' +
+        '시차입니다 — 가뭄이 오면 24개월 뒤 열릴 열매의 성별이 강제로 바뀌므로, 12~24개월 누적 ' +
+        '수분적자를 시차로 넣으면 실제로 잡힙니다(업계 표준 관행). 사탕수수를 지배하는 그루터기 ' +
+        '연차는 그런 날씨-시차 메커니즘이 아예 없습니다 — 언제 갈아엎어 재식할지의 투자 결정입니다. ' +
+        '문서가 요구한 다년 누적 방식(12~18개월 수분적자, SPI-12)을 이미 넣어봤는데도 날씨만의 ' +
+        '기여는 −3.1%로 그대로 마이너스였습니다. 시차를 늘려도 안 됐다는 건, 애초에 빠진 게 ' +
+        '"더 긴 날씨 기억"이 아니라 "날씨로 환원 안 되는 변수"라는 뜻입니다.',
     sp_cafe:
         '해걸이(격년결실)는 기상이 아니라 생리 현상입니다. 많이 열린 해에 나무가 소진되면 이듬해는 ' +
         '날씨와 무관하게 적게 열립니다. lag1·lag2가 이 주기를 담고 있고 이 둘이 모델의 최강 피처이므로, ' +
-        '이 모델 성능의 상당 부분은 기후가 아니라 생물학적 기억입니다.',
+        '이 모델 성능의 상당 부분은 기후가 아니라 생물학적 기억입니다. ' +
+        'lag1·lag2를 빼고 기상 피처만 남기면 스킬이 +1.6%로 줄어듭니다(전체는 +8.6%). 서리·개화기 ' +
+        '수분결핍이라는 진짜 기후 메커니즘은 있지만(문서에도 명시, 물리적으로도 잘 알려짐), 주(州) ' +
+        '단위 연간 데이터에서는 해걸이 주기가 그 변동을 압도합니다. "다년 메모리를 넣었다"가 ' +
+        '자동으로 "날씨가 이긴다"를 보장하진 않는다는 걸 이 작물이 가장 명확하게 보여줍니다.',
     sp_laranja:
         '이 문서는 첫 문단부터 "이 시장은 기후가 아닌 감귤 녹화병(HLB)에 의해 붕괴되고 있다"고 ' +
         '명시하며, 처방된 모델링도 드론 CNN과 공간 확산 모델이지 기상 모델이 아닙니다. 데이터도 ' +
@@ -567,6 +584,19 @@ const BRAZIL_NON_WEATHER_KO = {
         '일으키지만 그 압력은 파종기 조율과 방제 프로그램에 달려 있지 기후에 달려 있지 않습니다. ' +
         'MODIS NDVI가 면화 단수 모델에서 추세선 대비 거의 기여하지 못한다는 연구(Johnson, ORNL)도 ' +
         '있어, 위성 식생지수로 이 공백을 메우기는 어렵습니다.',
+};
+
+// Open hypotheses -- explicitly NOT established findings like the map above,
+// but real gaps worth stating so a low score isn't read as "weather doesn't
+// matter" when it might just mean "we're missing the right weather feature".
+const BRAZIL_OPEN_QUESTIONS_KO = {
+    matopiba_algodao:
+        '검증되지 않은 가설입니다. 이 모델은 면화에 토양수분·근권 저류량 피처를 하나도 안 씁니다 — ' +
+        '강수·폭염·VPD뿐입니다. MATOPIBA 세하두 토양은 모래질이라(대두 모델의 "유효수분용량" ' +
+        '로직이 이걸 전제하지만, 그 처리는 면화가 아니라 대두에만 적용됨) 정확히 강수량만으론 ' +
+        '식물이 실제 쓸 수 있는 물을 못 잡는 지역입니다. NASA POWER의 근권 토양수분(GWETROOT) — ' +
+        '예전 brazil_soy_model에서 썼지만 이번 패키지에선 아예 안 불러온 변수 — 을 붙이면 비용 ' +
+        '없이 바로 검증 가능합니다. 위성 토양수분(SMAP)이나 GRACE 총저류량을 더하면 더 확장됩니다.',
 };
 
 // Renders the Brazil regional yield forecasts.
@@ -658,6 +688,13 @@ const renderBrazilYieldForecast = async (regionName) => {
                         font-size:11px; color:#cbd5e1; line-height:1.5;">
                 <strong style="color:#fbbf24;">날씨가 아닌 요인</strong><br>${
                     BRAZIL_NON_WEATHER_KO[key] || d.provenance.non_weather_drivers}
+            </div>` : ''}
+            ${BRAZIL_OPEN_QUESTIONS_KO[key] ? `
+            <div style="margin-top:8px; padding:8px; background:rgba(96,165,250,0.08);
+                        border-left:2px solid rgba(96,165,250,0.5); border-radius:4px;
+                        font-size:11px; color:#cbd5e1; line-height:1.5;">
+                <strong style="color:#60a5fa;">미검증 가설 · 결측 가능성</strong><br>${
+                    BRAZIL_OPEN_QUESTIONS_KO[key]}
             </div>` : ''}
             ${obsPct === null ? '' : `
             <div style="margin-top:10px; font-size:11px; color:#94a3b8;">
