@@ -40,13 +40,18 @@ from collect_us_wheat import (  # noqa: E402
     CLIMATOLOGY_YEARS, CROPS, POWER_URL, STAGES,
     load_oni, power_weather, season_features, season_oni,
 )
+import collect_us_south as south  # noqa: E402
+
+# Cotton lives in its own collector (different states, different stages, and a
+# planted-acre target). Route to it rather than duplicating the definitions.
+SOUTH_CROPS = {"cotton"}
 
 FORECAST_URL = "https://api.open-meteo.com/v1/forecast"
 DAILY_VARS = ("temperature_2m_max,temperature_2m_min,temperature_2m_mean,"
               "precipitation_sum,dew_point_2m_mean,shortwave_radiation_sum")
 
 # Last month of each crop's season, i.e. how far the weather record must reach.
-SEASON_END_MONTH = {"winter_wheat": 6, "spring_wheat": 8}
+SEASON_END_MONTH = {"winter_wheat": 6, "spring_wheat": 8, "cotton": 11}
 
 
 def log(m):
@@ -147,13 +152,13 @@ def assemble(state, year, hist, end_month):
     return df
 
 
-def anomalies(state, year, season_df, hist, crop):
-    cur = season_features(season_df, year, crop)
+def anomalies(state, year, season_df, hist, crop, feat_fn=season_features):
+    cur = feat_fn(season_df, year, crop)
     if cur is None:
         return None
     base = {}
     for y in range(year - CLIMATOLOGY_YEARS, year):
-        f = season_features(hist, y, crop)
+        f = feat_fn(hist, y, crop)
         if f:
             base[y] = f
     if len(base) < 10:
@@ -173,24 +178,29 @@ def predict(crop, year):
     with open(os.path.join(HERE, f"us_{crop}_model.json"), encoding="utf-8") as f:
         model = json.load(f)
 
-    spec = CROPS[crop]
+    is_south = crop in SOUTH_CROPS
+    spec = south.CROPS[crop] if is_south else CROPS[crop]
+    feat_fn = south.season_features if is_south else season_features
+    stages = south.STAGES[crop] if is_south else STAGES[crop]
+    wx_fn = south.power_weather if is_south else power_weather
+    oni_fn = ((lambda o, y, c: south.season_oni(o, y)) if is_south else season_oni)
     end_month = SEASON_END_MONTH[crop]
     blended, wsum = {}, 0.0
     prov = {"observed": 0, "forecast": 0, "climatology": 0}
 
     for st in spec["states"]:
-        hist = power_weather(st)
+        hist = wx_fn(st)
         season = assemble(st, year, hist, end_month)
 
         # Count provenance over the yield-critical window only.
-        crit = STAGES[crop]["grainfill"]["months"]
+        crit = stages["bollfill" if is_south else "grainfill"]["months"]
         mask = np.zeros(len(season), dtype=bool)
         for m, off in crit:
             mask |= ((season.date.dt.year == year + off) & (season.date.dt.month == m)).values
         for s in prov:
             prov[s] += int((season[mask].src == s).sum())
 
-        a = anomalies(st, year, season, hist, crop)
+        a = anomalies(st, year, season, hist, crop, feat_fn)
         if a is None:
             log(f"  {st['code']}: insufficient history, skipped")
             continue
@@ -201,7 +211,7 @@ def predict(crop, year):
     if wsum == 0:
         return None
     blended = {k: v / wsum for k, v in blended.items()}
-    blended["oni_season"] = season_oni(load_oni(), year, crop)
+    blended["oni_season"] = oni_fn(load_oni(), year, crop)
 
     missing = [f for f in model["features"] if f not in blended or pd.isna(blended[f])]
     if missing:
@@ -233,7 +243,7 @@ def predict(crop, year):
 
 def main():
     year = int(sys.argv[1]) if len(sys.argv) > 1 else 2026
-    for crop in ("winter_wheat", "spring_wheat"):
+    for crop in ("winter_wheat", "spring_wheat", "cotton"):
         log(f"=== {crop} {year} ===")
         r = predict(crop, year)
         if r is None:

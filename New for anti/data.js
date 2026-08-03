@@ -548,6 +548,33 @@
         }
     };
 
+    // === India regional yield forecast (statistical model, refreshed weekly) ===
+    // Written by scripts/yield_model/india/run_forecast.py. Three region-crops,
+    // each following its own guide in Regions/인도 rather than a shared
+    // methodology -- Punjab wheat is a terminal-heat problem, Madhya Pradesh
+    // soybean a monsoon-timing problem, Vidarbha/Gujarat cotton an inverted-U
+    // drought/pest problem. skill.beats_trend is false where the weather
+    // features did not beat a trend-only baseline out of sample; such a figure
+    // is a trend extrapolation and should be presented as one, not as a
+    // weather-driven forecast.
+    let indiaForecastCache = null;
+    window.loadIndiaYieldForecast = async function() {
+        if (indiaForecastCache !== null) return indiaForecastCache;
+        try {
+            const res = await fetch('/public/data/india_yield_forecast.json');
+            if (!res.ok) { indiaForecastCache = false; return false; }
+            indiaForecastCache = await res.json();
+            const n = Object.keys(indiaForecastCache.regions || {}).length;
+            console.log(`[Yield IN] ${indiaForecastCache.season} forecast loaded, ` +
+                `${n} region-crops (generated ${indiaForecastCache.generated_at})`);
+            return indiaForecastCache;
+        } catch (err) {
+            console.warn('[Yield IN] forecast unavailable', err);
+            indiaForecastCache = false;
+            return false;
+        }
+    };
+
     const defaultNews = (commodityName, country="Global") => ({
         "default": [
             { title: `Global ${commodityName} prices see fluctuation amid supply chain adjustments`, date: "Today", source: "Bloomberg", url: "https://www.bloomberg.com/markets/commodities" },

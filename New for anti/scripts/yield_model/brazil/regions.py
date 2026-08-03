@@ -325,11 +325,22 @@ def _matopiba_soja(daily, y):
         "heat_days_35": C.heat_days(daily, rep, y, 35.0),
         # sum of max(0, Tmax - 35), the guide's heat-penalty node
         "heat_excess": C.heat_excess(daily, rep, y, 35.0),
-        # Rainfall * (1 - sand_fraction)
+        # Rainfall * (1 - sand_fraction): a fixed regional constant, so it
+        # rescales rain uniformly and cannot see any year-to-year difference
+        # in how wet the root zone actually is. Kept for comparison against
+        # the GWETROOT features below, which can.
         "effective_water": C.effective_water_capacity(
             daily, [(12, -1), (1, 0), (2, 0)], y, MATOPIBA_SAND),
         "days_late": C.days_late(ors),
         "precip_rep": C.window_totals(daily, rep, y),
+        # MATOPIBA soil-moisture work order, Step 1: NASA POWER GWETROOT
+        # (root-zone wetness, 0-1) over the same flowering/pod-fill window.
+        "gwetroot_rep_mean": C.soil_moisture_mean(daily, rep, y),
+        # 0.3 approximates soybean's wilting point.
+        "gwetroot_stress_days": C.soil_stress_days(daily, rep, y, 0.3),
+        # The guide's central claim: yield collapses on days that are both
+        # hot AND dry at the root, not on either condition alone.
+        "heat_x_drought": C.heat_x_drought_days(daily, rep, y, 35.0, 0.3),
     }
 
 
@@ -343,11 +354,13 @@ MATOPIBA_SOJA = RegionCrop(
     build=_matopiba_soja,
     doc="Regions/브라질/MATOPIBA/대두/대두_상세분석_및_수식.md",
     caveat="CWSI is replaced by a Tmax/VPD stress proxy -- satellite canopy "
-           "temperature needs a thermal-infrared feed. Sand fraction is one "
-           "regional constant rather than a joined soil map, so "
-           "Effective_Water_Capacity rescales rainfall uniformly here.",
-    core=["heat_vpd_stress", "heat_days_35", "heat_excess",
-          "effective_water"],
+           "temperature needs a thermal-infrared feed. GWETROOT (MERRA-2 "
+           "reanalysis root-zone wetness, restored from the earlier "
+           "brazil_soy_model.py) replaces the fixed sand-fraction constant "
+           "as of 2026-08-03; it is simulated, not a satellite measurement, "
+           "which is what a later SMAP step would improve on.",
+    core=["heat_x_drought", "gwetroot_stress_days", "gwetroot_rep_mean",
+          "oni_season"],
 )
 
 

@@ -1,0 +1,51 @@
+name: Fetch ICRISAT India yield snapshot (one-shot)
+
+on:
+  workflow_dispatch:
+
+# The ICRISAT District Level Database has no server-side filter: one crop,
+# district and year table comes back as a single ~13 MB response. That server
+# has proven to enforce a hard per-request timeout of roughly 90 seconds while
+# throttling the transfer to ~60-70 KB/s -- four separate attempts from an
+# ordinary home connection all failed with an identical IncompleteRead at the
+# same byte offset, which rules out ordinary packet loss as the cause. A
+# GitHub Actions runner sits on a datacentre link and stands a real chance of
+# finishing the transfer inside that same 90-second window.
+#
+# This is deliberately a one-shot, manually triggered job rather than part of
+# the weekly forecast workflow: ICRISAT's historical district series is not on
+# a weekly publication cadence, so there is nothing to gain from re-attempting
+# a fragile fetch every week. Run this once; india/icrisat.py commits the
+# result to india/data/icrisat_apy.csv, and every later run (local or CI)
+# reads that file directly with no network call at all.
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pandas
+
+      - name: Fetch ICRISAT snapshot
+        working-directory: "New for anti/scripts/yield_model"
+        run: |
+          python -m india.icrisat
+
+      - name: Commit and Push Changes
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add "New for anti/scripts/yield_model/india/data/icrisat_apy.csv"
+          git commit -m "chore: vendor ICRISAT India yield snapshot" || exit 0
+          git push

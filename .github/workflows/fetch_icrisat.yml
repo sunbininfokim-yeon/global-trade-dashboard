@@ -1,0 +1,36 @@
+name: Fetch ICRISAT Data
+
+on:
+  workflow_dispatch: # 수동 실행 트리거
+  schedule:
+    - cron: '0 0 * * 0' # 매주 일요일 자정에 실행 (필요 시 수정)
+
+jobs:
+  download-data:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install requests
+
+      - name: Run ICRISAT Data Fetcher
+        run: |
+          python "New for anti/scripts/icrisat_fetcher.py"
+
+      - name: Commit and push changes
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add "New for anti/public/data/icrisat_crop_production.json"
+          # 변경사항이 있을 때만 커밋
+          git diff --quiet && git diff --staged --quiet || (git commit -m "chore: update ICRISAT crop data" && git push)

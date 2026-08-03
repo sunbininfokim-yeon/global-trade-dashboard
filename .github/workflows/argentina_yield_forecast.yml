@@ -1,0 +1,74 @@
+name: Weekly Argentina Yield Forecast
+
+on:
+  schedule:
+    # Mondays 10:00 UTC, half an hour after the Brazil run so the three
+    # country jobs do not race for the same commit. NASA POWER lags real time
+    # by 2-3 days, so a weekly cadence always picks up new observations.
+    - cron: '0 10 * * 1'
+  workflow_dispatch:
+
+jobs:
+  forecast:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pandas numpy scipy scikit-learn
+
+      - name: Run forecast
+        # No API keys: MAGyP datos abiertos, NASA POWER, NOAA CPC and NOAA PSL
+        # are all open. Pampas wheat will decline to forecast between January
+        # and October -- its anthesis window has not happened yet -- and that
+        # is intended behaviour, not a failure.
+        working-directory: "New for anti/scripts/yield_model"
+        run: |
+          python -m argentina.run_forecast
+
+      # MAGyP republishes the whole estimaciones file when a campaign closes,
+      # roughly twice a year. When a new season lands the training tables and
+      # models have to be rebuilt, or the pipeline keeps forecasting against a
+      # record that stopped growing. Cheap to detect, so check every run.
+      - name: Rebuild models if MAGyP published a new season
+        working-directory: "New for anti/scripts/yield_model"
+        run: |
+          set -e
+          LATEST_TRAINED=$(python -c "import pandas as pd; d=pd.read_csv('argentina/training/pampas_soja.csv').dropna(subset=['yield_kg_ha']); print(int(d.year.max()))")
+          LATEST_PUBLISHED=$(python -c "
+          import argentina.magyp as m
+          m.download(force=True)
+          print(int(m.region_yield('soja', ['Buenos Aires','Córdoba','Santa Fe']).year.max()))
+          ")
+          echo "trained through $LATEST_TRAINED, MAGyP published through $LATEST_PUBLISHED"
+          if [ "$LATEST_PUBLISHED" -gt "$LATEST_TRAINED" ]; then
+            echo "new season published -- rebuilding training tables and models"
+            python -m argentina.collect
+            python -m argentina.train
+            python -m argentina.run_forecast
+          else
+            echo "no new season; keeping existing models"
+          fi
+
+      # The estimaciones CSV is ~15 MB and is a cache, not a source artifact.
+      # It is regenerated on demand by magyp.download(), so it stays out of the
+      # commit; the training tables derived from it do not.
+      - name: Commit and Push Changes
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add "New for anti/public/data/argentina_yield_forecast.json" \
+                  "New for anti/scripts/yield_model/argentina/training" \
+                  "New for anti/scripts/yield_model/argentina/models"
+          git commit -m "chore: weekly Argentina regional yield forecast refresh" || exit 0
+          git push

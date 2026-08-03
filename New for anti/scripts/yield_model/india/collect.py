@@ -1,14 +1,26 @@
 """
 Build one training table per region-crop.
 
-Usage: python3 -m brazil.collect [region_key ...]
+Usage: python3 -m india.collect [region_key ...]
 
 For each config in regions.py: pull daily NASA POWER weather for its points,
-run that region's own derived-variable formulas at each point, production-weight
-the results, add the panel-level features that need a cross-year view (SPI,
-coffee's biennial lags), and join IBGE state yields and NOAA ONI.
+run that region's own derived-variable formulas at each point, area-weight the
+results, add the panel-level features that need a cross-year view, and join
+ICRISAT district yields, NOAA ONI and the Indian Ocean Dipole index.
 
 Output: training/<region_key>.csv, one row per harvest year.
+
+Two things differ structurally from the Brazilian collector:
+
+  - The Indian Ocean Dipole is carried alongside ENSO. 중부_마디아프라데시/대두 §3A
+    asks for both as first-layer inputs, and it is right to: a positive IOD
+    can hold the monsoon up through an El Nino year, so ONI alone mis-scores
+    exactly the seasons the model most needs to get right.
+  - Kharif and Rabi run on opposite calendars. A Kharif crop is sown and
+    harvested inside one calendar year, so its features never reach across the
+    year boundary; Rabi wheat is sown in November of the previous year. The
+    (month, offset) convention from the Brazilian package handles both, but
+    the season rollover and the ENSO window have to be set per crop.
 """
 
 import json
@@ -21,7 +33,7 @@ from datetime import date
 import pandas as pd
 
 from . import climate as C
-from . import sidra
+from . import icrisat
 from .regions import ALL, BY_KEY
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -30,49 +42,53 @@ TRAINING = os.path.join(HERE, "training")
 
 POWER_URL = "https://power.larc.nasa.gov/api/temporal/daily/point"
 ONI_URL = "https://www.cpc.ncep.noaa.gov/data/indices/oni.ascii.txt"
+# HadISST-based DMI, the standard IOD index: SST anomaly over the western
+# equatorial Indian Ocean (50-70E, 10S-10N) minus the eastern pole
+# (90-110E, 10S-0). Monthly from 1870, which outruns every other series here.
+DMI_URL = "https://psl.noaa.gov/gcos_wgsp/Timeseries/Data/dmi.had.long.data"
 
-# NASA POWER rather than Open-Meteo's ERA5 archive. Open-Meteo would reach
-# back to 1940 instead of 1981, but its free tier meters by data volume and
-# eighteen 50-year six-variable pulls exhaust the daily quota outright. POWER
-# has no comparable cap, serves a 45-year daily record in one call, and gives
-# the radiation, wind and dewpoint needed to compute FAO-56 ET0 here instead
-# of accepting a precomputed one -- which is what the safrinha guide asks for.
 POWER_PARAMS = ("T2M_MAX,T2M_MIN,T2M,PRECTOTCORR,RH2M,T2MDEW,"
-                "ALLSKY_SFC_SW_DWN,WS2M,GWETROOT")
-# GWETROOT: root-zone (0-100cm) soil wetness from the MERRA-2 reanalysis that
-# underlies POWER, 0 (dry) to 1 (saturated). Restored here per the MATOPIBA
-# soil-moisture work order -- the earlier brazil_soy_model.py used it, this
-# package didn't fetch it at all until now. It is a simulated quantity, not a
-# satellite measurement; that distinction is what a later SMAP step would buy.
+                "ALLSKY_SFC_SW_DWN,WS2M")
 
 POWER_START = "19810101"
 POWER_FILL = -900          # POWER writes -999 for missing
 
-# Last season the training tables try to build. Derived, not pinned: a literal
-# year here silently freezes the pipeline -- the site would go on publishing a
-# 2026 forecast in 2027 with no error anywhere.
+# Derived rather than pinned, for the reason the Brazilian collector gives: a
+# literal year freezes the pipeline silently a year later.
 END_YEAR = date.today().year
 
-
-# The Brazilian summer crops run across the calendar boundary: a "2026" soybean
-# season is sown from September 2025 and harvested by May 2026. So the season
-# now under way rolls over in September, not in January. Wheat is a winter crop
-# sown and harvested inside one calendar year and rolls with it.
-SEASON_ROLLOVER_MONTH = 9
+# A Kharif crop sown in June and harvested by November belongs to the calendar
+# year it is harvested in, so its season rolls over in January like the
+# calendar. Rabi wheat is sown from November and harvested the following
+# March, so from November onward the season under way is next year's.
+RABI_ROLLOVER_MONTH = 11
 
 
 def current_season(cfg=None, today=None):
     """The harvest year a forecast should be aimed at right now."""
     today = today or date.today()
-    if cfg is not None and getattr(cfg, "calendar_year_crop", False):
+    if cfg is not None and getattr(cfg, "calendar_year_crop", True):
         return today.year
-    return today.year + (1 if today.month >= SEASON_ROLLOVER_MONTH else 0)
+    return today.year + (1 if today.month >= RABI_ROLLOVER_MONTH else 0)
 
-# ONI seasons spanning each crop's growing window. Summer crops take the
-# austral wet season; wheat is a winter crop and takes the austral winter.
-ONI_SUMMER = ({"OND", "NDJ"}, {"DJF", "JFM"})
-ONI_WINTER = (set(), {"JJA", "JAS", "ASO"})
-ONI_WINDOW = {"parana_trigo": ONI_WINTER}
+
+# ENSO windows. Kharif takes the boreal summer seasons of the harvest year --
+# the monsoon it is grown on. Rabi wheat is sown into the following winter, so
+# it takes the seasons spanning its own sowing and grain fill.
+#
+# The teleconnection sign is the opposite of Brazil's: El Nino suppresses the
+# Indian monsoon where it wets southern Brazil. Nothing here encodes that --
+# the coefficient is fitted from the data -- but it is why a Brazilian model
+# cannot be carried over, only the code.
+ONI_KHARIF = (set(), {"JJA", "JAS", "ASO"})
+ONI_RABI = ({"OND", "NDJ"}, {"DJF", "JFM"})
+ONI_WINDOW = {"punjab_wheat": ONI_RABI}
+
+# IOD peaks in the second half of the monsoon and decays by December, so the
+# Kharif window is where it carries information.
+DMI_KHARIF = (set(), {7, 8, 9, 10})
+DMI_RABI = ({10, 11, 12}, {1})
+DMI_WINDOW = {"punjab_wheat": DMI_RABI}
 
 
 def log(msg):
@@ -86,13 +102,7 @@ def fetch(url, timeout=300):
 
 
 def retry_json(url, attempts=6, timeout=300):
-    """
-    Fetch with exponential backoff.
-
-    POWER is generous, but the retry is kept because the earlier Open-Meteo
-    attempt showed how a keyless bulk feed fails: a volume-metered 429 that
-    seconds of backoff will not clear.
-    """
+    """Fetch with exponential backoff."""
     delay = 30
     for i in range(attempts):
         try:
@@ -107,12 +117,12 @@ def retry_json(url, attempts=6, timeout=300):
 
 def point_weather(point):
     """
-    Daily weather for one location, cached by coordinate so points shared
-    between region-crops (Mato Grosso soy and safrinha corn, for instance) are
-    downloaded once.
+    Daily weather for one location, cached by coordinate.
 
     Returns date, tmax, tmin, tmean, precip, rh_mean, vpd_max, et0 -- the last
-    two computed here rather than fetched.
+    two computed here rather than fetched, so that ET0 is FAO-56
+    Penman-Monteith from radiation, wind and dewpoint rather than a
+    temperature-only estimate.
     """
     os.makedirs(CACHE, exist_ok=True)
     slug = f"{point['lat']:.2f}_{point['lon']:.2f}".replace("-", "m").replace(".", "p")
@@ -136,19 +146,16 @@ def point_weather(point):
         "tdew": list(p["T2MDEW"].values()),
         "rs": list(p["ALLSKY_SFC_SW_DWN"].values()),
         "wind": list(p["WS2M"].values()),
-        "soil": list(p["GWETROOT"].values()),
     })
     df = df[(df[["tmax", "tmin", "tmean", "precip", "rh_mean",
-                 "tdew", "rs", "wind", "soil"]] > POWER_FILL).all(axis=1)]
+                 "tdew", "rs", "wind"]] > POWER_FILL).all(axis=1)]
     df = df.sort_values("date").reset_index(drop=True)
 
     df["et0"] = C.fao56_et0(df, point["lat"], point["elevation"])
-    # Daytime vapour pressure deficit: saturation at Tmax against the day's
-    # actual vapour pressure, matching what the guides mean by VPD.
     df["vpd_max"] = (C._svp(df.tmax) - C._svp(df.tdew)).clip(lower=0)
 
     df = df[["date", "tmax", "tmin", "tmean", "precip",
-             "rh_mean", "vpd_max", "et0", "soil"]]
+             "rh_mean", "vpd_max", "et0"]]
     df.to_csv(cached, index=False)
     log(f"  power {point['name']}: {len(df):,} days, "
         f"mean ET0 {df.et0.mean():.2f} mm/day")
@@ -158,16 +165,15 @@ def point_weather(point):
 
 def blend_features(cfg, dailies, year):
     """
-    Run the region's formulas at each point, then production-weight the
-    resulting features.
+    Run the region's formulas at each point, then area-weight the results.
 
-    Averaging the daily weather first and deriving features from the mean
-    would be simpler but wrong for this set of guides: nearly every one of
-    them counts threshold exceedances (Tmax > 35, Tmin <= 1, rain > 300 mm in
-    a month), and a mean across four locations hundreds of kilometres apart
-    rarely crosses a threshold that any single location crosses often. Doing
-    it in this order, a heatwave over 40% of the region registers as 40% of a
-    heatwave instead of vanishing.
+    Same order of operations as the Brazilian collector and for the same
+    reason, which if anything binds harder here: every headline variable in
+    these three guides is a threshold crossing -- Tmax above 30, seven
+    consecutive rainless days, RH above 80% -- and none of them survives
+    averaging the weather first. A dry spell that breaks in Indore on day 6 and
+    in Ujjain on day 12 is not a nine-day dry spell anywhere, but that is what
+    the mean rainfall series would show.
 
     Weights are renormalised over the points that returned a value, so a
     feature undefined at one location is not silently counted as zero.
@@ -212,6 +218,45 @@ def load_oni():
     return df
 
 
+def load_dmi():
+    """
+    Monthly Dipole Mode Index, the IOD measure 대두 §3A asks for.
+
+    The file is a fixed-width block: a header line giving the first and last
+    year, then one row per year of twelve monthly values, then a trailer of
+    provenance text. Missing months are written as a large negative sentinel.
+    """
+    os.makedirs(CACHE, exist_ok=True)
+    cached = os.path.join(CACHE, "dmi.csv")
+    if os.path.exists(cached):
+        return pd.read_csv(cached)
+
+    log("dmi: downloading")
+    text = fetch(DMI_URL, timeout=60).decode("utf-8", "replace")
+
+    rows = []
+    for line in text.splitlines():
+        parts = line.split()
+        if len(parts) != 13:
+            continue
+        try:
+            year = int(parts[0])
+            vals = [float(v) for v in parts[1:]]
+        except ValueError:
+            continue
+        if not 1800 <= year <= 2100:
+            continue
+        for month, v in enumerate(vals, start=1):
+            if v < -90:            # sentinel for a month with no SST coverage
+                continue
+            rows.append({"year": year, "month": month, "dmi": v})
+
+    df = pd.DataFrame(rows)
+    df.to_csv(cached, index=False)
+    log(f"dmi: {len(df):,} months, {df.year.min()}-{df.year.max()}")
+    return df
+
+
 def oni_for(oni, year, window):
     prev, cur = window
     vals = list(oni[(oni.year == year - 1) & (oni.season.isin(prev))].anom)
@@ -219,19 +264,27 @@ def oni_for(oni, year, window):
     return sum(vals) / len(vals) if vals else None
 
 
-def build_region(cfg, oni):
+def dmi_for(dmi, year, window):
+    prev, cur = window
+    vals = list(dmi[(dmi.year == year - 1) & (dmi.month.isin(prev))].dmi)
+    vals += list(dmi[(dmi.year == year) & (dmi.month.isin(cur))].dmi)
+    return sum(vals) / len(vals) if vals else None
+
+
+def build_region(cfg, oni, dmi):
     log(f"{cfg.key}: {cfg.label}")
     dailies = {p["name"]: point_weather(p) for p in cfg.points}
 
-    first = cfg.start_year
     rows = []
-    for year in range(first, END_YEAR + 1):
+    for year in range(cfg.start_year, END_YEAR + 1):
         feats = blend_features(cfg, dailies, year)
         if not feats:
             continue
         feats["year"] = year
         feats["oni_season"] = oni_for(
-            oni, year, ONI_WINDOW.get(cfg.key, ONI_SUMMER))
+            oni, year, ONI_WINDOW.get(cfg.key, ONI_KHARIF))
+        feats["dmi_season"] = dmi_for(
+            dmi, year, DMI_WINDOW.get(cfg.key, DMI_KHARIF))
         rows.append(feats)
 
     df = pd.DataFrame(rows)
@@ -239,16 +292,12 @@ def build_region(cfg, oni):
         log("  no season produced any feature -- check the build function")
         return df
 
-    yields = sidra.region_yield(cfg.crop, cfg.states)
-    df = df.merge(yields, on="year", how="left")
+    yields = icrisat.region_yield(cfg.crop, cfg.selector)
+    df = df.merge(yields[["year", "yield_kg_ha"]], on="year", how="left")
 
-    # Panel features: SPI needs the whole cross-year distribution to fit its
-    # Gamma, and the coffee lags need the yield series itself.
     for name, source in cfg.panel.items():
         if source == "__yield__":
             df[name] = df.yield_kg_ha.shift(1)
-        elif source == "__yield2__":
-            df[name] = df.yield_kg_ha.shift(2)
         elif source in df.columns:
             df[name] = C.spi(df[source]).reindex(df.index)
         else:
@@ -265,7 +314,8 @@ def build_region(cfg, oni):
         f"{len(df.columns)} columns -> {os.path.basename(out)}")
     if len(labelled):
         log(f"  yield {labelled.yield_kg_ha.min():.0f}-"
-            f"{labelled.yield_kg_ha.max():.0f} kg/ha")
+            f"{labelled.yield_kg_ha.max():.0f} kg/ha, "
+            f"labelled {int(labelled.year.min())}-{int(labelled.year.max())}")
     return df
 
 
@@ -273,9 +323,9 @@ def main():
     keys = sys.argv[1:]
     configs = [BY_KEY[k] for k in keys] if keys else ALL
 
-    oni = load_oni()
+    oni, dmi = load_oni(), load_dmi()
     for cfg in configs:
-        build_region(cfg, oni)
+        build_region(cfg, oni, dmi)
         log("")
     return 0
 

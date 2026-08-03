@@ -502,6 +502,82 @@ def heat_excess(daily, months, harvest_year, threshold=35.0):
     return float((w.tmax - threshold).clip(lower=0).sum())
 
 
+# ---------------------------------------------------------------------------
+# Root-zone soil moisture (NASA POWER GWETROOT, 0-1) -- MATOPIBA soil-moisture
+# work order. Sandy Cerrado soils decouple "rain fell" from "roots have
+# water": 100mm can drain through sand in a day, or 30mm can sit in a clay
+# patch for a week. Rainfall alone cannot see that difference; GWETROOT can.
+# ---------------------------------------------------------------------------
+
+
+def soil_moisture_mean(daily, months, harvest_year):
+    """Mean root-zone wetness over a month/offset window."""
+    w = _window(daily, months, harvest_year)
+    if w.empty or "soil" not in w or w.soil.isna().all():
+        return None
+    return float(w.soil.mean())
+
+
+def soil_stress_days(daily, months, harvest_year, threshold):
+    """Days with root-zone wetness below a threshold (wilting-point proxy)."""
+    w = _window(daily, months, harvest_year)
+    if w.empty or "soil" not in w:
+        return None
+    return float((w.soil < threshold).sum())
+
+
+def heat_x_drought_days(daily, months, harvest_year, temp_threshold, soil_threshold):
+    """
+    Days that are simultaneously hot and dry at the root.
+
+    The guide's central claim for MATOPIBA: a hot day with wet roots or a dry
+    day that stays cool both leave the crop's water balance intact: it is the
+    conjunction, not either alone, that collapses yield.
+    """
+    w = _window(daily, months, harvest_year)
+    if w.empty or "soil" not in w:
+        return None
+    return float(((w.soil < soil_threshold) & (w.tmax > temp_threshold)).sum())
+
+
+def wet_days(daily, months, harvest_year, threshold):
+    """Days with root-zone wetness above a threshold (waterlogging proxy)."""
+    w = _window(daily, months, harvest_year)
+    if w.empty or "soil" not in w:
+        return None
+    return float((w.soil > threshold).sum())
+
+
+def soil_moisture_mean_window(daily, start, end):
+    """Same as soil_moisture_mean, over an explicit date range (cotton's
+    ADD-based flowering window rather than a fixed calendar month)."""
+    if start is None or end is None:
+        return None
+    w = daily[(daily.date >= start) & (daily.date <= end)]
+    if w.empty or "soil" not in w or w.soil.isna().all():
+        return None
+    return float(w.soil.mean())
+
+
+def soil_stress_days_window(daily, start, end, threshold):
+    if start is None or end is None:
+        return None
+    w = daily[(daily.date >= start) & (daily.date <= end)]
+    if w.empty or "soil" not in w:
+        return None
+    return float((w.soil < threshold).sum())
+
+
+def heat_x_drought_days_window(daily, start, end, temp_threshold, soil_threshold):
+    if start is None or end is None:
+        return None
+    w = daily[(daily.date >= start) & (daily.date <= end)]
+    if w.empty or "soil" not in w:
+        return None
+    return float(((w.soil < soil_threshold) & (w.tmax > temp_threshold)).sum())
+    return float((w.tmax - threshold).clip(lower=0).sum())
+
+
 def vpd_heat_stress(daily, months, harvest_year, threshold=35.0):
     """
     Stand-in for CWSI where canopy temperature is unavailable (see module

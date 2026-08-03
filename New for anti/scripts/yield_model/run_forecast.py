@@ -46,11 +46,17 @@ REGIONS = {
         "note": "ND MT MN SD, production-weighted",
         "crops": ["spring_wheat"],
     },
+    "cotton_belt": {
+        "label": "US Cotton Belt (Texas High Plains)",
+        "label_ko": "남부 텍사스 (면화)",
+        "note": "TX GA MS AR AL, production-weighted · 파종면적 기준 단수",
+        "crops": ["cotton"],
+    },
 }
 
 CROP_LABELS_KO = {
     "corn": "옥수수", "soybeans": "대두",
-    "winter_wheat": "겨울밀", "spring_wheat": "봄밀",
+    "winter_wheat": "겨울밀", "spring_wheat": "봄밀", "cotton": "면화",
 }
 
 
@@ -102,8 +108,10 @@ def main():
                  "note": region["note"], "crops": {}}
 
         for crop in region["crops"]:
-            is_wheat = crop.endswith("wheat")
-            r = predict_wheat(crop, year) if is_wheat else predict(crop, year)
+            # predict_wheat handles every crop with its own collector
+            # (both wheats and cotton); predict() is the Corn Belt one.
+            use_south = crop.endswith("wheat") or crop == "cotton"
+            r = predict_wheat(crop, year) if use_south else predict(crop, year)
             if r is None:
                 log(f"{crop}: no forecast produced")
                 continue

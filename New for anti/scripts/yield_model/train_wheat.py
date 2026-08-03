@@ -1,5 +1,5 @@
 """
-Train and validate the US wheat models.
+Train and validate the US wheat and cotton models.
 
 Same discipline as corn/soybeans: predict the deviation from a technology
 trend, refit that trend inside every fold, and trust only the
@@ -40,6 +40,14 @@ CORE = {
         "grainfill_edd_anom", "preseason_precip_anom", "flowering_precip_anom",
         "grainfill_soil_anom", "oni_season",
     ],
+    # Cotton's core follows the boll-set physics: drought at flowering cuts
+    # boll number, and Texas dryland leans on winter/spring recharge before
+    # the crop is even planted.
+    "cotton": [
+        "flowering_soil_anom", "flowering_edd_anom", "flowering_vpd_anom",
+        "flowering_precip_anom", "preseason_soil_anom", "preseason_precip_anom",
+        "bollfill_soil_anom", "oni_season",
+    ],
 }
 
 DROP = {"year", "yield"}
@@ -63,6 +71,7 @@ DROP = {"year", "yield"}
 TRAIN_WINDOW = {
     "winter_wheat": None,
     "spring_wheat": 20,
+    "cotton": None,
 }
 
 
@@ -139,7 +148,9 @@ def train(crop):
     final = RidgeCV(alphas=ALPHAS).fit(sc.transform(fit[feats].values), resid)
 
     art = {
-        "crop": crop, "region": "US " + crop.replace("_", " "), "unit": "bu/acre",
+        "crop": crop, "region": "US " + crop.replace("_", " "),
+        # Cotton is reported in pounds, the wheats in bushels.
+        "unit": "lb/acre" if crop == "cotton" else "bu/acre",
         "trained_years": [int(df.year.min()), int(df.year.max())],
         "n_seasons": int(len(df)),
         "trend": {"slope_per_year": float(k), "intercept": float(b)},
@@ -162,6 +173,6 @@ def train(crop):
 
 
 if __name__ == "__main__":
-    for c in (sys.argv[1:] or ["winter_wheat", "spring_wheat"]):
+    for c in (sys.argv[1:] or ["winter_wheat", "spring_wheat", "cotton"]):
         train(c)
 

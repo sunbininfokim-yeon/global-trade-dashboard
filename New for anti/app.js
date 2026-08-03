@@ -325,6 +325,7 @@ const US_REGION_KEYS = {
     'US Corn Belt': 'corn_belt',
     'US Great Plains': 'great_plains',
     'US Northern Plains': 'northern_plains',
+    'US Cotton Belt': 'cotton_belt',
 };
 
 // Why each region's model is shaped the way it is, and which finding drove it.
@@ -353,6 +354,19 @@ const US_REGION_METHOD = {
         finding: '참고 가이드가 강조한 춘화처리·동해·서리 패널티는 신호가 없었습니다 '
                + '(r=+0.020 / −0.104 / −0.071). 서리 최다 3개년 중 2019년은 오히려 증수라 방향도 '
                + '엇갈립니다. 공식대로 구현했으나 이 지역·이 기간에서는 지배 요인이 아니었습니다.',
+    },
+    cotton_belt: {
+        headline: '추세수확량 + 기상편차 회귀 (면화, 파종면적 기준)',
+        refs: 'Pettigrew (2004), Agronomy Journal · Scanlon et al. (2012), PNAS',
+        notes: [
+            '개화~꼬투리 충실기(7~9월) 수분이 꼬투리 수를 결정합니다. 면화는 고온 내성이 높아 EDD 임계를 32°C로 잡았습니다.',
+            '텍사스 하이플레인스는 오갈라라 대수층 관개 의존도가 높아, 파종 전(11~4월) 토양수분 충전이 함께 들어갑니다.',
+        ],
+        finding: '수확면적이 아니라 파종면적 기준으로 단수를 계산했습니다. 텍사스 수확포기율이 '
+               + '연도별 4~75%로 요동치는데, 가뭄해에 농민이 망한 밭을 갈아엎으면 살아남은 '
+               + '관개 밭만 측정돼 단수가 오히려 높게 찍힙니다(2022년 포기율 74.5%인데 단수 734 lb/ac로 '
+               + '평년 이상). 파종면적 기준으로 바꾸니 변동계수가 10.0%→37.1%로 커지고 최악 3개년이 '
+               + '2022·2011·2023 — 실제 텍사스 가뭄해와 일치합니다.',
     },
     northern_plains: {
         headline: '추세수확량 + 기상편차 회귀 (봄밀, 20년 이동창)',
@@ -500,6 +514,8 @@ const CLIMATE_COUNTRIES = {
               coordinates: [-99.0, 38.0], regionKey: 'great_plains' },
             { name: 'US Northern Plains', label: '북부대평원 (봄밀)',
               coordinates: [-100.5, 47.0], regionKey: 'northern_plains' },
+            { name: 'US Cotton Belt', label: '남부 텍사스 (면화)',
+              coordinates: [-101.9, 33.6], regionKey: 'cotton_belt' },
         ],
     },
     'Brazil': {
@@ -517,6 +533,21 @@ const CLIMATE_COUNTRIES = {
             { name: 'Sao Paulo (Brazil)', label: '상파울루 (사탕수수·커피)', coordinates: [-47.8, -21.4] },
         ],
     },
+    'India': {
+        label: '인도',
+        iso: 'IND',
+        view: { longitude: 78.0, latitude: 23.5, zoom: 3.8 },
+        summaryKey: 'india',
+        // One point per region-crop rather than clusters, because the three
+        // Indian guides each cover a single crop over its own ground -- unlike
+        // Brazil's Mato Grosso or MATOPIBA, no point here hosts more than one
+        // model.
+        regions: [
+            { name: 'Punjab (India)', label: '펀자브·하리아나 (밀)', coordinates: [75.8, 30.4] },
+            { name: 'Madhya Pradesh (India)', label: '마디아프라데시 (대두)', coordinates: [77.0, 23.2] },
+            { name: 'Vidarbha (India)', label: '비다르바·마라트와다·구자라트 (면화)', coordinates: [76.5, 21.0] },
+        ],
+    },
 };
 
 // Which level the climate view is currently showing.
@@ -528,6 +559,15 @@ const BRAZIL_REGION_MODELS = {
     'Rio Grande do Sul (Brazil)': ['parana_soja', 'parana_milho', 'parana_trigo'],
     'MATOPIBA (Brazil)': ['matopiba_soja', 'matopiba_algodao'],
     'Sao Paulo (Brazil)': ['sp_cana', 'sp_cafe', 'sp_laranja'],
+};
+
+// Which model key belongs to each clickable Indian region on the map. One
+// model per point here, unlike Brazil -- the three guides in Regions/인도
+// each cover exactly one region-crop.
+const INDIA_REGION_MODELS = {
+    'Punjab (India)': ['punjab_wheat'],
+    'Madhya Pradesh (India)': ['mp_soybean'],
+    'Vidarbha (India)': ['vidarbha_cotton'],
 };
 
 // Korean copy for the "not weather" callout. The model artifacts carry the
@@ -584,6 +624,27 @@ const BRAZIL_NON_WEATHER_KO = {
         '일으키지만 그 압력은 파종기 조율과 방제 프로그램에 달려 있지 기후에 달려 있지 않습니다. ' +
         'MODIS NDVI가 면화 단수 모델에서 추세선 대비 거의 기여하지 못한다는 연구(Johnson, ORNL)도 ' +
         '있어, 위성 식생지수로 이 공백을 메우기는 어렵습니다.',
+};
+
+// Korean copy for India's "not weather" callout, same role as
+// BRAZIL_NON_WEATHER_KO above: the model artifacts carry the canonical
+// English in provenance.non_weather_drivers, this is the display layer.
+const INDIA_NON_WEATHER_KO = {
+    punjab_wheat:
+        '펀자브·하리아나 밀은 정책이 날씨만큼 수확량을 흔듭니다. 최저지지가격(MSP) 보장 수매, ' +
+        '관정 전력 보조금, 운하 로테이션 일정이 투입 강도와 파종 시기 자체를 정하며 어떤 기상 ' +
+        '피처에도 잡히지 않습니다. 지하수 고갈은 이보다 느리게 진행되는 제약으로, 개별 시즌이 ' +
+        '아니라 기술 추세선 자체를 서서히 끌어내리는 방향으로 작용합니다.',
+    mp_soybean:
+        '마디아프라데시 대두 재배면적은 대두·옥수수·두류의 상대가격에 따라 해마다 이동합니다. ' +
+        '면적 배분이 바뀌면 날씨가 그대로여도 평균 단수가 달라집니다. 종자 갱신률과 황색모자이크 ' +
+        '바이러스 발병 압력도 실질적인 해거리 요인이지만 어떤 기후 피처로도 포착되지 않습니다.',
+    vidarbha_cotton:
+        '이 세트에서 날씨로 가장 설명하기 어려운 작물입니다. 2002년 이후 Bt 면화 전환, 종자 ' +
+        '가격·공급, 2015년 무렵부터 확산된 핑크볼웜의 Bt 저항성, 대두·비둘기콩 대비 최저지지가격 ' +
+        '상대값이 매년 재배면적과 투입 강도를 움직입니다. ICRISAT은 면화를 섬유(lint) 기준으로 ' +
+        '발표하므로, 조면율(ginning ratio)이 바뀌기만 해도 밭에서 아무 변화가 없어도 수치가 ' +
+        '움직입니다.',
 };
 
 // Open hypotheses -- explicitly NOT established findings like the map above,
@@ -670,6 +731,14 @@ const renderBrazilYieldForecast = async (regionName) => {
             <div style="text-align:right; font-size:13px; margin-top:4px; color:${vsLast >= 0 ? '#4ade80' : '#fca5a5'};">
                 전년 대비 ${vsLast >= 0 ? '+' : ''}${fmt(vsLast)} ${d.unit}
             </div>
+            ${d.last_actual.note ? `
+            <div style="margin-top:6px; font-size:11px; color:#94a3b8;">
+                ※ IBGE가 ${d.last_actual.year + 1}년${
+                    fc.season - d.last_actual.year > 2 ? `~${fc.season - 1}년` : ''
+                } 확정 단수를 아직 발표하지 않았습니다. 결측이 아니라
+                <strong style="color:#cbd5e1;">미발표</strong>이며, 현재 확보된 가장 최근 실적은
+                ${d.last_actual.year}년입니다.
+            </div>` : ''}
             <div style="margin-top:10px; padding-top:10px; border-top:1px dashed rgba(255,255,255,0.1); font-size:12px;">
                 <div style="display:flex; justify-content:space-between; color:#cbd5e1;">
                     <span>68% 신뢰구간</span><span>${fmt(d.range_68[0])} – ${fmt(d.range_68[1])}</span>
@@ -754,6 +823,162 @@ const renderBrazilYieldForecast = async (regionName) => {
     countryStatsTitleEl.textContent = regionName.replace(' (Brazil)', '');
     document.getElementById('country-stats-desc').textContent =
         '기후 모델링 문서(Regions/브라질) 지역별 수식 구현 · log 추세 + 기상편차';
+    countryStatsContentEl.innerHTML = html;
+    macroPanelEl.classList.add('hidden');
+    countryStatsPanelEl.classList.remove('hidden');
+    return true;
+};
+
+// Renders the India regional yield forecasts.
+//
+// Same discipline as renderBrazilYieldForecast: a model that fails validation
+// is shown, not hidden, flagged so the trend-extrapolation reads as one. India
+// additionally carries the Indian Ocean Dipole alongside ENSO -- the soybean
+// guide asks for both, since a positive IOD can hold the monsoon up through an
+// El Nino year that ONI alone would score as a bad one.
+const renderIndiaYieldForecast = async (regionName) => {
+    const keys = INDIA_REGION_MODELS[regionName];
+    if (!keys) return false;
+
+    const fc = await window.loadIndiaYieldForecast?.();
+    if (!fc || !fc.regions) return false;
+
+    const shown = keys.map(k => [k, fc.regions[k]]).filter(([, d]) => d);
+    if (!shown.length) return false;
+
+    const fmt = n => Math.round(n).toLocaleString();
+    let html = '';
+
+    for (const [key, d] of shown) {
+        const vsLast = d.point - d.last_actual.yield;
+        const skilled = d.skill.weather_driven;
+        const color = d.weather_effect_pct < 0 ? '#fca5a5' : '#4ade80';
+        const obsPct = d.provenance.critical_window_observed === null
+            || d.provenance.critical_window_observed === undefined
+            ? null
+            : Math.round(d.provenance.critical_window_observed * 100);
+
+        let badge;
+        if (skilled) {
+            badge = `<span style="font-size:10px; padding:2px 6px; border-radius:4px;
+                 background:rgba(74,222,128,0.15); color:#4ade80;">검증 통과 · 기상 기여
+                 ${(d.skill.weather_skill * 100).toFixed(0)}%</span>`;
+        } else if (d.skill.beats_trend) {
+            badge = `<span style="font-size:10px; padding:2px 6px; border-radius:4px;
+                 background:rgba(148,163,184,0.18); color:#cbd5e1;">추세는 이기나 기상 기여는 없음
+                 (${(d.skill.non_weather_features || []).join(', ') || '비기상 요인'} 기여)</span>`;
+        } else {
+            badge = `<span style="font-size:10px; padding:2px 6px; border-radius:4px;
+                 background:rgba(251,191,36,0.15); color:#fbbf24;">기상 신호 없음 · 추세 외삽값</span>`;
+        }
+
+        const enso = d.enso || {};
+        const iod = d.iod || {};
+
+        html += `
+        <div class="indicator-item" style="cursor:default; transform:none; border-color:rgba(255,255,255,0.1);">
+            <div class="ind-header"><span class="ind-title">${d.label}</span></div>
+            <div style="margin-top:6px;">${badge}</div>
+            <div style="display:flex; justify-content:space-between; margin-top:8px;">
+                <div>
+                    <span style="font-size:12px; color:#94a3b8;">${d.last_actual.year} 실적</span>
+                    <div style="font-size:15px;">${fmt(d.last_actual.yield)} ${d.unit}</div>
+                </div>
+                <div style="text-align:right;">
+                    <span style="font-size:12px; color:#94a3b8;">${fc.season} 예상</span>
+                    <div style="font-size:20px; font-weight:bold; color:${skilled ? color : '#cbd5e1'};">
+                        ${fmt(d.point)} ${d.unit}</div>
+                </div>
+            </div>
+            <div style="text-align:right; font-size:13px; margin-top:4px; color:${vsLast >= 0 ? '#4ade80' : '#fca5a5'};">
+                전년 대비 ${vsLast >= 0 ? '+' : ''}${fmt(vsLast)} ${d.unit}
+            </div>
+            <div style="margin-top:10px; padding-top:10px; border-top:1px dashed rgba(255,255,255,0.1); font-size:12px;">
+                <div style="display:flex; justify-content:space-between; color:#cbd5e1;">
+                    <span>68% 신뢰구간</span><span>${fmt(d.range_68[0])} – ${fmt(d.range_68[1])}</span>
+                </div>
+                <div style="display:flex; justify-content:space-between; color:#94a3b8; margin-top:6px;">
+                    <span>기술 추세</span><span>${fmt(d.trend)} ${d.unit}</span>
+                </div>
+                <div style="display:flex; justify-content:space-between; color:${color}; margin-top:2px;">
+                    <span>기상 효과</span>
+                    <span>${d.weather_effect_pct >= 0 ? '+' : ''}${d.weather_effect_pct.toFixed(1)}%</span>
+                </div>
+                <div style="display:flex; justify-content:space-between; color:#94a3b8; margin-top:6px;">
+                    <span>엘니뇨/라니냐 (ONI)</span>
+                    <span>${enso.oni_growing_season == null ? 'N/A' : enso.oni_growing_season.toFixed(2)} · ${enso.state || 'N/A'}</span>
+                </div>
+                <div style="display:flex; justify-content:space-between; color:#94a3b8; margin-top:2px;">
+                    <span>인도양 쌍극자 (IOD)</span>
+                    <span>${iod.dmi_growing_season == null ? 'N/A' : iod.dmi_growing_season.toFixed(2)} · ${iod.state || 'N/A'}</span>
+                </div>
+            </div>
+            ${d.provenance.non_weather_drivers ? `
+            <div style="margin-top:8px; padding:8px; background:rgba(251,191,36,0.08);
+                        border-left:2px solid rgba(251,191,36,0.5); border-radius:4px;
+                        font-size:11px; color:#cbd5e1; line-height:1.5;">
+                <strong style="color:#fbbf24;">날씨가 아닌 요인</strong><br>${
+                    INDIA_NON_WEATHER_KO[key] || d.provenance.non_weather_drivers}
+            </div>` : ''}
+            ${obsPct === null ? '' : `
+            <div style="margin-top:10px; font-size:11px; color:#94a3b8;">
+                <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
+                    <span>${d.provenance.season_complete
+                        ? '수확기 종료 · 생육기 기상 확정'
+                        : '생육 진행 중 · 결정 구간 관측률'}</span>
+                    <span style="color:#cbd5e1;">${obsPct}%</span>
+                </div>
+                <div style="height:4px; background:rgba(255,255,255,0.08); border-radius:2px;">
+                    <div style="height:100%; width:${obsPct}%; border-radius:2px;
+                                background:${d.provenance.season_complete ? '#4ade80' : '#60a5fa'};"></div>
+                </div>
+            </div>`}
+            <div style="margin-top:8px; padding:8px; background:rgba(0,0,0,0.2); border-radius:6px;
+                        font-size:11px; color:#94a3b8;">
+                기상 관측 ${d.provenance.weather_through}까지 · 방법론
+                <span style="color:#cbd5e1;">${d.provenance.guide.split('/').slice(-2, -1)}</span>
+            </div>
+        </div>`;
+    }
+
+    const skippedNote = Object.entries(fc.skipped || {})
+        .filter(([k]) => keys.includes(k))
+        .map(([k]) => k);
+
+    forecastCountryTitle.textContent = `인도 지역 작황 예측 (${fc.season})`;
+    forecastContentEl.innerHTML = `
+        <div class="forecast-box">
+            <div class="forecast-item">
+                <span class="forecast-label">대상 지역</span>
+                <span class="forecast-val" style="font-size:12px;">${regionName.replace(' (India)', '')}</span>
+            </div>
+            <div class="forecast-item">
+                <span class="forecast-label">작물 수</span>
+                <span class="forecast-val">${shown.length}개 모델</span>
+            </div>
+            <div class="forecast-good" style="margin-top:16px;">
+                <strong>지역별 개별 방법론 + 추세·기상편차 분해</strong><br>
+                <span style="font-size:11px; font-weight:400;">
+                펀자브 밀은 등숙기 종말기 열 스트레스(THSDD), 마디아프라데시 대두는 몬순 개시
+                지연·개화기 무강우 연속일수, 비다르바 면화는 수분적자·해충 적합일수로 각각
+                다른 수식을 씁니다.
+                </span>
+            </div>
+            ${skippedNote.length ? `
+            <p style="font-size:11px; color:#fbbf24; margin-top:10px;">
+                ${skippedNote.join(', ')}: 해당 생육 단계가 아직 도래하지 않아 예측하지 않음
+            </p>` : ''}
+        </div>
+        <p style="font-size:11px; color:#94a3b8; text-align:right; margin-bottom:4px;">
+            갱신: ${new Date(fc.generated_at).toLocaleString()}
+        </p>
+        <p style="font-size:11px; color:#64748b; text-align:right;">
+            출처: ICRISAT DLD(지구별 수확량) · NASA POWER(기상) · NOAA CPC(ONI) · NOAA PSL(IOD)
+        </p>`;
+
+    countryStatsTitleEl.textContent = regionName.replace(' (India)', '');
+    document.getElementById('country-stats-desc').textContent =
+        '기후 모델링 문서(Regions/인도) 지역별 수식 구현 · log 추세 + 기상편차';
     countryStatsContentEl.innerHTML = html;
     macroPanelEl.classList.add('hidden');
     countryStatsPanelEl.classList.remove('hidden');
@@ -927,6 +1152,19 @@ const renderCountryPanel = async (cfg) => {
                 </div>`;
             }).join('');
         }
+    } else if (cfg.summaryKey === 'india') {
+        const fc = await window.loadIndiaYieldForecast?.();
+        if (fc && fc.regions) {
+            rows = Object.values(fc.regions).map(d => {
+                const diff = d.point - d.last_actual.yield;
+                return `<div class="forecast-item" style="display:flex; justify-content:space-between;">
+                    <span style="font-size:12px;">${d.label}</span>
+                    <span><strong style="color:#e2e8f0;">${Math.round(d.point).toLocaleString()}</strong>
+                    <span style="color:${diff >= 0 ? '#4ade80' : '#fca5a5'}; font-size:12px;">
+                    ${diff >= 0 ? '+' : ''}${Math.round(diff)}</span></span>
+                </div>`;
+            }).join('');
+        }
     }
 
     forecastContentEl.innerHTML = `
@@ -957,6 +1195,7 @@ window.showClimateWorld = showClimateWorld;
 const updateForecastPanel = async (regionName) => {
     if (await renderYieldForecast(regionName)) return;
     if (await renderBrazilYieldForecast(regionName)) return;
+    if (await renderIndiaYieldForecast(regionName)) return;
 
     const data = forecastData[regionName];
     forecastCountryTitle.textContent = `지역 기상 및 기후 요인: ${regionName}`;

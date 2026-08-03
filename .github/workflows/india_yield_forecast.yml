@@ -1,0 +1,67 @@
+name: Weekly India Yield Forecast
+
+on:
+  schedule:
+    # Mondays 10:00 UTC, after the US (09:00) and Brazil (09:30) runs so the
+    # three do not race for the same commit.
+    - cron: '0 10 * * 1'
+  workflow_dispatch:
+    inputs:
+      rebuild:
+        description: >-
+          Re-run collect + train from scratch (re-fetches the ICRISAT blob).
+          Leave off for the routine weekly refresh, which reuses the
+          committed training tables and models and only pulls fresh weather.
+        type: boolean
+        default: false
+
+jobs:
+  forecast:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pandas numpy scipy scikit-learn
+
+      # ICRISAT has no per-crop endpoint to check cheaply for a new season the
+      # way brazil_yield_forecast.yml checks SIDRA -- the whole district-year
+      # table comes back in one ~13 MB response, and that response has proven
+      # unreliable (the upstream server drops most transfers before
+      # completion; see india/icrisat.py). Re-attempting it on every weekly
+      # run would make routine forecasts hostage to a flaky one-shot fetch for
+      # no benefit, since ICRISAT's historical district series is not on a
+      # weekly publication cadence in the first place. So the rebuild is
+      # opt-in via workflow_dispatch rather than auto-detected.
+      - name: Rebuild training tables and models
+        if: ${{ github.event.inputs.rebuild == 'true' }}
+        working-directory: "New for anti/scripts/yield_model"
+        run: |
+          python -m india.collect
+          python -m india.train
+
+      - name: Run forecast
+        # No API keys: ICRISAT, NASA POWER, NOAA CPC and NOAA PSL are all open.
+        working-directory: "New for anti/scripts/yield_model"
+        run: |
+          python -m india.run_forecast
+
+      - name: Commit and Push Changes
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add "New for anti/public/data/india_yield_forecast.json" \
+                  "New for anti/scripts/yield_model/india/training" \
+                  "New for anti/scripts/yield_model/india/models"
+          git commit -m "chore: weekly India regional yield forecast refresh" || exit 0
+          git push

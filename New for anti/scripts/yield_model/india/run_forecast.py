@@ -1,9 +1,9 @@
 """
-Produce the Brazil regional yield forecast the dashboard reads.
+Produce the India regional yield forecast the dashboard reads.
 
-Usage: python3 -m brazil.run_forecast [season]
+Usage: python3 -m india.run_forecast [season]
 
-Run weekly from CI. Writes public/data/brazil_yield_forecast.json with, per
+Run weekly from CI. Writes public/data/india_yield_forecast.json with, per
 region-crop: the season's central estimate and interval, the trend and weather
 components split apart, last published actual for comparison, and enough
 provenance (which guide the methodology came from, what was substituted for
@@ -12,15 +12,17 @@ number on screen can be judged rather than just believed.
 
 Region-crops whose weather features do not beat a trend-only baseline are
 still published, flagged `beats_trend: false` and given the trend's own error
-as their band. Hiding them would misrepresent which of the nine methodologies
-actually carries at this resolution.
+as their band. Hiding a weak result would misrepresent which of these three
+methodologies actually carries at this resolution -- and unlike the Brazilian
+set, none of these three has yet been confirmed against real out-of-sample
+data at the time this module was written; see india/README.md for the current
+numbers before treating any of them as settled.
 
-Where a crop is moved substantially by things that are not weather -- the
-ratoon age profile of a cane plantation, coffee's biennial bearing, an
-acreage split between first-season and safrinha corn -- that is stated in
+Where a crop is moved substantially by things that are not weather -- Bt
+adoption and pink bollworm resistance for cotton, MSP-driven area shifts for
+soybean, groundwater and procurement policy for wheat -- that is stated in
 `provenance.non_weather_drivers` rather than left for the reader to infer from
-a low skill score. A weather model failing on a crop that weather does not
-drive is a correct result, and it should read as one.
+a low skill score.
 """
 
 import json
@@ -28,13 +30,13 @@ import os
 import sys
 from datetime import datetime, timezone
 
-from .collect import current_season, load_oni
+from .collect import current_season, load_dmi, load_oni
 from .predict import predict_one
 from .regions import ALL
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.abspath(os.path.join(
-    HERE, "..", "..", "..", "public", "data", "brazil_yield_forecast.json"))
+    HERE, "..", "..", "..", "public", "data", "india_yield_forecast.json"))
 
 
 def log(msg):
@@ -56,43 +58,58 @@ def enso_label(oni):
     return "neutral", oni
 
 
+def iod_label(dmi):
+    """
+    Loosely following the range commonly used for Indian Ocean Dipole events
+    (Saji & Yamagata 2003): a positive IOD tends to support the monsoon, a
+    negative one to weaken it -- the opposite-signed partner to ENSO's effect
+    on India, which is why the soybean guide asks for both together.
+    """
+    if dmi is None:
+        return "unknown", None
+    if dmi >= 0.4:
+        return "positive IOD", dmi
+    if dmi <= -0.4:
+        return "negative IOD", dmi
+    return "neutral", dmi
+
+
 def main():
     override = int(sys.argv[1]) if len(sys.argv) > 1 else None
-    oni = load_oni()
+    oni, dmi = load_oni(), load_dmi()
 
     payload = {
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "season": override or current_season(),
-        "country": "Brazil",
+        "country": "India",
         "source_note": (
-            "Yields: IBGE SIDRA (PAM tables 1612/1613), state level. "
-            "Weather: NASA POWER daily, production-weighted across each "
-            "region's growing points, ET0 by FAO-56 Penman-Monteith. "
-            "ENSO: NOAA CPC ONI."),
+            "Yields: ICRISAT District Level Database, district level, "
+            "aggregated to region by actual production / actual area. "
+            "Weather: NASA POWER daily, area-weighted across each region's "
+            "growing points, ET0 by FAO-56 Penman-Monteith. "
+            "ENSO: NOAA CPC ONI. IOD: NOAA PSL HadISST Dipole Mode Index."),
         "methodology_note": (
             "One model per region-crop, each implementing the derived "
-            "variables of its own guide in Regions/브라질. Yield is a log "
+            "variables of its own guide in Regions/인도. Yield is a log "
             "technology trend plus a weather deviation; only the deviation is "
             "modelled. Skill is measured by forward chaining with the trend "
-            "refit inside every fold, scored over the most recent folds."),
+            "refit inside every fold, scored over the most recent folds. "
+            "Each guide names an ML method (Random Forest, an ENSO-coupled "
+            "LSTM, XGBoost) that the labelled record here -- roughly thirty "
+            "seasons per region -- cannot support without fitting noise; the "
+            "guide's own derived variables are computed in full and fed to "
+            "the same ridge regression used throughout this repo instead. "
+            "See each config's caveat below."),
         "regions": {},
     }
 
-    predicted = {}
     skipped = []
 
     for cfg in ALL:
-        # Season is resolved per crop: the summer crops roll over in September,
-        # wheat with the calendar, so in October they are not all on the same
-        # harvest year.
+        # Kharif crops roll with the calendar; Rabi wheat rolls over in
+        # November, ahead of its own sowing.
         season = override or current_season(cfg)
-        # The prior season first, so coffee's biennial lag has something to
-        # stand on where SIDRA has not published yet.
-        prior = predict_one(cfg, season - 1, oni, predicted)
-        if prior and "error" not in prior:
-            predicted[season - 1] = prior["point"]
-
-        r = predict_one(cfg, season, oni, predicted)
+        r = predict_one(cfg, season, oni, dmi)
         if r is None:
             skipped.append((cfg.key, "no trained model"))
             continue
@@ -100,29 +117,12 @@ def main():
             skipped.append((cfg.key, r["error"]))
             continue
 
-        label, value = enso_label(r["features"].get("oni_season"))
-
-        # IBGE finalises PAM municipal data slowly -- typically well over a
-        # year after harvest -- so the "last actual" season is routinely one
-        # or more years behind the season being forecast. That gap is normal
-        # publication lag, not a missing pipeline step, but it should say so
-        # explicitly rather than let a 2024 figure sit next to a 2026 forecast
-        # with no explanation of why 2025 is absent.
-        expected_year = season - 1
-        published_year = r["last_actual"]["year"]
-        gap = expected_year - published_year
-        r["last_actual"]["sidra_current"] = gap <= 0
-        r["last_actual"]["note"] = (
-            None if gap <= 0 else
-            (f"IBGE has not yet published {published_year + 1}"
-             + (f"-{expected_year}" if gap > 1 else "")
-             + f"; {published_year} is the latest season SIDRA has released "
-               f"as of this run."))
+        enso_state, enso_val = enso_label(r["features"].get("oni_season"))
+        iod_state, iod_val = iod_label(r["features"].get("dmi_season"))
 
         payload["regions"][cfg.key] = {
             "label": r["label"],
             "crop": cfg.crop,
-            "states": [uf for uf, _ in cfg.states],
             "season": season,
             "unit": r["unit"],
             "point": round(r["point"], 1),
@@ -131,15 +131,12 @@ def main():
             "trend": round(r["trend"], 1),
             "weather_effect_pct": round(r["weather_effect_pct"], 2),
             "last_actual": r["last_actual"],
-            "enso": {"state": label, "oni_growing_season": value},
+            "enso": {"state": enso_state, "oni_growing_season": enso_val},
+            "iod": {"state": iod_state, "dmi_growing_season": iod_val},
             "skill": {
                 "method": ("forward chaining, trend refit inside each fold, "
                            "scored on the most recent folds"),
                 "skill_vs_trend_only": round(r["skill_vs_trend"], 3),
-                # Skill left once the non-weather features (lags) are held out.
-                # This, not the headline number, is what a climate panel may
-                # claim: São Paulo cane scores +8.2% overall but -3.1% on
-                # weather alone, because lag1 is carrying stand persistence.
                 "weather_skill": round(r["weather_skill"], 3),
                 "weather_driven": bool(r["weather_skill"] > 0),
                 "non_weather_features": r["non_weather_features"],
@@ -155,7 +152,6 @@ def main():
                     round(r["critical_window_observed"], 3)
                     if r["critical_window_observed"] is not None else None),
                 "season_complete": r["season_complete"],
-                "notes": r["notes"],
             },
         }
         flag = "" if r["beats_trend"] else "  [no skill vs trend]"
@@ -165,11 +161,6 @@ def main():
     for key, why in skipped:
         log(f"{key:22} skipped -- {why}")
     payload["skipped"] = {k: w for k, w in skipped}
-
-    published_years = [r["last_actual"]["year"]
-                       for r in payload["regions"].values()]
-    if published_years:
-        payload["sidra_latest_published_year"] = max(published_years)
 
     if not payload["regions"]:
         log("nothing to write")

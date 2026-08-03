@@ -1,14 +1,15 @@
 """
-Apply the trained region-crop models to a live season.
+Apply the trained India region-crop models to a live season.
 
-Usage: python3 -m brazil.predict [--year Y] [region_key ...]
+Usage: python3 -m india.predict [--year Y] [region_key ...]
 
 Pulls the season's actual weather from NASA POWER, rebuilds exactly the
 features the model was trained on, and reports a central estimate with the
 band the model's own out-of-sample error justifies.
 
-SIDRA's yield record ends in 2024, so 2025 onward are genuinely unseen
-seasons rather than a replay of training data.
+ICRISAT's published record ends well before the present, so every season from
+then on is a genuinely unseen forecast rather than a replay of training data --
+see india/README.md for the exact last labelled year per crop.
 """
 
 import json
@@ -20,15 +21,20 @@ import numpy as np
 import pandas as pd
 
 from . import climate as C
+from . import icrisat
 from .collect import (
     END_YEAR,
     current_season,
-    ONI_SUMMER,
+    DMI_WINDOW,
+    DMI_KHARIF,
     ONI_WINDOW,
+    ONI_KHARIF,
     POWER_FILL,
     POWER_PARAMS,
     POWER_URL,
     blend_features,
+    dmi_for,
+    load_dmi,
     load_oni,
     oni_for,
     retry_json,
@@ -51,7 +57,7 @@ def recent_weather(point, year):
 
     Cached under today's date rather than permanently: a live season's tail
     grows every day, and a stale cache would silently forecast last week's
-    weather. POWER runs about three days behind real time.
+    weather. POWER runs a few days behind real time.
     """
     os.makedirs(CACHE, exist_ok=True)
     slug = f"{point['lat']:.2f}_{point['lon']:.2f}".replace("-", "m").replace(".", "p")
@@ -60,8 +66,9 @@ def recent_weather(point, year):
     if os.path.exists(cached):
         return pd.read_csv(cached, parse_dates=["date"])
 
-    # Two years of lead-in: the water-balance and onset formulas reach back to
-    # the previous July, and coffee's deficit windows further still.
+    # Two years of lead-in: the monsoon-onset and water-balance formulas reach
+    # back into the year before the harvest year, and wheat's window opens the
+    # previous November.
     start = f"{year - 2}0101"
     end = date.today().strftime("%Y%m%d")
 
@@ -80,54 +87,32 @@ def recent_weather(point, year):
         "tdew": list(p["T2MDEW"].values()),
         "rs": list(p["ALLSKY_SFC_SW_DWN"].values()),
         "wind": list(p["WS2M"].values()),
-        "soil": list(p["GWETROOT"].values()),
     })
     df = df[(df[["tmax", "tmin", "tmean", "precip", "rh_mean",
-                 "tdew", "rs", "wind", "soil"]] > POWER_FILL).all(axis=1)]
+                 "tdew", "rs", "wind"]] > POWER_FILL).all(axis=1)]
     df = df.sort_values("date").reset_index(drop=True)
 
     df["et0"] = C.fao56_et0(df, point["lat"], point["elevation"])
     df["vpd_max"] = (C._svp(df.tmax) - C._svp(df.tdew)).clip(lower=0)
     df = df[["date", "tmax", "tmin", "tmean", "precip",
-             "rh_mean", "vpd_max", "et0", "soil"]]
+             "rh_mean", "vpd_max", "et0"]]
     df.to_csv(cached, index=False)
     return df
 
 
-def panel_features(cfg, feats, year, history, predicted):
+def panel_features(cfg, feats, year, history):
     """
-    Add the cross-year features, scoring this season against the training
-    climatology rather than refitting it to include this season.
-
-    Coffee's lags fall back to the model's own earlier forecast when SIDRA has
-    not published the prior year yet -- which is the honest thing to do for a
-    2026 call, but it does mean the lag carries this model's error as well as
-    the weather's.
+    Add the cross-year features -- currently just SPI -- scoring this season
+    against the training climatology rather than refitting it to include this
+    season.
     """
-    notes = []
     for name, source in cfg.panel.items():
-        if source == "__yield__":
-            feats[name], note = _prior_yield(year - 1, history, predicted)
-            notes += note
-        elif source == "__yield2__":
-            feats[name], note = _prior_yield(year - 2, history, predicted)
-            notes += note
-        elif source in history.columns and source in feats:
+        if source in history.columns and source in feats:
             params = C.fit_spi(history[source])
             feats[name] = float(C.apply_spi(params, [feats[source]])[0])
-    return notes
 
 
-def _prior_yield(year, history, predicted):
-    row = history[history.year == year]
-    if not row.empty and pd.notna(row.yield_kg_ha.iloc[0]):
-        return float(row.yield_kg_ha.iloc[0]), []
-    if year in predicted:
-        return predicted[year], [f"lag for {year} uses this model's own forecast"]
-    return np.nan, [f"no yield or forecast available for {year}"]
-
-
-def predict_one(cfg, year, oni, predicted):
+def predict_one(cfg, year, oni, dmi):
     model_path = os.path.join(MODELS, f"{cfg.key}.json")
     if not os.path.exists(model_path):
         return None
@@ -142,9 +127,10 @@ def predict_one(cfg, year, oni, predicted):
     feats = blend_features(cfg, dailies, year)
     if not feats:
         return None
-    feats["oni_season"] = oni_for(oni, year, ONI_WINDOW.get(cfg.key, ONI_SUMMER))
+    feats["oni_season"] = oni_for(oni, year, ONI_WINDOW.get(cfg.key, ONI_KHARIF))
+    feats["dmi_season"] = dmi_for(dmi, year, DMI_WINDOW.get(cfg.key, DMI_KHARIF))
 
-    notes = panel_features(cfg, feats, year, history, predicted)
+    panel_features(cfg, feats, year, history)
 
     missing = [f for f in model["features"]
                if f not in feats or feats[f] is None or pd.isna(feats[f])]
@@ -156,13 +142,6 @@ def predict_one(cfg, year, oni, predicted):
     trend_log = float(np.polyval(model["trend"]["log_poly_coef"], year))
 
     x = np.array([feats[f] for f in model["features"]], dtype=float)
-    # Lag features enter as log deviations from trend, matching training.
-    for i, f in enumerate(model["features"]):
-        if f in ("lag1", "lag2"):
-            lag = 1 if f == "lag1" else 2
-            x[i] = np.log(max(x[i], 1.0)) - np.polyval(
-                model["trend"]["log_poly_coef"], year - lag)
-
     z = (x - np.array(model["scaler"]["mean"])) / np.array(model["scaler"]["scale"])
     weather_log = float(model["ridge"]["intercept"]
                         + np.dot(z, model["ridge"]["coef"]))
@@ -211,7 +190,6 @@ def predict_one(cfg, year, oni, predicted):
         "doc": model["doc"],
         "caveat": model["caveat"],
         "non_weather_drivers": model.get("non_weather_drivers", ""),
-        "notes": notes,
     }
 
 
@@ -224,26 +202,19 @@ def main():
         del args[i:i + 2]
 
     configs = [BY_KEY[k] for k in args] if args else ALL
-    oni = load_oni()
-
-    # Predict the prior season first so coffee's lag has something to stand on
-    # when SIDRA has not caught up.
-    predicted = {}
-    results = []
-    for offset in (-1, 0):
-        for cfg in configs:
-            target = (year or current_season(cfg)) + offset
-            r = predict_one(cfg, target, oni, predicted)
-            if r and "error" not in r:
-                predicted[target] = r["point"]
-                if offset == 0:
-                    results.append(r)
-            elif r and offset == 0:
-                results.append(r)
+    oni, dmi = load_oni(), load_dmi()
 
     log(f"season {year or 'per-crop (' + str(current_season()) + ')'}"
-        "  -- beyond the last published SIDRA actual, so genuinely unseen")
+        "  -- beyond the last ICRISAT actual, so genuinely unseen")
     log("")
+
+    results = []
+    for cfg in configs:
+        target = year or current_season(cfg)
+        r = predict_one(cfg, target, oni, dmi)
+        if r:
+            results.append(r)
+
     for r in sorted(results, key=lambda x: -x.get("skill_vs_trend", -9)):
         if "error" in r:
             log(f"{r['key']:20} no forecast -- {r['error']}")
@@ -260,8 +231,6 @@ def main():
         if r.get("critical_window_observed") is not None:
             log(f"  critical window  {r['critical_window_observed']:.0%} observed"
                 + ("" if r["season_complete"] else "  <-- season still running"))
-        for n in r["notes"]:
-            log(f"  note: {n}")
         log("")
 
     return 0

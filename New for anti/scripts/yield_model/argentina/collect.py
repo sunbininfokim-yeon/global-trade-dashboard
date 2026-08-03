@@ -1,14 +1,22 @@
 """
 Build one training table per region-crop.
 
-Usage: python3 -m brazil.collect [region_key ...]
+Usage: python3 -m argentina.collect [region_key ...]
 
 For each config in regions.py: pull daily NASA POWER weather for its points,
-run that region's own derived-variable formulas at each point, production-weight
-the results, add the panel-level features that need a cross-year view (SPI,
-coffee's biennial lags), and join IBGE state yields and NOAA ONI.
+run that region's own derived-variable formulas at each point,
+production-weight the results, add the panel features that need a cross-year
+view (SPI, the ENSO x IOD switch, cane's lag), and join MAGyP yields, NOAA ONI
+and NOAA PSL DMI.
 
 Output: training/<region_key>.csv, one row per harvest year.
+
+The one new feed relative to Brazil is the **IOD**. 팜파스/옥수수 §2A does not
+treat ENSO alone as sufficient: its `Climate_Shock_Index` fires only when a La
+Niña (ONI < -0.5) coincides with a positive Indian Ocean Dipole (DMI > 0.4),
+and the guide's claim is that this conjunction, not either index by itself, is
+what empties the Pampas spring. HadISST's DMI reconstruction runs from 1870,
+so it costs nothing in record length to test that claim.
 """
 
 import json
@@ -20,8 +28,9 @@ from datetime import date
 
 import pandas as pd
 
-from . import climate as C
-from . import sidra
+from brazil import climate as C
+from . import climate_ar as A
+from . import magyp
 from .regions import ALL, BY_KEY
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -30,34 +39,38 @@ TRAINING = os.path.join(HERE, "training")
 
 POWER_URL = "https://power.larc.nasa.gov/api/temporal/daily/point"
 ONI_URL = "https://www.cpc.ncep.noaa.gov/data/indices/oni.ascii.txt"
+DMI_URL = "https://psl.noaa.gov/gcos_wgsp/Timeseries/Data/dmi.had.long.data"
 
-# NASA POWER rather than Open-Meteo's ERA5 archive. Open-Meteo would reach
-# back to 1940 instead of 1981, but its free tier meters by data volume and
-# eighteen 50-year six-variable pulls exhaust the daily quota outright. POWER
-# has no comparable cap, serves a 45-year daily record in one call, and gives
-# the radiation, wind and dewpoint needed to compute FAO-56 ET0 here instead
-# of accepting a precomputed one -- which is what the safrinha guide asks for.
+# GWETROOT and GWETTOP are the 0803 작업지시서's soil-moisture channel. The
+# sheet asks for SMAP, which starts in 2015; POWER's MERRA-2 root-zone wetness
+# starts in 1981, costs no extra request, and keeps the record at 42 seasons.
 POWER_PARAMS = ("T2M_MAX,T2M_MIN,T2M,PRECTOTCORR,RH2M,T2MDEW,"
-                "ALLSKY_SFC_SW_DWN,WS2M,GWETROOT")
-# GWETROOT: root-zone (0-100cm) soil wetness from the MERRA-2 reanalysis that
-# underlies POWER, 0 (dry) to 1 (saturated). Restored here per the MATOPIBA
-# soil-moisture work order -- the earlier brazil_soy_model.py used it, this
-# package didn't fetch it at all until now. It is a simulated quantity, not a
-# satellite measurement; that distinction is what a later SMAP step would buy.
+                "ALLSKY_SFC_SW_DWN,WS2M,GWETROOT,GWETTOP")
 
+# Bumped whenever POWER_PARAMS changes, so a cache written before a new
+# variable existed is not silently reused without it. v1 files had no soil
+# moisture; leaving them in place under the old name makes the upgrade a
+# re-download rather than a corrupt half-featured table.
+CACHE_SCHEMA = "v2"
 POWER_START = "19810101"
-POWER_FILL = -900          # POWER writes -999 for missing
+POWER_FILL = -900
+END_YEAR = 2025
 
-# Last season the training tables try to build. Derived, not pinned: a literal
-# year here silently freezes the pipeline -- the site would go on publishing a
-# 2026 forecast in 2027 with no error anywhere.
-END_YEAR = date.today().year
+# Default ONI window for a summer crop, used when a config names none.
+ONI_SUMMER = ({"OND", "NDJ"}, {"DJF", "JFM"})
 
+# Spring (SON) DMI is what 팜파스/옥수수 §2A means by "인도양 쌍극자(IOD)":
+# the dipole peaks in the austral spring and that is the season whose rainfall
+# it is claimed to steal.
+IOD_SEASON = [9, 10, 11]
 
-# The Brazilian summer crops run across the calendar boundary: a "2026" soybean
-# season is sown from September 2025 and harvested by May 2026. So the season
-# now under way rolls over in September, not in January. Wheat is a winter crop
-# sown and harvested inside one calendar year and rolls with it.
+UA = {"User-Agent": "yield-model/1.0"}
+
+# The Argentine summer crops cross the calendar boundary: a "2026" soybean
+# season is sown from October 2025 and harvested by April 2026. The season now
+# under way therefore rolls over in September. Wheat is sown in June and cut in
+# December of one calendar year and rolls with it -- which is the same
+# distinction magyp.HARVEST_OFFSET encodes for the historical record.
 SEASON_ROLLOVER_MONTH = 9
 
 
@@ -68,31 +81,18 @@ def current_season(cfg=None, today=None):
         return today.year
     return today.year + (1 if today.month >= SEASON_ROLLOVER_MONTH else 0)
 
-# ONI seasons spanning each crop's growing window. Summer crops take the
-# austral wet season; wheat is a winter crop and takes the austral winter.
-ONI_SUMMER = ({"OND", "NDJ"}, {"DJF", "JFM"})
-ONI_WINTER = (set(), {"JJA", "JAS", "ASO"})
-ONI_WINDOW = {"parana_trigo": ONI_WINTER}
-
 
 def log(msg):
     print(f"[collect] {msg}", flush=True)
 
 
 def fetch(url, timeout=300):
-    req = urllib.request.Request(url, headers={"User-Agent": "yield-model/1.0"})
+    req = urllib.request.Request(url, headers=UA)
     with urllib.request.urlopen(req, timeout=timeout) as r:
         return r.read()
 
 
 def retry_json(url, attempts=6, timeout=300):
-    """
-    Fetch with exponential backoff.
-
-    POWER is generous, but the retry is kept because the earlier Open-Meteo
-    attempt showed how a keyless bulk feed fails: a volume-metered 429 that
-    seconds of backoff will not clear.
-    """
     delay = 30
     for i in range(attempts):
         try:
@@ -108,15 +108,15 @@ def retry_json(url, attempts=6, timeout=300):
 def point_weather(point):
     """
     Daily weather for one location, cached by coordinate so points shared
-    between region-crops (Mato Grosso soy and safrinha corn, for instance) are
-    downloaded once.
+    between region-crops (Pergamino and Marcos Juárez serve soy, corn and
+    wheat) are downloaded once.
 
     Returns date, tmax, tmin, tmean, precip, rh_mean, vpd_max, et0 -- the last
     two computed here rather than fetched.
     """
     os.makedirs(CACHE, exist_ok=True)
     slug = f"{point['lat']:.2f}_{point['lon']:.2f}".replace("-", "m").replace(".", "p")
-    cached = os.path.join(CACHE, f"power_{slug}.csv")
+    cached = os.path.join(CACHE, f"power_{CACHE_SCHEMA}_{slug}.csv")
     if os.path.exists(cached):
         return pd.read_csv(cached, parse_dates=["date"])
 
@@ -136,22 +136,27 @@ def point_weather(point):
         "tdew": list(p["T2MDEW"].values()),
         "rs": list(p["ALLSKY_SFC_SW_DWN"].values()),
         "wind": list(p["WS2M"].values()),
-        "soil": list(p["GWETROOT"].values()),
+        "gwetroot": list(p["GWETROOT"].values()),
+        "gwettop": list(p["GWETTOP"].values()),
     })
-    df = df[(df[["tmax", "tmin", "tmean", "precip", "rh_mean",
-                 "tdew", "rs", "wind", "soil"]] > POWER_FILL).all(axis=1)]
+    df = df[(df[["tmax", "tmin", "tmean", "precip", "rh_mean", "tdew", "rs",
+                 "wind", "gwetroot", "gwettop"]] > POWER_FILL).all(axis=1)]
     df = df.sort_values("date").reset_index(drop=True)
 
     df["et0"] = C.fao56_et0(df, point["lat"], point["elevation"])
-    # Daytime vapour pressure deficit: saturation at Tmax against the day's
-    # actual vapour pressure, matching what the guides mean by VPD.
     df["vpd_max"] = (C._svp(df.tmax) - C._svp(df.tdew)).clip(lower=0)
+    # Percentile against this point's own day-of-year climatology. Done here,
+    # once per point over the whole record, because the ranking is a property
+    # of the location and not of any one season.
+    df["sm_pct"] = A.soil_wetness_percentile(df, "gwetroot")
 
-    df = df[["date", "tmax", "tmin", "tmean", "precip",
-             "rh_mean", "vpd_max", "et0", "soil"]]
+    df = df[["date", "tmax", "tmin", "tmean", "precip", "rh_mean", "vpd_max",
+             "et0", "gwetroot", "gwettop", "sm_pct"]]
     df.to_csv(cached, index=False)
     log(f"  power {point['name']}: {len(df):,} days, "
-        f"mean ET0 {df.et0.mean():.2f} mm/day")
+        f"mean ET0 {df.et0.mean():.2f} mm/day, "
+        f"GWETROOT p05-p95 {df.gwetroot.quantile(.05):.2f}-"
+        f"{df.gwetroot.quantile(.95):.2f}")
     time.sleep(2)
     return df
 
@@ -159,15 +164,13 @@ def point_weather(point):
 def blend_features(cfg, dailies, year):
     """
     Run the region's formulas at each point, then production-weight the
-    resulting features.
+    resulting features -- never the reverse.
 
-    Averaging the daily weather first and deriving features from the mean
-    would be simpler but wrong for this set of guides: nearly every one of
-    them counts threshold exceedances (Tmax > 35, Tmin <= 1, rain > 300 mm in
-    a month), and a mean across four locations hundreds of kilometres apart
-    rarely crosses a threshold that any single location crosses often. Doing
-    it in this order, a heatwave over 40% of the region registers as 40% of a
-    heatwave instead of vanishing.
+    Nearly every Argentine guide counts threshold exceedances (Tmax > 35 C,
+    Tmin < 0 C, ADD crossings), and a mean across stations 500 km apart rarely
+    crosses a threshold that any single station crosses often. Done in this
+    order, a frost over a quarter of the wheat belt registers as a quarter of a
+    frost instead of vanishing.
 
     Weights are renormalised over the points that returned a value, so a
     feature undefined at one location is not silently counted as zero.
@@ -212,6 +215,46 @@ def load_oni():
     return df
 
 
+def load_dmi():
+    """
+    NOAA PSL's HadISST Dipole Mode Index, monthly, 1870-.
+
+    The file is a fixed-width block: a `first_year last_year` header, then one
+    row per year of twelve monthly values, then a trailing prose block. The
+    missing-value sentinel is given in the footer but is reliably a large
+    negative; anything below -90 is dropped.
+    """
+    os.makedirs(CACHE, exist_ok=True)
+    cached = os.path.join(CACHE, "dmi.csv")
+    if os.path.exists(cached):
+        return pd.read_csv(cached)
+
+    log("dmi (IOD): downloading")
+    text = fetch(DMI_URL, timeout=60).decode("utf-8", "replace")
+
+    rows = []
+    for line in text.splitlines():
+        parts = line.split()
+        if len(parts) != 13:
+            continue
+        try:
+            year = int(parts[0])
+            vals = [float(v) for v in parts[1:]]
+        except ValueError:
+            continue
+        if not 1800 <= year <= 2100:
+            continue
+        for month, v in enumerate(vals, start=1):
+            if v < -90:
+                continue
+            rows.append({"year": year, "month": month, "dmi": v})
+
+    df = pd.DataFrame(rows)
+    df.to_csv(cached, index=False)
+    log(f"  dmi: {df.year.min()}-{df.year.max()}, {len(df)} months")
+    return df
+
+
 def oni_for(oni, year, window):
     prev, cur = window
     vals = list(oni[(oni.year == year - 1) & (oni.season.isin(prev))].anom)
@@ -219,19 +262,34 @@ def oni_for(oni, year, window):
     return sum(vals) / len(vals) if vals else None
 
 
-def build_region(cfg, oni):
+def iod_for(dmi, year, offset=-1, months=IOD_SEASON):
+    """
+    Mean DMI over the austral spring of the planting year.
+
+    `offset` is -1 for summer crops (spring of the year before harvest) and 0
+    for wheat, whose own spring is the harvest year's.
+    """
+    w = dmi[(dmi.year == year + offset) & (dmi.month.isin(months))]
+    return float(w.dmi.mean()) if not w.empty else None
+
+
+def build_region(cfg, oni, dmi):
     log(f"{cfg.key}: {cfg.label}")
     dailies = {p["name"]: point_weather(p) for p in cfg.points}
 
-    first = cfg.start_year
+    # Wheat's growing season sits inside its harvest year, so its "planting
+    # spring" is that same year; summer crops planted in the spring before
+    # harvest take the previous year's.
+    iod_offset = 0 if cfg.crop == "trigo" else -1
+
     rows = []
-    for year in range(first, END_YEAR + 1):
+    for year in range(cfg.start_year, END_YEAR + 1):
         feats = blend_features(cfg, dailies, year)
         if not feats:
             continue
         feats["year"] = year
-        feats["oni_season"] = oni_for(
-            oni, year, ONI_WINDOW.get(cfg.key, ONI_SUMMER))
+        feats["oni_lag"] = oni_for(oni, year, cfg.oni_window or ONI_SUMMER)
+        feats["iod_spring"] = iod_for(dmi, year, iod_offset)
         rows.append(feats)
 
     df = pd.DataFrame(rows)
@@ -239,16 +297,18 @@ def build_region(cfg, oni):
         log("  no season produced any feature -- check the build function")
         return df
 
-    yields = sidra.region_yield(cfg.crop, cfg.states)
+    yields = magyp.region_yield(cfg.crop, cfg.provinces, cfg.departments)
     df = df.merge(yields, on="year", how="left")
 
     # Panel features: SPI needs the whole cross-year distribution to fit its
-    # Gamma, and the coffee lags need the yield series itself.
+    # Gamma, the shock index needs both indices in hand, lags need the yield
+    # series itself.
     for name, source in cfg.panel.items():
         if source == "__yield__":
             df[name] = df.yield_kg_ha.shift(1)
-        elif source == "__yield2__":
-            df[name] = df.yield_kg_ha.shift(2)
+        elif source == "__shock__":
+            df[name] = [A.climate_shock_index(o, i)
+                        for o, i in zip(df.oni_lag, df.iod_spring)]
         elif source in df.columns:
             df[name] = C.spi(df[source]).reindex(df.index)
         else:
@@ -265,7 +325,8 @@ def build_region(cfg, oni):
         f"{len(df.columns)} columns -> {os.path.basename(out)}")
     if len(labelled):
         log(f"  yield {labelled.yield_kg_ha.min():.0f}-"
-            f"{labelled.yield_kg_ha.max():.0f} kg/ha")
+            f"{labelled.yield_kg_ha.max():.0f} kg/ha, "
+            f"mean abandonment {labelled.abandonment.mean() * 100:.1f}%")
     return df
 
 
@@ -273,9 +334,10 @@ def main():
     keys = sys.argv[1:]
     configs = [BY_KEY[k] for k in keys] if keys else ALL
 
-    oni = load_oni()
+    magyp.download()
+    oni, dmi = load_oni(), load_dmi()
     for cfg in configs:
-        build_region(cfg, oni)
+        build_region(cfg, oni, dmi)
         log("")
     return 0
 
