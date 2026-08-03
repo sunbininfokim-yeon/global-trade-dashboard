@@ -53,6 +53,7 @@ CROPS = {
     "algodao":  {"table": "1612", "cls": "c81", "code": "2689"},
     "cana":     {"table": "1612", "cls": "c81", "code": "2696"},
     "cafe":     {"table": "1613", "cls": "c82", "code": "2723"},
+    "laranja":  {"table": "1613", "cls": "c82", "code": "2733"},
 }
 
 # IBGE state (UF) codes.

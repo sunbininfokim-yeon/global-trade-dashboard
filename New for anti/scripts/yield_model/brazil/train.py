@@ -107,6 +107,27 @@ def fit_trend(years, yields, degree, window=None):
     return np.poly1d(np.polyfit(years, np.log(yields), degree))
 
 
+def window_rows(years, mask, degree, window):
+    """
+    Narrow a training mask to the rows the trend was actually fitted to.
+
+    A trailing-window trend describes only its own window. Computing residuals
+    against it over the whole record leaves them with a large non-zero mean --
+    older seasons sit far off a line fitted to recent ones -- and RidgeCV's
+    intercept then absorbs that mean as a free level correction, which scores
+    as model skill against a baseline that never received it. São Paulo oranges
+    made this unmissable: alpha pinned at its 10,000 ceiling, every coefficient
+    driven to ~1e-5 so the model used no weather whatsoever, and still +26.3%
+    "skill" -- all of it the intercept.
+    """
+    if not window:
+        return mask
+    cutoff = years[mask].max() - window + 1
+    narrowed = mask & (years >= cutoff)
+    # Fall back to the full mask if the window is too thin to regress on.
+    return narrowed if narrowed.sum() >= max(degree + 2, 8) else mask
+
+
 def prepare(df, features, years, trend):
     """
     Feature matrix with lag features expressed as log deviations from trend.
@@ -174,10 +195,11 @@ def run_cv(df, features, mode, degree, window, min_train):
         trend = fit_trend(years[train], yields[train], degree, window)
         X = prepare(df, features, years, trend)
 
-        resid_train = np.log(yields[train]) - trend(years[train])
+        fit = window_rows(years, train, degree, window)
+        resid_train = np.log(yields[fit]) - trend(years[fit])
 
-        scaler = StandardScaler().fit(X[train])
-        model = RidgeCV(alphas=ALPHAS).fit(scaler.transform(X[train]), resid_train)
+        scaler = StandardScaler().fit(X[fit])
+        model = RidgeCV(alphas=ALPHAS).fit(scaler.transform(X[fit]), resid_train)
         pred = float(model.predict(scaler.transform(X[i:i + 1]))[0])
 
         # Back to kg/ha so RMSE is readable and comparable to the trend
@@ -348,9 +370,10 @@ def train_one(cfg):
     # Final fit on every season, for forecasting the live one.
     years = df.year.values.astype(float)
     X = prepare(df, best_feats, years, trend)
-    scaler = StandardScaler().fit(X)
-    resid = np.log(df.yield_kg_ha.values) - trend(years)
-    final = RidgeCV(alphas=ALPHAS).fit(scaler.transform(X), resid)
+    fit = window_rows(years, np.ones(len(years), dtype=bool), degree, window)
+    scaler = StandardScaler().fit(X[fit])
+    resid = np.log(df.yield_kg_ha.values[fit]) - trend(years[fit])
+    final = RidgeCV(alphas=ALPHAS).fit(scaler.transform(X[fit]), resid)
 
     # Uncertainty from out-of-sample error, never in-sample. Where the model
     # loses to the trend, the honest band is the trend's own error.

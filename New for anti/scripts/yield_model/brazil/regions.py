@@ -573,6 +573,70 @@ SP_CAFE = RegionCrop(
 )
 
 
+# ---------------------------------------------------------------------------
+# 상파울루 -- 오렌지: a disease problem that the guide itself says is not
+# a climate problem.
+# ---------------------------------------------------------------------------
+
+# The citrus belt overlaps the cane region; Bebedouro is its centre.
+LARANJA_POINTS = [
+    {"name": "Bebedouro",      "lat": -20.95, "lon": -48.48, "elevation": 570, "weight": 0.40},
+    {"name": "Ribeirao Preto", "lat": -21.17, "lon": -47.81, "elevation": 546, "weight": 0.35},
+    {"name": "Piracicaba",     "lat": -22.72, "lon": -47.65, "elevation": 547, "weight": 0.25},
+]
+
+
+def _sp_laranja(daily, y):
+    defs = C.monthly_water_deficit(daily, awc=120.0)
+    # Spring flowering is triggered by the first rains; a dry September-October
+    # aborts bloom. Fruit sizing runs through the following summer.
+    flowering = [(y - 1, 9, 1.2), (y - 1, 10, 1.2)]
+    sizing = [(y - 1, 11, 0.9), (y - 1, 12, 0.9), (y, 1, 0.9), (y, 2, 0.9)]
+    return {
+        "def_flowering": C.weighted_deficit(defs, flowering),
+        "def_sizing": C.weighted_deficit(defs, sizing),
+        "precip_flowering": C.window_totals(daily, [(9, -1), (10, -1)], y),
+        "heat_days": C.heat_days(daily, [(1, 0), (2, 0)], y, 34.0),
+        "hotdays_flowering": C.heat_days(daily, [(9, -1), (10, -1)], y, 32.0),
+    }
+
+
+SP_LARANJA = RegionCrop(
+    critical_window=[(9, -1), (10, -1), (11, -1), (12, -1), (1, 0), (2, 0)],
+    key="sp_laranja",
+    label="São Paulo oranges",
+    crop="laranja",
+    states=[("SP", 1.0)],
+    points=LARANJA_POINTS,
+    build=_sp_laranja,
+    doc="Regions/브라질/상파울루/오렌지_설탕/오렌지_설탕_상세분석.md",
+    # IBGE switched the orange unit from thousands of fruits to tonnes between
+    # 2000 and 2001: yield falls 84% in one year (145,999 -> 23,267 kg/ha) and
+    # stays there. That is a reporting change, not agronomy, and training
+    # across it would be meaningless.
+    regime_start=2001,
+    min_train=15,
+    panel={"lag1": "__yield__"},
+    core=["def_flowering", "precip_flowering", "hotdays_flowering", "lag1"],
+    non_weather_drivers=(
+        "The guide opens by saying this market is being destroyed 'not by "
+        "climate' but by citrus greening (Huanglongbing), and prescribes drone "
+        "CNN detection and a spatio-temporal contagion model -- neither of "
+        "which is a weather model. The data agree, and in a way that matters "
+        "for how this number is read: HLB kills trees, not yield per hectare. "
+        "São Paulo's orange area has fallen 55% from its 1991 peak (789,329 to "
+        "354,562 ha) while yield on the surviving area ROSE 35% since 2005, "
+        "because growers eradicate infected trees and what remains is younger "
+        "and better managed. A kg/ha forecast for oranges therefore shows a "
+        "healthy rising crop while the industry contracts. Read it alongside "
+        "planted area, never alone."),
+    caveat="Yield per hectare only. The guide's actual subject -- HLB "
+           "incidence and its spatial spread -- needs orchard imagery that no "
+           "open feed provides, so none of its modelling is implemented here. "
+           "Trained from 2001 because of the IBGE unit change.",
+)
+
+
 ALL = [
     MATO_GROSSO_SOJA,
     MATO_GROSSO_MILHO,
@@ -583,6 +647,7 @@ ALL = [
     MATOPIBA_ALGODAO,
     SP_CANA,
     SP_CAFE,
+    SP_LARANJA,
 ]
 
 BY_KEY = {r.key: r for r in ALL}

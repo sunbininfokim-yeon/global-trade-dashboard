@@ -527,7 +527,7 @@ const BRAZIL_REGION_MODELS = {
     'Mato Grosso (Brazil)': ['mato_grosso_soja', 'mato_grosso_milho'],
     'Rio Grande do Sul (Brazil)': ['parana_soja', 'parana_milho', 'parana_trigo'],
     'MATOPIBA (Brazil)': ['matopiba_soja', 'matopiba_algodao'],
-    'Sao Paulo (Brazil)': ['sp_cana', 'sp_cafe'],
+    'Sao Paulo (Brazil)': ['sp_cana', 'sp_cafe', 'sp_laranja'],
 };
 
 // Korean copy for the "not weather" callout. The model artifacts carry the
@@ -552,6 +552,14 @@ const BRAZIL_NON_WEATHER_KO = {
         '해걸이(격년결실)는 기상이 아니라 생리 현상입니다. 많이 열린 해에 나무가 소진되면 이듬해는 ' +
         '날씨와 무관하게 적게 열립니다. lag1·lag2가 이 주기를 담고 있고 이 둘이 모델의 최강 피처이므로, ' +
         '이 모델 성능의 상당 부분은 기후가 아니라 생물학적 기억입니다.',
+    sp_laranja:
+        '이 문서는 첫 문단부터 "이 시장은 기후가 아닌 감귤 녹화병(HLB)에 의해 붕괴되고 있다"고 ' +
+        '명시하며, 처방된 모델링도 드론 CNN과 공간 확산 모델이지 기상 모델이 아닙니다. 데이터도 ' +
+        '같은 말을 합니다 — HLB는 나무를 죽이지 헥타르당 수확량을 낮추지 않습니다. 상파울루 오렌지 ' +
+        '재배면적은 1991년 정점 대비 55% 감소(789,329→354,562 ha)했는데, 살아남은 면적의 단수는 ' +
+        '2005년 이후 오히려 35% 상승했습니다. 감염목을 뽑아내면 남은 과수원이 더 젊고 관리가 좋기 ' +
+        '때문입니다. 따라서 이 kg/ha 수치는 산업이 축소되는 중에도 우상향으로 보입니다. ' +
+        '반드시 재배면적과 함께 읽어야 하며, 단독으로 해석하면 안 됩니다.',
     matopiba_algodao:
         '1999→2000년의 도약은 세하두 이전·신품종·규모화·경영의 생산 체계 전환이지 기상 호조가 ' +
         '아닙니다(관개가 아닙니다 — 브라질 면화 재배면적의 약 92%가 천수답이며, 천수답 섬유 단수 ' +

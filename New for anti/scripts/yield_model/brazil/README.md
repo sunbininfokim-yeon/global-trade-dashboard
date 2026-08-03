@@ -40,14 +40,15 @@ cannot claim credit for biological memory or management persistence.
 | region-crop | vs trend | weather only | 5-yr holdout MAPE vs trend | verdict |
 |---|---:|---:|---:|---|
 | parana_soja | +49.0% | +49.0% | 6.9% vs 21.6% | **confirmed by both** |
-| mato_grosso_milho | +40.4% | +40.4% | 4.4% vs 8.7% | **confirmed by both** |
-| matopiba_algodao | +11.2% | +11.2% | 3.4% vs 2.6% | forward-chaining only |
-| parana_trigo | +11.1% | +11.1% | 12.0% vs 13.2% | weak, both positive |
+| sp_laranja | +43.5% | +43.4% | 4.5% vs 5.6% | forward-chaining only |
+| mato_grosso_milho | +24.5% | +24.5% | 4.6% vs 7.4% | **confirmed by both** |
+| matopiba_algodao | +14.6% | +14.6% | 3.4% vs 2.6% | evaluations disagree |
 | sp_cafe | +8.6% | +1.6% | 11.3% vs 9.6% | skill is mostly the lags |
-| sp_cana | +8.2% | −3.1% | 2.7% vs 2.8% | skill is non-weather |
-| parana_milho | −2.8% | −2.8% | 16.7% vs 25.3% | evaluations disagree |
-| mato_grosso_soja | −9.4% | −9.4% | 7.8% vs 8.3% | no skill |
-| matopiba_soja | −17.7% | −17.7% | 11.7% vs 10.7% | no skill |
+| mato_grosso_soja | +5.4% | +5.4% | 8.2% vs 7.0% | evaluations disagree |
+| parana_trigo | +0.7% | +0.7% | 11.6% vs 13.5% | weak, both positive |
+| matopiba_soja | −1.3% | −1.3% | 17.3% vs 7.7% | no skill |
+| parana_milho | −3.5% | −3.5% | 38.3% vs 21.2% | no skill |
+| sp_cana | −13.6% | −13.6% | 2.3% vs 2.7% | skill is non-weather |
 
 Only **Paraná soy** and **Mato Grosso safrinha corn** are confirmed by both
 evaluations. Everything else is either weak, contradicted between the two
@@ -133,6 +134,13 @@ there, not on cotton or cane.
   Brazilian state yields have quadrupled since the 1980s, so absolute
   detrending would treat a 10% drought in 1985 as a fifth of the same drought
   today.
+- Residuals are computed on the **same window the trend was fitted to**. A
+  trailing-window trend describes only its window; regressing residuals over
+  the whole record leaves them with a non-zero mean that RidgeCV's intercept
+  absorbs as a free level correction, scoring as skill. São Paulo oranges
+  exposed it — alpha pinned at its ceiling, every coefficient ~1e-5 so the
+  model used no weather at all, and still +26.3% "skill". Fixing it cut
+  Mato Grosso safrinha corn from +40.4% to +24.5%.
 - Model and baseline are selected **independently**: the best model against the
   best trend, not against whichever trend flatters it. An earlier version let
   cane score +61.5% for correcting a baseline that ran 4,038 kg/ha high.
