@@ -1,0 +1,750 @@
+{
+  "generated_at": "2026-08-03T14:27:35.965939+00:00",
+  "key": "indonesia_coffee",
+  "label": "Indonesia green coffee",
+  "label_ko": "인도네시아 커피",
+  "faostat_item": "Coffee, green",
+  "doc": "Regions/인도네시아/수마트라/고무_커피/고무_커피_상세분석_및_수식.md",
+  "caveat": "The national label mixes Arabica and Robusta and cannot identify local disease outbreaks.",
+  "non_weather_drivers": "Biennial bearing, tree age, pruning, farm-gate price and harvest labour.",
+  "anomaly": {
+    "window_years": 20,
+    "uses_only_prior_years": true
+  },
+  "points": [
+    {
+      "name": "Lampung",
+      "lat": -5.1,
+      "lon": 104.3,
+      "weight": 0.27
+    },
+    {
+      "name": "South_Sumatra_Coffee",
+      "lat": -4.0,
+      "lon": 103.2,
+      "weight": 0.23
+    },
+    {
+      "name": "Aceh_Gayo",
+      "lat": 4.6,
+      "lon": 96.85,
+      "weight": 0.14
+    },
+    {
+      "name": "North_Sumatra_Coffee",
+      "lat": 2.6,
+      "lon": 98.7,
+      "weight": 0.14
+    },
+    {
+      "name": "East_Java_Coffee",
+      "lat": -7.95,
+      "lon": 113.85,
+      "weight": 0.12
+    },
+    {
+      "name": "South_Sulawesi_Coffee",
+      "lat": -3.1,
+      "lon": 119.85,
+      "weight": 0.1
+    }
+  ],
+  "targets": {
+    "yield": {
+      "target": "yield_kg_ha",
+      "trained_years": [
+        2006,
+        2024
+      ],
+      "n_seasons": 19,
+      "fit_years": [
+        2010,
+        2024
+      ],
+      "trend": {
+        "name": "recent_15_linear",
+        "degree": 1,
+        "window": 15,
+        "log_poly_coef": [
+          0.014822839664368825,
+          -23.55373259310763
+        ]
+      },
+      "configuration": "core__recent_15_linear",
+      "feature_set": "core",
+      "features": [
+        "soil_flower_lag_anom",
+        "vpd_flower_lag_anom",
+        "precip_flower_anom",
+        "fungal_risk_anom",
+        "oni_season"
+      ],
+      "ridge": {
+        "alpha": 10000.0,
+        "mean": [
+          0.4381304790385261,
+          -0.2349461386025629,
+          0.18410048007816535,
+          0.42602856786480753,
+          0.03600000000000002
+        ],
+        "scale": [
+          1.0935309262066322,
+          1.1364810443306181,
+          0.9388394672502898,
+          0.730900970399932,
+          0.9438838911645859
+        ],
+        "coef": [
+          -1.3604306552858556e-05,
+          1.2591530224496218e-05,
+          -9.34018541715805e-06,
+          -3.864594480860192e-06,
+          -6.6442732137279945e-06
+        ],
+        "intercept": 2.2500519965736505e-15,
+        "effect_per_scaled_sd_pct": [
+          -0.001360421401475076,
+          0.001259160949818039,
+          -0.0009340141797764545,
+          -0.00038645870132913984,
+          -0.0006644251140608404
+        ]
+      },
+      "beats_trend": false,
+      "minimum_operational_skill": 0.1,
+      "validation": {
+        "trend_only__full_linear": {
+          "rmse": 33.672585889800885,
+          "baseline_rmse": 33.672585889800885,
+          "recent_rmse": 20.734100484139102,
+          "recent_baseline_rmse": 20.734100484139102,
+          "skill_vs_trend": 0.0,
+          "detrended_r2": -0.9609991317249384,
+          "n_folds": 9,
+          "recent_folds": 5,
+          "years": [
+            2016,
+            2024
+          ]
+        },
+        "trend_only__full_quadratic": {
+          "rmse": 35.83640799718425,
+          "baseline_rmse": 35.83640799718425,
+          "recent_rmse": 29.889821814270697,
+          "recent_baseline_rmse": 29.889821814270697,
+          "skill_vs_trend": 0.0,
+          "detrended_r2": -0.00028802293617280483,
+          "n_folds": 9,
+          "recent_folds": 5,
+          "years": [
+            2016,
+            2024
+          ]
+        },
+        "trend_only__recent_20_linear": {
+          "rmse": 33.672585889800885,
+          "baseline_rmse": 33.672585889800885,
+          "recent_rmse": 20.734100484139102,
+          "recent_baseline_rmse": 20.734100484139102,
+          "skill_vs_trend": 0.0,
+          "detrended_r2": -0.9609991317249384,
+          "n_folds": 9,
+          "recent_folds": 5,
+          "years": [
+            2016,
+            2024
+          ]
+        },
+        "trend_only__recent_15_linear": {
+          "rmse": 33.382467964732015,
+          "baseline_rmse": 33.382467964732015,
+          "recent_rmse": 19.871737501411186,
+          "recent_baseline_rmse": 19.871737501411186,
+          "skill_vs_trend": 0.0,
+          "detrended_r2": -0.7446838524620585,
+          "n_folds": 9,
+          "recent_folds": 5,
+          "years": [
+            2016,
+            2024
+          ]
+        },
+        "trend_only__recent_10_linear": {
+          "rmse": 34.00613739387843,
+          "baseline_rmse": 34.00613739387843,
+          "recent_rmse": 21.535162001914166,
+          "recent_baseline_rmse": 21.535162001914166,
+          "skill_vs_trend": 0.0,
+          "detrended_r2": -0.08920019060846851,
+          "n_folds": 9,
+          "recent_folds": 5,
+          "years": [
+            2016,
+            2024
+          ]
+        },
+        "core__full_linear": {
+          "rmse": 36.11009478660807,
+          "baseline_rmse": 33.672585889800885,
+          "recent_rmse": 20.736499791396835,
+          "recent_baseline_rmse": 20.734100484139102,
+          "skill_vs_trend": -0.00011571793334219649,
+          "detrended_r2": -1.2551826386855045,
+          "n_folds": 9,
+          "recent_folds": 5,
+          "years": [
+            2016,
+            2024
+          ]
+        },
+        "core__full_quadratic": {
+          "rmse": 39.8717997706128,
+          "baseline_rmse": 35.83640799718425,
+          "recent_rmse": 36.673230237827354,
+          "recent_baseline_rmse": 29.889821814270697,
+          "skill_vs_trend": -0.22694710144835883,
+          "detrended_r2": -0.2382484795448292,
+          "n_folds": 9,
+          "recent_folds": 5,
+          "years": [
+            2016,
+            2024
+          ]
+        },
+        "core__recent_20_linear": {
+          "rmse": 36.11009478660807,
+          "baseline_rmse": 33.672585889800885,
+          "recent_rmse": 20.736499791396835,
+          "recent_baseline_rmse": 20.734100484139102,
+          "skill_vs_trend": -0.00011571793334219649,
+          "detrended_r2": -1.2551826386855045,
+          "n_folds": 9,
+          "recent_folds": 5,
+          "years": [
+            2016,
+            2024
+          ]
+        },
+        "core__recent_15_linear": {
+          "rmse": 35.72642547439922,
+          "baseline_rmse": 33.382467964732015,
+          "recent_rmse": 19.503635061766524,
+          "recent_baseline_rmse": 19.871737501411186,
+          "skill_vs_trend": 0.018523918183728116,
+          "detrended_r2": -0.9982921937775466,
+          "n_folds": 9,
+          "recent_folds": 5,
+          "years": [
+            2016,
+            2024
+          ]
+        },
+        "core__recent_10_linear": {
+          "rmse": 38.173997293118234,
+          "baseline_rmse": 34.00613739387843,
+          "recent_rmse": 28.68576654136113,
+          "recent_baseline_rmse": 21.535162001914166,
+          "skill_vs_trend": -0.33204322023727406,
+          "detrended_r2": -0.37255063519121734,
+          "n_folds": 9,
+          "recent_folds": 5,
+          "years": [
+            2016,
+            2024
+          ]
+        },
+        "all__full_linear": {
+          "rmse": 35.273063512801734,
+          "baseline_rmse": 33.672585889800885,
+          "recent_rmse": 20.737566384545378,
+          "recent_baseline_rmse": 20.734100484139102,
+          "skill_vs_trend": -0.00016715942941081252,
+          "detrended_r2": -1.1518441974081197,
+          "n_folds": 9,
+          "recent_folds": 5,
+          "years": [
+            2016,
+            2024
+          ]
+        },
+        "all__full_quadratic": {
+          "rmse": 36.4681117988881,
+          "baseline_rmse": 35.83640799718425,
+          "recent_rmse": 29.885005863319552,
+          "recent_baseline_rmse": 29.889821814270697,
+          "skill_vs_trend": 0.00016112344131957723,
+          "detrended_r2": -0.03586385453585006,
+          "n_folds": 9,
+          "recent_folds": 5,
+          "years": [
+            2016,
+            2024
+          ]
+        },
+        "all__recent_20_linear": {
+          "rmse": 35.273063512801734,
+          "baseline_rmse": 33.672585889800885,
+          "recent_rmse": 20.737566384545378,
+          "recent_baseline_rmse": 20.734100484139102,
+          "skill_vs_trend": -0.00016715942941081252,
+          "detrended_r2": -1.1518441974081197,
+          "n_folds": 9,
+          "recent_folds": 5,
+          "years": [
+            2016,
+            2024
+          ]
+        },
+        "all__recent_15_linear": {
+          "rmse": 41.6620952049641,
+          "baseline_rmse": 33.382467964732015,
+          "recent_rmse": 36.260457259585856,
+          "recent_baseline_rmse": 19.871737501411186,
+          "skill_vs_trend": -0.824725052704165,
+          "detrended_r2": -1.7174532024864804,
+          "n_folds": 9,
+          "recent_folds": 5,
+          "years": [
+            2016,
+            2024
+          ]
+        },
+        "all__recent_10_linear": {
+          "rmse": 36.98105969746256,
+          "baseline_rmse": 34.00613739387843,
+          "recent_rmse": 25.402286284375016,
+          "recent_baseline_rmse": 21.535162001914166,
+          "skill_vs_trend": -0.1795725651897635,
+          "detrended_r2": -0.28810658941497946,
+          "n_folds": 9,
+          "recent_folds": 5,
+          "years": [
+            2016,
+            2024
+          ]
+        }
+      },
+      "uncertainty": {
+        "sigma": 19.871737501411186,
+        "basis": "recent forward-chaining trend-only RMSE"
+      }
+    },
+    "production": {
+      "target": "production_tonnes",
+      "trained_years": [
+        2006,
+        2024
+      ],
+      "n_seasons": 19,
+      "fit_years": [
+        2015,
+        2024
+      ],
+      "trend": {
+        "name": "recent_10_linear",
+        "degree": 1,
+        "window": 10,
+        "log_poly_coef": [
+          0.02310604985643536,
+          -33.15181149663463
+        ]
+      },
+      "configuration": "trend_only__recent_10_linear",
+      "feature_set": "trend_only",
+      "features": [],
+      "ridge": null,
+      "beats_trend": false,
+      "minimum_operational_skill": 0.1,
+      "validation": {
+        "trend_only__full_linear": {
+          "rmse": 57736.92337796584,
+          "baseline_rmse": 57736.92337796584,
+          "recent_rmse": 44910.47338434179,
+          "recent_baseline_rmse": 44910.47338434179,
+          "skill_vs_trend": 0.0,
+          "detrended_r2": -2.2178710872281777,
+          "n_folds": 9,
+          "recent_folds": 5,
+          "years": [
+            2016,
+            2024
+          ]
+        },
+        "trend_only__full_quadratic": {
+          "rmse": 52246.170329728775,
+          "baseline_rmse": 52246.170329728775,
+          "recent_rmse": 43911.51034480965,
+          "recent_baseline_rmse": 43911.51034480965,
+          "skill_vs_trend": 0.0,
+          "detrended_r2": -0.0010332018342005256,
+          "n_folds": 9,
+          "recent_folds": 5,
+          "years": [
+            2016,
+            2024
+          ]
+        },
+        "trend_only__recent_20_linear": {
+          "rmse": 57736.92337796584,
+          "baseline_rmse": 57736.92337796584,
+          "recent_rmse": 44910.47338434179,
+          "recent_baseline_rmse": 44910.47338434179,
+          "skill_vs_trend": 0.0,
+          "detrended_r2": -2.2178710872281777,
+          "n_folds": 9,
+          "recent_folds": 5,
+          "years": [
+            2016,
+            2024
+          ]
+        },
+        "trend_only__recent_15_linear": {
+          "rmse": 56230.1504982508,
+          "baseline_rmse": 56230.1504982508,
+          "recent_rmse": 41326.14337959421,
+          "recent_baseline_rmse": 41326.14337959421,
+          "skill_vs_trend": 0.0,
+          "detrended_r2": -1.585328129762222,
+          "n_folds": 9,
+          "recent_folds": 5,
+          "years": [
+            2016,
+            2024
+          ]
+        },
+        "trend_only__recent_10_linear": {
+          "rmse": 51909.328965566165,
+          "baseline_rmse": 51909.328965566165,
+          "recent_rmse": 32172.547914931038,
+          "recent_baseline_rmse": 32172.547914931038,
+          "skill_vs_trend": 0.0,
+          "detrended_r2": -0.2008054099065113,
+          "n_folds": 9,
+          "recent_folds": 5,
+          "years": [
+            2016,
+            2024
+          ]
+        },
+        "core__full_linear": {
+          "rmse": 56569.75684973262,
+          "baseline_rmse": 57736.92337796584,
+          "recent_rmse": 44927.35958577459,
+          "recent_baseline_rmse": 44910.47338434179,
+          "skill_vs_trend": -0.0003759969592902479,
+          "detrended_r2": -2.089085933110144,
+          "n_folds": 9,
+          "recent_folds": 5,
+          "years": [
+            2016,
+            2024
+          ]
+        },
+        "core__full_quadratic": {
+          "rmse": 56996.72675184832,
+          "baseline_rmse": 52246.170329728775,
+          "recent_rmse": 56364.29135256836,
+          "recent_baseline_rmse": 43911.51034480965,
+          "skill_vs_trend": -0.28358808225849685,
+          "detrended_r2": -0.19135005485118484,
+          "n_folds": 9,
+          "recent_folds": 5,
+          "years": [
+            2016,
+            2024
+          ]
+        },
+        "core__recent_20_linear": {
+          "rmse": 56569.75684973262,
+          "baseline_rmse": 57736.92337796584,
+          "recent_rmse": 44927.35958577459,
+          "recent_baseline_rmse": 44910.47338434179,
+          "skill_vs_trend": -0.0003759969592902479,
+          "detrended_r2": -2.089085933110144,
+          "n_folds": 9,
+          "recent_folds": 5,
+          "years": [
+            2016,
+            2024
+          ]
+        },
+        "core__recent_15_linear": {
+          "rmse": 60675.912091746686,
+          "baseline_rmse": 56230.1504982508,
+          "recent_rmse": 53712.56549429559,
+          "recent_baseline_rmse": 41326.14337959421,
+          "skill_vs_trend": -0.2997236398501555,
+          "detrended_r2": -2.010300194734993,
+          "n_folds": 9,
+          "recent_folds": 5,
+          "years": [
+            2016,
+            2024
+          ]
+        },
+        "core__recent_10_linear": {
+          "rmse": 53873.45709022271,
+          "baseline_rmse": 51909.328965566165,
+          "recent_rmse": 35744.738922367476,
+          "recent_baseline_rmse": 32172.547914931038,
+          "skill_vs_trend": -0.11103226940190858,
+          "detrended_r2": -0.2933959509341617,
+          "n_folds": 9,
+          "recent_folds": 5,
+          "years": [
+            2016,
+            2024
+          ]
+        },
+        "all__full_linear": {
+          "rmse": 62756.25422086902,
+          "baseline_rmse": 57736.92337796584,
+          "recent_rmse": 44930.648112995455,
+          "recent_baseline_rmse": 44910.47338434179,
+          "skill_vs_trend": -0.00044922101980549023,
+          "detrended_r2": -2.8016785549026024,
+          "n_folds": 9,
+          "recent_folds": 5,
+          "years": [
+            2016,
+            2024
+          ]
+        },
+        "all__full_quadratic": {
+          "rmse": 57913.717048302104,
+          "baseline_rmse": 52246.170329728775,
+          "recent_rmse": 50328.76178709257,
+          "recent_baseline_rmse": 43911.51034480965,
+          "skill_vs_trend": -0.1461405310792605,
+          "detrended_r2": -0.22999242891990535,
+          "n_folds": 9,
+          "recent_folds": 5,
+          "years": [
+            2016,
+            2024
+          ]
+        },
+        "all__recent_20_linear": {
+          "rmse": 62756.25422086902,
+          "baseline_rmse": 57736.92337796584,
+          "recent_rmse": 44930.648112995455,
+          "recent_baseline_rmse": 44910.47338434179,
+          "skill_vs_trend": -0.00044922101980549023,
+          "detrended_r2": -2.8016785549026024,
+          "n_folds": 9,
+          "recent_folds": 5,
+          "years": [
+            2016,
+            2024
+          ]
+        },
+        "all__recent_15_linear": {
+          "rmse": 61372.528562058535,
+          "baseline_rmse": 56230.1504982508,
+          "recent_rmse": 41347.246737035,
+          "recent_baseline_rmse": 41326.14337959421,
+          "skill_vs_trend": -0.0005106539278769695,
+          "detrended_r2": -2.0798191366104652,
+          "n_folds": 9,
+          "recent_folds": 5,
+          "years": [
+            2016,
+            2024
+          ]
+        },
+        "all__recent_10_linear": {
+          "rmse": 60090.274585399835,
+          "baseline_rmse": 51909.328965566165,
+          "recent_rmse": 35143.43621313679,
+          "recent_baseline_rmse": 32172.547914931038,
+          "skill_vs_trend": -0.09234233813440018,
+          "detrended_r2": -0.6091264862567496,
+          "n_folds": 9,
+          "recent_folds": 5,
+          "years": [
+            2016,
+            2024
+          ]
+        }
+      },
+      "uncertainty": {
+        "sigma": 32172.547914931038,
+        "basis": "recent forward-chaining trend-only RMSE"
+      }
+    },
+    "area": {
+      "target": "area_ha",
+      "trained_years": [
+        1986,
+        2024
+      ],
+      "n_seasons": 39,
+      "fit_years": [
+        2015,
+        2024
+      ],
+      "trend": {
+        "name": "recent_10_linear",
+        "degree": 1,
+        "window": 10,
+        "log_poly_coef": [
+          0.004092370121108781,
+          5.776221610615286
+        ]
+      },
+      "configuration": "trend_only__recent_10_linear",
+      "feature_set": "trend_only",
+      "features": [],
+      "ridge": null,
+      "beats_trend": false,
+      "minimum_operational_skill": 0.1,
+      "validation": {
+        "trend_only__full_linear": {
+          "rmse": 231607.78641935208,
+          "baseline_rmse": 231607.78641935208,
+          "recent_rmse": 259678.410923357,
+          "recent_baseline_rmse": 259678.410923357,
+          "skill_vs_trend": 0.0,
+          "detrended_r2": -0.513903396399138,
+          "n_folds": 29,
+          "recent_folds": 5,
+          "years": [
+            1996,
+            2024
+          ]
+        },
+        "trend_only__full_quadratic": {
+          "rmse": 163795.77663897866,
+          "baseline_rmse": 163795.77663897866,
+          "recent_rmse": 76504.4486516261,
+          "recent_baseline_rmse": 76504.4486516261,
+          "skill_vs_trend": 0.0,
+          "detrended_r2": -0.08726183428455925,
+          "n_folds": 29,
+          "recent_folds": 5,
+          "years": [
+            1996,
+            2024
+          ]
+        },
+        "trend_only__recent_20_linear": {
+          "rmse": 176109.01487946673,
+          "baseline_rmse": 176109.01487946673,
+          "recent_rmse": 43842.439786879775,
+          "recent_baseline_rmse": 43842.439786879775,
+          "skill_vs_trend": 0.0,
+          "detrended_r2": -0.10638475892780863,
+          "n_folds": 29,
+          "recent_folds": 5,
+          "years": [
+            1996,
+            2024
+          ]
+        },
+        "trend_only__recent_15_linear": {
+          "rmse": 158956.13372252937,
+          "baseline_rmse": 158956.13372252937,
+          "recent_rmse": 33245.48223278202,
+          "recent_baseline_rmse": 33245.48223278202,
+          "skill_vs_trend": 0.0,
+          "detrended_r2": -0.03794682442766062,
+          "n_folds": 29,
+          "recent_folds": 5,
+          "years": [
+            1996,
+            2024
+          ]
+        },
+        "trend_only__recent_10_linear": {
+          "rmse": 141956.12303080477,
+          "baseline_rmse": 141956.12303080477,
+          "recent_rmse": 21540.60315198528,
+          "recent_baseline_rmse": 21540.60315198528,
+          "skill_vs_trend": 0.0,
+          "detrended_r2": -0.014217755831138046,
+          "n_folds": 29,
+          "recent_folds": 5,
+          "years": [
+            1996,
+            2024
+          ]
+        },
+        "weather__full_linear": {
+          "rmse": 231607.78641935208,
+          "baseline_rmse": 231607.78641935208,
+          "recent_rmse": 259678.410923357,
+          "recent_baseline_rmse": 259678.410923357,
+          "skill_vs_trend": 0.0,
+          "detrended_r2": -0.513903396399138,
+          "n_folds": 29,
+          "recent_folds": 5,
+          "years": [
+            1996,
+            2024
+          ]
+        },
+        "weather__full_quadratic": {
+          "rmse": 163795.77663897866,
+          "baseline_rmse": 163795.77663897866,
+          "recent_rmse": 76504.4486516261,
+          "recent_baseline_rmse": 76504.4486516261,
+          "skill_vs_trend": 0.0,
+          "detrended_r2": -0.08726183428455925,
+          "n_folds": 29,
+          "recent_folds": 5,
+          "years": [
+            1996,
+            2024
+          ]
+        },
+        "weather__recent_20_linear": {
+          "rmse": 176109.01487946673,
+          "baseline_rmse": 176109.01487946673,
+          "recent_rmse": 43842.439786879775,
+          "recent_baseline_rmse": 43842.439786879775,
+          "skill_vs_trend": 0.0,
+          "detrended_r2": -0.10638475892780863,
+          "n_folds": 29,
+          "recent_folds": 5,
+          "years": [
+            1996,
+            2024
+          ]
+        },
+        "weather__recent_15_linear": {
+          "rmse": 158956.13372252937,
+          "baseline_rmse": 158956.13372252937,
+          "recent_rmse": 33245.48223278202,
+          "recent_baseline_rmse": 33245.48223278202,
+          "skill_vs_trend": 0.0,
+          "detrended_r2": -0.03794682442766062,
+          "n_folds": 29,
+          "recent_folds": 5,
+          "years": [
+            1996,
+            2024
+          ]
+        },
+        "weather__recent_10_linear": {
+          "rmse": 141956.12303080477,
+          "baseline_rmse": 141956.12303080477,
+          "recent_rmse": 21540.60315198528,
+          "recent_baseline_rmse": 21540.60315198528,
+          "skill_vs_trend": 0.0,
+          "detrended_r2": -0.014217755831138046,
+          "n_folds": 29,
+          "recent_folds": 5,
+          "years": [
+            1996,
+            2024
+          ]
+        }
+      },
+      "uncertainty": {
+        "sigma": 21540.60315198528,
+        "basis": "recent forward-chaining trend-only RMSE"
+      }
+    }
+  }
+}

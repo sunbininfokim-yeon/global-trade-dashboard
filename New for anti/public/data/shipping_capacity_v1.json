@@ -1,0 +1,2001 @@
+{
+  "schema_version": "shipping-capacity-v1",
+  "generated_at": "2026-08-03T14:20:44.734241+00:00",
+  "model": {
+    "name": "Route Cycle Capacity + Chokepoint Shock",
+    "version": "1.0.0",
+    "formula": "required_dwt = annual_cargo_tonnes * round_trip_cycle_days / (365 * utilization)",
+    "uncertainty": "P10/P50/P90 parameter range; not an event-probability forecast"
+  },
+  "data_policy": {
+    "observed": "UNCTAD fleet baseline and optional IMF PortWatch daily capacity",
+    "estimated": "route DWT derived from cargo flow, distance, speed, utilization and reserve",
+    "scenario": "closure, reroute, wait and cancellation assumptions",
+    "warning": "Route capacity is DWT-equivalent demand, not a vessel-by-vessel AIS inventory."
+  },
+  "sources": [
+    {
+      "name": "UNCTAD Review of Maritime Transport 2025, table II.5",
+      "url": "https://unctad.org/system/files/official-document/rmt2025ch2_en.pdf"
+    },
+    {
+      "name": "IMF PortWatch Daily Chokepoints Data (ArcGIS REST)",
+      "url": "https://services9.arcgis.com/weJ1QsnbMYJlCHdG/ArcGIS/rest/services/Daily_Chokepoints_Data/FeatureServer/0/query"
+    },
+    {
+      "name": "UN Comtrade quantity/net-weight methodology",
+      "url": "https://comtradeapi.un.org/files/v1/app/wiki/MethodologyGuideforComtradePlus.pdf"
+    }
+  ],
+  "fleet": {
+    "as_of": "2025-01-01",
+    "unit": "dwt",
+    "status": "observed_annual_baseline",
+    "scope": "Propelled seagoing merchant vessels of 100 GT and above",
+    "source": {
+      "name": "UNCTAD Review of Maritime Transport 2025, table II.5",
+      "url": "https://unctad.org/system/files/official-document/rmt2025ch2_en.pdf"
+    },
+    "world_total_dwt": 2439832000,
+    "fleet_by_type": [
+      {
+        "ship_type": "dry_bulk",
+        "dwt": 1036158000,
+        "share_pct": 42.5
+      },
+      {
+        "ship_type": "tanker",
+        "dwt": 669842000,
+        "share_pct": 27.5
+      },
+      {
+        "ship_type": "container",
+        "dwt": 363759100,
+        "share_pct": 14.9
+      },
+      {
+        "ship_type": "general_cargo",
+        "dwt": 87421000,
+        "share_pct": 3.6
+      },
+      {
+        "ship_type": "other",
+        "dwt": 282651000,
+        "share_pct": 11.6
+      }
+    ],
+    "rounding_note": "Published vessel-type figures differ from the published world total by 900 DWT because of table rounding."
+  },
+  "chokepoints": [
+    {
+      "id": "suez",
+      "name_ko": "수에즈 운하",
+      "name_en": "Suez Canal",
+      "portwatch_id": "chokepoint1",
+      "coordinates": [
+        32.436882,
+        30.593346
+      ],
+      "source_status": "observed_free_api"
+    },
+    {
+      "id": "panama",
+      "name_ko": "파나마 운하",
+      "name_en": "Panama Canal",
+      "portwatch_id": "chokepoint2",
+      "coordinates": [
+        -79.6819,
+        9.08
+      ],
+      "source_status": "observed_free_api"
+    },
+    {
+      "id": "bosporus",
+      "name_ko": "보스포루스 해협",
+      "name_en": "Bosporus Strait",
+      "portwatch_id": "chokepoint3",
+      "coordinates": [
+        29.06,
+        41.12
+      ],
+      "source_status": "observed_free_api"
+    },
+    {
+      "id": "bab_el_mandeb",
+      "name_ko": "바벨만데브 해협",
+      "name_en": "Bab el-Mandeb Strait",
+      "portwatch_id": "chokepoint4",
+      "coordinates": [
+        43.349545,
+        12.788597
+      ],
+      "source_status": "observed_free_api"
+    },
+    {
+      "id": "hormuz",
+      "name_ko": "호르무즈 해협",
+      "name_en": "Strait of Hormuz",
+      "portwatch_id": "chokepoint6",
+      "coordinates": [
+        56.25,
+        26.5667
+      ],
+      "source_status": "observed_free_api"
+    }
+  ],
+  "chokepoints_live": {
+    "suez": {
+      "portwatch_id": "chokepoint1",
+      "portname": "Suez Canal",
+      "latest_date": "2026-07-26",
+      "quality": "observed_capacity_shortfall_7d_vs_prior_28d",
+      "interpretation": "Short-term capacity anomaly used as a shock proxy; not proof of literal closure.",
+      "observation_count": 120,
+      "metrics": {
+        "container": {
+          "field": "capacity_container",
+          "current_7d_mean_dwt": 243168.142857,
+          "prior_28d_mean_dwt": 286292.392857,
+          "capacity_ratio": 0.84937,
+          "observed_shortfall_fraction": 0.15063,
+          "change_pct": -15.063009
+        },
+        "dry_bulk": {
+          "field": "capacity_dry_bulk",
+          "current_7d_mean_dwt": 416516.714286,
+          "prior_28d_mean_dwt": 584773.821429,
+          "capacity_ratio": 0.71227,
+          "observed_shortfall_fraction": 0.28773,
+          "change_pct": -28.773023
+        },
+        "general_cargo": {
+          "field": "capacity_general_cargo",
+          "current_7d_mean_dwt": 26815.0,
+          "prior_28d_mean_dwt": 17639.571429,
+          "capacity_ratio": 1.520162,
+          "observed_shortfall_fraction": 0.0,
+          "change_pct": 52.016165
+        },
+        "tanker": {
+          "field": "capacity_tanker",
+          "current_7d_mean_dwt": 641735.285714,
+          "prior_28d_mean_dwt": 787074.25,
+          "capacity_ratio": 0.815343,
+          "observed_shortfall_fraction": 0.184657,
+          "change_pct": -18.465725
+        },
+        "all": {
+          "field": "capacity",
+          "current_7d_mean_dwt": 1333320.142857,
+          "prior_28d_mean_dwt": 1678706.0,
+          "capacity_ratio": 0.794255,
+          "observed_shortfall_fraction": 0.205745,
+          "change_pct": -20.574529
+        }
+      }
+    },
+    "panama": {
+      "portwatch_id": "chokepoint2",
+      "portname": "Panama Canal",
+      "latest_date": "2026-07-26",
+      "quality": "observed_capacity_shortfall_7d_vs_prior_28d",
+      "interpretation": "Short-term capacity anomaly used as a shock proxy; not proof of literal closure.",
+      "observation_count": 120,
+      "metrics": {
+        "container": {
+          "field": "capacity_container",
+          "current_7d_mean_dwt": 333911.285714,
+          "prior_28d_mean_dwt": 321462.321429,
+          "capacity_ratio": 1.038726,
+          "observed_shortfall_fraction": 0.0,
+          "change_pct": 3.872604
+        },
+        "dry_bulk": {
+          "field": "capacity_dry_bulk",
+          "current_7d_mean_dwt": 177283.714286,
+          "prior_28d_mean_dwt": 231021.607143,
+          "capacity_ratio": 0.76739,
+          "observed_shortfall_fraction": 0.23261,
+          "change_pct": -23.260981
+        },
+        "general_cargo": {
+          "field": "capacity_general_cargo",
+          "current_7d_mean_dwt": 11184.0,
+          "prior_28d_mean_dwt": 12956.928571,
+          "capacity_ratio": 0.863168,
+          "observed_shortfall_fraction": 0.136832,
+          "change_pct": -13.683247
+        },
+        "tanker": {
+          "field": "capacity_tanker",
+          "current_7d_mean_dwt": 267291.714286,
+          "prior_28d_mean_dwt": 396891.928571,
+          "capacity_ratio": 0.673462,
+          "observed_shortfall_fraction": 0.326538,
+          "change_pct": -32.653779
+        },
+        "all": {
+          "field": "capacity",
+          "current_7d_mean_dwt": 800941.285714,
+          "prior_28d_mean_dwt": 975363.142857,
+          "capacity_ratio": 0.821172,
+          "observed_shortfall_fraction": 0.178828,
+          "change_pct": -17.882761
+        }
+      }
+    },
+    "bosporus": {
+      "portwatch_id": "chokepoint3",
+      "portname": "Bosporus Strait",
+      "latest_date": "2026-07-26",
+      "quality": "observed_capacity_shortfall_7d_vs_prior_28d",
+      "interpretation": "Short-term capacity anomaly used as a shock proxy; not proof of literal closure.",
+      "observation_count": 120,
+      "metrics": {
+        "container": {
+          "field": "capacity_container",
+          "current_7d_mean_dwt": 61602.0,
+          "prior_28d_mean_dwt": 68405.75,
+          "capacity_ratio": 0.900538,
+          "observed_shortfall_fraction": 0.099462,
+          "change_pct": -9.946167
+        },
+        "dry_bulk": {
+          "field": "capacity_dry_bulk",
+          "current_7d_mean_dwt": 298060.428571,
+          "prior_28d_mean_dwt": 467050.178571,
+          "capacity_ratio": 0.638176,
+          "observed_shortfall_fraction": 0.361824,
+          "change_pct": -36.182354
+        },
+        "general_cargo": {
+          "field": "capacity_general_cargo",
+          "current_7d_mean_dwt": 61522.428571,
+          "prior_28d_mean_dwt": 77978.5,
+          "capacity_ratio": 0.788967,
+          "observed_shortfall_fraction": 0.211033,
+          "change_pct": -21.103344
+        },
+        "tanker": {
+          "field": "capacity_tanker",
+          "current_7d_mean_dwt": 215630.428571,
+          "prior_28d_mean_dwt": 507518.035714,
+          "capacity_ratio": 0.424872,
+          "observed_shortfall_fraction": 0.575128,
+          "change_pct": -57.512756
+        },
+        "all": {
+          "field": "capacity",
+          "current_7d_mean_dwt": 636977.714286,
+          "prior_28d_mean_dwt": 1121124.464286,
+          "capacity_ratio": 0.56816,
+          "observed_shortfall_fraction": 0.43184,
+          "change_pct": -43.184032
+        }
+      }
+    },
+    "bab_el_mandeb": {
+      "portwatch_id": "chokepoint4",
+      "portname": "Bab el-Mandeb Strait",
+      "latest_date": "2026-07-26",
+      "quality": "observed_capacity_shortfall_7d_vs_prior_28d",
+      "interpretation": "Short-term capacity anomaly used as a shock proxy; not proof of literal closure.",
+      "observation_count": 120,
+      "metrics": {
+        "container": {
+          "field": "capacity_container",
+          "current_7d_mean_dwt": 82555.142857,
+          "prior_28d_mean_dwt": 70127.678571,
+          "capacity_ratio": 1.177212,
+          "observed_shortfall_fraction": 0.0,
+          "change_pct": 17.721197
+        },
+        "dry_bulk": {
+          "field": "capacity_dry_bulk",
+          "current_7d_mean_dwt": 396409.857143,
+          "prior_28d_mean_dwt": 597687.214286,
+          "capacity_ratio": 0.66324,
+          "observed_shortfall_fraction": 0.33676,
+          "change_pct": -33.676035
+        },
+        "general_cargo": {
+          "field": "capacity_general_cargo",
+          "current_7d_mean_dwt": 34429.142857,
+          "prior_28d_mean_dwt": 25925.571429,
+          "capacity_ratio": 1.327999,
+          "observed_shortfall_fraction": 0.0,
+          "change_pct": 32.799938
+        },
+        "tanker": {
+          "field": "capacity_tanker",
+          "current_7d_mean_dwt": 582900.571429,
+          "prior_28d_mean_dwt": 797414.785714,
+          "capacity_ratio": 0.730988,
+          "observed_shortfall_fraction": 0.269012,
+          "change_pct": -26.901209
+        },
+        "all": {
+          "field": "capacity",
+          "current_7d_mean_dwt": 1102959.0,
+          "prior_28d_mean_dwt": 1495155.928571,
+          "capacity_ratio": 0.737688,
+          "observed_shortfall_fraction": 0.262312,
+          "change_pct": -26.231172
+        }
+      }
+    },
+    "hormuz": {
+      "portwatch_id": "chokepoint6",
+      "portname": "Strait of Hormuz",
+      "latest_date": "2026-07-23",
+      "quality": "observed_capacity_shortfall_7d_vs_prior_28d",
+      "interpretation": "Short-term capacity anomaly used as a shock proxy; not proof of literal closure.",
+      "observation_count": 120,
+      "metrics": {
+        "container": {
+          "field": "capacity_container",
+          "current_7d_mean_dwt": 57495.714286,
+          "prior_28d_mean_dwt": 66376.464286,
+          "capacity_ratio": 0.866206,
+          "observed_shortfall_fraction": 0.133794,
+          "change_pct": -13.379366
+        },
+        "dry_bulk": {
+          "field": "capacity_dry_bulk",
+          "current_7d_mean_dwt": 95155.571429,
+          "prior_28d_mean_dwt": 208879.821429,
+          "capacity_ratio": 0.455552,
+          "observed_shortfall_fraction": 0.544448,
+          "change_pct": -54.444823
+        },
+        "general_cargo": {
+          "field": "capacity_general_cargo",
+          "current_7d_mean_dwt": 6183.571429,
+          "prior_28d_mean_dwt": 11949.035714,
+          "capacity_ratio": 0.517495,
+          "observed_shortfall_fraction": 0.482505,
+          "change_pct": -48.250457
+        },
+        "tanker": {
+          "field": "capacity_tanker",
+          "current_7d_mean_dwt": 22809.142857,
+          "prior_28d_mean_dwt": 627465.428571,
+          "capacity_ratio": 0.036351,
+          "observed_shortfall_fraction": 0.963649,
+          "change_pct": -96.364877
+        },
+        "all": {
+          "field": "capacity",
+          "current_7d_mean_dwt": 181693.857143,
+          "prior_28d_mean_dwt": 914672.25,
+          "capacity_ratio": 0.198644,
+          "observed_shortfall_fraction": 0.801356,
+          "change_pct": -80.135633
+        }
+      }
+    }
+  },
+  "live_fetch_errors": [],
+  "routes": [
+    {
+      "id": "asia_north_europe_container",
+      "name_ko": "동아시아 → 북유럽 컨테이너",
+      "name_en": "East Asia to North Europe Container",
+      "ship_type": "container",
+      "origin": "East Asia",
+      "destination": "North Europe",
+      "input_status": "scenario_seed_replace_with_comtrade",
+      "input_sources": [
+        "UN Comtrade netWeight aggregation",
+        "Route distance assumption"
+      ],
+      "annual_cargo_tonnes": 250000000,
+      "baseline": {
+        "route_id": "asia_north_europe_container",
+        "scenario_id": "normal",
+        "ship_type": "container",
+        "baseline_cycle_days": 61.470588,
+        "baseline_required_dwt": 53978387.983223,
+        "allocated_dwt_with_reserve": 56677307.382384,
+        "route_share_of_type_fleet_pct": 14.839048,
+        "affected_flow_share": 0.0,
+        "rerouted_flow_share": 0.0,
+        "waiting_flow_share": 0.0,
+        "cancelled_flow_share": 0.0,
+        "reroute_extra_cycle_days": 0.0,
+        "disrupted_required_dwt": 53978387.983223,
+        "operational_capacity_absorbed_dwt": 0.0,
+        "net_required_capacity_change_dwt": 0.0,
+        "capacity_gap_dwt": 0.0,
+        "global_type_fleet_absorption_pct": 0.0,
+        "deliverable_flow_index": 1.0,
+        "traffic_change_pct": 0.0,
+        "lost_cargo_tonnes_horizon": 0.0,
+        "method": "annual-flow-cycle-capacity-v1",
+        "interval": {
+          "baseline_required_dwt": {
+            "p10": 47331076.159883,
+            "p50": 54216085.84246,
+            "p90": 61066322.253199
+          },
+          "disrupted_required_dwt": {
+            "p10": 47331076.159883,
+            "p50": 54216085.84246,
+            "p90": 61066322.253199
+          },
+          "operational_capacity_absorbed_dwt": {
+            "p10": 0.0,
+            "p50": 0.0,
+            "p90": 0.0
+          },
+          "capacity_gap_dwt": {
+            "p10": 0.0,
+            "p50": 0.0,
+            "p90": 0.0
+          },
+          "deliverable_flow_index": {
+            "p10": 1.0,
+            "p50": 1.0,
+            "p90": 1.0
+          }
+        }
+      },
+      "stress_tests": [
+        {
+          "route_id": "asia_north_europe_container",
+          "scenario_id": "suez_50pct_28d",
+          "ship_type": "container",
+          "baseline_cycle_days": 61.470588,
+          "baseline_required_dwt": 53978387.983223,
+          "allocated_dwt_with_reserve": 56677307.382384,
+          "route_share_of_type_fleet_pct": 14.839048,
+          "affected_flow_share": 0.475,
+          "rerouted_flow_share": 0.4275,
+          "waiting_flow_share": 0.038,
+          "cancelled_flow_share": 0.0095,
+          "reroute_extra_cycle_days": 17.156863,
+          "disrupted_required_dwt": 60039670.241121,
+          "operational_capacity_absorbed_dwt": 6574076.943739,
+          "net_required_capacity_change_dwt": 6061282.257898,
+          "capacity_gap_dwt": 3362362.858737,
+          "global_type_fleet_absorption_pct": 1.807261,
+          "deliverable_flow_index": 0.93503,
+          "traffic_change_pct": -6.497033,
+          "lost_cargo_tonnes_horizon": 182191.780822,
+          "method": "annual-flow-cycle-capacity-v1",
+          "interval": {
+            "baseline_required_dwt": {
+              "p10": 47399289.218919,
+              "p50": 54024019.389868,
+              "p90": 60237794.731428
+            },
+            "disrupted_required_dwt": {
+              "p10": 52733725.36038,
+              "p50": 60080574.804742,
+              "p90": 67016290.332686
+            },
+            "operational_capacity_absorbed_dwt": {
+              "p10": 5785504.919188,
+              "p50": 6574364.490113,
+              "p90": 7324878.200017
+            },
+            "capacity_gap_dwt": {
+              "p10": 2944077.819174,
+              "p50": 3363718.164968,
+              "p90": 3747802.991232
+            },
+            "deliverable_flow_index": {
+              "p10": 0.934342,
+              "p50": 0.935067,
+              "p90": 0.935753
+            }
+          }
+        },
+        {
+          "route_id": "asia_north_europe_container",
+          "scenario_id": "suez_100pct_28d",
+          "ship_type": "container",
+          "baseline_cycle_days": 61.470588,
+          "baseline_required_dwt": 53978387.983223,
+          "allocated_dwt_with_reserve": 56677307.382384,
+          "route_share_of_type_fleet_pct": 14.839048,
+          "affected_flow_share": 0.95,
+          "rerouted_flow_share": 0.855,
+          "waiting_flow_share": 0.076,
+          "cancelled_flow_share": 0.019,
+          "reroute_extra_cycle_days": 17.156863,
+          "disrupted_required_dwt": 66301163.247175,
+          "operational_capacity_absorbed_dwt": 13348364.635633,
+          "net_required_capacity_change_dwt": 12322775.263952,
+          "capacity_gap_dwt": 9623855.864791,
+          "global_type_fleet_absorption_pct": 3.669562,
+          "deliverable_flow_index": 0.838604,
+          "traffic_change_pct": -16.139573,
+          "lost_cargo_tonnes_horizon": 364383.561644,
+          "method": "annual-flow-cycle-capacity-v1",
+          "interval": {
+            "baseline_required_dwt": {
+              "p10": 48000679.973531,
+              "p50": 53881568.437056,
+              "p90": 61219989.510875
+            },
+            "disrupted_required_dwt": {
+              "p10": 58969859.070931,
+              "p50": 66242661.013377,
+              "p90": 75249584.85622
+            },
+            "operational_capacity_absorbed_dwt": {
+              "p10": 11859929.628071,
+              "p50": 13382910.625768,
+              "p90": 15198748.702977
+            },
+            "capacity_gap_dwt": {
+              "p10": 8541764.421025,
+              "p50": 9651285.260375,
+              "p90": 10969496.572428
+            },
+            "deliverable_flow_index": {
+              "p10": 0.837486,
+              "p50": 0.838487,
+              "p90": 0.839597
+            }
+          }
+        }
+      ],
+      "live_observed": [
+        {
+          "route_id": "asia_north_europe_container",
+          "scenario_id": "live_suez",
+          "ship_type": "container",
+          "baseline_cycle_days": 61.470588,
+          "baseline_required_dwt": 53978387.983223,
+          "allocated_dwt_with_reserve": 56677307.382384,
+          "route_share_of_type_fleet_pct": 14.839048,
+          "affected_flow_share": 0.143099,
+          "rerouted_flow_share": 0.128789,
+          "waiting_flow_share": 0.011448,
+          "cancelled_flow_share": 0.002862,
+          "reroute_extra_cycle_days": 17.156863,
+          "disrupted_required_dwt": 55814463.601672,
+          "operational_capacity_absorbed_dwt": 1990560.24174,
+          "net_required_capacity_change_dwt": 1836075.618449,
+          "capacity_gap_dwt": 0.0,
+          "global_type_fleet_absorption_pct": 0.547219,
+          "deliverable_flow_index": 0.997138,
+          "traffic_change_pct": -0.286197,
+          "lost_cargo_tonnes_horizon": 54887.130082,
+          "method": "annual-flow-cycle-capacity-v1",
+          "observation_latest_date": "2026-07-26",
+          "portwatch_capacity_ratio": 0.84937,
+          "signal_type": "observed_capacity_shortfall_proxy_not_literal_closure"
+        },
+        {
+          "route_id": "asia_north_europe_container",
+          "scenario_id": "live_bab_el_mandeb",
+          "ship_type": "container",
+          "baseline_cycle_days": 61.470588,
+          "baseline_required_dwt": 53978387.983223,
+          "allocated_dwt_with_reserve": 56677307.382384,
+          "route_share_of_type_fleet_pct": 14.839048,
+          "affected_flow_share": 0.0,
+          "rerouted_flow_share": 0.0,
+          "waiting_flow_share": 0.0,
+          "cancelled_flow_share": 0.0,
+          "reroute_extra_cycle_days": 17.156863,
+          "disrupted_required_dwt": 53978387.983223,
+          "operational_capacity_absorbed_dwt": 0.0,
+          "net_required_capacity_change_dwt": 0.0,
+          "capacity_gap_dwt": 0.0,
+          "global_type_fleet_absorption_pct": 0.0,
+          "deliverable_flow_index": 1.0,
+          "traffic_change_pct": 0.0,
+          "lost_cargo_tonnes_horizon": 0.0,
+          "method": "annual-flow-cycle-capacity-v1",
+          "observation_latest_date": "2026-07-26",
+          "portwatch_capacity_ratio": 1.177212,
+          "signal_type": "observed_capacity_shortfall_proxy_not_literal_closure"
+        }
+      ]
+    },
+    {
+      "id": "asia_us_east_container",
+      "name_ko": "동아시아 → 미국 동부 컨테이너",
+      "name_en": "East Asia to US East Coast Container",
+      "ship_type": "container",
+      "origin": "East Asia",
+      "destination": "US East Coast",
+      "input_status": "scenario_seed_replace_with_comtrade",
+      "input_sources": [
+        "UN Comtrade netWeight aggregation",
+        "Route distance assumption"
+      ],
+      "annual_cargo_tonnes": 120000000,
+      "baseline": {
+        "route_id": "asia_us_east_container",
+        "scenario_id": "normal",
+        "ship_type": "container",
+        "baseline_cycle_days": 55.568627,
+        "baseline_required_dwt": 24038339.200136,
+        "allocated_dwt_with_reserve": 25240256.160143,
+        "route_share_of_type_fleet_pct": 6.608313,
+        "affected_flow_share": 0.0,
+        "rerouted_flow_share": 0.0,
+        "waiting_flow_share": 0.0,
+        "cancelled_flow_share": 0.0,
+        "reroute_extra_cycle_days": 0.0,
+        "disrupted_required_dwt": 24038339.200136,
+        "operational_capacity_absorbed_dwt": 0.0,
+        "net_required_capacity_change_dwt": 0.0,
+        "capacity_gap_dwt": 0.0,
+        "global_type_fleet_absorption_pct": 0.0,
+        "deliverable_flow_index": 1.0,
+        "traffic_change_pct": 0.0,
+        "lost_cargo_tonnes_horizon": 0.0,
+        "method": "annual-flow-cycle-capacity-v1",
+        "interval": {
+          "baseline_required_dwt": {
+            "p10": 20782497.265417,
+            "p50": 23927859.15046,
+            "p90": 27135784.151123
+          },
+          "disrupted_required_dwt": {
+            "p10": 20782497.265417,
+            "p50": 23927859.15046,
+            "p90": 27135784.151123
+          },
+          "operational_capacity_absorbed_dwt": {
+            "p10": 0.0,
+            "p50": 0.0,
+            "p90": 0.0
+          },
+          "capacity_gap_dwt": {
+            "p10": 0.0,
+            "p50": 0.0,
+            "p90": 0.0
+          },
+          "deliverable_flow_index": {
+            "p10": 1.0,
+            "p50": 1.0,
+            "p90": 1.0
+          }
+        }
+      },
+      "stress_tests": [
+        {
+          "route_id": "asia_us_east_container",
+          "scenario_id": "panama_50pct_28d",
+          "ship_type": "container",
+          "baseline_cycle_days": 55.568627,
+          "baseline_required_dwt": 24038339.200136,
+          "allocated_dwt_with_reserve": 25240256.160143,
+          "route_share_of_type_fleet_pct": 6.608313,
+          "affected_flow_share": 0.36,
+          "rerouted_flow_share": 0.234,
+          "waiting_flow_share": 0.09,
+          "cancelled_flow_share": 0.036,
+          "reroute_extra_cycle_days": 23.529412,
+          "disrupted_required_dwt": 25749404.130794,
+          "operational_capacity_absorbed_dwt": 2576445.141864,
+          "net_required_capacity_change_dwt": 1711064.930659,
+          "capacity_gap_dwt": 509147.970652,
+          "global_type_fleet_absorption_pct": 0.708283,
+          "deliverable_flow_index": 0.944939,
+          "traffic_change_pct": -5.506136,
+          "lost_cargo_tonnes_horizon": 331397.260274,
+          "method": "annual-flow-cycle-capacity-v1",
+          "interval": {
+            "baseline_required_dwt": {
+              "p10": 21092097.074546,
+              "p50": 24065249.566526,
+              "p90": 27360040.778017
+            },
+            "disrupted_required_dwt": {
+              "p10": 22586865.678509,
+              "p50": 25772153.444337,
+              "p90": 29314600.128416
+            },
+            "operational_capacity_absorbed_dwt": {
+              "p10": 2254099.176083,
+              "p50": 2579619.466073,
+              "p90": 2938029.976874
+            },
+            "capacity_gap_dwt": {
+              "p10": 443095.961543,
+              "p50": 508219.486358,
+              "p90": 583320.209837
+            },
+            "deliverable_flow_index": {
+              "p10": 0.944577,
+              "p50": 0.944926,
+              "p90": 0.945293
+            }
+          }
+        }
+      ],
+      "live_observed": [
+        {
+          "route_id": "asia_us_east_container",
+          "scenario_id": "live_panama",
+          "ship_type": "container",
+          "baseline_cycle_days": 55.568627,
+          "baseline_required_dwt": 24038339.200136,
+          "allocated_dwt_with_reserve": 25240256.160143,
+          "route_share_of_type_fleet_pct": 6.608313,
+          "affected_flow_share": 0.0,
+          "rerouted_flow_share": 0.0,
+          "waiting_flow_share": 0.0,
+          "cancelled_flow_share": 0.0,
+          "reroute_extra_cycle_days": 23.529412,
+          "disrupted_required_dwt": 24038339.200136,
+          "operational_capacity_absorbed_dwt": 0.0,
+          "net_required_capacity_change_dwt": 0.0,
+          "capacity_gap_dwt": 0.0,
+          "global_type_fleet_absorption_pct": 0.0,
+          "deliverable_flow_index": 1.0,
+          "traffic_change_pct": 0.0,
+          "lost_cargo_tonnes_horizon": 0.0,
+          "method": "annual-flow-cycle-capacity-v1",
+          "observation_latest_date": "2026-07-26",
+          "portwatch_capacity_ratio": 1.038726,
+          "signal_type": "observed_capacity_shortfall_proxy_not_literal_closure"
+        }
+      ]
+    },
+    {
+      "id": "us_gulf_ne_asia_grain",
+      "name_ko": "미국 걸프 → 동북아 곡물",
+      "name_en": "US Gulf to Northeast Asia Grain",
+      "ship_type": "dry_bulk",
+      "origin": "US Gulf",
+      "destination": "Northeast Asia",
+      "input_status": "scenario_seed_replace_with_comtrade",
+      "input_sources": [
+        "UN Comtrade grain netWeight aggregation",
+        "Route distance assumption"
+      ],
+      "annual_cargo_tonnes": 35000000,
+      "baseline": {
+        "route_id": "us_gulf_ne_asia_grain",
+        "scenario_id": "normal",
+        "ship_type": "dry_bulk",
+        "baseline_cycle_days": 65.692308,
+        "baseline_required_dwt": 7682027.294456,
+        "allocated_dwt_with_reserve": 7989308.386235,
+        "route_share_of_type_fleet_pct": 0.741395,
+        "affected_flow_share": 0.0,
+        "rerouted_flow_share": 0.0,
+        "waiting_flow_share": 0.0,
+        "cancelled_flow_share": 0.0,
+        "reroute_extra_cycle_days": 0.0,
+        "disrupted_required_dwt": 7682027.294456,
+        "operational_capacity_absorbed_dwt": 0.0,
+        "net_required_capacity_change_dwt": 0.0,
+        "capacity_gap_dwt": 0.0,
+        "global_type_fleet_absorption_pct": 0.0,
+        "deliverable_flow_index": 1.0,
+        "traffic_change_pct": 0.0,
+        "lost_cargo_tonnes_horizon": 0.0,
+        "method": "annual-flow-cycle-capacity-v1",
+        "interval": {
+          "baseline_required_dwt": {
+            "p10": 6697386.78512,
+            "p50": 7742957.364562,
+            "p90": 9060140.310726
+          },
+          "disrupted_required_dwt": {
+            "p10": 6697386.78512,
+            "p50": 7742957.364562,
+            "p90": 9060140.310726
+          },
+          "operational_capacity_absorbed_dwt": {
+            "p10": 0.0,
+            "p50": 0.0,
+            "p90": 0.0
+          },
+          "capacity_gap_dwt": {
+            "p10": 0.0,
+            "p50": 0.0,
+            "p90": 0.0
+          },
+          "deliverable_flow_index": {
+            "p10": 1.0,
+            "p50": 1.0,
+            "p90": 1.0
+          }
+        }
+      },
+      "stress_tests": [
+        {
+          "route_id": "us_gulf_ne_asia_grain",
+          "scenario_id": "panama_50pct_28d",
+          "ship_type": "dry_bulk",
+          "baseline_cycle_days": 65.692308,
+          "baseline_required_dwt": 7682027.294456,
+          "allocated_dwt_with_reserve": 7989308.386235,
+          "route_share_of_type_fleet_pct": 0.741395,
+          "affected_flow_share": 0.4,
+          "rerouted_flow_share": 0.22,
+          "waiting_flow_share": 0.14,
+          "cancelled_flow_share": 0.04,
+          "reroute_extra_cycle_days": 41.666667,
+          "disrupted_required_dwt": 8528549.521533,
+          "operational_capacity_absorbed_dwt": 1153803.318855,
+          "net_required_capacity_change_dwt": 846522.227077,
+          "capacity_gap_dwt": 539241.135299,
+          "global_type_fleet_absorption_pct": 0.111354,
+          "deliverable_flow_index": 0.899301,
+          "traffic_change_pct": -10.069866,
+          "lost_cargo_tonnes_horizon": 107397.260274,
+          "method": "annual-flow-cycle-capacity-v1",
+          "interval": {
+            "baseline_required_dwt": {
+              "p10": 6561759.817816,
+              "p50": 7759199.759078,
+              "p90": 8980054.919542
+            },
+            "disrupted_required_dwt": {
+              "p10": 7282433.818073,
+              "p50": 8617573.415361,
+              "p90": 9973649.685419
+            },
+            "operational_capacity_absorbed_dwt": {
+              "p10": 984647.348174,
+              "p50": 1167949.979463,
+              "p90": 1351780.991244
+            },
+            "capacity_gap_dwt": {
+              "p10": 460982.360184,
+              "p50": 547508.180287,
+              "p90": 631872.971065
+            },
+            "deliverable_flow_index": {
+              "p10": 0.89885,
+              "p50": 0.899239,
+              "p90": 0.899546
+            }
+          }
+        }
+      ],
+      "live_observed": [
+        {
+          "route_id": "us_gulf_ne_asia_grain",
+          "scenario_id": "live_panama",
+          "ship_type": "dry_bulk",
+          "baseline_cycle_days": 65.692308,
+          "baseline_required_dwt": 7682027.294456,
+          "allocated_dwt_with_reserve": 7989308.386235,
+          "route_share_of_type_fleet_pct": 0.741395,
+          "affected_flow_share": 0.186088,
+          "rerouted_flow_share": 0.102348,
+          "waiting_flow_share": 0.065131,
+          "cancelled_flow_share": 0.018609,
+          "reroute_extra_cycle_days": 41.666667,
+          "disrupted_required_dwt": 8091078.765952,
+          "operational_capacity_absorbed_dwt": 552004.666145,
+          "net_required_capacity_change_dwt": 409051.471496,
+          "capacity_gap_dwt": 101770.379717,
+          "global_type_fleet_absorption_pct": 0.053274,
+          "deliverable_flow_index": 0.969047,
+          "traffic_change_pct": -3.095282,
+          "lost_cargo_tonnes_horizon": 49963.313277,
+          "method": "annual-flow-cycle-capacity-v1",
+          "observation_latest_date": "2026-07-26",
+          "portwatch_capacity_ratio": 0.76739,
+          "signal_type": "observed_capacity_shortfall_proxy_not_literal_closure"
+        }
+      ]
+    },
+    {
+      "id": "black_sea_mena_grain",
+      "name_ko": "흑해 → 중동·북아프리카 곡물",
+      "name_en": "Black Sea to Middle East and North Africa Grain",
+      "ship_type": "dry_bulk",
+      "origin": "Black Sea",
+      "destination": "Middle East and North Africa",
+      "input_status": "scenario_seed_replace_with_comtrade",
+      "input_sources": [
+        "UN Comtrade grain netWeight aggregation",
+        "Route distance assumption"
+      ],
+      "annual_cargo_tonnes": 55000000,
+      "baseline": {
+        "route_id": "black_sea_mena_grain",
+        "scenario_id": "normal",
+        "ship_type": "dry_bulk",
+        "baseline_cycle_days": 23.666667,
+        "baseline_required_dwt": 4245488.149598,
+        "allocated_dwt_with_reserve": 4415307.675582,
+        "route_share_of_type_fleet_pct": 0.409734,
+        "affected_flow_share": 0.0,
+        "rerouted_flow_share": 0.0,
+        "waiting_flow_share": 0.0,
+        "cancelled_flow_share": 0.0,
+        "reroute_extra_cycle_days": 0.0,
+        "disrupted_required_dwt": 4245488.149598,
+        "operational_capacity_absorbed_dwt": 0.0,
+        "net_required_capacity_change_dwt": 0.0,
+        "capacity_gap_dwt": 0.0,
+        "global_type_fleet_absorption_pct": 0.0,
+        "deliverable_flow_index": 1.0,
+        "traffic_change_pct": 0.0,
+        "lost_cargo_tonnes_horizon": 0.0,
+        "method": "annual-flow-cycle-capacity-v1",
+        "interval": {
+          "baseline_required_dwt": {
+            "p10": 3745271.590563,
+            "p50": 4281105.496878,
+            "p90": 4944168.768798
+          },
+          "disrupted_required_dwt": {
+            "p10": 3745271.590563,
+            "p50": 4281105.496878,
+            "p90": 4944168.768798
+          },
+          "operational_capacity_absorbed_dwt": {
+            "p10": 0.0,
+            "p50": 0.0,
+            "p90": 0.0
+          },
+          "capacity_gap_dwt": {
+            "p10": 0.0,
+            "p50": 0.0,
+            "p90": 0.0
+          },
+          "deliverable_flow_index": {
+            "p10": 1.0,
+            "p50": 1.0,
+            "p90": 1.0
+          }
+        }
+      },
+      "stress_tests": [
+        {
+          "route_id": "black_sea_mena_grain",
+          "scenario_id": "bosporus_100pct_14d",
+          "ship_type": "dry_bulk",
+          "baseline_cycle_days": 23.666667,
+          "baseline_required_dwt": 4245488.149598,
+          "allocated_dwt_with_reserve": 4415307.675582,
+          "route_share_of_type_fleet_pct": 0.409734,
+          "affected_flow_share": 0.5,
+          "rerouted_flow_share": 0.0,
+          "waiting_flow_share": 0.375,
+          "cancelled_flow_share": 0.125,
+          "reroute_extra_cycle_days": 0.0,
+          "disrupted_required_dwt": 4656582.952816,
+          "operational_capacity_absorbed_dwt": 941780.821918,
+          "net_required_capacity_change_dwt": 411094.803218,
+          "capacity_gap_dwt": 241275.277234,
+          "global_type_fleet_absorption_pct": 0.090892,
+          "deliverable_flow_index": 0.829663,
+          "traffic_change_pct": -17.033708,
+          "lost_cargo_tonnes_horizon": 527397.260274,
+          "method": "annual-flow-cycle-capacity-v1",
+          "interval": {
+            "baseline_required_dwt": {
+              "p10": 3791195.587433,
+              "p50": 4338499.144019,
+              "p90": 4936699.768117
+            },
+            "disrupted_required_dwt": {
+              "p10": 4174757.98856,
+              "p50": 4756950.119752,
+              "p90": 5407574.65635
+            },
+            "operational_capacity_absorbed_dwt": {
+              "p10": 836667.049786,
+              "p50": 955834.290207,
+              "p90": 1083822.908158
+            },
+            "capacity_gap_dwt": {
+              "p10": 196184.440072,
+              "p50": 237923.51405,
+              "p90": 281565.487682
+            },
+            "deliverable_flow_index": {
+              "p10": 0.824548,
+              "p50": 0.830633,
+              "p90": 0.838138
+            }
+          }
+        }
+      ],
+      "live_observed": [
+        {
+          "route_id": "black_sea_mena_grain",
+          "scenario_id": "live_bosporus",
+          "ship_type": "dry_bulk",
+          "baseline_cycle_days": 23.666667,
+          "baseline_required_dwt": 4245488.149598,
+          "allocated_dwt_with_reserve": 4415307.675582,
+          "route_share_of_type_fleet_pct": 0.409734,
+          "affected_flow_share": 0.361824,
+          "rerouted_flow_share": 0.0,
+          "waiting_flow_share": 0.271368,
+          "cancelled_flow_share": 0.090456,
+          "reroute_extra_cycle_days": 0.0,
+          "disrupted_required_dwt": 4542975.705366,
+          "operational_capacity_absorbed_dwt": 681516.945941,
+          "net_required_capacity_change_dwt": 297487.555768,
+          "capacity_gap_dwt": 127668.029784,
+          "global_type_fleet_absorption_pct": 0.065773,
+          "deliverable_flow_index": 0.883984,
+          "traffic_change_pct": -11.601616,
+          "lost_cargo_tonnes_horizon": 381649.489727,
+          "method": "annual-flow-cycle-capacity-v1",
+          "observation_latest_date": "2026-07-26",
+          "portwatch_capacity_ratio": 0.638176,
+          "signal_type": "observed_capacity_shortfall_proxy_not_literal_closure"
+        }
+      ]
+    },
+    {
+      "id": "black_sea_east_asia_grain",
+      "name_ko": "흑해 → 동아시아 곡물",
+      "name_en": "Black Sea to East Asia Grain",
+      "ship_type": "dry_bulk",
+      "origin": "Black Sea",
+      "destination": "East Asia",
+      "input_status": "scenario_seed_replace_with_comtrade",
+      "input_sources": [
+        "UN Comtrade grain netWeight aggregation",
+        "Route distance assumption"
+      ],
+      "annual_cargo_tonnes": 20000000,
+      "baseline": {
+        "route_id": "black_sea_east_asia_grain",
+        "scenario_id": "normal",
+        "ship_type": "dry_bulk",
+        "baseline_cycle_days": 66.0,
+        "baseline_required_dwt": 4410290.678249,
+        "allocated_dwt_with_reserve": 4586702.305379,
+        "route_share_of_type_fleet_pct": 0.425639,
+        "affected_flow_share": 0.0,
+        "rerouted_flow_share": 0.0,
+        "waiting_flow_share": 0.0,
+        "cancelled_flow_share": 0.0,
+        "reroute_extra_cycle_days": 0.0,
+        "disrupted_required_dwt": 4410290.678249,
+        "operational_capacity_absorbed_dwt": 0.0,
+        "net_required_capacity_change_dwt": 0.0,
+        "capacity_gap_dwt": 0.0,
+        "global_type_fleet_absorption_pct": 0.0,
+        "deliverable_flow_index": 1.0,
+        "traffic_change_pct": 0.0,
+        "lost_cargo_tonnes_horizon": 0.0,
+        "method": "annual-flow-cycle-capacity-v1",
+        "interval": {
+          "baseline_required_dwt": {
+            "p10": 3795287.482991,
+            "p50": 4495714.394773,
+            "p90": 5254157.489053
+          },
+          "disrupted_required_dwt": {
+            "p10": 3795287.482991,
+            "p50": 4495714.394773,
+            "p90": 5254157.489053
+          },
+          "operational_capacity_absorbed_dwt": {
+            "p10": 0.0,
+            "p50": 0.0,
+            "p90": 0.0
+          },
+          "capacity_gap_dwt": {
+            "p10": 0.0,
+            "p50": 0.0,
+            "p90": 0.0
+          },
+          "deliverable_flow_index": {
+            "p10": 1.0,
+            "p50": 1.0,
+            "p90": 1.0
+          }
+        }
+      },
+      "stress_tests": [
+        {
+          "route_id": "black_sea_east_asia_grain",
+          "scenario_id": "suez_50pct_28d",
+          "ship_type": "dry_bulk",
+          "baseline_cycle_days": 66.0,
+          "baseline_required_dwt": 4410290.678249,
+          "allocated_dwt_with_reserve": 4586702.305379,
+          "route_share_of_type_fleet_pct": 0.425639,
+          "affected_flow_share": 0.46,
+          "rerouted_flow_share": 0.368,
+          "waiting_flow_share": 0.069,
+          "cancelled_flow_share": 0.023,
+          "reroute_extra_cycle_days": 22.0,
+          "disrupted_required_dwt": 4868292.682927,
+          "operational_capacity_absorbed_dwt": 559438.690277,
+          "net_required_capacity_change_dwt": 458002.004678,
+          "capacity_gap_dwt": 281590.377548,
+          "global_type_fleet_absorption_pct": 0.053992,
+          "deliverable_flow_index": 0.920489,
+          "traffic_change_pct": -7.951135,
+          "lost_cargo_tonnes_horizon": 35287.671233,
+          "method": "annual-flow-cycle-capacity-v1",
+          "interval": {
+            "baseline_required_dwt": {
+              "p10": 3738425.579965,
+              "p50": 4481810.739034,
+              "p90": 5233349.008039
+            },
+            "disrupted_required_dwt": {
+              "p10": 4128669.250409,
+              "p50": 4947693.625575,
+              "p90": 5780435.958356
+            },
+            "operational_capacity_absorbed_dwt": {
+              "p10": 474504.993871,
+              "p50": 568135.991366,
+              "p90": 665212.459398
+            },
+            "capacity_gap_dwt": {
+              "p10": 239478.357899,
+              "p50": 286078.478031,
+              "p90": 335430.983196
+            },
+            "deliverable_flow_index": {
+              "p10": 0.919816,
+              "p50": 0.920367,
+              "p90": 0.920895
+            }
+          }
+        },
+        {
+          "route_id": "black_sea_east_asia_grain",
+          "scenario_id": "suez_100pct_28d",
+          "ship_type": "dry_bulk",
+          "baseline_cycle_days": 66.0,
+          "baseline_required_dwt": 4410290.678249,
+          "allocated_dwt_with_reserve": 4586702.305379,
+          "route_share_of_type_fleet_pct": 0.425639,
+          "affected_flow_share": 0.92,
+          "rerouted_flow_share": 0.736,
+          "waiting_flow_share": 0.138,
+          "cancelled_flow_share": 0.046,
+          "reroute_extra_cycle_days": 22.0,
+          "disrupted_required_dwt": 5353959.238223,
+          "operational_capacity_absorbed_dwt": 1146541.931173,
+          "net_required_capacity_change_dwt": 943668.559973,
+          "capacity_gap_dwt": 767256.932843,
+          "global_type_fleet_absorption_pct": 0.110653,
+          "deliverable_flow_index": 0.817286,
+          "traffic_change_pct": -18.271436,
+          "lost_cargo_tonnes_horizon": 70575.342466,
+          "method": "annual-flow-cycle-capacity-v1",
+          "interval": {
+            "baseline_required_dwt": {
+              "p10": 3768948.071743,
+              "p50": 4524858.082196,
+              "p90": 5420407.967546
+            },
+            "disrupted_required_dwt": {
+              "p10": 4572368.75888,
+              "p50": 5490743.337375,
+              "p90": 6582552.032707
+            },
+            "operational_capacity_absorbed_dwt": {
+              "p10": 976792.298437,
+              "p50": 1176990.064147,
+              "p90": 1411482.831668
+            },
+            "capacity_gap_dwt": {
+              "p10": 652818.628895,
+              "p50": 788435.355808,
+              "p90": 946591.712097
+            },
+            "deliverable_flow_index": {
+              "p10": 0.816496,
+              "p50": 0.817123,
+              "p90": 0.817743
+            }
+          }
+        },
+        {
+          "route_id": "black_sea_east_asia_grain",
+          "scenario_id": "bosporus_100pct_14d",
+          "ship_type": "dry_bulk",
+          "baseline_cycle_days": 66.0,
+          "baseline_required_dwt": 4410290.678249,
+          "allocated_dwt_with_reserve": 4586702.305379,
+          "route_share_of_type_fleet_pct": 0.425639,
+          "affected_flow_share": 0.5,
+          "rerouted_flow_share": 0.0,
+          "waiting_flow_share": 0.375,
+          "cancelled_flow_share": 0.125,
+          "reroute_extra_cycle_days": 0.0,
+          "disrupted_required_dwt": 4209822.920147,
+          "operational_capacity_absorbed_dwt": 350818.576679,
+          "net_required_capacity_change_dwt": -200467.758102,
+          "capacity_gap_dwt": 0.0,
+          "global_type_fleet_absorption_pct": 0.033858,
+          "deliverable_flow_index": 0.875,
+          "traffic_change_pct": -12.5,
+          "lost_cargo_tonnes_horizon": 191780.821918,
+          "method": "annual-flow-cycle-capacity-v1",
+          "interval": {
+            "baseline_required_dwt": {
+              "p10": 3732093.087648,
+              "p50": 4497375.019173,
+              "p90": 5266877.128207
+            },
+            "disrupted_required_dwt": {
+              "p10": 3562975.130401,
+              "p50": 4282509.770876,
+              "p90": 5006492.316567
+            },
+            "operational_capacity_absorbed_dwt": {
+              "p10": 297144.5148,
+              "p50": 351969.273297,
+              "p90": 408470.38534
+            },
+            "capacity_gap_dwt": {
+              "p10": 0.0,
+              "p50": 0.0,
+              "p90": 0.0
+            },
+            "deliverable_flow_index": {
+              "p10": 0.875,
+              "p50": 0.875,
+              "p90": 0.875
+            }
+          }
+        }
+      ],
+      "live_observed": [
+        {
+          "route_id": "black_sea_east_asia_grain",
+          "scenario_id": "live_bosporus",
+          "ship_type": "dry_bulk",
+          "baseline_cycle_days": 66.0,
+          "baseline_required_dwt": 4410290.678249,
+          "allocated_dwt_with_reserve": 4586702.305379,
+          "route_share_of_type_fleet_pct": 0.425639,
+          "affected_flow_share": 0.361824,
+          "rerouted_flow_share": 0.0,
+          "waiting_flow_share": 0.271368,
+          "cancelled_flow_share": 0.090456,
+          "reroute_extra_cycle_days": 0.0,
+          "disrupted_required_dwt": 4265222.769579,
+          "operational_capacity_absorbed_dwt": 253868.840173,
+          "net_required_capacity_change_dwt": -145067.90867,
+          "capacity_gap_dwt": 0.0,
+          "global_type_fleet_absorption_pct": 0.024501,
+          "deliverable_flow_index": 0.909544,
+          "traffic_change_pct": -9.045589,
+          "lost_cargo_tonnes_horizon": 138781.632628,
+          "method": "annual-flow-cycle-capacity-v1",
+          "observation_latest_date": "2026-07-26",
+          "portwatch_capacity_ratio": 0.638176,
+          "signal_type": "observed_capacity_shortfall_proxy_not_literal_closure"
+        },
+        {
+          "route_id": "black_sea_east_asia_grain",
+          "scenario_id": "live_suez",
+          "ship_type": "dry_bulk",
+          "baseline_cycle_days": 66.0,
+          "baseline_required_dwt": 4410290.678249,
+          "allocated_dwt_with_reserve": 4586702.305379,
+          "route_share_of_type_fleet_pct": 0.425639,
+          "affected_flow_share": 0.264712,
+          "rerouted_flow_share": 0.211769,
+          "waiting_flow_share": 0.039707,
+          "cancelled_flow_share": 0.013236,
+          "reroute_extra_cycle_days": 22.0,
+          "disrupted_required_dwt": 4679159.34249,
+          "operational_capacity_absorbed_dwt": 327241.466345,
+          "net_required_capacity_change_dwt": 268868.66424,
+          "capacity_gap_dwt": 92457.037111,
+          "global_type_fleet_absorption_pct": 0.031582,
+          "deliverable_flow_index": 0.967267,
+          "traffic_change_pct": -3.273339,
+          "lost_cargo_tonnes_horizon": 20306.659641,
+          "method": "annual-flow-cycle-capacity-v1",
+          "observation_latest_date": "2026-07-26",
+          "portwatch_capacity_ratio": 0.71227,
+          "signal_type": "observed_capacity_shortfall_proxy_not_literal_closure"
+        }
+      ]
+    },
+    {
+      "id": "persian_gulf_europe_crude",
+      "name_ko": "페르시아만 → 유럽 원유",
+      "name_en": "Persian Gulf to Europe Crude",
+      "ship_type": "tanker",
+      "origin": "Persian Gulf",
+      "destination": "Europe",
+      "input_status": "scenario_seed_replace_with_comtrade",
+      "input_sources": [
+        "UN Comtrade mineral fuels netWeight aggregation",
+        "Route distance assumption"
+      ],
+      "annual_cargo_tonnes": 150000000,
+      "baseline": {
+        "route_id": "persian_gulf_europe_crude",
+        "scenario_id": "normal",
+        "ship_type": "tanker",
+        "baseline_cycle_days": 46.74359,
+        "baseline_required_dwt": 21829198.199061,
+        "allocated_dwt_with_reserve": 22702366.127024,
+        "route_share_of_type_fleet_pct": 3.258858,
+        "affected_flow_share": 0.0,
+        "rerouted_flow_share": 0.0,
+        "waiting_flow_share": 0.0,
+        "cancelled_flow_share": 0.0,
+        "reroute_extra_cycle_days": 0.0,
+        "disrupted_required_dwt": 21829198.199061,
+        "operational_capacity_absorbed_dwt": 0.0,
+        "net_required_capacity_change_dwt": 0.0,
+        "capacity_gap_dwt": 0.0,
+        "global_type_fleet_absorption_pct": 0.0,
+        "deliverable_flow_index": 1.0,
+        "traffic_change_pct": 0.0,
+        "lost_cargo_tonnes_horizon": 0.0,
+        "method": "annual-flow-cycle-capacity-v1",
+        "interval": {
+          "baseline_required_dwt": {
+            "p10": 19437390.490713,
+            "p50": 22128567.642214,
+            "p90": 24987141.084803
+          },
+          "disrupted_required_dwt": {
+            "p10": 19437390.490713,
+            "p50": 22128567.642214,
+            "p90": 24987141.084803
+          },
+          "operational_capacity_absorbed_dwt": {
+            "p10": 0.0,
+            "p50": 0.0,
+            "p90": 0.0
+          },
+          "capacity_gap_dwt": {
+            "p10": 0.0,
+            "p50": 0.0,
+            "p90": 0.0
+          },
+          "deliverable_flow_index": {
+            "p10": 1.0,
+            "p50": 1.0,
+            "p90": 1.0
+          }
+        }
+      },
+      "stress_tests": [
+        {
+          "route_id": "persian_gulf_europe_crude",
+          "scenario_id": "suez_50pct_28d",
+          "ship_type": "tanker",
+          "baseline_cycle_days": 46.74359,
+          "baseline_required_dwt": 21829198.199061,
+          "allocated_dwt_with_reserve": 22702366.127024,
+          "route_share_of_type_fleet_pct": 3.258858,
+          "affected_flow_share": 0.36,
+          "rerouted_flow_share": 0.288,
+          "waiting_flow_share": 0.054,
+          "cancelled_flow_share": 0.018,
+          "reroute_extra_cycle_days": 28.205128,
+          "disrupted_required_dwt": 25330611.169652,
+          "operational_capacity_absorbed_dwt": 3894338.538174,
+          "net_required_capacity_change_dwt": 3501412.970591,
+          "capacity_gap_dwt": 2628245.042629,
+          "global_type_fleet_absorption_pct": 0.581382,
+          "deliverable_flow_index": 0.88011,
+          "traffic_change_pct": -11.989003,
+          "lost_cargo_tonnes_horizon": 207123.287671,
+          "method": "annual-flow-cycle-capacity-v1",
+          "interval": {
+            "baseline_required_dwt": {
+              "p10": 19513032.977038,
+              "p50": 22136124.460181,
+              "p90": 25123669.632355
+            },
+            "disrupted_required_dwt": {
+              "p10": 22648112.129131,
+              "p50": 25710914.982766,
+              "p90": 29179641.524647
+            },
+            "operational_capacity_absorbed_dwt": {
+              "p10": 3483989.03283,
+              "p50": 3962172.569874,
+              "p90": 4499690.961597
+            },
+            "capacity_gap_dwt": {
+              "p10": 2352429.504569,
+              "p50": 2681221.71302,
+              "p90": 3045383.156142
+            },
+            "deliverable_flow_index": {
+              "p10": 0.878904,
+              "p50": 0.879942,
+              "p90": 0.880709
+            }
+          }
+        },
+        {
+          "route_id": "persian_gulf_europe_crude",
+          "scenario_id": "suez_100pct_28d",
+          "ship_type": "tanker",
+          "baseline_cycle_days": 46.74359,
+          "baseline_required_dwt": 21829198.199061,
+          "allocated_dwt_with_reserve": 22702366.127024,
+          "route_share_of_type_fleet_pct": 3.258858,
+          "affected_flow_share": 0.72,
+          "rerouted_flow_share": 0.576,
+          "waiting_flow_share": 0.108,
+          "cancelled_flow_share": 0.036,
+          "reroute_extra_cycle_days": 28.205128,
+          "disrupted_required_dwt": 28983331.736756,
+          "operational_capacity_absorbed_dwt": 7939984.672861,
+          "net_required_capacity_change_dwt": 7154133.537695,
+          "capacity_gap_dwt": 6280965.609733,
+          "global_type_fleet_absorption_pct": 1.185352,
+          "deliverable_flow_index": 0.755092,
+          "traffic_change_pct": -24.490803,
+          "lost_cargo_tonnes_horizon": 414246.575342,
+          "method": "annual-flow-cycle-capacity-v1",
+          "interval": {
+            "baseline_required_dwt": {
+              "p10": 19589370.384264,
+              "p50": 22287357.72253,
+              "p90": 24954781.0474
+            },
+            "disrupted_required_dwt": {
+              "p10": 26014314.6287,
+              "p50": 29615575.401203,
+              "p90": 33165678.31178
+            },
+            "operational_capacity_absorbed_dwt": {
+              "p10": 7125085.532514,
+              "p50": 8137639.527629,
+              "p90": 9106314.461684
+            },
+            "capacity_gap_dwt": {
+              "p10": 5634957.293212,
+              "p50": 6430874.994688,
+              "p90": 7209154.856547
+            },
+            "deliverable_flow_index": {
+              "p10": 0.753568,
+              "p50": 0.754845,
+              "p90": 0.755891
+            }
+          }
+        },
+        {
+          "route_id": "persian_gulf_europe_crude",
+          "scenario_id": "hormuz_50pct_28d",
+          "ship_type": "tanker",
+          "baseline_cycle_days": 46.74359,
+          "baseline_required_dwt": 21829198.199061,
+          "allocated_dwt_with_reserve": 22702366.127024,
+          "route_share_of_type_fleet_pct": 3.258858,
+          "affected_flow_share": 0.475,
+          "rerouted_flow_share": 0.0,
+          "waiting_flow_share": 0.285,
+          "cancelled_flow_share": 0.19,
+          "reroute_extra_cycle_days": 0.0,
+          "disrupted_required_dwt": 18613313.056806,
+          "operational_capacity_absorbed_dwt": 931662.515567,
+          "net_required_capacity_change_dwt": -3215885.142255,
+          "capacity_gap_dwt": 0.0,
+          "global_type_fleet_absorption_pct": 0.139087,
+          "deliverable_flow_index": 0.81,
+          "traffic_change_pct": -19.0,
+          "lost_cargo_tonnes_horizon": 2186301.369863,
+          "method": "annual-flow-cycle-capacity-v1",
+          "interval": {
+            "baseline_required_dwt": {
+              "p10": 19647167.366015,
+              "p50": 22317337.055378,
+              "p90": 24984642.170781
+            },
+            "disrupted_required_dwt": {
+              "p10": 16766841.762705,
+              "p50": 19024707.055943,
+              "p90": 21260633.359544
+            },
+            "operational_capacity_absorbed_dwt": {
+              "p10": 841009.612896,
+              "p50": 940321.212362,
+              "p90": 1042560.725207
+            },
+            "capacity_gap_dwt": {
+              "p10": 0.0,
+              "p50": 0.0,
+              "p90": 0.0
+            },
+            "deliverable_flow_index": {
+              "p10": 0.81,
+              "p50": 0.81,
+              "p90": 0.81
+            }
+          }
+        },
+        {
+          "route_id": "persian_gulf_europe_crude",
+          "scenario_id": "hormuz_100pct_28d",
+          "ship_type": "tanker",
+          "baseline_cycle_days": 46.74359,
+          "baseline_required_dwt": 21829198.199061,
+          "allocated_dwt_with_reserve": 22702366.127024,
+          "route_share_of_type_fleet_pct": 3.258858,
+          "affected_flow_share": 0.95,
+          "rerouted_flow_share": 0.0,
+          "waiting_flow_share": 0.57,
+          "cancelled_flow_share": 0.38,
+          "reroute_extra_cycle_days": 0.0,
+          "disrupted_required_dwt": 17260752.945684,
+          "operational_capacity_absorbed_dwt": 3726650.062267,
+          "net_required_capacity_change_dwt": -4568445.253377,
+          "capacity_gap_dwt": 0.0,
+          "global_type_fleet_absorption_pct": 0.556348,
+          "deliverable_flow_index": 0.62,
+          "traffic_change_pct": -38.0,
+          "lost_cargo_tonnes_horizon": 4372602.739726,
+          "method": "annual-flow-cycle-capacity-v1",
+          "interval": {
+            "baseline_required_dwt": {
+              "p10": 19580222.980859,
+              "p50": 21962651.824276,
+              "p90": 24737658.614413
+            },
+            "disrupted_required_dwt": {
+              "p10": 15489775.080398,
+              "p50": 17354063.382716,
+              "p90": 19386068.773394
+            },
+            "operational_capacity_absorbed_dwt": {
+              "p10": 3304189.958894,
+              "p50": 3727683.581487,
+              "p90": 4169777.178145
+            },
+            "capacity_gap_dwt": {
+              "p10": 0.0,
+              "p50": 0.0,
+              "p90": 0.0
+            },
+            "deliverable_flow_index": {
+              "p10": 0.62,
+              "p50": 0.62,
+              "p90": 0.62
+            }
+          }
+        }
+      ],
+      "live_observed": [
+        {
+          "route_id": "persian_gulf_europe_crude",
+          "scenario_id": "live_hormuz",
+          "ship_type": "tanker",
+          "baseline_cycle_days": 46.74359,
+          "baseline_required_dwt": 21829198.199061,
+          "allocated_dwt_with_reserve": 22702366.127024,
+          "route_share_of_type_fleet_pct": 3.258858,
+          "affected_flow_share": 0.915466,
+          "rerouted_flow_share": 0.0,
+          "waiting_flow_share": 0.54928,
+          "cancelled_flow_share": 0.366187,
+          "reroute_extra_cycle_days": 0.0,
+          "disrupted_required_dwt": 16400769.646279,
+          "operational_capacity_absorbed_dwt": 2565129.808867,
+          "net_required_capacity_change_dwt": -5428428.552782,
+          "capacity_gap_dwt": 0.0,
+          "global_type_fleet_absorption_pct": 0.382946,
+          "deliverable_flow_index": 0.633813,
+          "traffic_change_pct": -36.618653,
+          "lost_cargo_tonnes_horizon": 4213653.232699,
+          "method": "annual-flow-cycle-capacity-v1",
+          "observation_latest_date": "2026-07-23",
+          "portwatch_capacity_ratio": 0.036351,
+          "signal_type": "observed_capacity_shortfall_proxy_not_literal_closure"
+        },
+        {
+          "route_id": "persian_gulf_europe_crude",
+          "scenario_id": "live_suez",
+          "ship_type": "tanker",
+          "baseline_cycle_days": 46.74359,
+          "baseline_required_dwt": 21829198.199061,
+          "allocated_dwt_with_reserve": 22702366.127024,
+          "route_share_of_type_fleet_pct": 3.258858,
+          "affected_flow_share": 0.132953,
+          "rerouted_flow_share": 0.106363,
+          "waiting_flow_share": 0.019943,
+          "cancelled_flow_share": 0.006648,
+          "reroute_extra_cycle_days": 28.205128,
+          "disrupted_required_dwt": 23140947.455596,
+          "operational_capacity_absorbed_dwt": 1456862.363802,
+          "net_required_capacity_change_dwt": 1311749.256535,
+          "capacity_gap_dwt": 438581.328572,
+          "global_type_fleet_absorption_pct": 0.217493,
+          "deliverable_flow_index": 0.974526,
+          "traffic_change_pct": -2.547428,
+          "lost_cargo_tonnes_horizon": 76493.632233,
+          "method": "annual-flow-cycle-capacity-v1",
+          "observation_latest_date": "2026-07-26",
+          "portwatch_capacity_ratio": 0.815343,
+          "signal_type": "observed_capacity_shortfall_proxy_not_literal_closure"
+        },
+        {
+          "route_id": "persian_gulf_europe_crude",
+          "scenario_id": "live_bab_el_mandeb",
+          "ship_type": "tanker",
+          "baseline_cycle_days": 46.74359,
+          "baseline_required_dwt": 21829198.199061,
+          "allocated_dwt_with_reserve": 22702366.127024,
+          "route_share_of_type_fleet_pct": 3.258858,
+          "affected_flow_share": 0.193689,
+          "rerouted_flow_share": 0.154951,
+          "waiting_flow_share": 0.029053,
+          "cancelled_flow_share": 0.009684,
+          "reroute_extra_cycle_days": 28.205128,
+          "disrupted_required_dwt": 23740178.722589,
+          "operational_capacity_absorbed_dwt": 2122383.976067,
+          "net_required_capacity_change_dwt": 1910980.523528,
+          "capacity_gap_dwt": 1037812.595566,
+          "global_type_fleet_absorption_pct": 0.316848,
+          "deliverable_flow_index": 0.947023,
+          "traffic_change_pct": -5.297653,
+          "lost_cargo_tonnes_horizon": 111437.335026,
+          "method": "annual-flow-cycle-capacity-v1",
+          "observation_latest_date": "2026-07-26",
+          "portwatch_capacity_ratio": 0.730988,
+          "signal_type": "observed_capacity_shortfall_proxy_not_literal_closure"
+        }
+      ]
+    },
+    {
+      "id": "persian_gulf_east_asia_crude",
+      "name_ko": "페르시아만 → 동아시아 원유",
+      "name_en": "Persian Gulf to East Asia Crude",
+      "ship_type": "tanker",
+      "origin": "Persian Gulf",
+      "destination": "East Asia",
+      "input_status": "scenario_seed_replace_with_comtrade",
+      "input_sources": [
+        "UN Comtrade mineral fuels netWeight aggregation",
+        "Route distance assumption"
+      ],
+      "annual_cargo_tonnes": 600000000,
+      "baseline": {
+        "route_id": "persian_gulf_east_asia_crude",
+        "scenario_id": "normal",
+        "ship_type": "tanker",
+        "baseline_cycle_days": 48.666667,
+        "baseline_required_dwt": 89887640.449438,
+        "allocated_dwt_with_reserve": 93483146.067416,
+        "route_share_of_type_fleet_pct": 13.41923,
+        "affected_flow_share": 0.0,
+        "rerouted_flow_share": 0.0,
+        "waiting_flow_share": 0.0,
+        "cancelled_flow_share": 0.0,
+        "reroute_extra_cycle_days": 0.0,
+        "disrupted_required_dwt": 89887640.449438,
+        "operational_capacity_absorbed_dwt": 0.0,
+        "net_required_capacity_change_dwt": 0.0,
+        "capacity_gap_dwt": 0.0,
+        "global_type_fleet_absorption_pct": 0.0,
+        "deliverable_flow_index": 1.0,
+        "traffic_change_pct": 0.0,
+        "lost_cargo_tonnes_horizon": 0.0,
+        "method": "annual-flow-cycle-capacity-v1",
+        "interval": {
+          "baseline_required_dwt": {
+            "p10": 82329674.975256,
+            "p50": 91903493.520503,
+            "p90": 101824494.833898
+          },
+          "disrupted_required_dwt": {
+            "p10": 82329674.975256,
+            "p50": 91903493.520503,
+            "p90": 101824494.833898
+          },
+          "operational_capacity_absorbed_dwt": {
+            "p10": 0.0,
+            "p50": 0.0,
+            "p90": 0.0
+          },
+          "capacity_gap_dwt": {
+            "p10": 0.0,
+            "p50": 0.0,
+            "p90": 0.0
+          },
+          "deliverable_flow_index": {
+            "p10": 1.0,
+            "p50": 1.0,
+            "p90": 1.0
+          }
+        }
+      },
+      "stress_tests": [
+        {
+          "route_id": "persian_gulf_east_asia_crude",
+          "scenario_id": "hormuz_50pct_28d",
+          "ship_type": "tanker",
+          "baseline_cycle_days": 48.666667,
+          "baseline_required_dwt": 89887640.449438,
+          "allocated_dwt_with_reserve": 93483146.067416,
+          "route_share_of_type_fleet_pct": 13.41923,
+          "affected_flow_share": 0.49,
+          "rerouted_flow_share": 0.0,
+          "waiting_flow_share": 0.3185,
+          "cancelled_flow_share": 0.1715,
+          "reroute_extra_cycle_days": 0.0,
+          "disrupted_required_dwt": 78589810.681853,
+          "operational_capacity_absorbed_dwt": 4117900.569494,
+          "net_required_capacity_change_dwt": -11297829.767585,
+          "capacity_gap_dwt": 0.0,
+          "global_type_fleet_absorption_pct": 0.614757,
+          "deliverable_flow_index": 0.8285,
+          "traffic_change_pct": -17.15,
+          "lost_cargo_tonnes_horizon": 7893698.630137,
+          "method": "annual-flow-cycle-capacity-v1",
+          "interval": {
+            "baseline_required_dwt": {
+              "p10": 82451824.51252,
+              "p50": 92056189.523993,
+              "p90": 102007334.854367
+            },
+            "disrupted_required_dwt": {
+              "p10": 72095467.692097,
+              "p50": 80477383.934034,
+              "p90": 89103004.870965
+            },
+            "operational_capacity_absorbed_dwt": {
+              "p10": 3771929.458918,
+              "p50": 4153793.444709,
+              "p90": 4602852.348646
+            },
+            "capacity_gap_dwt": {
+              "p10": 0.0,
+              "p50": 0.0,
+              "p90": 0.0
+            },
+            "deliverable_flow_index": {
+              "p10": 0.8285,
+              "p50": 0.8285,
+              "p90": 0.8285
+            }
+          }
+        },
+        {
+          "route_id": "persian_gulf_east_asia_crude",
+          "scenario_id": "hormuz_100pct_28d",
+          "ship_type": "tanker",
+          "baseline_cycle_days": 48.666667,
+          "baseline_required_dwt": 89887640.449438,
+          "allocated_dwt_with_reserve": 93483146.067416,
+          "route_share_of_type_fleet_pct": 13.41923,
+          "affected_flow_share": 0.98,
+          "rerouted_flow_share": 0.0,
+          "waiting_flow_share": 0.637,
+          "cancelled_flow_share": 0.343,
+          "reroute_extra_cycle_days": 0.0,
+          "disrupted_required_dwt": 75527782.053255,
+          "operational_capacity_absorbed_dwt": 16471602.277974,
+          "net_required_capacity_change_dwt": -14359858.396183,
+          "capacity_gap_dwt": 0.0,
+          "global_type_fleet_absorption_pct": 2.459028,
+          "deliverable_flow_index": 0.657,
+          "traffic_change_pct": -34.3,
+          "lost_cargo_tonnes_horizon": 15787397.260274,
+          "method": "annual-flow-cycle-capacity-v1",
+          "interval": {
+            "baseline_required_dwt": {
+              "p10": 81954459.911129,
+              "p50": 91709262.916762,
+              "p90": 101860666.98191
+            },
+            "disrupted_required_dwt": {
+              "p10": 68831213.539312,
+              "p50": 76763157.630902,
+              "p90": 85419731.444904
+            },
+            "operational_capacity_absorbed_dwt": {
+              "p10": 14839140.326303,
+              "p50": 16590182.435273,
+              "p90": 18284391.061771
+            },
+            "capacity_gap_dwt": {
+              "p10": 0.0,
+              "p50": 0.0,
+              "p90": 0.0
+            },
+            "deliverable_flow_index": {
+              "p10": 0.657,
+              "p50": 0.657,
+              "p90": 0.657
+            }
+          }
+        }
+      ],
+      "live_observed": [
+        {
+          "route_id": "persian_gulf_east_asia_crude",
+          "scenario_id": "live_hormuz",
+          "ship_type": "tanker",
+          "baseline_cycle_days": 48.666667,
+          "baseline_required_dwt": 89887640.449438,
+          "allocated_dwt_with_reserve": 93483146.067416,
+          "route_share_of_type_fleet_pct": 13.41923,
+          "affected_flow_share": 0.944376,
+          "rerouted_flow_share": 0.0,
+          "waiting_flow_share": 0.613844,
+          "cancelled_flow_share": 0.330532,
+          "reroute_extra_cycle_days": 0.0,
+          "disrupted_required_dwt": 71514683.716282,
+          "operational_capacity_absorbed_dwt": 11337742.287865,
+          "net_required_capacity_change_dwt": -18372956.733156,
+          "capacity_gap_dwt": 0.0,
+          "global_type_fleet_absorption_pct": 1.692599,
+          "deliverable_flow_index": 0.669468,
+          "traffic_change_pct": -33.053153,
+          "lost_cargo_tonnes_horizon": 15213505.882271,
+          "method": "annual-flow-cycle-capacity-v1",
+          "observation_latest_date": "2026-07-23",
+          "portwatch_capacity_ratio": 0.036351,
+          "signal_type": "observed_capacity_shortfall_proxy_not_literal_closure"
+        }
+      ]
+    },
+    {
+      "id": "brazil_china_soy",
+      "name_ko": "브라질 → 중국 대두",
+      "name_en": "Brazil to China Soybeans",
+      "ship_type": "dry_bulk",
+      "origin": "Brazil",
+      "destination": "China",
+      "input_status": "scenario_seed_replace_with_comtrade",
+      "input_sources": [
+        "UN Comtrade/Comex Stat soybean netWeight aggregation",
+        "Route distance assumption"
+      ],
+      "annual_cargo_tonnes": 75000000,
+      "baseline": {
+        "route_id": "brazil_china_soy",
+        "scenario_id": "normal",
+        "ship_type": "dry_bulk",
+        "baseline_cycle_days": 82.333333,
+        "baseline_required_dwt": 19903303.787268,
+        "allocated_dwt_with_reserve": 20699435.938759,
+        "route_share_of_type_fleet_pct": 1.920875,
+        "affected_flow_share": 0.0,
+        "rerouted_flow_share": 0.0,
+        "waiting_flow_share": 0.0,
+        "cancelled_flow_share": 0.0,
+        "reroute_extra_cycle_days": 0.0,
+        "disrupted_required_dwt": 19903303.787268,
+        "operational_capacity_absorbed_dwt": 0.0,
+        "net_required_capacity_change_dwt": 0.0,
+        "capacity_gap_dwt": 0.0,
+        "global_type_fleet_absorption_pct": 0.0,
+        "deliverable_flow_index": 1.0,
+        "traffic_change_pct": 0.0,
+        "lost_cargo_tonnes_horizon": 0.0,
+        "method": "annual-flow-cycle-capacity-v1",
+        "interval": {
+          "baseline_required_dwt": {
+            "p10": 18414992.049579,
+            "p50": 20175993.960676,
+            "p90": 22280899.644975
+          },
+          "disrupted_required_dwt": {
+            "p10": 18414992.049579,
+            "p50": 20175993.960676,
+            "p90": 22280899.644975
+          },
+          "operational_capacity_absorbed_dwt": {
+            "p10": 0.0,
+            "p50": 0.0,
+            "p90": 0.0
+          },
+          "capacity_gap_dwt": {
+            "p10": 0.0,
+            "p50": 0.0,
+            "p90": 0.0
+          },
+          "deliverable_flow_index": {
+            "p10": 1.0,
+            "p50": 1.0,
+            "p90": 1.0
+          }
+        }
+      },
+      "stress_tests": [],
+      "live_observed": []
+    }
+  ],
+  "scenario_summary": [
+    {
+      "id": "suez_50pct_28d",
+      "name_ko": "수에즈 50% 제약·28일",
+      "chokepoint_id": "suez",
+      "closure_fraction": 0.5,
+      "duration_days": 28,
+      "affected_route_count": 3,
+      "affected_baseline_dwt": 80217876.860533,
+      "disrupted_required_dwt": 90238574.0937,
+      "operational_capacity_absorbed_dwt": 11027854.17219,
+      "capacity_gap_dwt": 6272198.278913,
+      "lost_cargo_tonnes_horizon": 424602.739726,
+      "weighted_deliverable_flow_index": 0.919285,
+      "weighted_traffic_change_pct": -8.071474
+    },
+    {
+      "id": "suez_100pct_28d",
+      "name_ko": "수에즈 전면 봉쇄·28일",
+      "chokepoint_id": "suez",
+      "closure_fraction": 1.0,
+      "duration_days": 28,
+      "affected_route_count": 3,
+      "affected_baseline_dwt": 80217876.860533,
+      "disrupted_required_dwt": 100638454.222153,
+      "operational_capacity_absorbed_dwt": 22434891.239667,
+      "capacity_gap_dwt": 16672078.407367,
+      "lost_cargo_tonnes_horizon": 849205.479452,
+      "weighted_deliverable_flow_index": 0.814707,
+      "weighted_traffic_change_pct": -18.52935
+    },
+    {
+      "id": "panama_50pct_28d",
+      "name_ko": "파나마 통항능력 50% 감소·28일",
+      "chokepoint_id": "panama",
+      "closure_fraction": 0.5,
+      "duration_days": 28,
+      "affected_route_count": 2,
+      "affected_baseline_dwt": 31720366.494592,
+      "disrupted_required_dwt": 34277953.652328,
+      "operational_capacity_absorbed_dwt": 3730248.460719,
+      "capacity_gap_dwt": 1048389.10595,
+      "lost_cargo_tonnes_horizon": 438794.520548,
+      "weighted_deliverable_flow_index": 0.933886,
+      "weighted_traffic_change_pct": -6.611378
+    },
+    {
+      "id": "bosporus_100pct_14d",
+      "name_ko": "보스포루스 전면 봉쇄·14일",
+      "chokepoint_id": "bosporus",
+      "closure_fraction": 1.0,
+      "duration_days": 14,
+      "affected_route_count": 2,
+      "affected_baseline_dwt": 8655778.827847,
+      "disrupted_required_dwt": 8866405.872963,
+      "operational_capacity_absorbed_dwt": 1292599.398597,
+      "capacity_gap_dwt": 241275.277234,
+      "lost_cargo_tonnes_horizon": 719178.082192,
+      "weighted_deliverable_flow_index": 0.852763,
+      "weighted_traffic_change_pct": -14.723694
+    },
+    {
+      "id": "hormuz_50pct_28d",
+      "name_ko": "호르무즈 50% 봉쇄·28일",
+      "chokepoint_id": "hormuz",
+      "closure_fraction": 0.5,
+      "duration_days": 28,
+      "affected_route_count": 2,
+      "affected_baseline_dwt": 111716838.648499,
+      "disrupted_required_dwt": 97203123.738659,
+      "operational_capacity_absorbed_dwt": 5049563.08506,
+      "capacity_gap_dwt": 0.0,
+      "lost_cargo_tonnes_horizon": 10080000.0,
+      "weighted_deliverable_flow_index": 0.824885,
+      "weighted_traffic_change_pct": -17.511485
+    },
+    {
+      "id": "hormuz_100pct_28d",
+      "name_ko": "호르무즈 전면 봉쇄·28일",
+      "chokepoint_id": "hormuz",
+      "closure_fraction": 1.0,
+      "duration_days": 28,
+      "affected_route_count": 2,
+      "affected_baseline_dwt": 111716838.648499,
+      "disrupted_required_dwt": 92788534.99894,
+      "operational_capacity_absorbed_dwt": 20198252.340241,
+      "capacity_gap_dwt": 0.0,
+      "lost_cargo_tonnes_horizon": 20160000.0,
+      "weighted_deliverable_flow_index": 0.64977,
+      "weighted_traffic_change_pct": -35.022971
+    }
+  ]
+}

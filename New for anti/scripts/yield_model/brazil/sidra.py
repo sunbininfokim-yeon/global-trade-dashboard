@@ -126,6 +126,53 @@ def state_yield(crop, uf):
     return df
 
 
+def municipality_yield(crop, code):
+    """
+    Yield in kg/ha for one crop in one municipality (n6), indexed by harvest
+    year. Same table/variable as state_yield, just at IBGE's finer geographic
+    level (n6 instead of n3).
+
+    Built for the MATOPIBA municipality-level experiment: state-level
+    aggregation blends four states with different rainfall regimes, sowing
+    calendars and soils into one number, which the literature (Reis et al.
+    2020; MDPI Climate 11(10):1130) finds erases exactly the location-specific
+    weather-yield relationship a mechanistic, per-municipality model can see.
+    """
+    if crop not in CROPS:
+        raise KeyError(f"unknown crop {crop!r}; known: {sorted(CROPS)}")
+
+    os.makedirs(CACHE, exist_ok=True)
+    cached = os.path.join(CACHE, f"sidra_{crop}_muni{code}.csv")
+    if os.path.exists(cached):
+        age = datetime.now() - datetime.fromtimestamp(os.path.getmtime(cached))
+        if age < CACHE_MAX_AGE:
+            return pd.read_csv(cached)
+        log(f"{crop}/muni{code}: cache {age.days}d old, refreshing")
+
+    spec = CROPS[crop]
+    url = (f"{SIDRA}/t/{spec['table']}/n6/{code}/v/{YIELD_VAR}"
+           f"/p/all/{spec['cls']}/{spec['code']}")
+    log(f"{crop}/muni{code}: downloading")
+    raw = _get(url)
+
+    rows = []
+    for rec in raw[1:]:
+        v = rec.get("V")
+        if v in MISSING or v is None:
+            continue
+        try:
+            rows.append({"year": int(rec["D3N"]), "yield_kg_ha": float(v)})
+        except (ValueError, KeyError):
+            continue
+
+    df = pd.DataFrame(rows).sort_values("year").reset_index(drop=True)
+    df.to_csv(cached, index=False)
+    log(f"{crop}/muni{code}: {len(df)} years "
+        f"({df.year.min()}-{df.year.max()})" if len(df) else
+        f"{crop}/muni{code}: empty")
+    return df
+
+
 def region_yield(crop, states):
     """
     Production-weighted yield for a multi-state region.

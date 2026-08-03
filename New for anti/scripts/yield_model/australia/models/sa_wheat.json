@@ -1,0 +1,227 @@
+{
+  "key": "sa_wheat",
+  "label": "South Australia wheat",
+  "label_ko": "남호주 밀",
+  "crop": "wheat",
+  "state": "South Australia",
+  "doc": "Regions/호주/남부_SA_VIC/밀/밀_상세분석_및_수식.md",
+  "caveat": "South Australia is kept separate from Victoria. SAM is an ablation feature, not assigned a forced sign or importance.",
+  "target": {
+    "variable": "yield_kg_ha",
+    "source": "ABARES Australian Crop Report state data",
+    "area_basis": "planted",
+    "estimated_years": [
+      2022,
+      2023,
+      2024,
+      2025
+    ]
+  },
+  "trained_years": [
+    1994,
+    2025
+  ],
+  "n_seasons": 32,
+  "detrended_residual_cv": 0.2722221282716495,
+  "anomaly": {
+    "window_years": 20,
+    "minimum_prior_years": 10,
+    "current_year_excluded": true
+  },
+  "feature_sets": {
+    "weather": [
+      "rain_growing_z20",
+      "heat_excess_spring_z20",
+      "frost_days_z20"
+    ],
+    "weather_soil": [
+      "rain_growing_z20",
+      "heat_excess_spring_z20",
+      "frost_days_z20",
+      "sm_preseason_z20",
+      "sm_spring_z20"
+    ],
+    "weather_soil_drivers": [
+      "rain_growing_z20",
+      "heat_excess_spring_z20",
+      "frost_days_z20",
+      "sm_preseason_z20",
+      "sm_spring_z20",
+      "iod_winter_spring_z20",
+      "oni_winter_spring_z20",
+      "sam_winter_spring_z20"
+    ]
+  },
+  "selected_feature_set": "weather_soil",
+  "selected_features": [
+    "rain_growing_z20",
+    "heat_excess_spring_z20",
+    "frost_days_z20",
+    "sm_preseason_z20",
+    "sm_spring_z20"
+  ],
+  "selection_note": "Best recent forward RMSE among three pre-registered ablations; reported skill is not a nested post-selection estimate.",
+  "operational_choice": "ridge_weather",
+  "beats_trend": true,
+  "trend": {
+    "form": "log_linear",
+    "log_poly_coef": [
+      0.013627239315917342,
+      -19.898670621887202
+    ]
+  },
+  "scaler": {
+    "mean": [
+      -0.6306586312024854,
+      0.4193613117041143,
+      -0.15697232562707147,
+      0.022127001624824817,
+      -0.6066596928189929
+    ],
+    "scale": [
+      1.1129306585844934,
+      1.2312433269930942,
+      0.8549656562638245,
+      1.3207367044312501,
+      1.0121633223777895
+    ]
+  },
+  "ridge": {
+    "alpha": 8.376776400682925,
+    "coef": [
+      0.07560874557306521,
+      -0.05904759391558628,
+      -0.007262204439866941,
+      -0.0012251443482596963,
+      0.10383368387981454
+    ],
+    "intercept": 6.57403338794476e-15
+  },
+  "top_effects": [
+    {
+      "feature": "sm_spring_z20",
+      "effect_pct_per_sd": 10.94
+    },
+    {
+      "feature": "rain_growing_z20",
+      "effect_pct_per_sd": 7.85
+    },
+    {
+      "feature": "heat_excess_spring_z20",
+      "effect_pct_per_sd": -5.73
+    },
+    {
+      "feature": "frost_days_z20",
+      "effect_pct_per_sd": -0.72
+    },
+    {
+      "feature": "sm_preseason_z20",
+      "effect_pct_per_sd": -0.12
+    }
+  ],
+  "uncertainty": {
+    "basis": "absolute errors from forward-chaining predictions",
+    "absolute_error_q68_kg_ha": 757.2524880238386,
+    "absolute_error_q95_kg_ha": 1034.795457768201,
+    "n_forward_errors": 12
+  },
+  "validation": {
+    "weather": {
+      "rmse": 552.951919127273,
+      "mae": 399.05820748117475,
+      "baseline_rmse": 599.2378083447358,
+      "skill_vs_trend": 0.07724126978122015,
+      "recent_rmse": 484.04123711677727,
+      "recent_baseline_rmse": 626.3688646105401,
+      "recent_skill_vs_trend": 0.2272265362076361,
+      "detrended_r2": 0.07938213967142449,
+      "recent_trend_bias": -113.64757752380831,
+      "features": [
+        "rain_growing_z20",
+        "heat_excess_spring_z20",
+        "frost_days_z20"
+      ],
+      "fold_years": [
+        2014,
+        2015,
+        2016,
+        2017,
+        2018,
+        2019,
+        2020,
+        2021,
+        2022,
+        2023,
+        2024,
+        2025
+      ]
+    },
+    "weather_soil": {
+      "rmse": 552.2883335914476,
+      "mae": 409.35098357279895,
+      "baseline_rmse": 599.2378083447358,
+      "skill_vs_trend": 0.07834865240391942,
+      "recent_rmse": 476.1528380589034,
+      "recent_baseline_rmse": 626.3688646105401,
+      "recent_skill_vs_trend": 0.23982039184696247,
+      "detrended_r2": 0.08159044063184184,
+      "recent_trend_bias": -113.64757752380831,
+      "features": [
+        "rain_growing_z20",
+        "heat_excess_spring_z20",
+        "frost_days_z20",
+        "sm_preseason_z20",
+        "sm_spring_z20"
+      ],
+      "fold_years": [
+        2014,
+        2015,
+        2016,
+        2017,
+        2018,
+        2019,
+        2020,
+        2021,
+        2022,
+        2023,
+        2024,
+        2025
+      ]
+    },
+    "weather_soil_drivers": {
+      "rmse": 530.8250484418681,
+      "mae": 381.83568897385453,
+      "baseline_rmse": 599.2378083447358,
+      "skill_vs_trend": 0.11416629416598889,
+      "recent_rmse": 483.00140793000696,
+      "recent_baseline_rmse": 626.3688646105401,
+      "recent_skill_vs_trend": 0.22888662700320406,
+      "detrended_r2": 0.1515866906550618,
+      "recent_trend_bias": -113.64757752380831,
+      "features": [
+        "rain_growing_z20",
+        "heat_excess_spring_z20",
+        "frost_days_z20",
+        "sm_preseason_z20",
+        "sm_spring_z20",
+        "iod_winter_spring_z20",
+        "oni_winter_spring_z20",
+        "sam_winter_spring_z20"
+      ],
+      "fold_years": [
+        2014,
+        2015,
+        2016,
+        2017,
+        2018,
+        2019,
+        2020,
+        2021,
+        2022,
+        2023,
+        2024,
+        2025
+      ]
+    }
+  }
+}

@@ -1,0 +1,40 @@
+name: Update Shipping Capacity Snapshot
+
+on:
+  schedule:
+    - cron: '30 18 * * *'
+  workflow_dispatch:
+
+jobs:
+  update-shipping-capacity:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Run model tests
+        working-directory: New for anti/scripts/shipping_capacity
+        run: python -m unittest discover -s tests -v
+
+      - name: Build snapshot with IMF PortWatch
+        working-directory: New for anti/scripts/shipping_capacity
+        run: >-
+          python build_snapshot.py
+          --fetch-portwatch
+          --output ../../public/data/shipping_capacity_v1.json
+
+      - name: Commit refreshed snapshot
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "New for anti/public/data/shipping_capacity_v1.json"
+          git commit -m "chore: refresh shipping capacity snapshot" || exit 0
+          git push
+

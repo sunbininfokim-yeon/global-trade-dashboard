@@ -386,12 +386,28 @@ def _matopiba_algodao(daily, y):
         # Any rain on open bolls discolours the lint: raw total, threshold 0
         "harvest_rainfall": C.harvest_rain(daily, [(7, 0), (8, 0)], y, 0.0),
         "heat_days_32": C.heat_days(daily, [(3, 0), (4, 0)], y, 32.0),
+        # MATOPIBA soil-moisture work order, Step 1: root-zone wetness stood
+        # up alongside heat/rain over the harvest window. Wet roots in the
+        # Jul-Aug harvest rot open bolls independently of rainfall reaching
+        # the surface -- this is a second read on that risk, not a duplicate
+        # of harvest_rainfall.
+        "harvest_wet_days": C.wet_days(daily, [(7, 0), (8, 0)], y, 0.8),
     }
     if flower_start is not None:
         feats["flowering_doy"] = float(flower_start.dayofyear)
         feats["flowering_precip"] = float(
             daily[(daily.date >= flower_start)
                   & (daily.date <= flower_end)].precip.sum())
+        # Cotton's wilting point is less sensitive than soy's -- 0.2, not
+        # 0.3 -- and the guide's central claim carries over unchanged: yield
+        # collapses on days that are hot AND dry at the root, not on either
+        # alone.
+        feats["gwetroot_flowering_mean"] = C.soil_moisture_mean_window(
+            daily, flower_start, flower_end)
+        feats["gwetroot_severe_drought_days"] = C.soil_stress_days_window(
+            daily, flower_start, flower_end, 0.2)
+        feats["heat_x_drought_cotton"] = C.heat_x_drought_days_window(
+            daily, flower_start, flower_end, 32.0, 0.2)
     return feats
 
 
@@ -429,19 +445,14 @@ MATOPIBA_ALGODAO = RegionCrop(
            "to one. The NDVI classifier that would date flowering is replaced "
            "by the degree-day threshold from the same guide. Training starts "
            "in 2000: the pre-2000 smallholder crop is a different system. "
-           "Untested hypothesis, not a finding: this model carries no soil-"
-           "moisture or root-zone water-storage feature for cotton at all -- "
-           "only rainfall, heat and VPD. MATOPIBA's Cerrado soils are sandy "
-           "(the soybean guide's own Effective_Water_Capacity logic assumes "
-           "this, but that treatment was only applied to soy here, never to "
-           "cotton), which is exactly where plant-available water can diverge "
-           "sharply from rainfall received. NASA POWER's root-zone wetness "
-           "parameter (GWETROOT) -- used by the earlier brazil_soy_model but "
-           "never fetched by this package -- would test this at zero added "
-           "cost. Satellite soil moisture or GRACE total water storage would "
-           "extend it further.",
-    core=["flowering_heat_penalty", "boll_heat_penalty",
-          "harvest_rainfall"],
+           "GWETROOT (MERRA-2 reanalysis root-zone wetness) was added over "
+           "the ADD-based flowering window as of 2026-08-03, restoring what "
+           "the earlier brazil_soy_model.py had and this package originally "
+           "lacked entirely for cotton. It is simulated, not a satellite "
+           "measurement -- SMAP or GRACE would be the next step if this "
+           "does not resolve the gap.",
+    core=["heat_x_drought_cotton", "gwetroot_severe_drought_days",
+          "flowering_heat_penalty", "gwetroot_flowering_mean"],
 )
 
 
@@ -555,8 +566,11 @@ SP_CANA = RegionCrop(
         "all -- it is a replanting-investment decision. This model already "
         "tried the multi-year-weather approach the guide itself asks for "
         "(12-18mo cumulative deficit, SPI-12) and weather-only skill stayed "
-        "negative (-3.1%): more lag months did not help, because the missing "
-        "driver was never weather-shaped to begin with."),
+        "negative (-13.6%): more lag months did not help, because the missing "
+        "driver was never weather-shaped to begin with. (lag1's own "
+        "standardised effect is only +0.1%, the weakest of eleven features "
+        "here -- even the management proxy barely moves this model; that is "
+        "how little of cane's variance any of these terms reach.)"),
 )
 
 

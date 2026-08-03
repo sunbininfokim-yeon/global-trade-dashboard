@@ -154,6 +154,10 @@ def main():
                     "low_confidence": fwd.get("skill_vs_trend", 0) < 0.20,
                 },
                 "trained_years": model["trained_years"],
+                # The standardised weather inputs the model actually saw this
+                # season. Surfacing them lets the panel show *why* the forecast
+                # sits where it does, instead of only the output number.
+                "weather_inputs": {k: round(v, 3) for k, v in (r.get("features") or {}).items()},
             }
             log(f"{region_key}/{crop}: {r['point']:.1f} {r['unit']} "
                 f"({r['range_68'][0]:.1f}-{r['range_68'][1]:.1f} at 68%)")

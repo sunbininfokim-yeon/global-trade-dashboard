@@ -90,8 +90,11 @@ attribute this to *"the lack of coefficients accounting for crop
 management"*. Adding `kdec`, a ratoon-decline management factor, moved them to
 MAE 13–15 t/ha and R² 0.58–0.72. Operational São Paulo forecasting systems
 (Marin et al.) likewise combine Canegro output with agronomic inputs including
-variety and ratoon stage, not climate alone. Our own `weather_skill` of −3.1%
-is the same conclusion reached by a different route.
+variety and ratoon stage, not climate alone. Our own `weather_skill` of −13.6%
+is the same conclusion reached by a different route -- and even the
+management proxy (`lag1`) barely moves this model, at a standardised effect
+of +0.1%, the weakest of eleven features. Almost none of cane's variance is
+reached by anything in this feature set.
 
 **Cotton — satellite greenness is not the missing piece.** Johnson (ORNL)
 compared MODIS NDVI yield models against simple trend analysis across US

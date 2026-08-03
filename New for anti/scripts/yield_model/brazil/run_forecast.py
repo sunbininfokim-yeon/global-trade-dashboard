@@ -143,6 +143,12 @@ def main():
                 "weather_skill": round(r["weather_skill"], 3),
                 "weather_driven": bool(r["weather_skill"] > 0),
                 "non_weather_features": r["non_weather_features"],
+                # Ranked standardised effects (feature, % yield per 1 SD),
+                # every feature the model uses, weather and non-weather
+                # alike. The point: when weather_skill is low, the reader
+                # should see exactly what IS carrying the model instead of
+                # being told only what isn't.
+                "top_effects": r["top_effects"],
                 "beats_trend": r["beats_trend"],
                 "sigma_kg_ha": round(r["sigma"], 1),
             },

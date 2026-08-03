@@ -83,14 +83,42 @@ have no `train.py` yet.
 
 ## 5. Settled, do not redo
 
-- Sugarcane is not a weather problem. Our `weather_skill` −3.1%, Dias &
-  Sentelhas (2017) getting MAE > 29 t/ha and R² < 0.54 from FAO-AZM,
-  DSSAT/CANEGRO and APSIM until a ratoon-decline factor is added, and the new
-  guide itself pointing at the sugar/ethanol mix — three independent routes to
-  the same conclusion.
+- Sugarcane is not a weather problem. Our `weather_skill` −13.6% (`lag1`'s own
+  effect is +0.1%, the weakest of eleven features -- even the management
+  proxy barely moves it), Dias & Sentelhas (2017) getting MAE > 29 t/ha and
+  R² < 0.54 from FAO-AZM, DSSAT/CANEGRO and APSIM until a ratoon-decline
+  factor is added, and the new guide itself pointing at the sugar/ethanol mix
+  — three independent routes to the same conclusion.
 - Satellite data should not be added for cotton or cane. Johnson (ORNL) finds
   MODIS NDVI adds little for upland cotton while transforming corn
   (R² 0.93 vs 0.48). If satellite effort is spent, spend it on corn.
 - Cotton's pre-2000 era is a different farming system and stays excluded
   (`regime_start=2000`). Brazil cotton is ~92% rainfed — the 2000 break was
   relocation, cultivars and scale, not irrigation.
+- **MATOPIBA GWETROOT (Step 1 of the soil-moisture work order): tried, does
+  not help, reverted (2026-08-03).** Root-zone wetness (NASA POWER GWETROOT)
+  was added for both `matopiba_soja`'s reproductive window and
+  `matopiba_algodao`'s ADD-based flowering window, plus a "hot AND dry"
+  cross-term at the wilting-point thresholds the work order specified (0.3
+  soy, 0.2 cotton). Finding: **those thresholds never bind.** Across all
+  41-43 seasons at all four MATOPIBA points, root-zone wetness in the
+  relevant window never drops below 0.48 -- the cross-term and the
+  stress-day count are constant zero, always. This is the rainy season; the
+  "hot and dry" event the guide hypothesises for this specific window simply
+  is not present in this 1981-2024 reanalysis record at these points.
+  Retraining with the surviving `gwetroot_*_mean` feature alone moved
+  forward-chaining skill (soy −1.3%→+1.6%, cotton +14.6%→+47.2%), but the
+  **5-year holdout contradicted both** (soy 7.7%→15.5% MAPE, cotton
+  2.6%→8.9% MAPE -- both worse), and the mean-wetness feature's own
+  standardised effect was the smallest or second-smallest term in each model
+  (+0.36% cotton, −0.40% soy). Read together: the forward-chaining gain was
+  noise from a slightly different candidate set on small samples (25-41
+  seasons), not a real signal. The two model JSONs were reverted to the
+  pre-GWETROOT, holdout-confirmed state via `git checkout`. The code
+  (`collect.py`/`predict.py` fetch `GWETROOT` into a `soil` column;
+  `climate.py` has the helper functions; `regions.py`'s build functions
+  compute the features) is left in place -- harmless, and reusable if Step 2
+  (SMAP) is tried later with a threshold actually calibrated to what this
+  record shows (something above 0.48, not 0.2-0.4). Do not re-attempt Step 1
+  with the work order's thresholds unchanged; they are empirically wrong for
+  this window at these points.

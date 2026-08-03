@@ -203,6 +203,7 @@ def predict_one(cfg, year, oni, predicted):
         "skill_vs_trend": model["recent_skill_vs_trend"],
         "weather_skill": model.get("weather_skill", model["recent_skill_vs_trend"]),
         "non_weather_features": model.get("non_weather_features", []),
+        "top_effects": model.get("top_effects", []),
         "last_actual": {"year": int(last.year), "yield": float(last.yield_kg_ha)},
         "features": {f: float(feats[f]) for f in model["features"]},
         "weather_through": str(coverage.date()),

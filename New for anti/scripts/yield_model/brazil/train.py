@@ -383,10 +383,19 @@ def train_one(cfg):
     # the feature; exp() - 1 turns them into the percentage yield change,
     # which is the form the guides state their thresholds in.
     coefs = dict(zip(best_feats, final.coef_.tolist()))
-    ranked = sorted(coefs.items(), key=lambda kv: -abs(kv[1]))[:4]
+    ranked = sorted(coefs.items(), key=lambda kv: -abs(kv[1]))
     log("  effect of +1 SD: "
-        + ", ".join(f"{k} {(np.exp(v) - 1) * 100:+.1f}%" for k, v in ranked))
+        + ", ".join(f"{k} {(np.exp(v) - 1) * 100:+.1f}%" for k, v in ranked[:4]))
     log("")
+
+    # Full ranking, persisted rather than only logged. The point: when
+    # weather_skill is low but total skill isn't, the reader needs to see
+    # which feature is actually carrying the model -- coffee's lag2, cane's
+    # lag1 -- not just be told "it's not weather" in prose with no number
+    # attached to back it up.
+    top_effects = [{"feature": k, "effect_pct": round((np.exp(v) - 1) * 100, 2),
+                    "is_weather": k not in NON_WEATHER_FEATURES}
+                   for k, v in ranked]
 
     artifact = {
         "key": cfg.key,
@@ -407,6 +416,7 @@ def train_one(cfg):
                   "window": window,
                   "space": "log(kg/ha)"},
         "features": best_feats,
+        "top_effects": top_effects,
         "feature_set": best_key.split("_")[0],
         "trend_form": best["trend_form"],
         "scaler": {"mean": scaler.mean_.tolist(),

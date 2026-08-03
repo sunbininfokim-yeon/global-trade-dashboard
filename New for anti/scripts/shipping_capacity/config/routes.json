@@ -1,0 +1,298 @@
+[
+  {
+    "id": "asia_north_europe_container",
+    "name_ko": "동아시아 → 북유럽 컨테이너",
+    "name_en": "East Asia to North Europe Container",
+    "origin": "East Asia",
+    "destination": "North Europe",
+    "ship_type": "container",
+    "annual_cargo_tonnes": 250000000,
+    "distance_nm_one_way": 10500,
+    "speed_knots": 17.0,
+    "port_days_round_trip": 10,
+    "utilization": 0.78,
+    "reserve_margin": 0.05,
+    "input_status": "scenario_seed_replace_with_comtrade",
+    "input_sources": ["UN Comtrade netWeight aggregation", "Route distance assumption"],
+    "uncertainty": {
+      "annual_cargo_tonnes_low": 200000000,
+      "annual_cargo_tonnes_high": 300000000,
+      "utilization_low": 0.70,
+      "utilization_high": 0.86,
+      "speed_knots_low": 15.5,
+      "speed_knots_high": 18.5
+    },
+    "chokepoints": [
+      {
+        "id": "suez",
+        "exposure_share": 0.95,
+        "reroute_available": true,
+        "reroute_extra_nm_one_way": 3500,
+        "default_waiting_days": 5,
+        "response": {"reroute": 0.90, "wait": 0.08, "cancel": 0.02}
+      },
+      {
+        "id": "bab_el_mandeb",
+        "exposure_share": 0.95,
+        "reroute_available": true,
+        "reroute_extra_nm_one_way": 3500,
+        "default_waiting_days": 5,
+        "response": {"reroute": 0.90, "wait": 0.08, "cancel": 0.02}
+      }
+    ]
+  },
+  {
+    "id": "asia_us_east_container",
+    "name_ko": "동아시아 → 미국 동부 컨테이너",
+    "name_en": "East Asia to US East Coast Container",
+    "origin": "East Asia",
+    "destination": "US East Coast",
+    "ship_type": "container",
+    "annual_cargo_tonnes": 120000000,
+    "distance_nm_one_way": 9500,
+    "speed_knots": 17.0,
+    "port_days_round_trip": 9,
+    "utilization": 0.76,
+    "reserve_margin": 0.05,
+    "input_status": "scenario_seed_replace_with_comtrade",
+    "input_sources": ["UN Comtrade netWeight aggregation", "Route distance assumption"],
+    "uncertainty": {
+      "annual_cargo_tonnes_low": 95000000,
+      "annual_cargo_tonnes_high": 145000000,
+      "utilization_low": 0.68,
+      "utilization_high": 0.84,
+      "speed_knots_low": 15.5,
+      "speed_knots_high": 18.5
+    },
+    "chokepoints": [
+      {
+        "id": "panama",
+        "exposure_share": 0.72,
+        "reroute_available": true,
+        "reroute_extra_nm_one_way": 4800,
+        "default_waiting_days": 6,
+        "response": {"reroute": 0.65, "wait": 0.25, "cancel": 0.10}
+      }
+    ]
+  },
+  {
+    "id": "us_gulf_ne_asia_grain",
+    "name_ko": "미국 걸프 → 동북아 곡물",
+    "name_en": "US Gulf to Northeast Asia Grain",
+    "origin": "US Gulf",
+    "destination": "Northeast Asia",
+    "ship_type": "dry_bulk",
+    "annual_cargo_tonnes": 35000000,
+    "distance_nm_one_way": 9000,
+    "speed_knots": 13.0,
+    "port_days_round_trip": 8,
+    "utilization": 0.82,
+    "reserve_margin": 0.04,
+    "input_status": "scenario_seed_replace_with_comtrade",
+    "input_sources": ["UN Comtrade grain netWeight aggregation", "Route distance assumption"],
+    "uncertainty": {
+      "annual_cargo_tonnes_low": 26000000,
+      "annual_cargo_tonnes_high": 44000000,
+      "utilization_low": 0.74,
+      "utilization_high": 0.88,
+      "speed_knots_low": 11.5,
+      "speed_knots_high": 14.0
+    },
+    "chokepoints": [
+      {
+        "id": "panama",
+        "exposure_share": 0.80,
+        "reroute_available": true,
+        "reroute_extra_nm_one_way": 6500,
+        "default_waiting_days": 7,
+        "response": {"reroute": 0.55, "wait": 0.35, "cancel": 0.10}
+      }
+    ]
+  },
+  {
+    "id": "black_sea_mena_grain",
+    "name_ko": "흑해 → 중동·북아프리카 곡물",
+    "name_en": "Black Sea to Middle East and North Africa Grain",
+    "origin": "Black Sea",
+    "destination": "Middle East and North Africa",
+    "ship_type": "dry_bulk",
+    "annual_cargo_tonnes": 55000000,
+    "distance_nm_one_way": 2500,
+    "speed_knots": 12.5,
+    "port_days_round_trip": 7,
+    "utilization": 0.84,
+    "reserve_margin": 0.04,
+    "input_status": "scenario_seed_replace_with_comtrade",
+    "input_sources": ["UN Comtrade grain netWeight aggregation", "Route distance assumption"],
+    "uncertainty": {
+      "annual_cargo_tonnes_low": 42000000,
+      "annual_cargo_tonnes_high": 68000000,
+      "utilization_low": 0.76,
+      "utilization_high": 0.90,
+      "speed_knots_low": 11.0,
+      "speed_knots_high": 13.5
+    },
+    "chokepoints": [
+      {
+        "id": "bosporus",
+        "exposure_share": 1.0,
+        "reroute_available": false,
+        "reroute_extra_nm_one_way": 0,
+        "default_waiting_days": 14,
+        "response": {"reroute": 0.0, "wait": 0.75, "cancel": 0.25}
+      }
+    ]
+  },
+  {
+    "id": "black_sea_east_asia_grain",
+    "name_ko": "흑해 → 동아시아 곡물",
+    "name_en": "Black Sea to East Asia Grain",
+    "origin": "Black Sea",
+    "destination": "East Asia",
+    "ship_type": "dry_bulk",
+    "annual_cargo_tonnes": 20000000,
+    "distance_nm_one_way": 8700,
+    "speed_knots": 12.5,
+    "port_days_round_trip": 8,
+    "utilization": 0.82,
+    "reserve_margin": 0.04,
+    "input_status": "scenario_seed_replace_with_comtrade",
+    "input_sources": ["UN Comtrade grain netWeight aggregation", "Route distance assumption"],
+    "uncertainty": {
+      "annual_cargo_tonnes_low": 14000000,
+      "annual_cargo_tonnes_high": 26000000,
+      "utilization_low": 0.74,
+      "utilization_high": 0.88,
+      "speed_knots_low": 11.0,
+      "speed_knots_high": 13.5
+    },
+    "chokepoints": [
+      {
+        "id": "bosporus",
+        "exposure_share": 1.0,
+        "reroute_available": false,
+        "reroute_extra_nm_one_way": 0,
+        "default_waiting_days": 14,
+        "response": {"reroute": 0.0, "wait": 0.75, "cancel": 0.25}
+      },
+      {
+        "id": "suez",
+        "exposure_share": 0.92,
+        "reroute_available": true,
+        "reroute_extra_nm_one_way": 3300,
+        "default_waiting_days": 6,
+        "response": {"reroute": 0.80, "wait": 0.15, "cancel": 0.05}
+      }
+    ]
+  },
+  {
+    "id": "persian_gulf_europe_crude",
+    "name_ko": "페르시아만 → 유럽 원유",
+    "name_en": "Persian Gulf to Europe Crude",
+    "origin": "Persian Gulf",
+    "destination": "Europe",
+    "ship_type": "tanker",
+    "annual_cargo_tonnes": 150000000,
+    "distance_nm_one_way": 6200,
+    "speed_knots": 13.0,
+    "port_days_round_trip": 7,
+    "utilization": 0.88,
+    "reserve_margin": 0.04,
+    "input_status": "scenario_seed_replace_with_comtrade",
+    "input_sources": ["UN Comtrade mineral fuels netWeight aggregation", "Route distance assumption"],
+    "uncertainty": {
+      "annual_cargo_tonnes_low": 120000000,
+      "annual_cargo_tonnes_high": 180000000,
+      "utilization_low": 0.82,
+      "utilization_high": 0.92,
+      "speed_knots_low": 11.5,
+      "speed_knots_high": 14.0
+    },
+    "chokepoints": [
+      {
+        "id": "hormuz",
+        "exposure_share": 0.95,
+        "reroute_available": false,
+        "reroute_extra_nm_one_way": 0,
+        "default_waiting_days": 10,
+        "response": {"reroute": 0.0, "wait": 0.60, "cancel": 0.40}
+      },
+      {
+        "id": "suez",
+        "exposure_share": 0.72,
+        "reroute_available": true,
+        "reroute_extra_nm_one_way": 4400,
+        "default_waiting_days": 6,
+        "response": {"reroute": 0.80, "wait": 0.15, "cancel": 0.05}
+      },
+      {
+        "id": "bab_el_mandeb",
+        "exposure_share": 0.72,
+        "reroute_available": true,
+        "reroute_extra_nm_one_way": 4400,
+        "default_waiting_days": 6,
+        "response": {"reroute": 0.80, "wait": 0.15, "cancel": 0.05}
+      }
+    ]
+  },
+  {
+    "id": "persian_gulf_east_asia_crude",
+    "name_ko": "페르시아만 → 동아시아 원유",
+    "name_en": "Persian Gulf to East Asia Crude",
+    "origin": "Persian Gulf",
+    "destination": "East Asia",
+    "ship_type": "tanker",
+    "annual_cargo_tonnes": 600000000,
+    "distance_nm_one_way": 6500,
+    "speed_knots": 13.0,
+    "port_days_round_trip": 7,
+    "utilization": 0.89,
+    "reserve_margin": 0.04,
+    "input_status": "scenario_seed_replace_with_comtrade",
+    "input_sources": ["UN Comtrade mineral fuels netWeight aggregation", "Route distance assumption"],
+    "uncertainty": {
+      "annual_cargo_tonnes_low": 500000000,
+      "annual_cargo_tonnes_high": 700000000,
+      "utilization_low": 0.83,
+      "utilization_high": 0.93,
+      "speed_knots_low": 11.5,
+      "speed_knots_high": 14.0
+    },
+    "chokepoints": [
+      {
+        "id": "hormuz",
+        "exposure_share": 0.98,
+        "reroute_available": false,
+        "reroute_extra_nm_one_way": 0,
+        "default_waiting_days": 10,
+        "response": {"reroute": 0.0, "wait": 0.65, "cancel": 0.35}
+      }
+    ]
+  },
+  {
+    "id": "brazil_china_soy",
+    "name_ko": "브라질 → 중국 대두",
+    "name_en": "Brazil to China Soybeans",
+    "origin": "Brazil",
+    "destination": "China",
+    "ship_type": "dry_bulk",
+    "annual_cargo_tonnes": 75000000,
+    "distance_nm_one_way": 11000,
+    "speed_knots": 12.5,
+    "port_days_round_trip": 9,
+    "utilization": 0.85,
+    "reserve_margin": 0.04,
+    "input_status": "scenario_seed_replace_with_comtrade",
+    "input_sources": ["UN Comtrade/Comex Stat soybean netWeight aggregation", "Route distance assumption"],
+    "uncertainty": {
+      "annual_cargo_tonnes_low": 65000000,
+      "annual_cargo_tonnes_high": 85000000,
+      "utilization_low": 0.78,
+      "utilization_high": 0.90,
+      "speed_knots_low": 11.0,
+      "speed_knots_high": 13.5
+    },
+    "chokepoints": []
+  }
+]
+
