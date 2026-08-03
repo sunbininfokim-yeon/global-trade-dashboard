@@ -1,0 +1,269 @@
+{
+  "data": {
+    "faostat": {
+      "Côte d'Ivoire": {
+        "count": 64,
+        "first": 1961,
+        "last": 2024,
+        "rows": 64
+      },
+      "Ghana": {
+        "count": 64,
+        "first": 1961,
+        "last": 2024,
+        "rows": 64
+      }
+    },
+    "civ_regional_production": {
+      "count": 2,
+      "first": 2022,
+      "last": 2023,
+      "rows": 48,
+      "regions": 24,
+      "minimum_seasons_per_region": 2
+    },
+    "ghana_regional_purchases": {
+      "count": 50,
+      "first": 1970,
+      "last": 2020,
+      "rows": 300,
+      "regions": 6,
+      "minimum_seasons_per_region": 50
+    },
+    "earth_engine": {
+      "project": "climate-project-504313",
+      "initialized": true,
+      "checks": {
+        "Côte d'Ivoire:chirps_daily": 31,
+        "Côte d'Ivoire:era5_land_daily": 31,
+        "Côte d'Ivoire:sentinel_1_grd": 725,
+        "Côte d'Ivoire:sentinel_2_sr": 7937,
+        "Côte d'Ivoire:smap_l4": 248,
+        "Ghana:chirps_daily": 31,
+        "Ghana:era5_land_daily": 31,
+        "Ghana:sentinel_1_grd": 532,
+        "Ghana:sentinel_2_sr": 6068,
+        "Ghana:smap_l4": 248,
+        "hansen_band_count": 13
+      },
+      "interpretation": "Positive counts prove catalogue access only. Cocoa mapping still requires a validated cocoa mask or labelled farm polygons."
+    }
+  },
+  "feasibility": {
+    "Côte d'Ivoire national climate-production screen": {
+      "status": "feasible_for_validation",
+      "overlap": {
+        "count": 40,
+        "first": 1985,
+        "last": 2024
+      },
+      "warning": "Country totals cannot identify regional mechanisms; cocoa-year alignment is provisional."
+    },
+    "Ghana national climate-production screen": {
+      "status": "feasible_for_validation",
+      "overlap": {
+        "count": 40,
+        "first": 1985,
+        "last": 2024
+      },
+      "warning": "Country totals cannot identify regional mechanisms; cocoa-year alignment is provisional."
+    },
+    "Côte d'Ivoire regional model": {
+      "status": "not_trainable",
+      "evidence": {
+        "count": 2,
+        "first": 2022,
+        "last": 2023,
+        "rows": 48,
+        "regions": 24,
+        "minimum_seasons_per_region": 2
+      },
+      "reason": "The open CCC regional table currently has only two seasons."
+    },
+    "Ghana regional purchases model": {
+      "status": "candidate_for_validation",
+      "evidence": {
+        "count": 50,
+        "first": 1970,
+        "last": 2020,
+        "rows": 300,
+        "regions": 6,
+        "minimum_seasons_per_region": 50
+      },
+      "warning": "The label is cocoa purchases, not harvested area or farm yield."
+    },
+    "Ghana climate-purchases screen": {
+      "status": "feasible_for_validation",
+      "overlap": {
+        "count": 36,
+        "first": 1985,
+        "last": 2020
+      }
+    },
+    "satellite cocoa-area monitoring": {
+      "status": "feasible_as_separate_monitor",
+      "reason": "S1/S2/SMAP/CHIRPS/Hansen are available, but a validated cocoa mask is still required."
+    },
+    "black-pod loss model": {
+      "status": "proxy_only",
+      "reason": "Climate can produce a disease-risk proxy, but no open region-year incidence/loss label is wired in."
+    },
+    "EUDR eligible supply": {
+      "status": "scenario_only",
+      "reason": "Forest-loss exposure is observable; legal compliance also requires plot geolocation, traceability and due diligence."
+    }
+  },
+  "empirical_screen": {
+    "status": "not_yet_validated",
+    "decision_rule": "A feature set must improve RMSE over an expanding time-trend by at least 10% both across all held-out years and across the most recent eight folds.",
+    "interpretation": "The Ghana FAOSTAT production signal is not treated as validated because it did not reproduce in COCOBOD national purchases or the six-region panel.",
+    "screens": [
+      {
+        "country": "Côte d'Ivoire",
+        "target": "production_tonnes",
+        "status": "no_validated_climate_gain",
+        "passing_feature_sets": [],
+        "skills_vs_trend": {
+          "water_balance": {
+            "all_folds": -0.010494272797566317,
+            "recent_folds": -0.027858021949389355
+          },
+          "harmattan": {
+            "all_folds": 0.00813107131115054,
+            "recent_folds": 0.012180204316435295
+          },
+          "wet_disease_weather_proxy": {
+            "all_folds": -0.008843023849284704,
+            "recent_folds": -0.01878019052097679
+          },
+          "combined_minimal": {
+            "all_folds": -0.003838506784535012,
+            "recent_folds": -0.009558282986712019
+          }
+        }
+      },
+      {
+        "country": "Ghana",
+        "target": "production_tonnes",
+        "status": "candidate_signal",
+        "passing_feature_sets": [
+          "combined_minimal"
+        ],
+        "skills_vs_trend": {
+          "water_balance": {
+            "all_folds": 0.05963004634944491,
+            "recent_folds": 0.0825708700821477
+          },
+          "harmattan": {
+            "all_folds": -0.06170683676898858,
+            "recent_folds": -0.06235768259381369
+          },
+          "wet_disease_weather_proxy": {
+            "all_folds": 0.0037969513076914208,
+            "recent_folds": 0.004207358223565549
+          },
+          "combined_minimal": {
+            "all_folds": 0.17098654873502916,
+            "recent_folds": 0.2032416225190512
+          }
+        }
+      },
+      {
+        "country": "Côte d'Ivoire",
+        "target": "yield_kg_ha",
+        "status": "no_validated_climate_gain",
+        "passing_feature_sets": [],
+        "skills_vs_trend": {
+          "water_balance": {
+            "all_folds": 0.09070235187011444,
+            "recent_folds": 0.3974950191598208
+          },
+          "harmattan": {
+            "all_folds": 0.059510723536629784,
+            "recent_folds": 0.21779664651055408
+          },
+          "wet_disease_weather_proxy": {
+            "all_folds": 0.031812580318019146,
+            "recent_folds": 0.05498790300003553
+          },
+          "combined_minimal": {
+            "all_folds": 0.06342773529756851,
+            "recent_folds": 0.22420612810621354
+          }
+        }
+      },
+      {
+        "country": "Ghana",
+        "target": "yield_kg_ha",
+        "status": "no_validated_climate_gain",
+        "passing_feature_sets": [],
+        "skills_vs_trend": {
+          "water_balance": {
+            "all_folds": 0.00039543244871742544,
+            "recent_folds": 0.006880464145260001
+          },
+          "harmattan": {
+            "all_folds": 0.0004080802226056335,
+            "recent_folds": 0.009090299500571386
+          },
+          "wet_disease_weather_proxy": {
+            "all_folds": 0.00027333180229527354,
+            "recent_folds": 0.003653430110669209
+          },
+          "combined_minimal": {
+            "all_folds": 0.0006340508436849523,
+            "recent_folds": 0.007969860219751213
+          }
+        }
+      },
+      {
+        "country": "Ghana",
+        "target": "purchases_tonnes",
+        "status": "no_validated_climate_gain",
+        "passing_feature_sets": [],
+        "skills_vs_trend": {
+          "water_balance": {
+            "all_folds": 0.06563024383770166,
+            "recent_folds": 0.03812929825309308
+          },
+          "harmattan": {
+            "all_folds": -0.06607068874656008,
+            "recent_folds": -0.1299812479859348
+          },
+          "wet_disease_weather_proxy": {
+            "all_folds": -0.000568574105960673,
+            "recent_folds": 0.0001641917478646393
+          },
+          "combined_minimal": {
+            "all_folds": 0.04093143213607808,
+            "recent_folds": -0.010884761109319019
+          }
+        }
+      },
+      {
+        "country": "Ghana",
+        "target": "regional_purchases_tonnes",
+        "status": "no_validated_climate_gain",
+        "passing_feature_sets": [],
+        "skills_vs_trend": {
+          "water_balance": {
+            "all_folds": -0.004718585131068265,
+            "recent_folds": -0.012023831252246042
+          },
+          "harmattan": {
+            "all_folds": -0.02049606399525228,
+            "recent_folds": -0.05222522556216891
+          },
+          "wet_disease_weather_proxy": {
+            "all_folds": 0.0023660430568389623,
+            "recent_folds": 0.0028966881313949866
+          },
+          "combined_minimal": {
+            "all_folds": 0.04744748055490866,
+            "recent_folds": 0.03841299361795514
+          }
+        }
+      }
+    ]
+  }
+}
