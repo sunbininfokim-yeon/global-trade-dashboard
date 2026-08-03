@@ -120,6 +120,15 @@ def build_snapshot(config_dir: Path, *, fetch_portwatch: bool = False) -> dict[s
                 "input_status": route["input_status"],
                 "input_sources": route["input_sources"],
                 "annual_cargo_tonnes": route["annual_cargo_tonnes"],
+                "model_inputs": {
+                    "distance_nm_one_way": route["distance_nm_one_way"],
+                    "speed_knots": route["speed_knots"],
+                    "port_days_round_trip": route["port_days_round_trip"],
+                    "utilization": route["utilization"],
+                    "reserve_margin": route["reserve_margin"],
+                    "uncertainty": route.get("uncertainty", {}),
+                },
+                "chokepoints": route.get("chokepoints", []),
                 "baseline": {**baseline, "interval": baseline_interval},
                 "stress_tests": stress_results,
                 "live_observed": live_results,
@@ -164,6 +173,7 @@ def build_snapshot(config_dir: Path, *, fetch_portwatch: bool = False) -> dict[s
             "chokepoints_live": live_status,
             "live_fetch_errors": live_errors,
             "routes": route_outputs,
+            "scenarios": scenarios,
             "scenario_summary": scenario_summary,
         }
     )

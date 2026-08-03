@@ -8,6 +8,9 @@ import numpy as np
 ALPHAS = np.logspace(-2, 4, 24)
 RECENT_FOLDS = 5
 MIN_OPERATIONAL_SKILL = 0.10
+MIN_WEATHER_SEASONS = 25
+SEASONS_PER_WEATHER_PARAMETER = 5
+MAX_PUBLISH_MAPE = 0.15
 TREND_FORMS = {
     "full_linear": {"degree": 1, "window": None},
     "full_quadratic": {"degree": 2, "window": None},
@@ -82,6 +85,12 @@ def evaluate(truth, predicted, baseline, years):
     base_rmse = float(np.sqrt(np.mean((truth - baseline) ** 2)))
     recent_rmse = float(np.sqrt(np.mean((truth[recent] - predicted[recent]) ** 2)))
     recent_base = float(np.sqrt(np.mean((truth[recent] - baseline[recent]) ** 2)))
+    mape = float(np.mean(np.abs((truth - predicted) / truth)))
+    base_mape = float(np.mean(np.abs((truth - baseline) / truth)))
+    recent_mape = float(np.mean(np.abs((truth[recent] - predicted[recent]) / truth[recent])))
+    recent_base_mape = float(np.mean(np.abs((truth[recent] - baseline[recent]) / truth[recent])))
+    latest_ape = float(abs(predicted[-1] - truth[-1]) / truth[-1])
+    latest_base_ape = float(abs(baseline[-1] - truth[-1]) / truth[-1])
     skill = 1 - recent_rmse / recent_base if recent_base > 0 else float("nan")
     deviations = truth - baseline
     explained = predicted - baseline
@@ -91,6 +100,11 @@ def evaluate(truth, predicted, baseline, years):
     return {
         "rmse": rmse, "baseline_rmse": base_rmse,
         "recent_rmse": recent_rmse, "recent_baseline_rmse": recent_base,
+        "mape": mape, "baseline_mape": base_mape,
+        "recent_mape": recent_mape,
+        "recent_baseline_mape": recent_base_mape,
+        "latest_ape": latest_ape,
+        "latest_baseline_ape": latest_base_ape,
         "skill_vs_trend": skill, "detrended_r2": r2,
         "n_folds": len(truth), "recent_folds": recent_n,
         "years": [int(min(years)), int(max(years))],
@@ -125,14 +139,21 @@ def forward_validate(frame, target, features, min_train=10, degree=1, window=Non
 
 
 def train_target(frame, target, feature_sets, min_train=10):
+    feature_sets = dict(feature_sets)
+    feature_sets.setdefault("trend_only", [])
     required = sorted(set(sum(feature_sets.values(), [])))
-    usable = frame.dropna(subset=[target] + required).sort_values("year").reset_index(drop=True)
-    if len(usable) < min_train + 5:
+    trend_usable = frame.dropna(subset=[target]).sort_values("year").reset_index(drop=True)
+    weather_usable = frame.dropna(
+        subset=[target] + required).sort_values("year").reset_index(drop=True)
+    if len(trend_usable) < min_train + 5:
         return None
 
     validation = {}
     configurations = {}
     for feature_name, features in feature_sets.items():
+        usable = weather_usable if features else trend_usable
+        if len(usable) < min_train + 5:
+            continue
         for trend_name, trend_form in TREND_FORMS.items():
             name = feature_name + "__" + trend_name
             result = forward_validate(
@@ -146,12 +167,41 @@ def train_target(frame, target, feature_sets, min_train=10):
     if not validation:
         return None
 
-    best_name = min(validation, key=lambda name: validation[name]["recent_rmse"])
+    trend_names = [name for name, config in configurations.items()
+                   if not config["features"]]
+    weather_names = [name for name, config in configurations.items()
+                     if config["features"]]
+    best_trend_name = min(
+        trend_names, key=lambda name: validation[name]["recent_rmse"])
+    best_weather_name = (min(
+        weather_names, key=lambda name: validation[name]["recent_rmse"])
+        if weather_names else None)
+    candidate = configurations[best_weather_name] if best_weather_name else None
+    candidate_score = validation[best_weather_name] if best_weather_name else None
+    required_weather_seasons = (
+        max(MIN_WEATHER_SEASONS,
+            SEASONS_PER_WEATHER_PARAMETER * (len(candidate["features"]) + 1))
+        if candidate else None)
+    enough_weather_data = bool(
+        candidate and len(weather_usable) >= required_weather_seasons)
+    enough_weather_skill = bool(
+        candidate_score and
+        candidate_score["skill_vs_trend"] >= MIN_OPERATIONAL_SKILL)
+    beats_trend = bool(enough_weather_data and enough_weather_skill)
+    best_name = best_weather_name if beats_trend else best_trend_name
     selected = configurations[best_name]
     best_features = selected["features"]
     best = validation[best_name]
-    beats_trend = bool(
-        best_features and best["skill_vs_trend"] >= MIN_OPERATIONAL_SKILL)
+    usable = weather_usable if beats_trend else trend_usable
+
+    if not candidate:
+        climate_status = "not_evaluated_no_weather_features"
+    elif not enough_weather_data:
+        climate_status = "stopped_insufficient_sample"
+    elif not enough_weather_skill:
+        climate_status = "stopped_no_incremental_skill"
+    else:
+        climate_status = "weather_adjustment_validated"
 
     years = usable.year.to_numpy(dtype=float)
     values = usable[target].to_numpy(dtype=float)
@@ -159,7 +209,7 @@ def train_target(frame, target, feature_sets, min_train=10):
     trend = fit_trend(
         years, values, degree=selected["degree"], window=selected["window"])
     ridge_payload = None
-    if best_features:
+    if beats_trend and best_features:
         x = usable[best_features].to_numpy(dtype=float)
         _, _, fit_x = _tail(years, values, selected["window"], x=x)
         residual = np.log(fit_values) - trend(fit_years)
@@ -178,6 +228,14 @@ def train_target(frame, target, feature_sets, min_train=10):
 
     sigma = (best["recent_rmse"] if beats_trend
              else best["recent_baseline_rmse"])
+    operational_mape = (
+        best["recent_mape"] if beats_trend else best["recent_baseline_mape"])
+    operational_latest_ape = (
+        best["latest_ape"] if beats_trend else best["latest_baseline_ape"])
+    publishable = bool(
+        best["recent_folds"] >= 5 and
+        operational_mape <= MAX_PUBLISH_MAPE and
+        operational_latest_ape <= MAX_PUBLISH_MAPE)
     return {
         "target": target,
         "trained_years": [int(years.min()), int(years.max())],
@@ -195,6 +253,23 @@ def train_target(frame, target, feature_sets, min_train=10):
         "ridge": ridge_payload,
         "beats_trend": beats_trend,
         "minimum_operational_skill": MIN_OPERATIONAL_SKILL,
+        "climate_gate": {
+            "status": climate_status,
+            "candidate_configuration": best_weather_name,
+            "candidate_features": candidate["features"] if candidate else [],
+            "available_seasons": len(weather_usable),
+            "required_seasons": required_weather_seasons,
+            "candidate_skill_vs_trend": (
+                candidate_score["skill_vs_trend"] if candidate_score else None),
+        },
+        "forecast_gate": {
+            "publishable": publishable,
+            "recent_operational_mape": operational_mape,
+            "latest_operational_ape": operational_latest_ape,
+            "maximum_publish_mape": MAX_PUBLISH_MAPE,
+            "status": ("publishable_baseline" if publishable
+                       else "stopped_poor_recent_backtest"),
+        },
         "validation": validation,
         "uncertainty": {
             "sigma": float(sigma),

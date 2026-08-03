@@ -1482,8 +1482,9 @@ const renderMapLayers = (arcs) => {
     });
 };
 
-const togglePanels = ({ macro = false, countryStats = false, news = false, forecast = false, left = true, chart = false, map = true }) => {
+const togglePanels = ({ macro = false, countryStats = false, news = false, forecast = false, left = true, right = true, chart = false, map = true }) => {
     const leftPaneContainer = document.getElementById('left-pane'); // Target the whole container
+    const rightPaneContainer = document.getElementById('right-pane');
     const commodityInfoPanel = document.getElementById('commodity-info-panel');
     
     macro ? macroPanelEl.classList.remove('hidden') : macroPanelEl.classList.add('hidden');
@@ -1498,12 +1499,19 @@ const togglePanels = ({ macro = false, countryStats = false, news = false, forec
         leftPaneContainer.style.display = 'none'; // Hide the whole left pane
         commodityInfoPanel.classList.add('hidden');
     }
+
+    rightPaneContainer.style.display = right ? 'flex' : 'none';
     
     chart ? chartView.classList.remove('hidden') : chartView.classList.add('hidden');
     mapContainer.style.display = map ? 'block' : 'none';
 };
 
 const setView = (target) => {
+    const isShippingView = target && target.startsWith('shipping_');
+    if (!isShippingView && window.ShippingDashboard) {
+        window.ShippingDashboard.unmount(chartView);
+    }
+
     // Reset active states
     navLinks.forEach(link => link.classList.remove('active'));
     
@@ -1532,6 +1540,13 @@ const setView = (target) => {
 
         // Restart rotation
         startRotation();
+
+    } else if (isShippingView) {
+        currentCommodity = target;
+        stopRotation();
+        deckgl.setProps({ layers: [] });
+        togglePanels({ left: false, right: false, chart: true, map: false });
+        window.ShippingDashboard.render(target, chartView);
 
     } else if (target === 'inst_intl' || target === 'inst_country') {
         currentCommodity = target;

@@ -73,6 +73,11 @@ def cotton_features(daily: pd.DataFrame, harvest_year: int) -> dict[str, float]:
     heat_excess = (flowering.tmax - 35.0).clip(lower=0)
     heat_x_drought = (flowering.tmax.gt(35.0)
                       & flowering.gwetroot.lt(0.25))
+    # A fixed GWETROOT threshold is not portable between MERRA-2 grid cells.
+    # Keep the requested day count as a diagnostic, but use this continuous
+    # interaction in the model so a dry-hot season does not collapse to a
+    # constant zero simply because the reanalysis wetness scale is shifted.
+    heat_dry_stress = heat_excess * (1.0 - flowering.gwetroot.clip(0, 1))
     return {
         "rain_preseason": _sum(preseason, "precip"),
         "rain_flowering": _sum(flowering, "precip"),
@@ -81,7 +86,7 @@ def cotton_features(daily: pd.DataFrame, harvest_year: int) -> dict[str, float]:
         "sm_stress_days": float(flowering.gwetroot.lt(0.25).sum()),
         "heat_excess_flowering": float(heat_excess.sum()),
         "heat_x_drought": float(heat_x_drought.sum()),
+        "heat_dry_stress": float(heat_dry_stress.sum()),
         "vpd_flowering": float(_vpd_max(flowering).mean()),
         "harvest_rain": _sum(harvest, "precip"),
     }
-

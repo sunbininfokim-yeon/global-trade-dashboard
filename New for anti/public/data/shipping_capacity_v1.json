@@ -1,6 +1,6 @@
 {
   "schema_version": "shipping-capacity-v1",
-  "generated_at": "2026-08-03T14:20:44.734241+00:00",
+  "generated_at": "2026-08-03T14:34:38.301523+00:00",
   "model": {
     "name": "Route Cycle Capacity + Chokepoint Shock",
     "version": "1.0.0",
@@ -390,6 +390,47 @@
         "Route distance assumption"
       ],
       "annual_cargo_tonnes": 250000000,
+      "model_inputs": {
+        "distance_nm_one_way": 10500,
+        "speed_knots": 17.0,
+        "port_days_round_trip": 10,
+        "utilization": 0.78,
+        "reserve_margin": 0.05,
+        "uncertainty": {
+          "annual_cargo_tonnes_low": 200000000,
+          "annual_cargo_tonnes_high": 300000000,
+          "utilization_low": 0.7,
+          "utilization_high": 0.86,
+          "speed_knots_low": 15.5,
+          "speed_knots_high": 18.5
+        }
+      },
+      "chokepoints": [
+        {
+          "id": "suez",
+          "exposure_share": 0.95,
+          "reroute_available": true,
+          "reroute_extra_nm_one_way": 3500,
+          "default_waiting_days": 5,
+          "response": {
+            "reroute": 0.9,
+            "wait": 0.08,
+            "cancel": 0.02
+          }
+        },
+        {
+          "id": "bab_el_mandeb",
+          "exposure_share": 0.95,
+          "reroute_available": true,
+          "reroute_extra_nm_one_way": 3500,
+          "default_waiting_days": 5,
+          "response": {
+            "reroute": 0.9,
+            "wait": 0.08,
+            "cancel": 0.02
+          }
+        }
+      ],
       "baseline": {
         "route_id": "asia_north_europe_container",
         "scenario_id": "normal",
@@ -610,6 +651,35 @@
         "Route distance assumption"
       ],
       "annual_cargo_tonnes": 120000000,
+      "model_inputs": {
+        "distance_nm_one_way": 9500,
+        "speed_knots": 17.0,
+        "port_days_round_trip": 9,
+        "utilization": 0.76,
+        "reserve_margin": 0.05,
+        "uncertainty": {
+          "annual_cargo_tonnes_low": 95000000,
+          "annual_cargo_tonnes_high": 145000000,
+          "utilization_low": 0.68,
+          "utilization_high": 0.84,
+          "speed_knots_low": 15.5,
+          "speed_knots_high": 18.5
+        }
+      },
+      "chokepoints": [
+        {
+          "id": "panama",
+          "exposure_share": 0.72,
+          "reroute_available": true,
+          "reroute_extra_nm_one_way": 4800,
+          "default_waiting_days": 6,
+          "response": {
+            "reroute": 0.65,
+            "wait": 0.25,
+            "cancel": 0.1
+          }
+        }
+      ],
       "baseline": {
         "route_id": "asia_us_east_container",
         "scenario_id": "normal",
@@ -754,6 +824,35 @@
         "Route distance assumption"
       ],
       "annual_cargo_tonnes": 35000000,
+      "model_inputs": {
+        "distance_nm_one_way": 9000,
+        "speed_knots": 13.0,
+        "port_days_round_trip": 8,
+        "utilization": 0.82,
+        "reserve_margin": 0.04,
+        "uncertainty": {
+          "annual_cargo_tonnes_low": 26000000,
+          "annual_cargo_tonnes_high": 44000000,
+          "utilization_low": 0.74,
+          "utilization_high": 0.88,
+          "speed_knots_low": 11.5,
+          "speed_knots_high": 14.0
+        }
+      },
+      "chokepoints": [
+        {
+          "id": "panama",
+          "exposure_share": 0.8,
+          "reroute_available": true,
+          "reroute_extra_nm_one_way": 6500,
+          "default_waiting_days": 7,
+          "response": {
+            "reroute": 0.55,
+            "wait": 0.35,
+            "cancel": 0.1
+          }
+        }
+      ],
       "baseline": {
         "route_id": "us_gulf_ne_asia_grain",
         "scenario_id": "normal",
@@ -898,6 +997,35 @@
         "Route distance assumption"
       ],
       "annual_cargo_tonnes": 55000000,
+      "model_inputs": {
+        "distance_nm_one_way": 2500,
+        "speed_knots": 12.5,
+        "port_days_round_trip": 7,
+        "utilization": 0.84,
+        "reserve_margin": 0.04,
+        "uncertainty": {
+          "annual_cargo_tonnes_low": 42000000,
+          "annual_cargo_tonnes_high": 68000000,
+          "utilization_low": 0.76,
+          "utilization_high": 0.9,
+          "speed_knots_low": 11.0,
+          "speed_knots_high": 13.5
+        }
+      },
+      "chokepoints": [
+        {
+          "id": "bosporus",
+          "exposure_share": 1.0,
+          "reroute_available": false,
+          "reroute_extra_nm_one_way": 0,
+          "default_waiting_days": 14,
+          "response": {
+            "reroute": 0.0,
+            "wait": 0.75,
+            "cancel": 0.25
+          }
+        }
+      ],
       "baseline": {
         "route_id": "black_sea_mena_grain",
         "scenario_id": "normal",
@@ -1042,6 +1170,47 @@
         "Route distance assumption"
       ],
       "annual_cargo_tonnes": 20000000,
+      "model_inputs": {
+        "distance_nm_one_way": 8700,
+        "speed_knots": 12.5,
+        "port_days_round_trip": 8,
+        "utilization": 0.82,
+        "reserve_margin": 0.04,
+        "uncertainty": {
+          "annual_cargo_tonnes_low": 14000000,
+          "annual_cargo_tonnes_high": 26000000,
+          "utilization_low": 0.74,
+          "utilization_high": 0.88,
+          "speed_knots_low": 11.0,
+          "speed_knots_high": 13.5
+        }
+      },
+      "chokepoints": [
+        {
+          "id": "bosporus",
+          "exposure_share": 1.0,
+          "reroute_available": false,
+          "reroute_extra_nm_one_way": 0,
+          "default_waiting_days": 14,
+          "response": {
+            "reroute": 0.0,
+            "wait": 0.75,
+            "cancel": 0.25
+          }
+        },
+        {
+          "id": "suez",
+          "exposure_share": 0.92,
+          "reroute_available": true,
+          "reroute_extra_nm_one_way": 3300,
+          "default_waiting_days": 6,
+          "response": {
+            "reroute": 0.8,
+            "wait": 0.15,
+            "cancel": 0.05
+          }
+        }
+      ],
       "baseline": {
         "route_id": "black_sea_east_asia_grain",
         "scenario_id": "normal",
@@ -1312,6 +1481,59 @@
         "Route distance assumption"
       ],
       "annual_cargo_tonnes": 150000000,
+      "model_inputs": {
+        "distance_nm_one_way": 6200,
+        "speed_knots": 13.0,
+        "port_days_round_trip": 7,
+        "utilization": 0.88,
+        "reserve_margin": 0.04,
+        "uncertainty": {
+          "annual_cargo_tonnes_low": 120000000,
+          "annual_cargo_tonnes_high": 180000000,
+          "utilization_low": 0.82,
+          "utilization_high": 0.92,
+          "speed_knots_low": 11.5,
+          "speed_knots_high": 14.0
+        }
+      },
+      "chokepoints": [
+        {
+          "id": "hormuz",
+          "exposure_share": 0.95,
+          "reroute_available": false,
+          "reroute_extra_nm_one_way": 0,
+          "default_waiting_days": 10,
+          "response": {
+            "reroute": 0.0,
+            "wait": 0.6,
+            "cancel": 0.4
+          }
+        },
+        {
+          "id": "suez",
+          "exposure_share": 0.72,
+          "reroute_available": true,
+          "reroute_extra_nm_one_way": 4400,
+          "default_waiting_days": 6,
+          "response": {
+            "reroute": 0.8,
+            "wait": 0.15,
+            "cancel": 0.05
+          }
+        },
+        {
+          "id": "bab_el_mandeb",
+          "exposure_share": 0.72,
+          "reroute_available": true,
+          "reroute_extra_nm_one_way": 4400,
+          "default_waiting_days": 6,
+          "response": {
+            "reroute": 0.8,
+            "wait": 0.15,
+            "cancel": 0.05
+          }
+        }
+      ],
       "baseline": {
         "route_id": "persian_gulf_europe_crude",
         "scenario_id": "normal",
@@ -1658,6 +1880,35 @@
         "Route distance assumption"
       ],
       "annual_cargo_tonnes": 600000000,
+      "model_inputs": {
+        "distance_nm_one_way": 6500,
+        "speed_knots": 13.0,
+        "port_days_round_trip": 7,
+        "utilization": 0.89,
+        "reserve_margin": 0.04,
+        "uncertainty": {
+          "annual_cargo_tonnes_low": 500000000,
+          "annual_cargo_tonnes_high": 700000000,
+          "utilization_low": 0.83,
+          "utilization_high": 0.93,
+          "speed_knots_low": 11.5,
+          "speed_knots_high": 14.0
+        }
+      },
+      "chokepoints": [
+        {
+          "id": "hormuz",
+          "exposure_share": 0.98,
+          "reroute_available": false,
+          "reroute_extra_nm_one_way": 0,
+          "default_waiting_days": 10,
+          "response": {
+            "reroute": 0.0,
+            "wait": 0.65,
+            "cancel": 0.35
+          }
+        }
+      ],
       "baseline": {
         "route_id": "persian_gulf_east_asia_crude",
         "scenario_id": "normal",
@@ -1852,6 +2103,22 @@
         "Route distance assumption"
       ],
       "annual_cargo_tonnes": 75000000,
+      "model_inputs": {
+        "distance_nm_one_way": 11000,
+        "speed_knots": 12.5,
+        "port_days_round_trip": 9,
+        "utilization": 0.85,
+        "reserve_margin": 0.04,
+        "uncertainty": {
+          "annual_cargo_tonnes_low": 65000000,
+          "annual_cargo_tonnes_high": 85000000,
+          "utilization_low": 0.78,
+          "utilization_high": 0.9,
+          "speed_knots_low": 11.0,
+          "speed_knots_high": 13.5
+        }
+      },
+      "chokepoints": [],
       "baseline": {
         "route_id": "brazil_china_soy",
         "scenario_id": "normal",
@@ -1904,6 +2171,68 @@
       },
       "stress_tests": [],
       "live_observed": []
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "suez_50pct_28d",
+      "name_ko": "수에즈 50% 제약·28일",
+      "chokepoint_id": "suez",
+      "closure_fraction": 0.5,
+      "duration_days": 28,
+      "horizon_days": 28,
+      "waiting_days": 4,
+      "status": "scenario"
+    },
+    {
+      "id": "suez_100pct_28d",
+      "name_ko": "수에즈 전면 봉쇄·28일",
+      "chokepoint_id": "suez",
+      "closure_fraction": 1.0,
+      "duration_days": 28,
+      "horizon_days": 28,
+      "waiting_days": 7,
+      "status": "scenario"
+    },
+    {
+      "id": "panama_50pct_28d",
+      "name_ko": "파나마 통항능력 50% 감소·28일",
+      "chokepoint_id": "panama",
+      "closure_fraction": 0.5,
+      "duration_days": 28,
+      "horizon_days": 28,
+      "waiting_days": 5,
+      "status": "scenario"
+    },
+    {
+      "id": "bosporus_100pct_14d",
+      "name_ko": "보스포루스 전면 봉쇄·14일",
+      "chokepoint_id": "bosporus",
+      "closure_fraction": 1.0,
+      "duration_days": 14,
+      "horizon_days": 28,
+      "waiting_days": 14,
+      "status": "scenario"
+    },
+    {
+      "id": "hormuz_50pct_28d",
+      "name_ko": "호르무즈 50% 봉쇄·28일",
+      "chokepoint_id": "hormuz",
+      "closure_fraction": 0.5,
+      "duration_days": 28,
+      "horizon_days": 28,
+      "waiting_days": 7,
+      "status": "scenario"
+    },
+    {
+      "id": "hormuz_100pct_28d",
+      "name_ko": "호르무즈 전면 봉쇄·28일",
+      "chokepoint_id": "hormuz",
+      "closure_fraction": 1.0,
+      "duration_days": 28,
+      "horizon_days": 28,
+      "waiting_days": 14,
+      "status": "scenario"
     }
   ],
   "scenario_summary": [

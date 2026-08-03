@@ -25,6 +25,8 @@ TRAINING = os.path.join(HERE, "training")
 MODELS = os.path.join(HERE, "models")
 ALPHAS = np.logspace(-2, 4, 40)
 RECENT_FOLDS = 10
+MIN_OPERATIONAL_SKILL = 0.10
+LOW_CONFIDENCE_SKILL = 0.20
 
 
 def log(message: str) -> None:
@@ -165,11 +167,17 @@ def train_one(cfg) -> dict | None:
 
     # Three pre-registered ablations only.  Recent forward RMSE chooses the
     # operational challenger; both full-history and recent skill must be > 0.
-    best_name = min(runs, key=lambda name: runs[name]["metrics"]["recent_rmse"])
+    eligible = [
+        name for name, run in runs.items()
+        if run["metrics"]["skill_vs_trend"] >= MIN_OPERATIONAL_SKILL
+        and run["metrics"]["recent_skill_vs_trend"] >= MIN_OPERATIONAL_SKILL
+    ]
+    selection_pool = eligible or list(runs)
+    best_name = min(selection_pool,
+                    key=lambda name: runs[name]["metrics"]["recent_rmse"])
     best = runs[best_name]
     metrics = best["metrics"]
-    beats_trend = (metrics["skill_vs_trend"] > 0
-                   and metrics["recent_skill_vs_trend"] > 0)
+    beats_trend = bool(eligible)
 
     features = cfg.feature_sets[best_name]
     years = frame.year.to_numpy(dtype=float)
@@ -225,10 +233,16 @@ def train_one(cfg) -> dict | None:
         "selected_feature_set": best_name,
         "selected_features": features,
         "selection_note": (
-            "Best recent forward RMSE among three pre-registered ablations; "
-            "reported skill is not a nested post-selection estimate."),
+            "Lowest recent forward RMSE among pre-registered ablations that "
+            "clear 10% skill over both all and recent folds. If none clear, "
+            "the best diagnostic challenger is retained but trend-only is "
+            "the operational choice. Reported skill is not a nested "
+            "post-selection estimate."),
+        "minimum_operational_skill": MIN_OPERATIONAL_SKILL,
         "operational_choice": "ridge_weather" if beats_trend else "trend_only",
         "beats_trend": bool(beats_trend),
+        "low_confidence": bool(
+            metrics["recent_skill_vs_trend"] < LOW_CONFIDENCE_SKILL),
         "trend": {
             "form": "log_linear",
             "log_poly_coef": [float(value) for value in trend.coefficients],

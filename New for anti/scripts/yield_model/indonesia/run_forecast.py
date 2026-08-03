@@ -16,15 +16,20 @@ OUT = os.path.abspath(os.path.join(
 
 def rounded_prediction(result):
     def one(target):
+        publishable = target["forecast_gate"]["publishable"]
         return {
-            "point": round(target["point"], 1),
-            "range_68": [round(value, 1) for value in target["range_68"]],
-            "range_95": [round(value, 1) for value in target["range_95"]],
-            "trend": round(target["trend"], 1),
-            "weather_effect": round(target["weather_effect"], 1),
-            "candidate_weather_effect": round(target["candidate_weather_effect"], 1),
+            "point": round(target["point"], 1) if publishable else None,
+            "range_68": ([round(value, 1) for value in target["range_68"]]
+                         if publishable else None),
+            "range_95": ([round(value, 1) for value in target["range_95"]]
+                         if publishable else None),
+            "diagnostic_trend": round(target["trend"], 1),
+            "weather_effect": (round(target["weather_effect"], 1)
+                               if publishable else None),
             "sigma_used": round(target["sigma"], 1),
             "model_sigma": round(target["base_sigma"], 1),
+            "forecast_gate": target["forecast_gate"],
+            "climate_gate": target["climate_gate"],
         }
 
     return {name: one(target) for name, target in result["targets"].items()}
@@ -54,7 +59,7 @@ def main():
         with open(model_path, encoding="utf-8") as handle:
             model = json.load(handle)
         for name, target in model["targets"].items():
-            validation = target["validation"][target["feature_set"]]
+            validation = target["validation"][target["configuration"]]
             skills[name] = {
                 "skill_vs_trend_only": round(validation["skill_vs_trend"], 3),
                 "detrended_r2": round(validation["detrended_r2"], 3),
@@ -64,6 +69,8 @@ def main():
                 "features": target["features"],
                 "trained_years": target["trained_years"],
                 "low_confidence": validation["skill_vs_trend"] < 0.20,
+                "climate_gate": target["climate_gate"],
+                "forecast_gate": target["forecast_gate"],
             }
         payload["regions"][cfg.key] = {
             "label": cfg.label, "label_ko": cfg.label_ko,
@@ -92,4 +99,3 @@ def main():
 
 if __name__ == "__main__":
     sys.exit(main())
-

@@ -34,7 +34,7 @@ WHEAT_WEATHER = z(["rain_growing", "heat_excess_spring", "frost_days"])
 WHEAT_SOIL = WHEAT_WEATHER + z(["sm_preseason", "sm_spring"])
 COTTON_WEATHER = z(["rain_flowering", "heat_excess_flowering", "harvest_rain"])
 COTTON_SOIL = COTTON_WEATHER + z(["sm_preseason", "sm_flowering",
-                                  "heat_x_drought"])
+                                  "heat_dry_stress"])
 
 # Point weights are deliberately equal in phase 1.  They are sampling weights,
 # not invented claims about production shares.  The next spatial-data step will
@@ -139,4 +139,3 @@ QLD_COTTON = RegionCrop(
 
 ALL = [WA_WHEAT, SA_WHEAT, VIC_WHEAT, NSW_COTTON, QLD_COTTON]
 BY_KEY = {cfg.key: cfg for cfg in ALL}
-

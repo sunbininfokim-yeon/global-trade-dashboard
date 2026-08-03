@@ -73,11 +73,13 @@ def train_crop(cfg):
     log(cfg.label)
     for name, target in targets.items():
         score = target["validation"][target["configuration"]]
-        log("  {:10} skill {:+.1%}, detrended R2 {:+.3f}, {} seasons, {}, {}".format(
-            name, score["skill_vs_trend"], score["detrended_r2"],
-            target["n_seasons"],
-            "weather used" if target["beats_trend"] else "trend used",
-            target["trend"]["name"]))
+        gate = target["climate_gate"]
+        candidate_skill = gate["candidate_skill_vs_trend"]
+        skill_text = "n/a" if candidate_skill is None else "{:+.1%}".format(candidate_skill)
+        log("  {:10} climate {}, {} seasons (need {}), {}, trend {}, forecast {}".format(
+            name, skill_text, gate["available_seasons"], gate["required_seasons"],
+            gate["status"], target["trend"]["name"],
+            target["forecast_gate"]["status"]))
     return payload
 
 

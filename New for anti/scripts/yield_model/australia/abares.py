@@ -219,7 +219,8 @@ def _season(label: object, harvest_rule: str) -> tuple[int, str] | None:
 
 
 def state_crop_series(state_sheet: str, crop_label: str, harvest_rule: str,
-                      path: str | None = None) -> pd.DataFrame:
+                      path: str | None = None,
+                      include_forecast: bool = False) -> pd.DataFrame:
     """Extract area, production and derived yield for one state-crop series."""
     path = path or workbook_path()
     rows = read_sheet(path, state_sheet)
@@ -246,7 +247,7 @@ def state_crop_series(state_sheet: str, crop_label: str, harvest_rule: str,
         if not parsed or col >= len(rows[crop_i + 2]):
             continue
         year, status = parsed
-        if status == "f":
+        if status == "f" and not include_forecast:
             continue
         try:
             area_thousand_ha = float(rows[crop_i + 1][col])
@@ -260,10 +261,10 @@ def state_crop_series(state_sheet: str, crop_label: str, harvest_rule: str,
             "area_ha": area_thousand_ha * 1000.0,
             "production_t": production_kt * 1000.0,
             "yield_kg_ha": production_kt / area_thousand_ha * 1000.0,
-            "target_status": "estimate" if status == "s" else "actual",
+            "target_status": ("forecast" if status == "f" else
+                              "estimate" if status == "s" else "actual"),
             "source_season": str(label),
         })
     if not out:
         raise ValueError(f"no usable ABARES observations for {state_sheet}/{crop_label}")
     return pd.DataFrame(out).sort_values("year").reset_index(drop=True)
-

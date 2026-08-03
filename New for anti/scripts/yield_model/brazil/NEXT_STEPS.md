@@ -81,6 +81,66 @@ have no `train.py` yet.
 
 ---
 
+## 6. Municipality-level MATOPIBA soy -- tried, negative result (2026-08-03)
+
+New isolated module: `brazil/matopiba_municipal.py`. Deliberately does not
+touch collect.py/climate.py/regions.py/predict.py/run_forecast.py beyond
+importing from them, to avoid compounding the concurrent-session merge
+conflict on those files (see section 4) -- only `sidra.py` got one new
+function (`municipality_yield`, n6-level SIDRA query), and that file was
+untouched by the other session.
+
+**Feasibility check (done first, before building):** IBGE SIDRA has
+municipality-level (n6) yield for both soja and algodão across all 13
+candidate MATOPIBA municipalities geocoded for this experiment. Completeness
+is good -- every candidate has 100% coverage for 2015-2024, and 27-45 years
+total depending on when each municipality was administratively created
+(Luís Eduardo Magalhães, split off in 2000, only has 24 years -- excluded).
+Coordinates + elevations for all 13 are in `MUNICIPALITIES` in the new
+module.
+
+**Result: negative, consistent across 4 municipalities tested.**
+
+| municipality | seasons | vs trend (recent) | 5yr holdout MAPE | verdict |
+|---|---:|---:|---|---|
+| balsas (MA) | 41 | -1.7% | 9.2% vs 8.7% | no skill |
+| correntina (BA) | 39 | -6.6% | 5.2% vs 5.1% | no skill |
+| barreiras (BA) | 41 | -12.4% | 6.7% vs 4.0% | no skill |
+| sao_desiderio (BA) | 41 | -21.5% | 5.8% vs 3.6% | no skill |
+
+All four fail both evaluations. Barreiras and São Desidério are two of Reis
+et al.'s (2020) own four validation municipalities, where DSSAT-CROPGRO (a
+mechanistic crop simulator) was reported to have "good predictive capacity"
+-- so the same locations that work for a process-based model do not work for
+this statistical one.
+
+**What this actually tells us:** the working hypothesis going in was "state
+aggregation hides a real municipality-level signal." This experiment argues
+against that. If aggregation were the main problem, splitting to municipality
+level should have recovered skill at least somewhere in 4 tries; it didn't,
+not even at Reis et al.'s own sites. The more likely explanation: the
+modelling *approach* -- linear/ridge regression on a handful of monthly
+aggregate features (heat days, VPD stress, mean root-zone wetness) -- is not
+expressive enough to capture what a day-by-day mechanistic water-balance
+simulator captures, regardless of spatial grain. Aggregating four states into
+one number was never free of cost, but de-aggregating alone does not buy back
+what a simple regression is structurally missing.
+
+**Not yet tested:** the remaining 8 candidate municipalities (MA/PI/TO), and
+cotton at municipality level (data confirmed available for the BA
+municipalities, unused). Given four consistent negative results including two
+literature-validated sites, running the rest is unlikely to change the
+conclusion, but it would need doing before writing off municipality-level
+statistical modelling entirely rather than just this pilot's feature set.
+
+**If MATOPIBA soy is to work at all, the literature's own answer is to change
+architecture, not resolution:** a mechanistic model (DSSAT-CROPGRO or
+AquaCrop, both independently validated for MATOPIBA soy) rather than a
+statistical regression, at any spatial grain. That is materially more work
+than anything tried so far in this package (a full crop simulator needs
+cultivar genetic coefficients, daily soil-layer water balance, phenology
+staging) and was not attempted here.
+
 ## 5. Settled, do not redo
 
 - Sugarcane is not a weather problem. Our `weather_skill` −13.6% (`lag1`'s own

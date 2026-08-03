@@ -1,0 +1,338 @@
+{
+  "generated_at": "2026-08-03T14:33:18.748628+00:00",
+  "country": "Australia",
+  "method": "log technology trend plus causal 20-season weather anomalies; forward-chaining validation",
+  "regions": {
+    "wa_wheat": {
+      "label": "Western Australia wheat",
+      "label_ko": "서호주 밀",
+      "crop": "wheat",
+      "season": 2026,
+      "unit": "kg/ha",
+      "point": 2239.6039388174922,
+      "range_68": [
+        1599.8299650052754,
+        2825.911778765117
+      ],
+      "range_95": [
+        1257.0507869406392,
+        3172.699477481396
+      ],
+      "trend": 2252.88571465684,
+      "weather_model_point": 2239.6039388174922,
+      "weather_effect_pct": -0.589545033418204,
+      "operational_choice": "ridge_weather",
+      "low_confidence": false,
+      "last_actual": {
+        "year": 2025,
+        "yield": 3011.2359550561796,
+        "status": "estimate"
+      },
+      "season_progress": {
+        "observed_through": "2026-07-29",
+        "critical_window_observed": 0.4918032786885246,
+        "future_weather_fill": "20-member historical-year weather ensemble",
+        "weather_scenario_count": 20,
+        "weather_scenario_p16_p84": [
+          1976.7273322461597,
+          2449.014411524233
+        ],
+        "access_s_integrated": false
+      },
+      "features": [
+        {
+          "feature": "rain_growing_z20",
+          "anomaly": -0.286,
+          "log_contribution": -0.0434
+        },
+        {
+          "feature": "heat_excess_spring_z20",
+          "anomaly": -0.014,
+          "log_contribution": 0.0269
+        },
+        {
+          "feature": "frost_days_z20",
+          "anomaly": -0.325,
+          "log_contribution": -0.0008
+        }
+      ],
+      "skill": {
+        "rmse": 345.7895192880654,
+        "mae": 288.5176659942667,
+        "baseline_rmse": 600.7239171980839,
+        "skill_vs_trend": 0.42437863819221955,
+        "recent_rmse": 350.84849381637724,
+        "recent_baseline_rmse": 650.9099770459059,
+        "recent_skill_vs_trend": 0.4609876846431662,
+        "detrended_r2": 0.4449190871880232,
+        "recent_trend_bias": -414.8664165597405,
+        "features": [
+          "rain_growing_z20",
+          "heat_excess_spring_z20",
+          "frost_days_z20"
+        ],
+        "fold_years": [
+          2014,
+          2015,
+          2016,
+          2017,
+          2018,
+          2019,
+          2020,
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ]
+      },
+      "provenance": {
+        "target": {
+          "variable": "yield_kg_ha",
+          "source": "ABARES Australian Crop Report state data",
+          "area_basis": "planted",
+          "estimated_years": [
+            2022,
+            2023,
+            2024,
+            2025
+          ]
+        },
+        "guide": "Regions/호주/서호주_WA/밀/밀_상세분석_및_수식.md",
+        "caveat": "Phase-1 NASA POWER benchmark; PAWC/APSIM, AWRA-L, crop masks and NDVI are not yet integrated. Point weights are equal sampling weights."
+      }
+    },
+    "sa_wheat": {
+      "label": "South Australia wheat",
+      "label_ko": "남호주 밀",
+      "crop": "wheat",
+      "season": 2026,
+      "unit": "kg/ha",
+      "point": 2649.0297488352107,
+      "range_68": [
+        1564.2298142044106,
+        3625.7256402425573
+      ],
+      "range_95": [
+        1142.7374235557083,
+        5010.10273234307
+      ],
+      "trend": 2230.801534001078,
+      "weather_model_point": 2649.0297488352107,
+      "weather_effect_pct": 18.747889870956612,
+      "operational_choice": "ridge_weather",
+      "low_confidence": false,
+      "last_actual": {
+        "year": 2025,
+        "yield": 2370.0,
+        "status": "estimate"
+      },
+      "season_progress": {
+        "observed_through": "2026-07-28",
+        "critical_window_observed": 0.48770491803278687,
+        "future_weather_fill": "20-member historical-year weather ensemble",
+        "weather_scenario_count": 20,
+        "weather_scenario_p16_p84": [
+          2296.3500074154153,
+          2893.6054470315526
+        ],
+        "access_s_integrated": false
+      },
+      "features": [
+        {
+          "feature": "rain_growing_z20",
+          "anomaly": -0.17,
+          "log_contribution": 0.0348
+        },
+        {
+          "feature": "heat_excess_spring_z20",
+          "anomaly": -0.134,
+          "log_contribution": 0.028
+        },
+        {
+          "feature": "frost_days_z20",
+          "anomaly": -0.563,
+          "log_contribution": -0.0013
+        },
+        {
+          "feature": "sm_preseason_z20",
+          "anomaly": 1.907,
+          "log_contribution": 0.0224
+        },
+        {
+          "feature": "sm_spring_z20",
+          "anomaly": -0.045,
+          "log_contribution": 0.0559
+        },
+        {
+          "feature": "iod_winter_spring_z20",
+          "anomaly": -0.005,
+          "log_contribution": 0.0072
+        },
+        {
+          "feature": "oni_winter_spring_z20",
+          "anomaly": -0.185,
+          "log_contribution": -0.0069
+        },
+        {
+          "feature": "sam_winter_spring_z20",
+          "anomaly": 0.49,
+          "log_contribution": 0.0202
+        }
+      ],
+      "skill": {
+        "rmse": 530.8250484418681,
+        "mae": 381.83568897385453,
+        "baseline_rmse": 599.2378083447358,
+        "skill_vs_trend": 0.11416629416598889,
+        "recent_rmse": 483.00140793000696,
+        "recent_baseline_rmse": 626.3688646105401,
+        "recent_skill_vs_trend": 0.22888662700320406,
+        "detrended_r2": 0.1515866906550618,
+        "recent_trend_bias": -113.64757752380831,
+        "features": [
+          "rain_growing_z20",
+          "heat_excess_spring_z20",
+          "frost_days_z20",
+          "sm_preseason_z20",
+          "sm_spring_z20",
+          "iod_winter_spring_z20",
+          "oni_winter_spring_z20",
+          "sam_winter_spring_z20"
+        ],
+        "fold_years": [
+          2014,
+          2015,
+          2016,
+          2017,
+          2018,
+          2019,
+          2020,
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ]
+      },
+      "provenance": {
+        "target": {
+          "variable": "yield_kg_ha",
+          "source": "ABARES Australian Crop Report state data",
+          "area_basis": "planted",
+          "estimated_years": [
+            2022,
+            2023,
+            2024,
+            2025
+          ]
+        },
+        "guide": "Regions/호주/남부_SA_VIC/밀/밀_상세분석_및_수식.md",
+        "caveat": "South Australia is kept separate from Victoria. SAM is an ablation feature, not assigned a forced sign or importance."
+      }
+    },
+    "vic_wheat": {
+      "label": "Victoria wheat",
+      "label_ko": "빅토리아 밀",
+      "crop": "wheat",
+      "season": 2026,
+      "unit": "kg/ha",
+      "point": 2923.0188590134417,
+      "range_68": [
+        1890.320856551573,
+        3948.8043717100954
+      ],
+      "range_95": [
+        976.8766462464505,
+        5855.9445379103145
+      ],
+      "trend": 2749.8438426215293,
+      "weather_model_point": 2923.0188590134417,
+      "weather_effect_pct": 6.2976309311738365,
+      "operational_choice": "ridge_weather",
+      "low_confidence": false,
+      "last_actual": {
+        "year": 2025,
+        "yield": 2891.1564625850338,
+        "status": "estimate"
+      },
+      "season_progress": {
+        "observed_through": "2026-07-28",
+        "critical_window_observed": 0.48770491803278687,
+        "future_weather_fill": "20-member historical-year weather ensemble",
+        "weather_scenario_count": 20,
+        "weather_scenario_p16_p84": [
+          2429.405728334255,
+          3409.7194999274134
+        ],
+        "access_s_integrated": false
+      },
+      "features": [
+        {
+          "feature": "rain_growing_z20",
+          "anomaly": -0.003,
+          "log_contribution": 0.0244
+        },
+        {
+          "feature": "heat_excess_spring_z20",
+          "anomaly": -0.219,
+          "log_contribution": 0.0416
+        },
+        {
+          "feature": "frost_days_z20",
+          "anomaly": -0.299,
+          "log_contribution": -0.0006
+        }
+      ],
+      "skill": {
+        "rmse": 544.4254383223474,
+        "mae": 437.3060805974472,
+        "baseline_rmse": 808.2902453651312,
+        "skill_vs_trend": 0.32644809034357136,
+        "recent_rmse": 594.5266061567912,
+        "recent_baseline_rmse": 875.6973826467448,
+        "recent_skill_vs_trend": 0.3210821250146154,
+        "detrended_r2": 0.27292812735425964,
+        "recent_trend_bias": -636.2489359179493,
+        "features": [
+          "rain_growing_z20",
+          "heat_excess_spring_z20",
+          "frost_days_z20"
+        ],
+        "fold_years": [
+          2014,
+          2015,
+          2016,
+          2017,
+          2018,
+          2019,
+          2020,
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ]
+      },
+      "provenance": {
+        "target": {
+          "variable": "yield_kg_ha",
+          "source": "ABARES Australian Crop Report state data",
+          "area_basis": "planted",
+          "estimated_years": [
+            2022,
+            2023,
+            2024,
+            2025
+          ]
+        },
+        "guide": "Regions/호주/남부_SA_VIC/밀/밀_상세분석_및_수식.md",
+        "caveat": "Victoria is kept separate from South Australia. SAM effects vary by season and location and are accepted only if forward skill improves."
+      }
+    }
+  },
+  "skipped": {
+    "nsw_cotton": "next cotton season has no observed pre-sowing weather yet",
+    "qld_cotton": "next cotton season has no observed pre-sowing weather yet"
+  }
+}

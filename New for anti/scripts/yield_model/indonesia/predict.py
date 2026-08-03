@@ -67,9 +67,24 @@ def predict_crop(cfg, year):
     with open(model_path, encoding="utf-8") as handle:
         artifact = json.load(handle)
 
-    dailies = {point["name"]: live_daily(point, year) for point in cfg.points}
-    raw = blend_features(cfg, dailies, year)
-    features, training = anomaly_row(cfg, year, raw, load_oni())
+    weather_applied = any(
+        target["beats_trend"] for target in artifact["targets"].values())
+    if weather_applied:
+        dailies = {point["name"]: live_daily(point, year) for point in cfg.points}
+        raw = blend_features(cfg, dailies, year)
+        features, training = anomaly_row(cfg, year, raw, load_oni())
+        counts, observed_share = C.critical_progress(
+            next(iter(dailies.values())), year, cfg.critical_window)
+        latest_observed = max(
+            daily.loc[daily.source.eq("observed"), "date"].max()
+            for daily in dailies.values())
+    else:
+        # A rejected climate model must not trigger a live-weather adjustment.
+        dailies, raw, features = {}, {}, {}
+        training = pd.read_csv(os.path.join(TRAINING, cfg.key + ".csv"))
+        counts = {"observed": 0, "forecast": 0, "climatology": 0}
+        observed_share = 1.0
+        latest_observed = pd.NaT
 
     missing = sorted({name for target in artifact["targets"].values()
                       for name in target["features"]
@@ -77,21 +92,20 @@ def predict_crop(cfg, year):
     if missing:
         return {"key": cfg.key, "error": "missing live features: " + ", ".join(missing)}
 
-    counts, observed_share = C.critical_progress(
-        next(iter(dailies.values())), year, cfg.critical_window)
-    latest_observed = max(
-        daily.loc[daily.source.eq("observed"), "date"].max()
-        for daily in dailies.values())
-
     predictions = {}
     for name, target_model in artifact["targets"].items():
-        predictions[name] = _inflate_ranges(
+        prediction = _inflate_ranges(
             predict_target(target_model, year, features), observed_share)
+        prediction["forecast_gate"] = target_model["forecast_gate"]
+        prediction["climate_gate"] = target_model["climate_gate"]
+        predictions[name] = prediction
 
     labelled = training.dropna(subset=["yield_kg_ha"]).sort_values("year")
     last = labelled.iloc[-1]
     crosscheck = None
-    if "yield" in predictions and "area" in predictions:
+    if ("yield" in predictions and "area" in predictions and
+            predictions["yield"]["forecast_gate"]["publishable"] and
+            predictions["area"]["forecast_gate"]["publishable"]):
         crosscheck = predictions["yield"]["point"] * predictions["area"]["point"] / 1000.0
 
     return {
@@ -137,4 +151,3 @@ def main():
 
 if __name__ == "__main__":
     sys.exit(main())
-

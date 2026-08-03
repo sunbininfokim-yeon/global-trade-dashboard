@@ -8,6 +8,7 @@ and Victoria wheat, and separates New South Wales and Queensland cotton.
 cd scripts/yield_model
 python3 -m australia.collect wa_wheat
 python3 -m australia.train wa_wheat
+python3 -m australia.run_forecast
 ```
 
 `ABARES_STATE_XLSX=/path/to/state-data.xlsx` can pin a manually downloaded
@@ -24,7 +25,8 @@ The trend and the feature scaler are refitted inside every forward fold.  Every
 weather feature is a z-score against up to the preceding 20 seasons; the season
 being predicted is never part of its own normal.  A log-linear trend-only model
 is the baseline, and a weather model is operationally accepted only if it beats
-that baseline both over all forward folds and over the most recent folds.
+that baseline by at least 10% both over all forward folds and over the most
+recent folds.  Below 20% recent skill is marked low confidence.
 
 Only three feature sets are tested, declared before looking at scores:
 
@@ -90,6 +92,13 @@ area.  Those are not interchangeable target definitions.
   ACCESS-S/climatology after it; realised spring IOD, SAM or rainfall would be
   leakage.
 
+`run_forecast` currently uses observations followed by 20 intact historical-
+year weather paths.  Keeping each year's sequence preserves heat, frost and dry
+spell extremes that a daily-average climatology would erase.  The interval
+combines the scenario spread with forward-chaining error.  The JSON explicitly
+reports `access_s_integrated: false`; it is a leakage-safe interim forecast,
+not yet the registered ACCESS-S upgrade.
+
 ## Registered next experiments
 
 1. Run the five state-crop screens and reject any model that loses to trend.
@@ -100,4 +109,3 @@ area.  Those are not interchangeable target definitions.
    incremental forward skill rather than discarding the long climate history.
 5. Add APSIM water-limited yield as a feature/teacher, not as ground truth.
 6. Build cotton area and yield as separate systems using basin water data.
-
