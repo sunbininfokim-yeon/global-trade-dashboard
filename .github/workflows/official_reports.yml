@@ -1,0 +1,30 @@
+name: Official Reports Intel
+
+on:
+  schedule:
+    - cron: '20 */4 * * *'
+  workflow_dispatch:
+
+jobs:
+  update-official-reports:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Tests
+        working-directory: New for anti/scripts/official_reports
+        run: python -m unittest discover -s tests -v
+      - name: Build
+        working-directory: New for anti/scripts/official_reports
+        run: python build_reports.py build --print-stats
+      - name: Commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "New for anti/public/data/official_reports_v1.json"
+          git commit -m "chore: refresh official reports intel" || exit 0
+          git push

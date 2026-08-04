@@ -1,0 +1,36 @@
+{
+  "version": 1,
+  "notes_ko": "30분 격자 안에서 권역별 분 오프셋. 매 시 :00대와 :30대에 같은 패턴. 전 세계 동시 폭주 방지.",
+  "grid_minutes": 30,
+  "mode": "single_runner_stagger",
+  "mode_notes": "추천: 5분 cron 잡이 '현재 분에 스케줄된 권역만' fetch. 또는 권역별 workflow.",
+  "half_hour_offsets": [
+    { "minute": 3, "regions": ["mena"] },
+    { "minute": 6, "regions": ["south_asia"] },
+    { "minute": 9, "regions": ["east_asia"] },
+    { "minute": 12, "regions": ["asean"] },
+    { "minute": 15, "regions": ["cis"] },
+    { "minute": 18, "regions": ["latam"] },
+    { "minute": 21, "regions": ["ssa"] },
+    { "minute": 24, "regions": ["eu_core", "eu_other"] },
+    { "minute": 27, "regions": ["global_specialist", "na", "oceania"] }
+  ],
+  "second_half": {
+    "notes": "+:30 동일 패턴 — mena at :33, south_asia :36, …"
+  },
+  "liquidity_daily": {
+    "enabled": true,
+    "cron_suggestion_utc": "10 23 * * *",
+    "cron_notes_ko": "KST 08:10 부근 일 1회. 6시간 잡 폐기. 양기자·BOK는 이 배치+언론 공통 지표 사전.",
+    "sources": ["yang_youngbin", "bok_releases", "fed_treasury_pages"]
+  },
+  "official_reports": {
+    "default_hours": 24,
+    "calendar_spike": "release day denser probe"
+  },
+  "fx": {
+    "notes_ko": "FT 전량 대신 키워드 환율 + 일 1 스냅샷 API 후보",
+    "ft_keyword_filter": ["dollar", "sterling", "yen", "won", "exchange rate", "currency", "환율", "달러"],
+    "daily_snapshot": true
+  }
+}

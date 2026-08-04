@@ -27,6 +27,21 @@ export default {
             return await handleMacro(request, env, ctx);
         }
 
+        // Commodity / diplomacy ticker (RSS model snapshot + IP-locale display)
+        if (url.pathname.startsWith('/api/ticker')) {
+            return await handleTicker(request, env);
+        }
+
+        // Official macro / QRA / Beige Book / priority reporters
+        if (url.pathname.startsWith('/api/liquidity')) {
+            return await handleLiquidity(request, env);
+        }
+
+        // Multi-country official reports (US/JP/CN/EU…)
+        if (url.pathname.startsWith('/api/official-reports')) {
+            return await handleOfficialReports(request, env);
+        }
+
         // Default: Serve Static Assets
         return env.ASSETS.fetch(request);
     },
@@ -83,6 +98,166 @@ function missingKey(name) {
         JSON.stringify({ error: `Server misconfiguration: ${name} is not set.` }),
         { status: 500, headers: JSON_HEADERS }
     );
+}
+
+// --- Commodity ticker ------------------------------------------------------------
+// Snapshot is built offline/CI by scripts/commodity_news/build_ticker.py into
+// public/data/ticker_v1.json. This handler only applies visitor-locale display
+// rules: main line stays Korean; original title is preferred when the visitor
+// IP language matches the article language.
+async function handleTicker(request, env) {
+    const url = new URL(request.url);
+    const limit = Math.min(parseInt(url.searchParams.get('limit') || '24', 10) || 24, 80);
+    const forcedLang = (url.searchParams.get('lang') || '').trim();
+
+    let doc = null;
+    // Prefer ASSETS (static deploy path). Try both common prefixes used by the app.
+    const candidates = [
+        '/public/data/ticker_v1.json',
+        '/data/ticker_v1.json',
+        'public/data/ticker_v1.json',
+    ];
+    for (const path of candidates) {
+        try {
+            const assetUrl = new URL(path.startsWith('/') ? path : `/${path}`, url.origin);
+            const res = await env.ASSETS.fetch(new Request(assetUrl.toString()));
+            if (res.ok) {
+                doc = await res.json();
+                break;
+            }
+        } catch (_) {
+            // try next
+        }
+    }
+    if (!doc && env.API_CACHE) {
+        try {
+            const cached = await env.API_CACHE.get('ticker:v1', 'json');
+            if (cached) doc = cached;
+        } catch (_) { /* ignore */ }
+    }
+    if (!doc) {
+        return new Response(
+            JSON.stringify({
+                error: 'ticker_v1.json not found — run scripts/commodity_news/build_ticker.py',
+                items: [],
+            }),
+            { status: 404, headers: JSON_HEADERS }
+        );
+    }
+
+    const ipCountry = (request.cf && request.cf.country) || url.searchParams.get('country') || '';
+    const ipMap = (doc.model && doc.model.ip_lang_map) || {};
+    const defaultLang = (doc.model && doc.model.default_lang) || 'en';
+    const mainLang = (doc.model && doc.model.main_display_lang) || 'ko';
+    const visitorLang = forcedLang || ipMap[ipCountry] || defaultLang;
+
+    const items = (doc.items || []).slice(0, limit).map((it) => {
+        const origLang = (it.title && it.title.original_lang) || 'en';
+        const original = (it.title && it.title.original) || '';
+        const ko = (it.title && it.title.ko) || null;
+        const langMatches =
+            visitorLang === origLang ||
+            (visitorLang && origLang && visitorLang.split('-')[0] === origLang.split('-')[0]);
+        const display_title = langMatches ? original : (ko || original);
+        return {
+            ...it,
+            display_lang: langMatches ? origLang : (ko ? mainLang : origLang),
+            display_title,
+            title_ko: ko,
+            visitor_lang: visitorLang,
+            visitor_country: ipCountry || null,
+        };
+    });
+
+    return new Response(
+        JSON.stringify({
+            schema_version: doc.schema_version,
+            generated_at: doc.generated_at,
+            model: doc.model,
+            stats: doc.stats,
+            visitor: { country: ipCountry || null, lang: visitorLang, main_lang: mainLang },
+            items,
+        }),
+        {
+            status: 200,
+            headers: {
+                ...JSON_HEADERS,
+                // Revalidate often; snapshot itself is rebuilt by Actions.
+                'Cache-Control': 'public, max-age=120',
+            },
+        }
+    );
+}
+
+// Official liquidity intel (QRA, Beige Book, priority reporters).
+// Built offline by scripts/macro_intel/build_liquidity.py.
+async function handleLiquidity(request, env) {
+    const url = new URL(request.url);
+    let doc = null;
+    const candidates = [
+        '/public/data/liquidity_intel_v1.json',
+        '/data/liquidity_intel_v1.json',
+        'public/data/liquidity_intel_v1.json',
+    ];
+    for (const path of candidates) {
+        try {
+            const assetUrl = new URL(path.startsWith('/') ? path : `/${path}`, url.origin);
+            const res = await env.ASSETS.fetch(new Request(assetUrl.toString()));
+            if (res.ok) {
+                doc = await res.json();
+                break;
+            }
+        } catch (_) { /* next */ }
+    }
+    if (!doc) {
+        return new Response(
+            JSON.stringify({
+                error: 'liquidity_intel_v1.json missing — run scripts/macro_intel/build_liquidity.py',
+                liquidity: null,
+                ticker_items: [],
+            }),
+            { status: 404, headers: JSON_HEADERS }
+        );
+    }
+    return new Response(JSON.stringify(doc), {
+        status: 200,
+        headers: { ...JSON_HEADERS, 'Cache-Control': 'public, max-age=120' },
+    });
+}
+
+// Official multi-country report intel snapshot.
+async function handleOfficialReports(request, env) {
+    const url = new URL(request.url);
+    let doc = null;
+    const candidates = [
+        '/public/data/official_reports_v1.json',
+        '/data/official_reports_v1.json',
+        'public/data/official_reports_v1.json',
+    ];
+    for (const path of candidates) {
+        try {
+            const assetUrl = new URL(path.startsWith('/') ? path : `/${path}`, url.origin);
+            const res = await env.ASSETS.fetch(new Request(assetUrl.toString()));
+            if (res.ok) {
+                doc = await res.json();
+                break;
+            }
+        } catch (_) { /* next */ }
+    }
+    if (!doc) {
+        return new Response(
+            JSON.stringify({
+                error: 'official_reports_v1.json missing — run scripts/official_reports/build_reports.py build',
+                ticker_items: [],
+                indicators: [],
+            }),
+            { status: 404, headers: JSON_HEADERS }
+        );
+    }
+    return new Response(JSON.stringify(doc), {
+        status: 200,
+        headers: { ...JSON_HEADERS, 'Cache-Control': 'public, max-age=180' },
+    });
 }
 
 // Shared response cache backed by the API_CACHE KV namespace.

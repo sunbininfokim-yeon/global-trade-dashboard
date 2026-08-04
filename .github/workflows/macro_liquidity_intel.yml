@@ -1,0 +1,33 @@
+name: Macro Liquidity Intel
+
+on:
+  schedule:
+    - cron: '15 */6 * * *'
+  workflow_dispatch:
+
+jobs:
+  update-liquidity:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Tests
+        working-directory: New for anti/scripts/macro_intel
+        run: python -m unittest discover -s tests -v
+      - name: Build snapshot
+        working-directory: New for anti/scripts/macro_intel
+        run: >
+          python build_liquidity.py
+          --qra-url https://home.treasury.gov/news/press-releases/sb0584
+          --print-stats
+      - name: Commit snapshot
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "New for anti/public/data/liquidity_intel_v1.json"
+          git commit -m "chore: refresh liquidity intel snapshot" || exit 0
+          git push
