@@ -1,5 +1,6 @@
 // Application Logic for Global Trade Dashboard
-const { DeckGL, LineLayer, ArcLayer, ScatterplotLayer, GeoJsonLayer, _GlobeView, MapView } = deck;
+const { DeckGL, LineLayer, ArcLayer, ScatterplotLayer, GeoJsonLayer, _GlobeView, MapView,
+        WebMercatorViewport } = deck;
 
 // DOM Elements
 const tooltipEl = document.getElementById('tooltip');
@@ -509,7 +510,7 @@ const CLIMATE_COUNTRIES = {
         modelName: 'US Corn Belt Model',
         iso: 'USA',
         view: { longitude: -96.0, latitude: 39.5, zoom: 3.6 },
-        summaryKey: 'us',
+        dataFile: 'yield_forecast.json',
         // Each entry maps to a region key in yield_forecast.json. Wheat sits
         // apart from the Corn Belt because it is a different geography with
         // its own states and weights.
@@ -529,7 +530,7 @@ const CLIMATE_COUNTRIES = {
         modelName: 'Brazil Regional Model',
         iso: 'BRA',
         view: { longitude: -52.0, latitude: -13.0, zoom: 3.6 },
-        summaryKey: 'brazil',
+        dataFile: 'brazil_yield_forecast.json',
         // Coordinates are stated here rather than looked up in CountriesData:
         // that map is built for trade routes and is missing several of these
         // producing regions, which silently dropped their markers.
@@ -544,7 +545,7 @@ const CLIMATE_COUNTRIES = {
         label: '인도',
         iso: 'IND',
         view: { longitude: 78.0, latitude: 23.5, zoom: 3.8 },
-        summaryKey: 'india',
+        dataFile: 'india_yield_forecast.json',
         // One point per region-crop rather than clusters, because the three
         // Indian guides each cover a single crop over its own ground -- unlike
         // Brazil's Mato Grosso or MATOPIBA, no point here hosts more than one
@@ -1023,32 +1024,154 @@ const renderIndiaYieldForecast = async (regionName) => {
 
 let climateHover = null;
 
-// Reduce a country's crops to one headline for the hover card. Weather effect
-// is expressed against trend, which is the number that actually says whether
-// this season is running hot or cold.
+// --- Generic forecast loading -------------------------------------------
+// One loader for every country, keyed on the `dataFile` in CLIMATE_COUNTRIES.
+// Adding a country is then: drop the JSON in public/data/ and add a config
+// entry -- no new loader, no new render branch.
+const climateForecastCache = {};
+const loadClimateForecast = async (cfg) => {
+    if (!cfg.dataFile) return null;
+    if (cfg.dataFile in climateForecastCache) return climateForecastCache[cfg.dataFile];
+    try {
+        const res = await fetch(`/public/data/${cfg.dataFile}`);
+        climateForecastCache[cfg.dataFile] = res.ok ? await res.json() : null;
+    } catch (err) {
+        console.warn(`[Climate] ${cfg.dataFile} unavailable`, err);
+        climateForecastCache[cfg.dataFile] = null;
+    }
+    return climateForecastCache[cfg.dataFile];
+};
+
+// --- Shape normalisation -------------------------------------------------
+// The per-country pipelines were written at different times against different
+// guides, so the same quantity goes by several names. Rather than force a
+// migration of every producer, the reader accepts the known spellings and
+// hands the renderers one shape. A country whose JSON uses none of these
+// still renders -- it just contributes no rows, instead of throwing.
+//
+// Two structural families exist:
+//   nested  regions[k].crops[c]  -- one region hosting several crops (US)
+//   flat    regions[k]           -- the region entry *is* the crop
+const num = v => (typeof v === 'number' && isFinite(v) ? v : null);
+
+const normalizeCrop = (entry, group, label, parent = {}) => {
+    // Indonesia puts the whole forecast under `yield_kg_ha`; everyone else
+    // has `point` as a plain number at the top level.
+    const f = (entry.point && typeof entry.point === 'object') ? entry.point
+        : (entry.yield_kg_ha && typeof entry.yield_kg_ha === 'object') ? entry.yield_kg_ha
+        : entry;
+
+    const skill = entry.skill || f.skill || {};
+    const la = entry.last_actual || {};
+    const trend = num(f.trend) ?? num(f.diagnostic_trend);
+    const weather = num(f.weather_effect);
+
+    return {
+        group,
+        label: label || entry.label_ko || entry.label || entry.target_label || entry.crop || '—',
+        point: num(f.point),
+        unit: entry.unit || f.unit || 'kg/ha',
+        lastActual: num(la.yield) ?? num(la.value) ?? num(la.yield_kg_ha),
+        lastActualYear: num(la.year),
+        // Three spellings of the same warning. beats_trend === false means the
+        // weather features lost to a trend-only baseline out of sample, which
+        // is the same thing the other two flags say.
+        lowConfidence: skill.low_confidence === true
+            || entry.low_confidence === true
+            || skill.beats_trend === false,
+        // Percent deviation from trend -- the number that says whether the
+        // season is running hot or cold.
+        pct: num(entry.weather_effect_pct)
+            ?? (trend && weather !== null ? (weather / trend) * 100 : null),
+        // "no forecast here" is declared on the region, not on each crop under
+        // it (see DATA_LAYOUT.md), so the flag and its explanation are
+        // inherited downward.
+        forecastAvailable: entry.forecast_available !== false
+            && parent.forecast_available !== false
+            && num(f.point) !== null,
+        reason: entry.reason_ko || entry.reason
+            || parent.reason_ko || parent.reason || null,
+    };
+};
+
+const normalizeForecast = (fc) => {
+    if (!fc || !fc.regions) return [];
+    const out = [];
+    for (const region of Object.values(fc.regions)) {
+        const regionLabel = region.label_ko || region.label || null;
+        if (region.crops && typeof region.crops === 'object') {
+            for (const crop of Object.values(region.crops)) {
+                out.push(normalizeCrop(crop, regionLabel, crop.label_ko || crop.label, region));
+            }
+        } else {
+            out.push(normalizeCrop(region, null, regionLabel));
+        }
+    }
+    return out;
+};
+
+// Reduce a country's crops to one headline for the hover card.
 const climateCountrySummary = async (cfg) => {
-    const fc = cfg.summaryKey === 'us'
-        ? await window.loadYieldForecast?.()
-        : await window.loadBrazilYieldForecast?.();
+    const fc = await loadClimateForecast(cfg);
     if (!fc) return null;
 
-    let crops = [];
-    if (cfg.summaryKey === 'us' && fc.regions) {
-        for (const r of Object.values(fc.regions)) {
-            for (const d of Object.values(r.crops)) crops.push({
-                label: d.label_ko, pct: d.trend ? (d.weather_effect / d.trend) * 100 : 0,
-            });
-        }
-    } else if (fc.regions) {
-        for (const d of Object.values(fc.regions)) crops.push({
-            label: d.label, pct: d.weather_effect_pct ?? 0,
-        });
-    }
+    const crops = normalizeForecast(fc);
     if (!crops.length) return null;
 
-    const mean = crops.reduce((s, c) => s + c.pct, 0) / crops.length;
-    return { season: fc.season, regionCount: cfg.regions.length,
-             cropCount: crops.length, meanPct: mean };
+    // A country with no weather-driven numbers (observation-only regions such
+    // as West Africa) gets no percentage rather than a misleading 0%.
+    const scored = crops.filter(c => c.pct !== null);
+    return {
+        season: fc.season,
+        regionCount: cfg.regions.length,
+        cropCount: crops.length,
+        meanPct: scored.length
+            ? scored.reduce((s, c) => s + c.pct, 0) / scored.length
+            : null,
+    };
+};
+
+// Frame the world map on the countries that actually have models, instead of
+// a fixed centre. The map pane is a narrow column, so a hardcoded centre at
+// longitude 10 pushed the Americas -- two of the three modelled countries --
+// off the left edge, where they could not be hovered at all. Deriving the
+// framing also means adding a country re-frames the map on its own.
+const climateWorldViewState = () => {
+    const fallback = { longitude: 10, latitude: 25, zoom: 1.6, pitch: 0, bearing: 0 };
+    const pts = Object.values(CLIMATE_COUNTRIES)
+        .flatMap(c => c.regions.map(r => r.coordinates).filter(Boolean));
+    // Measure the map element, not deck's viewport: deck reports a stale size
+    // when the pane was resized after its canvas was created, and a 300x150
+    // default before the first layout. Fall back to deck only if the element
+    // has not been laid out yet.
+    const rect = mapContainer.getBoundingClientRect();
+    const vp = deckgl.getViewports?.()[0];
+    const canvas = rect.width && rect.height
+        ? { width: rect.width, height: rect.height }
+        : { width: vp?.width, height: vp?.height };
+    if (pts.length < 2 || !canvas.width || !canvas.height) return fallback;
+
+    const lons = pts.map(p => p[0]);
+    const lats = pts.map(p => p[1]);
+    try {
+        const fitted = new WebMercatorViewport({
+            width: canvas.width, height: canvas.height,
+        }).fitBounds(
+            [[Math.min(...lons), Math.min(...lats)], [Math.max(...lons), Math.max(...lats)]],
+            { padding: 40 },
+        );
+        return {
+            longitude: fitted.longitude, latitude: fitted.latitude,
+            // Upper cap so a single-country configuration does not open fully
+            // zoomed in on one producing region; lower cap because deck
+            // reports a 300x150 default viewport on the first paint, which
+            // fits to a zoom far below anything readable.
+            zoom: Math.min(Math.max(fitted.zoom, 1.1), 2.6), pitch: 0, bearing: 0,
+        };
+    } catch (err) {
+        console.warn('[Climate] world framing failed, using default', err);
+        return fallback;
+    }
 };
 
 const showClimateWorld = () => {
@@ -1065,7 +1188,16 @@ const showClimateWorld = () => {
 
     deckgl.setProps({
         views: [new MapView({ id: 'mapview' })],
-        viewState: { longitude: 10, latitude: 25, zoom: 1.6, pitch: 0, bearing: 0 },
+        viewState: climateWorldViewState(),
+        onClick: null,   // drop the country-view's "click map to go back" handler
+        // The first paint after a page load reports deck's default 300x150
+        // viewport, so the framing computed above is against the wrong size.
+        // Re-frame once the pane has its real dimensions.
+        onResize: () => {
+            if (climateLevel === 'world') {
+                deckgl.setProps({ viewState: climateWorldViewState() });
+            }
+        },
         layers: [
             new GeoJsonLayer({
                 id: 'climate-countries',
@@ -1113,8 +1245,10 @@ const showClimateTooltip = async (info, name, cfg) => {
         <div class="tooltip-title">${cfg.label}${cfg.modelName ? ` · ${cfg.modelName}` : ''}</div>
         ${s ? `
         <div class="tooltip-stat"><span>기상 효과</span>
-            <span style="color:${color}; font-weight:bold;">
-            ${s.meanPct >= 0 ? '+' : ''}${s.meanPct.toFixed(1)}%</span></div>
+            ${s.meanPct === null
+                ? '<span style="color:#94a3b8;">관측만</span>'
+                : `<span style="color:${color}; font-weight:bold;">
+                   ${s.meanPct >= 0 ? '+' : ''}${s.meanPct.toFixed(1)}%</span>`}</div>
         <div class="tooltip-stat"><span>대상 작물</span><span>${s.cropCount}개</span></div>
         <div class="tooltip-stat"><span>산지</span>
             <span style="font-weight:bold;">${s.regionCount}개 →</span></div>`
@@ -1172,6 +1306,17 @@ const showClimateCountry = async (countryName) => {
     deckgl.setProps({
         views: [new MapView({ id: 'mapview' })],
         viewState: { ...cfg.view, pitch: 0, bearing: 0 },
+        // Clicking the map backs out to the world view -- anywhere except a
+        // region marker, not just the exact highlighted country. A per-layer
+        // onClick only fires on that one polygon, so a click on a neighboring
+        // country visible at this zoom, or on a gap in the shape, did nothing.
+        // Guarded by climateLevel so a stale handler (deck.gl props persist
+        // across setProps calls) can't fire after the user has navigated to
+        // an unrelated view.
+        onClick: info => {
+            if (climateLevel !== 'country' || info.layer?.id === 'climate-regions') return;
+            showClimateWorld();
+        },
         layers: [
             new GeoJsonLayer({
                 id: 'climate-countries',
@@ -1186,8 +1331,6 @@ const showClimateCountry = async (countryName) => {
                 getLineColor: f => f.id === cfg.iso ? [125, 211, 252, 255] : [255, 255, 255, 30],
                 pickable: true,
                 updateTriggers: { getFillColor: [cfg.iso], getLineColor: [cfg.iso] },
-                // Clicking the country again backs out to the world view.
-                onClick: info => { if (info.object?.id === cfg.iso) showClimateWorld(); },
             }),
             new ScatterplotLayer({
                 id: 'climate-regions',
@@ -1218,40 +1361,43 @@ const renderCountryPanel = async (cfg) => {
     forecastCountryTitle.textContent =
         cfg.modelName ? `${cfg.label} · ${cfg.modelName}` : `${cfg.label} 작황 예측`;
 
+    const crops = normalizeForecast(await loadClimateForecast(cfg));
+
+    // bu/acre runs to one decimal; kg/ha is whole numbers with separators.
+    const fmt = (v, unit) => unit === 'bu/acre'
+        ? v.toFixed(1) : Math.round(v).toLocaleString();
+
+    const rowHtml = c => {
+        if (!c.forecastAvailable) {
+            return `<div class="forecast-item" style="display:block;">
+                <span style="font-size:12px;">${c.label}</span>
+                <span style="color:#64748b; font-size:11px; float:right;">예측 없음</span>
+                ${c.lastActual !== null ? `<br><span style="font-size:11px; color:#94a3b8;">
+                    ${c.lastActualYear ?? ''} 실적 ${fmt(c.lastActual, c.unit)} ${c.unit}</span>` : ''}
+                ${c.reason ? `<br><span style="font-size:10px; color:#64748b;">${c.reason}</span>` : ''}
+            </div>`;
+        }
+        const diff = c.lastActual !== null ? c.point - c.lastActual : null;
+        return `<div class="forecast-item" style="display:flex; justify-content:space-between;">
+            <span style="font-size:12px;">${c.label}${c.lowConfidence
+                ? ' <span style="color:#fbbf24; font-size:10px;">(신뢰도 낮음)</span>' : ''}</span>
+            <span><strong style="color:#e2e8f0;">${fmt(c.point, c.unit)}</strong>
+            ${diff !== null ? `<span style="color:${diff >= 0 ? '#4ade80' : '#fca5a5'}; font-size:12px;">
+                ${diff >= 0 ? '+' : ''}${fmt(diff, c.unit)}</span>` : ''}
+            <span style="color:#64748b; font-size:11px;"> ${c.unit}</span></span>
+        </div>`;
+    };
+
+    // Group headings only appear where the data actually has them (the nested
+    // region->crops shape). Flat country files render as a plain list.
     let rows = '';
-    if (cfg.summaryKey === 'us') {
-        const fc = await window.loadYieldForecast?.();
-        if (fc && fc.regions) {
-            rows = Object.values(fc.regions).map(region => {
-                const crops = Object.values(region.crops).map(d => {
-                    const diff = d.point - d.last_actual.yield;
-                    return `<div class="forecast-item" style="display:flex; justify-content:space-between;">
-                        <span style="font-size:12px;">${d.label_ko}${d.skill.low_confidence
-                            ? ' <span style="color:#fbbf24; font-size:10px;">(신뢰도 낮음)</span>' : ''}</span>
-                        <span><strong style="color:#e2e8f0;">${d.point}</strong>
-                        <span style="color:${diff >= 0 ? '#4ade80' : '#fca5a5'}; font-size:12px;">
-                        ${diff >= 0 ? '+' : ''}${diff.toFixed(1)}</span>
-                        <span style="color:#64748b; font-size:11px;"> ${d.unit}</span></span>
-                    </div>`;
-                }).join('');
-                return `<div style="margin-bottom:8px;">
-                    <div style="font-size:11px; color:#64748b; margin:6px 0 2px;">${region.label_ko}</div>
-                    ${crops}</div>`;
-            }).join('');
+    let lastGroup = null;
+    for (const c of crops) {
+        if (c.group && c.group !== lastGroup) {
+            rows += `<div style="font-size:11px; color:#64748b; margin:8px 0 2px;">${c.group}</div>`;
         }
-    } else if (cfg.summaryKey === 'brazil') {
-        const fc = await window.loadBrazilYieldForecast?.();
-        if (fc && fc.regions) {
-            rows = Object.values(fc.regions).map(d => {
-                const diff = d.point - d.last_actual.yield;
-                return `<div class="forecast-item" style="display:flex; justify-content:space-between;">
-                    <span style="font-size:12px;">${d.label}</span>
-                    <span><strong style="color:#e2e8f0;">${Math.round(d.point).toLocaleString()}</strong>
-                    <span style="color:${diff >= 0 ? '#4ade80' : '#fca5a5'}; font-size:12px;">
-                    ${diff >= 0 ? '+' : ''}${Math.round(diff)}</span></span>
-                </div>`;
-            }).join('');
-        }
+        lastGroup = c.group;
+        rows += rowHtml(c);
     }
 
     forecastContentEl.innerHTML = `
@@ -1512,6 +1658,15 @@ const setView = (target) => {
     const isShippingView = target && target.startsWith('shipping_');
     if (!isShippingView && window.ShippingDashboard) {
         window.ShippingDashboard.unmount(chartView);
+    }
+
+    // Leaving the climate view by the top menu bypasses showClimateWorld(), so
+    // reset its state here too -- otherwise climateLevel stays 'country' and a
+    // click on some other commodity map would jump back into the climate view.
+    if (target !== 'climate') {
+        climateLevel = 'world';
+        climateCountry = null;
+        hideClimateTooltip();
     }
 
     // Reset active states
