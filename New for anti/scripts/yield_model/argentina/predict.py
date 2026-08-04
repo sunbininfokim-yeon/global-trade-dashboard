@@ -64,7 +64,11 @@ def recent_weather(point, year):
     os.makedirs(CACHE, exist_ok=True)
     slug = f"{point['lat']:.2f}_{point['lon']:.2f}".replace("-", "m").replace(".", "p")
     stamp = date.today().isoformat()
-    cached = os.path.join(CACHE, f"live_{slug}_{year}_{stamp}.csv")
+    # Keyed on point and date only. The requested range starts at 1981 and ends
+    # today regardless of `year`, so keying on the season as well would fetch
+    # the same 45-year record once per season asked for -- and run_forecast
+    # asks for two.
+    cached = os.path.join(CACHE, f"live_{slug}_{stamp}.csv")
     if os.path.exists(cached):
         return pd.read_csv(cached, parse_dates=["date"])
 

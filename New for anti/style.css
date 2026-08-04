@@ -275,7 +275,75 @@ body {
     left: 0;
     width: 100%;
     height: 100%;
+    z-index: 1;
+    pointer-events: auto;
 }
+
+#chart-view.hidden {
+    pointer-events: none !important;
+    visibility: hidden;
+}
+
+.climate-click {
+    cursor: pointer;
+    border-radius: 8px;
+}
+.climate-click:hover {
+    background: rgba(56, 189, 248, 0.08);
+}
+.climate-click:focus-visible {
+    outline: 1px solid rgba(56, 189, 248, 0.55);
+    outline-offset: 2px;
+}
+.climate-country-hit,
+.climate-region-hit {
+    display: block;
+    width: 100%;
+    padding: 8px 10px;
+    margin: 0 0 6px;
+    border-radius: 8px;
+    cursor: pointer;
+    box-sizing: border-box;
+}
+.climate-country-hit .climate-table-row,
+.climate-region-hit .climate-table-row,
+.climate-region-hit .climate-metric-row {
+    border-bottom: none;
+    padding: 2px 0;
+}
+.climate-country-sub {
+    font-size: 10px;
+    color: #64748b;
+    margin-top: 2px;
+    line-height: 1.4;
+}
+.climate-nav-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px 10px;
+    margin-bottom: 10px;
+    font-size: 11px;
+}
+.climate-nav-trail {
+    color: #64748b;
+}
+.climate-back {
+    cursor: pointer;
+    color: #38bdf8;
+    font-size: 12px;
+    user-select: none;
+    display: inline-block;
+    padding: 6px 8px;
+    margin: -4px;
+    border-radius: 6px;
+}
+.climate-back:hover {
+    text-decoration: underline;
+    color: #7dd3fc;
+    background: rgba(56, 189, 248, 0.08);
+}
+
 
 
 

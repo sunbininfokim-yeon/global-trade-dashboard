@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Global Trade</title>
+    
+    <!-- MapLibre & Deck.gl -->
+    <script src="https://unpkg.com/deck.gl@latest/dist.min.js"></script>
+    <script src="https://unpkg.com/maplibre-gl@3.0.0/dist/maplibre-gl.js"></script>
+    <link href="https://unpkg.com/maplibre-gl@3.0.0/dist/maplibre-gl.css" rel="stylesheet" />
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="style.css?v=3">
+</head>
+<body>
+    <div id="app">
+        <!-- Top Navigation -->
+        <header class="top-nav">
+            <div class="logo" id="home-logo" style="cursor: pointer;">Global Trade</div>
+            <nav class="main-menu">
+                <div class="menu-item">
+                    <span>에너지</span>
+                    <div class="dropdown">
+                        <a href="#" data-target="oil">원유</a>
+                        <a href="#" data-target="gas">천연가스</a>
+                        <a href="#" data-target="thermal_coal">석탄 (연료탄)</a>
+                        <a href="#" data-target="met_coal">석탄 (원료탄)</a>
+                    </div>
+                </div>
+                <div class="menu-item">
+                    <span>귀금속</span>
+                    <div class="dropdown">
+                        <a href="#" data-target="gold">금 (Gold)</a>
+                        <a href="#" data-target="silver">은 (Silver)</a>
+                    </div>
+                </div>
+                <div class="menu-item">
+                    <span>비철금속</span>
+                    <div class="dropdown">
+                        <a href="#" data-target="copper">구리</a>
+                        <a href="#" data-target="zinc">아연</a>
+                        <a href="#" data-target="aluminum">알루미늄</a>
+                    </div>
+                </div>
+                <div class="menu-item">
+                    <span>농산물</span>
+                    <div class="dropdown">
+                        <a href="#" data-target="wheat">밀</a>
+                        <a href="#" data-target="corn">옥수수</a>
+                        <a href="#" data-target="soybeans">대두</a>
+                        <a href="#" data-target="sugar">설탕</a>
+                        <a href="#" data-target="coffee">커피</a>
+                        <a href="#" data-target="climate" style="color: #4ade80; border-top: 1px solid rgba(255,255,255,0.1); margin-top: 4px;">기후 (AI 예측)</a>
+                    </div>
+                </div>
+                <div class="menu-item">
+                    <span>해운</span>
+                    <div class="dropdown">
+                        <a href="#" data-target="shipping_fleet">글로벌 선대</a>
+                        <a href="#" data-target="shipping_routes">항로별 선복량</a>
+                        <a href="#" data-target="shipping_chokepoints">초크포인트 모니터</a>
+                        <a href="#" data-target="shipping_scenarios">봉쇄 충격 시뮬레이터</a>
+                    </div>
+                </div>
+                <div class="menu-item">
+                    <span>금융/제조</span>
+                    <div class="dropdown">
+                        <a href="#" data-target="fed_bs">FED B/S</a>
+                        <a href="#" data-target="tga">TGA 잔고</a>
+                        <a href="#" data-target="semi_dram">반도체 DRAM</a>
+                    </div>
+                </div>
+                <div class="menu-item" style="margin-left: 20px;">
+                    <span style="color: #cbd5e1;">주요 기관</span>
+                    <div class="dropdown">
+                        <a href="#" data-target="inst_intl">국제 기구 (UN, USDA 등)</a>
+                        <a href="#" data-target="inst_country">국가별 출처 (CONAB 등)</a>
+                    </div>
+                </div>
+            </nav>
+            <div class="date-picker-container">
+                <input type="date" id="historical-date" class="historical-date-picker" min="2021-01-01">
+            </div>
+            <script>
+                // Set the historical date picker to today's date dynamically
+                const dateInput = document.getElementById('historical-date');
+                const todayStr = new Date().toISOString().split('T')[0];
+                dateInput.value = todayStr;
+                dateInput.max = todayStr;
+            </script>
+        </header>
+
+        <!-- Ticker -->
+        <div class="ticker-wrapper">
+            <div class="ticker-label">속보</div>
+            <div class="ticker-overflow">
+                <div class="ticker-content" id="ticker-content">
+                    <!-- Ticker items injected by JS -->
+                    <span class="ticker-item"><span class="ticker-hl">[WTI 원유]</span> 배럴당 78.93 달러 마감 (-1.48%)</span>
+                    <span class="ticker-divider">·</span>
+                    <span class="ticker-item"><span class="ticker-hl">[농산물]</span> 브라질 마토 그로소 지역 강수량 부족으로 대두 수확량 우려</span>
+                    <span class="ticker-divider">·</span>
+                    <span class="ticker-item"><span class="ticker-hl">[거시경제]</span> 연준 대차대조표 전주 대비 120억 달러 축소</span>
+                    <span class="ticker-divider">·</span>
+                    <span class="ticker-item"><span class="ticker-hl">[석탄]</span> 호주 수출 물동량 전년 동기 대비 5% 증가</span>
+                    <span class="ticker-divider">·</span>
+                    <span class="ticker-item"><span class="ticker-hl">[구리]</span> LME 구리 재고량 3주 연속 하락세</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content Area -->
+        <main class="content-area split-layout">
+            
+            <!-- Left Pane: Info & News -->
+            <aside class="left-pane" id="left-pane">
+                <!-- Commodity Overview (Always top when a commodity is selected) -->
+                <div class="panel-section hidden" id="commodity-info-panel">
+                    <div class="panel-header">
+                        <h2 id="current-view-title">글로벌 원자재: 석탄</h2>
+                        <p id="current-view-desc">전 세계 석탄 수출입 무역 흐름</p>
+                    </div>
+                    
+                    <div class="stats-container">
+                        <div class="stat-box">
+                            <span class="stat-label">글로벌 무역량</span>
+                            <span class="stat-value" id="total-volume">1,245 Mt</span>
+                        </div>
+                        <div class="stat-box">
+                            <span class="stat-label">최대 수출국</span>
+                            <span class="stat-value" id="top-exporter">호주</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- News Panel -->
+                <div class="panel-section hidden" id="news-panel">
+                    <p class="section-title">주요 지역 뉴스 (국가 선택)</p>
+                    <div id="news-content" class="news-content">
+                        <p class="empty-state">지도에서 국가나 무역 흐름을 클릭하면 관련 뉴스가 표시됩니다.</p>
+                    </div>
+                </div>
+
+                <!-- Climate Forecast Panel -->
+                <div class="panel-section hidden" id="climate-forecast-panel">
+                    <p class="section-title" id="forecast-country-title">지역 기후 예측</p>
+                    <div id="forecast-content" class="news-content">
+                        <p class="empty-state">지도에서 국가(예: 미국, 브라질)를 클릭하면 AI 기반 기후 및 작황 예측 정보가 표시됩니다.</p>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Center Pane: Map -->
+            <div class="map-pane">
+                <div id="map"></div>
+                
+                <!-- Coal Legend -->
+                <div id="coal-legend" class="map-legend hidden">
+                    <h4>석탄 종류</h4>
+                    <div class="legend-item">
+                        <span class="color-box" style="background: linear-gradient(to right, #ff8c00, #facc15);"></span>
+                        <span>연료탄 (Thermal Coal)</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="color-box" style="background: linear-gradient(to right, #9333ea, #ec4899);"></span>
+                        <span>원료탄 (Metallurgical Coal)</span>
+                    </div>
+                </div>
+
+                <!-- Placeholder for other views (charts, etc) -->
+                <div id="chart-view" class="hidden">
+                    <div class="placeholder-content">
+                        <h3>해당 데이터는 수집 및 연동 준비 중입니다.</h3>
+                        <p>상단 메뉴에서 '원자재 > 석탄'을 선택하시면 지도를 보실 수 있습니다.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Pane: Stats & Macro -->
+            <aside class="right-pane" id="right-pane">
+                
+                <!-- Macro Indicators Panel (Only visible on Home) -->
+                <div class="panel-section" id="macro-panel">
+                    <div class="panel-header">
+                        <h2>핵심 거시 지표</h2>
+                        <p>실시간 글로벌 금융 상황</p>
+                    </div>
+                    
+                    <div class="indicators-list">
+                        <div class="indicator-item">
+                            <div class="ind-header">
+                                <span class="ind-title">EUR / USD (FRED)</span>
+                            </div>
+                            <div class="ind-value" id="macro-eur-usd">불러오는 중...</div>
+                        </div>
+
+                        <div class="indicator-item">
+                            <div class="ind-header">
+                                <span class="ind-title">KRW / USD (BOK)</span>
+                            </div>
+                            <div class="ind-value" id="macro-krw-usd">불러오는 중...</div>
+                        </div>
+                        
+                        <div class="indicator-item">
+                            <div class="ind-header">
+                                <span class="ind-title">USD / JPY (FRED)</span>
+                            </div>
+                            <div class="ind-value" id="macro-usd-jpy">불러오는 중...</div>
+                        </div>
+                        
+                        <div class="indicator-item">
+                            <div class="ind-header">
+                                <span class="ind-title">NASDAQ 지수 (FRED)</span>
+                            </div>
+                            <div class="ind-value" id="macro-nasdaq">불러오는 중...</div>
+                        </div>
+
+                        <div class="indicator-item">
+                            <div class="ind-header">
+                                <span class="ind-title">한국은행 기준금리 (BOK)</span>
+                            </div>
+                            <div class="ind-value" id="macro-bok-rate" style="font-size: 16px; color: #f87171;">불러오는 중...</div>
+                        </div>
+
+                        <div class="indicator-item">
+                            <div class="ind-header">
+                                <span class="ind-title">WTI 원유 (EIA)</span>
+                            </div>
+                            <div class="ind-value" id="macro-wti" style="font-size: 16px;">불러오는 중...</div>
+                        </div>
+
+                        <div class="indicator-item">
+                            <div class="ind-header">
+                                <span class="ind-title">천연가스 (EIA Henry Hub)</span>
+                            </div>
+                            <div class="ind-value" id="macro-natgas" style="font-size: 16px;">불러오는 중...</div>
+                        </div>
+
+                        <div class="indicator-item">
+                            <div class="ind-header">
+                                <span class="ind-title">FED 대차대조표 (FRED)</span>
+                            </div>
+                            <div class="ind-value" id="macro-fed-bs" style="color: #cbd5e1; font-size: 18px;">불러오는 중...</div>
+                            <p class="ind-sub" id="macro-fed-bs-date"></p>
+                        </div>
+
+                        <div class="indicator-item">
+                            <div class="ind-header">
+                                <span class="ind-title">TGA 재무부 일반계정 (FRED)</span>
+                            </div>
+                            <div class="ind-value" id="macro-tga" style="color: #cbd5e1; font-size: 18px;">불러오는 중...</div>
+                            <p class="ind-sub" id="macro-tga-date"></p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Country Stats Panel -->
+                <div class="panel-section hidden" id="country-stats-panel">
+                    <div class="panel-header" style="margin-bottom: 20px;">
+                        <h2 id="country-stats-title">국가명</h2>
+                        <p id="country-stats-desc">세부 산업 지표</p>
+                    </div>
+                    <div class="indicators-list" id="country-stats-content">
+                        <!-- Content will be injected by app.js -->
+                    </div>
+                </div>
+
+            </aside>
+        </main>
+
+        <!-- Tooltip -->
+        <div id="tooltip" class="tooltip hidden"></div>
+        
+        <!-- Chart Modal -->
+        <div id="chart-modal" class="modal hidden">
+            <div class="modal-content">
+                <span class="close-btn" id="close-modal">&times;</span>
+                <h2 id="modal-chart-title" style="margin-bottom: 5px;">지표 차트</h2>
+                <p id="modal-chart-desc" style="color: var(--text-secondary); font-size: 13px; margin-bottom: 20px;">최근 5년 데이터 (전고점 및 전저점 표시)</p>
+                <div class="chart-container" style="position: relative; height:400px; width:100%">
+                    <canvas id="macroChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Data and App Logic -->
+    <script src="data.js?v=2"></script>
+    <script src="shipping.js?v=1"></script>
+    <script src="app.js?v=5"></script>
+</body>
+</html>

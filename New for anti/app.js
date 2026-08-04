@@ -171,6 +171,12 @@ const deckgl = new DeckGL({
     layers: [],
     onViewStateChange: ({ viewState, interactionState }) => {
         currentViewState = viewState;
+        // Avoid stomping climate MapView while interacting on other screens only
+        if (currentCommodity === 'climate') {
+            // Still track; controller needs viewState updates for pan/zoom
+            deckgl.setProps({ viewState });
+            return;
+        }
         deckgl.setProps({ viewState: currentViewState });
 
         // 드래그로 지구를 직접 잡고 있을 때만 회전 멈춤.
@@ -453,6 +459,7 @@ const renderYieldForecast = async (regionName) => {
     const enso = fc.enso.oni_growing_season;
     forecastCountryTitle.textContent = `${region.label_ko} 작황 예측 (${fc.season})`;
     forecastContentEl.innerHTML = `
+        ${climateNavBackHtml(region.label_ko || '')}
         <div class="forecast-box">
             <div class="forecast-item">
                 <span class="forecast-label">엘니뇨/라니냐 (ONI)</span>
@@ -589,6 +596,17 @@ const CLIMATE_COUNTRIES = {
               coordinates: [-62.5, -26.5], regionKeys: ['norte_soja'] },
             { name: 'Chaco cotton (Argentina)', label: '차코 (면화)',
               coordinates: [-60.5, -26.8], regionKeys: ['chaco_algodon'] },
+            // Wheat sits four degrees south of the soy belt -- Tres Arroyos and
+            // Coronel Suárez, not Pergamino -- because that is where 57% of
+            // Argentine wheat is and it runs on a different frost calendar.
+            // Between January and October this card reports why it is not
+            // forecasting rather than showing a number (see reason_ko).
+            { name: 'Pampas wheat (Argentina)', label: '팜파스 남부 (밀)',
+              coordinates: [-60.3, -38.4], regionKeys: ['pampas_trigo'] },
+            // No trained model: MAGyP's cane series stops at 2004/05. The card
+            // carries the explanation so the gap reads as a decision.
+            { name: 'Tucuman cane (Argentina)', label: '투쿠만 (사탕수수)',
+              coordinates: [-65.3, -27.0], regionKeys: ['tucuman_cana'] },
         ],
     },
     'Australia': {
@@ -670,6 +688,206 @@ const TRADE_LINE = {
     red:    [252, 165, 165, 245],
     none:   [255, 255, 255, 30],
 };
+
+
+// Resolve ISO / name from a GeoJSON feature (johan world.geo.json uses top-level id).
+const featureCountryKey = (feature) => {
+    if (!feature) return null;
+    const id = feature.id ?? feature.properties?.id ?? feature.properties?.ISO_A3
+        ?? feature.properties?.iso_a3 ?? feature.properties?.ADM0_A3;
+    if (id != null) {
+        const s = String(id).toUpperCase();
+        const byIso = Object.entries(CLIMATE_COUNTRIES).find(([, c]) => c.iso === s);
+        if (byIso) return byIso[0];
+    }
+    const name = feature.properties?.name || feature.properties?.NAME;
+    if (name && CLIMATE_COUNTRIES[name]) return name;
+    // Fuzzy: "United States of America" → United States entry
+    if (name) {
+        const hit = Object.entries(CLIMATE_COUNTRIES).find(([k, c]) =>
+            name.includes(k) || name.includes(c.label) || k.includes(name));
+        if (hit) return hit[0];
+    }
+    return null;
+};
+
+// Persistent back control for climate left panel (survives region panel swaps).
+const climateNavBackHtml = (trail = '') => `
+    <div class="climate-nav-row">
+        <span class="climate-back climate-click" data-climate-back="1"
+              role="button" tabindex="0" aria-label="세계 지도로 돌아가기">← 세계 지도</span>
+        ${trail ? `<span class="climate-nav-trail">${trail}</span>` : ''}
+    </div>`;
+
+// Event-delegated climate UI clicks (large hit targets; rewire-safe after innerHTML).
+const handleClimateDomAction = (e) => {
+    const t = e.target instanceof Element ? e.target : null;
+    if (!t) return;
+    const back = t.closest('[data-climate-back]');
+    if (back) {
+        e.preventDefault();
+        e.stopPropagation();
+        showClimateWorld();
+        return;
+    }
+    const country = t.closest('[data-climate-country]');
+    if (country) {
+        e.preventDefault();
+        e.stopPropagation();
+        const name = country.getAttribute('data-climate-country');
+        if (name) showClimateCountry(name);
+        return;
+    }
+    const region = t.closest('[data-climate-region]');
+    if (region) {
+        e.preventDefault();
+        e.stopPropagation();
+        const name = region.getAttribute('data-climate-region');
+        if (name) updateForecastPanel(name);
+    }
+};
+
+const handleClimateDomKey = (e) => {
+    if (e.key !== 'Enter' && e.key !== ' ') return;
+    const t = e.target instanceof Element ? e.target : null;
+    if (!t) return;
+    if (!t.closest('[data-climate-country],[data-climate-region],[data-climate-back]')) return;
+    e.preventDefault();
+    handleClimateDomAction(e);
+};
+
+// One-time delegation on durable panel roots (survives innerHTML rebuilds).
+const wireClimateDomClicks = (root) => {
+    if (!root || root.dataset.climateDelegate === '1') return;
+    root.dataset.climateDelegate = '1';
+    root.addEventListener('click', handleClimateDomAction);
+    root.addEventListener('keydown', handleClimateDomKey);
+};
+// Attach early so first render is always covered.
+wireClimateDomClicks(climateRightContentEl);
+wireClimateDomClicks(forecastContentEl);
+
+// Map canvas pointer → pickObject (MapLibre/controller can swallow deck onClick).
+let climateCanvasPointerWired = false;
+let climatePointerDown = null;
+const climateCanvasLocalXY = (clientX, clientY) => {
+    if (!mapContainer) return null;
+    const deckCanvas = mapContainer.querySelector('canvas:not(.maplibregl-canvas)')
+        || mapContainer.querySelector('canvas');
+    if (!deckCanvas) return null;
+    const r = deckCanvas.getBoundingClientRect();
+    const x = clientX - r.left;
+    const y = clientY - r.top;
+    if (x < 0 || y < 0 || x > r.width || y > r.height) return null;
+    return { x, y };
+};
+const tryClimateMapPick = (clientX, clientY) => {
+    if (currentCommodity !== 'climate' || !deckgl?.pickObject) return;
+    const xy = climateCanvasLocalXY(clientX, clientY);
+    if (!xy) return;
+    // Fallback only acts on hits so empty picks do not burn the debounce window.
+    const info = deckgl.pickObject({ x: xy.x, y: xy.y, radius: 20 });
+    if (!info?.object) return;
+    handleClimateDeckClick(info);
+};
+const ensureClimateMapPointerFallback = () => {
+    if (climateCanvasPointerWired || !mapContainer) return;
+    climateCanvasPointerWired = true;
+    mapContainer.addEventListener('pointerdown', (e) => {
+        if (currentCommodity !== 'climate') return;
+        if (e.button !== 0) return;
+        climatePointerDown = { x: e.clientX, y: e.clientY, t: performance.now() };
+    }, true);
+    const onPointerLikeClick = (e) => {
+        if (currentCommodity !== 'climate') return;
+        if (e.button != null && e.button !== 0) return;
+        if (!climatePointerDown) {
+            // `click` without prior pointerdown tracking (rare) — still try pick.
+            if (e.type === 'click') tryClimateMapPick(e.clientX, e.clientY);
+            return;
+        }
+        const dx = e.clientX - climatePointerDown.x;
+        const dy = e.clientY - climatePointerDown.y;
+        const dt = performance.now() - climatePointerDown.t;
+        climatePointerDown = null;
+        // Treat as click only if short & small movement (not pan/drag).
+        if (dt > 600 || Math.hypot(dx, dy) > 8) return;
+        tryClimateMapPick(e.clientX, e.clientY);
+    };
+    mapContainer.addEventListener('pointerup', onPointerLikeClick, true);
+    mapContainer.addEventListener('click', onPointerLikeClick, true);
+};
+
+// Single deck click router for climate — layer onClick alone is flaky when
+// basemap + MapView controller steal events after GlobeView switches.
+// Debounce only after a successful action so pointerup+onClick do not double-fire.
+let lastClimatePickAt = 0;
+const handleClimateDeckClick = (info) => {
+    if (currentCommodity !== 'climate') return;
+    const now = performance.now();
+    if (now - lastClimatePickAt < 300) return;
+    const mark = () => { lastClimatePickAt = now; };
+
+    if (climateLevel === 'world') {
+        // Prefer pin object (has .name), else GeoJSON feature
+        if (info?.object?.name && CLIMATE_COUNTRIES[info.object.name]) {
+            mark();
+            showClimateCountry(info.object.name);
+            return;
+        }
+        // Scatterplot pins may report layer id without going through featureCountryKey
+        if (info?.layer?.id === 'climate-country-pins' && info.object?.name
+            && CLIMATE_COUNTRIES[info.object.name]) {
+            mark();
+            showClimateCountry(info.object.name);
+            return;
+        }
+        const key = featureCountryKey(info?.object);
+        if (key) {
+            mark();
+            showClimateCountry(key);
+        }
+        // Non-model country / ocean → no-op (stay on world)
+        return;
+    }
+    if (climateLevel === 'country') {
+        // Region pin → detail panel (layer id when present; else region point fields).
+        const isRegionPin = info?.layer?.id === 'climate-regions'
+            || (info?.object?.name && info.object.stress != null && info.object.coordinates);
+        if (isRegionPin && info.object?.name) {
+            mark();
+            updateForecastPanel(info.object.name);
+            return;
+        }
+        // Pin miss or country fill → stay. Never auto-return to world on empty hits.
+        // Optional: another modelled country poly → switch country view.
+        if (!info?.object) return;
+        const key = featureCountryKey(info.object);
+        if (key && key !== climateCountry) {
+            mark();
+            showClimateCountry(key);
+        }
+    }
+};
+
+const handleClimateDeckHover = (info) => {
+    if (currentCommodity !== 'climate' || climateLevel !== 'world') {
+        return;
+    }
+    if (!info?.object) {
+        hideClimateTooltip();
+        return;
+    }
+    let key = null;
+    if (info.object.name && CLIMATE_COUNTRIES[info.object.name]) key = info.object.name;
+    else key = featureCountryKey(info.object);
+    if (!key) {
+        hideClimateTooltip();
+        return;
+    }
+    showClimateTooltip(info, key, CLIMATE_COUNTRIES[key]);
+};
+
 
 const tradePolicyLevel = (countryName) => {
     const p = CLIMATE_TRADE_POLICY[countryName] || {};
@@ -945,6 +1163,7 @@ const renderBrazilYieldForecast = async (regionName) => {
 
     forecastCountryTitle.textContent = `브라질 지역 작황 예측 (${fc.season})`;
     forecastContentEl.innerHTML = `
+        ${climateNavBackHtml(regionName.replace(' (Brazil)', ''))}
         <div class="forecast-box">
             <div class="forecast-item">
                 <span class="forecast-label">대상 지역</span>
@@ -1100,6 +1319,7 @@ const renderIndiaYieldForecast = async (regionName) => {
 
     forecastCountryTitle.textContent = `인도 지역 작황 예측 (${fc.season})`;
     forecastContentEl.innerHTML = `
+        ${climateNavBackHtml(regionName.replace(' (India)', ''))}
         <div class="forecast-box">
             <div class="forecast-item">
                 <span class="forecast-label">대상 지역</span>
@@ -1375,7 +1595,7 @@ const setClimateMapLegend = (mode) => {
             <div class="leg-row"><span class="swatch" style="background:#f87171"></span> 고스트레스 (≤ −4%)</div>
             <div class="leg-row"><span class="swatch" style="background:#fb923c"></span> 주의 (−4 ~ −1.5%)</div>
             <div class="leg-row"><span class="swatch" style="background:#4ade80"></span> 양호</div>
-            <div style="margin-top:8px;color:#64748b;font-size:10px;">배경 지도 클릭 → 세계 지도</div>`;
+            <div style="margin-top:8px;color:#64748b;font-size:10px;">산지 핀·목록 클릭 · ← 세계 지도</div>`;
     } else {
         climateMapLegendEl.classList.add('hidden');
         climateMapLegendEl.innerHTML = '';
@@ -1471,13 +1691,16 @@ const renderClimateWorldRight = async () => {
         const lv = tradePolicyLevel(name);
         const pol = CLIMATE_TRADE_POLICY[name] || {};
         const bans = (pol.prohibitedCrops || []).join(', ') || '—';
-        return `<div class="climate-table-row" style="cursor:pointer;" onclick="showClimateCountry('${name}')">
-            <span class="nm">${cfg.label}
-                <span class="climate-status-pill ${lv}" style="margin-left:6px;">${tradePolicyLabelKo(lv)}</span>
-            </span>
-            <span class="vl" style="font-size:11px;color:#94a3b8;">${cfg.regions.length}산지 →</span>
-        </div>
-        <div style="font-size:10px;color:#64748b;margin:-4px 0 8px;">금지/통제: ${bans}</div>`;
+        return `<div class="climate-country-hit climate-click" role="button" tabindex="0"
+            data-climate-country="${name}" aria-label="${cfg.label} 상세 보기">
+            <div class="climate-table-row">
+                <span class="nm">${cfg.label}
+                    <span class="climate-status-pill ${lv}" style="margin-left:6px;">${tradePolicyLabelKo(lv)}</span>
+                </span>
+                <span class="vl" style="font-size:11px;color:#94a3b8;">${cfg.regions.length}산지 →</span>
+            </div>
+            <div class="climate-country-sub">금지/통제: ${bans}</div>
+        </div>`;
     }).join('');
 
     climateRightContentEl.innerHTML = `
@@ -1505,7 +1728,7 @@ const showClimateWorld = async () => {
 
     const isoMap = isoToCountryName();
     currentViewTitle.textContent = '기후·작황 예측';
-    currentViewDesc.textContent = '모델 보유국 hover=요약 · 클릭=국가 상세 · 배경 클릭으로 복귀';
+    currentViewDesc.textContent = '모델 보유국 hover=요약 · 클릭=국가 상세 · ← 세계 지도로 복귀';
     totalVolumeEl.textContent = `${Object.keys(CLIMATE_COUNTRIES).length}개국`;
     topExporterEl.textContent = 'Trade status colors';
 
@@ -1535,13 +1758,26 @@ const showClimateWorld = async () => {
         };
     }).filter(Boolean);
 
+    // Ensure map pane can receive events (chart-view can steal them)
+    if (chartView) {
+        chartView.classList.add('hidden');
+        chartView.style.pointerEvents = 'none';
+    }
+    mapContainer.style.display = 'block';
+    mapContainer.style.pointerEvents = 'auto';
+    ensureClimateMapPointerFallback();
+
     deckgl.setProps({
-        views: [new MapView({ id: 'mapview' })],
-        viewState: climateWorldViewState(),
-        onClick: null,
+        views: [new MapView({ id: 'climate-world-view' })],
+        viewState: { ...climateWorldViewState(), minZoom: 0.5, maxZoom: 8 },
+        controller: true,
+        pickingRadius: 18,
+        getCursor: ({ isHovering }) => (isHovering ? 'pointer' : 'grab'),
+        onClick: handleClimateDeckClick,
+        onHover: handleClimateDeckHover,
         onResize: () => {
-            if (climateLevel === 'world') {
-                deckgl.setProps({ viewState: climateWorldViewState() });
+            if (climateLevel === 'world' && currentCommodity === 'climate') {
+                deckgl.setProps({ viewState: { ...climateWorldViewState(), minZoom: 0.5, maxZoom: 8 } });
             }
         },
         layers: [
@@ -1552,49 +1788,40 @@ const showClimateWorld = async () => {
                 filled: true,
                 lineWidthMinPixels: 1,
                 getFillColor: f => {
-                    const name = isoMap[f.id];
-                    if (!name) return TRADE_FILL.none;
-                    return TRADE_FILL[tradePolicyLevel(name)] || TRADE_FILL.blue;
+                    const key = featureCountryKey(f);
+                    if (!key) return TRADE_FILL.none;
+                    return TRADE_FILL[tradePolicyLevel(key)] || TRADE_FILL.blue;
                 },
                 getLineColor: f => {
-                    const name = isoMap[f.id];
-                    if (!name) return TRADE_LINE.none;
-                    return TRADE_LINE[tradePolicyLevel(name)] || TRADE_LINE.blue;
+                    const key = featureCountryKey(f);
+                    if (!key) return TRADE_LINE.none;
+                    return TRADE_LINE[tradePolicyLevel(key)] || TRADE_LINE.blue;
                 },
                 pickable: true,
                 autoHighlight: true,
-                highlightColor: [255, 255, 255, 80],
+                highlightColor: [255, 255, 255, 90],
                 updateTriggers: {
                     getFillColor: [climateLevel, Object.keys(CLIMATE_TRADE_POLICY).join()],
                     getLineColor: [climateLevel],
                 },
-                onHover: async info => {
-                    if (!info.object) { hideClimateTooltip(); return; }
-                    const entry = Object.entries(CLIMATE_COUNTRIES)
-                        .find(([, c]) => c.iso === info.object.id);
-                    if (!entry) { hideClimateTooltip(); return; }
-                    showClimateTooltip(info, entry[0], entry[1]);
-                },
-                onClick: info => {
-                    const entry = Object.entries(CLIMATE_COUNTRIES)
-                        .find(([, c]) => c.iso === info.object?.id);
-                    if (entry) showClimateCountry(entry[0]);
-                },
             }),
+            // Large pickable pins — GeoJSON fill picks are unreliable with basemap
             new ScatterplotLayer({
                 id: 'climate-country-pins',
                 data: labels,
-                pickable: false,
+                pickable: true,
                 stroked: true,
                 filled: true,
                 opacity: 0.95,
-                radiusMinPixels: 4,
-                radiusMaxPixels: 8,
+                radiusMinPixels: 16,
+                radiusMaxPixels: 40,
+                lineWidthMinPixels: 2,
                 getPosition: d => d.coordinates,
-                getRadius: 40000,
+                getRadius: 180000,
                 getFillColor: d => TRADE_FILL[d.level] || TRADE_FILL.blue,
-                getLineColor: [255, 255, 255, 180],
-                lineWidthMinPixels: 1,
+                getLineColor: [255, 255, 255, 230],
+                autoHighlight: true,
+                highlightColor: [255, 255, 255, 200],
             }),
         ],
     });
@@ -1685,20 +1912,49 @@ const showClimateCountry = async (countryName) => {
     const pol = CLIMATE_TRADE_POLICY[countryName] || {};
 
     currentViewTitle.textContent = `${cfg.label} ${cfg.iso || ''}`.trim();
-    currentViewDesc.textContent = `${cfg.regions.length}개 산지 · 배경 클릭 시 세계 지도로 복귀`;
+    currentViewDesc.textContent = `${cfg.regions.length}개 산지 · 산지 핀 클릭 · ← 세계 지도로 복귀`;
     totalVolumeEl.textContent = cfg.modelName || cfg.label;
     topExporterEl.textContent = tradePolicyLabelKo(lv);
 
     setClimateMapLegend('country');
 
+    if (chartView) {
+        chartView.classList.add('hidden');
+        chartView.style.pointerEvents = 'none';
+    }
+    mapContainer.style.display = 'block';
+    mapContainer.style.pointerEvents = 'auto';
+    ensureClimateMapPointerFallback();
+
     deckgl.setProps({
-        views: [new MapView({ id: 'mapview' })],
-        viewState: { ...cfg.view, pitch: 0, bearing: 0 },
-        onClick: info => {
+        views: [new MapView({ id: 'climate-country-view' })],
+        viewState: { ...cfg.view, pitch: 0, bearing: 0, minZoom: 1, maxZoom: 10 },
+        controller: true,
+        pickingRadius: 18,
+        getCursor: ({ isHovering }) => (isHovering ? 'pointer' : 'grab'),
+        onClick: handleClimateDeckClick,
+        onHover: (info) => {
             if (climateLevel !== 'country') return;
-            // Region layer eats its own clicks; anything else returns to world.
-            if (info.layer?.id === 'climate-regions') return;
-            showClimateWorld();
+            if (!info.object || info.layer?.id !== 'climate-regions') {
+                // keep last region tooltip only while over a marker
+                if (!info.object) hideClimateTooltip();
+                return;
+            }
+            const d = info.object;
+            if (!tooltipEl) return;
+            tooltipEl.style.left = `${info.x + 10}px`;
+            tooltipEl.style.top = `${info.y + 10}px`;
+            tooltipEl.classList.remove('hidden');
+            const pctStr = d.meanPct == null ? '—'
+                : `${d.meanPct >= 0 ? '+' : ''}${d.meanPct.toFixed(1)}%`;
+            const ptStr = d.point == null ? '—'
+                : (d.unit === 'bu/acre' ? d.point.toFixed(1) : Math.round(d.point).toLocaleString());
+            tooltipEl.innerHTML = `
+                <div class="tooltip-title">${d.label}</div>
+                <div class="tooltip-stat"><span>상태</span>
+                    <span class="climate-status-pill ${d.stress.level === 'ok' ? 'green' : d.stress.level === 'high' ? 'red' : 'orange'}">${d.stress.ko}</span></div>
+                <div class="tooltip-stat"><span>예측/기상효과</span>
+                    <span>${ptStr} ${d.unit || ''} · ${pctStr}</span></div>`;
         },
         layers: [
             new GeoJsonLayer({
@@ -1706,16 +1962,20 @@ const showClimateCountry = async (countryName) => {
                 data: COUNTRIES_GEOJSON,
                 stroked: true,
                 filled: true,
-                lineWidthMinPixels: f => f.id === cfg.iso ? 2.5 : 1,
-                getFillColor: f => f.id === cfg.iso
-                    ? (TRADE_FILL[lv] || TRADE_FILL.blue).map((v, i) => i === 3 ? 70 : v)
-                    : [30, 41, 59, 70],
-                getLineColor: f => f.id === cfg.iso
-                    ? (TRADE_LINE[lv] || TRADE_LINE.blue)
-                    : [255, 255, 255, 30],
+                lineWidthMinPixels: 2,
+                getFillColor: f => {
+                    const key = featureCountryKey(f);
+                    if (key === countryName)
+                        return (TRADE_FILL[lv] || TRADE_FILL.blue).map((v, i) => (i === 3 ? 80 : v));
+                    return [30, 41, 59, 70];
+                },
+                getLineColor: f => {
+                    const key = featureCountryKey(f);
+                    if (key === countryName) return TRADE_LINE[lv] || TRADE_LINE.blue;
+                    return [255, 255, 255, 30];
+                },
                 pickable: true,
-                updateTriggers: { getFillColor: [cfg.iso, lv], getLineColor: [cfg.iso, lv] },
-                onClick: () => showClimateWorld(),
+                updateTriggers: { getFillColor: [cfg.iso, lv, countryName], getLineColor: [cfg.iso, lv] },
             }),
             new ScatterplotLayer({
                 id: 'climate-regions',
@@ -1724,33 +1984,15 @@ const showClimateCountry = async (countryName) => {
                 stroked: true,
                 filled: true,
                 opacity: 0.92,
-                radiusMinPixels: 14,
-                radiusMaxPixels: 42,
+                radiusMinPixels: 16,
+                radiusMaxPixels: 48,
                 lineWidthMinPixels: 2,
                 getPosition: d => d.coordinates,
-                getRadius: 140000,
+                getRadius: 160000,
                 getFillColor: d => d.stress.rgba,
                 getLineColor: [255, 255, 255, 220],
                 autoHighlight: true,
                 highlightColor: [255, 255, 255, 200],
-                onClick: info => { if (info.object) updateForecastPanel(info.object.name); },
-                onHover: info => {
-                    if (!info.object) { hideClimateTooltip(); return; }
-                    const d = info.object;
-                    tooltipEl.style.left = `${info.x + 10}px`;
-                    tooltipEl.style.top = `${info.y + 10}px`;
-                    tooltipEl.classList.remove('hidden');
-                    const pctStr = d.meanPct == null ? '—'
-                        : `${d.meanPct >= 0 ? '+' : ''}${d.meanPct.toFixed(1)}%`;
-                    const ptStr = d.point == null ? '—'
-                        : (d.unit === 'bu/acre' ? d.point.toFixed(1) : Math.round(d.point).toLocaleString());
-                    tooltipEl.innerHTML = `
-                        <div class="tooltip-title">${d.label}</div>
-                        <div class="tooltip-stat"><span>상태</span>
-                            <span class="climate-status-pill ${d.stress.level === 'ok' ? 'green' : d.stress.level === 'high' ? 'red' : 'orange'}">${d.stress.ko}</span></div>
-                        <div class="tooltip-stat"><span>예측/기상효과</span>
-                            <span>${ptStr} ${d.unit || ''} · ${pctStr}</span></div>`;
-                },
             }),
         ],
     });
@@ -1784,10 +2026,7 @@ const renderCountryPanel = async (cfg, points = null, meta = {}) => {
 
     forecastContentEl.innerHTML = `
         <div class="climate-scroll">
-            <div style="font-size:11px;margin-bottom:4px;">
-                <span class="climate-back" onclick="showClimateWorld()">← 세계 지도</span>
-                <span style="color:#64748b;"> · ${cfg.label}</span>
-            </div>
+            ${climateNavBackHtml(cfg.label)}
             <div class="climate-card">
                 <h3>모델 개요</h3>
                 <div style="font-size:13px;color:#e2e8f0;line-height:1.55;">
@@ -1822,10 +2061,12 @@ const renderCountryPanel = async (cfg, points = null, meta = {}) => {
             <div class="climate-card">
                 <h3>산지 바로가기</h3>
                 ${cfg.regions.map(r => `
-                    <div class="climate-table-row" style="cursor:pointer;"
-                         onclick="updateForecastPanel('${r.name.replace(/'/g, "\\'")}')">
-                        <span class="nm">${r.label}</span>
-                        <span class="vl" style="color:#94a3b8;font-size:11px;">상세 →</span>
+                    <div class="climate-region-hit climate-click" role="button" tabindex="0"
+                         data-climate-region="${r.name}" aria-label="${r.label} 상세">
+                        <div class="climate-table-row">
+                            <span class="nm">${r.label}</span>
+                            <span class="vl" style="color:#94a3b8;font-size:11px;">상세 →</span>
+                        </div>
                     </div>`).join('')}
             </div>
         </div>`;
@@ -1856,14 +2097,17 @@ const renderCountryPanel = async (cfg, points = null, meta = {}) => {
             <div class="climate-card">
                 <h3>지역 전망 요약</h3>
                 ${points.map(p => `
-                    <div class="climate-metric-row">
-                        <span class="nm">${p.label}</span>
-                        <span class="climate-status-pill ${p.stress.level === 'ok' ? 'green' : p.stress.level === 'high' ? 'red' : p.stress.level === 'warn' ? 'orange' : 'blue'}">${p.stress.ko}</span>
-                    </div>
-                    <div style="font-size:10px;color:#94a3b8;margin:-2px 0 6px;">
-                        ${p.meanPct == null ? '기상효과 요약 없음'
-                            : `기상효과 ${p.meanPct >= 0 ? '+' : ''}${p.meanPct.toFixed(1)}%`}
-                        ${p.point != null ? ` · ${fmtYield(p.point, p.unit)} ${p.unit}` : ''}
+                    <div class="climate-region-hit climate-click" role="button" tabindex="0"
+                         data-climate-region="${p.name}" aria-label="${p.label} 상세">
+                        <div class="climate-metric-row">
+                            <span class="nm">${p.label}</span>
+                            <span class="climate-status-pill ${p.stress.level === 'ok' ? 'green' : p.stress.level === 'high' ? 'red' : p.stress.level === 'warn' ? 'orange' : 'blue'}">${p.stress.ko}</span>
+                        </div>
+                        <div class="climate-country-sub">
+                            ${p.meanPct == null ? '기상효과 요약 없음'
+                                : `기상효과 ${p.meanPct >= 0 ? '+' : ''}${p.meanPct.toFixed(1)}%`}
+                            ${p.point != null ? ` · ${fmtYield(p.point, p.unit)} ${p.unit}` : ''}
+                        </div>
                     </div>`).join('')}
             </div>
             <div class="climate-card">
@@ -1950,6 +2194,7 @@ const renderClimateRegionForecast = async (regionName) => {
     forecastCountryTitle.textContent =
         `${cfg.label} · ${regionCfg.label}${fc.season ? ` (${fc.season})` : ''}`;
     forecastContentEl.innerHTML = `
+        ${climateNavBackHtml(regionCfg.label)}
         <div class="forecast-box">
             <div class="forecast-item">
                 <span class="forecast-label">산지</span>
@@ -1989,7 +2234,8 @@ const updateForecastPanel = async (regionName) => {
     forecastCountryTitle.textContent = `지역 기상 및 기후 요인: ${regionName}`;
 
     if (!data) {
-        forecastContentEl.innerHTML = `<p class="empty-state">해당 지역의 상세 기상 예측 데이터가 없습니다. 지도에서 활성화된 지역(예: Mato Grosso)을 선택해주세요.</p>`;
+        forecastContentEl.innerHTML = `${climateLevel === 'country' ? climateNavBackHtml(regionName) : ''}
+            <p class="empty-state">해당 지역의 상세 기상 예측 데이터가 없습니다. 지도에서 활성화된 지역(예: Mato Grosso)을 선택해주세요.</p>`;
         // Clear right panel
         panelHide(macroPanelEl);
         panelHide(countryStatsPanelEl);
@@ -2001,6 +2247,7 @@ const updateForecastPanel = async (regionName) => {
     const alertClass = (data.climate_status.includes('가뭄') || data.climate_status.includes('홍수')) ? 'forecast-alert' : 'forecast-good';
     
     forecastContentEl.innerHTML = `
+        ${climateLevel === 'country' ? climateNavBackHtml(regionName) : ''}
         <div class="forecast-box">
             <div class="forecast-item">
                 <span class="forecast-label">적산온도(GDD)</span>
@@ -2320,7 +2567,7 @@ const setView = (target) => {
         togglePanels({ forecast: true, climateRight: true, left: true, right: true });
         
         currentViewTitle.textContent = '기후·작황 예측';
-        currentViewDesc.textContent = '전역 기후 신호 + 모델 국가. hover 요약 · 클릭 상세 · 지도 배경 클릭으로 복귀';
+        currentViewDesc.textContent = '전역 기후 신호 + 모델 국가. hover 요약 · 클릭 상세 · ← 세계 지도로 복귀';
         totalVolumeEl.textContent = `${Object.keys(CLIMATE_COUNTRIES).length}개국`;
         topExporterEl.textContent = 'Status coloring';
         
@@ -2660,3 +2907,5 @@ const initialView = initialShippingTarget && document.querySelector(`[data-targe
 setView(initialView);
 updateNewsPanel('Global Market');
 loadTicker();
+
+window.__deckgl = typeof deckgl !== "undefined" ? deckgl : null;

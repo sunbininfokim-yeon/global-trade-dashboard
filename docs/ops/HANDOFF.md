@@ -1,5 +1,58 @@
 # HANDOFF — 최근 인수인계
 
+## 2026-08-04 — cursor
+
+### Goal / summary
+Dinner break: climate click fixed locally (app.js?v=10). Test http://127.0.0.1:8765/ (python on 8765 still listening). Codex data/shipping commit is THEIRS — do not stage/add/commit/push; leave staged shipping_* paths alone. Residual local UI: app.js index.html style.css unstaged; argentina yield model dirs also local/unstaged — do not collide with codex commit.
+
+### Meta
+- branch: `cursor/optimize-audit`
+- head: `99d8c71`
+
+### Files (working tree at handoff time)
+```
+"New for anti/app.js"
+"New for anti/index.html"
+"New for anti/public/data/argentina_yield_forecast.json"
+"New for anti/public/data/shipping_capacity_v1.json"
+"New for anti/scripts/shipping_capacity/README.md"
+"New for anti/scripts/shipping_capacity/build_snapshot.py"
+"New for anti/scripts/shipping_capacity/config/route_catalog.json"
+"New for anti/scripts/shipping_capacity/config/routes.json"
+"New for anti/scripts/shipping_capacity/schemas/shipping_capacity_v1.schema.json"
+"New for anti/scripts/shipping_capacity/shipping_capacity/engine.py"
+"New for anti/scripts/shipping_capacity/tests/test_engine.py"
+"New for anti/scripts/yield_model/argentina/models/chaco_algodon.json"
+"New for anti/scripts/yield_model/argentina/models/norte_soja.json"
+"New for anti/scripts/yield_model/argentina/models/pampas_maiz.json"
+"New for anti/scripts/yield_model/argentina/models/pampas_soja.json"
+"New for anti/scripts/yield_model/argentina/models/pampas_trigo.json"
+"New for anti/scripts/yield_model/argentina/predict.py"
+"New for anti/scripts/yield_model/argentina/regions.py"
+"New for anti/scripts/yield_model/argentina/train.py"
+"New for anti/scripts/yield_model/argentina/training/chaco_algodon.csv"
+"New for anti/scripts/yield_model/argentina/training/norte_soja.csv"
+"New for anti/scripts/yield_model/argentina/training/pampas_maiz.csv"
+"New for anti/scripts/yield_model/argentina/training/pampas_soja.csv"
+"New for anti/scripts/yield_model/argentina/training/pampas_trigo.csv"
+"New for anti/scripts/yield_model/argentina/training/tucuman_cana.csv"
+"New for anti/shipping.js"
+"New for anti/style.css"
+```
+
+### Not done / risks
+_(작성자 보완)_
+
+### Next
+_(다음 에이전트/사람 액션)_
+
+### Commands
+```bash
+./tools/ops/status.sh
+git push -u origin cursor/optimize-audit
+```
+
+---
 ## 2026-08-04 — cursor (full audit + optimize)
 
 ### Goal / summary
