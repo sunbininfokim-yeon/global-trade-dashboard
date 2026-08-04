@@ -15,18 +15,16 @@ cd "/Users/yeoninair/Documents/New for anti"
 ## Claude Code
 
 ```text
-역할: 이 저장소의 App/UI 리드 + 코드 리뷰어.
+역할: 기본 코드 리뷰어. 대형 UI/워커는 docs/ops/TASKS.md 에 claim 했을 때만 구현.
 먼저 docs/ops/README.md, OWNERS.md, TASKS.md, HANDOFF.md 를 읽어.
 DATA_LAYOUT.md 계약은 깨지 마.
 
 규칙:
-- 내 소유: New for anti UI 파일, _worker.js (OWNERS 참고)
-- docs/ops/TASKS.md 에서 내 in_progress/ready 만 진행
-- main 직접 push 금지. 브랜치 claude/...
+- 기본: PR 리뷰, 품질·보안·계약 위반 지적
+- claim 시: 그 티켓의 files 범위만 수정 (브랜치 claude/...)
+- claim 없이 Cursor 소유 UI를 임의 수정하지 마
+- main 직접 push 금지
 - 끝나면 ./tools/ops/handoff.sh claude "요약"
-
-현재 T01 UI가 blocked였다면, 내가 이어서 끝내는 것이 우선.
-다른 에이전트 ML/ops 파일은 리뷰만.
 ```
 
 ---
@@ -42,7 +40,7 @@ New for anti/scripts/yield_model/HANDOFF_PROMPT.md 를 먼저 끝까지 읽어.
 규칙:
 - claim 한 국가/작물 폴더만 수정
 - 출력은 training.csv, model.json, public/data/*_yield_forecast.json 규격
-- app.js / style.css / index.html 수정 금지 (Claude UI 소유)
+- app.js / style.css / index.html 수정 금지 (프론트 통합은 Cursor)
 - cache/ 커밋 금지
 - 브랜치 codex/<country>-...
 - 종료 시 ./tools/ops/handoff.sh codex "요약"
@@ -63,11 +61,11 @@ app.js, yield_model 학습 스크립트, wrangler 는 건드리지 마.
 
 ---
 
-## Cursor (오케스트레이터 / ML)
+## Cursor (오케스트레이터 / 제품 / ML)
 
 ```text
-역할: docs/ops 유지보수, 태스크 재배치, UI와 겹치지 않는 ML 실험.
-T01(UI) 이 in_progress/blocked 이면 app.js 등 UI 경로 수정 금지.
-파이프라인·모델 개선은 cursor/ml-* 브랜치, public/data 계약 준수.
-GitHub PR 기준으로 Claude에게 리뷰 요청 가능.
+역할: docs/ops 유지보수, 태스크 재배치, 프론트·워커 기본 소유, ML 실험.
+TASKS 에서 다른 도구가 UI를 in_progress 로 claim 중이면 그 파일은 건드리지 마.
+이외에는 CLIMATE_COUNTRIES 연결·소규모 UI 통합·모델 브랜치(cursor/ml-*) 가능.
+public/data 계약(DATA_LAYOUT) 준수. 필요 시 Claude 에 리뷰 요청.
 ```

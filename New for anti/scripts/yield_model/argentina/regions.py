@@ -154,10 +154,8 @@ def _pampas_soja(daily, y):
         # guess at it. Carried alongside smi_flowering so the training run can
         # say which of the two the yield actually follows.
         "sm_summer": A.mean_soil_percentile(
-            wb_start := pd.Timestamp(year=y, month=1, day=1),
-            pd.Timestamp(year=y, month=3, day=31)) if False else
-            A.mean_soil_percentile(daily, pd.Timestamp(year=y, month=1, day=1),
-                                   pd.Timestamp(year=y, month=3, day=31)),
+            daily, pd.Timestamp(year=y, month=1, day=1),
+            pd.Timestamp(year=y, month=3, day=31)),
         "heat_x_drought": A.heat_x_drought(
             daily, [(1, 0), (2, 0), (3, 0)], y, 35.0, 0.2),
         # El Nino autumns drown the harvest: beans rot standing and the

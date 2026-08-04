@@ -1,7 +1,8 @@
 # Commodity news ticker — RSS → filter → ticker_v1.json
 
 원자재 대시보드 **속보 티커**용 수집·필터 모델입니다.  
-(프런트 `app.js` 연결은 T01 UI 잠금 때문에 아직 안 함. Worker `/api/ticker` + 스냅샷 JSON만.)
+프런트: `app.js` 의 `loadTicker()` → `/api/ticker` (실패 시 `public/data/ticker_v1.json`).  
+Worker: `_worker.js` `handleTicker` (IP 로케일 표시).
 
 ## 설계 원칙
 

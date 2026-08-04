@@ -1,5 +1,57 @@
 # HANDOFF — 최근 인수인계
 
+## 2026-08-04 — cursor (full audit + optimize)
+
+### Goal / summary
+넘어온 코드 전수 점검 후 즉시 최적화. 보고서: `docs/ops/AUDIT_2026-08-04.md`.
+
+### Done
+- 기후 지도: ARG/AUS/CHN/IDN `CLIMATE_COUNTRIES` 연결 + 공용 산지 패널
+- skill 정규화 (nested yield skill, skill<0.2, climate_gate)
+- 티커 UI ↔ `/api/ticker` 연결
+- icrisat 6MB assets 제외, 티커 cron 시간당
+- `tools/ops/audit_forecasts.py`
+- 소유권 Cursor 핸드오프 문서
+
+### Not done / risks
+- **main 미머지** (PR #2 + 이 브랜치) → 프로덕션 무변화
+- india_yield_forecast.json missing
+- 중국/인니 모델 품질은 미개선 (표시만 정직화)
+
+### Next
+1. 사람: PR 머지 체인
+2. T04 중국 skill / T04c 인도 JSON
+3. Claude: T07 PR 리뷰
+
+### Commands
+```bash
+./tools/ops/status.sh
+python3 tools/ops/audit_forecasts.py
+```
+
+---
+
+## 2026-08-04 — cursor (ownership handoff + decisions)
+
+### Goal / summary
+Claude가 열어 둔 두 가지( PR #2 미머지 · OWNERS/CLAUDE UI 영구 소유 )를 정리.
+권장: PR #2 **머지**, UI 기본 소유 **Cursor**, Claude **리뷰 기본**.
+
+### Done (로컬, 아직 push/머지 전일 수 있음)
+- `OWNERS.md` / `CLAUDE.md` / `AGENTS.md` / `START_PROMPTS.md` / `TASKS.md` 역할 갱신
+- T04 / T04b 분석·연결 후보 등록
+
+### Not done / risks
+- **PR #2 미머지** → main=`a0f631e` 근처 유지 시 UI·티커·유동성·공식보고서 미배포
+- 로컬 dirty: `argentina/regions.py` (sm_summer 호출 정리) — 의도 확인 후 별도 커밋 여부
+- 인도 forecast JSON 이 이 워크트리 public/data 에 없음
+
+### Next (사람 결정 1개)
+1. PR #2 머지 여부 → Yes 권장 (Claude 또는 Cursor/`gh pr merge 2`)
+2. 머지 후 Cursor: T04 모델 진단 또는 T04b 4개국 UI 연결
+
+---
+
 ## 2026-08-04 — claude
 
 ### Goal / summary

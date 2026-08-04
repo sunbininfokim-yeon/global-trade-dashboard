@@ -67,7 +67,7 @@
 
 | 워크플로 | cron (UTC) | KST 감 | 산출 | 성격 |
 |----------|------------|--------|------|------|
-| `commodity_news_ticker.yml` | `*/30 * * * *` | **30분마다** | `ticker_v1.json` | 속보 RSS |
+| `commodity_news_ticker.yml` | `12 * * * *` | **매시** :12 | `ticker_v1.json` | 속보 RSS (구: 30분마다 → 쿼터 절감) |
 | `official_reports.yml` | `20 */4 * * *` | 4시간마다 (:20) | `official_reports_v1.json` | 기관 피드 |
 | `macro_liquidity_intel.yml` | `15 */6 * * *` | 6시간마다 | `liquidity_intel_v1.json` | QRA·Fed·기자 유동성 |
 | `shipping_capacity_update.yml` | `30 18 * * *` | 매일 03:30 | `shipping_capacity_v1.json` | PortWatch 등 |

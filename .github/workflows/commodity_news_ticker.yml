@@ -2,8 +2,10 @@ name: Commodity News Ticker
 
 on:
   schedule:
-    # every 30 minutes
-    - cron: '*/30 * * * *'
+    # Hourly is enough: RSS items rarely change faster, and 30-min runs burned
+    # MyMemory translation quota + Actions minutes with little user benefit.
+    # See docs/ops/DATA_CADENCE.md.
+    - cron: '12 * * * *'
   workflow_dispatch:
     inputs:
       translate:

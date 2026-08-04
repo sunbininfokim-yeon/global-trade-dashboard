@@ -7,22 +7,25 @@ Cursor가 주기적으로 재배치한다.
 
 | id | task | owner | files / scope | branch | status | note |
 |----|------|-------|---------------|--------|--------|------|
-| T01 | UI 개선 마무리 | claude | `New for anti/app.js` 등 UI | `claude/ui-climate-generic` | **review** | PR #2 올림. `app.js` 로컬 WIP 해소됨 → **타 도구 UI 수정 잠금 해제**. 머지 전 실제 브라우저 육안 확인 1회 요망 |
-| T02 | ops 문서·터미널 스크립트 정착 | cursor | `docs/ops/**`, `tools/ops/**` | `cursor/ops-bootstrap` 권장 | in_progress | 본 문서 세트 |
-| T03 | 데이터 계약 재확인 (Codex 목표 공유) | codex | `DATA_LAYOUT.md`, `HANDOFF_PROMPT.md` 읽기 | — | ready | 코드 수정 전 필독. 좁은 국가 1개만 claim |
-| T04 | (대기) 지역 모델 개선 — Cursor 담당 후보 | cursor | `scripts/yield_model/**` | `cursor/ml-…` | ready | **T01 done 후** 또는 UI와 파일 무겹침 확인 후 |
-| T05 | 논문/사전 자료 검토 | anti | `docs/literature/**` + `~/Documents/기후 모델링` | `anti/lit-…` | ready | 코드 금지. Model_Config 요약만 |
-| T06 | Claude UI 완료 후 코드 리뷰 루틴 | claude | PR diff | — | ready | Cursor PR도 Claude가 리뷰 |
+| T01 | UI 기후 뷰 공용화 | claude | `app.js` 등 | `claude/ui-climate-generic` | **review** | PR #2. **main 머지 전 배포 안 됨** |
+| T02 | ops 문서·터미널 스크립트 | cursor | `docs/ops/**`, `tools/ops/**` | `cursor/optimize-audit` | **review** | 소유권 핸드오프 + AUDIT 포함 |
+| T07 | 전체 점검·최적화 1차 | cursor | app/ticker/assets/cron/audit | `cursor/optimize-audit` | **review** | 4개국 연결, 티커, icrisat ignore, audit 스크립트. 보고서 `docs/ops/AUDIT_2026-08-04.md` |
+| T03 | 데이터 계약 재확인 | codex | `DATA_LAYOUT`, `HANDOFF_PROMPT` | — | ready | 좁은 국가 1개 |
+| T04 | 중국 skill 음수 원인 | cursor | `yield_model/china/**` | `cursor/ml-china-skill` | ready | audit: skill −0.5~−1.6, beats_trend false 전원 |
+| T04b | 인도네시아 climate_gate 표본 | cursor/codex | `indonesia/**` | — | ready | 19/40 시즌. 게이트·베이스라인 정책 재검토 |
+| T04c | 인도 forecast JSON 복구 | cursor | Actions + `public/data/india_*` | — | ready | 파일 missing → `gh workflow run india_yield_forecast` |
+| T05 | 논문/사전 자료 검토 | anti | `docs/literature/**` | `anti/lit-…` | ready | 코드 금지 |
+| T06 | 코드 리뷰 | claude | PR diff | — | ready | 기본 역할=리뷰 (T07 PR 포함) |
+| T08 | liquidity/official UI 연결 | cursor | app.js + worker API | — | ready | 스냅샷 JSON은 이미 있음. 패널 미연결 |
 
-## 백로그 (아직 id 없음)
+## 백로그
 
-- GitHub homepage / 커스텀 도메인 문서화 → `CLOUDFLARE.md`
-- `icrisat_crop_production.json` (6MB) 공개 자산 부담 — Actions/CF 전략 재검토
-- 인도·브라질 등 지역별 지시서(`~/Documents/기후 모델링/클로드_작업지시서`) ↔ 레포 스크립트 정합
+- 아르헨 norte_soja / chaco skill < 0.20
+- 브라질 사탕수수·일부 대두 skill (이미 리치 패널 표기)
+- 커스텀 CF 도메인 → `CLOUDFLARE.md`
 
 ## 갱신 규칙
 
 1. 작업 시작: `status=in_progress`, branch 칸 채움  
 2. 막히면: `blocked` + note에 이유  
 3. 끝: `review` 또는 `done` + `./tools/ops/handoff.sh`  
-4. done 행은 7일 후 “아카이브” 섹션으로 옮겨도 됨

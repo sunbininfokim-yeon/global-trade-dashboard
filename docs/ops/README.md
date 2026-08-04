@@ -25,14 +25,16 @@
 데이터 스키마(예측 JSON 등)는 이 문서가 아니라  
 `New for anti/scripts/yield_model/DATA_LAYOUT.md` 가 정본입니다.
 
-## 도구별 역할 (현재 합의)
+## 도구별 역할 (2026-08-04 이후 합의)
 
 | 도구 | 역할 | 기본 브랜치 접두 |
 |------|------|------------------|
-| **Cursor** | 오케스트레이션, 학습 파이프라인·모델 실험, ops 문서 | `cursor/` |
-| **Claude Code** | 앱/UI/워커 구현·수정, **코드 점검(리뷰)** | `claude/` |
+| **Cursor** | 오케스트레이션, **제품/프론트·워커 기본 소유**, ML·ops 문서 | `cursor/` |
+| **Claude Code** | **코드 리뷰 기본**, `TASKS` claim 시 대형 UI/아키텍처 | `claude/` |
 | **Codex** | `DATA_LAYOUT`·`HANDOFF_PROMPT` 범위의 **좁은** 모델/데이터 작업 | `codex/` |
 | **Antigravity** | 사전 자료·논문 검토 → `docs/literature/` 요약만 | `anti/` |
+
+경로 단위 상세·claim 우선규칙은 [`OWNERS.md`](./OWNERS.md).
 
 ## 절대 규칙
 
