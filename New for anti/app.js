@@ -21,6 +21,10 @@ const climateRightDescEl = document.getElementById('climate-right-desc');
 const climateRightContentEl = document.getElementById('climate-right-content');
 const climateMapLegendEl = document.getElementById('climate-map-legend');
 
+const panelHide = (el) => { if (el) el.classList.add('hidden'); };
+const panelShow = (el) => { if (el) el.classList.remove('hidden'); };
+
+
 const totalVolumeEl = document.getElementById('total-volume');
 const topExporterEl = document.getElementById('top-exporter');
 const currentViewTitle = document.getElementById('current-view-title');
@@ -294,8 +298,8 @@ const updateCountryStatsPanel = async (countryName) => {
         </div>
     `;
     
-    macroPanelEl.classList.add('hidden');
-    countryStatsPanelEl.classList.remove('hidden');
+    panelHide(macroPanelEl);
+    panelShow(countryStatsPanelEl);
 };
 
 const updateNewsPanel = (countryName) => {
@@ -488,8 +492,8 @@ const renderYieldForecast = async (regionName) => {
     countryStatsTitleEl.textContent = region.label_ko;
     document.getElementById('country-stats-desc').textContent = method.refs;
     countryStatsContentEl.innerHTML = html;
-    macroPanelEl.classList.add('hidden');
-    countryStatsPanelEl.classList.remove('hidden');
+    panelHide(macroPanelEl);
+    panelShow(countryStatsPanelEl);
     return true;
 };
 
@@ -973,8 +977,8 @@ const renderBrazilYieldForecast = async (regionName) => {
     document.getElementById('country-stats-desc').textContent =
         '기후 모델링 문서(Regions/브라질) 지역별 수식 구현 · log 추세 + 기상편차';
     countryStatsContentEl.innerHTML = html;
-    macroPanelEl.classList.add('hidden');
-    countryStatsPanelEl.classList.remove('hidden');
+    panelHide(macroPanelEl);
+    panelShow(countryStatsPanelEl);
     return true;
 };
 
@@ -1129,8 +1133,8 @@ const renderIndiaYieldForecast = async (regionName) => {
     document.getElementById('country-stats-desc').textContent =
         '기후 모델링 문서(Regions/인도) 지역별 수식 구현 · log 추세 + 기상편차';
     countryStatsContentEl.innerHTML = html;
-    macroPanelEl.classList.add('hidden');
-    countryStatsPanelEl.classList.remove('hidden');
+    panelHide(macroPanelEl);
+    panelShow(countryStatsPanelEl);
     return true;
 };
 
@@ -1493,6 +1497,7 @@ const renderClimateWorldRight = async () => {
 };
 
 const showClimateWorld = async () => {
+    try {
     climateLevel = 'world';
     climateCountry = null;
     climateHover = null;
@@ -1511,9 +1516,9 @@ const showClimateWorld = async () => {
     await renderClimateWorldLeft();
     await renderClimateWorldRight();
     if (climateRightPanelEl) climateRightPanelEl.classList.remove('hidden');
-    macroPanelEl.classList.add('hidden');
-    countryStatsPanelEl.classList.add('hidden');
-    forecastPanelEl.classList.remove('hidden');
+    panelHide(macroPanelEl);
+    panelHide(countryStatsPanelEl);
+    panelShow(forecastPanelEl);
 
     const g = await loadClimateGlobal();
     const tempSeed = g?.map_temp_anomaly_seed || {};
@@ -1598,6 +1603,9 @@ const showClimateWorld = async () => {
     refreshClimateCityTemps().then(() => {
         if (climateLevel === 'world') renderClimateWorldLeft();
     });
+    } catch (err) {
+        console.error('[Climate] showClimateWorld failed', err);
+    }
 };
 window.showClimateWorld = showClimateWorld;
 
@@ -1663,6 +1671,7 @@ const buildRegionPoints = async (cfg) => {
 };
 
 const showClimateCountry = async (countryName) => {
+    try {
     const cfg = CLIMATE_COUNTRIES[countryName];
     if (!cfg) return;
 
@@ -1747,6 +1756,9 @@ const showClimateCountry = async (countryName) => {
     });
 
     await renderCountryPanel(cfg, points, { lv, pol });
+    } catch (err) {
+        console.error('[Climate] showClimateCountry failed', err);
+    }
 };
 window.showClimateCountry = showClimateCountry;
 
@@ -1861,8 +1873,8 @@ const renderCountryPanel = async (cfg, points = null, meta = {}) => {
             <p style="font-size:10px;color:#64748b;">갱신: ${fc?.generated_at ? new Date(fc.generated_at).toLocaleString() : '—'}</p>`;
     }
     if (climateRightPanelEl) climateRightPanelEl.classList.remove('hidden');
-    macroPanelEl.classList.add('hidden');
-    countryStatsPanelEl.classList.add('hidden');
+    panelHide(macroPanelEl);
+    panelHide(countryStatsPanelEl);
 };
 
 
@@ -1962,8 +1974,8 @@ const renderClimateRegionForecast = async (regionName) => {
     document.getElementById('country-stats-desc').textContent =
         '공용 forecast JSON (DATA_LAYOUT) · 국가 파이프라인 산출';
     countryStatsContentEl.innerHTML = html;
-    macroPanelEl.classList.add('hidden');
-    countryStatsPanelEl.classList.remove('hidden');
+    panelHide(macroPanelEl);
+    panelShow(countryStatsPanelEl);
     return true;
 };
 
@@ -1979,8 +1991,8 @@ const updateForecastPanel = async (regionName) => {
     if (!data) {
         forecastContentEl.innerHTML = `<p class="empty-state">해당 지역의 상세 기상 예측 데이터가 없습니다. 지도에서 활성화된 지역(예: Mato Grosso)을 선택해주세요.</p>`;
         // Clear right panel
-        macroPanelEl.classList.add('hidden');
-        countryStatsPanelEl.classList.add('hidden');
+        panelHide(macroPanelEl);
+        panelHide(countryStatsPanelEl);
         return;
     }
     
@@ -2076,8 +2088,8 @@ const updateForecastPanel = async (regionName) => {
         });
         
         countryStatsContentEl.innerHTML = cropHtml;
-        macroPanelEl.classList.add('hidden');
-        countryStatsPanelEl.classList.remove('hidden');
+        panelHide(macroPanelEl);
+        panelShow(countryStatsPanelEl);
     }
 };
 
@@ -2178,10 +2190,10 @@ const togglePanels = ({ macro = false, countryStats = false, news = false, forec
     const rightPaneContainer = document.getElementById('right-pane');
     const commodityInfoPanel = document.getElementById('commodity-info-panel');
     
-    macro ? macroPanelEl.classList.remove('hidden') : macroPanelEl.classList.add('hidden');
-    countryStats ? countryStatsPanelEl.classList.remove('hidden') : countryStatsPanelEl.classList.add('hidden');
-    news ? newsPanelEl.classList.remove('hidden') : newsPanelEl.classList.add('hidden');
-    forecast ? forecastPanelEl.classList.remove('hidden') : forecastPanelEl.classList.add('hidden');
+    macro ? panelShow(macroPanelEl) : panelHide(macroPanelEl);
+    countryStats ? panelShow(countryStatsPanelEl) : panelHide(countryStatsPanelEl);
+    news ? panelShow(newsPanelEl) : panelHide(newsPanelEl);
+    forecast ? panelShow(forecastPanelEl) : panelHide(forecastPanelEl);
     if (climateRightPanelEl) {
         climateRight ? climateRightPanelEl.classList.remove('hidden') : climateRightPanelEl.classList.add('hidden');
     }
