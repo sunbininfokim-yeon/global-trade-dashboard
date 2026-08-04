@@ -4,6 +4,11 @@ This package audits whether the ideas in
 `기후 모델링/Regions/서아프리카/코트디부아르_가나/코코아` can be supported by
 real data. It does **not** begin by naming a preferred machine-learning model.
 
+The Ghana forecast gate failed on the independent COCOBOD labels. West African
+cocoa is therefore exposed as a descriptive reference only: area, recent
+reported or estimated production, crop calendar, regional source vintage and
+explicit uncertainty. No Ghana or Côte d'Ivoire forecast values are published.
+
 ## Analysis objectives
 
 The original guide combines four distinct questions. They are kept separate here:
@@ -75,6 +80,11 @@ No authentication flow or new credential creation is included.
 - `data/model_feasibility.json` — explicit trainable/proxy/scenario-only decisions.
 - `models/feasibility_screen.json` — all predeclared climate screens versus trend.
 - `models/ghana_forecast_decision.json` — hard go/no-go decision using only COCOBOD labels.
+- `reference/cocoa_country_profiles.json` — static country facts, crop calendars and sources.
+- `COCOA_REFERENCE_KO.md` — Korean display rules for the no-forecast reference panel.
+- `public/data/{ghana,cote_divoire}_yield_forecast.json` — dashboard-contract payloads with
+  `forecast_available: false`; they contain observations and reference facts but no `point`,
+  forecast interval or model skill.
 - `datasets/ghana/` and `datasets/cote_divoire/` — country-separated GitHub snapshots.
 - `datasets/manifest.json` — file sizes and SHA-256 checksums for the published snapshot.
 - `MODEL_REVIEW_KO.md` — Korean model decision, evidence table and next-data priorities.

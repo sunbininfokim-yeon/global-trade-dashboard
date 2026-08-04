@@ -1,0 +1,61 @@
+{
+  "generated_at": "2026-08-04T00:00:00+09:00",
+  "season": "2024/25",
+  "country": "Côte d'Ivoire",
+  "forecast_available": false,
+  "reason_ko": "공개 지역 생산자료가 2022~2023년 두 해뿐이므로 지역 시계열 예측을 학습하지 않습니다.",
+  "regions": {
+    "cote_divoire_cocoa": {
+      "label": "Côte d'Ivoire cocoa reference",
+      "label_ko": "코트디부아르 코코아 참고자료",
+      "note": "국가 단위 정적 참고자료 · 지역 forecast 아님",
+      "forecast_available": false,
+      "reason_ko": "지역 생산량의 공개 시계열이 두 해뿐이고 국가 모델도 시간순 검증 기준을 통과하지 못했습니다.",
+      "crops": {
+        "cocoa": {
+          "label_ko": "코코아",
+          "unit": "tonnes",
+          "last_actual": {
+            "year": 2024,
+            "value": 1890442,
+            "note": "FAOSTAT 달력연도 통계·원자료 생산 플래그 A"
+          },
+          "latest_completed_season_estimate": {
+            "season": "2024/25",
+            "production_tonnes": 1681000,
+            "status": "ICCO estimate/projection"
+          },
+          "area_reference": {
+            "season": "2024/25",
+            "harvested_ha": 4464000,
+            "harvested_km2": 44640,
+            "status": "USDA FAS Post estimate"
+          },
+          "crop_calendar": {
+            "type": "perennial tree crop",
+            "establishment": "March-April field preparation, then transplant at main-rain onset",
+            "main_harvest": "October-March",
+            "mid_crop_harvest": "April-August"
+          },
+          "regional_context": {
+            "year": 2023,
+            "measure": "Conseil du Café-Cacao regional production",
+            "total_tonnes": 1822442,
+            "largest_regions": [
+              {"region": "Guémon", "tonnes": 312474, "share": 0.1715},
+              {"region": "Cavally", "tonnes": 277486, "share": 0.1523},
+              {"region": "Tonkpi", "tonnes": 171003, "share": 0.0938}
+            ]
+          },
+          "sources": [
+            "https://www.icco.org/wp-content/uploads/ICCO-Annual-Report-2024-2025-EN.pdf",
+            "https://apps.fas.usda.gov/newgainapi/api/Report/DownloadReportByFileName?fileName=Cote+d%27Ivoire+-+Cocoa+Sector+Overview+-+2025_Accra_Cote+d%27Ivoire_IV2025-0001.pdf%5BPDF%5D",
+            "https://www.conseilcafecacao.ci/index.php?Itemid=183&id=105&option=com_content&view=article",
+            "https://data.gouv.ci/datasets/repartition-de-la-production-de-cafe-et-cacao-par-region-administrative-en-tonnes",
+            "https://www.fao.org/faostat/en/#data/QCL"
+          ]
+        }
+      }
+    }
+  }
+}

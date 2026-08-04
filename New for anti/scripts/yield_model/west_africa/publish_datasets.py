@@ -16,6 +16,7 @@ HERE = Path(__file__).resolve().parent
 DATA = HERE / "data"
 TRAINING = HERE / "training"
 MODELS = HERE / "models"
+REFERENCE = HERE / "reference"
 OUTPUT = HERE / "datasets"
 COUNTRIES = {
     "ghana": "Ghana",
@@ -79,6 +80,23 @@ def export_country(slug, country):
         written.append(copy(
             DATA / "civ_regional_cocoa.csv",
             OUTPUT / slug / "labels" / "civ_regional_cocoa.csv"))
+
+    profiles = json.loads(
+        (REFERENCE / "cocoa_country_profiles.json").read_text(encoding="utf-8"))
+    profile = {
+        "as_of": profiles["as_of"],
+        "mode": profiles["mode"],
+        "interpretation": profiles["interpretation"],
+        "country": profiles["countries"][slug],
+    }
+    profile_path = OUTPUT / slug / "reference" / "cocoa_profile.json"
+    profile_path.parent.mkdir(parents=True, exist_ok=True)
+    profile_path.write_text(
+        json.dumps(profile, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    written.append(profile_path)
+    written.append(filter_csv(
+        REFERENCE / "cocoa_country_profiles.csv",
+        OUTPUT / slug / "reference" / "cocoa_profile.csv", country))
     return written
 
 
