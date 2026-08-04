@@ -1110,7 +1110,7 @@ const showClimateTooltip = async (info, name, cfg) => {
     tooltipEl.style.top = `${info.y}px`;
     tooltipEl.classList.remove('hidden');
     tooltipEl.innerHTML = `
-        <div class="tooltip-title">${cfg.label} · ${cfg.modelName}</div>
+        <div class="tooltip-title">${cfg.label}${cfg.modelName ? ` · ${cfg.modelName}` : ''}</div>
         ${s ? `
         <div class="tooltip-stat"><span>기상 효과</span>
             <span style="color:${color}; font-weight:bold;">
@@ -1135,7 +1135,8 @@ const renderClimateWorldPanel = () => {
                 ${Object.entries(CLIMATE_COUNTRIES).map(([k, c]) => `
                 <div class="forecast-item" style="display:flex; justify-content:space-between; cursor:pointer;"
                      onclick="showClimateCountry('${k}')">
-                    <span>${c.label}<br><span style="font-size:11px; color:#64748b;">${c.modelName}</span></span>
+                    <span>${c.label}${c.modelName
+                        ? `<br><span style="font-size:11px; color:#64748b;">${c.modelName}</span>` : ''}</span>
                     <span style="color:#94a3b8; font-size:12px; align-self:center;">${c.regions.length}개 산지 →</span>
                 </div>`).join('')}
             </div>
@@ -1165,7 +1166,7 @@ const showClimateCountry = async (countryName) => {
 
     currentViewTitle.textContent = `${cfg.label} 작황 예측`;
     currentViewDesc.textContent = '산지를 클릭하면 상세 · 지도의 국가를 다시 클릭하면 세계 지도로';
-    totalVolumeEl.textContent = cfg.modelName;
+    totalVolumeEl.textContent = cfg.modelName || cfg.label;
     topExporterEl.textContent = `산지 ${cfg.regions.length}개`;
 
     deckgl.setProps({
@@ -1214,7 +1215,8 @@ const showClimateCountry = async (countryName) => {
 window.showClimateCountry = showClimateCountry;
 
 const renderCountryPanel = async (cfg) => {
-    forecastCountryTitle.textContent = `${cfg.label} · ${cfg.modelName}`;
+    forecastCountryTitle.textContent =
+        cfg.modelName ? `${cfg.label} · ${cfg.modelName}` : `${cfg.label} 작황 예측`;
 
     let rows = '';
     if (cfg.summaryKey === 'us') {
@@ -1830,12 +1832,20 @@ navLinks.forEach(link => {
     link.addEventListener('click', (e) => {
         e.preventDefault();
         const target = e.target.getAttribute('data-target');
+        if (target?.startsWith('shipping_')) {
+            window.history.replaceState(null, '', `#/${target}`);
+        } else if (window.location.hash.startsWith('#/shipping_')) {
+            window.history.replaceState(null, '', window.location.pathname + window.location.search);
+        }
         setView(target);
     });
 });
 
 // Home Logo click event
 document.getElementById('home-logo').addEventListener('click', () => {
+    if (window.location.hash) {
+        window.history.replaceState(null, '', window.location.pathname + window.location.search);
+    }
     setView('home');
 });
 
@@ -1875,6 +1885,12 @@ document.getElementById('historical-date').addEventListener('change', (e) => {
 // from inline handlers.
 window.updateForecastPanel = updateForecastPanel;
 
-// Initialize home view
-setView('home');
+// Initialize a shareable shipping deep link when present; otherwise home.
+const initialShippingTarget = window.location.hash.startsWith('#/shipping_')
+    ? window.location.hash.slice(2)
+    : null;
+const initialView = initialShippingTarget && document.querySelector(`[data-target="${initialShippingTarget}"]`)
+    ? initialShippingTarget
+    : 'home';
+setView(initialView);
 updateNewsPanel('Global Market');
