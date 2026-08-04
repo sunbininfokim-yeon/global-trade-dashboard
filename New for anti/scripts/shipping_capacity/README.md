@@ -19,11 +19,15 @@
 ```text
 왕복주기(일) = 2 × 편도거리(NM) ÷ 선속(kn) ÷ 24 + 왕복 항만일
 항로 필요 DWT = 연간 화물톤 × 왕복주기 ÷ (365 × 유효 적재율)
+양방향 정기선 필요 DWT = max(방향별 연간 화물톤 ÷ 방향별 적재율)
+                         × 왕복주기 ÷ 365
 추가 선복량 = 연간 화물톤 ÷ (365 × 적재율)
              × (우회대상비율 × 우회추가일 + 대기대상비율 × 대기일)
 ```
 
 `duration_days / horizon_days`가 단기 사건의 노출도를 제한합니다. 따라서 28일 분석창에서 7일 봉쇄는 같은 강도의 28일 봉쇄보다 노출 항차가 1/4입니다.
+
+컨테이너 정기선은 같은 선박이 두 방향을 왕복하므로 동향·서향 화물량으로 계산한 선복량을 합산하지 않습니다. 두 방향 가운데 `화물톤 ÷ 적재율`이 큰 방향이 서비스 배치 선복량을 결정합니다.
 
 ## 무료 데이터 파이프라인
 
@@ -47,7 +51,7 @@ python3 -m unittest discover -s tests -v
 
 ```bash
 python3 build_snapshot.py --fetch-portwatch \
-  --output "../New for anti/public/data/shipping_capacity_v1.json"
+  --output "../../public/data/shipping_capacity_v1.json"
 ```
 
 생성 JSON의 주요 경로:
@@ -56,11 +60,13 @@ python3 build_snapshot.py --fetch-portwatch \
 - `routes[].baseline`: 항로별 필요 DWT와 P10/P50/P90.
 - `routes[].stress_tests[]`: 해당 항로가 노출된 시나리오만 수록.
 - `routes[].live_observed[]`: PortWatch를 조회했을 때만 생성. 최근 7일 capacity가 직전 28일보다 낮은 정도를 **봉쇄 프록시**로 넣은 것이며 실제 물리적 봉쇄율이라는 뜻은 아닙니다.
+- `routes[].directions[]`: 컨테이너 정기선의 양방향 화물 입력. `null` 화물량은 공공데이터 연결 대기이며 용량 계산에서 제외합니다.
+- `route_catalog[]`: 대형선 중심 19개 세부 항로 정의. `capacity_model_active`만 용량 계산에 포함하며 `awaiting_public_cargo`는 임의 화물량을 만들지 않습니다.
 - `scenario_summary[]`: 봉쇄별 전체 영향 합계.
 
 ## 대시보드 계약
 
-프런트엔드는 `/data/shipping_capacity_v1.json` 하나만 읽으면 됩니다. 페이지를 만들 때는 반드시 다음 문구를 구분해 표시합니다.
+프런트엔드는 `/public/data/shipping_capacity_v1.json` 하나만 읽으면 됩니다. 페이지를 만들 때는 반드시 다음 문구를 구분해 표시합니다.
 
 - `세계 선대`: 관측 DWT.
 - `항로 필요 선복량`: 모델 추정 DWT-equivalent.
@@ -68,9 +74,14 @@ python3 build_snapshot.py --fetch-portwatch \
 
 TEU와 DWT는 직접 합산하지 않습니다. v1의 공통 비교 단위는 DWT-equivalent이며, 컨테이너 페이지에 TEU가 필요하면 별도의 TEU 선대 관측 시계열을 추가해야 합니다.
 
+## 현재 화면 연결 상태
+
+- 해운 메뉴의 `글로벌 선대`, `항로별 선복량`, `초크포인트`, `봉쇄 시뮬레이터`가 이 JSON을 공통으로 읽습니다.
+- URL 해시는 각각 `#/shipping_fleet`, `#/shipping_routes`, `#/shipping_chokepoints`, `#/shipping_scenarios`입니다.
+- 봉쇄 시뮬레이터는 프리셋과 봉쇄율·지속기간·대기일 입력을 브라우저에서 즉시 재계산합니다.
+- GitHub Action은 매일 IMF PortWatch 스냅샷을 갱신하도록 준비되어 있습니다.
+
 ## 다음 단계
 
 1. 기존 UN Comtrade API 응답을 항로 입력으로 변환하는 어댑터를 붙인다.
-2. GitHub Action에서 PortWatch를 매일 갱신하고 생성 JSON만 커밋한다.
-3. 화면에서 봉쇄율·지속기간·우회/대기/취소 비율을 조절하는 시뮬레이터를 만든다.
-4. 실제 사건 이후 PortWatch 통항 capacity로 예측 오차를 저장해 Model 1의 가정을 보정한다.
+2. 실제 사건 이후 PortWatch 통항 capacity로 예측 오차를 저장해 모델 가정을 보정한다.
