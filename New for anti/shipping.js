@@ -292,17 +292,33 @@
                 ${routeStatusBadge(selected)}
             </section>
             <section class="shipping-kpi-grid">
-                <article class="shipping-kpi featured"><span class="shipping-kpi-label">필요 선복량</span><strong>${formatDwt(selected.baseline.baseline_required_dwt)}</strong><small>DWT-equivalent 추정</small></article>
-                <article class="shipping-kpi"><span class="shipping-kpi-label">불확실성 P10–P90</span><strong>${formatDwt(interval.p10)} – ${formatDwt(interval.p90)}</strong><small>입력 범위 기반</small></article>
-                <article class="shipping-kpi"><span class="shipping-kpi-label">해당 선종 선대 비중</span><strong>${formatPct(selected.baseline.route_share_of_type_fleet_pct, 2)}</strong><small>${SHIP_TYPE_LABELS[selected.ship_type]}</small></article>
-                <article class="shipping-kpi"><span class="shipping-kpi-label">왕복 운항주기</span><strong>${formatNumber(selected.baseline.baseline_cycle_days, 1)}일</strong><small>${escapeHtml(selected.origin)} → ${escapeHtml(selected.destination)}</small></article>
+                <article class="shipping-kpi featured is-clickable" data-shipping-kpi="required" role="button" tabindex="0" title="모델 입력 패널로 이동">
+                    <span class="shipping-kpi-label">필요 선복량</span>
+                    <strong>${formatDwt(selected.baseline.baseline_required_dwt)}</strong>
+                    <small>DWT-equivalent 추정 · 클릭 시 상세</small>
+                </article>
+                <article class="shipping-kpi is-clickable" data-shipping-kpi="range" role="button" tabindex="0" title="불확실성 구간 설명">
+                    <span class="shipping-kpi-label">불확실성 P10–P90</span>
+                    <strong>${formatDwt(interval.p10)} – ${formatDwt(interval.p90)}</strong>
+                    <small>입력 범위 기반 · 클릭 시 산식</small>
+                </article>
+                <article class="shipping-kpi is-clickable" data-shipping-kpi="fleet-share" role="button" tabindex="0" title="전 항로 비교표">
+                    <span class="shipping-kpi-label">해당 선종 선대 비중</span>
+                    <strong>${formatPct(selected.baseline.route_share_of_type_fleet_pct, 2)}</strong>
+                    <small>${SHIP_TYPE_LABELS[selected.ship_type]} · 클릭 시 비교</small>
+                </article>
+                <article class="shipping-kpi is-clickable" data-shipping-kpi="cycle" role="button" tabindex="0" title="왕복 주기 입력 확인">
+                    <span class="shipping-kpi-label">왕복 운항주기</span>
+                    <strong>${formatNumber(selected.baseline.baseline_cycle_days, 1)}일</strong>
+                    <small>${escapeHtml(selected.origin)} → ${escapeHtml(selected.destination)}</small>
+                </article>
             </section>
-            <section class="shipping-grid two-columns wide-first">
-                <article class="shipping-panel shipping-chart-panel">
+            <section class="shipping-grid two-columns wide-first" id="shipping-section-model">
+                <article class="shipping-panel shipping-chart-panel" id="shipping-section-chart">
                     <div class="shipping-panel-heading"><div><p class="shipping-panel-kicker">ROUTE COMPARISON</p><h2>대표 항로 필요 선복량</h2></div><span>백만 DWT</span></div>
                     <div class="shipping-chart-wrap tall"><canvas id="shipping-routes-chart"></canvas></div>
                 </article>
-                <article class="shipping-panel">
+                <article class="shipping-panel" id="shipping-section-inputs">
                     <div class="shipping-panel-heading"><div><p class="shipping-panel-kicker">MODEL INPUTS</p><h2>${escapeHtml(selected.name_ko)}</h2></div></div>
                     <div class="shipping-definition-list">
                         <div><span>기준 선형</span><strong>${escapeHtml(selected.vessel_class_ko || '미분류')}</strong></div>
@@ -313,6 +329,8 @@
                         <div><span>평균 선속</span><strong>${formatNumber(selected.model_inputs?.speed_knots, 1)} knots</strong></div>
                         <div><span>유효 적재율</span><strong>${formatPct((selected.model_inputs?.utilization || 0) * 100)}</strong></div>
                         <div><span>예비 선복량</span><strong>${formatPct((selected.model_inputs?.reserve_margin || 0) * 100)}</strong></div>
+                        <div id="shipping-kpi-cycle-row"><span>왕복 운항주기</span><strong>${formatNumber(selected.baseline.baseline_cycle_days, 1)}일</strong></div>
+                        <div id="shipping-kpi-range-row"><span>필요 선복 P10–P90</span><strong>${formatDwt(interval.p10)} – ${formatDwt(interval.p90)}</strong></div>
                     </div>
                     ${directionMarkup}
                     <p class="shipping-formula">${selectedDirections.length
@@ -320,13 +338,13 @@
                         : '필요 DWT = 연간 화물톤 × 왕복주기 ÷ (365 × 적재율)'}</p>
                 </article>
             </section>
-            <section class="shipping-panel">
+            <section class="shipping-panel" id="shipping-section-table">
                 <div class="shipping-panel-heading"><div><p class="shipping-panel-kicker">ALL ROUTES</p><h2>항로별 비교표</h2></div></div>
                 <div class="shipping-table-wrap">
                     <table class="shipping-table">
                         <thead><tr><th>항로</th><th>선종·선형</th><th>필요 선복량</th><th>선종 선대 비중</th><th>왕복주기</th><th>상태</th></tr></thead>
                         <tbody>${routes.map(route => `
-                            <tr class="${route.id === selected.id ? 'selected-row' : ''}">
+                            <tr class="${route.id === selected.id ? 'selected-row' : ''}" data-route-id="${escapeHtml(route.id)}" role="button" tabindex="0">
                                 <td>${escapeHtml(route.name_ko)}</td>
                                 <td>${SHIP_TYPE_LABELS[route.ship_type] || route.ship_type}<br><small>${escapeHtml(route.vessel_class_ko || '미분류')}</small></td>
                                 <td>${formatDwt(route.baseline.baseline_required_dwt)}</td>
@@ -364,6 +382,62 @@
             destroyCharts();
             renderRoutes(data, root, event.target.value);
         });
+
+        const scrollToSection = (id, highlightRowId) => {
+            const el = root.querySelector(id);
+            if (!el) return;
+            el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            el.classList.add('is-active');
+            setTimeout(() => el.classList.remove('is-active'), 1200);
+            if (highlightRowId) {
+                const row = root.querySelector(`[data-route-id="${highlightRowId}"]`);
+                row?.classList.add('selected-row');
+            }
+        };
+        const onKpi = (kpi) => {
+            root.querySelectorAll('.shipping-kpi.is-active').forEach(n => n.classList.remove('is-active'));
+            root.querySelector(`[data-shipping-kpi="${kpi}"]`)?.classList.add('is-active');
+            if (kpi === 'required' || kpi === 'cycle' || kpi === 'range') {
+                scrollToSection('#shipping-section-inputs');
+                const flashId = kpi === 'cycle' ? '#shipping-kpi-cycle-row'
+                    : kpi === 'range' ? '#shipping-kpi-range-row' : null;
+                if (flashId) {
+                    const row = root.querySelector(flashId);
+                    if (row) {
+                        row.style.background = 'rgba(56,189,248,0.12)';
+                        setTimeout(() => { row.style.background = ''; }, 1400);
+                    }
+                }
+            } else if (kpi === 'fleet-share') {
+                scrollToSection('#shipping-section-table');
+                scrollToSection('#shipping-section-chart');
+            }
+        };
+        root.querySelectorAll('[data-shipping-kpi]').forEach(card => {
+            const run = () => onKpi(card.dataset.shippingKpi);
+            card.addEventListener('click', run);
+            card.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    run();
+                }
+            });
+        });
+        root.querySelectorAll('tr[data-route-id]').forEach(row => {
+            row.style.cursor = 'pointer';
+            const pick = () => {
+                destroyCharts();
+                renderRoutes(data, root, row.dataset.routeId);
+            };
+            row.addEventListener('click', pick);
+            row.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    pick();
+                }
+            });
+        });
+
         createChart(root, 'shipping-routes-chart', {
             type: 'bar',
             data: {

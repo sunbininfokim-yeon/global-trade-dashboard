@@ -1,0 +1,244 @@
+{
+  "schema_version": "usda-gain-outlook-v1",
+  "generated_at": "2026-08-04",
+  "note_ko": "USDA FAS GAIN 연례 계열(Grain and Feed, Oilseeds, Sugar 등) 요약을 정적 seed로 둔 것입니다. 브라우저에서 USDA를 크롤링하지 않습니다. 최신 리포트는 FAS Data Search 포털에서 국가·계열 키워드로 확인하세요.",
+  "portal": {
+    "label": "USDA FAS Data Search",
+    "url": "https://www.fas.usda.gov/data/search",
+    "note_ko": "국가명 + GAIN 계열명으로 검색 (예: Australia Grain and Feed, Brazil Oilseeds)."
+  },
+  "gain_families": {
+    "grain_feed": {
+      "id": "grain_feed",
+      "label_en": "Grain and Feed",
+      "label_ko": "곡물·사료 (Grain and Feed)",
+      "search_query": "Grain and Feed"
+    },
+    "oilseeds": {
+      "id": "oilseeds",
+      "label_en": "Oilseeds and Products",
+      "label_ko": "유지종자·제품 (Oilseeds)",
+      "search_query": "Oilseeds"
+    },
+    "sugar": {
+      "id": "sugar",
+      "label_en": "Sugar",
+      "label_ko": "설탕 (Sugar Annual)",
+      "search_query": "Sugar Annual"
+    },
+    "cotton": {
+      "id": "cotton",
+      "label_en": "Cotton and Products",
+      "label_ko": "면화 (Cotton)",
+      "search_query": "Cotton"
+    },
+    "coffee": {
+      "id": "coffee",
+      "label_en": "Coffee",
+      "label_ko": "커피 (Coffee)",
+      "search_query": "Coffee Annual"
+    }
+  },
+  "countries": {
+    "Australia": {
+      "season": "2025/26",
+      "search_country": "Australia",
+      "gain_families": ["grain_feed"],
+      "source_label": "GAIN Grain and Feed 계열 seed",
+      "items": [
+        {
+          "crop_ko": "밀",
+          "family": "grain_feed",
+          "production_mmt": 34.1,
+          "prior_mmt": 31.9,
+          "yoy_pct": 6.9,
+          "note_ko": "서·남호주 주산지 작황 방향(seed 요약)."
+        },
+        {
+          "crop_ko": "보리",
+          "family": "grain_feed",
+          "production_mmt": 12.8,
+          "prior_mmt": 11.5,
+          "yoy_pct": 11.3,
+          "note_ko": "밀·보리 동시 작기 참고치(seed)."
+        }
+      ]
+    },
+    "United States": {
+      "season": "2025/26",
+      "search_country": "United States",
+      "gain_families": ["grain_feed", "oilseeds", "cotton"],
+      "source_label": "GAIN + WASDE 방향 seed",
+      "items": [
+        {
+          "crop_ko": "옥수수",
+          "family": "grain_feed",
+          "production_mmt": 377.0,
+          "prior_mmt": 366.0,
+          "yoy_pct": 3.0,
+          "note_ko": "콘벨트 면적·단수 합산 방향(seed)."
+        },
+        {
+          "crop_ko": "대두",
+          "family": "oilseeds",
+          "production_mmt": 118.0,
+          "prior_mmt": 113.0,
+          "yoy_pct": 4.4,
+          "note_ko": "Oilseeds 계열·NASS 방향을 단순화(seed)."
+        },
+        {
+          "crop_ko": "밀",
+          "family": "grain_feed",
+          "production_mmt": 54.0,
+          "prior_mmt": 49.7,
+          "yoy_pct": 8.7,
+          "note_ko": "겨울밀·봄밀 합산 대략치(seed)."
+        }
+      ]
+    },
+    "Brazil": {
+      "season": "2025/26",
+      "search_country": "Brazil",
+      "gain_families": ["grain_feed", "oilseeds", "cotton", "coffee", "sugar"],
+      "source_label": "GAIN Grain/Oilseeds 계열 seed",
+      "items": [
+        {
+          "crop_ko": "대두",
+          "family": "oilseeds",
+          "production_mmt": 169.0,
+          "prior_mmt": 154.0,
+          "yoy_pct": 9.7,
+          "note_ko": "마투그로수·MATOPIBA 대두 방향(seed)."
+        },
+        {
+          "crop_ko": "옥수수",
+          "family": "grain_feed",
+          "production_mmt": 128.0,
+          "prior_mmt": 122.0,
+          "yoy_pct": 4.9,
+          "note_ko": "사프링냐 포함 합산 요약(seed)."
+        }
+      ]
+    },
+    "Argentina": {
+      "season": "2025/26",
+      "search_country": "Argentina",
+      "gain_families": ["grain_feed", "oilseeds"],
+      "source_label": "GAIN Grain and Feed · Oilseeds seed",
+      "items": [
+        {
+          "crop_ko": "대두",
+          "family": "oilseeds",
+          "production_mmt": 52.0,
+          "prior_mmt": 48.0,
+          "yoy_pct": 8.3,
+          "note_ko": "팜파스·북부 벨트 합산 전망(seed)."
+        },
+        {
+          "crop_ko": "옥수수",
+          "family": "grain_feed",
+          "production_mmt": 50.0,
+          "prior_mmt": 46.0,
+          "yoy_pct": 8.7,
+          "note_ko": "수출 통제와 별개 생산량 방향(seed)."
+        },
+        {
+          "crop_ko": "밀",
+          "family": "grain_feed",
+          "production_mmt": 18.5,
+          "prior_mmt": 15.1,
+          "yoy_pct": 22.5,
+          "note_ko": "남부 팜파스 밀 작기(seed)."
+        }
+      ]
+    },
+    "China": {
+      "season": "2025/26",
+      "search_country": "China",
+      "gain_families": ["grain_feed", "oilseeds"],
+      "source_label": "GAIN Grain and Feed 계열 seed",
+      "items": [
+        {
+          "crop_ko": "밀",
+          "family": "grain_feed",
+          "production_mmt": 140.0,
+          "prior_mmt": 136.6,
+          "yoy_pct": 2.5,
+          "note_ko": "황화이하이 겨울밀 중심 국가 합산(seed)."
+        },
+        {
+          "crop_ko": "벼",
+          "family": "grain_feed",
+          "production_mmt": 208.0,
+          "prior_mmt": 206.0,
+          "yoy_pct": 1.0,
+          "note_ko": "장강 유역 포함 국가 합산(seed)."
+        }
+      ]
+    },
+    "India": {
+      "season": "2025/26",
+      "search_country": "India",
+      "gain_families": ["grain_feed", "oilseeds", "cotton"],
+      "source_label": "GAIN Grain and Feed · Oilseeds seed",
+      "items": [
+        {
+          "crop_ko": "밀",
+          "family": "grain_feed",
+          "production_mmt": 113.0,
+          "prior_mmt": 110.0,
+          "yoy_pct": 2.7,
+          "note_ko": "북서부 관개 밀 벨트 방향(seed)."
+        },
+        {
+          "crop_ko": "대두",
+          "family": "oilseeds",
+          "production_mmt": 12.0,
+          "prior_mmt": 11.5,
+          "yoy_pct": 4.3,
+          "note_ko": "중부 벨트 Oilseeds 참고(seed)."
+        }
+      ]
+    },
+    "Indonesia": {
+      "season": "2025/26",
+      "search_country": "Indonesia",
+      "gain_families": ["oilseeds", "grain_feed"],
+      "source_label": "GAIN Oilseeds (palm) · Grain seed",
+      "items": [
+        {
+          "crop_ko": "팜유(CPO)",
+          "family": "oilseeds",
+          "production_mmt": 47.0,
+          "prior_mmt": 45.5,
+          "yoy_pct": 3.3,
+          "note_ko": "Oilseeds/palm 계열 방향(seed)."
+        },
+        {
+          "crop_ko": "쌀",
+          "family": "grain_feed",
+          "production_mmt": 34.0,
+          "prior_mmt": 33.5,
+          "yoy_pct": 1.5,
+          "note_ko": "전국 쌀 수급 요약(seed)."
+        }
+      ]
+    },
+    "Thailand": {
+      "season": "2025/26",
+      "search_country": "Thailand",
+      "gain_families": ["sugar", "grain_feed"],
+      "source_label": "GAIN Sugar Annual · Grain 계열 seed",
+      "items": [
+        {
+          "crop_ko": "설탕(원당 환산)",
+          "family": "sugar",
+          "production_mmt": 10.3,
+          "prior_mmt": 8.8,
+          "yoy_pct": 17.0,
+          "note_ko": "Sugar Annual 계열 구조 참고 예시(seed). 대시보드 지도 국가 드릴에는 미연결."
+        }
+      ]
+    }
+  }
+}

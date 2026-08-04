@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-04T09:57:38.888558+00:00",
+  "generated_at": "2026-08-04T13:43:30.344837+00:00",
   "season": 2026,
   "country": "Argentina",
   "source_note": "Yields: MAGyP Estimaciones Agrícolas, department level, aggregated as sum(production)/sum(harvested area). Weather: NASA POWER daily, production-weighted across each region's growing points, ET0 by FAO-56 Penman-Monteith. ENSO: NOAA CPC ONI. IOD: NOAA PSL HadISST DMI.",
@@ -7,6 +7,7 @@
   "regions": {
     "pampas_soja": {
       "label": "Pampas soybeans (BA + Córdoba + Santa Fe)",
+      "label_ko": "팜파스 대두",
       "crop": "soja",
       "provinces": [
         "Buenos Aires",
@@ -57,6 +58,7 @@
     },
     "pampas_maiz": {
       "label": "Pampas corn (BA + Córdoba + Santa Fe)",
+      "label_ko": "팜파스 옥수수",
       "crop": "maiz",
       "provinces": [
         "Buenos Aires",
@@ -107,6 +109,7 @@
     },
     "norte_soja": {
       "label": "NOA/NEA soybeans (Santiago del Estero, Chaco, Salta, Tucumán)",
+      "label_ko": "북부 NOA/NEA 대두",
       "crop": "soja",
       "provinces": [
         "Santiago del Estero",
@@ -158,6 +161,7 @@
     },
     "chaco_algodon": {
       "label": "Chaco cotton (Chaco, Santiago del Estero, Formosa, Santa Fe)",
+      "label_ko": "차코 면화",
       "crop": "algodon",
       "provinces": [
         "Chaco",
@@ -205,6 +209,51 @@
         "critical_window_observed": 1.0,
         "season_complete": true,
         "notes": []
+      }
+    },
+    "pampas_trigo": {
+      "label": "Pampas wheat (BA + Córdoba + Santa Fe + La Pampa)",
+      "label_ko": "팜파스 밀",
+      "crop": "trigo",
+      "provinces": [
+        "Buenos Aires",
+        "Córdoba",
+        "Santa Fe",
+        "La Pampa"
+      ],
+      "forecast_available": false,
+      "reason_ko": "밀은 10월 중순 개화기가 지나야 예측합니다. 수확량을 결정하는 서리·등숙 구간이 아직 오지 않아 이번 갱신에서는 기후 평년값으로 채워 넣지 않고 예측을 보류합니다. 11월부터 값이 나옵니다.",
+      "reason": "features unavailable: fii, fii_proxy, frost_days_spring, cold_days_spring, water_deficit_fill, water_deficit_season, smi_anthesis, precip_anthesis, heat_days_fill, harvest_rain_penalty, spring_heat_days, oni_lag, iod_spring",
+      "unit": "kg/ha",
+      "last_actual": {
+        "year": 2024,
+        "yield": 3112.690744325339
+      },
+      "provenance": {
+        "guide": "Regions/아르헨티나/팜파스/밀/밀_상세분석_및_수식.md",
+        "caveat": "The guide's FII cannot be computed as written from this weather feed: over the fixed 10-25 October anthesis window, POWER's gridded 2 m minimum falls below 0 C on 4 days in 42 years across five stations, because damaging spring frost in the Pampas is a radiative canopy-level event below the resolution of a reanalysis 2 m field. `fii` is kept at the guide's 0 C and is near-constant; `fii_proxy` raises the threshold to 3 C over a wider window as a frost-risk proxy. This variable needs station minima (INTA SIGA, SMN) to be modelled properly. Anthesis is also fixed at 15 October rather than tracked, and DSSAT CERES-Wheat is not runnable, so the guide's two-stage delta model collapses to one regression.",
+        "non_weather_drivers": ""
+      }
+    },
+    "tucuman_cana": {
+      "label": "Tucumán sugarcane",
+      "label_ko": "투쿠만 사탕수수",
+      "crop": "cana",
+      "provinces": [
+        "Tucumán"
+      ],
+      "forecast_available": false,
+      "reason_ko": "MAGyP 작황 통계가 2004/05 캠페인에서 끊기고 1998~2002년이 결측이라, 위성 기상 기록(1981~)과 겹치는 검증 가능 시즌이 부족합니다. FAOSTAT 전국 시리즈를 대체재로 검토했으나 최근 10년이 단조 감소하는 면적 보고 아티팩트로 판정해 기각했습니다. EEAOC 투쿠만 시리즈를 연결하면 복구됩니다.",
+      "reason": "no trained model",
+      "unit": "kg/ha",
+      "last_actual": {
+        "year": 2005,
+        "yield": 62137.53106876554
+      },
+      "provenance": {
+        "guide": "Regions/아르헨티나/북부지역_NOA_NEA/사탕수수/사탕수수_상세분석_및_수식.md",
+        "caveat": "MAGyP's estimaciones series stops at campaign 2004/05 for sugarcane and has a 1998-2002 hole, leaving too few post-1981 seasons to validate against. FAOSTAT's national series was checked as a substitute and rejected: its 2015-2024 stretch is a monotonic 46->28 t/ha decline with no year-to-year structure, and it correlates only 0.46 with the MAGyP Tucumán figures on their overlap. DSSAT-CANEGRO is not runnable either, so Y_sim is absent and the trend carries the baseline. Point EEAOC's series at magyp.region_yield to revive this config.",
+        "non_weather_drivers": "Cane is a ratoon crop cut for five to seven years before replanting, so much of a season's yield is the age profile of the standing crop -- set by replanting investment and mill economics, not weather."
       }
     }
   },

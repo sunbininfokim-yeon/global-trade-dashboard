@@ -14,7 +14,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
     <!-- Custom Styles -->
-    <link rel="stylesheet" href="style.css?v=10">
+    <link rel="stylesheet" href="style.css?v=11">
 </head>
 <body>
     <div id="app">
@@ -57,8 +57,8 @@
                         <a href="#" data-target="climate" style="color: #4ade80; border-top: 1px solid rgba(255,255,255,0.1); margin-top: 4px;">기후 (AI 예측)</a>
                     </div>
                 </div>
-                <div class="menu-item">
-                    <span>해운</span>
+                <div class="menu-item" data-nav-default="shipping_routes">
+                    <span class="menu-parent" role="button" tabindex="0" aria-label="해운 화면 열기">해운</span>
                     <div class="dropdown">
                         <a href="#" data-target="shipping_fleet">글로벌 선대</a>
                         <a href="#" data-target="shipping_routes">항로별 선복량</a>
@@ -117,13 +117,13 @@
                         <p id="current-view-desc">전 세계 석탄 수출입 무역 흐름</p>
                     </div>
                     
-                    <div class="stats-container">
+                    <div class="stats-container" id="commodity-stats">
                         <div class="stat-box">
-                            <span class="stat-label">글로벌 무역량</span>
+                            <span class="stat-label" id="stat-label-volume">글로벌 무역량</span>
                             <span class="stat-value" id="total-volume">1,245 Mt</span>
                         </div>
                         <div class="stat-box">
-                            <span class="stat-label">최대 수출국</span>
+                            <span class="stat-label" id="stat-label-exporter">최대 수출국</span>
                             <span class="stat-value" id="top-exporter">호주</span>
                         </div>
                     </div>
@@ -293,7 +293,7 @@
 
     <!-- Data and App Logic -->
     <script src="data.js?v=2"></script>
-    <script src="shipping.js?v=4"></script>
-    <script src="app.js?v=10"></script>
+    <script src="shipping.js?v=5"></script>
+    <script src="app.js?v=11"></script>
 </body>
 </html>

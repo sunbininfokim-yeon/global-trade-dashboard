@@ -730,6 +730,17 @@ const handleClimateDomAction = (e) => {
         showClimateWorld();
         return;
     }
+    const national = t.closest('[data-climate-national]');
+    if (national) {
+        e.preventDefault();
+        e.stopPropagation();
+        if (climateCountry && CLIMATE_COUNTRIES[climateCountry]) {
+            climateSelectedRegion = null;
+            renderCountryPanel(CLIMATE_COUNTRIES[climateCountry]).catch(err =>
+                console.error('[Climate] re-render national', err));
+        }
+        return;
+    }
     const country = t.closest('[data-climate-country]');
     if (country) {
         e.preventDefault();
@@ -751,7 +762,7 @@ const handleClimateDomKey = (e) => {
     if (e.key !== 'Enter' && e.key !== ' ') return;
     const t = e.target instanceof Element ? e.target : null;
     if (!t) return;
-    if (!t.closest('[data-climate-country],[data-climate-region],[data-climate-back]')) return;
+    if (!t.closest('[data-climate-country],[data-climate-region],[data-climate-back],[data-climate-national]')) return;
     e.preventDefault();
     handleClimateDomAction(e);
 };
@@ -908,6 +919,329 @@ const tradePolicyLabelKo = (level) => ({
 // Which level the climate view is currently showing.
 let climateLevel = 'world';
 let climateCountry = null;
+/** @type {string|null} region pin / list selection inside country view */
+let climateSelectedRegion = null;
+
+// Canonical crop identity for merging same crop across region slots (e.g. WA+SA+Vic wheat → 밀).
+const CROP_CANON = {
+    wheat: 'wheat', trigo: 'wheat', spring_wheat: 'wheat', winter_wheat: 'wheat',
+    corn: 'corn', maize: 'corn', milho: 'corn', maiz: 'corn',
+    soy: 'soy', soybean: 'soy', soybeans: 'soy', soja: 'soy',
+    rice: 'rice',
+    // algodao is Portuguese (MATOPIBA), algodon Spanish (Chaco). Without the
+    // second spelling Argentine cotton falls through to "기타 작물".
+    cotton: 'cotton', algodao: 'cotton', algodon: 'cotton',
+    sugar: 'sugar', cane: 'sugar', cana: 'sugar', sugarcane: 'sugar',
+    coffee: 'coffee', cafe: 'coffee',
+    palm: 'palm', oil_palm: 'palm', palm_oil: 'palm',
+    rubber: 'rubber',
+    vegetables: 'vegetables',
+    orange: 'orange', laranja: 'orange',
+};
+const CROP_LABEL_KO = {
+    wheat: '밀', corn: '옥수수', soy: '대두', rice: '벼', cotton: '면화',
+    sugar: '사탕수수', coffee: '커피', palm: '팜', rubber: '천연고무',
+    vegetables: '채소', orange: '오렌지', other: '기타 작물',
+};
+
+// Crop calendar seed (month 1–12). No live phenology feed — heuristic stage only.
+// Source discipline: agronomic calendar approximations per country × crop type.
+const CROP_CALENDAR_SEED = {
+    Australia: {
+        wheat: { sow: [4, 5, 6], harvest: [10, 11, 12] },
+    },
+    'United States': {
+        corn: { sow: [4, 5], harvest: [9, 10, 11] },
+        soy: { sow: [5, 6], harvest: [9, 10] },
+        wheat: { sow: [9, 10], harvest: [6, 7] },
+        cotton: { sow: [4, 5], harvest: [9, 10, 11] },
+    },
+    Brazil: {
+        soy: { sow: [10, 11, 12], harvest: [2, 3, 4] },
+        corn: { sow: [1, 2, 9, 10], harvest: [5, 6, 7, 12] },
+        wheat: { sow: [5, 6], harvest: [10, 11] },
+        cotton: { sow: [11, 12], harvest: [6, 7, 8] },
+        sugar: { sow: [2, 3, 4], harvest: [4, 5, 6, 7, 8, 9, 10, 11] },
+        coffee: { sow: [10, 11], harvest: [5, 6, 7, 8] },
+        orange: { sow: [8, 9], harvest: [6, 7, 8, 9] },
+    },
+    Argentina: {
+        soy: { sow: [11, 12], harvest: [3, 4, 5] },
+        corn: { sow: [9, 10, 11, 12], harvest: [3, 4, 5, 6] },
+        wheat: { sow: [5, 6, 7], harvest: [11, 12, 1] },
+        cotton: { sow: [10, 11], harvest: [3, 4, 5] },
+        sugar: { sow: [3, 4], harvest: [5, 6, 7, 8, 9, 10] },
+    },
+    China: {
+        wheat: { sow: [10, 11], harvest: [5, 6] },
+        rice: { sow: [4, 5, 6], harvest: [9, 10] },
+        vegetables: { sow: [3, 4, 5], harvest: [6, 7, 8, 9] },
+    },
+    India: {
+        wheat: { sow: [11, 12], harvest: [3, 4] },
+        soy: { sow: [6, 7], harvest: [10, 11] },
+        cotton: { sow: [5, 6, 7], harvest: [10, 11, 12] },
+    },
+    Indonesia: {
+        rice: { sow: [11, 12, 1], harvest: [3, 4, 5] },
+        palm: { sow: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], harvest: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12] },
+        coffee: { sow: [10, 11], harvest: [5, 6, 7, 8] },
+        rubber: { sow: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], harvest: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12] },
+    },
+};
+
+const cropIdentityFromText = (text) => {
+    const s = String(text || '').toLowerCase().replace(/[^a-z_]/g, ' ');
+    for (const token of s.split(/[\s_]+/)) {
+        if (CROP_CANON[token]) return CROP_CANON[token];
+    }
+    for (const [raw, canon] of Object.entries(CROP_CANON)) {
+        if (s.includes(raw)) return canon;
+    }
+    return 'other';
+};
+
+const cropIdentity = (c) => cropIdentityFromText(`${c.regionKey || ''} ${c.label || ''}`);
+
+const mergeCropsByType = (crops) => {
+    const map = new Map();
+    for (const c of crops) {
+        const id = cropIdentity(c);
+        if (!map.has(id)) {
+            map.set(id, {
+                id,
+                label: CROP_LABEL_KO[id] || c.label || id,
+                unit: c.unit,
+                points: [],
+                pcts: [],
+                lasts: [],
+                regions: new Set(),
+                lowN: 0,
+                total: 0,
+                noForecast: 0,
+            });
+        }
+        const g = map.get(id);
+        g.total += 1;
+        if (c.regionKey) g.regions.add(c.regionKey);
+        else if (c.group) g.regions.add(c.group);
+        if (c.unit && !g.unit) g.unit = c.unit;
+        if (c.forecastAvailable === false || c.point == null) g.noForecast += 1;
+        if (c.point != null) g.points.push(c.point);
+        if (c.pct != null) g.pcts.push(c.pct);
+        if (c.lastActual != null) g.lasts.push(c.lastActual);
+        if (c.lowConfidence) g.lowN += 1;
+    }
+    return [...map.values()].map((g) => {
+        const avg = (arr) => (arr.length
+            ? arr.reduce((a, b) => a + b, 0) / arr.length
+            : null);
+        return {
+            id: g.id,
+            label: g.label,
+            unit: g.unit || 'kg/ha',
+            meanPoint: avg(g.points),
+            meanPct: avg(g.pcts),
+            meanLast: avg(g.lasts),
+            regionCount: Math.max(g.regions.size, g.total),
+            lowShare: g.total ? g.lowN / g.total : 0,
+            noForecast: g.noForecast,
+            total: g.total,
+        };
+    }).sort((a, b) => a.label.localeCompare(b.label, 'ko'));
+};
+
+const monthInSpan = (months, m) => (months || []).includes(m);
+
+// Spans may wrap (e.g. wheat sow Oct–Nov, harvest Jun–Jul).
+const monthsToCssRange = (months) => {
+    if (!months?.length) return [];
+    const set = new Set(months);
+    const ranges = [];
+    let start = null;
+    for (let m = 1; m <= 12; m++) {
+        if (set.has(m)) {
+            if (start == null) start = m;
+        } else if (start != null) {
+            ranges.push([start, m - 1]);
+            start = null;
+        }
+    }
+    if (start != null) ranges.push([start, 12]);
+    return ranges;
+};
+
+const phenologyStageSeed = (cal, month) => {
+    if (!cal) return { stage: '미정', detail: '캘린더 seed 없음' };
+    const sow = cal.sow || [];
+    const har = cal.harvest || [];
+    if (monthInSpan(sow, month)) return { stage: '파종·출아', detail: 'seed · 파종창' };
+    if (monthInSpan(har, month)) return { stage: '수확', detail: 'seed · 수확창' };
+    // Rough mid-season between latest sow and earliest harvest (non-wrapping).
+    const maxSow = Math.max(...sow);
+    const minHar = Math.min(...har);
+    if (maxSow < minHar && month > maxSow && month < minHar) {
+        return { stage: '생육·충실', detail: 'seed · 파종–수확 사이' };
+    }
+    // Southern-hemisphere wrap: harvest early year after spring sow.
+    if (maxSow > minHar) {
+        if (month > maxSow || month < minHar) {
+            return { stage: '생육·충실', detail: 'seed · 작기 중' };
+        }
+    }
+    return { stage: '비작기', detail: 'seed · 휴지기' };
+};
+
+const fmtMonthList = (months) => {
+    if (!months?.length) return '—';
+    return months.map((m) => `${m}월`).join('·');
+};
+
+const renderCropCalendarHtml = (countryName, cropIds) => {
+    const calRoot = CROP_CALENDAR_SEED[countryName] || {};
+    const month = new Date().getMonth() + 1;
+    const ids = cropIds?.length ? cropIds : Object.keys(calRoot);
+    if (!ids.length) {
+        return `<div class="climate-sub">캘린더 seed 준비 중</div>`;
+    }
+    const rows = ids.map((id) => {
+        const cal = calRoot[id];
+        if (!cal) return '';
+        const label = CROP_LABEL_KO[id] || id;
+        const stage = phenologyStageSeed(cal, month);
+        const sowBars = monthsToCssRange(cal.sow).map(([a, b]) => {
+            const left = ((a - 1) / 12) * 100;
+            const width = ((b - a + 1) / 12) * 100;
+            return `<span class="climate-cal-bar sow" style="left:${left}%;width:${width}%" title="파종 ${fmtMonthList(cal.sow)}"></span>`;
+        }).join('');
+        const harBars = monthsToCssRange(cal.harvest).map(([a, b]) => {
+            const left = ((a - 1) / 12) * 100;
+            const width = ((b - a + 1) / 12) * 100;
+            return `<span class="climate-cal-bar harvest" style="left:${left}%;width:${width}%" title="수확 ${fmtMonthList(cal.harvest)}"></span>`;
+        }).join('');
+        const nowLeft = ((month - 0.5) / 12) * 100;
+        return `<div class="climate-cal-row">
+            <div class="cal-name">${label}
+                <span style="color:#64748b;font-weight:400;font-size:11px;"> · 파종 ${fmtMonthList(cal.sow)} · 수확 ${fmtMonthList(cal.harvest)}</span>
+            </div>
+            <div class="climate-cal-track">${sowBars}${harBars}
+                <span class="climate-cal-now" style="left:${nowLeft}%" title="현재 ${month}월"></span>
+            </div>
+            <div class="climate-cal-stage">현재 추정 단계: <strong style="color:#e2e8f0;">${stage.stage}</strong>
+                <span style="color:#64748b;"> · ${stage.detail}</span></div>
+        </div>`;
+    }).filter(Boolean).join('');
+    return `${rows || '<div class="climate-sub">해당 작물 캘린더 없음</div>'}
+        <div class="climate-cal-legend">
+            <span><i class="sow"></i>파종창</span>
+            <span><i class="har"></i>수확창</span>
+            <span>│ 현재월 · 단계는 seed 휴리스틱</span>
+        </div>`;
+};
+
+let usdaGainCache = null;
+const loadUsdaGain = async () => {
+    if (usdaGainCache) return usdaGainCache;
+    try {
+        const res = await fetch('/public/data/usda_gain_outlook_v1.json', { cache: 'no-cache' });
+        usdaGainCache = res.ok ? await res.json() : null;
+    } catch (err) {
+        console.warn('[Climate] USDA GAIN seed unavailable', err);
+        usdaGainCache = null;
+    }
+    return usdaGainCache;
+};
+
+const fasSearchUrl = (keyword) => {
+    const q = encodeURIComponent(String(keyword || '').trim());
+    return `https://www.fas.usda.gov/data/search?keyword=${q}`;
+};
+
+const renderUsdaGainCard = async (countryName) => {
+    const doc = await loadUsdaGain();
+    const entry = doc?.countries?.[countryName];
+    const portal = doc?.portal || {
+        label: 'USDA FAS Data Search',
+        url: 'https://www.fas.usda.gov/data/search',
+    };
+    const families = doc?.gain_families || {};
+
+    if (!entry) {
+        return `<div class="climate-card">
+            <h3>USDA/GAIN 전망 (시즌)</h3>
+            <div class="climate-sub">데이터 준비 중 — 이 국가의 생산 전망 seed가 아직 없습니다.</div>
+            <div class="climate-sub" style="margin-top:8px;">
+                <a href="${portal.url}" target="_blank" rel="noopener" style="color:#7dd3fc;">FAS Data Search ↗</a>
+                에서 국가·GAIN 계열을 검색하세요.
+            </div>
+        </div>`;
+    }
+
+    const countryTerm = entry.search_country || countryName;
+    const famIds = entry.gain_families?.length
+        ? entry.gain_families
+        : [...new Set((entry.items || []).map((it) => it.family).filter(Boolean))];
+
+    const familyLinks = famIds.map((fid) => {
+        const fam = families[fid];
+        const q = fam
+            ? `${countryTerm} ${fam.search_query || fam.label_en}`
+            : `${countryTerm} ${fid}`;
+        const label = fam?.label_ko || fam?.label_en || fid;
+        return `<a class="climate-gain-link" href="${fasSearchUrl(q)}" target="_blank" rel="noopener">${label} ↗</a>`;
+    }).join('');
+
+    // Country-wide search (all GAIN families for this country)
+    const countrySearch = fasSearchUrl(`${countryTerm} GAIN`);
+
+    const items = (entry.items || []).map((it) => {
+        const yoy = it.yoy_pct;
+        const yoyColor = yoy == null ? '#94a3b8' : (yoy >= 0 ? '#4ade80' : '#fca5a5');
+        const yoyStr = yoy == null ? '—' : `${yoy >= 0 ? '+' : ''}${Number(yoy).toFixed(1)}%`;
+        const prod = it.production_mmt != null ? `${Number(it.production_mmt).toFixed(1)} MMT` : '—';
+        const prior = it.prior_mmt != null ? ` / 전년 ${Number(it.prior_mmt).toFixed(1)}` : '';
+        const fam = it.family && families[it.family];
+        const famTag = fam
+            ? `<span class="climate-chip" style="margin-left:6px;">${fam.label_en}</span>`
+            : '';
+        const itemSearch = fam
+            ? fasSearchUrl(`${countryTerm} ${fam.search_query || fam.label_en}`)
+            : countrySearch;
+        return `<div class="climate-gain-item">
+            <div class="gi-top">
+                <span>${it.crop_ko || '작물'}${famTag}</span>
+                <span>${prod}<span class="gi-yoy" style="color:${yoyColor};margin-left:6px;">${yoyStr}</span></span>
+            </div>
+            <div class="gi-note">전년 대비 생산${prior}${it.note_ko ? ` · ${it.note_ko}` : ''}
+                · <a href="${itemSearch}" target="_blank" rel="noopener" style="color:#7dd3fc;">FAS 검색</a>
+            </div>
+        </div>`;
+    }).join('');
+
+    return `<div class="climate-card">
+        <h3>USDA/GAIN 전망 (${entry.season || '시즌'})</h3>
+        ${items || '<div class="climate-sub">항목 없음</div>'}
+        <div class="climate-gain-links">
+            <a class="climate-gain-link primary" href="${countrySearch}" target="_blank" rel="noopener">
+                ${countryTerm} GAIN 검색 ↗
+            </a>
+            ${familyLinks}
+            <a class="climate-gain-link" href="${portal.url}" target="_blank" rel="noopener">FAS 포털 ↗</a>
+        </div>
+        <div class="climate-sub" style="margin-top:8px;">
+            ${entry.source_label || 'USDA GAIN seed'} · 정적 요약 · 실무 최신값은
+            <a href="${portal.url}" target="_blank" rel="noopener" style="color:#7dd3fc;">fas.usda.gov/data/search</a>
+            에서 계열별로 확인
+        </div>
+    </div>`;
+};
+
+const setClimateCommodityHeader = (mode) => {
+    const panel = document.getElementById('commodity-info-panel');
+    if (!panel) return;
+    if (mode === 'climate') panel.classList.add('climate-mode');
+    else panel.classList.remove('climate-mode');
+};
 
 const BRAZIL_REGION_MODELS = {
     'Mato Grosso (Brazil)': ['mato_grosso_soja', 'mato_grosso_milho'],
@@ -1536,9 +1870,9 @@ const climateCountrySummary = async (cfg) => {
 
 const regionStressFromPct = (pct) => {
     if (pct === null || pct === undefined) return { level: 'neutral', rgba: [148, 163, 184, 180], ko: '데이터 부족' };
-    if (pct <= -4) return { level: 'high', rgba: [248, 113, 113, 210], ko: '고스트레스' };
-    if (pct <= -1.5) return { level: 'warn', rgba: [251, 146, 60, 210], ko: '주의' };
-    return { level: 'ok', rgba: [74, 222, 128, 210], ko: '양호' };
+    if (pct <= -4) return { level: 'high', rgba: [248, 113, 113, 210], ko: '기상 불리' };
+    if (pct <= -1.5) return { level: 'warn', rgba: [251, 146, 60, 210], ko: '기상 약세' };
+    return { level: 'ok', rgba: [74, 222, 128, 210], ko: '기상 양호' };
 };
 
 const isoToCountryName = () => {
@@ -1581,21 +1915,21 @@ const setClimateMapLegend = (mode) => {
     if (mode === 'world') {
         climateMapLegendEl.classList.remove('hidden');
         climateMapLegendEl.innerHTML = `
-            <h4>무역·수출 통제 (모델 보유국)</h4>
-            <div class="leg-row"><span class="swatch" style="background:#38bdf8"></span> 정상 (Blue)</div>
-            <div class="leg-row"><span class="swatch" style="background:#facc15"></span> Restricted (Yellow)</div>
-            <div class="leg-row"><span class="swatch" style="background:#fb923c"></span> Prohibited 1품목 (Orange)</div>
-            <div class="leg-row"><span class="swatch" style="background:#f87171"></span> Prohibited 곡물 2+ (Red)</div>
+            <h4>무역·수출 통제 색</h4>
+            <div class="leg-row"><span class="swatch" style="background:#38bdf8"></span> 정상</div>
+            <div class="leg-row"><span class="swatch" style="background:#facc15"></span> 제한 (Restricted)</div>
+            <div class="leg-row"><span class="swatch" style="background:#fb923c"></span> 금지 1품목</div>
+            <div class="leg-row"><span class="swatch" style="background:#f87171"></span> 금지 곡물 2+</div>
             <div class="leg-row"><span class="swatch" style="background:#1e293b"></span> 미대상</div>
-            <div style="margin-top:8px;color:#64748b;font-size:10px;">seed 정책표 · 실시간 정책 피드는 추후</div>`;
+            <div style="margin-top:8px;color:#64748b;font-size:10px;">우측 패널 범례 참고 · 클릭=국가</div>`;
     } else if (mode === 'country') {
         climateMapLegendEl.classList.remove('hidden');
         climateMapLegendEl.innerHTML = `
-            <h4>산지 기상 스트레스 (추세 대비)</h4>
-            <div class="leg-row"><span class="swatch" style="background:#f87171"></span> 고스트레스 (≤ −4%)</div>
-            <div class="leg-row"><span class="swatch" style="background:#fb923c"></span> 주의 (−4 ~ −1.5%)</div>
-            <div class="leg-row"><span class="swatch" style="background:#4ade80"></span> 양호</div>
-            <div style="margin-top:8px;color:#64748b;font-size:10px;">산지 핀·목록 클릭 · ← 세계 지도</div>`;
+            <h4>기상 효과 (추세 대비 %)</h4>
+            <div class="leg-row"><span class="swatch" style="background:#f87171"></span> 불리 (≤ −4%)</div>
+            <div class="leg-row"><span class="swatch" style="background:#fb923c"></span> 약세 (−4 ~ −1.5%)</div>
+            <div class="leg-row"><span class="swatch" style="background:#4ade80"></span> 양호 (&gt; −1.5%)</div>
+            <div style="margin-top:8px;color:#64748b;font-size:10px;">단수 예측의 기상 편차 · 산지 클릭=우측 상세</div>`;
     } else {
         climateMapLegendEl.classList.add('hidden');
         climateMapLegendEl.innerHTML = '';
@@ -1681,41 +2015,33 @@ const renderClimateWorldLeft = async () => {
 };
 
 const renderClimateWorldRight = async () => {
-    const g = await loadClimateGlobal();
-    const deriv = g?.climate_derivatives || {};
-    if (climateRightTitleEl) climateRightTitleEl.textContent = '모델 국가 · 무역 상태';
-    if (climateRightDescEl) climateRightDescEl.textContent = '클릭 시 국가 상세 · seed 정책색';
+    if (climateRightTitleEl) climateRightTitleEl.textContent = '무역 색 · 모델 국가';
+    if (climateRightDescEl) climateRightDescEl.textContent = '색 = 수출통제 상태 · 국가 클릭';
     if (!climateRightContentEl) return;
 
     const rows = Object.entries(CLIMATE_COUNTRIES).map(([name, cfg]) => {
         const lv = tradePolicyLevel(name);
-        const pol = CLIMATE_TRADE_POLICY[name] || {};
-        const bans = (pol.prohibitedCrops || []).join(', ') || '—';
         return `<div class="climate-country-hit climate-click" role="button" tabindex="0"
             data-climate-country="${name}" aria-label="${cfg.label} 상세 보기">
             <div class="climate-table-row">
-                <span class="nm">${cfg.label}
-                    <span class="climate-status-pill ${lv}" style="margin-left:6px;">${tradePolicyLabelKo(lv)}</span>
-                </span>
-                <span class="vl" style="font-size:11px;color:#94a3b8;">${cfg.regions.length}산지 →</span>
+                <span class="nm">${cfg.label}</span>
+                <span class="climate-status-pill ${lv}">${tradePolicyLabelKo(lv)}</span>
             </div>
-            <div class="climate-country-sub">금지/통제: ${bans}</div>
         </div>`;
     }).join('');
 
     climateRightContentEl.innerHTML = `
+        <div class="climate-card climate-legend-card">
+            <h3>색상 의미 (무역 상태)</h3>
+            <div class="leg-row"><span class="swatch" style="background:#38bdf8"></span> 정상 · 수출 원활</div>
+            <div class="leg-row"><span class="swatch" style="background:#facc15"></span> 제한 · 인허가·쿼터 등</div>
+            <div class="leg-row"><span class="swatch" style="background:#fb923c"></span> 금지 1품목</div>
+            <div class="leg-row"><span class="swatch" style="background:#f87171"></span> 금지 곡물 2품목+</div>
+            <div class="climate-sub" style="margin-top:8px;">지도 채색 기준 · 정책 피드는 추후 연동</div>
+        </div>
         <div class="climate-card">
             <h3>보유 모델 ${Object.keys(CLIMATE_COUNTRIES).length}개국</h3>
             ${rows}
-        </div>
-        <div class="climate-card">
-            <h3>기후 파생 (요약만 · 추후 업데이트)</h3>
-            <div class="climate-sub" style="margin-bottom:8px;">${deriv.note_ko || ''}</div>
-            ${(deriv.items || []).map(it => `
-                <div class="climate-metric-row">
-                    <span class="nm">${it.name}</span>
-                    <span class="vl">${it.price}${it.chg_pct != null ? ` <span style="color:${it.chg_pct>=0?'#4ade80':'#fca5a5'};font-size:11px;">(${it.chg_pct>=0?'+':''}${it.chg_pct}%)</span>` : ''}</span>
-                </div>`).join('') || '<div class="climate-sub">항목 없음</div>'}
         </div>`;
 };
 
@@ -1729,12 +2055,14 @@ const showClimateWorld = async () => {
     const isoMap = isoToCountryName();
     currentViewTitle.textContent = '기후·작황 예측';
     currentViewDesc.textContent = '모델 보유국 hover=요약 · 클릭=국가 상세 · ← 세계 지도로 복귀';
+    setClimateCommodityHeader('climate');
     totalVolumeEl.textContent = `${Object.keys(CLIMATE_COUNTRIES).length}개국`;
     topExporterEl.textContent = 'Trade status colors';
 
     // left commodity panel meta already from climate setView
     document.getElementById('commodity-info-panel')?.classList.remove('hidden');
 
+    climateSelectedRegion = null;
     setClimateMapLegend('world');
     await renderClimateWorldLeft();
     await renderClimateWorldRight();
@@ -1904,15 +2232,17 @@ const showClimateCountry = async (countryName) => {
 
     climateLevel = 'country';
     climateCountry = countryName;
+    climateSelectedRegion = null;
     hideClimateTooltip();
     document.getElementById('commodity-info-panel')?.classList.remove('hidden');
+    setClimateCommodityHeader('climate');
 
     const points = await buildRegionPoints(cfg);
     const lv = tradePolicyLevel(countryName);
     const pol = CLIMATE_TRADE_POLICY[countryName] || {};
 
     currentViewTitle.textContent = `${cfg.label} ${cfg.iso || ''}`.trim();
-    currentViewDesc.textContent = `${cfg.regions.length}개 산지 · 산지 핀 클릭 · ← 세계 지도로 복귀`;
+    currentViewDesc.textContent = `${cfg.regions.length}개 산지 · 산지 핀 클릭 시 우측 상세 · ← 세계 지도`;
     totalVolumeEl.textContent = cfg.modelName || cfg.label;
     topExporterEl.textContent = tradePolicyLabelKo(lv);
 
@@ -2012,219 +2342,219 @@ const fmtYield = (v, unit) => {
 const renderCountryPanel = async (cfg, points = null, meta = {}) => {
     const fc = await loadClimateForecast(cfg);
     const crops = normalizeForecast(fc);
+    const merged = mergeCropsByType(crops);
     const lv = meta.lv || tradePolicyLevel(climateCountry);
     const pol = meta.pol || CLIMATE_TRADE_POLICY[climateCountry] || {};
     points = points || await buildRegionPoints(cfg);
-
-    // Left: model brief + structure chips (major only)
-    forecastCountryTitle.textContent = cfg.modelName || cfg.label;
-    const skillVals = crops.map(c => c.skillVsTrend).filter(v => v != null);
-    const meanSkill = skillVals.length
-        ? skillVals.reduce((a, b) => a + b, 0) / skillVals.length
+    const regionFocus = climateSelectedRegion;
+    const regionCfg = regionFocus
+        ? cfg.regions.find((r) => r.name === regionFocus)
         : null;
-    const lowN = crops.filter(c => c.lowConfidence).length;
 
+    // Left: trade + GAIN + crop-type merge + calendar (not commodity trade stats)
+    forecastCountryTitle.textContent = cfg.modelName || cfg.label;
+    const gainHtml = await renderUsdaGainCard(climateCountry || cfg.label);
+
+    const mergeHtml = merged.length
+        ? merged.map((m) => {
+            const pct = m.meanPct;
+            const pctColor = pct == null ? '#94a3b8' : (pct < 0 ? '#fca5a5' : '#4ade80');
+            const pctStr = pct == null ? '—'
+                : `${pct >= 0 ? '+' : ''}${pct.toFixed(1)}%`;
+            const pt = m.meanPoint == null
+                ? (m.noForecast === m.total ? '예측없음' : '—')
+                : fmtYield(m.meanPoint, m.unit);
+            return `<div class="climate-crop-merge">
+                <div class="cm-head">
+                    <span class="cm-title">${m.label}</span>
+                    <span class="cm-meta">${m.regionCount}개 산지 합산</span>
+                </div>
+                <div class="climate-metric-row" style="border:none;padding:2px 0;">
+                    <span class="nm">평균 단수 전망</span>
+                    <span class="vl">${pt}
+                        <span style="color:${pctColor};font-size:11px;font-weight:600;"> ${pctStr}</span>
+                    </span>
+                </div>
+                <div class="climate-sub">
+                    기상효과(추세 대비) 평균 · 실적 평균 ${fmtYield(m.meanLast, m.unit)} ${m.unit || ''}
+                    ${m.lowShare > 0 ? ` · 저신뢰 ${(m.lowShare * 100).toFixed(0)}%` : ''}
+                </div>
+            </div>`;
+        }).join('')
+        : '<div class="climate-sub">forecast JSON 없음 (미배포 시)</div>';
+
+    const cropIds = merged.map((m) => m.id).filter((id) => id !== 'other');
     forecastContentEl.innerHTML = `
         <div class="climate-scroll">
             ${climateNavBackHtml(cfg.label)}
+            <div class="climate-trade-banner">
+                <div>
+                    <div class="tb-label">무역 · 수출 통제</div>
+                    <div class="tb-note">${pol.note || '상태 메모 없음'}</div>
+                </div>
+                <span class="climate-status-pill ${lv}">${tradePolicyLabelKo(lv)}</span>
+            </div>
+            ${gainHtml}
             <div class="climate-card">
-                <h3>모델 개요</h3>
-                <div style="font-size:13px;color:#e2e8f0;line-height:1.55;">
-                    <strong>${cfg.modelName || cfg.label}</strong><br>
-                    추세(기술 진보) + 기상 편차 분해. 산지 ${cfg.regions.length}곳 ·
-                    작물 슬롯 ${crops.length}개.
-                </div>
-                <div class="climate-chip-row">
-                    <span class="climate-chip">Trend</span>
-                    <span class="climate-chip">Weather anomaly</span>
-                    <span class="climate-chip">Forward skill</span>
-                    <span class="climate-chip">DATA_LAYOUT</span>
-                </div>
-                <div class="climate-metric-row" style="margin-top:10px;">
-                    <span class="nm">무역 상태</span>
-                    <span class="climate-status-pill ${lv}">${tradePolicyLabelKo(lv)}</span>
-                </div>
-                <div class="climate-sub">${pol.note || ''}</div>
+                <h3>작물 유형 합산 (국가)</h3>
+                <div class="climate-sub" style="margin-bottom:6px;">같은 작물(예: 밀)을 산지별로 두지 않고 하나로 묶음</div>
+                ${mergeHtml}
             </div>
             <div class="climate-card">
-                <h3>검증 요약 (주요만)</h3>
-                <div class="climate-metric-row">
-                    <span class="nm">평균 skill vs trend</span>
-                    <span class="vl">${meanSkill == null ? '—' : (meanSkill * 100).toFixed(0) + '%'}</span>
-                </div>
-                <div class="climate-metric-row">
-                    <span class="nm">신뢰도 낮음 배지</span>
-                    <span class="vl">${lowN} / ${crops.length}</span>
-                </div>
-                <div class="climate-sub">R²·MAPE 상세 차트는 이후 업데이트</div>
+                <h3>작물 캘린더 · 현재 단계 (seed)</h3>
+                ${renderCropCalendarHtml(climateCountry, cropIds)}
             </div>
             <div class="climate-card">
                 <h3>산지 바로가기</h3>
-                ${cfg.regions.map(r => `
-                    <div class="climate-region-hit climate-click" role="button" tabindex="0"
+                ${cfg.regions.map((r) => `
+                    <div class="climate-region-hit climate-click${regionFocus === r.name ? ' climate-region-active' : ''}"
+                         role="button" tabindex="0"
                          data-climate-region="${r.name}" aria-label="${r.label} 상세">
                         <div class="climate-table-row">
                             <span class="nm">${r.label}</span>
-                            <span class="vl" style="color:#94a3b8;font-size:11px;">상세 →</span>
+                            <span class="vl" style="color:#94a3b8;font-size:11px;">우측 →</span>
                         </div>
                     </div>`).join('')}
             </div>
         </div>`;
 
-    // Right: national aggregates + weather effect table (major)
-    if (climateRightTitleEl) climateRightTitleEl.textContent = '국가 집계 · 전망';
-    if (climateRightDescEl) climateRightDescEl.textContent = `시즌 ${fc?.season ?? '—'} · 주요 지표만`;
-    if (climateRightContentEl) {
-        climateRightContentEl.innerHTML = `
-            <div class="climate-card">
-                <h3>작물 전망</h3>
-                ${crops.length ? crops.map(c => {
-                    const diff = c.lastActual != null && c.point != null ? c.point - c.lastActual : null;
-                    const pct = c.pct;
-                    return `<div class="climate-metric-row">
-                        <span class="nm">${c.label}${c.lowConfidence ? ' <span style="color:#fbbf24">⚠</span>' : ''}</span>
-                        <span class="vl">${c.forecastAvailable === false ? '예측없음' : fmtYield(c.point, c.unit)}
-                        ${pct != null ? `<span style="color:${pct < 0 ? '#fca5a5' : '#4ade80'};font-size:11px;">
-                            (${pct >= 0 ? '+' : ''}${pct.toFixed(1)}%)</span>` : ''}
-                        </span>
-                    </div>
-                    <div style="font-size:10px;color:#64748b;margin:-2px 0 6px;">
-                        ${c.lastActualYear ?? ''} 실적 ${fmtYield(c.lastActual, c.unit)} ${c.unit || ''}
-                        ${diff != null ? ` · Δ ${diff >= 0 ? '+' : ''}${fmtYield(diff, c.unit)}` : ''}
-                    </div>`;
-                }).join('') : '<div class="climate-sub">forecast JSON 없음 (예: 인도 미배포 시)</div>'}
-            </div>
-            <div class="climate-card">
-                <h3>지역 전망 요약</h3>
-                ${points.map(p => `
-                    <div class="climate-region-hit climate-click" role="button" tabindex="0"
-                         data-climate-region="${p.name}" aria-label="${p.label} 상세">
-                        <div class="climate-metric-row">
-                            <span class="nm">${p.label}</span>
-                            <span class="climate-status-pill ${p.stress.level === 'ok' ? 'green' : p.stress.level === 'high' ? 'red' : p.stress.level === 'warn' ? 'orange' : 'blue'}">${p.stress.ko}</span>
-                        </div>
-                        <div class="climate-country-sub">
-                            ${p.meanPct == null ? '기상효과 요약 없음'
-                                : `기상효과 ${p.meanPct >= 0 ? '+' : ''}${p.meanPct.toFixed(1)}%`}
-                            ${p.point != null ? ` · ${fmtYield(p.point, p.unit)} ${p.unit}` : ''}
-                        </div>
-                    </div>`).join('')}
-            </div>
-            <div class="climate-card">
-                <h3>가격 민감도 / 파생</h3>
-                <div class="climate-sub">국가별 선물 연동·CBOT 시나리오는 추후 업데이트. 현재는 작황 시그널만 제공합니다.</div>
-            </div>
-            <p style="font-size:10px;color:#64748b;">갱신: ${fc?.generated_at ? new Date(fc.generated_at).toLocaleString() : '—'}</p>`;
+    // Right: national rollup OR selected region crop detail
+    if (regionCfg) {
+        await renderClimateRegionOnRight(cfg, regionCfg, fc, points);
+    } else {
+        if (climateRightTitleEl) climateRightTitleEl.textContent = '국가 집계 · 전망';
+        if (climateRightDescEl) climateRightDescEl.textContent = `시즌 ${fc?.season ?? '—'} · 산지 클릭 시 지역 상세`;
+        if (climateRightContentEl) {
+            climateRightContentEl.innerHTML = `
+                <div class="climate-card">
+                    <h3>국가 작물 전망 (유형 합산)</h3>
+                    ${mergeHtml}
+                </div>
+                <div class="climate-card">
+                    <h3>지역 기상효과 요약</h3>
+                    ${points.map((p) => `
+                        <div class="climate-region-hit climate-click" role="button" tabindex="0"
+                             data-climate-region="${p.name}" aria-label="${p.label} 상세">
+                            <div class="climate-metric-row">
+                                <span class="nm">${p.label}</span>
+                                <span class="climate-status-pill ${p.stress.level === 'ok' ? 'green' : p.stress.level === 'high' ? 'red' : p.stress.level === 'warn' ? 'orange' : 'blue'}">${p.stress.ko}</span>
+                            </div>
+                            <div class="climate-country-sub">
+                                ${p.meanPct == null ? '기상효과 요약 없음'
+                                    : `기상효과 ${p.meanPct >= 0 ? '+' : ''}${p.meanPct.toFixed(1)}%`}
+                                ${p.point != null ? ` · ${fmtYield(p.point, p.unit)} ${p.unit}` : ''}
+                            </div>
+                        </div>`).join('') || '<div class="climate-sub">산지 없음</div>'}
+                </div>
+                <p style="font-size:10px;color:#64748b;">갱신: ${fc?.generated_at ? new Date(fc.generated_at).toLocaleString() : '—'}</p>`;
+        }
     }
     if (climateRightPanelEl) climateRightPanelEl.classList.remove('hidden');
     panelHide(macroPanelEl);
     panelHide(countryStatsPanelEl);
 };
 
+// Region detail always lands on the climate right panel (left stays national merge).
+const renderClimateRegionOnRight = async (cfg, regionCfg, fc = null, points = null) => {
+    fc = fc || await loadClimateForecast(cfg);
+    const keys = regionCfg.regionKeys
+        || (regionCfg.regionKey ? [regionCfg.regionKey] : null);
+    const crops = keys?.length ? normalizeForecast(fc, keys) : [];
+    const p = (points || []).find((x) => x.name === regionCfg.name);
 
-// Generic region detail for countries that declare regionKeys
-// Generic region detail for countries that declare regionKeys (Argentina,
-// Australia, China, Indonesia, and any future country). Brazil/India/US keep
-// their richer specialised renderers above; this path only runs when those
-// return false.
+    if (climateRightTitleEl) climateRightTitleEl.textContent = regionCfg.label;
+    if (climateRightDescEl) {
+        climateRightDescEl.textContent = `${cfg.label} · 산지 상세 · 시즌 ${fc?.season ?? '—'}`;
+    }
+    if (!climateRightContentEl) return false;
+
+    const cropCards = crops.length
+        ? crops.map((c) => {
+            const color = c.pct != null && c.pct < 0 ? '#fca5a5' : '#4ade80';
+            const badge = c.forecastAvailable === false
+                ? `<span class="climate-status-pill orange">예측 없음</span>`
+                : c.lowConfidence
+                    ? `<span class="climate-status-pill yellow">신뢰도 낮음</span>`
+                    : `<span class="climate-status-pill green">검증 통과</span>`;
+            return `<div class="climate-card" style="margin-bottom:8px;">
+                <div class="climate-metric-row" style="border:none;">
+                    <span class="nm" style="font-size:13px;font-weight:600;color:#e2e8f0;">${c.label}</span>
+                    ${badge}
+                </div>
+                ${c.forecastAvailable === false ? `
+                    <div class="climate-sub">${c.reason || '예측 없음'}
+                    ${c.lastActual != null ? ` · ${c.lastActualYear ?? ''} 실적 ${fmtYield(c.lastActual, c.unit)} ${c.unit}` : ''}</div>`
+                : `
+                    <div class="climate-metric-row">
+                        <span class="nm">${c.lastActualYear ?? '—'} 실적</span>
+                        <span class="vl">${fmtYield(c.lastActual, c.unit)} ${c.unit || ''}</span>
+                    </div>
+                    <div class="climate-metric-row">
+                        <span class="nm">${fc?.season ?? ''} 예상</span>
+                        <span class="vl" style="color:${color};">${fmtYield(c.point, c.unit)} ${c.unit || ''}
+                            ${c.pct != null ? ` (${c.pct >= 0 ? '+' : ''}${c.pct.toFixed(1)}%)` : ''}</span>
+                    </div>
+                    ${c.pct != null ? `<div class="climate-sub">기상 효과(추세 대비) ${c.pct >= 0 ? '+' : ''}${c.pct.toFixed(1)}%</div>` : ''}
+                    ${c.reason ? `<div class="climate-sub">${c.reason}</div>` : ''}`}
+            </div>`;
+        }).join('')
+        : `<div class="climate-card"><div class="climate-sub">이 산지의 작물 슬롯 없음</div></div>`;
+
+    climateRightContentEl.innerHTML = `
+        <div class="climate-card" style="margin-bottom:10px;">
+            <div class="climate-nav-row" style="margin:0;">
+                <span class="climate-back climate-click" data-climate-national="1"
+                      role="button" tabindex="0">← 국가 집계</span>
+                <span class="climate-nav-trail">${regionCfg.label}</span>
+            </div>
+            ${p ? `<div class="climate-metric-row" style="margin-top:8px;">
+                <span class="nm">기상 효과 수준</span>
+                <span class="climate-status-pill ${p.stress.level === 'ok' ? 'green' : p.stress.level === 'high' ? 'red' : p.stress.level === 'warn' ? 'orange' : 'blue'}">${p.stress.ko}</span>
+            </div>
+            <div class="climate-sub">${p.meanPct == null ? '요약 없음'
+                : `평균 기상효과 ${p.meanPct >= 0 ? '+' : ''}${p.meanPct.toFixed(1)}%`}</div>` : ''}
+        </div>
+        <h3 style="font-size:12px;color:#94a3b8;margin:0 0 8px;">산지 작물 (지역 단위)</h3>
+        ${cropCards}
+        <p style="font-size:10px;color:#64748b;">갱신: ${fc?.generated_at ? new Date(fc.generated_at).toLocaleString() : '—'}</p>`;
+    return true;
+};
+
+// Keep name for callers; country drill uses updateForecastPanel first.
 const renderClimateRegionForecast = async (regionName) => {
     if (climateLevel !== 'country' || !climateCountry) return false;
     const cfg = CLIMATE_COUNTRIES[climateCountry];
     if (!cfg) return false;
-
-    const regionCfg = cfg.regions.find(r => r.name === regionName);
+    const regionCfg = cfg.regions.find((r) => r.name === regionName);
     if (!regionCfg) return false;
-
     const keys = regionCfg.regionKeys
         || (regionCfg.regionKey ? [regionCfg.regionKey] : null);
     if (!keys?.length) return false;
-
-    const fc = await loadClimateForecast(cfg);
-    if (!fc?.regions) return false;
-
-    const crops = normalizeForecast(fc, keys);
-    if (!crops.length) return false;
-
-    const fmt = (v, unit) => {
-        if (v === null || v === undefined) return '—';
-        return unit === 'bu/acre' ? Number(v).toFixed(1) : Math.round(v).toLocaleString();
-    };
-
-    let html = '';
-    for (const c of crops) {
-        const color = c.pct !== null && c.pct < 0 ? '#fca5a5' : '#4ade80';
-        const badge = c.lowConfidence
-            ? `<span style="font-size:10px; padding:2px 6px; border-radius:4px;
-                 background:rgba(251,191,36,0.15); color:#fbbf24;">신뢰도 낮음
-                 ${c.skillVsTrend !== null ? `· skill ${(c.skillVsTrend * 100).toFixed(0)}%` : ''}
-                 </span>`
-            : `<span style="font-size:10px; padding:2px 6px; border-radius:4px;
-                 background:rgba(74,222,128,0.15); color:#4ade80;">검증 통과</span>`;
-
-        html += `
-        <div class="indicator-item" style="cursor:default; transform:none; border-color:rgba(255,255,255,0.1);">
-            <div class="ind-header"><span class="ind-title">${c.label}</span></div>
-            <div style="margin-top:6px;">${badge}</div>
-            ${!c.forecastAvailable ? `
-            <div style="margin-top:8px; font-size:12px; color:#94a3b8;">
-                예측 없음${c.reason ? ` — ${c.reason}` : ''}
-                ${c.lastActual !== null ? `<br>${c.lastActualYear ?? ''} 실적 ${fmt(c.lastActual, c.unit)} ${c.unit}` : ''}
-            </div>` : `
-            <div style="display:flex; justify-content:space-between; margin-top:8px;">
-                <div>
-                    <span style="font-size:12px; color:#94a3b8;">${c.lastActualYear ?? '—'} 실적</span>
-                    <div style="font-size:15px;">${fmt(c.lastActual, c.unit)} ${c.unit}</div>
-                </div>
-                <div style="text-align:right;">
-                    <span style="font-size:12px; color:#94a3b8;">${fc.season ?? ''} 예상</span>
-                    <div style="font-size:20px; font-weight:bold; color:${c.lowConfidence ? '#cbd5e1' : color};">
-                        ${fmt(c.point, c.unit)} ${c.unit}</div>
-                </div>
-            </div>
-            ${c.pct !== null ? `
-            <div style="margin-top:8px; font-size:12px; color:${color};">
-                기상 효과(추세 대비) ${c.pct >= 0 ? '+' : ''}${c.pct.toFixed(1)}%
-            </div>` : ''}
-            ${c.reason ? `
-            <div style="margin-top:8px; font-size:11px; color:#94a3b8; line-height:1.5;">${c.reason}</div>` : ''}
-            `}
-        </div>`;
-    }
-
-    forecastCountryTitle.textContent =
-        `${cfg.label} · ${regionCfg.label}${fc.season ? ` (${fc.season})` : ''}`;
-    forecastContentEl.innerHTML = `
-        ${climateNavBackHtml(regionCfg.label)}
-        <div class="forecast-box">
-            <div class="forecast-item">
-                <span class="forecast-label">산지</span>
-                <span class="forecast-val" style="font-size:12px;">${regionCfg.label}</span>
-            </div>
-            <div class="forecast-item">
-                <span class="forecast-label">모델 수</span>
-                <span class="forecast-val">${crops.length}</span>
-            </div>
-            <div class="forecast-good" style="margin-top:12px;">
-                <strong style="font-size:12px;">${cfg.modelName || cfg.label}</strong><br>
-                <span style="font-size:11px; font-weight:400;">
-                추세 + 기상편차 분해 · 검증 실패·게이트 정지도 숨기지 않습니다.
-                </span>
-            </div>
-        </div>
-        <p style="font-size:11px; color:#94a3b8; text-align:right; margin-top:8px;">
-            갱신: ${fc.generated_at ? new Date(fc.generated_at).toLocaleString() : '—'}
-        </p>`;
-
-    countryStatsTitleEl.textContent = regionCfg.label;
-    document.getElementById('country-stats-desc').textContent =
-        '공용 forecast JSON (DATA_LAYOUT) · 국가 파이프라인 산출';
-    countryStatsContentEl.innerHTML = html;
-    panelHide(macroPanelEl);
-    panelShow(countryStatsPanelEl);
+    climateSelectedRegion = regionName;
+    const points = await buildRegionPoints(cfg);
+    await renderCountryPanel(cfg, points, {
+        lv: tradePolicyLevel(climateCountry),
+        pol: CLIMATE_TRADE_POLICY[climateCountry] || {},
+    });
     return true;
 };
 
 const updateForecastPanel = async (regionName) => {
+    // Country-drill: region pin/list → right panel only (left stays crop merge).
+    if (climateLevel === 'country' && climateCountry && CLIMATE_COUNTRIES[climateCountry]) {
+        const cfg = CLIMATE_COUNTRIES[climateCountry];
+        const regionCfg = cfg.regions.find((r) => r.name === regionName);
+        if (regionCfg) {
+            climateSelectedRegion = regionName;
+            const points = await buildRegionPoints(cfg);
+            await renderCountryPanel(cfg, points, {
+                lv: tradePolicyLevel(climateCountry),
+                pol: CLIMATE_TRADE_POLICY[climateCountry] || {},
+            });
+            return;
+        }
+    }
+
     if (await renderYieldForecast(regionName)) return;
     if (await renderBrazilYieldForecast(regionName)) return;
     if (await renderIndiaYieldForecast(regionName)) return;
@@ -2236,16 +2566,13 @@ const updateForecastPanel = async (regionName) => {
     if (!data) {
         forecastContentEl.innerHTML = `${climateLevel === 'country' ? climateNavBackHtml(regionName) : ''}
             <p class="empty-state">해당 지역의 상세 기상 예측 데이터가 없습니다. 지도에서 활성화된 지역(예: Mato Grosso)을 선택해주세요.</p>`;
-        // Clear right panel
         panelHide(macroPanelEl);
         panelHide(countryStatsPanelEl);
         return;
     }
-    
-    // Left panel: Climate factors only
-    const isGood = data.precip_anomaly_mm > 0;
+
     const alertClass = (data.climate_status.includes('가뭄') || data.climate_status.includes('홍수')) ? 'forecast-alert' : 'forecast-good';
-    
+
     forecastContentEl.innerHTML = `
         ${climateLevel === 'country' ? climateNavBackHtml(regionName) : ''}
         <div class="forecast-box">
@@ -2261,7 +2588,6 @@ const updateForecastPanel = async (regionName) => {
                 <span class="forecast-label">토양 수분 (0~7cm)</span>
                 <span class="forecast-val">${data.soil_moisture} m³/m³</span>
             </div>
-            
             <div class="${alertClass}" style="margin-top:16px;">
                 <strong>${data.climate_status}</strong>
             </div>
@@ -2269,21 +2595,15 @@ const updateForecastPanel = async (regionName) => {
         <p style="font-size: 11px; color: #94a3b8; text-align: right; margin-bottom: 4px;">업데이트: ${new Date(data.last_updated).toLocaleString()}</p>
         <p style="font-size: 11px; color: #64748b; text-align: right;">출처: Open-Meteo 기상 관측망 / 기관별 과거 작황 데이터 기반 예측</p>
     `;
-    
-    // Right panel: Multi-crop predictions
+
     if (data.crops && data.crops.length > 0) {
         countryStatsTitleEl.textContent = `${regionName}`;
-        // These regional figures are still hardcoded reference values, not model
-        // output -- the label says so rather than claiming an AI forecast.
         document.getElementById('country-stats-desc').textContent = "지역 참고 작황 데이터 (기관 발표 기준값)";
-        
         let cropHtml = '';
         data.crops.forEach(crop => {
             const isCropGood = crop.change_pct > 0;
             const sign = isCropGood ? '+' : '';
             const color = isCropGood ? '#4ade80' : '#fca5a5';
-            
-            // CEPEA Price UI
             let cepeaHtml = '';
             if (crop.cepea_price_usd) {
                 const trendColor = crop.cepea_trend.startsWith('-') ? '#fca5a5' : '#4ade80';
@@ -2296,8 +2616,6 @@ const updateForecastPanel = async (regionName) => {
                     </div>
                 </div>`;
             }
-
-            // IBGE Municipalities UI
             let ibgeHtml = '';
             if (crop.ibge_top_municipalities && crop.ibge_top_municipalities.length > 0) {
                 let muniList = crop.ibge_top_municipalities.map((m, idx) => `
@@ -2312,7 +2630,6 @@ const updateForecastPanel = async (regionName) => {
                     <div style="font-size:12px;">${muniList}</div>
                 </div>`;
             }
-
             cropHtml += `
             <div class="indicator-item" style="cursor: default; transform: none; border-color: rgba(255,255,255,0.1);">
                 <div class="ind-header"><span class="ind-title">${crop.name}</span></div>
@@ -2333,7 +2650,6 @@ const updateForecastPanel = async (regionName) => {
                 ${ibgeHtml}
             </div>`;
         });
-        
         countryStatsContentEl.innerHTML = cropHtml;
         panelHide(macroPanelEl);
         panelShow(countryStatsPanelEl);
@@ -2471,7 +2787,9 @@ const setView = (target) => {
     if (target !== 'climate') {
         climateLevel = 'world';
         climateCountry = null;
+        climateSelectedRegion = null;
         hideClimateTooltip();
+        setClimateCommodityHeader(null);
         if (climateMapLegendEl) climateMapLegendEl.classList.add('hidden');
         if (climateRightPanelEl) climateRightPanelEl.classList.add('hidden');
     }
@@ -2564,6 +2882,7 @@ const setView = (target) => {
         topExporterEl.textContent = "-";
     } else if (target === 'climate') {
         currentCommodity = 'climate';
+        setClimateCommodityHeader('climate');
         togglePanels({ forecast: true, climateRight: true, left: true, right: true });
         
         currentViewTitle.textContent = '기후·작황 예측';
@@ -2576,6 +2895,7 @@ const setView = (target) => {
     } else if (window.TradeData[target]) {
         // Render a supported commodity map
         currentCommodity = target;
+        setClimateCommodityHeader(null);
         const data = window.TradeData[target];
         
         togglePanels({ news: true, left: true });
@@ -2800,6 +3120,29 @@ navLinks.forEach(link => {
             window.history.replaceState(null, '', window.location.pathname + window.location.search);
         }
         setView(target);
+    });
+});
+
+// Parent menu labels with data-nav-default (e.g. 해운 → first shipping view)
+document.querySelectorAll('.menu-item[data-nav-default]').forEach((item) => {
+    const parent = item.querySelector(':scope > span, :scope > .menu-parent');
+    if (!parent) return;
+    const go = (e) => {
+        if (e.target.closest('.dropdown')) return;
+        e.preventDefault();
+        const target = item.getAttribute('data-nav-default');
+        if (!target) return;
+        if (target.startsWith('shipping_')) {
+            window.history.replaceState(null, '', `#/${target}`);
+        }
+        setView(target);
+    };
+    parent.addEventListener('click', go);
+    parent.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            go(e);
+        }
     });
 });
 
