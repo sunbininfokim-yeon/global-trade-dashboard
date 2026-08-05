@@ -45,13 +45,16 @@ DMI_URL = "https://psl.noaa.gov/gcos_wgsp/Timeseries/Data/dmi.had.long.data"
 # sheet asks for SMAP, which starts in 2015; POWER's MERRA-2 root-zone wetness
 # starts in 1981, costs no extra request, and keeps the record at 42 seasons.
 POWER_PARAMS = ("T2M_MAX,T2M_MIN,T2M,PRECTOTCORR,RH2M,T2MDEW,"
-                "ALLSKY_SFC_SW_DWN,WS2M,GWETROOT,GWETTOP")
+                "ALLSKY_SFC_SW_DWN,WS2M,GWETROOT,GWETTOP,GWETPROF")
 
-# Bumped whenever POWER_PARAMS changes, so a cache written before a new
-# variable existed is not silently reused without it. v1 files had no soil
-# moisture; leaving them in place under the old name makes the upgrade a
-# re-download rather than a corrupt half-featured table.
-CACHE_SCHEMA = "v2"
+# Bumped whenever POWER_PARAMS or the derived columns change, so a cache
+# written before a variable existed is not silently reused without it.
+#   v1  no soil moisture
+#   v2  + GWETROOT, GWETTOP
+#   v3  + GWETPROF (water-table proxy for wheat) and `rs` retained for the
+#       photothermal quotient -- shortwave radiation was being fetched, used
+#       once for ET0, and then dropped before caching.
+CACHE_SCHEMA = "v3"
 POWER_START = "19810101"
 POWER_FILL = -900
 END_YEAR = 2025
@@ -138,20 +141,25 @@ def point_weather(point):
         "wind": list(p["WS2M"].values()),
         "gwetroot": list(p["GWETROOT"].values()),
         "gwettop": list(p["GWETTOP"].values()),
+        "gwetprof": list(p["GWETPROF"].values()),
     })
     df = df[(df[["tmax", "tmin", "tmean", "precip", "rh_mean", "tdew", "rs",
-                 "wind", "gwetroot", "gwettop"]] > POWER_FILL).all(axis=1)]
+                 "wind", "gwetroot", "gwettop",
+                 "gwetprof"]] > POWER_FILL).all(axis=1)]
     df = df.sort_values("date").reset_index(drop=True)
 
     df["et0"] = C.fao56_et0(df, point["lat"], point["elevation"])
     df["vpd_max"] = (C._svp(df.tmax) - C._svp(df.tdew)).clip(lower=0)
-    # Percentile against this point's own day-of-year climatology. Done here,
+    # Percentiles against this point's own day-of-year climatology. Done here,
     # once per point over the whole record, because the ranking is a property
-    # of the location and not of any one season.
+    # of the location and not of any one season. Root zone drives the drought
+    # features; the full profile is the wheat water-table proxy.
     df["sm_pct"] = A.soil_wetness_percentile(df, "gwetroot")
+    df["prof_pct"] = A.soil_wetness_percentile(df, "gwetprof")
 
     df = df[["date", "tmax", "tmin", "tmean", "precip", "rh_mean", "vpd_max",
-             "et0", "gwetroot", "gwettop", "sm_pct"]]
+             "et0", "rs", "gwetroot", "gwettop", "gwetprof",
+             "sm_pct", "prof_pct"]]
     df.to_csv(cached, index=False)
     log(f"  power {point['name']}: {len(df):,} days, "
         f"mean ET0 {df.et0.mean():.2f} mm/day, "

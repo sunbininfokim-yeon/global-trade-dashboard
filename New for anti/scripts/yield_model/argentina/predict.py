@@ -97,16 +97,20 @@ def recent_weather(point, year):
         "wind": list(p["WS2M"].values()),
         "gwetroot": list(p["GWETROOT"].values()),
         "gwettop": list(p["GWETTOP"].values()),
+        "gwetprof": list(p["GWETPROF"].values()),
     })
     df = df[(df[["tmax", "tmin", "tmean", "precip", "rh_mean", "tdew", "rs",
-                 "wind", "gwetroot", "gwettop"]] > POWER_FILL).all(axis=1)]
+                 "wind", "gwetroot", "gwettop",
+                 "gwetprof"]] > POWER_FILL).all(axis=1)]
     df = df.sort_values("date").reset_index(drop=True)
 
     df["et0"] = C.fao56_et0(df, point["lat"], point["elevation"])
     df["vpd_max"] = (C._svp(df.tmax) - C._svp(df.tdew)).clip(lower=0)
     df["sm_pct"] = A.soil_wetness_percentile(df, "gwetroot")
+    df["prof_pct"] = A.soil_wetness_percentile(df, "gwetprof")
     df = df[["date", "tmax", "tmin", "tmean", "precip", "rh_mean", "vpd_max",
-             "et0", "gwetroot", "gwettop", "sm_pct"]]
+             "et0", "rs", "gwetroot", "gwettop", "gwetprof",
+             "sm_pct", "prof_pct"]]
     df.to_csv(cached, index=False)
     return df
 

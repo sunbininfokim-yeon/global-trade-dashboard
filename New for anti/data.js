@@ -353,6 +353,65 @@
         }
     };
 
+    // === Daily trade-flow snapshot ===
+    //
+    // Comtrade's annual period changes at most once a year, so re-fetching and
+    // re-aggregating thousands of raw rows on every page entry buys nothing.
+    // scripts/trade_snapshot/build_snapshot.py does that work once a day in CI
+    // and commits the aggregated routes here, so a visit reads one small static
+    // file straight off Cloudflare's edge instead of waiting on the API proxy.
+    //
+    // Rows are compact tuples -- [source, target, volumeUsdMillions, netWeightMt]
+    // -- because coordinates and colours already live in this file.
+    const TRADE_SNAPSHOT_URL = 'public/data/trade_flows_v1.json';
+    let tradeSnapshotPromise = null;
+
+    function loadTradeSnapshot() {
+        if (!tradeSnapshotPromise) {
+            tradeSnapshotPromise = fetch(TRADE_SNAPSHOT_URL)
+                .then(res => (res.ok ? res.json() : null))
+                .catch(() => null);
+        }
+        return tradeSnapshotPromise;
+    }
+
+    // Percentages are relative to whatever set of routes survived filtering, so
+    // they have to be computed after the fact -- shared by the snapshot and the
+    // live API path so both produce identical arcs.
+    function finalizeArcs(arcs) {
+        const totalVol = arcs.reduce((sum, a) => sum + a.volume, 0);
+        arcs.forEach(a => {
+            // Keep one decimal: trade is dominated by a few mega-routes (Brazil->China
+            // alone is ~71% of soybeans), so Math.round() collapsed every remaining
+            // route to 0 and the map's `percentage >= 1` filter then dropped ~95% of them.
+            a.percentage = totalVol > 0 ? Math.round((a.volume / totalVol) * 1000) / 10 : 0;
+        });
+        arcs.sort((a, b) => b.volume - a.volume);
+        return { arcs, totalVol };
+    }
+
+    function snapshotArcs(entry, config) {
+        const arcs = [];
+        for (const [sourceName, targetName, volume, netWeightMt] of entry.flows || []) {
+            if (!COUNTRIES[sourceName] || !COUNTRIES[targetName]) continue;
+            arcs.push({
+                sourceName,
+                targetName,
+                sourcePosition: COUNTRIES[sourceName],
+                targetPosition: COUNTRIES[targetName],
+                volume,
+                netWeightMt,
+                percentage: 0,
+                typeName: config.hsCode,
+                sourceColor: config.colorScheme.source,
+                targetColor: config.colorScheme.target,
+                usdValue: volume * 1000000,
+                dataSource: "UN Comtrade (comtradeapi.un.org)"
+            });
+        }
+        return arcs;
+    }
+
     // === Fetch Real Trade Data from UN Comtrade via CORS Proxy ===
     // 출처: UN Comtrade API (comtradeapi.un.org) → Cloudflare Pages Function 프록시 경유
     window.fetchComtradeArcs = async function(commodityKey) {
@@ -362,7 +421,18 @@
             return [];
         }
 
-        console.log(`[Comtrade] Fetching real trade data for ${commodityKey} (HS ${config.hsCode})...`);
+        const snapshot = await loadTradeSnapshot();
+        const entry = snapshot?.commodities?.[commodityKey];
+        if (entry?.flows?.length) {
+            const { arcs, totalVol } = finalizeArcs(snapshotArcs(entry, config));
+            if (arcs.length > 0) {
+                console.log(`[Comtrade] ✅ ${commodityKey}: ${arcs.length} trade flows from ` +
+                    `daily snapshot (${snapshot.generated_at}, total $${totalVol}M)`);
+                return arcs;
+            }
+        }
+
+        console.log(`[Comtrade] Snapshot miss for ${commodityKey}; fetching live (HS ${config.hsCode})...`);
 
         try {
             // ALL_M49_CODES contains 40+ countries allowing for dynamic mapping of global trade routes
@@ -450,21 +520,9 @@
             // The Comex Stat feed is genuinely useful as a monthly national
             // total instead -- see window.loadBrazilMonthlyExports().
 
-            const arcs = Object.values(arcMap);
+            const { arcs, totalVol } = finalizeArcs(Object.values(arcMap));
 
-            // Calculate percentages.
-            // Keep one decimal: trade is dominated by a few mega-routes (Brazil->China
-            // alone is ~71% of soybeans), so Math.round() collapsed every remaining
-            // route to 0 and the map's `percentage >= 1` filter then dropped ~95% of them.
-            const totalVol = arcs.reduce((sum, a) => sum + a.volume, 0);
-            arcs.forEach(a => {
-                a.percentage = totalVol > 0 ? Math.round((a.volume / totalVol) * 1000) / 10 : 0;
-            });
-
-            // Sort by volume descending
-            arcs.sort((a, b) => b.volume - a.volume);
-
-            console.log(`[Comtrade] ✅ ${commodityKey}: ${arcs.length} trade flows loaded (Total: $${totalVol}M)`);
+            console.log(`[Comtrade] ✅ ${commodityKey}: ${arcs.length} trade flows loaded live (Total: $${totalVol}M)`);
             return arcs;
 
         } catch (e) {

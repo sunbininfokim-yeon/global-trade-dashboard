@@ -1,0 +1,29 @@
+name: Trade Flows Snapshot
+
+# The Worker warms its own KV cache at 18:00 UTC; run after that so this pulls
+# an already-warm response instead of forcing 14 cold UN Comtrade queries.
+on:
+  schedule:
+    - cron: '20 19 * * *'
+  workflow_dispatch:
+
+jobs:
+  build-trade-snapshot:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Build
+        working-directory: New for anti/scripts/trade_snapshot
+        run: python build_snapshot.py
+      - name: Commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "New for anti/public/data/trade_flows_v1.json"
+          git commit -m "chore: refresh daily trade flow snapshot" || exit 0
+          git push
