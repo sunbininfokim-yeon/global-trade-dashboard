@@ -353,18 +353,78 @@ PAMPAS_TRIGO = RegionCrop(
 # 북부 NOA/NEA -- 대두: heat, counted on a planting-relative window.
 # ---------------------------------------------------------------------------
 
+# Days from the onset of the summer rains to sowing in the Chaco. Soy here is
+# planted once the profile has recharged, not on the first wet day.
+CHACO_SOW_LAG_DAYS = 30
+
+# The Chaco sowing window, used to clamp the derived date. Outside this the
+# onset index has found something that is not the planting rains.
+CHACO_SOW_EARLIEST = (11, 1)
+CHACO_SOW_LATEST = (1, 20)
+
+
+def _chaco_sowing(daily, y):
+    """
+    Sowing date derived from the onset of the summer rains, with the fixed
+    15 December fallback.
+
+    The guide's headline variable is a count over days 50-100 *after sowing*,
+    and MAGyP does not publish planting progress, so a fixed date silently
+    moves that window by up to two months between seasons -- measuring pod-fill
+    heat in an early year and vegetative heat in a late one. Eur. J. Agron. 123
+    (2021), across 112 Gran Chaco farmer trials, puts sowing date among the
+    three variables that decide yield here, so getting it approximately right
+    matters more than the precision of anything computed on top of it.
+
+    This is the same trick `brazil.regions._mt_milho` uses to date the safrinha
+    crop, and Liebmann's anomalous-accumulation onset is reused unchanged.
+    Returns (planting_date, derived) so the caller can tell a real onset from
+    the fallback.
+    """
+    fallback = pd.Timestamp(year=y - 1, month=12, day=15)
+    try:
+        ors, _ = C.onset_doy(daily, y)
+    except Exception:  # noqa: BLE001 - a bad season must not kill the row
+        return fallback, False
+    if ors is None:
+        return fallback, False
+
+    jan1 = pd.Timestamp(year=y - 1, month=1, day=1)
+    sowing = jan1 + pd.Timedelta(days=int(ors) - 1 + CHACO_SOW_LAG_DAYS)
+
+    lo = pd.Timestamp(year=y - 1, month=CHACO_SOW_EARLIEST[0],
+                      day=CHACO_SOW_EARLIEST[1])
+    hi = pd.Timestamp(year=y, month=CHACO_SOW_LATEST[0],
+                      day=CHACO_SOW_LATEST[1])
+    if sowing < lo or sowing > hi:
+        return fallback, False
+    return sowing, True
+
+
 def _norte_soja(daily, y):
-    # The Chaco crop follows the summer rains in: sown mid-December, so the
-    # guide's decisive days 50-100 window lands in February and early March.
-    planting = pd.Timestamp(year=y - 1, month=12, day=15)
+    # Sowing follows the summer rains rather than the calendar. Both the
+    # derived date and the old fixed one are carried, and training decides
+    # which set of windows actually predicts better -- a derived date is a
+    # model of a management decision, not an observation of one.
+    planting, derived = _chaco_sowing(daily, y)
+    fixed = pd.Timestamp(year=y - 1, month=12, day=15)
+
     wb = A.water_balance(daily, planting, 140, A.AWC_CHACO, A.KC_SOYBEAN)
 
     rep = (planting + pd.Timedelta(days=50), planting + pd.Timedelta(days=100))
 
     return {
+        # Sowing date itself: late sowing shortens the cycle and pushes pod
+        # fill into the autumn, which is a yield effect in its own right.
+        "planting_doy": float((planting - pd.Timestamp(year=y - 1, month=1,
+                                                       day=1)).days + 1),
+        "sowing_derived": 1.0 if derived else 0.0,
         # The guide's headline: count of Tmax > 35 C on days 50-100
         "heat_penalty_50_100": A.heat_days_window(daily, planting, 50, 100, 35.0),
         "heat_excess_50_100": A.heat_excess_window(daily, planting, 50, 100, 35.0),
+        # Same counts on the old fixed-date window, kept so the run can show
+        # whether deriving the date bought anything.
+        "heat_penalty_fixed": A.heat_days_window(daily, fixed, 50, 100, 35.0),
         "water_deficit_rep": A.deficit_ratio(wb, *rep),
         "smi_rep": A.mean_smi(wb, *rep),
         "heat_wave_duration": A.heatwave_duration(

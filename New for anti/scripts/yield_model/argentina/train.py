@@ -71,26 +71,64 @@ def log(msg):
     print(f"[train] {msg}", flush=True)
 
 
-def nested_sets(candidates):
-    """
-    The three cumulative feed sets, as (name, features), smallest first.
-
-    These are also offered to model selection, not only to the ablation report.
-    An ablation that finds a better feature set than the selector can choose is
-    a broken selector: Pampas corn scored +38.6% on local weather alone and
-    +30.1% once the soil features were bolted on, and the run had no way to
-    pick the first. Adding three physically-motivated nested sets to the
-    existing "all"/"core" choice widens selection multiplicity a little, which
-    is a real cost -- but nested-by-data-feed is a principled ordering, not a
-    search over arbitrary subsets.
-    """
+def _families(candidates):
+    """Split the usable features into the three data feeds they come from."""
     soil = [c for c in candidates if c in SOIL_FEATURES]
     enso = [c for c in candidates if c in ENSO_FEATURES]
     weather = [c for c in candidates if c not in SOIL_FEATURES
                and c not in ENSO_FEATURES]
+    return weather, enso, soil
+
+
+def nested_sets(candidates):
+    """
+    The three **cumulative** feed sets for the ablation report, smallest first.
+
+    Strictly nested on purpose: the 0803 지시서 asks an ordering question --
+    "is it worth adding this feed on top of what I already have?" -- and that
+    only has an answer if each rung contains the one below it.
+    """
+    weather, enso, soil = _families(candidates)
     return [("weather", weather),
             ("enso", weather + enso),
             ("soil", weather + enso + soil)]
+
+
+def selection_sets(candidates):
+    """
+    Candidate feature sets for **model selection**, which is a different
+    question from the ablation and needs a different set of options.
+
+    The cumulative rungs alone cannot express "use the soil feed and skip the
+    rest", and that turned out to be the answer for northern soy: the four
+    GWETROOT features are its top four correlates with detrended yield
+    (+0.59, +0.58, -0.49, -0.44), yet the selector could only reach them
+    bundled with eight weaker weather features, which on 13 forward folds
+    halved the score (+12.7% -> +6.4%).
+
+    So two non-cumulative sets are added:
+
+      soilonly   the soil feed by itself
+      wxsoil     weather + soil, skipping ENSO
+
+    `wxsoil` exists because ENSO's marginal contribution is negative in four of
+    the five trained models -- ONI acts on yield *through* local rainfall and
+    temperature, which the weather features already measure -- and a cumulative
+    ladder gives no way to step over it.
+
+    This widens selection multiplicity, which is a real cost. It is bounded by
+    two things: these are data-feed partitions rather than an arbitrary subset
+    search, and `beats_trend` still requires positive skill over both the full
+    fold history and the recent folds, which a lucky combination rarely
+    survives.
+    """
+    weather, enso, soil = _families(candidates)
+    sets = nested_sets(candidates)
+    if soil:
+        sets.append(("soilonly", soil))
+        if weather:
+            sets.append(("wxsoil", weather + soil))
+    return sets
 
 
 def ablation(df, candidates, degree, window, min_train, baseline_rmse):
@@ -198,10 +236,10 @@ def train_one(cfg):
 
     results = {}
     sets = [("all", candidates)] + ([("core", core)] if core else [])
-    # Plus the nested data-feed sets, so the selector can reach the answer the
+    # Plus the data-feed sets, so the selector can reach the answer the
     # ablation finds rather than only choosing between "everything" and "the
     # guide's own variables".
-    sets += [(name, feats) for name, feats in nested_sets(candidates) if feats]
+    sets += [(name, feats) for name, feats in selection_sets(candidates) if feats]
 
     for label, feats in sets:
         for tlabel, degree, window in TREND_FORMS:
