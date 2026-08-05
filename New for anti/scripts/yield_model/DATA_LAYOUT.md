@@ -163,6 +163,23 @@ __pycache__/
 
 > 값이 없을 때 0이나 임의값을 넣지 마세요. 화면이 그걸 "예측치 0"으로 표시합니다.
 
+### 4b. 국가 단위 참고 패널 (서아프리카 코코아)
+
+지역 forecast를 검증하지 못한 국가는 **정부·기관 전망 + 조사 메모**만 올립니다.
+파일은 그대로 `public/data/{country}_yield_forecast.json` 이고, 최상위에:
+
+| 필드 | 의미 |
+|---|---|
+| `forecast_available: false` | 예측 발행 안 함 |
+| `panel_mode: "reference"` | 좌측을 참고 패널로 렌더 (필수 권장) |
+| `title_ko` / `reason_ko` | 배지·설명 |
+| `government_outlooks[]` | 기관·시즌·수치·`url` |
+| `research_notes[]` | 조사 메모 + `links[].url` |
+| `sources[]` | `{ name, url, supports }` |
+
+`CLIMATE_COUNTRIES` 항목에 `panelMode: 'reference'` 와 geo 이름(`Ghana`, `Ivory Coast`)·`iso`를 맞춥니다.
+가나/코트디부아르 표시 규칙은 `west_africa/COCOA_REFERENCE_KO.md` 참고.
+
 ---
 
 ## 5. 새 국가를 추가할 때 (2단계)

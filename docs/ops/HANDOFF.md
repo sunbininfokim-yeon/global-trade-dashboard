@@ -1,5 +1,20 @@
 # HANDOFF — 최근 인수인계
 
+## 2026-08-05 — cursor (서아프리카 참고 패널)
+
+### Goal / summary
+가나·코트디부아르(Ivory Coast)를 **예측이 아닌** 정부·기관 전망 + 조사 메모 참고 패널로 기후 맵에 연결. `forecast_available: false` + `panel_mode: reference`. 가짜 point 없음.
+
+### Done
+- `public/data/ghana_yield_forecast.json`, `cote_divoire_yield_forecast.json` (Codex `codex/ghana-cocoa-reference` 기반 보강)
+- `CLIMATE_COUNTRIES` Ghana / Ivory Coast + 좌측 참고 UI·출처 링크
+- `west_africa/COCOA_REFERENCE_KO.md`, `reference/cocoa_country_profiles.json` 복사
+- DATA_LAYOUT §4b
+
+### Next
+Claude T09(우측 제거)와 합칠 때 참고 패널은 좌측 유지. Senegal 등 미배선.
+
+---
 ## 2026-08-05 — cursor → claude (기후 UI 우측 제거)
 
 ### Goal / summary

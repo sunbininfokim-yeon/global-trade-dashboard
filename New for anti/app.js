@@ -660,6 +660,34 @@ const CLIMATE_COUNTRIES = {
               coordinates: [104.0, -3.0], regionKeys: ['indonesia_rubber'] },
         ],
     },
+    // West Africa cocoa: reference / government outlook only — no yield forecast
+    // (data cannot support validated regional forecasts). GeoJSON name = Ghana / Ivory Coast.
+    'Ghana': {
+        label: '가나',
+        modelName: '서아프리카 코코아 (참고)',
+        iso: 'GHA',
+        panelMode: 'reference',
+        view: { longitude: -1.2, latitude: 7.6, zoom: 6.2 },
+        dataFile: 'ghana_yield_forecast.json',
+        regions: [
+            { name: 'Ghana Cocoa Belt', label: '코코아 벨트 (참고)',
+              coordinates: [-1.6, 6.4], regionKeys: ['ghana_cocoa'] },
+        ],
+    },
+    'Ivory Coast': {
+        label: '코트디부아르',
+        modelName: '서아프리카 코코아 (참고)',
+        iso: 'CIV',
+        panelMode: 'reference',
+        // johan world.geo.json name is "Ivory Coast"; keep aliases for fuzzy match.
+        aliases: ["Côte d'Ivoire", "Cote d'Ivoire"],
+        view: { longitude: -5.5, latitude: 7.0, zoom: 6.0 },
+        dataFile: 'cote_divoire_yield_forecast.json',
+        regions: [
+            { name: 'CIV Cocoa Belt', label: '코코아 벨트 (참고)',
+              coordinates: [-6.5, 6.2], regionKeys: ['cote_divoire_cocoa'] },
+        ],
+    },
 };
 
 // 무역·수출 통제 seed (지도 국가 색). 실제 정책 피드 연동 전까지 UI 규칙용.
@@ -672,6 +700,8 @@ const CLIMATE_TRADE_POLICY = {
     'Australia': { restricted: false, prohibitedCrops: [], note: '정상' },
     'China': { restricted: false, prohibitedCrops: ['corn', 'wheat'], note: '주요 곡물 수출 제한 seed (2+ → 적)' },
     'Indonesia': { restricted: true, prohibitedCrops: ['palm_oil'], note: '팜 등 통제 seed (1품목 금지 → 주황 우선)' },
+    'Ghana': { restricted: false, prohibitedCrops: [], note: '코코아 참고국 · 예측 아님' },
+    'Ivory Coast': { restricted: false, prohibitedCrops: [], note: '코코아 참고국 · 예측 아님' },
 };
 
 const TRADE_FILL = {
@@ -702,10 +732,13 @@ const featureCountryKey = (feature) => {
     }
     const name = feature.properties?.name || feature.properties?.NAME;
     if (name && CLIMATE_COUNTRIES[name]) return name;
-    // Fuzzy: "United States of America" → United States entry
+    // Fuzzy: "United States of America" → United States entry; aliases for Ivory Coast etc.
     if (name) {
-        const hit = Object.entries(CLIMATE_COUNTRIES).find(([k, c]) =>
-            name.includes(k) || name.includes(c.label) || k.includes(name));
+        const hit = Object.entries(CLIMATE_COUNTRIES).find(([k, c]) => {
+            const aliases = c.aliases || [];
+            return name.includes(k) || name.includes(c.label) || k.includes(name)
+                || aliases.some((a) => name.includes(a) || a.includes(name));
+        });
         if (hit) return hit[0];
     }
     return null;
@@ -1816,6 +1849,122 @@ const normalizeForecast = (fc, onlyKeys = null) => {
     return out;
 };
 
+// West Africa (and similar) countries publish outlooks without a yield model.
+// Do NOT key only on forecast_available:false — some forecast countries have
+// individual regions gated off (e.g. Argentina wheat) while still modelling others.
+const isClimateReference = (fc, cfg = null) =>
+    !!(cfg?.panelMode === 'reference'
+        || fc?.panel_mode === 'reference'
+        || (fc?.forecast_available === false
+            && (Array.isArray(fc.government_outlooks) || Array.isArray(fc.research_notes))));
+
+const fmtRefNumber = (v, unit) => {
+    if (v == null || !isFinite(Number(v))) return '—';
+    const n = Number(v);
+    if (unit === 'ha' || unit === 'tonnes' || unit === 't') {
+        return Math.round(n).toLocaleString('en-US');
+    }
+    return n.toLocaleString('en-US');
+};
+
+const renderSourceLink = (url, label) => {
+    if (!url) return '';
+    const text = label || '출처';
+    return `<a class="climate-ref-link" href="${url}" target="_blank" rel="noopener noreferrer">${text} ↗</a>`;
+};
+
+const renderClimateReferencePanelHtml = (cfg, fc, meta = {}) => {
+    const lv = meta.lv || 'blue';
+    const pol = meta.pol || {};
+    const title = fc.title_ko || cfg.modelName || `${cfg.label} 참고자료`;
+    const reason = fc.reason_ko || fc.reason || '데이터 한계로 예측하지 않습니다.';
+    const outlooks = Array.isArray(fc.government_outlooks) ? fc.government_outlooks : [];
+    const notes = Array.isArray(fc.research_notes) ? fc.research_notes : [];
+    const sources = Array.isArray(fc.sources) ? fc.sources : [];
+
+    const outlookHtml = outlooks.length
+        ? outlooks.map((o) => {
+            const unit = o.unit || '';
+            const unitKo = unit === 'tonnes' || unit === 't' ? 't'
+                : unit === 'ha' ? 'ha' : unit;
+            return `<div class="climate-ref-item">
+                <div class="gi-top">
+                    <span>${o.agency_ko || o.agency || '기관'}
+                        ${o.season ? `<span class="climate-chip" style="margin-left:6px;">${o.season}</span>` : ''}
+                    </span>
+                    <span>${fmtRefNumber(o.value, unit)} ${unitKo}</span>
+                </div>
+                <div class="gi-note">
+                    <strong style="color:#cbd5e1;font-weight:600;">${o.metric_ko || o.metric || ''}</strong>
+                    ${o.status_ko ? ` · ${o.status_ko}` : ''}
+                    ${o.note_ko ? ` · ${o.note_ko}` : ''}
+                    ${o.url ? ` · ${renderSourceLink(o.url, o.url_label || o.agency || '원문')}` : ''}
+                </div>
+            </div>`;
+        }).join('')
+        : '<div class="climate-sub">등록된 기관 전망이 없습니다.</div>';
+
+    const notesHtml = notes.length
+        ? notes.map((n) => {
+            const links = (n.links || []).map((l) => renderSourceLink(l.url, l.label)).join(' · ');
+            return `<div class="climate-ref-note">
+                <div class="cm-title" style="margin-bottom:4px;">${n.title_ko || n.title || '메모'}</div>
+                <div class="climate-sub">${n.body_ko || n.body || ''}</div>
+                ${links ? `<div class="climate-ref-links">${links}</div>` : ''}
+            </div>`;
+        }).join('')
+        : '<div class="climate-sub">조사 메모 없음</div>';
+
+    const sourcesHtml = sources.length
+        ? `<ul class="climate-ref-source-list">${sources.map((s) => {
+            const name = typeof s === 'string' ? s : (s.name || s.url);
+            const url = typeof s === 'string' ? s : s.url;
+            const supports = typeof s === 'object' && s.supports ? ` — ${s.supports}` : '';
+            return `<li>${url
+                ? `<a href="${url}" target="_blank" rel="noopener noreferrer">${name}</a>${supports}`
+                : `${name}${supports}`}</li>`;
+        }).join('')}</ul>`
+        : '';
+
+    return `
+        <div class="climate-scroll">
+            ${climateNavBackHtml(cfg.label)}
+            <div class="climate-trade-banner">
+                <div>
+                    <div class="tb-label">무역 · 수출 통제</div>
+                    <div class="tb-note">${pol.note || '상태 메모 없음'}</div>
+                </div>
+                <span class="climate-status-pill ${lv}">${tradePolicyLabelKo(lv)}</span>
+            </div>
+            <div class="climate-card climate-ref-banner">
+                <div class="climate-metric-row" style="border:none;padding:0;">
+                    <span class="nm" style="font-size:13px;font-weight:600;color:#e2e8f0;">${title}</span>
+                    <span class="climate-status-pill orange">예측 불가 / 참고 자료</span>
+                </div>
+                <div class="climate-sub" style="margin-top:8px;">시즌 ${fc.season || '—'} · ${reason}</div>
+            </div>
+            <div class="climate-card">
+                <h3>주요 정부·기관 전망</h3>
+                <div class="climate-sub" style="margin-bottom:8px;">
+                    ICCO·USDA GAIN·FAOSTAT 등 출처별 수치 · 예측치가 아님
+                </div>
+                ${outlookHtml}
+            </div>
+            <div class="climate-card">
+                <h3>조사 메모</h3>
+                ${notesHtml}
+            </div>
+            ${sourcesHtml ? `<div class="climate-card">
+                <h3>출처 링크</h3>
+                ${sourcesHtml}
+            </div>` : ''}
+            <p style="font-size:10px;color:#64748b;">
+                갱신: ${fc.generated_at ? new Date(fc.generated_at).toLocaleString() : '—'}
+                · 서아프리카 코코아는 모델 forecast를 발행하지 않습니다.
+            </p>
+        </div>`;
+};
+
 // --- Climate dashboard v2 (world global climate + country drill-down) -----
 
 let climateGlobalCache = null;
@@ -1851,6 +2000,18 @@ const refreshClimateCityTemps = async () => {
 const climateCountrySummary = async (cfg) => {
     const fc = await loadClimateForecast(cfg);
     if (!fc) return null;
+    if (isClimateReference(fc, cfg)) {
+        return {
+            season: fc.season,
+            regionCount: cfg.regions.length,
+            cropCount: 0,
+            meanPct: null,
+            lowShare: 0,
+            reference: true,
+            titleKo: fc.title_ko || cfg.modelName || cfg.label,
+            reason: fc.reason_ko || fc.reason || null,
+        };
+    }
     const crops = normalizeForecast(fc);
     if (!crops.length) return null;
     const scored = crops.filter(c => c.pct !== null);
@@ -1865,6 +2026,7 @@ const climateCountrySummary = async (cfg) => {
         lowShare: crops.length
             ? crops.filter(c => c.lowConfidence).length / crops.length
             : 0,
+        reference: false,
     };
 };
 
@@ -1921,7 +2083,13 @@ const setClimateMapLegend = (mode) => {
             <div class="leg-row"><span class="swatch" style="background:#fb923c"></span> 금지 1품목</div>
             <div class="leg-row"><span class="swatch" style="background:#f87171"></span> 금지 곡물 2+</div>
             <div class="leg-row"><span class="swatch" style="background:#1e293b"></span> 미대상</div>
-            <div style="margin-top:8px;color:#64748b;font-size:10px;">우측 패널 범례 참고 · 클릭=국가</div>`;
+            <div style="margin-top:8px;color:#64748b;font-size:10px;">맵 미니 범례 · 클릭=국가</div>`;
+    } else if (mode === 'reference') {
+        climateMapLegendEl.classList.remove('hidden');
+        climateMapLegendEl.innerHTML = `
+            <h4>참고 자료 국가</h4>
+            <div class="leg-row"><span class="swatch" style="background:#fb923c"></span> 예측 불가</div>
+            <div style="margin-top:8px;color:#64748b;font-size:10px;">정부·기관 전망 + 조사 메모 · 좌측 패널</div>`;
     } else if (mode === 'country') {
         climateMapLegendEl.classList.remove('hidden');
         climateMapLegendEl.innerHTML = `
@@ -1929,7 +2097,7 @@ const setClimateMapLegend = (mode) => {
             <div class="leg-row"><span class="swatch" style="background:#f87171"></span> 불리 (≤ −4%)</div>
             <div class="leg-row"><span class="swatch" style="background:#fb923c"></span> 약세 (−4 ~ −1.5%)</div>
             <div class="leg-row"><span class="swatch" style="background:#4ade80"></span> 양호 (&gt; −1.5%)</div>
-            <div style="margin-top:8px;color:#64748b;font-size:10px;">단수 예측의 기상 편차 · 산지 클릭=우측 상세</div>`;
+            <div style="margin-top:8px;color:#64748b;font-size:10px;">단수 예측의 기상 편차 · 산지 클릭=상세</div>`;
     } else {
         climateMapLegendEl.classList.add('hidden');
         climateMapLegendEl.innerHTML = '';
@@ -2040,7 +2208,7 @@ const renderClimateWorldRight = async () => {
             <div class="climate-sub" style="margin-top:8px;">지도 채색 기준 · 정책 피드는 추후 연동</div>
         </div>
         <div class="climate-card">
-            <h3>보유 모델 ${Object.keys(CLIMATE_COUNTRIES).length}개국</h3>
+            <h3>기후 연결 ${Object.keys(CLIMATE_COUNTRIES).length}개국</h3>
             ${rows}
         </div>`;
 };
@@ -2175,14 +2343,13 @@ const showClimateTooltip = async (info, name, cfg) => {
     tooltipEl.style.left = `${info.x + 12}px`;
     tooltipEl.style.top = `${info.y + 12}px`;
     tooltipEl.classList.remove('hidden');
-    tooltipEl.innerHTML = `
-        <div class="tooltip-title">${cfg.label}${cfg.modelName ? ` · ${cfg.modelName}` : ''}</div>
-        <div class="tooltip-stat"><span>무역 상태</span>
-            <span class="climate-status-pill ${lv}">${tradePolicyLabelKo(lv)}</span></div>
-        ${tAnom != null ? `<div class="tooltip-stat"><span>기온 편차 seed</span>
-            <span style="color:${tAnom >= 0 ? '#fca5a5' : '#7dd3fc'};font-weight:bold;">
-            ${tAnom >= 0 ? '+' : ''}${tAnom.toFixed(1)}°C</span></div>` : ''}
-        ${s ? `
+    const body = s?.reference
+        ? `<div class="tooltip-stat"><span>모드</span>
+            <span class="climate-status-pill orange">예측 불가 · 참고</span></div>
+           <div class="tooltip-stat"><span>시즌</span><span>${s.season || '—'}</span></div>
+           <div style="margin-top:6px;font-size:10px;color:#94a3b8;line-height:1.4;">
+             ${s.reason || '정부·기관 전망 + 조사 메모 (예측 아님)'}</div>`
+        : (s ? `
         <div class="tooltip-stat"><span>작황 기상효과</span>
             ${s.meanPct === null
                 ? '<span style="color:#94a3b8;">요약 불가</span>'
@@ -2190,7 +2357,15 @@ const showClimateTooltip = async (info, name, cfg) => {
                    ${s.meanPct >= 0 ? '+' : ''}${s.meanPct.toFixed(1)}%</span>`}</div>
         <div class="tooltip-stat"><span>대상 작물 / 산지</span>
             <span>${s.cropCount}개 · ${s.regionCount}개</span></div>`
-        : '<div class="tooltip-stat"><span>예측 로딩…</span></div>'}
+        : '<div class="tooltip-stat"><span>예측 로딩…</span></div>');
+    tooltipEl.innerHTML = `
+        <div class="tooltip-title">${cfg.label}${cfg.modelName ? ` · ${cfg.modelName}` : ''}</div>
+        <div class="tooltip-stat"><span>무역 상태</span>
+            <span class="climate-status-pill ${lv}">${tradePolicyLabelKo(lv)}</span></div>
+        ${tAnom != null ? `<div class="tooltip-stat"><span>기온 편차 seed</span>
+            <span style="color:${tAnom >= 0 ? '#fca5a5' : '#7dd3fc'};font-weight:bold;">
+            ${tAnom >= 0 ? '+' : ''}${tAnom.toFixed(1)}°C</span></div>` : ''}
+        ${body}
         <div style="margin-top:6px;font-size:10px;color:#64748b;">${pol.note || ''} · 클릭하여 상세</div>`;
 };
 
@@ -2242,11 +2417,13 @@ const showClimateCountry = async (countryName) => {
     const pol = CLIMATE_TRADE_POLICY[countryName] || {};
 
     currentViewTitle.textContent = `${cfg.label} ${cfg.iso || ''}`.trim();
-    currentViewDesc.textContent = `${cfg.regions.length}개 산지 · 산지 핀 클릭 시 우측 상세 · ← 세계 지도`;
+    currentViewDesc.textContent = isClimateReference(null, cfg) || cfg.panelMode === 'reference'
+        ? `${cfg.regions.length}개 산지 · 예측 불가 · 좌측 정부 전망·조사 메모 · ← 세계 지도`
+        : `${cfg.regions.length}개 산지 · 산지 핀 클릭 시 우측 상세 · ← 세계 지도`;
     totalVolumeEl.textContent = cfg.modelName || cfg.label;
     topExporterEl.textContent = tradePolicyLabelKo(lv);
 
-    setClimateMapLegend('country');
+    setClimateMapLegend(cfg.panelMode === 'reference' ? 'reference' : 'country');
 
     if (chartView) {
         chartView.classList.add('hidden');
@@ -2341,8 +2518,6 @@ const fmtYield = (v, unit) => {
 
 const renderCountryPanel = async (cfg, points = null, meta = {}) => {
     const fc = await loadClimateForecast(cfg);
-    const crops = normalizeForecast(fc);
-    const merged = mergeCropsByType(crops);
     const lv = meta.lv || tradePolicyLevel(climateCountry);
     const pol = meta.pol || CLIMATE_TRADE_POLICY[climateCountry] || {};
     points = points || await buildRegionPoints(cfg);
@@ -2350,6 +2525,44 @@ const renderCountryPanel = async (cfg, points = null, meta = {}) => {
     const regionCfg = regionFocus
         ? cfg.regions.find((r) => r.name === regionFocus)
         : null;
+
+    // Reference / no-forecast countries: left panel is government outlooks + notes.
+    // Do not invent crop-merge averages or fake yield points.
+    if (isClimateReference(fc, cfg)) {
+        forecastCountryTitle.textContent = fc?.title_ko || cfg.modelName || cfg.label;
+        forecastContentEl.innerHTML = renderClimateReferencePanelHtml(cfg, fc || {}, { lv, pol });
+        if (climateRightTitleEl) climateRightTitleEl.textContent = '참고 모드';
+        if (climateRightDescEl) {
+            climateRightDescEl.textContent = '예측 없음 · 좌측 정부 전망·조사 메모';
+        }
+        if (climateRightContentEl) {
+            climateRightContentEl.innerHTML = `
+                <div class="climate-card">
+                    <h3>예측 불가</h3>
+                    <div class="climate-sub">${fc?.reason_ko || fc?.reason || '데이터 한계로 단수 예측을 제공하지 않습니다.'}</div>
+                    <div class="climate-sub" style="margin-top:8px;">상세·링크는 좌측 패널을 보세요.</div>
+                </div>
+                <div class="climate-card">
+                    <h3>산지 핀</h3>
+                    ${cfg.regions.map((r) => `
+                        <div class="climate-region-hit climate-click${regionFocus === r.name ? ' climate-region-active' : ''}"
+                             role="button" tabindex="0"
+                             data-climate-region="${r.name}" aria-label="${r.label}">
+                            <div class="climate-table-row">
+                                <span class="nm">${r.label}</span>
+                                <span class="climate-status-pill orange">참고</span>
+                            </div>
+                        </div>`).join('') || '<div class="climate-sub">핀 없음</div>'}
+                </div>`;
+        }
+        if (climateRightPanelEl) climateRightPanelEl.classList.remove('hidden');
+        panelHide(macroPanelEl);
+        panelHide(countryStatsPanelEl);
+        return;
+    }
+
+    const crops = normalizeForecast(fc);
+    const merged = mergeCropsByType(crops);
 
     // Left: trade + GAIN + crop-type merge + calendar (not commodity trade stats)
     forecastCountryTitle.textContent = cfg.modelName || cfg.label;
