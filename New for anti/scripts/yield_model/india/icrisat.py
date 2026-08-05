@@ -62,12 +62,18 @@ API = "http://data.icrisat.org/dldAPI"
 DATASET = "unapportioned/area-production-yield"
 
 # "unapportioned" reports each district on its boundaries as they were in the
-# year of record; "apportioned" back-projects every year onto 2015 boundaries
-# but only starts in 1990. India redrew a great many district boundaries after
-# 1966 -- Madhya Pradesh alone shed Chhattisgarh in 2000 -- but because
-# everything here is aggregated up to a multi-district region before use, the
-# splits happen *inside* the aggregate and cancel. The extra 24 years of record
-# are worth more than boundary-stable district identifiers we do not use.
+# year of record; "apportioned" back-projects every year onto 2015 boundaries.
+# India redrew a great many district boundaries over this period -- Madhya
+# Pradesh alone shed Chhattisgarh in 2000 -- but because everything here is
+# aggregated up to a multi-district region before use, the splits happen
+# *inside* the aggregate and cancel out, so the boundary-stable identifiers
+# apportioned offers buy nothing here.
+#
+# Both series turn out to cover 1990-2019 in practice. The DLD web UI populates
+# its year dropdown from 1966 for unapportioned, which is what an earlier note
+# here claimed as an advantage, but the delivered payload does not go back that
+# far -- 18,060 district-years over 596 districts is exactly 30 seasons. Treat
+# 1990 as the hard start of the labelled record.
 
 CROPS = {
     "wheat": "WHEAT",

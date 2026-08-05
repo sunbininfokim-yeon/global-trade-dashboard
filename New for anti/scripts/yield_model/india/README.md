@@ -20,10 +20,18 @@ python3 -m india.run_forecast   # writes public/data/india_yield_forecast.json
 
 | | source | span | key |
 |---|---|---|---|
-| Yield | ICRISAT District Level Database, **district level** | 1966–2017ish | none |
+| Yield | ICRISAT District Level Database, **district level** | 1990–2019 (596 districts, 20 states) | none |
 | Weather | NASA POWER daily | 1984– (radiation opens later than meteorology) | none |
 | ENSO | NOAA CPC ONI | 1950– | none |
 | IOD | NOAA PSL HadISST Dipole Mode Index | 1870– | none |
+
+**The labelled record is 30 seasons**, and ICRISAT's 1990 start is what binds
+— not NASA POWER's 1984 radiation start. Thirty annual rows is thin: it is why
+every guide's prescribed ML method is replaced by a regularised linear model
+here (see Known departures), and it is why a negative result should be read as
+"this did not survive at this sample size", not as "the methodology is wrong".
+The series also ends in 2019, so seasons from 2020 on are unlabelled and can be
+forecast but not scored.
 
 District-level yield is what makes the region-specific methodologies
 possible, the same argument `brazil/README.md` makes for IBGE SIDRA's state
@@ -59,17 +67,31 @@ dewpoint and temperature, rather than taken precomputed, the same choice
 Brazil's package makes and for the same reason: it is the FAO reference method
 and the cotton guide's Moisture_Deficit needs it directly.
 
-### A known operational problem with the ICRISAT source
+### Why the yield table is committed rather than fetched
+
+`india/data/icrisat_apy.csv` is checked in, unlike every other input here.
+That is deliberate.
 
 The API serves one ~13 MB JSON blob with no server-side filter, and the
-upstream server has proven unreliable: most transfer attempts are cut short by
-`IncompleteRead` well before the declared `Content-Length`, and Range requests
-are not honoured (a ranged request restarts from zero rather than resuming).
-`icrisat.py`'s `_download()` retries with exponential backoff and verifies the
-received length before parsing, so a truncated body is never silently treated
-as complete -- but getting one clean transfer has required patience measured
-in attempts, not seconds. See that module's docstring for the escalation path
-if the patient retry does not get through.
+upstream server throttles to roughly 60-70 KB/s while enforcing a hard
+per-request timeout near 90 seconds. The arithmetic does not work: an ordinary
+connection cannot finish 13 MB inside 90 seconds, so the response is cut off
+every time. Four attempts from a home connection all died with `IncompleteRead`
+at the *identical* byte offset (6,078,207), which is what ruled out packet loss
+and identified the timeout. Range requests are not honoured either -- a ranged
+request restarts from zero rather than resuming -- so retrying cannot make
+progress, it can only repeat.
+
+A GitHub Actions runner has enough bandwidth to finish inside the same window;
+in practice it took 50 seconds. So the fetch runs once from CI
+(`.github/workflows/india_icrisat_fetch.yml`, manual `workflow_dispatch`) and
+the tidy table is committed. `load_raw()` reads that file first and never
+touches the network again, for anyone.
+
+`_download()` still verifies the received length against `Content-Length`
+before parsing, and that guard earns its place: a parallel fetcher that lacked
+it silently committed a 6.15 MB fragment of the same dataset, which failed to
+parse at all. Do not remove the check when re-running the snapshot.
 
 ## Results
 
@@ -129,11 +151,10 @@ JSON, so a low score reads as "weather does not drive this crop" rather than
   The 2002 Bt transition, seed pricing and availability, pink bollworm
   resistance spreading from about 2015, and MSP-relative pricing against
   soybean and pigeonpea all move planted area and input intensity year to
-  year. ICRISAT also reports cotton in lint terms, so a change in ginning
-  ratio moves the series with no change in the field -- **this specific claim
-  has not yet been checked against the downloaded data and should be verified
-  before being treated as settled** (expected yield level: roughly 300-600
-  kg/ha if lint, closer to 1,000-1,500 if seed cotton).
+  year. ICRISAT reports cotton in lint terms, so a change in ginning ratio
+  moves the series with no change in the field. (Confirmed against the data:
+  the region averages 414 kg/ha over 2015-19, which is a lint figure -- seed
+  cotton would run 1,000-1,500.)
 
 ## Structural note
 

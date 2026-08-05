@@ -10,6 +10,9 @@ wrangler.toml
 AI_WORKFLOW.md
 cloudflare_worker.js
 cloudflare_crop_forecast.json
-# ~6MB ICRISAT blob — train-time only; never needed by the browser.
-# Kept in git so Actions can refresh it without shipping to every visitor.
-public/data/icrisat_crop_production.json
+# The ICRISAT blob used to sit in public/data/ and was excluded here so it was
+# not shipped to every visitor. It has since been deleted outright: the copy in
+# git was a truncated download that would not parse, and a train-time input
+# does not belong under public/ in the first place. The India yield snapshot
+# now lives at scripts/yield_model/india/data/, which the browser never reads,
+# so no exclusion is needed.
