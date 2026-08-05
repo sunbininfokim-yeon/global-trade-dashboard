@@ -18,6 +18,7 @@ Cursor가 주기적으로 재배치한다.
 | T06 | 코드 리뷰 | claude | PR diff | — | ready | 기본 역할=리뷰 (T07 PR 포함) |
 | T08 | liquidity/official UI 연결 | cursor | app.js + worker API | — | ready | 스냅샷 JSON은 이미 있음. 패널 미연결 |
 | T09 | 기후 UI 우측 제거·좌측 산지·미니범례 | **claude** | `app.js` `style.css` `index.html` `usda_gain_outlook_v1.json` | `claude/ui-climate-panel` | **in_progress** | Cursor: 가나·CIV **참고 패널** 배선(미커밋, `panel_mode:reference`). Claude T09 이어갈 때 아프리카 참고 UI 유지·우측 제거와 합칠 것 |
+| T10 | MENA yield pipeline | cursor | `yield_model/mena/**`, `public/data/mena_yield_forecast.json` | `cursor/ml-mena-yield` | **in_progress** | Nile irrigated + Maghreb rainfed wheat T1; FAOSTAT labels; forecast JSON |
 
 ## 백로그
 
