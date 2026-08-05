@@ -731,17 +731,28 @@ body {
 }
 
 /* === SHIPPING CAPACITY DASHBOARD === */
+body.shipping-mode #map {
+    display: none !important;
+    pointer-events: none !important;
+    visibility: hidden !important;
+}
+
+body.shipping-mode #chart-view,
 #chart-view.shipping-surface {
-    display: block;
-    align-items: initial;
-    justify-content: initial;
-    overflow-y: auto;
-    overflow-x: hidden;
+    display: block !important;
+    align-items: initial !important;
+    justify-content: initial !important;
+    overflow-y: scroll !important;
+    overflow-x: hidden !important;
     -webkit-overflow-scrolling: touch;
     overscroll-behavior: contain;
-    pointer-events: auto;
+    pointer-events: auto !important;
+    position: absolute;
+    inset: 0;
+    width: 100%;
     height: 100%;
-    max-height: 100%;
+    max-height: none;
+    z-index: 40 !important;
     background:
         radial-gradient(circle at 12% 0%, rgba(56, 189, 248, 0.09), transparent 30%),
         radial-gradient(circle at 92% 8%, rgba(129, 140, 248, 0.08), transparent 28%),
@@ -751,6 +762,46 @@ body {
 #chart-view.shipping-surface::-webkit-scrollbar { width: 8px; }
 #chart-view.shipping-surface::-webkit-scrollbar-track { background: rgba(15, 23, 42, 0.8); }
 #chart-view.shipping-surface::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, 0.28); border-radius: 999px; }
+
+.menu-parent {
+    display: flex;
+    align-items: center;
+    height: 100%;
+    padding: 0 4px;
+    min-width: 2.5em;
+}
+
+/* Trade focus ranking (left, while right pane is hidden) */
+body.trade-map-mode .right-pane {
+    display: none !important;
+}
+body.trade-map-mode .left-pane {
+    width: min(340px, 32vw);
+    max-width: 340px;
+}
+.trade-focus-card { padding: 4px 0 12px; }
+.trade-focus-head {
+    display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 6px;
+}
+.trade-focus-clear {
+    font: inherit; font-size: 11px; color: #93c5fd; background: transparent;
+    border: 1px solid rgba(148,163,184,.35); border-radius: 6px; padding: 4px 8px; cursor: pointer;
+}
+.trade-focus-clear:hover { border-color: #38bdf8; color: #e2e8f0; }
+.trade-focus-sub { font-size: 11px; color: #94a3b8; margin: 0 0 10px; }
+.trade-rank-list { display: flex; flex-direction: column; gap: 2px; }
+.trade-rank-row {
+    display: grid; grid-template-columns: 22px 1fr auto auto; gap: 8px; align-items: center;
+    padding: 7px 4px; border-bottom: 1px solid rgba(255,255,255,.06); font-size: 12.5px;
+}
+.trade-rank-row .tr-i { color: #64748b; font-variant-numeric: tabular-nums; }
+.trade-rank-row .tr-pct { color: #38bdf8; font-weight: 700; font-variant-numeric: tabular-nums; }
+.trade-rank-row .tr-vol { color: #94a3b8; font-size: 11px; font-variant-numeric: tabular-nums; min-width: 52px; text-align: right; }
+
+.climate-model-notes {
+    margin: 10px 0 0; padding-left: 18px; color: #94a3b8; font-size: 12px; line-height: 1.55;
+}
+.climate-unit-bridge .climate-sub { line-height: 1.55; }
 
 .shipping-shell {
     width: 100%;
@@ -1144,18 +1195,42 @@ body {
 /* === CLIMATE DASHBOARD === */
 .climate-map-legend {
     position: absolute;
-    left: 16px;
-    bottom: 16px;
     z-index: 8;
-    background: rgba(15, 23, 42, 0.92);
-    border: 1px solid rgba(148, 163, 184, 0.25);
-    border-radius: 10px;
-    padding: 12px 14px;
-    font-size: 11px;
-    color: #cbd5e1;
-    line-height: 1.55;
-    max-width: 280px;
     pointer-events: none;
+    font-size: 11px;
+    color: rgba(226, 232, 240, 0.72);
+    line-height: 1.45;
+}
+/* Req 11: top-right, no card frame */
+.climate-map-legend.world-mini,
+.climate-map-legend.country-leg {
+    left: auto;
+    right: 14px;
+    top: 14px;
+    bottom: auto;
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    padding: 0;
+    max-width: none;
+    box-shadow: none;
+    backdrop-filter: none;
+}
+.climate-map-legend .mini-leg-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 3px;
+    font-size: 10.5px;
+    color: rgba(203, 213, 225, 0.7);
+    text-shadow: 0 1px 2px rgba(0,0,0,.55);
+}
+.climate-map-legend .mini-leg-row .swatch {
+    width: 8px;
+    height: 8px;
+    border-radius: 2px;
+    border: 1px solid rgba(255,255,255,0.18);
+    opacity: 0.85;
 }
 .climate-map-legend h4 {
     margin: 0 0 8px;
@@ -1348,7 +1423,16 @@ body {
     opacity: 0.9;
 }
 .climate-cal-bar.sow { background: rgba(56, 189, 248, 0.55); }
+.climate-cal-bar.grow { background: rgba(74, 222, 128, 0.28); }
 .climate-cal-bar.harvest { background: rgba(250, 204, 21, 0.55); }
+.climate-cal-legend i.grow {
+    display: inline-block; width: 10px; height: 8px; border-radius: 2px;
+    background: rgba(74, 222, 128, 0.45); margin-right: 4px; vertical-align: middle;
+}
+.climate-cal-legend i.fallow {
+    display: inline-block; width: 10px; height: 8px; border-radius: 2px;
+    background: rgba(100, 116, 139, 0.45); margin-right: 4px; vertical-align: middle;
+}
 .climate-cal-now {
     position: absolute;
     top: 0;
