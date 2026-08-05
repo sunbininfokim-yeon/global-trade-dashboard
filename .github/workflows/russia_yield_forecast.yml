@@ -1,0 +1,70 @@
+name: Weekly Russia Winter-Wheat Yield Forecast
+
+on:
+  schedule:
+    # Mondays 11:00 UTC — after China (10:30) to avoid POWER commit races.
+    - cron: '0 11 * * 1'
+  workflow_dispatch:
+
+jobs:
+  forecast:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pandas numpy scipy scikit-learn
+
+      - name: Run forecast
+        working-directory: "New for anti/scripts/yield_model"
+        run: |
+          python -m russia.run_forecast
+
+      - name: Rebuild models if USDA published a new season
+        working-directory: "New for anti/scripts/yield_model"
+        run: |
+          set -e
+          if [ ! -f russia/training/russia_winter_wheat.csv ]; then
+            echo "no training table yet — first-time collect + train"
+            python -m russia.collect
+            python -m russia.train
+            python -m russia.run_forecast
+            exit 0
+          fi
+          LATEST_TRAINED=$(python -c "import pandas as pd; d=pd.read_csv('russia/training/russia_winter_wheat.csv').dropna(subset=['target']); print(int(d.year.max()))")
+          LATEST_PUBLISHED=$(python -c "
+          import os, russia.labels as L
+          p = os.path.join(L.CACHE, 'psd_grains_russia.csv')
+          if os.path.exists(p):
+              os.remove(p)
+          print(int(L.psd_yield_kg_ha('Wheat').year.max()))
+          ")
+          echo "trained through $LATEST_TRAINED, USDA published through $LATEST_PUBLISHED"
+          if [ "$LATEST_PUBLISHED" -gt "$LATEST_TRAINED" ]; then
+            echo "new season published — rebuilding"
+            python -m russia.collect
+            python -m russia.train
+            python -m russia.run_forecast
+          else
+            echo "no new season; keeping existing models"
+          fi
+
+      - name: Commit and Push Changes
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add "New for anti/public/data/russia_yield_forecast.json" \
+                  "New for anti/scripts/yield_model/russia/training" \
+                  "New for anti/scripts/yield_model/russia/models"
+          git commit -m "chore: weekly Russia winter-wheat yield forecast refresh" || exit 0
+          git push

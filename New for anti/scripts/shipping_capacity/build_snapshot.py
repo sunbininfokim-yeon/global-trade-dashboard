@@ -62,6 +62,8 @@ def build_snapshot(config_dir: Path, *, fetch_portwatch: bool = False) -> dict[s
     fleet = load_json(config_dir / "fleet_2025.json")
     chokepoints = load_json(config_dir / "chokepoints.json")
     routes = load_json(config_dir / "routes.json")
+    route_catalog_path = config_dir / "route_catalog.json"
+    route_catalog = load_json(route_catalog_path) if route_catalog_path.exists() else []
     scenarios = load_json(config_dir / "scenarios.json")
     fleet_by_type = {row["ship_type"]: row["dwt"] for row in fleet["fleet_by_type"]}
 
@@ -117,6 +119,12 @@ def build_snapshot(config_dir: Path, *, fetch_portwatch: bool = False) -> dict[s
                 "ship_type": route["ship_type"],
                 "origin": route["origin"],
                 "destination": route["destination"],
+                "service_type": route.get("service_type", "laden_out_ballast_return"),
+                "vessel_class": route.get("vessel_class"),
+                "vessel_class_ko": route.get("vessel_class_ko"),
+                "reference_size": route.get("reference_size", {}),
+                "benchmark_family": route.get("benchmark_family"),
+                "directions": route.get("directions", []),
                 "input_status": route["input_status"],
                 "input_sources": route["input_sources"],
                 "annual_cargo_tonnes": route["annual_cargo_tonnes"],
@@ -144,8 +152,8 @@ def build_snapshot(config_dir: Path, *, fetch_portwatch: bool = False) -> dict[s
             "generated_at": datetime.now(timezone.utc).isoformat(),
             "model": {
                 "name": "Route Cycle Capacity + Chokepoint Shock",
-                "version": "1.0.0",
-                "formula": "required_dwt = annual_cargo_tonnes * round_trip_cycle_days / (365 * utilization)",
+                "version": "1.1.0",
+                "formula": "one-way: cargo * cycle / (365 * utilization); bidirectional: max(direction cargo / utilization) * cycle / 365",
                 "uncertainty": "P10/P50/P90 parameter range; not an event-probability forecast",
             },
             "data_policy": {
@@ -172,6 +180,7 @@ def build_snapshot(config_dir: Path, *, fetch_portwatch: bool = False) -> dict[s
             "chokepoints": chokepoints,
             "chokepoints_live": live_status,
             "live_fetch_errors": live_errors,
+            "route_catalog": route_catalog,
             "routes": route_outputs,
             "scenarios": scenarios,
             "scenario_summary": scenario_summary,

@@ -141,6 +141,43 @@ than anything tried so far in this package (a full crop simulator needs
 cultivar genetic coefficients, daily soil-layer water balance, phenology
 staging) and was not attempted here.
 
+## 7. MATOPIBA ML(RF/XGBoost) 실험 -- 미미한 개선, 결론 유지 (2026-08-04)
+
+새 파일: `brazil/matopiba_ml_experiment.py`. 새 데이터 수집 없음 -- 6번 섹션에서
+이미 모은 state-level matopiba_soja + 지자체 4곳 데이터에 ridge 대신
+RandomForestRegressor/XGBRegressor를 얹어 같은 forward-chaining 규율로 재검증.
+(Barbosa dos Santos et al. 2022, *J. Sci. Food Agric.* 102(9):3665-3672 --
+MATOPIBA 대두를 정확히 같은 데이터 소스(NASA POWER+SIDRA)로 예측, RF 최고
+R²=0.81, RMSE 176.93 kg/ha 보고 -- 를 재현할 수 있는지가 동기.)
+
+| 데이터 | ridge (6번 실험) | RF | XGBoost |
+|---|---:|---:|---:|
+| 주(州) matopiba_soja | -1.3%~+1.6% | -2.6% | -10.8% |
+| balsas | -1.7% | +0.9% | +10.6% |
+| barreiras | -12.4% | +1.0% | -9.3% |
+| correntina | -6.6% | -3.4% | -27.6% |
+| sao_desiderio | -21.5% | -15.1% | -29.5% |
+
+RF는 5곳 중 4곳에서 ridge보다 나았고 2곳(balsas, barreiras)은 약하게 추세선을
+이겼지만(+0.9%, +1.0%), 파라나 대두(+49%)급과는 비교가 안 되는 수준. XGBoost는
+대체로 더 나쁘고 변동폭도 큼 -- 작은 표본(N~40)에서 부스팅이 배깅보다 과적합에
+취약하다는 일반적 문헌(Meroni et al. 2021)과 일치.
+
+**RMSE 435~664 kg/ha로, Barbosa dos Santos의 177 kg/ha와 2.5~4배 차이.** 같은
+데이터인데 이 정도 차이가 난다는 건 그쪽이 이만큼 엄격한 시간순 홀드아웃을 안
+썼을 가능성이 높다는 뜻 -- 논문 전문을 못 봐서(paywall) 확인은 못 함.
+
+**결론: ML로의 전환도 근본 해결책은 아니었음.** 오늘 시도한 세 축(GWETROOT 추가,
+지자체 분할, 모델 교체) 전부 미미한 개선이거나 무효 -- 공통적으로 "더 나은 입력
+하나 추가" 또는 "더 유연한 모델"로는 안 풀림. 위성 NDVI(다음 후보)도 구조적으로
+같은 범주라 큰 반전은 기대하기 어렵다고 판단, API 비용(MODIS 요청당 10개 시점
+제한, 지자체당 수십 회) 대비 기대값이 낮아 보류.
+
+**진짜 검증된 해법은 문헌상 하나뿐**: DSSAT-CROPGRO/AquaCrop 같은 일 단위
+작물생리 시뮬레이터 (Reis et al. 2020; da Silva et al. 2018) -- 품종별 유전계수·
+토양층 보정이 필요해 지금까지 시도보다 스코프가 훨씬 큼. MATOPIBA는 여기서
+보류하고 다른 지역/국가 작업을 먼저 마친 뒤 재검토하기로 함.
+
 ## 5. Settled, do not redo
 
 - Sugarcane is not a weather problem. Our `weather_skill` −13.6% (`lag1`'s own

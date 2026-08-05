@@ -1,0 +1,15 @@
+# Live-verification harness: throwaway Chrome profiles, CDP logs, screenshots.
+# 1045 files of browser profile were committed and pushed to three branches
+# before this rule existed. The databases were empty and the repo is private,
+# so nothing leaked, but a browser profile has no business in version control.
+.verify_live/
+
+# Local worktrees for parallel agents (see docs/ops/OWNERS.md)
+.worktrees/
+
+# macOS
+.DS_Store
+**/.DS_Store
+
+# Local editor / tool settings
+.claude/launch.json

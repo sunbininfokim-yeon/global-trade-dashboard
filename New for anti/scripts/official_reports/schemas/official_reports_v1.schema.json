@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://global-trade-dashboard.example/schemas/official_reports_v1.schema.json",
+  "title": "Official Reports Intel v1",
+  "type": "object",
+  "required": ["schema_version", "generated_at", "ticker_items", "indicators"],
+  "properties": {
+    "schema_version": {"const": "official-reports-v1"},
+    "dashboard_fields": {"type": "object"},
+    "indicators": {"type": "array"},
+    "ticker_items": {"type": "array"},
+    "pending_review": {"type": "array"}
+  }
+}

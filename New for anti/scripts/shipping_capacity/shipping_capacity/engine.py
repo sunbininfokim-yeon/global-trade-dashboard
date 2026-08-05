@@ -64,6 +64,62 @@ def route_cycle_days(route: dict[str, Any]) -> float:
     return (2.0 * distance / speed / 24.0) + port_days
 
 
+def _route_flow_profile(route: dict[str, Any]) -> dict[str, Any]:
+    """Return the capacity-driving flow without double-counting a two-way service.
+
+    Container ships carry both headhaul and backhaul cargo during one round trip.
+    The same vessel capacity therefore serves both directions; required capacity
+    is driven by the larger cargo-to-utilization ratio, not the sum of two
+    independently calculated fleets.  Dry-bulk and tanker routes without a
+    ``directions`` list retain the original one-way-cargo/ballast-return model.
+    """
+
+    directional_rows = []
+    for direction in route.get("directions", []):
+        raw_cargo = direction.get("annual_cargo_tonnes")
+        if raw_cargo is None:
+            continue
+        cargo = _number(raw_cargo, "directions.annual_cargo_tonnes", minimum=0.0)
+        utilization = _share(
+            direction.get("utilization", route["utilization"]),
+            "directions.utilization",
+        )
+        if utilization == 0:
+            raise InputError("direction utilization must be greater than zero")
+        directional_rows.append(
+            {
+                "id": direction.get("id"),
+                "annual_cargo_tonnes": cargo,
+                "utilization": utilization,
+                "capacity_equivalent_tonnes": cargo / utilization,
+            }
+        )
+
+    if not directional_rows:
+        cargo = _number(route["annual_cargo_tonnes"], "annual_cargo_tonnes", minimum=0.0)
+        utilization = _share(route["utilization"], "utilization")
+        if utilization == 0:
+            raise InputError("utilization must be greater than zero")
+        directional_rows.append(
+            {
+                "id": None,
+                "annual_cargo_tonnes": cargo,
+                "utilization": utilization,
+                "capacity_equivalent_tonnes": cargo / utilization,
+            }
+        )
+
+    driver = max(directional_rows, key=lambda row: row["capacity_equivalent_tonnes"])
+    return {
+        "known_direction_count": len(directional_rows),
+        "total_annual_cargo_tonnes": sum(row["annual_cargo_tonnes"] for row in directional_rows),
+        "capacity_driver_direction_id": driver["id"],
+        "capacity_driver_annual_tonnes": driver["annual_cargo_tonnes"],
+        "capacity_driver_utilization": driver["utilization"],
+        "capacity_equivalent_tonnes": driver["capacity_equivalent_tonnes"],
+    }
+
+
 def _find_exposure(route: dict[str, Any], chokepoint_id: str) -> dict[str, Any] | None:
     for exposure in route.get("chokepoints", []):
         if exposure.get("id") == chokepoint_id:
@@ -96,20 +152,22 @@ def simulate_route(
     a seven-day closure exposes one quarter as much of the horizon's traffic.
     """
 
-    annual_cargo = _number(route["annual_cargo_tonnes"], "annual_cargo_tonnes", minimum=0.0)
-    utilization = _share(route["utilization"], "utilization")
-    if utilization == 0:
-        raise InputError("utilization must be greater than zero")
+    flow_profile = _route_flow_profile(route)
     reserve_margin = _share(route.get("reserve_margin", 0.0), "reserve_margin")
     global_fleet = _number(fleet_dwt, "fleet_dwt", minimum=0.01)
     base_cycle = route_cycle_days(route)
-    baseline_required = required_capacity_dwt(annual_cargo, base_cycle, utilization)
+    baseline_required = flow_profile["capacity_equivalent_tonnes"] * base_cycle / 365.0
     allocated_capacity = baseline_required * (1.0 + reserve_margin)
 
     result: dict[str, Any] = {
         "route_id": route["id"],
         "scenario_id": scenario["id"] if scenario else "normal",
         "ship_type": route["ship_type"],
+        "known_direction_count": flow_profile["known_direction_count"],
+        "total_annual_cargo_tonnes": flow_profile["total_annual_cargo_tonnes"],
+        "capacity_driver_direction_id": flow_profile["capacity_driver_direction_id"],
+        "capacity_driver_annual_tonnes": flow_profile["capacity_driver_annual_tonnes"],
+        "capacity_driver_utilization": flow_profile["capacity_driver_utilization"],
         "baseline_cycle_days": base_cycle,
         "baseline_required_dwt": baseline_required,
         "allocated_dwt_with_reserve": allocated_capacity,
@@ -159,7 +217,7 @@ def simulate_route(
 
     # Capacity tied up by cargo that still sails, plus weighted rerouting/wait.
     retained_base_capacity = baseline_required * (1.0 - cancelled)
-    delay_capacity = annual_cargo / (365.0 * utilization) * (
+    delay_capacity = flow_profile["capacity_equivalent_tonnes"] / 365.0 * (
         rerouted * extra_cycle_days + waiting * waiting_days
     )
     disrupted_required = retained_base_capacity + delay_capacity
@@ -167,7 +225,7 @@ def simulate_route(
     operational_absorbed = max(0.0, delay_capacity)
     capacity_coverage = min(1.0, allocated_capacity / disrupted_required) if disrupted_required else 1.0
     deliverable_index = (1.0 - cancelled) * capacity_coverage
-    lost_tonnes = annual_cargo / 365.0 * horizon * cancelled
+    lost_tonnes = flow_profile["total_annual_cargo_tonnes"] / 365.0 * horizon * cancelled
 
     result.update(
         {
@@ -246,8 +304,21 @@ def estimate_interval(
     }
     for _ in range(samples):
         sampled = copy.deepcopy(route)
-        sampled["annual_cargo_tonnes"] = rng.triangular(cargo_low, cargo_high, cargo_mode)
-        sampled["utilization"] = rng.triangular(util_low, util_high, util_mode)
+        sampled_cargo = rng.triangular(cargo_low, cargo_high, cargo_mode)
+        sampled_utilization = rng.triangular(util_low, util_high, util_mode)
+        sampled["annual_cargo_tonnes"] = sampled_cargo
+        sampled["utilization"] = sampled_utilization
+        if sampled.get("directions"):
+            cargo_scale = sampled_cargo / cargo_mode if cargo_mode else 1.0
+            utilization_scale = sampled_utilization / util_mode
+            for direction in sampled["directions"]:
+                if direction.get("annual_cargo_tonnes") is not None:
+                    direction["annual_cargo_tonnes"] *= cargo_scale
+                if direction.get("utilization") is not None:
+                    direction["utilization"] = min(
+                        1.0,
+                        max(0.01, direction["utilization"] * utilization_scale),
+                    )
         sampled["speed_knots"] = rng.triangular(speed_low, speed_high, speed_mode)
         trial = simulate_route(sampled, scenario, fleet_dwt)
         for metric in metrics:
@@ -260,4 +331,3 @@ def estimate_interval(
         }
         for metric, values in metrics.items()
     }
-

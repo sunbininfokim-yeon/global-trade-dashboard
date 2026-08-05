@@ -1,0 +1,155 @@
+{
+  "version": 2,
+  "notes_ko": "국가 geo 1-4. 미일(러)중=1. 인도·한국=2. 우크=3 기본·전쟁은 info/승격. 스위스식 키워드·암스테르담 해운 등 hub 승격.",
+  "geo_weights": {
+    "1": 1.0,
+    "2": 0.78,
+    "3": 0.52,
+    "4": 0.28
+  },
+  "tier_1": {
+    "label_ko": "구조적 핵심축",
+    "iso3": ["USA", "JPN", "RUS", "CHN"]
+  },
+  "tier_2": {
+    "label_ko": "에너지·안보·시장 연동 + 대륙 앵커 + 한국",
+    "iso3": [
+      "SAU", "IRN", "ARE", "ISR",
+      "GBR", "FRA", "DEU",
+      "TUR",
+      "BRA",
+      "IND",
+      "KOR",
+      "IDN",
+      "ZAF", "NGA"
+    ],
+    "notes": {
+      "IND": "2급 (확정)",
+      "KOR": "2급 (확정, 무역·반도체·동맹)",
+      "ZAF_NGA": "아프리카 앵커 초안"
+    }
+  },
+  "tier_3": {
+    "label_ko": "대륙·권역 주요국",
+    "iso3": [
+      "ARG", "MEX", "CHL", "COL", "PER",
+      "ITA", "ESP", "POL", "NLD", "BEL", "SWE", "NOR", "CHE",
+      "TWN", "AUS", "CAN",
+      "EGY", "QAT", "KWT",
+      "THA", "VNM", "PHL", "MYS", "SGP",
+      "UKR", "KAZ", "UZB", "BLR",
+      "KEN", "ETH", "GHA",
+      "PAK", "BGD"
+    ],
+    "notes": {
+      "CHE": "기본 3. 금융·안보 키워드 → hub_boost +1 geo",
+      "NLD": "기본 3. 해운·암스테르담/로테르담 키워드 → hub_boost +1 geo",
+      "UKR": "기본 3. 전쟁·침공 등은 critical_escape / info 승격",
+      "SGP": "금융·벙커 허브 키워드 시 +1"
+    }
+  },
+  "tier_4": {
+    "label_ko": "그 외",
+    "default": true
+  },
+  "hub_boost": {
+    "notes_ko": "3·4급 국가가 특정 상품·허브 키워드면 effective geo를 1단계 올림 (최대 2, 또는 floor 규칙). 스위스 금융·네덜란드 해운 패턴.",
+    "max_boost": 1,
+    "effective_geo_cap": 2,
+    "rules": [
+      {
+        "id": "nl_shipping",
+        "iso3": ["NLD"],
+        "label_ko": "암스테르담·로테르담 해운 허브",
+        "keywords": [
+          "Amsterdam", "Rotterdam", "Dutch port", "Port of Rotterdam",
+          "ARA barge", "ARA market", "Amsterdam-Rotterdam",
+          "암스테르담", "로테르담", "네덜란드 항만"
+        ],
+        "commodity_tags": ["shipping", "oil", "bunker", "grain_freight"],
+        "boost_geo": 1
+      },
+      {
+        "id": "ch_finance",
+        "iso3": ["CHE"],
+        "label_ko": "스위스 금융·원자재 트레이딩",
+        "keywords": [
+          "Swiss National Bank", "SNB", "Zurich", "Geneva trading",
+          "Swiss franc", "safe haven", "스위스", "취리히", "제네바", "SNB"
+        ],
+        "commodity_tags": ["fx", "gold", "finance"],
+        "boost_geo": 1
+      },
+      {
+        "id": "sg_bunker_finance",
+        "iso3": ["SGP"],
+        "label_ko": "싱가포르 벙커·아시아 금융 허브",
+        "keywords": [
+          "Singapore bunker", "Singapore Strait", "MAS ", "Singapore dollar",
+          "싱가포르 벙커", "말라카"
+        ],
+        "commodity_tags": ["shipping", "oil", "fx"],
+        "boost_geo": 1
+      },
+      {
+        "id": "ae_energy_hub",
+        "iso3": ["ARE"],
+        "notes": "UAE already tier 2; hub keywords keep weight, no extra needed unless demoted",
+        "boost_geo": 0
+      },
+      {
+        "id": "uk_baltic_shipping",
+        "iso3": ["GBR"],
+        "label_ko": "발틱·런던 해운 지수 (이미 2급 — 정보 힌트만)",
+        "keywords": ["Baltic Dry", "Baltic Exchange", "Lloyd's", "발틱운임"],
+        "commodity_tags": ["shipping"],
+        "boost_geo": 0,
+        "boost_info_hint": true
+      }
+    ]
+  },
+  "regions": {
+    "na": { "label_ko": "북미" },
+    "latam": { "label_ko": "중남미" },
+    "eu_core": { "label_ko": "유럽 핵심" },
+    "eu_other": { "label_ko": "유럽 기타" },
+    "mena": { "label_ko": "중동·북아프" },
+    "ssa": { "label_ko": "사하라이남 아프리카" },
+    "cis": { "label_ko": "CIS·구소련 권" },
+    "east_asia": { "label_ko": "동북아" },
+    "asean": { "label_ko": "아세안" },
+    "south_asia": { "label_ko": "남아시아" },
+    "oceania": { "label_ko": "오세아니아" },
+    "global_specialist": { "label_ko": "상품·해운 전문매체" }
+  },
+  "critical_escape": {
+    "notes_ko": "4급 국가 재난 또는 3급 우크 전쟁 등 — info 최소·effective geo floor",
+    "triggers": [
+      {
+        "id": "war_major",
+        "iso3_optional": ["UKR"],
+        "terms": ["full-scale invasion", "declares war", "침공", "전면전", "공세"],
+        "min_info_grade": 1,
+        "effective_geo_floor": 2
+      },
+      {
+        "id": "pandemic",
+        "terms": ["pandemic", "WHO emergency", "전염병", "팬데믹"],
+        "min_info_grade": 1,
+        "effective_geo_floor": 2
+      },
+      {
+        "id": "chokepoint",
+        "terms": ["blocks strait", "closes canal", "해협 봉쇄"],
+        "min_info_grade": 2,
+        "effective_geo_floor": 2
+      },
+      {
+        "id": "export_collapse",
+        "terms": ["export ban", "exports halted", "수출 전면"],
+        "min_info_grade": 2,
+        "effective_geo_floor": 2
+      }
+    ]
+  }
+}

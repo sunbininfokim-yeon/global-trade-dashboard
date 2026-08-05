@@ -32,17 +32,64 @@ import os
 import sys
 from datetime import datetime, timezone
 
+import pandas as pd
+
 from .collect import current_season, load_dmi, load_oni
 from .predict import predict_one
-from .regions import ALL
+from .regions import ALL, BY_KEY
 
 HERE = os.path.dirname(os.path.abspath(__file__))
+TRAINING = os.path.join(HERE, "training")
 OUT = os.path.abspath(os.path.join(
     HERE, "..", "..", "..", "public", "data", "argentina_yield_forecast.json"))
+
+# The dashboard reads `label_ko` first and falls back to `label`, so without
+# these the panel shows "Pampas soybeans (BA + Córdoba + Santa Fe)" in the
+# middle of a Korean page. (DATA_LAYOUT.md §2)
+LABEL_KO = {
+    "pampas_soja": "팜파스 대두",
+    "pampas_maiz": "팜파스 옥수수",
+    "pampas_trigo": "팜파스 밀",
+    "norte_soja": "북부 NOA/NEA 대두",
+    "chaco_algodon": "차코 면화",
+    "tucuman_cana": "투쿠만 사탕수수",
+}
+
+# Why a region has no forecast, in the reader's language. A region that simply
+# disappears from the panel reads as an oversight; a region that says why it
+# declined reads as a decision, which is what it is. (DATA_LAYOUT.md §4)
+SKIP_REASON_KO = {
+    "pampas_trigo": (
+        "밀은 10월 중순 개화기가 지나야 예측합니다. 수확량을 결정하는 서리·"
+        "등숙 구간이 아직 오지 않아 이번 갱신에서는 기후 평년값으로 채워 넣지 "
+        "않고 예측을 보류합니다. 11월부터 값이 나옵니다."),
+    "tucuman_cana": (
+        "MAGyP 작황 통계가 2004/05 캠페인에서 끊기고 1998~2002년이 결측이라, "
+        "위성 기상 기록(1981~)과 겹치는 검증 가능 시즌이 부족합니다. FAOSTAT "
+        "전국 시리즈를 대체재로 검토했으나 최근 10년이 단조 감소하는 면적 보고 "
+        "아티팩트로 판정해 기각했습니다. EEAOC 투쿠만 시리즈를 연결하면 "
+        "복구됩니다."),
+}
+
+# Displayed when a region is skipped for a reason not listed above -- a feature
+# that failed to build, a feed outage. Better than showing the raw English.
+GENERIC_SKIP_KO = "이번 갱신에서 필요한 입력을 만들지 못해 예측을 보류했습니다."
 
 
 def log(msg):
     print(f"[run] {msg}", flush=True)
+
+
+def last_actual(key):
+    """Most recent published yield for a region, for the no-forecast card."""
+    path = os.path.join(TRAINING, f"{key}.csv")
+    if not os.path.exists(path):
+        return None
+    df = pd.read_csv(path).dropna(subset=["yield_kg_ha"])
+    if df.empty:
+        return None
+    row = df.iloc[-1]
+    return {"year": int(row.year), "yield": float(row.yield_kg_ha)}
 
 
 def enso_label(oni):
@@ -109,6 +156,7 @@ def main():
 
         payload["regions"][cfg.key] = {
             "label": r["label"],
+            "label_ko": LABEL_KO.get(cfg.key),
             "crop": cfg.crop,
             "provinces": cfg.provinces,
             "season": season,
@@ -155,8 +203,27 @@ def main():
         log(f"{cfg.key:22} {r['point']:9,.0f} {r['unit']} "
             f"({r['weather_effect_pct']:+.1f}% weather){flag}")
 
+    # A skipped region is still published, as a card that states why it has no
+    # number and shows the last published actual instead. DATA_LAYOUT.md §4 is
+    # explicit that `point` must not be invented to fill the gap, and dropping
+    # the region entirely -- which is what this did before -- makes a
+    # deliberate abstention look like a missing model.
     for key, why in skipped:
-        log(f"{key:22} skipped -- {why}")
+        cfg = BY_KEY[key]
+        payload["regions"][key] = {
+            "label": cfg.label,
+            "label_ko": LABEL_KO.get(key),
+            "crop": cfg.crop,
+            "provinces": cfg.provinces,
+            "forecast_available": False,
+            "reason_ko": SKIP_REASON_KO.get(key, GENERIC_SKIP_KO),
+            "reason": why,
+            "unit": "kg/ha",
+            "last_actual": last_actual(key),
+            "provenance": {"guide": cfg.doc, "caveat": cfg.caveat,
+                           "non_weather_drivers": cfg.non_weather_drivers},
+        }
+        log(f"{key:22} no forecast -- {why}")
     payload["skipped"] = {k: w for k, w in skipped}
 
     if not payload["regions"]:

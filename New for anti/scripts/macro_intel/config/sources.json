@@ -1,0 +1,43 @@
+{
+  "version": 1,
+  "user_agent": "GlobalTradeDashboard-MacroIntel/1.0 (+research; official sources)",
+  "fetch_timeout_sec": 25,
+  "sources": {
+    "treasury_press_list": "https://home.treasury.gov/news/press-releases",
+    "treasury_press_item_prefix": "https://home.treasury.gov",
+    "fed_press_rss": "https://www.federalreserve.gov/feeds/press_all.xml",
+    "fed_beige_book_hub": "https://www.federalreserve.gov/monetarypolicy/beige-book-default.htm",
+    "economy21_section": "http://www.economy21.co.kr/news/articleList.html?sc_section_code=S1N10&view_type=sm",
+    "economy21_origin": "http://www.economy21.co.kr"
+  },
+  "priority_authors": [
+    {
+      "id": "yang_youngbin",
+      "name_ko": "양영빈",
+      "match": ["양영빈"],
+      "source_id": "economy21",
+      "max_articles": 8,
+      "notes": "기사 전문의 유동성 지표(FIMA, TGA, 외환개입 등) 추출 소스. 속보 나열 목적이 아님."
+    }
+  ],
+  "event_patterns": {
+    "qra": {
+      "title_any": [
+        "Marketable Borrowing Estimates",
+        "Quarterly Refunding",
+        "quarterly refunding",
+        "privately-held net marketable"
+      ],
+      "url_any": ["marketable-borrowing", "quarterly-refunding", "sources-uses"]
+    },
+    "beige_book": {
+      "title_any": ["Beige Book", "beige book", "Summary of Commentary on Current Economic Conditions"]
+    },
+    "fomc": {
+      "title_any": ["FOMC", "federal funds rate", "policy statement", "Implementation Note"]
+    },
+    "tga_cash": {
+      "title_any": ["cash balance", "TGA", "Treasury General Account", "end-of-quarter cash"]
+    }
+  }
+}

@@ -1,0 +1,260 @@
+{
+  "schema_version": "elections-board-v1",
+  "generated_at": "2026-08-04T08:16:51.857575+00:00",
+  "year": 2026,
+  "model": {
+    "name": "election_watch_seed_v1",
+    "description": "World election board: system type, tracked parties (presidential: ruling+main opposition; parliamentary: up to 4 majors), calendar + live headlines. Governance approval polls admitted; horse-race national polls dropped at ticker. US prediction-market snapshot (Polymarket) during election cycles. Major cabinet reshuffles tracked as grade-1 news.",
+    "leadership_policy": {
+      "presidential_system": {
+        "max_parties_for_leadership": 2,
+        "roles": [
+          "ruling",
+          "main_opposition"
+        ]
+      },
+      "parliamentary_system": {
+        "max_parties_for_leadership": 4,
+        "roles": [
+          "major_1",
+          "major_2",
+          "major_3",
+          "major_4"
+        ]
+      },
+      "always_include_event_types": [
+        "presidential",
+        "general",
+        "local",
+        "by_election",
+        "party_leadership"
+      ]
+    },
+    "polls": {
+      "reject_horserace": true,
+      "admit_governance": true
+    },
+    "betting_source": "polymarket"
+  },
+  "summary": {
+    "countries": 8,
+    "countries_with_events": 1,
+    "live_election_headlines": 0,
+    "betting_markets": 0
+  },
+  "countries": [
+    {
+      "iso3": "USA",
+      "name_ko": "미국",
+      "system": "presidential",
+      "ruling_party": {
+        "id": "gov",
+        "name_en": "Incumbent party",
+        "role": "ruling"
+      },
+      "parties_tracked": [
+        {
+          "id": "dem",
+          "name_en": "Democratic Party",
+          "role": "major"
+        },
+        {
+          "id": "gop",
+          "name_en": "Republican Party",
+          "role": "major"
+        }
+      ],
+      "events": [
+        {
+          "id": "usa-2026-midterms",
+          "type": "general",
+          "label_ko": "중간선거(상·하원)",
+          "date": "2026-11-03",
+          "status": "scheduled",
+          "notes": "Midterms; party leadership races tracked under party_leadership when open"
+        }
+      ],
+      "events_this_year": 1
+    },
+    {
+      "iso3": "TWN",
+      "name_ko": "대만",
+      "system": "presidential",
+      "ruling_party": null,
+      "parties_tracked": [
+        {
+          "id": "dpp",
+          "name_ko": "민진당",
+          "role": "ruling"
+        },
+        {
+          "id": "kmt",
+          "name_ko": "국민당",
+          "role": "main_opposition"
+        }
+      ],
+      "events": [],
+      "events_this_year": 0
+    },
+    {
+      "iso3": "BRA",
+      "name_ko": "브라질",
+      "system": "presidential",
+      "ruling_party": null,
+      "parties_tracked": [
+        {
+          "id": "pt",
+          "name_en": "PT",
+          "role": "ruling"
+        },
+        {
+          "id": "pl",
+          "name_en": "PL",
+          "role": "main_opposition"
+        }
+      ],
+      "events": [],
+      "events_this_year": 0
+    },
+    {
+      "iso3": "GBR",
+      "name_ko": "영국",
+      "system": "parliamentary",
+      "ruling_party": null,
+      "parties_tracked": [
+        {
+          "id": "lab",
+          "name_en": "Labour",
+          "role": "major_1"
+        },
+        {
+          "id": "con",
+          "name_en": "Conservatives",
+          "role": "major_2"
+        },
+        {
+          "id": "ld",
+          "name_en": "Liberal Democrats",
+          "role": "major_3"
+        },
+        {
+          "id": "snp",
+          "name_en": "SNP",
+          "role": "major_4"
+        }
+      ],
+      "events": [],
+      "events_this_year": 0
+    },
+    {
+      "iso3": "IND",
+      "name_ko": "인도",
+      "system": "parliamentary",
+      "ruling_party": null,
+      "parties_tracked": [
+        {
+          "id": "bjp",
+          "name_en": "BJP",
+          "role": "major_1"
+        },
+        {
+          "id": "inc",
+          "name_en": "Congress",
+          "role": "major_2"
+        },
+        {
+          "id": "aitc",
+          "name_en": "AITC",
+          "role": "major_3"
+        },
+        {
+          "id": "sp",
+          "name_en": "SP",
+          "role": "major_4"
+        }
+      ],
+      "events": [],
+      "events_this_year": 0
+    },
+    {
+      "iso3": "JPN",
+      "name_ko": "일본",
+      "system": "parliamentary",
+      "ruling_party": null,
+      "parties_tracked": [
+        {
+          "id": "ldp",
+          "name_ko": "자민당",
+          "role": "major_1"
+        },
+        {
+          "id": "cdp",
+          "name_ko": "입헌민주",
+          "role": "major_2"
+        },
+        {
+          "id": "ishin",
+          "name_ko": "유신",
+          "role": "major_3"
+        },
+        {
+          "id": "komei",
+          "name_ko": "공명",
+          "role": "major_4"
+        }
+      ],
+      "events": [],
+      "events_this_year": 0
+    },
+    {
+      "iso3": "TUR",
+      "name_ko": "튀르키예",
+      "system": "presidential",
+      "ruling_party": null,
+      "parties_tracked": [
+        {
+          "id": "akp",
+          "name_en": "AKP",
+          "role": "ruling"
+        },
+        {
+          "id": "chp",
+          "name_en": "CHP",
+          "role": "main_opposition"
+        }
+      ],
+      "events": [],
+      "events_this_year": 0
+    },
+    {
+      "iso3": "KOR",
+      "name_ko": "한국",
+      "system": "presidential",
+      "ruling_party": {
+        "id": "ruling",
+        "name_ko": "(집권) 여당",
+        "role": "ruling"
+      },
+      "parties_tracked": [
+        {
+          "id": "ruling",
+          "name_ko": "여당",
+          "role": "ruling"
+        },
+        {
+          "id": "opp1",
+          "name_ko": "제1야당",
+          "role": "main_opposition"
+        }
+      ],
+      "events": [],
+      "events_this_year": 0
+    }
+  ],
+  "live_election_news": [],
+  "betting_markets": {
+    "enabled": false,
+    "markets": [],
+    "note": "skipped"
+  }
+}

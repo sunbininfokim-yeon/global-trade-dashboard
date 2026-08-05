@@ -14,7 +14,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
     <!-- Custom Styles -->
-    <link rel="stylesheet" href="style.css?v=3">
+    <link rel="stylesheet" href="style.css?v=22">
 </head>
 <body>
     <div id="app">
@@ -57,8 +57,8 @@
                         <a href="#" data-target="climate" style="color: #4ade80; border-top: 1px solid rgba(255,255,255,0.1); margin-top: 4px;">기후 (AI 예측)</a>
                     </div>
                 </div>
-                <div class="menu-item">
-                    <span>해운</span>
+                <div class="menu-item" data-nav-default="shipping_routes">
+                    <span class="menu-parent" role="button" tabindex="0" aria-label="해운 화면 열기">해운</span>
                     <div class="dropdown">
                         <a href="#" data-target="shipping_fleet">글로벌 선대</a>
                         <a href="#" data-target="shipping_routes">항로별 선복량</a>
@@ -99,16 +99,8 @@
             <div class="ticker-label">속보</div>
             <div class="ticker-overflow">
                 <div class="ticker-content" id="ticker-content">
-                    <!-- Ticker items injected by JS -->
-                    <span class="ticker-item"><span class="ticker-hl">[WTI 원유]</span> 배럴당 78.93 달러 마감 (-1.48%)</span>
-                    <span class="ticker-divider">·</span>
-                    <span class="ticker-item"><span class="ticker-hl">[농산물]</span> 브라질 마토 그로소 지역 강수량 부족으로 대두 수확량 우려</span>
-                    <span class="ticker-divider">·</span>
-                    <span class="ticker-item"><span class="ticker-hl">[거시경제]</span> 연준 대차대조표 전주 대비 120억 달러 축소</span>
-                    <span class="ticker-divider">·</span>
-                    <span class="ticker-item"><span class="ticker-hl">[석탄]</span> 호주 수출 물동량 전년 동기 대비 5% 증가</span>
-                    <span class="ticker-divider">·</span>
-                    <span class="ticker-item"><span class="ticker-hl">[구리]</span> LME 구리 재고량 3주 연속 하락세</span>
+                    <!-- Filled by app.js loadTicker() from /api/ticker or ticker_v1.json -->
+                    <span class="ticker-item"><span class="ticker-hl">[상태]</span> 속보 불러오는 중…</span>
                 </div>
             </div>
         </div>
@@ -125,13 +117,13 @@
                         <p id="current-view-desc">전 세계 석탄 수출입 무역 흐름</p>
                     </div>
                     
-                    <div class="stats-container">
+                    <div class="stats-container" id="commodity-stats">
                         <div class="stat-box">
-                            <span class="stat-label">글로벌 무역량</span>
+                            <span class="stat-label" id="stat-label-volume">글로벌 무역량</span>
                             <span class="stat-value" id="total-volume">1,245 Mt</span>
                         </div>
                         <div class="stat-box">
-                            <span class="stat-label">최대 수출국</span>
+                            <span class="stat-label" id="stat-label-exporter">최대 수출국</span>
                             <span class="stat-value" id="top-exporter">호주</span>
                         </div>
                     </div>
@@ -178,11 +170,28 @@
                         <p>상단 메뉴에서 '원자재 > 석탄'을 선택하시면 지도를 보실 수 있습니다.</p>
                     </div>
                 </div>
+                <!-- Climate map legend (shown only in climate views) -->
+                <div id="climate-map-legend" class="climate-map-legend hidden"></div>
+
+                <!-- Climate country drill-down: TARGET frame over the globe -->
+                <div id="climate-target-hud" class="target-hud hidden"></div>
+
+                <!-- Producing-region labels, projected onto the globe by app.js -->
+                <div id="climate-region-labels" class="region-labels hidden"></div>
             </div>
 
             <!-- Right Pane: Stats & Macro -->
             <aside class="right-pane" id="right-pane">
                 
+                <!-- Climate right sidebar (world context / country metrics) -->
+                <div class="panel-section hidden" id="climate-right-panel">
+                    <div class="panel-header" style="margin-bottom: 12px;">
+                        <h2 id="climate-right-title">기후 컨텍스트</h2>
+                        <p id="climate-right-desc">전역 신호 · 무역 통제 상태</p>
+                    </div>
+                    <div id="climate-right-content" class="climate-scroll"></div>
+                </div>
+
                 <!-- Macro Indicators Panel (Only visible on Home) -->
                 <div class="panel-section" id="macro-panel">
                     <div class="panel-header">
@@ -289,8 +298,8 @@
     </div>
 
     <!-- Data and App Logic -->
-    <script src="data.js?v=2"></script>
-    <script src="shipping.js?v=1"></script>
-    <script src="app.js?v=5"></script>
+    <script src="data.js?v=3"></script>
+    <script src="shipping.js?v=6"></script>
+    <script src="app.js?v=36"></script>
 </body>
 </html>

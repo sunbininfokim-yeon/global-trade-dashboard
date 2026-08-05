@@ -1,11 +1,16 @@
 [
   {
     "id": "asia_north_europe_container",
-    "name_ko": "동아시아 → 북유럽 컨테이너",
-    "name_en": "East Asia to North Europe Container",
+    "name_ko": "동아시아 ↔ 북유럽 컨테이너 서비스",
+    "name_en": "East Asia ↔ North Europe Container Service",
     "origin": "East Asia",
     "destination": "North Europe",
     "ship_type": "container",
+    "service_type": "bidirectional_liner",
+    "vessel_class": "ulcv",
+    "vessel_class_ko": "ULCV 컨테이너선",
+    "reference_size": {"teu_min": 18000, "teu_max": 24000},
+    "benchmark_family": "Asia–North Europe mainline",
     "annual_cargo_tonnes": 250000000,
     "distance_nm_one_way": 10500,
     "speed_knots": 17.0,
@@ -14,6 +19,25 @@
     "reserve_margin": 0.05,
     "input_status": "scenario_seed_replace_with_comtrade",
     "input_sources": ["UN Comtrade netWeight aggregation", "Route distance assumption"],
+    "directions": [
+      {
+        "id": "east_asia_to_north_europe",
+        "name_ko": "동아시아 → 북유럽",
+        "origin": "East Asia",
+        "destination": "North Europe",
+        "annual_cargo_tonnes": 250000000,
+        "utilization": 0.78,
+        "input_status": "scenario_seed_replace_with_comtrade"
+      },
+      {
+        "id": "north_europe_to_east_asia",
+        "name_ko": "북유럽 → 동아시아",
+        "origin": "North Europe",
+        "destination": "East Asia",
+        "annual_cargo_tonnes": null,
+        "input_status": "public_data_pending"
+      }
+    ],
     "uncertainty": {
       "annual_cargo_tonnes_low": 200000000,
       "annual_cargo_tonnes_high": 300000000,
@@ -43,11 +67,16 @@
   },
   {
     "id": "asia_us_east_container",
-    "name_ko": "동아시아 → 미국 동부 컨테이너",
-    "name_en": "East Asia to US East Coast Container",
+    "name_ko": "동아시아 ↔ 미국 동부 컨테이너 서비스",
+    "name_en": "East Asia ↔ US East Coast Container Service",
     "origin": "East Asia",
     "destination": "US East Coast",
     "ship_type": "container",
+    "service_type": "bidirectional_liner",
+    "vessel_class": "neo_panamax_container",
+    "vessel_class_ko": "네오파나막스 컨테이너선",
+    "reference_size": {"teu_min": 10000, "teu_max": 16000},
+    "benchmark_family": "Transpacific–Panama mainline",
     "annual_cargo_tonnes": 120000000,
     "distance_nm_one_way": 9500,
     "speed_knots": 17.0,
@@ -56,6 +85,25 @@
     "reserve_margin": 0.05,
     "input_status": "scenario_seed_replace_with_comtrade",
     "input_sources": ["UN Comtrade netWeight aggregation", "Route distance assumption"],
+    "directions": [
+      {
+        "id": "east_asia_to_us_east",
+        "name_ko": "동아시아 → 미국 동부",
+        "origin": "East Asia",
+        "destination": "US East Coast",
+        "annual_cargo_tonnes": 120000000,
+        "utilization": 0.76,
+        "input_status": "scenario_seed_replace_with_comtrade"
+      },
+      {
+        "id": "us_east_to_east_asia",
+        "name_ko": "미국 동부 → 동아시아",
+        "origin": "US East Coast",
+        "destination": "East Asia",
+        "annual_cargo_tonnes": null,
+        "input_status": "public_data_pending"
+      }
+    ],
     "uncertainty": {
       "annual_cargo_tonnes_low": 95000000,
       "annual_cargo_tonnes_high": 145000000,
@@ -82,6 +130,9 @@
     "origin": "US Gulf",
     "destination": "Northeast Asia",
     "ship_type": "dry_bulk",
+    "vessel_class": "kamsarmax_panamax",
+    "vessel_class_ko": "Kamsarmax·Panamax",
+    "reference_size": {"dwt_min": 75000, "dwt_max": 85000},
     "annual_cargo_tonnes": 35000000,
     "distance_nm_one_way": 9000,
     "speed_knots": 13.0,
@@ -116,6 +167,9 @@
     "origin": "Black Sea",
     "destination": "Middle East and North Africa",
     "ship_type": "dry_bulk",
+    "vessel_class": "panamax_kamsarmax",
+    "vessel_class_ko": "Panamax·Kamsarmax",
+    "reference_size": {"dwt_min": 70000, "dwt_max": 85000},
     "annual_cargo_tonnes": 55000000,
     "distance_nm_one_way": 2500,
     "speed_knots": 12.5,
@@ -150,6 +204,9 @@
     "origin": "Black Sea",
     "destination": "East Asia",
     "ship_type": "dry_bulk",
+    "vessel_class": "panamax_kamsarmax",
+    "vessel_class_ko": "Panamax·Kamsarmax",
+    "reference_size": {"dwt_min": 70000, "dwt_max": 85000},
     "annual_cargo_tonnes": 20000000,
     "distance_nm_one_way": 8700,
     "speed_knots": 12.5,
@@ -192,6 +249,9 @@
     "origin": "Persian Gulf",
     "destination": "Europe",
     "ship_type": "tanker",
+    "vessel_class": "suezmax_vlcc",
+    "vessel_class_ko": "Suezmax·VLCC",
+    "reference_size": {"dwt_min": 135000, "dwt_max": 300000},
     "annual_cargo_tonnes": 150000000,
     "distance_nm_one_way": 6200,
     "speed_knots": 13.0,
@@ -242,6 +302,10 @@
     "origin": "Persian Gulf",
     "destination": "East Asia",
     "ship_type": "tanker",
+    "vessel_class": "vlcc",
+    "vessel_class_ko": "VLCC",
+    "reference_size": {"dwt_min": 260000, "dwt_max": 320000},
+    "benchmark_family": "TD3C family · Middle East Gulf to China",
     "annual_cargo_tonnes": 600000000,
     "distance_nm_one_way": 6500,
     "speed_knots": 13.0,
@@ -276,6 +340,9 @@
     "origin": "Brazil",
     "destination": "China",
     "ship_type": "dry_bulk",
+    "vessel_class": "kamsarmax_panamax",
+    "vessel_class_ko": "Kamsarmax·Panamax",
+    "reference_size": {"dwt_min": 75000, "dwt_max": 85000},
     "annual_cargo_tonnes": 75000000,
     "distance_nm_one_way": 11000,
     "speed_knots": 12.5,
@@ -295,4 +362,3 @@
     "chokepoints": []
   }
 ]
-

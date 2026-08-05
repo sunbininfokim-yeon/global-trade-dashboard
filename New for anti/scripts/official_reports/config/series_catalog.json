@@ -1,0 +1,126 @@
+{
+  "version": 1,
+  "notes": "Known official report/indicator series. Learning loop adjusts weights via cache/label_history.jsonl — humans label keep/drop/promote over time.",
+  "series": [
+    {
+      "series_id": "US_QRA_MARKETABLE_BORROWING",
+      "country": "USA",
+      "domain": "finance",
+      "label_ko": "재무부 시가발행(QRA) 추정",
+      "match_any": ["Marketable Borrowing Estimates", "privately-held net marketable", "Quarterly Refunding"],
+      "dashboard_fields": ["qra_next_net_borrowing_bn", "qra_end_cash_bn", "qra_vs_prior_bn"],
+      "extract": "qra_html",
+      "base_weight": 1.5,
+      "site_slot": "finance.liquidity"
+    },
+    {
+      "series_id": "US_FED_BEIGE_BOOK",
+      "country": "USA",
+      "domain": "economy",
+      "label_ko": "연준 베이지북",
+      "match_any": ["Beige Book", "Summary of Commentary on Current Economic Conditions"],
+      "dashboard_fields": ["beige_tone"],
+      "extract": "tone_keywords",
+      "base_weight": 1.35,
+      "site_slot": "finance.liquidity"
+    },
+    {
+      "series_id": "US_FED_FOMC",
+      "country": "USA",
+      "domain": "finance",
+      "label_ko": "FOMC 성명·의사록",
+      "match_any": ["FOMC", "federal funds rate", "Implementation Note", "FOMC minutes"],
+      "dashboard_fields": ["policy_rate_signal"],
+      "extract": "none",
+      "base_weight": 1.45,
+      "site_slot": "finance.policy"
+    },
+    {
+      "series_id": "US_TREASURY_SANCTIONS",
+      "country": "USA",
+      "domain": "diplomacy",
+      "label_ko": "재무부 제재",
+      "match_any": ["sanctions", "OFAC", "designates"],
+      "dashboard_fields": [],
+      "extract": "none",
+      "base_weight": 1.2,
+      "site_slot": "ticker"
+    },
+    {
+      "series_id": "US_EXPORT_CONTROL",
+      "country": "USA",
+      "domain": "security",
+      "label_ko": "수출통제·Entity List",
+      "match_any": ["export control", "Entity List", "BIS", "dual-use"],
+      "dashboard_fields": ["export_control_flag"],
+      "extract": "none",
+      "base_weight": 1.4,
+      "site_slot": "security.trade"
+    },
+    {
+      "series_id": "US_EIA_ENERGY",
+      "country": "USA",
+      "domain": "economy",
+      "label_ko": "EIA 에너지",
+      "match_any": ["EIA", "Today in Energy", "crude", "natural gas inventory", "petroleum"],
+      "dashboard_fields": [],
+      "extract": "none",
+      "base_weight": 1.05,
+      "site_slot": "ticker"
+    },
+    {
+      "series_id": "JP_BOJ_POLICY",
+      "country": "JPN",
+      "domain": "finance",
+      "label_ko": "일본은행 정책·공표",
+      "match_any": ["Bank of Japan", "Monetary Policy Meeting", "Statement on Monetary Policy", "Outlook for Economic Activity and Prices"],
+      "dashboard_fields": ["boj_policy_signal"],
+      "extract": "none",
+      "base_weight": 1.4,
+      "site_slot": "finance.policy"
+    },
+    {
+      "series_id": "CN_NBS_MACRO",
+      "country": "CHN",
+      "domain": "economy",
+      "label_ko": "중국 통계국 매크로",
+      "match_any": [
+        "National Bureau of Statistics",
+        "NBS",
+        "stats.gov.cn",
+        "from the NBS",
+        "China's CPI",
+        "China CPI",
+        "China's PPI",
+        "China industrial production"
+      ],
+      "dashboard_fields": ["cn_macro_signal"],
+      "extract": "none",
+      "base_weight": 1.3,
+      "site_slot": "economy.cn"
+    },
+    {
+      "series_id": "EU_ECB_POLICY",
+      "country": "EUR",
+      "domain": "finance",
+      "label_ko": "ECB 정책",
+      "match_any": ["ECB", "Governing Council", "monetary policy decisions", "key interest rates"],
+      "dashboard_fields": ["ecb_policy_signal"],
+      "extract": "none",
+      "base_weight": 1.25,
+      "site_slot": "finance.policy"
+    },
+    {
+      "series_id": "US_WASDE",
+      "country": "USA",
+      "domain": "agriculture",
+      "label_ko": "USDA WASDE",
+      "match_any": ["WASDE", "World Agricultural Supply and Demand"],
+      "dashboard_fields": ["wasde_flag"],
+      "extract": "none",
+      "base_weight": 1.5,
+      "site_slot": "agriculture.wasde",
+      "status": "source_pending"
+    }
+  ]
+}

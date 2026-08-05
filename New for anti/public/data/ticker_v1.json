@@ -1,0 +1,1794 @@
+{
+  "schema_version": "ticker-v1",
+  "generated_at": "2026-08-04T07:42:05.414145+00:00",
+  "model": {
+    "name": "commodity_diplomacy_rss_v1",
+    "description": "RSS multi-region ticker: regional priority (MENA/IN/TR/JP/CN/TW/RU + commodity specialists) over Western majors; politics admitted only with diplomacy+trade-statecraft bridge; main display language Korean.",
+    "main_display_lang": "ko",
+    "ip_lang_map": {
+      "KR": "ko",
+      "KP": "ko",
+      "JP": "ja",
+      "CN": "zh",
+      "TW": "zh-TW",
+      "HK": "zh-HK",
+      "MO": "zh",
+      "RU": "ru",
+      "BY": "ru",
+      "KZ": "ru",
+      "TR": "tr",
+      "AZ": "tr",
+      "IN": "hi",
+      "BD": "bn",
+      "PK": "ur",
+      "SA": "ar",
+      "AE": "ar",
+      "QA": "ar",
+      "KW": "ar",
+      "BH": "ar",
+      "OM": "ar",
+      "IQ": "ar",
+      "JO": "ar",
+      "LB": "ar",
+      "EG": "ar",
+      "MA": "ar",
+      "DZ": "ar",
+      "TN": "ar",
+      "IR": "fa",
+      "AF": "fa",
+      "BR": "pt",
+      "PT": "pt",
+      "MX": "es",
+      "AR": "es",
+      "CL": "es",
+      "CO": "es",
+      "ES": "es",
+      "FR": "fr",
+      "DE": "de",
+      "AT": "de",
+      "CH": "de",
+      "IT": "it",
+      "ID": "id",
+      "MY": "ms",
+      "TH": "th",
+      "VN": "vi",
+      "US": "en",
+      "GB": "en",
+      "AU": "en",
+      "CA": "en",
+      "SG": "en",
+      "NZ": "en"
+    },
+    "default_lang": "en"
+  },
+  "stats": {
+    "sources_ok": 37,
+    "sources_failed": 1,
+    "raw_items": 862,
+    "scored_items": 98,
+    "selected_items": 40,
+    "region_histogram": {
+      "commodity_specialist": 13,
+      "mena": 7,
+      "russia": 4,
+      "west": 2,
+      "turkey": 4,
+      "india": 4,
+      "china": 2,
+      "japan": 4
+    }
+  },
+  "feed_status": [
+    {
+      "source_id": "aljazeera_en",
+      "ok": true,
+      "count": 25,
+      "elapsed_ms": 323,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "iran_intl",
+      "ok": true,
+      "count": 0,
+      "elapsed_ms": 1210,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "arab_news",
+      "ok": true,
+      "count": 10,
+      "elapsed_ms": 87,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "tehran_times",
+      "ok": true,
+      "count": 30,
+      "elapsed_ms": 1969,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "middle_east_eye",
+      "ok": true,
+      "count": 0,
+      "elapsed_ms": 116,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "aa_world",
+      "ok": true,
+      "count": 30,
+      "elapsed_ms": 1858,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "daily_sabah",
+      "ok": true,
+      "count": 40,
+      "elapsed_ms": 1826,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "hurriyet_daily",
+      "ok": true,
+      "count": 0,
+      "elapsed_ms": 1276,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "the_hindu",
+      "ok": true,
+      "count": 40,
+      "elapsed_ms": 263,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "indian_express_world",
+      "ok": true,
+      "count": 40,
+      "elapsed_ms": 528,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "et_commodities",
+      "ok": true,
+      "count": 0,
+      "elapsed_ms": 394,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "business_standard_markets",
+      "ok": true,
+      "count": 35,
+      "elapsed_ms": 158,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "ndtv_world",
+      "ok": true,
+      "count": 20,
+      "elapsed_ms": 890,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "xinhua_world",
+      "ok": true,
+      "count": 20,
+      "elapsed_ms": 1555,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "china_daily_world",
+      "ok": true,
+      "count": 40,
+      "elapsed_ms": 667,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "cgtn_world",
+      "ok": true,
+      "count": 40,
+      "elapsed_ms": 1020,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "scmp",
+      "ok": true,
+      "count": 40,
+      "elapsed_ms": 922,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "nhk_business",
+      "ok": true,
+      "count": 40,
+      "elapsed_ms": 352,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "nhk_top",
+      "ok": true,
+      "count": 7,
+      "elapsed_ms": 139,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "japan_times",
+      "ok": true,
+      "count": 30,
+      "elapsed_ms": 476,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "nikkei_asia",
+      "ok": true,
+      "count": 0,
+      "elapsed_ms": 153,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "cna",
+      "ok": true,
+      "count": 20,
+      "elapsed_ms": 770,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "taipei_times",
+      "ok": true,
+      "count": 0,
+      "elapsed_ms": 109,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "ltn",
+      "ok": true,
+      "count": 40,
+      "elapsed_ms": 133,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "udn",
+      "ok": true,
+      "count": 0,
+      "elapsed_ms": 123,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "tass_en",
+      "ok": true,
+      "count": 40,
+      "elapsed_ms": 1472,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "tass_ru",
+      "ok": true,
+      "count": 40,
+      "elapsed_ms": 1706,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "interfax_ru",
+      "ok": true,
+      "count": 25,
+      "elapsed_ms": 1990,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "rt_ru",
+      "ok": true,
+      "count": 40,
+      "elapsed_ms": 1505,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "ship_and_bunker",
+      "ok": true,
+      "count": 10,
+      "elapsed_ms": 1211,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "oilprice",
+      "ok": true,
+      "count": 15,
+      "elapsed_ms": 1323,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "mining_com",
+      "ok": false,
+      "count": 0,
+      "elapsed_ms": 160,
+      "error": "HTTPError: HTTP Error 403: Forbidden",
+      "mode": "live"
+    },
+    {
+      "source_id": "world_grain",
+      "ok": true,
+      "count": 0,
+      "elapsed_ms": 1035,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "hellenic_shipping",
+      "ok": true,
+      "count": 20,
+      "elapsed_ms": 406,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "seatrade",
+      "ok": true,
+      "count": 40,
+      "elapsed_ms": 2717,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "bbc_business",
+      "ok": true,
+      "count": 40,
+      "elapsed_ms": 704,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "bloomberg_markets",
+      "ok": true,
+      "count": 20,
+      "elapsed_ms": 1182,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "ft_commodities",
+      "ok": true,
+      "count": 25,
+      "elapsed_ms": 478,
+      "error": null,
+      "mode": "live"
+    }
+  ],
+  "items": [
+    {
+      "id": "5840693edd9873fe",
+      "published_at": "2026-08-03T21:00:59+00:00",
+      "source": {
+        "id": "hellenic_shipping",
+        "name": "Hellenic Shipping News",
+        "region": "commodity_specialist",
+        "slant": null
+      },
+      "url": "https://www.hellenicshippingnews.com/mabux-bunker-market-volatility-to-persist-in-august/",
+      "category": "commodity_diplomacy",
+      "commodities": [
+        "oil",
+        "shipping"
+      ],
+      "title": {
+        "original": "MABUX: Bunker Market Volatility to Persist in August",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "The global bunker market in July was shaped primarily by geopolitical developments, crude price volatility, regional supply dynamics and logistics constraints. The key market drivers included: Middle East geopolitical tensions: Ongoing uncertainty surrounding the Strait of Hormuz",
+      "scores": {
+        "commodity": 5.0,
+        "diplomacy": 1.0,
+        "region_weight": 1.35,
+        "freshness": 0.743,
+        "final": 8.077
+      },
+      "rank_reasons": [
+        "region:commodity_specialist*1.35",
+        "category:commodity_diplomacy",
+        "commodity:oil:3",
+        "commodity:shipping:2",
+        "diplomacy:1",
+        "bridge:1"
+      ],
+      "translation_status": "skipped"
+    },
+    {
+      "id": "41f8c393ec8fccaf",
+      "published_at": "2026-08-03T16:30:00+00:00",
+      "source": {
+        "id": "oilprice",
+        "name": "OilPrice.com",
+        "region": "commodity_specialist",
+        "slant": null
+      },
+      "url": "https://oilprice.com/Latest-Energy-News/World-News/Georgias-Kulevi-Refinery-Replaces-Russian-Crude-With-Kazakh-Libyan-Oil.html",
+      "category": "commodity_diplomacy",
+      "commodities": [
+        "oil"
+      ],
+      "title": {
+        "original": "Georgia’s Kulevi Refinery Replaces Russian Crude With Kazakh, Libyan Oil",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Georgia’s only oil refinery has begun replacing Russian crude with supplies from Kazakhstan and Libya as owner Black Sea Petroleum races to avoid European Union sanctions that will go into effect in January. The Kulevi refinery received and processed Kazakh crude in July and will",
+      "scores": {
+        "commodity": 3.0,
+        "diplomacy": 1.0,
+        "region_weight": 1.35,
+        "freshness": 0.656,
+        "final": 5.496
+      },
+      "rank_reasons": [
+        "region:commodity_specialist*1.35",
+        "category:commodity_diplomacy",
+        "commodity:oil:3",
+        "diplomacy:1",
+        "bridge:3"
+      ],
+      "translation_status": "skipped"
+    },
+    {
+      "id": "53a1a617a6fca30e",
+      "published_at": "2026-08-04T06:45:00+00:00",
+      "source": {
+        "id": "oilprice",
+        "name": "OilPrice.com",
+        "region": "commodity_specialist",
+        "slant": null
+      },
+      "url": "https://oilprice.com/Latest-Energy-News/World-News/Tanker-Traffic-Remains-Subdued-Despite-Trumps-Talk-of-Peace.html",
+      "category": "commodity",
+      "commodities": [
+        "shipping"
+      ],
+      "title": {
+        "original": "Tanker Traffic Remains Subdued Despite Trump’s Talk of Peace",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Tanker crossings in the Strait of Hormuz and Bab el-Mandeb remained subdued at the start of this week despite reports about potential renewal of peace talks based on statements made by President Donald Trump. A dozen tankers crossed the Bab el-Mandeb Strait on Monday, Kpler data ",
+      "scores": {
+        "commodity": 2.0,
+        "diplomacy": 2.0,
+        "region_weight": 1.35,
+        "freshness": 0.974,
+        "final": 5.391
+      },
+      "rank_reasons": [
+        "region:commodity_specialist*1.35",
+        "category:commodity",
+        "commodity:shipping:2",
+        "diplomacy:2"
+      ],
+      "translation_status": "skipped"
+    },
+    {
+      "id": "75cb87d505855ebe",
+      "published_at": "2026-08-04T05:10:23+00:00",
+      "source": {
+        "id": "tehran_times",
+        "name": "Tehran Times",
+        "region": "mena",
+        "slant": null
+      },
+      "url": "https://www.tehrantimes.com/news/528817/US-oil-reserve-strategy-A-futile-gamble-amid-Iran-s-Strait-of",
+      "category": "commodity_diplomacy",
+      "commodities": [
+        "oil",
+        "shipping"
+      ],
+      "title": {
+        "original": "US oil reserve strategy: A futile gamble amid Iran's Strait of Hormuz leverage",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "TEHRAN- Washington's desperate bid to tame oil prices through strategic reserve releases is doomed to fail, experts warn, as Iran's commanding position in the Strait of Hormuz renders American threats increasingly hollow.",
+      "scores": {
+        "commodity": 2.0,
+        "diplomacy": 1.0,
+        "region_weight": 1.4,
+        "freshness": 0.932,
+        "final": 5.328
+      },
+      "rank_reasons": [
+        "region:mena*1.40",
+        "category:commodity_diplomacy",
+        "commodity:oil:1",
+        "commodity:shipping:1",
+        "diplomacy:1",
+        "bridge:1"
+      ],
+      "translation_status": "skipped"
+    },
+    {
+      "id": "b504f8deabf2d540",
+      "published_at": "2026-08-03T21:00:55+00:00",
+      "source": {
+        "id": "hellenic_shipping",
+        "name": "Hellenic Shipping News",
+        "region": "commodity_specialist",
+        "slant": null
+      },
+      "url": "https://www.hellenicshippingnews.com/a-second-qatari-lng-carrier-struck-as-22-chinese-vessels-cross-the-red-sea-unharmed/",
+      "category": "commodity",
+      "commodities": [
+        "shipping",
+        "gas"
+      ],
+      "title": {
+        "original": "A Second Qatari LNG Carrier Struck as 22 Chinese Vessels Cross the Red Sea Unharmed",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Operational Overview Two parallel escalations are shaping the maritime picture. Iran is tightening its grip on Hormuz. The Houthis are tightening theirs on the Red Sea. Chinese-linked shipping is moving freely through both. GASLOG SHANGHAI, a Bermuda-flagged LNG tanker carrying Q",
+      "scores": {
+        "commodity": 4.0,
+        "diplomacy": 0.0,
+        "region_weight": 1.35,
+        "freshness": 0.743,
+        "final": 4.615
+      },
+      "rank_reasons": [
+        "region:commodity_specialist*1.35",
+        "category:commodity",
+        "commodity:gas:1",
+        "commodity:shipping:3"
+      ],
+      "translation_status": "skipped"
+    },
+    {
+      "id": "b1a7d8675e0b9a32",
+      "published_at": "2026-08-03T15:30:00+00:00",
+      "source": {
+        "id": "oilprice",
+        "name": "OilPrice.com",
+        "region": "commodity_specialist",
+        "slant": null
+      },
+      "url": "https://oilprice.com/Latest-Energy-News/World-News/Trumps-Iran-Reversal-Sends-European-Gas-Prices-Tumbling.html",
+      "category": "commodity_diplomacy",
+      "commodities": [
+        "oil",
+        "gas"
+      ],
+      "title": {
+        "original": "Trump's Iran Reversal Sends European Gas Prices Tumbling",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "European natural gas prices plunged at opening on Monday after U.S. President Donald Trump said he had called off a planned attack on Iranian energy sites and talks on a deal would begin this week. Europe’s benchmark natural gas prices, the Dutch TTF Natural Gas Futures, sank by ",
+      "scores": {
+        "commodity": 2.0,
+        "diplomacy": 1.0,
+        "region_weight": 1.35,
+        "freshness": 0.638,
+        "final": 3.514
+      },
+      "rank_reasons": [
+        "region:commodity_specialist*1.35",
+        "category:commodity_diplomacy",
+        "commodity:oil:1",
+        "commodity:gas:1",
+        "diplomacy:1",
+        "bridge:1"
+      ],
+      "translation_status": "skipped"
+    },
+    {
+      "id": "a6e7e7467029680b",
+      "published_at": "2026-08-03T21:00:59+00:00",
+      "source": {
+        "id": "hellenic_shipping",
+        "name": "Hellenic Shipping News",
+        "region": "commodity_specialist",
+        "slant": null
+      },
+      "url": "https://www.hellenicshippingnews.com/tanker-shipping-under-fire-from-middle-east-tensions/",
+      "category": "commodity",
+      "commodities": [
+        "shipping"
+      ],
+      "title": {
+        "original": "Tanker Shipping Under Fire from Middle East Tensions",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Navigational safety is once again the topic of discussion in the Middle East, after the latest escalation coming from the Houthi regime in Yemen, on top of concerns regarding Hormuz. In its latest weekly report, shipbroker Intermodal said that “the Middle East conflict entered a ",
+      "scores": {
+        "commodity": 3.0,
+        "diplomacy": 0.0,
+        "region_weight": 1.35,
+        "freshness": 0.743,
+        "final": 3.461
+      },
+      "rank_reasons": [
+        "region:commodity_specialist*1.35",
+        "category:commodity",
+        "commodity:shipping:3"
+      ],
+      "translation_status": "skipped"
+    },
+    {
+      "id": "c2974ba949482360",
+      "published_at": "2026-08-03T21:00:37+00:00",
+      "source": {
+        "id": "hellenic_shipping",
+        "name": "Hellenic Shipping News",
+        "region": "commodity_specialist",
+        "slant": null
+      },
+      "url": "https://www.hellenicshippingnews.com/shanghai-port-reaches-2-million-cbm-lng-bunkering-landmark/",
+      "category": "commodity",
+      "commodities": [
+        "oil",
+        "gas"
+      ],
+      "title": {
+        "original": "Shanghai Port reaches 2 million cbm LNG bunkering landmark",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Shanghai Port has surpassed 2 million cbm (about 894,000 mt) of cumulative LNG bunker deliveries for the first time since launching its LNG bunkering operations in 2022. The milestone was achieved when Pacific International Lines (PIL) container vessel Kota Eagle received 4,549 c",
+      "scores": {
+        "commodity": 3.0,
+        "diplomacy": 0.0,
+        "region_weight": 1.35,
+        "freshness": 0.743,
+        "final": 3.461
+      },
+      "rank_reasons": [
+        "region:commodity_specialist*1.35",
+        "category:commodity",
+        "commodity:oil:2",
+        "commodity:gas:1"
+      ],
+      "translation_status": "skipped"
+    },
+    {
+      "id": "9b8f87929b524d84",
+      "published_at": "2026-08-04T05:30:00+00:00",
+      "source": {
+        "id": "oilprice",
+        "name": "OilPrice.com",
+        "region": "commodity_specialist",
+        "slant": null
+      },
+      "url": "https://oilprice.com/Latest-Energy-News/World-News/Venezuelas-Oil-Exports-Fall-Even-as-US-Shipments-Hit-Seven-Year-High.html",
+      "category": "commodity",
+      "commodities": [
+        "oil"
+      ],
+      "title": {
+        "original": "Venezuela’s Oil Exports Fall Even as U.S. Shipments Hit Seven-Year High",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Venezuela exported 1.16 million barrels of crude oil daily last month, a slight decline from June’s 1.2 million barrels daily, on lower withdrawals from storage, Reuters has reported, noting that exports to the United States during that month increased. July exports to Venezuela’",
+      "scores": {
+        "commodity": 2.0,
+        "diplomacy": 0.0,
+        "region_weight": 1.35,
+        "freshness": 0.941,
+        "final": 2.921
+      },
+      "rank_reasons": [
+        "region:commodity_specialist*1.35",
+        "category:commodity",
+        "commodity:oil:2"
+      ],
+      "translation_status": "skipped"
+    },
+    {
+      "id": "8676e7f5b1e949cb",
+      "published_at": "2026-08-03T23:00:00+00:00",
+      "source": {
+        "id": "oilprice",
+        "name": "OilPrice.com",
+        "region": "commodity_specialist",
+        "slant": null
+      },
+      "url": "https://oilprice.com/Energy/Energy-General/Big-Oil-Warns-Global-Fuel-Stocks-Are-Running-Dangerously-Low.html",
+      "category": "commodity",
+      "commodities": [
+        "oil"
+      ],
+      "title": {
+        "original": "Big Oil Warns Global Fuel Stocks Are Running Dangerously Low",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "The world is running short on fuels—the warning was first issued by some analysts who were watching the physical market rather than futures charts. Now, Big Oil is joining the chorus of warnings, with Shell, Exxon and Chevron all saying that prices at the pump are set to stay hig",
+      "scores": {
+        "commodity": 2.0,
+        "diplomacy": 0.0,
+        "region_weight": 1.35,
+        "freshness": 0.785,
+        "final": 2.809
+      },
+      "rank_reasons": [
+        "region:commodity_specialist*1.35",
+        "category:commodity",
+        "commodity:oil:2",
+        "bridge:1"
+      ],
+      "translation_status": "skipped"
+    },
+    {
+      "id": "f4e1fd1e90e54a1a",
+      "published_at": "2026-08-03T19:30:00+00:00",
+      "source": {
+        "id": "oilprice",
+        "name": "OilPrice.com",
+        "region": "commodity_specialist",
+        "slant": null
+      },
+      "url": "https://oilprice.com/Latest-Energy-News/World-News/Ukraines-Drone-Campaign-Drives-Russian-Oil-Refining-to-24-Year-Low.html",
+      "category": "commodity",
+      "commodities": [
+        "oil"
+      ],
+      "title": {
+        "original": "Ukraine’s Drone Campaign Drives Russian Oil Refining to 24-Year Low",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Russian crude processing fell to its lowest level in more than two decades in July after Ukraine expanded its drone campaign from refineries to tankers, pipelines and export infrastructure, according to The Moscow Times, citing Bloomberg analysis. Russian refineries processed an ",
+      "scores": {
+        "commodity": 2.0,
+        "diplomacy": 0.0,
+        "region_weight": 1.35,
+        "freshness": 0.713,
+        "final": 2.549
+      },
+      "rank_reasons": [
+        "region:commodity_specialist*1.35",
+        "category:commodity",
+        "commodity:oil:2",
+        "bridge:1"
+      ],
+      "translation_status": "skipped"
+    },
+    {
+      "id": "e53d33347c477ce8",
+      "published_at": "2026-08-03T23:02:07+00:00",
+      "source": {
+        "id": "aljazeera_en",
+        "name": "Al Jazeera",
+        "region": "mena",
+        "slant": null
+      },
+      "url": "https://www.aljazeera.com/economy/2026/8/3/petrol-prices-strain-us-households-as-oil-giants-chevron-exxon-profits-soar?traffic_source=rss",
+      "category": "commodity",
+      "commodities": [
+        "oil"
+      ],
+      "title": {
+        "original": "Petrol prices strain US households as oil giants Chevron, Exxon profits soar",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Low-income US households are hit hardest, spending more than 10 percent of monthly income on petrol as prices rise.",
+      "scores": {
+        "commodity": 2.0,
+        "diplomacy": 0.0,
+        "region_weight": 1.4,
+        "freshness": 0.786,
+        "final": 2.531
+      },
+      "rank_reasons": [
+        "region:mena*1.40",
+        "category:commodity",
+        "commodity:oil:2"
+      ],
+      "translation_status": "skipped"
+    },
+    {
+      "id": "24edb9392eaa47a5",
+      "published_at": "2026-08-04T00:00:00+00:00",
+      "source": {
+        "id": "oilprice",
+        "name": "OilPrice.com",
+        "region": "commodity_specialist",
+        "slant": null
+      },
+      "url": "https://oilprice.com/Energy/Energy-General/How-Namibia-Pulled-Ahead-In-Africas-Hottest-Offshore-Oil-Basin.html",
+      "category": "commodity",
+      "commodities": [
+        "oil"
+      ],
+      "title": {
+        "original": "How Namibia Pulled Ahead In Africa’s Hottest Offshore Oil Basin",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Namibia is rapidly emerging as Africa’s next major oil producer while neighboring South Africa, which controls roughly two-thirds of the same Orange Basin petroleum province, remains years behind in developing essentially the same petroleum system. The Orange Basin, an offshore d",
+      "scores": {
+        "commodity": 2.0,
+        "diplomacy": 0.0,
+        "region_weight": 1.35,
+        "freshness": 0.807,
+        "final": 2.507
+      },
+      "rank_reasons": [
+        "region:commodity_specialist*1.35",
+        "category:commodity",
+        "commodity:oil:2"
+      ],
+      "translation_status": "skipped"
+    },
+    {
+      "id": "724ec3186296ebd4",
+      "published_at": "2026-08-04T06:45:39+00:00",
+      "source": {
+        "id": "tass_en",
+        "name": "TASS",
+        "region": "russia",
+        "slant": null
+      },
+      "url": "https://tass.com/world/2168679",
+      "category": "commodity",
+      "commodities": [
+        "shipping"
+      ],
+      "title": {
+        "original": "Strait of Hormuz transit remains low amid US-Iran talks — Reuters",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "According to analysts, only three tankers and three bulk carriers passed through the strait over the past 24 hours",
+      "scores": {
+        "commodity": 1.0,
+        "diplomacy": 1.0,
+        "region_weight": 1.25,
+        "freshness": 0.974,
+        "final": 2.496
+      },
+      "rank_reasons": [
+        "region:russia*1.25",
+        "category:commodity",
+        "commodity:shipping:1",
+        "diplomacy:1"
+      ],
+      "translation_status": "skipped"
+    },
+    {
+      "id": "70877f8e21eaf28b",
+      "published_at": "2026-08-03T17:30:00+00:00",
+      "source": {
+        "id": "oilprice",
+        "name": "OilPrice.com",
+        "region": "commodity_specialist",
+        "slant": null
+      },
+      "url": "https://oilprice.com/Latest-Energy-News/World-News/Trump-Orders-Oil-Companies-to-Cut-Gas-Prices-Targets-Chevron-CEO.html",
+      "category": "commodity",
+      "commodities": [
+        "oil"
+      ],
+      "title": {
+        "original": "Trump Orders Oil Companies to Cut Gas Prices, Targets Chevron CEO",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "President Donald Trump demanded that U.S. oil companies immediately lower gasoline prices on Monday after crude futures plunged following his decision to suspend another planned military strike on Iran. In a Truth Social post, Trump instructed producers to “get your consumer (ret",
+      "scores": {
+        "commodity": 2.0,
+        "diplomacy": 0.0,
+        "region_weight": 1.35,
+        "freshness": 0.674,
+        "final": 2.411
+      },
+      "rank_reasons": [
+        "region:commodity_specialist*1.35",
+        "category:commodity",
+        "commodity:oil:2",
+        "bridge:1"
+      ],
+      "translation_status": "skipped"
+    },
+    {
+      "id": "2a080ba1ab865987",
+      "published_at": "2026-08-04T02:15:16+00:00",
+      "source": {
+        "id": "seatrade",
+        "name": "Seatrade Maritime",
+        "region": "commodity_specialist",
+        "slant": null
+      },
+      "url": "https://www.seatrade-maritime.com/security/cargo-ship-struck-in-the-strait-of-hormuz",
+      "category": "commodity",
+      "commodities": [
+        "shipping"
+      ],
+      "title": {
+        "original": "Seafarer missing after bulker struck in the Strait of Hormuz",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "The latest attack on a Liberian-flagged bulker in Hormuz follows two near misses on tankers the previous day",
+      "scores": {
+        "commodity": 1.0,
+        "diplomacy": 1.0,
+        "region_weight": 1.35,
+        "freshness": 0.86,
+        "final": 2.379
+      },
+      "rank_reasons": [
+        "region:commodity_specialist*1.35",
+        "category:commodity",
+        "commodity:shipping:1",
+        "diplomacy:1"
+      ],
+      "translation_status": "skipped"
+    },
+    {
+      "id": "e888329a397d20e5",
+      "published_at": "2026-06-09T05:03:07+00:00",
+      "source": {
+        "id": "arab_news",
+        "name": "Arab News",
+        "region": "mena",
+        "slant": null
+      },
+      "url": "https://www.arabnews.com/node/2646551/business-economy",
+      "category": "commodity",
+      "commodities": [
+        "copper",
+        "gold",
+        "silver",
+        "zinc"
+      ],
+      "title": {
+        "original": "Saudi Arabia qualifies 24 firms for new mining exploration licenses",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "RIYADH: Saudi Arabia has qualified 24 local and international companies and consortiums to compete for exploration licenses across three multi-mineral belts. The Ministry of Industry and Mineral Resources said the belts cover a combined area of approximately 13,000 sq. km across ",
+      "scores": {
+        "commodity": 4.0,
+        "diplomacy": 0.0,
+        "region_weight": 1.4,
+        "freshness": 0.35,
+        "final": 2.254
+      },
+      "rank_reasons": [
+        "region:mena*1.40",
+        "category:commodity",
+        "commodity:copper:1",
+        "commodity:gold:1",
+        "commodity:silver:1",
+        "commodity:zinc:1"
+      ],
+      "translation_status": "skipped"
+    },
+    {
+      "id": "7cd3fe06416fae0e",
+      "published_at": "2026-08-04T07:16:58+00:00",
+      "source": {
+        "id": "bloomberg_markets",
+        "name": "Bloomberg Markets",
+        "region": "west",
+        "slant": null
+      },
+      "url": "https://www.bloomberg.com/news/articles/2026-08-04/aramco-says-july-attacks-had-no-material-impact-on-operations",
+      "category": "commodity_diplomacy",
+      "commodities": [
+        "oil",
+        "shipping"
+      ],
+      "title": {
+        "original": "Aramco Says July Attacks Had No Material Impact on Operations",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Saudi Aramco said attacks on its assets last month have had no material impact on its operations, and the company is working to expand its oil export capacity as the Strait of Hormuz remains disrupted by the Iran war.",
+      "scores": {
+        "commodity": 2.0,
+        "diplomacy": 1.0,
+        "region_weight": 0.55,
+        "freshness": 0.988,
+        "final": 2.219
+      },
+      "rank_reasons": [
+        "region:west*0.55",
+        "category:commodity_diplomacy",
+        "commodity:oil:1",
+        "commodity:shipping:1",
+        "diplomacy:1",
+        "bridge:1"
+      ],
+      "translation_status": "skipped"
+    },
+    {
+      "id": "75a233257ec141e5",
+      "published_at": "2026-08-03T21:05:00+00:00",
+      "source": {
+        "id": "daily_sabah",
+        "name": "Daily Sabah",
+        "region": "turkey",
+        "slant": null
+      },
+      "url": "https://www.dailysabah.com/opinion/columns/battle-over-strait-of-hormuz",
+      "category": "commodity",
+      "commodities": [
+        "shipping"
+      ],
+      "title": {
+        "original": "Battle over Strait of Hormuz",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "The latest pause in the United States-Iran confrontation should not be confused with a return to stability. President Donald Trump’s decision to hold off on another round of strike...",
+      "scores": {
+        "commodity": 1.0,
+        "diplomacy": 1.0,
+        "region_weight": 1.3,
+        "freshness": 0.745,
+        "final": 1.984
+      },
+      "rank_reasons": [
+        "region:turkey*1.30",
+        "category:commodity",
+        "commodity:shipping:1",
+        "diplomacy:1"
+      ],
+      "translation_status": "skipped"
+    },
+    {
+      "id": "11b993403f64c381",
+      "published_at": "2026-08-03T20:01:10+00:00",
+      "source": {
+        "id": "ndtv_world",
+        "name": "NDTV World",
+        "region": "india",
+        "slant": null
+      },
+      "url": "https://www.ndtv.com/world-news/strait-of-hormuz-could-reopen-by-tomorrow-says-donald-trump-ahead-of-us-iran-talks-11861653#publisher=newsstand",
+      "category": "commodity",
+      "commodities": [
+        "shipping"
+      ],
+      "title": {
+        "original": "\"Strait Of Hormuz Could Reopen By Tomorrow\", Says Trump Amid Iran Talks",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Trump said that there are discussions over \"completely\" reopening the Strait of Hormuz \"by tomorrow\".",
+      "scores": {
+        "commodity": 1.0,
+        "diplomacy": 1.0,
+        "region_weight": 1.3,
+        "freshness": 0.723,
+        "final": 1.927
+      },
+      "rank_reasons": [
+        "region:india*1.30",
+        "category:commodity",
+        "commodity:shipping:1",
+        "diplomacy:1"
+      ],
+      "translation_status": "skipped"
+    },
+    {
+      "id": "e9aab47846e138fc",
+      "published_at": "2026-08-03T21:23:20+00:00",
+      "source": {
+        "id": "scmp",
+        "name": "South China Morning Post",
+        "region": "china",
+        "slant": null
+      },
+      "url": "https://www.scmp.com/news/us/diplomacy/article/3362850/trump-claims-last-chance-iran-strike-deal-latest-warning?utm_source=rss_feed",
+      "category": "commodity",
+      "commodities": [
+        "shipping"
+      ],
+      "title": {
+        "original": "Trump claims ‘last chance’ for Iran to strike deal in latest warning",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "US President Donald Trump on Monday said Iran was facing its “last chance” to reach an agreement with Washington to reopen the Strait of Hormuz and end the five-month-long war. “This is a last chance for them to sign a good document,” Trump said at the Oval Office in the White Ho",
+      "scores": {
+        "commodity": 1.0,
+        "diplomacy": 1.0,
+        "region_weight": 1.25,
+        "freshness": 0.751,
+        "final": 1.924
+      },
+      "rank_reasons": [
+        "region:china*1.25",
+        "category:commodity",
+        "commodity:shipping:1",
+        "diplomacy:1"
+      ],
+      "translation_status": "skipped"
+    },
+    {
+      "id": "9046594e67c45c30",
+      "published_at": "2026-08-03T19:02:13+00:00",
+      "source": {
+        "id": "tass_en",
+        "name": "TASS",
+        "region": "russia",
+        "slant": null
+      },
+      "url": "https://tass.com/world/2168575",
+      "category": "commodity",
+      "commodities": [
+        "shipping"
+      ],
+      "title": {
+        "original": "US and Iran discuss resumption of shipping in Strait of Hormuz by August 4, Trump says",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "The US president mentioned complete opening of the strait",
+      "scores": {
+        "commodity": 1.0,
+        "diplomacy": 1.0,
+        "region_weight": 1.25,
+        "freshness": 0.703,
+        "final": 1.803
+      },
+      "rank_reasons": [
+        "region:russia*1.25",
+        "category:commodity",
+        "commodity:shipping:1",
+        "diplomacy:1"
+      ],
+      "translation_status": "skipped"
+    },
+    {
+      "id": "79d007d7b2b956e7",
+      "published_at": "2026-08-03T10:54:00+00:00",
+      "source": {
+        "id": "daily_sabah",
+        "name": "Daily Sabah",
+        "region": "turkey",
+        "slant": null
+      },
+      "url": "https://www.dailysabah.com/business/economy/why-turkish-petroleums-iraq-bulgaria-energy-initiatives-matter",
+      "category": "commodity",
+      "commodities": [
+        "oil"
+      ],
+      "title": {
+        "original": "Why Turkish Petroleum's Iraq, Bulgaria energy initiatives matter",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Türkiye's state-owned oil and gas giant is widening its international footprint from onshore production to offshore exploration, following its entry into a major oil project i...",
+      "scores": {
+        "commodity": 2.0,
+        "diplomacy": 0.0,
+        "region_weight": 1.3,
+        "freshness": 0.561,
+        "final": 1.678
+      },
+      "rank_reasons": [
+        "region:turkey*1.30",
+        "category:commodity",
+        "commodity:oil:2"
+      ],
+      "translation_status": "skipped"
+    },
+    {
+      "id": "e6bafa0e9fe42454",
+      "published_at": "2026-08-04T04:00:08+00:00",
+      "source": {
+        "id": "ft_commodities",
+        "name": "FT Commodities",
+        "region": "west",
+        "slant": null
+      },
+      "url": "https://www.ft.com/content/cebc2dfc-1b9e-4119-b1e0-b9b514550d23?syn-25a6b1a6=1",
+      "category": "commodity",
+      "commodities": [
+        "gas"
+      ],
+      "title": {
+        "original": "Russia expands shadow LNG fleet to beat EU crackdown",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Growing number of ships will help Moscow continue exporting liquefied natural gas when sanctions tighten next year",
+      "scores": {
+        "commodity": 2.0,
+        "diplomacy": 1.0,
+        "region_weight": 0.55,
+        "freshness": 0.902,
+        "final": 1.588
+      },
+      "rank_reasons": [
+        "region:west*0.55",
+        "category:commodity",
+        "commodity:gas:2",
+        "diplomacy:1"
+      ],
+      "translation_status": "skipped"
+    },
+    {
+      "id": "f603749e87e89c06",
+      "published_at": "2026-08-04T07:30:04+00:00",
+      "source": {
+        "id": "rt_ru",
+        "name": "RT Russian",
+        "region": "russia",
+        "slant": null
+      },
+      "url": "https://russian.rt.com/world/news/1665419-posolstvo-rossiyane-kuba-telefony?utm_source=rss&utm_medium=rss&utm_campaign=RSS",
+      "category": "diplomacy",
+      "commodities": [],
+      "title": {
+        "original": "Посольство призвало посещающих Кубу россиян зарядить телефоны и запастись водой",
+        "original_lang": "ru",
+        "ko": null
+      },
+      "summary": "Россиянам, планирующим поездку на Кубу, рекомендовано иметь при себе заряженные мобильные телефоны и запас питьевой воды из-за регулярных отключений электроэнергии, заявил российский посол в республике Виктор Коронелли. Читать далее",
+      "scores": {
+        "commodity": 0,
+        "diplomacy": 1.0,
+        "region_weight": 1.25,
+        "freshness": 0.994,
+        "final": 1.554
+      },
+      "rank_reasons": [
+        "region:russia*1.25",
+        "category:diplomacy",
+        "diplomacy:1",
+        "bridge:1"
+      ],
+      "translation_status": "skipped"
+    },
+    {
+      "id": "cb5b6aa57e422f00",
+      "published_at": "2026-08-03T11:29:31+00:00",
+      "source": {
+        "id": "aa_world",
+        "name": "Anadolu Agency",
+        "region": "turkey",
+        "slant": null
+      },
+      "url": "https://www.aa.com.tr/en/economy/-in-5-questions-how-the-strait-of-hormuz-is-managed-and-what-could-change/4017050",
+      "category": "commodity",
+      "commodities": [
+        "shipping"
+      ],
+      "title": {
+        "original": "In 5 questions: How the Strait of Hormuz is managed and what could change",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "A new framework for managing shipping through the Strait of Hormuz is being negotiated by Iran and Oman",
+      "scores": {
+        "commodity": 1.0,
+        "diplomacy": 1.0,
+        "region_weight": 1.3,
+        "freshness": 0.57,
+        "final": 1.52
+      },
+      "rank_reasons": [
+        "region:turkey*1.30",
+        "category:commodity",
+        "commodity:shipping:1",
+        "diplomacy:1"
+      ],
+      "translation_status": "skipped"
+    },
+    {
+      "id": "60fde7948f590341",
+      "published_at": "2026-08-02T17:14:37+00:00",
+      "source": {
+        "id": "tehran_times",
+        "name": "Tehran Times",
+        "region": "mena",
+        "slant": null
+      },
+      "url": "https://www.tehrantimes.com/news/528798/Neither-threat-nor-attack-will-force-Iran-to-retreat-or-surrender",
+      "category": "commodity",
+      "commodities": [
+        "shipping"
+      ],
+      "title": {
+        "original": "Neither threat nor attack will force Iran to retreat or surrender",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Sobh-e-No presented its view on America’s need to accept Iran’s conditions and exit the current crisis. Iran’s position regarding the Strait of Hormuz crisis is clear and non-negotiable: “Accepting Iran’s sovereignty over the Strait is the condition for a ceasefire and any kind o",
+      "scores": {
+        "commodity": 1.0,
+        "diplomacy": 2.0,
+        "region_weight": 1.4,
+        "freshness": 0.35,
+        "final": 1.445
+      },
+      "rank_reasons": [
+        "region:mena*1.40",
+        "category:commodity",
+        "commodity:shipping:1",
+        "diplomacy:2"
+      ],
+      "translation_status": "skipped"
+    },
+    {
+      "id": "0cf2eaecac7bbb6a",
+      "published_at": "2026-08-02T15:27:03+00:00",
+      "source": {
+        "id": "tehran_times",
+        "name": "Tehran Times",
+        "region": "mena",
+        "slant": null
+      },
+      "url": "https://www.tehrantimes.com/news/528803/US-has-taken-global-food-security-hostage-by-naval-blockade",
+      "category": "commodity",
+      "commodities": [
+        "shipping"
+      ],
+      "title": {
+        "original": "‘US has taken global food security hostage by naval blockade of Iran’",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "TEHRAN- A member of the Iran Cooperative Chamber, regarding the potential impacts of the American naval blockade against Iran and the closure of the Strait of Hormuz, said: \"It's not that we say this regime has blockaded Iran—no, it has practically taken the world hostage.\"",
+      "scores": {
+        "commodity": 1.0,
+        "diplomacy": 2.0,
+        "region_weight": 1.4,
+        "freshness": 0.35,
+        "final": 1.445
+      },
+      "rank_reasons": [
+        "region:mena*1.40",
+        "category:commodity",
+        "commodity:shipping:1",
+        "diplomacy:2"
+      ],
+      "translation_status": "skipped"
+    },
+    {
+      "id": "2d361aef93d8aafc",
+      "published_at": "2026-08-04T06:20:10+00:00",
+      "source": {
+        "id": "business_standard_markets",
+        "name": "Business Standard Markets",
+        "region": "india",
+        "slant": null
+      },
+      "url": "https://www.business-standard.com/markets/capital-market-news/us-stocks-stay-well-supported-dow-hits-record-126080400482_1.html",
+      "category": "commodity",
+      "commodities": [
+        "oil"
+      ],
+      "title": {
+        "original": "US stocks stay well supported, DOW hits record",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "The US stocks stayed well supported Monday as supportive economic cues and weak oil prices boosted sentiments. The Dow Jones Industrial Average jumped 1.3 percent to reach a record 53,178.41. The S&P 500 soared 1.5 percent, ending just below its closing record of 7,620.90, set on",
+      "scores": {
+        "commodity": 1.0,
+        "diplomacy": 0.0,
+        "region_weight": 1.3,
+        "freshness": 0.963,
+        "final": 1.439
+      },
+      "rank_reasons": [
+        "region:india*1.30",
+        "category:commodity",
+        "commodity:oil:1"
+      ],
+      "translation_status": "skipped"
+    },
+    {
+      "id": "914fed42f2173c65",
+      "published_at": "2026-08-04T07:29:51+00:00",
+      "source": {
+        "id": "tass_ru",
+        "name": "ТАСС",
+        "region": "russia",
+        "slant": null
+      },
+      "url": "https://tass.ru/proisshestviya/27981023",
+      "category": "commodity",
+      "commodities": [
+        "gold"
+      ],
+      "title": {
+        "original": "В Приамурье компания нанесла ущерб недрам на 145,4 млн рублей",
+        "original_lang": "ru",
+        "ko": null
+      },
+      "summary": "Организация \"Легенда\" незаконно добывала золото в долине ручья Машистый",
+      "scores": {
+        "commodity": 1.0,
+        "diplomacy": 0.0,
+        "region_weight": 1.25,
+        "freshness": 0.994,
+        "final": 1.429
+      },
+      "rank_reasons": [
+        "region:russia*1.25",
+        "category:commodity",
+        "commodity:gold:1"
+      ],
+      "translation_status": "skipped"
+    },
+    {
+      "id": "476cca62e5acabe2",
+      "published_at": "2026-08-04T02:56:26+00:00",
+      "source": {
+        "id": "aljazeera_en",
+        "name": "Al Jazeera",
+        "region": "mena",
+        "slant": null
+      },
+      "url": "https://www.aljazeera.com/economy/2026/8/4/us-stocks-near-record-high-oil-falls-as-trump-claims-iran-talks-underway?traffic_source=rss",
+      "category": "commodity",
+      "commodities": [
+        "oil"
+      ],
+      "title": {
+        "original": "US stocks near record high, oil falls as Trump claims Iran talks under way",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Benchmark S&P 500 approaches all-time peak as Washington, Tehran offer conflicting accounts of status of talks.",
+      "scores": {
+        "commodity": 1.0,
+        "diplomacy": 0.0,
+        "region_weight": 1.4,
+        "freshness": 0.876,
+        "final": 1.411
+      },
+      "rank_reasons": [
+        "region:mena*1.40",
+        "category:commodity",
+        "commodity:oil:1"
+      ],
+      "translation_status": "skipped"
+    },
+    {
+      "id": "bed79c3791dcf5d9",
+      "published_at": "2026-08-03T09:03:30+00:00",
+      "source": {
+        "id": "cgtn_world",
+        "name": "CGTN",
+        "region": "china",
+        "slant": null
+      },
+      "url": "https://news.cgtn.com/news/2026-08-03/news-1PjcqDL5wWc/p.html?UTM_Source=cgtn&UTM_Medium=rss&UTM_Campaign=World",
+      "category": "commodity",
+      "commodities": [
+        "shipping"
+      ],
+      "title": {
+        "original": "Iran's IRGC says it shot down MQ-9 drone over Strait of Hormuz",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Iran's IRGC says it shot down MQ-9 drone over Strait of Hormuz",
+      "scores": {
+        "commodity": 1.0,
+        "diplomacy": 1.0,
+        "region_weight": 1.25,
+        "freshness": 0.533,
+        "final": 1.366
+      },
+      "rank_reasons": [
+        "region:china*1.25",
+        "category:commodity",
+        "commodity:shipping:1",
+        "diplomacy:1"
+      ],
+      "translation_status": "skipped"
+    },
+    {
+      "id": "4fe68a53ae68c6df",
+      "published_at": "2026-08-04T05:35:00+00:00",
+      "source": {
+        "id": "japan_times",
+        "name": "Japan Times",
+        "region": "japan",
+        "slant": null
+      },
+      "url": "https://www.japantimes.co.jp/commentary/2026/08/04/world/rohingya-drown-asean-debates/",
+      "category": "commodity",
+      "commodities": [
+        "oil"
+      ],
+      "title": {
+        "original": "The Rohingya drown while ASEAN debates oil",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "People do not board unseaworthy boats because they misjudge the tides. They board because remaining has become its own form of drowning.",
+      "scores": {
+        "commodity": 1.0,
+        "diplomacy": 0.0,
+        "region_weight": 1.25,
+        "freshness": 0.943,
+        "final": 1.355
+      },
+      "rank_reasons": [
+        "region:japan*1.25",
+        "category:commodity",
+        "commodity:oil:1"
+      ],
+      "translation_status": "skipped"
+    },
+    {
+      "id": "50b30a0615a847a9",
+      "published_at": "2026-08-03T22:30:25+00:00",
+      "source": {
+        "id": "ndtv_world",
+        "name": "NDTV World",
+        "region": "india",
+        "slant": null
+      },
+      "url": "https://www.ndtv.com/world-news/donald-trump-slams-big-oil-firms-for-making-too-much-money-amid-iran-war-11861832#publisher=newsstand",
+      "category": "commodity",
+      "commodities": [
+        "oil"
+      ],
+      "title": {
+        "original": "Trump Slams Big Oil Firms For \"Making Too Much Money\" Amid Iran War",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Trump said that he is not happy the way major oil companies are making profits amid Iran war shortage.",
+      "scores": {
+        "commodity": 1.0,
+        "diplomacy": 0.0,
+        "region_weight": 1.3,
+        "freshness": 0.775,
+        "final": 1.158
+      },
+      "rank_reasons": [
+        "region:india*1.30",
+        "category:commodity",
+        "commodity:oil:1"
+      ],
+      "translation_status": "skipped"
+    },
+    {
+      "id": "87831bde9dc28c3a",
+      "published_at": "2026-08-02T15:33:19+00:00",
+      "source": {
+        "id": "tehran_times",
+        "name": "Tehran Times",
+        "region": "mena",
+        "slant": null
+      },
+      "url": "https://www.tehrantimes.com/news/528804/TCCIMA-proposes-private-sector-role-in-Hormuz-governance-model",
+      "category": "commodity",
+      "commodities": [
+        "shipping"
+      ],
+      "title": {
+        "original": "TCCIMA proposes private sector role in Hormuz governance model",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "TEHRAN- At the 12th meeting of the Corporate Governance Committee of the Tehran Chamber of Commerce, Industries, Mines, and Agriculture (TCCIMA) held with the presence of a member of the National Security and Foreign Policy Committee of the Parliament, developments related to the",
+      "scores": {
+        "commodity": 1.0,
+        "diplomacy": 1.0,
+        "region_weight": 1.4,
+        "freshness": 0.35,
+        "final": 1.004
+      },
+      "rank_reasons": [
+        "region:mena*1.40",
+        "category:commodity",
+        "commodity:shipping:1",
+        "diplomacy:1"
+      ],
+      "translation_status": "skipped"
+    },
+    {
+      "id": "19dd9f61a3ca157a",
+      "published_at": "2026-08-02T20:10:08+00:00",
+      "source": {
+        "id": "nhk_business",
+        "name": "NHK (Business)",
+        "region": "japan",
+        "slant": null
+      },
+      "url": "http://www3.nhk.or.jp/news/html/20260803/k10015194501000.html",
+      "category": "commodity",
+      "commodities": [
+        "oil"
+      ],
+      "title": {
+        "original": "OPECプラスの7か国 9月も日量18万バレル余の増産発表",
+        "original_lang": "ja",
+        "ko": null
+      },
+      "summary": "サウジアラビアなどOPECプラスの主な産油国7か国は、原油の1日あたりの生産量を今月に続き、9月も増やすと発表しました。中東情勢が改善し、原油の輸送が正常化した場合に備えた対応とみられます。",
+      "scores": {
+        "commodity": 1.0,
+        "diplomacy": 1.0,
+        "region_weight": 1.25,
+        "freshness": 0.373,
+        "final": 0.955
+      },
+      "rank_reasons": [
+        "region:japan*1.25",
+        "category:commodity",
+        "commodity:oil:1",
+        "diplomacy:1"
+      ],
+      "translation_status": "skipped"
+    },
+    {
+      "id": "9431263cd60c4e9b",
+      "published_at": "2026-08-02T13:28:14+00:00",
+      "source": {
+        "id": "indian_express_world",
+        "name": "Indian Express World",
+        "region": "india",
+        "slant": null
+      },
+      "url": "https://indianexpress.com/article/world/iran-denies-trump-claim-strait-of-hormuz-reopening-deal-false-10814822/",
+      "category": "commodity",
+      "commodities": [
+        "shipping"
+      ],
+      "title": {
+        "original": "Did Iran reject Trump’s Strait of Hormuz peace deal?",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Trump Iran Mojtaba",
+      "scores": {
+        "commodity": 1.0,
+        "diplomacy": 1.0,
+        "region_weight": 1.3,
+        "freshness": 0.35,
+        "final": 0.933
+      },
+      "rank_reasons": [
+        "region:india*1.30",
+        "category:commodity",
+        "commodity:shipping:1",
+        "diplomacy:1"
+      ],
+      "translation_status": "skipped"
+    },
+    {
+      "id": "9536f7dc66da3ec3",
+      "published_at": "2026-08-03T14:40:00+00:00",
+      "source": {
+        "id": "daily_sabah",
+        "name": "Daily Sabah",
+        "region": "turkey",
+        "slant": null
+      },
+      "url": "https://www.dailysabah.com/business/energy/trump-renews-call-for-lower-gas-prices-blasts-chevron-ceo",
+      "category": "commodity",
+      "commodities": [
+        "oil"
+      ],
+      "title": {
+        "original": "Trump renews call for lower gas prices, blasts Chevron CEO",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "U.S. President Donald Trump demanded on Monday again that oil companies lower gasoline prices for American consumers while also blasting Chevron CEO Mike ⁠Wirth for not crediting h...",
+      "scores": {
+        "commodity": 1.0,
+        "diplomacy": 0.0,
+        "region_weight": 1.3,
+        "freshness": 0.623,
+        "final": 0.931
+      },
+      "rank_reasons": [
+        "region:turkey*1.30",
+        "category:commodity",
+        "commodity:oil:1"
+      ],
+      "translation_status": "skipped"
+    },
+    {
+      "id": "bc276805350e8bc3",
+      "published_at": "2026-08-03T13:42:20+00:00",
+      "source": {
+        "id": "nhk_business",
+        "name": "NHK (Business)",
+        "region": "japan",
+        "slant": null
+      },
+      "url": "http://www3.nhk.or.jp/news/html/20260803/k10015195391000.html",
+      "category": "commodity",
+      "commodities": [
+        "silver"
+      ],
+      "title": {
+        "original": "7月31日介入は4兆円超える規模か 民間仲介会社の分析",
+        "original_lang": "ja",
+        "ko": null
+      },
+      "summary": "アメリカ東部時間の先月31日に行われた日米の協調介入について、民間の金融仲介会社は、政府・日銀による介入は推計で4兆円を超える規模だった可能性があると分析しています。",
+      "scores": {
+        "commodity": 1.0,
+        "diplomacy": 0.0,
+        "region_weight": 1.25,
+        "freshness": 0.607,
+        "final": 0.872
+      },
+      "rank_reasons": [
+        "region:japan*1.25",
+        "category:commodity",
+        "commodity:silver:1"
+      ],
+      "translation_status": "skipped"
+    },
+    {
+      "id": "9e3d639922d0b544",
+      "published_at": "2026-08-02T11:40:45+00:00",
+      "source": {
+        "id": "nhk_business",
+        "name": "NHK (Business)",
+        "region": "japan",
+        "slant": null
+      },
+      "url": "http://www3.nhk.or.jp/news/html/20260802/k10015194291000.html",
+      "category": "commodity",
+      "commodities": [
+        "silver"
+      ],
+      "title": {
+        "original": "円安是正へ日米が異例の協調介入 3日に日米共同の声明発表へ",
+        "original_lang": "ja",
+        "ko": null
+      },
+      "summary": "歴史的な円安に歯止めをかけるため政府・日銀は、7月30日から8月1日にかけて断続的に市場介入を実施しました。アメリカの通貨当局と連携し、円安の是正に向けて異例の協調介入を行ったということで政府は3日、一連の対応を踏まえた日米共同の声明を発表することにしています。",
+      "scores": {
+        "commodity": 1.0,
+        "diplomacy": 0.0,
+        "region_weight": 1.25,
+        "freshness": 0.35,
+        "final": 0.503
+      },
+      "rank_reasons": [
+        "region:japan*1.25",
+        "category:commodity",
+        "commodity:silver:1"
+      ],
+      "translation_status": "skipped"
+    }
+  ]
+}

@@ -1,0 +1,222 @@
+{
+  "version": 1,
+  "notes_ko": "아프리카·남미 RSS 추천 초안. URL은 깨질 수 있음 — enabled는 헬스체크 후 true. global_specialist(mining/oil)와 중복 가능.",
+  "regions": {
+    "ssa": {
+      "label_ko": "사하라이남·아프리카 와이어",
+      "priority_fill": ["ZAF", "NGA", "KEN", "ETH", "GHA", "EGY"],
+      "sources": [
+        {
+          "id": "africanews_en",
+          "name": "Africanews",
+          "country_hint": null,
+          "lang": "en",
+          "url": "https://www.africanews.com/feed/",
+          "why_ko": "전 대륙 EN 와이어, 정치·안보 커버 넓음",
+          "enabled_suggested": true
+        },
+        {
+          "id": "allafrica_latest",
+          "name": "AllAfrica Headlines",
+          "lang": "en",
+          "url": "https://allafrica.com/tools/headlines/rdf/latest/headlines.rdf",
+          "why_ko": "다국 헤드라인 집약. 노이즈 많아 필터 필수",
+          "enabled_suggested": true
+        },
+        {
+          "id": "news24",
+          "name": "News24 (South Africa)",
+          "country_hint": "ZAF",
+          "lang": "en",
+          "url": "https://feeds.news24.com/articles/news24/TopStories/rss",
+          "why_ko": "남아공 앵커(2급). URL 변경 잦음 — 실패 시 site RSS 재탐색",
+          "enabled_suggested": true
+        },
+        {
+          "id": "premium_times_ng",
+          "name": "Premium Times (Nigeria)",
+          "country_hint": "NGA",
+          "lang": "en",
+          "url": "https://www.premiumtimesng.com/feed",
+          "why_ko": "나이지리아 정치·에너지 서사",
+          "enabled_suggested": true
+        },
+        {
+          "id": "east_african",
+          "name": "The East African",
+          "country_hint": "KEN",
+          "lang": "en",
+          "url": "https://www.theeastafrican.co.ke/tea/rss",
+          "why_ko": "동아프 지역 통합 시야",
+          "enabled_suggested": true
+        },
+        {
+          "id": "daily_nation_ke",
+          "name": "Daily Nation (Kenya)",
+          "country_hint": "KEN",
+          "lang": "en",
+          "url": "https://nation.africa/kenya/rss",
+          "why_ko": "케냐 주요지. 경로 변경 가능",
+          "enabled_suggested": false
+        },
+        {
+          "id": "egypt_today",
+          "name": "Egypt Today",
+          "country_hint": "EGY",
+          "region_also": "mena",
+          "lang": "en",
+          "url": "https://www.egypttoday.com/Rss",
+          "why_ko": "북아프·수에즈·밀 수입 연계 (MENA 교차)",
+          "enabled_suggested": true
+        },
+        {
+          "id": "aps_algeria_en",
+          "name": "APS Algeria (EN)",
+          "country_hint": "DZA",
+          "lang": "en",
+          "url": "https://www.aps.dz/en?format=feed&type=rss",
+          "why_ko": "가스·Maghreb 공식 성향",
+          "enabled_suggested": false
+        },
+        {
+          "id": "bbc_africa",
+          "name": "BBC Africa",
+          "lang": "en",
+          "url": "https://feeds.bbci.co.uk/news/world/africa/rss.xml",
+          "why_ko": "커버리지 보험. west 가중 낮게 채점",
+          "slant": "west_wire",
+          "enabled_suggested": true
+        }
+      ]
+    },
+    "latam": {
+      "label_ko": "중남미",
+      "priority_fill": ["BRA", "ARG", "MEX", "CHL", "COL", "PER"],
+      "sources": [
+        {
+          "id": "mercopress",
+          "name": "MercoPress",
+          "lang": "en",
+          "url": "https://en.mercopress.com/rss/",
+          "why_ko": "남대서양·남미 EN 요약. 농업·해운 자주",
+          "enabled_suggested": true
+        },
+        {
+          "id": "batimes",
+          "name": "Buenos Aires Times",
+          "country_hint": "ARG",
+          "lang": "en",
+          "url": "https://www.batimes.com.ar/feed",
+          "why_ko": "아르헨(3급) 정국·농업 정책 EN",
+          "enabled_suggested": true
+        },
+        {
+          "id": "rio_times",
+          "name": "The Rio Times",
+          "country_hint": "BRA",
+          "lang": "en",
+          "url": "https://www.riotimesonline.com/feed/",
+          "why_ko": "브라질 EN. 품질 편차 있음 — 필터 후 유지",
+          "enabled_suggested": true
+        },
+        {
+          "id": "folha_world_en",
+          "name": "Folha (World RSS)",
+          "country_hint": "BRA",
+          "lang": "en",
+          "url": "https://feeds.folha.uol.com.br/folha/internacional/rss091.xml",
+          "why_ko": "브라질 메이저 계열 국제 피드 후보",
+          "enabled_suggested": true
+        },
+        {
+          "id": "infobae_en",
+          "name": "Infobae",
+          "country_hint": "ARG",
+          "lang": "es",
+          "url": "https://www.infobae.com/feeds/rss/",
+          "why_ko": "중남미 광역. 스페인어 — 제목 번역 파이프 이후 본격",
+          "enabled_suggested": false
+        },
+        {
+          "id": "el_pais_america",
+          "name": "El País América",
+          "lang": "es",
+          "url": "https://feeds.elpais.com/mrss-s/pages/ep/site/elpais.com/section/america/portada",
+          "why_ko": "중남미 데스크. ES. 품질 높음",
+          "enabled_suggested": true
+        },
+        {
+          "id": "mexico_news_daily",
+          "name": "Mexico News Daily",
+          "country_hint": "MEX",
+          "lang": "en",
+          "url": "https://mexiconewsdaily.com/feed/",
+          "why_ko": "멕시코 EN. 통상·에너지",
+          "enabled_suggested": true
+        },
+        {
+          "id": "bnamericas_news",
+          "name": "BNamericas",
+          "lang": "en",
+          "url": "https://www.bnamericas.com/en/news.rss",
+          "why_ko": "인프라·광산·에너지 B2B. 페이월/차단 시 비활성",
+          "enabled_suggested": false
+        },
+        {
+          "id": "mining_latam_via_miningcom",
+          "name": "(reuse) Mining.com",
+          "lang": "en",
+          "url": "https://www.mining.com/feed/",
+          "why_ko": "이미 commodity_specialist에 있음. 칠레·페루·브라질 광산 다수 — 중복 등록 불필요, 지역 힌트만",
+          "enabled_suggested": false,
+          "already_in_registry": "mining_com"
+        }
+      ]
+    }
+  },
+  "cis_quick": {
+    "notes_ko": "덤: CIS 보강 2개 (요청은 아프·남미이나 구멍 메꿈)",
+    "sources": [
+      {
+        "id": "ukrainska_pravda_en",
+        "name": "Ukrainska Pravda (EN)",
+        "country_hint": "UKR",
+        "url": "https://www.pravda.com.ua/eng/rss/view_news/",
+        "enabled_suggested": true
+      },
+      {
+        "id": "kyiv_independent",
+        "name": "The Kyiv Independent",
+        "country_hint": "UKR",
+        "url": "https://kyivindependent.com/feed/",
+        "enabled_suggested": true
+      }
+    ]
+  },
+  "asean_quick": {
+    "notes_ko": "덤: 아세안 EN 3",
+    "sources": [
+      {
+        "id": "straitstimes",
+        "name": "Straits Times",
+        "country_hint": "SGP",
+        "url": "https://www.straitstimes.com/news/asia/rss.xml",
+        "enabled_suggested": true
+      },
+      {
+        "id": "bangkok_post",
+        "name": "Bangkok Post",
+        "country_hint": "THA",
+        "url": "https://www.bangkokpost.com/rss/data/topstories.xml",
+        "enabled_suggested": true
+      },
+      {
+        "id": "vnexpress_en",
+        "name": "VnExpress International",
+        "country_hint": "VNM",
+        "url": "https://e.vnexpress.net/rss/news.rss",
+        "enabled_suggested": true
+      }
+    ]
+  }
+}
