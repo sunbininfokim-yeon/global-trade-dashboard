@@ -74,22 +74,37 @@ MEKONG_POINTS = [
 # Dry-season salinity peak window for WS rice (master §1.1, §1.5)
 WS_DRY = [(12, -1), (1, 0), (2, 0), (3, 0), (4, 0)]
 WS_PEAK = [(2, 0), (3, 0), (4, 0)]
+# Yen et al. (2024) SPEI-4 growth window for WSC: Jan–Apr of harvest year
+WS_SPEI = [(1, 0), (2, 0), (3, 0), (4, 0)]
 # Preceding wet-season recharge (May–Oct of y-1) as Q_river memory proxy
 WS_WET_PRIOR = [(5, -1), (6, -1), (7, -1), (8, -1), (9, -1), (10, -1)]
 # Monsoon flood window for dual risk (upper delta, AW calendar remnant)
 WS_FLOOD = [(8, -1), (9, -1), (10, -1), (11, -1)]
+# Coastal belt for salt zoning (CTU 2019 west-coast agro-ecology; Water 2022)
+COAST_KM_THRESHOLD = 40.0
+
+# Upstream climate points for dry-season inflow proxy when MRC Q is unavailable.
+# Pakse ≈ lower-Mekong mainstream memory; Tan Chau ≈ delta-gate entry.
+MEKONG_UPSTREAM_POINTS = [
+    {"name": "Pakse", "lat": 15.12, "lon": 105.80, "elevation": 102},
+    {"name": "TanChau", "lat": 10.80, "lon": 105.24, "elevation": 3},
+]
 
 
 def _mekong_rice(daily, y, point):
     dry_p = C.window_sum(daily, "precip", WS_DRY, y)
     wet_p = C.window_sum(daily, "precip", WS_WET_PRIOR, y)
     dry_et0 = C.window_sum(daily, "et0", WS_DRY, y)
+    coast_km = float(point.get("coast_km", 50.0))
     # Flow / tidal contrast proxy without MRC discharge: dry moisture + wet memory.
     dry_flow = dry_p
-    # ONI is injected later by collect; builders use 0.0 here, then salt is
-    # recomputed at region level with ONI. Local water parts still filled.
-    salt = C.salinity_proxy(
-        point.get("coast_km", 50.0), dry_flow, 0.0, wet_p)
+    # ONI / q_upstream injected later by collect; builders use 0.0 here.
+    salt = C.salinity_proxy(coast_km, dry_flow, 0.0, wet_p)
+    coast_w = salt["coastal_exposure"]
+    spei4 = C.spei_like_min(daily, y, peak_months=(1, 2, 3, 4), timescale=4)
+    spi_ws = C.spi_like_window(daily, WS_DRY, y)
+    # Coastal-only salt channel (inland → 0) for provincial heterogeneity.
+    salt_coast = salt["salt_proxy"] if coast_km <= COAST_KM_THRESHOLD else 0.0
     return {
         "precip_dry_ws": dry_p,
         "precip_wet_prior": wet_p,
@@ -100,9 +115,15 @@ def _mekong_rice(daily, y, point):
         "sm_dry": C.window_mean(daily, "gwetroot", WS_PEAK, y),
         "flood_wet_days": C.extreme_rain_days(daily, WS_FLOOD, y, 40.0),
         "flood_spell": C.consecutive_wet_spell(daily, WS_FLOOD, y, 25.0),
-        "coast_km": float(point.get("coast_km", 50.0)),
+        "coast_km": coast_km,
+        "coastal_exposure": coast_w,
+        # Yen et al. 2024 SPEI-4min; Water 2022 / Climate 2023 SPI_WS season
+        "spei4_ws_min": spei4,
+        "spi_ws": spi_ws,
         # salt_proxy / ec_proxy without ONI — region blend overwrites with ONI
         "salt_water_index": salt["salt_proxy"],
+        "salt_x_coast": float(salt["salt_proxy"] * coast_w),
+        "salt_coastal_belt": float(salt_coast),
         "ec_proxy_hydro": salt["ec_proxy"],
         "y_rel_salt_hydro": salt["y_rel_salt"],
     }
@@ -122,14 +143,17 @@ MEKONG_RICE = RegionCrop(
     start_year=1985,
     # WS harvest Mar–Apr; season under way from prior November sowing
     critical_window=[(12, -1), (1, 0), (2, 0), (3, 0), (4, 0)],
+    # Mid dry-season ENSO memory; oni_lag2 (OND+NDJ) added in collect
     oni_window=({"OND", "NDJ"}, {"DJF", "JFM"}),
-    core=["salt_proxy", "oni_djf", "precip_dry_ws", "heat_days_35_ws",
+    core=["salt_proxy", "salt_x_coast", "spei4_ws_min", "spi_ws",
+          "oni_lag2", "q_upstream_proxy", "precip_dry_ws", "heat_days_35_ws",
           "wd_dry_ws", "y_rel_salt"],
     caveat=(
         "Labels: GSO Yearbook Mekong-region spring paddy (2018–2023) + MTN "
         "GSO-style provincial Đông Xuân (2017/2024); pre-2017 is FAOSTAT "
         "national rice scaled to WS overlap — not true province×WS. "
-        "salt_proxy is not measured EC; no MRC discharge, no Sentinel-1 area."),
+        "salt_proxy is not measured EC; MRC Tan Chau discharge blocked "
+        "(POWER Pakse/TanChau Q proxy). No Sentinel-1 area."),
     non_weather_drivers=(
         "Early planting adaptation, canal sluice management, shrimp–rice "
         "conversion, and export market prices move Mekong WS area and intensity "

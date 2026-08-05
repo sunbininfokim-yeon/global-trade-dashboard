@@ -27,9 +27,12 @@ from .collect import (
     load_oni,
     oni_djf,
     oni_for,
+    oni_lag2,
+    point_weather,
     retry_json,
+    upstream_q_features,
 )
-from .regions import ALL, BY_KEY
+from .regions import ALL, BY_KEY, MEKONG_UPSTREAM_POINTS
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 MODELS = os.path.join(HERE, "models")
@@ -92,7 +95,14 @@ def predict_one(cfg, year, oni):
         return None
     history = pd.read_csv(hist_path)
 
-    dailies = {p["name"]: recent_weather(p, year) for p in cfg.points}
+    # Full POWER cache so SPEI/SPI climatologies have enough years; live
+    # short pull only if cache is missing.
+    dailies = {}
+    for p in cfg.points:
+        try:
+            dailies[p["name"]] = point_weather(p)
+        except Exception:  # noqa: BLE001
+            dailies[p["name"]] = recent_weather(p, year)
     coverage = max(d.date.max() for d in dailies.values())
 
     feats = blend_features(cfg, dailies, year)
@@ -100,9 +110,25 @@ def predict_one(cfg, year, oni):
         return None
     feats["oni_season"] = oni_for(oni, year, cfg.oni_window)
     feats["oni_djf"] = oni_djf(oni, year)
-    oni_s = feats["oni_djf"] if feats["oni_djf"] is not None else feats["oni_season"]
+    feats["oni_lag2"] = oni_lag2(oni, year)
+    if cfg.key == "mekong_rice_ws":
+        dailies_up = {}
+        for p in MEKONG_UPSTREAM_POINTS:
+            try:
+                dailies_up[p["name"]] = point_weather(p)
+            except Exception:  # noqa: BLE001
+                dailies_up[p["name"]] = recent_weather(p, year)
+        feats.update(upstream_q_features(dailies_up, year))
+        coverage_up = max(d.date.max() for d in dailies_up.values())
+        coverage = max(coverage, coverage_up)
+    oni_s = feats.get("oni_lag2")
+    if oni_s is None:
+        oni_s = feats["oni_djf"] if feats["oni_djf"] is not None \
+            else feats["oni_season"]
     if "salt_water_index" in feats or cfg.crop == "rice":
-        feats = apply_salt_with_oni(feats, oni_s or 0.0)
+        feats = apply_salt_with_oni(
+            feats, oni_s or 0.0,
+            q_upstream=feats.get("q_upstream_proxy"))
 
     missing = [f for f in model["features"]
                if f not in feats or feats[f] is None or pd.isna(feats[f])]

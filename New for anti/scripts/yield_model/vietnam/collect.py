@@ -27,12 +27,13 @@ import time
 import urllib.request
 from datetime import date
 
+import numpy as np
 import pandas as pd
 
 from brazil import climate as BC
 from . import climate as C
 from . import labels as L
-from .regions import ALL, ALL_WITH_STUBS, BY_KEY
+from .regions import ALL, ALL_WITH_STUBS, BY_KEY, MEKONG_UPSTREAM_POINTS, WS_DRY, WS_PEAK, WS_WET_PRIOR
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 CACHE = os.path.join(HERE, "cache")
@@ -165,6 +166,52 @@ def oni_djf(oni, year):
     return oni_for(oni, year, (set(), {"DJF"}))
 
 
+def oni_lag2(oni, year):
+    """
+    ENSO lagged ~2 months ahead of mid dry-season (Feb–Mar) moisture.
+
+    Atmospheres 2026 / AF-1022: ONI→SPI peak correlation at lag ≈ 2 months.
+    Uses OND (year−1) + NDJ (year) — seasons ending before peak WS drought.
+    """
+    vals = list(oni[(oni.year == year - 1) & (oni.season == "OND")].anom)
+    vals += list(oni[(oni.year == year) & (oni.season == "NDJ")].anom)
+    return sum(vals) / len(vals) if vals else None
+
+
+def upstream_q_features(dailies_up, year):
+    """
+    Dry-season Mekong inflow proxy without MRC gauged discharge.
+
+    Yen et al. (2024) QTCmin (Tan Chau min discharge) + Eslami et al. (2021)
+    dry-season SWI mechanism. MRC portal requires request / returns 403 here,
+    so we combine:
+      · Pakse wet-season precip (y−1 May–Oct) — upstream storage/flood memory
+      · Tan Chau dry SM + dry precip — local delta-gate dryness
+    Scaled to O(1); higher ⇒ more freshwater push ⇒ less intrusion.
+    """
+    pakse = dailies_up.get("Pakse")
+    tc = dailies_up.get("TanChau")
+    if pakse is None or tc is None:
+        return {}
+    wet = C.window_sum(pakse, "precip", WS_WET_PRIOR, year)
+    dry_p = C.window_sum(tc, "precip", WS_DRY, year)
+    sm = C.window_mean(tc, "gwetroot", WS_PEAK, year)
+    if any(np.isnan(v) for v in (wet, dry_p, sm)):
+        return {
+            "q_wet_pakse": wet,
+            "precip_dry_tanchau": dry_p,
+            "q_sm_tanchau": sm,
+        }
+    # Weighted composite in roughly unit scale (typical wet ~1200–2000 mm).
+    q = 0.55 * (wet / 1500.0) + 0.30 * (sm / 0.45) + 0.15 * (dry_p / 80.0)
+    return {
+        "q_upstream_proxy": float(q),
+        "q_wet_pakse": float(wet),
+        "precip_dry_tanchau": float(dry_p),
+        "q_sm_tanchau": float(sm),
+    }
+
+
 def blend_features(cfg, dailies, year):
     """Point-level build then production-weight — never mean weather first."""
     acc, wsum = {}, {}
@@ -182,8 +229,8 @@ def blend_features(cfg, dailies, year):
     return {k: acc[k] / wsum[k] for k in acc if wsum[k] > 0}
 
 
-def apply_salt_with_oni(feats, oni_val):
-    """Rebuild salinity features once region-mean ONI is known."""
+def apply_salt_with_oni(feats, oni_val, q_upstream=None):
+    """Rebuild salinity features once region-mean ONI (and optional Q) known."""
     if oni_val is None:
         return feats
     dry = feats.get("precip_dry_ws", feats.get("precip_dry_coast",
@@ -191,17 +238,46 @@ def apply_salt_with_oni(feats, oni_val):
     wet = feats.get("precip_wet_prior", feats.get("precip_typhoon_window",
                    1000.0))
     coast = feats.get("coast_km", 40.0)
-    salt = C.salinity_proxy(coast, dry, oni_val, wet)
+    q = q_upstream
+    if q is None:
+        q = feats.get("q_upstream_proxy")
+    salt = C.salinity_proxy(coast, dry, oni_val, wet, q_upstream=q)
     feats["salt_proxy"] = salt["salt_proxy"]
     feats["ec_proxy"] = salt["ec_proxy"]
     feats["y_rel_salt"] = salt["y_rel_salt"]
+    feats["coastal_exposure"] = salt["coastal_exposure"]
+    # Refresh coastal interaction with ONI-aware salt
+    feats["salt_x_coast"] = float(
+        salt["salt_proxy"] * salt["coastal_exposure"])
     return feats
+
+
+def attach_sample_weights(df):
+    """
+    Up-weight official WS years (2017+) vs FAOSTAT-scaled prior.
+
+    Gap note: full 2017–2024-only train is n≈8 — too thin for min_train=18 CV;
+    weighting keeps history while emphasising GSO/MTN Đông Xuân labels.
+    """
+    w = pd.Series(1.0, index=df.index)
+    if "label_source" in df.columns:
+        src = df.label_source.fillna("").astype(str)
+        official = (df.year >= 2017) & (~src.str.contains("faostat", case=False))
+        w.loc[official] = 3.0
+    elif "year" in df.columns:
+        w.loc[df.year >= 2017] = 3.0
+    df = df.copy()
+    df["sample_weight"] = w.values
+    return df
 
 
 def build_region(cfg, oni):
     log(f"{cfg.key}: {cfg.label}"
         + (" [stub]" if cfg.stub else ""))
     dailies = {p["name"]: point_weather(p) for p in cfg.points}
+    dailies_up = {}
+    if cfg.key == "mekong_rice_ws":
+        dailies_up = {p["name"]: point_weather(p) for p in MEKONG_UPSTREAM_POINTS}
 
     rows = []
     for year in range(cfg.start_year, END_YEAR + 1):
@@ -212,11 +288,18 @@ def build_region(cfg, oni):
         window = cfg.oni_window
         feats["oni_season"] = oni_for(oni, year, window)
         feats["oni_djf"] = oni_djf(oni, year)
-        # Prefer DJF for salt channel (master note §1.2)
-        oni_for_salt = feats["oni_djf"] if feats["oni_djf"] is not None \
-            else feats["oni_season"]
+        feats["oni_lag2"] = oni_lag2(oni, year)
+        if dailies_up:
+            feats.update(upstream_q_features(dailies_up, year))
+        # Prefer lag-2 ONI for salt channel when available (teleconnection papers)
+        oni_for_salt = feats.get("oni_lag2")
+        if oni_for_salt is None:
+            oni_for_salt = feats["oni_djf"] if feats["oni_djf"] is not None \
+                else feats["oni_season"]
         if cfg.crop in ("rice",) or "salt_water_index" in feats:
-            feats = apply_salt_with_oni(feats, oni_for_salt or 0.0)
+            feats = apply_salt_with_oni(
+                feats, oni_for_salt or 0.0,
+                q_upstream=feats.get("q_upstream_proxy"))
         rows.append(feats)
 
     df = pd.DataFrame(rows)
@@ -225,6 +308,8 @@ def build_region(cfg, oni):
         return df
 
     df = L.attach_labels(cfg, df)
+    if cfg.key == "mekong_rice_ws":
+        df = attach_sample_weights(df)
     src = (df.label_source.dropna().iloc[0]
            if "label_source" in df.columns and df.label_source.notna().any()
            else "unknown")

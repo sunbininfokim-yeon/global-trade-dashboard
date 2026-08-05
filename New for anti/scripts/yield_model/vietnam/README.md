@@ -52,11 +52,15 @@ override CSVs exist.
 ### Salinity proxy (honest)
 
 ```
-salt_proxy ≈ f(coast_km, dry-season precip, prior wet precip, ONI DJF)
+salt_proxy ≈ f(coast_km, dry-season precip, prior wet precip, ONI lag-2, Q_upstream_proxy)
 ec_proxy / y_rel_salt  → Maas–Hoffman *shape* on that scaled proxy
+spei4_ws_min           → Jan–Apr SPEI-like min (Yen et al. 2024)
+spi_ws                 → Dec–Apr precip z (Loc et al. 2022 SPI_WS)
+q_upstream_proxy       → POWER Pakse/TanChau stand-in for MRC QTCmin
 ```
 
-Not canal EC, not MRC \(Q_\text{river}\). Wire discharge + SIWRP alerts before production.
+Not canal EC, not MRC \(Q_\text{river}\). See `METHODOLOGY_MEKONG_WS.md`.
+Wire MRC discharge + SIWRP alerts before production.
 
 ### Coffee irrigation
 
@@ -74,9 +78,10 @@ separate product step.
 ## Production gaps
 
 1. Longer machine-readable **GSO/NSO V0617** province×WS panel (API not public)  
-2. MRC dry-season discharge / stage at Tan Chau–Chau Doc  
+2. MRC dry-season discharge / stage at Tan Chau–Chau Doc (portal request; 403)  
 3. GEE CHIRPS + SMAP L4 + Sentinel-1 planted-area anomaly (2016-style)  
 4. IBTrACS for RRD/central coast cyclone exposure (true distance)  
 5. Province irrig fractions for coffee \(I_\text{proxy}\) calibration  
 6. Real labels for coffee / RRD (still provisional)  
 7. UI country entry once skill on real labels is re-evaluated  
+8. True SPEI log-logistic fit (current `spei4_ws_min` is CWB z-score approx)  
