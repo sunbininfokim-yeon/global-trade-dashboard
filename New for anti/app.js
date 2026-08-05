@@ -1129,15 +1129,17 @@ const oceanSstPointsFromGlobal = (g) => {
         else if (b.key === 'amo') anomaly = amo;
         else if (b.key === 'amo_half') anomaly = amo * 0.6;
         const base = (2.6e6 + Math.abs(anomaly) * 5e5) * (b.spread || 1);
-        // Three concentric rings instead of one disc. ScatterplotLayer has no
-        // radial falloff, and a single flat circle reads as a shape drawn on
-        // the ocean rather than as a temperature field; stacked low-alpha rings
-        // approximate the falloff and soften the edge.
-        return [1, 0.72, 0.46].map((scale, i) => ({
+        // Stacked low-alpha discs instead of one flat circle. ScatterplotLayer
+        // has no radial falloff, and the layer types that do -- IconLayer with
+        // a gradient sprite, TextLayer -- render nothing under deck 9.3.7's
+        // _GlobeView (verified in the browser). Six overlapping discs on a
+        // shrinking radius approximate the falloff well enough that the basin
+        // reads as a temperature field rather than a shape on the water.
+        return [1, 0.88, 0.75, 0.62, 0.48, 0.33].map((scale, i) => ({
             ...b,
             id: `${b.id}-${i}`,
             anomaly,
-            color: sstColor(anomaly).map((v, ci) => (ci === 3 ? Math.round(v * 0.55) : v)),
+            color: sstColor(anomaly).map((v, ci) => (ci === 3 ? Math.round(v * 0.26) : v)),
             radius: base * scale,
         }));
     }).flat();
@@ -3663,7 +3665,7 @@ const greatCirclePath = (src, dst, segments = 40) => {
     // Lift scales with route length so a Gulf-to-Japan run bows like an arc
     // while a short hop stays close to the surface instead of ballooning.
     const span = Math.hypot(dst[0] - src[0], dst[1] - src[1]);
-    const lift = Math.min(1.15e6, 90000 + span * 9000);
+    const lift = Math.min(5.5e5, 60000 + span * 4200);
     const out = [];
     for (let i = 0; i <= segments; i++) {
         const t = i / segments;
@@ -3672,6 +3674,39 @@ const greatCirclePath = (src, dst, segments = 40) => {
     }
     return out;
 };
+
+// A route whose vertices sit past the horizon is behind the planet. deck does
+// not depth-test these paths against the sphere mesh, so without clipping an
+// Australia-Japan run is drawn as a straight line across the middle of the
+// globe. Split the polyline instead of dropping the route: a path that crosses
+// the limb should show the half that faces us.
+// 74 degrees, not 90. A great circle that lies nearly edge-on to the camera --
+// Chile to China, say -- keeps every vertex just inside a 87-degree cut and
+// renders as a straight chord through the planet. Pulling the cut back to 74
+// removes the grazing portion, and the arc lift is kept low enough that a path
+// near the limb does not float outside the sphere's silhouette.
+const HORIZON_DEG = 74;
+const clipPathToHorizon = (points, center) => {
+    const out = [];
+    let run = [];
+    for (const p of points) {
+        if (angularDistanceDeg(center, [p[0], p[1]]) <= HORIZON_DEG) {
+            run.push(p);
+        } else if (run.length) {
+            if (run.length > 1) out.push(run);
+            run = [];
+        }
+    }
+    if (run.length > 1) out.push(run);
+    return out;
+};
+
+/** Flow polylines for the current camera, one entry per visible path segment. */
+const buildFlowPaths = (arcs, center) => arcs.flatMap((d) => {
+    if (!d.sourcePosition || !d.targetPosition) return [];
+    return clipPathToHorizon(greatCirclePath(d.sourcePosition, d.targetPosition), center)
+        .map((path) => ({ ...d, path }));
+});
 
 const buildTradeTrailParticles = (arcs, phase) => {
     const out = [];
@@ -3683,6 +3718,10 @@ const buildTradeTrailParticles = (arcs, phase) => {
         for (let p = 0; p < 3; p++) {
             const t = (phase * (1.1 + (i % 5) * 0.07) + p / 3 + i * 0.02) % 1;
             const pos = slerpLonLat(src, dst, t);
+            // Same reason as the paths: a particle behind the planet would
+            // otherwise glide across the visible face.
+            const center = [currentViewState.longitude ?? 0, currentViewState.latitude ?? 0];
+            if (angularDistanceDeg(center, pos) > HORIZON_DEG) continue;
             out.push({
                 position: pos,
                 color: [255, 255, 255, Math.round(90 + (1 - t) * 140)],
@@ -3763,12 +3802,15 @@ const renderMapLayers = (arcs, opts = {}) => {
         }),
         new PathLayer({
             id: `arc-layer-${currentCommodity}-${focus || 'world'}`,
-            data: filteredArcs,
+            data: buildFlowPaths(filteredArcs, [
+                currentViewState.longitude ?? 0,
+                currentViewState.latitude ?? 0,
+            ]),
             pickable: true,
             widthUnits: 'pixels',
             capRounded: true,
             jointRounded: true,
-            getPath: (d) => greatCirclePath(d.sourcePosition, d.targetPosition),
+            getPath: (d) => d.path,
             getWidth: (d) => {
                 const key = `${d.sourceName}>${d.targetName}`;
                 const hot = !focus || opts._focusedSet?.has(key);
@@ -3879,6 +3921,7 @@ const renderMapLayers = (arcs, opts = {}) => {
     // arcs 22x a second re-uploaded the whole world geometry for no visual gain
     // (and, while `data` was a Promise, meant the land never finished loading).
     let staticLayers = baseLayers();
+    let lastCenter = [currentViewState.longitude ?? 0, currentViewState.latitude ?? 0];
     let last = 0;
     const loop = (ts) => {
         if (!window.TradeData?.[currentCommodity] || currentCommodity === 'climate' || currentCommodity === 'home') {
@@ -3888,8 +3931,17 @@ const renderMapLayers = (arcs, opts = {}) => {
         if (ts - last > 45) {
             last = ts;
             tradeAnimPhase = (ts * 0.00008) % 1;
-            // Rebuild the static half only once the basemap has actually landed.
-            if (worldGeoData && staticLayers[1]?.props?.data !== worldGeoData) {
+            // Rebuild the static half when the basemap lands, and when the
+            // camera has moved far enough that the horizon clip is stale.
+            // Two degrees, not every frame: re-slicing 250 polylines per frame
+            // is the kind of work that shows up as jank while dragging.
+            const center = [currentViewState.longitude ?? 0, currentViewState.latitude ?? 0];
+            const moved = Math.abs(center[0] - lastCenter[0]) > 2
+                || Math.abs(center[1] - lastCenter[1]) > 2;
+            const basemapArrived = worldGeoData
+                && staticLayers.find((l) => l.id.endsWith('-land'))?.props?.data !== worldGeoData;
+            if (moved || basemapArrived) {
+                lastCenter = center;
                 staticLayers = baseLayers();
             }
             deckgl.setProps({
