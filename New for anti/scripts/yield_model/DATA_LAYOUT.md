@@ -199,11 +199,17 @@ public/data/{country}_yield_forecast.json
 
 `public/data/` 는 **방문자가 페이지를 열 때마다 받아가는** 경로입니다.
 
-현재 `icrisat_crop_production.json` 이 **6MB**로, 나머지 전부를 합친 것보다 큽니다.
 학습용 원본을 여기 두면 사이트가 느려집니다. **집계·요약한 결과만** 넣고,
 원본은 `cache/`(gitignore) 또는 `scripts/` 하위에 두세요.
 
 기준: `public/data/` 파일 하나가 **200KB를 넘으면** 요약이 필요한지 검토.
+
+전례: `icrisat_crop_production.json` 이 **6MB**로 나머지 전부를 합친 것보다
+컸던 적이 있습니다. 게다가 받는 도중 끊긴 파일이라 파싱조차 안 됐는데,
+받는 쪽이 `Content-Length` 를 대조하지 않아 잘린 채로 커밋됐습니다. 삭제했고,
+인도 수확량 원본은 `yield_model/india/data/` 아래로 옮겼습니다. 대용량 원본을
+외부에서 받을 때는 **받은 바이트 수를 선언된 길이와 대조한 뒤에** 저장하세요
+(`india/icrisat.py` 의 `_download()` 참고).
 
 ---
 
