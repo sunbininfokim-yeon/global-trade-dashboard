@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://global-trade-dashboard.example/schemas/shipping_capacity_v1.schema.json",
+  "title": "Shipping Capacity Snapshot v1",
+  "type": "object",
+  "required": ["schema_version", "generated_at", "model", "fleet", "routes", "scenario_summary"],
+  "properties": {
+    "schema_version": {"const": "shipping-capacity-v1"},
+    "generated_at": {"type": "string", "format": "date-time"},
+    "fleet": {
+      "type": "object",
+      "required": ["as_of", "world_total_dwt", "fleet_by_type"]
+    },
+    "routes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "ship_type", "input_status", "baseline", "stress_tests"],
+        "properties": {
+          "service_type": {"type": "string"},
+          "vessel_class": {"type": ["string", "null"]},
+          "directions": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["id", "origin", "destination", "input_status"],
+              "properties": {
+                "annual_cargo_tonnes": {"type": ["number", "null"], "minimum": 0}
+              }
+            }
+          }
+        }
+      }
+    },
+    "route_catalog": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "ship_type", "vessel_class", "name_ko", "model_status"]
+      }
+    },
+    "scenario_summary": {"type": "array"}
+  }
+}

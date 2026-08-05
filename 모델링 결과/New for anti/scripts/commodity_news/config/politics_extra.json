@@ -1,0 +1,50 @@
+{
+  "version": 1,
+  "notes": "여론조사: 전국 대선 경마형(horse-race) 배제. 통치·지지율(approval/job approval)은 허용. 배팅: 선거 사이클 중 predict/polymarket 참고.",
+  "polls": {
+    "reject_horserace_terms": [
+      "national poll leads", "nationwide poll shows", "horserace", "horse race",
+      "polling average for president", "generic ballot", "who would you vote",
+      "presidential preference poll", "trail in national poll", "leads national poll",
+      "rcp average", "538 forecast", "fiveThirtyEight",
+      "전국 대선 여론조사", "대선 지지율 경합", "가상 대선 대결", "양자대결 여론조사",
+      "대통령 후보 지지율 전국"
+    ],
+    "admit_governance_terms": [
+      "job approval", "approval rating", "presidential approval", "favorability of government",
+      "cabinet approval", "prime minister approval", "net approval",
+      "국정지지율", "대통령 지지율", "총리 지지율", "정부 지지율", "통치 여론",
+      "内閣支持率", "政権支持率", "支持率調査"
+    ],
+    "notes_ko": "예: 미국 대통령 전국 대선 가상 지지율 조사는 제외. 현직 통치 지지율은 유지."
+  },
+  "betting": {
+    "enabled": true,
+    "notes_ko": "선거 과정에서만 의미. Polymarket 공개 API 우선. 도박 조장이 아니라 시장확률 참고.",
+    "polymarket": {
+      "search_url": "https://gamma-api.polymarket.com/public-search",
+      "markets_url": "https://gamma-api.polymarket.com/markets",
+      "queries": [
+        "US presidential",
+        "US election",
+        "president",
+        "control of congress",
+        "senate"
+      ],
+      "max_markets": 12
+    },
+    "predictit_note": "PredictIt API는 지역/약관 제한 가능 — 연결 시 adapter 추가"
+  },
+  "cabinet_reshuffle": {
+    "admit": true,
+    "terms": [
+      "cabinet reshuffle", "reshuffles cabinet", "ministerial reshuffle",
+      "names new foreign minister", "appoints finance minister", "appoints defense minister",
+      "secretary of state", "treasury secretary nominated", "principal officers",
+      "개각", "장관 교체", "외교부장관", "재무장관", "국방장관", "총리 지명",
+      "内閣改造", "閣僚人事", "外相に", "財務相",
+      "改组内阁", "外长", "财政部长"
+    ],
+    "info_grade": 1
+  }
+}

@@ -1,0 +1,183 @@
+{
+  "key": "import_corn",
+  "label": "China corn imports",
+  "doc": "Regions/중국/거시_수입수요/사료_곡물/수입수요_갭_분석_및_수식.md",
+  "target_label": "corn imports",
+  "target_unit": "1000 MT",
+  "label_source": "USDA PSD, national, marketing year",
+  "regime_start": 2009,
+  "trained_years": [
+    2009,
+    2025
+  ],
+  "n_years": 17,
+  "trend": {
+    "log_poly_coef": [
+      0.119513135437946,
+      -232.5406890154715
+    ],
+    "degree": 1,
+    "form": "deg1",
+    "window": null,
+    "space": "log(1000 MT)"
+  },
+  "features": [
+    "shortfall",
+    "sow_growth",
+    "hog_growth",
+    "consumption_growth",
+    "stock_use_lag1",
+    "imports_lag1"
+  ],
+  "feature_set": "core",
+  "scaler": {
+    "mean": [
+      -8832.529411764706,
+      1.0002880870492703,
+      1.0078877709666674,
+      1.0433716762854068,
+      0.6113079957243749,
+      7967.529411764706
+    ],
+    "scale": [
+      23563.888231827874,
+      0.09259168822351505,
+      0.10649022739129765,
+      0.03503788929203939,
+      0.2316144121449425,
+      8917.504775754569
+    ]
+  },
+  "ridge": {
+    "alpha": 10000.0,
+    "coef": [
+      0.00014333124746803019,
+      -0.00013100597279402517,
+      2.289560509203221e-06,
+      -0.0003136566190227124,
+      1.3281349079254318e-05,
+      0.0002666806142747797
+    ],
+    "intercept": -6.598618057155737e-14
+  },
+  "beats_trend": false,
+  "selection": "pre-registered feature set from the guide; only the trend form is fitted. Exploratory sets are recorded in `validation` but cannot promote the model.",
+  "exploratory_best_skill": -0.00886923179429977,
+  "skill_vs_best_trend": -0.2959002090665228,
+  "recent_skill_vs_trend": -0.2959002090665228,
+  "uncertainty": {
+    "sigma": 14206.825040223152,
+    "unit": "1000 MT",
+    "basis": "trend-only baseline RMSE over the last 10 folds (model showed no skill)"
+  },
+  "comtrade_cross_check": {
+    "n_years": 16,
+    "median_ratio": 0.7087787506334395,
+    "min_ratio": 1.890359168241966e-09,
+    "max_ratio": 7.479919665963796
+  },
+  "departures": [
+    "No Temporal Fusion Transformer: ~40 annual rows cannot support one, so the model is a ridge on a log trend.",
+    "No hog inventory or ASF series -- not openly published at usable frequency. Soybean meal consumption is the feed-demand proxy.",
+    "No NLP policy-risk score from CSIS / Chatham House text.",
+    "Same-year domestic consumption is excluded as a feature: on a balance sheet it would recover an accounting identity and report it as skill."
+  ],
+  "validation": {
+    "core_deg1": {
+      "rmse": 18410.627539796693,
+      "baseline_rmse": 14206.825040223152,
+      "recent_rmse": 18410.627539796693,
+      "recent_baseline_rmse": 14206.825040223152,
+      "skill": -0.2959002090665228,
+      "recent_skill": -0.2959002090665228,
+      "n": 7,
+      "degree": 1,
+      "window": null,
+      "trend_form": "deg1",
+      "years": [
+        2019,
+        2025
+      ]
+    },
+    "core_deg2": {
+      "rmse": 20449.149328128162,
+      "baseline_rmse": 18342.935737859134,
+      "recent_rmse": 20449.149328128162,
+      "recent_baseline_rmse": 18342.935737859134,
+      "skill": -0.11482423644552608,
+      "recent_skill": -0.11482423644552608,
+      "n": 7,
+      "degree": 2,
+      "window": null,
+      "trend_form": "deg2",
+      "years": [
+        2019,
+        2025
+      ]
+    },
+    "core_recent20": {
+      "rmse": 18410.627539796693,
+      "baseline_rmse": 14206.825040223152,
+      "recent_rmse": 18410.627539796693,
+      "recent_baseline_rmse": 14206.825040223152,
+      "skill": -0.2959002090665228,
+      "recent_skill": -0.2959002090665228,
+      "n": 7,
+      "degree": 1,
+      "window": 20,
+      "trend_form": "recent20",
+      "years": [
+        2019,
+        2025
+      ]
+    },
+    "all_deg1": {
+      "rmse": 19153.69633530227,
+      "baseline_rmse": 14206.825040223152,
+      "recent_rmse": 19153.69633530227,
+      "recent_baseline_rmse": 14206.825040223152,
+      "skill": -0.34820385843235635,
+      "recent_skill": -0.34820385843235635,
+      "n": 7,
+      "degree": 1,
+      "window": null,
+      "trend_form": "deg1",
+      "years": [
+        2019,
+        2025
+      ]
+    },
+    "all_deg2": {
+      "rmse": 18505.62348670615,
+      "baseline_rmse": 18342.935737859134,
+      "recent_rmse": 18505.62348670615,
+      "recent_baseline_rmse": 18342.935737859134,
+      "skill": -0.00886923179429977,
+      "recent_skill": -0.00886923179429977,
+      "n": 7,
+      "degree": 2,
+      "window": null,
+      "trend_form": "deg2",
+      "years": [
+        2019,
+        2025
+      ]
+    },
+    "all_recent20": {
+      "rmse": 19153.69633530227,
+      "baseline_rmse": 14206.825040223152,
+      "recent_rmse": 19153.69633530227,
+      "recent_baseline_rmse": 14206.825040223152,
+      "skill": -0.34820385843235635,
+      "recent_skill": -0.34820385843235635,
+      "n": 7,
+      "degree": 1,
+      "window": 20,
+      "trend_form": "recent20",
+      "years": [
+        2019,
+        2025
+      ]
+    }
+  }
+}

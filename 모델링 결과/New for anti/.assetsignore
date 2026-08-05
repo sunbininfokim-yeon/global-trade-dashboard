@@ -1,0 +1,15 @@
+# Files excluded from the publicly served asset bundle.
+# Everything here would otherwise be downloadable straight from the site.
+scripts
+scripts/**
+functions
+functions/**
+*.py
+wrangler.toml
+.assetsignore
+AI_WORKFLOW.md
+cloudflare_worker.js
+cloudflare_crop_forecast.json
+# ~6MB ICRISAT blob — train-time only; never needed by the browser.
+# Kept in git so Actions can refresh it without shipping to every visitor.
+public/data/icrisat_crop_production.json
