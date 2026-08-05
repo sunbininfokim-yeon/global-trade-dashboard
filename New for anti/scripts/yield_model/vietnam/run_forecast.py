@@ -54,16 +54,18 @@ def main():
         "source_note": (
             "Weather: NASA POWER daily (GWETROOT, TEMP, precip, radiation), "
             "ET0 FAO-56. ENSO: NOAA CPC ONI. "
-            "Yield labels for training: provisional/synthetic unless "
-            "training/labels_official/ is populated — not GSO official. "
+            "Mekong WS labels: GSO Yearbook Mekong-region spring paddy "
+            "(2018–2023) + MTN provincial Đông Xuân (2017/2024); pre-2017 "
+            "FAOSTAT national rice scaled to WS overlap (season imperfect). "
+            "Coffee/RRD still provisional unless labels_official override. "
             "Salinity: coastal distance × dry-season hydrology proxy (not EC). "
             "GEE CHIRPS/SMAP/S1 and MRC discharge not executed in this build."),
         "methodology_note": (
             "T1 models from Regions/베트남 master: Mekong WS rice "
             "(salt/ENSO), Central Highlands robusta (WD_eff + Kath), "
             "Red River rice (flood/typhoon rain proxy). Ridge on log-yield "
-            "residual vs trend; skill is forward-chained and must be read "
-            "with labels_provisional."),
+            "residual vs trend; read labels_provisional / "
+            "labels_season_imperfect on each region."),
         "regions": {},
     }
 
@@ -116,6 +118,7 @@ def main():
                 "non_weather_drivers": r.get("non_weather_drivers", ""),
                 "label_source": r.get("label_source", ""),
                 "labels_provisional": r.get("labels_provisional", True),
+                "labels_season_imperfect": r.get("labels_season_imperfect", False),
                 "salinity_is_proxy": True,
                 "gee_used": False,
             },

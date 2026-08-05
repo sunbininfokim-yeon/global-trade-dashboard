@@ -126,9 +126,10 @@ MEKONG_RICE = RegionCrop(
     core=["salt_proxy", "oni_djf", "precip_dry_ws", "heat_days_35_ws",
           "wd_dry_ws", "y_rel_salt"],
     caveat=(
-        "Labels are provisional (no GSO province WS series wired yet). "
-        "salt_proxy is not measured EC; no MRC discharge, no Sentinel-1 area. "
-        "Skill figures on synthetic labels overstate operational skill."),
+        "Labels: GSO Yearbook Mekong-region spring paddy (2018–2023) + MTN "
+        "GSO-style provincial Đông Xuân (2017/2024); pre-2017 is FAOSTAT "
+        "national rice scaled to WS overlap — not true province×WS. "
+        "salt_proxy is not measured EC; no MRC discharge, no Sentinel-1 area."),
     non_weather_drivers=(
         "Early planting adaptation, canal sluice management, shrimp–rice "
         "conversion, and export market prices move Mekong WS area and intensity "

@@ -5,7 +5,9 @@ Usage: python3 -m vietnam.train [region_key ...]
 
 Reuses brazil.train validation (forward chaining, trend refit per fold).
 Skills on provisional_synthetic labels measure consistency of the feature
-scaffold, **not** production forecast skill against GSO.
+scaffold, **not** production forecast skill against GSO. Mekong WS uses
+labels_official (GSO Yearbook / MTN Đông Xuân + FAOSTAT prior) — read
+`labels_season_imperfect` on the artifact when pre-2017 FAOSTAT is included.
 """
 
 from __future__ import annotations
@@ -27,13 +29,19 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 TRAINING = os.path.join(HERE, "training")
 MODELS = os.path.join(HERE, "models")
 
-DROP = {"year", "yield_kg_ha", "label_source", "coast_km", "irrig_fraction",
-        "ec_proxy_hydro", "y_rel_salt_hydro", "salt_water_index"}
+DROP = {"year", "yield_kg_ha", "label_source", "label_note", "coast_km",
+        "irrig_fraction", "ec_proxy_hydro", "y_rel_salt_hydro",
+        "salt_water_index"}
 MIN_TRAIN = 18
 
 
 def log(msg):
     print(f"[train] {msg}", flush=True)
+
+
+def _is_provisional(label_sources):
+    return (not label_sources
+            or all(s.startswith("provisional") for s in label_sources))
 
 
 def train_one(cfg):
@@ -51,8 +59,15 @@ def train_one(cfg):
         return None
 
     label_source = "unknown"
+    label_sources = []
     if "label_source" in df.columns and df.label_source.notna().any():
-        label_source = str(df.label_source.dropna().iloc[0])
+        label_sources = sorted({str(s) for s in df.label_source.dropna().unique()})
+        recent = df.dropna(subset=["label_source"]).sort_values("year")
+        label_source = str(recent.label_source.iloc[-1])
+        if len(label_sources) > 1:
+            label_source = (
+                f"{label_source} (+{len(label_sources) - 1} other sources; "
+                f"see training CSV)")
 
     if cfg.regime_start:
         df = df[df.year >= cfg.regime_start].reset_index(drop=True)
@@ -133,11 +148,13 @@ def train_one(cfg):
     final = RidgeCV(alphas=ALPHAS).fit(scaler.transform(X), resid)
     sigma = best["recent_rmse"] if beats_trend else best_baseline_recent
 
+    provisional = _is_provisional(label_sources)
     if not beats_trend:
-        log("  VERDICT: does not beat trend-only (even on provisional labels).")
+        log("  VERDICT: does not beat trend-only.")
     else:
+        tag = "provisional labels only" if provisional else "on wired labels"
         log(f"  VERDICT: beats trend by {full_skill:.1%} full / "
-            f"{recent_skill:.1%} recent — provisional labels only.")
+            f"{recent_skill:.1%} recent — {tag}.")
 
     artifact = {
         "key": cfg.key,
@@ -148,7 +165,10 @@ def train_one(cfg):
         "caveat": cfg.caveat,
         "non_weather_drivers": cfg.non_weather_drivers,
         "label_source": label_source,
-        "labels_provisional": label_source.startswith("provisional"),
+        "label_sources": label_sources,
+        "labels_provisional": provisional,
+        "labels_season_imperfect": any(
+            "faostat" in s or "scaled" in s for s in label_sources),
         "trained_years": [int(df.year.min()), int(df.year.max())],
         "n_seasons": int(len(df)),
         "n_forward_folds": int(n_folds),
@@ -202,7 +222,9 @@ def main():
     log(f"{'region-crop':28} {'n':>4} {'vs trend':>10} {'sigma':>8}  notes")
     log("-" * 78)
     for a in sorted(built, key=lambda x: -x["recent_skill_vs_trend"]):
-        note = "provisional labels" if a["labels_provisional"] else "official"
+        note = "provisional labels" if a["labels_provisional"] else "real/best-effort"
+        if a.get("labels_season_imperfect"):
+            note += "; season imperfect"
         tag = "beats trend" if a["beats_trend"] else "use trend"
         log(f"{a['key']:28} {a['n_seasons']:4d} "
             f"{a['recent_skill_vs_trend']:+9.1%} "

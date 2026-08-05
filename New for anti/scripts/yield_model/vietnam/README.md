@@ -16,9 +16,11 @@ python3 -m vietnam.run_forecast            # public/data/vietnam_yield_forecast.
 python3 -m vietnam.collect --stubs         # also build T2 regions
 ```
 
-Optional official labels: drop `training/labels_official/<region_key>.csv` with
-columns `year,yield_kg_ha` before collect/train. Without that file, **labels are
-`provisional_synthetic_climate_response`** — not GSO.
+Optional labels: drop `training/labels_official/<region_key>.csv` with
+columns `year,yield_kg_ha` (+ optional `label_source`). **Mekong WS** ships
+with GSO Yearbook / MTN Đông Xuân (+ FAOSTAT prior) — see
+`training/labels_official/README.md`. Other crops without an override stay
+`provisional_synthetic_climate_response`.
 
 ## Region-crops
 
@@ -39,10 +41,13 @@ columns `year,yield_kg_ha` before collect/train. Without that file, **labels are
 | NOAA ONI | **real** |
 | CHIRPS / SMAP / S1 / GEE | **not run** — fall back to POWER precip/SM |
 | MRC discharge / field EC | **not available** — salinity **proxy** only |
-| Yield labels | **provisional/synthetic** unless override CSV |
-| Skill metrics in `models/*.json` | valid only as pipeline self-consistency on those labels |
+| Yield labels | **Mekong WS:** GSO Yearbook spring (2018–23) + MTN province×WS (2017/24) + FAOSTAT national scaled prior (≤2016). Other crops: provisional unless override CSV |
+| Skill metrics in `models/*.json` | Mekong: real/best-effort labels (`labels_season_imperfect` if FAOSTAT prior included). Others: scaffold self-consistency only |
 
-Never claim official GSO yields or true ECe from this package as currently shipped.
+Never claim full GSO province×WS history from this package: Mekong WS uses
+Yearbook Mekong-region spring cells + MTN provincial Đông Xuân where wired;
+pre-2017 is FAOSTAT annual scaled. Coffee/RRD remain provisional until
+override CSVs exist.
 
 ### Salinity proxy (honest)
 
@@ -68,9 +73,10 @@ separate product step.
 
 ## Production gaps
 
-1. GSO / MARD **province × season** rice (WS split for Mekong) and coffee yields  
+1. Longer machine-readable **GSO/NSO V0617** province×WS panel (API not public)  
 2. MRC dry-season discharge / stage at Tan Chau–Chau Doc  
 3. GEE CHIRPS + SMAP L4 + Sentinel-1 planted-area anomaly (2016-style)  
 4. IBTrACS for RRD/central coast cyclone exposure (true distance)  
 5. Province irrig fractions for coffee \(I_\text{proxy}\) calibration  
-6. UI country entry once skill on real labels is re-evaluated  
+6. Real labels for coffee / RRD (still provisional)  
+7. UI country entry once skill on real labels is re-evaluated  
