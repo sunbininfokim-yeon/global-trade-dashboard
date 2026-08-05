@@ -97,11 +97,11 @@ CORE_FEATURES = [
 ]
 
 CAVEAT = (
-    "Phase-1: USDA PSD *national* wheat yield is the training target. "
-    "Regional weather is production-weighted points only; Crimea/new regions "
-    "excluded from the point set. ERA5-Land snow_depth is optional (Open-Meteo "
-    "archive); without it winterkill is bare-frost severity from POWER Tmin. "
-    "Open-Meteo soil moisture is never used (project rule)."
+    "Target: Rosstat oblast grain yield (урожайность зерновых, c/ha→kg/ha), "
+    "sown-area-weighted within the zone. Indicator is cereals+legumes (not "
+    "winter-wheat-only); in South/CBE winter wheat dominates that basket. "
+    "Crimea/new regions excluded. ERA5-Land snow optional; without it "
+    "winterkill uses POWER Tmin bare-frost. No Open-Meteo soil (project rule)."
 )
 
 NON_WEATHER = (
@@ -119,19 +119,20 @@ SOUTH = RegionCrop(
     points=SOUTH_POINTS,
     build=_south,
     doc="Regions/흑해_통합/파이프라인_딥다이브_RU_UA_Phase1.md §D–E",
-    target=lambda: L.psd_yield_kg_ha("Wheat"),
-    target_label="wheat yield",
+    target=L.southern_yield_kg_ha,
+    target_label="zone grain yield (Rosstat oblast, area-weighted)",
     target_unit="kg/ha",
-    label_source="USDA PSD, national Russia wheat (oblast Rosstat deferred)",
+    label_source=(
+        "Rosstat Regions of Russia (tochno-st 13120000) Krasnodar+Rostov+"
+        "Stavropol; sown-area weights 13050000; 2024 from mojgorod yearbook table"),
     region_share=(
-        "Southern Federal District + Stavropol dominate export-oriented winter "
-        "wheat and a large share of RF production; national PSD still averages "
-        "Volga and Siberian spring wheat this point set never sees."),
+        "Southern Federal District + Stavropol export winter-wheat belt; "
+        "oblast labels exclude Volga/Siberia spring wheat dilution."),
     panel={"spi3_spring": "precip_spring"},
     core=CORE_FEATURES,
     critical_window=[(5, 0), (6, 0)],
-    # Soft regime after post-Soviet floor; PSD 1980s–90s are noisy.
-    regime_start=1995,
+    # Soft regime after post-Soviet floor; oblast series starts 2000.
+    regime_start=2000,
     min_train=18,
     caveat=CAVEAT,
     non_weather_drivers=NON_WEATHER,
@@ -144,17 +145,18 @@ CBE = RegionCrop(
     points=CBE_POINTS,
     build=_cbe,
     doc="Regions/흑해_통합/파이프라인_딥다이브_RU_UA_Phase1.md §D–E",
-    target=lambda: L.psd_yield_kg_ha("Wheat"),
-    target_label="wheat yield",
+    target=L.cbe_yield_kg_ha,
+    target_label="zone grain yield (Rosstat oblast, area-weighted)",
     target_unit="kg/ha",
-    label_source="USDA PSD, national Russia wheat (oblast Rosstat deferred)",
+    label_source=(
+        "Rosstat Regions of Russia (tochno-st 13120000) Belgorod+Voronezh+"
+        "Kursk+Tambov; sown-area weights 13050000; 2024 from mojgorod yearbook table"),
     region_share=(
-        "CBE is a major share of RF winter-wheat production and drought/heat "
-        "variance in the national series, but not the full country."),
+        "Central Black Earth winter-wheat core; oblast labels match zone weather."),
     panel={"spi3_spring": "precip_spring"},
     core=CORE_FEATURES,
     critical_window=[(5, 0), (6, 0), (7, 0)],
-    regime_start=1995,
+    regime_start=2000,
     min_train=18,
     caveat=CAVEAT,
     non_weather_drivers=NON_WEATHER,
@@ -167,18 +169,18 @@ NATIONAL = RegionCrop(
     points=NATIONAL_POINTS,
     build=_south,  # grainfill May–Jun; CBE still contributes via points
     doc="Regions/흑해_통합/파이프라인_딥다이브_RU_UA_Phase1.md §D–E",
-    target=lambda: L.psd_yield_kg_ha("Wheat"),
-    target_label="wheat yield",
+    target=L.belt_yield_kg_ha,
+    target_label="belt grain yield (Rosstat oblast, area-weighted)",
     target_unit="kg/ha",
-    label_source="USDA PSD, national Russia wheat (oblast Rosstat deferred)",
+    label_source=(
+        "Rosstat Regions of Russia (tochno-st 13120000) South+CBE seven oblasts; "
+        "sown-area weights 13050000; 2024 from mojgorod yearbook table"),
     region_share=(
-        "South+CBE cover the bulk of winter-wheat export weather; spring-wheat "
-        "Siberia and dry Volga remain outside. Best Phase-1 single series for "
-        "dashboard / national residual."),
+        "South+CBE winter-wheat export weather; Siberia/Volga outside labels."),
     panel={"spi3_spring": "precip_spring"},
     core=CORE_FEATURES,
     critical_window=[(5, 0), (6, 0)],
-    regime_start=1995,
+    regime_start=2000,
     min_train=18,
     caveat=CAVEAT,
     non_weather_drivers=NON_WEATHER,

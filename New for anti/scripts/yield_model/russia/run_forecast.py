@@ -49,12 +49,12 @@ def main():
         "season": override or current_season(),
         "country": "Russia",
         "source_note": (
-            "Target: USDA FAS PSD national Russia wheat yield (kg/ha). "
-            "Phase-1 does not yet use Rosstat oblast yields (cream/new regions "
-            "excluded by design once oblast joins land). Weather: NASA POWER "
-            "daily with GWETROOT; optional ERA5-Land snow when collected with "
-            "--snow. Open-Meteo provides short T/precip forecast tails only "
-            "(no OM soil). Crimea excluded from sample points."
+            "Target: Rosstat oblast grain yield (Regions of Russia / "
+            "tochno-st 13120000), sown-area-weighted by zone "
+            "(Krasnodar·Rostov·Stavropol / Belgorod·Voronezh·Kursk·Tambov). "
+            "Basket is cereals+legumes (winter-wheat dominated in these "
+            "oblasts). Crimea/new regions excluded. Weather: NASA POWER + "
+            "GWETROOT; Open-Meteo T/P forecast tails only (no OM soil)."
         ),
         "methodology_note": (
             "Log technology trend + ridge weather residual. Skill from "

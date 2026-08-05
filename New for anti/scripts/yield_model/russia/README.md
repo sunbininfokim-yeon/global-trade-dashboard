@@ -13,8 +13,10 @@ Contract: `scripts/yield_model/DATA_LAYOUT.md` → `public/data/russia_yield_for
 | NASA POWER daily (+ GWETROOT, RH, wind, radiation) | yes |
 | Winterkill bare-frost from POWER Tmin; optional ERA5-Land snow | yes (`--snow`) |
 | Open-Meteo short forecast T/P only | yes (predict) |
-| Labels: USDA PSD national Russia **Wheat** | yes (see `labels.md`) |
-| Rosstat oblast yields | deferred path |
+| Labels: **Rosstat oblast** grain yield (13120000), area-weighted by zone | yes (see `labels.md`) |
+| USDA PSD national wheat | cross-check helper only |
+| Barley / maize / sunflower / rapeseed | not yet |
+| Volga / West Siberia spring wheat | not yet |
 | Ukraine / export-duty Logit / AIS | out of scope |
 
 Crimea and wartime “new regions” are not in the point set.

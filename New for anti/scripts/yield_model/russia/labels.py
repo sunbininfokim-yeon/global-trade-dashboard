@@ -1,18 +1,12 @@
 """
 Target series for Russia winter-wheat models.
 
-Primary (Phase-1 bootstrap): USDA FAS PSD national Wheat yield for Russia.
-  - Open, keyless bulk CSV
-  - No oblast resolution
-  - Unit: MT/HA → kg/ha
+Primary: Rosstat oblast grain yields (Regions of Russia yearbook extract),
+area-weighted into Southern / CBE / South+CBE zones. See labels.md.
 
-Rosstat / EMISS oblast yields are the intended primary label once a stable
-indicator extract is wired (see labels.md). fedstat.ru scraping is unreliable
-from automated clients and is not in this package yet.
+Cross-check helper: USDA FAS PSD national Wheat yield remains available.
 
-Crimea and post-2022 "new regions" are not in PSD as separate geographies;
-the national series may still embed production accounting disputes — documented
-in labels.md rather than silently corrected here.
+Crimea and wartime "new regions" are excluded from the oblast set.
 """
 
 from __future__ import annotations
@@ -26,10 +20,15 @@ import pandas as pd
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 CACHE = os.path.join(HERE, "cache")
+TRAINING = os.path.join(HERE, "training")
 
 PSD_GRAINS = "https://apps.fas.usda.gov/psdonline/downloads/psd_grains_pulses_csv.zip"
 PSD_COLUMNS = ["Commodity_Description", "Country_Name", "Market_Year",
                "Attribute_Description", "Unit_Description", "Value"]
+
+SOUTH_OBLASTS = ["Krasnodar", "Rostov", "Stavropol"]
+CBE_OBLASTS = ["Belgorod", "Voronezh", "Kursk", "Tambov"]
+BELT_OBLASTS = SOUTH_OBLASTS + CBE_OBLASTS
 
 
 def log(msg):
@@ -101,15 +100,85 @@ def psd_production_1000t(commodity="Wheat"):
 
 def load_curated_oblast_csv(path=None):
     """
-    Optional oblast yields if a researcher drops a CSV at training/oblast_yields.csv.
+    Oblast yields at training/oblast_yields.csv.
 
     Expected columns: year, oblast, yield_kg_ha  (or yield_c_ha × 100).
-    Returns None if missing — Phase-1 does not require it.
     """
-    path = path or os.path.join(HERE, "training", "oblast_yields.csv")
+    path = path or os.path.join(TRAINING, "oblast_yields.csv")
     if not os.path.exists(path):
         return None
     df = pd.read_csv(path)
     if "yield_c_ha" in df.columns and "yield_kg_ha" not in df.columns:
         df["yield_kg_ha"] = df["yield_c_ha"] * 100.0  # 1 c/ha = 0.1 t/ha = 100 kg/ha
     return df
+
+
+def load_oblast_sown_area(path=None):
+    path = path or os.path.join(TRAINING, "oblast_sown_area.csv")
+    if not os.path.exists(path):
+        return None
+    return pd.read_csv(path)
+
+
+def zone_yield_kg_ha(oblasts, fallback_weights=None):
+    """
+    Sown-area-weighted mean of oblast yields (kg/ha) for a zone.
+
+    Prefer Rosstat sown area (1000 ha) weights; else fallback_weights / equal.
+    """
+    y = load_curated_oblast_csv()
+    if y is None or y.empty:
+        raise FileNotFoundError(
+            "training/oblast_yields.csv missing — Rosstat oblast labels required")
+    y = y[y.oblast.isin(oblasts)].copy()
+    if y.empty:
+        raise KeyError(f"no oblast yields for {oblasts}")
+
+    area = load_oblast_sown_area()
+    rows = []
+    for year, g in y.groupby("year"):
+        g = g.dropna(subset=["yield_kg_ha"])
+        if g.empty:
+            continue
+        if area is not None:
+            a = area[(area.year == year) & (area.oblast.isin(g.oblast))]
+            if not a.empty:
+                merged = g.merge(a[["oblast", "sown_1000ha"]], on="oblast",
+                                 how="left")
+                w = merged.sown_1000ha.fillna(0).astype(float).values
+                vals = merged.yield_kg_ha.astype(float).values
+                if w.sum() > 0:
+                    rows.append({
+                        "year": int(year),
+                        "target": float((vals * w).sum() / w.sum()),
+                    })
+                    continue
+        if fallback_weights:
+            w = g.oblast.map(fallback_weights).astype(float).fillna(1.0).values
+            vals = g.yield_kg_ha.astype(float).values
+            target = float((vals * w).sum() / w.sum()) if w.sum() > 0 else float(vals.mean())
+        else:
+            target = float(g.yield_kg_ha.astype(float).mean())
+        rows.append({"year": int(year), "target": target})
+
+    out = (pd.DataFrame(rows).sort_values("year").reset_index(drop=True))
+    log(f"  zone [{', '.join(oblasts)}]: {len(out)} yrs "
+        f"{int(out.year.min())}-{int(out.year.max())}")
+    return out
+
+
+def southern_yield_kg_ha():
+    return zone_yield_kg_ha(
+        SOUTH_OBLASTS,
+        fallback_weights={"Krasnodar": 0.40, "Rostov": 0.35, "Stavropol": 0.25})
+
+
+def cbe_yield_kg_ha():
+    return zone_yield_kg_ha(
+        CBE_OBLASTS,
+        fallback_weights={"Belgorod": 0.25, "Voronezh": 0.30,
+                          "Kursk": 0.25, "Tambov": 0.20})
+
+
+def belt_yield_kg_ha():
+    return zone_yield_kg_ha(BELT_OBLASTS)

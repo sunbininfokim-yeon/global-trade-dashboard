@@ -1,38 +1,37 @@
 # Russia winter-wheat labels
 
-## What Phase-1 uses
+## What Phase-1 uses now
 
 | Field | Source | Unit | Resolution |
 |---|---|---|---|
-| `target` | USDA FAS PSD `Wheat` / `Yield` for `Country_Name=Russia` | **kg/ha** (PSD MT/HA × 1000) | **National** |
-| Market year | PSD `Market_Year` | harvest-year aligned for winter wheat (summer harvest) | annual |
+| `target` | **Rosstat** *Regions of Russia* extract (`tochno-st/regions_collection` indicator **13120000**) | **kg/ha** (c/ha × 100) | **Oblast**, then sown-area-weighted zone |
+| Area weights | Same yearbook, indicator **13050000** sown area of cereals+legumes | 1000 ha | Oblast |
+| 2024 patch | mojgorod.ru tabR4711 (Rosstat-derived cereals table) | c/ha → kg/ha | Oblast |
 
-Downloader: `labels.py` → `https://apps.fas.usda.gov/psdonline/downloads/psd_grains_pulses_csv.zip`  
-Cache slice: `cache/psd_grains_russia.csv` (not committed).
-
-## Limitations (honest)
-
-1. **No oblast resolution.** South vs CBE weather both score against the same national tonnage yield. Spring-wheat Siberia and dry Volga still sit inside the target and dilute regional skill.
-2. **PSD is an estimate series**, revised through WASDE; not a farm survey like NASS.
-3. **Crimea / “new regions”.** Not added as POWER points. PSD national totals may still embed disputed accounting in some years; we do **not** attempt a silent correction.
-4. **Rosstat / EMISS** (preferred next step): indicator `урожайность` in **c/ha** (×100 → kg/ha). Access path: fedstat.ru indicator export or static yearbook CSVs. Place curated files at:
+Files:
 
 ```text
-russia/training/oblast_yields.csv
-# columns: year, oblast, yield_kg_ha
-#   or yield_c_ha  (auto-converted ×100)
+russia/training/oblast_yields.csv      # year, oblast, yield_c_ha, yield_kg_ha, source
+russia/training/oblast_sown_area.csv   # year, oblast, sown_1000ha, source
 ```
 
-`labels.load_curated_oblast_csv()` will read this when present; wiring into regional targets is deferred until a multi-year extract is available.
+Zone builders in `labels.py`:
+
+| Region key | Oblasts |
+|---|---|
+| `southern_winter_wheat` | Krasnodar, Rostov, Stavropol |
+| `cbe_winter_wheat` | Belgorod, Voronezh, Kursk, Tambov |
+| `russia_winter_wheat` | all seven (South + CBE) |
+
+## Honest limitations
+
+1. **Crop basket = cereals + legumes**, not winter-wheat-only. In South/CBE the basket is winter-wheat dominated; Volga/Siberia spring wheat is outside this point set.
+2. **Annual span:** 2000–2021 continuous; **2024** sparse yearbook patch; **2022–2023** missing until EMISS/fedstat extract.
+3. Crimea / “new regions” never joined.
+4. USDA PSD national wheat remains a **cross-check** (`psd_yield_kg_ha`), not the training target.
 
 ## Conversion
 
 | Rosstat | SI |
 |---|---|
 | 1 c/ha (центнер/га) | 0.1 t/ha = **100 kg/ha** |
-
-## Not used as yield labels
-
-- Shipping / AIS / black-sea capacity JSON  
-- Export duty / policy Logit  
-- Production alone without area (unless both sides check `prod ≈ yield × area`)
