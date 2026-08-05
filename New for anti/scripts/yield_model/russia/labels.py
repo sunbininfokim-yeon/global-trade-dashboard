@@ -106,6 +106,8 @@ def psd_production_1000t(commodity="Wheat"):
 def load_curated_oblast_csv(path=None):
     """
     Oblast yields CSV: year, oblast, yield_kg_ha (or yield_c_ha × 100).
+
+    Drops Rosstat confidentiality / missing sentinels (large negatives, zeros).
     """
     path = path or os.path.join(TRAINING, "oblast_yields.csv")
     if not os.path.exists(path):
@@ -113,7 +115,11 @@ def load_curated_oblast_csv(path=None):
     df = pd.read_csv(path)
     if "yield_c_ha" in df.columns and "yield_kg_ha" not in df.columns:
         df["yield_kg_ha"] = df["yield_c_ha"] * 100.0  # 1 c/ha = 0.1 t/ha = 100 kg/ha
-    return df
+    if "yield_c_ha" in df.columns:
+        df = df[(df.yield_c_ha > 0) & (df.yield_c_ha < 80)]
+    if "yield_kg_ha" in df.columns:
+        df = df[(df.yield_kg_ha > 0) & (df.yield_kg_ha < 8000)]
+    return df.reset_index(drop=True)
 
 
 def load_oblast_sown_area(path=None):

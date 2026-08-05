@@ -1,18 +1,15 @@
 """
 Yield labels for Vietnam training tables.
 
-Official GSO provincial / seasonal yields are **not** bundled here (no open
-machine-readable WS-by-province series wired yet). Labels are therefore
-**provisional/synthetic**: climate-coherent demos so the train/predict CLI
-runs end-to-end. They must never be presented as government statistics.
+Mekong WS (`mekong_rice_ws`) prefers real / best-effort real series in
+`training/labels_official/mekong_rice_ws.csv` (GSO Yearbook spring paddy for
+Mekong region where available; MTN GSO-style provincial Đông Xuân; FAOSTAT
+national scaled only as pre-2017 prior — see that folder's README).
 
-Priority for production:
-  1. GSO / MARD province × season rice yields (WS/SA split for Mekong)
-  2. USDA FAS Vietnam Rice Annual / Coffee Annual as national cross-check
-  3. Literature farm panels (Byrareddy et al. coffee) only as secondary
+Other region-crops still use provisional synthetic labels unless an override
+CSV is present.
 
-Override: place `training/labels_official/<region_key>.csv` with columns
-`year,yield_kg_ha` and it will be used instead of the synthetic path.
+Override schema: `year,yield_kg_ha` plus optional `label_source`, `label_note`.
 """
 
 from __future__ import annotations
@@ -36,8 +33,15 @@ def load_official(key: str) -> pd.DataFrame | None:
     df = pd.read_csv(path)
     if "year" not in df.columns or "yield_kg_ha" not in df.columns:
         raise ValueError(f"{path} needs year,yield_kg_ha")
-    out = df[["year", "yield_kg_ha"]].copy()
-    out["label_source"] = LABEL_SOURCE_OFFICIAL
+    cols = ["year", "yield_kg_ha"]
+    for optional in ("label_source", "label_note"):
+        if optional in df.columns:
+            cols.append(optional)
+    out = df[cols].copy()
+    if "label_source" not in out.columns:
+        out["label_source"] = LABEL_SOURCE_OFFICIAL
+    else:
+        out["label_source"] = out["label_source"].fillna(LABEL_SOURCE_OFFICIAL)
     return out
 
 

@@ -11,7 +11,8 @@ Sources:
   · NASA POWER daily (temp, precip, radiation, wind, GWETROOT) — real
   · FAO-56 ET0 computed locally (brazil.climate) — real
   · NOAA CPC ONI — real
-  · Yield labels — provisional synthetic unless training/labels_official/
+  · Yield labels — training/labels_official/ when present (Mekong WS: GSO
+    Yearbook spring + MTN Đông Xuân + FAOSTAT prior); else provisional synthetic
   · GEE CHIRPS / SMAP / Sentinel-1 / MRC discharge — **not run** (no GEE auth
     in this path); POWER precip and GWETROOT stand in; salinity is a documented
     proxy, never claimed as field EC.

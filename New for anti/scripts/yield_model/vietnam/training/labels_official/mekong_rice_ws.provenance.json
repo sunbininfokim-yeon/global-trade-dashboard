@@ -1,0 +1,87 @@
+{
+  "region_key": "mekong_rice_ws",
+  "built_at": "2026-08-05",
+  "priority": [
+    "GSO Statistical Yearbook Mekong River Delta spring paddy yield (2018-2023)",
+    "MTN GSO-style provincial Đông Xuân → Mekong-13 aggregate (2017, 2024)",
+    "FAOSTAT national rice × overlap scale (1990-2016) — imperfect season"
+  ],
+  "gso_yearbook_urls": {
+    "2022": "https://www.gso.gov.vn/wp-content/uploads/2023/06/Sach-Nien-giam-TK-2022-final.pdf",
+    "2023": "https://www.gso.gov.vn/wp-content/uploads/2024/07/NG-TCTK-2023_Final.pdf"
+  },
+  "mtn_url": "https://mtnongnghiep.com/index.php/du-lieu-trong-trot/",
+  "faostat_bulk": "https://bulks-faostat.fao.org/production/Production_Crops_Livestock_E_All_Data_(Normalized).zip",
+  "nso_pxweb_table": "V0617 Năng suất lúa đông xuân — UI only; agriculture DB not on public api/v1",
+  "scale_faostat_to_ws": 1.1641306055508933,
+  "gso_mekong_region_ta_ha": {
+    "2018": 68.8,
+    "2019": 67.8,
+    "2020": 68.3,
+    "2021": 72.3,
+    "2022": 70.8,
+    "2023": 72.2
+  },
+  "series_tail": [
+    {
+      "year": 2015,
+      "yield_kg_ha": 6705.0,
+      "label_source": "faostat_national_rice_scaled_to_mekong_ws_overlap",
+      "label_note": "FAOSTAT Viet Nam Rice yield (kg/ha, annual national, all seasons) × scale=1.1641 from mean(Mekong WS official/MTN / FAOSTAT) over 2017–2023. NOT GSO province×WS — season alignment imperfect."
+    },
+    {
+      "year": 2016,
+      "yield_kg_ha": 6488.6,
+      "label_source": "faostat_national_rice_scaled_to_mekong_ws_overlap",
+      "label_note": "FAOSTAT Viet Nam Rice yield (kg/ha, annual national, all seasons) × scale=1.1641 from mean(Mekong WS official/MTN / FAOSTAT) over 2017–2023. NOT GSO province×WS — season alignment imperfect."
+    },
+    {
+      "year": 2017,
+      "yield_kg_ha": 6122.2,
+      "label_source": "gso_style_mtn_mekong13_dong_xuan_fallback_area_share_weights",
+      "label_note": "MTN provincial Đông Xuân yields aggregated over Mekong 13 provinces (fallback_area_share_weights, n=13) from https://mtnongnghiep.com/index.php/du-lieu-trong-trot/ (GSO-style). Used when Yearbook Mekong-region cell not in our extract."
+    },
+    {
+      "year": 2018,
+      "yield_kg_ha": 6880.0,
+      "label_source": "gso_yearbook_mekong_region_spring_paddy",
+      "label_note": "GSO Statistical Yearbook table 'Yield of spring paddy by province' row Đồng bằng sông Cửu Long / Mekong River Delta (tạ/ha×100). Sources: Yearbook 2022 (2018–2022) and 2023 (2019–2023). True province×season regional mean — not synthetic."
+    },
+    {
+      "year": 2019,
+      "yield_kg_ha": 6780.0,
+      "label_source": "gso_yearbook_mekong_region_spring_paddy",
+      "label_note": "GSO Statistical Yearbook table 'Yield of spring paddy by province' row Đồng bằng sông Cửu Long / Mekong River Delta (tạ/ha×100). Sources: Yearbook 2022 (2018–2022) and 2023 (2019–2023). True province×season regional mean — not synthetic."
+    },
+    {
+      "year": 2020,
+      "yield_kg_ha": 6830.0,
+      "label_source": "gso_yearbook_mekong_region_spring_paddy",
+      "label_note": "GSO Statistical Yearbook table 'Yield of spring paddy by province' row Đồng bằng sông Cửu Long / Mekong River Delta (tạ/ha×100). Sources: Yearbook 2022 (2018–2022) and 2023 (2019–2023). True province×season regional mean — not synthetic."
+    },
+    {
+      "year": 2021,
+      "yield_kg_ha": 7230.0,
+      "label_source": "gso_yearbook_mekong_region_spring_paddy",
+      "label_note": "GSO Statistical Yearbook table 'Yield of spring paddy by province' row Đồng bằng sông Cửu Long / Mekong River Delta (tạ/ha×100). Sources: Yearbook 2022 (2018–2022) and 2023 (2019–2023). True province×season regional mean — not synthetic."
+    },
+    {
+      "year": 2022,
+      "yield_kg_ha": 7080.0,
+      "label_source": "gso_yearbook_mekong_region_spring_paddy",
+      "label_note": "GSO Statistical Yearbook table 'Yield of spring paddy by province' row Đồng bằng sông Cửu Long / Mekong River Delta (tạ/ha×100). Sources: Yearbook 2022 (2018–2022) and 2023 (2019–2023). True province×season regional mean — not synthetic."
+    },
+    {
+      "year": 2023,
+      "yield_kg_ha": 7220.0,
+      "label_source": "gso_yearbook_mekong_region_spring_paddy",
+      "label_note": "GSO Statistical Yearbook table 'Yield of spring paddy by province' row Đồng bằng sông Cửu Long / Mekong River Delta (tạ/ha×100). Sources: Yearbook 2022 (2018–2022) and 2023 (2019–2023). True province×season regional mean — not synthetic."
+    },
+    {
+      "year": 2024,
+      "yield_kg_ha": 7231.0,
+      "label_source": "gso_style_mtn_mekong13_dong_xuan_area_weighted",
+      "label_note": "MTN provincial Đông Xuân yields aggregated over Mekong 13 provinces (area_weighted, n=12) from https://mtnongnghiep.com/index.php/du-lieu-trong-trot/ (GSO-style). Used when Yearbook Mekong-region cell not in our extract."
+    }
+  ]
+}

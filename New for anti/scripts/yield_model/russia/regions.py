@@ -64,12 +64,27 @@ CBE_POINTS = [
      "weight": 0.20},
 ]
 
+VOLGA_POINTS = [
+    {"name": "Saratov", "lat": 51.53, "lon": 46.03, "elevation": 80,
+     "weight": 0.40},
+    {"name": "Samara", "lat": 53.20, "lon": 50.15, "elevation": 100,
+     "weight": 0.30},
+    {"name": "Volgograd", "lat": 48.71, "lon": 44.52, "elevation": 50,
+     "weight": 0.30},
+]
+
 # All Phase-1 points, reweighted so South : CBE ≈ 55 : 45 of the model mix.
 NATIONAL_POINTS = [
     {**p, "weight": p["weight"] * 0.55} for p in SOUTH_POINTS
 ] + [
     {**p, "weight": p["weight"] * 0.45} for p in CBE_POINTS
 ]
+
+SUNFLOWER_BELT_POINTS = (
+    [{**p, "weight": p["weight"] * 0.40} for p in SOUTH_POINTS]
+    + [{**p, "weight": p["weight"] * 0.30} for p in CBE_POINTS]
+    + [{**p, "weight": p["weight"] * 0.30} for p in VOLGA_POINTS]
+)
 
 
 def _south(daily, y):
@@ -91,9 +106,32 @@ def _cbe(daily, y):
     )
 
 
+def _volga_wheat(daily, y):
+    # Drier continental Volga: colder winterkill, May–Jun fill, stronger drought.
+    return C.winter_wheat_features(
+        daily, y,
+        grainfill_months=[(5, 0), (6, 0)],
+        heat_thr=29.0,
+        winterkill_tmin=-18.0,
+    )
+
+
+def _sunflower(daily, y):
+    return C.sunflower_features(
+        daily, y,
+        flower_months=[(6, 0), (7, 0), (8, 0)],
+        heat_thr=30.0,
+    )
+
+
 CORE_FEATURES = [
     "winterkill_bare_frost", "winterkill_edd", "sm_april",
     "edd_grainfill", "precip_spring", "precip_autumn",
+]
+
+SUNFLOWER_CORE = [
+    "precip_april", "sm_april", "edd_flower", "sm_flower",
+    "precip_may_aug", "radiation_season",
 ]
 
 CAVEAT = (
@@ -104,11 +142,23 @@ CAVEAT = (
     "winterkill uses POWER Tmin bare-frost. No Open-Meteo soil (project rule)."
 )
 
+SUNFLOWER_CAVEAT = (
+    "Target: Rosstat oblast sunflower yield (13160000), sown-area-weighted "
+    "(13070000). Features follow North Caucasus / CFO agromet literature "
+    "(April precip, flowering heat–drought, May–Aug moisture, radiation). "
+    "WOFOST is a process benchmark only — this package stays ridge+trend."
+)
+
 NON_WEATHER = (
     "Russian wheat yields carry a strong post-Soviet recovery and variety "
     "trend, plus fertilizer and policy shocks (export duty regime). Those are "
     "not weather; the log technology trend absorbs the smooth part, not the "
     "policy steps."
+)
+
+SUNFLOWER_NON_WEATHER = (
+    "Sunflower carries hybrid turnover, rotation (often after cereals), and "
+    "crush/export economics; weather models explain residual after trend."
 )
 
 
@@ -186,5 +236,121 @@ NATIONAL = RegionCrop(
     non_weather_drivers=NON_WEATHER,
 )
 
-ALL = [SOUTH, CBE, NATIONAL]
+VOLGA = RegionCrop(
+    key="volga_winter_wheat",
+    label="Volga winter wheat (Saratov, Samara, Volgograd)",
+    label_ko="볼가 겨울밀",
+    points=VOLGA_POINTS,
+    build=_volga_wheat,
+    doc="russia/METHODOLOGY_sunflower_wheat.md",
+    target=L.volga_yield_kg_ha,
+    target_label="zone grain yield (Rosstat oblast, area-weighted)",
+    target_unit="kg/ha",
+    label_source=(
+        "Rosstat Regions of Russia (tochno-st 13120000) Saratov+Samara+Volgograd; "
+        "sown-area weights 13050000"),
+    region_share=(
+        "Volga steppe — drier continental winter wheat / mixed cereals; "
+        "export path differs from Black Sea South but climate signal is sharp."),
+    panel={"spi3_spring": "precip_spring"},
+    core=CORE_FEATURES,
+    critical_window=[(5, 0), (6, 0)],
+    regime_start=2000,
+    min_train=16,
+    caveat=CAVEAT,
+    non_weather_drivers=NON_WEATHER,
+)
+
+SOUTH_SUN = RegionCrop(
+    key="southern_sunflower",
+    label="Southern sunflower (Krasnodar, Rostov, Stavropol)",
+    label_ko="남부 해바라기",
+    points=SOUTH_POINTS,
+    build=_sunflower,
+    doc="russia/METHODOLOGY_sunflower_wheat.md",
+    target=L.southern_sunflower_yield_kg_ha,
+    target_label="zone sunflower yield (Rosstat oblast, area-weighted)",
+    target_unit="kg/ha",
+    label_source=(
+        "Rosstat 13160000 sunflower yield; sown-area weights 13070000 "
+        "(Krasnodar+Rostov+Stavropol)"),
+    region_share="Core Black Sea sunflower / oilseed export belt.",
+    panel={"spi3_flower": "precip_flower"},
+    core=SUNFLOWER_CORE,
+    critical_window=[(6, 0), (7, 0), (8, 0)],
+    regime_start=2000,
+    min_train=16,
+    caveat=SUNFLOWER_CAVEAT,
+    non_weather_drivers=SUNFLOWER_NON_WEATHER,
+)
+
+CBE_SUN = RegionCrop(
+    key="cbe_sunflower",
+    label="Central Black Earth sunflower (Belgorod, Voronezh, Kursk, Tambov)",
+    label_ko="중앙 흑토 해바라기",
+    points=CBE_POINTS,
+    build=_sunflower,
+    doc="russia/METHODOLOGY_sunflower_wheat.md",
+    target=L.cbe_sunflower_yield_kg_ha,
+    target_label="zone sunflower yield (Rosstat oblast, area-weighted)",
+    target_unit="kg/ha",
+    label_source=(
+        "Rosstat 13160000; sown-area weights 13070000 "
+        "(Belgorod+Voronezh+Kursk+Tambov)"),
+    region_share="CBE expanding sunflower; Hydrometcenter CFO forecast literature.",
+    panel={"spi3_flower": "precip_flower"},
+    core=SUNFLOWER_CORE,
+    critical_window=[(6, 0), (7, 0), (8, 0)],
+    regime_start=2000,
+    min_train=16,
+    caveat=SUNFLOWER_CAVEAT,
+    non_weather_drivers=SUNFLOWER_NON_WEATHER,
+)
+
+VOLGA_SUN = RegionCrop(
+    key="volga_sunflower",
+    label="Volga sunflower (Saratov, Samara, Volgograd)",
+    label_ko="볼가 해바라기",
+    points=VOLGA_POINTS,
+    build=_sunflower,
+    doc="russia/METHODOLOGY_sunflower_wheat.md",
+    target=L.volga_sunflower_yield_kg_ha,
+    target_label="zone sunflower yield (Rosstat oblast, area-weighted)",
+    target_unit="kg/ha",
+    label_source=(
+        "Rosstat 13160000; sown-area weights 13070000 "
+        "(Saratov+Samara+Volgograd)"),
+    region_share="Volga is a top RF sunflower production share (Saratov especially).",
+    panel={"spi3_flower": "precip_flower"},
+    core=SUNFLOWER_CORE,
+    critical_window=[(6, 0), (7, 0), (8, 0)],
+    regime_start=2000,
+    min_train=16,
+    caveat=SUNFLOWER_CAVEAT,
+    non_weather_drivers=SUNFLOWER_NON_WEATHER,
+)
+
+BELT_SUN = RegionCrop(
+    key="russia_sunflower",
+    label="Russia sunflower belt (South + CBE + Volga)",
+    label_ko="러시아 해바라기 벨트",
+    points=SUNFLOWER_BELT_POINTS,
+    build=_sunflower,
+    doc="russia/METHODOLOGY_sunflower_wheat.md",
+    target=L.belt_sunflower_yield_kg_ha,
+    target_label="belt sunflower yield (Rosstat oblast, area-weighted)",
+    target_unit="kg/ha",
+    label_source="Rosstat 13160000 / 13070000 across 10 oblasts",
+    region_share="Main RF sunflower production geography for oilseed markets.",
+    panel={"spi3_flower": "precip_flower"},
+    core=SUNFLOWER_CORE,
+    critical_window=[(6, 0), (7, 0), (8, 0)],
+    regime_start=2000,
+    min_train=16,
+    caveat=SUNFLOWER_CAVEAT,
+    non_weather_drivers=SUNFLOWER_NON_WEATHER,
+)
+
+ALL = [SOUTH, CBE, NATIONAL, VOLGA,
+       SOUTH_SUN, CBE_SUN, VOLGA_SUN, BELT_SUN]
 BY_KEY = {r.key: r for r in ALL}
