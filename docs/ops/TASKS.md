@@ -17,6 +17,7 @@ Cursor가 주기적으로 재배치한다.
 | T05 | 논문/사전 자료 검토 | anti | `docs/literature/**` | `anti/lit-…` | ready | 코드 금지 |
 | T06 | 코드 리뷰 | claude | PR diff | — | ready | 기본 역할=리뷰 (T07 PR 포함) |
 | T08 | liquidity/official UI 연결 | cursor | app.js + worker API | — | ready | 스냅샷 JSON은 이미 있음. 패널 미연결 |
+| T09 | 기후 UI 우측 제거·좌측 산지·미니범례 | **claude** | `app.js` `style.css` `index.html` `usda_gain_outlook_v1.json` | `claude/ui-climate-panel` | **in_progress** | Cursor 로컬 미커밋 있음(`cursor/ml-vietnam-yield` 워킹트리). **클린 브랜치에서 이어갈 것**. 우측 대시 제거·맵 우상단 무역범례·핀→좌측 상세 |
 
 ## 백로그
 

@@ -3113,8 +3113,10 @@ document.querySelectorAll('.indicator-item').forEach(item => {
 navLinks.forEach(link => {
     link.addEventListener('click', (e) => {
         e.preventDefault();
-        const target = e.target.getAttribute('data-target');
-        if (target?.startsWith('shipping_')) {
+        // currentTarget is the <a data-target>; e.target can be a text node.
+        const target = link.getAttribute('data-target') || e.currentTarget?.getAttribute?.('data-target');
+        if (!target) return;
+        if (target.startsWith('shipping_')) {
             window.history.replaceState(null, '', `#/${target}`);
         } else if (window.location.hash.startsWith('#/shipping_')) {
             window.history.replaceState(null, '', window.location.pathname + window.location.search);
@@ -3123,12 +3125,15 @@ navLinks.forEach(link => {
     });
 });
 
-// Parent menu labels with data-nav-default (e.g. 해운 → first shipping view)
+// Parent menu labels with data-nav-default (e.g. 해운 → first shipping view).
+// Bind on the whole .menu-item (not only the label span): the nav row is
+// height:100% + cursor:pointer, so users often click padding around "해운"
+// and a span-only listener looks "dead". Ignore clicks that start in .dropdown
+// so submenu <a data-target> handlers still own those navigations.
 document.querySelectorAll('.menu-item[data-nav-default]').forEach((item) => {
-    const parent = item.querySelector(':scope > span, :scope > .menu-parent');
-    if (!parent) return;
     const go = (e) => {
-        if (e.target.closest('.dropdown')) return;
+        const t = e.target instanceof Element ? e.target : item;
+        if (t.closest('.dropdown')) return;
         e.preventDefault();
         const target = item.getAttribute('data-nav-default');
         if (!target) return;
@@ -3137,13 +3142,16 @@ document.querySelectorAll('.menu-item[data-nav-default]').forEach((item) => {
         }
         setView(target);
     };
-    parent.addEventListener('click', go);
-    parent.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-            e.preventDefault();
-            go(e);
-        }
-    });
+    item.addEventListener('click', go);
+    const parent = item.querySelector(':scope > .menu-parent, :scope > span');
+    if (parent) {
+        parent.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                go(e);
+            }
+        });
+    }
 });
 
 // Home Logo click event

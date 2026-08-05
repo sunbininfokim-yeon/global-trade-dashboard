@@ -1,5 +1,35 @@
 # HANDOFF — 최근 인수인계
 
+## 2026-08-05 — cursor → claude (기후 UI 우측 제거)
+
+### Goal / summary
+기후 세계/국가 뷰에서 **우측 대시보드 제거**. 무역 색 범례는 맵 **우상단 미니 프레임**. 산지 핀 클릭 → **좌측 패널** 상세. 캘린더는 좌측. 툴팁 좌표 수정·작물 identity·GAIN seed note 포함.
+
+### Live (배포본) showed
+- 미국 국가뷰: 좌 GAIN+합산+캘린더 / 우「국가 집계·전망」중복 + 지역 기상효과
+- 세계뷰: 우「보유 모델 N개국」설명 리스트
+
+### Done (로컬 **미커밋**, branch checkout was `cursor/ml-vietnam-yield`)
+- 우측 pane hide (`hideClimateRightChrome`, climate `right:false`)
+- 맵 우상단 `climate-legend-mini` 수출통제 색
+- 핀/목록 → `renderCountryPanel` 좌측 산지 모드 (`← 국가 집계`)
+- cropKey identity + US 겨울/봄밀 캘린더
+- `positionMapTooltip` (중국 호버 오프셋)
+- `app.js?v=18` `style.css?v=16`
+- T09 claim → claude
+
+### Next (Claude)
+```bash
+git checkout main && git pull
+git checkout -b claude/ui-climate-panel
+# copy/cherry-pick UI files from this working tree; do NOT commit on ml-* branches
+```
+Test: http://127.0.0.1:8766/ 농산물→기후→미국→산지 핀
+
+### GAIN/WASDE
+seed 377 MMT corn ≈ 2024/25; WASDE 2026-02 2025/26 = 17,021 mb ≈ 432 MMT. 비스크레이프.
+
+---
 ## 2026-08-04 — cursor
 
 ### Goal / summary
