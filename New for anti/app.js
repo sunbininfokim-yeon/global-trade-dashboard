@@ -752,6 +752,38 @@ const isAntarcticaFeature = (feature) => {
     return id === 'ATA' || /antarctica|남극/i.test(name);
 };
 
+// Carto dark_all still paints Antarctica in raster tiles. Transparent GeoJSON
+// cannot hide that — cover southern latitudes with opaque ocean matching the basemap.
+const ANTARCTICA_MASK_NORTH_LAT = -54;
+const ANTARCTICA_OCEAN_RGBA = [14, 22, 36, 255];
+const ANTARCTICA_MASK_GEOJSON = {
+    type: 'FeatureCollection',
+    features: [-180, -90, 0, 90].map((lon0) => ({
+        type: 'Feature',
+        properties: {},
+        geometry: {
+            type: 'Polygon',
+            coordinates: [[
+                [lon0, ANTARCTICA_MASK_NORTH_LAT],
+                [lon0 + 90, ANTARCTICA_MASK_NORTH_LAT],
+                [lon0 + 90, -85],
+                [lon0, -85],
+                [lon0, ANTARCTICA_MASK_NORTH_LAT],
+            ]],
+        },
+    })),
+};
+
+/** Opaque ocean strip over basemap Antarctica (under country/SST layers). */
+const antarcticaOceanMaskLayer = (id = 'antarctica-ocean-mask') => new GeoJsonLayer({
+    id,
+    data: ANTARCTICA_MASK_GEOJSON,
+    stroked: false,
+    filled: true,
+    pickable: false,
+    getFillColor: ANTARCTICA_OCEAN_RGBA,
+});
+
 /** Soft ocean SST anomaly wash (seed basins). Not a full gridded product — visual cue only. */
 const OCEAN_SST_BASINS = [
     { id: 'nino34', label: 'Niño 3.4', coordinates: [-140, 0], key: 'enso' },
@@ -2157,9 +2189,24 @@ const isoToCountryName = () => {
     return m;
 };
 
+/** Keep the tilted flat map from sliding into Antarctica / flipping into a globe.
+ *  Pitch reveals far south even at mid-latitudes, so we bias north + floor zoom. */
+const clampMapNoAntarctica = (vs = {}) => ({
+    ...vs,
+    latitude: Math.min(68, Math.max(12, vs.latitude ?? 30)),
+    zoom: Math.min(8, Math.max(1.2, vs.zoom ?? 1.5)),
+    pitch: Math.min(52, Math.max(24, vs.pitch == null ? 38 : vs.pitch)),
+    bearing: vs.bearing || 0,
+    maxPitch: 52,
+    minZoom: 1.2,
+    maxZoom: 8,
+});
+
 const climateWorldViewState = () => {
-    // Globe framing — keep north of Antarctica (no need to fit south polar ice).
-    return { longitude: 20, latitude: 12, zoom: 1.15, pitch: 0, bearing: 0 };
+    // Flat MapView with pitch = "곡률" on the world-map basemap itself.
+    // NOT GlobeView — that drew a glass sphere on top of the flat tiles.
+    // Latitude biased north so Antarctica stays off-screen (mask covers remainder).
+    return { longitude: 15, latitude: 32, zoom: 1.55, pitch: 40, bearing: 0 };
 };
 
 const setClimateMapLegend = (mode) => {
@@ -2298,7 +2345,7 @@ const showClimateWorld = async () => {
     hideClimateTooltip();
 
     currentViewTitle.textContent = '기후·작황 예측';
-    currentViewDesc.textContent = '곡면 세계 지도 · 모델국 클릭 · 바다 SST 워시(옅게) · 남극 제외';
+    currentViewDesc.textContent = '세계 지도(원근 곡률) · 모델국 클릭 · SST 워시 · 남극 제외';
     setClimateCommodityHeader('climate');
     totalVolumeEl.textContent = `${Object.keys(CLIMATE_COUNTRIES).length}개국`;
     topExporterEl.textContent = 'Trade status';
@@ -2335,17 +2382,35 @@ const showClimateWorld = async () => {
     mapContainer.style.pointerEvents = 'auto';
     ensureClimateMapPointerFallback();
 
-    const worldView = { ...climateWorldViewState(), minZoom: 0.4, maxZoom: 6 };
+    const worldView = clampMapNoAntarctica({
+        ...climateWorldViewState(),
+        minZoom: 0.8,
+        maxZoom: 6,
+        maxPitch: 55,
+    });
 
     deckgl.setProps({
-        views: [new _GlobeView({ id: 'globe', resolution: 2 })],
+        // MapView + pitch: curved flat basemap. Do NOT use GlobeView here —
+        // GlobeView composites a sphere over MapLibre's flat world tiles.
+        views: [new MapView({ id: 'climate-world-view', controller: true })],
         viewState: worldView,
-        controller: true,
+        controller: {
+            dragMode: 'pan',
+            touchRotate: false,
+        },
         pickingRadius: 18,
         getCursor: ({ isHovering }) => (isHovering ? 'pointer' : 'grab'),
         onClick: handleClimateDeckClick,
         onHover: handleClimateDeckHover,
+        onViewStateChange: ({ viewState }) => {
+            if (climateLevel !== 'world' || currentCommodity !== 'climate') return;
+            const next = clampMapNoAntarctica(viewState);
+            currentViewState = next;
+            deckgl.setProps({ viewState: next });
+        },
         layers: [
+            // Cover basemap Antarctica first (raster tiles ignore GeoJSON alpha).
+            antarcticaOceanMaskLayer('climate-antarctica-mask'),
             // Soft SST wash under countries (not vivid)
             new ScatterplotLayer({
                 id: 'climate-sst-wash',
@@ -2558,6 +2623,7 @@ const showClimateCountry = async (countryName) => {
                     <span>${ptStr} ${d.unit || ''} · ${pctStr}</span></div>`;
         },
         layers: [
+            antarcticaOceanMaskLayer('climate-country-antarctica-mask'),
             new GeoJsonLayer({
                 id: 'climate-countries',
                 data: COUNTRIES_GEOJSON,
@@ -3087,9 +3153,9 @@ const generateNodeData = (arcs) => {
 // this keeps the map readable without silently hiding mid-sized trade flows.
 const MAX_RENDERED_ARCS = 250;
 
-// Framing for commodity maps. Same GlobeView as home so scroll-zoom enlarges
-// the familiar dark globe — not a tiny flat inset.
-const TRADE_GLOBE_VIEW = { longitude: 20, latitude: 18, zoom: 1.35, pitch: 0, bearing: 0 };
+// Commodity maps: same MapLibre world basemap as home, but MapView + pitch
+// for curvature — never GlobeView (that stacks a sphere on the flat tiles).
+const TRADE_MAP_VIEW = { longitude: 20, latitude: 30, zoom: 1.5, pitch: 38, bearing: 0 };
 
 const stopTradeAnim = () => {
     if (tradeAnimRaf) {
@@ -3167,9 +3233,20 @@ const renderMapLayers = (arcs, opts = {}) => {
     );
     const totalFocus = (opts._focusedList || []).reduce((s, a) => s + a.volume, 0) || 1;
 
-    currentViewState = { ...TRADE_GLOBE_VIEW };
+    currentViewState = clampMapNoAntarctica({ ...TRADE_MAP_VIEW });
 
     const baseLayers = () => [
+        antarcticaOceanMaskLayer('trade-antarctica-mask'),
+        new GeoJsonLayer({
+            id: 'trade-countries-mask',
+            data: COUNTRIES_GEOJSON,
+            stroked: true,
+            filled: true,
+            lineWidthMinPixels: 0.5,
+            getFillColor: (f) => (isAntarcticaFeature(f) ? [0, 0, 0, 0] : [0, 0, 0, 0]),
+            getLineColor: (f) => (isAntarcticaFeature(f) ? [0, 0, 0, 0] : [255, 255, 255, 28]),
+            pickable: false,
+        }),
         new ArcLayer({
             id: `arc-layer-${currentCommodity}-${focus || 'world'}`,
             data: filteredArcs,
@@ -3235,7 +3312,7 @@ const renderMapLayers = (arcs, opts = {}) => {
     const trailData = () => buildTradeTrailParticles(opts._focusedList || filteredArcs.slice(0, 36), tradeAnimPhase);
 
     deckgl.setProps({
-        views: [new _GlobeView({ id: 'globe', resolution: 2 })],
+        views: [new MapView({ id: 'mapview', controller: true })],
         viewState: currentViewState,
         controller: true,
         layers: [
@@ -3256,6 +3333,12 @@ const renderMapLayers = (arcs, opts = {}) => {
         ],
         onClick: (info) => {
             if (!info.object && tradeFocusCountry) clearTradeFocus();
+        },
+        onViewStateChange: ({ viewState }) => {
+            if (!window.TradeData?.[currentCommodity]) return;
+            const next = clampMapNoAntarctica(viewState);
+            currentViewState = next;
+            deckgl.setProps({ viewState: next });
         },
     });
 
@@ -3464,7 +3547,7 @@ const setView = (target) => {
         setClimateCommodityHeader(null);
         const data = window.TradeData[target];
         
-        // Req 1: hide right pane so the (home-style) globe map can be larger.
+        // Req 1: hide right pane so the pitched world map can be larger.
         // Country-click detail on the right is deferred — ranking lives on the left.
         togglePanels({ news: true, left: true, right: false });
         
@@ -3481,11 +3564,11 @@ const setView = (target) => {
             currentViewDesc.textContent = "📡 UN Comtrade API에서 실시간 무역 데이터 로딩 중...";
             
             stopRotation();
-            currentViewState = { ...TRADE_GLOBE_VIEW };
+            currentViewState = clampMapNoAntarctica({ ...TRADE_MAP_VIEW });
             deckgl.setProps({
-                views: [new _GlobeView({ id: 'globe', resolution: 2 })],
+                views: [new MapView({ id: 'mapview', controller: true })],
                 viewState: currentViewState,
-                layers: []
+                layers: [antarcticaOceanMaskLayer('trade-antarctica-mask-loading')],
             });
 
             window.fetchComtradeArcs(target).then(arcs => {
@@ -3507,8 +3590,7 @@ const setView = (target) => {
         } else {
             // Already have data (cached from previous click or hardcoded)
             stopRotation();
-            currentViewState = { ...TRADE_GLOBE_VIEW };
-            deckgl.setProps({ viewState: currentViewState });
+            currentViewState = clampMapNoAntarctica({ ...TRADE_MAP_VIEW });
             currentViewDesc.textContent = data.desc + ` (데이터 출처: UN Comtrade API | ${data.arcs.length}개 무역 루트) · 국가 클릭 → 수출 대상 순위`;
             renderMapLayers(data.arcs);
         }
