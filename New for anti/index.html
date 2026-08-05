@@ -14,7 +14,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
     <!-- Custom Styles -->
-    <link rel="stylesheet" href="style.css?v=20">
+    <link rel="stylesheet" href="style.css?v=22">
 </head>
 <body>
     <div id="app">
@@ -172,6 +172,12 @@
                 </div>
                 <!-- Climate map legend (shown only in climate views) -->
                 <div id="climate-map-legend" class="climate-map-legend hidden"></div>
+
+                <!-- Climate country drill-down: TARGET frame over the globe -->
+                <div id="climate-target-hud" class="target-hud hidden"></div>
+
+                <!-- Producing-region labels, projected onto the globe by app.js -->
+                <div id="climate-region-labels" class="region-labels hidden"></div>
             </div>
 
             <!-- Right Pane: Stats & Macro -->
@@ -292,8 +298,8 @@
     </div>
 
     <!-- Data and App Logic -->
-    <script src="data.js?v=2"></script>
+    <script src="data.js?v=3"></script>
     <script src="shipping.js?v=6"></script>
-    <script src="app.js?v=22"></script>
+    <script src="app.js?v=33"></script>
 </body>
 </html>
