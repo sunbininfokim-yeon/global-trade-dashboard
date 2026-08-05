@@ -152,6 +152,7 @@ def predict_one(cfg, year, oni):
         "weather_skill": model.get("weather_skill",
                                    model["recent_skill_vs_trend"]),
         "labels_provisional": model.get("labels_provisional", True),
+        "labels_season_imperfect": model.get("labels_season_imperfect", False),
         "label_source": model.get("label_source", ""),
         "last_actual": {"year": int(last.year),
                         "yield": float(last.yield_kg_ha)},
