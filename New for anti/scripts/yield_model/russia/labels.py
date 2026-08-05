@@ -29,6 +29,11 @@ PSD_COLUMNS = ["Commodity_Description", "Country_Name", "Market_Year",
 SOUTH_OBLASTS = ["Krasnodar", "Rostov", "Stavropol"]
 CBE_OBLASTS = ["Belgorod", "Voronezh", "Kursk", "Tambov"]
 BELT_OBLASTS = SOUTH_OBLASTS + CBE_OBLASTS
+VOLGA_OBLASTS = ["Saratov", "Samara", "Volgograd"]
+SUNFLOWER_SOUTH = SOUTH_OBLASTS
+SUNFLOWER_CBE = CBE_OBLASTS
+SUNFLOWER_VOLGA = VOLGA_OBLASTS
+SUNFLOWER_BELT = SUNFLOWER_SOUTH + SUNFLOWER_CBE + SUNFLOWER_VOLGA
 
 
 def log(msg):
@@ -100,9 +105,7 @@ def psd_production_1000t(commodity="Wheat"):
 
 def load_curated_oblast_csv(path=None):
     """
-    Oblast yields at training/oblast_yields.csv.
-
-    Expected columns: year, oblast, yield_kg_ha  (or yield_c_ha × 100).
+    Oblast yields CSV: year, oblast, yield_kg_ha (or yield_c_ha × 100).
     """
     path = path or os.path.join(TRAINING, "oblast_yields.csv")
     if not os.path.exists(path):
@@ -120,21 +123,20 @@ def load_oblast_sown_area(path=None):
     return pd.read_csv(path)
 
 
-def zone_yield_kg_ha(oblasts, fallback_weights=None):
+def zone_yield_kg_ha(oblasts, fallback_weights=None,
+                     yield_path=None, area_path=None, label="grain"):
     """
     Sown-area-weighted mean of oblast yields (kg/ha) for a zone.
-
-    Prefer Rosstat sown area (1000 ha) weights; else fallback_weights / equal.
     """
-    y = load_curated_oblast_csv()
+    y = load_curated_oblast_csv(yield_path)
     if y is None or y.empty:
         raise FileNotFoundError(
-            "training/oblast_yields.csv missing — Rosstat oblast labels required")
+            f"oblast yield CSV missing ({yield_path or 'oblast_yields.csv'})")
     y = y[y.oblast.isin(oblasts)].copy()
     if y.empty:
-        raise KeyError(f"no oblast yields for {oblasts}")
+        raise KeyError(f"no {label} yields for {oblasts}")
 
-    area = load_oblast_sown_area()
+    area = load_oblast_sown_area(area_path)
     rows = []
     for year, g in y.groupby("year"):
         g = g.dropna(subset=["yield_kg_ha"])
@@ -162,7 +164,7 @@ def zone_yield_kg_ha(oblasts, fallback_weights=None):
         rows.append({"year": int(year), "target": target})
 
     out = (pd.DataFrame(rows).sort_values("year").reset_index(drop=True))
-    log(f"  zone [{', '.join(oblasts)}]: {len(out)} yrs "
+    log(f"  {label} zone [{', '.join(oblasts)}]: {len(out)} yrs "
         f"{int(out.year.min())}-{int(out.year.max())}")
     return out
 
@@ -182,3 +184,48 @@ def cbe_yield_kg_ha():
 
 def belt_yield_kg_ha():
     return zone_yield_kg_ha(BELT_OBLASTS)
+
+
+def volga_yield_kg_ha():
+    return zone_yield_kg_ha(
+        VOLGA_OBLASTS,
+        fallback_weights={"Saratov": 0.40, "Samara": 0.30, "Volgograd": 0.30},
+        label="volga grain")
+
+
+def _sunflower_paths():
+    return (
+        os.path.join(TRAINING, "oblast_sunflower_yields.csv"),
+        os.path.join(TRAINING, "oblast_sunflower_sown_area.csv"),
+    )
+
+
+def southern_sunflower_yield_kg_ha():
+    yp, ap = _sunflower_paths()
+    return zone_yield_kg_ha(
+        SUNFLOWER_SOUTH,
+        fallback_weights={"Krasnodar": 0.35, "Rostov": 0.40, "Stavropol": 0.25},
+        yield_path=yp, area_path=ap, label="sunflower")
+
+
+def cbe_sunflower_yield_kg_ha():
+    yp, ap = _sunflower_paths()
+    return zone_yield_kg_ha(
+        SUNFLOWER_CBE,
+        fallback_weights={"Belgorod": 0.25, "Voronezh": 0.30,
+                          "Kursk": 0.20, "Tambov": 0.25},
+        yield_path=yp, area_path=ap, label="sunflower")
+
+
+def volga_sunflower_yield_kg_ha():
+    yp, ap = _sunflower_paths()
+    return zone_yield_kg_ha(
+        SUNFLOWER_VOLGA,
+        fallback_weights={"Saratov": 0.45, "Samara": 0.30, "Volgograd": 0.25},
+        yield_path=yp, area_path=ap, label="sunflower")
+
+
+def belt_sunflower_yield_kg_ha():
+    yp, ap = _sunflower_paths()
+    return zone_yield_kg_ha(
+        SUNFLOWER_BELT, yield_path=yp, area_path=ap, label="sunflower")

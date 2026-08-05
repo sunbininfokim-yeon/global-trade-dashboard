@@ -172,3 +172,44 @@ def winter_wheat_features(daily, harvest_year, grainfill_months,
             daily, [(3, 0), (4, 0), (5, 0)], y),
     }
     return feats
+
+
+def sunflower_features(daily, harvest_year, flower_months=None,
+                       heat_thr=30.0):
+    """
+    Summer oilseed features for Russian sunflower (South / CBE / Volga).
+
+    Literature anchors (statistical, not WOFOST):
+      - North Caucasus Peredovik series: April precip (+), May–Aug heat/precip
+        stress; HTK above 20 °C (SPbU Biology 2023).
+      - Hydrometcenter CFO sunflower models: agro-met factors 1–3 months before
+        harvest (method.meteorf.ru Trudy 373).
+      - WOFOST RU regional hybrids for sunflower (MSU Soil Sci.) — process
+        benchmark; we keep ridge+trend like other packages.
+
+    Calendar (approx): sow Apr–May · flower Jun–Aug · harvest Sep–Oct.
+    """
+    y = harvest_year
+    flower_months = flower_months or [(6, 0), (7, 0), (8, 0)]
+    april = [(4, 0)]
+    may_aug = [(5, 0), (6, 0), (7, 0), (8, 0)]
+    season = [(4, 0), (5, 0), (6, 0), (7, 0), (8, 0)]
+
+    feats = {
+        # Early moisture (paper: April precip supports establishment)
+        "precip_april": window_totals(daily, april, y),
+        "sm_april": mean_gwetroot(daily, april, y),
+        # Flowering / seed-fill heat–drought complex
+        "edd_flower": heat_excess(daily, flower_months, y, heat_thr),
+        "heat_days_flower": heat_days(daily, flower_months, y, heat_thr),
+        "vpd_flower": vpd_peak(daily, flower_months, y),
+        "sm_flower": mean_gwetroot(daily, flower_months, y),
+        "sm_stress_flower": sm_stress_days(daily, flower_months, y, 0.25),
+        "precip_flower": window_totals(daily, flower_months, y),
+        # Broader season moisture & radiation (oil content / biomass)
+        "precip_may_aug": window_totals(daily, may_aug, y),
+        "sm_season": mean_gwetroot(daily, season, y),
+        "radiation_season": radiation_total(daily, season, y),
+        "gdd_season": gdd_total(daily, y, 4, 15, tbase=6.0, horizon=150),
+    }
+    return feats
