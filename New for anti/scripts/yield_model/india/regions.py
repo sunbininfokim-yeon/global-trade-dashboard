@@ -16,11 +16,26 @@ something no Brazilian config needed, it is in india/climate.py.
 Each `build` runs against one location's daily weather. collect.py calls it
 once per point and area-weights the results -- never the other way round.
 
-Point weights are measured, not estimated: they are each district's share of
-the region's planted area for that crop over 2000-2017, from the same ICRISAT
-tables the yields come from (icrisat.rank_districts). Elevations are needed by
-FAO-56 for atmospheric pressure and are hand-entered, since ICRISAT publishes
-coordinates but not altitude.
+Point weights are measured, not estimated: each district's share of the
+region's planted area for that crop over 2005-2019, from the same ICRISAT
+tables the yields come from (icrisat.rank_districts), renormalised over the
+points actually sampled.
+
+Coordinates are *not* ICRISAT's. Its district centroids are unreliable in
+places -- it puts Bhatinda at 31.60N/75.30E, about 150 km from the real town,
+and Sangrur three quarters of a degree north of where it is -- and a
+mislocated point silently samples the wrong weather. The coordinates here are
+checked by hand. Elevations are hand-entered too, since ICRISAT publishes no
+altitude and FAO-56 needs it for atmospheric pressure.
+
+These points sample 24-36% of each region's planted area. That is lower than
+it sounds: no district dominates any of these regions (the largest single
+share anywhere is Ujjain's 8% of MP soybean), so the shares are close to flat
+and coverage climbs slowly with each added point. Whether the sample is
+*representative* matters more than the fraction it covers, and the open
+question there is Marathwada -- Aurangabad, Bid, Jalna and Parbhani together
+are about 20% of the cotton region and are drier than the Vidarbha districts
+standing in for them. See README.
 """
 
 from dataclasses import dataclass, field
@@ -75,12 +90,12 @@ class RegionCrop:
 # ---------------------------------------------------------------------------
 
 PUNJAB_POINTS = [
-    {"name": "Ludhiana", "lat": 30.90, "lon": 75.85, "elevation": 247, "weight": 0.22},
-    {"name": "Sangrur",  "lat": 30.25, "lon": 75.84, "elevation": 232, "weight": 0.20},
-    {"name": "Bhatinda", "lat": 30.21, "lon": 74.95, "elevation": 210, "weight": 0.16},
-    {"name": "Karnal",   "lat": 29.69, "lon": 76.99, "elevation": 245, "weight": 0.16},
-    {"name": "Hissar",   "lat": 29.15, "lon": 75.72, "elevation": 215, "weight": 0.14},
-    {"name": "Sirsa",    "lat": 29.53, "lon": 75.03, "elevation": 205, "weight": 0.12},
+    {"name": "Ludhiana", "lat": 30.90, "lon": 75.85, "elevation": 247, "weight": 0.171},
+    {"name": "Sangrur",  "lat": 30.25, "lon": 75.84, "elevation": 232, "weight": 0.198},
+    {"name": "Bhatinda", "lat": 30.21, "lon": 74.95, "elevation": 210, "weight": 0.169},
+    {"name": "Karnal",   "lat": 29.69, "lon": 76.99, "elevation": 245, "weight": 0.117},
+    {"name": "Hissar",   "lat": 29.15, "lon": 75.72, "elevation": 215, "weight": 0.151},
+    {"name": "Sirsa",    "lat": 29.53, "lon": 75.03, "elevation": 205, "weight": 0.193},
 ]
 
 
@@ -151,12 +166,12 @@ PUNJAB_WHEAT = RegionCrop(
 # ---------------------------------------------------------------------------
 
 MP_POINTS = [
-    {"name": "Ujjain",    "lat": 23.18, "lon": 75.78, "elevation": 491, "weight": 0.20},
-    {"name": "Dewas",     "lat": 22.96, "lon": 76.06, "elevation": 555, "weight": 0.16},
-    {"name": "Sehore",    "lat": 23.20, "lon": 77.09, "elevation": 502, "weight": 0.16},
-    {"name": "Mandsaur",  "lat": 24.07, "lon": 75.07, "elevation": 435, "weight": 0.16},
-    {"name": "Vidisha",   "lat": 23.52, "lon": 77.81, "elevation": 424, "weight": 0.16},
-    {"name": "Indore",    "lat": 22.72, "lon": 75.86, "elevation": 553, "weight": 0.16},
+    {"name": "Ujjain",    "lat": 23.18, "lon": 75.78, "elevation": 491, "weight": 0.251},
+    {"name": "Dewas",     "lat": 22.96, "lon": 76.06, "elevation": 555, "weight": 0.179},
+    {"name": "Sehore",    "lat": 23.20, "lon": 77.09, "elevation": 502, "weight": 0.158},
+    {"name": "Mandsaur",  "lat": 24.07, "lon": 75.07, "elevation": 435, "weight": 0.146},
+    {"name": "Vidisha",   "lat": 23.52, "lon": 77.81, "elevation": 424, "weight": 0.141},
+    {"name": "Indore",    "lat": 22.72, "lon": 75.86, "elevation": 553, "weight": 0.124},
 ]
 
 
@@ -237,13 +252,13 @@ VIDARBHA = ["Amravati division", "Nagpur division"]
 MARATHWADA = ["Aurangabad division", "Latur division"]
 
 COTTON_POINTS = [
-    {"name": "Yeotmal",        "lat": 20.39, "lon": 78.13, "elevation": 445, "weight": 0.16},
-    {"name": "Akola",          "lat": 20.71, "lon": 77.00, "elevation": 282, "weight": 0.14},
-    {"name": "Amarawati",      "lat": 20.93, "lon": 77.75, "elevation": 343, "weight": 0.12},
-    {"name": "Nanded",         "lat": 19.15, "lon": 77.32, "elevation": 362, "weight": 0.12},
-    {"name": "Rajkot",         "lat": 22.30, "lon": 70.80, "elevation": 134, "weight": 0.16},
-    {"name": "Surendranagar",  "lat": 22.73, "lon": 71.65, "elevation": 78,  "weight": 0.16},
-    {"name": "Amreli",         "lat": 21.60, "lon": 71.22, "elevation": 127, "weight": 0.14},
+    {"name": "Yeotmal",        "lat": 20.39, "lon": 78.13, "elevation": 445, "weight": 0.207},
+    {"name": "Akola",          "lat": 20.71, "lon": 77.00, "elevation": 282, "weight": 0.081},
+    {"name": "Amarawati",      "lat": 20.93, "lon": 77.75, "elevation": 343, "weight": 0.097},
+    {"name": "Nanded",         "lat": 19.15, "lon": 77.32, "elevation": 362, "weight": 0.138},
+    {"name": "Rajkot",         "lat": 22.30, "lon": 70.80, "elevation": 134, "weight": 0.132},
+    {"name": "Surendranagar",  "lat": 22.73, "lon": 71.65, "elevation": 78,  "weight": 0.197},
+    {"name": "Amreli",         "lat": 21.60, "lon": 71.22, "elevation": 127, "weight": 0.149},
 ]
 
 
