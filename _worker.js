@@ -18,6 +18,9 @@ export default {
         }
 
         // API Route: USDA FAS ESR (weekly US export sales by destination)
+        if (url.pathname.startsWith('/api/usda-esr/commodities')) {
+            return await handleUsdaEsrCommodities(request, env);
+        }
         if (url.pathname.startsWith('/api/usda-esr')) {
             return await handleUsdaEsr(request, env, ctx);
         }
@@ -368,13 +371,56 @@ async function fetchEsrCountries(env) {
     return map;
 }
 
+/**
+ * The commodity list FAS itself publishes, so callers can map a name to a code
+ * instead of guessing. Cached for a week -- this list changes about never.
+ */
+async function handleUsdaEsrCommodities(request, env) {
+    if (!env.USDA_FAS_API_KEY) return missingKey('USDA_FAS_API_KEY');
+    const body = await kvCachedJson(env, 'usda-esr:commodities', 604800, async () => {
+        const res = await fetch('https://api.fas.usda.gov/api/esr/commodities', {
+            headers: { "X-Api-Key": env.USDA_FAS_API_KEY, "Accept": "application/json" }
+        });
+        if (!res.ok) return { ok: false, status: res.status, statusText: res.statusText };
+        return { ok: true, body: await res.json() };
+    });
+    return body;
+}
+
+/** Market year for a Sep-start commodity. Wheat starts in June -- see below. */
+function currentEsrMarketYear() {
+    const now = new Date();
+    return String(now.getUTCFullYear() + (now.getUTCMonth() >= 8 ? 1 : 0));
+}
+
 async function handleUsdaEsr(request, env, ctx) {
     const url = new URL(request.url);
 
     if (!env.USDA_FAS_API_KEY) return missingKey('USDA_FAS_API_KEY');
 
-    const commodityCode = url.searchParams.get('commodityCode') || '801'; // 801 = Soybeans
-    const marketYear = url.searchParams.get('marketYear') || '2025';
+    // Reject unknown params instead of ignoring them.
+    //
+    // `commodityCode` used to fall back to 801 (soybeans) whenever it was
+    // absent, so a caller asking for `?commodity=corn` -- a plausible typo, and
+    // the exact one made while wiring the UI -- got a full, valid-looking
+    // soybean series it would then have labelled as corn. Silently serving the
+    // wrong commodity is worse than an error, so this now fails loudly and
+    // points at the list endpoint.
+    const commodityCode = url.searchParams.get('commodityCode');
+    if (!commodityCode) {
+        return new Response(JSON.stringify({
+            error: "commodityCode is required",
+            hint: "GET /api/usda-esr/commodities for the code list. There is no default: "
+                + "a wrong default silently mislabels one commodity as another.",
+        }), { status: 400, headers: JSON_HEADERS });
+    }
+
+    // Market year is derived, not pinned. It was hardcoded to '2025', which is
+    // why every response carried a weekEndingDate almost a year stale.
+    // Caveat: this assumes a September market-year start (corn, soybeans).
+    // Wheat's runs June-May, so wheat callers should pass marketYear explicitly
+    // between June and August.
+    const marketYear = url.searchParams.get('marketYear') || currentEsrMarketYear();
 
     const SAFE = /^[0-9]+$/;
     if (!SAFE.test(commodityCode) || !SAFE.test(marketYear)) {
