@@ -276,13 +276,24 @@ async function handleOfficialReports(request, env) {
 async function kvCachedJson(env, cacheKey, ttlSeconds, doFetch) {
     const kv = env.API_CACHE;
 
+    // KV keeps the *upstream* call from repeating, but with no Cache-Control the
+    // browser still re-downloads and re-parses the full payload on every visit
+    // -- a ~220KB Comtrade response per page entry. Letting the browser reuse
+    // its copy for the same window KV holds it makes a return visit paint from
+    // memory instead of the network. Capped at a day so hourly series
+    // (FRED/yfinance, ttl 3600) keep their own freshness.
+    const browserTtl = Math.min(ttlSeconds, 86400);
+    const cacheControl = `public, max-age=${browserTtl}, stale-while-revalidate=86400`;
+
     if (kv) {
         // A cache read must never be able to fail the request -- an over-long
         // key or a KV hiccup should degrade to a live fetch, not a 500.
         try {
             const cached = await kv.get(cacheKey);
             if (cached !== null) {
-                return new Response(cached, { headers: { ...JSON_HEADERS, "X-Cache": "HIT" } });
+                return new Response(cached, {
+                    headers: { ...JSON_HEADERS, "Cache-Control": cacheControl, "X-Cache": "HIT" },
+                });
             }
         } catch (err) {
             console.log(`[cache] get failed for ${cacheKey}: ${err.message}`);
@@ -307,7 +318,9 @@ async function kvCachedJson(env, cacheKey, ttlSeconds, doFetch) {
             console.log(`[cache] put failed for ${cacheKey}: ${err.message}`);
         }
     }
-    return new Response(json, { headers: { ...JSON_HEADERS, "X-Cache": "MISS" } });
+    return new Response(json, {
+        headers: { ...JSON_HEADERS, "Cache-Control": cacheControl, "X-Cache": "MISS" },
+    });
 }
 
 // Canonical reporter/partner list, mirroring M49_MAP in data.js.

@@ -1138,82 +1138,230 @@ body {
 @keyframes shipping-spin { to { transform: rotate(360deg); } }
 
 /* === CLIMATE DASHBOARD === */
-/* === TRADE FLOW MAP CHROME === */
-.trade-map-chrome {
+/* === TRADE FLOW MAP (D3 SVG stage, see trade-flow.js) === */
+/* The deck.gl canvas is only used by the home globe / climate views, so the
+   trade stage covers it completely instead of layering on top of it. */
+.trade-flow-stage {
     position: absolute;
-    left: 16px;
-    bottom: 16px;
-    z-index: 8;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
+    inset: 0;
+    z-index: 6;
+    background: radial-gradient(1200px 700px at 50% 42%, #0f1620 0%, #080b11 78%);
+    overflow: hidden;
+}
+
+.trade-flow-stage.hidden {
+    display: none;
+}
+
+body.trade-flow-mode #map {
+    visibility: hidden;
     pointer-events: none;
-    max-width: 320px;
 }
 
-.trade-flow-legend,
-.trade-flow-scale {
-    background: rgba(9, 14, 24, 0.82);
-    border: 1px solid rgba(148, 163, 184, 0.16);
-    border-radius: 10px;
-    padding: 11px 13px;
-    backdrop-filter: blur(6px);
-}
-
-.tfl-label {
+.trade-flow-stage svg.tf-map {
     display: block;
-    color: #64748b;
-    font-size: 9px;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    margin-bottom: 8px;
+    width: 100%;
+    height: 100%;
 }
 
-.tfl-items {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 5px 12px;
-}
-
-.tfl-item {
+.tf-controls {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
     display: flex;
     align-items: center;
-    gap: 7px;
-    color: #cbd5e1;
-    font-size: 10.5px;
+    flex-wrap: wrap;
+    gap: 8px 18px;
+    padding: 10px 18px;
+    background: rgba(9, 13, 19, 0.9);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    z-index: 3;
 }
 
-.tfl-item i {
-    width: 14px;
-    height: 3px;
-    border-radius: 999px;
+.tf-panel {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.tf-legend-panel {
+    flex: 1;
+    justify-content: flex-end;
+}
+
+.tf-panel h3 {
+    margin: 0;
+    white-space: nowrap;
     flex: none;
-    box-shadow: 0 0 6px currentColor;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #7d8896;
+    font-weight: 600;
 }
 
-.tfs-row {
+.tf-seg {
+    display: flex;
+    gap: 4px;
+}
+
+.tf-seg button {
+    font: inherit;
+    font-size: 12px;
+    padding: 6px 11px;
+    border-radius: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: transparent;
+    color: #a9b4c2;
+    cursor: pointer;
+}
+
+.tf-seg button.on {
+    background: #1d4ed8;
+    border-color: #2f6fdb;
+    color: #fff;
+}
+
+.tf-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 14px;
+    flex: 0 1 auto;
+}
+
+.tf-lg {
     display: flex;
     align-items: center;
     gap: 9px;
-    margin-bottom: 5px;
+    white-space: nowrap;
+    font-size: 12px;
+    color: #cdd6e1;
+    cursor: pointer;
+    user-select: none;
 }
 
-.tfs-row i {
-    background: linear-gradient(90deg, rgba(95, 168, 255, 0.25), rgba(226, 240, 255, 0.95));
-    border-radius: 999px;
-    flex: none;
+.tf-lg .tf-bar {
+    width: 22px;
+    height: 3px;
+    border-radius: 2px;
 }
 
-.tfs-row span {
-    color: #94a3b8;
-    font-size: 10px;
+.tf-lg.off {
+    opacity: 0.35;
 }
 
-.tfs-hint {
-    color: #475569;
-    font-size: 9.5px;
+.tf-scale {
+    position: absolute;
+    right: 20px;
+    bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    align-items: flex-end;
+    font-size: 11px;
+    color: #8d99a8;
+    pointer-events: none;
+}
+
+.tf-scale-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.tf-scale-row i {
+    display: block;
+    background: #cdd6e1;
+    border-radius: 2px;
+}
+
+.tf-hint {
+    position: absolute;
+    left: 20px;
+    bottom: 20px;
+    font-size: 11px;
+    color: #6b7684;
+    pointer-events: none;
+}
+
+.tf-tip {
+    position: absolute;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.12s;
+    background: rgba(8, 11, 17, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 8px;
+    padding: 9px 11px;
+    font-size: 12px;
     line-height: 1.5;
-    margin-top: 8px;
+    transform: translate(-50%, -115%);
+    white-space: nowrap;
+    z-index: 4;
+}
+
+.tf-tip b { color: #fff; }
+.tf-tip .n { color: #8d99a8; }
+
+.tf-flow {
+    fill: none;
+    stroke-linecap: round;
+    mix-blend-mode: screen;
+    pointer-events: none;
+}
+
+.tf-node { cursor: pointer; }
+.tf-label { pointer-events: none; }
+
+@keyframes tfdash {
+    from { stroke-dashoffset: 486; }
+    to { stroke-dashoffset: 0; }
+}
+
+/* Left-panel exporter list mirroring the mockup's 물동량 상위 rows. */
+.tf-routes {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.tf-route {
+    display: grid;
+    grid-template-columns: 14px 1fr auto;
+    align-items: center;
+    gap: 9px;
+    padding: 7px 6px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 12.5px;
+}
+
+.tf-route:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.tf-route.on {
+    background: rgba(93, 168, 255, 0.12);
+}
+
+.tf-route .tf-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+}
+
+.tf-route-lbl {
+    color: #cdd6e1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.tf-route-val {
+    font-size: 11.5px;
+    color: #8d99a8;
+    font-variant-numeric: tabular-nums;
 }
 
 /* Trade mode dims the panel chrome so the flows stay the hero. */

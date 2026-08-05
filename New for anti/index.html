@@ -12,9 +12,13 @@
     
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    
+
+    <!-- D3 + topojson: flat SVG trade-flow map (trade-flow.js) -->
+    <script src="https://unpkg.com/d3@7.9.0/dist/d3.min.js" integrity="sha384-CjloA8y00+1SDAUkjs099PVfnY2KmDC2BZnws9kh8D/lX1s46w6EPhpXdqMfjK6i" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/topojson-client@3.1.0/dist/topojson-client.min.js" integrity="sha384-Ukv1p/xTma6P4/2bY5KzWBw+ydSpXmhCMtyciIQVDJ1RmOxtCYNMF1uXT9T63H67" crossorigin="anonymous"></script>
+
     <!-- Custom Styles -->
-    <link rel="stylesheet" href="style.css?v=14">
+    <link rel="stylesheet" href="style.css?v=15">
 </head>
 <body>
     <div id="app">
@@ -129,6 +133,12 @@
                     </div>
                 </div>
 
+                <!-- Top exporters by volume (trade views only) -->
+                <div class="panel-section hidden" id="trade-routes-panel">
+                    <p class="section-title">주요 수출국 · 물동량 상위</p>
+                    <div id="trade-routes-list" class="tf-routes"></div>
+                </div>
+
                 <!-- News Panel -->
                 <div class="panel-section hidden" id="news-panel">
                     <p class="section-title">주요 지역 뉴스 (국가 선택)</p>
@@ -163,26 +173,8 @@
                     </div>
                 </div>
 
-                <!-- Trade flow chrome (origin-continent legend + volume scale) -->
-                <div id="trade-map-chrome" class="trade-map-chrome hidden" aria-hidden="true">
-                    <div class="trade-flow-legend">
-                        <span class="tfl-label">수출 권역</span>
-                        <div class="tfl-items">
-                            <span class="tfl-item"><i style="background:#e8388a"></i>북아메리카</span>
-                            <span class="tfl-item"><i style="background:#f2743d"></i>남아메리카</span>
-                            <span class="tfl-item"><i style="background:#f2c53d"></i>아프리카</span>
-                            <span class="tfl-item"><i style="background:#42c164"></i>유럽</span>
-                            <span class="tfl-item"><i style="background:#3273e6"></i>아시아</span>
-                            <span class="tfl-item"><i style="background:#7b3fd4"></i>오세아니아</span>
-                        </div>
-                    </div>
-                    <div class="trade-flow-scale">
-                        <div class="tfs-row"><i style="width:18px;height:1px"></i><span>소량</span></div>
-                        <div class="tfs-row"><i style="width:22px;height:3px"></i><span>중간</span></div>
-                        <div class="tfs-row"><i style="width:26px;height:6px"></i><span>대량 루트</span></div>
-                        <p class="tfs-hint">굵기·밝기 = 물동량 · 색 = 수출 권역 · 점 = 흐름</p>
-                    </div>
-                </div>
+                <!-- Flat D3 trade-flow map (mounted by trade-flow.js) -->
+                <div id="trade-flow-stage" class="trade-flow-stage hidden" aria-hidden="true"></div>
 
                 <!-- Placeholder for other views (charts, etc) -->
                 <div id="chart-view" class="hidden">
@@ -313,8 +305,10 @@
     </div>
 
     <!-- Data and App Logic -->
+    <script src="ocean_layers.js?v=2"></script>
     <script src="data.js?v=3"></script>
     <script src="shipping.js?v=5"></script>
-    <script src="app.js?v=14"></script>
+    <script src="trade-flow.js?v=1"></script>
+    <script src="app.js?v=17"></script>
 </body>
 </html>

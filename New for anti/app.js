@@ -1,5 +1,5 @@
 // Application Logic for Global Trade Dashboard
-const { DeckGL, LineLayer, ArcLayer, ScatterplotLayer, GeoJsonLayer, _GlobeView, MapView,
+const { DeckGL, ScatterplotLayer, GeoJsonLayer, _GlobeView, MapView,
         WebMercatorViewport } = deck;
 
 // DOM Elements
@@ -194,59 +194,13 @@ const deckgl = new DeckGL({
     }
 });
 
-// Tooltip handler
-const handleHover = (info) => {
-    if (info.object) {
-        const { sourceName, targetName, volume, percentage } = info.object;
-        tooltipEl.style.left = `${info.x}px`;
-        tooltipEl.style.top = `${info.y}px`;
-        tooltipEl.classList.remove('hidden');
-        
-        tooltipEl.innerHTML = `
-            <div class="tooltip-title">${sourceName} → ${targetName}</div>
-            <div class="tooltip-stat">
-                <span>무역량:</span>
-                <span style="color: #38bdf8; font-weight: bold;">${volume} ${currentCommodity === 'oil' ? 'M bpd' : (currentCommodity === 'gold' || currentCommodity === 'silver' ? 'Tonnes' : 'Mt')}</span>
-            </div>
-            ${info.object.typeName !== "General" ? `
-            <div class="tooltip-stat">
-                <span>분류:</span>
-                <span>${info.object.typeName}</span>
-            </div>` : ''}
-            <div class="tooltip-stat">
-                <span>비중/상대규모:</span>
-                <span>${percentage}%</span>
-            </div>
-        `;
-    } else {
-        tooltipEl.classList.add('hidden');
-    }
-};
-
-const handleNodeClick = (info) => {
-    if (info.object) {
-        selectedCountry = info.object.name;
-        if (currentCommodity === 'climate') {
-            updateForecastPanel(selectedCountry).catch(err =>
-                console.error('[Forecast] panel update failed', err));
-        } else {
-            updateNewsPanel(selectedCountry);
-            updateCountryStatsPanel(selectedCountry);
-        }
-    }
-};
-
-const handleLineClick = (info) => {
-    if (info.object) {
-        selectedCountry = info.object.sourceName;
-        if (currentCommodity === 'climate') {
-            updateForecastPanel(selectedCountry).catch(err =>
-                console.error('[Forecast] panel update failed', err));
-        } else {
-            updateNewsPanel(selectedCountry);
-            updateCountryStatsPanel(selectedCountry);
-        }
-    }
+// Commodity map picking now lives in trade-flow.js (SVG); the deck.gl arc
+// hover/click handlers that used to sit here went with the deck trade path.
+const selectTradeCountry = (countryName) => {
+    if (!countryName) return;
+    selectedCountry = countryName;
+    updateNewsPanel(countryName);
+    updateCountryStatsPanel(countryName);
 };
 
 const updateCountryStatsPanel = async (countryName) => {
@@ -2039,7 +1993,7 @@ const renderClimateWorldLeft = async () => {
     forecastContentEl.innerHTML = `
         <div class="climate-scroll">
             <div class="climate-card">
-                <h3>ENSO · Niño 3.4 (NOAA CPC seed)</h3>
+                <h3>ENSO · Niño 3.4 (NOAA CPC${enso.latest_season ? ` · ${enso.latest_season}` : ''})</h3>
                 <div class="climate-big ${enso.latest_c < 0 ? 'neg' : 'pos'}">
                     ${enso.latest_c != null ? (enso.latest_c > 0 ? '+' : '') + enso.latest_c.toFixed(1) + '°C' : '—'}
                 </div>
@@ -2058,12 +2012,24 @@ const renderClimateWorldLeft = async () => {
                 <div class="climate-sub">${iod.note_ko || ''}</div>
             </div>
             <div class="climate-card">
-                <h3>북대서양 SST (요약 seed)</h3>
+                <h3>북대서양 SST 편차${amo.obs_date ? ` (${amo.obs_date})` : ''}</h3>
                 <div class="climate-metric-row">
                     <span class="nm">${amo.index || 'AMO'}</span>
                     <span class="vl">${amo.anomaly_c != null ? ((amo.anomaly_c>=0?'+':'') + amo.anomaly_c.toFixed(2) + '°C') : '—'}</span>
                 </div>
-                <div class="climate-sub">${amo.state_ko || ''} · 시계열 연동 예정</div>
+                ${amo.subpolar_gyre_anom_c != null ? `
+                <div class="climate-metric-row">
+                    <span class="nm">아극환류 (cold blob 해역)</span>
+                    <span class="vl">${(amo.subpolar_gyre_anom_c>=0?'+':'') + amo.subpolar_gyre_anom_c.toFixed(2)}°C</span>
+                </div>` : ''}
+                ${amo.labrador_anom_c != null ? `
+                <div class="climate-metric-row">
+                    <span class="nm">래브라도해</span>
+                    <span class="vl">${(amo.labrador_anom_c>=0?'+':'') + amo.labrador_anom_c.toFixed(2)}°C</span>
+                </div>` : ''}
+                <div class="climate-sub">${amo.state_ko || ''}${amo.nao?.latest != null
+                    ? ` · NAO ${(amo.nao.latest>=0?'+':'') + amo.nao.latest.toFixed(2)}` : ''}</div>
+                <div class="climate-sub" style="margin-top:4px;color:#64748b;">관측값 · 예측 아님 (배경 컨텍스트)</div>
             </div>
             <div class="climate-card">
                 <h3>대륙 평균 기온 편차 (${g?.continent_temp_anomaly?.baseline || 'baseline'})</h3>
@@ -2087,7 +2053,8 @@ const renderClimateWorldLeft = async () => {
                 }).join('') || '<div class="climate-sub">도시 seed 없음</div>'}
             </div>
             <p style="font-size:10px;color:#64748b;line-height:1.5;">
-                지수 seed: <code>climate_global_v1.json</code>. 상세 시계열·파생상품 풀셋은 이후 갱신.
+                ENSO·IOD·북대서양 = NOAA 실관측 (<code>scripts/climate_ocean</code>).
+                도시 기온·파생상품은 아직 seed.
             </p>
         </div>`;
 };
@@ -2142,6 +2109,8 @@ const showClimateWorld = async () => {
 
     climateSelectedRegion = null;
     setClimateMapLegend('world');
+    // 범례는 innerHTML 로 갈아끼워지므로 매번 해양 토글을 다시 붙인다.
+    if (window.OceanLayers) window.OceanLayers.mountLegend(climateMapLegendEl);
     await renderClimateWorldLeft();
     await renderClimateWorldRight();
     if (climateRightPanelEl) climateRightPanelEl.classList.remove('hidden');
@@ -2187,6 +2156,9 @@ const showClimateWorld = async () => {
             }
         },
         layers: [
+            // 해양 SST 편차 래스터 (ocean_layers.js). 국가 폴리곤보다 먼저 깔려야
+            // 육지가 위를 덮는다. 토글이 꺼져 있으면 빈 배열이라 비용 0.
+            ...(window.OceanLayers ? window.OceanLayers.buildLayers() : []),
             new GeoJsonLayer({
                 id: 'climate-countries',
                 data: COUNTRIES_GEOJSON,
@@ -2241,6 +2213,13 @@ const showClimateWorld = async () => {
     }
 };
 window.showClimateWorld = showClimateWorld;
+
+// 해양 레이어 토글 → 세계지도 재렌더. 기후 세계 화면에 있을 때만 반응한다.
+if (window.OceanLayers) {
+    window.OceanLayers.onChange = () => {
+        if (currentCommodity === 'climate' && climateLevel === 'world') showClimateWorld();
+    };
+}
 
 const showClimateTooltip = async (info, name, cfg) => {
     const s = await climateCountrySummary(cfg);
@@ -2756,500 +2735,62 @@ const updateForecastPanel = async (regionName) => {
 };
 
 // ── Trade flow map (flat 2D only) ──────────────────────────────────────────
-// Design refs: density heat (width+opacity hierarchy), Global Migration
-// (origin-continent color, translucent overlapping arcs), World Migrations
-// (volume → thickness, directional curve). Dark product shell → luminous arcs.
-// Climate / Globe home NEVER go through this path.
+// Commodity views are rendered by trade-flow.js: a flat D3/SVG equirectangular
+// map with antimeridian-split arcs, edge bundling, dash / highlight animation
+// and migration-style focus ribbons. deck.gl keeps the home globe and the
+// climate views; it is emptied and hidden while a trade view is on screen.
 
-const CONTINENT_META = {
-    NA: { name: '북아메리카', rgb: [232, 56, 138], c: '#e8388a' },
-    SA: { name: '남아메리카', rgb: [242, 116, 61], c: '#f2743d' },
-    AF: { name: '아프리카', rgb: [242, 197, 61], c: '#f2c53d' },
-    EU: { name: '유럽', rgb: [66, 193, 100], c: '#42c164' },
-    AS: { name: '아시아', rgb: [50, 115, 230], c: '#3273e6' },
-    OC: { name: '오세아니아', rgb: [123, 63, 212], c: '#7b3fd4' }
+const tradeStageEl = document.getElementById('trade-flow-stage');
+const tradeRoutesPanelEl = document.getElementById('trade-routes-panel');
+const tradeRoutesListEl = document.getElementById('trade-routes-list');
+
+const tradeUnit = (key) => {
+    if (key === 'oil') return 'M bpd';
+    if (key === 'gold' || key === 'silver') return 'Tonnes';
+    return 'Mt';
 };
 
-// Lon/lat fallback when country name is unknown (rough M49-style bins).
-const continentFromLonLat = (lon, lat) => {
-    if (lon == null || lat == null || Number.isNaN(lon) || Number.isNaN(lat)) return 'AS';
-    if (lat < -10 && lon >= 110 && lon <= 180) return 'OC';
-    if (lat < -10 && lon >= -180 && lon < -120) return 'OC';
-    if (lon >= -170 && lon <= -25) {
-        if (lat >= 12) return 'NA';
-        if (lat >= 7 && lon >= -90 && lon <= -60) return 'NA';
-        return 'SA';
-    }
-    // Europe vs Africa / Middle East
-    if (lon >= -25 && lon < 40 && lat >= 36) return 'EU';
-    if (lon >= -20 && lon < 52 && lat < 37) return 'AF';
-    if (lon >= 110 && lat >= -50 && lat < -10) return 'OC';
-    return 'AS';
-};
-
-const CONTINENT_BY_NAME = {
-    // North America
-    'United States': 'NA', 'USA': 'NA', 'Canada': 'NA', 'Mexico': 'NA',
-    // South America
-    'Brazil': 'SA', 'Argentina': 'SA', 'Chile': 'SA', 'Colombia': 'SA',
-    'Peru': 'SA', 'Venezuela': 'SA', 'Ecuador': 'SA', 'Uruguay': 'SA',
-    'Paraguay': 'SA', 'Bolivia': 'SA', 'Guyana': 'SA',
-    // Europe
-    'Russia': 'EU', 'Germany': 'EU', 'France': 'EU', 'United Kingdom': 'EU',
-    'Netherlands': 'EU', 'Italy': 'EU', 'Spain': 'EU', 'Belgium': 'EU',
-    'Poland': 'EU', 'Norway': 'EU', 'Sweden': 'EU', 'Finland': 'EU',
-    'Switzerland': 'EU', 'Austria': 'EU', 'Portugal': 'EU', 'Greece': 'EU',
-    'Czechia': 'EU', 'Czech Republic': 'EU', 'Romania': 'EU', 'Ukraine': 'EU',
-    'Ireland': 'EU', 'Denmark': 'EU', 'Hungary': 'EU', 'Turkey': 'EU',
-    // Africa
-    'Nigeria': 'AF', 'South Africa': 'AF', 'Egypt': 'AF', 'Angola': 'AF',
-    'Algeria': 'AF', 'Libya': 'AF', 'Morocco': 'AF', 'Ghana': 'AF',
-    'Kenya': 'AF', 'Ethiopia': 'AF', 'Mozambique': 'AF', 'Tanzania': 'AF',
-    // Asia / Middle East
-    'China': 'AS', 'India': 'AS', 'Japan': 'AS', 'South Korea': 'AS',
-    'Korea': 'AS', 'Taiwan': 'AS', 'Singapore': 'AS', 'Thailand': 'AS',
-    'Indonesia': 'AS', 'Malaysia': 'AS', 'Vietnam': 'AS', 'Philippines': 'AS',
-    'Pakistan': 'AS', 'Bangladesh': 'AS', 'Saudi Arabia': 'AS',
-    'United Arab Emirates': 'AS', 'UAE': 'AS', 'Iraq': 'AS', 'Iran': 'AS',
-    'Kuwait': 'AS', 'Qatar': 'AS', 'Oman': 'AS', 'Kazakhstan': 'AS',
-    'Azerbaijan': 'AS', 'Israel': 'AS',
-    // Oceania
-    'Australia': 'OC', 'New Zealand': 'OC', 'Papua New Guinea': 'OC'
-};
-
-const originContinent = (name, pos) => {
-    if (name && CONTINENT_BY_NAME[name]) return CONTINENT_BY_NAME[name];
-    if (pos && pos.length >= 2) return continentFromLonLat(pos[0], pos[1]);
-    return 'AS';
-};
-
-const continentColor = (key, alpha = 255) => {
-    const rgb = (CONTINENT_META[key] || CONTINENT_META.AS).rgb;
-    return [rgb[0], rgb[1], rgb[2], Math.max(0, Math.min(255, Math.round(alpha)))];
-};
-
-// Spherical lerp for particles that follow great-circle style arcs.
-const slerpLonLat = (a, b, t) => {
-    if (!a || !b) return a || b || [0, 0];
-    const lat1 = a[1] * Math.PI / 180;
-    const lon1 = a[0] * Math.PI / 180;
-    const lat2 = b[1] * Math.PI / 180;
-    const lon2 = b[0] * Math.PI / 180;
-    const d = 2 * Math.asin(Math.min(1, Math.sqrt(
-        Math.sin((lat2 - lat1) / 2) ** 2
-        + Math.cos(lat1) * Math.cos(lat2) * Math.sin((lon2 - lon1) / 2) ** 2
-    )));
-    if (d < 1e-9) return [a[0], a[1]];
-    const u = Math.sin((1 - t) * d) / Math.sin(d);
-    const v = Math.sin(t * d) / Math.sin(d);
-    const x = u * Math.cos(lat1) * Math.cos(lon1) + v * Math.cos(lat2) * Math.cos(lon2);
-    const y = u * Math.cos(lat1) * Math.sin(lon1) + v * Math.cos(lat2) * Math.sin(lon2);
-    const z = u * Math.sin(lat1) + v * Math.sin(lat2);
-    return [
-        Math.atan2(y, x) * 180 / Math.PI,
-        Math.atan2(z, Math.sqrt(x * x + y * y)) * 180 / Math.PI
-    ];
-};
-
-const generateNodeData = (arcs) => {
-    const agg = new Map();
-    arcs.forEach((arc) => {
-        const bump = (name, pos, role) => {
-            if (!name || !pos) return;
-            let row = agg.get(name);
-            if (!row) {
-                row = {
-                    name,
-                    coordinates: pos,
-                    totalTrade: 0,
-                    exportVol: 0,
-                    importVol: 0,
-                    cont: originContinent(name, pos)
-                };
-                agg.set(name, row);
-            }
-            row.totalTrade += arc.volume || 0;
-            if (role === 'ex') row.exportVol += arc.volume || 0;
-            else row.importVol += arc.volume || 0;
-        };
-        bump(arc.sourceName, arc.sourcePosition, 'ex');
-        bump(arc.targetName, arc.targetPosition, 'im');
-    });
-
-    const scaleFactor = currentCommodity === 'gold' ? 40 : 16;
-    return Array.from(agg.values()).map((row) => {
-        const isExporter = row.exportVol >= row.importVol;
-        return {
-            ...row,
-            isExporter,
-            radius: Math.max(18000, Math.sqrt(row.totalTrade + 1) * scaleFactor * 180),
-            color: continentColor(row.cont, isExporter ? 230 : 200)
-        };
-    });
-};
-
-// Cap on rendered routes. A global commodity query returns 300+ valid routes;
-// this keeps the map readable without silently hiding mid-sized trade flows.
-const MAX_RENDERED_ARCS = 220;
-const MAX_TRAIL_ARCS = 36;
-const TRAIL_PARTICLES = 3;
-
-// Framing for the flat commodity map. The globe runs at GLOBE_ZOOM, which is far
-// too tight for a world map, so the view has to be reset on the way in.
-const FLAT_VIEW_STATE = { longitude: 10, latitude: 15, zoom: 1.35, pitch: 0, bearing: 0 };
-
-let tradeAnimRaf = null;
-let tradeAnimPhase = 0;
-let tradeAnimSnapshot = null; // { commodity, baseLayers, trailArcs, nodeData }
-
-const isTradeCommodity = (key) => !!(key && window.TradeData && window.TradeData[key]);
-
-const stopTradeFlowAnim = () => {
-    if (tradeAnimRaf !== null) {
-        cancelAnimationFrame(tradeAnimRaf);
-        tradeAnimRaf = null;
-    }
-    tradeAnimSnapshot = null;
-};
-
+// Shows/hides the SVG stage and parks the deck canvas behind it. Panel display
+// itself stays with togglePanels(), which other views also drive.
 const setTradeMapChrome = (visible) => {
-    const chrome = document.getElementById('trade-map-chrome');
-    if (chrome) {
-        if (visible) chrome.classList.remove('hidden');
-        else chrome.classList.add('hidden');
-    }
     document.body.classList.toggle('trade-flow-mode', !!visible);
+    if (tradeStageEl) {
+        tradeStageEl.classList.toggle('hidden', !visible);
+        tradeStageEl.setAttribute('aria-hidden', visible ? 'false' : 'true');
+    }
+    if (tradeRoutesPanelEl) tradeRoutesPanelEl.classList.toggle('hidden', !visible);
     const coalLegend = document.getElementById('coal-legend');
     if (coalLegend && visible) coalLegend.classList.add('hidden');
 };
 
-const prepareTradeArcs = (arcs) => {
-    const vols = arcs.map((a) => a.volume || 0).filter((v) => v > 0);
-    const maxV = vols.length ? Math.max(...vols) : 1;
-    const minV = vols.length ? Math.min(...vols) : 0;
-    // Percentile-ish mid for opacity curve (avoid one mega-route dominating colors).
-    const sorted = [...vols].sort((a, b) => a - b);
-    const p90 = sorted[Math.floor(sorted.length * 0.9)] || maxV;
-
-    return arcs.map((arc, i) => {
-        const v = arc.volume || 0;
-        const t = maxV > minV ? (v - minV) / (maxV - minV) : 0.5;
-        // sqrt hierarchy: thin veil for low volume, thick luminous for high (ref 1 + 3)
-        const tSqrt = Math.sqrt(Math.max(0, Math.min(1, t)));
-        const cont = originContinent(arc.sourceName, arc.sourcePosition);
-        // Opacity 0.22–0.92 by volume; high routes brighter
-        const alpha = 55 + tSqrt * 180;
-        // Width px: hairline → trunk
-        const width = 0.45 + tSqrt * 7.2;
-        const rgb = CONTINENT_META[cont]?.rgb || CONTINENT_META.AS.rgb;
-        // Slight brighten toward white on mega-flows (density heat tip without rainbow noise)
-        const glow = tSqrt > 0.85 ? (tSqrt - 0.85) / 0.15 : 0;
-        const src = [
-            Math.round(rgb[0] + (255 - rgb[0]) * glow * 0.45),
-            Math.round(rgb[1] + (255 - rgb[1]) * glow * 0.45),
-            Math.round(rgb[2] + (255 - rgb[2]) * glow * 0.25),
-            Math.round(alpha)
-        ];
-        const tgt = [
-            Math.round(Math.min(255, src[0] + 18)),
-            Math.round(Math.min(255, src[1] + 24)),
-            Math.round(Math.min(255, src[2] + 30)),
-            Math.round(Math.min(255, alpha + 20))
-        ];
-        return {
-            ...arc,
-            cont,
-            tNorm: tSqrt,
-            width,
-            sourceColor: src,
-            targetColor: tgt,
-            // Gentle 2D bow — keep pitch 0 MapView, short height (not GlobeView)
-            height: 0.12 + tSqrt * 0.38,
-            _idx: i,
-            _isHot: v >= p90 * 0.55 || i < MAX_TRAIL_ARCS
-        };
-    });
-};
-
-const buildTradeParticles = (trailArcs, phase) => {
-    const particles = [];
-    trailArcs.forEach((arc, ai) => {
-        for (let p = 0; p < TRAIL_PARTICLES; p++) {
-            // Multiplier, not a fraction: phase already spans 0..1 per cycle, so a
-            // sub-1 factor would leave every particle parked near its offset.
-            const speed = 1 + arc.tNorm * 0.85;
-            const t = (phase * speed + p / TRAIL_PARTICLES + ai * 0.017) % 1;
-            // Lead particle brighter
-            const lead = p === 0 ? 1 : 0.55;
-            const pos = slerpLonLat(arc.sourcePosition, arc.targetPosition, t);
-            particles.push({
-                position: pos,
-                radius: 18000 + arc.tNorm * 42000,
-                color: [
-                    arc.sourceColor[0],
-                    arc.sourceColor[1],
-                    arc.sourceColor[2],
-                    Math.round((140 + arc.tNorm * 100) * lead)
-                ],
-                // Soft white head for high volume (density-flow tip)
-                core: arc.tNorm > 0.7
-            });
-        }
-    });
-    return particles;
-};
-
-const buildTradePulseNodes = (nodeData, phase) => {
-    const pulse = 0.55 + 0.45 * (0.5 + 0.5 * Math.sin(phase * Math.PI * 2));
-    return nodeData
-        .filter((n) => n.totalTrade > 0)
-        .slice(0, 48)
-        .map((n) => ({
-            ...n,
-            pulseRadius: n.radius * (1.25 + pulse * 0.5),
-            pulseColor: continentColor(n.cont, Math.round(18 + pulse * 34))
-        }));
-};
-
-const commitTradeLayers = (phase) => {
-    if (!tradeAnimSnapshot || currentCommodity !== tradeAnimSnapshot.commodity) {
-        stopTradeFlowAnim();
-        return;
-    }
-    if (!isTradeCommodity(currentCommodity)) {
-        stopTradeFlowAnim();
-        return;
-    }
-
-    const { baseLayers, trailArcs, nodeData, commodity } = tradeAnimSnapshot;
-    const particles = buildTradeParticles(trailArcs, phase);
-    const pulseNodes = buildTradePulseNodes(nodeData, phase);
-
-    const flowParticles = new ScatterplotLayer({
-        id: `trade-flow-particles-${commodity}`,
-        data: particles,
-        pickable: false,
-        opacity: 0.95,
-        stroked: false,
-        filled: true,
-        radiusMinPixels: 1.5,
-        radiusMaxPixels: 7,
-        getPosition: (d) => d.position,
-        getRadius: (d) => d.radius,
-        getFillColor: (d) => d.color,
-        updateTriggers: { getPosition: phase, getFillColor: phase }
-    });
-
-    const pulseLayer = new ScatterplotLayer({
-        id: `trade-node-pulse-${commodity}`,
-        data: pulseNodes,
-        pickable: false,
-        opacity: 0.45,
-        stroked: false,
-        filled: true,
-        radiusMinPixels: 4,
-        radiusMaxPixels: 18,
-        getPosition: (d) => d.coordinates,
-        getRadius: (d) => d.pulseRadius,
-        getFillColor: (d) => d.pulseColor,
-        updateTriggers: { getRadius: phase, getFillColor: phase }
-    });
-
-    // Hot-route highlight trail (white dash head) — migration “flow motion”
-    const highlightArcs = new ArcLayer({
-        id: `trade-arc-highlight-${commodity}`,
-        data: trailArcs,
-        pickable: false,
-        greatCircle: true,
-        numSegments: 48,
-        getWidth: (d) => Math.max(0.6, d.width * 0.42),
-        getSourcePosition: (d) => d.sourcePosition,
-        getTargetPosition: (d) => d.targetPosition,
-        getHeight: (d) => d.height,
-        getSourceColor: (d) => {
-            const head = 0.35 + 0.65 * (0.5 + 0.5 * Math.sin((phase + d._idx * 0.05) * Math.PI * 2));
-            return [255, 255, 255, Math.round(30 + head * 140 * d.tNorm)];
-        },
-        getTargetColor: (d) => {
-            const head = 0.35 + 0.65 * (0.5 + 0.5 * Math.cos((phase + d._idx * 0.05) * Math.PI * 2));
-            return [
-                d.sourceColor[0],
-                d.sourceColor[1],
-                d.sourceColor[2],
-                Math.round(20 + head * 100 * d.tNorm)
-            ];
-        },
-        updateTriggers: {
-            getSourceColor: phase,
-            getTargetColor: phase
-        }
-    });
-
-    deckgl.setProps({
-        layers: [
-            ...baseLayers,
-            highlightArcs,
-            pulseLayer,
-            flowParticles
-        ]
-    });
-};
-
-let tradeAnimLastFrame = 0;
-
-const tradeAnimLoop = (ts) => {
-    if (!tradeAnimSnapshot || !isTradeCommodity(currentCommodity)) {
-        tradeAnimRaf = null;
-        return;
-    }
-    // Rebuilding every layer at display refresh rate burns GPU for motion the eye
-    // cannot resolve on a 13s loop, so cap the rebuild at ~30fps.
-    if (ts - tradeAnimLastFrame >= 33) {
-        tradeAnimLastFrame = ts;
-        // full cycle ~13s for slow elegant flow
-        tradeAnimPhase = (ts * 0.000075) % 1;
-        commitTradeLayers(tradeAnimPhase);
-    }
-    tradeAnimRaf = requestAnimationFrame(tradeAnimLoop);
-};
-
-const startTradeFlowAnim = () => {
-    if (tradeAnimRaf !== null) return;
-    tradeAnimRaf = requestAnimationFrame(tradeAnimLoop);
+// Called on every view change, including from climate/shipping/home, so the
+// SVG renderer never survives into a deck.gl view.
+const stopTradeFlowAnim = () => {
+    if (window.TradeFlowMap) window.TradeFlowMap.unmount();
+    if (tradeRoutesListEl) tradeRoutesListEl.innerHTML = '';
+    setTradeMapChrome(false);
 };
 
 const renderMapLayers = (arcs) => {
     // Commodity path only — caller must not invoke for climate/shipping/home.
-    stopTradeFlowAnim();
-
-    // Drop only empty routes, then cap by size. The old `percentage >= 1` filter
-    // discarded ~95% of real routes because one mega-route dominates each commodity.
-    const filtered = (arcs || [])
-        .filter((arc) => arc && arc.volume > 0)
-        .slice(0, MAX_RENDERED_ARCS);
-
-    const prepared = prepareTradeArcs(filtered);
-    // Draw low-volume first so high-volume trunks paint on top (density hero).
-    prepared.sort((a, b) => a.tNorm - b.tNorm);
-
-    const nodeData = generateNodeData(prepared)
-        .filter((n) => n.coordinates && n.coordinates.length >= 2);
-
-    const trailArcs = [...prepared]
-        .sort((a, b) => b.volume - a.volume)
-        .slice(0, MAX_TRAIL_ARCS);
-
-    // Borders secondary: soft land fill + hairline stroke (migration maps).
-    const countriesLayer = new GeoJsonLayer({
-        id: 'trade-countries-layer',
-        data: 'https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json',
-        stroked: true,
-        filled: true,
-        pickable: false,
-        getFillColor: [22, 30, 42, 165],
-        getLineColor: [48, 60, 78, 95],
-        lineWidthMinPixels: 0.4,
-        lineWidthMaxPixels: 1.2
-    });
-
-    // Base arcs: origin-continent color, volume → width + opacity (refs 1–3).
-    const arcLayer = new ArcLayer({
-        id: `trade-arc-layer-${currentCommodity}`,
-        data: prepared,
-        pickable: true,
-        greatCircle: true,
-        numSegments: 64,
-        getWidth: (d) => d.width,
-        widthMinPixels: 0.4,
-        widthMaxPixels: 14,
-        getSourcePosition: (d) => d.sourcePosition,
-        getTargetPosition: (d) => d.targetPosition,
-        getSourceColor: (d) => d.sourceColor,
-        getTargetColor: (d) => d.targetColor,
-        getHeight: (d) => d.height,
-        onHover: handleHover,
-        onClick: handleLineClick,
-        autoHighlight: true,
-        highlightColor: [255, 255, 255, 180]
-    });
-
-    // Nodes as small dots (density-network ref); export hubs filled with cont color.
-    const nodeLayer = new ScatterplotLayer({
-        id: `trade-nodes-${currentCommodity}`,
-        data: nodeData,
-        pickable: true,
-        opacity: 0.95,
-        stroked: true,
-        filled: true,
-        radiusMinPixels: 2,
-        radiusMaxPixels: 9,
-        lineWidthMinPixels: 1,
-        getPosition: (d) => d.coordinates,
-        getRadius: (d) => d.radius,
-        getFillColor: (d) => (d.isExporter
-            ? continentColor(d.cont, 220)
-            : [12, 16, 24, 230]),
-        getLineColor: (d) => (d.isExporter
-            ? [240, 248, 255, 200]
-            : continentColor(d.cont, 210)),
-        onClick: handleNodeClick,
-        onHover: (info) => {
-            if (info.object) {
-                tooltipEl.style.left = `${info.x}px`;
-                tooltipEl.style.top = `${info.y}px`;
-                tooltipEl.classList.remove('hidden');
-                const unit = currentCommodity === 'oil' ? 'M bpd'
-                    : (currentCommodity === 'gold' || currentCommodity === 'silver' ? 'Tonnes' : 'Mt');
-                tooltipEl.innerHTML = `
-                    <div class="tooltip-title">${info.object.name}</div>
-                    <div class="tooltip-stat"><span>권역</span>
-                    <span style="color:${CONTINENT_META[info.object.cont]?.c || '#5fa8ff'}">${CONTINENT_META[info.object.cont]?.name || '—'}</span></div>
-                    <div class="tooltip-stat"><span>합산 교역</span>
-                    <span style="color:#5fa8ff;font-weight:600">${info.object.totalTrade.toLocaleString()} ${unit}</span></div>
-                    <div class="tooltip-stat"><span>수출 / 수입</span>
-                    <span>${info.object.exportVol.toLocaleString()} / ${info.object.importVol.toLocaleString()}</span></div>
-                `;
-            } else if (!info.picked) {
-                // leave hide to arc hover when nothing under cursor
-                tooltipEl.classList.add('hidden');
-            }
-        }
-    });
-
-    // Force flat MapView — never GlobeView on trade commodities.
     stopRotation();
-    currentViewState = {
-        ...FLAT_VIEW_STATE,
-        pitch: 0,
-        bearing: 0,
-        // Preserve user pan/zoom if already on trade map for same commodity frame
-        ...(deckgl.props?.viewState && isTradeCommodity(currentCommodity)
-            ? {}
-            : {})
-    };
-    // Always reset framing when first painting commodity (keep zoom consistent).
-    currentViewState = { ...FLAT_VIEW_STATE };
-
-    const baseLayers = [countriesLayer, arcLayer, nodeLayer];
-
-    tradeAnimSnapshot = {
-        commodity: currentCommodity,
-        baseLayers,
-        trailArcs,
-        nodeData
-    };
-
+    deckgl.setProps({ layers: [] });
     setTradeMapChrome(true);
-    deckgl.setProps({
-        views: [new MapView({ id: 'mapview', controller: true })],
-        viewState: currentViewState,
-        controller: true,
-        layers: baseLayers
-    });
 
-    // Kick animation (particles + pulse + highlight sweep)
-    commitTradeLayers(0);
-    startTradeFlowAnim();
+    if (!window.TradeFlowMap || !tradeStageEl) {
+        console.warn('[Trade] TradeFlowMap unavailable');
+        return;
+    }
+
+    const commodity = currentCommodity;
+    window.TradeFlowMap.mount(tradeStageEl, {
+        arcs: (arcs || []).filter((a) => a && a.volume > 0),
+        commodity,
+        unit: tradeUnit(commodity),
+        meta: window.TradeData?.[commodity] || null,
+        routesEl: tradeRoutesListEl,
+        onCountrySelect: selectTradeCountry
+    });
 };
 
 const togglePanels = ({ macro = false, countryStats = false, news = false, forecast = false, climateRight = false, left = true, right = true, chart = false, map = true }) => {
@@ -3298,11 +2839,9 @@ const setView = (target) => {
         if (climateRightPanelEl) climateRightPanelEl.classList.add('hidden');
     }
 
-    // Trade flow chrome / rAF only live on commodity maps.
-    if (!window.TradeData?.[target]) {
-        stopTradeFlowAnim();
-        setTradeMapChrome(false);
-    }
+    // The SVG trade map never survives a view change -- commodity views
+    // re-mount it once their arcs are in, everything else stays on deck.gl.
+    stopTradeFlowAnim();
 
     // Reset active states
     navLinks.forEach(link => link.classList.remove('active'));
@@ -3316,8 +2855,6 @@ const setView = (target) => {
     if (target === 'home') {
         // Initial empty state
         currentCommodity = 'home';
-        stopTradeFlowAnim();
-        setTradeMapChrome(false);
         togglePanels({ macro: true, left: false });
         
         // No GeoJson globe layer here: filled countries with a neon-blue outline
@@ -3337,8 +2874,6 @@ const setView = (target) => {
 
     } else if (isShippingView) {
         currentCommodity = target;
-        stopTradeFlowAnim();
-        setTradeMapChrome(false);
         stopRotation();
         deckgl.setProps({ layers: [] });
         togglePanels({ left: false, right: false, chart: true, map: false });
@@ -3346,8 +2881,6 @@ const setView = (target) => {
 
     } else if (target === 'inst_intl' || target === 'inst_country') {
         currentCommodity = target;
-        stopTradeFlowAnim();
-        setTradeMapChrome(false);
         togglePanels({ forecast: true, left: true });
         
         deckgl.setProps({ layers: [] }); // Clear map
@@ -3398,8 +2931,6 @@ const setView = (target) => {
         topExporterEl.textContent = "-";
     } else if (target === 'climate') {
         currentCommodity = 'climate';
-        stopTradeFlowAnim();
-        setTradeMapChrome(false);
         setClimateCommodityHeader('climate');
         togglePanels({ forecast: true, climateRight: true, left: true, right: true });
         
@@ -3411,7 +2942,7 @@ const setView = (target) => {
         showClimateWorld();
 
     } else if (window.TradeData[target]) {
-        // Flat trade-flow map (MapView only — never GlobeView).
+        // Flat D3/SVG trade-flow map (trade-flow.js) — never deck.gl, never a globe.
         currentCommodity = target;
         setClimateCommodityHeader(null);
         if (coalLegend) coalLegend.classList.add('hidden');
@@ -3427,27 +2958,12 @@ const setView = (target) => {
         // Reset news and map
         updateNewsPanel('Global Market');
 
+        // Park deck.gl (globe rotation off, no layers) and show the empty SVG
+        // stage while the Comtrade routes are still in flight.
         const enterFlatTradeShell = () => {
             stopRotation();
+            deckgl.setProps({ layers: [] });
             setTradeMapChrome(true);
-            currentViewState = { ...FLAT_VIEW_STATE, pitch: 0, bearing: 0 };
-            deckgl.setProps({
-                views: [new MapView({ id: 'mapview', controller: true })],
-                viewState: currentViewState,
-                controller: true,
-                layers: [
-                    new GeoJsonLayer({
-                        id: 'trade-countries-loading',
-                        data: 'https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json',
-                        stroked: true,
-                        filled: true,
-                        pickable: false,
-                        getFillColor: [22, 30, 42, 165],
-                        getLineColor: [48, 60, 78, 95],
-                        lineWidthMinPixels: 0.4
-                    })
-                ]
-            });
         };
 
         // Lazy Loading: if arcs are empty, fetch real data from UN Comtrade
@@ -3481,8 +2997,6 @@ const setView = (target) => {
     } else {
         // Unsupported/Placeholder view
         currentCommodity = null;
-        stopTradeFlowAnim();
-        setTradeMapChrome(false);
         togglePanels({ chart: true, left: false, map: false });
         
         const categoryName = targetLink ? targetLink.textContent : target;
