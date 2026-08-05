@@ -14,7 +14,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
     <!-- Custom Styles -->
-    <link rel="stylesheet" href="style.css?v=11">
+    <link rel="stylesheet" href="style.css?v=14">
 </head>
 <body>
     <div id="app">
@@ -163,6 +163,27 @@
                     </div>
                 </div>
 
+                <!-- Trade flow chrome (origin-continent legend + volume scale) -->
+                <div id="trade-map-chrome" class="trade-map-chrome hidden" aria-hidden="true">
+                    <div class="trade-flow-legend">
+                        <span class="tfl-label">수출 권역</span>
+                        <div class="tfl-items">
+                            <span class="tfl-item"><i style="background:#e8388a"></i>북아메리카</span>
+                            <span class="tfl-item"><i style="background:#f2743d"></i>남아메리카</span>
+                            <span class="tfl-item"><i style="background:#f2c53d"></i>아프리카</span>
+                            <span class="tfl-item"><i style="background:#42c164"></i>유럽</span>
+                            <span class="tfl-item"><i style="background:#3273e6"></i>아시아</span>
+                            <span class="tfl-item"><i style="background:#7b3fd4"></i>오세아니아</span>
+                        </div>
+                    </div>
+                    <div class="trade-flow-scale">
+                        <div class="tfs-row"><i style="width:18px;height:1px"></i><span>소량</span></div>
+                        <div class="tfs-row"><i style="width:22px;height:3px"></i><span>중간</span></div>
+                        <div class="tfs-row"><i style="width:26px;height:6px"></i><span>대량 루트</span></div>
+                        <p class="tfs-hint">굵기·밝기 = 물동량 · 색 = 수출 권역 · 점 = 흐름</p>
+                    </div>
+                </div>
+
                 <!-- Placeholder for other views (charts, etc) -->
                 <div id="chart-view" class="hidden">
                     <div class="placeholder-content">
@@ -292,8 +313,8 @@
     </div>
 
     <!-- Data and App Logic -->
-    <script src="data.js?v=2"></script>
+    <script src="data.js?v=3"></script>
     <script src="shipping.js?v=5"></script>
-    <script src="app.js?v=11"></script>
+    <script src="app.js?v=14"></script>
 </body>
 </html>

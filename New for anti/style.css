@@ -1138,6 +1138,90 @@ body {
 @keyframes shipping-spin { to { transform: rotate(360deg); } }
 
 /* === CLIMATE DASHBOARD === */
+/* === TRADE FLOW MAP CHROME === */
+.trade-map-chrome {
+    position: absolute;
+    left: 16px;
+    bottom: 16px;
+    z-index: 8;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    pointer-events: none;
+    max-width: 320px;
+}
+
+.trade-flow-legend,
+.trade-flow-scale {
+    background: rgba(9, 14, 24, 0.82);
+    border: 1px solid rgba(148, 163, 184, 0.16);
+    border-radius: 10px;
+    padding: 11px 13px;
+    backdrop-filter: blur(6px);
+}
+
+.tfl-label {
+    display: block;
+    color: #64748b;
+    font-size: 9px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+}
+
+.tfl-items {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 5px 12px;
+}
+
+.tfl-item {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    color: #cbd5e1;
+    font-size: 10.5px;
+}
+
+.tfl-item i {
+    width: 14px;
+    height: 3px;
+    border-radius: 999px;
+    flex: none;
+    box-shadow: 0 0 6px currentColor;
+}
+
+.tfs-row {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    margin-bottom: 5px;
+}
+
+.tfs-row i {
+    background: linear-gradient(90deg, rgba(95, 168, 255, 0.25), rgba(226, 240, 255, 0.95));
+    border-radius: 999px;
+    flex: none;
+}
+
+.tfs-row span {
+    color: #94a3b8;
+    font-size: 10px;
+}
+
+.tfs-hint {
+    color: #475569;
+    font-size: 9.5px;
+    line-height: 1.5;
+    margin-top: 8px;
+}
+
+/* Trade mode dims the panel chrome so the flows stay the hero. */
+body.trade-flow-mode .left-pane,
+body.trade-flow-mode .right-pane {
+    background: rgba(9, 13, 22, 0.92);
+}
+
 .climate-map-legend {
     position: absolute;
     left: 16px;
@@ -1431,6 +1515,31 @@ body {
 .climate-region-active {
     outline: 1px solid rgba(56, 189, 248, 0.4);
     background: rgba(56, 189, 248, 0.08);
+}
+.climate-mini-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 11px;
+    color: #cbd5e1;
+}
+.climate-mini-table th,
+.climate-mini-table td {
+    text-align: left;
+    padding: 6px 4px;
+    border-bottom: 1px solid rgba(148, 163, 184, 0.12);
+    vertical-align: top;
+}
+.climate-mini-table th {
+    color: #64748b;
+    font-weight: 500;
+    font-size: 10px;
+}
+.climate-mini-table td.num {
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+.climate-mini-table tr:last-child td {
+    border-bottom: none;
 }
 .climate-back {
     cursor: pointer;

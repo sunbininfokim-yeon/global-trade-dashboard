@@ -287,6 +287,11 @@
 
     const ALL_M49_CODES = Object.keys(M49_MAP).join(",");
 
+    // Only set when previewing from a local static server, where /api/* is absent.
+    const COMTRADE_DEV_ORIGIN = /^(localhost|127\.0\.0\.1)$/.test(location.hostname)
+        ? 'https://global-trade-dashboard.sunbin-info-kim.workers.dev'
+        : '';
+
     // === Commodity API Configuration (HS Codes + Major Traders) ===
     // 출처: UN Comtrade (comtradeapi.un.org), HS Classification
     const COMMODITY_API_CONFIG = {
@@ -364,8 +369,16 @@
             // Reporter/partner list intentionally omitted: the Worker supplies
             // its own canonical list, so this request lands on exactly the
             // cache key the nightly warm-up wrote.
-            const proxyUrl = `/api/comtrade?hs=${config.hsCode}&period=2023`;
-            const res = await fetch(proxyUrl);
+            const query = `/api/comtrade?hs=${config.hsCode}&period=2023`;
+            let res = await fetch(query);
+
+            // A plain static file server has no /api route, so local previews
+            // would always paint an empty map. Fall back to the deployed Worker
+            // proxy for localhost only; the served origin keeps using itself.
+            if (!res.ok && COMTRADE_DEV_ORIGIN) {
+                console.warn(`[Comtrade] Local proxy ${res.status}; retrying via ${COMTRADE_DEV_ORIGIN}`);
+                res = await fetch(`${COMTRADE_DEV_ORIGIN}${query}`);
+            }
 
             if (!res.ok) {
                 console.warn(`[Comtrade] Proxy returned ${res.status} for ${commodityKey}`);
