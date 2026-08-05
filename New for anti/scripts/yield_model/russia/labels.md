@@ -35,3 +35,28 @@ Zone builders in `labels.py`:
 | Rosstat | SI |
 |---|---|
 | 1 c/ha (центнер/га) | 0.1 t/ha = **100 kg/ha** |
+
+---
+
+## Barley (Track B desired / INTERIM PSD this pass)
+
+| Mode | Source | Resolution |
+|---|---|---|
+| Track B (when CSV exists) | fedstat **31328** / EMISS ячмень | Oblast → zone |
+| **INTERIM (2026-08)** | USDA FAS PSD Russia Barley Yield ≤2024 | **National only** |
+
+Files (Track B drop):
+
+```text
+russia/training/oblast_barley_yields.csv[.template]
+russia/training/oblast_barley_sown_area.csv[.template]
+```
+
+Region keys: `southern_spring_barley`, `cbe_spring_barley`, `volga_spring_barley`.
+
+### Validation honesty
+
+- INTERIM attaches the **same national series** to each zone’s weather → **not** oblast Track B validation.
+- Positive skill vs trend under INTERIM can be **spurious** (Siberia etc. move national y).
+- `train.py` sets `label_resolution=national_psd_interim` and **refuses** `beats_trend` / usable for forecast even if raw skill > 0.
+- True Track B remains blocked until 31328 Excel lands (fedstat 403 from this environment; Zenodo empty; yearbook has no barley code).

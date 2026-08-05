@@ -213,3 +213,68 @@ def sunflower_features(daily, harvest_year, flower_months=None,
         "gdd_season": gdd_total(daily, y, 4, 15, tbase=6.0, horizon=150),
     }
     return feats
+
+
+def mean_tmax(daily, months, harvest_year):
+    w = _window(daily, months, harvest_year)
+    if w.empty:
+        return None
+    return float(w.tmax.mean())
+
+
+def gtk_selyaninov(daily, months, harvest_year, t_thr=10.0):
+    """
+    Selyaninov hydrothermal coefficient proxy:
+      precip_mm / (0.1 * Σ Tmean on days with Tmean > t_thr).
+    """
+    w = _window(daily, months, harvest_year)
+    if w.empty:
+        return None
+    tmean = w.tmean if "tmean" in w.columns else (w.tmax + w.tmin) / 2.0
+    warm = tmean > t_thr
+    if not warm.any():
+        return None
+    denom = 0.1 * float(tmean[warm].sum())
+    if denom <= 0:
+        return None
+    return float(w.precip.sum()) / denom
+
+
+def spring_barley_features(daily, harvest_year, heat_thr=28.0):
+    """
+    Spring-barley weather features (South / CBE / Volga).
+
+    Literature anchors (statistical, not WOFOST):
+      - Non-chernozem / Ob / Ryazan: May–Jul precip & GTK; June heat
+      - Altai GAU ML: Sep–Mar prior precip; monthly T/P
+      - MSU WOFOST RU barley hybrids — process benchmark only
+
+    Calendar (approx): sow Apr–May · critical moisture mid-May→Jul ·
+    harvest Jul–Aug (South earlier).
+    """
+    y = harvest_year
+    may = [(5, 0)]
+    jun = [(6, 0)]
+    jul = [(7, 0)]
+    may_jul = [(5, 0), (6, 0), (7, 0)]
+    jun_jul = [(6, 0), (7, 0)]
+    # Autumn–winter recharge before spring sowing (Altai ML prior)
+    sep_mar = [(9, -1), (10, -1), (11, -1), (12, -1), (1, 0), (2, 0), (3, 0)]
+
+    feats = {
+        "precip_may_jul": window_totals(daily, may_jul, y),
+        "precip_may": window_totals(daily, may, y),
+        "precip_jun": window_totals(daily, jun, y),
+        "precip_jul": window_totals(daily, jul, y),
+        "sm_may_jul": mean_gwetroot(daily, may_jul, y),
+        "sm_stress_may_jul": sm_stress_days(daily, may_jul, y, 0.25),
+        "gtk_may_jul": gtk_selyaninov(daily, may_jul, y),
+        "tmax_jun": mean_tmax(daily, jun, y),
+        "edd_jun_jul": heat_excess(daily, jun_jul, y, heat_thr),
+        "heat_days_jun_jul": heat_days(daily, jun_jul, y, heat_thr),
+        "vpd_may_jul": vpd_peak(daily, may_jul, y),
+        "gdd_season": gdd_total(daily, y, 4, 15, tbase=5.0, horizon=120),
+        "precip_sep_mar": window_totals(daily, sep_mar, y),
+        "radiation_may_jul": radiation_total(daily, may_jul, y),
+    }
+    return feats

@@ -182,9 +182,22 @@ def train_one(cfg):
     full_skill = (1 - best["rmse"] / best_baseline
                   if best_baseline > 0 else float("nan"))
     beats_trend = full_skill > 0 and recent_skill > 0
+    raw_beats_trend = bool(beats_trend)
+    label_res = getattr(cfg, "label_resolution", "") or ""
+    interim_labels = label_res == "national_psd_interim"
+    if interim_labels and beats_trend:
+        log("  NOTE: numerical skill > 0 but labels are national PSD interim — "
+            "refusing usable / beats_trend for forecast (not Track B).")
+        beats_trend = False
+    elif interim_labels:
+        log("  NOTE: national PSD interim labels — not Track B oblast validation.")
 
     if not beats_trend:
-        log("  VERDICT: does not beat trend-only out of sample.")
+        if interim_labels and raw_beats_trend:
+            log("  VERDICT: INTERIM only — raw skill positive but NOT usable "
+                "(national y vs zone weather).")
+        else:
+            log("  VERDICT: does not beat trend-only out of sample.")
     else:
         log(f"  VERDICT: beats trend by {full_skill:.1%} (all folds), "
             f"{recent_skill:.1%} (recent {RECENT_FOLDS}).")
@@ -210,6 +223,7 @@ def train_one(cfg):
         "target_label": cfg.target_label,
         "target_unit": cfg.target_unit,
         "label_source": cfg.label_source,
+        "label_resolution": label_res or None,
         "region_share": cfg.region_share,
         "caveat": cfg.caveat,
         "non_weather_drivers": cfg.non_weather_drivers,
@@ -230,6 +244,7 @@ def train_one(cfg):
                   "coef": final.coef_.tolist(),
                   "intercept": float(final.intercept_)},
         "beats_trend": bool(beats_trend),
+        "raw_beats_trend": raw_beats_trend,
         "recent_skill_vs_trend": float(recent_skill),
         "skill_vs_best_trend": float(full_skill),
         "best_trend_baseline_rmse": float(best_baseline),
@@ -242,8 +257,15 @@ def train_one(cfg):
             "basis": (
                 f"out-of-sample RMSE over last {RECENT_FOLDS} forward folds"
                 if beats_trend else
-                f"trend-only baseline RMSE over last {RECENT_FOLDS} folds "
-                "(model showed no skill)"),
+                (
+                    f"INTERIM PSD labels: not usable for zone forecast; "
+                    f"raw recent skill={recent_skill:+.1%}, "
+                    f"trend-only sigma used"
+                    if interim_labels else
+                    f"trend-only baseline RMSE over last {RECENT_FOLDS} folds "
+                    "(model showed no skill)"
+                )
+            ),
         },
         "validation": {k: {kk: vv for kk, vv in v.items() if kk != "features"}
                        for k, v in results.items()},
@@ -266,7 +288,12 @@ def main():
         f"{'sigma':>10}  verdict")
     log("-" * 84)
     for a in sorted(built, key=lambda x: -x["recent_skill_vs_trend"]):
-        tag = "usable" if a["beats_trend"] else "no skill - use trend"
+        if a.get("label_resolution") == "national_psd_interim":
+            tag = "INTERIM PSD — not Track B / not usable"
+        elif a["beats_trend"]:
+            tag = "usable"
+        else:
+            tag = "no skill - use trend"
         log(f"{a['key']:28} {a['n_seasons']:7d} "
             f"{a['recent_skill_vs_trend']:+9.1%} "
             f"{a['uncertainty']['sigma']:10.0f}  {tag}")

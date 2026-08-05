@@ -82,19 +82,77 @@ def psd_series(commodity, attribute):
             .sort_values("year").reset_index(drop=True))
 
 
-def psd_yield_kg_ha(commodity="Wheat"):
+def psd_yield_kg_ha(commodity="Wheat", max_year=None):
     """
     PSD yield in kg/ha.
 
     Market_Year for Russian wheat is the marketing year that ends with the
     summer harvest of that year (harvest-year alignment for winter wheat).
+    For barley, same harvest-year alignment; drop unfinished PSD estimate
+    years via max_year (e.g. 2024) when used as an interim training target.
     """
     s = psd_series(commodity, "Yield")
     unit = str(s.Unit_Description.iloc[0])
     if "MT/HA" not in unit.upper() and "MT" not in unit.upper():
         log(f"  warning: unexpected PSD yield unit: {unit}")
-    return pd.DataFrame({"year": s.year.astype(int),
-                         "target": s.value.astype(float) * 1000.0})
+    out = pd.DataFrame({"year": s.year.astype(int),
+                        "target": s.value.astype(float) * 1000.0})
+    if max_year is not None:
+        out = out[out.year <= int(max_year)].reset_index(drop=True)
+    return out
+
+
+def _barley_paths():
+    return (
+        os.path.join(TRAINING, "oblast_barley_yields.csv"),
+        os.path.join(TRAINING, "oblast_barley_sown_area.csv"),
+    )
+
+
+def barley_oblast_available():
+    yp, _ = _barley_paths()
+    return os.path.exists(yp)
+
+
+def psd_barley_yield_kg_ha(max_year=2024):
+    """
+    INTERIM national barley yield (USDA FAS PSD).
+
+    Not oblast Track B. Do not claim zone-level validation when this is used.
+    """
+    log(f"  INTERIM PSD Barley national yield (max_year={max_year})")
+    return psd_yield_kg_ha("Barley", max_year=max_year)
+
+
+def _zone_or_psd_barley(oblasts, fallback_weights=None, label="barley"):
+    yp, ap = _barley_paths()
+    if os.path.exists(yp):
+        return zone_yield_kg_ha(
+            oblasts, fallback_weights=fallback_weights,
+            yield_path=yp, area_path=ap, label=label)
+    return psd_barley_yield_kg_ha()
+
+
+def southern_barley_yield_kg_ha():
+    return _zone_or_psd_barley(
+        SOUTH_OBLASTS,
+        fallback_weights={"Krasnodar": 0.35, "Rostov": 0.40, "Stavropol": 0.25},
+        label="southern barley")
+
+
+def cbe_barley_yield_kg_ha():
+    return _zone_or_psd_barley(
+        CBE_OBLASTS,
+        fallback_weights={"Belgorod": 0.25, "Voronezh": 0.30,
+                          "Kursk": 0.20, "Tambov": 0.25},
+        label="cbe barley")
+
+
+def volga_barley_yield_kg_ha():
+    return _zone_or_psd_barley(
+        VOLGA_OBLASTS,
+        fallback_weights={"Saratov": 0.40, "Samara": 0.30, "Volgograd": 0.30},
+        label="volga barley")
 
 
 def psd_production_1000t(commodity="Wheat"):

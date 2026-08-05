@@ -40,6 +40,8 @@ class RegionCrop:
     min_train: int = 0
     non_weather_drivers: str = ""
     caveat: str = ""
+    # "oblast" | "national_psd_interim" | "" — train refuses usable if interim
+    label_resolution: str = ""
 
 
 # Production-prior weights (South export belt ≈ larger share of RU wheat
@@ -351,6 +353,129 @@ BELT_SUN = RegionCrop(
     non_weather_drivers=SUNFLOWER_NON_WEATHER,
 )
 
+def _spring_barley(daily, y):
+    return C.spring_barley_features(daily, y, heat_thr=28.0)
+
+
+BARLEY_CORE = [
+    "precip_may_jul", "gtk_may_jul", "sm_may_jul",
+    "tmax_jun", "edd_jun_jul", "precip_sep_mar",
+]
+
+_BARLEY_OBLAST = L.barley_oblast_available()
+_BARLEY_RES = "oblast" if _BARLEY_OBLAST else "national_psd_interim"
+_BARLEY_SRC = (
+    "Rosstat/EMISS fedstat 31328 oblast barley yield; sown-area weights "
+    "when available"
+    if _BARLEY_OBLAST else
+    "INTERIM: USDA FAS PSD Russia Barley Yield (national MT/HA→kg/ha), "
+    "years ≤2024; NOT oblast Track B"
+)
+_BARLEY_TARGET_LABEL = (
+    "zone spring-barley yield (Rosstat oblast, area-weighted)"
+    if _BARLEY_OBLAST else
+    "INTERIM national barley yield (PSD) — same series for all zones"
+)
+_BARLEY_CAVEAT = (
+    "Track B oblast barley labels. Features: May–Jul precip/GTK/SM, June "
+    "heat, Sep–Mar prior precip (Non-chernozem / Ob / Altai / Ryazan lit). "
+    "WOFOST is process benchmark only."
+    if _BARLEY_OBLAST else
+    "INTERIM ONLY: target is national PSD barley yield while weather is "
+    "zone-level (South/CBE/Volga). Positive skill vs trend can be spurious "
+    "(national y vs regional weather; Siberia omitted). NOT Track B "
+    "oblast validation. Do not publish as usable forecast until "
+    "oblast_barley_yields.csv lands."
+)
+_BARLEY_NON_WEATHER = (
+    "Barley carries variety turnover, feed vs malting mix, and area shifts "
+    "across Volga/Siberia/South; national PSD absorbs geography the zone "
+    "points do not sample."
+)
+
+SOUTH_BARLEY = RegionCrop(
+    key="southern_spring_barley",
+    label=(
+        "Southern spring barley (Krasnodar, Rostov, Stavropol)"
+        if _BARLEY_OBLAST else
+        "Southern spring barley (Krasnodar, Rostov, Stavropol) — INTERIM PSD"
+    ),
+    label_ko="남부 봄보리",
+    points=SOUTH_POINTS,
+    build=_spring_barley,
+    doc="russia/METHODOLOGY_barley_track_b.md",
+    target=L.southern_barley_yield_kg_ha,
+    target_label=_BARLEY_TARGET_LABEL,
+    target_unit="kg/ha",
+    label_source=_BARLEY_SRC,
+    region_share=(
+        "South has spring (+ some winter) barley; Black Sea export relevant "
+        "but national PSD dilutes Siberia/Volga production."),
+    panel={"spi3_may_jul": "precip_may_jul"},
+    core=BARLEY_CORE,
+    critical_window=[(5, 0), (6, 0), (7, 0)],
+    regime_start=2000,
+    min_train=16,
+    caveat=_BARLEY_CAVEAT,
+    non_weather_drivers=_BARLEY_NON_WEATHER,
+    label_resolution=_BARLEY_RES,
+)
+
+CBE_BARLEY = RegionCrop(
+    key="cbe_spring_barley",
+    label=(
+        "Central Black Earth spring barley (Belgorod, Voronezh, Kursk, Tambov)"
+        if _BARLEY_OBLAST else
+        "Central Black Earth spring barley — INTERIM PSD"
+    ),
+    label_ko="중앙 흑토 봄보리",
+    points=CBE_POINTS,
+    build=_spring_barley,
+    doc="russia/METHODOLOGY_barley_track_b.md",
+    target=L.cbe_barley_yield_kg_ha,
+    target_label=_BARLEY_TARGET_LABEL,
+    target_unit="kg/ha",
+    label_source=_BARLEY_SRC,
+    region_share="CBE is a top spring-barley producer in recent rankings.",
+    panel={"spi3_may_jul": "precip_may_jul"},
+    core=BARLEY_CORE,
+    critical_window=[(5, 0), (6, 0), (7, 0)],
+    regime_start=2000,
+    min_train=16,
+    caveat=_BARLEY_CAVEAT,
+    non_weather_drivers=_BARLEY_NON_WEATHER,
+    label_resolution=_BARLEY_RES,
+)
+
+VOLGA_BARLEY = RegionCrop(
+    key="volga_spring_barley",
+    label=(
+        "Volga spring barley (Saratov, Samara, Volgograd)"
+        if _BARLEY_OBLAST else
+        "Volga spring barley — INTERIM PSD"
+    ),
+    label_ko="볼가 봄보리",
+    points=VOLGA_POINTS,
+    build=_spring_barley,
+    doc="russia/METHODOLOGY_barley_track_b.md",
+    target=L.volga_barley_yield_kg_ha,
+    target_label=_BARLEY_TARGET_LABEL,
+    target_unit="kg/ha",
+    label_source=_BARLEY_SRC,
+    region_share=(
+        "Volga holds a large RF spring-barley sown-area share; Orenburg "
+        "deferred until oblast labels."),
+    panel={"spi3_may_jul": "precip_may_jul"},
+    core=BARLEY_CORE,
+    critical_window=[(5, 0), (6, 0), (7, 0)],
+    regime_start=2000,
+    min_train=16,
+    caveat=_BARLEY_CAVEAT,
+    non_weather_drivers=_BARLEY_NON_WEATHER,
+    label_resolution=_BARLEY_RES,
+)
+
 ALL = [SOUTH, CBE, NATIONAL, VOLGA,
-       SOUTH_SUN, CBE_SUN, VOLGA_SUN, BELT_SUN]
+       SOUTH_SUN, CBE_SUN, VOLGA_SUN, BELT_SUN,
+       SOUTH_BARLEY, CBE_BARLEY, VOLGA_BARLEY]
 BY_KEY = {r.key: r for r in ALL}
