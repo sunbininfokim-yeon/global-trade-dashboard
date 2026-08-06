@@ -157,7 +157,7 @@ const deckgl = new DeckGL({
     container: 'map',
     initialViewState: currentViewState,
     controller: true,
-    views: [new MapView({ id: 'map' })], // Flat equirectangular, as the mockup
+    views: [new MapView({ id: 'map', repeat: true })], // Flat equirectangular, as the mockup
     layers: [],
     onViewStateChange: ({ viewState, interactionState }) => {
         currentViewState = viewState;
@@ -2915,7 +2915,7 @@ const showClimateWorld = async () => {
     deckgl.setProps({
         // Real globe. The basemap is our own vector world (worldBaseLayers), so
         // there is no flat raster underneath for the sphere to fight with.
-        views: [new MapView({ id: 'map', controller: true })],
+        views: [new MapView({ id: 'map', controller: true, repeat: true })],
         viewState: worldView,
         controller: { dragRotate: false, touchRotate: false },
         pickingRadius: 18,
@@ -3107,7 +3107,7 @@ const showClimateCountry = async (countryName) => {
     setClimateTargetHud(cfg, countryView.zoom);
 
     deckgl.setProps({
-        views: [new MapView({ id: 'map', controller: true })],
+        views: [new MapView({ id: 'map', controller: true, repeat: true })],
         viewState: countryView,
         controller: { dragRotate: false, touchRotate: false },
         onViewStateChange: ({ viewState }) => {
@@ -3730,7 +3730,20 @@ const generateNodeData = (arcs) => {
 
 // Cap on rendered routes. A global commodity query returns 300+ valid routes;
 // this keeps the map readable without silently hiding mid-sized trade flows.
-const MAX_RENDERED_ARCS = 250;
+const MAX_RENDERED_ARCS = 120;
+
+// Width and opacity both follow sqrt(volume), matching the mockup's
+// d3.scaleSqrt ranges (width 0.45–6.5px, opacity 0.3–0.9). Opacity carrying
+// volume is what keeps a dense commodity readable: 639 gold routes drawn at
+// full alpha are a solid mat, the same 639 with alpha by size read as a few
+// strong corridors over faint background trade.
+const arcScale = (v, lo, hi, vmax) => {
+    const x = Math.sqrt(Math.max(0, v) / vmax);
+    return lo + (hi - lo) * Math.min(1, x);
+};
+let arcVolumeMax = 1;
+const arcWidth = (v) => arcScale(v, 0.45, 6.5, arcVolumeMax);
+const arcAlpha = (v) => Math.round(arcScale(v, 0.3, 0.9, arcVolumeMax) * 255);
 
 // Commodity maps ride the same curved globe as the home screen (req 2, 13).
 // Whole world in the frame, as the mockup's fitExtent does. Latitude 12 trims
@@ -3792,6 +3805,11 @@ const renderMapLayers = (arcs, opts = {}) => {
     const focus = opts.focus || tradeFocusCountry;
     const asExporter = opts.asExporter !== false;
     let filteredArcs = arcs.filter((arc) => arc.volume > 0);
+    arcVolumeMax = filteredArcs.reduce((m, a) => Math.max(m, a.volume), 1);
+    // The mockup drops flows under a threshold rather than drawing every pair.
+    // Below ~1.5% of the largest route a line adds noise, not information.
+    const arcFloor = arcVolumeMax * 0.015;
+    filteredArcs = filteredArcs.filter((a) => a.volume >= arcFloor);
 
     if (focus) {
         const focusKey = resolveCountry(focus)?.key || focus;
@@ -3864,21 +3882,28 @@ const renderMapLayers = (arcs, opts = {}) => {
             getHeight: 0.35,
             getSourcePosition: (d) => d.sourcePosition,
             getTargetPosition: (d) => d.targetPosition,
+            widthUnits: 'pixels',
             getWidth: (d) => {
                 const key = `${d.sourceName}>${d.targetName}`;
                 const hot = !focus || opts._focusedSet?.has(key);
-                const base = Math.min(Math.max(1.2, d.volume / 18), 9);
-                return hot ? base : Math.max(0.4, base * 0.25);
+                // sqrt, as the mockup does (d3.scaleSqrt 0.45–6.5). Linear width
+                // let a handful of routes dominate and turned 639 of them into
+                // one bright mass.
+                const base = arcWidth(d.volume);
+                return hot ? base : Math.max(0.3, base * 0.3);
             },
             getSourceColor: (d) => {
                 const key = `${d.sourceName}>${d.targetName}`;
-                if (focus && !opts._focusedSet?.has(key)) return [80, 100, 130, 40];
-                return d.sourceColor || [56, 189, 248, 190];
+                // Unfocused routes drop to near-invisible (the mockup uses 0.035)
+                // so the selected country's lines are the only thing readable.
+                if (focus && !opts._focusedSet?.has(key)) return [90, 110, 140, 12];
+                const c = d.sourceColor || [56, 189, 248];
+                return [c[0], c[1], c[2], arcAlpha(d.volume)];
             },
             getTargetColor: (d) => {
                 const key = `${d.sourceName}>${d.targetName}`;
-                if (focus && !opts._focusedSet?.has(key)) return [80, 100, 130, 30];
-                return [125, 211, 252, 240];
+                if (focus && !opts._focusedSet?.has(key)) return [90, 110, 140, 8];
+                return [125, 211, 252, Math.min(255, arcAlpha(d.volume) + 30)];
             },
             updateTriggers: {
                 getWidth: [focus],
@@ -3929,7 +3954,7 @@ const renderMapLayers = (arcs, opts = {}) => {
         : []);
 
     deckgl.setProps({
-        views: [new MapView({ id: 'map', controller: true })],
+        views: [new MapView({ id: 'map', controller: true, repeat: true })],
         viewState: currentViewState,
         controller: { dragRotate: false, touchRotate: false },
         layers: [
@@ -4106,7 +4131,7 @@ const setView = (target) => {
         currentViewState = clampGlobeView({ ...currentViewState, zoom: GLOBE_ZOOM });
 
         deckgl.setProps({
-            views: [new MapView({ id: 'map', controller: true })],
+            views: [new MapView({ id: 'map', controller: true, repeat: true })],
             viewState: currentViewState,
             controller: { dragRotate: false, touchRotate: false },
             onClick: null,
@@ -4229,7 +4254,7 @@ const setView = (target) => {
             stopRotation();
             currentViewState = clampGlobeView({ ...TRADE_MAP_VIEW });
             deckgl.setProps({
-                views: [new MapView({ id: 'map', controller: true })],
+                views: [new MapView({ id: 'map', controller: true, repeat: true })],
                 viewState: currentViewState,
                 layers: worldBaseLayers({ id: 'trade-loading' }),
             });
