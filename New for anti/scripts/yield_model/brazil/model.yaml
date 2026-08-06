@@ -1,0 +1,52 @@
+# 브라질 — 국가 모델 매니페스트
+# 규격: ../MODEL_MANIFEST.md · 이 파일만 고치면 UI 코드 수정 없이 반영된다.
+
+country: brazil
+iso: BRA
+label_ko: 브라질
+label_en: Brazil
+panel_mode: forecast
+data_file: brazil_yield_forecast.json
+model_name: Brazil Regional Model
+
+view:
+  longitude: -52
+  latitude: -13
+  zoom: 3.6
+
+regions:
+  - key: mato_grosso_soja
+    label_ko: "마투그로수 (대두·옥수수)"
+    ui_name: Mato Grosso (Brazil)   # app.js 산지 식별자 (레지스트리 전환 중 유지)
+    coordinates: [-55.4, -12.6]
+    crops_region_keys: [mato_grosso_soja, mato_grosso_milho]
+  - key: parana_soja
+    label_ko: "파라나·히우그란지두술"
+    ui_name: Rio Grande do Sul (Brazil)   # app.js 산지 식별자 (레지스트리 전환 중 유지)
+    coordinates: [-52.3, -27]
+    crops_region_keys: [parana_soja, parana_milho, parana_trigo]
+  - key: matopiba_soja
+    label_ko: "MATOPIBA (대두·면화)"
+    ui_name: MATOPIBA (Brazil)   # app.js 산지 식별자 (레지스트리 전환 중 유지)
+    coordinates: [-45.5, -10.5]
+    crops_region_keys: [matopiba_soja, matopiba_algodao]
+  - key: sp_cana
+    label_ko: "상파울루 (사탕수수·커피)"
+    ui_name: Sao Paulo (Brazil)   # app.js 산지 식별자 (레지스트리 전환 중 유지)
+    coordinates: [-47.8, -21.4]
+    crops_region_keys: [sp_cana, sp_cafe, sp_laranja]
+
+sources:
+  labels:
+    name: IBGE SIDRA / CONAB
+    url: https://sidra.ibge.gov.br/
+    updated: "2025-06-01"
+  climate:
+    name: NASA POWER (daily)
+    url: https://power.larc.nasa.gov/
+    updated: "2026-08-06"
+
+trade_policy:
+  restricted: false
+  prohibited_crops: []
+  note_ko: 정상

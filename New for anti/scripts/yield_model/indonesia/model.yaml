@@ -1,0 +1,52 @@
+# 인도네시아 — 국가 모델 매니페스트
+# 규격: ../MODEL_MANIFEST.md · 이 파일만 고치면 UI 코드 수정 없이 반영된다.
+
+country: indonesia
+iso: IDN
+label_ko: 인도네시아
+label_en: Indonesia
+panel_mode: forecast
+data_file: indonesia_yield_forecast.json
+model_name: National panel (baseline)
+
+view:
+  longitude: 118
+  latitude: -2.5
+  zoom: 3.6
+
+regions:
+  - key: indonesia_rice
+    label_ko: 쌀 (전국)
+    ui_name: Indonesia rice   # app.js 산지 식별자 (레지스트리 전환 중 유지)
+    coordinates: [112.5, -7.5]
+    crops_region_keys: [indonesia_rice]
+  - key: indonesia_oil_palm
+    label_ko: 팜유 과실
+    ui_name: Indonesia oil palm   # app.js 산지 식별자 (레지스트리 전환 중 유지)
+    coordinates: [113.9, -2.2]
+    crops_region_keys: [indonesia_oil_palm]
+  - key: indonesia_coffee
+    label_ko: 커피
+    ui_name: Indonesia coffee   # app.js 산지 식별자 (레지스트리 전환 중 유지)
+    coordinates: [110.4, -7.8]
+    crops_region_keys: [indonesia_coffee]
+  - key: indonesia_rubber
+    label_ko: 천연고무
+    ui_name: Indonesia rubber   # app.js 산지 식별자 (레지스트리 전환 중 유지)
+    coordinates: [104, -3]
+    crops_region_keys: [indonesia_rubber]
+
+sources:
+  labels:
+    name: BPS Statistics Indonesia
+    url: https://www.bps.go.id/
+    updated: "2024-12-31"
+  climate:
+    name: NASA POWER (daily)
+    url: https://power.larc.nasa.gov/
+    updated: "2026-08-06"
+
+trade_policy:
+  restricted: true
+  prohibited_crops: [palm_oil]
+  note_ko: 팜 등 통제 seed (1품목 금지 → 주황 우선)

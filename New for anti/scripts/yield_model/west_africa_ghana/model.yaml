@@ -1,0 +1,37 @@
+# 가나 — 국가 모델 매니페스트
+# 규격: ../MODEL_MANIFEST.md · 이 파일만 고치면 UI 코드 수정 없이 반영된다.
+
+country: west_africa_ghana
+iso: GHA
+label_ko: 가나
+label_en: Ghana
+panel_mode: reference
+data_file: ghana_yield_forecast.json
+model_name: 서아프리카 코코아 (참고)
+
+view:
+  longitude: -1.2
+  latitude: 7.6
+  zoom: 6.2
+
+regions:
+  - key: ghana_cocoa
+    label_ko: 코코아 벨트 (참고)
+    ui_name: Ghana Cocoa Belt   # app.js 산지 식별자 (레지스트리 전환 중 유지)
+    coordinates: [-1.6, 6.4]
+    crops_region_keys: [ghana_cocoa]
+
+sources:
+  labels:
+    name: COCOBOD / 정부 전망
+    url: https://cocobod.gh/
+    updated: "2025-10-01"
+  climate:
+    name: NASA POWER (daily)
+    url: https://power.larc.nasa.gov/
+    updated: "2026-08-06"
+
+trade_policy:
+  restricted: false
+  prohibited_crops: []
+  note_ko: "코코아 참고국 · 예측 아님"

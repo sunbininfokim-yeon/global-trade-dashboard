@@ -1,0 +1,62 @@
+# 아르헨티나 — 국가 모델 매니페스트
+# 규격: ../MODEL_MANIFEST.md · 이 파일만 고치면 UI 코드 수정 없이 반영된다.
+
+country: argentina
+iso: ARG
+label_ko: 아르헨티나
+label_en: Argentina
+panel_mode: forecast
+data_file: argentina_yield_forecast.json
+model_name: Pampas + Norte Model
+
+view:
+  longitude: -64
+  latitude: -34
+  zoom: 3.8
+
+regions:
+  - key: pampas_soja
+    label_ko: 팜파스 (대두)
+    ui_name: Pampas soy (Argentina)   # app.js 산지 식별자 (레지스트리 전환 중 유지)
+    coordinates: [-61.5, -34]
+    crops_region_keys: [pampas_soja]
+  - key: pampas_maiz
+    label_ko: 팜파스 (옥수수)
+    ui_name: Pampas corn (Argentina)   # app.js 산지 식별자 (레지스트리 전환 중 유지)
+    coordinates: [-62.2, -32.5]
+    crops_region_keys: [pampas_maiz]
+  - key: norte_soja
+    label_ko: 북부 NOA/NEA (대두)
+    ui_name: Norte soy (Argentina)   # app.js 산지 식별자 (레지스트리 전환 중 유지)
+    coordinates: [-62.5, -26.5]
+    crops_region_keys: [norte_soja]
+  - key: chaco_algodon
+    label_ko: 차코 (면화)
+    ui_name: Chaco cotton (Argentina)   # app.js 산지 식별자 (레지스트리 전환 중 유지)
+    coordinates: [-60.5, -26.8]
+    crops_region_keys: [chaco_algodon]
+  - key: pampas_trigo
+    label_ko: 팜파스 남부 (밀)
+    ui_name: Pampas wheat (Argentina)   # app.js 산지 식별자 (레지스트리 전환 중 유지)
+    coordinates: [-60.3, -38.4]
+    crops_region_keys: [pampas_trigo]
+  - key: tucuman_cana
+    label_ko: 투쿠만 (사탕수수)
+    ui_name: Tucuman cane (Argentina)   # app.js 산지 식별자 (레지스트리 전환 중 유지)
+    coordinates: [-65.3, -27]
+    crops_region_keys: [tucuman_cana]
+
+sources:
+  labels:
+    name: MAGyP Estimaciones Agrícolas
+    url: https://datos.magyp.gob.ar/
+    updated: "2025-08-01"
+  climate:
+    name: NASA POWER (daily)
+    url: https://power.larc.nasa.gov/
+    updated: "2026-08-06"
+
+trade_policy:
+  restricted: false
+  prohibited_crops: [corn]
+  note_ko: 옥수수 관련 수출 통제 seed (1품목 → 주황)

@@ -1,0 +1,43 @@
+name: Validate climate registry
+
+# 다른 터미널(Cursor/Codex)이 만든 model.yaml 과 forecast JSON 이 UI 를 깨는 것을
+# 머지 전에 막는다. 2026-08-06 이전에는 이 게이트가 없어서, app.js 가 fetch 하는
+# india_yield_forecast.json 이 없는 채로 배포돼 인도 패널이 빈 화면이었다.
+
+on:
+  pull_request:
+    paths:
+      - 'New for anti/scripts/yield_model/**/model.yaml'
+      - 'New for anti/scripts/yield_model/build_registry.py'
+      - 'New for anti/public/data/*_yield_forecast.json'
+      - 'New for anti/public/data/yield_forecast.json'
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Validate manifests against forecast JSON
+        working-directory: "New for anti/scripts/yield_model"
+        run: python3 build_registry.py --check
+
+      - name: Registry must be regenerated when a manifest changes
+        working-directory: "New for anti/scripts/yield_model"
+        run: |
+          python3 build_registry.py
+          # generated_at moves every run, so compare everything except that line.
+          if ! git diff --quiet -- ../../public/data/climate_registry_v1.json; then
+            if git diff -- ../../public/data/climate_registry_v1.json \
+               | grep -E '^[+-]' | grep -v '^[+-][+-]' | grep -qv 'generated_at'; then
+              echo "::error::model.yaml 을 고쳤으면 build_registry.py 를 돌려 커밋하세요."
+              git diff -- ../../public/data/climate_registry_v1.json | head -40
+              exit 1
+            fi
+          fi
