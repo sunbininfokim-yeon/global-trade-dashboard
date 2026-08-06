@@ -1,0 +1,255 @@
+{
+  "key": "mb_soybeans",
+  "label": "Manitoba soybeans",
+  "label_ko": "매니토바 대두",
+  "crop": "soybeans",
+  "province": "Manitoba",
+  "doc": "Regions/북미_캐나다/매니토바/대두_귀리/대두_귀리_상세분석.md",
+  "caveat": "May excess moisture is the lead feature set. MASC Excess Moisture Insurance is the operational risk analogue; AquaCrop literature is not yet a teacher feature. Soy series is shorter than canola.",
+  "target": {
+    "variable": "yield_kg_ha",
+    "source": "Statistics Canada 32-10-0359 average yield kg/ha",
+    "area_basis": "harvested",
+    "estimated_years": [
+      2020,
+      2021,
+      2022,
+      2023,
+      2024,
+      2025
+    ]
+  },
+  "trained_years": [
+    2001,
+    2025
+  ],
+  "n_seasons": 25,
+  "detrended_residual_cv": 0.1463774437280819,
+  "anomaly": {
+    "window_years": 20,
+    "minimum_prior_years": 10,
+    "current_year_excluded": true
+  },
+  "feature_sets": {
+    "weather": [
+      "rain_may_z20",
+      "rain_growing_z20",
+      "heat_excess_jul_z20",
+      "frost_sep_z20"
+    ],
+    "weather_soil": [
+      "rain_may_z20",
+      "rain_growing_z20",
+      "heat_excess_jul_z20",
+      "frost_sep_z20",
+      "sm_may_z20",
+      "sm_flowering_z20",
+      "rain_winter_z20"
+    ],
+    "weather_soil_drivers": [
+      "rain_may_z20",
+      "rain_growing_z20",
+      "heat_excess_jul_z20",
+      "frost_sep_z20",
+      "sm_may_z20",
+      "sm_flowering_z20",
+      "rain_winter_z20",
+      "oni_summer_z20"
+    ]
+  },
+  "selected_feature_set": "weather_soil",
+  "selected_features": [
+    "rain_may_z20",
+    "rain_growing_z20",
+    "heat_excess_jul_z20",
+    "frost_sep_z20",
+    "sm_may_z20",
+    "sm_flowering_z20",
+    "rain_winter_z20"
+  ],
+  "selection_note": "Lowest recent forward RMSE among pre-registered ablations that clear 10% skill over both all and recent folds. If none clear, trend-only is the operational choice.",
+  "minimum_operational_skill": 0.1,
+  "operational_choice": "trend_only",
+  "beats_trend": false,
+  "low_confidence": true,
+  "literature_benchmark": {
+    "icyf_car_r2_canola": 0.67,
+    "icyf_car_r2_spring_wheat": 0.66,
+    "icyf_mei_gt0_share_canola_wheat": 0.7,
+    "icyf_national_mape_canola": 0.09,
+    "icyf_national_mape_spring_wheat": 0.08,
+    "note": "Chipanshi et al. 2015 ICCYF uses CAR+VSMB+NDVI; this Phase-1 province+POWER ridge is a weaker information set."
+  },
+  "trend": {
+    "form": "log_linear",
+    "log_poly_coef": [
+      0.02214123605284296,
+      -36.902672616008545
+    ]
+  },
+  "scaler": {
+    "mean": [
+      0.004284448510663119,
+      -0.021875604119496045,
+      0.5989256983186647,
+      -0.24830195982125244,
+      -0.0497040353229178,
+      -0.13327597966716748,
+      -0.1718539462361502
+    ],
+    "scale": [
+      1.2233905560719016,
+      1.1763320758949625,
+      2.0707405638891627,
+      1.0379042050573473,
+      1.2635900047791007,
+      1.257684595803085,
+      1.0038233405358608
+    ]
+  },
+  "ridge": {
+    "alpha": 10000.0,
+    "coef": [
+      -3.2107895257763094e-05,
+      -2.5786178134080007e-05,
+      8.119812250251213e-05,
+      8.461247063990346e-05,
+      -3.916303758549768e-05,
+      -5.4338916978759086e-05,
+      -5.04420221648631e-05
+    ],
+    "intercept": -2.077840927088622e-14
+  },
+  "top_effects": [
+    {
+      "feature": "frost_sep_z20",
+      "effect_pct_per_sd": 0.01
+    },
+    {
+      "feature": "heat_excess_jul_z20",
+      "effect_pct_per_sd": 0.01
+    },
+    {
+      "feature": "sm_flowering_z20",
+      "effect_pct_per_sd": -0.01
+    },
+    {
+      "feature": "rain_winter_z20",
+      "effect_pct_per_sd": -0.01
+    },
+    {
+      "feature": "sm_may_z20",
+      "effect_pct_per_sd": -0.0
+    },
+    {
+      "feature": "rain_may_z20",
+      "effect_pct_per_sd": -0.0
+    },
+    {
+      "feature": "rain_growing_z20",
+      "effect_pct_per_sd": -0.0
+    }
+  ],
+  "uncertainty": {
+    "basis": "absolute errors from forward-chaining predictions",
+    "absolute_error_q68_kg_ha": 592.4086694101134,
+    "absolute_error_q95_kg_ha": 668.0265417111564,
+    "n_forward_errors": 10
+  },
+  "validation": {
+    "weather": {
+      "rmse": 439.8471665606669,
+      "mae": 383.6407903718282,
+      "baseline_rmse": 380.7113979556361,
+      "skill_vs_trend": -0.15532965107580488,
+      "recent_rmse": 439.8471665606669,
+      "recent_baseline_rmse": 380.7113979556361,
+      "recent_skill_vs_trend": -0.15532965107580488,
+      "detrended_r2": -0.3887620735893933,
+      "recent_trend_bias": 75.05509439049997,
+      "features": [
+        "rain_may_z20",
+        "rain_growing_z20",
+        "heat_excess_jul_z20",
+        "frost_sep_z20"
+      ],
+      "fold_years": [
+        2016,
+        2017,
+        2018,
+        2019,
+        2020,
+        2021,
+        2022,
+        2023,
+        2024,
+        2025
+      ]
+    },
+    "weather_soil": {
+      "rmse": 415.03558138585686,
+      "mae": 364.3709003946267,
+      "baseline_rmse": 380.7113979556361,
+      "skill_vs_trend": -0.09015801369367082,
+      "recent_rmse": 415.03558138585686,
+      "recent_baseline_rmse": 380.7113979556361,
+      "recent_skill_vs_trend": -0.09015801369367082,
+      "detrended_r2": -0.2365022526372509,
+      "recent_trend_bias": 75.05509439049997,
+      "features": [
+        "rain_may_z20",
+        "rain_growing_z20",
+        "heat_excess_jul_z20",
+        "frost_sep_z20",
+        "sm_may_z20",
+        "sm_flowering_z20",
+        "rain_winter_z20"
+      ],
+      "fold_years": [
+        2016,
+        2017,
+        2018,
+        2019,
+        2020,
+        2021,
+        2022,
+        2023,
+        2024,
+        2025
+      ]
+    },
+    "weather_soil_drivers": {
+      "rmse": 423.8584104138818,
+      "mae": 370.12187226709375,
+      "baseline_rmse": 380.7113979556361,
+      "skill_vs_trend": -0.11333259968033227,
+      "recent_rmse": 423.8584104138818,
+      "recent_baseline_rmse": 380.7113979556361,
+      "recent_skill_vs_trend": -0.11333259968033227,
+      "detrended_r2": -0.2896321770071246,
+      "recent_trend_bias": 75.05509439049997,
+      "features": [
+        "rain_may_z20",
+        "rain_growing_z20",
+        "heat_excess_jul_z20",
+        "frost_sep_z20",
+        "sm_may_z20",
+        "sm_flowering_z20",
+        "rain_winter_z20",
+        "oni_summer_z20"
+      ],
+      "fold_years": [
+        2016,
+        2017,
+        2018,
+        2019,
+        2020,
+        2021,
+        2022,
+        2023,
+        2024,
+        2025
+      ]
+    }
+  }
+}

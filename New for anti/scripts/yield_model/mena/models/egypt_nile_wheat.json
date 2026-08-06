@@ -1,0 +1,393 @@
+{
+  "key": "egypt_nile_wheat",
+  "label": "Egypt Nile irrigated wheat",
+  "label_ko": "이집트 나일 관개 밀",
+  "crop": "wheat",
+  "doc": "Regions/중동_북아프리카_MENA/MENA_밀_작황_방법론.md §3 이집트",
+  "caveat": "Labels: FAOSTAT national wheat — not governorate×season. salt_proxy and nile_inflow_proxy are hydrologic stand-ins, not EC or G-REALM stage. WD alone is never yield without irrigation_buffer.",
+  "non_weather_drivers": "Subsidised fertiliser, area policy, FX, and GASC import strategy move Nile wheat independently of weather.",
+  "label_source": "faostat_national_wheat",
+  "label_sources": [
+    "faostat_national_wheat"
+  ],
+  "labels_provisional": false,
+  "labels_season_imperfect": true,
+  "trained_years": [
+    1985,
+    2024
+  ],
+  "n_seasons": 40,
+  "n_forward_folds": 22,
+  "trend": {
+    "log_poly_coef": [
+      0.003133676491821325,
+      2.471214998699405
+    ],
+    "degree": 1,
+    "form": "recent10",
+    "window": 10,
+    "space": "log(kg/ha)"
+  },
+  "features": [
+    "wd_eff",
+    "salt_proxy",
+    "nile_inflow_proxy",
+    "oni_ndj",
+    "edd_heading",
+    "sm_grainfill"
+  ],
+  "feature_set": "core",
+  "trend_form": "recent10",
+  "scaler": {
+    "mean": [
+      282.8758679461037,
+      0.01520732003931859,
+      1089.463225,
+      0.017000000000000005,
+      44.049795,
+      0.4442962034956304
+    ],
+    "scale": [
+      34.94134733072365,
+      0.003348311774173623,
+      244.43204431983622,
+      1.0887290755739005,
+      20.64407140897781,
+      0.009385862468154458
+    ]
+  },
+  "ridge": {
+    "alpha": 10000.0,
+    "coef": [
+      7.609854716996533e-05,
+      5.067850609945603e-05,
+      -9.715945880362043e-05,
+      -1.2615709670826716e-05,
+      7.48463751082388e-06,
+      5.169168378761418e-05
+    ],
+    "intercept": -0.06848767141459397
+  },
+  "beats_trend": false,
+  "recent_skill_vs_trend": -0.4085458567911744,
+  "skill_vs_best_trend": -0.03378482957830009,
+  "best_trend_baseline_rmse": 359.71792432048983,
+  "weather_skill": -0.4085458567911744,
+  "non_weather_features": [],
+  "recent_folds": 10,
+  "uncertainty": {
+    "sigma_kg_ha": 197.48095062029415,
+    "basis": "trend-only baseline (no skill)"
+  },
+  "validation": {
+    "all_deg1_loo": {
+      "rmse": 540.1016843777965,
+      "mae": 435.06436296436675,
+      "detrended_r2": -0.1767054884319168,
+      "skill_vs_trend": -0.08463760970730427,
+      "baseline_rmse": 497.9558882561209,
+      "recent_rmse": 441.5378669403662,
+      "recent_baseline_rmse": 432.5607581971593,
+      "recent_trend_bias": 348.64735055485727,
+      "n": 40,
+      "years": [
+        1985,
+        2024
+      ],
+      "degree": 1,
+      "window": null,
+      "trend_form": "deg1"
+    },
+    "all_deg1_forward": {
+      "rmse": 738.1143510107977,
+      "mae": 613.303351258241,
+      "detrended_r2": -5.557707409818207,
+      "skill_vs_trend": 0.021487419542283726,
+      "baseline_rmse": 754.322801517311,
+      "recent_rmse": 689.05792786385,
+      "recent_baseline_rmse": 681.7864885292142,
+      "recent_trend_bias": 654.5269974716709,
+      "n": 22,
+      "years": [
+        2003,
+        2024
+      ],
+      "degree": 1,
+      "window": null,
+      "trend_form": "deg1"
+    },
+    "all_deg2_loo": {
+      "rmse": 340.3051986145104,
+      "mae": 266.90693648142576,
+      "detrended_r2": -0.03347319851872599,
+      "skill_vs_trend": -0.016283904257683668,
+      "baseline_rmse": 334.8524926832103,
+      "recent_rmse": 313.68747680014843,
+      "recent_baseline_rmse": 299.86088081382934,
+      "recent_trend_bias": -75.37698473254859,
+      "n": 40,
+      "years": [
+        1985,
+        2024
+      ],
+      "degree": 2,
+      "window": null,
+      "trend_form": "deg2"
+    },
+    "all_deg2_forward": {
+      "rmse": 411.2858555023979,
+      "mae": 322.4746091550707,
+      "detrended_r2": -0.24991717009443226,
+      "skill_vs_trend": 0.02062190683989218,
+      "baseline_rmse": 419.9459415876084,
+      "recent_rmse": 471.36662474219315,
+      "recent_baseline_rmse": 487.9071752109987,
+      "recent_trend_bias": -444.1818039839721,
+      "n": 22,
+      "years": [
+        2003,
+        2024
+      ],
+      "degree": 2,
+      "window": null,
+      "trend_form": "deg2"
+    },
+    "all_recent20_loo": {
+      "rmse": 719.5236993573413,
+      "mae": 489.9335295984814,
+      "detrended_r2": -0.2621943325063192,
+      "skill_vs_trend": -0.00048513913008174647,
+      "baseline_rmse": 719.1747995207252,
+      "recent_rmse": 197.3509035389614,
+      "recent_baseline_rmse": 197.10675625152834,
+      "recent_trend_bias": -34.32795878492989,
+      "n": 40,
+      "years": [
+        1985,
+        2024
+      ],
+      "degree": 1,
+      "window": 20,
+      "trend_form": "recent20"
+    },
+    "all_recent20_forward": {
+      "rmse": 422.35094597556343,
+      "mae": 293.6851965541288,
+      "detrended_r2": -0.15479875186484038,
+      "skill_vs_trend": 0.09209132733860992,
+      "baseline_rmse": 465.19100289846193,
+      "recent_rmse": 197.41229821051652,
+      "recent_baseline_rmse": 197.48095062029415,
+      "recent_trend_bias": -66.6308078889635,
+      "n": 22,
+      "years": [
+        2003,
+        2024
+      ],
+      "degree": 1,
+      "window": 20,
+      "trend_form": "recent20"
+    },
+    "all_recent10_loo": {
+      "rmse": 740.5725893340081,
+      "mae": 500.7767171347997,
+      "detrended_r2": -0.3427369172952859,
+      "skill_vs_trend": -0.010367609026953106,
+      "baseline_rmse": 732.9734076166848,
+      "recent_rmse": 294.3372383384649,
+      "recent_baseline_rmse": 205.56568994622396,
+      "recent_trend_bias": -4.496204529342504,
+      "n": 40,
+      "years": [
+        1985,
+        2024
+      ],
+      "degree": 1,
+      "window": 10,
+      "trend_form": "recent10"
+    },
+    "all_recent10_forward": {
+      "rmse": 401.7590067438907,
+      "mae": 341.5769896701571,
+      "detrended_r2": -0.29281787831698125,
+      "skill_vs_trend": -0.1168723590930778,
+      "baseline_rmse": 359.71792432048983,
+      "recent_rmse": 280.5685907745392,
+      "recent_baseline_rmse": 277.96748583979524,
+      "recent_trend_bias": -34.826396166122684,
+      "n": 22,
+      "years": [
+        2003,
+        2024
+      ],
+      "degree": 1,
+      "window": 10,
+      "trend_form": "recent10"
+    },
+    "core_deg1_loo": {
+      "rmse": 487.4360950446378,
+      "mae": 376.74414239721574,
+      "detrended_r2": 0.0415883425257223,
+      "skill_vs_trend": 0.021125954044492135,
+      "baseline_rmse": 497.9558882561209,
+      "recent_rmse": 389.937680129782,
+      "recent_baseline_rmse": 432.5607581971593,
+      "recent_trend_bias": 348.64735055485727,
+      "n": 40,
+      "years": [
+        1985,
+        2024
+      ],
+      "degree": 1,
+      "window": null,
+      "trend_form": "deg1"
+    },
+    "core_deg1_forward": {
+      "rmse": 753.318584490894,
+      "mae": 691.1751054169931,
+      "detrended_r2": -5.830651060765127,
+      "skill_vs_trend": 0.0013312828730578374,
+      "baseline_rmse": 754.322801517311,
+      "recent_rmse": 683.5145459075742,
+      "recent_baseline_rmse": 681.7864885292142,
+      "recent_trend_bias": 654.5269974716709,
+      "n": 22,
+      "years": [
+        2003,
+        2024
+      ],
+      "degree": 1,
+      "window": null,
+      "trend_form": "deg1"
+    },
+    "core_deg2_loo": {
+      "rmse": 341.18739825661646,
+      "mae": 269.05762291814403,
+      "detrended_r2": -0.03883844984885432,
+      "skill_vs_trend": -0.018918496089558312,
+      "baseline_rmse": 334.8524926832103,
+      "recent_rmse": 321.74103455060884,
+      "recent_baseline_rmse": 299.86088081382934,
+      "recent_trend_bias": -75.37698473254859,
+      "n": 40,
+      "years": [
+        1985,
+        2024
+      ],
+      "degree": 2,
+      "window": null,
+      "trend_form": "deg2"
+    },
+    "core_deg2_forward": {
+      "rmse": 410.4359546042763,
+      "mae": 320.37120976808194,
+      "detrended_r2": -0.24475672943551197,
+      "skill_vs_trend": 0.022645740895553268,
+      "baseline_rmse": 419.9459415876084,
+      "recent_rmse": 469.75411072971417,
+      "recent_baseline_rmse": 487.9071752109987,
+      "recent_trend_bias": -444.1818039839721,
+      "n": 22,
+      "years": [
+        2003,
+        2024
+      ],
+      "degree": 2,
+      "window": null,
+      "trend_form": "deg2"
+    },
+    "core_recent20_loo": {
+      "rmse": 719.2575164853387,
+      "mae": 489.6973189839214,
+      "detrended_r2": -0.26126062492444135,
+      "skill_vs_trend": -0.00011501649483358634,
+      "baseline_rmse": 719.1747995207252,
+      "recent_rmse": 197.2142657248154,
+      "recent_baseline_rmse": 197.10675625152834,
+      "recent_trend_bias": -34.32795878492989,
+      "n": 40,
+      "years": [
+        1985,
+        2024
+      ],
+      "degree": 1,
+      "window": 20,
+      "trend_form": "recent20"
+    },
+    "core_recent20_forward": {
+      "rmse": 464.94777546587534,
+      "mae": 351.97017326997695,
+      "detrended_r2": -0.39948327186768173,
+      "skill_vs_trend": 0.0005228549801503668,
+      "baseline_rmse": 465.19100289846193,
+      "recent_rmse": 197.6223833696645,
+      "recent_baseline_rmse": 197.48095062029415,
+      "recent_trend_bias": -66.6308078889635,
+      "n": 22,
+      "years": [
+        2003,
+        2024
+      ],
+      "degree": 1,
+      "window": 20,
+      "trend_form": "recent20"
+    },
+    "core_recent10_loo": {
+      "rmse": 736.1299976742739,
+      "mae": 491.62774509444114,
+      "detrended_r2": -0.3266754545330268,
+      "skill_vs_trend": -0.0043065546782290465,
+      "baseline_rmse": 732.9734076166848,
+      "recent_rmse": 246.55145036261072,
+      "recent_baseline_rmse": 205.56568994622396,
+      "recent_trend_bias": -4.496204529342504,
+      "n": 40,
+      "years": [
+        1985,
+        2024
+      ],
+      "degree": 1,
+      "window": 10,
+      "trend_form": "recent10"
+    },
+    "core_recent10_forward": {
+      "rmse": 371.8709330899174,
+      "mae": 315.5818467006272,
+      "detrended_r2": -0.10761944879927232,
+      "skill_vs_trend": -0.03378482957830009,
+      "baseline_rmse": 359.71792432048983,
+      "recent_rmse": 278.16097479139785,
+      "recent_baseline_rmse": 277.96748583979524,
+      "recent_trend_bias": -34.826396166122684,
+      "n": 22,
+      "years": [
+        2003,
+        2024
+      ],
+      "degree": 1,
+      "window": 10,
+      "trend_form": "recent10"
+    }
+  },
+  "forward": {
+    "rmse": 371.8709330899174,
+    "mae": 315.5818467006272,
+    "detrended_r2": -0.10761944879927232,
+    "skill_vs_trend": -0.03378482957830009,
+    "baseline_rmse": 359.71792432048983,
+    "recent_rmse": 278.16097479139785,
+    "recent_baseline_rmse": 277.96748583979524,
+    "recent_trend_bias": -34.826396166122684,
+    "n": 22,
+    "years": [
+      2003,
+      2024
+    ],
+    "degree": 1,
+    "window": 10,
+    "trend_form": "recent10"
+  },
+  "gee_used": false,
+  "salinity_is_proxy": true,
+  "nile_inflow_is_proxy": true
+}

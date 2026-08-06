@@ -1,0 +1,42 @@
+{
+  "generated_at": "2026-08-06T06:04:35.302105+00:00",
+  "season": 2026,
+  "country": "Honduras",
+  "title_ko": "온두라스 바나나",
+  "forecast_available": false,
+  "panel_mode": "reference",
+  "reason_ko": "캐번디시 바나나는 블랙 시가토카·허리케인·TR4가 기상 회귀보다 지배적입니다. 문헌의 고성능 모델은 농장 주간 YLWS/YLS 또는 UAV NDVI를 쓰며, 공개 주(province) 라벨이 확보되고 skill gate를 통과하기 전에는 예측 point를 발행하지 않습니다.",
+  "methodology_note": "Phase-1: NASA POWER Sigatoka/wind proxies + province ridge (Australia protocol). Phase-2: farm YLWS/YLS RF (Jiménez 2022) / NDVI (Garcés-Fiallos 2025). TR4 = area quarantine layer.",
+  "sources": [
+    {
+      "name": "Jiménez et al. 2022 Sustainability (Panama RF)",
+      "url": "https://www.mdpi.com/2071-1050/14/21/14123",
+      "supports": "YLWS/YLS lead features"
+    },
+    {
+      "name": "Garcés-Fiallos et al. 2025 Sustainability (Ecuador RF)",
+      "url": "https://www.mdpi.com/2071-1050/17/22/10098",
+      "supports": "NDVI + soil + phenology"
+    },
+    {
+      "name": "FAO Banana Statistical Compendium",
+      "url": "https://www.fao.org/markets-and-trade/commodities/bananas",
+      "supports": "national trade cross-check only"
+    }
+  ],
+  "regions": {
+    "honduras_banana": {
+      "label": "Honduras banana",
+      "label_ko": "온두라스 바나나",
+      "note": "Jiménez et al. 2022 RF (Panama) — YLWS/YLS lead, farm weekly. Garcés-Fiallos et al. 2025 RF (Ecuador) — NDVI+soil+phenology, farm. Rojas-Briones et al. 2011 Bayesian net (Ecuador). Phase-1 is province+POWER ridge proxies, not farm RF. Highest hurricane blowdown exposure among the four.",
+      "forecast_available": false,
+      "reason_ko": "주 단위 라벨·학습 미완료 — 주(province) 수량성 CSV와 skill gate 통과 모델이 필요합니다.",
+      "crops": {
+        "banana": {
+          "label_ko": "바나나",
+          "unit": "kg/ha"
+        }
+      }
+    }
+  }
+}

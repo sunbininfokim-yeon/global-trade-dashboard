@@ -1,0 +1,197 @@
+{
+  "generated_at": "2026-08-06T06:05:22.814623+00:00",
+  "season": 2026,
+  "country": "MENA",
+  "forecast_available": true,
+  "source_note": "Weather: NASA POWER daily (GWETROOT, TEMP, precip, radiation), ET0 FAO-56. ENSO: NOAA CPC ONI. IOD: NOAA PSL HadISST DMI. Labels: FAOSTAT national wheat for Egypt / Morocco / Algeria (labels_season_imperfect — not governorate×season). Egypt nile_inflow_proxy = Blue Nile JJAS precip (not G-REALM). salt_proxy is coastal hydrology, not field EC. CHIRPS / ERA5 / GRACE / GEE not executed in this build.",
+  "methodology_note": "T1 from Regions/중동_북아프리카_MENA. Maghreb rainfed Ridge (French–Schultz + SPEI-like) publishes weather residual when beats_trend. Egypt Nile: irrigated scaffold trained for diagnostics; operational point is trend_only when weather skill fails (docs/literature/mena/WHY_EGYPT_TREND_ONLY.md). Ridge on log-yield residual vs trend; labels_season_imperfect.",
+  "regions": {
+    "egypt_nile_wheat": {
+      "label": "Egypt Nile irrigated wheat",
+      "label_ko": "이집트 나일 관개 밀",
+      "unit": "kg/ha",
+      "point": 6768.6,
+      "range_68": [
+        6571.1,
+        6966.0
+      ],
+      "range_95": [
+        6381.5,
+        7155.6
+      ],
+      "trend": 6768.6,
+      "weather_effect_pct": 0.0,
+      "last_actual": {
+        "year": 2024,
+        "yield": 6777.7,
+        "provisional": false
+      },
+      "skill": {
+        "beats_trend": false,
+        "recent_skill_vs_trend": -0.4085458567911744,
+        "low_confidence": true,
+        "sigma_kg_ha": 197.48095062029415
+      },
+      "weather_through": "2026-08-01",
+      "critical_window_observed": 1.0,
+      "season_complete": true,
+      "provenance": {
+        "doc": "Regions/중동_북아프리카_MENA/MENA_밀_작황_방법론.md §3 이집트",
+        "caveat": "Labels: FAOSTAT national wheat — not governorate×season. salt_proxy and nile_inflow_proxy are hydrologic stand-ins, not EC or G-REALM stage. WD alone is never yield without irrigation_buffer.",
+        "non_weather_drivers": "Subsidised fertiliser, area policy, FX, and GASC import strategy move Nile wheat independently of weather.",
+        "label_source": "faostat_national_wheat",
+        "labels_provisional": false,
+        "labels_season_imperfect": true,
+        "operational_mode": "trend_only",
+        "salinity_is_proxy": true,
+        "nile_inflow_is_proxy": true,
+        "gee_used": false
+      },
+      "crops": {
+        "wheat": {
+          "label_ko": "이집트 나일 관개 밀",
+          "unit": "kg/ha",
+          "point": 6768.6,
+          "range_68": [
+            6571.1,
+            6966.0
+          ],
+          "range_95": [
+            6381.5,
+            7155.6
+          ],
+          "skill": {
+            "beats_trend": false,
+            "low_confidence": true
+          }
+        }
+      }
+    },
+    "morocco_atlantic_wheat": {
+      "label": "Morocco Atlantic rainfed wheat",
+      "label_ko": "모로코 대서양 천수답 밀",
+      "unit": "kg/ha",
+      "point": 2663.0,
+      "range_68": [
+        2293.7,
+        3032.3
+      ],
+      "range_95": [
+        1939.1,
+        3386.8
+      ],
+      "trend": 1722.1,
+      "weather_effect_pct": 54.64,
+      "last_actual": {
+        "year": 2024,
+        "yield": 1388.4,
+        "provisional": false
+      },
+      "skill": {
+        "beats_trend": true,
+        "recent_skill_vs_trend": 0.45418748050341273,
+        "low_confidence": true,
+        "sigma_kg_ha": 369.30843282353356
+      },
+      "weather_through": "2026-08-01",
+      "critical_window_observed": 1.0,
+      "season_complete": true,
+      "provenance": {
+        "doc": "Regions/중동_북아프리카_MENA/MENA_밀_작황_방법론.md §3 마그레브",
+        "caveat": "Labels: FAOSTAT national wheat — Chaouia ≠ Oriental. French–Schultz y_w_proxy is a rainfall scaffold, not APSIM potential.",
+        "non_weather_drivers": "MAPMDREF input subsidies, fallow area swings, and EU import parity reshape Moroccan wheat area beyond weather.",
+        "label_source": "faostat_national_wheat",
+        "labels_provisional": false,
+        "labels_season_imperfect": true,
+        "operational_mode": "weather_residual",
+        "salinity_is_proxy": true,
+        "nile_inflow_is_proxy": true,
+        "gee_used": false
+      },
+      "crops": {
+        "wheat": {
+          "label_ko": "모로코 대서양 천수답 밀",
+          "unit": "kg/ha",
+          "point": 2663.0,
+          "range_68": [
+            2293.7,
+            3032.3
+          ],
+          "range_95": [
+            1939.1,
+            3386.8
+          ],
+          "skill": {
+            "beats_trend": true,
+            "low_confidence": true
+          }
+        }
+      }
+    },
+    "algeria_hauts_wheat": {
+      "label": "Algeria Hauts Plateaux rainfed wheat",
+      "label_ko": "알제리 고원 천수답 밀",
+      "unit": "kg/ha",
+      "point": 2209.3,
+      "range_68": [
+        1956.8,
+        2461.8
+      ],
+      "range_95": [
+        1714.5,
+        2704.1
+      ],
+      "trend": 1969.8,
+      "weather_effect_pct": 12.16,
+      "last_actual": {
+        "year": 2024,
+        "yield": 1666.7,
+        "provisional": false
+      },
+      "skill": {
+        "beats_trend": true,
+        "recent_skill_vs_trend": 0.2946980692601052,
+        "low_confidence": true,
+        "sigma_kg_ha": 252.4540807396074
+      },
+      "weather_through": "2026-08-01",
+      "critical_window_observed": 1.0,
+      "season_complete": true,
+      "provenance": {
+        "doc": "Regions/중동_북아프리카_MENA/MENA_밀_작황_방법론.md §3 마그레브",
+        "caveat": "Labels: FAOSTAT national wheat/barley mix at country scale. Setif high-plateau frost risk not separately labelled.",
+        "non_weather_drivers": "Input access, land fragmentation, and bread-subsidy policy dominate Algerian plateau yields beyond seasonal rainfall.",
+        "label_source": "faostat_national_wheat",
+        "labels_provisional": false,
+        "labels_season_imperfect": true,
+        "operational_mode": "weather_residual",
+        "salinity_is_proxy": true,
+        "nile_inflow_is_proxy": true,
+        "gee_used": false
+      },
+      "crops": {
+        "wheat": {
+          "label_ko": "알제리 고원 천수답 밀",
+          "unit": "kg/ha",
+          "point": 2209.3,
+          "range_68": [
+            1956.8,
+            2461.8
+          ],
+          "range_95": [
+            1714.5,
+            2704.1
+          ],
+          "skill": {
+            "beats_trend": true,
+            "low_confidence": true
+          }
+        }
+      }
+    }
+  },
+  "climate_context": {
+    "oni_ndj": -0.37,
+    "enso": "neutral"
+  }
+}

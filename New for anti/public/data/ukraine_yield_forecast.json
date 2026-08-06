@@ -1,0 +1,47 @@
+{
+  "generated_at": "2026-08-05T14:18:34.124458+00:00",
+  "season": 2026,
+  "country": "Ukraine",
+  "source_note": "Target: SSSU/Ukrstat oblast wheat yield, sown-area-weighted by zone (Central / Southern / Western). Train ≤2021; Crimea/Donetsk/Luhansk excluded. War area/abandonment is a separate layer. Weather: NASA POWER + GWETROOT; Open-Meteo T/P only.",
+  "methodology_note": "Log technology trend + ridge weather residual. Skill from forward chaining with trend refit inside each fold. Features: autumn recharge, winterkill proxies, April GWETROOT, spring precip, grain-fill EDD. Shipping black_sea routes not mixed in.",
+  "regions": {
+    "central_winter_wheat": {
+      "label": "Central forest-steppe winter wheat (Poltava, Vinnytsia, Cherkasy)",
+      "label_ko": "중부 삼림스텝 겨울밀",
+      "forecast_available": false,
+      "reason_ko": "모델 없음 — 2015–2021 라벨만 있어 min_train 미달 (pre-2015 아카이브 필요)",
+      "season": 2026,
+      "unit": "kg/ha"
+    },
+    "southern_winter_wheat": {
+      "label": "Southern steppe winter wheat (Odesa, Mykolaiv, Kherson)",
+      "label_ko": "남부 스텝 겨울밀",
+      "forecast_available": false,
+      "reason_ko": "모델 없음 — 2015–2021 라벨만 있어 min_train 미달 (pre-2015 아카이브 필요)",
+      "season": 2026,
+      "unit": "kg/ha"
+    },
+    "western_winter_wheat": {
+      "label": "Western winter wheat (Ternopil, Khmelnytskyi, Rivne)",
+      "label_ko": "서부 겨울밀",
+      "forecast_available": false,
+      "reason_ko": "모델 없음 — 2015–2021 라벨만 있어 min_train 미달 (pre-2015 아카이브 필요)",
+      "season": 2026,
+      "unit": "kg/ha"
+    },
+    "ukraine_winter_wheat": {
+      "label": "Ukraine winter-wheat belt (Central + South + West)",
+      "label_ko": "우크라이나 겨울밀 벨트",
+      "forecast_available": false,
+      "reason_ko": "모델 없음 — 2015–2021 라벨만 있어 min_train 미달 (pre-2015 아카이브 필요)",
+      "season": 2026,
+      "unit": "kg/ha"
+    }
+  },
+  "skipped": {
+    "central_winter_wheat": "no trained model",
+    "southern_winter_wheat": "no trained model",
+    "western_winter_wheat": "no trained model",
+    "ukraine_winter_wheat": "no trained model"
+  }
+}
