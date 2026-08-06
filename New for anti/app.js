@@ -257,7 +257,7 @@ const clearTradeFocus = () => {
     selectedCountry = null;
     if (currentCommodity && window.TradeData?.[currentCommodity]?.arcs?.length) {
         renderMapLayers(window.TradeData[currentCommodity].arcs);
-        updateNewsPanel('Global Market');
+        renderTradeWorldPanel(window.TradeData[currentCommodity].arcs);
         panelHide(countryStatsPanelEl);
         panelShow(newsPanelEl);
     }
@@ -303,16 +303,32 @@ const focusTradeCountry = (countryName) => {
     const unit = currentCommodity === 'oil' ? 'M USD'
         : (currentCommodity === 'gold' || currentCommodity === 'silver' ? 'Tonnes eq.' : 'M USD');
     const roleKo = asExporter ? '수출 → 대상국' : '수입 ← 공급국';
+    const maxVol = focused[0]?.volume || 1;
     const rows = focused.slice(0, 12).map((a, i) => {
-        const partner = asExporter ? a.targetName : a.sourceName;
+        const partner = resolveCountry(asExporter ? a.targetName : a.sourceName)?.label
+            || (asExporter ? a.targetName : a.sourceName);
         const share = (a.volume / total) * 100;
-        return `<div class="trade-rank-row" data-partner="${partner}">
+        return `<div class="trade-rank-row trade-bar-row" data-partner="${partner}">
             <span class="tr-i">${i + 1}</span>
             <span class="tr-name">${partner}</span>
+            <span class="tr-bar"><i style="width:${Math.max(3, (a.volume / maxVol) * 100)}%"></i></span>
             <span class="tr-pct">${share.toFixed(1)}%</span>
             <span class="tr-vol">${a.volume.toLocaleString()}</span>
         </div>`;
     }).join('');
+
+    // Export / import / net, so a country reads as a position rather than a
+    // one-directional list. Net is what says whether it is a seller or a buyer.
+    const net = exportVol - importVol;
+    const statsHtml = `
+        <div class="trade-stat-row">
+            <div class="ts-cell"><span class="ts-k">수출</span>
+                <span class="ts-v">${exportVol.toLocaleString()}</span></div>
+            <div class="ts-cell"><span class="ts-k">수입</span>
+                <span class="ts-v">${importVol.toLocaleString()}</span></div>
+            <div class="ts-cell"><span class="ts-k">순수지</span>
+                <span class="ts-v ${net >= 0 ? 'pos' : 'neg'}">${net >= 0 ? '+' : ''}${net.toLocaleString()}</span></div>
+        </div>`;
 
     if (newsPanelEl) panelShow(newsPanelEl);
     panelHide(countryStatsPanelEl);
@@ -327,6 +343,7 @@ const focusTradeCountry = (countryName) => {
                     <button type="button" class="trade-focus-clear" id="trade-focus-clear">전체 지도</button>
                 </div>
                 <p class="trade-focus-sub">${asExporter ? '수출 대상국' : '수입 공급국'} 순위 · 비중% · 물동량(${unit})</p>
+                ${statsHtml}
                 <div class="trade-rank-list">${rows || '<p class="empty-state">이 국가 루트 없음</p>'}</div>
             </div>`;
         document.getElementById('trade-focus-clear')?.addEventListener('click', (e) => {
@@ -342,6 +359,45 @@ const focusTradeCountry = (countryName) => {
 // Kept for any legacy callers; trade UI no longer opens the right stats column.
 const updateCountryStatsPanel = async (countryName) => {
     focusTradeCountry(countryName);
+};
+
+/**
+ * Default commodity view: who ships the most, with a bar for scale.
+ *
+ * The left column used to open on news alone, which said nothing about the map
+ * beside it. The mockup's reading order is structure first -- the ranking
+ * explains the thick lines you are looking at -- so news moves below it.
+ */
+const renderTradeWorldPanel = (arcs) => {
+    const byExporter = new Map();
+    for (const a of arcs) {
+        if (!(a.volume > 0)) continue;
+        const key = resolveCountry(a.sourceName)?.label || a.sourceName;
+        byExporter.set(key, (byExporter.get(key) || 0) + a.volume);
+    }
+    const ranked = [...byExporter.entries()].sort((x, y) => y[1] - x[1]);
+    const total = ranked.reduce((s, [, v]) => s + v, 0) || 1;
+    const max = ranked[0]?.[1] || 1;
+
+    const rows = ranked.slice(0, 10).map(([name, vol], i) => {
+        const share = (vol / total) * 100;
+        return `<div class="trade-rank-row trade-bar-row climate-click"
+                     role="button" tabindex="0" data-trade-country="${name}">
+            <span class="tr-i">${i + 1}</span>
+            <span class="tr-name">${name}</span>
+            <span class="tr-bar"><i style="width:${Math.max(3, (vol / max) * 100)}%"></i></span>
+            <span class="tr-pct">${share.toFixed(1)}%</span>
+        </div>`;
+    }).join('');
+
+    if (!newsContentEl) return;
+    const newsTitle = document.querySelector('#news-panel .section-title');
+    if (newsTitle) newsTitle.textContent = '주요 수출국 · 물동량 상위';
+    newsContentEl.innerHTML = `
+        <div class="trade-focus-card">
+            <p class="trade-focus-sub">비중% · 막대는 상대 물동량 · 국가를 누르면 그 나라 노선만 남습니다</p>
+            <div class="trade-rank-list">${rows || '<p class="empty-state">무역 루트 없음</p>'}</div>
+        </div>`;
 };
 
 const updateNewsPanel = (countryName) => {
@@ -556,189 +612,95 @@ const renderYieldForecast = async (regionName) => {
 const COUNTRIES_GEOJSON =
     'https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json';
 
-const CLIMATE_COUNTRIES = {
-    'United States': {
-        label: '미국',
-        modelName: 'US Corn Belt Model',
-        iso: 'USA',
-        view: { longitude: -96.0, latitude: 39.5, zoom: 3.6 },
-        dataFile: 'yield_forecast.json',
-        // Each entry maps to a region key in yield_forecast.json. Wheat sits
-        // apart from the Corn Belt because it is a different geography with
-        // its own states and weights.
-        regions: [
-            { name: 'US Corn Belt', label: '콘벨트 (옥수수·대두)',
-              coordinates: [-91.0, 41.5], regionKey: 'corn_belt' },
-            { name: 'US Great Plains', label: '대평원 (겨울밀)',
-              coordinates: [-99.0, 38.0], regionKey: 'great_plains' },
-            { name: 'US Northern Plains', label: '북부대평원 (봄밀)',
-              coordinates: [-100.5, 47.0], regionKey: 'northern_plains' },
-            { name: 'US Cotton Belt', label: '남부 텍사스 (면화)',
-              coordinates: [-101.9, 33.6], regionKey: 'cotton_belt' },
-        ],
-    },
-    'Brazil': {
-        label: '브라질',
-        modelName: 'Brazil Regional Model',
-        iso: 'BRA',
-        view: { longitude: -52.0, latitude: -13.0, zoom: 3.6 },
-        dataFile: 'brazil_yield_forecast.json',
-        // Coordinates are stated here rather than looked up in CountriesData:
-        // that map is built for trade routes and is missing several of these
-        // producing regions, which silently dropped their markers.
-        regions: [
-            { name: 'Mato Grosso (Brazil)', label: '마투그로수 (대두·옥수수)',
-              coordinates: [-55.4, -12.6],
-              regionKeys: ['mato_grosso_soja', 'mato_grosso_milho'] },
-            { name: 'Rio Grande do Sul (Brazil)', label: '파라나·히우그란지두술',
-              coordinates: [-52.3, -27.0],
-              regionKeys: ['parana_soja', 'parana_milho', 'parana_trigo'] },
-            { name: 'MATOPIBA (Brazil)', label: 'MATOPIBA (대두·면화)',
-              coordinates: [-45.5, -10.5],
-              regionKeys: ['matopiba_soja', 'matopiba_algodao'] },
-            { name: 'Sao Paulo (Brazil)', label: '상파울루 (사탕수수·커피)',
-              coordinates: [-47.8, -21.4],
-              regionKeys: ['sp_cana', 'sp_cafe', 'sp_laranja'] },
-        ],
-    },
-    // Forecast JSON is produced by Actions; if the file is absent the country
-    // panel shows empty rather than inventing numbers (see loadClimateForecast).
-    'India': {
-        label: '인도',
-        iso: 'IND',
-        view: { longitude: 78.0, latitude: 23.5, zoom: 3.8 },
-        dataFile: 'india_yield_forecast.json',
-        regions: [
-            { name: 'Punjab (India)', label: '펀자브·하리아나 (밀)',
-              coordinates: [75.8, 30.4], regionKeys: ['punjab_wheat'] },
-            { name: 'Madhya Pradesh (India)', label: '마디아프라데시 (대두)',
-              coordinates: [77.0, 23.2], regionKeys: ['mp_soybean'] },
-            { name: 'Vidarbha (India)', label: '비다르바·마라트와다·구자라트 (면화)',
-              coordinates: [76.5, 21.0], regionKeys: ['vidarbha_cotton'] },
-        ],
-    },
-    'Argentina': {
-        label: '아르헨티나',
-        modelName: 'Pampas + Norte Model',
-        iso: 'ARG',
-        view: { longitude: -64.0, latitude: -34.0, zoom: 3.8 },
-        dataFile: 'argentina_yield_forecast.json',
-        regions: [
-            { name: 'Pampas soy (Argentina)', label: '팜파스 (대두)',
-              coordinates: [-61.5, -34.0], regionKeys: ['pampas_soja'] },
-            { name: 'Pampas corn (Argentina)', label: '팜파스 (옥수수)',
-              coordinates: [-62.2, -32.5], regionKeys: ['pampas_maiz'] },
-            { name: 'Norte soy (Argentina)', label: '북부 NOA/NEA (대두)',
-              coordinates: [-62.5, -26.5], regionKeys: ['norte_soja'] },
-            { name: 'Chaco cotton (Argentina)', label: '차코 (면화)',
-              coordinates: [-60.5, -26.8], regionKeys: ['chaco_algodon'] },
-            // Wheat sits four degrees south of the soy belt -- Tres Arroyos and
-            // Coronel Suárez, not Pergamino -- because that is where 57% of
-            // Argentine wheat is and it runs on a different frost calendar.
-            // Between January and October this card reports why it is not
-            // forecasting rather than showing a number (see reason_ko).
-            { name: 'Pampas wheat (Argentina)', label: '팜파스 남부 (밀)',
-              coordinates: [-60.3, -38.4], regionKeys: ['pampas_trigo'] },
-            // No trained model: MAGyP's cane series stops at 2004/05. The card
-            // carries the explanation so the gap reads as a decision.
-            { name: 'Tucuman cane (Argentina)', label: '투쿠만 (사탕수수)',
-              coordinates: [-65.3, -27.0], regionKeys: ['tucuman_cana'] },
-        ],
-    },
-    'Australia': {
-        label: '호주',
-        modelName: 'Wheat Belt Model',
-        iso: 'AUS',
-        view: { longitude: 134.0, latitude: -27.0, zoom: 3.4 },
-        dataFile: 'australia_yield_forecast.json',
-        regions: [
-            { name: 'WA wheat (Australia)', label: '서호주 밀',
-              coordinates: [117.0, -31.5], regionKeys: ['wa_wheat'] },
-            { name: 'SA wheat (Australia)', label: '남호주 밀',
-              coordinates: [138.0, -34.0], regionKeys: ['sa_wheat'] },
-            { name: 'VIC wheat (Australia)', label: '빅토리아 밀',
-              coordinates: [143.0, -36.5], regionKeys: ['vic_wheat'] },
-        ],
-    },
-    'China': {
-        label: '중국',
-        modelName: 'Regional crop suite',
-        iso: 'CHN',
-        view: { longitude: 105.0, latitude: 35.0, zoom: 3.5 },
-        dataFile: 'china_yield_forecast.json',
-        // All three currently fail beats_trend (skill deeply negative) — UI
-        // still shows them with low-confidence badges so we do not hide failure.
-        regions: [
-            { name: 'Henan wheat (China)', label: '허난·황화이하이 (겨울밀)',
-              coordinates: [113.7, 34.0], regionKeys: ['henan_wheat'] },
-            { name: 'Yangtze rice (China)', label: '장강 유역 (벼)',
-              coordinates: [114.3, 30.6], regionKeys: ['yangtze_rice'] },
-            { name: 'Shandong vegetables (China)', label: '산둥 (채소)',
-              coordinates: [118.0, 36.5], regionKeys: ['shandong_vegetables'] },
-        ],
-    },
-    'Indonesia': {
-        label: '인도네시아',
-        modelName: 'National panel (baseline)',
-        iso: 'IDN',
-        view: { longitude: 118.0, latitude: -2.5, zoom: 3.6 },
-        dataFile: 'indonesia_yield_forecast.json',
-        // climate_gate often stops weather features (short sample); forecasts
-        // are trend baselines with low_confidence in skill.yield.
-        regions: [
-            { name: 'Indonesia rice', label: '쌀 (전국)',
-              coordinates: [112.5, -7.5], regionKeys: ['indonesia_rice'] },
-            { name: 'Indonesia oil palm', label: '팜유 과실',
-              coordinates: [113.9, -2.2], regionKeys: ['indonesia_oil_palm'] },
-            { name: 'Indonesia coffee', label: '커피',
-              coordinates: [110.4, -7.8], regionKeys: ['indonesia_coffee'] },
-            { name: 'Indonesia rubber', label: '천연고무',
-              coordinates: [104.0, -3.0], regionKeys: ['indonesia_rubber'] },
-        ],
-    },
-    // West Africa cocoa: reference / government outlook only — no yield forecast
-    // (data cannot support validated regional forecasts). GeoJSON name = Ghana / Ivory Coast.
-    'Ghana': {
-        label: '가나',
-        modelName: '서아프리카 코코아 (참고)',
-        iso: 'GHA',
-        panelMode: 'reference',
-        view: { longitude: -1.2, latitude: 7.6, zoom: 6.2 },
-        dataFile: 'ghana_yield_forecast.json',
-        regions: [
-            { name: 'Ghana Cocoa Belt', label: '코코아 벨트 (참고)',
-              coordinates: [-1.6, 6.4], regionKeys: ['ghana_cocoa'] },
-        ],
-    },
-    'Ivory Coast': {
-        label: '코트디부아르',
-        modelName: '서아프리카 코코아 (참고)',
-        iso: 'CIV',
-        panelMode: 'reference',
-        // johan world.geo.json name is "Ivory Coast"; keep aliases for fuzzy match.
-        aliases: ["Côte d'Ivoire", "Cote d'Ivoire"],
-        view: { longitude: -5.5, latitude: 7.0, zoom: 6.0 },
-        dataFile: 'cote_divoire_yield_forecast.json',
-        regions: [
-            { name: 'CIV Cocoa Belt', label: '코코아 벨트 (참고)',
-              coordinates: [-6.5, 6.2], regionKeys: ['cote_divoire_cocoa'] },
-        ],
-    },
+// === Country registry (generated, not hand-written) =======================
+//
+// These two used to be object literals holding every modelled country. Adding a
+// country meant editing this file, so two terminals adding two countries edited
+// the same lines -- which is how a session's UI work was lost on 2026-08-05.
+//
+// They are now filled from public/data/climate_registry_v1.json, which CI builds
+// from scripts/yield_model/*/model.yaml. A country lands entirely inside its own
+// folder and never touches app.js.
+//
+// Deliberately `let` and initially empty: nothing renders the climate view
+// before loadClimateRegistry() resolves, and an empty object renders an empty
+// map rather than throwing.
+let CLIMATE_COUNTRIES = {};
+let CLIMATE_TRADE_POLICY = {};
+
+const CLIMATE_REGISTRY_URL = '/public/data/climate_registry_v1.json';
+let climateRegistryPromise = null;
+
+/**
+ * Registry entry -> the shape the rest of app.js already speaks.
+ *
+ * The manifest is written for whoever trains the model (snake_case, region keys
+ * that match the forecast JSON); the UI grew up with camelCase and a `name`
+ * per region. Translating here keeps both sides readable instead of forcing
+ * either to adopt the other's vocabulary.
+ */
+const adaptRegistryCountry = (entry) => ({
+    label: entry.label_ko || entry.label_en,
+    modelName: entry.model_name || null,
+    iso: entry.iso,
+    panelMode: entry.panel_mode,
+    aliases: entry.aliases || undefined,
+    dataFile: entry.data_file,
+    view: entry.view,
+    // How much the numbers have earned. Surfaced as a badge so a country whose
+    // regions all score worse than a trend baseline does not read as settled.
+    modelStatus: entry.model_status || null,
+    statusNote: entry.status_note_ko || null,
+    sources: entry.sources || null,
+    regions: (entry.regions || []).map((r) => ({
+        name: r.ui_name || r.key,
+        label: r.label_ko || r.key,
+        coordinates: r.coordinates,
+        regionKeys: r.crops_region_keys && r.crops_region_keys.length
+            ? r.crops_region_keys
+            : (r.key ? [r.key] : []),
+    })),
+});
+
+const adaptRegistryPolicy = (entry) => {
+    const p = entry.trade_policy || {};
+    return {
+        restricted: !!p.restricted,
+        prohibitedCrops: p.prohibited_crops || [],
+        note: p.note_ko || '',
+    };
 };
 
-// 무역·수출 통제 seed (지도 국가 색). 실제 정책 피드 연동 전까지 UI 규칙용.
-// blue=정상 · yellow=restricted · orange=금지 1개 · red=곡물 금지 2개+
-const CLIMATE_TRADE_POLICY = {
-    'United States': { restricted: false, prohibitedCrops: [], note: '정상 수출' },
-    'Brazil': { restricted: false, prohibitedCrops: [], note: '정상' },
-    'India': { restricted: true, prohibitedCrops: [], note: '수출 인허가·쿼터 등 제한적 조치 (seed)' },
-    'Argentina': { restricted: false, prohibitedCrops: ['corn'], note: '옥수수 관련 수출 통제 seed (1품목 → 주황)' },
-    'Australia': { restricted: false, prohibitedCrops: [], note: '정상' },
-    'China': { restricted: false, prohibitedCrops: ['corn', 'wheat'], note: '주요 곡물 수출 제한 seed (2+ → 적)' },
-    'Indonesia': { restricted: true, prohibitedCrops: ['palm_oil'], note: '팜 등 통제 seed (1품목 금지 → 주황 우선)' },
-    'Ghana': { restricted: false, prohibitedCrops: [], note: '코코아 참고국 · 예측 아님' },
-    'Ivory Coast': { restricted: false, prohibitedCrops: [], note: '코코아 참고국 · 예측 아님' },
+/** Fetch once; every caller shares the same promise. */
+const loadClimateRegistry = () => {
+    if (climateRegistryPromise) return climateRegistryPromise;
+    climateRegistryPromise = fetch(CLIMATE_REGISTRY_URL, { cache: 'no-cache' })
+        .then((res) => {
+            if (!res.ok) throw new Error(`registry ${res.status}`);
+            return res.json();
+        })
+        .then((doc) => {
+            const countries = {};
+            const policy = {};
+            for (const [name, entry] of Object.entries(doc.countries || {})) {
+                countries[name] = adaptRegistryCountry(entry);
+                policy[name] = adaptRegistryPolicy(entry);
+            }
+            CLIMATE_COUNTRIES = countries;
+            CLIMATE_TRADE_POLICY = policy;
+            console.log(`[Climate] registry: ${Object.keys(countries).length} countries`);
+            return doc;
+        })
+        .catch((err) => {
+            // An empty climate map is a visible, honest failure. Falling back to
+            // a stale hardcoded list would quietly show countries that no longer
+            // match what the pipelines produce.
+            console.error('[Climate] registry load failed — climate view will be empty', err);
+            return null;
+        });
+    return climateRegistryPromise;
 };
+
 
 const TRADE_FILL = {
     // Softened fills — vivid pills were competing with the basemap / SST wash.
@@ -1253,6 +1215,29 @@ const handleClimateDomKey = (e) => {
     e.preventDefault();
     handleClimateDomAction(e);
 };
+
+// Flow particles are the one thing on this map that moves; some readers want
+// the structure still. Toggling redraws rather than pausing, so a paused map is
+// never a frame frozen mid-animation.
+document.getElementById('trade-flow-toggle')?.addEventListener('click', (e) => {
+    tradeFlowOn = !tradeFlowOn;
+    const b = e.currentTarget;
+    b.textContent = tradeFlowOn ? '켜기' : '끄기';
+    b.classList.toggle('is-on', tradeFlowOn);
+    const arcs = window.TradeData?.[currentCommodity]?.arcs;
+    if (arcs?.length) renderMapLayers(arcs, { focus: tradeFocusCountry, keepView: true });
+});
+
+// Ranking rows focus a country, same as clicking it on the globe.
+document.getElementById('news-content')?.addEventListener('click', (e) => {
+    const row = e.target instanceof Element ? e.target.closest('[data-trade-country]') : null;
+    if (!row || currentCommodity === 'climate') return;
+    const label = row.getAttribute('data-trade-country');
+    const arcs = window.TradeData?.[currentCommodity]?.arcs || [];
+    // Rows carry the display label; find whatever spelling the data uses.
+    const hit = arcs.find((a) => (resolveCountry(a.sourceName)?.label || a.sourceName) === label);
+    if (hit) focusTradeCountry(hit.sourceName);
+});
 
 // One-time delegation on durable panel roots (survives innerHTML rebuilds).
 const wireClimateDomClicks = (root) => {
@@ -2633,6 +2618,35 @@ const setClimateRegionLabels = (points) => {
 };
 wireClimateDomClicks(climateRegionLabelsEl);
 
+/**
+ * Says how finished a country's model is, right where its numbers are.
+ *
+ * Without this China reads exactly like the US: same layout, same decimals.
+ * Its three regions all score worse than a trend-only baseline (-0.57 to
+ * -1.60) and India's single published region scores 0.009, so presenting
+ * either as settled would be the interface lying on the model's behalf.
+ */
+const MODEL_STATUS_KO = {
+    validated: { label: '검증 통과', cls: 'green' },
+    provisional: { label: '부분 검증', cls: 'yellow' },
+    training: { label: '학습 중', cls: 'orange' },
+};
+
+const setModelStatusBadge = (cfg) => {
+    const host = document.getElementById('current-view-desc');
+    if (!host) return;
+    document.getElementById('model-status-badge')?.remove();
+    if (!cfg?.modelStatus) return;
+    const s = MODEL_STATUS_KO[cfg.modelStatus] || { label: cfg.modelStatus, cls: 'blue' };
+    const el = document.createElement('div');
+    el.id = 'model-status-badge';
+    el.className = 'model-status-badge';
+    el.innerHTML = `
+        <span class="climate-status-pill ${s.cls}">${s.label}</span>
+        ${cfg.statusNote ? `<span class="ms-note">${cfg.statusNote}</span>` : ''}`;
+    host.insertAdjacentElement('afterend', el);
+};
+
 const climateWorldViewState = () => (
     // Real curvature: _GlobeView bends our own vector basemap (req 13).
     // Latitude 18 puts the modelled belt -- US, Brazil, India, SE Asia -- across
@@ -2778,6 +2792,7 @@ const renderClimateWorldRight = async () => {
 
 const showClimateWorld = async () => {
     try {
+    await loadClimateRegistry();
     climateLevel = 'world';
     climateCountry = null;
     climateHover = null;
@@ -2974,6 +2989,7 @@ const buildRegionPoints = async (cfg) => {
 
 const showClimateCountry = async (countryName) => {
     try {
+    await loadClimateRegistry();
     const cfg = CLIMATE_COUNTRIES[countryName];
     if (!cfg) return;
 
@@ -2989,6 +3005,7 @@ const showClimateCountry = async (countryName) => {
     const pol = CLIMATE_TRADE_POLICY[countryName] || {};
 
     currentViewTitle.textContent = `${cfg.label} ${cfg.iso || ''}`.trim();
+    setModelStatusBadge(cfg);
     currentViewDesc.textContent = isClimateReference(null, cfg) || cfg.panelMode === 'reference'
         ? `${cfg.regions.length}개 산지 · 예측 불가 · 좌측 정부 전망·조사 메모 · ← 세계 지도`
         : `국가 워크스페이스 · ${cfg.regions.length}개 산지 핀 · 좌측 기관/캘린더 · 우측 집계 · 핀→모델 설명`;
@@ -3732,10 +3749,13 @@ const buildTradeTrailParticles = (arcs, phase) => {
     return out;
 };
 
+let tradeFlowOn = true;
+
 const renderMapLayers = (arcs, opts = {}) => {
     stopTradeAnim();
     document.body.classList.add('trade-map-mode');
     document.body.classList.remove('shipping-mode');
+    document.getElementById('trade-overlay')?.classList.remove('hidden');
 
     const focus = opts.focus || tradeFocusCountry;
     const asExporter = opts.asExporter !== false;
@@ -3865,7 +3885,9 @@ const renderMapLayers = (arcs, opts = {}) => {
         }),
     ];
 
-    const trailData = () => buildTradeTrailParticles(opts._focusedList || filteredArcs.slice(0, 36), tradeAnimPhase);
+    const trailData = () => (tradeFlowOn
+        ? buildTradeTrailParticles(opts._focusedList || filteredArcs.slice(0, 36), tradeAnimPhase)
+        : []);
 
     deckgl.setProps({
         views: [new _GlobeView({ id: 'globe', resolution: 2, controller: true })],
@@ -4004,6 +4026,7 @@ const setView = (target) => {
     if (!(window.TradeData && window.TradeData[target])) {
         stopTradeAnim();
         document.body.classList.remove('trade-map-mode');
+        document.getElementById('trade-overlay')?.classList.add('hidden');
         tradeFocusCountry = null;
     }
 
@@ -4017,6 +4040,7 @@ const setView = (target) => {
         hideClimateTooltip();
         setClimateTargetHud(null);
         setClimateRegionLabels([]);
+        setModelStatusBadge(null);
         setClimateCommodityHeader(null);
         if (climateMapLegendEl) climateMapLegendEl.classList.add('hidden');
         if (climateRightPanelEl) climateRightPanelEl.classList.add('hidden');
@@ -4126,15 +4150,19 @@ const setView = (target) => {
     } else if (target === 'climate') {
         currentCommodity = 'climate';
         setClimateCommodityHeader('climate');
+        // The country list arrives over the network now, so everything below
+        // has to wait for it -- otherwise the first paint is an empty world.
+        loadClimateRegistry().then(() => {
+            if (currentCommodity !== 'climate') return;
+            totalVolumeEl.textContent = `${Object.keys(CLIMATE_COUNTRIES).length}개국`;
+            showClimateWorld();
+        });
         // World climate: no right pane (req 11). Country drill re-enables it.
         togglePanels({ forecast: true, climateRight: false, left: true, right: false });
         
         currentViewTitle.textContent = '기후·작황 예측';
         currentViewDesc.textContent = '곡면 세계 지도 · SST 워시 · 모델국 클릭';
-        totalVolumeEl.textContent = `${Object.keys(CLIMATE_COUNTRIES).length}개국`;
         topExporterEl.textContent = 'Status coloring';
-        
-        showClimateWorld();
 
     } else if (window.TradeData[target]) {
         // Render a supported commodity map
@@ -4152,7 +4180,7 @@ const setView = (target) => {
         totalVolumeEl.textContent = data.totalVolume;
         topExporterEl.textContent = data.topExporter;
 
-        // Reset news and map
+        // Ranking first (it explains the map), news below it.
         updateNewsPanel('Global Market');
 
         // Lazy Loading: if arcs are empty, fetch real data from UN Comtrade
@@ -4174,6 +4202,7 @@ const setView = (target) => {
                 if (arcs.length > 0) {
                     data.arcs = arcs; // Cache for future clicks
                     currentViewDesc.textContent = data.desc + ` (데이터 출처: UN Comtrade API | ${arcs.length}개 무역 루트) · 국가 클릭 → 수출 대상 순위`;
+                    renderTradeWorldPanel(data.arcs);
                     renderMapLayers(data.arcs);
                 } else {
                     currentViewDesc.textContent = data.desc + " (UN Comtrade 데이터 로딩 실패 — 재시도 필요)";
@@ -4188,6 +4217,7 @@ const setView = (target) => {
             stopRotation();
             currentViewState = clampGlobeView({ ...TRADE_MAP_VIEW });
             currentViewDesc.textContent = data.desc + ` (데이터 출처: UN Comtrade API | ${data.arcs.length}개 무역 루트) · 국가 클릭 → 수출 대상 순위`;
+            renderTradeWorldPanel(data.arcs);
             renderMapLayers(data.arcs);
         }
 
