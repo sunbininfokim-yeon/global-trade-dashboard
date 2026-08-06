@@ -1,0 +1,43 @@
+name: Refresh global climate indices
+
+# ENSO·IOD 를 NOAA 원본에서 갱신한다.
+#
+# 이 값들은 원래 파일에 손으로 박혀 있었고 "(seed)" 라벨이 붙어 있었다.
+# 2026-08-06 확인 시 seed 는 ONI -0.9 (라니냐) 였는데 실제 CPC 값은 +1.39
+# (엘니뇨 중) 로 부호가 반대였다. 학습 파이프라인은 같은 URL 을 실시간으로
+# 읽고 있었으므로, 화면만 반대 국면을 표시하고 있었던 셈이다.
+
+on:
+  schedule:
+    # CPC 는 매월 초 ONI 를 갱신한다. 주 1회면 충분하고 상한도 여유롭다.
+    - cron: '40 7 * * 1'
+  workflow_dispatch:
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Fetch NOAA CPC ONI and PSL DMI
+        working-directory: "New for anti/scripts"
+        run: python3 build_climate_global.py
+
+      - name: Commit if the indices moved
+        run: |
+          f="New for anti/public/data/climate_global_v1.json"
+          if git diff --quiet -- "$f"; then exit 0; fi
+          # generated_at alone is not a change worth a commit.
+          if ! git diff -- "$f" | grep -E '^[+-]' | grep -v '^[+-][+-]' | grep -qv 'generated_at'; then
+            git checkout -- "$f"; exit 0
+          fi
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add "$f"
+          git commit -m "chore: refresh ENSO/IOD from NOAA"
+          git push

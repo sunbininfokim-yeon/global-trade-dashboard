@@ -1,34 +1,74 @@
 {
   "schema_version": "climate-global-v1",
-  "generated_at": "2026-08-04T00:00:00+00:00",
-  "note": "주요 수치 seed. Actions/수동 갱신 예정. UI는 이 파일이 없으면 축소 표시.",
+  "generated_at": "2026-08-06T07:46:29.239114+00:00",
+  "note": "ENSO·IOD 는 NOAA 원본에서 실시간 갱신됩니다 (build_climate_global.py). 도시 기온·대륙 편차 등 나머지 항목은 아직 seed 이며 갱신 예정입니다.",
   "enso": {
     "index": "Niño 3.4 ONI",
-    "source": "NOAA CPC (seed)",
-    "latest_c": -0.9,
-    "state_ko": "라니냐 · 약~중",
-    "state_en": "La Niña weak–moderate",
-    "prob_continue_pct": 68,
+    "source": "NOAA CPC (live)",
+    "source_url": "https://www.cpc.ncep.noaa.gov/data/indices/oni.ascii.txt",
+    "season": "MJJ",
+    "latest_c": 1.39,
+    "state_ko": "엘니뇨 · 중",
+    "state_en": "El Niño moderate",
+    "prob_continue_pct": null,
     "series": [
-      { "label": "25-08", "oni": -0.3 },
-      { "label": "25-09", "oni": -0.4 },
-      { "label": "25-10", "oni": -0.6 },
-      { "label": "25-11", "oni": -0.7 },
-      { "label": "25-12", "oni": -0.8 },
-      { "label": "26-01", "oni": -0.9 },
-      { "label": "26-02", "oni": -1.0 },
-      { "label": "26-03", "oni": -0.95 },
-      { "label": "26-04", "oni": -0.85 },
-      { "label": "26-05", "oni": -0.8 },
-      { "label": "26-06", "oni": -0.85 },
-      { "label": "26-07", "oni": -0.9 }
+      {
+        "label": "25-JJA",
+        "oni": -0.11
+      },
+      {
+        "label": "25-JAS",
+        "oni": -0.26
+      },
+      {
+        "label": "25-ASO",
+        "oni": -0.43
+      },
+      {
+        "label": "25-SON",
+        "oni": -0.57
+      },
+      {
+        "label": "25-OND",
+        "oni": -0.61
+      },
+      {
+        "label": "25-NDJ",
+        "oni": -0.6
+      },
+      {
+        "label": "26-DJF",
+        "oni": -0.39
+      },
+      {
+        "label": "26-JFM",
+        "oni": -0.21
+      },
+      {
+        "label": "26-FMA",
+        "oni": 0.11
+      },
+      {
+        "label": "26-MAM",
+        "oni": 0.46
+      },
+      {
+        "label": "26-AMJ",
+        "oni": 0.95
+      },
+      {
+        "label": "26-MJJ",
+        "oni": 1.39
+      }
     ]
   },
   "iod": {
     "index": "Indian Ocean Dipole DMI",
-    "source": "NOAA PSL / BOM (seed)",
-    "latest": 0.42,
-    "state_ko": "양성 (Positive)",
+    "source": "NOAA PSL / HadISST (live)",
+    "source_url": "https://psl.noaa.gov/gcos_wgsp/Timeseries/Data/dmi.had.long.data",
+    "latest": 0.15,
+    "as_of": "2026-05",
+    "state_ko": "중립",
     "note_ko": "양의 IOD는 인도·호주 강수 패턴과 연동되는 경우가 많음"
   },
   "north_atlantic": {
@@ -42,28 +82,103 @@
     "unit": "°C",
     "source": "seed — ERA5/NOAA 월평균 대체 예정",
     "values": [
-      { "name": "북미", "key": "NA", "anomaly": 1.62 },
-      { "name": "남미", "key": "SA", "anomaly": 0.74 },
-      { "name": "유럽", "key": "EU", "anomaly": 1.95 },
-      { "name": "아프리카", "key": "AF", "anomaly": 1.18 },
-      { "name": "아시아", "key": "AS", "anomaly": 1.47 },
-      { "name": "오세아니아", "key": "OC", "anomaly": 0.88 }
+      {
+        "name": "북미",
+        "key": "NA",
+        "anomaly": 1.62
+      },
+      {
+        "name": "남미",
+        "key": "SA",
+        "anomaly": 0.74
+      },
+      {
+        "name": "유럽",
+        "key": "EU",
+        "anomaly": 1.95
+      },
+      {
+        "name": "아프리카",
+        "key": "AF",
+        "anomaly": 1.18
+      },
+      {
+        "name": "아시아",
+        "key": "AS",
+        "anomaly": 1.47
+      },
+      {
+        "name": "오세아니아",
+        "key": "OC",
+        "anomaly": 0.88
+      }
     ]
   },
   "cities": [
-    { "name": "Chicago", "label_ko": "시카고 · 콘벨트", "lat": 41.88, "lon": -87.63, "country": "United States" },
-    { "name": "Sao Paulo", "label_ko": "상파울루 · 브라질", "lat": -23.55, "lon": -46.63, "country": "Brazil" },
-    { "name": "Buenos Aires", "label_ko": "부에노스아이레스", "lat": -34.60, "lon": -58.38, "country": "Argentina" },
-    { "name": "Zhengzhou", "label_ko": "정저우 · 황화이하이", "lat": 34.75, "lon": 113.65, "country": "China" },
-    { "name": "New Delhi", "label_ko": "뉴델리 · 인도", "lat": 28.61, "lon": 77.21, "country": "India" },
-    { "name": "Perth", "label_ko": "퍼스 · 서호주", "lat": -31.95, "lon": 115.86, "country": "Australia" }
+    {
+      "name": "Chicago",
+      "label_ko": "시카고 · 콘벨트",
+      "lat": 41.88,
+      "lon": -87.63,
+      "country": "United States"
+    },
+    {
+      "name": "Sao Paulo",
+      "label_ko": "상파울루 · 브라질",
+      "lat": -23.55,
+      "lon": -46.63,
+      "country": "Brazil"
+    },
+    {
+      "name": "Buenos Aires",
+      "label_ko": "부에노스아이레스",
+      "lat": -34.6,
+      "lon": -58.38,
+      "country": "Argentina"
+    },
+    {
+      "name": "Zhengzhou",
+      "label_ko": "정저우 · 황화이하이",
+      "lat": 34.75,
+      "lon": 113.65,
+      "country": "China"
+    },
+    {
+      "name": "New Delhi",
+      "label_ko": "뉴델리 · 인도",
+      "lat": 28.61,
+      "lon": 77.21,
+      "country": "India"
+    },
+    {
+      "name": "Perth",
+      "label_ko": "퍼스 · 서호주",
+      "lat": -31.95,
+      "lon": 115.86,
+      "country": "Australia"
+    }
   ],
   "climate_derivatives": {
     "note_ko": "주요 참고만 표시. 실거래 연동은 추후.",
     "items": [
-      { "name": "CME CDD Chicago 8월", "price": "412.5", "chg_pct": 2.1, "oi": "—" },
-      { "name": "CME HDD New York 12월", "price": "—", "chg_pct": null, "oi": "—" },
-      { "name": "유럽 강수 지수 (요약)", "price": "—", "chg_pct": null, "oi": "—" }
+      {
+        "name": "CME CDD Chicago 8월",
+        "price": "412.5",
+        "chg_pct": 2.1,
+        "oi": "—"
+      },
+      {
+        "name": "CME HDD New York 12월",
+        "price": "—",
+        "chg_pct": null,
+        "oi": "—"
+      },
+      {
+        "name": "유럽 강수 지수 (요약)",
+        "price": "—",
+        "chg_pct": null,
+        "oi": "—"
+      }
     ]
   },
   "map_temp_anomaly_seed": {
