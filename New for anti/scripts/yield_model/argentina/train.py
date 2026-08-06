@@ -49,9 +49,103 @@ DROP = {"year", "yield_kg_ha", "area_ha", "abandonment"}
 
 MIN_TRAIN = 22
 
+# Features derived from NOAA's climate indices rather than from local weather.
+ENSO_FEATURES = {"oni_lag", "iod_spring", "climate_shock"}
+
+# Features derived from POWER's GWETROOT root-zone wetness -- the 0803
+# 작업지시서's soil-moisture channel.
+#
+# `smi_*` is deliberately NOT in this set. Those come from this pipeline's own
+# single-layer bucket balance, which is a local water accounting built out of
+# rainfall and ET0 that the model would have anyway. The question the sheet
+# asks is whether an independent land-surface soil-moisture field adds
+# anything on top of that, so only the `sm_*` family and the thresholds built
+# on it count as "soil".
+SOIL_FEATURES = {
+    "sm_summer", "sm_silking", "sm_spring", "sm_rep_obs", "sm_flowering_obs",
+    "autumn_recharge", "heat_x_drought", "dry_spell", "harvest_wet_days",
+}
+
 
 def log(msg):
     print(f"[train] {msg}", flush=True)
+
+
+def nested_sets(candidates):
+    """
+    The three cumulative feed sets, as (name, features), smallest first.
+
+    These are also offered to model selection, not only to the ablation report.
+    An ablation that finds a better feature set than the selector can choose is
+    a broken selector: Pampas corn scored +38.6% on local weather alone and
+    +30.1% once the soil features were bolted on, and the run had no way to
+    pick the first. Adding three physically-motivated nested sets to the
+    existing "all"/"core" choice widens selection multiplicity a little, which
+    is a real cost -- but nested-by-data-feed is a principled ordering, not a
+    search over arbitrary subsets.
+    """
+    soil = [c for c in candidates if c in SOIL_FEATURES]
+    enso = [c for c in candidates if c in ENSO_FEATURES]
+    weather = [c for c in candidates if c not in SOIL_FEATURES
+               and c not in ENSO_FEATURES]
+    return [("weather", weather),
+            ("enso", weather + enso),
+            ("soil", weather + enso + soil)]
+
+
+def ablation(df, candidates, degree, window, min_train, baseline_rmse):
+    """
+    The 0803 작업지시서's results table, computed rather than asserted.
+
+    Four cumulative rungs, each scored by the same forward chaining and against
+    the same trend baseline:
+
+      trend          the technology trend alone -- no features at all
+      weather        local weather only (rainfall, heat, the water balance)
+      +enso          add ONI and the dipole
+      +soil          add the GWETROOT root-zone features
+
+    Cumulative rather than leave-one-out, because the sheet's question is an
+    ordering question -- "is it worth adding this feed?" -- and the answer to
+    that depends on what is already in the model. A soil-moisture field that
+    duplicates information the rainfall features already carry should score
+    zero here, and that is the correct answer, not a bug.
+
+    The rungs all share one trend form so the comparison is between feature
+    sets and not between baselines.
+    """
+    rungs = nested_sets(candidates)
+
+    mean_yield = float(df.yield_kg_ha.tail(10).mean())
+    out = {"trend": {"features": [], "n_features": 0,
+                     "rmse": baseline_rmse,
+                     "mape_pct": baseline_rmse / mean_yield * 100,
+                     "skill_vs_trend": 0.0}}
+
+    for name, feats in rungs:
+        if not feats:
+            continue
+        res = run_cv(df, feats, "forward", degree, window, min_train)
+        if res is None:
+            continue
+        truth, pred, base, _ = res
+        ev = evaluate(truth, pred, base)
+        out[name] = {
+            "features": feats,
+            "n_features": len(feats),
+            "rmse": ev["rmse"],
+            "mape_pct": ev["rmse"] / mean_yield * 100,
+            "skill_vs_trend": (1 - ev["rmse"] / baseline_rmse
+                               if baseline_rmse > 0 else float("nan")),
+        }
+
+    # What each feed bought on top of the rung below it.
+    for lower, upper in (("weather", "enso"), ("enso", "soil")):
+        if lower in out and upper in out and out[lower]["rmse"] > 0:
+            out[upper]["marginal_gain"] = (
+                1 - out[upper]["rmse"] / out[lower]["rmse"])
+
+    return out
 
 
 def train_one(cfg):
@@ -104,6 +198,10 @@ def train_one(cfg):
 
     results = {}
     sets = [("all", candidates)] + ([("core", core)] if core else [])
+    # Plus the nested data-feed sets, so the selector can reach the answer the
+    # ablation finds rather than only choosing between "everything" and "the
+    # guide's own variables".
+    sets += [(name, feats) for name, feats in nested_sets(candidates) if feats]
 
     for label, feats in sets:
         for tlabel, degree, window in TREND_FORMS:
@@ -193,6 +291,19 @@ def train_one(cfg):
     log("  effect of +1 SD: "
         + ", ".join(f"{k} {(np.exp(v) - 1) * 100:+.1f}%" for k, v in ranked))
 
+    # The 0803 작업지시서's results table.
+    abl = ablation(df, candidates, degree, window, min_train, best_baseline)
+    log("  feed ablation (forward chaining, one shared trend form):")
+    for rung in ("trend", "weather", "enso", "soil"):
+        if rung not in abl:
+            continue
+        a = abl[rung]
+        marginal = (f"  marginal {a['marginal_gain']:+6.1%}"
+                    if "marginal_gain" in a else "")
+        log(f"    {rung:8} {a['n_features']:2d} feats  RMSE {a['rmse']:7.1f}  "
+            f"MAPE {a['mape_pct']:5.1f}%  vs trend {a['skill_vs_trend']:+6.1%}"
+            f"{marginal}")
+
     # How much of the worst seasons never reached the yield average at all.
     if "abandonment" in df.columns and df.abandonment.notna().any():
         worst = df.nsmallest(3, "yield_kg_ha")
@@ -237,6 +348,8 @@ def train_one(cfg):
         "recent_folds": RECENT_FOLDS,
         "mean_abandonment": (float(df.abandonment.mean())
                              if "abandonment" in df.columns else None),
+        # Cumulative feed ablation: trend -> weather -> +ENSO -> +GWETROOT
+        "ablation": abl,
         "uncertainty": {
             "sigma_kg_ha": float(sigma),
             "basis": (f"out-of-sample RMSE over the last {RECENT_FOLDS} "

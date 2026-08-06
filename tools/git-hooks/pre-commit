@@ -1,0 +1,43 @@
+#!/bin/sh
+# 다른 터미널이 UI 파일과 대용량 쓰레기를 커밋하는 것을 로컬에서 차단한다.
+#
+# 설치:  git config core.hooksPath tools/git-hooks
+# 우회 :  CLAUDE_UI=1 git commit ...   (UI 소유자만)
+
+staged=$(git diff --cached --name-only)
+fail=0
+
+# --- 1. UI 파일 ---------------------------------------------------------
+ui=$(printf '%s\n' "$staged" | grep -E '^New for anti/(app\.js|style\.css|index\.html|data\.js|shipping\.js)$')
+if [ -n "$ui" ] && [ "$CLAUDE_UI" != "1" ]; then
+  echo "✗ UI 파일은 Claude Code 소유입니다 (docs/ops/OWNERS.md):"
+  printf '    %s\n' $ui
+  echo ""
+  echo "  국가·모델을 추가하는 중이라면 app.js가 아니라"
+  echo "  scripts/yield_model/{국가}/model.yaml 을 고치세요."
+  echo "  정말 UI 소유자라면:  CLAUDE_UI=1 git commit ..."
+  fail=1
+fi
+
+# --- 2. 커밋하면 안 되는 경로 -------------------------------------------
+junk=$(printf '%s\n' "$staged" | grep -E '(^|/)\.verify_live/|(^|/)cache/|(^|/)__pycache__/|\.DS_Store$|\.pyc$')
+if [ -n "$junk" ]; then
+  echo "✗ 커밋 대상이 아닌 파일 (캐시·브라우저 프로필·OS 부산물):"
+  printf '    %s\n' $junk | head -10
+  echo "  → git reset HEAD <파일>  후 .gitignore 확인"
+  fail=1
+fi
+
+# --- 3. 대용량 파일 -----------------------------------------------------
+for f in $staged; do
+  [ -f "$f" ] || continue
+  sz=$(wc -c < "$f" 2>/dev/null || echo 0)
+  if [ "$sz" -gt 5242880 ]; then
+    echo "✗ 5MB 초과: $f ($((sz/1048576))MB)"
+    echo "  → 산출물이면 축약본만, 원본이면 캐시로 두고 재생성 스크립트를 커밋하세요."
+    fail=1
+  fi
+done
+
+[ "$fail" = "1" ] && echo "" && echo "커밋 중단됨."
+exit $fail

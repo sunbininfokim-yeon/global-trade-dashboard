@@ -20,6 +20,46 @@ class EngineTests(unittest.TestCase):
     def test_capacity_formula(self) -> None:
         self.assertAlmostEqual(required_capacity_dwt(365_000, 10, 1.0), 10_000)
 
+    def test_bidirectional_service_counts_shared_fleet_once(self) -> None:
+        route = {
+            "id": "two_way_container",
+            "ship_type": "container",
+            "annual_cargo_tonnes": 365_000,
+            "distance_nm_one_way": 1_200,
+            "speed_knots": 10,
+            "port_days_round_trip": 0,
+            "utilization": 1.0,
+            "reserve_margin": 0,
+            "directions": [
+                {"id": "eastbound", "annual_cargo_tonnes": 365_000, "utilization": 1.0},
+                {"id": "westbound", "annual_cargo_tonnes": 182_500, "utilization": 1.0},
+            ],
+        }
+        result = simulate_route(route, None, 1_000_000)
+        self.assertAlmostEqual(result["baseline_required_dwt"], 10_000)
+        self.assertEqual(result["known_direction_count"], 2)
+        self.assertEqual(result["capacity_driver_direction_id"], "eastbound")
+        self.assertEqual(result["total_annual_cargo_tonnes"], 547_500)
+
+    def test_larger_reverse_flow_becomes_capacity_driver(self) -> None:
+        route = {
+            "id": "reverse_driven_container",
+            "ship_type": "container",
+            "annual_cargo_tonnes": 365_000,
+            "distance_nm_one_way": 1_200,
+            "speed_knots": 10,
+            "port_days_round_trip": 0,
+            "utilization": 1.0,
+            "reserve_margin": 0,
+            "directions": [
+                {"id": "eastbound", "annual_cargo_tonnes": 365_000, "utilization": 1.0},
+                {"id": "westbound", "annual_cargo_tonnes": 730_000, "utilization": 1.0},
+            ],
+        }
+        result = simulate_route(route, None, 1_000_000)
+        self.assertAlmostEqual(result["baseline_required_dwt"], 20_000)
+        self.assertEqual(result["capacity_driver_direction_id"], "westbound")
+
     def test_unaffected_route_is_unchanged(self) -> None:
         route = next(row for row in self.routes if row["id"] == "brazil_china_soy")
         scenario = next(row for row in self.scenarios if row["id"] == "suez_100pct_28d")

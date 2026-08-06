@@ -1,0 +1,19 @@
+# Live-verification harness: throwaway Chrome profiles, CDP logs, screenshots.
+# 1045 files of browser profile were committed and pushed to three branches
+# before this rule existed. The databases were empty and the repo is private,
+# so nothing leaked, but a browser profile has no business in version control.
+.verify_live/
+
+# Local worktrees for parallel agents (see docs/ops/OWNERS.md)
+.worktrees/
+
+# macOS
+.DS_Store
+**/.DS_Store
+
+# Local editor / tool settings
+.claude/launch.json
+
+# 로컬 학습 캐시 사본. DATA_LAYOUT.md ① 단계 — 재실행하면 복원된다.
+# 508개 파일 508MB 가 PR #4 에 그대로 실려 있었다 (전체 diff 의 3.3M 줄).
+모델링 결과/

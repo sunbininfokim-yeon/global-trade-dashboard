@@ -1,14 +1,18 @@
 # AI Agent Collaboration Workflow
 
+> **운영 정본(2026-08 갱신):** 저장소 루트 `docs/ops/README.md`  
+> 역할: **Cursor**=ops+ML · **Claude Code**=UI/앱+코드리뷰 · **Codex**=좁은 모델/데이터 · **Antigravity**=문헌만  
+> 터미널: `./tools/ops/status.sh` · 데이터 계약: `scripts/yield_model/DATA_LAYOUT.md`
+
 This repository uses a multi-agent workflow. Depending on your assigned role, please follow the instructions below.
 
-## 1. Main Architect (Antigravity / Primary Agent)
-- **Role**: Manages the overall web architecture (`app.js`, `data.js`, Cloudflare `_worker.js`), frontend UI, and map rendering logic.
-- **Responsibility**: Integrates the standardized JSON data provided by sub-agents into the main application. Does not get bogged down in deep web scraping for specific commodities.
+## 1. App & UI Lead + Reviewer (Claude Code)
+- **Role**: Web architecture (`app.js`, `data.js`, Cloudflare `_worker.js`), frontend UI, map rendering; also reviews other agents’ PRs.
+- **Responsibility**: Integrate standardized JSON from model/data agents. Do not expand scope into random scrapers when a dedicated task owner exists.
 
-## 2. Code Reviewer (Claude Code / Secondary Agent)
-- **Role**: Reviews code written by the Main Architect for bugs, security (API keys), and performance optimization.
-- **Responsibility**: Run local tests, check syntax, and suggest refactoring for `app.js`, `data.js`, and python crawler scripts.
+## 2. Orchestrator / ML (Cursor)
+- **Role**: `docs/ops`, task board, Git/Cloudflare pipeline hygiene; yield-model experiments when not conflicting with UI WIP.
+- **Responsibility**: Keep GOAL/TASKS/OWNERS current; merge policy and DATA_LAYOUT discipline.
 
 ## 3. Commodity Data Sub-Agents (Specialized Scrapers)
 - **Role**: Dedicated to a specific agricultural commodity (e.g., Wheat, Soybeans, Sugar).

@@ -1,0 +1,100 @@
+{
+  "version": 1,
+  "notes": "지표 추출용. 지정 기사 본문/요약을 유동성 신호로 변환. 속보 목적이 아님.",
+  "indicators": [
+    {
+      "id": "fima",
+      "label_ko": "FIMA 레포",
+      "terms": ["fima", "foreign and international monetary authorities"],
+      "liquidity_hint": "mixed",
+      "weight": 1.2
+    },
+    {
+      "id": "esf",
+      "label_ko": "ESF 외환안정기금",
+      "terms": ["esf", "exchange stabilization fund", "외환안정기금"],
+      "liquidity_hint": "fx_intervention",
+      "weight": 1.15
+    },
+    {
+      "id": "tga",
+      "label_ko": "TGA 재무부 일반계정",
+      "terms": ["tga", "treasury general account", "재무부 일반계정", "treasury account at the fed"],
+      "liquidity_hint": "tga",
+      "weight": 1.3
+    },
+    {
+      "id": "rrp",
+      "label_ko": "역레포(RRP)",
+      "terms": ["reverse repo", "overnight reverse", "on rrp", "역레포", " overnight rrp"],
+      "liquidity_hint": "rrp",
+      "weight": 1.25
+    },
+    {
+      "id": "fed_bs",
+      "label_ko": "연준 대차대조표",
+      "terms": ["fed balance sheet", "federal reserve balance sheet", "연준 대차대조표", "walcl", "qt", "quantitative tightening", "양적 긴축", "runoff"],
+      "liquidity_hint": "fed_bs",
+      "weight": 1.2
+    },
+    {
+      "id": "reserves",
+      "label_ko": "은행 지준·초과지준",
+      "terms": ["bank reserves", "reserve balances", "excess reserves", "지준", "초과지준", "iorb"],
+      "liquidity_hint": "reserves",
+      "weight": 1.15
+    },
+    {
+      "id": "fx_intervention",
+      "label_ko": "외환 개입",
+      "terms": [
+        "fx intervention", "foreign exchange intervention", "외환 시장에 개입", "외환개입",
+        "달러 매도", "달러 매수", "엔화 매입", "엔화 매도", "currency intervention"
+      ],
+      "liquidity_hint": "fx_intervention",
+      "weight": 1.1
+    },
+    {
+      "id": "usd_jpy",
+      "label_ko": "달러/엔",
+      "terms": ["달러/엔", "달러엔", "usd/jpy", "dollar-yen", "엔화 강세", "엔화 약세"],
+      "liquidity_hint": "fx_pair",
+      "weight": 0.9
+    },
+    {
+      "id": "swap_line",
+      "label_ko": "통화스왑",
+      "terms": ["dollar swap", "liquidity swap", "통화스왑", "스왑라인", "swap line"],
+      "liquidity_hint": "easing",
+      "weight": 1.2
+    },
+    {
+      "id": "net_liquidity",
+      "label_ko": "넷 유동성",
+      "terms": ["net liquidity", "순유동성", "넷 유동성", "fed liquidity"],
+      "liquidity_hint": "net_liq",
+      "weight": 1.25
+    },
+    {
+      "id": "bill_supply",
+      "label_ko": "단기불·발행",
+      "terms": ["t-bill", "treasury bills", "bill supply", "단기채", "tbill"],
+      "liquidity_hint": "bill_supply",
+      "weight": 1.1
+    },
+    {
+      "id": "qra",
+      "label_ko": "QRA·순발행",
+      "terms": ["qra", "marketable borrowing", "순발행", "refunding", "민간보유 순발행"],
+      "liquidity_hint": "tightening",
+      "weight": 1.2
+    },
+    {
+      "id": "fomc_liquidity",
+      "label_ko": "FOMC·금리 유동성",
+      "terms": ["fomc", "federal funds", "기준금리", "금리 인하", "금리 인상", "federal open market"],
+      "liquidity_hint": "policy",
+      "weight": 0.85
+    }
+  ]
+}

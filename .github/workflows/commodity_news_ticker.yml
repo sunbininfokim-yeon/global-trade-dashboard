@@ -1,0 +1,49 @@
+name: Commodity News Ticker
+
+on:
+  schedule:
+    # Hourly is enough: RSS items rarely change faster, and 30-min runs burned
+    # MyMemory translation quota + Actions minutes with little user benefit.
+    # See docs/ops/DATA_CADENCE.md.
+    - cron: '12 * * * *'
+  workflow_dispatch:
+    inputs:
+      translate:
+        description: 'Translate titles to Korean (MyMemory)'
+        required: false
+        default: 'true'
+
+jobs:
+  update-ticker:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Unit tests
+        working-directory: New for anti/scripts/commodity_news
+        run: python -m unittest discover -s tests -v
+
+      - name: Build ticker snapshot
+        working-directory: New for anti/scripts/commodity_news
+        run: |
+          ARGS="--limit 40 --print-stats"
+          if [ "${{ github.event.inputs.translate || 'true' }}" = "true" ]; then
+            ARGS="$ARGS --translate"
+          fi
+          python build_ticker.py $ARGS
+
+      - name: Commit ticker snapshot
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "New for anti/public/data/ticker_v1.json"
+          git commit -m "chore: refresh commodity news ticker" || exit 0
+          git push

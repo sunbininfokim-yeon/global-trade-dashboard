@@ -1,0 +1,537 @@
+{
+  "schema_version": "liquidity-intel-v1",
+  "generated_at": "2026-08-04T08:11:01.159712+00:00",
+  "model": {
+    "name": "macro_liquidity_official_v1",
+    "description": "QRA / Fed official liquidity + priority-reporter ARTICLES mined for liquidity indicators (FIMA, TGA, RRP, FX intervention…) — not reporter news fluff.",
+    "learning_strategy": {
+      "phase": "extract_and_store",
+      "not_doing": "Dumping every 양영빈 article to the ticker as celebrity news",
+      "doing": [
+        "Structured QRA parse",
+        "Fed beige/FOMC",
+        "Map designated reporters' prose → liquidity indicator themes",
+        "finance_panel_fields for dashboard tiles"
+      ],
+      "future": "Label which extracted indicators were decision-useful; calibrate weights."
+    }
+  },
+  "liquidity": {
+    "bias": "tightening",
+    "score": 2.1,
+    "headline_ko": "유동성: 재무부 순발행·현금 잔고 신호가 타이트 쪽으로 기울음 · 지정기자 분석 테마 반영",
+    "drivers": [
+      "qra_net_borrowing_up",
+      "tga_cash_high",
+      "reporter_tga_focus",
+      "reporter_rrp_focus",
+      "reporter_fx_intervention",
+      "reporter_fima_focus"
+    ],
+    "qra": {
+      "title": "Treasury Announces Marketable Borrowing Estimates | U.S. Department of the Treasury",
+      "url": "https://home.treasury.gov/news/press-releases/sb0584",
+      "text_chars": 876,
+      "quarters": [
+        {
+          "period": "July–September 2026",
+          "kind": "estimate",
+          "net_borrowing_bn": 739.0,
+          "end_cash_balance_bn": 950.0,
+          "vs_prior_bn": 68.0
+        },
+        {
+          "period": "October–December 2026",
+          "kind": "estimate",
+          "net_borrowing_bn": 628.0,
+          "end_cash_balance_bn": 850.0,
+          "vs_prior_bn": null
+        },
+        {
+          "period": "April–June 2026",
+          "kind": "actual",
+          "net_borrowing_bn": 190.0,
+          "end_cash_balance_bn": 919.0,
+          "vs_prior_bn": null
+        }
+      ],
+      "pdf_urls": [
+        "https://home.treasury.gov/system/files/136/Sources-Uses-Public-Table-August-2026.pdf"
+      ],
+      "signals": [
+        "qra_net_borrowing_up",
+        "tga_cash_high"
+      ],
+      "raw_matches": [
+        "During the July–September 2026 quarter, Treasury expects to borrow $739 billion in privately-held net marketable debt, assuming an end-of-September cash balance of $950 billion. The borrowing estimate is $68 billion higher than announced in",
+        "During the October–December 2026 quarter, Treasury expects to borrow $628 billion in privately-held net marketable debt, assuming an end-of-December cash balance of $850 billion.",
+        "During the April–June 2026 quarter, Treasury borrowed $190 billion in privately-held net marketable debt and ended the quarter with a cash balance of $919 billion."
+      ]
+    },
+    "fed": {
+      "beige_book": null,
+      "items": [
+        {
+          "title": "Beige Book - July 16, 2026",
+          "url": "https://www.federalreserve.gov/monetarypolicy/beigebook202607.htm",
+          "published": "Wed, 16 Jul 2026 14:00:00 GMT",
+          "event_type": "beige_book",
+          "tone": "mixed"
+        },
+        {
+          "title": "FOMC Statement",
+          "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260730a.htm",
+          "published": "Wed, 30 Jul 2026 18:00:00 GMT",
+          "event_type": "fomc",
+          "tone": null
+        }
+      ]
+    },
+    "reporter_liquidity": [
+      {
+        "author": "양영빈",
+        "articles_scanned": 2,
+        "articles_with_hits": 2,
+        "top_indicators": [
+          {
+            "id": "fima",
+            "score": 2.4,
+            "label_ko": "FIMA 레포",
+            "evidence": [
+              "[연준와처] 베센트에 의해 소환된 FIMA [이코노미21 양영빈] 미국 FIMA 레포 시설과 외환안정기금(ESF)을 활용한 엔화 매입·달러 매도 개입"
+            ]
+          },
+          {
+            "id": "fed_bs",
+            "score": 2.4,
+            "label_ko": "연준 대차대조표",
+            "evidence": [
+              "공조에 달러/엔 환율 하락 양영빈] 외환 시장 개입 공조와 달러/엔. 연준 대차대조표 QT 경로도 언급."
+            ]
+          },
+          {
+            "id": "esf",
+            "score": 2.3,
+            "label_ko": "ESF 외환안정기금",
+            "evidence": [
+              "FIMA [이코노미21 양영빈] 미국 FIMA 레포 시설과 외환안정기금(ESF)을 활용한 엔화 매입·달러 매도 개입 논의. TGA 잔고와 역레포(RRP) 축소가 순유동성에 미치는 영향을"
+            ]
+          },
+          {
+            "id": "fx_intervention",
+            "score": 2.2,
+            "label_ko": "외환 개입",
+            "evidence": [
+              "] 미국 FIMA 레포 시설과 외환안정기금(ESF)을 활용한 엔화 매입·달러 매도 개입 논의. TGA 잔고와 역레포(RRP) 축소가 순유동성에 미치는 영향을 분석한다."
+            ]
+          },
+          {
+            "id": "usd_jpy",
+            "score": 1.8,
+            "label_ko": "달러/엔",
+            "evidence": [
+              "미일 공조에 달러/엔 환율 하락 양영빈] 외환 시장 개입 공조와 달러/엔. 연준 대차대조표 QT 경로도 언급."
+            ]
+          },
+          {
+            "id": "tga",
+            "score": 1.3,
+            "label_ko": "TGA 재무부 일반계정",
+            "evidence": [
+              "시설과 외환안정기금(ESF)을 활용한 엔화 매입·달러 매도 개입 논의. TGA 잔고와 역레포(RRP) 축소가 순유동성에 미치는 영향을 분석한다."
+            ]
+          },
+          {
+            "id": "net_liquidity",
+            "score": 1.25,
+            "label_ko": "넷 유동성",
+            "evidence": [
+              "엔화 매입·달러 매도 개입 논의. TGA 잔고와 역레포(RRP) 축소가 순유동성에 미치는 영향을 분석한다."
+            ]
+          },
+          {
+            "id": "rrp",
+            "score": 1.25,
+            "label_ko": "역레포(RRP)",
+            "evidence": [
+              "기금(ESF)을 활용한 엔화 매입·달러 매도 개입 논의. TGA 잔고와 역레포(RRP) 축소가 순유동성에 미치는 영향을 분석한다."
+            ]
+          }
+        ],
+        "themes_ko": [
+          "FIMA 레포 (점수 2.4)",
+          "연준 대차대조표 (점수 2.4)",
+          "ESF 외환안정기금 (점수 2.3)",
+          "외환 개입 (점수 2.2)",
+          "달러/엔 (점수 1.8)",
+          "TGA 재무부 일반계정 (점수 1.3)"
+        ],
+        "hint_weights": {
+          "fx_intervention": 4.5,
+          "mixed": 2.4,
+          "fed_bs": 2.4,
+          "fx_pair": 1.8,
+          "tga": 1.3,
+          "net_liq": 1.25,
+          "rrp": 1.25
+        },
+        "reporter_signals": [
+          "reporter_tga_focus",
+          "reporter_rrp_focus",
+          "reporter_fx_intervention",
+          "reporter_fima_focus"
+        ],
+        "headline_ko": "[유동성 분석·양영빈] 최근 기사 핵심 지표: FIMA 레포 · 외 7개 테마",
+        "per_article": [
+          {
+            "title": "[연준와처] 베센트에 의해 소환된 FIMA",
+            "url": "http://www.economy21.co.kr/news/articleView.html?idxno=1016983",
+            "published": "2026-08-04 14:28",
+            "author": "양영빈",
+            "indicators": [
+              {
+                "id": "fima",
+                "label_ko": "FIMA 레포",
+                "mentions": 2,
+                "hint": "mixed",
+                "evidence": [
+                  "[연준와처] 베센트에 의해 소환된 FIMA [이코노미21 양영빈] 미국 FIMA 레포 시설과 외환안정기금(ESF)을 활용한 엔화 매입·달러 매도 개입",
+                  "[연준와처] 베센트에 의해 소환된 FIMA [이코노미21 양영빈] 미국 FIMA 레포 시설과 외환안정기금(ESF)을 활용한 엔화 매입·달러 매도 개입 논의. TGA 잔고와 역레포(RRP)"
+                ]
+              },
+              {
+                "id": "esf",
+                "label_ko": "ESF 외환안정기금",
+                "mentions": 2,
+                "hint": "fx_intervention",
+                "evidence": [
+                  "FIMA [이코노미21 양영빈] 미국 FIMA 레포 시설과 외환안정기금(ESF)을 활용한 엔화 매입·달러 매도 개입 논의. TGA 잔고와 역레포(RRP) 축소가 순유동성에 미치는 영향을",
+                  "의해 소환된 FIMA [이코노미21 양영빈] 미국 FIMA 레포 시설과 외환안정기금(ESF)을 활용한 엔화 매입·달러 매도 개입 논의. TGA 잔고와 역레포(RRP) 축소가 순유동성에 미치는"
+                ]
+              },
+              {
+                "id": "fx_intervention",
+                "label_ko": "외환 개입",
+                "mentions": 2,
+                "hint": "fx_intervention",
+                "evidence": [
+                  "] 미국 FIMA 레포 시설과 외환안정기금(ESF)을 활용한 엔화 매입·달러 매도 개입 논의. TGA 잔고와 역레포(RRP) 축소가 순유동성에 미치는 영향을 분석한다.",
+                  "21 양영빈] 미국 FIMA 레포 시설과 외환안정기금(ESF)을 활용한 엔화 매입·달러 매도 개입 논의. TGA 잔고와 역레포(RRP) 축소가 순유동성에 미치는 영향을 분석한다."
+                ]
+              },
+              {
+                "id": "tga",
+                "label_ko": "TGA 재무부 일반계정",
+                "mentions": 1,
+                "hint": "tga",
+                "evidence": [
+                  "시설과 외환안정기금(ESF)을 활용한 엔화 매입·달러 매도 개입 논의. TGA 잔고와 역레포(RRP) 축소가 순유동성에 미치는 영향을 분석한다."
+                ]
+              },
+              {
+                "id": "net_liquidity",
+                "label_ko": "넷 유동성",
+                "mentions": 1,
+                "hint": "net_liq",
+                "evidence": [
+                  "엔화 매입·달러 매도 개입 논의. TGA 잔고와 역레포(RRP) 축소가 순유동성에 미치는 영향을 분석한다."
+                ]
+              },
+              {
+                "id": "rrp",
+                "label_ko": "역레포(RRP)",
+                "mentions": 1,
+                "hint": "rrp",
+                "evidence": [
+                  "기금(ESF)을 활용한 엔화 매입·달러 매도 개입 논의. TGA 잔고와 역레포(RRP) 축소가 순유동성에 미치는 영향을 분석한다."
+                ]
+              }
+            ]
+          },
+          {
+            "title": "미일 공조에 달러/엔 환율 하락",
+            "url": "http://www.economy21.co.kr/news/articleView.html?idxno=1016978",
+            "published": "2026-08-03 16:28",
+            "author": "양영빈",
+            "indicators": [
+              {
+                "id": "fed_bs",
+                "label_ko": "연준 대차대조표",
+                "mentions": 2,
+                "hint": "fed_bs",
+                "evidence": [
+                  "공조에 달러/엔 환율 하락 양영빈] 외환 시장 개입 공조와 달러/엔. 연준 대차대조표 QT 경로도 언급.",
+                  "환율 하락 양영빈] 외환 시장 개입 공조와 달러/엔. 연준 대차대조표 QT 경로도 언급."
+                ]
+              },
+              {
+                "id": "usd_jpy",
+                "label_ko": "달러/엔",
+                "mentions": 2,
+                "hint": "fx_pair",
+                "evidence": [
+                  "미일 공조에 달러/엔 환율 하락 양영빈] 외환 시장 개입 공조와 달러/엔. 연준 대차대조표 QT 경로도 언급.",
+                  "미일 공조에 달러/엔 환율 하락 양영빈] 외환 시장 개입 공조와 달러/엔. 연준 대차대조표 QT 경로도 언급."
+                ]
+              }
+            ]
+          }
+        ],
+        "finance_panel_fields": {
+          "reporter_liquidity_primary": "fima",
+          "reporter_liquidity_primary_ko": "FIMA 레포",
+          "reporter_liquidity_themes": [
+            "FIMA 레포 (점수 2.4)",
+            "연준 대차대조표 (점수 2.4)",
+            "ESF 외환안정기금 (점수 2.3)",
+            "외환 개입 (점수 2.2)",
+            "달러/엔 (점수 1.8)",
+            "TGA 재무부 일반계정 (점수 1.3)"
+          ],
+          "reporter_liquidity_signals": [
+            "reporter_tga_focus",
+            "reporter_rrp_focus",
+            "reporter_fx_intervention",
+            "reporter_fima_focus"
+          ],
+          "reporter_liquidity_headline_ko": "[유동성 분석·양영빈] 최근 기사 핵심 지표: FIMA 레포 · 외 7개 테마"
+        }
+      }
+    ],
+    "finance_panel_fields": {
+      "qra_next_net_borrowing_bn": 739.0,
+      "qra_end_cash_bn": 950.0,
+      "qra_vs_prior_bn": 68.0,
+      "liquidity_bias": "tightening",
+      "liquidity_headline_ko": "유동성: 재무부 순발행·현금 잔고 신호가 타이트 쪽으로 기울음 · 지정기자 분석 테마 반영",
+      "beige_tone": "mixed",
+      "reporter_liquidity_primary": "fima",
+      "reporter_liquidity_primary_ko": "FIMA 레포",
+      "reporter_liquidity_themes": [
+        "FIMA 레포 (점수 2.4)",
+        "연준 대차대조표 (점수 2.4)",
+        "ESF 외환안정기금 (점수 2.3)",
+        "외환 개입 (점수 2.2)",
+        "달러/엔 (점수 1.8)",
+        "TGA 재무부 일반계정 (점수 1.3)"
+      ],
+      "reporter_liquidity_signals": [
+        "reporter_tga_focus",
+        "reporter_rrp_focus",
+        "reporter_fx_intervention",
+        "reporter_fima_focus"
+      ],
+      "reporter_liquidity_headline_ko": "[유동성 분석·양영빈] 최근 기사 핵심 지표: FIMA 레포 · 외 7개 테마"
+    }
+  },
+  "ticker_items": [
+    {
+      "id": "qra-995944081670",
+      "published_at": null,
+      "source": {
+        "id": "us_treasury",
+        "name": "U.S. Treasury",
+        "region": "west",
+        "slant": null
+      },
+      "url": "https://home.treasury.gov/news/press-releases/sb0584",
+      "category": "liquidity_official",
+      "commodities": [],
+      "title": {
+        "original": "Treasury Announces Marketable Borrowing Estimates | U.S. Department of the Treasury",
+        "original_lang": "en",
+        "ko": "[QRA] July–September 2026 민간보유 순발행 추정 $739B (기말 현금 $950B) 직전대비 ▲$68B | October–December 2026 민간보유 순발행 추정 $628B (기말 현금 $850B)"
+      },
+      "summary": "During the July–September 2026 quarter, Treasury expects to borrow $739 billion in privately-held net marketable debt, assuming an end-of-September cash balance of $950 billion. The borrowing estimate is $68 billion higher than announced in",
+      "scores": {
+        "commodity": 0,
+        "diplomacy": 0,
+        "region_weight": 1.0,
+        "freshness": 1.0,
+        "final": 9.5
+      },
+      "rank_reasons": [
+        "event:qra",
+        "qra_net_borrowing_up",
+        "tga_cash_high"
+      ],
+      "translation_status": "ok",
+      "event_type": "qra"
+    },
+    {
+      "id": "fed-974818601660",
+      "published_at": "Wed, 16 Jul 2026 14:00:00 GMT",
+      "source": {
+        "id": "federal_reserve",
+        "name": "Federal Reserve",
+        "region": "west",
+        "slant": null
+      },
+      "url": "https://www.federalreserve.gov/monetarypolicy/beigebook202607.htm",
+      "category": "liquidity_official",
+      "commodities": [],
+      "title": {
+        "original": "Beige Book - July 16, 2026",
+        "original_lang": "en",
+        "ko": "[베이지북] Beige Book - July 16, 2026 · 혼조"
+      },
+      "summary": "Economic activity expanded at a modest pace. Labor markets softened in several districts while price pressures remained elevated in services.",
+      "scores": {
+        "commodity": 0,
+        "diplomacy": 0,
+        "region_weight": 1.0,
+        "freshness": 1.0,
+        "final": 9.0
+      },
+      "rank_reasons": [
+        "event:beige_book",
+        "tone:mixed"
+      ],
+      "translation_status": "ok",
+      "event_type": "beige_book"
+    },
+    {
+      "id": "fed-494396307375",
+      "published_at": "Wed, 30 Jul 2026 18:00:00 GMT",
+      "source": {
+        "id": "federal_reserve",
+        "name": "Federal Reserve",
+        "region": "west",
+        "slant": null
+      },
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260730a.htm",
+      "category": "liquidity_official",
+      "commodities": [],
+      "title": {
+        "original": "FOMC Statement",
+        "original_lang": "en",
+        "ko": "[FOMC] FOMC Statement"
+      },
+      "summary": "The Committee decided to maintain the target range for the federal funds rate.",
+      "scores": {
+        "commodity": 0,
+        "diplomacy": 0,
+        "region_weight": 1.0,
+        "freshness": 1.0,
+        "final": 8.5
+      },
+      "rank_reasons": [
+        "event:fomc"
+      ],
+      "translation_status": "ok",
+      "event_type": "fomc"
+    },
+    {
+      "id": "liq-ind-76668249706",
+      "published_at": null,
+      "source": {
+        "id": "reporter_liquidity",
+        "name": "지정기자 유동성 분석 · 양영빈",
+        "region": "korea",
+        "slant": null
+      },
+      "url": "http://www.economy21.co.kr/news/articleView.html?idxno=1016983",
+      "category": "liquidity_indicator",
+      "commodities": [],
+      "title": {
+        "original": "FIMA 레포 · 연준 대차대조표 · ESF 외환안정기금",
+        "original_lang": "ko",
+        "ko": "[유동성지표·양영빈] FIMA 레포 · 연준 대차대조표 · ESF 외환안정기금"
+      },
+      "summary": "[유동성 분석·양영빈] 최근 기사 핵심 지표: FIMA 레포 · 외 7개 테마",
+      "scores": {
+        "commodity": 0,
+        "diplomacy": 0,
+        "region_weight": 1.0,
+        "freshness": 1.0,
+        "final": 7.5
+      },
+      "rank_reasons": [
+        "indicator:fima",
+        "reporter_tga_focus",
+        "reporter_rrp_focus",
+        "reporter_fx_intervention",
+        "reporter_fima_focus"
+      ],
+      "translation_status": "ok",
+      "event_type": "liquidity_indicator",
+      "indicators": [
+        {
+          "id": "fima",
+          "score": 2.4,
+          "label_ko": "FIMA 레포",
+          "evidence": [
+            "[연준와처] 베센트에 의해 소환된 FIMA [이코노미21 양영빈] 미국 FIMA 레포 시설과 외환안정기금(ESF)을 활용한 엔화 매입·달러 매도 개입"
+          ]
+        },
+        {
+          "id": "fed_bs",
+          "score": 2.4,
+          "label_ko": "연준 대차대조표",
+          "evidence": [
+            "공조에 달러/엔 환율 하락 양영빈] 외환 시장 개입 공조와 달러/엔. 연준 대차대조표 QT 경로도 언급."
+          ]
+        },
+        {
+          "id": "esf",
+          "score": 2.3,
+          "label_ko": "ESF 외환안정기금",
+          "evidence": [
+            "FIMA [이코노미21 양영빈] 미국 FIMA 레포 시설과 외환안정기금(ESF)을 활용한 엔화 매입·달러 매도 개입 논의. TGA 잔고와 역레포(RRP) 축소가 순유동성에 미치는 영향을"
+          ]
+        },
+        {
+          "id": "fx_intervention",
+          "score": 2.2,
+          "label_ko": "외환 개입",
+          "evidence": [
+            "] 미국 FIMA 레포 시설과 외환안정기금(ESF)을 활용한 엔화 매입·달러 매도 개입 논의. TGA 잔고와 역레포(RRP) 축소가 순유동성에 미치는 영향을 분석한다."
+          ]
+        },
+        {
+          "id": "usd_jpy",
+          "score": 1.8,
+          "label_ko": "달러/엔",
+          "evidence": [
+            "미일 공조에 달러/엔 환율 하락 양영빈] 외환 시장 개입 공조와 달러/엔. 연준 대차대조표 QT 경로도 언급."
+          ]
+        }
+      ]
+    }
+  ],
+  "feed_status": [
+    {
+      "source": "treasury_press_list.html",
+      "ok": false,
+      "error": "fixture_missing"
+    },
+    {
+      "source": "treasury_qra.html",
+      "ok": true,
+      "mode": "fixture"
+    },
+    {
+      "source": "fed_press.xml",
+      "ok": true,
+      "mode": "fixture"
+    },
+    {
+      "source": "beige_hub.html",
+      "ok": false,
+      "error": "fixture_missing"
+    },
+    {
+      "source": "economy21_list.html",
+      "ok": true,
+      "mode": "fixture"
+    }
+  ],
+  "stats": {
+    "ticker_items": 4,
+    "qra_parsed": true,
+    "reporter_analyses": 1,
+    "reporter_indicator_hits": 8,
+    "sources_ok": 3,
+    "sources_failed": 2
+  }
+}

@@ -15,10 +15,30 @@
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["id", "ship_type", "input_status", "baseline", "stress_tests"]
+        "required": ["id", "ship_type", "input_status", "baseline", "stress_tests"],
+        "properties": {
+          "service_type": {"type": "string"},
+          "vessel_class": {"type": ["string", "null"]},
+          "directions": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["id", "origin", "destination", "input_status"],
+              "properties": {
+                "annual_cargo_tonnes": {"type": ["number", "null"], "minimum": 0}
+              }
+            }
+          }
+        }
+      }
+    },
+    "route_catalog": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "ship_type", "vessel_class", "name_ko", "model_status"]
       }
     },
     "scenario_summary": {"type": "array"}
   }
 }
-
