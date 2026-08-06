@@ -100,13 +100,13 @@ const updateMacroPanel = (macro) => {
 // images: MapLibre paints them on a plane, so every attempt at curvature ended
 // up as either a tilted trapezoid (MapView + pitch) or a glass sphere floating
 // over a flat world (GlobeView on top of tiles). The basemap is now drawn by
-// deck itself -- an ocean sphere plus country polygons -- which _GlobeView bends
-// properly. Same dark look, real curvature, and Antarctica can just be dropped
-// from the source data instead of covered with an opaque strip.
+// deck itself -- a dark ocean rectangle, a graticule and country polygons -- on
+// a flat MapView, which is what the mockup uses (d3.geoEquirectangular).
+// Antarctica is dropped from the source data rather than covered with a strip.
 
 // Home globe zoom. Higher = the sphere fills more of the viewport, so the
 // horizon curve reads as a gentle bend rather than a small ball in space.
-const GLOBE_ZOOM = 2.5;
+const GLOBE_ZOOM = 0.85;
 
 let currentViewState = {
     longitude: 0,
@@ -157,7 +157,7 @@ const deckgl = new DeckGL({
     container: 'map',
     initialViewState: currentViewState,
     controller: true,
-    views: [new _GlobeView({ id: 'globe', resolution: 2 })], // Globe on every screen
+    views: [new MapView({ id: 'map' })], // Flat equirectangular, as the mockup
     layers: [],
     onViewStateChange: ({ viewState, interactionState }) => {
         currentViewState = viewState;
@@ -725,7 +725,7 @@ const isAntarcticaFeature = (feature) => {
     return id === 'ATA' || /antarctica|남극/i.test(name);
 };
 
-// === Curved world basemap (drawn by deck, bent by _GlobeView) ==============
+// === World basemap (flat equirectangular, drawn by deck) ===================
 //
 // Antarctica is dropped from the source features instead of hidden under an
 // opaque strip (req 12). The strip only ever existed to cover Carto's raster
@@ -777,16 +777,49 @@ const EARTH_RADIUS_M = 6370000;
  * Ocean sphere + country polygons. Home, trade and climate all build on this so
  * the three screens share one basemap identity (req 2).
  */
-// A mesh sphere rather than a lon/lat polygon: deck triangulates polygons in
-// lon/lat space, so a world-covering ring comes out as a coarse disc that does
-// not occlude the far hemisphere.
-const oceanSphereLayer = (id = 'base') => new SimpleMeshLayer({
+// Flat equirectangular basemap, matching the mockup.
+//
+// This was a sphere for a while. The brief asked for "약간의 곡률" -- slight
+// curvature -- and a globe is not that; the mockup uses d3.geoEquirectangular,
+// a flat projection, and gets its depth from a graticule plus arcs that bow.
+// The sphere also cost more than it looked: deck 9.3.7's _GlobeView draws no
+// ArcLayer, LineLayer, TextLayer or IconLayer, so every one of those needed a
+// hand-built substitute. Flat MapView draws them all.
+const oceanRect = (id = 'base') => new SolidPolygonLayer({
     id: `${id}-ocean`,
-    data: [0],
-    mesh: new SphereGeometry({ radius: EARTH_RADIUS_M, nlat: 24, nlong: 48 }),
-    coordinateSystem: COORDINATE_SYSTEM.CARTESIAN,
-    getPosition: [0, 0, 0],
-    getColor: OCEAN_RGBA,
+    data: [[[-180, -85], [180, -85], [180, 85], [-180, 85]]],
+    getPolygon: (d) => d,
+    stroked: false,
+    filled: true,
+    pickable: false,
+    getFillColor: OCEAN_RGBA,
+});
+
+// Graticule every 20 degrees. This is what reads as curvature on a flat map:
+// meridians converging toward the poles give the plane a globe's geometry
+// without pretending to be one.
+const GRATICULE_PATHS = (() => {
+    const out = [];
+    for (let lon = -180; lon <= 180; lon += 20) {
+        const line = [];
+        for (let lat = -80; lat <= 80; lat += 5) line.push([lon, lat]);
+        out.push(line);
+    }
+    for (let lat = -80; lat <= 80; lat += 20) {
+        const line = [];
+        for (let lon = -180; lon <= 180; lon += 5) line.push([lon, lat]);
+        out.push(line);
+    }
+    return out;
+})();
+
+const graticuleLayer = (id = 'base') => new PathLayer({
+    id: `${id}-graticule`,
+    data: GRATICULE_PATHS,
+    getPath: (d) => d,
+    getColor: [255, 255, 255, 13],
+    getWidth: 1,
+    widthUnits: 'pixels',
     pickable: false,
 });
 
@@ -807,15 +840,17 @@ const landLayer = ({
 });
 
 /**
- * Ocean sphere + land, with an optional `water` slot drawn between the two.
+ * Ocean, graticule and land, with an optional `water` slot between water and
+ * coastline.
  *
- * The slot exists for the SST wash: layered on top of the land it painted over
+ * The slot exists for the SST wash: drawn on top of the land it painted over
  * Argentina and smeared a basin-sized blob across Africa. It belongs on the
  * water, under the coastlines.
  */
 const worldBaseLayers = ({ water = [], ...opts } = {}) => [
-    oceanSphereLayer(opts.id || 'base'),
+    oceanRect(opts.id || 'base'),
     ...water,
+    graticuleLayer(opts.id || 'base'),
     landLayer(opts),
 ];
 
@@ -2563,21 +2598,22 @@ const isoToCountryName = () => {
 };
 
 /**
- * Globe view-state guard. On _GlobeView the earth is genuinely round, so there
- * is no pitch to fake curvature with and no southern edge to bias away from --
- * the only thing worth clamping is zoom, so scrolling can grow the sphere
- * (req 2) without letting it shrink to a marble.
+ * View-state guard. Curvature comes from the graticule and the bowed arcs, not
+ * from tilting or rounding the map, so pitch stays at zero and only zoom is
+ * clamped -- scrolling should grow the map (req 2) without losing the world.
  */
-const GLOBE_MIN_ZOOM = 1.4;
-const GLOBE_MAX_ZOOM = 7.5;
+const MAP_MIN_ZOOM = 0.5;
+const MAP_MAX_ZOOM = 7.5;
 const clampGlobeView = (vs = {}) => ({
     ...vs,
-    latitude: Math.min(78, Math.max(-58, vs.latitude ?? 20)),
-    zoom: Math.min(GLOBE_MAX_ZOOM, Math.max(GLOBE_MIN_ZOOM, vs.zoom ?? 2.4)),
+    latitude: Math.min(80, Math.max(-70, vs.latitude ?? 15)),
+    zoom: Math.min(MAP_MAX_ZOOM, Math.max(MAP_MIN_ZOOM, vs.zoom ?? 0.85)),
+    // No pitch. Tilting the plane was the previous attempt at curvature and it
+    // rendered the world as a trapezoid.
     pitch: 0,
     bearing: 0,
-    minZoom: GLOBE_MIN_ZOOM,
-    maxZoom: GLOBE_MAX_ZOOM,
+    minZoom: MAP_MIN_ZOOM,
+    maxZoom: MAP_MAX_ZOOM,
 });
 // Old name kept for any caller still reaching for it.
 const clampMapNoAntarctica = clampGlobeView;
@@ -2629,11 +2665,6 @@ const positionClimateRegionLabels = () => {
     climateRegionLabelsEl.querySelectorAll('.region-label').forEach((el, i) => {
         const p = climateLabelPoints[i];
         if (!p) return;
-        // 78 degrees keeps a label from sliding around the limb as a smear.
-        if (angularDistanceDeg(center, p.coordinates) > 78) {
-            el.style.display = 'none';
-            return;
-        }
         const [x, y] = viewport.project(p.coordinates);
         el.style.display = 'block';
         el.style.transform = `translate(${Math.round(x)}px, ${Math.round(y)}px)`;
@@ -2689,10 +2720,9 @@ const setModelStatusBadge = (cfg) => {
 };
 
 const climateWorldViewState = () => (
-    // Real curvature: _GlobeView bends our own vector basemap (req 13).
-    // Latitude 18 puts the modelled belt -- US, Brazil, India, SE Asia -- across
-    // the middle of the sphere rather than out on the horizon.
-    { longitude: -25, latitude: 15, zoom: 2.3, pitch: 0, bearing: 0 }
+    // Latitude 15 centres the modelled belt -- US, Brazil, India, SE Asia --
+    // rather than leaving it at the bottom of the frame.
+    { longitude: 5, latitude: 12, zoom: 0.85, pitch: 0, bearing: 0 }
 );
 
 const setClimateMapLegend = (mode) => {
@@ -2885,7 +2915,7 @@ const showClimateWorld = async () => {
     deckgl.setProps({
         // Real globe. The basemap is our own vector world (worldBaseLayers), so
         // there is no flat raster underneath for the sphere to fight with.
-        views: [new _GlobeView({ id: 'globe', resolution: 2, controller: true })],
+        views: [new MapView({ id: 'map', controller: true })],
         viewState: worldView,
         controller: { dragRotate: false, touchRotate: false },
         pickingRadius: 18,
@@ -3072,17 +3102,12 @@ const showClimateCountry = async (countryName) => {
     // Stage 2 hands the whole width to the map -- the right dashboard only
     // appears once a producing region is chosen -- so the country is framed
     // tighter than the manifest's default, which was set for a narrower pane.
-    const countryView = clampGlobeView({
-        ...cfg.view,
-        zoom: (cfg.view?.zoom ?? 3.6) + 0.55,
-        pitch: 0,
-        bearing: 0,
-    });
+    const countryView = clampGlobeView({ ...cfg.view, pitch: 0, bearing: 0 });
     currentViewState = countryView;
     setClimateTargetHud(cfg, countryView.zoom);
 
     deckgl.setProps({
-        views: [new _GlobeView({ id: 'globe', resolution: 2, controller: true })],
+        views: [new MapView({ id: 'map', controller: true })],
         viewState: countryView,
         controller: { dragRotate: false, touchRotate: false },
         onViewStateChange: ({ viewState }) => {
@@ -3171,10 +3196,9 @@ const showClimateCountry = async (countryName) => {
             }),
         ],
     });
-    // Region names live in an HTML overlay, not a TextLayer: deck's _GlobeView
-    // does not draw TextLayer in this build (the layer exists and holds data but
-    // renders nothing). Projecting HTML also gives us the mockup's two-line
-    // label with a coloured delta, and lets the label itself be clickable.
+    // Region names are an HTML overlay rather than a TextLayer: it gives the
+    // mockup's two-line label with a coloured delta, and lets the label itself
+    // be clickable.
     setClimateRegionLabels(points);
 
     await renderCountryPanel(cfg, points, { lv, pol });
@@ -3709,7 +3733,9 @@ const generateNodeData = (arcs) => {
 const MAX_RENDERED_ARCS = 250;
 
 // Commodity maps ride the same curved globe as the home screen (req 2, 13).
-const TRADE_MAP_VIEW = { longitude: -20, latitude: 20, zoom: 2.25, pitch: 0, bearing: 0 };
+// Whole world in the frame, as the mockup's fitExtent does. Latitude 12 trims
+// the empty polar bands without cutting the producing belt.
+const TRADE_MAP_VIEW = { longitude: 5, latitude: 12, zoom: 0.85, pitch: 0, bearing: 0 };
 
 const stopTradeAnim = () => {
     if (tradeAnimRaf) {
@@ -3733,61 +3759,6 @@ const slerpLonLat = (a, b, t) => {
     return [(Math.atan2(y, x) * 180) / Math.PI, (Math.atan2(z, Math.hypot(x, y)) * 180) / Math.PI];
 };
 
-/**
- * Great-circle polyline between two points, lifted off the surface in the
- * middle so it reads as an arc rather than a line painted on the ground.
- *
- * This exists because deck.gl 9.3.7's ArcLayer draws nothing under _GlobeView
- * (same layer renders fine under MapView, no error logged). PathLayer does
- * render on the globe, so the arc is built by hand.
- */
-const greatCirclePath = (src, dst, segments = 40) => {
-    // Lift scales with route length so a Gulf-to-Japan run bows like an arc
-    // while a short hop stays close to the surface instead of ballooning.
-    const span = Math.hypot(dst[0] - src[0], dst[1] - src[1]);
-    const lift = Math.min(5.5e5, 60000 + span * 4200);
-    const out = [];
-    for (let i = 0; i <= segments; i++) {
-        const t = i / segments;
-        const [lon, lat] = slerpLonLat(src, dst, t);
-        out.push([lon, lat, Math.sin(Math.PI * t) * lift]);
-    }
-    return out;
-};
-
-// A route whose vertices sit past the horizon is behind the planet. deck does
-// not depth-test these paths against the sphere mesh, so without clipping an
-// Australia-Japan run is drawn as a straight line across the middle of the
-// globe. Split the polyline instead of dropping the route: a path that crosses
-// the limb should show the half that faces us.
-// 74 degrees, not 90. A great circle that lies nearly edge-on to the camera --
-// Chile to China, say -- keeps every vertex just inside a 87-degree cut and
-// renders as a straight chord through the planet. Pulling the cut back to 74
-// removes the grazing portion, and the arc lift is kept low enough that a path
-// near the limb does not float outside the sphere's silhouette.
-const HORIZON_DEG = 74;
-const clipPathToHorizon = (points, center) => {
-    const out = [];
-    let run = [];
-    for (const p of points) {
-        if (angularDistanceDeg(center, [p[0], p[1]]) <= HORIZON_DEG) {
-            run.push(p);
-        } else if (run.length) {
-            if (run.length > 1) out.push(run);
-            run = [];
-        }
-    }
-    if (run.length > 1) out.push(run);
-    return out;
-};
-
-/** Flow polylines for the current camera, one entry per visible path segment. */
-const buildFlowPaths = (arcs, center) => arcs.flatMap((d) => {
-    if (!d.sourcePosition || !d.targetPosition) return [];
-    return clipPathToHorizon(greatCirclePath(d.sourcePosition, d.targetPosition), center)
-        .map((path) => ({ ...d, path }));
-});
-
 const buildTradeTrailParticles = (arcs, phase) => {
     const out = [];
     const n = Math.min(arcs.length, 40);
@@ -3800,8 +3771,6 @@ const buildTradeTrailParticles = (arcs, phase) => {
             const pos = slerpLonLat(src, dst, t);
             // Same reason as the paths: a particle behind the planet would
             // otherwise glide across the visible face.
-            const center = [currentViewState.longitude ?? 0, currentViewState.latitude ?? 0];
-            if (angularDistanceDeg(center, pos) > HORIZON_DEG) continue;
             out.push({
                 position: pos,
                 color: [255, 255, 255, Math.round(90 + (1 - t) * 140)],
@@ -3883,31 +3852,38 @@ const renderMapLayers = (arcs, opts = {}) => {
             autoHighlight: true,
             highlightColor: [125, 211, 252, 40],
         }),
-        new PathLayer({
+        // ArcLayer again, now that the map is flat. It draws the bowed
+        // great-circle the mockup specifies natively -- the hand-built
+        // PathLayer version only existed because _GlobeView refused to render
+        // this layer at all.
+        new ArcLayer({
             id: `arc-layer-${currentCommodity}-${focus || 'world'}`,
-            data: buildFlowPaths(filteredArcs, [
-                currentViewState.longitude ?? 0,
-                currentViewState.latitude ?? 0,
-            ]),
+            data: filteredArcs,
             pickable: true,
-            widthUnits: 'pixels',
-            capRounded: true,
-            jointRounded: true,
-            getPath: (d) => d.path,
+            greatCircle: true,
+            getHeight: 0.35,
+            getSourcePosition: (d) => d.sourcePosition,
+            getTargetPosition: (d) => d.targetPosition,
             getWidth: (d) => {
                 const key = `${d.sourceName}>${d.targetName}`;
                 const hot = !focus || opts._focusedSet?.has(key);
                 const base = Math.min(Math.max(1.2, d.volume / 18), 9);
                 return hot ? base : Math.max(0.4, base * 0.25);
             },
-            getColor: (d) => {
+            getSourceColor: (d) => {
                 const key = `${d.sourceName}>${d.targetName}`;
                 if (focus && !opts._focusedSet?.has(key)) return [80, 100, 130, 40];
-                return d.sourceColor || [56, 189, 248, 225];
+                return d.sourceColor || [56, 189, 248, 190];
+            },
+            getTargetColor: (d) => {
+                const key = `${d.sourceName}>${d.targetName}`;
+                if (focus && !opts._focusedSet?.has(key)) return [80, 100, 130, 30];
+                return [125, 211, 252, 240];
             },
             updateTriggers: {
                 getWidth: [focus],
-                getColor: [focus],
+                getSourceColor: [focus],
+                getTargetColor: [focus],
             },
             onHover: (info) => {
                 if (!info.object) {
@@ -3953,7 +3929,7 @@ const renderMapLayers = (arcs, opts = {}) => {
         : []);
 
     deckgl.setProps({
-        views: [new _GlobeView({ id: 'globe', resolution: 2, controller: true })],
+        views: [new MapView({ id: 'map', controller: true })],
         viewState: currentViewState,
         controller: { dragRotate: false, touchRotate: false },
         layers: [
@@ -4130,7 +4106,7 @@ const setView = (target) => {
         currentViewState = clampGlobeView({ ...currentViewState, zoom: GLOBE_ZOOM });
 
         deckgl.setProps({
-            views: [new _GlobeView({ id: 'globe', resolution: 2, controller: true })],
+            views: [new MapView({ id: 'map', controller: true })],
             viewState: currentViewState,
             controller: { dragRotate: false, touchRotate: false },
             onClick: null,
@@ -4253,7 +4229,7 @@ const setView = (target) => {
             stopRotation();
             currentViewState = clampGlobeView({ ...TRADE_MAP_VIEW });
             deckgl.setProps({
-                views: [new _GlobeView({ id: 'globe', resolution: 2, controller: true })],
+                views: [new MapView({ id: 'map', controller: true })],
                 viewState: currentViewState,
                 layers: worldBaseLayers({ id: 'trade-loading' }),
             });
