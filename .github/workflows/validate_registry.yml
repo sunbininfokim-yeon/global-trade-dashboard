@@ -1,8 +1,15 @@
-name: Validate climate registry
+name: Climate registry
 
-# 다른 터미널(Cursor/Codex)이 만든 model.yaml 과 forecast JSON 이 UI 를 깨는 것을
-# 머지 전에 막는다. 2026-08-06 이전에는 이 게이트가 없어서, app.js 가 fetch 하는
-# india_yield_forecast.json 이 없는 채로 배포돼 인도 패널이 빈 화면이었다.
+# 병렬 학습을 막지 않는 것이 목적이다.
+#
+# 국가 작업은 이미 {국가}/ 폴더와 {국가}_yield_forecast.json 으로 격리돼 있어
+# 서로 충돌하지 않는다. 남은 공유 파일은 생성물인 climate_registry_v1.json 하나뿐인데,
+# 이걸 브랜치마다 재생성해서 커밋하게 하면 두 국가가 동시에 들어올 때마다
+# 같은 파일에서 충돌한다. 격리해 놓고 마지막에 다시 묶는 꼴이다.
+#
+# 그래서 규칙을 나눈다:
+#   PR   — 검증만 한다. 레지스트리는 커밋하지 않는다.
+#   main — 병합된 뒤 CI 가 한 번만 재생성해서 커밋한다. 쓰는 주체가 하나라 충돌이 없다.
 
 on:
   pull_request:
@@ -17,27 +24,42 @@ on:
 
 jobs:
   validate:
+    if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-
       - name: Validate manifests against forecast JSON
         working-directory: "New for anti/scripts/yield_model"
         run: python3 build_registry.py --check
 
-      - name: Registry must be regenerated when a manifest changes
+  regenerate:
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Rebuild registry from manifests
         working-directory: "New for anti/scripts/yield_model"
+        run: python3 build_registry.py
+
+      - name: Commit if it actually changed
         run: |
-          python3 build_registry.py
-          # generated_at moves every run, so compare everything except that line.
-          if ! git diff --quiet -- ../../public/data/climate_registry_v1.json; then
-            if git diff -- ../../public/data/climate_registry_v1.json \
-               | grep -E '^[+-]' | grep -v '^[+-][+-]' | grep -qv 'generated_at'; then
-              echo "::error::model.yaml 을 고쳤으면 build_registry.py 를 돌려 커밋하세요."
-              git diff -- ../../public/data/climate_registry_v1.json | head -40
-              exit 1
-            fi
+          reg="New for anti/public/data/climate_registry_v1.json"
+          # generated_at moves on every run; a timestamp-only diff is not a change.
+          if git diff --quiet -- "$reg"; then exit 0; fi
+          if ! git diff -- "$reg" | grep -E '^[+-]' | grep -v '^[+-][+-]' | grep -qv 'generated_at'; then
+            git checkout -- "$reg"; exit 0
           fi
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add "$reg"
+          git commit -m "chore: rebuild climate registry from manifests"
+          git push

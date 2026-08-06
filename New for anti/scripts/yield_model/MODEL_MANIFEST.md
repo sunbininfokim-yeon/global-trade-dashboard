@@ -146,3 +146,59 @@ notes_ko: |
 | west_africa | ☐ | `panel_mode: reference` |
 
 전환 순서는 `docs/ops/ARCHITECTURE_REVIEW_2026-08-05.md` §9 참조.
+
+---
+
+## 병렬 학습 규칙 (2026-08-06)
+
+여러 터미널이 동시에 다른 국가를 학습한다. 실제로 우크라이나·태국·캐나다·중미 4개국·
+MENA 가 같은 시각에 진행 중이었다. 충돌하지 않으려면 **각자 자기 국가 밖으로 나가지 않는 것**
+하나면 된다.
+
+### 국가 작업이 만질 수 있는 것
+
+```
+New for anti/scripts/yield_model/{country}/**          ← 자기 폴더
+New for anti/public/data/{country}_yield_forecast.json ← 자기 산출물
+```
+
+이 둘은 국가마다 다른 경로라 **서로 절대 겹치지 않는다.** 몇 개국이 동시에 돌아도 상관없다.
+
+### 국가 작업이 만지면 안 되는 것 (공유 파일)
+
+| 파일 | 왜 |
+|---|---|
+| `New for anti/app.js` | 매니페스트가 생긴 이유. 국가 추가에 UI 수정은 필요 없다 |
+| `public/data/climate_registry_v1.json` | **생성물.** 커밋하지 않는다 — 아래 참조 |
+| `docs/ops/TASKS.md` | 자기 행만 고친다 |
+| `.gitignore` | 바꿔야 하면 별도 PR |
+
+### 레지스트리를 커밋하지 않는 이유
+
+브랜치마다 `build_registry.py` 를 돌려 커밋하게 하면, 두 국가가 동시에 들어올 때
+**매번 같은 파일에서 충돌한다.** 국가별로 격리해 놓고 마지막에 다시 한 파일로 묶는 꼴이다.
+
+그래서 쓰는 주체를 하나로 뒀다:
+
+```
+PR    → build_registry.py --check   (검증만. 레지스트리 커밋 안 함)
+main  → CI 가 한 번 재생성해서 커밋
+```
+
+로컬에서 확인하려면 그냥 돌리면 된다. 결과 파일은 gitignore 되어 있다.
+
+```bash
+cd "New for anti/scripts/yield_model" && python3 build_registry.py
+```
+
+### 학습이 덜 끝난 국가
+
+지금 당장 완성할 필요 없다. `model_status` 로 상태를 밝히면 화면이 그대로 반영한다.
+
+```yaml
+model_status: training
+status_note_ko: "3개 산지 모두 추세 대비 성능이 음수. 원인 규명 중."
+```
+
+`validated` 는 근거가 있어야 통과한다 — `build_registry.py` 가 forecast JSON 의
+skill 을 직접 읽어서, 실측보다 후하게 주장하면 거부한다.
