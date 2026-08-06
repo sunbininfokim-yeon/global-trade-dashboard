@@ -3723,12 +3723,10 @@ const generateNodeData = (arcs) => {
             }
         });
         
-        const scaleFactor = (currentCommodity === 'gold') ? 50 : 20; // Reduced base scale
         return {
             name: country,
             coordinates: countryCoords(country),
-            radius: Math.max(30000, totalTrade * scaleFactor), // Drastically reduced base radius
-            totalTrade
+            totalTrade,
         };
     // A country with no resolvable position would render at [0,0] in the Gulf
     // of Guinea and swallow clicks meant for the map, so drop it instead.
@@ -3788,18 +3786,36 @@ const slerpLonLat = (a, b, t) => {
  * stays on the surface. Doing the same in lon/lat gives a genuinely 2D route.
  */
 const bowedPath = (src, dst, segments = 36, bowF = 0.13) => {
-    const dx = dst[0] - src[0];
+    // Take the shorter way round. A route from the Americas to Asia is closer
+    // across the Pacific than back over Europe, and picking the long way is
+    // what sent lines sweeping across the whole map.
+    let lon0 = src[0];
+    let lon1 = dst[0];
+    if (Math.abs(lon1 - lon0) > 180) lon1 += lon1 > lon0 ? -360 : 360;
+
+    const dx = lon1 - lon0;
     const dy = dst[1] - src[1];
     const len = Math.hypot(dx, dy) || 1;
     const nx = -dy / len;
     const ny = dx / len;
-    const bow = Math.min(len * bowF, 26);
+    // Cap the bow in degrees, not just as a fraction. An east-west route is
+    // long enough that 13% of it lifted the curve ~26 degrees of latitude,
+    // which near the poles shoots off the top of an equirectangular map.
+    const bow = Math.min(len * bowF, 12);
+
     const out = [];
     for (let i = 0; i <= segments; i++) {
         const f = i / segments;
-        const [lon, lat] = slerpLonLat(src, dst, f);
+        // Interpolate in the unwrapped frame rather than slerping, so the path
+        // stays continuous instead of jumping when it crosses ±180. deck's
+        // repeat:true draws longitudes past the antimeridian into the next copy
+        // of the world, which is what makes the crossing look seamless.
         const k = Math.sin(Math.PI * f) * bow;
-        out.push([lon + nx * k, lat + ny * k]);
+        const lon = lon0 + dx * f + nx * k;
+        const lat = src[1] + dy * f + ny * k;
+        // Equirectangular stretches badly near the poles; keep the curve inside
+        // the band the basemap actually draws.
+        out.push([lon, Math.max(-78, Math.min(78, lat))]);
     }
     return out;
 };
@@ -3889,6 +3905,7 @@ const renderMapLayers = (arcs, opts = {}) => {
             : filteredArcs
     );
     const totalFocus = (opts._focusedList || []).reduce((s, a) => s + a.volume, 0) || 1;
+    const nodeTradeMax = nodeData.reduce((m, d) => Math.max(m, d.totalTrade), 1);
 
     if (!opts.keepView) currentViewState = clampGlobeView({ ...TRADE_MAP_VIEW });
 
@@ -3975,11 +3992,20 @@ const renderMapLayers = (arcs, opts = {}) => {
             opacity: 0.9,
             stroked: true,
             filled: true,
-            radiusMinPixels: 3,
-            radiusMaxPixels: 22,
-            lineWidthMinPixels: 1,
+            // Pixels on a sqrt curve, as the mockup does (2–9.5px). Sizing in
+            // metres meant the biggest traders were drawn as discs wide enough
+            // to cover the country underneath them, and they grew further on
+            // zoom.
+            radiusUnits: 'pixels',
+            radiusMinPixels: 2,
+            radiusMaxPixels: 10,
+            lineWidthMinPixels: 0.8,
             getPosition: (d) => d.coordinates,
-            getRadius: (d) => d.radius,
+            getRadius: (d) => {
+                const m = nodeTradeMax || 1;
+                return 2 + 7.5 * Math.min(1, Math.sqrt(d.totalTrade / m));
+            },
+            updateTriggers: { getRadius: [currentCommodity, focus] },
             getFillColor: (d) => (d.name === focus ? [56, 189, 248, 230] : [15, 23, 42, 220]),
             getLineColor: (d) => (d.name === focus ? [255, 255, 255, 255] : [200, 220, 255, 160]),
             onClick: handleNodeClick,
