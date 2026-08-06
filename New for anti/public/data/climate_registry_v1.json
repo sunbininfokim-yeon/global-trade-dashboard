@@ -1,6 +1,6 @@
 {
   "schema_version": "climate-registry-v1",
-  "generated_at": "2026-08-06T14:56:21.785241+09:00",
+  "generated_at": "2026-08-06T15:00:22.911327+09:00",
   "note": "Generated from scripts/yield_model/*/model.yaml. Do not edit by hand.",
   "countries": {
     "Argentina": {
@@ -9,6 +9,8 @@
       "label_ko": "아르헨티나",
       "label_en": "Argentina",
       "panel_mode": "forecast",
+      "model_status": "provisional",
+      "status_note_ko": "산지 4곳 검증 통과. 팜파스 밀은 서리 피처 생성 실패, 투쿠만 사탕수수는 학습된 모델 없음(공식 통계가 2004/05에서 끊김).",
       "data_file": "argentina_yield_forecast.json",
       "model_name": "Pampas + Norte Model",
       "view": {
@@ -116,6 +118,8 @@
       "label_ko": "호주",
       "label_en": "Australia",
       "panel_mode": "forecast",
+      "model_status": "provisional",
+      "status_note_ko": "산지 3곳 모두 검증 통과. 다만 2곳은 기상 피처 생성 실패로 예측 없음.",
       "data_file": "australia_yield_forecast.json",
       "model_name": "Wheat Belt Model",
       "view": {
@@ -185,6 +189,8 @@
       "label_ko": "브라질",
       "label_en": "Brazil",
       "panel_mode": "forecast",
+      "model_status": "provisional",
+      "status_note_ko": "산지 6곳 통과 / 3곳은 추세를 이기지 못함 / 파라나 밀은 적성병 피처 생성 실패.",
       "data_file": "brazil_yield_forecast.json",
       "model_name": "Brazil Regional Model",
       "view": {
@@ -272,6 +278,8 @@
       "label_ko": "중국",
       "label_en": "China",
       "panel_mode": "forecast",
+      "model_status": "training",
+      "status_note_ko": "3개 산지 모두 추세 대비 성능이 음수(-0.57 ~ -1.60). 기상 피처가 추세만 쓰는 것보다 나쁘다. 원인 규명 전까지 수치를 참고용으로만 볼 것. 냉해·서리 피처 3건은 생성 실패.",
       "data_file": "china_yield_forecast.json",
       "model_name": "Regional crop suite",
       "view": {
@@ -344,6 +352,8 @@
       "label_ko": "인도",
       "label_en": "India",
       "panel_mode": "forecast",
+      "model_status": "training",
+      "status_note_ko": "라벨(ICRISAT)이 2019년에서 끊겨 2026년을 7년 전 추세로 외삽 중. 3개 산지 중 2개는 기상 피처 생성 실패로 예측 없음. 통과한 펀자브 밀도 추세 대비 개선이 0.9%에 불과.",
       "data_file": "india_yield_forecast.json",
       "view": {
         "longitude": 78,
@@ -412,6 +422,8 @@
       "label_ko": "인도네시아",
       "label_en": "Indonesia",
       "panel_mode": "forecast",
+      "model_status": "training",
+      "status_note_ko": "4개 산지 모두 추세를 이기지 못했다. 표본 기간이 짧아 climate_gate 가 기상 피처를 대부분 차단한다 — 사실상 추세 베이스라인이다.",
       "data_file": "indonesia_yield_forecast.json",
       "model_name": "National panel (baseline)",
       "view": {
@@ -495,6 +507,7 @@
       "label_ko": "미국",
       "label_en": "United States",
       "panel_mode": "forecast",
+      "model_status": "validated",
       "data_file": "yield_forecast.json",
       "model_name": "US Corn Belt Model",
       "view": {
@@ -576,6 +589,8 @@
       "label_ko": "코트디부아르",
       "label_en": "Ivory Coast",
       "panel_mode": "reference",
+      "model_status": "training",
+      "status_note_ko": "예측 모델 없음 — 정부·기관 전망과 조사 메모만 제공한다.",
       "data_file": "cote_divoire_yield_forecast.json",
       "model_name": "서아프리카 코코아 (참고)",
       "aliases": [
@@ -625,6 +640,8 @@
       "label_ko": "가나",
       "label_en": "Ghana",
       "panel_mode": "reference",
+      "model_status": "training",
+      "status_note_ko": "예측 모델 없음 — 정부·기관 전망과 조사 메모만 제공한다.",
       "data_file": "ghana_yield_forecast.json",
       "model_name": "서아프리카 코코아 (참고)",
       "view": {
