@@ -1107,15 +1107,17 @@ const OCEAN_SST_BASINS = [
 /** Muted teal (cool) to muted rust (warm). Low chroma, low alpha, on purpose. */
 const sstColor = (anomaly) => {
     const t = Math.max(-1.5, Math.min(1.5, anomaly)) / 1.5; // -1..1
-    const cool = [62, 116, 142];
-    const warm = [156, 106, 74];
+    // Raised from a near-invisible wash. "색이 뚜렷하지 않게" meant not vivid,
+    // not undetectable -- at the old values the field could not be read at all.
+    const cool = [64, 150, 190];
+    const warm = [206, 122, 74];
     const u = (t + 1) / 2;
     const mix = (a, b) => Math.round(a + (b - a) * u);
     return [
         mix(cool[0], warm[0]),
         mix(cool[1], warm[1]),
         mix(cool[2], warm[2]),
-        30 + Math.round(Math.abs(t) * 26), // 30-56 alpha: a wash, not a fill
+        56 + Math.round(Math.abs(t) * 44), // 56-100: readable, still a wash
     ];
 };
 
@@ -1143,7 +1145,7 @@ const oceanSstPointsFromGlobal = (g) => {
             ...b,
             id: `${b.id}-${i}`,
             anomaly,
-            color: sstColor(anomaly).map((v, ci) => (ci === 3 ? Math.round(v * 0.26) : v)),
+            color: sstColor(anomaly).map((v, ci) => (ci === 3 ? Math.round(v * 0.42) : v)),
             radius: base * scale,
         }));
     }).flat();
@@ -1197,9 +1199,9 @@ const sstWashLayer = (sstPoints, id = 'climate-sst-wash') => new ScatterplotLaye
     pickable: true,
     stroked: false,
     filled: true,
-    opacity: 0.5,
-    radiusMinPixels: 18,
-    radiusMaxPixels: 95,
+    opacity: 0.72,
+    radiusMinPixels: 22,
+    radiusMaxPixels: 130,
     getPosition: (d) => d.coordinates,
     getRadius: (d) => d.radius,
     getFillColor: (d) => d.color,
