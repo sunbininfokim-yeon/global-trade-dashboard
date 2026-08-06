@@ -1,0 +1,143 @@
+{
+  "as_of": "2026-08-06",
+  "mode": "reference_only_no_forecast",
+  "scope": "Ecuador, Guatemala, Costa Rica, Honduras — Cavendish export bananas",
+  "interpretation": [
+    "Descriptive trade/production reference and disease-storm risk notes only.",
+    "Do not present weather-model points or farm-interview microdata as belt supply forecasts.",
+    "Weekly YLWS/YLS panels are not open; see YLWS_ACQUISITION.md."
+  ],
+  "ylws_status": {
+    "open_weekly_series": false,
+    "best_literature_panel": {
+      "citation": "Olivares et al. 2022 Sustainability 14(21):14123",
+      "doi": "10.3390/su142114123",
+      "n_weeks": 623,
+      "years": "2015-2018",
+      "geography": "3 COOBANA sites, Changuinola, Panama",
+      "data_availability_statement": "Not applicable",
+      "holder": "COOBANA R.L. (commercial cooperative records)"
+    }
+  },
+  "risk_framework": [
+    {
+      "id": "black_sigatoka",
+      "label_ko": "블랙 시가토카",
+      "summary_ko": "만성 엽면 괴사. 현장은 주간 YLWS/YLS로 방제 주기를 잡음. 공개 시계열 없음.",
+      "operational_note_ko": "YLWS가 어린 잎(상위)으로 올라오면 송이 충실·수출 박스에 직접 타격."
+    },
+    {
+      "id": "hurricane_blowdown",
+      "label_ko": "허리케인·강풍 blowdown",
+      "summary_ko": "중미 북부·카리브 벨트. 얕은 뿌리 — 최대풍 ~80 km/h 이상이면 농장 전복 리스크.",
+      "operational_note_ko": "하드 컷 스위치로만 서술. IBTrACS 연도 플래그 없이 소프트 기상 회귀로 대체하지 않음."
+    },
+    {
+      "id": "tr4",
+      "label_ko": "TR4 (퓨사리움 시들음병)",
+      "summary_ko": "토양 전염, 포장 단위 사실상 전손·장기 격리. LAC 상륙 2019년 이후 확산 리스크.",
+      "operational_note_ko": "수량성 잔차가 아니라 면적 격리 레이어."
+    }
+  ],
+  "countries": {
+    "ecuador": {
+      "country": "Ecuador",
+      "iso3": "ECU",
+      "label_ko": "에콰도르",
+      "role_ko": "세계 최대 바나나 수출국 — 연안 Los Ríos / Guayas / El Oro",
+      "belts": [
+        {"name": "Quevedo / Los Ríos", "coordinates": [-79.45, -1.03]},
+        {"name": "Guayaquil belt", "coordinates": [-79.90, -2.17]},
+        {"name": "Machala / El Oro", "coordinates": [-79.96, -3.26]}
+      ],
+      "headline_risks_ko": ["블랙 시가토카 상시", "ENSO 가뭄·습윤 변동", "TR4 유입·격리 리스크"],
+      "hurricane_prone": false,
+      "stat_notes_ko": [
+        "국가 생산·수출은 FAO Banana Statistical Compendium / FAOSTAT item 486로 교차. 주(province) 공개 패널은 별도 확보 전까지 숫자 헤드라인에 쓰지 않음."
+      ],
+      "sources": [
+        {
+          "name": "FAO bananas market / statistical compendium",
+          "url": "https://www.fao.org/markets-and-trade/commodities/bananas",
+          "supports": "export/production reference framing"
+        },
+        {
+          "name": "FAOSTAT item 486 Bananas",
+          "url": "https://www.fao.org/faostat/",
+          "supports": "national area/production/yield cross-check only"
+        }
+      ]
+    },
+    "guatemala": {
+      "country": "Guatemala",
+      "iso3": "GTM",
+      "label_ko": "과테말라",
+      "role_ko": "대미 수출 중심 — Izabal 카리브 + Escuintla 태평양",
+      "belts": [
+        {"name": "Puerto Barrios / Izabal", "coordinates": [-88.59, 15.73]},
+        {"name": "Escuintla Pacific", "coordinates": [-90.79, 14.30]}
+      ],
+      "headline_risks_ko": ["허리케인 blowdown", "블랙 시가토카", "TR4 지역 확산 경계"],
+      "hurricane_prone": true,
+      "stat_notes_ko": [
+        "수출 물량은 FAO Compendium 계열로 참고. MAGA 주별 수량성은 미적재."
+      ],
+      "sources": [
+        {
+          "name": "FAO bananas market / statistical compendium",
+          "url": "https://www.fao.org/markets-and-trade/commodities/bananas",
+          "supports": "export reference"
+        }
+      ]
+    },
+    "costa_rica": {
+      "country": "Costa Rica",
+      "iso3": "CRI",
+      "label_ko": "코스타리카",
+      "role_ko": "Limón 카리브 벨트 — CORBANA 연구·방제 체계",
+      "belts": [
+        {"name": "Limón", "coordinates": [-83.04, 9.99]},
+        {"name": "Sixaola", "coordinates": [-82.63, 9.51]}
+      ],
+      "headline_risks_ko": ["시가토카 (CORBANA Preaviso Biológico 내부)", "카리브 폭풍"],
+      "hurricane_prone": true,
+      "stat_notes_ko": [
+        "CORBANA 주간 병징·기상은 논문에만 인용되고 원본 CSV 비공개 (YLWS_ACQUISITION.md)."
+      ],
+      "sources": [
+        {
+          "name": "CORBANA",
+          "url": "https://www.corbana.com/",
+          "supports": "industry / research board (data not open)"
+        },
+        {
+          "name": "FAO bananas market / statistical compendium",
+          "url": "https://www.fao.org/markets-and-trade/commodities/bananas",
+          "supports": "export reference"
+        }
+      ]
+    },
+    "honduras": {
+      "country": "Honduras",
+      "iso3": "HND",
+      "label_ko": "온두라스",
+      "role_ko": "북부 Cortés–Atlántida — 네 나라 중 허리케인 노출 최대",
+      "belts": [
+        {"name": "La Lima / Cortés", "coordinates": [-87.92, 15.43]},
+        {"name": "El Progreso / Yoro", "coordinates": [-87.80, 15.40]}
+      ],
+      "headline_risks_ko": ["허리케인 blowdown (역사적 전복)", "시가토카", "면적·재식 변동"],
+      "hurricane_prone": true,
+      "stat_notes_ko": [
+        "폭풍 연도는 수출 급락으로 통계에 드러나나, YLWS 주간열은 공개되지 않음."
+      ],
+      "sources": [
+        {
+          "name": "FAO bananas market / statistical compendium",
+          "url": "https://www.fao.org/markets-and-trade/commodities/bananas",
+          "supports": "export reference"
+        }
+      ]
+    }
+  }
+}
