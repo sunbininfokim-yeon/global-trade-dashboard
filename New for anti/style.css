@@ -1869,3 +1869,16 @@ body.trade-map-mode .left-pane {
 .trade-overlay .to-scale-row i.s2 { height: 3px; opacity: 0.75; }
 .trade-overlay .to-scale-row i.s3 { height: 6px; }
 .trade-overlay .to-hint { margin: 0; font-size: 10.5px; color: rgba(148, 163, 184, 0.62); max-width: 420px; }
+
+/* 국가 포커스: 수출/수입 방향 구분 */
+.trade-bar-row { grid-template-columns: 16px 26px minmax(52px, 1fr) 54px 44px auto; }
+.trade-bar-row .tr-dir {
+    font-size: 9.5px;
+    padding: 1px 0;
+    text-align: center;
+    border-radius: 3px;
+    color: #7dd3fc;
+    background: rgba(56, 189, 248, 0.12);
+}
+.trade-bar-row.is-inbound .tr-dir { color: #cbd5e1; background: rgba(148, 163, 184, 0.14); }
+.trade-bar-row.is-inbound .tr-bar i { background: linear-gradient(90deg, rgba(148,163,184,.5), #94a3b8); }

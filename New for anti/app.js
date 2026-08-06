@@ -294,9 +294,11 @@ const focusTradeCountry = (countryName) => {
     const exportVol = exports.reduce((s, a) => s + a.volume, 0);
     const importVol = imports.reduce((s, a) => s + a.volume, 0);
     const asExporter = exportVol >= importVol && exports.length > 0;
-    const focused = (asExporter ? exports : imports)
-        .slice()
-        .sort((a, b) => b.volume - a.volume);
+    // Both directions, not just the larger one. US crude imports dwarf its
+    // exports, so picking the bigger side dropped every US export route from
+    // the map -- the country looked like a pure buyer, which it is not.
+    const focused = [...exports, ...imports].sort((a, b) => b.volume - a.volume);
+    const inboundKeys = new Set(imports.map((a) => `${a.sourceName}>${a.targetName}`));
     const total = focused.reduce((s, a) => s + a.volume, 0) || 1;
 
     // Left list: partner ranking with % (same pattern for China / USA / anyone)
@@ -304,12 +306,17 @@ const focusTradeCountry = (countryName) => {
         : (currentCommodity === 'gold' || currentCommodity === 'silver' ? 'Tonnes eq.' : 'M USD');
     const roleKo = asExporter ? '수출 → 대상국' : '수입 ← 공급국';
     const maxVol = focused[0]?.volume || 1;
-    const rows = focused.slice(0, 12).map((a, i) => {
-        const partner = resolveCountry(asExporter ? a.targetName : a.sourceName)?.label
-            || (asExporter ? a.targetName : a.sourceName);
-        const share = (a.volume / total) * 100;
-        return `<div class="trade-rank-row trade-bar-row" data-partner="${partner}">
+    const rows = focused.slice(0, 14).map((a, i) => {
+        const isIn = inboundKeys.has(`${a.sourceName}>${a.targetName}`);
+        const partner = resolveCountry(isIn ? a.sourceName : a.targetName)?.label
+            || (isIn ? a.sourceName : a.targetName);
+        // Share is of that direction's own total; mixing the two would make
+        // every percentage smaller than it is.
+        const denom = (isIn ? importVol : exportVol) || 1;
+        const share = (a.volume / denom) * 100;
+        return `<div class="trade-rank-row trade-bar-row${isIn ? ' is-inbound' : ''}" data-partner="${partner}">
             <span class="tr-i">${i + 1}</span>
+            <span class="tr-dir">${isIn ? '수입' : '수출'}</span>
             <span class="tr-name">${partner}</span>
             <span class="tr-bar"><i style="width:${Math.max(3, (a.volume / maxVol) * 100)}%"></i></span>
             <span class="tr-pct">${share.toFixed(1)}%</span>
@@ -342,7 +349,7 @@ const focusTradeCountry = (countryName) => {
                     <strong>${displayName}</strong>
                     <button type="button" class="trade-focus-clear" id="trade-focus-clear">전체 지도</button>
                 </div>
-                <p class="trade-focus-sub">${asExporter ? '수출 대상국' : '수입 공급국'} 순위 · 비중% · 물동량(${unit})</p>
+                <p class="trade-focus-sub">수출·수입 양방향 · 비중은 각 방향 내 비중 · 물동량(${unit})</p>
                 ${statsHtml}
                 <div class="trade-rank-list">${rows || '<p class="empty-state">이 국가 루트 없음</p>'}</div>
             </div>`;
@@ -353,7 +360,7 @@ const focusTradeCountry = (countryName) => {
     }
 
     currentViewDesc.textContent = `${displayName} ${roleKo} · ${focused.length}개 루트 · 배경 클릭 또는 「전체 지도」로 초기화`;
-    renderMapLayers(arcs, { focus: countryName, asExporter, focused, keepView: true });
+    renderMapLayers(arcs, { focus: countryName, asExporter, focused, inboundKeys, keepView: true });
 };
 
 // Kept for any legacy callers; trade UI no longer opens the right stats column.
@@ -3772,24 +3779,67 @@ const slerpLonLat = (a, b, t) => {
     return [(Math.atan2(y, x) * 180) / Math.PI, (Math.atan2(z, Math.hypot(x, y)) * 180) / Math.PI];
 };
 
-const buildTradeTrailParticles = (arcs, phase) => {
+/**
+ * Great-circle route bowed sideways in the plane, with no altitude.
+ *
+ * ArcLayer lifts its curve on the z axis, which at pitch 0 still reads as a
+ * ribbon arcing over the map. The mockup instead takes the chord, finds its
+ * perpendicular, and pushes the midpoint out by 13% of its length -- the curve
+ * stays on the surface. Doing the same in lon/lat gives a genuinely 2D route.
+ */
+const bowedPath = (src, dst, segments = 36, bowF = 0.13) => {
+    const dx = dst[0] - src[0];
+    const dy = dst[1] - src[1];
+    const len = Math.hypot(dx, dy) || 1;
+    const nx = -dy / len;
+    const ny = dx / len;
+    const bow = Math.min(len * bowF, 26);
     const out = [];
-    const n = Math.min(arcs.length, 40);
+    for (let i = 0; i <= segments; i++) {
+        const f = i / segments;
+        const [lon, lat] = slerpLonLat(src, dst, f);
+        const k = Math.sin(Math.PI * f) * bow;
+        out.push([lon + nx * k, lat + ny * k]);
+    }
+    return out;
+};
+
+/**
+ * Travelling dash segments along each route.
+ *
+ * These were circles sliding along the arc, which read as objects moving over
+ * the map rather than the route itself being alive. The mockup animates a
+ * dasharray of "34 452" -- one short dash inside a long gap -- so what travels
+ * is a piece of the line. Rebuilt per frame because deck's dash support has no
+ * animatable offset.
+ */
+const DASH_STEPS = 8;
+const DASH_SPAN = 0.06;
+const DASH_RES = 72;
+
+const buildTradeDashes = (arcs, phase) => {
+    const out = [];
+    const n = Math.min(arcs.length, 60);
     for (let i = 0; i < n; i++) {
         const arc = arcs[i];
-        const src = arc.sourcePosition, dst = arc.targetPosition;
-        if (!src || !dst) continue;
-        for (let p = 0; p < 3; p++) {
-            const t = (phase * (1.1 + (i % 5) * 0.07) + p / 3 + i * 0.02) % 1;
-            const pos = slerpLonLat(src, dst, t);
-            // Same reason as the paths: a particle behind the planet would
-            // otherwise glide across the visible face.
-            out.push({
-                position: pos,
-                color: [255, 255, 255, Math.round(90 + (1 - t) * 140)],
-                radius: 45000 + (1 - t) * 35000,
-            });
+        if (!arc.sourcePosition || !arc.targetPosition) continue;
+        const full = bowedPath(arc.sourcePosition, arc.targetPosition, DASH_RES);
+        // Stagger start and speed so routes do not pulse in lockstep.
+        const head = ((phase * (1 + (i % 5) * 0.13)) + (i % 7) / 7) % 1;
+        const path = [];
+        for (let s = 0; s <= DASH_STEPS; s++) {
+            const f = head + (s / DASH_STEPS) * DASH_SPAN;
+            if (f > 1) break;
+            path.push(full[Math.round(f * DASH_RES)]);
         }
+        if (path.length < 2) continue;
+        const c = arc.sourceColor || [125, 211, 252];
+        out.push({
+            path,
+            color: [Math.min(255, c[0] + 70), Math.min(255, c[1] + 70),
+                    Math.min(255, c[2] + 70), 230],
+            width: Math.max(1.5, arcWidth(arc.volume) * 0.9),
+        });
     }
     return out;
 };
@@ -3826,6 +3876,7 @@ const renderMapLayers = (arcs, opts = {}) => {
             ...focused.slice(0, 60),
         ];
         opts._focusedSet = focusSet;
+        opts._inbound = opts.inboundKeys || new Set();
         opts._focusedList = focused.slice(0, 40);
     } else {
         filteredArcs = filteredArcs.slice(0, MAX_RENDERED_ARCS);
@@ -3870,46 +3921,32 @@ const renderMapLayers = (arcs, opts = {}) => {
             autoHighlight: true,
             highlightColor: [125, 211, 252, 40],
         }),
-        // ArcLayer again, now that the map is flat. It draws the bowed
-        // great-circle the mockup specifies natively -- the hand-built
-        // PathLayer version only existed because _GlobeView refused to render
-        // this layer at all.
-        new ArcLayer({
+        new PathLayer({
             id: `arc-layer-${currentCommodity}-${focus || 'world'}`,
             data: filteredArcs,
             pickable: true,
-            greatCircle: true,
-            getHeight: 0.35,
-            getSourcePosition: (d) => d.sourcePosition,
-            getTargetPosition: (d) => d.targetPosition,
             widthUnits: 'pixels',
+            capRounded: true,
+            jointRounded: true,
+            getPath: (d) => bowedPath(d.sourcePosition, d.targetPosition),
             getWidth: (d) => {
                 const key = `${d.sourceName}>${d.targetName}`;
                 const hot = !focus || opts._focusedSet?.has(key);
-                // sqrt, as the mockup does (d3.scaleSqrt 0.45–6.5). Linear width
-                // let a handful of routes dominate and turned 639 of them into
-                // one bright mass.
                 const base = arcWidth(d.volume);
                 return hot ? base : Math.max(0.3, base * 0.3);
             },
-            getSourceColor: (d) => {
+            getColor: (d) => {
                 const key = `${d.sourceName}>${d.targetName}`;
-                // Unfocused routes drop to near-invisible (the mockup uses 0.035)
-                // so the selected country's lines are the only thing readable.
                 if (focus && !opts._focusedSet?.has(key)) return [90, 110, 140, 12];
+                // With both directions shown, colour carries which is which:
+                // outbound keeps the commodity colour, inbound goes slate.
+                if (focus && opts._inbound?.has(key)) {
+                    return [148, 163, 184, arcAlpha(d.volume)];
+                }
                 const c = d.sourceColor || [56, 189, 248];
                 return [c[0], c[1], c[2], arcAlpha(d.volume)];
             },
-            getTargetColor: (d) => {
-                const key = `${d.sourceName}>${d.targetName}`;
-                if (focus && !opts._focusedSet?.has(key)) return [90, 110, 140, 8];
-                return [125, 211, 252, Math.min(255, arcAlpha(d.volume) + 30)];
-            },
-            updateTriggers: {
-                getWidth: [focus],
-                getSourceColor: [focus],
-                getTargetColor: [focus],
-            },
+            updateTriggers: { getWidth: [focus], getColor: [focus] },
             onHover: (info) => {
                 if (!info.object) {
                     tooltipEl.classList.add('hidden');
@@ -3950,7 +3987,7 @@ const renderMapLayers = (arcs, opts = {}) => {
     ];
 
     const trailData = () => (tradeFlowOn
-        ? buildTradeTrailParticles(opts._focusedList || filteredArcs.slice(0, 36), tradeAnimPhase)
+        ? buildTradeDashes(opts._focusedList || filteredArcs.slice(0, 40), tradeAnimPhase)
         : []);
 
     deckgl.setProps({
@@ -3959,18 +3996,16 @@ const renderMapLayers = (arcs, opts = {}) => {
         controller: { dragRotate: false, touchRotate: false },
         layers: [
             ...baseLayers(),
-            new ScatterplotLayer({
+            new PathLayer({
                 id: `trade-trail-${currentCommodity}`,
                 data: trailData(),
                 pickable: false,
-                opacity: 0.85,
-                stroked: false,
-                filled: true,
-                radiusMinPixels: 1.5,
-                radiusMaxPixels: 8,
-                getPosition: (d) => d.position,
-                getRadius: (d) => d.radius,
-                getFillColor: (d) => d.color,
+                widthUnits: 'pixels',
+                capRounded: true,
+                jointRounded: true,
+                getPath: (d) => d.path,
+                getColor: (d) => d.color,
+                getWidth: (d) => d.width,
             }),
         ],
         onClick: (info) => {
@@ -4033,18 +4068,16 @@ const renderMapLayers = (arcs, opts = {}) => {
             deckgl.setProps({
                 layers: [
                     ...staticLayers,
-                    new ScatterplotLayer({
+                    new PathLayer({
                         id: `trade-trail-${currentCommodity}`,
                         data: trailData(),
                         pickable: false,
-                        opacity: 0.85,
-                        stroked: false,
-                        filled: true,
-                        radiusMinPixels: 1.5,
-                        radiusMaxPixels: 8,
-                        getPosition: (d) => d.position,
-                        getRadius: (d) => d.radius,
-                        getFillColor: (d) => d.color,
+                        widthUnits: 'pixels',
+                        capRounded: true,
+                        jointRounded: true,
+                        getPath: (d) => d.path,
+                        getColor: (d) => d.color,
+                        getWidth: (d) => d.width,
                     }),
                 ],
             });
