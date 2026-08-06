@@ -1,0 +1,373 @@
+{
+  "schema_version": "commodity-concordance-v1",
+  "generated_at": "2026-08-06",
+  "note_ko": "같은 상품이라도 소스마다 다른 것을 센다. 이 표는 코드를 잇기만 하고, 숫자를 섞지 않는다. combinable=false 가 기본값이다.",
+  "systems": {
+    "hs": {
+      "label_ko": "HS 코드 (UN Comtrade)",
+      "measures": "실현된 양자 무역 (수출입 신고 기준)",
+      "cadence": "연",
+      "coverage": "전세계 국가×상대국"
+    },
+    "esr": {
+      "label_ko": "USDA FAS ESR",
+      "measures": "미국 수출 '계약' (누적선적 + 미선적잔량)",
+      "cadence": "주",
+      "coverage": "미국발 수출만",
+      "codes_source": "/api/usda-esr/commodities"
+    },
+    "psd": {
+      "label_ko": "USDA PSD",
+      "measures": "국가별 수급 밸런스 (생산·소비·기말재고)",
+      "cadence": "월",
+      "coverage": "주요 생산·소비국"
+    }
+  },
+  "commodities": {
+    "corn": {
+      "label_ko": "옥수수",
+      "codes": {
+        "hs": {
+          "code": "1005",
+          "includes_ko": "종자용(100510) 포함"
+        },
+        "esr": {
+          "code": "401",
+          "name_en": "Corn"
+        },
+        "psd": {
+          "code": "0440000"
+        }
+      },
+      "combinable": false,
+      "primary": "hs",
+      "live_overlay": "esr",
+      "note_ko": "ESR은 미국 수출 계약만. HS는 종자용까지 포함해 범위가 더 넓다."
+    },
+    "soybeans": {
+      "label_ko": "대두",
+      "codes": {
+        "hs": {
+          "code": "1201",
+          "includes_ko": "종자용 포함"
+        },
+        "esr": {
+          "code": "801",
+          "name_en": "Soybeans"
+        },
+        "psd": {
+          "code": "2222000"
+        }
+      },
+      "combinable": false,
+      "primary": "hs",
+      "live_overlay": "esr",
+      "note_ko": "ESR 최대 목적지는 중국. HS 총액과 직접 비교 불가."
+    },
+    "wheat": {
+      "label_ko": "밀",
+      "codes": {
+        "hs": {
+          "code": "1001",
+          "includes_ko": "듀럼·기타 전 등급"
+        },
+        "esr": {
+          "code": "107",
+          "name_en": "All Wheat"
+        },
+        "psd": {
+          "code": "0410000"
+        }
+      },
+      "combinable": false,
+      "primary": "hs",
+      "live_overlay": "esr",
+      "note_ko": "ESR은 등급별(101 HRW · 102 SRW · 103 HRS · 104 White · 105 Durum)로도 제공. 107=전체를 쓰되 등급 분해가 필요하면 하위 코드로 내려간다."
+    },
+    "cotton": {
+      "label_ko": "면화",
+      "codes": {
+        "hs": {
+          "code": "5201",
+          "includes_ko": "조면 원면"
+        },
+        "esr": {
+          "code": "1404",
+          "name_en": "All Upland Cotton"
+        },
+        "psd": {
+          "code": "2631000"
+        }
+      },
+      "combinable": false,
+      "primary": "hs",
+      "live_overlay": "esr",
+      "note_ko": "ESR 단위가 다르다(unitId=2, 베일). 톤 환산 없이 병기만 한다. Am Pima(1301)는 별도 품종이라 합산하지 않는다."
+    },
+    "rice": {
+      "label_ko": "쌀",
+      "codes": {
+        "hs": {
+          "code": "1006",
+          "includes_ko": "벼·현미·정미 전체"
+        },
+        "esr": {
+          "code": "1505",
+          "name_en": "All Rice"
+        },
+        "psd": {
+          "code": "0422110"
+        }
+      },
+      "combinable": false,
+      "primary": "hs",
+      "live_overlay": "esr",
+      "note_ko": "ESR은 현미/정미/장립/중단립을 따로 센다. 1505=전체."
+    },
+    "barley": {
+      "label_ko": "보리",
+      "codes": {
+        "hs": {
+          "code": "1003",
+          "includes_ko": ""
+        },
+        "esr": {
+          "code": "301",
+          "name_en": "Barley"
+        },
+        "psd": {
+          "code": "0430000"
+        }
+      },
+      "combinable": false,
+      "primary": "hs",
+      "live_overlay": "esr",
+      "note_ko": ""
+    },
+    "sorghum": {
+      "label_ko": "수수",
+      "codes": {
+        "hs": {
+          "code": "1007",
+          "includes_ko": ""
+        },
+        "esr": {
+          "code": "701",
+          "name_en": "Sorghum"
+        },
+        "psd": {
+          "code": "0459100"
+        }
+      },
+      "combinable": false,
+      "primary": "hs",
+      "live_overlay": "esr",
+      "note_ko": ""
+    },
+    "soybean_meal": {
+      "label_ko": "대두박",
+      "codes": {
+        "hs": {
+          "code": "2304",
+          "includes_ko": ""
+        },
+        "esr": {
+          "code": "901",
+          "name_en": "Soybean cake & meal"
+        },
+        "psd": {
+          "code": "0813100"
+        }
+      },
+      "combinable": false,
+      "primary": "hs",
+      "live_overlay": "esr",
+      "note_ko": "대두(801)와 별개 품목. 대두에 더하지 않는다."
+    },
+    "soybean_oil": {
+      "label_ko": "대두유",
+      "codes": {
+        "hs": {
+          "code": "1507",
+          "includes_ko": ""
+        },
+        "esr": {
+          "code": "902",
+          "name_en": "Soybean Oil"
+        },
+        "psd": {
+          "code": "4232000"
+        }
+      },
+      "combinable": false,
+      "primary": "hs",
+      "live_overlay": "esr",
+      "note_ko": "대두(801)와 별개 품목. 대두에 더하지 않는다."
+    },
+    "oil": {
+      "label_ko": "원유",
+      "codes": {
+        "hs": {
+          "code": "2709",
+          "includes_ko": ""
+        },
+        "esr": null,
+        "psd": null
+      },
+      "combinable": false,
+      "primary": "hs",
+      "live_overlay": null,
+      "note_ko": "USDA는 농산물 기관이라 ESR 대응 코드가 없다. 실시간 소스는 별도 발굴 필요."
+    },
+    "gas": {
+      "label_ko": "천연가스",
+      "codes": {
+        "hs": {
+          "code": "2711",
+          "includes_ko": ""
+        },
+        "esr": null,
+        "psd": null
+      },
+      "combinable": false,
+      "primary": "hs",
+      "live_overlay": null,
+      "note_ko": "USDA는 농산물 기관이라 ESR 대응 코드가 없다. 실시간 소스는 별도 발굴 필요."
+    },
+    "thermal_coal": {
+      "label_ko": "연료탄",
+      "codes": {
+        "hs": {
+          "code": "2701",
+          "includes_ko": ""
+        },
+        "esr": null,
+        "psd": null
+      },
+      "combinable": false,
+      "primary": "hs",
+      "live_overlay": null,
+      "note_ko": "USDA는 농산물 기관이라 ESR 대응 코드가 없다. 실시간 소스는 별도 발굴 필요."
+    },
+    "met_coal": {
+      "label_ko": "원료탄",
+      "codes": {
+        "hs": {
+          "code": "2704",
+          "includes_ko": ""
+        },
+        "esr": null,
+        "psd": null
+      },
+      "combinable": false,
+      "primary": "hs",
+      "live_overlay": null,
+      "note_ko": "USDA는 농산물 기관이라 ESR 대응 코드가 없다. 실시간 소스는 별도 발굴 필요."
+    },
+    "gold": {
+      "label_ko": "금",
+      "codes": {
+        "hs": {
+          "code": "7108",
+          "includes_ko": ""
+        },
+        "esr": null,
+        "psd": null
+      },
+      "combinable": false,
+      "primary": "hs",
+      "live_overlay": null,
+      "note_ko": "USDA는 농산물 기관이라 ESR 대응 코드가 없다. 실시간 소스는 별도 발굴 필요."
+    },
+    "silver": {
+      "label_ko": "은",
+      "codes": {
+        "hs": {
+          "code": "7106",
+          "includes_ko": ""
+        },
+        "esr": null,
+        "psd": null
+      },
+      "combinable": false,
+      "primary": "hs",
+      "live_overlay": null,
+      "note_ko": "USDA는 농산물 기관이라 ESR 대응 코드가 없다. 실시간 소스는 별도 발굴 필요."
+    },
+    "copper": {
+      "label_ko": "구리",
+      "codes": {
+        "hs": {
+          "code": "7403",
+          "includes_ko": ""
+        },
+        "esr": null,
+        "psd": null
+      },
+      "combinable": false,
+      "primary": "hs",
+      "live_overlay": null,
+      "note_ko": "USDA는 농산물 기관이라 ESR 대응 코드가 없다. 실시간 소스는 별도 발굴 필요."
+    },
+    "zinc": {
+      "label_ko": "아연",
+      "codes": {
+        "hs": {
+          "code": "7901",
+          "includes_ko": ""
+        },
+        "esr": null,
+        "psd": null
+      },
+      "combinable": false,
+      "primary": "hs",
+      "live_overlay": null,
+      "note_ko": "USDA는 농산물 기관이라 ESR 대응 코드가 없다. 실시간 소스는 별도 발굴 필요."
+    },
+    "aluminum": {
+      "label_ko": "알루미늄",
+      "codes": {
+        "hs": {
+          "code": "7601",
+          "includes_ko": ""
+        },
+        "esr": null,
+        "psd": null
+      },
+      "combinable": false,
+      "primary": "hs",
+      "live_overlay": null,
+      "note_ko": "USDA는 농산물 기관이라 ESR 대응 코드가 없다. 실시간 소스는 별도 발굴 필요."
+    },
+    "sugar": {
+      "label_ko": "설탕",
+      "codes": {
+        "hs": {
+          "code": "1701",
+          "includes_ko": ""
+        },
+        "esr": null,
+        "psd": null
+      },
+      "combinable": false,
+      "primary": "hs",
+      "live_overlay": null,
+      "note_ko": "USDA는 농산물 기관이라 ESR 대응 코드가 없다. 실시간 소스는 별도 발굴 필요."
+    },
+    "coffee": {
+      "label_ko": "커피",
+      "codes": {
+        "hs": {
+          "code": "0901",
+          "includes_ko": ""
+        },
+        "esr": null,
+        "psd": null
+      },
+      "combinable": false,
+      "primary": "hs",
+      "live_overlay": null,
+      "note_ko": "USDA는 농산물 기관이라 ESR 대응 코드가 없다. 실시간 소스는 별도 발굴 필요."
+    }
+  }
+}
