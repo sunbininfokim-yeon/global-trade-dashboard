@@ -1107,6 +1107,47 @@ const oceanSstPointsFromGlobal = (g) => {
     }).flat();
 };
 
+// Admin-1 boundaries (states, provinces, oblasts) for the country drill-down.
+//
+// A country outline alone gives nothing to locate a producing region against:
+// "Mato Grosso" or "Punjab" means little without the internal borders that make
+// the shape readable as a place.
+//
+// Served per country from public/data/admin1/{ISO}.json, cut at build time by
+// scripts/build_admin1.py. Natural Earth's 50m file is small but covers only
+// nine countries -- Argentina, Ghana, Côte d'Ivoire and everything still in
+// training came back empty -- and the 10m file that covers all 253 is 39MB.
+// Splitting it means the browser fetches ~400KB for the one country on screen,
+// and any country with a manifest works without touching this file.
+const admin1Cache = new Map();
+
+const loadAdmin1 = (iso) => {
+    const key = String(iso || '').toUpperCase();
+    if (!key) return Promise.resolve(null);
+    if (admin1Cache.has(key)) return admin1Cache.get(key);
+    const req = fetch(`/public/data/admin1/${key}.json`, { cache: 'force-cache' })
+        .then((r) => (r.ok ? r.json() : null))
+        .catch((err) => {
+            // The country still renders with its outline; internal borders are
+            // an aid, not a dependency.
+            console.warn(`[Climate] admin-1 unavailable for ${key}`, err);
+            return null;
+        });
+    admin1Cache.set(key, req);
+    return req;
+};
+
+/** Internal borders for one country. */
+const admin1Layer = (iso, data) => new GeoJsonLayer({
+    id: 'climate-admin1',
+    data: data || { type: 'FeatureCollection', features: [] },
+    stroked: true,
+    filled: false,
+    pickable: false,
+    lineWidthMinPixels: 0.7,
+    getLineColor: [125, 211, 252, 95],
+});
+
 /** SST wash layer, shared by the climate world and country maps. */
 const sstWashLayer = (sstPoints, id = 'climate-sst-wash') => new ScatterplotLayer({
     id,
@@ -3024,10 +3065,19 @@ const showClimateCountry = async (countryName) => {
 
     const gWx = await loadClimateGlobal();
     const countrySst = oceanSstPointsFromGlobal(gWx);
+    const admin1 = await loadAdmin1(cfg.iso);
     // Req 4: the country drill is a workspace, not just a zoom. The map keeps
     // the same globe but frames the target with a HUD, dims every other
     // country, and labels each producing region on the sphere.
-    const countryView = clampGlobeView({ ...cfg.view, pitch: 0, bearing: 0 });
+    // Stage 2 hands the whole width to the map -- the right dashboard only
+    // appears once a producing region is chosen -- so the country is framed
+    // tighter than the manifest's default, which was set for a narrower pane.
+    const countryView = clampGlobeView({
+        ...cfg.view,
+        zoom: (cfg.view?.zoom ?? 3.6) + 0.55,
+        pitch: 0,
+        bearing: 0,
+    });
     currentViewState = countryView;
     setClimateTargetHud(cfg, countryView.zoom);
 
@@ -3098,6 +3148,7 @@ const showClimateCountry = async (countryName) => {
                 pickable: true,
                 updateTriggers: { getFillColor: [cfg.iso, lv, countryName], getLineColor: [cfg.iso, lv] },
             }),
+            admin1Layer(cfg.iso, admin1),
             new ScatterplotLayer({
                 id: 'climate-regions',
                 data: points,
@@ -3127,8 +3178,15 @@ const showClimateCountry = async (countryName) => {
     setClimateRegionLabels(points);
 
     await renderCountryPanel(cfg, points, { lv, pol });
-    // Country workspace uses left + right (world deliberately had no right pane).
-    togglePanels({ forecast: true, climateRight: true, left: true, right: true, map: true });
+    // Stage 2: map full width, no right dashboard. renderCountryPanel opens it
+    // when a region is selected (stage 3).
+    togglePanels({
+        forecast: true,
+        climateRight: !!climateSelectedRegion,
+        left: true,
+        right: !!climateSelectedRegion,
+        map: true,
+    });
     } catch (err) {
         console.error('[Climate] showClimateCountry failed', err);
     }
@@ -3327,7 +3385,12 @@ const renderCountryPanel = async (cfg, points = null, meta = {}) => {
                 <p style="font-size:10px;color:#64748b;">갱신: ${fc?.generated_at ? new Date(fc.generated_at).toLocaleString() : '—'}</p>`;
         }
     }
-    if (climateRightPanelEl) climateRightPanelEl.classList.remove('hidden');
+    // Stage 3 only: the dashboard appears when a producing region is chosen.
+    // At country level the map keeps the full width.
+    const showRight = !!regionCfg;
+    if (climateRightPanelEl) climateRightPanelEl.classList.toggle('hidden', !showRight);
+    const rightPane = document.getElementById('right-pane');
+    if (rightPane) rightPane.style.display = showRight ? 'flex' : 'none';
     panelHide(macroPanelEl);
     panelHide(countryStatsPanelEl);
 };
