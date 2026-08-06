@@ -2878,8 +2878,8 @@ const showClimateWorld = async () => {
     climateHover = null;
     hideClimateTooltip();
 
-    currentViewTitle.textContent = '기후·작황 예측';
-    currentViewDesc.textContent = '세계 지도(원근 곡률) · 모델국 클릭 · SST 워시 · 남극 제외';
+    currentViewTitle.textContent = '작황 모니터';
+    currentViewDesc.textContent = '작황·기후·수출통제 한눈에 · 국가를 클릭하면 산지별로 들어갑니다';
     setClimateCommodityHeader('climate');
     totalVolumeEl.textContent = `${Object.keys(CLIMATE_COUNTRIES).length}개국`;
     topExporterEl.textContent = 'Trade status';
@@ -4285,8 +4285,8 @@ const setView = (target) => {
         // World climate: no right pane (req 11). Country drill re-enables it.
         togglePanels({ forecast: true, climateRight: false, left: true, right: false });
         
-        currentViewTitle.textContent = '기후·작황 예측';
-        currentViewDesc.textContent = '곡면 세계 지도 · SST 워시 · 모델국 클릭';
+        currentViewTitle.textContent = '작황 모니터';
+        currentViewDesc.textContent = '작황·기후·수출통제 한눈에 · 국가를 클릭하면 산지별로 들어갑니다';
         topExporterEl.textContent = 'Status coloring';
 
     } else if (window.TradeData[target]) {
