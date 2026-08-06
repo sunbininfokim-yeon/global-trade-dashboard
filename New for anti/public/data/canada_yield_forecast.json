@@ -1,0 +1,3232 @@
+{
+  "generated_at": "2026-08-06T06:29:46.017736+00:00",
+  "country": "Canada",
+  "season": 2026,
+  "method": "SAD/CAR first (StatsCan 32-10-0002) with region-specific feature packs; province (32-10-0359) weather fallback; else log-linear trend. NASA POWER climate; forward-chaining skill gate ≥10%. Trend-only rows keep climate_risk (stance/gap/risks) for UI.",
+  "literature_note": "ICCYF Chipanshi 2015 CAR R2 canola/wheat ~0.66-0.67; Morrison HSU@29.5C; Mkhabela SMOS excess moisture; MASC Excess Moisture (MB). Phase-2 uses SAD labels + POWER.",
+  "hierarchy": [
+    {
+      "key": "sad_sk_canola_palliser",
+      "resolution": "sad_weather",
+      "beats_trend_sad": true,
+      "province_fallback": "prov_sk_canola"
+    },
+    {
+      "key": "sad_sk_canola_blacksoil",
+      "resolution": "sad_weather",
+      "beats_trend_sad": true,
+      "province_fallback": "prov_sk_canola"
+    },
+    {
+      "key": "sad_sk_canola_parkland",
+      "resolution": "trend",
+      "beats_trend_sad": false,
+      "province_fallback": "prov_sk_canola"
+    },
+    {
+      "key": "sad_sk_wheat_palliser",
+      "resolution": "sad_weather",
+      "beats_trend_sad": true,
+      "province_fallback": "prov_sk_spring_wheat"
+    },
+    {
+      "key": "sad_sk_wheat_parkland",
+      "resolution": "trend",
+      "beats_trend_sad": false,
+      "province_fallback": "prov_sk_spring_wheat"
+    },
+    {
+      "key": "sad_ab_canola_south",
+      "resolution": "sad_weather",
+      "beats_trend_sad": true,
+      "province_fallback": "prov_ab_canola"
+    },
+    {
+      "key": "sad_ab_canola_central",
+      "resolution": "trend",
+      "beats_trend_sad": false,
+      "province_fallback": "prov_ab_canola"
+    },
+    {
+      "key": "sad_ab_canola_peace",
+      "resolution": "trend",
+      "beats_trend_sad": false,
+      "province_fallback": "prov_ab_canola"
+    },
+    {
+      "key": "sad_mb_soy_redriver",
+      "resolution": "trend",
+      "beats_trend_sad": false,
+      "province_fallback": "prov_mb_soybeans"
+    },
+    {
+      "key": "sad_mb_canola_central",
+      "resolution": "trend",
+      "beats_trend_sad": false,
+      "province_fallback": "prov_mb_canola"
+    },
+    {
+      "key": "sad_on_corn_southern",
+      "resolution": "trend",
+      "beats_trend_sad": false,
+      "province_fallback": "prov_on_corn"
+    },
+    {
+      "key": "sad_on_corn_western",
+      "resolution": "trend",
+      "beats_trend_sad": false,
+      "province_fallback": "prov_on_corn"
+    }
+  ],
+  "regions": {
+    "sad_sk_canola_palliser": {
+      "label": "SK SAD 3 canola (Palliser)",
+      "label_ko": "SK 산지3 카놀라(팰리서)",
+      "crop": "canola",
+      "label_scale": "sad",
+      "season": 2026,
+      "unit": "kg/ha",
+      "point": 1839.5134259563388,
+      "range_68": [
+        1243.5018525928363,
+        2446.013856387583
+      ],
+      "range_95": [
+        967.6631379281266,
+        2726.3065121185205
+      ],
+      "trend": 1639.4840139008008,
+      "weather_model_point": 1839.5134259563388,
+      "weather_effect_pct": 12.200754039657324,
+      "operational_choice": "ridge_weather",
+      "low_confidence": false,
+      "beats_trend": true,
+      "climate_risk": {
+        "stance": "favorable",
+        "stance_ko": "유리",
+        "diagnostic_gap_pct": 12.2,
+        "drivers": [
+          {
+            "feature": "vpd_flowering_z20",
+            "label_ko": "개화기 VPD",
+            "anomaly": -1.249,
+            "log_contribution": 0.0608,
+            "direction": "favor"
+          },
+          {
+            "feature": "heat_dry_stress_z20",
+            "label_ko": "고온×건조",
+            "anomaly": -0.62,
+            "log_contribution": 0.0222,
+            "direction": "favor"
+          },
+          {
+            "feature": "hsu_flower_z20",
+            "label_ko": "개화기 고온누적(HSU)",
+            "anomaly": -0.56,
+            "log_contribution": 0.021,
+            "direction": "favor"
+          },
+          {
+            "feature": "rain_growing_z20",
+            "label_ko": "생육기 강수",
+            "anomaly": 0.428,
+            "log_contribution": 0.0111,
+            "direction": "favor"
+          }
+        ],
+        "risks": [],
+        "favors": [
+          "개화기 VPD이(가) 단수를 받치는 쪽",
+          "고온×건조이(가) 단수를 받치는 쪽",
+          "개화기 고온누적(HSU)이(가) 단수를 받치는 쪽"
+        ],
+        "reason_ko": "기상 모델 운영. 기후 전망은 추세 대비 +12.2% (유리).",
+        "note": "diagnostic_gap_pct = climate-model vs trend. Operational point may be trend-only when skill gate fails."
+      },
+      "reason_ko": "기상 모델 운영. 기후 전망은 추세 대비 +12.2% (유리).",
+      "last_actual": {
+        "year": 2025,
+        "yield": 1793.0,
+        "status": "estimate"
+      },
+      "season_progress": {
+        "observed_through": "2026-07-31",
+        "critical_window_observed": 0.6013071895424836,
+        "future_weather_fill": "20-member historical-year weather ensemble",
+        "weather_scenario_count": 20,
+        "weather_scenario_p16_p84": [
+          1831.4413349292224,
+          1858.0743740511969
+        ],
+        "nwp_integrated": false
+      },
+      "features": [
+        {
+          "feature": "hsu_flower_z20",
+          "anomaly": -0.56,
+          "log_contribution": 0.021
+        },
+        {
+          "feature": "heat_dry_stress_z20",
+          "anomaly": -0.62,
+          "log_contribution": 0.0222
+        },
+        {
+          "feature": "rain_growing_z20",
+          "anomaly": 0.428,
+          "log_contribution": 0.0111
+        },
+        {
+          "feature": "vpd_flowering_z20",
+          "anomaly": -1.249,
+          "log_contribution": 0.0608
+        }
+      ],
+      "skill": {
+        "rmse": 432.47507867598665,
+        "mae": 355.33264466350954,
+        "baseline_rmse": 547.0345107835865,
+        "skill_vs_trend": 0.20941902174234295,
+        "recent_rmse": 459.778326440427,
+        "recent_baseline_rmse": 603.7321569229691,
+        "recent_skill_vs_trend": 0.23843989231289087,
+        "detrended_r2": 0.3176901321628087,
+        "recent_trend_bias": 342.3251641199653,
+        "features": [
+          "hsu_flower_z20",
+          "heat_dry_stress_z20",
+          "rain_growing_z20",
+          "vpd_flowering_z20"
+        ],
+        "fold_years": [
+          2012,
+          2013,
+          2014,
+          2015,
+          2016,
+          2017,
+          2018,
+          2019,
+          2020,
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ]
+      },
+      "provenance": {
+        "target": {
+          "variable": "yield_kg_ha",
+          "source": "Statistics Canada 32-10-0002 SAD average yield kg/ha",
+          "area_basis": "harvested",
+          "label_scale": "sad",
+          "estimated_years": [
+            2020,
+            2021,
+            2022,
+            2023,
+            2024,
+            2025
+          ]
+        },
+        "guide": "Regions/북미_캐나다/서스캐처원_앨버타/카놀라_봄밀/카놀라_봄밀_상세분석.md",
+        "caveat": "ICCYF Chipanshi 2015 CAR R2~0.66-0.67; Morrison HSU@29.5C; Mkhabela SMOS excess SM; MASC Excess Moisture (MB). Semi-arid Palliser Triangle; heat×drought pack.",
+        "literature_benchmark": {
+          "icyf_car_r2_canola": 0.67,
+          "icyf_car_r2_spring_wheat": 0.66,
+          "icyf_mei_gt0_share_canola_wheat": 0.7,
+          "icyf_national_mape_canola": 0.09,
+          "icyf_national_mape_spring_wheat": 0.08,
+          "note": "Chipanshi et al. 2015 ICCYF uses CAR+VSMB+NDVI; this Phase-1 province+POWER ridge is a weaker information set."
+        }
+      }
+    },
+    "sad_sk_canola_blacksoil": {
+      "label": "SK SAD 6 canola (Regina plain)",
+      "label_ko": "SK 산지6 카놀라(레지나)",
+      "crop": "canola",
+      "label_scale": "sad",
+      "season": 2026,
+      "unit": "kg/ha",
+      "point": 2691.1130080411767,
+      "range_68": [
+        2372.779443936127,
+        3020.403144132614
+      ],
+      "range_95": [
+        1908.9183227959352,
+        3539.759193756739
+      ],
+      "trend": 2549.2873081531516,
+      "weather_model_point": 2691.1130080411767,
+      "weather_effect_pct": 5.563347035637656,
+      "operational_choice": "ridge_weather",
+      "low_confidence": false,
+      "beats_trend": true,
+      "climate_risk": {
+        "stance": "favorable",
+        "stance_ko": "유리",
+        "diagnostic_gap_pct": 5.56,
+        "drivers": [
+          {
+            "feature": "hsu_flower_z20",
+            "label_ko": "개화기 고온누적(HSU)",
+            "anomaly": -0.827,
+            "log_contribution": 0.0531,
+            "direction": "favor"
+          },
+          {
+            "feature": "sm_preseason_z20",
+            "label_ko": "파종 전 토양수분",
+            "anomaly": -0.036,
+            "log_contribution": 0.0043,
+            "direction": "favor"
+          },
+          {
+            "feature": "rain_winter_z20",
+            "label_ko": "동절 강수",
+            "anomaly": 0.336,
+            "log_contribution": -0.0042,
+            "direction": "adverse"
+          },
+          {
+            "feature": "sm_flowering_z20",
+            "label_ko": "개화기 토양수분",
+            "anomaly": 1.463,
+            "log_contribution": 0.0021,
+            "direction": "favor"
+          }
+        ],
+        "risks": [
+          "동절 강수이(가) 단수를 누르는 쪽"
+        ],
+        "favors": [
+          "개화기 고온누적(HSU)이(가) 단수를 받치는 쪽",
+          "파종 전 토양수분이(가) 단수를 받치는 쪽"
+        ],
+        "reason_ko": "기상 모델 운영. 기후 전망은 추세 대비 +5.6% (유리). 리스크: 동절 강수이(가) 단수를 누르는 쪽.",
+        "note": "diagnostic_gap_pct = climate-model vs trend. Operational point may be trend-only when skill gate fails."
+      },
+      "reason_ko": "기상 모델 운영. 기후 전망은 추세 대비 +5.6% (유리). 리스크: 동절 강수이(가) 단수를 누르는 쪽.",
+      "last_actual": {
+        "year": 2025,
+        "yield": 2499.0,
+        "status": "estimate"
+      },
+      "season_progress": {
+        "observed_through": "2026-07-31",
+        "critical_window_observed": 0.6013071895424836,
+        "future_weather_fill": "20-member historical-year weather ensemble",
+        "weather_scenario_count": 20,
+        "weather_scenario_p16_p84": [
+          2655.94650711092,
+          2737.2360809578217
+        ],
+        "nwp_integrated": false
+      },
+      "features": [
+        {
+          "feature": "rain_growing_z20",
+          "anomaly": -0.185,
+          "log_contribution": -0.0019
+        },
+        {
+          "feature": "hsu_flower_z20",
+          "anomaly": -0.827,
+          "log_contribution": 0.0531
+        },
+        {
+          "feature": "frost_sep_z20",
+          "anomaly": -0.425,
+          "log_contribution": -0.0005
+        },
+        {
+          "feature": "rain_flowering_z20",
+          "anomaly": -0.034,
+          "log_contribution": 0.0011
+        },
+        {
+          "feature": "sm_preseason_z20",
+          "anomaly": -0.036,
+          "log_contribution": 0.0043
+        },
+        {
+          "feature": "sm_flowering_z20",
+          "anomaly": 1.463,
+          "log_contribution": 0.0021
+        },
+        {
+          "feature": "rain_winter_z20",
+          "anomaly": 0.336,
+          "log_contribution": -0.0042
+        }
+      ],
+      "skill": {
+        "rmse": 313.58204204189354,
+        "mae": 248.56474706065657,
+        "baseline_rmse": 360.19651150677225,
+        "skill_vs_trend": 0.1294139947937899,
+        "recent_rmse": 257.64269728515757,
+        "recent_baseline_rmse": 343.21405575118496,
+        "recent_skill_vs_trend": 0.24932358402029675,
+        "detrended_r2": 0.10051346488058299,
+        "recent_trend_bias": -80.51718413885953,
+        "features": [
+          "rain_growing_z20",
+          "hsu_flower_z20",
+          "frost_sep_z20",
+          "rain_flowering_z20",
+          "sm_preseason_z20",
+          "sm_flowering_z20",
+          "rain_winter_z20"
+        ],
+        "fold_years": [
+          2012,
+          2013,
+          2014,
+          2015,
+          2016,
+          2017,
+          2018,
+          2019,
+          2020,
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ]
+      },
+      "provenance": {
+        "target": {
+          "variable": "yield_kg_ha",
+          "source": "Statistics Canada 32-10-0002 SAD average yield kg/ha",
+          "area_basis": "harvested",
+          "label_scale": "sad",
+          "estimated_years": [
+            2020,
+            2021,
+            2022,
+            2023,
+            2024,
+            2025
+          ]
+        },
+        "guide": "Regions/북미_캐나다/프레리/카놀라_봄밀/캐나다_카놀라_봄밀_상세분석.md",
+        "caveat": "ICCYF Chipanshi 2015 CAR R2~0.66-0.67; Morrison HSU@29.5C; Mkhabela SMOS excess SM; MASC Excess Moisture (MB). Dark Brown / Black soil; balanced moisture-heat.",
+        "literature_benchmark": {
+          "icyf_car_r2_canola": 0.67,
+          "icyf_car_r2_spring_wheat": 0.66,
+          "icyf_mei_gt0_share_canola_wheat": 0.7,
+          "icyf_national_mape_canola": 0.09,
+          "icyf_national_mape_spring_wheat": 0.08,
+          "note": "Chipanshi et al. 2015 ICCYF uses CAR+VSMB+NDVI; this Phase-1 province+POWER ridge is a weaker information set."
+        }
+      }
+    },
+    "sad_sk_canola_parkland": {
+      "label": "SK SAD 5 canola (Yorkton parkland)",
+      "label_ko": "SK 산지5 카놀라(요크턴)",
+      "crop": "canola",
+      "label_scale": "sad",
+      "season": 2026,
+      "unit": "kg/ha",
+      "point": 2710.55198902171,
+      "range_68": [
+        2298.3000775514265,
+        3122.8039004919938
+      ],
+      "range_95": [
+        1858.7762205724619,
+        3562.327757470958
+      ],
+      "trend": 2710.55198902171,
+      "weather_model_point": 2846.185618577947,
+      "weather_effect_pct": 5.003911753236268,
+      "operational_choice": "trend_only",
+      "low_confidence": true,
+      "beats_trend": false,
+      "climate_risk": {
+        "stance": "favorable",
+        "stance_ko": "유리",
+        "diagnostic_gap_pct": 5.0,
+        "drivers": [
+          {
+            "feature": "sm_flowering_z20",
+            "label_ko": "개화기 토양수분",
+            "anomaly": 3.062,
+            "log_contribution": 0.0389,
+            "direction": "favor"
+          },
+          {
+            "feature": "hsu_flower_z20",
+            "label_ko": "개화기 고온누적(HSU)",
+            "anomaly": -0.781,
+            "log_contribution": 0.0354,
+            "direction": "favor"
+          },
+          {
+            "feature": "rain_winter_z20",
+            "label_ko": "동절 강수",
+            "anomaly": 1.383,
+            "log_contribution": -0.0196,
+            "direction": "adverse"
+          },
+          {
+            "feature": "sm_preseason_z20",
+            "label_ko": "파종 전 토양수분",
+            "anomaly": 2.618,
+            "log_contribution": -0.0134,
+            "direction": "adverse"
+          }
+        ],
+        "risks": [
+          "동절 강수이(가) 단수를 누르는 쪽",
+          "파종 전 토양수분이(가) 단수를 누르는 쪽"
+        ],
+        "favors": [
+          "개화기 토양수분이(가) 단수를 받치는 쪽",
+          "개화기 고온누적(HSU)이(가) 단수를 받치는 쪽",
+          "생육기 강수이(가) 단수를 받치는 쪽"
+        ],
+        "reason_ko": "검증 스킬 미달로 운영 전망은 추세. 기후 진단 모델은 추세 대비 +5.0% (유리) — 전망 갭(진단−추세)이 시즌 유리/불리 신호. 주요 리스크: 동절 강수이(가) 단수를 누르는 쪽; 파종 전 토양수분이(가) 단수를 누르는 쪽.",
+        "note": "diagnostic_gap_pct = climate-model vs trend. Operational point may be trend-only when skill gate fails."
+      },
+      "reason_ko": "검증 스킬 미달로 운영 전망은 추세. 기후 진단 모델은 추세 대비 +5.0% (유리) — 전망 갭(진단−추세)이 시즌 유리/불리 신호. 주요 리스크: 동절 강수이(가) 단수를 누르는 쪽; 파종 전 토양수분이(가) 단수를 누르는 쪽.",
+      "last_actual": {
+        "year": 2025,
+        "yield": 2627.0,
+        "status": "estimate"
+      },
+      "season_progress": {
+        "observed_through": "2026-07-31",
+        "critical_window_observed": 0.6013071895424836,
+        "future_weather_fill": "20-member historical-year weather ensemble",
+        "weather_scenario_count": 20,
+        "weather_scenario_p16_p84": [
+          2710.55198902171,
+          2710.55198902171
+        ],
+        "nwp_integrated": false
+      },
+      "features": [
+        {
+          "feature": "rain_growing_z20",
+          "anomaly": 0.856,
+          "log_contribution": 0.0064
+        },
+        {
+          "feature": "hsu_flower_z20",
+          "anomaly": -0.781,
+          "log_contribution": 0.0354
+        },
+        {
+          "feature": "frost_sep_z20",
+          "anomaly": -0.696,
+          "log_contribution": 0.0007
+        },
+        {
+          "feature": "rain_flowering_z20",
+          "anomaly": 0.198,
+          "log_contribution": 0.002
+        },
+        {
+          "feature": "sm_preseason_z20",
+          "anomaly": 2.618,
+          "log_contribution": -0.0134
+        },
+        {
+          "feature": "sm_flowering_z20",
+          "anomaly": 3.062,
+          "log_contribution": 0.0389
+        },
+        {
+          "feature": "rain_winter_z20",
+          "anomaly": 1.383,
+          "log_contribution": -0.0196
+        }
+      ],
+      "skill": {
+        "rmse": 417.7069173793828,
+        "mae": 353.7091096978999,
+        "baseline_rmse": 384.9115982559004,
+        "skill_vs_trend": -0.08520221077276835,
+        "recent_rmse": 361.11231241074603,
+        "recent_baseline_rmse": 352.2716290649586,
+        "recent_skill_vs_trend": -0.025096211605951435,
+        "detrended_r2": -0.30756327735146494,
+        "recent_trend_bias": -25.828618811171737,
+        "features": [
+          "rain_growing_z20",
+          "hsu_flower_z20",
+          "frost_sep_z20",
+          "rain_flowering_z20",
+          "sm_preseason_z20",
+          "sm_flowering_z20",
+          "rain_winter_z20"
+        ],
+        "fold_years": [
+          2012,
+          2013,
+          2014,
+          2015,
+          2016,
+          2017,
+          2018,
+          2019,
+          2020,
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ]
+      },
+      "provenance": {
+        "target": {
+          "variable": "yield_kg_ha",
+          "source": "Statistics Canada 32-10-0002 SAD average yield kg/ha",
+          "area_basis": "harvested",
+          "label_scale": "sad",
+          "estimated_years": [
+            2020,
+            2021,
+            2022,
+            2023,
+            2024,
+            2025
+          ]
+        },
+        "guide": "Regions/북미_캐나다/프레리/카놀라_봄밀/캐나다_카놀라_봄밀_상세분석.md",
+        "caveat": "ICCYF Chipanshi 2015 CAR R2~0.66-0.67; Morrison HSU@29.5C; Mkhabela SMOS excess SM; MASC Excess Moisture (MB). Aspen Parkland; moisture-weighted pack.",
+        "literature_benchmark": {
+          "icyf_car_r2_canola": 0.67,
+          "icyf_car_r2_spring_wheat": 0.66,
+          "icyf_mei_gt0_share_canola_wheat": 0.7,
+          "icyf_national_mape_canola": 0.09,
+          "icyf_national_mape_spring_wheat": 0.08,
+          "note": "Chipanshi et al. 2015 ICCYF uses CAR+VSMB+NDVI; this Phase-1 province+POWER ridge is a weaker information set."
+        }
+      }
+    },
+    "sad_sk_wheat_palliser": {
+      "label": "SK SAD 3 spring wheat (Palliser)",
+      "label_ko": "SK 산지3 봄밀(팰리서)",
+      "crop": "spring_wheat",
+      "label_scale": "sad",
+      "season": 2026,
+      "unit": "kg/ha",
+      "point": 2448.119509267315,
+      "range_68": [
+        1849.4532463346995,
+        3013.871442519678
+      ],
+      "range_95": [
+        1413.9465194211564,
+        3436.7308214560617
+      ],
+      "trend": 2098.2192741303725,
+      "weather_model_point": 2448.119509267315,
+      "weather_effect_pct": 16.676056666287288,
+      "operational_choice": "ridge_weather",
+      "low_confidence": false,
+      "beats_trend": true,
+      "climate_risk": {
+        "stance": "favorable",
+        "stance_ko": "유리",
+        "diagnostic_gap_pct": 16.68,
+        "drivers": [
+          {
+            "feature": "vpd_heading_z20",
+            "label_ko": "출수기 VPD",
+            "anomaly": -0.798,
+            "log_contribution": 0.2216,
+            "direction": "favor"
+          },
+          {
+            "feature": "heat_excess_jul_z20",
+            "label_ko": "7월 고온초과",
+            "anomaly": -0.521,
+            "log_contribution": -0.0408,
+            "direction": "adverse"
+          },
+          {
+            "feature": "rain_growing_z20",
+            "label_ko": "생육기 강수",
+            "anomaly": 0.428,
+            "log_contribution": -0.0252,
+            "direction": "adverse"
+          },
+          {
+            "feature": "frost_sep_z20",
+            "label_ko": "9월 서리일",
+            "anomaly": -0.695,
+            "log_contribution": 0.0015,
+            "direction": "favor"
+          }
+        ],
+        "risks": [
+          "7월 고온초과이(가) 단수를 누르는 쪽",
+          "생육기 강수이(가) 단수를 누르는 쪽"
+        ],
+        "favors": [
+          "출수기 VPD이(가) 단수를 받치는 쪽"
+        ],
+        "reason_ko": "기상 모델 운영. 기후 전망은 추세 대비 +16.7% (유리). 리스크: 7월 고온초과이(가) 단수를 누르는 쪽; 생육기 강수이(가) 단수를 누르는 쪽.",
+        "note": "diagnostic_gap_pct = climate-model vs trend. Operational point may be trend-only when skill gate fails."
+      },
+      "reason_ko": "기상 모델 운영. 기후 전망은 추세 대비 +16.7% (유리). 리스크: 7월 고온초과이(가) 단수를 누르는 쪽; 생육기 강수이(가) 단수를 누르는 쪽.",
+      "last_actual": {
+        "year": 2025,
+        "yield": 2116.0,
+        "status": "estimate"
+      },
+      "season_progress": {
+        "observed_through": "2026-07-31",
+        "critical_window_observed": 0.6013071895424836,
+        "future_weather_fill": "20-member historical-year weather ensemble",
+        "weather_scenario_count": 20,
+        "weather_scenario_p16_p84": [
+          2384.5369041439258,
+          2478.787784710452
+        ],
+        "nwp_integrated": false
+      },
+      "features": [
+        {
+          "feature": "heat_excess_jul_z20",
+          "anomaly": -0.521,
+          "log_contribution": -0.0408
+        },
+        {
+          "feature": "rain_growing_z20",
+          "anomaly": 0.428,
+          "log_contribution": -0.0252
+        },
+        {
+          "feature": "vpd_heading_z20",
+          "anomaly": -0.798,
+          "log_contribution": 0.2216
+        },
+        {
+          "feature": "frost_sep_z20",
+          "anomaly": -0.695,
+          "log_contribution": 0.0015
+        }
+      ],
+      "skill": {
+        "rmse": 422.6655101883213,
+        "mae": 346.1616089212302,
+        "baseline_rmse": 519.787143363889,
+        "skill_vs_trend": 0.18684885614336055,
+        "recent_rmse": 357.9473244843862,
+        "recent_baseline_rmse": 485.9531903343188,
+        "recent_skill_vs_trend": 0.2634119260784543,
+        "detrended_r2": 0.33711853248375323,
+        "recent_trend_bias": 111.16788379824386,
+        "features": [
+          "heat_excess_jul_z20",
+          "rain_growing_z20",
+          "vpd_heading_z20",
+          "frost_sep_z20"
+        ],
+        "fold_years": [
+          2012,
+          2013,
+          2014,
+          2015,
+          2016,
+          2017,
+          2018,
+          2019,
+          2020,
+          2021,
+          2022,
+          2023,
+          2025
+        ]
+      },
+      "provenance": {
+        "target": {
+          "variable": "yield_kg_ha",
+          "source": "Statistics Canada 32-10-0002 SAD average yield kg/ha",
+          "area_basis": "harvested",
+          "label_scale": "sad",
+          "estimated_years": [
+            2020,
+            2021,
+            2022,
+            2023,
+            2025
+          ]
+        },
+        "guide": "Regions/북미_캐나다/프레리/카놀라_봄밀/캐나다_카놀라_봄밀_상세분석.md",
+        "caveat": "ICCYF Chipanshi 2015 CAR R2~0.66-0.67; Morrison HSU@29.5C; Mkhabela SMOS excess SM; MASC Excess Moisture (MB). Dryland spring wheat; July heat/VPD pack.",
+        "literature_benchmark": {
+          "icyf_car_r2_canola": 0.67,
+          "icyf_car_r2_spring_wheat": 0.66,
+          "icyf_mei_gt0_share_canola_wheat": 0.7,
+          "icyf_national_mape_canola": 0.09,
+          "icyf_national_mape_spring_wheat": 0.08,
+          "note": "Chipanshi et al. 2015 ICCYF uses CAR+VSMB+NDVI; this Phase-1 province+POWER ridge is a weaker information set."
+        }
+      }
+    },
+    "sad_sk_wheat_parkland": {
+      "label": "SK SAD 5 spring wheat (Yorkton)",
+      "label_ko": "SK 산지5 봄밀(요크턴)",
+      "crop": "spring_wheat",
+      "label_scale": "sad",
+      "season": 2026,
+      "unit": "kg/ha",
+      "point": 3661.3457122607297,
+      "range_68": [
+        2705.4472788925596,
+        4617.2441456289
+      ],
+      "range_95": [
+        2227.1438413720266,
+        5095.547583149433
+      ],
+      "trend": 3661.3457122607297,
+      "weather_model_point": 3869.001690278466,
+      "weather_effect_pct": 5.671575271418905,
+      "operational_choice": "trend_only",
+      "low_confidence": true,
+      "beats_trend": false,
+      "climate_risk": {
+        "stance": "favorable",
+        "stance_ko": "유리",
+        "diagnostic_gap_pct": 5.67,
+        "drivers": [
+          {
+            "feature": "sm_heading_z20",
+            "label_ko": "출수기 토양수분",
+            "anomaly": 3.408,
+            "log_contribution": 0.0256,
+            "direction": "favor"
+          },
+          {
+            "feature": "heat_excess_jul_z20",
+            "label_ko": "7월 고온초과",
+            "anomaly": -0.766,
+            "log_contribution": 0.0104,
+            "direction": "favor"
+          },
+          {
+            "feature": "rain_winter_z20",
+            "label_ko": "동절 강수",
+            "anomaly": 1.383,
+            "log_contribution": 0.0073,
+            "direction": "favor"
+          },
+          {
+            "feature": "sm_preseason_z20",
+            "label_ko": "파종 전 토양수분",
+            "anomaly": 2.618,
+            "log_contribution": 0.0045,
+            "direction": "favor"
+          }
+        ],
+        "risks": [],
+        "favors": [
+          "출수기 토양수분이(가) 단수를 받치는 쪽",
+          "7월 고온초과이(가) 단수를 받치는 쪽",
+          "동절 강수이(가) 단수를 받치는 쪽"
+        ],
+        "reason_ko": "검증 스킬 미달로 운영 전망은 추세. 기후 진단 모델은 추세 대비 +5.7% (유리) — 전망 갭(진단−추세)이 시즌 유리/불리 신호. 지지 요인: 출수기 토양수분이(가) 단수를 받치는 쪽; 7월 고온초과이(가) 단수를 받치는 쪽.",
+        "note": "diagnostic_gap_pct = climate-model vs trend. Operational point may be trend-only when skill gate fails."
+      },
+      "reason_ko": "검증 스킬 미달로 운영 전망은 추세. 기후 진단 모델은 추세 대비 +5.7% (유리) — 전망 갭(진단−추세)이 시즌 유리/불리 신호. 지지 요인: 출수기 토양수분이(가) 단수를 받치는 쪽; 7월 고온초과이(가) 단수를 받치는 쪽.",
+      "last_actual": {
+        "year": 2025,
+        "yield": 4438.0,
+        "status": "estimate"
+      },
+      "season_progress": {
+        "observed_through": "2026-07-31",
+        "critical_window_observed": 0.6013071895424836,
+        "future_weather_fill": "20-member historical-year weather ensemble",
+        "weather_scenario_count": 20,
+        "weather_scenario_p16_p84": [
+          3661.3457122607297,
+          3661.3457122607297
+        ],
+        "nwp_integrated": false
+      },
+      "features": [
+        {
+          "feature": "rain_growing_z20",
+          "anomaly": 0.856,
+          "log_contribution": 0.0035
+        },
+        {
+          "feature": "gdd0_growing_z20",
+          "anomaly": -0.335,
+          "log_contribution": 0.0025
+        },
+        {
+          "feature": "heat_excess_jul_z20",
+          "anomaly": -0.766,
+          "log_contribution": 0.0104
+        },
+        {
+          "feature": "frost_sep_z20",
+          "anomaly": -0.696,
+          "log_contribution": -0.0018
+        },
+        {
+          "feature": "sm_preseason_z20",
+          "anomaly": 2.618,
+          "log_contribution": 0.0045
+        },
+        {
+          "feature": "sm_heading_z20",
+          "anomaly": 3.408,
+          "log_contribution": 0.0256
+        },
+        {
+          "feature": "rain_winter_z20",
+          "anomaly": 1.383,
+          "log_contribution": 0.0073
+        }
+      ],
+      "skill": {
+        "rmse": 798.2867713252082,
+        "mae": 633.0399079844904,
+        "baseline_rmse": 733.8506156200315,
+        "skill_vs_trend": -0.08780554834138066,
+        "recent_rmse": 819.8936049596882,
+        "recent_baseline_rmse": 754.979212718866,
+        "recent_skill_vs_trend": -0.08598169479004514,
+        "detrended_r2": -1.5645199734537112,
+        "recent_trend_bias": -575.6342086696164,
+        "features": [
+          "rain_growing_z20",
+          "gdd0_growing_z20",
+          "heat_excess_jul_z20",
+          "frost_sep_z20",
+          "sm_preseason_z20",
+          "sm_heading_z20",
+          "rain_winter_z20"
+        ],
+        "fold_years": [
+          2012,
+          2013,
+          2014,
+          2015,
+          2017,
+          2018,
+          2019,
+          2020,
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ]
+      },
+      "provenance": {
+        "target": {
+          "variable": "yield_kg_ha",
+          "source": "Statistics Canada 32-10-0002 SAD average yield kg/ha",
+          "area_basis": "harvested",
+          "label_scale": "sad",
+          "estimated_years": [
+            2020,
+            2021,
+            2022,
+            2023,
+            2024,
+            2025
+          ]
+        },
+        "guide": "Regions/북미_캐나다/프레리/카놀라_봄밀/캐나다_카놀라_봄밀_상세분석.md",
+        "caveat": "ICCYF Chipanshi 2015 CAR R2~0.66-0.67; Morrison HSU@29.5C; Mkhabela SMOS excess SM; MASC Excess Moisture (MB).",
+        "literature_benchmark": {
+          "icyf_car_r2_canola": 0.67,
+          "icyf_car_r2_spring_wheat": 0.66,
+          "icyf_mei_gt0_share_canola_wheat": 0.7,
+          "icyf_national_mape_canola": 0.09,
+          "icyf_national_mape_spring_wheat": 0.08,
+          "note": "Chipanshi et al. 2015 ICCYF uses CAR+VSMB+NDVI; this Phase-1 province+POWER ridge is a weaker information set."
+        }
+      }
+    },
+    "sad_ab_canola_south": {
+      "label": "AB SAD 20 canola (Lethbridge)",
+      "label_ko": "AB 산지20 카놀라(레스브리지)",
+      "crop": "canola",
+      "label_scale": "sad",
+      "season": 2026,
+      "unit": "kg/ha",
+      "point": 2700.4387559717698,
+      "range_68": [
+        2230.3047606111113,
+        3169.9009440413643
+      ],
+      "range_95": [
+        1616.5846321412828,
+        3788.507400668408
+      ],
+      "trend": 2370.863838005364,
+      "weather_model_point": 2700.4387559717698,
+      "weather_effect_pct": 13.901047908499088,
+      "operational_choice": "ridge_weather",
+      "low_confidence": false,
+      "beats_trend": true,
+      "climate_risk": {
+        "stance": "favorable",
+        "stance_ko": "유리",
+        "diagnostic_gap_pct": 13.9,
+        "drivers": [
+          {
+            "feature": "sm_flowering_z20",
+            "label_ko": "개화기 토양수분",
+            "anomaly": 1.849,
+            "log_contribution": 0.0697,
+            "direction": "favor"
+          },
+          {
+            "feature": "vpd_flowering_z20",
+            "label_ko": "개화기 VPD",
+            "anomaly": -0.447,
+            "log_contribution": 0.0223,
+            "direction": "favor"
+          },
+          {
+            "feature": "sm_preseason_z20",
+            "label_ko": "파종 전 토양수분",
+            "anomaly": -0.883,
+            "log_contribution": -0.0202,
+            "direction": "adverse"
+          },
+          {
+            "feature": "heat_dry_stress_z20",
+            "label_ko": "고온×건조",
+            "anomaly": -0.54,
+            "log_contribution": 0.02,
+            "direction": "favor"
+          }
+        ],
+        "risks": [
+          "파종 전 토양수분이(가) 단수를 누르는 쪽"
+        ],
+        "favors": [
+          "개화기 토양수분이(가) 단수를 받치는 쪽",
+          "개화기 VPD이(가) 단수를 받치는 쪽",
+          "고온×건조이(가) 단수를 받치는 쪽"
+        ],
+        "reason_ko": "기상 모델 운영. 기후 전망은 추세 대비 +13.9% (유리). 리스크: 파종 전 토양수분이(가) 단수를 누르는 쪽.",
+        "note": "diagnostic_gap_pct = climate-model vs trend. Operational point may be trend-only when skill gate fails."
+      },
+      "reason_ko": "기상 모델 운영. 기후 전망은 추세 대비 +13.9% (유리). 리스크: 파종 전 토양수분이(가) 단수를 누르는 쪽.",
+      "last_actual": {
+        "year": 2025,
+        "yield": 2953.0,
+        "status": "estimate"
+      },
+      "season_progress": {
+        "observed_through": "2026-07-31",
+        "critical_window_observed": 0.6013071895424836,
+        "future_weather_fill": "20-member historical-year weather ensemble",
+        "weather_scenario_count": 20,
+        "weather_scenario_p16_p84": [
+          2677.9324067570396,
+          2722.273297895436
+        ],
+        "nwp_integrated": false
+      },
+      "features": [
+        {
+          "feature": "hsu_flower_z20",
+          "anomaly": -0.491,
+          "log_contribution": 0.0187
+        },
+        {
+          "feature": "heat_dry_stress_z20",
+          "anomaly": -0.54,
+          "log_contribution": 0.02
+        },
+        {
+          "feature": "rain_growing_z20",
+          "anomaly": 0.462,
+          "log_contribution": 0.0194
+        },
+        {
+          "feature": "vpd_flowering_z20",
+          "anomaly": -0.447,
+          "log_contribution": 0.0223
+        },
+        {
+          "feature": "sm_preseason_z20",
+          "anomaly": -0.883,
+          "log_contribution": -0.0202
+        },
+        {
+          "feature": "sm_flowering_z20",
+          "anomaly": 1.849,
+          "log_contribution": 0.0697
+        },
+        {
+          "feature": "rain_winter_z20",
+          "anomaly": 0.052,
+          "log_contribution": 0.0003
+        }
+      ],
+      "skill": {
+        "rmse": 472.03711191032227,
+        "mae": 376.683022054267,
+        "baseline_rmse": 597.1809414550045,
+        "skill_vs_trend": 0.2095576413402861,
+        "recent_rmse": 525.3095841656326,
+        "recent_baseline_rmse": 686.8850774223409,
+        "recent_skill_vs_trend": 0.23522929608989218,
+        "detrended_r2": 0.18994489965453965,
+        "recent_trend_bias": 360.3734153273224,
+        "features": [
+          "hsu_flower_z20",
+          "heat_dry_stress_z20",
+          "rain_growing_z20",
+          "vpd_flowering_z20",
+          "sm_preseason_z20",
+          "sm_flowering_z20",
+          "rain_winter_z20"
+        ],
+        "fold_years": [
+          2012,
+          2013,
+          2014,
+          2015,
+          2016,
+          2017,
+          2018,
+          2019,
+          2020,
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ]
+      },
+      "provenance": {
+        "target": {
+          "variable": "yield_kg_ha",
+          "source": "Statistics Canada 32-10-0002 SAD average yield kg/ha",
+          "area_basis": "harvested",
+          "label_scale": "sad",
+          "estimated_years": [
+            2020,
+            2021,
+            2022,
+            2023,
+            2024,
+            2025
+          ]
+        },
+        "guide": "Regions/북미_캐나다/서스캐처원_앨버타/카놀라_봄밀/카놀라_봄밀_상세분석.md",
+        "caveat": "ICCYF Chipanshi 2015 CAR R2~0.66-0.67; Morrison HSU@29.5C; Mkhabela SMOS excess SM; MASC Excess Moisture (MB). Southern AB heat/drought.",
+        "literature_benchmark": {
+          "icyf_car_r2_canola": 0.67,
+          "icyf_car_r2_spring_wheat": 0.66,
+          "icyf_mei_gt0_share_canola_wheat": 0.7,
+          "icyf_national_mape_canola": 0.09,
+          "icyf_national_mape_spring_wheat": 0.08,
+          "note": "Chipanshi et al. 2015 ICCYF uses CAR+VSMB+NDVI; this Phase-1 province+POWER ridge is a weaker information set."
+        }
+      }
+    },
+    "sad_ab_canola_central": {
+      "label": "AB SAD 50 canola (Red Deer)",
+      "label_ko": "AB 산지50 카놀라(레드디어)",
+      "crop": "canola",
+      "label_scale": "sad",
+      "season": 2026,
+      "unit": "kg/ha",
+      "point": 2815.167657086519,
+      "range_68": [
+        2423.1384723219835,
+        3207.196841851054
+      ],
+      "range_95": [
+        2152.582291749508,
+        3477.7530224235297
+      ],
+      "trend": 2815.167657086519,
+      "weather_model_point": 2877.8916314339785,
+      "weather_effect_pct": 2.228072427216432,
+      "operational_choice": "trend_only",
+      "low_confidence": true,
+      "beats_trend": false,
+      "climate_risk": {
+        "stance": "favorable",
+        "stance_ko": "유리",
+        "diagnostic_gap_pct": 2.23,
+        "drivers": [
+          {
+            "feature": "hsu_flower_z20",
+            "label_ko": "개화기 고온누적(HSU)",
+            "anomaly": -0.503,
+            "log_contribution": 0.0373,
+            "direction": "favor"
+          },
+          {
+            "feature": "rain_flowering_z20",
+            "label_ko": "개화기 강수",
+            "anomaly": 0.943,
+            "log_contribution": -0.0114,
+            "direction": "adverse"
+          },
+          {
+            "feature": "rain_growing_z20",
+            "label_ko": "생육기 강수",
+            "anomaly": 1.664,
+            "log_contribution": -0.0037,
+            "direction": "adverse"
+          },
+          {
+            "feature": "frost_sep_z20",
+            "label_ko": "9월 서리일",
+            "anomaly": -0.542,
+            "log_contribution": 0.0004,
+            "direction": "favor"
+          }
+        ],
+        "risks": [
+          "개화기 강수이(가) 단수를 누르는 쪽"
+        ],
+        "favors": [
+          "개화기 고온누적(HSU)이(가) 단수를 받치는 쪽"
+        ],
+        "reason_ko": "검증 스킬 미달로 운영 전망은 추세. 기후 진단 모델은 추세 대비 +2.2% (유리) — 전망 갭(진단−추세)이 시즌 유리/불리 신호. 주요 리스크: 개화기 강수이(가) 단수를 누르는 쪽.",
+        "note": "diagnostic_gap_pct = climate-model vs trend. Operational point may be trend-only when skill gate fails."
+      },
+      "reason_ko": "검증 스킬 미달로 운영 전망은 추세. 기후 진단 모델은 추세 대비 +2.2% (유리) — 전망 갭(진단−추세)이 시즌 유리/불리 신호. 주요 리스크: 개화기 강수이(가) 단수를 누르는 쪽.",
+      "last_actual": {
+        "year": 2025,
+        "yield": 2917.0,
+        "status": "estimate"
+      },
+      "season_progress": {
+        "observed_through": "2026-07-31",
+        "critical_window_observed": 0.6013071895424836,
+        "future_weather_fill": "20-member historical-year weather ensemble",
+        "weather_scenario_count": 20,
+        "weather_scenario_p16_p84": [
+          2815.167657086519,
+          2815.167657086519
+        ],
+        "nwp_integrated": false
+      },
+      "features": [
+        {
+          "feature": "rain_growing_z20",
+          "anomaly": 1.664,
+          "log_contribution": -0.0037
+        },
+        {
+          "feature": "hsu_flower_z20",
+          "anomaly": -0.503,
+          "log_contribution": 0.0373
+        },
+        {
+          "feature": "frost_sep_z20",
+          "anomaly": -0.542,
+          "log_contribution": 0.0004
+        },
+        {
+          "feature": "rain_flowering_z20",
+          "anomaly": 0.943,
+          "log_contribution": -0.0114
+        }
+      ],
+      "skill": {
+        "rmse": 329.283288218651,
+        "mae": 262.94372309483094,
+        "baseline_rmse": 324.4209195819113,
+        "skill_vs_trend": -0.014987839387811341,
+        "recent_rmse": 345.0920509922577,
+        "recent_baseline_rmse": 351.0727508366972,
+        "recent_skill_vs_trend": 0.017035499993052428,
+        "detrended_r2": -0.23961546601441075,
+        "recent_trend_bias": 177.84464123982042,
+        "features": [
+          "rain_growing_z20",
+          "hsu_flower_z20",
+          "frost_sep_z20",
+          "rain_flowering_z20"
+        ],
+        "fold_years": [
+          2012,
+          2013,
+          2014,
+          2015,
+          2016,
+          2017,
+          2018,
+          2019,
+          2020,
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ]
+      },
+      "provenance": {
+        "target": {
+          "variable": "yield_kg_ha",
+          "source": "Statistics Canada 32-10-0002 SAD average yield kg/ha",
+          "area_basis": "harvested",
+          "label_scale": "sad",
+          "estimated_years": [
+            2020,
+            2021,
+            2022,
+            2023,
+            2024,
+            2025
+          ]
+        },
+        "guide": "Regions/북미_캐나다/서스캐처원_앨버타/카놀라_봄밀/카놀라_봄밀_상세분석.md",
+        "caveat": "ICCYF Chipanshi 2015 CAR R2~0.66-0.67; Morrison HSU@29.5C; Mkhabela SMOS excess SM; MASC Excess Moisture (MB).",
+        "literature_benchmark": {
+          "icyf_car_r2_canola": 0.67,
+          "icyf_car_r2_spring_wheat": 0.66,
+          "icyf_mei_gt0_share_canola_wheat": 0.7,
+          "icyf_national_mape_canola": 0.09,
+          "icyf_national_mape_spring_wheat": 0.08,
+          "note": "Chipanshi et al. 2015 ICCYF uses CAR+VSMB+NDVI; this Phase-1 province+POWER ridge is a weaker information set."
+        }
+      }
+    },
+    "sad_ab_canola_peace": {
+      "label": "AB SAD 70 canola (Peace)",
+      "label_ko": "AB 산지70 카놀라(피스)",
+      "crop": "canola",
+      "label_scale": "sad",
+      "season": 2026,
+      "unit": "kg/ha",
+      "point": 2311.8206855920025,
+      "range_68": [
+        2052.2473384088435,
+        2571.3940327751616
+      ],
+      "range_95": [
+        1724.6211994720466,
+        2899.0201717119585
+      ],
+      "trend": 2311.8206855920025,
+      "weather_model_point": 2311.865258369915,
+      "weather_effect_pct": 0.0019280378530384112,
+      "operational_choice": "trend_only",
+      "low_confidence": true,
+      "beats_trend": false,
+      "climate_risk": {
+        "stance": "near_neutral",
+        "stance_ko": "중립",
+        "diagnostic_gap_pct": 0.0,
+        "drivers": [
+          {
+            "feature": "frost_sep_z20",
+            "label_ko": "9월 서리일",
+            "anomaly": -0.347,
+            "log_contribution": -0.0,
+            "direction": "adverse"
+          },
+          {
+            "feature": "gdd0_growing_z20",
+            "label_ko": "생육기 GDD0",
+            "anomaly": 0.224,
+            "log_contribution": 0.0,
+            "direction": "adverse"
+          },
+          {
+            "feature": "hsu_flower_z20",
+            "label_ko": "개화기 고온누적(HSU)",
+            "anomaly": -0.557,
+            "log_contribution": -0.0,
+            "direction": "adverse"
+          },
+          {
+            "feature": "rain_growing_z20",
+            "label_ko": "생육기 강수",
+            "anomaly": 0.358,
+            "log_contribution": 0.0,
+            "direction": "adverse"
+          }
+        ],
+        "risks": [],
+        "favors": [],
+        "reason_ko": "검증 스킬 미달로 운영 전망은 추세. 기후 진단 모델은 추세 대비 +0.0% (중립) — 전망 갭(진단−추세)이 시즌 유리/불리 신호. 뚜렷한 기후 드라이버 없음.",
+        "note": "diagnostic_gap_pct = climate-model vs trend. Operational point may be trend-only when skill gate fails."
+      },
+      "reason_ko": "검증 스킬 미달로 운영 전망은 추세. 기후 진단 모델은 추세 대비 +0.0% (중립) — 전망 갭(진단−추세)이 시즌 유리/불리 신호. 뚜렷한 기후 드라이버 없음.",
+      "last_actual": {
+        "year": 2025,
+        "yield": 1756.0,
+        "status": "estimate"
+      },
+      "season_progress": {
+        "observed_through": "2026-07-31",
+        "critical_window_observed": 0.6013071895424836,
+        "future_weather_fill": "20-member historical-year weather ensemble",
+        "weather_scenario_count": 20,
+        "weather_scenario_p16_p84": [
+          2311.8206855920025,
+          2311.8206855920025
+        ],
+        "nwp_integrated": false
+      },
+      "features": [
+        {
+          "feature": "frost_sep_z20",
+          "anomaly": -0.347,
+          "log_contribution": -0.0
+        },
+        {
+          "feature": "gdd0_growing_z20",
+          "anomaly": 0.224,
+          "log_contribution": 0.0
+        },
+        {
+          "feature": "hsu_flower_z20",
+          "anomaly": -0.557,
+          "log_contribution": -0.0
+        },
+        {
+          "feature": "rain_growing_z20",
+          "anomaly": 0.358,
+          "log_contribution": 0.0
+        }
+      ],
+      "skill": {
+        "rmse": 305.33509773229247,
+        "mae": 242.2543807942679,
+        "baseline_rmse": 305.32242163239556,
+        "skill_vs_trend": -4.151709471300613e-05,
+        "recent_rmse": 327.7024358360723,
+        "recent_baseline_rmse": 327.6746465801206,
+        "recent_skill_vs_trend": -8.480746448258358e-05,
+        "detrended_r2": -0.12529588254733115,
+        "recent_trend_bias": 129.7471833884711,
+        "features": [
+          "frost_sep_z20",
+          "gdd0_growing_z20",
+          "hsu_flower_z20",
+          "rain_growing_z20"
+        ],
+        "fold_years": [
+          2012,
+          2013,
+          2014,
+          2015,
+          2016,
+          2017,
+          2018,
+          2019,
+          2020,
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ]
+      },
+      "provenance": {
+        "target": {
+          "variable": "yield_kg_ha",
+          "source": "Statistics Canada 32-10-0002 SAD average yield kg/ha",
+          "area_basis": "harvested",
+          "label_scale": "sad",
+          "estimated_years": [
+            2020,
+            2021,
+            2022,
+            2023,
+            2024,
+            2025
+          ]
+        },
+        "guide": "Regions/북미_캐나다/서스캐처원_앨버타/카놀라_봄밀/카놀라_봄밀_상세분석.md",
+        "caveat": "ICCYF Chipanshi 2015 CAR R2~0.66-0.67; Morrison HSU@29.5C; Mkhabela SMOS excess SM; MASC Excess Moisture (MB). Short season; frost/GDD pack.",
+        "literature_benchmark": {
+          "icyf_car_r2_canola": 0.67,
+          "icyf_car_r2_spring_wheat": 0.66,
+          "icyf_mei_gt0_share_canola_wheat": 0.7,
+          "icyf_national_mape_canola": 0.09,
+          "icyf_national_mape_spring_wheat": 0.08,
+          "note": "Chipanshi et al. 2015 ICCYF uses CAR+VSMB+NDVI; this Phase-1 province+POWER ridge is a weaker information set."
+        }
+      }
+    },
+    "sad_mb_soy_redriver": {
+      "label": "MB SAD 2 soybeans (Red River)",
+      "label_ko": "MB 산지2 대두(레드리버)",
+      "crop": "soybeans",
+      "label_scale": "sad",
+      "season": 2026,
+      "unit": "kg/ha",
+      "point": 2803.2079928203807,
+      "range_68": [
+        2356.031385261319,
+        3250.3846003794424
+      ],
+      "range_95": [
+        2219.672808037336,
+        3386.7431776034255
+      ],
+      "trend": 2803.2079928203807,
+      "weather_model_point": 2802.9783436777893,
+      "weather_effect_pct": -0.008192368999360156,
+      "operational_choice": "trend_only",
+      "low_confidence": true,
+      "beats_trend": false,
+      "climate_risk": {
+        "stance": "near_neutral",
+        "stance_ko": "중립",
+        "diagnostic_gap_pct": -0.01,
+        "drivers": [
+          {
+            "feature": "rain_may_z20",
+            "label_ko": "5월 강수",
+            "anomaly": -1.022,
+            "log_contribution": -0.0001,
+            "direction": "adverse"
+          },
+          {
+            "feature": "excess_may_z20",
+            "label_ko": "5월 과습일",
+            "anomaly": -0.941,
+            "log_contribution": -0.0001,
+            "direction": "adverse"
+          },
+          {
+            "feature": "sm_may_z20",
+            "label_ko": "5월 토양수분",
+            "anomaly": -0.6,
+            "log_contribution": 0.0,
+            "direction": "adverse"
+          },
+          {
+            "feature": "frost_sep_z20",
+            "label_ko": "9월 서리일",
+            "anomaly": -0.5,
+            "log_contribution": 0.0,
+            "direction": "adverse"
+          }
+        ],
+        "risks": [],
+        "favors": [],
+        "reason_ko": "검증 스킬 미달로 운영 전망은 추세. 기후 진단 모델은 추세 대비 -0.0% (중립) — 전망 갭(진단−추세)이 시즌 유리/불리 신호. 뚜렷한 기후 드라이버 없음.",
+        "note": "diagnostic_gap_pct = climate-model vs trend. Operational point may be trend-only when skill gate fails."
+      },
+      "reason_ko": "검증 스킬 미달로 운영 전망은 추세. 기후 진단 모델은 추세 대비 -0.0% (중립) — 전망 갭(진단−추세)이 시즌 유리/불리 신호. 뚜렷한 기후 드라이버 없음.",
+      "last_actual": {
+        "year": 2025,
+        "yield": 2946.0,
+        "status": "estimate"
+      },
+      "season_progress": {
+        "observed_through": "2026-07-31",
+        "critical_window_observed": 0.6013071895424836,
+        "future_weather_fill": "20-member historical-year weather ensemble",
+        "weather_scenario_count": 20,
+        "weather_scenario_p16_p84": [
+          2803.2079928203807,
+          2803.2079928203807
+        ],
+        "nwp_integrated": false
+      },
+      "features": [
+        {
+          "feature": "rain_may_z20",
+          "anomaly": -1.022,
+          "log_contribution": -0.0001
+        },
+        {
+          "feature": "sm_may_z20",
+          "anomaly": -0.6,
+          "log_contribution": 0.0
+        },
+        {
+          "feature": "excess_may_z20",
+          "anomaly": -0.941,
+          "log_contribution": -0.0001
+        },
+        {
+          "feature": "frost_sep_z20",
+          "anomaly": -0.5,
+          "log_contribution": 0.0
+        },
+        {
+          "feature": "rain_growing_z20",
+          "anomaly": 0.091,
+          "log_contribution": 0.0
+        },
+        {
+          "feature": "sm_flowering_z20",
+          "anomaly": 2.203,
+          "log_contribution": 0.0
+        },
+        {
+          "feature": "heat_excess_jul_z20",
+          "anomaly": 0.143,
+          "log_contribution": 0.0
+        },
+        {
+          "feature": "oni_summer_z20",
+          "anomaly": -0.102,
+          "log_contribution": 0.0
+        }
+      ],
+      "skill": {
+        "rmse": 361.7966491959894,
+        "mae": 304.8283608976303,
+        "baseline_rmse": 361.7390670525321,
+        "skill_vs_trend": -0.00015918143408311103,
+        "recent_rmse": 361.7966491959894,
+        "recent_baseline_rmse": 361.7390670525321,
+        "recent_skill_vs_trend": -0.00015918143408311103,
+        "detrended_r2": -0.0338265671039506,
+        "recent_trend_bias": -65.12488699131632,
+        "features": [
+          "rain_may_z20",
+          "sm_may_z20",
+          "excess_may_z20",
+          "frost_sep_z20",
+          "rain_growing_z20",
+          "sm_flowering_z20",
+          "heat_excess_jul_z20",
+          "oni_summer_z20"
+        ],
+        "fold_years": [
+          2020,
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ]
+      },
+      "provenance": {
+        "target": {
+          "variable": "yield_kg_ha",
+          "source": "Statistics Canada 32-10-0359 province average yield kg/ha",
+          "area_basis": "harvested",
+          "label_scale": "province",
+          "estimated_years": [
+            2020,
+            2021,
+            2022,
+            2023,
+            2024,
+            2025
+          ]
+        },
+        "guide": "Regions/북미_캐나다/매니토바/대두_귀리/대두_귀리_상세분석.md",
+        "caveat": "Province fallback.",
+        "literature_benchmark": {
+          "icyf_car_r2_canola": 0.67,
+          "icyf_car_r2_spring_wheat": 0.66,
+          "icyf_mei_gt0_share_canola_wheat": 0.7,
+          "icyf_national_mape_canola": 0.09,
+          "icyf_national_mape_spring_wheat": 0.08,
+          "note": "Chipanshi et al. 2015 ICCYF uses CAR+VSMB+NDVI; this Phase-1 province+POWER ridge is a weaker information set."
+        }
+      },
+      "fallback_from": "prov_mb_soybeans",
+      "note": "SAD model missing (model or training table missing); province trend + climate diagnostic from prov_mb_soybeans"
+    },
+    "sad_mb_canola_central": {
+      "label": "MB SAD 8 canola",
+      "label_ko": "MB 산지8 카놀라",
+      "crop": "canola",
+      "label_scale": "sad",
+      "season": 2026,
+      "unit": "kg/ha",
+      "point": 2678.172066781397,
+      "range_68": [
+        2418.529787260605,
+        2937.814346302189
+      ],
+      "range_95": [
+        2137.6208575355495,
+        3218.7232760272445
+      ],
+      "trend": 2678.172066781397,
+      "weather_model_point": 2696.3986028834793,
+      "weather_effect_pct": 0.6805588157741793,
+      "operational_choice": "trend_only",
+      "low_confidence": true,
+      "beats_trend": false,
+      "climate_risk": {
+        "stance": "near_neutral",
+        "stance_ko": "중립",
+        "diagnostic_gap_pct": 0.68,
+        "drivers": [
+          {
+            "feature": "hsu_flower_z20",
+            "label_ko": "개화기 고온누적(HSU)",
+            "anomaly": -0.344,
+            "log_contribution": 0.0211,
+            "direction": "favor"
+          },
+          {
+            "feature": "rain_growing_z20",
+            "label_ko": "생육기 강수",
+            "anomaly": 0.715,
+            "log_contribution": -0.016,
+            "direction": "adverse"
+          },
+          {
+            "feature": "rain_flowering_z20",
+            "label_ko": "개화기 강수",
+            "anomaly": 1.481,
+            "log_contribution": 0.0037,
+            "direction": "favor"
+          },
+          {
+            "feature": "frost_sep_z20",
+            "label_ko": "9월 서리일",
+            "anomaly": -0.417,
+            "log_contribution": -0.0024,
+            "direction": "adverse"
+          }
+        ],
+        "risks": [
+          "생육기 강수이(가) 단수를 누르는 쪽"
+        ],
+        "favors": [
+          "개화기 고온누적(HSU)이(가) 단수를 받치는 쪽"
+        ],
+        "reason_ko": "검증 스킬 미달로 운영 전망은 추세. 기후 진단 모델은 추세 대비 +0.7% (중립) — 전망 갭(진단−추세)이 시즌 유리/불리 신호. 주요 리스크: 생육기 강수이(가) 단수를 누르는 쪽.",
+        "note": "diagnostic_gap_pct = climate-model vs trend. Operational point may be trend-only when skill gate fails."
+      },
+      "reason_ko": "검증 스킬 미달로 운영 전망은 추세. 기후 진단 모델은 추세 대비 +0.7% (중립) — 전망 갭(진단−추세)이 시즌 유리/불리 신호. 주요 리스크: 생육기 강수이(가) 단수를 누르는 쪽.",
+      "last_actual": {
+        "year": 2025,
+        "yield": 2693.0,
+        "status": "estimate"
+      },
+      "season_progress": {
+        "observed_through": "2026-07-31",
+        "critical_window_observed": 0.6013071895424836,
+        "future_weather_fill": "20-member historical-year weather ensemble",
+        "weather_scenario_count": 20,
+        "weather_scenario_p16_p84": [
+          2678.172066781397,
+          2678.172066781397
+        ],
+        "nwp_integrated": false
+      },
+      "features": [
+        {
+          "feature": "rain_growing_z20",
+          "anomaly": 0.715,
+          "log_contribution": -0.016
+        },
+        {
+          "feature": "hsu_flower_z20",
+          "anomaly": -0.344,
+          "log_contribution": 0.0211
+        },
+        {
+          "feature": "frost_sep_z20",
+          "anomaly": -0.417,
+          "log_contribution": -0.0024
+        },
+        {
+          "feature": "rain_flowering_z20",
+          "anomaly": 1.481,
+          "log_contribution": 0.0037
+        }
+      ],
+      "skill": {
+        "rmse": 260.01946804963114,
+        "mae": 218.78678357679203,
+        "baseline_rmse": 277.47815271933825,
+        "skill_vs_trend": 0.06291913254650394,
+        "recent_rmse": 199.81701434586554,
+        "recent_baseline_rmse": 230.26497257747414,
+        "recent_skill_vs_trend": 0.13223009079839176,
+        "detrended_r2": 0.05304553791175248,
+        "recent_trend_bias": -24.84877914507674,
+        "features": [
+          "rain_growing_z20",
+          "hsu_flower_z20",
+          "frost_sep_z20",
+          "rain_flowering_z20"
+        ],
+        "fold_years": [
+          2012,
+          2013,
+          2014,
+          2015,
+          2016,
+          2017,
+          2018,
+          2019,
+          2020,
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ]
+      },
+      "provenance": {
+        "target": {
+          "variable": "yield_kg_ha",
+          "source": "Statistics Canada 32-10-0002 SAD average yield kg/ha",
+          "area_basis": "harvested",
+          "label_scale": "sad",
+          "estimated_years": [
+            2020,
+            2021,
+            2022,
+            2023,
+            2024,
+            2025
+          ]
+        },
+        "guide": "Regions/북미_캐나다/매니토바/대두_귀리/대두_귀리_상세분석.md",
+        "caveat": "ICCYF Chipanshi 2015 CAR R2~0.66-0.67; Morrison HSU@29.5C; Mkhabela SMOS excess SM; MASC Excess Moisture (MB).",
+        "literature_benchmark": {
+          "icyf_car_r2_canola": 0.67,
+          "icyf_car_r2_spring_wheat": 0.66,
+          "icyf_mei_gt0_share_canola_wheat": 0.7,
+          "icyf_national_mape_canola": 0.09,
+          "icyf_national_mape_spring_wheat": 0.08,
+          "note": "Chipanshi et al. 2015 ICCYF uses CAR+VSMB+NDVI; this Phase-1 province+POWER ridge is a weaker information set."
+        }
+      }
+    },
+    "sad_on_corn_southern": {
+      "label": "ON Southern corn (Region 1)",
+      "label_ko": "온타리오 남부 옥수수",
+      "crop": "corn",
+      "label_scale": "sad",
+      "season": 2026,
+      "unit": "kg/ha",
+      "point": 12561.00887345124,
+      "range_68": [
+        12027.393836631883,
+        13094.623910270595
+      ],
+      "range_95": [
+        11329.920751178237,
+        13792.096995724241
+      ],
+      "trend": 12561.00887345124,
+      "weather_model_point": 12641.775627729783,
+      "weather_effect_pct": 0.6429957584796586,
+      "operational_choice": "trend_only",
+      "low_confidence": true,
+      "beats_trend": false,
+      "climate_risk": {
+        "stance": "near_neutral",
+        "stance_ko": "중립",
+        "diagnostic_gap_pct": 0.64,
+        "drivers": [
+          {
+            "feature": "rain_jul_z20",
+            "label_ko": "7월 강수",
+            "anomaly": 2.78,
+            "log_contribution": 0.007,
+            "direction": "favor"
+          },
+          {
+            "feature": "sm_jul_z20",
+            "label_ko": "7월 토양수분",
+            "anomaly": -2.26,
+            "log_contribution": -0.0016,
+            "direction": "adverse"
+          },
+          {
+            "feature": "vpd_jul_z20",
+            "label_ko": "7월 VPD",
+            "anomaly": -0.938,
+            "log_contribution": 0.0012,
+            "direction": "favor"
+          },
+          {
+            "feature": "gdd10_growing_z20",
+            "label_ko": "생육기 GDD10",
+            "anomaly": 0.145,
+            "log_contribution": -0.0004,
+            "direction": "adverse"
+          }
+        ],
+        "risks": [],
+        "favors": [
+          "7월 강수이(가) 단수를 받치는 쪽"
+        ],
+        "reason_ko": "검증 스킬 미달로 운영 전망은 추세. 기후 진단 모델은 추세 대비 +0.6% (중립) — 전망 갭(진단−추세)이 시즌 유리/불리 신호. 지지 요인: 7월 강수이(가) 단수를 받치는 쪽.",
+        "note": "diagnostic_gap_pct = climate-model vs trend. Operational point may be trend-only when skill gate fails."
+      },
+      "reason_ko": "검증 스킬 미달로 운영 전망은 추세. 기후 진단 모델은 추세 대비 +0.6% (중립) — 전망 갭(진단−추세)이 시즌 유리/불리 신호. 지지 요인: 7월 강수이(가) 단수를 받치는 쪽.",
+      "last_actual": {
+        "year": 2025,
+        "yield": 12190.0,
+        "status": "estimate"
+      },
+      "season_progress": {
+        "observed_through": "2026-07-31",
+        "critical_window_observed": 0.6013071895424836,
+        "future_weather_fill": "20-member historical-year weather ensemble",
+        "weather_scenario_count": 20,
+        "weather_scenario_p16_p84": [
+          12561.00887345124,
+          12561.00887345124
+        ],
+        "nwp_integrated": false
+      },
+      "features": [
+        {
+          "feature": "gdd10_growing_z20",
+          "anomaly": 0.145,
+          "log_contribution": -0.0004
+        },
+        {
+          "feature": "edd_jul_z20",
+          "anomaly": -0.196,
+          "log_contribution": 0.0002
+        },
+        {
+          "feature": "rain_jul_z20",
+          "anomaly": 2.78,
+          "log_contribution": 0.007
+        },
+        {
+          "feature": "heat_days_32_z20",
+          "anomaly": -0.281,
+          "log_contribution": -0.0001
+        },
+        {
+          "feature": "sm_jul_z20",
+          "anomaly": -2.26,
+          "log_contribution": -0.0016
+        },
+        {
+          "feature": "rain_growing_z20",
+          "anomaly": 0.318,
+          "log_contribution": 0.0003
+        },
+        {
+          "feature": "vpd_jul_z20",
+          "anomaly": -0.938,
+          "log_contribution": 0.0012
+        },
+        {
+          "feature": "oni_summer_z20",
+          "anomaly": -0.102,
+          "log_contribution": 0.0
+        }
+      ],
+      "skill": {
+        "rmse": 566.4104894149032,
+        "mae": 423.2160479038258,
+        "baseline_rmse": 567.3617288825274,
+        "skill_vs_trend": 0.0016766013976616811,
+        "recent_rmse": 663.7510499028799,
+        "recent_baseline_rmse": 664.9457672159687,
+        "recent_skill_vs_trend": 0.0017967139156187528,
+        "detrended_r2": -0.6068761738428332,
+        "recent_trend_bias": 543.1325813800584,
+        "features": [
+          "gdd10_growing_z20",
+          "edd_jul_z20",
+          "rain_jul_z20",
+          "heat_days_32_z20",
+          "sm_jul_z20",
+          "rain_growing_z20",
+          "vpd_jul_z20",
+          "oni_summer_z20"
+        ],
+        "fold_years": [
+          2012,
+          2013,
+          2014,
+          2015,
+          2016,
+          2017,
+          2018,
+          2019,
+          2020,
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ]
+      },
+      "provenance": {
+        "target": {
+          "variable": "yield_kg_ha",
+          "source": "Statistics Canada 32-10-0002 SAD average yield kg/ha",
+          "area_basis": "harvested",
+          "label_scale": "sad",
+          "estimated_years": [
+            2020,
+            2021,
+            2022,
+            2023,
+            2024,
+            2025
+          ]
+        },
+        "guide": "Regions/북미_캐나다/온타리오_퀘벡/옥수수_겨울밀/옥수수_겨울밀_상세분석.md",
+        "caveat": "ICCYF Chipanshi 2015 CAR R2~0.66-0.67; Morrison HSU@29.5C; Mkhabela SMOS excess SM; MASC Excess Moisture (MB). Schlenker EDD@29C + short-season GDD10.",
+        "literature_benchmark": {
+          "icyf_car_r2_canola": 0.67,
+          "icyf_car_r2_spring_wheat": 0.66,
+          "icyf_mei_gt0_share_canola_wheat": 0.7,
+          "icyf_national_mape_canola": 0.09,
+          "icyf_national_mape_spring_wheat": 0.08,
+          "note": "Chipanshi et al. 2015 ICCYF uses CAR+VSMB+NDVI; this Phase-1 province+POWER ridge is a weaker information set."
+        }
+      }
+    },
+    "sad_on_corn_western": {
+      "label": "ON Western corn (Region 2)",
+      "label_ko": "온타리오 서부 옥수수",
+      "crop": "corn",
+      "label_scale": "sad",
+      "season": 2026,
+      "unit": "kg/ha",
+      "point": 11759.678427386836,
+      "range_68": [
+        11109.618579042546,
+        12409.738275731126
+      ],
+      "range_95": [
+        10802.295413774955,
+        12717.061440998717
+      ],
+      "trend": 11759.678427386836,
+      "weather_model_point": 11957.351122711942,
+      "weather_effect_pct": 1.6809362309155418,
+      "operational_choice": "trend_only",
+      "low_confidence": true,
+      "beats_trend": false,
+      "climate_risk": {
+        "stance": "near_neutral",
+        "stance_ko": "중립",
+        "diagnostic_gap_pct": 1.68,
+        "drivers": [
+          {
+            "feature": "rain_jul_z20",
+            "label_ko": "7월 강수",
+            "anomaly": 1.247,
+            "log_contribution": 0.035,
+            "direction": "favor"
+          },
+          {
+            "feature": "gdd10_growing_z20",
+            "label_ko": "생육기 GDD10",
+            "anomaly": 0.046,
+            "log_contribution": -0.0088,
+            "direction": "adverse"
+          },
+          {
+            "feature": "edd_jul_z20",
+            "label_ko": "7월 EDD",
+            "anomaly": -0.426,
+            "log_contribution": -0.0054,
+            "direction": "adverse"
+          },
+          {
+            "feature": "heat_days_32_z20",
+            "label_ko": "32°C 초과일",
+            "anomaly": -0.251,
+            "log_contribution": -0.0042,
+            "direction": "adverse"
+          }
+        ],
+        "risks": [
+          "생육기 GDD10이(가) 단수를 누르는 쪽",
+          "7월 EDD이(가) 단수를 누르는 쪽",
+          "32°C 초과일이(가) 단수를 누르는 쪽"
+        ],
+        "favors": [
+          "7월 강수이(가) 단수를 받치는 쪽"
+        ],
+        "reason_ko": "검증 스킬 미달로 운영 전망은 추세. 기후 진단 모델은 추세 대비 +1.7% (중립) — 전망 갭(진단−추세)이 시즌 유리/불리 신호. 주요 리스크: 생육기 GDD10이(가) 단수를 누르는 쪽; 7월 EDD이(가) 단수를 누르는 쪽; 32°C 초과일이(가) 단수를 누르는 쪽.",
+        "note": "diagnostic_gap_pct = climate-model vs trend. Operational point may be trend-only when skill gate fails."
+      },
+      "reason_ko": "검증 스킬 미달로 운영 전망은 추세. 기후 진단 모델은 추세 대비 +1.7% (중립) — 전망 갭(진단−추세)이 시즌 유리/불리 신호. 주요 리스크: 생육기 GDD10이(가) 단수를 누르는 쪽; 7월 EDD이(가) 단수를 누르는 쪽; 32°C 초과일이(가) 단수를 누르는 쪽.",
+      "last_actual": {
+        "year": 2025,
+        "yield": 11068.0,
+        "status": "estimate"
+      },
+      "season_progress": {
+        "observed_through": "2026-07-31",
+        "critical_window_observed": 0.6013071895424836,
+        "future_weather_fill": "20-member historical-year weather ensemble",
+        "weather_scenario_count": 20,
+        "weather_scenario_p16_p84": [
+          11759.678427386836,
+          11759.678427386836
+        ],
+        "nwp_integrated": false
+      },
+      "features": [
+        {
+          "feature": "gdd10_growing_z20",
+          "anomaly": 0.046,
+          "log_contribution": -0.0088
+        },
+        {
+          "feature": "edd_jul_z20",
+          "anomaly": -0.426,
+          "log_contribution": -0.0054
+        },
+        {
+          "feature": "rain_jul_z20",
+          "anomaly": 1.247,
+          "log_contribution": 0.035
+        },
+        {
+          "feature": "heat_days_32_z20",
+          "anomaly": -0.251,
+          "log_contribution": -0.0042
+        }
+      ],
+      "skill": {
+        "rmse": 581.2908076143366,
+        "mae": 515.3549460348192,
+        "baseline_rmse": 467.5767702152851,
+        "skill_vs_trend": -0.24319864596073604,
+        "recent_rmse": 637.4382722142681,
+        "recent_baseline_rmse": 543.3362493516448,
+        "recent_skill_vs_trend": -0.17319297759888808,
+        "detrended_r2": -1.4090146863305875,
+        "recent_trend_bias": 381.46951071351214,
+        "features": [
+          "gdd10_growing_z20",
+          "edd_jul_z20",
+          "rain_jul_z20",
+          "heat_days_32_z20"
+        ],
+        "fold_years": [
+          2012,
+          2013,
+          2014,
+          2015,
+          2016,
+          2017,
+          2018,
+          2019,
+          2020,
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ]
+      },
+      "provenance": {
+        "target": {
+          "variable": "yield_kg_ha",
+          "source": "Statistics Canada 32-10-0002 SAD average yield kg/ha",
+          "area_basis": "harvested",
+          "label_scale": "sad",
+          "estimated_years": [
+            2020,
+            2021,
+            2022,
+            2023,
+            2024,
+            2025
+          ]
+        },
+        "guide": "Regions/북미_캐나다/온타리오_퀘벡/옥수수_겨울밀/옥수수_겨울밀_상세분석.md",
+        "caveat": "ICCYF Chipanshi 2015 CAR R2~0.66-0.67; Morrison HSU@29.5C; Mkhabela SMOS excess SM; MASC Excess Moisture (MB).",
+        "literature_benchmark": {
+          "icyf_car_r2_canola": 0.67,
+          "icyf_car_r2_spring_wheat": 0.66,
+          "icyf_mei_gt0_share_canola_wheat": 0.7,
+          "icyf_national_mape_canola": 0.09,
+          "icyf_national_mape_spring_wheat": 0.08,
+          "note": "Chipanshi et al. 2015 ICCYF uses CAR+VSMB+NDVI; this Phase-1 province+POWER ridge is a weaker information set."
+        }
+      }
+    },
+    "prov_sk_canola": {
+      "label": "Saskatchewan canola (province)",
+      "label_ko": "서스캐처원 카놀라(주)",
+      "crop": "canola",
+      "label_scale": "province",
+      "season": 2026,
+      "unit": "kg/ha",
+      "point": 2487.595788040125,
+      "range_68": [
+        2146.3489912396644,
+        2828.842584840586
+      ],
+      "range_95": [
+        1813.4420358513926,
+        3161.7495402288578
+      ],
+      "trend": 2487.595788040125,
+      "weather_model_point": 2610.597250842243,
+      "weather_effect_pct": 4.944592019068561,
+      "operational_choice": "trend_only",
+      "low_confidence": true,
+      "beats_trend": false,
+      "climate_risk": {
+        "stance": "favorable",
+        "stance_ko": "유리",
+        "diagnostic_gap_pct": 4.94,
+        "drivers": [
+          {
+            "feature": "hsu_flower_z20",
+            "label_ko": "개화기 고온누적(HSU)",
+            "anomaly": -0.694,
+            "log_contribution": 0.0281,
+            "direction": "favor"
+          },
+          {
+            "feature": "heat_dry_stress_z20",
+            "label_ko": "고온×건조",
+            "anomaly": -0.737,
+            "log_contribution": 0.0279,
+            "direction": "favor"
+          },
+          {
+            "feature": "rain_growing_z20",
+            "label_ko": "생육기 강수",
+            "anomaly": 0.721,
+            "log_contribution": -0.0068,
+            "direction": "adverse"
+          },
+          {
+            "feature": "frost_sep_z20",
+            "label_ko": "9월 서리일",
+            "anomaly": -0.436,
+            "log_contribution": 0.0001,
+            "direction": "favor"
+          }
+        ],
+        "risks": [
+          "생육기 강수이(가) 단수를 누르는 쪽"
+        ],
+        "favors": [
+          "개화기 고온누적(HSU)이(가) 단수를 받치는 쪽",
+          "고온×건조이(가) 단수를 받치는 쪽"
+        ],
+        "reason_ko": "검증 스킬 미달로 운영 전망은 추세. 기후 진단 모델은 추세 대비 +4.9% (유리) — 전망 갭(진단−추세)이 시즌 유리/불리 신호. 주요 리스크: 생육기 강수이(가) 단수를 누르는 쪽.",
+        "note": "diagnostic_gap_pct = climate-model vs trend. Operational point may be trend-only when skill gate fails."
+      },
+      "reason_ko": "검증 스킬 미달로 운영 전망은 추세. 기후 진단 모델은 추세 대비 +4.9% (유리) — 전망 갭(진단−추세)이 시즌 유리/불리 신호. 주요 리스크: 생육기 강수이(가) 단수를 누르는 쪽.",
+      "last_actual": {
+        "year": 2025,
+        "yield": 2488.0,
+        "status": "estimate"
+      },
+      "season_progress": {
+        "observed_through": "2026-07-31",
+        "critical_window_observed": 0.6013071895424836,
+        "future_weather_fill": "20-member historical-year weather ensemble",
+        "weather_scenario_count": 20,
+        "weather_scenario_p16_p84": [
+          2487.595788040125,
+          2487.595788040125
+        ],
+        "nwp_integrated": false
+      },
+      "features": [
+        {
+          "feature": "rain_growing_z20",
+          "anomaly": 0.721,
+          "log_contribution": -0.0068
+        },
+        {
+          "feature": "hsu_flower_z20",
+          "anomaly": -0.694,
+          "log_contribution": 0.0281
+        },
+        {
+          "feature": "heat_dry_stress_z20",
+          "anomaly": -0.737,
+          "log_contribution": 0.0279
+        },
+        {
+          "feature": "frost_sep_z20",
+          "anomaly": -0.436,
+          "log_contribution": 0.0001
+        }
+      ],
+      "skill": {
+        "rmse": 330.0529977150139,
+        "mae": 266.4165689740486,
+        "baseline_rmse": 346.20048627357534,
+        "skill_vs_trend": 0.046642015822592864,
+        "recent_rmse": 320.2436602345215,
+        "recent_baseline_rmse": 367.9904339069559,
+        "recent_skill_vs_trend": 0.12975004041683025,
+        "detrended_r2": 0.0653349796471242,
+        "recent_trend_bias": 85.96847922406857,
+        "features": [
+          "rain_growing_z20",
+          "hsu_flower_z20",
+          "heat_dry_stress_z20",
+          "frost_sep_z20"
+        ],
+        "fold_years": [
+          2012,
+          2013,
+          2014,
+          2015,
+          2016,
+          2017,
+          2018,
+          2019,
+          2020,
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ]
+      },
+      "provenance": {
+        "target": {
+          "variable": "yield_kg_ha",
+          "source": "Statistics Canada 32-10-0359 province average yield kg/ha",
+          "area_basis": "harvested",
+          "label_scale": "province",
+          "estimated_years": [
+            2020,
+            2021,
+            2022,
+            2023,
+            2024,
+            2025
+          ]
+        },
+        "guide": "Regions/북미_캐나다/프레리/카놀라_봄밀/캐나다_카놀라_봄밀_상세분석.md",
+        "caveat": "Province fallback when SAD weather skill fails.",
+        "literature_benchmark": {
+          "icyf_car_r2_canola": 0.67,
+          "icyf_car_r2_spring_wheat": 0.66,
+          "icyf_mei_gt0_share_canola_wheat": 0.7,
+          "icyf_national_mape_canola": 0.09,
+          "icyf_national_mape_spring_wheat": 0.08,
+          "note": "Chipanshi et al. 2015 ICCYF uses CAR+VSMB+NDVI; this Phase-1 province+POWER ridge is a weaker information set."
+        }
+      }
+    },
+    "prov_ab_canola": {
+      "label": "Alberta canola (province)",
+      "label_ko": "앨버타 카놀라(주)",
+      "crop": "canola",
+      "label_scale": "province",
+      "season": 2026,
+      "unit": "kg/ha",
+      "point": 2568.811168522923,
+      "range_68": [
+        2170.619451595467,
+        2967.0028854503785
+      ],
+      "range_95": [
+        1729.9148514550666,
+        3407.707485590779
+      ],
+      "trend": 2568.811168522923,
+      "weather_model_point": 2689.1858099522196,
+      "weather_effect_pct": 4.686005842092045,
+      "operational_choice": "trend_only",
+      "low_confidence": true,
+      "beats_trend": false,
+      "climate_risk": {
+        "stance": "favorable",
+        "stance_ko": "유리",
+        "diagnostic_gap_pct": 4.69,
+        "drivers": [
+          {
+            "feature": "hsu_flower_z20",
+            "label_ko": "개화기 고온누적(HSU)",
+            "anomaly": -0.676,
+            "log_contribution": 0.0216,
+            "direction": "favor"
+          },
+          {
+            "feature": "heat_dry_stress_z20",
+            "label_ko": "고온×건조",
+            "anomaly": -0.681,
+            "log_contribution": 0.0214,
+            "direction": "favor"
+          },
+          {
+            "feature": "rain_growing_z20",
+            "label_ko": "생육기 강수",
+            "anomaly": 1.313,
+            "log_contribution": 0.011,
+            "direction": "favor"
+          },
+          {
+            "feature": "rain_winter_z20",
+            "label_ko": "동절 강수",
+            "anomaly": 1.714,
+            "log_contribution": -0.0049,
+            "direction": "adverse"
+          }
+        ],
+        "risks": [
+          "동절 강수이(가) 단수를 누르는 쪽",
+          "개화기 토양수분이(가) 단수를 누르는 쪽"
+        ],
+        "favors": [
+          "개화기 고온누적(HSU)이(가) 단수를 받치는 쪽",
+          "고온×건조이(가) 단수를 받치는 쪽",
+          "생육기 강수이(가) 단수를 받치는 쪽"
+        ],
+        "reason_ko": "검증 스킬 미달로 운영 전망은 추세. 기후 진단 모델은 추세 대비 +4.7% (유리) — 전망 갭(진단−추세)이 시즌 유리/불리 신호. 주요 리스크: 동절 강수이(가) 단수를 누르는 쪽; 개화기 토양수분이(가) 단수를 누르는 쪽.",
+        "note": "diagnostic_gap_pct = climate-model vs trend. Operational point may be trend-only when skill gate fails."
+      },
+      "reason_ko": "검증 스킬 미달로 운영 전망은 추세. 기후 진단 모델은 추세 대비 +4.7% (유리) — 전망 갭(진단−추세)이 시즌 유리/불리 신호. 주요 리스크: 동절 강수이(가) 단수를 누르는 쪽; 개화기 토양수분이(가) 단수를 누르는 쪽.",
+      "last_actual": {
+        "year": 2025,
+        "yield": 2544.0,
+        "status": "estimate"
+      },
+      "season_progress": {
+        "observed_through": "2026-07-31",
+        "critical_window_observed": 0.6013071895424836,
+        "future_weather_fill": "20-member historical-year weather ensemble",
+        "weather_scenario_count": 20,
+        "weather_scenario_p16_p84": [
+          2568.811168522923,
+          2568.811168522923
+        ],
+        "nwp_integrated": false
+      },
+      "features": [
+        {
+          "feature": "rain_growing_z20",
+          "anomaly": 1.313,
+          "log_contribution": 0.011
+        },
+        {
+          "feature": "hsu_flower_z20",
+          "anomaly": -0.676,
+          "log_contribution": 0.0216
+        },
+        {
+          "feature": "heat_dry_stress_z20",
+          "anomaly": -0.681,
+          "log_contribution": 0.0214
+        },
+        {
+          "feature": "frost_sep_z20",
+          "anomaly": -0.481,
+          "log_contribution": -0.0002
+        },
+        {
+          "feature": "sm_preseason_z20",
+          "anomaly": 0.058,
+          "log_contribution": 0.0
+        },
+        {
+          "feature": "sm_flowering_z20",
+          "anomaly": 1.592,
+          "log_contribution": -0.0042
+        },
+        {
+          "feature": "rain_winter_z20",
+          "anomaly": 1.714,
+          "log_contribution": -0.0049
+        },
+        {
+          "feature": "oni_summer_z20",
+          "anomaly": -0.102,
+          "log_contribution": 0.0001
+        }
+      ],
+      "skill": {
+        "rmse": 352.6863466102596,
+        "mae": 279.3108240961318,
+        "baseline_rmse": 355.53846125696623,
+        "skill_vs_trend": 0.008021958121276929,
+        "recent_rmse": 391.53799184389953,
+        "recent_baseline_rmse": 398.8461190918819,
+        "recent_skill_vs_trend": 0.018323175024548277,
+        "detrended_r2": -0.6957623659664565,
+        "recent_trend_bias": 285.36217634867137,
+        "features": [
+          "rain_growing_z20",
+          "hsu_flower_z20",
+          "heat_dry_stress_z20",
+          "frost_sep_z20",
+          "sm_preseason_z20",
+          "sm_flowering_z20",
+          "rain_winter_z20",
+          "oni_summer_z20"
+        ],
+        "fold_years": [
+          2012,
+          2013,
+          2014,
+          2015,
+          2016,
+          2017,
+          2018,
+          2019,
+          2020,
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ]
+      },
+      "provenance": {
+        "target": {
+          "variable": "yield_kg_ha",
+          "source": "Statistics Canada 32-10-0359 province average yield kg/ha",
+          "area_basis": "harvested",
+          "label_scale": "province",
+          "estimated_years": [
+            2020,
+            2021,
+            2022,
+            2023,
+            2024,
+            2025
+          ]
+        },
+        "guide": "Regions/북미_캐나다/서스캐처원_앨버타/카놀라_봄밀/카놀라_봄밀_상세분석.md",
+        "caveat": "Province fallback.",
+        "literature_benchmark": {
+          "icyf_car_r2_canola": 0.67,
+          "icyf_car_r2_spring_wheat": 0.66,
+          "icyf_mei_gt0_share_canola_wheat": 0.7,
+          "icyf_national_mape_canola": 0.09,
+          "icyf_national_mape_spring_wheat": 0.08,
+          "note": "Chipanshi et al. 2015 ICCYF uses CAR+VSMB+NDVI; this Phase-1 province+POWER ridge is a weaker information set."
+        }
+      }
+    },
+    "prov_sk_spring_wheat": {
+      "label": "Saskatchewan spring wheat (province)",
+      "label_ko": "서스캐처원 봄밀(주)",
+      "crop": "spring_wheat",
+      "label_scale": "province",
+      "season": 2026,
+      "unit": "kg/ha",
+      "point": 3478.2597668366884,
+      "range_68": [
+        3130.28015740963,
+        3826.2393762637466
+      ],
+      "range_95": [
+        2660.76747530975,
+        4295.752058363627
+      ],
+      "trend": 3478.2597668366884,
+      "weather_model_point": 3667.4301162507863,
+      "weather_effect_pct": 5.438649269894502,
+      "operational_choice": "trend_only",
+      "low_confidence": true,
+      "beats_trend": false,
+      "climate_risk": {
+        "stance": "favorable",
+        "stance_ko": "유리",
+        "diagnostic_gap_pct": 5.44,
+        "drivers": [
+          {
+            "feature": "heat_excess_jul_z20",
+            "label_ko": "7월 고온초과",
+            "anomaly": -0.803,
+            "log_contribution": 0.039,
+            "direction": "favor"
+          },
+          {
+            "feature": "sm_heading_z20",
+            "label_ko": "출수기 토양수분",
+            "anomaly": 2.184,
+            "log_contribution": 0.0209,
+            "direction": "favor"
+          },
+          {
+            "feature": "rain_winter_z20",
+            "label_ko": "동절 강수",
+            "anomaly": 1.39,
+            "log_contribution": -0.0051,
+            "direction": "adverse"
+          },
+          {
+            "feature": "rain_growing_z20",
+            "label_ko": "생육기 강수",
+            "anomaly": 0.227,
+            "log_contribution": -0.002,
+            "direction": "adverse"
+          }
+        ],
+        "risks": [
+          "동절 강수이(가) 단수를 누르는 쪽"
+        ],
+        "favors": [
+          "7월 고온초과이(가) 단수를 받치는 쪽",
+          "출수기 토양수분이(가) 단수를 받치는 쪽"
+        ],
+        "reason_ko": "검증 스킬 미달로 운영 전망은 추세. 기후 진단 모델은 추세 대비 +5.4% (유리) — 전망 갭(진단−추세)이 시즌 유리/불리 신호. 주요 리스크: 동절 강수이(가) 단수를 누르는 쪽.",
+        "note": "diagnostic_gap_pct = climate-model vs trend. Operational point may be trend-only when skill gate fails."
+      },
+      "reason_ko": "검증 스킬 미달로 운영 전망은 추세. 기후 진단 모델은 추세 대비 +5.4% (유리) — 전망 갭(진단−추세)이 시즌 유리/불리 신호. 주요 리스크: 동절 강수이(가) 단수를 누르는 쪽.",
+      "last_actual": {
+        "year": 2025,
+        "yield": 3751.0,
+        "status": "estimate"
+      },
+      "season_progress": {
+        "observed_through": "2026-07-31",
+        "critical_window_observed": 0.6013071895424836,
+        "future_weather_fill": "20-member historical-year weather ensemble",
+        "weather_scenario_count": 20,
+        "weather_scenario_p16_p84": [
+          3478.2597668366884,
+          3478.2597668366884
+        ],
+        "nwp_integrated": false
+      },
+      "features": [
+        {
+          "feature": "rain_growing_z20",
+          "anomaly": 0.227,
+          "log_contribution": -0.002
+        },
+        {
+          "feature": "gdd0_growing_z20",
+          "anomaly": 0.122,
+          "log_contribution": 0.0
+        },
+        {
+          "feature": "heat_excess_jul_z20",
+          "anomaly": -0.803,
+          "log_contribution": 0.039
+        },
+        {
+          "feature": "frost_sep_z20",
+          "anomaly": -0.423,
+          "log_contribution": 0.0003
+        },
+        {
+          "feature": "sm_preseason_z20",
+          "anomaly": 0.391,
+          "log_contribution": -0.0002
+        },
+        {
+          "feature": "sm_heading_z20",
+          "anomaly": 2.184,
+          "log_contribution": 0.0209
+        },
+        {
+          "feature": "rain_winter_z20",
+          "anomaly": 1.39,
+          "log_contribution": -0.0051
+        },
+        {
+          "feature": "oni_summer_z20",
+          "anomaly": -0.102,
+          "log_contribution": 0.0003
+        }
+      ],
+      "skill": {
+        "rmse": 444.6592137621107,
+        "mae": 351.15134174015236,
+        "baseline_rmse": 406.4020616711782,
+        "skill_vs_trend": -0.09413621558319396,
+        "recent_rmse": 433.3267692237481,
+        "recent_baseline_rmse": 391.74661305738135,
+        "recent_skill_vs_trend": -0.10614043562969178,
+        "detrended_r2": -0.31960750966499085,
+        "recent_trend_bias": -73.40911211763137,
+        "features": [
+          "rain_growing_z20",
+          "gdd0_growing_z20",
+          "heat_excess_jul_z20",
+          "frost_sep_z20",
+          "sm_preseason_z20",
+          "sm_heading_z20",
+          "rain_winter_z20",
+          "oni_summer_z20"
+        ],
+        "fold_years": [
+          2012,
+          2013,
+          2014,
+          2015,
+          2016,
+          2017,
+          2018,
+          2019,
+          2020,
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ]
+      },
+      "provenance": {
+        "target": {
+          "variable": "yield_kg_ha",
+          "source": "Statistics Canada 32-10-0359 province average yield kg/ha",
+          "area_basis": "harvested",
+          "label_scale": "province",
+          "estimated_years": [
+            2020,
+            2021,
+            2022,
+            2023,
+            2024,
+            2025
+          ]
+        },
+        "guide": "Regions/북미_캐나다/프레리/카놀라_봄밀/캐나다_카놀라_봄밀_상세분석.md",
+        "caveat": "Province fallback.",
+        "literature_benchmark": {
+          "icyf_car_r2_canola": 0.67,
+          "icyf_car_r2_spring_wheat": 0.66,
+          "icyf_mei_gt0_share_canola_wheat": 0.7,
+          "icyf_national_mape_canola": 0.09,
+          "icyf_national_mape_spring_wheat": 0.08,
+          "note": "Chipanshi et al. 2015 ICCYF uses CAR+VSMB+NDVI; this Phase-1 province+POWER ridge is a weaker information set."
+        }
+      }
+    },
+    "prov_mb_soybeans": {
+      "label": "Manitoba soybeans (province)",
+      "label_ko": "매니토바 대두(주)",
+      "crop": "soybeans",
+      "label_scale": "province",
+      "season": 2026,
+      "unit": "kg/ha",
+      "point": 2803.2079928203807,
+      "range_68": [
+        2356.031385261319,
+        3250.3846003794424
+      ],
+      "range_95": [
+        2219.672808037336,
+        3386.7431776034255
+      ],
+      "trend": 2803.2079928203807,
+      "weather_model_point": 2802.9783436777893,
+      "weather_effect_pct": -0.008192368999360156,
+      "operational_choice": "trend_only",
+      "low_confidence": true,
+      "beats_trend": false,
+      "climate_risk": {
+        "stance": "near_neutral",
+        "stance_ko": "중립",
+        "diagnostic_gap_pct": -0.01,
+        "drivers": [
+          {
+            "feature": "rain_may_z20",
+            "label_ko": "5월 강수",
+            "anomaly": -1.022,
+            "log_contribution": -0.0001,
+            "direction": "adverse"
+          },
+          {
+            "feature": "excess_may_z20",
+            "label_ko": "5월 과습일",
+            "anomaly": -0.941,
+            "log_contribution": -0.0001,
+            "direction": "adverse"
+          },
+          {
+            "feature": "sm_may_z20",
+            "label_ko": "5월 토양수분",
+            "anomaly": -0.6,
+            "log_contribution": 0.0,
+            "direction": "adverse"
+          },
+          {
+            "feature": "frost_sep_z20",
+            "label_ko": "9월 서리일",
+            "anomaly": -0.5,
+            "log_contribution": 0.0,
+            "direction": "adverse"
+          }
+        ],
+        "risks": [],
+        "favors": [],
+        "reason_ko": "검증 스킬 미달로 운영 전망은 추세. 기후 진단 모델은 추세 대비 -0.0% (중립) — 전망 갭(진단−추세)이 시즌 유리/불리 신호. 뚜렷한 기후 드라이버 없음.",
+        "note": "diagnostic_gap_pct = climate-model vs trend. Operational point may be trend-only when skill gate fails."
+      },
+      "reason_ko": "검증 스킬 미달로 운영 전망은 추세. 기후 진단 모델은 추세 대비 -0.0% (중립) — 전망 갭(진단−추세)이 시즌 유리/불리 신호. 뚜렷한 기후 드라이버 없음.",
+      "last_actual": {
+        "year": 2025,
+        "yield": 2946.0,
+        "status": "estimate"
+      },
+      "season_progress": {
+        "observed_through": "2026-07-31",
+        "critical_window_observed": 0.6013071895424836,
+        "future_weather_fill": "20-member historical-year weather ensemble",
+        "weather_scenario_count": 20,
+        "weather_scenario_p16_p84": [
+          2803.2079928203807,
+          2803.2079928203807
+        ],
+        "nwp_integrated": false
+      },
+      "features": [
+        {
+          "feature": "rain_may_z20",
+          "anomaly": -1.022,
+          "log_contribution": -0.0001
+        },
+        {
+          "feature": "sm_may_z20",
+          "anomaly": -0.6,
+          "log_contribution": 0.0
+        },
+        {
+          "feature": "excess_may_z20",
+          "anomaly": -0.941,
+          "log_contribution": -0.0001
+        },
+        {
+          "feature": "frost_sep_z20",
+          "anomaly": -0.5,
+          "log_contribution": 0.0
+        },
+        {
+          "feature": "rain_growing_z20",
+          "anomaly": 0.091,
+          "log_contribution": 0.0
+        },
+        {
+          "feature": "sm_flowering_z20",
+          "anomaly": 2.203,
+          "log_contribution": 0.0
+        },
+        {
+          "feature": "heat_excess_jul_z20",
+          "anomaly": 0.143,
+          "log_contribution": 0.0
+        },
+        {
+          "feature": "oni_summer_z20",
+          "anomaly": -0.102,
+          "log_contribution": 0.0
+        }
+      ],
+      "skill": {
+        "rmse": 361.7966491959894,
+        "mae": 304.8283608976303,
+        "baseline_rmse": 361.7390670525321,
+        "skill_vs_trend": -0.00015918143408311103,
+        "recent_rmse": 361.7966491959894,
+        "recent_baseline_rmse": 361.7390670525321,
+        "recent_skill_vs_trend": -0.00015918143408311103,
+        "detrended_r2": -0.0338265671039506,
+        "recent_trend_bias": -65.12488699131632,
+        "features": [
+          "rain_may_z20",
+          "sm_may_z20",
+          "excess_may_z20",
+          "frost_sep_z20",
+          "rain_growing_z20",
+          "sm_flowering_z20",
+          "heat_excess_jul_z20",
+          "oni_summer_z20"
+        ],
+        "fold_years": [
+          2020,
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ]
+      },
+      "provenance": {
+        "target": {
+          "variable": "yield_kg_ha",
+          "source": "Statistics Canada 32-10-0359 province average yield kg/ha",
+          "area_basis": "harvested",
+          "label_scale": "province",
+          "estimated_years": [
+            2020,
+            2021,
+            2022,
+            2023,
+            2024,
+            2025
+          ]
+        },
+        "guide": "Regions/북미_캐나다/매니토바/대두_귀리/대두_귀리_상세분석.md",
+        "caveat": "Province fallback.",
+        "literature_benchmark": {
+          "icyf_car_r2_canola": 0.67,
+          "icyf_car_r2_spring_wheat": 0.66,
+          "icyf_mei_gt0_share_canola_wheat": 0.7,
+          "icyf_national_mape_canola": 0.09,
+          "icyf_national_mape_spring_wheat": 0.08,
+          "note": "Chipanshi et al. 2015 ICCYF uses CAR+VSMB+NDVI; this Phase-1 province+POWER ridge is a weaker information set."
+        }
+      }
+    },
+    "prov_mb_canola": {
+      "label": "Manitoba canola (province)",
+      "label_ko": "매니토바 카놀라(주)",
+      "crop": "canola",
+      "label_scale": "province",
+      "season": 2026,
+      "unit": "kg/ha",
+      "point": 2509.222093460701,
+      "range_68": [
+        2262.054765245801,
+        2756.3894216756016
+      ],
+      "range_95": [
+        1890.3822466278114,
+        3128.061940293591
+      ],
+      "trend": 2509.222093460701,
+      "weather_model_point": 2514.56525914552,
+      "weather_effect_pct": 0.2129411222204558,
+      "operational_choice": "trend_only",
+      "low_confidence": true,
+      "beats_trend": false,
+      "climate_risk": {
+        "stance": "near_neutral",
+        "stance_ko": "중립",
+        "diagnostic_gap_pct": 0.21,
+        "drivers": [
+          {
+            "feature": "rain_growing_z20",
+            "label_ko": "생육기 강수",
+            "anomaly": 0.771,
+            "log_contribution": -0.0145,
+            "direction": "adverse"
+          },
+          {
+            "feature": "hsu_flower_z20",
+            "label_ko": "개화기 고온누적(HSU)",
+            "anomaly": -0.366,
+            "log_contribution": 0.012,
+            "direction": "favor"
+          },
+          {
+            "feature": "rain_flowering_z20",
+            "label_ko": "개화기 강수",
+            "anomaly": 1.513,
+            "log_contribution": 0.0049,
+            "direction": "favor"
+          },
+          {
+            "feature": "frost_sep_z20",
+            "label_ko": "9월 서리일",
+            "anomaly": -0.394,
+            "log_contribution": -0.0001,
+            "direction": "adverse"
+          }
+        ],
+        "risks": [
+          "생육기 강수이(가) 단수를 누르는 쪽"
+        ],
+        "favors": [
+          "개화기 고온누적(HSU)이(가) 단수를 받치는 쪽",
+          "개화기 강수이(가) 단수를 받치는 쪽"
+        ],
+        "reason_ko": "검증 스킬 미달로 운영 전망은 추세. 기후 진단 모델은 추세 대비 +0.2% (중립) — 전망 갭(진단−추세)이 시즌 유리/불리 신호. 주요 리스크: 생육기 강수이(가) 단수를 누르는 쪽.",
+        "note": "diagnostic_gap_pct = climate-model vs trend. Operational point may be trend-only when skill gate fails."
+      },
+      "reason_ko": "검증 스킬 미달로 운영 전망은 추세. 기후 진단 모델은 추세 대비 +0.2% (중립) — 전망 갭(진단−추세)이 시즌 유리/불리 신호. 주요 리스크: 생육기 강수이(가) 단수를 누르는 쪽.",
+      "last_actual": {
+        "year": 2025,
+        "yield": 2510.0,
+        "status": "estimate"
+      },
+      "season_progress": {
+        "observed_through": "2026-07-31",
+        "critical_window_observed": 0.6013071895424836,
+        "future_weather_fill": "20-member historical-year weather ensemble",
+        "weather_scenario_count": 20,
+        "weather_scenario_p16_p84": [
+          2509.222093460701,
+          2509.222093460701
+        ],
+        "nwp_integrated": false
+      },
+      "features": [
+        {
+          "feature": "rain_growing_z20",
+          "anomaly": 0.771,
+          "log_contribution": -0.0145
+        },
+        {
+          "feature": "hsu_flower_z20",
+          "anomaly": -0.366,
+          "log_contribution": 0.012
+        },
+        {
+          "feature": "frost_sep_z20",
+          "anomaly": -0.394,
+          "log_contribution": -0.0001
+        },
+        {
+          "feature": "rain_flowering_z20",
+          "anomaly": 1.513,
+          "log_contribution": 0.0049
+        }
+      ],
+      "skill": {
+        "rmse": 290.439845268103,
+        "mae": 208.50178604444366,
+        "baseline_rmse": 269.14895514870636,
+        "skill_vs_trend": -0.07910448735583353,
+        "recent_rmse": 249.09076351108962,
+        "recent_baseline_rmse": 211.01982293029835,
+        "recent_skill_vs_trend": -0.1804140485577339,
+        "detrended_r2": -0.2787647723154927,
+        "recent_trend_bias": -73.80263055985233,
+        "features": [
+          "rain_growing_z20",
+          "hsu_flower_z20",
+          "frost_sep_z20",
+          "rain_flowering_z20"
+        ],
+        "fold_years": [
+          2012,
+          2013,
+          2014,
+          2015,
+          2016,
+          2017,
+          2018,
+          2019,
+          2020,
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ]
+      },
+      "provenance": {
+        "target": {
+          "variable": "yield_kg_ha",
+          "source": "Statistics Canada 32-10-0359 province average yield kg/ha",
+          "area_basis": "harvested",
+          "label_scale": "province",
+          "estimated_years": [
+            2020,
+            2021,
+            2022,
+            2023,
+            2024,
+            2025
+          ]
+        },
+        "guide": "Regions/북미_캐나다/매니토바/대두_귀리/대두_귀리_상세분석.md",
+        "caveat": "Province fallback for MB canola SAD.",
+        "literature_benchmark": {
+          "icyf_car_r2_canola": 0.67,
+          "icyf_car_r2_spring_wheat": 0.66,
+          "icyf_mei_gt0_share_canola_wheat": 0.7,
+          "icyf_national_mape_canola": 0.09,
+          "icyf_national_mape_spring_wheat": 0.08,
+          "note": "Chipanshi et al. 2015 ICCYF uses CAR+VSMB+NDVI; this Phase-1 province+POWER ridge is a weaker information set."
+        }
+      }
+    },
+    "prov_on_corn": {
+      "label": "Ontario grain corn (province)",
+      "label_ko": "온타리오 옥수수(주)",
+      "crop": "corn",
+      "label_scale": "province",
+      "season": 2026,
+      "unit": "kg/ha",
+      "point": 11789.601893876657,
+      "range_68": [
+        10948.116338397018,
+        12631.087449356297
+      ],
+      "range_95": [
+        10431.555800610184,
+        13147.647987143131
+      ],
+      "trend": 11789.601893876657,
+      "weather_model_point": 11790.912041531981,
+      "weather_effect_pct": 0.011112738726182236,
+      "operational_choice": "trend_only",
+      "low_confidence": true,
+      "beats_trend": false,
+      "climate_risk": {
+        "stance": "near_neutral",
+        "stance_ko": "중립",
+        "diagnostic_gap_pct": 0.01,
+        "drivers": [
+          {
+            "feature": "rain_jul_z20",
+            "label_ko": "7월 강수",
+            "anomaly": 1.684,
+            "log_contribution": 0.0001,
+            "direction": "favor"
+          },
+          {
+            "feature": "gdd10_growing_z20",
+            "label_ko": "생육기 GDD10",
+            "anomaly": 0.055,
+            "log_contribution": -0.0,
+            "direction": "adverse"
+          },
+          {
+            "feature": "edd_jul_z20",
+            "label_ko": "7월 EDD",
+            "anomaly": -0.223,
+            "log_contribution": -0.0,
+            "direction": "adverse"
+          },
+          {
+            "feature": "heat_days_32_z20",
+            "label_ko": "32°C 초과일",
+            "anomaly": -0.115,
+            "log_contribution": -0.0,
+            "direction": "adverse"
+          }
+        ],
+        "risks": [],
+        "favors": [],
+        "reason_ko": "검증 스킬 미달로 운영 전망은 추세. 기후 진단 모델은 추세 대비 +0.0% (중립) — 전망 갭(진단−추세)이 시즌 유리/불리 신호. 뚜렷한 기후 드라이버 없음.",
+        "note": "diagnostic_gap_pct = climate-model vs trend. Operational point may be trend-only when skill gate fails."
+      },
+      "reason_ko": "검증 스킬 미달로 운영 전망은 추세. 기후 진단 모델은 추세 대비 +0.0% (중립) — 전망 갭(진단−추세)이 시즌 유리/불리 신호. 뚜렷한 기후 드라이버 없음.",
+      "last_actual": {
+        "year": 2025,
+        "yield": 11025.0,
+        "status": "estimate"
+      },
+      "season_progress": {
+        "observed_through": "2026-07-31",
+        "critical_window_observed": 0.6013071895424836,
+        "future_weather_fill": "20-member historical-year weather ensemble",
+        "weather_scenario_count": 20,
+        "weather_scenario_p16_p84": [
+          11789.601893876657,
+          11789.601893876657
+        ],
+        "nwp_integrated": false
+      },
+      "features": [
+        {
+          "feature": "gdd10_growing_z20",
+          "anomaly": 0.055,
+          "log_contribution": -0.0
+        },
+        {
+          "feature": "edd_jul_z20",
+          "anomaly": -0.223,
+          "log_contribution": -0.0
+        },
+        {
+          "feature": "rain_jul_z20",
+          "anomaly": 1.684,
+          "log_contribution": 0.0001
+        },
+        {
+          "feature": "heat_days_32_z20",
+          "anomaly": -0.115,
+          "log_contribution": -0.0
+        },
+        {
+          "feature": "sm_jul_z20",
+          "anomaly": -2.115,
+          "log_contribution": 0.0
+        },
+        {
+          "feature": "rain_growing_z20",
+          "anomaly": 0.229,
+          "log_contribution": 0.0
+        },
+        {
+          "feature": "vpd_jul_z20",
+          "anomaly": -0.779,
+          "log_contribution": -0.0
+        },
+        {
+          "feature": "oni_summer_z20",
+          "anomaly": -0.102,
+          "log_contribution": 0.0
+        }
+      ],
+      "skill": {
+        "rmse": 671.4261670766504,
+        "mae": 546.4222752586976,
+        "baseline_rmse": 539.3141610348447,
+        "skill_vs_trend": -0.24496298370565128,
+        "recent_rmse": 654.0460609407892,
+        "recent_baseline_rmse": 628.7187644732975,
+        "recent_skill_vs_trend": -0.04028398371203279,
+        "detrended_r2": -2.1336809454150663,
+        "recent_trend_bias": 542.2305513170444,
+        "features": [
+          "gdd10_growing_z20",
+          "edd_jul_z20",
+          "rain_jul_z20",
+          "heat_days_32_z20",
+          "sm_jul_z20",
+          "rain_growing_z20",
+          "vpd_jul_z20",
+          "oni_summer_z20"
+        ],
+        "fold_years": [
+          2012,
+          2013,
+          2014,
+          2015,
+          2016,
+          2017,
+          2018,
+          2019,
+          2020,
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ]
+      },
+      "provenance": {
+        "target": {
+          "variable": "yield_kg_ha",
+          "source": "Statistics Canada 32-10-0359 province average yield kg/ha",
+          "area_basis": "harvested",
+          "label_scale": "province",
+          "estimated_years": [
+            2020,
+            2021,
+            2022,
+            2023,
+            2024,
+            2025
+          ]
+        },
+        "guide": "Regions/북미_캐나다/온타리오_퀘벡/옥수수_겨울밀/옥수수_겨울밀_상세분석.md",
+        "caveat": "Province fallback.",
+        "literature_benchmark": {
+          "icyf_car_r2_canola": 0.67,
+          "icyf_car_r2_spring_wheat": 0.66,
+          "icyf_mei_gt0_share_canola_wheat": 0.7,
+          "icyf_national_mape_canola": 0.09,
+          "icyf_national_mape_spring_wheat": 0.08,
+          "note": "Chipanshi et al. 2015 ICCYF uses CAR+VSMB+NDVI; this Phase-1 province+POWER ridge is a weaker information set."
+        }
+      }
+    }
+  },
+  "skipped": {}
+}

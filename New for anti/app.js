@@ -713,6 +713,36 @@ const CLIMATE_COUNTRIES = {
               coordinates: [-6.5, 6.2], regionKeys: ['cote_divoire_cocoa'] },
         ],
     },
+    'Canada': {
+        label: '캐나다',
+        modelName: 'Prairies SAD + Ontario',
+        iso: 'CAN',
+        view: { longitude: -105.0, latitude: 52.0, zoom: 3.4 },
+        dataFile: 'canada_yield_forecast.json',
+        // SAD/CAR first; trend-only regions still expose climate stance via
+        // weather_effect_pct + climate_risk (favorable/unfavorable/risks).
+        regions: [
+            { name: 'SK Palliser (Canada)', label: 'SK 팰리서 (카놀라·봄밀)',
+              coordinates: [-106.5, 50.0],
+              regionKeys: ['sad_sk_canola_palliser', 'sad_sk_wheat_palliser'] },
+            { name: 'SK Parkland (Canada)', label: 'SK 파크랜드·레지나',
+              coordinates: [-103.5, 51.2],
+              regionKeys: ['sad_sk_canola_parkland', 'sad_sk_canola_blacksoil',
+                           'sad_sk_wheat_parkland'] },
+            { name: 'AB South (Canada)', label: 'AB 남부 (카놀라)',
+              coordinates: [-112.5, 50.0],
+              regionKeys: ['sad_ab_canola_south'] },
+            { name: 'AB Central/Peace (Canada)', label: 'AB 중부·피스',
+              coordinates: [-114.5, 54.0],
+              regionKeys: ['sad_ab_canola_central', 'sad_ab_canola_peace'] },
+            { name: 'MB Red River (Canada)', label: 'MB 레드리버 (대두·카놀라)',
+              coordinates: [-98.0, 50.0],
+              regionKeys: ['sad_mb_soy_redriver', 'sad_mb_canola_central'] },
+            { name: 'ON Corn Belt (Canada)', label: '온타리오 옥수수',
+              coordinates: [-81.5, 43.0],
+              regionKeys: ['sad_on_corn_southern', 'sad_on_corn_western'] },
+        ],
+    },
 };
 
 // 무역·수출 통제 seed (지도 국가 색). 실제 정책 피드 연동 전까지 UI 규칙용.
@@ -727,6 +757,7 @@ const CLIMATE_TRADE_POLICY = {
     'Indonesia': { restricted: true, prohibitedCrops: ['palm_oil'], note: '팜 등 통제 seed (1품목 금지 → 주황 우선)' },
     'Ghana': { restricted: false, prohibitedCrops: [], note: '코코아 참고국 · 예측 아님' },
     'Ivory Coast': { restricted: false, prohibitedCrops: [], note: '코코아 참고국 · 예측 아님' },
+    'Canada': { restricted: false, prohibitedCrops: [], note: '정상 수출' },
 };
 
 const TRADE_FILL = {
@@ -1077,11 +1108,12 @@ const CROP_CANON = {
     rubber: 'rubber',
     vegetables: 'vegetables',
     orange: 'orange', laranja: 'orange',
+    canola: 'canola', rapeseed: 'canola',
 };
 const CROP_LABEL_KO = {
     wheat: '밀', corn: '옥수수', soy: '대두', rice: '벼', cotton: '면화',
     sugar: '사탕수수', coffee: '커피', palm: '팜', rubber: '천연고무',
-    vegetables: '채소', orange: '오렌지', other: '기타 작물',
+    vegetables: '채소', orange: '오렌지', canola: '카놀라', other: '기타 작물',
 };
 
 // Crop calendar seed (month 1–12). No live phenology feed — heuristic stage only.
@@ -1127,6 +1159,12 @@ const CROP_CALENDAR_SEED = {
         palm: { sow: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], harvest: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12] },
         coffee: { sow: [10, 11], harvest: [5, 6, 7, 8] },
         rubber: { sow: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], harvest: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12] },
+    },
+    Canada: {
+        canola: { sow: [5, 6], harvest: [8, 9, 10] },
+        wheat: { sow: [4, 5], harvest: [8, 9] },
+        soy: { sow: [5, 6], harvest: [9, 10] },
+        corn: { sow: [5, 6], harvest: [10, 11] },
     },
 };
 
@@ -1969,10 +2007,14 @@ const normalizeCrop = (entry, group, label, parent = {}, regionKey = null) => {
             && parent.forecast_available !== false
             && num(f.point) !== null,
         reason: entry.reason_ko || entry.reason
+            || entry.climate_risk?.reason_ko
             || parent.reason_ko || parent.reason
             || (gateStopped
                 ? `기상 피처 게이트 정지 (표본 ${climateGate.available_seasons ?? '?'} / 필요 ${climateGate.required_seasons ?? '?'})`
                 : null),
+        // Climate stance retained under trend_only (Canada and similar).
+        climateRisk: entry.climate_risk || f.climate_risk || null,
+        operationalChoice: entry.operational_choice || f.operational_choice || null,
     };
 };
 
@@ -2938,15 +2980,30 @@ const renderClimateRegionOnRight = async (cfg, regionCfg, fc = null, points = nu
     const cropCards = crops.length
         ? crops.map((c) => {
             const color = c.pct != null && c.pct < 0 ? '#fca5a5' : '#4ade80';
+            const risk = c.climateRisk;
+            const stanceKo = risk?.stance_ko;
+            const stanceLevel = risk?.stance === 'unfavorable' ? 'red'
+                : risk?.stance === 'favorable' ? 'green'
+                : risk?.stance === 'near_neutral' ? 'blue' : null;
             const badge = c.forecastAvailable === false
                 ? `<span class="climate-status-pill orange">예측 없음</span>`
                 : c.lowConfidence
                     ? `<span class="climate-status-pill yellow">신뢰도 낮음</span>`
                     : `<span class="climate-status-pill green">검증 통과</span>`;
+            const stanceBadge = stanceKo && stanceLevel
+                ? `<span class="climate-status-pill ${stanceLevel}" style="margin-left:6px;">기후 ${stanceKo}</span>`
+                : '';
+            const gap = risk?.diagnostic_gap_pct ?? c.pct;
+            const risksHtml = Array.isArray(risk?.risks) && risk.risks.length
+                ? `<div class="climate-sub" style="margin-top:4px;">리스크: ${risk.risks.slice(0, 3).join(' · ')}</div>`
+                : '';
+            const opsNote = c.operationalChoice === 'trend_only'
+                ? `<div class="climate-sub">운영=추세 · 아래 %는 기후 진단 갭(전망 차이)</div>`
+                : '';
             return `<div class="climate-card" style="margin-bottom:8px;">
                 <div class="climate-metric-row" style="border:none;">
                     <span class="nm" style="font-size:13px;font-weight:600;color:#e2e8f0;">${c.label}</span>
-                    ${badge}
+                    <span>${badge}${stanceBadge}</span>
                 </div>
                 ${c.forecastAvailable === false ? `
                     <div class="climate-sub">${c.reason || '예측 없음'}
@@ -2959,9 +3016,11 @@ const renderClimateRegionOnRight = async (cfg, regionCfg, fc = null, points = nu
                     <div class="climate-metric-row">
                         <span class="nm">${fc?.season ?? ''} 예상</span>
                         <span class="vl" style="color:${color};">${fmtYield(c.point, c.unit)} ${c.unit || ''}
-                            ${c.pct != null ? ` (${c.pct >= 0 ? '+' : ''}${c.pct.toFixed(1)}%)` : ''}</span>
+                            ${gap != null ? ` (${gap >= 0 ? '+' : ''}${Number(gap).toFixed(1)}%)` : ''}</span>
                     </div>
-                    ${c.pct != null ? `<div class="climate-sub">기상 효과(추세 대비) ${c.pct >= 0 ? '+' : ''}${c.pct.toFixed(1)}%</div>` : ''}
+                    ${opsNote}
+                    ${gap != null ? `<div class="climate-sub">기후 진단(추세 대비) ${gap >= 0 ? '+' : ''}${Number(gap).toFixed(1)}%</div>` : ''}
+                    ${risksHtml}
                     ${c.reason ? `<div class="climate-sub">${c.reason}</div>` : ''}`}
             </div>`;
         }).join('')
