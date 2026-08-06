@@ -1,0 +1,293 @@
+{
+  "verdict": "현재 데이터로는 불가",
+  "verdict_reason": "CV skill -0.24739954431508093, 유의 계수 부족, T=8 — 기후→수율 유의성 주장에 부족.",
+  "coverage": {
+    "years": [
+      2017,
+      2018,
+      2019,
+      2020,
+      2021,
+      2022,
+      2023,
+      2024
+    ],
+    "provinces": [
+      "An Giang",
+      "Bac Lieu",
+      "Ben Tre",
+      "Ca Mau",
+      "Can Tho",
+      "Dong Thap",
+      "Hau Giang",
+      "Kien Giang",
+      "Long An",
+      "Soc Trang",
+      "Tien Giang",
+      "Tra Vinh",
+      "Vinh Long"
+    ],
+    "cells": {
+      "An Giang": {
+        "2017": "ok",
+        "2018": "ok",
+        "2019": "ok",
+        "2020": "ok",
+        "2021": "ok",
+        "2022": "ok",
+        "2023": "ok",
+        "2024": "ok"
+      },
+      "Bac Lieu": {
+        "2017": "ok",
+        "2018": "ok",
+        "2019": "ok",
+        "2020": "ok",
+        "2021": "ok",
+        "2022": "ok",
+        "2023": "ok",
+        "2024": "ok"
+      },
+      "Ben Tre": {
+        "2017": "ok",
+        "2018": "ok",
+        "2019": "ok",
+        "2020": "drop",
+        "2021": "ok",
+        "2022": "ok",
+        "2023": "ok",
+        "2024": "ok"
+      },
+      "Ca Mau": {
+        "2017": "drop",
+        "2018": "—",
+        "2019": "ok",
+        "2020": "ok",
+        "2021": "ok",
+        "2022": "ok",
+        "2023": "ok",
+        "2024": "ok"
+      },
+      "Can Tho": {
+        "2017": "ok",
+        "2018": "ok",
+        "2019": "ok",
+        "2020": "ok",
+        "2021": "ok",
+        "2022": "ok",
+        "2023": "ok",
+        "2024": "ok"
+      },
+      "Dong Thap": {
+        "2017": "ok",
+        "2018": "ok",
+        "2019": "ok",
+        "2020": "ok",
+        "2021": "ok",
+        "2022": "ok",
+        "2023": "ok",
+        "2024": "ok"
+      },
+      "Hau Giang": {
+        "2017": "ok",
+        "2018": "ok",
+        "2019": "ok",
+        "2020": "ok",
+        "2021": "ok",
+        "2022": "ok",
+        "2023": "ok",
+        "2024": "ok"
+      },
+      "Kien Giang": {
+        "2017": "ok",
+        "2018": "ok",
+        "2019": "ok",
+        "2020": "ok",
+        "2021": "ok",
+        "2022": "ok",
+        "2023": "ok",
+        "2024": "ok"
+      },
+      "Long An": {
+        "2017": "ok",
+        "2018": "ok",
+        "2019": "ok",
+        "2020": "ok",
+        "2021": "ok",
+        "2022": "ok",
+        "2023": "ok",
+        "2024": "ok"
+      },
+      "Soc Trang": {
+        "2017": "ok",
+        "2018": "ok",
+        "2019": "ok",
+        "2020": "ok",
+        "2021": "ok",
+        "2022": "ok",
+        "2023": "ok",
+        "2024": "ok"
+      },
+      "Tien Giang": {
+        "2017": "ok",
+        "2018": "ok",
+        "2019": "ok",
+        "2020": "ok",
+        "2021": "ok",
+        "2022": "ok",
+        "2023": "ok",
+        "2024": "ok"
+      },
+      "Tra Vinh": {
+        "2017": "ok",
+        "2018": "ok",
+        "2019": "ok",
+        "2020": "drop",
+        "2021": "ok",
+        "2022": "ok",
+        "2023": "ok",
+        "2024": "ok"
+      },
+      "Vinh Long": {
+        "2017": "ok",
+        "2018": "ok",
+        "2019": "ok",
+        "2020": "ok",
+        "2021": "ok",
+        "2022": "ok",
+        "2023": "ok",
+        "2024": "ok"
+      }
+    }
+  },
+  "n_raw": 103,
+  "n_qc": 100,
+  "province_fe": {
+    "n": 100,
+    "n_provinces": 13,
+    "n_years": 8,
+    "years": [
+      2017,
+      2018,
+      2019,
+      2020,
+      2021,
+      2022,
+      2023,
+      2024
+    ],
+    "within_r2": 0.14198746000040074,
+    "cluster_G": 13,
+    "coefs": [
+      {
+        "feature": "spei4_ws_min",
+        "coef": -0.03894756898757713,
+        "se_cluster_province": 0.011768138850015132,
+        "p_approx": 0.0009343685413951689,
+        "theory_sign": "+",
+        "sign_matches_theory": false,
+        "ci95": [
+          -0.0620131211336068,
+          -0.015882016841547473
+        ]
+      },
+      {
+        "feature": "spi_ws",
+        "coef": 0.025875719910403924,
+        "se_cluster_province": 0.03362675099999017,
+        "p_approx": 0.4415976913175337,
+        "theory_sign": "+",
+        "sign_matches_theory": true,
+        "ci95": [
+          -0.04003271204957681,
+          0.09178415187038466
+        ]
+      },
+      {
+        "feature": "oni_lag2",
+        "coef": 0.010517217954532324,
+        "se_cluster_province": 0.008679758791377709,
+        "p_approx": 0.2256292585380599,
+        "theory_sign": "-",
+        "sign_matches_theory": false,
+        "ci95": [
+          -0.006495109276567986,
+          0.027529545185632633
+        ]
+      },
+      {
+        "feature": "q_upstream_proxy",
+        "coef": 0.013158527616593923,
+        "se_cluster_province": 0.027750628116319412,
+        "p_approx": 0.6353783689926588,
+        "theory_sign": "+",
+        "sign_matches_theory": true,
+        "ci95": [
+          -0.041232703491392124,
+          0.06754975872457997
+        ]
+      },
+      {
+        "feature": "salt_coastal_belt",
+        "coef": -0.11973563186763232,
+        "se_cluster_province": 0.17289857684723572,
+        "p_approx": 0.4886111592915584,
+        "theory_sign": "-",
+        "sign_matches_theory": true,
+        "ci95": [
+          -0.4586168424882143,
+          0.2191455787529497
+        ]
+      },
+      {
+        "feature": "precip_dry_ws",
+        "coef": -0.00032510146021903465,
+        "se_cluster_province": 0.0003198632305690027,
+        "p_approx": 0.3094501475938418,
+        "theory_sign": "+",
+        "sign_matches_theory": false,
+        "ci95": [
+          -0.0009520333921342798,
+          0.0003018304716962106
+        ]
+      },
+      {
+        "feature": "heat_days_35_ws",
+        "coef": -0.0016626742418113167,
+        "se_cluster_province": 0.0008847781489689325,
+        "p_approx": 0.06021732165930978,
+        "theory_sign": "-",
+        "sign_matches_theory": true,
+        "ci95": [
+          -0.0033968394137904243,
+          7.149093016779089e-05
+        ]
+      }
+    ]
+  },
+  "forward_cv": {
+    "n_fold_obs": 52,
+    "years_evaluated": [
+      2021,
+      2022,
+      2023,
+      2024
+    ],
+    "rmse_model": 490.93901897976536,
+    "rmse_province_trend": 393.56998422612776,
+    "skill_vs_province_trend": -0.24739954431508093,
+    "mae_model": 377.78860274550425,
+    "mae_trend": 311.22744448727667
+  },
+  "predictors": [
+    "spei4_ws_min",
+    "spi_ws",
+    "oni_lag2",
+    "q_upstream_proxy",
+    "salt_coastal_belt",
+    "precip_dry_ws",
+    "heat_days_35_ws"
+  ],
+  "label_source": "https://mtnongnghiep.com/index.php/du-lieu-trong-trot/",
+  "commit_policy": "no_commit_per_user_request"
+}

@@ -1,11 +1,65 @@
-# Vietnam yield model — regional package (T1 scaffold)
+# Vietnam — Mekong **risk monitor** (ops) + yield scaffold (deferred)
 
 Methodology source (Obsidian): `기후 모델링/Regions/베트남/`  
 Master: `베트남_쌀_커피_상세수식.md` · data stack: `베트남_데이터스택_레시피.md`
 
 Code path: `New for anti/scripts/yield_model/vietnam/`
 
-## Run (from `scripts/yield_model`)
+---
+
+## Ops product (2026-08 pivot)
+
+**Mekong climate → yield prediction is abandoned / deferred for ops.**
+
+Provincial panel and regional CV did not beat province/region trend with
+honest labels (negative skill; short T). Continuing to ship yield point
+estimates would overclaim. Ops path is now a **hydrology / salinity early-warning
+risk monitor** for the same Mekong Delta WS dry season.
+
+| | Yield path (deferred) | Risk monitor (active) |
+|--|--|--|
+| Output | `vietnam_yield_forecast.json` skill/point | `vietnam_mekong_risk_v1.json` scores/flags/TS |
+| Claim | skill vs trend | **none** — heuristic early-warning only |
+| Drivers | ridge on climate → kg/ha | Q-proxy, salt_proxy, SPI/SPEI-like, ONI context |
+| MRC Q | wanted for labels | still wanted; **POWER proxy** until portal works |
+
+### Run risk monitor
+
+```bash
+cd "New for anti/scripts/yield_model"
+python3 -m vietnam.risk
+# optional:
+python3 -m vietnam.risk --year 2026
+python3 -m vietnam.risk --out ../../public/data/vietnam_mekong_risk_v1.json
+```
+
+Writes `public/data/vietnam_mekong_risk_v1.json`.
+
+### Risk field cheat-sheet
+
+| Field | Meaning |
+|-------|---------|
+| `overall.risk_score_0_100` | Heuristic blend (basin Q-proxy + coastal salt + ENSO). **Not** a probability. |
+| `overall.risk_level` | `low` / `watch` / `elevated` / `high` |
+| `overall.flags` | e.g. `low_q_upstream_proxy`, `el_nino_context`, `coastal_salt_proxy_alert` |
+| `basin.q_upstream_proxy` | POWER Pakse wet + Tan Chau dry SM/precip composite. **Not MRC Q.** Higher ⇒ more freshwater push. |
+| `enso.oni_lag2` / `oni_djf` | NOAA CPC ONI — risk **context**, not a yield coefficient claim |
+| `provinces.*.salt_proxy` | coast × dry hydro × wet memory × ONI × Q-proxy |
+| `provinces.*.ec_proxy` | scaled hydro stand-in — **not** field ECe (dS/m) |
+| `provinces.*.spi_ws` / `spei4_ws_min` | POWER-based z approx for WS dry stress |
+| `time_series[]` | Annual basin risk + components for charts |
+| `area_risk.soft_flag` | Planted-area **caveat** when coastal salt alerts fire — no ha model / no skill |
+| `field_guide` / `how_to_read` | Machine-readable descriptions + KO/EN reading notes |
+| `claim_boundary` | Explicit ships / does-not-ship (no yield, no skill-vs-trend) |
+| `yield_model_status` | always `abandoned_for_ops` on this product |
+| `forecast_available` | `false` |
+
+Full methodology: [`risk/README.md`](risk/README.md)  
+Vault note: `Regions/베트남/메콩_리스크모니터_피벗.md`
+
+---
+
+## Yield scaffold (kept for research; not ops)
 
 ```bash
 cd "New for anti/scripts/yield_model"
@@ -13,75 +67,28 @@ python3 -m vietnam.collect                 # NASA POWER + ONI → training/*.csv
 python3 -m vietnam.train                   # ridge CV → models/*.json
 python3 -m vietnam.predict --year 2026
 python3 -m vietnam.run_forecast            # public/data/vietnam_yield_forecast.json
-python3 -m vietnam.collect --stubs         # also build T2 regions
 ```
 
-Optional labels: drop `training/labels_official/<region_key>.csv` with
-columns `year,yield_kg_ha` (+ optional `label_source`). **Mekong WS** ships
-with GSO Yearbook / MTN Đông Xuân (+ FAOSTAT prior) — see
-`training/labels_official/README.md`. Other crops without an override stay
-`provisional_synthetic_climate_response`.
+Do **not** treat Mekong WS skill metrics as production-ready. Coffee / RRD
+remain provisional-label scaffolds.
 
-## Region-crops
+### Region-crops (legacy table)
 
 | key | tier | crop | guide focus |
 |-----|------|------|-------------|
-| `mekong_rice_ws` | T1 | rice | WS salt / ENSO / dry stress; dual flood proxy |
-| `central_highlands_coffee` | T1 | coffee | Feb–Apr WD, **irrigation_buffer**, Kath temp |
-| `red_river_rice` | T1 | rice | typhoon rain days, flood spell, coastal salt proxy |
-| `central_coast_rice` | T2 stub | rice | schema only unless `--stubs` |
-| `central_highlands_pepper` | T2 stub | pepper | schema only unless `--stubs` |
+| `mekong_rice_ws` | T1 (deferred ops) | rice | WS salt / ENSO / dry stress |
+| `central_highlands_coffee` | T1 scaffold | coffee | Feb–Apr WD, irrigation_buffer, Kath |
+| `red_river_rice` | T1 scaffold | rice | typhoon / flood / coast salt proxy |
+| `central_coast_rice` | T2 stub | rice | schema only |
+| `central_highlands_pepper` | T2 stub | pepper | schema only |
 
-## Real vs provisional
-
-| feed | status |
-|------|--------|
-| NASA POWER daily + GWETROOT | **real** (cached under `cache/`, gitignored) |
-| FAO-56 ET0 | **computed** from POWER |
-| NOAA ONI | **real** |
-| CHIRPS / SMAP / S1 / GEE | **not run** — fall back to POWER precip/SM |
-| MRC discharge / field EC | **not available** — salinity **proxy** only |
-| Yield labels | **Mekong WS:** GSO Yearbook spring (2018–23) + MTN province×WS (2017/24) + FAOSTAT national scaled prior (≤2016). Other crops: provisional unless override CSV |
-| Skill metrics in `models/*.json` | Mekong: real/best-effort labels (`labels_season_imperfect` if FAOSTAT prior included). Others: scaffold self-consistency only |
-
-Never claim full GSO province×WS history from this package: Mekong WS uses
-Yearbook Mekong-region spring cells + MTN provincial Đông Xuân where wired;
-pre-2017 is FAOSTAT annual scaled. Coffee/RRD remain provisional until
-override CSVs exist.
-
-### Salinity proxy (honest)
+### Honest proxies (unchanged)
 
 ```
 salt_proxy ≈ f(coast_km, dry-season precip, prior wet precip, ONI lag-2, Q_upstream_proxy)
-ec_proxy / y_rel_salt  → Maas–Hoffman *shape* on that scaled proxy
-spei4_ws_min           → Jan–Apr SPEI-like min (Yen et al. 2024)
-spi_ws                 → Dec–Apr precip z (Loc et al. 2022 SPI_WS)
-q_upstream_proxy       → POWER Pakse/TanChau stand-in for MRC QTCmin
+ec_proxy                  → Maas–Hoffman *shape* on scaled proxy — not dS/m
+q_upstream_proxy          → POWER Pakse/TanChau stand-in for MRC QTCmin
 ```
 
-Not canal EC, not MRC \(Q_\text{river}\). See `METHODOLOGY_MEKONG_WS.md`.
-Wire MRC discharge + SIWRP alerts before production.
-
-### Coffee irrigation
-
-`irrigation_buffer_mm` combines literature `irrig_fraction` dummies with days of
-root-zone wetness above DOY median (POWER GWETROOT). WD alone is **not** yield
-for irrigated robusta (`wd_eff = max(0, WD − I_proxy)`).
-
-## DATA_LAYOUT
-
-Forecast JSON: `public/data/vietnam_yield_forecast.json` with
-`forecast_available`, per-region `point` / `range_*` / `skill.low_confidence` /
-`provenance.labels_provisional`. Dashboard wiring (`CLIMATE_COUNTRIES`) is a
-separate product step.
-
-## Production gaps
-
-1. Longer machine-readable **GSO/NSO V0617** province×WS panel (API not public)  
-2. MRC dry-season discharge / stage at Tan Chau–Chau Doc (portal request; 403)  
-3. GEE CHIRPS + SMAP L4 + Sentinel-1 planted-area anomaly (2016-style)  
-4. IBTrACS for RRD/central coast cyclone exposure (true distance)  
-5. Province irrig fractions for coffee \(I_\text{proxy}\) calibration  
-6. Real labels for coffee / RRD (still provisional)  
-7. UI country entry once skill on real labels is re-evaluated  
-8. True SPEI log-logistic fit (current `spei4_ws_min` is CWB z-score approx)  
+MRC discharge / SIWRP field EC / GEE S1 area: still gaps. Risk monitor documents
+them under `data_gaps` and does not block on MRC login.

@@ -71,6 +71,24 @@ MEKONG_POINTS = [
      "weight": 0.12, "coast_km": 70},
 ]
 
+# All 13 Mekong Delta provinces (Đông Xuân panel). Weights unused for
+# per-province climate; coast_km approx. from province capital → coast.
+MEKONG_ALL_PROVINCE_POINTS = [
+    {"name": "An Giang", "lat": 10.52, "lon": 105.13, "elevation": 5, "coast_km": 120},
+    {"name": "Bac Lieu", "lat": 9.29, "lon": 105.72, "elevation": 2, "coast_km": 8},
+    {"name": "Ben Tre", "lat": 10.24, "lon": 106.38, "elevation": 2, "coast_km": 12},
+    {"name": "Ca Mau", "lat": 9.18, "lon": 105.15, "elevation": 1, "coast_km": 15},
+    {"name": "Can Tho", "lat": 10.05, "lon": 105.75, "elevation": 3, "coast_km": 70},
+    {"name": "Dong Thap", "lat": 10.46, "lon": 105.63, "elevation": 4, "coast_km": 95},
+    {"name": "Hau Giang", "lat": 9.78, "lon": 105.47, "elevation": 2, "coast_km": 55},
+    {"name": "Kien Giang", "lat": 10.01, "lon": 105.08, "elevation": 2, "coast_km": 25},
+    {"name": "Long An", "lat": 10.60, "lon": 106.17, "elevation": 3, "coast_km": 45},
+    {"name": "Soc Trang", "lat": 9.60, "lon": 105.97, "elevation": 2, "coast_km": 22},
+    {"name": "Tien Giang", "lat": 10.36, "lon": 106.36, "elevation": 2, "coast_km": 20},
+    {"name": "Tra Vinh", "lat": 9.93, "lon": 106.34, "elevation": 2, "coast_km": 18},
+    {"name": "Vinh Long", "lat": 10.25, "lon": 105.97, "elevation": 3, "coast_km": 65},
+]
+
 # Dry-season salinity peak window for WS rice (master §1.1, §1.5)
 WS_DRY = [(12, -1), (1, 0), (2, 0), (3, 0), (4, 0)]
 WS_PEAK = [(2, 0), (3, 0), (4, 0)]

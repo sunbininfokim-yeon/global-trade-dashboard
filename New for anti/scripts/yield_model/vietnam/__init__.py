@@ -1,1 +1,1 @@
-"""Vietnam regional yield models (Mekong rice, Central Highlands robusta, RRD rice)."""
+"""Vietnam package: Mekong hydrology/salinity risk monitor + deferred yield scaffolds."""
