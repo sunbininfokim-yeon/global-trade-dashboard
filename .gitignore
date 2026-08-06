@@ -18,9 +18,12 @@
 # 508개 파일 508MB 가 PR #4 에 그대로 실려 있었다 (전체 diff 의 3.3M 줄).
 모델링 결과/
 
-# 생성물. 브랜치마다 재생성해 커밋하면 병렬 국가 작업이 매번 충돌한다.
-# main 에서 CI 가 한 번만 만든다 (.github/workflows/validate_registry.yml).
-New for anti/public/data/climate_registry_v1.json
+# climate_registry_v1.json 은 gitignore 하지 않는다.
+#
+# 생성물이라 CI 가 main 에서 만들게 두려고 했는데, Cloudflare 가 어느 브랜치를
+# 배포하는지 확정되지 않은 상태에서 그러면 레지스트리가 배포본에 없을 수 있다.
+# 없으면 app.js 의 국가 목록이 비고 기후 화면이 통째로 죽는다. 병렬 국가 작업의
+# 머지 충돌은 재생성 한 번으로 끝나지만, 기후 화면이 빈 것은 사용자가 본다.
 
 # 39MB Natural Earth 원본 — build_admin1.py 가 국가별로 잘라 쓴다
 New for anti/scripts/cache/
