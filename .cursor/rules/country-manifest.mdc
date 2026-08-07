@@ -1,0 +1,39 @@
+---
+description: 국가 모델을 대시보드에 올릴 때 (app.js 수정 금지)
+globs:
+  - "New for anti/scripts/yield_model/**"
+  - "New for anti/public/data/*_yield_forecast.json"
+alwaysApply: true
+---
+
+# 국가 추가는 app.js 가 아니라 model.yaml
+
+`New for anti/app.js` 를 수정하지 마라. 국가를 대시보드에 올리는 데 UI 코드
+변경은 필요하지 않다.
+
+```bash
+cd "New for anti/scripts/yield_model"
+python3 scaffold_manifest.py <country>
+# TODO 채운 뒤
+python3 build_registry.py --check
+```
+
+스캐폴드가 forecast JSON 과 regions.py 에서 산지·좌표·model_status 를 채운다.
+사람이 채울 것: iso, label_ko, label_en(월드 GeoJSON 이름), view, sources.labels.
+
+**추측으로 채우지 마라.** 틀린 좌표는 빈칸보다 나쁘다. 모르면 TODO 로 두고 물어라.
+
+## 수정 금지
+- `New for anti/app.js`
+- `public/data/climate_registry_v1.json` (main 에서 CI 생성)
+- `public/data/admin1/*.json` (생성물)
+
+## 자유
+- `New for anti/scripts/yield_model/{country}/**`
+- `New for anti/public/data/{country}_yield_forecast.json`
+
+## 학습 미완료
+`model_status: training` + `status_note_ko` 로 밝히면 된다.
+`validated` 는 실측 skill 이 뒷받침해야 CI 를 통과한다.
+
+전체 규격: `New for anti/scripts/yield_model/MODEL_MANIFEST.md`
