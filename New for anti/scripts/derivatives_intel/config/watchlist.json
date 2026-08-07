@@ -1,0 +1,20 @@
+{
+  "tickers": ["TSLA", "NVDA", "AAPL", "AMD", "PLTR"],
+
+  "flow_rules": {
+    "min_notional": 1000000,
+    "block_min_size": 250,
+    "sweep_window_ms": 500,
+    "sweep_min_venues": 2,
+    "sweep_min_notional": 500000,
+    "min_dte": 0,
+    "max_dte": 400,
+    "exclude_mid": true
+  },
+
+  "baseline_days": 20,
+  "short_lookback_days": 40,
+
+  "_cost_guard_note": "max_cost_usd is a hard stop applied to Databento's quote before any billable download. Raise it deliberately, not reflexively.",
+  "max_cost_usd": 1.0
+}

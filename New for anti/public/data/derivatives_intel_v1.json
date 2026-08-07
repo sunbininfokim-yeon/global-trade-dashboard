@@ -1,0 +1,189 @@
+{
+  "schema_version": "derivatives_intel_v1",
+  "generated_at": "2026-08-07T00:58:11.928215+00:00",
+  "model": {
+    "name": "Derivatives Intel",
+    "description": "OPRA 옵션 플로우(Databento) + FINRA 공매도 거래량·잔고. 공매도 비율은 절대값이 아니라 종목별 20일 baseline 대비 z-score로 해석."
+  },
+  "flow_available": false,
+  "short_volume_available": true,
+  "rules": {
+    "min_notional": 1000000,
+    "block_min_size": 250,
+    "sweep_window_ms": 500,
+    "sweep_min_venues": 2,
+    "baseline_days": 20
+  },
+  "tickers": [
+    {
+      "symbol": "TSLA",
+      "short_volume": {
+        "date": "2026-08-06",
+        "short_volume": 5991772.32,
+        "short_exempt_volume": 20455.5,
+        "total_volume": 12348435.81,
+        "short_ratio": 0.48523,
+        "markets": "B,Q,N"
+      },
+      "short_ratio_mean_20d": 0.45178,
+      "short_ratio_z": 0.685,
+      "short_interest": {
+        "settlement_date": "2026-07-15",
+        "current_short": 70646375,
+        "previous_short": 79109257,
+        "avg_daily_volume": 39663962,
+        "days_to_cover": 1.78,
+        "change_pct": -10.7
+      },
+      "call_premium": 0.0,
+      "put_premium": 0.0,
+      "bullish_premium": 0.0,
+      "bearish_premium": 0.0,
+      "put_call_premium_ratio": null,
+      "flow_alerts": []
+    },
+    {
+      "symbol": "NVDA",
+      "short_volume": {
+        "date": "2026-08-06",
+        "short_volume": 16137695.38,
+        "short_exempt_volume": 170066.0,
+        "total_volume": 48434646.16,
+        "short_ratio": 0.33318,
+        "markets": "B,Q,N"
+      },
+      "short_ratio_mean_20d": 0.36509,
+      "short_ratio_z": -0.689,
+      "short_interest": {
+        "settlement_date": "2026-07-15",
+        "current_short": 324052767,
+        "previous_short": 310126785,
+        "avg_daily_volume": 131174356,
+        "days_to_cover": 2.47,
+        "change_pct": 4.49
+      },
+      "call_premium": 0.0,
+      "put_premium": 0.0,
+      "bullish_premium": 0.0,
+      "bearish_premium": 0.0,
+      "put_call_premium_ratio": null,
+      "flow_alerts": []
+    },
+    {
+      "symbol": "AAPL",
+      "short_volume": {
+        "date": "2026-08-06",
+        "short_volume": 8381448.47,
+        "short_exempt_volume": 40260.5,
+        "total_volume": 16462467.52,
+        "short_ratio": 0.50912,
+        "markets": "B,Q,N"
+      },
+      "short_ratio_mean_20d": 0.49151,
+      "short_ratio_z": 0.378,
+      "short_interest": {
+        "settlement_date": "2026-07-15",
+        "current_short": 146547784,
+        "previous_short": 140526320,
+        "avg_daily_volume": 47952794,
+        "days_to_cover": 3.06,
+        "change_pct": 4.28
+      },
+      "call_premium": 0.0,
+      "put_premium": 0.0,
+      "bullish_premium": 0.0,
+      "bearish_premium": 0.0,
+      "put_call_premium_ratio": null,
+      "flow_alerts": []
+    },
+    {
+      "symbol": "AMD",
+      "short_volume": {
+        "date": "2026-08-06",
+        "short_volume": 5166386.39,
+        "short_exempt_volume": 8910.0,
+        "total_volume": 11528732.22,
+        "short_ratio": 0.44813,
+        "markets": "B,Q,N"
+      },
+      "short_ratio_mean_20d": 0.49248,
+      "short_ratio_z": -0.581,
+      "short_interest": {
+        "settlement_date": "2026-07-15",
+        "current_short": 39768152,
+        "previous_short": 41583210,
+        "avg_daily_volume": 25582906,
+        "days_to_cover": 1.55,
+        "change_pct": -4.36
+      },
+      "call_premium": 0.0,
+      "put_premium": 0.0,
+      "bullish_premium": 0.0,
+      "bearish_premium": 0.0,
+      "put_call_premium_ratio": null,
+      "flow_alerts": []
+    },
+    {
+      "symbol": "PLTR",
+      "short_volume": {
+        "date": "2026-08-06",
+        "short_volume": 8348736.83,
+        "short_exempt_volume": 86000.0,
+        "total_volume": 16954832.32,
+        "short_ratio": 0.49241,
+        "markets": "B,Q,N"
+      },
+      "short_ratio_mean_20d": 0.52307,
+      "short_ratio_z": -0.394,
+      "short_interest": {
+        "settlement_date": "2026-07-15",
+        "current_short": 77877652,
+        "previous_short": 87264219,
+        "avg_daily_volume": 42481966,
+        "days_to_cover": 1.83,
+        "change_pct": -10.76
+      },
+      "call_premium": 0.0,
+      "put_premium": 0.0,
+      "bullish_premium": 0.0,
+      "bearish_premium": 0.0,
+      "put_call_premium_ratio": null,
+      "flow_alerts": []
+    }
+  ],
+  "top_alerts": [],
+  "feed_status": [
+    {
+      "source": "finra_daily_short_volume",
+      "ok": true,
+      "error": null,
+      "days_retrieved": 28
+    },
+    {
+      "source": "finra_short_interest",
+      "ok": true,
+      "error": null,
+      "symbols_ok": 5
+    },
+    {
+      "source": "databento_opra",
+      "ok": false,
+      "error": null,
+      "note": "no DATABENTO_API_KEY — flow section disabled"
+    }
+  ],
+  "stats": {
+    "tickers": 5,
+    "flow_alerts": 0,
+    "short_volume_days": {
+      "TSLA": 28,
+      "NVDA": 28,
+      "AAPL": 28,
+      "AMD": 28,
+      "PLTR": 28
+    },
+    "flow_cost_usd": null,
+    "sources_ok": 2,
+    "sources_failed": 1
+  }
+}

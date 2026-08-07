@@ -1,0 +1,146 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "derivatives_intel_v1.schema.json",
+  "title": "derivatives_intel_v1",
+  "description": "Options flow (OPRA via Databento) + short-selling (FINRA) snapshot consumed by the dashboard.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "generated_at",
+    "flow_available",
+    "short_volume_available",
+    "tickers",
+    "feed_status",
+    "stats"
+  ],
+  "properties": {
+    "schema_version": { "const": "derivatives_intel_v1" },
+    "generated_at": { "type": "string", "format": "date-time" },
+    "model": {
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "description": { "type": "string" }
+      }
+    },
+    "flow_available": {
+      "type": "boolean",
+      "description": "False when no Databento key was present; the UI must hide the flow panel rather than render zeros."
+    },
+    "short_volume_available": { "type": "boolean" },
+    "rules": {
+      "type": "object",
+      "properties": {
+        "min_notional": { "type": "number" },
+        "block_min_size": { "type": "integer" },
+        "sweep_window_ms": { "type": "integer" },
+        "sweep_min_venues": { "type": "integer" },
+        "baseline_days": { "type": "integer" }
+      }
+    },
+    "tickers": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/tickerSnapshot" }
+    },
+    "top_alerts": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/flowAlert" }
+    },
+    "feed_status": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["source", "ok"],
+        "properties": {
+          "source": { "type": "string" },
+          "ok": { "type": "boolean" },
+          "error": { "type": ["string", "null"] },
+          "note": { "type": "string" }
+        }
+      }
+    },
+    "stats": {
+      "type": "object",
+      "properties": {
+        "tickers": { "type": "integer" },
+        "flow_alerts": { "type": "integer" },
+        "flow_cost_usd": { "type": ["number", "null"] },
+        "sources_ok": { "type": "integer" },
+        "sources_failed": { "type": "integer" }
+      }
+    }
+  },
+  "definitions": {
+    "tickerSnapshot": {
+      "type": "object",
+      "required": ["symbol"],
+      "properties": {
+        "symbol": { "type": "string" },
+        "short_volume": {
+          "type": ["object", "null"],
+          "properties": {
+            "date": { "type": "string", "format": "date" },
+            "short_volume": { "type": "number" },
+            "short_exempt_volume": { "type": "number" },
+            "total_volume": { "type": "number" },
+            "short_ratio": {
+              "type": ["number", "null"],
+              "minimum": 0,
+              "maximum": 1,
+              "description": "Fraction, not percent. ~0.4-0.5 is an ordinary resting state for a liquid name."
+            },
+            "markets": { "type": "string" }
+          }
+        },
+        "short_ratio_mean_20d": { "type": ["number", "null"] },
+        "short_ratio_z": {
+          "type": ["number", "null"],
+          "description": "Deviation of today's short ratio from this symbol's own baseline. This, not short_ratio, is the signal."
+        },
+        "short_interest": {
+          "type": ["object", "null"],
+          "description": "Bi-monthly settled position; published on roughly a three-week lag.",
+          "properties": {
+            "settlement_date": { "type": "string", "format": "date" },
+            "current_short": { "type": "integer" },
+            "previous_short": { "type": "integer" },
+            "avg_daily_volume": { "type": "integer" },
+            "days_to_cover": { "type": ["number", "null"] },
+            "change_pct": { "type": ["number", "null"] }
+          }
+        },
+        "call_premium": { "type": "number" },
+        "put_premium": { "type": "number" },
+        "bullish_premium": { "type": "number" },
+        "bearish_premium": { "type": "number" },
+        "put_call_premium_ratio": { "type": ["number", "null"] },
+        "flow_alerts": { "type": "array", "items": { "$ref": "#/definitions/flowAlert" } }
+      }
+    },
+    "flowAlert": {
+      "type": "object",
+      "required": ["osi", "underlying", "kind", "aggressor", "sentiment", "size", "notional"],
+      "properties": {
+        "osi": { "type": "string" },
+        "underlying": { "type": "string" },
+        "label": { "type": "string" },
+        "expiry": { "type": "string", "format": "date" },
+        "right": { "enum": ["C", "P"] },
+        "strike": { "type": "number" },
+        "ts": { "type": "string", "format": "date-time" },
+        "kind": { "enum": ["block", "sweep", "large"] },
+        "aggressor": {
+          "enum": ["BUY", "SELL", "MID"],
+          "description": "Derived from trade price vs the NBBO at print time. MID means genuinely unclassifiable."
+        },
+        "sentiment": { "enum": ["bullish", "bearish", "neutral"] },
+        "size": { "type": "integer" },
+        "notional": { "type": "number" },
+        "vwap": { "type": "number" },
+        "venues": { "type": "integer" },
+        "prints": { "type": "integer" },
+        "dte": { "type": "integer" }
+      }
+    }
+  }
+}
