@@ -1211,6 +1211,128 @@ const sstColor = (anomaly) => {
     ];
 };
 
+// Clickable ocean regions with their own history.
+//
+// The grid shows one month. Whether the subpolar Atlantic is having a cold spell
+// or has been cold for forty years is a different question, and the second one
+// is why that patch matters -- it is read as a fingerprint of a weakening
+// Atlantic overturning circulation (AMOC), which moves European rainfall and the
+// monsoons West African cocoa and Indian wheat run on.
+let sstRegionsDoc = null;
+let sstRegionsPromise = null;
+let selectedOceanRegion = null;
+
+const loadSstRegions = () => {
+    if (sstRegionsPromise) return sstRegionsPromise;
+    sstRegionsPromise = fetch('/public/data/sst_regions_v1.json', { cache: 'force-cache' })
+        .then((r) => (r.ok ? r.json() : null))
+        .then((d) => { sstRegionsDoc = d; return d; })
+        .catch(() => null);
+    return sstRegionsPromise;
+};
+
+const regionCentre = (r) => [
+    (r.bounds.lon[0] + r.bounds.lon[1]) / 2,
+    (r.bounds.lat[0] + r.bounds.lat[1]) / 2,
+];
+
+/**
+ * Invisible hit targets over each ocean region.
+ *
+ * The old basin circles were visible marks the reader had to aim at. The grid
+ * already carries the colour, so a second painted circle on top of it says
+ * nothing -- the target only needs to be there, not seen. Radius matches the
+ * circles it replaces so "click near the basin" still works.
+ */
+const oceanHitLayer = () => new ScatterplotLayer({
+    id: 'climate-ocean-hits',
+    data: sstRegionsDoc?.regions || [],
+    pickable: true,
+    stroked: true,
+    filled: true,
+    radiusUnits: 'pixels',
+    radiusMinPixels: 26,
+    radiusMaxPixels: 46,
+    lineWidthMinPixels: 1,
+    getPosition: regionCentre,
+    getRadius: 34,
+    // Fully transparent until selected or hovered; deck still picks it.
+    getFillColor: (d) => (d.id === selectedOceanRegion ? [125, 211, 252, 30] : [0, 0, 0, 0]),
+    getLineColor: (d) => (d.id === selectedOceanRegion ? [125, 211, 252, 150] : [0, 0, 0, 0]),
+    autoHighlight: true,
+    highlightColor: [125, 211, 252, 45],
+    updateTriggers: { getFillColor: [selectedOceanRegion], getLineColor: [selectedOceanRegion] },
+});
+
+/** Sparkline of the monthly series, drawn as an inline SVG path. */
+const sstSparkline = (series, w = 300, h = 64) => {
+    if (!series?.length) return '';
+    const vals = series.map((s) => s[1]);
+    const lo = Math.min(...vals);
+    const hi = Math.max(...vals);
+    const span = hi - lo || 1;
+    const x = (i) => (i / (series.length - 1)) * w;
+    const y = (v) => h - ((v - lo) / span) * h;
+    const d = series.map((s, i) => `${i ? 'L' : 'M'}${x(i).toFixed(1)},${y(s[1]).toFixed(1)}`).join('');
+    // Zero line, so "above or below normal" is readable without axis labels.
+    const zeroY = lo <= 0 && hi >= 0 ? y(0) : null;
+    return `<svg class="sst-spark" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none">
+        ${zeroY != null ? `<line x1="0" y1="${zeroY.toFixed(1)}" x2="${w}" y2="${zeroY.toFixed(1)}"
+             stroke="rgba(148,163,184,.35)" stroke-dasharray="3 3" stroke-width="1"/>` : ''}
+        <path d="${d}" fill="none" stroke="#7dd3fc" stroke-width="1.2"/>
+    </svg>`;
+};
+
+const renderOceanRegionPanel = (region) => {
+    if (!climateRightContentEl || !region) return;
+    const s = region.series || [];
+    const trend = region.trend_c_per_decade;
+    const sign = (v) => (v >= 0 ? '+' : '');
+    if (climateRightTitleEl) climateRightTitleEl.textContent = region.label_ko;
+    if (climateRightDescEl) {
+        climateRightDescEl.textContent =
+            `해수면 수온 편차 · ${s[0]?.[0] ?? ''}~${region.latest_month} · ${s.length}개월`;
+    }
+    climateRightContentEl.innerHTML = `
+        <div class="climate-card">
+            <div class="climate-nav-row" style="margin:0 0 8px;">
+                <span class="climate-back climate-click" data-ocean-close="1"
+                      role="button" tabindex="0">← 닫기</span>
+            </div>
+            <div class="climate-big ${region.latest < 0 ? 'neg' : 'pos'}">
+                ${sign(region.latest)}${region.latest.toFixed(2)}°C
+            </div>
+            <div class="climate-sub">${region.latest_month} · 최근 12개월 평균 ${sign(region.mean_12m)}${region.mean_12m.toFixed(2)}°C</div>
+            ${sstSparkline(s)}
+            <div class="sst-axis"><span>${s[0]?.[0] ?? ''}</span><span>${region.latest_month}</span></div>
+        </div>
+        <div class="climate-card">
+            <h3>장기 변화</h3>
+            <div class="climate-metric-row">
+                <span class="nm">추세</span>
+                <span class="vl" style="color:${trend > 0 ? '#fca5a5' : '#7dd3fc'};">
+                    ${trend == null ? '—' : `${sign(trend)}${trend.toFixed(3)}°C / 10년`}</span>
+            </div>
+            <div class="climate-metric-row">
+                <span class="nm">1980년대 대비</span>
+                <span class="vl">${region.vs_1980s == null ? '—'
+                    : `${sign(region.vs_1980s)}${region.vs_1980s.toFixed(2)}°C`}</span>
+            </div>
+            <div class="climate-sub">${sstRegionsDoc?.baseline || ''} 기준 편차</div>
+        </div>
+        <div class="climate-card">
+            <h3>왜 보는가</h3>
+            <div class="climate-sub">${region.why_ko}</div>
+            <div class="ocean-affects">
+                ${(region.affects || []).map((a) => `<span class="oa-chip">${a}</span>`).join('')}
+            </div>
+        </div>
+        <p style="font-size:10px;color:#64748b;">${sstRegionsDoc?.source || ''} · ${sstRegionsDoc?.note_ko || ''}</p>`;
+    if (climateRightPanelEl) climateRightPanelEl.classList.remove('hidden');
+    const rp = document.getElementById('right-pane');
+    if (rp) rp.style.display = 'flex';
+};
+
 /** SST grid cells, shared by the climate world and country maps. */
 const sstWashLayer = (_unused, id = 'climate-sst') => {
     const pts = sstDoc?.points || [];
@@ -1290,6 +1412,12 @@ const climateNavBackHtml = (trail = '') => `
 const handleClimateDomAction = (e) => {
     const t = e.target instanceof Element ? e.target : null;
     if (!t) return;
+    if (t.closest('[data-ocean-close]')) {
+        e.preventDefault();
+        selectedOceanRegion = null;
+        showClimateWorld();
+        return;
+    }
     const back = t.closest('[data-climate-back]');
     if (back) {
         e.preventDefault();
@@ -1478,6 +1606,14 @@ const handleClimateDeckClick = (info) => {
     const mark = () => { lastClimatePickAt = now; };
 
     if (climateLevel === 'world') {
+        // Ocean region first: its hit target sits over water, so a pick there is
+        // unambiguous and should not fall through to the country layer.
+        if (info?.layer?.id === 'climate-ocean-hits' && info.object?.id) {
+            mark();
+            selectedOceanRegion = info.object.id;
+            showClimateWorld();
+            return;
+        }
         // Prefer pin object (has .name), else GeoJSON feature
         if (info?.object?.name && CLIMATE_COUNTRIES[info.object.name]) {
             mark();
@@ -3121,13 +3257,24 @@ const showClimateWorld = async () => {
     await renderClimateWorldLeft();
     await renderClimateWorldRight();
     // World: left only — no right dashboard
-    togglePanels({ forecast: true, climateRight: false, left: true, right: false, map: true });
+    togglePanels({
+        forecast: true,
+        climateRight: !!selectedOceanRegion,
+        left: true,
+        right: !!selectedOceanRegion,
+        map: true,
+    });
+    if (selectedOceanRegion) {
+        const r = (sstRegionsDoc?.regions || []).find((x) => x.id === selectedOceanRegion);
+        if (r) renderOceanRegionPanel(r);
+    }
     panelHide(macroPanelEl);
     panelHide(countryStatsPanelEl);
     panelShow(forecastPanelEl);
 
     await loadClimateGlobal();
     await loadSst();
+    await loadSstRegions();
 
     const labels = Object.entries(CLIMATE_COUNTRIES).map(([name, cfg]) => {
         const coords = cfg.regions[0]?.coordinates;
@@ -3200,6 +3347,9 @@ const showClimateWorld = async () => {
                     getLineColor: [climateLevel],
                 },
             }),
+            // Invisible until hovered or selected; the grid already carries the
+            // colour, so a second painted circle would only repeat it.
+            oceanHitLayer(),
             new ScatterplotLayer({
                 id: 'climate-country-pins',
                 data: labels,
