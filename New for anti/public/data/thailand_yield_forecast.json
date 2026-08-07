@@ -1,0 +1,307 @@
+{
+  "generated_at": "2026-08-06T06:25:20.284395+00:00",
+  "season": 2026,
+  "country": "Thailand",
+  "forecast_available": true,
+  "source_note": "Weather: NASA POWER daily (GWETROOT, TEMP, precip), ET0 FAO-56. ENSO: NOAA CPC ONI. Labels: FAOSTAT Thailand national Yield (Sugar cane / Rice / Natural rubber) unless labels_official override. RID Bhumibol–Sirikit Nov-1 storage NOT wired — off-season rice uses dam_recharge_proxy only. OAE wet/dry rice split and OCSB province cane not wired. Isan cassava is T2 stub (CMD disease-primary).",
+  "methodology_note": "T1 from Regions/태국 + peer-reviewed Thai sources (see SOURCES.md): Central–NE sugarcane (SM/SPI/ENSO), Chao Phraya wet rice (onset/ENSO), Chao Phraya off-season rice (dam PROXY + heat), rubber (rainy/tapping days). Ridge on log-yield residual vs tech trend; read labels_season_imperfect / dam_storage_is_proxy.",
+  "regions": {
+    "central_ne_sugarcane": {
+      "label": "Central–NE Thailand sugarcane",
+      "label_ko": "중부·북동 사탕수수",
+      "unit": "kg/ha",
+      "point": 50622.0,
+      "range_68": [
+        39581.3,
+        61662.6
+      ],
+      "range_95": [
+        28982.4,
+        72261.5
+      ],
+      "trend": 50622.0,
+      "weather_effect_pct": 0.0,
+      "last_actual": {
+        "year": 2024,
+        "yield": 55281.3,
+        "provisional": false
+      },
+      "skill": {
+        "beats_trend": true,
+        "recent_skill_vs_trend": 0.1621034554175792,
+        "low_confidence": true,
+        "sigma_kg_ha": 11040.604721464233
+      },
+      "weather_through": "2026-08-01",
+      "critical_window_observed": 0.7006578947368421,
+      "season_complete": false,
+      "provenance": {
+        "doc": "Regions/태국/중부_북동부/설탕_고무 + Pipitpukdee et al. 2020",
+        "caveat": "FAOSTAT national sugar-cane yield (not OCSB province×mill). No live CCS sweetness. GWETROOT stands in for SMAP/ETa drought indices (SEaI12) used in Thai drought-cane papers.",
+        "non_weather_drivers": "OCSB cane price, mill capacity, ratoon age, and labour; 2019/20 COVID + drought compound shock (Chula 2022 thesis).",
+        "label_source": "faostat_thailand_national_yield",
+        "labels_provisional": false,
+        "labels_season_imperfect": true,
+        "dam_storage_is_proxy": false,
+        "weather_withheld_incomplete_season": true,
+        "rid_dam_wired": false,
+        "gee_used": false,
+        "sources": [
+          "Pipitpukdee et al. (2020) Atmosphere — Kasetsart/spatial ENSO cane",
+          "Pattanapanchai et al. (2022) Agronomy 12:2005 — sat+weather cane",
+          "Promping et al. EASR — SEaI12 drought × cane yield / Nino3.4",
+          "Kapetch et al. (2014) Thai Agric. Res. J. — DSSAT-CANEGRO N/NE",
+          "OCSB / Office of the Cane and Sugar Board production stats"
+        ]
+      },
+      "crops": {
+        "sugarcane": {
+          "label_ko": "중부·북동 사탕수수",
+          "unit": "kg/ha",
+          "point": 50622.0,
+          "range_68": [
+            39581.3,
+            61662.6
+          ],
+          "range_95": [
+            28982.4,
+            72261.5
+          ],
+          "skill": {
+            "beats_trend": true,
+            "low_confidence": true
+          }
+        }
+      }
+    },
+    "chao_phraya_rice_wet": {
+      "label": "Chao Phraya wet-season rice",
+      "label_ko": "짜오프라야 우기 쌀",
+      "unit": "kg/ha",
+      "point": 2987.2,
+      "range_68": [
+        2863.7,
+        3110.7
+      ],
+      "range_95": [
+        2745.2,
+        3229.2
+      ],
+      "trend": 2987.2,
+      "weather_effect_pct": 0.0,
+      "last_actual": {
+        "year": 2024,
+        "yield": 2982.7,
+        "provisional": false
+      },
+      "skill": {
+        "beats_trend": false,
+        "recent_skill_vs_trend": 0.08165442351650543,
+        "low_confidence": true,
+        "sigma_kg_ha": 123.46659089120739
+      },
+      "weather_through": "2026-08-01",
+      "critical_window_observed": 0.5054347826086957,
+      "season_complete": false,
+      "provenance": {
+        "doc": "Regions/태국/중부_짜오프라야/쌀 + Prabnakorn et al. 2018",
+        "caveat": "FAOSTAT national rice mixes wet+dry seasons and basins outside Chao Phraya. Onset/flood features follow Prabnakorn/Limsakul ENSO rainfall literature, not OAE wet-only provincial yields.",
+        "non_weather_drivers": "Variety turnover, fertiliser, and irrigation expansion outside the strict rainfed Isan share.",
+        "label_source": "faostat_thailand_national_yield",
+        "labels_provisional": false,
+        "labels_season_imperfect": true,
+        "dam_storage_is_proxy": false,
+        "weather_withheld_incomplete_season": true,
+        "rid_dam_wired": false,
+        "gee_used": false,
+        "sources": [
+          "Prabnakorn et al. (2018) Climatic Change — rice × ENSO Thailand",
+          "Limsakul et al. (2014) J. Earth Sci. — ENSO–rainfall maps",
+          "OAE Agricultural Statistics of Thailand"
+        ]
+      },
+      "crops": {
+        "rice": {
+          "label_ko": "짜오프라야 우기 쌀",
+          "unit": "kg/ha",
+          "point": 2987.2,
+          "range_68": [
+            2863.7,
+            3110.7
+          ],
+          "range_95": [
+            2745.2,
+            3229.2
+          ],
+          "skill": {
+            "beats_trend": false,
+            "low_confidence": true
+          }
+        }
+      }
+    },
+    "chao_phraya_rice_off": {
+      "label": "Chao Phraya off-season rice",
+      "label_ko": "짜오프라야 건기 쌀",
+      "unit": "kg/ha",
+      "point": 2936.0,
+      "range_68": [
+        2864.0,
+        3008.0
+      ],
+      "range_95": [
+        2794.9,
+        3077.1
+      ],
+      "trend": 2987.2,
+      "weather_effect_pct": -1.71,
+      "last_actual": {
+        "year": 2024,
+        "yield": 2982.7,
+        "provisional": false
+      },
+      "skill": {
+        "beats_trend": true,
+        "recent_skill_vs_trend": 0.41700959670158144,
+        "low_confidence": true,
+        "sigma_kg_ha": 71.97983761754584
+      },
+      "weather_through": "2026-08-01",
+      "critical_window_observed": 1.0,
+      "season_complete": true,
+      "provenance": {
+        "doc": "Regions/태국/중부_짜오프라야/쌀 + TDRI dam-irrigation mechanism",
+        "caveat": "CRITICAL: dam_recharge_proxy ≠ RID Nov-1 Bhumibol+Sirikit storage. Policy planting bans act on AREA more than yield; FAOSTAT national rice mixes seasons. Do not claim irrigation-allocation skill until Thaiwater/RID series is wired.",
+        "non_weather_drivers": "RID/ONWR dry-season planting permits, municipal/industrial water priority, and farm-gate rice price.",
+        "label_source": "faostat_thailand_national_yield",
+        "labels_provisional": false,
+        "labels_season_imperfect": true,
+        "dam_storage_is_proxy": true,
+        "weather_withheld_incomplete_season": false,
+        "rid_dam_wired": false,
+        "gee_used": false,
+        "sources": [
+          "TDRI Chaiyasit technical report — Chao Phraya water & dry-season rice",
+          "Kyaw / Chulalongkorn AER 2024 — Bhumibol–Sirikit operations",
+          "Ekasingh et al. (2007) World Bank/SEI — irrigated CP rice mechanism",
+          "RID Daily Reservoir Water Situation; Thaiwater HAII"
+        ]
+      },
+      "crops": {
+        "rice": {
+          "label_ko": "짜오프라야 건기 쌀",
+          "unit": "kg/ha",
+          "point": 2936.0,
+          "range_68": [
+            2864.0,
+            3008.0
+          ],
+          "range_95": [
+            2794.9,
+            3077.1
+          ],
+          "skill": {
+            "beats_trend": true,
+            "low_confidence": true
+          }
+        }
+      }
+    },
+    "thailand_rubber": {
+      "label": "Thailand natural rubber",
+      "label_ko": "태국 천연고무",
+      "unit": "kg/ha",
+      "point": 1026.4,
+      "range_68": [
+        988.3,
+        1064.5
+      ],
+      "range_95": [
+        951.7,
+        1101.0
+      ],
+      "trend": 1292.8,
+      "weather_effect_pct": -20.61,
+      "last_actual": {
+        "year": 2024,
+        "yield": 1332.0,
+        "provisional": false
+      },
+      "skill": {
+        "beats_trend": false,
+        "recent_skill_vs_trend": -0.19206491464892794,
+        "low_confidence": true,
+        "sigma_kg_ha": 38.09654064165297
+      },
+      "weather_through": "2026-08-01",
+      "critical_window_observed": 0.7702020202020202,
+      "season_complete": false,
+      "provenance": {
+        "doc": "Regions/태국/중부_북동부/설탕_고무 + Makkaew & Sdoodee 2015",
+        "caveat": "FAOSTAT national rubber; rainy-day loss is a tapping-opportunity proxy, not measured latex kg/tree. NE vs South rainfall signs can oppose (Thaiburi 2025 JAM).",
+        "non_weather_drivers": "Farm-gate rubber price, tapping frequency, labour, clone RRIM600 share, and Pestalotiopsis / leaf disease.",
+        "label_source": "faostat_thailand_national_yield",
+        "labels_provisional": false,
+        "labels_season_imperfect": true,
+        "dam_storage_is_proxy": false,
+        "weather_withheld_incomplete_season": false,
+        "rid_dam_wired": false,
+        "gee_used": false,
+        "sources": [
+          "Makkaew & Sdoodee (2015) IJAT — Songkhla rainy days × tapping yield",
+          "Thaiburi et al. (2025) J. Agrometeorology — climate × rubber TH",
+          "FAO WPP/MPP rubber production potential (East/NE Thailand)"
+        ]
+      },
+      "crops": {
+        "rubber": {
+          "label_ko": "태국 천연고무",
+          "unit": "kg/ha",
+          "point": 1026.4,
+          "range_68": [
+            988.3,
+            1064.5
+          ],
+          "range_95": [
+            951.7,
+            1101.0
+          ],
+          "skill": {
+            "beats_trend": false,
+            "low_confidence": true
+          }
+        }
+      }
+    },
+    "isan_cassava": {
+      "label": "Isan cassava (reference)",
+      "label_ko": "이산 카사바",
+      "unit": "kg/ha",
+      "point": null,
+      "forecast_available": false,
+      "panel_mode": "reference",
+      "unavailable_reason": "Cassava Mosaic Disease (CMD) / whitefly dominates recent Isan supply risk; weather-only yield model withheld.",
+      "provenance": {
+        "doc": "Regions/태국/북동부_이산/카사바",
+        "sources": [
+          "Regions cassava guide — CMD mechanism",
+          "OAE cassava statistics (not wired as climate yield)"
+        ]
+      },
+      "crops": {
+        "cassava": {
+          "label_ko": "카사바",
+          "point": null,
+          "skill": {
+            "low_confidence": true,
+            "beats_trend": false
+          }
+        }
+      }
+    }
+  },
+  "climate_context": {
+    "oni_djf": -0.37,
+    "enso": "neutral"
+  }
+}
