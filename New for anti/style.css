@@ -2181,3 +2181,30 @@ body.finance-mode #chart-view::-webkit-scrollbar-thumb { background: rgba(148, 1
     .fin-grid, .fin-moves { grid-template-columns: 1fr; }
     .fin-risk-row { grid-template-columns: minmax(96px, 1.2fr) 2fr minmax(70px, auto); gap: 8px; }
 }
+
+/* 공급망 집중도 카드 (CR3 · HHI) */
+.dep-card {
+    margin: 8px 0 10px;
+    padding: 9px 10px;
+    border: 1px solid rgba(148, 163, 184, 0.16);
+    border-radius: 7px;
+    background: rgba(15, 23, 42, 0.5);
+}
+.dep-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.dep-head strong { font-size: 11.5px; color: #cbd5e1; font-weight: 600; }
+.dep-band {
+    font-size: 10px; padding: 1px 6px; border-radius: 999px;
+    border: 1px solid transparent;
+}
+.dep-band.dep-hi { color: #fca5a5; background: rgba(248, 113, 113, .13); border-color: rgba(248, 113, 113, .3); }
+.dep-band.dep-mid { color: #fcd34d; background: rgba(251, 191, 36, .12); border-color: rgba(251, 191, 36, .28); }
+.dep-band.dep-lo { color: #86efac; background: rgba(74, 222, 128, .11); border-color: rgba(74, 222, 128, .26); }
+.dep-metrics { display: flex; gap: 16px; margin-top: 6px; }
+.dep-m { display: flex; align-items: baseline; gap: 5px; }
+.dep-k { font-size: 10px; color: #64748b; letter-spacing: .04em; }
+.dep-v { font-size: 14px; font-weight: 700; color: #38bdf8; font-variant-numeric: tabular-nums; }
+.dep-top {
+    margin: 5px 0 0; font-size: 10.5px; color: #94a3b8;
+    font-variant-numeric: tabular-nums; letter-spacing: .02em;
+}
+.dep-note { margin: 4px 0 0; font-size: 9.5px; line-height: 1.45; color: rgba(148, 163, 184, .62); }

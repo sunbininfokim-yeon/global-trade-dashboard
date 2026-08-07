@@ -350,6 +350,13 @@ const focusTradeCountry = (countryName) => {
                 <span class="ts-v ${net >= 0 ? 'pos' : 'neg'}">${net >= 0 ? '+' : ''}${net.toLocaleString()}</span></div>
         </div>`;
 
+    // Which side carries the dependency. A buyer's exposure is its suppliers;
+    // a country that only sells has no supply risk here, but it does have
+    // customer risk, and that is the concentration worth showing instead.
+    const depHtml = importVol > 0
+        ? concentrationHtml(imports, (a) => a.sourceName, '공급')
+        : concentrationHtml(exports, (a) => a.targetName, '판로');
+
     if (newsPanelEl) panelShow(newsPanelEl);
     panelHide(countryStatsPanelEl);
     panelHide(macroPanelEl);
@@ -364,6 +371,7 @@ const focusTradeCountry = (countryName) => {
                 </div>
                 <p class="trade-focus-sub">수출·수입 양방향 · 비중은 각 방향 내 비중 · 물동량(${unit})</p>
                 ${statsHtml}
+                ${depHtml}
                 <div class="trade-rank-list">${rows || '<p class="empty-state">이 국가 루트 없음</p>'}</div>
             </div>`;
         document.getElementById('trade-focus-clear')?.addEventListener('click', (e) => {
@@ -434,6 +442,63 @@ const countryCode = (name) => {
     const r = resolveCountry(name);
     if (r?.iso) return r.iso;
     return String(name || '').slice(0, 3).toUpperCase();
+};
+
+/**
+ * Supply concentration for one country's trade in one commodity.
+ *
+ * CR3 and HHI over whichever direction actually carries the dependency: for a
+ * buyer, who it buys from; for a pure seller, who it sells to. Herfindahl fits
+ * without stretching -- Hirschman published it in 1945 to measure how
+ * concentrated a nation's trade was, and antitrust borrowed it afterwards.
+ *
+ * Labelled 집중도 and not 위험 on purpose. Concentration is half of supply risk:
+ * three suppliers who are all allies is not the exposure that one supplier who
+ * is not would be, which is why the EU multiplies its HHI by a governance
+ * score. That weighting needs World Bank WGI data this page does not carry, so
+ * the card reports what it can actually measure and says which half that is.
+ */
+const concentrationHtml = (arcs, partnerOf, dirKo) => {
+    const byPartner = new Map();
+    for (const a of arcs) {
+        if (!(a.volume > 0)) continue;
+        const p = partnerOf(a);
+        byPartner.set(p, (byPartner.get(p) || 0) + a.volume);
+    }
+    const total = [...byPartner.values()].reduce((s, v) => s + v, 0);
+    // Two partners cannot say anything about concentration that the ranking
+    // below does not already show.
+    if (byPartner.size < 3 || total <= 0) return '';
+
+    const ranked = [...byPartner.entries()].sort((x, y) => y[1] - x[1]);
+    const hhi = ranked.reduce((s, [, v]) => s + (v / total) ** 2, 0);
+    const cr3 = ranked.slice(0, 3).reduce((s, [, v]) => s + v, 0) / total;
+
+    // The 0.15 / 0.25 cutoffs are the ones competition authorities use, and the
+    // EU's raw-materials assessment carries them over to supplier countries.
+    const band = hhi >= 0.25 ? { ko: '높음', cls: 'hi' }
+        : hhi >= 0.15 ? { ko: '보통', cls: 'mid' }
+            : { ko: '낮음', cls: 'lo' };
+    const top3 = ranked.slice(0, 3)
+        .map(([p, v]) => `${countryCode(p)} ${((v / total) * 100).toFixed(1)}`)
+        .join(' · ');
+
+    return `
+        <div class="dep-card">
+            <div class="dep-head">
+                <strong>${dirKo} 집중도</strong>
+                <span class="dep-band dep-${band.cls}">${band.ko}</span>
+            </div>
+            <div class="dep-metrics">
+                <div class="dep-m"><span class="dep-k">CR3</span>
+                    <span class="dep-v">${(cr3 * 100).toFixed(1)}%</span></div>
+                <div class="dep-m"><span class="dep-k">HHI</span>
+                    <span class="dep-v">${hhi.toFixed(3)}</span></div>
+            </div>
+            <p class="dep-top">${top3}</p>
+            <p class="dep-note">상위 3개국 비중과 허핀달 지수. 공급국의 정치적 신뢰도는
+                반영하지 않은 순수 집중도다.</p>
+        </div>`;
 };
 
 /**
