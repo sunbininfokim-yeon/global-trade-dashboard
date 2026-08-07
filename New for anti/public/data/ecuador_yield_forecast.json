@@ -1,14 +1,50 @@
 {
-  "generated_at": "2026-08-07T05:53:02.539617+00:00",
-  "season": 2020,
+  "generated_at": "2026-08-07T06:20:02.537666+00:00",
+  "season": 2024,
   "country": "Ecuador",
   "title_ko": "에콰도르 바나나 참고·리스크",
   "forecast_available": false,
   "panel_mode": "reference",
-  "reason_ko": "캐번디시 수출은 시가토카·폭풍·TR4가 지배적입니다. 주간 YLWS/YLS(가능하면 3–4년+)가 오기 전에는 수량성 point를 내지 않고, FAO 수출 참고치와 NASA POWER 기상 리스크 프록시만 표시합니다.",
-  "methodology_note": "No YLWS required. FAO Compendium export reference + optional NASA POWER Sigatoka/wind pressure proxies. Never writes point.",
+  "reason_ko": "캐번디시 수출은 시가토카·폭풍·TR4가 지배적입니다. 주간 YLWS/YLS(가능하면 3–4년+)가 오기 전에는 수량성 point를 내지 않고, 국가 생산·면적(FAOSTAT)과 수출 참고·POWER 기상 리스크 프록시만 표시합니다.",
+  "methodology_note": "No YLWS. National FAOSTAT production/area via OWID + Compendium exports + optional POWER risk proxies. Never writes forecast point.",
   "dashboard_url": "https://global-trade-dashboard.sunbin-info-kim.workers.dev",
   "government_outlooks": [
+    {
+      "agency": "FAOSTAT (via OWID)",
+      "agency_ko": "FAOSTAT",
+      "season": "2024",
+      "metric_ko": "국가 바나나 생산량",
+      "value": 7585653,
+      "unit": "tonnes",
+      "status_ko": "달력연도 국가 합계 · 벨트/농장 아님",
+      "note_ko": "국가 단위. area_ha = production_t / yield_t_ha. 수출량과 다름. 에콰도르 ESPAC과 소폭 차이 가능.",
+      "url": "https://ourworldindata.org/grapher/banana-production",
+      "url_label": "OWID banana production"
+    },
+    {
+      "agency": "FAOSTAT (via OWID)",
+      "agency_ko": "FAOSTAT",
+      "season": "2024",
+      "metric_ko": "국가 수확면적 (생산÷단수)",
+      "value": 181088,
+      "unit": "ha",
+      "status_ko": "달력연도 국가 합계",
+      "note_ko": "area_ha = production_t / yield_t_ha",
+      "url": "https://ourworldindata.org/grapher/banana-yields",
+      "url_label": "OWID banana yields"
+    },
+    {
+      "agency": "FAOSTAT (via OWID)",
+      "agency_ko": "FAOSTAT",
+      "season": "2024",
+      "metric_ko": "국가 평균 단수",
+      "value": 41.89,
+      "unit": "t/ha",
+      "status_ko": "국가 평균 · 수출 농장 단수와 다를 수 있음",
+      "note_ko": "",
+      "url": "https://ourworldindata.org/grapher/banana-yields",
+      "url_label": "OWID banana yields"
+    },
     {
       "agency": "FAO Banana Statistical Compendium",
       "agency_ko": "FAO 바나나 통계 요약",
@@ -17,7 +53,7 @@
       "value": 7036,
       "unit": "1000 tonnes",
       "status_ko": "Compendium 표의 최근 열(~2020). 최신 연도는 FAOSTAT/Compendium에서 재확인.",
-      "note_ko": "세계 최대 바나나 수출국 — Los Ríos / Guayas / El Oro",
+      "note_ko": "수출 ≠ 생산. 세계 최대 바나나 수출국 — Los Ríos / Guayas / El Oro",
       "url": "https://www.fao.org/markets-and-trade/commodities/bananas",
       "url_label": "FAO bananas"
     }
@@ -40,7 +76,7 @@
     },
     {
       "title_ko": "YLWS 없이 운영",
-      "body_ko": "병 점수 시계열이 오면 그때 재검토. 지금은 FAO 수출 참고 + POWER 리스크 프록시만. 대시보드: https://global-trade-dashboard.sunbin-info-kim.workers.dev",
+      "body_ko": "병 점수 시계열이 오면 그때 재검토. 지금은 국가 생산·면적(FAOSTAT) + 수출 참고 + POWER 리스크 프록시. 대시보드: https://global-trade-dashboard.sunbin-info-kim.workers.dev",
       "links": [
         {
           "label": "dashboard",
@@ -65,6 +101,11 @@
   ],
   "sources": [
     {
+      "name": "FAOSTAT bananas via Our World in Data",
+      "url": "https://ourworldindata.org/grapher/banana-production",
+      "supports": "national production / yield / implied area"
+    },
+    {
       "name": "FAO Banana Statistical Compendium 2020 (export volumes, 1000 tonnes)",
       "url": "https://www.fao.org/markets-and-trade/commodities/bananas",
       "supports": "national export reference"
@@ -80,7 +121,7 @@
       "label": "Ecuador coastal banana",
       "label_ko": "에콰도르 연안 바나나",
       "forecast_available": false,
-      "reason_ko": "캐번디시 수출은 시가토카·폭풍·TR4가 지배적입니다. 주간 YLWS/YLS(가능하면 3–4년+)가 오기 전에는 수량성 point를 내지 않고, FAO 수출 참고치와 NASA POWER 기상 리스크 프록시만 표시합니다.",
+      "reason_ko": "캐번디시 수출은 시가토카·폭풍·TR4가 지배적입니다. 주간 YLWS/YLS(가능하면 3–4년+)가 오기 전에는 수량성 point를 내지 않고, 국가 생산·면적(FAOSTAT)과 수출 참고·POWER 기상 리스크 프록시만 표시합니다.",
       "weather_risk": {
         "year": 2025,
         "sigatoka_rh_days": 9.7,
@@ -97,7 +138,12 @@
       "crops": {
         "banana": {
           "label_ko": "바나나",
-          "unit": "kg/ha"
+          "unit": "kg/ha",
+          "last_actual": {
+            "year": 2024,
+            "yield": 41890.0,
+            "note_ko": "국가 FAOSTAT 단수(kg/ha). 벨트 라벨 아님."
+          }
         }
       }
     }

@@ -16,6 +16,7 @@ from .regions import BY_COUNTRY
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 PROFILES = os.path.join(HERE, "reference", "banana_country_profiles.json")
+FAOSTAT = os.path.join(HERE, "reference", "faostat_banana_national.json")
 TRAINING = os.path.join(HERE, "training")
 PUBLIC = os.path.abspath(os.path.join(HERE, "..", "..", "..", "public", "data"))
 
@@ -29,7 +30,7 @@ FILE_FOR = {
 REASON = (
     "캐번디시 수출은 시가토카·폭풍·TR4가 지배적입니다. "
     "주간 YLWS/YLS(가능하면 3–4년+)가 오기 전에는 수량성 point를 내지 않고, "
-    "FAO 수출 참고치와 NASA POWER 기상 리스크 프록시만 표시합니다."
+    "국가 생산·면적(FAOSTAT)과 수출 참고·POWER 기상 리스크 프록시만 표시합니다."
 )
 
 
@@ -76,8 +77,9 @@ def risk_note(risk: dict | None, hurricane: bool) -> str:
     return " · ".join(parts)
 
 
-def build_one(key: str, meta: dict, shared: dict) -> dict:
+def build_one(key: str, meta: dict, shared: dict, faostat: dict) -> dict:
     export = shared["export_reference"]["latest"][key]
+    nat = (faostat.get("latest") or {}).get(key) or {}
     belts = BY_COUNTRY[key]
     regions = {}
     research = [
@@ -92,7 +94,7 @@ def build_one(key: str, meta: dict, shared: dict) -> dict:
         "title_ko": "YLWS 없이 운영",
         "body_ko": (
             "병 점수 시계열이 오면 그때 재검토. "
-            "지금은 FAO 수출 참고 + POWER 리스크 프록시만. "
+            "지금은 국가 생산·면적(FAOSTAT) + 수출 참고 + POWER 리스크 프록시. "
             f"대시보드: {shared.get('dashboard_url', '')}"
         ),
         "links": [
@@ -104,6 +106,16 @@ def build_one(key: str, meta: dict, shared: dict) -> dict:
 
     for belt in belts:
         risk = latest_risk(belt.key)
+        banana_crop = {
+            "label_ko": "바나나",
+            "unit": "kg/ha",
+        }
+        if nat.get("yield_t_ha") is not None:
+            banana_crop["last_actual"] = {
+                "year": nat["year"],
+                "yield": round(nat["yield_t_ha"] * 1000, 1),
+                "note_ko": "국가 FAOSTAT 단수(kg/ha). 벨트 라벨 아님.",
+            }
         regions[belt.key] = {
             "label": belt.label,
             "label_ko": belt.label_ko,
@@ -111,12 +123,7 @@ def build_one(key: str, meta: dict, shared: dict) -> dict:
             "reason_ko": REASON,
             "weather_risk": risk,
             "weather_risk_note_ko": risk_note(risk, belt.hurricane_prone),
-            "crops": {
-                "banana": {
-                    "label_ko": "바나나",
-                    "unit": "kg/ha",
-                }
-            },
+            "crops": {"banana": banana_crop},
         }
         research.append({
             "title_ko": f"기상 리스크 — {belt.label_ko}",
@@ -124,36 +131,81 @@ def build_one(key: str, meta: dict, shared: dict) -> dict:
             "links": [],
         })
 
+    outlooks = []
+    if nat:
+        outlooks.extend([
+            {
+                "agency": "FAOSTAT (via OWID)",
+                "agency_ko": "FAOSTAT",
+                "season": str(nat["year"]),
+                "metric_ko": "국가 바나나 생산량",
+                "value": round(nat["production_t"]),
+                "unit": "tonnes",
+                "status_ko": "달력연도 국가 합계 · 벨트/농장 아님",
+                "note_ko": faostat.get("note_ko", ""),
+                "url": "https://ourworldindata.org/grapher/banana-production",
+                "url_label": "OWID banana production",
+            },
+            {
+                "agency": "FAOSTAT (via OWID)",
+                "agency_ko": "FAOSTAT",
+                "season": str(nat["year"]),
+                "metric_ko": "국가 수확면적 (생산÷단수)",
+                "value": round(nat["area_ha"]),
+                "unit": "ha",
+                "status_ko": "달력연도 국가 합계",
+                "note_ko": "area_ha = production_t / yield_t_ha",
+                "url": "https://ourworldindata.org/grapher/banana-yields",
+                "url_label": "OWID banana yields",
+            },
+            {
+                "agency": "FAOSTAT (via OWID)",
+                "agency_ko": "FAOSTAT",
+                "season": str(nat["year"]),
+                "metric_ko": "국가 평균 단수",
+                "value": round(nat["yield_t_ha"], 2),
+                "unit": "t/ha",
+                "status_ko": "국가 평균 · 수출 농장 단수와 다를 수 있음",
+                "note_ko": "",
+                "url": "https://ourworldindata.org/grapher/banana-yields",
+                "url_label": "OWID banana yields",
+            },
+        ])
+    outlooks.append({
+        "agency": "FAO Banana Statistical Compendium",
+        "agency_ko": "FAO 바나나 통계 요약",
+        "season": str(export["year"]),
+        "metric_ko": "신선 바나나 수출 (참고)",
+        "value": export["value"],
+        "unit": "1000 tonnes",
+        "status_ko": shared["export_reference"]["vintage_note_ko"],
+        "note_ko": "수출 ≠ 생산. " + meta.get("role_ko", ""),
+        "url": shared["export_reference"]["url"],
+        "url_label": "FAO bananas",
+    })
+
     return {
         "generated_at": datetime.now(timezone.utc).isoformat(),
-        "season": export["year"],
+        "season": nat.get("year") or export["year"],
         "country": meta["country"],
         "title_ko": f"{meta['label_ko']} 바나나 참고·리스크",
         "forecast_available": False,
         "panel_mode": "reference",
         "reason_ko": REASON,
         "methodology_note": (
-            "No YLWS required. FAO Compendium export reference + optional "
-            "NASA POWER Sigatoka/wind pressure proxies. Never writes point."
+            "No YLWS. National FAOSTAT production/area via OWID + Compendium "
+            "exports + optional POWER risk proxies. Never writes forecast point."
         ),
         "dashboard_url": shared.get("dashboard_url"),
-        "government_outlooks": [
-            {
-                "agency": "FAO Banana Statistical Compendium",
-                "agency_ko": "FAO 바나나 통계 요약",
-                "season": str(export["year"]),
-                "metric_ko": "신선 바나나 수출 (참고)",
-                "value": export["value"],
-                "unit": "1000 tonnes",
-                "status_ko": shared["export_reference"]["vintage_note_ko"],
-                "note_ko": meta.get("role_ko", ""),
-                "url": shared["export_reference"]["url"],
-                "url_label": "FAO bananas",
-            }
-        ],
+        "government_outlooks": outlooks,
         "research_notes": research,
         "headline_risks_ko": meta.get("headline_risks_ko") or [],
         "sources": [
+            {
+                "name": "FAOSTAT bananas via Our World in Data",
+                "url": "https://ourworldindata.org/grapher/banana-production",
+                "supports": "national production / yield / implied area",
+            },
             {
                 "name": shared["export_reference"]["source"],
                 "url": shared["export_reference"]["url"],
@@ -172,9 +224,11 @@ def build_one(key: str, meta: dict, shared: dict) -> dict:
 def main() -> int:
     with open(PROFILES, encoding="utf-8") as handle:
         shared = json.load(handle)
+    with open(FAOSTAT, encoding="utf-8") as handle:
+        faostat = json.load(handle)
     os.makedirs(PUBLIC, exist_ok=True)
     for key, meta in shared["countries"].items():
-        payload = build_one(key, meta, shared)
+        payload = build_one(key, meta, shared, faostat)
         out = os.path.join(PUBLIC, FILE_FOR[key])
         with open(out, "w", encoding="utf-8") as handle:
             json.dump(payload, handle, indent=2, ensure_ascii=False)
