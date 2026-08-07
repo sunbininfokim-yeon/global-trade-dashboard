@@ -1,0 +1,182 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "derivatives_intel_v1.schema.json",
+  "title": "derivatives_intel_v1",
+  "description": "Options positioning (CBOE delayed chain) + short selling (FINRA) snapshot consumed by the dashboard. All sources are free and key-free.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "generated_at",
+    "chain_available",
+    "short_volume_available",
+    "tickers",
+    "feed_status",
+    "stats"
+  ],
+  "properties": {
+    "schema_version": { "const": "derivatives_intel_v1" },
+    "generated_at": { "type": "string", "format": "date-time" },
+    "model": {
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "description": { "type": "string" },
+        "limitations": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Surface these in the UI. The panel must not imply it can see sweeps or trade direction."
+        }
+      }
+    },
+    "chain_available": {
+      "type": "boolean",
+      "description": "False when no chain was retrieved; the UI must hide the options panel rather than render zeros."
+    },
+    "short_volume_available": { "type": "boolean" },
+    "rules": {
+      "type": "object",
+      "properties": {
+        "min_notional": { "type": "number" },
+        "min_volume": { "type": "integer" },
+        "min_vol_oi_ratio": { "type": "number" },
+        "max_abs_delta": { "type": "number" },
+        "baseline_days": { "type": "integer" }
+      }
+    },
+    "tickers": { "type": "array", "items": { "$ref": "#/definitions/tickerSnapshot" } },
+    "top_unusual": { "type": "array", "items": { "$ref": "#/definitions/unusual" } },
+    "feed_status": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["source", "ok"],
+        "properties": {
+          "source": { "type": "string" },
+          "ok": { "type": "boolean" },
+          "error": { "type": ["string", "null"] },
+          "note": { "type": "string" },
+          "cost": { "type": "string" }
+        }
+      }
+    },
+    "stats": {
+      "type": "object",
+      "properties": {
+        "tickers": { "type": "integer" },
+        "unusual_contracts": { "type": "integer" },
+        "chains_ok": { "type": "integer" },
+        "sources_ok": { "type": "integer" },
+        "sources_failed": { "type": "integer" },
+        "cost_usd": { "const": 0.0 }
+      }
+    }
+  },
+  "definitions": {
+    "tickerSnapshot": {
+      "type": "object",
+      "required": ["symbol"],
+      "properties": {
+        "symbol": { "type": "string" },
+        "short_volume": {
+          "type": ["object", "null"],
+          "properties": {
+            "date": { "type": "string", "format": "date" },
+            "short_volume": { "type": "number" },
+            "short_exempt_volume": { "type": "number" },
+            "total_volume": { "type": "number" },
+            "short_ratio": {
+              "type": ["number", "null"],
+              "minimum": 0,
+              "maximum": 1,
+              "description": "Fraction, not percent. ~0.4-0.5 is an ordinary resting state for a liquid name — never render it without the z-score."
+            },
+            "markets": { "type": "string" }
+          }
+        },
+        "short_ratio_mean_20d": { "type": ["number", "null"] },
+        "short_ratio_z": {
+          "type": ["number", "null"],
+          "description": "Deviation of today's short ratio from this symbol's own baseline. This, not short_ratio, is the signal."
+        },
+        "short_interest": {
+          "type": ["object", "null"],
+          "description": "Bi-monthly settled position; FINRA publishes on roughly a three-week lag, so a few-weeks-old settlement_date is normal.",
+          "properties": {
+            "settlement_date": { "type": "string", "format": "date" },
+            "current_short": { "type": "integer" },
+            "previous_short": { "type": "integer" },
+            "avg_daily_volume": { "type": "integer" },
+            "days_to_cover": { "type": ["number", "null"] },
+            "change_pct": { "type": ["number", "null"] }
+          }
+        },
+        "chain": { "$ref": "#/definitions/chainSummary" },
+        "unusual": { "type": "array", "items": { "$ref": "#/definitions/unusual" } },
+        "recurring_strikes": {
+          "type": "array",
+          "description": "Contracts flagged on more than one of the last 5 sessions — a position being built rather than one loud day.",
+          "items": {
+            "type": "object",
+            "properties": {
+              "osi": { "type": "string" },
+              "hits": { "type": "integer" },
+              "total_notional": { "type": "number" },
+              "best": { "type": "number" }
+            }
+          }
+        }
+      }
+    },
+    "chainSummary": {
+      "type": ["object", "null"],
+      "properties": {
+        "spot": { "type": "number" },
+        "as_of": { "type": ["string", "null"], "description": "CBOE snapshot time, ~15 min delayed." },
+        "iv30": { "type": ["number", "null"] },
+        "call_volume": { "type": "integer" },
+        "put_volume": { "type": "integer" },
+        "call_oi": { "type": "integer" },
+        "put_oi": { "type": "integer" },
+        "call_premium": { "type": "number" },
+        "put_premium": { "type": "number" },
+        "put_call_volume_ratio": { "type": ["number", "null"] },
+        "put_call_premium_ratio": { "type": ["number", "null"] },
+        "put_call_oi_ratio": { "type": ["number", "null"] },
+        "net_delta_notional": { "type": "number" },
+        "gamma_exposure": {
+          "type": "number",
+          "description": "Dealer GEX under the naive long-call/short-put convention. Read the magnitude and sign flips, not the absolute level."
+        },
+        "contracts_considered": { "type": "integer" }
+      }
+    },
+    "unusual": {
+      "type": "object",
+      "required": ["osi", "underlying", "volume", "open_interest", "notional"],
+      "description": "A standout contract. Note there is deliberately no BUY/SELL or bullish/bearish field: a chain snapshot cannot identify who crossed the spread.",
+      "properties": {
+        "osi": { "type": "string" },
+        "underlying": { "type": "string" },
+        "label": { "type": "string" },
+        "expiry": { "type": "string", "format": "date" },
+        "right": { "enum": ["C", "P"] },
+        "strike": { "type": "number" },
+        "volume": { "type": "integer" },
+        "open_interest": { "type": "integer" },
+        "vol_oi_ratio": {
+          "type": ["number", "null"],
+          "description": "Above 1.0 means more contracts traded today than existed at the open — new positioning."
+        },
+        "notional": { "type": "number", "description": "volume x mid x 100." },
+        "mid": { "type": "number" },
+        "last": { "type": "number" },
+        "dte": { "type": "integer" },
+        "delta": { "type": ["number", "null"] },
+        "iv": { "type": ["number", "null"] },
+        "moneyness": { "type": ["number", "null"] },
+        "score": { "type": "number" },
+        "reasons": { "type": "array", "items": { "type": "string" } }
+      }
+    }
+  }
+}

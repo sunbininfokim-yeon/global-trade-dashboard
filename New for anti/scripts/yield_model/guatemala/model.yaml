@@ -1,0 +1,44 @@
+# guatemala — LatAm banana reference (unblocks build_registry orphan check)
+# 규격: ../MODEL_MANIFEST.md · 본 패키지 본체는 latam_banana/
+
+country: guatemala
+iso: GTM
+label_ko: 과테말라
+label_en: Guatemala
+panel_mode: reference
+data_file: guatemala_yield_forecast.json
+model_status: training
+status_note_ko: "예측 모델 없음 — 바나나 참고·리스크 패널만 (허리케인·시가토카·TR4)."
+model_name: "LatAm banana (reference)"
+
+view:
+  longitude: -90.0
+  latitude: 15.0
+  zoom: 6.2
+
+regions:
+  - key: guatemala_belt_1
+    label_ko: "Puerto Barrios / Izabal"
+    ui_name: guatemala_belt_1
+    coordinates: [-88.59, 15.73]
+    crops_region_keys: [guatemala_belt_1]
+  - key: guatemala_belt_2
+    label_ko: "Escuintla Pacific"
+    ui_name: guatemala_belt_2
+    coordinates: [-90.79, 14.30]
+    crops_region_keys: [guatemala_belt_2]
+
+sources:
+  labels:
+    name: "FAO bananas / MAGA (reference)"
+    url: https://www.fao.org/markets-and-trade/commodities/bananas
+    updated: "2026-08-06"
+  climate:
+    name: NASA POWER (daily)
+    url: https://power.larc.nasa.gov/
+    updated: "2026-08-06"
+
+trade_policy:
+  restricted: false
+  prohibited_crops: []
+  note_ko: "바나나 참고국 · 예측 아님"

@@ -1,0 +1,50 @@
+---
+description: Cursor ML-only scope — do not touch UI/deploy/ops-owned files or switch branches without asking
+alwaysApply: true
+---
+
+# Cursor ML scope (hard rules)
+
+## Read-only UI / deploy / ops files
+
+Cursor must **NOT modify** these files (read-only only):
+
+- `New for anti/app.js`
+- `New for anti/style.css`
+- `New for anti/index.html`
+- `New for anti/data.js`
+- `New for anti/shipping.js`
+- `_worker.js`
+- `wrangler.jsonc`
+- `.github/workflows/**`
+- `CLAUDE.md`
+- `docs/ops/OWNERS.md`
+- `docs/ops/TASKS.md`
+
+## Branch discipline
+
+- Never change git branches without asking the user first.
+- **NEVER** checkout `claude/*` branches.
+- Stay on the current ML branch; switch only when the user explicitly authorizes it.
+
+## Allowed Cursor work scope (ML / model only)
+
+- `New for anti/scripts/yield_model/**` (including `{country}/model.yaml`)
+- `public/data/*_yield_forecast.json` and `New for anti/public/data/*_yield_forecast.json` (respect `New for anti/scripts/yield_model/DATA_LAYOUT.md`)
+
+## Country → screen (no UI edit)
+
+Do **not** wire countries via `CLIMATE_COUNTRIES` in `app.js`. Use:
+
+```bash
+cd "New for anti/scripts/yield_model"
+python3 scaffold_manifest.py {country}   # fill iso / label_ko / label_en / sources
+python3 build_registry.py --check        # validate only; do not commit climate_registry_v1.json
+```
+
+See `MODEL_MANIFEST.md` and rule `climate-manifest-no-appjs`.
+
+## Git hygiene
+
+- Never stage or commit `.verify_live/` (Chrome profile junk).
+- Never commit `public/data/climate_registry_v1.json` from a country PR (CI regenerates on main).

@@ -1,0 +1,44 @@
+# honduras — LatAm banana reference (unblocks build_registry orphan check)
+# 규격: ../MODEL_MANIFEST.md · 본 패키지 본체는 latam_banana/
+
+country: honduras
+iso: HND
+label_ko: 온두라스
+label_en: Honduras
+panel_mode: reference
+data_file: honduras_yield_forecast.json
+model_status: training
+status_note_ko: "예측 모델 없음 — 바나나 참고·리스크 패널만 (허리케인 blowdown·시가토카)."
+model_name: "LatAm banana (reference)"
+
+view:
+  longitude: -87.5
+  latitude: 15.2
+  zoom: 6.5
+
+regions:
+  - key: honduras_belt_1
+    label_ko: "La Lima / Cortés"
+    ui_name: honduras_belt_1
+    coordinates: [-87.92, 15.43]
+    crops_region_keys: [honduras_belt_1]
+  - key: honduras_belt_2
+    label_ko: "El Progreso / Yoro"
+    ui_name: honduras_belt_2
+    coordinates: [-87.80, 15.40]
+    crops_region_keys: [honduras_belt_2]
+
+sources:
+  labels:
+    name: "FAO bananas (reference)"
+    url: https://www.fao.org/markets-and-trade/commodities/bananas
+    updated: "2026-08-06"
+  climate:
+    name: NASA POWER (daily)
+    url: https://power.larc.nasa.gov/
+    updated: "2026-08-06"
+
+trade_policy:
+  restricted: false
+  prohibited_crops: []
+  note_ko: "바나나 참고국 · 예측 아님"

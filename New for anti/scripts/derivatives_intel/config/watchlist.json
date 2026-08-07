@@ -1,0 +1,18 @@
+{
+  "tickers": ["TSLA", "NVDA", "AAPL", "AMD", "PLTR"],
+
+  "_chain_rules_note": "CBOE 지연 체인 스냅샷 기준. sweep/aggressor는 틱 데이터가 없으면 판정 불가하므로 여기서는 신규 포지셔닝(volume/OI)으로 이상 거래를 잡는다.",
+  "chain_rules": {
+    "min_notional": 250000,
+    "min_volume": 100,
+    "min_vol_oi_ratio": 1.0,
+    "min_dte": 0,
+    "max_dte": 400,
+    "max_spread_pct": 0.6,
+    "max_abs_delta": 0.95,
+    "top_n": 20
+  },
+
+  "baseline_days": 20,
+  "short_lookback_days": 40
+}

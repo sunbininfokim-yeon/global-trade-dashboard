@@ -1,0 +1,105 @@
+{
+  "generated_at": "2026-08-07T05:53:02.539617+00:00",
+  "season": 2020,
+  "country": "Ecuador",
+  "title_ko": "에콰도르 바나나 참고·리스크",
+  "forecast_available": false,
+  "panel_mode": "reference",
+  "reason_ko": "캐번디시 수출은 시가토카·폭풍·TR4가 지배적입니다. 주간 YLWS/YLS(가능하면 3–4년+)가 오기 전에는 수량성 point를 내지 않고, FAO 수출 참고치와 NASA POWER 기상 리스크 프록시만 표시합니다.",
+  "methodology_note": "No YLWS required. FAO Compendium export reference + optional NASA POWER Sigatoka/wind pressure proxies. Never writes point.",
+  "dashboard_url": "https://global-trade-dashboard.sunbin-info-kim.workers.dev",
+  "government_outlooks": [
+    {
+      "agency": "FAO Banana Statistical Compendium",
+      "agency_ko": "FAO 바나나 통계 요약",
+      "season": "2020",
+      "metric_ko": "신선 바나나 수출 (참고)",
+      "value": 7036,
+      "unit": "1000 tonnes",
+      "status_ko": "Compendium 표의 최근 열(~2020). 최신 연도는 FAOSTAT/Compendium에서 재확인.",
+      "note_ko": "세계 최대 바나나 수출국 — Los Ríos / Guayas / El Oro",
+      "url": "https://www.fao.org/markets-and-trade/commodities/bananas",
+      "url_label": "FAO bananas"
+    }
+  ],
+  "research_notes": [
+    {
+      "title_ko": "블랙 시가토카",
+      "body_ko": "만성 엽면 병. 현장 gold standard는 주간 YLWS/YLS(비공개). 패널은 RH≥90% 일수 등 기상 압력만 표시.",
+      "links": []
+    },
+    {
+      "title_ko": "허리케인 blowdown",
+      "body_ko": "중미 북부·카리브. ~80 km/h 이상 최대풍이면 전복 리스크. POWER 일평균 강풍일수는 소프트 프록시.",
+      "links": []
+    },
+    {
+      "title_ko": "TR4",
+      "body_ko": "토양 전염·면적 격리. 수량성 point로 모델링하지 않음.",
+      "links": []
+    },
+    {
+      "title_ko": "YLWS 없이 운영",
+      "body_ko": "병 점수 시계열이 오면 그때 재검토. 지금은 FAO 수출 참고 + POWER 리스크 프록시만. 대시보드: https://global-trade-dashboard.sunbin-info-kim.workers.dev",
+      "links": [
+        {
+          "label": "dashboard",
+          "url": "https://global-trade-dashboard.sunbin-info-kim.workers.dev"
+        },
+        {
+          "label": "Olivares et al. 2022",
+          "url": "https://doi.org/10.3390/su142114123"
+        }
+      ]
+    },
+    {
+      "title_ko": "기상 리스크 — 에콰도르 연안 바나나",
+      "body_ko": "2025년 벨트 가중 POWER 프록시: · 시가토카형 고습일(RH≥90%) 9.7일 · 최장 고습 연속 1.5일 · 우기 강수 821.98 mm · → 환경 압력 지표이며 박스/ha 예측이 아님.",
+      "links": []
+    }
+  ],
+  "headline_risks_ko": [
+    "블랙 시가토카",
+    "ENSO 습윤·가뭄",
+    "TR4 격리 리스크"
+  ],
+  "sources": [
+    {
+      "name": "FAO Banana Statistical Compendium 2020 (export volumes, 1000 tonnes)",
+      "url": "https://www.fao.org/markets-and-trade/commodities/bananas",
+      "supports": "national export reference"
+    },
+    {
+      "name": "NASA POWER",
+      "url": "https://power.larc.nasa.gov/",
+      "supports": "optional weather-risk proxies only"
+    }
+  ],
+  "regions": {
+    "ecuador_coast_banana": {
+      "label": "Ecuador coastal banana",
+      "label_ko": "에콰도르 연안 바나나",
+      "forecast_available": false,
+      "reason_ko": "캐번디시 수출은 시가토카·폭풍·TR4가 지배적입니다. 주간 YLWS/YLS(가능하면 3–4년+)가 오기 전에는 수량성 point를 내지 않고, FAO 수출 참고치와 NASA POWER 기상 리스크 프록시만 표시합니다.",
+      "weather_risk": {
+        "year": 2025,
+        "sigatoka_rh_days": 9.7,
+        "humid_spell_max": 1.5,
+        "rain_wet": 821.98,
+        "wet_days": 164.1,
+        "wind_storm_days": 0.0,
+        "wind_max_daily": 3.46,
+        "rain_year": 1101.41,
+        "tmean_year": 24.42,
+        "heat_days_34": 61.2
+      },
+      "weather_risk_note_ko": "2025년 벨트 가중 POWER 프록시: · 시가토카형 고습일(RH≥90%) 9.7일 · 최장 고습 연속 1.5일 · 우기 강수 821.98 mm · → 환경 압력 지표이며 박스/ha 예측이 아님.",
+      "crops": {
+        "banana": {
+          "label_ko": "바나나",
+          "unit": "kg/ha"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,35 @@
+---
+description: Country dashboards use model.yaml + registry — never edit app.js to add a country
+alwaysApply: true
+---
+
+# Climate country wiring (no app.js)
+
+## Do this
+
+When a yield/reference country is ready for the dashboard:
+
+```bash
+cd "New for anti/scripts/yield_model"
+python3 scaffold_manifest.py {country}
+# Fill TODOs: iso, label_ko, label_en, view, sources (and any [TODO,TODO] coords)
+python3 build_registry.py --check
+```
+
+Then PR **only**:
+
+- `scripts/yield_model/{country}/model.yaml` (+ package if new)
+- `public/data/{country}_yield_forecast.json` (if not already on main)
+
+**Do not** edit `New for anti/app.js` / `CLIMATE_COUNTRIES` to add a country.  
+**Do not** commit `public/data/climate_registry_v1.json` (generated on main by CI).
+
+Spec: `scripts/yield_model/MODEL_MANIFEST.md`
+
+## Why
+
+Parallel country work used to collide on one `app.js` object. Manifests isolate each country; the UI fetches the registry.
+
+## Orphan forecasts
+
+If `--check` fails with “예측 JSON 이 있는데 매니페스트가 없다”, scaffold that country (or a thin `model.yaml` folder) before merging — otherwise CI blocks everyone.

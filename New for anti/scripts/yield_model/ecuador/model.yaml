@@ -1,0 +1,49 @@
+# ecuador — LatAm banana reference (unblocks build_registry orphan check)
+# 규격: ../MODEL_MANIFEST.md · 본 패키지 본체는 latam_banana/
+
+country: ecuador
+iso: ECU
+label_ko: 에콰도르
+label_en: Ecuador
+panel_mode: reference
+data_file: ecuador_yield_forecast.json
+model_status: training
+status_note_ko: "예측 모델 없음 — 바나나 참고·리스크 패널만 (시가토카·ENSO·TR4)."
+model_name: "LatAm banana (reference)"
+
+view:
+  longitude: -79.5
+  latitude: -2.0
+  zoom: 5.8
+
+regions:
+  - key: ecuador_belt_1
+    label_ko: "Quevedo / Los Ríos"
+    ui_name: ecuador_belt_1
+    coordinates: [-79.45, -1.03]
+    crops_region_keys: [ecuador_belt_1]
+  - key: ecuador_belt_2
+    label_ko: "Guayaquil belt"
+    ui_name: ecuador_belt_2
+    coordinates: [-79.90, -2.17]
+    crops_region_keys: [ecuador_belt_2]
+  - key: ecuador_belt_3
+    label_ko: "Machala / El Oro"
+    ui_name: ecuador_belt_3
+    coordinates: [-79.96, -3.26]
+    crops_region_keys: [ecuador_belt_3]
+
+sources:
+  labels:
+    name: "FAOSTAT / FAO Banana Statistical Compendium"
+    url: https://www.fao.org/markets-and-trade/commodities/bananas
+    updated: "2026-08-06"
+  climate:
+    name: NASA POWER (daily)
+    url: https://power.larc.nasa.gov/
+    updated: "2026-08-06"
+
+trade_policy:
+  restricted: false
+  prohibited_crops: []
+  note_ko: "바나나 참고국 · 예측 아님"
