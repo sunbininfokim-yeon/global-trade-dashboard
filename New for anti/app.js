@@ -5027,6 +5027,260 @@ const pfLoadRefs = async () => {
 const pfKrw = (n) => (n === null || n === undefined || Number.isNaN(n))
     ? '—' : `${Math.round(n).toLocaleString('ko-KR')}원`;
 
+// A holding is entered either as "how much it is worth" or "how many I hold".
+// Shares are the honest unit for a stock -- the amount drifts with the price
+// while the share count does not -- so the value is derived, and the price it
+// was derived from is kept alongside it to show how stale the figure is.
+const pfValueOf = (p) => {
+    if (!p) return null;
+    if (p.mode === 'shares') {
+        if (!(p.shares > 0) || !(p.price > 0)) return null;
+        return p.shares * p.price * (p.fx || 1);
+    }
+    const v = Number(p.value);
+    return Number.isFinite(v) && v !== 0 ? v : null;
+};
+
+const pfPriceCache = new Map();
+
+// Last close plus the exchange rate that puts it in KRW. Base-currency cash has
+// neither, so it is priced at 1 and multiplied by nothing.
+const pfSpot = async (symbol, currency) => {
+    if (!symbol) return { price: 1, fx: 1, currency: 'KRW' };
+    const key = `${symbol}|${currency || ''}`;
+    if (pfPriceCache.has(key)) return pfPriceCache.get(key);
+    const task = (async () => {
+        const j = await pfFetchHistory(symbol, '1y');
+        const cur = j.currency || currency || 'KRW';
+        let fx = 1;
+        const fxSym = pfFxSymbol(cur);
+        if (fxSym && fxSym !== symbol) {
+            const f = await pfFetchHistory(fxSym, '1y');
+            fx = f.price || 1;
+        }
+        return { price: j.price, fx, currency: cur };
+    })();
+    pfPriceCache.set(key, task);
+    return task;
+};
+
+// --- 계산 -------------------------------------------------------------------
+// Runs entirely in the browser. The Worker only proxies public price series, so
+// nobody's holdings reach a server. Deliberately mirrors the Python engine in
+// scripts/금융_재무분석 so the two can be cross-checked -- that comparison is
+// what surfaced the leverage bug in returns.py, and it only works if the
+// formulas stay recognisably the same on both sides.
+const PF_TRADING_DAYS = 252;
+const PF_RF_ANNUAL = 0.03;
+const PF_Z95 = 1.6448536269514722;
+
+const pfQuoteCache = new Map();
+
+const pfFetchHistory = async (symbol, range = '2y') => {
+    const key = `${symbol}|${range}`;
+    if (pfQuoteCache.has(key)) return pfQuoteCache.get(key);
+    const p = (async () => {
+        const res = await fetch(`/api/quote/history?symbol=${encodeURIComponent(symbol)}&range=${range}`);
+        if (!res.ok) throw new Error(`${symbol}: 가격을 못 받았습니다 (${res.status})`);
+        const j = await res.json();
+        if (!j.points || j.points.length < 60) throw new Error(`${symbol}: 가격 이력이 너무 짧습니다`);
+        return j;
+    })();
+    pfQuoteCache.set(key, p);
+    return p;
+};
+
+// Yahoo quotes each instrument in its home currency, so a KRW-based portfolio
+// has to convert before returns can be compared. Fetched as its own series
+// because the exchange rate is a risk the holder actually carries.
+const pfFxSymbol = (cur) => (!cur || cur === 'KRW') ? null : `${cur}KRW=X`;
+
+const pfAlign = (series) => {
+    // Intersect on trading days: markets keep different holidays, and pairing a
+    // stale carried-forward close against a live one invents correlation.
+    const keys = Object.keys(series);
+    if (!keys.length) return { dates: [], cols: {} };
+    let common = null;
+    for (const k of keys) {
+        const s = new Set(series[k].map(([t]) => Math.floor(t / 86400)));
+        common = common === null ? s : new Set([...common].filter((d) => s.has(d)));
+    }
+    const dates = [...common].sort((a, b) => a - b);
+    const cols = {};
+    for (const k of keys) {
+        const m = new Map(series[k].map(([t, v]) => [Math.floor(t / 86400), v]));
+        cols[k] = dates.map((d) => m.get(d));
+    }
+    return { dates, cols };
+};
+
+const pfSimpleReturns = (arr) => {
+    const out = [];
+    for (let i = 1; i < arr.length; i++) out.push(arr[i] / arr[i - 1] - 1);
+    return out;
+};
+
+const pfMean = (a) => a.reduce((x, y) => x + y, 0) / (a.length || 1);
+
+const pfStd = (a) => {
+    if (a.length < 2) return 0;
+    const m = pfMean(a);
+    return Math.sqrt(a.reduce((s, x) => s + (x - m) ** 2, 0) / (a.length - 1));
+};
+
+const pfCov = (cols) => {
+    const n = cols.length;
+    const means = cols.map(pfMean);
+    const T = cols[0].length;
+    const S = Array.from({ length: n }, () => new Array(n).fill(0));
+    for (let i = 0; i < n; i++) {
+        for (let j = i; j < n; j++) {
+            let s = 0;
+            for (let t = 0; t < T; t++) s += (cols[i][t] - means[i]) * (cols[j][t] - means[j]);
+            const v = s / Math.max(T - 1, 1);
+            S[i][j] = v; S[j][i] = v;
+        }
+    }
+    return S;
+};
+
+const pfMatVec = (S, w) => S.map((row) => row.reduce((s, v, j) => s + v * w[j], 0));
+const pfDot = (a, b) => a.reduce((s, v, i) => s + v * b[i], 0);
+const pfQuantile = (sorted, p) => {
+    if (!sorted.length) return 0;
+    const i = (sorted.length - 1) * p;
+    const lo = Math.floor(i), hi = Math.ceil(i);
+    return lo === hi ? sorted[lo] : sorted[lo] + (sorted[hi] - sorted[lo]) * (i - lo);
+};
+
+// Assets that move together are one bet wearing several names. Single-link
+// union-find over a correlation threshold, same as the Python side.
+const pfClusters = (names, corr, thr = 0.6) => {
+    const parent = names.map((_, i) => i);
+    const find = (a) => { while (parent[a] !== a) { parent[a] = parent[parent[a]]; a = parent[a]; } return a; };
+    const union = (a, b) => { const ra = find(a), rb = find(b); if (ra !== rb) parent[rb] = ra; };
+    for (let i = 0; i < names.length; i++) {
+        for (let j = i + 1; j < names.length; j++) if (corr[i][j] >= thr) union(i, j);
+    }
+    const groups = new Map();
+    names.forEach((_, i) => {
+        const r = find(i);
+        if (!groups.has(r)) groups.set(r, []);
+        groups.get(r).push(i);
+    });
+    return [...groups.values()].filter((g) => g.length > 1);
+};
+
+const pfCompute = async (pf, onProgress) => {
+    const rows = pf.positions.filter((p) => pfValueOf(p) !== null && pfValueOf(p) !== 0);
+    if (rows.length < 2) throw new Error('종목이 2개 이상이어야 계산할 수 있습니다.');
+
+    // Cash in the base currency has no price series of its own; it is the
+    // thing everything else is measured against.
+    const needed = new Set();
+    for (const p of rows) {
+        if (p.symbol) needed.add(p.symbol);
+        const fx = pfFxSymbol(p.currency);
+        if (fx && p.symbol !== fx) needed.add(fx);
+    }
+
+    let done = 0;
+    const fetched = {};
+    for (const sym of needed) {
+        onProgress && onProgress(`가격 받는 중… ${++done}/${needed.size}`);
+        fetched[sym] = await pfFetchHistory(sym);
+    }
+
+    const series = {};
+    for (const [sym, j] of Object.entries(fetched)) series[sym] = j.points;
+    const { dates, cols } = pfAlign(series);
+    if (dates.length < 60) throw new Error('공통 거래일이 60일 미만이라 계산이 불안정합니다.');
+
+    // Each holding becomes one KRW-denominated return series.
+    const names = [], weights = [], meta = [];
+    const retCols = [];
+    const total = rows.reduce((a, p) => a + Math.abs(pfValueOf(p)), 0);
+
+    for (const p of rows) {
+        const signed = (p.side === 'short' ? -1 : 1) * Math.abs(pfValueOf(p));
+        const fxSym = pfFxSymbol(p.currency);
+
+        let krwPath;
+        if (!p.symbol) {
+            // Base-currency cash: flat in KRW terms.
+            krwPath = dates.map(() => 1);
+        } else if (p.symbol === fxSym) {
+            krwPath = cols[p.symbol];                       // holding the currency itself
+        } else if (fxSym) {
+            krwPath = cols[p.symbol].map((v, i) => v * cols[fxSym][i]);
+        } else {
+            krwPath = cols[p.symbol];
+        }
+
+        let r = pfSimpleReturns(krwPath);
+        const lev = Number(p.leverage) || 1;
+        // A daily-rebalanced 2x fund doubles the SIMPLE return each day. Doubling
+        // log returns instead squares the price path and quietly drops volatility
+        // decay -- the exact bug found in the Python engine (returns.py:158).
+        if (lev !== 1) r = r.map((x) => lev * x);
+
+        names.push(p.name);
+        weights.push(signed / total);
+        retCols.push(r);
+        meta.push({ ...p, signed, weight: signed / total, lev });
+    }
+
+    const T = Math.min(...retCols.map((c) => c.length));
+    const cut = retCols.map((c) => c.slice(c.length - T));
+
+    const logCols = cut.map((c) => c.map((x) => Math.log1p(Math.max(x, -0.999999))));
+    const S = pfCov(logCols);
+    const portVar = pfDot(weights, pfMatVec(S, weights));
+    const dailyVol = Math.sqrt(Math.max(portVar, 0));
+    const annVol = dailyVol * Math.sqrt(PF_TRADING_DAYS);
+
+    const mrc = pfMatVec(S, weights);
+    const rc = portVar > 0 ? weights.map((w, i) => w * mrc[i] / portVar) : weights.map(() => 0);
+
+    // Portfolio return is a weighted sum of simple returns; compounding that
+    // daily series is what an actual account does.
+    const portR = [];
+    for (let t = 0; t < T; t++) portR.push(weights.reduce((s, w, i) => s + w * cut[i][t], 0));
+
+    const sorted = [...portR].sort((a, b) => a - b);
+    const var1d = -pfQuantile(sorted, 0.05);
+    const cvar1d = -pfMean(sorted.slice(0, Math.max(1, Math.floor(sorted.length * 0.05))));
+    const var10d = PF_Z95 * dailyVol * Math.sqrt(10);
+
+    const window = Math.min(PF_TRADING_DAYS, portR.length);
+    const ret1y = portR.slice(-window).reduce((a, x) => a * (1 + x), 1) - 1;
+    const annRet = window >= PF_TRADING_DAYS ? ret1y
+        : Math.pow(1 + ret1y, PF_TRADING_DAYS / window) - 1;
+    const sharpe = annVol > 0 ? (annRet - PF_RF_ANNUAL) / annVol : null;
+
+    const sd = logCols.map(pfStd);
+    const corr = S.map((row, i) => row.map((v, j) =>
+        (sd[i] > 0 && sd[j] > 0) ? v / (sd[i] * sd[j]) : 0));
+
+    const krwWeight = meta.filter((m) => m.currency === 'KRW')
+        .reduce((a, m) => a + Math.abs(m.weight), 0);
+
+    return {
+        names, weights, rc, meta, corr, total,
+        obs: T,
+        start: new Date(dates[dates.length - T] * 86400000).toISOString().slice(0, 10),
+        end: new Date(dates[dates.length - 1] * 86400000).toISOString().slice(0, 10),
+        annVol, annRet, sharpe,
+        var1d, cvar1d, var10d,
+        var10dKrw: var10d * total,
+        krwWeight, foreignWeight: 1 - krwWeight,
+        clusters: pfClusters(names, corr).map((g) => ({
+            members: g.map((i) => names[i]),
+            weight: g.reduce((a, i) => a + Math.abs(weights[i]), 0),
+        })),
+    };
+};
+
 // Alias match, not fuzzy search: the registry carries hand-written Korean
 // aliases ("삼전", "하이닉스") precisely so a substring test is enough.
 const pfSearch = (q) => {
@@ -5041,9 +5295,14 @@ const pfSearch = (q) => {
 
 const PF_CLASS_KO = { cash: '현금', equity: '주식', etf: 'ETF', bond: '채권', commodity: '원자재', fx: '환율' };
 
+// Adding a holding re-renders the whole form, so the unit toggle has to live
+// outside it. Kept local once, it silently reverted to 금액 after every add and
+// the next "5" meant five won instead of five shares.
+let pfMode = 'value';
+
 const renderPfInput = (root, onDone) => {
     const pf = pfLoad() || pfBlank();
-    const total = pf.positions.reduce((a, p) => a + Math.abs(p.value || 0), 0);
+    const total = pf.positions.reduce((a, p) => a + Math.abs(pfValueOf(p) || 0), 0);
 
     root.innerHTML = `
         <section class="fin-block fin-block-wide pf-input">
@@ -5067,7 +5326,12 @@ const renderPfInput = (root, onDone) => {
                            placeholder="종목명·티커로 검색 (예: 삼전, 엔비디아, 달러)">
                     <div id="pf-sug" class="pf-sug hidden"></div>
                 </div>
-                <input type="text" id="pf-amt" class="pf-field pf-amt" inputmode="numeric" placeholder="평가금액 (원)">
+                <div class="pf-mode" role="group" aria-label="입력 단위">
+                    <button type="button" class="pf-mode-btn ${pfMode === 'value' ? 'on' : ''}" data-mode="value">금액</button>
+                    <button type="button" class="pf-mode-btn ${pfMode === 'shares' ? 'on' : ''}" data-mode="shares">주수</button>
+                </div>
+                <input type="text" id="pf-amt" class="pf-field pf-amt" inputmode="numeric"
+                       placeholder="${pfMode === 'shares' ? '보유 주수' : '평가금액 (원)'}">
                 <select id="pf-side" class="pf-field pf-side">
                     <option value="long">매수</option>
                     <option value="short">공매도</option>
@@ -5089,7 +5353,8 @@ const renderPfInput = (root, onDone) => {
             <div class="pf-rows">
                 ${pf.positions.map((p, i) => {
                     const it = PF_REGISTRY.find((x) => x.id === p.id) || {};
-                    const w = total ? Math.abs(p.value) / total : 0;
+                    const val = pfValueOf(p);
+                    const w = (total && val !== null) ? Math.abs(val) / total : 0;
                     return `
                     <div class="pf-row">
                         <span class="pf-row-name">
@@ -5098,8 +5363,12 @@ const renderPfInput = (root, onDone) => {
                             ${it.leveraged ? '<span class="fin-tag fin-tag-warn">레버리지</span>' : ''}
                             ${it.proxy || it.synthetic_leverage ? '<span class="fin-tag">프록시</span>' : ''}
                             ${p.side === 'short' ? '<span class="fin-tag fin-tag-warn">공매도</span>' : ''}
+                            ${p.mode === 'shares'
+                                ? `<span class="pf-row-sub">${p.shares.toLocaleString('ko-KR')}주 ·
+                                   ${pfKrw(p.price * (p.fx || 1))} 기준 (${finEsc(p.pricedAt || '')})</span>`
+                                : ''}
                         </span>
-                        <span class="pf-row-val">${pfKrw(p.value)}</span>
+                        <span class="pf-row-val">${pfKrw(val)}</span>
                         <span class="pf-row-w">${(w * 100).toFixed(1)}%</span>
                         <button class="pf-del" data-i="${i}" aria-label="삭제">✕</button>
                     </div>`;
@@ -5123,14 +5392,60 @@ const renderPfInput = (root, onDone) => {
     const addEl = root.querySelector('#pf-add');
     const pickedEl = root.querySelector('#pf-picked');
     let picked = null;
+    let spot = null;          // { price, fx, currency } for the picked instrument
+    let mode = pfMode;
+
+    const numOf = () => Number(String(amtEl.value).replace(/[^0-9.]/g, ''));
 
     const refreshAdd = () => {
         const full = (pfLoad() || pfBlank()).positions.length >= PF_MAX;
-        addEl.disabled = full || !(picked && Number(String(amtEl.value).replace(/[^0-9.]/g, '')) > 0);
+        const ready = mode === 'shares' ? (spot && spot.price > 0) : true;
+        addEl.disabled = full || !picked || !(numOf() > 0) || !ready;
     };
 
+    // In share mode the amount is unknown until a price arrives, so show the
+    // arithmetic rather than a number that appeared from nowhere.
+    const showPicked = () => {
+        if (!picked) { pickedEl.textContent = ''; pickedEl.className = 'pf-picked'; return; }
+        const label = `선택: ${picked.name_ko} (${picked.currency})`;
+        if (mode !== 'shares') { pickedEl.textContent = label; pickedEl.className = 'pf-picked'; return; }
+        if (!spot) { pickedEl.textContent = `${label} · 현재가 조회 중…`; return; }
+        if (!(spot.price > 0)) {
+            pickedEl.textContent = `${label} · 현재가를 못 받았습니다 — 금액으로 넣어 주세요`;
+            pickedEl.className = 'pf-picked pf-picked-warn';
+            return;
+        }
+        const n = numOf();
+        const unit = spot.price * (spot.fx || 1);
+        pickedEl.className = 'pf-picked';
+        pickedEl.textContent = n > 0
+            ? `${label} · 현재가 ${pfKrw(unit)} × ${n.toLocaleString('ko-KR')}주 = ${pfKrw(unit * n)}`
+            : `${label} · 현재가 ${pfKrw(unit)}`;
+    };
+
+    const loadSpot = async () => {
+        if (!picked || mode !== 'shares') return;
+        spot = null; showPicked(); refreshAdd();
+        try {
+            spot = await pfSpot(picked.yahoo || null, picked.currency);
+        } catch (_) {
+            spot = { price: 0, fx: 1, currency: picked.currency };
+        }
+        showPicked(); refreshAdd();
+    };
+
+    root.querySelectorAll('.pf-mode-btn').forEach((b) => b.addEventListener('click', () => {
+        mode = pfMode = b.dataset.mode;
+        root.querySelectorAll('.pf-mode-btn').forEach((x) => x.classList.toggle('on', x.dataset.mode === mode));
+        amtEl.placeholder = mode === 'shares' ? '보유 주수' : '평가금액 (원)';
+        amtEl.value = '';
+        loadSpot();
+        showPicked();
+        refreshAdd();
+    }));
+
     qEl.addEventListener('input', () => {
-        picked = null; pickedEl.textContent = ''; refreshAdd();
+        picked = null; spot = null; pickedEl.textContent = ''; refreshAdd();
         const hits = pfSearch(qEl.value);
         if (!hits.length) { sugEl.classList.add('hidden'); return; }
         sugEl.innerHTML = hits.map((h) => `
@@ -5146,8 +5461,9 @@ const renderPfInput = (root, onDone) => {
         if (!b) return;
         picked = PF_REGISTRY.find((x) => x.id === b.dataset.id) || null;
         qEl.value = picked ? picked.name_ko : '';
-        pickedEl.textContent = picked ? `선택: ${picked.name_ko} (${picked.currency})` : '';
         sugEl.classList.add('hidden');
+        showPicked();
+        loadSpot();
         amtEl.focus();
         refreshAdd();
     });
@@ -5156,20 +5472,38 @@ const renderPfInput = (root, onDone) => {
     amtEl.addEventListener('input', () => {
         const raw = String(amtEl.value).replace(/[^0-9]/g, '');
         amtEl.value = raw ? Number(raw).toLocaleString('ko-KR') : '';
+        showPicked();
         refreshAdd();
     });
 
     addEl.addEventListener('click', () => {
-        const val = Number(String(amtEl.value).replace(/[^0-9.]/g, ''));
-        if (!picked || !(val > 0)) return;
+        const n = numOf();
+        if (!picked || !(n > 0)) return;
         const side = root.querySelector('#pf-side').value;
         const next = pfLoad() || pfBlank();
         next.risk_profile = root.querySelector('input[name="pf-profile"]:checked')?.value || next.risk_profile;
-        const existing = next.positions.findIndex((p) => p.id === picked.id && p.side === side);
+
+        const same = (p) => p.id === picked.id && p.side === side && (p.mode || 'value') === mode;
+        const existing = next.positions.findIndex(same);
+        const row = mode === 'shares'
+            ? { id: picked.id, side, mode: 'shares', shares: n,
+                price: spot.price, fx: spot.fx, pricedAt: new Date().toISOString().slice(0, 10) }
+            : { id: picked.id, side, mode: 'value', value: n };
+
         // Topping up something already held is fine at the cap; only new rows count.
-        if (existing >= 0) next.positions[existing].value += val;
-        else if (next.positions.length < PF_MAX) next.positions.push({ id: picked.id, value: val, side });
-        else return;
+        if (existing >= 0) {
+            if (mode === 'shares') {
+                next.positions[existing].shares += n;
+                next.positions[existing].price = spot.price;
+                next.positions[existing].fx = spot.fx;
+                next.positions[existing].pricedAt = row.pricedAt;
+            } else {
+                next.positions[existing].value += n;
+            }
+        } else if (next.positions.length < PF_MAX) {
+            next.positions.push(row);
+        } else return;
+
         pfSave(next);
         renderPfInput(root, onDone);
     });

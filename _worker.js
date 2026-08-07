@@ -40,6 +40,11 @@ export default {
             return await handleLiquidity(request, env);
         }
 
+        // Instrument lookup + daily price history for the portfolio panel
+        if (url.pathname.startsWith('/api/quote')) {
+            return await handleQuote(request, env);
+        }
+
         // Multi-country official reports (US/JP/CN/EU…)
         if (url.pathname.startsWith('/api/official-reports')) {
             return await handleOfficialReports(request, env);
@@ -800,6 +805,101 @@ async function handleMacro(request, env, ctx) {
         }
 
         return new Response(JSON.stringify({ error: "Invalid macro source" }), { status: 400, headers: JSON_HEADERS });
+
+    } catch (err) {
+        return new Response(JSON.stringify({ error: err.message }), { status: 500, headers: JSON_HEADERS });
+    }
+}
+
+// --- Instrument lookup + daily prices -------------------------------------
+// The portfolio panel computes covariance in the browser, which needs daily
+// closes -- the existing /api/macro yfinance route returns monthly, far too
+// coarse to estimate a covariance matrix from. Kept separate rather than
+// widening that route because the cache lifetimes differ by an order of
+// magnitude: a ticker's name never changes, its price does.
+const YF_HEADERS = { "User-Agent": "Mozilla/5.0", "Accept": "application/json" };
+
+async function handleQuote(request, env) {
+    const url = new URL(request.url);
+    const action = url.pathname.replace(/^\/api\/quote\/?/, '') || 'search';
+
+    try {
+        if (action === 'search') {
+            const q = (url.searchParams.get('q') || '').trim();
+            if (!q) return new Response(JSON.stringify({ quotes: [] }), { headers: JSON_HEADERS });
+
+            return kvCachedJson(env, `yfsearch:${q.toLowerCase()}`, 86400, async () => {
+                const yf = `https://query1.finance.yahoo.com/v1/finance/search`
+                    + `?q=${encodeURIComponent(q)}&quotesCount=12&newsCount=0&listsCount=0`;
+                const res = await fetch(yf, { headers: YF_HEADERS });
+                if (!res.ok) return { ok: false, status: res.status };
+                const body = await res.json();
+
+                // Trim to what the picker needs. Yahoo returns indices, futures
+                // and currencies alongside equities; all are legitimate holdings
+                // here, but options and anything without a symbol are not.
+                const quotes = (body.quotes || [])
+                    .filter((q2) => q2.symbol && q2.quoteType !== 'OPTION')
+                    .map((q2) => ({
+                        symbol: q2.symbol,
+                        name: q2.longname || q2.shortname || q2.symbol,
+                        exchange: q2.exchDisp || q2.exchange || '',
+                        type: q2.quoteType || '',
+                    }));
+                return { ok: true, body: { quotes } };
+            });
+        }
+
+        if (action === 'history') {
+            const symbol = (url.searchParams.get('symbol') || '').trim();
+            if (!symbol) {
+                return new Response(JSON.stringify({ error: 'symbol required' }), { status: 400, headers: JSON_HEADERS });
+            }
+            const range = ['1y', '2y', '5y'].includes(url.searchParams.get('range'))
+                ? url.searchParams.get('range') : '2y';
+
+            // An hour of staleness is immaterial to a covariance estimate built
+            // from two years of closes, and it keeps Yahoo from rate-limiting
+            // this Worker's shared egress IP.
+            return kvCachedJson(env, `yfhist:${symbol}:${range}`, 3600, async () => {
+                const yf = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}`
+                    + `?range=${range}&interval=1d`;
+                const res = await fetch(yf, { headers: YF_HEADERS });
+                if (!res.ok) return { ok: false, status: res.status };
+                const raw = await res.json();
+
+                const r = raw && raw.chart && raw.chart.result && raw.chart.result[0];
+                if (!r) return { ok: false, status: 404 };
+
+                const ts = r.timestamp || [];
+                const quote = (r.indicators && r.indicators.quote && r.indicators.quote[0]) || {};
+                const adj = r.indicators && r.indicators.adjclose && r.indicators.adjclose[0];
+                // Adjusted closes when present: splits and dividends otherwise
+                // show up as one-day crashes and poison the volatility estimate.
+                const closes = (adj && adj.adjclose) || quote.close || [];
+
+                const points = [];
+                for (let i = 0; i < ts.length; i++) {
+                    const c = closes[i];
+                    if (c === null || c === undefined || Number.isNaN(c)) continue;
+                    points.push([ts[i], c]);
+                }
+
+                const meta = r.meta || {};
+                return {
+                    ok: true,
+                    body: {
+                        symbol: meta.symbol || symbol,
+                        currency: meta.currency || null,
+                        exchange: meta.fullExchangeName || meta.exchangeName || null,
+                        price: meta.regularMarketPrice ?? (points.length ? points[points.length - 1][1] : null),
+                        points,
+                    },
+                };
+            });
+        }
+
+        return new Response(JSON.stringify({ error: 'Invalid quote action' }), { status: 400, headers: JSON_HEADERS });
 
     } catch (err) {
         return new Response(JSON.stringify({ error: err.message }), { status: 500, headers: JSON_HEADERS });
