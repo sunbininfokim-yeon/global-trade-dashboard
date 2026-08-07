@@ -1712,9 +1712,10 @@ wireClimateDomClicks(climateRightContentEl);
 wireClimateDomClicks(forecastContentEl);
 
 // Map canvas pointer → pickObject (MapLibre/controller can swallow deck onClick).
+// Purely geometric, so the trade fallback below shares it.
 let climateCanvasPointerWired = false;
 let climatePointerDown = null;
-const climateCanvasLocalXY = (clientX, clientY) => {
+const deckCanvasLocalXY = (clientX, clientY) => {
     if (!mapContainer) return null;
     const deckCanvas = mapContainer.querySelector('canvas:not(.maplibregl-canvas)')
         || mapContainer.querySelector('canvas');
@@ -1727,7 +1728,7 @@ const climateCanvasLocalXY = (clientX, clientY) => {
 };
 const tryClimateMapPick = (clientX, clientY) => {
     if (currentCommodity !== 'climate' || !deckgl?.pickObject) return;
-    const xy = climateCanvasLocalXY(clientX, clientY);
+    const xy = deckCanvasLocalXY(clientX, clientY);
     if (!xy) return;
     // Fallback only acts on hits so empty picks do not burn the debounce window.
     const info = deckgl.pickObject({ x: xy.x, y: xy.y, radius: 20 });
@@ -1757,6 +1758,99 @@ const ensureClimateMapPointerFallback = () => {
         // Treat as click only if short & small movement (not pan/drag).
         if (dt > 600 || Math.hypot(dx, dy) > 8) return;
         tryClimateMapPick(e.clientX, e.clientY);
+    };
+    mapContainer.addEventListener('pointerup', onPointerLikeClick, true);
+    mapContainer.addEventListener('click', onPointerLikeClick, true);
+};
+
+/**
+ * The same pointer fallback, for the trade map.
+ *
+ * Clicking a country's circle did nothing: deck's onClick never fires here
+ * either -- the MapView controller consumes the event before any layer sees it,
+ * which is the reason the climate view grew the fallback above. Trade was left
+ * on `onClick` alone and quietly stopped responding as the map changed under it.
+ * Instrumenting deck's root handler on the live page recorded zero calls for a
+ * click that visibly landed on Saudi Arabia's node.
+ */
+let tradeCanvasPointerWired = false;
+let tradePointerDown = null;
+let lastTradePickAt = 0;
+
+/** Country name in the commodity's own spelling, from whatever got picked. */
+const tradeNameFromPick = (info) => {
+    // Nodes and routes already carry data names.
+    if (info?.object?.name) return info.object.name;
+    if (info?.object?.sourceName) return info.object.sourceName;
+
+    // A country polygon: match it to the routes so any country in the data
+    // works, not only the ones large enough to have drawn a node.
+    const fname = info?.object?.properties?.name;
+    if (!fname) return null;
+    const rec = resolveCountry(fname);
+    if (!rec) return null;
+    const all = window.TradeData?.[currentCommodity]?.arcs || [];
+    const named = all.find((a) => resolveCountry(a.sourceName)?.key === rec.key
+        || resolveCountry(a.targetName)?.key === rec.key);
+    if (!named) return null;
+    return resolveCountry(named.sourceName)?.key === rec.key
+        ? named.sourceName : named.targetName;
+};
+
+const tryTradeMapPick = (clientX, clientY) => {
+    if (currentCommodity === 'climate' || currentCommodity === 'home') return;
+    if (!deckgl?.pickObject || !window.TradeData?.[currentCommodity]) return;
+    const xy = deckCanvasLocalXY(clientX, clientY);
+    if (!xy) return;
+    const now = performance.now();
+    if (now - lastTradePickAt < 300) return;
+
+    // Radius so the smallest nodes (2px) stay catchable. Nodes sit above the
+    // country polygons in the stack, so a click over both resolves to the node.
+    const info = deckgl.pickObject({ x: xy.x, y: xy.y, radius: 8 });
+
+    // Clicking empty map is how you leave a country.
+    if (!info?.object) {
+        if (tradeFocusCountry) { lastTradePickAt = now; clearTradeFocus(); }
+        return;
+    }
+    const name = tradeNameFromPick(info);
+    if (!name) return;
+    lastTradePickAt = now;
+
+    // Clicking the country you are already inside goes back out, so the way in
+    // is also the way out.
+    if (tradeFocusCountry
+        && resolveCountry(name)?.key === resolveCountry(tradeFocusCountry)?.key) {
+        clearTradeFocus();
+        return;
+    }
+    focusTradeCountry(name);
+};
+
+const ensureTradeMapPointerFallback = () => {
+    if (tradeCanvasPointerWired || !mapContainer) return;
+    tradeCanvasPointerWired = true;
+    const active = () => currentCommodity && currentCommodity !== 'climate'
+        && currentCommodity !== 'home';
+    mapContainer.addEventListener('pointerdown', (e) => {
+        if (!active() || e.button !== 0) return;
+        tradePointerDown = { x: e.clientX, y: e.clientY, t: performance.now() };
+    }, true);
+    const onPointerLikeClick = (e) => {
+        if (!active()) return;
+        if (e.button != null && e.button !== 0) return;
+        if (!tradePointerDown) {
+            if (e.type === 'click') tryTradeMapPick(e.clientX, e.clientY);
+            return;
+        }
+        const dx = e.clientX - tradePointerDown.x;
+        const dy = e.clientY - tradePointerDown.y;
+        const dt = performance.now() - tradePointerDown.t;
+        tradePointerDown = null;
+        // A pan is not a click; dragging the globe must not select a country.
+        if (dt > 600 || Math.hypot(dx, dy) > 8) return;
+        tryTradeMapPick(e.clientX, e.clientY);
     };
     mapContainer.addEventListener('pointerup', onPointerLikeClick, true);
     mapContainer.addEventListener('click', onPointerLikeClick, true);
@@ -4595,6 +4689,7 @@ let tradeFlowOn = true;
 
 const renderMapLayers = (arcs, opts = {}) => {
     stopTradeAnim();
+    ensureTradeMapPointerFallback();
     document.body.classList.add('trade-map-mode');
     document.body.classList.remove('shipping-mode');
     document.getElementById('trade-overlay')?.classList.remove('hidden');
