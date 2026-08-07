@@ -78,6 +78,7 @@
 | `argentina_yield_forecast.yml` | `0 10 * * 1` | 월 19:00 | `argentina_…` | AR 수율 |
 | `india_yield_forecast.yml` | `0 10 * * 1` | 월 19:00 | `india_…` | IN 수율 |
 | `china_yield_forecast.yml` | `30 10 * * 1` | 월 19:30 | `china_…` | CN 수율 |
+| `canada_yield_forecast.yml` | `0 11 1 * *` | **매월 1일** 20:00 | `canada_yield_forecast.json` + `canada_gov_outlooks.json` | CA SAD 수율 + AAFC/주 작황 스크랩 |
 | `fetch_icrisat.yml` | `0 0 * * 0` | 일 09:00 | `icrisat_…` (대용량 주의) | 인도 작물 통계 |
 | `india_icrisat_fetch.yml` | (수동 위주) | — | icrisat blob | 일회 재수집 |
 
