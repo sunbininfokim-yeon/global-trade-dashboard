@@ -14,7 +14,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
     <!-- Custom Styles -->
-    <link rel="stylesheet" href="style.css?v=36">
+    <link rel="stylesheet" href="style.css?v=37">
 </head>
 <body>
     <div id="app">
@@ -83,11 +83,16 @@
                     </div>
                 </div>
                 <div class="menu-item">
-                    <span>금융/제조</span>
-                    <div class="dropdown">
+                    <span>금융</span>
+                    <div class="dropdown dropdown-grouped">
+                        <span class="dd-head">매크로</span>
                         <a href="#" data-target="fed_bs">FED B/S</a>
                         <a href="#" data-target="tga">TGA 잔고</a>
-                        <a href="#" data-target="semi_dram">반도체 DRAM</a>
+                        <span class="dd-head">파생상품</span>
+                        <a href="#" data-target="fin_derivatives">옵션·공매도 동향</a>
+                        <span class="dd-head">진단</span>
+                        <a href="#" data-target="fin_portfolio">포트폴리오 진단</a>
+                        <a href="#" data-target="fin_valuation">기업 가치 진단</a>
                     </div>
                 </div>
                 <div class="menu-item" style="margin-left: 20px;">
@@ -331,6 +336,6 @@
     <!-- Data and App Logic -->
     <script src="data.js?v=4"></script>
     <script src="shipping.js?v=10"></script>
-    <script src="app.js?v=67"></script>
+    <script src="app.js?v=68"></script>
 </body>
 </html>
