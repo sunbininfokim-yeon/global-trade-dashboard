@@ -7,12 +7,14 @@ import os
 import sys
 from datetime import datetime, timezone
 
+from .gov_outlooks import build_snapshot as build_gov_outlooks
 from .predict import predict_one
 from .regions import ALL, PROVINCE, SAD
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-OUT = os.path.abspath(os.path.join(
-    HERE, "..", "..", "..", "public", "data", "canada_yield_forecast.json"))
+PUBLIC_DATA = os.path.abspath(os.path.join(HERE, "..", "..", "..", "public", "data"))
+OUT = os.path.join(PUBLIC_DATA, "canada_yield_forecast.json")
+GOV_OUT = os.path.join(PUBLIC_DATA, "canada_gov_outlooks.json")
 
 
 def _as_trend(cfg, base: dict, note: str | None = None) -> dict:
@@ -136,6 +138,17 @@ def main() -> int:
             **prov,
         }
 
+    try:
+        gov = build_gov_outlooks()
+    except Exception as exc:  # noqa: BLE001
+        gov = {
+            "generated_at": datetime.now(timezone.utc).isoformat(),
+            "error": f"{type(exc).__name__}: {exc}",
+            "cadence": [],
+            "government_outlooks": [],
+            "provincial_weekly_crop_reports": [],
+        }
+
     payload = {
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "country": "Canada",
@@ -144,7 +157,9 @@ def main() -> int:
             "SAD/CAR first (StatsCan 32-10-0002) with region-specific feature "
             "packs; province (32-10-0359) weather fallback; else log-linear trend. "
             "NASA POWER climate; forward-chaining skill gate ≥10%. "
-            "Trend-only rows keep climate_risk (stance/gap/risks) for UI."),
+            "Trend-only rows keep climate_risk (stance/gap/risks) for UI. "
+            "Monthly refresh also scrapes AAFC/StatsCan outlooks + prairie "
+            "weekly crop-report cadence."),
         "literature_note": (
             "ICCYF Chipanshi 2015 CAR R2 canola/wheat ~0.66-0.67; "
             "Morrison HSU@29.5C; Mkhabela SMOS excess moisture; "
@@ -152,10 +167,17 @@ def main() -> int:
         "hierarchy": hierarchy,
         "regions": regions,
         "skipped": skipped,
+        "government_outlooks": gov.get("government_outlooks", []),
+        "provincial_weekly_crop_reports": gov.get(
+            "provincial_weekly_crop_reports", []),
+        "gov_cadence": gov.get("cadence", []),
+        "gov_notes_ko": gov.get("notes_ko"),
     }
-    os.makedirs(os.path.dirname(OUT), exist_ok=True)
+    os.makedirs(PUBLIC_DATA, exist_ok=True)
     with open(OUT, "w", encoding="utf-8") as handle:
         json.dump(payload, handle, indent=2, ensure_ascii=False)
+    with open(GOV_OUT, "w", encoding="utf-8") as handle:
+        json.dump(gov, handle, indent=2, ensure_ascii=False)
 
     n_wx = sum(1 for h in hierarchy if h["resolution"] in
                ("sad_weather", "province_weather_fallback"))
@@ -166,6 +188,7 @@ def main() -> int:
         print(f"[forecast] {key}: {row['point']:.0f} kg/ha "
               f"({row.get('operational_choice')})", flush=True)
     print(f"[forecast] wrote {OUT}", flush=True)
+    print(f"[forecast] wrote {GOV_OUT}", flush=True)
     return 0
 
 

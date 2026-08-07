@@ -28,3 +28,23 @@ Mkhabela SMOS excess moisture; MASC Excess Moisture (MB); Schlenker-style EDD fo
 
 `log(yield) = technology trend + weather anomaly` — causal 20-yr z-scores, Ridge,
 forward skill gate ≥10% (all + recent). Same skeleton as Australia.
+
+## Monthly refresh
+
+GitHub Actions: `.github/workflows/canada_yield_forecast.yml`  
+cron `0 11 1 * *` (1st of month 11:00 UTC). Runs `collect` → `run_forecast`
+(including `gov_outlooks` scrape of AAFC monthly Outlook + prairie weekly crop reports).
+
+```bash
+python3 -m canada.gov_outlooks   # federal/provincial outlook snapshot only
+python3 -m canada.run_forecast   # yield JSON + gov embed
+```
+
+## Official Canadian cadence (what they publish)
+
+| source | level | cadence |
+|---|---|---|
+| AAFC Outlook for Principal Field Crops | federal | **monthly** |
+| CCYF / Crop Metrics | federal | **monthly Jul–Oct** (corn/soy + Oct) |
+| StatsCan field crop surveys | federal | seasonal (Mar / Jun / Jul–Aug / Nov) |
+| SK / AB / MB Crop Report | provincial | **weekly** in growing season |
