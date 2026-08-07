@@ -4978,8 +4978,210 @@ const finRiskRows = (data) => {
         </div>`).join('');
 };
 
-const renderPortfolioLab = async (host) => {
-    host.innerHTML = `<div class="fin-wrap"><p class="fin-loading">포트폴리오 진단 불러오는 중…</p></div>`;
+// Holdings never leave the browser. The engine that produced the reference
+// payload runs offline; this input path keeps the portfolio in localStorage so
+// there is no server that could hold someone else's positions. Price lookups
+// still go through the Worker, which sees the tickers but not the amounts.
+const PF_STORE = 'portfolioLab.v1';
+
+const pfLoad = () => {
+    try {
+        const raw = localStorage.getItem(PF_STORE);
+        if (!raw) return null;
+        const p = JSON.parse(raw);
+        return (p && Array.isArray(p.positions)) ? p : null;
+    } catch (_) { return null; }
+};
+
+const pfSave = (p) => {
+    try { localStorage.setItem(PF_STORE, JSON.stringify(p)); } catch (_) { /* quota */ }
+};
+
+const pfBlank = () => ({ risk_profile: 'balanced', base_currency: 'KRW', positions: [] });
+
+let PF_REGISTRY = null;
+let PF_PROFILES = null;
+
+const pfLoadRefs = async () => {
+    if (PF_REGISTRY && PF_PROFILES) return;
+    const grab = async (name) => {
+        for (const base of ['/public/data/', '/data/']) {
+            try {
+                const r = await fetch(base + name, { cache: 'no-store' });
+                if (r.ok) return await r.json();
+            } catch (_) { /* next */ }
+        }
+        return null;
+    };
+    const [reg, prof] = await Promise.all([grab('instruments_v1.json'), grab('risk_profiles_v1.json')]);
+    PF_REGISTRY = (reg && reg.instruments) || [];
+    PF_PROFILES = (prof && prof.profiles) || {};
+};
+
+const pfKrw = (n) => (n === null || n === undefined || Number.isNaN(n))
+    ? '—' : `${Math.round(n).toLocaleString('ko-KR')}원`;
+
+// Alias match, not fuzzy search: the registry carries hand-written Korean
+// aliases ("삼전", "하이닉스") precisely so a substring test is enough.
+const pfSearch = (q) => {
+    const s = (q || '').trim().toLowerCase();
+    if (!s) return [];
+    return PF_REGISTRY.filter((it) =>
+        (it.name_ko || '').toLowerCase().includes(s) ||
+        (it.id || '').toLowerCase().includes(s) ||
+        (it.aliases || []).some((a) => String(a).toLowerCase().includes(s))
+    ).slice(0, 8);
+};
+
+const PF_CLASS_KO = { cash: '현금', equity: '주식', etf: 'ETF', bond: '채권', commodity: '원자재', fx: '환율' };
+
+const renderPfInput = (root, onDone) => {
+    const pf = pfLoad() || pfBlank();
+    const total = pf.positions.reduce((a, p) => a + Math.abs(p.value || 0), 0);
+
+    root.innerHTML = `
+        <section class="fin-block fin-block-wide pf-input">
+            <h2>투자 성향</h2>
+            <p class="fin-note">성향은 한도 판정에만 씁니다. 목표 수익률은 받지 않습니다 — 기대수익 가정이 틀리기 쉬워서입니다.</p>
+            <div class="pf-profiles">
+                ${Object.entries(PF_PROFILES).map(([id, p]) => `
+                    <label class="pf-profile ${pf.risk_profile === id ? 'on' : ''}">
+                        <input type="radio" name="pf-profile" value="${finEsc(id)}" ${pf.risk_profile === id ? 'checked' : ''}>
+                        <span class="pf-profile-label">${finEsc(p.label_ko)}</span>
+                        <span class="pf-profile-blurb">${finEsc(p.blurb_ko)}</span>
+                    </label>`).join('')}
+            </div>
+        </section>
+
+        <section class="fin-block fin-block-wide pf-input">
+            <h2>종목 추가</h2>
+            <div class="pf-add">
+                <div class="pf-search-wrap">
+                    <input type="text" id="pf-q" class="pf-field" autocomplete="off"
+                           placeholder="종목명·티커로 검색 (예: 삼전, 엔비디아, 달러)">
+                    <div id="pf-sug" class="pf-sug hidden"></div>
+                </div>
+                <input type="text" id="pf-amt" class="pf-field pf-amt" inputmode="numeric" placeholder="평가금액 (원)">
+                <select id="pf-side" class="pf-field pf-side">
+                    <option value="long">매수</option>
+                    <option value="short">공매도</option>
+                </select>
+                <button id="pf-add" class="pf-btn" disabled>추가</button>
+            </div>
+            <p id="pf-picked" class="pf-picked"></p>
+            <p class="fin-note">등록된 종목만 넣을 수 있습니다 (${PF_REGISTRY.length}종). 없는 종목은 엔진 쪽 종목표에 추가해야 합니다.</p>
+        </section>
+
+        <section class="fin-block fin-block-wide pf-input">
+            <h2>보유 목록 <span class="pf-count">${pf.positions.length}건</span></h2>
+            ${pf.positions.length ? `
+            <div class="pf-rows">
+                ${pf.positions.map((p, i) => {
+                    const it = PF_REGISTRY.find((x) => x.id === p.id) || {};
+                    const w = total ? Math.abs(p.value) / total : 0;
+                    return `
+                    <div class="pf-row">
+                        <span class="pf-row-name">
+                            ${finEsc(it.name_ko || p.id)}
+                            <span class="fin-tag">${finEsc(PF_CLASS_KO[it.asset_class] || it.asset_class || '')}</span>
+                            ${it.leveraged ? '<span class="fin-tag fin-tag-warn">레버리지</span>' : ''}
+                            ${it.proxy || it.synthetic_leverage ? '<span class="fin-tag">프록시</span>' : ''}
+                            ${p.side === 'short' ? '<span class="fin-tag fin-tag-warn">공매도</span>' : ''}
+                        </span>
+                        <span class="pf-row-val">${pfKrw(p.value)}</span>
+                        <span class="pf-row-w">${(w * 100).toFixed(1)}%</span>
+                        <button class="pf-del" data-i="${i}" aria-label="삭제">✕</button>
+                    </div>`;
+                }).join('')}
+            </div>
+            <div class="pf-total"><span>합계</span><strong>${pfKrw(total)}</strong></div>
+            <div class="pf-actions">
+                <button id="pf-run" class="pf-btn pf-btn-primary">진단하기</button>
+                <button id="pf-clear" class="pf-btn pf-btn-ghost">전부 지우기</button>
+            </div>
+            <p class="fin-note pf-privacy">입력한 내역은 이 브라우저에만 저장됩니다. 서버로 보내지 않습니다.</p>
+            ` : `<p class="fin-note">아직 없습니다. 위에서 종목을 추가하세요.</p>`}
+        </section>`;
+
+    const qEl = root.querySelector('#pf-q');
+    const sugEl = root.querySelector('#pf-sug');
+    const amtEl = root.querySelector('#pf-amt');
+    const addEl = root.querySelector('#pf-add');
+    const pickedEl = root.querySelector('#pf-picked');
+    let picked = null;
+
+    const refreshAdd = () => {
+        addEl.disabled = !(picked && Number(String(amtEl.value).replace(/[^0-9.]/g, '')) > 0);
+    };
+
+    qEl.addEventListener('input', () => {
+        picked = null; pickedEl.textContent = ''; refreshAdd();
+        const hits = pfSearch(qEl.value);
+        if (!hits.length) { sugEl.classList.add('hidden'); return; }
+        sugEl.innerHTML = hits.map((h) => `
+            <button class="pf-sug-item" data-id="${finEsc(h.id)}">
+                <span>${finEsc(h.name_ko)}</span>
+                <span class="pf-sug-meta">${finEsc(PF_CLASS_KO[h.asset_class] || '')} · ${finEsc(h.currency)}</span>
+            </button>`).join('');
+        sugEl.classList.remove('hidden');
+    });
+
+    sugEl.addEventListener('click', (e) => {
+        const b = e.target.closest('.pf-sug-item');
+        if (!b) return;
+        picked = PF_REGISTRY.find((x) => x.id === b.dataset.id) || null;
+        qEl.value = picked ? picked.name_ko : '';
+        pickedEl.textContent = picked ? `선택: ${picked.name_ko} (${picked.currency})` : '';
+        sugEl.classList.add('hidden');
+        amtEl.focus();
+        refreshAdd();
+    });
+
+    // Thousands separators while typing; the raw number is parsed back on add.
+    amtEl.addEventListener('input', () => {
+        const raw = String(amtEl.value).replace(/[^0-9]/g, '');
+        amtEl.value = raw ? Number(raw).toLocaleString('ko-KR') : '';
+        refreshAdd();
+    });
+
+    addEl.addEventListener('click', () => {
+        const val = Number(String(amtEl.value).replace(/[^0-9.]/g, ''));
+        if (!picked || !(val > 0)) return;
+        const side = root.querySelector('#pf-side').value;
+        const next = pfLoad() || pfBlank();
+        next.risk_profile = root.querySelector('input[name="pf-profile"]:checked')?.value || next.risk_profile;
+        const existing = next.positions.findIndex((p) => p.id === picked.id && p.side === side);
+        if (existing >= 0) next.positions[existing].value += val;
+        else next.positions.push({ id: picked.id, value: val, side });
+        pfSave(next);
+        renderPfInput(root, onDone);
+    });
+
+    root.querySelectorAll('.pf-del').forEach((b) => b.addEventListener('click', () => {
+        const next = pfLoad() || pfBlank();
+        next.positions.splice(Number(b.dataset.i), 1);
+        pfSave(next);
+        renderPfInput(root, onDone);
+    }));
+
+    root.querySelectorAll('input[name="pf-profile"]').forEach((r) => r.addEventListener('change', () => {
+        const next = pfLoad() || pfBlank();
+        next.risk_profile = r.value;
+        pfSave(next);
+        renderPfInput(root, onDone);
+    }));
+
+    root.querySelector('#pf-clear')?.addEventListener('click', () => {
+        if (!confirm('보유 목록을 전부 지웁니다. 되돌릴 수 없습니다.')) return;
+        pfSave(pfBlank());
+        renderPfInput(root, onDone);
+    });
+
+    root.querySelector('#pf-run')?.addEventListener('click', () => onDone && onDone());
+};
+
+const renderPfResult = async (host) => {
+    host.innerHTML = `<p class="fin-loading">진단 결과 불러오는 중…</p>`;
 
     let data = null;
     for (const path of ['/public/data/portfolio_analysis_v1.json', '/data/portfolio_analysis_v1.json']) {
@@ -4990,13 +5192,15 @@ const renderPortfolioLab = async (host) => {
     }
 
     if (!data) {
-        host.innerHTML = finPlaceholder(
-            '포트폴리오 진단',
-            '보유 자산의 위험이 어디에 몰려 있는지 진단합니다',
-            `분석 결과 파일이 배포본에 없습니다. 개인 보유 내역이라 저장소에 커밋하지 않습니다.<br>
-             로컬에서 <code>python3 run_pipeline.py</code> 를 돌리면
-             <code>public/data/portfolio_analysis_v1.json</code> 이 생성되고 이 화면이 채워집니다.<br>
-             계약: <code>scripts/금융_재무분석/DATA_CONTRACT.md</code>`);
+        const saved = pfLoad();
+        host.innerHTML = `
+            <div class="fin-empty">
+                <p class="fin-empty-title">아직 진단 결과가 없습니다</p>
+                <p>${saved && saved.positions.length
+                    ? `보유 ${saved.positions.length}건이 저장돼 있습니다. 계산 기능은 준비 중입니다 —
+                       현재는 <code>run_pipeline.py</code> 로 만든 결과 파일만 읽습니다.`
+                    : `「내 포트폴리오」 탭에서 보유 종목을 먼저 넣어 주세요.`}</p>
+            </div>`;
         return;
     }
 
@@ -5010,10 +5214,8 @@ const renderPortfolioLab = async (host) => {
     const dq = data.data_quality || {};
 
     host.innerHTML = `
-    <div class="fin-wrap">
-        <div class="fin-head">
-            <h1>포트폴리오 진단</h1>
-            <p>${finEsc(S('headline'))}</p>
+        <div class="fin-head fin-head-sub">
+            <p class="fin-headline">${finEsc(S('headline'))}</p>
             <div class="fin-meta">
                 <span class="fin-chip">${finEsc(u.profile?.[`label_${FIN_LOCALE}`] || data.risk_profile_id)}</span>
                 <span>${finEsc(u.profile?.[`blurb_${FIN_LOCALE}`] || '')}</span>
@@ -5108,8 +5310,44 @@ const renderPortfolioLab = async (host) => {
             <p class="fin-engine">엔진: <code>scripts/금융_재무분석</code> ·
                방식: ${finEsc((data.advice && data.advice.method) || '')} ·
                스키마 ${finEsc(data.schema_version || '')}</p>
+        </div>`;
+};
+
+const renderPortfolioLab = async (host) => {
+    host.innerHTML = `<div class="fin-wrap"><p class="fin-loading">불러오는 중…</p></div>`;
+    await pfLoadRefs();
+
+    const saved = pfLoad();
+    // Land on input when there is nothing to show yet, on results otherwise.
+    let tab = (saved && saved.positions.length) ? 'result' : 'input';
+
+    host.innerHTML = `
+    <div class="fin-wrap">
+        <div class="fin-head">
+            <h1>포트폴리오 진단</h1>
+            <p>보유 자산의 위험이 어디에 몰려 있는지 봅니다. 수익 예측이 아닙니다.</p>
         </div>
+        <div class="pf-tabs" role="tablist">
+            <button class="pf-tab" data-tab="input" role="tab">내 포트폴리오</button>
+            <button class="pf-tab" data-tab="result" role="tab">진단 결과</button>
+        </div>
+        <div id="pf-body"></div>
     </div>`;
+
+    const body = host.querySelector('#pf-body');
+    const paint = () => {
+        host.querySelectorAll('.pf-tab').forEach((b) =>
+            b.classList.toggle('on', b.dataset.tab === tab));
+        if (tab === 'input') renderPfInput(body, () => { tab = 'result'; paint(); });
+        else renderPfResult(body);
+    };
+
+    host.querySelectorAll('.pf-tab').forEach((b) => b.addEventListener('click', () => {
+        tab = b.dataset.tab;
+        paint();
+    }));
+
+    paint();
 };
 
 const renderFinanceView = async (target, host) => {
