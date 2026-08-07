@@ -319,16 +319,6 @@ def main() -> None:
         "Phases 1–2: UI chrome + panel body/essays for Claude t()+lang toggle. "
         "Do not rename keys without bumping both files. Phase 3 = model.yaml label_en/status_note_en."
     )
-    todos = en_meta.get("__todos__") or {}
-    if not isinstance(todos, dict):
-        todos = {}
-    todos.update(
-        {
-            "br.nonwx.sp_cana": "TODO: long scientific paragraph — spot-check numbers vs Dias & Sentelhas citation if UI shows truncated",
-            "ship.capacity_driver": "TODO: app wraps with escapeHtml(name_ko); placeholder is agency/direction display name only",
-        }
-    )
-    en_meta["__todos__"] = todos
 
     def dump(path: Path, data: dict, meta: dict) -> None:
         ordered = dict(sorted(data.items(), key=lambda kv: kv[0]))
