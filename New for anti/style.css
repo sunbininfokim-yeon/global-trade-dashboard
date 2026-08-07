@@ -1882,3 +1882,22 @@ body.trade-map-mode .left-pane {
 }
 .trade-bar-row.is-inbound .tr-dir { color: #cbd5e1; background: rgba(148, 163, 184, 0.14); }
 .trade-bar-row.is-inbound .tr-bar i { background: linear-gradient(90deg, rgba(148,163,184,.5), #94a3b8); }
+
+/* 순위 행: 이름에 폭을 주기 위해 방향을 점으로 축소 (국가명이 Sa... 로 잘렸다) */
+.trade-bar-row { grid-template-columns: 15px 8px minmax(0, 1fr) 46px 44px; gap: 7px; }
+.trade-bar-row .tr-dir {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: #38bdf8; padding: 0;
+}
+.trade-bar-row.is-inbound .tr-dir { background: #94a3b8; }
+.trade-bar-row .tr-name {
+    min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+/* 물동량 숫자는 막대와 %가 이미 말해준다. 정확한 값은 행 툴팁에. */
+.trade-bar-row .tr-vol { display: none; }
+
+/* 데이터 출처 태그 (seed 인지 live 인지 화면에서 구분) */
+.climate-card h3 .src-tag {
+    font-size: 9.5px; font-weight: 400; letter-spacing: .04em;
+    color: rgba(148, 163, 184, .8); margin-left: 4px;
+}

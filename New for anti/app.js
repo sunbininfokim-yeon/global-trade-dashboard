@@ -302,8 +302,10 @@ const focusTradeCountry = (countryName) => {
     const total = focused.reduce((s, a) => s + a.volume, 0) || 1;
 
     // Left list: partner ranking with % (same pattern for China / USA / anyone)
-    const unit = currentCommodity === 'oil' ? 'M USD'
-        : (currentCommodity === 'gold' || currentCommodity === 'silver' ? 'Tonnes eq.' : 'M USD');
+    // Every commodity's `volume` is Millions USD -- data.js divides Comtrade's
+    // primaryValue by 1e6 regardless of commodity. Gold and silver were labelled
+    // "Tonnes eq.", which named a quantity the figure is not.
+    const unit = 'M USD';
     const roleKo = asExporter ? '수출 → 대상국' : '수입 ← 공급국';
     const maxVol = focused[0]?.volume || 1;
     const rows = focused.slice(0, 14).map((a, i) => {
@@ -314,9 +316,10 @@ const focusTradeCountry = (countryName) => {
         // every percentage smaller than it is.
         const denom = (isIn ? importVol : exportVol) || 1;
         const share = (a.volume / denom) * 100;
-        return `<div class="trade-rank-row trade-bar-row${isIn ? ' is-inbound' : ''}" data-partner="${partner}">
+        return `<div class="trade-rank-row trade-bar-row${isIn ? ' is-inbound' : ''}"
+                     data-partner="${partner}" title="${isIn ? '수입' : '수출'} · ${partner} · ${a.volume.toLocaleString()} ${unit}">
             <span class="tr-i">${i + 1}</span>
-            <span class="tr-dir">${isIn ? '수입' : '수출'}</span>
+            <span class="tr-dir" aria-label="${isIn ? '수입' : '수출'}"></span>
             <span class="tr-name">${partner}</span>
             <span class="tr-bar"><i style="width:${Math.max(3, (a.volume / maxVol) * 100)}%"></i></span>
             <span class="tr-pct">${share.toFixed(1)}%</span>
@@ -328,12 +331,12 @@ const focusTradeCountry = (countryName) => {
     // one-directional list. Net is what says whether it is a seller or a buyer.
     const net = exportVol - importVol;
     const statsHtml = `
-        <div class="trade-stat-row">
-            <div class="ts-cell"><span class="ts-k">수출</span>
+        <div class="trade-stat-row" data-unit="${unit}">
+            <div class="ts-cell"><span class="ts-k">수출 (${unit})</span>
                 <span class="ts-v">${exportVol.toLocaleString()}</span></div>
-            <div class="ts-cell"><span class="ts-k">수입</span>
+            <div class="ts-cell"><span class="ts-k">수입 (${unit})</span>
                 <span class="ts-v">${importVol.toLocaleString()}</span></div>
-            <div class="ts-cell"><span class="ts-k">순수지</span>
+            <div class="ts-cell"><span class="ts-k">순수지 (${unit})</span>
                 <span class="ts-v ${net >= 0 ? 'pos' : 'neg'}">${net >= 0 ? '+' : ''}${net.toLocaleString()}</span></div>
         </div>`;
 
@@ -2797,7 +2800,7 @@ const renderClimateWorldLeft = async () => {
     forecastContentEl.innerHTML = `
         <div class="climate-scroll">
             <div class="climate-card">
-                <h3>ENSO · Niño 3.4 (NOAA CPC seed)</h3>
+                <h3>ENSO · Niño 3.4 <span class="src-tag">${enso.source || 'NOAA CPC'}</span></h3>
                 <div class="climate-big ${enso.latest_c < 0 ? 'neg' : 'pos'}">
                     ${enso.latest_c != null ? (enso.latest_c > 0 ? '+' : '') + enso.latest_c.toFixed(1) + '°C' : '—'}
                 </div>
@@ -2806,7 +2809,7 @@ const renderClimateWorldLeft = async () => {
                 ${renderEnsoBars(enso.series)}
             </div>
             <div class="climate-card">
-                <h3>IOD · 인도양 쌍극자</h3>
+                <h3>IOD · 인도양 쌍극자 <span class="src-tag">${iod.source || 'NOAA PSL'}</span></h3>
                 <div style="display:flex;justify-content:space-between;align-items:baseline;">
                     <div class="climate-big ${ (iod.latest||0) >= 0 ? 'pos' : 'neg'}" style="font-size:22px;">
                         ${iod.latest != null ? ((iod.latest >= 0 ? '+' : '') + iod.latest.toFixed(2)) : '—'}
