@@ -684,8 +684,13 @@ async function handleUsdaFas(request, env, ctx) {
 // Upstream routes /api/macro?source=eia may proxy. Without this allowlist the
 // `route` param would let a caller aim our API key at any EIA endpoint.
 const EIA_ROUTES = {
-    "petroleum/pri/spt/data/": true,
-    "natural-gas/pri/spt/data/": true
+    "petroleum/pri/spt/data/": { frequency: "daily" },
+    "natural-gas/pri/spt/data/": { frequency: "daily" },
+    // Stocks: the Strategic Petroleum Reserve and the Cushing hub. EIA reports
+    // these weekly, not daily -- asking for daily returns an empty series, which
+    // is why the frequency now travels with the route instead of being pinned.
+    "petroleum/stoc/wstk/data/": { frequency: "weekly" },
+    "petroleum/stoc/typ/data/": { frequency: "weekly" }
 };
 
 async function handleMacro(request, env, ctx) {
@@ -728,8 +733,12 @@ async function handleMacro(request, env, ctx) {
                 return new Response(JSON.stringify({ error: "Unsupported EIA route" }), { status: 400, headers: JSON_HEADERS });
             }
 
-            return kvCachedJson(env, `eia:${route}:${seriesId}`, 3600, async () => {
-                const eiaUrl = `https://api.eia.gov/v2/${route}?api_key=${EIA_KEY}&frequency=daily&data[0]=value&facets[series][]=${encodeURIComponent(seriesId)}&sort[0][column]=period&sort[0][direction]=desc&offset=0&length=1`;
+            const freq = EIA_ROUTES[route].frequency;
+            // Stocks move weekly and the panel shows a change, so keep a short
+            // history rather than one point.
+            const length = freq === 'weekly' ? 12 : 1;
+            return kvCachedJson(env, `eia:${route}:${seriesId}:${length}`, 3600, async () => {
+                const eiaUrl = `https://api.eia.gov/v2/${route}?api_key=${EIA_KEY}&frequency=${freq}&data[0]=value&facets[series][]=${encodeURIComponent(seriesId)}&sort[0][column]=period&sort[0][direction]=desc&offset=0&length=${length}`;
                 const res = await fetch(eiaUrl);
                 if (!res.ok) return { ok: false, status: res.status };
                 return { ok: true, body: await res.json() };
