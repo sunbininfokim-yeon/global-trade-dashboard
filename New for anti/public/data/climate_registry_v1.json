@@ -1,6 +1,6 @@
 {
   "schema_version": "climate-registry-v1",
-  "generated_at": "2026-08-07T09:40:26.433908+09:00",
+  "generated_at": "2026-08-07T14:21:39.832703+09:00",
   "note": "Generated from scripts/yield_model/*/model.yaml. Do not edit by hand.",
   "countries": {
     "Argentina": {
@@ -272,6 +272,120 @@
         "note_ko": "정상"
       }
     },
+    "Canada": {
+      "country": "canada",
+      "iso": "CAN",
+      "label_ko": "캐나다",
+      "label_en": "Canada",
+      "panel_mode": "forecast",
+      "data_file": "canada_yield_forecast.json",
+      "model_name": "Prairies SAD + Ontario",
+      "model_status": "provisional",
+      "status_note_ko": "SAD 기상 모델 4곳 검증 통과 / 나머지 산지는 추세+기후 진단(유리·불리·리스크).",
+      "view": {
+        "longitude": -105.0,
+        "latitude": 52.0,
+        "zoom": 3.4
+      },
+      "regions": [
+        {
+          "key": "sad_sk_canola_palliser",
+          "label_ko": "SK 팰리서 (카놀라·봄밀)",
+          "ui_name": "SK Palliser (Canada)",
+          "coordinates": [
+            -106.5,
+            50.0
+          ],
+          "crops_region_keys": [
+            "sad_sk_canola_palliser",
+            "sad_sk_wheat_palliser"
+          ]
+        },
+        {
+          "key": "sad_sk_canola_blacksoil",
+          "label_ko": "SK 파크랜드·레지나",
+          "ui_name": "SK Parkland (Canada)",
+          "coordinates": [
+            -103.5,
+            51.2
+          ],
+          "crops_region_keys": {}
+        },
+        {
+          "key": "sad_ab_canola_south",
+          "label_ko": "AB 남부 (카놀라)",
+          "ui_name": "AB South (Canada)",
+          "coordinates": [
+            -112.5,
+            50.0
+          ],
+          "crops_region_keys": [
+            "sad_ab_canola_south"
+          ]
+        },
+        {
+          "key": "sad_ab_canola_central",
+          "label_ko": "AB 중부·피스",
+          "ui_name": "AB Central/Peace (Canada)",
+          "coordinates": [
+            -114.5,
+            54.0
+          ],
+          "crops_region_keys": [
+            "sad_ab_canola_central",
+            "sad_ab_canola_peace"
+          ]
+        },
+        {
+          "key": "sad_mb_canola_central",
+          "label_ko": "MB 레드리버 (대두·카놀라)",
+          "ui_name": "MB Red River (Canada)",
+          "coordinates": [
+            -98.0,
+            50.0
+          ],
+          "crops_region_keys": [
+            "sad_mb_soy_redriver",
+            "sad_mb_canola_central"
+          ]
+        },
+        {
+          "key": "sad_on_corn_southern",
+          "label_ko": "온타리오 옥수수",
+          "ui_name": "ON Corn Belt (Canada)",
+          "coordinates": [
+            -81.5,
+            43.0
+          ],
+          "crops_region_keys": [
+            "sad_on_corn_southern",
+            "sad_on_corn_western"
+          ]
+        }
+      ],
+      "sources": {
+        "labels": {
+          "name": "Statistics Canada 32-10-0002 (SAD) / 32-10-0359 (province)",
+          "url": "https://www150.statcan.gc.ca/",
+          "updated": "2025-12-01"
+        },
+        "climate": {
+          "name": "NASA POWER (daily)",
+          "url": "https://power.larc.nasa.gov/",
+          "updated": "2026-08-07"
+        },
+        "outlooks": {
+          "name": "AAFC Outlook + prairie weekly crop reports",
+          "url": "https://agriculture.canada.ca/en/sector/crops/reports-statistics",
+          "updated": "2026-08-07"
+        }
+      },
+      "trade_policy": {
+        "restricted": false,
+        "prohibited_crops": [],
+        "note_ko": "정상 수출"
+      }
+    },
     "China": {
       "country": "china",
       "iso": "CHN",
@@ -344,6 +458,254 @@
           "wheat"
         ],
         "note_ko": "주요 곡물 수출 제한 seed (2+ → 적)"
+      }
+    },
+    "Costa Rica": {
+      "country": "costa_rica",
+      "iso": "CRI",
+      "label_ko": "코스타리카",
+      "label_en": "Costa Rica",
+      "panel_mode": "reference",
+      "data_file": "costa_rica_yield_forecast.json",
+      "model_status": "training",
+      "status_note_ko": "예측 모델 없음 — 바나나 참고·리스크 패널만 (시가토카·폭풍·TR4).",
+      "model_name": "LatAm banana (reference)",
+      "view": {
+        "longitude": -83.5,
+        "latitude": 9.8,
+        "zoom": 6.5
+      },
+      "regions": [
+        {
+          "key": "costa_rica_belt_1",
+          "label_ko": "Limón",
+          "ui_name": "costa_rica_belt_1",
+          "coordinates": [
+            -83.04,
+            9.99
+          ],
+          "crops_region_keys": [
+            "costa_rica_belt_1"
+          ]
+        },
+        {
+          "key": "costa_rica_belt_2",
+          "label_ko": "Sixaola",
+          "ui_name": "costa_rica_belt_2",
+          "coordinates": [
+            -82.63,
+            9.51
+          ],
+          "crops_region_keys": [
+            "costa_rica_belt_2"
+          ]
+        }
+      ],
+      "sources": {
+        "labels": {
+          "name": "CORBANA / FAO bananas (reference)",
+          "url": "https://www.corbana.com/",
+          "updated": "2026-08-06"
+        },
+        "climate": {
+          "name": "NASA POWER (daily)",
+          "url": "https://power.larc.nasa.gov/",
+          "updated": "2026-08-06"
+        }
+      },
+      "trade_policy": {
+        "restricted": false,
+        "prohibited_crops": [],
+        "note_ko": "바나나 참고국 · 예측 아님"
+      }
+    },
+    "Ecuador": {
+      "country": "ecuador",
+      "iso": "ECU",
+      "label_ko": "에콰도르",
+      "label_en": "Ecuador",
+      "panel_mode": "reference",
+      "data_file": "ecuador_yield_forecast.json",
+      "model_status": "training",
+      "status_note_ko": "예측 모델 없음 — 바나나 참고·리스크 패널만 (시가토카·ENSO·TR4).",
+      "model_name": "LatAm banana (reference)",
+      "view": {
+        "longitude": -79.5,
+        "latitude": -2.0,
+        "zoom": 5.8
+      },
+      "regions": [
+        {
+          "key": "ecuador_belt_1",
+          "label_ko": "Quevedo / Los Ríos",
+          "ui_name": "ecuador_belt_1",
+          "coordinates": [
+            -79.45,
+            -1.03
+          ],
+          "crops_region_keys": [
+            "ecuador_belt_1"
+          ]
+        },
+        {
+          "key": "ecuador_belt_2",
+          "label_ko": "Guayaquil belt",
+          "ui_name": "ecuador_belt_2",
+          "coordinates": [
+            -79.9,
+            -2.17
+          ],
+          "crops_region_keys": [
+            "ecuador_belt_2"
+          ]
+        },
+        {
+          "key": "ecuador_belt_3",
+          "label_ko": "Machala / El Oro",
+          "ui_name": "ecuador_belt_3",
+          "coordinates": [
+            -79.96,
+            -3.26
+          ],
+          "crops_region_keys": [
+            "ecuador_belt_3"
+          ]
+        }
+      ],
+      "sources": {
+        "labels": {
+          "name": "FAOSTAT / FAO Banana Statistical Compendium",
+          "url": "https://www.fao.org/markets-and-trade/commodities/bananas",
+          "updated": "2026-08-06"
+        },
+        "climate": {
+          "name": "NASA POWER (daily)",
+          "url": "https://power.larc.nasa.gov/",
+          "updated": "2026-08-06"
+        }
+      },
+      "trade_policy": {
+        "restricted": false,
+        "prohibited_crops": [],
+        "note_ko": "바나나 참고국 · 예측 아님"
+      }
+    },
+    "Guatemala": {
+      "country": "guatemala",
+      "iso": "GTM",
+      "label_ko": "과테말라",
+      "label_en": "Guatemala",
+      "panel_mode": "reference",
+      "data_file": "guatemala_yield_forecast.json",
+      "model_status": "training",
+      "status_note_ko": "예측 모델 없음 — 바나나 참고·리스크 패널만 (허리케인·시가토카·TR4).",
+      "model_name": "LatAm banana (reference)",
+      "view": {
+        "longitude": -90.0,
+        "latitude": 15.0,
+        "zoom": 6.2
+      },
+      "regions": [
+        {
+          "key": "guatemala_belt_1",
+          "label_ko": "Puerto Barrios / Izabal",
+          "ui_name": "guatemala_belt_1",
+          "coordinates": [
+            -88.59,
+            15.73
+          ],
+          "crops_region_keys": [
+            "guatemala_belt_1"
+          ]
+        },
+        {
+          "key": "guatemala_belt_2",
+          "label_ko": "Escuintla Pacific",
+          "ui_name": "guatemala_belt_2",
+          "coordinates": [
+            -90.79,
+            14.3
+          ],
+          "crops_region_keys": [
+            "guatemala_belt_2"
+          ]
+        }
+      ],
+      "sources": {
+        "labels": {
+          "name": "FAO bananas / MAGA (reference)",
+          "url": "https://www.fao.org/markets-and-trade/commodities/bananas",
+          "updated": "2026-08-06"
+        },
+        "climate": {
+          "name": "NASA POWER (daily)",
+          "url": "https://power.larc.nasa.gov/",
+          "updated": "2026-08-06"
+        }
+      },
+      "trade_policy": {
+        "restricted": false,
+        "prohibited_crops": [],
+        "note_ko": "바나나 참고국 · 예측 아님"
+      }
+    },
+    "Honduras": {
+      "country": "honduras",
+      "iso": "HND",
+      "label_ko": "온두라스",
+      "label_en": "Honduras",
+      "panel_mode": "reference",
+      "data_file": "honduras_yield_forecast.json",
+      "model_status": "training",
+      "status_note_ko": "예측 모델 없음 — 바나나 참고·리스크 패널만 (허리케인 blowdown·시가토카).",
+      "model_name": "LatAm banana (reference)",
+      "view": {
+        "longitude": -87.5,
+        "latitude": 15.2,
+        "zoom": 6.5
+      },
+      "regions": [
+        {
+          "key": "honduras_belt_1",
+          "label_ko": "La Lima / Cortés",
+          "ui_name": "honduras_belt_1",
+          "coordinates": [
+            -87.92,
+            15.43
+          ],
+          "crops_region_keys": [
+            "honduras_belt_1"
+          ]
+        },
+        {
+          "key": "honduras_belt_2",
+          "label_ko": "El Progreso / Yoro",
+          "ui_name": "honduras_belt_2",
+          "coordinates": [
+            -87.8,
+            15.4
+          ],
+          "crops_region_keys": [
+            "honduras_belt_2"
+          ]
+        }
+      ],
+      "sources": {
+        "labels": {
+          "name": "FAO bananas (reference)",
+          "url": "https://www.fao.org/markets-and-trade/commodities/bananas",
+          "updated": "2026-08-06"
+        },
+        "climate": {
+          "name": "NASA POWER (daily)",
+          "url": "https://power.larc.nasa.gov/",
+          "updated": "2026-08-06"
+        }
+      },
+      "trade_policy": {
+        "restricted": false,
+        "prohibited_crops": [],
+        "note_ko": "바나나 참고국 · 예측 아님"
       }
     },
     "India": {

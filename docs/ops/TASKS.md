@@ -22,6 +22,7 @@
 | T12 | 국가 포커스 범용화 (하드코딩 제거) | **claude** | `app.js` `data.js` | `claude/ui-globe` | **in_progress** | `resolveCountry()` 레지스트리: 월드 GeoJSON 중심점 + 별칭. `CountriesData` 65개 표는 게이트→오버라이드로 강등. Comtrade 행도 `reporterDesc` 폴백. Angola/Kazakhstan/Mongolia 등 미등록국 클릭 검증 완료 |
 | T13 | 기후 국가 드릴다운 = TARGET 워크스페이스 | **claude** | `app.js` `style.css` `index.html` | `claude/ui-globe` | **review** | HUD 프레임 + 산지 라벨(단수·편차) + 단위 환산표 |
 | T10 | MENA yield pipeline | cursor | `yield_model/mena/**`, `public/data/mena_yield_forecast.json` | `cursor/ml-mena-yield` | **in_progress** | Nile irrigated + Maghreb rainfed wheat T1; FAOSTAT labels; forecast JSON |
+| T14 | Canada SAD yield + UI | cursor | `yield_model/canada/**`, `canada_*forecast.json`, registry | `cursor/pr-canada-yield` | **review** | SAD+UI+monthly Actions+gov_outlooks; model.yaml → climate_registry |
 
 ## 백로그
 
