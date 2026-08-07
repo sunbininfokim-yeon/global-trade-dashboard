@@ -1,0 +1,178 @@
+{
+  "version": 1,
+  "instruments": [
+    {
+      "id": "cash:krw",
+      "asset_class": "cash",
+      "currency": "KRW",
+      "yahoo": null,
+      "synthetic": "flat",
+      "aliases": ["현금", "원화", "KRW", "현금원화"],
+      "name_ko": "원화 현금",
+      "leveraged": false
+    },
+    {
+      "id": "cash:usd",
+      "asset_class": "cash",
+      "currency": "USD",
+      "yahoo": "USDKRW=X",
+      "fx_as_asset": true,
+      "aliases": ["달러", "USD", "달러현금", "현금달러"],
+      "name_ko": "달러 현금(환율 위험)",
+      "leveraged": false
+    },
+    {
+      "id": "eq:kr:000660",
+      "asset_class": "equity",
+      "currency": "KRW",
+      "yahoo": "000660.KS",
+      "aliases": ["000660", "하이닉스", "SK하이닉스", "hynix"],
+      "name_ko": "SK하이닉스",
+      "leveraged": false
+    },
+    {
+      "id": "eq:kr:005930",
+      "asset_class": "equity",
+      "currency": "KRW",
+      "yahoo": "005930.KS",
+      "aliases": ["005930", "삼전", "삼성전자", "samsung"],
+      "name_ko": "삼성전자",
+      "leveraged": false
+    },
+    {
+      "id": "eq:kr:009540",
+      "asset_class": "equity",
+      "currency": "KRW",
+      "yahoo": "009540.KS",
+      "aliases": ["009540", "한국조선해양", "한조해"],
+      "name_ko": "한국조선해양",
+      "leveraged": false
+    },
+    {
+      "id": "eq:us:NVDA",
+      "asset_class": "equity",
+      "currency": "USD",
+      "yahoo": "NVDA",
+      "aliases": ["NVDA", "엔비디아", "nvidia"],
+      "name_ko": "엔비디아",
+      "leveraged": false
+    },
+    {
+      "id": "etf:us:QQQ",
+      "asset_class": "etf",
+      "currency": "USD",
+      "yahoo": "QQQ",
+      "aliases": ["QQQ", "나스닥", "나스닥100", "nasdaq"],
+      "name_ko": "인베스코 QQQ",
+      "leveraged": false
+    },
+    {
+      "id": "etf:us:WMT",
+      "asset_class": "equity",
+      "currency": "USD",
+      "yahoo": "WMT",
+      "aliases": ["WMT", "월마트", "walmart"],
+      "name_ko": "월마트",
+      "leveraged": false
+    },
+    {
+      "id": "etf:us:AGG",
+      "asset_class": "bond",
+      "currency": "USD",
+      "yahoo": "AGG",
+      "aliases": ["AGG", "채권", "미국채권", "bond"],
+      "name_ko": "미국종합채권(AGG 프록시)",
+      "leveraged": false
+    },
+    {
+      "id": "cmd:xau",
+      "asset_class": "commodity",
+      "currency": "USD",
+      "yahoo": "GLD",
+      "aliases": ["금", "GOLD", "XAU", "GLD"],
+      "name_ko": "금(GLD 프록시)",
+      "leveraged": false,
+      "proxy": true
+    },
+    {
+      "id": "cmd:xag",
+      "asset_class": "commodity",
+      "currency": "USD",
+      "yahoo": "SLV",
+      "aliases": ["은", "SILVER", "XAG", "SLV"],
+      "name_ko": "은(SLV 프록시)",
+      "leveraged": false,
+      "proxy": true
+    },
+    {
+      "id": "etf:kr:122630",
+      "asset_class": "etf",
+      "currency": "KRW",
+      "yahoo": "122630.KS",
+      "aliases": ["122630", "KODEX레버리지", "코덱스레버리지"],
+      "name_ko": "KODEX 레버리지",
+      "leveraged": true,
+      "leverage_factor": 2,
+      "max_weight": 0.1
+    },
+    {
+      "id": "etf:kr:hynix_lev2_proxy",
+      "asset_class": "etf",
+      "currency": "KRW",
+      "yahoo": "000660.KS",
+      "aliases": ["하이닉스레버리지", "하이닉스2배", "하이닉스레버리지ETF", "hynix2x"],
+      "name_ko": "하이닉스 2배 ETF(현물×2 프록시)",
+      "leveraged": true,
+      "leverage_factor": 2,
+      "synthetic_leverage": true,
+      "proxy": true,
+      "max_weight": 0.1
+    },
+    {
+      "id": "eq:kr:010140",
+      "asset_class": "equity",
+      "currency": "KRW",
+      "yahoo": "010140.KS",
+      "aliases": ["010140", "삼성중공업", "삼중"],
+      "name_ko": "삼성중공업",
+      "leveraged": false
+    },
+    {
+      "id": "etf:us:IWM",
+      "asset_class": "etf",
+      "currency": "USD",
+      "yahoo": "IWM",
+      "aliases": ["IWM", "러셀", "러셀2000", "러셀인덱스", "russell"],
+      "name_ko": "러셀2000(IWM)",
+      "leveraged": false
+    },
+    {
+      "id": "eq:us:TSLA",
+      "asset_class": "equity",
+      "currency": "USD",
+      "yahoo": "TSLA",
+      "aliases": ["TSLA", "테슬라", "tesla"],
+      "name_ko": "테슬라",
+      "leveraged": false
+    },
+    {
+      "id": "bond:jp:1482",
+      "asset_class": "bond",
+      "currency": "JPY",
+      "yahoo": "1482.T",
+      "aliases": ["일본국채", "일본10년", "일본채권", "JGB", "일본10년물"],
+      "name_ko": "일본국채 ETF(1482.T 프록시)",
+      "leveraged": false,
+      "proxy": true
+    },
+    {
+      "id": "fx:usdkrw",
+      "asset_class": "fx",
+      "currency": "KRW",
+      "yahoo": "USDKRW=X",
+      "aliases": ["USDKRW", "원달러", "환율"],
+      "name_ko": "원달러 환율",
+      "leveraged": false
+    }
+  ]
+}

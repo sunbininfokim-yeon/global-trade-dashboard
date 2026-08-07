@@ -1883,8 +1883,14 @@ body.trade-map-mode .left-pane {
 .trade-bar-row.is-inbound .tr-dir { color: #cbd5e1; background: rgba(148, 163, 184, 0.14); }
 .trade-bar-row.is-inbound .tr-bar i { background: linear-gradient(90deg, rgba(148,163,184,.5), #94a3b8); }
 
-/* 순위 행: 이름에 폭을 주기 위해 방향을 점으로 축소 (국가명이 Sa... 로 잘렸다) */
-.trade-bar-row { grid-template-columns: 15px 8px minmax(0, 1fr) 46px 44px; gap: 7px; }
+/* 순위 행: [순위] [방향점] [ISO] [막대] [비중].
+   늘어나는 칸은 막대다. 국가를 ISO 코드로 줄인 뒤에도 이름 칸이 1fr 을 계속
+   가져가는 바람에, 3글자에 136px 이 가고 정작 막대가 46px 로 찌그러져 있었다. */
+.trade-bar-row { grid-template-columns: 15px 8px 30px minmax(0, 1fr) 46px; gap: 7px; }
+/* 세계뷰 행에는 방향점이 없다 — 전부 수출이라 구분할 것이 없다. 칼럼이 하나 적은
+   채로 같은 그리드를 쓰면 전체가 한 칸씩 밀려 ISO 가 8px 점 칸에서 한 글자로
+   잘린다 (CAN 이 C 로 보이던 원인). */
+.trade-bar-row.is-world { grid-template-columns: 15px 30px minmax(0, 1fr) 46px; }
 .trade-bar-row .tr-dir {
     width: 8px; height: 8px; border-radius: 50%;
     background: #38bdf8; padding: 0;
@@ -2054,3 +2060,151 @@ body.trade-map-mode .left-pane {
 .stock-row .ch.up { color: #4ade80; }
 .stock-row .ch.down { color: #fca5a5; }
 .stock-note { font-size: 9.5px; color: #64748b; margin-top: 6px; }
+
+/* ── 금융 진단 (포트폴리오 / 기업 가치) ─────────────────────────────────────
+   Full-bleed document surface, same treatment as shipping: these views have no
+   map, so the globe would only take room away from the numbers. */
+body.finance-mode #chart-view {
+    display: block !important;
+    align-items: initial !important;
+    justify-content: initial !important;
+    overflow-y: scroll !important;
+    overflow-x: hidden !important;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+    pointer-events: auto !important;
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    max-height: none;
+    z-index: 40 !important;
+    background:
+        radial-gradient(circle at 10% 0%, rgba(56, 189, 248, .08), transparent 32%),
+        radial-gradient(circle at 90% 6%, rgba(167, 139, 250, .07), transparent 30%),
+        #090e18;
+}
+body.finance-mode #chart-view::-webkit-scrollbar { width: 8px; }
+body.finance-mode #chart-view::-webkit-scrollbar-track { background: rgba(15, 23, 42, .8); }
+body.finance-mode #chart-view::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, .28); border-radius: 999px; }
+
+.fin-wrap { max-width: 1180px; margin: 0 auto; padding: 30px 28px 64px; color: var(--text-primary); }
+.fin-loading { color: var(--text-secondary); font-size: 13px; padding: 40px 0; }
+
+.fin-head { border-bottom: 1px solid var(--border); padding-bottom: 18px; margin-bottom: 22px; }
+.fin-head h1 { font-size: 23px; font-weight: 650; margin: 0 0 8px; letter-spacing: -.01em; }
+.fin-head > p { font-size: 14px; line-height: 1.65; color: #cbd5e1; margin: 0 0 12px; max-width: 78ch; }
+.fin-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 7px; font-size: 11.5px; color: #64748b; }
+.fin-meta-sep { color: #334155; }
+.fin-chip {
+    background: rgba(56, 189, 248, .13); color: #7dd3fc; border: 1px solid rgba(56, 189, 248, .28);
+    padding: 2px 9px; border-radius: 999px; font-size: 11px; font-weight: 600;
+}
+
+.fin-alert {
+    background: rgba(239, 68, 68, .08); border: 1px solid rgba(239, 68, 68, .3);
+    border-radius: 10px; padding: 13px 16px; margin-bottom: 22px;
+}
+.fin-alert-mark { font-size: 10.5px; font-weight: 700; letter-spacing: .1em; color: #fca5a5; text-transform: uppercase; }
+.fin-alert ul { margin: 7px 0 0; padding-left: 17px; }
+.fin-alert li { font-size: 13px; line-height: 1.6; color: #fecaca; }
+
+.fin-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(238px, 1fr)); gap: 13px; margin-bottom: 26px; }
+.fin-card { background: rgba(30, 41, 59, .42); border: 1px solid var(--border); border-radius: 11px; padding: 15px 16px; }
+.fin-card-title { display: block; font-size: 11px; color: var(--text-secondary); letter-spacing: .04em; }
+.fin-card-value {
+    display: block; font-size: 21px; font-weight: 660; margin: 5px 0 9px;
+    color: #f1f5f9; font-variant-numeric: tabular-nums;
+}
+.fin-card-plain { font-size: 12px; line-height: 1.65; color: #94a3b8; margin: 0 0 7px; }
+.fin-card-analogy { font-size: 11.5px; line-height: 1.6; color: #64748b; margin: 0; font-style: italic; }
+
+.fin-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 15px; }
+.fin-block {
+    background: rgba(15, 23, 42, .5); border: 1px solid var(--border);
+    border-radius: 11px; padding: 18px 20px;
+}
+.fin-block-wide { grid-column: 1 / -1; }
+.fin-block h2 { font-size: 14px; font-weight: 620; margin: 0 0 11px; color: #e2e8f0; }
+.fin-sub { font-size: 12px; font-weight: 620; margin: 15px 0 7px; color: #cbd5e1; }
+.fin-sub-up { color: #6ee7b7; }
+.fin-sub-down { color: #fca5a5; }
+.fin-lead { font-size: 13px; line-height: 1.65; color: #cbd5e1; margin: 0 0 13px; }
+.fin-p { font-size: 12.5px; line-height: 1.7; color: #94a3b8; margin: 0 0 9px; }
+.fin-note { font-size: 12px; line-height: 1.65; color: #64748b; margin: 0 0 14px; }
+.fin-list { margin: 0; padding-left: 17px; }
+.fin-list li { font-size: 12.5px; line-height: 1.75; color: #94a3b8; margin-bottom: 4px; }
+
+.fin-legend { display: flex; gap: 15px; font-size: 11px; color: #64748b; margin-bottom: 10px; }
+.fin-swatch { display: inline-block; width: 9px; height: 9px; border-radius: 2px; margin-right: 5px; vertical-align: middle; }
+
+.fin-risk-list { display: flex; flex-direction: column; gap: 7px; }
+.fin-risk-row { display: grid; grid-template-columns: minmax(140px, 1.5fr) 3fr minmax(84px, auto); gap: 12px; align-items: center; }
+.fin-risk-name { font-size: 12px; color: #cbd5e1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.fin-risk-bars { display: flex; flex-direction: column; gap: 3px; }
+.fin-bar-track { height: 7px; background: rgba(148, 163, 184, .09); border-radius: 3px; overflow: hidden; }
+.fin-bar { height: 100%; border-radius: 3px; }
+.fin-bar-risk { background: linear-gradient(90deg, #38bdf8, #818cf8); }
+.fin-bar-weight { background: rgba(148, 163, 184, .45); }
+.fin-risk-nums { display: flex; flex-direction: column; align-items: flex-end; font-variant-numeric: tabular-nums; }
+.fin-risk-rc { font-size: 12.5px; font-weight: 620; color: #7dd3fc; }
+.fin-risk-w { font-size: 11px; color: #64748b; }
+
+.fin-tag {
+    font-size: 9.5px; padding: 1px 6px; border-radius: 4px; margin-left: 6px;
+    background: rgba(148, 163, 184, .15); color: #94a3b8; vertical-align: middle;
+}
+.fin-tag-warn { background: rgba(251, 191, 36, .15); color: #fcd34d; }
+
+.fin-moves { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
+.fin-move { border-left: 2px solid rgba(148, 163, 184, .2); padding: 0 0 0 11px; margin-bottom: 12px; }
+.fin-move-head { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; margin-bottom: 3px; }
+.fin-move-head span:first-child { font-size: 12.5px; color: #e2e8f0; font-weight: 560; }
+.fin-move-delta { font-size: 12px; font-weight: 640; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.fin-up { color: var(--positive); }
+.fin-down { color: var(--negative); }
+.fin-move p { font-size: 11.5px; line-height: 1.6; color: #64748b; margin: 0; }
+
+.fin-foot { margin-top: 26px; padding-top: 17px; border-top: 1px solid var(--border); }
+.fin-foot p { font-size: 11.5px; line-height: 1.7; color: #64748b; margin: 0 0 7px; }
+.fin-disclaimer { color: #475569 !important; }
+.fin-proxy, .fin-engine { color: #475569 !important; font-size: 11px !important; }
+.fin-foot code { background: rgba(148, 163, 184, .1); padding: 1px 5px; border-radius: 3px; font-size: 10.5px; }
+
+.fin-empty { background: rgba(15, 23, 42, .5); border: 1px solid var(--border); border-radius: 11px; padding: 34px 28px; text-align: center; }
+.fin-empty-title { font-size: 13px; font-weight: 620; color: #cbd5e1; margin: 0 0 10px; }
+.fin-empty p { font-size: 12.5px; line-height: 1.8; color: #64748b; margin: 0; }
+.fin-empty code { background: rgba(148, 163, 184, .12); padding: 2px 6px; border-radius: 4px; font-size: 11.5px; color: #94a3b8; }
+
+@media (max-width: 900px) {
+    .fin-wrap { padding: 22px 16px 48px; }
+    .fin-grid, .fin-moves { grid-template-columns: 1fr; }
+    .fin-risk-row { grid-template-columns: minmax(96px, 1.2fr) 2fr minmax(70px, auto); gap: 8px; }
+}
+
+/* 공급망 집중도 카드 (CR3 · HHI) */
+.dep-card {
+    margin: 8px 0 10px;
+    padding: 9px 10px;
+    border: 1px solid rgba(148, 163, 184, 0.16);
+    border-radius: 7px;
+    background: rgba(15, 23, 42, 0.5);
+}
+.dep-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.dep-head strong { font-size: 11.5px; color: #cbd5e1; font-weight: 600; }
+.dep-band {
+    font-size: 10px; padding: 1px 6px; border-radius: 999px;
+    border: 1px solid transparent;
+}
+.dep-band.dep-hi { color: #fca5a5; background: rgba(248, 113, 113, .13); border-color: rgba(248, 113, 113, .3); }
+.dep-band.dep-mid { color: #fcd34d; background: rgba(251, 191, 36, .12); border-color: rgba(251, 191, 36, .28); }
+.dep-band.dep-lo { color: #86efac; background: rgba(74, 222, 128, .11); border-color: rgba(74, 222, 128, .26); }
+.dep-metrics { display: flex; gap: 16px; margin-top: 6px; }
+.dep-m { display: flex; align-items: baseline; gap: 5px; }
+.dep-k { font-size: 10px; color: #64748b; letter-spacing: .04em; }
+.dep-v { font-size: 14px; font-weight: 700; color: #38bdf8; font-variant-numeric: tabular-nums; }
+.dep-top {
+    margin: 5px 0 0; font-size: 10.5px; color: #94a3b8;
+    font-variant-numeric: tabular-nums; letter-spacing: .02em;
+}
+.dep-note { margin: 4px 0 0; font-size: 9.5px; line-height: 1.45; color: rgba(148, 163, 184, .62); }

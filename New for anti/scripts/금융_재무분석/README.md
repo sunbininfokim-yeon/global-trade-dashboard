@@ -1,0 +1,78 @@
+# 금융_재무분석 — Personal Portfolio Lab
+
+글로벌 트레이드 대시보드 **금융/제조 창** 하위에 붙일 개인 포트 진단 파이프라인.
+
+- 데이터: Yahoo Finance chart API 우선, 실패 시 Stooq CSV 일봉 폴백 (거래소 직접 API 불필요)
+- 이론: Ledoit–Wolf Σ · EWMA(단기) · HRP · 위험기여 · 단기/장기 VaR · Sharpe
+- 산출: `public/data/portfolio_analysis_v1.json` (UI는 이 JSON을 fetch)
+
+> **UI 연결:** `app.js` / 금융 창 마크업은 Claude Code 소유.  
+> 이 폴더는 **분석 파이프라인 + 데이터 계약**만 담당한다.
+
+## 빠른 실행
+
+```bash
+cd "New for anti/scripts/금융_재무분석"
+python3 run_pipeline.py --portfolio samples/demo_portfolio.json
+```
+
+옵션:
+
+```bash
+python3 run_pipeline.py \
+  --portfolio samples/demo_portfolio.json \
+  --out "../../public/data/portfolio_analysis_v1.json" \
+  --base-currency KRW
+```
+
+오프라인(캐시만):
+
+```bash
+python3 run_pipeline.py --portfolio samples/demo_portfolio.json --cache-only
+```
+
+## 가격 소스
+
+1. **Yahoo** chart API (`query1`) — 기본  
+   실패 시 같은 Yahoo 계열로 `query2` → 기간 단축(2Y) → `v7/finance/download` CSV 재시도
+2. **Stooq** 일봉 CSV — `AAPL`→`aapl.us`, `005930.KS`→`005930.ks`, `USDKRW=X`→`usdkrw` 등 심볼 매핑 후 best-effort  
+   (JS bot challenge에 막히면 조용히 실패하고 다음으로 넘어감 / 전부 실패 시 에러)
+
+성공 소스는 `data_quality.price_sources` 와 캐시 사이드카 `*.meta.json`에 기록됩니다.  
+(Investing.com 스크래핑은 ToS/취약성 때문에 의존하지 않습니다 — 향후 옵션으로만 메모.)
+
+## 파이프라인
+
+```text
+portfolio JSON
+  → resolve (alias → canonical id → Yahoo symbol)
+  → prices (Yahoo daily → Stooq CSV fallback; csv + .meta.json cache)
+  → returns (base currency 통일)
+  → Σ_short (EWMA) / Σ_long (Ledoit–Wolf)
+  → metrics (return, vol, Sharpe, VaR/CVaR, risk contrib)
+  → HRP 대안 비중 + Δweights
+  → portfolio_analysis_v1.json
+```
+
+## 입력 포맷
+
+`samples/demo_portfolio.json` 참고. 각 포지션은 `query`(티커·한글명·종목코드) + `value`(원화 평가액) 또는 `weight`.
+
+## 투자 성향
+
+```bash
+python3 run_pipeline.py --portfolio samples/user_balanced_portfolio.json --risk-profile balanced
+```
+
+`conservative` / `balanced` / `aggressive` — 현금·VaR 한도만 다르고, 기대수익률 가정은 없습니다.
+
+## 종목 자동완성 (UI용)
+
+```bash
+python3 run_pipeline.py --suggest "삼성전"
+```
+
+## 화면 문구
+
+산출 JSON의 `ui_copy_ko` / `ui_copy_en` 를 금융 창에 그대로 붙이면 됩니다 (용어 해설·비유 포함).  
+로케일만 골라 같은 카드 스키마를 쓰면 됩니다.

@@ -350,6 +350,13 @@ const focusTradeCountry = (countryName) => {
                 <span class="ts-v ${net >= 0 ? 'pos' : 'neg'}">${net >= 0 ? '+' : ''}${net.toLocaleString()}</span></div>
         </div>`;
 
+    // Which side carries the dependency. A buyer's exposure is its suppliers;
+    // a country that only sells has no supply risk here, but it does have
+    // customer risk, and that is the concentration worth showing instead.
+    const depHtml = importVol > 0
+        ? concentrationHtml(imports, (a) => a.sourceName, '공급')
+        : concentrationHtml(exports, (a) => a.targetName, '판로');
+
     if (newsPanelEl) panelShow(newsPanelEl);
     panelHide(countryStatsPanelEl);
     panelHide(macroPanelEl);
@@ -364,6 +371,7 @@ const focusTradeCountry = (countryName) => {
                 </div>
                 <p class="trade-focus-sub">수출·수입 양방향 · 비중은 각 방향 내 비중 · 물동량(${unit})</p>
                 ${statsHtml}
+                ${depHtml}
                 <div class="trade-rank-list">${rows || '<p class="empty-state">이 국가 루트 없음</p>'}</div>
             </div>`;
         document.getElementById('trade-focus-clear')?.addEventListener('click', (e) => {
@@ -434,6 +442,63 @@ const countryCode = (name) => {
     const r = resolveCountry(name);
     if (r?.iso) return r.iso;
     return String(name || '').slice(0, 3).toUpperCase();
+};
+
+/**
+ * Supply concentration for one country's trade in one commodity.
+ *
+ * CR3 and HHI over whichever direction actually carries the dependency: for a
+ * buyer, who it buys from; for a pure seller, who it sells to. Herfindahl fits
+ * without stretching -- Hirschman published it in 1945 to measure how
+ * concentrated a nation's trade was, and antitrust borrowed it afterwards.
+ *
+ * Labelled 집중도 and not 위험 on purpose. Concentration is half of supply risk:
+ * three suppliers who are all allies is not the exposure that one supplier who
+ * is not would be, which is why the EU multiplies its HHI by a governance
+ * score. That weighting needs World Bank WGI data this page does not carry, so
+ * the card reports what it can actually measure and says which half that is.
+ */
+const concentrationHtml = (arcs, partnerOf, dirKo) => {
+    const byPartner = new Map();
+    for (const a of arcs) {
+        if (!(a.volume > 0)) continue;
+        const p = partnerOf(a);
+        byPartner.set(p, (byPartner.get(p) || 0) + a.volume);
+    }
+    const total = [...byPartner.values()].reduce((s, v) => s + v, 0);
+    // Two partners cannot say anything about concentration that the ranking
+    // below does not already show.
+    if (byPartner.size < 3 || total <= 0) return '';
+
+    const ranked = [...byPartner.entries()].sort((x, y) => y[1] - x[1]);
+    const hhi = ranked.reduce((s, [, v]) => s + (v / total) ** 2, 0);
+    const cr3 = ranked.slice(0, 3).reduce((s, [, v]) => s + v, 0) / total;
+
+    // The 0.15 / 0.25 cutoffs are the ones competition authorities use, and the
+    // EU's raw-materials assessment carries them over to supplier countries.
+    const band = hhi >= 0.25 ? { ko: '높음', cls: 'hi' }
+        : hhi >= 0.15 ? { ko: '보통', cls: 'mid' }
+            : { ko: '낮음', cls: 'lo' };
+    const top3 = ranked.slice(0, 3)
+        .map(([p, v]) => `${countryCode(p)} ${((v / total) * 100).toFixed(1)}`)
+        .join(' · ');
+
+    return `
+        <div class="dep-card">
+            <div class="dep-head">
+                <strong>${dirKo} 집중도</strong>
+                <span class="dep-band dep-${band.cls}">${band.ko}</span>
+            </div>
+            <div class="dep-metrics">
+                <div class="dep-m"><span class="dep-k">CR3</span>
+                    <span class="dep-v">${(cr3 * 100).toFixed(1)}%</span></div>
+                <div class="dep-m"><span class="dep-k">HHI</span>
+                    <span class="dep-v">${hhi.toFixed(3)}</span></div>
+            </div>
+            <p class="dep-top">${top3}</p>
+            <p class="dep-note">상위 3개국 비중과 허핀달 지수. 공급국의 정치적 신뢰도는
+                반영하지 않은 순수 집중도다.</p>
+        </div>`;
 };
 
 /**
@@ -520,7 +585,7 @@ const renderTradeWorldPanel = (arcs) => {
 
     const rows = ranked.slice(0, 10).map(([name, vol], i) => {
         const share = (vol / total) * 100;
-        return `<div class="trade-rank-row trade-bar-row climate-click"
+        return `<div class="trade-rank-row trade-bar-row is-world climate-click"
                      role="button" tabindex="0" data-trade-country="${name}"
                      title="${name} · ${share.toFixed(1)}%">
             <span class="tr-i">${i + 1}</span>
@@ -4849,12 +4914,236 @@ const togglePanels = ({ macro = false, countryStats = false, news = false, forec
     mapContainer.style.display = map ? 'block' : 'none';
 };
 
+// --- 금융 진단 ---------------------------------------------------------------
+// The engines live outside this file: portfolio risk in
+// scripts/금융_재무분석 (portfolio_analysis_v1.json), corporate financials in
+// scripts/dart. This side only renders. Per DATA_CONTRACT.md the wording comes
+// from the payload's own ui_copy_* block rather than being written here, so the
+// engine stays the single source of both the numbers and how they read.
+const FIN_LOCALE = 'ko';
+
+const finPct = (x, digits = 1) =>
+    (x === null || x === undefined || Number.isNaN(x)) ? '—' : `${(x * 100).toFixed(digits)}%`;
+
+const finSignedPct = (x, digits = 1) => {
+    if (x === null || x === undefined || Number.isNaN(x)) return '—';
+    const v = x * 100;
+    return `${v >= 0 ? '+' : ''}${v.toFixed(digits)}%p`;
+};
+
+const finEsc = (s) => String(s ?? '').replace(/[&<>"']/g,
+    (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+const finPlaceholder = (title, desc, detail) => `
+    <div class="fin-wrap">
+        <div class="fin-head"><h1>${finEsc(title)}</h1><p>${finEsc(desc)}</p></div>
+        <div class="fin-empty">
+            <p class="fin-empty-title">준비 중</p>
+            <p>${detail}</p>
+        </div>
+    </div>`;
+
+// Weight says where the money sits; risk contribution says where the account's
+// movement actually comes from. Showing them on one row is the whole point of
+// the panel -- a 5% position driving half the volatility is invisible otherwise.
+const finRiskRows = (data) => {
+    const contrib = (data.structure && data.structure.risk_contribution) || {};
+    const byName = new Map((data.positions || []).map((p) => [p.name_ko, p]));
+    const rows = Object.entries(contrib)
+        .map(([name, rc]) => ({ name, rc, w: (byName.get(name) || {}).weight ?? null,
+                                lev: (byName.get(name) || {}).leveraged,
+                                proxy: (byName.get(name) || {}).proxy }))
+        .sort((a, b) => b.rc - a.rc);
+    const max = Math.max(...rows.map((r) => Math.abs(r.rc)), 0.0001);
+
+    return rows.map((r) => `
+        <div class="fin-risk-row">
+            <div class="fin-risk-name">
+                ${finEsc(r.name)}
+                ${r.lev ? '<span class="fin-tag fin-tag-warn">레버리지</span>' : ''}
+                ${r.proxy ? '<span class="fin-tag">프록시</span>' : ''}
+            </div>
+            <div class="fin-risk-bars">
+                <div class="fin-bar-track" title="위험 기여 ${finPct(r.rc)}">
+                    <div class="fin-bar fin-bar-risk" style="width:${Math.abs(r.rc) / max * 100}%"></div>
+                </div>
+                <div class="fin-bar-track" title="비중 ${finPct(r.w)}">
+                    <div class="fin-bar fin-bar-weight" style="width:${(Math.abs(r.w ?? 0)) / max * 100}%"></div>
+                </div>
+            </div>
+            <div class="fin-risk-nums">
+                <span class="fin-risk-rc">${finPct(r.rc)}</span>
+                <span class="fin-risk-w">${finPct(r.w)}</span>
+            </div>
+        </div>`).join('');
+};
+
+const renderPortfolioLab = async (host) => {
+    host.innerHTML = `<div class="fin-wrap"><p class="fin-loading">포트폴리오 진단 불러오는 중…</p></div>`;
+
+    let data = null;
+    for (const path of ['/public/data/portfolio_analysis_v1.json', '/data/portfolio_analysis_v1.json']) {
+        try {
+            const res = await fetch(path, { cache: 'no-store' });
+            if (res.ok) { data = await res.json(); break; }
+        } catch (_) { /* try next */ }
+    }
+
+    if (!data) {
+        host.innerHTML = finPlaceholder(
+            '포트폴리오 진단',
+            '보유 자산의 위험이 어디에 몰려 있는지 진단합니다',
+            `분석 결과 파일이 배포본에 없습니다. 개인 보유 내역이라 저장소에 커밋하지 않습니다.<br>
+             로컬에서 <code>python3 run_pipeline.py</code> 를 돌리면
+             <code>public/data/portfolio_analysis_v1.json</code> 이 생성되고 이 화면이 채워집니다.<br>
+             계약: <code>scripts/금융_재무분석/DATA_CONTRACT.md</code>`);
+        return;
+    }
+
+    const u = data[`ui_copy_${FIN_LOCALE}`] || {};
+    const S = (k) => u[`${k}_${FIN_LOCALE}`];
+    const cards = u.metric_cards || [];
+    const breaches = S('profile_breaches') || [];
+    const movesUp = S('moves_up') || [];
+    const movesDown = S('moves_down') || [];
+    const proxies = (data.data_quality && data.data_quality.proxies) || [];
+    const dq = data.data_quality || {};
+
+    host.innerHTML = `
+    <div class="fin-wrap">
+        <div class="fin-head">
+            <h1>포트폴리오 진단</h1>
+            <p>${finEsc(S('headline'))}</p>
+            <div class="fin-meta">
+                <span class="fin-chip">${finEsc(u.profile?.[`label_${FIN_LOCALE}`] || data.risk_profile_id)}</span>
+                <span>${finEsc(u.profile?.[`blurb_${FIN_LOCALE}`] || '')}</span>
+                <span class="fin-meta-sep">·</span>
+                <span>기준 ${finEsc((data.generated_at || '').slice(0, 10))}</span>
+                <span class="fin-meta-sep">·</span>
+                <span>관측 ${dq.n_obs ?? '—'}일 (${finEsc(dq.start || '')} ~ ${finEsc(dq.end || '')})</span>
+            </div>
+        </div>
+
+        ${breaches.length ? `
+        <div class="fin-alert">
+            <span class="fin-alert-mark">성향 한도 초과</span>
+            <ul>${breaches.map((b) => `<li>${finEsc(b)}</li>`).join('')}</ul>
+        </div>` : ''}
+
+        <div class="fin-cards">
+            ${cards.map((c) => `
+                <div class="fin-card">
+                    <span class="fin-card-title">${finEsc(c[`title_${FIN_LOCALE}`])}</span>
+                    <span class="fin-card-value">${finEsc(c[`value_${FIN_LOCALE}`])}</span>
+                    <p class="fin-card-plain">${finEsc(c[`plain_${FIN_LOCALE}`])}</p>
+                    <p class="fin-card-analogy">${finEsc(c[`analogy_${FIN_LOCALE}`])}</p>
+                </div>`).join('')}
+        </div>
+
+        <div class="fin-grid">
+            <section class="fin-block fin-block-wide">
+                <h2>위험이 어디서 나오는가</h2>
+                <p class="fin-lead">${finEsc(S('risk_contribution_plain'))}</p>
+                <div class="fin-legend">
+                    <span><i class="fin-swatch fin-bar-risk"></i>위험 기여</span>
+                    <span><i class="fin-swatch fin-bar-weight"></i>비중</span>
+                </div>
+                <div class="fin-risk-list">${finRiskRows(data)}</div>
+            </section>
+
+            <section class="fin-block">
+                <h2>이 숫자 보는 법</h2>
+                <ul class="fin-list">
+                    ${(S('how_to_read') || []).map((x) => `<li>${finEsc(x)}</li>`).join('')}
+                </ul>
+            </section>
+
+            <section class="fin-block">
+                <h2>함께 움직이는 묶음</h2>
+                ${(S('clusters_plain') || []).map((x) => `<p class="fin-p">${finEsc(x)}</p>`).join('')}
+                <h3 class="fin-sub">통화 노출</h3>
+                <p class="fin-p">${finEsc(S('currency_plain'))}</p>
+            </section>
+
+            <section class="fin-block">
+                <h2>과거 급락 구간 대입</h2>
+                ${(S('stress_plain') || []).map((x) => `<p class="fin-p">${finEsc(x)}</p>`).join('')}
+            </section>
+
+            <section class="fin-block fin-block-wide">
+                <h2>조절 제안</h2>
+                <p class="fin-note">${finEsc(S('rebalance_note'))}</p>
+                <div class="fin-moves">
+                    <div class="fin-moves-col">
+                        <h3 class="fin-sub fin-sub-up">비중을 키우는 방향</h3>
+                        ${movesUp.map((m) => `
+                            <div class="fin-move">
+                                <div class="fin-move-head">
+                                    <span>${finEsc(m[`name_${FIN_LOCALE}`])}</span>
+                                    <span class="fin-move-delta fin-up">${finSignedPct(m.delta)}</span>
+                                </div>
+                                <p>${finEsc(m[`plain_${FIN_LOCALE}`])}</p>
+                            </div>`).join('')}
+                    </div>
+                    <div class="fin-moves-col">
+                        <h3 class="fin-sub fin-sub-down">비중을 줄이는 방향</h3>
+                        ${movesDown.map((m) => `
+                            <div class="fin-move">
+                                <div class="fin-move-head">
+                                    <span>${finEsc(m[`name_${FIN_LOCALE}`])}</span>
+                                    <span class="fin-move-delta fin-down">${finSignedPct(m.delta)}</span>
+                                </div>
+                                <p>${finEsc(m[`plain_${FIN_LOCALE}`])}</p>
+                            </div>`).join('')}
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <div class="fin-foot">
+            <p>${finEsc(S('footer'))}</p>
+            <p class="fin-disclaimer">${finEsc(data[`disclaimer_${FIN_LOCALE}`])}</p>
+            ${proxies.length ? `<p class="fin-proxy">프록시 사용: ${proxies.map((p) =>
+                finEsc(typeof p === 'string' ? p : (p.name_ko || p.id || JSON.stringify(p)))).join(' · ')}</p>` : ''}
+            <p class="fin-engine">엔진: <code>scripts/금융_재무분석</code> ·
+               방식: ${finEsc((data.advice && data.advice.method) || '')} ·
+               스키마 ${finEsc(data.schema_version || '')}</p>
+        </div>
+    </div>`;
+};
+
+const renderFinanceView = async (target, host) => {
+    if (target === 'fin_portfolio') return renderPortfolioLab(host);
+
+    if (target === 'fin_valuation') {
+        host.innerHTML = finPlaceholder(
+            '기업 가치 진단',
+            'DART 공시 재무제표 기반 기업 재무 상태·현금흐름 진단',
+            `엔진(<code>scripts/dart</code>)은 <code>cursor/ml-dart-kfa</code> 브랜치에서 작업 중입니다.
+             DART API 키 발급 후 <code>public/data/dart_*.json</code> 이 나오면 이 화면이 연결됩니다.<br>
+             설계: <code>LEVELS_OUTPUT.md</code> · <code>OUTPUT_SCHEMA.md</code>`);
+        return;
+    }
+
+    host.innerHTML = finPlaceholder(
+        '옵션·공매도 동향',
+        '무료 공개 소스 기반 파생상품 포지션 동향',
+        `수집 파이프라인은 있으나 산출 JSON이 아직 배포본에 없습니다.
+         <code>derivatives_intel</code> 파이프라인 결과가 <code>public/data/</code> 에 들어오면 연결됩니다.`);
+};
+
 const setView = (target) => {
     const isShippingView = target && target.startsWith('shipping_');
+    const isFinanceView = target && target.startsWith('fin_');
     if (!isShippingView && window.ShippingDashboard) {
         window.ShippingDashboard.unmount(chartView);
     }
     if (!isShippingView) document.body.classList.remove('shipping-mode');
+    if (!isFinanceView) {
+        document.body.classList.remove('finance-mode');
+        // Shipping owns chartView too, so only clear what this view wrote.
+        if (chartView && chartView.querySelector('.fin-wrap')) chartView.innerHTML = '';
+    }
     if (!(window.TradeData && window.TradeData[target])) {
         stopTradeAnim();
         document.body.classList.remove('trade-map-mode');
@@ -4928,6 +5217,27 @@ const setView = (target) => {
             chartView.style.zIndex = '40';
         }
         window.ShippingDashboard.render(target, chartView);
+
+    } else if (isFinanceView) {
+        // Document-style panel, same full-bleed treatment as shipping: there is
+        // no map to show, so the globe would only steal room from the numbers.
+        currentCommodity = target;
+        stopTradeAnim();
+        stopRotation();
+        document.body.classList.remove('trade-map-mode');
+        document.body.classList.add('finance-mode');
+        deckgl.setProps({ layers: [] });
+        togglePanels({ left: false, right: false, chart: true, map: false });
+        if (mapContainer) {
+            mapContainer.style.display = 'none';
+            mapContainer.style.pointerEvents = 'none';
+        }
+        if (chartView) {
+            chartView.classList.remove('hidden');
+            chartView.style.pointerEvents = 'auto';
+            chartView.style.zIndex = '40';
+        }
+        renderFinanceView(target, chartView);
 
     } else if (target === 'inst_intl' || target === 'inst_country') {
         currentCommodity = target;
