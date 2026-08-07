@@ -1,0 +1,390 @@
+{
+  "key": "thailand_rubber",
+  "label": "Thailand natural rubber",
+  "label_ko": "태국 천연고무",
+  "crop": "rubber",
+  "doc": "Regions/태국/중부_북동부/설탕_고무 + Makkaew & Sdoodee 2015",
+  "caveat": "FAOSTAT national rubber; rainy-day loss is a tapping-opportunity proxy, not measured latex kg/tree. NE vs South rainfall signs can oppose (Thaiburi 2025 JAM).",
+  "non_weather_drivers": "Farm-gate rubber price, tapping frequency, labour, clone RRIM600 share, and Pestalotiopsis / leaf disease.",
+  "sources": [
+    "Makkaew & Sdoodee (2015) IJAT — Songkhla rainy days × tapping yield",
+    "Thaiburi et al. (2025) J. Agrometeorology — climate × rubber TH",
+    "FAO WPP/MPP rubber production potential (East/NE Thailand)"
+  ],
+  "label_source": "faostat_thailand_national_yield",
+  "label_sources": [
+    "faostat_thailand_national_yield"
+  ],
+  "labels_provisional": false,
+  "labels_season_imperfect": true,
+  "dam_storage_is_proxy": false,
+  "trained_years": [
+    1985,
+    2024
+  ],
+  "n_seasons": 40,
+  "n_forward_folds": 22,
+  "trend": {
+    "log_poly_coef": [
+      -0.01446457571849772,
+      36.46983430324726
+    ],
+    "degree": 1,
+    "form": "recent10",
+    "window": 10,
+    "space": "log(kg/ha)"
+  },
+  "features": [
+    "rainy_days_5mm",
+    "rainy_days_1mm",
+    "oni_season",
+    "precip_wet"
+  ],
+  "feature_set": "core",
+  "trend_form": "recent10",
+  "scaler": {
+    "mean": [
+      54.431999999999995,
+      107.2935,
+      0.02124999999999999,
+      1295.536765
+    ],
+    "scale": [
+      14.219866244096671,
+      18.30918315354347,
+      0.42636010308189015,
+      141.47274402968145
+    ]
+  },
+  "ridge": {
+    "alpha": 70.1703828670383,
+    "coef": [
+      0.04094218593698651,
+      0.02238967646662126,
+      0.005698693213122501,
+      -0.013008771931715696
+    ],
+    "intercept": -0.26110144393133705
+  },
+  "beats_trend": false,
+  "recent_skill_vs_trend": -0.19206491464892794,
+  "skill_vs_best_trend": 0.0037012843191198685,
+  "best_trend_baseline_rmse": 97.07129823938976,
+  "weather_skill": -0.19206491464892794,
+  "non_weather_features": [],
+  "recent_folds": 10,
+  "uncertainty": {
+    "sigma_kg_ha": 38.09654064165297,
+    "basis": "trend-only baseline (no skill)"
+  },
+  "validation": {
+    "all_deg1_loo": {
+      "rmse": 268.34996123020994,
+      "mae": 225.8818879995218,
+      "detrended_r2": 0.1242106076400673,
+      "skill_vs_trend": 0.06588220876915285,
+      "baseline_rmse": 287.2763625202092,
+      "recent_rmse": 249.29201915665115,
+      "recent_baseline_rmse": 317.80485886723125,
+      "recent_trend_bias": 281.7813038448097,
+      "n": 40,
+      "years": [
+        1985,
+        2024
+      ],
+      "degree": 1,
+      "window": null,
+      "trend_form": "deg1"
+    },
+    "all_deg1_forward": {
+      "rmse": 501.1957947488595,
+      "mae": 486.5248337649478,
+      "detrended_r2": -15.484828349824564,
+      "skill_vs_trend": 0.025848131438155897,
+      "baseline_rmse": 514.494516639159,
+      "recent_rmse": 538.7772892476481,
+      "recent_baseline_rmse": 568.7141692040568,
+      "recent_trend_bias": 567.2087166079884,
+      "n": 22,
+      "years": [
+        2003,
+        2024
+      ],
+      "degree": 1,
+      "window": null,
+      "trend_form": "deg1"
+    },
+    "all_deg2_loo": {
+      "rmse": 89.24213993414378,
+      "mae": 73.3933207543582,
+      "detrended_r2": -0.02662969828420736,
+      "skill_vs_trend": -0.013134964250461678,
+      "baseline_rmse": 88.08514470741514,
+      "recent_rmse": 106.67811320372066,
+      "recent_baseline_rmse": 104.00778333197603,
+      "recent_trend_bias": -1.241633890485491,
+      "n": 40,
+      "years": [
+        1985,
+        2024
+      ],
+      "degree": 2,
+      "window": null,
+      "trend_form": "deg2"
+    },
+    "all_deg2_forward": {
+      "rmse": 119.76425954850374,
+      "mae": 103.17691538762917,
+      "detrended_r2": -1.4827596466873922,
+      "skill_vs_trend": -0.009811849337700185,
+      "baseline_rmse": 118.6005686376654,
+      "recent_rmse": 145.56219244205855,
+      "recent_baseline_rmse": 144.33227673131927,
+      "recent_trend_bias": -134.91323507654178,
+      "n": 22,
+      "years": [
+        2003,
+        2024
+      ],
+      "degree": 2,
+      "window": null,
+      "trend_form": "deg2"
+    },
+    "all_recent20_loo": {
+      "rmse": 709.8946618117978,
+      "mae": 437.126200749087,
+      "detrended_r2": -0.5371576686026944,
+      "skill_vs_trend": 0.004050675934170522,
+      "baseline_rmse": 712.7819103423336,
+      "recent_rmse": 32.921153460090515,
+      "recent_baseline_rmse": 30.319704810825332,
+      "recent_trend_bias": 5.340665026380111,
+      "n": 40,
+      "years": [
+        1985,
+        2024
+      ],
+      "degree": 1,
+      "window": 20,
+      "trend_form": "recent20"
+    },
+    "all_recent20_forward": {
+      "rmse": 242.39284384382307,
+      "mae": 207.57419578386563,
+      "detrended_r2": -3.18156713621818,
+      "skill_vs_trend": -0.04591765035917539,
+      "baseline_rmse": 231.75136566495814,
+      "recent_rmse": 135.82654400834528,
+      "recent_baseline_rmse": 135.3700782957554,
+      "recent_trend_bias": 101.2804406953591,
+      "n": 22,
+      "years": [
+        2003,
+        2024
+      ],
+      "degree": 1,
+      "window": 20,
+      "trend_form": "recent20"
+    },
+    "all_recent10_loo": {
+      "rmse": 671.0849162439572,
+      "mae": 412.5375845879962,
+      "detrended_r2": -0.5024776982551662,
+      "skill_vs_trend": -2.4153916577507317e-05,
+      "baseline_rmse": 671.0687073063831,
+      "recent_rmse": 34.57326824029949,
+      "recent_baseline_rmse": 33.08682081707792,
+      "recent_trend_bias": 1.1923074457209624,
+      "n": 40,
+      "years": [
+        1985,
+        2024
+      ],
+      "degree": 1,
+      "window": 10,
+      "trend_form": "recent10"
+    },
+    "all_recent10_forward": {
+      "rmse": 111.63298303276481,
+      "mae": 75.06751691360707,
+      "detrended_r2": -0.7203151981842053,
+      "skill_vs_trend": -0.15001019928119375,
+      "baseline_rmse": 97.07129823938976,
+      "recent_rmse": 75.47247591112382,
+      "recent_baseline_rmse": 38.09654064165297,
+      "recent_trend_bias": 8.266866562517407,
+      "n": 22,
+      "years": [
+        2003,
+        2024
+      ],
+      "degree": 1,
+      "window": 10,
+      "trend_form": "recent10"
+    },
+    "core_deg1_loo": {
+      "rmse": 259.5206289739944,
+      "mae": 220.11507508358136,
+      "detrended_r2": 0.18089349092133533,
+      "skill_vs_trend": 0.09661683719022396,
+      "baseline_rmse": 287.2763625202092,
+      "recent_rmse": 241.44351130586557,
+      "recent_baseline_rmse": 317.80485886723125,
+      "recent_trend_bias": 281.7813038448097,
+      "n": 40,
+      "years": [
+        1985,
+        2024
+      ],
+      "degree": 1,
+      "window": null,
+      "trend_form": "deg1"
+    },
+    "core_deg1_forward": {
+      "rmse": 492.59825650695103,
+      "mae": 476.1398133220009,
+      "detrended_r2": -14.924116025947601,
+      "skill_vs_trend": 0.04255878230781007,
+      "baseline_rmse": 514.494516639159,
+      "recent_rmse": 525.0549686460927,
+      "recent_baseline_rmse": 568.7141692040568,
+      "recent_trend_bias": 567.2087166079884,
+      "n": 22,
+      "years": [
+        2003,
+        2024
+      ],
+      "degree": 1,
+      "window": null,
+      "trend_form": "deg1"
+    },
+    "core_deg2_loo": {
+      "rmse": 90.63868857753232,
+      "mae": 74.70076468111753,
+      "detrended_r2": -0.05901252966867787,
+      "skill_vs_trend": -0.028989495091358064,
+      "baseline_rmse": 88.08514470741514,
+      "recent_rmse": 111.06776422730317,
+      "recent_baseline_rmse": 104.00778333197603,
+      "recent_trend_bias": -1.241633890485491,
+      "n": 40,
+      "years": [
+        1985,
+        2024
+      ],
+      "degree": 2,
+      "window": null,
+      "trend_form": "deg2"
+    },
+    "core_deg2_forward": {
+      "rmse": 120.75975359240972,
+      "mae": 103.2444947357896,
+      "detrended_r2": -1.5242051404371675,
+      "skill_vs_trend": -0.018205519413155624,
+      "baseline_rmse": 118.6005686376654,
+      "recent_rmse": 146.46189293967697,
+      "recent_baseline_rmse": 144.33227673131927,
+      "recent_trend_bias": -134.91323507654178,
+      "n": 22,
+      "years": [
+        2003,
+        2024
+      ],
+      "degree": 2,
+      "window": null,
+      "trend_form": "deg2"
+    },
+    "core_recent20_loo": {
+      "rmse": 710.7843856800758,
+      "mae": 438.41718349679047,
+      "detrended_r2": -0.5410131784082408,
+      "skill_vs_trend": 0.002802434564169065,
+      "baseline_rmse": 712.7819103423336,
+      "recent_rmse": 32.76734682684153,
+      "recent_baseline_rmse": 30.319704810825332,
+      "recent_trend_bias": 5.340665026380111,
+      "n": 40,
+      "years": [
+        1985,
+        2024
+      ],
+      "degree": 1,
+      "window": 20,
+      "trend_form": "recent20"
+    },
+    "core_recent20_forward": {
+      "rmse": 234.32016921306322,
+      "mae": 202.36897876649502,
+      "detrended_r2": -2.907678545313794,
+      "skill_vs_trend": -0.01108430813658634,
+      "baseline_rmse": 231.75136566495814,
+      "recent_rmse": 135.77049657364364,
+      "recent_baseline_rmse": 135.3700782957554,
+      "recent_trend_bias": 101.2804406953591,
+      "n": 22,
+      "years": [
+        2003,
+        2024
+      ],
+      "degree": 1,
+      "window": 20,
+      "trend_form": "recent20"
+    },
+    "core_recent10_loo": {
+      "rmse": 671.0706066917215,
+      "mae": 412.37839949509873,
+      "detrended_r2": -0.5024136242360204,
+      "skill_vs_trend": -2.8303887780189996e-06,
+      "baseline_rmse": 671.0687073063831,
+      "recent_rmse": 33.416620708889845,
+      "recent_baseline_rmse": 33.08682081707792,
+      "recent_trend_bias": 1.1923074457209624,
+      "n": 40,
+      "years": [
+        1985,
+        2024
+      ],
+      "degree": 1,
+      "window": 10,
+      "trend_form": "recent10"
+    },
+    "core_recent10_forward": {
+      "rmse": 96.7120097653797,
+      "mae": 68.40070151648496,
+      "detrended_r2": -0.2911710589377896,
+      "skill_vs_trend": 0.0037012843191198685,
+      "baseline_rmse": 97.07129823938976,
+      "recent_rmse": 45.41354946841147,
+      "recent_baseline_rmse": 38.09654064165297,
+      "recent_trend_bias": 8.266866562517407,
+      "n": 22,
+      "years": [
+        2003,
+        2024
+      ],
+      "degree": 1,
+      "window": 10,
+      "trend_form": "recent10"
+    }
+  },
+  "forward": {
+    "rmse": 96.7120097653797,
+    "mae": 68.40070151648496,
+    "detrended_r2": -0.2911710589377896,
+    "skill_vs_trend": 0.0037012843191198685,
+    "baseline_rmse": 97.07129823938976,
+    "recent_rmse": 45.41354946841147,
+    "recent_baseline_rmse": 38.09654064165297,
+    "recent_trend_bias": 8.266866562517407,
+    "n": 22,
+    "years": [
+      2003,
+      2024
+    ],
+    "degree": 1,
+    "window": 10,
+    "trend_form": "recent10"
+  },
+  "gee_used": false,
+  "rid_dam_wired": false
+}

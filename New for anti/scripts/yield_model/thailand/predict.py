@@ -1,0 +1,251 @@
+"""
+Apply trained Thailand models to a live season.
+
+Usage: PYTHONPATH=. python3 -m thailand.predict [--year Y] [region_key ...]
+"""
+
+from __future__ import annotations
+
+import json
+import os
+import sys
+from datetime import date
+
+import numpy as np
+import pandas as pd
+
+from brazil import climate as BC
+from . import climate as C
+from .collect import (
+    END_YEAR,
+    POWER_FILL,
+    POWER_PARAMS,
+    POWER_URL,
+    apply_dam_proxy,
+    blend_features,
+    current_season,
+    load_oni,
+    oni_djf,
+    oni_for,
+    retry_json,
+)
+from .regions import ALL, BY_KEY
+
+HERE = os.path.dirname(os.path.abspath(__file__))
+MODELS = os.path.join(HERE, "models")
+TRAINING = os.path.join(HERE, "training")
+CACHE = os.path.join(HERE, "cache")
+
+
+def log(msg):
+    print(f"[predict] {msg}", flush=True)
+
+
+def recent_weather(point, year):
+    os.makedirs(CACHE, exist_ok=True)
+    slug = f"{point['lat']:.2f}_{point['lon']:.2f}".replace("-", "m").replace(".", "p")
+    stamp = date.today().isoformat()
+    cached = os.path.join(CACHE, f"live_{slug}_{year}_{stamp}.csv")
+    if os.path.exists(cached):
+        return pd.read_csv(cached, parse_dates=["date"])
+
+    start = f"{year - 2}0101"
+    end = min(date.today(), date(year, 12, 31)).strftime("%Y%m%d")
+    url = (f"{POWER_URL}?parameters={POWER_PARAMS}&community=AG"
+           f"&longitude={point['lon']}&latitude={point['lat']}"
+           f"&start={start}&end={end}&format=JSON")
+    p = retry_json(url)["properties"]["parameter"]
+
+    df = pd.DataFrame({
+        "date": pd.to_datetime(list(p["T2M_MAX"].keys()), format="%Y%m%d"),
+        "tmax": list(p["T2M_MAX"].values()),
+        "tmin": list(p["T2M_MIN"].values()),
+        "tmean": list(p["T2M"].values()),
+        "precip": list(p["PRECTOTCORR"].values()),
+        "rh_mean": list(p["RH2M"].values()),
+        "tdew": list(p["T2MDEW"].values()),
+        "rs": list(p["ALLSKY_SFC_SW_DWN"].values()),
+        "wind": list(p["WS2M"].values()),
+        "gwetroot": list(p["GWETROOT"].values()),
+        "gwettop": list(p["GWETTOP"].values()),
+    })
+    df = df[(df[["tmax", "tmin", "tmean", "precip", "rh_mean", "tdew", "rs",
+                 "wind", "gwetroot", "gwettop"]] > POWER_FILL).all(axis=1)]
+    df = df.sort_values("date").reset_index(drop=True)
+    elev = point.get("elevation", 50)
+    df["et0"] = BC.fao56_et0(df, point["lat"], elev)
+    df["vpd_max"] = (C._svp(df.tmax) - C._svp(df.tdew)).clip(lower=0)
+    df = df[["date", "tmax", "tmin", "tmean", "precip", "rh_mean", "vpd_max",
+             "et0", "gwetroot", "gwettop"]]
+    df.to_csv(cached, index=False)
+    return df
+
+
+def _onset_delay_live(feats, history, year):
+    if "onset_doy" not in feats or feats["onset_doy"] is None:
+        return feats
+    if "onset_doy" not in history.columns:
+        feats["onset_delay"] = feats.get("onset_delay")
+        return feats
+    hist = history[history.year < year]["onset_doy"].dropna().tail(20)
+    if len(hist) < 5:
+        feats["onset_delay"] = float("nan")
+    else:
+        feats["onset_delay"] = float(feats["onset_doy"] - hist.mean())
+    return feats
+
+
+def predict_one(cfg, year, oni):
+    model_path = os.path.join(MODELS, f"{cfg.key}.json")
+    if not os.path.exists(model_path):
+        return None
+    with open(model_path, encoding="utf-8") as f:
+        model = json.load(f)
+
+    hist_path = os.path.join(TRAINING, f"{cfg.key}.csv")
+    if not os.path.exists(hist_path):
+        return None
+    history = pd.read_csv(hist_path)
+
+    dailies = {p["name"]: recent_weather(p, year) for p in cfg.points}
+    coverage = max(d.date.max() for d in dailies.values())
+
+    feats = blend_features(cfg, dailies, year)
+    if not feats:
+        return None
+    feats["oni_season"] = oni_for(oni, year, cfg.oni_window)
+    feats["oni_djf"] = oni_djf(oni, year)
+    if cfg.key == "chao_phraya_rice_off":
+        feats = apply_dam_proxy(
+            feats, feats["oni_djf"] if feats["oni_djf"] is not None
+            else feats["oni_season"])
+    feats = _onset_delay_live(feats, history, year)
+
+    # Panel z for spi3 if used
+    if "spi3_z" in model["features"] and "precip_spi3" in feats:
+        hist_p = history["precip_spi3"].dropna()
+        if len(hist_p) and hist_p.std():
+            feats["spi3_z"] = (feats["precip_spi3"] - hist_p.mean()) / hist_p.std()
+
+    # Future / empty windows (e.g. Oct–Nov harvest rain in August) →
+    # prior-20 climatology so live predict does not NaN-out mid-season.
+    clim_filled = []
+    for f in model["features"]:
+        if f in feats and feats[f] is not None and not pd.isna(feats[f]):
+            continue
+        if f in history.columns and history[f].notna().any():
+            feats[f] = float(history[f].dropna().tail(20).mean())
+            clim_filled.append(f)
+        else:
+            feats[f] = 0.0
+            clim_filled.append(f)
+
+    missing = [f for f in model["features"]
+               if f not in feats or feats[f] is None or pd.isna(feats[f])]
+    if missing:
+        return {"key": cfg.key, "year": year,
+                "error": f"features unavailable: {', '.join(missing)}",
+                "weather_through": str(coverage.date())}
+
+    observed = total = 0
+    for month, offset in cfg.critical_window:
+        m_start = pd.Timestamp(year=year + offset, month=month, day=1)
+        m_end = m_start + pd.offsets.MonthEnd(0)
+        days = (m_end - m_start).days + 1
+        total += days
+        if coverage >= m_end:
+            observed += days
+        elif coverage >= m_start:
+            observed += (coverage - m_start).days + 1
+    share = (observed / total) if total else None
+
+    trend_log = float(np.polyval(model["trend"]["log_poly_coef"], year))
+    x = np.array([feats[f] for f in model["features"]], dtype=float)
+    z = (x - np.array(model["scaler"]["mean"])) / np.array(model["scaler"]["scale"])
+    weather_log_full = float(model["ridge"]["intercept"]
+                             + np.dot(z, model["ridge"]["coef"]))
+    # Partial critical windows under-count precip/SM sums vs training →
+    # withhold climate adjustment until ≥75% of the window is observed.
+    # Keep full residual as diagnostic (map colour / stance) even when ops
+    # point stays on trend — same pattern as canada.predict.
+    weather_withheld = bool(share is not None and share < 0.75)
+    weather_log = 0.0 if weather_withheld else weather_log_full
+    trend_kg = float(np.exp(trend_log))
+    point_kg = float(np.exp(trend_log + weather_log))
+    diagnostic_pct = (np.exp(weather_log_full) - 1) * 100
+    ops_pct = (np.exp(weather_log) - 1) * 100
+    sigma = model["uncertainty"]["sigma_kg_ha"]
+
+    last = history.dropna(subset=["yield_kg_ha"]).iloc[-1]
+
+    return {
+        "key": cfg.key,
+        "label": cfg.label,
+        "label_ko": cfg.label_ko,
+        "crop": cfg.crop,
+        "year": year,
+        "unit": "kg/ha",
+        "trend": trend_kg,
+        "weather_effect_pct": ops_pct,
+        "diagnostic_weather_effect_pct": diagnostic_pct,
+        "point": point_kg,
+        "range_68": [point_kg - sigma, point_kg + sigma],
+        "range_95": [point_kg - 1.96 * sigma, point_kg + 1.96 * sigma],
+        "sigma": sigma,
+        "beats_trend": model["beats_trend"],
+        "skill_vs_trend": model["recent_skill_vs_trend"],
+        "weather_skill": model.get("weather_skill",
+                                   model["recent_skill_vs_trend"]),
+        "labels_provisional": model.get("labels_provisional", True),
+        "labels_season_imperfect": model.get("labels_season_imperfect", False),
+        "dam_storage_is_proxy": model.get("dam_storage_is_proxy", False),
+        "label_source": model.get("label_source", ""),
+        "sources": model.get("sources", []),
+        "last_actual": {"year": int(last.year),
+                        "yield": float(last.yield_kg_ha)},
+        "features": {f: float(feats[f]) for f in model["features"]},
+        "weather_through": str(coverage.date()),
+        "critical_window_observed": share,
+        "season_complete": bool(share is not None and share >= 0.999),
+        "weather_withheld_incomplete_season": weather_withheld,
+        "climatology_filled_features": clim_filled,
+        "doc": model["doc"],
+        "caveat": model["caveat"],
+        "non_weather_drivers": model.get("non_weather_drivers", ""),
+    }
+
+
+def main():
+    args = list(sys.argv[1:])
+    year = None
+    if "--year" in args:
+        i = args.index("--year")
+        year = int(args[i + 1])
+        del args[i:i + 2]
+
+    configs = [BY_KEY[k] for k in args] if args else list(ALL)
+    oni = load_oni()
+    results = []
+    for cfg in configs:
+        target = year or current_season(cfg)
+        r = predict_one(cfg, target, oni)
+        if r:
+            results.append(r)
+
+    for r in results:
+        if "error" in r:
+            log(f"{r['key']}: {r['error']}")
+            continue
+        flag = "" if r["beats_trend"] else " [no skill vs trend]"
+        prov = " [provisional labels]" if r.get("labels_provisional") else ""
+        log(f"{r['label']}{flag}{prov}")
+        log(f"  point {r['point']:,.0f} kg/ha  "
+            f"(trend {r['trend']:,.0f}, weather {r['weather_effect_pct']:+.1f}%)")
+        log(f"  range68 {r['range_68'][0]:,.0f}–{r['range_68'][1]:,.0f}  "
+            f"through {r['weather_through']}")
+        log("")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

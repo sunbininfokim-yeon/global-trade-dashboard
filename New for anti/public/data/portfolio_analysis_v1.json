@@ -1,0 +1,633 @@
+{
+  "schema_version": "portfolio_analysis_v1",
+  "generated_at": "2026-08-07T08:54:21.240324+00:00",
+  "base_currency": "KRW",
+  "portfolio_id": "user_balanced_2026_04_07",
+  "disclaimer_ko": "모형 출력은 과거 수익률·공분산 기반 참고 지표이며 투자 권유가 아닙니다. 레버리지·상품은 프록시 가격을 쓸 수 있습니다. 목표 수익률 가정은 사용하지 않습니다.",
+  "disclaimer_en": "Model output is a past-returns / covariance reference — not investment advice. Leveraged products may use proxy prices. No target-return assumption is used.",
+  "risk_profile_id": "balanced",
+  "positions": [
+    {
+      "id": "cash:krw",
+      "name_ko": "원화 현금",
+      "yahoo": null,
+      "asset_class": "cash",
+      "currency": "KRW",
+      "value": 1500000.0,
+      "weight": 0.14285714285714285,
+      "side": "long",
+      "leveraged": false,
+      "proxy": false
+    },
+    {
+      "id": "cash:usd",
+      "name_ko": "달러 현금(환율 위험)",
+      "yahoo": "USDKRW=X",
+      "asset_class": "cash",
+      "currency": "USD",
+      "value": 1000000.0,
+      "weight": 0.09523809523809523,
+      "side": "long",
+      "leveraged": false,
+      "proxy": false
+    },
+    {
+      "id": "eq:us:NVDA",
+      "name_ko": "엔비디아",
+      "yahoo": "NVDA",
+      "asset_class": "equity",
+      "currency": "USD",
+      "value": 1500000.0,
+      "weight": 0.14285714285714285,
+      "side": "long",
+      "leveraged": false,
+      "proxy": false
+    },
+    {
+      "id": "etf:us:IWM",
+      "name_ko": "러셀2000(IWM)",
+      "yahoo": "IWM",
+      "asset_class": "etf",
+      "currency": "USD",
+      "value": 1500000.0,
+      "weight": 0.14285714285714285,
+      "side": "long",
+      "leveraged": false,
+      "proxy": false
+    },
+    {
+      "id": "eq:kr:010140",
+      "name_ko": "삼성중공업",
+      "yahoo": "010140.KS",
+      "asset_class": "equity",
+      "currency": "KRW",
+      "value": 1000000.0,
+      "weight": 0.09523809523809523,
+      "side": "long",
+      "leveraged": false,
+      "proxy": false
+    },
+    {
+      "id": "cmd:xau",
+      "name_ko": "금(GLD 프록시)",
+      "yahoo": "GLD",
+      "asset_class": "commodity",
+      "currency": "USD",
+      "value": 1000000.0,
+      "weight": 0.09523809523809523,
+      "side": "long",
+      "leveraged": false,
+      "proxy": true
+    },
+    {
+      "id": "etf:kr:hynix_lev2_proxy",
+      "name_ko": "하이닉스 2배 ETF(현물×2 프록시)",
+      "yahoo": "000660.KS",
+      "asset_class": "etf",
+      "currency": "KRW",
+      "value": 500000.0,
+      "weight": 0.047619047619047616,
+      "side": "long",
+      "leveraged": true,
+      "proxy": true
+    },
+    {
+      "id": "eq:us:TSLA",
+      "name_ko": "테슬라",
+      "yahoo": "TSLA",
+      "asset_class": "equity",
+      "currency": "USD",
+      "value": -500000.0,
+      "weight": -0.047619047619047616,
+      "side": "short",
+      "leveraged": false,
+      "proxy": false
+    },
+    {
+      "id": "bond:jp:1482",
+      "name_ko": "일본국채 ETF(1482.T 프록시)",
+      "yahoo": "1482.T",
+      "asset_class": "bond",
+      "currency": "JPY",
+      "value": 1000000.0,
+      "weight": 0.09523809523809523,
+      "side": "long",
+      "leveraged": false,
+      "proxy": true
+    },
+    {
+      "id": "etf:us:QQQ",
+      "name_ko": "인베스코 QQQ",
+      "yahoo": "QQQ",
+      "asset_class": "etf",
+      "currency": "USD",
+      "value": 1000000.0,
+      "weight": 0.09523809523809523,
+      "side": "long",
+      "leveraged": false,
+      "proxy": false
+    }
+  ],
+  "performance": {
+    "ann_return_short": 0.25320425819995024,
+    "ann_return_long": 0.19480174060666994,
+    "ann_volatility_short": 0.15437500582807406,
+    "ann_volatility_long": 0.12111733223893274,
+    "sharpe_short": 1.4458574884105957,
+    "sharpe_long": 1.36067842281697,
+    "horizon_returns": {
+      "1M": -0.0255755212035732,
+      "3M": -0.07661156392692302,
+      "1Y": 0.2881463644224865
+    },
+    "risk_free_rate_ann": 0.03,
+    "total_value": 10500000.0,
+    "horizon_note_ko": "1Y는 오늘 기준 지난 약 1년(거래일) 누적입니다. 달력 연도(1~12월) 대비가 아닙니다.",
+    "horizon_note_en": "1Y is cumulative over roughly the past year of trading days from today — not calendar-year YoY."
+  },
+  "risk": {
+    "short": {
+      "method": "historical_1d + parametric_10d",
+      "lookback": "252d",
+      "var_1d_95": 0.014491967697031155,
+      "cvar_1d_95": 0.022264325482099348,
+      "var_10d_95": 0.05058292898627374,
+      "var_10d_95_hist_scaled": 0.04582762570020342,
+      "var_1d_95_krw": 152165.66081882713,
+      "var_10d_95_krw": 531120.7543558743
+    },
+    "long": {
+      "method": "historical_weekly",
+      "lookback": "260w",
+      "var_1m_95": 0.02598055308665861,
+      "cvar_1m_95": 0.03480705878205339,
+      "var_1m_95_krw": 272795.80740991543
+    }
+  },
+  "structure": {
+    "risk_contribution": {
+      "하이닉스 2배 ETF(현물×2 프록시)": 0.5283385010335228,
+      "삼성중공업": 0.18740487394927893,
+      "엔비디아": 0.11840823307074824,
+      "인베스코 QQQ": 0.061213641311768804,
+      "러셀2000(IWM)": 0.059530800003750196,
+      "금(GLD 프록시)": 0.04666787156287725,
+      "달러 현금(환율 위험)": 0.013132866628582473,
+      "일본국채 ETF(1482.T 프록시)": 0.01221788293672571,
+      "원화 현금": 0.0,
+      "테슬라": -0.026914670497254493
+    },
+    "clusters": [
+      {
+        "label_ko": "기술·성장 묶음",
+        "label_en": "Tech / growth cluster",
+        "members": [
+          "eq:us:NVDA",
+          "etf:us:IWM",
+          "eq:us:TSLA",
+          "etf:us:QQQ"
+        ],
+        "members_ko": [
+          "엔비디아",
+          "러셀2000(IWM)",
+          "테슬라",
+          "인베스코 QQQ"
+        ],
+        "weight_sum": 0.38095238095238093,
+        "threshold": 0.55
+      }
+    ],
+    "currency_exposure": {
+      "krw_weight": 0.2857142857142857,
+      "foreign_weight": 0.7142857142857142
+    },
+    "corr_short_top_pairs": [
+      {
+        "a": "etf:us:IWM",
+        "b": "etf:us:QQQ",
+        "corr": 0.8765277351695718,
+        "a_ko": "러셀2000(IWM)",
+        "b_ko": "인베스코 QQQ"
+      },
+      {
+        "a": "eq:us:TSLA",
+        "b": "etf:us:QQQ",
+        "corr": 0.7125502096177933,
+        "a_ko": "테슬라",
+        "b_ko": "인베스코 QQQ"
+      },
+      {
+        "a": "eq:us:NVDA",
+        "b": "etf:us:QQQ",
+        "corr": 0.6871773911447241,
+        "a_ko": "엔비디아",
+        "b_ko": "인베스코 QQQ"
+      },
+      {
+        "a": "etf:us:IWM",
+        "b": "eq:us:TSLA",
+        "corr": 0.6036840610544053,
+        "a_ko": "러셀2000(IWM)",
+        "b_ko": "테슬라"
+      },
+      {
+        "a": "eq:us:NVDA",
+        "b": "etf:us:IWM",
+        "corr": 0.5003728128596004,
+        "a_ko": "엔비디아",
+        "b_ko": "러셀2000(IWM)"
+      },
+      {
+        "a": "eq:kr:010140",
+        "b": "etf:kr:hynix_lev2_proxy",
+        "corr": 0.4885887059410091,
+        "a_ko": "삼성중공업",
+        "b_ko": "하이닉스 2배 ETF(현물×2 프록시)"
+      },
+      {
+        "a": "eq:us:NVDA",
+        "b": "eq:us:TSLA",
+        "corr": 0.4741993379682263,
+        "a_ko": "엔비디아",
+        "b_ko": "테슬라"
+      },
+      {
+        "a": "eq:us:NVDA",
+        "b": "bond:jp:1482",
+        "corr": 0.45698510687334737,
+        "a_ko": "엔비디아",
+        "b_ko": "일본국채 ETF(1482.T 프록시)"
+      },
+      {
+        "a": "etf:us:IWM",
+        "b": "bond:jp:1482",
+        "corr": 0.40090874306603863,
+        "a_ko": "러셀2000(IWM)",
+        "b_ko": "일본국채 ETF(1482.T 프록시)"
+      },
+      {
+        "a": "bond:jp:1482",
+        "b": "etf:us:QQQ",
+        "corr": 0.3993976755683871,
+        "a_ko": "일본국채 ETF(1482.T 프록시)",
+        "b_ko": "인베스코 QQQ"
+      },
+      {
+        "a": "cmd:xau",
+        "b": "etf:kr:hynix_lev2_proxy",
+        "corr": 0.3919730092767691,
+        "a_ko": "금(GLD 프록시)",
+        "b_ko": "하이닉스 2배 ETF(현물×2 프록시)"
+      },
+      {
+        "a": "cash:usd",
+        "b": "etf:us:IWM",
+        "corr": 0.3632181950387368,
+        "a_ko": "달러 현금(환율 위험)",
+        "b_ko": "러셀2000(IWM)"
+      }
+    ],
+    "cov_long_shrinkage": 0.17181313967821013
+  },
+  "stress": {
+    "windows": [
+      {
+        "id": "inflation_2022",
+        "label_ko": "긴축·인플레 구간 (2022)",
+        "label_en": "Tightening / inflation stretch (2022)",
+        "start": "2022-01-03",
+        "end": "2022-12-30",
+        "portfolio_return": -0.1636114544564812
+      },
+      {
+        "id": "recent_90d",
+        "label_ko": "최근 90거래일",
+        "label_en": "Last 90 trading days",
+        "start": "2026-04-23",
+        "end": "2026-08-07",
+        "portfolio_return": -0.016083049884614113
+      }
+    ],
+    "note_ko": "당시 비중·매매가 아니라, ‘지금 비중’을 그 구간에 대입한 참고 수치입니다.",
+    "note_en": "Not what you actually held or traded then — a what-if using today’s weights on that historical window."
+  },
+  "profile_check": {
+    "cash_weight": 0.23809523809523808,
+    "equity_like_weight": 0.5714285714285714,
+    "leveraged_weight": 0.047619047619047616,
+    "peak_name_ko": "원화 현금",
+    "peak_weight": 0.14285714285714285,
+    "var_10d_95": 0.05058292898627374,
+    "var_10d_budget": 0.05,
+    "ok": false,
+    "breaches_ko": [
+      "10일 VaR 5.1%가 성향 한도 5.0%을 넘습니다 (성향 대비 손실·변동 규모가 큽니다)."
+    ],
+    "breaches_en": [
+      "10-day VaR 5.1% is above your profile budget of 5.0% (swings look large vs. your risk style)."
+    ]
+  },
+  "advice": {
+    "method": "HRP_long_risky_sleeve",
+    "reference": "Lopez de Prado (2016) Hierarchical Risk Parity; Ledoit-Wolf covariance",
+    "cash_policy": "flat_cash_and_shorts_fixed",
+    "risk_profile": "balanced",
+    "no_expected_return": true,
+    "current_weights": {
+      "원화 현금": 0.14285714285714285,
+      "달러 현금(환율 위험)": 0.09523809523809523,
+      "엔비디아": 0.14285714285714285,
+      "러셀2000(IWM)": 0.14285714285714285,
+      "삼성중공업": 0.09523809523809523,
+      "금(GLD 프록시)": 0.09523809523809523,
+      "하이닉스 2배 ETF(현물×2 프록시)": 0.047619047619047616,
+      "테슬라": -0.047619047619047616,
+      "일본국채 ETF(1482.T 프록시)": 0.09523809523809523,
+      "인베스코 QQQ": 0.09523809523809523
+    },
+    "target_weights": {
+      "원화 현금": 0.14285714285714285,
+      "달러 현금(환율 위험)": 0.12143452809388408,
+      "엔비디아": 0.06984625567599369,
+      "러셀2000(IWM)": 0.12142857142857143,
+      "삼성중공업": 0.1145886223708075,
+      "금(GLD 프록시)": 0.12142857142857143,
+      "하이닉스 2배 ETF(현물×2 프록시)": 0.017934161003525954,
+      "테슬라": -0.047619047619047616,
+      "일본국채 ETF(1482.T 프록시)": 0.12143452809388408,
+      "인베스코 QQQ": 0.12142857142857143
+    },
+    "delta_weights": {
+      "원화 현금": 0.0,
+      "달러 현금(환율 위험)": 0.026196432855788848,
+      "엔비디아": -0.07301088718114916,
+      "러셀2000(IWM)": -0.021428571428571422,
+      "삼성중공업": 0.019350527132712264,
+      "금(GLD 프록시)": 0.026190476190476195,
+      "하이닉스 2배 ETF(현물×2 프록시)": -0.029684886615521662,
+      "테슬라": 0.0,
+      "일본국채 ETF(1482.T 프록시)": 0.026196432855788848,
+      "인베스코 QQQ": 0.026190476190476195
+    },
+    "notes_ko": [
+      "투자 성향: 일반 (균형) — 성장과 방어를 섞는 보통 투자자 기준입니다.",
+      "원화 현금·공매도 비중은 고정하고, 롱 위험자산만 위험을 고르게 나누는 방향(HRP)입니다.",
+      "목표 수익률은 사용하지 않습니다 (기대수익 가정 없음).",
+      "성향 점검: 10일 VaR 5.1%가 성향 한도 5.0%을 넘습니다 (성향 대비 손실·변동 규모가 큽니다).",
+      "늘리는 쪽 후보: '달러 현금(환율 위험)' (+2.6%p)",
+      "늘리는 쪽 후보: '일본국채 ETF(1482.T 프록시)' (+2.6%p)",
+      "늘리는 쪽 후보: '금(GLD 프록시)' (+2.6%p)",
+      "줄이는 쪽 후보: '엔비디아' (-7.3%p)",
+      "줄이는 쪽 후보: '하이닉스 2배 ETF(현물×2 프록시)' (-3.0%p)",
+      "줄이는 쪽 후보: '러셀2000(IWM)' (-2.1%p)",
+      "레버리지 ETF는 비중보다 위험을 더 키웁니다. 장기에는 배수만큼 수익이 안 나올 수 있습니다.",
+      "금·일본국채·일부 레버리지는 ETF/현물 프록시로 계산했습니다."
+    ],
+    "notes_en": [
+      "Risk style: Balanced — A typical mix of growth and defense for a middle-of-the-road investor.",
+      "KRW cash and short sleeves stay flat; only the long risky sleeve is rebalanced toward even risk (HRP).",
+      "No target return is used (no expected-return assumption).",
+      "Profile check: 10-day VaR 5.1% is above your profile budget of 5.0% (swings look large vs. your risk style).",
+      "Add candidate: '달러 현금(환율 위험)' (+2.6%p)",
+      "Add candidate: '일본국채 ETF(1482.T 프록시)' (+2.6%p)",
+      "Add candidate: '금(GLD 프록시)' (+2.6%p)",
+      "Trim candidate: '엔비디아' (-7.3%p)",
+      "Trim candidate: '하이닉스 2배 ETF(현물×2 프록시)' (-3.0%p)",
+      "Trim candidate: '러셀2000(IWM)' (-2.1%p)",
+      "Leveraged ETFs amplify risk beyond their weight; long-run returns may not match the multiple.",
+      "Gold, JGBs, and some leverage sleeves use ETF/spot proxies."
+    ],
+    "constraints_applied": {
+      "cash:usd": 0.15,
+      "eq:us:NVDA": 0.15,
+      "etf:us:IWM": 0.15,
+      "eq:kr:010140": 0.15,
+      "cmd:xau": 0.15,
+      "etf:kr:hynix_lev2_proxy": 0.1,
+      "bond:jp:1482": 0.15,
+      "etf:us:QQQ": 0.15
+    }
+  },
+  "data_quality": {
+    "unresolved_queries": [],
+    "proxies": [
+      "cmd:xau",
+      "etf:kr:hynix_lev2_proxy",
+      "bond:jp:1482"
+    ],
+    "errors": [],
+    "price_sources": {
+      "fx:USDKRW=X": "yahoo",
+      "fx:USDJPY=X": "yahoo",
+      "cash:krw": "synthetic",
+      "cash:usd": "yahoo",
+      "eq:us:NVDA": "yahoo",
+      "etf:us:IWM": "yahoo",
+      "eq:kr:010140": "yahoo",
+      "cmd:xau": "yahoo",
+      "etf:kr:hynix_lev2_proxy": "yahoo",
+      "eq:us:TSLA": "yahoo",
+      "bond:jp:1482": "yahoo",
+      "etf:us:QQQ": "yahoo"
+    },
+    "n_obs": 1442,
+    "start": "2021-08-11",
+    "end": "2026-08-07"
+  },
+  "ui_copy_ko": {
+    "headline_ko": "종목은 여러 개여도, 전체 변동의 약 53%가 '하이닉스 2배 ETF(현물×2 프록시)'에서 나옵니다. 선택하신 투자 성향 기준으로는, 한도보다 공격적인 부분이 있습니다.",
+    "profile": {
+      "id": "balanced",
+      "label_ko": "일반 (균형)",
+      "blurb_ko": "성장과 방어를 섞는 보통 투자자 기준입니다."
+    },
+    "how_to_read_ko": [
+      "비중(%) = 어디에 돈을 넣었는지",
+      "위험 기여(%) = 계좌 변동에 실제로 얼마나 영향을 주는지 (비중과 다를 수 있음)",
+      "샤프·수익률 = 과거 성적 · VaR·변동성 = 손실·흔들림 규모",
+      "아래 ‘조절 제안’은 미래 수익 예상이 아니라, 위험을 더 고르게 나누는 방향입니다",
+      "목표 수익률은 넣지 않습니다. 기대수익 가정이 틀리기 쉽기 때문입니다"
+    ],
+    "metric_cards": [
+      {
+        "id": "vol",
+        "title_ko": "변동성 (연환산)",
+        "value_ko": "15.4%",
+        "plain_ko": "한 해 기준으로 보면, 포트폴리오 가치가 대략 ±15.4% 범위에서 움직일 수 있다는 뜻입니다. 숫자가 클수록 가격이 더 크게 왔다 갔다 합니다.",
+        "analogy_ko": "수익률이 얼마나 크게 흔들리는지를 보여주는 눈금입니다."
+      },
+      {
+        "id": "sharpe",
+        "title_ko": "샤프 비율",
+        "value_ko": "1.45",
+        "plain_ko": "예금·국채 수준을 웃돈 수익을, 변동성으로 나눈 값입니다. 1 근처면 괜찮은 편으로 보는 경우가 많지만, 최근에 잘 간 자산에 많이 실리면 자연히 높아질 수 있습니다. 앞으로의 보장은 아닙니다.",
+        "analogy_ko": "같은 위험을 감수했을 때 얼마나 효율적으로 수익을 냈는지 비교하는 지표입니다."
+      },
+      {
+        "id": "var10",
+        "title_ko": "10일 VaR (95%)",
+        "value_ko": "5.1% · 약 531,121원",
+        "plain_ko": "최근과 비슷한 장세라면, 앞으로 약 2주(10거래일) 동안 이 정도까지 손실이 날 수 있다고 보는 눈금입니다. 내일 꼭 이만큼 잃는다는 뜻은 아닙니다.",
+        "analogy_ko": "‘이 정도까지는 감수할 준비가 됐는지’를 가늠해 보는 참고 숫자입니다."
+      },
+      {
+        "id": "ret1y",
+        "title_ko": "최근 1년 수익률",
+        "value_ko": "28.8%",
+        "plain_ko": "오늘 기준으로 거슬러 약 1년(거래일) 동안의 누적 수익률입니다. 달력 연도(1월~12월)가 아니라, ‘지금 시점에서 본 지난 1년’입니다.",
+        "analogy_ko": "이미 지나간 성적이지, 앞으로의 예상이 아닙니다."
+      }
+    ],
+    "risk_contribution_plain_ko": "지금 계좌 변동에 가장 큰 영향을 주는 것은 '하이닉스 2배 ETF(현물×2 프록시)'입니다 (위험 기여 52.8%).",
+    "clusters_plain_ko": [
+      "‘기술·성장 묶음'(엔비디아, 러셀2000(IWM), 테슬라, 인베스코 QQQ)이 함께 움직이는 편이라, 종목 수와 달리 사실상 한 덩어리 위험(합 비중 약 38.1%)일 수 있습니다."
+    ],
+    "currency_plain_ko": "원화에 직접 묶인 비중 약 28.6%, 달러·환산 자산 등 외화 쪽 약 71.4%입니다. 달러 현금도 안전자산처럼 보여도, 환율만큼은 흔들립니다.",
+    "stress_plain_ko": [
+      "긴축·인플레 구간 (2022): 그 구간에 지금 비중을 유지했다고 가정하면 약 -16.4% (참고용 · 당시 매매는 반영하지 않음)",
+      "최근 90거래일: 그 구간에 지금 비중을 유지했다고 가정하면 약 -1.6% (참고용 · 당시 매매는 반영하지 않음)"
+    ],
+    "profile_breaches_ko": [
+      "10일 VaR 5.1%가 성향 한도 5.0%을 넘습니다 (성향 대비 손실·변동 규모가 큽니다)."
+    ],
+    "moves_up_ko": [
+      {
+        "name_ko": "달러 현금(환율 위험)",
+        "delta": 0.026196432855788848,
+        "plain_ko": "위험이 한곳에 몰리는 걸 줄이려면 '달러 현금(환율 위험)' 비중을 상대적으로 키우는 방향입니다 (+2.6%p)."
+      },
+      {
+        "name_ko": "일본국채 ETF(1482.T 프록시)",
+        "delta": 0.026196432855788848,
+        "plain_ko": "위험이 한곳에 몰리는 걸 줄이려면 '일본국채 ETF(1482.T 프록시)' 비중을 상대적으로 키우는 방향입니다 (+2.6%p)."
+      },
+      {
+        "name_ko": "금(GLD 프록시)",
+        "delta": 0.026190476190476195,
+        "plain_ko": "위험이 한곳에 몰리는 걸 줄이려면 '금(GLD 프록시)' 비중을 상대적으로 키우는 방향입니다 (+2.6%p)."
+      },
+      {
+        "name_ko": "인베스코 QQQ",
+        "delta": 0.026190476190476195,
+        "plain_ko": "위험이 한곳에 몰리는 걸 줄이려면 '인베스코 QQQ' 비중을 상대적으로 키우는 방향입니다 (+2.6%p)."
+      }
+    ],
+    "moves_down_ko": [
+      {
+        "name_ko": "엔비디아",
+        "delta": -0.07301088718114916,
+        "plain_ko": "변동이 여기에 몰려 있어, '엔비디아' 비중을 줄이면 분산에 도움이 됩니다 (-7.3%p)."
+      },
+      {
+        "name_ko": "하이닉스 2배 ETF(현물×2 프록시)",
+        "delta": -0.029684886615521662,
+        "plain_ko": "변동이 여기에 몰려 있어, '하이닉스 2배 ETF(현물×2 프록시)' 비중을 줄이면 분산에 도움이 됩니다 (-3.0%p)."
+      },
+      {
+        "name_ko": "러셀2000(IWM)",
+        "delta": -0.021428571428571422,
+        "plain_ko": "변동이 여기에 몰려 있어, '러셀2000(IWM)' 비중을 줄이면 분산에 도움이 됩니다 (-2.1%p)."
+      }
+    ],
+    "footer_ko": "이 화면의 숫자는 과거 가격으로 돌린 계산 결과입니다. 매수·매도 지시가 아니며, ‘위험이 어디에 몰렸는지’를 보는 데 초점이 있습니다.",
+    "rebalance_note_ko": "비중을 옮길 때는 수수료·세금·환전 비용이 있으니, 제안 %를 한 번에 맞추기보다 큰 쏠림부터 줄이는 편이 현실적입니다."
+  },
+  "ui_copy_en": {
+    "headline_en": "Money may look spread around, but about 53% of the portfolio’s swings come from '하이닉스 2배 ETF(현물×2 프록시)'. Against the risk style you picked, some limits look more aggressive than intended.",
+    "profile": {
+      "id": "balanced",
+      "label_en": "Balanced",
+      "blurb_en": "A typical mix of growth and defense for a middle-of-the-road investor."
+    },
+    "how_to_read_en": [
+      "Weight (%) = where the money sits",
+      "Risk contribution (%) = who actually shakes the account (can differ from weight)",
+      "Sharpe & return = past scorecard · VaR & volatility = how painful it can get",
+      "‘Suggested moves’ below are about spreading risk more evenly — not a jackpot forecast",
+      "No target return is used; expected-return guesses go wrong easily"
+    ],
+    "metric_cards": [
+      {
+        "id": "vol",
+        "title_en": "How bumpy it feels (volatility)",
+        "value_en": "15.4%",
+        "plain_en": "A thermometer for how much the portfolio might wobble — roughly ±15.4% over a year in either direction. Bigger number, more stomach-churn.",
+        "analogy_en": "Closer to ‘how rough is the road?’ than to how fast the car is going."
+      },
+      {
+        "id": "sharpe",
+        "title_en": "Payoff for the hassle (Sharpe)",
+        "value_en": "1.45",
+        "plain_en": "How much you earned above a cash-like rate, divided by how hard it bounced. Near 1 is often called decent — but a run of strong assets can inflate it. Not a promise about the future.",
+        "analogy_en": "A scorecard for reward per unit of motion sickness (risk)."
+      },
+      {
+        "id": "var10",
+        "title_en": "How sore it could get (10-day VaR 95%)",
+        "value_en": "5.1% · about 531,121 KRW",
+        "plain_en": "If markets behave a bit like recently, a loss of this size over about two weeks is in the ‘bad but not unheard-of’ bucket. It does not mean you will lose exactly this much tomorrow.",
+        "analogy_en": "Like an insurance deductible — ‘could you live with a hit this big?’"
+      },
+      {
+        "id": "ret1y",
+        "title_en": "Last 1-year score",
+        "value_en": "28.8%",
+        "plain_en": "Cumulative return over roughly the past year of trading days, counted backward from today — not a calendar year (Jan 1–Dec 31).",
+        "analogy_en": "Last semester’s grade — not next semester’s forecast."
+      }
+    ],
+    "risk_contribution_plain_en": "What shakes the account most right now is '하이닉스 2배 ETF(현물×2 프록시)' (risk contribution 52.8%).",
+    "clusters_plain_en": [
+      "The 'Tech / growth cluster' group (엔비디아, 러셀2000(IWM), 테슬라, 인베스코 QQQ) tends to move together, so despite several tickers it can act like one lump of risk (combined weight about 38.1%)."
+    ],
+    "currency_plain_en": "About 28.6% is tied directly to the won; about 71.4% sits in dollar / FX-exposed assets. Even ‘safe’ USD cash still moves with the exchange rate.",
+    "stress_plain_en": [
+      "Tightening / inflation stretch (2022): holding today’s weights through that window would have been about -16.4% (illustrative — ignores trades you made then)",
+      "Last 90 trading days: holding today’s weights through that window would have been about -1.6% (illustrative — ignores trades you made then)"
+    ],
+    "profile_breaches_en": [
+      "10-day VaR 5.1% is above your profile budget of 5.0% (swings look large vs. your risk style)."
+    ],
+    "moves_up_en": [
+      {
+        "name_en": "달러 현금(환율 위험)",
+        "delta": 0.026196432855788848,
+        "plain_en": "To pile less risk in one place, leaning relatively more into '달러 현금(환율 위험)' is the direction (+2.6%p)."
+      },
+      {
+        "name_en": "일본국채 ETF(1482.T 프록시)",
+        "delta": 0.026196432855788848,
+        "plain_en": "To pile less risk in one place, leaning relatively more into '일본국채 ETF(1482.T 프록시)' is the direction (+2.6%p)."
+      },
+      {
+        "name_en": "금(GLD 프록시)",
+        "delta": 0.026190476190476195,
+        "plain_en": "To pile less risk in one place, leaning relatively more into '금(GLD 프록시)' is the direction (+2.6%p)."
+      },
+      {
+        "name_en": "인베스코 QQQ",
+        "delta": 0.026190476190476195,
+        "plain_en": "To pile less risk in one place, leaning relatively more into '인베스코 QQQ' is the direction (+2.6%p)."
+      }
+    ],
+    "moves_down_en": [
+      {
+        "name_en": "엔비디아",
+        "delta": -0.07301088718114916,
+        "plain_en": "Swings are concentrated here — trimming '엔비디아' helps diversification (-7.3%p)."
+      },
+      {
+        "name_en": "하이닉스 2배 ETF(현물×2 프록시)",
+        "delta": -0.029684886615521662,
+        "plain_en": "Swings are concentrated here — trimming '하이닉스 2배 ETF(현물×2 프록시)' helps diversification (-3.0%p)."
+      },
+      {
+        "name_en": "러셀2000(IWM)",
+        "delta": -0.021428571428571422,
+        "plain_en": "Swings are concentrated here — trimming '러셀2000(IWM)' helps diversification (-2.1%p)."
+      }
+    ],
+    "footer_en": "Numbers here are a calculator on past prices — not buy/sell orders. The point is less like a broker order ticket and more like seeing where risk has piled up.",
+    "rebalance_note_en": "Moving weights costs fees, taxes, and FX spreads — so trimming the biggest concentrations first usually beats chasing every suggested percent in one go."
+  }
+}
