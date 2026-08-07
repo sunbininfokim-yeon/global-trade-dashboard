@@ -51,12 +51,22 @@ export default {
 
     // Cron-driven cache warm-up (see "triggers" in wrangler.jsonc).
     // Without this the first visitor to open each commodity pays the full
-    // UN Comtrade round trip -- several seconds on a 40+ country query. This
-    // refreshes every commodity overnight so every real visit is a cache hit.
+    // UN Comtrade round trip -- half a minute on a 60+ country query. Each run
+    // fills the commodities that have gone cold, up to a budget; see
+    // warmComtradeCache for why it does not refill all of them at once.
     async scheduled(event, env, ctx) {
         ctx.waitUntil(warmComtradeCache(env));
     }
 };
+
+// One commodity costs ceil(64 reporters / REPORTER_CHUNK_SIZE) upstream calls,
+// and a Worker invocation may only make so many subrequests. Refilling every
+// commodity in a single run exceeded that once the metals were added, and the
+// overflow fails silently inside waitUntil -- the tail of the list would simply
+// never warm, with nothing in the metrics to say so. Capping the run keeps each
+// night inside the ceiling; whatever is left stays cold for a night and gets
+// picked up by the next run, because entries already in KV are skipped.
+const WARM_FETCH_BUDGET = 8;
 
 async function warmComtradeCache(env) {
     if (!env.COMTRADE_API_KEY || !env.API_CACHE) {
@@ -64,11 +74,26 @@ async function warmComtradeCache(env) {
         return;
     }
 
-    let ok = 0, failed = 0;
+    // One listing instead of a lookup per commodity: KV list returns names
+    // without values, so this stays cheap no matter how large the entries are.
+    const warm = new Set();
+    let cursor;
+    do {
+        const page = await env.API_CACHE.list({ prefix: 'comtrade:A:', cursor }).catch(() => null);
+        if (!page) break;
+        for (const k of page.keys) warm.add(k.name);
+        cursor = page.list_complete ? null : page.cursor;
+    } while (cursor);
 
-    // Sequential on purpose: firing 14 heavy queries at once risks tripping
-    // Comtrade's rate limiting, and the cron run has no deadline pressure.
+    let filled = 0, fresh = 0, failed = 0, deferred = 0;
+
+    // Sequential on purpose: firing these at once risks tripping Comtrade's
+    // rate limiting, and the cron run has no deadline pressure.
     for (const hs of Object.keys(COMTRADE_TTL)) {
+        const key = comtradeCacheKey(hs, DEFAULT_M49_CODES, DEFAULT_M49_CODES, COMTRADE_PERIOD, 'A');
+        if (warm.has(key)) { fresh++; continue; }
+        if (filled >= WARM_FETCH_BUDGET) { deferred++; continue; }
+
         try {
             const result = await fetchComtrade(env, hs, DEFAULT_M49_CODES, DEFAULT_M49_CODES, COMTRADE_PERIOD, 'A');
             if (!result.ok) {
@@ -76,19 +101,15 @@ async function warmComtradeCache(env) {
                 console.log(`[warm] ${hs} upstream ${result.status}`);
                 continue;
             }
-            await env.API_CACHE.put(
-                comtradeCacheKey(hs, DEFAULT_M49_CODES, DEFAULT_M49_CODES, COMTRADE_PERIOD, 'A'),
-                JSON.stringify(result.body),
-                { expirationTtl: COMTRADE_TTL[hs] }
-            );
-            ok++;
+            await env.API_CACHE.put(key, JSON.stringify(result.body), { expirationTtl: COMTRADE_TTL[hs] });
+            filled++;
         } catch (err) {
             failed++;
             console.log(`[warm] ${hs} error: ${err.message}`);
         }
     }
 
-    console.log(`[warm] done: ${ok} cached, ${failed} failed`);
+    console.log(`[warm] done: ${filled} filled, ${fresh} already warm, ${deferred} deferred, ${failed} failed`);
 }
 
 const JSON_HEADERS = {
@@ -337,7 +358,21 @@ const COMTRADE_TTL = {
     "1005": 1209600, // Corn: 14 days
     "1201": 1209600, // Soybeans: 14 days
     "1701": 1209600, // Sugar: 14 days
-    "0901": 1209600  // Coffee: 14 days
+    "0901": 1209600, // Coffee: 14 days
+
+    // Battery and steel-chain minerals. Annual Comtrade data that moves once a
+    // year, so a week of staleness costs nothing.
+    "7502": 604800,  // Nickel
+    "8105": 604800,  // Cobalt
+    "283691": 604800,// Lithium carbonate
+    "2504": 604800,  // Graphite
+    "280530": 604800,// Rare earths
+    "2601": 604800,  // Iron ore
+    "2602": 604800,  // Manganese
+    "2610": 604800,  // Chromium
+    "8001": 604800,  // Tin
+    "7801": 604800,  // Lead
+    "7110": 604800   // Platinum group
 };
 
 const COMTRADE_PERIOD = "2023";
