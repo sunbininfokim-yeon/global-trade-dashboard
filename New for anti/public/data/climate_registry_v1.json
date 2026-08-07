@@ -1,0 +1,975 @@
+{
+  "schema_version": "climate-registry-v1",
+  "generated_at": "2026-08-07T10:17:02.539352+09:00",
+  "note": "Generated from scripts/yield_model/*/model.yaml. Do not edit by hand.",
+  "countries": {
+    "Argentina": {
+      "country": "argentina",
+      "iso": "ARG",
+      "label_ko": "아르헨티나",
+      "label_en": "Argentina",
+      "panel_mode": "forecast",
+      "model_status": "provisional",
+      "status_note_ko": "산지 4곳 검증 통과. 팜파스 밀은 서리 피처 생성 실패, 투쿠만 사탕수수는 학습된 모델 없음(공식 통계가 2004/05에서 끊김).",
+      "data_file": "argentina_yield_forecast.json",
+      "model_name": "Pampas + Norte Model",
+      "view": {
+        "longitude": -64,
+        "latitude": -34,
+        "zoom": 3.8
+      },
+      "regions": [
+        {
+          "key": "pampas_soja",
+          "label_ko": "팜파스 (대두)",
+          "ui_name": "Pampas soy (Argentina)",
+          "coordinates": [
+            -61.5,
+            -34
+          ],
+          "crops_region_keys": [
+            "pampas_soja"
+          ]
+        },
+        {
+          "key": "pampas_maiz",
+          "label_ko": "팜파스 (옥수수)",
+          "ui_name": "Pampas corn (Argentina)",
+          "coordinates": [
+            -62.2,
+            -32.5
+          ],
+          "crops_region_keys": [
+            "pampas_maiz"
+          ]
+        },
+        {
+          "key": "norte_soja",
+          "label_ko": "북부 NOA/NEA (대두)",
+          "ui_name": "Norte soy (Argentina)",
+          "coordinates": [
+            -62.5,
+            -26.5
+          ],
+          "crops_region_keys": [
+            "norte_soja"
+          ]
+        },
+        {
+          "key": "chaco_algodon",
+          "label_ko": "차코 (면화)",
+          "ui_name": "Chaco cotton (Argentina)",
+          "coordinates": [
+            -60.5,
+            -26.8
+          ],
+          "crops_region_keys": [
+            "chaco_algodon"
+          ]
+        },
+        {
+          "key": "pampas_trigo",
+          "label_ko": "팜파스 남부 (밀)",
+          "ui_name": "Pampas wheat (Argentina)",
+          "coordinates": [
+            -60.3,
+            -38.4
+          ],
+          "crops_region_keys": [
+            "pampas_trigo"
+          ]
+        },
+        {
+          "key": "tucuman_cana",
+          "label_ko": "투쿠만 (사탕수수)",
+          "ui_name": "Tucuman cane (Argentina)",
+          "coordinates": [
+            -65.3,
+            -27
+          ],
+          "crops_region_keys": [
+            "tucuman_cana"
+          ]
+        }
+      ],
+      "sources": {
+        "labels": {
+          "name": "MAGyP Estimaciones Agrícolas",
+          "url": "https://datos.magyp.gob.ar/",
+          "updated": "2025-08-01"
+        },
+        "climate": {
+          "name": "NASA POWER (daily)",
+          "url": "https://power.larc.nasa.gov/",
+          "updated": "2026-08-06"
+        }
+      },
+      "trade_policy": {
+        "restricted": false,
+        "prohibited_crops": [
+          "corn"
+        ],
+        "note_ko": "옥수수 관련 수출 통제 seed (1품목 → 주황)"
+      }
+    },
+    "Australia": {
+      "country": "australia",
+      "iso": "AUS",
+      "label_ko": "호주",
+      "label_en": "Australia",
+      "panel_mode": "forecast",
+      "model_status": "provisional",
+      "status_note_ko": "산지 3곳 모두 검증 통과. 다만 2곳은 기상 피처 생성 실패로 예측 없음.",
+      "data_file": "australia_yield_forecast.json",
+      "model_name": "Wheat Belt Model",
+      "view": {
+        "longitude": 134,
+        "latitude": -27,
+        "zoom": 3.4
+      },
+      "regions": [
+        {
+          "key": "wa_wheat",
+          "label_ko": "서호주 밀",
+          "ui_name": "WA wheat (Australia)",
+          "coordinates": [
+            117,
+            -31.5
+          ],
+          "crops_region_keys": [
+            "wa_wheat"
+          ]
+        },
+        {
+          "key": "sa_wheat",
+          "label_ko": "남호주 밀",
+          "ui_name": "SA wheat (Australia)",
+          "coordinates": [
+            138,
+            -34
+          ],
+          "crops_region_keys": [
+            "sa_wheat"
+          ]
+        },
+        {
+          "key": "vic_wheat",
+          "label_ko": "빅토리아 밀",
+          "ui_name": "VIC wheat (Australia)",
+          "coordinates": [
+            143,
+            -36.5
+          ],
+          "crops_region_keys": [
+            "vic_wheat"
+          ]
+        }
+      ],
+      "sources": {
+        "labels": {
+          "name": "ABARES Crop Report",
+          "url": "https://www.agriculture.gov.au/abares",
+          "updated": "2025-12-01"
+        },
+        "climate": {
+          "name": "NASA POWER (daily)",
+          "url": "https://power.larc.nasa.gov/",
+          "updated": "2026-08-06"
+        }
+      },
+      "trade_policy": {
+        "restricted": false,
+        "prohibited_crops": [],
+        "note_ko": "정상"
+      }
+    },
+    "Brazil": {
+      "country": "brazil",
+      "iso": "BRA",
+      "label_ko": "브라질",
+      "label_en": "Brazil",
+      "panel_mode": "forecast",
+      "model_status": "provisional",
+      "status_note_ko": "산지 6곳 통과 / 3곳은 추세를 이기지 못함 / 파라나 밀은 적성병 피처 생성 실패.",
+      "data_file": "brazil_yield_forecast.json",
+      "model_name": "Brazil Regional Model",
+      "view": {
+        "longitude": -52,
+        "latitude": -13,
+        "zoom": 3.6
+      },
+      "regions": [
+        {
+          "key": "mato_grosso_soja",
+          "label_ko": "마투그로수 (대두·옥수수)",
+          "ui_name": "Mato Grosso (Brazil)",
+          "coordinates": [
+            -55.4,
+            -12.6
+          ],
+          "crops_region_keys": [
+            "mato_grosso_soja",
+            "mato_grosso_milho"
+          ]
+        },
+        {
+          "key": "parana_soja",
+          "label_ko": "파라나·히우그란지두술",
+          "ui_name": "Rio Grande do Sul (Brazil)",
+          "coordinates": [
+            -52.3,
+            -27
+          ],
+          "crops_region_keys": [
+            "parana_soja",
+            "parana_milho",
+            "parana_trigo"
+          ]
+        },
+        {
+          "key": "matopiba_soja",
+          "label_ko": "MATOPIBA (대두·면화)",
+          "ui_name": "MATOPIBA (Brazil)",
+          "coordinates": [
+            -45.5,
+            -10.5
+          ],
+          "crops_region_keys": [
+            "matopiba_soja",
+            "matopiba_algodao"
+          ]
+        },
+        {
+          "key": "sp_cana",
+          "label_ko": "상파울루 (사탕수수·커피)",
+          "ui_name": "Sao Paulo (Brazil)",
+          "coordinates": [
+            -47.8,
+            -21.4
+          ],
+          "crops_region_keys": [
+            "sp_cana",
+            "sp_cafe",
+            "sp_laranja"
+          ]
+        }
+      ],
+      "sources": {
+        "labels": {
+          "name": "IBGE SIDRA / CONAB",
+          "url": "https://sidra.ibge.gov.br/",
+          "updated": "2025-06-01"
+        },
+        "climate": {
+          "name": "NASA POWER (daily)",
+          "url": "https://power.larc.nasa.gov/",
+          "updated": "2026-08-06"
+        }
+      },
+      "trade_policy": {
+        "restricted": false,
+        "prohibited_crops": [],
+        "note_ko": "정상"
+      }
+    },
+    "Canada": {
+      "country": "canada",
+      "iso": "CAN",
+      "label_ko": "캐나다",
+      "label_en": "Canada",
+      "panel_mode": "forecast",
+      "data_file": "canada_yield_forecast.json",
+      "model_name": "Prairies SAD + Ontario",
+      "model_status": "provisional",
+      "status_note_ko": "SAD 기상 모델 4곳 검증 통과 / 나머지 산지는 추세+기후 진단(유리·불리·리스크).",
+      "view": {
+        "longitude": -105.0,
+        "latitude": 52.0,
+        "zoom": 3.4
+      },
+      "regions": [
+        {
+          "key": "sad_sk_canola_palliser",
+          "label_ko": "SK 팰리서 (카놀라·봄밀)",
+          "ui_name": "SK Palliser (Canada)",
+          "coordinates": [
+            -106.5,
+            50.0
+          ],
+          "crops_region_keys": [
+            "sad_sk_canola_palliser",
+            "sad_sk_wheat_palliser"
+          ]
+        },
+        {
+          "key": "sad_sk_canola_blacksoil",
+          "label_ko": "SK 파크랜드·레지나",
+          "ui_name": "SK Parkland (Canada)",
+          "coordinates": [
+            -103.5,
+            51.2
+          ],
+          "crops_region_keys": {}
+        },
+        {
+          "key": "sad_ab_canola_south",
+          "label_ko": "AB 남부 (카놀라)",
+          "ui_name": "AB South (Canada)",
+          "coordinates": [
+            -112.5,
+            50.0
+          ],
+          "crops_region_keys": [
+            "sad_ab_canola_south"
+          ]
+        },
+        {
+          "key": "sad_ab_canola_central",
+          "label_ko": "AB 중부·피스",
+          "ui_name": "AB Central/Peace (Canada)",
+          "coordinates": [
+            -114.5,
+            54.0
+          ],
+          "crops_region_keys": [
+            "sad_ab_canola_central",
+            "sad_ab_canola_peace"
+          ]
+        },
+        {
+          "key": "sad_mb_canola_central",
+          "label_ko": "MB 레드리버 (대두·카놀라)",
+          "ui_name": "MB Red River (Canada)",
+          "coordinates": [
+            -98.0,
+            50.0
+          ],
+          "crops_region_keys": [
+            "sad_mb_soy_redriver",
+            "sad_mb_canola_central"
+          ]
+        },
+        {
+          "key": "sad_on_corn_southern",
+          "label_ko": "온타리오 옥수수",
+          "ui_name": "ON Corn Belt (Canada)",
+          "coordinates": [
+            -81.5,
+            43.0
+          ],
+          "crops_region_keys": [
+            "sad_on_corn_southern",
+            "sad_on_corn_western"
+          ]
+        }
+      ],
+      "sources": {
+        "labels": {
+          "name": "Statistics Canada 32-10-0002 (SAD) / 32-10-0359 (province)",
+          "url": "https://www150.statcan.gc.ca/",
+          "updated": "2025-12-01"
+        },
+        "climate": {
+          "name": "NASA POWER (daily)",
+          "url": "https://power.larc.nasa.gov/",
+          "updated": "2026-08-07"
+        },
+        "outlooks": {
+          "name": "AAFC Outlook + prairie weekly crop reports",
+          "url": "https://agriculture.canada.ca/en/sector/crops/reports-statistics",
+          "updated": "2026-08-07"
+        }
+      },
+      "trade_policy": {
+        "restricted": false,
+        "prohibited_crops": [],
+        "note_ko": "정상 수출"
+      }
+    },
+    "China": {
+      "country": "china",
+      "iso": "CHN",
+      "label_ko": "중국",
+      "label_en": "China",
+      "panel_mode": "forecast",
+      "model_status": "training",
+      "status_note_ko": "3개 산지 모두 추세 대비 성능이 음수(-0.57 ~ -1.60). 기상 피처가 추세만 쓰는 것보다 나쁘다. 원인 규명 전까지 수치를 참고용으로만 볼 것. 냉해·서리 피처 3건은 생성 실패.",
+      "data_file": "china_yield_forecast.json",
+      "model_name": "Regional crop suite",
+      "view": {
+        "longitude": 105,
+        "latitude": 35,
+        "zoom": 3.5
+      },
+      "regions": [
+        {
+          "key": "henan_wheat",
+          "label_ko": "허난·황화이하이 (겨울밀)",
+          "ui_name": "Henan wheat (China)",
+          "coordinates": [
+            113.7,
+            34
+          ],
+          "crops_region_keys": [
+            "henan_wheat"
+          ]
+        },
+        {
+          "key": "yangtze_rice",
+          "label_ko": "장강 유역 (벼)",
+          "ui_name": "Yangtze rice (China)",
+          "coordinates": [
+            114.3,
+            30.6
+          ],
+          "crops_region_keys": [
+            "yangtze_rice"
+          ]
+        },
+        {
+          "key": "shandong_vegetables",
+          "label_ko": "산둥 (채소)",
+          "ui_name": "Shandong vegetables (China)",
+          "coordinates": [
+            118,
+            36.5
+          ],
+          "crops_region_keys": [
+            "shandong_vegetables"
+          ]
+        }
+      ],
+      "sources": {
+        "labels": {
+          "name": "National Bureau of Statistics",
+          "url": "http://www.stats.gov.cn/",
+          "updated": "2025-12-01"
+        },
+        "climate": {
+          "name": "NASA POWER (daily)",
+          "url": "https://power.larc.nasa.gov/",
+          "updated": "2026-08-06"
+        }
+      },
+      "trade_policy": {
+        "restricted": false,
+        "prohibited_crops": [
+          "corn",
+          "wheat"
+        ],
+        "note_ko": "주요 곡물 수출 제한 seed (2+ → 적)"
+      }
+    },
+    "India": {
+      "country": "india",
+      "iso": "IND",
+      "label_ko": "인도",
+      "label_en": "India",
+      "panel_mode": "forecast",
+      "model_status": "training",
+      "status_note_ko": "라벨(ICRISAT)이 2019년에서 끊겨 2026년을 7년 전 추세로 외삽 중. 3개 산지 중 2개는 기상 피처 생성 실패로 예측 없음. 통과한 펀자브 밀도 추세 대비 개선이 0.9%에 불과.",
+      "data_file": "india_yield_forecast.json",
+      "view": {
+        "longitude": 78,
+        "latitude": 23.5,
+        "zoom": 3.8
+      },
+      "regions": [
+        {
+          "key": "punjab_wheat",
+          "label_ko": "펀자브·하리아나 (밀)",
+          "ui_name": "Punjab (India)",
+          "coordinates": [
+            75.8,
+            30.4
+          ],
+          "crops_region_keys": [
+            "punjab_wheat"
+          ]
+        },
+        {
+          "key": "mp_soybean",
+          "label_ko": "마디아프라데시 (대두)",
+          "ui_name": "Madhya Pradesh (India)",
+          "coordinates": [
+            77,
+            23.2
+          ],
+          "crops_region_keys": [
+            "mp_soybean"
+          ]
+        },
+        {
+          "key": "vidarbha_cotton",
+          "label_ko": "비다르바·마라트와다·구자라트 (면화)",
+          "ui_name": "Vidarbha (India)",
+          "coordinates": [
+            76.5,
+            21
+          ],
+          "crops_region_keys": [
+            "vidarbha_cotton"
+          ]
+        }
+      ],
+      "sources": {
+        "labels": {
+          "name": "ICRISAT District Level Database",
+          "url": "http://data.icrisat.org/dld/",
+          "updated": "2019-12-31"
+        },
+        "climate": {
+          "name": "NASA POWER (daily)",
+          "url": "https://power.larc.nasa.gov/",
+          "updated": "2026-08-06"
+        }
+      },
+      "trade_policy": {
+        "restricted": true,
+        "prohibited_crops": [],
+        "note_ko": "수출 인허가·쿼터 등 제한적 조치 (seed)"
+      }
+    },
+    "Indonesia": {
+      "country": "indonesia",
+      "iso": "IDN",
+      "label_ko": "인도네시아",
+      "label_en": "Indonesia",
+      "panel_mode": "forecast",
+      "model_status": "training",
+      "status_note_ko": "4개 산지 모두 추세를 이기지 못했다. 표본 기간이 짧아 climate_gate 가 기상 피처를 대부분 차단한다 — 사실상 추세 베이스라인이다.",
+      "data_file": "indonesia_yield_forecast.json",
+      "model_name": "National panel (baseline)",
+      "view": {
+        "longitude": 118,
+        "latitude": -2.5,
+        "zoom": 3.6
+      },
+      "regions": [
+        {
+          "key": "indonesia_rice",
+          "label_ko": "쌀 (전국)",
+          "ui_name": "Indonesia rice",
+          "coordinates": [
+            112.5,
+            -7.5
+          ],
+          "crops_region_keys": [
+            "indonesia_rice"
+          ]
+        },
+        {
+          "key": "indonesia_oil_palm",
+          "label_ko": "팜유 과실",
+          "ui_name": "Indonesia oil palm",
+          "coordinates": [
+            113.9,
+            -2.2
+          ],
+          "crops_region_keys": [
+            "indonesia_oil_palm"
+          ]
+        },
+        {
+          "key": "indonesia_coffee",
+          "label_ko": "커피",
+          "ui_name": "Indonesia coffee",
+          "coordinates": [
+            110.4,
+            -7.8
+          ],
+          "crops_region_keys": [
+            "indonesia_coffee"
+          ]
+        },
+        {
+          "key": "indonesia_rubber",
+          "label_ko": "천연고무",
+          "ui_name": "Indonesia rubber",
+          "coordinates": [
+            104,
+            -3
+          ],
+          "crops_region_keys": [
+            "indonesia_rubber"
+          ]
+        }
+      ],
+      "sources": {
+        "labels": {
+          "name": "BPS Statistics Indonesia",
+          "url": "https://www.bps.go.id/",
+          "updated": "2024-12-31"
+        },
+        "climate": {
+          "name": "NASA POWER (daily)",
+          "url": "https://power.larc.nasa.gov/",
+          "updated": "2026-08-06"
+        }
+      },
+      "trade_policy": {
+        "restricted": true,
+        "prohibited_crops": [
+          "palm_oil"
+        ],
+        "note_ko": "팜 등 통제 seed (1품목 금지 → 주황 우선)"
+      }
+    },
+    "Russia": {
+      "country": "russia",
+      "iso": "RUS",
+      "label_ko": "러시아",
+      "label_en": "Russia",
+      "panel_mode": "forecast",
+      "data_file": "russia_yield_forecast.json",
+      "model_status": "provisional",
+      "status_note_ko": "산지 5곳 검증 통과 / 3곳은 추세를 이기지 못함.",
+      "view": {
+        "longitude": 42.0,
+        "latitude": 50.5,
+        "zoom": 4.2
+      },
+      "regions": [
+        {
+          "key": "southern_winter_wheat",
+          "label_ko": "남부 곡창지대 (겨울밀)",
+          "ui_name": "southern_winter_wheat",
+          "coordinates": [
+            40.22,
+            45.77
+          ],
+          "crops_region_keys": [
+            "southern_winter_wheat"
+          ]
+        },
+        {
+          "key": "cbe_winter_wheat",
+          "label_ko": "중앙흑토 (겨울밀)",
+          "ui_name": "cbe_winter_wheat",
+          "coordinates": [
+            38.35,
+            51.68
+          ],
+          "crops_region_keys": [
+            "cbe_winter_wheat"
+          ]
+        },
+        {
+          "key": "russia_winter_wheat",
+          "label_ko": "러시아 겨울밀 벨트 (가중 전국)",
+          "ui_name": "russia_winter_wheat",
+          "coordinates": [
+            39.38,
+            48.43
+          ],
+          "crops_region_keys": [
+            "russia_winter_wheat"
+          ]
+        },
+        {
+          "key": "volga_winter_wheat",
+          "label_ko": "볼가 (겨울밀)",
+          "ui_name": "volga_winter_wheat",
+          "coordinates": [
+            46.9,
+            51.15
+          ],
+          "crops_region_keys": [
+            "volga_winter_wheat"
+          ]
+        },
+        {
+          "key": "southern_sunflower",
+          "label_ko": "남부 (해바라기)",
+          "ui_name": "southern_sunflower",
+          "coordinates": [
+            42.02,
+            44.47
+          ],
+          "crops_region_keys": [
+            "southern_sunflower"
+          ]
+        },
+        {
+          "key": "cbe_sunflower",
+          "label_ko": "중앙흑토 (해바라기)",
+          "ui_name": "cbe_sunflower",
+          "coordinates": [
+            40.15,
+            50.38
+          ],
+          "crops_region_keys": [
+            "cbe_sunflower"
+          ]
+        },
+        {
+          "key": "volga_sunflower",
+          "label_ko": "볼가 (해바라기)",
+          "ui_name": "volga_sunflower",
+          "coordinates": [
+            48.7,
+            49.85
+          ],
+          "crops_region_keys": [
+            "volga_sunflower"
+          ]
+        },
+        {
+          "key": "russia_sunflower",
+          "label_ko": "러시아 해바라기 벨트 (가중 전국)",
+          "ui_name": "russia_sunflower",
+          "coordinates": [
+            44.06,
+            47.36
+          ],
+          "crops_region_keys": [
+            "russia_sunflower"
+          ]
+        }
+      ],
+      "sources": {
+        "labels": {
+          "name": "Rosstat 작물 통계",
+          "url": "https://rosstat.gov.ru/enterprise_economy",
+          "updated": "2024-12-31"
+        },
+        "climate": {
+          "name": "NASA POWER (daily)",
+          "url": "https://power.larc.nasa.gov/",
+          "updated": "2026-08-07"
+        }
+      },
+      "trade_policy": {
+        "restricted": true,
+        "prohibited_crops": [],
+        "note_ko": "밀 수출세·쿼터 운용 (seed)"
+      }
+    },
+    "United States": {
+      "country": "us",
+      "iso": "USA",
+      "label_ko": "미국",
+      "label_en": "United States",
+      "panel_mode": "forecast",
+      "model_status": "validated",
+      "data_file": "yield_forecast.json",
+      "model_name": "US Corn Belt Model",
+      "view": {
+        "longitude": -96,
+        "latitude": 39.5,
+        "zoom": 3.6
+      },
+      "regions": [
+        {
+          "key": "corn_belt",
+          "label_ko": "콘벨트 (옥수수·대두)",
+          "ui_name": "US Corn Belt",
+          "coordinates": [
+            -91,
+            41.5
+          ],
+          "crops_region_keys": [
+            "corn_belt"
+          ]
+        },
+        {
+          "key": "great_plains",
+          "label_ko": "대평원 (겨울밀)",
+          "ui_name": "US Great Plains",
+          "coordinates": [
+            -99,
+            38
+          ],
+          "crops_region_keys": [
+            "great_plains"
+          ]
+        },
+        {
+          "key": "northern_plains",
+          "label_ko": "북부대평원 (봄밀)",
+          "ui_name": "US Northern Plains",
+          "coordinates": [
+            -100.5,
+            47
+          ],
+          "crops_region_keys": [
+            "northern_plains"
+          ]
+        },
+        {
+          "key": "cotton_belt",
+          "label_ko": "남부 텍사스 (면화)",
+          "ui_name": "US Cotton Belt",
+          "coordinates": [
+            -101.9,
+            33.6
+          ],
+          "crops_region_keys": [
+            "cotton_belt"
+          ]
+        }
+      ],
+      "sources": {
+        "labels": {
+          "name": "USDA NASS",
+          "url": "https://quickstats.nass.usda.gov/",
+          "updated": "2025-12-01"
+        },
+        "climate": {
+          "name": "NASA POWER (daily)",
+          "url": "https://power.larc.nasa.gov/",
+          "updated": "2026-08-06"
+        }
+      },
+      "trade_policy": {
+        "restricted": false,
+        "prohibited_crops": [],
+        "note_ko": "정상 수출"
+      }
+    },
+    "Vietnam": {
+      "country": "vietnam",
+      "iso": "VNM",
+      "label_ko": "베트남",
+      "label_en": "Vietnam",
+      "panel_mode": "forecast",
+      "data_file": "vietnam_yield_forecast.json",
+      "model_status": "training",
+      "status_note_ko": "추세를 이긴 산지가 없다 (실패 2 · 스킵 0). 학습 진행 중.",
+      "view": {
+        "longitude": 106.0,
+        "latitude": 12.5,
+        "zoom": 4.6
+      },
+      "regions": [
+        {
+          "key": "mekong_rice_ws",
+          "label_ko": "메콩 델타 (동춘작 벼)",
+          "ui_name": "mekong_rice_ws",
+          "coordinates": [
+            105.76,
+            9.91
+          ],
+          "crops_region_keys": [
+            "mekong_rice_ws"
+          ]
+        }
+      ],
+      "sources": {
+        "labels": {
+          "name": "GSO Vietnam 농업통계",
+          "url": "https://www.gso.gov.vn/en/agriculture-forestry-and-fishery/",
+          "updated": "2024-12-31"
+        },
+        "climate": {
+          "name": "NASA POWER (daily)",
+          "url": "https://power.larc.nasa.gov/",
+          "updated": "2026-08-07"
+        }
+      },
+      "trade_policy": {
+        "restricted": false,
+        "prohibited_crops": [],
+        "note_ko": "쌀 수출 정상 (seed)"
+      }
+    },
+    "Ivory Coast": {
+      "country": "west_africa_civ",
+      "iso": "CIV",
+      "label_ko": "코트디부아르",
+      "label_en": "Ivory Coast",
+      "panel_mode": "reference",
+      "model_status": "training",
+      "status_note_ko": "예측 모델 없음 — 정부·기관 전망과 조사 메모만 제공한다.",
+      "data_file": "cote_divoire_yield_forecast.json",
+      "model_name": "서아프리카 코코아 (참고)",
+      "aliases": [
+        "Côte d'Ivoire",
+        "Cote d'Ivoire"
+      ],
+      "view": {
+        "longitude": -5.5,
+        "latitude": 7,
+        "zoom": 6
+      },
+      "regions": [
+        {
+          "key": "cote_divoire_cocoa",
+          "label_ko": "코코아 벨트 (참고)",
+          "ui_name": "CIV Cocoa Belt",
+          "coordinates": [
+            -6.5,
+            6.2
+          ],
+          "crops_region_keys": [
+            "cote_divoire_cocoa"
+          ]
+        }
+      ],
+      "sources": {
+        "labels": {
+          "name": "Conseil du Café-Cacao",
+          "url": "https://www.conseilcafecacao.ci/",
+          "updated": "2025-10-01"
+        },
+        "climate": {
+          "name": "NASA POWER (daily)",
+          "url": "https://power.larc.nasa.gov/",
+          "updated": "2026-08-06"
+        }
+      },
+      "trade_policy": {
+        "restricted": false,
+        "prohibited_crops": [],
+        "note_ko": "코코아 참고국 · 예측 아님"
+      }
+    },
+    "Ghana": {
+      "country": "west_africa_ghana",
+      "iso": "GHA",
+      "label_ko": "가나",
+      "label_en": "Ghana",
+      "panel_mode": "reference",
+      "model_status": "training",
+      "status_note_ko": "예측 모델 없음 — 정부·기관 전망과 조사 메모만 제공한다.",
+      "data_file": "ghana_yield_forecast.json",
+      "model_name": "서아프리카 코코아 (참고)",
+      "view": {
+        "longitude": -1.2,
+        "latitude": 7.6,
+        "zoom": 6.2
+      },
+      "regions": [
+        {
+          "key": "ghana_cocoa",
+          "label_ko": "코코아 벨트 (참고)",
+          "ui_name": "Ghana Cocoa Belt",
+          "coordinates": [
+            -1.6,
+            6.4
+          ],
+          "crops_region_keys": [
+            "ghana_cocoa"
+          ]
+        }
+      ],
+      "sources": {
+        "labels": {
+          "name": "COCOBOD / 정부 전망",
+          "url": "https://cocobod.gh/",
+          "updated": "2025-10-01"
+        },
+        "climate": {
+          "name": "NASA POWER (daily)",
+          "url": "https://power.larc.nasa.gov/",
+          "updated": "2026-08-06"
+        }
+      },
+      "trade_policy": {
+        "restricted": false,
+        "prohibited_crops": [],
+        "note_ko": "코코아 참고국 · 예측 아님"
+      }
+    }
+  }
+}

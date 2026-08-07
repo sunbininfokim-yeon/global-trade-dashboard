@@ -1,0 +1,70 @@
+# canada — 국가 모델 매니페스트
+# 규격: ../MODEL_MANIFEST.md · 이 파일만 고치면 UI 코드 수정 없이 반영된다.
+# region.key 는 forecast JSON regions 키와 일치해야 함 (그룹 핀은 crops_region_keys).
+
+country: canada
+iso: CAN
+label_ko: 캐나다
+label_en: Canada
+panel_mode: forecast
+data_file: canada_yield_forecast.json
+model_name: Prairies SAD + Ontario
+model_status: provisional
+status_note_ko: "SAD 기상 모델 4곳 검증 통과 / 나머지 산지는 추세+기후 진단(유리·불리·리스크)."
+
+view:
+  longitude: -105.0
+  latitude: 52.0
+  zoom: 3.4
+
+regions:
+  - key: sad_sk_canola_palliser
+    label_ko: SK 팰리서 (카놀라·봄밀)
+    ui_name: SK Palliser (Canada)
+    coordinates: [-106.5, 50.0]
+    crops_region_keys: [sad_sk_canola_palliser, sad_sk_wheat_palliser]
+  - key: sad_sk_canola_blacksoil
+    label_ko: SK 파크랜드·레지나
+    ui_name: SK Parkland (Canada)
+    coordinates: [-103.5, 51.2]
+    crops_region_keys:
+      [sad_sk_canola_parkland, sad_sk_canola_blacksoil, sad_sk_wheat_parkland]
+  - key: sad_ab_canola_south
+    label_ko: AB 남부 (카놀라)
+    ui_name: AB South (Canada)
+    coordinates: [-112.5, 50.0]
+    crops_region_keys: [sad_ab_canola_south]
+  - key: sad_ab_canola_central
+    label_ko: AB 중부·피스
+    ui_name: AB Central/Peace (Canada)
+    coordinates: [-114.5, 54.0]
+    crops_region_keys: [sad_ab_canola_central, sad_ab_canola_peace]
+  - key: sad_mb_canola_central
+    label_ko: MB 레드리버 (대두·카놀라)
+    ui_name: MB Red River (Canada)
+    coordinates: [-98.0, 50.0]
+    crops_region_keys: [sad_mb_soy_redriver, sad_mb_canola_central]
+  - key: sad_on_corn_southern
+    label_ko: 온타리오 옥수수
+    ui_name: ON Corn Belt (Canada)
+    coordinates: [-81.5, 43.0]
+    crops_region_keys: [sad_on_corn_southern, sad_on_corn_western]
+
+sources:
+  labels:
+    name: Statistics Canada 32-10-0002 (SAD) / 32-10-0359 (province)
+    url: https://www150.statcan.gc.ca/
+    updated: "2025-12-01"
+  climate:
+    name: NASA POWER (daily)
+    url: https://power.larc.nasa.gov/
+    updated: "2026-08-07"
+  outlooks:
+    name: AAFC Outlook + prairie weekly crop reports
+    url: https://agriculture.canada.ca/en/sector/crops/reports-statistics
+    updated: "2026-08-07"
+
+trade_policy:
+  restricted: false
+  prohibited_crops: []
+  note_ko: 정상 수출

@@ -18,6 +18,9 @@ export default {
         }
 
         // API Route: USDA FAS ESR (weekly US export sales by destination)
+        if (url.pathname.startsWith('/api/usda-esr/commodities')) {
+            return await handleUsdaEsrCommodities(request, env);
+        }
         if (url.pathname.startsWith('/api/usda-esr')) {
             return await handleUsdaEsr(request, env, ctx);
         }
@@ -43,7 +46,7 @@ export default {
         }
 
         // Default: Serve Static Assets
-        return env.ASSETS.fetch(request);
+        return serveAsset(request, env);
     },
 
     // Cron-driven cache warm-up (see "triggers" in wrangler.jsonc).
@@ -368,13 +371,85 @@ async function fetchEsrCountries(env) {
     return map;
 }
 
+/**
+ * The commodity list FAS itself publishes, so callers can map a name to a code
+ * instead of guessing. Cached for a week -- this list changes about never.
+ */
+/**
+ * Static assets, with HTML held out of every cache.
+ *
+ * A deployed update was not reaching visitors: the site was serving
+ * `cache-control: public, max-age=0, must-revalidate` for index.html and
+ * Cloudflare was still answering `cf-cache-status: HIT`. Reloading the page --
+ * or opening a shared portfolio link a second time -- returned the previous
+ * build, whose <script src="app.js?v=..."> pointed at the previous bundle. The
+ * versioned query strings only bust caches if the HTML naming them is fresh.
+ *
+ * So HTML is `no-store`: it is small, it changes on every deploy, and it is the
+ * one file that decides which version of everything else the browser loads.
+ * Fingerprinted assets keep their long cache, which is where caching earns its
+ * keep anyway.
+ */
+async function serveAsset(request, env) {
+    const res = await env.ASSETS.fetch(request);
+    const type = res.headers.get('content-type') || '';
+    if (!type.includes('text/html')) return res;
+
+    const headers = new Headers(res.headers);
+    headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0');
+    headers.set('CDN-Cache-Control', 'no-store');
+    headers.set('Pragma', 'no-cache');
+    // Lets anyone confirm which build they are looking at without guessing.
+    headers.set('X-Deployed-At', new Date().toISOString());
+    return new Response(res.body, { status: res.status, statusText: res.statusText, headers });
+}
+
+async function handleUsdaEsrCommodities(request, env) {
+    if (!env.USDA_FAS_API_KEY) return missingKey('USDA_FAS_API_KEY');
+    const body = await kvCachedJson(env, 'usda-esr:commodities', 604800, async () => {
+        const res = await fetch('https://api.fas.usda.gov/api/esr/commodities', {
+            headers: { "X-Api-Key": env.USDA_FAS_API_KEY, "Accept": "application/json" }
+        });
+        if (!res.ok) return { ok: false, status: res.status, statusText: res.statusText };
+        return { ok: true, body: await res.json() };
+    });
+    return body;
+}
+
+/** Market year for a Sep-start commodity. Wheat starts in June -- see below. */
+function currentEsrMarketYear() {
+    const now = new Date();
+    return String(now.getUTCFullYear() + (now.getUTCMonth() >= 8 ? 1 : 0));
+}
+
 async function handleUsdaEsr(request, env, ctx) {
     const url = new URL(request.url);
 
     if (!env.USDA_FAS_API_KEY) return missingKey('USDA_FAS_API_KEY');
 
-    const commodityCode = url.searchParams.get('commodityCode') || '801'; // 801 = Soybeans
-    const marketYear = url.searchParams.get('marketYear') || '2025';
+    // Reject unknown params instead of ignoring them.
+    //
+    // `commodityCode` used to fall back to 801 (soybeans) whenever it was
+    // absent, so a caller asking for `?commodity=corn` -- a plausible typo, and
+    // the exact one made while wiring the UI -- got a full, valid-looking
+    // soybean series it would then have labelled as corn. Silently serving the
+    // wrong commodity is worse than an error, so this now fails loudly and
+    // points at the list endpoint.
+    const commodityCode = url.searchParams.get('commodityCode');
+    if (!commodityCode) {
+        return new Response(JSON.stringify({
+            error: "commodityCode is required",
+            hint: "GET /api/usda-esr/commodities for the code list. There is no default: "
+                + "a wrong default silently mislabels one commodity as another.",
+        }), { status: 400, headers: JSON_HEADERS });
+    }
+
+    // Market year is derived, not pinned. It was hardcoded to '2025', which is
+    // why every response carried a weekEndingDate almost a year stale.
+    // Caveat: this assumes a September market-year start (corn, soybeans).
+    // Wheat's runs June-May, so wheat callers should pass marketYear explicitly
+    // between June and August.
+    const marketYear = url.searchParams.get('marketYear') || currentEsrMarketYear();
 
     const SAFE = /^[0-9]+$/;
     if (!SAFE.test(commodityCode) || !SAFE.test(marketYear)) {

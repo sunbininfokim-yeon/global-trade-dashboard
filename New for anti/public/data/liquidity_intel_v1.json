@@ -1,6 +1,6 @@
 {
   "schema_version": "liquidity-intel-v1",
-  "generated_at": "2026-08-04T08:11:01.159712+00:00",
+  "generated_at": "2026-08-06T12:31:42.307754+00:00",
   "model": {
     "name": "macro_liquidity_official_v1",
     "description": "QRA / Fed official liquidity + priority-reporter ARTICLES mined for liquidity indicators (FIMA, TGA, RRP, FX intervention…) — not reporter news fluff.",
@@ -18,20 +18,20 @@
   },
   "liquidity": {
     "bias": "tightening",
-    "score": 2.1,
+    "score": 2.25,
     "headline_ko": "유동성: 재무부 순발행·현금 잔고 신호가 타이트 쪽으로 기울음 · 지정기자 분석 테마 반영",
     "drivers": [
       "qra_net_borrowing_up",
       "tga_cash_high",
+      "reporter_tightening_theme",
       "reporter_tga_focus",
-      "reporter_rrp_focus",
       "reporter_fx_intervention",
       "reporter_fima_focus"
     ],
     "qra": {
       "title": "Treasury Announces Marketable Borrowing Estimates | U.S. Department of the Treasury",
       "url": "https://home.treasury.gov/news/press-releases/sb0584",
-      "text_chars": 876,
+      "text_chars": 12939,
       "quarters": [
         {
           "period": "July–September 2026",
@@ -56,6 +56,7 @@
         }
       ],
       "pdf_urls": [
+        "https://home.treasury.gov/system/files/136/Fact-Sheet-Department-of-Education-and-Department-of-the-Treasury.pdf",
         "https://home.treasury.gov/system/files/136/Sources-Uses-Public-Table-August-2026.pdf"
       ],
       "signals": [
@@ -72,17 +73,17 @@
       "beige_book": null,
       "items": [
         {
-          "title": "Beige Book - July 16, 2026",
-          "url": "https://www.federalreserve.gov/monetarypolicy/beigebook202607.htm",
-          "published": "Wed, 16 Jul 2026 14:00:00 GMT",
-          "event_type": "beige_book",
-          "tone": "mixed"
+          "title": "Federal Reserve issues FOMC statement",
+          "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260729a.htm",
+          "published": "Wed, 29 Jul 2026 18:00:00 GMT",
+          "event_type": "fomc",
+          "tone": null
         },
         {
-          "title": "FOMC Statement",
-          "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260730a.htm",
-          "published": "Wed, 30 Jul 2026 18:00:00 GMT",
-          "event_type": "fomc",
+          "title": "Minutes of the Board's discount rate meetings on June 8 and June 17, 2026",
+          "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260714a.htm",
+          "published": "Tue, 14 Jul 2026 18:00:00 GMT",
+          "event_type": "press",
           "tone": null
         }
       ]
@@ -90,23 +91,31 @@
     "reporter_liquidity": [
       {
         "author": "양영빈",
-        "articles_scanned": 2,
-        "articles_with_hits": 2,
+        "articles_scanned": 8,
+        "articles_with_hits": 5,
         "top_indicators": [
           {
-            "id": "fima",
-            "score": 2.4,
-            "label_ko": "FIMA 레포",
+            "id": "qra",
+            "score": 7.2,
+            "label_ko": "QRA·순발행",
             "evidence": [
-              "[연준와처] 베센트에 의해 소환된 FIMA [이코노미21 양영빈] 미국 FIMA 레포 시설과 외환안정기금(ESF)을 활용한 엔화 매입·달러 매도 개입"
+              "[연준와처] 8월 2차 QRA(재무부 분기별 자금조달 계획) [이코노미21 양영빈] 8월 5일 미국 재무부의 2차 QRA(분기별 자금조달"
             ]
           },
           {
-            "id": "fed_bs",
-            "score": 2.4,
-            "label_ko": "연준 대차대조표",
+            "id": "usd_jpy",
+            "score": 6.3,
+            "label_ko": "달러/엔",
             "evidence": [
-              "공조에 달러/엔 환율 하락 양영빈] 외환 시장 개입 공조와 달러/엔. 연준 대차대조표 QT 경로도 언급."
+              "미일 공조에 달러/엔 환율 하락(엔화 강세) [이코노미21 양영빈] 지난 주말 금융 시장 최고의 관심사는 달러/엔 환율이었다."
+            ]
+          },
+          {
+            "id": "fomc_liquidity",
+            "score": 3.4,
+            "label_ko": "FOMC·금리 유동성",
+            "evidence": [
+              "7월 FOMC 내비게이션 서비스 종료에 대한 시장의 반격 [연준와처] 7월 FOMC: 금리 동결, 3명의 반대, 그리고"
             ]
           },
           {
@@ -114,7 +123,7 @@
             "score": 2.3,
             "label_ko": "ESF 외환안정기금",
             "evidence": [
-              "FIMA [이코노미21 양영빈] 미국 FIMA 레포 시설과 외환안정기금(ESF)을 활용한 엔화 매입·달러 매도 개입 논의. TGA 잔고와 역레포(RRP) 축소가 순유동성에 미치는 영향을"
+              "보유한 외환안정기금(Exchang Stabilization Fund, ESF)의 유로화와 엔화를 통한 것이다. 일본은 전세계에서 최대 미국채권 보유국으로 엔화 절상이 필요할 때는 보통"
             ]
           },
           {
@@ -122,15 +131,7 @@
             "score": 2.2,
             "label_ko": "외환 개입",
             "evidence": [
-              "] 미국 FIMA 레포 시설과 외환안정기금(ESF)을 활용한 엔화 매입·달러 매도 개입 논의. TGA 잔고와 역레포(RRP) 축소가 순유동성에 미치는 영향을 분석한다."
-            ]
-          },
-          {
-            "id": "usd_jpy",
-            "score": 1.8,
-            "label_ko": "달러/엔",
-            "evidence": [
-              "미일 공조에 달러/엔 환율 하락 양영빈] 외환 시장 개입 공조와 달러/엔. 연준 대차대조표 QT 경로도 언급."
+              "를 매입하는 방식으로, 일본은 달러를 매각하고 엔화를 매입하는 방식으로 외환 시장에 개입했다. 미국이 외환 시장에 개입하는 방법은 재무부가 보유한 외환안정기금(Exchang Stabilizatio"
             ]
           },
           {
@@ -138,51 +139,70 @@
             "score": 1.3,
             "label_ko": "TGA 재무부 일반계정",
             "evidence": [
-              "시설과 외환안정기금(ESF)을 활용한 엔화 매입·달러 매도 개입 논의. TGA 잔고와 역레포(RRP) 축소가 순유동성에 미치는 영향을 분석한다."
+              "[연준와처] 연준 대차대조표 축소 방안과 TGA [이코노미21 양영빈] 케빈 워시 의장의 평소 지론은 연준의 대차대조표 정상화(축소)다. 대럴 대피(Dar"
             ]
           },
           {
-            "id": "net_liquidity",
-            "score": 1.25,
-            "label_ko": "넷 유동성",
+            "id": "fima",
+            "score": 1.2,
+            "label_ko": "FIMA 레포",
             "evidence": [
-              "엔화 매입·달러 매도 개입 논의. TGA 잔고와 역레포(RRP) 축소가 순유동성에 미치는 영향을 분석한다."
+              "[연준와처] 베센트에 의해 소환된 FIMA [이코노미21 양영빈] 7월 31일 미국은 보유한 유로화를 매각하고 엔화를 매입하는 방식으로, 일본은 달러"
             ]
           },
           {
-            "id": "rrp",
-            "score": 1.25,
-            "label_ko": "역레포(RRP)",
+            "id": "fed_bs",
+            "score": 1.2,
+            "label_ko": "연준 대차대조표",
             "evidence": [
-              "기금(ESF)을 활용한 엔화 매입·달러 매도 개입 논의. TGA 잔고와 역레포(RRP) 축소가 순유동성에 미치는 영향을 분석한다."
+              "[연준와처] 연준 대차대조표 축소 방안과 TGA [이코노미21 양영빈] 케빈 워시 의장의 평소 지론은 연준의 대차대조표 정상화(축소)다"
             ]
           }
         ],
         "themes_ko": [
-          "FIMA 레포 (점수 2.4)",
-          "연준 대차대조표 (점수 2.4)",
+          "QRA·순발행 (점수 7.2)",
+          "달러/엔 (점수 6.3)",
+          "FOMC·금리 유동성 (점수 3.4)",
           "ESF 외환안정기금 (점수 2.3)",
           "외환 개입 (점수 2.2)",
-          "달러/엔 (점수 1.8)",
           "TGA 재무부 일반계정 (점수 1.3)"
         ],
         "hint_weights": {
+          "tightening": 7.2,
+          "fx_pair": 6.3,
           "fx_intervention": 4.5,
-          "mixed": 2.4,
-          "fed_bs": 2.4,
-          "fx_pair": 1.8,
+          "policy": 3.4,
           "tga": 1.3,
-          "net_liq": 1.25,
-          "rrp": 1.25
+          "mixed": 1.2,
+          "fed_bs": 1.2
         },
         "reporter_signals": [
+          "reporter_tightening_theme",
           "reporter_tga_focus",
-          "reporter_rrp_focus",
           "reporter_fx_intervention",
           "reporter_fima_focus"
         ],
-        "headline_ko": "[유동성 분석·양영빈] 최근 기사 핵심 지표: FIMA 레포 · 외 7개 테마",
+        "headline_ko": "[유동성 분석·양영빈] 최근 기사 핵심 지표: QRA·순발행 · 외 7개 테마",
         "per_article": [
+          {
+            "title": "[연준와처] 8월 2차 QRA(재무부 분기별 자금조달 계획)",
+            "url": "http://www.economy21.co.kr/news/articleView.html?idxno=1017002",
+            "published": "2026-08-06 16:37",
+            "author": "양영빈",
+            "indicators": [
+              {
+                "id": "qra",
+                "label_ko": "QRA·순발행",
+                "mentions": 6,
+                "hint": "tightening",
+                "evidence": [
+                  "[연준와처] 8월 2차 QRA(재무부 분기별 자금조달 계획) [이코노미21 양영빈] 8월 5일 미국 재무부의 2차 QRA(분기별 자금조달",
+                  "자금조달 계획) [이코노미21 양영빈] 8월 5일 미국 재무부의 2차 QRA(분기별 자금조달 계획, Quarterly Refunding Announcement)가 발표됐다. QRA는",
+                  "uarterly Refunding Announcement)가 발표됐다. QRA는 크게 중장기 국채 발행계획과 단기국채 발행 계획으로 나누어 볼 수 있다. 이번 QRA 성명서를 보면 지난"
+                ]
+              }
+            ]
+          },
           {
             "title": "[연준와처] 베센트에 의해 소환된 FIMA",
             "url": "http://www.economy21.co.kr/news/articleView.html?idxno=1016983",
@@ -190,23 +210,13 @@
             "author": "양영빈",
             "indicators": [
               {
-                "id": "fima",
-                "label_ko": "FIMA 레포",
-                "mentions": 2,
-                "hint": "mixed",
-                "evidence": [
-                  "[연준와처] 베센트에 의해 소환된 FIMA [이코노미21 양영빈] 미국 FIMA 레포 시설과 외환안정기금(ESF)을 활용한 엔화 매입·달러 매도 개입",
-                  "[연준와처] 베센트에 의해 소환된 FIMA [이코노미21 양영빈] 미국 FIMA 레포 시설과 외환안정기금(ESF)을 활용한 엔화 매입·달러 매도 개입 논의. TGA 잔고와 역레포(RRP)"
-                ]
-              },
-              {
                 "id": "esf",
                 "label_ko": "ESF 외환안정기금",
                 "mentions": 2,
                 "hint": "fx_intervention",
                 "evidence": [
-                  "FIMA [이코노미21 양영빈] 미국 FIMA 레포 시설과 외환안정기금(ESF)을 활용한 엔화 매입·달러 매도 개입 논의. TGA 잔고와 역레포(RRP) 축소가 순유동성에 미치는 영향을",
-                  "의해 소환된 FIMA [이코노미21 양영빈] 미국 FIMA 레포 시설과 외환안정기금(ESF)을 활용한 엔화 매입·달러 매도 개입 논의. TGA 잔고와 역레포(RRP) 축소가 순유동성에 미치는"
+                  "보유한 외환안정기금(Exchang Stabilization Fund, ESF)의 유로화와 엔화를 통한 것이다. 일본은 전세계에서 최대 미국채권 보유국으로 엔화 절상이 필요할 때는 보통",
+                  "시장에 개입했다. 미국이 외환 시장에 개입하는 방법은 재무부가 보유한 외환안정기금(Exchang Stabilization Fund, ESF)의 유로화와 엔화를 통한 것이다. 일본은 전세계에"
                 ]
               },
               {
@@ -215,86 +225,104 @@
                 "mentions": 2,
                 "hint": "fx_intervention",
                 "evidence": [
-                  "] 미국 FIMA 레포 시설과 외환안정기금(ESF)을 활용한 엔화 매입·달러 매도 개입 논의. TGA 잔고와 역레포(RRP) 축소가 순유동성에 미치는 영향을 분석한다.",
-                  "21 양영빈] 미국 FIMA 레포 시설과 외환안정기금(ESF)을 활용한 엔화 매입·달러 매도 개입 논의. TGA 잔고와 역레포(RRP) 축소가 순유동성에 미치는 영향을 분석한다."
+                  "를 매입하는 방식으로, 일본은 달러를 매각하고 엔화를 매입하는 방식으로 외환 시장에 개입했다. 미국이 외환 시장에 개입하는 방법은 재무부가 보유한 외환안정기금(Exchang Stabilizatio",
+                  "달러를 매각하고 엔화를 매입하는 방식으로 외환 시장에 개입했다. 미국이 외환 시장에 개입하는 방법은 재무부가 보유한 외환안정기금(Exchang Stabilization Fund, ESF)의 유로화"
                 ]
               },
+              {
+                "id": "fima",
+                "label_ko": "FIMA 레포",
+                "mentions": 1,
+                "hint": "mixed",
+                "evidence": [
+                  "[연준와처] 베센트에 의해 소환된 FIMA [이코노미21 양영빈] 7월 31일 미국은 보유한 유로화를 매각하고 엔화를 매입하는 방식으로, 일본은 달러"
+                ]
+              }
+            ]
+          },
+          {
+            "title": "미일 공조에 달러/엔 환율 하락(엔화 강세)",
+            "url": "http://www.economy21.co.kr/news/articleView.html?idxno=1016978",
+            "published": "2026-08-03 16:28",
+            "author": "양영빈",
+            "indicators": [
+              {
+                "id": "usd_jpy",
+                "label_ko": "달러/엔",
+                "mentions": 7,
+                "hint": "fx_pair",
+                "evidence": [
+                  "미일 공조에 달러/엔 환율 하락(엔화 강세) [이코노미21 양영빈] 지난 주말 금융 시장 최고의 관심사는 달러/엔 환율이었다.",
+                  "화 강세) [이코노미21 양영빈] 지난 주말 금융 시장 최고의 관심사는 달러/엔 환율이었다. 달러/엔 환율($1당 엔화)이 최근 상승하지 일본 재무성은 달러/엔 환율의 안정화를 위해 달러",
+                  "1 양영빈] 지난 주말 금융 시장 최고의 관심사는 달러/엔 환율이었다. 달러/엔 환율($1당 엔화)이 최근 상승하지 일본 재무성은 달러/엔 환율의 안정화를 위해 달러를 팔고 엔화를 사는"
+                ]
+              }
+            ]
+          },
+          {
+            "title": "7월 FOMC 내비게이션 서비스 종료에 대한 시장의 반격 [연준와처]",
+            "url": "http://www.economy21.co.kr/news/articleView.html?idxno=1016968",
+            "published": "2026-07-30 15:23",
+            "author": "양영빈",
+            "indicators": [
+              {
+                "id": "fomc_liquidity",
+                "label_ko": "FOMC·금리 유동성",
+                "mentions": 4,
+                "hint": "policy",
+                "evidence": [
+                  "7월 FOMC 내비게이션 서비스 종료에 대한 시장의 반격 [연준와처] 7월 FOMC: 금리 동결, 3명의 반대, 그리고",
+                  "FOMC 내비게이션 서비스 종료에 대한 시장의 반격 [연준와처] 7월 FOMC: 금리 동결, 3명의 반대, 그리고 Warsh 체제의 ‘가족 싸움’[이코노미21 양영빈] 연방공개시장위원회",
+                  "Warsh 체제의 ‘가족 싸움’[이코노미21 양영빈] 연방공개시장위원회(FOMC)는 29일(현지시간) 기준금리를 3.50~3.75%로 동결했다. 표결 결과는 9대 3이었다. 반대 표는 클"
+                ]
+              }
+            ]
+          },
+          {
+            "title": "[연준와처] 연준 대차대조표 축소 방안과 TGA",
+            "url": "http://www.economy21.co.kr/news/articleView.html?idxno=1016898",
+            "published": "2026-07-13 12:53",
+            "author": "양영빈",
+            "indicators": [
               {
                 "id": "tga",
                 "label_ko": "TGA 재무부 일반계정",
                 "mentions": 1,
                 "hint": "tga",
                 "evidence": [
-                  "시설과 외환안정기금(ESF)을 활용한 엔화 매입·달러 매도 개입 논의. TGA 잔고와 역레포(RRP) 축소가 순유동성에 미치는 영향을 분석한다."
+                  "[연준와처] 연준 대차대조표 축소 방안과 TGA [이코노미21 양영빈] 케빈 워시 의장의 평소 지론은 연준의 대차대조표 정상화(축소)다. 대럴 대피(Dar"
                 ]
               },
-              {
-                "id": "net_liquidity",
-                "label_ko": "넷 유동성",
-                "mentions": 1,
-                "hint": "net_liq",
-                "evidence": [
-                  "엔화 매입·달러 매도 개입 논의. TGA 잔고와 역레포(RRP) 축소가 순유동성에 미치는 영향을 분석한다."
-                ]
-              },
-              {
-                "id": "rrp",
-                "label_ko": "역레포(RRP)",
-                "mentions": 1,
-                "hint": "rrp",
-                "evidence": [
-                  "기금(ESF)을 활용한 엔화 매입·달러 매도 개입 논의. TGA 잔고와 역레포(RRP) 축소가 순유동성에 미치는 영향을 분석한다."
-                ]
-              }
-            ]
-          },
-          {
-            "title": "미일 공조에 달러/엔 환율 하락",
-            "url": "http://www.economy21.co.kr/news/articleView.html?idxno=1016978",
-            "published": "2026-08-03 16:28",
-            "author": "양영빈",
-            "indicators": [
               {
                 "id": "fed_bs",
                 "label_ko": "연준 대차대조표",
-                "mentions": 2,
+                "mentions": 1,
                 "hint": "fed_bs",
                 "evidence": [
-                  "공조에 달러/엔 환율 하락 양영빈] 외환 시장 개입 공조와 달러/엔. 연준 대차대조표 QT 경로도 언급.",
-                  "환율 하락 양영빈] 외환 시장 개입 공조와 달러/엔. 연준 대차대조표 QT 경로도 언급."
-                ]
-              },
-              {
-                "id": "usd_jpy",
-                "label_ko": "달러/엔",
-                "mentions": 2,
-                "hint": "fx_pair",
-                "evidence": [
-                  "미일 공조에 달러/엔 환율 하락 양영빈] 외환 시장 개입 공조와 달러/엔. 연준 대차대조표 QT 경로도 언급.",
-                  "미일 공조에 달러/엔 환율 하락 양영빈] 외환 시장 개입 공조와 달러/엔. 연준 대차대조표 QT 경로도 언급."
+                  "[연준와처] 연준 대차대조표 축소 방안과 TGA [이코노미21 양영빈] 케빈 워시 의장의 평소 지론은 연준의 대차대조표 정상화(축소)다"
                 ]
               }
             ]
           }
         ],
         "finance_panel_fields": {
-          "reporter_liquidity_primary": "fima",
-          "reporter_liquidity_primary_ko": "FIMA 레포",
+          "reporter_liquidity_primary": "qra",
+          "reporter_liquidity_primary_ko": "QRA·순발행",
           "reporter_liquidity_themes": [
-            "FIMA 레포 (점수 2.4)",
-            "연준 대차대조표 (점수 2.4)",
+            "QRA·순발행 (점수 7.2)",
+            "달러/엔 (점수 6.3)",
+            "FOMC·금리 유동성 (점수 3.4)",
             "ESF 외환안정기금 (점수 2.3)",
             "외환 개입 (점수 2.2)",
-            "달러/엔 (점수 1.8)",
             "TGA 재무부 일반계정 (점수 1.3)"
           ],
           "reporter_liquidity_signals": [
+            "reporter_tightening_theme",
             "reporter_tga_focus",
-            "reporter_rrp_focus",
             "reporter_fx_intervention",
             "reporter_fima_focus"
           ],
-          "reporter_liquidity_headline_ko": "[유동성 분석·양영빈] 최근 기사 핵심 지표: FIMA 레포 · 외 7개 테마"
+          "reporter_liquidity_headline_ko": "[유동성 분석·양영빈] 최근 기사 핵심 지표: QRA·순발행 · 외 7개 테마"
         }
       }
     ],
@@ -304,29 +332,29 @@
       "qra_vs_prior_bn": 68.0,
       "liquidity_bias": "tightening",
       "liquidity_headline_ko": "유동성: 재무부 순발행·현금 잔고 신호가 타이트 쪽으로 기울음 · 지정기자 분석 테마 반영",
-      "beige_tone": "mixed",
-      "reporter_liquidity_primary": "fima",
-      "reporter_liquidity_primary_ko": "FIMA 레포",
+      "beige_tone": null,
+      "reporter_liquidity_primary": "qra",
+      "reporter_liquidity_primary_ko": "QRA·순발행",
       "reporter_liquidity_themes": [
-        "FIMA 레포 (점수 2.4)",
-        "연준 대차대조표 (점수 2.4)",
+        "QRA·순발행 (점수 7.2)",
+        "달러/엔 (점수 6.3)",
+        "FOMC·금리 유동성 (점수 3.4)",
         "ESF 외환안정기금 (점수 2.3)",
         "외환 개입 (점수 2.2)",
-        "달러/엔 (점수 1.8)",
         "TGA 재무부 일반계정 (점수 1.3)"
       ],
       "reporter_liquidity_signals": [
+        "reporter_tightening_theme",
         "reporter_tga_focus",
-        "reporter_rrp_focus",
         "reporter_fx_intervention",
         "reporter_fima_focus"
       ],
-      "reporter_liquidity_headline_ko": "[유동성 분석·양영빈] 최근 기사 핵심 지표: FIMA 레포 · 외 7개 테마"
+      "reporter_liquidity_headline_ko": "[유동성 분석·양영빈] 최근 기사 핵심 지표: QRA·순발행 · 외 7개 테마"
     }
   },
   "ticker_items": [
     {
-      "id": "qra-995944081670",
+      "id": "qra-258766316720",
       "published_at": null,
       "source": {
         "id": "us_treasury",
@@ -359,55 +387,23 @@
       "event_type": "qra"
     },
     {
-      "id": "fed-974818601660",
-      "published_at": "Wed, 16 Jul 2026 14:00:00 GMT",
+      "id": "fed-590161433346",
+      "published_at": "Wed, 29 Jul 2026 18:00:00 GMT",
       "source": {
         "id": "federal_reserve",
         "name": "Federal Reserve",
         "region": "west",
         "slant": null
       },
-      "url": "https://www.federalreserve.gov/monetarypolicy/beigebook202607.htm",
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260729a.htm",
       "category": "liquidity_official",
       "commodities": [],
       "title": {
-        "original": "Beige Book - July 16, 2026",
+        "original": "Federal Reserve issues FOMC statement",
         "original_lang": "en",
-        "ko": "[베이지북] Beige Book - July 16, 2026 · 혼조"
+        "ko": "[FOMC] Federal Reserve issues FOMC statement"
       },
-      "summary": "Economic activity expanded at a modest pace. Labor markets softened in several districts while price pressures remained elevated in services.",
-      "scores": {
-        "commodity": 0,
-        "diplomacy": 0,
-        "region_weight": 1.0,
-        "freshness": 1.0,
-        "final": 9.0
-      },
-      "rank_reasons": [
-        "event:beige_book",
-        "tone:mixed"
-      ],
-      "translation_status": "ok",
-      "event_type": "beige_book"
-    },
-    {
-      "id": "fed-494396307375",
-      "published_at": "Wed, 30 Jul 2026 18:00:00 GMT",
-      "source": {
-        "id": "federal_reserve",
-        "name": "Federal Reserve",
-        "region": "west",
-        "slant": null
-      },
-      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260730a.htm",
-      "category": "liquidity_official",
-      "commodities": [],
-      "title": {
-        "original": "FOMC Statement",
-        "original_lang": "en",
-        "ko": "[FOMC] FOMC Statement"
-      },
-      "summary": "The Committee decided to maintain the target range for the federal funds rate.",
+      "summary": "Federal Reserve issues FOMC statement",
       "scores": {
         "commodity": 0,
         "diplomacy": 0,
@@ -422,7 +418,38 @@
       "event_type": "fomc"
     },
     {
-      "id": "liq-ind-76668249706",
+      "id": "fed-231861276683",
+      "published_at": "Tue, 14 Jul 2026 18:00:00 GMT",
+      "source": {
+        "id": "federal_reserve",
+        "name": "Federal Reserve",
+        "region": "west",
+        "slant": null
+      },
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260714a.htm",
+      "category": "liquidity_official",
+      "commodities": [],
+      "title": {
+        "original": "Minutes of the Board's discount rate meetings on June 8 and June 17, 2026",
+        "original_lang": "en",
+        "ko": "[연준] Minutes of the Board's discount rate meetings on June 8 and June 17, 2026"
+      },
+      "summary": "Minutes of the Board&#39;s discount rate meetings on June 8 and June 17, 2026",
+      "scores": {
+        "commodity": 0,
+        "diplomacy": 0,
+        "region_weight": 1.0,
+        "freshness": 1.0,
+        "final": 8.5
+      },
+      "rank_reasons": [
+        "event:press"
+      ],
+      "translation_status": "ok",
+      "event_type": "press"
+    },
+    {
+      "id": "liq-ind-738526191348",
       "published_at": null,
       "source": {
         "id": "reporter_liquidity",
@@ -430,15 +457,15 @@
         "region": "korea",
         "slant": null
       },
-      "url": "http://www.economy21.co.kr/news/articleView.html?idxno=1016983",
+      "url": "http://www.economy21.co.kr/news/articleView.html?idxno=1017002",
       "category": "liquidity_indicator",
       "commodities": [],
       "title": {
-        "original": "FIMA 레포 · 연준 대차대조표 · ESF 외환안정기금",
+        "original": "QRA·순발행 · 달러/엔 · FOMC·금리 유동성",
         "original_lang": "ko",
-        "ko": "[유동성지표·양영빈] FIMA 레포 · 연준 대차대조표 · ESF 외환안정기금"
+        "ko": "[유동성지표·양영빈] QRA·순발행 · 달러/엔 · FOMC·금리 유동성"
       },
-      "summary": "[유동성 분석·양영빈] 최근 기사 핵심 지표: FIMA 레포 · 외 7개 테마",
+      "summary": "[유동성 분석·양영빈] 최근 기사 핵심 지표: QRA·순발행 · 외 7개 테마",
       "scores": {
         "commodity": 0,
         "diplomacy": 0,
@@ -447,9 +474,9 @@
         "final": 7.5
       },
       "rank_reasons": [
-        "indicator:fima",
+        "indicator:qra",
+        "reporter_tightening_theme",
         "reporter_tga_focus",
-        "reporter_rrp_focus",
         "reporter_fx_intervention",
         "reporter_fima_focus"
       ],
@@ -457,19 +484,27 @@
       "event_type": "liquidity_indicator",
       "indicators": [
         {
-          "id": "fima",
-          "score": 2.4,
-          "label_ko": "FIMA 레포",
+          "id": "qra",
+          "score": 7.2,
+          "label_ko": "QRA·순발행",
           "evidence": [
-            "[연준와처] 베센트에 의해 소환된 FIMA [이코노미21 양영빈] 미국 FIMA 레포 시설과 외환안정기금(ESF)을 활용한 엔화 매입·달러 매도 개입"
+            "[연준와처] 8월 2차 QRA(재무부 분기별 자금조달 계획) [이코노미21 양영빈] 8월 5일 미국 재무부의 2차 QRA(분기별 자금조달"
           ]
         },
         {
-          "id": "fed_bs",
-          "score": 2.4,
-          "label_ko": "연준 대차대조표",
+          "id": "usd_jpy",
+          "score": 6.3,
+          "label_ko": "달러/엔",
           "evidence": [
-            "공조에 달러/엔 환율 하락 양영빈] 외환 시장 개입 공조와 달러/엔. 연준 대차대조표 QT 경로도 언급."
+            "미일 공조에 달러/엔 환율 하락(엔화 강세) [이코노미21 양영빈] 지난 주말 금융 시장 최고의 관심사는 달러/엔 환율이었다."
+          ]
+        },
+        {
+          "id": "fomc_liquidity",
+          "score": 3.4,
+          "label_ko": "FOMC·금리 유동성",
+          "evidence": [
+            "7월 FOMC 내비게이션 서비스 종료에 대한 시장의 반격 [연준와처] 7월 FOMC: 금리 동결, 3명의 반대, 그리고"
           ]
         },
         {
@@ -477,7 +512,7 @@
           "score": 2.3,
           "label_ko": "ESF 외환안정기금",
           "evidence": [
-            "FIMA [이코노미21 양영빈] 미국 FIMA 레포 시설과 외환안정기금(ESF)을 활용한 엔화 매입·달러 매도 개입 논의. TGA 잔고와 역레포(RRP) 축소가 순유동성에 미치는 영향을"
+            "보유한 외환안정기금(Exchang Stabilization Fund, ESF)의 유로화와 엔화를 통한 것이다. 일본은 전세계에서 최대 미국채권 보유국으로 엔화 절상이 필요할 때는 보통"
           ]
         },
         {
@@ -485,15 +520,7 @@
           "score": 2.2,
           "label_ko": "외환 개입",
           "evidence": [
-            "] 미국 FIMA 레포 시설과 외환안정기금(ESF)을 활용한 엔화 매입·달러 매도 개입 논의. TGA 잔고와 역레포(RRP) 축소가 순유동성에 미치는 영향을 분석한다."
-          ]
-        },
-        {
-          "id": "usd_jpy",
-          "score": 1.8,
-          "label_ko": "달러/엔",
-          "evidence": [
-            "미일 공조에 달러/엔 환율 하락 양영빈] 외환 시장 개입 공조와 달러/엔. 연준 대차대조표 QT 경로도 언급."
+            "를 매입하는 방식으로, 일본은 달러를 매각하고 엔화를 매입하는 방식으로 외환 시장에 개입했다. 미국이 외환 시장에 개입하는 방법은 재무부가 보유한 외환안정기금(Exchang Stabilizatio"
           ]
         }
       ]
@@ -501,29 +528,28 @@
   ],
   "feed_status": [
     {
-      "source": "treasury_press_list.html",
-      "ok": false,
-      "error": "fixture_missing"
-    },
-    {
-      "source": "treasury_qra.html",
+      "source": "treasury_qra_0.html",
       "ok": true,
-      "mode": "fixture"
+      "mode": "live",
+      "url": "https://home.treasury.gov/news/press-releases/sb0584"
     },
     {
       "source": "fed_press.xml",
       "ok": true,
-      "mode": "fixture"
+      "mode": "live",
+      "url": "https://www.federalreserve.gov/feeds/press_all.xml"
     },
     {
       "source": "beige_hub.html",
-      "ok": false,
-      "error": "fixture_missing"
+      "ok": true,
+      "mode": "live",
+      "url": "https://www.federalreserve.gov/monetarypolicy/beige-book-default.htm"
     },
     {
       "source": "economy21_list.html",
       "ok": true,
-      "mode": "fixture"
+      "mode": "live",
+      "url": "http://www.economy21.co.kr/news/articleList.html?sc_section_code=S1N10&view_type=sm"
     }
   ],
   "stats": {
@@ -531,7 +557,7 @@
     "qra_parsed": true,
     "reporter_analyses": 1,
     "reporter_indicator_hits": 8,
-    "sources_ok": 3,
-    "sources_failed": 2
+    "sources_ok": 4,
+    "sources_failed": 0
   }
 }

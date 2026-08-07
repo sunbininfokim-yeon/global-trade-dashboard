@@ -381,11 +381,21 @@
             // Use a map to deduplicate arcs and combine X (Export) and M (Import) 'Mirror Data'
             const arcMap = {};
 
+            // Position lookup. COUNTRIES is a 65-entry hand-written table; anything
+            // outside it used to be dropped here, which is why newly added
+            // countries never appeared on the map or became clickable. The map's
+            // own country registry (app.js) resolves any name the basemap knows,
+            // so the curated table is now a preference, not a gate.
+            const posOf = (name) => COUNTRIES[name]
+                || (window.CountryCoords ? window.CountryCoords(name) : null);
+
             json.data.forEach(row => {
-                const reporterName = M49_MAP[row.reporterCode];
-                const partnerName = M49_MAP[row.partnerCode];
+                // Fall back to the names Comtrade ships with the row, so a code
+                // missing from M49_MAP no longer silently loses the route.
+                const reporterName = M49_MAP[row.reporterCode] || row.reporterDesc;
+                const partnerName = M49_MAP[row.partnerCode] || row.partnerDesc;
                 if (!reporterName || !partnerName) return;
-                if (!COUNTRIES[reporterName] || !COUNTRIES[partnerName]) return;
+                if (!posOf(reporterName) || !posOf(partnerName)) return;
                 if (reporterName === partnerName) return; // Ignore domestic trade
 
                 const tradeValue = row.primaryValue || 0;  // USD
@@ -409,8 +419,8 @@
                     arcMap[arcKey] = {
                         sourceName,
                         targetName,
-                        sourcePosition: COUNTRIES[sourceName],
-                        targetPosition: COUNTRIES[targetName],
+                        sourcePosition: posOf(sourceName),
+                        targetPosition: posOf(targetName),
                         volume,
                         netWeightMt,
                         percentage: 0,
