@@ -255,6 +255,16 @@ const handleLineClick = (info) => {
 const clearTradeFocus = () => {
     tradeFocusCountry = null;
     selectedCountry = null;
+    // Put the world-level labels back; stage 2 rewrote them in place.
+    const d = window.TradeData?.[currentCommodity];
+    const lv = document.getElementById('stat-label-volume');
+    const lt = document.getElementById('stat-label-exporter');
+    if (lv) lv.textContent = '글로벌 무역량';
+    if (lt) lt.textContent = '최대 수출국';
+    if (d) {
+        if (totalVolumeEl) totalVolumeEl.textContent = d.totalVolume;
+        if (topExporterEl) topExporterEl.textContent = d.topExporter;
+    }
     if (currentCommodity && window.TradeData?.[currentCommodity]?.arcs?.length) {
         renderMapLayers(window.TradeData[currentCommodity].arcs);
         renderTradeWorldPanel(window.TradeData[currentCommodity].arcs);
@@ -362,6 +372,26 @@ const focusTradeCountry = (countryName) => {
         });
     }
 
+    // Stage 2 stats become the country's, not the world's. "글로벌 무역량
+    // 98.5 Million bpd" said the same thing on every country's screen, which
+    // is the one number a country view should not repeat.
+    const worldVol = arcs.reduce((s, a) => s + (a.volume > 0 ? a.volume : 0), 0) || 1;
+    const countryVol = exportVol + importVol;
+    const top = focused[0];
+    if (top) {
+        const isIn = inboundKeys.has(`${top.sourceName}>${top.targetName}`);
+        const partner = resolveCountry(isIn ? top.sourceName : top.targetName)?.label
+            || (isIn ? top.sourceName : top.targetName);
+        const statLabelVol = document.getElementById('stat-label-volume');
+        const statLabelTop = document.getElementById('stat-label-exporter');
+        if (statLabelVol) statLabelVol.textContent = '글로벌 비중';
+        if (statLabelTop) statLabelTop.textContent = isIn ? '최대 공급국' : '최대 수출 대상국';
+        if (totalVolumeEl) {
+            totalVolumeEl.textContent = `${((countryVol / worldVol) * 100).toFixed(1)}%`;
+        }
+        if (topExporterEl) topExporterEl.textContent = partner;
+    }
+
     const ctl = controlsFor(currentCommodity).get(target?.key || countryName);
     if (ctl && newsContentEl) {
         const lv = exportControlsDoc?.levels?.[ctl.level]?.label_ko || ctl.level;
@@ -406,6 +436,77 @@ const countryCode = (name) => {
     return String(name || '').slice(0, 3).toUpperCase();
 };
 
+/**
+ * US emergency crude stocks: the SPR and the Cushing hub.
+ *
+ * A flow map says who ships to whom but nothing about the buffer behind it.
+ * Cushing is the WTI delivery point -- when it runs low the contract moves on
+ * storage rather than supply -- and the SPR is the release valve a government
+ * actually pulls. Neither is visible in trade data.
+ *
+ * EIA reports these weekly, so the card carries the week-on-week change; a
+ * level alone does not say whether a buffer is filling or draining.
+ */
+const EIA_STOCKS = [
+    { id: 'spr', label_ko: '미국 전략비축유 (SPR)', series: 'WCSSTUS1',
+      route: 'petroleum/stoc/wstk/data/' },
+    { id: 'cushing', label_ko: '쿠싱 원유 저장 (WTI 인도지점)', series: 'W_EPC0_SAX_YCUOK_MBBL',
+      route: 'petroleum/stoc/wstk/data/' },
+];
+let eiaStocksCache = null;
+
+const loadEiaStocks = async () => {
+    if (eiaStocksCache) return eiaStocksCache;
+    const out = [];
+    for (const s of EIA_STOCKS) {
+        try {
+            const r = await fetch(
+                `/api/macro?source=eia&route=${encodeURIComponent(s.route)}&seriesId=${s.series}`);
+            if (!r.ok) continue;
+            const j = await r.json();
+            const rows = j?.response?.data || j?.data || [];
+            if (!rows.length) continue;
+            const latest = Number(rows[0]?.value);
+            const prev = rows.length > 1 ? Number(rows[1]?.value) : null;
+            if (!Number.isFinite(latest)) continue;
+            out.push({
+                ...s,
+                value: latest,
+                period: rows[0]?.period || '',
+                change: Number.isFinite(prev) ? latest - prev : null,
+            });
+        } catch (err) {
+            // The map is the point; a missing buffer card is not worth failing over.
+            console.warn(`[EIA] ${s.id} unavailable`, err);
+        }
+    }
+    eiaStocksCache = out;
+    return out;
+};
+
+/** Only meaningful for crude; other commodities have no equivalent series. */
+const renderEmergencyStocks = async () => {
+    const host = document.getElementById('news-content');
+    if (!host || currentCommodity !== 'oil') return;
+    const stocks = await loadEiaStocks();
+    if (!stocks.length || currentCommodity !== 'oil') return;
+    host.insertAdjacentHTML('beforeend', `
+        <div class="stock-card">
+            <p class="section-title" style="margin:0 0 6px;">글로벌 비상 재고 · EIA 주간</p>
+            ${stocks.map((s) => {
+                const up = s.change != null && s.change > 0;
+                return `<div class="stock-row">
+                    <span class="nm">${s.label_ko}</span>
+                    <span class="vl">${(s.value / 1000).toFixed(1)}<em>백만 배럴</em></span>
+                    <span class="ch ${s.change == null ? '' : (up ? 'up' : 'down')}">
+                        ${s.change == null ? '—'
+                            : `${up ? '+' : ''}${(s.change / 1000).toFixed(1)}`}</span>
+                </div>`;
+            }).join('')}
+            <div class="stock-note">${stocks[0]?.period || ''} 기준 · 전주 대비 증감 · 출처 EIA</div>
+        </div>`);
+};
+
 const renderTradeWorldPanel = (arcs) => {
     const byExporter = new Map();
     for (const a of arcs) {
@@ -437,6 +538,7 @@ const renderTradeWorldPanel = (arcs) => {
             <p class="trade-focus-sub">비중% · 막대는 상대 물동량 · 국가를 누르면 그 나라 노선만 남습니다</p>
             <div class="trade-rank-list">${rows || '<p class="empty-state">무역 루트 없음</p>'}</div>
         </div>`;
+    renderEmergencyStocks();
 };
 
 const updateNewsPanel = (countryName) => {
