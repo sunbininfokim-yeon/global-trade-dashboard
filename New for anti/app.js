@@ -4999,6 +4999,12 @@ const pfSave = (p) => {
 
 const pfBlank = () => ({ risk_profile: 'balanced', base_currency: 'KRW', positions: [] });
 
+// Covariance from ~250 daily observations needs comfortably more rows than
+// assets or the estimate turns to noise -- and noisy covariance is exactly what
+// the risk-contribution number is built on. 20 keeps that ratio above 12 while
+// still fitting any portfolio a person actually holds.
+const PF_MAX = 20;
+
 let PF_REGISTRY = null;
 let PF_PROFILES = null;
 
@@ -5069,7 +5075,12 @@ const renderPfInput = (root, onDone) => {
                 <button id="pf-add" class="pf-btn" disabled>추가</button>
             </div>
             <p id="pf-picked" class="pf-picked"></p>
-            <p class="fin-note">등록된 종목만 넣을 수 있습니다 (${PF_REGISTRY.length}종). 없는 종목은 엔진 쪽 종목표에 추가해야 합니다.</p>
+            <p class="fin-note">
+                등록된 종목만 넣을 수 있습니다 (${PF_REGISTRY.length}종). 없는 종목은 엔진 쪽 종목표에 추가해야 합니다.
+                최대 ${PF_MAX}종까지 — 종목이 더 늘면 과거 가격만으로는 종목 간 관계를 안정적으로 못 잡습니다.
+            </p>
+            ${pf.positions.length >= PF_MAX
+                ? `<p class="pf-limit">${PF_MAX}종을 채웠습니다. 더 넣으려면 기존 종목을 지워 주세요.</p>` : ''}
         </section>
 
         <section class="fin-block fin-block-wide pf-input">
@@ -5096,10 +5107,13 @@ const renderPfInput = (root, onDone) => {
             </div>
             <div class="pf-total"><span>합계</span><strong>${pfKrw(total)}</strong></div>
             <div class="pf-actions">
-                <button id="pf-run" class="pf-btn pf-btn-primary">진단하기</button>
+                <button id="pf-run" class="pf-btn pf-btn-primary">진단 결과 보기</button>
                 <button id="pf-clear" class="pf-btn pf-btn-ghost">전부 지우기</button>
             </div>
-            <p class="fin-note pf-privacy">입력한 내역은 이 브라우저에만 저장됩니다. 서버로 보내지 않습니다.</p>
+            <p class="fin-note pf-privacy">
+                입력한 내역은 이 브라우저에만 저장됩니다. 서버로 보내지 않습니다.<br>
+                <strong>계산 기능은 아직 붙지 않았습니다</strong> — 지금은 입력과 저장까지만 됩니다.
+            </p>
             ` : `<p class="fin-note">아직 없습니다. 위에서 종목을 추가하세요.</p>`}
         </section>`;
 
@@ -5111,7 +5125,8 @@ const renderPfInput = (root, onDone) => {
     let picked = null;
 
     const refreshAdd = () => {
-        addEl.disabled = !(picked && Number(String(amtEl.value).replace(/[^0-9.]/g, '')) > 0);
+        const full = (pfLoad() || pfBlank()).positions.length >= PF_MAX;
+        addEl.disabled = full || !(picked && Number(String(amtEl.value).replace(/[^0-9.]/g, '')) > 0);
     };
 
     qEl.addEventListener('input', () => {
@@ -5151,8 +5166,10 @@ const renderPfInput = (root, onDone) => {
         const next = pfLoad() || pfBlank();
         next.risk_profile = root.querySelector('input[name="pf-profile"]:checked')?.value || next.risk_profile;
         const existing = next.positions.findIndex((p) => p.id === picked.id && p.side === side);
+        // Topping up something already held is fine at the cap; only new rows count.
         if (existing >= 0) next.positions[existing].value += val;
-        else next.positions.push({ id: picked.id, value: val, side });
+        else if (next.positions.length < PF_MAX) next.positions.push({ id: picked.id, value: val, side });
+        else return;
         pfSave(next);
         renderPfInput(root, onDone);
     });
