@@ -362,6 +362,23 @@ def main():
     if not countries:
         errors.append("model.yaml 을 가진 국가 폴더가 하나도 없음")
 
+    # A trained country that nobody wrote a manifest for is invisible on the
+    # site, and nothing announces it. Russia and Vietnam sat like that for
+    # weeks with finished models and published forecasts. Fail the build
+    # instead, and say exactly which command fixes it.
+    declared = {m.get("data_file") for m in countries.values()}
+    for fname in sorted(os.listdir(PUBLIC_DATA)):
+        if not fname.endswith("_yield_forecast.json"):
+            continue
+        if fname in declared:
+            continue
+        country = fname[: -len("_yield_forecast.json")]
+        errors.append(
+            f"{country}: 예측 JSON 이 있는데 매니페스트가 없다 (public/data/{fname}). "
+            f"화면에 뜨지 않는다 — `python3 scaffold_manifest.py {country}` 로 초안을 만든 뒤 "
+            f"TODO 를 채우세요."
+        )
+
     if errors:
         print("레지스트리 검증 실패:\n", file=sys.stderr)
         for e in errors:

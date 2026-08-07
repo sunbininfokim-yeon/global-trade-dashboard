@@ -1,6 +1,6 @@
 {
   "schema_version": "climate-registry-v1",
-  "generated_at": "2026-08-06T15:44:10.666274+09:00",
+  "generated_at": "2026-08-07T09:40:26.433908+09:00",
   "note": "Generated from scripts/yield_model/*/model.yaml. Do not edit by hand.",
   "countries": {
     "Argentina": {
@@ -501,6 +501,136 @@
         "note_ko": "팜 등 통제 seed (1품목 금지 → 주황 우선)"
       }
     },
+    "Russia": {
+      "country": "russia",
+      "iso": "RUS",
+      "label_ko": "러시아",
+      "label_en": "Russia",
+      "panel_mode": "forecast",
+      "data_file": "russia_yield_forecast.json",
+      "model_status": "provisional",
+      "status_note_ko": "산지 5곳 검증 통과 / 3곳은 추세를 이기지 못함.",
+      "view": {
+        "longitude": 42.0,
+        "latitude": 50.5,
+        "zoom": 4.2
+      },
+      "regions": [
+        {
+          "key": "southern_winter_wheat",
+          "label_ko": "남부 곡창지대 (겨울밀)",
+          "ui_name": "southern_winter_wheat",
+          "coordinates": [
+            40.22,
+            45.77
+          ],
+          "crops_region_keys": [
+            "southern_winter_wheat"
+          ]
+        },
+        {
+          "key": "cbe_winter_wheat",
+          "label_ko": "중앙흑토 (겨울밀)",
+          "ui_name": "cbe_winter_wheat",
+          "coordinates": [
+            38.35,
+            51.68
+          ],
+          "crops_region_keys": [
+            "cbe_winter_wheat"
+          ]
+        },
+        {
+          "key": "russia_winter_wheat",
+          "label_ko": "러시아 겨울밀 벨트 (가중 전국)",
+          "ui_name": "russia_winter_wheat",
+          "coordinates": [
+            39.38,
+            48.43
+          ],
+          "crops_region_keys": [
+            "russia_winter_wheat"
+          ]
+        },
+        {
+          "key": "volga_winter_wheat",
+          "label_ko": "볼가 (겨울밀)",
+          "ui_name": "volga_winter_wheat",
+          "coordinates": [
+            46.9,
+            51.15
+          ],
+          "crops_region_keys": [
+            "volga_winter_wheat"
+          ]
+        },
+        {
+          "key": "southern_sunflower",
+          "label_ko": "남부 (해바라기)",
+          "ui_name": "southern_sunflower",
+          "coordinates": [
+            42.02,
+            44.47
+          ],
+          "crops_region_keys": [
+            "southern_sunflower"
+          ]
+        },
+        {
+          "key": "cbe_sunflower",
+          "label_ko": "중앙흑토 (해바라기)",
+          "ui_name": "cbe_sunflower",
+          "coordinates": [
+            40.15,
+            50.38
+          ],
+          "crops_region_keys": [
+            "cbe_sunflower"
+          ]
+        },
+        {
+          "key": "volga_sunflower",
+          "label_ko": "볼가 (해바라기)",
+          "ui_name": "volga_sunflower",
+          "coordinates": [
+            48.7,
+            49.85
+          ],
+          "crops_region_keys": [
+            "volga_sunflower"
+          ]
+        },
+        {
+          "key": "russia_sunflower",
+          "label_ko": "러시아 해바라기 벨트 (가중 전국)",
+          "ui_name": "russia_sunflower",
+          "coordinates": [
+            44.06,
+            47.36
+          ],
+          "crops_region_keys": [
+            "russia_sunflower"
+          ]
+        }
+      ],
+      "sources": {
+        "labels": {
+          "name": "Rosstat 작물 통계",
+          "url": "https://rosstat.gov.ru/enterprise_economy",
+          "updated": "2024-12-31"
+        },
+        "climate": {
+          "name": "NASA POWER (daily)",
+          "url": "https://power.larc.nasa.gov/",
+          "updated": "2026-08-07"
+        }
+      },
+      "trade_policy": {
+        "restricted": true,
+        "prohibited_crops": [],
+        "note_ko": "밀 수출세·쿼터 운용 (seed)"
+      }
+    },
     "United States": {
       "country": "us",
       "iso": "USA",
@@ -581,6 +711,52 @@
         "restricted": false,
         "prohibited_crops": [],
         "note_ko": "정상 수출"
+      }
+    },
+    "Vietnam": {
+      "country": "vietnam",
+      "iso": "VNM",
+      "label_ko": "베트남",
+      "label_en": "Vietnam",
+      "panel_mode": "forecast",
+      "data_file": "vietnam_yield_forecast.json",
+      "model_status": "training",
+      "status_note_ko": "추세를 이긴 산지가 없다 (실패 2 · 스킵 0). 학습 진행 중.",
+      "view": {
+        "longitude": 106.0,
+        "latitude": 12.5,
+        "zoom": 4.6
+      },
+      "regions": [
+        {
+          "key": "mekong_rice_ws",
+          "label_ko": "메콩 델타 (동춘작 벼)",
+          "ui_name": "mekong_rice_ws",
+          "coordinates": [
+            105.76,
+            9.91
+          ],
+          "crops_region_keys": [
+            "mekong_rice_ws"
+          ]
+        }
+      ],
+      "sources": {
+        "labels": {
+          "name": "GSO Vietnam 농업통계",
+          "url": "https://www.gso.gov.vn/en/agriculture-forestry-and-fishery/",
+          "updated": "2024-12-31"
+        },
+        "climate": {
+          "name": "NASA POWER (daily)",
+          "url": "https://power.larc.nasa.gov/",
+          "updated": "2026-08-07"
+        }
+      },
+      "trade_policy": {
+        "restricted": false,
+        "prohibited_crops": [],
+        "note_ko": "쌀 수출 정상 (seed)"
       }
     },
     "Ivory Coast": {

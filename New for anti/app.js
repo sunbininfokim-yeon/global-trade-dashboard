@@ -302,8 +302,10 @@ const focusTradeCountry = (countryName) => {
     const total = focused.reduce((s, a) => s + a.volume, 0) || 1;
 
     // Left list: partner ranking with % (same pattern for China / USA / anyone)
-    const unit = currentCommodity === 'oil' ? 'M USD'
-        : (currentCommodity === 'gold' || currentCommodity === 'silver' ? 'Tonnes eq.' : 'M USD');
+    // Every commodity's `volume` is Millions USD -- data.js divides Comtrade's
+    // primaryValue by 1e6 regardless of commodity. Gold and silver were labelled
+    // "Tonnes eq.", which named a quantity the figure is not.
+    const unit = 'M USD';
     const roleKo = asExporter ? '수출 → 대상국' : '수입 ← 공급국';
     const maxVol = focused[0]?.volume || 1;
     const rows = focused.slice(0, 14).map((a, i) => {
@@ -314,9 +316,10 @@ const focusTradeCountry = (countryName) => {
         // every percentage smaller than it is.
         const denom = (isIn ? importVol : exportVol) || 1;
         const share = (a.volume / denom) * 100;
-        return `<div class="trade-rank-row trade-bar-row${isIn ? ' is-inbound' : ''}" data-partner="${partner}">
+        return `<div class="trade-rank-row trade-bar-row${isIn ? ' is-inbound' : ''}"
+                     data-partner="${partner}" title="${isIn ? '수입' : '수출'} · ${partner} · ${a.volume.toLocaleString()} ${unit}">
             <span class="tr-i">${i + 1}</span>
-            <span class="tr-dir">${isIn ? '수입' : '수출'}</span>
+            <span class="tr-dir" aria-label="${isIn ? '수입' : '수출'}"></span>
             <span class="tr-name">${partner}</span>
             <span class="tr-bar"><i style="width:${Math.max(3, (a.volume / maxVol) * 100)}%"></i></span>
             <span class="tr-pct">${share.toFixed(1)}%</span>
@@ -328,12 +331,12 @@ const focusTradeCountry = (countryName) => {
     // one-directional list. Net is what says whether it is a seller or a buyer.
     const net = exportVol - importVol;
     const statsHtml = `
-        <div class="trade-stat-row">
-            <div class="ts-cell"><span class="ts-k">수출</span>
+        <div class="trade-stat-row" data-unit="${unit}">
+            <div class="ts-cell"><span class="ts-k">수출 (${unit})</span>
                 <span class="ts-v">${exportVol.toLocaleString()}</span></div>
-            <div class="ts-cell"><span class="ts-k">수입</span>
+            <div class="ts-cell"><span class="ts-k">수입 (${unit})</span>
                 <span class="ts-v">${importVol.toLocaleString()}</span></div>
-            <div class="ts-cell"><span class="ts-k">순수지</span>
+            <div class="ts-cell"><span class="ts-k">순수지 (${unit})</span>
                 <span class="ts-v ${net >= 0 ? 'pos' : 'neg'}">${net >= 0 ? '+' : ''}${net.toLocaleString()}</span></div>
         </div>`;
 
@@ -1075,94 +1078,12 @@ const featureIsCountry = (feature, name) => {
 window.ResolveCountry = resolveCountry;
 window.CountryCoords = countryCoords;
 
-/**
- * Sea-surface-temperature anomaly wash (req 10).
- *
- * Seed basins, not a gridded SST product: the indices we hold (ONI, IOD, AMO)
- * are basin averages, so a per-pixel field would imply resolution the data does
- * not have. Coverage is now wide enough that every ocean carries a tint, and the
- * palette stays washed out on purpose -- the map's job is land and trade status,
- * so SST reads as background gradient, never as a colour that competes with the
- * country fills.
- */
-const OCEAN_SST_BASINS = [
-    { id: 'nino34', label: 'Niño 3.4 (적도 동태평양)', coordinates: [-140, 0], key: 'enso', spread: 1.35 },
-    { id: 'nino4', label: '적도 중태평양', coordinates: [-170, 0], key: 'enso', spread: 1.15 },
-    { id: 'wpac', label: '서태평양 웜풀', coordinates: [150, 5], key: 'enso_inv', spread: 1.2 },
-    { id: 'npac', label: '북태평양', coordinates: [-170, 38], key: 'enso_half', spread: 1.25 },
-    { id: 'nepac', label: '북동태평양', coordinates: [-135, 40], key: 'enso_half', spread: 1.0 },
-    { id: 'spac', label: '남태평양', coordinates: [-130, -30], key: 'enso_half', spread: 1.25 },
-    { id: 'iod_w', label: 'IOD 서 (아프리카측)', coordinates: [55, -5], key: 'iod', spread: 1.0 },
-    { id: 'iod_e', label: 'IOD 동 (수마트라측)', coordinates: [95, -8], key: 'iod_inv', spread: 0.95 },
-    { id: 'sind', label: '남인도양', coordinates: [78, -28], key: 'iod', spread: 1.2 },
-    { id: 'arab', label: '아라비아해·벵골만', coordinates: [68, 14], key: 'iod', spread: 0.9 },
-    { id: 'natl', label: '북대서양 (AMO)', coordinates: [-40, 36], key: 'amo', spread: 1.3 },
-    { id: 'natl_e', label: '동북대서양', coordinates: [-18, 48], key: 'amo', spread: 1.0 },
-    { id: 'tatl', label: '열대 대서양', coordinates: [-28, 5], key: 'amo_half', spread: 1.1 },
-    { id: 'satl', label: '남대서양', coordinates: [-18, -28], key: 'amo_half', spread: 1.15 },
-    { id: 'carib', label: '카리브·멕시코만', coordinates: [-82, 22], key: 'amo', spread: 0.8 },
-    { id: 'southocn', label: '남빙양 (호주 남)', coordinates: [120, -45], key: 'iod', spread: 1.2 },
-];
-
-/** Muted teal (cool) to muted rust (warm). Low chroma, low alpha, on purpose. */
-const sstColor = (anomaly) => {
-    const t = Math.max(-1.5, Math.min(1.5, anomaly)) / 1.5; // -1..1
-    // Raised from a near-invisible wash. "색이 뚜렷하지 않게" meant not vivid,
-    // not undetectable -- at the old values the field could not be read at all.
-    const cool = [64, 150, 190];
-    const warm = [206, 122, 74];
-    const u = (t + 1) / 2;
-    const mix = (a, b) => Math.round(a + (b - a) * u);
-    return [
-        mix(cool[0], warm[0]),
-        mix(cool[1], warm[1]),
-        mix(cool[2], warm[2]),
-        56 + Math.round(Math.abs(t) * 44), // 56-100: readable, still a wash
-    ];
-};
-
-const oceanSstPointsFromGlobal = (g) => {
-    const enso = g?.enso?.latest_c ?? -0.5;
-    const iod = g?.iod?.latest ?? 0;
-    const amo = g?.north_atlantic?.anomaly_c ?? 0.3;
-    return OCEAN_SST_BASINS.map((b) => {
-        let anomaly = 0;
-        if (b.key === 'enso') anomaly = enso;
-        else if (b.key === 'enso_inv') anomaly = -enso * 0.6;
-        else if (b.key === 'enso_half') anomaly = enso * 0.45;
-        else if (b.key === 'iod') anomaly = iod * 1.2;
-        else if (b.key === 'iod_inv') anomaly = -iod * 0.9;
-        else if (b.key === 'amo') anomaly = amo;
-        else if (b.key === 'amo_half') anomaly = amo * 0.6;
-        const base = (2.6e6 + Math.abs(anomaly) * 5e5) * (b.spread || 1);
-        // Stacked low-alpha discs instead of one flat circle. ScatterplotLayer
-        // has no radial falloff, and the layer types that do -- IconLayer with
-        // a gradient sprite, TextLayer -- render nothing under deck 9.3.7's
-        // _GlobeView (verified in the browser). Six overlapping discs on a
-        // shrinking radius approximate the falloff well enough that the basin
-        // reads as a temperature field rather than a shape on the water.
-        return [1, 0.88, 0.75, 0.62, 0.48, 0.33].map((scale, i) => ({
-            ...b,
-            id: `${b.id}-${i}`,
-            anomaly,
-            color: sstColor(anomaly).map((v, ci) => (ci === 3 ? Math.round(v * 0.42) : v)),
-            radius: base * scale,
-        }));
-    }).flat();
-};
-
 // Admin-1 boundaries (states, provinces, oblasts) for the country drill-down.
 //
-// A country outline alone gives nothing to locate a producing region against:
-// "Mato Grosso" or "Punjab" means little without the internal borders that make
-// the shape readable as a place.
-//
+// A country outline alone gives nothing to locate a producing region against.
 // Served per country from public/data/admin1/{ISO}.json, cut at build time by
-// scripts/build_admin1.py. Natural Earth's 50m file is small but covers only
-// nine countries -- Argentina, Ghana, Côte d'Ivoire and everything still in
-// training came back empty -- and the 10m file that covers all 253 is 39MB.
-// Splitting it means the browser fetches ~400KB for the one country on screen,
-// and any country with a manifest works without touching this file.
+// scripts/build_admin1.py -- the full 10m Natural Earth file is 39MB and the
+// 50m one covers only nine countries.
 const admin1Cache = new Map();
 
 const loadAdmin1 = (iso) => {
@@ -1192,34 +1113,103 @@ const admin1Layer = (iso, data) => new GeoJsonLayer({
     getLineColor: [125, 211, 252, 95],
 });
 
-/** SST wash layer, shared by the climate world and country maps. */
-const sstWashLayer = (sstPoints, id = 'climate-sst-wash') => new ScatterplotLayer({
-    id,
-    data: sstPoints,
-    pickable: true,
-    stroked: false,
-    filled: true,
-    opacity: 0.72,
-    radiusMinPixels: 22,
-    radiusMaxPixels: 130,
-    getPosition: (d) => d.coordinates,
-    getRadius: (d) => d.radius,
-    getFillColor: (d) => d.color,
-    onHover: (info) => {
-        if (!info.object) return;
-        tooltipEl.style.left = `${info.x + 12}px`;
-        tooltipEl.style.top = `${info.y + 12}px`;
-        tooltipEl.classList.remove('hidden');
-        const a = info.object.anomaly;
-        tooltipEl.innerHTML = `<div class="tooltip-title">${info.object.label}</div>
-            <div class="tooltip-stat"><span>해수면 수온 편차</span>
-            <span style="color:${a >= 0 ? '#e0a084' : '#7fb6cc'};font-weight:700;">
-            ${a >= 0 ? '+' : ''}${a.toFixed(2)}°C</span></div>
-            <div style="font-size:10px;color:#94a3b8;margin-top:4px;">
-            ONI·IOD·AMO 지수에서 파생한 해역 요약 · 격자 SST 제품 아님</div>`;
-    },
-});
+/**
+ * Sea-surface-temperature anomaly, measured rather than inferred.
+ *
+ * This was sixteen hand-placed basin circles whose values were derived from ONI,
+ * DMI and AMO. Deriving from three indices means the map can only ever show what
+ * those three describe: the North Atlantic "blue blob" is a cold patch inside a
+ * warm basin, so an AMO average paints over precisely the feature; and the
+ * Mediterranean, Black Sea and Gulf have no open-ocean index at all. Drawing them
+ * would have meant making numbers up.
+ *
+ * Now a real 1.5° grid from NOAA OISST v2.1, built by scripts/build_sst.py.
+ */
+const SST_URL = '/public/data/sst_anomaly_v1.json';
+let sstDoc = null;
+let sstPromise = null;
 
+const loadSst = () => {
+    if (sstPromise) return sstPromise;
+    sstPromise = fetch(SST_URL, { cache: 'force-cache' })
+        .then((r) => (r.ok ? r.json() : null))
+        .then((d) => { sstDoc = d; return d; })
+        .catch((err) => {
+            // The map is still readable without it; land and status fills are
+            // what the screen is actually for.
+            console.warn('[Climate] SST grid unavailable', err);
+            return null;
+        });
+    return sstPromise;
+};
+
+/**
+ * Muted teal (cool) to muted rust (warm), saturating at ±3°C.
+ *
+ * ±3 rather than the data's full ±12: the extremes are a handful of shallow
+ * coastal cells, and scaling to them would flatten every basin-scale signal
+ * into the middle of the ramp.
+ */
+const sstColor = (anomaly) => {
+    const t = Math.max(-3, Math.min(3, anomaly)) / 3;
+    const cool = [58, 132, 176];
+    const warm = [198, 108, 66];
+    const u = (t + 1) / 2;
+    const mix = (a, b) => Math.round(a + (b - a) * u);
+    return [
+        mix(cool[0], warm[0]),
+        mix(cool[1], warm[1]),
+        mix(cool[2], warm[2]),
+        // Kept low. Against a 1971-2000 baseline most of the ocean now reads
+        // warm, so a bold ramp turns the whole map orange and buries the land
+        // and trade-status fills the screen is actually for. This is a wash
+        // under the coastlines; the tooltip carries the number.
+        22 + Math.round(Math.abs(t) * 74),
+    ];
+};
+
+/** SST grid cells, shared by the climate world and country maps. */
+const sstWashLayer = (_unused, id = 'climate-sst') => {
+    const pts = sstDoc?.points || [];
+    const half = (sstDoc?.resolution_deg || 1.5) / 2;
+    return new GeoJsonLayer({
+        id,
+        // Squares rather than points: a grid cell covers an area, and drawing it
+        // as a dot leaves gaps that read as structure the data does not have.
+        data: {
+            type: 'FeatureCollection',
+            features: pts.map(([lon, lat, a]) => ({
+                type: 'Feature',
+                properties: { a },
+                geometry: {
+                    type: 'Polygon',
+                    coordinates: [[
+                        [lon - half, lat - half], [lon + half, lat - half],
+                        [lon + half, lat + half], [lon - half, lat + half],
+                        [lon - half, lat - half],
+                    ]],
+                },
+            })),
+        },
+        stroked: false,
+        filled: true,
+        pickable: true,
+        getFillColor: (f) => sstColor(f.properties.a),
+        onHover: (info) => {
+            if (!info.object) return;
+            const a = info.object.properties.a;
+            tooltipEl.style.left = `${info.x + 12}px`;
+            tooltipEl.style.top = `${info.y + 12}px`;
+            tooltipEl.classList.remove('hidden');
+            tooltipEl.innerHTML = `<div class="tooltip-title">해수면 수온 편차</div>
+                <div class="tooltip-stat"><span>편차</span>
+                <span style="color:${a >= 0 ? '#e0a084' : '#7fb6cc'};font-weight:700;">
+                ${a >= 0 ? '+' : ''}${a.toFixed(1)}°C</span></div>
+                <div style="font-size:10px;color:#94a3b8;margin-top:4px;">
+                NOAA OISST v2.1 · ${sstDoc?.as_of || ''} · ${sstDoc?.resolution_deg}° 격자</div>`;
+        },
+    });
+};
 
 // Resolve ISO / name from a GeoJSON feature (johan world.geo.json uses top-level id).
 const featureCountryKey = (feature) => {
@@ -1323,6 +1313,54 @@ document.getElementById('news-content')?.addEventListener('click', (e) => {
     const hit = arcs.find((a) => (resolveCountry(a.sourceName)?.label || a.sourceName) === label);
     if (hit) focusTradeCountry(hit.sourceName);
 });
+
+// Widget-stack swipe. Delegated on a durable root so it survives the panel
+// being rebuilt, and pointer-based so trackpad, mouse and touch all work.
+const wireWidgetStacks = (root) => {
+    if (!root || root.dataset.wsWired === '1') return;
+    root.dataset.wsWired = '1';
+
+    const goTo = (stack, i) => {
+        const track = stack.querySelector('.ws-track');
+        const dots = [...stack.querySelectorAll('.ws-dot')];
+        const n = dots.length || 1;
+        const idx = Math.max(0, Math.min(n - 1, i));
+        stack.dataset.index = String(idx);
+        track.style.transform = `translateX(${-idx * 100}%)`;
+        dots.forEach((d, k) => d.classList.toggle('is-on', k === idx));
+    };
+
+    root.addEventListener('click', (e) => {
+        const dot = e.target instanceof Element ? e.target.closest('[data-ws-go]') : null;
+        if (!dot) return;
+        e.preventDefault();
+        goTo(dot.closest('.widget-stack'), Number(dot.dataset.wsGo));
+    });
+
+    let drag = null;
+    root.addEventListener('pointerdown', (e) => {
+        const stack = e.target instanceof Element ? e.target.closest('.widget-stack') : null;
+        // Links and buttons inside a card keep their own behaviour.
+        if (!stack || e.target.closest('a,button')) return;
+        drag = { stack, x: e.clientX, idx: Number(stack.dataset.index || 0) };
+    });
+    root.addEventListener('pointerup', (e) => {
+        if (!drag) return;
+        const dx = e.clientX - drag.x;
+        // 40px, so a click that wobbles does not change card.
+        if (Math.abs(dx) > 40) goTo(drag.stack, drag.idx + (dx < 0 ? 1 : -1));
+        drag = null;
+    });
+    root.addEventListener('pointercancel', () => { drag = null; });
+
+    root.addEventListener('keydown', (e) => {
+        const stack = e.target instanceof Element ? e.target.closest('.widget-stack') : null;
+        if (!stack || (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight')) return;
+        e.preventDefault();
+        goTo(stack, Number(stack.dataset.index || 0) + (e.key === 'ArrowRight' ? 1 : -1));
+    });
+};
+wireWidgetStacks(forecastContentEl);
 
 // One-time delegation on durable panel roots (survives innerHTML rebuilds).
 const wireClimateDomClicks = (root) => {
@@ -1751,6 +1789,75 @@ const loadUsdaGain = async () => {
 const fasSearchUrl = (keyword) => {
     const q = encodeURIComponent(String(keyword || '').trim());
     return `https://www.fas.usda.gov/data/search?keyword=${q}`;
+};
+
+/**
+ * The country's own statistics office, beside USDA's view of it.
+ *
+ * USDA GAIN is a foreign attaché's read. Every country here also publishes its
+ * own crop statistics -- CONAB, MAGyP, ABARES, BPS, Rosstat -- and that is what
+ * the models are actually trained against, so the two belong side by side
+ * rather than one standing in for the other.
+ *
+ * Where they disagree is the interesting part, which is a reason to show both
+ * and not to merge them.
+ */
+const monthsSince = (iso) => {
+    const d = new Date(iso);
+    if (Number.isNaN(d.getTime())) return null;
+    const now = new Date();
+    return (now.getFullYear() - d.getFullYear()) * 12 + (now.getMonth() - d.getMonth());
+};
+
+const renderNationalSourceCard = (cfg) => {
+    const src = cfg?.sources || {};
+    const lab = src.labels || {};
+    const clim = src.climate || {};
+    if (!lab.name && !clim.name) return '';
+
+    const age = lab.updated ? monthsSince(lab.updated) : null;
+    // Agricultural statistics normally run a season or two behind; past three
+    // years the series is not "recent official data" in any useful sense.
+    const tone = age == null ? '' : (age > 36 ? 'red' : age > 24 ? 'yellow' : 'green');
+    const ageKo = age == null ? '갱신일 미상'
+        : (age < 1 ? '이번 달' : age < 24 ? `${age}개월 전` : `${Math.floor(age / 12)}년 ${age % 12}개월 전`);
+
+    return `<div class="climate-card">
+        <h3>자국 공식 통계 <span class="src-tag">모델 학습 라벨</span></h3>
+        <div class="climate-metric-row">
+            <span class="nm">${lab.name || '—'}</span>
+            ${tone ? `<span class="climate-status-pill ${tone}">${ageKo}</span>` : ''}
+        </div>
+        ${lab.updated ? `<div class="climate-sub">수록 최신 시점 ${lab.updated}</div>` : ''}
+        ${lab.url ? `<div style="margin-top:6px;"><a class="climate-gain-link" href="${lab.url}"
+             target="_blank" rel="noopener">원본 열기 ↗</a></div>` : ''}
+        ${clim.name ? `<div class="climate-metric-row" style="margin-top:10px;">
+            <span class="nm">기상 입력</span>
+            <span class="vl" style="font-size:11px;">${clim.name}</span>
+        </div>` : ''}
+        <div class="climate-sub" style="margin-top:8px;">
+            USDA/GAIN 은 외부 기관의 관측이고, 이 통계는 해당국이 직접 집계해 공표한 값입니다.
+            모델의 정답지는 이쪽이며, 두 수치가 갈리는 지점이 곧 살펴볼 지점입니다.
+        </div>
+    </div>`;
+};
+
+/**
+ * iPhone-style widget stack: several source cards in one slot, swiped between.
+ *
+ * Vertical space in this column is the constraint -- stacking every source
+ * pushes the crop calendar below the fold. Sharing one slot keeps them at equal
+ * weight instead of ranking them by scroll position.
+ */
+const renderSourceStack = (cards) => {
+    const present = cards.filter(Boolean);
+    if (present.length <= 1) return present[0] || '';
+    return `<div class="widget-stack" data-count="${present.length}">
+        <div class="ws-track">${present.map((c) => `<div class="ws-slide">${c}</div>`).join('')}</div>
+        <div class="ws-dots">${present.map((_, i) =>
+            `<button type="button" class="ws-dot${i === 0 ? ' is-on' : ''}" data-ws-go="${i}"
+                     aria-label="${i + 1}번째 출처"></button>`).join('')}</div>
+    </div>`;
 };
 
 const renderUsdaGainCard = async (countryName) => {
@@ -2749,7 +2856,8 @@ const setClimateMapLegend = (mode) => {
             <div class="mini-leg-row"><span class="swatch" style="background:#f87171"></span>금지2+</div>
             <div class="mini-leg-head" style="margin-top:9px;">해수면 수온 편차</div>
             <div class="mini-leg-row"><span class="swatch sst-cool"></span>낮음 (−)</div>
-            <div class="mini-leg-row"><span class="swatch sst-warm"></span>높음 (+)</div>`;
+            <div class="mini-leg-row"><span class="swatch sst-warm"></span>높음 (+)</div>
+            <div class="mini-leg-note">1971–2000 평년 대비</div>`;
     } else if (mode === 'reference') {
         climateMapLegendEl.classList.remove('hidden');
         climateMapLegendEl.classList.add('world-mini');
@@ -2765,7 +2873,8 @@ const setClimateMapLegend = (mode) => {
             <div class="mini-leg-row"><span class="swatch" style="background:#4ade80"></span>양호</div>
             <div class="mini-leg-head" style="margin-top:9px;">해수면 수온 편차</div>
             <div class="mini-leg-row"><span class="swatch sst-cool"></span>낮음 (−)</div>
-            <div class="mini-leg-row"><span class="swatch sst-warm"></span>높음 (+)</div>`;
+            <div class="mini-leg-row"><span class="swatch sst-warm"></span>높음 (+)</div>
+            <div class="mini-leg-note">1971–2000 평년 대비</div>`;
     } else {
         climateMapLegendEl.classList.add('hidden');
         climateMapLegendEl.innerHTML = '';
@@ -2797,7 +2906,7 @@ const renderClimateWorldLeft = async () => {
     forecastContentEl.innerHTML = `
         <div class="climate-scroll">
             <div class="climate-card">
-                <h3>ENSO · Niño 3.4 (NOAA CPC seed)</h3>
+                <h3>ENSO · Niño 3.4 <span class="src-tag">${enso.source || 'NOAA CPC'}</span></h3>
                 <div class="climate-big ${enso.latest_c < 0 ? 'neg' : 'pos'}">
                     ${enso.latest_c != null ? (enso.latest_c > 0 ? '+' : '') + enso.latest_c.toFixed(1) + '°C' : '—'}
                 </div>
@@ -2806,7 +2915,7 @@ const renderClimateWorldLeft = async () => {
                 ${renderEnsoBars(enso.series)}
             </div>
             <div class="climate-card">
-                <h3>IOD · 인도양 쌍극자</h3>
+                <h3>IOD · 인도양 쌍극자 <span class="src-tag">${iod.source || 'NOAA PSL'}</span></h3>
                 <div style="display:flex;justify-content:space-between;align-items:baseline;">
                     <div class="climate-big ${ (iod.latest||0) >= 0 ? 'pos' : 'neg'}" style="font-size:22px;">
                         ${iod.latest != null ? ((iod.latest >= 0 ? '+' : '') + iod.latest.toFixed(2)) : '—'}
@@ -2896,8 +3005,8 @@ const showClimateWorld = async () => {
     panelHide(countryStatsPanelEl);
     panelShow(forecastPanelEl);
 
-    const g = await loadClimateGlobal();
-    const sstPoints = oceanSstPointsFromGlobal(g);
+    await loadClimateGlobal();
+    await loadSst();
 
     const labels = Object.entries(CLIMATE_COUNTRIES).map(([name, cfg]) => {
         const coords = cfg.regions[0]?.coordinates;
@@ -2942,7 +3051,7 @@ const showClimateWorld = async () => {
             // the trade-status fills paint over the countries.
             ...worldBaseLayers({
                 id: 'climate-world',
-                water: [sstWashLayer(sstPoints, 'climate-sst-wash')],
+                water: [sstWashLayer(null, 'climate-sst-wash')],
             }),
             new GeoJsonLayer({
                 id: 'climate-countries',
@@ -3102,8 +3211,8 @@ const showClimateCountry = async (countryName) => {
     mapContainer.style.pointerEvents = 'auto';
     ensureClimateMapPointerFallback();
 
-    const gWx = await loadClimateGlobal();
-    const countrySst = oceanSstPointsFromGlobal(gWx);
+    await loadClimateGlobal();
+    await loadSst();
     const admin1 = await loadAdmin1(cfg.iso);
     // Req 4: the country drill is a workspace, not just a zoom. The map keeps
     // the same globe but frames the target with a HUD, dims every other
@@ -3160,7 +3269,7 @@ const showClimateCountry = async (countryName) => {
                 id: 'climate-country',
                 landColor: [24, 30, 40, 255],
                 lineColor: [96, 112, 136, 55],
-                water: [sstWashLayer(countrySst, 'climate-country-sst-wash')],
+                water: [sstWashLayer(null, 'climate-country-sst-wash')],
             }),
             new GeoJsonLayer({
                 id: 'climate-countries',
@@ -3281,7 +3390,10 @@ const renderCountryPanel = async (cfg, points = null, meta = {}) => {
 
     // Left: trade + GAIN + crop-type merge + calendar (not commodity trade stats)
     forecastCountryTitle.textContent = cfg.modelName || cfg.label;
-    const gainHtml = await renderUsdaGainCard(climateCountry || cfg.label);
+    const gainHtml = renderSourceStack([
+        await renderUsdaGainCard(climateCountry || cfg.label),
+        renderNationalSourceCard(cfg),
+    ]);
 
     const mergeHtml = merged.length
         ? merged.map((m) => {

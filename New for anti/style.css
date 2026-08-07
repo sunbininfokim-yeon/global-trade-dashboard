@@ -1882,3 +1882,46 @@ body.trade-map-mode .left-pane {
 }
 .trade-bar-row.is-inbound .tr-dir { color: #cbd5e1; background: rgba(148, 163, 184, 0.14); }
 .trade-bar-row.is-inbound .tr-bar i { background: linear-gradient(90deg, rgba(148,163,184,.5), #94a3b8); }
+
+/* 순위 행: 이름에 폭을 주기 위해 방향을 점으로 축소 (국가명이 Sa... 로 잘렸다) */
+.trade-bar-row { grid-template-columns: 15px 8px minmax(0, 1fr) 46px 44px; gap: 7px; }
+.trade-bar-row .tr-dir {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: #38bdf8; padding: 0;
+}
+.trade-bar-row.is-inbound .tr-dir { background: #94a3b8; }
+.trade-bar-row .tr-name {
+    min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+/* 물동량 숫자는 막대와 %가 이미 말해준다. 정확한 값은 행 툴팁에. */
+.trade-bar-row .tr-vol { display: none; }
+
+/* 데이터 출처 태그 (seed 인지 live 인지 화면에서 구분) */
+.climate-card h3 .src-tag {
+    font-size: 9.5px; font-weight: 400; letter-spacing: .04em;
+    color: rgba(148, 163, 184, .8); margin-left: 4px;
+}
+
+/* === 출처 위젯 스택 — 한 자리에 여러 출처, 옆으로 넘겨서 전환 === */
+.widget-stack { position: relative; overflow: hidden; }
+.widget-stack .ws-track {
+    display: flex;
+    transition: transform 0.28s cubic-bezier(0.22, 0.61, 0.36, 1);
+    touch-action: pan-y;                 /* 세로 스크롤은 페이지에 양보 */
+}
+.widget-stack .ws-slide { flex: 0 0 100%; min-width: 0; }
+.widget-stack .ws-slide > .climate-card { margin: 0; }
+.widget-stack .ws-dots {
+    display: flex; justify-content: center; gap: 6px; margin-top: 7px;
+}
+.widget-stack .ws-dot {
+    width: 6px; height: 6px; padding: 0; border: 0; border-radius: 50%;
+    background: rgba(148, 163, 184, 0.32); cursor: pointer;
+    transition: background 0.15s ease, transform 0.15s ease;
+}
+.widget-stack .ws-dot.is-on { background: #7dd3fc; transform: scale(1.25); }
+.widget-stack .ws-dot:focus-visible { outline: 1px solid rgba(56, 189, 248, 0.6); outline-offset: 2px; }
+.climate-map-legend .mini-leg-note {
+    font-size: 9px; color: rgba(148, 163, 184, .6); margin-top: 2px;
+    text-shadow: 0 1px 2px rgba(0,0,0,.6);
+}
