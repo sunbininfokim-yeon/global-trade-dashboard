@@ -14,7 +14,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
     <!-- Custom Styles -->
-    <link rel="stylesheet" href="style.css?v=33">
+    <link rel="stylesheet" href="style.css?v=34">
 </head>
 <body>
     <div id="app">
@@ -32,18 +32,34 @@
                     </div>
                 </div>
                 <div class="menu-item">
-                    <span>귀금속</span>
-                    <div class="dropdown">
+                    <span>금속·광물</span>
+                    <!-- 귀금속과 비철금속을 하나로 합치고 소제목으로 나눔.
+                         배터리·전략광물이 늘면서 둘로 나눈 구분이 애매해졌고,
+                         수출 통제가 걸리는 품목이 여러 그룹에 흩어져 있다. -->
+                    <div class="dropdown dropdown-grouped">
+                        <span class="dd-head">귀금속</span>
                         <a href="#" data-target="gold">금 (Gold)</a>
                         <a href="#" data-target="silver">은 (Silver)</a>
-                    </div>
-                </div>
-                <div class="menu-item">
-                    <span>비철금속</span>
-                    <div class="dropdown">
+                        <a href="#" data-target="platinum">백금족 (Pt·Pd)</a>
+
+                        <span class="dd-head">산업금속</span>
                         <a href="#" data-target="copper">구리</a>
-                        <a href="#" data-target="zinc">아연</a>
                         <a href="#" data-target="aluminum">알루미늄</a>
+                        <a href="#" data-target="zinc">아연</a>
+                        <a href="#" data-target="tin">주석</a>
+                        <a href="#" data-target="lead">납</a>
+
+                        <span class="dd-head">배터리·전략광물</span>
+                        <a href="#" data-target="nickel">니켈</a>
+                        <a href="#" data-target="cobalt">코발트</a>
+                        <a href="#" data-target="lithium">리튬</a>
+                        <a href="#" data-target="graphite">흑연</a>
+                        <a href="#" data-target="rare_earths">희토류</a>
+
+                        <span class="dd-head">철강 원료</span>
+                        <a href="#" data-target="iron_ore">철광석</a>
+                        <a href="#" data-target="manganese">망간</a>
+                        <a href="#" data-target="chromium">크롬</a>
                     </div>
                 </div>
                 <div class="menu-item">
@@ -313,7 +329,7 @@
     </div>
 
     <!-- Data and App Logic -->
-    <script src="data.js?v=3"></script>
+    <script src="data.js?v=4"></script>
     <script src="shipping.js?v=10"></script>
     <script src="app.js?v=65"></script>
 </body>

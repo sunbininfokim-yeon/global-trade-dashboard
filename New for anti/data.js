@@ -345,7 +345,29 @@
         coffee: {
             hsCode: "0901",
             colorScheme: { source: [34, 197, 94], target: [74, 222, 128] }
-        }
+        },
+
+        // Battery and strategic minerals. These are the commodities the export
+        // control layer actually has entries for -- Indonesia's nickel ore ban,
+        // China's graphite and rare-earth licensing, the DRC on cobalt -- so
+        // without them the control data had nowhere to show.
+        nickel: { hsCode: "7502", colorScheme: { source: [148, 163, 184], target: [203, 213, 225] } },
+        cobalt: { hsCode: "8105", colorScheme: { source: [96, 165, 250], target: [147, 197, 253] } },
+        lithium: { hsCode: "283691", colorScheme: { source: [167, 139, 250], target: [196, 181, 253] } },
+        graphite: { hsCode: "2504", colorScheme: { source: [100, 116, 139], target: [148, 163, 184] } },
+        rare_earths: { hsCode: "280530", colorScheme: { source: [217, 70, 239], target: [232, 121, 249] } },
+
+        // Steel chain. Iron ore and manganese are the two largest dry-bulk
+        // flows after coal, which the shipping screens already model.
+        iron_ore: { hsCode: "2601", colorScheme: { source: [180, 83, 9], target: [217, 119, 6] } },
+        manganese: { hsCode: "2602", colorScheme: { source: [161, 98, 7], target: [202, 138, 4] } },
+        chromium: { hsCode: "2610", colorScheme: { source: [120, 113, 108], target: [168, 162, 158] } },
+
+        // Remaining industrial metals, and the platinum group as a precious
+        // metal distinct from gold and silver.
+        tin: { hsCode: "8001", colorScheme: { source: [113, 113, 122], target: [161, 161, 170] } },
+        lead: { hsCode: "7801", colorScheme: { source: [82, 82, 91], target: [113, 113, 122] } },
+        platinum: { hsCode: "7110", colorScheme: { source: [226, 232, 240], target: [241, 245, 249] } }
     };
 
     // === Fetch Real Trade Data from UN Comtrade via CORS Proxy ===
@@ -724,6 +746,94 @@
             topExporter: "중국 (가공품)",
             arcs: [],  // Lazy loaded from UN Comtrade API (HS 7601)
             news: defaultNews("Aluminum")
+        },
+        nickel: {
+            title: "글로벌 전략광물: 니켈",
+            desc: "스테인리스·배터리용 니켈 무역 흐름",
+            totalVolume: "3.6 Million Tonnes",
+            topExporter: "인도네시아",
+            arcs: [],  // Lazy loaded from UN Comtrade API
+            news: defaultNews("nickel")
+        },
+        cobalt: {
+            title: "글로벌 전략광물: 코발트",
+            desc: "배터리 양극재용 코발트 무역 흐름",
+            totalVolume: "0.23 Million Tonnes",
+            topExporter: "콩고민주공화국",
+            arcs: [],  // Lazy loaded from UN Comtrade API
+            news: defaultNews("cobalt")
+        },
+        lithium: {
+            title: "글로벌 전략광물: 리튬",
+            desc: "탄산리튬 기준 무역 흐름",
+            totalVolume: "1.0 Million Tonnes LCE",
+            topExporter: "칠레 / 호주",
+            arcs: [],  // Lazy loaded from UN Comtrade API
+            news: defaultNews("lithium")
+        },
+        graphite: {
+            title: "글로벌 전략광물: 흑연",
+            desc: "음극재용 천연흑연 무역 흐름",
+            totalVolume: "1.6 Million Tonnes",
+            topExporter: "중국",
+            arcs: [],  // Lazy loaded from UN Comtrade API
+            news: defaultNews("graphite")
+        },
+        rare_earths: {
+            title: "글로벌 전략광물: 희토류",
+            desc: "희토류 화합물 무역 흐름",
+            totalVolume: "0.35 Million Tonnes",
+            topExporter: "중국",
+            arcs: [],  // Lazy loaded from UN Comtrade API
+            news: defaultNews("rare_earths")
+        },
+        iron_ore: {
+            title: "글로벌 철강원료: 철광석",
+            desc: "제철용 철광석 무역 흐름",
+            totalVolume: "1,600 Million Tonnes",
+            topExporter: "호주",
+            arcs: [],  // Lazy loaded from UN Comtrade API
+            news: defaultNews("iron_ore")
+        },
+        manganese: {
+            title: "글로벌 철강원료: 망간",
+            desc: "합금철용 망간광 무역 흐름",
+            totalVolume: "20 Million Tonnes",
+            topExporter: "남아프리카공화국",
+            arcs: [],  // Lazy loaded from UN Comtrade API
+            news: defaultNews("manganese")
+        },
+        chromium: {
+            title: "글로벌 철강원료: 크롬",
+            desc: "스테인리스용 크롬광 무역 흐름",
+            totalVolume: "41 Million Tonnes",
+            topExporter: "남아프리카공화국",
+            arcs: [],  // Lazy loaded from UN Comtrade API
+            news: defaultNews("chromium")
+        },
+        tin: {
+            title: "글로벌 산업금속: 주석",
+            desc: "납땜·도금용 주석 무역 흐름",
+            totalVolume: "0.38 Million Tonnes",
+            topExporter: "인도네시아",
+            arcs: [],  // Lazy loaded from UN Comtrade API
+            news: defaultNews("tin")
+        },
+        lead: {
+            title: "글로벌 산업금속: 납",
+            desc: "축전지용 납 무역 흐름",
+            totalVolume: "4.5 Million Tonnes",
+            topExporter: "중국",
+            arcs: [],  // Lazy loaded from UN Comtrade API
+            news: defaultNews("lead")
+        },
+        platinum: {
+            title: "글로벌 귀금속: 백금족",
+            desc: "백금·팔라듐 무역 흐름",
+            totalVolume: "0.4 Thousand Tonnes",
+            topExporter: "남아프리카공화국",
+            arcs: [],  // Lazy loaded from UN Comtrade API
+            news: defaultNews("platinum")
         },
         wheat: {
             title: "글로벌 농산물: 밀 (Wheat)",
