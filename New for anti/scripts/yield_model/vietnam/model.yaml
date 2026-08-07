@@ -1,0 +1,41 @@
+# vietnam — 국가 모델 매니페스트 (scaffold_manifest.py 생성)
+# 규격: ../MODEL_MANIFEST.md
+#
+# TODO 로 표시된 항목은 사람이 채워야 합니다. 추정으로 채우면 화면에
+# 그럴듯한 오류가 남으므로 비워 둡니다.
+
+country: vietnam
+iso: VNM
+label_ko: 베트남
+label_en: Vietnam
+panel_mode: forecast
+data_file: vietnam_yield_forecast.json
+model_status: training
+status_note_ko: "추세를 이긴 산지가 없다 (실패 2 · 스킵 0). 학습 진행 중."
+
+view:                # 국가 클릭 시 카메라
+  longitude: 106.0
+  latitude: 12.5
+  zoom: 4.6
+
+regions:
+  - key: mekong_rice_ws
+    label_ko: "메콩 델타 (동춘작 벼)"
+    ui_name: mekong_rice_ws
+    coordinates: [105.76, 9.91]
+    crops_region_keys: [mekong_rice_ws]
+
+sources:
+  labels:
+    name: "GSO Vietnam 농업통계"
+    url: https://www.gso.gov.vn/en/agriculture-forestry-and-fishery/
+    updated: "2024-12-31"
+  climate:
+    name: NASA POWER (daily)
+    url: https://power.larc.nasa.gov/
+    updated: "2026-08-07"
+
+trade_policy:
+  restricted: false
+  prohibited_crops: []
+  note_ko: "쌀 수출 정상 (seed)"

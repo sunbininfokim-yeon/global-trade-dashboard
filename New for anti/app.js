@@ -1078,6 +1078,41 @@ const featureIsCountry = (feature, name) => {
 window.ResolveCountry = resolveCountry;
 window.CountryCoords = countryCoords;
 
+// Admin-1 boundaries (states, provinces, oblasts) for the country drill-down.
+//
+// A country outline alone gives nothing to locate a producing region against.
+// Served per country from public/data/admin1/{ISO}.json, cut at build time by
+// scripts/build_admin1.py -- the full 10m Natural Earth file is 39MB and the
+// 50m one covers only nine countries.
+const admin1Cache = new Map();
+
+const loadAdmin1 = (iso) => {
+    const key = String(iso || '').toUpperCase();
+    if (!key) return Promise.resolve(null);
+    if (admin1Cache.has(key)) return admin1Cache.get(key);
+    const req = fetch(`/public/data/admin1/${key}.json`, { cache: 'force-cache' })
+        .then((r) => (r.ok ? r.json() : null))
+        .catch((err) => {
+            // The country still renders with its outline; internal borders are
+            // an aid, not a dependency.
+            console.warn(`[Climate] admin-1 unavailable for ${key}`, err);
+            return null;
+        });
+    admin1Cache.set(key, req);
+    return req;
+};
+
+/** Internal borders for one country. */
+const admin1Layer = (iso, data) => new GeoJsonLayer({
+    id: 'climate-admin1',
+    data: data || { type: 'FeatureCollection', features: [] },
+    stroked: true,
+    filled: false,
+    pickable: false,
+    lineWidthMinPixels: 0.7,
+    getLineColor: [125, 211, 252, 95],
+});
+
 /**
  * Sea-surface-temperature anomaly, measured rather than inferred.
  *
