@@ -15,7 +15,7 @@ cd "/Users/yeoninair/Documents/New for anti"   # 또는 clone 경로
 ./tools/ops/status.sh
 ```
 
-읽고 따를 것: `docs/ops/README.md`, `OWNERS.md`, `TASKS.md`, `HANDOFF.md`.
+읽고 따를 것: `docs/ops/README.md`, `OWNERS.md`, `TASKS.md`, `docs/ops/handoff/`.
 
 ## 소유
 
@@ -25,6 +25,10 @@ cd "/Users/yeoninair/Documents/New for anti"   # 또는 clone 경로
 - **금지:** `cache/`·시크릿 커밋, `main` 직접 push, force-push
 
 ## 편집 충돌 — 작업 전 확인
+
+**전용 워크트리에서 작업한다.** 다른 세션과 같은 체크아웃을 쓰면, 그쪽 커밋에
+내 미커밋 수정이 딸려 들어간다 (2026-08-07 에 세 번 발생). 그리고 **인수인계는
+`docs/ops/handoff/<날짜>-<에이전트>.md` 자기 파일에만** 쓴다.
 
 Cursor가 UI 파일을 열어 둔 채로 저장하면 오래된 버퍼가 진행 중인 수정을 덮어쓴다
 (2026-08-05 실제 발생: `app.js` 전체 롤백). UI 작업 시작 전에:

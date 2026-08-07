@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
-# 인수인계 블록을 HANDOFF.md 상단에 삽입
+# 인수인계 블록을 그 에이전트 자신의 파일에 덧붙인다.
 # 사용: ./tools/ops/handoff.sh <agent> "요약 한 줄 이상"
+#
+# 예전에는 공유 HANDOFF.md 하나의 맨 위에 끼워 넣었다. 2026-08-07 에 두 세션이
+# 같은 파일을 편집하다 한쪽 내용이 통째로 사라졌다 -- 그래서 파일을 나눈다.
+# 자세한 규칙은 docs/ops/handoff/README.md.
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
@@ -14,13 +18,13 @@ if [[ -z "$AGENT" || -z "$SUMMARY" ]]; then
   exit 1
 fi
 
-FILE="docs/ops/HANDOFF.md"
-mkdir -p docs/ops
+DATE="$(date +%Y-%m-%d)"
+FILE="docs/ops/handoff/${DATE}-${AGENT}.md"
+mkdir -p docs/ops/handoff
 if [[ ! -f "$FILE" ]]; then
-  printf '# HANDOFF\n\n' > "$FILE"
+  printf '# 인수인계 %s — %s\n' "$DATE" "$AGENT" > "$FILE"
 fi
 
-DATE="$(date +%Y-%m-%d)"
 BRANCH="$(git branch --show-current 2>/dev/null || echo '?')"
 HEAD="$(git rev-parse --short HEAD 2>/dev/null || echo '?')"
 
@@ -62,24 +66,11 @@ git push -u origin ${BRANCH}
 EOF
 )
 
-TMP="$(mktemp)"
-# insert after first line if title-only, else after first heading block intro
-{
-  if head -n 1 "$FILE" | grep -q '^#'; then
-    head -n 1 "$FILE"
-    echo
-    printf '%s' "$BLOCK"
-    # skip original first line
-    tail -n +2 "$FILE"
-  else
-    printf '%s' "$BLOCK"
-    cat "$FILE"
-  fi
-} > "$TMP"
-mv "$TMP" "$FILE"
+# 덧붙이기. 남의 줄을 건드리지 않으므로 병합 충돌이 생길 여지가 없다.
+printf '\n%s' "$BLOCK" >> "$FILE"
 
 echo "Updated $FILE"
-echo "Also update docs/ops/TASKS.md status → review/done."
+echo "Also update docs/ops/TASKS.md status → review/done (자기 owner 행만)."
 echo "Commit when ready:"
-echo "  git add docs/ops/HANDOFF.md docs/ops/TASKS.md"
+echo "  git add $FILE docs/ops/TASKS.md"
 echo "  git commit -m \"handoff(${AGENT}): …\""
