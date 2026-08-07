@@ -368,8 +368,8 @@ const COMTRADE_TTL = {
     "2504": 604800,  // Graphite
     "280530": 604800,// Rare earths
     "2601": 604800,  // Iron ore
-    "2602": 604800,  // Manganese
-    "2610": 604800,  // Chromium
+    "2602,720211,720219": 604800, // Manganese: ore + ferromanganese
+    "2610,720241,720249": 604800, // Chromium: ore + ferrochromium
     "8001": 604800,  // Tin
     "7801": 604800,  // Lead
     "7110": 604800   // Platinum group

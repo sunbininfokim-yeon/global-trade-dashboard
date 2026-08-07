@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Compare locales/ko.json and locales/en.json key sets (1:1).
+"""Compare New for anti/public/locales/ko.json and New for anti/public/locales/en.json key sets (1:1).
 
 Ignores meta keys starting with "__".
 Exit 0 on match; exit 1 with missing/extra keys listed.
@@ -11,8 +11,8 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-KO = ROOT / "locales" / "ko.json"
-EN = ROOT / "locales" / "en.json"
+KO = ROOT / "New for anti" / "public" / "locales" / "ko.json"
+EN = ROOT / "New for anti" / "public" / "locales" / "en.json"
 
 
 def flatten(obj, prefix=""):
