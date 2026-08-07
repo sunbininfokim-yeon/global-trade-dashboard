@@ -46,7 +46,7 @@ export default {
         }
 
         // Default: Serve Static Assets
-        return env.ASSETS.fetch(request);
+        return serveAsset(request, env);
     },
 
     // Cron-driven cache warm-up (see "triggers" in wrangler.jsonc).
@@ -375,6 +375,35 @@ async function fetchEsrCountries(env) {
  * The commodity list FAS itself publishes, so callers can map a name to a code
  * instead of guessing. Cached for a week -- this list changes about never.
  */
+/**
+ * Static assets, with HTML held out of every cache.
+ *
+ * A deployed update was not reaching visitors: the site was serving
+ * `cache-control: public, max-age=0, must-revalidate` for index.html and
+ * Cloudflare was still answering `cf-cache-status: HIT`. Reloading the page --
+ * or opening a shared portfolio link a second time -- returned the previous
+ * build, whose <script src="app.js?v=..."> pointed at the previous bundle. The
+ * versioned query strings only bust caches if the HTML naming them is fresh.
+ *
+ * So HTML is `no-store`: it is small, it changes on every deploy, and it is the
+ * one file that decides which version of everything else the browser loads.
+ * Fingerprinted assets keep their long cache, which is where caching earns its
+ * keep anyway.
+ */
+async function serveAsset(request, env) {
+    const res = await env.ASSETS.fetch(request);
+    const type = res.headers.get('content-type') || '';
+    if (!type.includes('text/html')) return res;
+
+    const headers = new Headers(res.headers);
+    headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0');
+    headers.set('CDN-Cache-Control', 'no-store');
+    headers.set('Pragma', 'no-cache');
+    // Lets anyone confirm which build they are looking at without guessing.
+    headers.set('X-Deployed-At', new Date().toISOString());
+    return new Response(res.body, { status: res.status, statusText: res.statusText, headers });
+}
+
 async function handleUsdaEsrCommodities(request, env) {
     if (!env.USDA_FAS_API_KEY) return missingKey('USDA_FAS_API_KEY');
     const body = await kvCachedJson(env, 'usda-esr:commodities', 604800, async () => {

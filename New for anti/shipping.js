@@ -167,6 +167,50 @@
         });
     };
 
+    /**
+     * Wire the KPI cards on any shipping page.
+     *
+     * This lived inside renderRoutes, so only the route page's cards responded.
+     * On the fleet landing page -- the first shipping screen anyone sees -- all
+     * four boxes were inert: no handler, no pointer cursor, no indication they
+     * were meant to do anything.
+     *
+     * `targets` maps a card's key to the section it explains.
+     */
+    const bindKpiCards = (root, targets) => {
+        root.querySelectorAll('[data-shipping-kpi]').forEach((card) => {
+            const run = () => {
+                root.querySelectorAll('.shipping-kpi.is-active')
+                    .forEach((n) => n.classList.remove('is-active'));
+                card.classList.add('is-active');
+                const t = targets[card.dataset.shippingKpi];
+                if (!t) return;
+                const el = root.querySelector(t.section);
+                if (el) {
+                    // scrollIntoView walks up to the nearest scrollable ancestor
+                    // and, with this absolutely-positioned surface, resolved to
+                    // the document instead of the panel -- so nothing moved.
+                    // Offsetting the container directly is unambiguous.
+                    const top = el.getBoundingClientRect().top
+                        - root.getBoundingClientRect().top
+                        + root.scrollTop - 12;
+                    root.scrollTo({ top: Math.max(0, top), behavior: 'smooth' });
+                }
+                if (t.flash) {
+                    const row = root.querySelector(t.flash);
+                    if (row) {
+                        row.style.background = 'rgba(56,189,248,0.12)';
+                        setTimeout(() => { row.style.background = ''; }, 1400);
+                    }
+                }
+            };
+            card.addEventListener('click', run);
+            card.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); run(); }
+            });
+        });
+    };
+
     const renderFleet = (data, root) => {
         const rows = [...data.fleet.fleet_by_type].sort((a, b) => b.dwt - a.dwt);
         const topTwoShare = rows
@@ -174,28 +218,32 @@
             .reduce((sum, row) => sum + row.share_pct, 0);
         const content = `
             <section class="shipping-kpi-grid">
-                <article class="shipping-kpi featured">
+                <article class="shipping-kpi featured is-clickable" data-shipping-kpi="fleet-total"
+                         role="button" tabindex="0" title="선종별 상세표로 이동">
                     <span class="shipping-kpi-label">세계 총 선복량</span>
                     <strong>${formatDwt(data.fleet.world_total_dwt)}</strong>
                     <small>약 ${(data.fleet.world_total_dwt / 1e8).toFixed(1)}억 DWT</small>
                 </article>
-                <article class="shipping-kpi">
+                <article class="shipping-kpi is-clickable" data-shipping-kpi="fleet-bulk"
+                         role="button" tabindex="0" title="차트에서 벌크선 강조">
                     <span class="shipping-kpi-label">벌크선</span>
                     <strong>${formatDwt(rows.find(row => row.ship_type === 'dry_bulk')?.dwt)}</strong>
                     <small>세계 선대 42.5%</small>
                 </article>
-                <article class="shipping-kpi">
+                <article class="shipping-kpi is-clickable" data-shipping-kpi="fleet-tanker"
+                         role="button" tabindex="0" title="차트에서 유조선 강조">
                     <span class="shipping-kpi-label">유조선</span>
                     <strong>${formatDwt(rows.find(row => row.ship_type === 'tanker')?.dwt)}</strong>
                     <small>세계 선대 27.5%</small>
                 </article>
-                <article class="shipping-kpi">
+                <article class="shipping-kpi is-clickable" data-shipping-kpi="fleet-mix"
+                         role="button" tabindex="0" title="선복량 차트로 이동">
                     <span class="shipping-kpi-label">벌크선 + 유조선</span>
                     <strong>${formatPct(topTwoShare, 0)}</strong>
                     <small>세계 DWT의 핵심 구성</small>
                 </article>
             </section>
-            <section class="shipping-grid two-columns">
+            <section class="shipping-grid two-columns" id="shipping-section-fleet-chart">
                 <article class="shipping-panel shipping-chart-panel">
                     <div class="shipping-panel-heading">
                         <div><p class="shipping-panel-kicker">FLEET MIX</p><h2>선종별 세계 선복량</h2></div>
@@ -216,7 +264,7 @@
                     <p class="shipping-note">${escapeHtml(data.fleet.rounding_note)}</p>
                 </article>
             </section>
-            <section class="shipping-panel">
+            <section class="shipping-panel" id="shipping-section-fleet-table">
                 <div class="shipping-panel-heading">
                     <div><p class="shipping-panel-kicker">WORLD FLEET TABLE</p><h2>선종별 상세</h2></div>
                 </div>
@@ -224,7 +272,7 @@
                     <table class="shipping-table">
                         <thead><tr><th>선종</th><th>선복량</th><th>세계 비중</th><th>데이터 성격</th></tr></thead>
                         <tbody>${rows.map(row => `
-                            <tr>
+                            <tr data-ship-type="${escapeHtml(row.ship_type)}">
                                 <td><span class="shipping-color-dot" style="background:${SHIP_TYPE_COLORS[row.ship_type]}"></span>${SHIP_TYPE_LABELS[row.ship_type] || row.ship_type}</td>
                                 <td>${formatDwt(row.dwt)}</td>
                                 <td>${formatPct(row.share_pct)}</td>
@@ -237,6 +285,14 @@
         `;
         root.innerHTML = shell(data, 'shipping_fleet', content);
         bindInternalNavigation(root);
+        bindKpiCards(root, {
+            'fleet-total':  { section: '#shipping-section-fleet-table' },
+            'fleet-bulk':   { section: '#shipping-section-fleet-chart',
+                              flash: 'tr[data-ship-type="dry_bulk"]' },
+            'fleet-tanker': { section: '#shipping-section-fleet-chart',
+                              flash: 'tr[data-ship-type="tanker"]' },
+            'fleet-mix':    { section: '#shipping-section-fleet-chart' },
+        });
         createChart(root, 'shipping-fleet-chart', {
             type: 'bar',
             data: {

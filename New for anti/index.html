@@ -14,7 +14,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
     <!-- Custom Styles -->
-    <link rel="stylesheet" href="style.css?v=22">
+    <link rel="stylesheet" href="style.css?v=25">
 </head>
 <body>
     <div id="app">
@@ -49,12 +49,12 @@
                 <div class="menu-item">
                     <span>농산물</span>
                     <div class="dropdown">
+                        <a href="#" data-target="climate" style="color: #4ade80; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 8px; margin-bottom: 4px;">작황 모니터</a>
                         <a href="#" data-target="wheat">밀</a>
                         <a href="#" data-target="corn">옥수수</a>
                         <a href="#" data-target="soybeans">대두</a>
                         <a href="#" data-target="sugar">설탕</a>
                         <a href="#" data-target="coffee">커피</a>
-                        <a href="#" data-target="climate" style="color: #4ade80; border-top: 1px solid rgba(255,255,255,0.1); margin-top: 4px;">기후 (AI 예측)</a>
                     </div>
                 </div>
                 <div class="menu-item" data-nav-default="shipping_routes">
@@ -173,6 +173,21 @@
                 <!-- Climate map legend (shown only in climate views) -->
                 <div id="climate-map-legend" class="climate-map-legend hidden"></div>
 
+                <!-- Trade map overlay: scale, flow toggle, interaction hint -->
+                <div id="trade-overlay" class="trade-overlay hidden">
+                    <div class="to-controls">
+                        <span class="to-label">흐름</span>
+                        <button type="button" class="to-btn is-on" id="trade-flow-toggle">켜기</button>
+                    </div>
+                    <div class="to-scale">
+                        <span class="to-label">물동량</span>
+                        <span class="to-scale-row"><i class="s1"></i>낮음</span>
+                        <span class="to-scale-row"><i class="s2"></i>중간</span>
+                        <span class="to-scale-row"><i class="s3"></i>높음</span>
+                    </div>
+                    <p class="to-hint">국가 호버 → 교역량 · 클릭 → 해당 국가 노선만 강조 · 배경 클릭 → 초기화</p>
+                </div>
+
                 <!-- Climate country drill-down: TARGET frame over the globe -->
                 <div id="climate-target-hud" class="target-hud hidden"></div>
 
@@ -186,7 +201,7 @@
                 <!-- Climate right sidebar (world context / country metrics) -->
                 <div class="panel-section hidden" id="climate-right-panel">
                     <div class="panel-header" style="margin-bottom: 12px;">
-                        <h2 id="climate-right-title">기후 컨텍스트</h2>
+                        <h2 id="climate-right-title">작황 컨텍스트</h2>
                         <p id="climate-right-desc">전역 신호 · 무역 통제 상태</p>
                     </div>
                     <div id="climate-right-content" class="climate-scroll"></div>
@@ -299,7 +314,7 @@
 
     <!-- Data and App Logic -->
     <script src="data.js?v=3"></script>
-    <script src="shipping.js?v=6"></script>
-    <script src="app.js?v=36"></script>
+    <script src="shipping.js?v=10"></script>
+    <script src="app.js?v=53"></script>
 </body>
 </html>

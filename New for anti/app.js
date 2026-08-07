@@ -100,13 +100,13 @@ const updateMacroPanel = (macro) => {
 // images: MapLibre paints them on a plane, so every attempt at curvature ended
 // up as either a tilted trapezoid (MapView + pitch) or a glass sphere floating
 // over a flat world (GlobeView on top of tiles). The basemap is now drawn by
-// deck itself -- an ocean sphere plus country polygons -- which _GlobeView bends
-// properly. Same dark look, real curvature, and Antarctica can just be dropped
-// from the source data instead of covered with an opaque strip.
+// deck itself -- a dark ocean rectangle, a graticule and country polygons -- on
+// a flat MapView, which is what the mockup uses (d3.geoEquirectangular).
+// Antarctica is dropped from the source data rather than covered with a strip.
 
 // Home globe zoom. Higher = the sphere fills more of the viewport, so the
 // horizon curve reads as a gentle bend rather than a small ball in space.
-const GLOBE_ZOOM = 2.5;
+const GLOBE_ZOOM = 0.85;
 
 let currentViewState = {
     longitude: 0,
@@ -157,7 +157,7 @@ const deckgl = new DeckGL({
     container: 'map',
     initialViewState: currentViewState,
     controller: true,
-    views: [new _GlobeView({ id: 'globe', resolution: 2 })], // Globe on every screen
+    views: [new MapView({ id: 'map', repeat: true })], // Flat equirectangular, as the mockup
     layers: [],
     onViewStateChange: ({ viewState, interactionState }) => {
         currentViewState = viewState;
@@ -257,7 +257,7 @@ const clearTradeFocus = () => {
     selectedCountry = null;
     if (currentCommodity && window.TradeData?.[currentCommodity]?.arcs?.length) {
         renderMapLayers(window.TradeData[currentCommodity].arcs);
-        updateNewsPanel('Global Market');
+        renderTradeWorldPanel(window.TradeData[currentCommodity].arcs);
         panelHide(countryStatsPanelEl);
         panelShow(newsPanelEl);
     }
@@ -294,25 +294,48 @@ const focusTradeCountry = (countryName) => {
     const exportVol = exports.reduce((s, a) => s + a.volume, 0);
     const importVol = imports.reduce((s, a) => s + a.volume, 0);
     const asExporter = exportVol >= importVol && exports.length > 0;
-    const focused = (asExporter ? exports : imports)
-        .slice()
-        .sort((a, b) => b.volume - a.volume);
+    // Both directions, not just the larger one. US crude imports dwarf its
+    // exports, so picking the bigger side dropped every US export route from
+    // the map -- the country looked like a pure buyer, which it is not.
+    const focused = [...exports, ...imports].sort((a, b) => b.volume - a.volume);
+    const inboundKeys = new Set(imports.map((a) => `${a.sourceName}>${a.targetName}`));
     const total = focused.reduce((s, a) => s + a.volume, 0) || 1;
 
     // Left list: partner ranking with % (same pattern for China / USA / anyone)
     const unit = currentCommodity === 'oil' ? 'M USD'
         : (currentCommodity === 'gold' || currentCommodity === 'silver' ? 'Tonnes eq.' : 'M USD');
     const roleKo = asExporter ? '수출 → 대상국' : '수입 ← 공급국';
-    const rows = focused.slice(0, 12).map((a, i) => {
-        const partner = asExporter ? a.targetName : a.sourceName;
-        const share = (a.volume / total) * 100;
-        return `<div class="trade-rank-row" data-partner="${partner}">
+    const maxVol = focused[0]?.volume || 1;
+    const rows = focused.slice(0, 14).map((a, i) => {
+        const isIn = inboundKeys.has(`${a.sourceName}>${a.targetName}`);
+        const partner = resolveCountry(isIn ? a.sourceName : a.targetName)?.label
+            || (isIn ? a.sourceName : a.targetName);
+        // Share is of that direction's own total; mixing the two would make
+        // every percentage smaller than it is.
+        const denom = (isIn ? importVol : exportVol) || 1;
+        const share = (a.volume / denom) * 100;
+        return `<div class="trade-rank-row trade-bar-row${isIn ? ' is-inbound' : ''}" data-partner="${partner}">
             <span class="tr-i">${i + 1}</span>
+            <span class="tr-dir">${isIn ? '수입' : '수출'}</span>
             <span class="tr-name">${partner}</span>
+            <span class="tr-bar"><i style="width:${Math.max(3, (a.volume / maxVol) * 100)}%"></i></span>
             <span class="tr-pct">${share.toFixed(1)}%</span>
             <span class="tr-vol">${a.volume.toLocaleString()}</span>
         </div>`;
     }).join('');
+
+    // Export / import / net, so a country reads as a position rather than a
+    // one-directional list. Net is what says whether it is a seller or a buyer.
+    const net = exportVol - importVol;
+    const statsHtml = `
+        <div class="trade-stat-row">
+            <div class="ts-cell"><span class="ts-k">수출</span>
+                <span class="ts-v">${exportVol.toLocaleString()}</span></div>
+            <div class="ts-cell"><span class="ts-k">수입</span>
+                <span class="ts-v">${importVol.toLocaleString()}</span></div>
+            <div class="ts-cell"><span class="ts-k">순수지</span>
+                <span class="ts-v ${net >= 0 ? 'pos' : 'neg'}">${net >= 0 ? '+' : ''}${net.toLocaleString()}</span></div>
+        </div>`;
 
     if (newsPanelEl) panelShow(newsPanelEl);
     panelHide(countryStatsPanelEl);
@@ -326,7 +349,8 @@ const focusTradeCountry = (countryName) => {
                     <strong>${displayName}</strong>
                     <button type="button" class="trade-focus-clear" id="trade-focus-clear">전체 지도</button>
                 </div>
-                <p class="trade-focus-sub">${asExporter ? '수출 대상국' : '수입 공급국'} 순위 · 비중% · 물동량(${unit})</p>
+                <p class="trade-focus-sub">수출·수입 양방향 · 비중은 각 방향 내 비중 · 물동량(${unit})</p>
+                ${statsHtml}
                 <div class="trade-rank-list">${rows || '<p class="empty-state">이 국가 루트 없음</p>'}</div>
             </div>`;
         document.getElementById('trade-focus-clear')?.addEventListener('click', (e) => {
@@ -336,12 +360,51 @@ const focusTradeCountry = (countryName) => {
     }
 
     currentViewDesc.textContent = `${displayName} ${roleKo} · ${focused.length}개 루트 · 배경 클릭 또는 「전체 지도」로 초기화`;
-    renderMapLayers(arcs, { focus: countryName, asExporter, focused, keepView: true });
+    renderMapLayers(arcs, { focus: countryName, asExporter, focused, inboundKeys, keepView: true });
 };
 
 // Kept for any legacy callers; trade UI no longer opens the right stats column.
 const updateCountryStatsPanel = async (countryName) => {
     focusTradeCountry(countryName);
+};
+
+/**
+ * Default commodity view: who ships the most, with a bar for scale.
+ *
+ * The left column used to open on news alone, which said nothing about the map
+ * beside it. The mockup's reading order is structure first -- the ranking
+ * explains the thick lines you are looking at -- so news moves below it.
+ */
+const renderTradeWorldPanel = (arcs) => {
+    const byExporter = new Map();
+    for (const a of arcs) {
+        if (!(a.volume > 0)) continue;
+        const key = resolveCountry(a.sourceName)?.label || a.sourceName;
+        byExporter.set(key, (byExporter.get(key) || 0) + a.volume);
+    }
+    const ranked = [...byExporter.entries()].sort((x, y) => y[1] - x[1]);
+    const total = ranked.reduce((s, [, v]) => s + v, 0) || 1;
+    const max = ranked[0]?.[1] || 1;
+
+    const rows = ranked.slice(0, 10).map(([name, vol], i) => {
+        const share = (vol / total) * 100;
+        return `<div class="trade-rank-row trade-bar-row climate-click"
+                     role="button" tabindex="0" data-trade-country="${name}">
+            <span class="tr-i">${i + 1}</span>
+            <span class="tr-name">${name}</span>
+            <span class="tr-bar"><i style="width:${Math.max(3, (vol / max) * 100)}%"></i></span>
+            <span class="tr-pct">${share.toFixed(1)}%</span>
+        </div>`;
+    }).join('');
+
+    if (!newsContentEl) return;
+    const newsTitle = document.querySelector('#news-panel .section-title');
+    if (newsTitle) newsTitle.textContent = '주요 수출국 · 물동량 상위';
+    newsContentEl.innerHTML = `
+        <div class="trade-focus-card">
+            <p class="trade-focus-sub">비중% · 막대는 상대 물동량 · 국가를 누르면 그 나라 노선만 남습니다</p>
+            <div class="trade-rank-list">${rows || '<p class="empty-state">무역 루트 없음</p>'}</div>
+        </div>`;
 };
 
 const updateNewsPanel = (countryName) => {
@@ -556,189 +619,95 @@ const renderYieldForecast = async (regionName) => {
 const COUNTRIES_GEOJSON =
     'https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json';
 
-const CLIMATE_COUNTRIES = {
-    'United States': {
-        label: '미국',
-        modelName: 'US Corn Belt Model',
-        iso: 'USA',
-        view: { longitude: -96.0, latitude: 39.5, zoom: 3.6 },
-        dataFile: 'yield_forecast.json',
-        // Each entry maps to a region key in yield_forecast.json. Wheat sits
-        // apart from the Corn Belt because it is a different geography with
-        // its own states and weights.
-        regions: [
-            { name: 'US Corn Belt', label: '콘벨트 (옥수수·대두)',
-              coordinates: [-91.0, 41.5], regionKey: 'corn_belt' },
-            { name: 'US Great Plains', label: '대평원 (겨울밀)',
-              coordinates: [-99.0, 38.0], regionKey: 'great_plains' },
-            { name: 'US Northern Plains', label: '북부대평원 (봄밀)',
-              coordinates: [-100.5, 47.0], regionKey: 'northern_plains' },
-            { name: 'US Cotton Belt', label: '남부 텍사스 (면화)',
-              coordinates: [-101.9, 33.6], regionKey: 'cotton_belt' },
-        ],
-    },
-    'Brazil': {
-        label: '브라질',
-        modelName: 'Brazil Regional Model',
-        iso: 'BRA',
-        view: { longitude: -52.0, latitude: -13.0, zoom: 3.6 },
-        dataFile: 'brazil_yield_forecast.json',
-        // Coordinates are stated here rather than looked up in CountriesData:
-        // that map is built for trade routes and is missing several of these
-        // producing regions, which silently dropped their markers.
-        regions: [
-            { name: 'Mato Grosso (Brazil)', label: '마투그로수 (대두·옥수수)',
-              coordinates: [-55.4, -12.6],
-              regionKeys: ['mato_grosso_soja', 'mato_grosso_milho'] },
-            { name: 'Rio Grande do Sul (Brazil)', label: '파라나·히우그란지두술',
-              coordinates: [-52.3, -27.0],
-              regionKeys: ['parana_soja', 'parana_milho', 'parana_trigo'] },
-            { name: 'MATOPIBA (Brazil)', label: 'MATOPIBA (대두·면화)',
-              coordinates: [-45.5, -10.5],
-              regionKeys: ['matopiba_soja', 'matopiba_algodao'] },
-            { name: 'Sao Paulo (Brazil)', label: '상파울루 (사탕수수·커피)',
-              coordinates: [-47.8, -21.4],
-              regionKeys: ['sp_cana', 'sp_cafe', 'sp_laranja'] },
-        ],
-    },
-    // Forecast JSON is produced by Actions; if the file is absent the country
-    // panel shows empty rather than inventing numbers (see loadClimateForecast).
-    'India': {
-        label: '인도',
-        iso: 'IND',
-        view: { longitude: 78.0, latitude: 23.5, zoom: 3.8 },
-        dataFile: 'india_yield_forecast.json',
-        regions: [
-            { name: 'Punjab (India)', label: '펀자브·하리아나 (밀)',
-              coordinates: [75.8, 30.4], regionKeys: ['punjab_wheat'] },
-            { name: 'Madhya Pradesh (India)', label: '마디아프라데시 (대두)',
-              coordinates: [77.0, 23.2], regionKeys: ['mp_soybean'] },
-            { name: 'Vidarbha (India)', label: '비다르바·마라트와다·구자라트 (면화)',
-              coordinates: [76.5, 21.0], regionKeys: ['vidarbha_cotton'] },
-        ],
-    },
-    'Argentina': {
-        label: '아르헨티나',
-        modelName: 'Pampas + Norte Model',
-        iso: 'ARG',
-        view: { longitude: -64.0, latitude: -34.0, zoom: 3.8 },
-        dataFile: 'argentina_yield_forecast.json',
-        regions: [
-            { name: 'Pampas soy (Argentina)', label: '팜파스 (대두)',
-              coordinates: [-61.5, -34.0], regionKeys: ['pampas_soja'] },
-            { name: 'Pampas corn (Argentina)', label: '팜파스 (옥수수)',
-              coordinates: [-62.2, -32.5], regionKeys: ['pampas_maiz'] },
-            { name: 'Norte soy (Argentina)', label: '북부 NOA/NEA (대두)',
-              coordinates: [-62.5, -26.5], regionKeys: ['norte_soja'] },
-            { name: 'Chaco cotton (Argentina)', label: '차코 (면화)',
-              coordinates: [-60.5, -26.8], regionKeys: ['chaco_algodon'] },
-            // Wheat sits four degrees south of the soy belt -- Tres Arroyos and
-            // Coronel Suárez, not Pergamino -- because that is where 57% of
-            // Argentine wheat is and it runs on a different frost calendar.
-            // Between January and October this card reports why it is not
-            // forecasting rather than showing a number (see reason_ko).
-            { name: 'Pampas wheat (Argentina)', label: '팜파스 남부 (밀)',
-              coordinates: [-60.3, -38.4], regionKeys: ['pampas_trigo'] },
-            // No trained model: MAGyP's cane series stops at 2004/05. The card
-            // carries the explanation so the gap reads as a decision.
-            { name: 'Tucuman cane (Argentina)', label: '투쿠만 (사탕수수)',
-              coordinates: [-65.3, -27.0], regionKeys: ['tucuman_cana'] },
-        ],
-    },
-    'Australia': {
-        label: '호주',
-        modelName: 'Wheat Belt Model',
-        iso: 'AUS',
-        view: { longitude: 134.0, latitude: -27.0, zoom: 3.4 },
-        dataFile: 'australia_yield_forecast.json',
-        regions: [
-            { name: 'WA wheat (Australia)', label: '서호주 밀',
-              coordinates: [117.0, -31.5], regionKeys: ['wa_wheat'] },
-            { name: 'SA wheat (Australia)', label: '남호주 밀',
-              coordinates: [138.0, -34.0], regionKeys: ['sa_wheat'] },
-            { name: 'VIC wheat (Australia)', label: '빅토리아 밀',
-              coordinates: [143.0, -36.5], regionKeys: ['vic_wheat'] },
-        ],
-    },
-    'China': {
-        label: '중국',
-        modelName: 'Regional crop suite',
-        iso: 'CHN',
-        view: { longitude: 105.0, latitude: 35.0, zoom: 3.5 },
-        dataFile: 'china_yield_forecast.json',
-        // All three currently fail beats_trend (skill deeply negative) — UI
-        // still shows them with low-confidence badges so we do not hide failure.
-        regions: [
-            { name: 'Henan wheat (China)', label: '허난·황화이하이 (겨울밀)',
-              coordinates: [113.7, 34.0], regionKeys: ['henan_wheat'] },
-            { name: 'Yangtze rice (China)', label: '장강 유역 (벼)',
-              coordinates: [114.3, 30.6], regionKeys: ['yangtze_rice'] },
-            { name: 'Shandong vegetables (China)', label: '산둥 (채소)',
-              coordinates: [118.0, 36.5], regionKeys: ['shandong_vegetables'] },
-        ],
-    },
-    'Indonesia': {
-        label: '인도네시아',
-        modelName: 'National panel (baseline)',
-        iso: 'IDN',
-        view: { longitude: 118.0, latitude: -2.5, zoom: 3.6 },
-        dataFile: 'indonesia_yield_forecast.json',
-        // climate_gate often stops weather features (short sample); forecasts
-        // are trend baselines with low_confidence in skill.yield.
-        regions: [
-            { name: 'Indonesia rice', label: '쌀 (전국)',
-              coordinates: [112.5, -7.5], regionKeys: ['indonesia_rice'] },
-            { name: 'Indonesia oil palm', label: '팜유 과실',
-              coordinates: [113.9, -2.2], regionKeys: ['indonesia_oil_palm'] },
-            { name: 'Indonesia coffee', label: '커피',
-              coordinates: [110.4, -7.8], regionKeys: ['indonesia_coffee'] },
-            { name: 'Indonesia rubber', label: '천연고무',
-              coordinates: [104.0, -3.0], regionKeys: ['indonesia_rubber'] },
-        ],
-    },
-    // West Africa cocoa: reference / government outlook only — no yield forecast
-    // (data cannot support validated regional forecasts). GeoJSON name = Ghana / Ivory Coast.
-    'Ghana': {
-        label: '가나',
-        modelName: '서아프리카 코코아 (참고)',
-        iso: 'GHA',
-        panelMode: 'reference',
-        view: { longitude: -1.2, latitude: 7.6, zoom: 6.2 },
-        dataFile: 'ghana_yield_forecast.json',
-        regions: [
-            { name: 'Ghana Cocoa Belt', label: '코코아 벨트 (참고)',
-              coordinates: [-1.6, 6.4], regionKeys: ['ghana_cocoa'] },
-        ],
-    },
-    'Ivory Coast': {
-        label: '코트디부아르',
-        modelName: '서아프리카 코코아 (참고)',
-        iso: 'CIV',
-        panelMode: 'reference',
-        // johan world.geo.json name is "Ivory Coast"; keep aliases for fuzzy match.
-        aliases: ["Côte d'Ivoire", "Cote d'Ivoire"],
-        view: { longitude: -5.5, latitude: 7.0, zoom: 6.0 },
-        dataFile: 'cote_divoire_yield_forecast.json',
-        regions: [
-            { name: 'CIV Cocoa Belt', label: '코코아 벨트 (참고)',
-              coordinates: [-6.5, 6.2], regionKeys: ['cote_divoire_cocoa'] },
-        ],
-    },
+// === Country registry (generated, not hand-written) =======================
+//
+// These two used to be object literals holding every modelled country. Adding a
+// country meant editing this file, so two terminals adding two countries edited
+// the same lines -- which is how a session's UI work was lost on 2026-08-05.
+//
+// They are now filled from public/data/climate_registry_v1.json, which CI builds
+// from scripts/yield_model/*/model.yaml. A country lands entirely inside its own
+// folder and never touches app.js.
+//
+// Deliberately `let` and initially empty: nothing renders the climate view
+// before loadClimateRegistry() resolves, and an empty object renders an empty
+// map rather than throwing.
+let CLIMATE_COUNTRIES = {};
+let CLIMATE_TRADE_POLICY = {};
+
+const CLIMATE_REGISTRY_URL = '/public/data/climate_registry_v1.json';
+let climateRegistryPromise = null;
+
+/**
+ * Registry entry -> the shape the rest of app.js already speaks.
+ *
+ * The manifest is written for whoever trains the model (snake_case, region keys
+ * that match the forecast JSON); the UI grew up with camelCase and a `name`
+ * per region. Translating here keeps both sides readable instead of forcing
+ * either to adopt the other's vocabulary.
+ */
+const adaptRegistryCountry = (entry) => ({
+    label: entry.label_ko || entry.label_en,
+    modelName: entry.model_name || null,
+    iso: entry.iso,
+    panelMode: entry.panel_mode,
+    aliases: entry.aliases || undefined,
+    dataFile: entry.data_file,
+    view: entry.view,
+    // How much the numbers have earned. Surfaced as a badge so a country whose
+    // regions all score worse than a trend baseline does not read as settled.
+    modelStatus: entry.model_status || null,
+    statusNote: entry.status_note_ko || null,
+    sources: entry.sources || null,
+    regions: (entry.regions || []).map((r) => ({
+        name: r.ui_name || r.key,
+        label: r.label_ko || r.key,
+        coordinates: r.coordinates,
+        regionKeys: r.crops_region_keys && r.crops_region_keys.length
+            ? r.crops_region_keys
+            : (r.key ? [r.key] : []),
+    })),
+});
+
+const adaptRegistryPolicy = (entry) => {
+    const p = entry.trade_policy || {};
+    return {
+        restricted: !!p.restricted,
+        prohibitedCrops: p.prohibited_crops || [],
+        note: p.note_ko || '',
+    };
 };
 
-// 무역·수출 통제 seed (지도 국가 색). 실제 정책 피드 연동 전까지 UI 규칙용.
-// blue=정상 · yellow=restricted · orange=금지 1개 · red=곡물 금지 2개+
-const CLIMATE_TRADE_POLICY = {
-    'United States': { restricted: false, prohibitedCrops: [], note: '정상 수출' },
-    'Brazil': { restricted: false, prohibitedCrops: [], note: '정상' },
-    'India': { restricted: true, prohibitedCrops: [], note: '수출 인허가·쿼터 등 제한적 조치 (seed)' },
-    'Argentina': { restricted: false, prohibitedCrops: ['corn'], note: '옥수수 관련 수출 통제 seed (1품목 → 주황)' },
-    'Australia': { restricted: false, prohibitedCrops: [], note: '정상' },
-    'China': { restricted: false, prohibitedCrops: ['corn', 'wheat'], note: '주요 곡물 수출 제한 seed (2+ → 적)' },
-    'Indonesia': { restricted: true, prohibitedCrops: ['palm_oil'], note: '팜 등 통제 seed (1품목 금지 → 주황 우선)' },
-    'Ghana': { restricted: false, prohibitedCrops: [], note: '코코아 참고국 · 예측 아님' },
-    'Ivory Coast': { restricted: false, prohibitedCrops: [], note: '코코아 참고국 · 예측 아님' },
+/** Fetch once; every caller shares the same promise. */
+const loadClimateRegistry = () => {
+    if (climateRegistryPromise) return climateRegistryPromise;
+    climateRegistryPromise = fetch(CLIMATE_REGISTRY_URL, { cache: 'no-cache' })
+        .then((res) => {
+            if (!res.ok) throw new Error(`registry ${res.status}`);
+            return res.json();
+        })
+        .then((doc) => {
+            const countries = {};
+            const policy = {};
+            for (const [name, entry] of Object.entries(doc.countries || {})) {
+                countries[name] = adaptRegistryCountry(entry);
+                policy[name] = adaptRegistryPolicy(entry);
+            }
+            CLIMATE_COUNTRIES = countries;
+            CLIMATE_TRADE_POLICY = policy;
+            console.log(`[Climate] registry: ${Object.keys(countries).length} countries`);
+            return doc;
+        })
+        .catch((err) => {
+            // An empty climate map is a visible, honest failure. Falling back to
+            // a stale hardcoded list would quietly show countries that no longer
+            // match what the pipelines produce.
+            console.error('[Climate] registry load failed — climate view will be empty', err);
+            return null;
+        });
+    return climateRegistryPromise;
 };
+
 
 const TRADE_FILL = {
     // Softened fills — vivid pills were competing with the basemap / SST wash.
@@ -763,7 +732,7 @@ const isAntarcticaFeature = (feature) => {
     return id === 'ATA' || /antarctica|남극/i.test(name);
 };
 
-// === Curved world basemap (drawn by deck, bent by _GlobeView) ==============
+// === World basemap (flat equirectangular, drawn by deck) ===================
 //
 // Antarctica is dropped from the source features instead of hidden under an
 // opaque strip (req 12). The strip only ever existed to cover Carto's raster
@@ -815,16 +784,49 @@ const EARTH_RADIUS_M = 6370000;
  * Ocean sphere + country polygons. Home, trade and climate all build on this so
  * the three screens share one basemap identity (req 2).
  */
-// A mesh sphere rather than a lon/lat polygon: deck triangulates polygons in
-// lon/lat space, so a world-covering ring comes out as a coarse disc that does
-// not occlude the far hemisphere.
-const oceanSphereLayer = (id = 'base') => new SimpleMeshLayer({
+// Flat equirectangular basemap, matching the mockup.
+//
+// This was a sphere for a while. The brief asked for "약간의 곡률" -- slight
+// curvature -- and a globe is not that; the mockup uses d3.geoEquirectangular,
+// a flat projection, and gets its depth from a graticule plus arcs that bow.
+// The sphere also cost more than it looked: deck 9.3.7's _GlobeView draws no
+// ArcLayer, LineLayer, TextLayer or IconLayer, so every one of those needed a
+// hand-built substitute. Flat MapView draws them all.
+const oceanRect = (id = 'base') => new SolidPolygonLayer({
     id: `${id}-ocean`,
-    data: [0],
-    mesh: new SphereGeometry({ radius: EARTH_RADIUS_M, nlat: 24, nlong: 48 }),
-    coordinateSystem: COORDINATE_SYSTEM.CARTESIAN,
-    getPosition: [0, 0, 0],
-    getColor: OCEAN_RGBA,
+    data: [[[-180, -85], [180, -85], [180, 85], [-180, 85]]],
+    getPolygon: (d) => d,
+    stroked: false,
+    filled: true,
+    pickable: false,
+    getFillColor: OCEAN_RGBA,
+});
+
+// Graticule every 20 degrees. This is what reads as curvature on a flat map:
+// meridians converging toward the poles give the plane a globe's geometry
+// without pretending to be one.
+const GRATICULE_PATHS = (() => {
+    const out = [];
+    for (let lon = -180; lon <= 180; lon += 20) {
+        const line = [];
+        for (let lat = -80; lat <= 80; lat += 5) line.push([lon, lat]);
+        out.push(line);
+    }
+    for (let lat = -80; lat <= 80; lat += 20) {
+        const line = [];
+        for (let lon = -180; lon <= 180; lon += 5) line.push([lon, lat]);
+        out.push(line);
+    }
+    return out;
+})();
+
+const graticuleLayer = (id = 'base') => new PathLayer({
+    id: `${id}-graticule`,
+    data: GRATICULE_PATHS,
+    getPath: (d) => d,
+    getColor: [255, 255, 255, 13],
+    getWidth: 1,
+    widthUnits: 'pixels',
     pickable: false,
 });
 
@@ -845,15 +847,17 @@ const landLayer = ({
 });
 
 /**
- * Ocean sphere + land, with an optional `water` slot drawn between the two.
+ * Ocean, graticule and land, with an optional `water` slot between water and
+ * coastline.
  *
- * The slot exists for the SST wash: layered on top of the land it painted over
+ * The slot exists for the SST wash: drawn on top of the land it painted over
  * Argentina and smeared a basin-sized blob across Africa. It belongs on the
  * water, under the coastlines.
  */
 const worldBaseLayers = ({ water = [], ...opts } = {}) => [
-    oceanSphereLayer(opts.id || 'base'),
+    oceanRect(opts.id || 'base'),
     ...water,
+    graticuleLayer(opts.id || 'base'),
     landLayer(opts),
 ];
 
@@ -1103,15 +1107,17 @@ const OCEAN_SST_BASINS = [
 /** Muted teal (cool) to muted rust (warm). Low chroma, low alpha, on purpose. */
 const sstColor = (anomaly) => {
     const t = Math.max(-1.5, Math.min(1.5, anomaly)) / 1.5; // -1..1
-    const cool = [62, 116, 142];
-    const warm = [156, 106, 74];
+    // Raised from a near-invisible wash. "색이 뚜렷하지 않게" meant not vivid,
+    // not undetectable -- at the old values the field could not be read at all.
+    const cool = [64, 150, 190];
+    const warm = [206, 122, 74];
     const u = (t + 1) / 2;
     const mix = (a, b) => Math.round(a + (b - a) * u);
     return [
         mix(cool[0], warm[0]),
         mix(cool[1], warm[1]),
         mix(cool[2], warm[2]),
-        30 + Math.round(Math.abs(t) * 26), // 30-56 alpha: a wash, not a fill
+        56 + Math.round(Math.abs(t) * 44), // 56-100: readable, still a wash
     ];
 };
 
@@ -1139,11 +1145,52 @@ const oceanSstPointsFromGlobal = (g) => {
             ...b,
             id: `${b.id}-${i}`,
             anomaly,
-            color: sstColor(anomaly).map((v, ci) => (ci === 3 ? Math.round(v * 0.26) : v)),
+            color: sstColor(anomaly).map((v, ci) => (ci === 3 ? Math.round(v * 0.42) : v)),
             radius: base * scale,
         }));
     }).flat();
 };
+
+// Admin-1 boundaries (states, provinces, oblasts) for the country drill-down.
+//
+// A country outline alone gives nothing to locate a producing region against:
+// "Mato Grosso" or "Punjab" means little without the internal borders that make
+// the shape readable as a place.
+//
+// Served per country from public/data/admin1/{ISO}.json, cut at build time by
+// scripts/build_admin1.py. Natural Earth's 50m file is small but covers only
+// nine countries -- Argentina, Ghana, Côte d'Ivoire and everything still in
+// training came back empty -- and the 10m file that covers all 253 is 39MB.
+// Splitting it means the browser fetches ~400KB for the one country on screen,
+// and any country with a manifest works without touching this file.
+const admin1Cache = new Map();
+
+const loadAdmin1 = (iso) => {
+    const key = String(iso || '').toUpperCase();
+    if (!key) return Promise.resolve(null);
+    if (admin1Cache.has(key)) return admin1Cache.get(key);
+    const req = fetch(`/public/data/admin1/${key}.json`, { cache: 'force-cache' })
+        .then((r) => (r.ok ? r.json() : null))
+        .catch((err) => {
+            // The country still renders with its outline; internal borders are
+            // an aid, not a dependency.
+            console.warn(`[Climate] admin-1 unavailable for ${key}`, err);
+            return null;
+        });
+    admin1Cache.set(key, req);
+    return req;
+};
+
+/** Internal borders for one country. */
+const admin1Layer = (iso, data) => new GeoJsonLayer({
+    id: 'climate-admin1',
+    data: data || { type: 'FeatureCollection', features: [] },
+    stroked: true,
+    filled: false,
+    pickable: false,
+    lineWidthMinPixels: 0.7,
+    getLineColor: [125, 211, 252, 95],
+});
 
 /** SST wash layer, shared by the climate world and country maps. */
 const sstWashLayer = (sstPoints, id = 'climate-sst-wash') => new ScatterplotLayer({
@@ -1152,9 +1199,9 @@ const sstWashLayer = (sstPoints, id = 'climate-sst-wash') => new ScatterplotLaye
     pickable: true,
     stroked: false,
     filled: true,
-    opacity: 0.5,
-    radiusMinPixels: 18,
-    radiusMaxPixels: 95,
+    opacity: 0.72,
+    radiusMinPixels: 22,
+    radiusMaxPixels: 130,
     getPosition: (d) => d.coordinates,
     getRadius: (d) => d.radius,
     getFillColor: (d) => d.color,
@@ -1253,6 +1300,29 @@ const handleClimateDomKey = (e) => {
     e.preventDefault();
     handleClimateDomAction(e);
 };
+
+// Flow particles are the one thing on this map that moves; some readers want
+// the structure still. Toggling redraws rather than pausing, so a paused map is
+// never a frame frozen mid-animation.
+document.getElementById('trade-flow-toggle')?.addEventListener('click', (e) => {
+    tradeFlowOn = !tradeFlowOn;
+    const b = e.currentTarget;
+    b.textContent = tradeFlowOn ? '켜기' : '끄기';
+    b.classList.toggle('is-on', tradeFlowOn);
+    const arcs = window.TradeData?.[currentCommodity]?.arcs;
+    if (arcs?.length) renderMapLayers(arcs, { focus: tradeFocusCountry, keepView: true });
+});
+
+// Ranking rows focus a country, same as clicking it on the globe.
+document.getElementById('news-content')?.addEventListener('click', (e) => {
+    const row = e.target instanceof Element ? e.target.closest('[data-trade-country]') : null;
+    if (!row || currentCommodity === 'climate') return;
+    const label = row.getAttribute('data-trade-country');
+    const arcs = window.TradeData?.[currentCommodity]?.arcs || [];
+    // Rows carry the display label; find whatever spelling the data uses.
+    const hit = arcs.find((a) => (resolveCountry(a.sourceName)?.label || a.sourceName) === label);
+    if (hit) focusTradeCountry(hit.sourceName);
+});
 
 // One-time delegation on durable panel roots (survives innerHTML rebuilds).
 const wireClimateDomClicks = (root) => {
@@ -2537,21 +2607,22 @@ const isoToCountryName = () => {
 };
 
 /**
- * Globe view-state guard. On _GlobeView the earth is genuinely round, so there
- * is no pitch to fake curvature with and no southern edge to bias away from --
- * the only thing worth clamping is zoom, so scrolling can grow the sphere
- * (req 2) without letting it shrink to a marble.
+ * View-state guard. Curvature comes from the graticule and the bowed arcs, not
+ * from tilting or rounding the map, so pitch stays at zero and only zoom is
+ * clamped -- scrolling should grow the map (req 2) without losing the world.
  */
-const GLOBE_MIN_ZOOM = 1.4;
-const GLOBE_MAX_ZOOM = 7.5;
+const MAP_MIN_ZOOM = 0.5;
+const MAP_MAX_ZOOM = 7.5;
 const clampGlobeView = (vs = {}) => ({
     ...vs,
-    latitude: Math.min(78, Math.max(-58, vs.latitude ?? 20)),
-    zoom: Math.min(GLOBE_MAX_ZOOM, Math.max(GLOBE_MIN_ZOOM, vs.zoom ?? 2.4)),
+    latitude: Math.min(80, Math.max(-70, vs.latitude ?? 15)),
+    zoom: Math.min(MAP_MAX_ZOOM, Math.max(MAP_MIN_ZOOM, vs.zoom ?? 0.85)),
+    // No pitch. Tilting the plane was the previous attempt at curvature and it
+    // rendered the world as a trapezoid.
     pitch: 0,
     bearing: 0,
-    minZoom: GLOBE_MIN_ZOOM,
-    maxZoom: GLOBE_MAX_ZOOM,
+    minZoom: MAP_MIN_ZOOM,
+    maxZoom: MAP_MAX_ZOOM,
 });
 // Old name kept for any caller still reaching for it.
 const clampMapNoAntarctica = clampGlobeView;
@@ -2603,11 +2674,6 @@ const positionClimateRegionLabels = () => {
     climateRegionLabelsEl.querySelectorAll('.region-label').forEach((el, i) => {
         const p = climateLabelPoints[i];
         if (!p) return;
-        // 78 degrees keeps a label from sliding around the limb as a smear.
-        if (angularDistanceDeg(center, p.coordinates) > 78) {
-            el.style.display = 'none';
-            return;
-        }
         const [x, y] = viewport.project(p.coordinates);
         el.style.display = 'block';
         el.style.transform = `translate(${Math.round(x)}px, ${Math.round(y)}px)`;
@@ -2633,11 +2699,39 @@ const setClimateRegionLabels = (points) => {
 };
 wireClimateDomClicks(climateRegionLabelsEl);
 
+/**
+ * Says how finished a country's model is, right where its numbers are.
+ *
+ * Without this China reads exactly like the US: same layout, same decimals.
+ * Its three regions all score worse than a trend-only baseline (-0.57 to
+ * -1.60) and India's single published region scores 0.009, so presenting
+ * either as settled would be the interface lying on the model's behalf.
+ */
+const MODEL_STATUS_KO = {
+    validated: { label: '검증 통과', cls: 'green' },
+    provisional: { label: '부분 검증', cls: 'yellow' },
+    training: { label: '학습 중', cls: 'orange' },
+};
+
+const setModelStatusBadge = (cfg) => {
+    const host = document.getElementById('current-view-desc');
+    if (!host) return;
+    document.getElementById('model-status-badge')?.remove();
+    if (!cfg?.modelStatus) return;
+    const s = MODEL_STATUS_KO[cfg.modelStatus] || { label: cfg.modelStatus, cls: 'blue' };
+    const el = document.createElement('div');
+    el.id = 'model-status-badge';
+    el.className = 'model-status-badge';
+    el.innerHTML = `
+        <span class="climate-status-pill ${s.cls}">${s.label}</span>
+        ${cfg.statusNote ? `<span class="ms-note">${cfg.statusNote}</span>` : ''}`;
+    host.insertAdjacentElement('afterend', el);
+};
+
 const climateWorldViewState = () => (
-    // Real curvature: _GlobeView bends our own vector basemap (req 13).
-    // Latitude 18 puts the modelled belt -- US, Brazil, India, SE Asia -- across
-    // the middle of the sphere rather than out on the horizon.
-    { longitude: -25, latitude: 15, zoom: 2.3, pitch: 0, bearing: 0 }
+    // Latitude 15 centres the modelled belt -- US, Brazil, India, SE Asia --
+    // rather than leaving it at the bottom of the frame.
+    { longitude: 5, latitude: 12, zoom: 0.85, pitch: 0, bearing: 0 }
 );
 
 const setClimateMapLegend = (mode) => {
@@ -2778,13 +2872,14 @@ const renderClimateWorldRight = async () => {
 
 const showClimateWorld = async () => {
     try {
+    await loadClimateRegistry();
     climateLevel = 'world';
     climateCountry = null;
     climateHover = null;
     hideClimateTooltip();
 
-    currentViewTitle.textContent = '기후·작황 예측';
-    currentViewDesc.textContent = '세계 지도(원근 곡률) · 모델국 클릭 · SST 워시 · 남극 제외';
+    currentViewTitle.textContent = '작황 모니터';
+    currentViewDesc.textContent = '작황·기후·수출통제 한눈에 · 국가를 클릭하면 산지별로 들어갑니다';
     setClimateCommodityHeader('climate');
     totalVolumeEl.textContent = `${Object.keys(CLIMATE_COUNTRIES).length}개국`;
     topExporterEl.textContent = 'Trade status';
@@ -2829,7 +2924,7 @@ const showClimateWorld = async () => {
     deckgl.setProps({
         // Real globe. The basemap is our own vector world (worldBaseLayers), so
         // there is no flat raster underneath for the sphere to fight with.
-        views: [new _GlobeView({ id: 'globe', resolution: 2, controller: true })],
+        views: [new MapView({ id: 'map', controller: true, repeat: true })],
         viewState: worldView,
         controller: { dragRotate: false, touchRotate: false },
         pickingRadius: 18,
@@ -2974,6 +3069,7 @@ const buildRegionPoints = async (cfg) => {
 
 const showClimateCountry = async (countryName) => {
     try {
+    await loadClimateRegistry();
     const cfg = CLIMATE_COUNTRIES[countryName];
     if (!cfg) return;
 
@@ -2989,6 +3085,7 @@ const showClimateCountry = async (countryName) => {
     const pol = CLIMATE_TRADE_POLICY[countryName] || {};
 
     currentViewTitle.textContent = `${cfg.label} ${cfg.iso || ''}`.trim();
+    setModelStatusBadge(cfg);
     currentViewDesc.textContent = isClimateReference(null, cfg) || cfg.panelMode === 'reference'
         ? `${cfg.regions.length}개 산지 · 예측 불가 · 좌측 정부 전망·조사 메모 · ← 세계 지도`
         : `국가 워크스페이스 · ${cfg.regions.length}개 산지 핀 · 좌측 기관/캘린더 · 우측 집계 · 핀→모델 설명`;
@@ -3007,15 +3104,19 @@ const showClimateCountry = async (countryName) => {
 
     const gWx = await loadClimateGlobal();
     const countrySst = oceanSstPointsFromGlobal(gWx);
+    const admin1 = await loadAdmin1(cfg.iso);
     // Req 4: the country drill is a workspace, not just a zoom. The map keeps
     // the same globe but frames the target with a HUD, dims every other
     // country, and labels each producing region on the sphere.
+    // Stage 2 hands the whole width to the map -- the right dashboard only
+    // appears once a producing region is chosen -- so the country is framed
+    // tighter than the manifest's default, which was set for a narrower pane.
     const countryView = clampGlobeView({ ...cfg.view, pitch: 0, bearing: 0 });
     currentViewState = countryView;
     setClimateTargetHud(cfg, countryView.zoom);
 
     deckgl.setProps({
-        views: [new _GlobeView({ id: 'globe', resolution: 2, controller: true })],
+        views: [new MapView({ id: 'map', controller: true, repeat: true })],
         viewState: countryView,
         controller: { dragRotate: false, touchRotate: false },
         onViewStateChange: ({ viewState }) => {
@@ -3081,6 +3182,7 @@ const showClimateCountry = async (countryName) => {
                 pickable: true,
                 updateTriggers: { getFillColor: [cfg.iso, lv, countryName], getLineColor: [cfg.iso, lv] },
             }),
+            admin1Layer(cfg.iso, admin1),
             new ScatterplotLayer({
                 id: 'climate-regions',
                 data: points,
@@ -3103,15 +3205,21 @@ const showClimateCountry = async (countryName) => {
             }),
         ],
     });
-    // Region names live in an HTML overlay, not a TextLayer: deck's _GlobeView
-    // does not draw TextLayer in this build (the layer exists and holds data but
-    // renders nothing). Projecting HTML also gives us the mockup's two-line
-    // label with a coloured delta, and lets the label itself be clickable.
+    // Region names are an HTML overlay rather than a TextLayer: it gives the
+    // mockup's two-line label with a coloured delta, and lets the label itself
+    // be clickable.
     setClimateRegionLabels(points);
 
     await renderCountryPanel(cfg, points, { lv, pol });
-    // Country workspace uses left + right (world deliberately had no right pane).
-    togglePanels({ forecast: true, climateRight: true, left: true, right: true, map: true });
+    // Stage 2: map full width, no right dashboard. renderCountryPanel opens it
+    // when a region is selected (stage 3).
+    togglePanels({
+        forecast: true,
+        climateRight: !!climateSelectedRegion,
+        left: true,
+        right: !!climateSelectedRegion,
+        map: true,
+    });
     } catch (err) {
         console.error('[Climate] showClimateCountry failed', err);
     }
@@ -3310,7 +3418,12 @@ const renderCountryPanel = async (cfg, points = null, meta = {}) => {
                 <p style="font-size:10px;color:#64748b;">갱신: ${fc?.generated_at ? new Date(fc.generated_at).toLocaleString() : '—'}</p>`;
         }
     }
-    if (climateRightPanelEl) climateRightPanelEl.classList.remove('hidden');
+    // Stage 3 only: the dashboard appears when a producing region is chosen.
+    // At country level the map keeps the full width.
+    const showRight = !!regionCfg;
+    if (climateRightPanelEl) climateRightPanelEl.classList.toggle('hidden', !showRight);
+    const rightPane = document.getElementById('right-pane');
+    if (rightPane) rightPane.style.display = showRight ? 'flex' : 'none';
     panelHide(macroPanelEl);
     panelHide(countryStatsPanelEl);
 };
@@ -3612,12 +3725,10 @@ const generateNodeData = (arcs) => {
             }
         });
         
-        const scaleFactor = (currentCommodity === 'gold') ? 50 : 20; // Reduced base scale
         return {
             name: country,
             coordinates: countryCoords(country),
-            radius: Math.max(30000, totalTrade * scaleFactor), // Drastically reduced base radius
-            totalTrade
+            totalTrade,
         };
     // A country with no resolvable position would render at [0,0] in the Gulf
     // of Guinea and swallow clicks meant for the map, so drop it instead.
@@ -3626,10 +3737,25 @@ const generateNodeData = (arcs) => {
 
 // Cap on rendered routes. A global commodity query returns 300+ valid routes;
 // this keeps the map readable without silently hiding mid-sized trade flows.
-const MAX_RENDERED_ARCS = 250;
+const MAX_RENDERED_ARCS = 120;
+
+// Width and opacity both follow sqrt(volume), matching the mockup's
+// d3.scaleSqrt ranges (width 0.45–6.5px, opacity 0.3–0.9). Opacity carrying
+// volume is what keeps a dense commodity readable: 639 gold routes drawn at
+// full alpha are a solid mat, the same 639 with alpha by size read as a few
+// strong corridors over faint background trade.
+const arcScale = (v, lo, hi, vmax) => {
+    const x = Math.sqrt(Math.max(0, v) / vmax);
+    return lo + (hi - lo) * Math.min(1, x);
+};
+let arcVolumeMax = 1;
+const arcWidth = (v) => arcScale(v, 0.45, 6.5, arcVolumeMax);
+const arcAlpha = (v) => Math.round(arcScale(v, 0.3, 0.9, arcVolumeMax) * 255);
 
 // Commodity maps ride the same curved globe as the home screen (req 2, 13).
-const TRADE_MAP_VIEW = { longitude: -20, latitude: 20, zoom: 2.25, pitch: 0, bearing: 0 };
+// Whole world in the frame, as the mockup's fitExtent does. Latitude 12 trims
+// the empty polar bands without cutting the producing belt.
+const TRADE_MAP_VIEW = { longitude: 5, latitude: 12, zoom: 0.85, pitch: 0, bearing: 0 };
 
 const stopTradeAnim = () => {
     if (tradeAnimRaf) {
@@ -3654,92 +3780,104 @@ const slerpLonLat = (a, b, t) => {
 };
 
 /**
- * Great-circle polyline between two points, lifted off the surface in the
- * middle so it reads as an arc rather than a line painted on the ground.
+ * Great-circle route bowed sideways in the plane, with no altitude.
  *
- * This exists because deck.gl 9.3.7's ArcLayer draws nothing under _GlobeView
- * (same layer renders fine under MapView, no error logged). PathLayer does
- * render on the globe, so the arc is built by hand.
+ * ArcLayer lifts its curve on the z axis, which at pitch 0 still reads as a
+ * ribbon arcing over the map. The mockup instead takes the chord, finds its
+ * perpendicular, and pushes the midpoint out by 13% of its length -- the curve
+ * stays on the surface. Doing the same in lon/lat gives a genuinely 2D route.
  */
-const greatCirclePath = (src, dst, segments = 40) => {
-    // Lift scales with route length so a Gulf-to-Japan run bows like an arc
-    // while a short hop stays close to the surface instead of ballooning.
-    const span = Math.hypot(dst[0] - src[0], dst[1] - src[1]);
-    const lift = Math.min(5.5e5, 60000 + span * 4200);
+const bowedPath = (src, dst, segments = 36, bowF = 0.13) => {
+    // Take the shorter way round. A route from the Americas to Asia is closer
+    // across the Pacific than back over Europe, and picking the long way is
+    // what sent lines sweeping across the whole map.
+    let lon0 = src[0];
+    let lon1 = dst[0];
+    if (Math.abs(lon1 - lon0) > 180) lon1 += lon1 > lon0 ? -360 : 360;
+
+    const dx = lon1 - lon0;
+    const dy = dst[1] - src[1];
+    const len = Math.hypot(dx, dy) || 1;
+    const nx = -dy / len;
+    const ny = dx / len;
+    // Cap the bow in degrees, not just as a fraction. An east-west route is
+    // long enough that 13% of it lifted the curve ~26 degrees of latitude,
+    // which near the poles shoots off the top of an equirectangular map.
+    const bow = Math.min(len * bowF, 12);
+
     const out = [];
     for (let i = 0; i <= segments; i++) {
-        const t = i / segments;
-        const [lon, lat] = slerpLonLat(src, dst, t);
-        out.push([lon, lat, Math.sin(Math.PI * t) * lift]);
+        const f = i / segments;
+        // Interpolate in the unwrapped frame rather than slerping, so the path
+        // stays continuous instead of jumping when it crosses ±180. deck's
+        // repeat:true draws longitudes past the antimeridian into the next copy
+        // of the world, which is what makes the crossing look seamless.
+        const k = Math.sin(Math.PI * f) * bow;
+        const lon = lon0 + dx * f + nx * k;
+        const lat = src[1] + dy * f + ny * k;
+        // Equirectangular stretches badly near the poles; keep the curve inside
+        // the band the basemap actually draws.
+        out.push([lon, Math.max(-78, Math.min(78, lat))]);
     }
     return out;
 };
 
-// A route whose vertices sit past the horizon is behind the planet. deck does
-// not depth-test these paths against the sphere mesh, so without clipping an
-// Australia-Japan run is drawn as a straight line across the middle of the
-// globe. Split the polyline instead of dropping the route: a path that crosses
-// the limb should show the half that faces us.
-// 74 degrees, not 90. A great circle that lies nearly edge-on to the camera --
-// Chile to China, say -- keeps every vertex just inside a 87-degree cut and
-// renders as a straight chord through the planet. Pulling the cut back to 74
-// removes the grazing portion, and the arc lift is kept low enough that a path
-// near the limb does not float outside the sphere's silhouette.
-const HORIZON_DEG = 74;
-const clipPathToHorizon = (points, center) => {
-    const out = [];
-    let run = [];
-    for (const p of points) {
-        if (angularDistanceDeg(center, [p[0], p[1]]) <= HORIZON_DEG) {
-            run.push(p);
-        } else if (run.length) {
-            if (run.length > 1) out.push(run);
-            run = [];
-        }
-    }
-    if (run.length > 1) out.push(run);
-    return out;
-};
+/**
+ * Travelling dash segments along each route.
+ *
+ * These were circles sliding along the arc, which read as objects moving over
+ * the map rather than the route itself being alive. The mockup animates a
+ * dasharray of "34 452" -- one short dash inside a long gap -- so what travels
+ * is a piece of the line. Rebuilt per frame because deck's dash support has no
+ * animatable offset.
+ */
+const DASH_STEPS = 8;
+const DASH_SPAN = 0.06;
+const DASH_RES = 72;
 
-/** Flow polylines for the current camera, one entry per visible path segment. */
-const buildFlowPaths = (arcs, center) => arcs.flatMap((d) => {
-    if (!d.sourcePosition || !d.targetPosition) return [];
-    return clipPathToHorizon(greatCirclePath(d.sourcePosition, d.targetPosition), center)
-        .map((path) => ({ ...d, path }));
-});
-
-const buildTradeTrailParticles = (arcs, phase) => {
+const buildTradeDashes = (arcs, phase) => {
     const out = [];
-    const n = Math.min(arcs.length, 40);
+    const n = Math.min(arcs.length, 60);
     for (let i = 0; i < n; i++) {
         const arc = arcs[i];
-        const src = arc.sourcePosition, dst = arc.targetPosition;
-        if (!src || !dst) continue;
-        for (let p = 0; p < 3; p++) {
-            const t = (phase * (1.1 + (i % 5) * 0.07) + p / 3 + i * 0.02) % 1;
-            const pos = slerpLonLat(src, dst, t);
-            // Same reason as the paths: a particle behind the planet would
-            // otherwise glide across the visible face.
-            const center = [currentViewState.longitude ?? 0, currentViewState.latitude ?? 0];
-            if (angularDistanceDeg(center, pos) > HORIZON_DEG) continue;
-            out.push({
-                position: pos,
-                color: [255, 255, 255, Math.round(90 + (1 - t) * 140)],
-                radius: 45000 + (1 - t) * 35000,
-            });
+        if (!arc.sourcePosition || !arc.targetPosition) continue;
+        const full = bowedPath(arc.sourcePosition, arc.targetPosition, DASH_RES);
+        // Stagger start and speed so routes do not pulse in lockstep.
+        const head = ((phase * (1 + (i % 5) * 0.13)) + (i % 7) / 7) % 1;
+        const path = [];
+        for (let s = 0; s <= DASH_STEPS; s++) {
+            const f = head + (s / DASH_STEPS) * DASH_SPAN;
+            if (f > 1) break;
+            path.push(full[Math.round(f * DASH_RES)]);
         }
+        if (path.length < 2) continue;
+        const c = arc.sourceColor || [125, 211, 252];
+        out.push({
+            path,
+            color: [Math.min(255, c[0] + 70), Math.min(255, c[1] + 70),
+                    Math.min(255, c[2] + 70), 230],
+            width: Math.max(1.5, arcWidth(arc.volume) * 0.9),
+        });
     }
     return out;
 };
+
+let tradeFlowOn = true;
 
 const renderMapLayers = (arcs, opts = {}) => {
     stopTradeAnim();
     document.body.classList.add('trade-map-mode');
     document.body.classList.remove('shipping-mode');
+    document.getElementById('trade-overlay')?.classList.remove('hidden');
 
     const focus = opts.focus || tradeFocusCountry;
     const asExporter = opts.asExporter !== false;
     let filteredArcs = arcs.filter((arc) => arc.volume > 0);
+    arcVolumeMax = filteredArcs.reduce((m, a) => Math.max(m, a.volume), 1);
+    // The mockup drops flows under a threshold rather than drawing every pair.
+    // Below ~1.5% of the largest route a line adds noise, not information.
+    const arcFloor = arcVolumeMax * 0.015;
+    filteredArcs = filteredArcs.filter((a) => a.volume >= arcFloor);
 
     if (focus) {
         const focusKey = resolveCountry(focus)?.key || focus;
@@ -3756,6 +3894,7 @@ const renderMapLayers = (arcs, opts = {}) => {
             ...focused.slice(0, 60),
         ];
         opts._focusedSet = focusSet;
+        opts._inbound = opts.inboundKeys || new Set();
         opts._focusedList = focused.slice(0, 40);
     } else {
         filteredArcs = filteredArcs.slice(0, MAX_RENDERED_ARCS);
@@ -3768,6 +3907,7 @@ const renderMapLayers = (arcs, opts = {}) => {
             : filteredArcs
     );
     const totalFocus = (opts._focusedList || []).reduce((s, a) => s + a.volume, 0) || 1;
+    const nodeTradeMax = nodeData.reduce((m, d) => Math.max(m, d.totalTrade), 1);
 
     if (!opts.keepView) currentViewState = clampGlobeView({ ...TRADE_MAP_VIEW });
 
@@ -3802,30 +3942,30 @@ const renderMapLayers = (arcs, opts = {}) => {
         }),
         new PathLayer({
             id: `arc-layer-${currentCommodity}-${focus || 'world'}`,
-            data: buildFlowPaths(filteredArcs, [
-                currentViewState.longitude ?? 0,
-                currentViewState.latitude ?? 0,
-            ]),
+            data: filteredArcs,
             pickable: true,
             widthUnits: 'pixels',
             capRounded: true,
             jointRounded: true,
-            getPath: (d) => d.path,
+            getPath: (d) => bowedPath(d.sourcePosition, d.targetPosition),
             getWidth: (d) => {
                 const key = `${d.sourceName}>${d.targetName}`;
                 const hot = !focus || opts._focusedSet?.has(key);
-                const base = Math.min(Math.max(1.2, d.volume / 18), 9);
-                return hot ? base : Math.max(0.4, base * 0.25);
+                const base = arcWidth(d.volume);
+                return hot ? base : Math.max(0.3, base * 0.3);
             },
             getColor: (d) => {
                 const key = `${d.sourceName}>${d.targetName}`;
-                if (focus && !opts._focusedSet?.has(key)) return [80, 100, 130, 40];
-                return d.sourceColor || [56, 189, 248, 225];
+                if (focus && !opts._focusedSet?.has(key)) return [90, 110, 140, 12];
+                // With both directions shown, colour carries which is which:
+                // outbound keeps the commodity colour, inbound goes slate.
+                if (focus && opts._inbound?.has(key)) {
+                    return [148, 163, 184, arcAlpha(d.volume)];
+                }
+                const c = d.sourceColor || [56, 189, 248];
+                return [c[0], c[1], c[2], arcAlpha(d.volume)];
             },
-            updateTriggers: {
-                getWidth: [focus],
-                getColor: [focus],
-            },
+            updateTriggers: { getWidth: [focus], getColor: [focus] },
             onHover: (info) => {
                 if (!info.object) {
                     tooltipEl.classList.add('hidden');
@@ -3854,37 +3994,46 @@ const renderMapLayers = (arcs, opts = {}) => {
             opacity: 0.9,
             stroked: true,
             filled: true,
-            radiusMinPixels: 3,
-            radiusMaxPixels: 22,
-            lineWidthMinPixels: 1,
+            // Pixels on a sqrt curve, as the mockup does (2–9.5px). Sizing in
+            // metres meant the biggest traders were drawn as discs wide enough
+            // to cover the country underneath them, and they grew further on
+            // zoom.
+            radiusUnits: 'pixels',
+            radiusMinPixels: 2,
+            radiusMaxPixels: 10,
+            lineWidthMinPixels: 0.8,
             getPosition: (d) => d.coordinates,
-            getRadius: (d) => d.radius,
+            getRadius: (d) => {
+                const m = nodeTradeMax || 1;
+                return 2 + 7.5 * Math.min(1, Math.sqrt(d.totalTrade / m));
+            },
+            updateTriggers: { getRadius: [currentCommodity, focus] },
             getFillColor: (d) => (d.name === focus ? [56, 189, 248, 230] : [15, 23, 42, 220]),
             getLineColor: (d) => (d.name === focus ? [255, 255, 255, 255] : [200, 220, 255, 160]),
             onClick: handleNodeClick,
         }),
     ];
 
-    const trailData = () => buildTradeTrailParticles(opts._focusedList || filteredArcs.slice(0, 36), tradeAnimPhase);
+    const trailData = () => (tradeFlowOn
+        ? buildTradeDashes(opts._focusedList || filteredArcs.slice(0, 40), tradeAnimPhase)
+        : []);
 
     deckgl.setProps({
-        views: [new _GlobeView({ id: 'globe', resolution: 2, controller: true })],
+        views: [new MapView({ id: 'map', controller: true, repeat: true })],
         viewState: currentViewState,
         controller: { dragRotate: false, touchRotate: false },
         layers: [
             ...baseLayers(),
-            new ScatterplotLayer({
+            new PathLayer({
                 id: `trade-trail-${currentCommodity}`,
                 data: trailData(),
                 pickable: false,
-                opacity: 0.85,
-                stroked: false,
-                filled: true,
-                radiusMinPixels: 1.5,
-                radiusMaxPixels: 8,
-                getPosition: (d) => d.position,
-                getRadius: (d) => d.radius,
-                getFillColor: (d) => d.color,
+                widthUnits: 'pixels',
+                capRounded: true,
+                jointRounded: true,
+                getPath: (d) => d.path,
+                getColor: (d) => d.color,
+                getWidth: (d) => d.width,
             }),
         ],
         onClick: (info) => {
@@ -3947,18 +4096,16 @@ const renderMapLayers = (arcs, opts = {}) => {
             deckgl.setProps({
                 layers: [
                     ...staticLayers,
-                    new ScatterplotLayer({
+                    new PathLayer({
                         id: `trade-trail-${currentCommodity}`,
                         data: trailData(),
                         pickable: false,
-                        opacity: 0.85,
-                        stroked: false,
-                        filled: true,
-                        radiusMinPixels: 1.5,
-                        radiusMaxPixels: 8,
-                        getPosition: (d) => d.position,
-                        getRadius: (d) => d.radius,
-                        getFillColor: (d) => d.color,
+                        widthUnits: 'pixels',
+                        capRounded: true,
+                        jointRounded: true,
+                        getPath: (d) => d.path,
+                        getColor: (d) => d.color,
+                        getWidth: (d) => d.width,
                     }),
                 ],
             });
@@ -4004,6 +4151,7 @@ const setView = (target) => {
     if (!(window.TradeData && window.TradeData[target])) {
         stopTradeAnim();
         document.body.classList.remove('trade-map-mode');
+        document.getElementById('trade-overlay')?.classList.add('hidden');
         tradeFocusCountry = null;
     }
 
@@ -4017,6 +4165,7 @@ const setView = (target) => {
         hideClimateTooltip();
         setClimateTargetHud(null);
         setClimateRegionLabels([]);
+        setModelStatusBadge(null);
         setClimateCommodityHeader(null);
         if (climateMapLegendEl) climateMapLegendEl.classList.add('hidden');
         if (climateRightPanelEl) climateRightPanelEl.classList.add('hidden');
@@ -4043,7 +4192,7 @@ const setView = (target) => {
         currentViewState = clampGlobeView({ ...currentViewState, zoom: GLOBE_ZOOM });
 
         deckgl.setProps({
-            views: [new _GlobeView({ id: 'globe', resolution: 2, controller: true })],
+            views: [new MapView({ id: 'map', controller: true, repeat: true })],
             viewState: currentViewState,
             controller: { dragRotate: false, touchRotate: false },
             onClick: null,
@@ -4126,15 +4275,19 @@ const setView = (target) => {
     } else if (target === 'climate') {
         currentCommodity = 'climate';
         setClimateCommodityHeader('climate');
+        // The country list arrives over the network now, so everything below
+        // has to wait for it -- otherwise the first paint is an empty world.
+        loadClimateRegistry().then(() => {
+            if (currentCommodity !== 'climate') return;
+            totalVolumeEl.textContent = `${Object.keys(CLIMATE_COUNTRIES).length}개국`;
+            showClimateWorld();
+        });
         // World climate: no right pane (req 11). Country drill re-enables it.
         togglePanels({ forecast: true, climateRight: false, left: true, right: false });
         
-        currentViewTitle.textContent = '기후·작황 예측';
-        currentViewDesc.textContent = '곡면 세계 지도 · SST 워시 · 모델국 클릭';
-        totalVolumeEl.textContent = `${Object.keys(CLIMATE_COUNTRIES).length}개국`;
+        currentViewTitle.textContent = '작황 모니터';
+        currentViewDesc.textContent = '작황·기후·수출통제 한눈에 · 국가를 클릭하면 산지별로 들어갑니다';
         topExporterEl.textContent = 'Status coloring';
-        
-        showClimateWorld();
 
     } else if (window.TradeData[target]) {
         // Render a supported commodity map
@@ -4152,7 +4305,7 @@ const setView = (target) => {
         totalVolumeEl.textContent = data.totalVolume;
         topExporterEl.textContent = data.topExporter;
 
-        // Reset news and map
+        // Ranking first (it explains the map), news below it.
         updateNewsPanel('Global Market');
 
         // Lazy Loading: if arcs are empty, fetch real data from UN Comtrade
@@ -4162,7 +4315,7 @@ const setView = (target) => {
             stopRotation();
             currentViewState = clampGlobeView({ ...TRADE_MAP_VIEW });
             deckgl.setProps({
-                views: [new _GlobeView({ id: 'globe', resolution: 2, controller: true })],
+                views: [new MapView({ id: 'map', controller: true, repeat: true })],
                 viewState: currentViewState,
                 layers: worldBaseLayers({ id: 'trade-loading' }),
             });
@@ -4174,6 +4327,7 @@ const setView = (target) => {
                 if (arcs.length > 0) {
                     data.arcs = arcs; // Cache for future clicks
                     currentViewDesc.textContent = data.desc + ` (데이터 출처: UN Comtrade API | ${arcs.length}개 무역 루트) · 국가 클릭 → 수출 대상 순위`;
+                    renderTradeWorldPanel(data.arcs);
                     renderMapLayers(data.arcs);
                 } else {
                     currentViewDesc.textContent = data.desc + " (UN Comtrade 데이터 로딩 실패 — 재시도 필요)";
@@ -4188,6 +4342,7 @@ const setView = (target) => {
             stopRotation();
             currentViewState = clampGlobeView({ ...TRADE_MAP_VIEW });
             currentViewDesc.textContent = data.desc + ` (데이터 출처: UN Comtrade API | ${data.arcs.length}개 무역 루트) · 국가 클릭 → 수출 대상 순위`;
+            renderTradeWorldPanel(data.arcs);
             renderMapLayers(data.arcs);
         }
 
