@@ -1079,150 +1079,102 @@ window.ResolveCountry = resolveCountry;
 window.CountryCoords = countryCoords;
 
 /**
- * Sea-surface-temperature anomaly wash (req 10).
+ * Sea-surface-temperature anomaly, measured rather than inferred.
  *
- * Seed basins, not a gridded SST product: the indices we hold (ONI, IOD, AMO)
- * are basin averages, so a per-pixel field would imply resolution the data does
- * not have. Coverage is now wide enough that every ocean carries a tint, and the
- * palette stays washed out on purpose -- the map's job is land and trade status,
- * so SST reads as background gradient, never as a colour that competes with the
- * country fills.
+ * This was sixteen hand-placed basin circles whose values were derived from ONI,
+ * DMI and AMO. Deriving from three indices means the map can only ever show what
+ * those three describe: the North Atlantic "blue blob" is a cold patch inside a
+ * warm basin, so an AMO average paints over precisely the feature; and the
+ * Mediterranean, Black Sea and Gulf have no open-ocean index at all. Drawing them
+ * would have meant making numbers up.
+ *
+ * Now a real 1.5° grid from NOAA OISST v2.1, built by scripts/build_sst.py.
  */
-const OCEAN_SST_BASINS = [
-    { id: 'nino34', label: 'Niño 3.4 (적도 동태평양)', coordinates: [-140, 0], key: 'enso', spread: 1.35 },
-    { id: 'nino4', label: '적도 중태평양', coordinates: [-170, 0], key: 'enso', spread: 1.15 },
-    { id: 'wpac', label: '서태평양 웜풀', coordinates: [150, 5], key: 'enso_inv', spread: 1.2 },
-    { id: 'npac', label: '북태평양', coordinates: [-170, 38], key: 'enso_half', spread: 1.25 },
-    { id: 'nepac', label: '북동태평양', coordinates: [-135, 40], key: 'enso_half', spread: 1.0 },
-    { id: 'spac', label: '남태평양', coordinates: [-130, -30], key: 'enso_half', spread: 1.25 },
-    { id: 'iod_w', label: 'IOD 서 (아프리카측)', coordinates: [55, -5], key: 'iod', spread: 1.0 },
-    { id: 'iod_e', label: 'IOD 동 (수마트라측)', coordinates: [95, -8], key: 'iod_inv', spread: 0.95 },
-    { id: 'sind', label: '남인도양', coordinates: [78, -28], key: 'iod', spread: 1.2 },
-    { id: 'arab', label: '아라비아해·벵골만', coordinates: [68, 14], key: 'iod', spread: 0.9 },
-    { id: 'natl', label: '북대서양 (AMO)', coordinates: [-40, 36], key: 'amo', spread: 1.3 },
-    { id: 'natl_e', label: '동북대서양', coordinates: [-18, 48], key: 'amo', spread: 1.0 },
-    { id: 'tatl', label: '열대 대서양', coordinates: [-28, 5], key: 'amo_half', spread: 1.1 },
-    { id: 'satl', label: '남대서양', coordinates: [-18, -28], key: 'amo_half', spread: 1.15 },
-    { id: 'carib', label: '카리브·멕시코만', coordinates: [-82, 22], key: 'amo', spread: 0.8 },
-    { id: 'southocn', label: '남빙양 (호주 남)', coordinates: [120, -45], key: 'iod', spread: 1.2 },
-];
+const SST_URL = '/public/data/sst_anomaly_v1.json';
+let sstDoc = null;
+let sstPromise = null;
 
-/** Muted teal (cool) to muted rust (warm). Low chroma, low alpha, on purpose. */
+const loadSst = () => {
+    if (sstPromise) return sstPromise;
+    sstPromise = fetch(SST_URL, { cache: 'force-cache' })
+        .then((r) => (r.ok ? r.json() : null))
+        .then((d) => { sstDoc = d; return d; })
+        .catch((err) => {
+            // The map is still readable without it; land and status fills are
+            // what the screen is actually for.
+            console.warn('[Climate] SST grid unavailable', err);
+            return null;
+        });
+    return sstPromise;
+};
+
+/**
+ * Muted teal (cool) to muted rust (warm), saturating at ±3°C.
+ *
+ * ±3 rather than the data's full ±12: the extremes are a handful of shallow
+ * coastal cells, and scaling to them would flatten every basin-scale signal
+ * into the middle of the ramp.
+ */
 const sstColor = (anomaly) => {
-    const t = Math.max(-1.5, Math.min(1.5, anomaly)) / 1.5; // -1..1
-    // Raised from a near-invisible wash. "색이 뚜렷하지 않게" meant not vivid,
-    // not undetectable -- at the old values the field could not be read at all.
-    const cool = [64, 150, 190];
-    const warm = [206, 122, 74];
+    const t = Math.max(-3, Math.min(3, anomaly)) / 3;
+    const cool = [58, 132, 176];
+    const warm = [198, 108, 66];
     const u = (t + 1) / 2;
     const mix = (a, b) => Math.round(a + (b - a) * u);
     return [
         mix(cool[0], warm[0]),
         mix(cool[1], warm[1]),
         mix(cool[2], warm[2]),
-        56 + Math.round(Math.abs(t) * 44), // 56-100: readable, still a wash
+        // Kept low. Against a 1971-2000 baseline most of the ocean now reads
+        // warm, so a bold ramp turns the whole map orange and buries the land
+        // and trade-status fills the screen is actually for. This is a wash
+        // under the coastlines; the tooltip carries the number.
+        22 + Math.round(Math.abs(t) * 74),
     ];
 };
 
-const oceanSstPointsFromGlobal = (g) => {
-    const enso = g?.enso?.latest_c ?? -0.5;
-    const iod = g?.iod?.latest ?? 0;
-    const amo = g?.north_atlantic?.anomaly_c ?? 0.3;
-    return OCEAN_SST_BASINS.map((b) => {
-        let anomaly = 0;
-        if (b.key === 'enso') anomaly = enso;
-        else if (b.key === 'enso_inv') anomaly = -enso * 0.6;
-        else if (b.key === 'enso_half') anomaly = enso * 0.45;
-        else if (b.key === 'iod') anomaly = iod * 1.2;
-        else if (b.key === 'iod_inv') anomaly = -iod * 0.9;
-        else if (b.key === 'amo') anomaly = amo;
-        else if (b.key === 'amo_half') anomaly = amo * 0.6;
-        const base = (2.6e6 + Math.abs(anomaly) * 5e5) * (b.spread || 1);
-        // Stacked low-alpha discs instead of one flat circle. ScatterplotLayer
-        // has no radial falloff, and the layer types that do -- IconLayer with
-        // a gradient sprite, TextLayer -- render nothing under deck 9.3.7's
-        // _GlobeView (verified in the browser). Six overlapping discs on a
-        // shrinking radius approximate the falloff well enough that the basin
-        // reads as a temperature field rather than a shape on the water.
-        return [1, 0.88, 0.75, 0.62, 0.48, 0.33].map((scale, i) => ({
-            ...b,
-            id: `${b.id}-${i}`,
-            anomaly,
-            color: sstColor(anomaly).map((v, ci) => (ci === 3 ? Math.round(v * 0.42) : v)),
-            radius: base * scale,
-        }));
-    }).flat();
+/** SST grid cells, shared by the climate world and country maps. */
+const sstWashLayer = (_unused, id = 'climate-sst') => {
+    const pts = sstDoc?.points || [];
+    const half = (sstDoc?.resolution_deg || 1.5) / 2;
+    return new GeoJsonLayer({
+        id,
+        // Squares rather than points: a grid cell covers an area, and drawing it
+        // as a dot leaves gaps that read as structure the data does not have.
+        data: {
+            type: 'FeatureCollection',
+            features: pts.map(([lon, lat, a]) => ({
+                type: 'Feature',
+                properties: { a },
+                geometry: {
+                    type: 'Polygon',
+                    coordinates: [[
+                        [lon - half, lat - half], [lon + half, lat - half],
+                        [lon + half, lat + half], [lon - half, lat + half],
+                        [lon - half, lat - half],
+                    ]],
+                },
+            })),
+        },
+        stroked: false,
+        filled: true,
+        pickable: true,
+        getFillColor: (f) => sstColor(f.properties.a),
+        onHover: (info) => {
+            if (!info.object) return;
+            const a = info.object.properties.a;
+            tooltipEl.style.left = `${info.x + 12}px`;
+            tooltipEl.style.top = `${info.y + 12}px`;
+            tooltipEl.classList.remove('hidden');
+            tooltipEl.innerHTML = `<div class="tooltip-title">해수면 수온 편차</div>
+                <div class="tooltip-stat"><span>편차</span>
+                <span style="color:${a >= 0 ? '#e0a084' : '#7fb6cc'};font-weight:700;">
+                ${a >= 0 ? '+' : ''}${a.toFixed(1)}°C</span></div>
+                <div style="font-size:10px;color:#94a3b8;margin-top:4px;">
+                NOAA OISST v2.1 · ${sstDoc?.as_of || ''} · ${sstDoc?.resolution_deg}° 격자</div>`;
+        },
+    });
 };
-
-// Admin-1 boundaries (states, provinces, oblasts) for the country drill-down.
-//
-// A country outline alone gives nothing to locate a producing region against:
-// "Mato Grosso" or "Punjab" means little without the internal borders that make
-// the shape readable as a place.
-//
-// Served per country from public/data/admin1/{ISO}.json, cut at build time by
-// scripts/build_admin1.py. Natural Earth's 50m file is small but covers only
-// nine countries -- Argentina, Ghana, Côte d'Ivoire and everything still in
-// training came back empty -- and the 10m file that covers all 253 is 39MB.
-// Splitting it means the browser fetches ~400KB for the one country on screen,
-// and any country with a manifest works without touching this file.
-const admin1Cache = new Map();
-
-const loadAdmin1 = (iso) => {
-    const key = String(iso || '').toUpperCase();
-    if (!key) return Promise.resolve(null);
-    if (admin1Cache.has(key)) return admin1Cache.get(key);
-    const req = fetch(`/public/data/admin1/${key}.json`, { cache: 'force-cache' })
-        .then((r) => (r.ok ? r.json() : null))
-        .catch((err) => {
-            // The country still renders with its outline; internal borders are
-            // an aid, not a dependency.
-            console.warn(`[Climate] admin-1 unavailable for ${key}`, err);
-            return null;
-        });
-    admin1Cache.set(key, req);
-    return req;
-};
-
-/** Internal borders for one country. */
-const admin1Layer = (iso, data) => new GeoJsonLayer({
-    id: 'climate-admin1',
-    data: data || { type: 'FeatureCollection', features: [] },
-    stroked: true,
-    filled: false,
-    pickable: false,
-    lineWidthMinPixels: 0.7,
-    getLineColor: [125, 211, 252, 95],
-});
-
-/** SST wash layer, shared by the climate world and country maps. */
-const sstWashLayer = (sstPoints, id = 'climate-sst-wash') => new ScatterplotLayer({
-    id,
-    data: sstPoints,
-    pickable: true,
-    stroked: false,
-    filled: true,
-    opacity: 0.72,
-    radiusMinPixels: 22,
-    radiusMaxPixels: 130,
-    getPosition: (d) => d.coordinates,
-    getRadius: (d) => d.radius,
-    getFillColor: (d) => d.color,
-    onHover: (info) => {
-        if (!info.object) return;
-        tooltipEl.style.left = `${info.x + 12}px`;
-        tooltipEl.style.top = `${info.y + 12}px`;
-        tooltipEl.classList.remove('hidden');
-        const a = info.object.anomaly;
-        tooltipEl.innerHTML = `<div class="tooltip-title">${info.object.label}</div>
-            <div class="tooltip-stat"><span>해수면 수온 편차</span>
-            <span style="color:${a >= 0 ? '#e0a084' : '#7fb6cc'};font-weight:700;">
-            ${a >= 0 ? '+' : ''}${a.toFixed(2)}°C</span></div>
-            <div style="font-size:10px;color:#94a3b8;margin-top:4px;">
-            ONI·IOD·AMO 지수에서 파생한 해역 요약 · 격자 SST 제품 아님</div>`;
-    },
-});
-
 
 // Resolve ISO / name from a GeoJSON feature (johan world.geo.json uses top-level id).
 const featureCountryKey = (feature) => {
@@ -2869,7 +2821,8 @@ const setClimateMapLegend = (mode) => {
             <div class="mini-leg-row"><span class="swatch" style="background:#f87171"></span>금지2+</div>
             <div class="mini-leg-head" style="margin-top:9px;">해수면 수온 편차</div>
             <div class="mini-leg-row"><span class="swatch sst-cool"></span>낮음 (−)</div>
-            <div class="mini-leg-row"><span class="swatch sst-warm"></span>높음 (+)</div>`;
+            <div class="mini-leg-row"><span class="swatch sst-warm"></span>높음 (+)</div>
+            <div class="mini-leg-note">1971–2000 평년 대비</div>`;
     } else if (mode === 'reference') {
         climateMapLegendEl.classList.remove('hidden');
         climateMapLegendEl.classList.add('world-mini');
@@ -2885,7 +2838,8 @@ const setClimateMapLegend = (mode) => {
             <div class="mini-leg-row"><span class="swatch" style="background:#4ade80"></span>양호</div>
             <div class="mini-leg-head" style="margin-top:9px;">해수면 수온 편차</div>
             <div class="mini-leg-row"><span class="swatch sst-cool"></span>낮음 (−)</div>
-            <div class="mini-leg-row"><span class="swatch sst-warm"></span>높음 (+)</div>`;
+            <div class="mini-leg-row"><span class="swatch sst-warm"></span>높음 (+)</div>
+            <div class="mini-leg-note">1971–2000 평년 대비</div>`;
     } else {
         climateMapLegendEl.classList.add('hidden');
         climateMapLegendEl.innerHTML = '';
@@ -3016,8 +2970,8 @@ const showClimateWorld = async () => {
     panelHide(countryStatsPanelEl);
     panelShow(forecastPanelEl);
 
-    const g = await loadClimateGlobal();
-    const sstPoints = oceanSstPointsFromGlobal(g);
+    await loadClimateGlobal();
+    await loadSst();
 
     const labels = Object.entries(CLIMATE_COUNTRIES).map(([name, cfg]) => {
         const coords = cfg.regions[0]?.coordinates;
@@ -3062,7 +3016,7 @@ const showClimateWorld = async () => {
             // the trade-status fills paint over the countries.
             ...worldBaseLayers({
                 id: 'climate-world',
-                water: [sstWashLayer(sstPoints, 'climate-sst-wash')],
+                water: [sstWashLayer(null, 'climate-sst-wash')],
             }),
             new GeoJsonLayer({
                 id: 'climate-countries',
@@ -3222,8 +3176,8 @@ const showClimateCountry = async (countryName) => {
     mapContainer.style.pointerEvents = 'auto';
     ensureClimateMapPointerFallback();
 
-    const gWx = await loadClimateGlobal();
-    const countrySst = oceanSstPointsFromGlobal(gWx);
+    await loadClimateGlobal();
+    await loadSst();
     const admin1 = await loadAdmin1(cfg.iso);
     // Req 4: the country drill is a workspace, not just a zoom. The map keeps
     // the same globe but frames the target with a HUD, dims every other
@@ -3280,7 +3234,7 @@ const showClimateCountry = async (countryName) => {
                 id: 'climate-country',
                 landColor: [24, 30, 40, 255],
                 lineColor: [96, 112, 136, 55],
-                water: [sstWashLayer(countrySst, 'climate-country-sst-wash')],
+                water: [sstWashLayer(null, 'climate-country-sst-wash')],
             }),
             new GeoJsonLayer({
                 id: 'climate-countries',
