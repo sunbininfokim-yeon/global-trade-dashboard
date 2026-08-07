@@ -1925,3 +1925,41 @@ body.trade-map-mode .left-pane {
     font-size: 9px; color: rgba(148, 163, 184, .6); margin-top: 2px;
     text-shadow: 0 1px 2px rgba(0,0,0,.6);
 }
+
+/* 무역 순위: 국가는 ISO 코드로. 이름은 행 툴팁에. */
+.trade-bar-row .tr-name.tr-code {
+    font-variant-numeric: tabular-nums;
+    letter-spacing: .04em;
+    font-size: 11.5px;
+    color: #cbd5e1;
+}
+
+/* 다년생: 파종·수확 구간이 아니라 연중 띠로 */
+.climate-cal-bar.perennial {
+    background: repeating-linear-gradient(
+        90deg, rgba(148,163,184,.30) 0 8px, rgba(148,163,184,.14) 8px 16px);
+}
+.climate-cal-legend i.perennial {
+    background: repeating-linear-gradient(
+        90deg, rgba(148,163,184,.45) 0 4px, rgba(148,163,184,.18) 4px 8px);
+}
+
+/* 데이터 시점·갱신 주기 표 */
+.vintage-table { font-size: 11px; }
+.vintage-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr) minmax(0, 0.85fr);
+    gap: 8px;
+    padding: 5px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    align-items: baseline;
+}
+.vintage-row.vt-head {
+    font-size: 9.5px; letter-spacing: .1em; text-transform: uppercase;
+    color: #64748b; border-bottom-color: rgba(255,255,255,.1);
+}
+.vintage-row .vt-what { color: #94a3b8; }
+.vintage-row .vt-when { color: #e2e8f0; font-variant-numeric: tabular-nums; }
+.vintage-row .vt-when em { color: #64748b; font-style: normal; font-size: 10px; }
+.vintage-row .vt-next { color: #7dd3fc; font-size: 10.5px; }
+.climate-sub.vt-note { font-size: 10px; margin: 2px 0 4px; color: #64748b; }

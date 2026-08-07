@@ -320,7 +320,7 @@ const focusTradeCountry = (countryName) => {
                      data-partner="${partner}" title="${isIn ? '수입' : '수출'} · ${partner} · ${a.volume.toLocaleString()} ${unit}">
             <span class="tr-i">${i + 1}</span>
             <span class="tr-dir" aria-label="${isIn ? '수입' : '수출'}"></span>
-            <span class="tr-name">${partner}</span>
+            <span class="tr-name tr-code">${countryCode(partner)}</span>
             <span class="tr-bar"><i style="width:${Math.max(3, (a.volume / maxVol) * 100)}%"></i></span>
             <span class="tr-pct">${share.toFixed(1)}%</span>
             <span class="tr-vol">${a.volume.toLocaleString()}</span>
@@ -378,6 +378,20 @@ const updateCountryStatsPanel = async (countryName) => {
  * beside it. The mockup's reading order is structure first -- the ranking
  * explains the thick lines you are looking at -- so news moves below it.
  */
+/**
+ * Three-letter code for a rank row.
+ *
+ * The trade panel is a ranking, not prose: "United States of America" pushes
+ * the bar out of the row while ISO codes line up and stay scannable. The crop
+ * monitor keeps full names -- it reads as a country workspace, not a league
+ * table.
+ */
+const countryCode = (name) => {
+    const r = resolveCountry(name);
+    if (r?.iso) return r.iso;
+    return String(name || '').slice(0, 3).toUpperCase();
+};
+
 const renderTradeWorldPanel = (arcs) => {
     const byExporter = new Map();
     for (const a of arcs) {
@@ -392,9 +406,10 @@ const renderTradeWorldPanel = (arcs) => {
     const rows = ranked.slice(0, 10).map(([name, vol], i) => {
         const share = (vol / total) * 100;
         return `<div class="trade-rank-row trade-bar-row climate-click"
-                     role="button" tabindex="0" data-trade-country="${name}">
+                     role="button" tabindex="0" data-trade-country="${name}"
+                     title="${name} · ${share.toFixed(1)}%">
             <span class="tr-i">${i + 1}</span>
-            <span class="tr-name">${name}</span>
+            <span class="tr-name tr-code">${countryCode(name)}</span>
             <span class="tr-bar"><i style="width:${Math.max(3, (vol / max) * 100)}%"></i></span>
             <span class="tr-pct">${share.toFixed(1)}%</span>
         </div>`;
@@ -1532,11 +1547,15 @@ const CROP_CANON = {
     rubber: 'rubber',
     vegetables: 'vegetables',
     orange: 'orange', laranja: 'orange',
+    sunflower: 'sunflower', podsolnechnik: 'sunflower',
+    barley: 'barley',
+    cocoa: 'cocoa', cacao: 'cocoa',
 };
 const CROP_LABEL_KO = {
     wheat: '밀', corn: '옥수수', soy: '대두', rice: '벼', cotton: '면화',
     sugar: '사탕수수', coffee: '커피', palm: '팜', rubber: '천연고무',
-    vegetables: '채소', orange: '오렌지', other: '기타 작물',
+    vegetables: '채소', orange: '오렌지',
+    sunflower: '해바라기', barley: '보리', cocoa: '코코아', other: '기타 작물',
 };
 
 // Crop calendar seed (month 1–12). No live phenology feed — heuristic stage only.
@@ -1579,9 +1598,34 @@ const CROP_CALENDAR_SEED = {
     },
     Indonesia: {
         rice: { sow: [11, 12, 1], harvest: [3, 4, 5] },
-        palm: { sow: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], harvest: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12] },
+        // Perennials are not sown and harvested on a season. Oil palm is cut on
+        // a 10-14 day round and rubber is tapped through the year, so filling
+        // every month as "sow" and "harvest" drew a bar that said nothing --
+        // and implied a planting window that does not exist.
+        palm: { perennial: true, note_ko: '연중 수확 (10~14일 주기 수확)' },
         coffee: { sow: [10, 11], harvest: [5, 6, 7, 8] },
-        rubber: { sow: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], harvest: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12] },
+        rubber: { perennial: true, note_ko: '연중 채취 (수액 채취, 저수기 2~3월 감소)' },
+    },
+    Russia: {
+        // Winter wheat overwinters: sown late summer, dormant, harvested the
+        // following July. Sunflower runs a spring-to-autumn window entirely
+        // inside one calendar year -- which is why the same oblast can read
+        // -9% for wheat and +8% for sunflower in the same season.
+        wheat: { sow: [8, 9], harvest: [7, 8] },
+        sunflower: { sow: [5], harvest: [9, 10] },
+        barley: { sow: [4, 5], harvest: [8] },
+    },
+    Vietnam: {
+        // Mekong Delta runs three rice crops; the modelled one is Winter-Spring.
+        rice: { sow: [11, 12], harvest: [2, 3, 4] },
+        coffee: { sow: [6, 7], harvest: [11, 12, 1] },
+        rubber: { perennial: true, note_ko: '연중 채취 (낙엽기 2~4월 채취 중단)' },
+    },
+    Ghana: {
+        cocoa: { perennial: true, note_ko: '다년생 · 주수확 10~2월, 중간수확 5~8월' },
+    },
+    'Ivory Coast': {
+        cocoa: { perennial: true, note_ko: '다년생 · 주수확 10~3월, 중간수확 4~8월' },
     },
 };
 
@@ -1668,6 +1712,11 @@ const monthsToCssRange = (months) => {
 
 const phenologyStageSeed = (cal, month) => {
     if (!cal) return { stage: '미정', detail: '캘린더 seed 없음', kind: 'unknown' };
+    // A perennial has no sowing, no fallow and no single harvest window; asking
+    // which growth stage it is in makes no sense for a tree or a tapped stand.
+    if (cal.perennial) {
+        return { stage: '다년생', detail: cal.note_ko || '연중 생육 · 파종/휴경 구분 없음', kind: 'perennial' };
+    }
     const sow = cal.sow || [];
     const har = cal.harvest || [];
     if (monthInSpan(sow, month)) {
@@ -1727,6 +1776,19 @@ const renderCropCalendarHtml = (countryName, cropIds) => {
         if (!cal) return '';
         const label = CROP_LABEL_KO[id] || id;
         const stage = phenologyStageSeed(cal, month);
+        if (cal.perennial) {
+            const nowLeft = ((month - 0.5) / 12) * 100;
+            return `<div class="climate-cal-row">
+                <div class="cal-name">${label}
+                    <span style="color:#64748b;font-weight:400;font-size:11px;"> · 다년생</span>
+                </div>
+                <div class="climate-cal-track">
+                    <span class="climate-cal-bar perennial" style="left:0;width:100%"></span>
+                    <span class="climate-cal-now" style="left:${nowLeft}%" title="현재 ${month}월"></span>
+                </div>
+                <div class="climate-cal-stage">${cal.note_ko || '연중 생육'}</div>
+            </div>`;
+        }
         const grow = growMonthsBetween(cal);
         const sowBars = monthsToCssRange(cal.sow).map(([a, b]) => {
             const left = ((a - 1) / 12) * 100;
@@ -1761,6 +1823,7 @@ const renderCropCalendarHtml = (countryName, cropIds) => {
             <span><i class="grow"></i>생육(영양→생식)</span>
             <span><i class="har"></i>수확</span>
             <span><i class="fallow"></i>비작기</span>
+            <span><i class="perennial"></i>다년생</span>
         </div>
         <div class="climate-sub" style="margin-top:8px;line-height:1.55;">
             <strong>단계 설명</strong><br>
@@ -1769,6 +1832,7 @@ const renderCropCalendarHtml = (countryName, cropIds) => {
             · <em>생식·충실</em>: 꽃·꼬투리·알곡이 차는 달<br>
             · <em>수확</em>: 거둬들이는 달<br>
             · <em>비작기</em>: 작기가 끝난 휴경·휴지 (다음 파종 전까지)<br>
+            · <em>다년생</em>: 고무·팜·코코아처럼 심어두고 여러 해 수확 — 파종기·비작기가 없습니다<br>
             막대에 없는 달은 비작기로 보면 됩니다. (seed 휴리스틱 · 실측 위성 페놀이로지 아님)
         </div>`;
 };
@@ -3354,7 +3418,15 @@ const renderCountryPanel = async (cfg, points = null, meta = {}) => {
     // Do not invent crop-merge averages or fake yield points.
     if (isClimateReference(fc, cfg)) {
         forecastCountryTitle.textContent = fc?.title_ko || cfg.modelName || cfg.label;
-        forecastContentEl.innerHTML = renderClimateReferencePanelHtml(cfg, fc || {}, { lv, pol });
+        // A reference country has no forecast, but it still has a growing
+        // season. Cocoa's main and mid crops are the whole reason West Africa
+        // is on the map, so the calendar belongs here too.
+        const refCrops = Object.keys(CROP_CALENDAR_SEED[climateCountry] || {});
+        forecastContentEl.innerHTML = renderClimateReferencePanelHtml(cfg, fc || {}, { lv, pol })
+            + (refCrops.length ? `<div class="climate-card">
+                <h3>작물 캘린더 · 현재 단계 (seed)</h3>
+                ${renderCropCalendarHtml(climateCountry, refCrops)}
+            </div>` : '');
         if (climateRightTitleEl) climateRightTitleEl.textContent = '참고 모드';
         if (climateRightDescEl) {
             climateRightDescEl.textContent = '예측 없음 · 좌측 정부 전망·조사 메모';
@@ -3541,6 +3613,70 @@ const renderCountryPanel = async (cfg, points = null, meta = {}) => {
 };
 
 /**
+ * When each input was measured, and when it is refreshed.
+ *
+ * "출처: NASA POWER" says where a number came from but not whether it is
+ * current. A forecast built on labels that stop in 2019 and weather from last
+ * week is two different vintages in one figure, and only one of them is
+ * visible unless both are stated.
+ *
+ * Cadences are the GitHub Actions schedules in .github/workflows, so this
+ * matches what actually runs rather than an intention.
+ */
+const REFRESH_CADENCE = {
+    forecast: { ko: '주 1회 (월요일)', detail: '국가별 yield_forecast 워크플로' },
+    climate: { ko: '주 1회', detail: 'NASA POWER 일별 관측을 매 실행 시 재수집' },
+    indices: { ko: '주 1회 (월요일)', detail: 'NOAA CPC ONI · NOAA PSL DMI' },
+    sst: { ko: '주 1회 (화요일)', detail: 'NOAA OISST v2.1 격자' },
+};
+
+const fmtAge = (iso) => {
+    const d = new Date(iso);
+    if (Number.isNaN(d.getTime())) return null;
+    const days = Math.floor((Date.now() - d.getTime()) / 86400000);
+    if (days < 1) return '오늘';
+    if (days < 60) return `${days}일 전`;
+    const m = Math.round(days / 30.4);
+    return m < 24 ? `${m}개월 전` : `${Math.floor(m / 12)}년 ${m % 12}개월 전`;
+};
+
+const renderVintageRows = (cfg, fc) => {
+    const src = cfg?.sources || {};
+    const rows = [];
+
+    const push = (what, when, cadence, extra) => {
+        const age = when ? fmtAge(when) : null;
+        rows.push(`<div class="vintage-row">
+            <span class="vt-what">${what}</span>
+            <span class="vt-when">${when || '—'}${age ? ` <em>${age}</em>` : ''}</span>
+            <span class="vt-next">${cadence}</span>
+        </div>${extra ? `<div class="climate-sub vt-note">${extra}</div>` : ''}`);
+    };
+
+    push('공식 통계 (모델 정답지)', src.labels?.updated,
+         REFRESH_CADENCE.forecast.ko,
+         src.labels?.name ? `출처 ${src.labels.name}` : '');
+    push('기상 관측', src.climate?.updated, REFRESH_CADENCE.climate.ko,
+         REFRESH_CADENCE.climate.detail);
+    push('예측 산출', fc?.generated_at ? String(fc.generated_at).slice(0, 10) : null,
+         REFRESH_CADENCE.forecast.ko, REFRESH_CADENCE.forecast.detail);
+    push('기후 지수 (ENSO·IOD)', climateGlobalCache?.generated_at
+         ? String(climateGlobalCache.generated_at).slice(0, 10) : null,
+         REFRESH_CADENCE.indices.ko, REFRESH_CADENCE.indices.detail);
+    push('해수면 수온 격자', sstDoc?.as_of, REFRESH_CADENCE.sst.ko,
+         REFRESH_CADENCE.sst.detail);
+
+    return `<div class="vintage-table">
+        <div class="vintage-row vt-head">
+            <span class="vt-what">항목</span>
+            <span class="vt-when">데이터 시점</span>
+            <span class="vt-next">갱신 주기</span>
+        </div>
+        ${rows.join('')}
+    </div>`;
+};
+
+/**
  * Req 7: region click → left panel becomes model / data / paper provenance
  * (not a duplicate of the yield numbers that stay on the right).
  */
@@ -3593,6 +3729,10 @@ const renderClimateModelOnLeft = async (cfg, regionCfg, fc = null) => {
             <div class="climate-card">
                 <h3>참고 논문 · 방법론 출처</h3>
                 <div class="climate-sub">${refs}</div>
+            </div>
+            <div class="climate-card">
+                <h3>데이터 시점 · 갱신 주기</h3>
+                ${renderVintageRows(cfg, fc)}
             </div>
             <div class="climate-card">
                 <h3>데이터 출처</h3>
@@ -4002,14 +4142,24 @@ const renderMapLayers = (arcs, opts = {}) => {
         const focusSet = new Set(focused.map((a) => `${a.sourceName}>${a.targetName}`));
         // Dim world context + bright focused routes (China-style for every country)
         filteredArcs = [
-            ...filteredArcs.filter((a) => !focusSet.has(`${a.sourceName}>${a.targetName}`)).slice(0, 80),
+            ...filteredArcs
+                .filter((a) => !focusSet.has(`${a.sourceName}>${a.targetName}`))
+                .sort((a, b) => b.volume - a.volume)
+                .slice(0, 80),
             ...focused.slice(0, 60),
         ];
         opts._focusedSet = focusSet;
         opts._inbound = opts.inboundKeys || new Set();
         opts._focusedList = focused.slice(0, 40);
     } else {
-        filteredArcs = filteredArcs.slice(0, MAX_RENDERED_ARCS);
+        // Sort first. This used to slice the array as it arrived, so the cap
+        // kept the first 120 routes rather than the largest 120 -- Turkey is
+        // the biggest reporter in the gold data with 69 routes and only three
+        // survived, which read as Turkey being absent from the trade entirely.
+        filteredArcs = filteredArcs
+            .slice()
+            .sort((a, b) => b.volume - a.volume)
+            .slice(0, MAX_RENDERED_ARCS);
         opts._focusedList = filteredArcs.slice(0, 36);
     }
 
@@ -4149,9 +4299,19 @@ const renderMapLayers = (arcs, opts = {}) => {
             }),
         ],
         onClick: (info) => {
+            // Clicking the map away from a route clears the focus. The country
+            // polygon layer is pickable, so a click on any other country counts
+            // as "away" too -- previously only the ocean did, which made getting
+            // back to the world map harder than getting into a country.
             if (!info.object) {
                 if (tradeFocusCountry) clearTradeFocus();
                 return;
+            }
+            if (tradeFocusCountry && info.layer?.id === 'trade-countries-pick') {
+                const fname = info.object?.properties?.name;
+                const same = fname && resolveCountry(fname)?.key
+                    === resolveCountry(tradeFocusCountry)?.key;
+                if (same) { clearTradeFocus(); return; }
             }
             // Country polygon click: focus it if it appears anywhere in the
             // current commodity's routes, so any country in the data works --
