@@ -1,0 +1,56 @@
+# 러시아 — 흑해 밀·해바라기 (oblast zone)
+# 규격: ../MODEL_MANIFEST.md · app.js 수정 없이 레지스트리로 반영.
+# 우크라이나는 archive 라벨 확보 전까지 별도 (이 매니페스트에 넣지 않음).
+
+country: russia
+iso: RUS
+label_ko: 러시아
+label_en: Russia
+aliases: [Russian Federation]
+panel_mode: forecast
+model_status: provisional
+status_note_ko: "남부·중앙흑토·볼가 oblast 가중 밀/해바라기. CBE·볼가 밀과 해바라기 벨트는 skill 양호. 남부 밀·해바라기는 low_confidence. 보리 Track B는 oblast 라벨 미확보(interim PSD, 예측 미발행)."
+data_file: russia_yield_forecast.json
+model_name: 흑해 밀·해바라기 (oblast)
+
+view:
+  longitude: 42
+  latitude: 50
+  zoom: 4.2
+
+regions:
+  - key: southern_winter_wheat
+    label_ko: 남부 (밀·해바라기)
+    ui_name: Southern Russia
+    coordinates: [40.2, 45.8]
+    crops_region_keys: [southern_winter_wheat, southern_sunflower]
+  - key: cbe_winter_wheat
+    label_ko: 중앙 흑토 (밀·해바라기)
+    ui_name: Central Black Earth
+    coordinates: [38.4, 51.7]
+    crops_region_keys: [cbe_winter_wheat, cbe_sunflower]
+  - key: volga_winter_wheat
+    label_ko: 볼가 (밀·해바라기)
+    ui_name: Volga Russia
+    coordinates: [46.9, 51.1]
+    crops_region_keys: [volga_winter_wheat, volga_sunflower]
+  - key: russia_sunflower
+    label_ko: 해바라기 벨트 (South+CBE+Volga)
+    ui_name: Russia sunflower belt
+    coordinates: [42.5, 49.5]
+    crops_region_keys: [russia_sunflower]
+
+sources:
+  labels:
+    name: Rosstat Regions of Russia (tochno-st 13120000 / 13160000)
+    url: https://rosstat.gov.ru/
+    updated: "2024-12-01"
+  climate:
+    name: NASA POWER (daily) + GWETROOT
+    url: https://power.larc.nasa.gov/
+    updated: "2026-08-05"
+
+trade_policy:
+  restricted: false
+  prohibited_crops: []
+  note_ko: 흑해 곡물·유지종자 · 정상 seed

@@ -140,7 +140,7 @@ notes_ko: |
 | australia | ☐ | |
 | china | ☐ | |
 | indonesia | ☐ | |
-| russia | ☐ | |
+| russia | ✅ | Rosstat oblast wheat/sunflower · UI via registry 2026-08-07 |
 | vietnam | ☐ | Codex 작업 중 |
 | mena | ☐ | Cursor 작업 중 — forecast JSON 아직 없음 |
 | west_africa | ☐ | `panel_mode: reference` |
