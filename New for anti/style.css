@@ -1901,3 +1901,23 @@ body.trade-map-mode .left-pane {
     font-size: 9.5px; font-weight: 400; letter-spacing: .04em;
     color: rgba(148, 163, 184, .8); margin-left: 4px;
 }
+
+/* === 출처 위젯 스택 — 한 자리에 여러 출처, 옆으로 넘겨서 전환 === */
+.widget-stack { position: relative; overflow: hidden; }
+.widget-stack .ws-track {
+    display: flex;
+    transition: transform 0.28s cubic-bezier(0.22, 0.61, 0.36, 1);
+    touch-action: pan-y;                 /* 세로 스크롤은 페이지에 양보 */
+}
+.widget-stack .ws-slide { flex: 0 0 100%; min-width: 0; }
+.widget-stack .ws-slide > .climate-card { margin: 0; }
+.widget-stack .ws-dots {
+    display: flex; justify-content: center; gap: 6px; margin-top: 7px;
+}
+.widget-stack .ws-dot {
+    width: 6px; height: 6px; padding: 0; border: 0; border-radius: 50%;
+    background: rgba(148, 163, 184, 0.32); cursor: pointer;
+    transition: background 0.15s ease, transform 0.15s ease;
+}
+.widget-stack .ws-dot.is-on { background: #7dd3fc; transform: scale(1.25); }
+.widget-stack .ws-dot:focus-visible { outline: 1px solid rgba(56, 189, 248, 0.6); outline-offset: 2px; }

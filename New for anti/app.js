@@ -1327,6 +1327,54 @@ document.getElementById('news-content')?.addEventListener('click', (e) => {
     if (hit) focusTradeCountry(hit.sourceName);
 });
 
+// Widget-stack swipe. Delegated on a durable root so it survives the panel
+// being rebuilt, and pointer-based so trackpad, mouse and touch all work.
+const wireWidgetStacks = (root) => {
+    if (!root || root.dataset.wsWired === '1') return;
+    root.dataset.wsWired = '1';
+
+    const goTo = (stack, i) => {
+        const track = stack.querySelector('.ws-track');
+        const dots = [...stack.querySelectorAll('.ws-dot')];
+        const n = dots.length || 1;
+        const idx = Math.max(0, Math.min(n - 1, i));
+        stack.dataset.index = String(idx);
+        track.style.transform = `translateX(${-idx * 100}%)`;
+        dots.forEach((d, k) => d.classList.toggle('is-on', k === idx));
+    };
+
+    root.addEventListener('click', (e) => {
+        const dot = e.target instanceof Element ? e.target.closest('[data-ws-go]') : null;
+        if (!dot) return;
+        e.preventDefault();
+        goTo(dot.closest('.widget-stack'), Number(dot.dataset.wsGo));
+    });
+
+    let drag = null;
+    root.addEventListener('pointerdown', (e) => {
+        const stack = e.target instanceof Element ? e.target.closest('.widget-stack') : null;
+        // Links and buttons inside a card keep their own behaviour.
+        if (!stack || e.target.closest('a,button')) return;
+        drag = { stack, x: e.clientX, idx: Number(stack.dataset.index || 0) };
+    });
+    root.addEventListener('pointerup', (e) => {
+        if (!drag) return;
+        const dx = e.clientX - drag.x;
+        // 40px, so a click that wobbles does not change card.
+        if (Math.abs(dx) > 40) goTo(drag.stack, drag.idx + (dx < 0 ? 1 : -1));
+        drag = null;
+    });
+    root.addEventListener('pointercancel', () => { drag = null; });
+
+    root.addEventListener('keydown', (e) => {
+        const stack = e.target instanceof Element ? e.target.closest('.widget-stack') : null;
+        if (!stack || (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight')) return;
+        e.preventDefault();
+        goTo(stack, Number(stack.dataset.index || 0) + (e.key === 'ArrowRight' ? 1 : -1));
+    });
+};
+wireWidgetStacks(forecastContentEl);
+
 // One-time delegation on durable panel roots (survives innerHTML rebuilds).
 const wireClimateDomClicks = (root) => {
     if (!root || root.dataset.climateDelegate === '1') return;
@@ -1754,6 +1802,75 @@ const loadUsdaGain = async () => {
 const fasSearchUrl = (keyword) => {
     const q = encodeURIComponent(String(keyword || '').trim());
     return `https://www.fas.usda.gov/data/search?keyword=${q}`;
+};
+
+/**
+ * The country's own statistics office, beside USDA's view of it.
+ *
+ * USDA GAIN is a foreign attaché's read. Every country here also publishes its
+ * own crop statistics -- CONAB, MAGyP, ABARES, BPS, Rosstat -- and that is what
+ * the models are actually trained against, so the two belong side by side
+ * rather than one standing in for the other.
+ *
+ * Where they disagree is the interesting part, which is a reason to show both
+ * and not to merge them.
+ */
+const monthsSince = (iso) => {
+    const d = new Date(iso);
+    if (Number.isNaN(d.getTime())) return null;
+    const now = new Date();
+    return (now.getFullYear() - d.getFullYear()) * 12 + (now.getMonth() - d.getMonth());
+};
+
+const renderNationalSourceCard = (cfg) => {
+    const src = cfg?.sources || {};
+    const lab = src.labels || {};
+    const clim = src.climate || {};
+    if (!lab.name && !clim.name) return '';
+
+    const age = lab.updated ? monthsSince(lab.updated) : null;
+    // Agricultural statistics normally run a season or two behind; past three
+    // years the series is not "recent official data" in any useful sense.
+    const tone = age == null ? '' : (age > 36 ? 'red' : age > 24 ? 'yellow' : 'green');
+    const ageKo = age == null ? '갱신일 미상'
+        : (age < 1 ? '이번 달' : age < 24 ? `${age}개월 전` : `${Math.floor(age / 12)}년 ${age % 12}개월 전`);
+
+    return `<div class="climate-card">
+        <h3>자국 공식 통계 <span class="src-tag">모델 학습 라벨</span></h3>
+        <div class="climate-metric-row">
+            <span class="nm">${lab.name || '—'}</span>
+            ${tone ? `<span class="climate-status-pill ${tone}">${ageKo}</span>` : ''}
+        </div>
+        ${lab.updated ? `<div class="climate-sub">수록 최신 시점 ${lab.updated}</div>` : ''}
+        ${lab.url ? `<div style="margin-top:6px;"><a class="climate-gain-link" href="${lab.url}"
+             target="_blank" rel="noopener">원본 열기 ↗</a></div>` : ''}
+        ${clim.name ? `<div class="climate-metric-row" style="margin-top:10px;">
+            <span class="nm">기상 입력</span>
+            <span class="vl" style="font-size:11px;">${clim.name}</span>
+        </div>` : ''}
+        <div class="climate-sub" style="margin-top:8px;">
+            USDA/GAIN 은 외부 기관의 관측이고, 이 통계는 해당국이 직접 집계해 공표한 값입니다.
+            모델의 정답지는 이쪽이며, 두 수치가 갈리는 지점이 곧 살펴볼 지점입니다.
+        </div>
+    </div>`;
+};
+
+/**
+ * iPhone-style widget stack: several source cards in one slot, swiped between.
+ *
+ * Vertical space in this column is the constraint -- stacking every source
+ * pushes the crop calendar below the fold. Sharing one slot keeps them at equal
+ * weight instead of ranking them by scroll position.
+ */
+const renderSourceStack = (cards) => {
+    const present = cards.filter(Boolean);
+    if (present.length <= 1) return present[0] || '';
+    return `<div class="widget-stack" data-count="${present.length}">
+        <div class="ws-track">${present.map((c) => `<div class="ws-slide">${c}</div>`).join('')}</div>
+        <div class="ws-dots">${present.map((_, i) =>
+            `<button type="button" class="ws-dot${i === 0 ? ' is-on' : ''}" data-ws-go="${i}"
+                     aria-label="${i + 1}번째 출처"></button>`).join('')}</div>
+    </div>`;
 };
 
 const renderUsdaGainCard = async (countryName) => {
@@ -3284,7 +3401,10 @@ const renderCountryPanel = async (cfg, points = null, meta = {}) => {
 
     // Left: trade + GAIN + crop-type merge + calendar (not commodity trade stats)
     forecastCountryTitle.textContent = cfg.modelName || cfg.label;
-    const gainHtml = await renderUsdaGainCard(climateCountry || cfg.label);
+    const gainHtml = renderSourceStack([
+        await renderUsdaGainCard(climateCountry || cfg.label),
+        renderNationalSourceCard(cfg),
+    ]);
 
     const mergeHtml = merged.length
         ? merged.map((m) => {
