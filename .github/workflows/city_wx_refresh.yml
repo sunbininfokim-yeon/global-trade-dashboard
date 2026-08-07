@@ -1,0 +1,32 @@
+name: Refresh producing-region weather
+
+# 산지 도시의 최근 30일 기온·강수를 직전 10년 동일 기간 평균과 비교해 갱신한다.
+# 도시당 11회 요청(현재 1 + 과거 10)이라 브라우저에서 매번 돌릴 일이 아니다.
+
+on:
+  schedule:
+    - cron: '10 6 * * 3'
+  workflow_dispatch:
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Fetch Open-Meteo ERA5 archive
+        working-directory: "New for anti/scripts"
+        run: python3 build_city_wx.py
+      - name: Commit if values moved
+        run: |
+          f="New for anti/public/data/city_wx_v1.json"
+          if git diff --quiet -- "$f"; then exit 0; fi
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add "$f"
+          git commit -m "chore: refresh producing-region weather anomalies"
+          git push

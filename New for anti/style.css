@@ -1963,3 +1963,16 @@ body.trade-map-mode .left-pane {
 .vintage-row .vt-when em { color: #64748b; font-style: normal; font-size: 10px; }
 .vintage-row .vt-next { color: #7dd3fc; font-size: 10.5px; }
 .climate-sub.vt-note { font-size: 10px; margin: 2px 0 4px; color: #64748b; }
+
+/* 산지 기상: 값 + 평년 대비 편차 */
+.city-wx-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr) minmax(0, 1fr);
+    gap: 6px; align-items: baseline;
+    padding: 5px 0; border-bottom: 1px solid rgba(255,255,255,.05);
+    font-size: 11.5px;
+}
+.city-wx-row .nm { color: #cbd5e1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.city-wx-row .wx-pair { display: flex; gap: 5px; justify-content: flex-end; align-items: baseline; }
+.city-wx-row .wx-v { color: #e2e8f0; font-variant-numeric: tabular-nums; }
+.city-wx-row .wx-a { font-size: 10.5px; font-weight: 700; font-variant-numeric: tabular-nums; }

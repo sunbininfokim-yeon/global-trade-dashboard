@@ -987,19 +987,24 @@ const featureCentroid = (feature) => {
 // small to survive its simplification. Without these a Singapore or Bahrain
 // route resolves to nothing and disappears from the map.
 const SUPPLEMENTAL_POINTS = {
-    'Singapore': [103.82, 1.35],
-    'Macau': [113.55, 22.20],
-    'Bahrain': [50.55, 26.07],
-    'Malta': [14.40, 35.90],
-    'Trinidad and Tobago': [-61.25, 10.70],
-    'Mauritius': [57.55, -20.35],
-    'Cape Verde': [-23.60, 15.10],
-    'Maldives': [73.50, 3.20],
-    'Barbados': [-59.55, 13.19],
-    'Bahamas': [-77.40, 24.25],
-    'Seychelles': [55.50, -4.60],
-    'Comoros': [43.35, -11.65],
-    'Sao Tome and Principe': [6.61, 0.19],
+    // [lon, lat, ISO3]. The code matters: rank rows show it, and without one
+    // the fallback takes the first three letters, which turned Hong Kong into
+    // "HON" instead of HKG.
+    'Singapore': [103.82, 1.35, 'SGP'],
+    'Hong Kong': [114.17, 22.32, 'HKG'],
+    'Macau': [113.55, 22.20, 'MAC'],
+    'Taiwan': [120.96, 23.70, 'TWN'],
+    'Bahrain': [50.55, 26.07, 'BHR'],
+    'Malta': [14.40, 35.90, 'MLT'],
+    'Trinidad and Tobago': [-61.25, 10.70, 'TTO'],
+    'Mauritius': [57.55, -20.35, 'MUS'],
+    'Cape Verde': [-23.60, 15.10, 'CPV'],
+    'Maldives': [73.50, 3.20, 'MDV'],
+    'Barbados': [-59.55, 13.19, 'BRB'],
+    'Bahamas': [-77.40, 24.25, 'BHS'],
+    'Seychelles': [55.50, -4.60, 'SYC'],
+    'Comoros': [43.35, -11.65, 'COM'],
+    'Sao Tome and Principe': [6.61, 0.19, 'STP'],
 };
 
 let countryIndex = null;
@@ -1032,15 +1037,18 @@ const buildCountryIndex = (geo) => {
     })) {
         if (!Array.isArray(coords)) continue;
         const n = normCountryName(name);
+        const iso = SUPPLEMENTAL_POINTS[name]?.[2] || '';
         const existing = byKey.get(n);
         if (existing) {
-            existing.coordinates = coords;
+            existing.coordinates = coords.slice(0, 2);
             existing.aliasOf = existing.key;
+            if (!existing.iso && iso) existing.iso = iso;
             byKey.set(n, existing);
         } else {
-            const rec = { key: name, label: name, iso: '', coordinates: coords };
+            const rec = { key: name, label: name, iso, coordinates: coords.slice(0, 2) };
             records.push(rec);
             byKey.set(n, rec);
+            if (iso) put(iso, rec);
         }
     }
     return { byKey, records };
@@ -2716,6 +2724,19 @@ const loadClimateGlobal = async () => {
     return climateGlobalCache;
 };
 
+let cityWxDoc = null;
+let cityWxPromise = null;
+
+/** Producing-region weather against local normals (scripts/build_city_wx.py). */
+const loadCityWx = () => {
+    if (cityWxPromise) return cityWxPromise;
+    cityWxPromise = fetch('/public/data/city_wx_v1.json', { cache: 'no-cache' })
+        .then((r) => (r.ok ? r.json() : null))
+        .then((d) => { cityWxDoc = d; return d; })
+        .catch(() => null);
+    return cityWxPromise;
+};
+
 const refreshClimateCityTemps = async () => {
     const g = await loadClimateGlobal();
     if (!g?.cities?.length) return;
@@ -2960,6 +2981,7 @@ const renderEnsoBars = (series) => {
 
 const renderClimateWorldLeft = async () => {
     const g = await loadClimateGlobal();
+    await loadCityWx();
     const enso = g?.enso || {};
     const iod = g?.iod || {};
     const amo = g?.north_atlantic || {};
@@ -3021,12 +3043,27 @@ const renderClimateWorldLeft = async () => {
                 }).join('') || '<div class="climate-sub">데이터 없음</div>'}
             </div>
             <div class="climate-card">
-                <h3>주요 산지 도시 기온 (Open-Meteo)</h3>
-                ${(g?.cities || []).map(c => {
-                    const t = climateCityWx[c.name];
-                    return `<div class="climate-city-row">
+                <h3>주요 산지 기상 <span class="src-tag">최근 ${cityWxDoc?.window?.days ?? 30}일 · ${cityWxDoc?.normal || '평년 대비'}</span></h3>
+                ${(cityWxDoc?.cities || g?.cities || []).map(c => {
+                    const w = (cityWxDoc?.cities || []).find(x => x.name === c.name) || {};
+                    const live = climateCityWx[c.name];
+                    // Departure carries the meaning: 27°C says nothing without
+                    // knowing whether 27 is normal there this month.
+                    const ta = w.temp_anom_c;
+                    const pa = w.precip_anom_pct;
+                    const tc = ta == null ? '#94a3b8' : (ta > 0 ? '#fca5a5' : '#7dd3fc');
+                    const pc = pa == null ? '#94a3b8' : (pa < 0 ? '#fbbf24' : '#4ade80');
+                    return `<div class="city-wx-row">
                         <span class="nm">${c.label_ko || c.name}</span>
-                        <span class="vl">${t != null ? t.toFixed(1) + '°C' : '…'}</span>
+                        <span class="wx-pair">
+                            <span class="wx-v">${w.temp_c != null ? w.temp_c.toFixed(1)
+                                : (live != null ? live.toFixed(1) : '—')}°C</span>
+                            ${ta != null ? `<span class="wx-a" style="color:${tc}">${ta >= 0 ? '+' : ''}${ta.toFixed(1)}</span>` : ''}
+                        </span>
+                        <span class="wx-pair">
+                            <span class="wx-v">${w.precip_mm != null ? Math.round(w.precip_mm) : '—'}mm</span>
+                            ${pa != null ? `<span class="wx-a" style="color:${pc}">${pa >= 0 ? '+' : ''}${pa}%</span>` : ''}
+                        </span>
                     </div>`;
                 }).join('') || '<div class="climate-sub">도시 seed 없음</div>'}
             </div>
