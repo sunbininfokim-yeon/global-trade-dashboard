@@ -362,6 +362,20 @@ const focusTradeCountry = (countryName) => {
         });
     }
 
+    const ctl = controlsFor(currentCommodity).get(target?.key || countryName);
+    if (ctl && newsContentEl) {
+        const lv = exportControlsDoc?.levels?.[ctl.level]?.label_ko || ctl.level;
+        newsContentEl.insertAdjacentHTML('afterbegin', `
+            <div class="ctl-card ctl-${ctl.level}">
+                <div class="ctl-head"><strong>${lv}</strong>
+                    <span class="ctl-since">${ctl.since || ''}~</span></div>
+                <div class="ctl-measure">${ctl.measure_ko || ''}</div>
+                <div class="ctl-src">${ctl.source || ''}
+                    ${ctl.url ? `<a href="${ctl.url}" target="_blank" rel="noopener">원문 ↗</a>` : ''}
+                    · 신뢰도 ${ctl.confidence || '—'}</div>
+            </div>`);
+    }
+
     currentViewDesc.textContent = `${displayName} ${roleKo} · ${focused.length}개 루트 · 배경 클릭 또는 「전체 지도」로 초기화`;
     renderMapLayers(arcs, { focus: countryName, asExporter, focused, inboundKeys, keepView: true });
 };
@@ -1084,6 +1098,12 @@ const resolveCountry = (name) => {
 
 /** Coordinates for a country name, or null. Used for node/arc placement. */
 const countryCoords = (name) => resolveCountry(name)?.coordinates || null;
+
+/** Canonical country name for a GeoJSON feature, or ''. */
+const featureCountryName = (feature) => {
+    const n = feature?.properties?.name || feature?.properties?.NAME;
+    return n ? (resolveCountry(n)?.key || n) : '';
+};
 
 /** True when a GeoJSON feature is the same country as `name`. */
 const featureIsCountry = (feature, name) => {
@@ -4151,6 +4171,109 @@ const buildTradeDashes = (arcs, phase) => {
     return out;
 };
 
+// Export controls on the commodity currently shown.
+//
+// The crop monitor already coloured countries by export status, but the
+// commodity maps -- oil, gold, copper, aluminium -- had none, even though the
+// controls that move those markets are exactly what a trade map should surface:
+// Indonesia's nickel ore ban, China's gallium and graphite licensing.
+//
+// Curated, not live. Trade policy changes faster than a hand-maintained file,
+// so every entry carries a source, a start date and a confidence, and the map
+// shows the file's as_of rather than implying it is current.
+let exportControlsDoc = null;
+let exportControlsPromise = null;
+
+const loadExportControls = () => {
+    if (exportControlsPromise) return exportControlsPromise;
+    exportControlsPromise = fetch('/public/data/export_controls_v1.json', { cache: 'no-cache' })
+        .then((r) => (r.ok ? r.json() : null))
+        .then((d) => { exportControlsDoc = d; return d; })
+        .catch(() => null);
+    return exportControlsPromise;
+};
+
+// A dashboard commodity maps to the terms the control file uses. Bauxite sits
+// under aluminium because that is the map the user is looking at when the ore
+// ban matters to them.
+const CONTROL_ALIASES = {
+    aluminum: ['aluminum', 'bauxite'],
+    copper: ['copper'],
+    zinc: ['zinc'],
+    gold: ['gold'],
+    silver: ['silver'],
+    oil: ['oil', 'crude'],
+    gas: ['gas', 'lng'],
+    thermal_coal: ['coal', 'thermal_coal'],
+    met_coal: ['coal', 'met_coal'],
+    wheat: ['wheat'],
+    corn: ['corn'],
+    soybeans: ['soybeans', 'soy'],
+    sugar: ['sugar'],
+    coffee: ['coffee'],
+};
+
+/** Controls affecting `commodity`, keyed by resolved country. */
+const controlsFor = (commodity) => {
+    const out = new Map();
+    const terms = CONTROL_ALIASES[commodity] || [commodity];
+    for (const c of exportControlsDoc?.controls || []) {
+        if (!(c.commodities || []).some((x) => terms.includes(x))) continue;
+        const key = resolveCountry(c.country)?.key || c.country;
+        const rank = exportControlsDoc?.levels?.[c.level]?.rank ?? 0;
+        const prev = out.get(key);
+        // A country can carry several measures on one commodity; show the
+        // strongest rather than whichever was listed first.
+        if (!prev || rank > prev.rank) out.set(key, { ...c, rank });
+    }
+    return out;
+};
+
+/**
+ * Legend for the controls actually on screen.
+ *
+ * Listing every level regardless would imply the map shows all three; naming
+ * the countries makes the colour readable without hovering, and carrying as_of
+ * keeps a hand-maintained file from reading as a live feed.
+ */
+const renderExportControlLegend = (controls) => {
+    const host = document.getElementById('trade-overlay');
+    if (!host) return;
+    host.querySelector('.to-controls-legend')?.remove();
+    if (!controls || controls.size === 0) return;
+
+    const byLevel = new Map();
+    for (const [country, c] of controls) {
+        if (!byLevel.has(c.level)) byLevel.set(c.level, []);
+        byLevel.get(c.level).push(resolveCountry(country)?.iso || country);
+    }
+    const order = ['prohibited', 'restricted', 'watch'];
+    const rows = order.filter((l) => byLevel.has(l)).map((l) => {
+        const label = exportControlsDoc?.levels?.[l]?.label_ko || l;
+        return `<div class="to-scale-row">
+            <i class="ctl ctl-${l}"></i>${label}
+            <span class="ctl-iso">${byLevel.get(l).join(' · ')}</span>
+        </div>`;
+    }).join('');
+
+    const el = document.createElement('div');
+    el.className = 'to-controls-legend';
+    el.innerHTML = `<span class="to-label">수출 통제</span>${rows}
+        <div class="to-hint ctl-asof">${exportControlsDoc?.as_of || ''} 기준 · 수기 정리본 · 국가 클릭 시 상세</div>`;
+    host.insertBefore(el, host.querySelector('.to-hint'));
+};
+
+const CONTROL_FILL = {
+    prohibited: [248, 113, 113, 70],
+    restricted: [251, 146, 60, 62],
+    watch: [250, 204, 21, 48],
+};
+const CONTROL_LINE = {
+    prohibited: [252, 165, 165, 190],
+    restricted: [253, 186, 116, 175],
+    watch: [253, 224, 71, 160],
+};
+
 let tradeFlowOn = true;
 
 const renderMapLayers = (arcs, opts = {}) => {
@@ -4209,6 +4332,8 @@ const renderMapLayers = (arcs, opts = {}) => {
     const nodeTradeMax = nodeData.reduce((m, d) => Math.max(m, d.totalTrade), 1);
 
     if (!opts.keepView) currentViewState = clampGlobeView({ ...TRADE_MAP_VIEW });
+    const tradeControls = controlsFor(currentCommodity);
+    renderExportControlLegend(tradeControls);
 
     const baseLayers = () => [
         ...worldBaseLayers({ id: 'trade' }),
@@ -4228,6 +4353,27 @@ const renderMapLayers = (arcs, opts = {}) => {
                 : [0, 0, 0, 0]),
             pickable: false,
             updateTriggers: { getFillColor: [focus], getLineColor: [focus] },
+        }),
+        // Countries under an export control on this commodity.
+        new GeoJsonLayer({
+            id: 'trade-export-controls',
+            data: worldGeo(),
+            stroked: true,
+            filled: true,
+            pickable: false,
+            lineWidthMinPixels: 1,
+            getFillColor: (f) => {
+                const c = tradeControls.get(featureCountryName(f));
+                return c ? (CONTROL_FILL[c.level] || CONTROL_FILL.watch) : [0, 0, 0, 0];
+            },
+            getLineColor: (f) => {
+                const c = tradeControls.get(featureCountryName(f));
+                return c ? (CONTROL_LINE[c.level] || CONTROL_LINE.watch) : [0, 0, 0, 0];
+            },
+            updateTriggers: {
+                getFillColor: [currentCommodity, tradeControls.size],
+                getLineColor: [currentCommodity, tradeControls.size],
+            },
         }),
         new GeoJsonLayer({
             id: 'trade-countries-pick',
@@ -4616,6 +4762,11 @@ const setView = (target) => {
 
         // Ranking first (it explains the map), news below it.
         updateNewsPanel('Global Market');
+        loadExportControls().then(() => {
+            if (currentCommodity !== target) return;
+            const arcs = window.TradeData?.[target]?.arcs;
+            if (arcs?.length) renderMapLayers(arcs, { keepView: true });
+        });
 
         // Lazy Loading: if arcs are empty, fetch real data from UN Comtrade
         if (data.arcs.length === 0 && window.fetchComtradeArcs) {
