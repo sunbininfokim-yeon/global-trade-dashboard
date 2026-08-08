@@ -43,6 +43,9 @@ jobs:
           KRX_API: ${{ secrets.KRX_API }}
         run: python build_derivatives_board.py --live --print-stats
 
+      - name: Investor × price levels (real data; marcap + high-vol in top100)
+        run: python build_investor_price_levels.py --live --universe both --top 10 --pool 100 --print-stats
+
       - name: Commit snapshots
         working-directory: ${{ github.workspace }}
         run: |
@@ -59,8 +62,10 @@ jobs:
             "New for anti/public/data/us_kr_regime_proxy_backtest_v1.json" \
             "New for anti/public/data/derivatives_board_v1.json" \
             "New for anti/public/data/us_oi_daily_archive.jsonl" \
+            "New for anti/public/data/investor_price_levels_v1.json" \
             "New for anti/scripts/market_microstructure/US_KR_L3.md" \
             "New for anti/scripts/market_microstructure/DERIVATIVES_BOARD.md" \
+            "New for anti/scripts/market_microstructure/INVESTOR_PRICE_LEVELS.md" \
             "New for anti/scripts/market_microstructure/tests/fixtures/us_day.json" \
             || true
           git commit -m "chore: refresh market microstructure daily snapshots" || exit 0
