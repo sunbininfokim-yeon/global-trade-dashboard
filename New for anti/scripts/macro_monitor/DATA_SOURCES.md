@@ -13,8 +13,20 @@
 | **BIS SDMX** / BIS statistics | REER | ✅ | 엔·파운드·달러 REER |
 | **Yahoo / Stooq / Polygon** 등 | 주가지수 일봉 | ✅~⚠️ | 라이선스·약관 확인 |
 | **IMF IFS** | M2/M4·예비 | ✅ | 갱신 느림 |
+| **Ember Yearly Electricity** | 국가별 발전량 TWh · 연료 믹스 | ✅ CC-BY | `config/electricity_ember_v1.json` · `tools/extract_ember_electricity.py` |
 
 키/시크릿은 커밋 금지. Worker 시크릿 또는 로컬 env.
+
+갱신 주기 티어: [`REFRESH_TIERS.md`](./REFRESH_TIERS.md) (Alpha Vantage = last resort only).
+
+### 0b. 매크로 뉴스 (UI 사이드 레일 — forthcoming)
+
+| 항목 | 메모 |
+|------|------|
+| 트리거 | 지표 칩/차트 클릭 → `news_query` / `news_tags` |
+| 구현 | **서버사이드** Worker + **캐시(KV)** — 브라우저에서 뉴스 API 직콜 금지 권장 |
+| fixture | `news: null` only — **가짜 기사 넣지 말 것** |
+| UI 계약 | [`CLAUDE_UI_HANDOFF_US_TUNING.md`](./CLAUDE_UI_HANDOFF_US_TUNING.md) §B |
 
 ---
 
@@ -129,7 +141,7 @@
 | USD/CNY · CNH | FRED / FX API | ✅ | `DEXCHUS` 등 |
 | PBOC Fixing | PBOC 일일 | ✅~⚠️ | |
 | 외환보유 · CFETS | SAFE / CFETS | ✅~⚠️ | |
-| SSE / CSI300 / HSCEI | 시세 API | ✅~⚠️ | |
+| SSE / CSI300 (A주) · HSCEI (H주) · 북향/남향 | 시세·HKEX Connect | ✅~⚠️ | B주는 미포함(사장) |
 | Northbound | HKEX / Wind | ⚠️ | 일별 순유입 |
 | 커창지수 | 전력·화물·대출 합성 | ⚠️ | 공식 단일 API 없음 |
 | NBS PMI | NBS | ✅ | |
@@ -138,7 +150,7 @@
 | 청년실업 | NBS | ⚠️ | **기준 변경** 메타데이터 필수 |
 | **PPI** / CPI | NBS | ✅ | PPI = 글로벌 핵심 |
 
-**중국 우선순위:** TSF+M1/M2+LPR+PPI → CNY/CNH+CSI300 → NBS PMI+부동산 → LGFV/HY(유료면 스킵)
+**중국 우선순위:** TSF+M1/M2+LPR+PPI → CNY/CNH → **A주(CSI300)+북향** → H주(HSCEI) → NBS PMI+부동산 → LGFV/HY
 
 ---
 
@@ -271,6 +283,28 @@
 | 은행신용 YoY | RBI | ✅ | |
 
 **인도 우선순위:** CAD/GDP + Repo + USD/INR → FPI/Nifty → CPI/WPI → 농촌판매·신용
+
+---
+
+## 10b. 이스라엘 (`il_macro_v1`)
+
+| 지표 | 추천 소스 | 난이도 | 메모 |
+|------|-----------|--------|------|
+| BOI 총자산 · 외환보유 · M2 | Bank of Israel | ✅ | |
+| **BOI 정책금리** · 셰켈 국채 | BOI | ✅ | 물가목표 1–3% |
+| **5Y CDS** | Markit/터미널 | ⚠️ | **위험프리미엄 핵심** — 유지 |
+| **USD/ILS** | BOI / FX | ✅ | |
+| 재정수지 · 부채/GDP | MOF / CBS | ✅ | 전시 재정 |
+| **TA-125** | TASE | ✅~⚠️ | |
+| **하이테크 수출** | CBS / BOI | ✅~⚠️ | KR 반도체 슬롯 |
+| GDP · 실업 · CPI | CBS | ✅ | 전시 노동공급 주의 |
+
+**이스라엘 우선순위:** CDS + USD/ILS + BOI Rate → 하이테크수출/TA-125 → 재정 → CPI
+
+### 이란 (`IRN`) — 키트 없음
+
+제재·이중환율·통계 불투명·접근 제한. **표준 6탭 비추천.**  
+유가·호르무즈·해운은 글로벌 외생으로만 추적.
 
 ---
 

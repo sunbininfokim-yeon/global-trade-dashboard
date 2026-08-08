@@ -13,16 +13,20 @@
 ## 풀 키트: US · JP · UK · CN · EZ · RU · HK · SG · ZA · IN · KR · CA · AU · CH · BR · VN · KZ · TW
 
 - [`TW_MACRO_KIT.md`](./TW_MACRO_KIT.md) — 반도체 · 생보 환헤지 · USD/TWD · 수출주문
-- **API:** [`DATA_SOURCES.md`](./DATA_SOURCES.md)
+- **API:** [`DATA_SOURCES.md`](./DATA_SOURCES.md) · **refresh:** [`REFRESH_TIERS.md`](./REFRESH_TIERS.md)
+- **Claude UI handoff:** [`CLAUDE_UI_HANDOFF.md`](./CLAUDE_UI_HANDOFF.md)
 
 ## 실행
 
 ```bash
 cd "New for anti/scripts/macro_monitor"
 python3 -m unittest discover -s tests -v
-python3 build_macro_monitor.py --print-stats
+python3 build_macro_monitor.py --print-stats          # fixture only
+python3 build_macro_monitor.py --live --print-stats   # Yahoo + Worker FRED/BOK overlay
 # → ../../public/data/macro_monitor_v1.json
 ```
+
+실데이터 범위: [`LIVE_DATA.md`](./LIVE_DATA.md)
 
 ## 프로토타입 UI (기존 app.js 미수정)
 
