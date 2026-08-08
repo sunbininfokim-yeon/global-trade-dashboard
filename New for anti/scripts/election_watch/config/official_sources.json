@@ -1,0 +1,262 @@
+{
+  "version": 1,
+  "updated": "2026-08-08",
+  "notes": [
+    "CIA World Factbook sunset 2026-02 — Government 라이브 소스 아님.",
+    "파벌/코커스 비공식 명단은 factions_*.json + media cross-check."
+  ],
+  "global_reference": [
+    {
+      "id": "cia_factbook_archive",
+      "status": "sunset_2026-02",
+      "url": "https://www.cia.gov/the-world-factbook/",
+      "grade": "archive_only"
+    }
+  ],
+  "tier1": {
+    "USA": {
+      "official": [
+        {
+          "id": "fec",
+          "org": "FEC OpenFEC",
+          "url": "https://api.open.fec.gov/developers/",
+          "covers": [
+            "federal_finance",
+            "candidate_meta"
+          ]
+        },
+        {
+          "id": "fec_dates",
+          "org": "FEC Dates and deadlines",
+          "url": "https://www.fec.gov/help-candidates-and-committees/dates-and-deadlines/",
+          "covers": [
+            "2026_special_elections",
+            "reporting_calendar"
+          ]
+        },
+        {
+          "id": "state_sos",
+          "org": "State Secretaries of State",
+          "note": "인증 득표 1차 원천(주별)",
+          "covers": [
+            "certified_results",
+            "governor",
+            "state_legislature"
+          ]
+        },
+        {
+          "id": "house_clerk",
+          "url": "https://clerk.house.gov/",
+          "covers": [
+            "house_membership"
+          ]
+        },
+        {
+          "id": "senate",
+          "url": "https://www.senate.gov/",
+          "covers": [
+            "senate_membership",
+            "floor_leadership"
+          ]
+        },
+        {
+          "id": "nga",
+          "url": "https://www.nga.org/governors/",
+          "covers": [
+            "governors"
+          ]
+        },
+        {
+          "id": "nga_elections",
+          "url": "https://www.nga.org/governors/elections/",
+          "covers": [
+            "gubernatorial_election_calendar"
+          ]
+        }
+      ],
+      "calendar_file": "calendars/usa_2026.json",
+      "aggregators": [
+        {
+          "id": "medsl",
+          "url": "https://electionlab.mit.edu/data",
+          "repos": [
+            "https://github.com/MEDSL/2024-elections-official"
+          ]
+        }
+      ],
+      "factions_file": "usa_house_factions.json"
+    },
+    "JPN": {
+      "official": [
+        {
+          "id": "mic",
+          "org": "総務省",
+          "url": "https://www.soumu.go.jp/senkyo/senkyo_s/data/index.html"
+        },
+        {
+          "id": "mic_hoketsu",
+          "org": "総務省 衆議院議員補欠選挙",
+          "url": "https://www.soumu.go.jp/senkyo/senkyo_s/data/hoketsu/hoketsu_1.html",
+          "covers": [
+            "national_by_elections"
+          ]
+        },
+        {
+          "id": "estat",
+          "org": "e-Stat",
+          "url": "https://www.e-stat.go.jp/"
+        }
+      ],
+      "calendar_file": "calendars/jpn_2026.json",
+      "factions_file": "jpn_ldp_factions.json"
+    },
+    "CHN": {
+      "mode": "leadership_pla_not_competitive_board",
+      "official": [
+        {
+          "id": "npc",
+          "url": "http://www.npc.gov.cn/"
+        },
+        {
+          "id": "gov_cn",
+          "url": "https://www.gov.cn/"
+        },
+        {
+          "id": "xinhua",
+          "url": "https://www.news.cn/"
+        }
+      ],
+      "deferred": [
+        "politburo_standing_committee",
+        "pla_commanders_from_reports"
+      ]
+    },
+    "RUS": {
+      "mode": "managed_elections_document_extract",
+      "official": [
+        {
+          "id": "cikrf",
+          "org": "Central Election Commission",
+          "url": "http://www.cikrf.ru/",
+          "covers": [
+            "duma",
+            "regional",
+            "calendar"
+          ]
+        },
+        {
+          "id": "kremlin",
+          "org": "President of Russia",
+          "url": "http://en.kremlin.ru/",
+          "covers": [
+            "decrees",
+            "head"
+          ]
+        },
+        {
+          "id": "duma",
+          "org": "State Duma",
+          "url": "http://duma.gov.ru/",
+          "covers": [
+            "membership"
+          ]
+        }
+      ],
+      "notes": "Activated 2026-08-08; roster scrape todo"
+    }
+  },
+  "tier2_portals": {
+    "BRA": {
+      "url": "https://dadosabertos.tse.jus.br/",
+      "quality": "best_open_data"
+    },
+    "DEU": {
+      "url": "https://www.bundeswahlleiterin.de/"
+    },
+    "FRA": {
+      "url": "https://www.elections.interieur.gouv.fr/"
+    },
+    "IND": {
+      "url": "https://www.eci.gov.in/"
+    },
+    "GBR": {
+      "url": "https://www.electoralcommission.org.uk/"
+    },
+    "TUR": {
+      "url": "https://www.ysk.gov.tr/"
+    },
+    "IDN": {
+      "url": "https://www.kpu.go.id/"
+    },
+    "ZAF": {
+      "url": "https://www.elections.org.za/"
+    },
+    "NGA": {
+      "url": "https://www.inecnigeria.org/"
+    },
+    "ISR": {
+      "url": "https://www.bechirot.gov.il/"
+    },
+    "ARE": {
+      "url": "https://www.uaenec.ae/",
+      "tier": "3_leadership_brief"
+    },
+    "IRN": {
+      "url": "https://www.moi.ir/",
+      "note": "Guardian Council supervises"
+    },
+    "SAU": {
+      "url": "https://www.spa.gov.sa/",
+      "note": "limited competitive elections",
+      "tier": "3_leadership_brief"
+    }
+  },
+  "tier2_active": {
+    "GBR": {
+      "url": "https://members-api.parliament.uk/",
+      "calendar": "calendars/gbr_2026.json",
+      "extract": "extracted/gbr_commons.json",
+      "wave": "2a_europe",
+      "depth": "commons_state_of_parties"
+    },
+    "DEU": {
+      "url": "https://www.bundeswahlleiterin.de/",
+      "calendar": "calendars/deu_2026.json",
+      "wave": "2a_europe"
+    },
+    "FRA": {
+      "url": "https://www.elections.interieur.gouv.fr/",
+      "calendar": "calendars/fra_2026.json",
+      "wave": "2a_europe"
+    },
+    "ISR": {
+      "url": "https://www.bechirot.gov.il/",
+      "calendar": "calendars/isr_2026.json",
+      "extract": "extracted/isr_knesset.json",
+      "wave": "2b_israel",
+      "depth": "knesset_25_wiki"
+    },
+    "BRA": {
+      "url": "https://dadosabertos.tse.jus.br/",
+      "calendar": "calendars/bra_2026.json",
+      "wave": "2c_brazil",
+      "quality": "best_open_data"
+    }
+  },
+  "tier3_leadership": {
+    "mode": "leadership_brief",
+    "SAU": {
+      "profile": "profiles/sau.json",
+      "calendar": "calendars/sau_2026.json"
+    },
+    "ARE": {
+      "profile": "profiles/are.json",
+      "calendar": "calendars/are_2026.json",
+      "emirates": 7
+    },
+    "IRN": {
+      "status": "deferred",
+      "note": "의도적 미작성"
+    }
+  }
+}

@@ -289,6 +289,23 @@ UI 선거 창은 이후. 시드에 일정만 채우면 보드가 자람.
 
 ---
 
+## 6b. 러시아 수출 펄스 (`russia_export_pulse_v1`)
+
+피격·다크십이 아니라 **공식 수출량**에서 빠짐을 본다.
+
+| | |
+|------|-----|
+| 생성 | `scripts/russia_export_pulse/build_snapshot.py` |
+| 산출 | `public/data/russia_export_pulse_v1.json` |
+| 정본 | USDA PSD 밀 Exports (마케팅연도) + 세계 비중·기여분 |
+| 보조 | PortWatch 보스포루스 dry_bulk (흑해 **전체** 출구) |
+| 월별 | Comtrade `freq=M` — `COMTRADE_SUBSCRIPTION_KEY` 있을 때만 |
+| 제외 | 다크십, 피격 건수, 언론 “세계 밀 −15%” 인과 |
+
+`shipping.js` 배선은 Claude. 이 JSON만 Cursor/Codex가 갱신.
+
+---
+
 ## 7. 커밋 전 체크리스트
 
 ```

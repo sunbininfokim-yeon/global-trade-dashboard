@@ -1,0 +1,168 @@
+{
+  "version": 1,
+  "chamber": "US House",
+  "as_of": "2026-08-08",
+  "notes": [
+    "공식 선관위 데이터 아님.",
+    "공개 코커스 = 코커스 사이트 1차. 비공개(HFC/RSC) = 언론·업계·Ballotpedia 교차, confidence 필수.",
+    "명단은 스냅샷 — Congress 중 변동. 재검증 주기: 분기 또는 리더십 선거 직후."
+  ],
+  "spectrum_axis": "progressive_blue_to_conservative_red",
+  "floor_leadership_offices": [
+    {"id": "speaker", "chamber": "house"},
+    {"id": "majority_leader", "chamber": "house"},
+    {"id": "majority_whip", "chamber": "house"},
+    {"id": "minority_leader", "chamber": "house"},
+    {"id": "minority_whip", "chamber": "house"},
+    {"id": "senate_majority_leader", "chamber": "senate"},
+    {"id": "senate_minority_leader", "chamber": "senate"}
+  ],
+  "parties": {
+    "dem": {
+      "factions": [
+        {
+          "id": "cpc",
+          "name_en": "Congressional Progressive Caucus",
+          "spectrum": "progressive",
+          "roster_mode": "official_caucus_site",
+          "confidence": "high",
+          "url": "https://progressives.house.gov/caucus-members",
+          "members_snapshot": null,
+          "note": "Pull live from site; do not hardcode full roster here."
+        },
+        {
+          "id": "newdem",
+          "name_en": "New Democrat Coalition",
+          "spectrum": "center_left",
+          "roster_mode": "official_caucus_site",
+          "confidence": "high",
+          "url": "https://newdemocratcoalition.house.gov/members"
+        },
+        {
+          "id": "bluedog",
+          "name_en": "Blue Dog Coalition",
+          "spectrum": "center",
+          "roster_mode": "official_caucus_site",
+          "confidence": "high",
+          "url": "https://bluedogcaucus.house.gov/"
+        }
+      ]
+    },
+    "gop": {
+      "factions": [
+        {
+          "id": "hfc",
+          "name_en": "House Freedom Caucus",
+          "spectrum": "conservative",
+          "roster_mode": "media_crosscheck",
+          "roster_official": false,
+          "confidence": "medium",
+          "caveat": "Invitation-only; no official public roster. Snapshot below is cross-checked media/industry list — incomplete risk.",
+          "crosscheck_sources": [
+            {
+              "id": "nada_119_2025-04-22",
+              "org": "NADA compiled list (industry briefing)",
+              "title": "House Freedom Caucus Members, 119th Congress",
+              "date": "2025-04-22",
+              "url": "https://www.nada.org/media/16927/download?inline=",
+              "role": "primary_snapshot"
+            },
+            {
+              "id": "ballotpedia_hfc",
+              "org": "Ballotpedia",
+              "url": "https://ballotpedia.org/House_Freedom_Caucus",
+              "role": "secondary_crosscheck",
+              "note": "Explicitly says caucus does not disclose roster; cites news lists."
+            },
+            {
+              "id": "pew_118",
+              "org": "Pew Research Center",
+              "url": "https://www.pewresearch.org/short-reads/2023/01/23/freedom-caucus-likely-to-play-a-bigger-role-in-new-gop-led-house-so-who-are-they/",
+              "role": "historical_118th_baseline"
+            },
+            {
+              "id": "cdc_bioguide",
+              "org": "Congressional Data Coalition",
+              "url": "https://congressionaldata.org/presenting-caucus-membership-as-data/",
+              "role": "aggregated_bioguide_join",
+              "note": "Uses Wikipedia/Ballotpedia/press for HFC."
+            }
+          ],
+          "members_snapshot": {
+            "congress": 119,
+            "snapshot_date": "2025-04-22",
+            "source_id": "nada_119_2025-04-22",
+            "count": 32,
+            "members": [
+              {"name": "Barry Moore", "state": "AL"},
+              {"name": "Gary Palmer", "state": "AL"},
+              {"name": "Andy Biggs", "state": "AZ"},
+              {"name": "Eli Crane", "state": "AZ"},
+              {"name": "Paul Gosar", "state": "AZ"},
+              {"name": "Lauren Boebert", "state": "CO"},
+              {"name": "Byron Donalds", "state": "FL"},
+              {"name": "Greg Steube", "state": "FL"},
+              {"name": "Andrew Clyde", "state": "GA"},
+              {"name": "Mike Collins", "state": "GA"},
+              {"name": "Russ Fulcher", "state": "ID"},
+              {"name": "Mary Miller", "state": "IL"},
+              {"name": "Marlin Stutzman", "state": "IN"},
+              {"name": "Clay Higgins", "state": "LA"},
+              {"name": "Andy Harris", "state": "MD"},
+              {"name": "Eric Burlison", "state": "MO"},
+              {"name": "Jim Jordan", "state": "OH"},
+              {"name": "Josh Brecheen", "state": "OK"},
+              {"name": "Scott Perry", "state": "PA"},
+              {"name": "Ralph Norman", "state": "SC"},
+              {"name": "Scott DesJarlais", "state": "TN"},
+              {"name": "Mark Green", "state": "TN"},
+              {"name": "Diana Harshbarger", "state": "TN"},
+              {"name": "Andy Ogles", "state": "TN"},
+              {"name": "Michael Cloud", "state": "TX"},
+              {"name": "Brandon Gill", "state": "TX"},
+              {"name": "Chip Roy", "state": "TX"},
+              {"name": "Keith Self", "state": "TX"},
+              {"name": "Ben Cline", "state": "VA"},
+              {"name": "Morgan Griffith", "state": "VA"},
+              {"name": "Tom Tiffany", "state": "WI"},
+              {"name": "Harriet Hageman", "state": "WY"}
+            ]
+          }
+        },
+        {
+          "id": "rsc",
+          "name_en": "Republican Study Committee",
+          "spectrum": "conservative",
+          "roster_mode": "media_crosscheck",
+          "roster_official": false,
+          "confidence": "low",
+          "url": "https://rsc-hern.house.gov/",
+          "caveat": "119th에서 공개 명단 축소·비공개 경향. 프레스 릴리스·CDC 교차만.",
+          "crosscheck_sources": [
+            {
+              "id": "cdc_bioguide",
+              "url": "https://congressionaldata.org/presenting-caucus-membership-as-data/"
+            }
+          ],
+          "members_snapshot": null
+        },
+        {
+          "id": "mainstreet",
+          "name_en": "Republican Main Street Caucus",
+          "spectrum": "center_right",
+          "roster_mode": "caucus_or_org_site",
+          "confidence": "medium",
+          "url": "https://www.republicanmainstreet.org/"
+        },
+        {
+          "id": "tuesday",
+          "name_en": "Tuesday Group / governance moderates",
+          "spectrum": "center_right",
+          "roster_mode": "media_curated",
+          "confidence": "low",
+          "members_snapshot": null
+        }
+      ]
+    }
+  }
+}

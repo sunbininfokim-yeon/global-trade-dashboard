@@ -55,7 +55,36 @@ python3 build_board.py --print-stats
 
 ## 데이터 채우기
 
-`config/country_seed.json` 의 `events_2026[]` 에 날짜를 계속 추가.
+`config/calendars/{usa,jpn,rus}_2026.json` 에 연도 일정을 넣고 `build_board.py`가 병합.  
+시드·프로필의 `events_2026` 는 캘린더 파일이 우선. 교차 로그: `config/extracted/calendars_2026.json`.
+
+## 학습 (문서/텍스트)
+
+숫자 API 페인팅이 아님. → **`LEARNING.md`**
+
+- 스펙트럼 규칙: `config/spectrum_rules.json` (공화·자민 = conservative → 지도 빨강)
+- 중국 보고서: `config/china_report_sources.json` + `raw/china/CMPR_2025.{pdf,txt}`
+- PLA 한국어 바이오: `python3 -m election_watch.build_china_pla_bios` → `config/china_pla_bios.json` (LLM 아님)
+- Anti 문헌만: `HANDOFF_ANTIGRAVITY_CHINA_LIT.md` — JSON/파이프는 Cursor
+
+## 1급 상태 · 파벌 (언론 교차)
+
+| 파일 | 내용 |
+|------|------|
+| `config/tier1_status.json` | 뭐가 됐고 뭐가 남았는지 |
+| `config/official_sources.json` | 선관위·공식 포털 |
+| `config/usa_house_factions.json` | 하원 파벌 + HFC 119대 스냅샷(언론 교차) |
+| `config/jpn_ldp_factions.json` | 자민 파벌/旧파벌 (読売·日経·연합 등) |
+
+**2급 deep:** `GBR`·`ISR` (`extract_gbr_isr`) · `KOR` (`extract_kor`).  
+**2급 composition:** `DEU`·`FRA`·`BRA` (`extract_tier2_fill`) — 여론 숫자 todo.  
+**2급 scaffold:** `TWN`·`TUR`·`IND`.  
+**3급 간략:** `SAU`·`ARE` — 선거 `없음`. `IRN` 미작성. → `tier3_leadership_briefs.json`.  
+**학습 분석 정본:** `LEARNING.md` + `config/extracted/learning_analysis_v1.json` + `human_labels.jsonl`.
+
+미국: 당대표 선거 없음 → 원내대표만. HFC는 공식 명단 없음 → NADA(2025-04) + Ballotpedia/Pew/CDC 교차로 32명 스냅샷 남김.
+
+일본: 공식 파벌은 아소파만 존속(読売·47NEWS). 旧아베·모테기·기시다·니카이 등은 해산 후에도 회동 블록으로 언론 추적 → `ex_*`로 남김. 전체 명단은 변동 심해 count+출처만.
 
 ## UI 스케치 (나중)
 

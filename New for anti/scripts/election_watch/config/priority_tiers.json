@@ -1,0 +1,211 @@
+{
+  "version": 1,
+  "notes": "1급 경쟁/문서 심화. 2급 경쟁선거(유럽·이스라엘·브라질…). 3급=비경쟁·제한선거 leadership_brief. IRN 미작성.",
+  "tiers": {
+    "1": {
+      "label_ko": "1급",
+      "iso3_active": [
+        "USA",
+        "JPN",
+        "CHN",
+        "RUS"
+      ],
+      "deferred": [],
+      "ingest_order": [
+        "USA",
+        "JPN",
+        "CHN",
+        "RUS"
+      ]
+    },
+    "2": {
+      "label_ko": "2급 (경쟁 선거)",
+      "iso3": [
+        "BRA",
+        "DEU",
+        "FRA",
+        "GBR",
+        "IDN",
+        "IND",
+        "ISR",
+        "KOR",
+        "NGA",
+        "TUR",
+        "TWN",
+        "ZAF"
+      ],
+      "regions": {
+        "europe": [
+          "GBR",
+          "DEU",
+          "FRA",
+          "TUR"
+        ],
+        "middle_east": [
+          "ISR"
+        ],
+        "americas": [
+          "BRA"
+        ],
+        "south_asia_se": [
+          "IND",
+          "IDN"
+        ],
+        "africa": [
+          "ZAF",
+          "NGA"
+        ],
+        "east_asia": [
+          "KOR",
+          "TWN"
+        ]
+      },
+      "competitive_first": [
+        "GBR",
+        "DEU",
+        "FRA",
+        "ISR",
+        "BRA"
+      ],
+      "ingest_waves": {
+        "2a_europe": [
+          "GBR",
+          "DEU",
+          "FRA"
+        ],
+        "2b_israel": [
+          "ISR"
+        ],
+        "2c_brazil": [
+          "BRA"
+        ],
+        "2d_next": [
+          "TUR",
+          "IND",
+          "IDN",
+          "ZAF",
+          "NGA"
+        ],
+        "2d_scaffold": [
+          "KOR",
+          "TWN",
+          "TUR",
+          "IND"
+        ]
+      },
+      "iso3_active": [
+        "BRA",
+        "DEU",
+        "FRA",
+        "GBR",
+        "IND",
+        "ISR",
+        "KOR",
+        "TUR",
+        "TWN"
+      ]
+    },
+    "3": {
+      "label_ko": "3급 (비경쟁·제한 선거 — 지도자 카드)",
+      "doc": "tier3_leadership_briefs.json",
+      "iso3": [
+        "SAU",
+        "ARE"
+      ],
+      "deferred": [
+        "IRN"
+      ],
+      "deferred_note": "IRN managed — 의도적 미작성",
+      "mode": "leadership_brief",
+      "iso3_active": [
+        "SAU",
+        "ARE"
+      ],
+      "depth": "minimal_head_emirs_power_event_only"
+    }
+  },
+  "country_policy_overrides": {
+    "USA": {
+      "skip_event_types": [
+        "party_leadership"
+      ],
+      "track_event_types": [
+        "presidential",
+        "general",
+        "local",
+        "by_election",
+        "floor_leadership",
+        "state_legislature"
+      ]
+    },
+    "JPN": {
+      "faction_mode": "party_factions_media_curated"
+    },
+    "CHN": {
+      "mode": "leadership_pla_document_extract"
+    },
+    "RUS": {
+      "status": "active",
+      "mode": "managed_elections_document_extract"
+    },
+    "GBR": {
+      "status": "active",
+      "region": "europe",
+      "wave": "2a_europe"
+    },
+    "DEU": {
+      "status": "active",
+      "region": "europe",
+      "wave": "2a_europe"
+    },
+    "FRA": {
+      "status": "active",
+      "region": "europe",
+      "wave": "2a_europe"
+    },
+    "ISR": {
+      "status": "active",
+      "region": "middle_east",
+      "wave": "2b_israel"
+    },
+    "BRA": {
+      "status": "active",
+      "region": "americas",
+      "wave": "2c_brazil"
+    },
+    "SAU": {
+      "status": "active",
+      "region": "middle_east",
+      "mode": "leadership_brief",
+      "tier": 3
+    },
+    "ARE": {
+      "status": "active",
+      "region": "middle_east",
+      "mode": "leadership_brief_emirates",
+      "tier": 3
+    },
+    "IRN": {
+      "status": "deferred",
+      "mode": "managed_document_extract",
+      "note": "의도적 미작성"
+    },
+    "KOR": {
+      "status": "active",
+      "wave": "2_kor_deep",
+      "depth": "assembly_local_poll"
+    },
+    "TWN": {
+      "status": "active",
+      "wave": "2d_scaffold"
+    },
+    "TUR": {
+      "status": "active",
+      "wave": "2d_scaffold"
+    },
+    "IND": {
+      "status": "active",
+      "wave": "2d_scaffold"
+    }
+  }
+}

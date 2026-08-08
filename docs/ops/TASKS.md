@@ -23,6 +23,7 @@
 | T13 | 기후 국가 드릴다운 = TARGET 워크스페이스 | **claude** | `app.js` `style.css` `index.html` | `claude/ui-globe` | **review** | HUD 프레임 + 산지 라벨(단수·편차) + 단위 환산표 |
 | T10 | MENA yield pipeline | cursor | `yield_model/mena/**`, `public/data/mena_yield_forecast.json` | `cursor/ml-mena-yield` | **in_progress** | Nile irrigated + Maghreb rainfed wheat T1; FAOSTAT labels; forecast JSON |
 | T14 | Canada SAD yield + UI | cursor | `yield_model/canada/**`, `canada_*forecast.json`, registry | `cursor/pr-canada-yield` | **review** | SAD+UI+monthly Actions+gov_outlooks; model.yaml → climate_registry |
+| T15 | Russia export pulse (PSD+PortWatch) | **cursor** | `scripts/russia_export_pulse/**`, `russia_export_pulse_v1.json` | `cursor/russia-export-pulse` | **review** | 밀 수출·세계비중·기여분 + 보스포루스 보조. 다크십/피격 제외. UI는 Claude 핸드오프. |
 
 ## 백로그
 

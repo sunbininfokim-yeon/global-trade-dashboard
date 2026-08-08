@@ -1,0 +1,67 @@
+{
+  "iso3": "BRA",
+  "as_of": "2026-08-08",
+  "priority_tier": 2,
+  "region": "americas",
+  "system": "presidential",
+  "map_spectrum": "progressive",
+  "head": {
+    "role": "president",
+    "name_en": "Luiz Inácio Lula da Silva",
+    "party_id": "pt",
+    "spectrum": "progressive",
+    "sources": [
+      {
+        "org": "TSE / wiki cycle",
+        "url": "https://en.wikipedia.org/wiki/2026_Brazilian_general_election",
+        "note": "Incumbent heading into 2026 general"
+      }
+    ]
+  },
+  "parties": [
+    {
+      "id": "pt",
+      "abbr": "PT",
+      "name_en": "Workers' Party",
+      "role": "ruling",
+      "spectrum": "progressive",
+      "confidence": "high"
+    },
+    {
+      "id": "pl",
+      "abbr": "PL",
+      "name_en": "Liberal Party",
+      "role": "main_opposition",
+      "spectrum": "conservative",
+      "confidence": "high"
+    }
+  ],
+  "legislature": {
+    "chambers": [
+      "chamber_of_deputies",
+      "federal_senate"
+    ],
+    "member_roster_source": {
+      "id": "midyear_cross_check",
+      "extract_file": "extracted/bra_congress.json",
+      "status": "extracted"
+    }
+  },
+  "elections": {
+    "calendar_file": "calendars/bra_2026.json"
+  },
+  "polls": {
+    "admit": [
+      "presidential_job_approval"
+    ],
+    "reject": [
+      "national_horserace_headline"
+    ],
+    "status": "slot_or_wired"
+  },
+  "ingest": {
+    "mode": "document_text_extract",
+    "wave": "2c_brazil",
+    "depth": "legislature_composition_v1"
+  }
+}
