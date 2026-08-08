@@ -8,10 +8,15 @@
 |----|------|
 | 유동성·부채 | **가계부채/가처분소득** · M3 · BOC 자산 |
 | 금리 | Overnight · GoC 2Y/10Y · **미−캐 2Y 스프레드** |
-| 환율·원자재 | **USD/CAD** · **WCS** · WCS−WTI · 무역수지 |
+| 환율 | **USD/CAD** · **WCS−WTI**(가격 스프레드) · 무역수지 · 경상 · us_fx_watch |
 | 주식 | S&P/TSX · 외국인 유가증권 |
-| 성장·부동산 | **Teranet HPI** · GDP · **1인당 GDP** · Ivey PMI · 고용 |
+| 성장·부동산 | **WCS**(수출 드라이버 · KR 반도체와 동일 슬롯) · **Teranet HPI** · GDP · **1인당 GDP** · Ivey PMI · 고용 |
 | 물가 | CPI · **CPI-trim / median**(BOC) |
+
+### FX vs growth (원자재)
+
+- **환율(`fx`)**: USD/CAD · WCS−WTI 스프레드 · 무역수지/경상 · us_fx_watch.
+- **성장(`growth`)**: WCS 중질유 가격 = 주력 수출·교역 드라이버. 환율 탭이 아님.
 
 ## 헤드라인
 

@@ -30,6 +30,11 @@ def main() -> int:
     ap.add_argument("--output", type=Path, default=DEFAULT_OUT)
     ap.add_argument("--asof", type=str, default=None, help="YYYY-MM-DD (default: today)")
     ap.add_argument("--print-stats", action="store_true")
+    ap.add_argument(
+        "--live",
+        action="store_true",
+        help="Overlay live FRED CSV / Yahoo / BOK Worker onto fixture snapshot",
+    )
     args = ap.parse_args()
 
     countries_doc = json.loads(args.countries.read_text(encoding="utf-8"))
@@ -42,6 +47,17 @@ def main() -> int:
         asof=asof,
         generated_at=_now(),
     )
+
+    if args.live:
+        from macro_monitor.live_overlay import overlay_live  # noqa: WPS433
+
+        stats = overlay_live(doc, asof=asof)
+        if args.print_stats:
+            print(f"live ok={len(stats['ok'])} fail={len(stats['fail'])} skip={len(stats['skip'])}")
+            for x in stats["ok"][:40]:
+                print("  OK", x)
+            for x in stats["fail"][:20]:
+                print("  FAIL", x)
 
     args.output.parent.mkdir(parents=True, exist_ok=True)
     # allow_nan=False: Infinity/NaN are not valid JSON — fail the build instead
@@ -100,6 +116,10 @@ def main() -> int:
         ind = next(c for c in doc["countries"] if c["iso3"] == "IND")
         print(f"IND kit={ind['kit']} cats={ind['active_categories']} n={len(ind['indicators'])}")
         for h in ind["headlines"]:
+            print(f"  headline: {h['label_ko']} {h['display']}")
+        isr = next(c for c in doc["countries"] if c["iso3"] == "ISR")
+        print(f"ISR kit={isr['kit']} cats={isr['active_categories']} n={len(isr['indicators'])}")
+        for h in isr["headlines"]:
             print(f"  headline: {h['label_ko']} {h['display']}")
         kor = next(c for c in doc["countries"] if c["iso3"] == "KOR")
         print(f"KOR kit={kor['kit']} cats={kor['active_categories']} n={len(kor['indicators'])}")

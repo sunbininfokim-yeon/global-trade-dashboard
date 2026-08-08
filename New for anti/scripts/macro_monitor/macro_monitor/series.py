@@ -85,6 +85,10 @@ def format_value(value: float | None, fmt: str) -> str:
     if v is None:
         return "—"
     value = v
+    if fmt == "fx_watch":
+        return "관찰대상" if value >= 0.5 else "해당없음"
+    if fmt == "rating":
+        return str(value) if value is not None else "—"
     if fmt == "flag":
         return "가동" if value >= 0.5 else "미가동"
     if fmt == "usd1":
@@ -104,9 +108,9 @@ def format_value(value: float | None, fmt: str) -> str:
     if fmt == "tn2":
         return f"{value:.2f}T"
     if fmt == "bn0":
-        return f"{value:,.0f}B"
+        return f"{value:+,.0f}B" if value != 0 else "0B"
     if fmt == "bn1":
-        return f"{value:,.1f}B"
+        return f"{value:+,.1f}B" if value != 0 else "0.0B"
     if fmt == "k0":
         return f"{value:,.0f}K"
     if fmt == "number0":
@@ -115,6 +119,10 @@ def format_value(value: float | None, fmt: str) -> str:
         return f"{value:.1f}"
     if fmt == "number2":
         return f"{value:.2f}"
+    if fmt == "twh0":
+        return f"{value:,.0f} TWh"
+    if fmt == "twh1":
+        return f"{value:,.1f} TWh"
     if fmt == "fx":
         if abs(value) >= 100:
             return f"{value:,.1f}"
@@ -282,6 +290,40 @@ def _sanitize_values(values: list[float | None]) -> list[float | None]:
     return [finite_or_none(v) for v in values]
 
 
+def moving_average(values: list[float | None], period: int) -> list[float | None]:
+    """Trailing MA; leading entries are null until `period` finite points exist."""
+    out: list[float | None] = []
+    for i in range(len(values)):
+        window = values[max(0, i - period + 1) : i + 1]
+        finite = [finite_or_none(v) for v in window]
+        finite_ok = [v for v in finite if v is not None]
+        if len(finite_ok) < period:
+            out.append(None)
+        else:
+            out.append(round(sum(finite_ok) / period, 6))
+    return out
+
+
+def _default_ma(spec: dict[str, Any], series_id: str) -> dict[str, Any] | None:
+    if spec.get("ma") is not None:
+        return spec.get("ma")
+    # Price-like equities: 5-period MA. Skip vol / fear gauges.
+    if spec.get("category") == "equity" and spec.get("higher_is") != "fear":
+        if series_id.endswith("_vi") or "vix" in series_id:
+            return None
+        return {"periods": [5]}
+    return None
+
+
+def _merge_ui(spec: dict[str, Any], country_cfg: dict[str, Any]) -> dict[str, Any] | None:
+    ui: dict[str, Any] = {}
+    if isinstance(spec.get("ui"), dict):
+        ui.update(spec["ui"])
+    if isinstance(country_cfg.get("ui"), dict):
+        ui.update(country_cfg["ui"])
+    return ui or None
+
+
 def build_indicator(
     *,
     series_id: str,
@@ -294,12 +336,35 @@ def build_indicator(
     label = country_cfg.get("label_ko") or spec["label_ko"]
     fmt = spec.get("format", "number1")
     unit = spec.get("unit", "")
+    note = country_cfg.get("note_ko") or spec.get("note_ko")
 
-    if values_override is not None:
+    outcomes = country_cfg.get("outcomes") or spec.get("outcomes")
+
+    if outcomes and (series_id == "fedwatch" or fmt == "fedwatch"):
+        # Structured policy-watch: value = top outcome probability; display = label + %.
+        top = max(outcomes, key=lambda o: float(o.get("prob") or 0))
+        latest = finite_or_none(float(top.get("prob")))
+        display = f"{top.get('label_ko', '')} {int(round(float(top.get('prob') or 0)))}%"
+        # Synthetic flat-ish path around top prob for history windows (demo only).
+        base = float(latest if latest is not None else 50)
+        values = _sanitize_values(
+            synth_path(
+                base=base,
+                vol=float(country_cfg.get("vol", 2.0)),
+                drift=0.0,
+                n=len(dates),
+                seed=seed,
+                multiplicative=False,
+                floor=0.0,
+            )
+        )
+        values[-1] = latest
+    elif values_override is not None:
         values = _sanitize_values(
             [round(v, 6) if finite_or_none(v) is not None else None for v in values_override]
         )
         latest = values[-1] if values else None
+        display = format_value(latest, fmt)
     else:
         base = float(country_cfg["base"])
         vol = float(country_cfg.get("vol", 0.02))
@@ -320,15 +385,26 @@ def build_indicator(
         )
         values[-1] = finite_or_none(round(base, 6))
         latest = values[-1]
+        display = format_value(latest, fmt)
 
     hist_years = list(spec.get("history_years") or [5, 10])
+    ma_cfg = _default_ma(spec, series_id)
+    ma_periods = list((ma_cfg or {}).get("periods") or [])
+    full_ma: dict[int, list[float | None]] = {
+        p: moving_average(values, p) for p in ma_periods if isinstance(p, int) and p > 0
+    }
+
     histories: dict[str, dict[str, Any]] = {}
     for y in hist_years:
         months = y * 12
-        histories[f"{y}y"] = {
+        slice_vals = values[-months:] if months <= len(values) else values
+        entry: dict[str, Any] = {
             "dates": dates[-months:] if months <= len(dates) else dates,
-            "values": values[-months:] if months <= len(values) else values,
+            "values": slice_vals,
         }
+        for p, ma_full in full_ma.items():
+            entry[f"ma{p}"] = ma_full[-months:] if months <= len(ma_full) else ma_full
+        histories[f"{y}y"] = entry
 
     out: dict[str, Any] = {
         "id": series_id,
@@ -337,7 +413,7 @@ def build_indicator(
         "unit": unit,
         "format": fmt,
         "value": finite_or_none(latest),
-        "display": format_value(latest, fmt),
+        "display": display,
         "change_1m_pct": delta_vs(values, 1),
         "change_1y_pct": delta_vs(values, 12),
         "asof": dates[-1],
@@ -345,10 +421,44 @@ def build_indicator(
         "source": "fixture_synth",
         "quality": "demo",
     }
-    if spec.get("note_ko"):
-        out["note_ko"] = spec["note_ko"]
+    if note:
+        out["note_ko"] = note
+    # Interpretation anchor (NAIRU / full-employment guide) — not a live series.
+    reference = country_cfg.get("reference") or spec.get("reference")
+    if reference:
+        out["reference"] = reference
+    analog = country_cfg.get("analog_ko") or spec.get("analog_ko")
+    if analog:
+        out["analog_ko"] = analog
     if spec.get("fred_hint"):
         out["fred_hint"] = spec["fred_hint"]
+    if spec.get("refresh_tier") or country_cfg.get("refresh_tier"):
+        out["refresh_tier"] = country_cfg.get("refresh_tier") or spec.get("refresh_tier")
+    if spec.get("chart_type") or country_cfg.get("chart_type"):
+        out["chart_type"] = country_cfg.get("chart_type") or spec.get("chart_type")
+    if ma_cfg:
+        out["ma"] = ma_cfg
+    ui = _merge_ui(spec, country_cfg)
+    if ui:
+        out["ui"] = ui
+    components = country_cfg.get("components") or spec.get("components")
+    if components:
+        out["components"] = components
+    stack_series = country_cfg.get("stack_series") or spec.get("stack_series")
+    if stack_series:
+        out["stack_series"] = stack_series
+    if outcomes:
+        out["outcomes"] = outcomes
+        out["chart_type"] = out.get("chart_type") or "bar"
+    news_query = country_cfg.get("news_query") or spec.get("news_query")
+    news_tags = country_cfg.get("news_tags") or spec.get("news_tags")
+    if news_query:
+        out["news_query"] = news_query
+    if news_tags:
+        out["news_tags"] = list(news_tags)
+    # Never invent articles in fixture_synth — Worker fills later.
+    if news_query or news_tags:
+        out["news"] = None
     if spec.get("derived") or country_cfg.get("derived"):
         out["derived"] = spec.get("derived") or True
         out["source"] = "derived"
