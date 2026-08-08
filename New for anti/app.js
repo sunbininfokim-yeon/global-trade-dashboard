@@ -448,9 +448,7 @@ const focusTradeCountry = (countryName) => {
     // Which side carries the dependency. A buyer's exposure is its suppliers;
     // a country that only sells has no supply risk here, but it does have
     // customer risk, and that is the concentration worth showing instead.
-    const depHtml = importVol > 0
-        ? concentrationHtml(imports, (a) => a.sourceName, '공급')
-        : concentrationHtml(exports, (a) => a.targetName, '판로');
+    const depHtml = concentrationHtml(imports, exports, importVol, exportVol);
 
     if (newsPanelEl) panelShow(newsPanelEl);
     panelHide(countryStatsPanelEl);
@@ -540,20 +538,37 @@ const countryCode = (name) => {
 };
 
 /**
- * Supply concentration for one country's trade in one commodity.
+ * Trade concentration for one country in one commodity, both directions.
  *
- * CR3 and HHI over whichever direction actually carries the dependency: for a
- * buyer, who it buys from; for a pure seller, who it sells to. Herfindahl fits
- * without stretching -- Hirschman published it in 1945 to measure how
- * concentrated a nation's trade was, and antitrust borrowed it afterwards.
+ * The first version showed the import side whenever a country imported
+ * anything at all, labelled it 공급, and stopped there. Three ways that was
+ * wrong, all visible on the live map:
  *
- * Labelled 집중도 and not 위험 on purpose. Concentration is half of supply risk:
- * three suppliers who are all allies is not the exposure that one supplier who
- * is not would be, which is why the EU multiplies its HHI by a governance
- * score. That weighting needs World Bank WGI data this page does not carry, so
- * the card reports what it can actually measure and says which half that is.
+ *   US natural gas read 99.8%. True of what it imports -- nearly all Canadian
+ *   -- but the US ships out three and a half times what it takes in, so the
+ *   headline number described the smaller half and implied dependence in the
+ *   world's largest LNG exporter.
+ *
+ *   Russian wheat read CR3 100%. Russia files no wheat returns with Comtrade,
+ *   so its rows here are mirrors from partners that reported trading with it.
+ *   Three mirrored counterparties make 100% arithmetically and mean nothing.
+ *
+ *   And 공급 never said which direction it meant.
+ *
+ * So both directions are computed and labelled, the net position leads, and a
+ * direction carrying a small share of the country's trade is marked rather than
+ * presented as the story.
+ *
+ * What this still cannot say: Comtrade counts what crosses a border and knows
+ * nothing about what a country digs up or grows for itself. A concentrated
+ * import basket is dependence only for a country that does not produce the
+ * thing. That is why the card says 무역 기준 and not 자급도 -- see
+ * `productionCaveatKo`.
  */
-const concentrationHtml = (arcs, partnerOf, dirKo) => {
+const MIN_PARTNERS = 3;
+const MINOR_SHARE = 0.15;
+
+const concentrationOf = (arcs, partnerOf) => {
     const byPartner = new Map();
     for (const a of arcs) {
         if (!(a.volume > 0)) continue;
@@ -561,38 +576,79 @@ const concentrationHtml = (arcs, partnerOf, dirKo) => {
         byPartner.set(p, (byPartner.get(p) || 0) + a.volume);
     }
     const total = [...byPartner.values()].reduce((s, v) => s + v, 0);
-    // Two partners cannot say anything about concentration that the ranking
-    // below does not already show.
-    if (byPartner.size < 3 || total <= 0) return '';
-
+    if (!byPartner.size || total <= 0) return null;
     const ranked = [...byPartner.entries()].sort((x, y) => y[1] - x[1]);
-    const hhi = ranked.reduce((s, [, v]) => s + (v / total) ** 2, 0);
-    const cr3 = ranked.slice(0, 3).reduce((s, [, v]) => s + v, 0) / total;
+    return {
+        total,
+        partners: byPartner.size,
+        hhi: ranked.reduce((s, [, v]) => s + (v / total) ** 2, 0),
+        cr3: ranked.slice(0, 3).reduce((s, [, v]) => s + v, 0) / total,
+        top: ranked.slice(0, 3).map(([k, v]) => `${countryCode(k)} ${((v / total) * 100).toFixed(1)}`),
+    };
+};
 
-    // The 0.15 / 0.25 cutoffs are the ones competition authorities use, and the
-    // EU's raw-materials assessment carries them over to supplier countries.
-    const band = hhi >= 0.25 ? { ko: '높음', cls: 'hi' }
-        : hhi >= 0.15 ? { ko: '보통', cls: 'mid' }
-            : { ko: '낮음', cls: 'lo' };
-    const top3 = ranked.slice(0, 3)
-        .map(([p, v]) => `${countryCode(p)} ${((v / total) * 100).toFixed(1)}`)
-        .join(' · ');
+// The 0.15 / 0.25 cutoffs are the ones competition authorities use, and the
+// EU's raw-materials assessment carries them over to supplier countries.
+const concBand = (hhi) => (hhi >= 0.25 ? { ko: '높음', cls: 'hi' }
+    : hhi >= 0.15 ? { ko: '보통', cls: 'mid' } : { ko: '낮음', cls: 'lo' });
+
+const concRowHtml = (c, dirKo, shareOfTrade) => {
+    if (!c) return '';
+    // Too few counterparties for a share to mean anything -- most often a
+    // country that does not file its own returns, showing up only in mirrors.
+    if (c.partners < MIN_PARTNERS) {
+        return `<div class="dep-row dep-thin">
+            <span class="dep-dir">${dirKo}</span>
+            <span class="dep-thin-note">상대국 ${c.partners}곳 — 집중도를 낼 표본이 아닙니다</span>
+        </div>`;
+    }
+    const band = concBand(c.hhi);
+    const minor = shareOfTrade < MINOR_SHARE;
+    return `<div class="dep-row${minor ? ' dep-minor' : ''}">
+        <span class="dep-dir">${dirKo}</span>
+        <span class="dep-cr">CR3 <b>${(c.cr3 * 100).toFixed(1)}%</b></span>
+        <span class="dep-hhi">HHI ${c.hhi.toFixed(3)}</span>
+        <span class="dep-band dep-${band.cls}">${band.ko}</span>
+        <span class="dep-partners">${c.top.join(' · ')}</span>
+        ${minor ? `<span class="dep-minor-tag">이 나라 무역의 ${(shareOfTrade * 100).toFixed(0)}%</span>` : ''}
+    </div>`;
+};
+
+/**
+ * Trade concentration only ever describes flows across a border. Whether that
+ * is exposure depends on what the country produces at home, which Comtrade does
+ * not carry, so the card says which question it is answering.
+ */
+const productionCaveatKo =
+    '무역 기준입니다 — 자국 생산은 포함하지 않습니다. 큰 생산국은 수입처가 몰려 있어도 '
+    + '실제 의존도가 낮을 수 있습니다.';
+
+const concentrationHtml = (imports, exports, importVol, exportVol) => {
+    const imp = concentrationOf(imports, (a) => a.sourceName);
+    const exp = concentrationOf(exports, (a) => a.targetName);
+    if (!imp && !exp) return '';
+
+    const totalTrade = (importVol || 0) + (exportVol || 0);
+    const impShare = totalTrade ? (importVol || 0) / totalTrade : 0;
+    const net = (exportVol || 0) - (importVol || 0);
+    const stance = net >= 0 ? '순수출국' : '순수입국';
+
+    // Lead with the direction that carries the country's position: a net
+    // exporter's story is who it sells to.
+    const rows = net >= 0
+        ? concRowHtml(exp, '수출처', 1 - impShare) + concRowHtml(imp, '수입처', impShare)
+        : concRowHtml(imp, '수입처', impShare) + concRowHtml(exp, '수출처', 1 - impShare);
 
     return `
         <div class="dep-card">
             <div class="dep-head">
-                <strong>${dirKo} 집중도</strong>
-                <span class="dep-band dep-${band.cls}">${band.ko}</span>
+                <strong>무역 집중도</strong>
+                <span class="dep-stance">${stance}</span>
             </div>
-            <div class="dep-metrics">
-                <div class="dep-m"><span class="dep-k">CR3</span>
-                    <span class="dep-v">${(cr3 * 100).toFixed(1)}%</span></div>
-                <div class="dep-m"><span class="dep-k">HHI</span>
-                    <span class="dep-v">${hhi.toFixed(3)}</span></div>
-            </div>
-            <p class="dep-top">${top3}</p>
-            <p class="dep-note">상위 3개국 비중과 허핀달 지수. 공급국의 정치적 신뢰도는
-                반영하지 않은 순수 집중도다.</p>
+            ${rows}
+            <p class="dep-note">상위 3개국 비중(CR3)과 허핀달 지수(HHI).
+                ${productionCaveatKo}
+                공급국의 정치적 신뢰도도 반영하지 않은 순수 집중도입니다.</p>
         </div>`;
 };
 
