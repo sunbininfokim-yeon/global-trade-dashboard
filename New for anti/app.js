@@ -6289,6 +6289,9 @@ const loadCompany = async (out, inst) => {
     let level = 'health';
     CO_DCF.growth = null;      // 새 기업이면 그 기업의 이력에서 다시 잡는다
     CO_STRUCT_OPEN = null;
+    CO_DATA = data;
+    CO_PRICE.value = null;
+    CO_PRICE.status = 'loading';
     const paint = () => {
         out.innerHTML = `
         <div class="fin-head fin-head-sub">
@@ -6328,8 +6331,27 @@ const loadCompany = async (out, inst) => {
             CO_DCF.growth = null; CO_DCF.terminal = 2.5; CO_DCF.discount = 9.0;
             paint();
         });
+        out.querySelector('[data-co-price]')?.addEventListener('change', (e) => {
+            const v = Number(e.target.value);
+            CO_PRICE.value = Number.isFinite(v) && v > 0 ? v : null;
+            CO_PRICE.status = 'manual';
+            paint();
+        });
     };
     paint();
+
+    // The reverse DCF needs a price, and the quote proxy already exists for the
+    // portfolio panel. Fetched after first paint so the statements are not held
+    // up by a second network call.
+    pfSpot(sym, data.currency).then((sp) => {
+        if (CO_DATA !== data) return;                 // 사용자가 그새 다른 기업을 골랐다
+        if (sp && Number.isFinite(sp.price) && sp.price > 0) {
+            CO_PRICE.value = sp.price; CO_PRICE.status = 'ok';
+        } else {
+            CO_PRICE.status = 'fail';
+        }
+        paint();
+    }).catch(() => { CO_PRICE.status = 'fail'; paint(); });
 };
 
 const coTable = (rows, cols) => `
@@ -6351,6 +6373,8 @@ const coTable = (rows, cols) => `
 // not a flaw to hide behind a single "fair value" figure -- it is the whole
 // point, so the assumptions stay on screen and adjustable.
 const CO_DCF = { growth: null, terminal: 2.5, discount: 9.0, years: 5 };
+const CO_PRICE = { value: null, status: 'idle' };
+let CO_DATA = null;   // 현재 렌더 중인 기업 페이로드 (통화 등)
 
 const coDcf = (rows) => {
     const latest = rows[0];
@@ -6389,6 +6413,159 @@ const coDefaultGrowth = (rows) => {
     const newest = fcfs[0], oldest = fcfs[fcfs.length - 1], n = fcfs.length - 1;
     const cagr = (Math.pow(newest / oldest, 1 / n) - 1) * 100;
     return Math.max(-10, Math.min(20, Math.round(cagr * 10) / 10));
+};
+
+// Forward DCF answers "what is it worth if I am right about growth". Reverse
+// DCF asks the better question: at today's price, what growth is already being
+// assumed? That turns a number the reader must trust into one they can judge.
+const coImpliedGrowth = (rows, marketCap) => {
+    if (!Number.isFinite(marketCap) || marketCap <= 0) return null;
+    const latest = rows[0];
+    const base = latest.fcf;
+    if (!Number.isFinite(base) || base <= 0) return null;
+    const targetEv = marketCap + (latest.net_debt ?? 0);
+
+    const evAt = (g) => {
+        const tg = CO_DCF.terminal / 100, r = CO_DCF.discount / 100;
+        if (!(r > tg)) return null;
+        let f = base, pv = 0;
+        for (let i = 1; i <= CO_DCF.years; i++) { f *= (1 + g); pv += f / Math.pow(1 + r, i); }
+        return pv + (f * (1 + tg) / (r - tg)) / Math.pow(1 + r, CO_DCF.years);
+    };
+    if (evAt(0) === null) return null;
+
+    // EV rises monotonically in g below the discount rate, so bisection is both
+    // sufficient and stable here.
+    let lo = -0.5, hi = (CO_DCF.discount / 100) - 0.001;
+    if (evAt(hi) < targetEv) return { unreachable: true, cap: hi * 100 };
+    if (evAt(lo) > targetEv) return { unreachable: true, below: true, cap: lo * 100 };
+    for (let k = 0; k < 60; k++) {
+        const mid = (lo + hi) / 2;
+        if (evAt(mid) < targetEv) lo = mid; else hi = mid;
+    }
+    return { growth: (lo + hi) / 2 * 100 };
+};
+
+const coSensitivity = (rows) => {
+    const latest = rows[0];
+    const base = latest.fcf;
+    if (!Number.isFinite(base) || base <= 0) return null;
+    const shares = latest.raw.shares;
+    if (!Number.isFinite(shares) || shares <= 0) return null;
+
+    const gs = [-5, 0, 5, 10, 15];
+    const rs = [7, 8, 9, 10, 12];
+    const tg = CO_DCF.terminal / 100;
+    const cells = rs.map((rp) => ({
+        r: rp,
+        row: gs.map((gp) => {
+            const g = gp / 100, r = rp / 100;
+            if (!(r > tg)) return null;
+            let f = base, pv = 0;
+            for (let i = 1; i <= CO_DCF.years; i++) { f *= (1 + g); pv += f / Math.pow(1 + r, i); }
+            const ev = pv + (f * (1 + tg) / (r - tg)) / Math.pow(1 + r, CO_DCF.years);
+            return (ev - (latest.net_debt ?? 0)) / shares;
+        }),
+    }));
+    return { gs, cells };
+};
+
+const coSensPanel = (rows, CUR) => {
+    const sens = coSensitivity(rows);
+    if (!sens) return '';
+    const flat = sens.cells.flatMap((c) => c.row).filter(Number.isFinite);
+    const lo = Math.min(...flat), hi = Math.max(...flat);
+    const tone = (v) => {
+        if (!Number.isFinite(v) || hi === lo) return '';
+        const t = (v - lo) / (hi - lo);
+        return `background: rgba(56,189,248,${(0.05 + t * 0.24).toFixed(3)})`;
+    };
+    return `
+    <h3 class="fin-sub">민감도 — 주당 가치</h3>
+    <p class="fin-note">가로: 성장률 · 세로: 할인율 · 영구성장률 ${CO_DCF.terminal}% 고정.
+       한 칸만 옮겨도 값이 크게 달라진다면, 그건 이 방법의 성질이지 계산 오류가 아닙니다.</p>
+    <div class="co-table-wrap">
+        <table class="co-table co-sens">
+            <thead><tr><th>할인율 \\ 성장률</th>${sens.gs.map((g) => `<th>${g}%</th>`).join('')}</tr></thead>
+            <tbody>
+                ${sens.cells.map((c) => `
+                    <tr><td class="co-label">${c.r}%</td>
+                        ${c.row.map((v) => `<td style="${tone(v)}">${Number.isFinite(v) ? coNum(v, CUR) : '—'}</td>`).join('')}
+                    </tr>`).join('')}
+            </tbody>
+        </table>
+    </div>`;
+};
+
+const coReversePanel = (rows, CUR, data) => {
+    const price = CO_PRICE.value;
+    const shares = rows[0].raw.shares;
+    const mcap = (Number.isFinite(price) && Number.isFinite(shares)) ? price * shares : null;
+    const imp = mcap ? coImpliedGrowth(rows, mcap) : null;
+
+    return `
+    <h3 class="fin-sub">역방향 DCF — 시장은 몇 %를 가정하고 있나</h3>
+    <p class="fin-note">
+        위가 "이 가정이면 얼마인가" 라면, 이건 "지금 값이 맞으려면 무엇을 믿어야 하나" 입니다.
+        ${CO_PRICE.status === 'loading' ? '현재가 조회 중…'
+          : CO_PRICE.status === 'fail' ? `현재가를 못 받았습니다 — 직접 넣어 보세요.` : ''}
+    </p>
+    <div class="co-dcf-inputs">
+        <label class="co-dcf-input">
+            <span>현재 주가 (${finEsc(data.currency || '')})</span>
+            <input type="number" data-co-price="1" value="${Number.isFinite(price) ? price : ''}" step="0.01" min="0">
+        </label>
+    </div>
+    ${!Number.isFinite(price) ? `<p class="fin-note">주가를 넣으면 역산합니다.</p>`
+      : !Number.isFinite(shares) ? `<p class="fin-note">희석주식수를 못 읽어 시가총액을 낼 수 없습니다.</p>`
+      : !imp ? `<p class="fin-note">잉여현금흐름이 없거나 음수라 역산할 수 없습니다.</p>`
+      : imp.unreachable ? `
+        <div class="fin-cards">
+            <div class="fin-card"><span class="fin-card-title">시가총액</span>
+                <span class="fin-card-value">${coNum(mcap, data.currency)}</span>
+                <p class="fin-card-plain">주가 × 희석주식수 ${mmFmt(shares, 0)}</p></div>
+            <div class="fin-card"><span class="fin-card-title">FCF 배수</span>
+                <span class="fin-card-value">${(mcap / rows[0].fcf).toFixed(0)}배</span>
+                <p class="fin-card-plain">시가총액 ÷ 최근 잉여현금흐름입니다.</p></div>
+            <div class="fin-card"><span class="fin-card-title">필요 영구성장률</span>
+                <span class="fin-card-value">${(() => {
+                    // 성장률로는 못 닿으니, 영구성장률을 역산해 격차의 크기를 보인다.
+                    const r = CO_DCF.discount / 100, base = rows[0].fcf;
+                    const target = mcap + (rows[0].net_debt ?? 0);
+                    let lo = 0, hi = r - 0.0005;
+                    const ev = (tg) => {
+                        let f = base, pv = 0;
+                        for (let i = 1; i <= CO_DCF.years; i++) { f *= (1 + tg); pv += f / Math.pow(1 + r, i); }
+                        return pv + (f * (1 + tg) / (r - tg)) / Math.pow(1 + r, CO_DCF.years);
+                    };
+                    if (ev(hi) < target) return '해당 없음';
+                    for (let k = 0; k < 60; k++) { const m = (lo + hi) / 2; if (ev(m) < target) lo = m; else hi = m; }
+                    return `${((lo + hi) / 2 * 100).toFixed(1)}%`;
+                })()}</span>
+                <p class="fin-card-plain">할인율 ${CO_DCF.discount}% 를 유지할 때, 지금 값이 설명되려면 현금흐름이 영구히 이만큼 자라야 합니다.</p></div>
+        </div>
+        <p class="fin-note">
+            ${imp.below ? '이 주가를 설명할 만큼 낮은 성장률이 없습니다.'
+            : `성장률만으로는 닿지 않습니다 — 할인율(${CO_DCF.discount}%) 근처까지 올려도 지금 시가총액에 못 미칩니다.
+               <strong>모델이 틀렸다기보다 가정이 시장과 다르다</strong>는 뜻입니다.
+               장기 성장을 더 믿거나, 할인율을 더 낮게 보거나, 현금흐름 외의 것에 값이 매겨져 있거나입니다.`}
+        </p>`
+      : `
+        <div class="fin-cards">
+            <div class="fin-card"><span class="fin-card-title">시가총액</span>
+                <span class="fin-card-value">${coNum(mcap, data.currency)}</span>
+                <p class="fin-card-plain">주가 × 희석주식수 ${mmFmt(shares, 0)}</p></div>
+            <div class="fin-card"><span class="fin-card-title">시장 내재 성장률</span>
+                <span class="fin-card-value">${imp.growth.toFixed(1)}%</span>
+                <p class="fin-card-plain">향후 5년 FCF가 매년 이만큼 늘어야 지금 값이 설명됩니다.</p></div>
+            <div class="fin-card"><span class="fin-card-title">과거 5년 실적</span>
+                <span class="fin-card-value">${coDefaultGrowth(rows).toFixed(1)}%</span>
+                <p class="fin-card-plain">같은 기간 실제 FCF 연평균 증가율입니다.</p></div>
+        </div>
+        <p class="fin-note">
+            두 숫자의 간격이 이 주식에 걸린 기대입니다. 어느 쪽이 맞는지는 이 화면이 답하지 않습니다 —
+            <strong>판단은 보는 사람의 몫</strong>이고, 이 도구는 그 판단이 무엇에 대한 것인지만 분명히 합니다.
+        </p>`}`;
 };
 
 const coDcfPanel = (rows, CUR) => {
@@ -6441,8 +6618,9 @@ const coDcfPanel = (rows, CUR) => {
         </div>
         <p class="fin-note">
             기준 FCF ${coNum(d.base, CUR)} (FY${rows[0].fy} 실적) 에서 출발합니다.
-            할인율을 1%p 올리면 결과가 크게 내려갑니다 — 그 민감도 자체가 이 방법의 성질입니다.
-        </p>`}
+        </p>
+        ${coSensPanel(rows, CUR)}`}
+        ${coReversePanel(rows, CUR, CO_DATA || {})}
     </section>`;
 };
 
@@ -6621,9 +6799,356 @@ const coRenderLevel = (level, rowsDesc, data) => {
     return parts.join('\n<hr class="co-sep">\n');
 };
 
+// === 시장 미시구조 / US→KR ==================================================
+//
+// Engine and snapshots are Cursor's (scripts/market_microstructure). This file
+// only reads them. The rule that matters most here: when a field is null, or
+// quality says demo/missing, the screen says so. A plausible-looking number in
+// a position-flow panel is worse than a blank one.
+const MS_FILES = {
+    transmission: 'us_kr_transmission_v1.json',
+    alerts: 'alert_levels_v1.json',
+    conc: 'kospi_concentration_history_v1.json',
+    board: 'derivatives_board_v1.json',
+    brief: 'ai_casino_brief_v1.json',
+    levels: 'investor_price_levels_v1.json',
+};
+
+let MS_DATA = null;
+let MS_UNIVERSE = 'marcap';     // 'marcap' | 'high_vol'
+let MS_TICKER = null;
+
+const msGet = async (name) => {
+    for (const base of ['/public/data/', '/data/']) {
+        try {
+            const r = await fetch(base + name, { cache: 'no-store' });
+            if (r.ok) return await r.json();
+        } catch (_) { /* next */ }
+    }
+    return null;
+};
+
+const msMissing = (label) => `<span class="ms-missing">${finEsc(label || '데이터 없음')}</span>`;
+
+// 억원 / 백만원 are the units the engine publishes; keep them rather than
+// converting, so a number on screen can be traced back to the snapshot.
+const msEok = (v) => Number.isFinite(v)
+    ? `${v >= 0 ? '+' : ''}${Math.round(v).toLocaleString('ko-KR')}억` : '—';
+const msShares = (v) => Number.isFinite(v)
+    ? `${v >= 0 ? '+' : ''}${Math.round(v).toLocaleString('ko-KR')}` : '—';
+
+const MS_LEVEL_CLASS = { '경계': 'ms-lv-3', '주의': 'ms-lv-2', '관찰': 'ms-lv-1' };
+
+const msTransmission = (t) => {
+    if (!t) return '';
+    const ch = t.channels || {};
+    const order = [
+        ['downside', '하방'], ['upside', '상방'],
+        ['vol_up', '변동성 확대'], ['vol_down', '변동성 축소'],
+    ];
+    const head = String(t.headline || '');
+    const [lvl, dir] = head.split(':');
+    const dirKo = { downside: '하방', upside: '상방', vol_up: '변동성 확대', vol_down: '변동성 축소' }[dir] || dir || '';
+    const lvlKo = { high: '높음', mid: '중간', low: '낮음' }[lvl] || lvl || '';
+    const main = ch[dir] || {};
+
+    return `
+    <section class="fin-block fin-block-wide">
+        <h2>US → KR 조기경보</h2>
+        <div class="ms-headline">
+            <span class="ms-head-level ${lvl === 'high' ? 'ms-lv-3' : (lvl === 'mid' ? 'ms-lv-2' : 'ms-lv-1')}">${finEsc(lvlKo)}</span>
+            <span class="ms-head-dir">${finEsc(dirKo)}</span>
+            <span class="ms-head-meta">기준 ${finEsc(t.as_of || '')} · 모델 ${finEsc(t.model_version || '')}</span>
+        </div>
+        <div class="ms-channels">
+            ${order.map(([k, ko]) => {
+                const c = ch[k] || {};
+                const heat = Number(c.heat);
+                const on = k === dir;
+                return `
+                <div class="ms-channel${on ? ' on' : ''}">
+                    <span class="ms-ch-name">${finEsc(ko)}</span>
+                    <span class="ms-ch-heat">${Number.isFinite(heat) ? heat.toFixed(1) : '—'}</span>
+                    <span class="ms-ch-lv">${finEsc(c.level || '—')}</span>
+                </div>`;
+            }).join('')}
+        </div>
+        ${(main.kr_tickers || []).length ? `
+        <div class="ms-chips-row">
+            <span class="ms-row-label">KR 타깃</span>
+            ${main.kr_tickers.map((tk) => `<span class="ms-tick">${finEsc(tk)}</span>`).join('')}
+        </div>` : ''}
+        ${(main.drivers || []).length ? `
+        <div class="co-table-wrap">
+            <table class="co-table">
+                <thead><tr><th>US</th><th>KR</th><th>heat</th><th>연결 유형</th><th>tier</th></tr></thead>
+                <tbody>
+                    ${main.drivers.slice(0, 6).map((d) => `
+                        <tr>
+                            <td class="co-label">${finEsc(d.us)}</td>
+                            <td>${finEsc(d.kr)}</td>
+                            <td>${Number.isFinite(d.heat) ? d.heat.toFixed(2) : '—'}</td>
+                            <td>${finEsc(d.edge_type || '')}</td>
+                            <td>${finEsc(d.tier || '')}</td>
+                        </tr>`).join('')}
+                </tbody>
+            </table>
+        </div>
+        <p class="fin-note">
+            <code>etf_beta</code> 는 미국 상장 ETF 수익률과 국내 종목의 통계적 연동입니다 —
+            <strong>옵션 포지션이 아닙니다.</strong>
+        </p>` : ''}
+        <p class="fin-note">${finEsc(t.disclaimer_ko || '')}</p>
+    </section>`;
+};
+
+const msAlerts = (a) => {
+    if (!a) return '';
+    const letf = a.kr_hynix_letf || {};
+    const vix = a.us_vix_to_kr || {};
+    return `
+    <section class="fin-block fin-block-wide">
+        <h2>알림 레벨</h2>
+        <div class="fin-cards">
+            <div class="fin-card">
+                <span class="fin-card-title">하이닉스 레버리지 ETF 비율</span>
+                <span class="fin-card-value">
+                    <span class="ms-badge ${MS_LEVEL_CLASS[letf.today_level] || ''}">${finEsc(letf.today_level || '—')}</span>
+                    ${Number.isFinite(letf.today_ratio) ? `${(letf.today_ratio * 100).toFixed(1)}%` : ''}
+                </span>
+                <p class="fin-card-plain">${finEsc(letf.metric_ko || '레버리지 ETF 거래 비중')}</p>
+            </div>
+            <div class="fin-card">
+                <span class="fin-card-title">US VIX → KR</span>
+                <span class="fin-card-value">
+                    <span class="ms-badge ${MS_LEVEL_CLASS[vix.today_level] || ''}">${finEsc(vix.today_level || '—')}</span>
+                </span>
+                <p class="fin-card-plain">${finEsc(vix.metric_ko || '')}</p>
+                ${vix.not_put_oi ? `<p class="fin-card-analogy">${finEsc(vix.put_oi_status_ko || '풋 OI 지표가 아닙니다.')}</p>` : ''}
+            </div>
+        </div>
+        <p class="fin-note">${finEsc(a.disclaimer_ko || '')}</p>
+    </section>`;
+};
+
+const msConc = (c) => {
+    if (!c || !(c.points || []).length) return '';
+    const pts = c.points;
+    const dates = pts.map((p) => p.date);
+    const mk = (key) => pts.map((p) => Number(p[key]));
+    const L = c.latest || {};
+    return `
+    <section class="fin-block fin-block-wide">
+        <h2>코스피 집중도</h2>
+        <div class="fin-cards">
+            ${[['conc_top2_samsung_hynix_pct', '상위 2 (삼성·하닉)'],
+               ['conc_top5_pct', '상위 5'], ['conc_top10_pct', '상위 10']].map(([k, ko]) => `
+                <div class="fin-card">
+                    <span class="fin-card-title">${finEsc(ko)}</span>
+                    <span class="fin-card-value">${Number.isFinite(L[k]) ? L[k].toFixed(1) + '%' : '—'}</span>
+                </div>`).join('')}
+        </div>
+        ${mmLineChart(dates, mk('conc_top2_samsung_hynix_pct'), { unit: '%', label: '상위 2 집중도' })}
+        <p class="fin-note">
+            ${finEsc(c.note_ko || '')} 표본 ${c.n_points || 0}일 · 종목 ${finEsc(String(L.n_names || ''))}개 ·
+            품질 ${finEsc(L.quality || '')}
+        </p>
+        <p class="fin-note">${finEsc(c.disclaimer_ko || '')}</p>
+    </section>`;
+};
+
+const msBoard = (b) => {
+    if (!b) return '';
+    const kr = b.kr || {};
+    const nets = kr.investor_nets || {};
+    const box = (key, ko) => {
+        const rows = Array.isArray(nets[key]) ? nets[key] : null;
+        const last = rows && rows.length ? rows[rows.length - 1] : null;
+        const v = last ? last.foreign_net_mn_krw : null;
+        return `
+        <div class="fin-card">
+            <span class="fin-card-title">외국인 ${finEsc(ko)}</span>
+            <span class="fin-card-value">${Number.isFinite(v)
+                ? `${v >= 0 ? '+' : ''}${Math.round(v).toLocaleString('ko-KR')}백만`
+                : msMissing('데이터 없음')}</span>
+            <p class="fin-card-plain">${last && last.note ? finEsc(last.note) : (Number.isFinite(v) ? `기준 ${finEsc(last.date || '')}` : 'KRX_API 키 또는 CSV 주입 필요')}</p>
+        </div>`;
+    };
+    const opts = kr.kospi200_options || {};
+    return `
+    <section class="fin-block fin-block-wide">
+        <h2>파생 보드</h2>
+        <div class="fin-cards">
+            ${box('futures', '선물')}
+            ${box('options_call', '콜')}
+            ${box('options_put', '풋')}
+            <div class="fin-card">
+                <span class="fin-card-title">US OI 룰 헤드라인</span>
+                <span class="fin-card-value">
+                    <span class="ms-badge ${MS_LEVEL_CLASS[(b.us_kr_rules || {}).headline_level] || ''}">
+                        ${finEsc((b.us_kr_rules || {}).headline_level || '—')}</span>
+                </span>
+            </div>
+        </div>
+        ${opts.quality === 'missing' ? `<p class="fin-note">코스피200 옵션: ${msMissing('missing')} — KRX 데이터 미수집.</p>` : ''}
+        ${nets.note_ko ? `<p class="fin-note">${finEsc(nets.note_ko)}</p>` : ''}
+        <p class="fin-note">콜/풋 분리 값이 없을 때는 빈칸으로 둡니다. 전체 옵션 시드를 콜·풋으로 나눠 적지 않습니다.</p>
+    </section>`;
+};
+
+const msBrief = (br) => {
+    if (!br || !(br.headlines || []).length) return '';
+    return `
+    <section class="fin-block fin-block-wide">
+        <h2>브리프</h2>
+        <div class="ms-brief">
+            ${br.headlines.slice(0, 6).map((h) => `
+                <div class="ms-brief-card">
+                    <span class="ms-brief-title">${finEsc(h.title_ko || h.title_en || '')}</span>
+                    ${h.stat ? `<span class="ms-brief-stat">${finEsc(h.stat)}</span>` : ''}
+                    ${h.detail_ko ? `<p>${finEsc(h.detail_ko)}</p>` : ''}
+                </div>`).join('')}
+        </div>
+        <p class="fin-note">${finEsc(br.disclaimer_ko || '')}</p>
+    </section>`;
+};
+
+const msLevels = (lv) => {
+    if (!lv) return '';
+    const kl = lv.kospi_index_levels || {};
+    const L = kl.latest || {};
+    const table = MS_UNIVERSE === 'high_vol' ? (lv.close_day_table_high_vol || []) : (lv.close_day_table_marcap || []);
+    const tickers = lv.tickers || {};
+    const sel = MS_TICKER && tickers[MS_TICKER] ? tickers[MS_TICKER] : null;
+    const bins = sel && Array.isArray(sel.bins_by_close) ? sel.bins_by_close : null;
+
+    return `
+    <section class="fin-block fin-block-wide">
+        <h2>가격 × 수급 <span class="ms-q">${finEsc(kl.quality || '')}</span></h2>
+        <p class="fin-lead">${finEsc(lv.data_policy_ko || '')}</p>
+
+        <h3 class="fin-sub">코스피 지수 레벨</h3>
+        ${kl.quality === 'observed' ? `
+        <div class="fin-cards">
+            <div class="fin-card"><span class="fin-card-title">종가</span>
+                <span class="fin-card-value">${Number.isFinite(L.close) ? L.close.toLocaleString('ko-KR') : '—'}</span>
+                <p class="fin-card-plain">${finEsc(L.date || '')}</p></div>
+            <div class="fin-card"><span class="fin-card-title">개인 순매수</span>
+                <span class="fin-card-value ${L.retail_net_eok >= 0 ? 'fin-up' : 'fin-down'}">${msEok(L.retail_net_eok)}</span></div>
+            <div class="fin-card"><span class="fin-card-title">외국인 순매수</span>
+                <span class="fin-card-value ${L.foreign_net_eok >= 0 ? 'fin-up' : 'fin-down'}">${msEok(L.foreign_net_eok)}</span></div>
+            <div class="fin-card"><span class="fin-card-title">기관 순매수</span>
+                <span class="fin-card-value ${L.institution_net_eok >= 0 ? 'fin-up' : 'fin-down'}">${msEok(L.institution_net_eok)}</span></div>
+        </div>
+        <p class="fin-note">${finEsc(kl.method_ko || '')} · ${finEsc(kl.unit || '')} · ${kl.n_days || 0}일 (${finEsc(kl.date_start || '')} ~ ${finEsc(kl.date_end || '')})</p>`
+        : `<p class="fin-note">${msMissing('지수 레벨 수급 미수집')}</p>`}
+
+        <h3 class="fin-sub">종가일 수급</h3>
+        <div class="co-struct-toggle">
+            <button class="mm-view-btn ${MS_UNIVERSE === 'marcap' ? 'on' : ''}" data-ms-univ="marcap">시총 상위</button>
+            <button class="mm-view-btn ${MS_UNIVERSE === 'high_vol' ? 'on' : ''}" data-ms-univ="high_vol">시총 100위 내 고변동</button>
+        </div>
+        ${table.length ? `
+        <div class="co-table-wrap">
+            <table class="co-table">
+                <thead><tr>
+                    <th>종목</th><th>날짜</th><th>종가</th><th>개인(주)</th><th>외국인(주)</th><th>기관(주)</th><th></th>
+                </tr></thead>
+                <tbody>
+                    ${table.map((r) => `
+                        <tr>
+                            <td class="co-label">${finEsc(r.label_ko)} <span class="co-hint">${finEsc(r.ticker)}</span></td>
+                            <td>${finEsc(r.date || '')}</td>
+                            <td>${Number.isFinite(r.close) ? r.close.toLocaleString('ko-KR') : '—'}</td>
+                            <td class="${r.retail_net_shares >= 0 ? 'fin-up' : 'fin-down'}">${msShares(r.retail_net_shares)}</td>
+                            <td class="${r.foreign_net_shares >= 0 ? 'fin-up' : 'fin-down'}">${msShares(r.foreign_net_shares)}</td>
+                            <td class="${r.institution_net_shares >= 0 ? 'fin-up' : 'fin-down'}">${msShares(r.institution_net_shares)}</td>
+                            <td>${tickers[r.ticker] ? `<button class="mm-view-btn ${MS_TICKER === r.ticker ? 'on' : ''}" data-ms-ticker="${finEsc(r.ticker)}">가격대별</button>` : ''}</td>
+                        </tr>`).join('')}
+                </tbody>
+            </table>
+        </div>` : `<p class="fin-note">${msMissing('종가일 표 없음')}</p>`}
+
+        ${sel ? `
+        <h3 class="fin-sub">${finEsc(sel.label_ko)} — 종가 구간별 누적 수급 <span class="ms-q">${finEsc(sel.quality || '')}</span></h3>
+        ${sel.quality === 'observed' && bins && bins.length ? `
+        <div class="co-table-wrap">
+            <table class="co-table">
+                <thead><tr><th>가격 구간</th><th>일수</th><th>개인(주)</th><th>외국인(주)</th><th>기관(주)</th></tr></thead>
+                <tbody>
+                    ${bins.map((b) => `
+                        <tr>
+                            <td class="co-label">${Math.round(b.price_lo).toLocaleString('ko-KR')} ~ ${Math.round(b.price_hi).toLocaleString('ko-KR')}</td>
+                            <td>${b.n_days}</td>
+                            <td class="${b.retail_net_shares >= 0 ? 'fin-up' : 'fin-down'}">${msShares(b.retail_net_shares)}</td>
+                            <td class="${b.foreign_net_shares >= 0 ? 'fin-up' : 'fin-down'}">${msShares(b.foreign_net_shares)}</td>
+                            <td class="${b.institution_net_shares >= 0 ? 'fin-up' : 'fin-down'}">${msShares(b.institution_net_shares)}</td>
+                        </tr>`).join('')}
+                </tbody>
+            </table>
+        </div>
+        <p class="fin-note">${finEsc(sel.method_ko || '')} ${finEsc(sel.bin_attribution || '')}</p>`
+        : `<p class="fin-note">${msMissing('구간별 수급 없음')}</p>`}` : ''}
+
+        ${(lv.cannot_do_ko || []).length ? `
+        <details class="mm-limits">
+            <summary>이 데이터로 할 수 없는 것</summary>
+            ${lv.cannot_do_ko.map((x) => `<div class="mm-limit"><p>${finEsc(x)}</p></div>`).join('')}
+        </details>` : ''}
+        <p class="fin-note">${finEsc(lv.disclaimer_ko || '')}</p>
+    </section>`;
+};
+
+const renderMicrostructure = async (host) => {
+    host.innerHTML = `<div class="fin-wrap"><p class="fin-loading">시장 미시구조 자료를 받는 중…</p></div>`;
+
+    if (!MS_DATA) {
+        const keys = Object.keys(MS_FILES);
+        const got = await Promise.all(keys.map((k) => msGet(MS_FILES[k])));
+        MS_DATA = {};
+        keys.forEach((k, i) => { MS_DATA[k] = got[i]; });
+    }
+    const D = MS_DATA;
+    if (!Object.values(D).some(Boolean)) {
+        host.innerHTML = finPlaceholder('시장 미시구조', '집중도 · US→KR 전이 · 파생 · 가격대별 수급',
+            '스냅샷 JSON을 찾지 못했습니다. 일일 워크플로가 <code>public/data/</code> 에 산출합니다.');
+        return;
+    }
+
+    const paint = () => {
+        host.innerHTML = `
+        <div class="fin-wrap">
+            <div class="fin-head">
+                <h1>시장 미시구조</h1>
+                <p>집중도 · 미국→한국 전이 · 파생 포지션 · 가격대별 수급. 공개·지연 데이터이며 투자 권유가 아닙니다.</p>
+                <div class="fin-meta">
+                    <span class="fin-chip">${finEsc((D.transmission || {}).as_of || (D.levels || {}).as_of || '')}</span>
+                    <span>값이 없는 항목은 채우지 않고 비워 둡니다</span>
+                </div>
+            </div>
+            ${msTransmission(D.transmission)}
+            ${msAlerts(D.alerts)}
+            ${msConc(D.conc)}
+            ${msBoard(D.board)}
+            ${msLevels(D.levels)}
+            ${msBrief(D.brief)}
+        </div>`;
+
+        host.querySelectorAll('[data-ms-univ]').forEach((b) => b.addEventListener('click', () => {
+            MS_UNIVERSE = b.dataset.msUniv; MS_TICKER = null; paint();
+        }));
+        host.querySelectorAll('[data-ms-ticker]').forEach((b) => b.addEventListener('click', () => {
+            MS_TICKER = MS_TICKER === b.dataset.msTicker ? null : b.dataset.msTicker; paint();
+        }));
+        mmWireCharts(host);
+    };
+    paint();
+};
+
 const renderFinanceView = async (target, host) => {
     if (target === 'fin_portfolio') return renderPortfolioLab(host);
     if (target === 'fin_valuation') return renderCompanyCalc(host);
+    if (target === 'fin_derivatives') return renderMicrostructure(host);
 
     host.innerHTML = finPlaceholder(
         '옵션·공매도 동향',
