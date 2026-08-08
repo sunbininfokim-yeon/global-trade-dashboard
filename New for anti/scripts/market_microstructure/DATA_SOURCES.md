@@ -13,6 +13,7 @@
 | Rebalancing = short-gamma | `TR = Σ AUM×(L²−L)×R` | AUM + L + 현물 수익률 | estimated |
 | Concentration | Conc_top2/5/10 | KRX `get_market_cap` (pykrx) | observed |
 | Foreign vs retail | 투자자별 순매수 (현물·ETF) | KRX 투자자별 매매 (pykrx) | observed |
+| 가격대별 누가 샀나 | 일별 순매수 → 종가/고저 빈 귀속 | Naver `trend?pageSize=` + FDR OHLC | **estimated** (틱 단위 아님) |
 | Shorts | 공매도 잔고·비중 | KRX OpenAPI 공매도 엔드포인트 / pykrx | **missing** (data.krx LOGOUT since 2026-02; needs `KRX_API` 이용신청 or login) |
 | 미수·강제청산 (Paper C) | 신용융자·미수·반대매매 | 네이버 증시자금 **신용잔고·예탁금** (FreeSIS 재배포) | observed (미수·반대는 미포함) |
 | 코스피 시장 수급 | 투자자별 순매수 | Naver `investorDealTrendDay` | observed |
