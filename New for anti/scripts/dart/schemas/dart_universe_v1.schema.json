@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://global-trade-dashboard.example/schemas/dart_universe_v1.schema.json",
+  "title": "DART Universe Snapshot v1",
+  "type": "object",
+  "required": ["schema_version", "generated_at", "model", "companies"],
+  "properties": {
+    "schema_version": {"const": "dart-universe-v1"},
+    "generated_at": {"type": "string"},
+    "model": {
+      "type": "object",
+      "required": ["name", "engine_version"]
+    },
+    "companies": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["corp", "parse_status", "metrics"]
+      }
+    },
+    "detail": {"type": "array"},
+    "errors": {"type": "array"},
+    "disclaimer_ko": {"type": "string"}
+  }
+}

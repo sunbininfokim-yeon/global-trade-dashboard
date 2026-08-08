@@ -1,0 +1,81 @@
+{
+  "schema_version": "portfolio-risk-v1",
+  "generated_at": "2026-08-07T07:39:59Z",
+  "model": {
+    "name": "portfolio_risk_v1",
+    "returns_source": "/Users/yeoninair/Documents/New for anti-dart/New for anti/scripts/portfolio/tests/fixtures/returns_sample.json",
+    "missing_tickers": []
+  },
+  "holdings_file": "holdings.example.json",
+  "portfolio": {
+    "schema_version": "portfolio-risk-v1",
+    "weights": {
+      "005930.KS": 0.4,
+      "010140.KS": 0.2,
+      "011200.KS": 0.25,
+      "000660.KS": 0.15
+    },
+    "concentration": {
+      "hhi": 0.285,
+      "effective_n": 3.5088,
+      "n_names": 4,
+      "max_weight": 0.4
+    },
+    "industry_concentration": {
+      "hhi": 0.405,
+      "effective_n": 2.4691,
+      "n_names": 3,
+      "max_weight": 0.55
+    },
+    "industry_weights": {
+      "electronics": 0.55,
+      "shipbuilding": 0.2,
+      "shipping": 0.25
+    },
+    "avg_pairwise_correlation": 0.404376,
+    "correlation": {
+      "005930.KS": {
+        "005930.KS": 1.0,
+        "010140.KS": 0.297237,
+        "011200.KS": 0.408402,
+        "000660.KS": 0.459333
+      },
+      "010140.KS": {
+        "005930.KS": 0.297237,
+        "010140.KS": 1.0,
+        "011200.KS": 0.407025,
+        "000660.KS": 0.397284
+      },
+      "011200.KS": {
+        "005930.KS": 0.408402,
+        "010140.KS": 0.407025,
+        "011200.KS": 1.0,
+        "000660.KS": 0.456975
+      },
+      "000660.KS": {
+        "005930.KS": 0.459333,
+        "010140.KS": 0.397284,
+        "011200.KS": 0.456975,
+        "000660.KS": 1.0
+      }
+    },
+    "sharpe": {
+      "sharpe_annualized": 1.4675,
+      "mean_excess_per_period": 0.0010127,
+      "vol_per_period": 0.01095493,
+      "vol_annualized": 0.173904,
+      "n_periods": 252
+    },
+    "diversification": {
+      "score": 76.5,
+      "band": "well_diversified",
+      "note_ko": "비중이 고르고 상관도 상대적으로 낮습니다."
+    },
+    "risk_free_annual": 0.03,
+    "disclaimer_ko": "과거 수익률 기반 통계이며 미래 수익·투자 권유가 아닙니다."
+  },
+  "link": {
+    "fundamentals": "See dart_universe_v1.json industry_kit / ma_metrics for same names",
+    "note_ko": "가격 수익률(포트)과 공시 재무(DART)는 서로 다른 축입니다."
+  }
+}

@@ -1,0 +1,349 @@
+{
+  "schema_version": "dart-accounts-map-1.2.0",
+  "notes": "Resolve order: account_id exact → normalized name → optional rollup. Never invent amounts.",
+  "accounts": {
+    "TOTAL_ASSETS": {
+      "ids": [
+        "ifrs-full_Assets",
+        "us-gaap_Assets"
+      ],
+      "names": [
+        "자산총계",
+        "자산 총계"
+      ],
+      "sj": "BS"
+    },
+    "CURRENT_ASSETS": {
+      "ids": [
+        "ifrs-full_CurrentAssets",
+        "us-gaap_AssetsCurrent"
+      ],
+      "names": [
+        "유동자산"
+      ],
+      "sj": "BS"
+    },
+    "CASH": {
+      "ids": [
+        "ifrs-full_CashAndCashEquivalents",
+        "dart_CashAndCashEquivalents",
+        "us-gaap_CashAndCashEquivalentsAtCarryingValue",
+        "us-gaap_CashCashEquivalentsAndShortTermInvestments"
+      ],
+      "names": [
+        "현금및현금성자산",
+        "현금및현금성자산(주석)"
+      ],
+      "sj": "BS"
+    },
+    "INVENTORIES": {
+      "ids": [
+        "ifrs-full_Inventories",
+        "us-gaap_InventoryNet"
+      ],
+      "names": [
+        "재고자산"
+      ],
+      "sj": "BS"
+    },
+    "TRADE_RECEIVABLES": {
+      "ids": [
+        "ifrs-full_TradeAndOtherCurrentReceivables",
+        "dart_ShortTermTradeReceivable",
+        "us-gaap_AccountsReceivableNetCurrent",
+        "us-gaap_AccountsReceivableNet"
+      ],
+      "names": [
+        "매출채권",
+        "매출채권 및 기타유동채권",
+        "단기매출채권"
+      ],
+      "sj": "BS"
+    },
+    "TOTAL_LIABILITIES": {
+      "ids": [
+        "ifrs-full_Liabilities",
+        "us-gaap_Liabilities"
+      ],
+      "names": [
+        "부채총계",
+        "부채 총계"
+      ],
+      "sj": "BS"
+    },
+    "CURRENT_LIABILITIES": {
+      "ids": [
+        "ifrs-full_CurrentLiabilities",
+        "us-gaap_LiabilitiesCurrent"
+      ],
+      "names": [
+        "유동부채"
+      ],
+      "sj": "BS"
+    },
+    "EQUITY": {
+      "ids": [
+        "ifrs-full_Equity",
+        "ifrs-full_EquityAttributableToOwnersOfParent",
+        "us-gaap_StockholdersEquity",
+        "us-gaap_StockholdersEquityIncludingPortionAttributableToNoncontrollingInterest"
+      ],
+      "names": [
+        "자본총계",
+        "자본 총계",
+        "지배기업 소유주지분"
+      ],
+      "sj": "BS"
+    },
+    "NET_DEBT_INTEREST_BEARING": {
+      "ids": [],
+      "names": [
+        "차입금",
+        "단기차입금",
+        "장기차입금",
+        "사채"
+      ],
+      "sj": "BS",
+      "note": "Prefer explicit NET_DEBT if present; otherwise leave null rather than guessing."
+    },
+    "REVENUE": {
+      "ids": [
+        "ifrs-full_Revenue",
+        "ifrs-full_RevenueFromContractsWithCustomers",
+        "us-gaap_RevenueFromContractWithCustomerExcludingAssessedTax",
+        "us-gaap_SalesRevenueNet",
+        "us-gaap_Revenues"
+      ],
+      "names": [
+        "매출액",
+        "수익(매출액)",
+        "영업수익"
+      ],
+      "sj": "IS"
+    },
+    "OPERATING_INCOME": {
+      "ids": [
+        "dart_OperatingIncomeLoss",
+        "ifrs-full_ProfitLossFromOperatingActivities",
+        "us-gaap_OperatingIncomeLoss"
+      ],
+      "names": [
+        "영업이익",
+        "영업이익(손실)",
+        "영업손실"
+      ],
+      "sj": "IS"
+    },
+    "NET_INCOME": {
+      "ids": [
+        "ifrs-full_ProfitLoss",
+        "ifrs-full_ProfitLossAttributableToOwnersOfParent",
+        "us-gaap_NetIncomeLoss",
+        "us-gaap_ProfitLoss",
+        "us-gaap_NetIncomeLossAvailableToCommonStockholdersBasic"
+      ],
+      "names": [
+        "당기순이익",
+        "당기순이익(손실)",
+        "지배기업의 소유주에게 귀속되는 당기순이익(손실)"
+      ],
+      "sj": "IS"
+    },
+    "INTEREST_EXPENSE": {
+      "ids": [
+        "ifrs-full_FinanceCosts",
+        "ifrs-full_InterestExpense",
+        "us-gaap_InterestExpense"
+      ],
+      "names": [
+        "금융비용",
+        "이자비용"
+      ],
+      "sj": "IS"
+    },
+    "INCOME_TAX_EXPENSE": {
+      "ids": [
+        "ifrs-full_IncomeTaxExpenseContinuingOperations",
+        "us-gaap_IncomeTaxExpenseBenefit"
+      ],
+      "names": [
+        "법인세비용",
+        "법인세비용(수익)"
+      ],
+      "sj": "IS"
+    },
+    "PROFIT_BEFORE_TAX": {
+      "ids": [
+        "ifrs-full_ProfitLossBeforeTax",
+        "us-gaap_IncomeLossFromContinuingOperationsBeforeIncomeTaxesExtraordinaryItemsNoncontrollingInterest"
+      ],
+      "names": [
+        "법인세비용차감전순이익",
+        "법인세비용차감전순이익(손실)"
+      ],
+      "sj": "IS"
+    },
+    "CFO": {
+      "ids": [
+        "ifrs-full_CashFlowsFromUsedInOperatingActivities",
+        "us-gaap_NetCashProvidedByUsedInOperatingActivities"
+      ],
+      "names": [
+        "영업활동현금흐름",
+        "영업활동으로 인한 현금흐름"
+      ],
+      "sj": "CF"
+    },
+    "CFI": {
+      "ids": [
+        "ifrs-full_CashFlowsFromUsedInInvestingActivities"
+      ],
+      "names": [
+        "투자활동현금흐름",
+        "투자활동으로 인한 현금흐름"
+      ],
+      "sj": "CF"
+    },
+    "CAPEX": {
+      "ids": [
+        "ifrs-full_PurchaseOfPropertyPlantAndEquipmentClassifiedAsInvestingActivities",
+        "dart_PurchaseOfPropertyPlantAndEquipmentIntangibleAssetsOtherNonCurrentAssets",
+        "us-gaap_PaymentsToAcquirePropertyPlantAndEquipment"
+      ],
+      "names": [
+        "유형자산의 취득",
+        "유형자산의취득",
+        "유·무형자산의 취득"
+      ],
+      "sj": "CF"
+    },
+    "LEASE_LIABILITIES": {
+      "ids": [
+        "ifrs-full_LeaseLiabilities",
+        "ifrs-full_CurrentLeaseLiabilities",
+        "ifrs-full_NoncurrentLeaseLiabilities",
+        "us-gaap_OperatingLeaseLiability",
+        "us-gaap_LeaseLiability"
+      ],
+      "names": [
+        "리스부채",
+        "유동리스부채",
+        "비유동리스부채"
+      ],
+      "sj": "BS",
+      "note": "If only current/noncurrent split exists, prefer summed custom extract later."
+    },
+    "CONTRACT_LIABILITIES": {
+      "ids": [
+        "ifrs-full_CurrentContractLiabilities",
+        "ifrs-full_ContractLiabilities"
+      ],
+      "names": [
+        "계약부채",
+        "선수금",
+        "초과청구공사"
+      ],
+      "sj": "BS"
+    },
+    "DEPRECIATION": {
+      "ids": [
+        "ifrs-full_DepreciationExpense",
+        "ifrs-full_DepreciationAndAmortisationExpense",
+        "dart_DepreciationExpense",
+        "us-gaap_DepreciationDepletionAndAmortization",
+        "us-gaap_DepreciationAndAmortization"
+      ],
+      "names": [
+        "감가상각비",
+        "감가상각비및상각비",
+        "감가상각비 및 상각비"
+      ],
+      "sj": "IS"
+    },
+    "COGS": {
+      "ids": [
+        "ifrs-full_CostOfSales",
+        "us-gaap_CostOfGoodsAndServicesSold",
+        "us-gaap_CostOfRevenue"
+      ],
+      "names": [
+        "매출원가",
+        "제품매출원가",
+        "상품매출원가"
+      ],
+      "sj": "IS"
+    },
+    "MARKETABLE_SECURITIES_CURRENT": {
+      "ids": [
+        "us-gaap_MarketableSecuritiesCurrent",
+        "ifrs-full_CurrentFinancialAssets"
+      ],
+      "names": [
+        "단기금융상품",
+        "유동성시장성유가증권",
+        "단기투자자산"
+      ],
+      "sj": "BS"
+    },
+    "MARKETABLE_SECURITIES_NONCURRENT": {
+      "ids": [
+        "us-gaap_MarketableSecuritiesNoncurrent"
+      ],
+      "names": [
+        "장기금융상품",
+        "비유동시장성유가증권"
+      ],
+      "sj": "BS"
+    },
+    "SHORT_TERM_DEBT": {
+      "ids": [
+        "us-gaap_ShortTermBorrowings",
+        "ifrs-full_ShorttermBorrowings"
+      ],
+      "names": [
+        "단기차입금"
+      ],
+      "sj": "BS"
+    },
+    "LONG_TERM_DEBT_CURRENT": {
+      "ids": [
+        "us-gaap_LongTermDebtCurrent"
+      ],
+      "names": [
+        "유동성장기차입금",
+        "유동성장기부채"
+      ],
+      "sj": "BS"
+    },
+    "LONG_TERM_DEBT_NONCURRENT": {
+      "ids": [
+        "us-gaap_LongTermDebtNoncurrent"
+      ],
+      "names": [
+        "장기차입금",
+        "사채"
+      ],
+      "sj": "BS"
+    },
+    "LONG_TERM_DEBT": {
+      "ids": [
+        "us-gaap_LongTermDebt",
+        "ifrs-full_LongtermBorrowings"
+      ],
+      "names": [
+        "장기차입금총액"
+      ],
+      "sj": "BS",
+      "note": "Use only when current/noncurrent split missing."
+    },
+    "COMMERCIAL_PAPER": {
+      "ids": [
+        "us-gaap_CommercialPaper"
+      ],
+      "names": [
+        "기업어음"
+      ],
+      "sj": "BS"
+    }
+  }
+}

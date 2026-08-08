@@ -1,0 +1,2963 @@
+{
+  "schema_version": "dart-universe-v1",
+  "generated_at": "2026-08-07T07:59:34Z",
+  "model": {
+    "name": "kfa_engine",
+    "engine_version": "kfa-1.0.0",
+    "description": "Industry kits + M&A metrics + assumption DCF. No LLM.",
+    "api_key_present": false
+  },
+  "companies": [
+    {
+      "corp": {
+        "code": "005930",
+        "corp_code": "00126380",
+        "name": "삼성전자",
+        "industry": null,
+        "industry_kit": "semiconductor"
+      },
+      "period": {
+        "year": 2024,
+        "reprt": "11011",
+        "fs_div": "CFS"
+      },
+      "parse_status": "verified",
+      "industry_kit": "semiconductor",
+      "flags": [
+        "capex_heavy_fcf"
+      ],
+      "metrics": {
+        "current_ratio": 302.6667,
+        "debt_ratio": 28.169,
+        "roe": 7.1831,
+        "roa": 5.6044,
+        "operating_margin": 11.6667,
+        "earnings_quality": 1.5686,
+        "fcf": -5000000000000.0,
+        "net_debt_to_ebitda": -1.1429
+      },
+      "value_band": {
+        "equity_value_low": 168040086702375.3,
+        "equity_value_high": 562146969696969.25,
+        "equity_value_mid": 286366089021486.6
+      },
+      "engine_version": "kfa-1.0.0"
+    },
+    {
+      "corp": {
+        "code": "010140",
+        "corp_code": "00126186",
+        "name": "삼성중공업",
+        "industry": null,
+        "industry_kit": "shipbuilding"
+      },
+      "period": {
+        "year": 2024,
+        "reprt": "11011",
+        "fs_div": "CFS"
+      },
+      "parse_status": "verified",
+      "industry_kit": "shipbuilding",
+      "flags": [
+        "advances_inflate_liabilities"
+      ],
+      "metrics": {
+        "current_ratio": 114.2857,
+        "debt_ratio": 172.7273,
+        "roe": 5.4545,
+        "roa": 2.0,
+        "operating_margin": 5.0,
+        "earnings_quality": 0.8333,
+        "fcf": -1000000000000.0,
+        "net_debt_to_ebitda": 1.1111
+      },
+      "value_band": {
+        "equity_value_low": -8387303881015.22,
+        "equity_value_high": 45227272727272.7,
+        "equity_value_mid": -2527192469486.16
+      },
+      "engine_version": "kfa-1.0.0"
+    },
+    {
+      "corp": {
+        "code": "011200",
+        "corp_code": "00164638",
+        "name": "HMM",
+        "industry": null,
+        "industry_kit": "shipping"
+      },
+      "period": {
+        "year": 2024,
+        "reprt": "11011",
+        "fs_div": "CFS"
+      },
+      "parse_status": "verified",
+      "industry_kit": "shipping",
+      "flags": [
+        "lease_inflates_leverage",
+        "cycle_peak_earnings"
+      ],
+      "metrics": {
+        "current_ratio": 133.3333,
+        "debt_ratio": 400.0,
+        "roe": 56.25,
+        "roa": 11.25,
+        "operating_margin": 30.0,
+        "earnings_quality": 1.7778,
+        "fcf": 25000000000000.0,
+        "net_debt_to_ebitda": 4.7222
+      },
+      "value_band": {
+        "equity_value_low": 46787448384974.06,
+        "equity_value_high": 428787878787878.6,
+        "equity_value_mid": 190480386670462.62
+      },
+      "engine_version": "kfa-1.0.0"
+    }
+  ],
+  "detail": [
+    {
+      "schema_version": "dart-company-v1",
+      "generated_at": "2026-08-07T07:59:34Z",
+      "engine_version": "kfa-1.0.0",
+      "corp": {
+        "code": "005930",
+        "corp_code": "00126380",
+        "name": "삼성전자",
+        "industry": null,
+        "industry_kit": "semiconductor"
+      },
+      "period": {
+        "year": 2024,
+        "reprt": "11011",
+        "fs_div": "CFS"
+      },
+      "parse_status": "verified",
+      "validation": {
+        "parse_status": "verified",
+        "checks": [
+          {
+            "id": "assets_eq_liab_plus_equity",
+            "ok": true,
+            "assets": 455000000000000.0,
+            "liabilities_plus_equity": 455000000000000.0,
+            "rel_error": 0.0
+          },
+          {
+            "id": "current_le_total_assets",
+            "ok": true,
+            "current": 227000000000000.0,
+            "total": 455000000000000.0
+          },
+          {
+            "id": "current_le_total_liabilities",
+            "ok": true,
+            "current": 75000000000000.0,
+            "total": 100000000000000.0
+          }
+        ],
+        "identity_ok": true
+      },
+      "accounts": {
+        "TOTAL_ASSETS": {
+          "value": 455000000000000.0,
+          "match": "id:ifrs-full_Assets",
+          "account_nm": "자산총계",
+          "reason": null
+        },
+        "CURRENT_ASSETS": {
+          "value": 227000000000000.0,
+          "match": "id:ifrs-full_CurrentAssets",
+          "account_nm": "유동자산",
+          "reason": null
+        },
+        "CASH": {
+          "value": 65000000000000.0,
+          "match": "id:ifrs-full_CashAndCashEquivalents",
+          "account_nm": "현금및현금성자산",
+          "reason": null
+        },
+        "INVENTORIES": {
+          "value": 52000000000000.0,
+          "match": "id:ifrs-full_Inventories",
+          "account_nm": "재고자산",
+          "reason": null
+        },
+        "TRADE_RECEIVABLES": {
+          "value": 40000000000000.0,
+          "match": "id:ifrs-full_TradeAndOtherCurrentReceivables",
+          "account_nm": "매출채권",
+          "reason": null
+        },
+        "TOTAL_LIABILITIES": {
+          "value": 100000000000000.0,
+          "match": "id:ifrs-full_Liabilities",
+          "account_nm": "부채총계",
+          "reason": null
+        },
+        "CURRENT_LIABILITIES": {
+          "value": 75000000000000.0,
+          "match": "id:ifrs-full_CurrentLiabilities",
+          "account_nm": "유동부채",
+          "reason": null
+        },
+        "EQUITY": {
+          "value": 355000000000000.0,
+          "match": "id:ifrs-full_Equity",
+          "account_nm": "자본총계",
+          "reason": null
+        },
+        "NET_DEBT_INTEREST_BEARING": {
+          "value": null,
+          "match": null,
+          "account_nm": null,
+          "reason": "missing"
+        },
+        "REVENUE": {
+          "value": 300000000000000.0,
+          "match": "id:ifrs-full_Revenue",
+          "account_nm": "매출액",
+          "reason": null
+        },
+        "OPERATING_INCOME": {
+          "value": 35000000000000.0,
+          "match": "id:dart_OperatingIncomeLoss",
+          "account_nm": "영업이익",
+          "reason": null
+        },
+        "NET_INCOME": {
+          "value": 25500000000000.0,
+          "match": "id:ifrs-full_ProfitLoss",
+          "account_nm": "당기순이익",
+          "reason": null
+        },
+        "INTEREST_EXPENSE": {
+          "value": 1500000000000.0,
+          "match": "id:ifrs-full_FinanceCosts",
+          "account_nm": "금융비용",
+          "reason": null
+        },
+        "INCOME_TAX_EXPENSE": {
+          "value": 8500000000000.0,
+          "match": "id:ifrs-full_IncomeTaxExpenseContinuingOperations",
+          "account_nm": "법인세비용",
+          "reason": null
+        },
+        "PROFIT_BEFORE_TAX": {
+          "value": 34000000000000.0,
+          "match": "id:ifrs-full_ProfitLossBeforeTax",
+          "account_nm": "법인세비용차감전순이익",
+          "reason": null
+        },
+        "CFO": {
+          "value": 40000000000000.0,
+          "match": "id:ifrs-full_CashFlowsFromUsedInOperatingActivities",
+          "account_nm": "영업활동현금흐름",
+          "reason": null
+        },
+        "CFI": {
+          "value": null,
+          "match": null,
+          "account_nm": null,
+          "reason": "missing"
+        },
+        "CAPEX": {
+          "value": -45000000000000.0,
+          "match": "id:ifrs-full_PurchaseOfPropertyPlantAndEquipmentClassifiedAsInvestingActivities",
+          "account_nm": "유형자산의 취득",
+          "reason": null
+        },
+        "LEASE_LIABILITIES": {
+          "value": null,
+          "match": null,
+          "account_nm": null,
+          "reason": "missing"
+        },
+        "CONTRACT_LIABILITIES": {
+          "value": null,
+          "match": null,
+          "account_nm": null,
+          "reason": "missing"
+        },
+        "DEPRECIATION": {
+          "value": null,
+          "match": null,
+          "account_nm": null,
+          "reason": "missing"
+        }
+      },
+      "metrics": {
+        "current_ratio": {
+          "value": 302.6667,
+          "unit": "pct",
+          "label": "유동비율",
+          "polarity": "higher_better",
+          "reason": null,
+          "trend_3y": [
+            247.5,
+            269.2308,
+            302.6667
+          ]
+        },
+        "quick_ratio": {
+          "value": 233.3333,
+          "unit": "pct",
+          "label": "당좌비율",
+          "polarity": "higher_better",
+          "reason": null,
+          "trend_3y": [
+            187.5,
+            205.1282,
+            233.3333
+          ]
+        },
+        "debt_ratio": {
+          "value": 28.169,
+          "unit": "pct",
+          "label": "부채비율",
+          "polarity": "lower_better",
+          "reason": null,
+          "trend_3y": [
+            36.6667,
+            32.3077,
+            28.169
+          ]
+        },
+        "roe": {
+          "value": 7.1831,
+          "unit": "pct",
+          "label": "ROE",
+          "polarity": "higher_better",
+          "reason": null,
+          "trend_3y": [
+            6.7667,
+            6.7077,
+            7.1831
+          ]
+        },
+        "roa": {
+          "value": 5.6044,
+          "unit": "pct",
+          "label": "ROA",
+          "polarity": "higher_better",
+          "reason": null,
+          "trend_3y": [
+            4.9512,
+            5.0698,
+            5.6044
+          ]
+        },
+        "operating_margin": {
+          "value": 11.6667,
+          "unit": "pct",
+          "label": "영업이익률",
+          "polarity": "higher_better",
+          "reason": null,
+          "trend_3y": [
+            10.7692,
+            10.7143,
+            11.6667
+          ]
+        },
+        "net_margin": {
+          "value": 8.5,
+          "unit": "pct",
+          "label": "순이익률",
+          "polarity": "higher_better",
+          "reason": null,
+          "trend_3y": [
+            7.8077,
+            7.7857,
+            8.5
+          ]
+        },
+        "interest_coverage": {
+          "value": 23.3333,
+          "unit": "x",
+          "label": "이자보상배율",
+          "polarity": "higher_better",
+          "reason": null,
+          "trend_3y": [
+            21.5385,
+            21.4286,
+            23.3333
+          ]
+        },
+        "asset_turnover": {
+          "value": 0.6593,
+          "unit": "x",
+          "label": "총자산회전율",
+          "polarity": "higher_better",
+          "reason": null,
+          "trend_3y": [
+            0.6341,
+            0.6512,
+            0.6593
+          ]
+        },
+        "inventory_turnover": {
+          "value": 5.7692,
+          "unit": "x",
+          "label": "재고회전율",
+          "polarity": "higher_better",
+          "reason": null,
+          "trend_3y": [
+            5.4167,
+            5.6,
+            5.7692
+          ]
+        },
+        "receivables_turnover": {
+          "value": 7.5,
+          "unit": "x",
+          "label": "매출채권회전율",
+          "polarity": "higher_better",
+          "reason": null,
+          "trend_3y": [
+            7.2222,
+            7.3684,
+            7.5
+          ]
+        },
+        "cash_ratio": {
+          "value": 86.6667,
+          "unit": "pct",
+          "label": "현금비율",
+          "polarity": "higher_better",
+          "reason": null,
+          "trend_3y": [
+            68.75,
+            76.9231,
+            86.6667
+          ]
+        },
+        "earnings_quality": {
+          "value": 1.5686,
+          "unit": "x",
+          "label": "이익의 질",
+          "polarity": "higher_better",
+          "reason": null,
+          "trend_3y": [
+            1.5764,
+            1.6055,
+            1.5686
+          ]
+        },
+        "fcf": {
+          "value": -5000000000000.0,
+          "unit": "currency",
+          "label": "잉여현금흐름",
+          "polarity": "higher_better",
+          "reason": null,
+          "trend_3y": [
+            -6000000000000.0,
+            -5000000000000.0,
+            -5000000000000.0
+          ]
+        },
+        "roic": {
+          "value": null,
+          "unit": "pct",
+          "label": "ROIC",
+          "reason": "missing:INVESTED_CAPITAL"
+        }
+      },
+      "industry": {
+        "industry_kit": "semiconductor",
+        "label_ko": "반도체",
+        "notes_ko": [
+          "메모리·시스템 사이클과 ASP가 마진·FCF를 지배합니다.",
+          "EBITDA·순차입금은 단년보다 다년(3년) 평균으로 보는 편이 맞습니다.",
+          "대규모 Fab Capex로 FCF가 장기간 음수여도 성장 투자일 수 있습니다."
+        ],
+        "watch_notes": [
+          "inventory_valuation",
+          "capex_commitments",
+          "related_party",
+          "customer_concentration"
+        ],
+        "ma_focus": [
+          "normalized_ebitda_proxy",
+          "fcf",
+          "net_debt_to_ebitda",
+          "roic"
+        ],
+        "priority_metrics": [
+          "roic",
+          "operating_margin",
+          "fcf",
+          "earnings_quality",
+          "inventory_turnover",
+          "cash_ratio"
+        ],
+        "mti_export_items": [
+          "반도체"
+        ],
+        "flags": [
+          {
+            "id": "capex_heavy_fcf",
+            "severity_ko": "대규모 설비투자로 FCF가 음수일 수 있습니다. 투자 계획을 확인하세요.",
+            "when": "fcf_negative_and_capex_large"
+          }
+        ],
+        "adjusted_metrics": {},
+        "models_hint_ko": [],
+        "sources": [
+          "KIS Electronics methodology",
+          "MOTIE MTI 반도체",
+          "BOK C26/C261"
+        ],
+        "background": {
+          "headline_ko": "사이클·Capex·ASP가 현금과 레버리지를 지배하는 산업",
+          "why_ko": [
+            "메모리/시스템 수요와 고정가격 변동이 마진을 좌우한다.",
+            "Fab 증설은 이익보다 먼저 현금을 쓰므로 FCF 음수가 수년 갈 수 있다.",
+            "신용평가에서는 EBITDA·순차입을 단년보다 다년 평균으로 보는 경우가 많다."
+          ],
+          "watch_ko": [
+            "재고평가",
+            "Capex 약정",
+            "고객 집중",
+            "특수관계자"
+          ],
+          "sources": [
+            "KIS 전자산업 평가방법론",
+            "MOTIE 반도체",
+            "BOK C26/C261"
+          ]
+        },
+        "bok_peer": {
+          "asof": "2024",
+          "source_ko": "한국은행 기업경영분석 업종별 재무비율(입찰·경영상태 평가용 공개 재수록표 기준). 원통계는 한은 기업경영분석/ECOS.",
+          "row": {
+            "ksic": "C261",
+            "label_ko": "반도체 및 전자부품",
+            "current_ratio": 132.02,
+            "debt_ratio": 64.71,
+            "net_margin": 10.32,
+            "equity_ratio": 60.71,
+            "asset_turnover": 0.68
+          },
+          "vs": {
+            "available": true,
+            "matched_ksic": "C261",
+            "peer_label_ko": "반도체 및 전자부품",
+            "metrics": {
+              "current_ratio": {
+                "firm": 302.6667,
+                "peer_avg": 132.02,
+                "delta": 170.6467,
+                "vs_peer": "above_peer",
+                "polarity": "higher_better",
+                "unit": "pct"
+              },
+              "debt_ratio": {
+                "firm": 28.169,
+                "peer_avg": 64.71,
+                "delta": -36.541,
+                "vs_peer": "below_peer_better",
+                "polarity": "lower_better",
+                "unit": "pct"
+              },
+              "net_margin": {
+                "firm": 8.5,
+                "peer_avg": 10.32,
+                "delta": -1.82,
+                "vs_peer": "below_peer",
+                "polarity": "higher_better",
+                "unit": "pct"
+              },
+              "asset_turnover": {
+                "firm": 0.6593,
+                "peer_avg": 0.68,
+                "delta": -0.0207,
+                "vs_peer": "below_peer",
+                "polarity": "higher_better",
+                "unit": "x"
+              },
+              "operating_margin_vs_peer_net_margin": {
+                "firm_operating_margin": 11.6667,
+                "peer_net_margin": 10.32,
+                "note_ko": "한은 표는 매출액순이익률만 제공. 영업이익률과 직접 동일하지 않음."
+              }
+            }
+          }
+        }
+      },
+      "ma_metrics": {
+        "fcf": {
+          "value": -5000000000000.0,
+          "unit": "currency",
+          "label": "FCF",
+          "reason": null
+        },
+        "fcf_margin": {
+          "value": -1.6667,
+          "unit": "pct",
+          "label": "FCF 마진",
+          "reason": null
+        },
+        "ebitda_proxy": {
+          "value": 35000000000000.0,
+          "unit": "currency",
+          "label": "EBITDA 대용",
+          "reason": "proxy:operating_income_only_no_da"
+        },
+        "net_debt_proxy": {
+          "value": -40000000000000.0,
+          "unit": "currency",
+          "label": "순차입 대용(비유동부채−현금)",
+          "reason": null
+        },
+        "net_debt_incl_lease": {
+          "value": -40000000000000.0,
+          "unit": "currency",
+          "label": "순차입+리스(대용)",
+          "reason": null
+        },
+        "net_debt_ex_contract_liab": {
+          "value": 35000000000000.0,
+          "unit": "currency",
+          "label": "총부채−계약부채−현금",
+          "reason": null
+        },
+        "net_debt_to_ebitda": {
+          "value": -1.1429,
+          "unit": "x",
+          "label": "Net Debt(+lease)/EBITDA",
+          "reason": null
+        },
+        "net_cash_proxy": {
+          "value": 40000000000000.0,
+          "unit": "currency",
+          "label": "순현금 대용",
+          "reason": null
+        },
+        "cfo_to_ebitda": {
+          "value": 1.1429,
+          "unit": "x",
+          "label": "CFO/EBITDA",
+          "reason": null
+        },
+        "interest_burden": {
+          "value": 0.0429,
+          "unit": "x",
+          "label": "이자/영업이익",
+          "reason": null
+        },
+        "lease_to_liabilities": {
+          "value": null,
+          "unit": "pct",
+          "label": "리스부채/총부채",
+          "reason": "missing:LEASE_LIABILITIES"
+        },
+        "contract_liab_to_liabilities": {
+          "value": null,
+          "unit": "pct",
+          "label": "계약부채/총부채",
+          "reason": "missing:CONTRACT_LIABILITIES"
+        },
+        "notes_ko": [
+          "순차입·EBITDA는 공시 계정이 불완전하면 대용치이며 reason 필드를 확인하세요.",
+          "M&A 실사 시 주석의 리스·우발·선수금을 조정항으로 반영해야 합니다."
+        ]
+      },
+      "assumption_defaults": {
+        "current_operating_margin_pct": 11.6667,
+        "bok_peer_net_margin_pct": 10.32,
+        "preset_suggestions": {
+          "bear": 9.67,
+          "base": 11.6667,
+          "bull": 13.67,
+          "unit": "pct",
+          "note_ko": "UI에서 Base/Bull/Bear 선택 후 사용자가 미세 조정(예: 10.5). 한은 peer는 매출액순이익률 참고용(영업이익률과 정의 다름)."
+        }
+      },
+      "valuation": {
+        "schema_version": "dart-valuation-v1",
+        "engine_version": "kfa-val-1.0.0",
+        "disclaimer_ko": "가정에 따른 모형 산출이며 투자 권유·목표가 제시가 아닙니다.",
+        "models": {
+          "fcff_dcf": {
+            "label_ko": "FCFF DCF",
+            "pros_ko": [
+              "현금흐름 본위라 회계 이익 왜곡에 상대적으로 강함",
+              "가정·민감도를 명시적으로 드러냄"
+            ],
+            "cons_ko": [
+              "WACC·영구성장률에 결과가 민감",
+              "사이클 업종(해운)은 정규화 이익 가정이 핵심"
+            ],
+            "user_assumptions": [
+              "projection_years",
+              "revenue_cagr",
+              "ebit_margin",
+              "tax_rate",
+              "sales_to_nwc",
+              "capex_to_sales",
+              "da_to_sales",
+              "wacc",
+              "terminal_growth",
+              "net_debt",
+              "shares_out"
+            ]
+          },
+          "ev_ebitda": {
+            "label_ko": "EV/EBITDA 배수",
+            "pros_ko": [
+              "단순하고 peer 비교에 익숙함",
+              "단기 상대가치 스크린에 유용"
+            ],
+            "cons_ko": [
+              "회계·리스·일회성 EBITDA 왜곡",
+              "피어 선정과 사이클 위치에 좌우"
+            ],
+            "user_assumptions": [
+              "ebitda",
+              "ev_ebitda_multiple",
+              "net_debt",
+              "shares_out"
+            ]
+          }
+        },
+        "scenarios": [
+          {
+            "scenario_id": "bear",
+            "name_ko": "보수",
+            "fcff_dcf": {
+              "ok": true,
+              "model": "fcff_dcf",
+              "enterprise_value": 128040086702375.31,
+              "equity_value": 168040086702375.3,
+              "value_per_share": null,
+              "pv_explicit_fcff": 47150406202663.04,
+              "pv_terminal": 80889680499712.27,
+              "terminal_value": 136303815789473.66,
+              "projected": [
+                {
+                  "year": 1,
+                  "revenue": 300000000000000.0,
+                  "ebit": 29010000000000.0,
+                  "fcff": 12757500000000.0,
+                  "pv_fcff": 11493243243243.24
+                },
+                {
+                  "year": 2,
+                  "revenue": 300000000000000.0,
+                  "ebit": 29010000000000.0,
+                  "fcff": 12757500000000.0,
+                  "pv_fcff": 10354273192111.03
+                },
+                {
+                  "year": 3,
+                  "revenue": 300000000000000.0,
+                  "ebit": 29010000000000.0,
+                  "fcff": 12757500000000.0,
+                  "pv_fcff": 9328174046946.87
+                },
+                {
+                  "year": 4,
+                  "revenue": 300000000000000.0,
+                  "ebit": 29010000000000.0,
+                  "fcff": 12757500000000.0,
+                  "pv_fcff": 8403760402654.84
+                },
+                {
+                  "year": 5,
+                  "revenue": 300000000000000.0,
+                  "ebit": 29010000000000.0,
+                  "fcff": 12757500000000.0,
+                  "pv_fcff": 7570955317707.06
+                }
+              ],
+              "assumptions_used": {
+                "projection_years": 5,
+                "revenue_cagr": 0.0,
+                "ebit_margin": 0.0967,
+                "tax_rate": 0.25,
+                "sales_to_nwc": 0.15,
+                "capex_to_sales": 0.08,
+                "da_to_sales": 0.05,
+                "wacc": 0.11,
+                "terminal_growth": 0.015,
+                "net_debt": -40000000000000.0,
+                "shares_out": null,
+                "revenue0": 300000000000000.0
+              }
+            },
+            "ev_ebitda": {
+              "ok": true,
+              "model": "ev_ebitda",
+              "enterprise_value": 210000000000000.0,
+              "equity_value": 250000000000000.0,
+              "value_per_share": null,
+              "assumptions_used": {
+                "ebitda": 35000000000000.0,
+                "ev_ebitda_multiple": 6.0,
+                "net_debt": -40000000000000.0,
+                "shares_out": null
+              }
+            }
+          },
+          {
+            "scenario_id": "base",
+            "name_ko": "기본(현재 마진)",
+            "fcff_dcf": {
+              "ok": true,
+              "model": "fcff_dcf",
+              "enterprise_value": 246366089021486.6,
+              "equity_value": 286366089021486.6,
+              "value_per_share": null,
+              "pv_explicit_fcff": 67549161502946.18,
+              "pv_terminal": 178816927518540.4,
+              "terminal_value": 275132008221643.38,
+              "projected": [
+                {
+                  "year": 1,
+                  "revenue": 312000000000000.0,
+                  "ebit": 36400104000000.0,
+                  "fcff": 16140078000000.0,
+                  "pv_fcff": 14807411009174.31
+                },
+                {
+                  "year": 2,
+                  "revenue": 324480000000000.0,
+                  "ebit": 37856108160000.0,
+                  "fcff": 16785681120000.0,
+                  "pv_fcff": 14128171972056.22
+                },
+                {
+                  "year": 3,
+                  "revenue": 337459200000000.0,
+                  "ebit": 39370352486400.0,
+                  "fcff": 17457108364800.0,
+                  "pv_fcff": 13480090688934.38
+                },
+                {
+                  "year": 4,
+                  "revenue": 350957568000000.0,
+                  "ebit": 40945166585856.0,
+                  "fcff": 18155392699392.0,
+                  "pv_fcff": 12861737905038.3
+                },
+                {
+                  "year": 5,
+                  "revenue": 364995870720000.0,
+                  "ebit": 42582973249290.24,
+                  "fcff": 18881608407367.68,
+                  "pv_fcff": 12271749927742.97
+                }
+              ],
+              "assumptions_used": {
+                "projection_years": 5,
+                "revenue_cagr": 0.04,
+                "ebit_margin": 0.116667,
+                "tax_rate": 0.25,
+                "sales_to_nwc": 0.15,
+                "capex_to_sales": 0.08,
+                "da_to_sales": 0.05,
+                "wacc": 0.09,
+                "terminal_growth": 0.02,
+                "net_debt": -40000000000000.0,
+                "shares_out": null,
+                "revenue0": 300000000000000.0
+              }
+            },
+            "ev_ebitda": {
+              "ok": true,
+              "model": "ev_ebitda",
+              "enterprise_value": 280000000000000.0,
+              "equity_value": 320000000000000.0,
+              "value_per_share": null,
+              "assumptions_used": {
+                "ebitda": 35000000000000.0,
+                "ev_ebitda_multiple": 8.0,
+                "net_debt": -40000000000000.0,
+                "shares_out": null
+              }
+            }
+          },
+          {
+            "scenario_id": "bull",
+            "name_ko": "낙관",
+            "fcff_dcf": {
+              "ok": true,
+              "model": "fcff_dcf",
+              "enterprise_value": 522146969696969.25,
+              "equity_value": 562146969696969.25,
+              "value_per_share": null,
+              "pv_explicit_fcff": 110454166666666.6,
+              "pv_terminal": 411692803030302.6,
+              "terminal_value": 604911794508916.0,
+              "projected": [
+                {
+                  "year": 1,
+                  "revenue": 324000000000000.0,
+                  "ebit": 44290800000000.0,
+                  "fcff": 23858100000000.0,
+                  "pv_fcff": 22090833333333.33
+                },
+                {
+                  "year": 2,
+                  "revenue": 349920000000000.0,
+                  "ebit": 47834063999999.99,
+                  "fcff": 25766747999999.99,
+                  "pv_fcff": 22090833333333.32
+                },
+                {
+                  "year": 3,
+                  "revenue": 377913600000000.0,
+                  "ebit": 51660789119999.99,
+                  "fcff": 27828087839999.99,
+                  "pv_fcff": 22090833333333.32
+                },
+                {
+                  "year": 4,
+                  "revenue": 408146688000000.0,
+                  "ebit": 55793652249599.99,
+                  "fcff": 30054334867199.99,
+                  "pv_fcff": 22090833333333.32
+                },
+                {
+                  "year": 5,
+                  "revenue": 440798423040000.0,
+                  "ebit": 60257144429567.99,
+                  "fcff": 32458681656575.98,
+                  "pv_fcff": 22090833333333.31
+                }
+              ],
+              "assumptions_used": {
+                "projection_years": 5,
+                "revenue_cagr": 0.08,
+                "ebit_margin": 0.1367,
+                "tax_rate": 0.25,
+                "sales_to_nwc": 0.12,
+                "capex_to_sales": 0.07,
+                "da_to_sales": 0.05,
+                "wacc": 0.08,
+                "terminal_growth": 0.025,
+                "net_debt": -40000000000000.0,
+                "shares_out": null,
+                "revenue0": 300000000000000.0
+              }
+            },
+            "ev_ebitda": {
+              "ok": true,
+              "model": "ev_ebitda",
+              "enterprise_value": 350000000000000.0,
+              "equity_value": 390000000000000.0,
+              "value_per_share": null,
+              "assumptions_used": {
+                "ebitda": 35000000000000.0,
+                "ev_ebitda_multiple": 10.0,
+                "net_debt": -40000000000000.0,
+                "shares_out": null
+              }
+            }
+          }
+        ],
+        "value_band": {
+          "equity_value_low": 168040086702375.3,
+          "equity_value_high": 562146969696969.25,
+          "equity_value_mid": 286366089021486.6
+        },
+        "sensitivity_wacc_g": [
+          {
+            "wacc": 0.08,
+            "terminal_growth": 0.015,
+            "enterprise_value": 270054393767040.8,
+            "equity_value": 310054393767040.8,
+            "ok": true
+          },
+          {
+            "wacc": 0.08,
+            "terminal_growth": 0.02,
+            "enterprise_value": 287847401264768.75,
+            "equity_value": 327847401264768.75,
+            "ok": true
+          },
+          {
+            "wacc": 0.08,
+            "terminal_growth": 0.025,
+            "enterprise_value": 308875501034810.75,
+            "equity_value": 348875501034810.75,
+            "ok": true
+          },
+          {
+            "wacc": 0.09,
+            "terminal_growth": 0.015,
+            "enterprise_value": 233626843858401.0,
+            "equity_value": 273626843858401.0,
+            "ok": true
+          },
+          {
+            "wacc": 0.09,
+            "terminal_growth": 0.02,
+            "enterprise_value": 246366089021486.6,
+            "equity_value": 286366089021486.6,
+            "ok": true
+          },
+          {
+            "wacc": 0.09,
+            "terminal_growth": 0.025,
+            "enterprise_value": 261065218055816.03,
+            "equity_value": 301065218055816.0,
+            "ok": true
+          },
+          {
+            "wacc": 0.09999999999999999,
+            "terminal_growth": 0.015,
+            "enterprise_value": 205783689209968.7,
+            "equity_value": 245783689209968.7,
+            "ok": true
+          },
+          {
+            "wacc": 0.09999999999999999,
+            "terminal_growth": 0.02,
+            "enterprise_value": 215266330828473.4,
+            "equity_value": 255266330828473.4,
+            "ok": true
+          },
+          {
+            "wacc": 0.09999999999999999,
+            "terminal_growth": 0.025,
+            "enterprise_value": 226013324662778.72,
+            "equity_value": 266013324662778.72,
+            "ok": true
+          }
+        ]
+      },
+      "scores": {},
+      "macro_beta": {},
+      "narrative": [
+        "산업 키트: 반도체.",
+        "사이클·Capex·ASP가 현금과 레버리지를 지배하는 산업",
+        "메모리·시스템 사이클과 ASP가 마진·FCF를 지배합니다.",
+        "EBITDA·순차입금은 단년보다 다년(3년) 평균으로 보는 편이 맞습니다.",
+        "유동비율 302.7% (한은 업종평균 132.0%, Δ +170.6%p).",
+        "부채비율 28.2% (한은 업종평균 64.7%, Δ -36.5%p).",
+        "주의: 대규모 설비투자로 FCF가 음수일 수 있습니다. 투자 계획을 확인하세요.",
+        "유동비율 302.7%입니다. 단기 지급능력은 확보돼 있습니다.",
+        "부채비율 28.2%입니다.",
+        "영업이익률 11.7%입니다. (가정 입력 기본값으로 사용)",
+        "ROE 7.2%입니다.",
+        "FCF -5,000,000,000,000 (통화 단위는 공시와 동일).",
+        "이익의 질(CFO/순이익) 1.57배. 영업현금이 회계이익을 뒷받침합니다.",
+        "확인 권장 주석: inventory_valuation, capex_commitments, related_party, customer_concentration"
+      ],
+      "disclaimer_ko": "본 산출물은 공시 숫자·사용자 가정 모형이며 투자 권유가 아닙니다."
+    },
+    {
+      "schema_version": "dart-company-v1",
+      "generated_at": "2026-08-07T07:59:34Z",
+      "engine_version": "kfa-1.0.0",
+      "corp": {
+        "code": "010140",
+        "corp_code": "00126186",
+        "name": "삼성중공업",
+        "industry": null,
+        "industry_kit": "shipbuilding"
+      },
+      "period": {
+        "year": 2024,
+        "reprt": "11011",
+        "fs_div": "CFS"
+      },
+      "parse_status": "verified",
+      "validation": {
+        "parse_status": "verified",
+        "checks": [
+          {
+            "id": "assets_eq_liab_plus_equity",
+            "ok": true,
+            "assets": 150000000000000.0,
+            "liabilities_plus_equity": 150000000000000.0,
+            "rel_error": 0.0
+          },
+          {
+            "id": "current_le_total_assets",
+            "ok": true,
+            "current": 80000000000000.0,
+            "total": 150000000000000.0
+          },
+          {
+            "id": "current_le_total_liabilities",
+            "ok": true,
+            "current": 70000000000000.0,
+            "total": 95000000000000.0
+          }
+        ],
+        "identity_ok": true
+      },
+      "accounts": {
+        "TOTAL_ASSETS": {
+          "value": 150000000000000.0,
+          "match": "id:ifrs-full_Assets",
+          "account_nm": "자산총계",
+          "reason": null
+        },
+        "CURRENT_ASSETS": {
+          "value": 80000000000000.0,
+          "match": "id:ifrs-full_CurrentAssets",
+          "account_nm": "유동자산",
+          "reason": null
+        },
+        "CASH": {
+          "value": 20000000000000.0,
+          "match": "id:ifrs-full_CashAndCashEquivalents",
+          "account_nm": "현금및현금성자산",
+          "reason": null
+        },
+        "INVENTORIES": {
+          "value": 25000000000000.0,
+          "match": "id:ifrs-full_Inventories",
+          "account_nm": "재고자산",
+          "reason": null
+        },
+        "TRADE_RECEIVABLES": {
+          "value": 15000000000000.0,
+          "match": "id:ifrs-full_TradeAndOtherCurrentReceivables",
+          "account_nm": "매출채권",
+          "reason": null
+        },
+        "TOTAL_LIABILITIES": {
+          "value": 95000000000000.0,
+          "match": "id:ifrs-full_Liabilities",
+          "account_nm": "부채총계",
+          "reason": null
+        },
+        "CURRENT_LIABILITIES": {
+          "value": 70000000000000.0,
+          "match": "id:ifrs-full_CurrentLiabilities",
+          "account_nm": "유동부채",
+          "reason": null
+        },
+        "EQUITY": {
+          "value": 55000000000000.0,
+          "match": "id:ifrs-full_Equity",
+          "account_nm": "자본총계",
+          "reason": null
+        },
+        "NET_DEBT_INTEREST_BEARING": {
+          "value": null,
+          "match": null,
+          "account_nm": null,
+          "reason": "missing"
+        },
+        "REVENUE": {
+          "value": 90000000000000.0,
+          "match": "id:ifrs-full_Revenue",
+          "account_nm": "매출액",
+          "reason": null
+        },
+        "OPERATING_INCOME": {
+          "value": 4500000000000.0,
+          "match": "id:dart_OperatingIncomeLoss",
+          "account_nm": "영업이익",
+          "reason": null
+        },
+        "NET_INCOME": {
+          "value": 3000000000000.0,
+          "match": "id:ifrs-full_ProfitLoss",
+          "account_nm": "당기순이익",
+          "reason": null
+        },
+        "INTEREST_EXPENSE": {
+          "value": 800000000000.0,
+          "match": "id:ifrs-full_FinanceCosts",
+          "account_nm": "금융비용",
+          "reason": null
+        },
+        "INCOME_TAX_EXPENSE": {
+          "value": 1000000000000.0,
+          "match": "id:ifrs-full_IncomeTaxExpenseContinuingOperations",
+          "account_nm": "법인세비용",
+          "reason": null
+        },
+        "PROFIT_BEFORE_TAX": {
+          "value": 4000000000000.0,
+          "match": "id:ifrs-full_ProfitLossBeforeTax",
+          "account_nm": "법인세비용차감전순이익",
+          "reason": null
+        },
+        "CFO": {
+          "value": 2500000000000.0,
+          "match": "id:ifrs-full_CashFlowsFromUsedInOperatingActivities",
+          "account_nm": "영업활동현금흐름",
+          "reason": null
+        },
+        "CFI": {
+          "value": null,
+          "match": null,
+          "account_nm": null,
+          "reason": "missing"
+        },
+        "CAPEX": {
+          "value": -3500000000000.0,
+          "match": "id:ifrs-full_PurchaseOfPropertyPlantAndEquipmentClassifiedAsInvestingActivities",
+          "account_nm": "유형자산의 취득",
+          "reason": null
+        },
+        "LEASE_LIABILITIES": {
+          "value": null,
+          "match": null,
+          "account_nm": null,
+          "reason": "missing"
+        },
+        "CONTRACT_LIABILITIES": {
+          "value": 40000000000000.0,
+          "match": "id:ifrs-full_CurrentContractLiabilities",
+          "account_nm": "계약부채",
+          "reason": null
+        },
+        "DEPRECIATION": {
+          "value": null,
+          "match": null,
+          "account_nm": null,
+          "reason": "missing"
+        }
+      },
+      "metrics": {
+        "current_ratio": {
+          "value": 114.2857,
+          "unit": "pct",
+          "label": "유동비율",
+          "polarity": "higher_better",
+          "reason": null,
+          "trend_3y": [
+            116.6667,
+            115.3846,
+            114.2857
+          ]
+        },
+        "quick_ratio": {
+          "value": 78.5714,
+          "unit": "pct",
+          "label": "당좌비율",
+          "polarity": "higher_better",
+          "reason": null,
+          "trend_3y": [
+            80.0,
+            78.4615,
+            78.5714
+          ]
+        },
+        "debt_ratio": {
+          "value": 172.7273,
+          "unit": "pct",
+          "label": "부채비율",
+          "polarity": "lower_better",
+          "reason": null,
+          "trend_3y": [
+            188.8889,
+            180.0,
+            172.7273
+          ]
+        },
+        "roe": {
+          "value": 5.4545,
+          "unit": "pct",
+          "label": "ROE",
+          "polarity": "higher_better",
+          "reason": null,
+          "trend_3y": [
+            2.4444,
+            3.8,
+            5.4545
+          ]
+        },
+        "roa": {
+          "value": 2.0,
+          "unit": "pct",
+          "label": "ROA",
+          "polarity": "higher_better",
+          "reason": null,
+          "trend_3y": [
+            0.8462,
+            1.3571,
+            2.0
+          ]
+        },
+        "operating_margin": {
+          "value": 5.0,
+          "unit": "pct",
+          "label": "영업이익률",
+          "polarity": "higher_better",
+          "reason": null,
+          "trend_3y": [
+            2.8571,
+            3.75,
+            5.0
+          ]
+        },
+        "net_margin": {
+          "value": 3.3333,
+          "unit": "pct",
+          "label": "순이익률",
+          "polarity": "higher_better",
+          "reason": null,
+          "trend_3y": [
+            1.5714,
+            2.375,
+            3.3333
+          ]
+        },
+        "interest_coverage": {
+          "value": 5.625,
+          "unit": "x",
+          "label": "이자보상배율",
+          "polarity": "higher_better",
+          "reason": null,
+          "trend_3y": [
+            3.3333,
+            4.2857,
+            5.625
+          ]
+        },
+        "asset_turnover": {
+          "value": 0.6,
+          "unit": "x",
+          "label": "총자산회전율",
+          "polarity": "higher_better",
+          "reason": null,
+          "trend_3y": [
+            0.5385,
+            0.5714,
+            0.6
+          ]
+        },
+        "inventory_turnover": {
+          "value": 3.6,
+          "unit": "x",
+          "label": "재고회전율",
+          "polarity": "higher_better",
+          "reason": null,
+          "trend_3y": [
+            3.1818,
+            3.3333,
+            3.6
+          ]
+        },
+        "receivables_turnover": {
+          "value": 6.0,
+          "unit": "x",
+          "label": "매출채권회전율",
+          "polarity": "higher_better",
+          "reason": null,
+          "trend_3y": [
+            5.3846,
+            5.7143,
+            6.0
+          ]
+        },
+        "cash_ratio": {
+          "value": 28.5714,
+          "unit": "pct",
+          "label": "현금비율",
+          "polarity": "higher_better",
+          "reason": null,
+          "trend_3y": [
+            25.0,
+            27.6923,
+            28.5714
+          ]
+        },
+        "earnings_quality": {
+          "value": 0.8333,
+          "unit": "x",
+          "label": "이익의 질",
+          "polarity": "higher_better",
+          "reason": null,
+          "trend_3y": [
+            0.7273,
+            0.7895,
+            0.8333
+          ]
+        },
+        "fcf": {
+          "value": -1000000000000.0,
+          "unit": "currency",
+          "label": "잉여현금흐름",
+          "polarity": "higher_better",
+          "reason": null,
+          "trend_3y": [
+            -1700000000000.0,
+            -1500000000000.0,
+            -1000000000000.0
+          ]
+        },
+        "roic": {
+          "value": null,
+          "unit": "pct",
+          "label": "ROIC",
+          "reason": "missing:INVESTED_CAPITAL"
+        }
+      },
+      "industry": {
+        "industry_kit": "shipbuilding",
+        "label_ko": "조선·기타 운송장비(선박)",
+        "notes_ko": [
+          "선수금·계약부채가 커서 부채비율이 높아 보일 수 있습니다(이자부 차입과 구분).",
+          "공사진행률·예상원가 변경이 손익을 좌우합니다.",
+          "건조계약 잔고(백로그)와 강재·환율 헤지를 주석에서 보세요."
+        ],
+        "watch_notes": [
+          "contract_liabilities_advances",
+          "percentage_of_completion",
+          "construction_backlog",
+          "raw_material_hedges",
+          "guarantee_obligations"
+        ],
+        "ma_focus": [
+          "backlog_note",
+          "fcf",
+          "net_debt_ex_contract_liab",
+          "percentage_of_completion_risk"
+        ],
+        "priority_metrics": [
+          "operating_margin",
+          "fcf",
+          "earnings_quality",
+          "current_ratio",
+          "interest_coverage",
+          "debt_ratio"
+        ],
+        "mti_export_items": [
+          "선박"
+        ],
+        "flags": [
+          {
+            "id": "advances_inflate_liabilities",
+            "severity_ko": "선수금/계약부채가 부채를 부풀립니다. 이자부 차입금과 분리해 보세요.",
+            "when": "contract_liabilities_high"
+          }
+        ],
+        "adjusted_metrics": {
+          "debt_ratio_ex_contract_liab": {
+            "value": 100.0,
+            "unit": "pct",
+            "label": "부채비율(계약부채·선수금 제외)",
+            "reason": null
+          }
+        },
+        "models_hint_ko": [
+          {
+            "id": "leverage_ex_contract",
+            "label_ko": "계약부채·선수금 제외 레버리지",
+            "requires_accounts": [
+              "CONTRACT_LIABILITIES"
+            ],
+            "note_ko": "보고 부채비율과 해석이 달라질 수 있습니다."
+          }
+        ],
+        "sources": [
+          "KIS Shipbuilding methodology",
+          "NICE shipbuilding adjustments",
+          "MOTIE MTI 선박",
+          "BOK C311"
+        ],
+        "background": {
+          "headline_ko": "선수금·진행기준이 부채·이익 숫자를 구조적으로 왜곡",
+          "why_ko": [
+            "건조 선수금·계약부채는 이자부 차입과 성격이 다르다.",
+            "한은 C311 평균 부채비율이 제조업보다 높은 것은 구조적 현상이다.",
+            "진행기준 이익과 CFO가 어긋날 수 있어 이익의 질을 반드시 본다."
+          ],
+          "watch_ko": [
+            "계약부채",
+            "백로그",
+            "PoC",
+            "강재·환율 헤지",
+            "지급보증"
+          ],
+          "sources": [
+            "KIS/NICE 조선 방법론",
+            "BOK C311",
+            "MOTIE 선박"
+          ]
+        },
+        "bok_peer": {
+          "asof": "2024",
+          "source_ko": "한국은행 기업경영분석 업종별 재무비율(입찰·경영상태 평가용 공개 재수록표 기준). 원통계는 한은 기업경영분석/ECOS.",
+          "row": {
+            "ksic": "C311",
+            "label_ko": "선박 및 보트 건조업",
+            "current_ratio": 97.34,
+            "debt_ratio": 164.16,
+            "net_margin": 5.16,
+            "equity_ratio": 37.86,
+            "asset_turnover": 0.69
+          },
+          "vs": {
+            "available": true,
+            "matched_ksic": "C311",
+            "peer_label_ko": "선박 및 보트 건조업",
+            "metrics": {
+              "current_ratio": {
+                "firm": 114.2857,
+                "peer_avg": 97.34,
+                "delta": 16.9457,
+                "vs_peer": "above_peer",
+                "polarity": "higher_better",
+                "unit": "pct"
+              },
+              "debt_ratio": {
+                "firm": 172.7273,
+                "peer_avg": 164.16,
+                "delta": 8.5673,
+                "vs_peer": "above_peer_worse",
+                "polarity": "lower_better",
+                "unit": "pct"
+              },
+              "net_margin": {
+                "firm": 3.3333,
+                "peer_avg": 5.16,
+                "delta": -1.8267,
+                "vs_peer": "below_peer",
+                "polarity": "higher_better",
+                "unit": "pct"
+              },
+              "asset_turnover": {
+                "firm": 0.6,
+                "peer_avg": 0.69,
+                "delta": -0.09,
+                "vs_peer": "below_peer",
+                "polarity": "higher_better",
+                "unit": "x"
+              },
+              "operating_margin_vs_peer_net_margin": {
+                "firm_operating_margin": 5.0,
+                "peer_net_margin": 5.16,
+                "note_ko": "한은 표는 매출액순이익률만 제공. 영업이익률과 직접 동일하지 않음."
+              }
+            }
+          }
+        }
+      },
+      "ma_metrics": {
+        "fcf": {
+          "value": -1000000000000.0,
+          "unit": "currency",
+          "label": "FCF",
+          "reason": null
+        },
+        "fcf_margin": {
+          "value": -1.1111,
+          "unit": "pct",
+          "label": "FCF 마진",
+          "reason": null
+        },
+        "ebitda_proxy": {
+          "value": 4500000000000.0,
+          "unit": "currency",
+          "label": "EBITDA 대용",
+          "reason": "proxy:operating_income_only_no_da"
+        },
+        "net_debt_proxy": {
+          "value": 5000000000000.0,
+          "unit": "currency",
+          "label": "순차입 대용(비유동부채−현금)",
+          "reason": null
+        },
+        "net_debt_incl_lease": {
+          "value": 5000000000000.0,
+          "unit": "currency",
+          "label": "순차입+리스(대용)",
+          "reason": null
+        },
+        "net_debt_ex_contract_liab": {
+          "value": 35000000000000.0,
+          "unit": "currency",
+          "label": "총부채−계약부채−현금",
+          "reason": null
+        },
+        "net_debt_to_ebitda": {
+          "value": 1.1111,
+          "unit": "x",
+          "label": "Net Debt(+lease)/EBITDA",
+          "reason": null
+        },
+        "net_cash_proxy": {
+          "value": -5000000000000.0,
+          "unit": "currency",
+          "label": "순현금 대용",
+          "reason": null
+        },
+        "cfo_to_ebitda": {
+          "value": 0.5556,
+          "unit": "x",
+          "label": "CFO/EBITDA",
+          "reason": null
+        },
+        "interest_burden": {
+          "value": 0.1778,
+          "unit": "x",
+          "label": "이자/영업이익",
+          "reason": null
+        },
+        "lease_to_liabilities": {
+          "value": null,
+          "unit": "pct",
+          "label": "리스부채/총부채",
+          "reason": "missing:LEASE_LIABILITIES"
+        },
+        "contract_liab_to_liabilities": {
+          "value": 42.1053,
+          "unit": "pct",
+          "label": "계약부채/총부채",
+          "reason": null
+        },
+        "notes_ko": [
+          "순차입·EBITDA는 공시 계정이 불완전하면 대용치이며 reason 필드를 확인하세요.",
+          "M&A 실사 시 주석의 리스·우발·선수금을 조정항으로 반영해야 합니다."
+        ]
+      },
+      "assumption_defaults": {
+        "current_operating_margin_pct": 5.0,
+        "bok_peer_net_margin_pct": 5.16,
+        "preset_suggestions": {
+          "bear": 3.5,
+          "base": 5.0,
+          "bull": 7.0,
+          "unit": "pct",
+          "note_ko": "UI에서 Base/Bull/Bear 선택 후 사용자가 미세 조정(예: 10.5). 한은 peer는 매출액순이익률 참고용(영업이익률과 정의 다름)."
+        }
+      },
+      "valuation": {
+        "schema_version": "dart-valuation-v1",
+        "engine_version": "kfa-val-1.0.0",
+        "disclaimer_ko": "가정에 따른 모형 산출이며 투자 권유·목표가 제시가 아닙니다.",
+        "models": {
+          "fcff_dcf": {
+            "label_ko": "FCFF DCF",
+            "pros_ko": [
+              "현금흐름 본위라 회계 이익 왜곡에 상대적으로 강함",
+              "가정·민감도를 명시적으로 드러냄"
+            ],
+            "cons_ko": [
+              "WACC·영구성장률에 결과가 민감",
+              "사이클 업종(해운)은 정규화 이익 가정이 핵심"
+            ],
+            "user_assumptions": [
+              "projection_years",
+              "revenue_cagr",
+              "ebit_margin",
+              "tax_rate",
+              "sales_to_nwc",
+              "capex_to_sales",
+              "da_to_sales",
+              "wacc",
+              "terminal_growth",
+              "net_debt",
+              "shares_out"
+            ]
+          },
+          "ev_ebitda": {
+            "label_ko": "EV/EBITDA 배수",
+            "pros_ko": [
+              "단순하고 peer 비교에 익숙함",
+              "단기 상대가치 스크린에 유용"
+            ],
+            "cons_ko": [
+              "회계·리스·일회성 EBITDA 왜곡",
+              "피어 선정과 사이클 위치에 좌우"
+            ],
+            "user_assumptions": [
+              "ebitda",
+              "ev_ebitda_multiple",
+              "net_debt",
+              "shares_out"
+            ]
+          }
+        },
+        "scenarios": [
+          {
+            "scenario_id": "bear",
+            "name_ko": "보수",
+            "fcff_dcf": {
+              "ok": true,
+              "model": "fcff_dcf",
+              "enterprise_value": -3387303881015.22,
+              "equity_value": -8387303881015.22,
+              "value_per_share": null,
+              "pv_explicit_fcff": -1247365243456.69,
+              "pv_terminal": -2139938637558.53,
+              "terminal_value": -3605921052631.58,
+              "projected": [
+                {
+                  "year": 1,
+                  "revenue": 90000000000000.0,
+                  "ebit": 3150000000000.0,
+                  "fcff": -337500000000.0,
+                  "pv_fcff": -304054054054.05
+                },
+                {
+                  "year": 2,
+                  "revenue": 90000000000000.0,
+                  "ebit": 3150000000000.0,
+                  "fcff": -337500000000.0,
+                  "pv_fcff": -273922571219.87
+                },
+                {
+                  "year": 3,
+                  "revenue": 90000000000000.0,
+                  "ebit": 3150000000000.0,
+                  "fcff": -337500000000.0,
+                  "pv_fcff": -246777091189.07
+                },
+                {
+                  "year": 4,
+                  "revenue": 90000000000000.0,
+                  "ebit": 3150000000000.0,
+                  "fcff": -337500000000.0,
+                  "pv_fcff": -222321703773.94
+                },
+                {
+                  "year": 5,
+                  "revenue": 90000000000000.0,
+                  "ebit": 3150000000000.0,
+                  "fcff": -337500000000.0,
+                  "pv_fcff": -200289823219.76
+                }
+              ],
+              "assumptions_used": {
+                "projection_years": 5,
+                "revenue_cagr": 0.0,
+                "ebit_margin": 0.035,
+                "tax_rate": 0.25,
+                "sales_to_nwc": 0.15,
+                "capex_to_sales": 0.08,
+                "da_to_sales": 0.05,
+                "wacc": 0.11,
+                "terminal_growth": 0.015,
+                "net_debt": 5000000000000.0,
+                "shares_out": null,
+                "revenue0": 90000000000000.0
+              }
+            },
+            "ev_ebitda": {
+              "ok": true,
+              "model": "ev_ebitda",
+              "enterprise_value": 27000000000000.0,
+              "equity_value": 22000000000000.0,
+              "value_per_share": null,
+              "assumptions_used": {
+                "ebitda": 4500000000000.0,
+                "ev_ebitda_multiple": 6.0,
+                "net_debt": 5000000000000.0,
+                "shares_out": null
+              }
+            }
+          },
+          {
+            "scenario_id": "base",
+            "name_ko": "기본(현재 마진)",
+            "fcff_dcf": {
+              "ok": true,
+              "model": "fcff_dcf",
+              "enterprise_value": 2472807530513.84,
+              "equity_value": -2527192469486.16,
+              "value_per_share": null,
+              "pv_explicit_fcff": 677999459697.61,
+              "pv_terminal": 1794808070816.23,
+              "terminal_value": 2761534692205.71,
+              "projected": [
+                {
+                  "year": 1,
+                  "revenue": 93600000000000.0,
+                  "ebit": 4680000000000.0,
+                  "fcff": 162000000000.0,
+                  "pv_fcff": 148623853211.01
+                },
+                {
+                  "year": 2,
+                  "revenue": 97344000000000.0,
+                  "ebit": 4867200000000.0,
+                  "fcff": 168480000000.0,
+                  "pv_fcff": 141806245265.55
+                },
+                {
+                  "year": 3,
+                  "revenue": 101237760000000.0,
+                  "ebit": 5061888000000.0,
+                  "fcff": 175219200000.0,
+                  "pv_fcff": 135301371629.52
+                },
+                {
+                  "year": 4,
+                  "revenue": 105287270400000.0,
+                  "ebit": 5264363520000.0,
+                  "fcff": 182227968000.0,
+                  "pv_fcff": 129094886692.38
+                },
+                {
+                  "year": 5,
+                  "revenue": 109498761216000.0,
+                  "ebit": 5474938060800.0,
+                  "fcff": 189517086720.0,
+                  "pv_fcff": 123173102899.15
+                }
+              ],
+              "assumptions_used": {
+                "projection_years": 5,
+                "revenue_cagr": 0.04,
+                "ebit_margin": 0.05,
+                "tax_rate": 0.25,
+                "sales_to_nwc": 0.15,
+                "capex_to_sales": 0.08,
+                "da_to_sales": 0.05,
+                "wacc": 0.09,
+                "terminal_growth": 0.02,
+                "net_debt": 5000000000000.0,
+                "shares_out": null,
+                "revenue0": 90000000000000.0
+              }
+            },
+            "ev_ebitda": {
+              "ok": true,
+              "model": "ev_ebitda",
+              "enterprise_value": 36000000000000.0,
+              "equity_value": 31000000000000.0,
+              "value_per_share": null,
+              "assumptions_used": {
+                "ebitda": 4500000000000.0,
+                "ev_ebitda_multiple": 8.0,
+                "net_debt": 5000000000000.0,
+                "shares_out": null
+              }
+            }
+          },
+          {
+            "scenario_id": "bull",
+            "name_ko": "낙관",
+            "fcff_dcf": {
+              "ok": true,
+              "model": "fcff_dcf",
+              "enterprise_value": 50227272727272.7,
+              "equity_value": 45227272727272.7,
+              "value_per_share": null,
+              "pv_explicit_fcff": 10624999999999.99,
+              "pv_terminal": 39602272727272.7,
+              "terminal_value": 58188731223272.72,
+              "projected": [
+                {
+                  "year": 1,
+                  "revenue": 97200000000000.0,
+                  "ebit": 6804000000000.0,
+                  "fcff": 2295000000000.0,
+                  "pv_fcff": 2125000000000.0
+                },
+                {
+                  "year": 2,
+                  "revenue": 104976000000000.0,
+                  "ebit": 7348320000000.0,
+                  "fcff": 2478600000000.0,
+                  "pv_fcff": 2125000000000.0
+                },
+                {
+                  "year": 3,
+                  "revenue": 113374080000000.0,
+                  "ebit": 7936185600000.0,
+                  "fcff": 2676888000000.0,
+                  "pv_fcff": 2125000000000.0
+                },
+                {
+                  "year": 4,
+                  "revenue": 122444006400000.02,
+                  "ebit": 8571080448000.0,
+                  "fcff": 2891039040000.0,
+                  "pv_fcff": 2125000000000.0
+                },
+                {
+                  "year": 5,
+                  "revenue": 132239526912000.03,
+                  "ebit": 9256766883840.0,
+                  "fcff": 3122322163200.0,
+                  "pv_fcff": 2125000000000.0
+                }
+              ],
+              "assumptions_used": {
+                "projection_years": 5,
+                "revenue_cagr": 0.08,
+                "ebit_margin": 0.07,
+                "tax_rate": 0.25,
+                "sales_to_nwc": 0.12,
+                "capex_to_sales": 0.07,
+                "da_to_sales": 0.05,
+                "wacc": 0.08,
+                "terminal_growth": 0.025,
+                "net_debt": 5000000000000.0,
+                "shares_out": null,
+                "revenue0": 90000000000000.0
+              }
+            },
+            "ev_ebitda": {
+              "ok": true,
+              "model": "ev_ebitda",
+              "enterprise_value": 45000000000000.0,
+              "equity_value": 40000000000000.0,
+              "value_per_share": null,
+              "assumptions_used": {
+                "ebitda": 4500000000000.0,
+                "ev_ebitda_multiple": 10.0,
+                "net_debt": 5000000000000.0,
+                "shares_out": null
+              }
+            }
+          }
+        ],
+        "value_band": {
+          "equity_value_low": -8387303881015.22,
+          "equity_value_high": 45227272727272.7,
+          "equity_value_mid": -2527192469486.16
+        },
+        "sensitivity_wacc_g": [
+          {
+            "wacc": 0.08,
+            "terminal_growth": 0.015,
+            "enterprise_value": 2710570035055.63,
+            "equity_value": -2289429964944.37,
+            "ok": true
+          },
+          {
+            "wacc": 0.08,
+            "terminal_growth": 0.02,
+            "enterprise_value": 2889160697048.21,
+            "equity_value": -2110839302951.79,
+            "ok": true
+          },
+          {
+            "wacc": 0.08,
+            "terminal_growth": 0.025,
+            "enterprise_value": 3100222388493.99,
+            "equity_value": -1899777611506.01,
+            "ok": true
+          },
+          {
+            "wacc": 0.09,
+            "terminal_growth": 0.015,
+            "enterprise_value": 2344942118932.82,
+            "equity_value": -2655057881067.18,
+            "ok": true
+          },
+          {
+            "wacc": 0.09,
+            "terminal_growth": 0.02,
+            "enterprise_value": 2472807530513.84,
+            "equity_value": -2527192469486.16,
+            "ok": true
+          },
+          {
+            "wacc": 0.09,
+            "terminal_growth": 0.025,
+            "enterprise_value": 2620344543876.57,
+            "equity_value": -2379655456123.43,
+            "ok": true
+          },
+          {
+            "wacc": 0.09999999999999999,
+            "terminal_growth": 0.015,
+            "enterprise_value": 2065476861512.99,
+            "equity_value": -2934523138487.01,
+            "ok": true
+          },
+          {
+            "wacc": 0.09999999999999999,
+            "terminal_growth": 0.02,
+            "enterprise_value": 2160655332286.05,
+            "equity_value": -2839344667713.95,
+            "ok": true
+          },
+          {
+            "wacc": 0.09999999999999999,
+            "terminal_growth": 0.025,
+            "enterprise_value": 2268524265828.84,
+            "equity_value": -2731475734171.16,
+            "ok": true
+          }
+        ]
+      },
+      "scores": {},
+      "macro_beta": {},
+      "narrative": [
+        "산업 키트: 조선·기타 운송장비(선박).",
+        "선수금·진행기준이 부채·이익 숫자를 구조적으로 왜곡",
+        "선수금·계약부채가 커서 부채비율이 높아 보일 수 있습니다(이자부 차입과 구분).",
+        "공사진행률·예상원가 변경이 손익을 좌우합니다.",
+        "유동비율 114.3% (한은 업종평균 97.3%, Δ +16.9%p).",
+        "부채비율 172.7% (한은 업종평균 164.2%, Δ +8.6%p).",
+        "주의: 선수금/계약부채가 부채를 부풀립니다. 이자부 차입금과 분리해 보세요.",
+        "유동비율 114.3%입니다. 단기 지급능력은 확보돼 있습니다.",
+        "부채비율 172.7%입니다.",
+        "계약부채·선수금 제외 부채비율 100.0%입니다.",
+        "영업이익률 5.0%입니다. (가정 입력 기본값으로 사용)",
+        "ROE 5.5%입니다.",
+        "FCF -1,000,000,000,000 (통화 단위는 공시와 동일).",
+        "이익의 질(CFO/순이익) 0.83배. 영업현금이 회계이익보다 작습니다.",
+        "확인 권장 주석: contract_liabilities_advances, percentage_of_completion, construction_backlog, raw_material_hedges, guarantee_obligations"
+      ],
+      "disclaimer_ko": "본 산출물은 공시 숫자·사용자 가정 모형이며 투자 권유가 아닙니다."
+    },
+    {
+      "schema_version": "dart-company-v1",
+      "generated_at": "2026-08-07T07:59:34Z",
+      "engine_version": "kfa-1.0.0",
+      "corp": {
+        "code": "011200",
+        "corp_code": "00164638",
+        "name": "HMM",
+        "industry": null,
+        "industry_kit": "shipping"
+      },
+      "period": {
+        "year": 2024,
+        "reprt": "11011",
+        "fs_div": "CFS"
+      },
+      "parse_status": "verified",
+      "validation": {
+        "parse_status": "verified",
+        "checks": [
+          {
+            "id": "assets_eq_liab_plus_equity",
+            "ok": true,
+            "assets": 200000000000000.0,
+            "liabilities_plus_equity": 200000000000000.0,
+            "rel_error": 0.0
+          },
+          {
+            "id": "current_le_total_assets",
+            "ok": true,
+            "current": 60000000000000.0,
+            "total": 200000000000000.0
+          },
+          {
+            "id": "current_le_total_liabilities",
+            "ok": true,
+            "current": 45000000000000.0,
+            "total": 160000000000000.0
+          }
+        ],
+        "identity_ok": true
+      },
+      "accounts": {
+        "TOTAL_ASSETS": {
+          "value": 200000000000000.0,
+          "match": "id:ifrs-full_Assets",
+          "account_nm": "자산총계",
+          "reason": null
+        },
+        "CURRENT_ASSETS": {
+          "value": 60000000000000.0,
+          "match": "id:ifrs-full_CurrentAssets",
+          "account_nm": "유동자산",
+          "reason": null
+        },
+        "CASH": {
+          "value": 25000000000000.0,
+          "match": "id:ifrs-full_CashAndCashEquivalents",
+          "account_nm": "현금및현금성자산",
+          "reason": null
+        },
+        "INVENTORIES": {
+          "value": 5000000000000.0,
+          "match": "id:ifrs-full_Inventories",
+          "account_nm": "재고자산",
+          "reason": null
+        },
+        "TRADE_RECEIVABLES": {
+          "value": 12000000000000.0,
+          "match": "id:ifrs-full_TradeAndOtherCurrentReceivables",
+          "account_nm": "매출채권",
+          "reason": null
+        },
+        "TOTAL_LIABILITIES": {
+          "value": 160000000000000.0,
+          "match": "id:ifrs-full_Liabilities",
+          "account_nm": "부채총계",
+          "reason": null
+        },
+        "CURRENT_LIABILITIES": {
+          "value": 45000000000000.0,
+          "match": "id:ifrs-full_CurrentLiabilities",
+          "account_nm": "유동부채",
+          "reason": null
+        },
+        "EQUITY": {
+          "value": 40000000000000.0,
+          "match": "id:ifrs-full_Equity",
+          "account_nm": "자본총계",
+          "reason": null
+        },
+        "NET_DEBT_INTEREST_BEARING": {
+          "value": null,
+          "match": null,
+          "account_nm": null,
+          "reason": "missing"
+        },
+        "REVENUE": {
+          "value": 120000000000000.0,
+          "match": "id:ifrs-full_Revenue",
+          "account_nm": "매출액",
+          "reason": null
+        },
+        "OPERATING_INCOME": {
+          "value": 36000000000000.0,
+          "match": "id:dart_OperatingIncomeLoss",
+          "account_nm": "영업이익",
+          "reason": null
+        },
+        "NET_INCOME": {
+          "value": 22500000000000.0,
+          "match": "id:ifrs-full_ProfitLoss",
+          "account_nm": "당기순이익",
+          "reason": null
+        },
+        "INTEREST_EXPENSE": {
+          "value": 4000000000000.0,
+          "match": "id:ifrs-full_FinanceCosts",
+          "account_nm": "금융비용",
+          "reason": null
+        },
+        "INCOME_TAX_EXPENSE": {
+          "value": 7500000000000.0,
+          "match": "id:ifrs-full_IncomeTaxExpenseContinuingOperations",
+          "account_nm": "법인세비용",
+          "reason": null
+        },
+        "PROFIT_BEFORE_TAX": {
+          "value": 30000000000000.0,
+          "match": "id:ifrs-full_ProfitLossBeforeTax",
+          "account_nm": "법인세비용차감전순이익",
+          "reason": null
+        },
+        "CFO": {
+          "value": 40000000000000.0,
+          "match": "id:ifrs-full_CashFlowsFromUsedInOperatingActivities",
+          "account_nm": "영업활동현금흐름",
+          "reason": null
+        },
+        "CFI": {
+          "value": null,
+          "match": null,
+          "account_nm": null,
+          "reason": "missing"
+        },
+        "CAPEX": {
+          "value": -15000000000000.0,
+          "match": "id:ifrs-full_PurchaseOfPropertyPlantAndEquipmentClassifiedAsInvestingActivities",
+          "account_nm": "유형자산의 취득",
+          "reason": null
+        },
+        "LEASE_LIABILITIES": {
+          "value": 80000000000000.0,
+          "match": "id:ifrs-full_LeaseLiabilities",
+          "account_nm": "리스부채",
+          "reason": null
+        },
+        "CONTRACT_LIABILITIES": {
+          "value": null,
+          "match": null,
+          "account_nm": null,
+          "reason": "missing"
+        },
+        "DEPRECIATION": {
+          "value": null,
+          "match": null,
+          "account_nm": null,
+          "reason": "missing"
+        }
+      },
+      "metrics": {
+        "current_ratio": {
+          "value": 133.3333,
+          "unit": "pct",
+          "label": "유동비율",
+          "polarity": "higher_better",
+          "reason": null,
+          "trend_3y": [
+            125.0,
+            130.9524,
+            133.3333
+          ]
+        },
+        "quick_ratio": {
+          "value": 122.2222,
+          "unit": "pct",
+          "label": "당좌비율",
+          "polarity": "higher_better",
+          "reason": null,
+          "trend_3y": [
+            115.0,
+            120.2381,
+            122.2222
+          ]
+        },
+        "debt_ratio": {
+          "value": 400.0,
+          "unit": "pct",
+          "label": "부채비율",
+          "polarity": "lower_better",
+          "reason": null,
+          "trend_3y": [
+            700.0,
+            500.0,
+            400.0
+          ]
+        },
+        "roe": {
+          "value": 56.25,
+          "unit": "pct",
+          "label": "ROE",
+          "polarity": "higher_better",
+          "reason": null,
+          "trend_3y": [
+            9.5,
+            35.0,
+            56.25
+          ]
+        },
+        "roa": {
+          "value": 11.25,
+          "unit": "pct",
+          "label": "ROA",
+          "polarity": "higher_better",
+          "reason": null,
+          "trend_3y": [
+            1.1875,
+            5.8333,
+            11.25
+          ]
+        },
+        "operating_margin": {
+          "value": 30.0,
+          "unit": "pct",
+          "label": "영업이익률",
+          "polarity": "higher_better",
+          "reason": null,
+          "trend_3y": [
+            10.0,
+            20.0,
+            30.0
+          ]
+        },
+        "net_margin": {
+          "value": 18.75,
+          "unit": "pct",
+          "label": "순이익률",
+          "polarity": "higher_better",
+          "reason": null,
+          "trend_3y": [
+            3.1667,
+            11.6667,
+            18.75
+          ]
+        },
+        "interest_coverage": {
+          "value": 9.0,
+          "unit": "x",
+          "label": "이자보상배율",
+          "polarity": "higher_better",
+          "reason": null,
+          "trend_3y": [
+            2.0,
+            5.1429,
+            9.0
+          ]
+        },
+        "asset_turnover": {
+          "value": 0.6,
+          "unit": "x",
+          "label": "총자산회전율",
+          "polarity": "higher_better",
+          "reason": null,
+          "trend_3y": [
+            0.375,
+            0.5,
+            0.6
+          ]
+        },
+        "inventory_turnover": {
+          "value": 24.0,
+          "unit": "x",
+          "label": "재고회전율",
+          "polarity": "higher_better",
+          "reason": null,
+          "trend_3y": [
+            15.0,
+            20.0,
+            24.0
+          ]
+        },
+        "receivables_turnover": {
+          "value": 10.0,
+          "unit": "x",
+          "label": "매출채권회전율",
+          "polarity": "higher_better",
+          "reason": null,
+          "trend_3y": [
+            6.0,
+            8.1818,
+            10.0
+          ]
+        },
+        "cash_ratio": {
+          "value": 55.5556,
+          "unit": "pct",
+          "label": "현금비율",
+          "polarity": "higher_better",
+          "reason": null,
+          "trend_3y": [
+            37.5,
+            47.619,
+            55.5556
+          ]
+        },
+        "earnings_quality": {
+          "value": 1.7778,
+          "unit": "x",
+          "label": "이익의 질",
+          "polarity": "higher_better",
+          "reason": null,
+          "trend_3y": [
+            4.2105,
+            1.9048,
+            1.7778
+          ]
+        },
+        "fcf": {
+          "value": 25000000000000.0,
+          "unit": "currency",
+          "label": "잉여현금흐름",
+          "polarity": "higher_better",
+          "reason": null,
+          "trend_3y": [
+            -2000000000000.0,
+            8000000000000.0,
+            25000000000000.0
+          ]
+        },
+        "roic": {
+          "value": null,
+          "unit": "pct",
+          "label": "ROIC",
+          "reason": "missing:INVESTED_CAPITAL"
+        }
+      },
+      "industry": {
+        "industry_kit": "shipping",
+        "label_ko": "해운(수상 운송)",
+        "notes_ko": [
+          "IFRS 16 용선·리스부채가 부채비율·레버리지를 크게 올립니다.",
+          "운임 사이클에 EBITDA가 민감해 한 해 배수만으로 판단하기 어렵습니다.",
+          "선대 담보·SPC·용선 만기표를 주석에서 확인하세요."
+        ],
+        "watch_notes": [
+          "ifrs16_lease_maturity",
+          "charter_commitments",
+          "vessel_collateral",
+          "spc_affiliates",
+          "bunker_hedges"
+        ],
+        "ma_focus": [
+          "net_debt_incl_lease",
+          "fcf",
+          "normalized_ebitda_note",
+          "fleet_nav_note"
+        ],
+        "priority_metrics": [
+          "fcf",
+          "earnings_quality",
+          "interest_coverage",
+          "cash_ratio",
+          "operating_margin",
+          "debt_ratio"
+        ],
+        "mti_export_items": [],
+        "flags": [
+          {
+            "id": "lease_inflates_leverage",
+            "severity_ko": "부채비율이 높아 보여도 상당 부분이 용선·리스일 수 있습니다.",
+            "when": "lease_liabilities_present_or_high_debt"
+          },
+          {
+            "id": "cycle_peak_earnings",
+            "severity_ko": "운임 호황기 이익을 영구 수준으로 쓰지 마세요(DCF·배수 가정 주의).",
+            "when": "operating_margin_very_high"
+          }
+        ],
+        "adjusted_metrics": {
+          "debt_ratio_ex_lease": {
+            "value": 200.0,
+            "unit": "pct",
+            "label": "부채비율(리스제외)",
+            "reason": null
+          }
+        },
+        "models_hint_ko": [
+          {
+            "id": "leverage_ex_lease",
+            "label_ko": "리스 제외 레버리지(가능 시)",
+            "requires_accounts": [
+              "LEASE_LIABILITIES"
+            ],
+            "note_ko": "리스부채를 뺀 순차입/이익으로 보면 보고 부채비율과 해석이 달라집니다."
+          }
+        ],
+        "sources": [
+          "KIS Shipping methodology 2020",
+          "K-IFRS 1116",
+          "BOK H50"
+        ],
+        "background": {
+          "headline_ko": "IFRS16 용선 온밸런스 + 운임 사이클",
+          "why_ko": [
+            "장기용선이 리스부채·사용권자산으로 올라가 부채비율이 급등할 수 있다.",
+            "핵심은 단순 부채비율보다 순차입/EBITDA·계약 안정성이다.",
+            "호황기 마진을 DCF 영구치로 쓰면 이론가가 과대평가된다."
+          ],
+          "watch_ko": [
+            "리스 만기표",
+            "용선약정",
+            "선박 담보",
+            "SPC",
+            "벙커 헤지"
+          ],
+          "sources": [
+            "KIS 해운산업 평가방법론 2020",
+            "K-IFRS 1116",
+            "BOK H50"
+          ]
+        },
+        "bok_peer": {
+          "asof": "2024",
+          "source_ko": "한국은행 기업경영분석 업종별 재무비율(입찰·경영상태 평가용 공개 재수록표 기준). 원통계는 한은 기업경영분석/ECOS.",
+          "row": {
+            "ksic": "H50",
+            "label_ko": "수상 운송업",
+            "current_ratio": 183.93,
+            "debt_ratio": 85.66,
+            "net_margin": 15.19,
+            "equity_ratio": 53.86,
+            "asset_turnover": 0.46
+          },
+          "vs": {
+            "available": true,
+            "matched_ksic": "H50",
+            "peer_label_ko": "수상 운송업",
+            "metrics": {
+              "current_ratio": {
+                "firm": 133.3333,
+                "peer_avg": 183.93,
+                "delta": -50.5967,
+                "vs_peer": "below_peer",
+                "polarity": "higher_better",
+                "unit": "pct"
+              },
+              "debt_ratio": {
+                "firm": 400.0,
+                "peer_avg": 85.66,
+                "delta": 314.34,
+                "vs_peer": "above_peer_worse",
+                "polarity": "lower_better",
+                "unit": "pct"
+              },
+              "net_margin": {
+                "firm": 18.75,
+                "peer_avg": 15.19,
+                "delta": 3.56,
+                "vs_peer": "above_peer",
+                "polarity": "higher_better",
+                "unit": "pct"
+              },
+              "asset_turnover": {
+                "firm": 0.6,
+                "peer_avg": 0.46,
+                "delta": 0.14,
+                "vs_peer": "above_peer",
+                "polarity": "higher_better",
+                "unit": "x"
+              },
+              "operating_margin_vs_peer_net_margin": {
+                "firm_operating_margin": 30.0,
+                "peer_net_margin": 15.19,
+                "note_ko": "한은 표는 매출액순이익률만 제공. 영업이익률과 직접 동일하지 않음."
+              }
+            }
+          }
+        }
+      },
+      "ma_metrics": {
+        "fcf": {
+          "value": 25000000000000.0,
+          "unit": "currency",
+          "label": "FCF",
+          "reason": null
+        },
+        "fcf_margin": {
+          "value": 20.8333,
+          "unit": "pct",
+          "label": "FCF 마진",
+          "reason": null
+        },
+        "ebitda_proxy": {
+          "value": 36000000000000.0,
+          "unit": "currency",
+          "label": "EBITDA 대용",
+          "reason": "proxy:operating_income_only_no_da"
+        },
+        "net_debt_proxy": {
+          "value": 90000000000000.0,
+          "unit": "currency",
+          "label": "순차입 대용(비유동부채−현금)",
+          "reason": null
+        },
+        "net_debt_incl_lease": {
+          "value": 170000000000000.0,
+          "unit": "currency",
+          "label": "순차입+리스(대용)",
+          "reason": null
+        },
+        "net_debt_ex_contract_liab": {
+          "value": 135000000000000.0,
+          "unit": "currency",
+          "label": "총부채−계약부채−현금",
+          "reason": null
+        },
+        "net_debt_to_ebitda": {
+          "value": 4.7222,
+          "unit": "x",
+          "label": "Net Debt(+lease)/EBITDA",
+          "reason": null
+        },
+        "net_cash_proxy": {
+          "value": -90000000000000.0,
+          "unit": "currency",
+          "label": "순현금 대용",
+          "reason": null
+        },
+        "cfo_to_ebitda": {
+          "value": 1.1111,
+          "unit": "x",
+          "label": "CFO/EBITDA",
+          "reason": null
+        },
+        "interest_burden": {
+          "value": 0.1111,
+          "unit": "x",
+          "label": "이자/영업이익",
+          "reason": null
+        },
+        "lease_to_liabilities": {
+          "value": 50.0,
+          "unit": "pct",
+          "label": "리스부채/총부채",
+          "reason": null
+        },
+        "contract_liab_to_liabilities": {
+          "value": null,
+          "unit": "pct",
+          "label": "계약부채/총부채",
+          "reason": "missing:CONTRACT_LIABILITIES"
+        },
+        "notes_ko": [
+          "순차입·EBITDA는 공시 계정이 불완전하면 대용치이며 reason 필드를 확인하세요.",
+          "M&A 실사 시 주석의 리스·우발·선수금을 조정항으로 반영해야 합니다."
+        ]
+      },
+      "assumption_defaults": {
+        "current_operating_margin_pct": 30.0,
+        "bok_peer_net_margin_pct": 15.19,
+        "preset_suggestions": {
+          "bear": 28.0,
+          "base": 30.0,
+          "bull": 32.0,
+          "unit": "pct",
+          "note_ko": "UI에서 Base/Bull/Bear 선택 후 사용자가 미세 조정(예: 10.5). 한은 peer는 매출액순이익률 참고용(영업이익률과 정의 다름)."
+        }
+      },
+      "valuation": {
+        "schema_version": "dart-valuation-v1",
+        "engine_version": "kfa-val-1.0.0",
+        "disclaimer_ko": "가정에 따른 모형 산출이며 투자 권유·목표가 제시가 아닙니다.",
+        "models": {
+          "fcff_dcf": {
+            "label_ko": "FCFF DCF",
+            "pros_ko": [
+              "현금흐름 본위라 회계 이익 왜곡에 상대적으로 강함",
+              "가정·민감도를 명시적으로 드러냄"
+            ],
+            "cons_ko": [
+              "WACC·영구성장률에 결과가 민감",
+              "사이클 업종(해운)은 정규화 이익 가정이 핵심"
+            ],
+            "user_assumptions": [
+              "projection_years",
+              "revenue_cagr",
+              "ebit_margin",
+              "tax_rate",
+              "sales_to_nwc",
+              "capex_to_sales",
+              "da_to_sales",
+              "wacc",
+              "terminal_growth",
+              "net_debt",
+              "shares_out"
+            ]
+          },
+          "ev_ebitda": {
+            "label_ko": "EV/EBITDA 배수",
+            "pros_ko": [
+              "단순하고 peer 비교에 익숙함",
+              "단기 상대가치 스크린에 유용"
+            ],
+            "cons_ko": [
+              "회계·리스·일회성 EBITDA 왜곡",
+              "피어 선정과 사이클 위치에 좌우"
+            ],
+            "user_assumptions": [
+              "ebitda",
+              "ev_ebitda_multiple",
+              "net_debt",
+              "shares_out"
+            ]
+          }
+        },
+        "scenarios": [
+          {
+            "scenario_id": "bear",
+            "name_ko": "보수",
+            "fcff_dcf": {
+              "ok": true,
+              "model": "fcff_dcf",
+              "enterprise_value": 216787448384974.06,
+              "equity_value": 46787448384974.06,
+              "value_per_share": null,
+              "pv_explicit_fcff": 79831375581228.45,
+              "pv_terminal": 136956072803745.62,
+              "terminal_value": 230778947368421.0,
+              "projected": [
+                {
+                  "year": 1,
+                  "revenue": 120000000000000.0,
+                  "ebit": 33600000000000.0,
+                  "fcff": 21600000000000.0,
+                  "pv_fcff": 19459459459459.46
+                },
+                {
+                  "year": 2,
+                  "revenue": 120000000000000.0,
+                  "ebit": 33600000000000.0,
+                  "fcff": 21600000000000.0,
+                  "pv_fcff": 17531044558071.59
+                },
+                {
+                  "year": 3,
+                  "revenue": 120000000000000.0,
+                  "ebit": 33600000000000.0,
+                  "fcff": 21600000000000.0,
+                  "pv_fcff": 15793733836100.53
+                },
+                {
+                  "year": 4,
+                  "revenue": 120000000000000.0,
+                  "ebit": 33600000000000.0,
+                  "fcff": 21600000000000.0,
+                  "pv_fcff": 14228589041532.01
+                },
+                {
+                  "year": 5,
+                  "revenue": 120000000000000.0,
+                  "ebit": 33600000000000.0,
+                  "fcff": 21600000000000.0,
+                  "pv_fcff": 12818548686064.87
+                }
+              ],
+              "assumptions_used": {
+                "projection_years": 5,
+                "revenue_cagr": 0.0,
+                "ebit_margin": 0.28,
+                "tax_rate": 0.25,
+                "sales_to_nwc": 0.15,
+                "capex_to_sales": 0.08,
+                "da_to_sales": 0.05,
+                "wacc": 0.11,
+                "terminal_growth": 0.015,
+                "net_debt": 170000000000000.0,
+                "shares_out": null,
+                "revenue0": 120000000000000.0
+              }
+            },
+            "ev_ebitda": {
+              "ok": true,
+              "model": "ev_ebitda",
+              "enterprise_value": 216000000000000.0,
+              "equity_value": 46000000000000.0,
+              "value_per_share": null,
+              "assumptions_used": {
+                "ebitda": 36000000000000.0,
+                "ev_ebitda_multiple": 6.0,
+                "net_debt": 170000000000000.0,
+                "shares_out": null
+              }
+            }
+          },
+          {
+            "scenario_id": "base",
+            "name_ko": "기본(현재 마진)",
+            "fcff_dcf": {
+              "ok": true,
+              "model": "fcff_dcf",
+              "enterprise_value": 360480386670462.6,
+              "equity_value": 190480386670462.62,
+              "value_per_share": null,
+              "pv_explicit_fcff": 98837254569251.58,
+              "pv_terminal": 261643132101211.06,
+              "terminal_value": 402570390685988.6,
+              "projected": [
+                {
+                  "year": 1,
+                  "revenue": 124800000000000.0,
+                  "ebit": 37440000000000.0,
+                  "fcff": 23616000000000.0,
+                  "pv_fcff": 21666055045871.56
+                },
+                {
+                  "year": 2,
+                  "revenue": 129792000000000.0,
+                  "ebit": 38937600000000.0,
+                  "fcff": 24560640000000.0,
+                  "pv_fcff": 20672199309822.4
+                },
+                {
+                  "year": 3,
+                  "revenue": 134983680000000.0,
+                  "ebit": 40495104000000.0,
+                  "fcff": 25543065600000.0,
+                  "pv_fcff": 19723933286436.05
+                },
+                {
+                  "year": 4,
+                  "revenue": 140383027200000.0,
+                  "ebit": 42114908160000.0,
+                  "fcff": 26564788224000.0,
+                  "pv_fcff": 18819165704489.44
+                },
+                {
+                  "year": 5,
+                  "revenue": 145998348288000.0,
+                  "ebit": 43799504486400.0,
+                  "fcff": 27627379752960.0,
+                  "pv_fcff": 17955901222632.13
+                }
+              ],
+              "assumptions_used": {
+                "projection_years": 5,
+                "revenue_cagr": 0.04,
+                "ebit_margin": 0.3,
+                "tax_rate": 0.25,
+                "sales_to_nwc": 0.15,
+                "capex_to_sales": 0.08,
+                "da_to_sales": 0.05,
+                "wacc": 0.09,
+                "terminal_growth": 0.02,
+                "net_debt": 170000000000000.0,
+                "shares_out": null,
+                "revenue0": 120000000000000.0
+              }
+            },
+            "ev_ebitda": {
+              "ok": true,
+              "model": "ev_ebitda",
+              "enterprise_value": 288000000000000.0,
+              "equity_value": 118000000000000.0,
+              "value_per_share": null,
+              "assumptions_used": {
+                "ebitda": 36000000000000.0,
+                "ev_ebitda_multiple": 8.0,
+                "net_debt": 170000000000000.0,
+                "shares_out": null
+              }
+            }
+          },
+          {
+            "scenario_id": "bull",
+            "name_ko": "낙관",
+            "fcff_dcf": {
+              "ok": true,
+              "model": "fcff_dcf",
+              "enterprise_value": 598787878787878.6,
+              "equity_value": 428787878787878.6,
+              "value_per_share": null,
+              "pv_explicit_fcff": 126666666666666.66,
+              "pv_terminal": 472121212121212.0,
+              "terminal_value": 693700952622545.5,
+              "projected": [
+                {
+                  "year": 1,
+                  "revenue": 129600000000000.02,
+                  "ebit": 41472000000000.01,
+                  "fcff": 27360000000000.01,
+                  "pv_fcff": 25333333333333.34
+                },
+                {
+                  "year": 2,
+                  "revenue": 139968000000000.03,
+                  "ebit": 44789760000000.01,
+                  "fcff": 29548800000000.0,
+                  "pv_fcff": 25333333333333.33
+                },
+                {
+                  "year": 3,
+                  "revenue": 151165440000000.03,
+                  "ebit": 48372940800000.01,
+                  "fcff": 31912704000000.0,
+                  "pv_fcff": 25333333333333.33
+                },
+                {
+                  "year": 4,
+                  "revenue": 163258675200000.03,
+                  "ebit": 52242776064000.01,
+                  "fcff": 34465720320000.0,
+                  "pv_fcff": 25333333333333.33
+                },
+                {
+                  "year": 5,
+                  "revenue": 176319369216000.03,
+                  "ebit": 56422198149120.01,
+                  "fcff": 37222977945600.0,
+                  "pv_fcff": 25333333333333.32
+                }
+              ],
+              "assumptions_used": {
+                "projection_years": 5,
+                "revenue_cagr": 0.08,
+                "ebit_margin": 0.32,
+                "tax_rate": 0.25,
+                "sales_to_nwc": 0.12,
+                "capex_to_sales": 0.07,
+                "da_to_sales": 0.05,
+                "wacc": 0.08,
+                "terminal_growth": 0.025,
+                "net_debt": 170000000000000.0,
+                "shares_out": null,
+                "revenue0": 120000000000000.0
+              }
+            },
+            "ev_ebitda": {
+              "ok": true,
+              "model": "ev_ebitda",
+              "enterprise_value": 360000000000000.0,
+              "equity_value": 190000000000000.0,
+              "value_per_share": null,
+              "assumptions_used": {
+                "ebitda": 36000000000000.0,
+                "ev_ebitda_multiple": 10.0,
+                "net_debt": 170000000000000.0,
+                "shares_out": null
+              }
+            }
+          }
+        ],
+        "value_band": {
+          "equity_value_low": 46787448384974.06,
+          "equity_value_high": 428787878787878.6,
+          "equity_value_mid": 190480386670462.62
+        },
+        "sensitivity_wacc_g": [
+          {
+            "wacc": 0.08,
+            "terminal_growth": 0.015,
+            "enterprise_value": 395140876221443.06,
+            "equity_value": 225140876221443.06,
+            "ok": true
+          },
+          {
+            "wacc": 0.08,
+            "terminal_growth": 0.02,
+            "enterprise_value": 421175426058584.0,
+            "equity_value": 251175426058584.0,
+            "ok": true
+          },
+          {
+            "wacc": 0.08,
+            "terminal_growth": 0.025,
+            "enterprise_value": 451943530411568.6,
+            "equity_value": 281943530411568.6,
+            "ok": true
+          },
+          {
+            "wacc": 0.09,
+            "terminal_growth": 0.015,
+            "enterprise_value": 341840451115539.75,
+            "equity_value": 171840451115539.75,
+            "ok": true
+          },
+          {
+            "wacc": 0.09,
+            "terminal_growth": 0.02,
+            "enterprise_value": 360480386670462.6,
+            "equity_value": 190480386670462.62,
+            "ok": true
+          },
+          {
+            "wacc": 0.09,
+            "terminal_growth": 0.025,
+            "enterprise_value": 381988004618450.5,
+            "equity_value": 211988004618450.5,
+            "ok": true
+          },
+          {
+            "wacc": 0.09999999999999999,
+            "terminal_growth": 0.015,
+            "enterprise_value": 301100626922783.25,
+            "equity_value": 131100626922783.25,
+            "ok": true
+          },
+          {
+            "wacc": 0.09999999999999999,
+            "terminal_growth": 0.02,
+            "enterprise_value": 314975532884365.75,
+            "equity_value": 144975532884365.75,
+            "ok": true
+          },
+          {
+            "wacc": 0.09999999999999999,
+            "terminal_growth": 0.025,
+            "enterprise_value": 330700426307492.6,
+            "equity_value": 160700426307492.62,
+            "ok": true
+          }
+        ]
+      },
+      "scores": {},
+      "macro_beta": {},
+      "narrative": [
+        "산업 키트: 해운(수상 운송).",
+        "IFRS16 용선 온밸런스 + 운임 사이클",
+        "IFRS 16 용선·리스부채가 부채비율·레버리지를 크게 올립니다.",
+        "운임 사이클에 EBITDA가 민감해 한 해 배수만으로 판단하기 어렵습니다.",
+        "유동비율 133.3% (한은 업종평균 183.9%, Δ -50.6%p).",
+        "부채비율 400.0% (한은 업종평균 85.7%, Δ +314.3%p).",
+        "주의: 부채비율이 높아 보여도 상당 부분이 용선·리스일 수 있습니다.",
+        "주의: 운임 호황기 이익을 영구 수준으로 쓰지 마세요(DCF·배수 가정 주의).",
+        "유동비율 133.3%입니다. 단기 지급능력은 확보돼 있습니다.",
+        "부채비율 400.0%입니다.",
+        "리스 제외 부채비율 200.0%입니다.",
+        "영업이익률 30.0%입니다. (가정 입력 기본값으로 사용)",
+        "ROE 56.2%입니다.",
+        "FCF 25,000,000,000,000 (통화 단위는 공시와 동일).",
+        "이익의 질(CFO/순이익) 1.78배. 영업현금이 회계이익을 뒷받침합니다.",
+        "확인 권장 주석: ifrs16_lease_maturity, charter_commitments, vessel_collateral, spc_affiliates, bunker_hedges"
+      ],
+      "disclaimer_ko": "본 산출물은 공시 숫자·사용자 가정 모형이며 투자 권유가 아닙니다."
+    }
+  ],
+  "errors": [
+    {
+      "source": "hd_korea_shipbuilding",
+      "error": "no_fixture_yet"
+    }
+  ],
+  "disclaimer_ko": "계산·가정 모형이며 투자 권유가 아닙니다."
+}
