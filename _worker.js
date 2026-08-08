@@ -812,13 +812,29 @@ async function handleCropTrade(request, env, ctx) {
         ).then((r) => r.json()).catch(() => null);
 
         const rows = body?.data || [];
-        let exp = 0, imp = 0, missing = 0;
+
+        // Largest row per counterparty, not the sum of them. One query can come
+        // back with the heading total and its subheadings as separate rows for
+        // the same pair -- Brazil files soybeans that way, six rows for
+        // Brazil-Argentina alone -- and adding them counted the same cargo
+        // twice. Summed, Brazil exported 197 Mt of soybeans in 2023, more than
+        // it grew; taking the largest row gives 98.7 Mt against an actual ~101.
+        // Where a reporter files one row per partner, as Egypt and the US do,
+        // the largest row is the only row and nothing changes. data.js resolves
+        // the map's arcs the same way, so the two agree.
+        const best = new Map();
+        let missing = 0;
         for (const r of rows) {
             if (!wanted.has(String(r.reporterCode))) continue;
+            if (r.flowCode !== 'X' && r.flowCode !== 'M') continue;
             const w = Number(r.netWgt);
             if (!Number.isFinite(w) || w <= 0) { missing++; continue; }
-            if (r.flowCode === 'X') exp += w;
-            else if (r.flowCode === 'M') imp += w;
+            const k = `${r.flowCode}:${r.partnerCode}`;
+            if (w > (best.get(k) || 0)) best.set(k, w);
+        }
+        let exp = 0, imp = 0;
+        for (const [k, w] of best) {
+            if (k.startsWith('X:')) exp += w; else imp += w;
         }
         if (exp === 0 && imp === 0) continue;
         out.push({
