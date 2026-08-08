@@ -1,4 +1,99 @@
 // Application Logic for Global Trade Dashboard
+
+/* ── i18n ────────────────────────────────────────────────────────────────────
+ *
+ * The packs are flat: one dotted string per key, no nesting, so a lookup is a
+ * property read and a missing key is visible rather than silently undefined.
+ *
+ * Korean is not fetched. It is the language the markup is already written in,
+ * so the pack only has to supply English -- which means a failed fetch, an
+ * offline load, or a pack that has not caught up degrades to a correct Korean
+ * page instead of a page full of raw key names.
+ *
+ * Placeholders are `{0}`, `{1}`, and carry no sign. `기상효과 {0}%` with the app
+ * passing `+8.5` is right; `기상효과 +{0}%` renders `+-8.5` the first time the
+ * number goes negative.
+ */
+const I18N_LANGS = { ko: '한국어', en: 'English' };
+let currentLang = 'ko';
+let i18nPack = {};
+
+const t = (key, ...args) => {
+    // Korean reads through to the fallback, so ko.json is never fetched.
+    const raw = (currentLang !== 'ko' && i18nPack[key]) || I18N_FALLBACK[key] || key;
+    return args.length
+        ? raw.replace(/\{(\d+)\}/g, (m, i) => (args[i] !== undefined ? args[i] : m))
+        : raw;
+};
+
+// Korean strings for keys the markup does not carry inline. Populated from
+// ko.json on first load so the two never drift; empty until then, which is
+// harmless because every call falls through to the key's own English or to
+// text already in the DOM.
+let I18N_FALLBACK = {};
+
+/** Re-render every element that declares its own key. */
+const applyI18nDom = (root = document) => {
+    root.querySelectorAll('[data-i18n]').forEach((el) => {
+        const key = el.getAttribute('data-i18n');
+        // First pass records the authored Korean so switching back is lossless.
+        if (!(key in I18N_FALLBACK)) I18N_FALLBACK[key] = el.textContent.trim();
+        el.textContent = t(key);
+    });
+    root.querySelectorAll('[data-i18n-attr]').forEach((el) => {
+        // `data-i18n-attr="title:tip.foo,aria-label:a11y.bar"`
+        for (const pair of el.getAttribute('data-i18n-attr').split(',')) {
+            const [attr, key] = pair.split(':').map((s) => s.trim());
+            if (!attr || !key) continue;
+            if (!(key in I18N_FALLBACK)) I18N_FALLBACK[key] = el.getAttribute(attr) || '';
+            el.setAttribute(attr, t(key));
+        }
+    });
+    document.documentElement.lang = currentLang;
+};
+
+const loadLocale = async (lang) => {
+    if (lang === 'ko') return true;
+    try {
+        const res = await fetch(`/public/locales/${lang}.json`);
+        if (!res.ok) throw new Error(`${res.status}`);
+        i18nPack = await res.json();
+        return true;
+    } catch (err) {
+        // A missing pack must not blank the page: staying on Korean is the
+        // honest failure, and the toggle reverts so the UI does not claim to be
+        // in a language it could not load.
+        console.warn(`[i18n] ${lang} pack unavailable, staying on Korean`, err);
+        return false;
+    }
+};
+
+const setLang = async (lang) => {
+    if (!I18N_LANGS[lang]) return;
+    const ok = await loadLocale(lang);
+    currentLang = ok ? lang : 'ko';
+    try { localStorage.setItem('lang', currentLang); } catch { /* private mode */ }
+    applyI18nDom();
+    document.querySelectorAll('[data-lang-opt]').forEach((b) => {
+        b.classList.toggle('active', b.dataset.langOpt === currentLang);
+    });
+    // Panels build their strings in JS, so they have to be asked to redraw.
+    document.dispatchEvent(new CustomEvent('langchange', { detail: { lang: currentLang } }));
+};
+
+const initI18n = async () => {
+    // Seed the Korean fallback from ko.json so JS-built strings have something
+    // to fall back to even before anyone touches the toggle.
+    try {
+        const res = await fetch('/public/locales/ko.json');
+        if (res.ok) I18N_FALLBACK = { ...(await res.json()), ...I18N_FALLBACK };
+    } catch { /* markup already carries the Korean */ }
+
+    let saved = null;
+    try { saved = localStorage.getItem('lang'); } catch { /* private mode */ }
+    await setLang(saved && I18N_LANGS[saved] ? saved : 'ko');
+};
+
 const { DeckGL, LineLayer, ArcLayer, PathLayer, ScatterplotLayer, GeoJsonLayer,
         SolidPolygonLayer, SimpleMeshLayer, COORDINATE_SYSTEM, TextLayer,
         _GlobeView, MapView, WebMercatorViewport } = deck;
@@ -5239,56 +5334,6 @@ const setView = (target) => {
         }
         renderFinanceView(target, chartView);
 
-    } else if (target === 'inst_intl' || target === 'inst_country') {
-        currentCommodity = target;
-        togglePanels({ forecast: true, left: true });
-        
-        deckgl.setProps({ layers: [] }); // Clear map
-        
-        if (target === 'inst_intl') {
-            currentViewTitle.textContent = "데이터 출처: 국제 기구";
-            currentViewDesc.textContent = "글로벌 거시 및 무역 지표를 제공하는 주요 국제 기구 API 현황";
-            forecastCountryTitle.textContent = "국제 기구 리스트";
-            forecastContentEl.innerHTML = `
-                <div class="forecast-box">
-                    <div class="forecast-item" style="display:block; margin-bottom:12px;">
-                        <strong>UN Comtrade</strong><br>
-                        <span style="color:#94a3b8; font-size:12px;">전 세계 170여 개국의 수출입 통계 데이터</span>
-                    </div>
-                    <div class="forecast-item" style="display:block; margin-bottom:12px;">
-                        <strong>USDA (미 농무부)</strong><br>
-                        <span style="color:#94a3b8; font-size:12px;">글로벌 농산물 수급 전망 (WASDE) 및 작황 데이터</span>
-                    </div>
-                    <div class="forecast-item" style="display:block; margin-bottom:12px;">
-                        <strong>World Bank / IMF</strong><br>
-                        <span style="color:#94a3b8; font-size:12px;">원자재 가격 지수 및 주요 거시 경제 지표</span>
-                    </div>
-                </div>
-            `;
-        } else {
-            currentViewTitle.textContent = "데이터 출처: 국가별 주요 기관";
-            currentViewDesc.textContent = "각 국가의 1차 데이터(Primary Data)를 제공하는 핵심 정부/공공 기관 API";
-            forecastCountryTitle.textContent = "국가별 기관 리스트";
-            forecastContentEl.innerHTML = `
-                <div class="forecast-box">
-                    <div class="forecast-item" style="display:block; margin-bottom:12px;">
-                        <strong>CONAB (브라질 국가식량공급공사)</strong><br>
-                        <span style="color:#94a3b8; font-size:12px;">브라질 대두/옥수수 생산량 및 기후 리포트</span>
-                    </div>
-                    <div class="forecast-item" style="display:block; margin-bottom:12px;">
-                        <strong>BCCR (아르헨티나 로사리오 곡물거래소)</strong><br>
-                        <span style="color:#94a3b8; font-size:12px;">팜파스 지역 작황 동향 및 무역 전망치</span>
-                    </div>
-                    <div class="forecast-item" style="display:block; margin-bottom:12px;">
-                        <strong>Open-Meteo</strong><br>
-                        <span style="color:#94a3b8; font-size:12px;">전 세계 고해상도 실시간 기상/기후 API</span>
-                    </div>
-                </div>
-            `;
-        }
-        
-        totalVolumeEl.textContent = "API / Data Sources";
-        topExporterEl.textContent = "-";
     } else if (target === 'climate') {
         currentCommodity = 'climate';
         setClimateCommodityHeader('climate');
@@ -5667,5 +5712,15 @@ const initialView = initialShippingTarget && document.querySelector(`[data-targe
 setView(initialView);
 updateNewsPanel('Global Market');
 loadTicker();
+
+document.querySelectorAll('[data-lang-opt]').forEach((btn) => {
+    btn.addEventListener('click', () => setLang(btn.dataset.langOpt));
+});
+// Panels that build their own strings redraw on the event setLang fires; the
+// current view is the only one on screen, so re-running it is enough.
+document.addEventListener('langchange', () => {
+    if (currentCommodity && currentCommodity !== 'home') setView(currentCommodity);
+});
+initI18n();
 
 window.__deckgl = typeof deckgl !== "undefined" ? deckgl : null;

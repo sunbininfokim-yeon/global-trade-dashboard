@@ -2208,3 +2208,25 @@ body.finance-mode #chart-view::-webkit-scrollbar-thumb { background: rgba(148, 1
     font-variant-numeric: tabular-nums; letter-spacing: .02em;
 }
 .dep-note { margin: 4px 0 0; font-size: 9.5px; line-height: 1.45; color: rgba(148, 163, 184, .62); }
+
+/* 언어 토글 (달력 옆) */
+.lang-toggle {
+    display: inline-flex;
+    margin-right: 10px;
+    border: 1px solid rgba(148, 163, 184, 0.28);
+    border-radius: 6px;
+    overflow: hidden;
+}
+.lang-opt {
+    background: transparent;
+    border: 0;
+    color: #94a3b8;
+    font: 600 10.5px/1 inherit;
+    letter-spacing: .06em;
+    padding: 6px 9px;
+    cursor: pointer;
+    transition: background .15s, color .15s;
+}
+.lang-opt + .lang-opt { border-left: 1px solid rgba(148, 163, 184, 0.22); }
+.lang-opt:hover { color: #e2e8f0; background: rgba(148, 163, 184, 0.1); }
+.lang-opt.active { color: #0f172a; background: #38bdf8; }

@@ -14,7 +14,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
     <!-- Custom Styles -->
-    <link rel="stylesheet" href="style.css?v=38">
+    <link rel="stylesheet" href="style.css?v=39">
 </head>
 <body>
     <div id="app">
@@ -23,87 +23,84 @@
             <div class="logo" id="home-logo" style="cursor: pointer;">Global Trade</div>
             <nav class="main-menu">
                 <div class="menu-item">
-                    <span>에너지</span>
+                    <span data-i18n="nav.energy">에너지</span>
                     <div class="dropdown">
-                        <a href="#" data-target="oil">원유</a>
-                        <a href="#" data-target="gas">천연가스</a>
-                        <a href="#" data-target="thermal_coal">석탄 (연료탄)</a>
-                        <a href="#" data-target="met_coal">석탄 (원료탄)</a>
+                        <a href="#" data-target="oil" data-i18n="nav.oil">원유</a>
+                        <a href="#" data-target="gas" data-i18n="nav.gas">천연가스</a>
+                        <a href="#" data-target="thermal_coal" data-i18n="nav.thermal_coal">석탄 (연료탄)</a>
+                        <a href="#" data-target="met_coal" data-i18n="nav.met_coal">석탄 (원료탄)</a>
                     </div>
                 </div>
                 <div class="menu-item">
-                    <span>금속·광물</span>
+                    <span data-i18n="nav.metals">금속·광물</span>
                     <!-- 귀금속과 비철금속을 하나로 합치고 소제목으로 나눔.
                          배터리·전략광물이 늘면서 둘로 나눈 구분이 애매해졌고,
                          수출 통제가 걸리는 품목이 여러 그룹에 흩어져 있다. -->
                     <div class="dropdown dropdown-grouped">
-                        <span class="dd-head">귀금속</span>
-                        <a href="#" data-target="gold">금 (Gold)</a>
-                        <a href="#" data-target="silver">은 (Silver)</a>
-                        <a href="#" data-target="platinum">백금족 (Pt·Pd)</a>
+                        <span class="dd-head" data-i18n="nav.precious">귀금속</span>
+                        <a href="#" data-target="gold" data-i18n="nav.gold">금 (Gold)</a>
+                        <a href="#" data-target="silver" data-i18n="nav.silver">은 (Silver)</a>
+                        <a href="#" data-target="platinum" data-i18n="nav.platinum">백금족 (Pt·Pd)</a>
 
-                        <span class="dd-head">산업금속</span>
-                        <a href="#" data-target="copper">구리</a>
-                        <a href="#" data-target="aluminum">알루미늄</a>
-                        <a href="#" data-target="zinc">아연</a>
-                        <a href="#" data-target="tin">주석</a>
-                        <a href="#" data-target="lead">납</a>
+                        <span class="dd-head" data-i18n="nav.industrial">산업금속</span>
+                        <a href="#" data-target="copper" data-i18n="nav.copper">구리</a>
+                        <a href="#" data-target="aluminum" data-i18n="nav.aluminum">알루미늄</a>
+                        <a href="#" data-target="zinc" data-i18n="nav.zinc">아연</a>
+                        <a href="#" data-target="tin" data-i18n="nav.tin">주석</a>
+                        <a href="#" data-target="lead" data-i18n="nav.lead">납</a>
 
-                        <span class="dd-head">배터리·전략광물</span>
-                        <a href="#" data-target="nickel">니켈</a>
-                        <a href="#" data-target="cobalt">코발트</a>
-                        <a href="#" data-target="lithium">리튬</a>
-                        <a href="#" data-target="graphite">흑연</a>
-                        <a href="#" data-target="rare_earths">희토류</a>
+                        <span class="dd-head" data-i18n="nav.battery_minerals">배터리·전략광물</span>
+                        <a href="#" data-target="nickel" data-i18n="nav.nickel">니켈</a>
+                        <a href="#" data-target="cobalt" data-i18n="nav.cobalt">코발트</a>
+                        <a href="#" data-target="lithium" data-i18n="nav.lithium">리튬</a>
+                        <a href="#" data-target="graphite" data-i18n="nav.graphite">흑연</a>
+                        <a href="#" data-target="rare_earths" data-i18n="nav.rare_earths">희토류</a>
 
-                        <span class="dd-head">철강 원료</span>
-                        <a href="#" data-target="iron_ore">철광석</a>
-                        <a href="#" data-target="manganese">망간</a>
-                        <a href="#" data-target="chromium">크롬</a>
+                        <span class="dd-head" data-i18n="nav.steel_inputs">철강 원료</span>
+                        <a href="#" data-target="iron_ore" data-i18n="nav.iron_ore">철광석</a>
+                        <a href="#" data-target="manganese" data-i18n="nav.manganese">망간</a>
+                        <a href="#" data-target="chromium" data-i18n="nav.chromium">크롬</a>
                     </div>
                 </div>
                 <div class="menu-item" data-nav-default="climate">
-                    <span class="menu-parent" role="button" tabindex="0" aria-label="작황 모니터 열기">농산물</span>
+                    <span class="menu-parent" role="button" tabindex="0" aria-label="작황 모니터 열기" data-i18n="nav.agri">농산물</span>
                     <div class="dropdown">
-                        <a href="#" data-target="climate" style="color: #4ade80; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 8px; margin-bottom: 4px;">작황 모니터</a>
-                        <a href="#" data-target="wheat">밀</a>
-                        <a href="#" data-target="corn">옥수수</a>
-                        <a href="#" data-target="soybeans">대두</a>
-                        <a href="#" data-target="sugar">설탕</a>
-                        <a href="#" data-target="coffee">커피</a>
+                        <a href="#" data-target="climate" style="color: #4ade80; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 8px; margin-bottom: 4px;" data-i18n="nav.climate">작황 모니터</a>
+                        <a href="#" data-target="wheat" data-i18n="nav.wheat">밀</a>
+                        <a href="#" data-target="corn" data-i18n="nav.corn">옥수수</a>
+                        <a href="#" data-target="soybeans" data-i18n="nav.soybeans">대두</a>
+                        <a href="#" data-target="sugar" data-i18n="nav.sugar">설탕</a>
+                        <a href="#" data-target="coffee" data-i18n="nav.coffee">커피</a>
                     </div>
                 </div>
                 <div class="menu-item" data-nav-default="shipping_fleet">
-                    <span class="menu-parent" role="button" tabindex="0" aria-label="해운 화면 열기">해운</span>
+                    <span class="menu-parent" role="button" tabindex="0" aria-label="해운 화면 열기" data-i18n="nav.shipping">해운</span>
                     <div class="dropdown">
-                        <a href="#" data-target="shipping_fleet">글로벌 선대</a>
-                        <a href="#" data-target="shipping_routes">항로별 선복량</a>
-                        <a href="#" data-target="shipping_chokepoints">초크포인트 모니터</a>
-                        <a href="#" data-target="shipping_scenarios">봉쇄 충격 시뮬레이터</a>
+                        <a href="#" data-target="shipping_fleet" data-i18n="nav.shipping_fleet">글로벌 선대</a>
+                        <a href="#" data-target="shipping_routes" data-i18n="nav.shipping_routes">항로별 선복량</a>
+                        <a href="#" data-target="shipping_chokepoints" data-i18n="nav.shipping_chokepoints">초크포인트 모니터</a>
+                        <a href="#" data-target="shipping_scenarios" data-i18n="nav.shipping_scenarios">봉쇄 충격 시뮬레이터</a>
                     </div>
                 </div>
                 <div class="menu-item">
-                    <span>금융</span>
+                    <span data-i18n="nav.finance">금융</span>
                     <div class="dropdown dropdown-grouped">
-                        <span class="dd-head">매크로</span>
-                        <a href="#" data-target="fed_bs">FED B/S</a>
-                        <a href="#" data-target="tga">TGA 잔고</a>
-                        <span class="dd-head">파생상품</span>
-                        <a href="#" data-target="fin_derivatives">옵션·공매도 동향</a>
-                        <span class="dd-head">진단</span>
-                        <a href="#" data-target="fin_portfolio">포트폴리오 진단</a>
-                        <a href="#" data-target="fin_valuation">기업 가치 진단</a>
-                    </div>
-                </div>
-                <div class="menu-item" style="margin-left: 20px;">
-                    <span style="color: #cbd5e1;">주요 기관</span>
-                    <div class="dropdown">
-                        <a href="#" data-target="inst_intl">국제 기구 (UN, USDA 등)</a>
-                        <a href="#" data-target="inst_country">국가별 출처 (CONAB 등)</a>
+                        <span class="dd-head" data-i18n="nav.macro">매크로</span>
+                        <a href="#" data-target="fed_bs" data-i18n="nav.fed_bs">FED B/S</a>
+                        <a href="#" data-target="tga" data-i18n="nav.tga">TGA 잔고</a>
+                        <span class="dd-head" data-i18n="nav.derivatives_head">파생상품</span>
+                        <a href="#" data-target="fin_derivatives" data-i18n="nav.fin_derivatives">옵션·공매도 동향</a>
+                        <span class="dd-head" data-i18n="nav.diagnostics">진단</span>
+                        <a href="#" data-target="fin_portfolio" data-i18n="nav.fin_portfolio">포트폴리오 진단</a>
+                        <a href="#" data-target="fin_valuation" data-i18n="nav.fin_valuation">기업 가치 진단</a>
                     </div>
                 </div>
             </nav>
             <div class="date-picker-container">
+                <div class="lang-toggle" role="group" aria-label="Language">
+                    <button type="button" class="lang-opt active" data-lang-opt="ko">KO</button>
+                    <button type="button" class="lang-opt" data-lang-opt="en">EN</button>
+                </div>
                 <input type="date" id="historical-date" class="historical-date-picker" min="2021-01-01">
             </div>
             <script>
@@ -117,7 +114,7 @@
 
         <!-- Ticker -->
         <div class="ticker-wrapper">
-            <div class="ticker-label">속보</div>
+            <div class="ticker-label" data-i18n="ticker.label">속보</div>
             <div class="ticker-overflow">
                 <div class="ticker-content" id="ticker-content">
                     <!-- Filled by app.js loadTicker() from /api/ticker or ticker_v1.json -->
@@ -336,6 +333,6 @@
     <!-- Data and App Logic -->
     <script src="data.js?v=5"></script>
     <script src="shipping.js?v=10"></script>
-    <script src="app.js?v=69"></script>
+    <script src="app.js?v=70"></script>
 </body>
 </html>
