@@ -5019,9 +5019,36 @@ const pfLoadRefs = async () => {
         }
         return null;
     };
-    const [reg, prof] = await Promise.all([grab('instruments_v1.json'), grab('risk_profiles_v1.json')]);
-    PF_REGISTRY = (reg && reg.instruments) || [];
+    const [reg, prof, ko] = await Promise.all([
+        grab('instruments_v1.json'), grab('risk_profiles_v1.json'), grab('aliases_ko_v1.json'),
+    ]);
     PF_PROFILES = (prof && prof.profiles) || {};
+
+    // Neither Yahoo nor SEC indexes Korean names -- searching 삼성전자 through
+    // either returns nothing at all. So the Korean table is not a convenience
+    // layer over remote search, it is the only way a Korean name resolves.
+    const engine = (reg && reg.instruments) || [];
+    const known = new Set(engine.map((x) => String(x.yahoo || '').toUpperCase()));
+    const koRows = ((ko && ko.instruments) || [])
+        .filter((x) => !known.has(String(x.symbol).toUpperCase()))
+        .map((x) => ({
+            id: `ko:${x.symbol}`,
+            name_ko: x.name_ko,
+            yahoo: x.symbol,
+            currency: 'USD',
+            asset_class: x.asset_class || 'equity',
+            aliases: [...(x.aliases || []), x.symbol],
+            // TQQQ and SOXL are real funds: their quoted price already carries
+            // the 3x. Multiplying returns again would triple-count it. The flag
+            // is here for the risk-profile limit, not for the return maths --
+            // which is why synthetic_leverage stays false.
+            leveraged: !!x.leveraged,
+            synthetic_leverage: false,
+        }));
+
+    // Engine entries first: only they carry proxy flags and leverage factors
+    // that a plain ticker lookup cannot know.
+    PF_REGISTRY = [...engine, ...koRows];
 };
 
 const pfKrw = (n) => (n === null || n === undefined || Number.isNaN(n))
