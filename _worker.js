@@ -819,6 +819,72 @@ async function handleMacro(request, env, ctx) {
 // magnitude: a ticker's name never changes, its price does.
 const YF_HEADERS = { "User-Agent": "Mozilla/5.0", "Accept": "application/json" };
 
+// Returns null (not an error) when Yahoo declines, so the caller can fall back
+// rather than surface a failure the visitor can do nothing about.
+async function yahooSearch(q) {
+    try {
+        const yf = `https://query1.finance.yahoo.com/v1/finance/search`
+            + `?q=${encodeURIComponent(q)}&quotesCount=12&newsCount=0&listsCount=0`;
+        const res = await fetch(yf, { headers: YF_HEADERS });
+        if (!res.ok) return null;
+        const body = await res.json();
+        // Indices, futures and currencies are all legitimate holdings here;
+        // options and anything without a symbol are not.
+        const quotes = (body.quotes || [])
+            .filter((x) => x.symbol && x.quoteType !== 'OPTION')
+            .map((x) => ({
+                symbol: x.symbol,
+                name: x.longname || x.shortname || x.symbol,
+                exchange: x.exchDisp || x.exchange || '',
+                type: x.quoteType || '',
+            }));
+        return quotes.length ? quotes : null;
+    } catch (_) {
+        return null;
+    }
+}
+
+const SEC_TICKERS_URL = 'https://www.sec.gov/files/company_tickers.json';
+
+async function secIndex(env) {
+    const KEY = 'sec:tickers:v1';
+    if (env.API_CACHE) {
+        try {
+            const hit = await env.API_CACHE.get(KEY, 'json');
+            if (hit) return hit;
+        } catch (_) { /* fall through to fetch */ }
+    }
+    // SEC asks that automated clients identify themselves with a contact address.
+    const res = await fetch(SEC_TICKERS_URL, {
+        headers: { 'User-Agent': 'global-trade-dashboard overideal@gmail.com', 'Accept': 'application/json' },
+    });
+    if (!res.ok) return [];
+    const raw = await res.json();
+    const rows = Object.values(raw).map((v) => [v.ticker, v.title]);
+    if (env.API_CACHE) {
+        // The filer list changes on the scale of weeks; a day of staleness is
+        // invisible and keeps this off SEC's servers.
+        try { await env.API_CACHE.put(KEY, JSON.stringify(rows), { expirationTtl: 86400 }); } catch (_) { /* ignore */ }
+    }
+    return rows;
+}
+
+async function secSearch(env, q) {
+    const rows = await secIndex(env);
+    const s = q.toLowerCase();
+    const starts = [], contains = [];
+    for (const [ticker, title] of rows) {
+        const t = ticker.toLowerCase(), n = title.toLowerCase();
+        if (t === s) starts.unshift([ticker, title]);
+        else if (t.startsWith(s) || n.startsWith(s)) starts.push([ticker, title]);
+        else if (n.includes(s)) contains.push([ticker, title]);
+        if (starts.length >= 12) break;
+    }
+    return [...starts, ...contains].slice(0, 12).map(([symbol, name]) => ({
+        symbol, name, exchange: 'SEC', type: 'EQUITY',
+    }));
+}
+
 async function handleQuote(request, env) {
     const url = new URL(request.url);
     const action = url.pathname.replace(/^\/api\/quote\/?/, '') || 'search';
@@ -828,25 +894,17 @@ async function handleQuote(request, env) {
             const q = (url.searchParams.get('q') || '').trim();
             if (!q) return new Response(JSON.stringify({ quotes: [] }), { headers: JSON_HEADERS });
 
-            return kvCachedJson(env, `yfsearch:${q.toLowerCase()}`, 86400, async () => {
-                const yf = `https://query1.finance.yahoo.com/v1/finance/search`
-                    + `?q=${encodeURIComponent(q)}&quotesCount=12&newsCount=0&listsCount=0`;
-                const res = await fetch(yf, { headers: YF_HEADERS });
-                if (!res.ok) return { ok: false, status: res.status };
-                const body = await res.json();
+            return kvCachedJson(env, `qsearch:${q.toLowerCase()}`, 86400, async () => {
+                const yahoo = await yahooSearch(q);
+                if (yahoo) return { ok: true, body: { quotes: yahoo, source: 'yahoo' } };
 
-                // Trim to what the picker needs. Yahoo returns indices, futures
-                // and currencies alongside equities; all are legitimate holdings
-                // here, but options and anything without a symbol are not.
-                const quotes = (body.quotes || [])
-                    .filter((q2) => q2.symbol && q2.quoteType !== 'OPTION')
-                    .map((q2) => ({
-                        symbol: q2.symbol,
-                        name: q2.longname || q2.shortname || q2.symbol,
-                        exchange: q2.exchDisp || q2.exchange || '',
-                        type: q2.quoteType || '',
-                    }));
-                return { ok: true, body: { quotes } };
+                // Yahoo throttles search far harder than it throttles prices, and
+                // it is the only piece of this with a usable substitute: the SEC
+                // publishes its filer list as a plain file with no rate limit.
+                // Narrower than Yahoo (US filers only, misses some ETFs), but a
+                // degraded picker beats a dead one.
+                const sec = await secSearch(env, q);
+                return { ok: true, body: { quotes: sec, source: 'sec', degraded: true } };
             });
         }
 
