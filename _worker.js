@@ -25,6 +25,13 @@ export default {
             return await handleUsdaEsr(request, env, ctx);
         }
 
+        // Macro monitor, sliced per country (see handleMacroMonitor).
+        // Must precede /api/macro: these are prefix matches, and the shorter
+        // one swallows this path otherwise.
+        if (url.pathname.startsWith('/api/macro-monitor')) {
+            return await handleMacroMonitor(request, env);
+        }
+
         // API Route: Macro Financial Data Proxy (FRED, BOK, EIA, Yahoo Finance)
         if (url.pathname.startsWith('/api/macro')) {
             return await handleMacro(request, env, ctx);
@@ -48,11 +55,6 @@ export default {
         // Filed financial statements for the company calculator
         if (url.pathname.startsWith('/api/financials')) {
             return await handleFinancials(request, env);
-        }
-
-        // Macro monitor, sliced per country (see handleMacroMonitor)
-        if (url.pathname.startsWith('/api/macro-monitor')) {
-            return await handleMacroMonitor(request, env);
         }
 
         // Multi-country official reports (US/JP/CN/EU…)
