@@ -666,6 +666,40 @@ async function fetchComtrade(env, hs, reporters, partners, period, freq) {
     return { ok: true, body: { count: merged.length, data: merged } };
 }
 
+/**
+ * The most recent month Comtrade actually has rows for.
+ *
+ * Reporting lags by months and the lag is not fixed, so a hardcoded month goes
+ * stale silently -- the map would just render empty and look broken. Walking
+ * back from the current month finds the real edge of the data; the answer is
+ * cached for a day so this costs one probe, not one per visitor.
+ *
+ * Probed with a single cheap reporter rather than the full 64-country list:
+ * the question is only "does this month exist yet", and the US files early
+ * enough to answer it.
+ */
+async function resolveLatestComtradeMonth(env, hs) {
+    const cached = env.API_CACHE
+        ? await env.API_CACHE.get('comtrade:latest-month', 'text').catch(() => null)
+        : null;
+    if (cached) return cached;
+
+    const now = new Date();
+    for (let back = 1; back <= 8; back++) {
+        const d = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - back, 1));
+        const period = `${d.getUTCFullYear()}${String(d.getUTCMonth() + 1).padStart(2, '0')}`;
+        const probe = await fetchComtrade(env, hs, '842', DEFAULT_M49_CODES, period, 'M');
+        if (probe.ok && (probe.body?.data?.length > 0)) {
+            if (env.API_CACHE) {
+                await env.API_CACHE.put('comtrade:latest-month', period, { expirationTtl: 86400 })
+                    .catch(() => {});
+            }
+            return period;
+        }
+    }
+    return null;
+}
+
 async function handleComtrade(request, env, ctx) {
     const url = new URL(request.url);
     const hs = url.searchParams.get('hs') || '2709';
@@ -673,14 +707,32 @@ async function handleComtrade(request, env, ctx) {
     const partners = url.searchParams.get('partners') || DEFAULT_M49_CODES;
     // freq=M returns monthly rows (period must then look like "202403").
     const freq = url.searchParams.get('freq') === 'M' ? 'M' : 'A';
-    const period = url.searchParams.get('period') || (freq === 'M' ? '202403' : COMTRADE_PERIOD);
+    let period = url.searchParams.get('period') || (freq === 'M' ? 'latest' : COMTRADE_PERIOD);
 
     if (!env.COMTRADE_API_KEY) return missingKey('COMTRADE_API_KEY');
 
-    const cacheTtl = COMTRADE_TTL[hs] || 604800; // Default: weekly
+    if (freq === 'M' && period === 'latest') {
+        period = await resolveLatestComtradeMonth(env, hs);
+        if (!period) {
+            return new Response(
+                JSON.stringify({ error: 'no monthly Comtrade data in the last 8 months', data: [] }),
+                { status: 404, headers: JSON_HEADERS });
+        }
+    }
 
-    return kvCachedJson(env, comtradeCacheKey(hs, reporters, partners, period, freq), cacheTtl,
+    // Monthly entries are small and revised, so they expire faster than the
+    // annual ones -- a week of TTL on a month that gets restated is a week of
+    // showing the superseded figure.
+    const cacheTtl = freq === 'M' ? 172800 : (COMTRADE_TTL[hs] || 604800);
+
+    const res = await kvCachedJson(env, comtradeCacheKey(hs, reporters, partners, period, freq), cacheTtl,
         () => fetchComtrade(env, hs, reporters, partners, period, freq));
+
+    // Tell the caller which month it actually got, since it asked for "latest".
+    const headers = new Headers(res.headers);
+    headers.set('X-Comtrade-Period', period);
+    headers.set('X-Comtrade-Freq', freq);
+    return new Response(res.body, { status: res.status, headers });
 }
 
 /**

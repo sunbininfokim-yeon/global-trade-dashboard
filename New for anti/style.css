@@ -2400,3 +2400,14 @@ body.finance-mode #chart-view::-webkit-scrollbar-thumb { background: rgba(148, 1
 
 /* 순수입의존도(NIR) 배지 — 작황 모니터 수출입 표 */
 .ct-nir { font-weight: 700; color: #fbbf24; }
+
+/* 연도별 | 월별 토글 (무역 지도 오버레이) */
+.to-freq { display: inline-flex; border: 1px solid rgba(148,163,184,.25); border-radius: 5px; overflow: hidden; }
+.to-freq-btn {
+    background: transparent; border: 0; color: #94a3b8;
+    font: 600 10px/1 inherit; padding: 4px 7px; cursor: pointer;
+    transition: background .15s, color .15s; white-space: nowrap;
+}
+.to-freq-btn + .to-freq-btn { border-left: 1px solid rgba(148,163,184,.2); }
+.to-freq-btn:hover { color: #e2e8f0; background: rgba(148,163,184,.1); }
+.to-freq-btn.active { color: #0f172a; background: #38bdf8; }

@@ -395,22 +395,32 @@
 
     // === Fetch Real Trade Data from UN Comtrade via CORS Proxy ===
     // 출처: UN Comtrade API (comtradeapi.un.org) → Cloudflare Pages Function 프록시 경유
-    window.fetchComtradeArcs = async function(commodityKey) {
+    // Which period the last monthly fetch actually landed on. The Worker
+    // resolves "latest" server-side because the reporting lag moves, and it
+    // reports the month it chose in a header so the UI can label the map with
+    // the month being shown rather than the month it asked for.
+    window.LastComtradePeriod = null;
+
+    window.fetchComtradeArcs = async function(commodityKey, freq = 'A') {
         const config = COMMODITY_API_CONFIG[commodityKey];
         if (!config) {
             console.warn(`[Comtrade] No API config for commodity: ${commodityKey}`);
             return [];
         }
 
-        console.log(`[Comtrade] Fetching real trade data for ${commodityKey} (HS ${config.hsCode})...`);
+        console.log(`[Comtrade] Fetching ${freq === 'M' ? 'monthly' : 'annual'} trade data for ${commodityKey} (HS ${config.hsCode})...`);
 
         try {
             // ALL_M49_CODES contains 40+ countries allowing for dynamic mapping of global trade routes
             // Reporter/partner list intentionally omitted: the Worker supplies
             // its own canonical list, so this request lands on exactly the
             // cache key the nightly warm-up wrote.
-            const proxyUrl = `/api/comtrade?hs=${config.hsCode}&period=2023`;
+            const proxyUrl = freq === 'M'
+                ? `/api/comtrade?hs=${config.hsCode}&freq=M&period=latest`
+                : `/api/comtrade?hs=${config.hsCode}&period=2023`;
             const res = await fetch(proxyUrl);
+            window.LastComtradePeriod = res.headers.get('X-Comtrade-Period')
+                || (freq === 'M' ? null : '2023');
 
             if (!res.ok) {
                 console.warn(`[Comtrade] Proxy returned ${res.status} for ${commodityKey}`);

@@ -14,7 +14,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
     <!-- Custom Styles -->
-    <link rel="stylesheet" href="style.css?v=45">
+    <link rel="stylesheet" href="style.css?v=46">
 </head>
 <body>
     <div id="app">
@@ -195,6 +195,15 @@
                 <!-- Trade map overlay: scale, flow toggle, interaction hint -->
                 <div id="trade-overlay" class="trade-overlay hidden">
                     <div class="to-controls">
+                        <span class="to-label" data-i18n="trade_freq.label">주기</span>
+                        <div class="to-freq" role="group">
+                            <button type="button" class="to-freq-btn active" data-trade-freq="A"
+                                    data-i18n="trade_freq.annual">연도별</button>
+                            <button type="button" class="to-freq-btn" data-trade-freq="M"
+                                    data-i18n="trade_freq.monthly">월별</button>
+                        </div>
+                    </div>
+                    <div class="to-controls">
                         <span class="to-label">흐름</span>
                         <button type="button" class="to-btn is-on" id="trade-flow-toggle">켜기</button>
                     </div>
@@ -332,8 +341,8 @@
     </div>
 
     <!-- Data and App Logic -->
-    <script src="data.js?v=7"></script>
+    <script src="data.js?v=8"></script>
     <script src="shipping.js?v=10"></script>
-    <script src="app.js?v=82"></script>
+    <script src="app.js?v=83"></script>
 </body>
 </html>

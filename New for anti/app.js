@@ -3988,6 +3988,37 @@ const m49ForCountry = (name) => {
     return null;
 };
 
+/**
+ * Annual or monthly Comtrade. Annual is the default because it is complete:
+ * every reporter files it, the nightly warm-up has it cached, and it is what
+ * every figure elsewhere on the map is built from. Monthly is fresher but
+ * thinner -- fewer countries file it, and they file it late -- so it is a
+ * deliberate choice rather than the thing you land on.
+ */
+let tradeFreq = 'A';
+
+const COMTRADE_ANNUAL_YEAR = '2023';
+
+/** The period actually being shown, for the map's own caption. */
+const tradePeriodLabel = () => {
+    if (tradeFreq === 'A') return t('trade_freq.annual_of', COMTRADE_ANNUAL_YEAR);
+    const p = window.LastComtradePeriod;
+    if (!p || p.length !== 6) return t('trade_freq.monthly');
+    return t('trade_freq.monthly_of', p.slice(0, 4), p.slice(4));
+};
+
+const setTradeFreq = (freq) => {
+    if (freq === tradeFreq) return;
+    tradeFreq = freq;
+    document.querySelectorAll('[data-trade-freq]').forEach((b) => {
+        b.classList.toggle('active', b.dataset.tradeFreq === tradeFreq);
+    });
+    // Leaving a focused country on a frequency change would show that country
+    // against a period it was never ranked in.
+    if (tradeFocusCountry) clearTradeFocus();
+    if (currentCommodity && window.TradeData?.[currentCommodity]) setView(currentCommodity);
+};
+
 const cropTradeCache = new Map();
 
 /**
@@ -6969,10 +7000,17 @@ const setView = (target) => {
             if (arcs?.length) renderMapLayers(arcs, { keepView: true });
         });
 
-        // Lazy Loading: if arcs are empty, fetch real data from UN Comtrade
-        if (data.arcs.length === 0 && window.fetchComtradeArcs) {
+        // Lazy Loading: if arcs are empty, fetch real data from UN Comtrade.
+        // Annual and monthly are cached in separate slots -- they are different
+        // series, and overwriting one with the other made the toggle re-fetch
+        // every time it was flipped.
+        data.arcsByFreq = data.arcsByFreq || {};
+        if (data.arcs.length && !data.arcsByFreq.A) data.arcsByFreq.A = data.arcs;
+        const cachedForFreq = data.arcsByFreq[tradeFreq];
+
+        if (!cachedForFreq?.length && window.fetchComtradeArcs) {
             currentViewDesc.textContent = "📡 UN Comtrade API에서 실시간 무역 데이터 로딩 중...";
-            
+
             stopRotation();
             currentViewState = clampGlobeView({ ...TRADE_MAP_VIEW });
             deckgl.setProps({
@@ -6981,17 +7019,24 @@ const setView = (target) => {
                 layers: worldBaseLayers({ id: 'trade-loading' }),
             });
 
-            window.fetchComtradeArcs(target).then(arcs => {
-                // Check if user hasn't navigated away
-                if (currentCommodity !== target) return;
-                
+            const freqAtRequest = tradeFreq;
+            window.fetchComtradeArcs(target, freqAtRequest).then(arcs => {
+                // Check the user has not navigated away *or* flipped the toggle
+                // while this was in flight -- either would make these the wrong
+                // arcs to draw.
+                if (currentCommodity !== target || tradeFreq !== freqAtRequest) return;
+
                 if (arcs.length > 0) {
-                    data.arcs = arcs; // Cache for future clicks
-                    currentViewDesc.textContent = data.desc + ` (데이터 출처: UN Comtrade API | ${arcs.length}개 무역 루트) · 국가 클릭 → 수출 대상 순위`;
+                    data.arcsByFreq[freqAtRequest] = arcs;
+                    data.arcs = arcs;
+                    currentViewDesc.textContent = data.desc + ` (${tradePeriodLabel()} · UN Comtrade | ${arcs.length}개 무역 루트) · 국가 클릭 → 수출 대상 순위`;
                     renderTradeWorldPanel(data.arcs);
                     renderMapLayers(data.arcs);
                 } else {
-                    currentViewDesc.textContent = data.desc + " (UN Comtrade 데이터 로딩 실패 — 재시도 필요)";
+                    currentViewDesc.textContent = data.desc
+                        + (freqAtRequest === 'M'
+                            ? " (이 품목은 월별 신고가 없습니다 — 연도별로 보세요)"
+                            : " (UN Comtrade 데이터 로딩 실패 — 재시도 필요)");
                 }
             }).catch(err => {
                 if (currentCommodity !== target) return;
@@ -6999,10 +7044,12 @@ const setView = (target) => {
                 console.error('[Comtrade] Lazy load error:', err);
             });
         } else {
-            // Already have data (cached from previous click or hardcoded)
+            // Already have this frequency cached, from an earlier visit or a
+            // flip back to it.
+            data.arcs = cachedForFreq;
             stopRotation();
             currentViewState = clampGlobeView({ ...TRADE_MAP_VIEW });
-            currentViewDesc.textContent = data.desc + ` (데이터 출처: UN Comtrade API | ${data.arcs.length}개 무역 루트) · 국가 클릭 → 수출 대상 순위`;
+            currentViewDesc.textContent = data.desc + ` (${tradePeriodLabel()} · UN Comtrade | ${data.arcs.length}개 무역 루트) · 국가 클릭 → 수출 대상 순위`;
             renderTradeWorldPanel(data.arcs);
             renderMapLayers(data.arcs);
         }
@@ -7318,6 +7365,9 @@ setView(initialView);
 updateNewsPanel('Global Market');
 loadTicker();
 
+document.querySelectorAll('[data-trade-freq]').forEach((btn) => {
+    btn.addEventListener('click', () => setTradeFreq(btn.dataset.tradeFreq));
+});
 document.querySelectorAll('[data-lang-opt]').forEach((btn) => {
     btn.addEventListener('click', () => setLang(btn.dataset.langOpt));
 });
