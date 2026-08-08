@@ -5,7 +5,8 @@ Read and follow:
 `New for anti/scripts/market_microstructure/CLAUDE_UI_HANDOFF.md`
 
 ## Goal
-Wire market-microstructure + US→KR early-warning + derivatives board into the dashboard UI. Engine/JSON already built by Cursor on branch `cursor/macro-monitor-fix`.
+Wire market-microstructure + US→KR + derivatives + **investor×price levels** into the dashboard.
+Engine/JSON on PR branch (real data only). Merge to `main` for daily cron.
 
 ## You own
 - `New for anti/{app.js,style.css,index.html,data.js}` (and related UI)
@@ -26,6 +27,6 @@ Wire market-microstructure + US→KR early-warning + derivatives board into the 
 3. `kospi_concentration_history_v1.json` → Conc lines
 4. `derivatives_board_v1.json` → foreign boxes (empty OK) + US OI rule level
 5. `ai_casino_brief_v1.json` / `market_microstructure_v1.json` → brief cards
-6. `investor_price_levels_v1.json` → Infomax-style KOSPI index levels + high-vol stock close bins + same-day table
+6. `investor_price_levels_v1.json` → **실측만** · 시총상위 + 시총100위 내 고변동 · index levels + close_day tables + bins (`observed|missing`)
 
-Always show `disclaimer_ko`. Not investment advice.
+Always show `disclaimer_ko`. Not investment advice. Never invent numbers.
