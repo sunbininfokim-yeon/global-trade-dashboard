@@ -40,6 +40,11 @@ export default {
             return await handleLiquidity(request, env);
         }
 
+        // Instrument lookup + daily price history for the portfolio panel
+        if (url.pathname.startsWith('/api/quote')) {
+            return await handleQuote(request, env);
+        }
+
         // Multi-country official reports (US/JP/CN/EU…)
         if (url.pathname.startsWith('/api/official-reports')) {
             return await handleOfficialReports(request, env);
@@ -800,6 +805,159 @@ async function handleMacro(request, env, ctx) {
         }
 
         return new Response(JSON.stringify({ error: "Invalid macro source" }), { status: 400, headers: JSON_HEADERS });
+
+    } catch (err) {
+        return new Response(JSON.stringify({ error: err.message }), { status: 500, headers: JSON_HEADERS });
+    }
+}
+
+// --- Instrument lookup + daily prices -------------------------------------
+// The portfolio panel computes covariance in the browser, which needs daily
+// closes -- the existing /api/macro yfinance route returns monthly, far too
+// coarse to estimate a covariance matrix from. Kept separate rather than
+// widening that route because the cache lifetimes differ by an order of
+// magnitude: a ticker's name never changes, its price does.
+const YF_HEADERS = { "User-Agent": "Mozilla/5.0", "Accept": "application/json" };
+
+// Returns null (not an error) when Yahoo declines, so the caller can fall back
+// rather than surface a failure the visitor can do nothing about.
+async function yahooSearch(q) {
+    try {
+        const yf = `https://query1.finance.yahoo.com/v1/finance/search`
+            + `?q=${encodeURIComponent(q)}&quotesCount=12&newsCount=0&listsCount=0`;
+        const res = await fetch(yf, { headers: YF_HEADERS });
+        if (!res.ok) return null;
+        const body = await res.json();
+        // Indices, futures and currencies are all legitimate holdings here;
+        // options and anything without a symbol are not.
+        const quotes = (body.quotes || [])
+            .filter((x) => x.symbol && x.quoteType !== 'OPTION')
+            .map((x) => ({
+                symbol: x.symbol,
+                name: x.longname || x.shortname || x.symbol,
+                exchange: x.exchDisp || x.exchange || '',
+                type: x.quoteType || '',
+            }));
+        return quotes.length ? quotes : null;
+    } catch (_) {
+        return null;
+    }
+}
+
+const SEC_TICKERS_URL = 'https://www.sec.gov/files/company_tickers.json';
+
+async function secIndex(env) {
+    const KEY = 'sec:tickers:v1';
+    if (env.API_CACHE) {
+        try {
+            const hit = await env.API_CACHE.get(KEY, 'json');
+            if (hit) return hit;
+        } catch (_) { /* fall through to fetch */ }
+    }
+    // SEC asks that automated clients identify themselves with a contact address.
+    const res = await fetch(SEC_TICKERS_URL, {
+        headers: { 'User-Agent': 'global-trade-dashboard overideal@gmail.com', 'Accept': 'application/json' },
+    });
+    if (!res.ok) return [];
+    const raw = await res.json();
+    const rows = Object.values(raw).map((v) => [v.ticker, v.title]);
+    if (env.API_CACHE) {
+        // The filer list changes on the scale of weeks; a day of staleness is
+        // invisible and keeps this off SEC's servers.
+        try { await env.API_CACHE.put(KEY, JSON.stringify(rows), { expirationTtl: 86400 }); } catch (_) { /* ignore */ }
+    }
+    return rows;
+}
+
+async function secSearch(env, q) {
+    const rows = await secIndex(env);
+    const s = q.toLowerCase();
+    const starts = [], contains = [];
+    for (const [ticker, title] of rows) {
+        const t = ticker.toLowerCase(), n = title.toLowerCase();
+        if (t === s) starts.unshift([ticker, title]);
+        else if (t.startsWith(s) || n.startsWith(s)) starts.push([ticker, title]);
+        else if (n.includes(s)) contains.push([ticker, title]);
+        if (starts.length >= 12) break;
+    }
+    return [...starts, ...contains].slice(0, 12).map(([symbol, name]) => ({
+        symbol, name, exchange: 'SEC', type: 'EQUITY',
+    }));
+}
+
+async function handleQuote(request, env) {
+    const url = new URL(request.url);
+    const action = url.pathname.replace(/^\/api\/quote\/?/, '') || 'search';
+
+    try {
+        if (action === 'search') {
+            const q = (url.searchParams.get('q') || '').trim();
+            if (!q) return new Response(JSON.stringify({ quotes: [] }), { headers: JSON_HEADERS });
+
+            return kvCachedJson(env, `qsearch:${q.toLowerCase()}`, 86400, async () => {
+                const yahoo = await yahooSearch(q);
+                if (yahoo) return { ok: true, body: { quotes: yahoo, source: 'yahoo' } };
+
+                // Yahoo throttles search far harder than it throttles prices, and
+                // it is the only piece of this with a usable substitute: the SEC
+                // publishes its filer list as a plain file with no rate limit.
+                // Narrower than Yahoo (US filers only, misses some ETFs), but a
+                // degraded picker beats a dead one.
+                const sec = await secSearch(env, q);
+                return { ok: true, body: { quotes: sec, source: 'sec', degraded: true } };
+            });
+        }
+
+        if (action === 'history') {
+            const symbol = (url.searchParams.get('symbol') || '').trim();
+            if (!symbol) {
+                return new Response(JSON.stringify({ error: 'symbol required' }), { status: 400, headers: JSON_HEADERS });
+            }
+            const range = ['1y', '2y', '5y'].includes(url.searchParams.get('range'))
+                ? url.searchParams.get('range') : '2y';
+
+            // An hour of staleness is immaterial to a covariance estimate built
+            // from two years of closes, and it keeps Yahoo from rate-limiting
+            // this Worker's shared egress IP.
+            return kvCachedJson(env, `yfhist:${symbol}:${range}`, 3600, async () => {
+                const yf = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}`
+                    + `?range=${range}&interval=1d`;
+                const res = await fetch(yf, { headers: YF_HEADERS });
+                if (!res.ok) return { ok: false, status: res.status };
+                const raw = await res.json();
+
+                const r = raw && raw.chart && raw.chart.result && raw.chart.result[0];
+                if (!r) return { ok: false, status: 404 };
+
+                const ts = r.timestamp || [];
+                const quote = (r.indicators && r.indicators.quote && r.indicators.quote[0]) || {};
+                const adj = r.indicators && r.indicators.adjclose && r.indicators.adjclose[0];
+                // Adjusted closes when present: splits and dividends otherwise
+                // show up as one-day crashes and poison the volatility estimate.
+                const closes = (adj && adj.adjclose) || quote.close || [];
+
+                const points = [];
+                for (let i = 0; i < ts.length; i++) {
+                    const c = closes[i];
+                    if (c === null || c === undefined || Number.isNaN(c)) continue;
+                    points.push([ts[i], c]);
+                }
+
+                const meta = r.meta || {};
+                return {
+                    ok: true,
+                    body: {
+                        symbol: meta.symbol || symbol,
+                        currency: meta.currency || null,
+                        exchange: meta.fullExchangeName || meta.exchangeName || null,
+                        price: meta.regularMarketPrice ?? (points.length ? points[points.length - 1][1] : null),
+                        points,
+                    },
+                };
+            });
+        }
+
+        return new Response(JSON.stringify({ error: 'Invalid quote action' }), { status: 400, headers: JSON_HEADERS });
 
     } catch (err) {
         return new Response(JSON.stringify({ error: err.message }), { status: 500, headers: JSON_HEADERS });
