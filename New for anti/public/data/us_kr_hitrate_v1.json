@@ -1,0 +1,156 @@
+{
+  "schema_version": "us-kr-hitrate-v1",
+  "as_of": "2026-08-08",
+  "fetched_at": "2026-08-08T09:59:20.879613+00:00",
+  "cadence": "weekly_manual",
+  "period": "1y",
+  "channel_summary_000660": {
+    "downside": {
+      "n_driver_buckets": 5,
+      "drivers": [
+        "MU",
+        "NVDA",
+        "SOXL",
+        "SMH",
+        "AMZN"
+      ],
+      "mean_of_means": -0.028288,
+      "hit_rate_mean": 0.8355,
+      "note_ko": "하방=익일 KR open R<0 비율 평균; 상방=R>0 비율 평균"
+    },
+    "upside": {
+      "n_driver_buckets": 5,
+      "drivers": [
+        "MU",
+        "NVDA",
+        "SOXL",
+        "SMH",
+        "AMZN"
+      ],
+      "mean_of_means": 0.031053,
+      "hit_rate_mean": 0.7208,
+      "note_ko": "하방=익일 KR open R<0 비율 평균; 상방=R>0 비율 평균"
+    },
+    "vol_up": {
+      "proxy": "VIX_day_return>=5%",
+      "open_overnight": {
+        "baseline": {
+          "label": "all",
+          "n": 248,
+          "mean": 0.006787,
+          "median": 0.002246,
+          "p10": -0.039705,
+          "p90": 0.056963,
+          "frac_neg": 0.4758,
+          "frac_pos": 0.5242
+        },
+        "vix_up": {
+          "label": "vix_up",
+          "n": 53,
+          "mean": -0.018598,
+          "median": -0.023593,
+          "p10": -0.054478,
+          "p90": 0.018236,
+          "frac_neg": 0.717,
+          "frac_pos": 0.283
+        }
+      },
+      "quality": "estimated"
+    }
+  },
+  "channel_summary_005930": {
+    "downside": {
+      "n_driver_buckets": 5,
+      "drivers": [
+        "MU",
+        "NVDA",
+        "SOXL",
+        "SMH",
+        "AMZN"
+      ],
+      "mean_of_means": -0.020978,
+      "hit_rate_mean": 0.7435,
+      "note_ko": "하방=익일 KR open R<0 비율 평균; 상방=R>0 비율 평균"
+    },
+    "upside": {
+      "n_driver_buckets": 5,
+      "drivers": [
+        "MU",
+        "NVDA",
+        "SOXL",
+        "SMH",
+        "AMZN"
+      ],
+      "mean_of_means": 0.02582,
+      "hit_rate_mean": 0.7933,
+      "note_ko": "하방=익일 KR open R<0 비율 평균; 상방=R>0 비율 평균"
+    },
+    "vol_up": {
+      "proxy": "VIX_day_return>=5%",
+      "open_overnight": {
+        "baseline": {
+          "label": "all",
+          "n": 248,
+          "mean": 0.006522,
+          "median": 0.004601,
+          "p10": -0.035551,
+          "p90": 0.047354,
+          "frac_neg": 0.3992,
+          "frac_pos": 0.5968
+        },
+        "vix_up": {
+          "label": "vix_up",
+          "n": 53,
+          "mean": -0.014725,
+          "median": -0.014815,
+          "p10": -0.049474,
+          "p90": 0.015726,
+          "frac_neg": 0.6792,
+          "frac_pos": 0.3208
+        }
+      },
+      "quality": "estimated"
+    }
+  },
+  "composite_any_driver_down": {
+    "drivers": [
+      "MU",
+      "SOXL",
+      "SMH",
+      "NVDA"
+    ],
+    "stress_thr": -0.02,
+    "n_us_days": 246,
+    "n_alert_days": 95,
+    "baseline_open": {
+      "label": "all",
+      "n": 246,
+      "mean": 0.006639,
+      "median": 0.001776,
+      "p10": -0.040008,
+      "p90": 0.057465,
+      "frac_neg": 0.4756,
+      "frac_pos": 0.5244
+    },
+    "alert_open": {
+      "label": "any_driver_down",
+      "n": 95,
+      "mean": -0.019675,
+      "median": -0.02144,
+      "p10": -0.059675,
+      "p90": 0.017701,
+      "frac_neg": 0.7789,
+      "frac_pos": 0.2211
+    },
+    "lift_frac_neg": 0.3033
+  },
+  "recalibration_suggestions": {
+    "downside_hit_rate_mean": 0.8355,
+    "upside_hit_rate_mean": 0.7208,
+    "suggest_keep_downside_emphasis": true,
+    "suggest_pc_vol_downside_floor": 1.1,
+    "suggest_day_return_stress": 0.02,
+    "note_ko": "옵션 레짐 히스토리 없이 수익률 버킷으로 제안. 월간 리뷰용."
+  },
+  "disclaimer_ko": "프록시 백테스트. 투자 권유 아님. 주간 리포트용."
+}
