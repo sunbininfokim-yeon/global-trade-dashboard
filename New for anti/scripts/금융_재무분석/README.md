@@ -72,7 +72,13 @@ python3 run_pipeline.py --portfolio samples/user_balanced_portfolio.json --risk-
 python3 run_pipeline.py --suggest "삼성전"
 ```
 
-## 화면 문구
+## 화면 문구 (basic vs expert)
 
-산출 JSON의 `ui_copy_ko` / `ui_copy_en` 를 금융 창에 그대로 붙이면 됩니다 (용어 해설·비유 포함).  
-로케일만 골라 같은 카드 스키마를 쓰면 됩니다.
+산출 JSON에 카피 블록이 두 세트 있습니다. UI는 모드만 고르면 됩니다.
+
+| 모드 | 키 | 용도 |
+|------|-----|------|
+| **basic** | `ui_copy_basic_ko` / `ui_copy_basic_en` | 사무/실무 표현. 카드 제목에 VaR·샤프를 쓰지 않음 (예: 예상 등락 폭, 단기 손실 가능 규모, 현금·대기자금). 현금은 성향 `cash_min`/`cash_max` 밴드를 공식 목표로 안내. |
+| **expert** | `ui_copy_ko` / `ui_copy_en` | 변동성·샤프·VaR 등 지표명 포함. |
+
+로케일만 골라 같은 카드 스키마를 쓰면 됩니다. 상세 필드 목록은 `DATA_CONTRACT.md` 참고.

@@ -86,12 +86,45 @@ python3 build_board.py --print-stats
 
 일본: 공식 파벌은 아소파만 존속(読売·47NEWS). 旧아베·모테기·기시다·니카이 등은 해산 후에도 회동 블록으로 언론 추적 → `ex_*`로 남김. 전체 명단은 변동 심해 count+출처만.
 
+## 진행 중 중간 집계 (`race_progress`)
+
+진행 중 레이스만 권역/주 단위 누적 + 클릭 드릴다운 계약.
+
+| 파일 | 내용 |
+|------|------|
+| `public/data/race_progress_kor_v1.json` | 민주당 전당 순회 **중간** 득표 |
+| `public/data/race_progress_usa_v1.json` | 2026 중간선거 **주별 프라이머리** 누적 + 주 클릭 시 당 승자 |
+| `public/data/race_progress_bundle_v1.json` | 합본 + UI 계약 |
+| `public/data/race_progress_preview.html` | 로컬 미리보기 (대시보드 app.js 미연동) |
+
+```bash
+python3 -m election_watch.build_race_progress   # USA 재생성 (KOR 스냅 유지)
+python3 build_board.py --no-betting             # row.race_progress 부착 (KOR·USA)
+```
+
+미리보기: `public/data` 에서 정적 서버 후 `race_progress_preview.html` 열기.
+
+- **KOR**: 단위 = 순회 권역; 클릭 → %/득표·시도 서브.
+- **USA**: 2026은 대선 경선 아님(대선 프라이머리 2028). 단위 = 주; 클릭 → 상원·주지사·하원 샘플 승자. 승자 출처 The Midterm Project 파싱.
+
+### 가중·합산 모델 (`aggregation`)
+
+| 레이스 | model_id | 동일 가중? |
+|--------|----------|------------|
+| KOR 민주 전당 | `weighted_convention_hybrid` | **아니오** — 최종 **70%** 대의원·권리당원 + **30%** 국민여론; TK·경남 당원 **+5%**; 순회 중간은 권리당원 1순위 단순 누적 |
+| KOR 국민의힘 (2025) | 동일 계열 | **80/20** (완료) |
+| USA 2026 중간 프라이머리 | `independent_jurisdiction_first_past_post` | 관할 **독립**; UI 진척만 1주=1. 전국 가중합 **없음** |
+| USA 대선 경선 (2028) | `delegate_allocation_…` | 대표 수·주 규칙 가중 — 2026 보드 밖 |
+
+비교 정본: `public/data/race_aggregation_compare_v1.json` · 번들 `aggregation_compare`.
+
 ## UI 스케치 (나중)
 
 ```
 [2026 선거 맵/리스트]
   국가 · 체제 · 집권당
   다가오는 일정 (D-day)
+  진행 중 race_progress (KOR 순회 / USA 주 롤링)
   예측시장 스트립 (US cycle)
   통치지지율 헤드라인
   개각 / 관련 속보

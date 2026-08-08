@@ -149,7 +149,12 @@ def load_profile(path, profile_id: str) -> dict[str, Any]:
     profiles = raw.get("profiles") or {}
     if profile_id not in profiles:
         profile_id = "balanced"
-    return profile_id, profiles[profile_id]
+    profile = dict(profiles[profile_id])
+    if raw.get("methodology_note_ko"):
+        profile["methodology_note_ko"] = raw["methodology_note_ko"]
+    if raw.get("methodology_note_en"):
+        profile["methodology_note_en"] = raw["methodology_note_en"]
+    return profile_id, profile
 
 
 def check_profile(

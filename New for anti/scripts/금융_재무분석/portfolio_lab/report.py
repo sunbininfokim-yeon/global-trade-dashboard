@@ -10,7 +10,12 @@ import pandas as pd
 
 from .allocate import apply_max_weight_caps, hierarchical_risk_parity
 from .covariance import corr_from_cov, ewma_cov, ledoit_wolf_cov
-from .explain import build_ui_copy, build_ui_copy_en
+from .explain import (
+    build_ui_copy,
+    build_ui_copy_basic_en,
+    build_ui_copy_basic_ko,
+    build_ui_copy_en,
+)
 from .risk import portfolio_risk_bundle
 from .structure import check_profile, corr_clusters, currency_exposure, stress_windows
 
@@ -189,6 +194,19 @@ def build_report(
         "disclaimer_ko": DISCLAIMER_KO,
         "disclaimer_en": DISCLAIMER_EN,
         "risk_profile_id": risk_profile_id,
+        # Full profile object (cash bands + footnotes) for hover/tooltip UI.
+        "risk_profile_meta": profile,
+        "risk_profile_footnotes": {
+            "cash_footnote_ko": profile.get("cash_footnote_ko"),
+            "cash_footnote_en": profile.get("cash_footnote_en"),
+            "why_cash_band_ko": profile.get("why_cash_band_ko"),
+            "why_cash_band_en": profile.get("why_cash_band_en"),
+            "methodology_note_ko": profile.get("methodology_note_ko"),
+            "methodology_note_en": profile.get("methodology_note_en"),
+            "cash_min": profile.get("cash_min"),
+            "cash_max": profile.get("cash_max"),
+            "var_10d_budget": profile.get("var_10d_budget"),
+        },
         "positions": [
             {
                 "id": p["instrument"]["id"],
@@ -254,6 +272,16 @@ def build_report(
         profile_id=risk_profile_id,
     )
     report["ui_copy_en"] = build_ui_copy_en(
+        report,
+        profile=profile,
+        profile_id=risk_profile_id,
+    )
+    report["ui_copy_basic_ko"] = build_ui_copy_basic_ko(
+        report,
+        profile=profile,
+        profile_id=risk_profile_id,
+    )
+    report["ui_copy_basic_en"] = build_ui_copy_basic_en(
         report,
         profile=profile,
         profile_id=risk_profile_id,

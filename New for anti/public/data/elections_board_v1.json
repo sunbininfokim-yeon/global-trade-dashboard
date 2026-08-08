@@ -1,6 +1,6 @@
 {
   "schema_version": "elections-board-v1",
-  "generated_at": "2026-08-08T12:45:09.376206+00:00",
+  "generated_at": "2026-08-08T13:23:31.428169+00:00",
   "year": 2026,
   "model": {
     "name": "election_watch_doc_extract_v1",
@@ -78,7 +78,8 @@
     "countries_with_events": 14,
     "countries_with_governance_polls": 8,
     "countries_with_legislature_live": 9,
-    "live_election_headlines": 3,
+    "countries_with_race_progress": 2,
+    "live_election_headlines": 1,
     "betting_markets": 0,
     "extract_summary": {
       "generated_at": "2026-08-08T12:44:52.451134+00:00",
@@ -738,6 +739,37 @@
       },
       "events": [
         {
+          "id": "jpn-2026-ldp-president",
+          "type": "party_leadership",
+          "party_id": "ldp",
+          "label_ko": "자민당 총재 정기교체(2026)",
+          "date": "없음",
+          "status": "없음",
+          "notes": "2025-10 선출 임기 중; 별도 2026 총재전 없음(현재 기준)"
+        },
+        {
+          "id": "jpn-2025-ldp-president",
+          "type": "party_leadership",
+          "party_id": "ldp",
+          "party_abbr": "LDP",
+          "label_ko": "자민당 총재 선거 (현 총리 출처)",
+          "date": "2025-10-04",
+          "status": "completed",
+          "carry_forward_incumbent": true,
+          "board_include_years": [
+            2026
+          ],
+          "office": "party_leader",
+          "winner": {
+            "name_en": "Sanae Takaichi",
+            "name_ko": "다카이치 사나에"
+          },
+          "notes": "Ishiba 사임 후 full-scale 총재선·결선; 이후 2025-10-21 총리 지명. carry 2026 board.",
+          "sources": [
+            "https://en.wikipedia.org/wiki/2025_Liberal_Democratic_Party_presidential_election"
+          ]
+        },
+        {
           "id": "jpn-2026-gov-fukui",
           "type": "local",
           "label_ko": "후쿠이현 지사",
@@ -977,7 +1009,7 @@
           ]
         }
       ],
-      "events_this_year": 20,
+      "events_this_year": 22,
       "ingest_mode": "document_text_extract",
       "calendar": {
         "as_of": "2026-08-08",
@@ -1056,6 +1088,7 @@
           }
         ],
         "notes": [
+          "LDP president: Takaichi elected 2025-10-04 (carry_forward on 2026 board).",
           "참의원 통상선거는 2026년 없음(다음 반수 개헌은 2028년 계열).",
           "국정 재보궐은 공직선거법상 4월·10월 제4일요일 창만 사용(해당 기간 결원 요건 충족 시).",
           "2026-04 창: 도쿄 참의원 1결원(山本太郎 사직)만으로는 실시요건 미충족 → 선거 없음.",
@@ -1844,6 +1877,21 @@
       },
       "events": [
         {
+          "id": "usa-2026-rnc-midterm-convention",
+          "type": "party_convention",
+          "party_id": "gop",
+          "party_abbr": "GOP",
+          "label_ko": "공화당 중간선거 전국대회 (댈러스)",
+          "date": "2026-09-09",
+          "date_end": "2026-09-10",
+          "status": "scheduled",
+          "venue": "American Airlines Center, Dallas",
+          "notes": "정책상 party_leadership 제외이나 캘린더 추적용. 후보 지명 없음 랠리/메시징.",
+          "sources": [
+            "https://apnews.com/article/rnc-republican-midterm-convention-donald-trump-fb02b785fb38362f99d7991a97e969d2"
+          ]
+        },
+        {
           "id": "usa-2026-tx18-special-runoff",
           "type": "by_election",
           "label_ko": "하원 재보궐 TX-18 결선",
@@ -2029,9 +2077,11 @@
           "date": "2026-11-03",
           "notes": "House all 435 + Senate Class 1 regulars. No presidential race.",
           "sources": [
-            "fec_specials_2026"
+            "fec_specials_2026",
+            "invest_lens_elections"
           ],
-          "status": "scheduled"
+          "status": "scheduled",
+          "market_significance_invest_lens": 3
         },
         {
           "id": "usa-2026-senate-special-fl",
@@ -2042,9 +2092,11 @@
           "state": "FL",
           "notes": "Concurrent with midterms; Rubio → Secretary of State vacancy.",
           "sources": [
-            "wiki_us_senate_2026"
+            "wiki_us_senate_2026",
+            "invest_lens_elections"
           ],
-          "status": "scheduled"
+          "status": "scheduled",
+          "market_significance_invest_lens": 3
         },
         {
           "id": "usa-2026-senate-special-oh",
@@ -2055,9 +2107,11 @@
           "state": "OH",
           "notes": "Concurrent with midterms; Vance → VP vacancy.",
           "sources": [
-            "wiki_us_senate_2026"
+            "wiki_us_senate_2026",
+            "invest_lens_elections"
           ],
-          "status": "scheduled"
+          "status": "scheduled",
+          "market_significance_invest_lens": 3
         },
         {
           "id": "usa-2026-governors",
@@ -2066,12 +2120,14 @@
           "date": "2026-11-03",
           "notes": "NGA: general election 2026-11-03 for 36 states and listed territories.",
           "sources": [
-            "nga_governors_2026"
+            "nga_governors_2026",
+            "invest_lens_elections"
           ],
-          "status": "scheduled"
+          "status": "scheduled",
+          "market_significance_invest_lens": 3
         }
       ],
-      "events_this_year": 17,
+      "events_this_year": 18,
       "ingest_mode": "document_text_extract",
       "calendar": {
         "as_of": "2026-08-08",
@@ -3687,6 +3743,3072 @@
         },
         "source_file": "usa_house_factions.json"
       },
+      "race_progress": {
+        "schema": "race_progress_v1",
+        "iso3": "USA",
+        "as_of": "2026-08-08",
+        "as_of_iso": "2026-08-08T13:14:00.146108+00:00",
+        "mode": "rolling_state_primary_midterms",
+        "status": "ongoing",
+        "race": {
+          "id": "usa-2026-midterm-primaries",
+          "label_ko": "중간선거 주별 프라이머리 (누적)",
+          "label_en": "2026 rolling state primaries",
+          "general_date": "2026-11-03",
+          "note_ko": "2026은 대선 경선 해 아님(대선 프라이머리 2028). 주마다 상·하원·주지사 공천자를 뽑고 누적. 주 클릭 → 당별 승자.",
+          "ui_hint": "map_or_timeline_click_state"
+        },
+        "cumulative": {
+          "as_of": "2026-08-08",
+          "states_in_calendar": 51,
+          "states_completed": 40,
+          "states_pending": 11,
+          "states_with_statewide_winners_parsed": 25,
+          "general_election": "2026-11-03",
+          "next_waves": [
+            {
+              "id": "CT",
+              "name_en": "CT",
+              "name_ko": "코네티컷",
+              "date": "2026-08-11",
+              "status": "scheduled",
+              "contests": [],
+              "contests_statewide": [],
+              "headline": "미실시",
+              "ui_click": "show contests list for this state"
+            },
+            {
+              "id": "MN",
+              "name_en": "MN",
+              "name_ko": "미네소타",
+              "date": "2026-08-11",
+              "status": "scheduled",
+              "contests": [],
+              "contests_statewide": [],
+              "headline": "미실시",
+              "ui_click": "show contests list for this state"
+            },
+            {
+              "id": "VT",
+              "name_en": "VT",
+              "name_ko": "버몬트",
+              "date": "2026-08-11",
+              "status": "scheduled",
+              "contests": [],
+              "contests_statewide": [],
+              "headline": "미실시",
+              "ui_click": "show contests list for this state"
+            },
+            {
+              "id": "WI",
+              "name_en": "WI",
+              "name_ko": "위스콘신",
+              "date": "2026-08-11",
+              "status": "scheduled",
+              "contests": [],
+              "contests_statewide": [],
+              "headline": "미실시",
+              "ui_click": "show contests list for this state"
+            },
+            {
+              "id": "AK",
+              "name_en": "AK",
+              "name_ko": "알래스카",
+              "date": "2026-08-18",
+              "status": "scheduled",
+              "contests": [],
+              "contests_statewide": [],
+              "headline": "미실시",
+              "ui_click": "show contests list for this state"
+            },
+            {
+              "id": "FL",
+              "name_en": "FL",
+              "name_ko": "플로리다",
+              "date": "2026-08-18",
+              "status": "scheduled",
+              "contests": [],
+              "contests_statewide": [],
+              "headline": "미실시",
+              "ui_click": "show contests list for this state"
+            }
+          ]
+        },
+        "units": [
+          {
+            "id": "AR",
+            "name_en": "AR",
+            "name_ko": "아칸소",
+            "date": "2026-03-03",
+            "status": "completed",
+            "contests": [
+              {
+                "office": "house AR-01",
+                "office_kind": "house",
+                "party": "D",
+                "winner": "Terri Yarbrough Dr. Green",
+                "date": "2026-03-03",
+                "status": "called"
+              },
+              {
+                "office": "house AR-04",
+                "office_kind": "house",
+                "party": "D",
+                "winner": "James Richard Mr III Russell",
+                "date": "2026-03-03",
+                "status": "called"
+              }
+            ],
+            "contests_statewide": [],
+            "headline": "프라이머리 실시 완료 — 하원 등 세부 확장 중",
+            "ui_click": "show contests list for this state"
+          },
+          {
+            "id": "NC",
+            "name_en": "NC",
+            "name_ko": "노스캐롤라이나",
+            "date": "2026-03-03",
+            "status": "completed",
+            "contests": [
+              {
+                "office": "house NC-02",
+                "office_kind": "house",
+                "party": "R",
+                "winner": "Eugene Farley Dr. Douglass",
+                "date": "2026-03-03",
+                "status": "called"
+              },
+              {
+                "office": "house NC-03",
+                "office_kind": "house",
+                "party": "D",
+                "winner": "Raymond Edward Dr. Jr. Smith",
+                "date": "2026-03-03",
+                "status": "called"
+              }
+            ],
+            "contests_statewide": [],
+            "headline": "프라이머리 실시 완료 — 하원 등 세부 확장 중",
+            "ui_click": "show contests list for this state"
+          },
+          {
+            "id": "TX",
+            "name_en": "TX",
+            "name_ko": "텍사스",
+            "date": "2026-03-03",
+            "status": "completed",
+            "contests": [
+              {
+                "office": "senate",
+                "office_kind": "senate",
+                "party": "D",
+                "winner": "James Talarico",
+                "date": "2026-03-03",
+                "status": "called"
+              },
+              {
+                "office": "house TX-01",
+                "office_kind": "house",
+                "party": "R",
+                "winner": "Nathaniel Moran",
+                "date": "2026-03-03",
+                "status": "called"
+              },
+              {
+                "office": "house TX-02",
+                "office_kind": "house",
+                "party": "R",
+                "winner": "Steve Toth",
+                "date": "2026-03-03",
+                "status": "called"
+              },
+              {
+                "office": "house TX-07",
+                "office_kind": "house",
+                "party": "D",
+                "winner": "Lizzie Fletcher",
+                "date": "2026-03-03",
+                "status": "called"
+              },
+              {
+                "office": "house TX-08",
+                "office_kind": "house",
+                "party": "R",
+                "winner": "Jessica Hart Steinmann",
+                "date": "2026-03-03",
+                "status": "called"
+              },
+              {
+                "office": "house TX-10",
+                "office_kind": "house",
+                "party": "R",
+                "winner": "Chris Gober",
+                "date": "2026-03-03",
+                "status": "called"
+              },
+              {
+                "office": "house TX-14",
+                "office_kind": "house",
+                "party": "D",
+                "winner": "Richard Harvey III Davis",
+                "date": "2026-03-03",
+                "status": "called"
+              },
+              {
+                "office": "house TX-16",
+                "office_kind": "house",
+                "party": "D",
+                "winner": "Veronica Escobar",
+                "date": "2026-03-03",
+                "status": "called"
+              },
+              {
+                "office": "house TX-17",
+                "office_kind": "house",
+                "party": "R",
+                "winner": "Pete Sessions",
+                "date": "2026-03-03",
+                "status": "called"
+              }
+            ],
+            "contests_statewide": [
+              {
+                "office": "senate",
+                "office_kind": "senate",
+                "party": "D",
+                "winner": "James Talarico",
+                "date": "2026-03-03",
+                "status": "called"
+              }
+            ],
+            "headline": "D:James Talarico(상원)",
+            "ui_click": "show contests list for this state"
+          },
+          {
+            "id": "MS",
+            "name_en": "MS",
+            "name_ko": "미시시피",
+            "date": "2026-03-10",
+            "status": "completed",
+            "contests": [
+              {
+                "office": "house MS-02",
+                "office_kind": "house",
+                "party": "R",
+                "winner": "Ron Eller",
+                "date": "2026-03-10",
+                "status": "called"
+              }
+            ],
+            "contests_statewide": [],
+            "headline": "프라이머리 실시 완료 — 하원 등 세부 확장 중",
+            "ui_click": "show contests list for this state"
+          },
+          {
+            "id": "IL",
+            "name_en": "IL",
+            "name_ko": "일리노이",
+            "date": "2026-03-17",
+            "status": "completed",
+            "contests": [
+              {
+                "office": "senate",
+                "office_kind": "senate",
+                "party": "D",
+                "winner": "Juliana Stratton",
+                "date": "2026-03-17",
+                "status": "called"
+              },
+              {
+                "office": "senate",
+                "office_kind": "senate",
+                "party": "R",
+                "winner": "Don Tracy",
+                "date": "2026-03-17",
+                "status": "called"
+              },
+              {
+                "office": "house IL-01",
+                "office_kind": "house",
+                "party": "D",
+                "winner": "Jonathan Jackson",
+                "date": "2026-03-17",
+                "status": "called"
+              },
+              {
+                "office": "house IL-01",
+                "office_kind": "house",
+                "party": "R",
+                "winner": "Christian Maxwell",
+                "date": "2026-03-17",
+                "status": "called"
+              },
+              {
+                "office": "house IL-02",
+                "office_kind": "house",
+                "party": "D",
+                "winner": "Donna Miller",
+                "date": "2026-03-17",
+                "status": "called"
+              },
+              {
+                "office": "house IL-06",
+                "office_kind": "house",
+                "party": "D",
+                "winner": "Sean Casten",
+                "date": "2026-03-17",
+                "status": "called"
+              },
+              {
+                "office": "house IL-06",
+                "office_kind": "house",
+                "party": "R",
+                "winner": "Niki Conforti",
+                "date": "2026-03-17",
+                "status": "called"
+              },
+              {
+                "office": "house IL-07",
+                "office_kind": "house",
+                "party": "D",
+                "winner": "La Shawn K Ford",
+                "date": "2026-03-17",
+                "status": "called"
+              },
+              {
+                "office": "house IL-08",
+                "office_kind": "house",
+                "party": "D",
+                "winner": "Melissa Luburich Bean",
+                "date": "2026-03-17",
+                "status": "called"
+              },
+              {
+                "office": "house IL-09",
+                "office_kind": "house",
+                "party": "D",
+                "winner": "Daniel Biss",
+                "date": "2026-03-17",
+                "status": "called"
+              }
+            ],
+            "contests_statewide": [
+              {
+                "office": "senate",
+                "office_kind": "senate",
+                "party": "D",
+                "winner": "Juliana Stratton",
+                "date": "2026-03-17",
+                "status": "called"
+              },
+              {
+                "office": "senate",
+                "office_kind": "senate",
+                "party": "R",
+                "winner": "Don Tracy",
+                "date": "2026-03-17",
+                "status": "called"
+              }
+            ],
+            "headline": "D:Juliana Stratton(상원) · R:Don Tracy(상원)",
+            "ui_click": "show contests list for this state"
+          },
+          {
+            "id": "IN",
+            "name_en": "IN",
+            "name_ko": "인디애나",
+            "date": "2026-05-05",
+            "status": "completed",
+            "contests": [
+              {
+                "office": "house IN-01",
+                "office_kind": "house",
+                "party": "R",
+                "winner": "Barb Regnitz",
+                "date": "2026-05-05",
+                "status": "called"
+              },
+              {
+                "office": "house IN-03",
+                "office_kind": "house",
+                "party": "R",
+                "winner": "Marlin Stutzman",
+                "date": "2026-05-05",
+                "status": "called"
+              },
+              {
+                "office": "house IN-04",
+                "office_kind": "house",
+                "party": "D",
+                "winner": "Drew Cox",
+                "date": "2026-05-05",
+                "status": "called"
+              },
+              {
+                "office": "house IN-04",
+                "office_kind": "house",
+                "party": "R",
+                "winner": "James Baird",
+                "date": "2026-05-05",
+                "status": "called"
+              },
+              {
+                "office": "house IN-09",
+                "office_kind": "house",
+                "party": "D",
+                "winner": "Bradley Allen Mr. Meyer",
+                "date": "2026-05-05",
+                "status": "called"
+              }
+            ],
+            "contests_statewide": [],
+            "headline": "프라이머리 실시 완료 — 하원 등 세부 확장 중",
+            "ui_click": "show contests list for this state"
+          },
+          {
+            "id": "OH",
+            "name_en": "OH",
+            "name_ko": "오하이오",
+            "date": "2026-05-05",
+            "status": "completed",
+            "contests": [
+              {
+                "office": "senate",
+                "office_kind": "senate",
+                "party": "D",
+                "winner": "Sherrod Brown",
+                "date": "2026-05-05",
+                "status": "called"
+              },
+              {
+                "office": "senate",
+                "office_kind": "senate",
+                "party": "R",
+                "winner": "Jon Husted",
+                "date": "2026-05-05",
+                "status": "called"
+              },
+              {
+                "office": "governor",
+                "office_kind": "governor",
+                "party": "R",
+                "winner": "Vivek Ramaswamy",
+                "date": "2026-05-05",
+                "status": "called"
+              },
+              {
+                "office": "house OH-01",
+                "office_kind": "house",
+                "party": "R",
+                "winner": "Eric Conroy",
+                "date": "2026-05-05",
+                "status": "called"
+              },
+              {
+                "office": "house OH-05",
+                "office_kind": "house",
+                "party": "D",
+                "winner": "Brian Alan Mr. Shaver",
+                "date": "2026-05-05",
+                "status": "called"
+              },
+              {
+                "office": "house OH-06",
+                "office_kind": "house",
+                "party": "D",
+                "winner": "Elizabeth Ann Mrs. Kirtley",
+                "date": "2026-05-05",
+                "status": "called"
+              },
+              {
+                "office": "house OH-08",
+                "office_kind": "house",
+                "party": "D",
+                "winner": "Vanessa L. Dr. Enoch",
+                "date": "2026-05-05",
+                "status": "called"
+              }
+            ],
+            "contests_statewide": [
+              {
+                "office": "senate",
+                "office_kind": "senate",
+                "party": "D",
+                "winner": "Sherrod Brown",
+                "date": "2026-05-05",
+                "status": "called"
+              },
+              {
+                "office": "senate",
+                "office_kind": "senate",
+                "party": "R",
+                "winner": "Jon Husted",
+                "date": "2026-05-05",
+                "status": "called"
+              },
+              {
+                "office": "governor",
+                "office_kind": "governor",
+                "party": "R",
+                "winner": "Vivek Ramaswamy",
+                "date": "2026-05-05",
+                "status": "called"
+              }
+            ],
+            "headline": "D:Sherrod Brown(상원) · R:Jon Husted(상원) · R:Vivek Ramaswamy(주지사)",
+            "ui_click": "show contests list for this state"
+          },
+          {
+            "id": "NE",
+            "name_en": "NE",
+            "name_ko": "네브래스카",
+            "date": "2026-05-12",
+            "status": "completed",
+            "contests": [
+              {
+                "office": "governor",
+                "office_kind": "governor",
+                "party": "R",
+                "winner": "Jim Pillen",
+                "date": "2026-05-12",
+                "status": "called"
+              },
+              {
+                "office": "house NE-01",
+                "office_kind": "house",
+                "party": "D",
+                "winner": "Christopher Backemeyer",
+                "date": "2026-05-12",
+                "status": "called"
+              },
+              {
+                "office": "house NE-02",
+                "office_kind": "house",
+                "party": "D",
+                "winner": "Denise Powell",
+                "date": "2026-05-12",
+                "status": "called"
+              },
+              {
+                "office": "house NE-02",
+                "office_kind": "house",
+                "party": "R",
+                "winner": "Brinker Harding",
+                "date": "2026-05-12",
+                "status": "called"
+              },
+              {
+                "office": "house NE-03",
+                "office_kind": "house",
+                "party": "R",
+                "winner": "Adrian Smith",
+                "date": "2026-05-12",
+                "status": "called"
+              }
+            ],
+            "contests_statewide": [
+              {
+                "office": "governor",
+                "office_kind": "governor",
+                "party": "R",
+                "winner": "Jim Pillen",
+                "date": "2026-05-12",
+                "status": "called"
+              }
+            ],
+            "headline": "R:Jim Pillen(주지사)",
+            "ui_click": "show contests list for this state"
+          },
+          {
+            "id": "WV",
+            "name_en": "WV",
+            "name_ko": "웨스트버지니아",
+            "date": "2026-05-12",
+            "status": "completed",
+            "contests": [
+              {
+                "office": "senate",
+                "office_kind": "senate",
+                "party": "D",
+                "winner": "Rachel Lee Fetty Anderson",
+                "date": "2026-05-12",
+                "status": "called"
+              },
+              {
+                "office": "senate",
+                "office_kind": "senate",
+                "party": "R",
+                "winner": "Shelley Moore Capito",
+                "date": "2026-05-12",
+                "status": "called"
+              },
+              {
+                "office": "house WV-01",
+                "office_kind": "house",
+                "party": "D",
+                "winner": "Vincent Raymond Mr. George",
+                "date": "2026-05-12",
+                "status": "called"
+              },
+              {
+                "office": "house WV-01",
+                "office_kind": "house",
+                "party": "R",
+                "winner": "Carol Miller",
+                "date": "2026-05-12",
+                "status": "called"
+              },
+              {
+                "office": "house WV-02",
+                "office_kind": "house",
+                "party": "D",
+                "winner": "Ahsan Parsi",
+                "date": "2026-05-12",
+                "status": "called"
+              }
+            ],
+            "contests_statewide": [
+              {
+                "office": "senate",
+                "office_kind": "senate",
+                "party": "D",
+                "winner": "Rachel Lee Fetty Anderson",
+                "date": "2026-05-12",
+                "status": "called"
+              },
+              {
+                "office": "senate",
+                "office_kind": "senate",
+                "party": "R",
+                "winner": "Shelley Moore Capito",
+                "date": "2026-05-12",
+                "status": "called"
+              }
+            ],
+            "headline": "D:Rachel Lee Fetty Anderson(상원) · R:Shelley Moore Capito(상원)",
+            "ui_click": "show contests list for this state"
+          },
+          {
+            "id": "LA",
+            "name_en": "LA",
+            "name_ko": "루이지애나",
+            "date": "2026-05-16",
+            "status": "completed",
+            "contests": [],
+            "contests_statewide": [],
+            "headline": "프라이머리 실시 완료 — 하원 등 세부 확장 중",
+            "ui_click": "show contests list for this state"
+          },
+          {
+            "id": "AL",
+            "name_en": "AL",
+            "name_ko": "앨라배마",
+            "date": "2026-05-19",
+            "status": "completed",
+            "contests": [
+              {
+                "office": "governor",
+                "office_kind": "governor",
+                "party": "D",
+                "winner": "Doug Jones",
+                "date": "2026-05-19",
+                "status": "called"
+              },
+              {
+                "office": "governor",
+                "office_kind": "governor",
+                "party": "R",
+                "winner": "Tommy Tuberville",
+                "date": "2026-05-19",
+                "status": "called"
+              },
+              {
+                "office": "house AL-03",
+                "office_kind": "house",
+                "party": "R",
+                "winner": "Mike Rogers",
+                "date": "2026-05-19",
+                "status": "called"
+              },
+              {
+                "office": "house AL-04",
+                "office_kind": "house",
+                "party": "R",
+                "winner": "Robert Aderholt",
+                "date": "2026-05-19",
+                "status": "called"
+              },
+              {
+                "office": "house AL-05",
+                "office_kind": "house",
+                "party": "R",
+                "winner": "Dale Strong",
+                "date": "2026-05-19",
+                "status": "called"
+              }
+            ],
+            "contests_statewide": [
+              {
+                "office": "governor",
+                "office_kind": "governor",
+                "party": "D",
+                "winner": "Doug Jones",
+                "date": "2026-05-19",
+                "status": "called"
+              },
+              {
+                "office": "governor",
+                "office_kind": "governor",
+                "party": "R",
+                "winner": "Tommy Tuberville",
+                "date": "2026-05-19",
+                "status": "called"
+              }
+            ],
+            "headline": "D:Doug Jones(주지사) · R:Tommy Tuberville(주지사)",
+            "ui_click": "show contests list for this state"
+          },
+          {
+            "id": "GA",
+            "name_en": "GA",
+            "name_ko": "조지아",
+            "date": "2026-05-19",
+            "status": "completed",
+            "contests": [
+              {
+                "office": "senate",
+                "office_kind": "senate",
+                "party": "D",
+                "winner": "Jon Ossoff",
+                "date": "2026-05-19",
+                "status": "called"
+              },
+              {
+                "office": "governor",
+                "office_kind": "governor",
+                "party": "D",
+                "winner": "Keisha Lance Bottoms",
+                "date": "2026-05-19",
+                "status": "called"
+              },
+              {
+                "office": "house GA-01",
+                "office_kind": "house",
+                "party": "R",
+                "winner": "James Morris Kingston",
+                "date": "2026-05-19",
+                "status": "called"
+              },
+              {
+                "office": "house GA-07",
+                "office_kind": "house",
+                "party": "R",
+                "winner": "Rich McCormick",
+                "date": "2026-05-19",
+                "status": "called"
+              },
+              {
+                "office": "house GA-09",
+                "office_kind": "house",
+                "party": "R",
+                "winner": "Andrew Clyde",
+                "date": "2026-05-19",
+                "status": "called"
+              },
+              {
+                "office": "house GA-11",
+                "office_kind": "house",
+                "party": "D",
+                "winner": "Christopher Matthew Harden",
+                "date": "2026-05-19",
+                "status": "called"
+              },
+              {
+                "office": "house GA-12",
+                "office_kind": "house",
+                "party": "R",
+                "winner": "Rick Allen",
+                "date": "2026-05-19",
+                "status": "called"
+              },
+              {
+                "office": "house GA-13",
+                "office_kind": "house",
+                "party": "D",
+                "winner": "Jasmine Clark",
+                "date": "2026-05-19",
+                "status": "called"
+              },
+              {
+                "office": "house GA-14",
+                "office_kind": "house",
+                "party": "R",
+                "winner": "Clay Fuller",
+                "date": "2026-05-19",
+                "status": "called"
+              }
+            ],
+            "contests_statewide": [
+              {
+                "office": "senate",
+                "office_kind": "senate",
+                "party": "D",
+                "winner": "Jon Ossoff",
+                "date": "2026-05-19",
+                "status": "called"
+              },
+              {
+                "office": "governor",
+                "office_kind": "governor",
+                "party": "D",
+                "winner": "Keisha Lance Bottoms",
+                "date": "2026-05-19",
+                "status": "called"
+              }
+            ],
+            "headline": "D:Jon Ossoff(상원) · D:Keisha Lance Bottoms(주지사)",
+            "ui_click": "show contests list for this state"
+          },
+          {
+            "id": "ID",
+            "name_en": "ID",
+            "name_ko": "아이다호",
+            "date": "2026-05-19",
+            "status": "completed",
+            "contests": [
+              {
+                "office": "governor",
+                "office_kind": "governor",
+                "party": "D",
+                "winner": "Terri Pickens",
+                "date": "2026-05-19",
+                "status": "called"
+              },
+              {
+                "office": "governor",
+                "office_kind": "governor",
+                "party": "R",
+                "winner": "Brad Little",
+                "date": "2026-05-19",
+                "status": "called"
+              }
+            ],
+            "contests_statewide": [
+              {
+                "office": "governor",
+                "office_kind": "governor",
+                "party": "D",
+                "winner": "Terri Pickens",
+                "date": "2026-05-19",
+                "status": "called"
+              },
+              {
+                "office": "governor",
+                "office_kind": "governor",
+                "party": "R",
+                "winner": "Brad Little",
+                "date": "2026-05-19",
+                "status": "called"
+              }
+            ],
+            "headline": "D:Terri Pickens(주지사) · R:Brad Little(주지사)",
+            "ui_click": "show contests list for this state"
+          },
+          {
+            "id": "KY",
+            "name_en": "KY",
+            "name_ko": "켄터키",
+            "date": "2026-05-19",
+            "status": "completed",
+            "contests": [
+              {
+                "office": "house KY-04",
+                "office_kind": "house",
+                "party": "R",
+                "winner": "Ed Gallrein",
+                "date": "2026-05-19",
+                "status": "called"
+              }
+            ],
+            "contests_statewide": [],
+            "headline": "프라이머리 실시 완료 — 하원 등 세부 확장 중",
+            "ui_click": "show contests list for this state"
+          },
+          {
+            "id": "OR",
+            "name_en": "OR",
+            "name_ko": "오리건",
+            "date": "2026-05-19",
+            "status": "completed",
+            "contests": [
+              {
+                "office": "governor",
+                "office_kind": "governor",
+                "party": "D",
+                "winner": "Tina Kotek",
+                "date": "2026-05-19",
+                "status": "called"
+              },
+              {
+                "office": "governor",
+                "office_kind": "governor",
+                "party": "R",
+                "winner": "Christine Drazan",
+                "date": "2026-05-19",
+                "status": "called"
+              },
+              {
+                "office": "house OR-01",
+                "office_kind": "house",
+                "party": "R",
+                "winner": "Barbara J Dr Dvm Kahl",
+                "date": "2026-05-19",
+                "status": "called"
+              }
+            ],
+            "contests_statewide": [
+              {
+                "office": "governor",
+                "office_kind": "governor",
+                "party": "D",
+                "winner": "Tina Kotek",
+                "date": "2026-05-19",
+                "status": "called"
+              },
+              {
+                "office": "governor",
+                "office_kind": "governor",
+                "party": "R",
+                "winner": "Christine Drazan",
+                "date": "2026-05-19",
+                "status": "called"
+              }
+            ],
+            "headline": "D:Tina Kotek(주지사) · R:Christine Drazan(주지사)",
+            "ui_click": "show contests list for this state"
+          },
+          {
+            "id": "PA",
+            "name_en": "PA",
+            "name_ko": "펜실베이니아",
+            "date": "2026-05-19",
+            "status": "completed",
+            "contests": [
+              {
+                "office": "house PA-02",
+                "office_kind": "house",
+                "party": "D",
+                "winner": "Brendan Boyle",
+                "date": "2026-05-19",
+                "status": "called"
+              },
+              {
+                "office": "house PA-02",
+                "office_kind": "house",
+                "party": "R",
+                "winner": "Jessica Arriaga",
+                "date": "2026-05-19",
+                "status": "called"
+              },
+              {
+                "office": "house PA-03",
+                "office_kind": "house",
+                "party": "D",
+                "winner": "Christopher M. Rabb",
+                "date": "2026-05-19",
+                "status": "called"
+              },
+              {
+                "office": "house PA-05",
+                "office_kind": "house",
+                "party": "R",
+                "winner": "Nicholas Waln Morris Manganaro",
+                "date": "2026-05-19",
+                "status": "called"
+              },
+              {
+                "office": "house PA-07",
+                "office_kind": "house",
+                "party": "D",
+                "winner": "Bob Brooks",
+                "date": "2026-05-19",
+                "status": "called"
+              },
+              {
+                "office": "house PA-10",
+                "office_kind": "house",
+                "party": "D",
+                "winner": "Janelle Stelson",
+                "date": "2026-05-19",
+                "status": "called"
+              },
+              {
+                "office": "house PA-15",
+                "office_kind": "house",
+                "party": "D",
+                "winner": "Raymond Allen Bilger",
+                "date": "2026-05-19",
+                "status": "called"
+              }
+            ],
+            "contests_statewide": [],
+            "headline": "프라이머리 실시 완료 — 하원 등 세부 확장 중",
+            "ui_click": "show contests list for this state"
+          },
+          {
+            "id": "CA",
+            "name_en": "CA",
+            "name_ko": "캘리포니아",
+            "date": "2026-06-02",
+            "status": "completed",
+            "contests": [
+              {
+                "office": "governor",
+                "office_kind": "governor",
+                "party": "D",
+                "winner": "Xavier Becerra",
+                "date": "2026-06-02",
+                "status": "called"
+              },
+              {
+                "office": "governor",
+                "office_kind": "governor",
+                "party": "R",
+                "winner": "Steve Hilton",
+                "date": "2026-06-02",
+                "status": "called"
+              },
+              {
+                "office": "house CA-01",
+                "office_kind": "house",
+                "party": "D",
+                "winner": "Mike Mcguire",
+                "date": "2026-06-02",
+                "status": "called"
+              },
+              {
+                "office": "house CA-01",
+                "office_kind": "house",
+                "party": "R",
+                "winner": "James Gallagher",
+                "date": "2026-06-02",
+                "status": "called"
+              },
+              {
+                "office": "house CA-02",
+                "office_kind": "house",
+                "party": "D",
+                "winner": "Jared Huffman",
+                "date": "2026-06-02",
+                "status": "called"
+              },
+              {
+                "office": "house CA-02",
+                "office_kind": "house",
+                "party": "R",
+                "winner": "Robin Littau",
+                "date": "2026-06-02",
+                "status": "called"
+              },
+              {
+                "office": "house CA-03",
+                "office_kind": "house",
+                "party": "D",
+                "winner": "Ami Bera",
+                "date": "2026-06-02",
+                "status": "called"
+              },
+              {
+                "office": "house CA-03",
+                "office_kind": "house",
+                "party": "R",
+                "winner": "Robb Tucker",
+                "date": "2026-06-02",
+                "status": "called"
+              },
+              {
+                "office": "house CA-04",
+                "office_kind": "house",
+                "party": "D",
+                "winner": "Mike Thompson",
+                "date": "2026-06-02",
+                "status": "called"
+              },
+              {
+                "office": "house CA-04",
+                "office_kind": "house",
+                "party": "R",
+                "winner": "Jimih L Jones",
+                "date": "2026-06-02",
+                "status": "called"
+              }
+            ],
+            "contests_statewide": [
+              {
+                "office": "governor",
+                "office_kind": "governor",
+                "party": "D",
+                "winner": "Xavier Becerra",
+                "date": "2026-06-02",
+                "status": "called"
+              },
+              {
+                "office": "governor",
+                "office_kind": "governor",
+                "party": "R",
+                "winner": "Steve Hilton",
+                "date": "2026-06-02",
+                "status": "called"
+              }
+            ],
+            "headline": "D:Xavier Becerra(주지사) · R:Steve Hilton(주지사)",
+            "ui_click": "show contests list for this state"
+          },
+          {
+            "id": "IA",
+            "name_en": "IA",
+            "name_ko": "아이오와",
+            "date": "2026-06-02",
+            "status": "completed",
+            "contests": [
+              {
+                "office": "senate",
+                "office_kind": "senate",
+                "party": "D",
+                "winner": "Joshua Turek",
+                "date": "2026-06-02",
+                "status": "called"
+              },
+              {
+                "office": "senate",
+                "office_kind": "senate",
+                "party": "R",
+                "winner": "Ashley Hinson",
+                "date": "2026-06-02",
+                "status": "called"
+              },
+              {
+                "office": "governor",
+                "office_kind": "governor",
+                "party": "R",
+                "winner": "Zach Lahn",
+                "date": "2026-06-02",
+                "status": "called"
+              },
+              {
+                "office": "house IA-01",
+                "office_kind": "house",
+                "party": "D",
+                "winner": "Christina Bohannan",
+                "date": "2026-06-02",
+                "status": "called"
+              },
+              {
+                "office": "house IA-01",
+                "office_kind": "house",
+                "party": "R",
+                "winner": "Mariannette Miller-Meeks",
+                "date": "2026-06-02",
+                "status": "called"
+              },
+              {
+                "office": "house IA-02",
+                "office_kind": "house",
+                "party": "D",
+                "winner": "Lindsay James",
+                "date": "2026-06-02",
+                "status": "called"
+              },
+              {
+                "office": "house IA-02",
+                "office_kind": "house",
+                "party": "R",
+                "winner": "Joe Mitchell",
+                "date": "2026-06-02",
+                "status": "called"
+              },
+              {
+                "office": "house IA-03",
+                "office_kind": "house",
+                "party": "D",
+                "winner": "Sarah Trone Garriott",
+                "date": "2026-06-02",
+                "status": "called"
+              },
+              {
+                "office": "house IA-04",
+                "office_kind": "house",
+                "party": "D",
+                "winner": "Dave Dawson",
+                "date": "2026-06-02",
+                "status": "called"
+              },
+              {
+                "office": "house IA-04",
+                "office_kind": "house",
+                "party": "R",
+                "winner": "Chris Mcgowan",
+                "date": "2026-06-02",
+                "status": "called"
+              }
+            ],
+            "contests_statewide": [
+              {
+                "office": "senate",
+                "office_kind": "senate",
+                "party": "D",
+                "winner": "Joshua Turek",
+                "date": "2026-06-02",
+                "status": "called"
+              },
+              {
+                "office": "senate",
+                "office_kind": "senate",
+                "party": "R",
+                "winner": "Ashley Hinson",
+                "date": "2026-06-02",
+                "status": "called"
+              },
+              {
+                "office": "governor",
+                "office_kind": "governor",
+                "party": "R",
+                "winner": "Zach Lahn",
+                "date": "2026-06-02",
+                "status": "called"
+              }
+            ],
+            "headline": "D:Joshua Turek(상원) · R:Ashley Hinson(상원) · R:Zach Lahn(주지사)",
+            "ui_click": "show contests list for this state"
+          },
+          {
+            "id": "MT",
+            "name_en": "MT",
+            "name_ko": "몬태나",
+            "date": "2026-06-02",
+            "status": "completed",
+            "contests": [
+              {
+                "office": "senate",
+                "office_kind": "senate",
+                "party": "D",
+                "winner": "Alani Ines Bankhead",
+                "date": "2026-06-02",
+                "status": "called"
+              },
+              {
+                "office": "senate",
+                "office_kind": "senate",
+                "party": "R",
+                "winner": "Kurt Alme",
+                "date": "2026-06-02",
+                "status": "called"
+              },
+              {
+                "office": "house MT-01",
+                "office_kind": "house",
+                "party": "D",
+                "winner": "Samuel Kelley Forstag",
+                "date": "2026-06-02",
+                "status": "called"
+              },
+              {
+                "office": "house MT-01",
+                "office_kind": "house",
+                "party": "R",
+                "winner": "Aaron Flint",
+                "date": "2026-06-02",
+                "status": "called"
+              },
+              {
+                "office": "house MT-02",
+                "office_kind": "house",
+                "party": "D",
+                "winner": "Brian James Miller",
+                "date": "2026-06-02",
+                "status": "called"
+              }
+            ],
+            "contests_statewide": [
+              {
+                "office": "senate",
+                "office_kind": "senate",
+                "party": "D",
+                "winner": "Alani Ines Bankhead",
+                "date": "2026-06-02",
+                "status": "called"
+              },
+              {
+                "office": "senate",
+                "office_kind": "senate",
+                "party": "R",
+                "winner": "Kurt Alme",
+                "date": "2026-06-02",
+                "status": "called"
+              }
+            ],
+            "headline": "D:Alani Ines Bankhead(상원) · R:Kurt Alme(상원)",
+            "ui_click": "show contests list for this state"
+          },
+          {
+            "id": "NJ",
+            "name_en": "NJ",
+            "name_ko": "뉴저지",
+            "date": "2026-06-02",
+            "status": "completed",
+            "contests": [
+              {
+                "office": "senate",
+                "office_kind": "senate",
+                "party": "D",
+                "winner": "Cory Booker",
+                "date": "2026-06-02",
+                "status": "called"
+              },
+              {
+                "office": "senate",
+                "office_kind": "senate",
+                "party": "R",
+                "winner": "Justin Michael Ll.m. Murphy",
+                "date": "2026-06-02",
+                "status": "called"
+              },
+              {
+                "office": "house NJ-02",
+                "office_kind": "house",
+                "party": "D",
+                "winner": "Zack Mullock",
+                "date": "2026-06-02",
+                "status": "called"
+              },
+              {
+                "office": "house NJ-03",
+                "office_kind": "house",
+                "party": "R",
+                "winner": "Michael Patrick Mcguire",
+                "date": "2026-06-02",
+                "status": "called"
+              },
+              {
+                "office": "house NJ-04",
+                "office_kind": "house",
+                "party": "D",
+                "winner": "Rachel Peace",
+                "date": "2026-06-02",
+                "status": "called"
+              },
+              {
+                "office": "house NJ-06",
+                "office_kind": "house",
+                "party": "D",
+                "winner": "Frank Pallone",
+                "date": "2026-06-02",
+                "status": "called"
+              },
+              {
+                "office": "house NJ-07",
+                "office_kind": "house",
+                "party": "D",
+                "winner": "Rebecca Bennett",
+                "date": "2026-06-02",
+                "status": "called"
+              },
+              {
+                "office": "house NJ-08",
+                "office_kind": "house",
+                "party": "D",
+                "winner": "Robert Menendez",
+                "date": "2026-06-02",
+                "status": "called"
+              },
+              {
+                "office": "house NJ-09",
+                "office_kind": "house",
+                "party": "D",
+                "winner": "Nellie Pou",
+                "date": "2026-06-02",
+                "status": "called"
+              },
+              {
+                "office": "house NJ-10",
+                "office_kind": "house",
+                "party": "D",
+                "winner": "LaMonica McIver",
+                "date": "2026-06-02",
+                "status": "called"
+              }
+            ],
+            "contests_statewide": [
+              {
+                "office": "senate",
+                "office_kind": "senate",
+                "party": "D",
+                "winner": "Cory Booker",
+                "date": "2026-06-02",
+                "status": "called"
+              },
+              {
+                "office": "senate",
+                "office_kind": "senate",
+                "party": "R",
+                "winner": "Justin Michael Ll.m. Murphy",
+                "date": "2026-06-02",
+                "status": "called"
+              }
+            ],
+            "headline": "D:Cory Booker(상원) · R:Justin Michael Ll.m. Murphy(상원)",
+            "ui_click": "show contests list for this state"
+          },
+          {
+            "id": "NM",
+            "name_en": "NM",
+            "name_ko": "뉴멕시코",
+            "date": "2026-06-02",
+            "status": "completed",
+            "contests": [
+              {
+                "office": "senate",
+                "office_kind": "senate",
+                "party": "R",
+                "winner": "Larry E Marker",
+                "date": "2026-06-02",
+                "status": "called"
+              },
+              {
+                "office": "governor",
+                "office_kind": "governor",
+                "party": "D",
+                "winner": "Debra Haaland",
+                "date": "2026-06-02",
+                "status": "called"
+              },
+              {
+                "office": "governor",
+                "office_kind": "governor",
+                "party": "R",
+                "winner": "Gregg Hull",
+                "date": "2026-06-02",
+                "status": "called"
+              },
+              {
+                "office": "house NM-02",
+                "office_kind": "house",
+                "party": "R",
+                "winner": "Greg Cunningham",
+                "date": "2026-06-02",
+                "status": "called"
+              },
+              {
+                "office": "house NM-03",
+                "office_kind": "house",
+                "party": "D",
+                "winner": "Teresa Leger Fernandez",
+                "date": "2026-06-02",
+                "status": "called"
+              },
+              {
+                "office": "house NM-03",
+                "office_kind": "house",
+                "party": "R",
+                "winner": "Martin",
+                "date": "2026-06-02",
+                "status": "called"
+              }
+            ],
+            "contests_statewide": [
+              {
+                "office": "senate",
+                "office_kind": "senate",
+                "party": "R",
+                "winner": "Larry E Marker",
+                "date": "2026-06-02",
+                "status": "called"
+              },
+              {
+                "office": "governor",
+                "office_kind": "governor",
+                "party": "D",
+                "winner": "Debra Haaland",
+                "date": "2026-06-02",
+                "status": "called"
+              },
+              {
+                "office": "governor",
+                "office_kind": "governor",
+                "party": "R",
+                "winner": "Gregg Hull",
+                "date": "2026-06-02",
+                "status": "called"
+              }
+            ],
+            "headline": "R:Larry E Marker(상원) · D:Debra Haaland(주지사) · R:Gregg Hull(주지사)",
+            "ui_click": "show contests list for this state"
+          },
+          {
+            "id": "SD",
+            "name_en": "SD",
+            "name_ko": "사우스다코타",
+            "date": "2026-06-02",
+            "status": "completed",
+            "contests": [
+              {
+                "office": "senate",
+                "office_kind": "senate",
+                "party": "R",
+                "winner": "Mike Rounds",
+                "date": "2026-06-02",
+                "status": "called"
+              },
+              {
+                "office": "governor",
+                "office_kind": "governor",
+                "party": "D",
+                "winner": "Dan Ahlers",
+                "date": "2026-06-02",
+                "status": "called"
+              },
+              {
+                "office": "house SD-01",
+                "office_kind": "house",
+                "party": "R",
+                "winner": "Marty Jackley",
+                "date": "2026-06-02",
+                "status": "called"
+              }
+            ],
+            "contests_statewide": [
+              {
+                "office": "senate",
+                "office_kind": "senate",
+                "party": "R",
+                "winner": "Mike Rounds",
+                "date": "2026-06-02",
+                "status": "called"
+              },
+              {
+                "office": "governor",
+                "office_kind": "governor",
+                "party": "D",
+                "winner": "Dan Ahlers",
+                "date": "2026-06-02",
+                "status": "called"
+              }
+            ],
+            "headline": "R:Mike Rounds(상원) · D:Dan Ahlers(주지사)",
+            "ui_click": "show contests list for this state"
+          },
+          {
+            "id": "ME",
+            "name_en": "ME",
+            "name_ko": "메인",
+            "date": "2026-06-09",
+            "status": "completed",
+            "contests": [
+              {
+                "office": "senate",
+                "office_kind": "senate",
+                "party": "D",
+                "winner": "Graham Platner",
+                "date": "2026-06-09",
+                "status": "called"
+              },
+              {
+                "office": "house ME-01",
+                "office_kind": "house",
+                "party": "R",
+                "winner": "Ronald Charles Mr. Russell",
+                "date": "2026-06-09",
+                "status": "called"
+              },
+              {
+                "office": "house ME-02",
+                "office_kind": "house",
+                "party": "R",
+                "winner": "Paul Lepage",
+                "date": "2026-06-09",
+                "status": "called"
+              }
+            ],
+            "contests_statewide": [
+              {
+                "office": "senate",
+                "office_kind": "senate",
+                "party": "D",
+                "winner": "Graham Platner",
+                "date": "2026-06-09",
+                "status": "called"
+              }
+            ],
+            "headline": "D:Graham Platner(상원)",
+            "ui_click": "show contests list for this state"
+          },
+          {
+            "id": "ND",
+            "name_en": "ND",
+            "name_ko": "노스다코타",
+            "date": "2026-06-09",
+            "status": "completed",
+            "contests": [
+              {
+                "office": "house ND-01",
+                "office_kind": "house",
+                "party": "R",
+                "winner": "Julie Fedorchak",
+                "date": "2026-06-09",
+                "status": "called"
+              }
+            ],
+            "contests_statewide": [],
+            "headline": "프라이머리 실시 완료 — 하원 등 세부 확장 중",
+            "ui_click": "show contests list for this state"
+          },
+          {
+            "id": "NV",
+            "name_en": "NV",
+            "name_ko": "네바다",
+            "date": "2026-06-09",
+            "status": "completed",
+            "contests": [
+              {
+                "office": "governor",
+                "office_kind": "governor",
+                "party": "D",
+                "winner": "Aaron Ford",
+                "date": "2026-06-09",
+                "status": "called"
+              },
+              {
+                "office": "governor",
+                "office_kind": "governor",
+                "party": "R",
+                "winner": "Joe Lombardo",
+                "date": "2026-06-09",
+                "status": "called"
+              },
+              {
+                "office": "house NV-01",
+                "office_kind": "house",
+                "party": "D",
+                "winner": "Dina Titus",
+                "date": "2026-06-09",
+                "status": "called"
+              },
+              {
+                "office": "house NV-01",
+                "office_kind": "house",
+                "party": "R",
+                "winner": "Carrie Buck",
+                "date": "2026-06-09",
+                "status": "called"
+              },
+              {
+                "office": "house NV-02",
+                "office_kind": "house",
+                "party": "D",
+                "winner": "Teresa Benitez-Thompson",
+                "date": "2026-06-09",
+                "status": "called"
+              },
+              {
+                "office": "house NV-02",
+                "office_kind": "house",
+                "party": "R",
+                "winner": "David Flippo",
+                "date": "2026-06-09",
+                "status": "called"
+              },
+              {
+                "office": "house NV-03",
+                "office_kind": "house",
+                "party": "D",
+                "winner": "Susie Lee",
+                "date": "2026-06-09",
+                "status": "called"
+              },
+              {
+                "office": "house NV-03",
+                "office_kind": "house",
+                "party": "R",
+                "winner": "Marty O'Donnell",
+                "date": "2026-06-09",
+                "status": "called"
+              },
+              {
+                "office": "house NV-04",
+                "office_kind": "house",
+                "party": "R",
+                "winner": "Cody K Whipple",
+                "date": "2026-06-09",
+                "status": "called"
+              }
+            ],
+            "contests_statewide": [
+              {
+                "office": "governor",
+                "office_kind": "governor",
+                "party": "D",
+                "winner": "Aaron Ford",
+                "date": "2026-06-09",
+                "status": "called"
+              },
+              {
+                "office": "governor",
+                "office_kind": "governor",
+                "party": "R",
+                "winner": "Joe Lombardo",
+                "date": "2026-06-09",
+                "status": "called"
+              }
+            ],
+            "headline": "D:Aaron Ford(주지사) · R:Joe Lombardo(주지사)",
+            "ui_click": "show contests list for this state"
+          },
+          {
+            "id": "SC",
+            "name_en": "SC",
+            "name_ko": "사우스캐롤라이나",
+            "date": "2026-06-09",
+            "status": "completed",
+            "contests": [
+              {
+                "office": "senate",
+                "office_kind": "senate",
+                "party": "D",
+                "winner": "Annie Andrews",
+                "date": "2026-06-09",
+                "status": "called"
+              },
+              {
+                "office": "governor",
+                "office_kind": "governor",
+                "party": "D",
+                "winner": "Jermaine Johnson",
+                "date": "2026-06-09",
+                "status": "called"
+              },
+              {
+                "office": "house SC-02",
+                "office_kind": "house",
+                "party": "R",
+                "winner": "Joe Wilson",
+                "date": "2026-06-09",
+                "status": "called"
+              },
+              {
+                "office": "house SC-03",
+                "office_kind": "house",
+                "party": "D",
+                "winner": "Eunice Lehmacher",
+                "date": "2026-06-09",
+                "status": "called"
+              },
+              {
+                "office": "house SC-04",
+                "office_kind": "house",
+                "party": "R",
+                "winner": "William Timmons",
+                "date": "2026-06-09",
+                "status": "called"
+              },
+              {
+                "office": "house SC-05",
+                "office_kind": "house",
+                "party": "D",
+                "winner": "Mallory Dittmer",
+                "date": "2026-06-09",
+                "status": "called"
+              },
+              {
+                "office": "house SC-05",
+                "office_kind": "house",
+                "party": "R",
+                "winner": "Wes Climer",
+                "date": "2026-06-09",
+                "status": "called"
+              },
+              {
+                "office": "house SC-06",
+                "office_kind": "house",
+                "party": "D",
+                "winner": "James Clyburn",
+                "date": "2026-06-09",
+                "status": "called"
+              },
+              {
+                "office": "house SC-06",
+                "office_kind": "house",
+                "party": "R",
+                "winner": "John Peterson",
+                "date": "2026-06-09",
+                "status": "called"
+              }
+            ],
+            "contests_statewide": [
+              {
+                "office": "senate",
+                "office_kind": "senate",
+                "party": "D",
+                "winner": "Annie Andrews",
+                "date": "2026-06-09",
+                "status": "called"
+              },
+              {
+                "office": "governor",
+                "office_kind": "governor",
+                "party": "D",
+                "winner": "Jermaine Johnson",
+                "date": "2026-06-09",
+                "status": "called"
+              }
+            ],
+            "headline": "D:Annie Andrews(상원) · D:Jermaine Johnson(주지사)",
+            "ui_click": "show contests list for this state"
+          },
+          {
+            "id": "DC",
+            "name_en": "DC",
+            "name_ko": "워싱턴DC",
+            "date": "2026-06-16",
+            "status": "completed",
+            "contests": [],
+            "contests_statewide": [],
+            "headline": "프라이머리 실시 완료 — 하원 등 세부 확장 중",
+            "ui_click": "show contests list for this state"
+          },
+          {
+            "id": "OK",
+            "name_en": "OK",
+            "name_ko": "오클라호마",
+            "date": "2026-06-16",
+            "status": "completed",
+            "contests": [
+              {
+                "office": "senate",
+                "office_kind": "senate",
+                "party": "R",
+                "winner": "Kevin Hern",
+                "date": "2026-06-16",
+                "status": "called"
+              },
+              {
+                "office": "governor",
+                "office_kind": "governor",
+                "party": "D",
+                "winner": "Cyndi Munson",
+                "date": "2026-06-16",
+                "status": "called"
+              },
+              {
+                "office": "house OK-01",
+                "office_kind": "house",
+                "party": "D",
+                "winner": "John Thomas Croisant",
+                "date": "2026-06-16",
+                "status": "called"
+              },
+              {
+                "office": "house OK-02",
+                "office_kind": "house",
+                "party": "D",
+                "winner": "Brandon Wade",
+                "date": "2026-06-16",
+                "status": "called"
+              },
+              {
+                "office": "house OK-02",
+                "office_kind": "house",
+                "party": "R",
+                "winner": "Josh Brecheen",
+                "date": "2026-06-16",
+                "status": "called"
+              },
+              {
+                "office": "house OK-03",
+                "office_kind": "house",
+                "party": "D",
+                "winner": "Suzie Byrd",
+                "date": "2026-06-16",
+                "status": "called"
+              },
+              {
+                "office": "house OK-03",
+                "office_kind": "house",
+                "party": "R",
+                "winner": "Frank Lucas",
+                "date": "2026-06-16",
+                "status": "called"
+              },
+              {
+                "office": "house OK-04",
+                "office_kind": "house",
+                "party": "D",
+                "winner": "Mitchell Leigh Jacob",
+                "date": "2026-06-16",
+                "status": "called"
+              },
+              {
+                "office": "house OK-04",
+                "office_kind": "house",
+                "party": "R",
+                "winner": "Tom Cole",
+                "date": "2026-06-16",
+                "status": "called"
+              },
+              {
+                "office": "house OK-05",
+                "office_kind": "house",
+                "party": "D",
+                "winner": "Jena Nelson",
+                "date": "2026-06-16",
+                "status": "called"
+              }
+            ],
+            "contests_statewide": [
+              {
+                "office": "senate",
+                "office_kind": "senate",
+                "party": "R",
+                "winner": "Kevin Hern",
+                "date": "2026-06-16",
+                "status": "called"
+              },
+              {
+                "office": "governor",
+                "office_kind": "governor",
+                "party": "D",
+                "winner": "Cyndi Munson",
+                "date": "2026-06-16",
+                "status": "called"
+              }
+            ],
+            "headline": "R:Kevin Hern(상원) · D:Cyndi Munson(주지사)",
+            "ui_click": "show contests list for this state"
+          },
+          {
+            "id": "MD",
+            "name_en": "MD",
+            "name_ko": "메릴랜드",
+            "date": "2026-06-23",
+            "status": "completed",
+            "contests": [
+              {
+                "office": "governor",
+                "office_kind": "governor",
+                "party": "D",
+                "winner": "Wes Moore",
+                "date": "2026-06-23",
+                "status": "called"
+              },
+              {
+                "office": "governor",
+                "office_kind": "governor",
+                "party": "R",
+                "winner": "Dan Cox",
+                "date": "2026-06-23",
+                "status": "called"
+              },
+              {
+                "office": "house MD-01",
+                "office_kind": "house",
+                "party": "D",
+                "winner": "Daniel Schwartz",
+                "date": "2026-06-23",
+                "status": "called"
+              },
+              {
+                "office": "house MD-01",
+                "office_kind": "house",
+                "party": "R",
+                "winner": "Andy Harris",
+                "date": "2026-06-23",
+                "status": "called"
+              },
+              {
+                "office": "house MD-02",
+                "office_kind": "house",
+                "party": "D",
+                "winner": "Johnny Olszewski",
+                "date": "2026-06-23",
+                "status": "called"
+              },
+              {
+                "office": "house MD-02",
+                "office_kind": "house",
+                "party": "R",
+                "winner": "David Drain II Wallace",
+                "date": "2026-06-23",
+                "status": "called"
+              },
+              {
+                "office": "house MD-03",
+                "office_kind": "house",
+                "party": "D",
+                "winner": "Sarah Elfreth",
+                "date": "2026-06-23",
+                "status": "called"
+              },
+              {
+                "office": "house MD-03",
+                "office_kind": "house",
+                "party": "R",
+                "winner": "Bernard Flowers",
+                "date": "2026-06-23",
+                "status": "called"
+              },
+              {
+                "office": "house MD-04",
+                "office_kind": "house",
+                "party": "D",
+                "winner": "Glenn Ivey",
+                "date": "2026-06-23",
+                "status": "called"
+              },
+              {
+                "office": "house MD-05",
+                "office_kind": "house",
+                "party": "D",
+                "winner": "Adrian Boafo",
+                "date": "2026-06-23",
+                "status": "called"
+              }
+            ],
+            "contests_statewide": [
+              {
+                "office": "governor",
+                "office_kind": "governor",
+                "party": "D",
+                "winner": "Wes Moore",
+                "date": "2026-06-23",
+                "status": "called"
+              },
+              {
+                "office": "governor",
+                "office_kind": "governor",
+                "party": "R",
+                "winner": "Dan Cox",
+                "date": "2026-06-23",
+                "status": "called"
+              }
+            ],
+            "headline": "D:Wes Moore(주지사) · R:Dan Cox(주지사)",
+            "ui_click": "show contests list for this state"
+          },
+          {
+            "id": "NY",
+            "name_en": "NY",
+            "name_ko": "뉴욕",
+            "date": "2026-06-23",
+            "status": "completed",
+            "contests": [
+              {
+                "office": "house NY-01",
+                "office_kind": "house",
+                "party": "D",
+                "winner": "Christopher Gallant",
+                "date": "2026-06-23",
+                "status": "called"
+              },
+              {
+                "office": "house NY-03",
+                "office_kind": "house",
+                "party": "D",
+                "winner": "Thomas Suozzi",
+                "date": "2026-06-23",
+                "status": "called"
+              },
+              {
+                "office": "house NY-03",
+                "office_kind": "house",
+                "party": "R",
+                "winner": "Mike Lipetri",
+                "date": "2026-06-23",
+                "status": "called"
+              },
+              {
+                "office": "house NY-04",
+                "office_kind": "house",
+                "party": "R",
+                "winner": "Jeanine Driscoll",
+                "date": "2026-06-23",
+                "status": "called"
+              },
+              {
+                "office": "house NY-06",
+                "office_kind": "house",
+                "party": "D",
+                "winner": "Grace Meng",
+                "date": "2026-06-23",
+                "status": "called"
+              },
+              {
+                "office": "house NY-07",
+                "office_kind": "house",
+                "party": "D",
+                "winner": "Claire Valdez",
+                "date": "2026-06-23",
+                "status": "called"
+              },
+              {
+                "office": "house NY-09",
+                "office_kind": "house",
+                "party": "D",
+                "winner": "Yvette Clarke",
+                "date": "2026-06-23",
+                "status": "called"
+              },
+              {
+                "office": "house NY-10",
+                "office_kind": "house",
+                "party": "D",
+                "winner": "Brad Mr. Lander",
+                "date": "2026-06-23",
+                "status": "called"
+              }
+            ],
+            "contests_statewide": [],
+            "headline": "프라이머리 실시 완료 — 하원 등 세부 확장 중",
+            "ui_click": "show contests list for this state"
+          },
+          {
+            "id": "UT",
+            "name_en": "UT",
+            "name_ko": "유타",
+            "date": "2026-06-23",
+            "status": "completed",
+            "contests": [
+              {
+                "office": "house UT-01",
+                "office_kind": "house",
+                "party": "D",
+                "winner": "Ben Mcadams",
+                "date": "2026-06-23",
+                "status": "called"
+              },
+              {
+                "office": "house UT-02",
+                "office_kind": "house",
+                "party": "R",
+                "winner": "Blake Moore",
+                "date": "2026-06-23",
+                "status": "called"
+              },
+              {
+                "office": "house UT-03",
+                "office_kind": "house",
+                "party": "R",
+                "winner": "Celeste Maloy",
+                "date": "2026-06-23",
+                "status": "called"
+              },
+              {
+                "office": "house UT-04",
+                "office_kind": "house",
+                "party": "R",
+                "winner": "Mike Kennedy",
+                "date": "2026-06-23",
+                "status": "called"
+              }
+            ],
+            "contests_statewide": [],
+            "headline": "프라이머리 실시 완료 — 하원 등 세부 확장 중",
+            "ui_click": "show contests list for this state"
+          },
+          {
+            "id": "CO",
+            "name_en": "CO",
+            "name_ko": "콜로라도",
+            "date": "2026-06-30",
+            "status": "completed",
+            "contests": [
+              {
+                "office": "senate",
+                "office_kind": "senate",
+                "party": "D",
+                "winner": "John Hickenlooper",
+                "date": "2026-06-30",
+                "status": "called"
+              },
+              {
+                "office": "governor",
+                "office_kind": "governor",
+                "party": "D",
+                "winner": "Phil Weiser",
+                "date": "2026-06-30",
+                "status": "called"
+              },
+              {
+                "office": "house CO-01",
+                "office_kind": "house",
+                "party": "D",
+                "winner": "Melat Kiros",
+                "date": "2026-06-30",
+                "status": "called"
+              },
+              {
+                "office": "house CO-02",
+                "office_kind": "house",
+                "party": "R",
+                "winner": "Kelley Anne Dennison",
+                "date": "2026-06-30",
+                "status": "called"
+              },
+              {
+                "office": "house CO-03",
+                "office_kind": "house",
+                "party": "D",
+                "winner": "Dwayne Romero",
+                "date": "2026-06-30",
+                "status": "called"
+              },
+              {
+                "office": "house CO-04",
+                "office_kind": "house",
+                "party": "D",
+                "winner": "Eileen Laubacher",
+                "date": "2026-06-30",
+                "status": "called"
+              },
+              {
+                "office": "house CO-05",
+                "office_kind": "house",
+                "party": "D",
+                "winner": "Jessica Willow Killin",
+                "date": "2026-06-30",
+                "status": "called"
+              },
+              {
+                "office": "house CO-08",
+                "office_kind": "house",
+                "party": "D",
+                "winner": "Manny Rutinel",
+                "date": "2026-06-30",
+                "status": "called"
+              }
+            ],
+            "contests_statewide": [
+              {
+                "office": "senate",
+                "office_kind": "senate",
+                "party": "D",
+                "winner": "John Hickenlooper",
+                "date": "2026-06-30",
+                "status": "called"
+              },
+              {
+                "office": "governor",
+                "office_kind": "governor",
+                "party": "D",
+                "winner": "Phil Weiser",
+                "date": "2026-06-30",
+                "status": "called"
+              }
+            ],
+            "headline": "D:John Hickenlooper(상원) · D:Phil Weiser(주지사)",
+            "ui_click": "show contests list for this state"
+          },
+          {
+            "id": "AZ",
+            "name_en": "AZ",
+            "name_ko": "애리조나",
+            "date": "2026-07-21",
+            "status": "completed",
+            "contests": [
+              {
+                "office": "governor",
+                "office_kind": "governor",
+                "party": "R",
+                "winner": "Andy Biggs",
+                "date": "2026-07-21",
+                "status": "called"
+              },
+              {
+                "office": "house AZ-01",
+                "office_kind": "house",
+                "party": "D",
+                "winner": "Amish Dr. Shah",
+                "date": "2026-07-21",
+                "status": "called"
+              },
+              {
+                "office": "house AZ-01",
+                "office_kind": "house",
+                "party": "R",
+                "winner": "Thomas James Feely",
+                "date": "2026-07-21",
+                "status": "called"
+              },
+              {
+                "office": "house AZ-04",
+                "office_kind": "house",
+                "party": "D",
+                "winner": "Greg Stanton",
+                "date": "2026-07-21",
+                "status": "called"
+              },
+              {
+                "office": "house AZ-05",
+                "office_kind": "house",
+                "party": "D",
+                "winner": "Elizabeth Lee",
+                "date": "2026-07-21",
+                "status": "called"
+              },
+              {
+                "office": "house AZ-05",
+                "office_kind": "house",
+                "party": "R",
+                "winner": "Mark Lamb",
+                "date": "2026-07-21",
+                "status": "called"
+              },
+              {
+                "office": "house AZ-08",
+                "office_kind": "house",
+                "party": "D",
+                "winner": "Bernadette Greene Placentia",
+                "date": "2026-07-21",
+                "status": "called"
+              }
+            ],
+            "contests_statewide": [
+              {
+                "office": "governor",
+                "office_kind": "governor",
+                "party": "R",
+                "winner": "Andy Biggs",
+                "date": "2026-07-21",
+                "status": "called"
+              }
+            ],
+            "headline": "R:Andy Biggs(주지사)",
+            "ui_click": "show contests list for this state"
+          },
+          {
+            "id": "KS",
+            "name_en": "KS",
+            "name_ko": "캔자스",
+            "date": "2026-08-04",
+            "status": "completed",
+            "contests": [
+              {
+                "office": "senate",
+                "office_kind": "senate",
+                "party": "D",
+                "winner": "Adam Hamilton",
+                "date": "2026-08-04",
+                "status": "called"
+              },
+              {
+                "office": "senate",
+                "office_kind": "senate",
+                "party": "R",
+                "winner": "Roger Marshall",
+                "date": "2026-08-04",
+                "status": "called"
+              },
+              {
+                "office": "governor",
+                "office_kind": "governor",
+                "party": "D",
+                "winner": "Cindy Holscher",
+                "date": "2026-08-04",
+                "status": "called"
+              },
+              {
+                "office": "governor",
+                "office_kind": "governor",
+                "party": "R",
+                "winner": "Ty Masterson",
+                "date": "2026-08-04",
+                "status": "called"
+              },
+              {
+                "office": "house KS-01",
+                "office_kind": "house",
+                "party": "D",
+                "winner": "Lauren Reinhold",
+                "date": "2026-08-04",
+                "status": "called"
+              },
+              {
+                "office": "house KS-02",
+                "office_kind": "house",
+                "party": "R",
+                "winner": "Derek Schmidt",
+                "date": "2026-08-04",
+                "status": "called"
+              },
+              {
+                "office": "house KS-03",
+                "office_kind": "house",
+                "party": "D",
+                "winner": "Sharice Davids",
+                "date": "2026-08-04",
+                "status": "called"
+              },
+              {
+                "office": "house KS-03",
+                "office_kind": "house",
+                "party": "R",
+                "winner": "Eric Jenkins",
+                "date": "2026-08-04",
+                "status": "called"
+              },
+              {
+                "office": "house KS-04",
+                "office_kind": "house",
+                "party": "D",
+                "winner": "Katy Tyndell",
+                "date": "2026-08-04",
+                "status": "called"
+              },
+              {
+                "office": "house KS-04",
+                "office_kind": "house",
+                "party": "R",
+                "winner": "Ron Estes",
+                "date": "2026-08-04",
+                "status": "called"
+              }
+            ],
+            "contests_statewide": [
+              {
+                "office": "senate",
+                "office_kind": "senate",
+                "party": "D",
+                "winner": "Adam Hamilton",
+                "date": "2026-08-04",
+                "status": "called"
+              },
+              {
+                "office": "senate",
+                "office_kind": "senate",
+                "party": "R",
+                "winner": "Roger Marshall",
+                "date": "2026-08-04",
+                "status": "called"
+              },
+              {
+                "office": "governor",
+                "office_kind": "governor",
+                "party": "D",
+                "winner": "Cindy Holscher",
+                "date": "2026-08-04",
+                "status": "called"
+              },
+              {
+                "office": "governor",
+                "office_kind": "governor",
+                "party": "R",
+                "winner": "Ty Masterson",
+                "date": "2026-08-04",
+                "status": "called"
+              }
+            ],
+            "headline": "D:Adam Hamilton(상원) · R:Roger Marshall(상원) · D:Cindy Holscher(주지사) · R:Ty Masterson(주지사)",
+            "ui_click": "show contests list for this state"
+          },
+          {
+            "id": "MI",
+            "name_en": "MI",
+            "name_ko": "미시간",
+            "date": "2026-08-04",
+            "status": "completed",
+            "contests": [
+              {
+                "office": "senate",
+                "office_kind": "senate",
+                "party": "D",
+                "winner": "Abdul El-Sayed",
+                "date": "2026-08-04",
+                "status": "called"
+              },
+              {
+                "office": "governor",
+                "office_kind": "governor",
+                "party": "D",
+                "winner": "Jocelyn Benson",
+                "date": "2026-08-04",
+                "status": "called"
+              },
+              {
+                "office": "governor",
+                "office_kind": "governor",
+                "party": "R",
+                "winner": "John James",
+                "date": "2026-08-04",
+                "status": "called"
+              },
+              {
+                "office": "house MI-01",
+                "office_kind": "house",
+                "party": "D",
+                "winner": "Callie Barr",
+                "date": "2026-08-04",
+                "status": "called"
+              },
+              {
+                "office": "house MI-01",
+                "office_kind": "house",
+                "party": "R",
+                "winner": "Jack Bergman",
+                "date": "2026-08-04",
+                "status": "called"
+              },
+              {
+                "office": "house MI-02",
+                "office_kind": "house",
+                "party": "D",
+                "winner": "Benjamin Ambrose",
+                "date": "2026-08-04",
+                "status": "called"
+              },
+              {
+                "office": "house MI-03",
+                "office_kind": "house",
+                "party": "R",
+                "winner": "Terri Deboer",
+                "date": "2026-08-04",
+                "status": "called"
+              },
+              {
+                "office": "house MI-04",
+                "office_kind": "house",
+                "party": "D",
+                "winner": "Sean Mccann",
+                "date": "2026-08-04",
+                "status": "called"
+              },
+              {
+                "office": "house MI-04",
+                "office_kind": "house",
+                "party": "R",
+                "winner": "Bill Huizenga",
+                "date": "2026-08-04",
+                "status": "called"
+              },
+              {
+                "office": "house MI-07",
+                "office_kind": "house",
+                "party": "D",
+                "winner": "William Lawrence",
+                "date": "2026-08-04",
+                "status": "called"
+              },
+              {
+                "office": "house MI-08",
+                "office_kind": "house",
+                "party": "R",
+                "winner": "Thomas James Mr Smith",
+                "date": "2026-08-04",
+                "status": "called"
+              }
+            ],
+            "contests_statewide": [
+              {
+                "office": "senate",
+                "office_kind": "senate",
+                "party": "D",
+                "winner": "Abdul El-Sayed",
+                "date": "2026-08-04",
+                "status": "called"
+              },
+              {
+                "office": "governor",
+                "office_kind": "governor",
+                "party": "D",
+                "winner": "Jocelyn Benson",
+                "date": "2026-08-04",
+                "status": "called"
+              },
+              {
+                "office": "governor",
+                "office_kind": "governor",
+                "party": "R",
+                "winner": "John James",
+                "date": "2026-08-04",
+                "status": "called"
+              }
+            ],
+            "headline": "D:Abdul El-Sayed(상원) · D:Jocelyn Benson(주지사) · R:John James(주지사)",
+            "ui_click": "show contests list for this state"
+          },
+          {
+            "id": "MO",
+            "name_en": "MO",
+            "name_ko": "미주리",
+            "date": "2026-08-04",
+            "status": "completed",
+            "contests": [
+              {
+                "office": "house MO-01",
+                "office_kind": "house",
+                "party": "D",
+                "winner": "Wesley Bell",
+                "date": "2026-08-04",
+                "status": "called"
+              },
+              {
+                "office": "house MO-01",
+                "office_kind": "house",
+                "party": "R",
+                "winner": "Paul Berry",
+                "date": "2026-08-04",
+                "status": "called"
+              },
+              {
+                "office": "house MO-02",
+                "office_kind": "house",
+                "party": "D",
+                "winner": "Frederick Paul Wellman",
+                "date": "2026-08-04",
+                "status": "called"
+              },
+              {
+                "office": "house MO-02",
+                "office_kind": "house",
+                "party": "R",
+                "winner": "Ann Wagner",
+                "date": "2026-08-04",
+                "status": "called"
+              },
+              {
+                "office": "house MO-03",
+                "office_kind": "house",
+                "party": "D",
+                "winner": "Bethany Mann",
+                "date": "2026-08-04",
+                "status": "called"
+              },
+              {
+                "office": "house MO-03",
+                "office_kind": "house",
+                "party": "R",
+                "winner": "Robert Onder",
+                "date": "2026-08-04",
+                "status": "called"
+              },
+              {
+                "office": "house MO-04",
+                "office_kind": "house",
+                "party": "D",
+                "winner": "Jordan Herrera",
+                "date": "2026-08-04",
+                "status": "called"
+              },
+              {
+                "office": "house MO-04",
+                "office_kind": "house",
+                "party": "R",
+                "winner": "Mark Alford",
+                "date": "2026-08-04",
+                "status": "called"
+              }
+            ],
+            "contests_statewide": [],
+            "headline": "프라이머리 실시 완료 — 하원 등 세부 확장 중",
+            "ui_click": "show contests list for this state"
+          },
+          {
+            "id": "VA",
+            "name_en": "VA",
+            "name_ko": "버지니아",
+            "date": "2026-08-04",
+            "status": "completed",
+            "contests": [
+              {
+                "office": "senate",
+                "office_kind": "senate",
+                "party": "R",
+                "winner": "Bert K Mizusawa",
+                "date": "2026-08-04",
+                "status": "called"
+              },
+              {
+                "office": "house VA-02",
+                "office_kind": "house",
+                "party": "D",
+                "winner": "Elaine Luria",
+                "date": "2026-08-04",
+                "status": "called"
+              },
+              {
+                "office": "house VA-03",
+                "office_kind": "house",
+                "party": "R",
+                "winner": "Edwin Mr. Jr. Rivera",
+                "date": "2026-08-04",
+                "status": "called"
+              },
+              {
+                "office": "house VA-04",
+                "office_kind": "house",
+                "party": "D",
+                "winner": "Jennifer McClellan",
+                "date": "2026-08-04",
+                "status": "called"
+              },
+              {
+                "office": "house VA-05",
+                "office_kind": "house",
+                "party": "D",
+                "winner": "Thomas Perriello",
+                "date": "2026-08-04",
+                "status": "called"
+              },
+              {
+                "office": "house VA-07",
+                "office_kind": "house",
+                "party": "R",
+                "winner": "Douglas Ollivant",
+                "date": "2026-08-04",
+                "status": "called"
+              },
+              {
+                "office": "house VA-08",
+                "office_kind": "house",
+                "party": "D",
+                "winner": "Donald Beyer",
+                "date": "2026-08-04",
+                "status": "called"
+              },
+              {
+                "office": "house VA-09",
+                "office_kind": "house",
+                "party": "D",
+                "winner": "Joy Powers",
+                "date": "2026-08-04",
+                "status": "called"
+              },
+              {
+                "office": "house VA-10",
+                "office_kind": "house",
+                "party": "R",
+                "winner": "David Beckwith",
+                "date": "2026-08-04",
+                "status": "called"
+              }
+            ],
+            "contests_statewide": [
+              {
+                "office": "senate",
+                "office_kind": "senate",
+                "party": "R",
+                "winner": "Bert K Mizusawa",
+                "date": "2026-08-04",
+                "status": "called"
+              }
+            ],
+            "headline": "R:Bert K Mizusawa(상원)",
+            "ui_click": "show contests list for this state"
+          },
+          {
+            "id": "WA",
+            "name_en": "WA",
+            "name_ko": "워싱턴",
+            "date": "2026-08-04",
+            "status": "completed",
+            "contests": [
+              {
+                "office": "house WA-01",
+                "office_kind": "house",
+                "party": "D",
+                "winner": "Suzan DelBene",
+                "date": "2026-08-04",
+                "status": "called"
+              },
+              {
+                "office": "house WA-02",
+                "office_kind": "house",
+                "party": "D",
+                "winner": "Rick Larsen",
+                "date": "2026-08-04",
+                "status": "called"
+              },
+              {
+                "office": "house WA-03",
+                "office_kind": "house",
+                "party": "D",
+                "winner": "Marie Gluesenkamp Perez",
+                "date": "2026-08-04",
+                "status": "called"
+              },
+              {
+                "office": "house WA-03",
+                "office_kind": "house",
+                "party": "R",
+                "winner": "John Braun",
+                "date": "2026-08-04",
+                "status": "called"
+              },
+              {
+                "office": "house WA-04",
+                "office_kind": "house",
+                "party": "R",
+                "winner": "Amanda Mckinney",
+                "date": "2026-08-04",
+                "status": "called"
+              },
+              {
+                "office": "house WA-05",
+                "office_kind": "house",
+                "party": "R",
+                "winner": "Michael Baumgartner",
+                "date": "2026-08-04",
+                "status": "called"
+              },
+              {
+                "office": "house WA-06",
+                "office_kind": "house",
+                "party": "R",
+                "winner": "Teresa Fox",
+                "date": "2026-08-04",
+                "status": "called"
+              },
+              {
+                "office": "house WA-07",
+                "office_kind": "house",
+                "party": "D",
+                "winner": "Pramila Jayapal",
+                "date": "2026-08-04",
+                "status": "called"
+              }
+            ],
+            "contests_statewide": [],
+            "headline": "프라이머리 실시 완료 — 하원 등 세부 확장 중",
+            "ui_click": "show contests list for this state"
+          },
+          {
+            "id": "TN",
+            "name_en": "TN",
+            "name_ko": "테네시",
+            "date": "2026-08-06",
+            "status": "completed",
+            "contests": [],
+            "contests_statewide": [],
+            "headline": "프라이머리 실시 완료 — 하원 등 세부 확장 중",
+            "ui_click": "show contests list for this state"
+          },
+          {
+            "id": "HI",
+            "name_en": "HI",
+            "name_ko": "하와이",
+            "date": "2026-08-08",
+            "status": "completed",
+            "contests": [],
+            "contests_statewide": [],
+            "headline": "프라이머리 실시 완료 — 하원 등 세부 확장 중",
+            "ui_click": "show contests list for this state"
+          },
+          {
+            "id": "CT",
+            "name_en": "CT",
+            "name_ko": "코네티컷",
+            "date": "2026-08-11",
+            "status": "scheduled",
+            "contests": [],
+            "contests_statewide": [],
+            "headline": "미실시",
+            "ui_click": "show contests list for this state"
+          },
+          {
+            "id": "MN",
+            "name_en": "MN",
+            "name_ko": "미네소타",
+            "date": "2026-08-11",
+            "status": "scheduled",
+            "contests": [],
+            "contests_statewide": [],
+            "headline": "미실시",
+            "ui_click": "show contests list for this state"
+          },
+          {
+            "id": "VT",
+            "name_en": "VT",
+            "name_ko": "버몬트",
+            "date": "2026-08-11",
+            "status": "scheduled",
+            "contests": [],
+            "contests_statewide": [],
+            "headline": "미실시",
+            "ui_click": "show contests list for this state"
+          },
+          {
+            "id": "WI",
+            "name_en": "WI",
+            "name_ko": "위스콘신",
+            "date": "2026-08-11",
+            "status": "scheduled",
+            "contests": [],
+            "contests_statewide": [],
+            "headline": "미실시",
+            "ui_click": "show contests list for this state"
+          },
+          {
+            "id": "AK",
+            "name_en": "AK",
+            "name_ko": "알래스카",
+            "date": "2026-08-18",
+            "status": "scheduled",
+            "contests": [],
+            "contests_statewide": [],
+            "headline": "미실시",
+            "ui_click": "show contests list for this state"
+          },
+          {
+            "id": "FL",
+            "name_en": "FL",
+            "name_ko": "플로리다",
+            "date": "2026-08-18",
+            "status": "scheduled",
+            "contests": [],
+            "contests_statewide": [],
+            "headline": "미실시",
+            "ui_click": "show contests list for this state"
+          },
+          {
+            "id": "WY",
+            "name_en": "WY",
+            "name_ko": "와이오밍",
+            "date": "2026-08-18",
+            "status": "scheduled",
+            "contests": [],
+            "contests_statewide": [],
+            "headline": "미실시",
+            "ui_click": "show contests list for this state"
+          },
+          {
+            "id": "MA",
+            "name_en": "MA",
+            "name_ko": "매사추세츠",
+            "date": "2026-09-01",
+            "status": "scheduled",
+            "contests": [],
+            "contests_statewide": [],
+            "headline": "미실시",
+            "ui_click": "show contests list for this state"
+          },
+          {
+            "id": "NH",
+            "name_en": "NH",
+            "name_ko": "뉴햄프셔",
+            "date": "2026-09-08",
+            "status": "scheduled",
+            "contests": [],
+            "contests_statewide": [],
+            "headline": "미실시",
+            "ui_click": "show contests list for this state"
+          },
+          {
+            "id": "RI",
+            "name_en": "RI",
+            "name_ko": "로드아일랜드",
+            "date": "2026-09-09",
+            "status": "scheduled",
+            "contests": [],
+            "contests_statewide": [],
+            "headline": "미실시",
+            "ui_click": "show contests list for this state"
+          },
+          {
+            "id": "DE",
+            "name_en": "DE",
+            "name_ko": "델라웨어",
+            "date": "2026-09-15",
+            "status": "scheduled",
+            "contests": [],
+            "contests_statewide": [],
+            "headline": "미실시",
+            "ui_click": "show contests list for this state"
+          }
+        ],
+        "ui": {
+          "summary_card": "states_completed / states_in_calendar",
+          "list": "units sorted by date; completed dimmed green",
+          "detail_on_click": "contests_statewide + contests (house sample)",
+          "null_policy": {
+            "없음": "해당 없음",
+            "불명": "미집계"
+          }
+        },
+        "sources": [
+          {
+            "id": "fec_primary_dates",
+            "url": "https://www.fec.gov/resources/cms-content/documents/2026pdates.pdf"
+          },
+          {
+            "id": "themidtermproject",
+            "url": "https://themidtermproject.org/results",
+            "grade": "aggregator",
+            "parse_note": "statewide winners linked via next House state code"
+          }
+        ],
+        "aggregation": {
+          "model_id": "independent_jurisdiction_first_past_post",
+          "model_label_ko": "주·선거구 독립 · 다수결 공천",
+          "like_usa_equal_units": true,
+          "summary_ko": "2026 중간선거 프라이머리는 전국 단일 점수가 없다. 주(또는 하원 선거구)마다 후보자 명부를 따로 뽑고, 그 승자가 11/3 총선 후보가 된다. 대시보드 누적 40/51 은 “실시한 주 개수”이지, 대선 선거인단처럼 주를 가중 합산한 점수가 아니다.",
+          "components": [
+            {
+              "id": "state_or_district_primary",
+              "label_ko": "주·선거구 프라이머리",
+              "final_weight_pct": null,
+              "unit": "해당 관할 유권자 표",
+              "equal_weight_across_regions": false,
+              "notes_ko": [
+                "캘리포니아와 와이오밍의 표는 서로 합쳐지지 않음",
+                "상원: 주 전역 1개 공천(당별)",
+                "하원: 선거구마다 1개 공천",
+                "주지사: 주 전역 1개 공천(실시 주만)"
+              ]
+            },
+            {
+              "id": "dashboard_progress_counter",
+              "label_ko": "진행률 카운터(UI)",
+              "final_weight_pct": null,
+              "unit": "주 개수",
+              "equal_weight_across_regions": true,
+              "notes_ko": [
+                "states_completed / states_in_calendar = 일정 진척도",
+                "각 주 가중치 동일(1주=1)은 진행률 표시용뿐",
+                "전국 “공천 지지율 평균” 산출에 쓰지 않음"
+              ]
+            }
+          ],
+          "interim_display": {
+            "what_we_show": "per_state_winners_running_calendar",
+            "is_final_score": false,
+            "national_weighted_score": false,
+            "user_caution_ko": "주 클릭 = 그 주 공천 승자. 누적 바는 대선 선거인단 점수가 아님."
+          },
+          "unit_aggregation": {
+            "unit": "state (primary date wave)",
+            "cross_unit_method": "none_independent",
+            "progress_counter": "equal_weight_per_state_for_schedule_only",
+            "not": "electoral_college_or_delegate_math"
+          },
+          "not_in_scope_2026": {
+            "presidential_primary_delegates": {
+              "when": "2028 cycle",
+              "model_id": "delegate_allocation_by_party_state_rules",
+              "summary_ko": "대선 후보 경선은 주마다 대표(delegate)를 배분. 민주당은 대체로 비례, 공화당은 주·규칙에 따라 승자독식/비례 혼재. 총 대표 과반으로 후보 확정. 주=균등 1표가 아니라 대표 수·규칙 가중이 핵심. 2026 보드에는 미적용.",
+              "electoral_college": "총선(11월 대선)만 해당 — 경선 단계와 별개"
+            }
+          },
+          "general_election_note_ko": "11/3 총선: 상원·하원 의석은 각각 “이긴 관할”의 승리 수 합(seat count). 표의 전국 합으로 의석이 정해지지 않음(미국식 FPTP/양원).",
+          "sources": [
+            "FEC 2026 primary dates",
+            "The Midterm Project results (named winners)",
+            "standard US primary structure (jurisdiction-independent)"
+          ]
+        },
+        "rules": {
+          "aggregation_model": "independent_jurisdiction_first_past_post",
+          "equal_weight_states_for_progress_only": true,
+          "national_hybrid_score": false,
+          "presidential_delegate_math": "없음_2026"
+        }
+      },
       "governance_polls": [
         {
           "iso3": "USA",
@@ -3812,6 +6934,15 @@
       },
       "events": [
         {
+          "id": "rus-2026-ur-congress",
+          "type": "party_leadership",
+          "party_id": "ur",
+          "label_ko": "통합러시아 전당·명부 절차",
+          "date": "불명",
+          "status": "tentative",
+          "notes": "두마 전 당 명부; 공개 경쟁적 당대표 교체와 다름. CIKRF/UR 공고 todo"
+        },
+        {
           "id": "rus-2026-duma",
           "type": "general",
           "label_ko": "국가두마 선거(제9기)",
@@ -3825,8 +6956,10 @@
           "sources": [
             "kremlin_decree_2026-06-16",
             "cikrf",
-            "tass_2026-06-16"
-          ]
+            "tass_2026-06-16",
+            "invest_lens_elections"
+          ],
+          "market_significance_invest_lens": 1
         },
         {
           "id": "rus-2026-single-voting-day-regions",
@@ -3841,8 +6974,10 @@
           "notes": "Bundled with Duma day. Exact subject list = CIKRF extract todo.",
           "sources": [
             "tass_2026-06-16",
-            "cikrf"
-          ]
+            "cikrf",
+            "invest_lens_elections"
+          ],
+          "market_significance_invest_lens": 1
         },
         {
           "id": "rus-2026-presidential",
@@ -3856,7 +6991,7 @@
           ]
         }
       ],
-      "events_this_year": 3,
+      "events_this_year": 4,
       "ingest_mode": "document_text_extract",
       "calendar": {
         "as_of": "2026-08-08",
@@ -4720,6 +7855,307 @@
       }
     },
     {
+      "iso3": "DEU",
+      "name_ko": "독일",
+      "priority_tier": 2,
+      "region": "europe",
+      "system": "parliamentary",
+      "map_spectrum": "conservative",
+      "head": {
+        "role": "chancellor",
+        "name_en": "Friedrich Merz",
+        "party_id": "cdu",
+        "spectrum": "conservative",
+        "sources": [
+          {
+            "org": "Bundeskanzler",
+            "url": "https://www.bundeskanzler.de/bk-en/news/g7-summit-evian-france-2440544",
+            "date": "2026-06-15"
+          }
+        ]
+      },
+      "ruling_party": {
+        "id": "cdu",
+        "name_en": "CDU/CSU",
+        "role": "ruling"
+      },
+      "parties_tracked": [
+        {
+          "id": "cdu",
+          "abbr": "CDU",
+          "name_en": "CDU/CSU",
+          "role": "ruling",
+          "spectrum": "conservative",
+          "confidence": "high",
+          "display": "CDU"
+        },
+        {
+          "id": "spd",
+          "abbr": "SPD",
+          "name_en": "SPD",
+          "role": "main_opposition",
+          "spectrum": "progressive",
+          "confidence": "high",
+          "display": "SPD"
+        },
+        {
+          "id": "afd",
+          "abbr": "AfD",
+          "name_en": "AfD",
+          "role": "major_3",
+          "spectrum": "other",
+          "confidence": "medium",
+          "display": "AfD"
+        },
+        {
+          "id": "gruene",
+          "abbr": "Grüne",
+          "name_en": "Alliance 90/The Greens",
+          "role": "major_4",
+          "spectrum": "progressive",
+          "confidence": "medium",
+          "display": "Grüne"
+        }
+      ],
+      "legislature": {
+        "chambers": [
+          "bundestag",
+          "bundesrat"
+        ],
+        "member_roster_source": {
+          "id": "bwl_2025",
+          "extract_file": "extracted/deu_bundestag.json",
+          "status": "extracted"
+        }
+      },
+      "subnational": null,
+      "polls": {
+        "admit": [
+          "chancellor_approval",
+          "party_support"
+        ],
+        "status": "slot_or_wired"
+      },
+      "events": [
+        {
+          "id": "deu-2026-spd-leadership",
+          "type": "party_leadership",
+          "party_id": "spd",
+          "label_ko": "SPD 당대표 교체 경선",
+          "date": "불명",
+          "status": "없음",
+          "notes": "2026 중 대규모 공개 당대표 교체 대회 미확인 → 없음; 확인 시 갱신"
+        },
+        {
+          "id": "deu-2026-cdu-parteitag-38",
+          "type": "party_leadership",
+          "party_id": "cdu",
+          "party_abbr": "CDU",
+          "label_ko": "CDU 제38차 연방전당대회 (당대표 재신임)",
+          "date": "2026-02-20",
+          "date_end": "2026-02-21",
+          "status": "completed",
+          "office": "party_leader",
+          "venue": "슈투트가르트 메세",
+          "winner": {
+            "name_en": "Friedrich Merz",
+            "name_ko": "프리드리히 메르츠",
+            "result_pct": 91.2
+          },
+          "notes": "단독 후보 재선출 878/963. 2026 주 선거 해 직전 결속 전당.",
+          "sources": [
+            "https://www.cdu.de/38-parteitag/",
+            "https://www.dw.com/en/merz-cdu-party-congress-germany-deutschland/live-76052837"
+          ]
+        },
+        {
+          "id": "deu-2026-bundestag",
+          "type": "general",
+          "label_ko": "연방하원(Bundestag)",
+          "date": "없음",
+          "status": "없음",
+          "sources": [
+            "bundeswahlleiterin"
+          ]
+        },
+        {
+          "id": "deu-2026-bw-landtag",
+          "type": "local",
+          "label_ko": "바덴뷔르템베르크 주의회",
+          "date": "2026-03-08",
+          "status": "scheduled",
+          "sources": [
+            "das_parlament_landtag_2026"
+          ]
+        },
+        {
+          "id": "deu-2026-rlp-landtag",
+          "type": "local",
+          "label_ko": "라인란트팔츠 주의회",
+          "date": "2026-03-22",
+          "status": "scheduled",
+          "sources": [
+            "das_parlament_landtag_2026"
+          ]
+        },
+        {
+          "id": "deu-2026-st-landtag",
+          "type": "local",
+          "label_ko": "작센안할트 주의회",
+          "date": "2026-09-06",
+          "status": "scheduled",
+          "sources": [
+            "bundeswahlleiterin",
+            "sachsen_anhalt_faq"
+          ]
+        },
+        {
+          "id": "deu-2026-berlin-ag",
+          "type": "local",
+          "label_ko": "베를린 주의회(Abgeordnetenhaus)",
+          "date": "2026-09-20",
+          "status": "scheduled",
+          "sources": [
+            "bundeswahlleiterin"
+          ]
+        },
+        {
+          "id": "deu-2026-mv-landtag",
+          "type": "local",
+          "label_ko": "메클렌부르크포어포메른 주의회",
+          "date": "2026-09-20",
+          "status": "scheduled",
+          "sources": [
+            "bundeswahlleiterin",
+            "landtag_mv"
+          ]
+        }
+      ],
+      "events_this_year": 8,
+      "ingest_mode": "document_text_extract",
+      "calendar": {
+        "as_of": "2026-08-08",
+        "sources": [
+          {
+            "id": "bundeswahlleiterin",
+            "org": "Die Bundeswahlleiterin",
+            "url": "https://www.bundeswahlleiterin.de/service/wahltermine.html",
+            "retrieved": "2026-08-08"
+          },
+          {
+            "id": "das_parlament_landtag_2026",
+            "org": "Das Parlament",
+            "url": "https://www.das-parlament.de/inland/bundeslaender/diese-fuenf-landtagswahlen-stehen-in-2026-an"
+          },
+          {
+            "id": "sachsen_anhalt_faq",
+            "url": "https://wahlen.sachsen-anhalt.de/zu-den-wahlen/landtagswahl/faq-zur-landtagswahl-2026"
+          },
+          {
+            "id": "landtag_mv",
+            "url": "https://www.landtag-mv.de/landtag/rund-um-wahlen/landtagswahl-2026"
+          }
+        ],
+        "notes": [
+          "Bundestag federal general: 없음 in 2026 (post-2025 cycle; next listed 2029 on federal overview).",
+          "Five Land/Abgeordnetenhaus races in 2026."
+        ],
+        "null_policy": {
+          "없음": "해당 일정/선거 없음",
+          "불명": "발표·확정 전 또는 출처에 날짜 없음"
+        }
+      },
+      "legislature_live": {
+        "summary": {
+          "chamber": "bundestag",
+          "seats_total": 630,
+          "by_party_abbr": {
+            "CDU": 164,
+            "AfD": 152,
+            "SPD": 120,
+            "Grüne": 85,
+            "Linke": 64,
+            "CSU": 44,
+            "SSW": 1,
+            "CDU/CSU": 208
+          },
+          "union_faction_cdu_csu": 208,
+          "election_basis": "2025-02"
+        },
+        "parties": [
+          {
+            "abbr": "CDU",
+            "name_en": "CDU",
+            "seats": 164
+          },
+          {
+            "abbr": "AfD",
+            "name_en": "AfD",
+            "seats": 152
+          },
+          {
+            "abbr": "SPD",
+            "name_en": "SPD",
+            "seats": 120
+          },
+          {
+            "abbr": "Grüne",
+            "name_en": "Alliance 90/The Greens",
+            "seats": 85
+          },
+          {
+            "abbr": "Linke",
+            "name_en": "The Left",
+            "seats": 64
+          },
+          {
+            "abbr": "CSU",
+            "name_en": "CSU",
+            "seats": 44
+          },
+          {
+            "abbr": "SSW",
+            "name_en": "SSW",
+            "seats": 1
+          }
+        ],
+        "floor_leadership": [
+          {
+            "office": "chancellor",
+            "name": "Friedrich Merz",
+            "party_abbr": "CDU",
+            "source": "https://www.bundeskanzler.de/"
+          },
+          {
+            "office": "largest_opposition_group",
+            "name": "불명",
+            "party_abbr": "AfD",
+            "note": "AfD 2nd-largest Fraktion by seats; parliamentary floor roles separate from chancellor."
+          }
+        ],
+        "source": {
+          "id": "bundeswahlleiterin_2025_final",
+          "url": "https://www.bundeswahlleiterin.de/en/info/presse/mitteilungen/bundestagswahl-2025/29_25_endgueltiges-ergebnis.html",
+          "org": "Die Bundeswahlleiterin",
+          "grade": "official",
+          "note": "21st Bundestag final seat matrix after 2025 snap election; 2026 no federal general."
+        }
+      },
+      "governance_polls": [
+        {
+          "iso3": "DEU",
+          "kind": "chancellor_approval",
+          "subject": "Friedrich Merz",
+          "pollster": "불명",
+          "approve_pct": null,
+          "field_note": "Series slot reserved; no single canonical series wired yet.",
+          "sources": [],
+          "confidence": "low",
+          "status": "todo"
+        }
+      ]
+    },
+    {
       "iso3": "KOR",
       "name_ko": "한국",
       "priority_tier": 2,
@@ -4870,7 +8306,11 @@
             "gyeonggi_governor": "Choo Mi-ae (DPK)",
             "busan_mayor": "Jeon Jae-soo (DPK)"
           },
-          "notes": "Ruling DPK landslide among 16 heads; PPP held Seoul + Yeongnam core"
+          "notes": "Ruling DPK landslide among 16 heads; PPP held Seoul + Yeongnam core",
+          "sources": [
+            "invest_lens_elections"
+          ],
+          "market_significance_invest_lens": 3
         },
         {
           "id": "kor-2026-na-byelections-local-day",
@@ -4878,7 +8318,11 @@
           "label_ko": "국회의원 재보궐 (6·3 동시)",
           "date": "2026-06-03",
           "status": "completed",
-          "notes": "Multiple constituency replacements (e.g. Gyeyang B after Lee elected president; local-run resignations). Party split of wins media-reported ~DPK majority of seats — exact district list NEC open data todo."
+          "notes": "Multiple constituency replacements (e.g. Gyeyang B after Lee elected president; local-run resignations). Party split of wins media-reported ~DPK majority of seats — exact district list NEC open data todo.",
+          "sources": [
+            "invest_lens_elections"
+          ],
+          "market_significance_invest_lens": 3
         },
         {
           "id": "kor-2026-speaker-half",
@@ -5327,6 +8771,376 @@
           ]
         }
       },
+      "race_progress": {
+        "schema": "race_progress_v1",
+        "iso3": "KOR",
+        "as_of": "2026-08-08",
+        "as_of_iso": "2026-08-08T13:12:52.991135+00:00",
+        "mode": "party_leadership_tour_interim",
+        "status": "ongoing",
+        "race": {
+          "id": "kor-2026-dpk-convention",
+          "label_ko": "더불어민주당 전당대회 당대표",
+          "final_date": "2026-08-17",
+          "venue_final": "대전컨벤션센터",
+          "ui_hint": "list_stops_click_for_regional_pct"
+        },
+        "rules": {
+          "member_weight_pct": 70,
+          "public_poll_weight_pct": 30,
+          "tour_publishes": "rights_member_first_preference_only",
+          "final_includes": "delegates_online + public_poll + member_votes",
+          "regional_bonus_pct": 5,
+          "regional_bonus_targets": [
+            "대구",
+            "경북",
+            "경남"
+          ],
+          "aggregation_model": "weighted_convention_hybrid"
+        },
+        "candidates": [
+          {
+            "id": "kim",
+            "name_ko": "김민석",
+            "name_en": "Kim Min-seok",
+            "ballot_no": 3
+          },
+          {
+            "id": "chung",
+            "name_ko": "정청래",
+            "name_en": "Chung Chung-rae",
+            "ballot_no": 2
+          },
+          {
+            "id": "song",
+            "name_ko": "송영길",
+            "name_en": "Song Young-gil",
+            "ballot_no": 1
+          }
+        ],
+        "cumulative": {
+          "as_of": "2026-08-08",
+          "scope": "권리당원 순회 1순위 누적 (경남 5% 가중 미반영)",
+          "is_final": false,
+          "leader": "김민석",
+          "share_pct": {
+            "김민석": 45.42,
+            "정청래": 44.56,
+            "송영길": 10.02
+          },
+          "votes": {
+            "김민석": 76844,
+            "정청래": 75380,
+            "송영길": null
+          },
+          "margin_votes": 1464,
+          "margin_pp": 0.86,
+          "stops_completed": 3,
+          "stops_remaining": 3,
+          "source": "https://en.sedaily.com/politics/2026/08/08/kim-min-seok-wins-incheon-to-retake-lead-over-jung-chung-rae"
+        },
+        "units": [
+          {
+            "id": "chungcheong",
+            "label_ko": "충청(충남·충북·대전·세종)",
+            "date": "2026-08-01",
+            "status": "completed",
+            "winner": "김민석",
+            "results": [
+              {
+                "name_ko": "김민석",
+                "pct": 45.06,
+                "votes": 30632
+              },
+              {
+                "name_ko": "정청래",
+                "pct": 44.61,
+                "votes": 30329
+              },
+              {
+                "name_ko": "송영길",
+                "pct": 10.34,
+                "votes": 7027
+              }
+            ],
+            "total_votes": 67988,
+            "subunits": [
+              {
+                "id": "chungnam",
+                "label_ko": "충남",
+                "results_pct": {
+                  "김민석": 45.65,
+                  "정청래": 43.28,
+                  "송영길": null
+                },
+                "winner": "김민석"
+              },
+              {
+                "id": "chungbuk",
+                "label_ko": "충북",
+                "results_pct": {
+                  "김민석": 47.39,
+                  "정청래": 41.86,
+                  "송영길": null
+                },
+                "winner": "김민석"
+              },
+              {
+                "id": "daejeon",
+                "label_ko": "대전",
+                "results_pct": {
+                  "김민석": 42.71,
+                  "정청래": 48.23,
+                  "송영길": null
+                },
+                "winner": "정청래"
+              },
+              {
+                "id": "sejong",
+                "label_ko": "세종",
+                "results_pct": {
+                  "김민석": 40.68,
+                  "정청래": 50.28,
+                  "송영길": null
+                },
+                "winner": "정청래"
+              }
+            ],
+            "source": "https://www.newsis.com/view/NISX20260802_0003733231"
+          },
+          {
+            "id": "bug",
+            "label_ko": "부울경(부산·울산·경남)",
+            "date": "2026-08-02",
+            "status": "completed",
+            "winner": "정청래",
+            "results": [
+              {
+                "name_ko": "정청래",
+                "pct": 46.65,
+                "votes": 25189
+              },
+              {
+                "name_ko": "김민석",
+                "pct": 43.85,
+                "votes": 23675
+              },
+              {
+                "name_ko": "송영길",
+                "pct": 9.5,
+                "votes": 5129
+              }
+            ],
+            "total_votes": 53993,
+            "turnout_pct": 54.69,
+            "note": "경남 5% 가중은 최종 집계 때만 반영 예정; 이 단위는 미가중",
+            "subunits": [
+              {
+                "id": "busan",
+                "label_ko": "부산",
+                "results_pct": {
+                  "정청래": 48.76,
+                  "김민석": 43.28,
+                  "송영길": 7.96
+                },
+                "winner": "정청래"
+              },
+              {
+                "id": "ulsan",
+                "label_ko": "울산",
+                "results_pct": {
+                  "김민석": 46.32,
+                  "정청래": 43.3,
+                  "송영길": 10.38
+                },
+                "winner": "김민석"
+              },
+              {
+                "id": "gyeongnam",
+                "label_ko": "경남",
+                "results_pct": {
+                  "정청래": 46.08,
+                  "김민석": 43.38,
+                  "송영길": 10.54
+                },
+                "winner": "정청래"
+              }
+            ],
+            "cumulative_after": {
+              "정청래": 45.51,
+              "김민석": 44.52,
+              "송영길": 9.97,
+              "leader": "정청래"
+            },
+            "source": "https://en.infomaxai.com/news/articleView.html?idxno=133191"
+          },
+          {
+            "id": "jeju_incheon",
+            "label_ko": "제주·인천",
+            "date": "2026-08-08",
+            "status": "completed",
+            "winner": "김민석",
+            "results": [
+              {
+                "name_ko": "김민석",
+                "pct": 47.75,
+                "votes": 22537
+              },
+              {
+                "name_ko": "정청래",
+                "pct": 42.08,
+                "votes": 19862
+              },
+              {
+                "name_ko": "송영길",
+                "pct": 10.17,
+                "votes": 4799
+              }
+            ],
+            "subunits": [
+              {
+                "id": "jeju",
+                "label_ko": "제주",
+                "results_pct": {
+                  "김민석": 52.64,
+                  "정청래": 39.89,
+                  "송영길": 7.47
+                },
+                "winner": "김민석"
+              },
+              {
+                "id": "incheon",
+                "label_ko": "인천",
+                "results_pct": {
+                  "김민석": 45.09,
+                  "정청래": 43.27,
+                  "송영길": 11.63
+                },
+                "winner": "김민석",
+                "votes": {
+                  "김민석": 13795,
+                  "정청래": 13237
+                }
+              }
+            ],
+            "source": "https://www.asiae.co.kr/en/article/2026080819353764193"
+          },
+          {
+            "id": "gangwon_tk",
+            "label_ko": "강원·대구·경북",
+            "date": "2026-08-09",
+            "status": "scheduled",
+            "winner": "불명",
+            "results": []
+          },
+          {
+            "id": "honam",
+            "label_ko": "전북·전남광주",
+            "date": "2026-08-15",
+            "status": "scheduled",
+            "winner": "불명",
+            "results": []
+          },
+          {
+            "id": "capital",
+            "label_ko": "경기·서울",
+            "date": "2026-08-16",
+            "status": "scheduled",
+            "winner": "불명",
+            "results": []
+          }
+        ],
+        "ui": {
+          "summary_card": "cumulative.share_pct + leader + margin_pp",
+          "list": "units[] status + winner",
+          "detail_on_click": "units[i].results + subunits[]",
+          "null_policy": {
+            "없음": "해당 없음",
+            "불명": "미개표/미발표"
+          }
+        },
+        "aggregation": {
+          "model_id": "weighted_convention_hybrid",
+          "model_label_ko": "가중·혼합형 전당대회",
+          "like_usa_equal_units": false,
+          "summary_ko": "단위(권역) 1표가 아님. 최종 당선은 권리당원·대의원 득표군 70%와 국민여론조사 30%를 합산. 순회 중 공개 수치는 그 중 권리당원 1순위만의 단순 누적(표·%)이며, 지역 5% 가·감점과 여론 30%는 최종에 따로 들어간다.",
+          "components": [
+            {
+              "id": "party_vote_bloc",
+              "label_ko": "대의원·권리당원 투표",
+              "final_weight_pct": 70,
+              "unit": "표 / 선호투표 합산",
+              "equal_weight_across_regions": false,
+              "notes_ko": [
+                "1인1표·선호투표 구조(당 규정)",
+                "권역 순회는 중간 공개용 — 권역 점수를 균등(1/6) 가중합하는 모델 아님",
+                "권역별 표 수가 다르면 누적 비중도 표 수에 비례 (인구·당원 규모 반영)"
+              ]
+            },
+            {
+              "id": "public_poll",
+              "label_ko": "국민 여론조사",
+              "final_weight_pct": 30,
+              "unit": "조사 지지율 → 당 배점",
+              "equal_weight_across_regions": null,
+              "applies_when": "final_convention_only",
+              "notes_ko": [
+                "순회 중간 공개에는 미포함",
+                "전당대회 당일(또는 당이 정한 시점)에 70:30 최종 합산"
+              ]
+            },
+            {
+              "id": "regional_bonus",
+              "label_ko": "지역 가중 (대의원·권리당원)",
+              "final_weight_pct": null,
+              "modifier_pct": 5,
+              "applies_to": [
+                "대구",
+                "경북",
+                "경남"
+              ],
+              "applies_when": "final_member_bloc",
+              "equal_weight_across_regions": false,
+              "notes_ko": [
+                "당 규정: TK·경남 대의원·권리당원 득표에 5% 가중",
+                "보도되는 순회 누적(예: 부울경 집계)은 대개 미가중 1순위 %"
+              ]
+            }
+          ],
+          "interim_display": {
+            "what_we_show": "rights_member_first_preference_running_total",
+            "is_final_score": false,
+            "includes_public_poll_30": false,
+            "includes_regional_5pct": false,
+            "includes_delegate_online": "불명_or_partial",
+            "user_caution_ko": "지금 보는 누적 선두 ≠ 확정. 8/17 최종은 30% 여론 + 지역가중 반영."
+          },
+          "unit_aggregation": {
+            "unit": "tour_stop_region",
+            "cross_unit_method": "sum_raw_votes_or_share_as_published",
+            "not": "equal_weight_per_stop",
+            "contrast_usa": "미국 주처럼 주=1 단위로 균등 합산하지 않음"
+          },
+          "compare_party_variants": {
+            "DPK_2026": {
+              "member_pct": 70,
+              "public_pct": 30,
+              "regional_bonus": "TK+경남 5%"
+            },
+            "PPP_2025": {
+              "member_pct": 80,
+              "public_pct": 20,
+              "regional_bonus": "없음_이_스냅샷",
+              "status": "completed_incumbent"
+            }
+          },
+          "sources": [
+            "config/extracted/kor_party_leadership.json",
+            "config/calendars/kor_2026.json rules_summary",
+            "media cross on DPK 전당 규정"
+          ]
+        }
+      },
       "prime_minister": {
         "name_en": "Han Seong-sook",
         "name_ko": "한성숙",
@@ -5383,276 +9197,6 @@
           ],
           "confidence": "medium",
           "refresh": "weekly_realmeter"
-        }
-      ]
-    },
-    {
-      "iso3": "DEU",
-      "name_ko": "독일",
-      "priority_tier": 2,
-      "region": "europe",
-      "system": "parliamentary",
-      "map_spectrum": "conservative",
-      "head": {
-        "role": "chancellor",
-        "name_en": "Friedrich Merz",
-        "party_id": "cdu",
-        "spectrum": "conservative",
-        "sources": [
-          {
-            "org": "Bundeskanzler",
-            "url": "https://www.bundeskanzler.de/bk-en/news/g7-summit-evian-france-2440544",
-            "date": "2026-06-15"
-          }
-        ]
-      },
-      "ruling_party": {
-        "id": "cdu",
-        "name_en": "CDU/CSU",
-        "role": "ruling"
-      },
-      "parties_tracked": [
-        {
-          "id": "cdu",
-          "abbr": "CDU",
-          "name_en": "CDU/CSU",
-          "role": "ruling",
-          "spectrum": "conservative",
-          "confidence": "high",
-          "display": "CDU"
-        },
-        {
-          "id": "spd",
-          "abbr": "SPD",
-          "name_en": "SPD",
-          "role": "main_opposition",
-          "spectrum": "progressive",
-          "confidence": "high",
-          "display": "SPD"
-        },
-        {
-          "id": "afd",
-          "abbr": "AfD",
-          "name_en": "AfD",
-          "role": "major_3",
-          "spectrum": "other",
-          "confidence": "medium",
-          "display": "AfD"
-        },
-        {
-          "id": "gruene",
-          "abbr": "Grüne",
-          "name_en": "Alliance 90/The Greens",
-          "role": "major_4",
-          "spectrum": "progressive",
-          "confidence": "medium",
-          "display": "Grüne"
-        }
-      ],
-      "legislature": {
-        "chambers": [
-          "bundestag",
-          "bundesrat"
-        ],
-        "member_roster_source": {
-          "id": "bwl_2025",
-          "extract_file": "extracted/deu_bundestag.json",
-          "status": "extracted"
-        }
-      },
-      "subnational": null,
-      "polls": {
-        "admit": [
-          "chancellor_approval",
-          "party_support"
-        ],
-        "status": "slot_or_wired"
-      },
-      "events": [
-        {
-          "id": "deu-2026-bundestag",
-          "type": "general",
-          "label_ko": "연방하원(Bundestag)",
-          "date": "없음",
-          "status": "없음",
-          "sources": [
-            "bundeswahlleiterin"
-          ]
-        },
-        {
-          "id": "deu-2026-bw-landtag",
-          "type": "local",
-          "label_ko": "바덴뷔르템베르크 주의회",
-          "date": "2026-03-08",
-          "status": "scheduled",
-          "sources": [
-            "das_parlament_landtag_2026"
-          ]
-        },
-        {
-          "id": "deu-2026-rlp-landtag",
-          "type": "local",
-          "label_ko": "라인란트팔츠 주의회",
-          "date": "2026-03-22",
-          "status": "scheduled",
-          "sources": [
-            "das_parlament_landtag_2026"
-          ]
-        },
-        {
-          "id": "deu-2026-st-landtag",
-          "type": "local",
-          "label_ko": "작센안할트 주의회",
-          "date": "2026-09-06",
-          "status": "scheduled",
-          "sources": [
-            "bundeswahlleiterin",
-            "sachsen_anhalt_faq"
-          ]
-        },
-        {
-          "id": "deu-2026-berlin-ag",
-          "type": "local",
-          "label_ko": "베를린 주의회(Abgeordnetenhaus)",
-          "date": "2026-09-20",
-          "status": "scheduled",
-          "sources": [
-            "bundeswahlleiterin"
-          ]
-        },
-        {
-          "id": "deu-2026-mv-landtag",
-          "type": "local",
-          "label_ko": "메클렌부르크포어포메른 주의회",
-          "date": "2026-09-20",
-          "status": "scheduled",
-          "sources": [
-            "bundeswahlleiterin",
-            "landtag_mv"
-          ]
-        }
-      ],
-      "events_this_year": 6,
-      "ingest_mode": "document_text_extract",
-      "calendar": {
-        "as_of": "2026-08-08",
-        "sources": [
-          {
-            "id": "bundeswahlleiterin",
-            "org": "Die Bundeswahlleiterin",
-            "url": "https://www.bundeswahlleiterin.de/service/wahltermine.html",
-            "retrieved": "2026-08-08"
-          },
-          {
-            "id": "das_parlament_landtag_2026",
-            "org": "Das Parlament",
-            "url": "https://www.das-parlament.de/inland/bundeslaender/diese-fuenf-landtagswahlen-stehen-in-2026-an"
-          },
-          {
-            "id": "sachsen_anhalt_faq",
-            "url": "https://wahlen.sachsen-anhalt.de/zu-den-wahlen/landtagswahl/faq-zur-landtagswahl-2026"
-          },
-          {
-            "id": "landtag_mv",
-            "url": "https://www.landtag-mv.de/landtag/rund-um-wahlen/landtagswahl-2026"
-          }
-        ],
-        "notes": [
-          "Bundestag federal general: 없음 in 2026 (post-2025 cycle; next listed 2029 on federal overview).",
-          "Five Land/Abgeordnetenhaus races in 2026."
-        ],
-        "null_policy": {
-          "없음": "해당 일정/선거 없음",
-          "불명": "발표·확정 전 또는 출처에 날짜 없음"
-        }
-      },
-      "legislature_live": {
-        "summary": {
-          "chamber": "bundestag",
-          "seats_total": 630,
-          "by_party_abbr": {
-            "CDU": 164,
-            "AfD": 152,
-            "SPD": 120,
-            "Grüne": 85,
-            "Linke": 64,
-            "CSU": 44,
-            "SSW": 1,
-            "CDU/CSU": 208
-          },
-          "union_faction_cdu_csu": 208,
-          "election_basis": "2025-02"
-        },
-        "parties": [
-          {
-            "abbr": "CDU",
-            "name_en": "CDU",
-            "seats": 164
-          },
-          {
-            "abbr": "AfD",
-            "name_en": "AfD",
-            "seats": 152
-          },
-          {
-            "abbr": "SPD",
-            "name_en": "SPD",
-            "seats": 120
-          },
-          {
-            "abbr": "Grüne",
-            "name_en": "Alliance 90/The Greens",
-            "seats": 85
-          },
-          {
-            "abbr": "Linke",
-            "name_en": "The Left",
-            "seats": 64
-          },
-          {
-            "abbr": "CSU",
-            "name_en": "CSU",
-            "seats": 44
-          },
-          {
-            "abbr": "SSW",
-            "name_en": "SSW",
-            "seats": 1
-          }
-        ],
-        "floor_leadership": [
-          {
-            "office": "chancellor",
-            "name": "Friedrich Merz",
-            "party_abbr": "CDU",
-            "source": "https://www.bundeskanzler.de/"
-          },
-          {
-            "office": "largest_opposition_group",
-            "name": "불명",
-            "party_abbr": "AfD",
-            "note": "AfD 2nd-largest Fraktion by seats; parliamentary floor roles separate from chancellor."
-          }
-        ],
-        "source": {
-          "id": "bundeswahlleiterin_2025_final",
-          "url": "https://www.bundeswahlleiterin.de/en/info/presse/mitteilungen/bundestagswahl-2025/29_25_endgueltiges-ergebnis.html",
-          "org": "Die Bundeswahlleiterin",
-          "grade": "official",
-          "note": "21st Bundestag final seat matrix after 2025 snap election; 2026 no federal general."
-        }
-      },
-      "governance_polls": [
-        {
-          "iso3": "DEU",
-          "kind": "chancellor_approval",
-          "subject": "Friedrich Merz",
-          "pollster": "불명",
-          "approve_pct": null,
-          "field_note": "Series slot reserved; no single canonical series wired yet.",
-          "sources": [],
-          "confidence": "low",
-          "status": "todo"
         }
       ]
     },
@@ -5753,6 +9297,35 @@
       },
       "events": [
         {
+          "id": "gbr-2026-con-leadership",
+          "type": "party_leadership",
+          "party_id": "con",
+          "label_ko": "보수당 당대표 경선",
+          "date": "없음",
+          "status": "없음",
+          "notes": "2026 중 공식 당대표 교체 대회 없음(Badenoch 임기 중으로 추적 중)"
+        },
+        {
+          "id": "gbr-2026-labour-leadership",
+          "type": "party_leadership",
+          "party_id": "lab",
+          "party_abbr": "Lab",
+          "label_ko": "노동당 당대표 특별당대회",
+          "date": "2026-07-17",
+          "status": "completed",
+          "office": "party_leader",
+          "venue": "TUC London (Special Conference)",
+          "winner": {
+            "name_en": "Andy Burnham",
+            "name_ko": "앤디 번ham"
+          },
+          "notes": "Starmer 사임 후 단독 후보 당선(PLP 379 등). PM 취임 2026-07-20.",
+          "sources": [
+            "https://labour.org.uk/updates/members-updates/andy-burnham-elected-leader-of-the-labour-party/",
+            "https://en.wikipedia.org/wiki/2026_Labour_Party_leadership_election"
+          ]
+        },
+        {
           "id": "gbr-2026-westminster",
           "type": "general",
           "label_ko": "하원 총선",
@@ -5801,13 +9374,14 @@
           "label_ko": "총리 교체(노동당·내각)",
           "date": "2026-07-20",
           "status": "completed",
-          "notes": "Keir Starmer 사임 후 Andy Burnham PM 취임. 하원 다수 유지.",
+          "notes": "Keir Starmer 사임 후 Andy Burnham PM 취임(2026-07-20). 당대표 선출은 gbr-2026-labour-leadership(2026-07-17) 참고.",
           "sources": [
             "https://www.gov.uk/government/people/andy-burnham"
-          ]
+          ],
+          "related_event": "gbr-2026-labour-leadership"
         }
       ],
-      "events_this_year": 5,
+      "events_this_year": 7,
       "ingest_mode": "document_text_extract",
       "calendar": {
         "as_of": "2026-08-08",
@@ -6147,6 +9721,39 @@
       },
       "events": [
         {
+          "id": "fra-2026-renaissance-leadership",
+          "type": "party_leadership",
+          "party_id": "renaissance",
+          "label_ko": "르네상스(여) 당대표/전당",
+          "date": "불명",
+          "status": "tentative",
+          "notes": "2026 확정 일정 불명 — 발표 시 채움"
+        },
+        {
+          "id": "fra-2026-rn-congres-19",
+          "type": "party_leadership",
+          "party_id": "rn",
+          "party_abbr": "RN",
+          "label_ko": "국민연합(RN) 제19차 전당대회",
+          "date": "2026-10-24",
+          "date_end": "2026-10-25",
+          "status": "scheduled",
+          "office": "party_leader",
+          "venue": "오를레앙",
+          "candidates": [
+            {
+              "name_en": "Jordan Bardella",
+              "name_ko": "조르당 바르델라",
+              "status": "incumbent_running"
+            }
+          ],
+          "notes": "당수·전국평의회 갱신. 전자투표 9/21–10/22 뒤 결과 10/24 발표 예정.",
+          "sources": [
+            "https://rassemblementnational.fr/congres2026",
+            "https://fr.wikipedia.org/wiki/XIXe_congr%C3%A8s_du_Rassemblement_national"
+          ]
+        },
+        {
           "id": "fra-2026-presidential",
           "type": "presidential",
           "label_ko": "대선",
@@ -6198,7 +9805,7 @@
           ]
         }
       ],
-      "events_this_year": 5,
+      "events_this_year": 7,
       "ingest_mode": "document_text_extract",
       "calendar": {
         "as_of": "2026-08-08",
@@ -6358,6 +9965,237 @@
       ]
     },
     {
+      "iso3": "IND",
+      "name_ko": "인도",
+      "priority_tier": 2,
+      "region": "south_asia_se",
+      "system": "parliamentary",
+      "map_spectrum": "conservative",
+      "head": {
+        "role": "prime_minister",
+        "name_en": "Narendra Modi",
+        "name_ko": "나렌드라 모디",
+        "party_id": "bjp",
+        "spectrum": "conservative",
+        "sources": [
+          {
+            "org": "profile seed",
+            "note": "Incumbent after 2024 Lok Sabha; 2026 mostly state-level"
+          }
+        ]
+      },
+      "ruling_party": {
+        "id": "bjp",
+        "name_en": "BJP",
+        "role": "ruling"
+      },
+      "parties_tracked": [
+        {
+          "id": "bjp",
+          "abbr": "BJP",
+          "name_en": "BJP",
+          "role": "ruling",
+          "spectrum": "conservative",
+          "display": "BJP"
+        },
+        {
+          "id": "inc",
+          "abbr": "INC",
+          "name_en": "Indian National Congress",
+          "role": "main_opposition",
+          "spectrum": "progressive",
+          "display": "INC"
+        }
+      ],
+      "legislature": null,
+      "subnational": null,
+      "polls": {
+        "admit": [
+          "pm_approval"
+        ],
+        "status": "todo"
+      },
+      "events": [
+        {
+          "id": "ind-2026-rajya-sabha-jun",
+          "type": "general",
+          "label_ko": "라지야 사바(상원) 간선 묶음",
+          "date": "2026-06-18",
+          "status": "scheduled",
+          "sources": [
+            "https://en.wikipedia.org/wiki/2026_national_electoral_calendar"
+          ]
+        },
+        {
+          "id": "ind-2026-rajya-sabha-mar",
+          "type": "general",
+          "label_ko": "라지야 사바(상원) 간선 묶음",
+          "date": "2026-03-16",
+          "status": "scheduled",
+          "notes": "Wiki national calendar: Council of States rolls Mar 16 / Jun 18 / Nov TBD",
+          "sources": [
+            "https://en.wikipedia.org/wiki/2026_national_electoral_calendar"
+          ]
+        },
+        {
+          "id": "ind-2026-party-leadership-bjp-inc",
+          "type": "party_leadership",
+          "label_ko": "BJP·INC 전국 당대표 전당대회",
+          "date": "불명",
+          "status": "tentative",
+          "notes": "2026 공개 정기 당대표 교체 일정 미확정"
+        },
+        {
+          "id": "ind-2026-lok-sabha",
+          "type": "general",
+          "label_ko": "로크사바 총선",
+          "date": "없음",
+          "status": "없음"
+        },
+        {
+          "id": "ind-2026-state-pack",
+          "type": "local",
+          "label_ko": "주요 주의회 선거 묶음",
+          "date": "불명",
+          "status": "tentative",
+          "notes": "ECI calendar cross-check todo"
+        }
+      ],
+      "events_this_year": 5,
+      "ingest_mode": "document_text_extract",
+      "calendar": {
+        "as_of": "2026-08-08",
+        "sources": null,
+        "notes": [
+          "No Lok Sabha general in 2026; state elections / Rajya Sabha rolls possible — aggregate later."
+        ],
+        "null_policy": {
+          "없음": "해당 없음",
+          "불명": "미확정"
+        }
+      }
+    },
+    {
+      "iso3": "TWN",
+      "name_ko": "대만",
+      "priority_tier": 2,
+      "region": "east_asia",
+      "system": "presidential",
+      "map_spectrum": "progressive",
+      "head": {
+        "role": "president",
+        "name_en": "Lai Ching-te",
+        "name_en_alt": "William Lai",
+        "name_ko": "라이칭더",
+        "party_id": "dpp",
+        "spectrum": "progressive",
+        "since": "2024-05-20",
+        "sources": [
+          {
+            "org": "Focus Taiwan",
+            "url": "https://focustaiwan.tw/politics/202605200009",
+            "date": "2026-05-20"
+          }
+        ]
+      },
+      "ruling_party": {
+        "id": "dpp",
+        "name_ko": "민진당",
+        "role": "ruling"
+      },
+      "parties_tracked": [
+        {
+          "id": "dpp",
+          "abbr": "DPP",
+          "name_en": "Democratic Progressive Party",
+          "name_ko": "민진당",
+          "role": "ruling",
+          "spectrum": "progressive",
+          "display": "DPP"
+        },
+        {
+          "id": "kmt",
+          "abbr": "KMT",
+          "name_en": "Kuomintang",
+          "name_ko": "국민당",
+          "role": "main_opposition",
+          "spectrum": "conservative",
+          "display": "KMT"
+        }
+      ],
+      "legislature": null,
+      "subnational": null,
+      "polls": {
+        "admit": [
+          "presidential_job_approval"
+        ],
+        "status": "todo"
+      },
+      "events": [
+        {
+          "id": "twn-2026-local",
+          "type": "local",
+          "label_ko": "지방동시선거(구시·향진·시의회 등)",
+          "date": "불명",
+          "status": "tentative",
+          "notes": "9합1 계열 2026; 중앙선관위 일자 확인 todo (보통 하반기)"
+        },
+        {
+          "id": "twn-2026-dpp-chair",
+          "type": "party_leadership",
+          "party_id": "dpp",
+          "label_ko": "민진당 당주석 교체",
+          "date": "불명",
+          "status": "tentative",
+          "notes": "2026 중 정기 당주석전 일정 불명 — 채움 todo"
+        },
+        {
+          "id": "twn-2025-kmt-chair",
+          "type": "party_leadership",
+          "party_id": "kmt",
+          "party_abbr": "KMT",
+          "label_ko": "국민당 당주석 선거 (현 야당 수장)",
+          "date": "2025-10-18",
+          "status": "completed",
+          "carry_forward_incumbent": true,
+          "board_include_years": [
+            2026
+          ],
+          "office": "party_chair",
+          "winner": {
+            "name_en": "Cheng Li-wun",
+            "name_ko": "정려원",
+            "since": "2025-11-01"
+          },
+          "notes": "50.15% 득표. 2026 지방·2028 대선 지휘.",
+          "sources": [
+            "https://en.wikipedia.org/wiki/2025_Kuomintang_chairmanship_election"
+          ]
+        },
+        {
+          "id": "twn-2026-national",
+          "type": "general",
+          "label_ko": "총·대선",
+          "date": "없음",
+          "status": "없음"
+        }
+      ],
+      "events_this_year": 4,
+      "ingest_mode": "document_text_extract",
+      "calendar": {
+        "as_of": "2026-08-08",
+        "sources": null,
+        "notes": [
+          "No presidential/legislative general in 2026 mid-term of Lai presidency.",
+          "2026 local (nine-in-one-style) date still 불명 until CEC; KMT chair Cheng Li-wun since 2025-11."
+        ],
+        "null_policy": {
+          "없음": "해당 없음",
+          "불명": "미확정"
+        }
+      }
+    },
+    {
       "iso3": "BRA",
       "name_ko": "브라질",
       "priority_tier": 2,
@@ -6425,6 +10263,50 @@
       },
       "events": [
         {
+          "id": "bra-2026-pl-ticket",
+          "type": "party_leadership",
+          "party_id": "pl",
+          "party_abbr": "PL",
+          "label_ko": "PL 대선 후보 라인 (볼소나루 계열)",
+          "date": "불명",
+          "status": "tentative",
+          "notes": "Flávio Bolsonaro 유력 보도 — 공식 전당 일자 TSE/당 공고 확인 필요",
+          "candidates": [
+            {
+              "name_en": "Flávio Bolsonaro",
+              "status": "reported_pref"
+            }
+          ]
+        },
+        {
+          "id": "bra-2026-pt-convention",
+          "type": "party_leadership",
+          "party_id": "pt",
+          "party_abbr": "PT",
+          "label_ko": "PT 전국전당대회 (대선 후보 공천)",
+          "date": "2026-08-02",
+          "status": "completed",
+          "office": "presidential_nomination",
+          "venue": "상파울루 Expo Center Norte",
+          "result_summary": {
+            "presidential_nominee": "Luiz Inácio Lula da Silva",
+            "running_mate": "Geraldo Alckmin (PSB)",
+            "coalition": [
+              "PT",
+              "PSB",
+              "PCdoB",
+              "PV",
+              "Rede",
+              "PSOL",
+              "PDT"
+            ]
+          },
+          "notes": "대선 티켓 공식 지명 (당대표 경선과 별개이나 전당대회).",
+          "sources": [
+            "https://agenciabrasil.ebc.com.br/en/politica/noticia/2026-08/workers-party-officially-nominates-lula-presidential-candidate"
+          ]
+        },
+        {
           "id": "bra-2026-general-r1",
           "type": "general",
           "label_ko": "총선·대선 1차(대통령·의회·주지사)",
@@ -6432,8 +10314,10 @@
           "status": "scheduled",
           "sources": [
             "wiki_bra_2026",
-            "tse"
-          ]
+            "tse",
+            "invest_lens_elections"
+          ],
+          "market_significance_invest_lens": 3
         },
         {
           "id": "bra-2026-general-r2",
@@ -6448,7 +10332,7 @@
           ]
         }
       ],
-      "events_this_year": 2,
+      "events_this_year": 4,
       "ingest_mode": "document_text_extract",
       "calendar": {
         "as_of": "2026-08-08",
@@ -6800,6 +10684,21 @@
       },
       "events": [
         {
+          "id": "isr-2026-likud-primaries",
+          "type": "party_leadership",
+          "party_id": "likud",
+          "party_abbr": "Likud",
+          "label_ko": "리쿠드 크네세트 명단 프라이머리",
+          "date": "2026-08-17",
+          "status": "tentative",
+          "office": "party_list_primary",
+          "notes": "당 의장 네타냐후 자리 비경쟁; 목록 순서·지명 슬롯 분쟁. 8/4→8/17 등 연기 이력. 최종 일자 CEC/당 공고 재확인.",
+          "sources": [
+            "https://www.jpost.com/israel-news/politics-and-diplomacy/article-903831",
+            "https://www.timesofisrael.com/likud-postpones-primaries-to-august-4-as-netanyahu-fights-for-control-of-party-slate/"
+          ]
+        },
+        {
           "id": "isr-2026-candidate-lists",
           "type": "general",
           "label_ko": "26대 후보 명단 제출 기한",
@@ -6824,7 +10723,7 @@
           ]
         }
       ],
-      "events_this_year": 2,
+      "events_this_year": 3,
       "ingest_mode": "document_text_extract",
       "calendar": {
         "as_of": "2026-08-08",
@@ -6978,167 +10877,6 @@
       ]
     },
     {
-      "iso3": "IND",
-      "name_ko": "인도",
-      "priority_tier": 2,
-      "region": "south_asia_se",
-      "system": "parliamentary",
-      "map_spectrum": "conservative",
-      "head": {
-        "role": "prime_minister",
-        "name_en": "Narendra Modi",
-        "name_ko": "나렌드라 모디",
-        "party_id": "bjp",
-        "spectrum": "conservative",
-        "sources": [
-          {
-            "org": "profile seed",
-            "note": "Incumbent after 2024 Lok Sabha; 2026 mostly state-level"
-          }
-        ]
-      },
-      "ruling_party": {
-        "id": "bjp",
-        "name_en": "BJP",
-        "role": "ruling"
-      },
-      "parties_tracked": [
-        {
-          "id": "bjp",
-          "abbr": "BJP",
-          "name_en": "BJP",
-          "role": "ruling",
-          "spectrum": "conservative",
-          "display": "BJP"
-        },
-        {
-          "id": "inc",
-          "abbr": "INC",
-          "name_en": "Indian National Congress",
-          "role": "main_opposition",
-          "spectrum": "progressive",
-          "display": "INC"
-        }
-      ],
-      "legislature": null,
-      "subnational": null,
-      "polls": {
-        "admit": [
-          "pm_approval"
-        ],
-        "status": "todo"
-      },
-      "events": [
-        {
-          "id": "ind-2026-lok-sabha",
-          "type": "general",
-          "label_ko": "로크사바 총선",
-          "date": "없음",
-          "status": "없음"
-        },
-        {
-          "id": "ind-2026-state-pack",
-          "type": "local",
-          "label_ko": "주요 주의회 선거 묶음",
-          "date": "불명",
-          "status": "tentative",
-          "notes": "ECI calendar cross-check todo"
-        }
-      ],
-      "events_this_year": 2,
-      "ingest_mode": "document_text_extract",
-      "calendar": {
-        "as_of": "2026-08-08",
-        "sources": null,
-        "notes": [
-          "No Lok Sabha general in 2026; state elections / Rajya Sabha rolls possible — aggregate later."
-        ],
-        "null_policy": {
-          "없음": "해당 없음",
-          "불명": "미확정"
-        }
-      }
-    },
-    {
-      "iso3": "TWN",
-      "name_ko": "대만",
-      "priority_tier": 2,
-      "region": "east_asia",
-      "system": "presidential",
-      "map_spectrum": "progressive",
-      "head": {
-        "role": "president",
-        "name_en": "Lai Ching-te",
-        "name_en_alt": "William Lai",
-        "name_ko": "라이칭더",
-        "party_id": "dpp",
-        "spectrum": "progressive",
-        "since": "2024-05-20",
-        "sources": [
-          {
-            "org": "Focus Taiwan",
-            "url": "https://focustaiwan.tw/politics/202605200009",
-            "date": "2026-05-20"
-          }
-        ]
-      },
-      "ruling_party": {
-        "id": "dpp",
-        "name_ko": "민진당",
-        "role": "ruling"
-      },
-      "parties_tracked": [
-        {
-          "id": "dpp",
-          "abbr": "DPP",
-          "name_en": "Democratic Progressive Party",
-          "name_ko": "민진당",
-          "role": "ruling",
-          "spectrum": "progressive",
-          "display": "DPP"
-        },
-        {
-          "id": "kmt",
-          "abbr": "KMT",
-          "name_en": "Kuomintang",
-          "name_ko": "국민당",
-          "role": "main_opposition",
-          "spectrum": "conservative",
-          "display": "KMT"
-        }
-      ],
-      "legislature": null,
-      "subnational": null,
-      "polls": {
-        "admit": [
-          "presidential_job_approval"
-        ],
-        "status": "todo"
-      },
-      "events": [
-        {
-          "id": "twn-2026-national",
-          "type": "general",
-          "label_ko": "총·대선",
-          "date": "없음",
-          "status": "없음"
-        }
-      ],
-      "events_this_year": 1,
-      "ingest_mode": "document_text_extract",
-      "calendar": {
-        "as_of": "2026-08-08",
-        "sources": null,
-        "notes": [
-          "No presidential/legislative general in 2026 mid-term of Lai presidency."
-        ],
-        "null_policy": {
-          "없음": "해당 없음",
-          "불명": "미확정"
-        }
-      }
-    },
-    {
       "iso3": "TUR",
       "name_ko": "튀르키예",
       "priority_tier": 2,
@@ -7191,6 +10929,14 @@
       },
       "events": [
         {
+          "id": "tur-2026-akp-chp-leadership",
+          "type": "party_leadership",
+          "label_ko": "AKP·CHP 당대표/전당대회",
+          "date": "불명",
+          "status": "tentative",
+          "notes": "YSK·당 공고 전"
+        },
+        {
           "id": "tur-2026-national",
           "type": "general",
           "label_ko": "총·대선",
@@ -7199,7 +10945,7 @@
           "notes": "발표 전 — YSK 확인 필요"
         }
       ],
-      "events_this_year": 1,
+      "events_this_year": 2,
       "ingest_mode": "document_text_extract",
       "calendar": {
         "as_of": "2026-08-08",
@@ -7421,31 +11167,9 @@
       "category": "cabinet_reshuffle",
       "country_tier": "A",
       "info_grade": "1",
-      "importance": 1.554,
+      "importance": 1.483,
       "source_region": "japan",
       "published_at": "2026-08-07T12:57:08+00:00"
-    },
-    {
-      "title": "Igor Butman은 Larisa Dolina와 함께 새로운 공동 프로그램을 만들고 싶었습니다.",
-      "url": "https://russian.rt.com/russia/news/1667303-butman-dolina-programma?utm_source=rss&utm_medium=rss&utm_campaign=RSS",
-      "election_type": "local",
-      "category": "commodity",
-      "country_tier": "A",
-      "info_grade": "3",
-      "importance": 1.054,
-      "source_region": "russia",
-      "published_at": "2026-08-08T09:59:36+00:00"
-    },
-    {
-      "title": "미국 외교관, 남캅카스 평화에 대한 미국의 약속 선언",
-      "url": "https://www.interfax.ru/world/1108219",
-      "election_type": "local",
-      "category": "election",
-      "country_tier": "A",
-      "info_grade": "3",
-      "importance": 0.943,
-      "source_region": "russia",
-      "published_at": "2026-08-08T08:35:00+00:00"
     }
   ],
   "betting_markets": {

@@ -228,6 +228,9 @@ def build_board(
                 "parties": {},
                 "note": "불명 — factions_board.json 미생성",
             }
+            usa_rp = load_extracted("race_progress_usa_v1.json")
+            if usa_rp:
+                row["race_progress"] = usa_rp
         if iso3 == "JPN":
             row["legislature_live"] = {
                 "shugiin_members": (jpn_shugiin.get("summary") or {}).get("members"),
@@ -313,6 +316,9 @@ def build_board(
                     "parties": kor_party_lead.get("parties"),
                     "source": kor_party_lead.get("source"),
                 }
+            kor_rp = load_extracted("race_progress_kor_v1.json")
+            if kor_rp:
+                row["race_progress"] = kor_rp
             if profile.get("prime_minister"):
                 row["prime_minister"] = profile["prime_minister"]
         # attach governance polls for this country
@@ -416,6 +422,9 @@ def build_board(
             ),
             "countries_with_legislature_live": sum(
                 1 for c in countries_out if c.get("legislature_live")
+            ),
+            "countries_with_race_progress": sum(
+                1 for c in countries_out if c.get("race_progress")
             ),
             "live_election_headlines": len(live_news),
             "betting_markets": len(betting_block.get("markets") or []),
