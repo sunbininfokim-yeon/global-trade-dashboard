@@ -2230,3 +2230,19 @@ body.finance-mode #chart-view::-webkit-scrollbar-thumb { background: rgba(148, 1
 .lang-opt + .lang-opt { border-left: 1px solid rgba(148, 163, 184, 0.22); }
 .lang-opt:hover { color: #e2e8f0; background: rgba(148, 163, 184, 0.1); }
 .lang-opt.active { color: #0f172a; background: #38bdf8; }
+
+/* 주요 작물 수출입 표 (작황 모니터) */
+.crop-trade-table { width: 100%; border-collapse: collapse; margin-top: 4px; }
+.crop-trade-table th {
+    text-align: right; font-size: 9.5px; font-weight: 600; color: #64748b;
+    letter-spacing: .04em; padding: 0 0 4px; border-bottom: 1px solid rgba(148,163,184,.16);
+}
+.crop-trade-table th:first-child { text-align: left; }
+.crop-trade-table td { padding: 5px 0; font-size: 11px; border-bottom: 1px solid rgba(148,163,184,.07); }
+.crop-trade-table tr:last-child td { border-bottom: 0; }
+.ct-crop { color: #cbd5e1; font-weight: 600; }
+.ct-num { text-align: right; color: #94a3b8; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.ct-net { font-weight: 700; padding-left: 10px; }
+.ct-imp { color: #fca5a5; }
+.ct-exp { color: #86efac; }
+.ct-note { margin: 6px 0 0; font-size: 9.5px; color: rgba(148,163,184,.6); line-height: 1.45; }

@@ -3873,8 +3873,103 @@ const fmtYield = (v, unit) => {
     return unit === 'bu/acre' ? Number(v).toFixed(1) : Math.round(v).toLocaleString();
 };
 
+/** Comtrade reporter code for a country, via the one table that carries them. */
+const m49ForCountry = (name) => {
+    const want = resolveCountry(name)?.key;
+    if (!want) return null;
+    for (const [code, label] of Object.entries(window.M49_MAP || {})) {
+        if (resolveCountry(label)?.key === want) return code;
+    }
+    return null;
+};
+
+const cropTradeCache = new Map();
+
+/**
+ * Staple-crop net position for a country, in tonnes.
+ *
+ * The Worker aggregates this because the underlying Comtrade payloads run to
+ * 3.4 MB across the basket and the answer is six numbers.
+ */
+const loadCropTrade = async (countryName) => {
+    const m49 = m49ForCountry(countryName);
+    if (!m49) return null;
+    if (cropTradeCache.has(m49)) return cropTradeCache.get(m49);
+    try {
+        const res = await fetch(`/api/crop-trade?reporter=${m49}`);
+        if (!res.ok) throw new Error(String(res.status));
+        const doc = await res.json();
+        cropTradeCache.set(m49, doc);
+        return doc;
+    } catch (err) {
+        // A yield forecast is the point of this screen; trade context is not
+        // worth failing it over.
+        console.warn('[crop-trade] unavailable', err);
+        cropTradeCache.set(m49, null);
+        return null;
+    }
+};
+
+// Parameter is not named `t`: that is the translation function, and shadowing
+// it here would turn every suffix lookup into a call on a number.
+const fmtTonnes = (tonnes) => {
+    const a = Math.abs(tonnes);
+    // The magnitude suffix is a word, so it has to follow the language too --
+    // "6.2백만t" sitting inside an English row is the tell that a number was
+    // formatted somewhere the translation never reached.
+    if (a >= 1e6) return t('unit.mt', (tonnes / 1e6).toFixed(1));
+    if (a >= 1e3) return t('unit.kt', Math.round(tonnes / 1e3).toLocaleString());
+    return t('unit.t', Math.round(tonnes).toLocaleString());
+};
+
+/**
+ * Net importer or exporter, per crop, above the forecast.
+ *
+ * Sorted by net imports first: a forecast matters most where the country cannot
+ * feed itself from its own harvest, so the crops it depends on belong at the
+ * top rather than the ones it happens to grow a lot of.
+ */
+const renderCropTradeTableHtml = (doc) => {
+    const crops = doc?.crops || [];
+    if (!crops.length) return '';
+    const rows = [...crops].sort((a, b) => a.net_t - b.net_t);
+
+    return `
+        <div class="climate-card crop-trade-card">
+            <h3>${t('crop_trade.title')}</h3>
+            <table class="crop-trade-table">
+                <thead>
+                    <tr>
+                        <th>${t('crop_trade.crop')}</th>
+                        <th>${t('crop_trade.export')}</th>
+                        <th>${t('crop_trade.import')}</th>
+                        <th>${t('crop_trade.net')}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${rows.map((r) => {
+                        const imp = r.net_t < 0;
+                        return `<tr>
+                            <td class="ct-crop">${currentLang === 'en' ? r.label_en : r.label_ko}</td>
+                            <td class="ct-num">${fmtTonnes(r.export_t)}</td>
+                            <td class="ct-num">${fmtTonnes(r.import_t)}</td>
+                            <td class="ct-num ct-net ${imp ? 'ct-imp' : 'ct-exp'}">
+                                ${imp ? t('crop_trade.net_import') : t('crop_trade.net_export')}
+                                ${fmtTonnes(Math.abs(r.net_t))}
+                            </td>
+                        </tr>`;
+                    }).join('')}
+                </tbody>
+            </table>
+            <p class="ct-note">${t('crop_trade.note', doc.period)}</p>
+        </div>`;
+};
+
 const renderCountryPanel = async (cfg, points = null, meta = {}) => {
     const fc = await loadClimateForecast(cfg);
+    // What this country actually buys and sells, above the forecast: a yield
+    // number reads differently for a net importer than for an exporter.
+    const cropTradeHtml = renderCropTradeTableHtml(await loadCropTrade(cfg.label || climateCountry));
     const lv = meta.lv || tradePolicyLevel(climateCountry);
     const pol = meta.pol || CLIMATE_TRADE_POLICY[climateCountry] || {};
     points = points || await buildRegionPoints(cfg);
@@ -4017,6 +4112,7 @@ const renderCountryPanel = async (cfg, points = null, meta = {}) => {
                 </div>
                 <span class="climate-status-pill ${lv}">${tradePolicyLabelKo(lv)}</span>
             </div>
+            ${cropTradeHtml}
             ${gainHtml}
             ${unitBridgeHtml}
             <div class="climate-card">

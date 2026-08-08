@@ -287,6 +287,12 @@
 
     const ALL_M49_CODES = Object.keys(M49_MAP).join(",");
 
+    // The crop-trade panel needs a country's Comtrade reporter code, and this
+    // is the only table that carries it. Exported rather than duplicated so the
+    // 842-not-840 correction above keeps applying everywhere. The name matching
+    // lives in app.js, which is where resolveCountry is.
+    window.M49_MAP = M49_MAP;
+
     // === Commodity API Configuration (HS Codes + Major Traders) ===
     // 출처: UN Comtrade (comtradeapi.un.org), HS Classification
     const COMMODITY_API_CONFIG = {

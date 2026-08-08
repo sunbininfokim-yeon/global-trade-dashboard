@@ -7,6 +7,12 @@ export default {
             return await handleComtrade(request, env, ctx);
         }
 
+        // One country's staple-crop net position, aggregated from the same
+        // cached Comtrade payloads the trade map uses.
+        if (url.pathname.startsWith('/api/crop-trade')) {
+            return await handleCropTrade(request, env, ctx);
+        }
+
         // API Route: USDA NASS Quick Stats Proxy
         if (url.pathname.startsWith('/api/usda-nass')) {
             return await handleUsdaNass(request, env, ctx);
@@ -654,6 +660,78 @@ async function handleComtrade(request, env, ctx) {
 
     return kvCachedJson(env, comtradeCacheKey(hs, reporters, partners, period, freq), cacheTtl,
         () => fetchComtrade(env, hs, reporters, partners, period, freq));
+}
+
+/**
+ * One country's net position in the staple crops, in tonnes.
+ *
+ * The crop monitor wants "wheat: net importer, N tonnes" next to a yield
+ * forecast, and the raw Comtrade payloads that answer it are 3.4 MB across this
+ * basket -- too much to ship to a browser that needs six numbers. The Worker
+ * already holds those payloads in KV for the trade map, so it aggregates here
+ * and returns a few hundred bytes.
+ *
+ * Weight, not value: a forecast is in tonnes per hectare, and putting dollars
+ * beside it would invite comparing quantities against prices. Rows without
+ * netWgt are dropped rather than converted -- an estimated tonnage would look
+ * exactly like a reported one.
+ */
+const CROP_TRADE_BASKET = [
+    { key: "wheat",    hs: "1001", label_ko: "밀",    label_en: "Wheat" },
+    { key: "corn",     hs: "1005", label_ko: "옥수수", label_en: "Corn" },
+    { key: "rice",     hs: "1006", label_ko: "쌀",    label_en: "Rice" },
+    { key: "soybeans", hs: "1201", label_ko: "대두",   label_en: "Soybeans" },
+    { key: "sugar",    hs: "1701", label_ko: "설탕",   label_en: "Sugar" },
+];
+
+async function handleCropTrade(request, env, ctx) {
+    const url = new URL(request.url);
+    const reporter = (url.searchParams.get('reporter') || '').trim();
+    if (!/^\d{1,4}$/.test(reporter)) {
+        return new Response(JSON.stringify({ error: "reporter must be an M49 numeric code" }),
+            { status: 400, headers: JSON_HEADERS });
+    }
+    if (!env.COMTRADE_API_KEY) return missingKey('COMTRADE_API_KEY');
+
+    const period = url.searchParams.get('period') || COMTRADE_PERIOD;
+    // The US reports as 842; 840 returns nothing. Accept either and read both.
+    const wanted = new Set(reporter === '840' || reporter === '842'
+        ? ['840', '842'] : [reporter]);
+
+    const out = [];
+    for (const crop of CROP_TRADE_BASKET) {
+        // Same key the trade map and the nightly warm-up build, so this route
+        // rides their cache instead of opening a second one.
+        const body = await kvCachedJson(
+            env,
+            comtradeCacheKey(crop.hs, DEFAULT_M49_CODES, DEFAULT_M49_CODES, period, 'A'),
+            COMTRADE_TTL[crop.hs] || 604800,
+            () => fetchComtrade(env, crop.hs, DEFAULT_M49_CODES, DEFAULT_M49_CODES, period, 'A'),
+        ).then((r) => r.json()).catch(() => null);
+
+        const rows = body?.data || [];
+        let exp = 0, imp = 0, missing = 0;
+        for (const r of rows) {
+            if (!wanted.has(String(r.reporterCode))) continue;
+            const w = Number(r.netWgt);
+            if (!Number.isFinite(w) || w <= 0) { missing++; continue; }
+            if (r.flowCode === 'X') exp += w;
+            else if (r.flowCode === 'M') imp += w;
+        }
+        if (exp === 0 && imp === 0) continue;
+        out.push({
+            ...crop,
+            // Comtrade reports netWgt in kilograms.
+            export_t: Math.round(exp / 1000),
+            import_t: Math.round(imp / 1000),
+            net_t: Math.round((exp - imp) / 1000),
+            rows_without_weight: missing,
+        });
+    }
+
+    return new Response(
+        JSON.stringify({ reporter, period, source: "UN Comtrade", unit: "tonnes", crops: out }),
+        { headers: JSON_HEADERS });
 }
 
 async function handleUsdaNass(request, env, ctx) {
