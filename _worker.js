@@ -908,7 +908,35 @@ const SEC_TAGS = {
           'NetCashProvidedByUsedInOperatingActivitiesContinuingOperations'],
     capex: ['PaymentsToAcquirePropertyPlantAndEquipment', 'PaymentsToAcquireProductiveAssets',
             'PaymentsToAcquirePropertyPlantAndEquipmentAndIntangibleAssets'],
-    shares: ['CommonStockSharesOutstanding', 'EntityCommonStockSharesOutstanding'],
+    shares: ['WeightedAverageNumberOfDilutedSharesOutstanding',
+             'CommonStockSharesOutstanding', 'EntityCommonStockSharesOutstanding'],
+
+    // Debt broken out by when it comes due. "부채비율" alone hides the thing
+    // that actually sinks companies -- not how much they owe, but how soon.
+    debt_short: ['ShortTermBorrowings', 'CommercialPaper', 'DebtCurrent'],
+    debt_current_portion: ['LongTermDebtCurrent'],
+    payables: ['AccountsPayableCurrent'],
+    accrued: ['AccruedLiabilitiesCurrent'],
+    deferred_revenue: ['ContractWithCustomerLiabilityCurrent'],
+    lease_current: ['OperatingLeaseLiabilityCurrent'],
+    lease_noncurrent: ['OperatingLeaseLiabilityNoncurrent'],
+    other_current: ['OtherLiabilitiesCurrent'],
+    other_noncurrent: ['OtherLiabilitiesNoncurrent'],
+    deferred_tax: ['DeferredIncomeTaxLiabilitiesNet'],
+
+    // Asset side, for the same structural read.
+    receivables: ['AccountsReceivableNetCurrent'],
+    inventory: ['InventoryNet'],
+    securities_current: ['MarketableSecuritiesCurrent', 'ShortTermInvestments'],
+    ppe: ['PropertyPlantAndEquipmentNet'],
+    goodwill: ['Goodwill'],
+    intangibles: ['IntangibleAssetsNetExcludingGoodwill'],
+    retained_earnings: ['RetainedEarningsAccumulatedDeficit'],
+
+    // DCF inputs.
+    interest_expense: ['InterestExpense'],
+    tax_expense: ['IncomeTaxExpenseBenefit'],
+    dna: ['DepreciationDepletionAndAmortization'],
 };
 
 // Merges every candidate tag by year instead of committing to the first one
