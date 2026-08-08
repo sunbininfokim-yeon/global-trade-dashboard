@@ -15,6 +15,7 @@ sys.path.insert(0, str(ROOT))
 from market_microstructure.investor_price_levels import (  # noqa: E402
     aggregate_by_close_bins,
     aggregate_by_range_bins,
+    default_kospi_universe,
     trend_to_frame,
     _top_zone,
 )
@@ -85,6 +86,18 @@ class TestInvestorPriceLevels(unittest.TestCase):
         bins = aggregate_by_range_bins(joined, n_bins=4)
         total = sum(b["retail_net_shares"] for b in bins)
         self.assertEqual(total, 0)
+
+    def test_default_kospi_universe_shape(self):
+        # Network/FDR — skip soft if listing empty in offline CI without FDR cache.
+        try:
+            uni = default_kospi_universe(top_n=5)
+        except Exception as e:  # noqa: BLE001
+            self.skipTest(f"FDR listing unavailable: {e}")
+        self.assertGreaterEqual(len(uni), 1)
+        self.assertLessEqual(len(uni), 5)
+        for code, name in uni:
+            self.assertEqual(len(code), 6)
+            self.assertFalse(str(name).endswith("우"))
 
 
 if __name__ == "__main__":

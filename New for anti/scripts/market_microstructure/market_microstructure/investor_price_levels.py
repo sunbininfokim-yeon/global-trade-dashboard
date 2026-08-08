@@ -312,13 +312,34 @@ def build_ticker_levels(
     }
 
 
+def default_kospi_universe(*, top_n: int = 10) -> list[tuple[str, str]]:
+    """KOSPI ordinary shares by Marcap (skip 우선주). Live listing."""
+    import FinanceDataReader as fdr
+
+    kospi = fdr.StockListing("KOSPI")
+    if kospi is None or kospi.empty:
+        return [("000660", "SK하이닉스"), ("005930", "삼성전자")]
+    df = kospi.dropna(subset=["Marcap", "Code", "Name"]).copy()
+    names = df["Name"].astype(str)
+    # Prefer common stock: drop names ending with 우 / 우선
+    df = df[~names.str.endswith("우") & ~names.str.contains("우선", na=False)]
+    df = df.sort_values("Marcap", ascending=False).head(int(top_n))
+    out: list[tuple[str, str]] = []
+    for _, row in df.iterrows():
+        code = str(row["Code"]).zfill(6)
+        out.append((code, str(row["Name"])))
+    return out or [("000660", "SK하이닉스"), ("005930", "삼성전자")]
+
+
 def build_investor_price_levels_report(
     tickers: list[tuple[str, str]] | None = None,
     *,
     page_size: int = 60,
     n_bins: int = 12,
+    kospi_top_n: int | None = 10,
 ) -> dict[str, Any]:
-    tickers = tickers or [("000660", "SK하이닉스"), ("005930", "삼성전자")]
+    if tickers is None:
+        tickers = default_kospi_universe(top_n=kospi_top_n or 10)
     names: dict[str, Any] = {}
     errors: list[str] = []
     for code, label in tickers:
@@ -339,29 +360,34 @@ def build_investor_price_levels_report(
         "schema_version": "investor-price-levels-v1",
         "as_of": datetime.now(timezone.utc).date().isoformat(),
         "fetched_at": datetime.now(timezone.utc).isoformat(),
+        "market": "KOSPI",
+        "universe": "kospi_top_marcap_common",
+        "universe_n": len(tickers),
         "n_bins": n_bins,
         "page_size": page_size,
         "tickers": names,
         "ui_hint_ko": (
-            "종가 빈(bins_by_close) 또는 고저 분산(bins_by_range) 막대 + "
-            "highlights.*.buy.label_ko 를 박스에 표시. quality=estimated."
+            "코스피 시총 상위 보통주. 종가 빈(bins_by_close) 또는 고저 분산(bins_by_range) 막대 + "
+            "highlights.*.buy.label_ko. quality=estimated (일별 수급×가격, 틱 아님)."
         ),
         "cannot_do_ko": [
             "체결/호가 단위로 개인·외인·기관을 나눈 진짜 가격대 매집도 (유료)",
             "장중 1분 투자자별 실적 (KRX 유료 상품)",
+            "코스피 지수 자체 가격대 수급 (종목별만)",
         ],
         "errors": errors,
-        "disclaimer_ko": "투자 권유 아님. 일별 순매수×가격 빈 근사.",
+        "disclaimer_ko": "투자 권유 아님. 코스피 종목 일별 순매수×가격 빈 근사.",
     }
 
 
 def markdown_investor_price_levels(rep: dict[str, Any]) -> str:
     lines = [
-        f"# Investor × price levels — {rep.get('as_of')}",
+        f"# Investor × price levels (KOSPI) — {rep.get('as_of')}",
         "",
         rep.get("disclaimer_ko") or "",
         "",
-        "일별 수급을 가격 빈에 귀속한 **추정**. 틱 단위 아님.",
+        f"Universe: `{rep.get('universe')}` n={rep.get('universe_n')} · "
+        "일별 수급→가격 빈 **추정** (틱 단위 아님).",
         "",
     ]
     for code, block in (rep.get("tickers") or {}).items():

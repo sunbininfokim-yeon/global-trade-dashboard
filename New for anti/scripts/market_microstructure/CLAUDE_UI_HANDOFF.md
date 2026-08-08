@@ -52,7 +52,7 @@ Cursor owns engine + `public/data/*` snapshots below.
 | `us_oi_daily_archive.jsonl` | US OI 히스토리(줄단위) | 차트 백엔드용; UI는 보드 JSON 우선 |
 | `alert_levels_v1.json` | 관찰/주의/경계 | `kr_hynix_letf.today_level` · `today_ratio` · `us_vix_to_kr` |
 | `validation_backtest_v1.json` | 내부 검증(선택 UI) | paper vs engine |
-| `investor_price_levels_v1.json` | 가격대별 개인/외인/기관 | `tickers.000660.highlights` · `bins_by_close` |
+| `investor_price_levels_v1.json` | 코스피 시총상위 가격대×수급 | `market=KOSPI` · `tickers.*` · `bins_by_close` · `highlights` |
 | `us_kr_hitrate_v1.json` 등 | L3 부속 | 고급/접기 패널 |
 
 스키마 문서:
@@ -94,10 +94,9 @@ Cursor owns engine + `public/data/*` snapshots below.
 
 [브리프]  ai_casino_brief_v1.headlines + concentration
 
-[가격×수급] investor_price_levels_v1.tickers.{000660,005930}
-         - highlights.close_bin.{retail,foreign,institution}.buy.label_ko
-         - bins_by_close 막대 (개인/외인/기관 순매수)
-         - quality=estimated 배지 필수 (틱 단위 아님)
+[가격×수급] investor_price_levels_v1 (**KOSPI** 시총 상위 보통주)
+         - tickers.{code}.highlights.close_bin.{retail,foreign,institution}.buy
+         - bins_by_close 막대 · quality=estimated
 ```
 
 Cursor 쪽 참고 캔버스(IDE only, 배포 아님):  
