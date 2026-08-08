@@ -5717,7 +5717,7 @@ const renderPfInput = (root, onDone) => {
             </div>
             <div class="pf-total"><span>합계</span><strong>${pfKrw(total)}</strong></div>
             <div class="pf-actions">
-                <button id="pf-run" class="pf-btn pf-btn-primary">진단하기</button>
+                <button id="pf-run" class="pf-btn pf-btn-primary">계산하기</button>
                 <button id="pf-clear" class="pf-btn pf-btn-ghost">전부 지우기</button>
             </div>
             <p class="fin-note pf-privacy">
@@ -5932,7 +5932,7 @@ const renderPfInput = (root, onDone) => {
 };
 
 const renderPfResult = async (host) => {
-    host.innerHTML = `<p class="fin-loading">진단 결과 불러오는 중…</p>`;
+    host.innerHTML = `<p class="fin-loading">계산 결과 불러오는 중…</p>`;
 
     let data = null;
     for (const path of ['/public/data/portfolio_analysis_v1.json', '/data/portfolio_analysis_v1.json']) {
@@ -5946,7 +5946,7 @@ const renderPfResult = async (host) => {
         const saved = pfLoad();
         host.innerHTML = `
             <div class="fin-empty">
-                <p class="fin-empty-title">아직 진단 결과가 없습니다</p>
+                <p class="fin-empty-title">아직 계산 결과가 없습니다</p>
                 <p>${saved && saved.positions.length
                     ? `보유 ${saved.positions.length}건이 저장돼 있습니다. 계산 기능은 준비 중입니다 —
                        현재는 <code>run_pipeline.py</code> 로 만든 결과 파일만 읽습니다.`
@@ -6073,7 +6073,7 @@ const renderPortfolioLab = async (host) => {
     host.innerHTML = `
     <div class="fin-wrap">
         <div class="fin-head">
-            <h1>포트폴리오 진단</h1>
+            <h1>포트폴리오 계산기</h1>
             <p>보유 자산의 위험이 어디에 몰려 있는지 봅니다. 수익 예측이 아닙니다.</p>
         </div>
         <div id="pf-form"></div>
@@ -6107,18 +6107,304 @@ const renderPortfolioLab = async (host) => {
     if (saved && saved.positions.length >= 2) run();
 };
 
-const renderFinanceView = async (target, host) => {
-    if (target === 'fin_portfolio') return renderPortfolioLab(host);
+// --- 기업 가치 계산기 ---------------------------------------------------------
+// The same statements read at three depths. Named for what each view is for,
+// not for who is supposed to be reading it -- a label like "취준생용" tells the
+// reader what the site thinks of them rather than what the numbers show.
+const CO_LEVELS = [
+    { id: 'health',    label: '재무 건전성', blurb: '빚을 감당할 수 있는가, 이익은 나는가' },
+    { id: 'valuation', label: '투자 판단',   blurb: '벌어들이는 현금 대비 값이 어떤가' },
+    { id: 'deal',      label: '인수 검토',   blurb: '사들인다면 무엇을 더 봐야 하는가' },
+];
 
-    if (target === 'fin_valuation') {
-        host.innerHTML = finPlaceholder(
-            '기업 가치 진단',
-            'DART 공시 재무제표 기반 기업 재무 상태·현금흐름 진단',
-            `엔진(<code>scripts/dart</code>)은 <code>cursor/ml-dart-kfa</code> 브랜치에서 작업 중입니다.
-             DART API 키 발급 후 <code>public/data/dart_*.json</code> 이 나오면 이 화면이 연결됩니다.<br>
-             설계: <code>LEVELS_OUTPUT.md</code> · <code>OUTPUT_SCHEMA.md</code>`);
+// Korean 억/조 grouping on a dollar figure reads as the wrong number entirely
+// -- $98.8B shown as "987.7억" invites being read as won. Group by the scale
+// the currency is normally quoted in.
+const coNum = (v, currency = 'KRW') => {
+    if (v === null || v === undefined || Number.isNaN(v)) return '—';
+    const a = Math.abs(v);
+    if (currency === 'KRW') {
+        if (a >= 1e12) return `${(v / 1e12).toFixed(2)}조원`;
+        if (a >= 1e8) return `${(v / 1e8).toFixed(1)}억원`;
+        if (a >= 1e4) return `${(v / 1e4).toFixed(0)}만원`;
+        return `${Math.round(v).toLocaleString('ko-KR')}원`;
+    }
+    const sym = currency === 'USD' ? '$' : `${currency} `;
+    if (a >= 1e9) return `${sym}${(v / 1e9).toFixed(1)}B`;
+    if (a >= 1e6) return `${sym}${(v / 1e6).toFixed(1)}M`;
+    if (a >= 1e3) return `${sym}${(v / 1e3).toFixed(1)}K`;
+    return `${sym}${Math.round(v).toLocaleString('en-US')}`;
+};
+
+const coRatio = (v, digits = 1) =>
+    (v === null || v === undefined || !Number.isFinite(v)) ? '—' : `${v.toFixed(digits)}`;
+
+const coPct = (v, digits = 1) =>
+    (v === null || v === undefined || !Number.isFinite(v)) ? '—' : `${(v * 100).toFixed(digits)}%`;
+
+const coDiv = (a, b) => (a === null || b === null || !b) ? null : a / b;
+
+// Ratios follow the same definitions the KFA engine uses, so the two can be
+// checked against each other the way the portfolio maths already is.
+const coDerive = (s) => ({
+    fy: s.fy,
+    current_ratio: coDiv(s.assets_current, s.liabilities_current),
+    debt_ratio: coDiv(s.liabilities, s.assets),
+    equity_ratio: coDiv(s.equity, s.assets),
+    roe: coDiv(s.net_income, s.equity),
+    roa: coDiv(s.net_income, s.assets),
+    operating_margin: coDiv(s.operating_income, s.revenue),
+    net_margin: coDiv(s.net_income, s.revenue),
+    fcf: (s.cfo === null || s.capex === null) ? null : s.cfo - s.capex,
+    fcf_margin: (s.cfo === null || s.capex === null) ? null : coDiv(s.cfo - s.capex, s.revenue),
+    net_debt: (s.liabilities === null) ? null
+        : ((s.debt_long ?? 0) - (s.cash ?? 0)),
+    raw: s,
+});
+
+const renderCompanyCalc = async (host) => {
+    host.innerHTML = `<div class="fin-wrap"><p class="fin-loading">불러오는 중…</p></div>`;
+    await pfLoadRefs();
+
+    host.innerHTML = `
+    <div class="fin-wrap">
+        <div class="fin-head">
+            <h1>기업 가치 계산기</h1>
+            <p>공시된 재무제표를 세 단계 깊이로 읽습니다. 투자 의견이 아니라, 그 단계에서 봐야 할 항목입니다.</p>
+        </div>
+        <section class="fin-block fin-block-wide pf-input">
+            <h2>기업 찾기</h2>
+            <div class="pf-add">
+                <div class="pf-search-wrap">
+                    <input type="text" id="co-q" class="pf-field" autocomplete="off"
+                           placeholder="기업명·티커로 검색 (예: 애플, AAPL, NVDA)">
+                    <div id="co-sug" class="pf-sug hidden"></div>
+                </div>
+            </div>
+            <p id="co-picked" class="pf-picked"></p>
+            <p class="fin-note">
+                미국 상장사는 SEC 공시로 바로 계산됩니다. <strong>한국 상장사는 DART 키가 연결되면</strong> 같은 화면에서 열립니다.
+            </p>
+        </section>
+        <div id="co-out"></div>
+    </div>`;
+
+    const qEl = host.querySelector('#co-q');
+    const sugEl = host.querySelector('#co-sug');
+    const pickedEl = host.querySelector('#co-picked');
+    const out = host.querySelector('#co-out');
+    let shown = [], seq = 0, timer = null;
+
+    qEl.addEventListener('input', () => {
+        const q = qEl.value.trim();
+        clearTimeout(timer);
+        if (!q) { sugEl.classList.add('hidden'); return; }
+        const local = pfSearchLocal(q).filter((x) => x.asset_class === 'equity');
+        shown = local;
+        sugEl.innerHTML = local.map((h, i) =>
+            `<button class="pf-sug-item" data-i="${i}"><span>${finEsc(h.name_ko)}</span>
+             <span class="pf-sug-meta">${finEsc(h.yahoo || '')}</span></button>`).join('') || '<p class="pf-sug-note">찾는 중…</p>';
+        sugEl.classList.remove('hidden');
+
+        const my = ++seq;
+        timer = setTimeout(async () => {
+            const { quotes } = await pfSearchRemote(q);
+            if (my !== seq) return;
+            const have = new Set(local.map((x) => String(x.yahoo || '').toUpperCase()));
+            const remote = quotes
+                .filter((c) => (c.type || '').toUpperCase() === 'EQUITY')
+                .filter((c) => !have.has(String(c.symbol).toUpperCase()))
+                .map(pfFromQuote);
+            shown = [...local, ...remote];
+            sugEl.innerHTML = shown.map((h, i) =>
+                `<button class="pf-sug-item" data-i="${i}"><span>${finEsc(h.name_ko)}</span>
+                 <span class="pf-sug-meta">${finEsc(h.yahoo || '')}${h._exchange ? ' · ' + finEsc(h._exchange) : ''}</span></button>`
+            ).join('') || '<p class="pf-sug-note">결과가 없습니다. 티커를 직접 넣어 보세요.</p>';
+        }, 250);
+    });
+
+    sugEl.addEventListener('click', async (e) => {
+        const b = e.target.closest('.pf-sug-item');
+        if (!b) return;
+        const it = shown[Number(b.dataset.i)];
+        if (!it) return;
+        qEl.value = it.name_ko;
+        sugEl.classList.add('hidden');
+        pickedEl.textContent = `선택: ${it.name_ko} (${it.yahoo})`;
+        await loadCompany(out, it);
+    });
+};
+
+const loadCompany = async (out, inst) => {
+    const sym = String(inst.yahoo || '').toUpperCase();
+    out.innerHTML = `<div class="fin-block fin-block-wide"><p class="fin-loading">공시 자료를 받는 중…</p></div>`;
+
+    // A Korean listing carries a market suffix Yahoo uses and SEC does not.
+    if (/\.(KS|KQ)$/.test(sym)) {
+        out.innerHTML = `
+            <div class="fin-empty">
+                <p class="fin-empty-title">한국 상장사는 아직 연결되지 않았습니다</p>
+                <p>${finEsc(inst.name_ko)}는 DART 공시가 필요합니다. API 키가 연결되면 같은 화면에서 열립니다.<br>
+                   지금은 미국 상장사(SEC 공시)만 계산됩니다.</p>
+            </div>`;
         return;
     }
+
+    let data;
+    try {
+        const res = await fetch(`/api/financials?symbol=${encodeURIComponent(sym)}`);
+        if (!res.ok) throw new Error(res.status === 502 ? '공시를 찾지 못했습니다' : `조회 실패 (${res.status})`);
+        data = await res.json();
+    } catch (err) {
+        out.innerHTML = `<div class="fin-block fin-block-wide"><h2>불러오지 못했습니다</h2>
+            <p class="fin-p">${finEsc(err.message)}</p>
+            <p class="fin-note">미국 상장사가 아니거나 공시 형식이 달라 항목을 못 찾은 경우입니다.</p></div>`;
+        return;
+    }
+
+    const rows = (data.statements || []).map(coDerive);
+    if (!rows.length) {
+        out.innerHTML = `<div class="fin-block fin-block-wide"><h2>공시 항목을 찾지 못했습니다</h2>
+            <p class="fin-note">${finEsc(data.name || sym)}의 연차보고서에서 표준 항목을 읽지 못했습니다.</p></div>`;
+        return;
+    }
+
+    let level = 'health';
+    const paint = () => {
+        out.innerHTML = `
+        <div class="fin-head fin-head-sub">
+            <p class="fin-headline">${finEsc(data.name)} · ${finEsc(data.symbol)}</p>
+            <div class="fin-meta">
+                <span class="fin-chip">${finEsc(data.source)}</span>
+                <span>${rows[rows.length - 1].fy}~${rows[0].fy} 회계연도 · ${finEsc(data.currency)}</span>
+            </div>
+        </div>
+        <div class="pf-mode co-levels" role="tablist">
+            ${CO_LEVELS.map((L) => `
+                <button type="button" class="pf-mode-btn ${L.id === level ? 'on' : ''}" data-level="${L.id}">
+                    ${finEsc(L.label)}
+                </button>`).join('')}
+        </div>
+        <p class="fin-note co-blurb">${finEsc(CO_LEVELS.find((L) => L.id === level).blurb)}</p>
+        ${coRenderLevel(level, rows, data)}`;
+
+        out.querySelectorAll('[data-level]').forEach((b) => b.addEventListener('click', () => {
+            level = b.dataset.level; paint();
+        }));
+    };
+    paint();
+};
+
+const coTable = (rows, cols) => `
+    <div class="co-table-wrap">
+        <table class="co-table">
+            <thead><tr><th>항목</th>${rows.map((r) => `<th>${r.fy}</th>`).join('')}</tr></thead>
+            <tbody>
+                ${cols.map((c) => `
+                    <tr>
+                        <td class="co-label">${finEsc(c.label)}${c.hint ? `<span class="co-hint">${finEsc(c.hint)}</span>` : ''}</td>
+                        ${rows.map((r) => `<td>${c.fmt(r)}</td>`).join('')}
+                    </tr>`).join('')}
+            </tbody>
+        </table>
+    </div>`;
+
+const coRenderLevel = (level, rowsDesc, data) => {
+    const CUR = data.currency || 'KRW';
+    const rows = [...rowsDesc].reverse();   // oldest first reads as a trend
+    const latest = rowsDesc[0];
+
+    if (level === 'health') {
+        return `
+        <div class="fin-cards">
+            <div class="fin-card"><span class="fin-card-title">유동비율</span>
+                <span class="fin-card-value">${coRatio(latest.current_ratio ? latest.current_ratio * 100 : null, 0)}%</span>
+                <p class="fin-card-plain">1년 안에 갚을 빚 대비 1년 안에 현금이 되는 자산. 100%를 밑돌면 단기 자금이 빠듯하다는 뜻입니다.</p></div>
+            <div class="fin-card"><span class="fin-card-title">부채비율 (부채/자산)</span>
+                <span class="fin-card-value">${coPct(latest.debt_ratio)}</span>
+                <p class="fin-card-plain">자산 중 남의 돈이 차지하는 비율입니다. 업종마다 정상 범위가 크게 달라 같은 업종끼리 비교해야 합니다.</p></div>
+            <div class="fin-card"><span class="fin-card-title">영업이익률</span>
+                <span class="fin-card-value">${coPct(latest.operating_margin)}</span>
+                <p class="fin-card-plain">매출 100원으로 본업에서 남긴 이익입니다.</p></div>
+            <div class="fin-card"><span class="fin-card-title">ROE</span>
+                <span class="fin-card-value">${coPct(latest.roe)}</span>
+                <p class="fin-card-plain">주주 돈으로 낸 수익률입니다. 빚을 많이 쓰면 자연히 높아지므로 부채비율과 같이 봐야 합니다.</p></div>
+        </div>
+        <section class="fin-block fin-block-wide">
+            <h2>연도별 추이</h2>
+            ${coTable(rows, [
+                { label: '매출', fmt: (r) => coNum(r.raw.revenue, CUR) },
+                { label: '영업이익', fmt: (r) => coNum(r.raw.operating_income, CUR) },
+                { label: '순이익', fmt: (r) => coNum(r.raw.net_income, CUR) },
+                { label: '영업이익률', fmt: (r) => coPct(r.operating_margin) },
+                { label: '유동비율', fmt: (r) => coRatio(r.current_ratio ? r.current_ratio * 100 : null, 0) + '%' },
+                { label: '부채비율', fmt: (r) => coPct(r.debt_ratio) },
+            ])}
+        </section>`;
+    }
+
+    if (level === 'valuation') {
+        return `
+        <div class="fin-cards">
+            <div class="fin-card"><span class="fin-card-title">잉여현금흐름 (FCF)</span>
+                <span class="fin-card-value">${coNum(latest.fcf, CUR)}</span>
+                <p class="fin-card-plain">영업으로 번 현금에서 설비투자를 뺀 값입니다. 배당·자사주·부채상환에 쓸 수 있는 실제 여윳돈입니다.</p></div>
+            <div class="fin-card"><span class="fin-card-title">FCF 마진</span>
+                <span class="fin-card-value">${coPct(latest.fcf_margin)}</span>
+                <p class="fin-card-plain">매출이 현금으로 남는 비율입니다. 이익은 나는데 이 값이 낮으면 회계 이익과 현금이 어긋난다는 신호입니다.</p></div>
+            <div class="fin-card"><span class="fin-card-title">순부채</span>
+                <span class="fin-card-value">${coNum(latest.net_debt, CUR)}</span>
+                <p class="fin-card-plain">장기차입금에서 현금을 뺀 값입니다. 음수면 빚보다 현금이 많다는 뜻입니다.</p></div>
+            <div class="fin-card"><span class="fin-card-title">ROA</span>
+                <span class="fin-card-value">${coPct(latest.roa)}</span>
+                <p class="fin-card-plain">자산 전체로 낸 수익률입니다. ROE와 벌어지면 그 차이가 레버리지에서 옵니다.</p></div>
+        </div>
+        <section class="fin-block fin-block-wide">
+            <h2>현금 흐름</h2>
+            ${coTable(rows, [
+                { label: '영업현금흐름', fmt: (r) => coNum(r.raw.cfo, CUR) },
+                { label: '설비투자 (CapEx)', fmt: (r) => coNum(r.raw.capex, CUR) },
+                { label: '잉여현금흐름', fmt: (r) => coNum(r.fcf, CUR) },
+                { label: 'FCF 마진', fmt: (r) => coPct(r.fcf_margin) },
+                { label: '순이익', hint: '현금과 비교', fmt: (r) => coNum(r.raw.net_income, CUR) },
+            ])}
+            <p class="fin-note">
+                순이익과 영업현금흐름이 오래 벌어져 있으면 이유를 봐야 합니다 — 매출채권이 쌓였거나, 재고가 늘었거나,
+                회계상 이익이 현금으로 들어오지 않는 구조일 수 있습니다.
+            </p>
+        </section>`;
+    }
+
+    return `
+        <section class="fin-block fin-block-wide">
+            <h2>자산·자본 구조</h2>
+            ${coTable(rows, [
+                { label: '총자산', fmt: (r) => coNum(r.raw.assets, CUR) },
+                { label: '총부채', fmt: (r) => coNum(r.raw.liabilities, CUR) },
+                { label: '자기자본', fmt: (r) => coNum(r.raw.equity, CUR) },
+                { label: '현금성자산', fmt: (r) => coNum(r.raw.cash, CUR) },
+                { label: '장기차입금', fmt: (r) => coNum(r.raw.debt_long, CUR) },
+                { label: '순부채', fmt: (r) => coNum(r.net_debt, CUR) },
+                { label: '자기자본비율', fmt: (r) => coPct(r.equity_ratio) },
+            ])}
+        </section>
+        <section class="fin-block fin-block-wide">
+            <h2>아직 못 보는 것</h2>
+            <p class="fin-lead">인수를 검토한다면 아래가 필요한데, 표준 XBRL 항목만으로는 나오지 않습니다. 없는 것을 있는 척하지 않기 위해 적어 둡니다.</p>
+            <ul class="fin-list">
+                <li><strong>사업부별 실적</strong> — 어느 부문이 벌고 어느 부문이 까먹는지. 주석에 있고 태그가 회사마다 다릅니다</li>
+                <li><strong>정상화 이익</strong> — 일회성 손익을 걷어낸 이익. 무엇이 일회성인지는 판단이 필요합니다</li>
+                <li><strong>우발채무</strong> — 소송·보증 등 아직 재무제표에 안 들어온 부담</li>
+                <li><strong>운전자본 상세</strong> — 매출채권·재고 회전. 인수 후 현금 소요를 좌우합니다</li>
+                <li><strong>DCF</strong> — 할인율과 성장률 가정이 필요하고, 그 가정이 결과를 지배합니다</li>
+            </ul>
+            <p class="fin-note">태그 매핑: ${finEsc(Object.entries(data.tags_used || {}).map(([k, v]) => `${k}=${v}`).join(' · ') || '—')}</p>
+        </section>`;
+};
+
+const renderFinanceView = async (target, host) => {
+    if (target === 'fin_portfolio') return renderPortfolioLab(host);
+    if (target === 'fin_valuation') return renderCompanyCalc(host);
 
     host.innerHTML = finPlaceholder(
         '옵션·공매도 동향',
