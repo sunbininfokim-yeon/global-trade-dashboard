@@ -1,0 +1,394 @@
+{
+  "schema_version": "validation-backtest-v1",
+  "paper_vs_engine": {
+    "as_of": "2026-08-07",
+    "fx_usdkrw": 1400.0,
+    "n_rows": 10,
+    "n_close_band": 4,
+    "n_directionally_ok": 8,
+    "rows": [
+      {
+        "field": "levered_etf_aum_usd",
+        "paper_anchor": 26000000000.0,
+        "model_value": 16357428571.43,
+        "delta_pct": -37.08681318681318,
+        "band": "same_order",
+        "similarity_score": 62.9,
+        "note": "KR levered ETF AUM only (paper Korea chart); FX for USD",
+        "quality": "observed",
+        "source": "engine.paper_calibration"
+      },
+      {
+        "field": "leverage_exposure_pct_aum_over_ff",
+        "paper_anchor": 2.1,
+        "model_value": 0.5917,
+        "delta_pct": -71.82182088403002,
+        "band": "diverged",
+        "similarity_score": 28.2,
+        "note": "paper-style: KR total levered ETF AUM / KOSPI free float (no |L|)",
+        "quality": "estimated",
+        "source": "engine.paper_calibration"
+      },
+      {
+        "field": "leverage_exposure_pct_notional",
+        "paper_anchor": null,
+        "model_value": 0.6871,
+        "delta_pct": null,
+        "band": "n/a",
+        "similarity_score": null,
+        "note": "brief §4.3: Σ AUM×|L|×β / free_float of covered underlyings (KR only)",
+        "quality": "estimated",
+        "source": "engine.paper_calibration"
+      },
+      {
+        "field": "conc_top2_samsung_hynix_pct",
+        "paper_anchor": "elevated (~50% discussed)",
+        "model_value": 46.3033,
+        "delta_pct": null,
+        "band": "qualitative_match",
+        "similarity_score": 46.3,
+        "note": "paper: concentration elevated; engine observes level",
+        "quality": "observed",
+        "source": "engine.concentration"
+      },
+      {
+        "field": "levered_etf_aum_vs_paper_peak",
+        "paper_anchor": 53000000000.0,
+        "model_value": 16357428571.43,
+        "delta_pct": -69.14,
+        "band": "reset_confirmed",
+        "similarity_score": null,
+        "note": "paper peak $53bn → reset; model is KR-only current",
+        "quality": "observed",
+        "source": "engine.market_levered_etf"
+      },
+      {
+        "field": "soxl_path_peak",
+        "paper_anchor": 300.0,
+        "model_value": 300.77,
+        "delta_pct": 0.26,
+        "band": "close",
+        "similarity_score": 99.7,
+        "note": "1y Yahoo path vs paper approximate levels",
+        "quality": "observed",
+        "source": "yfinance_path"
+      },
+      {
+        "field": "soxl_path_recent",
+        "paper_anchor": 120.0,
+        "model_value": 140.25,
+        "delta_pct": 16.88,
+        "band": "same_order",
+        "similarity_score": 83.1,
+        "note": "1y Yahoo path vs paper approximate levels",
+        "quality": "observed",
+        "source": "yfinance_path"
+      },
+      {
+        "field": "koru_path_peak",
+        "paper_anchor": 64.0,
+        "model_value": 63.24,
+        "delta_pct": -1.18,
+        "band": "close",
+        "similarity_score": 98.8,
+        "note": "1y Yahoo path vs paper approximate levels",
+        "quality": "observed",
+        "source": "yfinance_path"
+      },
+      {
+        "field": "koru_path_recent",
+        "paper_anchor": 17.0,
+        "model_value": 17.36,
+        "delta_pct": 2.12,
+        "band": "close",
+        "similarity_score": 97.9,
+        "note": "1y Yahoo path vs paper approximate levels",
+        "quality": "observed",
+        "source": "yfinance_path"
+      },
+      {
+        "field": "kospi_drawdown_from_peak_pct",
+        "paper_anchor": -35.0,
+        "model_value": -31.33,
+        "delta_pct": 10.48,
+        "band": "close",
+        "similarity_score": 89.5,
+        "note": "paper canary ~−35% / next-china ~−25%; model = peak→trough or peak→last",
+        "quality": "observed",
+        "source": "yfinance_KS11"
+      }
+    ],
+    "verdict_ko": "정량 근접(≤15%): 4개 · 방향/오더일치 포함: 8/10. 레버 AUM·2.1%는 페이퍼 시점·분모 정의 차이로 현재 엔진이 낮게 나오는 편."
+  },
+  "us_stress_event_study": {
+    "schema_version": "us-kr-event-study-v1",
+    "as_of": "2026-08-08",
+    "fetched_at": "2026-08-08T09:59:34.443130+00:00",
+    "period": "1y",
+    "soxl_thr": -0.1,
+    "definition_ko": "스트레스일 = SOXL≤-10% 또는 (MU≤−5% & SMH≤−3%). 익일 KR overnight open. 알림 프록시 = 드라이버 중 하나 ≤−2%.",
+    "baseline_overnight": {
+      "000660": {
+        "n": 242,
+        "frac_neg": 0.4711,
+        "mean": 0.005853
+      },
+      "005930": {
+        "n": 242,
+        "frac_neg": 0.4008,
+        "mean": 0.005938
+      }
+    },
+    "summary": {
+      "000660": {
+        "n_stress_events": 28,
+        "frac_kr_open_neg": 0.8571,
+        "mean_kr_open": -0.037706,
+        "median_kr_open": -0.040592,
+        "p10": -0.079795,
+        "p90": 0.006491,
+        "when_alert_fires": {
+          "n": 28,
+          "frac_neg": 0.8571,
+          "mean": -0.037706
+        },
+        "when_high": {
+          "n": 21,
+          "frac_neg": 0.8095,
+          "mean": -0.039743
+        }
+      },
+      "005930": {
+        "n_stress_events": 28,
+        "frac_kr_open_neg": 0.7857,
+        "mean_kr_open": -0.028946,
+        "median_kr_open": -0.034265,
+        "p10": -0.062479,
+        "p90": 0.016946,
+        "when_alert_fires": {
+          "n": 28,
+          "frac_neg": 0.7857,
+          "mean": -0.028946
+        },
+        "when_high": {
+          "n": 21,
+          "frac_neg": 0.7619,
+          "mean": -0.030414
+        }
+      }
+    },
+    "top_soxl_stress_hynix": [
+      {
+        "us_day": "2026-06-05",
+        "kr_day": "2026-06-08",
+        "kr": "000660",
+        "r_kr_open": -0.103382,
+        "driver_returns": {
+          "SOXL": -0.3051,
+          "SMH": -0.0922,
+          "MU": -0.1325,
+          "NVDA": -0.062
+        },
+        "vix_day_return": 0.3968,
+        "alert_would_fire": true,
+        "proxy_stress_level": "high",
+        "hit_down": true
+      },
+      {
+        "us_day": "2026-06-23",
+        "kr_day": "2026-06-24",
+        "kr": "000660",
+        "r_kr_open": 0.01683,
+        "driver_returns": {
+          "SOXL": -0.2306,
+          "SMH": -0.0701,
+          "MU": -0.1318,
+          "NVDA": -0.0413
+        },
+        "vix_day_return": 0.1279,
+        "alert_would_fire": true,
+        "proxy_stress_level": "high",
+        "hit_down": false
+      },
+      {
+        "us_day": "2025-10-10",
+        "kr_day": "2025-10-13",
+        "kr": "000660",
+        "r_kr_open": -0.05257,
+        "driver_returns": {
+          "SOXL": -0.1901,
+          "SMH": -0.0576,
+          "MU": -0.0558,
+          "NVDA": -0.0489
+        },
+        "vix_day_return": 0.3183,
+        "alert_would_fire": true,
+        "proxy_stress_level": "high",
+        "hit_down": true
+      },
+      {
+        "us_day": "2026-07-01",
+        "kr_day": "2026-07-02",
+        "kr": "000660",
+        "r_kr_open": -0.081641,
+        "driver_returns": {
+          "SOXL": -0.1843,
+          "SMH": -0.054,
+          "MU": -0.1057,
+          "NVDA": -0.0125
+        },
+        "vix_day_return": 0.0085,
+        "alert_would_fire": true,
+        "proxy_stress_level": "high",
+        "hit_down": true
+      },
+      {
+        "us_day": "2026-06-16",
+        "kr_day": "2026-06-17",
+        "kr": "000660",
+        "r_kr_open": -0.019731,
+        "driver_returns": {
+          "SOXL": -0.1699,
+          "SMH": -0.0481,
+          "MU": -0.0618,
+          "NVDA": -0.0237
+        },
+        "vix_day_return": 0.013,
+        "alert_would_fire": true,
+        "proxy_stress_level": "high",
+        "hit_down": true
+      },
+      {
+        "us_day": "2026-07-02",
+        "kr_day": "2026-07-03",
+        "kr": "000660",
+        "r_kr_open": 0.004572,
+        "driver_returns": {
+          "SOXL": -0.1658,
+          "SMH": -0.0454,
+          "MU": -0.0549,
+          "NVDA": -0.0139
+        },
+        "vix_day_return": -0.0265,
+        "alert_would_fire": true,
+        "proxy_stress_level": "high",
+        "hit_down": false
+      },
+      {
+        "us_day": "2026-07-29",
+        "kr_day": "2026-07-30",
+        "kr": "000660",
+        "r_kr_open": -0.028551,
+        "driver_returns": {
+          "SOXL": -0.1602,
+          "SMH": -0.0479,
+          "MU": -0.0994,
+          "NVDA": -0.0355
+        },
+        "vix_day_return": 0.1345,
+        "alert_would_fire": true,
+        "proxy_stress_level": "high",
+        "hit_down": true
+      },
+      {
+        "us_day": "2026-07-07",
+        "kr_day": "2026-07-08",
+        "kr": "000660",
+        "r_kr_open": -0.03771,
+        "driver_returns": {
+          "SOXL": -0.1509,
+          "SMH": -0.0378,
+          "MU": -0.0471,
+          "NVDA": 0.0071
+        },
+        "vix_day_return": 0.036,
+        "alert_would_fire": true,
+        "proxy_stress_level": "high",
+        "hit_down": true
+      },
+      {
+        "us_day": "2026-03-03",
+        "kr_day": "2026-03-04",
+        "kr": "000660",
+        "r_kr_open": -0.047923,
+        "driver_returns": {
+          "SOXL": -0.1488,
+          "SMH": -0.0377,
+          "MU": -0.0799,
+          "NVDA": -0.0133
+        },
+        "vix_day_return": 0.0993,
+        "alert_would_fire": true,
+        "proxy_stress_level": "high",
+        "hit_down": true
+      },
+      {
+        "us_day": "2026-06-26",
+        "kr_day": "2026-06-29",
+        "kr": "000660",
+        "r_kr_open": -0.013842,
+        "driver_returns": {
+          "SOXL": -0.1465,
+          "SMH": -0.0397,
+          "MU": -0.0669,
+          "NVDA": -0.0164
+        },
+        "vix_day_return": -0.0254,
+        "alert_would_fire": true,
+        "proxy_stress_level": "high",
+        "hit_down": true
+      },
+      {
+        "us_day": "2026-07-28",
+        "kr_day": "2026-07-29",
+        "kr": "000660",
+        "r_kr_open": 0.010968,
+        "driver_returns": {
+          "SOXL": -0.1452,
+          "SMH": -0.0345,
+          "MU": -0.0885,
+          "NVDA": 0.0025
+        },
+        "vix_day_return": -0.0246,
+        "alert_would_fire": true,
+        "proxy_stress_level": "high",
+        "hit_down": false
+      },
+      {
+        "us_day": "2025-12-12",
+        "kr_day": "2025-12-15",
+        "kr": "000660",
+        "r_kr_open": -0.063047,
+        "driver_returns": {
+          "SOXL": -0.1451,
+          "SMH": -0.0452,
+          "MU": -0.067,
+          "NVDA": -0.0327
+        },
+        "vix_day_return": 0.0599,
+        "alert_would_fire": true,
+        "proxy_stress_level": "high",
+        "hit_down": true
+      }
+    ],
+    "n_events_total": 56,
+    "disclaimer_ko": "옵션 체인 히스토리 없이 수익률 프록시. 투자 권유 아님."
+  },
+  "path_stats": {
+    "soxl_peak_paper": 300.0,
+    "soxl_recent_paper": 120.0,
+    "soxl_peak_1y": 300.7699890136719,
+    "soxl_last": 140.25,
+    "soxl_min_1y": 24.90276527404785,
+    "koru_peak_paper": 64.0,
+    "koru_recent_paper": 17.0,
+    "koru_peak_1y": 63.244998931884766,
+    "koru_last": 17.360000610351562,
+    "kospi_dd_paper": -35.0,
+    "kospi_dd_1y": -31.33209918593629,
+    "kospi_max_dd_1y": -65.65831385022595,
+    "kospi_peak": 9114.5498046875,
+    "kospi_last": 6258.77001953125,
+    "note": "1y Yahoo path vs paper approximate levels"
+  }
+}

@@ -3,16 +3,30 @@
 DXY 내 비중 2위(~13.6%). 초저금리·YCC·ETF/J-REIT 매입 등 **비전통 정책** 때문에
 미국 키트와 다른 고유 지표가 필요하다.
 
-## 카테고리
+## 카테고리 (칩 순서 = 전 국가 공통 규칙)
 
 | id | 내용 |
 |----|------|
-| `liquidity` | BOJ 총자산·GDP비·YoY · ETF/J-REIT · **JGB 보유비율** · 당좌예금 · M2 vs 2019 |
-| `rates` | 무담보콜 · JGB 2Y/10Y/30Y · 10Y−2Y · **30Y−10Y** · 월간 JGB 매입 목표/실적 |
-| `fx` | USD/JPY · EUR/JPY · 엔 REER · 외환보유액 · 개입 |
+| `liquidity` | BOJ 총자산·GDP비·YoY · **JGB 보유비율** · **JGB 매입·롤오버(만기 바)** · **ETF 통합(잔고+비중)** · J-REIT · M2 vs 2019 |
+| `rates` | 무담보콜 · JGB 2Y/10Y/30Y · 스프레드 (매입 실적은 유동성 바로 이동) |
+| `fx` | USD/JPY · **IMM 엔 순투기** · 외환보유액 · **외환개입** (EUR/JPY·REER 제외) |
 | `equity` | Nikkei · TOPIX · 외국인 순매수 · Nikkei VI |
-| `growth` | GDP QoQ/YoY · Jibun PMI · **춘투** · 실질임금 · 유효구인배율 |
-| `inflation` | 근원 CPI · 근원-근원 · 도쿄 CPI · CGPI |
+| `growth` | **GDP(YoY\|QoQ)** → 노동·춘투 → **PMI는 맨 뒤** |
+| `inflation` | 근원 CPI · 근원-근원 · 도쿄 CPI · **CGPI(도매/생산자, 선행 보조)** |
+
+## 2026-08 피드백 반영
+
+- M2 전년비 제거 (vs 2019만 유지)
+- ETF 잔고+시장비중 → `boj_etf_holdings` 한 칩
+- BOJ 당좌예금 제외 — 초과지준 정보는 유용하나 JGB 보유·매입 실적과 역할이 겹침. **채권 보유비율 + 월간 매입/롤오버 바**가 더 직관적
+- JGB 매입 실적 → 만기별 매입 + 롤오버 미실시 막대 (`boj_jgb_ops`). QE/QT국(US/EZ/UK)에도 동일 패턴
+- 엔 REER 제거 → IMM 선물 순포지션. EUR/JPY 제거
+- 비미국·개입 공표국: 외환개입 칩 (KR/CH/TW 등 stub)
+
+## CGPI가 유의한가?
+
+**보조로 유의하다.** 일본 기업물가(도매·생산자)로, 근원 CPI보다 먼저 움직이는 경우가 많다.
+소비 물가(근원/근원-근원)가 메인, CGPI는 “파이프라인 물가” 확인용으로 뒤에 둔다.
 
 ## 한계
 
@@ -22,4 +36,4 @@ DXY 내 비중 2위(~13.6%). 초저금리·YCC·ETF/J-REIT 매입 등 **비전�
 
 ## 데이터
 
-현재 `fixture_synth`. 다음: BOJ 통계 · MOF 개입 · TSE 수급 · 춘투 연간 시리즈.
+현재 `fixture_synth`. 다음: BOJ 통계 · MOF 개입 · CFTC IMM · TSE 수급 · 춘투 연간 시리즈.

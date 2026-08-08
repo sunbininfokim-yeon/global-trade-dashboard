@@ -376,3 +376,5 @@ Q. 학습에 넣을까?
 ```
 
 문서 갱신 시 cron 변경은 **본 표 As-Is 섹션과 workflow 파일을 같이** 수정한다.
+
+| `market_microstructure_daily.yml` | `30 7 * * 1-5` UTC (16:30 KST) | 코스피 미시구조·집중도·US→KR 전이·파생 보드·가격×수급. `KRX_API` 시크릿이 있으면 KR OI·외인 파생까지, 없으면 US·집중도만 갱신 |

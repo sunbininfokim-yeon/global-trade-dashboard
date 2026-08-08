@@ -12,13 +12,13 @@
 |------:|----|------|----------------|----------------|
 | 1 | `liquidity` | 유동성 | 중앙은행 BS · TGA/RRP · **Net Liquidity** · M2 | CB 자산 + **공통 M2/M3 vs 2019** + 국가 고유 유동성(가계부채·NFRK·Sight Deposits·Credit Quota 등) |
 | 2 | `rates` | 금리 | EFFR · 국채 · 스프레드 · 신용스프레드 | **정책금리** + 국채 2Y/10Y(+필요시 30Y) + 대미/대역내 스프레드 + CDS(가능 시) |
-| 3 | `fx` | 환율 | DXY · EUR · JPY | **USD/\*** 또는 주요 교차 + 외환보유/경상 + **상품통화면 원자재** |
+| 3 | `fx` | 환율 | DXY · EUR · JPY | **USD/\*** 또는 주요 교차 + 외환보유/경상 + us_fx_watch (+ FX 스프레드·Urals−Brent 등). **주력 수출 원자재는 넣지 않음** |
 | 4 | `equity` | 주식 | SPX · NDX · RUT · VIX | 대표지수 + 외국인/FDI + (가능 시) 변동성 |
-| 5 | `growth` | 성장 | GDP · GDPNow · PMI · 고용 | GDP QoQ/YoY + **국가 선행지표** + (필요 시) 부동산/산업분리 |
+| 5 | `growth` | 성장 | GDP · GDPNow · PMI · 고용 | GDP QoQ/YoY + **수출 드라이버**(KR 반도체 · BR 철광석/대두/원유 · AU 철광석 등) + 선행지표 + (필요 시) 부동산/산업분리 |
 | 6 | `inflation` | 물가 | Core PCE · CPI · BEI | Headline + Core/중앙은행 선호지표 |
 
 탭을 합치거나(`FX & Commodities`) 이름을 바꿔서 넣지 않는다.  
-원자재·부동산·생보 헤지는 **해당 탭에 슬롯**으로 넣는다 (fx / growth / liquidity).
+주력 수출·교역 원자재는 **`growth`**(한국 반도체 수출과 동일 슬롯). 부동산·생보 헤지 등은 해당 탭에 슬롯으로 넣는다.
 
 ---
 

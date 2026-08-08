@@ -6114,12 +6114,14 @@ const renderPortfolioLab = async (host) => {
 const CO_LEVELS = [
     { id: 'health',    label: '재무 건전성', blurb: '빚을 감당할 수 있는가, 이익은 나는가' },
     { id: 'valuation', label: '투자 판단',   blurb: '벌어들이는 현금 대비 값이 어떤가' },
-    { id: 'deal',      label: '인수 검토',   blurb: '사들인다면 무엇을 더 봐야 하는가' },
+    { id: 'deep',      label: '심층 분석',   blurb: '자산과 부채가 실제로 어떤 모양인가' },
 ];
 
-// Korean 억/조 grouping on a dollar figure reads as the wrong number entirely
-// -- $98.8B shown as "987.7억" invites being read as won. Group by the scale
-// the currency is normally quoted in.
+// Levels stack rather than replace. Moving up a level is a request for more,
+// not for something else -- valuation still wants the health numbers in view.
+const CO_LEVEL_ORDER = CO_LEVELS.map((l) => l.id);
+const coLevelsUpTo = (id) => CO_LEVEL_ORDER.slice(0, CO_LEVEL_ORDER.indexOf(id) + 1);
+
 const coNum = (v, currency = 'KRW') => {
     if (v === null || v === undefined || Number.isNaN(v)) return '—';
     const a = Math.abs(v);
@@ -6146,21 +6148,36 @@ const coDiv = (a, b) => (a === null || b === null || !b) ? null : a / b;
 
 // Ratios follow the same definitions the KFA engine uses, so the two can be
 // checked against each other the way the portfolio maths already is.
-const coDerive = (s) => ({
-    fy: s.fy,
-    current_ratio: coDiv(s.assets_current, s.liabilities_current),
-    debt_ratio: coDiv(s.liabilities, s.assets),
-    equity_ratio: coDiv(s.equity, s.assets),
-    roe: coDiv(s.net_income, s.equity),
-    roa: coDiv(s.net_income, s.assets),
-    operating_margin: coDiv(s.operating_income, s.revenue),
-    net_margin: coDiv(s.net_income, s.revenue),
-    fcf: (s.cfo === null || s.capex === null) ? null : s.cfo - s.capex,
-    fcf_margin: (s.cfo === null || s.capex === null) ? null : coDiv(s.cfo - s.capex, s.revenue),
-    net_debt: (s.liabilities === null) ? null
-        : ((s.debt_long ?? 0) - (s.cash ?? 0)),
-    raw: s,
-});
+const coDerive = (s) => {
+    const sum = (...xs) => {
+        const vals = xs.filter((x) => Number.isFinite(x));
+        return vals.length ? vals.reduce((a, b) => a + b, 0) : null;
+    };
+    const interestBearingShort = sum(s.debt_short, s.debt_current_portion);
+    const debtTotal = sum(interestBearingShort, s.debt_long);
+    return {
+        fy: s.fy,
+        current_ratio: coDiv(s.assets_current, s.liabilities_current),
+        quick_ratio: coDiv(sum(s.cash, s.securities_current, s.receivables), s.liabilities_current),
+        debt_ratio: coDiv(s.liabilities, s.assets),
+        equity_ratio: coDiv(s.equity, s.assets),
+        roe: coDiv(s.net_income, s.equity),
+        roa: coDiv(s.net_income, s.assets),
+        operating_margin: coDiv(s.operating_income, s.revenue),
+        net_margin: coDiv(s.net_income, s.revenue),
+        fcf: (s.cfo === null || s.capex === null) ? null : s.cfo - s.capex,
+        fcf_margin: (s.cfo === null || s.capex === null) ? null : coDiv(s.cfo - s.capex, s.revenue),
+        // Net debt counts what carries interest, not every payable.
+        interest_bearing_short: interestBearingShort,
+        debt_total: debtTotal,
+        net_debt: (debtTotal === null) ? null : debtTotal - (s.cash ?? 0) - (s.securities_current ?? 0),
+        // How much of the interest-bearing debt falls due inside a year.
+        short_share: coDiv(interestBearingShort, debtTotal),
+        interest_cover: coDiv(s.operating_income, s.interest_expense),
+        effective_tax: coDiv(s.tax_expense, sum(s.net_income, s.tax_expense)),
+        raw: s,
+    };
+};
 
 const renderCompanyCalc = async (host) => {
     host.innerHTML = `<div class="fin-wrap"><p class="fin-loading">불러오는 중…</p></div>`;
@@ -6270,6 +6287,11 @@ const loadCompany = async (out, inst) => {
     }
 
     let level = 'health';
+    CO_DCF.growth = null;      // 새 기업이면 그 기업의 이력에서 다시 잡는다
+    CO_STRUCT_OPEN = null;
+    CO_DATA = data;
+    CO_PRICE.value = null;
+    CO_PRICE.status = 'loading';
     const paint = () => {
         out.innerHTML = `
         <div class="fin-head fin-head-sub">
@@ -6291,8 +6313,45 @@ const loadCompany = async (out, inst) => {
         out.querySelectorAll('[data-level]').forEach((b) => b.addEventListener('click', () => {
             level = b.dataset.level; paint();
         }));
+
+        out.querySelectorAll('[data-co-struct]').forEach((b) => b.addEventListener('click', () => {
+            const k = b.dataset.coStruct;
+            CO_STRUCT_OPEN = CO_STRUCT_OPEN === k ? null : k;
+            paint();
+        }));
+
+        // Recompute on change rather than on every keystroke: a half-typed
+        // discount rate briefly reads as 0 and the numbers jump.
+        out.querySelectorAll('[data-co-dcf]').forEach((el) => el.addEventListener('change', () => {
+            const v = Number(el.value);
+            if (Number.isFinite(v)) CO_DCF[el.dataset.coDcf] = v;
+            paint();
+        }));
+        out.querySelector('[data-co-dcf-reset]')?.addEventListener('click', () => {
+            CO_DCF.growth = null; CO_DCF.terminal = 2.5; CO_DCF.discount = 9.0;
+            paint();
+        });
+        out.querySelector('[data-co-price]')?.addEventListener('change', (e) => {
+            const v = Number(e.target.value);
+            CO_PRICE.value = Number.isFinite(v) && v > 0 ? v : null;
+            CO_PRICE.status = 'manual';
+            paint();
+        });
     };
     paint();
+
+    // The reverse DCF needs a price, and the quote proxy already exists for the
+    // portfolio panel. Fetched after first paint so the statements are not held
+    // up by a second network call.
+    pfSpot(sym, data.currency).then((sp) => {
+        if (CO_DATA !== data) return;                 // 사용자가 그새 다른 기업을 골랐다
+        if (sp && Number.isFinite(sp.price) && sp.price > 0) {
+            CO_PRICE.value = sp.price; CO_PRICE.status = 'ok';
+        } else {
+            CO_PRICE.status = 'fail';
+        }
+        paint();
+    }).catch(() => { CO_PRICE.status = 'fail'; paint(); });
 };
 
 const coTable = (rows, cols) => `
@@ -6309,16 +6368,368 @@ const coTable = (rows, cols) => `
         </table>
     </div>`;
 
-const coRenderLevel = (level, rowsDesc, data) => {
-    const CUR = data.currency || 'KRW';
-    const rows = [...rowsDesc].reverse();   // oldest first reads as a trend
-    const latest = rowsDesc[0];
+// --- DCF ---------------------------------------------------------------------
+// Every number here is a consequence of three inputs the reader chooses. That is
+// not a flaw to hide behind a single "fair value" figure -- it is the whole
+// point, so the assumptions stay on screen and adjustable.
+const CO_DCF = { growth: null, terminal: 2.5, discount: 9.0, years: 5 };
+const CO_PRICE = { value: null, status: 'idle' };
+let CO_DATA = null;   // 현재 렌더 중인 기업 페이로드 (통화 등)
 
-    if (level === 'health') {
-        return `
+const coDcf = (rows) => {
+    const latest = rows[0];
+    const base = latest.fcf;
+    if (!Number.isFinite(base) || base <= 0) return null;
+
+    const g = (CO_DCF.growth ?? 0) / 100;
+    const tg = CO_DCF.terminal / 100;
+    const r = CO_DCF.discount / 100;
+    if (!(r > tg)) return { invalid: '할인율이 영구성장률보다 커야 합니다.' };
+
+    const flows = [];
+    let f = base;
+    for (let i = 1; i <= CO_DCF.years; i++) {
+        f = f * (1 + g);
+        flows.push({ year: i, fcf: f, pv: f / Math.pow(1 + r, i) });
+    }
+    const tail = flows[flows.length - 1].fcf * (1 + tg) / (r - tg);
+    const tailPv = tail / Math.pow(1 + r, CO_DCF.years);
+    const ev = flows.reduce((a, x) => a + x.pv, 0) + tailPv;
+    const equity = ev - (latest.net_debt ?? 0);
+    const shares = latest.raw.shares;
+    return {
+        base, flows, tail, tailPv, ev, equity,
+        tailShare: tailPv / ev,
+        perShare: Number.isFinite(shares) && shares > 0 ? equity / shares : null,
+        shares,
+    };
+};
+
+// Historical FCF growth, as a starting point for the input rather than a
+// forecast. Clamped because a single recovery year can imply 300% forever.
+const coDefaultGrowth = (rows) => {
+    const fcfs = rows.map((r) => r.fcf).filter((x) => Number.isFinite(x) && x > 0);
+    if (fcfs.length < 3) return 5;
+    const newest = fcfs[0], oldest = fcfs[fcfs.length - 1], n = fcfs.length - 1;
+    const cagr = (Math.pow(newest / oldest, 1 / n) - 1) * 100;
+    return Math.max(-10, Math.min(20, Math.round(cagr * 10) / 10));
+};
+
+// Forward DCF answers "what is it worth if I am right about growth". Reverse
+// DCF asks the better question: at today's price, what growth is already being
+// assumed? That turns a number the reader must trust into one they can judge.
+const coImpliedGrowth = (rows, marketCap) => {
+    if (!Number.isFinite(marketCap) || marketCap <= 0) return null;
+    const latest = rows[0];
+    const base = latest.fcf;
+    if (!Number.isFinite(base) || base <= 0) return null;
+    const targetEv = marketCap + (latest.net_debt ?? 0);
+
+    const evAt = (g) => {
+        const tg = CO_DCF.terminal / 100, r = CO_DCF.discount / 100;
+        if (!(r > tg)) return null;
+        let f = base, pv = 0;
+        for (let i = 1; i <= CO_DCF.years; i++) { f *= (1 + g); pv += f / Math.pow(1 + r, i); }
+        return pv + (f * (1 + tg) / (r - tg)) / Math.pow(1 + r, CO_DCF.years);
+    };
+    if (evAt(0) === null) return null;
+
+    // EV rises monotonically in g below the discount rate, so bisection is both
+    // sufficient and stable here.
+    let lo = -0.5, hi = (CO_DCF.discount / 100) - 0.001;
+    if (evAt(hi) < targetEv) return { unreachable: true, cap: hi * 100 };
+    if (evAt(lo) > targetEv) return { unreachable: true, below: true, cap: lo * 100 };
+    for (let k = 0; k < 60; k++) {
+        const mid = (lo + hi) / 2;
+        if (evAt(mid) < targetEv) lo = mid; else hi = mid;
+    }
+    return { growth: (lo + hi) / 2 * 100 };
+};
+
+const coSensitivity = (rows) => {
+    const latest = rows[0];
+    const base = latest.fcf;
+    if (!Number.isFinite(base) || base <= 0) return null;
+    const shares = latest.raw.shares;
+    if (!Number.isFinite(shares) || shares <= 0) return null;
+
+    const gs = [-5, 0, 5, 10, 15];
+    const rs = [7, 8, 9, 10, 12];
+    const tg = CO_DCF.terminal / 100;
+    const cells = rs.map((rp) => ({
+        r: rp,
+        row: gs.map((gp) => {
+            const g = gp / 100, r = rp / 100;
+            if (!(r > tg)) return null;
+            let f = base, pv = 0;
+            for (let i = 1; i <= CO_DCF.years; i++) { f *= (1 + g); pv += f / Math.pow(1 + r, i); }
+            const ev = pv + (f * (1 + tg) / (r - tg)) / Math.pow(1 + r, CO_DCF.years);
+            return (ev - (latest.net_debt ?? 0)) / shares;
+        }),
+    }));
+    return { gs, cells };
+};
+
+const coSensPanel = (rows, CUR) => {
+    const sens = coSensitivity(rows);
+    if (!sens) return '';
+    const flat = sens.cells.flatMap((c) => c.row).filter(Number.isFinite);
+    const lo = Math.min(...flat), hi = Math.max(...flat);
+    const tone = (v) => {
+        if (!Number.isFinite(v) || hi === lo) return '';
+        const t = (v - lo) / (hi - lo);
+        return `background: rgba(56,189,248,${(0.05 + t * 0.24).toFixed(3)})`;
+    };
+    return `
+    <h3 class="fin-sub">민감도 — 주당 가치</h3>
+    <p class="fin-note">가로: 성장률 · 세로: 할인율 · 영구성장률 ${CO_DCF.terminal}% 고정.
+       한 칸만 옮겨도 값이 크게 달라진다면, 그건 이 방법의 성질이지 계산 오류가 아닙니다.</p>
+    <div class="co-table-wrap">
+        <table class="co-table co-sens">
+            <thead><tr><th>할인율 \\ 성장률</th>${sens.gs.map((g) => `<th>${g}%</th>`).join('')}</tr></thead>
+            <tbody>
+                ${sens.cells.map((c) => `
+                    <tr><td class="co-label">${c.r}%</td>
+                        ${c.row.map((v) => `<td style="${tone(v)}">${Number.isFinite(v) ? coNum(v, CUR) : '—'}</td>`).join('')}
+                    </tr>`).join('')}
+            </tbody>
+        </table>
+    </div>`;
+};
+
+const coReversePanel = (rows, CUR, data) => {
+    const price = CO_PRICE.value;
+    const shares = rows[0].raw.shares;
+    const mcap = (Number.isFinite(price) && Number.isFinite(shares)) ? price * shares : null;
+    const imp = mcap ? coImpliedGrowth(rows, mcap) : null;
+
+    return `
+    <h3 class="fin-sub">역방향 DCF — 시장은 몇 %를 가정하고 있나</h3>
+    <p class="fin-note">
+        위가 "이 가정이면 얼마인가" 라면, 이건 "지금 값이 맞으려면 무엇을 믿어야 하나" 입니다.
+        ${CO_PRICE.status === 'loading' ? '현재가 조회 중…'
+          : CO_PRICE.status === 'fail' ? `현재가를 못 받았습니다 — 직접 넣어 보세요.` : ''}
+    </p>
+    <div class="co-dcf-inputs">
+        <label class="co-dcf-input">
+            <span>현재 주가 (${finEsc(data.currency || '')})</span>
+            <input type="number" data-co-price="1" value="${Number.isFinite(price) ? price : ''}" step="0.01" min="0">
+        </label>
+    </div>
+    ${!Number.isFinite(price) ? `<p class="fin-note">주가를 넣으면 역산합니다.</p>`
+      : !Number.isFinite(shares) ? `<p class="fin-note">희석주식수를 못 읽어 시가총액을 낼 수 없습니다.</p>`
+      : !imp ? `<p class="fin-note">잉여현금흐름이 없거나 음수라 역산할 수 없습니다.</p>`
+      : imp.unreachable ? `
+        <div class="fin-cards">
+            <div class="fin-card"><span class="fin-card-title">시가총액</span>
+                <span class="fin-card-value">${coNum(mcap, data.currency)}</span>
+                <p class="fin-card-plain">주가 × 희석주식수 ${mmFmt(shares, 0)}</p></div>
+            <div class="fin-card"><span class="fin-card-title">FCF 배수</span>
+                <span class="fin-card-value">${(mcap / rows[0].fcf).toFixed(0)}배</span>
+                <p class="fin-card-plain">시가총액 ÷ 최근 잉여현금흐름입니다.</p></div>
+            <div class="fin-card"><span class="fin-card-title">필요 영구성장률</span>
+                <span class="fin-card-value">${(() => {
+                    // 성장률로는 못 닿으니, 영구성장률을 역산해 격차의 크기를 보인다.
+                    const r = CO_DCF.discount / 100, base = rows[0].fcf;
+                    const target = mcap + (rows[0].net_debt ?? 0);
+                    let lo = 0, hi = r - 0.0005;
+                    const ev = (tg) => {
+                        let f = base, pv = 0;
+                        for (let i = 1; i <= CO_DCF.years; i++) { f *= (1 + tg); pv += f / Math.pow(1 + r, i); }
+                        return pv + (f * (1 + tg) / (r - tg)) / Math.pow(1 + r, CO_DCF.years);
+                    };
+                    if (ev(hi) < target) return '해당 없음';
+                    for (let k = 0; k < 60; k++) { const m = (lo + hi) / 2; if (ev(m) < target) lo = m; else hi = m; }
+                    return `${((lo + hi) / 2 * 100).toFixed(1)}%`;
+                })()}</span>
+                <p class="fin-card-plain">할인율 ${CO_DCF.discount}% 를 유지할 때, 지금 값이 설명되려면 현금흐름이 영구히 이만큼 자라야 합니다.</p></div>
+        </div>
+        <p class="fin-note">
+            ${imp.below ? '이 주가를 설명할 만큼 낮은 성장률이 없습니다.'
+            : `성장률만으로는 닿지 않습니다 — 할인율(${CO_DCF.discount}%) 근처까지 올려도 지금 시가총액에 못 미칩니다.
+               <strong>모델이 틀렸다기보다 가정이 시장과 다르다</strong>는 뜻입니다.
+               장기 성장을 더 믿거나, 할인율을 더 낮게 보거나, 현금흐름 외의 것에 값이 매겨져 있거나입니다.`}
+        </p>`
+      : `
+        <div class="fin-cards">
+            <div class="fin-card"><span class="fin-card-title">시가총액</span>
+                <span class="fin-card-value">${coNum(mcap, data.currency)}</span>
+                <p class="fin-card-plain">주가 × 희석주식수 ${mmFmt(shares, 0)}</p></div>
+            <div class="fin-card"><span class="fin-card-title">시장 내재 성장률</span>
+                <span class="fin-card-value">${imp.growth.toFixed(1)}%</span>
+                <p class="fin-card-plain">향후 5년 FCF가 매년 이만큼 늘어야 지금 값이 설명됩니다.</p></div>
+            <div class="fin-card"><span class="fin-card-title">과거 5년 실적</span>
+                <span class="fin-card-value">${coDefaultGrowth(rows).toFixed(1)}%</span>
+                <p class="fin-card-plain">같은 기간 실제 FCF 연평균 증가율입니다.</p></div>
+        </div>
+        <p class="fin-note">
+            두 숫자의 간격이 이 주식에 걸린 기대입니다. 어느 쪽이 맞는지는 이 화면이 답하지 않습니다 —
+            <strong>판단은 보는 사람의 몫</strong>이고, 이 도구는 그 판단이 무엇에 대한 것인지만 분명히 합니다.
+        </p>`}`;
+};
+
+const coDcfPanel = (rows, CUR) => {
+    if (CO_DCF.growth === null) CO_DCF.growth = coDefaultGrowth(rows);
+    const d = coDcf(rows);
+    const input = (key, label, step, min, max) => `
+        <label class="co-dcf-input">
+            <span>${finEsc(label)}</span>
+            <input type="number" data-co-dcf="${key}" value="${CO_DCF[key]}"
+                   step="${step}" min="${min}" max="${max}"><i>%</i>
+        </label>`;
+
+    return `
+    <section class="fin-block fin-block-wide">
+        <h2>DCF — 현금흐름 할인</h2>
+        <p class="fin-lead">
+            앞으로 벌어들일 잉여현금흐름을 오늘 가치로 당겨 더한 값입니다.
+            <strong>세 가지 가정이 결과를 지배합니다</strong> — 그래서 숨기지 않고 여기 둡니다. 직접 바꿔 보세요.
+        </p>
+        <div class="co-dcf-inputs">
+            ${input('growth', '향후 5년 FCF 성장률', 0.5, -30, 60)}
+            ${input('terminal', '영구성장률', 0.1, 0, 5)}
+            ${input('discount', '할인율 (WACC)', 0.25, 1, 30)}
+            <button class="pf-btn pf-btn-ghost" data-co-dcf-reset="1">기본값</button>
+        </div>
+        ${!d ? '<p class="fin-note">잉여현금흐름이 음수이거나 없어 DCF를 낼 수 없습니다. 현금을 쓰는 국면의 기업에는 이 방법이 맞지 않습니다.</p>'
+          : d.invalid ? `<p class="fin-note">${finEsc(d.invalid)}</p>` : `
+        <div class="fin-cards">
+            <div class="fin-card"><span class="fin-card-title">기업가치 (EV)</span>
+                <span class="fin-card-value">${coNum(d.ev, CUR)}</span>
+                <p class="fin-card-plain">향후 현금흐름 + 잔존가치의 현재가치 합입니다.</p></div>
+            <div class="fin-card"><span class="fin-card-title">주주가치</span>
+                <span class="fin-card-value">${coNum(d.equity, CUR)}</span>
+                <p class="fin-card-plain">기업가치에서 순부채를 뺀 값입니다.</p></div>
+            <div class="fin-card"><span class="fin-card-title">주당 가치</span>
+                <span class="fin-card-value">${d.perShare === null ? '—' : coNum(d.perShare, CUR)}</span>
+                <p class="fin-card-plain">${d.shares ? `희석주식수 ${mmFmt(d.shares, 0)}주 기준` : '주식수를 못 읽어 계산하지 못했습니다.'}</p></div>
+            <div class="fin-card"><span class="fin-card-title">잔존가치 비중</span>
+                <span class="fin-card-value">${coPct(d.tailShare)}</span>
+                <p class="fin-card-plain">전체 가치 중 6년차 이후가 차지하는 몫입니다. 이 값이 높을수록 결과가 영구성장률 가정에 좌우됩니다.</p></div>
+        </div>
+        <div class="co-table-wrap">
+            <table class="co-table">
+                <thead><tr><th>연차</th>${d.flows.map((f) => `<th>${f.year}년</th>`).join('')}<th>잔존</th></tr></thead>
+                <tbody>
+                    <tr><td class="co-label">예상 FCF</td>${d.flows.map((f) => `<td>${coNum(f.fcf, CUR)}</td>`).join('')}<td>${coNum(d.tail, CUR)}</td></tr>
+                    <tr><td class="co-label">현재가치</td>${d.flows.map((f) => `<td>${coNum(f.pv, CUR)}</td>`).join('')}<td>${coNum(d.tailPv, CUR)}</td></tr>
+                </tbody>
+            </table>
+        </div>
+        <p class="fin-note">
+            기준 FCF ${coNum(d.base, CUR)} (FY${rows[0].fy} 실적) 에서 출발합니다.
+        </p>
+        ${coSensPanel(rows, CUR)}`}
+        ${coReversePanel(rows, CUR, CO_DATA || {})}
+    </section>`;
+};
+
+// --- 구조 (심층) --------------------------------------------------------------
+const coStructRows = (r, CUR) => {
+    const R = r.raw;
+    const liab = [
+        ['단기차입금·기업어음', R.debt_short],
+        ['유동성 장기부채', R.debt_current_portion],
+        ['매입채무', R.payables],
+        ['미지급비용', R.accrued],
+        ['이연수익(선수금)', R.deferred_revenue],
+        ['리스부채 (유동)', R.lease_current],
+        ['기타 유동부채', R.other_current],
+        ['장기차입금', R.debt_long],
+        ['리스부채 (비유동)', R.lease_noncurrent],
+        ['이연법인세', R.deferred_tax],
+        ['기타 비유동부채', R.other_noncurrent],
+    ].filter(([, v]) => Number.isFinite(v));
+    const asset = [
+        ['현금성자산', R.cash],
+        ['단기투자·유가증권', R.securities_current],
+        ['매출채권', R.receivables],
+        ['재고자산', R.inventory],
+        ['유형자산', R.ppe],
+        ['영업권', R.goodwill],
+        ['무형자산', R.intangibles],
+    ].filter(([, v]) => Number.isFinite(v));
+    return { liab, asset };
+};
+
+const coBarList = (rows, total, CUR) => {
+    const max = Math.max(...rows.map(([, v]) => Math.abs(v)), 1);
+    return `<div class="mm-bars mm-bars-compact">
+        ${rows.map(([label, v]) => `
+            <div class="mm-bar-row">
+                <span class="mm-bar-label">${finEsc(label)}</span>
+                <span class="mm-bar-track"><span class="mm-bar-fill" style="width:${(Math.abs(v) / max * 100).toFixed(1)}%"></span></span>
+                <span class="mm-bar-value">${coNum(v, CUR)}${total ? `<span class="co-share">${(v / total * 100).toFixed(0)}%</span>` : ''}</span>
+            </div>`).join('')}
+    </div>`;
+};
+
+let CO_STRUCT_OPEN = null;   // 'liab' | 'asset' | null
+
+const coDeepPanel = (rowsDesc, CUR) => {
+    const rows = [...rowsDesc].reverse();
+    const latest = rowsDesc[0];
+    const { liab, asset } = coStructRows(latest, CUR);
+
+    return `
+    <section class="fin-block fin-block-wide">
+        <h2>부채 구조 — 언제 갚아야 하는가</h2>
+        <p class="fin-lead">
+            부채비율 하나로는 보이지 않는 것이 있습니다. 회사를 어렵게 만드는 건 <strong>얼마를 빚졌는지가 아니라 언제 갚아야 하는지</strong>입니다.
+        </p>
+        <div class="fin-cards">
+            <div class="fin-card"><span class="fin-card-title">이자부 부채 합계</span>
+                <span class="fin-card-value">${coNum(latest.debt_total, CUR)}</span>
+                <p class="fin-card-plain">매입채무 같은 영업부채를 뺀, 이자를 무는 빚만 모은 값입니다.</p></div>
+            <div class="fin-card"><span class="fin-card-title">1년 내 만기 비중</span>
+                <span class="fin-card-value">${coPct(latest.short_share)}</span>
+                <p class="fin-card-plain">이자부 부채 중 1년 안에 갚거나 차환해야 하는 몫입니다. 높을수록 금리·자금시장 경색에 민감합니다.</p></div>
+            <div class="fin-card"><span class="fin-card-title">이자보상배율</span>
+                <span class="fin-card-value">${coRatio(latest.interest_cover, 1)}배</span>
+                <p class="fin-card-plain">영업이익이 이자비용의 몇 배인가. 1배 아래면 본업으로 이자도 못 냅니다.</p></div>
+            <div class="fin-card"><span class="fin-card-title">당좌비율</span>
+                <span class="fin-card-value">${coPct(latest.quick_ratio)}</span>
+                <p class="fin-card-plain">재고를 뺀 유동자산으로 단기부채를 갚을 수 있는 정도입니다.</p></div>
+        </div>
+        ${coTable(rows, [
+            { label: '이자부 부채', fmt: (r) => coNum(r.debt_total, CUR) },
+            { label: '1년 내 만기', fmt: (r) => coNum(r.interest_bearing_short, CUR) },
+            { label: '순부채', fmt: (r) => coNum(r.net_debt, CUR) },
+            { label: '이자보상배율', fmt: (r) => coRatio(r.interest_cover, 1) },
+        ])}
+    </section>
+
+    <section class="fin-block fin-block-wide">
+        <h2>자산·자본 구조</h2>
+        <p class="fin-lead">항목을 눌러 구성을 펼쳐 보세요.</p>
+        <div class="co-struct-toggle">
+            <button class="mm-view-btn ${CO_STRUCT_OPEN === 'asset' ? 'on' : ''}" data-co-struct="asset">자산 구성 (${asset.length})</button>
+            <button class="mm-view-btn ${CO_STRUCT_OPEN === 'liab' ? 'on' : ''}" data-co-struct="liab">부채 구성 (${liab.length})</button>
+        </div>
+        ${CO_STRUCT_OPEN === 'asset' ? `
+            ${coBarList(asset, latest.raw.assets, CUR)}
+            <p class="fin-note">비율은 총자산 ${coNum(latest.raw.assets, CUR)} 대비입니다. 합이 100%가 되지 않는 것은 위에 없는 잔여 항목이 있기 때문입니다.</p>`
+        : CO_STRUCT_OPEN === 'liab' ? `
+            ${coBarList(liab, latest.raw.liabilities, CUR)}
+            <p class="fin-note">비율은 총부채 ${coNum(latest.raw.liabilities, CUR)} 대비입니다.</p>`
+        : ''}
+        ${coTable(rows, [
+            { label: '총자산', fmt: (r) => coNum(r.raw.assets, CUR) },
+            { label: '총부채', fmt: (r) => coNum(r.raw.liabilities, CUR) },
+            { label: '자기자본', fmt: (r) => coNum(r.raw.equity, CUR) },
+            { label: '이익잉여금', fmt: (r) => coNum(r.raw.retained_earnings, CUR) },
+            { label: '자기자본비율', fmt: (r) => coPct(r.equity_ratio) },
+        ])}
+    </section>`;
+};
+
+const coHealthPanel = (rowsDesc, CUR) => {
+    const rows = [...rowsDesc].reverse();
+    const latest = rowsDesc[0];
+    return `
         <div class="fin-cards">
             <div class="fin-card"><span class="fin-card-title">유동비율</span>
-                <span class="fin-card-value">${coRatio(latest.current_ratio ? latest.current_ratio * 100 : null, 0)}%</span>
+                <span class="fin-card-value">${coPct(latest.current_ratio)}</span>
                 <p class="fin-card-plain">1년 안에 갚을 빚 대비 1년 안에 현금이 되는 자산. 100%를 밑돌면 단기 자금이 빠듯하다는 뜻입니다.</p></div>
             <div class="fin-card"><span class="fin-card-title">부채비율 (부채/자산)</span>
                 <span class="fin-card-value">${coPct(latest.debt_ratio)}</span>
@@ -6337,14 +6748,16 @@ const coRenderLevel = (level, rowsDesc, data) => {
                 { label: '영업이익', fmt: (r) => coNum(r.raw.operating_income, CUR) },
                 { label: '순이익', fmt: (r) => coNum(r.raw.net_income, CUR) },
                 { label: '영업이익률', fmt: (r) => coPct(r.operating_margin) },
-                { label: '유동비율', fmt: (r) => coRatio(r.current_ratio ? r.current_ratio * 100 : null, 0) + '%' },
+                { label: '유동비율', fmt: (r) => coPct(r.current_ratio) },
                 { label: '부채비율', fmt: (r) => coPct(r.debt_ratio) },
             ])}
         </section>`;
-    }
+};
 
-    if (level === 'valuation') {
-        return `
+const coValuationPanel = (rowsDesc, CUR) => {
+    const rows = [...rowsDesc].reverse();
+    const latest = rowsDesc[0];
+    return `
         <div class="fin-cards">
             <div class="fin-card"><span class="fin-card-title">잉여현금흐름 (FCF)</span>
                 <span class="fin-card-value">${coNum(latest.fcf, CUR)}</span>
@@ -6354,7 +6767,7 @@ const coRenderLevel = (level, rowsDesc, data) => {
                 <p class="fin-card-plain">매출이 현금으로 남는 비율입니다. 이익은 나는데 이 값이 낮으면 회계 이익과 현금이 어긋난다는 신호입니다.</p></div>
             <div class="fin-card"><span class="fin-card-title">순부채</span>
                 <span class="fin-card-value">${coNum(latest.net_debt, CUR)}</span>
-                <p class="fin-card-plain">장기차입금에서 현금을 뺀 값입니다. 음수면 빚보다 현금이 많다는 뜻입니다.</p></div>
+                <p class="fin-card-plain">이자부 부채에서 현금·단기투자를 뺀 값입니다. 음수면 빚보다 현금이 많다는 뜻입니다.</p></div>
             <div class="fin-card"><span class="fin-card-title">ROA</span>
                 <span class="fin-card-value">${coPct(latest.roa)}</span>
                 <p class="fin-card-plain">자산 전체로 낸 수익률입니다. ROE와 벌어지면 그 차이가 레버리지에서 옵니다.</p></div>
@@ -6372,39 +6785,370 @@ const coRenderLevel = (level, rowsDesc, data) => {
                 순이익과 영업현금흐름이 오래 벌어져 있으면 이유를 봐야 합니다 — 매출채권이 쌓였거나, 재고가 늘었거나,
                 회계상 이익이 현금으로 들어오지 않는 구조일 수 있습니다.
             </p>
-        </section>`;
+        </section>
+        ${coDcfPanel(rowsDesc, CUR)}`;
+};
+
+const coRenderLevel = (level, rowsDesc, data) => {
+    const CUR = data.currency || 'KRW';
+    const parts = coLevelsUpTo(level).map((id) => {
+        if (id === 'health') return coHealthPanel(rowsDesc, CUR);
+        if (id === 'valuation') return coValuationPanel(rowsDesc, CUR);
+        return coDeepPanel(rowsDesc, CUR);
+    });
+    return parts.join('\n<hr class="co-sep">\n');
+};
+
+// === 시장 미시구조 / US→KR ==================================================
+//
+// Engine and snapshots are Cursor's (scripts/market_microstructure). This file
+// only reads them. The rule that matters most here: when a field is null, or
+// quality says demo/missing, the screen says so. A plausible-looking number in
+// a position-flow panel is worse than a blank one.
+const MS_FILES = {
+    transmission: 'us_kr_transmission_v1.json',
+    alerts: 'alert_levels_v1.json',
+    conc: 'kospi_concentration_history_v1.json',
+    board: 'derivatives_board_v1.json',
+    brief: 'ai_casino_brief_v1.json',
+    levels: 'investor_price_levels_v1.json',
+};
+
+let MS_DATA = null;
+let MS_UNIVERSE = 'marcap';     // 'marcap' | 'high_vol'
+let MS_TICKER = null;
+
+const msGet = async (name) => {
+    for (const base of ['/public/data/', '/data/']) {
+        try {
+            const r = await fetch(base + name, { cache: 'no-store' });
+            if (r.ok) return await r.json();
+        } catch (_) { /* next */ }
     }
+    return null;
+};
+
+const msMissing = (label) => `<span class="ms-missing">${finEsc(label || '데이터 없음')}</span>`;
+
+// 억원 / 백만원 are the units the engine publishes; keep them rather than
+// converting, so a number on screen can be traced back to the snapshot.
+const msEok = (v) => Number.isFinite(v)
+    ? `${v >= 0 ? '+' : ''}${Math.round(v).toLocaleString('ko-KR')}억` : '—';
+const msShares = (v) => Number.isFinite(v)
+    ? `${v >= 0 ? '+' : ''}${Math.round(v).toLocaleString('ko-KR')}` : '—';
+
+const MS_LEVEL_CLASS = { '경계': 'ms-lv-3', '주의': 'ms-lv-2', '관찰': 'ms-lv-1' };
+
+const msTransmission = (t) => {
+    if (!t) return '';
+    const ch = t.channels || {};
+    const order = [
+        ['downside', '하방'], ['upside', '상방'],
+        ['vol_up', '변동성 확대'], ['vol_down', '변동성 축소'],
+    ];
+    const head = String(t.headline || '');
+    const [lvl, dir] = head.split(':');
+    const dirKo = { downside: '하방', upside: '상방', vol_up: '변동성 확대', vol_down: '변동성 축소' }[dir] || dir || '';
+    const lvlKo = { high: '높음', mid: '중간', low: '낮음' }[lvl] || lvl || '';
+    const main = ch[dir] || {};
 
     return `
-        <section class="fin-block fin-block-wide">
-            <h2>자산·자본 구조</h2>
-            ${coTable(rows, [
-                { label: '총자산', fmt: (r) => coNum(r.raw.assets, CUR) },
-                { label: '총부채', fmt: (r) => coNum(r.raw.liabilities, CUR) },
-                { label: '자기자본', fmt: (r) => coNum(r.raw.equity, CUR) },
-                { label: '현금성자산', fmt: (r) => coNum(r.raw.cash, CUR) },
-                { label: '장기차입금', fmt: (r) => coNum(r.raw.debt_long, CUR) },
-                { label: '순부채', fmt: (r) => coNum(r.net_debt, CUR) },
-                { label: '자기자본비율', fmt: (r) => coPct(r.equity_ratio) },
-            ])}
-        </section>
-        <section class="fin-block fin-block-wide">
-            <h2>아직 못 보는 것</h2>
-            <p class="fin-lead">인수를 검토한다면 아래가 필요한데, 표준 XBRL 항목만으로는 나오지 않습니다. 없는 것을 있는 척하지 않기 위해 적어 둡니다.</p>
-            <ul class="fin-list">
-                <li><strong>사업부별 실적</strong> — 어느 부문이 벌고 어느 부문이 까먹는지. 주석에 있고 태그가 회사마다 다릅니다</li>
-                <li><strong>정상화 이익</strong> — 일회성 손익을 걷어낸 이익. 무엇이 일회성인지는 판단이 필요합니다</li>
-                <li><strong>우발채무</strong> — 소송·보증 등 아직 재무제표에 안 들어온 부담</li>
-                <li><strong>운전자본 상세</strong> — 매출채권·재고 회전. 인수 후 현금 소요를 좌우합니다</li>
-                <li><strong>DCF</strong> — 할인율과 성장률 가정이 필요하고, 그 가정이 결과를 지배합니다</li>
-            </ul>
-            <p class="fin-note">태그 매핑: ${finEsc(Object.entries(data.tags_used || {}).map(([k, v]) => `${k}=${v}`).join(' · ') || '—')}</p>
-        </section>`;
+    <section class="fin-block fin-block-wide">
+        <h2>US → KR 조기경보</h2>
+        <div class="ms-headline">
+            <span class="ms-head-level ${lvl === 'high' ? 'ms-lv-3' : (lvl === 'mid' ? 'ms-lv-2' : 'ms-lv-1')}">${finEsc(lvlKo)}</span>
+            <span class="ms-head-dir">${finEsc(dirKo)}</span>
+            <span class="ms-head-meta">기준 ${finEsc(t.as_of || '')} · 모델 ${finEsc(t.model_version || '')}</span>
+        </div>
+        <div class="ms-channels">
+            ${order.map(([k, ko]) => {
+                const c = ch[k] || {};
+                const heat = Number(c.heat);
+                const on = k === dir;
+                return `
+                <div class="ms-channel${on ? ' on' : ''}">
+                    <span class="ms-ch-name">${finEsc(ko)}</span>
+                    <span class="ms-ch-heat">${Number.isFinite(heat) ? heat.toFixed(1) : '—'}</span>
+                    <span class="ms-ch-lv">${finEsc(c.level || '—')}</span>
+                </div>`;
+            }).join('')}
+        </div>
+        ${(main.kr_tickers || []).length ? `
+        <div class="ms-chips-row">
+            <span class="ms-row-label">KR 타깃</span>
+            ${main.kr_tickers.map((tk) => `<span class="ms-tick">${finEsc(tk)}</span>`).join('')}
+        </div>` : ''}
+        ${(main.drivers || []).length ? `
+        <div class="co-table-wrap">
+            <table class="co-table">
+                <thead><tr><th>US</th><th>KR</th><th>heat</th><th>연결 유형</th><th>tier</th></tr></thead>
+                <tbody>
+                    ${main.drivers.slice(0, 6).map((d) => `
+                        <tr>
+                            <td class="co-label">${finEsc(d.us)}</td>
+                            <td>${finEsc(d.kr)}</td>
+                            <td>${Number.isFinite(d.heat) ? d.heat.toFixed(2) : '—'}</td>
+                            <td>${finEsc(d.edge_type || '')}</td>
+                            <td>${finEsc(d.tier || '')}</td>
+                        </tr>`).join('')}
+                </tbody>
+            </table>
+        </div>
+        <p class="fin-note">
+            <code>etf_beta</code> 는 미국 상장 ETF 수익률과 국내 종목의 통계적 연동입니다 —
+            <strong>옵션 포지션이 아닙니다.</strong>
+        </p>` : ''}
+        <p class="fin-note">${finEsc(t.disclaimer_ko || '')}</p>
+    </section>`;
+};
+
+const msAlerts = (a) => {
+    if (!a) return '';
+    const letf = a.kr_hynix_letf || {};
+    const vix = a.us_vix_to_kr || {};
+    return `
+    <section class="fin-block fin-block-wide">
+        <h2>알림 레벨</h2>
+        <div class="fin-cards">
+            <div class="fin-card">
+                <span class="fin-card-title">하이닉스 레버리지 ETF 비율</span>
+                <span class="fin-card-value">
+                    <span class="ms-badge ${MS_LEVEL_CLASS[letf.today_level] || ''}">${finEsc(letf.today_level || '—')}</span>
+                    ${Number.isFinite(letf.today_ratio) ? `${(letf.today_ratio * 100).toFixed(1)}%` : ''}
+                </span>
+                <p class="fin-card-plain">${finEsc(letf.metric_ko || '레버리지 ETF 거래 비중')}</p>
+            </div>
+            <div class="fin-card">
+                <span class="fin-card-title">US VIX → KR</span>
+                <span class="fin-card-value">
+                    <span class="ms-badge ${MS_LEVEL_CLASS[vix.today_level] || ''}">${finEsc(vix.today_level || '—')}</span>
+                </span>
+                <p class="fin-card-plain">${finEsc(vix.metric_ko || '')}</p>
+                ${vix.not_put_oi ? `<p class="fin-card-analogy">${finEsc(vix.put_oi_status_ko || '풋 OI 지표가 아닙니다.')}</p>` : ''}
+            </div>
+        </div>
+        <p class="fin-note">${finEsc(a.disclaimer_ko || '')}</p>
+    </section>`;
+};
+
+const msConc = (c) => {
+    if (!c || !(c.points || []).length) return '';
+    const pts = c.points;
+    const dates = pts.map((p) => p.date);
+    const mk = (key) => pts.map((p) => Number(p[key]));
+    const L = c.latest || {};
+    return `
+    <section class="fin-block fin-block-wide">
+        <h2>코스피 집중도</h2>
+        <div class="fin-cards">
+            ${[['conc_top2_samsung_hynix_pct', '상위 2 (삼성·하닉)'],
+               ['conc_top5_pct', '상위 5'], ['conc_top10_pct', '상위 10']].map(([k, ko]) => `
+                <div class="fin-card">
+                    <span class="fin-card-title">${finEsc(ko)}</span>
+                    <span class="fin-card-value">${Number.isFinite(L[k]) ? L[k].toFixed(1) + '%' : '—'}</span>
+                </div>`).join('')}
+        </div>
+        ${mmLineChart(dates, mk('conc_top2_samsung_hynix_pct'), { unit: '%', label: '상위 2 집중도' })}
+        <p class="fin-note">
+            ${finEsc(c.note_ko || '')} 표본 ${c.n_points || 0}일 · 종목 ${finEsc(String(L.n_names || ''))}개 ·
+            품질 ${finEsc(L.quality || '')}
+        </p>
+        <p class="fin-note">${finEsc(c.disclaimer_ko || '')}</p>
+    </section>`;
+};
+
+const msBoard = (b) => {
+    if (!b) return '';
+    const kr = b.kr || {};
+    const nets = kr.investor_nets || {};
+    const box = (key, ko) => {
+        const rows = Array.isArray(nets[key]) ? nets[key] : null;
+        const last = rows && rows.length ? rows[rows.length - 1] : null;
+        const v = last ? last.foreign_net_mn_krw : null;
+        return `
+        <div class="fin-card">
+            <span class="fin-card-title">외국인 ${finEsc(ko)}</span>
+            <span class="fin-card-value">${Number.isFinite(v)
+                ? `${v >= 0 ? '+' : ''}${Math.round(v).toLocaleString('ko-KR')}백만`
+                : msMissing('데이터 없음')}</span>
+            <p class="fin-card-plain">${last && last.note ? finEsc(last.note) : (Number.isFinite(v) ? `기준 ${finEsc(last.date || '')}` : 'KRX_API 키 또는 CSV 주입 필요')}</p>
+        </div>`;
+    };
+    const opts = kr.kospi200_options || {};
+    return `
+    <section class="fin-block fin-block-wide">
+        <h2>파생 보드</h2>
+        <div class="fin-cards">
+            ${box('futures', '선물')}
+            ${box('options_call', '콜')}
+            ${box('options_put', '풋')}
+            <div class="fin-card">
+                <span class="fin-card-title">US OI 룰 헤드라인</span>
+                <span class="fin-card-value">
+                    <span class="ms-badge ${MS_LEVEL_CLASS[(b.us_kr_rules || {}).headline_level] || ''}">
+                        ${finEsc((b.us_kr_rules || {}).headline_level || '—')}</span>
+                </span>
+            </div>
+        </div>
+        ${opts.quality === 'missing' ? `<p class="fin-note">코스피200 옵션: ${msMissing('missing')} — KRX 데이터 미수집.</p>` : ''}
+        ${nets.note_ko ? `<p class="fin-note">${finEsc(nets.note_ko)}</p>` : ''}
+        <p class="fin-note">콜/풋 분리 값이 없을 때는 빈칸으로 둡니다. 전체 옵션 시드를 콜·풋으로 나눠 적지 않습니다.</p>
+    </section>`;
+};
+
+const msBrief = (br) => {
+    if (!br || !(br.headlines || []).length) return '';
+    return `
+    <section class="fin-block fin-block-wide">
+        <h2>브리프</h2>
+        <div class="ms-brief">
+            ${br.headlines.slice(0, 6).map((h) => `
+                <div class="ms-brief-card">
+                    <span class="ms-brief-title">${finEsc(h.title_ko || h.title_en || '')}</span>
+                    ${h.stat ? `<span class="ms-brief-stat">${finEsc(h.stat)}</span>` : ''}
+                    ${h.detail_ko ? `<p>${finEsc(h.detail_ko)}</p>` : ''}
+                </div>`).join('')}
+        </div>
+        <p class="fin-note">${finEsc(br.disclaimer_ko || '')}</p>
+    </section>`;
+};
+
+const msLevels = (lv) => {
+    if (!lv) return '';
+    const kl = lv.kospi_index_levels || {};
+    const L = kl.latest || {};
+    const table = MS_UNIVERSE === 'high_vol' ? (lv.close_day_table_high_vol || []) : (lv.close_day_table_marcap || []);
+    const tickers = lv.tickers || {};
+    const sel = MS_TICKER && tickers[MS_TICKER] ? tickers[MS_TICKER] : null;
+    const bins = sel && Array.isArray(sel.bins_by_close) ? sel.bins_by_close : null;
+
+    return `
+    <section class="fin-block fin-block-wide">
+        <h2>가격 × 수급 <span class="ms-q">${finEsc(kl.quality || '')}</span></h2>
+        <p class="fin-lead">${finEsc(lv.data_policy_ko || '')}</p>
+
+        <h3 class="fin-sub">코스피 지수 레벨</h3>
+        ${kl.quality === 'observed' ? `
+        <div class="fin-cards">
+            <div class="fin-card"><span class="fin-card-title">종가</span>
+                <span class="fin-card-value">${Number.isFinite(L.close) ? L.close.toLocaleString('ko-KR') : '—'}</span>
+                <p class="fin-card-plain">${finEsc(L.date || '')}</p></div>
+            <div class="fin-card"><span class="fin-card-title">개인 순매수</span>
+                <span class="fin-card-value ${L.retail_net_eok >= 0 ? 'fin-up' : 'fin-down'}">${msEok(L.retail_net_eok)}</span></div>
+            <div class="fin-card"><span class="fin-card-title">외국인 순매수</span>
+                <span class="fin-card-value ${L.foreign_net_eok >= 0 ? 'fin-up' : 'fin-down'}">${msEok(L.foreign_net_eok)}</span></div>
+            <div class="fin-card"><span class="fin-card-title">기관 순매수</span>
+                <span class="fin-card-value ${L.institution_net_eok >= 0 ? 'fin-up' : 'fin-down'}">${msEok(L.institution_net_eok)}</span></div>
+        </div>
+        <p class="fin-note">${finEsc(kl.method_ko || '')} · ${finEsc(kl.unit || '')} · ${kl.n_days || 0}일 (${finEsc(kl.date_start || '')} ~ ${finEsc(kl.date_end || '')})</p>`
+        : `<p class="fin-note">${msMissing('지수 레벨 수급 미수집')}</p>`}
+
+        <h3 class="fin-sub">종가일 수급</h3>
+        <div class="co-struct-toggle">
+            <button class="mm-view-btn ${MS_UNIVERSE === 'marcap' ? 'on' : ''}" data-ms-univ="marcap">시총 상위</button>
+            <button class="mm-view-btn ${MS_UNIVERSE === 'high_vol' ? 'on' : ''}" data-ms-univ="high_vol">시총 100위 내 고변동</button>
+        </div>
+        ${table.length ? `
+        <div class="co-table-wrap">
+            <table class="co-table">
+                <thead><tr>
+                    <th>종목</th><th>날짜</th><th>종가</th><th>개인(주)</th><th>외국인(주)</th><th>기관(주)</th><th></th>
+                </tr></thead>
+                <tbody>
+                    ${table.map((r) => `
+                        <tr>
+                            <td class="co-label">${finEsc(r.label_ko)} <span class="co-hint">${finEsc(r.ticker)}</span></td>
+                            <td>${finEsc(r.date || '')}</td>
+                            <td>${Number.isFinite(r.close) ? r.close.toLocaleString('ko-KR') : '—'}</td>
+                            <td class="${r.retail_net_shares >= 0 ? 'fin-up' : 'fin-down'}">${msShares(r.retail_net_shares)}</td>
+                            <td class="${r.foreign_net_shares >= 0 ? 'fin-up' : 'fin-down'}">${msShares(r.foreign_net_shares)}</td>
+                            <td class="${r.institution_net_shares >= 0 ? 'fin-up' : 'fin-down'}">${msShares(r.institution_net_shares)}</td>
+                            <td>${tickers[r.ticker] ? `<button class="mm-view-btn ${MS_TICKER === r.ticker ? 'on' : ''}" data-ms-ticker="${finEsc(r.ticker)}">가격대별</button>` : ''}</td>
+                        </tr>`).join('')}
+                </tbody>
+            </table>
+        </div>` : `<p class="fin-note">${msMissing('종가일 표 없음')}</p>`}
+
+        ${sel ? `
+        <h3 class="fin-sub">${finEsc(sel.label_ko)} — 종가 구간별 누적 수급 <span class="ms-q">${finEsc(sel.quality || '')}</span></h3>
+        ${sel.quality === 'observed' && bins && bins.length ? `
+        <div class="co-table-wrap">
+            <table class="co-table">
+                <thead><tr><th>가격 구간</th><th>일수</th><th>개인(주)</th><th>외국인(주)</th><th>기관(주)</th></tr></thead>
+                <tbody>
+                    ${bins.map((b) => `
+                        <tr>
+                            <td class="co-label">${Math.round(b.price_lo).toLocaleString('ko-KR')} ~ ${Math.round(b.price_hi).toLocaleString('ko-KR')}</td>
+                            <td>${b.n_days}</td>
+                            <td class="${b.retail_net_shares >= 0 ? 'fin-up' : 'fin-down'}">${msShares(b.retail_net_shares)}</td>
+                            <td class="${b.foreign_net_shares >= 0 ? 'fin-up' : 'fin-down'}">${msShares(b.foreign_net_shares)}</td>
+                            <td class="${b.institution_net_shares >= 0 ? 'fin-up' : 'fin-down'}">${msShares(b.institution_net_shares)}</td>
+                        </tr>`).join('')}
+                </tbody>
+            </table>
+        </div>
+        <p class="fin-note">${finEsc(sel.method_ko || '')} ${finEsc(sel.bin_attribution || '')}</p>`
+        : `<p class="fin-note">${msMissing('구간별 수급 없음')}</p>`}` : ''}
+
+        ${(lv.cannot_do_ko || []).length ? `
+        <details class="mm-limits">
+            <summary>이 데이터로 할 수 없는 것</summary>
+            ${lv.cannot_do_ko.map((x) => `<div class="mm-limit"><p>${finEsc(x)}</p></div>`).join('')}
+        </details>` : ''}
+        <p class="fin-note">${finEsc(lv.disclaimer_ko || '')}</p>
+    </section>`;
+};
+
+const renderMicrostructure = async (host) => {
+    host.innerHTML = `<div class="fin-wrap"><p class="fin-loading">시장 미시구조 자료를 받는 중…</p></div>`;
+
+    if (!MS_DATA) {
+        const keys = Object.keys(MS_FILES);
+        const got = await Promise.all(keys.map((k) => msGet(MS_FILES[k])));
+        MS_DATA = {};
+        keys.forEach((k, i) => { MS_DATA[k] = got[i]; });
+    }
+    const D = MS_DATA;
+    if (!Object.values(D).some(Boolean)) {
+        host.innerHTML = finPlaceholder('시장 미시구조', '집중도 · US→KR 전이 · 파생 · 가격대별 수급',
+            '스냅샷 JSON을 찾지 못했습니다. 일일 워크플로가 <code>public/data/</code> 에 산출합니다.');
+        return;
+    }
+
+    const paint = () => {
+        host.innerHTML = `
+        <div class="fin-wrap">
+            <div class="fin-head">
+                <h1>시장 미시구조</h1>
+                <p>집중도 · 미국→한국 전이 · 파생 포지션 · 가격대별 수급. 공개·지연 데이터이며 투자 권유가 아닙니다.</p>
+                <div class="fin-meta">
+                    <span class="fin-chip">${finEsc((D.transmission || {}).as_of || (D.levels || {}).as_of || '')}</span>
+                    <span>값이 없는 항목은 채우지 않고 비워 둡니다</span>
+                </div>
+            </div>
+            ${msTransmission(D.transmission)}
+            ${msAlerts(D.alerts)}
+            ${msConc(D.conc)}
+            ${msBoard(D.board)}
+            ${msLevels(D.levels)}
+            ${msBrief(D.brief)}
+        </div>`;
+
+        host.querySelectorAll('[data-ms-univ]').forEach((b) => b.addEventListener('click', () => {
+            MS_UNIVERSE = b.dataset.msUniv; MS_TICKER = null; paint();
+        }));
+        host.querySelectorAll('[data-ms-ticker]').forEach((b) => b.addEventListener('click', () => {
+            MS_TICKER = MS_TICKER === b.dataset.msTicker ? null : b.dataset.msTicker; paint();
+        }));
+        mmWireCharts(host);
+    };
+    paint();
 };
 
 const renderFinanceView = async (target, host) => {
     if (target === 'fin_portfolio') return renderPortfolioLab(host);
     if (target === 'fin_valuation') return renderCompanyCalc(host);
+    if (target === 'fin_derivatives') return renderMicrostructure(host);
 
     host.innerHTML = finPlaceholder(
         '옵션·공매도 동향',
@@ -6437,65 +7181,330 @@ const mmDelta = (v) => {
     return `<span class="mm-delta ${cls}">${sign}${v.toFixed(1)}%</span>`;
 };
 
-// Small inline chart rather than a charting library: one series, no axes to
-// speak of, and the drawer opens and closes often enough that avoiding a
-// canvas lifecycle is worth more than the features.
-const mmSparkline = (dates, values) => {
-    const pts = values.map((v, i) => [i, v]).filter(([, v]) => Number.isFinite(v));
-    if (pts.length < 2) return '<p class="fin-note">그릴 수 있는 시계열이 없습니다.</p>';
-    const xs = pts.map(([x]) => x), ys = pts.map(([, y]) => y);
-    const minY = Math.min(...ys), maxY = Math.max(...ys);
-    const span = (maxY - minY) || Math.abs(maxY) || 1;
-    const W = 720, H = 210, PAD = 28;
-    const sx = (x) => PAD + (x - xs[0]) / ((xs[xs.length - 1] - xs[0]) || 1) * (W - PAD * 2);
-    const sy = (y) => H - PAD - (y - minY) / span * (H - PAD * 2);
-    const d = pts.map(([x, y], i) => `${i ? 'L' : 'M'}${sx(x).toFixed(1)},${sy(y).toFixed(1)}`).join('');
-    const area = `${d}L${sx(xs[xs.length - 1]).toFixed(1)},${H - PAD}L${sx(xs[0]).toFixed(1)},${H - PAD}Z`;
-    const last = pts[pts.length - 1];
-    const fmt = (v) => Math.abs(v) >= 1000 ? v.toLocaleString('ko-KR', { maximumFractionDigits: 0 }) : v.toFixed(2);
+const mmFmt = (v, digits) => {
+    if (!Number.isFinite(v)) return '—';
+    const a = Math.abs(v);
+    const dg = digits ?? (a >= 1000 ? 0 : (a >= 10 ? 1 : 2));
+    return v.toLocaleString('ko-KR', { minimumFractionDigits: dg, maximumFractionDigits: dg });
+};
+
+// Inline SVG rather than a charting library: the drawer opens and closes on
+// every chip click, and avoiding a canvas lifecycle at that rate is worth more
+// than the features a library would add. Hover is wired after paint (mmWire).
+const MM_W = 760, MM_H = 260, MM_L = 52, MM_R = 16, MM_T = 14, MM_B = 30;
+
+const mmLineChart = (dates, values, opts = {}) => {
+    const idx = values.map((v, i) => [i, v]).filter(([, v]) => Number.isFinite(v));
+    if (idx.length < 2) return '<p class="fin-note">그릴 수 있는 시계열이 없습니다.</p>';
+    const ma = Array.isArray(opts.ma5) ? opts.ma5 : null;
+
+    const ys = idx.map(([, y]) => y).concat(ma ? ma.filter(Number.isFinite) : []);
+    let lo = Math.min(...ys), hi = Math.max(...ys);
+    if (lo === hi) { lo -= 1; hi += 1; }
+    const pad = (hi - lo) * 0.08;
+    lo -= pad; hi += pad;
+    // A series that crosses zero reads wrong without the zero line on the axis.
+    if (lo > 0 && lo < (hi - lo) * 0.5) lo = 0;
+
+    const n = values.length;
+    const sx = (i) => MM_L + (i / Math.max(n - 1, 1)) * (MM_W - MM_L - MM_R);
+    const sy = (v) => MM_T + (1 - (v - lo) / (hi - lo)) * (MM_H - MM_T - MM_B);
+
+    const path = (arr) => {
+        let dstr = '', pen = false;
+        arr.forEach((v, i) => {
+            if (!Number.isFinite(v)) { pen = false; return; }
+            dstr += `${pen ? 'L' : 'M'}${sx(i).toFixed(1)},${sy(v).toFixed(1)}`;
+            pen = true;
+        });
+        return dstr;
+    };
+
+    const line = path(values);
+    const first = idx[0][0], last = idx[idx.length - 1][0];
+    const area = `${line}L${sx(last).toFixed(1)},${sy(lo).toFixed(1)}L${sx(first).toFixed(1)},${sy(lo).toFixed(1)}Z`;
+
+    const ticks = [0, 0.25, 0.5, 0.75, 1].map((t) => lo + (hi - lo) * t);
+    const xAt = [0, Math.floor((n - 1) / 2), n - 1];
+
     return `
-    <svg class="mm-chart" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" role="img" aria-label="시계열 차트">
-        <defs><linearGradient id="mmg" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.28"/>
-            <stop offset="100%" stop-color="#38bdf8" stop-opacity="0"/>
-        </linearGradient></defs>
-        <line x1="${PAD}" y1="${H - PAD}" x2="${W - PAD}" y2="${H - PAD}" class="mm-axis"/>
-        <path d="${area}" fill="url(#mmg)"/>
-        <path d="${d}" class="mm-line"/>
-        <circle cx="${sx(last[0]).toFixed(1)}" cy="${sy(last[1]).toFixed(1)}" r="3.5" class="mm-dot"/>
-        <text x="${PAD}" y="16" class="mm-tick">${fmt(maxY)}</text>
-        <text x="${PAD}" y="${H - PAD - 4}" class="mm-tick">${fmt(minY)}</text>
-        <text x="${PAD}" y="${H - 8}" class="mm-tick">${finEsc(dates[0] || '')}</text>
-        <text x="${W - PAD}" y="${H - 8}" class="mm-tick" text-anchor="end">${finEsc(dates[dates.length - 1] || '')}</text>
-    </svg>`;
+    <div class="mm-chart-box" data-mm-chart-box="1"
+         data-dates='${finEsc(JSON.stringify(dates))}'
+         data-values='${finEsc(JSON.stringify(values.map((v) => Number.isFinite(v) ? v : null)))}'
+         ${ma ? `data-ma='${finEsc(JSON.stringify(ma.map((v) => Number.isFinite(v) ? v : null)))}'` : ''}
+         data-geom='${finEsc(JSON.stringify({ lo, hi, n }))}'
+         data-unit="${finEsc(opts.unit || '')}">
+        <svg class="mm-chart" viewBox="0 0 ${MM_W} ${MM_H}" preserveAspectRatio="none" role="img"
+             aria-label="${finEsc(opts.label || '시계열')} 차트">
+            <defs><linearGradient id="mmg" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.26"/>
+                <stop offset="100%" stop-color="#38bdf8" stop-opacity="0"/>
+            </linearGradient></defs>
+            ${ticks.map((t) => `
+                <line x1="${MM_L}" y1="${sy(t).toFixed(1)}" x2="${MM_W - MM_R}" y2="${sy(t).toFixed(1)}" class="mm-grid"/>
+                <text x="${MM_L - 7}" y="${(sy(t) + 3.5).toFixed(1)}" class="mm-tick" text-anchor="end">${mmFmt(t)}</text>`).join('')}
+            ${(lo < 0 && hi > 0) ? `<line x1="${MM_L}" y1="${sy(0).toFixed(1)}" x2="${MM_W - MM_R}" y2="${sy(0).toFixed(1)}" class="mm-zero"/>` : ''}
+            <path d="${area}" fill="url(#mmg)"/>
+            ${ma ? `<path d="${path(ma)}" class="mm-ma"/>` : ''}
+            <path d="${line}" class="mm-line"/>
+            ${xAt.map((i) => `<text x="${sx(i).toFixed(1)}" y="${MM_H - 8}" class="mm-tick"
+                text-anchor="${i === 0 ? 'start' : (i === n - 1 ? 'end' : 'middle')}">${finEsc(dates[i] || '')}</text>`).join('')}
+            <line class="mm-cross" x1="0" y1="${MM_T}" x2="0" y2="${MM_H - MM_B}" style="display:none"/>
+            <circle class="mm-hover-dot" r="4" style="display:none"/>
+        </svg>
+        <div class="mm-tip-box" style="display:none"></div>
+        ${ma ? '<p class="mm-legend-note"><i class="mm-swatch-ma"></i>MA5 (5기간 이동평균)</p>' : ''}
+    </div>`;
+};
+
+// Grouped bars for a handful of labelled values -- QRA compare, energy mix,
+// FedWatch outcomes and maturity buckets all reduce to this shape.
+const mmBars = (rows, opts = {}) => {
+    const vals = rows.map((r) => Number(r.value)).filter(Number.isFinite);
+    if (!vals.length) return '<p class="fin-note">표시할 값이 없습니다.</p>';
+    const hi = Math.max(...vals, 0), lo = Math.min(...vals, 0);
+    const span = (hi - lo) || 1;
+    return `
+    <div class="mm-bars ${opts.compact ? 'mm-bars-compact' : ''}">
+        ${rows.map((r) => {
+            const v = Number(r.value);
+            const w = Number.isFinite(v) ? Math.abs(v) / span * 100 : 0;
+            return `
+            <div class="mm-bar-row${r.highlight ? ' mm-bar-hi' : ''}">
+                <span class="mm-bar-label">${finEsc(r.label)}${r.sub ? `<span class="mm-bar-sub">${finEsc(r.sub)}</span>` : ''}</span>
+                <span class="mm-bar-track"><span class="mm-bar-fill${v < 0 ? ' mm-bar-neg' : ''}" style="width:${w.toFixed(1)}%"></span></span>
+                <span class="mm-bar-value">${finEsc(r.display ?? (mmFmt(v) + (opts.unit || '')))}</span>
+            </div>`;
+        }).join('')}
+    </div>`;
+};
+
+// Which panels an indicator can show, in the order they should appear. The
+// engine names the primary view (ui.click_view); chart_type covers the rest.
+const mmViewsFor = (ind) => {
+    const views = [];
+    const cv = (ind.ui || {}).click_view;
+    const has = (a) => Array.isArray(a) && a.length;
+
+    if (cv === 'compare_bar_table' && has((ind.compare || {}).series)) {
+        views.push({ id: 'compare', label: '비교' });
+    }
+    if (cv === 'energy_mix' && has((ind.energy_mix || {}).series)) {
+        views.push({ id: 'mix', label: '연료 비중' });
+    }
+    if (ind.chart_type === 'stack' && has(ind.components)) {
+        views.push({ id: 'stack', label: '구성' });
+    }
+    if (ind.chart_type === 'bar' && has(ind.outcomes)) {
+        views.push({ id: 'outcomes', label: '확률' });
+    }
+    if (has(((ind.history || {})['5y'] || {}).values) || ind.modes) {
+        views.push({ id: 'history', label: '추이' });
+    }
+    // Secondary panels come last so the engine's primary view stays default.
+    const sv = (ind.ui || {}).secondary_view;
+    if (sv === 'maturity_components' && has(ind.components)) {
+        views.push({ id: 'components', label: '만기별' });
+    } else if (has(ind.components) && !views.some((v) => v.id === 'stack')
+               && ind.chart_type === 'line+components') {
+        views.push({ id: 'components', label: '구성' });
+    }
+    return views.length ? views : [{ id: 'history', label: '추이' }];
+};
+
+// GDP arrives as two series under `modes`; the drawer swaps between them
+// rather than showing an annualised figure the engine deliberately dropped.
+const mmModeSeries = (ind, mode) => {
+    const m = (ind.modes || {})[mode];
+    return m || null;
+};
+
+const mmCompareView = (ind) => {
+    const c = ind.compare || {};
+    const rows = (c.series || []).map((s) => ({
+        label: s.label_ko,
+        sub: s.period,
+        value: s.value,
+        display: `${mmFmt(s.value, 0)}B`,
+        highlight: s.id === 'current',
+    }));
+    const table = c.table || [];
+    return `
+        ${c.title_ko ? `<p class="mm-view-title">${finEsc(c.title_ko)}</p>` : ''}
+        ${mmBars(rows, { unit: 'B' })}
+        ${table.length ? `
+        <div class="co-table-wrap mm-table">
+            <table class="co-table">
+                <thead><tr>
+                    <th>구분</th><th>대상 분기</th><th>순발행 ($B)</th><th>기말 현금 ($B)</th><th>공시일</th>
+                </tr></thead>
+                <tbody>
+                    ${table.map((r) => `
+                        <tr>
+                            <td class="co-label">${finEsc(r.label_ko)}</td>
+                            <td>${finEsc(r.period || '—')}</td>
+                            <td>${mmFmt(r.net_borrowing_bn, 0)}</td>
+                            <td>${mmFmt(r.end_cash_bn, 0)}</td>
+                            <td>${finEsc(r.announcement_date || '—')}</td>
+                        </tr>`).join('')}
+                </tbody>
+            </table>
+        </div>` : ''}
+        ${c.note_ko ? `<p class="fin-note">${finEsc(c.note_ko)}</p>` : ''}`;
+};
+
+const mmMixView = (ind) => {
+    const em = ind.energy_mix || {};
+    const rows = (em.series || []).map((s) => ({
+        label: s.label_ko || s.id,
+        value: s.value,
+        display: `${mmFmt(s.value, 1)}%${Number.isFinite(s.twh) ? ` · ${mmFmt(s.twh, 0)}TWh` : ''}`,
+    }));
+    return `
+        <p class="mm-view-title">연료별 발전 비중${em.asof_year ? ` · ${em.asof_year}년` : ''}</p>
+        ${mmBars(rows, { unit: '%' })}
+        <p class="fin-note">발전량 기준 비중입니다. 설비용량이 아니라 실제로 만들어낸 전력의 몫입니다.</p>`;
+};
+
+const mmComponentsView = (ind, title) => mmBars(
+    (ind.components || []).map((c) => ({
+        label: c.label_ko || c.id,
+        value: c.value,
+        display: c.display ?? (mmFmt(c.value, 0) + (c.unit === 'pct' ? '%' : '')),
+    })), {}) + (title ? `<p class="fin-note">${finEsc(title)}</p>` : '');
+
+const mmOutcomesView = (ind) => {
+    const rows = (ind.outcomes || []).map((o) => ({
+        label: o.label_ko,
+        value: o.prob,
+        display: `${mmFmt(o.prob, 0)}%`,
+        highlight: o.prob === Math.max(...ind.outcomes.map((x) => x.prob)),
+    }));
+    return `
+        <p class="mm-view-title">회의 결과별 시장 내재 확률</p>
+        ${mmBars(rows, { unit: '%' })}
+        <p class="fin-note">선물 가격에서 역산한 확률입니다. 예측이 아니라 시장이 지금 무엇에 값을 매기고 있는지입니다.</p>`;
 };
 
 const mmChartDrawer = () => {
     if (!MM_CHART || !MM_COUNTRY) return '';
     const ind = (MM_COUNTRY.country.indicators || []).find((x) => x.id === MM_CHART.indicatorId);
     if (!ind) return '';
-    const hist = (ind.history || {})[MM_CHART.window] || {};
-    const dates = hist.dates || [];
-    const values = hist.values || [];
+
+    const views = mmViewsFor(ind);
+    const view = views.some((v) => v.id === MM_CHART.view) ? MM_CHART.view : views[0].id;
+    MM_CHART.view = view;
+
+    const dual = (ind.ui || {}).dual;
+    const mode = MM_CHART.mode || (ind.ui || {}).default || (dual ? dual[0] : null);
+    const modeSeries = dual ? mmModeSeries(ind, mode) : null;
+
+    let body = '';
+    if (view === 'compare') body = mmCompareView(ind);
+    else if (view === 'mix') body = mmMixView(ind);
+    else if (view === 'outcomes') body = mmOutcomesView(ind);
+    else if (view === 'stack') body = mmComponentsView(ind, '연준이 보유한 국채를 잔존만기로 나눈 잔액입니다. 시장금리가 아니라 대차대조표입니다.');
+    else if (view === 'components') body = mmComponentsView(ind, ind.chart_type === 'line+components' ? '' : '만기별 발행 구성입니다.');
+    else {
+        const src = modeSeries || ind;
+        const hist = (src.history || {})[MM_CHART.window] || {};
+        // VIX and other fear gauges have no moving average by design: a smoothed
+        // fear index invites reading a trend into what is meant to be a level.
+        body = mmLineChart(hist.dates || [], hist.values || [], {
+            ma5: hist.ma5,
+            unit: src.unit === 'pct' ? '%' : (src.unit || ''),
+            label: src.label_ko || ind.label_ko,
+        });
+    }
+
+    const meta = [
+        ind.display != null ? String(ind.display) : null,
+        ind.asof ? `기준 ${ind.asof}` : null,
+        ind.source ? (typeof ind.source === 'string' ? ind.source : ind.source.name) : null,
+        ind.refresh_tier || null,
+    ].filter(Boolean);
+
+    const showWindow = view === 'history';
+
     return `
-    <div class="mm-drawer" role="dialog" aria-label="${finEsc(ind.label_ko)} 추이">
+    <div class="mm-drawer" role="dialog" aria-label="${finEsc(ind.label_ko)}">
         <div class="mm-drawer-head">
             <div>
                 <h3>${finEsc(ind.label_ko)}</h3>
-                <p class="mm-drawer-sub">${finEsc(ind.display ?? '')} · 기준 ${finEsc(ind.asof || '')}
-                   ${ind.source ? ` · ${finEsc(typeof ind.source === 'string' ? ind.source : (ind.source.name || ''))}` : ''}</p>
+                <p class="mm-drawer-sub">${meta.map((m) => finEsc(m)).join(' · ')}</p>
             </div>
             <div class="mm-drawer-actions">
-                <div class="pf-mode">
-                    ${['5y', '10y'].map((w) => `
-                        <button type="button" class="pf-mode-btn ${MM_CHART.window === w ? 'on' : ''}"
-                                data-mm-window="${w}">${w === '5y' ? '5년' : '10년'}</button>`).join('')}
-                </div>
+                ${dual ? `<div class="pf-mode">
+                    ${dual.map((m) => `<button type="button" class="pf-mode-btn ${m === mode ? 'on' : ''}"
+                        data-mm-mode="${finEsc(m)}">${finEsc(((ind.modes || {})[m] || {}).label_ko || m.toUpperCase())}</button>`).join('')}
+                </div>` : ''}
+                ${showWindow ? `<div class="pf-mode">
+                    ${['5y', '10y'].map((w) => `<button type="button" class="pf-mode-btn ${MM_CHART.window === w ? 'on' : ''}"
+                        data-mm-window="${w}">${w === '5y' ? '5년' : '10년'}</button>`).join('')}
+                </div>` : ''}
                 <button class="mm-close" data-mm-chart-close="1" aria-label="닫기">✕</button>
             </div>
         </div>
-        ${mmSparkline(dates, values)}
-        ${ind.note_ko ? `<p class="fin-note">${finEsc(ind.note_ko)}</p>` : ''}
+
+        ${views.length > 1 ? `<div class="mm-views">
+            ${views.map((v) => `<button class="mm-view-btn ${v.id === view ? 'on' : ''}"
+                data-mm-view="${finEsc(v.id)}">${finEsc(v.label)}</button>`).join('')}
+        </div>` : ''}
+
+        <div class="mm-drawer-body">
+            <div class="mm-drawer-main">
+                ${body}
+                ${ind.note_ko ? `<p class="fin-note mm-note">${finEsc(ind.note_ko)}</p>` : ''}
+                ${ind.reference ? `<p class="fin-note">${finEsc(typeof ind.reference === 'string' ? ind.reference : JSON.stringify(ind.reference))}</p>` : ''}
+            </div>
+            ${mmNewsRail(ind)}
+        </div>
+    </div>`;
+};
+
+// The news API is not wired yet. An empty rail that says so is honest; a
+// spinner that never resolves is not, and fabricated articles would be worse.
+const mmNewsRail = (ind) => {
+    const items = Array.isArray(ind.news) ? ind.news : null;
+    return `
+    <aside class="mm-news">
+        <p class="mm-news-head">관련 뉴스</p>
+        ${items && items.length ? items.map((it) => `
+            <a class="mm-news-item" href="${finEsc(it.url)}" target="_blank" rel="noopener noreferrer">
+                <span class="mm-news-title">${finEsc(it.title)}</span>
+                <span class="mm-news-meta">${finEsc(it.source || '')}${it.published_at ? ` · ${finEsc(String(it.published_at).slice(0, 10))}` : ''}</span>
+            </a>`).join('')
+        : `<p class="mm-news-empty">관련 뉴스 없음 · API 연결 대기</p>
+           ${ind.news_query ? `<p class="mm-news-q">검색어: <code>${finEsc(ind.news_query)}</code></p>` : ''}`}
+        <p class="mm-news-foot">투자 권유 아님 · 뉴스 요약은 참고용</p>
+    </aside>`;
+};
+
+// Central bank head + finance minister only. Financial-supervision chiefs are
+// deliberately left out, and Korea's slot is the finance ministry rather than
+// the budget office or the financial regulator. China names two people per
+// institution -- party secretary and governor/minister -- with separate
+// appointment dates even when it is the same person.
+const mmPerson = (p) => `${finEsc(p.title_ko || '')} <strong>${finEsc(p.name_ko || '')}</strong>`
+    + (p.appointed ? `<span class="mm-off-date">${finEsc(p.appointed)} 임명</span>` : '');
+
+const mmOfficialSlot = (slot) => {
+    if (!slot) return '';
+    const people = Array.isArray(slot.set) ? slot.set : [slot];
+    return `
+    <div class="mm-official">
+        <span class="mm-off-inst">${finEsc(slot.institution_ko || '')}</span>
+        ${people.map((p) => `<span class="mm-off-person">${mmPerson(p)}</span>`).join('')}
+    </div>`;
+};
+
+const mmOfficials = (off) => {
+    if (!off || (!off.central_bank && !off.finance)) return '';
+    return `
+    <div class="mm-officials">
+        ${mmOfficialSlot(off.central_bank)}
+        ${mmOfficialSlot(off.finance)}
+        ${off.asof ? `<span class="mm-off-asof">${finEsc(off.asof)} 기준</span>` : ''}
     </div>`;
 };
 
@@ -6517,6 +7526,7 @@ const mmOverlay = () => {
                 <h2>${finEsc(c.name_ko)}
                     ${c.benchmark ? '<span class="mm-badge">벤치마크</span>' : ''}</h2>
                 <p>${finEsc(c.name_en || '')} · 기준 ${finEsc(c.asof || '')} · 키트 <code>${finEsc(c.kit || '')}</code></p>
+                ${mmOfficials(c.officials)}
             </div>
             <button class="mm-close" data-mm-close="1" aria-label="닫기">✕</button>
         </div>
@@ -6570,6 +7580,60 @@ const mmOverlay = () => {
     </div>`;
 };
 
+// Re-run after every paint: mmPaint replaces innerHTML, so listeners attached
+// to the previous SVG are gone with it.
+const mmWireCharts = (host) => {
+    host.querySelectorAll('[data-mm-chart-box]').forEach((box) => {
+        const svg = box.querySelector('svg');
+        const cross = box.querySelector('.mm-cross');
+        const dot = box.querySelector('.mm-hover-dot');
+        const tip = box.querySelector('.mm-tip-box');
+        if (!svg || !cross || !dot || !tip) return;
+
+        let dates, values, ma, geom, unit;
+        try {
+            dates = JSON.parse(box.dataset.dates);
+            values = JSON.parse(box.dataset.values);
+            ma = box.dataset.ma ? JSON.parse(box.dataset.ma) : null;
+            geom = JSON.parse(box.dataset.geom);
+            unit = box.dataset.unit || '';
+        } catch (_) { return; }
+
+        const hide = () => {
+            cross.style.display = 'none';
+            dot.style.display = 'none';
+            tip.style.display = 'none';
+        };
+
+        svg.addEventListener('mousemove', (e) => {
+            const r = svg.getBoundingClientRect();
+            if (!r.width) return;
+            // Pointer is in CSS pixels; the chart is drawn in viewBox units.
+            const vx = (e.clientX - r.left) / r.width * MM_W;
+            const t = (vx - MM_L) / (MM_W - MM_L - MM_R);
+            let i = Math.round(t * (geom.n - 1));
+            i = Math.max(0, Math.min(geom.n - 1, i));
+            if (!Number.isFinite(values[i])) { hide(); return; }
+
+            const px = MM_L + (i / Math.max(geom.n - 1, 1)) * (MM_W - MM_L - MM_R);
+            const py = MM_T + (1 - (values[i] - geom.lo) / (geom.hi - geom.lo)) * (MM_H - MM_T - MM_B);
+            cross.setAttribute('x1', px); cross.setAttribute('x2', px);
+            cross.style.display = '';
+            dot.setAttribute('cx', px); dot.setAttribute('cy', py);
+            dot.style.display = '';
+
+            const maTxt = (ma && Number.isFinite(ma[i])) ? `<span class="mm-tip-ma">MA5 ${mmFmt(ma[i])}${unit}</span>` : '';
+            tip.innerHTML = `<span class="mm-tip-date">${finEsc(dates[i] || '')}</span>`
+                + `<span class="mm-tip-val">${mmFmt(values[i])}${unit}</span>${maTxt}`;
+            tip.style.display = '';
+            // Flip before the tooltip would run off the right edge.
+            const leftPct = px / MM_W * 100;
+            tip.style.left = `${Math.min(Math.max(leftPct, 4), 78)}%`;
+        });
+        svg.addEventListener('mouseleave', hide);
+    });
+};
+
 const mmPaint = () => {
     const host = document.getElementById('macro-layer');
     if (!host) return;
@@ -6580,6 +7644,7 @@ const mmPaint = () => {
             <span class="mm-hint-count">${(MM_INDEX?.countries_index || []).length}개국</span>
         </div>`;
     host.classList.toggle('mm-open', !!MM_COUNTRY);
+    mmWireCharts(host);
 };
 
 const mmOpenCountry = async (iso3) => {
@@ -6664,12 +7729,16 @@ const renderMacroMonitor = async () => {
             if (chip) {
                 const id = chip.getAttribute('data-mm-chip');
                 MM_CHART = (MM_CHART && MM_CHART.indicatorId === id)
-                    ? null : { indicatorId: id, window: '5y' };
+                    ? null : { indicatorId: id, window: '5y', view: null, mode: null };
                 mmPaint();
                 return;
             }
             const win = t.closest('[data-mm-window]');
-            if (win && MM_CHART) { MM_CHART.window = win.getAttribute('data-mm-window'); mmPaint(); }
+            if (win && MM_CHART) { MM_CHART.window = win.getAttribute('data-mm-window'); mmPaint(); return; }
+            const vw = t.closest('[data-mm-view]');
+            if (vw && MM_CHART) { MM_CHART.view = vw.getAttribute('data-mm-view'); mmPaint(); return; }
+            const md = t.closest('[data-mm-mode]');
+            if (md && MM_CHART) { MM_CHART.mode = md.getAttribute('data-mm-mode'); mmPaint(); return; }
         });
     }
 
