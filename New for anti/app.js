@@ -6437,65 +6437,330 @@ const mmDelta = (v) => {
     return `<span class="mm-delta ${cls}">${sign}${v.toFixed(1)}%</span>`;
 };
 
-// Small inline chart rather than a charting library: one series, no axes to
-// speak of, and the drawer opens and closes often enough that avoiding a
-// canvas lifecycle is worth more than the features.
-const mmSparkline = (dates, values) => {
-    const pts = values.map((v, i) => [i, v]).filter(([, v]) => Number.isFinite(v));
-    if (pts.length < 2) return '<p class="fin-note">그릴 수 있는 시계열이 없습니다.</p>';
-    const xs = pts.map(([x]) => x), ys = pts.map(([, y]) => y);
-    const minY = Math.min(...ys), maxY = Math.max(...ys);
-    const span = (maxY - minY) || Math.abs(maxY) || 1;
-    const W = 720, H = 210, PAD = 28;
-    const sx = (x) => PAD + (x - xs[0]) / ((xs[xs.length - 1] - xs[0]) || 1) * (W - PAD * 2);
-    const sy = (y) => H - PAD - (y - minY) / span * (H - PAD * 2);
-    const d = pts.map(([x, y], i) => `${i ? 'L' : 'M'}${sx(x).toFixed(1)},${sy(y).toFixed(1)}`).join('');
-    const area = `${d}L${sx(xs[xs.length - 1]).toFixed(1)},${H - PAD}L${sx(xs[0]).toFixed(1)},${H - PAD}Z`;
-    const last = pts[pts.length - 1];
-    const fmt = (v) => Math.abs(v) >= 1000 ? v.toLocaleString('ko-KR', { maximumFractionDigits: 0 }) : v.toFixed(2);
+const mmFmt = (v, digits) => {
+    if (!Number.isFinite(v)) return '—';
+    const a = Math.abs(v);
+    const dg = digits ?? (a >= 1000 ? 0 : (a >= 10 ? 1 : 2));
+    return v.toLocaleString('ko-KR', { minimumFractionDigits: dg, maximumFractionDigits: dg });
+};
+
+// Inline SVG rather than a charting library: the drawer opens and closes on
+// every chip click, and avoiding a canvas lifecycle at that rate is worth more
+// than the features a library would add. Hover is wired after paint (mmWire).
+const MM_W = 760, MM_H = 260, MM_L = 52, MM_R = 16, MM_T = 14, MM_B = 30;
+
+const mmLineChart = (dates, values, opts = {}) => {
+    const idx = values.map((v, i) => [i, v]).filter(([, v]) => Number.isFinite(v));
+    if (idx.length < 2) return '<p class="fin-note">그릴 수 있는 시계열이 없습니다.</p>';
+    const ma = Array.isArray(opts.ma5) ? opts.ma5 : null;
+
+    const ys = idx.map(([, y]) => y).concat(ma ? ma.filter(Number.isFinite) : []);
+    let lo = Math.min(...ys), hi = Math.max(...ys);
+    if (lo === hi) { lo -= 1; hi += 1; }
+    const pad = (hi - lo) * 0.08;
+    lo -= pad; hi += pad;
+    // A series that crosses zero reads wrong without the zero line on the axis.
+    if (lo > 0 && lo < (hi - lo) * 0.5) lo = 0;
+
+    const n = values.length;
+    const sx = (i) => MM_L + (i / Math.max(n - 1, 1)) * (MM_W - MM_L - MM_R);
+    const sy = (v) => MM_T + (1 - (v - lo) / (hi - lo)) * (MM_H - MM_T - MM_B);
+
+    const path = (arr) => {
+        let dstr = '', pen = false;
+        arr.forEach((v, i) => {
+            if (!Number.isFinite(v)) { pen = false; return; }
+            dstr += `${pen ? 'L' : 'M'}${sx(i).toFixed(1)},${sy(v).toFixed(1)}`;
+            pen = true;
+        });
+        return dstr;
+    };
+
+    const line = path(values);
+    const first = idx[0][0], last = idx[idx.length - 1][0];
+    const area = `${line}L${sx(last).toFixed(1)},${sy(lo).toFixed(1)}L${sx(first).toFixed(1)},${sy(lo).toFixed(1)}Z`;
+
+    const ticks = [0, 0.25, 0.5, 0.75, 1].map((t) => lo + (hi - lo) * t);
+    const xAt = [0, Math.floor((n - 1) / 2), n - 1];
+
     return `
-    <svg class="mm-chart" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" role="img" aria-label="시계열 차트">
-        <defs><linearGradient id="mmg" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.28"/>
-            <stop offset="100%" stop-color="#38bdf8" stop-opacity="0"/>
-        </linearGradient></defs>
-        <line x1="${PAD}" y1="${H - PAD}" x2="${W - PAD}" y2="${H - PAD}" class="mm-axis"/>
-        <path d="${area}" fill="url(#mmg)"/>
-        <path d="${d}" class="mm-line"/>
-        <circle cx="${sx(last[0]).toFixed(1)}" cy="${sy(last[1]).toFixed(1)}" r="3.5" class="mm-dot"/>
-        <text x="${PAD}" y="16" class="mm-tick">${fmt(maxY)}</text>
-        <text x="${PAD}" y="${H - PAD - 4}" class="mm-tick">${fmt(minY)}</text>
-        <text x="${PAD}" y="${H - 8}" class="mm-tick">${finEsc(dates[0] || '')}</text>
-        <text x="${W - PAD}" y="${H - 8}" class="mm-tick" text-anchor="end">${finEsc(dates[dates.length - 1] || '')}</text>
-    </svg>`;
+    <div class="mm-chart-box" data-mm-chart-box="1"
+         data-dates='${finEsc(JSON.stringify(dates))}'
+         data-values='${finEsc(JSON.stringify(values.map((v) => Number.isFinite(v) ? v : null)))}'
+         ${ma ? `data-ma='${finEsc(JSON.stringify(ma.map((v) => Number.isFinite(v) ? v : null)))}'` : ''}
+         data-geom='${finEsc(JSON.stringify({ lo, hi, n }))}'
+         data-unit="${finEsc(opts.unit || '')}">
+        <svg class="mm-chart" viewBox="0 0 ${MM_W} ${MM_H}" preserveAspectRatio="none" role="img"
+             aria-label="${finEsc(opts.label || '시계열')} 차트">
+            <defs><linearGradient id="mmg" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.26"/>
+                <stop offset="100%" stop-color="#38bdf8" stop-opacity="0"/>
+            </linearGradient></defs>
+            ${ticks.map((t) => `
+                <line x1="${MM_L}" y1="${sy(t).toFixed(1)}" x2="${MM_W - MM_R}" y2="${sy(t).toFixed(1)}" class="mm-grid"/>
+                <text x="${MM_L - 7}" y="${(sy(t) + 3.5).toFixed(1)}" class="mm-tick" text-anchor="end">${mmFmt(t)}</text>`).join('')}
+            ${(lo < 0 && hi > 0) ? `<line x1="${MM_L}" y1="${sy(0).toFixed(1)}" x2="${MM_W - MM_R}" y2="${sy(0).toFixed(1)}" class="mm-zero"/>` : ''}
+            <path d="${area}" fill="url(#mmg)"/>
+            ${ma ? `<path d="${path(ma)}" class="mm-ma"/>` : ''}
+            <path d="${line}" class="mm-line"/>
+            ${xAt.map((i) => `<text x="${sx(i).toFixed(1)}" y="${MM_H - 8}" class="mm-tick"
+                text-anchor="${i === 0 ? 'start' : (i === n - 1 ? 'end' : 'middle')}">${finEsc(dates[i] || '')}</text>`).join('')}
+            <line class="mm-cross" x1="0" y1="${MM_T}" x2="0" y2="${MM_H - MM_B}" style="display:none"/>
+            <circle class="mm-hover-dot" r="4" style="display:none"/>
+        </svg>
+        <div class="mm-tip-box" style="display:none"></div>
+        ${ma ? '<p class="mm-legend-note"><i class="mm-swatch-ma"></i>MA5 (5기간 이동평균)</p>' : ''}
+    </div>`;
+};
+
+// Grouped bars for a handful of labelled values -- QRA compare, energy mix,
+// FedWatch outcomes and maturity buckets all reduce to this shape.
+const mmBars = (rows, opts = {}) => {
+    const vals = rows.map((r) => Number(r.value)).filter(Number.isFinite);
+    if (!vals.length) return '<p class="fin-note">표시할 값이 없습니다.</p>';
+    const hi = Math.max(...vals, 0), lo = Math.min(...vals, 0);
+    const span = (hi - lo) || 1;
+    return `
+    <div class="mm-bars ${opts.compact ? 'mm-bars-compact' : ''}">
+        ${rows.map((r) => {
+            const v = Number(r.value);
+            const w = Number.isFinite(v) ? Math.abs(v) / span * 100 : 0;
+            return `
+            <div class="mm-bar-row${r.highlight ? ' mm-bar-hi' : ''}">
+                <span class="mm-bar-label">${finEsc(r.label)}${r.sub ? `<span class="mm-bar-sub">${finEsc(r.sub)}</span>` : ''}</span>
+                <span class="mm-bar-track"><span class="mm-bar-fill${v < 0 ? ' mm-bar-neg' : ''}" style="width:${w.toFixed(1)}%"></span></span>
+                <span class="mm-bar-value">${finEsc(r.display ?? (mmFmt(v) + (opts.unit || '')))}</span>
+            </div>`;
+        }).join('')}
+    </div>`;
+};
+
+// Which panels an indicator can show, in the order they should appear. The
+// engine names the primary view (ui.click_view); chart_type covers the rest.
+const mmViewsFor = (ind) => {
+    const views = [];
+    const cv = (ind.ui || {}).click_view;
+    const has = (a) => Array.isArray(a) && a.length;
+
+    if (cv === 'compare_bar_table' && has((ind.compare || {}).series)) {
+        views.push({ id: 'compare', label: '비교' });
+    }
+    if (cv === 'energy_mix' && has((ind.energy_mix || {}).series)) {
+        views.push({ id: 'mix', label: '연료 비중' });
+    }
+    if (ind.chart_type === 'stack' && has(ind.components)) {
+        views.push({ id: 'stack', label: '구성' });
+    }
+    if (ind.chart_type === 'bar' && has(ind.outcomes)) {
+        views.push({ id: 'outcomes', label: '확률' });
+    }
+    if (has(((ind.history || {})['5y'] || {}).values) || ind.modes) {
+        views.push({ id: 'history', label: '추이' });
+    }
+    // Secondary panels come last so the engine's primary view stays default.
+    const sv = (ind.ui || {}).secondary_view;
+    if (sv === 'maturity_components' && has(ind.components)) {
+        views.push({ id: 'components', label: '만기별' });
+    } else if (has(ind.components) && !views.some((v) => v.id === 'stack')
+               && ind.chart_type === 'line+components') {
+        views.push({ id: 'components', label: '구성' });
+    }
+    return views.length ? views : [{ id: 'history', label: '추이' }];
+};
+
+// GDP arrives as two series under `modes`; the drawer swaps between them
+// rather than showing an annualised figure the engine deliberately dropped.
+const mmModeSeries = (ind, mode) => {
+    const m = (ind.modes || {})[mode];
+    return m || null;
+};
+
+const mmCompareView = (ind) => {
+    const c = ind.compare || {};
+    const rows = (c.series || []).map((s) => ({
+        label: s.label_ko,
+        sub: s.period,
+        value: s.value,
+        display: `${mmFmt(s.value, 0)}B`,
+        highlight: s.id === 'current',
+    }));
+    const table = c.table || [];
+    return `
+        ${c.title_ko ? `<p class="mm-view-title">${finEsc(c.title_ko)}</p>` : ''}
+        ${mmBars(rows, { unit: 'B' })}
+        ${table.length ? `
+        <div class="co-table-wrap mm-table">
+            <table class="co-table">
+                <thead><tr>
+                    <th>구분</th><th>대상 분기</th><th>순발행 ($B)</th><th>기말 현금 ($B)</th><th>공시일</th>
+                </tr></thead>
+                <tbody>
+                    ${table.map((r) => `
+                        <tr>
+                            <td class="co-label">${finEsc(r.label_ko)}</td>
+                            <td>${finEsc(r.period || '—')}</td>
+                            <td>${mmFmt(r.net_borrowing_bn, 0)}</td>
+                            <td>${mmFmt(r.end_cash_bn, 0)}</td>
+                            <td>${finEsc(r.announcement_date || '—')}</td>
+                        </tr>`).join('')}
+                </tbody>
+            </table>
+        </div>` : ''}
+        ${c.note_ko ? `<p class="fin-note">${finEsc(c.note_ko)}</p>` : ''}`;
+};
+
+const mmMixView = (ind) => {
+    const em = ind.energy_mix || {};
+    const rows = (em.series || []).map((s) => ({
+        label: s.label_ko || s.id,
+        value: s.value,
+        display: `${mmFmt(s.value, 1)}%${Number.isFinite(s.twh) ? ` · ${mmFmt(s.twh, 0)}TWh` : ''}`,
+    }));
+    return `
+        <p class="mm-view-title">연료별 발전 비중${em.asof_year ? ` · ${em.asof_year}년` : ''}</p>
+        ${mmBars(rows, { unit: '%' })}
+        <p class="fin-note">발전량 기준 비중입니다. 설비용량이 아니라 실제로 만들어낸 전력의 몫입니다.</p>`;
+};
+
+const mmComponentsView = (ind, title) => mmBars(
+    (ind.components || []).map((c) => ({
+        label: c.label_ko || c.id,
+        value: c.value,
+        display: c.display ?? (mmFmt(c.value, 0) + (c.unit === 'pct' ? '%' : '')),
+    })), {}) + (title ? `<p class="fin-note">${finEsc(title)}</p>` : '');
+
+const mmOutcomesView = (ind) => {
+    const rows = (ind.outcomes || []).map((o) => ({
+        label: o.label_ko,
+        value: o.prob,
+        display: `${mmFmt(o.prob, 0)}%`,
+        highlight: o.prob === Math.max(...ind.outcomes.map((x) => x.prob)),
+    }));
+    return `
+        <p class="mm-view-title">회의 결과별 시장 내재 확률</p>
+        ${mmBars(rows, { unit: '%' })}
+        <p class="fin-note">선물 가격에서 역산한 확률입니다. 예측이 아니라 시장이 지금 무엇에 값을 매기고 있는지입니다.</p>`;
 };
 
 const mmChartDrawer = () => {
     if (!MM_CHART || !MM_COUNTRY) return '';
     const ind = (MM_COUNTRY.country.indicators || []).find((x) => x.id === MM_CHART.indicatorId);
     if (!ind) return '';
-    const hist = (ind.history || {})[MM_CHART.window] || {};
-    const dates = hist.dates || [];
-    const values = hist.values || [];
+
+    const views = mmViewsFor(ind);
+    const view = views.some((v) => v.id === MM_CHART.view) ? MM_CHART.view : views[0].id;
+    MM_CHART.view = view;
+
+    const dual = (ind.ui || {}).dual;
+    const mode = MM_CHART.mode || (ind.ui || {}).default || (dual ? dual[0] : null);
+    const modeSeries = dual ? mmModeSeries(ind, mode) : null;
+
+    let body = '';
+    if (view === 'compare') body = mmCompareView(ind);
+    else if (view === 'mix') body = mmMixView(ind);
+    else if (view === 'outcomes') body = mmOutcomesView(ind);
+    else if (view === 'stack') body = mmComponentsView(ind, '연준이 보유한 국채를 잔존만기로 나눈 잔액입니다. 시장금리가 아니라 대차대조표입니다.');
+    else if (view === 'components') body = mmComponentsView(ind, ind.chart_type === 'line+components' ? '' : '만기별 발행 구성입니다.');
+    else {
+        const src = modeSeries || ind;
+        const hist = (src.history || {})[MM_CHART.window] || {};
+        // VIX and other fear gauges have no moving average by design: a smoothed
+        // fear index invites reading a trend into what is meant to be a level.
+        body = mmLineChart(hist.dates || [], hist.values || [], {
+            ma5: hist.ma5,
+            unit: src.unit === 'pct' ? '%' : (src.unit || ''),
+            label: src.label_ko || ind.label_ko,
+        });
+    }
+
+    const meta = [
+        ind.display != null ? String(ind.display) : null,
+        ind.asof ? `기준 ${ind.asof}` : null,
+        ind.source ? (typeof ind.source === 'string' ? ind.source : ind.source.name) : null,
+        ind.refresh_tier || null,
+    ].filter(Boolean);
+
+    const showWindow = view === 'history';
+
     return `
-    <div class="mm-drawer" role="dialog" aria-label="${finEsc(ind.label_ko)} 추이">
+    <div class="mm-drawer" role="dialog" aria-label="${finEsc(ind.label_ko)}">
         <div class="mm-drawer-head">
             <div>
                 <h3>${finEsc(ind.label_ko)}</h3>
-                <p class="mm-drawer-sub">${finEsc(ind.display ?? '')} · 기준 ${finEsc(ind.asof || '')}
-                   ${ind.source ? ` · ${finEsc(typeof ind.source === 'string' ? ind.source : (ind.source.name || ''))}` : ''}</p>
+                <p class="mm-drawer-sub">${meta.map((m) => finEsc(m)).join(' · ')}</p>
             </div>
             <div class="mm-drawer-actions">
-                <div class="pf-mode">
-                    ${['5y', '10y'].map((w) => `
-                        <button type="button" class="pf-mode-btn ${MM_CHART.window === w ? 'on' : ''}"
-                                data-mm-window="${w}">${w === '5y' ? '5년' : '10년'}</button>`).join('')}
-                </div>
+                ${dual ? `<div class="pf-mode">
+                    ${dual.map((m) => `<button type="button" class="pf-mode-btn ${m === mode ? 'on' : ''}"
+                        data-mm-mode="${finEsc(m)}">${finEsc(((ind.modes || {})[m] || {}).label_ko || m.toUpperCase())}</button>`).join('')}
+                </div>` : ''}
+                ${showWindow ? `<div class="pf-mode">
+                    ${['5y', '10y'].map((w) => `<button type="button" class="pf-mode-btn ${MM_CHART.window === w ? 'on' : ''}"
+                        data-mm-window="${w}">${w === '5y' ? '5년' : '10년'}</button>`).join('')}
+                </div>` : ''}
                 <button class="mm-close" data-mm-chart-close="1" aria-label="닫기">✕</button>
             </div>
         </div>
-        ${mmSparkline(dates, values)}
-        ${ind.note_ko ? `<p class="fin-note">${finEsc(ind.note_ko)}</p>` : ''}
+
+        ${views.length > 1 ? `<div class="mm-views">
+            ${views.map((v) => `<button class="mm-view-btn ${v.id === view ? 'on' : ''}"
+                data-mm-view="${finEsc(v.id)}">${finEsc(v.label)}</button>`).join('')}
+        </div>` : ''}
+
+        <div class="mm-drawer-body">
+            <div class="mm-drawer-main">
+                ${body}
+                ${ind.note_ko ? `<p class="fin-note mm-note">${finEsc(ind.note_ko)}</p>` : ''}
+                ${ind.reference ? `<p class="fin-note">${finEsc(typeof ind.reference === 'string' ? ind.reference : JSON.stringify(ind.reference))}</p>` : ''}
+            </div>
+            ${mmNewsRail(ind)}
+        </div>
+    </div>`;
+};
+
+// The news API is not wired yet. An empty rail that says so is honest; a
+// spinner that never resolves is not, and fabricated articles would be worse.
+const mmNewsRail = (ind) => {
+    const items = Array.isArray(ind.news) ? ind.news : null;
+    return `
+    <aside class="mm-news">
+        <p class="mm-news-head">관련 뉴스</p>
+        ${items && items.length ? items.map((it) => `
+            <a class="mm-news-item" href="${finEsc(it.url)}" target="_blank" rel="noopener noreferrer">
+                <span class="mm-news-title">${finEsc(it.title)}</span>
+                <span class="mm-news-meta">${finEsc(it.source || '')}${it.published_at ? ` · ${finEsc(String(it.published_at).slice(0, 10))}` : ''}</span>
+            </a>`).join('')
+        : `<p class="mm-news-empty">관련 뉴스 없음 · API 연결 대기</p>
+           ${ind.news_query ? `<p class="mm-news-q">검색어: <code>${finEsc(ind.news_query)}</code></p>` : ''}`}
+        <p class="mm-news-foot">투자 권유 아님 · 뉴스 요약은 참고용</p>
+    </aside>`;
+};
+
+// Central bank head + finance minister only. Financial-supervision chiefs are
+// deliberately left out, and Korea's slot is the finance ministry rather than
+// the budget office or the financial regulator. China names two people per
+// institution -- party secretary and governor/minister -- with separate
+// appointment dates even when it is the same person.
+const mmPerson = (p) => `${finEsc(p.title_ko || '')} <strong>${finEsc(p.name_ko || '')}</strong>`
+    + (p.appointed ? `<span class="mm-off-date">${finEsc(p.appointed)} 임명</span>` : '');
+
+const mmOfficialSlot = (slot) => {
+    if (!slot) return '';
+    const people = Array.isArray(slot.set) ? slot.set : [slot];
+    return `
+    <div class="mm-official">
+        <span class="mm-off-inst">${finEsc(slot.institution_ko || '')}</span>
+        ${people.map((p) => `<span class="mm-off-person">${mmPerson(p)}</span>`).join('')}
+    </div>`;
+};
+
+const mmOfficials = (off) => {
+    if (!off || (!off.central_bank && !off.finance)) return '';
+    return `
+    <div class="mm-officials">
+        ${mmOfficialSlot(off.central_bank)}
+        ${mmOfficialSlot(off.finance)}
+        ${off.asof ? `<span class="mm-off-asof">${finEsc(off.asof)} 기준</span>` : ''}
     </div>`;
 };
 
@@ -6517,6 +6782,7 @@ const mmOverlay = () => {
                 <h2>${finEsc(c.name_ko)}
                     ${c.benchmark ? '<span class="mm-badge">벤치마크</span>' : ''}</h2>
                 <p>${finEsc(c.name_en || '')} · 기준 ${finEsc(c.asof || '')} · 키트 <code>${finEsc(c.kit || '')}</code></p>
+                ${mmOfficials(c.officials)}
             </div>
             <button class="mm-close" data-mm-close="1" aria-label="닫기">✕</button>
         </div>
@@ -6570,6 +6836,60 @@ const mmOverlay = () => {
     </div>`;
 };
 
+// Re-run after every paint: mmPaint replaces innerHTML, so listeners attached
+// to the previous SVG are gone with it.
+const mmWireCharts = (host) => {
+    host.querySelectorAll('[data-mm-chart-box]').forEach((box) => {
+        const svg = box.querySelector('svg');
+        const cross = box.querySelector('.mm-cross');
+        const dot = box.querySelector('.mm-hover-dot');
+        const tip = box.querySelector('.mm-tip-box');
+        if (!svg || !cross || !dot || !tip) return;
+
+        let dates, values, ma, geom, unit;
+        try {
+            dates = JSON.parse(box.dataset.dates);
+            values = JSON.parse(box.dataset.values);
+            ma = box.dataset.ma ? JSON.parse(box.dataset.ma) : null;
+            geom = JSON.parse(box.dataset.geom);
+            unit = box.dataset.unit || '';
+        } catch (_) { return; }
+
+        const hide = () => {
+            cross.style.display = 'none';
+            dot.style.display = 'none';
+            tip.style.display = 'none';
+        };
+
+        svg.addEventListener('mousemove', (e) => {
+            const r = svg.getBoundingClientRect();
+            if (!r.width) return;
+            // Pointer is in CSS pixels; the chart is drawn in viewBox units.
+            const vx = (e.clientX - r.left) / r.width * MM_W;
+            const t = (vx - MM_L) / (MM_W - MM_L - MM_R);
+            let i = Math.round(t * (geom.n - 1));
+            i = Math.max(0, Math.min(geom.n - 1, i));
+            if (!Number.isFinite(values[i])) { hide(); return; }
+
+            const px = MM_L + (i / Math.max(geom.n - 1, 1)) * (MM_W - MM_L - MM_R);
+            const py = MM_T + (1 - (values[i] - geom.lo) / (geom.hi - geom.lo)) * (MM_H - MM_T - MM_B);
+            cross.setAttribute('x1', px); cross.setAttribute('x2', px);
+            cross.style.display = '';
+            dot.setAttribute('cx', px); dot.setAttribute('cy', py);
+            dot.style.display = '';
+
+            const maTxt = (ma && Number.isFinite(ma[i])) ? `<span class="mm-tip-ma">MA5 ${mmFmt(ma[i])}${unit}</span>` : '';
+            tip.innerHTML = `<span class="mm-tip-date">${finEsc(dates[i] || '')}</span>`
+                + `<span class="mm-tip-val">${mmFmt(values[i])}${unit}</span>${maTxt}`;
+            tip.style.display = '';
+            // Flip before the tooltip would run off the right edge.
+            const leftPct = px / MM_W * 100;
+            tip.style.left = `${Math.min(Math.max(leftPct, 4), 78)}%`;
+        });
+        svg.addEventListener('mouseleave', hide);
+    });
+};
+
 const mmPaint = () => {
     const host = document.getElementById('macro-layer');
     if (!host) return;
@@ -6580,6 +6900,7 @@ const mmPaint = () => {
             <span class="mm-hint-count">${(MM_INDEX?.countries_index || []).length}개국</span>
         </div>`;
     host.classList.toggle('mm-open', !!MM_COUNTRY);
+    mmWireCharts(host);
 };
 
 const mmOpenCountry = async (iso3) => {
@@ -6664,12 +6985,16 @@ const renderMacroMonitor = async () => {
             if (chip) {
                 const id = chip.getAttribute('data-mm-chip');
                 MM_CHART = (MM_CHART && MM_CHART.indicatorId === id)
-                    ? null : { indicatorId: id, window: '5y' };
+                    ? null : { indicatorId: id, window: '5y', view: null, mode: null };
                 mmPaint();
                 return;
             }
             const win = t.closest('[data-mm-window]');
-            if (win && MM_CHART) { MM_CHART.window = win.getAttribute('data-mm-window'); mmPaint(); }
+            if (win && MM_CHART) { MM_CHART.window = win.getAttribute('data-mm-window'); mmPaint(); return; }
+            const vw = t.closest('[data-mm-view]');
+            if (vw && MM_CHART) { MM_CHART.view = vw.getAttribute('data-mm-view'); mmPaint(); return; }
+            const md = t.closest('[data-mm-mode]');
+            if (md && MM_CHART) { MM_CHART.mode = md.getAttribute('data-mm-mode'); mmPaint(); return; }
         });
     }
 
