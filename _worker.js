@@ -45,6 +45,11 @@ export default {
             return await handleQuote(request, env);
         }
 
+        // Filed financial statements for the company calculator
+        if (url.pathname.startsWith('/api/financials')) {
+            return await handleFinancials(request, env);
+        }
+
         // Multi-country official reports (US/JP/CN/EU…)
         if (url.pathname.startsWith('/api/official-reports')) {
             return await handleOfficialReports(request, env);
@@ -847,7 +852,7 @@ async function yahooSearch(q) {
 const SEC_TICKERS_URL = 'https://www.sec.gov/files/company_tickers.json';
 
 async function secIndex(env) {
-    const KEY = 'sec:tickers:v1';
+    const KEY = 'sec:tickers:v2';   // v2 carries the CIK, needed for filings
     if (env.API_CACHE) {
         try {
             const hit = await env.API_CACHE.get(KEY, 'json');
@@ -860,13 +865,150 @@ async function secIndex(env) {
     });
     if (!res.ok) return [];
     const raw = await res.json();
-    const rows = Object.values(raw).map((v) => [v.ticker, v.title]);
+    const rows = Object.values(raw).map((v) => [v.ticker, v.title, v.cik_str]);
     if (env.API_CACHE) {
         // The filer list changes on the scale of weeks; a day of staleness is
         // invisible and keeps this off SEC's servers.
         try { await env.API_CACHE.put(KEY, JSON.stringify(rows), { expirationTtl: 86400 }); } catch (_) { /* ignore */ }
     }
     return rows;
+}
+
+// --- Filed financials -----------------------------------------------------
+// SEC publishes every filer's XBRL facts free and without a key, which is why
+// the US half of the company calculator works before the Korean DART key
+// exists. One company's full fact set is several megabytes, so the extraction
+// happens here and the browser receives a few kilobytes.
+const SEC_HEADERS = {
+    'User-Agent': 'global-trade-dashboard overideal@gmail.com',
+    'Accept': 'application/json',
+};
+
+// us-gaap tags, in the order they should be tried: filers disagree about which
+// concept a line belongs to, and the first one present wins.
+const SEC_TAGS = {
+    revenue: ['RevenueFromContractWithCustomerExcludingAssessedTax', 'Revenues', 'SalesRevenueNet'],
+    operating_income: ['OperatingIncomeLoss'],
+    net_income: ['NetIncomeLoss', 'ProfitLoss'],
+    assets: ['Assets'],
+    assets_current: ['AssetsCurrent'],
+    liabilities: ['Liabilities'],
+    liabilities_current: ['LiabilitiesCurrent'],
+    equity: ['StockholdersEquity', 'StockholdersEquityIncludingPortionAttributableToNoncontrollingInterest'],
+    cash: ['CashAndCashEquivalentsAtCarryingValue'],
+    debt_long: ['LongTermDebtNoncurrent', 'LongTermDebt'],
+    cfo: ['NetCashProvidedByUsedInOperatingActivities',
+          'NetCashProvidedByUsedInOperatingActivitiesContinuingOperations'],
+    capex: ['PaymentsToAcquirePropertyPlantAndEquipment', 'PaymentsToAcquireProductiveAssets',
+            'PaymentsToAcquirePropertyPlantAndEquipmentAndIntangibleAssets'],
+    shares: ['CommonStockSharesOutstanding', 'EntityCommonStockSharesOutstanding'],
+};
+
+// Merges every candidate tag by year instead of committing to the first one
+// that has any data. Filers migrate between concepts mid-history -- NVIDIA
+// reports capex under PropertyPlantAndEquipment in older years and
+// ProductiveAssets in newer ones -- so taking a single tag leaves the recent
+// years blank, which is exactly the part anyone is looking at.
+const SEC_DAY = 86400000;
+
+// The `fy` on an XBRL fact is the fiscal year of the FILING, not of the figure.
+// A 10-K carries two or three comparative years and stamps all of them with the
+// filing's own year -- Microsoft's FY2026 report tags FY2024, FY2025 and FY2026
+// alike as fy=2026. Keying on it silently shifts every company's history.
+// The period end date is the only field that says what the number covers.
+function secFiscalYear(p) {
+    const end = p.end && new Date(p.end);
+    return (end && !Number.isNaN(end.getTime())) ? end.getUTCFullYear() : null;
+}
+
+// Flow concepts (revenue, cash flow) span a period; stock concepts (assets)
+// are a snapshot. Only the former can be a multi-year cumulative by mistake.
+function secIsFullYear(p) {
+    if (!p.start) return true;
+    const days = (new Date(p.end) - new Date(p.start)) / SEC_DAY;
+    return days >= 340 && days <= 380;
+}
+
+function secPickAnnual(facts, names) {
+    const byYear = new Map();
+    const used = [];
+    let unit = null;
+    for (const tag of names) {
+        const node = facts[tag];
+        if (!node || !node.units) continue;
+        const u = Object.keys(node.units)[0];
+        const annual = (node.units[u] || []).filter((p) =>
+            p.form === '10-K' && p.end && secIsFullYear(p) && secFiscalYear(p));
+        if (!annual.length) continue;
+        unit = unit || u;
+        used.push(tag);
+
+        // Two precedence rules, easy to conflate. Within one tag a period shows
+        // up once per filing that repeated it, so the most recently FILED entry
+        // is the current restatement and wins. Across tags the earlier-listed
+        // concept is the better match and must not be overwritten by a fallback.
+        const perTag = new Map();
+        for (const p of annual.slice().sort((a, b) => String(a.filed).localeCompare(String(b.filed)))) {
+            perTag.set(secFiscalYear(p), p.val);
+        }
+        for (const [fy, val] of perTag) if (!byYear.has(fy)) byYear.set(fy, val);
+    }
+    return byYear.size ? { tag: used.join('+'), unit, years: byYear } : null;
+}
+
+async function handleFinancials(request, env) {
+    const url = new URL(request.url);
+    const symbol = (url.searchParams.get('symbol') || '').trim().toUpperCase();
+    if (!symbol) {
+        return new Response(JSON.stringify({ error: 'symbol required' }), { status: 400, headers: JSON_HEADERS });
+    }
+
+    try {
+        return await kvCachedJson(env, `fin:sec:${symbol}`, 86400, async () => {
+            const rows = await secIndex(env);
+            const hit = rows.find((r) => String(r[0]).toUpperCase() === symbol);
+            if (!hit) return { ok: false, status: 404, statusText: 'not a US filer' };
+
+            const cik = String(hit[2]).padStart(10, '0');
+            const res = await fetch(`https://data.sec.gov/api/xbrl/companyfacts/CIK${cik}.json`, { headers: SEC_HEADERS });
+            if (!res.ok) return { ok: false, status: res.status };
+            const doc = await res.json();
+            const gaap = (doc.facts && doc.facts['us-gaap']) || {};
+
+            const picked = {}, used = {};
+            for (const [key, names] of Object.entries(SEC_TAGS)) {
+                const got = secPickAnnual(gaap, names);
+                if (got) { picked[key] = got.years; used[key] = got.tag; }
+            }
+
+            const years = [...new Set(Object.values(picked).flatMap((m) => [...m.keys()]))]
+                .sort((a, b) => b - a).slice(0, 5);
+
+            const statements = years.map((fy) => {
+                const row = { fy };
+                for (const key of Object.keys(SEC_TAGS)) {
+                    const v = picked[key] ? picked[key].get(fy) : undefined;
+                    row[key] = (v === undefined) ? null : v;
+                }
+                return row;
+            });
+
+            return {
+                ok: true,
+                body: {
+                    source: 'SEC XBRL',
+                    symbol,
+                    cik,
+                    name: doc.entityName || hit[1],
+                    currency: 'USD',
+                    statements,
+                    tags_used: used,
+                },
+            };
+        });
+    } catch (err) {
+        return new Response(JSON.stringify({ error: err.message }), { status: 500, headers: JSON_HEADERS });
+    }
 }
 
 async function secSearch(env, q) {
