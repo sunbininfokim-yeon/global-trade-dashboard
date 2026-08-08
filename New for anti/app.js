@@ -6413,9 +6413,290 @@ const renderFinanceView = async (target, host) => {
          <code>derivatives_intel</code> 파이프라인 결과가 <code>public/data/</code> 에 들어오면 연결됩니다.`);
 };
 
+// === 매크로 모니터 =========================================================
+//
+// Engine and schema are Cursor's (scripts/macro_monitor); this file only draws.
+// The map is the view -- no side dashboards -- so a country opens as an overlay
+// on top of the globe rather than pushing it aside.
+let MM_INDEX = null;
+let MM_COUNTRY = null;          // currently opened country payload
+let MM_TAB = 'liquidity';
+let MM_CHART = null;            // { indicatorId, window }
+
+const mmFetch = async (iso3) => {
+    const q = iso3 ? `?country=${encodeURIComponent(iso3)}` : '';
+    const res = await fetch(`/api/macro-monitor${q}`);
+    if (!res.ok) throw new Error(`매크로 데이터를 못 받았습니다 (${res.status})`);
+    return res.json();
+};
+
+const mmDelta = (v) => {
+    if (v === null || v === undefined || !Number.isFinite(v)) return '';
+    const cls = v > 0 ? 'mm-up' : (v < 0 ? 'mm-down' : 'mm-flat');
+    const sign = v > 0 ? '+' : '';
+    return `<span class="mm-delta ${cls}">${sign}${v.toFixed(1)}%</span>`;
+};
+
+// Small inline chart rather than a charting library: one series, no axes to
+// speak of, and the drawer opens and closes often enough that avoiding a
+// canvas lifecycle is worth more than the features.
+const mmSparkline = (dates, values) => {
+    const pts = values.map((v, i) => [i, v]).filter(([, v]) => Number.isFinite(v));
+    if (pts.length < 2) return '<p class="fin-note">그릴 수 있는 시계열이 없습니다.</p>';
+    const xs = pts.map(([x]) => x), ys = pts.map(([, y]) => y);
+    const minY = Math.min(...ys), maxY = Math.max(...ys);
+    const span = (maxY - minY) || Math.abs(maxY) || 1;
+    const W = 720, H = 210, PAD = 28;
+    const sx = (x) => PAD + (x - xs[0]) / ((xs[xs.length - 1] - xs[0]) || 1) * (W - PAD * 2);
+    const sy = (y) => H - PAD - (y - minY) / span * (H - PAD * 2);
+    const d = pts.map(([x, y], i) => `${i ? 'L' : 'M'}${sx(x).toFixed(1)},${sy(y).toFixed(1)}`).join('');
+    const area = `${d}L${sx(xs[xs.length - 1]).toFixed(1)},${H - PAD}L${sx(xs[0]).toFixed(1)},${H - PAD}Z`;
+    const last = pts[pts.length - 1];
+    const fmt = (v) => Math.abs(v) >= 1000 ? v.toLocaleString('ko-KR', { maximumFractionDigits: 0 }) : v.toFixed(2);
+    return `
+    <svg class="mm-chart" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" role="img" aria-label="시계열 차트">
+        <defs><linearGradient id="mmg" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.28"/>
+            <stop offset="100%" stop-color="#38bdf8" stop-opacity="0"/>
+        </linearGradient></defs>
+        <line x1="${PAD}" y1="${H - PAD}" x2="${W - PAD}" y2="${H - PAD}" class="mm-axis"/>
+        <path d="${area}" fill="url(#mmg)"/>
+        <path d="${d}" class="mm-line"/>
+        <circle cx="${sx(last[0]).toFixed(1)}" cy="${sy(last[1]).toFixed(1)}" r="3.5" class="mm-dot"/>
+        <text x="${PAD}" y="16" class="mm-tick">${fmt(maxY)}</text>
+        <text x="${PAD}" y="${H - PAD - 4}" class="mm-tick">${fmt(minY)}</text>
+        <text x="${PAD}" y="${H - 8}" class="mm-tick">${finEsc(dates[0] || '')}</text>
+        <text x="${W - PAD}" y="${H - 8}" class="mm-tick" text-anchor="end">${finEsc(dates[dates.length - 1] || '')}</text>
+    </svg>`;
+};
+
+const mmChartDrawer = () => {
+    if (!MM_CHART || !MM_COUNTRY) return '';
+    const ind = (MM_COUNTRY.country.indicators || []).find((x) => x.id === MM_CHART.indicatorId);
+    if (!ind) return '';
+    const hist = (ind.history || {})[MM_CHART.window] || {};
+    const dates = hist.dates || [];
+    const values = hist.values || [];
+    return `
+    <div class="mm-drawer" role="dialog" aria-label="${finEsc(ind.label_ko)} 추이">
+        <div class="mm-drawer-head">
+            <div>
+                <h3>${finEsc(ind.label_ko)}</h3>
+                <p class="mm-drawer-sub">${finEsc(ind.display ?? '')} · 기준 ${finEsc(ind.asof || '')}
+                   ${ind.source ? ` · ${finEsc(typeof ind.source === 'string' ? ind.source : (ind.source.name || ''))}` : ''}</p>
+            </div>
+            <div class="mm-drawer-actions">
+                <div class="pf-mode">
+                    ${['5y', '10y'].map((w) => `
+                        <button type="button" class="pf-mode-btn ${MM_CHART.window === w ? 'on' : ''}"
+                                data-mm-window="${w}">${w === '5y' ? '5년' : '10년'}</button>`).join('')}
+                </div>
+                <button class="mm-close" data-mm-chart-close="1" aria-label="닫기">✕</button>
+            </div>
+        </div>
+        ${mmSparkline(dates, values)}
+        ${ind.note_ko ? `<p class="fin-note">${finEsc(ind.note_ko)}</p>` : ''}
+    </div>`;
+};
+
+const mmOverlay = () => {
+    if (!MM_COUNTRY) return '';
+    const c = MM_COUNTRY.country;
+    const tabs = (MM_INDEX.ui && MM_INDEX.ui.category_tabs) || [];
+    const active = (c.active_categories || []).includes(MM_TAB) ? MM_TAB
+        : (c.active_categories || [])[0] || 'liquidity';
+    MM_TAB = active;
+    const chips = (c.categories || {})[active] || [];
+    const tabMeta = tabs.find((t) => t.id === active) || {};
+    const lim = c.limitations || {};
+
+    return `
+    <div class="mm-overlay" role="dialog" aria-label="${finEsc(c.name_ko)} 매크로">
+        <div class="mm-head">
+            <div class="mm-title">
+                <h2>${finEsc(c.name_ko)}
+                    ${c.benchmark ? '<span class="mm-badge">벤치마크</span>' : ''}</h2>
+                <p>${finEsc(c.name_en || '')} · 기준 ${finEsc(c.asof || '')} · 키트 <code>${finEsc(c.kit || '')}</code></p>
+            </div>
+            <button class="mm-close" data-mm-close="1" aria-label="닫기">✕</button>
+        </div>
+
+        ${(c.headlines || []).length ? `
+        <div class="mm-headlines">
+            ${c.headlines.map((h) => `
+                <button class="mm-headline" data-mm-tab="${finEsc(h.category)}">
+                    <span class="mm-headline-label">${finEsc(h.label_ko)}</span>
+                    <span class="mm-headline-value">${finEsc(h.display ?? '—')}</span>
+                </button>`).join('')}
+        </div>` : ''}
+
+        <div class="mm-tabs" role="tablist">
+            ${tabs.map((t) => {
+                const on = t.id === active;
+                const has = (c.active_categories || []).includes(t.id);
+                return `<button class="mm-tab ${on ? 'on' : ''}" data-mm-tab="${finEsc(t.id)}"
+                        ${has ? '' : 'disabled'} role="tab">${finEsc(t.label_ko)}</button>`;
+            }).join('')}
+        </div>
+        ${tabMeta.description_ko ? `<p class="mm-tab-desc">${finEsc(tabMeta.description_ko)}</p>` : ''}
+
+        <div class="mm-chips">
+            ${chips.length ? chips.map((ch) => `
+                <button class="mm-chip" data-mm-chip="${finEsc(ch.id)}">
+                    <span class="mm-chip-label">${finEsc(ch.label_ko)}</span>
+                    <span class="mm-chip-value">${finEsc(ch.display ?? '—')}</span>
+                    <span class="mm-chip-foot">
+                        ${mmDelta(ch.change_1m_pct)}<span class="mm-chip-win">1M</span>
+                        ${mmDelta(ch.change_1y_pct)}<span class="mm-chip-win">1Y</span>
+                    </span>
+                    ${ch.note_ko ? `<span class="mm-chip-note">${finEsc(ch.note_ko)}</span>` : ''}
+                </button>`).join('')
+              : '<p class="fin-note">이 항목은 이 국가에서 아직 제공되지 않습니다.</p>'}
+        </div>
+
+        ${mmChartDrawer()}
+
+        ${(lim.items || []).length ? `
+        <details class="mm-limits">
+            <summary>${finEsc(lim.title_ko || '해석의 한계')}</summary>
+            ${lim.items.map((it) => `
+                <div class="mm-limit">
+                    <strong>${finEsc(it.title_ko)}</strong>
+                    <p>${finEsc(it.body_ko)}</p>
+                </div>`).join('')}
+        </details>` : ''}
+
+        <p class="mm-disclaimer">${finEsc(MM_COUNTRY.disclaimer_ko || MM_INDEX.disclaimer_ko || '')}</p>
+    </div>`;
+};
+
+const mmPaint = () => {
+    const host = document.getElementById('macro-layer');
+    if (!host) return;
+    host.innerHTML = MM_COUNTRY ? mmOverlay() : `
+        <div class="mm-hint">
+            <span class="mm-hint-dot"></span>
+            국가를 클릭하세요 · <strong>미국</strong>은 벤치마크입니다
+            <span class="mm-hint-count">${(MM_INDEX?.countries_index || []).length}개국</span>
+        </div>`;
+    host.classList.toggle('mm-open', !!MM_COUNTRY);
+};
+
+const mmOpenCountry = async (iso3) => {
+    const host = document.getElementById('macro-layer');
+    if (host) {
+        host.innerHTML = `<div class="mm-overlay"><p class="fin-loading">${finEsc(iso3)} 지표를 받는 중…</p></div>`;
+        host.classList.add('mm-open');
+    }
+    try {
+        MM_COUNTRY = await mmFetch(iso3);
+        MM_TAB = (MM_COUNTRY.country.active_categories || ['liquidity'])[0];
+        MM_CHART = null;
+    } catch (err) {
+        if (host) host.innerHTML = `<div class="mm-overlay"><p class="fin-p">${finEsc(err.message)}</p>
+            <button class="mm-close" data-mm-close="1">✕</button></div>`;
+        return;
+    }
+    mmPaint();
+};
+
+const mmDrawMap = () => {
+    const rows = (MM_INDEX?.countries_index || []).filter((c) => c.coords);
+    deckgl.setProps({
+        views: [new MapView({ id: 'map', controller: true, repeat: true })],
+        viewState: currentViewState,
+        controller: { dragRotate: false, touchRotate: false },
+        onHover: null,
+        getTooltip: ({ object }) => object && object.name_ko
+            ? { html: `<div class="mm-tip">${finEsc(object.name_ko)}${object.benchmark ? ' · 벤치마크' : ''}</div>` }
+            : null,
+        onClick: ({ object }) => { if (object && object.iso3) mmOpenCountry(object.iso3); },
+        layers: [
+            ...worldBaseLayers({ id: 'macro' }),
+            new ScatterplotLayer({
+                id: 'macro-pins',
+                data: rows,
+                pickable: true,
+                stroked: true,
+                filled: true,
+                opacity: 0.9,
+                radiusMinPixels: 9,
+                radiusMaxPixels: 26,
+                lineWidthMinPixels: 2,
+                getPosition: (d) => [d.coords.lon, d.coords.lat],
+                // The benchmark is the one everything else is read against, so
+                // it is the only marker that differs.
+                getRadius: (d) => d.benchmark ? 220000 : 150000,
+                getFillColor: (d) => d.benchmark ? [56, 189, 248, 230] : [148, 163, 184, 200],
+                getLineColor: (d) => d.benchmark ? [255, 255, 255, 230] : [255, 255, 255, 120],
+                autoHighlight: true,
+                highlightColor: [125, 211, 252, 220],
+            }),
+        ],
+    });
+};
+
+const renderMacroMonitor = async () => {
+    currentCommodity = 'macro_monitor';
+    stopTradeAnim();
+    stopRotation();
+    document.body.classList.remove('trade-map-mode', 'shipping-mode', 'finance-mode');
+    document.body.classList.add('macro-mode');
+    togglePanels({ left: false, right: false, chart: false, map: true });
+    if (mapContainer) {
+        mapContainer.style.display = 'block';
+        mapContainer.style.pointerEvents = 'auto';
+    }
+
+    let host = document.getElementById('macro-layer');
+    if (!host) {
+        host = document.createElement('div');
+        host.id = 'macro-layer';
+        (mapContainer || document.body).appendChild(host);
+        host.addEventListener('click', (e) => {
+            const t = e.target instanceof Element ? e.target : null;
+            if (!t) return;
+            if (t.closest('[data-mm-close]')) { MM_COUNTRY = null; MM_CHART = null; mmPaint(); return; }
+            if (t.closest('[data-mm-chart-close]')) { MM_CHART = null; mmPaint(); return; }
+            const tab = t.closest('[data-mm-tab]');
+            if (tab) { MM_TAB = tab.getAttribute('data-mm-tab'); MM_CHART = null; mmPaint(); return; }
+            const chip = t.closest('[data-mm-chip]');
+            if (chip) {
+                const id = chip.getAttribute('data-mm-chip');
+                MM_CHART = (MM_CHART && MM_CHART.indicatorId === id)
+                    ? null : { indicatorId: id, window: '5y' };
+                mmPaint();
+                return;
+            }
+            const win = t.closest('[data-mm-window]');
+            if (win && MM_CHART) { MM_CHART.window = win.getAttribute('data-mm-window'); mmPaint(); }
+        });
+    }
+
+    currentViewState = clampGlobeView({ ...currentViewState, zoom: GLOBE_ZOOM });
+
+    if (!MM_INDEX) {
+        host.innerHTML = `<div class="mm-hint">매크로 지표를 받는 중…</div>`;
+        try {
+            MM_INDEX = await mmFetch(null);
+        } catch (err) {
+            host.innerHTML = `<div class="mm-hint mm-hint-warn">${finEsc(err.message)}</div>`;
+            return;
+        }
+    }
+    MM_COUNTRY = null;
+    MM_CHART = null;
+    mmDrawMap();
+    mmPaint();
+};
+
 const setView = (target) => {
     const isShippingView = target && target.startsWith('shipping_');
     const isFinanceView = target && target.startsWith('fin_');
+    if (target !== 'macro_monitor') {
+        document.body.classList.remove('macro-mode');
+        document.getElementById('macro-layer')?.remove();
+    }
     if (!isShippingView && window.ShippingDashboard) {
         window.ShippingDashboard.unmount(chartView);
     }
@@ -6498,6 +6779,9 @@ const setView = (target) => {
             chartView.style.zIndex = '40';
         }
         window.ShippingDashboard.render(target, chartView);
+
+    } else if (target === 'macro_monitor') {
+        renderMacroMonitor();
 
     } else if (isFinanceView) {
         // Document-style panel, same full-bleed treatment as shipping: there is
