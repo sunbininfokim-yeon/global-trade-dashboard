@@ -1,0 +1,54 @@
+{
+  "schema_version": "letf-universe-v1",
+  "note": "Venues must never be naively summed into KR spot wag-the-dog. HK=swap; crypto=perp OI.",
+  "venues": {
+    "kr": {
+      "currency": "KRW",
+      "products": [
+        {"ticker": "0193T0", "name": "KODEX SK하이닉스단일종목레버리지", "underlying": "000660", "L": 2, "structure": "cash", "direction": "long"},
+        {"ticker": "0195S0", "name": "TIGER SK하이닉스단일종목레버리지", "underlying": "000660", "L": 2, "structure": "cash", "direction": "long"},
+        {"ticker": "0194T0", "name": "ACE SK하이닉스단일종목레버리지", "underlying": "000660", "L": 2, "structure": "cash", "direction": "long"},
+        {"ticker": "0192L0", "name": "RISE SK하이닉스단일종목레버리지", "underlying": "000660", "L": 2, "structure": "cash", "direction": "long"},
+        {"ticker": "0197W0", "name": "SOL SK하이닉스단일종목레버리지", "underlying": "000660", "L": 2, "structure": "cash", "direction": "long"},
+        {"ticker": "0194R0", "name": "KIWOOM SK하이닉스선물단일종목레버리지", "underlying": "000660", "L": 2, "structure": "futures", "direction": "long"},
+        {"ticker": "0198D0", "name": "1Q SK하이닉스선물단일종목레버리지", "underlying": "000660", "L": 2, "structure": "futures", "direction": "long"},
+        {"ticker": "0197X0", "name": "SOL SK하이닉스선물단일종목인버스2X", "underlying": "000660", "L": -2, "structure": "futures", "direction": "inverse"},
+        {"ticker": "0193W0", "name": "KODEX 삼성전자단일종목레버리지", "underlying": "005930", "L": 2, "structure": "cash", "direction": "long"},
+        {"ticker": "0195R0", "name": "TIGER 삼성전자단일종목레버리지", "underlying": "005930", "L": 2, "structure": "cash", "direction": "long"},
+        {"ticker": "0194M0", "name": "ACE 삼성전자단일종목레버리지", "underlying": "005930", "L": 2, "structure": "cash", "direction": "long"},
+        {"ticker": "0192M0", "name": "RISE 삼성전자단일종목레버리지", "underlying": "005930", "L": 2, "structure": "cash", "direction": "long"},
+        {"ticker": "0193K0", "name": "PLUS 삼성전자단일종목레버리지", "underlying": "005930", "L": 2, "structure": "cash", "direction": "long"},
+        {"ticker": "0194N0", "name": "KIWOOM 삼성전자선물단일종목레버리지", "underlying": "005930", "L": 2, "structure": "futures", "direction": "long"},
+        {"ticker": "0198B0", "name": "1Q 삼성전자선물단일종목레버리지", "underlying": "005930", "L": 2, "structure": "futures", "direction": "long"},
+        {"ticker": "0193L0", "name": "PLUS 삼성전자선물단일종목인버스2X", "underlying": "005930", "L": -2, "structure": "futures", "direction": "inverse"}
+      ]
+    },
+    "hk": {
+      "currency": "HKD",
+      "note": "CSOP HKEX L&I. Swap-based; L may be flexible (1.1x–2x). Yahoo Finance totalAssets. Do not treat TR as KR cash rebalance.",
+      "products": [
+        {"ticker": "7709.HK", "name": "CSOP SK Hynix Daily Max (2x)", "underlying": "000660", "L": 2, "L_flexible": true, "structure": "swap", "direction": "long", "yahoo": "7709.HK"},
+        {"ticker": "7747.HK", "name": "CSOP Samsung Electronics Daily Max (2x)", "underlying": "005930", "L": 2, "L_flexible": true, "structure": "swap", "direction": "long", "yahoo": "7747.HK"},
+        {"ticker": "7347.HK", "name": "CSOP Samsung Electronics Daily Max (-2x)", "underlying": "005930", "L": -2, "L_flexible": true, "structure": "swap", "direction": "inverse", "yahoo": "7347.HK"}
+      ]
+    },
+    "crypto": {
+      "currency": "USDT",
+      "note": "Binance USD-M perps. OI notional = exposure proxy. Not KR cash rebalance. KR users may be geo-blocked on stock perps.",
+      "products": [
+        {"ticker": "SKHYNIXUSDT", "name": "Binance SK Hynix TradFi perpetual (KR equity)", "underlying": "000660", "L_max": 50, "structure": "tradifi_perp", "direction": "both", "exchange": "binance", "note": "TRADIFI_PERPETUAL / underlyingType=KR_EQUITY. USD share price ≈ KRW/FX. Not a 2x ETF."},
+        {"ticker": "SAMSUNGUSDT", "name": "Binance Samsung TradFi perpetual (KR equity)", "underlying": "005930", "L_max": 50, "structure": "tradifi_perp", "direction": "both", "exchange": "binance", "note": "TRADIFI_PERPETUAL / KR_EQUITY. Not a 2x ETF."},
+        {"ticker": "KORUUSDT", "name": "Binance KORU 3x Korea ETF perp", "underlying": "KORU", "L_max": 50, "structure": "tradifi_perp", "direction": "both", "exchange": "binance", "note": "Regime proxy only — stacked on US 3x ETF, not single-stock Hynix."},
+        {"ticker": "SOXLUSDT", "name": "Binance SOXL 3x Semis ETF perp", "underlying": "SOXL", "L_max": 50, "structure": "tradifi_perp", "direction": "both", "exchange": "binance", "note": "Regime proxy only — not single-stock KR."}
+      ]
+    },
+    "us": {
+      "currency": "USD",
+      "note": "US levered ETFs as regime proxies (not single-stock KR).",
+      "products": [
+        {"ticker": "SOXL", "name": "Direxion Daily Semiconductor Bull 3X", "underlying": "SOX", "L": 3, "structure": "swap", "direction": "long", "yahoo": "SOXL"},
+        {"ticker": "KORU", "name": "Direxion Daily South Korea Bull 3X", "underlying": "EWY", "L": 3, "structure": "swap", "direction": "long", "yahoo": "KORU"}
+      ]
+    }
+  }
+}

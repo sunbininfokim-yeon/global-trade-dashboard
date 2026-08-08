@@ -1,0 +1,171 @@
+{
+  "schema_version": "us-kr-link-graph-v1",
+  "note_ko": "고정 링크. LLM 즉흥 추론 금지. weight는 v1 휴리스틱(합=정규화하지 않음).",
+  "kr_anchors": {
+    "000660": "SK하이닉스",
+    "005930": "삼성전자"
+  },
+  "edges": [
+    {
+      "id": "mu_hynix_peer",
+      "us": "MU",
+      "kr": "000660",
+      "edge_type": "peer_memory",
+      "weight": 0.9,
+      "lag_hint_hours": 16,
+      "note": "Micron ↔ Hynix memory peer"
+    },
+    {
+      "id": "mu_samsung_peer",
+      "us": "MU",
+      "kr": "005930",
+      "edge_type": "peer_memory",
+      "weight": 0.55,
+      "lag_hint_hours": 16,
+      "note": "Micron ↔ Samsung memory/peer (weaker than Hynix)"
+    },
+    {
+      "id": "nvda_hynix_demand",
+      "us": "NVDA",
+      "kr": "000660",
+      "edge_type": "demand_ai_gpu",
+      "weight": 0.85,
+      "lag_hint_hours": 16,
+      "note": "GPU AI demand → HBM (Hynix)"
+    },
+    {
+      "id": "amd_hynix_demand",
+      "us": "AMD",
+      "kr": "000660",
+      "edge_type": "demand_ai_gpu",
+      "weight": 0.45,
+      "lag_hint_hours": 16,
+      "note": "AMD AI/GPU secondary demand"
+    },
+    {
+      "id": "amzn_hynix_aws",
+      "us": "AMZN",
+      "kr": "000660",
+      "edge_type": "demand_hyperscaler",
+      "weight": 0.7,
+      "lag_hint_hours": 16,
+      "note": "AWS / hyperscaler capex → HBM & server DRAM"
+    },
+    {
+      "id": "msft_hynix_demand",
+      "us": "MSFT",
+      "kr": "000660",
+      "edge_type": "demand_hyperscaler",
+      "weight": 0.65,
+      "lag_hint_hours": 16,
+      "note": "Azure capex → HBM"
+    },
+    {
+      "id": "googl_hynix_demand",
+      "us": "GOOGL",
+      "kr": "000660",
+      "edge_type": "demand_hyperscaler",
+      "weight": 0.55,
+      "lag_hint_hours": 16,
+      "note": "GCP capex → HBM"
+    },
+    {
+      "id": "meta_hynix_demand",
+      "us": "META",
+      "kr": "000660",
+      "edge_type": "demand_hyperscaler",
+      "weight": 0.5,
+      "lag_hint_hours": 16,
+      "note": "Meta AI infra → HBM"
+    },
+    {
+      "id": "tsm_samsung_peer",
+      "us": "TSM",
+      "kr": "005930",
+      "edge_type": "peer_foundry_logic",
+      "weight": 0.5,
+      "lag_hint_hours": 16,
+      "note": "Foundry/logic peer channel (Samsung)"
+    },
+    {
+      "id": "soxl_semis_beta",
+      "us": "SOXL",
+      "kr": "000660",
+      "edge_type": "etf_beta",
+      "weight": 0.75,
+      "lag_hint_hours": 16,
+      "note": "3x semis ETF — regime + leverage reset proxy"
+    },
+    {
+      "id": "soxl_samsung_beta",
+      "us": "SOXL",
+      "kr": "005930",
+      "edge_type": "etf_beta",
+      "weight": 0.6,
+      "lag_hint_hours": 16,
+      "note": "3x semis ETF → Samsung"
+    },
+    {
+      "id": "smh_hynix_beta",
+      "us": "SMH",
+      "kr": "000660",
+      "edge_type": "etf_beta",
+      "weight": 0.55,
+      "lag_hint_hours": 16,
+      "note": "VanEck semiconductor ETF beta"
+    },
+    {
+      "id": "koru_korea_beta",
+      "us": "KORU",
+      "kr": "000660",
+      "edge_type": "korea_country",
+      "weight": 0.4,
+      "lag_hint_hours": 16,
+      "note": "3x Korea ETF — country risk, not single-stock peer"
+    },
+    {
+      "id": "ewy_korea_beta",
+      "us": "EWY",
+      "kr": "005930",
+      "edge_type": "korea_country",
+      "weight": 0.45,
+      "lag_hint_hours": 16,
+      "note": "iShares Korea → Samsung heavy"
+    }
+  ],
+  "scenario_channels": {
+    "note_ko": "경보 채널. 하방에 더 민감하게 쓰되 상방·vol도 분리 저장.",
+    "channels": [
+      "downside",
+      "upside",
+      "vol_up",
+      "vol_down"
+    ],
+    "downside_emphasis": 1.25,
+    "regimes": [
+      "downside_put_bid",
+      "upside_call_bid",
+      "vol_long_straddle",
+      "vol_short_strangle",
+      "short_cover_squeeze",
+      "gap_down_stress",
+      "quiet"
+    ]
+  },
+  "source_priority": [
+    "cboe_official",
+    "finra_short",
+    "occ_stats",
+    "nasdaq_delayed",
+    "yahoo_fallback"
+  ],
+  "recalibration": {
+    "daily": "snapshot+alert",
+    "weekly": "hit_rate_report",
+    "monthly": "corr_discovery_weights",
+    "quarterly": "model_version_bump"
+  },
+  "us_watchlist": ["MU", "NVDA", "AMD", "AMZN", "MSFT", "GOOGL", "META", "TSM", "SOXL", "SMH", "KORU", "EWY", "SPY", "QQQ"],
+  "options_priority": ["MU", "NVDA", "AMZN", "SOXL", "SMH", "SPY", "QQQ"],
+  "short_priority": ["MU", "NVDA", "AMZN", "SOXL"]
+}

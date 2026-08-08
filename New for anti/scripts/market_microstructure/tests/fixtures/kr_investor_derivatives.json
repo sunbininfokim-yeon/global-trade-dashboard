@@ -1,0 +1,27 @@
+{
+  "quality": "demo",
+  "note_ko": "data.krx 투자자별 거래실적 화면에서 시드. 콜/풋은 권리유형을 바꿔 각각 export 하면 observed로 교체. 단위=백만원 순매수(음수=순매도).",
+  "investor": {
+    "unit": "백만원",
+    "futures": [
+      {"date": "2026-08-01", "foreign_net_mn_krw": null, "note": "선물 CSV 필요"},
+      {"date": "2026-08-07", "foreign_net_mn_krw": null}
+    ],
+    "options_call": [
+      {"date": "2026-08-01", "foreign_net_mn_krw": null},
+      {"date": "2026-08-07", "foreign_net_mn_krw": null}
+    ],
+    "options_put": [
+      {"date": "2026-08-01", "foreign_net_mn_krw": null},
+      {"date": "2026-08-07", "foreign_net_mn_krw": null}
+    ],
+    "options_total_seed_from_ui": [
+      {"date": "2026-08-01", "foreign_net_mn_krw": 9346},
+      {"date": "2026-08-02", "foreign_net_mn_krw": -5445},
+      {"date": "2026-08-05", "foreign_net_mn_krw": 6617},
+      {"date": "2026-08-06", "foreign_net_mn_krw": -2281},
+      {"date": "2026-08-07", "foreign_net_mn_krw": -421}
+    ],
+    "note_ko": "UI 시드는 권리유형=전체. 콜/풋 분리는 CSV 2회 export 후 --csv-opt-call/--csv-opt-put 로 주입."
+  }
+}
