@@ -16,6 +16,6 @@ echo "[daily] $(date -Iseconds) conc append + US→KR L3 + derivatives + investo
 
 "$PY" build_us_kr_l3.py --live --print-stats
 "$PY" build_derivatives_board.py --live --print-stats
-"$PY" build_investor_price_levels.py --live --universe high_vol --top 10 --print-stats
+"$PY" build_investor_price_levels.py --live --universe both --top 10 --pool 100 --print-stats
 
 echo "[daily] done"

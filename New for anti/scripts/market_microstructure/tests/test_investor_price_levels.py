@@ -16,6 +16,7 @@ from market_microstructure.investor_price_levels import (  # noqa: E402
     aggregate_by_close_bins,
     aggregate_by_range_bins,
     default_kospi_universe,
+    high_vol_kospi_universe,
     trend_to_frame,
     _top_zone,
 )
@@ -98,6 +99,17 @@ class TestInvestorPriceLevels(unittest.TestCase):
         for code, name in uni:
             self.assertEqual(len(code), 6)
             self.assertFalse(str(name).endswith("우"))
+
+    def test_high_vol_universe_returns_meta(self):
+        try:
+            hv = high_vol_kospi_universe(top_n=3, pool=15, lookback_days=30)
+        except Exception as e:  # noqa: BLE001
+            self.skipTest(f"FDR high-vol unavailable: {e}")
+        self.assertIn("pairs", hv)
+        self.assertEqual(hv.get("pool"), 15)
+        self.assertLessEqual(len(hv["pairs"]), 3)
+        if hv.get("quality") == "observed":
+            self.assertTrue(hv.get("ranks"))
 
 
 if __name__ == "__main__":

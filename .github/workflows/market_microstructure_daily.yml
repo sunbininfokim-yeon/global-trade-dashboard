@@ -43,8 +43,8 @@ jobs:
           KRX_API: ${{ secrets.KRX_API }}
         run: python build_derivatives_board.py --live --print-stats
 
-      - name: Investor × price levels (KOSPI Infomax-style)
-        run: python build_investor_price_levels.py --live --universe high_vol --top 10 --print-stats
+      - name: Investor × price levels (real data; marcap + high-vol in top100)
+        run: python build_investor_price_levels.py --live --universe both --top 10 --pool 100 --print-stats
 
       - name: Commit snapshots
         working-directory: ${{ github.workspace }}

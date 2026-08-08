@@ -333,23 +333,25 @@ def build_ticker_levels(
         "n_days": len(days),
         "date_start": days[0]["date"] if days else None,
         "date_end": days[-1]["date"] if days else None,
-        "unit": "shares + KRW(≈ shares × that-day close)",
-        "quality": "estimated",
+        "unit": "shares + KRW(= shares × that-day close; both from live prints)",
+        "quality": "observed",
+        "bin_attribution": "daily_close",
+        "data_policy_ko": "실측만(네이버 수급·FDR OHLC). demo/시드/합성 금지. 실패면 missing.",
         "method_ko": (
-            "인포맥스/증권사 ‘가격대별 주체 순매수 분포’와 같은 공개 근사: "
-            "일별 개인/외국인/기관 순매수(네이버)를 그날 종가 빈에 귀속. "
-            "틱/호가 단위가 아님. KRW=주수×당일종가."
+            "실측 일별 개인/외국인/기관 순매수(네이버) + 실측 종가(FDR)를 "
+            "종가 빈에 귀속해 표로 만든 것. 틱/호가 단위 매집은 공개되지 않음. "
+            "숫자는 모두 실측; 빈 배정만 일별 종가 기준."
         ),
         "source": [
-            "https://m.stock.naver.com/api/stock/{ticker}/trend?pageSize=",
-            "FinanceDataReader OHLC",
+            "https://m.stock.naver.com/api/stock/{ticker}/trend?pageSize= (live)",
+            "FinanceDataReader OHLC (live)",
         ],
         "latest_close_row": latest,
         "days": days,
         "bins_by_close": close_bins,
         "bins_by_range": range_bins,
         "highlights": highlights,
-        "disclaimer_ko": "투자 권유 아님. 공개 일별 수급×가격 근사.",
+        "disclaimer_ko": "투자 권유 아님. 실측 일별 수급×종가.",
     }
 
 
@@ -373,42 +375,81 @@ def default_kospi_universe(*, top_n: int = 10) -> list[tuple[str, str]]:
 def high_vol_kospi_universe(
     *,
     top_n: int = 10,
-    pool: int = 40,
+    pool: int = 100,
     lookback_days: int = 40,
-) -> list[tuple[str, str]]:
-    """Liquid KOSPI commons ranked by realized vol (Infomax-style focus set)."""
+) -> dict[str, Any]:
+    """시총 pool위(기본 100) 보통주 중 실현변동성 상위 top_n. 실측 FDR only."""
     import FinanceDataReader as fdr
+    from concurrent.futures import ThreadPoolExecutor, as_completed
 
     kospi = fdr.StockListing("KOSPI")
     if kospi is None or kospi.empty:
-        return default_kospi_universe(top_n=top_n)
+        pairs = default_kospi_universe(top_n=top_n)
+        return {
+            "pairs": pairs,
+            "pool": pool,
+            "ranks": [],
+            "quality": "missing",
+            "note_ko": "KOSPI listing empty — fallback marcap",
+        }
     df = kospi.dropna(subset=["Marcap", "Code", "Name"]).copy()
     names = df["Name"].astype(str)
     df = df[~names.str.endswith("우") & ~names.str.contains("우선", na=False)]
-    df = df.sort_values("Marcap", ascending=False).head(int(pool))
+    df = df.sort_values("Marcap", ascending=False).head(int(pool)).reset_index(drop=True)
     start = (pd.Timestamp.now().normalize() - pd.Timedelta(days=lookback_days + 20)).strftime(
         "%Y-%m-%d"
     )
-    scored: list[tuple[float, str, str]] = []
-    for _, row in df.iterrows():
-        code = str(row["Code"]).zfill(6)
-        name = str(row["Name"])
+
+    def _one(code: str, name: str, marcap_rank: int) -> tuple[float, str, str, int] | None:
         try:
             px = fdr.DataReader(code, start)
             if px is None or px.empty or "Close" not in px.columns:
-                continue
+                return None
             r = px["Close"].astype(float).pct_change().dropna()
             if len(r) < 15:
-                continue
+                return None
             vol = float(r.tail(lookback_days).std(ddof=1) * np.sqrt(252))
             if not np.isfinite(vol):
-                continue
-            scored.append((vol, code, name))
+                return None
+            return (vol, code, name, marcap_rank)
         except Exception:  # noqa: BLE001
-            continue
+            return None
+
+    scored: list[tuple[float, str, str, int]] = []
+    jobs = [
+        (str(row["Code"]).zfill(6), str(row["Name"]), int(i) + 1)
+        for i, row in df.iterrows()
+    ]
+    with ThreadPoolExecutor(max_workers=16) as ex:
+        futs = {ex.submit(_one, c, n, rk): c for c, n, rk in jobs}
+        for fut in as_completed(futs):
+            got = fut.result()
+            if got:
+                scored.append(got)
     scored.sort(key=lambda x: x[0], reverse=True)
-    out = [(c, n) for _, c, n in scored[:top_n]]
-    return out or default_kospi_universe(top_n=top_n)
+    top = scored[: int(top_n)]
+    pairs = [(c, n) for _, c, n, _ in top]
+    ranks = [
+        {
+            "vol_rank": i + 1,
+            "ticker": c,
+            "label_ko": n,
+            "realized_vol_ann": round(v, 4),
+            "marcap_rank_in_pool": rk,
+            "pool": int(pool),
+        }
+        for i, (v, c, n, rk) in enumerate(top)
+    ]
+    return {
+        "pairs": pairs or default_kospi_universe(top_n=top_n),
+        "pool": int(pool),
+        "lookback_days": lookback_days,
+        "scored_n": len(scored),
+        "ranks": ranks,
+        "quality": "observed" if pairs else "missing",
+        "source": "FinanceDataReader KOSPI Marcap + Close returns (live)",
+        "note_ko": f"코스피 시총 {pool}위 내 보통주 → 실현변동성 상위 {top_n}",
+    }
 
 
 def _parse_naver_flow_date(raw: str) -> pd.Timestamp | None:
@@ -605,24 +646,25 @@ def build_kospi_index_levels(*, max_days: int = 60, step: float = 250.0) -> dict
     if retail_buy and foreign_sell and retail_buy["price_lo"] == foreign_sell["price_lo"]:
         headline = (
             f"코스피 {int(retail_buy['price_lo']):,} 이상 구간에서 개인 사고 외국인 팔았다 "
-            f"(개인 {retail_buy['net_eok']:+,}억 / 외인 {foreign_sell['net_eok']:+,}억, 추정)"
+            f"(개인 {retail_buy['net_eok']:+,}억 / 외인 {foreign_sell['net_eok']:+,}억, 실측)"
         )
     elif retail_buy:
-        headline = retail_buy["label_ko"] + " (추정)"
+        headline = retail_buy["label_ko"] + " (실측)"
 
     return {
         "schema": "kospi-index-investor-levels-v1",
-        "quality": "estimated",
+        "quality": "observed",
+        "bin_attribution": "daily_close_step",
+        "data_policy_ko": "실측만(네이버 시장수급·FDR KS11). demo 금지.",
         "unit": "억원 (시장 전체 순매수)",
         "step": step,
         "method_ko": (
-            "연합인포맥스(메리츠) 스타일: 코스피 종가 레벨(심리적 구간)별 "
-            "개인·외인·기관 순매수 분포. 공개 일별 집계 귀속."
+            "실측 코스피 종가(KS11) 레벨(심리적 step)에 실측 시장 개인·외인·기관 순매수(억원)를 귀속."
         ),
         "source": [
-            "https://finance.naver.com/sise/investorDealTrendDay.naver",
-            "FinanceDataReader KS11",
-            "ref: https://news.einfomax.co.kr/news/articleView.html?idxno=4427169",
+            "https://finance.naver.com/sise/investorDealTrendDay.naver (live)",
+            "FinanceDataReader KS11 (live)",
+            "ref framing: https://news.einfomax.co.kr/news/articleView.html?idxno=4427169",
         ],
         "n_days": len(days),
         "date_start": days[0]["date"] if days else None,
@@ -666,31 +708,64 @@ def build_investor_price_levels_report(
     page_size: int = 60,
     n_bins: int = 12,
     kospi_top_n: int | None = 10,
-    universe_mode: str = "high_vol",
+    universe_mode: str = "both",
+    high_vol_pool: int = 100,
 ) -> dict[str, Any]:
+    """universe_mode: both | high_vol | marcap | custom(tickers). Real data only."""
+    universe_meta: dict[str, Any] = {}
+    marcap_set: set[str] = set()
+    high_vol_set: set[str] = set()
+
     if tickers is None:
-        if universe_mode == "marcap":
-            tickers = default_kospi_universe(top_n=kospi_top_n or 10)
-            uni_name = "kospi_top_marcap_common"
+        if universe_mode in ("marcap", "both"):
+            marcap_pairs = default_kospi_universe(top_n=kospi_top_n or 10)
+            marcap_set = {c for c, _ in marcap_pairs}
+            universe_meta["marcap_top"] = {
+                "n": len(marcap_pairs),
+                "tickers": [{"ticker": c, "label_ko": n} for c, n in marcap_pairs],
+                "quality": "observed",
+                "source": "FinanceDataReader KOSPI Marcap (live)",
+            }
         else:
-            tickers = high_vol_kospi_universe(top_n=kospi_top_n or 10)
-            uni_name = "kospi_high_vol_liquid"
+            marcap_pairs = []
+
+        if universe_mode in ("high_vol", "both"):
+            hv = high_vol_kospi_universe(
+                top_n=kospi_top_n or 10, pool=high_vol_pool
+            )
+            high_vol_pairs = list(hv["pairs"])
+            high_vol_set = {c for c, _ in high_vol_pairs}
+            universe_meta["high_vol_in_marcap_top"] = hv
+        else:
+            high_vol_pairs = []
+
+        if universe_mode == "marcap":
+            tickers = marcap_pairs
+            uni_name = "kospi_top_marcap_common"
+        elif universe_mode == "high_vol":
+            tickers = high_vol_pairs
+            uni_name = f"kospi_high_vol_in_marcap_top{high_vol_pool}"
+        else:
+            # both: union, marcap first then high-vol extras
+            seen: dict[str, str] = {}
+            for c, n in marcap_pairs + high_vol_pairs:
+                seen.setdefault(c, n)
+            tickers = list(seen.items())
+            uni_name = f"kospi_marcap_top{kospi_top_n or 10}_plus_high_vol_in_top{high_vol_pool}"
     else:
-        uni_name = (
-            "kospi_high_vol_liquid"
-            if universe_mode == "high_vol"
-            else "kospi_top_marcap_common"
-            if universe_mode == "marcap"
-            else "custom"
-        )
+        uni_name = "custom"
+        universe_mode = "custom"
 
     names: dict[str, Any] = {}
     errors: list[str] = []
     for code, label in tickers:
         try:
-            names[code] = build_ticker_levels(
+            block = build_ticker_levels(
                 code, page_size=page_size, n_bins=n_bins, label_ko=label
             )
+            block["in_marcap_top"] = code in marcap_set if marcap_set else None
+            block["in_high_vol"] = code in high_vol_set if high_vol_set else None
+            names[code] = block
         except Exception as e:  # noqa: BLE001
             errors.append(f"{code}: {type(e).__name__}: {e}")
             names[code] = {
@@ -698,6 +773,8 @@ def build_investor_price_levels_report(
                 "label_ko": label,
                 "quality": "missing",
                 "error": f"{type(e).__name__}: {e}",
+                "in_marcap_top": code in marcap_set if marcap_set else None,
+                "in_high_vol": code in high_vol_set if high_vol_set else None,
             }
 
     try:
@@ -707,35 +784,43 @@ def build_investor_price_levels_report(
         errors.append(f"KS11: {type(e).__name__}: {e}")
 
     day_table = close_day_table(names)
+    # split day tables for UI
+    day_marcap = [r for r in day_table if names.get(r["ticker"], {}).get("in_marcap_top")]
+    day_high_vol = [r for r in day_table if names.get(r["ticker"], {}).get("in_high_vol")]
 
     return {
         "schema_version": "investor-price-levels-v1",
         "as_of": datetime.now(timezone.utc).date().isoformat(),
         "fetched_at": datetime.now(timezone.utc).isoformat(),
         "market": "KOSPI",
+        "data_policy_ko": "무조건 실측 공개 데이터. demo/시드/합성/프록시 숫자 금지. 실패=missing.",
         "universe": uni_name,
-        "universe_mode": universe_mode if tickers else universe_mode,
+        "universe_mode": universe_mode,
         "universe_n": len(tickers),
+        "universe_meta": universe_meta,
         "n_bins": n_bins,
         "page_size": page_size,
         "infomax_style_ko": (
-            "코스피 지수 레벨별 주체 순매수 + 고변동 개별주 종가 빈 분포 + "
-            "당일 종가 기준 순매수 표 (주/원)."
+            "코스피 지수 레벨별 실측 주체 순매수 + 시총상위/시총100내고변동 개별주 "
+            "종가 빈·당일 표 (주/원)."
         ),
         "kospi_index_levels": index_levels,
         "close_day_table": day_table,
+        "close_day_table_marcap": day_marcap,
+        "close_day_table_high_vol": day_high_vol,
         "tickers": names,
         "ui_hint_ko": (
-            "1) kospi_index_levels.headline_ko / bins_by_close (억원) — 인포맥스형\n"
-            "2) close_day_table — 고변동주 당일 종가×개인·외인·기관\n"
-            "3) tickers.*.bins_by_close — 개별 가격대 분포 (estimated)"
+            "1) kospi_index_levels (실측 억원)\n"
+            "2) close_day_table_marcap / close_day_table_high_vol\n"
+            "3) tickers.*.bins_by_close — 실측 일별 수급을 종가 빈에 귀속\n"
+            "quality=observed only; missing면 빈칸"
         ),
         "cannot_do_ko": [
-            "체결/호가 단위로 개인·외인·기관을 나눈 진짜 가격대 매집도 (유료)",
-            "장중 1분 투자자별 실적 (KRX 유료 상품)",
+            "체결/호가 단위 주체별 매집도 (비공개/유료) — 대신 실측 일별×종가 빈",
+            "장중 1분 투자자별 실적 (KRX 유료)",
         ],
         "errors": errors,
-        "disclaimer_ko": "투자 권유 아님. 공개 일별 수급×종가 레벨 근사 (인포맥스형).",
+        "disclaimer_ko": "투자 권유 아님. 실측 일별 수급·종가 기반.",
     }
 
 
@@ -743,21 +828,41 @@ def markdown_investor_price_levels(rep: dict[str, Any]) -> str:
     lines = [
         f"# Investor × price levels (KOSPI) — {rep.get('as_of')}",
         "",
+        rep.get("data_policy_ko") or "",
+        "",
         rep.get("disclaimer_ko") or "",
         "",
         f"Universe: `{rep.get('universe')}` n={rep.get('universe_n')} · "
         f"mode=`{rep.get('universe_mode')}`",
         "",
     ]
+    meta = rep.get("universe_meta") or {}
+    hv = meta.get("high_vol_in_marcap_top") or {}
+    if hv.get("ranks"):
+        lines.append(
+            f"### 시총 {hv.get('pool')}위 내 고변동 top "
+            f"(lookback={hv.get('lookback_days')}d, quality=`{hv.get('quality')}`)"
+        )
+        lines.append("")
+        lines.append("| vol순위 | 종목 | 연율변동성 | 시총순위(풀내) |")
+        lines.append("|--------:|------|----------:|---------------:|")
+        for r in hv["ranks"]:
+            lines.append(
+                f"| {r['vol_rank']} | {r['label_ko']} ({r['ticker']}) | "
+                f"{r['realized_vol_ann']:.2%} | {r['marcap_rank_in_pool']} |"
+            )
+        lines.append("")
+
     idx = rep.get("kospi_index_levels") or {}
     if idx.get("quality") != "missing":
-        lines.append("## 코스피 지수 레벨 (인포맥스형)")
+        lines.append("## 코스피 지수 레벨 (실측)")
         lines.append("")
         if idx.get("headline_ko"):
             lines.append(f"**{idx['headline_ko']}**")
             lines.append("")
         lines.append(
-            f"- 표본 {idx.get('n_days')}일 · step={idx.get('step')}pt · unit=억원"
+            f"- 표본 {idx.get('n_days')}일 · step={idx.get('step')}pt · unit=억원 · "
+            f"quality=`{idx.get('quality')}`"
         )
         hi = idx.get("highlights") or {}
         for a in ACTORS:
@@ -771,6 +876,8 @@ def markdown_investor_price_levels(rep: dict[str, Any]) -> str:
         lines.append("| 코스피 레벨 | 개인(억) | 외국인(억) | 기관(억) | n |")
         lines.append("|------------|--------:|----------:|--------:|--:|")
         for b in idx.get("bins_by_close") or []:
+            if not b.get("n_days"):
+                continue
             lines.append(
                 f"| {int(b['price_lo']):,}–{int(b['price_hi']):,} | "
                 f"{b['retail_net_krw']:+,} | {b['foreign_net_krw']:+,} | "
@@ -778,21 +885,35 @@ def markdown_investor_price_levels(rep: dict[str, Any]) -> str:
             )
         lines.append("")
 
-    lines.append("## 당일 종가 기준 표 (고변동 개별주)")
-    lines.append("")
-    lines.append("| 종목 | 종가 | 개인(주) | 외인(주) | 기관(주) | 개인(원) | 외인(원) |")
-    lines.append("|------|-----:|--------:|--------:|--------:|--------:|--------:|")
-    for r in rep.get("close_day_table") or []:
-        lines.append(
-            f"| {r.get('label_ko')} ({r.get('ticker')}) | {int(r.get('close') or 0):,} | "
-            f"{(r.get('retail_net_shares') or 0):+,} | {(r.get('foreign_net_shares') or 0):+,} | "
-            f"{(r.get('institution_net_shares') or 0):+,} | "
-            f"{(r.get('retail_net_krw') or 0):+,} | {(r.get('foreign_net_krw') or 0):+,} |"
-        )
-    lines.append("")
+    def _day_section(title: str, rows: list[dict[str, Any]]) -> None:
+        lines.append(f"## {title}")
+        lines.append("")
+        lines.append("| 종목 | 종가 | 개인(주) | 외인(주) | 기관(주) | 개인(원) | 외인(원) |")
+        lines.append("|------|-----:|--------:|--------:|--------:|--------:|--------:|")
+        for r in rows:
+            lines.append(
+                f"| {r.get('label_ko')} ({r.get('ticker')}) | {int(r.get('close') or 0):,} | "
+                f"{(r.get('retail_net_shares') or 0):+,} | {(r.get('foreign_net_shares') or 0):+,} | "
+                f"{(r.get('institution_net_shares') or 0):+,} | "
+                f"{(r.get('retail_net_krw') or 0):+,} | {(r.get('foreign_net_krw') or 0):+,} |"
+            )
+        lines.append("")
+
+    if rep.get("close_day_table_marcap"):
+        _day_section("당일 종가 표 — 시총 상위", rep["close_day_table_marcap"])
+    if rep.get("close_day_table_high_vol"):
+        _day_section("당일 종가 표 — 시총100위 내 고변동", rep["close_day_table_high_vol"])
+    if not rep.get("close_day_table_marcap") and not rep.get("close_day_table_high_vol"):
+        _day_section("당일 종가 표", rep.get("close_day_table") or [])
 
     for code, block in (rep.get("tickers") or {}).items():
-        lines.append(f"## {block.get('label_ko') or code} (`{code}`)")
+        tags = []
+        if block.get("in_marcap_top"):
+            tags.append("marcap")
+        if block.get("in_high_vol"):
+            tags.append("high_vol")
+        tag_s = f" [{'·'.join(tags)}]" if tags else ""
+        lines.append(f"## {block.get('label_ko') or code} (`{code}`){tag_s}")
         lines.append("")
         if block.get("quality") == "missing":
             lines.append(f"- missing: {block.get('error') or block.get('note_ko')}")
@@ -800,7 +921,7 @@ def markdown_investor_price_levels(rep: dict[str, Any]) -> str:
             continue
         lines.append(
             f"- 표본 {block.get('n_days')}일 ({block.get('date_start')} → {block.get('date_end')}) "
-            f"· quality=`{block.get('quality')}`"
+            f"· quality=`{block.get('quality')}` · bin=`{block.get('bin_attribution')}`"
         )
         hi = ((block.get("highlights") or {}).get("close_bin") or {})
         for a in ACTORS:

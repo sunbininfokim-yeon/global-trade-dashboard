@@ -52,7 +52,7 @@ Cursor owns engine + `public/data/*` snapshots below.
 | `us_oi_daily_archive.jsonl` | US OI 히스토리(줄단위) | 차트 백엔드용; UI는 보드 JSON 우선 |
 | `alert_levels_v1.json` | 관찰/주의/경계 | `kr_hynix_letf.today_level` · `today_ratio` · `us_vix_to_kr` |
 | `validation_backtest_v1.json` | 내부 검증(선택 UI) | paper vs engine |
-| `investor_price_levels_v1.json` | 인포맥스형 레벨 수급 | `kospi_index_levels` · `close_day_table` · `tickers.*.bins_by_close` |
+| `investor_price_levels_v1.json` | 실측 레벨 수급 | `data_policy_ko` · `kospi_index_levels` · `close_day_table_marcap` · `close_day_table_high_vol` · `universe_meta` |
 | `us_kr_hitrate_v1.json` 등 | L3 부속 | 고급/접기 패널 |
 
 스키마 문서:
@@ -94,10 +94,10 @@ Cursor owns engine + `public/data/*` snapshots below.
 
 [브리프]  ai_casino_brief_v1.headlines + concentration
 
-[가격×수급] investor_price_levels_v1 (인포맥스형)
-         - kospi_index_levels.headline_ko + bins (억원)
-         - close_day_table (고변동주 당일 종가×주체)
-         - tickers.*.bins_by_close (개별 가격대, estimated)
+[가격×수급] investor_price_levels_v1 (**실측만**, demo 금지)
+         - kospi_index_levels (억원)
+         - close_day_table_marcap + close_day_table_high_vol (시총100위 내 고변동)
+         - tickers.*.bins_by_close · quality=observed | missing
 ```
 
 Cursor 쪽 참고 캔버스(IDE only, 배포 아님):  
