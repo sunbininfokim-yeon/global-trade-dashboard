@@ -751,10 +751,70 @@ const renderTradeWorldPanel = (arcs) => {
     if (newsTitle) newsTitle.textContent = '주요 수출국 · 물동량 상위';
     newsContentEl.innerHTML = `
         <div class="trade-focus-card">
+            <div id="futures-slot"></div>
             <p class="trade-focus-sub">비중% · 막대는 상대 물동량 · 국가를 누르면 그 나라 노선만 남습니다</p>
             <div class="trade-rank-list">${rows || '<p class="empty-state">무역 루트 없음</p>'}</div>
         </div>`;
+    renderFuturesCard(currentCommodity);
     renderEmergencyStocks();
+};
+
+const futuresCache = new Map();
+
+/**
+ * Front-month futures beside the flow ranking.
+ *
+ * A flow map says who ships to whom and nothing about what the cargo is worth
+ * today, which is the number that moves first when a route is threatened.
+ *
+ * Where there is no free price the card says which and why rather than showing
+ * an empty box: LME's real-time feed is licensed, so nickel, tin, lead and zinc
+ * are absent instead of being filled with a COMEX contract that is not the same
+ * benchmark, and cobalt, lithium, graphite and rare earths have no liquid
+ * contract at all -- their prices are assessments sold by Fastmarkets and
+ * Benchmark Mineral. Naming the gap is more useful than hiding it.
+ */
+const renderFuturesCard = async (commodity) => {
+    const slot = document.getElementById('futures-slot');
+    if (!slot || !commodity) return;
+
+    let doc = futuresCache.get(commodity);
+    if (doc === undefined) {
+        try {
+            const res = await fetch(`/api/futures?commodity=${encodeURIComponent(commodity)}`);
+            doc = res.ok ? await res.json() : null;
+        } catch (err) {
+            console.warn('[futures] unavailable', err);
+            doc = null;
+        }
+        futuresCache.set(commodity, doc);
+    }
+    // The panel may have been rebuilt while the fetch was in flight.
+    const live = document.getElementById('futures-slot');
+    if (!live || !doc) return;
+
+    if (doc.priced === false) {
+        live.innerHTML = `<div class="fut-card fut-none">
+            <span class="fut-k">선물 시세</span>
+            <span class="fut-none-note">${doc.reason_ko}</span>
+        </div>`;
+        return;
+    }
+    const q = doc.quotes?.[0];
+    if (!q) return;
+
+    const up = (q.change_pct ?? 0) >= 0;
+    live.innerHTML = `
+        <div class="fut-card">
+            <div class="fut-main">
+                <span class="fut-px">$${q.price.toLocaleString(undefined, { maximumFractionDigits: 4 })}</span>
+                <span class="fut-unit">/ ${q.unit_ko}</span>
+                ${q.change_pct === null ? '' : `<span class="fut-chg ${up ? 'up' : 'down'}">
+                    ${up ? '+' : ''}${q.change_pct}%</span>`}
+            </div>
+            <div class="fut-meta">${q.exchange} ${q.symbol}
+                ${q.proxy_ko ? ` · ${q.proxy_ko}` : ''} · 지연 시세</div>
+        </div>`;
 };
 
 const updateNewsPanel = (countryName) => {
@@ -4617,13 +4677,37 @@ const MAX_RENDERED_ARCS = 120;
 // volume is what keeps a dense commodity readable: 639 gold routes drawn at
 // full alpha are a solid mat, the same 639 with alpha by size read as a few
 // strong corridors over faint background trade.
-const arcScale = (v, lo, hi, vmax) => {
-    const x = Math.sqrt(Math.max(0, v) / vmax);
-    return lo + (hi - lo) * Math.min(1, x);
+const quantile = (ascending, p) => {
+    if (!ascending.length) return 0;
+    const i = (ascending.length - 1) * p;
+    const lo = Math.floor(i), hi = Math.ceil(i);
+    return ascending[lo] + (ascending[hi] - ascending[lo]) * (i - lo);
 };
+
+/**
+ * Trade volumes are heavy-tailed, so the ramp is logarithmic.
+ *
+ * On a square root against the largest route, cobalt drew its top leg at full
+ * width and the next one at 1.58 of 6.5 -- a quarter -- because that top leg is
+ * 60% of world cobalt and 28 times the second. Every other route collapsed into
+ * the same thin line and the map looked frozen. Log spreads the ranks that
+ * actually differ: the same second route now reads 3.22, and oil and nickel,
+ * which were never broken, keep their ordering rather than saturating at the
+ * top the way a percentile reference made them.
+ */
 let arcVolumeMax = 1;
-const arcWidth = (v) => arcScale(v, 0.45, 6.5, arcVolumeMax);
-const arcAlpha = (v) => Math.round(arcScale(v, 0.3, 0.9, arcVolumeMax) * 255);
+let arcVolumeFloor = 1;
+const ARC_DRAW_CAP = 120;
+
+const arcScale = (v, lo, hi) => {
+    if (!(v > 0)) return lo;
+    const min = Math.max(1, arcVolumeFloor);
+    const max = Math.max(min * 1.0001, arcVolumeMax);
+    const t = (Math.log(v) - Math.log(min)) / (Math.log(max) - Math.log(min));
+    return lo + (hi - lo) * Math.min(1, Math.max(0, t));
+};
+const arcWidth = (v) => arcScale(v, 0.45, 6.5);
+const arcAlpha = (v) => Math.round(arcScale(v, 0.3, 0.9) * 255);
 
 // Commodity maps ride the same curved globe as the home screen (req 2, 13).
 // Whole world in the frame, as the mockup's fitExtent does. Latitude 12 trims
@@ -4850,10 +4934,19 @@ const renderMapLayers = (arcs, opts = {}) => {
     const asExporter = opts.asExporter !== false;
     let filteredArcs = arcs.filter((arc) => arc.volume > 0);
     arcVolumeMax = filteredArcs.reduce((m, a) => Math.max(m, a.volume), 1);
-    // The mockup drops flows under a threshold rather than drawing every pair.
-    // Below ~1.5% of the largest route a line adds noise, not information.
-    const arcFloor = arcVolumeMax * 0.015;
-    filteredArcs = filteredArcs.filter((a) => a.volume >= arcFloor);
+
+    // The cut used to be 1.5% of the largest route, which works until one route
+    // is most of the trade. Cobalt's Congo-China leg is 60% of the world's, so
+    // that threshold landed above 92% of cobalt's own routes and the map drew a
+    // single line with nothing moving around it. A quantile cuts the same shape
+    // out of every commodity's distribution instead of taking its cue from the
+    // one outlier, and the cap keeps the busiest maps from getting busier.
+    const ascending = filteredArcs.map((a) => a.volume).sort((x, y) => x - y);
+    arcVolumeFloor = Math.max(1, quantile(ascending, 0.55));
+    filteredArcs = filteredArcs
+        .filter((a) => a.volume >= arcVolumeFloor)
+        .sort((a, b) => b.volume - a.volume)
+        .slice(0, ARC_DRAW_CAP);
 
     if (focus) {
         const focusKey = resolveCountry(focus)?.key || focus;
