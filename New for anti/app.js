@@ -6114,12 +6114,14 @@ const renderPortfolioLab = async (host) => {
 const CO_LEVELS = [
     { id: 'health',    label: '재무 건전성', blurb: '빚을 감당할 수 있는가, 이익은 나는가' },
     { id: 'valuation', label: '투자 판단',   blurb: '벌어들이는 현금 대비 값이 어떤가' },
-    { id: 'deal',      label: '인수 검토',   blurb: '사들인다면 무엇을 더 봐야 하는가' },
+    { id: 'deep',      label: '심층 분석',   blurb: '자산과 부채가 실제로 어떤 모양인가' },
 ];
 
-// Korean 억/조 grouping on a dollar figure reads as the wrong number entirely
-// -- $98.8B shown as "987.7억" invites being read as won. Group by the scale
-// the currency is normally quoted in.
+// Levels stack rather than replace. Moving up a level is a request for more,
+// not for something else -- valuation still wants the health numbers in view.
+const CO_LEVEL_ORDER = CO_LEVELS.map((l) => l.id);
+const coLevelsUpTo = (id) => CO_LEVEL_ORDER.slice(0, CO_LEVEL_ORDER.indexOf(id) + 1);
+
 const coNum = (v, currency = 'KRW') => {
     if (v === null || v === undefined || Number.isNaN(v)) return '—';
     const a = Math.abs(v);
@@ -6146,21 +6148,36 @@ const coDiv = (a, b) => (a === null || b === null || !b) ? null : a / b;
 
 // Ratios follow the same definitions the KFA engine uses, so the two can be
 // checked against each other the way the portfolio maths already is.
-const coDerive = (s) => ({
-    fy: s.fy,
-    current_ratio: coDiv(s.assets_current, s.liabilities_current),
-    debt_ratio: coDiv(s.liabilities, s.assets),
-    equity_ratio: coDiv(s.equity, s.assets),
-    roe: coDiv(s.net_income, s.equity),
-    roa: coDiv(s.net_income, s.assets),
-    operating_margin: coDiv(s.operating_income, s.revenue),
-    net_margin: coDiv(s.net_income, s.revenue),
-    fcf: (s.cfo === null || s.capex === null) ? null : s.cfo - s.capex,
-    fcf_margin: (s.cfo === null || s.capex === null) ? null : coDiv(s.cfo - s.capex, s.revenue),
-    net_debt: (s.liabilities === null) ? null
-        : ((s.debt_long ?? 0) - (s.cash ?? 0)),
-    raw: s,
-});
+const coDerive = (s) => {
+    const sum = (...xs) => {
+        const vals = xs.filter((x) => Number.isFinite(x));
+        return vals.length ? vals.reduce((a, b) => a + b, 0) : null;
+    };
+    const interestBearingShort = sum(s.debt_short, s.debt_current_portion);
+    const debtTotal = sum(interestBearingShort, s.debt_long);
+    return {
+        fy: s.fy,
+        current_ratio: coDiv(s.assets_current, s.liabilities_current),
+        quick_ratio: coDiv(sum(s.cash, s.securities_current, s.receivables), s.liabilities_current),
+        debt_ratio: coDiv(s.liabilities, s.assets),
+        equity_ratio: coDiv(s.equity, s.assets),
+        roe: coDiv(s.net_income, s.equity),
+        roa: coDiv(s.net_income, s.assets),
+        operating_margin: coDiv(s.operating_income, s.revenue),
+        net_margin: coDiv(s.net_income, s.revenue),
+        fcf: (s.cfo === null || s.capex === null) ? null : s.cfo - s.capex,
+        fcf_margin: (s.cfo === null || s.capex === null) ? null : coDiv(s.cfo - s.capex, s.revenue),
+        // Net debt counts what carries interest, not every payable.
+        interest_bearing_short: interestBearingShort,
+        debt_total: debtTotal,
+        net_debt: (debtTotal === null) ? null : debtTotal - (s.cash ?? 0) - (s.securities_current ?? 0),
+        // How much of the interest-bearing debt falls due inside a year.
+        short_share: coDiv(interestBearingShort, debtTotal),
+        interest_cover: coDiv(s.operating_income, s.interest_expense),
+        effective_tax: coDiv(s.tax_expense, sum(s.net_income, s.tax_expense)),
+        raw: s,
+    };
+};
 
 const renderCompanyCalc = async (host) => {
     host.innerHTML = `<div class="fin-wrap"><p class="fin-loading">불러오는 중…</p></div>`;
@@ -6270,6 +6287,8 @@ const loadCompany = async (out, inst) => {
     }
 
     let level = 'health';
+    CO_DCF.growth = null;      // 새 기업이면 그 기업의 이력에서 다시 잡는다
+    CO_STRUCT_OPEN = null;
     const paint = () => {
         out.innerHTML = `
         <div class="fin-head fin-head-sub">
@@ -6291,6 +6310,24 @@ const loadCompany = async (out, inst) => {
         out.querySelectorAll('[data-level]').forEach((b) => b.addEventListener('click', () => {
             level = b.dataset.level; paint();
         }));
+
+        out.querySelectorAll('[data-co-struct]').forEach((b) => b.addEventListener('click', () => {
+            const k = b.dataset.coStruct;
+            CO_STRUCT_OPEN = CO_STRUCT_OPEN === k ? null : k;
+            paint();
+        }));
+
+        // Recompute on change rather than on every keystroke: a half-typed
+        // discount rate briefly reads as 0 and the numbers jump.
+        out.querySelectorAll('[data-co-dcf]').forEach((el) => el.addEventListener('change', () => {
+            const v = Number(el.value);
+            if (Number.isFinite(v)) CO_DCF[el.dataset.coDcf] = v;
+            paint();
+        }));
+        out.querySelector('[data-co-dcf-reset]')?.addEventListener('click', () => {
+            CO_DCF.growth = null; CO_DCF.terminal = 2.5; CO_DCF.discount = 9.0;
+            paint();
+        });
     };
     paint();
 };
@@ -6309,16 +6346,212 @@ const coTable = (rows, cols) => `
         </table>
     </div>`;
 
-const coRenderLevel = (level, rowsDesc, data) => {
-    const CUR = data.currency || 'KRW';
-    const rows = [...rowsDesc].reverse();   // oldest first reads as a trend
-    const latest = rowsDesc[0];
+// --- DCF ---------------------------------------------------------------------
+// Every number here is a consequence of three inputs the reader chooses. That is
+// not a flaw to hide behind a single "fair value" figure -- it is the whole
+// point, so the assumptions stay on screen and adjustable.
+const CO_DCF = { growth: null, terminal: 2.5, discount: 9.0, years: 5 };
 
-    if (level === 'health') {
-        return `
+const coDcf = (rows) => {
+    const latest = rows[0];
+    const base = latest.fcf;
+    if (!Number.isFinite(base) || base <= 0) return null;
+
+    const g = (CO_DCF.growth ?? 0) / 100;
+    const tg = CO_DCF.terminal / 100;
+    const r = CO_DCF.discount / 100;
+    if (!(r > tg)) return { invalid: '할인율이 영구성장률보다 커야 합니다.' };
+
+    const flows = [];
+    let f = base;
+    for (let i = 1; i <= CO_DCF.years; i++) {
+        f = f * (1 + g);
+        flows.push({ year: i, fcf: f, pv: f / Math.pow(1 + r, i) });
+    }
+    const tail = flows[flows.length - 1].fcf * (1 + tg) / (r - tg);
+    const tailPv = tail / Math.pow(1 + r, CO_DCF.years);
+    const ev = flows.reduce((a, x) => a + x.pv, 0) + tailPv;
+    const equity = ev - (latest.net_debt ?? 0);
+    const shares = latest.raw.shares;
+    return {
+        base, flows, tail, tailPv, ev, equity,
+        tailShare: tailPv / ev,
+        perShare: Number.isFinite(shares) && shares > 0 ? equity / shares : null,
+        shares,
+    };
+};
+
+// Historical FCF growth, as a starting point for the input rather than a
+// forecast. Clamped because a single recovery year can imply 300% forever.
+const coDefaultGrowth = (rows) => {
+    const fcfs = rows.map((r) => r.fcf).filter((x) => Number.isFinite(x) && x > 0);
+    if (fcfs.length < 3) return 5;
+    const newest = fcfs[0], oldest = fcfs[fcfs.length - 1], n = fcfs.length - 1;
+    const cagr = (Math.pow(newest / oldest, 1 / n) - 1) * 100;
+    return Math.max(-10, Math.min(20, Math.round(cagr * 10) / 10));
+};
+
+const coDcfPanel = (rows, CUR) => {
+    if (CO_DCF.growth === null) CO_DCF.growth = coDefaultGrowth(rows);
+    const d = coDcf(rows);
+    const input = (key, label, step, min, max) => `
+        <label class="co-dcf-input">
+            <span>${finEsc(label)}</span>
+            <input type="number" data-co-dcf="${key}" value="${CO_DCF[key]}"
+                   step="${step}" min="${min}" max="${max}"><i>%</i>
+        </label>`;
+
+    return `
+    <section class="fin-block fin-block-wide">
+        <h2>DCF — 현금흐름 할인</h2>
+        <p class="fin-lead">
+            앞으로 벌어들일 잉여현금흐름을 오늘 가치로 당겨 더한 값입니다.
+            <strong>세 가지 가정이 결과를 지배합니다</strong> — 그래서 숨기지 않고 여기 둡니다. 직접 바꿔 보세요.
+        </p>
+        <div class="co-dcf-inputs">
+            ${input('growth', '향후 5년 FCF 성장률', 0.5, -30, 60)}
+            ${input('terminal', '영구성장률', 0.1, 0, 5)}
+            ${input('discount', '할인율 (WACC)', 0.25, 1, 30)}
+            <button class="pf-btn pf-btn-ghost" data-co-dcf-reset="1">기본값</button>
+        </div>
+        ${!d ? '<p class="fin-note">잉여현금흐름이 음수이거나 없어 DCF를 낼 수 없습니다. 현금을 쓰는 국면의 기업에는 이 방법이 맞지 않습니다.</p>'
+          : d.invalid ? `<p class="fin-note">${finEsc(d.invalid)}</p>` : `
+        <div class="fin-cards">
+            <div class="fin-card"><span class="fin-card-title">기업가치 (EV)</span>
+                <span class="fin-card-value">${coNum(d.ev, CUR)}</span>
+                <p class="fin-card-plain">향후 현금흐름 + 잔존가치의 현재가치 합입니다.</p></div>
+            <div class="fin-card"><span class="fin-card-title">주주가치</span>
+                <span class="fin-card-value">${coNum(d.equity, CUR)}</span>
+                <p class="fin-card-plain">기업가치에서 순부채를 뺀 값입니다.</p></div>
+            <div class="fin-card"><span class="fin-card-title">주당 가치</span>
+                <span class="fin-card-value">${d.perShare === null ? '—' : coNum(d.perShare, CUR)}</span>
+                <p class="fin-card-plain">${d.shares ? `희석주식수 ${mmFmt(d.shares, 0)}주 기준` : '주식수를 못 읽어 계산하지 못했습니다.'}</p></div>
+            <div class="fin-card"><span class="fin-card-title">잔존가치 비중</span>
+                <span class="fin-card-value">${coPct(d.tailShare)}</span>
+                <p class="fin-card-plain">전체 가치 중 6년차 이후가 차지하는 몫입니다. 이 값이 높을수록 결과가 영구성장률 가정에 좌우됩니다.</p></div>
+        </div>
+        <div class="co-table-wrap">
+            <table class="co-table">
+                <thead><tr><th>연차</th>${d.flows.map((f) => `<th>${f.year}년</th>`).join('')}<th>잔존</th></tr></thead>
+                <tbody>
+                    <tr><td class="co-label">예상 FCF</td>${d.flows.map((f) => `<td>${coNum(f.fcf, CUR)}</td>`).join('')}<td>${coNum(d.tail, CUR)}</td></tr>
+                    <tr><td class="co-label">현재가치</td>${d.flows.map((f) => `<td>${coNum(f.pv, CUR)}</td>`).join('')}<td>${coNum(d.tailPv, CUR)}</td></tr>
+                </tbody>
+            </table>
+        </div>
+        <p class="fin-note">
+            기준 FCF ${coNum(d.base, CUR)} (FY${rows[0].fy} 실적) 에서 출발합니다.
+            할인율을 1%p 올리면 결과가 크게 내려갑니다 — 그 민감도 자체가 이 방법의 성질입니다.
+        </p>`}
+    </section>`;
+};
+
+// --- 구조 (심층) --------------------------------------------------------------
+const coStructRows = (r, CUR) => {
+    const R = r.raw;
+    const liab = [
+        ['단기차입금·기업어음', R.debt_short],
+        ['유동성 장기부채', R.debt_current_portion],
+        ['매입채무', R.payables],
+        ['미지급비용', R.accrued],
+        ['이연수익(선수금)', R.deferred_revenue],
+        ['리스부채 (유동)', R.lease_current],
+        ['기타 유동부채', R.other_current],
+        ['장기차입금', R.debt_long],
+        ['리스부채 (비유동)', R.lease_noncurrent],
+        ['이연법인세', R.deferred_tax],
+        ['기타 비유동부채', R.other_noncurrent],
+    ].filter(([, v]) => Number.isFinite(v));
+    const asset = [
+        ['현금성자산', R.cash],
+        ['단기투자·유가증권', R.securities_current],
+        ['매출채권', R.receivables],
+        ['재고자산', R.inventory],
+        ['유형자산', R.ppe],
+        ['영업권', R.goodwill],
+        ['무형자산', R.intangibles],
+    ].filter(([, v]) => Number.isFinite(v));
+    return { liab, asset };
+};
+
+const coBarList = (rows, total, CUR) => {
+    const max = Math.max(...rows.map(([, v]) => Math.abs(v)), 1);
+    return `<div class="mm-bars mm-bars-compact">
+        ${rows.map(([label, v]) => `
+            <div class="mm-bar-row">
+                <span class="mm-bar-label">${finEsc(label)}</span>
+                <span class="mm-bar-track"><span class="mm-bar-fill" style="width:${(Math.abs(v) / max * 100).toFixed(1)}%"></span></span>
+                <span class="mm-bar-value">${coNum(v, CUR)}${total ? `<span class="co-share">${(v / total * 100).toFixed(0)}%</span>` : ''}</span>
+            </div>`).join('')}
+    </div>`;
+};
+
+let CO_STRUCT_OPEN = null;   // 'liab' | 'asset' | null
+
+const coDeepPanel = (rowsDesc, CUR) => {
+    const rows = [...rowsDesc].reverse();
+    const latest = rowsDesc[0];
+    const { liab, asset } = coStructRows(latest, CUR);
+
+    return `
+    <section class="fin-block fin-block-wide">
+        <h2>부채 구조 — 언제 갚아야 하는가</h2>
+        <p class="fin-lead">
+            부채비율 하나로는 보이지 않는 것이 있습니다. 회사를 어렵게 만드는 건 <strong>얼마를 빚졌는지가 아니라 언제 갚아야 하는지</strong>입니다.
+        </p>
+        <div class="fin-cards">
+            <div class="fin-card"><span class="fin-card-title">이자부 부채 합계</span>
+                <span class="fin-card-value">${coNum(latest.debt_total, CUR)}</span>
+                <p class="fin-card-plain">매입채무 같은 영업부채를 뺀, 이자를 무는 빚만 모은 값입니다.</p></div>
+            <div class="fin-card"><span class="fin-card-title">1년 내 만기 비중</span>
+                <span class="fin-card-value">${coPct(latest.short_share)}</span>
+                <p class="fin-card-plain">이자부 부채 중 1년 안에 갚거나 차환해야 하는 몫입니다. 높을수록 금리·자금시장 경색에 민감합니다.</p></div>
+            <div class="fin-card"><span class="fin-card-title">이자보상배율</span>
+                <span class="fin-card-value">${coRatio(latest.interest_cover, 1)}배</span>
+                <p class="fin-card-plain">영업이익이 이자비용의 몇 배인가. 1배 아래면 본업으로 이자도 못 냅니다.</p></div>
+            <div class="fin-card"><span class="fin-card-title">당좌비율</span>
+                <span class="fin-card-value">${coPct(latest.quick_ratio)}</span>
+                <p class="fin-card-plain">재고를 뺀 유동자산으로 단기부채를 갚을 수 있는 정도입니다.</p></div>
+        </div>
+        ${coTable(rows, [
+            { label: '이자부 부채', fmt: (r) => coNum(r.debt_total, CUR) },
+            { label: '1년 내 만기', fmt: (r) => coNum(r.interest_bearing_short, CUR) },
+            { label: '순부채', fmt: (r) => coNum(r.net_debt, CUR) },
+            { label: '이자보상배율', fmt: (r) => coRatio(r.interest_cover, 1) },
+        ])}
+    </section>
+
+    <section class="fin-block fin-block-wide">
+        <h2>자산·자본 구조</h2>
+        <p class="fin-lead">항목을 눌러 구성을 펼쳐 보세요.</p>
+        <div class="co-struct-toggle">
+            <button class="mm-view-btn ${CO_STRUCT_OPEN === 'asset' ? 'on' : ''}" data-co-struct="asset">자산 구성 (${asset.length})</button>
+            <button class="mm-view-btn ${CO_STRUCT_OPEN === 'liab' ? 'on' : ''}" data-co-struct="liab">부채 구성 (${liab.length})</button>
+        </div>
+        ${CO_STRUCT_OPEN === 'asset' ? `
+            ${coBarList(asset, latest.raw.assets, CUR)}
+            <p class="fin-note">비율은 총자산 ${coNum(latest.raw.assets, CUR)} 대비입니다. 합이 100%가 되지 않는 것은 위에 없는 잔여 항목이 있기 때문입니다.</p>`
+        : CO_STRUCT_OPEN === 'liab' ? `
+            ${coBarList(liab, latest.raw.liabilities, CUR)}
+            <p class="fin-note">비율은 총부채 ${coNum(latest.raw.liabilities, CUR)} 대비입니다.</p>`
+        : ''}
+        ${coTable(rows, [
+            { label: '총자산', fmt: (r) => coNum(r.raw.assets, CUR) },
+            { label: '총부채', fmt: (r) => coNum(r.raw.liabilities, CUR) },
+            { label: '자기자본', fmt: (r) => coNum(r.raw.equity, CUR) },
+            { label: '이익잉여금', fmt: (r) => coNum(r.raw.retained_earnings, CUR) },
+            { label: '자기자본비율', fmt: (r) => coPct(r.equity_ratio) },
+        ])}
+    </section>`;
+};
+
+const coHealthPanel = (rowsDesc, CUR) => {
+    const rows = [...rowsDesc].reverse();
+    const latest = rowsDesc[0];
+    return `
         <div class="fin-cards">
             <div class="fin-card"><span class="fin-card-title">유동비율</span>
-                <span class="fin-card-value">${coRatio(latest.current_ratio ? latest.current_ratio * 100 : null, 0)}%</span>
+                <span class="fin-card-value">${coPct(latest.current_ratio)}</span>
                 <p class="fin-card-plain">1년 안에 갚을 빚 대비 1년 안에 현금이 되는 자산. 100%를 밑돌면 단기 자금이 빠듯하다는 뜻입니다.</p></div>
             <div class="fin-card"><span class="fin-card-title">부채비율 (부채/자산)</span>
                 <span class="fin-card-value">${coPct(latest.debt_ratio)}</span>
@@ -6337,14 +6570,16 @@ const coRenderLevel = (level, rowsDesc, data) => {
                 { label: '영업이익', fmt: (r) => coNum(r.raw.operating_income, CUR) },
                 { label: '순이익', fmt: (r) => coNum(r.raw.net_income, CUR) },
                 { label: '영업이익률', fmt: (r) => coPct(r.operating_margin) },
-                { label: '유동비율', fmt: (r) => coRatio(r.current_ratio ? r.current_ratio * 100 : null, 0) + '%' },
+                { label: '유동비율', fmt: (r) => coPct(r.current_ratio) },
                 { label: '부채비율', fmt: (r) => coPct(r.debt_ratio) },
             ])}
         </section>`;
-    }
+};
 
-    if (level === 'valuation') {
-        return `
+const coValuationPanel = (rowsDesc, CUR) => {
+    const rows = [...rowsDesc].reverse();
+    const latest = rowsDesc[0];
+    return `
         <div class="fin-cards">
             <div class="fin-card"><span class="fin-card-title">잉여현금흐름 (FCF)</span>
                 <span class="fin-card-value">${coNum(latest.fcf, CUR)}</span>
@@ -6354,7 +6589,7 @@ const coRenderLevel = (level, rowsDesc, data) => {
                 <p class="fin-card-plain">매출이 현금으로 남는 비율입니다. 이익은 나는데 이 값이 낮으면 회계 이익과 현금이 어긋난다는 신호입니다.</p></div>
             <div class="fin-card"><span class="fin-card-title">순부채</span>
                 <span class="fin-card-value">${coNum(latest.net_debt, CUR)}</span>
-                <p class="fin-card-plain">장기차입금에서 현금을 뺀 값입니다. 음수면 빚보다 현금이 많다는 뜻입니다.</p></div>
+                <p class="fin-card-plain">이자부 부채에서 현금·단기투자를 뺀 값입니다. 음수면 빚보다 현금이 많다는 뜻입니다.</p></div>
             <div class="fin-card"><span class="fin-card-title">ROA</span>
                 <span class="fin-card-value">${coPct(latest.roa)}</span>
                 <p class="fin-card-plain">자산 전체로 낸 수익률입니다. ROE와 벌어지면 그 차이가 레버리지에서 옵니다.</p></div>
@@ -6372,34 +6607,18 @@ const coRenderLevel = (level, rowsDesc, data) => {
                 순이익과 영업현금흐름이 오래 벌어져 있으면 이유를 봐야 합니다 — 매출채권이 쌓였거나, 재고가 늘었거나,
                 회계상 이익이 현금으로 들어오지 않는 구조일 수 있습니다.
             </p>
-        </section>`;
-    }
-
-    return `
-        <section class="fin-block fin-block-wide">
-            <h2>자산·자본 구조</h2>
-            ${coTable(rows, [
-                { label: '총자산', fmt: (r) => coNum(r.raw.assets, CUR) },
-                { label: '총부채', fmt: (r) => coNum(r.raw.liabilities, CUR) },
-                { label: '자기자본', fmt: (r) => coNum(r.raw.equity, CUR) },
-                { label: '현금성자산', fmt: (r) => coNum(r.raw.cash, CUR) },
-                { label: '장기차입금', fmt: (r) => coNum(r.raw.debt_long, CUR) },
-                { label: '순부채', fmt: (r) => coNum(r.net_debt, CUR) },
-                { label: '자기자본비율', fmt: (r) => coPct(r.equity_ratio) },
-            ])}
         </section>
-        <section class="fin-block fin-block-wide">
-            <h2>아직 못 보는 것</h2>
-            <p class="fin-lead">인수를 검토한다면 아래가 필요한데, 표준 XBRL 항목만으로는 나오지 않습니다. 없는 것을 있는 척하지 않기 위해 적어 둡니다.</p>
-            <ul class="fin-list">
-                <li><strong>사업부별 실적</strong> — 어느 부문이 벌고 어느 부문이 까먹는지. 주석에 있고 태그가 회사마다 다릅니다</li>
-                <li><strong>정상화 이익</strong> — 일회성 손익을 걷어낸 이익. 무엇이 일회성인지는 판단이 필요합니다</li>
-                <li><strong>우발채무</strong> — 소송·보증 등 아직 재무제표에 안 들어온 부담</li>
-                <li><strong>운전자본 상세</strong> — 매출채권·재고 회전. 인수 후 현금 소요를 좌우합니다</li>
-                <li><strong>DCF</strong> — 할인율과 성장률 가정이 필요하고, 그 가정이 결과를 지배합니다</li>
-            </ul>
-            <p class="fin-note">태그 매핑: ${finEsc(Object.entries(data.tags_used || {}).map(([k, v]) => `${k}=${v}`).join(' · ') || '—')}</p>
-        </section>`;
+        ${coDcfPanel(rowsDesc, CUR)}`;
+};
+
+const coRenderLevel = (level, rowsDesc, data) => {
+    const CUR = data.currency || 'KRW';
+    const parts = coLevelsUpTo(level).map((id) => {
+        if (id === 'health') return coHealthPanel(rowsDesc, CUR);
+        if (id === 'valuation') return coValuationPanel(rowsDesc, CUR);
+        return coDeepPanel(rowsDesc, CUR);
+    });
+    return parts.join('\n<hr class="co-sep">\n');
 };
 
 const renderFinanceView = async (target, host) => {

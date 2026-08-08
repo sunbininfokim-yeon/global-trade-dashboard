@@ -2515,3 +2515,20 @@ body.macro-mode .map-pane { flex: 1 1 100%; }
     .mm-news { border-left: 0; border-top: 1px solid var(--border); padding: 14px 0 0; }
     .mm-bar-row { grid-template-columns: minmax(84px, 1fr) 2fr minmax(62px, auto); gap: 8px; }
 }
+
+/* ── 기업 계산기: 누적 레벨 · DCF · 구조 ──────────────────────────────────── */
+.co-sep { border: 0; border-top: 1px solid var(--border); margin: 26px 0; }
+.co-struct-toggle { display: flex; gap: 6px; margin-bottom: 14px; }
+.co-share { display: block; font-size: 10px; color: #64748b; }
+.mm-bars-compact .mm-bar-row { grid-template-columns: minmax(120px, 1.4fr) 3fr minmax(90px, auto); }
+
+.co-dcf-inputs { display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-end; margin-bottom: 18px; }
+.co-dcf-input { display: flex; flex-direction: column; gap: 4px; font-size: 11px; color: #94a3b8; position: relative; }
+.co-dcf-input input {
+    width: 130px; padding: 8px 26px 8px 11px; border-radius: 8px;
+    background: rgba(15, 23, 42, .75); border: 1px solid var(--border);
+    color: #e2e8f0; font-size: 13px; font-family: inherit;
+    font-variant-numeric: tabular-nums; outline: none;
+}
+.co-dcf-input input:focus { border-color: rgba(56, 189, 248, .5); }
+.co-dcf-input i { position: absolute; right: 10px; bottom: 9px; font-style: normal; font-size: 11.5px; color: #64748b; }
