@@ -28,6 +28,11 @@ export default {
             return await handleUsdaFas(request, env, ctx);
         }
 
+        // PSD production, resolved by attribute name rather than a guessed id.
+        if (url.pathname.startsWith('/api/psd-production')) {
+            return await handlePsdProduction(request, env, ctx);
+        }
+
         // API Route: USDA FAS ESR (weekly US export sales by destination)
         if (url.pathname.startsWith('/api/usda-esr/commodities')) {
             return await handleUsdaEsrCommodities(request, env);
@@ -887,6 +892,169 @@ async function handleUsdaNass(request, env, ctx) {
         }
         return { ok: true, body: await nassRes.json() };
     });
+}
+
+/**
+ * PSD's attributeId -> name table.
+ *
+ * The commodity/country/year endpoint returns rows tagged only with a numeric
+ * attributeId -- no name travels with the data. Hardcoding "28 means
+ * Production" from a guess is exactly the kind of error this project has been
+ * catching all week (chromium and manganese read as barely-traded because an
+ * HS code was assumed instead of checked). FAS publishes its own reference
+ * list; this resolves attributeId to name from that list instead, so a wrong
+ * guess is structurally impossible -- the worst case is an unresolved id,
+ * which shows up as a gap, not a wrong number wearing a right label.
+ *
+ * Cached for a month: this is a code table, not a data series.
+ */
+async function fetchPsdAttributeNames(env) {
+    return kvCachedJson(env, 'usda-fas:attributes', 2592000, async () => {
+        const res = await fetch('https://api.fas.usda.gov/api/psd/attributes',
+            { headers: { "X-Api-Key": env.USDA_FAS_API_KEY, "Accept": "application/json" } });
+        if (!res.ok) return { ok: false, status: res.status, statusText: res.statusText };
+        const rows = await res.json();
+        const byId = {};
+        for (const r of rows) {
+            const id = r.attributeId ?? r.AttributeId ?? r.id;
+            const name = r.attributeName ?? r.AttributeName ?? r.name;
+            if (id != null && name) byId[id] = name;
+        }
+        return { ok: true, body: byId };
+    }).then((r) => r.json());
+}
+
+/**
+ * PSD's own country code -> name table, same reasoning as the attributes
+ * table above: FAS uses its own numbering (not ISO or M49), and guessing a
+ * two-letter code risks silently querying the wrong country. Resolved by
+ * name instead.
+ */
+async function fetchPsdCountryCodes(env) {
+    return kvCachedJson(env, 'usda-fas:countries', 2592000, async () => {
+        const res = await fetch('https://api.fas.usda.gov/api/psd/countries',
+            { headers: { "X-Api-Key": env.USDA_FAS_API_KEY, "Accept": "application/json" } });
+        if (!res.ok) return { ok: false, status: res.status, statusText: res.statusText };
+        const rows = await res.json();
+        const byName = {};
+        for (const r of rows) {
+            const code = r.countryCode ?? r.CountryCode;
+            const name = r.countryName ?? r.CountryName;
+            if (code != null && name) byName[name.trim().toLowerCase()] = code;
+        }
+        return { ok: true, body: byName };
+    }).then((r) => r.json());
+}
+
+/** PSD's own commodity code -> name table, same reasoning again. */
+async function fetchPsdCommodityCodes(env) {
+    return kvCachedJson(env, 'usda-fas:commodities', 2592000, async () => {
+        const res = await fetch('https://api.fas.usda.gov/api/psd/commodities',
+            { headers: { "X-Api-Key": env.USDA_FAS_API_KEY, "Accept": "application/json" } });
+        if (!res.ok) return { ok: false, status: res.status, statusText: res.statusText };
+        const rows = await res.json();
+        const byName = {};
+        for (const r of rows) {
+            const code = r.commodityCode ?? r.CommodityCode;
+            const name = r.commodityName ?? r.CommodityName;
+            if (code != null && name) byName[name.trim().toLowerCase()] = code;
+        }
+        return { ok: true, body: byName };
+    }).then((r) => r.json());
+}
+
+/**
+ * One country's PSD production figure for one commodity/marketing year,
+ * resolved by attribute name rather than a hardcoded id. countryCode accepts
+ * either FAS's own code (if the caller already knows it) or a plain English
+ * name to resolve through fetchPsdCountryCodes -- the crop-trade panel has
+ * country names on hand already and should not have to carry a second code
+ * table just to call this route.
+ */
+async function handlePsdProduction(request, env, ctx) {
+    const url = new URL(request.url);
+    let commodityCode = url.searchParams.get('commodityCode');
+    const commodityName = url.searchParams.get('commodityName');
+    let countryCode = url.searchParams.get('countryCode');
+    const countryName = url.searchParams.get('countryName');
+    const year = url.searchParams.get('year');
+
+    const SAFE = /^[A-Za-z0-9]+$/;
+    if (!year || !SAFE.test(year) || (!commodityCode && !commodityName) || (!countryCode && !countryName)) {
+        return new Response(
+            JSON.stringify({ error: "year, one of commodityCode/commodityName, and one of countryCode/countryName are required" }),
+            { status: 400, headers: JSON_HEADERS });
+    }
+    if (!env.USDA_FAS_API_KEY) return missingKey('USDA_FAS_API_KEY');
+
+    if (!countryCode || !SAFE.test(countryCode)) {
+        const countries = await fetchPsdCountryCodes(env);
+        if (!countries.ok) {
+            return new Response(JSON.stringify({ error: 'PSD country reference unavailable', detail: countries }),
+                { status: 502, headers: JSON_HEADERS });
+        }
+        countryCode = countries.body[String(countryName).trim().toLowerCase()];
+        if (!countryCode) {
+            return new Response(JSON.stringify({ error: `PSD has no country named "${countryName}"` }),
+                { status: 404, headers: JSON_HEADERS });
+        }
+    }
+    if (!commodityCode || !SAFE.test(commodityCode)) {
+        const commodities = await fetchPsdCommodityCodes(env);
+        if (!commodities.ok) {
+            return new Response(JSON.stringify({ error: 'PSD commodity reference unavailable', detail: commodities }),
+                { status: 502, headers: JSON_HEADERS });
+        }
+        commodityCode = commodities.body[String(commodityName).trim().toLowerCase()];
+        if (!commodityCode) {
+            return new Response(JSON.stringify({ error: `PSD has no commodity named "${commodityName}"` }),
+                { status: 404, headers: JSON_HEADERS });
+        }
+    }
+
+    const attrNames = await fetchPsdAttributeNames(env);
+    if (!attrNames.ok) {
+        return new Response(JSON.stringify({ error: 'PSD attribute reference unavailable', detail: attrNames }),
+            { status: 502, headers: JSON_HEADERS });
+    }
+
+    const cacheKey = `usda-fas:${commodityCode}:${countryCode}:${year}`;
+    const dataRes = await kvCachedJson(env, cacheKey, 86400, async () => {
+        const fasUrl = `https://api.fas.usda.gov/api/psd/commodity/${commodityCode}/country/${countryCode}/year/${year}`;
+        const res = await fetch(fasUrl, { headers: { "X-Api-Key": env.USDA_FAS_API_KEY, "Accept": "application/json" } });
+        if (!res.ok) return { ok: false, status: res.status, statusText: res.statusText };
+        return { ok: true, body: await res.json() };
+    });
+    const rows = await dataRes.json();
+    if (!Array.isArray(rows)) {
+        return new Response(JSON.stringify({ error: 'PSD data unavailable', detail: rows }),
+            { status: 502, headers: JSON_HEADERS });
+    }
+
+    // Latest month on file for this MY, so a mid-year revision is picked up
+    // rather than the first estimate PSD ever published for it.
+    let latestMonth = null;
+    for (const r of rows) {
+        if (!latestMonth || String(r.month) > latestMonth) latestMonth = String(r.month);
+    }
+    const production = rows.find((r) => r.month === latestMonth
+        && (attrNames.body[r.attributeId] || '').toLowerCase() === 'production');
+
+    if (!production) {
+        return new Response(JSON.stringify({
+            commodityCode, countryCode, year, production: null,
+            reason: 'no row named "Production" in this response',
+        }), { headers: JSON_HEADERS });
+    }
+    // unitId 8 is "(1000 MT)" in every PSD series this proxy has been asked
+    // for; carrying the raw id rather than a hardcoded label so a commodity
+    // reported in a different unit is visible as a mismatch, not silently
+    // mislabelled the way the attribute id would have been.
+    return new Response(JSON.stringify({
+        commodityCode, countryCode, year,
+        production: production.value, unit_id: production.unitId,
+        marketing_year: production.marketYear, as_of_month: production.month,
+    }), { headers: JSON_HEADERS });
 }
 
 async function handleUsdaFas(request, env, ctx) {

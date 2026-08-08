@@ -4026,6 +4026,59 @@ const loadCropTrade = async (countryName) => {
     }
 };
 
+/**
+ * Net import reliance, per crop: net imports ÷ (domestic production + net
+ * imports). This is the number the trade-only concentration card upstream
+ * admits it cannot give -- Comtrade counts what crosses a border and knows
+ * nothing about what a country grows for itself, so a country that imports
+ * from three concentrated suppliers but grows most of what it eats is not
+ * dependent the way the trade numbers alone would suggest. Adding PSD
+ * production closes exactly that gap for these five crops.
+ *
+ * PSD's own commodity names, not FAS's numeric codes -- the Worker resolves
+ * the code from the name via PSD's reference list rather than a hardcoded
+ * number, on the same reasoning as the ferroalloy HS codes: a guessed code
+ * either points at nothing (visible, safe) or at the wrong thing (invisible,
+ * not safe). A name that PSD does not recognize degrades to no NIR badge for
+ * that row, not a wrong one.
+ */
+const CROP_PSD_NAMES = {
+    wheat: 'Wheat',
+    corn: 'Corn',
+    rice: 'Rice, Milled',
+    soybeans: 'Oilseed, Soybean',
+    sugar: 'Sugar, Centrifugal',
+};
+
+const psdProductionCache = new Map();
+
+const loadPsdProduction = async (countryName, cropKey) => {
+    const psdName = CROP_PSD_NAMES[cropKey];
+    if (!psdName) return null;
+    const year = new Date().getFullYear();
+    const cacheKey = `${countryName}:${cropKey}`;
+    if (psdProductionCache.has(cacheKey)) return psdProductionCache.get(cacheKey);
+    try {
+        const res = await fetch(`/api/psd-production?commodityName=${encodeURIComponent(psdName)}`
+            + `&countryName=${encodeURIComponent(countryName)}&year=${year}`);
+        const doc = res.ok ? await res.json() : null;
+        const value = (doc && typeof doc.production === 'number') ? doc : null;
+        psdProductionCache.set(cacheKey, value);
+        return value;
+    } catch (err) {
+        console.warn(`[psd] production unavailable for ${countryName}/${cropKey}`, err);
+        psdProductionCache.set(cacheKey, null);
+        return null;
+    }
+};
+
+/** All five crops in parallel; one slow or missing series must not block the rest. */
+const loadPsdProductions = async (countryName) => {
+    const keys = Object.keys(CROP_PSD_NAMES);
+    const results = await Promise.all(keys.map((k) => loadPsdProduction(countryName, k)));
+    return Object.fromEntries(keys.map((k, i) => [k, results[i]]));
+};
+
 // Parameter is not named `t`: that is the translation function, and shadowing
 // it here would turn every suffix lookup into a call on a number.
 const fmtTonnes = (tonnes) => {
@@ -4045,10 +4098,11 @@ const fmtTonnes = (tonnes) => {
  * feed itself from its own harvest, so the crops it depends on belong at the
  * top rather than the ones it happens to grow a lot of.
  */
-const renderCropTradeTableHtml = (doc) => {
+const renderCropTradeTableHtml = (doc, productions = {}) => {
     const crops = doc?.crops || [];
     if (!crops.length) return '';
     const rows = [...crops].sort((a, b) => a.net_t - b.net_t);
+    const anyNir = rows.some((r) => r.net_t < 0 && productions[r.key]);
 
     return `
         <div class="climate-card crop-trade-card">
@@ -4060,11 +4114,27 @@ const renderCropTradeTableHtml = (doc) => {
                         <th>${t('crop_trade.export')}</th>
                         <th>${t('crop_trade.import')}</th>
                         <th>${t('crop_trade.net')}</th>
+                        ${anyNir ? `<th>${t('crop_trade.nir')}</th>` : ''}
                     </tr>
                 </thead>
                 <tbody>
                     ${rows.map((r) => {
                         const imp = r.net_t < 0;
+                        const prod = productions[r.key];
+                        // NIR only where it means something: a country buying
+                        // from concentrated suppliers but growing most of what
+                        // it eats is not what a trade-only number implies.
+                        // Exporters and countries PSD has no production series
+                        // for get no badge rather than a fabricated one.
+                        // unit_id 8 is "(1000 MT)" -- confirmed against Russia's
+                        // real wheat production (~81-82 Mt vs. the row's 81,600
+                        // in that unit), not assumed. A different unit id means
+                        // this commodity or country reports some other way and
+                        // multiplying by 1000 would silently misplace a decimal,
+                        // so it is treated the same as no production series.
+                        const nir = (imp && prod && prod.production > 0 && prod.unit_id === 8)
+                            ? Math.abs(r.net_t) / ((prod.production * 1000) + Math.abs(r.net_t))
+                            : null;
                         return `<tr>
                             <td class="ct-crop">${currentLang === 'en' ? r.label_en : r.label_ko}</td>
                             <td class="ct-num">${fmtTonnes(r.export_t)}</td>
@@ -4073,11 +4143,15 @@ const renderCropTradeTableHtml = (doc) => {
                                 ${imp ? t('crop_trade.net_import') : t('crop_trade.net_export')}
                                 ${fmtTonnes(Math.abs(r.net_t))}
                             </td>
+                            ${anyNir ? `<td class="ct-num ct-nir">
+                                ${nir != null ? `${(nir * 100).toFixed(0)}%` : '—'}
+                            </td>` : ''}
                         </tr>`;
                     }).join('')}
                 </tbody>
             </table>
-            <p class="ct-note">${t('crop_trade.note', doc.period)}</p>
+            <p class="ct-note">${t('crop_trade.note', doc.period)}
+                ${anyNir ? ` ${t('crop_trade.nir_note')}` : ''}</p>
         </div>`;
 };
 
@@ -4085,7 +4159,12 @@ const renderCountryPanel = async (cfg, points = null, meta = {}) => {
     const fc = await loadClimateForecast(cfg);
     // What this country actually buys and sells, above the forecast: a yield
     // number reads differently for a net importer than for an exporter.
-    const cropTradeHtml = renderCropTradeTableHtml(await loadCropTrade(cfg.label || climateCountry));
+    const countryLabel = cfg.label || climateCountry;
+    const [cropTradeDoc, psdProductions] = await Promise.all([
+        loadCropTrade(countryLabel),
+        loadPsdProductions(countryLabel),
+    ]);
+    const cropTradeHtml = renderCropTradeTableHtml(cropTradeDoc, psdProductions);
     const lv = meta.lv || tradePolicyLevel(climateCountry);
     const pol = meta.pol || CLIMATE_TRADE_POLICY[climateCountry] || {};
     points = points || await buildRegionPoints(cfg);
