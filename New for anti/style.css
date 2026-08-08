@@ -2330,3 +2330,113 @@ body.finance-mode #chart-view::-webkit-scrollbar-thumb { background: rgba(148, 1
 .co-table td { color: #cbd5e1; }
 .co-table td.co-label { color: #94a3b8; }
 .co-hint { display: block; font-size: 10px; color: #475569; margin-top: 2px; }
+
+/* ── 매크로 모니터 ────────────────────────────────────────────────────────
+   지도가 주인공. 좌·우 대시보드를 쓰지 않고 오버레이만 지도 위에 띄운다. */
+body.macro-mode .left-pane,
+body.macro-mode #right-pane-container { display: none !important; }
+body.macro-mode .map-pane { flex: 1 1 100%; }
+
+#macro-layer {
+    position: absolute; inset: 0; z-index: 30;
+    pointer-events: none; display: flex;
+    align-items: flex-end; justify-content: center;
+    padding: 0 16px 22px;
+}
+#macro-layer.mm-open { align-items: center; padding: 20px 16px; }
+#macro-layer > * { pointer-events: auto; }
+
+.mm-hint {
+    display: flex; align-items: center; gap: 9px;
+    background: rgba(15, 23, 42, .82); border: 1px solid var(--border);
+    backdrop-filter: blur(8px); border-radius: 999px;
+    padding: 9px 18px; font-size: 12.5px; color: #cbd5e1;
+}
+.mm-hint-warn { color: #fca5a5; border-color: rgba(239, 68, 68, .35); }
+.mm-hint-dot { width: 7px; height: 7px; border-radius: 50%; background: #38bdf8; box-shadow: 0 0 0 4px rgba(56,189,248,.18); }
+.mm-hint-count { color: #64748b; font-size: 11.5px; }
+.mm-tip { background: rgba(15,23,42,.95); color: #e2e8f0; padding: 5px 9px; border-radius: 6px; font-size: 12px; }
+
+.mm-overlay {
+    width: min(1080px, 100%); max-height: calc(100vh - 190px); overflow-y: auto;
+    background: rgba(11, 17, 30, .93); backdrop-filter: blur(14px);
+    border: 1px solid rgba(148, 163, 184, .22); border-radius: 14px;
+    padding: 20px 22px 22px; box-shadow: 0 26px 70px rgba(0, 0, 0, .6);
+}
+.mm-overlay::-webkit-scrollbar { width: 7px; }
+.mm-overlay::-webkit-scrollbar-thumb { background: rgba(148,163,184,.3); border-radius: 999px; }
+
+.mm-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 14px; margin-bottom: 15px; }
+.mm-title h2 { font-size: 19px; font-weight: 650; margin: 0 0 5px; display: flex; align-items: center; gap: 9px; }
+.mm-title p { font-size: 11.5px; color: #64748b; margin: 0; }
+.mm-title code { background: rgba(148,163,184,.12); padding: 1px 5px; border-radius: 3px; font-size: 10.5px; }
+.mm-badge {
+    font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 999px;
+    background: rgba(56,189,248,.16); color: #7dd3fc; border: 1px solid rgba(56,189,248,.32);
+}
+.mm-close {
+    background: none; border: 0; color: #64748b; font-size: 15px; cursor: pointer;
+    padding: 4px 8px; border-radius: 6px; font-family: inherit; flex: 0 0 auto;
+}
+.mm-close:hover { color: #e2e8f0; background: rgba(148,163,184,.14); }
+
+.mm-headlines { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 8px; margin-bottom: 16px; }
+.mm-headline {
+    text-align: left; background: rgba(30,41,59,.5); border: 1px solid var(--border);
+    border-radius: 9px; padding: 9px 12px; cursor: pointer; font-family: inherit;
+}
+.mm-headline:hover { border-color: rgba(56,189,248,.4); }
+.mm-headline-label { display: block; font-size: 10.5px; color: #64748b; margin-bottom: 3px; }
+.mm-headline-value { display: block; font-size: 16px; font-weight: 620; color: #f1f5f9; font-variant-numeric: tabular-nums; }
+
+.mm-tabs { display: flex; flex-wrap: wrap; gap: 3px; border-bottom: 1px solid var(--border); margin-bottom: 10px; }
+.mm-tab {
+    background: none; border: 0; border-bottom: 2px solid transparent; cursor: pointer;
+    padding: 8px 14px; font-size: 12.5px; font-weight: 560; color: #64748b; font-family: inherit;
+}
+.mm-tab:hover:not(:disabled) { color: #cbd5e1; }
+.mm-tab.on { color: #7dd3fc; border-bottom-color: #38bdf8; }
+.mm-tab:disabled { opacity: .3; cursor: not-allowed; }
+.mm-tab-desc { font-size: 11.5px; color: #64748b; margin: 0 0 14px; }
+
+.mm-chips { display: grid; grid-template-columns: repeat(auto-fill, minmax(178px, 1fr)); gap: 8px; }
+.mm-chip {
+    text-align: left; background: rgba(30,41,59,.42); border: 1px solid var(--border);
+    border-radius: 9px; padding: 11px 13px; cursor: pointer; font-family: inherit;
+    display: flex; flex-direction: column; gap: 3px; transition: border-color .15s, background .15s;
+}
+.mm-chip:hover { border-color: rgba(56,189,248,.45); background: rgba(56,189,248,.07); }
+.mm-chip-label { font-size: 11px; color: #94a3b8; }
+.mm-chip-value { font-size: 17px; font-weight: 620; color: #f1f5f9; font-variant-numeric: tabular-nums; }
+.mm-chip-foot { display: flex; align-items: baseline; gap: 4px; font-size: 10.5px; }
+.mm-chip-win { color: #475569; margin-right: 5px; }
+.mm-chip-note { font-size: 10.5px; color: #64748b; line-height: 1.45; margin-top: 3px; }
+.mm-delta { font-variant-numeric: tabular-nums; font-weight: 600; }
+.mm-up { color: var(--positive); } .mm-down { color: var(--negative); } .mm-flat { color: #64748b; }
+
+.mm-drawer {
+    margin-top: 14px; background: rgba(15,23,42,.66);
+    border: 1px solid rgba(56,189,248,.24); border-radius: 11px; padding: 15px 17px;
+}
+.mm-drawer-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 10px; }
+.mm-drawer-head h3 { font-size: 14px; font-weight: 620; margin: 0 0 3px; color: #e2e8f0; }
+.mm-drawer-sub { font-size: 11px; color: #64748b; margin: 0; }
+.mm-drawer-actions { display: flex; align-items: center; gap: 8px; }
+.mm-chart { width: 100%; height: 210px; display: block; }
+.mm-line { fill: none; stroke: #38bdf8; stroke-width: 2; stroke-linejoin: round; vector-effect: non-scaling-stroke; }
+.mm-dot { fill: #7dd3fc; stroke: #0b111e; stroke-width: 2; }
+.mm-axis { stroke: rgba(148,163,184,.22); stroke-width: 1; vector-effect: non-scaling-stroke; }
+.mm-tick { fill: #475569; font-size: 10px; font-family: inherit; }
+
+.mm-limits { margin-top: 16px; border-top: 1px solid var(--border); padding-top: 13px; }
+.mm-limits summary { cursor: pointer; font-size: 12.5px; font-weight: 560; color: #94a3b8; }
+.mm-limits summary:hover { color: #cbd5e1; }
+.mm-limit { margin-top: 11px; }
+.mm-limit strong { display: block; font-size: 12px; color: #cbd5e1; margin-bottom: 3px; }
+.mm-limit p { font-size: 11.5px; line-height: 1.65; color: #64748b; margin: 0; }
+.mm-disclaimer { font-size: 10.5px; color: #475569; margin: 14px 0 0; line-height: 1.6; }
+
+@media (max-width: 900px) {
+    .mm-overlay { padding: 15px 14px; max-height: calc(100vh - 150px); }
+    .mm-chips { grid-template-columns: repeat(auto-fill, minmax(148px, 1fr)); }
+}

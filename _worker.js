@@ -50,6 +50,11 @@ export default {
             return await handleFinancials(request, env);
         }
 
+        // Macro monitor, sliced per country (see handleMacroMonitor)
+        if (url.pathname.startsWith('/api/macro-monitor')) {
+            return await handleMacroMonitor(request, env);
+        }
+
         // Multi-country official reports (US/JP/CN/EU…)
         if (url.pathname.startsWith('/api/official-reports')) {
             return await handleOfficialReports(request, env);
@@ -1003,6 +1008,107 @@ async function handleFinancials(request, env) {
                     currency: 'USD',
                     statements,
                     tags_used: used,
+                },
+            };
+        });
+    } catch (err) {
+        return new Response(JSON.stringify({ error: err.message }), { status: 500, headers: JSON_HEADERS });
+    }
+}
+
+// --- Macro monitor --------------------------------------------------------
+// The engine (scripts/macro_monitor, Cursor's) emits one document holding all
+// 18 countries with five and ten years of history per indicator -- 2.4 MB. The
+// schema is theirs and stays untouched; what changes here is only how much of
+// it crosses the wire. The map stage needs the 17 KB shell, and a country click
+// needs that one country, so the split happens on this side instead of asking
+// the browser to download eighteen countries to draw one.
+const MACRO_DOC_PATHS = [
+    '/public/data/macro_monitor_v1.json',
+    '/data/macro_monitor_v1.json',
+];
+
+// Python writes Infinity and NaN as bare literals; JSON has neither, so a
+// document containing them cannot be parsed by anything on this side of the
+// wire. The engine emitting them is a bug to fix upstream (a percent change
+// against a zero base), but a malformed number in one country's ten-year
+// series should not take the whole monitor down -- null is what "no value"
+// means here, and every reader already skips it.
+const MACRO_NONFINITE = /(:|\[|,)(\s*)-?(?:Infinity|NaN)(?=\s*[,\]}])/g;
+
+function macroParse(text) {
+    let cleaned = text, pass = 0;
+    // One pass leaves neighbours unmatched because the regex consumes the comma
+    // that the next value needs as its own prefix.
+    while (MACRO_NONFINITE.test(cleaned) && pass++ < 12) {
+        MACRO_NONFINITE.lastIndex = 0;
+        cleaned = cleaned.replace(MACRO_NONFINITE, '$1$2null');
+    }
+    return JSON.parse(cleaned);
+}
+
+async function macroDoc(env, origin) {
+    for (const path of MACRO_DOC_PATHS) {
+        try {
+            const res = await env.ASSETS.fetch(new Request(new URL(path, origin).toString()));
+            if (!res.ok) continue;
+            const text = await res.text();
+            try {
+                return JSON.parse(text);
+            } catch (_) {
+                return macroParse(text);
+            }
+        } catch (_) { /* try next */ }
+    }
+    return null;
+}
+
+async function handleMacroMonitor(request, env) {
+    const url = new URL(request.url);
+    const iso3 = (url.searchParams.get('country') || '').trim().toUpperCase();
+
+    try {
+        return await kvCachedJson(env, `macro:v1:${iso3 || 'index'}`, 21600, async () => {
+            const doc = await macroDoc(env, url.origin);
+            if (!doc) return { ok: false, status: 404, statusText: 'macro_monitor_v1.json not found' };
+
+            if (!iso3) {
+                // Everything except the per-country payloads: tab definitions,
+                // the reasoning caveats, and enough per-country data to draw
+                // and label the map.
+                const { countries, ...shell } = doc;
+                return {
+                    ok: true,
+                    body: {
+                        ...shell,
+                        countries_index: (doc.countries || []).map((c) => ({
+                            iso3: c.iso3,
+                            iso2: c.iso2,
+                            name_ko: c.name_ko,
+                            name_en: c.name_en,
+                            aliases: c.aliases || [],
+                            coords: c.coords,
+                            kit: c.kit,
+                            benchmark: !!c.benchmark,
+                            featured: !!c.featured,
+                            asof: c.asof,
+                            active_categories: c.active_categories || [],
+                            headlines: c.headlines || [],
+                        })),
+                    },
+                };
+            }
+
+            const country = (doc.countries || []).find((c) => String(c.iso3).toUpperCase() === iso3);
+            if (!country) return { ok: false, status: 404, statusText: `no country ${iso3}` };
+            return {
+                ok: true,
+                body: {
+                    schema_version: doc.schema_version,
+                    generated_at: doc.generated_at,
+                    source: doc.source,
+                    disclaimer_ko: doc.disclaimer_ko,
+                    country,
                 },
             };
         });
