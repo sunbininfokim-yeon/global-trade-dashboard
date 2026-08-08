@@ -26,6 +26,6 @@ Wire market-microstructure + US→KR early-warning + derivatives board into the 
 3. `kospi_concentration_history_v1.json` → Conc lines
 4. `derivatives_board_v1.json` → foreign boxes (empty OK) + US OI rule level
 5. `ai_casino_brief_v1.json` / `market_microstructure_v1.json` → brief cards
-6. `investor_price_levels_v1.json` → **KOSPI** top-Marcap names; price-bin bars (retail/foreign/institution); `estimated`
+6. `investor_price_levels_v1.json` → Infomax-style KOSPI index levels + high-vol stock close bins + same-day table
 
 Always show `disclaimer_ko`. Not investment advice.
