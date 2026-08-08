@@ -698,36 +698,34 @@ async function handleComtrade(request, env, ctx) {
  * back as 638.25 meaning $6.3825/bu. The currency travels with the quote and
  * the conversion happens once, here, rather than in whichever panel renders it.
  */
+// unit_key / proxy_key, not Korean text: same reasoning as FUTURES_UNPRICED
+// below, so a unit label actually switches with the visitor's language.
 const FUTURES = {
-    oil:       { symbol: "CL=F",  unit_ko: "배럴",    exchange: "NYMEX" },
-    gas:       { symbol: "NG=F",  unit_ko: "MMBtu",  exchange: "NYMEX" },
-    uranium:   { symbol: "UX=F",  unit_ko: "파운드",   exchange: "COMEX" },
-    wheat:     { symbol: "ZW=F",  unit_ko: "부셸",    exchange: "CBOT" },
-    corn:      { symbol: "ZC=F",  unit_ko: "부셸",    exchange: "CBOT" },
-    soybeans:  { symbol: "ZS=F",  unit_ko: "부셸",    exchange: "CBOT" },
-    sugar:     { symbol: "SB=F",  unit_ko: "파운드",   exchange: "ICE" },
-    coffee:    { symbol: "KC=F",  unit_ko: "파운드",   exchange: "ICE" },
-    copper:    { symbol: "HG=F",  unit_ko: "파운드",   exchange: "COMEX" },
-    gold:      { symbol: "GC=F",  unit_ko: "온스",    exchange: "COMEX" },
-    silver:    { symbol: "SI=F",  unit_ko: "온스",    exchange: "COMEX" },
-    platinum:  { symbol: "PL=F",  unit_ko: "온스",    exchange: "NYMEX" },
-    aluminum:  { symbol: "ALI=F", unit_ko: "톤",     exchange: "COMEX" },
-    iron_ore:  { symbol: "HRC=F", unit_ko: "톤",     exchange: "COMEX", proxy_ko: "열연강판 (철광석 대리)" },
+    oil:       { symbol: "CL=F",  unit_key: "barrel",  exchange: "NYMEX" },
+    gas:       { symbol: "NG=F",  unit_key: "mmbtu",   exchange: "NYMEX" },
+    uranium:   { symbol: "UX=F",  unit_key: "lb",      exchange: "COMEX" },
+    wheat:     { symbol: "ZW=F",  unit_key: "bushel",  exchange: "CBOT" },
+    corn:      { symbol: "ZC=F",  unit_key: "bushel",  exchange: "CBOT" },
+    soybeans:  { symbol: "ZS=F",  unit_key: "bushel",  exchange: "CBOT" },
+    sugar:     { symbol: "SB=F",  unit_key: "lb",      exchange: "ICE" },
+    coffee:    { symbol: "KC=F",  unit_key: "lb",      exchange: "ICE" },
+    copper:    { symbol: "HG=F",  unit_key: "lb",      exchange: "COMEX" },
+    gold:      { symbol: "GC=F",  unit_key: "oz",      exchange: "COMEX" },
+    silver:    { symbol: "SI=F",  unit_key: "oz",      exchange: "COMEX" },
+    platinum:  { symbol: "PL=F",  unit_key: "oz",      exchange: "NYMEX" },
+    aluminum:  { symbol: "ALI=F", unit_key: "tonne",   exchange: "COMEX" },
+    iron_ore:  { symbol: "HRC=F", unit_key: "tonne",   exchange: "COMEX", proxy_key: "hrc_proxy" },
 };
 
 // No free real-time source. Named so the panel can say which and why, rather
-// than rendering an empty box that looks like a bug.
+// than rendering an empty box that looks like a bug. A code, not Korean text
+// -- the panel translates it, and Korean baked in here would stay Korean no
+// matter what language the visitor switched to.
 const FUTURES_UNPRICED = {
-    nickel:      "LME 실시간은 유료",
-    tin:         "LME 실시간은 유료",
-    lead:        "LME 실시간은 유료",
-    zinc:        "LME 실시간은 유료",
-    cobalt:      "거래소 상장 없음 · 평가가격(유료)",
-    lithium:     "거래소 상장 없음 · 평가가격(유료)",
-    graphite:    "거래소 상장 없음 · 평가가격(유료)",
-    rare_earths: "거래소 상장 없음 · 평가가격(유료)",
-    manganese:   "거래소 상장 없음",
-    chromium:    "거래소 상장 없음",
+    nickel: 'lme_paid', tin: 'lme_paid', lead: 'lme_paid', zinc: 'lme_paid',
+    cobalt: 'assessed_paid', lithium: 'assessed_paid',
+    graphite: 'assessed_paid', rare_earths: 'assessed_paid',
+    manganese: 'no_contract', chromium: 'no_contract',
 };
 
 async function handleFutures(request, env, ctx) {
@@ -736,7 +734,7 @@ async function handleFutures(request, env, ctx) {
 
     if (want && FUTURES_UNPRICED[want]) {
         return new Response(
-            JSON.stringify({ commodity: want, priced: false, reason_ko: FUTURES_UNPRICED[want] }),
+            JSON.stringify({ commodity: want, priced: false, reason_key: FUTURES_UNPRICED[want] }),
             { headers: JSON_HEADERS });
     }
     const keys = want ? (FUTURES[want] ? [want] : []) : Object.keys(FUTURES);
@@ -766,9 +764,9 @@ async function handleFutures(request, env, ctx) {
                 const px = cents ? last / 100 : last;
                 out.push({
                     commodity: key, priced: true, symbol: cfg.symbol,
-                    exchange: cfg.exchange, proxy_ko: cfg.proxy_ko || null,
+                    exchange: cfg.exchange, proxy_key: cfg.proxy_key || null,
                     price: Math.round(px * 10000) / 10000,
-                    currency: "USD", unit_ko: cfg.unit_ko,
+                    currency: "USD", unit_key: cfg.unit_key,
                     change_pct: Number.isFinite(prev) && prev > 0
                         ? Math.round(((last - prev) / prev) * 1000) / 10 : null,
                     as_of: meta?.regularMarketTime
@@ -777,7 +775,10 @@ async function handleFutures(request, env, ctx) {
             } catch (_) { /* one missing quote must not empty the panel */ }
         }));
         out.sort((a, b) => keys.indexOf(a.commodity) - keys.indexOf(b.commodity));
-        return { ok: true, body: { source: "Yahoo Finance (지연 시세)", quotes: out } };
+        // "지연 시세" belongs to the panel's translation, not this response --
+        // source name plus a delayed:true flag, so the label follows the
+        // visitor's language instead of always reading in Korean.
+        return { ok: true, body: { source: "Yahoo Finance", delayed: true, quotes: out } };
     });
 }
 

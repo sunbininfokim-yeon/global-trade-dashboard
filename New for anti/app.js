@@ -562,8 +562,8 @@ const countryCode = (name) => {
  * What this still cannot say: Comtrade counts what crosses a border and knows
  * nothing about what a country digs up or grows for itself. A concentrated
  * import basket is dependence only for a country that does not produce the
- * thing. That is why the card says 무역 기준 and not 자급도 -- see
- * `productionCaveatKo`.
+ * thing -- see `conc.caveat`, and the PSD-backed net import reliance figure
+ * on the crop-trade table above, which closes this gap for five crops.
  */
 const MIN_PARTNERS = 3;
 const MINOR_SHARE = 0.15;
@@ -589,39 +589,30 @@ const concentrationOf = (arcs, partnerOf) => {
 
 // The 0.15 / 0.25 cutoffs are the ones competition authorities use, and the
 // EU's raw-materials assessment carries them over to supplier countries.
-const concBand = (hhi) => (hhi >= 0.25 ? { ko: '높음', cls: 'hi' }
-    : hhi >= 0.15 ? { ko: '보통', cls: 'mid' } : { ko: '낮음', cls: 'lo' });
+const concBand = (hhi) => (hhi >= 0.25 ? { key: 'conc.band_hi', cls: 'hi' }
+    : hhi >= 0.15 ? { key: 'conc.band_mid', cls: 'mid' } : { key: 'conc.band_lo', cls: 'lo' });
 
-const concRowHtml = (c, dirKo, shareOfTrade) => {
+const concRowHtml = (c, dirKey, shareOfTrade) => {
     if (!c) return '';
     // Too few counterparties for a share to mean anything -- most often a
     // country that does not file its own returns, showing up only in mirrors.
     if (c.partners < MIN_PARTNERS) {
         return `<div class="dep-row dep-thin">
-            <span class="dep-dir">${dirKo}</span>
-            <span class="dep-thin-note">상대국 ${c.partners}곳 — 집중도를 낼 표본이 아닙니다</span>
+            <span class="dep-dir">${t(dirKey)}</span>
+            <span class="dep-thin-note">${t('conc.thin_sample', c.partners)}</span>
         </div>`;
     }
     const band = concBand(c.hhi);
     const minor = shareOfTrade < MINOR_SHARE;
     return `<div class="dep-row${minor ? ' dep-minor' : ''}">
-        <span class="dep-dir">${dirKo}</span>
+        <span class="dep-dir">${t(dirKey)}</span>
         <span class="dep-cr">CR3 <b>${(c.cr3 * 100).toFixed(1)}%</b></span>
         <span class="dep-hhi">HHI ${c.hhi.toFixed(3)}</span>
-        <span class="dep-band dep-${band.cls}">${band.ko}</span>
+        <span class="dep-band dep-${band.cls}">${t(band.key)}</span>
         <span class="dep-partners">${c.top.join(' · ')}</span>
-        ${minor ? `<span class="dep-minor-tag">이 나라 무역의 ${(shareOfTrade * 100).toFixed(0)}%</span>` : ''}
+        ${minor ? `<span class="dep-minor-tag">${t('conc.minor_tag', (shareOfTrade * 100).toFixed(0))}</span>` : ''}
     </div>`;
 };
-
-/**
- * Trade concentration only ever describes flows across a border. Whether that
- * is exposure depends on what the country produces at home, which Comtrade does
- * not carry, so the card says which question it is answering.
- */
-const productionCaveatKo =
-    '무역 기준입니다 — 자국 생산은 포함하지 않습니다. 큰 생산국은 수입처가 몰려 있어도 '
-    + '실제 의존도가 낮을 수 있습니다.';
 
 const concentrationHtml = (imports, exports, importVol, exportVol) => {
     const imp = concentrationOf(imports, (a) => a.sourceName);
@@ -631,24 +622,22 @@ const concentrationHtml = (imports, exports, importVol, exportVol) => {
     const totalTrade = (importVol || 0) + (exportVol || 0);
     const impShare = totalTrade ? (importVol || 0) / totalTrade : 0;
     const net = (exportVol || 0) - (importVol || 0);
-    const stance = net >= 0 ? '순수출국' : '순수입국';
+    const stanceKey = net >= 0 ? 'conc.net_exporter' : 'conc.net_importer';
 
     // Lead with the direction that carries the country's position: a net
     // exporter's story is who it sells to.
     const rows = net >= 0
-        ? concRowHtml(exp, '수출처', 1 - impShare) + concRowHtml(imp, '수입처', impShare)
-        : concRowHtml(imp, '수입처', impShare) + concRowHtml(exp, '수출처', 1 - impShare);
+        ? concRowHtml(exp, 'conc.exports_to', 1 - impShare) + concRowHtml(imp, 'conc.imports_from', impShare)
+        : concRowHtml(imp, 'conc.imports_from', impShare) + concRowHtml(exp, 'conc.exports_to', 1 - impShare);
 
     return `
         <div class="dep-card">
             <div class="dep-head">
-                <strong>무역 집중도</strong>
-                <span class="dep-stance">${stance}</span>
+                <strong>${t('conc.title')}</strong>
+                <span class="dep-stance">${t(stanceKey)}</span>
             </div>
             ${rows}
-            <p class="dep-note">상위 3개국 비중(CR3)과 허핀달 지수(HHI).
-                ${productionCaveatKo}
-                공급국의 정치적 신뢰도도 반영하지 않은 순수 집중도입니다.</p>
+            <p class="dep-note">${t('conc.note', t('conc.caveat'))}</p>
         </div>`;
 };
 
@@ -795,8 +784,8 @@ const renderFuturesCard = async (commodity) => {
 
     if (doc.priced === false) {
         live.innerHTML = `<div class="fut-card fut-none">
-            <span class="fut-k">선물 시세</span>
-            <span class="fut-none-note">${doc.reason_ko}</span>
+            <span class="fut-k">${t('futures.label')}</span>
+            <span class="fut-none-note">${t(`futures.reason.${doc.reason_key}`)}</span>
         </div>`;
         return;
     }
@@ -808,12 +797,12 @@ const renderFuturesCard = async (commodity) => {
         <div class="fut-card">
             <div class="fut-main">
                 <span class="fut-px">$${q.price.toLocaleString(undefined, { maximumFractionDigits: 4 })}</span>
-                <span class="fut-unit">/ ${q.unit_ko}</span>
+                <span class="fut-unit">/ ${t(`futures.unit.${q.unit_key}`)}</span>
                 ${q.change_pct === null ? '' : `<span class="fut-chg ${up ? 'up' : 'down'}">
                     ${up ? '+' : ''}${q.change_pct}%</span>`}
             </div>
             <div class="fut-meta">${q.exchange} ${q.symbol}
-                ${q.proxy_ko ? ` · ${q.proxy_ko}` : ''} · 지연 시세</div>
+                ${q.proxy_key ? ` · ${t(`futures.proxy.${q.proxy_key}`)}` : ''} · ${t('futures.delayed')}</div>
         </div>`;
 };
 
