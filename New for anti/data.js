@@ -312,6 +312,15 @@
             hsCode: "2704",
             colorScheme: { source: [255, 140, 0], target: [250, 204, 21] }
         },
+        // Ore, natural compounds and enriched together, the same reasoning the
+        // ferroalloys got: a country with no enrichment capacity buys enriched
+        // fuel, not yellowcake, and 2612.10 alone would miss that entirely.
+        // Deliberately not 2844, which sweeps in thorium, medical isotopes and
+        // radioactive waste -- none of which is the nuclear fuel trade.
+        uranium: {
+            hsCode: "261210,284410,284420",
+            colorScheme: { source: [74, 222, 128], target: [163, 230, 53] }
+        },
         gold: {
             hsCode: "7108",
             colorScheme: { source: [250, 204, 21], target: [253, 224, 71] }

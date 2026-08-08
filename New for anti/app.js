@@ -5941,10 +5941,21 @@ const loadTicker = async () => {
     }).filter(Boolean);
 
     if (!parts.length) return;
-    // Duplicate once so CSS marquee loops without a visible gap.
-    el.innerHTML = parts.join('<span class="ticker-divider">·</span>')
-        + '<span class="ticker-divider">·</span>'
-        + parts.join('<span class="ticker-divider">·</span>');
+    // Two copies, so the keyframe can travel exactly half the element and land
+    // the second copy where the first started -- a loop with no seam.
+    const joined = parts.join('<span class="ticker-divider">·</span>');
+    el.innerHTML = joined + '<span class="ticker-divider">·</span>' + joined;
+
+    // Constant speed rather than constant duration. A fixed 30s made a slow
+    // crawl on a quiet day and a blur when two dozen headlines landed.
+    // Measured synchronously: reading scrollWidth forces the layout this needs,
+    // so deferring to a frame callback only added a window where the element
+    // could be re-rendered before the duration was ever applied.
+    const oneCopy = el.scrollWidth / 2;
+    if (oneCopy) {
+        const PX_PER_SEC = 70;
+        el.style.animationDuration = `${Math.round(Math.max(20, oneCopy / PX_PER_SEC))}s`;
+    }
 };
 
 // Initialize a shareable shipping deep link when present; otherwise home.

@@ -200,8 +200,15 @@ body {
     white-space: nowrap;
     align-items: center;
     height: 100%;
-    animation: ticker 30s linear infinite;
-    padding-left: 100%;
+    /* Two identical copies live in here (see loadTicker), so travelling exactly
+       half the element puts the second copy where the first began and the loop
+       has no seam. The old rule paired padding-left:100% with -100%, which
+       scrolled both copies and the padding off screen and then snapped back --
+       the blank stretch and the jump were the same bug.
+       Duration is set in JS from the measured width so the speed is constant
+       however many headlines arrive. */
+    animation: ticker 60s linear infinite;
+    will-change: transform;
 }
 .ticker-content:hover {
     animation-play-state: paused;
@@ -229,7 +236,7 @@ body {
 
 @keyframes ticker {
     0% { transform: translateX(0); }
-    100% { transform: translateX(-100%); }
+    100% { transform: translateX(-50%); }
 }
 
 /* === SPLIT LAYOUT === */

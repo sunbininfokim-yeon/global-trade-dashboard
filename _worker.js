@@ -360,6 +360,7 @@ const COMTRADE_TTL = {
     "2711": 172800,  // Gas: 48h
     "2701": 604800,  // Thermal coal: weekly
     "2704": 604800,  // Met coal: weekly
+    "261210,284410,284420": 604800, // Uranium: ore + natural + enriched
     "7108": 86400,   // Gold: 24h
     "7106": 86400,   // Silver: 24h
     "7403": 86400,   // Copper: 24h
@@ -685,6 +686,7 @@ async function handleComtrade(request, env, ctx) {
 const FUTURES = {
     oil:       { symbol: "CL=F",  unit_ko: "배럴",    exchange: "NYMEX" },
     gas:       { symbol: "NG=F",  unit_ko: "MMBtu",  exchange: "NYMEX" },
+    uranium:   { symbol: "UX=F",  unit_ko: "파운드",   exchange: "COMEX" },
     wheat:     { symbol: "ZW=F",  unit_ko: "부셸",    exchange: "CBOT" },
     corn:      { symbol: "ZC=F",  unit_ko: "부셸",    exchange: "CBOT" },
     soybeans:  { symbol: "ZS=F",  unit_ko: "부셸",    exchange: "CBOT" },
