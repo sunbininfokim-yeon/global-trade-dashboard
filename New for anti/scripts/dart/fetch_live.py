@@ -20,6 +20,7 @@ ROOT = Path(__file__).resolve().parent
 sys.path.insert(0, str(ROOT))
 
 from dart_kfa.analyze import analyze_payload  # noqa: E402
+from dart_kfa.credit import credit_panel_for_cik  # noqa: E402
 from dart_kfa.fetch import DartApiError, api_key_from_env, fetch_fnltt_singl_acnt_all  # noqa: E402
 from dart_kfa.fundamental_pack import attach_market_to_pack  # noqa: E402
 from dart_kfa.market import QuoteError, fetch_yahoo_quote, market_multiples  # noqa: E402
@@ -72,6 +73,16 @@ def main() -> int:
     ap.add_argument("--print", action="store_true")
     ap.add_argument("--no-cache", action="store_true")
     ap.add_argument("--no-quote", action="store_true", help="Skip Yahoo price/PER")
+    ap.add_argument(
+        "--no-credit",
+        action="store_true",
+        help="Skip SEC debt-filing index / optional 424 term parse",
+    )
+    ap.add_argument(
+        "--no-credit-docs",
+        action="store_true",
+        help="List debt filings only; do not fetch prospectus HTML",
+    )
     args = ap.parse_args()
 
     use_cache = not args.no_cache
@@ -98,6 +109,26 @@ def main() -> int:
             company["source"] = "sec_companyfacts"
             if not args.no_quote:
                 _attach_market(company, meta.get("ticker"))
+            if not args.no_credit:
+                try:
+                    amounts = {
+                        k: (v or {}).get("value")
+                        for k, v in (company.get("accounts") or {}).items()
+                    }
+                    company["credit"] = credit_panel_for_cik(
+                        meta["cik"],
+                        ma=company.get("ma_metrics"),
+                        amounts=amounts,
+                        use_cache=use_cache,
+                        parse_docs=not args.no_credit_docs,
+                    )
+                except SecApiError as ce:
+                    company["credit"] = {
+                        "schema": "kfa-credit-v1",
+                        "source": "sec",
+                        "ok": False,
+                        "reason": str(ce),
+                    }
         except (SecApiError, ValueError) as e:
             print(f"SEC error: {e}", file=sys.stderr)
             return 1
@@ -145,9 +176,30 @@ def main() -> int:
         for k in ("current_ratio", "debt_ratio", "roe", "operating_margin", "fcf", "inventory_turnover"):
             cell = m.get(k) or ma.get(k) or {}
             print(f"  {k}: {cell.get('value')} {cell.get('reason') or ''}")
-        for k in ("gross_interest_bearing_debt", "cash_and_marketable_securities", "net_debt", "net_debt_to_ebitda"):
+        for k in (
+            "gross_interest_bearing_debt",
+            "cash_and_marketable_securities",
+            "net_debt",
+            "net_debt_to_ebitda",
+            "interest_coverage",
+            "effective_interest_rate_pct",
+        ):
             cell = ma.get(k) or {}
             print(f"  {k}: {cell.get('value')} {cell.get('reason') or ''}")
+        cr = company.get("credit") or {}
+        if cr:
+            df = cr.get("debt_filings") or {}
+            print(
+                f"  credit filings={df.get('count')} "
+                f"ratings={((cr.get('ratings') or {}).get('status'))} "
+                f"cds={((cr.get('cds') or {}).get('status'))}"
+            )
+            for it in (df.get("items") or [])[:5]:
+                terms = it.get("terms") or {}
+                print(
+                    f"    {it.get('filed')} {it.get('form')} {it.get('kind')} "
+                    f"coupon={terms.get('coupons_pct')} principal={terms.get('principal_usd')}"
+                )
         if company.get("shares_out"):
             print(f"  shares_out={company['shares_out']}")
         mk = company.get("market") or {}

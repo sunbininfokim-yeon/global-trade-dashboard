@@ -268,8 +268,10 @@ def build_fundamental_pack(
                 "net_debt_to_ebitda": nd_ebitda,
                 "gross_debt": gross_debt,
                 "cash_and_msi": cash_msi,
+                "interest_coverage": _cell(ma, "interest_coverage"),
+                "effective_interest_rate_pct": _cell(ma, "effective_interest_rate_pct"),
             },
-            "lens_ko": "Credit/M&A: Net Debt/EBITDA가 본지표. 총부채/자본만 보면 금융자회사에서 왜곡.",
+            "lens_ko": "Credit/M&A: Net Debt/EBITDA·이자보상배율이 본지표. 총부채/자본만 보면 금융자회사에서 왜곡.",
         },
         {
             "id": "returns",

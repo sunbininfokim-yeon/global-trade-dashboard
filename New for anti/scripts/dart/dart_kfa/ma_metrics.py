@@ -136,6 +136,20 @@ def compute_ma_metrics(
         interest_burden = interest / abs(opinc)
         ib_reason = None
 
+    # Interest coverage = EBIT(operating income) / interest (standard "x" times).
+    interest_coverage = None
+    ic_reason = "missing:interest_or_oi"
+    if interest is not None and interest != 0 and opinc is not None:
+        interest_coverage = opinc / abs(interest)
+        ic_reason = None
+
+    # Rough all-in coupon proxy from P&L + balance-sheet stock — NOT a TRACE YTM.
+    effective_interest_rate_pct = None
+    eir_reason = "missing:interest_or_gross_debt"
+    if interest is not None and gross_debt not in (None, 0):
+        effective_interest_rate_pct = 100.0 * abs(interest) / abs(gross_debt)
+        eir_reason = "proxy:interest_expense_over_gross_ib_debt"
+
     return {
         "fcf": _cell(fcf, unit="currency", label="FCF", reason=fcf_cell.get("reason")),
         "fcf_margin": _cell(
@@ -202,6 +216,18 @@ def compute_ma_metrics(
         "interest_burden": _cell(
             interest_burden, unit="x", label="이자/영업이익", reason=ib_reason
         ),
+        "interest_coverage": _cell(
+            interest_coverage,
+            unit="x",
+            label="이자보상배율(영업이익/이자)",
+            reason=ic_reason,
+        ),
+        "effective_interest_rate_pct": _cell(
+            effective_interest_rate_pct,
+            unit="pct",
+            label="유효이자율 대용(이자비용/이자부차입)",
+            reason=eir_reason,
+        ),
         "lease_to_liabilities": _cell(
             None
             if lease is None or total_liab in (None, 0)
@@ -222,5 +248,7 @@ def compute_ma_metrics(
             "FCF = CFO − |Capex| (DART 음수·SEC 양수 Capex 모두 처리).",
             "순차입 = 이자부차입(단기차입·유동성장기차입·장기차입·CP) − (현금+유동/비유동 시장성유가증권).",
             "레거시 net_debt_proxy(비유동부채−현금)는 진단용이며 순차입이 아닙니다.",
+            "이자보상배율 = 영업이익 / |이자비용| (EBIT 정의를 공시 영업이익으로 근사).",
+            "유효이자율 대용 = |이자비용| / 이자부차입. 신규 발행 쿠폰·YTM이 아님.",
         ],
     }

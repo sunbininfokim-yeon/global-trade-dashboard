@@ -23,6 +23,8 @@
 5. INDUSTRY_RATIONALE.md  ← 업종 키트·한은 peer가 왜 그런지 (깊게)
        ↓
 6. EXPORT_BOK_COVERAGE.md ← 수출·KSIC 매핑 (필요할 때)
+       ↓
+7. CREDIT_SOURCES.md      ← 무료 credit 패널 (이자보상·채공시 인덱스 / 등급·CDS 제외)
 ```
 
 ### 한 줄로
