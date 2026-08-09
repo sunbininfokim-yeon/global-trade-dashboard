@@ -16,6 +16,73 @@ def _norm(text: str) -> str:
     return t
 
 
+# Yahoo-style tickers: AAPL, SPCX, BRK.B, 005930.KS, ^KS11, EURUSD=X, bare 6-digit KRX
+_YAHOO_TICKER_RE = re.compile(
+    r"""^
+    (?:
+        \^[A-Za-z0-9]{1,12}                 # ^KS11, ^GSPC
+      | [A-Za-z]{2,12}=X                    # EURUSD=X, USDKRW=X
+      | \d{6}\.(?:KS|KQ)                    # 005930.KS
+      | \d{1,4}\.T                          # 1482.T
+      | \d{6}                               # bare KRX code → .KS
+      | [A-Za-z][A-Za-z0-9.\-]{0,14}        # AAPL, SPCX, BRK-B, BRK.B
+    )
+    $""",
+    re.VERBOSE | re.IGNORECASE,
+)
+
+
+def looks_like_yahoo_ticker(query: str) -> bool:
+    """True if stripped query resembles a Yahoo Finance symbol."""
+    s = unicodedata.normalize("NFKC", str(query)).strip()
+    if not s or " " in s:
+        return False
+    return bool(_YAHOO_TICKER_RE.fullmatch(s))
+
+
+def canonicalize_yahoo_symbol(query: str) -> str:
+    """Uppercase ticker while preserving ^, =X, and exchange suffixes."""
+    s = unicodedata.normalize("NFKC", str(query)).strip()
+    if re.fullmatch(r"\d{6}", s):
+        return f"{s}.KS"
+    upper = s.upper()
+    if upper.endswith("=X"):
+        return upper[:-2] + "=X"
+    for suf in (".KS", ".KQ", ".T", ".L", ".HK"):
+        if upper.endswith(suf):
+            return upper[: -len(suf)] + suf
+    if s.startswith("^"):
+        return "^" + s[1:].upper()
+    return upper
+
+
+def currency_for_yahoo(yahoo: str) -> str:
+    u = yahoo.upper()
+    if u.endswith(".KS") or u.endswith(".KQ"):
+        return "KRW"
+    if u.endswith(".T"):
+        return "JPY"
+    if u.endswith("=X"):
+        if "KRW" in u:
+            return "KRW"
+        if "JPY" in u and not u.startswith("JPY"):
+            return "JPY"
+        return "USD"
+    return "USD"
+
+
+def asset_class_for_yahoo(yahoo: str) -> str:
+    u = yahoo.upper()
+    if u.endswith("=X"):
+        return "fx"
+    if u.startswith("^"):
+        return "index"
+    if u.endswith(".KS") or u.endswith(".KQ") or u.endswith(".T"):
+        # exchange-listed: treat ETFs/stocks alike as equity unless known
+        return "equity"
+    return "equity"
+
+
 @dataclass(frozen=True)
 class Instrument:
     id: str
@@ -49,6 +116,21 @@ class Instrument:
         }
 
 
+def make_dynamic_yahoo_instrument(query: str) -> Instrument:
+    yahoo = canonicalize_yahoo_symbol(query)
+    ccy = currency_for_yahoo(yahoo)
+    ac = asset_class_for_yahoo(yahoo)
+    label = yahoo
+    return Instrument(
+        id=f"dyn:yahoo:{yahoo}",
+        asset_class=ac,
+        currency=ccy,
+        yahoo=yahoo,
+        name_ko=label,
+        aliases=(),
+    )
+
+
 class InstrumentRegistry:
     def __init__(self, path: Path):
         raw = json.loads(path.read_text(encoding="utf-8"))
@@ -78,7 +160,10 @@ class InstrumentRegistry:
                 self._by_alias[_norm(a)] = inst
 
     def resolve_one(self, query: str) -> Instrument | None:
-        q = _norm(query)
+        raw = unicodedata.normalize("NFKC", str(query)).strip()
+        if not raw:
+            return None
+        q = _norm(raw)
         if q in self._by_alias:
             return self._by_alias[q]
         # bare KRX 6-digit → try .KS style ids / aliases
@@ -86,10 +171,13 @@ class InstrumentRegistry:
             for cand in (q, f"{q}.ks", f"eq:kr:{q}", f"etf:kr:{q}"):
                 if cand in self._by_alias:
                     return self._by_alias[cand]
-        # direct yahoo-looking ticker
+        # direct yahoo-looking ticker in registry
         for inst in self.instruments:
             if inst.yahoo and _norm(inst.yahoo) == q:
                 return inst
+        # Yahoo passthrough: unknown but ticker-shaped → dynamic instrument
+        if looks_like_yahoo_ticker(raw):
+            return make_dynamic_yahoo_instrument(raw)
         return None
 
 

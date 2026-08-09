@@ -58,6 +58,21 @@ portfolio JSON
 
 `samples/demo_portfolio.json` 참고. 각 포지션은 `query`(티커·한글명·종목코드) + `value`(원화 평가액) 또는 `weight`.
 
+### 종목 해석 (registry + Yahoo passthrough)
+
+| 입력 유형 | 동작 |
+|-----------|------|
+| **한글명 / 별칭** | `instruments/registry.json` 별칭 매칭 (예: `삼성전자`, `코스피`, `스페이스X`) |
+| **티커 직접 입력** | 레지스트리에 없어도 Yahoo 심볼처럼 보이면 동적 종목 `dyn:yahoo:{SYMBOL}` 생성 |
+
+예시:
+
+- SpaceX 관련 → 레지스트리 `SPCX` (별칭: 스페이스X, SpaceX) 또는 티커 `SPCX` 직접
+- 코스피 지수 → `코스피` / `^KS11` · 코스피200 ETF → `KODEX200` / `069500`
+- 미등록 티커 → `AAPL`, `005930.KS`, `EURUSD=X` 등 그대로 passthrough
+
+통화 추정: `.KS`/`.KQ`→KRW, `.T`→JPY, `=X`→FX, 그 외→USD (USD 종목은 기존처럼 USDKRW로 원화 환산).
+
 ## 투자 성향
 
 ```bash

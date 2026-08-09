@@ -10,7 +10,7 @@ import pandas as pd
 from .risk import portfolio_returns
 
 
-EQUITY_LIKE = {"equity", "etf"}
+EQUITY_LIKE = {"equity", "etf", "index"}
 
 
 def currency_exposure(positions: list[dict[str, Any]]) -> dict[str, Any]:
@@ -264,14 +264,15 @@ def _pct(x: float) -> str:
 
 
 def suggest_aliases(registry, query: str, limit: int = 8) -> list[dict[str, str]]:
-    """Typeahead: '삼성전' → 삼성전자 등."""
-    from .resolve import _norm
+    """Typeahead: '삼성전' → 삼성전자 등. Ticker-shaped queries also yield Yahoo passthrough."""
+    from .resolve import _norm, looks_like_yahoo_ticker
 
-    q = _norm(query)
+    raw = str(query or "").strip()
+    q = _norm(raw)
     if not q:
         return []
-    hits = []
-    seen = set()
+    hits: list[dict[str, str]] = []
+    seen: set[str] = set()
     for inst in registry.instruments:
         keys = list(inst.aliases) + [inst.name_ko, inst.id]
         if inst.yahoo:
@@ -293,4 +294,18 @@ def suggest_aliases(registry, query: str, limit: int = 8) -> list[dict[str, str]
                 break
         if len(hits) >= limit:
             break
+
+    # Passthrough dyn candidate when query looks like a ticker AND is not a registry hit
+    if looks_like_yahoo_ticker(raw) and len(hits) < limit:
+        resolved = registry.resolve_one(raw)
+        if resolved is not None and str(resolved.id).startswith("dyn:yahoo:"):
+            if resolved.id not in seen:
+                hits.append(
+                    {
+                        "id": resolved.id,
+                        "name_ko": resolved.name_ko,
+                        "yahoo": resolved.yahoo or "",
+                        "match": resolved.yahoo or raw,
+                    }
+                )
     return hits
