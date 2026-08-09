@@ -1,0 +1,163 @@
+{
+  "schema_version": "dart-metrics-spec-1.0.0",
+  "engine_version": "kfa-1.0.0",
+  "metrics": {
+    "current_ratio": {
+      "label": "유동비율",
+      "label_en": "Current Ratio",
+      "formula": ["CURRENT_ASSETS", "/", "CURRENT_LIABILITIES"],
+      "unit": "pct",
+      "scale": 100,
+      "polarity": "higher_better",
+      "requires": ["CURRENT_ASSETS", "CURRENT_LIABILITIES"]
+    },
+    "quick_ratio": {
+      "label": "당좌비율",
+      "label_en": "Quick Ratio",
+      "formula": [
+        ["CURRENT_ASSETS", "-", "INVENTORIES"],
+        "/",
+        "CURRENT_LIABILITIES"
+      ],
+      "unit": "pct",
+      "scale": 100,
+      "polarity": "higher_better",
+      "requires": ["CURRENT_ASSETS", "INVENTORIES", "CURRENT_LIABILITIES"]
+    },
+    "debt_ratio": {
+      "label": "부채비율",
+      "label_en": "Debt Ratio",
+      "formula": ["TOTAL_LIABILITIES", "/", "EQUITY"],
+      "unit": "pct",
+      "scale": 100,
+      "polarity": "lower_better",
+      "requires": ["TOTAL_LIABILITIES", "EQUITY"]
+    },
+    "roe": {
+      "label": "ROE",
+      "label_en": "Return on Equity",
+      "formula": ["NET_INCOME", "/", "EQUITY"],
+      "unit": "pct",
+      "scale": 100,
+      "polarity": "higher_better",
+      "requires": ["NET_INCOME", "EQUITY"]
+    },
+    "roa": {
+      "label": "ROA",
+      "label_en": "Return on Assets",
+      "formula": ["NET_INCOME", "/", "TOTAL_ASSETS"],
+      "unit": "pct",
+      "scale": 100,
+      "polarity": "higher_better",
+      "requires": ["NET_INCOME", "TOTAL_ASSETS"]
+    },
+    "operating_margin": {
+      "label": "영업이익률",
+      "label_en": "Operating Margin",
+      "formula": ["OPERATING_INCOME", "/", "REVENUE"],
+      "unit": "pct",
+      "scale": 100,
+      "polarity": "higher_better",
+      "requires": ["OPERATING_INCOME", "REVENUE"]
+    },
+    "net_margin": {
+      "label": "순이익률",
+      "label_en": "Net Margin",
+      "formula": ["NET_INCOME", "/", "REVENUE"],
+      "unit": "pct",
+      "scale": 100,
+      "polarity": "higher_better",
+      "requires": ["NET_INCOME", "REVENUE"]
+    },
+    "interest_coverage": {
+      "label": "이자보상배율",
+      "label_en": "Interest Coverage",
+      "formula": ["OPERATING_INCOME", "/", "INTEREST_EXPENSE"],
+      "unit": "x",
+      "scale": 1,
+      "polarity": "higher_better",
+      "requires": ["OPERATING_INCOME", "INTEREST_EXPENSE"]
+    },
+    "asset_turnover": {
+      "label": "총자산회전율",
+      "label_en": "Asset Turnover",
+      "formula": ["REVENUE", "/", "TOTAL_ASSETS"],
+      "unit": "x",
+      "scale": 1,
+      "polarity": "higher_better",
+      "requires": ["REVENUE", "TOTAL_ASSETS"]
+    },
+    "inventory_turnover": {
+      "label": "재고회전율",
+      "label_en": "Inventory Turnover",
+      "formula": ["COGS", "/", "INVENTORIES"],
+      "unit": "x",
+      "scale": 1,
+      "polarity": "higher_better",
+      "requires": ["COGS", "INVENTORIES"],
+      "notes": "Standard definition uses COGS, not revenue. Null when COGS missing."
+    },
+    "receivables_turnover": {
+      "label": "매출채권회전율",
+      "label_en": "Receivables Turnover",
+      "formula": ["REVENUE", "/", "TRADE_RECEIVABLES"],
+      "unit": "x",
+      "scale": 1,
+      "polarity": "higher_better",
+      "requires": ["REVENUE", "TRADE_RECEIVABLES"]
+    },
+    "cash_ratio": {
+      "label": "현금비율",
+      "label_en": "Cash Ratio",
+      "formula": ["CASH", "/", "CURRENT_LIABILITIES"],
+      "unit": "pct",
+      "scale": 100,
+      "polarity": "higher_better",
+      "requires": ["CASH", "CURRENT_LIABILITIES"]
+    },
+    "earnings_quality": {
+      "label": "이익의 질",
+      "label_en": "Earnings Quality (CFO/NI)",
+      "formula": ["CFO", "/", "NET_INCOME"],
+      "unit": "x",
+      "scale": 1,
+      "polarity": "higher_better",
+      "requires": ["CFO", "NET_INCOME"]
+    },
+    "fcf": {
+      "label": "잉여현금흐름",
+      "label_en": "Free Cash Flow",
+      "formula": ["CFO", "-", "CAPEX_OUTFLOW"],
+      "unit": "currency",
+      "scale": 1,
+      "polarity": "higher_better",
+      "requires": ["CFO", "CAPEX"],
+      "derived": {
+        "CAPEX_OUTFLOW": ["abs", "CAPEX"]
+      },
+      "notes": "FCF = CFO − |Capex|. DART Capex is often negative; SEC often positive outflow."
+    },
+    "roic": {
+      "label": "ROIC",
+      "label_en": "Return on Invested Capital",
+      "formula": ["NOPAT", "/", "INVESTED_CAPITAL"],
+      "unit": "pct",
+      "scale": 100,
+      "polarity": "higher_better",
+      "derived": {
+        "EFFECTIVE_TAX_RATE": ["INCOME_TAX_EXPENSE", "/", "PROFIT_BEFORE_TAX"],
+        "NOPAT": ["OPERATING_INCOME", "*", ["1", "-", "EFFECTIVE_TAX_RATE"]],
+        "INVESTED_CAPITAL": ["EQUITY", "+", "TOTAL_LIABILITIES", "-", "CURRENT_LIABILITIES"]
+      },
+      "requires": [
+        "OPERATING_INCOME",
+        "INCOME_TAX_EXPENSE",
+        "PROFIT_BEFORE_TAX",
+        "EQUITY",
+        "TOTAL_LIABILITIES",
+        "CURRENT_LIABILITIES"
+      ],
+      "notes": "Invested capital proxy = equity + non-current liabilities. Prefer null over a bad NET_DEBT guess."
+    }
+  }
+}

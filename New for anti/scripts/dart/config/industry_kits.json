@@ -1,0 +1,1431 @@
+{
+  "schema_version": "dart-industry-kits-2.0.0",
+  "engine_note": "Longest KSIC prefix wins. Rule-based; no LLM. See INDUSTRY_RATIONALE.md and EXPORT_BOK_COVERAGE.md",
+  "kits": {
+    "semiconductor": {
+      "label_ko": "반도체",
+      "label_en": "Semiconductors",
+      "ksic_prefixes": [
+        "C261"
+      ],
+      "mti_export_items": [
+        "반도체"
+      ],
+      "notes_ko": [
+        "메모리·시스템 사이클과 ASP가 마진·FCF를 지배합니다.",
+        "EBITDA·순차입금은 단년보다 다년(3년) 평균으로 보는 편이 맞습니다.",
+        "대규모 Fab Capex로 FCF가 장기간 음수여도 성장 투자일 수 있습니다."
+      ],
+      "watch_notes": [
+        "inventory_valuation",
+        "capex_commitments",
+        "related_party",
+        "customer_concentration"
+      ],
+      "priority_metrics": [
+        "roic",
+        "operating_margin",
+        "fcf",
+        "earnings_quality",
+        "inventory_turnover",
+        "cash_ratio"
+      ],
+      "de_emphasize": [
+        "debt_ratio"
+      ],
+      "flags": [
+        {
+          "id": "capex_heavy_fcf",
+          "when": "fcf_negative_and_capex_large",
+          "severity_ko": "대규모 설비투자로 FCF가 음수일 수 있습니다. 투자 계획을 확인하세요."
+        },
+        {
+          "id": "inventory_build",
+          "when": "inventory_turnover_falling",
+          "severity_ko": "재고회전 하락은 수요 둔화·가격 하락 신호일 수 있습니다."
+        },
+        {
+          "id": "cycle_peak_earnings",
+          "when": "operating_margin_very_high",
+          "severity_ko": "업황 호황기 마진일 수 있어 DCF·배수에 영구치로 쓰지 마세요."
+        }
+      ],
+      "ma_focus": [
+        "normalized_ebitda_proxy",
+        "fcf",
+        "net_debt_to_ebitda",
+        "roic"
+      ],
+      "sources": [
+        "KIS Electronics methodology",
+        "MOTIE MTI 반도체",
+        "BOK C26/C261"
+      ]
+    },
+    "display": {
+      "label_ko": "디스플레이",
+      "label_en": "Displays",
+      "ksic_prefixes": [
+        "C262"
+      ],
+      "mti_export_items": [
+        "디스플레이"
+      ],
+      "notes_ko": [
+        "패널 판가·가동률 사이클이 큽니다. 한 해 마진을 영구치로 쓰지 마세요.",
+        "대형 증설 Capex와 고객(세트사) 협상력이 현금흐름을 좌우합니다."
+      ],
+      "watch_notes": [
+        "capex_commitments",
+        "customer_concentration",
+        "inventory_valuation"
+      ],
+      "priority_metrics": [
+        "operating_margin",
+        "fcf",
+        "roic",
+        "earnings_quality",
+        "cash_ratio"
+      ],
+      "de_emphasize": [],
+      "flags": [
+        {
+          "id": "capex_heavy_fcf",
+          "when": "fcf_negative_and_capex_large",
+          "severity_ko": "대규모 설비투자로 FCF가 음수일 수 있습니다. 투자 계획을 확인하세요."
+        },
+        {
+          "id": "cycle_peak_earnings",
+          "when": "operating_margin_very_high",
+          "severity_ko": "업황 호황기 마진일 수 있어 DCF·배수에 영구치로 쓰지 마세요."
+        }
+      ],
+      "ma_focus": [
+        "fcf",
+        "normalized_ebitda_proxy",
+        "net_debt_to_ebitda"
+      ],
+      "sources": [
+        "MOTIE MTI 디스플레이",
+        "BOK C26"
+      ]
+    },
+    "computers": {
+      "label_ko": "컴퓨터·SSD",
+      "label_en": "Computers / Storage",
+      "ksic_prefixes": [
+        "C263"
+      ],
+      "mti_export_items": [
+        "컴퓨터"
+      ],
+      "notes_ko": [
+        "SSD·서버향 수요와 부품 원가에 민감합니다.",
+        "재고·매출채권 회전과 고객 집중도를 함께 보세요."
+      ],
+      "watch_notes": [
+        "inventory_valuation",
+        "customer_concentration",
+        "warranty_provisions"
+      ],
+      "priority_metrics": [
+        "operating_margin",
+        "inventory_turnover",
+        "receivables_turnover",
+        "fcf",
+        "roe"
+      ],
+      "de_emphasize": [],
+      "flags": [
+        {
+          "id": "inventory_build",
+          "when": "inventory_turnover_falling",
+          "severity_ko": "재고회전 하락은 수요 둔화·가격 하락 신호일 수 있습니다."
+        }
+      ],
+      "ma_focus": [
+        "fcf",
+        "earnings_quality",
+        "net_cash_proxy"
+      ],
+      "sources": [
+        "BOK Financial Statement Analysis (KSIC)",
+        "MOTIE major export items (MTI)"
+      ]
+    },
+    "telecom_devices": {
+      "label_ko": "무선통신기기",
+      "label_en": "Wireless / Handsets",
+      "ksic_prefixes": [
+        "C264"
+      ],
+      "mti_export_items": [
+        "무선통신"
+      ],
+      "notes_ko": [
+        "세트 교체 주기·채널 재고가 분기 실적을 흔듭니다.",
+        "로열티·소송·품질보증 충당금을 주석에서 확인하세요."
+      ],
+      "watch_notes": [
+        "warranty_provisions",
+        "litigation",
+        "inventory_valuation",
+        "related_party"
+      ],
+      "priority_metrics": [
+        "operating_margin",
+        "inventory_turnover",
+        "fcf",
+        "cash_ratio",
+        "roe"
+      ],
+      "de_emphasize": [],
+      "flags": [
+        {
+          "id": "inventory_build",
+          "when": "inventory_turnover_falling",
+          "severity_ko": "재고회전 하락은 수요 둔화·가격 하락 신호일 수 있습니다."
+        }
+      ],
+      "ma_focus": [
+        "fcf",
+        "net_cash_proxy",
+        "earnings_quality"
+      ],
+      "sources": [
+        "BOK Financial Statement Analysis (KSIC)",
+        "MOTIE major export items (MTI)"
+      ]
+    },
+    "home_appliances": {
+      "label_ko": "가전",
+      "label_en": "Home Appliances",
+      "ksic_prefixes": [
+        "C285"
+      ],
+      "mti_export_items": [
+        "가전"
+      ],
+      "notes_ko": [
+        "내수·환율·물류비가 마진에 영향이 큽니다.",
+        "재고와 판매보증, 할부·금융 자회사가 있으면 연결 기준으로 보세요."
+      ],
+      "watch_notes": [
+        "warranty_provisions",
+        "inventory_valuation",
+        "finance_subsidiary"
+      ],
+      "priority_metrics": [
+        "operating_margin",
+        "inventory_turnover",
+        "current_ratio",
+        "fcf",
+        "roe"
+      ],
+      "de_emphasize": [],
+      "flags": [
+        {
+          "id": "inventory_build",
+          "when": "inventory_turnover_falling",
+          "severity_ko": "재고회전 하락은 수요 둔화·가격 하락 신호일 수 있습니다."
+        }
+      ],
+      "ma_focus": [
+        "fcf",
+        "net_debt_proxy",
+        "earnings_quality"
+      ],
+      "sources": [
+        "BOK Financial Statement Analysis (KSIC)",
+        "MOTIE major export items (MTI)"
+      ]
+    },
+    "electronics_components": {
+      "label_ko": "전자부품·기타 IT하드웨어",
+      "label_en": "Electronic Components / IT hardware",
+      "ksic_prefixes": [
+        "C26"
+      ],
+      "mti_export_items": [],
+      "notes_ko": [
+        "세부 키트(반도체·디스플레이 등)에 안 걸리면 C26 일반 전자로 분류됩니다.",
+        "Capex·재고·고객 집중이 공통 포인트입니다."
+      ],
+      "watch_notes": [
+        "inventory_valuation",
+        "capex_commitments",
+        "related_party"
+      ],
+      "priority_metrics": [
+        "roic",
+        "operating_margin",
+        "fcf",
+        "inventory_turnover",
+        "earnings_quality"
+      ],
+      "de_emphasize": [
+        "debt_ratio"
+      ],
+      "flags": [
+        {
+          "id": "capex_heavy_fcf",
+          "when": "fcf_negative_and_capex_large",
+          "severity_ko": "대규모 설비투자로 FCF가 음수일 수 있습니다. 투자 계획을 확인하세요."
+        },
+        {
+          "id": "inventory_build",
+          "when": "inventory_turnover_falling",
+          "severity_ko": "재고회전 하락은 수요 둔화·가격 하락 신호일 수 있습니다."
+        }
+      ],
+      "ma_focus": [
+        "fcf",
+        "roic",
+        "net_debt_to_ebitda"
+      ],
+      "sources": [
+        "BOK Financial Statement Analysis (KSIC)",
+        "MOTIE major export items (MTI)"
+      ]
+    },
+    "auto": {
+      "label_ko": "자동차",
+      "label_en": "Automobiles",
+      "ksic_prefixes": [
+        "C30"
+      ],
+      "mti_export_items": [
+        "자동차"
+      ],
+      "notes_ko": [
+        "대당 ASP·믹스(하이브리드/EV)·지역 믹스가 영업이익을 좌우합니다.",
+        "판매금융·보증·리콜 충당은 본업 마진과 분리해 보세요.",
+        "관세·현지생산 전환이 수출·마진 가정에 핵심입니다."
+      ],
+      "watch_notes": [
+        "warranty_provisions",
+        "finance_subsidiary",
+        "recall_provisions",
+        "related_party"
+      ],
+      "priority_metrics": [
+        "operating_margin",
+        "roe",
+        "fcf",
+        "asset_turnover",
+        "interest_coverage",
+        "current_ratio"
+      ],
+      "de_emphasize": [],
+      "flags": [
+        {
+          "id": "capex_heavy_fcf",
+          "when": "fcf_negative_and_capex_large",
+          "severity_ko": "대규모 설비투자로 FCF가 음수일 수 있습니다. 투자 계획을 확인하세요."
+        }
+      ],
+      "ma_focus": [
+        "fcf",
+        "normalized_ebitda_proxy",
+        "net_debt_to_ebitda",
+        "roic"
+      ],
+      "sources": [
+        "MOTIE MTI 자동차",
+        "BOK C30",
+        "KIS auto-related practice"
+      ]
+    },
+    "auto_parts": {
+      "label_ko": "자동차부품",
+      "label_en": "Auto Parts",
+      "ksic_prefixes": [
+        "C303"
+      ],
+      "mti_export_items": [
+        "자동차부품"
+      ],
+      "notes_ko": [
+        "완성차 고객 집중도가 높고, 단가 인하 압력이 상시적입니다.",
+        "재고·매출채권과 특정 OEM 의존을 주석·공시에서 확인하세요."
+      ],
+      "watch_notes": [
+        "customer_concentration",
+        "inventory_valuation",
+        "related_party"
+      ],
+      "priority_metrics": [
+        "operating_margin",
+        "receivables_turnover",
+        "inventory_turnover",
+        "fcf",
+        "roe"
+      ],
+      "de_emphasize": [],
+      "flags": [
+        {
+          "id": "inventory_build",
+          "when": "inventory_turnover_falling",
+          "severity_ko": "재고회전 하락은 수요 둔화·가격 하락 신호일 수 있습니다."
+        }
+      ],
+      "ma_focus": [
+        "fcf",
+        "earnings_quality",
+        "net_debt_proxy"
+      ],
+      "sources": [
+        "BOK Financial Statement Analysis (KSIC)",
+        "MOTIE major export items (MTI)"
+      ]
+    },
+    "machinery": {
+      "label_ko": "일반기계",
+      "label_en": "General Machinery",
+      "ksic_prefixes": [
+        "C29"
+      ],
+      "mti_export_items": [
+        "일반기계"
+      ],
+      "notes_ko": [
+        "수주·백로그 변동이 크고, 프로젝트성 매출이 많습니다.",
+        "선수금·계약자산과 보증을 부채 해석 시 구분하세요."
+      ],
+      "watch_notes": [
+        "construction_backlog",
+        "contract_liabilities_advances",
+        "guarantee_obligations"
+      ],
+      "priority_metrics": [
+        "operating_margin",
+        "fcf",
+        "current_ratio",
+        "interest_coverage",
+        "earnings_quality"
+      ],
+      "de_emphasize": [],
+      "flags": [
+        {
+          "id": "advances_inflate_liabilities",
+          "when": "contract_liabilities_high",
+          "severity_ko": "선수금/계약부채가 부채비율을 높일 수 있습니다."
+        }
+      ],
+      "ma_focus": [
+        "fcf",
+        "backlog_note",
+        "net_debt_ex_contract_liab"
+      ],
+      "sources": [
+        "BOK Financial Statement Analysis (KSIC)",
+        "MOTIE major export items (MTI)"
+      ]
+    },
+    "petrochemical": {
+      "label_ko": "석유화학",
+      "label_en": "Petrochemicals",
+      "ksic_prefixes": [
+        "C20"
+      ],
+      "mti_export_items": [
+        "석유화학"
+      ],
+      "notes_ko": [
+        "스프레드(제품−원료) 사이클이 이익을 결정합니다. 단년 ROE만으로 판단 금지.",
+        "정기보수·가동률·중국 증설이 공급과잉 리스크입니다."
+      ],
+      "watch_notes": [
+        "commodity_hedges",
+        "turnaround_capex",
+        "environmental_provisions"
+      ],
+      "priority_metrics": [
+        "operating_margin",
+        "fcf",
+        "roic",
+        "interest_coverage",
+        "cash_ratio"
+      ],
+      "de_emphasize": [
+        "roe"
+      ],
+      "flags": [
+        {
+          "id": "cycle_peak_earnings",
+          "when": "operating_margin_very_high",
+          "severity_ko": "업황 호황기 마진일 수 있어 DCF·배수에 영구치로 쓰지 마세요."
+        },
+        {
+          "id": "capex_heavy_fcf",
+          "when": "fcf_negative_and_capex_large",
+          "severity_ko": "대규모 설비투자로 FCF가 음수일 수 있습니다. 투자 계획을 확인하세요."
+        }
+      ],
+      "ma_focus": [
+        "normalized_ebitda_proxy",
+        "fcf",
+        "net_debt_to_ebitda"
+      ],
+      "sources": [
+        "MOTIE MTI 석유화학",
+        "BOK C20",
+        "spread-cycle credit practice"
+      ]
+    },
+    "petroleum_products": {
+      "label_ko": "석유제품(정유)",
+      "label_en": "Petroleum Products / Refining",
+      "ksic_prefixes": [
+        "C19"
+      ],
+      "mti_export_items": [
+        "석유제품"
+      ],
+      "notes_ko": [
+        "정제마진·유가·재고평가손익이 분기 이익을 크게 흔듭니다.",
+        "재고회계(평균법 등)와 일회성 재고효과를 구분해 보세요."
+      ],
+      "watch_notes": [
+        "inventory_valuation",
+        "commodity_hedges",
+        "environmental_provisions"
+      ],
+      "priority_metrics": [
+        "operating_margin",
+        "fcf",
+        "current_ratio",
+        "interest_coverage",
+        "earnings_quality"
+      ],
+      "de_emphasize": [],
+      "flags": [
+        {
+          "id": "cycle_peak_earnings",
+          "when": "operating_margin_very_high",
+          "severity_ko": "업황 호황기 마진일 수 있어 DCF·배수에 영구치로 쓰지 마세요."
+        },
+        {
+          "id": "inventory_build",
+          "when": "inventory_turnover_falling",
+          "severity_ko": "재고회전 하락은 수요 둔화·가격 하락 신호일 수 있습니다."
+        }
+      ],
+      "ma_focus": [
+        "normalized_ebitda_proxy",
+        "fcf",
+        "net_debt_to_ebitda"
+      ],
+      "sources": [
+        "MOTIE MTI 석유제품",
+        "BOK C19"
+      ]
+    },
+    "steel": {
+      "label_ko": "철강",
+      "label_en": "Steel",
+      "ksic_prefixes": [
+        "C241"
+      ],
+      "mti_export_items": [
+        "철강"
+      ],
+      "notes_ko": [
+        "글로벌 공급과잉·판가·원재료(철광석·고철) 스프레드가 핵심입니다.",
+        "고정비 비중 커 가동률 하락 시 레버리지가 급격히 악화됩니다."
+      ],
+      "watch_notes": [
+        "commodity_hedges",
+        "capex_commitments",
+        "environmental_provisions"
+      ],
+      "priority_metrics": [
+        "operating_margin",
+        "fcf",
+        "interest_coverage",
+        "debt_ratio",
+        "cash_ratio"
+      ],
+      "de_emphasize": [],
+      "flags": [
+        {
+          "id": "cycle_peak_earnings",
+          "when": "operating_margin_very_high",
+          "severity_ko": "업황 호황기 마진일 수 있어 DCF·배수에 영구치로 쓰지 마세요."
+        },
+        {
+          "id": "capex_heavy_fcf",
+          "when": "fcf_negative_and_capex_large",
+          "severity_ko": "대규모 설비투자로 FCF가 음수일 수 있습니다. 투자 계획을 확인하세요."
+        }
+      ],
+      "ma_focus": [
+        "normalized_ebitda_proxy",
+        "net_debt_to_ebitda",
+        "fcf"
+      ],
+      "sources": [
+        "MOTIE MTI 철강",
+        "BOK C24"
+      ]
+    },
+    "shipbuilding": {
+      "label_ko": "조선·기타 운송장비(선박)",
+      "label_en": "Shipbuilding",
+      "ksic_prefixes": [
+        "C311",
+        "C31"
+      ],
+      "mti_export_items": [
+        "선박"
+      ],
+      "notes_ko": [
+        "선수금·계약부채가 커서 부채비율이 높아 보일 수 있습니다(이자부 차입과 구분).",
+        "공사진행률·예상원가 변경이 손익을 좌우합니다.",
+        "건조계약 잔고(백로그)와 강재·환율 헤지를 주석에서 보세요."
+      ],
+      "watch_notes": [
+        "contract_liabilities_advances",
+        "percentage_of_completion",
+        "construction_backlog",
+        "raw_material_hedges",
+        "guarantee_obligations"
+      ],
+      "priority_metrics": [
+        "operating_margin",
+        "fcf",
+        "earnings_quality",
+        "current_ratio",
+        "interest_coverage",
+        "debt_ratio"
+      ],
+      "de_emphasize": [
+        "inventory_turnover"
+      ],
+      "flags": [
+        {
+          "id": "advances_inflate_liabilities",
+          "when": "contract_liabilities_high",
+          "severity_ko": "선수금/계약부채가 부채를 부풀립니다. 이자부 차입금과 분리해 보세요."
+        },
+        {
+          "id": "poc_earnings_quality",
+          "when": "earnings_quality_low",
+          "severity_ko": "진행기준 손익은 현금과 어긋날 수 있어 CFO/순이익을 함께 봅니다."
+        }
+      ],
+      "ma_focus": [
+        "backlog_note",
+        "fcf",
+        "net_debt_ex_contract_liab",
+        "percentage_of_completion_risk"
+      ],
+      "sources": [
+        "KIS Shipbuilding methodology",
+        "NICE shipbuilding adjustments",
+        "MOTIE MTI 선박",
+        "BOK C311"
+      ],
+      "adjusted_views": [
+        {
+          "id": "leverage_ex_contract",
+          "label_ko": "계약부채·선수금 제외 레버리지",
+          "requires_accounts": [
+            "CONTRACT_LIABILITIES"
+          ],
+          "note_ko": "보고 부채비율과 해석이 달라질 수 있습니다."
+        }
+      ]
+    },
+    "textile": {
+      "label_ko": "섬유·의류",
+      "label_en": "Textiles / Apparel",
+      "ksic_prefixes": [
+        "C13",
+        "C14"
+      ],
+      "mti_export_items": [
+        "섬유"
+      ],
+      "notes_ko": [
+        "원자재·임가공·환율과 패스트패션 수요에 민감합니다.",
+        "운전자본(재고·매출채권) 부담이 커질 수 있습니다."
+      ],
+      "watch_notes": [
+        "inventory_valuation",
+        "receivables_quality",
+        "fx_exposure"
+      ],
+      "priority_metrics": [
+        "operating_margin",
+        "inventory_turnover",
+        "receivables_turnover",
+        "current_ratio",
+        "fcf"
+      ],
+      "de_emphasize": [],
+      "flags": [
+        {
+          "id": "inventory_build",
+          "when": "inventory_turnover_falling",
+          "severity_ko": "재고회전 하락은 수요 둔화·가격 하락 신호일 수 있습니다."
+        }
+      ],
+      "ma_focus": [
+        "fcf",
+        "net_cash_proxy",
+        "earnings_quality"
+      ],
+      "sources": [
+        "BOK Financial Statement Analysis (KSIC)",
+        "MOTIE major export items (MTI)"
+      ]
+    },
+    "biohealth": {
+      "label_ko": "바이오헬스",
+      "label_en": "Biohealth / Pharma",
+      "ksic_prefixes": [
+        "C21"
+      ],
+      "mti_export_items": [
+        "바이오헬스"
+      ],
+      "notes_ko": [
+        "R&D 자산화·임상 성과·허가 리스크가 회계이익보다 중요할 수 있습니다.",
+        "마일스톤·라이선스 수익의 일회성을 구분해 보세요."
+      ],
+      "watch_notes": [
+        "rd_capitalization",
+        "milestone_revenue",
+        "litigation",
+        "inventory_valuation"
+      ],
+      "priority_metrics": [
+        "operating_margin",
+        "fcf",
+        "cash_ratio",
+        "roe",
+        "earnings_quality"
+      ],
+      "de_emphasize": [],
+      "flags": [
+        {
+          "id": "capex_heavy_fcf",
+          "when": "fcf_negative_and_capex_large",
+          "severity_ko": "대규모 설비투자로 FCF가 음수일 수 있습니다. 투자 계획을 확인하세요."
+        }
+      ],
+      "ma_focus": [
+        "fcf",
+        "net_cash_proxy",
+        "pipeline_note"
+      ],
+      "sources": [
+        "MOTIE MTI 바이오헬스",
+        "BOK C21"
+      ]
+    },
+    "battery": {
+      "label_ko": "이차전지",
+      "label_en": "Secondary Batteries",
+      "ksic_prefixes": [
+        "C282"
+      ],
+      "mti_export_items": [
+        "이차전지"
+      ],
+      "notes_ko": [
+        "증설 Capex·메탈 가격·수율·고객(EV OEM) 계약이 핵심입니다.",
+        "공급과잉 국면에서 마진·가동률이 급변할 수 있습니다."
+      ],
+      "watch_notes": [
+        "capex_commitments",
+        "customer_concentration",
+        "commodity_hedges",
+        "inventory_valuation"
+      ],
+      "priority_metrics": [
+        "operating_margin",
+        "fcf",
+        "roic",
+        "interest_coverage",
+        "cash_ratio"
+      ],
+      "de_emphasize": [],
+      "flags": [
+        {
+          "id": "capex_heavy_fcf",
+          "when": "fcf_negative_and_capex_large",
+          "severity_ko": "대규모 설비투자로 FCF가 음수일 수 있습니다. 투자 계획을 확인하세요."
+        },
+        {
+          "id": "cycle_peak_earnings",
+          "when": "operating_margin_very_high",
+          "severity_ko": "업황 호황기 마진일 수 있어 DCF·배수에 영구치로 쓰지 마세요."
+        },
+        {
+          "id": "inventory_build",
+          "when": "inventory_turnover_falling",
+          "severity_ko": "재고회전 하락은 수요 둔화·가격 하락 신호일 수 있습니다."
+        }
+      ],
+      "ma_focus": [
+        "fcf",
+        "normalized_ebitda_proxy",
+        "net_debt_to_ebitda"
+      ],
+      "sources": [
+        "MOTIE MTI 이차전지",
+        "BOK C28"
+      ]
+    },
+    "electrical_equipment": {
+      "label_ko": "전기기기·전기장비",
+      "label_en": "Electrical Equipment",
+      "ksic_prefixes": [
+        "C28"
+      ],
+      "mti_export_items": [
+        "전기기기"
+      ],
+      "notes_ko": [
+        "전력기기·전선 등은 프로젝트 수주와 원자재(구리)에 민감합니다.",
+        "세부 이차전지(C282)가 있으면 battery 키트가 우선합니다."
+      ],
+      "watch_notes": [
+        "construction_backlog",
+        "commodity_hedges",
+        "guarantee_obligations"
+      ],
+      "priority_metrics": [
+        "operating_margin",
+        "fcf",
+        "interest_coverage",
+        "current_ratio",
+        "roe"
+      ],
+      "de_emphasize": [],
+      "flags": [
+        {
+          "id": "capex_heavy_fcf",
+          "when": "fcf_negative_and_capex_large",
+          "severity_ko": "대규모 설비투자로 FCF가 음수일 수 있습니다. 투자 계획을 확인하세요."
+        }
+      ],
+      "ma_focus": [
+        "fcf",
+        "net_debt_proxy",
+        "backlog_note"
+      ],
+      "sources": [
+        "BOK Financial Statement Analysis (KSIC)",
+        "MOTIE major export items (MTI)"
+      ]
+    },
+    "nonferrous": {
+      "label_ko": "비철금속",
+      "label_en": "Non-ferrous Metals",
+      "ksic_prefixes": [
+        "C242"
+      ],
+      "mti_export_items": [
+        "비철금속"
+      ],
+      "notes_ko": [
+        "LME 등 메탈 가격·프리미엄이 실적을 좌우하는 원자재 업종입니다.",
+        "재고평가와 헤지 회계를 반드시 확인하세요."
+      ],
+      "watch_notes": [
+        "commodity_hedges",
+        "inventory_valuation"
+      ],
+      "priority_metrics": [
+        "operating_margin",
+        "fcf",
+        "current_ratio",
+        "interest_coverage",
+        "cash_ratio"
+      ],
+      "de_emphasize": [],
+      "flags": [
+        {
+          "id": "cycle_peak_earnings",
+          "when": "operating_margin_very_high",
+          "severity_ko": "업황 호황기 마진일 수 있어 DCF·배수에 영구치로 쓰지 마세요."
+        },
+        {
+          "id": "inventory_build",
+          "when": "inventory_turnover_falling",
+          "severity_ko": "재고회전 하락은 수요 둔화·가격 하락 신호일 수 있습니다."
+        }
+      ],
+      "ma_focus": [
+        "normalized_ebitda_proxy",
+        "fcf",
+        "net_debt_to_ebitda"
+      ],
+      "sources": [
+        "BOK Financial Statement Analysis (KSIC)",
+        "MOTIE major export items (MTI)"
+      ]
+    },
+    "food_agri": {
+      "label_ko": "식료품·농수산 관련 제조",
+      "label_en": "Food / Agri processing",
+      "ksic_prefixes": [
+        "C10",
+        "C11"
+      ],
+      "mti_export_items": [
+        "농수산식품"
+      ],
+      "notes_ko": [
+        "원재료 작황·수입 곡물가·환율이 원가에 직접 반영됩니다.",
+        "운전자본과 재고 신선도·폐기율이 중요합니다."
+      ],
+      "watch_notes": [
+        "inventory_valuation",
+        "commodity_hedges",
+        "fx_exposure"
+      ],
+      "priority_metrics": [
+        "operating_margin",
+        "inventory_turnover",
+        "current_ratio",
+        "fcf",
+        "roe"
+      ],
+      "de_emphasize": [],
+      "flags": [
+        {
+          "id": "inventory_build",
+          "when": "inventory_turnover_falling",
+          "severity_ko": "재고회전 하락은 수요 둔화·가격 하락 신호일 수 있습니다."
+        }
+      ],
+      "ma_focus": [
+        "fcf",
+        "earnings_quality",
+        "net_cash_proxy"
+      ],
+      "sources": [
+        "BOK Financial Statement Analysis (KSIC)",
+        "MOTIE major export items (MTI)"
+      ]
+    },
+    "cosmetics": {
+      "label_ko": "화장품·생활화학",
+      "label_en": "Cosmetics",
+      "ksic_prefixes": [
+        "C204"
+      ],
+      "mti_export_items": [
+        "화장품"
+      ],
+      "notes_ko": [
+        "브랜드·유통 채널·해외 비중(중국 등)이 성장과 마진을 좌우합니다.",
+        "마케팅비·반품·재고진부화를 보세요."
+      ],
+      "watch_notes": [
+        "inventory_valuation",
+        "return_provisions",
+        "related_party"
+      ],
+      "priority_metrics": [
+        "operating_margin",
+        "roe",
+        "inventory_turnover",
+        "fcf",
+        "cash_ratio"
+      ],
+      "de_emphasize": [],
+      "flags": [
+        {
+          "id": "inventory_build",
+          "when": "inventory_turnover_falling",
+          "severity_ko": "재고회전 하락은 수요 둔화·가격 하락 신호일 수 있습니다."
+        }
+      ],
+      "ma_focus": [
+        "fcf",
+        "net_cash_proxy",
+        "earnings_quality"
+      ],
+      "sources": [
+        "BOK Financial Statement Analysis (KSIC)",
+        "MOTIE major export items (MTI)"
+      ]
+    },
+    "household_goods": {
+      "label_ko": "생활용품·기타 소비재 제조",
+      "label_en": "Household / Consumer goods",
+      "ksic_prefixes": [
+        "C33",
+        "C32"
+      ],
+      "mti_export_items": [
+        "생활용품"
+      ],
+      "notes_ko": [
+        "내수 소비와 유통 협상력이 핵심입니다.",
+        "재고·매출채권 관리가 현금흐름을 가릅니다."
+      ],
+      "watch_notes": [
+        "inventory_valuation",
+        "receivables_quality"
+      ],
+      "priority_metrics": [
+        "operating_margin",
+        "inventory_turnover",
+        "current_ratio",
+        "fcf",
+        "roe"
+      ],
+      "de_emphasize": [],
+      "flags": [
+        {
+          "id": "inventory_build",
+          "when": "inventory_turnover_falling",
+          "severity_ko": "재고회전 하락은 수요 둔화·가격 하락 신호일 수 있습니다."
+        }
+      ],
+      "ma_focus": [
+        "fcf",
+        "net_cash_proxy"
+      ],
+      "sources": [
+        "BOK Financial Statement Analysis (KSIC)",
+        "MOTIE major export items (MTI)"
+      ]
+    },
+    "shipping": {
+      "label_ko": "해운(수상 운송)",
+      "label_en": "Shipping / Water transport",
+      "ksic_prefixes": [
+        "H50"
+      ],
+      "mti_export_items": [],
+      "notes_ko": [
+        "IFRS 16 용선·리스부채가 부채비율·레버리지를 크게 올립니다.",
+        "운임 사이클에 EBITDA가 민감해 한 해 배수만으로 판단하기 어렵습니다.",
+        "선대 담보·SPC·용선 만기표를 주석에서 확인하세요."
+      ],
+      "watch_notes": [
+        "ifrs16_lease_maturity",
+        "charter_commitments",
+        "vessel_collateral",
+        "spc_affiliates",
+        "bunker_hedges"
+      ],
+      "priority_metrics": [
+        "fcf",
+        "earnings_quality",
+        "interest_coverage",
+        "cash_ratio",
+        "operating_margin",
+        "debt_ratio"
+      ],
+      "de_emphasize": [
+        "debt_ratio_raw_only"
+      ],
+      "flags": [
+        {
+          "id": "lease_inflates_leverage",
+          "when": "lease_liabilities_present_or_high_debt",
+          "severity_ko": "부채비율이 높아 보여도 상당 부분이 용선·리스일 수 있습니다."
+        },
+        {
+          "id": "cycle_peak_earnings",
+          "when": "operating_margin_very_high",
+          "severity_ko": "운임 호황기 이익을 영구 수준으로 쓰지 마세요(DCF·배수 가정 주의)."
+        }
+      ],
+      "ma_focus": [
+        "net_debt_incl_lease",
+        "fcf",
+        "normalized_ebitda_note",
+        "fleet_nav_note"
+      ],
+      "sources": [
+        "KIS Shipping methodology 2020",
+        "K-IFRS 1116",
+        "BOK H50"
+      ],
+      "adjusted_views": [
+        {
+          "id": "leverage_ex_lease",
+          "label_ko": "리스 제외 레버리지(가능 시)",
+          "requires_accounts": [
+            "LEASE_LIABILITIES"
+          ],
+          "note_ko": "리스부채를 뺀 순차입/이익으로 보면 보고 부채비율과 해석이 달라집니다."
+        }
+      ]
+    },
+    "airline": {
+      "label_ko": "항공 운송",
+      "label_en": "Airlines",
+      "ksic_prefixes": [
+        "H51"
+      ],
+      "mti_export_items": [],
+      "notes_ko": [
+        "항공기 리스(IFRS 16)로 부채·사용권자산이 크게 인식됩니다.",
+        "유가·환율·수요(여객/화물) 민감도가 극단적입니다."
+      ],
+      "watch_notes": [
+        "ifrs16_lease_maturity",
+        "fuel_hedges",
+        "fx_exposure"
+      ],
+      "priority_metrics": [
+        "fcf",
+        "operating_margin",
+        "interest_coverage",
+        "cash_ratio",
+        "debt_ratio"
+      ],
+      "de_emphasize": [],
+      "flags": [
+        {
+          "id": "lease_inflates_leverage",
+          "when": "lease_liabilities_present_or_high_debt",
+          "severity_ko": "리스부채가 레버리지를 크게 올립니다."
+        },
+        {
+          "id": "cycle_peak_earnings",
+          "when": "operating_margin_very_high",
+          "severity_ko": "업황 호황기 마진일 수 있어 DCF·배수에 영구치로 쓰지 마세요."
+        }
+      ],
+      "ma_focus": [
+        "net_debt_incl_lease",
+        "fcf",
+        "normalized_ebitda_note"
+      ],
+      "sources": [
+        "KIS IFRS16 airline/shipping reviews",
+        "BOK H51"
+      ]
+    },
+    "construction": {
+      "label_ko": "건설",
+      "label_en": "Construction",
+      "ksic_prefixes": [
+        "F41",
+        "F42",
+        "F"
+      ],
+      "mti_export_items": [],
+      "notes_ko": [
+        "진행기준·미청구공사·주택 분양 수익 인식이 핵심 왜곡 요인입니다.",
+        "PF·지급보증·공사손실충당을 주석에서 확인하세요."
+      ],
+      "watch_notes": [
+        "percentage_of_completion",
+        "unbilled_receivables",
+        "guarantee_obligations",
+        "project_financing"
+      ],
+      "priority_metrics": [
+        "operating_margin",
+        "fcf",
+        "current_ratio",
+        "debt_ratio",
+        "earnings_quality"
+      ],
+      "de_emphasize": [],
+      "flags": [
+        {
+          "id": "poc_earnings_quality",
+          "when": "earnings_quality_low",
+          "severity_ko": "진행기준 이익과 영업현금 괴리를 점검하세요."
+        }
+      ],
+      "ma_focus": [
+        "fcf",
+        "guarantee_contingent",
+        "percentage_of_completion_risk"
+      ],
+      "sources": [
+        "BOK F construction",
+        "construction credit practice"
+      ]
+    },
+    "utilities": {
+      "label_ko": "전기·가스·유틸리티",
+      "label_en": "Utilities",
+      "ksic_prefixes": [
+        "D35",
+        "D"
+      ],
+      "mti_export_items": [],
+      "notes_ko": [
+        "규제요금·연료비 연동·대규모 설비자산이 특징입니다.",
+        "차입·사채 만기구조와 이자보상이 핵심입니다."
+      ],
+      "watch_notes": [
+        "regulatory_assets",
+        "capex_commitments",
+        "fuel_cost_pass_through"
+      ],
+      "priority_metrics": [
+        "interest_coverage",
+        "fcf",
+        "debt_ratio",
+        "operating_margin",
+        "cash_ratio"
+      ],
+      "de_emphasize": [],
+      "flags": [
+        {
+          "id": "capex_heavy_fcf",
+          "when": "fcf_negative_and_capex_large",
+          "severity_ko": "대규모 설비투자로 FCF가 음수일 수 있습니다. 투자 계획을 확인하세요."
+        }
+      ],
+      "ma_focus": [
+        "fcf",
+        "net_debt_to_ebitda",
+        "interest_coverage"
+      ],
+      "sources": [
+        "BOK Financial Statement Analysis (KSIC)",
+        "MOTIE major export items (MTI)"
+      ]
+    },
+    "retail_wholesale": {
+      "label_ko": "도소매",
+      "label_en": "Retail / Wholesale",
+      "ksic_prefixes": [
+        "G46",
+        "G47",
+        "G45",
+        "G"
+      ],
+      "mti_export_items": [],
+      "notes_ko": [
+        "임차·리스(점포)와 재고회전이 핵심입니다.",
+        "매출총이익률·동일점포 성장보다 운전자본을 같이 보세요."
+      ],
+      "watch_notes": [
+        "ifrs16_lease_maturity",
+        "inventory_valuation",
+        "franchise_receivables"
+      ],
+      "priority_metrics": [
+        "operating_margin",
+        "inventory_turnover",
+        "current_ratio",
+        "fcf",
+        "cash_ratio"
+      ],
+      "de_emphasize": [],
+      "flags": [
+        {
+          "id": "inventory_build",
+          "when": "inventory_turnover_falling",
+          "severity_ko": "재고회전 하락은 수요 둔화·가격 하락 신호일 수 있습니다."
+        },
+        {
+          "id": "lease_inflates_leverage",
+          "when": "lease_liabilities_present_or_high_debt",
+          "severity_ko": "점포 리스부채가 레버리지를 올립니다."
+        }
+      ],
+      "ma_focus": [
+        "fcf",
+        "net_debt_incl_lease",
+        "earnings_quality"
+      ],
+      "sources": [
+        "BOK Financial Statement Analysis (KSIC)",
+        "MOTIE major export items (MTI)"
+      ]
+    },
+    "precision_instruments": {
+      "label_ko": "의료·정밀기기",
+      "label_en": "Precision / Medical devices",
+      "ksic_prefixes": [
+        "C27"
+      ],
+      "mti_export_items": [],
+      "notes_ko": [
+        "인허가·품질·병원 고객 집중이 중요합니다.",
+        "R&D와 재고 진부화를 확인하세요."
+      ],
+      "watch_notes": [
+        "rd_capitalization",
+        "regulatory_approval",
+        "inventory_valuation"
+      ],
+      "priority_metrics": [
+        "operating_margin",
+        "roe",
+        "fcf",
+        "cash_ratio",
+        "earnings_quality"
+      ],
+      "de_emphasize": [],
+      "flags": [],
+      "ma_focus": [
+        "fcf",
+        "net_cash_proxy"
+      ],
+      "sources": [
+        "BOK Financial Statement Analysis (KSIC)",
+        "MOTIE major export items (MTI)"
+      ]
+    },
+    "rubber_plastic": {
+      "label_ko": "고무·플라스틱",
+      "label_en": "Rubber / Plastics",
+      "ksic_prefixes": [
+        "C22"
+      ],
+      "mti_export_items": [],
+      "notes_ko": [
+        "유가·나프타 연동 원가와 전방(자동차·가전) 수요에 연동됩니다."
+      ],
+      "watch_notes": [
+        "commodity_hedges",
+        "customer_concentration"
+      ],
+      "priority_metrics": [
+        "operating_margin",
+        "fcf",
+        "inventory_turnover",
+        "interest_coverage"
+      ],
+      "de_emphasize": [],
+      "flags": [
+        {
+          "id": "cycle_peak_earnings",
+          "when": "operating_margin_very_high",
+          "severity_ko": "업황 호황기 마진일 수 있어 DCF·배수에 영구치로 쓰지 마세요."
+        },
+        {
+          "id": "inventory_build",
+          "when": "inventory_turnover_falling",
+          "severity_ko": "재고회전 하락은 수요 둔화·가격 하락 신호일 수 있습니다."
+        }
+      ],
+      "ma_focus": [
+        "fcf",
+        "net_debt_proxy"
+      ],
+      "sources": [
+        "BOK Financial Statement Analysis (KSIC)",
+        "MOTIE major export items (MTI)"
+      ]
+    },
+    "primary_metal_other": {
+      "label_ko": "1차 금속(기타)",
+      "label_en": "Primary metals (broad)",
+      "ksic_prefixes": [
+        "C24"
+      ],
+      "mti_export_items": [],
+      "notes_ko": [
+        "철강·비철 세부가 없으면 금속 사이클 일반 가정을 적용합니다."
+      ],
+      "watch_notes": [
+        "commodity_hedges",
+        "inventory_valuation"
+      ],
+      "priority_metrics": [
+        "operating_margin",
+        "fcf",
+        "interest_coverage",
+        "debt_ratio"
+      ],
+      "de_emphasize": [],
+      "flags": [
+        {
+          "id": "cycle_peak_earnings",
+          "when": "operating_margin_very_high",
+          "severity_ko": "업황 호황기 마진일 수 있어 DCF·배수에 영구치로 쓰지 마세요."
+        }
+      ],
+      "ma_focus": [
+        "normalized_ebitda_proxy",
+        "net_debt_to_ebitda"
+      ],
+      "sources": [
+        "BOK Financial Statement Analysis (KSIC)",
+        "MOTIE major export items (MTI)"
+      ]
+    },
+    "manufacturing_other": {
+      "label_ko": "기타 제조(한은 중분류 폴백)",
+      "label_en": "Other manufacturing",
+      "ksic_prefixes": [
+        "C"
+      ],
+      "mti_export_items": [],
+      "notes_ko": [
+        "세분 키트에 없는 제조업 KSIC는 여기로 옵니다.",
+        "공통으로 유동성·레버리지·FCF·이익의 질을 봅니다."
+      ],
+      "watch_notes": [
+        "contingent_liabilities",
+        "related_party",
+        "lease_commitments"
+      ],
+      "priority_metrics": [
+        "current_ratio",
+        "debt_ratio",
+        "roe",
+        "operating_margin",
+        "fcf",
+        "earnings_quality"
+      ],
+      "de_emphasize": [],
+      "flags": [],
+      "ma_focus": [
+        "fcf",
+        "net_cash_proxy",
+        "earnings_quality",
+        "interest_coverage"
+      ],
+      "sources": [
+        "BOK Financial Statement Analysis (KSIC)",
+        "MOTIE major export items (MTI)"
+      ]
+    },
+    "general": {
+      "label_ko": "일반(미분류)",
+      "label_en": "General",
+      "ksic_prefixes": [],
+      "mti_export_items": [],
+      "notes_ko": [
+        "업종 미지정 — 공통 재무지표만 적용합니다."
+      ],
+      "watch_notes": [
+        "contingent_liabilities",
+        "related_party",
+        "lease_commitments"
+      ],
+      "priority_metrics": [
+        "current_ratio",
+        "debt_ratio",
+        "roe",
+        "operating_margin",
+        "fcf",
+        "earnings_quality"
+      ],
+      "de_emphasize": [],
+      "flags": [],
+      "ma_focus": [
+        "fcf",
+        "net_cash_proxy",
+        "earnings_quality",
+        "interest_coverage"
+      ],
+      "sources": [
+        "BOK Financial Statement Analysis (KSIC)",
+        "MOTIE major export items (MTI)"
+      ]
+    }
+  }
+}
