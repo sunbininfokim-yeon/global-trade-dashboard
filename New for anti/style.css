@@ -2573,3 +2573,46 @@ body.macro-mode .map-pane { flex: 1 1 100%; }
 .ms-brief-card p { font-size: 11.5px; line-height: 1.6; color: #64748b; margin: 0; }
 .co-sens td { font-variant-numeric: tabular-nums; }
 .co-sens thead th:first-child { font-size: 10.5px; color: #475569; }
+
+/* ── 미시구조 3분할 · 클릭 드릴다운 ───────────────────────────────────────── */
+.ms-card { text-align: left; width: 100%; font-family: inherit; cursor: default; }
+.ms-card:disabled { opacity: 1; }
+.ms-clickable { cursor: pointer; transition: border-color .15s, background .15s; }
+.ms-clickable:hover { border-color: rgba(56,189,248,.45); background: rgba(56,189,248,.07); }
+.ms-more { display: block; font-size: 10.5px; color: #38bdf8; margin-top: 7px; }
+.ms-link { background: none; border: 0; color: #7dd3fc; cursor: pointer; font-family: inherit; font-size: 12.5px; padding: 0; text-decoration: underline dotted; }
+.ms-lead-strong { font-size: 13px; color: #cbd5e1; line-height: 1.6; margin: 0 0 14px; }
+.ms-why { font-size: 13px; line-height: 1.75; color: #cbd5e1; margin: 0 0 12px; }
+.ms-warn { border-left: 2px solid rgba(251,191,36,.45); padding-left: 11px; }
+.ms-ch-tick { font-size: 10px; color: #64748b; margin-top: 2px; }
+.ms-channel { text-align: left; width: 100%; font-family: inherit; }
+
+/* 0을 가운데 둔 발산형 막대: 순매수/순매도가 한눈에 갈려야 한다 */
+.ms-dist { display: flex; flex-direction: column; gap: 5px; }
+.ms-dist-row { display: grid; grid-template-columns: minmax(120px, 1.1fr) 2.4fr minmax(150px, auto); gap: 12px; align-items: center; }
+.ms-dist-row.on .ms-dist-label { color: #e2e8f0; }
+.ms-dist-label { font-size: 11.5px; color: #94a3b8; font-variant-numeric: tabular-nums; }
+.ms-dist-label span { display: block; font-size: 10px; color: #475569; }
+.ms-dist-bars { display: flex; flex-direction: column; gap: 2px; }
+.ms-dist-track { position: relative; height: 9px; background: rgba(148,163,184,.07); border-radius: 2px; }
+.ms-dist-track::before { content: ''; position: absolute; left: 50%; top: 0; bottom: 0; width: 1px; background: rgba(148,163,184,.25); }
+.ms-dist-fill { position: absolute; top: 0; bottom: 0; border-radius: 2px; }
+.ms-retail { background: #38bdf8; } .ms-foreign { background: #f472b6; } .ms-inst { background: #a78bfa; }
+.ms-dist-fill.neg { opacity: .55; }
+.ms-dist-val { font-size: 10.5px; color: #64748b; text-align: right; font-variant-numeric: tabular-nums; }
+.ms-dist-legend { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 10px; font-size: 10.5px; color: #64748b; }
+.ms-sw { display: inline-block; width: 9px; height: 9px; border-radius: 2px; margin-right: 5px; vertical-align: middle; }
+.ms-dist-zero { color: #475569; }
+
+.ms-modal-back {
+    position: fixed; inset: 0; z-index: 60; background: rgba(2,6,16,.72);
+    display: flex; align-items: center; justify-content: center; padding: 24px;
+}
+.ms-modal {
+    width: min(860px, 94vw); max-height: 82vh; overflow-y: auto;
+    background: rgba(11,17,30,.98); border: 1px solid rgba(148,163,184,.25);
+    border-radius: 13px; padding: 20px 22px; box-shadow: 0 26px 70px rgba(0,0,0,.65);
+}
+.ms-modal-head { display: flex; justify-content: space-between; align-items: center; gap: 14px; margin-bottom: 14px; }
+.ms-modal-head h3 { font-size: 15px; font-weight: 620; margin: 0; color: #e2e8f0; }
+@media (max-width: 900px) { .ms-dist-row { grid-template-columns: minmax(88px, 1fr) 2fr; } .ms-dist-val { display: none; } }
