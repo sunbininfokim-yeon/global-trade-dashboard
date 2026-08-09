@@ -222,8 +222,77 @@
         5,
         10
       ],
-      "note_ko": "TGA↑ → 시중 유동성 흡수",
-      "fred_hint": "WTREGEN"
+      "note_ko": "TGA↑ → 시중 유동성 흡수. 클릭: 잔고 선그래프 + QRA 만기(이표/무이표) 바·표.",
+      "fred_hint": "WTREGEN",
+      "refresh_tier": "weekly",
+      "chart_type": "line",
+      "ui": {
+        "click_view": "line",
+        "secondary_view": "qra_maturity_bar_table"
+      }
+    },
+    {
+      "id": "dts_marketable_net",
+      "category": "liquidity",
+      "label_ko": "시중성 국채 순발행(일)",
+      "unit": "bn_usd",
+      "format": "bn1",
+      "higher_is": "more_supply",
+      "history_years": [5],
+      "refresh_tier": "weekly",
+      "chart_type": "bar",
+      "note_ko": "DTS Public Debt Transactions — 당일 Marketable Bills/Notes/Bonds 발행−상환.",
+      "ui": {
+        "click_view": "bar_table"
+      }
+    },
+    {
+      "id": "public_debt_outstanding",
+      "category": "liquidity",
+      "label_ko": "연방 총부채",
+      "unit": "tn_usd",
+      "format": "tn2",
+      "higher_is": "more_debt",
+      "history_years": [5, 10],
+      "refresh_tier": "weekly",
+      "chart_type": "line",
+      "note_ko": "Debt to the Penny — 시중보유+정부내보유."
+    },
+    {
+      "id": "mts_deficit",
+      "category": "liquidity",
+      "label_ko": "월간 재정적자",
+      "unit": "bn_usd",
+      "format": "bn0",
+      "higher_is": "mixed",
+      "history_years": [5, 10],
+      "refresh_tier": "monthly",
+      "chart_type": "line",
+      "note_ko": "MTS On-Budget 흑자(+)/적자(-). 음수=적자."
+    },
+    {
+      "id": "mts_receipts",
+      "category": "liquidity",
+      "label_ko": "월간 세입",
+      "unit": "bn_usd",
+      "format": "bn0",
+      "higher_is": "stronger",
+      "history_years": [5, 10],
+      "refresh_tier": "monthly",
+      "chart_type": "line",
+      "note_ko": "MTS Table 2 Total Receipts"
+    },
+    {
+      "id": "mts_outlays",
+      "category": "liquidity",
+      "label_ko": "월간 세출",
+      "unit": "bn_usd",
+      "format": "bn0",
+      "higher_is": "more_spending",
+      "history_years": [5, 10],
+      "refresh_tier": "monthly",
+      "chart_type": "line",
+      "note_ko": "MTS Table 2 Total Outlays"
     },
     {
       "id": "qra_coupon_bn",
@@ -265,7 +334,7 @@
       "refresh_tier": "quarterly",
       "chart_type": "bar",
       "composite": true,
-      "note_ko": "클릭 시 전분 실적·직전예측·당기공시 비교 바/표 (compare). 만기별은 components.",
+      "note_ko": "클릭 시 전분 실적·직전예측·당기공시 비교 바/표 (compare). 만기별은 components(이표/무이표).",
       "news_query": "US Treasury QRA refunding bills coupons",
       "news_tags": [
         "qra",
@@ -4841,7 +4910,100 @@
         "base": 780,
         "vol": 0.04,
         "drift": 0.0,
-        "floor": 50
+        "floor": 50,
+        "chart_type": "line",
+        "ui": {
+          "click_view": "line",
+          "secondary_view": "qra_maturity_bar_table"
+        }
+      },
+      "dts_marketable_net": {
+        "base": 45.8,
+        "vol": 0.2,
+        "drift": 0.0,
+        "components": [
+          {
+            "id": "bills",
+            "label_ko": "T-Bills",
+            "kind": "bill",
+            "value": 45.8,
+            "unit": "bn_usd"
+          },
+          {
+            "id": "notes",
+            "label_ko": "Notes",
+            "kind": "coupon",
+            "value": 0.0,
+            "unit": "bn_usd"
+          },
+          {
+            "id": "bonds",
+            "label_ko": "Bonds",
+            "kind": "coupon",
+            "value": 0.0,
+            "unit": "bn_usd"
+          }
+        ],
+        "table": [
+          {
+            "kind": "bill",
+            "label_ko": "T-Bills",
+            "issues_bn": 343.2,
+            "redemptions_bn": 297.4,
+            "net_bn": 45.8
+          },
+          {
+            "kind": "coupon",
+            "label_ko": "Notes",
+            "issues_bn": 0,
+            "redemptions_bn": 0,
+            "net_bn": 0
+          },
+          {
+            "kind": "coupon",
+            "label_ko": "Bonds",
+            "issues_bn": 0,
+            "redemptions_bn": 0,
+            "net_bn": 0
+          }
+        ],
+        "note_ko": "DTS Public Debt Transactions (Marketable). fixture — --live 시 Fiscal Data."
+      },
+      "public_debt_outstanding": {
+        "base": 36.85,
+        "vol": 0.002,
+        "drift": 0.001,
+        "floor": 20,
+        "components": [
+          {
+            "id": "public",
+            "label_ko": "시중 보유",
+            "value": 28.9,
+            "unit": "tn_usd"
+          },
+          {
+            "id": "intragov",
+            "label_ko": "정부내 보유",
+            "value": 7.95,
+            "unit": "tn_usd"
+          }
+        ]
+      },
+      "mts_deficit": {
+        "base": -220,
+        "vol": 40.0,
+        "drift": 0.0,
+        "note_ko": "음수=적자. MTS Table 2 On-Budget."
+      },
+      "mts_receipts": {
+        "base": 420,
+        "vol": 20.0,
+        "drift": 0.0
+      },
+      "mts_outlays": {
+        "base": 640,
+        "vol": 25.0,
+        "drift": 0.0
       },
       "qra_coupon_bn": {
         "base": 520,
@@ -4866,48 +5028,64 @@
             "id": "bills",
             "label_ko": "T-Bills",
             "tenor": "bills",
+            "kind": "bill",
+            "instrument": "bill",
             "value": 890
           },
           {
             "id": "c2y",
-            "label_ko": "2Y",
+            "label_ko": "2Y Note",
             "tenor": "2y",
+            "kind": "coupon",
+            "instrument": "note",
             "value": 120
           },
           {
             "id": "c3y",
-            "label_ko": "3Y",
+            "label_ko": "3Y Note",
             "tenor": "3y",
+            "kind": "coupon",
+            "instrument": "note",
             "value": 85
           },
           {
             "id": "c5y",
-            "label_ko": "5Y",
+            "label_ko": "5Y Note",
             "tenor": "5y",
+            "kind": "coupon",
+            "instrument": "note",
             "value": 95
           },
           {
             "id": "c7y",
-            "label_ko": "7Y",
+            "label_ko": "7Y Note",
             "tenor": "7y",
+            "kind": "coupon",
+            "instrument": "note",
             "value": 70
           },
           {
             "id": "c10y",
-            "label_ko": "10Y",
+            "label_ko": "10Y Note",
             "tenor": "10y",
+            "kind": "coupon",
+            "instrument": "note",
             "value": 80
           },
           {
             "id": "c20y",
-            "label_ko": "20Y",
+            "label_ko": "20Y Bond",
             "tenor": "20y",
+            "kind": "coupon",
+            "instrument": "bond",
             "value": 40
           },
           {
             "id": "c30y",
-            "label_ko": "30Y",
+            "label_ko": "30Y Bond",
             "tenor": "30y",
+            "kind": "coupon",
+            "instrument": "bond",
             "value": 30
           }
         ]

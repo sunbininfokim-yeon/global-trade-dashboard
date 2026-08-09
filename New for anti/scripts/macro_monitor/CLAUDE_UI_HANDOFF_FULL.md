@@ -15,37 +15,44 @@ python3 build_macro_monitor.py --live   # QRA compare 오버레이 포함
 
 ---
 
-## 1. (신규) QRA 클릭 → 비교 표/그래프 — **UI 필수**
+## 1. (신규) QRA → **레이어 스택** (정태 × 통시) — **UI 필수**
 
-선빈: *클릭하면 전분기 발행량 또는 전분기 예측 발행량과 해당기 발행량, 또는 셋 다 표·그래프*
+정본 설계: [`ISSUANCE_LAYERS.md`](./ISSUANCE_LAYERS.md)
+
+USA `qra_issuance.issuance_layers`:
+
+| 밴드 | 축 | 레이어 | 기본 |
+|------|----|--------|------|
+| L0 표제 | 정태 요약 | 당기 순발행 칩 | sticky |
+| **A 정태 해부** | 이 발표를 가로로 | A1 3-way → A2 Bill\|Coupon → A3 만기 → A4 S&U | **A1 open** |
+| **B 통시** | 세로 시간축 | B1 분기계적 → B2 재추정 → B3 DTS/TGA | collapsed |
+| **C 좌표** | 주변 | C1 SOMA · C2 순유동성/MTS | collapsed |
 
 ### 데이터 계약 (이미 JSON에 있음)
 
-USA 지표/칩 `qra_issuance`:
-
 | 필드 | 용도 |
 |------|------|
-| `compare.series[]` | 그룹 바 차트 (1~3개) |
-| `compare.table[]` | 동일 내용 표 |
-| `compare.series[].id` | `prior_actual` \| `prior_forecast` \| `current` |
-| `compare.series[].label_ko` | 전분기 실적 / 직전 공시 예측 / 당기 공시 |
-| `compare.series[].value` | 순발행 $B (`privately_held_net_marketable`) |
-| `compare.series[].period` | 예: `July–September 2026` |
-| `components[]` | **보조 뷰**: 만기별 쿠폰 바 (기존) |
-| `history_net_borrowing[]` | 선택: 분기 추이 스파크/라인 |
-| `ui.click_view` | `"compare_bar_table"` |
-| `ui.secondary_view` | `"maturity_components"` |
+| `issuance_layers` | 밴드·레이어·read_path · ui.default_layer_id |
+| `compare.series[]` / `table[]` | **A1** 그룹 바+표 |
+| `components[]` + `table[]` | **A2/A3** kind bill\|coupon 만기 |
+| `sources_uses` · `tga_vs_qra` | **A4** |
+| `history_net_borrowing` · `quarters` | **B1** |
+| sibling: `dts_marketable_net` `tga` … | **B3** |
+| sibling: `fed_ust_holdings` `net_liquidity` `mts_*` | **C** |
+| `ui.click_view` | `"compare_bar_table"` (= A1) |
+| `ui.layers_view` | `"issuance_layers"` |
 
 ### UI 동작
 
-1. `qra_issuance` 칩/차트 클릭(또는 드로어 오픈)  
-2. **기본**: `compare` 그룹 바 + 표 (있는 시리즈만)  
-3. 토글/탭: 만기별 `components`  
-4. 칩 숫자: `compare.series` 중 `id==current` 값 우선  
+1. `qra_issuance` 클릭 → 드로어: **L0 sticky + 밴드 탭 A|B|C**  
+2. 기본 탭 **A**, 기본 레이어 **A1** (compare 바+표)  
+3. A2 스택 → A3 표(토글) → A4 접기  
+4. B/C는 탭 전환; sibling 시리즈는 딥링크/스크롤  
+5. 칩 숫자: `compare.series id==current` 우선  
 
 원문 복제·기자 UI 베끼기 금지. 숫자만 공식 Treasury/엔진.
 
-전체 히스토리: `public/data/qra_engine_v1.json` → `events[].compare`, `latest.compare`
+전체 히스토리: `public/data/qra_engine_v1.json` → `events[]`, `history_net_borrowing`
 
 ---
 
@@ -141,6 +148,43 @@ UI: 기본 라인(발전량) → 클릭/토글 시 `energy_mix` 바(비중%).
 EMU는 Ember **EU** 지역 합산 프록시.
 
 원본: `config/electricity_ember_v1.json` · 재추출 `tools/extract_ember_electricity.py`
+
+---
+
+## 2d. (신규) 국가 미리보기 헤드라인 — 통일 슬롯
+
+국가 클릭 전/호버 `headlines[]` (6칸):
+
+| role | role_ko | 예(USA) |
+|------|---------|---------|
+| `growth` | 성장 | `gdp` (YoY\|QoQ) |
+| `policy_rate` | 기준금리 | `effr` |
+| `inflation` | 물가 | `core_cpi_yoy` |
+| `credit_rating` | 신용등급 | `sovereign_ratings` (S&P) |
+| `fx` | 환율 | `dxy` / `usdkrw` … |
+| `key` | 핵심 | 주식 또는 국가 특화(반도체·유가 등) |
+
+각 항목에 `role` / `role_ko` 포함.
+
+---
+
+## 2e. TGA 클릭 + Fiscal Data (미국)
+
+- **TGA**: 기본 **선그래프**(잔고). `ui.secondary_view=qra_maturity_bar_table` → QRA 이표/무이표 만기 **바+표** (`maturity_components` / `maturity_table`)
+- **QRA**: 그대로 compare 기본, 만기 components(`kind: bill|coupon`)
+- 신규 미국 유동성 칩:
+  - `dts_marketable_net` — DTS Public Debt Transactions (당일 Bills/Notes/Bonds 순발행) 바+표
+  - `public_debt_outstanding` — Debt to the Penny
+  - `mts_receipts` / `mts_outlays` / `mts_deficit` — MTS Table 2
+
+출처 URL은 지표 `note_ko`·Fiscal Data.
+
+---
+
+## 2f. 전 국가 `limitations` → 지표 설명
+
+모든 키트 `limitations.kind = "explainers"`, 제목 **지표 설명 (<국가>)**.  
+추론 한계가 아니라 **지표 정의·읽는 법** (미국: TGA/QRA/SOMA… / 타국: 정책금리·환율·주식·GDP·물가·특화).
 
 ---
 
