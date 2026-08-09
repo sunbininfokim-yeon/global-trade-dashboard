@@ -295,19 +295,90 @@ def build_transmission(
 
     prior = open30m_prior_from_backtest(open30m_backtest)
 
+    # Human-readable "why" for UI (실측 inputs — not advice)
+    evidence_us: list[dict[str, Any]] = []
+    for n in regimes.get("names") or []:
+        if n.get("primary_channel") != "downside" and "downside_put_bid" not in (
+            n.get("regimes") or []
+        ):
+            continue
+        inp = n.get("inputs") or {}
+        evidence_us.append(
+            {
+                "symbol": n.get("symbol"),
+                "regimes": n.get("regimes"),
+                "stress_level": n.get("stress_level"),
+                "put_call_volume": inp.get("put_call_volume"),
+                "put_call_oi": inp.get("put_call_oi"),
+                "options_total_volume": inp.get("options_total_volume"),
+                "short_chg_pct": inp.get("short_chg_pct"),
+                "day_return": inp.get("day_return"),
+                "rule_ko": (
+                    "풋/콜 거래량비 ≥1.1 이고 (당일 약세 또는 풋/콜 OI≥1.0) → downside_put_bid"
+                ),
+            }
+        )
+    evidence_us.sort(
+        key=lambda r: float(r.get("put_call_volume") or 0), reverse=True
+    )
+
+    down = channels_out.get("downside") or {}
+    top_drv = (down.get("drivers") or [])[:5]
+    why_bits = []
+    for e in evidence_us[:4]:
+        why_bits.append(
+            f"{e['symbol']} P/C거래량={e.get('put_call_volume')} "
+            f"P/C OI={e.get('put_call_oi')} 공매증감%={e.get('short_chg_pct')}"
+        )
+    link_bits = [
+        f"{d['us']}→{d['kr']}(heat {d['heat']}, {d.get('edge_type')})" for d in top_drv
+    ]
+    headline_ko_map = {
+        "high:downside": "높음 · 하방",
+        "watch:downside": "주의 · 하방",
+        "high:vol_up": "높음 · 변동성 확대",
+        "watch:vol_up": "주의 · 변동성 확대",
+        "high:upside": "높음 · 상방",
+        "watch:upside": "주의 · 상방",
+        "quiet": "조용",
+    }
+    why_ko = (
+        "하방 경보는 ‘미국 종목이 빠졌다’가 아니라, "
+        "공개 옵션에서 풋 거래·OI가 콜보다 두드러진 이름(SOXL/SMH/EWY 등)이 "
+        "한국 반도체·대형주 링크(Tier A/B)로 연결된 상태다. "
+        + ("근거: " + " · ".join(why_bits) if why_bits else "")
+        + ((" · 전이: " + ", ".join(link_bits)) if link_bits else "")
+    )
+    meaning_ko = {
+        "headline": "오늘 US 레짐×KR 링크 heat의 최강 채널 요약. 투자 권유 아님.",
+        "channels": "채널별 heat 합. 카드 클릭 시 drivers·US 옵션/숏 실측값 표를 열 것.",
+        "drivers": "어느 미국 심볼→어느 한국 종목으로 heat가 전달되는지.",
+        "edge_type": "etf_beta=수익률 링크(옵션 포지션 아님). discovered_corr=통계 발견.",
+        "not_price_crash": "당일 미국 주가 급락이 없어도 P/C 상승만으로 하방 레짐이 뜰 수 있음.",
+    }
+
     return {
         "schema_version": "us-kr-transmission-v1",
         "as_of": us_snap.get("as_of"),
         "model_version": "uskr-scenario-2026-08",
         "headline": headline,
+        "headline_ko": headline_ko_map.get(headline, headline),
+        "why_ko": why_ko,
+        "meaning_ko": meaning_ko,
+        "evidence_us": evidence_us,
         "channels": channels_out,
         "edges_active": sorted(edges_active, key=lambda e: -e["heat"])[:40],
         "tier_b_edges_fired": tier_b_n,
         "kospi_open30m_prior": prior,
         "source_priority_used": us_snap.get("source_priority_used"),
+        "ui_hint_ko": (
+            "조기경보 박스/채널 카드/표 행을 클릭하면 evidence_us + drivers + "
+            "us_regime_v1.inputs(P/C·숏) 상세 표를 모달로 표시."
+        ),
         "disclaimer_ko": us_snap.get("disclaimer_ko"),
         "note_ko": (
             "Tier A 고정 링크 (+ Tier B corr 발견, 하향 가중). "
-            "주체 특정 없음. 하방 채널 강조. open30m_prior는 수익률 버킷 프록시."
+            "주체 특정 없음. 하방=풋 우세 레짐×KR 링크 heat. "
+            "open30m_prior는 수익률 버킷 프록시(옵션 히스토리 아님)."
         ),
     }
