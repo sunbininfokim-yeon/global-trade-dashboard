@@ -169,33 +169,62 @@ def classify_letf_name(name: str) -> str:
         return "sector"
     if any(k in n for k in ("나스닥", "필라델피아", "미국", "중국", "일본", "홍콩", "대만", "인도")):
         return "overseas"
-    if any(k in n for k in ("코스닥", "코스피", "200", "레버리지", "인버스", "선물")):
+    if any(k in n for k in ("코스닥", "코스피", "200", "레버리지", "인버스", "선물", "곱버스")):
         return "index"
     return "other_levered"
 
 
+def classify_letf_direction(name: str) -> str:
+    """long vs inverse vs 곱버스(지수 −2x). Name-based for FDR listings.
+
+    소매 관용 '곱버스'는 상품명에 곱버스가 없어도 지수·선물 인버스2X
+    (예: KODEX 200선물인버스2X)를 gobus_inverse_2x로 본다.
+    단일종목 인버스2X는 별도(inverse_2x).
+    """
+    n = str(name)
+    is_ss = "단일종목" in n
+    is_inv = "인버스" in n or "INVERSE" in n.upper() or "(-2" in n or "(-1" in n or "곱버스" in n
+    is_2x = (
+        "2X" in n.upper()
+        or "2배" in n
+        or "2x" in n
+        or "곱버스" in n
+        or "(-2" in n
+    )
+    if is_inv and is_2x:
+        if is_ss:
+            return "inverse_2x"
+        # 지수/섹터/해외 인버스2X ≈ 곱버스 계열
+        return "gobus_inverse_2x"
+    if is_inv:
+        return "inverse"
+    if "레버리지" in n:
+        return "long"
+    return "other"
+
+
 def fetch_letf_category_share() -> dict[str, Any]:
-    """레버·인버스 ETF 거래대금·AUM을 카테고리별로 분해."""
+    """레버·인버스 ETF 거래대금·AUM을 카테고리·방향(롱/곱버스)별로 분해."""
     import FinanceDataReader as fdr
 
     etfs = fdr.StockListing("ETF/KR")
     kospi = fdr.StockListing("KOSPI")
     unit = 1_000_000.0  # ETF Amount = 백만원
-    lev = etfs[etfs["Name"].astype(str).str.contains("레버리지|인버스", na=False)].copy()
+    lev = etfs[etfs["Name"].astype(str).str.contains("레버리지|인버스|곱버스", na=False)].copy()
     lev["category"] = lev["Name"].map(classify_letf_name)
+    lev["direction"] = lev["Name"].map(classify_letf_direction)
 
     kospi_tv = float(kospi["Amount"].sum())
     by_cat: dict[str, dict[str, float]] = {}
     for cat, g in lev.groupby("category"):
         tv = float(g["Amount"].sum()) * unit
-        # MarCap often 0 on FDR for new listings; still report Amount
         aum = float(g["MarCap"].sum()) * unit if "MarCap" in g.columns else 0.0
         by_cat[str(cat)] = {
             "n_products": int(len(g)),
             "trading_value_krw": tv,
             "trading_value_jo": round(tv / 1e12, 3),
             "aum_proxy_krw": aum,
-            "share_of_lev_tv_pct": None,  # fill below
+            "share_of_lev_tv_pct": None,
             "share_of_kospi_tv_pct": round(100.0 * tv / kospi_tv, 3) if kospi_tv else None,
         }
     lev_tv = sum(v["trading_value_krw"] for v in by_cat.values())
@@ -204,9 +233,29 @@ def fetch_letf_category_share() -> dict[str, Any]:
             round(100.0 * v["trading_value_krw"] / lev_tv, 2) if lev_tv else None
         )
 
+    by_dir: dict[str, dict[str, Any]] = {}
+    for d, g in lev.groupby("direction"):
+        tv = float(g["Amount"].sum()) * unit
+        aum = float(g["MarCap"].sum()) * unit if "MarCap" in g.columns else 0.0
+        by_dir[str(d)] = {
+            "n_products": int(len(g)),
+            "trading_value_krw": tv,
+            "trading_value_jo": round(tv / 1e12, 3),
+            "aum_proxy_krw": aum,
+            "share_of_lev_tv_pct": round(100.0 * tv / lev_tv, 2) if lev_tv else None,
+            "share_of_kospi_tv_pct": round(100.0 * tv / kospi_tv, 3) if kospi_tv else None,
+        }
+
+    inv_mask = lev["direction"].isin(["inverse", "inverse_2x", "gobus_inverse_2x"])
+    long_mask = lev["direction"] == "long"
+    inv_tv = float(lev.loc[inv_mask, "Amount"].sum()) * unit if inv_mask.any() else 0.0
+    long_tv = float(lev.loc[long_mask, "Amount"].sum()) * unit if long_mask.any() else 0.0
+    gobus_mask = lev["direction"] == "gobus_inverse_2x"
+    gobus_tv = float(lev.loc[gobus_mask, "Amount"].sum()) * unit if gobus_mask.any() else 0.0
+
     top = (
         lev.sort_values("Amount", ascending=False)
-        .head(8)[["Symbol", "Name", "Amount", "category"]]
+        .head(12)[["Symbol", "Name", "Amount", "category", "direction"]]
         .assign(
             trading_value_krw=lambda d: d["Amount"] * unit,
             trading_value_jo=lambda d: (d["Amount"] * unit / 1e12).round(3),
@@ -217,9 +266,27 @@ def fetch_letf_category_share() -> dict[str, Any]:
             "ticker": str(r["Symbol"]),
             "name": str(r["Name"]),
             "category": str(r["category"]),
+            "direction": str(r["direction"]),
             "trading_value_jo": float(r["trading_value_jo"]),
         }
         for _, r in top.iterrows()
+    ]
+    top_inv = (
+        lev.loc[inv_mask]
+        .sort_values("Amount", ascending=False)
+        .head(8)[["Symbol", "Name", "Amount", "category", "direction"]]
+        if inv_mask.any()
+        else lev.iloc[0:0]
+    )
+    top_inv_rows = [
+        {
+            "ticker": str(r["Symbol"]),
+            "name": str(r["Name"]),
+            "category": str(r["category"]),
+            "direction": str(r["direction"]),
+            "trading_value_jo": float(r["Amount"]) * unit / 1e12,
+        }
+        for _, r in top_inv.iterrows()
     ]
 
     return {
@@ -227,13 +294,24 @@ def fetch_letf_category_share() -> dict[str, Any]:
         "kospi_cash_tv_jo": round(kospi_tv / 1e12, 2),
         "levered_inverse_tv_krw": lev_tv,
         "levered_inverse_tv_jo": round(lev_tv / 1e12, 2),
+        "long_tv_krw": long_tv,
+        "long_tv_jo": round(long_tv / 1e12, 3),
+        "inverse_tv_krw": inv_tv,
+        "inverse_tv_jo": round(inv_tv / 1e12, 3),
+        "gobus_tv_krw": gobus_tv,
+        "gobus_tv_jo": round(gobus_tv / 1e12, 3),
+        "inverse_share_of_lev_tv_pct": round(100.0 * inv_tv / lev_tv, 2) if lev_tv else None,
         "by_category": by_cat,
+        "by_direction": by_dir,
         "top_products_by_tv": top_rows,
+        "top_inverse_gobus_by_tv": top_inv_rows,
         "quality": "observed",
         "source": "FinanceDataReader ETF/KR Amount(백만원) + Name classify",
         "note_ko": (
+            "이름에 레버리지|인버스|곱버스 포함 ETF 전부. "
+            "곱버스=지수 인버스2X 계열. "
             "지수/섹터 레버는 단일종목 wag-the-dog 분모와 다름. "
-            "카테고리 비중은 거래대금 기준."
+            "카테고리·방향 비중은 거래대금 기준."
         ),
     }
 

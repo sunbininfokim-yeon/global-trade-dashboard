@@ -239,36 +239,116 @@ def build_snapshot(day: dict[str, Any], *, anchors: dict[str, Any] | None = None
     hk_notional = float((ext.get("hk") or {}).get("notional_exposure_usd_sum") or 0.0)
     crypto_oi = float((ext.get("crypto") or {}).get("open_interest_notional_usd_sum") or 0.0)
     crypto_vol = float((ext.get("crypto") or {}).get("quote_volume_24h_usd_sum") or 0.0)
+    us_notional = float((ext.get("us_proxy") or {}).get("notional_exposure_usd_sum") or 0.0)
+    hk_dir = (ext.get("hk") or {}).get("direction_split") or {}
+    us_dir = (ext.get("us_proxy") or {}).get("direction_split") or {}
+    # KR single-stock long vs inverse notional
+    kr_long_n = sum(
+        abs(float(p["L"])) * float(p["aum"]) / fx
+        for p in all_products
+        if float(p["L"]) > 0
+    )
+    kr_inv_n = sum(
+        abs(float(p["L"])) * float(p["aum"]) / fx
+        for p in all_products
+        if float(p["L"]) < 0
+    )
     global_stack = {
-        "note_ko": "venue 분리. KR cash wag-the-dog ≠ HK swap ≠ crypto perp. 합산은 글로벌 노출 상한 참고용.",
+        "note_ko": (
+            "venue 분리: KR cash 회전율 식에 HK/US/crypto 합산 금지. "
+            "다만 Distortion·Spillover에서는 해외 롱/인버스 노셔널을 1급으로 표시 "
+            "(스왑 상대 헷지 → 국내 압력)."
+        ),
+        "hedge_channel_ko": ext.get("hedge_channel_ko")
+        or (
+            "해외 레버·인버스·옵션 → 헷지 데스크 → 한국 현물/선물/국내 LETF 간접 압력"
+        ),
         "kr_single_stock_letf_notional_usd": round(kr_ss_notional_usd, 2),
+        "kr_single_stock_long_notional_usd": round(kr_long_n, 2),
+        "kr_single_stock_inverse_notional_usd": round(kr_inv_n, 2),
         "hk_swap_letf_notional_usd": round(hk_notional, 2),
+        "hk_direction_split": hk_dir,
+        "us_levered_etf_notional_usd": round(us_notional, 2),
+        "us_direction_split": us_dir,
         "crypto_perp_oi_notional_usd": round(crypto_oi, 2),
         "crypto_perp_quote_volume_24h_usd": round(crypto_vol, 2),
-        "global_stack_usd": round(kr_ss_notional_usd + hk_notional + crypto_oi, 2),
+        "global_stack_usd": round(kr_ss_notional_usd + hk_notional + crypto_oi + us_notional, 2),
         "by_underlying_usd": ext.get("by_underlying_usd") or {},
         "hk_products": (ext.get("hk") or {}).get("products") or [],
         "crypto_products": (ext.get("crypto") or {}).get("products") or [],
         "us_proxy_products": (ext.get("us_proxy") or {}).get("products") or [],
         "quality": "observed" if ext else "missing",
-        "source": ext.get("fetched_at") and "Yahoo HK + Binance perps" or None,
+        "source": ext.get("fetched_at") and "Yahoo HK/US + Binance perps (+ options via us_regime)" or None,
         "disclaimer_ko": (ext.get("disclaimer_ko") or ""),
     }
 
-    # Per-stock: attach external exposure vs KR ADV (informational, not wag-the-dog)
+    # Per-stock: attach external exposure + HK products list
+    hk_rows = global_stack.get("hk_products") or []
     for s in stocks_out:
         und = s["ticker"]
         bu = (ext.get("by_underlying_usd") or {}).get(und) or {}
         hk_u = float(bu.get("hk_usd") or 0.0)
         cr_u = float(bu.get("crypto_usd") or 0.0)
         adv_usd = float(s["adv_spot_krw"]) / fx
+        s["products_hk"] = [
+            {
+                "ticker": p.get("ticker"),
+                "name": p.get("name"),
+                "L": p.get("L"),
+                "direction": p.get("direction")
+                or ("inverse" if float(p.get("L") or 0) < 0 else "long"),
+                "aum_usd": p.get("aum_usd"),
+                "notional_exposure_usd": p.get("notional_exposure_usd"),
+                "trading_value_usd": p.get("trading_value_usd"),
+                "structure": p.get("structure") or "swap",
+                "venue": "hk",
+                "kr_spot_impact": p.get("kr_spot_impact") or "indirect_swap",
+                "note_ko": "스왑. 국내 cash 회전율 합산 금지 / spillover 모니터 1급.",
+            }
+            for p in hk_rows
+            if str(p.get("underlying") or "") == und and not p.get("error")
+        ]
         s["external_vs_spot"] = {
             "hk_notional_usd": round(hk_u, 2),
             "crypto_oi_usd": round(cr_u, 2),
             "hk_over_spot_adv": None if adv_usd <= 0 else round(hk_u / adv_usd, 4),
             "crypto_oi_over_spot_adv": None if adv_usd <= 0 else round(cr_u / adv_usd, 4),
-            "note_ko": "비율은 규모 비교용. HK/코인 체결이 곧바로 KRX 현물 리밸런싱은 아님.",
+            "note_ko": (
+                "규모 비교용. 스왑→한국 기관 헷지 경로 가능 "
+                "(YouTube wag reverse / 유튜브 하닉 레버 역산 계열)."
+            ),
+            "ticker_note_ko": "HK 하닉 2x 메인=7709.HK. products=국내, products_hk=홍콩.",
         }
+
+    cat = (day.get("public_extras") or {}).get("letf_category_share") or {}
+    kospi_tv = cat.get("kospi_cash_tv_krw")
+    lev_tv = cat.get("levered_inverse_tv_krw")
+    kospi_letf_tv_share_pct = (
+        None
+        if not kospi_tv or not lev_tv
+        else round(100.0 * float(lev_tv) / float(kospi_tv), 3)
+    )
+    market_ratios = {
+        "label_ko": "코스피·전시장 레버/곱버스·파생 비중",
+        "levered_inverse_etf_tv_over_kospi_cash_tv_pct": kospi_letf_tv_share_pct,
+        "long_tv_jo": cat.get("long_tv_jo"),
+        "inverse_tv_jo": cat.get("inverse_tv_jo"),
+        "gobus_tv_jo": cat.get("gobus_tv_jo"),
+        "inverse_share_of_lev_tv_pct": cat.get("inverse_share_of_lev_tv_pct"),
+        "by_direction": cat.get("by_direction"),
+        "by_letf_category_tv_share_of_kospi_pct": {
+            k: ((cat.get("by_category") or {}).get(k) or {}).get("share_of_kospi_tv_pct")
+            for k in ("index", "single_stock", "sector", "overseas")
+        },
+        "top_inverse_gobus_by_tv": cat.get("top_inverse_gobus_by_tv"),
+        "definitions_ko": {
+            "gobus": "곱버스·지수 인버스2X 포함. by_direction / gobus_tv_jo.",
+            "single_stock_inverse": "stocks inv AUM·inv_tv_share (하닉/삼전 인버스2X).",
+            "global": "global_leverage_stack us_proxy(SOXL/SOXS…) + hk + options (us_regime).",
+        },
+        "quality": cat.get("quality") or "missing",
+        "source": cat.get("source"),
+    }
 
     return {
         "schema_version": "market-microstructure-v1",
@@ -284,7 +364,9 @@ def build_snapshot(day: dict[str, Any], *, anchors: dict[str, Any] | None = None
                 "krx_investor_flows",
                 "krx_short_interest",
                 "yahoo_hk_letf",
+                "yahoo_us_levered_inverse",
                 "binance_stock_perps",
+                "us_options_regime",
             ],
         },
         "fx_usdkrw": fx,
@@ -297,6 +379,7 @@ def build_snapshot(day: dict[str, Any], *, anchors: dict[str, Any] | None = None
             "quality": market_lev.get("quality", "demo"),
             "source": market_lev.get("source", "fixture"),
         },
+        "market_letf_derivatives_ratios": market_ratios,
         "global_leverage_stack": global_stack,
         "stocks": stocks_out,
         "paper_calibration": calibration,
@@ -306,6 +389,9 @@ def build_snapshot(day: dict[str, Any], *, anchors: dict[str, Any] | None = None
         "deposit_credit": (day.get("public_extras") or {}).get("deposit_credit"),
         "letf_category_share": (day.get("public_extras") or {}).get("letf_category_share"),
         "short_interest_meta": (day.get("public_extras") or {}).get("short_interest"),
+        "ticker_note_7708_vs_7709_ko": (
+            "하이닉스 HK 2x 메인=7709.HK. 7708 아님."
+        ),
     }
 
 

@@ -212,18 +212,41 @@ def build_external_venues(
                 "underlying": p.get("underlying"),
                 "venue": "us",
                 "L": L,
+                "direction": p.get("direction")
+                or ("inverse" if L < 0 else "long"),
                 "structure": p.get("structure", "swap"),
                 "aum_usd": aum_usd,
                 "notional_exposure_usd": None if aum_usd is None else abs(L) * aum_usd,
-                "kr_spot_impact": "regime_proxy",
+                "kr_spot_impact": "regime_proxy_and_dealer_hedge",
                 "yahoo": y,
                 "quality": y.get("quality", "observed"),
                 "source": y.get("source"),
+                "channel_ko": (
+                    "레버·인버스 ETF + 옵션 레짐. "
+                    "스왑 상대·글로벌 데스크 헷지가 한국 링크로 번질 수 있음 (spillover)."
+                ),
             }
         )
 
     def _sum_exp(rows: list[dict[str, Any]], key: str = "notional_exposure_usd") -> float:
         return float(sum(float(r[key]) for r in rows if r.get(key) is not None))
+
+    def _dir_split(rows: list[dict[str, Any]]) -> dict[str, float]:
+        long_n = inv_n = 0.0
+        for r in rows:
+            n = r.get("notional_exposure_usd")
+            if n is None:
+                continue
+            L = float(r.get("L") or 0)
+            d = r.get("direction") or ("inverse" if L < 0 else "long")
+            if d in ("inverse", "gobus_inverse_2x", "inverse_2x") or L < 0:
+                inv_n += float(n)
+            else:
+                long_n += float(n)
+        return {
+            "long_notional_usd": round(long_n, 2),
+            "inverse_notional_usd": round(inv_n, 2),
+        }
 
     by_underlying: dict[str, dict[str, float]] = {}
     for row in hk_out + crypto_out:
@@ -240,10 +263,20 @@ def build_external_venues(
         "schema_version": "external-venues-v1",
         "fetched_at": datetime.now(timezone.utc).isoformat(),
         "fx": {"usdkrw": usdkrw, "usdhkd": usdhkd},
-        "disclaimer_ko": "HK·코인은 국내 현물 호가에 직접 리밸런싱하지 않음(스왑/합성). venue 분리 필수. 투자 권유 아님.",
+        "disclaimer_ko": (
+            "HK·US 레버/인버스=스왑 합성, 코인=퍼프 OI. "
+            "국내 cash LETF 회전율 식에 합산 금지. "
+            "다만 헷지 데스크→KR 현물/선물 간접 압력(spillover)은 Distortion·Spillover 탭에서 반드시 표시. "
+            "투자 권유 아님."
+        ),
+        "hedge_channel_ko": (
+            "홍콩/미국 레버 펀드·옵션 레짐 변화 → 스왑 상대(한국·글로벌 기관) 헷지 요청 → "
+            "국내 현물·선물·국내 LETF에 압력이 붙을 수 있음 (유튜브 wag-the-dog reverse 계열)."
+        ),
         "hk": {
             "products": hk_out,
             "notional_exposure_usd_sum": _sum_exp(hk_out),
+            "direction_split": _dir_split(hk_out),
             "source": "Yahoo Finance",
         },
         "crypto": {
@@ -277,7 +310,9 @@ def build_external_venues(
         "us_proxy": {
             "products": us_out,
             "notional_exposure_usd_sum": _sum_exp(us_out),
+            "direction_split": _dir_split(us_out),
             "source": "Yahoo Finance",
+            "note_ko": "SOXL/SOXS·KORU·TQQQ/SQQQ 등. 옵션 보드(us_regime)와 함께 Global Spillover에서 읽음.",
         },
         "by_underlying_usd": by_underlying,
     }

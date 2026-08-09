@@ -8,7 +8,7 @@
 |------|-----|
 | available | False |
 | note | 증권사는 종목별 고객 레버리지 비율을 공시하지 않음. 대체: LETF AUM, FreeSIS 신용·미수 집계, KRX 투자자별 매매. |
-| public_proxies | krx_letf_aum, krx_letf_turnover, kofia_freesis_margin, krx_investor_flows, krx_short_interest, yahoo_hk_letf, binance_stock_perps |
+| public_proxies | krx_letf_aum, krx_letf_turnover, kofia_freesis_margin, krx_investor_flows, krx_short_interest, yahoo_hk_letf, yahoo_us_levered_inverse, binance_stock_perps, us_options_regime |
 
 ## 1. Concentration (paper: concentration matters)
 
@@ -76,20 +76,20 @@ Conc_topN = Σ(시총 TopN) / KOSPI 전체시총 ×100. constituent 표는 Top30
 
 ## 4d. Global leverage stack (HK + crypto, venue-separated)
 
-venue 분리. KR cash wag-the-dog ≠ HK swap ≠ crypto perp. 합산은 글로벌 노출 상한 참고용.
+venue 분리: KR cash 회전율 식에 HK/US/crypto 합산 금지. 다만 Distortion·Spillover에서는 해외 롱/인버스 노셔널을 1급으로 표시 (스왑 상대 헷지 → 국내 압력).
 
 | venue | metric | USD |
 |-------|--------|----:|
 | KR single-stock LETF | notional AUM×\|L\| | 8310571428.57 |
 | HK CSOP swap LETF | notional AUM×\|L\| | 4312317226.67 |
-| Crypto Binance perps | OI notional | 526057636.9 |
-| Crypto Binance perps | 24h quote volume | 2816964663.18 |
-| Stack (KR+HK+crypto OI) | sum (reference only) | 13148946292.14 |
+| Crypto Binance perps | OI notional | 537779897.58 |
+| Crypto Binance perps | 24h quote volume | 312178082.35 |
+| Stack (KR+HK+crypto OI) | sum (reference only) | 199492168120.82 |
 
 | underlying | HK notional USD | Crypto OI USD | HK/spot ADV | Crypto OI/spot ADV |
 |------------|----------------:|--------------:|------------:|-------------------:|
-| 000660 | 3351317267.69 | 371494150.68 | 0.6467 | 0.0717 |
-| 005930 | 960999958.97 | 21571034.04 | 0.2808 | 0.0063 |
+| 000660 | 3351317267.69 | 374545898.85 | 0.6467 | 0.0723 |
+| 005930 | 960999958.97 | 22064145.14 | 0.2808 | 0.0064 |
 
 | HK product | underlying | L | AUM USD | TV USD | impact |
 |------------|------------|--:|--------:|-------:|--------|
@@ -99,10 +99,11 @@ venue 분리. KR cash wag-the-dog ≠ HK swap ≠ crypto perp. 합산은 글로�
 
 | Crypto product | underlying | OI USD | 24h vol USD | funding | impact |
 |---------------|------------|-------:|------------:|--------:|--------|
-| SKHYNIXUSDT | 000660 | 371494150.6763 | 809860769.0953 | 0.0 | indirect_synthetic |
-| SAMSUNGUSDT | 005930 | 21571034.037299998 | 97768082.542 | 0.0 | indirect_synthetic |
-| KORUUSDT | KORU | 46104490.10919999 | 664040029.335 | -5.901e-05 | indirect_synthetic |
-| SOXLUSDT | SOXL | 86887962.07550001 | 1245295782.2035 | 0.0 | indirect_synthetic |
+| SKHYNIXUSDT | 000660 | 374545898.8544 | 132861776.6924 | 0.0 | indirect_synthetic |
+| SAMSUNGUSDT | 005930 | 22064145.1356 | 11485933.296 | 0.0 | indirect_synthetic |
+| KORUUSDT | KORU | 46931594.37100001 | 39900009.9195 | -0.0003312 | indirect_synthetic |
+| SOXLUSDT | SOXL | 86507171.7075 | 109008187.5135 | -9.68e-05 | indirect_synthetic |
+| SOXSUSDT | SOXS | 7731087.51 | 18922174.9278 | 2.542e-05 | indirect_synthetic |
 
 ## 5. Rebalancing short-gamma scenarios (TR / IR)
 
@@ -145,7 +146,7 @@ venue 분리. KR cash wag-the-dog ≠ HK swap ≠ crypto perp. 합산은 글로�
 
 ## 9. Levered ETF TV by category
 
-지수/섹터 레버는 단일종목 wag-the-dog 분모와 다름. 카테고리 비중은 거래대금 기준.
+이름에 레버리지|인버스|곱버스 포함 ETF 전부. 곱버스=지수 인버스2X 계열. 지수/섹터 레버는 단일종목 wag-the-dog 분모와 다름. 카테고리·방향 비중은 거래대금 기준.
 
 | category | n | TV 조 | % of lev TV | % of KOSPI TV |
 |----------|--:|------:|------------:|--------------:|
