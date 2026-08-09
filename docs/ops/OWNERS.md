@@ -19,6 +19,7 @@
 | ML / 학습 실험 | **Cursor** | `scripts/yield_model/**` 실험, `docs/literature` 연결, 목표 재배치 | Claude (품질) |
 | Scoped model/data tasks | **Codex** | `scripts/yield_model/**` 지정 국가, `public/data/*_forecast.json` | Claude → Cursor |
 | Literature only | **Antigravity** | `docs/literature/**`, Obsidian 요약 링크 | 사람 |
+| **데이터 검증** | **Grok** | `docs/audit/**` — 표시된 숫자 대 현실 대조. 코드 수정 안 함 | Claude |
 
 Obsidian 연구 노트 원본: `~/Documents/기후 모델링/`  
 코드 레포에 넣을 때는 **요약·Model_Config만** `docs/literature/` 또는 별도 PR로 반영 (대용량 PDF 금지).
@@ -40,6 +41,7 @@ Obsidian 연구 노트 원본: `~/Documents/기후 모델링/`
 | `New for anti/public/data/live_override.json` 및 뉴스·유동성·보고서 JSON | Cursor / 해당 파이프라인 담당 | |
 | `.github/workflows/**` | **Claude** | 예측 JSON 생성 워크플로는 담당 모델과 협의 |
 | `docs/literature/**` | Antigravity | 코드 import 금지 |
+| `docs/audit/**` | **Grok** | 유일한 쓰기 허용 경로. `grok/*` 브랜치는 그 밖을 못 건드린다 (CI 강제) |
 | `.claude/**` | Claude | 로컬 설정, 커밋 여부 신중 |
 
 ### Claim이 있으면 claim 우선

@@ -46,21 +46,39 @@ jobs:
               "New for anti/shipping.js",
               "_worker.js", "wrangler.jsonc", ".github/workflows/*",
           ]
+          # Grok verifies data and writes findings; it does not edit the
+          # product. Everything outside docs/audit/ is off limits, which is the
+          # inverse of the other rules -- an allowlist, not a denylist.
+          GROK_ALLOW = ["docs/audit/*"]
+
           RULES = {
               "cursor/":  UI,
               "codex/":   UI,
               "claude/":  ["scripts/yield_model/*/model.yaml"],
           }
 
-          owner = next((p for p in RULES if branch.startswith(p)), None)
-          if owner is None:
-              print(f"branch '{branch}' claims no owner prefix -- skipping")
-              sys.exit(0)
-
           changed = subprocess.run(
               ["git", "diff", "--name-only", f"{base}...{head}"],
               capture_output=True, text=True, check=True).stdout.split("\n")
           changed = [f for f in changed if f]
+
+          if branch.startswith("grok/"):
+              bad = [f for f in changed
+                     if not any(fnmatch.fnmatch(f, pat) for pat in GROK_ALLOW)]
+              if not bad:
+                  print(f"grok/* wrote only to docs/audit/ ({len(changed)} files)")
+                  sys.exit(0)
+              print(f"::error::'{branch}' is a grok/* branch and may only write docs/audit/:")
+              for f in bad:
+                  print(f"::error file={f}::{f} is outside docs/audit/")
+              print()
+              print("Grok reports findings; the path owner makes the fix.")
+              sys.exit(1)
+
+          owner = next((p for p in RULES if branch.startswith(p)), None)
+          if owner is None:
+              print(f"branch '{branch}' claims no owner prefix -- skipping")
+              sys.exit(0)
 
           bad = [f for f in changed
                  if any(fnmatch.fnmatch(f, pat) for pat in RULES[owner])]
