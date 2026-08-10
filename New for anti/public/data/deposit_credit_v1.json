@@ -5,8 +5,10 @@
     "as_of": "2026-08-06",
     "unit_native": "억원",
     "investor_deposit_eok": 1040711.97,
+    "investor_deposit_jo": 104.071,
     "credit_balance_eok": 287940.1,
     "credit_loan_eok": 287940.1,
+    "credit_loan_jo": 28.794,
     "credit_loan_kospi_eok": 228685.07,
     "credit_loan_kosdaq_eok": 59255.03,
     "collateral_loan_eok": 243714.11,
@@ -16,26 +18,36 @@
     "forced_sale_eok": 106.94,
     "forced_sale_over_uncollected_pct": 1.0,
     "credit_over_deposit_pct": 27.668,
+    "uncollected_over_deposit_pct": 1.021,
     "credit_funds_over_deposit_pct": 51.086,
     "components": [
-      {"key": "investor_deposit", "label_ko": "투자자예탁금", "value_eok": 1040711.97},
-      {"key": "credit_loan", "label_ko": "신용거래융자", "value_eok": 287940.1},
-      {"key": "credit_loan_kospi", "label_ko": "신용거래융자(유가증권)", "value_eok": 228685.07},
-      {"key": "credit_loan_kosdaq", "label_ko": "신용거래융자(코스닥)", "value_eok": 59255.03},
-      {"key": "collateral_loan", "label_ko": "예탁증권담보융자", "value_eok": 243714.11},
-      {"key": "short_loan", "label_ko": "신용거래대주", "value_eok": 247.44},
-      {"key": "credit_funds", "label_ko": "신용공여자금(융자+담보)", "value_eok": 531654.21},
-      {"key": "uncollected", "label_ko": "위탁매매미수금", "value_eok": 10623.8},
-      {"key": "forced_sale", "label_ko": "반대매매금액(미수 대비)", "value_eok": 106.94},
-      {"key": "forced_sale_pct", "label_ko": "미수 대비 반대매매비중(%)", "value_pct": 1.0}
+      {"key": "investor_deposit", "label_ko": "투자자예탁금", "group": "cash_leverage", "value_eok": 1040711.97, "value_jo": 104.071, "preferred_unit": "조원"},
+      {"key": "credit_loan", "label_ko": "신용거래융자", "group": "cash_leverage", "value_eok": 287940.1, "value_jo": 28.794, "preferred_unit": "조원"},
+      {"key": "credit_loan_kospi", "label_ko": "신용거래융자(유가증권)", "group": "cash_leverage", "value_eok": 228685.07, "value_jo": 22.869, "preferred_unit": "조원"},
+      {"key": "credit_loan_kosdaq", "label_ko": "신용거래융자(코스닥)", "group": "cash_leverage", "value_eok": 59255.03, "value_jo": 5.926, "preferred_unit": "조원"},
+      {"key": "uncollected", "label_ko": "위탁매매미수금", "group": "stress", "value_eok": 10623.8, "value_jo": 1.062, "preferred_unit": "억원"},
+      {"key": "forced_sale", "label_ko": "반대매매금액(미수 대비)", "group": "stress", "value_eok": 106.94, "value_jo": 0.011, "preferred_unit": "억원"},
+      {"key": "forced_sale_pct", "label_ko": "미수 대비 반대매매비중(%)", "group": "stress", "value_pct": 1.0, "preferred_unit": "pct"},
+      {"key": "credit_over_deposit_pct", "label_ko": "신용/예탁금(%)", "group": "cash_leverage", "value_pct": 27.668, "preferred_unit": "pct"},
+      {"key": "uncollected_over_deposit_pct", "label_ko": "미수/예탁금(%)", "group": "stress", "value_pct": 1.021, "preferred_unit": "pct"}
     ],
+    "ui_display": {
+      "exclude_keys": ["collateral_loan", "short_loan", "credit_funds"],
+      "groups": [
+        {"id": "cash_leverage", "label_ko": "예탁·신용", "preferred_unit": "조원", "keys": ["investor_deposit", "credit_loan", "credit_loan_kospi", "credit_loan_kosdaq"], "ratio_keys": ["credit_over_deposit_pct"]},
+        {"id": "stress", "label_ko": "미수·반대매매", "preferred_unit": "억원", "keys": ["uncollected", "forced_sale"], "ratio_keys": ["forced_sale_pct", "uncollected_over_deposit_pct"]}
+      ],
+      "chart_y_right_default": "credit_over_deposit_pct",
+      "chart_y_right_alt": ["credit_loan_jo", "credit_loan_eok"],
+      "scale_note_ko": "규모 차이 큼: 예탁~104조 · 신용~29조 · 미수~1조 · 반대매매~100억. 표는 절대액(조/억)+비율 병행. 차트 Y오른쪽은 신용/예탁% 권장. 미수·반대매매는 별도 소형 스트립."
+    },
     "history_n": 65,
     "quality": "observed",
     "source": [
       "https://freesis.kofia.or.kr/ (증시자금추이 STATSCU0100000060)",
       "https://freesis.kofia.or.kr/ (신용공여 잔고 추이 STATSCU0100000070)"
     ],
-    "note_ko": "금투협 FreeSIS 공개 집계. 종목·증권사·계좌별 아님. 신용공여자금=신용거래융자+예탁증권담보융자. 반대매매는 시장 전체 미수 대비 금액·비중만 공개."
+    "note_ko": "금투협 FreeSIS 공개 집계. 종목·증권사·계좌별 아님. UI 기본은 예탁금·신용거래융자·미수·반대매매만 표시. 예탁증권담보융자·대주·광의신용공여(융자+담보)는 원본 필드만 유지·기본 표 제외 (코스피 가격대 수급 설명력 낮음). 반대매매는 시장 전체 미수 대비 금액·비중만 공개."
   },
-  "ui_ko": "Volume/D&S 공통 표: components[] 전부 표시. 시장 전체만. 종목별 배지 필수."
+  "ui_ko": "표: components[] (담보 제외). 예탁·신용=조원, 미수·반대=억원+비율. Y오른쪽 기본 credit_over_deposit_pct. 시장 전체 배지 필수."
 }
