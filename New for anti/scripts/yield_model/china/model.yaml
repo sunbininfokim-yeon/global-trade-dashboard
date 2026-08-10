@@ -5,11 +5,11 @@ country: china
 iso: CHN
 label_ko: 중국
 label_en: China
-panel_mode: forecast
+panel_mode: reference
 model_status: training
-status_note_ko: "3개 산지 모두 추세 대비 성능이 음수(-0.57 ~ -1.60). 기상 피처가 추세만 쓰는 것보다 나쁘다. 원인 규명 전까지 수치를 참고용으로만 볼 것. 냉해·서리 피처 3건은 생성 실패."
+status_note_ko: "8개 모델 모두 추세 기준선을 이기지 못해 forecast를 철회했다. 주요 산지의 완결 2025년 기상 관측과 전국 농업 참고치만 제공한다."
 data_file: china_yield_forecast.json
-model_name: Regional crop suite
+model_name: 중국 주요 산지 관측
 
 view:
   longitude: 105
@@ -17,31 +17,41 @@ view:
   zoom: 3.5
 
 regions:
+  - key: northeast_grains
+    label_ko: "동북3성 (대두·옥수수)"
+    ui_name: Northeast grains (China)
+    coordinates: [125.84, 45.60]
+    crops_region_keys: [northeast_grains]
   - key: henan_wheat
     label_ko: "허난·황화이하이 (겨울밀)"
-    ui_name: Henan wheat (China)   # app.js 산지 식별자 (레지스트리 전환 중 유지)
-    coordinates: [113.7, 34]
+    ui_name: Henan wheat (China)
+    coordinates: [115.456, 34.791]
     crops_region_keys: [henan_wheat]
   - key: yangtze_rice
     label_ko: 장강 유역 (벼)
-    ui_name: Yangtze rice (China)   # app.js 산지 식별자 (레지스트리 전환 중 유지)
-    coordinates: [114.3, 30.6]
+    ui_name: Yangtze rice (China)
+    coordinates: [114.189, 30.139]
     crops_region_keys: [yangtze_rice]
+  - key: south_china_rice
+    label_ko: 화남 (이모작 벼)
+    ui_name: South China rice
+    coordinates: [111.213, 23.432]
+    crops_region_keys: [south_china_rice]
   - key: shandong_vegetables
-    label_ko: 산둥 (채소)
-    ui_name: Shandong vegetables (China)   # app.js 산지 식별자 (레지스트리 전환 중 유지)
-    coordinates: [118, 36.5]
+    label_ko: 산둥 (시설·노지 채소)
+    ui_name: Shandong vegetables (China)
+    coordinates: [118.688, 36.412]
     crops_region_keys: [shandong_vegetables]
 
 sources:
   labels:
-    name: National Bureau of Statistics
-    url: http://www.stats.gov.cn/
-    updated: "2025-12-01"
+    name: USDA PSD / FAOSTAT national references
+    url: https://apps.fas.usda.gov/psdonline/app/index.html#/app/home
+    updated: "2025-12-31"
   climate:
     name: NASA POWER (daily)
     url: https://power.larc.nasa.gov/
-    updated: "2026-08-06"
+    updated: "2025-12-31"
 
 trade_policy:
   restricted: false

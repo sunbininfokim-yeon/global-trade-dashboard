@@ -8,7 +8,8 @@ python3 -m china.collect        # build training tables
 python3 -m china.train          # fit + validate, writes models/
 python3 -m china.imports        # the macro import-demand guide
 python3 -m china.predict --year 2026
-python3 -m china.run_forecast   # writes public/data/china_yield_forecast.json
+python3 -m china.run_forecast   # publish observation-only reference panel
+python3 -m china.build_reference # same publisher, explicit entrypoint
 ```
 
 ## The headline result
@@ -27,6 +28,24 @@ fits the trend form, so this cannot recur.
 
 The field models fail for a reason worth stating before any methodology,
 because no amount of better feature engineering would fix it.
+
+### Publication decision
+
+The dashboard does **not** publish the trend extrapolations produced by the
+failed experiment. China is registered as `panel_mode: reference`, and
+`build_reference.py` writes five regional observation cards:
+
+- Northeast soybeans and corn;
+- Henan / Huang-Huai-Hai winter wheat;
+- Yangtze rice;
+- South China double-cropped rice; and
+- Shandong protected and open-field vegetables.
+
+Each card carries completed-2025, production-weighted NASA POWER risk metrics
+and the latest USDA PSD / FAOSTAT **national** value as context.  No national
+value is converted into a regional production estimate, and no `point`,
+forecast interval or `skill` object is published.  The model-side observation
+artifact is kept separately at `data/region_observations_v1.json`.
 
 The targets barely move.
 
@@ -184,10 +203,10 @@ Stated per config in `non_weather_drivers` and published in the forecast JSON:
   heading window; MODIS starts in 2000.
 - **Sentinel-1 inundation masking** (장강 §2B) is replaced by the heaviest 7-day
   rainfall total, named `max_7day_rain`.
-- **Temporal Fusion Transformer, hog inventory, NLP policy scoring** (거시 §3)
-  are not implemented — ~40 annual rows cannot support a TFT, and China does not
-  publish herd numbers at usable frequency. Soybean-meal consumption is the
-  feed-demand proxy.
+- **Temporal Fusion Transformer and NLP policy scoring** (거시 §3) are not
+  implemented — ~40 annual rows cannot support a TFT. USDA PSD sow and total
+  swine-herd estimates are implemented as lagged features, but do not improve
+  out-of-sample skill at annual resolution.
 - **Robust loss weighting** (동북3성 §4, 허난 §4) is deliberately not implemented.
   It asks for down-weighting seasons where the official yield diverges from
   USDA's. Here USDA *is* the label, so there is no divergence left to
@@ -216,27 +235,28 @@ Stated per config in `non_weather_drivers` and published in the forecast JSON:
   balance sheet imports ≈ consumption − production + stock change, so including
   it would recover an accounting identity and report it as forecasting skill.
 
-## Season availability
+## Observation publication
 
-Three models decline to forecast for part of the year, by design. Northeast soy
-and corn need September–October frost data; South China needs the late-September
-cold-dew window. Before those months have happened the features do not exist and
-the model returns "season has no observed weather yet" rather than a number
-manufactured from climatology.
+The reference panel uses the latest **completed** weather year, currently 2025.
+It therefore never fills an unfinished frost, cold-dew or heading window with
+climatology. `run_forecast.py` is a compatibility entrypoint for the same
+reference publisher because the existing weekly Action invokes that module
+name. The failed experiment remains reproducible through `predict.py` and the
+committed training/model artifacts, but it cannot overwrite the site JSON.
 
 ## What would actually change the answer
 
 Not better features, and not more of them — adding features is what produced
 the false positive above.
 
-Two things would:
+Only a new target would:
 
 **Province-level or satellite-derived yields**, restoring the variance that
 national aggregation destroys. This is what the guides' satellite methods were
 designed to produce. `satellite.py` is the first step: MODIS NDVI/EVI/LST,
 cropland-masked, per region, 2001 onward.
 
-**Monthly rather than annual resolution** for the import models. Comtrade
-serves monthly trade and the Worker proxy already accepts `freq=M`, which would
-turn 30 observations into roughly 360. The guide asks for a 3-6 month forecast
-horizon anyway, so monthly is the native resolution of the question.
+Until such a target exists, further feature searches or monthly import variants
+are not treated as a route to a China crop-yield forecast.  The project stops at
+observation and source-backed agricultural context rather than searching for a
+positive score.
