@@ -7,7 +7,7 @@ label_ko: 호주
 label_en: Australia
 panel_mode: forecast
 model_status: provisional
-status_note_ko: "밀 3곳과 WA·VIC 보리/카놀라는 검증 통과. SA 보리·카놀라는 수치 예측 없이 참고 신호만 제공. 면화 모델은 종료."
+status_note_ko: "밀 3곳과 WA·VIC 보리/카놀라는 검증 통과. NSW·QLD 수수는 저신뢰 검증 통과 후 2027 파종 전 관측 대기. SA 보리·카놀라는 참고 신호만 제공. 면화 모델은 종료."
 data_file: australia_yield_forecast.json
 model_name: Wheat Belt Model
 
@@ -32,6 +32,16 @@ regions:
     ui_name: VIC wheat (Australia)   # app.js 산지 식별자 (레지스트리 전환 중 유지)
     coordinates: [143, -36.5]
     crops_region_keys: [vic_wheat, vic_barley, vic_canola]
+  - key: nsw_sorghum
+    label_ko: NSW 곡물 수수
+    ui_name: NSW sorghum (Australia)
+    coordinates: [150.1, -30.6]
+    crops_region_keys: [nsw_sorghum]
+  - key: qld_sorghum
+    label_ko: QLD 곡물 수수
+    ui_name: QLD sorghum (Australia)
+    coordinates: [149.6, -26.5]
+    crops_region_keys: [qld_sorghum]
 
 sources:
   labels:

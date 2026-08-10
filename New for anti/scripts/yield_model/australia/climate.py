@@ -95,6 +95,33 @@ def canola_features(daily: pd.DataFrame, harvest_year: int) -> dict[str, float]:
     }
 
 
+def sorghum_features(daily: pd.DataFrame, harvest_year: int) -> dict[str, float]:
+    """Summer grain-sorghum water and reproductive heat-stress features."""
+    y = harvest_year
+    preseason = _between(daily, pd.Timestamp(y - 1, 8, 1),
+                         pd.Timestamp(y - 1, 10, 31))
+    growing = _between(daily, pd.Timestamp(y - 1, 9, 1),
+                       pd.Timestamp(y, 4, 30))
+    flowering = _between(daily, pd.Timestamp(y - 1, 12, 1),
+                         pd.Timestamp(y, 2, 28))
+    grain_fill = _between(daily, pd.Timestamp(y, 1, 1), pd.Timestamp(y, 3, 31))
+    harvest = _between(daily, pd.Timestamp(y, 3, 1), pd.Timestamp(y, 5, 31))
+    heat = (flowering.tmax - 35.0).clip(lower=0)
+    terminal_dry = 1.0 - grain_fill.gwetroot.clip(0, 1)
+    return {
+        "rain_preseason": _sum(preseason, "precip"),
+        "rain_growing": _sum(growing, "precip"),
+        "rain_flowering": _sum(flowering, "precip"),
+        "sm_preseason": _mean(preseason, "gwetroot"),
+        "sm_flowering": _mean(flowering, "gwetroot"),
+        "heat_excess_flowering": float(heat.sum()),
+        "heat_dry_flowering": float(
+            (heat * (1.0 - flowering.gwetroot.clip(0, 1))).sum()),
+        "terminal_dryness": float(terminal_dry.mean()),
+        "harvest_rain": _sum(harvest, "precip"),
+    }
+
+
 def cotton_features(daily: pd.DataFrame, harvest_year: int) -> dict[str, float]:
     """Full-season features for cotton harvested in ``harvest_year``."""
     y = harvest_year

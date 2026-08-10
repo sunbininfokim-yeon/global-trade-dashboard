@@ -109,3 +109,12 @@ not yet the registered ACCESS-S upgrade.
    incremental forward skill rather than discarding the long climate history.
 5. Add APSIM water-limited yield as a feature/teacher, not as ground truth.
 6. Build cotton area and yield as separate systems using basin water data.
+
+## Grain sorghum model selection
+
+NSW and Queensland grain sorghum use flowering heat, heat × dryness, soil
+wetness and rainfall features.  Both Ridge screens pass the +10% gate but are
+low confidence.  A leakage-safe Ridge/XGBoost/two-layer-MLP comparison keeps
+Ridge for Queensland and records XGBoost as an NSW challenger; see
+`SORGHUM_MODEL_COMPARISON.md`.  No 2027 point is issued before the September–
+October pre-sowing observation window.

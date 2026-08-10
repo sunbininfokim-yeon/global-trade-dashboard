@@ -118,7 +118,7 @@ def predict_one(cfg, today: date | None = None) -> dict:
     today = today or date.today()
     season = current_season(cfg, today)
     if season is None:
-        return {"error": "next cotton season has no observed pre-sowing weather yet"}
+        return {"error": "next summer-crop season has no observed pre-sowing weather yet"}
 
     model_path = os.path.join(MODELS, f"{cfg.key}.json")
     training_path = os.path.join(TRAINING, f"{cfg.key}.csv")

@@ -5,7 +5,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Callable
 
-from .climate import barley_features, canola_features, cotton_features, wheat_features
+from .climate import (barley_features, canola_features, cotton_features,
+                      sorghum_features, wheat_features)
 
 
 @dataclass(frozen=True)
@@ -41,6 +42,10 @@ BARLEY_SOIL = BARLEY_WEATHER + z(["sm_preseason", "sm_reproductive"])
 CANOLA_WEATHER = z(["rain_growing", "rain_flowering_pod",
                     "heat_excess_flowering_pod", "frost_exposure_flowering_pod"])
 CANOLA_SOIL = CANOLA_WEATHER + z(["sm_preseason", "sm_flowering_pod"])
+SORGHUM_WEATHER = z(["rain_preseason", "rain_growing",
+                     "heat_excess_flowering", "harvest_rain"])
+SORGHUM_SOIL = SORGHUM_WEATHER + z(["sm_preseason", "sm_flowering",
+                                    "heat_dry_flowering", "terminal_dryness"])
 
 # Point weights are deliberately equal in phase 1.  They are sampling weights,
 # not invented claims about production shares.  The next spatial-data step will
@@ -74,6 +79,12 @@ QLD_COTTON_POINTS = [
     {"name": "Emerald", "lat": -23.53, "lon": 148.16, "weight": 0.25},
     {"name": "Goondiwindi", "lat": -28.55, "lon": 150.31, "weight": 0.25},
 ]
+NSW_SORGHUM_POINTS = [
+    {"name": "Moree", "lat": -29.46, "lon": 149.84, "weight": 0.25},
+    {"name": "Narrabri", "lat": -30.33, "lon": 149.78, "weight": 0.25},
+    {"name": "Gunnedah", "lat": -30.98, "lon": 150.25, "weight": 0.25},
+    {"name": "Quirindi", "lat": -31.51, "lon": 150.68, "weight": 0.25},
+]
 
 
 def wheat_sets(include_sam: bool) -> dict[str, list[str]]:
@@ -92,6 +103,14 @@ def cotton_sets() -> dict[str, list[str]]:
         "weather": COTTON_WEATHER,
         "weather_soil": COTTON_SOIL,
         "weather_soil_drivers": COTTON_SOIL + ["oni_flowering_z20"],
+    }
+
+
+def sorghum_sets() -> dict[str, list[str]]:
+    return {
+        "weather": SORGHUM_WEATHER,
+        "weather_soil": SORGHUM_SOIL,
+        "weather_soil_drivers": SORGHUM_SOIL + ["oni_flowering_z20"],
     }
 
 
@@ -207,10 +226,31 @@ QLD_COTTON = RegionCrop(
             "dryland systems. This is a screening model until water allocations "
             "and planted area are modelled separately."),
 )
+NSW_SORGHUM = RegionCrop(
+    key="nsw_sorghum", label="New South Wales grain sorghum",
+    label_ko="NSW 곡물 수수", crop="grain_sorghum",
+    state_sheet="New South Wales", crop_label="Grain sorghum",
+    harvest_rule="summer", points=NSW_SORGHUM_POINTS, build=sorghum_features,
+    feature_sets=sorghum_sets(),
+    doc="GRDC northern-region sorghum agronomy climate screen",
+    caveat=("State yield mixes sowing dates, hybrids, dryland and some irrigated "
+            "fields. Fixed flowering windows are a screening approximation."),
+)
+QLD_SORGHUM = RegionCrop(
+    key="qld_sorghum", label="Queensland grain sorghum",
+    label_ko="QLD 곡물 수수", crop="grain_sorghum",
+    state_sheet="Queensland", crop_label="Grain sorghum",
+    harvest_rule="summer", points=QLD_COTTON_POINTS, build=sorghum_features,
+    feature_sets=sorghum_sets(),
+    doc="GRDC northern-region sorghum agronomy climate screen",
+    caveat=("State yield mixes sowing dates, hybrids, dryland and some irrigated "
+            "fields. Fixed flowering windows are a screening approximation."),
+)
 
 ALL = [
     WA_WHEAT, SA_WHEAT, VIC_WHEAT,
     WA_BARLEY, SA_BARLEY, VIC_BARLEY, WA_CANOLA, SA_CANOLA, VIC_CANOLA,
+    NSW_SORGHUM, QLD_SORGHUM,
 ]
 COTTON_ARCHIVE = [NSW_COTTON, QLD_COTTON]
 BY_KEY = {cfg.key: cfg for cfg in ALL + COTTON_ARCHIVE}
