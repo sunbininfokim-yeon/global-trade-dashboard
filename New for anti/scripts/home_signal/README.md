@@ -11,11 +11,10 @@ UI, Worker, 배포 워크플로는 수정하지 않는다.
 | `public/data/home_signal_series_v1.json` | 순환 A–E 소스·시리즈 매니페스트 |
 | `public/data/kospi_risk_slot_v1.json` | 고정 F3의 정직한 placeholder |
 
-싱가포르 VLSFO는 Ship & Bunker 공개 페이지에 최신값이 표시되지만, 가격 데이터의
-제품 사용·재배포는 해당 사이트 약관상 서면 동의 또는 적절한 라이선스 확인이
-필요하다. EIA는 관련 시장 분석은 제공하지만 동일한 싱가포르 VLSFO 일별 API
-시계열은 제공하지 않는다. 따라서 매니페스트에는 `requires_license`로만 등록하고
-값을 복제하거나 자동 크롤링하지 않는다.
+싱가포르 VLSFO는 재배포 가능한 대표 공개 가격을 확보하지 못해 에너지 페이지에서
+제외한다. 가격이 아닌 MPA 벙커 판매량으로 대체하지도 않는다. 뉴캐슬 연료탄은
+FRED의 IMF 호주 석탄 월간 시계열(`PCOALAUUSDM`)을 사용한다. IMF 기술 문서상
+원자료 규격은 Argus Newcastle 6000 kcal/kg NAR FOB다.
 
 ## 초크포인트 통합
 

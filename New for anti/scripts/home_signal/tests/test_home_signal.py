@@ -62,14 +62,15 @@ class ChokepointStressTests(unittest.TestCase):
 
 
 class PublicManifestTests(unittest.TestCase):
-    def test_pages_a_to_e_have_four_unique_slots(self) -> None:
+    def test_pages_a_to_e_have_expected_unique_slots(self) -> None:
         path = APP_DIR / "public" / "data" / "home_signal_series_v1.json"
         with path.open(encoding="utf-8") as handle:
             manifest = json.load(handle)
         self.assertEqual(set(manifest["pages"]), set("ABCDE"))
         slot_ids = []
-        for page in manifest["pages"].values():
-            self.assertEqual(len(page["slots"]), 4)
+        expected_counts = {"A": 3, "B": 4, "C": 4, "D": 4, "E": 4}
+        for page_id, page in manifest["pages"].items():
+            self.assertEqual(len(page["slots"]), expected_counts[page_id])
             slot_ids.extend(slot["id"] for slot in page["slots"])
         self.assertEqual(len(slot_ids), len(set(slot_ids)))
 
@@ -83,6 +84,20 @@ class PublicManifestTests(unittest.TestCase):
             with (APP_DIR / "public" / "data" / name).open(encoding="utf-8") as handle:
                 doc = json.load(handle)
             self.assertNotIn(None, _walk_values(doc), name)
+
+    def test_energy_page_omits_vlsfo_and_uses_fred_newcastle_proxy(self) -> None:
+        path = APP_DIR / "public" / "data" / "home_signal_series_v1.json"
+        with path.open(encoding="utf-8") as handle:
+            manifest = json.load(handle)
+        slots = manifest["pages"]["A"]["slots"]
+        slot_ids = {slot["id"] for slot in slots}
+        self.assertNotIn("vlsfo_singapore", slot_ids)
+        self.assertNotIn("singapore_bunker_sales", slot_ids)
+        newcastle = next(slot for slot in slots if slot["id"] == "newcastle_thermal_coal")
+        self.assertEqual(newcastle["source"], "fred")
+        self.assertEqual(newcastle["series_id"], "PCOALAUUSDM")
+        self.assertEqual(newcastle["availability"], "ready")
+        self.assertEqual(newcastle["cadence"], "monthly")
 
 
 def _walk_values(value):

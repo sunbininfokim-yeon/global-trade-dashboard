@@ -17,17 +17,6 @@
           "route": "petroleum/pri/spt/data/"
         },
         {
-          "id": "vlsfo_singapore",
-          "label_ko": "싱가포르 VLSFO",
-          "source": "ship_and_bunker",
-          "series_id": "singapore_vlsfo",
-          "unit": "usd_per_metric_tonne",
-          "cadence": "daily",
-          "availability": "requires_license",
-          "source_url": "https://shipandbunker.com/prices/apac/sea/sg-sin-singapore",
-          "note_ko": "공개 페이지에 최신값이 보이지만 가격의 제품 사용·재배포는 Ship & Bunker 서면 허가 또는 라이선스 확인 후 연결. EIA에는 동일한 일별 VLSFO API 시계열이 없음"
-        },
-        {
           "id": "henry_hub",
           "label_ko": "헨리허브",
           "source": "eia",
@@ -40,12 +29,13 @@
         {
           "id": "newcastle_thermal_coal",
           "label_ko": "뉴캐슬 연료탄",
-          "source": "pending_vendor",
-          "series_id": "newcastle_thermal_coal",
+          "source": "fred",
+          "series_id": "PCOALAUUSDM",
           "unit": "usd_per_metric_tonne",
-          "cadence": "daily",
-          "availability": "pending_source",
-          "note_ko": "검증된 공개 시세 소스 미확보. 임의 Yahoo 심볼을 사용하지 않음"
+          "cadence": "monthly",
+          "availability": "ready",
+          "source_url": "https://fred.stlouisfed.org/series/PCOALAUUSDM",
+          "note_ko": "IMF 호주 석탄 가격. 원자료 규격은 Argus Newcastle 6000 kcal/kg NAR FOB이며 FRED가 월간 시계열로 제공"
         }
       ]
     },

@@ -46,9 +46,13 @@ def _fallback_validate(name: str, data: dict) -> None:
         pages = data.get("pages")
         _require(isinstance(pages, dict) and set(pages) == set("ABCDE"), "manifest pages must be A-E")
         ids = []
+        expected_counts = {"A": 3, "B": 4, "C": 4, "D": 4, "E": 4}
         for page_id, page in pages.items():
             slots = page.get("slots") if isinstance(page, dict) else None
-            _require(isinstance(slots, list) and len(slots) == 4, f"page {page_id} needs four slots")
+            _require(
+                isinstance(slots, list) and len(slots) == expected_counts[page_id],
+                f"page {page_id} has unexpected slot count",
+            )
             for slot in slots:
                 _require(all(slot.get(key) for key in ("id", "label_ko", "source", "series_id", "unit", "cadence", "availability")), f"incomplete slot on page {page_id}")
                 ids.append(slot["id"])

@@ -31,7 +31,7 @@
         "label_ko": { "type": "string", "minLength": 1 },
         "slots": {
           "type": "array",
-          "minItems": 4,
+          "minItems": 3,
           "maxItems": 4,
           "items": { "$ref": "#/$defs/slot" }
         }
@@ -53,12 +53,12 @@
         "id": { "type": "string", "pattern": "^[a-z0-9_]+$" },
         "label_ko": { "type": "string", "minLength": 1 },
         "source": {
-          "enum": ["fred", "eia", "yfinance", "bok", "krx", "ship_and_bunker", "pending_vendor"]
+          "enum": ["fred", "eia", "yfinance", "bok", "krx", "pending_vendor"]
         },
         "series_id": { "type": "string", "minLength": 1 },
         "unit": { "type": "string", "minLength": 1 },
-        "cadence": { "enum": ["daily", "weekly"] },
-        "availability": { "enum": ["ready", "pending_api_key", "pending_source", "requires_license"] },
+        "cadence": { "enum": ["daily", "weekly", "monthly"] },
+        "availability": { "enum": ["ready", "pending_api_key", "pending_source"] },
         "route": { "type": "string", "minLength": 1 },
         "source_url": { "type": "string", "format": "uri" },
         "fallback_source": { "type": "string", "minLength": 1 },
