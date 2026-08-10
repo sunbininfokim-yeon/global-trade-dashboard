@@ -1,6 +1,6 @@
 {
   "schema_version": "official-reports-v1",
-  "generated_at": "2026-08-09T21:56:49.435389+00:00",
+  "generated_at": "2026-08-10T05:12:03.382726+00:00",
   "model": {
     "name": "official_reports_learnable_v1",
     "description": "Official sources only (US/JP/CN/EU/UK public RSS·HTML). Domains: economy/finance/diplomacy/security/agriculture. Series catalog + label_history for collaborative learning. No Dropbox.",
@@ -116,6 +116,20 @@
       "published_at": "2026-07-29T18:00:00+00:00",
       "site_slot": "finance.policy",
       "significance": 3.445
+    },
+    {
+      "series_id": "JP_BOJ_POLICY",
+      "label_ko": "일본은행 정책·공표",
+      "country": "JPN",
+      "domains": [
+        "finance",
+        "economy"
+      ],
+      "title": "Summary of Opinions at the Monetary Policy Meeting on July 30 and 31, 2026",
+      "url": "http://www.boj.or.jp/en/mopo/mpmsche_minu/opinion_2026/opi260731.pdf",
+      "published_at": "2026-08-09T23:50:00+00:00",
+      "site_slot": "finance.policy",
+      "significance": 3.326
     },
     {
       "series_id": "JP_BOJ_POLICY",
@@ -265,20 +279,6 @@
       "published_at": "2026-08-06T23:50:00+00:00",
       "site_slot": "finance.policy",
       "significance": 2.306
-    },
-    {
-      "series_id": "JP_BOJ_POLICY",
-      "label_ko": "일본은행 정책·공표",
-      "country": "JPN",
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "title": "Bank of Japan's Transactions with the Government (July)",
-      "url": "http://www.boj.or.jp/en/statistics/boj/other/tseifu/release/2026/seifu2607.pdf",
-      "published_at": "2026-08-06T23:50:00+00:00",
-      "site_slot": "finance.policy",
-      "significance": 2.306
     }
   ],
   "ticker_items": [
@@ -417,6 +417,41 @@
       "rank_reasons": [
         "domains:economy,finance",
         "series:US_FED_FOMC"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": "finance.policy"
+    },
+    {
+      "id": "0f9273d9472286ee",
+      "published_at": "2026-08-09T23:50:00+00:00",
+      "source": {
+        "id": "jp_boj_whatsnew",
+        "name": "Bank of Japan",
+        "region": "jpn",
+        "slant": null
+      },
+      "url": "http://www.boj.or.jp/en/mopo/mpmsche_minu/opinion_2026/opi260731.pdf",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "finance",
+        "economy"
+      ],
+      "series_id": "JP_BOJ_POLICY",
+      "title": {
+        "original": "Summary of Opinions at the Monetary Policy Meeting on July 30 and 31, 2026",
+        "original_lang": "en",
+        "ko": "[JPN·금융] Summary of Opinions at the Monetary Policy Meeting on July 30 and 31, 2026"
+      },
+      "summary": "",
+      "scores": {
+        "significance": 3.326,
+        "final": 3.326
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "series:JP_BOJ_POLICY"
       ],
       "translation_status": "skipped",
       "event_type": "official_report",
@@ -1644,41 +1679,6 @@
       "translation_status": "skipped",
       "event_type": "official_report",
       "site_slot": "finance.policy"
-    },
-    {
-      "id": "8e5469f1b87939a7",
-      "published_at": "2026-08-06T23:50:00+00:00",
-      "source": {
-        "id": "jp_boj_whatsnew",
-        "name": "Bank of Japan",
-        "region": "jpn",
-        "slant": null
-      },
-      "url": "http://www.boj.or.jp/en/statistics/boj/other/tseifu/release/2026/seifu2607.pdf",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "series_id": "JP_BOJ_POLICY",
-      "title": {
-        "original": "Bank of Japan's Transactions with the Government (July)",
-        "original_lang": "en",
-        "ko": "[JPN·경제] Bank of Japan's Transactions with the Government (July)"
-      },
-      "summary": "",
-      "scores": {
-        "significance": 2.306,
-        "final": 2.306
-      },
-      "rank_reasons": [
-        "domains:economy,finance",
-        "series:JP_BOJ_POLICY"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": "finance.policy"
     }
   ],
   "pending_review": [
@@ -1769,6 +1769,30 @@
     {
       "title": "testimonies",
       "url": "https://home.treasury.gov/news/press-releases/testimonies",
+      "country": "USA",
+      "domains": [
+        "economy",
+        "finance",
+        "diplomacy"
+      ],
+      "significance": 2.291,
+      "suggest": "label promote|keep|drop + series_id later"
+    },
+    {
+      "title": "August 7, 2026",
+      "url": "https://home.treasury.gov/news/press-releases/sb0597",
+      "country": "USA",
+      "domains": [
+        "economy",
+        "finance",
+        "diplomacy"
+      ],
+      "significance": 2.291,
+      "suggest": "label promote|keep|drop + series_id later"
+    },
+    {
+      "title": "August 5, 2026",
+      "url": "https://home.treasury.gov/news/press-releases/sb0594",
       "country": "USA",
       "domains": [
         "economy",
@@ -1921,6 +1945,41 @@
       "site_slot": "finance.policy"
     },
     {
+      "id": "0f9273d9472286ee",
+      "published_at": "2026-08-09T23:50:00+00:00",
+      "source": {
+        "id": "jp_boj_whatsnew",
+        "name": "Bank of Japan",
+        "region": "jpn",
+        "slant": null
+      },
+      "url": "http://www.boj.or.jp/en/mopo/mpmsche_minu/opinion_2026/opi260731.pdf",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "finance",
+        "economy"
+      ],
+      "series_id": "JP_BOJ_POLICY",
+      "title": {
+        "original": "Summary of Opinions at the Monetary Policy Meeting on July 30 and 31, 2026",
+        "original_lang": "en",
+        "ko": "[JPN·금융] Summary of Opinions at the Monetary Policy Meeting on July 30 and 31, 2026"
+      },
+      "summary": "",
+      "scores": {
+        "significance": 3.326,
+        "final": 3.326
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "series:JP_BOJ_POLICY"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": "finance.policy"
+    },
+    {
       "id": "f737748098fd3679",
       "published_at": "2026-07-31T04:25:00+00:00",
       "source": {
@@ -3129,41 +3188,6 @@
         "original": "Monetary Base and the Bank of Japan's Transactions (July)",
         "original_lang": "en",
         "ko": "[JPN·경제] Monetary Base and the Bank of Japan's Transactions (July)"
-      },
-      "summary": "",
-      "scores": {
-        "significance": 2.306,
-        "final": 2.306
-      },
-      "rank_reasons": [
-        "domains:economy,finance",
-        "series:JP_BOJ_POLICY"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": "finance.policy"
-    },
-    {
-      "id": "8e5469f1b87939a7",
-      "published_at": "2026-08-06T23:50:00+00:00",
-      "source": {
-        "id": "jp_boj_whatsnew",
-        "name": "Bank of Japan",
-        "region": "jpn",
-        "slant": null
-      },
-      "url": "http://www.boj.or.jp/en/statistics/boj/other/tseifu/release/2026/seifu2607.pdf",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "series_id": "JP_BOJ_POLICY",
-      "title": {
-        "original": "Bank of Japan's Transactions with the Government (July)",
-        "original_lang": "en",
-        "ko": "[JPN·경제] Bank of Japan's Transactions with the Government (July)"
       },
       "summary": "",
       "scores": {
