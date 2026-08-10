@@ -24,7 +24,8 @@
     "directionality": "bidirectional",
     "benchmark_code": "Asia–Mediterranean mainline",
     "chokepoints": ["suez", "bab_el_mandeb"],
-    "model_status": "awaiting_public_cargo"
+    "model_status": "capacity_model_configured",
+    "route_config_id": "asia_mediterranean_container"
   },
   {
     "id": "asia_us_west_container_service",
@@ -37,7 +38,8 @@
     "directionality": "bidirectional",
     "benchmark_code": "Transpacific mainline",
     "chokepoints": [],
-    "model_status": "awaiting_public_cargo"
+    "model_status": "capacity_model_configured",
+    "route_config_id": "asia_us_west_container"
   },
   {
     "id": "asia_us_east_container_service",
@@ -54,6 +56,20 @@
     "route_config_id": "asia_us_east_container"
   },
   {
+    "id": "north_europe_us_east_container_service",
+    "ship_type": "container",
+    "vessel_class": "neo_panamax_container",
+    "vessel_class_ko": "Neo-Panamax 8K–14K TEU",
+    "name_ko": "북유럽 ↔ 미국 동부",
+    "origin": "North Europe",
+    "destination": "US East Coast",
+    "directionality": "bidirectional",
+    "benchmark_code": "Transatlantic mainline",
+    "chokepoints": [],
+    "model_status": "capacity_model_configured",
+    "route_config_id": "north_europe_us_east_container"
+  },
+  {
     "id": "c2_tubarao_rotterdam",
     "ship_type": "dry_bulk",
     "vessel_class": "capesize",
@@ -64,7 +80,8 @@
     "directionality": "laden_out_ballast_return",
     "benchmark_code": "C2",
     "chokepoints": [],
-    "model_status": "awaiting_public_cargo"
+    "model_status": "capacity_model_configured",
+    "route_config_id": "c2_tubarao_rotterdam_iron_ore"
   },
   {
     "id": "c3_tubarao_qingdao",
@@ -77,7 +94,8 @@
     "directionality": "laden_out_ballast_return",
     "benchmark_code": "C3",
     "chokepoints": [],
-    "model_status": "awaiting_public_cargo"
+    "model_status": "capacity_model_configured",
+    "route_config_id": "c3_tubarao_qingdao_iron_ore"
   },
   {
     "id": "c5_west_australia_qingdao",
@@ -90,7 +108,8 @@
     "directionality": "laden_out_ballast_return",
     "benchmark_code": "C5",
     "chokepoints": [],
-    "model_status": "awaiting_public_cargo"
+    "model_status": "capacity_model_configured",
+    "route_config_id": "c5_west_australia_qingdao_iron_ore"
   },
   {
     "id": "c7_bolivar_rotterdam",
@@ -103,7 +122,8 @@
     "directionality": "laden_out_ballast_return",
     "benchmark_code": "C7",
     "chokepoints": [],
-    "model_status": "awaiting_public_cargo"
+    "model_status": "capacity_model_configured",
+    "route_config_id": "c7_bolivar_rotterdam_coal"
   },
   {
     "id": "c17_saldanha_qingdao",
@@ -116,7 +136,8 @@
     "directionality": "laden_out_ballast_return",
     "benchmark_code": "C17",
     "chokepoints": [],
-    "model_status": "awaiting_public_cargo"
+    "model_status": "capacity_model_configured",
+    "route_config_id": "c17_saldanha_qingdao_iron_ore"
   },
   {
     "id": "us_gulf_ne_asia_grain_catalog",
@@ -199,7 +220,8 @@
     "directionality": "laden_out_ballast_return",
     "benchmark_code": "TD15",
     "chokepoints": [],
-    "model_status": "awaiting_public_cargo"
+    "model_status": "capacity_model_configured",
+    "route_config_id": "west_africa_east_asia_crude"
   },
   {
     "id": "td22_us_gulf_china",
@@ -211,8 +233,9 @@
     "destination": "China",
     "directionality": "laden_out_ballast_return",
     "benchmark_code": "TD22",
-    "chokepoints": ["panama"],
-    "model_status": "awaiting_public_cargo"
+    "chokepoints": [],
+    "model_status": "capacity_model_configured",
+    "route_config_id": "us_gulf_east_asia_crude"
   },
   {
     "id": "td6_black_sea_mediterranean",
@@ -225,7 +248,8 @@
     "directionality": "laden_out_ballast_return",
     "benchmark_code": "TD6",
     "chokepoints": ["bosporus"],
-    "model_status": "awaiting_public_cargo"
+    "model_status": "capacity_model_configured",
+    "route_config_id": "black_sea_mediterranean_crude"
   },
   {
     "id": "td20_west_africa_uk_continent",
@@ -238,7 +262,8 @@
     "directionality": "laden_out_ballast_return",
     "benchmark_code": "TD20",
     "chokepoints": [],
-    "model_status": "awaiting_public_cargo"
+    "model_status": "capacity_model_configured",
+    "route_config_id": "west_africa_north_europe_crude"
   },
   {
     "id": "meg_europe_crude_corridor",
@@ -253,5 +278,20 @@
     "chokepoints": ["hormuz", "bab_el_mandeb", "suez"],
     "model_status": "capacity_model_active",
     "route_config_id": "persian_gulf_europe_crude"
+  },
+  {
+    "id": "meg_east_asia_lng_corridor",
+    "ship_type": "tanker",
+    "cargo_segment": "lng",
+    "vessel_class": "q_flex_q_max_lng",
+    "vessel_class_ko": "Q-Flex·Q-Max LNG 운반선 95K–130K DWT",
+    "name_ko": "중동 걸프 → 동아시아 LNG",
+    "origin": "Middle East Gulf",
+    "destination": "East Asia",
+    "directionality": "laden_out_ballast_return",
+    "benchmark_code": "Middle East–East Asia LNG corridor",
+    "chokepoints": ["hormuz"],
+    "model_status": "capacity_model_configured",
+    "route_config_id": "persian_gulf_east_asia_lng"
   }
 ]

@@ -13,6 +13,7 @@ import copy
 import hashlib
 import math
 import random
+from collections import defaultdict
 from typing import Any, Iterable
 
 
@@ -127,17 +128,174 @@ def _find_exposure(route: dict[str, Any], chokepoint_id: str) -> dict[str, Any] 
     return None
 
 
-def _response_shares(exposure: dict[str, Any]) -> tuple[float, float, float]:
-    response = exposure.get("response", {})
+def _response_shares(
+    exposure: dict[str, Any],
+    scenario: dict[str, Any],
+) -> tuple[float, float, float]:
+    response = scenario.get("response_override") or exposure.get("response", {})
     reroute = _share(response.get("reroute", 0), "response.reroute")
     wait = _share(response.get("wait", 0), "response.wait")
     cancel = _share(response.get("cancel", 0), "response.cancel")
+    adjustment = scenario.get("response_adjustment", {})
+    reroute *= _number(
+        adjustment.get("reroute_multiplier", 1.0),
+        "response_adjustment.reroute_multiplier",
+        minimum=0.0,
+    )
+    wait *= _number(
+        adjustment.get("wait_multiplier", 1.0),
+        "response_adjustment.wait_multiplier",
+        minimum=0.0,
+    )
+    cancel *= _number(
+        adjustment.get("cancel_multiplier", 1.0),
+        "response_adjustment.cancel_multiplier",
+        minimum=0.0,
+    )
+    if not exposure.get("reroute_available", True):
+        reroute = 0.0
     total = reroute + wait + cancel
-    if not math.isclose(total, 1.0, abs_tol=1e-9):
-        raise InputError("reroute + wait + cancel response shares must equal 1.0")
-    if not exposure.get("reroute_available", True) and reroute > 0:
-        raise InputError("reroute share must be zero when no reroute is available")
-    return reroute, wait, cancel
+    if total <= 0:
+        raise InputError("adjusted reroute + wait + cancel response shares must be positive")
+    return reroute / total, wait / total, cancel / total
+
+
+def _scenario_throughput(scenario: dict[str, Any]) -> tuple[float, float]:
+    """Return (effective blockage, residual throughput) for a scenario.
+
+    ``closure_fraction`` remains supported for the existing UI contract, while
+    ``residual_throughput_rate`` makes the operational meaning explicit.  They
+    are complements: an 80% scenario blockage means 20% of baseline route flow
+    remains, not that the waterway is necessarily physically sealed.
+    """
+
+    closure = _share(scenario["closure_fraction"], "closure_fraction")
+    residual_raw = scenario.get("residual_throughput_rate")
+    residual = 1.0 - closure if residual_raw is None else _share(
+        residual_raw,
+        "residual_throughput_rate",
+    )
+    if not math.isclose(closure + residual, 1.0, abs_tol=1e-9):
+        raise InputError("closure_fraction + residual_throughput_rate must equal 1.0")
+    return closure, residual
+
+
+def _simulate_daily_cargo_flow(
+    *,
+    annual_cargo_tonnes: float,
+    exposure_share: float,
+    closure_fraction: float,
+    duration_days: float,
+    horizon_days: float,
+    reroute_response: float,
+    wait_response: float,
+    cancel_response: float,
+    reroute_extra_arrival_days: float,
+    waiting_days: float,
+) -> dict[str, Any]:
+    """Track scheduled cargo through direct, rerouted, waiting and cancelled states."""
+
+    daily_cargo = annual_cargo_tonnes / 365.0
+    total_scheduled = daily_cargo * horizon_days
+    expected_waiting = (
+        daily_cargo
+        * min(duration_days, horizon_days)
+        * exposure_share
+        * closure_fraction
+        * wait_response
+    )
+    if waiting_days == 0:
+        daily_clearance_capacity = expected_waiting
+    else:
+        daily_clearance_capacity = expected_waiting / waiting_days
+
+    waiting_queue = 0.0
+    rerouted_in_transit = 0.0
+    rerouted_departed = 0.0
+    rerouted_arrived = 0.0
+    waiting_added_total = 0.0
+    waiting_cleared_total = 0.0
+    cancelled_total = 0.0
+    served_total = 0.0
+    peak_backlog = 0.0
+    peak_backlog_day = None
+    arrival_schedule: dict[int, float] = defaultdict(float)
+    timeline = []
+
+    for day in range(1, math.ceil(horizon_days) + 1):
+        day_fraction = max(0.0, min(1.0, horizon_days - (day - 1)))
+        active_fraction = max(0.0, min(day_fraction, duration_days - (day - 1)))
+        scheduled_today = daily_cargo * day_fraction
+        rerouted_arrival_today = arrival_schedule.pop(day, 0.0)
+        rerouted_in_transit = max(0.0, rerouted_in_transit - rerouted_arrival_today)
+
+        affected_today = daily_cargo * active_fraction * exposure_share * closure_fraction
+        rerouted_today = affected_today * reroute_response
+        waiting_today = affected_today * wait_response
+        cancelled_today = affected_today * cancel_response
+        direct_served_today = scheduled_today - affected_today
+
+        rerouted_departed += rerouted_today
+        waiting_added_total += waiting_today
+        cancelled_total += cancelled_today
+        waiting_queue += waiting_today
+
+        if rerouted_today > 0:
+            delay_days = max(0, math.ceil(reroute_extra_arrival_days))
+            if delay_days == 0:
+                rerouted_arrival_today += rerouted_today
+            else:
+                arrival_schedule[day + delay_days] += rerouted_today
+                rerouted_in_transit += rerouted_today
+
+        non_event_fraction = max(0.0, day_fraction - active_fraction)
+        waiting_cleared_today = min(
+            waiting_queue,
+            daily_clearance_capacity * non_event_fraction,
+        )
+        waiting_queue -= waiting_cleared_today
+        waiting_cleared_total += waiting_cleared_today
+        rerouted_arrived += rerouted_arrival_today
+        served_today = direct_served_today + rerouted_arrival_today + waiting_cleared_today
+        served_total += served_today
+
+        if waiting_queue > peak_backlog:
+            peak_backlog = waiting_queue
+            peak_backlog_day = day
+        timeline.append(
+            {
+                "day": day,
+                "event_active_fraction": active_fraction,
+                "scheduled_cargo_tonnes": scheduled_today,
+                "direct_served_tonnes": direct_served_today,
+                "rerouted_departed_tonnes": rerouted_today,
+                "rerouted_arrived_tonnes": rerouted_arrival_today,
+                "waiting_added_tonnes": waiting_today,
+                "waiting_cleared_tonnes": waiting_cleared_today,
+                "cancelled_tonnes": cancelled_today,
+                "end_waiting_backlog_tonnes": waiting_queue,
+                "end_rerouted_in_transit_tonnes": rerouted_in_transit,
+                "served_tonnes": served_today,
+            }
+        )
+
+    conservation = served_total + waiting_queue + rerouted_in_transit + cancelled_total
+    return {
+        "timeline": timeline,
+        "scheduled_cargo_tonnes": total_scheduled,
+        "served_cargo_tonnes": served_total,
+        "waiting_added_tonnes": waiting_added_total,
+        "waiting_cleared_tonnes": waiting_cleared_total,
+        "waiting_backlog_tonnes": waiting_queue,
+        "peak_waiting_backlog_tonnes": peak_backlog,
+        "peak_waiting_backlog_day": peak_backlog_day,
+        "rerouted_departed_tonnes": rerouted_departed,
+        "rerouted_arrived_tonnes": rerouted_arrived,
+        "rerouted_in_transit_tonnes": rerouted_in_transit,
+        "cancelled_tonnes": cancelled_total,
+        "daily_clearance_capacity_tonnes": daily_clearance_capacity,
+        "accounting_residual_tonnes": total_scheduled - conservation,
+    }
 
 
 def simulate_route(
@@ -148,8 +306,10 @@ def simulate_route(
     """Simulate one route under one chokepoint scenario.
 
     ``duration_days / horizon_days`` limits the share of sailings exposed to a
-    finite event.  A 28-day closure on a 28-day horizon is a steady-state shock;
-    a seven-day closure exposes one quarter as much of the horizon's traffic.
+    finite event.  Flow, cargo backlog and commercially available DWT are kept
+    separate: waiting cargo is not counted as delivered inside the horizon, and
+    trapped or uninsured tonnage remains in the physical fleet while being
+    unavailable to the commercial market.
     """
 
     flow_profile = _route_flow_profile(route)
@@ -158,6 +318,13 @@ def simulate_route(
     base_cycle = route_cycle_days(route)
     baseline_required = flow_profile["capacity_equivalent_tonnes"] * base_cycle / 365.0
     allocated_capacity = baseline_required * (1.0 + reserve_margin)
+    reference_size = route.get("reference_size", {})
+    reference_vessel_dwt = None
+    if reference_size.get("dwt_min") is not None and reference_size.get("dwt_max") is not None:
+        reference_vessel_dwt = (
+            _number(reference_size["dwt_min"], "reference_size.dwt_min", minimum=0.01)
+            + _number(reference_size["dwt_max"], "reference_size.dwt_max", minimum=0.01)
+        ) / 2.0
 
     result: dict[str, Any] = {
         "route_id": route["id"],
@@ -172,20 +339,48 @@ def simulate_route(
         "baseline_required_dwt": baseline_required,
         "allocated_dwt_with_reserve": allocated_capacity,
         "route_share_of_type_fleet_pct": baseline_required / global_fleet * 100.0,
+        "event_type": "normal",
+        "effective_blockage_fraction": 0.0,
+        "residual_throughput_rate": 1.0,
         "affected_flow_share": 0.0,
         "rerouted_flow_share": 0.0,
+        "rerouted_in_transit_flow_share": 0.0,
         "waiting_flow_share": 0.0,
+        "cleared_waiting_flow_share": 0.0,
+        "backlog_flow_share": 0.0,
         "cancelled_flow_share": 0.0,
         "reroute_extra_cycle_days": 0.0,
+        "reroute_extra_arrival_days": 0.0,
+        "trapped_loaded_dwt": 0.0,
+        "reference_vessel_dwt_mid": reference_vessel_dwt,
+        "trapped_vessel_equivalent": 0.0 if reference_vessel_dwt else None,
+        "insurance_excluded_dwt": 0.0,
+        "commercially_unavailable_dwt": 0.0,
+        "commercially_available_dwt": allocated_capacity,
+        "continuity_required_dwt": baseline_required,
+        "commercial_capacity_gap_dwt": 0.0,
         "disrupted_required_dwt": baseline_required,
         "operational_capacity_absorbed_dwt": 0.0,
         "net_required_capacity_change_dwt": 0.0,
         "capacity_gap_dwt": 0.0,
         "global_type_fleet_absorption_pct": 0.0,
         "deliverable_flow_index": 1.0,
+        "served_flow_index": 1.0,
         "traffic_change_pct": 0.0,
+        "served_cargo_tonnes_horizon": 0.0,
+        "backlog_cargo_tonnes_horizon": 0.0,
         "lost_cargo_tonnes_horizon": 0.0,
-        "method": "annual-flow-cycle-capacity-v1",
+        "rerouted_cargo_tonnes_horizon": 0.0,
+        "rerouted_delivered_cargo_tonnes_horizon": 0.0,
+        "rerouted_in_transit_cargo_tonnes_horizon": 0.0,
+        "waiting_cargo_tonnes_horizon": 0.0,
+        "cleared_waiting_cargo_tonnes_horizon": 0.0,
+        "peak_backlog_cargo_tonnes": 0.0,
+        "peak_backlog_day": None,
+        "daily_flow_timeline": [],
+        "cargo_accounting_residual_tonnes": 0.0,
+        "response_profile_id": None,
+        "method": "daily-stock-flow-cycle-capacity-v3",
     }
     if scenario is None:
         return result
@@ -195,53 +390,146 @@ def simulate_route(
     if exposure is None:
         return result
 
-    closure = _share(scenario["closure_fraction"], "closure_fraction")
+    closure, residual_throughput = _scenario_throughput(scenario)
     duration = _number(scenario["duration_days"], "duration_days", minimum=0.0)
     horizon = _number(scenario.get("horizon_days", 28), "horizon_days", minimum=0.01)
     duration_factor = min(duration / horizon, 1.0)
     exposure_share = _share(exposure.get("exposure_share", 1.0), "exposure_share")
-    affected = exposure_share * closure * duration_factor
-    reroute_response, wait_response, cancel_response = _response_shares(exposure)
-    rerouted = affected * reroute_response
-    waiting = affected * wait_response
-    cancelled = affected * cancel_response
+    reroute_response, wait_response, cancel_response = _response_shares(exposure, scenario)
 
     extra_nm = _number(exposure.get("reroute_extra_nm_one_way", 0), "reroute_extra_nm_one_way", minimum=0.0)
     speed = _number(route["speed_knots"], "speed_knots", minimum=0.01)
     extra_cycle_days = 2.0 * extra_nm / speed / 24.0
+    extra_arrival_days = extra_nm / speed / 24.0
     waiting_days = _number(
         scenario.get("waiting_days", exposure.get("default_waiting_days", 0)),
         "waiting_days",
         minimum=0.0,
     )
-
-    # Capacity tied up by cargo that still sails, plus weighted rerouting/wait.
-    retained_base_capacity = baseline_required * (1.0 - cancelled)
-    delay_capacity = flow_profile["capacity_equivalent_tonnes"] / 365.0 * (
-        rerouted * extra_cycle_days + waiting * waiting_days
+    event_type = str(scenario.get("event_type", "operational_restriction"))
+    daily_flow = _simulate_daily_cargo_flow(
+        annual_cargo_tonnes=flow_profile["total_annual_cargo_tonnes"],
+        exposure_share=exposure_share,
+        closure_fraction=closure,
+        duration_days=duration,
+        horizon_days=horizon,
+        reroute_response=reroute_response,
+        wait_response=wait_response,
+        cancel_response=cancel_response,
+        reroute_extra_arrival_days=extra_arrival_days,
+        waiting_days=waiting_days,
     )
-    disrupted_required = retained_base_capacity + delay_capacity
-    capacity_gap = max(0.0, disrupted_required - allocated_capacity)
-    operational_absorbed = max(0.0, delay_capacity)
-    capacity_coverage = min(1.0, allocated_capacity / disrupted_required) if disrupted_required else 1.0
-    deliverable_index = (1.0 - cancelled) * capacity_coverage
-    lost_tonnes = flow_profile["total_annual_cargo_tonnes"] / 365.0 * horizon * cancelled
+    horizon_cargo = daily_flow["scheduled_cargo_tonnes"]
+    denominator = horizon_cargo if horizon_cargo else 1.0
+    rerouted = daily_flow["rerouted_departed_tonnes"] / denominator
+    waiting = daily_flow["waiting_added_tonnes"] / denominator
+    cleared_waiting = daily_flow["waiting_cleared_tonnes"] / denominator
+    backlog = daily_flow["waiting_backlog_tonnes"] / denominator
+    cancelled = daily_flow["cancelled_tonnes"] / denominator
+    rerouted_in_transit = daily_flow["rerouted_in_transit_tonnes"] / denominator
+    affected = rerouted + waiting + cancelled
+    served_flow_index = (
+        daily_flow["served_cargo_tonnes"] / denominator if horizon_cargo else 1.0
+    )
+    served_tonnes = daily_flow["served_cargo_tonnes"]
+    backlog_tonnes = daily_flow["waiting_backlog_tonnes"]
+    lost_tonnes = daily_flow["cancelled_tonnes"]
+
+    reroute_capacity = flow_profile["capacity_equivalent_tonnes"] / 365.0 * (
+        rerouted * extra_cycle_days
+    )
+    onboard_waiting_share = _share(
+        scenario.get("onboard_waiting_share", exposure.get("onboard_waiting_share", 1.0)),
+        "onboard_waiting_share",
+    )
+    trapped_days = _number(
+        scenario.get("trapped_days", min(waiting_days, horizon)),
+        "trapped_days",
+        minimum=0.0,
+    )
+    trapped_days = min(trapped_days, horizon)
+    trapped_loaded_dwt = flow_profile["capacity_equivalent_tonnes"] / 365.0 * (
+        waiting * onboard_waiting_share * trapped_days
+    )
+    trapped_vessel_equivalent = (
+        trapped_loaded_dwt / reference_vessel_dwt if reference_vessel_dwt else None
+    )
+
+    insurance_unavailable_share = _share(
+        scenario.get("insurance_unavailable_share", 0.0),
+        "insurance_unavailable_share",
+    )
+    insurance_eligible_pool = max(0.0, allocated_capacity - trapped_loaded_dwt)
+    insurance_excluded_dwt = (
+        insurance_eligible_pool
+        * exposure_share
+        * duration_factor
+        * insurance_unavailable_share
+    )
+    commercially_unavailable = min(
+        allocated_capacity,
+        trapped_loaded_dwt + insurance_excluded_dwt,
+    )
+    commercially_available = max(0.0, allocated_capacity - commercially_unavailable)
+
+    # Capacity needed to preserve baseline service.  Trapped and uninsured DWT
+    # are already removed from commercially_available and must not be counted
+    # twice on the required side of the comparison.
+    continuity_required = baseline_required + reroute_capacity
+    commercial_capacity_gap = max(0.0, continuity_required - commercially_available)
+    operational_absorbed = reroute_capacity + commercially_unavailable
 
     result.update(
         {
+            "event_type": event_type,
+            "effective_blockage_fraction": closure,
+            "residual_throughput_rate": residual_throughput,
             "affected_flow_share": affected,
             "rerouted_flow_share": rerouted,
+            "rerouted_in_transit_flow_share": rerouted_in_transit,
             "waiting_flow_share": waiting,
+            "cleared_waiting_flow_share": cleared_waiting,
+            "backlog_flow_share": backlog,
             "cancelled_flow_share": cancelled,
             "reroute_extra_cycle_days": extra_cycle_days,
-            "disrupted_required_dwt": disrupted_required,
+            "reroute_extra_arrival_days": extra_arrival_days,
+            "trapped_loaded_dwt": trapped_loaded_dwt,
+            "trapped_vessel_equivalent": trapped_vessel_equivalent,
+            "insurance_excluded_dwt": insurance_excluded_dwt,
+            "commercially_unavailable_dwt": commercially_unavailable,
+            "commercially_available_dwt": commercially_available,
+            "continuity_required_dwt": continuity_required,
+            "commercial_capacity_gap_dwt": commercial_capacity_gap,
+            # Backward-compatible aliases consumed by the current UI.
+            "disrupted_required_dwt": continuity_required,
             "operational_capacity_absorbed_dwt": operational_absorbed,
-            "net_required_capacity_change_dwt": disrupted_required - baseline_required,
-            "capacity_gap_dwt": capacity_gap,
+            "net_required_capacity_change_dwt": continuity_required - baseline_required,
+            "capacity_gap_dwt": commercial_capacity_gap,
             "global_type_fleet_absorption_pct": operational_absorbed / global_fleet * 100.0,
-            "deliverable_flow_index": deliverable_index,
-            "traffic_change_pct": (deliverable_index - 1.0) * 100.0,
+            "deliverable_flow_index": served_flow_index,
+            "served_flow_index": served_flow_index,
+            "traffic_change_pct": (served_flow_index - 1.0) * 100.0,
+            "served_cargo_tonnes_horizon": served_tonnes,
+            "backlog_cargo_tonnes_horizon": backlog_tonnes,
             "lost_cargo_tonnes_horizon": lost_tonnes,
+            "rerouted_cargo_tonnes_horizon": daily_flow["rerouted_departed_tonnes"],
+            "rerouted_delivered_cargo_tonnes_horizon": daily_flow[
+                "rerouted_arrived_tonnes"
+            ],
+            "rerouted_in_transit_cargo_tonnes_horizon": daily_flow[
+                "rerouted_in_transit_tonnes"
+            ],
+            "waiting_cargo_tonnes_horizon": daily_flow["waiting_added_tonnes"],
+            "cleared_waiting_cargo_tonnes_horizon": daily_flow[
+                "waiting_cleared_tonnes"
+            ],
+            "peak_backlog_cargo_tonnes": daily_flow["peak_waiting_backlog_tonnes"],
+            "peak_backlog_day": daily_flow["peak_waiting_backlog_day"],
+            "daily_flow_timeline": daily_flow["timeline"],
+            "cargo_accounting_residual_tonnes": daily_flow[
+                "accounting_residual_tonnes"
+            ],
+            "response_profile_id": scenario.get("response_profile_id"),
         }
     )
     return result
@@ -301,6 +589,9 @@ def estimate_interval(
         "operational_capacity_absorbed_dwt": [],
         "capacity_gap_dwt": [],
         "deliverable_flow_index": [],
+        "backlog_cargo_tonnes_horizon": [],
+        "trapped_loaded_dwt": [],
+        "commercially_available_dwt": [],
     }
     for _ in range(samples):
         sampled = copy.deepcopy(route)
@@ -323,11 +614,10 @@ def estimate_interval(
         trial = simulate_route(sampled, scenario, fleet_dwt)
         for metric in metrics:
             metrics[metric].append(float(trial[metric]))
-    return {
-        metric: {
-            "p10": _percentile(values, 0.10),
-            "p50": _percentile(values, 0.50),
-            "p90": _percentile(values, 0.90),
-        }
-        for metric, values in metrics.items()
-    }
+    intervals: dict[str, dict[str, float]] = {}
+    for metric, values in metrics.items():
+        p10 = _percentile(values, 0.10)
+        p50 = max(p10, _percentile(values, 0.50))
+        p90 = max(p50, _percentile(values, 0.90))
+        intervals[metric] = {"p10": p10, "p50": p50, "p90": p90}
+    return intervals

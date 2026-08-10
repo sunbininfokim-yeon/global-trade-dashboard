@@ -1,0 +1,65 @@
+{
+  "status": "route_segmented_scenario_ranges",
+  "central_case_id": "central",
+  "methodology_ko": "무료 공공자료로 완전한 선박별 CII·건조연도·연료 패널을 만들 수 없으므로, 관측 가능한 선종·선형·항로 EU 노출과 명시적인 저손실·중앙·고손실 행동범위를 결합한다. 결과는 선박별 예측이 아니라 항로 유효 DWT 범위다.",
+  "identification_boundary": {
+    "observed_or_configured": [
+      "ship_type",
+      "vessel_size_class",
+      "reference_size",
+      "route_eu_exposure"
+    ],
+    "not_observed_in_free_complete_fleet_panel": [
+      "vessel_build_year",
+      "primary_fuel",
+      "attained_cii_grade",
+      "owner_compliance_choice"
+    ]
+  },
+  "defaults": {
+    "build_year_band": "route_aggregate_not_observed",
+    "fuel_profile": "route_aggregate_not_observed",
+    "eu_route_exposure_share": 0.0,
+    "cii_grade_status": "ship_level_free_public_data_unavailable",
+    "cii_d_or_e_share_range": [0.10, 0.35]
+  },
+  "response_cases": [
+    {
+      "id": "lower_loss",
+      "label_ko": "저손실 대응",
+      "speed_response_multiplier": 0.65,
+      "speed_reduction_multiplier": 0.70,
+      "retrofit_offhire_multiplier": 0.60,
+      "retirement_multiplier": 0.25,
+      "eu_exposure_response_uplift": 0.05
+    },
+    {
+      "id": "central",
+      "label_ko": "중앙 대응",
+      "speed_response_multiplier": 1.0,
+      "speed_reduction_multiplier": 1.0,
+      "retrofit_offhire_multiplier": 1.0,
+      "retirement_multiplier": 1.0,
+      "eu_exposure_response_uplift": 0.10
+    },
+    {
+      "id": "higher_loss",
+      "label_ko": "고손실 대응",
+      "speed_response_multiplier": 1.35,
+      "speed_reduction_multiplier": 1.30,
+      "retrofit_offhire_multiplier": 1.50,
+      "retirement_multiplier": 2.0,
+      "eu_exposure_response_uplift": 0.20
+    }
+  ],
+  "route_overrides": {
+    "asia_north_europe_container": {"eu_route_exposure_share": 1.0},
+    "asia_mediterranean_container": {"eu_route_exposure_share": 0.8},
+    "north_europe_us_east_container": {"eu_route_exposure_share": 1.0},
+    "c2_tubarao_rotterdam_iron_ore": {"eu_route_exposure_share": 1.0},
+    "c7_bolivar_rotterdam_coal": {"eu_route_exposure_share": 1.0},
+    "persian_gulf_europe_crude": {"eu_route_exposure_share": 1.0},
+    "black_sea_mediterranean_crude": {"eu_route_exposure_share": 0.7},
+    "west_africa_north_europe_crude": {"eu_route_exposure_share": 1.0}
+  }
+}

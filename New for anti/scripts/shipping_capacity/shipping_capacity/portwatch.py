@@ -2,12 +2,15 @@
 
 from __future__ import annotations
 
+import copy
 import json
 import statistics
 import urllib.parse
 import urllib.request
 from datetime import datetime, timezone
 from typing import Any
+
+from shipping_capacity.ml_validation import analyze_capacity_series
 
 
 PORTWATCH_QUERY_URL = (
@@ -22,6 +25,16 @@ CAPACITY_FIELDS = {
     "tanker": "capacity_tanker",
     "all": "capacity",
 }
+
+ML_PRIMARY_METRIC = {
+    "chokepoint6": "tanker",
+}
+
+PORTWATCH_METRIC_UNIT = "estimated_trade_tonnes_per_day"
+PORTWATCH_METRIC_DEFINITION = (
+    "PortWatch estimated daily trade volume in metric tonnes, derived from vessel DWT "
+    "and estimated payload/utilization; not observed vessel DWT."
+)
 
 
 def _date_key(value: Any) -> float:
@@ -51,31 +64,219 @@ def _mean(rows: list[dict[str, Any]], field: str) -> float | None:
     return statistics.fmean(values) if values else None
 
 
+def _mae(actual: list[float], predicted: list[float]) -> float:
+    return statistics.fmean(abs(a - p) for a, p in zip(actual, predicted))
+
+
+def _r_squared(actual: list[float], predicted: list[float]) -> float | None:
+    mean_actual = statistics.fmean(actual)
+    denominator = sum((value - mean_actual) ** 2 for value in actual)
+    if denominator == 0:
+        return None
+    numerator = sum((value - estimate) ** 2 for value, estimate in zip(actual, predicted))
+    return 1.0 - numerator / denominator
+
+
+def validate_7d_28d_signal(
+    rows: list[dict[str, Any]],
+    field: str,
+    *,
+    current_window: int = 7,
+    baseline_window: int = 28,
+    forward_window: int = 7,
+) -> dict[str, Any]:
+    """Walk-forward OLS check for persistence of the 7d-vs-28d trade-volume signal.
+
+    The feature is the signed gap between the current seven observations and
+    the preceding 28.  The target is the signed gap of the following seven
+    observations against the same preceding baseline.  This is a diagnostic
+    for signal persistence, not a closure-probability forecast.
+    """
+
+    values = [
+        float(row[field])
+        for row in sorted(rows, key=lambda row: _date_key(row.get("date")))
+        if _date_key(row.get("date")) != float("-inf")
+        and isinstance(row.get(field), (int, float))
+    ]
+    history = baseline_window + current_window
+    pairs: list[tuple[float, float]] = []
+    for stop in range(history, len(values) - forward_window + 1):
+        baseline = values[stop - history : stop - current_window]
+        current = values[stop - current_window : stop]
+        future = values[stop : stop + forward_window]
+        baseline_mean = statistics.fmean(baseline)
+        if baseline_mean == 0:
+            continue
+        feature = 1.0 - statistics.fmean(current) / baseline_mean
+        target = 1.0 - statistics.fmean(future) / baseline_mean
+        pairs.append((feature, target))
+
+    if len(pairs) < 30:
+        return {
+            "status": "insufficient_history",
+            "sample_count": len(pairs),
+            "minimum_sample_count": 30,
+        }
+
+    split = max(20, int(len(pairs) * 0.8))
+    split = min(split, len(pairs) - 7)
+    train = pairs[:split]
+    test = pairs[split:]
+    train_x = [pair[0] for pair in train]
+    train_y = [pair[1] for pair in train]
+    mean_x = statistics.fmean(train_x)
+    mean_y = statistics.fmean(train_y)
+    variance_x = sum((value - mean_x) ** 2 for value in train_x)
+    slope = (
+        sum((x - mean_x) * (y - mean_y) for x, y in train) / variance_x
+        if variance_x
+        else 0.0
+    )
+    intercept = mean_y - slope * mean_x
+
+    test_x = [pair[0] for pair in test]
+    test_y = [pair[1] for pair in test]
+    predictions = [intercept + slope * value for value in test_x]
+    persistence_predictions = test_x
+    test_mae = _mae(test_y, predictions)
+    persistence_mae = _mae(test_y, persistence_predictions)
+    test_r2 = _r_squared(test_y, predictions)
+    beats_persistence = test_mae < persistence_mae
+    has_positive_skill = test_r2 is not None and test_r2 > 0 and beats_persistence
+    return {
+        "status": "exploratory_positive_skill" if has_positive_skill else "exploratory_no_proven_skill",
+        "forecast_use": "eligible_for_exploratory_forecast" if has_positive_skill else "descriptive_only",
+        "sample_count": len(pairs),
+        "train_count": len(train),
+        "test_count": len(test),
+        "feature": "signed current 7-observation estimated trade-volume gap vs preceding 28",
+        "target": "signed next 7-observation estimated trade-volume gap vs same preceding 28",
+        "ols_intercept": intercept,
+        "ols_slope": slope,
+        "test_r2": test_r2,
+        "test_mae_fraction": test_mae,
+        "persistence_mae_fraction": persistence_mae,
+        "beats_persistence": beats_persistence,
+        "warning": "Exploratory chronological validation; not a causal model or closure probability.",
+    }
+
+
 class PortWatchClient:
     def __init__(self, timeout_seconds: int = 30) -> None:
         self.timeout_seconds = timeout_seconds
 
-    def fetch_series(self, portwatch_id: str, record_count: int = 120) -> list[dict[str, Any]]:
-        params = {
-            "where": f"portid='{portwatch_id}'",
-            "outFields": "date,portid,portname,n_total,capacity,capacity_container,capacity_dry_bulk,capacity_general_cargo,capacity_tanker",
-            "returnGeometry": "false",
-            "orderByFields": "date DESC",
-            "resultRecordCount": str(record_count),
-            "f": "json",
-        }
-        url = PORTWATCH_QUERY_URL + "?" + urllib.parse.urlencode(params)
-        request = urllib.request.Request(url, headers={"User-Agent": "global-trade-dashboard/1.0"})
-        with urllib.request.urlopen(request, timeout=self.timeout_seconds) as response:
-            payload = json.load(response)
-        if "error" in payload:
-            raise RuntimeError(f"PortWatch API error: {payload['error']}")
-        rows = [feature["attributes"] for feature in payload.get("features", [])]
+    def fetch_series(self, portwatch_id: str, record_count: int = 730) -> list[dict[str, Any]]:
+        rows: list[dict[str, Any]] = []
+        offset = 0
+        page_size = min(1000, record_count)
+        while len(rows) < record_count:
+            requested = min(page_size, record_count - len(rows))
+            params = {
+                "where": f"portid='{portwatch_id}'",
+                "outFields": "date,portid,portname,n_total,capacity,capacity_container,capacity_dry_bulk,capacity_general_cargo,capacity_tanker",
+                "returnGeometry": "false",
+                "orderByFields": "date DESC",
+                "resultOffset": str(offset),
+                "resultRecordCount": str(requested),
+                "f": "json",
+            }
+            url = PORTWATCH_QUERY_URL + "?" + urllib.parse.urlencode(params)
+            request = urllib.request.Request(
+                url,
+                headers={"User-Agent": "global-trade-dashboard/1.0"},
+            )
+            with urllib.request.urlopen(request, timeout=self.timeout_seconds) as response:
+                payload = json.load(response)
+            if "error" in payload:
+                raise RuntimeError(f"PortWatch API error: {payload['error']}")
+            page = [feature["attributes"] for feature in payload.get("features", [])]
+            rows.extend(page)
+            if len(page) < requested:
+                break
+            offset += len(page)
+
+        # Pagination can occasionally repeat a boundary row while the upstream
+        # layer is being revised.  Keep one observation per port/date.
+        deduplicated: dict[tuple[Any, Any], dict[str, Any]] = {}
+        for row in rows:
+            deduplicated[(row.get("portid"), row.get("date"))] = row
+        rows = list(deduplicated.values())
         rows.sort(key=lambda row: _date_key(row.get("date")))
         return rows
 
     def fetch_status(self, portwatch_id: str) -> dict[str, Any]:
         return summarize_series(self.fetch_series(portwatch_id), portwatch_id)
+
+
+def normalize_status_contract(status: dict[str, Any]) -> dict[str, Any]:
+    """Migrate a cached PortWatch status away from the former DWT mislabel.
+
+    Older snapshots named PortWatch ``capacity_*`` values as DWT even though the
+    upstream definition is estimated trade volume in metric tonnes.  Fallback
+    snapshots pass through this function so an upstream outage cannot revive
+    the incorrect public contract.
+    """
+
+    normalized = copy.deepcopy(status)
+    for metric in normalized.get("metrics", {}).values():
+        current = metric.pop(
+            "current_7d_mean_dwt",
+            metric.get("current_7d_mean_estimated_trade_tonnes"),
+        )
+        baseline = metric.pop(
+            "prior_28d_mean_dwt",
+            metric.get("prior_28d_mean_estimated_trade_tonnes"),
+        )
+        ratio = metric.pop(
+            "capacity_ratio",
+            metric.get("estimated_trade_volume_ratio"),
+        )
+        shortfall = metric.pop(
+            "observed_shortfall_fraction",
+            metric.get("observed_trade_volume_shortfall_fraction"),
+        )
+        if shortfall is None:
+            shortfall = metric.pop("effective_blockage_fraction", None)
+        else:
+            metric.pop("effective_blockage_fraction", None)
+        remaining = metric.pop(
+            "residual_throughput_rate",
+            metric.get("remaining_trade_volume_ratio"),
+        )
+        if current is not None:
+            metric["current_7d_mean_estimated_trade_tonnes"] = current
+        if baseline is not None:
+            metric["prior_28d_mean_estimated_trade_tonnes"] = baseline
+        if ratio is not None:
+            metric["estimated_trade_volume_ratio"] = ratio
+        if shortfall is not None:
+            metric["observed_trade_volume_shortfall_fraction"] = shortfall
+        if remaining is None and shortfall is not None:
+            remaining = 1.0 - shortfall
+        if remaining is not None:
+            metric["remaining_trade_volume_ratio"] = remaining
+        metric["unit"] = PORTWATCH_METRIC_UNIT
+        metric["definition"] = PORTWATCH_METRIC_DEFINITION
+
+    for validation in normalized.get("signal_validation", {}).values():
+        if validation.get("feature"):
+            validation["feature"] = (
+                "signed current 7-observation estimated trade-volume gap vs preceding 28"
+            )
+        if validation.get("target"):
+            validation["target"] = (
+                "signed next 7-observation estimated trade-volume gap vs same preceding 28"
+            )
+
+    normalized["quality"] = "observed_estimated_trade_volume_shortfall_7d_vs_prior_28d"
+    normalized["metric_unit"] = PORTWATCH_METRIC_UNIT
+    normalized["metric_definition"] = PORTWATCH_METRIC_DEFINITION
+    normalized["interpretation"] = (
+        "Short-term estimated trade-volume anomaly used as a disruption signal; "
+        "not observed DWT and not proof of literal physical closure."
+    )
+    return normalized
 
 
 def summarize_series(rows: list[dict[str, Any]], portwatch_id: str) -> dict[str, Any]:
@@ -93,27 +294,52 @@ def summarize_series(rows: list[dict[str, Any]], portwatch_id: str) -> dict[str,
     current = valid[-7:]
     baseline = valid[-35:-7] if len(valid) >= 35 else valid[:-7]
     metrics: dict[str, Any] = {}
+    validation: dict[str, Any] = {}
+    multi_model_analysis: dict[str, Any] = {}
     for ship_type, field in CAPACITY_FIELDS.items():
         current_mean = _mean(current, field)
         baseline_mean = _mean(baseline, field)
         if current_mean is None or baseline_mean in (None, 0):
             continue
         ratio = current_mean / baseline_mean
+        trade_volume_shortfall = max(0.0, min(1.0, 1.0 - ratio))
         metrics[ship_type] = {
             "field": field,
-            "current_7d_mean_dwt": current_mean,
-            "prior_28d_mean_dwt": baseline_mean,
-            "capacity_ratio": ratio,
-            "observed_shortfall_fraction": max(0.0, min(1.0, 1.0 - ratio)),
+            "unit": PORTWATCH_METRIC_UNIT,
+            "definition": PORTWATCH_METRIC_DEFINITION,
+            "current_7d_mean_estimated_trade_tonnes": current_mean,
+            "prior_28d_mean_estimated_trade_tonnes": baseline_mean,
+            "estimated_trade_volume_ratio": ratio,
+            "observed_trade_volume_shortfall_fraction": trade_volume_shortfall,
+            "remaining_trade_volume_ratio": 1.0 - trade_volume_shortfall,
             "change_pct": (ratio - 1.0) * 100.0,
         }
+        validation[ship_type] = validate_7d_28d_signal(valid, field)
+        primary_ml_metric = ML_PRIMARY_METRIC.get(portwatch_id, "all")
+        if ship_type == primary_ml_metric:
+            field_values = [
+                float(row[field])
+                for row in valid
+                if isinstance(row.get(field), (int, float))
+            ]
+            multi_model_analysis[ship_type] = analyze_capacity_series(field_values)
     latest_date = _iso_date(valid[-1]["date"])
     return {
         "portwatch_id": portwatch_id,
         "portname": valid[-1].get("portname"),
         "latest_date": latest_date,
-        "quality": "observed_capacity_shortfall_7d_vs_prior_28d",
-        "interpretation": "Short-term capacity anomaly used as a shock proxy; not proof of literal closure.",
+        "quality": "observed_estimated_trade_volume_shortfall_7d_vs_prior_28d",
+        "current_window_days": 7,
+        "baseline_window_days": 28,
+        "metric_unit": PORTWATCH_METRIC_UNIT,
+        "metric_definition": PORTWATCH_METRIC_DEFINITION,
+        "interpretation": (
+            "Short-term estimated trade-volume anomaly used as a disruption signal; "
+            "not observed DWT and not proof of literal physical closure."
+        ),
         "observation_count": len(valid),
         "metrics": metrics,
+        "signal_validation": validation,
+        "multi_model_analysis": multi_model_analysis,
+        "multi_model_primary_metric": ML_PRIMARY_METRIC.get(portwatch_id, "all"),
     }
