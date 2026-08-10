@@ -44,7 +44,7 @@ def _blend_scenario(cfg, year: int, lag: int) -> tuple[dict, pd.Timestamp | None
     sums, weights = {}, {}
     observed_dates = []
     for point in cfg.points:
-        if cfg.crop == "wheat":
+        if cfg.harvest_rule == "winter":
             start, end = pd.Timestamp(year, 1, 1), pd.Timestamp(year, 11, 30)
         else:
             start, end = pd.Timestamp(year - 1, 9, 1), pd.Timestamp(year, 5, 31)
@@ -108,7 +108,7 @@ def _anomalies(raw: dict, history: pd.DataFrame,
 
 def current_season(cfg, today: date | None = None) -> int | None:
     today = today or date.today()
-    if cfg.crop == "wheat":
+    if cfg.harvest_rule == "winter":
         return today.year
     # Do not forecast next summer cotton before its Sep-Oct pre-sowing window.
     return today.year + 1 if today.month >= 9 else None
@@ -140,7 +140,7 @@ def predict_one(cfg, today: date | None = None) -> dict:
         raw, observed = _blend_scenario(cfg, season, lag)
         if observed is not None:
             observed_dates.append(observed)
-        if cfg.crop == "wheat":
+        if cfg.harvest_rule == "winter":
             raw.update({
                 "iod_winter_spring": _scenario_monthly(
                     dmi, season, [6, 7, 8, 9, 10, 11], lag),

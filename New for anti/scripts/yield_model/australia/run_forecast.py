@@ -31,6 +31,31 @@ def main() -> int:
         if "error" in result:
             payload["skipped"][cfg.key] = result["error"]
             continue
+        if result["operational_choice"] != "ridge_weather":
+            pct = result["weather_effect_pct"]
+            direction = ("우호" if pct >= 1.5 else
+                         "불리" if pct <= -1.5 else "중립")
+            payload["regions"][cfg.key] = {
+                "label": cfg.label,
+                "label_ko": cfg.label_ko,
+                "crop": cfg.crop,
+                "season": result["season"],
+                "unit": result["unit"],
+                "forecast_available": False,
+                "panel_mode": "reference",
+                "reason_ko": (
+                    "전체·최근 시간순 검증에서 추세 대비 +10% 기준을 모두 "
+                    "통과하지 못해 단수 전망을 발행하지 않습니다."),
+                "weather_effect_pct": pct,
+                "condition_signal_ko": direction,
+                "last_actual": result["last_actual"],
+                "season_progress": result["season_progress"],
+                "features": result["features"],
+                "skill": result["skill"],
+                "provenance": result["provenance"],
+            }
+            print(f"[reference] {cfg.key}: {direction} ({pct:+.1f}%)", flush=True)
+            continue
         payload["regions"][cfg.key] = {
             "label": cfg.label,
             "label_ko": cfg.label_ko,
@@ -47,4 +72,3 @@ def main() -> int:
 
 if __name__ == "__main__":
     sys.exit(main())
-

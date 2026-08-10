@@ -1,0 +1,241 @@
+{
+  "key": "wa_canola",
+  "label": "Western Australia canola",
+  "label_ko": "서호주 카놀라",
+  "crop": "canola",
+  "state": "Western Australia",
+  "doc": "ABARES state crop report; winter-oilseed climate diagnostic",
+  "caveat": "Broad July-October canola flowering/pod-set window; actual flowering dates and cultivar phenology are not observed. No annual crop mask.",
+  "target": {
+    "variable": "yield_kg_ha",
+    "source": "ABARES Australian Crop Report state data",
+    "area_basis": "planted",
+    "estimated_years": [
+      2022,
+      2023,
+      2024,
+      2025
+    ]
+  },
+  "trained_years": [
+    1994,
+    2025
+  ],
+  "n_seasons": 32,
+  "detrended_residual_cv": 0.21658330228530273,
+  "anomaly": {
+    "window_years": 20,
+    "minimum_prior_years": 10,
+    "current_year_excluded": true
+  },
+  "feature_sets": {
+    "weather": [
+      "rain_growing_z20",
+      "rain_flowering_pod_z20",
+      "heat_excess_flowering_pod_z20",
+      "frost_exposure_flowering_pod_z20"
+    ],
+    "weather_soil": [
+      "rain_growing_z20",
+      "rain_flowering_pod_z20",
+      "heat_excess_flowering_pod_z20",
+      "frost_exposure_flowering_pod_z20",
+      "sm_preseason_z20",
+      "sm_flowering_pod_z20"
+    ],
+    "weather_soil_drivers": [
+      "rain_growing_z20",
+      "rain_flowering_pod_z20",
+      "heat_excess_flowering_pod_z20",
+      "frost_exposure_flowering_pod_z20",
+      "sm_preseason_z20",
+      "sm_flowering_pod_z20",
+      "iod_winter_spring_z20",
+      "oni_winter_spring_z20"
+    ]
+  },
+  "selected_feature_set": "weather_soil",
+  "selected_features": [
+    "rain_growing_z20",
+    "rain_flowering_pod_z20",
+    "heat_excess_flowering_pod_z20",
+    "frost_exposure_flowering_pod_z20",
+    "sm_preseason_z20",
+    "sm_flowering_pod_z20"
+  ],
+  "selection_note": "Lowest recent forward RMSE among pre-registered ablations that clear 10% skill over both all and recent folds. If none clear, the best diagnostic challenger is retained but trend-only is the operational choice. Reported skill is not a nested post-selection estimate.",
+  "minimum_operational_skill": 0.1,
+  "operational_choice": "ridge_weather",
+  "beats_trend": true,
+  "low_confidence": false,
+  "trend": {
+    "form": "log_linear",
+    "log_poly_coef": [
+      0.016675876016847974,
+      -26.412993373063372
+    ]
+  },
+  "scaler": {
+    "mean": [
+      0.13380242555611915,
+      0.3902663862465579,
+      0.4472130876650653,
+      -0.35547262287194786,
+      0.11180144619894654,
+      0.015612191258490324
+    ],
+    "scale": [
+      1.1331658458165947,
+      1.2120415298337555,
+      1.3072687515314958,
+      0.842867769953523,
+      1.2374969287475488,
+      1.038162018235226
+    ]
+  },
+  "ridge": {
+    "alpha": 17.012542798525892,
+    "coef": [
+      0.051887829590968985,
+      0.0412834666314392,
+      -0.020332334215552635,
+      0.015826648084920975,
+      -0.019756569309956992,
+      0.02620921239323378
+    ],
+    "intercept": 6.722051330273636e-16
+  },
+  "top_effects": [
+    {
+      "feature": "rain_growing_z20",
+      "effect_pct_per_sd": 5.33
+    },
+    {
+      "feature": "rain_flowering_pod_z20",
+      "effect_pct_per_sd": 4.21
+    },
+    {
+      "feature": "sm_flowering_pod_z20",
+      "effect_pct_per_sd": 2.66
+    },
+    {
+      "feature": "heat_excess_flowering_pod_z20",
+      "effect_pct_per_sd": -2.01
+    },
+    {
+      "feature": "sm_preseason_z20",
+      "effect_pct_per_sd": -1.96
+    },
+    {
+      "feature": "frost_exposure_flowering_pod_z20",
+      "effect_pct_per_sd": 1.6
+    }
+  ],
+  "uncertainty": {
+    "basis": "absolute errors from forward-chaining predictions",
+    "absolute_error_q68_kg_ha": 358.5465963155855,
+    "absolute_error_q95_kg_ha": 474.0476248731313,
+    "n_forward_errors": 12
+  },
+  "validation": {
+    "weather": {
+      "rmse": 277.95908067339496,
+      "mae": 235.71877358978182,
+      "baseline_rmse": 400.80974014062195,
+      "skill_vs_trend": 0.3065061727894275,
+      "recent_rmse": 296.61189332475516,
+      "recent_baseline_rmse": 438.29417963363096,
+      "recent_skill_vs_trend": 0.3232584252597369,
+      "detrended_r2": 0.26699322107636314,
+      "recent_trend_bias": -270.7284784728731,
+      "features": [
+        "rain_growing_z20",
+        "rain_flowering_pod_z20",
+        "heat_excess_flowering_pod_z20",
+        "frost_exposure_flowering_pod_z20"
+      ],
+      "fold_years": [
+        2014,
+        2015,
+        2016,
+        2017,
+        2018,
+        2019,
+        2020,
+        2021,
+        2022,
+        2023,
+        2024,
+        2025
+      ]
+    },
+    "weather_soil": {
+      "rmse": 270.61682952144537,
+      "mae": 229.28059184393817,
+      "baseline_rmse": 400.80974014062195,
+      "skill_vs_trend": 0.3248247175168425,
+      "recent_rmse": 290.5154431897522,
+      "recent_baseline_rmse": 438.29417963363096,
+      "recent_skill_vs_trend": 0.3371679189703286,
+      "detrended_r2": 0.3052063171548588,
+      "recent_trend_bias": -270.7284784728731,
+      "features": [
+        "rain_growing_z20",
+        "rain_flowering_pod_z20",
+        "heat_excess_flowering_pod_z20",
+        "frost_exposure_flowering_pod_z20",
+        "sm_preseason_z20",
+        "sm_flowering_pod_z20"
+      ],
+      "fold_years": [
+        2014,
+        2015,
+        2016,
+        2017,
+        2018,
+        2019,
+        2020,
+        2021,
+        2022,
+        2023,
+        2024,
+        2025
+      ]
+    },
+    "weather_soil_drivers": {
+      "rmse": 283.178660710199,
+      "mae": 241.0767655861213,
+      "baseline_rmse": 400.80974014062195,
+      "skill_vs_trend": 0.2934835849776324,
+      "recent_rmse": 307.8657714599922,
+      "recent_baseline_rmse": 438.29417963363096,
+      "recent_skill_vs_trend": 0.29758188503133576,
+      "detrended_r2": 0.23920560441552152,
+      "recent_trend_bias": -270.7284784728731,
+      "features": [
+        "rain_growing_z20",
+        "rain_flowering_pod_z20",
+        "heat_excess_flowering_pod_z20",
+        "frost_exposure_flowering_pod_z20",
+        "sm_preseason_z20",
+        "sm_flowering_pod_z20",
+        "iod_winter_spring_z20",
+        "oni_winter_spring_z20"
+      ],
+      "fold_years": [
+        2014,
+        2015,
+        2016,
+        2017,
+        2018,
+        2019,
+        2020,
+        2021,
+        2022,
+        2023,
+        2024,
+        2025
+      ]
+    }
+  }
+}

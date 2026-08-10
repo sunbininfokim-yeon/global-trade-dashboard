@@ -5,7 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Callable
 
-from .climate import cotton_features, wheat_features
+from .climate import barley_features, canola_features, cotton_features, wheat_features
 
 
 @dataclass(frozen=True)
@@ -35,6 +35,12 @@ WHEAT_SOIL = WHEAT_WEATHER + z(["sm_preseason", "sm_spring"])
 COTTON_WEATHER = z(["rain_flowering", "heat_excess_flowering", "harvest_rain"])
 COTTON_SOIL = COTTON_WEATHER + z(["sm_preseason", "sm_flowering",
                                   "heat_dry_stress"])
+BARLEY_WEATHER = z(["rain_growing", "heat_excess_reproductive",
+                    "frost_exposure_reproductive"])
+BARLEY_SOIL = BARLEY_WEATHER + z(["sm_preseason", "sm_reproductive"])
+CANOLA_WEATHER = z(["rain_growing", "rain_flowering_pod",
+                    "heat_excess_flowering_pod", "frost_exposure_flowering_pod"])
+CANOLA_SOIL = CANOLA_WEATHER + z(["sm_preseason", "sm_flowering_pod"])
 
 # Point weights are deliberately equal in phase 1.  They are sampling weights,
 # not invented claims about production shares.  The next spatial-data step will
@@ -89,6 +95,14 @@ def cotton_sets() -> dict[str, list[str]]:
     }
 
 
+def winter_crop_sets(weather: list[str], soil: list[str], include_sam: bool) -> dict[str, list[str]]:
+    drivers = ["iod_winter_spring_z20", "oni_winter_spring_z20"]
+    if include_sam:
+        drivers.append("sam_winter_spring_z20")
+    return {"weather": weather, "weather_soil": soil,
+            "weather_soil_drivers": soil + drivers}
+
+
 WA_WHEAT = RegionCrop(
     key="wa_wheat", label="Western Australia wheat", label_ko="서호주 밀",
     crop="wheat", state_sheet="Western Australia", crop_label="Wheat",
@@ -116,6 +130,63 @@ VIC_WHEAT = RegionCrop(
     caveat=("Victoria is kept separate from South Australia. SAM effects vary "
             "by season and location and are accepted only if forward skill improves."),
 )
+
+# Barley and canola share the broad winter-crop footprint with wheat, but use
+# separate reproductive-stage stress windows and validation artifacts.
+WA_BARLEY = RegionCrop(
+    key="wa_barley", label="Western Australia barley", label_ko="서호주 보리",
+    crop="barley", state_sheet="Western Australia", crop_label="Barley",
+    harvest_rule="winter", points=WA_POINTS, build=barley_features,
+    feature_sets=winter_crop_sets(BARLEY_WEATHER, BARLEY_SOIL, include_sam=False),
+    doc="ABARES state crop report; winter-crop climate diagnostic",
+    caveat=("Crop-specific barley climate window; equal point weights and no "
+            "annual crop mask. State yield labels include management effects."),
+)
+SA_BARLEY = RegionCrop(
+    key="sa_barley", label="South Australia barley", label_ko="남호주 보리",
+    crop="barley", state_sheet="South Australia", crop_label="Barley",
+    harvest_rule="winter", points=SA_POINTS, build=barley_features,
+    feature_sets=winter_crop_sets(BARLEY_WEATHER, BARLEY_SOIL, include_sam=True),
+    doc="ABARES state crop report; winter-crop climate diagnostic",
+    caveat=("Crop-specific barley climate window; equal point weights and no "
+            "annual crop mask. State yield labels include management effects."),
+)
+VIC_BARLEY = RegionCrop(
+    key="vic_barley", label="Victoria barley", label_ko="빅토리아 보리",
+    crop="barley", state_sheet="Victoria", crop_label="Barley",
+    harvest_rule="winter", points=VIC_POINTS, build=barley_features,
+    feature_sets=winter_crop_sets(BARLEY_WEATHER, BARLEY_SOIL, include_sam=True),
+    doc="ABARES state crop report; winter-crop climate diagnostic",
+    caveat=("Crop-specific barley climate window; equal point weights and no "
+            "annual crop mask. State yield labels include management effects."),
+)
+WA_CANOLA = RegionCrop(
+    key="wa_canola", label="Western Australia canola", label_ko="서호주 카놀라",
+    crop="canola", state_sheet="Western Australia", crop_label="Canola",
+    harvest_rule="winter", points=WA_POINTS, build=canola_features,
+    feature_sets=winter_crop_sets(CANOLA_WEATHER, CANOLA_SOIL, include_sam=False),
+    doc="ABARES state crop report; winter-oilseed climate diagnostic",
+    caveat=("Broad July-October canola flowering/pod-set window; actual flowering "
+            "dates and cultivar phenology are not observed. No annual crop mask."),
+)
+SA_CANOLA = RegionCrop(
+    key="sa_canola", label="South Australia canola", label_ko="남호주 카놀라",
+    crop="canola", state_sheet="South Australia", crop_label="Canola",
+    harvest_rule="winter", points=SA_POINTS, build=canola_features,
+    feature_sets=winter_crop_sets(CANOLA_WEATHER, CANOLA_SOIL, include_sam=True),
+    doc="ABARES state crop report; winter-oilseed climate diagnostic",
+    caveat=("Broad July-October canola flowering/pod-set window; actual flowering "
+            "dates and cultivar phenology are not observed. No annual crop mask."),
+)
+VIC_CANOLA = RegionCrop(
+    key="vic_canola", label="Victoria canola", label_ko="빅토리아 카놀라",
+    crop="canola", state_sheet="Victoria", crop_label="Canola",
+    harvest_rule="winter", points=VIC_POINTS, build=canola_features,
+    feature_sets=winter_crop_sets(CANOLA_WEATHER, CANOLA_SOIL, include_sam=True),
+    doc="ABARES state crop report; winter-oilseed climate diagnostic",
+    caveat=("Broad July-October canola flowering/pod-set window; actual flowering "
+            "dates and cultivar phenology are not observed. No annual crop mask."),
+)
 NSW_COTTON = RegionCrop(
     key="nsw_cotton", label="New South Wales cotton lint", label_ko="NSW 면화",
     crop="cotton_lint", state_sheet="New South Wales", crop_label="Cotton lint a",
@@ -137,5 +208,9 @@ QLD_COTTON = RegionCrop(
             "and planted area are modelled separately."),
 )
 
-ALL = [WA_WHEAT, SA_WHEAT, VIC_WHEAT, NSW_COTTON, QLD_COTTON]
-BY_KEY = {cfg.key: cfg for cfg in ALL}
+ALL = [
+    WA_WHEAT, SA_WHEAT, VIC_WHEAT,
+    WA_BARLEY, SA_BARLEY, VIC_BARLEY, WA_CANOLA, SA_CANOLA, VIC_CANOLA,
+]
+COTTON_ARCHIVE = [NSW_COTTON, QLD_COTTON]
+BY_KEY = {cfg.key: cfg for cfg in ALL + COTTON_ARCHIVE}

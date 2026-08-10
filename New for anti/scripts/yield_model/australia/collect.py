@@ -221,7 +221,7 @@ def build_region(cfg, oni: pd.DataFrame, dmi: pd.DataFrame,
         if not features:
             continue
         features["year"] = year
-        if cfg.crop == "wheat":
+        if cfg.harvest_rule == "winter":
             features.update({
                 "iod_winter_spring": _mean_index(dmi, year, [6, 7, 8, 9, 10, 11]),
                 "sam_winter_spring": _mean_index(sam, year, [6, 7, 8, 9, 10, 11]),
@@ -273,4 +273,3 @@ def main() -> int:
 
 if __name__ == "__main__":
     sys.exit(main())
-

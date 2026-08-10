@@ -7,7 +7,7 @@ label_ko: 호주
 label_en: Australia
 panel_mode: forecast
 model_status: provisional
-status_note_ko: "산지 3곳 모두 검증 통과. 다만 2곳은 기상 피처 생성 실패로 예측 없음."
+status_note_ko: "밀 3곳과 WA·VIC 보리/카놀라는 검증 통과. SA 보리·카놀라는 수치 예측 없이 참고 신호만 제공. 면화 모델은 종료."
 data_file: australia_yield_forecast.json
 model_name: Wheat Belt Model
 
@@ -18,20 +18,20 @@ view:
 
 regions:
   - key: wa_wheat
-    label_ko: 서호주 밀
+    label_ko: 서호주 겨울작물
     ui_name: WA wheat (Australia)   # app.js 산지 식별자 (레지스트리 전환 중 유지)
     coordinates: [117, -31.5]
-    crops_region_keys: [wa_wheat]
+    crops_region_keys: [wa_wheat, wa_barley, wa_canola]
   - key: sa_wheat
-    label_ko: 남호주 밀
+    label_ko: 남호주 겨울작물
     ui_name: SA wheat (Australia)   # app.js 산지 식별자 (레지스트리 전환 중 유지)
     coordinates: [138, -34]
-    crops_region_keys: [sa_wheat]
+    crops_region_keys: [sa_wheat, sa_barley, sa_canola]
   - key: vic_wheat
-    label_ko: 빅토리아 밀
+    label_ko: 빅토리아 겨울작물
     ui_name: VIC wheat (Australia)   # app.js 산지 식별자 (레지스트리 전환 중 유지)
     coordinates: [143, -36.5]
-    crops_region_keys: [vic_wheat]
+    crops_region_keys: [vic_wheat, vic_barley, vic_canola]
 
 sources:
   labels:
@@ -41,7 +41,7 @@ sources:
   climate:
     name: NASA POWER (daily)
     url: https://power.larc.nasa.gov/
-    updated: "2026-08-06"
+    updated: "2026-08-10"
 
 trade_policy:
   restricted: false

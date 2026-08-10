@@ -1,4 +1,4 @@
-"""Crop-stage features for Australian wheat and cotton."""
+"""Crop-stage features for Australian winter crops and cotton."""
 
 from __future__ import annotations
 
@@ -58,6 +58,40 @@ def wheat_features(daily: pd.DataFrame, harvest_year: int) -> dict[str, float]:
         # retained separately above; calling this a complete potential yield
         # would imply PAWC information the phase-1 feed does not yet contain.
         "french_schultz_rain_limit": max(0.0, _sum(growing, "precip") - 110.0),
+    }
+
+
+def barley_features(daily: pd.DataFrame, harvest_year: int) -> dict[str, float]:
+    """Broad barley windows; flowering is earlier than the wheat window."""
+    y = harvest_year
+    preseason = _between(daily, pd.Timestamp(y, 1, 1), pd.Timestamp(y, 4, 30))
+    growing = _between(daily, pd.Timestamp(y, 4, 1), pd.Timestamp(y, 10, 31))
+    reproductive = _between(daily, pd.Timestamp(y, 8, 1), pd.Timestamp(y, 10, 31))
+    heat = (reproductive.tmax - 30.0).clip(lower=0)
+    return {
+        "rain_growing": _sum(growing, "precip"),
+        "sm_preseason": _mean(preseason, "gwetroot"),
+        "sm_reproductive": _mean(reproductive, "gwetroot"),
+        "heat_excess_reproductive": float(heat.sum()),
+        # POWER 2 m Tmin is an exposure proxy, not a measured canopy frost.
+        "frost_exposure_reproductive": float(reproductive.tmin.lt(2.0).sum()),
+    }
+
+
+def canola_features(daily: pd.DataFrame, harvest_year: int) -> dict[str, float]:
+    """Broad flowering/pod-set stress screen for Australian canola."""
+    y = harvest_year
+    preseason = _between(daily, pd.Timestamp(y, 1, 1), pd.Timestamp(y, 4, 30))
+    growing = _between(daily, pd.Timestamp(y, 4, 1), pd.Timestamp(y, 10, 31))
+    flowering_pod = _between(daily, pd.Timestamp(y, 7, 1), pd.Timestamp(y, 10, 31))
+    heat = (flowering_pod.tmax - 29.5).clip(lower=0)
+    return {
+        "rain_growing": _sum(growing, "precip"),
+        "rain_flowering_pod": _sum(flowering_pod, "precip"),
+        "sm_preseason": _mean(preseason, "gwetroot"),
+        "sm_flowering_pod": _mean(flowering_pod, "gwetroot"),
+        "heat_excess_flowering_pod": float(heat.sum()),
+        "frost_exposure_flowering_pod": float(flowering_pod.tmin.lt(2.0).sum()),
     }
 
 
