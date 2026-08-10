@@ -20,7 +20,6 @@ def _eok(x: Any) -> float | None:
     except (TypeError, ValueError):
         return None
 
-
 def _freesis_million_to_eok(v: Any) -> float | None:
     """FreeSIS 단위 백만원 → 억원."""
     x = _eok(v)
@@ -71,12 +70,7 @@ def fetch_freesis_funding_credit(
                 "OBJ_NM": obj_nm,
             }
         }
-        r = requests.post(
-            url,
-            headers={**headers, "Referer": f"https://freesis.kofia.or.kr/stat/FreeSIS.do?serviceId={service_id}"},
-            json=body,
-            timeout=40,
-        )
+        r = requests.post(url, headers={**headers, "Referer": f"https://freesis.kofia.or.kr/stat/FreeSIS.do?serviceId={service_id}"}, json=body, timeout=40)
         r.raise_for_status()
         return list((r.json() or {}).get("ds1") or [])
 
@@ -123,43 +117,89 @@ def fetch_freesis_funding_credit(
     history = [by_date[k] for k in sorted(by_date.keys())]
     latest = history[-1] if history else None
     if not latest:
-        return {"quality": "missing", "note_ko": "FreeSIS 증시자금/신용공여 조회 실패", "history": []}
+        return {
+            "quality": "missing",
+            "note_ko": "FreeSIS 증시자금/신용공여 조회 실패",
+            "history": [],
+        }
 
     dep = latest.get("investor_deposit_eok")
     funds = latest.get("credit_funds_eok")
     loan = latest.get("credit_loan_eok")
+    unc = latest.get("uncollected_eok")
+    forced = latest.get("forced_sale_eok")
+    forced_pct = latest.get("forced_sale_over_uncollected_pct")
+
+    def _jo(v: float | None) -> float | None:
+        return None if v is None else round(v / 10000.0, 3)
+
+    credit_over_dep = None if not dep or not loan or dep <= 0 else round(100.0 * loan / dep, 3)
+    unc_over_dep = None if not dep or not unc or dep <= 0 else round(100.0 * unc / dep, 3)
+
     components = [
-        {"key": "investor_deposit", "label_ko": "투자자예탁금", "value_eok": dep},
-        {"key": "credit_loan", "label_ko": "신용거래융자", "value_eok": loan},
-        {"key": "credit_loan_kospi", "label_ko": "신용거래융자(유가증권)", "value_eok": latest.get("credit_loan_kospi_eok")},
-        {"key": "credit_loan_kosdaq", "label_ko": "신용거래융자(코스닥)", "value_eok": latest.get("credit_loan_kosdaq_eok")},
-        {"key": "collateral_loan", "label_ko": "예탁증권담보융자", "value_eok": latest.get("collateral_loan_eok")},
-        {"key": "short_loan", "label_ko": "신용거래대주", "value_eok": latest.get("short_loan_eok")},
-        {"key": "credit_funds", "label_ko": "신용공여자금(융자+담보)", "value_eok": funds},
-        {"key": "uncollected", "label_ko": "위탁매매미수금", "value_eok": latest.get("uncollected_eok")},
-        {"key": "forced_sale", "label_ko": "반대매매금액(미수 대비)", "value_eok": latest.get("forced_sale_eok")},
-        {"key": "forced_sale_pct", "label_ko": "미수 대비 반대매매비중(%)", "value_pct": latest.get("forced_sale_over_uncollected_pct")},
+        {"key": "investor_deposit", "label_ko": "투자자예탁금", "group": "cash_leverage", "value_eok": dep, "value_jo": _jo(dep), "preferred_unit": "조원"},
+        {"key": "credit_loan", "label_ko": "신용거래융자", "group": "cash_leverage", "value_eok": loan, "value_jo": _jo(loan), "preferred_unit": "조원"},
+        {"key": "credit_loan_kospi", "label_ko": "신용거래융자(유가증권)", "group": "cash_leverage", "value_eok": latest.get("credit_loan_kospi_eok"), "value_jo": _jo(latest.get("credit_loan_kospi_eok")), "preferred_unit": "조원"},
+        {"key": "credit_loan_kosdaq", "label_ko": "신용거래융자(코스닥)", "group": "cash_leverage", "value_eok": latest.get("credit_loan_kosdaq_eok"), "value_jo": _jo(latest.get("credit_loan_kosdaq_eok")), "preferred_unit": "조원"},
+        {"key": "uncollected", "label_ko": "위탁매매미수금", "group": "stress", "value_eok": unc, "value_jo": _jo(unc), "preferred_unit": "억원"},
+        {"key": "forced_sale", "label_ko": "반대매매금액(미수 대비)", "group": "stress", "value_eok": forced, "value_jo": _jo(forced), "preferred_unit": "억원"},
+        {"key": "forced_sale_pct", "label_ko": "미수 대비 반대매매비중(%)", "group": "stress", "value_pct": forced_pct, "preferred_unit": "pct"},
+        {"key": "credit_over_deposit_pct", "label_ko": "신용/예탁금(%)", "group": "cash_leverage", "value_pct": credit_over_dep, "preferred_unit": "pct"},
+        {"key": "uncollected_over_deposit_pct", "label_ko": "미수/예탁금(%)", "group": "stress", "value_pct": unc_over_dep, "preferred_unit": "pct"},
     ]
+
     eok = 1e8
-    return {
+    out = {
         "as_of": latest["date"],
         "unit_native": "억원",
         "investor_deposit_eok": dep,
+        "investor_deposit_jo": _jo(dep),
         "investor_deposit_krw": None if dep is None else dep * eok,
         "credit_balance_eok": loan,
         "credit_balance_krw": None if loan is None else loan * eok,
         "credit_loan_eok": loan,
+        "credit_loan_jo": _jo(loan),
         "credit_loan_kospi_eok": latest.get("credit_loan_kospi_eok"),
         "credit_loan_kosdaq_eok": latest.get("credit_loan_kosdaq_eok"),
         "collateral_loan_eok": latest.get("collateral_loan_eok"),
         "short_loan_eok": latest.get("short_loan_eok"),
         "credit_funds_eok": funds,
-        "uncollected_eok": latest.get("uncollected_eok"),
-        "forced_sale_eok": latest.get("forced_sale_eok"),
-        "forced_sale_over_uncollected_pct": latest.get("forced_sale_over_uncollected_pct"),
-        "credit_over_deposit_pct": (None if not dep or not loan or dep <= 0 else round(100.0 * loan / dep, 3)),
-        "credit_funds_over_deposit_pct": (None if not dep or not funds or dep <= 0 else round(100.0 * funds / dep, 3)),
+        "uncollected_eok": unc,
+        "forced_sale_eok": forced,
+        "forced_sale_over_uncollected_pct": forced_pct,
+        "credit_over_deposit_pct": credit_over_dep,
+        "uncollected_over_deposit_pct": unc_over_dep,
+        "credit_funds_over_deposit_pct": (
+            None if not dep or not funds or dep <= 0 else round(100.0 * funds / dep, 3)
+        ),
         "components": components,
+        "ui_display": {
+            "exclude_keys": ["collateral_loan", "short_loan", "credit_funds"],
+            "groups": [
+                {
+                    "id": "cash_leverage",
+                    "label_ko": "예탁·신용",
+                    "preferred_unit": "조원",
+                    "keys": ["investor_deposit", "credit_loan", "credit_loan_kospi", "credit_loan_kosdaq"],
+                    "ratio_keys": ["credit_over_deposit_pct"],
+                },
+                {
+                    "id": "stress",
+                    "label_ko": "미수·반대매매",
+                    "preferred_unit": "억원",
+                    "keys": ["uncollected", "forced_sale"],
+                    "ratio_keys": ["forced_sale_pct", "uncollected_over_deposit_pct"],
+                },
+            ],
+            "chart_y_right_default": "credit_over_deposit_pct",
+            "chart_y_right_alt": ["credit_loan_jo", "credit_loan_eok"],
+            "scale_note_ko": (
+                "규모 차이 큼: 예탁~104조 · 신용~29조 · 미수~1조 · 반대매매~100억. "
+                "표는 절대액(조/억)+비율 병행. 차트 Y오른쪽은 신용/예탁% 권장 "
+                "(절대 예탁·미수를 한 축에 올리면 미수가 보이지 않음). "
+                "미수·반대매매는 별도 소형 스트립."
+            ),
+        },
         "history": history,
         "history_n": len(history),
         "quality": "observed",
@@ -167,5 +207,12 @@ def fetch_freesis_funding_credit(
             "https://freesis.kofia.or.kr/ (증시자금추이 STATSCU0100000060)",
             "https://freesis.kofia.or.kr/ (신용공여 잔고 추이 STATSCU0100000070)",
         ],
-        "note_ko": "금투협 FreeSIS 공개 집계. 종목·증권사·계좌별 아님. 신용공여자금=신용거래융자+예탁증권담보융자. 반대매매는 시장 전체 미수 대비 금액·비중만 공개.",
+        "note_ko": (
+            "금투협 FreeSIS 공개 집계. 종목·증권사·계좌별 아님. "
+            "UI 기본은 예탁금·신용거래융자·미수·반대매매만 표시. "
+            "예탁증권담보융자·대주·광의신용공여(융자+담보)는 원본 필드만 유지·기본 표 제외 "
+            "(코스피 가격대 수급 설명력 낮음). "
+            "반대매매는 시장 전체 미수 대비 금액·비중만 공개."
+        ),
     }
+    return out
