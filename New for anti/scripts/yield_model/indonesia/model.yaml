@@ -6,8 +6,8 @@ iso: IDN
 label_ko: 인도네시아
 label_en: Indonesia
 panel_mode: forecast
-model_status: training
-status_note_ko: "4개 산지 모두 추세를 이기지 못했다. 표본 기간이 짧아 climate_gate 가 기상 피처를 대부분 차단한다 — 사실상 추세 베이스라인이다."
+model_status: provisional
+status_note_ko: "팜유는 BPS CPO 구조 모델로 국가 전망과 검증 통과 3개 주 전망을 제공한다. 기후 변수의 추가 설명력은 부족해 점 전망에 적용하지 않았고, 나머지 주는 관측 참고지역으로 표시한다."
 data_file: indonesia_yield_forecast.json
 model_name: National panel (baseline)
 
@@ -23,7 +23,7 @@ regions:
     coordinates: [112.5, -7.5]
     crops_region_keys: [indonesia_rice]
   - key: indonesia_oil_palm
-    label_ko: 팜유 과실
+    label_ko: 팜유(CPO)
     ui_name: Indonesia oil palm   # app.js 산지 식별자 (레지스트리 전환 중 유지)
     coordinates: [113.9, -2.2]
     crops_region_keys: [indonesia_oil_palm]
@@ -42,11 +42,11 @@ sources:
   labels:
     name: BPS Statistics Indonesia
     url: https://www.bps.go.id/
-    updated: "2024-12-31"
+    updated: "2025-08-29"
   climate:
-    name: NASA POWER (daily)
-    url: https://power.larc.nasa.gov/
-    updated: "2026-08-06"
+    name: Google Earth Engine (ERA5-Land · CHIRPS)
+    url: https://earthengine.google.com/
+    updated: "2025-10-31"
 
 trade_policy:
   restricted: true

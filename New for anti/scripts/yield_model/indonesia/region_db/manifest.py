@@ -162,6 +162,28 @@ PUBLICATIONS = [
         ),
     },
     {
+        "id": "bps_estate_crops_2024", "crop": "oil_palm",
+        "publication_year": 2024, "data_years": [2024], "product": "CPO",
+        "page_url": (
+            "https://www.bps.go.id/id/publication/2025/08/29/"
+            "8d2a6ab3510f9828daf73191/statistik-tanaman-perkebunan-tahunan-"
+            "indonesia-2024-kelapa-sawit-kopi-kakao-karet-teh-dan-komoditas-"
+            "perkebunan-unggulan-.html"
+        ),
+        "download_url": (
+            "https://web-api.bps.go.id/download.php?f="
+            "1EKcb6S303h%2FUSDQ4%2FRlTndOcFgxSmd1R3VRNCtoY2hGdHJyc045WkZHVTZp"
+            "dlVrRUQ3bDhiSVNrL3JrZWs1WHd5QUU0SjQ5YXgydm8zWGptNGV4czNhQWpCdGxs"
+            "MlhhSXo2d25BZzV6UmgwVFZ4WVphUEJCbWM0RkJJT2FhTHVtbGVJd01mcjIwdzdH"
+            "R3dhV0h2dm5xTmhrbE1RSG91R1gwWk9ldVBPcDZ3eGxFTTlhK1hFalNXZEoyZ3RR"
+            "bkFmdEFqOEFQQVZTODVEb1RWeHcxaG1GM3JPWDEzbkd6QlFvcStSc1pZSEVhTm93"
+            "MTVNN05QM1hiY0ZJZHhXeHZlUzEwcitKa3ZEM1dyRkJyVTIya0dTcGYwQXJORCt0"
+            "WDYwLzJoYkZlRlRwMUpoVml5NDA3ZE1oTXBuRHhqWm1uU0dmd3IweHN3RGZxMjkz"
+            "cTJLWnZWVjRiV1B2eUhBbVNBZVJ6aTl0dTV2SXhHRFJUWG5pZHhCN1l5NkJBNSt1"
+            "ZjdUb1d3YWxGMFA0M09jbCtsdQ%3D%3D"
+        ),
+    },
+    {
         "id": "bps_coffee_2017", "crop": "coffee",
         "publication_year": 2017, "data_years": [2016, 2017],
         "product": "coffee_beans",

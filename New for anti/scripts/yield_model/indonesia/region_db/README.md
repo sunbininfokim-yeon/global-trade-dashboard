@@ -4,7 +4,7 @@ This directory builds a provenance-rich province panel before any regional
 model is trained. Raw BPS PDFs and the SQLite database are ignored by Git;
 transparent CSV extracts and code can be reviewed independently.
 
-The current snapshot covers oil palm, coffee and rubber. BPS reports oil-palm
+The base snapshot covers oil palm, coffee and rubber. BPS reports oil-palm
 plantation area and **CPO production**, not FAOSTAT's oil-palm-fruit/FFB target.
 The two products must never be joined as if they were the same label.
 
@@ -15,6 +15,20 @@ The two products must never be joined as if they were the same label.
 | Oil palm (CPO) | 23 (2001-2023) | 30 | 690/690 | stopped: 23 < 25 independent seasons |
 | Coffee beans | 8 (2016-2023) | 33 | 264/264 | stopped: 8 < 25 independent seasons |
 | Dry rubber | 17 (2007-2023) | 33 | 561/561 | stopped: 17 < 25 independent seasons |
+
+## Palm-specific extension
+
+The palm audit now also parses the BPS crop-condition tables. It adds
+immature (TBM), mature (TM), and damaged/old (TTM) area for 2005–2024 and the
+latest BPS-consistent national CPO history for 2003–2024. The 2024 GEE lag
+windows are included. These data are intentionally separate from the older
+multi-crop snapshot so palm work does not silently rewrite coffee or rubber.
+
+`data/PALM_MODEL_REPORT.md` contains the honest forward test. The best
+exploratory national diagnostic has 5.2% MAPE for 2015–2024, but climate adds
+only 1.1% skill over the no-climate structural model and the strict climate
+sample gate is one independent season short. No operational forecast is
+published.
 
 There is no published regional forecast in this directory. The row count of a
 province panel is not treated as the effective sample size: provinces in the
@@ -27,7 +41,11 @@ database stay local and are reproducible from the publication manifest. The two
 largest tracked extracts are:
 
 - `data/province_observations.csv`: 6,412 BPS province/category observations.
-- `data/province_climate.csv`: 24,024 GEE province/window/metric observations.
+- `data/province_climate.csv`: 25,410 GEE province/window/metric observations.
+- `data/palm_structure.csv`: 692 BPS province/year crop-condition rows.
+- `data/palm_national_history.csv`: 22 consistent national CPO history rows.
+- `data/palm_outlook_candidate.json`: forecast/reference-separated candidate;
+  it is not wired to the public dashboard JSON.
 
 `data/SNAPSHOT.json` records row counts and SHA-256 hashes for integrity checks.
 
@@ -45,6 +63,15 @@ PYTHONPATH=scripts/yield_model python3 -B -m indonesia.region_db.collect_gee
 PYTHONPATH=scripts/yield_model \
   ~/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3 \
   -m indonesia.region_db.analyze_readiness
+PYTHONPATH=scripts/yield_model \
+  ~/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3 \
+  -m indonesia.region_db.extract_palm_structure
+PYTHONPATH=scripts/yield_model \
+  ~/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3 \
+  -m indonesia.region_db.palm_backtest
+PYTHONPATH=scripts/yield_model \
+  ~/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3 \
+  -m indonesia.region_db.build_palm_outlook
 ```
 
 Earth Engine always uses the existing machine authentication and initializes as

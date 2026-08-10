@@ -32,7 +32,9 @@ GAUL_TO_BPS = {
 }
 
 YEARS = {
-    "oil_palm": range(2001, 2024),
+    # Labels currently end in 2024.  Keep 2025/2026 lag windows as inference
+    # inputs only; they must never be counted as additional training seasons.
+    "oil_palm": range(2001, 2027),
     "coffee": range(2016, 2024),
     "rubber": range(2007, 2024),
 }

@@ -124,14 +124,14 @@ RICE = CropConfig(
 )
 
 PALM = CropConfig(
-    key="indonesia_oil_palm", label="Indonesia oil palm fruit", label_ko="인도네시아 팜유 과실",
+    key="indonesia_oil_palm", label="Indonesia crude palm oil (CPO)", label_ko="인도네시아 팜유(CPO)",
     faostat_item="Oil palm fruit", points=PALM_POINTS, build=build_palm,
     core=["soil_dry_lag1", "soil_dry_lag2", "vpd_dry_lag1"],
     critical_window=[(6, -2), (7, -2), (8, -2), (9, -2), (10, -2),
                      (6, -1), (7, -1), (8, -1), (9, -1), (10, -1)],
     doc="Regions/인도네시아/수마트라_칼리만탄/팜유/팜유_상세분석_및_수식.md",
-    caveat=("The FAOSTAT oil-palm series is national and recent production/yield values are "
-            "flagged estimated; solar anomaly is a haze proxy, not an AOD observation."),
+    caveat=("The published palm outlook uses BPS CPO production and mature area, not "
+            "FAOSTAT fresh fruit bunches. Climate is reference-only until it adds skill."),
     non_weather_drivers="Mature-tree share, replanting, fertilizer, labour and milling capacity.",
 )
 
@@ -159,4 +159,3 @@ RUBBER = CropConfig(
 
 ALL = [RICE, PALM, COFFEE, RUBBER]
 BY_KEY = {cfg.key: cfg for cfg in ALL}
-

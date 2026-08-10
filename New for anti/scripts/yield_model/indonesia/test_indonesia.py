@@ -6,6 +6,7 @@ import pandas as pd
 from . import climate as C
 from .model import predict_target, train_target
 from .regions import ALL
+from .run_forecast import palm_public_region
 
 
 class ClimateTests(unittest.TestCase):
@@ -44,6 +45,35 @@ class ModelTests(unittest.TestCase):
             model["validation"][model["configuration"]]["skill_vs_trend"], 0.5)
         forecast = predict_target(model, 2025, {"signal_anom": 0.5})
         self.assertGreater(forecast["point"], forecast["trend"])
+
+
+class PalmPublicForecastTests(unittest.TestCase):
+    def test_2026_cpo_forecast_is_numeric(self):
+        palm = palm_public_region(2026)
+        self.assertTrue(palm["forecast_available"])
+        self.assertGreater(palm["yield_kg_ha"]["point"], 0)
+        self.assertGreater(palm["headline"]["production_tonnes"]["point"], 0)
+        self.assertEqual(palm["provenance"]["target"],
+                         "CPO, not fresh fruit bunches (FFB)")
+
+    def test_only_validated_regions_publish_numbers(self):
+        regions = palm_public_region(2026)["regional_outlook"]
+        published = {r["province"] for r in regions
+                     if r["forecast_2026"] is not None}
+        self.assertEqual(published, {
+            "Riau", "Sumatera Selatan", "Sumatera Barat",
+        })
+        for region in regions:
+            if region["province"] not in published:
+                self.assertEqual(region["status"], "reference_only")
+                self.assertFalse(region["forecast_available"])
+                self.assertIsNone(region["forecast_2026"])
+
+    def test_oil_palm_calendar_is_perennial(self):
+        calendar = palm_public_region(2026)["crop_calendar"]
+        self.assertFalse(calendar["annual_sowing_season"])
+        self.assertEqual(calendar["harvest"]["months"], list(range(1, 13)))
+        self.assertEqual(calendar["harvest"]["ideal_round_days"], 7)
 
 
 if __name__ == "__main__":

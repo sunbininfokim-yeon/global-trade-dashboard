@@ -12,7 +12,7 @@
 | T07 | 전체 점검·최적화 1차 | cursor | app/ticker/assets/cron/audit | `cursor/optimize-audit` | **review** | 4개국 연결, 티커, icrisat ignore, audit 스크립트. 보고서 `docs/ops/AUDIT_2026-08-04.md` |
 | T03 | 데이터 계약 재확인 | codex | `DATA_LAYOUT`, `HANDOFF_PROMPT` | — | ready | 좁은 국가 1개 |
 | T04 | 중국 skill 음수 원인 | cursor | `yield_model/china/**` | `cursor/ml-china-skill` | ready | audit: skill −0.5~−1.6, beats_trend false 전원 |
-| T04b | 인도네시아 climate_gate 표본 | cursor/codex | `indonesia/**` | — | ready | 19/40 시즌. 게이트·베이스라인 정책 재검토 |
+| T04b | 인도네시아 climate_gate 표본 | codex | `indonesia/**` | `codex/T04b-indonesia-palm-oil` | **done** | 팜유 BPS CPO 구조모델·GEE 지연기후·1/2년 전진검증 완료. 전국+3개 주 forecast, 나머지 reference_only |
 | T04c | 인도 forecast JSON 복구 | cursor | Actions + `public/data/india_*` | — | ready | 파일 missing → `gh workflow run india_yield_forecast` |
 | T05 | 논문/사전 자료 검토 | anti | `docs/literature/**` | `anti/lit-…` | ready | 코드 금지 |
 | T06 | 코드 리뷰 | claude | PR diff | — | ready | 소유권 이전 후에도 리뷰는 계속 수행 |

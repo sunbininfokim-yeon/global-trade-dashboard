@@ -1,0 +1,448 @@
+{
+  "generated_at": "2026-08-10T04:47:09.166283+00:00",
+  "artifact_status": "input_to_public_forecast_pipeline",
+  "country": "Indonesia",
+  "crop": "palm_oil",
+  "target": "CPO",
+  "unit": "tonnes",
+  "label_data_through": 2024,
+  "climate_inputs_through": 2026,
+  "climate_adjustment": {
+    "applied": false,
+    "status": "stopped_no_incremental_skill",
+    "available_labeled_seasons": 19,
+    "best_incremental_skill_vs_structure": 0.010935900638976204,
+    "core_features": [
+      "dry_lag1__soil_root_m3m3",
+      "dry_lag2__soil_root_m3m3",
+      "dry_lag1__vpd_max_kpa"
+    ]
+  },
+  "crop_calendar": {
+    "id": "indonesia_oil_palm_perennial",
+    "type": "perennial_tree_crop",
+    "annual_sowing_season": false,
+    "establishment": {
+      "nursery_months": [
+        10,
+        12
+      ],
+      "field_transplant_timing": "beginning_of_local_rainy_season",
+      "note_ko": "묘목을 약 10–12개월 육묘한 뒤 지역 우기 시작에 본밭에 정식한다. 전국 공통 고정월로 표시하지 않는다."
+    },
+    "growth_stages": [
+      {
+        "stage": "nursery",
+        "age_months": "0–12",
+        "label_ko": "육묘·활착 준비"
+      },
+      {
+        "stage": "TBM",
+        "age_months_after_field_planting": "0–36/48",
+        "label_ko": "미성숙기·영양생장",
+        "management_ko": "제초·시비·수분관리·초기 꽃/과실 제거"
+      },
+      {
+        "stage": "TM",
+        "age_months_after_field_planting": ">36",
+        "label_ko": "성숙 생산기"
+      },
+      {
+        "stage": "replanting_candidate",
+        "age_years": ">25",
+        "label_ko": "노후목 재식재 검토"
+      }
+    ],
+    "harvest": {
+      "months": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12
+      ],
+      "pattern": "year_round",
+      "ideal_round_days": 7,
+      "note_ko": "단일 수확기가 아니라 성숙 TBS를 연중 반복 수확한다. 이상적 수확 회전은 약 7일이며 생산 피크는 기후와 지역에 따라 변한다."
+    },
+    "model_windows": [
+      {
+        "name": "dry_lag2",
+        "timing": "harvest_year_minus_2_Jun-Oct",
+        "role_ko": "개화·착과의 2년 지연 수분 스트레스 참고"
+      },
+      {
+        "name": "dry_lag1",
+        "timing": "harvest_year_minus_1_Jun-Oct",
+        "role_ko": "과실 발달 전년 건기 스트레스 참고"
+      }
+    ],
+    "sources": [
+      {
+        "name": "Indonesia Ministry of Agriculture Regulation 18/2016",
+        "url": "https://jdih.pertanian.go.id/jdih-ops/storage/sources/files/Permentan_18-2016_Peremajaan_Kelapa_Sawit_Sawit.pdf",
+        "supports": "10–12 month planting material; TBM 36–48 months; TM definition"
+      },
+      {
+        "name": "Indonesia Ministry of Agriculture oil-palm good cultivation guide",
+        "url": "https://repository.pertanian.go.id/server/api/core/bitstreams/ded4029b-5a17-4de9-8461-2b7e447a7d24/content",
+        "supports": "year-round repeated harvest and ideal seven-day harvest rotation"
+      },
+      {
+        "name": "FAO oil-palm establishment guide",
+        "url": "https://www.fao.org/4/t0309e/T0309E03.htm",
+        "supports": "field transplant at the beginning of the rainy season"
+      }
+    ]
+  },
+  "climate_reference": {
+    "2025": {
+      "status": "reference_only_not_applied_to_point",
+      "mature_area_weight_vintage": 2024,
+      "metrics": {
+        "climate_soil_lag1": {
+          "value": 0.3852141172042857,
+          "z_score_vs_2006_2024": -0.2417837114135055,
+          "historical_percentile": 0.42105263157894735
+        },
+        "climate_soil_lag2": {
+          "value": 0.3758251628131716,
+          "z_score_vs_2006_2024": -0.6734252328111633,
+          "historical_percentile": 0.2631578947368421
+        },
+        "climate_vpd_lag1": {
+          "value": 1.3762778989984943,
+          "z_score_vs_2006_2024": 0.4974550558717732,
+          "historical_percentile": 0.7368421052631579
+        }
+      }
+    },
+    "2026": {
+      "status": "reference_only_not_applied_to_point",
+      "mature_area_weight_vintage": 2024,
+      "metrics": {
+        "climate_soil_lag1": {
+          "value": 0.38174960212712095,
+          "z_score_vs_2006_2024": -0.42518087212763184,
+          "historical_percentile": 0.2631578947368421
+        },
+        "climate_soil_lag2": {
+          "value": 0.3852141172042857,
+          "z_score_vs_2006_2024": -0.19426935098233503,
+          "historical_percentile": 0.42105263157894735
+        },
+        "climate_vpd_lag1": {
+          "value": 1.3772584361935574,
+          "z_score_vs_2006_2024": 0.5060377410746848,
+          "historical_percentile": 0.7368421052631579
+        }
+      }
+    }
+  },
+  "national": {
+    "2025": {
+      "status": "baseline_estimate_pending_actual",
+      "confidence": "medium_low",
+      "method": "fixed_50_50_last_year_and_mature_area_yield_trend",
+      "point": 46728871.7,
+      "range_68": [
+        43945804.5,
+        49511938.9
+      ],
+      "range_95": [
+        40209276.3,
+        53248467.1
+      ],
+      "interval_method": "symmetric_empirical_forward_ape",
+      "backtest": {
+        "horizon_years": 1,
+        "forward_folds": 10,
+        "mape": 0.052152844838266786,
+        "baseline_last_year_mape": 0.056693848757849864,
+        "skill_vs_last_year": 0.08009694206824025,
+        "latest_ape": 0.0559295795590444,
+        "max_ape": 0.18037714645623912
+      }
+    },
+    "2026": {
+      "status": "baseline_forecast_low_confidence",
+      "confidence": "low",
+      "method": "two_year_mature_area_yield_trend",
+      "point": 48141191.9,
+      "range_68": [
+        44347972.5,
+        51934411.2
+      ],
+      "range_95": [
+        36310846.3,
+        59971537.4
+      ],
+      "interval_method": "symmetric_empirical_forward_ape",
+      "backtest": {
+        "horizon_years": 2,
+        "forward_folds": 9,
+        "mape": 0.08938599529429762,
+        "baseline_last_year_mape": 0.10078980661404086,
+        "skill_vs_last_year": 0.11314449052782072,
+        "latest_ape": 0.06417593430559236,
+        "max_ape": 0.24770769224400882
+      },
+      "caveat_ko": "2025년 BPS 생산량·성숙면적이 아직 없어 2024년 구조를 두 해 앞까지 연장한 저신뢰 기준 전망"
+    }
+  },
+  "regions": [
+    {
+      "province": "Riau",
+      "status": "forecast_baseline",
+      "target": "CPO",
+      "unit": "tonnes",
+      "last_actual": {
+        "year": 2024,
+        "production_tonnes": 9136101.0,
+        "mature_area_ha": 2592557.0
+      },
+      "climate_adjustment_applied": false,
+      "crop_calendar_ref": "indonesia_oil_palm_perennial",
+      "forecast_available": true,
+      "forecast_2025": {
+        "method": "last_year",
+        "point": 9136101.0,
+        "range_68": [
+          8524645.8,
+          9747556.2
+        ],
+        "range_95": [
+          7982420.6,
+          10289781.4
+        ],
+        "interval_method": "symmetric_empirical_forward_ape",
+        "backtest_mape": 0.05542687133175151,
+        "forward_folds": 11
+      },
+      "forecast_2026": {
+        "method": "h2_fixed_equal_baseline",
+        "confidence": "low",
+        "point": 9418804.3,
+        "range_68": [
+          8719895.8,
+          10117712.8
+        ],
+        "range_95": [
+          7771864.8,
+          11065743.8
+        ],
+        "interval_method": "symmetric_empirical_forward_ape",
+        "backtest_mape": 0.06281380853805617,
+        "latest_ape": 0.011500037186166084,
+        "max_ape": 0.20135948409787882,
+        "forward_folds": 10
+      }
+    },
+    {
+      "province": "Kalimantan Tengah",
+      "status": "reference_only",
+      "target": "CPO",
+      "unit": "tonnes",
+      "last_actual": {
+        "year": 2024,
+        "production_tonnes": 7458143.0,
+        "mature_area_ha": 1785872.0
+      },
+      "climate_adjustment_applied": false,
+      "crop_calendar_ref": "indonesia_oil_palm_perennial",
+      "forecast_available": false,
+      "forecast_2025": null,
+      "reason": "regional_forward_gate_failed",
+      "reason_ko": "지역별 전진검증 기준을 통과하지 못해 수치 전망은 제공하지 않고, 최근 BPS 실적과 기후 관측만 참고자료로 제공",
+      "forecast_2026": null,
+      "forecast_2026_reason": "two_year_regional_gate_failed"
+    },
+    {
+      "province": "Kalimantan Barat",
+      "status": "reference_only",
+      "target": "CPO",
+      "unit": "tonnes",
+      "last_actual": {
+        "year": 2024,
+        "production_tonnes": 4958544.0,
+        "mature_area_ha": 1775668.0
+      },
+      "climate_adjustment_applied": false,
+      "crop_calendar_ref": "indonesia_oil_palm_perennial",
+      "forecast_available": false,
+      "forecast_2025": null,
+      "reason": "regional_forward_gate_failed",
+      "reason_ko": "지역별 전진검증 기준을 통과하지 못해 수치 전망은 제공하지 않고, 최근 BPS 실적과 기후 관측만 참고자료로 제공",
+      "forecast_2026": null,
+      "forecast_2026_reason": "two_year_regional_gate_failed"
+    },
+    {
+      "province": "Sumatera Utara",
+      "status": "reference_only",
+      "target": "CPO",
+      "unit": "tonnes",
+      "last_actual": {
+        "year": 2024,
+        "production_tonnes": 5120024.0,
+        "mature_area_ha": 1144263.0
+      },
+      "climate_adjustment_applied": false,
+      "crop_calendar_ref": "indonesia_oil_palm_perennial",
+      "forecast_available": false,
+      "forecast_2025": null,
+      "reason": "regional_forward_gate_failed",
+      "reason_ko": "지역별 전진검증 기준을 통과하지 못해 수치 전망은 제공하지 않고, 최근 BPS 실적과 기후 관측만 참고자료로 제공",
+      "forecast_2026": null,
+      "forecast_2026_reason": "two_year_regional_gate_failed"
+    },
+    {
+      "province": "Kalimantan Timur",
+      "status": "reference_only",
+      "target": "CPO",
+      "unit": "tonnes",
+      "last_actual": {
+        "year": 2024,
+        "production_tonnes": 4516326.0,
+        "mature_area_ha": 1372351.0
+      },
+      "climate_adjustment_applied": false,
+      "crop_calendar_ref": "indonesia_oil_palm_perennial",
+      "forecast_available": false,
+      "forecast_2025": null,
+      "reason": "regional_forward_gate_failed",
+      "reason_ko": "지역별 전진검증 기준을 통과하지 못해 수치 전망은 제공하지 않고, 최근 BPS 실적과 기후 관측만 참고자료로 제공",
+      "forecast_2026": null,
+      "forecast_2026_reason": "two_year_regional_gate_failed"
+    },
+    {
+      "province": "Sumatera Selatan",
+      "status": "forecast_structural",
+      "target": "CPO",
+      "unit": "tonnes",
+      "last_actual": {
+        "year": 2024,
+        "production_tonnes": 3967386.0,
+        "mature_area_ha": 1082870.0
+      },
+      "climate_adjustment_applied": false,
+      "crop_calendar_ref": "indonesia_oil_palm_perennial",
+      "forecast_available": true,
+      "forecast_2025": {
+        "method": "structure_no_climate",
+        "point": 4421118.3,
+        "range_68": [
+          3995845.5,
+          4846391.1
+        ],
+        "range_95": [
+          3589547.4,
+          5252689.2
+        ],
+        "interval_method": "symmetric_empirical_forward_ape",
+        "backtest_mape": 0.08937507111056715,
+        "forward_folds": 11
+      },
+      "forecast_2026": {
+        "method": "h2_structure_no_climate",
+        "confidence": "low",
+        "point": 4459602.2,
+        "range_68": [
+          3890360.9,
+          5028843.5
+        ],
+        "range_95": [
+          3470327.0,
+          5448877.4
+        ],
+        "interval_method": "symmetric_empirical_forward_ape",
+        "backtest_mape": 0.10549260607143207,
+        "latest_ape": 0.012614904383011952,
+        "max_ape": 0.2250697208900413,
+        "forward_folds": 10
+      }
+    },
+    {
+      "province": "Jambi",
+      "status": "reference_only",
+      "target": "CPO",
+      "unit": "tonnes",
+      "last_actual": {
+        "year": 2024,
+        "production_tonnes": 2113972.0,
+        "mature_area_ha": 684956.0
+      },
+      "climate_adjustment_applied": false,
+      "crop_calendar_ref": "indonesia_oil_palm_perennial",
+      "forecast_available": false,
+      "forecast_2025": null,
+      "reason": "regional_forward_gate_failed",
+      "reason_ko": "지역별 전진검증 기준을 통과하지 못해 수치 전망은 제공하지 않고, 최근 BPS 실적과 기후 관측만 참고자료로 제공",
+      "forecast_2026": null,
+      "forecast_2026_reason": "two_year_regional_gate_failed"
+    },
+    {
+      "province": "Sumatera Barat",
+      "status": "forecast_baseline",
+      "target": "CPO",
+      "unit": "tonnes",
+      "last_actual": {
+        "year": 2024,
+        "production_tonnes": 1410636.0,
+        "mature_area_ha": 366177.0
+      },
+      "climate_adjustment_applied": false,
+      "crop_calendar_ref": "indonesia_oil_palm_perennial",
+      "forecast_available": true,
+      "forecast_2025": {
+        "method": "last_year",
+        "point": 1410636.0,
+        "range_68": [
+          1357333.6,
+          1463938.4
+        ],
+        "range_95": [
+          1248311.1,
+          1572960.9
+        ],
+        "interval_method": "symmetric_empirical_forward_ape",
+        "backtest_mape": 0.0455124792607767,
+        "forward_folds": 11
+      },
+      "forecast_2026": {
+        "method": "h2_last_year",
+        "confidence": "low",
+        "point": 1410636.0,
+        "range_68": [
+          1293911.4,
+          1527360.6
+        ],
+        "range_95": [
+          1125853.5,
+          1695418.5
+        ],
+        "interval_method": "symmetric_empirical_forward_ape",
+        "backtest_mape": 0.07586133425888328,
+        "latest_ape": 0.0006996843976759419,
+        "max_ape": 0.21828600119351713,
+        "forward_folds": 10
+      }
+    }
+  ],
+  "sources": [
+    {
+      "name": "BPS-Statistics Indonesia",
+      "url": "https://www.bps.go.id/id/publication/2025/08/29/8d2a6ab3510f9828daf73191/statistik-tanaman-perkebunan-tahunan-indonesia-2024-kelapa-sawit-kopi-kakao-karet-teh-dan-komoditas-perkebunan-unggulan-.html"
+    },
+    {
+      "name": "Google Earth Engine: ERA5-Land and CHIRPS",
+      "project": "climate-project-504313"
+    }
+  ]
+}

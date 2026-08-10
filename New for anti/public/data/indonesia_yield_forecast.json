@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-03T14:32:29.575078+00:00",
+  "generated_at": "2026-08-10T04:47:09.526939+00:00",
   "season": 2026,
   "country": "Indonesia",
   "methodology": "FAOSTAT national yield/area/production trend plus NASA POWER climate deviations from a leak-free prior-20-year normal. Ridge strength is selected inside each training fold; skill is forward-chained against a trend-only baseline. Weak weather models publish the trend, not an unvalidated climate adjustment.",
@@ -251,219 +251,491 @@
       }
     },
     "indonesia_oil_palm": {
-      "label": "Indonesia oil palm fruit",
-      "label_ko": "인도네시아 팜유 과실",
+      "label": "Indonesia crude palm oil (CPO)",
+      "label_ko": "인도네시아 팜유(CPO)",
+      "unit": "kg CPO/성숙면적 ha",
+      "forecast_available": true,
       "headline": {
         "production_tonnes": {
-          "point": null,
-          "range_68": null,
-          "range_95": null,
-          "diagnostic_trend": 293262726.7,
-          "weather_effect": null,
-          "sigma_used": 27077613.9,
-          "model_sigma": 27077613.9,
+          "point": 48141191.9,
+          "range_68": [
+            44347972.5,
+            51934411.2
+          ],
+          "range_95": [
+            36310846.3,
+            59971537.4
+          ],
+          "diagnostic_trend": 48141191.9,
+          "weather_effect": 0.0,
           "forecast_gate": {
-            "publishable": false,
-            "recent_operational_mape": 0.09423994185128767,
-            "latest_operational_ape": 0.1526743361854519,
-            "maximum_publish_mape": 0.15,
-            "status": "stopped_poor_recent_backtest"
+            "publishable": true,
+            "status": "baseline_forecast_low_confidence",
+            "confidence": "low"
           },
           "climate_gate": {
-            "status": "stopped_insufficient_sample",
-            "candidate_configuration": "core__full_quadratic",
-            "candidate_features": [
-              "soil_dry_lag1_anom",
-              "soil_dry_lag2_anom",
-              "vpd_dry_lag1_anom",
-              "oni_season"
-            ],
-            "available_seasons": 19,
-            "required_seasons": 25,
-            "candidate_skill_vs_trend": 2.9967736238534215e-05
+            "applied": false,
+            "status": "stopped_no_incremental_skill",
+            "available_labeled_seasons": 19,
+            "best_incremental_skill_vs_structure": 0.010935900638976204,
+            "core_features": [
+              "dry_lag1__soil_root_m3m3",
+              "dry_lag2__soil_root_m3m3",
+              "dry_lag1__vpd_max_kpa"
+            ]
           }
         }
       },
       "yield_kg_ha": {
-        "point": 16812.2,
+        "point": 3738.7,
         "range_68": [
-          16236.3,
-          17388.2
+          3444.1,
+          4033.3
         ],
         "range_95": [
-          15683.3,
-          17941.2
+          2819.9,
+          4657.4
         ],
-        "diagnostic_trend": 16812.2,
+        "diagnostic_trend": 3738.7,
         "weather_effect": 0.0,
-        "sigma_used": 576.0,
-        "model_sigma": 576.0,
         "forecast_gate": {
           "publishable": true,
-          "recent_operational_mape": 0.0284162997594171,
-          "latest_operational_ape": 0.005030005577644701,
-          "maximum_publish_mape": 0.15,
-          "status": "publishable_baseline"
+          "status": "baseline_forecast_low_confidence",
+          "confidence": "low"
         },
         "climate_gate": {
-          "status": "stopped_insufficient_sample",
-          "candidate_configuration": "core__full_linear",
-          "candidate_features": [
-            "soil_dry_lag1_anom",
-            "soil_dry_lag2_anom",
-            "vpd_dry_lag1_anom",
-            "oni_season"
-          ],
-          "available_seasons": 19,
-          "required_seasons": 25,
-          "candidate_skill_vs_trend": -3.715621733491048e-05
+          "applied": false,
+          "status": "stopped_no_incremental_skill",
+          "available_labeled_seasons": 19,
+          "best_incremental_skill_vs_structure": 0.010935900638976204,
+          "core_features": [
+            "dry_lag1__soil_root_m3m3",
+            "dry_lag2__soil_root_m3m3",
+            "dry_lag1__vpd_max_kpa"
+          ]
         }
       },
       "area_ha": {
-        "point": null,
-        "range_68": null,
-        "range_95": null,
-        "diagnostic_trend": 17969622.0,
-        "weather_effect": null,
-        "sigma_used": 1496737.1,
-        "model_sigma": 1496737.1,
+        "point": 12876487.0,
+        "range_68": [
+          12876487.0,
+          12876487.0
+        ],
+        "range_95": [
+          12876487.0,
+          12876487.0
+        ],
+        "diagnostic_trend": 12876487.0,
+        "weather_effect": 0.0,
+        "basis": "2024_BPS_mature_area_held_constant",
         "forecast_gate": {
-          "publishable": false,
-          "recent_operational_mape": 0.09269126638549137,
-          "latest_operational_ape": 0.15926722693908504,
-          "maximum_publish_mape": 0.15,
-          "status": "stopped_poor_recent_backtest"
+          "publishable": true,
+          "status": "baseline_forecast_low_confidence",
+          "confidence": "low"
         },
         "climate_gate": {
-          "status": "not_evaluated_no_weather_features",
-          "candidate_configuration": null,
-          "candidate_features": [],
-          "available_seasons": 39,
-          "required_seasons": null,
-          "candidate_skill_vs_trend": null
+          "applied": false,
+          "status": "stopped_no_incremental_skill",
+          "available_labeled_seasons": 19,
+          "best_incremental_skill_vs_structure": 0.010935900638976204,
+          "core_features": [
+            "dry_lag1__soil_root_m3m3",
+            "dry_lag2__soil_root_m3m3",
+            "dry_lag1__vpd_max_kpa"
+          ]
         }
       },
-      "production_crosscheck_tonnes": null,
+      "production_crosscheck_tonnes": 48141191.9,
       "last_actual": {
         "year": 2024,
-        "yield_kg_ha": 16969.3,
-        "area_ha": 14320000.0,
-        "production_tonnes": 243000000.0,
-        "flags": {
-          "yield": "E",
-          "area": "X",
-          "production": "E"
-        }
+        "yield": 3528.6,
+        "area": 12876487.0,
+        "production": 45436197.0,
+        "area_basis": "mature_area",
+        "source_status": "BPS_final_2024"
       },
       "season_progress": {
-        "critical_days": {
-          "observed": 0,
-          "forecast": 0,
-          "climatology": 0
-        },
+        "type": "perennial_year_round_harvest",
+        "climate_windows_complete": true,
         "observed_share": 1.0
       },
-      "weather_through": null,
+      "weather_through": "2025-10-31",
       "skill": {
-        "yield": {
-          "skill_vs_trend_only": 0.0,
-          "detrended_r2": -0.014,
-          "forward_folds": 29,
-          "weather_applied": false,
-          "feature_set": "trend_only",
-          "features": [],
-          "trained_years": [
-            1986,
-            2024
+        "skill_vs_trend_only": 0.113,
+        "baseline": "last_year",
+        "mape": 0.0894,
+        "baseline_mape": 0.1008,
+        "forward_folds": 9,
+        "weather_applied": false,
+        "low_confidence": true,
+        "climate_gate": {
+          "applied": false,
+          "status": "stopped_no_incremental_skill",
+          "available_labeled_seasons": 19,
+          "best_incremental_skill_vs_structure": 0.010935900638976204,
+          "core_features": [
+            "dry_lag1__soil_root_m3m3",
+            "dry_lag2__soil_root_m3m3",
+            "dry_lag1__vpd_max_kpa"
+          ]
+        }
+      },
+      "crop_calendar": {
+        "id": "indonesia_oil_palm_perennial",
+        "type": "perennial_tree_crop",
+        "annual_sowing_season": false,
+        "establishment": {
+          "nursery_months": [
+            10,
+            12
           ],
-          "low_confidence": true,
-          "climate_gate": {
-            "status": "stopped_insufficient_sample",
-            "candidate_configuration": "core__full_linear",
-            "candidate_features": [
-              "soil_dry_lag1_anom",
-              "soil_dry_lag2_anom",
-              "vpd_dry_lag1_anom",
-              "oni_season"
-            ],
-            "available_seasons": 19,
-            "required_seasons": 25,
-            "candidate_skill_vs_trend": -3.715621733491048e-05
+          "field_transplant_timing": "beginning_of_local_rainy_season",
+          "note_ko": "묘목을 약 10–12개월 육묘한 뒤 지역 우기 시작에 본밭에 정식한다. 전국 공통 고정월로 표시하지 않는다."
+        },
+        "growth_stages": [
+          {
+            "stage": "nursery",
+            "age_months": "0–12",
+            "label_ko": "육묘·활착 준비"
           },
-          "forecast_gate": {
-            "publishable": true,
-            "recent_operational_mape": 0.0284162997594171,
-            "latest_operational_ape": 0.005030005577644701,
-            "maximum_publish_mape": 0.15,
-            "status": "publishable_baseline"
+          {
+            "stage": "TBM",
+            "age_months_after_field_planting": "0–36/48",
+            "label_ko": "미성숙기·영양생장",
+            "management_ko": "제초·시비·수분관리·초기 꽃/과실 제거"
+          },
+          {
+            "stage": "TM",
+            "age_months_after_field_planting": ">36",
+            "label_ko": "성숙 생산기"
+          },
+          {
+            "stage": "replanting_candidate",
+            "age_years": ">25",
+            "label_ko": "노후목 재식재 검토"
+          }
+        ],
+        "harvest": {
+          "months": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12
+          ],
+          "pattern": "year_round",
+          "ideal_round_days": 7,
+          "note_ko": "단일 수확기가 아니라 성숙 TBS를 연중 반복 수확한다. 이상적 수확 회전은 약 7일이며 생산 피크는 기후와 지역에 따라 변한다."
+        },
+        "model_windows": [
+          {
+            "name": "dry_lag2",
+            "timing": "harvest_year_minus_2_Jun-Oct",
+            "role_ko": "개화·착과의 2년 지연 수분 스트레스 참고"
+          },
+          {
+            "name": "dry_lag1",
+            "timing": "harvest_year_minus_1_Jun-Oct",
+            "role_ko": "과실 발달 전년 건기 스트레스 참고"
+          }
+        ],
+        "sources": [
+          {
+            "name": "Indonesia Ministry of Agriculture Regulation 18/2016",
+            "url": "https://jdih.pertanian.go.id/jdih-ops/storage/sources/files/Permentan_18-2016_Peremajaan_Kelapa_Sawit_Sawit.pdf",
+            "supports": "10–12 month planting material; TBM 36–48 months; TM definition"
+          },
+          {
+            "name": "Indonesia Ministry of Agriculture oil-palm good cultivation guide",
+            "url": "https://repository.pertanian.go.id/server/api/core/bitstreams/ded4029b-5a17-4de9-8461-2b7e447a7d24/content",
+            "supports": "year-round repeated harvest and ideal seven-day harvest rotation"
+          },
+          {
+            "name": "FAO oil-palm establishment guide",
+            "url": "https://www.fao.org/4/t0309e/T0309E03.htm",
+            "supports": "field transplant at the beginning of the rainy season"
+          }
+        ]
+      },
+      "regional_outlook": [
+        {
+          "province": "Riau",
+          "status": "forecast_baseline",
+          "target": "CPO",
+          "unit": "tonnes",
+          "last_actual": {
+            "year": 2024,
+            "production_tonnes": 9136101.0,
+            "mature_area_ha": 2592557.0
+          },
+          "climate_adjustment_applied": false,
+          "crop_calendar_ref": "indonesia_oil_palm_perennial",
+          "forecast_available": true,
+          "forecast_2025": {
+            "method": "last_year",
+            "point": 9136101.0,
+            "range_68": [
+              8524645.8,
+              9747556.2
+            ],
+            "range_95": [
+              7982420.6,
+              10289781.4
+            ],
+            "interval_method": "symmetric_empirical_forward_ape",
+            "backtest_mape": 0.05542687133175151,
+            "forward_folds": 11
+          },
+          "forecast_2026": {
+            "method": "h2_fixed_equal_baseline",
+            "confidence": "low",
+            "point": 9418804.3,
+            "range_68": [
+              8719895.8,
+              10117712.8
+            ],
+            "range_95": [
+              7771864.8,
+              11065743.8
+            ],
+            "interval_method": "symmetric_empirical_forward_ape",
+            "backtest_mape": 0.06281380853805617,
+            "latest_ape": 0.011500037186166084,
+            "max_ape": 0.20135948409787882,
+            "forward_folds": 10
           }
         },
-        "production": {
-          "skill_vs_trend_only": 0.0,
-          "detrended_r2": -0.26,
-          "forward_folds": 29,
-          "weather_applied": false,
-          "feature_set": "trend_only",
-          "features": [],
-          "trained_years": [
-            1986,
-            2024
-          ],
-          "low_confidence": true,
-          "climate_gate": {
-            "status": "stopped_insufficient_sample",
-            "candidate_configuration": "core__full_quadratic",
-            "candidate_features": [
-              "soil_dry_lag1_anom",
-              "soil_dry_lag2_anom",
-              "vpd_dry_lag1_anom",
-              "oni_season"
-            ],
-            "available_seasons": 19,
-            "required_seasons": 25,
-            "candidate_skill_vs_trend": 2.9967736238534215e-05
+        {
+          "province": "Kalimantan Tengah",
+          "status": "reference_only",
+          "target": "CPO",
+          "unit": "tonnes",
+          "last_actual": {
+            "year": 2024,
+            "production_tonnes": 7458143.0,
+            "mature_area_ha": 1785872.0
           },
-          "forecast_gate": {
-            "publishable": false,
-            "recent_operational_mape": 0.09423994185128767,
-            "latest_operational_ape": 0.1526743361854519,
-            "maximum_publish_mape": 0.15,
-            "status": "stopped_poor_recent_backtest"
+          "climate_adjustment_applied": false,
+          "crop_calendar_ref": "indonesia_oil_palm_perennial",
+          "forecast_available": false,
+          "forecast_2025": null,
+          "reason": "regional_forward_gate_failed",
+          "reason_ko": "지역별 전진검증 기준을 통과하지 못해 수치 전망은 제공하지 않고, 최근 BPS 실적과 기후 관측만 참고자료로 제공",
+          "forecast_2026": null,
+          "forecast_2026_reason": "two_year_regional_gate_failed"
+        },
+        {
+          "province": "Kalimantan Barat",
+          "status": "reference_only",
+          "target": "CPO",
+          "unit": "tonnes",
+          "last_actual": {
+            "year": 2024,
+            "production_tonnes": 4958544.0,
+            "mature_area_ha": 1775668.0
+          },
+          "climate_adjustment_applied": false,
+          "crop_calendar_ref": "indonesia_oil_palm_perennial",
+          "forecast_available": false,
+          "forecast_2025": null,
+          "reason": "regional_forward_gate_failed",
+          "reason_ko": "지역별 전진검증 기준을 통과하지 못해 수치 전망은 제공하지 않고, 최근 BPS 실적과 기후 관측만 참고자료로 제공",
+          "forecast_2026": null,
+          "forecast_2026_reason": "two_year_regional_gate_failed"
+        },
+        {
+          "province": "Sumatera Utara",
+          "status": "reference_only",
+          "target": "CPO",
+          "unit": "tonnes",
+          "last_actual": {
+            "year": 2024,
+            "production_tonnes": 5120024.0,
+            "mature_area_ha": 1144263.0
+          },
+          "climate_adjustment_applied": false,
+          "crop_calendar_ref": "indonesia_oil_palm_perennial",
+          "forecast_available": false,
+          "forecast_2025": null,
+          "reason": "regional_forward_gate_failed",
+          "reason_ko": "지역별 전진검증 기준을 통과하지 못해 수치 전망은 제공하지 않고, 최근 BPS 실적과 기후 관측만 참고자료로 제공",
+          "forecast_2026": null,
+          "forecast_2026_reason": "two_year_regional_gate_failed"
+        },
+        {
+          "province": "Kalimantan Timur",
+          "status": "reference_only",
+          "target": "CPO",
+          "unit": "tonnes",
+          "last_actual": {
+            "year": 2024,
+            "production_tonnes": 4516326.0,
+            "mature_area_ha": 1372351.0
+          },
+          "climate_adjustment_applied": false,
+          "crop_calendar_ref": "indonesia_oil_palm_perennial",
+          "forecast_available": false,
+          "forecast_2025": null,
+          "reason": "regional_forward_gate_failed",
+          "reason_ko": "지역별 전진검증 기준을 통과하지 못해 수치 전망은 제공하지 않고, 최근 BPS 실적과 기후 관측만 참고자료로 제공",
+          "forecast_2026": null,
+          "forecast_2026_reason": "two_year_regional_gate_failed"
+        },
+        {
+          "province": "Sumatera Selatan",
+          "status": "forecast_structural",
+          "target": "CPO",
+          "unit": "tonnes",
+          "last_actual": {
+            "year": 2024,
+            "production_tonnes": 3967386.0,
+            "mature_area_ha": 1082870.0
+          },
+          "climate_adjustment_applied": false,
+          "crop_calendar_ref": "indonesia_oil_palm_perennial",
+          "forecast_available": true,
+          "forecast_2025": {
+            "method": "structure_no_climate",
+            "point": 4421118.3,
+            "range_68": [
+              3995845.5,
+              4846391.1
+            ],
+            "range_95": [
+              3589547.4,
+              5252689.2
+            ],
+            "interval_method": "symmetric_empirical_forward_ape",
+            "backtest_mape": 0.08937507111056715,
+            "forward_folds": 11
+          },
+          "forecast_2026": {
+            "method": "h2_structure_no_climate",
+            "confidence": "low",
+            "point": 4459602.2,
+            "range_68": [
+              3890360.9,
+              5028843.5
+            ],
+            "range_95": [
+              3470327.0,
+              5448877.4
+            ],
+            "interval_method": "symmetric_empirical_forward_ape",
+            "backtest_mape": 0.10549260607143207,
+            "latest_ape": 0.012614904383011952,
+            "max_ape": 0.2250697208900413,
+            "forward_folds": 10
           }
         },
-        "area": {
-          "skill_vs_trend_only": 0.0,
-          "detrended_r2": -0.032,
-          "forward_folds": 29,
-          "weather_applied": false,
-          "feature_set": "trend_only",
-          "features": [],
-          "trained_years": [
-            1986,
-            2024
-          ],
-          "low_confidence": true,
-          "climate_gate": {
-            "status": "not_evaluated_no_weather_features",
-            "candidate_configuration": null,
-            "candidate_features": [],
-            "available_seasons": 39,
-            "required_seasons": null,
-            "candidate_skill_vs_trend": null
+        {
+          "province": "Jambi",
+          "status": "reference_only",
+          "target": "CPO",
+          "unit": "tonnes",
+          "last_actual": {
+            "year": 2024,
+            "production_tonnes": 2113972.0,
+            "mature_area_ha": 684956.0
           },
-          "forecast_gate": {
-            "publishable": false,
-            "recent_operational_mape": 0.09269126638549137,
-            "latest_operational_ape": 0.15926722693908504,
-            "maximum_publish_mape": 0.15,
-            "status": "stopped_poor_recent_backtest"
+          "climate_adjustment_applied": false,
+          "crop_calendar_ref": "indonesia_oil_palm_perennial",
+          "forecast_available": false,
+          "forecast_2025": null,
+          "reason": "regional_forward_gate_failed",
+          "reason_ko": "지역별 전진검증 기준을 통과하지 못해 수치 전망은 제공하지 않고, 최근 BPS 실적과 기후 관측만 참고자료로 제공",
+          "forecast_2026": null,
+          "forecast_2026_reason": "two_year_regional_gate_failed"
+        },
+        {
+          "province": "Sumatera Barat",
+          "status": "forecast_baseline",
+          "target": "CPO",
+          "unit": "tonnes",
+          "last_actual": {
+            "year": 2024,
+            "production_tonnes": 1410636.0,
+            "mature_area_ha": 366177.0
+          },
+          "climate_adjustment_applied": false,
+          "crop_calendar_ref": "indonesia_oil_palm_perennial",
+          "forecast_available": true,
+          "forecast_2025": {
+            "method": "last_year",
+            "point": 1410636.0,
+            "range_68": [
+              1357333.6,
+              1463938.4
+            ],
+            "range_95": [
+              1248311.1,
+              1572960.9
+            ],
+            "interval_method": "symmetric_empirical_forward_ape",
+            "backtest_mape": 0.0455124792607767,
+            "forward_folds": 11
+          },
+          "forecast_2026": {
+            "method": "h2_last_year",
+            "confidence": "low",
+            "point": 1410636.0,
+            "range_68": [
+              1293911.4,
+              1527360.6
+            ],
+            "range_95": [
+              1125853.5,
+              1695418.5
+            ],
+            "interval_method": "symmetric_empirical_forward_ape",
+            "backtest_mape": 0.07586133425888328,
+            "latest_ape": 0.0006996843976759419,
+            "max_ape": 0.21828600119351713,
+            "forward_folds": 10
+          }
+        }
+      ],
+      "climate_reference": {
+        "status": "reference_only_not_applied_to_point",
+        "mature_area_weight_vintage": 2024,
+        "metrics": {
+          "climate_soil_lag1": {
+            "value": 0.38174960212712095,
+            "z_score_vs_2006_2024": -0.42518087212763184,
+            "historical_percentile": 0.2631578947368421
+          },
+          "climate_soil_lag2": {
+            "value": 0.3852141172042857,
+            "z_score_vs_2006_2024": -0.19426935098233503,
+            "historical_percentile": 0.42105263157894735
+          },
+          "climate_vpd_lag1": {
+            "value": 1.3772584361935574,
+            "z_score_vs_2006_2024": 0.5060377410746848,
+            "historical_percentile": 0.7368421052631579
           }
         }
       },
       "provenance": {
-        "guide": "Regions/인도네시아/수마트라_칼리만탄/팜유/팜유_상세분석_및_수식.md",
-        "caveat": "The FAOSTAT oil-palm series is national and recent production/yield values are flagged estimated; solar anomaly is a haze proxy, not an AOD observation.",
-        "non_weather_drivers": "Mature-tree share, replanting, fertilizer, labour and milling capacity."
+        "target": "CPO, not fresh fruit bunches (FFB)",
+        "sources": [
+          {
+            "name": "BPS-Statistics Indonesia",
+            "url": "https://www.bps.go.id/id/publication/2025/08/29/8d2a6ab3510f9828daf73191/statistik-tanaman-perkebunan-tahunan-indonesia-2024-kelapa-sawit-kopi-kakao-karet-teh-dan-komoditas-perkebunan-unggulan-.html"
+          },
+          {
+            "name": "Google Earth Engine: ERA5-Land and CHIRPS",
+            "project": "climate-project-504313"
+          }
+        ],
+        "caveat_ko": "2025년 BPS 생산량·성숙면적이 아직 없어 2024년 구조를 두 해 앞까지 연장한 저신뢰 기준 전망"
       }
     },
     "indonesia_coffee": {
