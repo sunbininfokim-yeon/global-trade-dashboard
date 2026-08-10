@@ -1,5 +1,8 @@
 # 데이터 저장 규칙 (Codex 안내용)
 
+모델 복잡도 선택과 `production`/`challenger`/`reference` 판정 원칙은
+[`MODEL_SELECTION_LESSONS.md`](./MODEL_SELECTION_LESSONS.md)를 함께 따른다.
+
 작업물이 대시보드에 나타나려면 **어디에 무엇을 저장하느냐**가 정해져 있습니다.
 이 규칙만 지키면 커밋하는 순간 화면에 반영됩니다. 코드를 고칠 필요 없습니다.
 
