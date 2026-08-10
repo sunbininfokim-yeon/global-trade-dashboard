@@ -1,0 +1,263 @@
+{
+  "key": "national_coffee_belt",
+  "crop": "coffee",
+  "target": {
+    "variable": "green_coffee_yield_kg_ha",
+    "source": "FAOSTAT QCL via Our World in Data",
+    "spatial_scale": "Uganda national yield, climate proxied by seven coffee-belt locations",
+    "area_basis": "harvested area"
+  },
+  "trained_years": [
+    1992,
+    2024
+  ],
+  "n_seasons": 33,
+  "selection_protocol": {
+    "feature_selection_years": "2004-2014 forward folds only",
+    "untouched_holdout_years": "2015-2024",
+    "trend_ensemble": "equal weight: full-history + rolling 20-season log trends"
+  },
+  "feature_sets": {
+    "rain_heat": [
+      "rain_long_rains_mm_z",
+      "hot28_edd_c_days_z"
+    ],
+    "water_demand": [
+      "root_sm_long_rains_z",
+      "vpd_long_rains_kpa_z"
+    ],
+    "bimodal_rain": [
+      "rain_short_rains_mm_z",
+      "rain_long_rains_mm_z"
+    ],
+    "phase_water": [
+      "rain_short_rains_mm_z",
+      "rain_long_rains_mm_z",
+      "rain_jun_jul_mm_z"
+    ]
+  },
+  "development_validation_runs": {
+    "rain_heat": {
+      "all": {
+        "n_folds": 21,
+        "rmse_kg_ha": 63.439314456106665,
+        "baseline_rmse_kg_ha": 66.38654500678001,
+        "skill_vs_trend": 0.04439499826918769,
+        "detrended_r2": -0.48914691063498195
+      },
+      "development_2004_2014": {
+        "n_folds": 11,
+        "rmse_kg_ha": 81.82990315762764,
+        "baseline_rmse_kg_ha": 89.02477935641988,
+        "skill_vs_trend": 0.08081880405439501,
+        "detrended_r2": -1.7800405620370703
+      },
+      "holdout_2015_2024": {
+        "n_folds": 10,
+        "rmse_kg_ha": 32.95150289929517,
+        "baseline_rmse_kg_ha": 23.17566780619305,
+        "skill_vs_trend": -0.42181460205818966,
+        "detrended_r2": -1.1202256008314437
+      }
+    },
+    "water_demand": {
+      "all": {
+        "n_folds": 21,
+        "rmse_kg_ha": 101.73269224520512,
+        "baseline_rmse_kg_ha": 66.38654500678001,
+        "skill_vs_trend": -0.5324293836170451,
+        "detrended_r2": -2.8294963328119507
+      },
+      "development_2004_2014": {
+        "n_folds": 11,
+        "rmse_kg_ha": 131.46223195941644,
+        "baseline_rmse_kg_ha": 89.02477935641988,
+        "skill_vs_trend": -0.47669258952155147,
+        "detrended_r2": -6.175118218516436
+      },
+      "holdout_2015_2024": {
+        "n_folds": 10,
+        "rmse_kg_ha": 52.18702075357853,
+        "baseline_rmse_kg_ha": 23.17566780619305,
+        "skill_vs_trend": -1.251802243197195,
+        "detrended_r2": -4.318101583580192
+      }
+    },
+    "bimodal_rain": {
+      "all": {
+        "n_folds": 21,
+        "rmse_kg_ha": 70.42020542469584,
+        "baseline_rmse_kg_ha": 66.38654500678001,
+        "skill_vs_trend": -0.0607602100320761,
+        "detrended_r2": -0.8349116483862411
+      },
+      "development_2004_2014": {
+        "n_folds": 11,
+        "rmse_kg_ha": 92.56776052018917,
+        "baseline_rmse_kg_ha": 89.02477935641988,
+        "skill_vs_trend": -0.039797696656844295,
+        "detrended_r2": -2.5575136256679865
+      },
+      "holdout_2015_2024": {
+        "n_folds": 10,
+        "rmse_kg_ha": 31.436314682592094,
+        "baseline_rmse_kg_ha": 23.17566780619305,
+        "skill_vs_trend": -0.35643619616396194,
+        "detrended_r2": -0.9297225615683047
+      }
+    },
+    "phase_water": {
+      "all": {
+        "n_folds": 21,
+        "rmse_kg_ha": 107.39358324006804,
+        "baseline_rmse_kg_ha": 66.38654500678001,
+        "skill_vs_trend": -0.6177010451304554,
+        "detrended_r2": -3.2675365417749527
+      },
+      "development_2004_2014": {
+        "n_folds": 11,
+        "rmse_kg_ha": 139.47341161693788,
+        "baseline_rmse_kg_ha": 89.02477935641988,
+        "skill_vs_trend": -0.5666807896096175,
+        "detrended_r2": -7.076252834281666
+      },
+      "holdout_2015_2024": {
+        "n_folds": 10,
+        "rmse_kg_ha": 53.12236639610877,
+        "baseline_rmse_kg_ha": 23.17566780619305,
+        "skill_vs_trend": -1.292161194246722,
+        "detrended_r2": -4.510442124134245
+      }
+    }
+  },
+  "selected_feature_set": "rain_heat",
+  "selected_features": [
+    "rain_long_rains_mm_z",
+    "hot28_edd_c_days_z"
+  ],
+  "ensemble_validation": {
+    "all": {
+      "n_folds": 21,
+      "rmse_kg_ha": 61.08431570465053,
+      "baseline_rmse_kg_ha": 65.39379703981061,
+      "skill_vs_trend": 0.06590046044484221,
+      "detrended_r2": -0.1558230758725796
+    },
+    "development_2004_2014": {
+      "n_folds": 11,
+      "rmse_kg_ha": 81.88385597772681,
+      "baseline_rmse_kg_ha": 88.18237125627117,
+      "skill_vs_trend": 0.07142601393922521,
+      "detrended_r2": -1.350385899551807
+    },
+    "holdout_2015_2024": {
+      "n_folds": 10,
+      "rmse_kg_ha": 21.453534812756473,
+      "baseline_rmse_kg_ha": 20.654021189094276,
+      "skill_vs_trend": -0.03870982877098794,
+      "detrended_r2": -0.3458218990123654
+    }
+  },
+  "operational_choice": "trend_ensemble_only",
+  "beats_trend": false,
+  "low_confidence": true,
+  "skill": {
+    "n_folds": 10,
+    "rmse_kg_ha": 21.453534812756473,
+    "baseline_rmse_kg_ha": 20.654021189094276,
+    "skill_vs_trend": -0.03870982877098794,
+    "detrended_r2": -0.3458218990123654,
+    "evaluation_period": "untouched holdout 2015-2024"
+  },
+  "components": [
+    {
+      "name": "full_history",
+      "train_window_years": null,
+      "trained_years": [
+        1992,
+        2024
+      ],
+      "n_seasons": 33,
+      "trend": {
+        "form": "log_linear",
+        "log_poly_coef": [
+          -0.00842638990951259,
+          23.35480739058646
+        ]
+      },
+      "scaler": {
+        "mean": [
+          0.17279273131653847,
+          0.9663704224402384
+        ],
+        "scale": [
+          1.1590625796378167,
+          1.2838044971566196
+        ]
+      },
+      "ridge": {
+        "alpha": 24.244620170823307,
+        "intercept": 8.609182468201282e-15,
+        "coef": [
+          0.029631010973543835,
+          -0.01706257413513237
+        ]
+      }
+    },
+    {
+      "name": "rolling_20",
+      "train_window_years": 20,
+      "trained_years": [
+        2005,
+        2024
+      ],
+      "n_seasons": 20,
+      "trend": {
+        "form": "log_linear",
+        "log_poly_coef": [
+          -0.006102181392829391,
+          18.655645117769893
+        ]
+      },
+      "scaler": {
+        "mean": [
+          0.06066827867199953,
+          0.935180262956278
+        ],
+        "scale": [
+          1.2230200528497073,
+          1.256081916870115
+        ]
+      },
+      "ridge": {
+        "alpha": 5.878016072274912,
+        "intercept": 3.197097289519707e-15,
+        "coef": [
+          -0.0010791782223522394,
+          -0.011881484851330905
+        ]
+      }
+    }
+  ],
+  "uncertainty": {
+    "basis": "absolute errors on untouched 2015-2024 holdout using trend fallback",
+    "q68_kg_ha": 23.06736283033024,
+    "q95_kg_ha": 38.87623123077992
+  },
+  "anomaly": {
+    "window_years": 20,
+    "minimum_prior_years": 10
+  },
+  "model_warnings": [
+    "The target is national FAOSTAT yield; regional climate weights are fixed species proxies, not annual district production weights.",
+    "Uganda has two harvest cycles and FAOSTAT calendar-year labels do not align perfectly with either marketing season.",
+    "Management, tree age, disease and expansion of improved seedlings are not observed by the model.",
+    "The untouched evaluation set contains only ten seasons (2015-2024)."
+  ],
+  "caveats": [
+    "The target is national FAOSTAT yield; regional climate weights are fixed species proxies, not annual district production weights.",
+    "Uganda has two harvest cycles and FAOSTAT calendar-year labels do not align perfectly with either marketing season.",
+    "Management, tree age, disease and expansion of improved seedlings are not observed by the model.",
+    "The untouched evaluation set contains only ten seasons (2015-2024)."
+  ]
+}

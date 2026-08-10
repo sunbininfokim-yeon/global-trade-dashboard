@@ -1,0 +1,350 @@
+{
+  "key": "national_arabica_belt",
+  "crop": "coffee",
+  "target": {
+    "variable": "FAOSTAT_green_coffee_yield_kg_ha",
+    "source": "FAOSTAT QCL via OWID",
+    "spatial_scale": "Ethiopia national yield; ECTA regional climate proxy"
+  },
+  "trained_years": [
+    1996,
+    2024
+  ],
+  "n_seasons": 29,
+  "selection_protocol": {
+    "feature_selection": "forward folds ending 2014",
+    "untouched_holdout": "2015-2024",
+    "baseline": "refitted log trend",
+    "incremental_gate": "weather+cycle must improve holdout RMSE >=2% versus cycle-only"
+  },
+  "feature_sets": {
+    "cycle_only": [
+      "yield_lag2_kg_ha",
+      "area_growth_lag2"
+    ],
+    "rain_heat": [
+      "rain_flowering_mar_may_mm",
+      "hot30_mar_jul_c_days"
+    ],
+    "water_demand": [
+      "root_sm_mar_jul",
+      "vpd_mar_jul_kpa"
+    ],
+    "rain_heat_cycle": [
+      "yield_lag2_kg_ha",
+      "area_growth_lag2",
+      "rain_flowering_mar_may_mm",
+      "hot30_mar_jul_c_days"
+    ],
+    "water_cycle": [
+      "yield_lag2_kg_ha",
+      "area_growth_lag2",
+      "root_sm_mar_jul",
+      "vpd_mar_jul_kpa"
+    ],
+    "phase_cycle": [
+      "yield_lag2_kg_ha",
+      "area_growth_lag2",
+      "rain_prev_aug_dec_mm",
+      "rain_flowering_mar_may_mm",
+      "rain_filling_jun_jul_mm"
+    ]
+  },
+  "validation_runs": {
+    "cycle_only": {
+      "development_2007_2014": {
+        "n_folds": 7,
+        "rmse_kg_ha": 75.96197679271523,
+        "baseline_rmse_kg_ha": 69.09691057073549,
+        "skill_vs_trend": -0.09935417032794658,
+        "detrended_r2": -4.777406161210469
+      },
+      "holdout_2015_2024": {
+        "n_folds": 10,
+        "rmse_kg_ha": 36.69236754341956,
+        "baseline_rmse_kg_ha": 36.6846421793554,
+        "skill_vs_trend": -0.00021058850802968543,
+        "detrended_r2": -0.22397577591900286
+      },
+      "all": {
+        "n_folds": 17,
+        "rmse_kg_ha": 56.28438911520094,
+        "baseline_rmse_kg_ha": 52.5123576891332,
+        "skill_vs_trend": -0.07183130965853235,
+        "detrended_r2": -0.26767347244559225
+      }
+    },
+    "rain_heat": {
+      "development_2007_2014": {
+        "n_folds": 7,
+        "rmse_kg_ha": 69.09685263870823,
+        "baseline_rmse_kg_ha": 69.09691057073549,
+        "skill_vs_trend": 8.384170403497038e-07,
+        "detrended_r2": -3.780319403519796
+      },
+      "holdout_2015_2024": {
+        "n_folds": 10,
+        "rmse_kg_ha": 37.09005164588879,
+        "baseline_rmse_kg_ha": 36.6846421793554,
+        "skill_vs_trend": -0.011051204058398545,
+        "detrended_r2": -0.2506512700836616
+      },
+      "all": {
+        "n_folds": 17,
+        "rmse_kg_ha": 52.67957781720065,
+        "baseline_rmse_kg_ha": 52.5123576891332,
+        "skill_vs_trend": -0.0031843957389492417,
+        "detrended_r2": -0.11049360074867742
+      }
+    },
+    "water_demand": {
+      "development_2007_2014": {
+        "n_folds": 7,
+        "rmse_kg_ha": 69.10286967482011,
+        "baseline_rmse_kg_ha": 69.09691057073549,
+        "skill_vs_trend": -8.624269935375573e-05,
+        "detrended_r2": -3.781151991568379
+      },
+      "holdout_2015_2024": {
+        "n_folds": 10,
+        "rmse_kg_ha": 37.99254821117027,
+        "baseline_rmse_kg_ha": 36.6846421793554,
+        "skill_vs_trend": -0.03565268608646566,
+        "detrended_r2": -0.3122548871338886
+      },
+      "all": {
+        "n_folds": 17,
+        "rmse_kg_ha": 53.05977948161931,
+        "baseline_rmse_kg_ha": 52.5123576891332,
+        "skill_vs_trend": -0.010424627965226474,
+        "detrended_r2": -0.12658086400489865
+      }
+    },
+    "rain_heat_cycle": {
+      "development_2007_2014": {
+        "n_folds": 7,
+        "rmse_kg_ha": 69.07944724184675,
+        "baseline_rmse_kg_ha": 69.09691057073549,
+        "skill_vs_trend": 0.00025273675399506423,
+        "detrended_r2": -3.7779113958099364
+      },
+      "holdout_2015_2024": {
+        "n_folds": 10,
+        "rmse_kg_ha": 36.70398548419792,
+        "baseline_rmse_kg_ha": 36.6846421793554,
+        "skill_vs_trend": -0.0005272861800846851,
+        "detrended_r2": -0.22475099596010129
+      },
+      "all": {
+        "n_folds": 17,
+        "rmse_kg_ha": 52.510848023732336,
+        "baseline_rmse_kg_ha": 52.5123576891332,
+        "skill_vs_trend": 2.8748764429820106e-05,
+        "detrended_r2": -0.10339129316112805
+      }
+    },
+    "water_cycle": {
+      "development_2007_2014": {
+        "n_folds": 7,
+        "rmse_kg_ha": 69.08550258682588,
+        "baseline_rmse_kg_ha": 69.09691057073549,
+        "skill_vs_trend": 0.0001651012153131015,
+        "detrended_r2": -3.77874907390345
+      },
+      "holdout_2015_2024": {
+        "n_folds": 10,
+        "rmse_kg_ha": 36.69160956582321,
+        "baseline_rmse_kg_ha": 36.6846421793554,
+        "skill_vs_trend": -0.00018992652112403974,
+        "detrended_r2": -0.2239252075476379
+      },
+      "all": {
+        "n_folds": 17,
+        "rmse_kg_ha": 52.50904056559514,
+        "baseline_rmse_kg_ha": 52.5123576891332,
+        "skill_vs_trend": 6.316843661235971e-05,
+        "detrended_r2": -0.10331533555148198
+      }
+    },
+    "phase_cycle": {
+      "development_2007_2014": {
+        "n_folds": 7,
+        "rmse_kg_ha": 69.0937131091327,
+        "baseline_rmse_kg_ha": 69.09691057073549,
+        "skill_vs_trend": 4.627502990195431e-05,
+        "detrended_r2": -3.779885009980317
+      },
+      "holdout_2015_2024": {
+        "n_folds": 10,
+        "rmse_kg_ha": 36.70561598825172,
+        "baseline_rmse_kg_ha": 36.6846421793554,
+        "skill_vs_trend": -0.0005717326829515201,
+        "detrended_r2": -0.2248598127980035
+      },
+      "all": {
+        "n_folds": 17,
+        "rmse_kg_ha": 52.519246214081285,
+        "baseline_rmse_kg_ha": 52.5123576891332,
+        "skill_vs_trend": -0.0001311791214719804,
+        "detrended_r2": -0.10374425760426731
+      }
+    }
+  },
+  "selected_full_model": "rain_heat_cycle",
+  "selected_features": [
+    "yield_lag2_kg_ha",
+    "area_growth_lag2",
+    "rain_flowering_mar_may_mm",
+    "hot30_mar_jul_c_days"
+  ],
+  "selected_validation": {
+    "development_2007_2014": {
+      "n_folds": 7,
+      "rmse_kg_ha": 69.07944724184675,
+      "baseline_rmse_kg_ha": 69.09691057073549,
+      "skill_vs_trend": 0.00025273675399506423,
+      "detrended_r2": -3.7779113958099364
+    },
+    "holdout_2015_2024": {
+      "n_folds": 10,
+      "rmse_kg_ha": 36.70398548419792,
+      "baseline_rmse_kg_ha": 36.6846421793554,
+      "skill_vs_trend": -0.0005272861800846851,
+      "detrended_r2": -0.22475099596010129
+    },
+    "all": {
+      "n_folds": 17,
+      "rmse_kg_ha": 52.510848023732336,
+      "baseline_rmse_kg_ha": 52.5123576891332,
+      "skill_vs_trend": 2.8748764429820106e-05,
+      "detrended_r2": -0.10339129316112805
+    }
+  },
+  "cycle_only_validation": {
+    "development_2007_2014": {
+      "n_folds": 7,
+      "rmse_kg_ha": 75.96197679271523,
+      "baseline_rmse_kg_ha": 69.09691057073549,
+      "skill_vs_trend": -0.09935417032794658,
+      "detrended_r2": -4.777406161210469
+    },
+    "holdout_2015_2024": {
+      "n_folds": 10,
+      "rmse_kg_ha": 36.69236754341956,
+      "baseline_rmse_kg_ha": 36.6846421793554,
+      "skill_vs_trend": -0.00021058850802968543,
+      "detrended_r2": -0.22397577591900286
+    },
+    "all": {
+      "n_folds": 17,
+      "rmse_kg_ha": 56.28438911520094,
+      "baseline_rmse_kg_ha": 52.5123576891332,
+      "skill_vs_trend": -0.07183130965853235,
+      "detrended_r2": -0.26767347244559225
+    }
+  },
+  "weather_incremental_skill_vs_cycle_holdout": -0.0003166309932063349,
+  "accepted_weather_forecast": false,
+  "operational_choice": "no_forecast_reference",
+  "low_confidence": true,
+  "components": [
+    {
+      "name": "full_history",
+      "train_window_years": null,
+      "trained_years": [
+        1996,
+        2024
+      ],
+      "trend": {
+        "log_poly_coef": [
+          -0.0040331022167170265,
+          14.663572947138478
+        ]
+      },
+      "scaler": {
+        "mean": [
+          -0.00013102861346619784,
+          0.046691286341156144,
+          439.1579610812755,
+          3.9583557962235556
+        ],
+        "scale": [
+          0.09969595089108771,
+          0.1140057635862282,
+          67.70173405205533,
+          1.9517573557196688
+        ]
+      },
+      "ridge": {
+        "alpha": 10000.0,
+        "intercept": -1.4997726200826419e-15,
+        "coef": [
+          3.326043099564036e-05,
+          2.343243479647632e-05,
+          9.61039557969544e-06,
+          7.721318540342618e-06
+        ]
+      }
+    },
+    {
+      "name": "rolling_20",
+      "train_window_years": 20,
+      "trained_years": [
+        2005,
+        2024
+      ],
+      "trend": {
+        "log_poly_coef": [
+          -0.004537362572775032,
+          15.68734967563558
+        ]
+      },
+      "scaler": {
+        "mean": [
+          -0.024358604855842403,
+          0.07285636928660713,
+          455.84762833654577,
+          4.364817205309474
+        ],
+        "scale": [
+          0.09844044572832107,
+          0.11603723556848948,
+          66.24744425960695,
+          1.9359095677911993
+        ]
+      },
+      "ridge": {
+        "alpha": 10000.0,
+        "intercept": 5.0199024261847465e-15,
+        "coef": [
+          1.4236226907918604e-05,
+          -2.855326984681469e-05,
+          3.6243489798566917e-06,
+          -1.995264196182352e-05
+        ]
+      }
+    }
+  ],
+  "uncertainty": {
+    "basis": "absolute 2015-2024 errors; trend fallback if weather model rejected",
+    "q68_kg_ha": 47.85563716177171,
+    "q95_kg_ha": 66.1642549611754
+  },
+  "structural_context_not_fitted": {
+    "source": "USDA/FAS ET2026-0005 citing ECTA",
+    "old_tree_share_approx": 0.7,
+    "stumped_area_share_2025_26": 0.15,
+    "regional_stumping_rates": {
+      "Oromia": 0.19,
+      "South Ethiopia": 0.14,
+      "Sidama": 0.13
+    },
+    "reason_not_fitted": "one recent snapshot, no causal annual regional history"
+  },
+  "warnings": [
+    "FAOSTAT calendar-year yield and Ethiopia's Oct-Sep marketing year are not perfectly aligned.",
+    "Lag-2 yield and area growth are proxies for bearing cycle and structural change, not observed tree age.",
+    "Stumping rates are scenario context only and never multiplied into the forecast.",
+    "Regional climate weights are recent three-year average production shares, not annual historical weights."
+  ]
+}
