@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "kospi_risk_slot_v1.schema.json",
+  "title": "Pending KOSPI derivatives-risk fixed slot",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "generated_at",
+    "slot_id",
+    "label_ko",
+    "status",
+    "display_ko",
+    "required_inputs",
+    "note_ko"
+  ],
+  "properties": {
+    "schema_version": { "const": "kospi-risk-slot-v1" },
+    "generated_at": { "type": "string", "format": "date-time" },
+    "slot_id": { "const": "F3" },
+    "label_ko": { "const": "코스피 리스크" },
+    "status": { "const": "pending_derivatives" },
+    "display_ko": { "const": "분석 예정" },
+    "required_inputs": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "note_ko": { "type": "string", "minLength": 1 }
+  }
+}

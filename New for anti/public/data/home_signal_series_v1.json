@@ -1,0 +1,226 @@
+{
+  "schema_version": "home-signal-series-v1",
+  "updated_at": "2026-08-10",
+  "pages": {
+    "A": {
+      "keyword": "페이지A에너지",
+      "label_ko": "에너지",
+      "slots": [
+        {
+          "id": "brent_spot",
+          "label_ko": "브렌트",
+          "source": "eia",
+          "series_id": "RBRTE",
+          "unit": "usd_per_barrel",
+          "cadence": "daily",
+          "availability": "ready",
+          "route": "petroleum/pri/spt/data/"
+        },
+        {
+          "id": "vlsfo_singapore",
+          "label_ko": "싱가포르 VLSFO",
+          "source": "ship_and_bunker",
+          "series_id": "singapore_vlsfo",
+          "unit": "usd_per_metric_tonne",
+          "cadence": "daily",
+          "availability": "requires_license",
+          "source_url": "https://shipandbunker.com/prices/apac/sea/sg-sin-singapore",
+          "note_ko": "공개 페이지에 최신값이 보이지만 가격의 제품 사용·재배포는 Ship & Bunker 서면 허가 또는 라이선스 확인 후 연결. EIA에는 동일한 일별 VLSFO API 시계열이 없음"
+        },
+        {
+          "id": "henry_hub",
+          "label_ko": "헨리허브",
+          "source": "eia",
+          "series_id": "RNGWHHD",
+          "unit": "usd_per_mmbtu",
+          "cadence": "daily",
+          "availability": "ready",
+          "route": "natural-gas/pri/spt/data/"
+        },
+        {
+          "id": "newcastle_thermal_coal",
+          "label_ko": "뉴캐슬 연료탄",
+          "source": "pending_vendor",
+          "series_id": "newcastle_thermal_coal",
+          "unit": "usd_per_metric_tonne",
+          "cadence": "daily",
+          "availability": "pending_source",
+          "note_ko": "검증된 공개 시세 소스 미확보. 임의 Yahoo 심볼을 사용하지 않음"
+        }
+      ]
+    },
+    "B": {
+      "keyword": "페이지B농산물",
+      "label_ko": "농산물",
+      "slots": [
+        {
+          "id": "wheat_futures",
+          "label_ko": "밀",
+          "source": "yfinance",
+          "series_id": "ZW=F",
+          "unit": "us_cents_per_bushel",
+          "cadence": "daily",
+          "availability": "ready"
+        },
+        {
+          "id": "corn_futures",
+          "label_ko": "옥수수",
+          "source": "yfinance",
+          "series_id": "ZC=F",
+          "unit": "us_cents_per_bushel",
+          "cadence": "daily",
+          "availability": "ready"
+        },
+        {
+          "id": "soybean_futures",
+          "label_ko": "대두",
+          "source": "yfinance",
+          "series_id": "ZS=F",
+          "unit": "us_cents_per_bushel",
+          "cadence": "daily",
+          "availability": "ready"
+        },
+        {
+          "id": "sugar_futures",
+          "label_ko": "설탕",
+          "source": "yfinance",
+          "series_id": "SB=F",
+          "unit": "us_cents_per_pound",
+          "cadence": "daily",
+          "availability": "ready"
+        }
+      ]
+    },
+    "C": {
+      "keyword": "페이지C환율",
+      "label_ko": "환율",
+      "slots": [
+        {
+          "id": "broad_dollar_index",
+          "label_ko": "달러지수(광의)",
+          "source": "fred",
+          "series_id": "DTWEXBGS",
+          "unit": "index_points",
+          "cadence": "daily",
+          "availability": "ready",
+          "note_ko": "ICE DXY가 아닌 FRED 광의 달러지수 근사치"
+        },
+        {
+          "id": "usd_jpy",
+          "label_ko": "USD/JPY",
+          "source": "fred",
+          "series_id": "DEXJPUS",
+          "unit": "jpy_per_usd",
+          "cadence": "daily",
+          "availability": "ready"
+        },
+        {
+          "id": "eur_usd",
+          "label_ko": "EUR/USD",
+          "source": "fred",
+          "series_id": "DEXUSEU",
+          "unit": "usd_per_eur",
+          "cadence": "daily",
+          "availability": "ready"
+        },
+        {
+          "id": "usd_krw",
+          "label_ko": "USD/KRW",
+          "source": "bok",
+          "series_id": "KRW_USD",
+          "unit": "krw_per_usd",
+          "cadence": "daily",
+          "availability": "ready",
+          "note_ko": "기존 BOK KeyStatisticList 응답의 원/달러 환율 매핑"
+        }
+      ]
+    },
+    "D": {
+      "keyword": "페이지D금리",
+      "label_ko": "금리·유동성",
+      "slots": [
+        {
+          "id": "fed_effective_rate",
+          "label_ko": "미 기준금리",
+          "source": "fred",
+          "series_id": "EFFR",
+          "unit": "percent",
+          "cadence": "daily",
+          "availability": "ready"
+        },
+        {
+          "id": "us_10y",
+          "label_ko": "미 10년물",
+          "source": "fred",
+          "series_id": "DGS10",
+          "unit": "percent",
+          "cadence": "daily",
+          "availability": "ready"
+        },
+        {
+          "id": "fed_balance_sheet",
+          "label_ko": "FED B/S",
+          "source": "fred",
+          "series_id": "WALCL",
+          "unit": "usd_millions",
+          "cadence": "weekly",
+          "availability": "ready"
+        },
+        {
+          "id": "treasury_general_account",
+          "label_ko": "TGA",
+          "source": "fred",
+          "series_id": "WTREGEN",
+          "unit": "usd_millions",
+          "cadence": "weekly",
+          "availability": "ready"
+        }
+      ]
+    },
+    "E": {
+      "keyword": "페이지E주식",
+      "label_ko": "주식",
+      "slots": [
+        {
+          "id": "sp500",
+          "label_ko": "S&P 500",
+          "source": "fred",
+          "series_id": "SP500",
+          "unit": "index_points",
+          "cadence": "daily",
+          "availability": "ready"
+        },
+        {
+          "id": "nasdaq_100",
+          "label_ko": "Nasdaq 100",
+          "source": "fred",
+          "series_id": "NASDAQ100",
+          "unit": "index_points",
+          "cadence": "daily",
+          "availability": "ready"
+        },
+        {
+          "id": "philadelphia_sox",
+          "label_ko": "필라델피아 반도체",
+          "source": "yfinance",
+          "series_id": "^SOX",
+          "unit": "index_points",
+          "cadence": "daily",
+          "availability": "ready"
+        },
+        {
+          "id": "kospi",
+          "label_ko": "KOSPI",
+          "source": "krx",
+          "series_id": "KOSPI",
+          "unit": "index_points",
+          "cadence": "daily",
+          "availability": "pending_api_key",
+          "fallback_source": "yfinance",
+          "fallback_series_id": "^KS11",
+          "note_ko": "정본은 KRX. 키 복구 전 기존 Yahoo 프록시를 임시 폴백으로 사용 가능"
+        }
+      ]
+    }
+  }
+}

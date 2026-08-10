@@ -1,0 +1,64 @@
+{
+  "schema_version": "chokepoint-stress-v1",
+  "generated_at": "2026-08-10T06:15:41.711391+00:00",
+  "as_of": "2026-08-02",
+  "index_pct": -28.006893,
+  "worst_id": "hormuz",
+  "worst_change_pct": -66.971103,
+  "contributor_count": 5,
+  "method": "arithmetic_mean_of_chokepoints_live.metrics.all.change_pct",
+  "interpretation": "Negative means 7-day capacity is below the preceding 28-day mean; this is a stress proxy, not proof of closure.",
+  "freshness_note": "as_of is the oldest contributor date so mixed-date inputs cannot appear fresher than their least-recent component.",
+  "source": {
+    "dataset": "shipping_capacity_v1.json",
+    "upstream": "IMF PortWatch Daily Chokepoints Data",
+    "url": "https://portwatch.imf.org/"
+  },
+  "components": [
+    {
+      "id": "bab_el_mandeb",
+      "name_ko": "바벨만데브 해협",
+      "name_en": "Bab el-Mandeb Strait",
+      "as_of": "2026-08-02",
+      "change_pct": -33.859066,
+      "current_7d_mean_dwt": 908653.428571,
+      "prior_28d_mean_dwt": 1373814.035714
+    },
+    {
+      "id": "bosporus",
+      "name_ko": "보스포루스 해협",
+      "name_en": "Bosporus Strait",
+      "as_of": "2026-08-02",
+      "change_pct": -25.150825,
+      "current_7d_mean_dwt": 769630.571429,
+      "prior_28d_mean_dwt": 1028241.892857
+    },
+    {
+      "id": "hormuz",
+      "name_ko": "호르무즈 해협",
+      "name_en": "Strait of Hormuz",
+      "as_of": "2026-08-02",
+      "change_pct": -66.971103,
+      "current_7d_mean_dwt": 142535.0,
+      "prior_28d_mean_dwt": 431546.357143
+    },
+    {
+      "id": "panama",
+      "name_ko": "파나마 운하",
+      "name_en": "Panama Canal",
+      "as_of": "2026-08-02",
+      "change_pct": -9.518226,
+      "current_7d_mean_dwt": 868794.714286,
+      "prior_28d_mean_dwt": 960187.535714
+    },
+    {
+      "id": "suez",
+      "name_ko": "수에즈 운하",
+      "name_en": "Suez Canal",
+      "as_of": "2026-08-02",
+      "change_pct": -4.535244,
+      "current_7d_mean_dwt": 1516660.714286,
+      "prior_28d_mean_dwt": 1588712.714286
+    }
+  ]
+}

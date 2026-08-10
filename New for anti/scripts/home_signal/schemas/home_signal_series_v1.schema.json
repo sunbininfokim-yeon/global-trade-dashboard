@@ -1,0 +1,70 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "home_signal_series_v1.schema.json",
+  "title": "Today-signal rotating market series manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "updated_at", "pages"],
+  "properties": {
+    "schema_version": { "const": "home-signal-series-v1" },
+    "updated_at": { "type": "string", "format": "date" },
+    "pages": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["A", "B", "C", "D", "E"],
+      "properties": {
+        "A": { "$ref": "#/$defs/page" },
+        "B": { "$ref": "#/$defs/page" },
+        "C": { "$ref": "#/$defs/page" },
+        "D": { "$ref": "#/$defs/page" },
+        "E": { "$ref": "#/$defs/page" }
+      }
+    }
+  },
+  "$defs": {
+    "page": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["keyword", "label_ko", "slots"],
+      "properties": {
+        "keyword": { "type": "string", "minLength": 1 },
+        "label_ko": { "type": "string", "minLength": 1 },
+        "slots": {
+          "type": "array",
+          "minItems": 4,
+          "maxItems": 4,
+          "items": { "$ref": "#/$defs/slot" }
+        }
+      }
+    },
+    "slot": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "label_ko",
+        "source",
+        "series_id",
+        "unit",
+        "cadence",
+        "availability"
+      ],
+      "properties": {
+        "id": { "type": "string", "pattern": "^[a-z0-9_]+$" },
+        "label_ko": { "type": "string", "minLength": 1 },
+        "source": {
+          "enum": ["fred", "eia", "yfinance", "bok", "krx", "ship_and_bunker", "pending_vendor"]
+        },
+        "series_id": { "type": "string", "minLength": 1 },
+        "unit": { "type": "string", "minLength": 1 },
+        "cadence": { "enum": ["daily", "weekly"] },
+        "availability": { "enum": ["ready", "pending_api_key", "pending_source", "requires_license"] },
+        "route": { "type": "string", "minLength": 1 },
+        "source_url": { "type": "string", "format": "uri" },
+        "fallback_source": { "type": "string", "minLength": 1 },
+        "fallback_series_id": { "type": "string", "minLength": 1 },
+        "note_ko": { "type": "string", "minLength": 1 }
+      }
+    }
+  }
+}
