@@ -1,6 +1,6 @@
 {
   "schema_version": "liquidity-intel-v1",
-  "generated_at": "2026-08-11T04:52:29.966902+00:00",
+  "generated_at": "2026-08-11T09:43:54.937879+00:00",
   "model": {
     "name": "macro_liquidity_official_v1",
     "description": "QRA / Fed official liquidity + priority-reporter ARTICLES mined for liquidity indicators (FIMA, TGA, RRP, FX intervention…) — not reporter news fluff.",
@@ -96,10 +96,19 @@
         "top_indicators": [
           {
             "id": "qra",
-            "score": 7.2,
+            "score": 8.4,
             "label_ko": "QRA·순발행",
             "evidence": [
+              "GA 잔고 어떻게 해석해야 할까? [이코노미21 양영빈] 8월에 발표된 QRA(재무부 분기별 자금조달 계획)를 보면 3분기(7월~9월) 말의 TGA(재무부 일반계좌) 잔고는 9500억달",
               "[연준와처] 8월 2차 QRA(재무부 분기별 자금조달 계획) [이코노미21 양영빈] 8월 5일 미국 재무부의 2차 QRA(분기별 자금조달"
+            ]
+          },
+          {
+            "id": "tga",
+            "score": 6.5,
+            "label_ko": "TGA 재무부 일반계정",
+            "evidence": [
+              "[연준와처] TGA 잔고 어떻게 해석해야 할까? [이코노미21 양영빈] 8월에 발표된 QRA(재무부 분기별 자금조달 계획)를"
             ]
           },
           {
@@ -135,46 +144,29 @@
             ]
           },
           {
-            "id": "tga",
-            "score": 1.3,
-            "label_ko": "TGA 재무부 일반계정",
-            "evidence": [
-              "[연준와처] 연준 대차대조표 축소 방안과 TGA [이코노미21 양영빈] 케빈 워시 의장의 평소 지론은 연준의 대차대조표 정상화(축소)다. 대럴 대피(Dar"
-            ]
-          },
-          {
             "id": "fima",
             "score": 1.2,
             "label_ko": "FIMA 레포",
             "evidence": [
               "[연준와처] 베센트에 의해 소환된 FIMA [이코노미21 양영빈] 7월 31일 미국은 보유한 유로화를 매각하고 엔화를 매입하는 방식으로, 일본은 달러"
             ]
-          },
-          {
-            "id": "fed_bs",
-            "score": 1.2,
-            "label_ko": "연준 대차대조표",
-            "evidence": [
-              "[연준와처] 연준 대차대조표 축소 방안과 TGA [이코노미21 양영빈] 케빈 워시 의장의 평소 지론은 연준의 대차대조표 정상화(축소)다"
-            ]
           }
         ],
         "themes_ko": [
-          "QRA·순발행 (점수 7.2)",
+          "QRA·순발행 (점수 8.4)",
+          "TGA 재무부 일반계정 (점수 6.5)",
           "달러/엔 (점수 6.3)",
           "FOMC·금리 유동성 (점수 3.4)",
           "ESF 외환안정기금 (점수 2.3)",
-          "외환 개입 (점수 2.2)",
-          "TGA 재무부 일반계정 (점수 1.3)"
+          "외환 개입 (점수 2.2)"
         ],
         "hint_weights": {
-          "tightening": 7.2,
+          "tightening": 8.4,
+          "tga": 6.5,
           "fx_pair": 6.3,
           "fx_intervention": 4.5,
           "policy": 3.4,
-          "tga": 1.3,
-          "mixed": 1.2,
-          "fed_bs": 1.2
+          "mixed": 1.2
         },
         "reporter_signals": [
           "reporter_tightening_theme",
@@ -182,8 +174,36 @@
           "reporter_fx_intervention",
           "reporter_fima_focus"
         ],
-        "headline_ko": "[유동성 분석·양영빈] 최근 기사 핵심 지표: QRA·순발행 · 외 7개 테마",
+        "headline_ko": "[유동성 분석·양영빈] 최근 기사 핵심 지표: QRA·순발행 · 외 6개 테마",
         "per_article": [
+          {
+            "title": "[연준와처] TGA 잔고 어떻게 해석해야 할까?",
+            "url": "http://www.economy21.co.kr/news/articleView.html?idxno=1017015",
+            "published": "2026-08-11 17:26",
+            "author": "양영빈",
+            "indicators": [
+              {
+                "id": "tga",
+                "label_ko": "TGA 재무부 일반계정",
+                "mentions": 5,
+                "hint": "tga",
+                "evidence": [
+                  "[연준와처] TGA 잔고 어떻게 해석해야 할까? [이코노미21 양영빈] 8월에 발표된 QRA(재무부 분기별 자금조달 계획)를",
+                  "QRA(재무부 분기별 자금조달 계획)를 보면 3분기(7월~9월) 말의 TGA(재무부 일반계좌) 잔고는 9500억달러, 4분기(10월~12월) 말의 잔고는 8500억달러를 예상하고 있다",
+                  "의 잔고는 8500억달러를 예상하고 있다. 특히 재무부는 10월 말에는 TGA 잔고가 1조500억달러(±500억달러)로 고점에 다다른 후, 4분기 말에는 8500억달러로 2000억달러"
+                ]
+              },
+              {
+                "id": "qra",
+                "label_ko": "QRA·순발행",
+                "mentions": 1,
+                "hint": "tightening",
+                "evidence": [
+                  "GA 잔고 어떻게 해석해야 할까? [이코노미21 양영빈] 8월에 발표된 QRA(재무부 분기별 자금조달 계획)를 보면 3분기(7월~9월) 말의 TGA(재무부 일반계좌) 잔고는 9500억달"
+                ]
+              }
+            ]
+          },
           {
             "title": "[연준와처] 8월 2차 QRA(재무부 분기별 자금조달 계획)",
             "url": "http://www.economy21.co.kr/news/articleView.html?idxno=1017002",
@@ -277,44 +297,18 @@
                 ]
               }
             ]
-          },
-          {
-            "title": "[연준와처] 연준 대차대조표 축소 방안과 TGA",
-            "url": "http://www.economy21.co.kr/news/articleView.html?idxno=1016898",
-            "published": "2026-07-13 12:53",
-            "author": "양영빈",
-            "indicators": [
-              {
-                "id": "tga",
-                "label_ko": "TGA 재무부 일반계정",
-                "mentions": 1,
-                "hint": "tga",
-                "evidence": [
-                  "[연준와처] 연준 대차대조표 축소 방안과 TGA [이코노미21 양영빈] 케빈 워시 의장의 평소 지론은 연준의 대차대조표 정상화(축소)다. 대럴 대피(Dar"
-                ]
-              },
-              {
-                "id": "fed_bs",
-                "label_ko": "연준 대차대조표",
-                "mentions": 1,
-                "hint": "fed_bs",
-                "evidence": [
-                  "[연준와처] 연준 대차대조표 축소 방안과 TGA [이코노미21 양영빈] 케빈 워시 의장의 평소 지론은 연준의 대차대조표 정상화(축소)다"
-                ]
-              }
-            ]
           }
         ],
         "finance_panel_fields": {
           "reporter_liquidity_primary": "qra",
           "reporter_liquidity_primary_ko": "QRA·순발행",
           "reporter_liquidity_themes": [
-            "QRA·순발행 (점수 7.2)",
+            "QRA·순발행 (점수 8.4)",
+            "TGA 재무부 일반계정 (점수 6.5)",
             "달러/엔 (점수 6.3)",
             "FOMC·금리 유동성 (점수 3.4)",
             "ESF 외환안정기금 (점수 2.3)",
-            "외환 개입 (점수 2.2)",
-            "TGA 재무부 일반계정 (점수 1.3)"
+            "외환 개입 (점수 2.2)"
           ],
           "reporter_liquidity_signals": [
             "reporter_tightening_theme",
@@ -322,7 +316,7 @@
             "reporter_fx_intervention",
             "reporter_fima_focus"
           ],
-          "reporter_liquidity_headline_ko": "[유동성 분석·양영빈] 최근 기사 핵심 지표: QRA·순발행 · 외 7개 테마"
+          "reporter_liquidity_headline_ko": "[유동성 분석·양영빈] 최근 기사 핵심 지표: QRA·순발행 · 외 6개 테마"
         }
       }
     ],
@@ -336,12 +330,12 @@
       "reporter_liquidity_primary": "qra",
       "reporter_liquidity_primary_ko": "QRA·순발행",
       "reporter_liquidity_themes": [
-        "QRA·순발행 (점수 7.2)",
+        "QRA·순발행 (점수 8.4)",
+        "TGA 재무부 일반계정 (점수 6.5)",
         "달러/엔 (점수 6.3)",
         "FOMC·금리 유동성 (점수 3.4)",
         "ESF 외환안정기금 (점수 2.3)",
-        "외환 개입 (점수 2.2)",
-        "TGA 재무부 일반계정 (점수 1.3)"
+        "외환 개입 (점수 2.2)"
       ],
       "reporter_liquidity_signals": [
         "reporter_tightening_theme",
@@ -349,12 +343,12 @@
         "reporter_fx_intervention",
         "reporter_fima_focus"
       ],
-      "reporter_liquidity_headline_ko": "[유동성 분석·양영빈] 최근 기사 핵심 지표: QRA·순발행 · 외 7개 테마"
+      "reporter_liquidity_headline_ko": "[유동성 분석·양영빈] 최근 기사 핵심 지표: QRA·순발행 · 외 6개 테마"
     }
   },
   "ticker_items": [
     {
-      "id": "qra-50200939047",
+      "id": "qra-632169240973",
       "published_at": null,
       "source": {
         "id": "us_treasury",
@@ -387,7 +381,7 @@
       "event_type": "qra"
     },
     {
-      "id": "fed-455713404018",
+      "id": "fed-786765968760",
       "published_at": "Wed, 29 Jul 2026 18:00:00 GMT",
       "source": {
         "id": "federal_reserve",
@@ -418,7 +412,7 @@
       "event_type": "fomc"
     },
     {
-      "id": "fed-234628345888",
+      "id": "fed-225882432768",
       "published_at": "Tue, 14 Jul 2026 18:00:00 GMT",
       "source": {
         "id": "federal_reserve",
@@ -449,7 +443,7 @@
       "event_type": "press"
     },
     {
-      "id": "liq-ind-649305611154",
+      "id": "liq-ind-90012414349",
       "published_at": null,
       "source": {
         "id": "reporter_liquidity",
@@ -457,15 +451,15 @@
         "region": "korea",
         "slant": null
       },
-      "url": "http://www.economy21.co.kr/news/articleView.html?idxno=1017002",
+      "url": "http://www.economy21.co.kr/news/articleView.html?idxno=1017015",
       "category": "liquidity_indicator",
       "commodities": [],
       "title": {
-        "original": "QRA·순발행 · 달러/엔 · FOMC·금리 유동성",
+        "original": "QRA·순발행 · TGA 재무부 일반계정 · 달러/엔",
         "original_lang": "ko",
-        "ko": "[유동성지표·양영빈] QRA·순발행 · 달러/엔 · FOMC·금리 유동성"
+        "ko": "[유동성지표·양영빈] QRA·순발행 · TGA 재무부 일반계정 · 달러/엔"
       },
-      "summary": "[유동성 분석·양영빈] 최근 기사 핵심 지표: QRA·순발행 · 외 7개 테마",
+      "summary": "[유동성 분석·양영빈] 최근 기사 핵심 지표: QRA·순발행 · 외 6개 테마",
       "scores": {
         "commodity": 0,
         "diplomacy": 0,
@@ -485,10 +479,19 @@
       "indicators": [
         {
           "id": "qra",
-          "score": 7.2,
+          "score": 8.4,
           "label_ko": "QRA·순발행",
           "evidence": [
+            "GA 잔고 어떻게 해석해야 할까? [이코노미21 양영빈] 8월에 발표된 QRA(재무부 분기별 자금조달 계획)를 보면 3분기(7월~9월) 말의 TGA(재무부 일반계좌) 잔고는 9500억달",
             "[연준와처] 8월 2차 QRA(재무부 분기별 자금조달 계획) [이코노미21 양영빈] 8월 5일 미국 재무부의 2차 QRA(분기별 자금조달"
+          ]
+        },
+        {
+          "id": "tga",
+          "score": 6.5,
+          "label_ko": "TGA 재무부 일반계정",
+          "evidence": [
+            "[연준와처] TGA 잔고 어떻게 해석해야 할까? [이코노미21 양영빈] 8월에 발표된 QRA(재무부 분기별 자금조달 계획)를"
           ]
         },
         {
@@ -513,14 +516,6 @@
           "label_ko": "ESF 외환안정기금",
           "evidence": [
             "보유한 외환안정기금(Exchang Stabilization Fund, ESF)의 유로화와 엔화를 통한 것이다. 일본은 전세계에서 최대 미국채권 보유국으로 엔화 절상이 필요할 때는 보통"
-          ]
-        },
-        {
-          "id": "fx_intervention",
-          "score": 2.2,
-          "label_ko": "외환 개입",
-          "evidence": [
-            "를 매입하는 방식으로, 일본은 달러를 매각하고 엔화를 매입하는 방식으로 외환 시장에 개입했다. 미국이 외환 시장에 개입하는 방법은 재무부가 보유한 외환안정기금(Exchang Stabilizatio"
           ]
         }
       ]
@@ -556,7 +551,7 @@
     "ticker_items": 4,
     "qra_parsed": true,
     "reporter_analyses": 1,
-    "reporter_indicator_hits": 8,
+    "reporter_indicator_hits": 7,
     "sources_ok": 4,
     "sources_failed": 0
   }
