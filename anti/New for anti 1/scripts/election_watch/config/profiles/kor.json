@@ -1,0 +1,97 @@
+{
+  "iso3": "KOR",
+  "as_of": "2026-08-08",
+  "priority_tier": 2,
+  "region": "east_asia",
+  "system": "presidential",
+  "map_spectrum": "progressive",
+  "head": {
+    "role": "president",
+    "name_en": "Lee Jae Myung",
+    "name_ko": "이재명",
+    "party_id": "dpk",
+    "spectrum": "progressive",
+    "since": "2025-06-04",
+    "sources": [
+      {
+        "org": "Presidential office / media cross-check",
+        "url": "https://en.wikipedia.org/wiki/Lee_Jae-myung",
+        "note": "Elected 2025 snap presidential election after Yoon removal; inaugurated 2025-06-04"
+      }
+    ]
+  },
+  "prime_minister": {
+    "name_en": "Han Seong-sook",
+    "name_ko": "한성숙",
+    "hanja": "韓聖淑",
+    "since": "2026-07-01",
+    "title": "제50대 국무총리",
+    "party_id": null,
+    "party_note": "무소속 관행(총리) — 이재명 정부 내각",
+    "confidence": "high",
+    "sources": [
+      {
+        "org": "국무조정실",
+        "url": "https://www.opm.go.kr/opm/prime/profile.do"
+      }
+    ]
+  },
+  "parties": [
+    {
+      "id": "dpk",
+      "abbr": "DPK",
+      "name_en": "Democratic Party of Korea",
+      "name_ko": "더불어민주당",
+      "role": "ruling",
+      "spectrum": "progressive"
+    },
+    {
+      "id": "ppp",
+      "abbr": "PPP",
+      "name_en": "People Power Party",
+      "name_ko": "국민의힘",
+      "role": "main_opposition",
+      "spectrum": "conservative"
+    },
+    {
+      "id": "rkp",
+      "abbr": "RKP",
+      "name_en": "Rebuilding Korea Party",
+      "name_ko": "조국혁신당",
+      "role": "other",
+      "spectrum": "progressive"
+    }
+  ],
+  "legislature": {
+    "chambers": ["national_assembly"],
+    "seats_nominal": 300,
+    "assembly_number": 22,
+    "member_roster_source": {
+      "id": "wiki_22nd_na",
+      "extract_file": "extracted/kor_assembly.json",
+      "status": "extracted",
+      "composition_date": "2026-07-16"
+    }
+  },
+  "subnational": {
+    "local_election_file": "extracted/kor_local_2026.json",
+    "note": "9th nationwide local elections 2026-06-03"
+  },
+  "elections": {
+    "calendar_file": "calendars/kor_2026.json"
+  },
+  "polls": {
+    "admit": ["presidential_job_approval"],
+    "status": "gallup_primary_realmeter_secondary"
+  },
+  "party_leadership": {
+    "policy": "ruling_plus_main_opposition",
+    "extract_file": "extracted/kor_party_leadership.json",
+    "status": "live_dpk_ongoing_ppp_incumbent"
+  },
+  "ingest": {
+    "mode": "document_text_extract",
+    "wave": "2_kor_deep",
+    "depth": "assembly_local_poll_calendar_party_leadership"
+  }
+}

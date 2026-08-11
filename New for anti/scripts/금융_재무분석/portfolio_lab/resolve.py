@@ -62,12 +62,38 @@ def currency_for_yahoo(yahoo: str) -> str:
         return "KRW"
     if u.endswith(".T"):
         return "JPY"
+    # KR indices are point levels in KRW terms — never treat as USD (would * USDKRW).
+    if u.startswith("^"):
+        if u in {"^KS11", "^KQ11", "^KS200"} or u.startswith("^KS") or u.startswith("^KQ"):
+            return "KRW"
+        return "USD"
     if u.endswith("=X"):
         if "KRW" in u:
             return "KRW"
         if "JPY" in u and not u.startswith("JPY"):
             return "JPY"
+        # Pair quotes (EURUSD=X, GBPUSD=X, …) are treated as USD-leg prices so
+        # USD→KRW conversion yields base-currency units of the pair's base cash.
         return "USD"
+    # Common non-US listings (dynamic passthrough). Missing FX path still fails loudly
+    # in returns._to_base_price rather than silently treating them as USD.
+    _SUFFIX_CCY = {
+        ".DE": "EUR",
+        ".PA": "EUR",
+        ".AS": "EUR",
+        ".BR": "EUR",
+        ".MI": "EUR",
+        ".MC": "EUR",
+        ".L": "GBP",
+        ".HK": "HKD",
+        ".SS": "CNY",
+        ".SZ": "CNY",
+        ".AX": "AUD",
+        ".TO": "CAD",
+    }
+    for suf, ccy in _SUFFIX_CCY.items():
+        if u.endswith(suf):
+            return ccy
     return "USD"
 
 
@@ -218,16 +244,18 @@ def resolve_portfolio(
         rows.append((inst, val))
         values.append(val)
 
-    # weight-only portfolio
+    # weight-only portfolio — normalize by gross (|w|), same convention as value path.
+    # Net-sum renormalization breaks with shorts (0.6/-0.4 → 3/-2; 0.5/-0.5 → 0/0).
     if rows and all(v is None for v in values):
-        wsum = sum(v for _, v in rows)
+        gross = sum(abs(v) for _, v in rows)
         for inst, w in rows:
             resolved.append(
                 {
                     "query": inst.name_ko,
                     "instrument": inst.to_dict(),
                     "value": None,
-                    "weight": (w / wsum) if wsum else 0.0,
+                    "weight": (w / gross) if gross else 0.0,
+                    "side": "short" if w < 0 else "long",
                 }
             )
         return resolved, unresolved

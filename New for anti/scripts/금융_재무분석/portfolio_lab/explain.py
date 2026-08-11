@@ -199,7 +199,46 @@ def build_ui_copy(
             "비중을 옮길 때는 수수료·세금·환전 비용이 있으니, "
             "제안 %를 한 번에 맞추기보다 큰 쏠림부터 줄이는 편이 현실적입니다."
         ),
+        "size_note_ko": _size_note_ko(report),
     }
+
+
+def _size_note_ko(report: dict[str, Any]) -> str | None:
+    guide = report.get("size_guide") or {}
+    parts = []
+    if guide:
+        lo, hi = guide.get("names_min"), guide.get("names_max")
+        label = guide.get("label_ko") or guide.get("bucket")
+        n = (guide.get("vs_actual") or {}).get("n_names")
+        parts.append(
+            f"규모 '{label}' 구간 권장 종목 수 약 {lo}–{hi}개 "
+            f"(현재 {n}개 · 휴리스틱, MPT 공식 아님)."
+        )
+        if guide.get("prefer_etf"):
+            parts.append("소액 구간이라 ETF·소수 종목을 우선하는 편이 실무적입니다.")
+    trunc = report.get("positions_truncated_ko")
+    if trunc:
+        parts.append(trunc)
+    return " ".join(parts) if parts else None
+
+
+def _size_note_en(report: dict[str, Any]) -> str | None:
+    guide = report.get("size_guide") or {}
+    parts = []
+    if guide:
+        lo, hi = guide.get("names_min"), guide.get("names_max")
+        label = guide.get("label_en") or guide.get("bucket")
+        n = (guide.get("vs_actual") or {}).get("n_names")
+        parts.append(
+            f"Size band '{label}': about {lo}–{hi} names suggested "
+            f"(you have {n}; heuristic, not an MPT formula)."
+        )
+        if guide.get("prefer_etf"):
+            parts.append("At this size, favoring ETFs and fewer single names is practical.")
+    trunc = report.get("positions_truncated_en")
+    if trunc:
+        parts.append(trunc)
+    return " ".join(parts) if parts else None
 
 
 def build_ui_copy_en(
@@ -381,6 +420,7 @@ def build_ui_copy_en(
             "Moving weights costs fees, taxes, and FX spreads — so trimming the biggest "
             "concentrations first usually beats chasing every suggested percent in one go."
         ),
+        "size_note_en": _size_note_en(report),
     }
 
 
@@ -638,6 +678,7 @@ def build_ui_copy_basic_ko(
             "비중을 옮길 때는 수수료·세금·환전 비용이 있으니, "
             "제안 %를 한 번에 맞추기보다 큰 쏠림과 현금 밴드부터 맞추는 편이 실무적입니다."
         ),
+        "size_note_ko": _size_note_ko(report),
     }
 
 
@@ -851,4 +892,5 @@ def build_ui_copy_basic_en(
             "Moving weights costs fees, taxes, and FX spreads — so fixing cash-band gaps "
             "and the biggest concentrations usually beats chasing every suggested percent."
         ),
+        "size_note_en": _size_note_en(report),
     }

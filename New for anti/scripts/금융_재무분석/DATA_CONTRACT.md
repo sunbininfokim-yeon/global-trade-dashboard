@@ -23,6 +23,40 @@ UI는 숫자 객체와 함께 카피 블록을 우선 렌더하세요.
 | `stress` | 과거 급락 구간에 현재 비중 대입 (`label_ko` / `label_en`) |
 | `advice` | HRP 조절 방향 (`no_expected_return: true`, `notes_ko` / `notes_en`) |
 | `disclaimer_ko` / `disclaimer_en` | 고지 |
+| `size_guide` | 개인 규모 구간 휴리스틱 (`aum_krw`, `bucket`, `names_min`/`max`, `prefer_etf`, `vs_actual`) — MPT 종목수 공식 아님 |
+| `positions_truncated_ko` / `positions_truncated_en` | 상위 `MAX_NAMES`(기본 20) 절단 경고 문구 (없으면 null) |
+| `input_normalize` | `max_names`, `aum_krw`, `residual_cash_added`, `truncated_positions[]` |
+
+## 입력 → 정규화 (엔진)
+
+포트폴리오 JSON 선택 필드:
+
+| 필드 | 설명 |
+|------|------|
+| `total_value` 또는 `aum_krw` | 선택. 비어 있거나 0이면 Σ\|position.value\| |
+| 합 < 총액 | 잔여 → 원화 현금 (`원화` / `cash:krw`) merge |
+| 합 > 총액 | 파이프라인 에러 (silent drop 없음) |
+
+처리 순서: 잔여 현금 → `MAX_NAMES=20` 절단 (`portfolio_lab/normalize.py`).  
+채권·금 등 비주식 라인도 20캡·공분산에 포함.
+
+### size_guide 스키마
+
+```json
+{
+  "aum_krw": 50000000,
+  "bucket": "standard",
+  "label_ko": "확대",
+  "label_en": "Standard",
+  "names_min": 8,
+  "names_max": 20,
+  "prefer_etf": false,
+  "footnote_ko": "규모 구간 휴리스틱. MPT 종목수 공식 아님.",
+  "vs_actual": { "n_names": 12, "status": "ok" }
+}
+```
+
+`vs_actual.status`: `ok` \| `too_many` \| `too_few`.
 
 ## basic vs expert
 
@@ -40,6 +74,7 @@ UI는 숫자 객체와 함께 카피 블록을 우선 렌더하세요.
 - `risk_contribution_title_*` — 계좌 흔들림 집중도 / Account-swing concentration
 - `moves_title_*` — 비중 조정 제안 / Suggested weight moves
 - `glossary_note_ko` / `glossary_note_en` — VaR·Sharpe는 expert 모드 안내
+- `size_note_ko` / `size_note_en` — 규모 구간·20종 절단 요약 (없을 수 있음)
 - 그 외 expert와 평행: `how_to_read_*`, `clusters_plain_*`, `moves_up_*` / `moves_down_*`, `footer_*`, `rebalance_note_*`
 
 ## ui_copy_ko / ui_copy_en (expert 화면 권장)
@@ -57,6 +92,7 @@ UI는 숫자 객체와 함께 카피 블록을 우선 렌더하세요.
 - `clusters_plain_*` / `currency_plain_*` / `stress_plain_*`
 - `moves_up_*` / `moves_down_*` — 비중 조절 문장
 - `footer_*` / `rebalance_note_*`
+- `size_note_ko` / `size_note_en` — 규모 구간·절단 요약 (optional one-liner; 없으면 null)
 
 ## 자동완성
 

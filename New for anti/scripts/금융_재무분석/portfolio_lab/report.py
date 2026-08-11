@@ -16,6 +16,7 @@ from .explain import (
     build_ui_copy_basic_ko,
     build_ui_copy_en,
 )
+from .normalize import MAX_NAMES, build_size_guide
 from .risk import portfolio_risk_bundle
 from .structure import check_profile, corr_clusters, currency_exposure, stress_windows
 
@@ -43,10 +44,13 @@ def build_report(
     unresolved: list[str] | None = None,
     risk_profile_id: str = "balanced",
     risk_profile: dict[str, Any] | None = None,
+    normalize_meta: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     total_value = None
     if positions and all(p.get("value") is not None for p in positions):
         total_value = sum(abs(float(p["value"])) for p in positions)
+    # Analyzed sleeve for VaR KRW (weights renormalize on kept names after truncate).
+    # size_guide / input_normalize keep declared or pre-truncate book AUM.
 
     short_rets = rets.iloc[-252:] if len(rets) >= 60 else rets
     long_rets = rets.copy()
@@ -184,6 +188,52 @@ def build_report(
         notes.append("금·일본국채·일부 레버리지는 ETF/현물 프록시로 계산했습니다.")
         notes_en.append("Gold, JGBs, and some leverage sleeves use ETF/spot proxies.")
 
+    norm = normalize_meta or {}
+    size_guide = norm.get("size_guide")
+    if size_guide is None and total_value is not None:
+        size_guide = build_size_guide(float(total_value), n_names=len(positions))
+    elif size_guide is not None:
+        # Refresh vs_actual against resolved unique count (after id merge).
+        size_guide = dict(size_guide)
+        size_guide["vs_actual"] = {
+            "n_names": len(positions),
+            "status": (
+                "too_few"
+                if len(positions) < int(size_guide.get("names_min") or 0)
+                else (
+                    "too_many"
+                    if len(positions) > int(size_guide.get("names_max") or 10**9)
+                    else "ok"
+                )
+            ),
+        }
+    for n in norm.get("notes_ko") or []:
+        notes.append(n)
+    for n in norm.get("notes_en") or []:
+        notes_en.append(n)
+    if size_guide:
+        sg_status = (size_guide.get("vs_actual") or {}).get("status")
+        n_act = (size_guide.get("vs_actual") or {}).get("n_names")
+        lo, hi = size_guide.get("names_min"), size_guide.get("names_max")
+        if sg_status == "too_many":
+            notes.append(
+                f"규모 가이드({size_guide.get('label_ko')}): 현재 {n_act}종 · 권장 {lo}–{hi} "
+                f"— 통합·ETF 축소를 검토하세요."
+            )
+            notes_en.append(
+                f"Size guide ({size_guide.get('label_en')}): {n_act} names vs "
+                f"suggested {lo}–{hi} — consider consolidating."
+            )
+        elif sg_status == "too_few":
+            notes.append(
+                f"규모 가이드({size_guide.get('label_ko')}): 현재 {n_act}종 · 권장 {lo}–{hi} "
+                f"— 분산(자산군·ETF) 여지를 볼 수 있습니다."
+            )
+            notes_en.append(
+                f"Size guide ({size_guide.get('label_en')}): {n_act} names vs "
+                f"suggested {lo}–{hi} — room to diversify across sleeves/ETFs."
+            )
+
     shrink = float(getattr(cov_l, "attrs", {}).get("shrinkage", np.nan))
 
     report: dict[str, Any] = {
@@ -264,6 +314,20 @@ def build_report(
             "n_obs": int(len(rets)),
             "start": str(rets.index.min().date()) if len(rets) else None,
             "end": str(rets.index.max().date()) if len(rets) else None,
+            "max_names": int(norm.get("max_names") or MAX_NAMES),
+            "residual_cash_added": norm.get("residual_cash_added"),
+            "total_was_inferred": norm.get("total_was_inferred"),
+            "truncated_positions": norm.get("truncated_positions") or [],
+        },
+        "size_guide": size_guide,
+        "positions_truncated_ko": norm.get("positions_truncated_ko"),
+        "positions_truncated_en": norm.get("positions_truncated_en"),
+        "input_normalize": {
+            "max_names": int(norm.get("max_names") or MAX_NAMES),
+            "aum_krw": norm.get("aum_krw"),
+            "total_was_inferred": norm.get("total_was_inferred"),
+            "residual_cash_added": norm.get("residual_cash_added") or 0.0,
+            "truncated_positions": norm.get("truncated_positions") or [],
         },
     }
     report["ui_copy_ko"] = build_ui_copy(

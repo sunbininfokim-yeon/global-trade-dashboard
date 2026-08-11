@@ -45,6 +45,7 @@ python3 run_pipeline.py --portfolio samples/demo_portfolio.json --cache-only
 
 ```text
 portfolio JSON
+  → normalize (optional total_value → residual KRW cash; top MAX_NAMES=20 by |value|)
   → resolve (alias → canonical id → Yahoo symbol)
   → prices (Yahoo daily → Stooq CSV fallback; csv + .meta.json cache)
   → returns (base currency 통일)
@@ -57,6 +58,46 @@ portfolio JSON
 ## 입력 포맷
 
 `samples/demo_portfolio.json` 참고. 각 포지션은 `query`(티커·한글명·종목코드) + `value`(원화 평가액) 또는 `weight`.
+
+### 총액(AUM) — 선택
+
+| 필드 | 설명 |
+|------|------|
+| `total_value` 또는 `aum_krw` | 계좌 총액(원화). **생략·null·0**이면 포지션 `\|value\|` 합으로 채움 |
+| 합 < 총액 | 잔여를 **원화 현금**(`query: 원화` / `cash:krw`)으로 자동 배정(기존 현금 줄에 합침) |
+| 합 > 총액 | **에러** (`PortfolioNormalizeError`) — 조용히 자르지 않음 |
+
+```json
+{
+  "total_value": 10000000,
+  "positions": [
+    { "query": "엔비디아", "value": 7000000 }
+  ]
+}
+```
+→ 잔여 300만원이 원화 현금으로 들어갑니다.
+
+정규화 순서는 **(1) 잔여 현금 배정 → (2) 상위 `MAX_NAMES` 절단** 입니다.  
+상수 위치: `portfolio_lab/normalize.py` 의 **`MAX_NAMES = 20`** (30 상향 시 이 값만 바꾸면 됨 · Claude UI 입력 한도와 동기).
+
+절단: 포지션 수 > 20이면 `\|value\|`(또는 weight mode는 `\|weight\|`) **큰 순 20개**만 분석.  
+잘린 줄은 `data_quality.truncated_positions` / `positions_truncated_ko|en`에 기록하며, 가짜 ‘기타’ 시계열로 넣지 않습니다. 원화 현금이 크면 그대로 상위권에 남습니다.
+
+### 규모 구간 가이드 (개인 100만~5억 휴리스틱)
+
+정규화 후 총액으로 `size_guide` 를 리포트에 넣습니다 (MPT 종목수 공식 아님).
+
+| bucket | 대략 구간 | 권장 라인 수 |
+|--------|-----------|--------------|
+| micro | < 500만 | 3–8 · ETF 우선 |
+| small | 500만–3천만 | 5–15 |
+| standard | 3천만–1억 | 8–20 |
+| large | 1억–5억 | 10–30 |
+| overload | > 5억 | 참고 구간 밖 주석 |
+
+### 채권·원자재
+
+레지스트리/`asset_class: bond`·commodity 라인(미국채권 AGG, 일본국채, 금 등)도 **종목 수 20 캡·공분산·HRP에 동일 포함**됩니다. “주식 전용” 모델이 아닙니다.
 
 ### 종목 해석 (registry + Yahoo passthrough)
 
@@ -97,3 +138,14 @@ python3 run_pipeline.py --suggest "삼성전"
 | **expert** | `ui_copy_ko` / `ui_copy_en` | 변동성·샤프·VaR 등 지표명 포함. |
 
 로케일만 골라 같은 카드 스키마를 쓰면 됩니다. 상세 필드 목록은 `DATA_CONTRACT.md` 참고.
+
+## Golden tests
+
+고정 샘플 포트 + `cache/prices` 캐시로 엔진을 돌린 뒤, 핵심 지표를 `tests/golden/*.json`과 비교합니다. 브라우저가 SoT이면 브라우저 export 숫자로 golden을 갱신하세요.
+
+```bash
+cd "New for anti/scripts/금융_재무분석"
+python3 -m unittest discover -s tests -v
+```
+
+상세: `tests/golden/README.md`.

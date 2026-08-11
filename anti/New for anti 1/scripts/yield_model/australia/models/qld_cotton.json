@@ -1,0 +1,245 @@
+{
+  "key": "qld_cotton",
+  "label": "Queensland cotton lint",
+  "label_ko": "QLD 면화",
+  "crop": "cotton_lint",
+  "state": "Queensland",
+  "doc": "Regions/호주/동부_QLD_NSW/면화/면화_상세분석_및_수식.md",
+  "caveat": "ABARES yield is based on harvested area and mixes irrigated and dryland systems. This is a screening model until water allocations and planted area are modelled separately.",
+  "target": {
+    "variable": "yield_kg_ha",
+    "source": "ABARES Australian Crop Report state data",
+    "area_basis": "harvested",
+    "estimated_years": [
+      2023,
+      2024,
+      2025,
+      2026
+    ]
+  },
+  "trained_years": [
+    1995,
+    2026
+  ],
+  "n_seasons": 32,
+  "detrended_residual_cv": 0.1444232783368415,
+  "anomaly": {
+    "window_years": 20,
+    "minimum_prior_years": 10,
+    "current_year_excluded": true
+  },
+  "feature_sets": {
+    "weather": [
+      "rain_flowering_z20",
+      "heat_excess_flowering_z20",
+      "harvest_rain_z20"
+    ],
+    "weather_soil": [
+      "rain_flowering_z20",
+      "heat_excess_flowering_z20",
+      "harvest_rain_z20",
+      "sm_preseason_z20",
+      "sm_flowering_z20",
+      "heat_dry_stress_z20"
+    ],
+    "weather_soil_drivers": [
+      "rain_flowering_z20",
+      "heat_excess_flowering_z20",
+      "harvest_rain_z20",
+      "sm_preseason_z20",
+      "sm_flowering_z20",
+      "heat_dry_stress_z20",
+      "oni_flowering_z20"
+    ]
+  },
+  "selected_feature_set": "weather_soil_drivers",
+  "selected_features": [
+    "rain_flowering_z20",
+    "heat_excess_flowering_z20",
+    "harvest_rain_z20",
+    "sm_preseason_z20",
+    "sm_flowering_z20",
+    "heat_dry_stress_z20",
+    "oni_flowering_z20"
+  ],
+  "selection_note": "Lowest recent forward RMSE among pre-registered ablations that clear 10% skill over both all and recent folds. If none clear, the best diagnostic challenger is retained but trend-only is the operational choice. Reported skill is not a nested post-selection estimate.",
+  "minimum_operational_skill": 0.1,
+  "operational_choice": "trend_only",
+  "beats_trend": false,
+  "low_confidence": true,
+  "trend": {
+    "form": "log_linear",
+    "log_poly_coef": [
+      0.017368645302365184,
+      -27.433752598722386
+    ]
+  },
+  "scaler": {
+    "mean": [
+      0.06802181267776067,
+      0.18360107820095112,
+      -0.14428163259052076,
+      -0.10168351314631177,
+      0.1293731704614065,
+      0.18274696697545353,
+      -0.033390318791947524
+    ],
+    "scale": [
+      1.2231711194423702,
+      1.1721497221713741,
+      0.9078630429964055,
+      1.253351651248596,
+      1.279533938362649,
+      1.1766752722082923,
+      1.0601214593661432
+    ]
+  },
+  "ridge": {
+    "alpha": 2.030917620904737,
+    "coef": [
+      0.061235345127512934,
+      -0.03069652733620282,
+      0.003803841041916084,
+      -0.035936480569006425,
+      -0.0834065465256203,
+      -0.028171790892264178,
+      -0.011540534961709465
+    ],
+    "intercept": 1.6079332410302185e-15
+  },
+  "top_effects": [
+    {
+      "feature": "sm_flowering_z20",
+      "effect_pct_per_sd": -8.0
+    },
+    {
+      "feature": "rain_flowering_z20",
+      "effect_pct_per_sd": 6.31
+    },
+    {
+      "feature": "sm_preseason_z20",
+      "effect_pct_per_sd": -3.53
+    },
+    {
+      "feature": "heat_excess_flowering_z20",
+      "effect_pct_per_sd": -3.02
+    },
+    {
+      "feature": "heat_dry_stress_z20",
+      "effect_pct_per_sd": -2.78
+    },
+    {
+      "feature": "oni_flowering_z20",
+      "effect_pct_per_sd": -1.15
+    },
+    {
+      "feature": "harvest_rain_z20",
+      "effect_pct_per_sd": 0.38
+    }
+  ],
+  "uncertainty": {
+    "basis": "absolute errors from forward-chaining predictions",
+    "absolute_error_q68_kg_ha": 397.4200898568622,
+    "absolute_error_q95_kg_ha": 894.9251719532954,
+    "n_forward_errors": 12
+  },
+  "validation": {
+    "weather": {
+      "rmse": 392.56709697487423,
+      "mae": 292.10543980653097,
+      "baseline_rmse": 392.5255387502046,
+      "skill_vs_trend": -0.00010587393829708525,
+      "recent_rmse": 382.83974664809944,
+      "recent_baseline_rmse": 382.83076436363353,
+      "recent_skill_vs_trend": -2.346280733434014e-05,
+      "detrended_r2": -0.008493241389009532,
+      "recent_trend_bias": 104.52158388467426,
+      "features": [
+        "rain_flowering_z20",
+        "heat_excess_flowering_z20",
+        "harvest_rain_z20"
+      ],
+      "fold_years": [
+        2015,
+        2016,
+        2017,
+        2018,
+        2019,
+        2020,
+        2021,
+        2022,
+        2023,
+        2024,
+        2025,
+        2026
+      ]
+    },
+    "weather_soil": {
+      "rmse": 400.4906822262497,
+      "mae": 310.794128154159,
+      "baseline_rmse": 392.5255387502046,
+      "skill_vs_trend": -0.02029203883499142,
+      "recent_rmse": 391.91319970163454,
+      "recent_baseline_rmse": 382.83076436363353,
+      "recent_skill_vs_trend": -0.02372441345746701,
+      "detrended_r2": -0.04961500798782126,
+      "recent_trend_bias": 104.52158388467426,
+      "features": [
+        "rain_flowering_z20",
+        "heat_excess_flowering_z20",
+        "harvest_rain_z20",
+        "sm_preseason_z20",
+        "sm_flowering_z20",
+        "heat_dry_stress_z20"
+      ],
+      "fold_years": [
+        2015,
+        2016,
+        2017,
+        2018,
+        2019,
+        2020,
+        2021,
+        2022,
+        2023,
+        2024,
+        2025,
+        2026
+      ]
+    },
+    "weather_soil_drivers": {
+      "rmse": 385.0790135827574,
+      "mae": 304.03384900212683,
+      "baseline_rmse": 392.5255387502046,
+      "skill_vs_trend": 0.018970804272141928,
+      "recent_rmse": 370.8933371892407,
+      "recent_baseline_rmse": 382.83076436363353,
+      "recent_skill_vs_trend": 0.031181995507168825,
+      "detrended_r2": 0.029613154567280753,
+      "recent_trend_bias": 104.52158388467426,
+      "features": [
+        "rain_flowering_z20",
+        "heat_excess_flowering_z20",
+        "harvest_rain_z20",
+        "sm_preseason_z20",
+        "sm_flowering_z20",
+        "heat_dry_stress_z20",
+        "oni_flowering_z20"
+      ],
+      "fold_years": [
+        2015,
+        2016,
+        2017,
+        2018,
+        2019,
+        2020,
+        2021,
+        2022,
+        2023,
+        2024,
+        2025,
+        2026
+      ]
+    }
+  }
+}

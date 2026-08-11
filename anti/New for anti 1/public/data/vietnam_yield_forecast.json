@@ -1,0 +1,73 @@
+{
+  "generated_at": "2026-08-05T12:02:30.612103+00:00",
+  "season": 2026,
+  "country": "Vietnam",
+  "forecast_available": true,
+  "source_note": "Weather: NASA POWER daily (GWETROOT, TEMP, precip, radiation), ET0 FAO-56. ENSO: NOAA CPC ONI. Mekong WS labels: GSO Yearbook Mekong-region spring paddy (2018–2023) + MTN provincial Đông Xuân (2017/2024); pre-2017 FAOSTAT national rice scaled to WS overlap (season imperfect). Coffee/RRD still provisional unless labels_official override. Salinity: coastal distance × dry-season hydrology proxy (not EC). GEE CHIRPS/SMAP/S1 and MRC discharge not executed in this build.",
+  "methodology_note": "T1 models from Regions/베트남 master: Mekong WS rice (salt/ENSO), Central Highlands robusta (WD_eff + Kath), Red River rice (flood/typhoon rain proxy). Ridge on log-yield residual vs trend; read labels_provisional / labels_season_imperfect on each region.",
+  "regions": {
+    "mekong_rice_ws": {
+      "label": "Mekong Delta Winter–Spring rice",
+      "label_ko": "메콩 삼각주 동춘(건기) 쌀",
+      "unit": "kg/ha",
+      "point": 7196.5,
+      "range_68": [
+        6881.6,
+        7511.4
+      ],
+      "range_95": [
+        6579.3,
+        7813.8
+      ],
+      "trend": 7120.8,
+      "weather_effect_pct": 1.06,
+      "last_actual": {
+        "year": 2024,
+        "yield": 7231.0,
+        "provisional": false
+      },
+      "skill": {
+        "beats_trend": false,
+        "recent_skill_vs_trend": -0.03576929686994412,
+        "low_confidence": true,
+        "sigma_kg_ha": 314.9138122925518
+      },
+      "weather_through": "2026-07-31",
+      "critical_window_observed": 1.0,
+      "season_complete": true,
+      "provenance": {
+        "doc": "Regions/베트남/베트남_쌀_커피_상세수식.md §1 + 메콩삼각주",
+        "caveat": "Labels: GSO Yearbook Mekong-region spring paddy (2018–2023) + MTN GSO-style provincial Đông Xuân (2017/2024); pre-2017 is FAOSTAT national rice scaled to WS overlap — not true province×WS. salt_proxy is not measured EC; no MRC discharge, no Sentinel-1 area.",
+        "non_weather_drivers": "Early planting adaptation, canal sluice management, shrimp–rice conversion, and export market prices move Mekong WS area and intensity independently of weather.",
+        "label_source": "gso_style_mtn_mekong13_dong_xuan_area_weighted (+3 other sources; see training CSV)",
+        "labels_provisional": false,
+        "labels_season_imperfect": true,
+        "salinity_is_proxy": true,
+        "gee_used": false
+      },
+      "crops": {
+        "rice": {
+          "label_ko": "메콩 삼각주 동춘(건기) 쌀",
+          "unit": "kg/ha",
+          "point": 7196.5,
+          "range_68": [
+            6881.6,
+            7511.4
+          ],
+          "range_95": [
+            6579.3,
+            7813.8
+          ],
+          "skill": {
+            "beats_trend": false,
+            "low_confidence": true
+          }
+        }
+      }
+    }
+  },
+  "climate_context": {
+    "oni_djf": -0.37,
+    "enso": "neutral"
+  }
+}

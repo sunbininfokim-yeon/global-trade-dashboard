@@ -12,8 +12,19 @@ TRADING_DAYS = 252
 
 
 def portfolio_returns(rets: pd.DataFrame, weights: pd.Series) -> pd.Series:
+    """Constant-weight portfolio *log* returns from asset log returns.
+
+    Mixing must happen in simple-return space:
+    ``r_p = log1p(sum_i w_i * expm1(r_i))``.
+    ``sum_i w_i * r_i`` on logs is wrong (and badly wrong with shorts / fat tails).
+    """
     w = weights.reindex(rets.columns).fillna(0.0)
-    return (rets * w).sum(axis=1)
+    port_simple = np.expm1(rets).mul(w, axis=1).sum(axis=1)
+    return pd.Series(
+        np.log1p(port_simple.clip(lower=-0.999999999)),
+        index=rets.index,
+        dtype="float64",
+    )
 
 
 def ann_vol(r: pd.Series, periods: int = TRADING_DAYS) -> float:
@@ -21,19 +32,25 @@ def ann_vol(r: pd.Series, periods: int = TRADING_DAYS) -> float:
 
 
 def ann_return(r: pd.Series, periods: int = TRADING_DAYS) -> float:
-    mu = float(r.mean())
-    return mu * periods
+    # Compounded CAGR from log returns: (Π(1+r_s))^(periods/n)-1 = expm1(sum(log)*periods/n).
+    # Do not use mean(log)*periods — that is not the UI “수익률” / Sharpe numerator story.
+    clean = r.dropna()
+    n = len(clean)
+    if n == 0:
+        return 0.0
+    return float(np.expm1(float(clean.sum()) * (periods / n)))
 
 
 def sharpe(r: pd.Series, rf_ann: float, periods: int = TRADING_DAYS) -> float:
     vol = ann_vol(r, periods)
     if vol <= 1e-12:
         return 0.0
+    # Same compounding basis as ann_return, then subtract annual rf.
     return (ann_return(r, periods) - rf_ann) / vol
 
 
 def hist_var_cvar(r: pd.Series, alpha: float = 0.95) -> tuple[float, float]:
-    """Return positive loss numbers (VaR/CVaR as loss)."""
+    """Historical VaR/CVaR on *simple* (or already-simple) returns; positive = loss."""
     if r.empty:
         return 0.0, 0.0
     q = float(np.quantile(r.values, 1.0 - alpha))
@@ -89,12 +106,16 @@ def portfolio_risk_bundle(
     weekly = pr.resample("W-FRI").sum().dropna()
     long = weekly.iloc[-260:] if len(weekly) >= 40 else weekly
 
-    var1, cvar1 = hist_var_cvar(short, 0.95)
+    # Hist VaR on simple daily/weekly portfolio returns (loss in value space).
+    short_simple = pd.Series(np.expm1(short), index=short.index, dtype="float64")
+    long_simple = pd.Series(np.expm1(long), index=long.index, dtype="float64")
+
+    var1, cvar1 = hist_var_cvar(short_simple, 0.95)
     var10 = parametric_var(ann_vol(short), 0.95, 10)
     # scale hist 1d to 10d roughly for display alongside
     var10_hist = var1 * np.sqrt(10)
 
-    var_m, cvar_m = hist_var_cvar(long, 0.95)
+    var_m, cvar_m = hist_var_cvar(long_simple, 0.95)
 
     vol_s = ann_vol(short)
     vol_l = ann_vol(long, periods=52) if len(long) > 3 else ann_vol(pr)

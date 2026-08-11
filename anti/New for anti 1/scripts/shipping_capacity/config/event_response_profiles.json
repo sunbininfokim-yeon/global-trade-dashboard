@@ -1,0 +1,45 @@
+{
+  "status": "throughput_severity_calibrated_behavior_multipliers_partially_identified",
+  "profiles": {
+    "operational_restriction": {
+      "reroute_multiplier": 1.0,
+      "wait_multiplier": 1.15,
+      "cancel_multiplier": 0.85,
+      "multiplier_status": "prior_not_numerically_identified",
+      "calibration_event_ids": ["panama_drought_restrictions_2023_24"]
+    },
+    "physical_chokepoint_closure": {
+      "reroute_multiplier": 1.10,
+      "wait_multiplier": 0.85,
+      "cancel_multiplier": 1.0,
+      "multiplier_status": "prior_not_numerically_identified",
+      "calibration_event_ids": ["suez_ever_given_2021"]
+    },
+    "commercial_war_risk": {
+      "reroute_multiplier": 0.90,
+      "wait_multiplier": 1.0,
+      "cancel_multiplier": 1.40,
+      "multiplier_status": "qualitatively_constrained_not_numerically_identified",
+      "calibration_event_ids": ["red_sea_initial_rerouting_2023_24"]
+    },
+    "military_physical_closure": {
+      "reroute_multiplier": 0.60,
+      "wait_multiplier": 0.80,
+      "cancel_multiplier": 2.0,
+      "multiplier_status": "qualitatively_constrained_not_numerically_identified",
+      "calibration_event_ids": ["hormuz_conflict_2026"]
+    },
+    "observed_trade_volume_signal_applied_to_route": {
+      "reroute_multiplier": 1.0,
+      "wait_multiplier": 1.0,
+      "cancel_multiplier": 1.0
+    },
+    "hypothetical_persistence_of_observed_trade_volume_shortfall": {
+      "reroute_multiplier": 1.0,
+      "wait_multiplier": 1.0,
+      "cancel_multiplier": 1.0
+    }
+  },
+  "calibration_source": "event_calibration.json",
+  "warning_ko": "역사 사건으로 통항 위축 강도·지속·회복은 보정했지만, 우회·대기·취소·보험 제외 배수는 단일 초크포인트 통항량만으로 수치 식별할 수 없어 시나리오 prior로 유지한다."
+}

@@ -1,0 +1,21 @@
+# Files excluded from the publicly served asset bundle.
+# Everything here would otherwise be downloadable straight from the site.
+scripts
+scripts/**
+functions
+functions/**
+*.py
+wrangler.toml
+.assetsignore
+AI_WORKFLOW.md
+cloudflare_worker.js
+cloudflare_crop_forecast.json
+# ~6MB ICRISAT blob — train-time only; never needed by the browser.
+# Kept in git so Actions can refresh it without shipping to every visitor.
+public/data/icrisat_crop_production.json
+
+# 매크로 프로토타입 (Cursor). 와이어·인터랙션 참고용으로 저장소에는 두되,
+# 본 화면은 app.js 가 그리므로 배포본에 같은 기능의 낡은 사본이 공개되면 안 된다.
+macro_monitor.html
+macro_monitor.js
+macro_monitor.css

@@ -1,0 +1,432 @@
+{
+  "key": "mato_grosso_milho",
+  "label": "Mato Grosso corn (safrinha)",
+  "crop": "milho",
+  "states": [
+    [
+      "MT",
+      1.0
+    ]
+  ],
+  "doc": "Regions/브라질/마투그로수/옥수수/옥수수_상세분석_및_수식.md",
+  "caveat": "Planting date is derived from the modelled soy onset plus a fixed 125-day soy cycle, not observed. SIDRA reports one combined corn figure, but in Mato Grosso safrinha is the great majority of it.",
+  "non_weather_drivers": "",
+  "trained_years": [
+    1984,
+    2024
+  ],
+  "n_seasons": 41,
+  "regime_start": null,
+  "trend": {
+    "log_poly_coef": [
+      0.03380265819342324,
+      -59.559907370686574
+    ],
+    "degree": 1,
+    "form": "deg1",
+    "window": null,
+    "space": "log(kg/ha)"
+  },
+  "features": [
+    "ers_doy",
+    "planting_doy",
+    "time_window",
+    "silking_stress",
+    "vpd_peak_dry",
+    "precip_silking",
+    "oni_season"
+  ],
+  "feature_set": "all",
+  "trend_form": "deg1",
+  "scaler": {
+    "mean": [
+      461.6121951219512,
+      424.8219512195122,
+      36.79024390243902,
+      -46.6896846557407,
+      2.132337865716726,
+      157.17548780487803,
+      -0.00249999999999999
+    ],
+    "scale": [
+      9.281852083946882,
+      40.35901998009514,
+      40.4869072777376,
+      20.08763166866161,
+      0.5907035006555367,
+      45.779070394147254,
+      1.060926740534184
+    ]
+  },
+  "ridge": {
+    "alpha": 34.551072945922215,
+    "coef": [
+      0.003838312945485081,
+      -0.011235255309060093,
+      0.012079721060359669,
+      0.016543282882536058,
+      -0.0065012496575093965,
+      0.024395559280199843,
+      -0.0020372712530938287
+    ],
+    "intercept": -4.5058887544455184e-14
+  },
+  "beats_trend": true,
+  "recent_skill_vs_trend": 0.24546609435328925,
+  "skill_vs_best_trend": 0.12628901672957515,
+  "best_trend_baseline_rmse": 675.9519551735053,
+  "weather_skill": 0.24546609435328925,
+  "non_weather_features": [],
+  "trend_plus_lags_rmse": null,
+  "recent_trend_bias_kg_ha": 217.24662397363537,
+  "recent_folds": 10,
+  "uncertainty": {
+    "sigma_kg_ha": 524.8107127538733,
+    "basis": "out-of-sample RMSE over the last 10 forward-chaining folds"
+  },
+  "validation": {
+    "all_deg1_loo": {
+      "rmse": 425.61884318824826,
+      "mae": 314.1730984722038,
+      "detrended_r2": 0.23517681184779304,
+      "skill_vs_trend": 0.12625844257420227,
+      "baseline_rmse": 487.1221238946207,
+      "recent_rmse": 551.4068628765018,
+      "recent_baseline_rmse": 677.3882523260975,
+      "recent_trend_bias": 88.71976959442691,
+      "n": 41,
+      "years": [
+        1984,
+        2024
+      ],
+      "degree": 1,
+      "window": null,
+      "trend_form": "deg1"
+    },
+    "all_deg1_forward": {
+      "rmse": 590.5866473982095,
+      "mae": 468.9436254984119,
+      "detrended_r2": 0.2302435900054468,
+      "skill_vs_trend": 0.12628901672957515,
+      "baseline_rmse": 675.9519551735053,
+      "recent_rmse": 524.8107127538733,
+      "recent_baseline_rmse": 695.5429157342614,
+      "recent_trend_bias": 217.24662397363537,
+      "n": 19,
+      "years": [
+        2006,
+        2024
+      ],
+      "degree": 1,
+      "window": null,
+      "trend_form": "deg1"
+    },
+    "all_deg2_loo": {
+      "rmse": 434.3618482007623,
+      "mae": 323.37626874212447,
+      "detrended_r2": 0.2116149120548263,
+      "skill_vs_trend": 0.1127640276702323,
+      "baseline_rmse": 489.5674451298271,
+      "recent_rmse": 571.5797863277942,
+      "recent_baseline_rmse": 673.3828241352845,
+      "recent_trend_bias": 58.23264155115648,
+      "n": 41,
+      "years": [
+        1984,
+        2024
+      ],
+      "degree": 2,
+      "window": null,
+      "trend_form": "deg2"
+    },
+    "all_deg2_forward": {
+      "rmse": 620.5919540555819,
+      "mae": 477.28139701956627,
+      "detrended_r2": 0.31098260410445877,
+      "skill_vs_trend": 0.16999309020250353,
+      "baseline_rmse": 747.6949248615205,
+      "recent_rmse": 543.7699157244042,
+      "recent_baseline_rmse": 798.5641393121741,
+      "recent_trend_bias": 377.0792090215474,
+      "n": 19,
+      "years": [
+        2006,
+        2024
+      ],
+      "degree": 2,
+      "window": null,
+      "trend_form": "deg2"
+    },
+    "all_recent20_loo": {
+      "rmse": 811.6772758372422,
+      "mae": 488.5531342276533,
+      "detrended_r2": -1.6895854601077742,
+      "skill_vs_trend": -0.6216131980593487,
+      "baseline_rmse": 500.53692015371473,
+      "recent_rmse": 464.45259638019866,
+      "recent_baseline_rmse": 675.0675281289414,
+      "recent_trend_bias": 75.35495737109758,
+      "n": 41,
+      "years": [
+        1984,
+        2024
+      ],
+      "degree": 1,
+      "window": 20,
+      "trend_form": "recent20"
+    },
+    "all_recent20_forward": {
+      "rmse": 611.1642032185938,
+      "mae": 470.0117719772411,
+      "detrended_r2": 0.33397825190562425,
+      "skill_vs_trend": 0.18510174031663773,
+      "baseline_rmse": 749.9883524798156,
+      "recent_rmse": 532.8662939095827,
+      "recent_baseline_rmse": 810.9124933638777,
+      "recent_trend_bias": 463.34124383925035,
+      "n": 19,
+      "years": [
+        2006,
+        2024
+      ],
+      "degree": 1,
+      "window": 20,
+      "trend_form": "recent20"
+    },
+    "all_recent10_loo": {
+      "rmse": 971.3812089558605,
+      "mae": 847.9423436954145,
+      "detrended_r2": -1.615043740789154,
+      "skill_vs_trend": -0.4152044254151608,
+      "baseline_rmse": 686.3893240518229,
+      "recent_rmse": 711.667768860419,
+      "recent_baseline_rmse": 800.9960686277257,
+      "recent_trend_bias": -40.688214027444516,
+      "n": 41,
+      "years": [
+        1984,
+        2024
+      ],
+      "degree": 1,
+      "window": 10,
+      "trend_form": "recent10"
+    },
+    "all_recent10_forward": {
+      "rmse": 719.816687941746,
+      "mae": 505.34174215217575,
+      "detrended_r2": 0.003218512625082881,
+      "skill_vs_trend": 0.003775142852773805,
+      "baseline_rmse": 722.5443962550801,
+      "recent_rmse": 791.7235305242802,
+      "recent_baseline_rmse": 810.200453346842,
+      "recent_trend_bias": 160.33286867592196,
+      "n": 19,
+      "years": [
+        2006,
+        2024
+      ],
+      "degree": 1,
+      "window": 10,
+      "trend_form": "recent10"
+    },
+    "core_deg1_loo": {
+      "rmse": 485.2250876882212,
+      "mae": 361.5205673348811,
+      "detrended_r2": 0.0059554537339758795,
+      "skill_vs_trend": 0.0038943749695299346,
+      "baseline_rmse": 487.1221238946207,
+      "recent_rmse": 638.7800703622399,
+      "recent_baseline_rmse": 677.3882523260975,
+      "recent_trend_bias": 88.71976959442691,
+      "n": 41,
+      "years": [
+        1984,
+        2024
+      ],
+      "degree": 1,
+      "window": null,
+      "trend_form": "deg1"
+    },
+    "core_deg1_forward": {
+      "rmse": 654.4380211680949,
+      "mae": 541.704931423266,
+      "detrended_r2": 0.05480130757972734,
+      "skill_vs_trend": 0.03182760822089514,
+      "baseline_rmse": 675.9519551735053,
+      "recent_rmse": 633.2799600682789,
+      "recent_baseline_rmse": 695.5429157342614,
+      "recent_trend_bias": 217.24662397363537,
+      "n": 19,
+      "years": [
+        2006,
+        2024
+      ],
+      "degree": 1,
+      "window": null,
+      "trend_form": "deg1"
+    },
+    "core_deg2_loo": {
+      "rmse": 481.0052443080667,
+      "mae": 360.40220397027355,
+      "detrended_r2": 0.03320436874955712,
+      "skill_vs_trend": 0.017489318186771574,
+      "baseline_rmse": 489.5674451298271,
+      "recent_rmse": 639.0128426031974,
+      "recent_baseline_rmse": 673.3828241352845,
+      "recent_trend_bias": 58.23264155115648,
+      "n": 41,
+      "years": [
+        1984,
+        2024
+      ],
+      "degree": 2,
+      "window": null,
+      "trend_form": "deg2"
+    },
+    "core_deg2_forward": {
+      "rmse": 701.5141566806489,
+      "mae": 544.0858089798971,
+      "detrended_r2": 0.11957820575297406,
+      "skill_vs_trend": 0.06176418569301467,
+      "baseline_rmse": 747.6949248615205,
+      "recent_rmse": 689.2233652670727,
+      "recent_baseline_rmse": 798.5641393121741,
+      "recent_trend_bias": 377.0792090215474,
+      "n": 19,
+      "years": [
+        2006,
+        2024
+      ],
+      "degree": 2,
+      "window": null,
+      "trend_form": "deg2"
+    },
+    "core_recent20_loo": {
+      "rmse": 1767.6489858889229,
+      "mae": 661.6651591821919,
+      "detrended_r2": -11.755886032134077,
+      "skill_vs_trend": -2.5315056986127584,
+      "baseline_rmse": 500.53692015371473,
+      "recent_rmse": 474.36254427049823,
+      "recent_baseline_rmse": 675.0675281289414,
+      "recent_trend_bias": 75.35495737109758,
+      "n": 41,
+      "years": [
+        1984,
+        2024
+      ],
+      "degree": 1,
+      "window": 20,
+      "trend_form": "recent20"
+    },
+    "core_recent20_forward": {
+      "rmse": 663.9594773339202,
+      "mae": 550.1666937937216,
+      "detrended_r2": 0.21393991966022252,
+      "skill_vs_trend": 0.1147069482631875,
+      "baseline_rmse": 749.9883524798156,
+      "recent_rmse": 634.2662967433952,
+      "recent_baseline_rmse": 810.9124933638777,
+      "recent_trend_bias": 463.34124383925035,
+      "n": 19,
+      "years": [
+        2006,
+        2024
+      ],
+      "degree": 1,
+      "window": 20,
+      "trend_form": "recent20"
+    },
+    "core_recent10_loo": {
+      "rmse": 1957.4251490662373,
+      "mae": 1038.9124554688442,
+      "detrended_r2": -9.618664255730796,
+      "skill_vs_trend": -1.851770970899382,
+      "baseline_rmse": 686.3893240518229,
+      "recent_rmse": 819.7029265611895,
+      "recent_baseline_rmse": 800.9960686277257,
+      "recent_trend_bias": -40.688214027444516,
+      "n": 41,
+      "years": [
+        1984,
+        2024
+      ],
+      "degree": 1,
+      "window": 10,
+      "trend_form": "recent10"
+    },
+    "core_recent10_forward": {
+      "rmse": 768.8725347468387,
+      "mae": 567.4721703864692,
+      "detrended_r2": -0.13727328287497276,
+      "skill_vs_trend": -0.06411805105938906,
+      "baseline_rmse": 722.5443962550801,
+      "recent_rmse": 804.3171038769649,
+      "recent_baseline_rmse": 810.200453346842,
+      "recent_trend_bias": 160.33286867592196,
+      "n": 19,
+      "years": [
+        2006,
+        2024
+      ],
+      "degree": 1,
+      "window": 10,
+      "trend_form": "recent10"
+    }
+  },
+  "forward": {
+    "rmse": 590.5866473982095,
+    "mae": 468.9436254984119,
+    "detrended_r2": 0.2302435900054468,
+    "skill_vs_trend": 0.12628901672957515,
+    "baseline_rmse": 675.9519551735053,
+    "recent_rmse": 524.8107127538733,
+    "recent_baseline_rmse": 695.5429157342614,
+    "recent_trend_bias": 217.24662397363537,
+    "n": 19,
+    "years": [
+      2006,
+      2024
+    ],
+    "degree": 1,
+    "window": null,
+    "trend_form": "deg1"
+  },
+  "top_effects": [
+    {
+      "feature": "precip_silking",
+      "effect_pct": 2.47,
+      "is_weather": true
+    },
+    {
+      "feature": "silking_stress",
+      "effect_pct": 1.67,
+      "is_weather": true
+    },
+    {
+      "feature": "time_window",
+      "effect_pct": 1.22,
+      "is_weather": true
+    },
+    {
+      "feature": "planting_doy",
+      "effect_pct": -1.12,
+      "is_weather": true
+    },
+    {
+      "feature": "vpd_peak_dry",
+      "effect_pct": -0.65,
+      "is_weather": true
+    },
+    {
+      "feature": "ers_doy",
+      "effect_pct": 0.38,
+      "is_weather": true
+    },
+    {
+      "feature": "oni_season",
+      "effect_pct": -0.2,
+      "is_weather": true
+    }
+  ]
+}

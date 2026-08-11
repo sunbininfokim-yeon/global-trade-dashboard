@@ -1,0 +1,86 @@
+{
+  "iso3": "GBR",
+  "as_of": "2026-08-08",
+  "priority_tier": 2,
+  "region": "europe",
+  "system": "parliamentary",
+  "map_spectrum": "progressive",
+  "head": {
+    "role": "prime_minister",
+    "name_en": "Andy Burnham",
+    "party_id": "lab",
+    "spectrum": "progressive",
+    "since": "2026-07-20",
+    "predecessor": "Keir Starmer",
+    "sources": [
+      {
+        "org": "GOV.UK",
+        "url": "https://www.gov.uk/government/people/andy-burnham",
+        "date": "2026-07-20",
+        "note": "Andy Burnham became Prime Minister on 20 July 2026"
+      },
+      {
+        "org": "GOV.UK",
+        "url": "https://www.gov.uk/government/speeches/andy-burnhams-first-speech-as-prime-minister-20-july-2026",
+        "date": "2026-07-20"
+      }
+    ]
+  },
+  "parties": [
+    {
+      "id": "lab",
+      "abbr": "Lab",
+      "name_en": "Labour",
+      "role": "ruling",
+      "spectrum": "progressive",
+      "confidence": "high"
+    },
+    {
+      "id": "con",
+      "abbr": "Con",
+      "name_en": "Conservative Party",
+      "role": "main_opposition",
+      "spectrum": "conservative",
+      "confidence": "high"
+    },
+    {
+      "id": "ld",
+      "abbr": "LD",
+      "name_en": "Liberal Democrats",
+      "role": "major_3",
+      "spectrum": "centrist",
+      "confidence": "medium"
+    },
+    {
+      "id": "snp",
+      "abbr": "SNP",
+      "name_en": "Scottish National Party",
+      "role": "major_4",
+      "spectrum": "other",
+      "confidence": "medium"
+    }
+  ],
+  "legislature": {
+    "chambers": ["house_of_commons", "house_of_lords"],
+    "member_roster_source": {
+      "id": "parliament_uk_api",
+      "url": "https://members-api.parliament.uk/api/Parties/StateOfTheParties/1/{date}",
+      "status": "extracted",
+      "extract_file": "extracted/gbr_commons.json"
+    }
+  },
+  "elections": {
+    "calendar_file": "calendars/gbr_2026.json"
+  },
+  "polls": {
+    "admit": ["pm_approval", "party_support"],
+    "reject": ["national_horserace_headline"],
+    "status": "snapshot_wired",
+    "extract": "extracted/governance_polls.json"
+  },
+  "ingest": {
+    "mode": "document_text_extract",
+    "wave": "2a_europe",
+    "depth": "commons_composition_plus_pm"
+  }
+}

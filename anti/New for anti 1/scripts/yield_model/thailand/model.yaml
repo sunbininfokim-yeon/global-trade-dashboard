@@ -1,0 +1,66 @@
+# thailand — 국가 모델 매니페스트 (scaffold_manifest.py 생성)
+# 규격: ../MODEL_MANIFEST.md
+# app.js 수정 없음. build_registry.py 가 climate_registry_v1.json 으로 합친다.
+
+country: thailand
+iso: THA
+label_ko: 태국
+label_en: Thailand
+panel_mode: forecast
+data_file: thailand_yield_forecast.json
+model_status: provisional
+status_note_ko: "사탕수수·건기쌀은 추세 대비 양의 스킬. 우기쌀·고무는 추세만. 건기쌀은 RID 댐 실측 미연결(프록시). 카사바는 CMD 참고 패널."
+model_name: "Thailand regional (sugarcane / Chao Phraya rice / rubber)"
+
+view:
+  longitude: 100.5
+  latitude: 15.5
+  zoom: 5.0
+
+regions:
+  - key: central_ne_sugarcane
+    label_ko: "중부·북동 사탕수수"
+    ui_name: central_ne_sugarcane
+    coordinates: [101.44, 15.42]
+    crops_region_keys: [central_ne_sugarcane]
+  - key: chao_phraya_rice_wet
+    label_ko: "짜오프라야 우기 쌀"
+    ui_name: chao_phraya_rice_wet
+    coordinates: [100.33, 14.74]
+    crops_region_keys: [chao_phraya_rice_wet]
+  - key: chao_phraya_rice_off
+    label_ko: "짜오프라야 건기 쌀"
+    ui_name: chao_phraya_rice_off
+    coordinates: [100.33, 14.74]
+    crops_region_keys: [chao_phraya_rice_off]
+  - key: thailand_rubber
+    label_ko: "태국 천연고무"
+    ui_name: thailand_rubber
+    coordinates: [100.63, 10.81]
+    crops_region_keys: [thailand_rubber]
+  - key: isan_cassava
+    label_ko: "이산 카사바 (참고)"
+    ui_name: isan_cassava
+    coordinates: [103.09, 15.82]
+    crops_region_keys: [isan_cassava]
+
+sources:
+  labels:
+    name: "FAOSTAT Thailand Yield (OAE/OCSB 지방 패널은 미연결)"
+    url: https://www.fao.org/faostat/en/#data/QCL
+    updated: "2024-12-31"
+  climate:
+    name: NASA POWER (daily)
+    url: https://power.larc.nasa.gov/
+    updated: "2026-08-06"
+
+method_refs: "Pipitpukdee et al. (2020) Atmosphere · Pattanapanchai et al. (2022) Agronomy · Prabnakorn et al. (2018) Climatic Change · Makkaew & Sdoodee (2015) IJAT · TDRI Chao Phraya water — see thailand/SOURCES.md"
+
+trade_policy:
+  restricted: false
+  prohibited_crops: []
+  note_ko: "정상 수출 (seed)"
+
+notes_ko: |
+  중부·북동 천수답 사탕수수(ENSO·토양수분), 짜오프라야 우기/건기 쌀, 남부·북동 고무(우천·채취일).
+  건기 쌀 dam_recharge_proxy ≠ RID 푸미폰·시리킷 Nov-1 저수. 카사바는 CMD로 예측 보류.

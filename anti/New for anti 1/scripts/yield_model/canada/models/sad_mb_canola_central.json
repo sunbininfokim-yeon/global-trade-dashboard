@@ -1,0 +1,246 @@
+{
+  "key": "sad_mb_canola_central",
+  "label": "MB SAD 8 canola",
+  "label_ko": "MB 산지8 카놀라",
+  "crop": "canola",
+  "label_scale": "sad",
+  "geo": "Small Area Data Region 8 - Manitoba",
+  "province_fallback_key": "prov_mb_canola",
+  "doc": "Regions/북미_캐나다/매니토바/대두_귀리/대두_귀리_상세분석.md",
+  "caveat": "ICCYF Chipanshi 2015 CAR R2~0.66-0.67; Morrison HSU@29.5C; Mkhabela SMOS excess SM; MASC Excess Moisture (MB).",
+  "target": {
+    "variable": "yield_kg_ha",
+    "source": "Statistics Canada 32-10-0002 SAD average yield kg/ha",
+    "area_basis": "harvested",
+    "label_scale": "sad",
+    "estimated_years": [
+      2020,
+      2021,
+      2022,
+      2023,
+      2024,
+      2025
+    ]
+  },
+  "trained_years": [
+    1994,
+    2025
+  ],
+  "n_seasons": 32,
+  "detrended_residual_cv": 0.12027888762782439,
+  "anomaly": {
+    "window_years": 20,
+    "minimum_prior_years": 10,
+    "current_year_excluded": true
+  },
+  "feature_sets": {
+    "weather": [
+      "rain_growing_z20",
+      "hsu_flower_z20",
+      "frost_sep_z20",
+      "rain_flowering_z20"
+    ],
+    "weather_soil": [
+      "rain_growing_z20",
+      "hsu_flower_z20",
+      "frost_sep_z20",
+      "rain_flowering_z20",
+      "sm_preseason_z20",
+      "sm_flowering_z20",
+      "rain_winter_z20"
+    ],
+    "weather_soil_drivers": [
+      "rain_growing_z20",
+      "hsu_flower_z20",
+      "frost_sep_z20",
+      "rain_flowering_z20",
+      "sm_preseason_z20",
+      "sm_flowering_z20",
+      "rain_winter_z20",
+      "oni_summer_z20"
+    ]
+  },
+  "selected_feature_set": "weather",
+  "selected_features": [
+    "rain_growing_z20",
+    "hsu_flower_z20",
+    "frost_sep_z20",
+    "rain_flowering_z20"
+  ],
+  "selection_note": "Lowest recent forward RMSE among pre-registered ablations that clear 10% skill over both all and recent folds. If none clear, trend-only is the operational choice.",
+  "minimum_operational_skill": 0.1,
+  "operational_choice": "trend_only",
+  "beats_trend": false,
+  "low_confidence": true,
+  "literature_benchmark": {
+    "icyf_car_r2_canola": 0.67,
+    "icyf_car_r2_spring_wheat": 0.66,
+    "icyf_mei_gt0_share_canola_wheat": 0.7,
+    "icyf_national_mape_canola": 0.09,
+    "icyf_national_mape_spring_wheat": 0.08,
+    "note": "Chipanshi et al. 2015 ICCYF uses CAR+VSMB+NDVI; this Phase-1 province+POWER ridge is a weaker information set."
+  },
+  "trend": {
+    "form": "log_linear",
+    "log_poly_coef": [
+      0.016613989905875436,
+      -25.767053773144443
+    ]
+  },
+  "scaler": {
+    "mean": [
+      0.14135611322358696,
+      -0.007170772044273618,
+      -0.2562107033969365,
+      -0.028111707879758835
+    ],
+    "scale": [
+      1.1297076495940381,
+      0.8853908378990731,
+      1.0434034507020111,
+      0.9520778809867886
+    ]
+  },
+  "ridge": {
+    "alpha": 4.1246263829013525,
+    "coef": [
+      -0.031588827069159185,
+      -0.055494489863690696,
+      0.015871496765226995,
+      0.002341319154322029
+    ],
+    "intercept": 9.103311305687405e-15
+  },
+  "top_effects": [
+    {
+      "feature": "hsu_flower_z20",
+      "effect_pct_per_sd": -5.4
+    },
+    {
+      "feature": "rain_growing_z20",
+      "effect_pct_per_sd": -3.11
+    },
+    {
+      "feature": "frost_sep_z20",
+      "effect_pct_per_sd": 1.6
+    },
+    {
+      "feature": "rain_flowering_z20",
+      "effect_pct_per_sd": 0.23
+    }
+  ],
+  "uncertainty": {
+    "basis": "absolute errors from forward-chaining predictions",
+    "absolute_error_q68_kg_ha": 259.6422795207918,
+    "absolute_error_q95_kg_ha": 540.5512092458475,
+    "n_forward_errors": 14
+  },
+  "validation": {
+    "weather": {
+      "rmse": 260.01946804963114,
+      "mae": 218.78678357679203,
+      "baseline_rmse": 277.47815271933825,
+      "skill_vs_trend": 0.06291913254650394,
+      "recent_rmse": 199.81701434586554,
+      "recent_baseline_rmse": 230.26497257747414,
+      "recent_skill_vs_trend": 0.13223009079839176,
+      "detrended_r2": 0.05304553791175248,
+      "recent_trend_bias": -24.84877914507674,
+      "features": [
+        "rain_growing_z20",
+        "hsu_flower_z20",
+        "frost_sep_z20",
+        "rain_flowering_z20"
+      ],
+      "fold_years": [
+        2012,
+        2013,
+        2014,
+        2015,
+        2016,
+        2017,
+        2018,
+        2019,
+        2020,
+        2021,
+        2022,
+        2023,
+        2024,
+        2025
+      ]
+    },
+    "weather_soil": {
+      "rmse": 289.95060939108026,
+      "mae": 249.70462888550875,
+      "baseline_rmse": 277.47815271933825,
+      "skill_vs_trend": -0.04494932862104495,
+      "recent_rmse": 263.9179939558663,
+      "recent_baseline_rmse": 230.26497257747414,
+      "recent_skill_vs_trend": -0.14614911248418117,
+      "detrended_r2": -0.17751220020299363,
+      "recent_trend_bias": -24.84877914507674,
+      "features": [
+        "rain_growing_z20",
+        "hsu_flower_z20",
+        "frost_sep_z20",
+        "rain_flowering_z20",
+        "sm_preseason_z20",
+        "sm_flowering_z20",
+        "rain_winter_z20"
+      ],
+      "fold_years": [
+        2012,
+        2013,
+        2014,
+        2015,
+        2016,
+        2017,
+        2018,
+        2019,
+        2020,
+        2021,
+        2022,
+        2023,
+        2024,
+        2025
+      ]
+    },
+    "weather_soil_drivers": {
+      "rmse": 299.7020253884747,
+      "mae": 265.94123931616394,
+      "baseline_rmse": 277.47815271933825,
+      "skill_vs_trend": -0.08009233322096998,
+      "recent_rmse": 268.8649200429018,
+      "recent_baseline_rmse": 230.26497257747414,
+      "recent_skill_vs_trend": -0.16763273646598797,
+      "detrended_r2": -0.2580465749486025,
+      "recent_trend_bias": -24.84877914507674,
+      "features": [
+        "rain_growing_z20",
+        "hsu_flower_z20",
+        "frost_sep_z20",
+        "rain_flowering_z20",
+        "sm_preseason_z20",
+        "sm_flowering_z20",
+        "rain_winter_z20",
+        "oni_summer_z20"
+      ],
+      "fold_years": [
+        2012,
+        2013,
+        2014,
+        2015,
+        2016,
+        2017,
+        2018,
+        2019,
+        2020,
+        2021,
+        2022,
+        2023,
+        2024,
+        2025
+      ]
+    }
+  }
+}

@@ -1,0 +1,81 @@
+{
+  "iso3": "DEU",
+  "as_of": "2026-08-08",
+  "priority_tier": 2,
+  "region": "europe",
+  "system": "parliamentary",
+  "map_spectrum": "conservative",
+  "head": {
+    "role": "chancellor",
+    "name_en": "Friedrich Merz",
+    "party_id": "cdu",
+    "spectrum": "conservative",
+    "sources": [
+      {
+        "org": "Bundeskanzler",
+        "url": "https://www.bundeskanzler.de/bk-en/news/g7-summit-evian-france-2440544",
+        "date": "2026-06-15"
+      }
+    ]
+  },
+  "parties": [
+    {
+      "id": "cdu",
+      "abbr": "CDU",
+      "name_en": "CDU/CSU",
+      "role": "ruling",
+      "spectrum": "conservative",
+      "confidence": "high"
+    },
+    {
+      "id": "spd",
+      "abbr": "SPD",
+      "name_en": "SPD",
+      "role": "main_opposition",
+      "spectrum": "progressive",
+      "confidence": "high"
+    },
+    {
+      "id": "afd",
+      "abbr": "AfD",
+      "name_en": "AfD",
+      "role": "major_3",
+      "spectrum": "other",
+      "confidence": "medium"
+    },
+    {
+      "id": "gruene",
+      "abbr": "Grüne",
+      "name_en": "Alliance 90/The Greens",
+      "role": "major_4",
+      "spectrum": "progressive",
+      "confidence": "medium"
+    }
+  ],
+  "legislature": {
+    "chambers": [
+      "bundestag",
+      "bundesrat"
+    ],
+    "member_roster_source": {
+      "id": "bwl_2025",
+      "extract_file": "extracted/deu_bundestag.json",
+      "status": "extracted"
+    }
+  },
+  "elections": {
+    "calendar_file": "calendars/deu_2026.json"
+  },
+  "polls": {
+    "admit": [
+      "chancellor_approval",
+      "party_support"
+    ],
+    "status": "slot_or_wired"
+  },
+  "ingest": {
+    "mode": "document_text_extract",
+    "wave": "2a_europe",
+    "depth": "legislature_composition_v1"
+  }
+}

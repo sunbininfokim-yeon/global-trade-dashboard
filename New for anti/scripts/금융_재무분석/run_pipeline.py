@@ -12,6 +12,11 @@ ROOT = Path(__file__).resolve().parent
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
+from portfolio_lab.normalize import (
+    MAX_NAMES,
+    PortfolioNormalizeError,
+    normalize_portfolio,
+)
 from portfolio_lab.report import build_report
 from portfolio_lab.resolve import InstrumentRegistry, resolve_portfolio
 from portfolio_lab.returns import aligned_returns
@@ -66,6 +71,22 @@ def main() -> int:
     profile_id = args.risk_profile or portfolio.get("risk_profile") or "balanced"
     profile_id, profile = load_profile(args.profiles, profile_id)
 
+    try:
+        norm = normalize_portfolio(portfolio, max_names=MAX_NAMES)
+    except PortfolioNormalizeError as exc:
+        print(f"ERROR: portfolio normalize failed: {exc}", file=sys.stderr)
+        return 1
+    portfolio = norm.portfolio
+    if norm.notes_ko:
+        for n in norm.notes_ko:
+            print("NOTE:", n, file=sys.stderr)
+    if norm.truncated_positions:
+        print(
+            f"WARN: truncated to top {MAX_NAMES} by |value| "
+            f"({len(norm.truncated_positions)} dropped)",
+            file=sys.stderr,
+        )
+
     positions, unresolved = resolve_portfolio(portfolio, registry)
     if not positions:
         print("ERROR: no positions resolved", unresolved, file=sys.stderr)
@@ -92,6 +113,7 @@ def main() -> int:
         unresolved=unresolved,
         risk_profile_id=profile_id,
         risk_profile=profile,
+        normalize_meta=norm.to_meta(),
     )
 
     out_path: Path = args.out.resolve()

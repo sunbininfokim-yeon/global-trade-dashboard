@@ -1,0 +1,145 @@
+{
+  "iso3": "RUS",
+  "as_of": "2026-08-08",
+  "priority_tier": 1,
+  "system": "presidential",
+  "mode": "managed_elections_document_extract",
+  "map_spectrum": "authoritarian_ur",
+  "head": {
+    "role": "president",
+    "name_en": "Vladimir Putin",
+    "name_ru": "Владимир Путин",
+    "name_ko": "블라디미르 푸틴",
+    "party_id": "ur",
+    "spectrum": "authoritarian_ur",
+    "sources": [
+      {
+        "org": "Kremlin",
+        "url": "http://en.kremlin.ru/",
+        "note": "Incumbent president; 2024 re-election"
+      },
+      {
+        "org": "Kremlin decree",
+        "url": "http://en.kremlin.ru/acts/news/80036",
+        "date": "2026-06-16",
+        "note": "Set State Duma election date"
+      }
+    ]
+  },
+  "parties": [
+    {
+      "id": "ur",
+      "abbr": "UR",
+      "name_en": "United Russia",
+      "name_ru": "Единая Россия",
+      "name_ko": "통합러시아",
+      "role": "ruling",
+      "spectrum": "authoritarian_ur",
+      "confidence": "high"
+    },
+    {
+      "id": "cprf",
+      "abbr": "CPRF",
+      "name_en": "Communist Party of the Russian Federation",
+      "name_ru": "КПРФ",
+      "name_ko": "러시아연방공산당",
+      "role": "main_opposition",
+      "spectrum": "other",
+      "confidence": "medium",
+      "notes": "Systemic opposition; not competitive liberal opposition"
+    }
+  ],
+  "legislature": {
+    "federal": {
+      "chambers": [
+        "state_duma",
+        "federation_council"
+      ],
+      "state_duma_seats": 450,
+      "member_roster_source": {
+        "id": "duma_light",
+        "extract_file": "extracted/rus_duma.json",
+        "status": "approximate_pre_election"
+      }
+    }
+  },
+  "subnational": {
+    "level": "federal_subject",
+    "includes": [
+      "governor",
+      "regional_legislature"
+    ],
+    "excludes": [
+      "municipal_basic"
+    ],
+    "sources": [
+      {
+        "id": "cikrf",
+        "url": "http://www.cikrf.ru/"
+      }
+    ],
+    "status": "single_voting_day_bundled_with_duma"
+  },
+  "elections": {
+    "calendar_extract": "extracted/calendars_2026.json",
+    "events_2026": [
+      {
+        "id": "rus-2026-duma",
+        "type": "general",
+        "label_ko": "국가두마 선거(제9기)",
+        "date": "2026-09-20",
+        "status": "scheduled",
+        "notes": "450 seats; Putin decree 2026-06-16; CEC 3-day voting",
+        "date_span": [
+          "2026-09-18",
+          "2026-09-20"
+        ]
+      },
+      {
+        "id": "rus-2026-single-voting-day-regions",
+        "type": "local",
+        "label_ko": "단일투표일 지방(주지사·주의회 등)",
+        "date": "2026-09-20",
+        "status": "scheduled",
+        "notes": "TASS: ~11 regional heads, ~39 regional parliaments combined with Duma day",
+        "date_span": [
+          "2026-09-18",
+          "2026-09-20"
+        ]
+      },
+      {
+        "id": "rus-2026-presidential",
+        "type": "presidential",
+        "label_ko": "대선",
+        "date": "없음",
+        "status": "없음",
+        "notes": "Next after 2024 cycle — not in 2026"
+      }
+    ]
+  },
+  "polls": {
+    "admit": [
+      "presidential_approval"
+    ],
+    "reject": [
+      "national_horserace_headline"
+    ],
+    "note": "Independent poll quality 불명; series wire later",
+    "status": "todo"
+  },
+  "ingest": {
+    "mode": "document_text_extract",
+    "not": "numeric_timeseries_api_paint"
+  },
+  "document_ingest": {
+    "catalog": "official_sources.json#tier1.RUS",
+    "done": [
+      "duma_date_from_kremlin_decree"
+    ],
+    "todo": [
+      "cikrf_party_lists",
+      "duma_seat_composition_live",
+      "regional_heads_2026_roster"
+    ]
+  }
+}

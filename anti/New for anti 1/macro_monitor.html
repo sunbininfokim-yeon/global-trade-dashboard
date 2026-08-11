@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Macro Monitor — US Benchmark</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="macro_monitor.css" />
+</head>
+<body>
+  <div id="app">
+    <canvas id="map" aria-label="World map"></canvas>
+
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand-mark">MACRO</span>
+        <span class="brand-sub">MONITOR</span>
+      </div>
+      <p class="stage-hint" id="stageHint">국가를 클릭하세요 · 미국 = 글로벌 벤치마크</p>
+    </header>
+
+    <section class="country-stage" id="countryStage" hidden>
+      <button type="button" class="back-btn" id="backBtn">← 세계지도</button>
+      <div class="country-head">
+        <h1 id="countryName">—</h1>
+        <span class="kit-badge" id="kitBadge"></span>
+      </div>
+      <p class="country-asof" id="countryAsof"></p>
+
+      <nav class="cat-tabs" id="catTabs" role="tablist"></nav>
+
+      <div class="chip-cloud" id="chipCloud"></div>
+
+      <details class="limits" id="limitsBox">
+        <summary>지표 추론의 한계</summary>
+        <div id="limitsBody"></div>
+      </details>
+    </section>
+
+    <aside class="chart-drawer" id="chartDrawer" hidden>
+      <div class="chart-head">
+        <div>
+          <h2 id="chartTitle">—</h2>
+          <p id="chartMeta"></p>
+        </div>
+        <button type="button" class="close-btn" id="closeChart" aria-label="Close">×</button>
+      </div>
+      <div class="window-toggle" id="windowToggle">
+        <button type="button" data-window="5y" class="active">5년</button>
+        <button type="button" data-window="10y">10년</button>
+      </div>
+      <canvas id="chartCanvas" width="640" height="280"></canvas>
+      <p class="chart-note" id="chartNote"></p>
+    </aside>
+
+    <footer class="foot">
+      <span id="footSource">fixture demo</span>
+      <span>· app.js 미연결 · 독립 프로토타입</span>
+    </footer>
+  </div>
+  <script src="macro_monitor.js"></script>
+</body>
+</html>
