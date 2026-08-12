@@ -43,6 +43,9 @@ export KRX_API='…'   # optional
 
 # LETF 거래대금 비중 과거 백필 (KRX_API 필요, 장 마감 일별)
 ./.venv/bin/python build_letf_share_history.py --live --months 6 --print-stats
+# KOSPI 현물 투자자별 순매수: 일별 아카이브 / 최초 60거래일 백필
+./.venv/bin/python build_investor_flow_history.py --append-only
+./.venv/bin/python build_investor_flow_history.py --live --lookback-days 60
 ./run_weekly.sh   # conc backfill + discovery + hitrate + regime-proxy
 
 # 페이퍼 대비 검증 + (가격경로) 이벤트 스터디
@@ -77,6 +80,13 @@ OI(전체 미결제약정)는 KRX 파생 일별 API로, 외국인 **당일 거�
 - 정의2: `Σ AUM×|L| / 커버 종목 유동시총`
 - HK·crypto는 KR 유동시총 분모에 **합산하지 않음**
 - AUM 1위는 보통 **7709.HK** (7708 아님)
+
+## Paper-derived observed charts
+
+- **Leverage reset**: 국내 레버·인버스 ETF AUM(관측)과 `AUM / KOSPI 유동시총 프록시`(추정)를 분리해 장마감 시계열로 보관한다. AUM 하락만으로 환매/자금유출을 주장하지 않는다.
+- **Foreign vs retail**: KOSPI 현물의 외국인·개인·기관 **순매수**를 일별/보관시작일 대비 누적으로 표시한다. GS Gross/Net 국가배분·투자자 보유비중이 아니다.
+- **Retail leverage stress**: 예탁금·신용융자·미수·반대매매는 FreeSIS 공표 시점의 시장전체 보조지표로 표시하며, 가격대별 수급이나 특정 투자자 포지션으로 귀속하지 않는다.
+- **Leveraged pain / Korea leading**: `SOXL vs SMH`, `KORU vs EWY`는 Yahoo 조정종가를 100으로 재기준화한 외부 레짐 비교다. 원 도표의 SOX·GS 배분 데이터를 복제한 것이 아니며 한국 현물 리밸런싱 공식에 넣지 않는다.
 
 ## US → KR cross-market
 

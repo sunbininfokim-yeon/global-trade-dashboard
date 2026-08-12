@@ -6816,6 +6816,8 @@ const MS_FILES = {
     levels: 'investor_price_levels_v1.json',
     micro: 'market_microstructure_v1.json',
     micro_history: 'market_microstructure_history_v1.json',
+    flow_history: 'kospi_investor_flow_history_v1.json',
+    global_leverage_paths: 'global_leverage_price_paths_v1.json',
     credit: 'deposit_credit_v1.json',
 };
 
@@ -7083,6 +7085,8 @@ const msTangle = (D) => {
     const ratios = m.market_letf_derivatives_ratios || {};
     const stack = m.global_leverage_stack || {};
     const dc = m.deposit_credit || {};
+    const marketLev = m.market_levered_etf || {};
+    const calibration = (m.paper_calibration || []).find((row) => row?.field === 'leverage_exposure_pct_aum_over_ff') || {};
     const byDir = ratios.by_direction || {};
     const bands = m.ir_bands || {};
 
@@ -7112,6 +7116,8 @@ const msTangle = (D) => {
         <div class="fin-cards">
             ${msCard('레버·곱버스 거래대금 / 코스피 현물', Number.isFinite(ratios.levered_inverse_etf_tv_over_kospi_cash_tv_pct) ? ratios.levered_inverse_etf_tv_over_kospi_cash_tv_pct.toFixed(1) + '%' : '—',
                 `롱 ${msJo(ratios.long_tv_jo * 1e12)} · 인버스 ${msJo(ratios.inverse_tv_jo * 1e12)}`, 'letf_history')}
+            ${msCard('레버·인버스 ETF AUM', msJo(marketLev.aum_krw),
+                Number.isFinite(Number(calibration.model_value)) ? `KOSPI 유동시총의 ${Number(calibration.model_value).toFixed(2)}% · AUM 기준` : 'KOSPI 유동시총 대비 비중 미산출', 'leverage_reset')}
             ${msCard('신용융자 / 예탁금', Number.isFinite(dc.credit_over_deposit_pct) ? dc.credit_over_deposit_pct.toFixed(1) + '%' : '—',
                 `예탁금 ${msEok(dc.investor_deposit_eok)} · 신용 ${msEok(dc.credit_balance_eok)} (${finEsc(dc.as_of || '')})`, 'credit_history')}
         </div>
@@ -7211,8 +7217,23 @@ const msDailyMarketActivity = (D) => {
     const flows = m.flows_kospi_market || flowDoc.latest || {};
     const letf = m.letf_category_share || {};
     const program = m.program_trading || extras.program_trading || {};
+    const archivedPoints = (D.flow_history || {}).points || [];
+    const recentPoints = flowDoc.history || [];
+    const flowPoints = (archivedPoints.length ? archivedPoints : recentPoints)
+        .filter((p) => p?.date || p?.observed_as_of || p?.date_raw)
+        .map((p) => ({ ...p, date: p.date || p.observed_as_of || p.date_raw }))
+        .sort((a, b) => String(a.date).localeCompare(String(b.date)));
+    const cumulative = flowPoints.reduce((acc, point) => ({
+        foreign: acc.foreign + (Number(point.foreign_net_eok) || 0),
+        retail: acc.retail + (Number(point.retail_net_eok) || 0),
+    }), { foreign: 0, retail: 0 });
     const asOf = flows.observed_as_of || flows.date_raw || m.as_of || '—';
-    const net = (key) => Number(flows[`${key}_net_eok`]);
+    const net = (key) => {
+        const eok = Number(flows[`${key}_net_eok`]);
+        if (Number.isFinite(eok)) return eok;
+        const krw = Number(flows[`${key}_net_krw`]);
+        return Number.isFinite(krw) ? krw / 1e8 : NaN;
+    };
     const flowCard = (label, key) => {
         const value = net(key);
         return msCard(label, msEok(value), `KOSPI 현물 · ${finEsc(asOf)}`, 'cash_flow_history',
@@ -7238,6 +7259,8 @@ const msDailyMarketActivity = (D) => {
             ${flowCard('외국인 순매수', 'foreign')}
             ${flowCard('개인 순매수', 'retail')}
             ${flowCard('기관 순매수', 'institution')}
+            ${msCard('외국인 vs 개인 누적', flowPoints.length ? `외국인 ${msEok(cumulative.foreign)}` : '—',
+                flowPoints.length ? `개인 ${msEok(cumulative.retail)} · ${flowPoints.length}거래일` : '장마감 순매수 시계열 없음', 'cash_flow_history')}
         </div>
         <p class="fin-note">투자자별 값은 KOSPI 시장 전체의 <strong>순매수</strong>입니다. 매수·매도 총액, 종목별 체결, 보유 포지션과는 다릅니다.</p>
     </section>
@@ -7367,6 +7390,8 @@ const msUsKr = (D) => {
     const foreignFut = msForeignDerivativeFlow(D, 'futures');
     const foreignCall = msForeignDerivativeFlow(D, 'options_call');
     const foreignPut = msForeignDerivativeFlow(D, 'options_put');
+    const globalPaths = D.global_leverage_paths || {};
+    const usSemisPath = (globalPaths.series || []).find((row) => row?.id === 'us_semis') || {};
 
     return `
     <section class="fin-block fin-block-wide">
@@ -7425,6 +7450,9 @@ const msUsKr = (D) => {
             ${msCard('US OI 룰 헤드라인',
                 `<span class="ms-badge ${MS_LEVEL_CLASS[(b.us_kr_rules || {}).headline_level] || ''}">${finEsc((b.us_kr_rules || {}).headline_level || '—')}</span>`,
                 '', null)}
+            ${msCard('SOXL vs SMH 성과',
+                usSemisPath.quality === 'observed' ? `SOXL ${Number(usSemisPath.leveraged_return_pct).toFixed(1)}%` : msMissing('데이터 없음'),
+                usSemisPath.quality === 'observed' ? `SMH ${Number(usSemisPath.benchmark_return_pct).toFixed(1)}% · ${finEsc(globalPaths.period || '')}` : '외부 레버 ETF 성과 비교', 'global_leverage_paths')}
             ${msCard('외국인 선물 당일 수급', msDerivativeFlowText(foreignFut), msDerivativeFlowSub(foreignFut), 'kr_derivatives')}
             ${msCard('외국인 콜옵션 당일 수급', msDerivativeFlowText(foreignCall), msDerivativeFlowSub(foreignCall), 'kr_derivatives')}
             ${msCard('외국인 풋옵션 당일 수급', msDerivativeFlowText(foreignPut), msDerivativeFlowSub(foreignPut), 'kr_derivatives')}
@@ -7514,7 +7542,8 @@ const msModalFor = (key, D) => {
         const hist = D.micro_history || {};
         const pts = hist.points || [];
         const current = m.market_letf_derivatives_ratios || {};
-        const fallback = pts.length ? pts : [{
+        const hasAumHistory = pts.some((p) => Number.isFinite(Number(p.levered_inverse_etf_aum_jo)));
+        const fallback = hasAumHistory ? pts : [{
             date: m.as_of, levered_inverse_etf_tv_over_kospi_cash_tv_pct: current.levered_inverse_etf_tv_over_kospi_cash_tv_pct,
             long_tv_jo: current.long_tv_jo, inverse_tv_jo: current.inverse_tv_jo, gobus_tv_jo: current.gobus_tv_jo,
         }];
@@ -7529,6 +7558,26 @@ const msModalFor = (key, D) => {
                 { label: '곱버스', color: '#fbbf24', value: (p) => p.gobus_tv_jo },
             ], { unit: '조' }) +
             `<p class="fin-note">${pts.length > 1 ? 'KRX 장 마감 일별 거래대금 관측 시계열입니다.' : '현재는 최신 일별값만 있어 점 하나로 표시됩니다. Actions에서 과거 KRX 시계열을 백필하면 선으로 연결됩니다.'}</p>` };
+    }
+    if (key === 'leverage_reset') {
+        const hist = D.micro_history || {};
+        const pts = hist.points || [];
+        const marketLev = m.market_levered_etf || {};
+        const cal = (m.paper_calibration || []).find((row) => row?.field === 'leverage_exposure_pct_aum_over_ff') || {};
+        const fallback = pts.length ? pts : [{
+            date: m.as_of,
+            levered_inverse_etf_aum_jo: Number(marketLev.aum_krw) / 1e12,
+            levered_inverse_etf_aum_over_kospi_ff_pct: cal.model_value,
+        }];
+        return { title: '레버리지 리셋 · AUM과 유동시총 비중', html:
+            `<p class="ms-modal-scope"><strong>논문 그래프의 공개 데이터 버전</strong> · 한국 상장 레버·인버스 ETF의 장마감 AUM을 합산합니다. 해외 상장 상품은 국내 현물 리밸런싱 규모에 합산하지 않습니다.</p>` +
+            msHistoryChart('레버·인버스 ETF AUM (조원)', fallback, [
+                { label: '국내 레버·인버스 ETF AUM', color: '#38bdf8', value: (p) => p.levered_inverse_etf_aum_jo },
+            ], { unit: '조', empty: 'KRX 장마감 AUM 시계열이 없습니다.' }) +
+            msHistoryChart('레버 ETF AUM / KOSPI 유동시총 프록시 (%)', fallback, [
+                { label: 'AUM / 유동시총', color: '#a78bfa', value: (p) => p.levered_inverse_etf_aum_over_kospi_ff_pct },
+            ], { unit: '%', empty: 'AUM/유동시총 시계열이 없습니다.' }) +
+            `<p class="fin-note">AUM은 관측값입니다. 유동시총 분모는 공개 일별 유통주식수 부재로 엔진의 유동시총 프록시를 사용하므로 <strong>추정</strong>입니다. AUM 감소는 순환매/환매와 기초자산 가격하락 효과를 구분하지 않습니다.</p>` };
     }
     if (key === 'credit_history') {
         const doc = D.credit || {};
@@ -7573,9 +7622,20 @@ const msModalFor = (key, D) => {
     }
     if (key === 'cash_flow_history') {
         const flowDoc = (m.public_extras || {}).kospi_investor_flows || {};
-        const points = (flowDoc.history || []).filter((p) => p?.observed_as_of || p?.date_raw)
-            .map((p) => ({ ...p, date: p.observed_as_of || p.date_raw }))
+        const archive = D.flow_history || {};
+        const sourcePoints = (archive.points || []).length ? archive.points : (flowDoc.history || []);
+        const points = sourcePoints.filter((p) => p?.date || p?.observed_as_of || p?.date_raw)
+            .map((p) => ({ ...p, date: p.date || p.observed_as_of || p.date_raw }))
             .sort((a, b) => String(a.date).localeCompare(String(b.date)));
+        let sums = { foreign: 0, retail: 0, institution: 0 };
+        const cumulative = points.map((p) => {
+            sums = {
+                foreign: sums.foreign + (Number(p.foreign_net_eok) || 0),
+                retail: sums.retail + (Number(p.retail_net_eok) || 0),
+                institution: sums.institution + (Number(p.institution_net_eok) || 0),
+            };
+            return { date: p.date, foreign_cum_eok: sums.foreign, retail_cum_eok: sums.retail, institution_cum_eok: sums.institution };
+        });
         return { title: 'KOSPI 투자자별 당일 순매수', html:
             `<p class="ms-modal-scope"><strong>KOSPI 현물 시장 전체</strong> · 장마감 공표 순매수이며, 매수·매도 총액·종목별 체결·보유 포지션은 아닙니다.</p>` +
             msHistoryChart('투자자별 일별 순매수/순매도 (억원)', points, [
@@ -7583,7 +7643,12 @@ const msModalFor = (key, D) => {
                 { label: '개인', color: '#f472b6', value: (p) => p.retail_net_eok },
                 { label: '기관', color: '#fbbf24', value: (p) => p.institution_net_eok },
             ], { unit: '억', empty: '당일 투자자별 순매수 시계열이 없습니다.' }) +
-            `<p class="fin-note">출처: ${finEsc(flowDoc.source || '—')} · 현재 수집기는 최근 공표 거래일을 표시합니다. 장기 누적 수급은 일별 아카이브를 추가한 뒤에만 해석합니다.</p>` };
+            msHistoryChart('투자자별 누적 순매수/순매도 (억원)', cumulative, [
+                { label: '외국인', color: '#38bdf8', value: (p) => p.foreign_cum_eok },
+                { label: '개인', color: '#f472b6', value: (p) => p.retail_cum_eok },
+                { label: '기관', color: '#fbbf24', value: (p) => p.institution_cum_eok },
+            ], { unit: '억', empty: '누적 수급 시계열이 없습니다.' }) +
+            `<p class="fin-note">출처: ${finEsc(archive.source || flowDoc.source || '—')} · 누적값은 선택된 보관 시작일을 0으로 둡니다. 이는 GS의 해외 투자자 Gross/Net Allocation 그래프가 아니라 KOSPI 현물의 공표 순매수입니다.</p>` };
     }
     if (key === 'program_history') {
         const program = m.program_trading || (m.public_extras || {}).program_trading || {};
@@ -7602,6 +7667,17 @@ const msModalFor = (key, D) => {
                 { label: '합계', color: '#fbbf24', value: (p) => p.total_net_eok },
             ], { unit: '억', empty: '프로그램 매매 시계열이 없습니다.' }) +
             `<p class="fin-note">출처: ${finEsc(program.source || '—')}</p>` };
+    }
+    if (key === 'global_leverage_paths') {
+        const paths = D.global_leverage_paths || {};
+        const rows = paths.series || [];
+        return { title: '글로벌 레버 ETF 성과 · 외부 레짐', html:
+            `<p class="ms-modal-scope"><strong>가격 성과 비교</strong> · 각 시계열은 공통 시작일을 100으로 둡니다. AUM·순자금유입·국내 현물 리밸런싱 물량이 아닙니다.</p>` +
+            rows.map((row) => msHistoryChart(row.title_ko || row.id || '', row.points || [], [
+                { label: row.leveraged || '레버 ETF', color: '#f472b6', value: (p) => p.leveraged_index },
+                { label: row.benchmark || '비레버 기준', color: '#38bdf8', value: (p) => p.benchmark_index },
+            ], { unit: '', empty: `${row.title_ko || '시계열'} 데이터가 없습니다.` })).join('') +
+            `<p class="fin-note">${finEsc(paths.note_ko || '')} · The AI Trade 원 도표의 SOX 대신 공개 SMH를 기준으로 사용합니다.</p>` };
     }
     if (key === 'kr_derivatives') {
         const kr = (D.board || {}).kr || {};

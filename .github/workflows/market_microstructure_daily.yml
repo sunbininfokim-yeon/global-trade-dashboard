@@ -41,10 +41,13 @@ jobs:
         run: |
           python build_market_microstructure.py --live --source auto --print-stats
           python build_letf_share_history.py --append-only
+          python build_investor_flow_history.py --append-only
           python build_deposit_credit.py --print-stats
 
       - name: US→KR L3
-        run: python build_us_kr_l3.py --live --print-stats
+        run: |
+          python build_us_kr_l3.py --live --print-stats
+          python build_global_leverage_paths.py --period 1y
 
       - name: Derivatives board + US OI archive
         env:
@@ -63,6 +66,7 @@ jobs:
             "New for anti/public/data/kospi_concentration_history_v1.json" \
             "New for anti/public/data/market_microstructure_v1.json" \
             "New for anti/public/data/market_microstructure_history_v1.json" \
+            "New for anti/public/data/kospi_investor_flow_history_v1.json" \
             "New for anti/public/data/deposit_credit_v1.json" \
             "New for anti/public/data/us_microstructure_v1.json" \
             "New for anti/public/data/us_regime_v1.json" \
@@ -71,6 +75,7 @@ jobs:
             "New for anti/public/data/us_kr_open30m_backtest_v1.json" \
             "New for anti/public/data/us_kr_hitrate_v1.json" \
             "New for anti/public/data/us_kr_regime_proxy_backtest_v1.json" \
+            "New for anti/public/data/global_leverage_price_paths_v1.json" \
             "New for anti/public/data/derivatives_board_v1.json" \
             "New for anti/public/data/kr_foreign_derivatives_history_v1.json" \
             "New for anti/public/data/us_oi_daily_archive.jsonl" \
