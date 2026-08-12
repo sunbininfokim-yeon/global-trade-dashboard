@@ -13,8 +13,8 @@ Cursor owns engine + `public/data/*` snapshots below.
 ## 선빈 → Claude 요청 (UI만)
 
 1. **미시구조 / AI Casino 브리프** 패널 — 집중도·레버 ETF·예탁/신용·수급
-2. **US→KR early warning** — `headline` + 채널 heat + KR 타깃(하닉 우선)
-3. **파생 보드** — 오늘 코스피200 외인 선물/콜/풋 박스 + US OI 룰 헤드라인
+2. **US→KR 관찰** — `headline`은 관찰 레벨로만 표시하고, 채널 heat + KR 링크를 제공
+3. **파생 보드** — 외국인 K200 선물·옵션 전체 매수·매도·순매수 + 시장 거래 활동
 4. **Alert 레벨** — KR 하닉 LETF 비율 · US VIX→KR (풋 OI 히스토리 아님)
 5. **Conc 시계열** — Conc_top2/5/10 라인
 
@@ -27,7 +27,7 @@ Cursor owns engine + `public/data/*` snapshots below.
 | 할 일 | 왜 |
 |------|-----|
 | 이 브랜치(또는 스냅샷)를 **`main`에 머지** | Actions **schedule는 default branch에서만** 돈다 |
-| repo secret **`KRX_API`** (선택) | KR OI / 외인 파생 자동. 없으면 US·Conc만 갱신 |
+| repo secret **`KRX_API`** (선택) | KRX 일별 선물·옵션 시장 거래 활동 자동. 외국인 K200 선물·옵션 전체 집계는 공개 대시보드로 별도 수집 |
 | `docs/ops/DATA_CADENCE.md`에 cron 한 줄 추가 | `market_microstructure_daily.yml` · `30 7 * * 1-5` UTC (= 16:30 KST) |
 | UI에서 `public/data/*.json` fetch | Worker 정적 assets = `New for anti` |
 
@@ -45,7 +45,7 @@ Cursor owns engine + `public/data/*` snapshots below.
 | `market_microstructure_v1.json` | KR 미시구조 당일 | `concentration`, `market_levered_etf`, `stocks`, `flows_kospi_market`, `deposit_credit`, `letf_category_share`, `short_interest_meta` |
 | `ai_casino_brief_v1.json` | 브리프/헤드라인 카드 | `headlines`, `concentration`, `leverage_notional`, `disclaimer_ko` |
 | `kospi_concentration_history_v1.json` | Conc 차트 | `points[]` · `latest.conc_top2_samsung_hynix_pct` · `stats` |
-| `us_kr_transmission_v1.json` | US→KR 경보 | `headline` (예: `high:downside`) · `channels.{downside,upside,vol_up,vol_down}` · `drivers[]` · `kr_tickers` |
+| `us_kr_transmission_v1.json` | US→KR 관찰 | `headline` (예: `high:downside`) · `channels.{downside,upside,vol_up,vol_down}` · `drivers[]` · `kr_tickers` |
 | `us_regime_v1.json` | US 레짐 상세 | 심볼별 regime |
 | `us_microstructure_v1.json` | US 스냅 (옵션/숏) | watchlist 스냅 |
 | `derivatives_board_v1.json` | 파생 보드 | `kr.investor_nets` · `kr.kospi200_options` · `us_kr_rules.headline_level` |
@@ -66,8 +66,8 @@ Cursor owns engine + `public/data/*` snapshots below.
 ## quality / missing 규칙 (반드시 지킬 것)
 
 - `quality: demo` · `null` · `errors[]` → **가짜 숫자로 채우지 말 것.** “데이터 없음 / KRX 키 필요” 배지.
-- **외인 콜/풋/선물 분리** (`investor_nets.futures|options_call|options_put`)는 현재 대부분 `null`.  
-  UI 시드만 있는 것은 `options_total_seed_from_ui` (옵션 **전체**, quality=`demo`).
+- **외인 K200 선물·옵션 전체** 매수·매도·순매수는 `investor_nets.public_dashboard`의 공개 대시보드 실측이다.
+  **콜/풋 분리** (`investor_nets.options_call|options_put`)는 인증된 상세 CSV 없이는 `null`로 둔다. 공개 옵션 전체를 콜/풋으로 추정하지 않는다.
 - **숏 잔고** `short_interest` 자주 `missing` (data.krx LOGOUT).
 - **SOXL 수익률을 옵션 포지션으로 포장 금지** (엔진도 금지).
 - Alert US 쪽은 **Cboe VIX 일변화**이지 풋 OI가 아님 → 라벨에 “풋 OI” 쓰지 말 것.
@@ -88,9 +88,9 @@ Cursor owns engine + `public/data/*` snapshots below.
          latest top2/5/10
 
 [파생]    derivatives_board_v1
-         - 외인 옵션 전체 시드 스파크 (demo 배지)
+         - investor_nets.public_dashboard: 외인 K200 선물·옵션 전체 매수/매도/순매수
          - us_kr_rules.headline_level
-         - call/put/fut 박스는 null이면 빈 슬롯 + “KRX_API/CSV”
+         - 콜/풋 분리는 null이면 빈 슬롯 + “인증된 KRX CSV 필요”
 
 [브리프]  ai_casino_brief_v1.headlines + concentration
 
@@ -113,8 +113,8 @@ Cursor 쪽 참고 캔버스(IDE only, 배포 아님):
 | US→KR headline | `high:downside` |
 | KR LETF alert | 관찰 (ratio ~0.09) |
 | VIX alert | 관찰 |
-| 파생 외인 콜/풋/선물 | missing / demo seed only |
-| KR OI | missing (`KRX_API` unset in that run) |
+| 파생 외인 K200 선물·옵션 전체 | KRX 공개 대시보드 실측 (콜/풋 분리 missing) |
+| KR OI | 이 보드 범위에서 제외 |
 
 공개 JSON은 이 핸드오프와 같이 브랜치에 커밋할 것(아래). cron 머지 후 Actions가 덮어씀.
 
