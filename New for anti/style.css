@@ -2587,9 +2587,10 @@ body.macro-mode .map-pane { flex: 1 1 100%; }
 .ms-ch-tick { font-size: 10px; color: #64748b; margin-top: 2px; }
 .ms-channel { text-align: left; width: 100%; font-family: inherit; }
 
-/* 0을 가운데 둔 발산형 막대: 순매수/순매도가 한눈에 갈려야 한다 */
-.ms-dist { display: flex; flex-direction: column; gap: 5px; }
-.ms-dist-row { display: grid; grid-template-columns: minmax(120px, 1.1fr) 2.4fr minmax(150px, auto); gap: 12px; align-items: center; }
+/* 0을 가운데 둔 발산형 막대: 수치는 행에 hover할 때만 툴팁으로 보인다 */
+.ms-dist { position: relative; display: flex; flex-direction: column; gap: 5px; }
+.ms-dist-row { display: grid; grid-template-columns: minmax(120px, 1.1fr) 2.4fr; gap: 12px; align-items: center; cursor: help; border-radius: 5px; outline: none; }
+.ms-dist-row:hover, .ms-dist-row:focus-visible { background: rgba(56,189,248,.06); }
 .ms-dist-row.on .ms-dist-label { color: #e2e8f0; }
 .ms-dist-label { font-size: 11.5px; color: #94a3b8; font-variant-numeric: tabular-nums; }
 .ms-dist-label span { display: block; font-size: 10px; color: #475569; }
@@ -2599,7 +2600,12 @@ body.macro-mode .map-pane { flex: 1 1 100%; }
 .ms-dist-fill { position: absolute; top: 0; bottom: 0; border-radius: 2px; }
 .ms-retail { background: #38bdf8; } .ms-foreign { background: #f472b6; } .ms-inst { background: #a78bfa; }
 .ms-dist-fill.neg { opacity: .55; }
-.ms-dist-val { font-size: 10.5px; color: #64748b; text-align: right; font-variant-numeric: tabular-nums; }
+.ms-flow-tip { position: absolute; z-index: 5; display: none; min-width: 166px; max-width: min(280px, 80vw); padding: 8px 10px; border: 1px solid rgba(125,211,252,.28); border-radius: 7px; background: rgba(8,15,28,.97); box-shadow: 0 10px 24px rgba(0,0,0,.35); color: #cbd5e1; font-size: 11px; line-height: 1.65; pointer-events: none; }
+.ms-flow-tip.is-visible { display: block; }
+.ms-flow-tip strong { display: block; margin-bottom: 3px; color: #f1f5f9; font-weight: 620; }
+.ms-flow-tip em { color: #64748b; font-style: normal; font-weight: 400; }
+.ms-flow-tip span { display: inline-block; margin-right: 9px; white-space: nowrap; }
+.ms-flow-tip b { color: #94a3b8; font-weight: 560; }
 .ms-dist-legend { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 10px; font-size: 10.5px; color: #64748b; }
 .ms-sw { display: inline-block; width: 9px; height: 9px; border-radius: 2px; margin-right: 5px; vertical-align: middle; }
 .ms-dist-zero { color: #475569; }
@@ -2625,5 +2631,7 @@ body.macro-mode .map-pane { flex: 1 1 100%; }
 .ms-history-legend { display: flex; flex-wrap: wrap; gap: 10px 16px; margin: 0 2px; font-size: 10.5px; color: #64748b; }
 .ms-history-legend i { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 5px; vertical-align: -1px; }
 .ms-history-empty { padding: 26px 12px; border: 1px dashed rgba(148,163,184,.22); border-radius: 9px; color: #64748b; font-size: 12px; text-align: center; }
-@media (max-width: 900px) { .ms-dist-row { grid-template-columns: minmax(88px, 1fr) 2fr; } .ms-dist-val { display: none; } }
+.ms-modal-scope { margin: -3px 0 13px; color: #94a3b8; font-size: 11.5px; line-height: 1.6; }
+.ms-modal-scope strong { color: #7dd3fc; font-weight: 600; }
+@media (max-width: 900px) { .ms-dist-row { grid-template-columns: minmax(88px, 1fr) 2fr; } }
 .fin-head-en { font-size: 11px; color: #64748b; letter-spacing: .04em; margin: -4px 0 8px; }

@@ -6874,8 +6874,11 @@ const msDivergingBars = (rows, opts = {}) => {
     const max = Math.max(...all.map(Math.abs), 1);
     return `
     <div class="ms-dist">
-        ${rows.map((r) => `
-            <div class="ms-dist-row${r.highlight ? ' on' : ''}">
+        ${rows.map((r, ri) => `
+            <div class="ms-dist-row${r.highlight ? ' on' : ''}" data-ms-flow-row="${ri}" tabindex="0"
+                aria-label="${finEsc(`${r.label}${r.sub ? ` ${r.sub}` : ''} 가격대 수급`)}"
+                data-ms-flow-label="${finEsc(r.label)}" data-ms-flow-sub="${finEsc(r.sub || '')}"
+                ${r.series.map((sx) => `data-ms-flow-${finEsc(sx.key)}="${finEsc(sx.display || msNum(sx.value))}"`).join(' ')}>
                 <span class="ms-dist-label">${finEsc(r.label)}${r.sub ? `<span>${finEsc(r.sub)}</span>` : ''}</span>
                 <span class="ms-dist-bars">
                     ${r.series.map((sx) => {
@@ -6888,13 +6891,49 @@ const msDivergingBars = (rows, opts = {}) => {
                         </span>`;
                     }).join('')}
                 </span>
-                <span class="ms-dist-val">${finEsc(r.valueText || '')}</span>
             </div>`).join('')}
+        <div class="ms-flow-tip" data-ms-flow-tip role="status" aria-live="polite"></div>
         <div class="ms-dist-legend">
             ${(opts.legend || []).map((l) => `<span><i class="ms-sw ms-${l.key}"></i>${finEsc(l.name)}</span>`).join('')}
-            <span class="ms-dist-zero">가운데가 0 · 왼쪽 순매도 / 오른쪽 순매수</span>
+            <span class="ms-dist-zero">가운데가 0 · 왼쪽 순매도 / 오른쪽 순매수 · 행에 마우스를 올리면 수치 표시</span>
         </div>
     </div>`;
+};
+
+// The values belong in the graph interaction, not in a fixed right-hand
+// column that repeats the same two participants on every row.  This also
+// gives keyboard users the same readout through focus/blur.
+const msWireFlowTooltips = (host) => {
+    const dist = host.querySelector('.ms-dist');
+    const tip = dist?.querySelector('[data-ms-flow-tip]');
+    if (!dist || !tip) return;
+    const labels = { retail: '개인', foreign: '외국인', inst: '기관' };
+    const place = (row, ev) => {
+        const box = dist.getBoundingClientRect();
+        const rr = row.getBoundingClientRect();
+        const px = ev?.clientX ?? (rr.left + rr.width * .72);
+        const py = ev?.clientY ?? rr.top;
+        const left = Math.min(Math.max(8, px - box.left + 12), Math.max(8, box.width - tip.offsetWidth - 8));
+        const top = Math.min(Math.max(8, py - box.top - tip.offsetHeight - 10), Math.max(8, box.height - tip.offsetHeight - 8));
+        tip.style.left = `${left}px`;
+        tip.style.top = `${top}px`;
+    };
+    const show = (row, ev) => {
+        const items = Object.entries(labels).map(([key, label]) => {
+            const value = row.dataset[`msFlow${key[0].toUpperCase()}${key.slice(1)}`];
+            return value === undefined ? '' : `<span><b>${label}</b> ${finEsc(value)}</span>`;
+        }).filter(Boolean).join('');
+        tip.innerHTML = `<strong>${finEsc(row.dataset.msFlowLabel || '')}${row.dataset.msFlowSub ? ` <em>${finEsc(row.dataset.msFlowSub)}</em>` : ''}</strong>${items}`;
+        tip.classList.add('is-visible');
+        place(row, ev);
+    };
+    dist.querySelectorAll('[data-ms-flow-row]').forEach((row) => {
+        row.addEventListener('mouseenter', (e) => show(row, e));
+        row.addEventListener('mousemove', (e) => place(row, e));
+        row.addEventListener('mouseleave', () => tip.classList.remove('is-visible'));
+        row.addEventListener('focus', () => show(row));
+        row.addEventListener('blur', () => tip.classList.remove('is-visible'));
+    });
 };
 
 // --- ① 수급 꼬임 -------------------------------------------------------------
@@ -7021,13 +7060,13 @@ const msLevelsTab = (D) => {
         label: `${msNum(b.price_lo)} ~ ${msNum(b.price_hi)}`,
         sub: `${b.n_days}일`,
         series: [
-            { key: 'retail', name: '개인', value: unitEok ? b.retail_net_krw : b.retail_net_shares },
-            { key: 'foreign', name: '외국인', value: unitEok ? b.foreign_net_krw : b.foreign_net_shares },
-            { key: 'inst', name: '기관', value: unitEok ? b.institution_net_krw : b.institution_net_shares },
+            { key: 'retail', name: '개인', value: unitEok ? b.retail_net_krw : b.retail_net_shares,
+                display: unitEok ? msEok(b.retail_net_krw / 1e8) : msShares(b.retail_net_shares) },
+            { key: 'foreign', name: '외국인', value: unitEok ? b.foreign_net_krw : b.foreign_net_shares,
+                display: unitEok ? msEok(b.foreign_net_krw / 1e8) : msShares(b.foreign_net_shares) },
+            { key: 'inst', name: '기관', value: unitEok ? b.institution_net_krw : b.institution_net_shares,
+                display: unitEok ? msEok(b.institution_net_krw / 1e8) : msShares(b.institution_net_shares) },
         ],
-        valueText: unitEok
-            ? `개인 ${msEok(b.retail_net_krw)} · 외인 ${msEok(b.foreign_net_krw)}`
-            : `개인 ${msShares(b.retail_net_shares)} · 외인 ${msShares(b.foreign_net_shares)}`,
     }));
 
     return `
@@ -7258,7 +7297,26 @@ const msModalFor = (key, D) => {
             date: dc.as_of, investor_deposit_eok: dc.investor_deposit_eok, credit_loan_eok: dc.credit_loan_eok || dc.credit_balance_eok,
             uncollected_eok: dc.uncollected_eok, forced_sale_eok: dc.forced_sale_eok, credit_over_deposit_pct: dc.credit_over_deposit_pct,
         }];
+        const excluded = new Set((dc.ui_display || {}).exclude_keys || []);
+        const components = (Array.isArray(dc.components) ? dc.components : [])
+            .filter((c) => c && !excluded.has(c.key));
+        const componentRows = components.map((c) => {
+            const unit = c.preferred_unit || '';
+            const value = unit === '조원' && Number.isFinite(Number(c.value_jo))
+                ? `${Number(c.value_jo).toFixed(3)}조`
+                : unit === '억원' && Number.isFinite(Number(c.value_eok))
+                    ? `${Number(c.value_eok).toLocaleString('ko-KR', { maximumFractionDigits: 1 })}억`
+                    : unit === 'pct' && Number.isFinite(Number(c.value_pct))
+                        ? `${Number(c.value_pct).toFixed(2)}%` : '—';
+            return [finEsc(c.label_ko || c.key || ''), value, finEsc(dc.as_of || doc.as_of || '')];
+        });
+        const snapshot = componentRows.length
+            ? msTable(['현재 항목', '현재값', '기준일'], componentRows)
+            : `<p class="ms-history-empty">현재 구성요소 스냅샷이 없습니다.</p>`;
+        const uiNote = (dc.ui_display || {}).scale_note_ko || doc.ui_ko || '';
         return { title: '신용융자·예탁금·미수·반대매매 추이', html:
+            `<p class="ms-modal-scope"><strong>시장 전체 공표값</strong> · 종목·투자자·증권사별 포지션이 아닙니다.</p>` +
+            snapshot +
             msHistoryChart('예탁금·신용융자 (조원)', fallback, [
                 { label: '예탁금', color: '#38bdf8', value: (p) => Number(p.investor_deposit_eok) / 10000 },
                 { label: '신용융자', color: '#f472b6', value: (p) => Number(p.credit_loan_eok) / 10000 },
@@ -7270,7 +7328,7 @@ const msModalFor = (key, D) => {
             msHistoryChart('신용 / 예탁금 (%)', fallback, [
                 { label: '신용·예탁 비율', color: '#a78bfa', value: (p) => p.credit_over_deposit_pct },
             ], { unit: '%' }) +
-            `<p class="fin-note">시장 전체 공표값입니다. 특정 종목·투자자·증권사 포지션이 아닙니다.</p>` };
+            `<p class="fin-note">${finEsc(uiNote)}</p>` };
     }
     if (key === 'letf_cat') {
         const by = ((m.letf_category_share || {}).by_category) || {};
@@ -7381,6 +7439,7 @@ const renderMicrostructure = async (host) => {
         // paint() twice.
         on('[data-ms-modal]:not([data-ms-stock])', (b) => { MS_MODAL = msModalFor(b.dataset.msModal, D); paint(); });
         on('[data-ms-modal-close]', (b, e) => { if (e.target === b) { MS_MODAL = null; paint(); } });
+        msWireFlowTooltips(host);
         mmWireCharts(host);
     };
     paint();
