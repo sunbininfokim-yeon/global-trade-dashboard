@@ -2499,15 +2499,23 @@ body.macro-mode .map-pane { flex: 1 1 100%; }
 .mm-legend-note { font-size: 10.5px; color: #64748b; margin: 6px 0 0; display: flex; align-items: center; gap: 6px; }
 .mm-swatch-ma { display: inline-block; width: 14px; height: 0; border-top: 1.6px dashed #fbbf24; }
 
+.ms-sub-h { font-size: 12px; font-weight: 620; color: #cbd5e1; margin: 16px 0 6px; }
+
 /* Price-level distribution: index path + net-buying profile on one price axis */
 .ms-plc-box { position: relative; margin: 14px 0 4px; }
 .ms-plc { width: 100%; height: 400px; display: block; overflow: visible; }
 .ms-plc-bar { fill: rgba(148,163,184,.45); }
-.ms-plc-bar.neg { fill: rgba(148,163,184,.24); }
-.ms-plc-bar:hover { fill: rgba(203,213,225,.72); }
-.ms-plc-line { fill: none; stroke: #38bdf8; stroke-width: 2; stroke-linejoin: round; vector-effect: non-scaling-stroke; }
-.ms-plc-sw-line { display: inline-block; width: 14px; height: 0; border-top: 2px solid #38bdf8; }
-.ms-plc-sw-bar { display: inline-block; width: 11px; height: 9px; background: rgba(148,163,184,.45); margin-left: 8px; }
+.ms-plc-bar.neg { fill-opacity: .55; }
+.ms-plc-bar:hover { fill-opacity: 1; }
+.ms-plc-retail { fill: rgba(56,189,248,.72); }
+.ms-plc-foreign { fill: rgba(244,114,182,.72); }
+.ms-plc-inst { fill: rgba(167,139,250,.72); }
+.ms-plc-line { fill: none; stroke: #e2e8f0; stroke-width: 2; stroke-linejoin: round; vector-effect: non-scaling-stroke; }
+.ms-plc-sw-line { display: inline-block; width: 14px; height: 0; border-top: 2px solid #e2e8f0; }
+.ms-plc-sw { display: inline-block; width: 11px; height: 9px; margin-left: 8px; }
+.ms-plc-sw.ms-plc-retail { background: rgba(56,189,248,.72); }
+.ms-plc-sw.ms-plc-foreign { background: rgba(244,114,182,.72); }
+.ms-plc-sw.ms-plc-inst { background: rgba(167,139,250,.72); }
 @media (max-width: 720px) { .ms-plc { height: 320px; } }
 
 .mm-bars { display: flex; flex-direction: column; gap: 7px; }
