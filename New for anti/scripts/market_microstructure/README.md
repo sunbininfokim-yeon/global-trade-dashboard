@@ -60,6 +60,15 @@ export KRX_API='…'   # optional
 - Naver → 외인/기관/개인 순매수
 - 키는 코드·깃에 넣지 말 것 (채팅에도 재부착 금지)
 
+### KOSPI200 외국인 선물·콜·풋 수급
+
+OI(전체 미결제약정)는 KRX 파생 일별 API로, 외국인 **당일 거래수급**은
+투자자별 거래실적 CSV로 별도 받는다. `--csv-fut`, `--csv-opt-call`,
+`--csv-opt-put`에 각각 전달한다. CSV는 `일자`와 외국인 `매수`·`매도`
+또는 `합계(순매수)` 열을 가진다. 산출 JSON은 매수·매도·순매수를
+백만원 단위로 보존하고 `kr_foreign_derivatives_history_v1.json`에 실측만
+일별 적재한다. 외국인 보유 OI/포지션으로 해석하지 않는다.
+
 ## AI Casino brief
 
 페이퍼 섹션 미러: concentration · leverage reset · **AUM/유동시총** · foreign vs retail · largest ETF drill-down.

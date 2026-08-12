@@ -26,6 +26,49 @@ from collect_us_oi_daily import (  # noqa: E402
 from fetch_kr_derivatives import fetch_kr_derivatives_bundle  # noqa: E402
 
 
+FLOW_PRODUCTS = ("futures", "options_call", "options_put")
+FLOW_FIELDS = ("foreign_buy_mn_krw", "foreign_sell_mn_krw", "foreign_net_mn_krw")
+
+
+def foreign_flow_points(investor: dict) -> list[dict]:
+    """Pivot three CSV series into observed, date-keyed daily flow points."""
+    by_date: dict[str, dict] = {}
+    for product in FLOW_PRODUCTS:
+        for row in investor.get(product) or []:
+            date = str(row.get("date") or "")
+            if not date or not any(row.get(k) is not None for k in FLOW_FIELDS):
+                continue
+            point = by_date.setdefault(date, {"date": date})
+            point[product] = {k: row.get(k) for k in FLOW_FIELDS}
+    return [by_date[k] for k in sorted(by_date)]
+
+
+def append_foreign_flow_history(path: Path, investor: dict) -> dict:
+    """Merge observed CSV points only; demo/missing never enter the archive."""
+    previous: dict = {}
+    if path.exists():
+        try:
+            previous = json.loads(path.read_text(encoding="utf-8"))
+        except (json.JSONDecodeError, OSError):
+            previous = {}
+    merged = {str(p.get("date")): p for p in previous.get("points") or [] if p.get("date")}
+    for fresh in foreign_flow_points(investor):
+        old = merged.get(fresh["date"], {"date": fresh["date"]})
+        merged[fresh["date"]] = {**old, **fresh}
+    points = [merged[k] for k in sorted(merged)]
+    return {
+        "schema_version": "kr-foreign-derivatives-flow-history-v1",
+        "as_of": points[-1]["date"] if points else None,
+        "unit": "백만원 (당일 매수·매도·순매수)",
+        "quality": "observed" if points else "missing",
+        "points": points,
+        "note_ko": (
+            "외국인 선물·콜·풋의 일별 거래수급 아카이브. "
+            "보유 미결제약정(OI)·포지션·만기별 노출이 아니다. demo 데이터는 적재하지 않는다."
+        ),
+    }
+
+
 def _md(kr: dict, us: dict, rules: dict) -> str:
     lines = [
         f"# Derivatives board — {us.get('as_of') or kr.get('as_of')}",
@@ -111,9 +154,13 @@ def main() -> int:
     path = pub / "derivatives_board_v1.json"
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(out, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    history_path = pub / "kr_foreign_derivatives_history_v1.json"
+    history = append_foreign_flow_history(history_path, kr.get("investor_nets") or {})
+    history_path.write_text(json.dumps(history, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     md = _md(kr, us, rules)
     (ROOT / "DERIVATIVES_BOARD.md").write_text(md, encoding="utf-8")
     print(f"Wrote {path}")
+    print(f"Wrote {history_path}")
     print(f"Wrote {ROOT / 'DERIVATIVES_BOARD.md'}")
     if args.print_stats:
         print(md)

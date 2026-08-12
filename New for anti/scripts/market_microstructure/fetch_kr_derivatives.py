@@ -21,7 +21,6 @@ from typing import Any
 import requests
 
 ROOT = Path(__file__).resolve().parent
-FIXTURES = ROOT / "tests" / "fixtures"
 
 UA = {"User-Agent": "market-microstructure/1.0", "Accept": "application/json"}
 
@@ -185,34 +184,75 @@ def equity_options_oi_skew(
     return out
 
 
+def _csv_value(row: dict[str, Any], *names: str) -> str | None:
+    """Read Korean/English CSV headers without inventing an absent value."""
+    normalized = {re.sub(r"[\s_()·/-]", "", str(k)).lower(): v for k, v in row.items()}
+    for name in names:
+        if name in row and row[name] not in (None, ""):
+            return row[name]
+        value = normalized.get(re.sub(r"[\s_()·/-]", "", name).lower())
+        if value not in (None, ""):
+            return value
+    return None
+
+
+def _csv_num(raw: Any) -> float | None:
+    if raw in (None, ""):
+        return None
+    try:
+        return float(str(raw).replace(",", "").replace("+", "").strip())
+    except ValueError:
+        return None
+
+
 def load_investor_csv(path: Path) -> list[dict[str, Any]]:
-    """Parse data.krx CSV export (일자, 외국인 합계, ...). Unit often 백만원."""
+    """Parse a KRX investor CSV into foreign buy/sell/net amounts.
+
+    A CSV that contains only ``외국인 합계`` remains a valid net-flow-only
+    observation; missing buy/sell legs are never reconstructed from a net.
+    Amounts retain KRX's export unit (normally 백만원), not contracts or OI.
+    """
     text = path.read_text(encoding="utf-8-sig")
     reader = csv.DictReader(io.StringIO(text))
     rows = []
     for row in reader:
-        # flexible headers
-        date = row.get("일자") or row.get("date") or row.get("TRD_DD")
-        foreign = row.get("외국인 합계") or row.get("외국인합계") or row.get("foreign_net")
-        inst = row.get("기관 합계") or row.get("기관합계") or row.get("institution_net")
-        retail = row.get("개인") or row.get("retail_net")
-        try:
-            foreign_f = float(str(foreign).replace(",", "")) if foreign not in (None, "") else None
-        except ValueError:
-            foreign_f = None
+        date = _csv_value(row, "일자", "거래일", "date", "TRD_DD")
+        buy = _csv_num(_csv_value(
+            row, "외국인 매수", "외국인매수", "외국인 매수금액", "외국인매수금액",
+            "foreign_buy", "foreign_buy_mn_krw",
+        ))
+        sell = _csv_num(_csv_value(
+            row, "외국인 매도", "외국인매도", "외국인 매도금액", "외국인매도금액",
+            "foreign_sell", "foreign_sell_mn_krw",
+        ))
+        net = _csv_num(_csv_value(
+            row, "외국인 합계", "외국인합계", "외국인 순매수", "외국인순매수",
+            "foreign_net", "foreign_net_mn_krw",
+        ))
+        if net is None and buy is not None and sell is not None:
+            net = buy - sell
+        inst = _csv_num(_csv_value(row, "기관 합계", "기관합계", "institution_net"))
+        retail = _csv_num(_csv_value(row, "개인", "개인 합계", "개인합계", "retail_net"))
+        if not date or (buy is None and sell is None and net is None):
+            continue
         rows.append(
             {
                 "date": str(date).replace("/", "-") if date else None,
-                "foreign_net_mn_krw": foreign_f,
-                "institution_net_mn_krw": None
-                if inst in (None, "")
-                else float(str(inst).replace(",", "")),
-                "retail_net_mn_krw": None
-                if retail in (None, "")
-                else float(str(retail).replace(",", "")),
+                "foreign_buy_mn_krw": buy,
+                "foreign_sell_mn_krw": sell,
+                "foreign_net_mn_krw": net,
+                "institution_net_mn_krw": inst,
+                "retail_net_mn_krw": retail,
             }
         )
-    return rows
+    return sorted(rows, key=lambda x: str(x["date"]))
+
+
+def _latest_observed(rows: list[dict[str, Any]] | None) -> dict[str, Any] | None:
+    valid = [r for r in (rows or []) if any(
+        r.get(k) is not None for k in ("foreign_buy_mn_krw", "foreign_sell_mn_krw", "foreign_net_mn_krw")
+    )]
+    return valid[-1] if valid else None
 
 
 def fetch_kr_derivatives_bundle(
@@ -267,36 +307,31 @@ def fetch_kr_derivatives_bundle(
         errors.append("KRX_API unset — OpenAPI OI/skew not fetched")
 
     investor: dict[str, Any] = {
+        "schema_version": "kr-foreign-derivatives-flow-v2",
         "note_ko": (
-            "외인 콜/풋 순매수는 data.krx 「투자자별 거래실적」 CSV를 콜·풋 각각 export 하거나 "
-            "이용신청된 OpenAPI가 생기면 자동 수집. 웹 비로그인=LOGOUT."
+            "외국인 선물·콜·풋의 매수/매도/순매수는 투자자별 거래실적에서 각각 입력한다. "
+            "이는 당일 거래수급이며 외국인의 보유 OI/포지션이 아니다."
         ),
-        "unit": "백만원 (순매수; 음수=순매도)",
+        "unit": "백만원 (매수·매도·순매수; 순매수 음수=순매도)",
         "futures": None,
         "options_call": None,
         "options_put": None,
+        "latest": {"futures": None, "options_call": None, "options_put": None},
         "quality": "missing",
     }
     if investor_fut_csv and investor_fut_csv.exists():
         investor["futures"] = load_investor_csv(investor_fut_csv)
-        investor["quality"] = "observed"
         sources.append("csv_fut_investor")
     if investor_opt_call_csv and investor_opt_call_csv.exists():
         investor["options_call"] = load_investor_csv(investor_opt_call_csv)
-        investor["quality"] = "observed"
         sources.append("csv_opt_call_investor")
     if investor_opt_put_csv and investor_opt_put_csv.exists():
         investor["options_put"] = load_investor_csv(investor_opt_put_csv)
-        investor["quality"] = "observed"
         sources.append("csv_opt_put_investor")
-
-    # seed fixture if nothing
-    seed = FIXTURES / "kr_investor_derivatives.json"
-    if investor["quality"] == "missing" and seed.exists():
-        seeded = __import__("json").loads(seed.read_text(encoding="utf-8"))
-        investor.update(seeded.get("investor") or {})
-        investor["quality"] = seeded.get("quality", "demo")
-        sources.append("fixture_seed")
+    for product in ("futures", "options_call", "options_put"):
+        investor["latest"][product] = _latest_observed(investor.get(product))
+    if any(investor["latest"].values()):
+        investor["quality"] = "observed"
 
     return {
         "schema_version": "kr-derivatives-v1",

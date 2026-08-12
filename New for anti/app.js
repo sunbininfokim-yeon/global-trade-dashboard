@@ -6811,6 +6811,7 @@ const MS_FILES = {
     alerts: 'alert_levels_v1.json',
     conc: 'kospi_concentration_history_v1.json',
     board: 'derivatives_board_v1.json',
+    deriv_history: 'kr_foreign_derivatives_history_v1.json',
     brief: 'ai_casino_brief_v1.json',
     levels: 'investor_price_levels_v1.json',
     micro: 'market_microstructure_v1.json',
@@ -7273,6 +7274,33 @@ const msLevelsTab = (D) => {
 };
 
 // --- ③ US → KR 조기경보 ------------------------------------------------------
+const msForeignDerivativeFlow = (D, product) => {
+    const inv = ((D.board || {}).kr || {}).investor_nets || {};
+    if (inv.quality !== 'observed') return null;
+    const direct = inv.latest?.[product];
+    const rows = Array.isArray(inv[product]) ? inv[product] : [];
+    const fallback = rows.filter((r) => r && [r.foreign_buy_mn_krw, r.foreign_sell_mn_krw, r.foreign_net_mn_krw]
+        .some((v) => Number.isFinite(Number(v)))).slice(-1)[0];
+    return direct || fallback || null;
+};
+
+const msDerivativeFlowText = (row) => {
+    if (!row) return msMissing('데이터 없음');
+    const buy = Number(row.foreign_buy_mn_krw);
+    const sell = Number(row.foreign_sell_mn_krw);
+    const net = Number(row.foreign_net_mn_krw);
+    if (Number.isFinite(buy) && Number.isFinite(sell)) {
+        return `매수 ${Math.round(buy / 100).toLocaleString('ko-KR')}억 · 매도 ${Math.round(sell / 100).toLocaleString('ko-KR')}억`;
+    }
+    return Number.isFinite(net) ? `순매수 ${msEok(net / 100)}` : msMissing('데이터 없음');
+};
+
+const msDerivativeFlowSub = (row) => {
+    if (!row) return '투자자별 선물·콜·풋 자료 연결 필요';
+    const net = Number(row.foreign_net_mn_krw);
+    return `${finEsc(row.date || '')} · ${Number.isFinite(net) ? `순매수 ${msEok(net / 100)}` : '매수·매도 분리값'}`;
+};
+
 const msUsKr = (D) => {
     const t = D.transmission || {};
     const gs = t.global_spillover || {};
@@ -7285,6 +7313,9 @@ const msUsKr = (D) => {
     const letf = a.kr_hynix_letf || {};
     const vix = a.us_vix_to_kr || {};
     const hit = gs.open30m_hit || {};
+    const foreignFut = msForeignDerivativeFlow(D, 'futures');
+    const foreignCall = msForeignDerivativeFlow(D, 'options_call');
+    const foreignPut = msForeignDerivativeFlow(D, 'options_put');
 
     return `
     <section class="fin-block fin-block-wide">
@@ -7343,11 +7374,13 @@ const msUsKr = (D) => {
             ${msCard('US OI 룰 헤드라인',
                 `<span class="ms-badge ${MS_LEVEL_CLASS[(b.us_kr_rules || {}).headline_level] || ''}">${finEsc((b.us_kr_rules || {}).headline_level || '—')}</span>`,
                 '', null)}
-            ${msCard('코스피200 외인 콜/풋/선물', msMissing('데이터 없음'), 'KRX_API 키 또는 CSV 주입 필요', null)}
+            ${msCard('외국인 선물 당일 수급', msDerivativeFlowText(foreignFut), msDerivativeFlowSub(foreignFut), 'kr_derivatives')}
+            ${msCard('외국인 콜옵션 당일 수급', msDerivativeFlowText(foreignCall), msDerivativeFlowSub(foreignCall), 'kr_derivatives')}
+            ${msCard('외국인 풋옵션 당일 수급', msDerivativeFlowText(foreignPut), msDerivativeFlowSub(foreignPut), 'kr_derivatives')}
         </div>
         <p class="fin-note">
             VIX 알림은 Cboe 공식 VIX의 전일 대비 변화율입니다 — <strong>풋 미결제약정(OI)이 아닙니다.</strong>
-            종목 단위 풋 OI 히스토리가 공개되지 않아 그 임계값은 만들 수 없습니다.
+            외국인 선물·콜·풋은 <strong>당일 거래수급</strong>이며 외국인 보유 OI·포지션이 아닙니다.
         </p>
     </section>
 
@@ -7486,6 +7519,48 @@ const msModalFor = (key, D) => {
                 { label: '신용·예탁 비율', color: '#a78bfa', value: (p) => p.credit_over_deposit_pct },
             ], { unit: '%' }) +
             `<p class="fin-note">${finEsc(uiNote)}</p>` };
+    }
+    if (key === 'kr_derivatives') {
+        const kr = (D.board || {}).kr || {};
+        const inv = kr.investor_nets || {};
+        const stored = (D.deriv_history || {}).points || [];
+        const fallbackByDate = {};
+        ['futures', 'options_call', 'options_put'].forEach((product) => {
+            (inv[product] || []).forEach((row) => {
+                if (!row?.date) return;
+                fallbackByDate[row.date] = fallbackByDate[row.date] || { date: row.date };
+                fallbackByDate[row.date][product] = row;
+            });
+        });
+        const points = (D.deriv_history || {}).quality === 'observed' ? stored
+            : inv.quality === 'observed' ? Object.values(fallbackByDate).sort((a, b) => a.date.localeCompare(b.date)) : [];
+        const flowValue = (point, product, field) => Number(point?.[product]?.[field]);
+        const flowAmount = (point, product) => {
+            const row = point?.[product];
+            if (!row) return '—';
+            const buy = Number(row.foreign_buy_mn_krw), sell = Number(row.foreign_sell_mn_krw), net = Number(row.foreign_net_mn_krw);
+            return Number.isFinite(buy) && Number.isFinite(sell)
+                ? `매수 ${Math.round(buy / 100).toLocaleString('ko-KR')}억 · 매도 ${Math.round(sell / 100).toLocaleString('ko-KR')}억`
+                : Number.isFinite(net) ? `순매수 ${msEok(net / 100)}` : '—';
+        };
+        const futOi = kr.kospi200_futures_oi || {};
+        const optOi = kr.kospi200_options || {};
+        return { title: 'KOSPI200 · 외국인 파생 당일 수급', html:
+            `<p class="ms-modal-scope"><strong>외국인 거래수급</strong> · 매수/매도/순매수는 당일 거래금액이며 보유 OI·포지션이 아닙니다.</p>` +
+            `<div class="fin-cards ms-deriv-oi-cards">
+                ${msCard('K200 선물 전체 OI', futOi.quality === 'observed' ? msNum(futOi.open_interest_qty) : msMissing('데이터 없음'), futOi.quality === 'observed' ? `기준 ${finEsc(kr.as_of || '')}` : 'KRX 선물 API 이용신청 필요', null)}
+                ${msCard('K200 콜 전체 OI', optOi.quality === 'observed' ? msNum(optOi.call_oi) : msMissing('데이터 없음'), optOi.quality === 'observed' ? `P/C OI ${Number.isFinite(optOi.put_call_oi) ? optOi.put_call_oi.toFixed(2) : '—'}` : 'KRX 옵션 API 이용신청 필요', null)}
+                ${msCard('K200 풋 전체 OI', optOi.quality === 'observed' ? msNum(optOi.put_oi) : msMissing('데이터 없음'), optOi.quality === 'observed' ? `기준 ${finEsc(optOi.bas_dd || kr.as_of || '')}` : 'KRX 옵션 API 이용신청 필요', null)}
+            </div>` +
+            msHistoryChart('외국인 일별 순매수/순매도 (억원)', points, [
+                { label: '선물', color: '#38bdf8', value: (p) => flowValue(p, 'futures', 'foreign_net_mn_krw') / 100 },
+                { label: '콜옵션', color: '#a78bfa', value: (p) => flowValue(p, 'options_call', 'foreign_net_mn_krw') / 100 },
+                { label: '풋옵션', color: '#fbbf24', value: (p) => flowValue(p, 'options_put', 'foreign_net_mn_krw') / 100 },
+            ], { unit: '억', empty: '실측 외국인 선물·콜·풋 시계열이 아직 없습니다.' }) +
+            (points.length ? msTable(['날짜', '선물', '콜옵션', '풋옵션'], points.slice(-20).reverse().map((p) => [
+                finEsc(p.date), flowAmount(p, 'futures'), flowAmount(p, 'options_call'), flowAmount(p, 'options_put'),
+            ])) : '') +
+            `<p class="fin-note">${finEsc(inv.note_ko || '실측 CSV/API가 연결되면 일별 아카이브에 추가됩니다. demo 값은 표시·적재하지 않습니다.')}</p>` };
     }
     if (key === 'letf_cat') {
         const by = ((m.letf_category_share || {}).by_category) || {};
