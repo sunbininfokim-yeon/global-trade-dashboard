@@ -1,18 +1,18 @@
 # US→KR L3 pipeline — 2026-08-12
 
-Headline: `high:vol_up`
-Tier B edges fired: 8
+Headline: `high:downside`
+Tier B edges fired: 11
 Sources: cboe_vol_indices, finra_short, cboe_spot, yahoo_spot_options_fallback, cboe_options
 
 ## Channels
-- downside: watch heat=1.875 kr=['000660']
-- upside: watch heat=1.8833 kr=['000660', '005930']
-- vol_up: high heat=2.5152 kr=['000660', '005930']
-- vol_down: watch heat=1.6014 kr=['000660', '005930']
+- downside: high heat=8.5735 kr=['000660', '005930']
+- upside: quiet heat=0.0 kr=[]
+- vol_up: high heat=3.2952 kr=['000660', '005930']
+- vol_down: watch heat=1.7868 kr=['000660', '005930']
 
 ## Hit-rate (overnight open, any driver ≤−2%)
 - alert days: 96 / 247
-- frac_neg alert=0.7812 vs baseline=0.4777 (lift=0.3035)
+- frac_neg alert=0.7812 vs baseline=0.4818 (lift=0.2994)
 - mean alert R=-0.01958 baseline=0.006566
 
 ## Recalibration suggestions
