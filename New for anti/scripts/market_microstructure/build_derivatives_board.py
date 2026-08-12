@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Build KR derivatives + US daily OI archive + rule-based KR watches.
 
-  export KRX_API=...   # for KR OI/skew via OpenAPI
+  export KRX_API=...   # for KR futures/options EOD activity via OpenAPI
   # optional CSVs from data.krx 투자자별 거래실적 (콜/풋/선물 각각):
   #   --csv-opt-call path --csv-opt-put path --csv-fut path
 
@@ -27,40 +27,48 @@ from fetch_kr_derivatives import fetch_kr_derivatives_bundle  # noqa: E402
 
 
 def _md(kr: dict, us: dict, rules: dict) -> str:
+    kr_as_of = kr.get("as_of") or "—"
+    us_as_of = us.get("as_of") or "—"
     lines = [
-        f"# Derivatives board — {us.get('as_of') or kr.get('as_of')}",
+        f"# Derivatives board — KR {kr_as_of} / US {us_as_of}",
         "",
-        "## 오늘의 코스피200 · 외인 파생 (순매수 백만원)",
+        "## 오늘의 코스피200 · 외국인 파생 관찰",
         "",
     ]
     inv = kr.get("investor_nets") or {}
-    seed = inv.get("options_total_seed_from_ui") or []
-    if seed:
-        latest = seed[-1]
-        lines.append(
-            f"- UI시드(옵션 전체): {latest.get('date')} 외인 순매수 **{latest.get('foreign_net_mn_krw')}**백만원 "
-            f"(quality={inv.get('quality')})"
-        )
-        lines.append("- 콜/풋 분리는 data.krx에서 권리유형 바꿔 CSV export 후 플래그로 주입")
+    public_flow = inv.get("public_dashboard") or {}
+
+    def krw(value: object, *, signed: bool = False) -> str:
+        if not isinstance(value, (int, float)):
+            return "—"
+        prefix = "+" if signed and value >= 0 else ""
+        return f"{prefix}{value / 1e12:.3f}조원"
+
+    for key, label in (("futures", "K200 선물"), ("options_total", "K200 옵션 전체")):
+        item = public_flow.get(key) or {}
+        foreign = (item.get("investors") or {}).get("foreign") or {}
+        if item.get("quality") == "observed":
+            lines.append(
+                f"- {label} 외국인: 매수 **{krw(foreign.get('buy_krw'))}** / "
+                f"매도 **{krw(foreign.get('sell_krw'))}** / 순매수 **{krw(foreign.get('net_krw'), signed=True)}** "
+                f"(거래일 {item.get('as_of')}, KRX 표출 {item.get('observed_at_krx')})"
+            )
+    lines.append("- 옵션 콜/풋 외국인 분리: 인증된 data.krx 상세 CSV가 필요하며, 현재 수치를 추정하지 않음.")
     opt = kr.get("kospi200_options") or {}
     lines += [
         "",
-        f"- K200 옵션 OI: call={opt.get('call_oi')} put={opt.get('put_oi')} "
-        f"P/C OI={opt.get('put_call_oi')} ({opt.get('quality')})",
-        f"- K200 선물 OI: {(kr.get('kospi200_futures_oi') or {}).get('open_interest_qty')} "
-        f"({(kr.get('kospi200_futures_oi') or {}).get('quality')})",
+        "## 코스피200 시장 전체 거래 활동 (투자자별 아님)",
         "",
-        "## 한국 개별주 옵션 OI / 스큐",
+        f"- K200 옵션 거래량: call={opt.get('call_volume')} put={opt.get('put_volume')} "
+        f"P/C 거래량={opt.get('put_call_volume')} ({opt.get('quality')})",
+        f"- K200 옵션 거래대금: call={opt.get('call_trading_value_krw')} "
+        f"put={opt.get('put_trading_value_krw')} P/C={opt.get('put_call_trading_value')}",
+        f"- K200 선물 거래량: {(kr.get('kospi200_futures') or {}).get('volume')} · "
+        f"거래대금: {(kr.get('kospi200_futures') or {}).get('trading_value_krw')} "
+        f"({(kr.get('kospi200_futures') or {}).get('quality')})",
         "",
     ]
-    for e in kr.get("equity_options_oi_skew") or []:
-        lines.append(
-            f"- {e.get('underlying')}: P/C OI={e.get('put_call_oi')} "
-            f"skew(put−call IV)={e.get('skew_put_minus_call_iv')} ({e.get('quality')})"
-        )
-    if not (kr.get("equity_options_oi_skew")):
-        lines.append("- (KRX_API + eqsop 이용신청 필요)")
-    lines += ["", f"## US→KR 룰 헤드라인: **{rules.get('headline_level')}**", ""]
+    lines += ["", f"## US→KR 관찰 레벨: **{rules.get('headline_level')}**", ""]
     for a in (rules.get("alerts") or [])[:20]:
         lines.append(
             f"- [{a.get('level')}/{a.get('channel')}] {a.get('us')}→{a.get('kr')} "
@@ -69,7 +77,7 @@ def _md(kr: dict, us: dict, rules: dict) -> str:
     if kr.get("errors"):
         lines += ["", "## Errors", ""] + [f"- {e}" for e in kr["errors"]]
     lines.append("")
-    return "\n".join(lines)
+    return "\n".join(lines).rstrip() + "\n"
 
 
 def main() -> int:

@@ -1,25 +1,25 @@
-# US→KR L3 pipeline — 2026-08-08
+# US→KR L3 pipeline — 2026-08-12
 
-Headline: `high:downside`
-Tier B edges fired: 3
+Headline: `high:vol_up`
+Tier B edges fired: 8
 Sources: cboe_vol_indices, finra_short, cboe_spot, yahoo_spot_options_fallback, cboe_options
 
 ## Channels
-- downside: high heat=7.1331 kr=['000660', '005930']
-- upside: quiet heat=0.0 kr=[]
-- vol_up: watch heat=1.912 kr=['000660', '005930']
-- vol_down: quiet heat=0.0 kr=[]
+- downside: watch heat=1.875 kr=['000660']
+- upside: watch heat=1.8833 kr=['000660', '005930']
+- vol_up: high heat=2.5152 kr=['000660', '005930']
+- vol_down: watch heat=1.6014 kr=['000660', '005930']
 
 ## Hit-rate (overnight open, any driver ≤−2%)
-- alert days: 95 / 246
-- frac_neg alert=0.7789 vs baseline=0.4756 (lift=0.3033)
-- mean alert R=-0.019675 baseline=0.006639
+- alert days: 96 / 247
+- frac_neg alert=0.7812 vs baseline=0.4777 (lift=0.3035)
+- mean alert R=-0.01958 baseline=0.006566
 
 ## Recalibration suggestions
-- downside_hit_rate_mean=0.8355
+- downside_hit_rate_mean=0.8319
 - keep_downside_emphasis=True
 
 ## Regime-proxy backtest (downside overnight)
-- n=244 mean=-0.028192 frac_neg=0.8402
+- n=248 mean=-0.027777 frac_neg=0.8387
 
-Tier A 고정 링크 (+ Tier B corr 발견, 하향 가중). 주체 특정 없음. 하방 채널 강조. open30m_prior는 수익률 버킷 프록시.
+Tier A 고정 링크 (+ Tier B corr 발견, 하향 가중). 주체 특정 없음. 하방=풋 우세 레짐×KR 링크 heat. open30m_prior는 수익률 버킷 프록시(옵션 히스토리 아님).

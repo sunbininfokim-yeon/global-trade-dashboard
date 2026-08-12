@@ -1,11 +1,13 @@
-"""Korea derivatives: KOSPI200 fut/opt OI + investor nets + equity-option OI/skew.
+"""Korea derivatives: KOSPI200 futures/options activity + investor flow.
 
 Sources (priority):
-  1) KRX OpenAPI (`KRX_API`) — drv/fut_bydd_trd, drv/opt_bydd_trd, drv/eqsop_bydd_trd
-  2) Manual CSV/JSON export from data.krx 「투자자별 거래실적」 (콜/풋 각각 조회 후 저장)
-  3) Fixture seed (demo only)
+  1) KRX OpenAPI (`KRX_API`) — drv/fut_bydd_trd, drv/opt_bydd_trd
+  2) KRX public dashboard — KOSPI200 futures/options *aggregate* investor buy/sell/net
+  3) Manual CSV/JSON export from data.krx 「투자자별 거래실적」 (콜/풋 각각 조회 후 저장)
 
-data.krx web JSON requires login (LOGOUT for anonymous) — not scraped here.
+The public dashboard is intentionally limited to KOSPI200 futures and options
+as a whole.  It cannot identify call versus put investor flow; that detailed
+table still requires an authenticated data.krx CSV export.
 """
 
 from __future__ import annotations
@@ -20,10 +22,17 @@ from typing import Any
 
 import requests
 
-ROOT = Path(__file__).resolve().parent
-FIXTURES = ROOT / "tests" / "fixtures"
-
 UA = {"User-Agent": "market-microstructure/1.0", "Accept": "application/json"}
+KRX_MAIN_URL = "https://data.krx.co.kr/contents/MDC/MAIN/main/index.cmd"
+KRX_MAIN_TREND_URL = (
+    "https://data.krx.co.kr/comm/bldAttendant/getJsonData.cmd?"
+    "bld=dbms/MDC/MAIN/MDCMAIN00103"
+)
+KRX_MAIN_PRODUCTS = {
+    "futures": "KR___FUK2I",
+    "options_total": "KR___OPK2I",
+}
+KRX_MAIN_UNIT = 1_000_000_000  # dashboard labels investor amounts as 십억원
 
 
 def _key() -> str | None:
@@ -79,6 +88,88 @@ def _num(row: dict[str, Any], *keys: str) -> float | None:
     return None
 
 
+def _integer(value: Any) -> int | None:
+    """Parse KRX display values such as ``28,402`` without guessing units."""
+    if value in (None, ""):
+        return None
+    try:
+        return int(float(str(value).replace(",", "")))
+    except ValueError:
+        return None
+
+
+def _main_investor_kind(label: str) -> str | None:
+    if label.startswith("외국인"):
+        return "foreign"
+    if label.startswith("기관"):
+        return "institution"
+    if label.startswith("개인"):
+        return "retail"
+    return None
+
+
+def fetch_krx_public_investor_flow() -> dict[str, Any]:
+    """Fetch the no-login KRX dashboard's K200 aggregate investor flow.
+
+    The endpoint needs the same anonymous session and Referer as its public
+    webpage.  Values are displayed in 십억원, so they are converted explicitly
+    to KRW here.  This is a same-day observation snapshot, not an EOD history
+    and not a call/put split.
+    """
+    session = requests.Session()
+    session.headers.update({
+        **UA,
+        "Accept": "application/json, text/javascript, */*; q=0.01",
+        "X-Requested-With": "XMLHttpRequest",
+        "Referer": KRX_MAIN_URL,
+    })
+    landing = session.get(KRX_MAIN_URL, timeout=30)
+    landing.raise_for_status()
+
+    result: dict[str, Any] = {
+        "source": "KRX 공개 대시보드 MDCMAIN00103",
+        "coverage_ko": "KOSPI200 선물 및 KOSPI200 옵션 전체의 투자자별 매수·매도·순매수. 옵션 콜/풋 분리 아님.",
+        "unit": "KRW",
+        "futures": None,
+        "options_total": None,
+        "quality": "missing",
+    }
+    for name, product_id in KRX_MAIN_PRODUCTS.items():
+        response = session.post(KRX_MAIN_TREND_URL, data={"prodId": product_id}, timeout=30)
+        response.raise_for_status()
+        payload = response.json()
+        rows = payload.get("output") if isinstance(payload, dict) else None
+        if not isinstance(rows, list):
+            raise RuntimeError(f"unexpected KRX public flow payload for {name}")
+        investors: dict[str, dict[str, int | None]] = {}
+        for row in rows:
+            kind = _main_investor_kind(str(row.get("INVST_TP") or ""))
+            if not kind:
+                continue
+            # ACC_BID_TRDVAL is buy and ACC_ASK_TRDVAL is sell in the KRX UI.
+            buy = _integer(row.get("ACC_BID_TRDVAL"))
+            sell = _integer(row.get("ACC_ASK_TRDVAL"))
+            net = _integer(row.get("NETBID_TRDVAL"))
+            investors[kind] = {
+                "buy_krw": None if buy is None else buy * KRX_MAIN_UNIT,
+                "sell_krw": None if sell is None else sell * KRX_MAIN_UNIT,
+                "net_krw": None if net is None else net * KRX_MAIN_UNIT,
+            }
+        trade_day = next((str(r.get("TRD_DD")) for r in rows if r.get("TRD_DD")), None)
+        result[name] = {
+            "as_of": (
+                f"{trade_day[:4]}-{trade_day[4:6]}-{trade_day[6:8]}"
+                if trade_day and len(trade_day) == 8 else None
+            ),
+            "observed_at_krx": payload.get("CURRENT_DATETIME"),
+            "investors": investors,
+            "quality": "observed" if investors else "missing",
+        }
+    if any((result[k] or {}).get("quality") == "observed" for k in KRX_MAIN_PRODUCTS):
+        result["quality"] = "partial_observed"
+    return result
+
+
 def _is_call(row: dict[str, Any]) -> bool | None:
     for k in ("RGHT_TP_NM", "OPTN_TP_NM", "CP_TP_NM", "ISU_NM", "ISU_ABBRV"):
         v = str(row.get(k) or "")
@@ -93,100 +184,64 @@ def _is_call(row: dict[str, Any]) -> bool | None:
     return None
 
 
-def aggregate_k200_options_oi(rows: list[dict[str, Any]]) -> dict[str, Any]:
-    call_oi = put_oi = call_vol = put_vol = 0.0
+def _is_kospi200_product(row: dict[str, Any]) -> bool:
+    """Include standard/weekly KOSPI200; exclude mini and KOSDAQ150."""
+    product = str(row.get("PROD_NM") or "").strip()
+    name = str(row.get("ISU_NM") or "").strip()
+    return product.startswith("코스피200") or name.startswith("코스피200")
+
+
+def aggregate_k200_options_activity(rows: list[dict[str, Any]]) -> dict[str, Any]:
+    """Aggregate EOD call/put trading activity, deliberately excluding OI."""
+    call_vol = put_vol = call_value = put_value = 0.0
     n_call = n_put = 0
     for row in rows:
         # opt_bydd_trd contains mini-K200, KOSDAQ150 and weekly options too.
         # The board label is KOSPI200, so retain only the standard/weekly
         # KOSPI200 family and exclude 미니코스피200.
-        product = str(row.get("PROD_NM") or "").strip()
-        name = str(row.get("ISU_NM") or "").strip()
-        if not (product.startswith("코스피200") or name.startswith("코스피200")):
+        if not _is_kospi200_product(row):
             continue
-        oi = _num(row, "ACC_OPNINT_QTY", "OPNINT_QTY", "OPN_INT_QTY", "OI", "OPNINT") or 0.0
         vol = _num(row, "ACC_TRDVOL", "ACC_TRDVOL_QTY", "TRDVOL") or 0.0
+        value = _num(row, "ACC_TRDVAL", "TRDVAL") or 0.0
         side = _is_call(row)
         if side is True:
-            call_oi += oi
             call_vol += vol
+            call_value += value
             n_call += 1
         elif side is False:
-            put_oi += oi
             put_vol += vol
+            put_value += value
             n_put += 1
-    pc_oi = None if call_oi <= 0 else put_oi / call_oi
     pc_vol = None if call_vol <= 0 else put_vol / call_vol
+    pc_value = None if call_value <= 0 else put_value / call_value
     return {
-        "call_oi": call_oi,
-        "put_oi": put_oi,
         "call_volume": call_vol,
         "put_volume": put_vol,
-        "put_call_oi": None if pc_oi is None else round(pc_oi, 4),
+        "call_trading_value_krw": call_value,
+        "put_trading_value_krw": put_value,
         "put_call_volume": None if pc_vol is None else round(pc_vol, 4),
+        "put_call_trading_value": None if pc_value is None else round(pc_value, 4),
         "n_call_contracts": n_call,
         "n_put_contracts": n_put,
         "quality": "observed" if (n_call + n_put) else "missing",
+        "coverage_ko": "코스피200 표준·위클리 옵션 합계. 미니코스피200·코스닥150 제외.",
     }
 
 
-def equity_options_oi_skew(
-    rows: list[dict[str, Any]],
-    underlyings: list[str] | None = None,
-) -> list[dict[str, Any]]:
-    """Per-underlying call/put OI + crude skew from IV fields if present."""
-    underlyings = underlyings or ["005930", "000660"]
-    by_u: dict[str, dict[str, Any]] = {
-        u: {"call_oi": 0.0, "put_oi": 0.0, "call_ivs": [], "put_ivs": []} for u in underlyings
+def aggregate_k200_futures_activity(rows: list[dict[str, Any]]) -> dict[str, Any]:
+    """Aggregate KOSPI200 futures EOD volume/value, not open interest."""
+    selected = [row for row in rows if _is_kospi200_product(row)]
+    volume = sum(_num(row, "ACC_TRDVOL", "ACC_TRDVOL_QTY", "TRDVOL") or 0.0 for row in selected)
+    value = sum(_num(row, "ACC_TRDVAL", "TRDVAL") or 0.0 for row in selected)
+    return {
+        "product": "KOSPI200_futures",
+        "volume": volume,
+        "trading_value_krw": value,
+        "n_contracts": len(selected),
+        "quality": "observed" if selected else "missing",
+        "coverage_ko": "코스피200 선물 전 결제월 합계. 미니코스피200 제외.",
+        "source": "KRX OpenAPI drv/fut_bydd_trd",
     }
-    for row in rows:
-        code = None
-        for k in ("UNDRLYNG_ISU_SRT_CD", "UNDRLYNG_CD", "UNDRLYNG_ISU_CD"):
-            v = str(row.get(k) or "").strip()
-            if len(v) >= 6 and v[-6:].isdigit():
-                code = v[-6:]
-                break
-        name = str(row.get("ISU_NM") or "")
-        if code is None:
-            if "하이닉스" in name:
-                code = "000660"
-            elif "삼성전자" in name:
-                code = "005930"
-        if code not in by_u:
-            continue
-        oi = _num(row, "ACC_OPNINT_QTY", "OPNINT_QTY", "OPN_INT_QTY", "OI") or 0.0
-        iv = _num(row, "IMP_VOLT", "IMPVOL", "IV", "ATMS_IMPVOL", "IMPL_VOL")
-        side = _is_call(row)
-        if side is True:
-            by_u[code]["call_oi"] += oi
-            if iv:
-                by_u[code]["call_ivs"].append(iv)
-        elif side is False:
-            by_u[code]["put_oi"] += oi
-            if iv:
-                by_u[code]["put_ivs"].append(iv)
-
-    out = []
-    for u, b in by_u.items():
-        c_iv = sum(b["call_ivs"]) / len(b["call_ivs"]) if b["call_ivs"] else None
-        p_iv = sum(b["put_ivs"]) / len(b["put_ivs"]) if b["put_ivs"] else None
-        skew = None if c_iv is None or p_iv is None else p_iv - c_iv
-        out.append(
-            {
-                "underlying": u,
-                "call_oi": b["call_oi"],
-                "put_oi": b["put_oi"],
-                "put_call_oi": None
-                if b["call_oi"] <= 0
-                else round(b["put_oi"] / b["call_oi"], 4),
-                "avg_call_iv": None if c_iv is None else round(c_iv, 6),
-                "avg_put_iv": None if p_iv is None else round(p_iv, 6),
-                "skew_put_minus_call_iv": None if skew is None else round(skew, 6),
-                "skew_note_ko": "평균 IV(풋−콜). 행사가별 ATM 스큐 정밀화는 필드 확인 후.",
-                "quality": "observed" if (b["call_oi"] + b["put_oi"]) > 0 else "missing",
-            }
-        )
-    return out
 
 
 def load_investor_csv(path: Path) -> list[dict[str, Any]]:
@@ -230,60 +285,46 @@ def fetch_kr_derivatives_bundle(
     errors: list[str] = []
     sources: list[str] = []
 
-    fut_oi = {"quality": "missing"}
+    futures_activity = {"quality": "missing"}
     opt_agg = {"quality": "missing"}
-    equity_oi: list[dict[str, Any]] = []
 
     if _key():
         try:
             fut_rows = krx_drv("fut_bydd_trd", day)
-            # sum OI for KOSPI200 futures near month
-            oi_sum = 0.0
-            n_k200_rows = 0
-            for row in fut_rows:
-                product = str(row.get("PROD_NM") or "")
-                name = str(row.get("ISU_NM") or "")
-                if product.startswith("코스피200") or name.startswith("코스피200"):
-                    oi_sum += _num(row, "ACC_OPNINT_QTY", "OPNINT_QTY", "OPN_INT_QTY") or 0.0
-                    n_k200_rows += 1
-            fut_oi = {
-                "product": "KOSPI200_futures",
-                "open_interest_qty": oi_sum,
-                "n_rows": n_k200_rows,
-                "quality": "observed" if n_k200_rows else "missing",
-                "source": "KRX OpenAPI drv/fut_bydd_trd",
-            }
+            futures_activity = aggregate_k200_futures_activity(fut_rows)
             sources.append("krx_fut_bydd_trd")
         except Exception as e:  # noqa: BLE001
             errors.append(f"fut:{e}")
         try:
             opt_rows = krx_drv("opt_bydd_trd", day)
-            opt_agg = aggregate_k200_options_oi(opt_rows)
+            opt_agg = aggregate_k200_options_activity(opt_rows)
             opt_agg["source"] = "KRX OpenAPI drv/opt_bydd_trd"
             opt_agg["bas_dd"] = day
             sources.append("krx_opt_bydd_trd")
         except Exception as e:  # noqa: BLE001
             errors.append(f"opt:{e}")
-        try:
-            eq_rows = krx_drv("eqsop_bydd_trd", day)
-            equity_oi = equity_options_oi_skew(eq_rows)
-            sources.append("krx_eqsop_bydd_trd")
-        except Exception as e:  # noqa: BLE001
-            errors.append(f"eqsop:{e}")
     else:
-        errors.append("KRX_API unset — OpenAPI OI/skew not fetched")
+        errors.append("KRX_API unset — KRX OpenAPI EOD futures/options activity not fetched")
 
     investor: dict[str, Any] = {
         "note_ko": (
-            "외인 콜/풋 순매수는 data.krx 「투자자별 거래실적」 CSV를 콜·풋 각각 export 하거나 "
-            "이용신청된 OpenAPI가 생기면 자동 수집. 웹 비로그인=LOGOUT."
+            "KRX 공개 대시보드는 코스피200 선물 및 옵션 전체의 투자자별 매수·매도·순매수를 제공한다. "
+            "옵션 콜/풋 분리는 인증이 필요한 data.krx 「투자자별 거래실적」 CSV를 콜·풋 각각 export해야 한다."
         ),
-        "unit": "백만원 (순매수; 음수=순매도)",
+        "public_dashboard": None,
+        "unit": "CSV 세부 순매수는 백만원; 공개 대시보드 매수·매도·순매수는 KRW",
         "futures": None,
         "options_call": None,
         "options_put": None,
         "quality": "missing",
     }
+    try:
+        investor["public_dashboard"] = fetch_krx_public_investor_flow()
+        if investor["public_dashboard"].get("quality") == "partial_observed":
+            investor["quality"] = "partial_observed"
+            sources.append("krx_public_investor_dashboard")
+    except Exception as e:  # noqa: BLE001
+        errors.append(f"public_investor:{e}")
     if investor_fut_csv and investor_fut_csv.exists():
         investor["futures"] = load_investor_csv(investor_fut_csv)
         investor["quality"] = "observed"
@@ -297,21 +338,12 @@ def fetch_kr_derivatives_bundle(
         investor["quality"] = "observed"
         sources.append("csv_opt_put_investor")
 
-    # seed fixture if nothing
-    seed = FIXTURES / "kr_investor_derivatives.json"
-    if investor["quality"] == "missing" and seed.exists():
-        seeded = __import__("json").loads(seed.read_text(encoding="utf-8"))
-        investor.update(seeded.get("investor") or {})
-        investor["quality"] = seeded.get("quality", "demo")
-        sources.append("fixture_seed")
-
     return {
         "schema_version": "kr-derivatives-v1",
         "as_of": f"{day[:4]}-{day[4:6]}-{day[6:8]}",
         "fetched_at": datetime.now(timezone.utc).isoformat(),
-        "kospi200_futures_oi": fut_oi,
+        "kospi200_futures": futures_activity,
         "kospi200_options": opt_agg,
-        "equity_options_oi_skew": equity_oi,
         "investor_nets": investor,
         "source_priority_used": sources,
         "errors": errors,
