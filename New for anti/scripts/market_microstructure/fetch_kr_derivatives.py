@@ -48,7 +48,9 @@ def krx_drv(endpoint: str, bas_dd: str) -> list[dict[str, Any]]:
     r = requests.get(
         url,
         headers={**UA, "AUTH_KEY": key},
-        params={"basDd": bas_dd, "AUTH_KEY": key},
+        # KRX accepts the documented header.  Do not mirror the secret into
+        # the query string: requests/exception logs would then expose it.
+        params={"basDd": bas_dd},
         timeout=60,
     )
     if r.status_code == 401:
@@ -95,12 +97,14 @@ def aggregate_k200_options_oi(rows: list[dict[str, Any]]) -> dict[str, Any]:
     call_oi = put_oi = call_vol = put_vol = 0.0
     n_call = n_put = 0
     for row in rows:
-        # Prefer KOSPI200 / 코스피200
-        name = str(row.get("ISU_NM") or row.get("PROD_NM") or row.get("UNDRLYNG_NM") or "")
-        if name and ("코스피200" not in name and "KOSPI200" not in name.upper() and "K200" not in name.upper()):
-            # endpoint opt_bydd_trd is already non-equity; keep all
-            pass
-        oi = _num(row, "OPNINT_QTY", "OPN_INT_QTY", "OI", "OPNINT") or 0.0
+        # opt_bydd_trd contains mini-K200, KOSDAQ150 and weekly options too.
+        # The board label is KOSPI200, so retain only the standard/weekly
+        # KOSPI200 family and exclude 미니코스피200.
+        product = str(row.get("PROD_NM") or "").strip()
+        name = str(row.get("ISU_NM") or "").strip()
+        if not (product.startswith("코스피200") or name.startswith("코스피200")):
+            continue
+        oi = _num(row, "ACC_OPNINT_QTY", "OPNINT_QTY", "OPN_INT_QTY", "OI", "OPNINT") or 0.0
         vol = _num(row, "ACC_TRDVOL", "ACC_TRDVOL_QTY", "TRDVOL") or 0.0
         side = _is_call(row)
         if side is True:
@@ -150,8 +154,8 @@ def equity_options_oi_skew(
                 code = "005930"
         if code not in by_u:
             continue
-        oi = _num(row, "OPNINT_QTY", "OPN_INT_QTY", "OI") or 0.0
-        iv = _num(row, "IMPVOL", "IV", "ATMS_IMPVOL", "IMPL_VOL")
+        oi = _num(row, "ACC_OPNINT_QTY", "OPNINT_QTY", "OPN_INT_QTY", "OI") or 0.0
+        iv = _num(row, "IMP_VOLT", "IMPVOL", "IV", "ATMS_IMPVOL", "IMPL_VOL")
         side = _is_call(row)
         if side is True:
             by_u[code]["call_oi"] += oi
@@ -235,15 +239,18 @@ def fetch_kr_derivatives_bundle(
             fut_rows = krx_drv("fut_bydd_trd", day)
             # sum OI for KOSPI200 futures near month
             oi_sum = 0.0
+            n_k200_rows = 0
             for row in fut_rows:
+                product = str(row.get("PROD_NM") or "")
                 name = str(row.get("ISU_NM") or "")
-                if "코스피200" in name or "KOSPI200" in name.upper():
-                    oi_sum += _num(row, "OPNINT_QTY", "OPN_INT_QTY") or 0.0
+                if product.startswith("코스피200") or name.startswith("코스피200"):
+                    oi_sum += _num(row, "ACC_OPNINT_QTY", "OPNINT_QTY", "OPN_INT_QTY") or 0.0
+                    n_k200_rows += 1
             fut_oi = {
                 "product": "KOSPI200_futures",
                 "open_interest_qty": oi_sum,
-                "n_rows": len(fut_rows),
-                "quality": "observed",
+                "n_rows": n_k200_rows,
+                "quality": "observed" if n_k200_rows else "missing",
                 "source": "KRX OpenAPI drv/fut_bydd_trd",
             }
             sources.append("krx_fut_bydd_trd")
