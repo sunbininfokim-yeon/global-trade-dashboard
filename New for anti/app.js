@@ -5953,8 +5953,12 @@ const renderPfInput = (root, onDone) => {
     root.querySelector('#pf-run')?.addEventListener('click', () => onDone && onDone());
 };
 
+const PF_MODE_KEY = 'portfolioLab.mode';
+const pfGetMode = () => (localStorage.getItem(PF_MODE_KEY) === 'expert') ? 'expert' : 'basic';
+const pfSetMode = (m) => { try { localStorage.setItem(PF_MODE_KEY, m); } catch (_) { /* quota */ } };
+
 const renderPfResult = async (host) => {
-    host.innerHTML = `<p class="fin-loading">계산 결과 불러오는 중…</p>`;
+    host.innerHTML = `<p class="fin-loading">진단 리포트 불러오는 중…</p>`;
 
     let data = null;
     for (const path of ['/public/data/portfolio_analysis_v1.json', '/data/portfolio_analysis_v1.json']) {
@@ -5965,33 +5969,52 @@ const renderPfResult = async (host) => {
     }
 
     if (!data) {
-        const saved = pfLoad();
         host.innerHTML = `
             <div class="fin-empty">
-                <p class="fin-empty-title">아직 계산 결과가 없습니다</p>
-                <p>${saved && saved.positions.length
-                    ? `보유 ${saved.positions.length}건이 저장돼 있습니다. 계산 기능은 준비 중입니다 —
-                       현재는 <code>run_pipeline.py</code> 로 만든 결과 파일만 읽습니다.`
-                    : `「내 포트폴리오」 탭에서 보유 종목을 먼저 넣어 주세요.`}</p>
+                <p class="fin-empty-title">진단 리포트가 없습니다</p>
+                <p>로컬에서 <code>scripts/금융_재무분석/run_pipeline.py</code> 를 돌리면
+                   <code>public/data/portfolio_analysis_v1.json</code> 이 만들어지고 여기에 표시됩니다.</p>
+                <p class="fin-note pf-privacy">이 파일은 <code>.gitignore</code> 처리돼 커밋·배포되지 않습니다 —
+                   실제 보유 내역은 본인 컴퓨터에만 남고, 대시보드 운영자를 포함해 누구에게도 전송되지 않습니다.</p>
             </div>`;
         return;
     }
 
-    const u = data[`ui_copy_${FIN_LOCALE}`] || {};
+    const mode = pfGetMode();
+    const u = (mode === 'expert' ? data[`ui_copy_${FIN_LOCALE}`] : data[`ui_copy_basic_${FIN_LOCALE}`])
+        || data[`ui_copy_${FIN_LOCALE}`] || {};
     const S = (k) => u[`${k}_${FIN_LOCALE}`];
     const cards = u.metric_cards || [];
-    const breaches = S('profile_breaches') || [];
+    const breaches = (data.profile_check && data.profile_check[`breaches_${FIN_LOCALE}`]) || S('profile_breaches') || [];
     const movesUp = S('moves_up') || [];
     const movesDown = S('moves_down') || [];
     const proxies = (data.data_quality && data.data_quality.proxies) || [];
     const dq = data.data_quality || {};
 
+    const baseCcy = data.base_currency || 'KRW';
+    const acct = data.accounting || null;
+    const cash = data.cash_breakdown || null;
+    const nav = acct ? (acct.net_asset_value ?? null) : null;
+    const gross = acct ? (acct.gross_exposure ?? null) : null;
+    const grossOfNav = acct ? (acct.gross_exposure_of_nav ?? null) : null;
+    const creditUsed = acct ? (acct.credit_used ?? null) : null;
+    const varShort = data.risk && data.risk.short;
+    const varOfNav = varShort ? (varShort.var_10d_95 ?? null) : null;
+    const sizeGuide = data.size_guide || null;
+
     host.innerHTML = `
+        <div class="pf-mode" role="group" aria-label="보기 수준">
+            <button type="button" class="pf-mode-btn ${mode === 'basic' ? 'on' : ''}" data-mode="basic">기본</button>
+            <button type="button" class="pf-mode-btn ${mode === 'expert' ? 'on' : ''}" data-mode="expert">전문가</button>
+        </div>
+
         <div class="fin-head fin-head-sub">
             <p class="fin-headline">${finEsc(S('headline'))}</p>
             <div class="fin-meta">
                 <span class="fin-chip">${finEsc(u.profile?.[`label_${FIN_LOCALE}`] || data.risk_profile_id)}</span>
                 <span>${finEsc(u.profile?.[`blurb_${FIN_LOCALE}`] || '')}</span>
+                <span class="fin-meta-sep">·</span>
+                <span>기준통화 ${finEsc(baseCcy)}</span>
                 <span class="fin-meta-sep">·</span>
                 <span>기준 ${finEsc((data.generated_at || '').slice(0, 10))}</span>
                 <span class="fin-meta-sep">·</span>
@@ -6004,6 +6027,37 @@ const renderPfResult = async (host) => {
             <span class="fin-alert-mark">성향 한도 초과</span>
             <ul>${breaches.map((b) => `<li>${finEsc(b)}</li>`).join('')}</ul>
         </div>` : ''}
+
+        ${(nav !== null || gross !== null || varOfNav !== null) ? `
+        <div class="fin-cards">
+            ${nav !== null ? `
+            <div class="fin-card">
+                <span class="fin-card-title">순자산(NAV)</span>
+                <span class="fin-card-value">${finEsc(baseCcy)} ${Number(nav).toLocaleString()}</span>
+                ${creditUsed ? `<p class="fin-card-plain">신용·미수 ${finEsc(baseCcy)} ${Number(creditUsed).toLocaleString()}은 이미 뺀 값입니다.</p>` : ''}
+            </div>` : ''}
+            ${gross !== null ? `
+            <div class="fin-card">
+                <span class="fin-card-title">총 노출(gross)</span>
+                <span class="fin-card-value">${finEsc(baseCcy)} ${Number(gross).toLocaleString()}${(grossOfNav !== null) ? ` · NAV 대비 ${finPct(grossOfNav)}` : ''}</span>
+                <p class="fin-card-plain">공매도·신용을 포함한 총 노출입니다. NAV와 다를 수 있습니다.</p>
+            </div>` : ''}
+            ${varOfNav !== null ? `
+            <div class="fin-card">
+                <span class="fin-card-title">10일 VaR (95%, NAV 대비)</span>
+                <span class="fin-card-value">${finPct(varOfNav)}</span>
+            </div>` : ''}
+        </div>` : ''}
+
+        ${cash ? `
+        <section class="fin-block fin-block-wide">
+            <h2>현금 구성</h2>
+            <p class="fin-p">
+                성향 현금(${finEsc(baseCcy)}) ${finPct(cash.base_cash_weight_of_nav)}
+                · 외화 현금(환위험) ${finPct(cash.foreign_cash_weight_of_nav)}
+            </p>
+            <p class="fin-note">${finEsc(cash.policy_ko || '성향 현금 밴드는 기준통화 현금만 검사합니다. 외화 현금은 환율 노출로 별도 표시됩니다.')}</p>
+        </section>` : ''}
 
         <div class="fin-cards">
             ${cards.map((c) => `
@@ -6078,55 +6132,89 @@ const renderPfResult = async (host) => {
         <div class="fin-foot">
             <p>${finEsc(S('footer'))}</p>
             <p class="fin-disclaimer">${finEsc(data[`disclaimer_${FIN_LOCALE}`])}</p>
+            ${sizeGuide ? `<p class="fin-note">${finEsc(sizeGuide[`footnote_${FIN_LOCALE}`] || '')}
+               (보유 ${sizeGuide.vs_actual?.n_names ?? '—'}종 · 권장 ${sizeGuide.names_min ?? '—'}–${sizeGuide.names_max ?? '—'}종)</p>` : ''}
             ${proxies.length ? `<p class="fin-proxy">프록시 사용: ${proxies.map((p) =>
                 finEsc(typeof p === 'string' ? p : (p.name_ko || p.id || JSON.stringify(p)))).join(' · ')}</p>` : ''}
             <p class="fin-engine">엔진: <code>scripts/금융_재무분석</code> ·
                방식: ${finEsc((data.advice && data.advice.method) || '')} ·
                스키마 ${finEsc(data.schema_version || '')}</p>
+            <p class="pf-privacy">이 리포트는 로컬 파일만 읽습니다 — 서버에 저장되지 않고, 대시보드 운영자는 이 데이터를 볼 수 없습니다.</p>
         </div>`;
+
+    host.querySelectorAll('.pf-mode-btn').forEach((b) => b.addEventListener('click', () => {
+        if (b.dataset.mode === mode) return;
+        pfSetMode(b.dataset.mode);
+        renderPfResult(host);
+    }));
 };
+
+const PF_VIEW_KEY = 'portfolioLab.view';
+const pfGetView = () => (localStorage.getItem(PF_VIEW_KEY) === 'manual') ? 'manual' : 'report';
+const pfSetView = (v) => { try { localStorage.setItem(PF_VIEW_KEY, v); } catch (_) { /* quota */ } };
 
 const renderPortfolioLab = async (host) => {
     host.innerHTML = `<div class="fin-wrap"><p class="fin-loading">불러오는 중…</p></div>`;
     await pfLoadRefs();
 
-    const saved = pfLoad();
+    const view = pfGetView();
 
     host.innerHTML = `
     <div class="fin-wrap">
         <div class="fin-head">
-            <h1>포트폴리오 계산기</h1>
+            <h1>포트폴리오 진단</h1>
             <p>보유 자산의 위험이 어디에 몰려 있는지 봅니다. 수익 예측이 아닙니다.</p>
         </div>
-        <div id="pf-form"></div>
-        <div id="pf-out"></div>
+        <div class="pf-mode pf-view-tabs" role="tablist" aria-label="보기 방식">
+            <button type="button" class="pf-mode-btn ${view === 'report' ? 'on' : ''}" data-view="report">진단 리포트</button>
+            <button type="button" class="pf-mode-btn ${view === 'manual' ? 'on' : ''}" data-view="manual">직접 입력</button>
+        </div>
+        <div id="pf-panel"></div>
     </div>`;
 
-    const form = host.querySelector('#pf-form');
-    const out = host.querySelector('#pf-out');
+    const panel = host.querySelector('#pf-panel');
 
-    const run = async () => {
-        const pf = pfLoad() || pfBlank();
-        out.innerHTML = `<div class="fin-block fin-block-wide"><p class="fin-loading" id="pf-prog">계산 준비 중…</p></div>`;
-        out.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        const prog = out.querySelector('#pf-prog');
-        try {
-            const R = await pfCompute(pf, (msg) => { if (prog) prog.textContent = msg; });
-            pfRenderResult(out, R, PF_PROFILES[pf.risk_profile]);
-        } catch (err) {
-            out.innerHTML = `
-                <div class="fin-block fin-block-wide">
-                    <h2>계산하지 못했습니다</h2>
-                    <p class="fin-p">${finEsc(err.message || String(err))}</p>
-                    <p class="fin-note">가격 조회가 일시적으로 막혔을 수 있습니다. 잠시 뒤 다시 눌러 보세요.</p>
-                </div>`;
-        }
+    const renderManual = () => {
+        panel.innerHTML = `<div id="pf-form"></div><div id="pf-out"></div>`;
+        const form = panel.querySelector('#pf-form');
+        const out = panel.querySelector('#pf-out');
+
+        const run = async () => {
+            const pf = pfLoad() || pfBlank();
+            out.innerHTML = `<div class="fin-block fin-block-wide"><p class="fin-loading" id="pf-prog">계산 준비 중…</p></div>`;
+            out.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            const prog = out.querySelector('#pf-prog');
+            try {
+                const R = await pfCompute(pf, (msg) => { if (prog) prog.textContent = msg; });
+                pfRenderResult(out, R, PF_PROFILES[pf.risk_profile]);
+            } catch (err) {
+                out.innerHTML = `
+                    <div class="fin-block fin-block-wide">
+                        <h2>계산하지 못했습니다</h2>
+                        <p class="fin-p">${finEsc(err.message || String(err))}</p>
+                        <p class="fin-note">가격 조회가 일시적으로 막혔을 수 있습니다. 잠시 뒤 다시 눌러 보세요.</p>
+                    </div>`;
+            }
+        };
+
+        renderPfInput(form, run);
+
+        // A saved portfolio is a standing request to see its numbers.
+        const saved = pfLoad();
+        if (saved && saved.positions.length >= 2) run();
     };
 
-    renderPfInput(form, run);
+    const renderReport = () => renderPfResult(panel);
 
-    // A saved portfolio is a standing request to see its numbers.
-    if (saved && saved.positions.length >= 2) run();
+    host.querySelectorAll('.pf-view-tabs .pf-mode-btn').forEach((b) => b.addEventListener('click', () => {
+        const v = b.dataset.view;
+        if (v === pfGetView()) return;
+        pfSetView(v);
+        host.querySelectorAll('.pf-view-tabs .pf-mode-btn').forEach((x) => x.classList.toggle('on', x === b));
+        if (v === 'manual') renderManual(); else renderReport();
+    }));
+
+    if (view === 'manual') renderManual(); else renderReport();
 };
 
 // --- 기업 가치 계산기 ---------------------------------------------------------

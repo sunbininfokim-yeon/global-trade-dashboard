@@ -45,7 +45,7 @@ python3 run_pipeline.py --portfolio samples/demo_portfolio.json --cache-only
 
 ```text
 portfolio JSON
-  → normalize (optional total_value → residual KRW cash; top MAX_NAMES=20 by |value|)
+  → normalize (NAV·신용 원장 검증 → 단순 계좌만 residual KRW cash; top MAX_NAMES=20 by |value|)
   → resolve (alias → canonical id → Yahoo symbol)
   → prices (Yahoo daily → Stooq CSV fallback; csv + .meta.json cache)
   → returns (base currency 통일)
@@ -59,23 +59,39 @@ portfolio JSON
 
 `samples/demo_portfolio.json` 참고. 각 포지션은 `query`(티커·한글명·종목코드) + `value`(원화 평가액) 또는 `weight`.
 
-### 총액(AUM) — 선택
+### 순자산(NAV)·신용 — 선택
 
 | 필드 | 설명 |
 |------|------|
-| `total_value` 또는 `aum_krw` | 계좌 총액(원화). **생략·null·0**이면 포지션 `\|value\|` 합으로 채움 |
-| 합 < 총액 | 잔여를 **원화 현금**(`query: 원화` / `cash:krw`)으로 자동 배정(기존 현금 줄에 합침) |
-| 합 > 총액 | **에러** (`PortfolioNormalizeError`) — 조용히 자르지 않음 |
+| `net_asset_value` 또는 `nav` | 권장 입력. 계좌 **순자산**(원화) |
+| `total_value` 또는 `aum_krw` | 구 입력 호환 별칭이며 NAV로 해석 |
+| `credit_used_krw` (`margin_debt_krw` 별칭) | 신용·미수 원금(원화). 총노출이 아니라 부채로 별도 기록 |
+| 단순 롱·현금 계좌의 합 < NAV | 잔여를 **원화 현금**(`query: 원화` / `cash:krw`)으로 자동 배정(기존 현금 줄에 합침) |
+| 공매도 또는 신용 계좌 | `Σ(부호 있는 position.value) − credit_used_krw = NAV`를 만족해야 함. 현금·담보를 직접 입력하며 자동 잔여 현금 없음 |
 
 ```json
 {
-  "total_value": 10000000,
+  "net_asset_value": 10000000,
   "positions": [
     { "query": "엔비디아", "value": 7000000 }
   ]
 }
 ```
 → 잔여 300만원이 원화 현금으로 들어갑니다.
+
+신용 사용 예시(1억 순자산으로 1.3억 롱 노출):
+
+```json
+{
+  "net_asset_value": 100000000,
+  "credit_used_krw": 30000000,
+  "positions": [
+    { "query": "삼성전자", "value": 130000000 }
+  ]
+}
+```
+
+이 경우 총노출은 1.3억(130% of NAV)이고, 금액 VaR은 1.3억이 아니라 1억 NAV를 기준으로 표기합니다. 위험수익률 계산도 130% 노출을 그대로 반영합니다.
 
 정규화 순서는 **(1) 잔여 현금 배정 → (2) 상위 `MAX_NAMES` 절단** 입니다.  
 상수 위치: `portfolio_lab/normalize.py` 의 **`MAX_NAMES = 20`** (30 상향 시 이 값만 바꾸면 됨 · Claude UI 입력 한도와 동기).
@@ -111,6 +127,7 @@ portfolio JSON
 - SpaceX 관련 → 레지스트리 `SPCX` (별칭: 스페이스X, SpaceX) 또는 티커 `SPCX` 직접
 - 코스피 지수 → `코스피` / `^KS11` · 코스피200 ETF → `KODEX200` / `069500`
 - 미등록 티커 → `AAPL`, `005930.KS`, `EURUSD=X` 등 그대로 passthrough
+- 홍콩 CSOP SK하이닉스 일간 2배 → `7709`, `7709.HK`, `CSOP 하이닉스 2배` (HKD 실제 상장 가격). 기존 `하이닉스2배`는 현물×2 프록시이므로 서로 다릅니다.
 
 통화 추정: `.KS`/`.KQ`→KRW, `.T`→JPY, `=X`→FX, 그 외→USD (USD 종목은 기존처럼 USDKRW로 원화 환산).
 

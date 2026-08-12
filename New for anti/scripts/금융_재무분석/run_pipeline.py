@@ -87,7 +87,11 @@ def main() -> int:
             file=sys.stderr,
         )
 
-    positions, unresolved = resolve_portfolio(portfolio, registry)
+    positions, unresolved = resolve_portfolio(
+        portfolio,
+        registry,
+        net_asset_value=norm.net_asset_value_krw,
+    )
     if not positions:
         print("ERROR: no positions resolved", unresolved, file=sys.stderr)
         return 1

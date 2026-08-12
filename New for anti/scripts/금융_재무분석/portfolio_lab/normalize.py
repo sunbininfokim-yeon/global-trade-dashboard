@@ -1,9 +1,10 @@
-"""Portfolio input normalization: optional AUM, residual KRW cash, top-N truncate.
+"""Portfolio input normalization: NAV, credit, residual KRW cash, top-N truncate.
 
 Order (raw dict, before resolve):
-  1) Resolve optional total_value / aum_krw (sum of |values| if blank)
-  2) Auto-fill residual as KRW cash when sum(positions) < total
-  3) Truncate to MAX_NAMES by |value| (largest first); cash keeps if large enough
+  1) Resolve optional net asset value (NAV); ``total_value`` / ``aum_krw`` are legacy aliases
+  2) Auto-fill residual as KRW cash only for a cash-funded long-only book
+  3) Require an explicit, balanced ledger when the book contains a short or credit debt
+  4) Truncate to MAX_NAMES by |value| (largest first); cash keeps if large enough
 
 MAX_NAMES is a product / UI convenience cap (easy to raise to 30 later), not an MPT formula.
 """
@@ -11,6 +12,7 @@ MAX_NAMES is a product / UI convenience cap (easy to raise to 30 later), not an 
 from __future__ import annotations
 
 import copy
+import math
 import re
 import unicodedata
 from dataclasses import dataclass, field
@@ -119,7 +121,11 @@ def is_krw_cash_query(query: str) -> bool:
 
 
 def _read_optional_total(portfolio: dict[str, Any]) -> float | None:
-    raw = portfolio.get("total_value")
+    raw = portfolio.get("net_asset_value")
+    if raw is None:
+        raw = portfolio.get("nav")
+    if raw is None:
+        raw = portfolio.get("total_value")
     if raw is None:
         raw = portfolio.get("aum_krw")
     if raw is None or raw == "":
@@ -127,10 +133,28 @@ def _read_optional_total(portfolio: dict[str, Any]) -> float | None:
     try:
         v = float(raw)
     except (TypeError, ValueError) as exc:
-        raise PortfolioNormalizeError(f"invalid total_value/aum_krw: {raw!r}") from exc
-    if v <= 0 or not (v == v):  # NaN check
+        raise PortfolioNormalizeError(f"invalid net_asset_value/nav/total_value/aum_krw: {raw!r}") from exc
+    if v <= 0 or not math.isfinite(v):
         return None
     return v
+
+
+def _read_credit_used(portfolio: dict[str, Any]) -> float:
+    """Read an explicit KRW credit/margin debt; never infer it from gross exposure."""
+    raw = portfolio.get("credit_used_krw")
+    if raw is None:
+        raw = portfolio.get("margin_debt_krw")
+    if raw is None:
+        raw = portfolio.get("credit_debt_krw")
+    if raw is None or raw == "":
+        return 0.0
+    try:
+        value = float(raw)
+    except (TypeError, ValueError) as exc:
+        raise PortfolioNormalizeError(f"invalid credit_used_krw/margin_debt_krw: {raw!r}") from exc
+    if value < 0 or not math.isfinite(value):
+        raise PortfolioNormalizeError("credit_used_krw/margin_debt_krw must be a finite non-negative number")
+    return value
 
 
 def size_bucket_for_aum(aum_krw: float) -> dict[str, Any]:
@@ -187,6 +211,10 @@ def build_size_guide(aum_krw: float | None, n_names: int) -> dict[str, Any] | No
 class NormalizeResult:
     portfolio: dict[str, Any]
     aum_krw: float | None = None
+    net_asset_value_krw: float | None = None
+    gross_exposure_krw: float | None = None
+    signed_positions_value_krw: float | None = None
+    credit_used_krw: float = 0.0
     total_was_inferred: bool = False
     residual_cash_added: float = 0.0
     truncated_positions: list[dict[str, Any]] = field(default_factory=list)
@@ -200,6 +228,10 @@ class NormalizeResult:
     def to_meta(self) -> dict[str, Any]:
         return {
             "aum_krw": self.aum_krw,
+            "net_asset_value_krw": self.net_asset_value_krw,
+            "gross_exposure_krw": self.gross_exposure_krw,
+            "signed_positions_value_krw": self.signed_positions_value_krw,
+            "credit_used_krw": self.credit_used_krw,
             "total_was_inferred": self.total_was_inferred,
             "residual_cash_added": self.residual_cash_added,
             "max_names": MAX_NAMES,
@@ -401,37 +433,70 @@ def normalize_portfolio(
         value_rows.append(p)
 
     gross = sum(abs(float(p["value"])) for p in value_rows if p.get("value") is not None)
+    signed_positions = sum(float(m or 0.0) for m in markers if m is not None)
+    credit_used = _read_credit_used(out)
+    has_short = any(float(m or 0.0) < -1e-9 for m in markers if m is not None)
     declared = _read_optional_total(out)
+    simple_cash_funded_long_book = not has_short and credit_used <= 1e-9
+
     if declared is None:
         result.total_was_inferred = True
-        aum = float(gross)
+        aum = float(gross) if simple_cash_funded_long_book else float(signed_positions - credit_used)
     else:
         result.total_was_inferred = False
         aum = float(declared)
-        if gross > aum + 1e-6:
-            raise PortfolioNormalizeError(
-                f"position |values| sum ({gross:,.0f}) exceeds total_value/aum_krw ({aum:,.0f}); "
-                "reduce positions or raise total — will not silently drop excess."
-            )
-        residual = aum - gross
-        if residual > 1e-6:
-            added = _apply_residual_cash(value_rows, residual)
-            result.residual_cash_added = added
-            if added > 0:
-                msg_ko = (
-                    f"총액 {aum:,.0f}원 대비 입력 합 {gross:,.0f}원 → "
-                    f"잔여 {added:,.0f}원을 원화 현금(cash:krw)으로 자동 배정했습니다."
+        if simple_cash_funded_long_book:
+            if gross > aum + 1e-6:
+                raise PortfolioNormalizeError(
+                    f"position |values| sum ({gross:,.0f}) exceeds net asset value ({aum:,.0f}); "
+                    "reduce positions or raise NAV — will not silently drop excess."
                 )
-                msg_en = (
-                    f"Declared AUM {aum:,.0f} KRW vs entered {gross:,.0f} → "
-                    f"residual {added:,.0f} KRW auto-filled as KRW cash."
+            residual = aum - gross
+            if residual > 1e-6:
+                added = _apply_residual_cash(value_rows, residual)
+                result.residual_cash_added = added
+                if added > 0:
+                    msg_ko = (
+                        f"순자산 {aum:,.0f}원 대비 입력 합 {gross:,.0f}원 → "
+                        f"잔여 {added:,.0f}원을 원화 현금(cash:krw)으로 자동 배정했습니다."
+                    )
+                    msg_en = (
+                        f"Declared NAV {aum:,.0f} KRW vs entered {gross:,.0f} → "
+                        f"residual {added:,.0f} KRW auto-filled as KRW cash."
+                    )
+                    result.notes_ko.append(msg_ko)
+                    result.notes_en.append(msg_en)
+        else:
+            ledger_nav = signed_positions - credit_used
+            if abs(ledger_nav - aum) > max(1e-6, abs(aum) * 1e-8):
+                raise PortfolioNormalizeError(
+                    "short/credit portfolio ledger does not balance: "
+                    f"signed positions ({signed_positions:,.0f}) - credit debt ({credit_used:,.0f}) "
+                    f"= {ledger_nav:,.0f}, but declared NAV is {aum:,.0f}. "
+                    "Include cash collateral / short-sale proceeds explicitly; residual cash is not auto-filled."
                 )
-                result.notes_ko.append(msg_ko)
-                result.notes_en.append(msg_en)
+
+    if aum <= 1e-9:
+        raise PortfolioNormalizeError(
+            "net asset value must be positive after short positions and credit debt are accounted for"
+        )
+
+    # Recompute the submitted ledger after a permitted residual cash fill.
+    normalized_signed = sum(
+        (-abs(float(p["value"])) if str(p.get("side") or "long").strip().lower() in {"short", "sell", "공매도"}
+         else abs(float(p["value"])))
+        for p in value_rows
+        if p.get("value") is not None
+    )
+    normalized_gross = sum(abs(float(p["value"])) for p in value_rows if p.get("value") is not None)
 
     # Book size for size_guide: declared total or full gross after residual cash (before truncate).
     book_aum = float(aum) if aum > 0 else None
     result.aum_krw = book_aum
+    result.net_asset_value_krw = book_aum
+    result.gross_exposure_krw = normalized_gross
+    result.signed_positions_value_krw = normalized_signed
+    result.credit_used_krw = credit_used
 
     cleaned, truncated = _truncate_by_abs(value_rows, mode="value", max_names=max_names)
     out["positions"] = cleaned

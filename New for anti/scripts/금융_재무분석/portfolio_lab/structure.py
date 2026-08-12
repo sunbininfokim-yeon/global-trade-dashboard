@@ -162,12 +162,19 @@ def check_profile(
     weights: pd.Series,
     risk: dict[str, Any],
     profile: dict[str, Any],
+    *,
+    base_currency: str = "KRW",
 ) -> dict[str, Any]:
     breaches_ko: list[str] = []
     breaches_en: list[str] = []
     abs_w = weights.abs()
+    gross_exposure = float(abs_w.sum())
 
+    # Base cash is a liquidity buffer; foreign cash is an FX-risk sleeve.  Do not
+    # count USD/HKD cash toward a KRW cash-band constraint just because it is named
+    # "cash" in the broker statement.
     cash_w = 0.0
+    foreign_cash_w = 0.0
     equity_like = 0.0
     lev_w = 0.0
     for p in positions:
@@ -175,7 +182,13 @@ def check_profile(
         w = abs(float(weights.get(iid, p.get("weight") or 0.0)))
         ac = p["instrument"].get("asset_class")
         if ac == "cash":
-            cash_w += w
+            if (
+                str(p["instrument"].get("currency") or "").upper() == str(base_currency).upper()
+                and not p["instrument"].get("fx_as_asset")
+            ):
+                cash_w += w
+            else:
+                foreign_cash_w += w
         if ac in EQUITY_LIKE or p["instrument"].get("leveraged"):
             # leveraged ETF counts as equity-like
             if ac in EQUITY_LIKE:
@@ -232,6 +245,16 @@ def check_profile(
             f"Leveraged products at {_pct(lev_w)} exceed your profile limit of "
             f"{_pct(profile['leveraged_max'])}."
         )
+    gross_limit = profile.get("gross_exposure_max")
+    if gross_limit is not None and gross_exposure > float(gross_limit) + 1e-6:
+        breaches_ko.append(
+            f"총노출 {_pct(gross_exposure)}가 성향 안내선 {_pct(float(gross_limit))}을 넘습니다 "
+            "(차단 규칙이 아니라 신용·공매도 포함 위험 수준 경고)."
+        )
+        breaches_en.append(
+            f"Gross exposure {_pct(gross_exposure)} exceeds your profile guide rail of "
+            f"{_pct(float(gross_limit))} (a warning, not a trade block; includes credit/short exposure)."
+        )
 
     var10 = float(risk["short"].get("var_10d_95") or 0.0)
     budget = float(profile["var_10d_budget"])
@@ -247,8 +270,11 @@ def check_profile(
 
     return {
         "cash_weight": cash_w,
+        "foreign_cash_weight": foreign_cash_w,
         "equity_like_weight": equity_like,
         "leveraged_weight": lev_w,
+        "gross_exposure_of_nav": gross_exposure,
+        "gross_exposure_max": gross_limit,
         "peak_name_ko": long_names.get(peak_id, peak_id) if peak_id else None,
         "peak_weight": peak_w,
         "var_10d_95": var10,

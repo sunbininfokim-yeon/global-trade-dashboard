@@ -55,7 +55,11 @@ class TestGoldenPortfolio(unittest.TestCase):
         registry = InstrumentRegistry(REGISTRY)
         norm = normalize_portfolio(portfolio)
         portfolio = norm.portfolio
-        positions, unresolved = resolve_portfolio(portfolio, registry)
+        positions, unresolved = resolve_portfolio(
+            portfolio,
+            registry,
+            net_asset_value=norm.net_asset_value_krw,
+        )
         if not positions:
             raise unittest.SkipTest(f"no positions resolved: {unresolved}")
         try:
