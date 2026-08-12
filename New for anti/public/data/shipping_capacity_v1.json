@@ -1,8 +1,8 @@
 {
   "schema_version": "shipping-capacity-v1",
   "artifact_type": "screen_snapshot",
-  "bundle_id": "2691320fc9eda557aa31",
-  "generated_at": "2026-08-10T07:20:17.625581+00:00",
+  "bundle_id": "a9b51f9c2f9fd9e9d3ee",
+  "generated_at": "2026-08-12T03:30:20.349188+00:00",
   "artifact_manifest": {
     "screen": "shipping_capacity_v1.json",
     "diagnostics": "shipping_capacity_diagnostics_v1.json",
@@ -34,6 +34,7 @@
       "chronological OLS signal diagnostic",
       "chronological multi-model regression comparison",
       "historical event-window throughput calibration",
+      "deterministic joint behavior sensitivity paths",
       "K-Means regime classification",
       "Isolation Forest anomaly scoring"
     ]
@@ -42,7 +43,7 @@
     "observed": "UNCTAD fleet baseline and optional IMF PortWatch daily estimated trade volume",
     "estimated": "route DWT derived from cargo flow, distance, speed, utilization and reserve",
     "scenario": "effective blockage, residual throughput, reroute, backlog, trapped DWT, insurance and cancellation assumptions",
-    "warning": "Route capacity is DWT-equivalent demand, not a vessel-by-vessel AIS inventory. Trapped and insurance-excluded DWT are scenario estimates unless an explicit observed source is attached."
+    "warning": "Route capacity is DWT-equivalent demand, not a vessel-by-vessel AIS inventory. Trapped and insurance-excluded DWT are scenario estimates. Behavior sensitivity ranges are deterministic joint paths, not probabilities or empirically estimated correlations."
   },
   "sources": [
     {
@@ -100,6 +101,19 @@
       }
     ],
     "rounding_note": "Published vessel-type figures differ from the published world total by 900 DWT because of table rounding."
+  },
+  "lng_fleet": {
+    "status": "combined_lng_lpg_dwt_observed_lng_only_dwt_not_available_free",
+    "as_of": "2025-01-01",
+    "liquefied_gas_carriers_dwt": 100462000,
+    "lng_only_dwt": null,
+    "source": {
+      "name": "UNCTAD Review of Maritime Transport 2025, table II.5",
+      "url": "https://unctad.org/system/files/official-document/rmt2025ch2_en.pdf",
+      "table_scope": "Liquefied gas carriers; UNCTAD vessel grouping includes LPG carriers and LNG carriers."
+    },
+    "model_use": "context_only_not_eligible_lng_only_denominator",
+    "warning_ko": "무료 UNCTAD 표의 100.462m DWT는 LNG·LPG 합계입니다. LNG 전용 DWT가 아니므로 현 LNG 항로의 가용선대 분모·보험 제외 DWT·환경 시나리오 분모로 자동 사용하지 않습니다. LNG 전용 세계 DWT는 무료 공개 원천에서 별도 검증 전까지 null로 유지합니다."
   },
   "chokepoints": [
     {
@@ -556,7 +570,7 @@
       },
       "multi_model_primary_metric": "all",
       "fetched_at": "2026-08-10T06:47:05.058878+00:00",
-      "stale_days": 8,
+      "stale_days": 10,
       "is_stale": true,
       "fallback_used": true,
       "source_status": "cached_fallback"
@@ -956,7 +970,7 @@
       },
       "multi_model_primary_metric": "all",
       "fetched_at": "2026-08-10T06:47:05.058878+00:00",
-      "stale_days": 8,
+      "stale_days": 10,
       "is_stale": true,
       "fallback_used": true,
       "source_status": "cached_fallback"
@@ -1356,7 +1370,7 @@
       },
       "multi_model_primary_metric": "all",
       "fetched_at": "2026-08-10T06:47:05.058878+00:00",
-      "stale_days": 8,
+      "stale_days": 10,
       "is_stale": true,
       "fallback_used": true,
       "source_status": "cached_fallback"
@@ -1756,7 +1770,7 @@
       },
       "multi_model_primary_metric": "all",
       "fetched_at": "2026-08-10T06:47:05.058878+00:00",
-      "stale_days": 8,
+      "stale_days": 10,
       "is_stale": true,
       "fallback_used": true,
       "source_status": "cached_fallback"
@@ -2156,7 +2170,7 @@
       },
       "multi_model_primary_metric": "tanker",
       "fetched_at": "2026-08-10T06:47:05.058878+00:00",
-      "stale_days": 8,
+      "stale_days": 10,
       "is_stale": true,
       "fallback_used": true,
       "source_status": "cached_fallback"
@@ -2176,7 +2190,7 @@
       "remaining_trade_volume_ratio": 0.954648,
       "remaining_trade_volume_pct_rounded": 95,
       "latest_date": "2026-08-02",
-      "stale_days": 8,
+      "stale_days": 10,
       "is_stale": true,
       "fallback_used": true,
       "source_status": "cached_fallback",
@@ -2197,7 +2211,7 @@
       "remaining_trade_volume_ratio": 0.904818,
       "remaining_trade_volume_pct_rounded": 90,
       "latest_date": "2026-08-02",
-      "stale_days": 8,
+      "stale_days": 10,
       "is_stale": true,
       "fallback_used": true,
       "source_status": "cached_fallback",
@@ -2218,7 +2232,7 @@
       "remaining_trade_volume_ratio": 0.748492,
       "remaining_trade_volume_pct_rounded": 75,
       "latest_date": "2026-08-02",
-      "stale_days": 8,
+      "stale_days": 10,
       "is_stale": true,
       "fallback_used": true,
       "source_status": "cached_fallback",
@@ -2239,7 +2253,7 @@
       "remaining_trade_volume_ratio": 0.661409,
       "remaining_trade_volume_pct_rounded": 66,
       "latest_date": "2026-08-02",
-      "stale_days": 8,
+      "stale_days": 10,
       "is_stale": true,
       "fallback_used": true,
       "source_status": "cached_fallback",
@@ -2260,7 +2274,7 @@
       "remaining_trade_volume_ratio": 0.19172,
       "remaining_trade_volume_pct_rounded": 19,
       "latest_date": "2026-08-02",
-      "stale_days": 8,
+      "stale_days": 10,
       "is_stale": true,
       "fallback_used": true,
       "source_status": "cached_fallback",
@@ -2808,7 +2822,132 @@
       "weighted_deliverable_flow_index": 0.79112,
       "weighted_served_flow_index": 0.79112,
       "weighted_traffic_change_pct": -20.887996,
-      "cargo_accounting_residual_tonnes": 0.0
+      "cargo_accounting_residual_tonnes": 0.0,
+      "behavior_sensitivity": {
+        "status": "deterministic_joint_paths_not_probability_interval",
+        "event_throughput_held_fixed": true,
+        "path_count": 3,
+        "paths": [
+          {
+            "path_id": "continuity_response",
+            "name_ko": "운항 연속성 우선",
+            "assumptions": {
+              "response_adjustment": {
+                "reroute_multiplier": 1.1,
+                "wait_multiplier": 1.3225,
+                "cancel_multiplier": 0.6375,
+                "multiplier_status": "prior_not_numerically_identified",
+                "calibration_event_ids": [
+                  "panama_drought_restrictions_2023_24"
+                ]
+              },
+              "waiting_days": 3.2,
+              "trapped_days": 3.2,
+              "onboard_waiting_share": 0.8,
+              "insurance_unavailable_share": 0.0
+            },
+            "results": {
+              "commercial_capacity_gap_dwt": 1793075.306599,
+              "commercially_available_dwt": 17763489.985032,
+              "insurance_excluded_dwt": 0.0,
+              "trapped_loaded_dwt": 47211.764791,
+              "backlog_cargo_tonnes_horizon": 451152.102271,
+              "lost_cargo_tonnes_horizon": 66023.220635,
+              "weighted_served_flow_index": 0.791695
+            },
+            "cargo_accounting_residual_tonnes": -0.0
+          },
+          {
+            "path_id": "central",
+            "name_ko": "현재 중앙 가정",
+            "assumptions": {
+              "response_adjustment": {
+                "reroute_multiplier": 1.0,
+                "wait_multiplier": 1.15,
+                "cancel_multiplier": 0.85,
+                "multiplier_status": "prior_not_numerically_identified",
+                "calibration_event_ids": [
+                  "panama_drought_restrictions_2023_24"
+                ]
+              },
+              "waiting_days": 4.0,
+              "trapped_days": 4.0,
+              "onboard_waiting_share": 1.0,
+              "insurance_unavailable_share": 0.0
+            },
+            "results": {
+              "commercial_capacity_gap_dwt": 1806720.694073,
+              "commercially_available_dwt": 17740425.14695,
+              "insurance_excluded_dwt": 0.0,
+              "trapped_loaded_dwt": 70276.602873,
+              "backlog_cargo_tonnes_horizon": 429795.947746,
+              "lost_cargo_tonnes_horizon": 96416.69171,
+              "weighted_served_flow_index": 0.79112
+            },
+            "cargo_accounting_residual_tonnes": 0.0
+          },
+          {
+            "path_id": "prolonged_queue",
+            "name_ko": "대기 장기화",
+            "assumptions": {
+              "response_adjustment": {
+                "reroute_multiplier": 0.9,
+                "wait_multiplier": 1.38,
+                "cancel_multiplier": 0.9775,
+                "multiplier_status": "prior_not_numerically_identified",
+                "calibration_event_ids": [
+                  "panama_drought_restrictions_2023_24"
+                ]
+              },
+              "waiting_days": 5.2,
+              "trapped_days": 5.2,
+              "onboard_waiting_share": 1.0,
+              "insurance_unavailable_share": 0.0
+            },
+            "results": {
+              "commercial_capacity_gap_dwt": 1723626.865358,
+              "commercially_available_dwt": 17695363.276054,
+              "insurance_excluded_dwt": 0.0,
+              "trapped_loaded_dwt": 115338.473769,
+              "backlog_cargo_tonnes_horizon": 542592.733825,
+              "lost_cargo_tonnes_horizon": 116415.391553,
+              "weighted_served_flow_index": 0.781764
+            },
+            "cargo_accounting_residual_tonnes": 0.0
+          }
+        ],
+        "ranges": {
+          "commercial_capacity_gap_dwt": {
+            "minimum": 1723626.865358,
+            "maximum": 1806720.694073
+          },
+          "commercially_available_dwt": {
+            "minimum": 17695363.276054,
+            "maximum": 17763489.985032
+          },
+          "insurance_excluded_dwt": {
+            "minimum": 0.0,
+            "maximum": 0.0
+          },
+          "trapped_loaded_dwt": {
+            "minimum": 47211.764791,
+            "maximum": 115338.473769
+          },
+          "backlog_cargo_tonnes_horizon": {
+            "minimum": 429795.947746,
+            "maximum": 542592.733825
+          },
+          "lost_cargo_tonnes_horizon": {
+            "minimum": 66023.220635,
+            "maximum": 116415.391553
+          },
+          "weighted_served_flow_index": {
+            "minimum": 0.781764,
+            "maximum": 0.791695
+          }
+        },
+        "warning_ko": "행동변수 동시변화에 대한 민감도 범위이며 발생확률·신뢰구간·예측구간이 아닙니다."
+      }
     },
     {
       "id": "suez_100pct_28d",
@@ -2838,7 +2977,132 @@
       "weighted_deliverable_flow_index": 0.598578,
       "weighted_served_flow_index": 0.598578,
       "weighted_traffic_change_pct": -40.142223,
-      "cargo_accounting_residual_tonnes": -0.0
+      "cargo_accounting_residual_tonnes": -0.0,
+      "behavior_sensitivity": {
+        "status": "deterministic_joint_paths_not_probability_interval",
+        "event_throughput_held_fixed": true,
+        "path_count": 3,
+        "paths": [
+          {
+            "path_id": "reroute_dominant",
+            "name_ko": "우회 우세",
+            "assumptions": {
+              "response_adjustment": {
+                "reroute_multiplier": 1.43,
+                "wait_multiplier": 0.68,
+                "cancel_multiplier": 0.75,
+                "multiplier_status": "prior_not_numerically_identified",
+                "calibration_event_ids": [
+                  "suez_ever_given_2021"
+                ]
+              },
+              "waiting_days": 5.6,
+              "trapped_days": 5.6,
+              "onboard_waiting_share": 0.8,
+              "insurance_unavailable_share": 0.0
+            },
+            "results": {
+              "commercial_capacity_gap_dwt": 4823115.583463,
+              "commercially_available_dwt": 17738657.240503,
+              "insurance_excluded_dwt": 0.0,
+              "trapped_loaded_dwt": 72044.509319,
+              "backlog_cargo_tonnes_horizon": 393414.658273,
+              "lost_cargo_tonnes_horizon": 132199.533037,
+              "weighted_served_flow_index": 0.618965
+            },
+            "cargo_accounting_residual_tonnes": 0.0
+          },
+          {
+            "path_id": "central",
+            "name_ko": "현재 중앙 가정",
+            "assumptions": {
+              "response_adjustment": {
+                "reroute_multiplier": 1.1,
+                "wait_multiplier": 0.85,
+                "cancel_multiplier": 1.0,
+                "multiplier_status": "prior_not_numerically_identified",
+                "calibration_event_ids": [
+                  "suez_ever_given_2021"
+                ]
+              },
+              "waiting_days": 7.0,
+              "trapped_days": 7.0,
+              "onboard_waiting_share": 1.0,
+              "insurance_unavailable_share": 0.0
+            },
+            "results": {
+              "commercial_capacity_gap_dwt": 4634929.036771,
+              "commercially_available_dwt": 17637758.221267,
+              "insurance_excluded_dwt": 0.0,
+              "trapped_loaded_dwt": 172943.528556,
+              "backlog_cargo_tonnes_horizon": 604400.03254,
+              "lost_cargo_tonnes_horizon": 216152.352015,
+              "weighted_served_flow_index": 0.598578
+            },
+            "cargo_accounting_residual_tonnes": -0.0
+          },
+          {
+            "path_id": "wait_cancel_dominant",
+            "name_ko": "대기·취소 우세",
+            "assumptions": {
+              "response_adjustment": {
+                "reroute_multiplier": 0.77,
+                "wait_multiplier": 1.02,
+                "cancel_multiplier": 1.4,
+                "multiplier_status": "prior_not_numerically_identified",
+                "calibration_event_ids": [
+                  "suez_ever_given_2021"
+                ]
+              },
+              "waiting_days": 9.1,
+              "trapped_days": 9.1,
+              "onboard_waiting_share": 1.0,
+              "insurance_unavailable_share": 0.0
+            },
+            "results": {
+              "commercial_capacity_gap_dwt": 4320692.326804,
+              "commercially_available_dwt": 17462776.741626,
+              "insurance_excluded_dwt": 0.0,
+              "trapped_loaded_dwt": 347925.008196,
+              "backlog_cargo_tonnes_horizon": 935288.368313,
+              "lost_cargo_tonnes_horizon": 388671.134175,
+              "weighted_served_flow_index": 0.56341
+            },
+            "cargo_accounting_residual_tonnes": 0.0
+          }
+        ],
+        "ranges": {
+          "commercial_capacity_gap_dwt": {
+            "minimum": 4320692.326804,
+            "maximum": 4823115.583463
+          },
+          "commercially_available_dwt": {
+            "minimum": 17462776.741626,
+            "maximum": 17738657.240503
+          },
+          "insurance_excluded_dwt": {
+            "minimum": 0.0,
+            "maximum": 0.0
+          },
+          "trapped_loaded_dwt": {
+            "minimum": 72044.509319,
+            "maximum": 347925.008196
+          },
+          "backlog_cargo_tonnes_horizon": {
+            "minimum": 393414.658273,
+            "maximum": 935288.368313
+          },
+          "lost_cargo_tonnes_horizon": {
+            "minimum": 132199.533037,
+            "maximum": 388671.134175
+          },
+          "weighted_served_flow_index": {
+            "minimum": 0.56341,
+            "maximum": 0.618965
+          }
+        },
+        "warning_ko": "행동변수 동시변화에 대한 민감도 범위이며 발생확률·신뢰구간·예측구간이 아닙니다."
+      }
     },
     {
       "id": "panama_50pct_28d",
@@ -2868,7 +3132,132 @@
       "weighted_deliverable_flow_index": 0.687718,
       "weighted_served_flow_index": 0.687718,
       "weighted_traffic_change_pct": -31.228243,
-      "cargo_accounting_residual_tonnes": 0.0
+      "cargo_accounting_residual_tonnes": 0.0,
+      "behavior_sensitivity": {
+        "status": "deterministic_joint_paths_not_probability_interval",
+        "event_throughput_held_fixed": true,
+        "path_count": 3,
+        "paths": [
+          {
+            "path_id": "continuity_response",
+            "name_ko": "운항 연속성 우선",
+            "assumptions": {
+              "response_adjustment": {
+                "reroute_multiplier": 1.1,
+                "wait_multiplier": 1.3225,
+                "cancel_multiplier": 0.6375,
+                "multiplier_status": "prior_not_numerically_identified",
+                "calibration_event_ids": [
+                  "panama_drought_restrictions_2023_24"
+                ]
+              },
+              "waiting_days": 4.0,
+              "trapped_days": 4.0,
+              "onboard_waiting_share": 0.8,
+              "insurance_unavailable_share": 0.0
+            },
+            "results": {
+              "commercial_capacity_gap_dwt": 942507.576307,
+              "commercially_available_dwt": 10951953.342721,
+              "insurance_excluded_dwt": 0.0,
+              "trapped_loaded_dwt": 78709.675692,
+              "backlog_cargo_tonnes_horizon": 583938.845285,
+              "lost_cargo_tonnes_horizon": 89093.582819,
+              "weighted_served_flow_index": 0.68857
+            },
+            "cargo_accounting_residual_tonnes": 0.0
+          },
+          {
+            "path_id": "central",
+            "name_ko": "현재 중앙 가정",
+            "assumptions": {
+              "response_adjustment": {
+                "reroute_multiplier": 1.0,
+                "wait_multiplier": 1.15,
+                "cancel_multiplier": 0.85,
+                "multiplier_status": "prior_not_numerically_identified",
+                "calibration_event_ids": [
+                  "panama_drought_restrictions_2023_24"
+                ]
+              },
+              "waiting_days": 5.0,
+              "trapped_days": 5.0,
+              "onboard_waiting_share": 1.0,
+              "insurance_unavailable_share": 0.0
+            },
+            "results": {
+              "commercial_capacity_gap_dwt": 967572.51458,
+              "commercially_available_dwt": 10914169.098713,
+              "insurance_excluded_dwt": 0.0,
+              "trapped_loaded_dwt": 116493.9197,
+              "backlog_cargo_tonnes_horizon": 553051.345812,
+              "lost_cargo_tonnes_horizon": 129335.517034,
+              "weighted_served_flow_index": 0.687718
+            },
+            "cargo_accounting_residual_tonnes": 0.0
+          },
+          {
+            "path_id": "prolonged_queue",
+            "name_ko": "대기 장기화",
+            "assumptions": {
+              "response_adjustment": {
+                "reroute_multiplier": 0.9,
+                "wait_multiplier": 1.38,
+                "cancel_multiplier": 0.9775,
+                "multiplier_status": "prior_not_numerically_identified",
+                "calibration_event_ids": [
+                  "panama_drought_restrictions_2023_24"
+                ]
+              },
+              "waiting_days": 6.5,
+              "trapped_days": 6.5,
+              "onboard_waiting_share": 1.0,
+              "insurance_unavailable_share": 0.0
+            },
+            "results": {
+              "commercial_capacity_gap_dwt": 863671.383024,
+              "commercially_available_dwt": 10854045.735489,
+              "insurance_excluded_dwt": 0.0,
+              "trapped_loaded_dwt": 176617.282924,
+              "backlog_cargo_tonnes_horizon": 645489.086759,
+              "lost_cargo_tonnes_horizon": 144984.392872,
+              "weighted_served_flow_index": 0.678751
+            },
+            "cargo_accounting_residual_tonnes": 0.0
+          }
+        ],
+        "ranges": {
+          "commercial_capacity_gap_dwt": {
+            "minimum": 863671.383024,
+            "maximum": 967572.51458
+          },
+          "commercially_available_dwt": {
+            "minimum": 10854045.735489,
+            "maximum": 10951953.342721
+          },
+          "insurance_excluded_dwt": {
+            "minimum": 0.0,
+            "maximum": 0.0
+          },
+          "trapped_loaded_dwt": {
+            "minimum": 78709.675692,
+            "maximum": 176617.282924
+          },
+          "backlog_cargo_tonnes_horizon": {
+            "minimum": 553051.345812,
+            "maximum": 645489.086759
+          },
+          "lost_cargo_tonnes_horizon": {
+            "minimum": 89093.582819,
+            "maximum": 144984.392872
+          },
+          "weighted_served_flow_index": {
+            "minimum": 0.678751,
+            "maximum": 0.68857
+          }
+        },
+        "warning_ko": "행동변수 동시변화에 대한 민감도 범위이며 발생확률·신뢰구간·예측구간이 아닙니다."
+      }
     },
     {
       "id": "bosporus_100pct_14d",
@@ -2898,7 +3287,132 @@
       "weighted_deliverable_flow_index": 0.859155,
       "weighted_served_flow_index": 0.859155,
       "weighted_traffic_change_pct": -14.084507,
-      "cargo_accounting_residual_tonnes": 0.0
+      "cargo_accounting_residual_tonnes": 0.0,
+      "behavior_sensitivity": {
+        "status": "deterministic_joint_paths_not_probability_interval",
+        "event_throughput_held_fixed": true,
+        "path_count": 3,
+        "paths": [
+          {
+            "path_id": "reroute_dominant",
+            "name_ko": "우회 우세",
+            "assumptions": {
+              "response_adjustment": {
+                "reroute_multiplier": 1.43,
+                "wait_multiplier": 0.68,
+                "cancel_multiplier": 0.75,
+                "multiplier_status": "prior_not_numerically_identified",
+                "calibration_event_ids": [
+                  "suez_ever_given_2021"
+                ]
+              },
+              "waiting_days": 11.2,
+              "trapped_days": 11.2,
+              "onboard_waiting_share": 0.8,
+              "insurance_unavailable_share": 0.0
+            },
+            "results": {
+              "commercial_capacity_gap_dwt": 394302.087871,
+              "commercially_available_dwt": 3264172.88264,
+              "insurance_excluded_dwt": 0.0,
+              "trapped_loaded_dwt": 540641.086692,
+              "backlog_cargo_tonnes_horizon": 0.0,
+              "lost_cargo_tonnes_horizon": 532061.101798,
+              "weighted_served_flow_index": 0.865591
+            },
+            "cargo_accounting_residual_tonnes": 0.0
+          },
+          {
+            "path_id": "central",
+            "name_ko": "현재 중앙 가정",
+            "assumptions": {
+              "response_adjustment": {
+                "reroute_multiplier": 1.1,
+                "wait_multiplier": 0.85,
+                "cancel_multiplier": 1.0,
+                "multiplier_status": "prior_not_numerically_identified",
+                "calibration_event_ids": [
+                  "suez_ever_given_2021"
+                ]
+              },
+              "waiting_days": 14.0,
+              "trapped_days": 14.0,
+              "onboard_waiting_share": 1.0,
+              "insurance_unavailable_share": 0.0
+            },
+            "results": {
+              "commercial_capacity_gap_dwt": 683540.310087,
+              "commercially_available_dwt": 2974934.660424,
+              "insurance_excluded_dwt": 0.0,
+              "trapped_loaded_dwt": 829879.308907,
+              "backlog_cargo_tonnes_horizon": 0.0,
+              "lost_cargo_tonnes_horizon": 557540.084138,
+              "weighted_served_flow_index": 0.859155
+            },
+            "cargo_accounting_residual_tonnes": 0.0
+          },
+          {
+            "path_id": "wait_cancel_dominant",
+            "name_ko": "대기·취소 우세",
+            "assumptions": {
+              "response_adjustment": {
+                "reroute_multiplier": 0.77,
+                "wait_multiplier": 1.02,
+                "cancel_multiplier": 1.4,
+                "multiplier_status": "prior_not_numerically_identified",
+                "calibration_event_ids": [
+                  "suez_ever_given_2021"
+                ]
+              },
+              "waiting_days": 18.2,
+              "trapped_days": 18.2,
+              "onboard_waiting_share": 1.0,
+              "insurance_unavailable_share": 0.0
+            },
+            "results": {
+              "commercial_capacity_gap_dwt": 884125.488338,
+              "commercially_available_dwt": 2774349.482173,
+              "insurance_excluded_dwt": 0.0,
+              "trapped_loaded_dwt": 1030464.487159,
+              "backlog_cargo_tonnes_horizon": 313378.299447,
+              "lost_cargo_tonnes_horizon": 621294.66775,
+              "weighted_served_flow_index": 0.763884
+            },
+            "cargo_accounting_residual_tonnes": 0.0
+          }
+        ],
+        "ranges": {
+          "commercial_capacity_gap_dwt": {
+            "minimum": 394302.087871,
+            "maximum": 884125.488338
+          },
+          "commercially_available_dwt": {
+            "minimum": 2774349.482173,
+            "maximum": 3264172.88264
+          },
+          "insurance_excluded_dwt": {
+            "minimum": 0.0,
+            "maximum": 0.0
+          },
+          "trapped_loaded_dwt": {
+            "minimum": 540641.086692,
+            "maximum": 1030464.487159
+          },
+          "backlog_cargo_tonnes_horizon": {
+            "minimum": 0.0,
+            "maximum": 313378.299447
+          },
+          "lost_cargo_tonnes_horizon": {
+            "minimum": 532061.101798,
+            "maximum": 621294.66775
+          },
+          "weighted_served_flow_index": {
+            "minimum": 0.763884,
+            "maximum": 0.865591
+          }
+        },
+        "warning_ko": "행동변수 동시변화에 대한 민감도 범위이며 발생확률·신뢰구간·예측구간이 아닙니다."
+      }
     },
     {
       "id": "hormuz_50pct_28d",
@@ -2928,7 +3442,132 @@
       "weighted_deliverable_flow_index": 0.5,
       "weighted_served_flow_index": 0.5,
       "weighted_traffic_change_pct": -50.0,
-      "cargo_accounting_residual_tonnes": 0.0
+      "cargo_accounting_residual_tonnes": 0.0,
+      "behavior_sensitivity": {
+        "status": "deterministic_joint_paths_not_probability_interval",
+        "event_throughput_held_fixed": true,
+        "path_count": 3,
+        "paths": [
+          {
+            "path_id": "insured_continuity",
+            "name_ko": "보험 유지·운항 연속",
+            "assumptions": {
+              "response_adjustment": {
+                "reroute_multiplier": 1.035,
+                "wait_multiplier": 1.15,
+                "cancel_multiplier": 0.98,
+                "multiplier_status": "qualitatively_constrained_not_numerically_identified",
+                "calibration_event_ids": [
+                  "red_sea_initial_rerouting_2023_24"
+                ]
+              },
+              "waiting_days": 5.25,
+              "trapped_days": 21.0,
+              "onboard_waiting_share": 0.3,
+              "insurance_unavailable_share": 0.175
+            },
+            "results": {
+              "commercial_capacity_gap_dwt": 15329683.848775,
+              "commercially_available_dwt": 70464827.169867,
+              "insurance_excluded_dwt": 14947084.551184,
+              "trapped_loaded_dwt": 3867107.232502,
+              "backlog_cargo_tonnes_horizon": 15240886.940415,
+              "lost_cargo_tonnes_horizon": 7027804.582332,
+              "weighted_served_flow_index": 0.5
+            },
+            "cargo_accounting_residual_tonnes": 0.0
+          },
+          {
+            "path_id": "central",
+            "name_ko": "현재 중앙 가정",
+            "assumptions": {
+              "response_adjustment": {
+                "reroute_multiplier": 0.9,
+                "wait_multiplier": 1.0,
+                "cancel_multiplier": 1.4,
+                "multiplier_status": "qualitatively_constrained_not_numerically_identified",
+                "calibration_event_ids": [
+                  "red_sea_initial_rerouting_2023_24"
+                ]
+              },
+              "waiting_days": 7.0,
+              "trapped_days": 28.0,
+              "onboard_waiting_share": 0.4,
+              "insurance_unavailable_share": 0.35
+            },
+            "results": {
+              "commercial_capacity_gap_dwt": 31479737.723811,
+              "commercially_available_dwt": 54314773.294831,
+              "insurance_excluded_dwt": 29246416.389525,
+              "trapped_loaded_dwt": 5717829.269196,
+              "backlog_cargo_tonnes_horizon": 12675298.690365,
+              "lost_cargo_tonnes_horizon": 9593392.832382,
+              "weighted_served_flow_index": 0.5
+            },
+            "cargo_accounting_residual_tonnes": 0.0
+          },
+          {
+            "path_id": "market_withdrawal",
+            "name_ko": "보험·선복 시장 이탈",
+            "assumptions": {
+              "response_adjustment": {
+                "reroute_multiplier": 0.675,
+                "wait_multiplier": 0.85,
+                "cancel_multiplier": 2.24,
+                "multiplier_status": "qualitatively_constrained_not_numerically_identified",
+                "calibration_event_ids": [
+                  "red_sea_initial_rerouting_2023_24"
+                ]
+              },
+              "waiting_days": 8.75,
+              "trapped_days": 35.0,
+              "onboard_waiting_share": 0.46,
+              "insurance_unavailable_share": 0.4375
+            },
+            "results": {
+              "commercial_capacity_gap_dwt": 38257190.789806,
+              "commercially_available_dwt": 47537320.228837,
+              "insurance_excluded_dwt": 36973471.289095,
+              "trapped_loaded_dwt": 4768227.435621,
+              "backlog_cargo_tonnes_horizon": 9190872.417422,
+              "lost_cargo_tonnes_horizon": 13077819.105326,
+              "weighted_served_flow_index": 0.5
+            },
+            "cargo_accounting_residual_tonnes": -0.0
+          }
+        ],
+        "ranges": {
+          "commercial_capacity_gap_dwt": {
+            "minimum": 15329683.848775,
+            "maximum": 38257190.789806
+          },
+          "commercially_available_dwt": {
+            "minimum": 47537320.228837,
+            "maximum": 70464827.169867
+          },
+          "insurance_excluded_dwt": {
+            "minimum": 14947084.551184,
+            "maximum": 36973471.289095
+          },
+          "trapped_loaded_dwt": {
+            "minimum": 3867107.232502,
+            "maximum": 5717829.269196
+          },
+          "backlog_cargo_tonnes_horizon": {
+            "minimum": 9190872.417422,
+            "maximum": 15240886.940415
+          },
+          "lost_cargo_tonnes_horizon": {
+            "minimum": 7027804.582332,
+            "maximum": 13077819.105326
+          },
+          "weighted_served_flow_index": {
+            "minimum": 0.5,
+            "maximum": 0.5
+          }
+        },
+        "warning_ko": "행동변수 동시변화에 대한 민감도 범위이며 발생확률·신뢰구간·예측구간이 아닙니다."
+      }
     },
     {
       "id": "hormuz_effective_80pct_28d",
@@ -2958,7 +3597,132 @@
       "weighted_deliverable_flow_index": 0.2,
       "weighted_served_flow_index": 0.2,
       "weighted_traffic_change_pct": -80.0,
-      "cargo_accounting_residual_tonnes": 0.0
+      "cargo_accounting_residual_tonnes": 0.0,
+      "behavior_sensitivity": {
+        "status": "deterministic_joint_paths_not_probability_interval",
+        "event_throughput_held_fixed": true,
+        "path_count": 3,
+        "paths": [
+          {
+            "path_id": "insured_continuity",
+            "name_ko": "보험 유지·운항 연속",
+            "assumptions": {
+              "response_adjustment": {
+                "reroute_multiplier": 1.035,
+                "wait_multiplier": 1.15,
+                "cancel_multiplier": 0.98,
+                "multiplier_status": "qualitatively_constrained_not_numerically_identified",
+                "calibration_event_ids": [
+                  "red_sea_initial_rerouting_2023_24"
+                ]
+              },
+              "waiting_days": 21.0,
+              "trapped_days": 21.0,
+              "onboard_waiting_share": 0.45,
+              "insurance_unavailable_share": 0.4
+            },
+            "results": {
+              "commercial_capacity_gap_dwt": 37795734.061313,
+              "commercially_available_dwt": 47998776.957329,
+              "insurance_excluded_dwt": 31999184.638219,
+              "trapped_loaded_dwt": 9281057.358004,
+              "backlog_cargo_tonnes_horizon": 24385419.104664,
+              "lost_cargo_tonnes_horizon": 11244487.331732,
+              "weighted_served_flow_index": 0.2
+            },
+            "cargo_accounting_residual_tonnes": 0.0
+          },
+          {
+            "path_id": "central",
+            "name_ko": "현재 중앙 가정",
+            "assumptions": {
+              "response_adjustment": {
+                "reroute_multiplier": 0.9,
+                "wait_multiplier": 1.0,
+                "cancel_multiplier": 1.4,
+                "multiplier_status": "qualitatively_constrained_not_numerically_identified",
+                "calibration_event_ids": [
+                  "red_sea_initial_rerouting_2023_24"
+                ]
+              },
+              "waiting_days": 28.0,
+              "trapped_days": 28.0,
+              "onboard_waiting_share": 0.6,
+              "insurance_unavailable_share": 0.8
+            },
+            "results": {
+              "commercial_capacity_gap_dwt": 70683265.277146,
+              "commercially_available_dwt": 15111245.741496,
+              "insurance_excluded_dwt": 60444982.965985,
+              "trapped_loaded_dwt": 13722790.246071,
+              "backlog_cargo_tonnes_horizon": 20280477.904584,
+              "lost_cargo_tonnes_horizon": 15349428.531812,
+              "weighted_served_flow_index": 0.2
+            },
+            "cargo_accounting_residual_tonnes": 0.0
+          },
+          {
+            "path_id": "market_withdrawal",
+            "name_ko": "보험·선복 시장 이탈",
+            "assumptions": {
+              "response_adjustment": {
+                "reroute_multiplier": 0.675,
+                "wait_multiplier": 0.85,
+                "cancel_multiplier": 2.24,
+                "multiplier_status": "qualitatively_constrained_not_numerically_identified",
+                "calibration_event_ids": [
+                  "red_sea_initial_rerouting_2023_24"
+                ]
+              },
+              "waiting_days": 35.0,
+              "trapped_days": 35.0,
+              "onboard_waiting_share": 0.69,
+              "insurance_unavailable_share": 1.0
+            },
+            "results": {
+              "commercial_capacity_gap_dwt": 85794511.018642,
+              "commercially_available_dwt": 0.0,
+              "insurance_excluded_dwt": 77835273.108063,
+              "trapped_loaded_dwt": 11443745.845489,
+              "backlog_cargo_tonnes_horizon": 14705395.867875,
+              "lost_cargo_tonnes_horizon": 20924510.568521,
+              "weighted_served_flow_index": 0.2
+            },
+            "cargo_accounting_residual_tonnes": 0.0
+          }
+        ],
+        "ranges": {
+          "commercial_capacity_gap_dwt": {
+            "minimum": 37795734.061313,
+            "maximum": 85794511.018642
+          },
+          "commercially_available_dwt": {
+            "minimum": 0.0,
+            "maximum": 47998776.957329
+          },
+          "insurance_excluded_dwt": {
+            "minimum": 31999184.638219,
+            "maximum": 77835273.108063
+          },
+          "trapped_loaded_dwt": {
+            "minimum": 9281057.358004,
+            "maximum": 13722790.246071
+          },
+          "backlog_cargo_tonnes_horizon": {
+            "minimum": 14705395.867875,
+            "maximum": 24385419.104664
+          },
+          "lost_cargo_tonnes_horizon": {
+            "minimum": 11244487.331732,
+            "maximum": 20924510.568521
+          },
+          "weighted_served_flow_index": {
+            "minimum": 0.2,
+            "maximum": 0.2
+          }
+        },
+        "warning_ko": "행동변수 동시변화에 대한 민감도 범위이며 발생확률·신뢰구간·예측구간이 아닙니다."
+      }
     },
     {
       "id": "hormuz_100pct_28d",
@@ -2988,7 +3752,132 @@
       "weighted_deliverable_flow_index": 0.0,
       "weighted_served_flow_index": 0.0,
       "weighted_traffic_change_pct": -100.0,
-      "cargo_accounting_residual_tonnes": 0.0
+      "cargo_accounting_residual_tonnes": 0.0,
+      "behavior_sensitivity": {
+        "status": "deterministic_joint_paths_not_probability_interval",
+        "event_throughput_held_fixed": true,
+        "path_count": 3,
+        "paths": [
+          {
+            "path_id": "controlled_evacuation",
+            "name_ko": "제한적 안전통항·대기 해소",
+            "assumptions": {
+              "response_adjustment": {
+                "reroute_multiplier": 0.6,
+                "wait_multiplier": 0.96,
+                "cancel_multiplier": 1.4,
+                "multiplier_status": "qualitatively_constrained_not_numerically_identified",
+                "calibration_event_ids": [
+                  "hormuz_conflict_2026"
+                ]
+              },
+              "waiting_days": 21.0,
+              "trapped_days": 21.0,
+              "onboard_waiting_share": 0.6,
+              "insurance_unavailable_share": 0.75
+            },
+            "results": {
+              "commercial_capacity_gap_dwt": 66634443.904408,
+              "commercially_available_dwt": 19160067.114234,
+              "insurance_excluded_dwt": 57480201.342702,
+              "trapped_loaded_dwt": 12638750.496616,
+              "backlog_cargo_tonnes_horizon": 24904444.249124,
+              "lost_cargo_tonnes_horizon": 19632938.796371,
+              "weighted_served_flow_index": 0.0
+            },
+            "cargo_accounting_residual_tonnes": -0.0
+          },
+          {
+            "path_id": "central",
+            "name_ko": "현재 중앙 가정",
+            "assumptions": {
+              "response_adjustment": {
+                "reroute_multiplier": 0.6,
+                "wait_multiplier": 0.8,
+                "cancel_multiplier": 2.0,
+                "multiplier_status": "qualitatively_constrained_not_numerically_identified",
+                "calibration_event_ids": [
+                  "hormuz_conflict_2026"
+                ]
+              },
+              "waiting_days": 28.0,
+              "trapped_days": 28.0,
+              "onboard_waiting_share": 0.75,
+              "insurance_unavailable_share": 1.0
+            },
+            "results": {
+              "commercial_capacity_gap_dwt": 85794511.018642,
+              "commercially_available_dwt": 0.0,
+              "insurance_excluded_dwt": 73248110.448289,
+              "trapped_loaded_dwt": 16030908.505263,
+              "backlog_cargo_tonnes_horizon": 18952085.770118,
+              "lost_cargo_tonnes_horizon": 25585297.275377,
+              "weighted_served_flow_index": 0.0
+            },
+            "cargo_accounting_residual_tonnes": 0.0
+          },
+          {
+            "path_id": "full_market_withdrawal",
+            "name_ko": "보험·상업운항 전면 이탈",
+            "assumptions": {
+              "response_adjustment": {
+                "reroute_multiplier": 0.3,
+                "wait_multiplier": 0.6,
+                "cancel_multiplier": 3.6,
+                "multiplier_status": "qualitatively_constrained_not_numerically_identified",
+                "calibration_event_ids": [
+                  "hormuz_conflict_2026"
+                ]
+              },
+              "waiting_days": 35.0,
+              "trapped_days": 35.0,
+              "onboard_waiting_share": 0.9,
+              "insurance_unavailable_share": 1.0
+            },
+            "results": {
+              "commercial_capacity_gap_dwt": 85794511.018642,
+              "commercially_available_dwt": 0.0,
+              "insurance_excluded_dwt": 78603731.913199,
+              "trapped_loaded_dwt": 10675287.040353,
+              "backlog_cargo_tonnes_horizon": 10516162.634472,
+              "lost_cargo_tonnes_horizon": 34021220.411023,
+              "weighted_served_flow_index": 0.0
+            },
+            "cargo_accounting_residual_tonnes": -0.0
+          }
+        ],
+        "ranges": {
+          "commercial_capacity_gap_dwt": {
+            "minimum": 66634443.904408,
+            "maximum": 85794511.018642
+          },
+          "commercially_available_dwt": {
+            "minimum": 0.0,
+            "maximum": 19160067.114234
+          },
+          "insurance_excluded_dwt": {
+            "minimum": 57480201.342702,
+            "maximum": 78603731.913199
+          },
+          "trapped_loaded_dwt": {
+            "minimum": 10675287.040353,
+            "maximum": 16030908.505263
+          },
+          "backlog_cargo_tonnes_horizon": {
+            "minimum": 10516162.634472,
+            "maximum": 24904444.249124
+          },
+          "lost_cargo_tonnes_horizon": {
+            "minimum": 19632938.796371,
+            "maximum": 34021220.411023
+          },
+          "weighted_served_flow_index": {
+            "minimum": 0.0,
+            "maximum": 0.0
+          }
+        },
+        "warning_ko": "행동변수 동시변화에 대한 민감도 범위이며 발생확률·신뢰구간·예측구간이 아닙니다."
+      }
     }
   ],
   "comtrade_routes": {
@@ -2996,7 +3885,233 @@
     "period": "2024",
     "fetched_at": "2026-08-10T07:06:55.352112+00:00",
     "method": "water-mode row preferred per reporter-partner-flow-commodity cell; all-mode total used only as fallback",
-    "route_count": 21
+    "route_count": 21,
+    "history": {
+      "status": "partial_quality_gated",
+      "periods": [
+        "2019",
+        "2020",
+        "2021",
+        "2022",
+        "2023",
+        "2024"
+      ],
+      "route_count": 21,
+      "identification_boundary": "Input-volume history only; it is not used to calibrate operational behavior shares or scenario coefficients."
+    }
+  },
+  "portwatch_port_context": {
+    "status": "configured_public_port_calls_no_waiting_or_anchorage_fields",
+    "source": {
+      "name": "IMF PortWatch Daily Ports Data (ArcGIS REST)",
+      "url": "https://services9.arcgis.com/weJ1QsnbMYJlCHdG/ArcGIS/rest/services/Daily_Ports_Data/FeatureServer/0/query",
+      "available_fields": [
+        "portcalls_*",
+        "import_*",
+        "export_*"
+      ],
+      "unavailable_fields": [
+        "anchored_vessel_count",
+        "waiting_vessel_count",
+        "anchorage_waiting_time_hours"
+      ]
+    },
+    "groups": [],
+    "identification_boundary": "PortWatch public REST presently publishes daily port calls and estimated import/export tonnage, not waiting or anchorage vessel counts. These observations remain diagnostic context and are not mapped to backlog, trapped DWT, insurance exclusion, or behavioral shares."
+  },
+  "market_signals": {
+    "status": "source_registry_only_no_unlicensed_scraping",
+    "generated_at": "2026-08-12T03:30:20.352292+00:00",
+    "signals": [
+      {
+        "id": "unctad_freight_rate_review",
+        "signal_class": "freight_rate",
+        "ship_type": "all",
+        "source_name": "UNCTAD Review of Maritime Transport 2025, Chapter 3",
+        "source_url": "https://unctad.org/system/files/official-document/rmt2025ch3_en.pdf",
+        "access": "public_pdf",
+        "status": "automated_public_document_context",
+        "model_use": "external_validation_only",
+        "reason": "Official annual freight-rate context; a reproducible daily/weekly redistributable series is not provided by this source."
+      },
+      {
+        "id": "nyfed_gscpi",
+        "signal_class": "supply_chain_pressure_proxy",
+        "ship_type": "all",
+        "source_name": "Federal Reserve Bank of New York Global Supply Chain Pressure Index",
+        "source_url": "https://www.newyorkfed.org/research/policy/gscpi",
+        "access": "public_pdf",
+        "status": "automated_public_document_context",
+        "model_use": "external_validation_only",
+        "reason": "Public global supply-chain stress proxy that incorporates transportation-cost inputs; it is not a route-level freight, charter, or insurance price series."
+      },
+      {
+        "id": "baltic_dry_and_tanker_assessments",
+        "signal_class": "charter_rate",
+        "ship_type": "dry_bulk",
+        "source_name": "Baltic Exchange market information",
+        "source_url": "https://www.balticexchange.com/en/data-services/market-information0.html",
+        "access": "commercial_or_license_required",
+        "status": "not_automated_without_permitted_public_series",
+        "model_use": "not_used",
+        "reason": "Benchmark assessments are visible as market information but redistribution/API rights must be licensed."
+      },
+      {
+        "id": "jwc_listed_areas_2026",
+        "signal_class": "insurance_area_status",
+        "ship_type": "all",
+        "source_name": "LMA/IUA Joint War Committee Listed Areas JWLA-033",
+        "source_url": "https://lmalloyds.com/specialist-areas/underwriting/listed-areas/",
+        "access": "public_web_page",
+        "status": "automated_public_document_context",
+        "model_use": "external_validation_only",
+        "reason": "Public war-risk area designation. Application to an individual insurance contract remains subject to negotiation and it is not a quoted premium series."
+      },
+      {
+        "id": "iumi_global_marine_insurance_2025",
+        "signal_class": "marine_insurance_market_aggregate",
+        "ship_type": "all",
+        "source_name": "IUMI Global Marine Insurance Report 2025",
+        "source_url": "https://iumi.com/wp-content/uploads/2026/02/IUMI-Stats-Report-2025-2.pdf",
+        "access": "public_pdf",
+        "status": "automated_public_document_context",
+        "model_use": "external_validation_only",
+        "reason": "Public global premium and loss-ratio aggregates by insurance line; not route-level war-risk pricing or bindability."
+      },
+      {
+        "id": "war_risk_premium",
+        "signal_class": "war_risk_insurance_premium",
+        "ship_type": "tanker",
+        "source_name": "War-risk insurance premium market",
+        "source_url": "https://www.imo.org/en/mediacentre/hottopics/pages/middle-east-strait-of-hormuz.aspx",
+        "access": "commercial_or_license_required",
+        "status": "not_automated_without_permitted_public_series",
+        "model_use": "not_used",
+        "reason": "Official safety notices can identify affected areas, but public official data do not publish vessel-level quoted war-risk premiums or bindability."
+      }
+    ],
+    "identification_boundary": "A price/index movement can externally corroborate market stress, but it cannot by itself identify waiting, rerouting, cancellation, trapped loaded DWT, or insurance-excluded DWT. No registry entry recalibrates scenario behavior coefficients.",
+    "warning_ko": "Baltic·Worldscale·선박 용선·전쟁위험보험의 정량 시계열은 대체로 상업 라이선스 대상입니다. 허가 없는 화면 스크래핑을 하지 않으며, 무료 공개 원천은 연간 PDF 또는 공급망 압력 프록시로만 보존합니다."
+  },
+  "pdf_reports": {
+    "status": "fetched",
+    "fetched_at": "2026-08-11T10:59:59.823830+00:00",
+    "sources": [
+      {
+        "id": "unctad_rmt_2025_chapter_2_fleet",
+        "publisher": "UN Trade and Development (UNCTAD)",
+        "title": "Review of Maritime Transport 2025, Chapter 2",
+        "source_url": "https://unctad.org/system/files/official-document/rmt2025ch2_en.pdf",
+        "fetched_at": "2026-08-11T10:59:46.824907+00:00",
+        "content_sha256": "1f29b6f422b87e665e81907145c871cdecbf84d849a9d278330ddf1008e03322",
+        "byte_size": 2420035,
+        "page_count": 36,
+        "extracted_page_count": 36,
+        "status": "verified_text_extract",
+        "required_patterns_missing": [],
+        "evidence": [
+          {
+            "pattern": "Trends in world fleet capacity by vessel type",
+            "context": "nual average of 5.1 per cent of the past two decades but faster than growth in maritime trade volume. Global capacity reached about 2.44 billion dead weight tons. Table II.5 Trends in world fleet capacity by vessel type, 1 January 2025 Source: UNCTAD calculations, based on data from Clarksons Research. Note: The table refers to propelled seagoing merchant vessels of 100 gross tons and above. Figu"
+          },
+          {
+            "pattern": "Liquefied gas carriers",
+            "context": "s Dead weight tons (thousands) 271 141 282 651 4.2 Share (percentage) 11.5 11.6 Offshore supply Dead weight tons (thousands) 89 507 91 334 2.0 Share (percentage) 3.8 3.7 Liquefied gas carriers Dead weight tons (thousands) 93 907 100 462 7.0 Share (percentage) 4.0 4.1 Chemical tankers Dead weight tons (thousands) 52 584 54 333 3.3 Share (percentage) 2.2 2.2 Oth"
+          },
+          {
+            "pattern": "World total",
+            "context": "ing merchant vessels of 100 gross tons and above. Dead weight ton figures for some individual vessels have been estimated. Rank Flag of registration Number of vessels Share of world total vessels (percentage) Dead weight tons (thousands) Share of world total dead weight tons (percentage) Average vessel size (thousands of dead weight tons) Growth in d"
+          }
+        ],
+        "storage_note": "Original PDF is ephemeral download-cache input and is not committed with this snapshot."
+      },
+      {
+        "id": "imo_mepc_400_83_cii",
+        "publisher": "International Maritime Organization",
+        "title": "Resolution MEPC.400(83)",
+        "source_url": "https://wwwcdn.imo.org/localresources/en/KnowledgeCentre/IndexofIMOResolutions/MEPCDocuments/MEPC.400%2883%29.pdf",
+        "fetched_at": "2026-08-11T10:59:49.568683+00:00",
+        "content_sha256": "0c1c4d3f64b80fcf26f83aae820845fcee6537431df5907ed7d1f0e0a8fe612e",
+        "byte_size": 820978,
+        "page_count": 6,
+        "extracted_page_count": 6,
+        "status": "verified_text_extract",
+        "required_patterns_missing": [],
+        "evidence": [
+          {
+            "pattern": "MEPC.400\\(83\\)",
+            "context": "RESOLUTION MEPC.400(83) (adopted on 11 April 2025) AMENDMENTS TO THE 2021 GUIDELINES ON THE OPERATIONAL CARBON INTENSITY REDUCTION FACTORS RELATIVE TO REFERENCE LINES (CII REDUCTION FACTORS GUIDELINES,"
+          },
+          {
+            "pattern": "2027",
+            "context": "), the 2021 Guidelines on the operational carbon intensity reduction factors relative to reference lines (CII reduction factors guidelines, G3), in which Z factors for the years 2027 to 2030 were not specified at the time of adoption, NOTING that regulation 28.11 of MARPOL Annex VI requires that the review of CII regulations shall be completed by the Organi"
+          },
+          {
+            "pattern": "2030",
+            "context": "2021 Guidelines on the operational carbon intensity reduction factors relative to reference lines (CII reduction factors guidelines, G3), in which Z factors for the years 2027 to 2030 were not specified at the time of adoption, NOTING that regulation 28.11 of MARPOL Annex VI requires that the review of CII regulations shall be completed by the Organization b"
+          }
+        ],
+        "storage_note": "Original PDF is ephemeral download-cache input and is not committed with this snapshot."
+      },
+      {
+        "id": "unctad_rmt_2025_chapter_3_freight",
+        "publisher": "UN Trade and Development (UNCTAD)",
+        "title": "Review of Maritime Transport 2025, Chapter 3",
+        "source_url": "https://unctad.org/system/files/official-document/rmt2025ch3_en.pdf",
+        "fetched_at": "2026-08-11T10:59:50.549668+00:00",
+        "content_sha256": "7eb989ad3452b4e947982b9ce5e6465b00496d44bd316dae2c6715518ca914fd",
+        "byte_size": 1588446,
+        "page_count": 25,
+        "extracted_page_count": 25,
+        "status": "verified_text_extract",
+        "required_patterns_missing": [],
+        "evidence": [
+          {
+            "pattern": "Freight rates",
+            "context": "Review of maritime transport 2025 Staying the course in turbulent waters 69 Chapter III Freight rates and maritime transport costs 2025 Review of maritime transport Freight rate volatility is becoming the new normal across all shipping segments, driven by continued geopolitica"
+          },
+          {
+            "pattern": "container",
+            "context": "regulatory developments, and persistent supply and demand imbalances. Considering trends discussed in chapters I and II, this chapter analyses freight rate developments in the container, dry bulk and tanker shipping segments from January 2024 to mid-2025. In 2024, disruptions in the Red Sea significantly affected container shipping. Rerouting via the Cape of G"
+          },
+          {
+            "pattern": "tanker",
+            "context": "s, and persistent supply and demand imbalances. Considering trends discussed in chapters I and II, this chapter analyses freight rate developments in the container, dry bulk and tanker shipping segments from January 2024 to mid-2025. In 2024, disruptions in the Red Sea significantly affected container shipping. Rerouting via the Cape of Good Hope extended voy"
+          }
+        ],
+        "storage_note": "Original PDF is ephemeral download-cache input and is not committed with this snapshot."
+      },
+      {
+        "id": "iumi_stats_report_2025",
+        "publisher": "International Union of Marine Insurance",
+        "title": "IUMI Stats Report 2025",
+        "source_url": "https://iumi.com/wp-content/uploads/2026/02/IUMI-Stats-Report-2025-2.pdf",
+        "fetched_at": "2026-08-11T10:59:59.821728+00:00",
+        "content_sha256": "3dc3275482d37e323f88a66c77db39dbb609734dbcd8c3eb1be59c2c1bc75df6",
+        "byte_size": 5986140,
+        "page_count": 46,
+        "extracted_page_count": 46,
+        "status": "verified_text_extract",
+        "required_patterns_missing": [],
+        "evidence": [
+          {
+            "pattern": "Global marine insurance",
+            "context": "4, momentum has now slowed and economic forecasts are muted. Correspondingly, growth in seaborne trade has also slowed but, more positively, inflationary pressures have eased. Global marine insurance premiums in 2024 totalled USD39.92 billion — a 1.5 % uplift on 2023. Stability was seen across all lines of business except for offshore energy where premiums reduced by almost"
+          },
+          {
+            "pattern": "Hull",
+            "context": "IUMI’s 2025 analysis of the global marine insurance market 1 Introduction 2 Highlights 4 In context 12 Marine insurance 14 Global marine cargo insurance 20 Global marine hull insurance 28 Global offshore energy insurance 34 Major claims database 38 Hull Inflation Index 40 Notes 42 Facts & Figures Committee Contents IUMI Stats 2025 1 We are pleased"
+          },
+          {
+            "pattern": "war",
+            "context": "ance demands and seafarer well-being. Claims were relatively benign in 2023 and 2024 but 2025 has seen an uptick particularly in groundings, large vessel fires and, of course, war-related losses. The relatively weak oil price continues to impact offshore energy prices and, consequently, insurance premiums. There has been a substantial pull-back in capita"
+          }
+        ],
+        "storage_note": "Original PDF is ephemeral download-cache input and is not committed with this snapshot."
+      }
+    ],
+    "errors": [],
+    "methodology": "Download only configured HTTPS official PDFs, verify PDF magic bytes and checksum, extract text with pypdf, and require source-specific patterns. The original PDF is not committed; evidence remains reproducible from URL and checksum."
   },
   "routes": [
     {
