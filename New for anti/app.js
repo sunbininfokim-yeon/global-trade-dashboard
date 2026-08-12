@@ -7071,7 +7071,7 @@ const coRenderLevel = (level, rowsDesc, data) => {
 // === 시장 미시구조 / US→KR 관찰 ==============================================
 //
 // Engine and snapshots are Cursor's (scripts/market_microstructure); this file
-// only reads them. Three tabs, because the three questions are separate ones:
+// only reads them. Four tabs, because the four questions are separate ones:
 // how tangled Korean flow is, where foreigners actually bought, and whether the
 // US options tape is leaning on Korea. The rule throughout: a null stays blank.
 // A plausible-looking number in a positioning panel is worse than an empty one.
@@ -7089,6 +7089,7 @@ const MS_TABS = [
     { id: 'tangle', label: '수급 불균형', blurb: '집중도와 단일종목 레버리지 ETF (Distortion & Squeeze)' },
     { id: 'levels', label: '가격대별 체결', blurb: '어느 가격에서 누가 샀는가 (Volume Profile)' },
     { id: 'uskr',   label: '해외-국내 선행', blurb: '미국 옵션 레짐이 한국으로 (Global Spillover)' },
+    { id: 'derivatives', label: '파생 수급', blurb: '외국인 K200 선물·옵션 수급과 시장 전체 거래 활동' },
 ];
 
 let MS_DATA = null;
@@ -7404,7 +7405,7 @@ const msUsKr = (D) => {
     </section>
 
     <section class="fin-block fin-block-wide">
-        <h2>알림 레벨 · 파생 보드</h2>
+        <h2>알림 레벨</h2>
         <div class="fin-cards">
             ${msCard('하닉 레버리지 ETF 비율',
                 `<span class="ms-badge ${MS_LEVEL_CLASS[letf.today_level] || ''}">${finEsc(letf.today_level || '—')}</span> ${Number.isFinite(letf.today_ratio) ? msPct(letf.today_ratio) : ''}`,
@@ -7415,7 +7416,6 @@ const msUsKr = (D) => {
             ${msCard('US OI 룰 헤드라인',
                 `<span class="ms-badge ${MS_LEVEL_CLASS[(b.us_kr_rules || {}).headline_level] || ''}">${finEsc((b.us_kr_rules || {}).headline_level || '—')}</span>`,
                 '', null)}
-            ${msCard('코스피200 외인 콜/풋/선물', msMissing('데이터 없음'), 'KRX_API 키 또는 CSV 주입 필요', null)}
         </div>
         <p class="fin-note">
             VIX 알림은 Cboe 공식 VIX의 전일 대비 변화율입니다 — <strong>풋 미결제약정(OI)이 아닙니다.</strong>
@@ -7448,10 +7448,99 @@ const msUsKr = (D) => {
     <p class="mm-disclaimer">${finEsc(t.disclaimer_ko || '')}</p>`;
 };
 
+// --- ④ KRX 파생 수급 --------------------------------------------------------
+// The public KRX dashboard identifies the foreign investor's K200 futures and
+// options-total flow. It does *not* split that foreign options flow into calls
+// and puts, so those two cells stay visibly missing until authenticated KRX
+// investor-detail CSVs are supplied. Never infer the split from market volume.
+const msDerivatives = (D) => {
+    const kr = (D.board || {}).kr || {};
+    const dashboard = (kr.investor_nets || {}).public_dashboard || {};
+    const futuresFlow = ((dashboard.futures || {}).investors || {}).foreign || {};
+    const optionsFlow = ((dashboard.options_total || {}).investors || {}).foreign || {};
+    const futures = kr.kospi200_futures || {};
+    const options = kr.kospi200_options || {};
+    const observedAt = (dashboard.futures || {}).observed_at_krx
+        || (dashboard.options_total || {}).observed_at_krx || '—';
+    const sourceNote = (kr.investor_nets || {}).note_ko
+        || '공개 대시보드는 옵션 전체만 제공하며 콜/풋별 외국인 수급은 제공하지 않습니다.';
+
+    const flowRow = (label, data, quality) => [
+        finEsc(label),
+        msJo(data.sell_krw),
+        msJo(data.buy_krw),
+        `<span class="${data.net_krw >= 0 ? 'fin-up' : 'fin-down'}">${msSignedJo(data.net_krw)}</span>`,
+        finEsc(quality),
+    ];
+    const missingSplitRow = (label) => [
+        finEsc(label), '—', '—', '—', msMissing('인증된 KRX 상세 CSV 필요'),
+    ];
+
+    return `
+    <section class="fin-block fin-block-wide">
+        <h2>당일 외국인 KOSPI200 파생 수급</h2>
+        <p class="fin-lead">매도·매수·순매수는 KRX 공개 대시보드의 당일 누적 거래대금입니다. 기준 표출 시각 ${finEsc(observedAt)}.</p>
+        <div class="fin-cards">
+            ${msCard('외국인 K200 선물 순매수', `<span class="${futuresFlow.net_krw >= 0 ? 'fin-up' : 'fin-down'}">${msSignedJo(futuresFlow.net_krw)}</span>`,
+                `매수 ${msJo(futuresFlow.buy_krw)} · 매도 ${msJo(futuresFlow.sell_krw)}`, 'kr_investor')}
+            ${msCard('외국인 K200 옵션 전체 순매수', `<span class="${optionsFlow.net_krw >= 0 ? 'fin-up' : 'fin-down'}">${msSignedJo(optionsFlow.net_krw)}</span>`,
+                `매수 ${msJo(optionsFlow.buy_krw)} · 매도 ${msJo(optionsFlow.sell_krw)} · 콜/풋 미분리`, 'kr_investor')}
+        </div>
+        ${msTable(['구분', '매도', '매수', '순매수', '데이터 상태'], [
+            flowRow('K200 선물', futuresFlow, (dashboard.futures || {}).quality === 'observed' ? '실측' : '—'),
+            missingSplitRow('K200 콜옵션'),
+            missingSplitRow('K200 풋옵션'),
+            flowRow('K200 옵션 전체 (참고)', optionsFlow, (dashboard.options_total || {}).quality === 'observed' ? '실측 · 콜/풋 미분리' : '—'),
+        ])}
+        <p class="fin-note ms-warn">${finEsc(sourceNote)} 콜/풋 행은 옵션 전체를 배분해 추정하지 않습니다. 이 표는 당일 거래 흐름이지 미결제약정(OI), 보유 포지션, 헤지 의도 또는 다음 가격 방향이 아닙니다.</p>
+    </section>
+
+    <section class="fin-block fin-block-wide">
+        <h2>KOSPI200 시장 전체 거래 활동</h2>
+        <p class="fin-lead">아래는 투자자별 수급과 별개인 시장 전체 체결 합계입니다. 활동 규모를 보되, 외국인 거래로 읽으면 안 됩니다.</p>
+        <div class="fin-cards">
+            ${msCard('K200 선물 거래대금', msJo(futures.trading_value_krw),
+                `거래량 ${msNum(futures.volume)}계약 · ${finEsc(futures.coverage_ko || '')}`, 'kr_activity')}
+            ${msCard('K200 콜옵션 거래량', Number.isFinite(options.call_volume) ? `${msNum(options.call_volume)}계약` : '—',
+                `거래대금 ${msJo(options.call_trading_value_krw)}`, 'kr_activity')}
+            ${msCard('K200 풋옵션 거래량', Number.isFinite(options.put_volume) ? `${msNum(options.put_volume)}계약` : '—',
+                `거래대금 ${msJo(options.put_trading_value_krw)}`, 'kr_activity')}
+            ${msCard('풋/콜 거래량 비율', Number.isFinite(options.put_call_volume) ? options.put_call_volume.toFixed(2) : '—',
+                '시장 전체 풋 거래량 ÷ 콜 거래량', 'kr_activity')}
+        </div>
+        <p class="fin-note">기준일 ${finEsc(kr.as_of || options.bas_dd || '—')} · 선물 ${finEsc(futures.source || '출처 미표기')} · 옵션 ${finEsc(options.source || '출처 미표기')}. 이 보드에서는 한국 OI를 표시하지 않습니다.</p>
+    </section>
+
+    <p class="mm-disclaimer">${finEsc(kr.disclaimer_ko || '공개·신청 API 기반 관측값입니다. 투자 권유가 아닙니다.')}</p>`;
+};
+
 // --- 모달 --------------------------------------------------------------------
 const msModalFor = (key, D) => {
     const t = D.transmission || {};
     const m = D.micro || {};
+    const kr = (D.board || {}).kr || {};
+    if (key === 'kr_investor') {
+        const dashboard = (kr.investor_nets || {}).public_dashboard || {};
+        const futures = ((dashboard.futures || {}).investors || {}).foreign || {};
+        const options = ((dashboard.options_total || {}).investors || {}).foreign || {};
+        return { title: '외국인 KOSPI200 파생 수급 — 원자료 구분',
+            html: msTable(['구분', '매도', '매수', '순매수', '출처'], [
+                ['K200 선물', msJo(futures.sell_krw), msJo(futures.buy_krw), msSignedJo(futures.net_krw), 'KRX 공개 대시보드'],
+                ['K200 콜옵션', '—', '—', '—', msMissing('인증된 KRX 상세 CSV 필요')],
+                ['K200 풋옵션', '—', '—', '—', msMissing('인증된 KRX 상세 CSV 필요')],
+                ['K200 옵션 전체', msJo(options.sell_krw), msJo(options.buy_krw), msSignedJo(options.net_krw), 'KRX 공개 대시보드 · 콜/풋 미분리'],
+            ]) + '<p class="fin-note">공개 대시보드의 옵션 전체 금액을 콜·풋으로 나누어 추정하지 않습니다. 매수·매도·순매수는 당일 거래 흐름이며 보유 포지션이나 헤지 방향이 아닙니다.</p>' };
+    }
+    if (key === 'kr_activity') {
+        const futures = kr.kospi200_futures || {};
+        const options = kr.kospi200_options || {};
+        return { title: 'KOSPI200 시장 전체 거래 활동',
+            html: msTable(['상품', '거래량', '거래대금', '범위'], [
+                ['K200 선물', `${msNum(futures.volume)}계약`, msJo(futures.trading_value_krw), finEsc(futures.coverage_ko || '—')],
+                ['K200 콜옵션', `${msNum(options.call_volume)}계약`, msJo(options.call_trading_value_krw), finEsc(options.coverage_ko || '—')],
+                ['K200 풋옵션', `${msNum(options.put_volume)}계약`, msJo(options.put_trading_value_krw), finEsc(options.coverage_ko || '—')],
+            ]) + '<p class="fin-note">시장 전체 체결 합계입니다. 외국인·개인·기관별 거래를 뜻하지 않으며 OI도 아닙니다.</p>' };
+    }
     if (key === 'conc') {
         const pts = (D.conc || {}).points || [];
         return { title: '코스피 집중도 추이',
@@ -7568,7 +7657,10 @@ const renderMicrostructure = async (host) => {
                 ${MS_TABS.map((x) => `<button class="mm-tab ${x.id === MS_TAB ? 'on' : ''}" data-ms-tab="${x.id}">${finEsc(x.label)}</button>`).join('')}
             </div>
             <p class="mm-tab-desc">${finEsc(tab.blurb)}</p>
-            ${MS_TAB === 'tangle' ? msTangle(D) : MS_TAB === 'levels' ? msLevelsTab(D) : msUsKr(D)}
+            ${MS_TAB === 'tangle' ? msTangle(D)
+                : MS_TAB === 'levels' ? msLevelsTab(D)
+                : MS_TAB === 'derivatives' ? msDerivatives(D)
+                : msUsKr(D)}
             ${MS_MODAL ? `
             <div class="ms-modal-back" data-ms-modal-close="1">
                 <div class="ms-modal" role="dialog">

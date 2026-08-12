@@ -1,4 +1,4 @@
-# Claude UI — 파생상품 3분할 + 클릭 드릴다운 (2026-08-08)
+# Claude UI — 시장 미시구조 4탭 + 클릭 드릴다운 (2026-08-12)
 
 Cursor 엔진/JSON은 main에 있음. **아래는 UI 재구성 요청.**
 
@@ -15,7 +15,7 @@ Cursor 엔진/JSON은 main에 있음. **아래는 UI 재구성 요청.**
 → 데이터가 틀린 게 아니라 **UI가 엔진 계약을 덜 풀어쓴 상태**.  
 (로컬 worktree `app.js`는 옛 placeholder일 수 있음 — **배포본/main 기준**으로 볼 것.)
 
-## 파생상품 내부 3탭 (필수)
+## 시장 미시구조 내부 4탭 (필수)
 
 ### ① 한국 수급이 얼마나 꼬였나
 JSON: `market_microstructure_v1.json` + `kospi_concentration_history_v1.json` + `ai_casino_brief_v1.json`
@@ -43,6 +43,16 @@ JSON: `us_kr_transmission_v1.json` (+ `us_regime_v1.json`)
 - 카드/행 **클릭 → 모달 표** (`ui_hint_ko` 참고)
 
 하방 ≠ 미국 주가 급락. **풋 우세 옵션 레짐 × KR 링크 heat**.
+
+### ④ KRX 파생 수급
+
+JSON: `derivatives_board_v1.json`
+
+- 외국인 KOSPI200 **선물**: 매도·매수·순매수 (KRX 공개 대시보드 실측)
+- 외국인 KOSPI200 **옵션 전체**: 매도·매수·순매수. 반드시 “콜/풋 미분리”로 표시
+- 외국인 **콜·풋 분리**: `options_call` / `options_put`이 `null`이면 각 행을 `— / 인증된 KRX 상세 CSV 필요`로 유지. 옵션 전체를 콜·풋으로 배분·추정하지 않음
+- 시장 전체 K200 선물·콜·풋 거래량/거래대금은 투자자별 수급과 별도 블록으로 표시
+- OI·보유 포지션·헤지 의도·향후 방향으로 해석하지 않는다는 주석을 고정
 
 ## 클릭 동작 (전 박스)
 
