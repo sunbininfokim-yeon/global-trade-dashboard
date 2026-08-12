@@ -50,6 +50,13 @@ class TestPublicExtras(unittest.TestCase):
         self.assertEqual(payload["schema"], "deposit_credit_v1")
         self.assertIn("시장 전체", payload["market_scope_ko"])
 
+    def test_program_trading_starts_as_an_explicit_missing_contract(self):
+        got = extras.program_trading_contract()
+        self.assertEqual(got["quality"], "missing")
+        self.assertIsNone(got["arbitrage_net_eok"])
+        self.assertIsNone(got["non_arbitrage_net_eok"])
+        self.assertIn("투자자별 수급이 아님", got["note_ko"])
+
 
 if __name__ == "__main__":
     unittest.main()

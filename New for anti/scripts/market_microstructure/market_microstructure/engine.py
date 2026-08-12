@@ -461,6 +461,7 @@ def build_snapshot(day: dict[str, Any], *, anchors: dict[str, Any] | None = None
         "ir_bands": {"low_lt_pct": low, "watch_lt_pct": high},
         "public_extras": day.get("public_extras"),
         "flows_kospi_market": day.get("flows_kospi_market"),
+        "program_trading": (day.get("public_extras") or {}).get("program_trading"),
         "deposit_credit": (day.get("public_extras") or {}).get("deposit_credit"),
         "letf_category_share": (day.get("public_extras") or {}).get("letf_category_share"),
         "short_interest_meta": (day.get("public_extras") or {}).get("short_interest"),

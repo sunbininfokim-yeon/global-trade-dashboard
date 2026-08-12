@@ -263,6 +263,28 @@ def fetch_short_interest(tickers: list[str]) -> dict[str, Any]:
     return out
 
 
+def program_trading_contract() -> dict[str, Any]:
+    """Explicit no-data contract until the KRX EOD program feed is subscribed.
+
+    Program trading is an order classification (arbitrage/non-arbitrage), not
+    a foreign/retail/institution classification.  Keeping the absent source
+    explicit prevents the UI from silently turning total program flow into a
+    foreign-flow proxy.
+    """
+    return {
+        "scope": "kospi_program_trading",
+        "unit_native": "억원",
+        "as_of": None,
+        "arbitrage_net_eok": None,
+        "non_arbitrage_net_eok": None,
+        "total_net_eok": None,
+        "history": [],
+        "quality": "missing",
+        "source": "KRX Data Marketplace program-trading EOD (subscription pending)",
+        "note_ko": "차익·비차익은 프로그램 주문 분류이며 투자자별 수급이 아님. KRX 장마감 원천 이용권한·명세 확인 전에는 값을 채우지 않음.",
+    }
+
+
 def fetch_deposit_credit() -> dict[str, Any]:
     """Prefer FreeSIS; retain the narrow Naver fallback with explicit quality."""
     try:
@@ -300,6 +322,7 @@ def build_public_extras(tickers: list[str] | None = None) -> dict[str, Any]:
         "fetched_at": datetime.now(timezone.utc).isoformat(),
         "deposit_credit": deposit,
         "kospi_investor_flows": flows,
+        "program_trading": program_trading_contract(),
         "letf_category_share": categories,
         "short_interest": shorts,
         "errors": errors,
@@ -311,4 +334,5 @@ __all__ = [
     "build_public_extras", "classify_letf_direction", "classify_letf_name",
     "fetch_deposit_credit", "fetch_freesis_funding_credit", "fetch_letf_category_share",
     "fetch_naver_deposit_credit", "fetch_naver_kospi_investor_flows", "fetch_short_interest",
+    "program_trading_contract",
 ]

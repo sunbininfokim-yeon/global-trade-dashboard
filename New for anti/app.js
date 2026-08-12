@@ -7082,7 +7082,6 @@ const msTangle = (D) => {
     const sel = stocks.find((x) => x.ticker === MS_STOCK) || stocks[0] || null;
     const ratios = m.market_letf_derivatives_ratios || {};
     const stack = m.global_leverage_stack || {};
-    const fvr = m.foreign_vs_retail || {};
     const dc = m.deposit_credit || {};
     const byDir = ratios.by_direction || {};
     const bands = m.ir_bands || {};
@@ -7113,9 +7112,6 @@ const msTangle = (D) => {
         <div class="fin-cards">
             ${msCard('레버·곱버스 거래대금 / 코스피 현물', Number.isFinite(ratios.levered_inverse_etf_tv_over_kospi_cash_tv_pct) ? ratios.levered_inverse_etf_tv_over_kospi_cash_tv_pct.toFixed(1) + '%' : '—',
                 `롱 ${msJo(ratios.long_tv_jo * 1e12)} · 인버스 ${msJo(ratios.inverse_tv_jo * 1e12)}`, 'letf_history')}
-            ${msCard('외국인 vs 개인 순매수', msEok((fvr.foreign_net_krw ?? 0) / 1e8),
-                `개인 ${msEok((fvr.retail_net_krw ?? 0) / 1e8)} · 기관 ${msEok((fvr.institution_net_krw ?? 0) / 1e8)}${fvr.quality === 'estimated' ? ' · 추정' : ''}`, null,
-                fvr.foreign_net_krw >= 0 ? 'fin-up' : 'fin-down')}
             ${msCard('신용융자 / 예탁금', Number.isFinite(dc.credit_over_deposit_pct) ? dc.credit_over_deposit_pct.toFixed(1) + '%' : '—',
                 `예탁금 ${msEok(dc.investor_deposit_eok)} · 신용 ${msEok(dc.credit_balance_eok)} (${finEsc(dc.as_of || '')})`, 'credit_history')}
         </div>
@@ -7205,6 +7201,59 @@ const msCreditForPeriod = (D, period) => {
     </section>`;
 };
 
+// Daily market direction belongs with volume, not with the structural stress
+// score.  These are KOSPI cash-market net flows after close; they explain
+// who was the marginal buyer/seller today, but are never positions or fills.
+const msDailyMarketActivity = (D) => {
+    const m = D.micro || {};
+    const extras = m.public_extras || {};
+    const flowDoc = extras.kospi_investor_flows || {};
+    const flows = m.flows_kospi_market || flowDoc.latest || {};
+    const letf = m.letf_category_share || {};
+    const program = m.program_trading || extras.program_trading || {};
+    const asOf = flows.observed_as_of || flows.date_raw || m.as_of || '—';
+    const net = (key) => Number(flows[`${key}_net_eok`]);
+    const flowCard = (label, key) => {
+        const value = net(key);
+        return msCard(label, msEok(value), `KOSPI 현물 · ${finEsc(asOf)}`, 'cash_flow_history',
+            Number.isFinite(value) ? (value >= 0 ? 'fin-up' : 'fin-down') : '');
+    };
+    const programValue = (key) => {
+        const value = Number(program[`${key}_net_eok`]);
+        return Number.isFinite(value) ? msEok(value) : msMissing('미연결');
+    };
+    const programSub = program.quality === 'observed'
+        ? `KRX 장마감 · ${finEsc(program.as_of || asOf)}`
+        : 'KRX 장마감 차익·비차익 수집 계약 대기';
+    const cashTv = Number(letf.kospi_cash_tv_jo);
+    const levTv = Number(letf.levered_inverse_tv_jo);
+    const levPct = Number(m.market_letf_derivatives_ratios?.levered_inverse_etf_tv_over_kospi_cash_tv_pct);
+    return `
+    <section class="fin-block fin-block-wide">
+        <h2>당일 거래대금 · 수급 방향</h2>
+        <p class="fin-lead">오늘 현물 거래가 얼마나 있었고, 외국인·개인·기관 중 누가 순매수/순매도였는지입니다. 외국인 방향은 이곳에서 먼저 읽습니다.</p>
+        <div class="fin-cards">
+            ${msCard('KOSPI 현물 거래대금', Number.isFinite(cashTv) ? `${cashTv.toFixed(2)}조` : '—', `장마감 ${finEsc(asOf)}`, 'cash_flow_history')}
+            ${msCard('레버·인버스 ETF 거래대금', Number.isFinite(levTv) ? `${levTv.toFixed(2)}조` : '—', Number.isFinite(levPct) ? `현물 거래대금의 ${levPct.toFixed(1)}%` : '비중 미산출', 'letf_history')}
+            ${flowCard('외국인 순매수', 'foreign')}
+            ${flowCard('개인 순매수', 'retail')}
+            ${flowCard('기관 순매수', 'institution')}
+        </div>
+        <p class="fin-note">투자자별 값은 KOSPI 시장 전체의 <strong>순매수</strong>입니다. 매수·매도 총액, 종목별 체결, 보유 포지션과는 다릅니다.</p>
+    </section>
+
+    <section class="fin-block fin-block-wide">
+        <h2>프로그램 매매 · 차익 / 비차익</h2>
+        <p class="fin-lead">차익거래는 현물 바스켓과 KOSPI200 파생을 연결한 거래이고, 비차익은 그 외 프로그램 바스켓 거래입니다. 이는 <strong>외국인 수급의 대체값이 아닙니다.</strong></p>
+        <div class="fin-cards">
+            ${msCard('차익거래 순매수', programValue('arbitrage'), programSub, 'program_history')}
+            ${msCard('비차익거래 순매수', programValue('non_arbitrage'), programSub, 'program_history')}
+            ${msCard('프로그램 합계 순매수', programValue('total'), programSub, 'program_history')}
+        </div>
+        <p class="fin-note">현재 프로그램 매매 수치는 표시하지 않습니다. KRX 장마감 원천의 이용권한·응답 형식을 확인한 뒤에만 실측값을 연결합니다.</p>
+    </section>`;
+};
+
 const msLevelsTab = (D) => {
     const lv = D.levels || {};
     const kl = lv.kospi_index_levels || {};
@@ -7220,6 +7269,8 @@ const msLevelsTab = (D) => {
     const label = isIndex ? 'KOSPI' : (src.label_ko || MS_TICKER || '선택 종목');
 
     return `
+    ${msDailyMarketActivity(D)}
+
     <section class="fin-block fin-block-wide">
         <h2>가격대별 누적 수급 <span class="ms-q">${finEsc(src.quality || '')}</span></h2>
         <p class="fin-lead">
@@ -7519,6 +7570,38 @@ const msModalFor = (key, D) => {
                 { label: '신용·예탁 비율', color: '#a78bfa', value: (p) => p.credit_over_deposit_pct },
             ], { unit: '%' }) +
             `<p class="fin-note">${finEsc(uiNote)}</p>` };
+    }
+    if (key === 'cash_flow_history') {
+        const flowDoc = (m.public_extras || {}).kospi_investor_flows || {};
+        const points = (flowDoc.history || []).filter((p) => p?.observed_as_of || p?.date_raw)
+            .map((p) => ({ ...p, date: p.observed_as_of || p.date_raw }))
+            .sort((a, b) => String(a.date).localeCompare(String(b.date)));
+        return { title: 'KOSPI 투자자별 당일 순매수', html:
+            `<p class="ms-modal-scope"><strong>KOSPI 현물 시장 전체</strong> · 장마감 공표 순매수이며, 매수·매도 총액·종목별 체결·보유 포지션은 아닙니다.</p>` +
+            msHistoryChart('투자자별 일별 순매수/순매도 (억원)', points, [
+                { label: '외국인', color: '#38bdf8', value: (p) => p.foreign_net_eok },
+                { label: '개인', color: '#f472b6', value: (p) => p.retail_net_eok },
+                { label: '기관', color: '#fbbf24', value: (p) => p.institution_net_eok },
+            ], { unit: '억', empty: '당일 투자자별 순매수 시계열이 없습니다.' }) +
+            `<p class="fin-note">출처: ${finEsc(flowDoc.source || '—')} · 현재 수집기는 최근 공표 거래일을 표시합니다. 장기 누적 수급은 일별 아카이브를 추가한 뒤에만 해석합니다.</p>` };
+    }
+    if (key === 'program_history') {
+        const program = m.program_trading || (m.public_extras || {}).program_trading || {};
+        const points = (program.history || []).filter((p) => p?.date)
+            .slice().sort((a, b) => String(a.date).localeCompare(String(b.date)));
+        if (program.quality !== 'observed') {
+            return { title: '프로그램 매매 · 차익 / 비차익', html:
+                `<p class="ms-modal-scope"><strong>아직 미연결</strong> · KRX 장마감 프로그램 매매 원천의 이용권한과 응답 필드를 확인 중입니다.</p>` +
+                `<p class="fin-note">연결할 필드: 차익·비차익 각각의 매수, 매도, 순매수 및 합계. 프로그램 분류는 투자자 주체 분류가 아니므로 외국인 순매수와 합산하거나 대체하지 않습니다.</p>` };
+        }
+        return { title: '프로그램 매매 · 차익 / 비차익', html:
+            `<p class="ms-modal-scope"><strong>KRX 장마감 프로그램 매매</strong> · 투자자 주체별 데이터가 아닌 주문 분류별 데이터입니다.</p>` +
+            msHistoryChart('프로그램 일별 순매수/순매도 (억원)', points, [
+                { label: '차익', color: '#38bdf8', value: (p) => p.arbitrage_net_eok },
+                { label: '비차익', color: '#f472b6', value: (p) => p.non_arbitrage_net_eok },
+                { label: '합계', color: '#fbbf24', value: (p) => p.total_net_eok },
+            ], { unit: '억', empty: '프로그램 매매 시계열이 없습니다.' }) +
+            `<p class="fin-note">출처: ${finEsc(program.source || '—')}</p>` };
     }
     if (key === 'kr_derivatives') {
         const kr = (D.board || {}).kr || {};
