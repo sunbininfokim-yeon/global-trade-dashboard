@@ -1,0 +1,33 @@
+{
+  "status": "configured_public_port_calls_no_waiting_or_anchorage_fields",
+  "source": {
+    "name": "IMF PortWatch Daily Ports Data (ArcGIS REST)",
+    "url": "https://services9.arcgis.com/weJ1QsnbMYJlCHdG/ArcGIS/rest/services/Daily_Ports_Data/FeatureServer/0/query",
+    "available_fields": ["portcalls_*", "import_*", "export_*"],
+    "unavailable_fields": ["anchored_vessel_count", "waiting_vessel_count", "anchorage_waiting_time_hours"]
+  },
+  "groups": [
+    {
+      "id": "hormuz_adjacent_ports",
+      "name_ko": "호르무즈 인접국 항만",
+      "iso3_codes": ["BHR", "IRN", "KWT", "OMN", "QAT", "SAU", "ARE"],
+      "record_count": 365,
+      "scope_warning_ko": "호르무즈 해협 자체 통항이나 해협 입구 정박지의 선박 원장이 아니라 인접국 전체 PortWatch 항만 관측 합계입니다."
+    },
+    {
+      "id": "suez_adjacent_ports",
+      "name_ko": "수에즈 인접국 항만",
+      "iso3_codes": ["EGY", "ISR", "JOR", "SAU"],
+      "record_count": 365,
+      "scope_warning_ko": "수에즈 운하 자체 통항이나 정박지 대기열이 아닌 인접국 항만 관측 합계입니다."
+    },
+    {
+      "id": "panama_adjacent_ports",
+      "name_ko": "파나마 항만",
+      "iso3_codes": ["PAN"],
+      "record_count": 365,
+      "scope_warning_ko": "운하 대기열의 직접 관측이 아니라 파나마 PortWatch 항만 관측 합계입니다."
+    }
+  ],
+  "identification_boundary": "PortWatch public REST presently publishes daily port calls and estimated import/export tonnage, not waiting or anchorage vessel counts. These observations remain diagnostic context and are not mapped to backlog, trapped DWT, insurance exclusion, or behavioral shares."
+}

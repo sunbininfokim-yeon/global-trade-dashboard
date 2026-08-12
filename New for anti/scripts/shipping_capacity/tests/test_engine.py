@@ -9,7 +9,16 @@ from unittest.mock import patch
 
 from build_snapshot import build_snapshot
 from shipping_capacity.artifacts import build_artifact_bundle, golden_contract_failures
-from shipping_capacity.comtrade_routes import apply_route_flows, select_net_weight_rows
+from shipping_capacity.behavior_sensitivity import (
+    apply_behavior_path,
+    behavior_paths_for_scenario,
+)
+from shipping_capacity.comtrade_routes import (
+    apply_route_flows,
+    merge_route_history,
+    select_net_weight_rows,
+    summarize_route_history,
+)
 from shipping_capacity.container import summarize_world_bank_teu
 from shipping_capacity.engine import InputError, estimate_interval, required_capacity_dwt, simulate_route
 from shipping_capacity.environment import (
@@ -20,9 +29,12 @@ from shipping_capacity.historical_calibration import calibrate_event
 from shipping_capacity.ml_validation import analyze_capacity_series
 from shipping_capacity.portwatch import (
     normalize_status_contract,
+    summarize_port_context,
     summarize_series,
     validate_7d_28d_signal,
 )
+from shipping_capacity.lng_fleet import build_lng_fleet_context
+from shipping_capacity.market_signals import build_market_signal_registry
 from shipping_capacity.validation import (
     run_temporary_environment_grid,
     run_temporary_scenario_grid,
@@ -40,6 +52,130 @@ class EngineTests(unittest.TestCase):
 
     def test_capacity_formula(self) -> None:
         self.assertAlmostEqual(required_capacity_dwt(365_000, 10, 1.0), 10_000)
+
+    def test_behavior_path_changes_joint_assumptions_but_not_throughput(self) -> None:
+        scenario = next(
+            row for row in self.scenarios if row["id"] == "hormuz_effective_80pct_28d"
+        )
+        path = {
+            "id": "withdrawal",
+            "response_multiplier_factors": {
+                "reroute_multiplier": 0.75,
+                "wait_multiplier": 0.85,
+                "cancel_multiplier": 1.6,
+            },
+            "insurance_unavailable_share_factor": 1.25,
+            "onboard_waiting_share_factor": 1.15,
+            "waiting_days_factor": 1.25,
+            "trapped_days_factor": 1.25,
+        }
+        variant = apply_behavior_path(scenario, path)
+        self.assertEqual(variant["closure_fraction"], scenario["closure_fraction"])
+        self.assertEqual(
+            variant["residual_throughput_rate"], scenario["residual_throughput_rate"]
+        )
+        self.assertEqual(variant["insurance_unavailable_share"], 1.0)
+        self.assertGreater(variant["waiting_days"], scenario["waiting_days"])
+
+    def test_behavior_config_uses_named_paths_without_probabilities(self) -> None:
+        config = json.loads(
+            (ROOT / "config" / "behavior_uncertainty_profiles.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        scenario = next(
+            row for row in self.scenarios if row["id"] == "hormuz_effective_80pct_28d"
+        )
+        variants = behavior_paths_for_scenario(scenario, config)
+        self.assertEqual(len(variants), 3)
+        self.assertEqual(
+            {row["behavior_sensitivity_path_id"] for row in variants},
+            {"insured_continuity", "central", "market_withdrawal"},
+        )
+        self.assertNotIn("probability", config)
+
+    def test_comtrade_history_keeps_annual_inputs_separate(self) -> None:
+        history = summarize_route_history(
+            {
+                "2019": {"routes": [{"route_id": "route_a", "annual_cargo_tonnes": 100.0}]},
+                "2024": {"routes": [{"route_id": "route_a", "annual_cargo_tonnes": 125.0}]},
+            }
+        )
+        route = history["routes"][0]
+        self.assertEqual(route["available_period_count"], 2)
+        self.assertAlmostEqual(route["first_to_last_change_fraction"], 0.25)
+
+    def test_comtrade_history_refresh_is_resumable_by_year(self) -> None:
+        previous = {
+            "years": {"2019": {"routes": [{"route_id": "route_a", "annual_cargo_tonnes": 100.0}]}},
+            "periods": ["2019"],
+        }
+        current = {
+            "years": {"2020": {"routes": [{"route_id": "route_a", "annual_cargo_tonnes": 110.0}]}},
+            "periods": ["2020"],
+        }
+        merged = merge_route_history(previous, current)
+        self.assertEqual(merged["periods"], ["2019", "2020"])
+        self.assertEqual(merged["route_history_summary"]["routes"][0]["available_period_count"], 2)
+
+    def test_port_context_does_not_turn_port_calls_into_waiting_vessels(self) -> None:
+        rows = []
+        for index in range(35):
+            rows.append(
+                {
+                    "date": 1_700_000_000_000 + index * 86_400_000,
+                    "portcalls": 100,
+                    "portcalls_container": 10,
+                    "portcalls_dry_bulk": 20,
+                    "portcalls_tanker": 30,
+                    "import": 1_000,
+                    "export": 2_000,
+                    "import_container": 100,
+                    "export_container": 200,
+                    "import_dry_bulk": 300,
+                    "export_dry_bulk": 400,
+                    "import_tanker": 500,
+                    "export_tanker": 600,
+                }
+            )
+        status = summarize_port_context(rows, {"id": "test", "iso3_codes": ["OMN"]})
+        self.assertEqual(
+            status["waiting_anchorage_status"],
+            "not_published_in_public_portwatch_daily_ports_layer",
+        )
+        self.assertNotIn("waiting_vessel_count", status["metrics"]["tanker"])
+        self.assertEqual(status["use_in_model"], "diagnostic_context_only_not_behavior_calibration")
+
+    def test_lng_combined_fleet_is_rejected_as_lng_only_denominator(self) -> None:
+        context = build_lng_fleet_context(
+            {
+                "as_of": "2025-01-01",
+                "liquefied_gas_carriers_dwt": 100_462_000,
+                "lng_only_dwt": None,
+                "source": {"url": "https://example.test"},
+                "warning_ko": "combined",
+            }
+        )
+        self.assertEqual(context["model_use"], "context_only_not_eligible_lng_only_denominator")
+
+    def test_market_registry_never_uses_commercial_values(self) -> None:
+        registry = build_market_signal_registry(
+            {
+                "identification_boundary": "test",
+                "warning_ko": "test",
+                "sources": [
+                    {
+                        "id": "licensed",
+                        "signal_class": "charter_rate",
+                        "source_name": "source",
+                        "source_url": "https://example.test",
+                        "access": "commercial_or_license_required",
+                    }
+                ],
+            }
+        )
+        self.assertEqual(registry["signals"][0]["status"], "not_automated_without_permitted_public_series")
+        self.assertEqual(registry["signals"][0]["model_use"], "not_used")
 
     def test_bidirectional_service_counts_shared_fleet_once(self) -> None:
         route = {
@@ -520,6 +656,25 @@ class ScenarioGridTests(unittest.TestCase):
         )
         self.assertFalse(
             golden_contract_failures(bundle["screen"], bundle["diagnostics"])
+        )
+        hormuz = next(
+            row
+            for row in bundle["screen"]["scenario_summary"]
+            if row["id"] == "hormuz_effective_80pct_28d"
+        )
+        sensitivity = hormuz["behavior_sensitivity"]
+        self.assertEqual(sensitivity["path_count"], 3)
+        self.assertEqual(
+            sensitivity["status"],
+            "deterministic_joint_paths_not_probability_interval",
+        )
+        for interval in sensitivity["ranges"].values():
+            self.assertLessEqual(interval["minimum"], interval["maximum"])
+        self.assertTrue(
+            all(
+                abs(path["cargo_accounting_residual_tonnes"]) < 1e-6
+                for path in sensitivity["paths"]
+            )
         )
         self.assertNotIn("historical_event_calibration", bundle["screen"])
         self.assertIn("historical_event_calibration", bundle["backtests"])

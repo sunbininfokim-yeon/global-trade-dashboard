@@ -256,8 +256,15 @@ def _direction_result(
     }
 
 
-def fetch_route_flows(config: dict[str, Any], client: ComtradeRouteClient) -> dict[str, Any]:
-    period = str(config["period"])
+def fetch_route_flows(
+    config: dict[str, Any],
+    client: ComtradeRouteClient,
+    *,
+    period: str | None = None,
+) -> dict[str, Any]:
+    """Fetch one annual vintage without mutating the shared route configuration."""
+
+    period = str(period or config["period"])
     route_results = []
     route_errors = []
     for route_spec in config["routes"]:
@@ -299,6 +306,97 @@ def fetch_route_flows(config: dict[str, Any], client: ComtradeRouteClient) -> di
         "method": "water-mode row preferred per reporter-partner-flow-commodity cell; all-mode total used only as fallback",
         "routes": route_results,
         "route_errors": route_errors,
+    }
+
+
+def summarize_route_history(year_results: dict[str, dict[str, Any]]) -> dict[str, Any]:
+    """Build a compact, quality-gated route history from annual Comtrade pulls.
+
+    The historical file preserves each annual provenance record.  This summary
+    deliberately reports only observed input trends: it does not retune route
+    utilization, rerouting, insurance, or blockage assumptions.
+    """
+
+    by_route: dict[str, dict[str, Any]] = {}
+    for period, result in sorted(year_results.items()):
+        for row in result.get("routes", []):
+            route = by_route.setdefault(
+                row["route_id"],
+                {"route_id": row["route_id"], "annual_cargo_tonnes": []},
+            )
+            route["annual_cargo_tonnes"].append(
+                {"period": str(period), "value": row.get("annual_cargo_tonnes")}
+            )
+
+    summaries: list[dict[str, Any]] = []
+    for route in by_route.values():
+        observations = route["annual_cargo_tonnes"]
+        values = [row["value"] for row in observations if isinstance(row["value"], (int, float))]
+        first = values[0] if values else None
+        last = values[-1] if values else None
+        route["available_period_count"] = len(values)
+        route["first_to_last_change_fraction"] = (
+            (last / first - 1.0) if first not in (None, 0) and last is not None else None
+        )
+        summaries.append(route)
+    return {"routes": sorted(summaries, key=lambda row: row["route_id"])}
+
+
+def fetch_route_history(
+    config: dict[str, Any],
+    client: ComtradeRouteClient,
+    *,
+    periods: list[str] | None = None,
+) -> dict[str, Any]:
+    """Fetch separate annual route inputs for a fixed historical window."""
+
+    requested_periods = [str(value) for value in (periods or config.get("history_periods", []))]
+    if not requested_periods:
+        raise ValueError("history_periods must contain at least one annual period")
+    annual_results = {
+        period: fetch_route_flows(config, client, period=period) for period in requested_periods
+    }
+    errors = {
+        period: result.get("route_errors", [])
+        for period, result in annual_results.items()
+        if result.get("route_errors")
+    }
+    return {
+        "status": "fetched" if not errors else "partial_quality_gated",
+        "source": "UN Comtrade annual bilateral net weight",
+        "source_url": COMTRADE_URL,
+        "periods": requested_periods,
+        "fetched_at": datetime.now(timezone.utc).isoformat(),
+        "method": "annual pulls use the same water-mode-preferred cell selection and quality gates as the current route input",
+        "years": annual_results,
+        "route_history_summary": summarize_route_history(annual_results),
+        "year_errors": errors,
+        "identification_boundary": "Input-volume history only; it is not used to calibrate operational behavior shares or scenario coefficients.",
+    }
+
+
+def merge_route_history(
+    previous: dict[str, Any] | None, current: dict[str, Any]
+) -> dict[str, Any]:
+    """Merge independently refreshed annual vintages for resumable collection."""
+
+    if not previous:
+        return current
+    years = dict(previous.get("years", {}))
+    years.update(current.get("years", {}))
+    periods = sorted(years, key=int)
+    errors = {
+        period: result.get("route_errors", [])
+        for period, result in years.items()
+        if result.get("route_errors")
+    }
+    return {
+        **current,
+        "status": "fetched" if not errors else "partial_quality_gated",
+        "periods": periods,
+        "years": {period: years[period] for period in periods},
+        "route_history_summary": summarize_route_history(years),
+        "year_errors": errors,
     }
 
 
@@ -395,6 +493,9 @@ def main() -> None:
     parser.add_argument("--config", type=Path, default=root / "config" / "comtrade_routes.json")
     parser.add_argument("--output", type=Path, default=root / "config" / "comtrade_route_flows.json")
     parser.add_argument("--period")
+    parser.add_argument("--history", action="store_true")
+    parser.add_argument("--history-output", type=Path)
+    parser.add_argument("--history-period", action="append", dest="history_periods")
     parser.add_argument("--api-key-file", type=Path)
     parser.add_argument("--route-id", action="append", dest="route_ids")
     args = parser.parse_args()
@@ -410,7 +511,17 @@ def main() -> None:
     key = _read_api_key(args.api_key_file)
     if not key:
         raise SystemExit("COMTRADE_SUBSCRIPTION_KEY is required")
-    result = fetch_route_flows(config, ComtradeRouteClient(key))
+    client = ComtradeRouteClient(key)
+    if args.history:
+        result = fetch_route_history(config, client, periods=args.history_periods)
+        output = args.history_output or (root / "config" / "comtrade_route_history.json")
+        previous = json.loads(output.read_text(encoding="utf-8")) if output.exists() else None
+        result = merge_route_history(previous, result)
+        output.parent.mkdir(parents=True, exist_ok=True)
+        output.write_text(json.dumps(result, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+        print(f"wrote {output} ({len(result['periods'])} annual pulls)")
+        return
+    result = fetch_route_flows(config, client)
     previous = None
     if args.output.exists():
         previous = json.loads(args.output.read_text(encoding="utf-8"))

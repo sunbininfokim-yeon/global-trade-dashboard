@@ -45,6 +45,10 @@
 - 세계 선대 기준: UNCTAD Review of Maritime Transport 2025, Table II.5.
 - 항로 화물톤: 공식 UN Comtrade API의 연간 양자 `netWgt`. reporter-partner-flow-HS 셀마다 Water 운송수단을 우선하고, 없을 때만 전체 운송수단 합계를 사용해 중복을 막습니다.
 - 현재 초크포인트 이상: IMF PortWatch ArcGIS REST API의 `capacity_container`, `capacity_dry_bulk`, `capacity_tanker`. 이 필드는 선박 DWT와 추정 적재율로 산출한 일일 **추정 교역량(metric tonnes)**이며 관측 DWT가 아닙니다. 최근 7일 평균을 직전 28일 평균과 비교합니다.
+- 인접 항만 컨텍스트: IMF PortWatch `Daily_Ports_Data`의 선종별 입항수·추정 수출입량을 국가군별로 합산합니다. 이 공개 레이어에는 정박 대수·대기 시간·대기 선박 DWT가 없으므로 입항량을 backlog로 환산하지 않으며, `portwatch_port_context`는 진단 전용입니다.
+- PDF 발간물: UNCTAD·IMO의 설정된 HTTPS PDF를 원문 URL·SHA-256·필수 문구·짧은 추출 근거로 검증합니다. PDF 원본은 저장소에 넣지 않습니다.
+- LNG: UNCTAD Table II.5의 2025년 liquefied-gas carrier 100.462m DWT는 LNG와 LPG 합계입니다. LNG 전용 DWT가 아니므로 `lng_fleet.lng_only_dwt`는 검증 전 `null`이며, LNG 항로의 가용선대 분모에 자동 투입하지 않습니다.
+- 운임·보험·용선료: 무료로 재배포 가능한 정량 시계열인지부터 `market_signals` 레지스트리에서 검증합니다. Baltic/Worldscale·전쟁위험보험 가격을 무단 스크래핑하거나 0으로 대체하지 않습니다.
 - 거리·선속·적재율: 모델 가정 테이블. 나중에 검증된 공개 거리 테이블이 생기면 설정값만 교체.
 
 IMF PortWatch는 주요 통로의 일일 AIS 통항척수와 추정 교역량을 공개하지만, 이것은 개별 선박 원장이나 통항 DWT가 아닙니다. Comtrade 어댑터는 `isNetWgtEstimated` 비중, Water 보고 셀 비중, 전체 운송수단 폴백 셀 수, 배분계수와 허용범위를 provenance에 저장합니다.
@@ -54,6 +58,10 @@ IMF PortWatch는 주요 통로의 일일 AIS 통항척수와 추정 교역량을
 `chokepoints_live.*.multi_model_analysis`는 730일 이력에서 Linear, Ridge, Random Forest, Gradient Boosting을 비교합니다. 급등 구간의 분모 효과를 제한하기 위해 목표값은 `[-2, 2]` 대칭 변화척도를 사용합니다. 학습 구간 내부의 7표본 purge를 둔 3분할 `TimeSeriesSplit` MAE로 모델을 고릅니다. 마지막 20% 홀드아웃과 별도의 4회 expanding-window 백테스트에서 모두 지속 예측·변화 없음 중 더 강한 단순 기준보다 5% 이상 개선되고 R²가 양수일 때만 탐색적 forecast를 공개합니다. K-Means는 흐름 레짐, Isolation Forest는 현재 이상치 백분위를 제공합니다. 계산 시간과 과적합을 줄이기 위해 호르무즈는 탱커, 나머지 초크포인트는 전체 추정 교역량 대표지표만 학습합니다.
 
 `historical_event_calibration`은 PortWatch 2019년 이후 전체 이력과 공식 사건창을 결합합니다. 사건 직전 28개 관측치를 기준선으로 사용하고, 이동블록 bootstrap 95% 구간·직전 1년 동일길이 placebo·사건 종료 후 7일 평균 90% 회복을 계산합니다. 통항 위축 강도·지속·회복은 보정하지만, 단일 초크포인트 시계열로 우회·대기·취소·보험 제외 비율을 분해할 수는 없으므로 행동 배수는 `prior_not_numerically_identified`로 유지합니다.
+
+`scenario_summary[].behavior_sensitivity`는 우회·대기·취소·선적 후 억류·보험 제외를 독립 난수로 샘플링하지 않습니다. 대신 운영제약·물리봉쇄·상업 전쟁위험·군사적 봉쇄별로 세 개의 이름 있는 공동 경로를 계산하고, 봉쇄율과 잔존 통항률은 고정한 채 결과 최소·최대를 냅니다. 이 범위는 행동 가정의 민감도이며 P10/P90, 신뢰구간, 사건확률이 아닙니다.
+
+보험 공개자료는 세 수준으로 구분합니다. LMA/IUA JWC Listed Areas는 추가 전쟁위험보험이 요구될 수 있는 지역을 공개하지만 실제 요율은 계약별 협상입니다. IUMI는 전 세계 보험료·손해율 집계를 공개하고 IMO는 사건·안전·통항 및 보험비용 상황을 제공합니다. 개별 항로 추가보험료, 선박별 인수 가능 여부와 거절률은 공개 시계열이 없으므로 `insurance_unavailable_share`를 관측값으로 표시하거나 자동 보정하지 않습니다.
 
 ## 실행
 
@@ -69,6 +77,27 @@ python3 -m shipping_capacity.historical_calibration
 python3 -m unittest discover -s tests -v
 python3 validate_model.py
 python3 validate_schema.py
+```
+
+공개 PDF 원천을 갱신하려면 `pypdf`가 포함된 의존성을 설치한 뒤 실행합니다.
+
+```bash
+python3 -m shipping_capacity.pdf_reports
+```
+
+PortWatch 인접 항만 관측은 초크포인트 관측과 별도로 선택 실행합니다.
+
+```bash
+python3 build_snapshot.py --fetch-portwatch-port-context
+```
+
+Comtrade 2019–2024 이력은 현재 연도 입력과 별도 파일에 저장합니다. API 키는 환경변수 또는 로컬 key file만 사용하며 결과 JSON·로그·Git에는 저장하지 않습니다. 통신 실패 후 특정 연도만 재실행해도 기존 연도를 보존합니다.
+
+```bash
+export COMTRADE_SUBSCRIPTION_KEY='...'
+python3 -m shipping_capacity.comtrade_routes --history
+python3 -m shipping_capacity.comtrade_routes --history --history-period 2021
+unset COMTRADE_SUBSCRIPTION_KEY
 ```
 
 `validate_model.py`는 공개 프리셋을 바꾸지 않고 봉쇄율·기간·보험 제외·억류와 감속·개조 휴항의 임시 경계값을 조합해 회계등식·단조성을 검사합니다. 또한 최신 스냅샷에 포함된 7표본 purge, 4회 expanding-window PortWatch 백테스트와 역사 사건 보정의 회계·신뢰구간·식별경계 검사를 `generated/validation_report.json`으로 요약합니다.
@@ -98,6 +127,11 @@ python3 build_snapshot.py --fetch-portwatch \
 - `live_display[]`: UI가 그대로 읽는 관측 신호 계약. 호르무즈는 `추정 교역량 감소율 / 최근 7일 탱커 추정 교역량 기준 / 잔존 추정 교역량` 순서로 표시합니다.
 - `live_data_quality`: 최신 관측의 7일 freshness 기준, stale·fallback 개수. stale 관측은 화면에 기준일과 경고를 함께 표시합니다.
 - `comtrade_routes`: 항로 입력 갱신 상태·기준연도·경로 수. 상세 출처와 불확실성은 각 `routes[].data_provenance`에 있습니다.
+- `comtrade_routes.history`: 2019–2024 수집 상태와 연도 범위. 상세 관측·품질오류·각 항로 first-to-last 변화율은 진단 JSON `comtrade_route_history`에만 둡니다.
+- `portwatch_port_context`: 호르무즈·수에즈·파나마 인접 항만의 공개 입항/수출입 관측. `waiting_anchorage_status`가 `not_published...`이면 대기·정박 수치는 이 데이터로 제공되지 않는다는 뜻입니다.
+- `market_signals`: 운임·용선·전쟁보험 관련 공개 원천의 접근권·자동화 가능 여부. 현재는 허가 없는 상업 가격을 사용하지 않는 방어적 레지스트리입니다.
+- `pdf_reports`: 마지막으로 성공한 공식 PDF의 checksum·문구 검증 상태. 화면에는 상태만, 추출 근거는 진단 JSON에 보관합니다.
+- `lng_fleet`: UNCTAD liquefied-gas carrier 합계와 LNG 전용 DWT의 식별 경계를 함께 표시합니다.
 - `ui_scenario_grid.rows[]`: 봉쇄율 0/25/50/75/80/100% × 지속일 7/14/28일의 Python 사전 계산 결과. 브라우저는 모델식을 재구현하지 않습니다.
 - `event_response_profiles`: 운영제약·물리봉쇄·전쟁위험별 우회/대기/취소 행동 prior. 역사 사건으로 통항 강도는 보정했지만 이 행동 배수 자체는 관측계수가 아닙니다.
 - `historical_event_calibration.events[]`: 백테스트 JSON에 수에즈 2021·파나마 2023–24·홍해 2023–24·호르무즈 2026의 사건 평균/최대 7일 통항 위축, bootstrap 구간, placebo p-value와 회복일을 둡니다.
@@ -114,6 +148,8 @@ python3 build_snapshot.py --fetch-portwatch \
 - `routes[].directions[]`: 컨테이너 정기선의 양방향 화물 입력. `null` 화물량은 공공데이터 연결 대기이며 용량 계산에서 제외합니다.
 - `route_catalog[]`: 대형선 중심 21개 세부 항로 정의. 모두 Comtrade 2024 품질 게이트를 통과해 `capacity_model_active`로 연결됩니다.
 - `scenario_summary[]`: 봉쇄별 전체 영향 합계. 실효 봉쇄율과 잔존 통항률, backlog, 억류 DWT, 보험 제외 DWT를 함께 제공합니다.
+- `scenario_summary[].behavior_sensitivity`: 사건 통항률을 고정한 상태에서 보험 유지·중앙·시장 이탈 등 행동변수 공동 경로별 결과와 최소–최대 범위.
+- 진단 JSON `behavior_uncertainty`: 공동 경로 정의, 무료 보험자료의 가용·비가용 필드와 식별 한계.
 
 ## 대시보드 계약
 
