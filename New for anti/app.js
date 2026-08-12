@@ -438,9 +438,31 @@ const updateCountryStatsPanel = async (countryName) => {
  * monitor keeps full names -- it reads as a country workspace, not a league
  * table.
  */
+// Static ISO3 fallback for the reporter/partner names Comtrade uses most.
+// resolveCountry needs the world GeoJSON in memory; when the trade panel
+// renders before that fetch resolves, every unresolved name fell back to its
+// first three letters, so "United States" and "United Arab Emirates" both
+// showed as "UNI". This table keeps the code correct regardless of load order.
+const ISO3_FALLBACK = {
+    'united states': 'USA', 'usa': 'USA', 'us': 'USA', 'america': 'USA',
+    'united arab emirates': 'ARE', 'uae': 'ARE',
+    'united kingdom': 'GBR', 'uk': 'GBR', 'great britain': 'GBR',
+    'south korea': 'KOR', 'korea rep': 'KOR', 'republic of korea': 'KOR',
+    'north korea': 'PRK',
+    'russia': 'RUS', 'russian federation': 'RUS',
+    'china': 'CHN',
+    'south africa': 'ZAF',
+    'saudi arabia': 'SAU',
+    'ivory coast': 'CIV', 'cote d ivoire': 'CIV',
+    'democratic republic of the congo': 'COD',
+    'republic of the congo': 'COG',
+};
+
 const countryCode = (name) => {
     const r = resolveCountry(name);
     if (r?.iso) return r.iso;
+    const fallback = ISO3_FALLBACK[normCountryName(name)];
+    if (fallback) return fallback;
     return String(name || '').slice(0, 3).toUpperCase();
 };
 
