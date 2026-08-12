@@ -23,6 +23,7 @@ Before `US→KR L3`, add a **D&S + FreeSIS** step:
 - name: D&S + FreeSIS credit/deposit
   run: |
     python build_market_microstructure.py --live --source auto --print-stats
+    python build_letf_share_history.py --append-only
     python build_deposit_credit.py --print-stats
 ```
 
@@ -30,15 +31,28 @@ In `Commit snapshots`, add these exact output paths:
 
 ```text
 New for anti/public/data/market_microstructure_v1.json
+New for anti/public/data/market_microstructure_history_v1.json
 New for anti/public/data/deposit_credit_v1.json
 New for anti/scripts/market_microstructure/MARKET_MICROSTRUCTURE.md
 ```
 
-Keep `KRX_API: ${{ secrets.KRX_API }}` only on the derivatives-board step.
+Keep `KRX_API: ${{ secrets.KRX_API }}` on the D&S/history and derivatives-board steps only.
 Set that GitHub Actions secret to a newly issued key; do not commit it or put
 it in Cloudflare settings.  The previously pasted key must be revoked.
 
-### 2. `app.js` volume-panel contract
+### 2. `app.js` graph/UI contract
+
+The Codex branch wires the three summary cards to graph modals:
+
+- concentration cards → `kospi_concentration_history_v1.points[]` line chart;
+- LETF share card → `market_microstructure_history_v1.points[]` ratio and direction charts;
+- credit card → `deposit_credit_v1.deposit_credit.history[]` scale-separated charts.
+
+Keep the labels as end-of-day series. A one-point LETF history is explicitly
+shown as a current daily value; it must not be presented as a historical trend
+until KRX backfill has accumulated multiple dates.
+
+### 3. `app.js` volume-panel contract
 
 Fetch `deposit_credit_v1.json` as a separate market-wide overlay.  Render
 `deposit_credit.components` according to `deposit_credit.ui_display.groups`:
@@ -54,10 +68,11 @@ For Global Spillover, read `t.global_spillover` (not raw `t.channels` and
 ## Acceptance checks
 
 1. Manually dispatch the workflow with a fresh `KRX_API` GitHub Secret.
-2. Confirm both new JSON files have `quality=observed` where the public source
+2. Confirm the LETF history JSON has multiple dates after KRX backfill.
+3. Confirm both new JSON files have `quality=observed` where the public source
    responded; `missing` must remain visible rather than be converted to zero.
-3. Confirm D&S still renders during a refresh: old top-level fields and the
+4. Confirm D&S still renders during a refresh: old top-level fields and the
    new `distortion_squeeze` block coexist by design.
-4. Confirm the volume overlay has no ticker/investor-position wording.
-5. Confirm the spillover panel renders `global_spillover.evidence_us_top` and
+5. Confirm the volume overlay has no ticker/investor-position wording.
+6. Confirm the spillover panel renders `global_spillover.evidence_us_top` and
    labels open30m as a return-bucket proxy, not option-OI validation.

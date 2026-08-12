@@ -40,6 +40,9 @@ export KRX_API='…'   # optional
 
 # 스케줄러 (UI 제외)
 ./run_daily.sh    # conc + D&S + FreeSIS credit + L3 + derivatives + investor×price
+
+# LETF 거래대금 비중 과거 백필 (KRX_API 필요, 장 마감 일별)
+./.venv/bin/python build_letf_share_history.py --live --months 6 --print-stats
 ./run_weekly.sh   # conc backfill + discovery + hitrate + regime-proxy
 
 # 페이퍼 대비 검증 + (가격경로) 이벤트 스터디

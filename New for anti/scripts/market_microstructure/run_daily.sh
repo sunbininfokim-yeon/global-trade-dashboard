@@ -15,6 +15,7 @@ echo "[daily] $(date -Iseconds) conc + D&S + FreeSIS + US→KR L3 + derivatives 
   "$PY" build_conc_history.py --live --months 6 --print-stats
 
 "$PY" build_market_microstructure.py --live --source auto --print-stats
+"$PY" build_letf_share_history.py --append-only
 "$PY" build_deposit_credit.py --print-stats
 "$PY" build_us_kr_l3.py --live --print-stats
 "$PY" build_derivatives_board.py --live --print-stats

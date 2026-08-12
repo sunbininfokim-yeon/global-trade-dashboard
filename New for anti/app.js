@@ -6814,6 +6814,8 @@ const MS_FILES = {
     brief: 'ai_casino_brief_v1.json',
     levels: 'investor_price_levels_v1.json',
     micro: 'market_microstructure_v1.json',
+    micro_history: 'market_microstructure_history_v1.json',
+    credit: 'deposit_credit_v1.json',
 };
 
 const MS_TABS = [
@@ -6847,14 +6849,14 @@ const msShares = (v) => Number.isFinite(v) ? `${v >= 0 ? '+' : ''}${Math.round(v
 const msPct = (v, d = 1) => Number.isFinite(v) ? `${(v * 100).toFixed(d)}%` : '—';
 const MS_LEVEL_CLASS = { '경계': 'ms-lv-3', '주의': 'ms-lv-2', '관찰': 'ms-lv-1', high: 'ms-lv-3', mid: 'ms-lv-2', watch: 'ms-lv-2', low: 'ms-lv-1', quiet: 'ms-lv-1' };
 
-// Every summary box is a button that opens the table behind it. A card that
+// Every summary box is a button that opens the chart/history behind it. A card that
 // shows a number but cannot be opened reads as data without an explanation.
 const msCard = (title, value, sub, modalKey, cls) => `
     <button class="fin-card ms-card${modalKey ? ' ms-clickable' : ''}" ${modalKey ? `data-ms-modal="${finEsc(modalKey)}"` : 'disabled'}>
         <span class="fin-card-title">${finEsc(title)}</span>
         <span class="fin-card-value ${cls || ''}">${value}</span>
         ${sub ? `<p class="fin-card-plain">${sub}</p>` : ''}
-        ${modalKey ? '<span class="ms-more">표 보기 →</span>' : ''}
+        ${modalKey ? '<span class="ms-more">그래프 보기 →</span>' : ''}
     </button>`;
 
 const msTable = (head, rows) => `
@@ -6927,11 +6929,11 @@ const msTangle = (D) => {
         <p class="fin-lead">지수가 몇 종목에 얼마나 매달려 있는지입니다. 높을수록 그 종목의 사정이 곧 시장의 사정이 됩니다.</p>
         <div class="fin-cards">
             ${msCard('상위 2 (삼성·하닉)', Number.isFinite(conc.conc_top2_samsung_hynix_pct) ? conc.conc_top2_samsung_hynix_pct.toFixed(1) + '%' : '—',
-                (conc.top5_tickers || []).slice(0, 2).join(' · '), 'conc')}
+                (conc.top5_tickers || []).slice(0, 2).join(' · '), 'conc_history')}
             ${msCard('상위 5', Number.isFinite(conc.conc_top5_pct) ? conc.conc_top5_pct.toFixed(1) + '%' : '—',
-                (conc.top5_tickers || []).join(' · '), 'conc')}
+                (conc.top5_tickers || []).join(' · '), 'conc_history')}
             ${msCard('상위 10', Number.isFinite(conc.conc_top10_pct) ? conc.conc_top10_pct.toFixed(1) + '%' : '—',
-                `종목 ${msNum((D.conc || {}).latest?.n_names)}개 기준`, 'conc')}
+                `종목 ${msNum((D.conc || {}).latest?.n_names)}개 기준`, 'conc_history')}
         </div>
     </section>
 
@@ -6939,12 +6941,12 @@ const msTangle = (D) => {
         <h2>B · 시장 전체</h2>
         <div class="fin-cards">
             ${msCard('레버·곱버스 거래대금 / 코스피 현물', Number.isFinite(ratios.levered_inverse_etf_tv_over_kospi_cash_tv_pct) ? ratios.levered_inverse_etf_tv_over_kospi_cash_tv_pct.toFixed(1) + '%' : '—',
-                `롱 ${msJo(ratios.long_tv_jo * 1e12)} · 인버스 ${msJo(ratios.inverse_tv_jo * 1e12)}`, 'letf_cat')}
+                `롱 ${msJo(ratios.long_tv_jo * 1e12)} · 인버스 ${msJo(ratios.inverse_tv_jo * 1e12)}`, 'letf_history')}
             ${msCard('외국인 vs 개인 순매수', msEok((fvr.foreign_net_krw ?? 0) / 1e8),
                 `개인 ${msEok((fvr.retail_net_krw ?? 0) / 1e8)} · 기관 ${msEok((fvr.institution_net_krw ?? 0) / 1e8)}${fvr.quality === 'estimated' ? ' · 추정' : ''}`, null,
                 fvr.foreign_net_krw >= 0 ? 'fin-up' : 'fin-down')}
             ${msCard('신용융자 / 예탁금', Number.isFinite(dc.credit_over_deposit_pct) ? dc.credit_over_deposit_pct.toFixed(1) + '%' : '—',
-                `예탁금 ${msEok(dc.investor_deposit_eok)} · 신용 ${msEok(dc.credit_balance_eok)} (${finEsc(dc.as_of || '')})`, null)}
+                `예탁금 ${msEok(dc.investor_deposit_eok)} · 신용 ${msEok(dc.credit_balance_eok)} (${finEsc(dc.as_of || '')})`, 'credit_history')}
         </div>
     </section>
 
@@ -7178,18 +7180,97 @@ const msUsKr = (D) => {
     <p class="mm-disclaimer">${finEsc(t.disclaimer_ko || '')}</p>`;
 };
 
+const msHistoryChart = (title, rows, series, { unit = '', empty = '과거 시계열이 아직 없습니다.' } = {}) => {
+    const clean = (rows || []).map((row) => ({
+        date: String(row.date || row.as_of || ''),
+        values: series.map((s) => Number(s.value(row))),
+    })).filter((row) => row.date && row.values.some(Number.isFinite));
+    if (!clean.length) return `<div class="ms-history-empty">${finEsc(empty)}</div>`;
+    const W = 780, H = 270, L = 58, R = 18, T = 24, B = 40;
+    const vals = clean.flatMap((row) => row.values.filter(Number.isFinite));
+    let lo = Math.min(...vals), hi = Math.max(...vals);
+    if (lo === hi) { lo -= 1; hi += 1; }
+    const pad = (hi - lo) * 0.08 || 1;
+    lo -= pad; hi += pad;
+    const x = (i) => L + (clean.length === 1 ? (W - L - R) / 2 : i * (W - L - R) / (clean.length - 1));
+    const y = (v) => T + (hi - v) * (H - T - B) / (hi - lo);
+    const grid = Array.from({ length: 5 }, (_, i) => {
+        const v = lo + (hi - lo) * (4 - i) / 4;
+        const yy = y(v);
+        return `<line class="ms-history-grid" x1="${L}" x2="${W - R}" y1="${yy.toFixed(2)}" y2="${yy.toFixed(2)}"/>` +
+            `<text class="ms-history-axis" x="${L - 8}" y="${(yy + 4).toFixed(2)}" text-anchor="end">${v.toFixed(1)}${finEsc(unit)}</text>`;
+    }).join('');
+    const lines = series.map((s, si) => {
+        const valid = clean.map((row, i) => Number.isFinite(row.values[si]) ? `${x(i).toFixed(2)},${y(row.values[si]).toFixed(2)}` : null).filter(Boolean);
+        const path = valid.length > 1 ? `<polyline class="ms-history-line" stroke="${s.color}" points="${valid.join(' ')}"/>` : '';
+        const dots = clean.map((row, i) => Number.isFinite(row.values[si]) ? `<circle class="ms-history-dot" fill="${s.color}" cx="${x(i).toFixed(2)}" cy="${y(row.values[si]).toFixed(2)}" r="3"/>` : '').join('');
+        return path + dots;
+    }).join('');
+    const tickIdx = [...new Set([0, Math.floor((clean.length - 1) / 2), clean.length - 1])];
+    const ticks = tickIdx.map((i) => `<text class="ms-history-axis" x="${x(i).toFixed(2)}" y="${H - 14}" text-anchor="middle">${finEsc(clean[i].date.slice(5))}</text>`).join('');
+    const legend = series.map((s) => `<span><i style="background:${s.color}"></i>${finEsc(s.label)}</span>`).join('');
+    return `<div class="ms-history-chart"><h4>${finEsc(title)}</h4><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${finEsc(title)}">${grid}${lines}${ticks}</svg><div class="ms-history-legend">${legend}</div></div>`;
+};
+
 // --- 모달 --------------------------------------------------------------------
 const msModalFor = (key, D) => {
     const t = D.transmission || {};
     const m = D.micro || {};
-    if (key === 'conc') {
+    if (key === 'conc' || key === 'conc_history') {
         const pts = (D.conc || {}).points || [];
-        return { title: '코스피 집중도 추이',
-            html: msTable(['날짜', '상위 2', '상위 5', '상위 10', '종목 수'],
-                pts.slice(-24).reverse().map((p) => [finEsc(p.date),
+        return { title: '코스피 집중도 추이', html:
+            msHistoryChart('시총 집중도 (%)', pts, [
+                { label: '상위 2 (삼성·하닉)', color: '#38bdf8', value: (p) => p.conc_top2_samsung_hynix_pct },
+                { label: '상위 5', color: '#a78bfa', value: (p) => p.conc_top5_pct },
+                { label: '상위 10', color: '#fbbf24', value: (p) => p.conc_top10_pct },
+            ], { unit: '%' }) +
+            msTable(['날짜', '상위 2', '상위 5', '상위 10', '종목 수'],
+                pts.slice(-12).reverse().map((p) => [finEsc(p.date),
                     `${(p.conc_top2_samsung_hynix_pct ?? 0).toFixed(2)}%`,
                     `${(p.conc_top5_pct ?? 0).toFixed(2)}%`,
                     `${(p.conc_top10_pct ?? 0).toFixed(2)}%`, msNum(p.n_names)])) };
+    }
+    if (key === 'letf_history') {
+        const hist = D.micro_history || {};
+        const pts = hist.points || [];
+        const current = m.market_letf_derivatives_ratios || {};
+        const fallback = pts.length ? pts : [{
+            date: m.as_of, levered_inverse_etf_tv_over_kospi_cash_tv_pct: current.levered_inverse_etf_tv_over_kospi_cash_tv_pct,
+            long_tv_jo: current.long_tv_jo, inverse_tv_jo: current.inverse_tv_jo, gobus_tv_jo: current.gobus_tv_jo,
+        }];
+        return { title: '레버·곱버스 거래대금 비중 추이', html:
+            msHistoryChart('레버·곱버스 / KOSPI 현물 거래대금 (%)', fallback, [
+                { label: '레버·곱버스 / 현물', color: '#38bdf8', value: (p) => p.levered_inverse_etf_tv_over_kospi_cash_tv_pct },
+                { label: '인버스 비중', color: '#f472b6', value: (p) => p.inverse_share_of_lev_tv_pct },
+            ], { unit: '%' }) +
+            msHistoryChart('방향별 거래대금 (조원)', fallback, [
+                { label: '롱', color: '#22d3ee', value: (p) => p.long_tv_jo },
+                { label: '인버스', color: '#fb7185', value: (p) => p.inverse_tv_jo },
+                { label: '곱버스', color: '#fbbf24', value: (p) => p.gobus_tv_jo },
+            ], { unit: '조' }) +
+            `<p class="fin-note">${pts.length > 1 ? 'KRX 장 마감 일별 거래대금 관측 시계열입니다.' : '현재는 최신 일별값만 있어 점 하나로 표시됩니다. Actions에서 과거 KRX 시계열을 백필하면 선으로 연결됩니다.'}</p>` };
+    }
+    if (key === 'credit_history') {
+        const doc = D.credit || {};
+        const dc = doc.deposit_credit || m.deposit_credit || {};
+        const pts = dc.history || [];
+        const fallback = pts.length ? pts : [{
+            date: dc.as_of, investor_deposit_eok: dc.investor_deposit_eok, credit_loan_eok: dc.credit_loan_eok || dc.credit_balance_eok,
+            uncollected_eok: dc.uncollected_eok, forced_sale_eok: dc.forced_sale_eok, credit_over_deposit_pct: dc.credit_over_deposit_pct,
+        }];
+        return { title: '신용융자·예탁금·미수·반대매매 추이', html:
+            msHistoryChart('예탁금·신용융자 (조원)', fallback, [
+                { label: '예탁금', color: '#38bdf8', value: (p) => Number(p.investor_deposit_eok) / 10000 },
+                { label: '신용융자', color: '#f472b6', value: (p) => Number(p.credit_loan_eok) / 10000 },
+            ], { unit: '조' }) +
+            msHistoryChart('미수·반대매매 (억원)', fallback, [
+                { label: '미수금', color: '#fbbf24', value: (p) => p.uncollected_eok },
+                { label: '반대매매', color: '#fb7185', value: (p) => p.forced_sale_eok },
+            ], { unit: '억' }) +
+            msHistoryChart('신용 / 예탁금 (%)', fallback, [
+                { label: '신용·예탁 비율', color: '#a78bfa', value: (p) => p.credit_over_deposit_pct },
+            ], { unit: '%' }) +
+            `<p class="fin-note">시장 전체 공표값입니다. 특정 종목·투자자·증권사 포지션이 아닙니다.</p>` };
     }
     if (key === 'letf_cat') {
         const by = ((m.letf_category_share || {}).by_category) || {};

@@ -35,6 +35,14 @@ jobs:
           python build_conc_history.py --append-only --print-stats || \
             python build_conc_history.py --live --months 6 --print-stats
 
+      - name: D&S + LETF share + FreeSIS credit/deposit
+        env:
+          KRX_API: ${{ secrets.KRX_API }}
+        run: |
+          python build_market_microstructure.py --live --source auto --print-stats
+          python build_letf_share_history.py --append-only
+          python build_deposit_credit.py --print-stats
+
       - name: US→KR L3
         run: python build_us_kr_l3.py --live --print-stats
 
@@ -53,6 +61,9 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add \
             "New for anti/public/data/kospi_concentration_history_v1.json" \
+            "New for anti/public/data/market_microstructure_v1.json" \
+            "New for anti/public/data/market_microstructure_history_v1.json" \
+            "New for anti/public/data/deposit_credit_v1.json" \
             "New for anti/public/data/us_microstructure_v1.json" \
             "New for anti/public/data/us_regime_v1.json" \
             "New for anti/public/data/us_kr_transmission_v1.json" \
