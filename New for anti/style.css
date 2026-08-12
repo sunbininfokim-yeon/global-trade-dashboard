@@ -2610,6 +2610,27 @@ body.macro-mode .map-pane { flex: 1 1 100%; }
 .ms-sw { display: inline-block; width: 9px; height: 9px; border-radius: 2px; margin-right: 5px; vertical-align: middle; }
 .ms-dist-zero { color: #475569; }
 
+/* 기간을 먼저 읽고 그 기간에만 가격대별 수급을 귀속한다. */
+.ms-period-controls { display: flex; align-items: center; flex-wrap: wrap; gap: 7px; margin: 12px 0; }
+.ms-period-controls label { display: inline-flex; align-items: center; gap: 5px; color: #64748b; font-size: 10.5px; }
+.ms-period-controls input { min-height: 28px; padding: 3px 7px; border: 1px solid rgba(148,163,184,.2); border-radius: 6px; background: rgba(15,23,42,.65); color: #cbd5e1; color-scheme: dark; font: inherit; }
+.ms-range-panel { margin: 4px 0 14px; padding: 10px 12px 8px; border: 1px solid rgba(148,163,184,.14); border-radius: 9px; background: rgba(15,23,42,.36); }
+.ms-range-head, .ms-section-head { display: flex; justify-content: space-between; align-items: start; gap: 12px; }
+.ms-range-head { margin-bottom: 3px; font-size: 11.5px; color: #cbd5e1; }
+.ms-range-head span { color: #64748b; font-size: 10.5px; }
+.ms-range-panel svg { display: block; width: 100%; height: 150px; touch-action: none; cursor: crosshair; }
+.ms-range-grid { stroke: rgba(148,163,184,.13); stroke-width: 1; vector-effect: non-scaling-stroke; }
+.ms-range-axis { fill: #64748b; font-size: 10px; font-family: inherit; }
+.ms-range-selection { fill: rgba(56,189,248,.13); stroke: rgba(125,211,252,.6); stroke-width: 1; vector-effect: non-scaling-stroke; pointer-events: none; }
+.ms-range-line { fill: none; stroke: #38bdf8; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; vector-effect: non-scaling-stroke; }
+.ms-range-panel p { margin: 4px 0 0; font-size: 10.5px; color: #64748b; }
+.ms-range-panel p strong { color: #cbd5e1; font-variant-numeric: tabular-nums; }
+.ms-section-head { margin-bottom: 12px; }
+.ms-section-head h2 { margin: 0 0 4px; }
+.ms-section-head p { margin: 0; color: #94a3b8; font-size: 12px; line-height: 1.55; }
+.ms-credit-period .fin-cards { margin-bottom: 12px; }
+.ms-credit-lag { padding: 10px 11px; border-left: 2px solid rgba(251,191,36,.5); background: rgba(251,191,36,.045); }
+
 .ms-modal-back {
     position: fixed; inset: 0; z-index: 60; background: rgba(2,6,16,.72);
     display: flex; align-items: center; justify-content: center; padding: 24px;
@@ -2634,4 +2655,5 @@ body.macro-mode .map-pane { flex: 1 1 100%; }
 .ms-modal-scope { margin: -3px 0 13px; color: #94a3b8; font-size: 11.5px; line-height: 1.6; }
 .ms-modal-scope strong { color: #7dd3fc; font-weight: 600; }
 @media (max-width: 900px) { .ms-dist-row { grid-template-columns: minmax(88px, 1fr) 2fr; } }
+@media (max-width: 640px) { .ms-period-controls { align-items: stretch; } .ms-period-controls label { width: calc(50% - 4px); } .ms-period-controls input { width: 100%; min-width: 0; } .ms-range-head span { display: none; } .ms-section-head { flex-direction: column; } }
 .fin-head-en { font-size: 11px; color: #64748b; letter-spacing: .04em; margin: -4px 0 8px; }

@@ -6830,6 +6830,11 @@ let MS_UNIVERSE = 'marcap';
 let MS_TICKER = null;         // 가격대별 탭에서 선택한 종목 (null = 코스피 지수)
 let MS_STOCK = null;          // 수급 꼬임 탭에서 선택한 종목
 let MS_MODAL = null;          // { title, html }
+// Price-level attribution must be read in a contiguous market regime.  A
+// 60-day all-in total is still available, but the default deliberately reads
+// the latest 20 sessions and a brush/date range can replace it.
+let MS_LEVEL_WINDOW = '20d';
+let MS_LEVEL_RANGE = null;    // { start: ISO, end: ISO } when the brush is used
 
 const msGet = async (name) => {
     for (const base of ['/public/data/', '/data/']) {
@@ -6898,6 +6903,132 @@ const msDivergingBars = (rows, opts = {}) => {
             <span class="ms-dist-zero">가운데가 0 · 왼쪽 순매도 / 오른쪽 순매수 · 행에 마우스를 올리면 수치 표시</span>
         </div>
     </div>`;
+};
+
+const msLevelPeriod = (rawDays) => {
+    const days = (rawDays || []).filter((d) => d && d.date && Number.isFinite(Number(d.close)))
+        .slice().sort((a, b) => String(a.date).localeCompare(String(b.date)));
+    if (!days.length) return { days: [], start: '', end: '', startIndex: 0, endIndex: 0, total: 0 };
+    let chosen = [];
+    if (MS_LEVEL_RANGE?.start && MS_LEVEL_RANGE?.end) {
+        chosen = days.filter((d) => d.date >= MS_LEVEL_RANGE.start && d.date <= MS_LEVEL_RANGE.end);
+    } else {
+        const n = MS_LEVEL_WINDOW === 'all' ? days.length : Number.parseInt(MS_LEVEL_WINDOW, 10) || 20;
+        chosen = days.slice(-Math.min(n, days.length));
+    }
+    if (!chosen.length) chosen = days.slice(-Math.min(20, days.length));
+    return {
+        days: chosen,
+        start: chosen[0].date,
+        end: chosen[chosen.length - 1].date,
+        startIndex: days.findIndex((d) => d.date === chosen[0].date),
+        endIndex: days.findIndex((d) => d.date === chosen[chosen.length - 1].date),
+        total: days.length,
+        allDays: days,
+    };
+};
+
+const msPriceLevelRows = (periodDays, src, isIndex) => {
+    if (!periodDays.length) return [];
+    const close = periodDays.map((d) => Number(d.close)).filter(Number.isFinite);
+    const originalWidth = Number((src.bins_by_close || [])[0]?.price_hi) - Number((src.bins_by_close || [])[0]?.price_lo);
+    const span = Math.max(...close) - Math.min(...close);
+    const step = isIndex ? (Number(src.step) || 250) : (originalWidth > 0 ? originalWidth : Math.max(1, span / 12));
+    const byBin = new Map();
+    periodDays.forEach((d) => {
+        const px = Number(d.close);
+        const lo = Math.floor(px / step) * step;
+        const key = lo.toFixed(6);
+        if (!byBin.has(key)) byBin.set(key, { price_lo: lo, price_hi: lo + step, n_days: 0, retail: 0, foreign: 0, inst: 0 });
+        const b = byBin.get(key);
+        b.n_days += 1;
+        b.retail += Number(isIndex ? d.retail_net_eok : d.retail_net_shares) || 0;
+        b.foreign += Number(isIndex ? d.foreign_net_eok : d.foreign_net_shares) || 0;
+        b.inst += Number(isIndex ? d.institution_net_eok : d.institution_net_shares) || 0;
+    });
+    const display = (v) => isIndex ? msEok(v) : msShares(v);
+    return [...byBin.values()].sort((a, b) => b.price_lo - a.price_lo).map((b) => ({
+        label: `${msNum(b.price_lo)} ~ ${msNum(b.price_hi)}`,
+        sub: `${b.n_days}일`,
+        series: [
+            { key: 'retail', name: '개인', value: b.retail, display: display(b.retail) },
+            { key: 'foreign', name: '외국인', value: b.foreign, display: display(b.foreign) },
+            { key: 'inst', name: '기관', value: b.inst, display: display(b.inst) },
+        ],
+    }));
+};
+
+// A small, purpose-built brush above the price profile.  It does not claim
+// intraday sequencing: it selects whole observed trading dates only.
+const msLevelRangeChart = (period, title) => {
+    const days = period.allDays || [];
+    if (!days.length) return '';
+    const W = 860, H = 160, L = 46, R = 16, T = 18, B = 30;
+    const vals = days.map((d) => Number(d.close)).filter(Number.isFinite);
+    let lo = Math.min(...vals), hi = Math.max(...vals);
+    if (lo === hi) { lo -= 1; hi += 1; }
+    const pad = (hi - lo) * .08 || 1;
+    lo -= pad; hi += pad;
+    const x = (i) => L + (days.length === 1 ? (W - L - R) / 2 : i * (W - L - R) / (days.length - 1));
+    const y = (v) => T + (hi - v) * (H - T - B) / (hi - lo);
+    const path = days.map((d, i) => `${i ? 'L' : 'M'}${x(i).toFixed(2)},${y(Number(d.close)).toFixed(2)}`).join('');
+    const left = Math.max(L, x(period.startIndex) - 5);
+    const right = Math.min(W - R, x(period.endIndex) + 5);
+    const ticks = [...new Set([0, Math.floor((days.length - 1) / 2), days.length - 1])].map((i) =>
+        `<text class="ms-range-axis" x="${x(i).toFixed(2)}" y="${H - 10}" text-anchor="middle">${finEsc(days[i].date.slice(5))}</text>`).join('');
+    return `<section class="ms-range-panel" data-ms-range-chart="1"
+        data-ms-range-days="${finEsc(JSON.stringify(days.map((d) => d.date)))}"
+        data-ms-range-start="${period.startIndex}" data-ms-range-end="${period.endIndex}">
+        <div class="ms-range-head"><strong>${finEsc(title)} 경로</strong><span>드래그하여 연속 거래일 선택</span></div>
+        <svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${finEsc(title)} 기간 선택 그래프">
+            <line class="ms-range-grid" x1="${L}" x2="${W - R}" y1="${y(lo).toFixed(2)}" y2="${y(lo).toFixed(2)}"/>
+            <line class="ms-range-grid" x1="${L}" x2="${W - R}" y1="${y(hi).toFixed(2)}" y2="${y(hi).toFixed(2)}"/>
+            <text class="ms-range-axis" x="${L - 7}" y="${(y(hi) + 4).toFixed(2)}" text-anchor="end">${msNum(hi, 0)}</text>
+            <text class="ms-range-axis" x="${L - 7}" y="${(y(lo) + 4).toFixed(2)}" text-anchor="end">${msNum(lo, 0)}</text>
+            <rect class="ms-range-selection" data-ms-range-selection="1" x="${left.toFixed(2)}" y="${T}" width="${Math.max(10, right - left).toFixed(2)}" height="${H - T - B}"/>
+            <path class="ms-range-line" d="${path}"/>
+            ${ticks}
+        </svg>
+        <p>선택: <strong>${finEsc(period.start)} ~ ${finEsc(period.end)}</strong> · ${period.days.length}거래일 · 수급은 이 기간의 일별 종가 기준으로만 재집계</p>
+    </section>`;
+};
+
+const msWireLevelBrush = (host, onSelect) => {
+    const panel = host.querySelector('[data-ms-range-chart]');
+    const svg = panel?.querySelector('svg');
+    const selection = panel?.querySelector('[data-ms-range-selection]');
+    if (!panel || !svg || !selection) return;
+    let dates = [];
+    try { dates = JSON.parse(panel.dataset.msRangeDays || '[]'); } catch (_) { return; }
+    if (dates.length < 2) return;
+    const W = 860, L = 46, R = 16;
+    const toIndex = (ev) => {
+        const rect = svg.getBoundingClientRect();
+        const raw = (ev.clientX - rect.left) / Math.max(rect.width, 1) * W;
+        const ratio = Math.max(0, Math.min(1, (raw - L) / (W - L - R)));
+        return Math.round(ratio * (dates.length - 1));
+    };
+    const draw = (a, b) => {
+        const start = Math.min(a, b), end = Math.max(a, b);
+        const at = (i) => L + i * (W - L - R) / (dates.length - 1);
+        selection.setAttribute('x', String(Math.max(L, at(start) - 5)));
+        selection.setAttribute('width', String(Math.max(10, at(end) - at(start) + 10)));
+    };
+    svg.addEventListener('pointerdown', (down) => {
+        down.preventDefault();
+        const anchor = toIndex(down);
+        draw(anchor, anchor);
+        svg.setPointerCapture?.(down.pointerId);
+        const move = (ev) => draw(anchor, toIndex(ev));
+        const done = (up) => {
+            svg.removeEventListener('pointermove', move);
+            const end = toIndex(up);
+            onSelect({ start: dates[Math.min(anchor, end)], end: dates[Math.max(anchor, end)] });
+        };
+        svg.addEventListener('pointermove', move);
+        svg.addEventListener('pointerup', done, { once: true });
+        svg.addEventListener('pointercancel', done, { once: true });
+    });
 };
 
 // The values belong in the graph interaction, not in a fixed right-hand
@@ -7044,52 +7175,78 @@ const msTangle = (D) => {
 };
 
 // --- ② 가격대별 수급 ---------------------------------------------------------
+const msCreditForPeriod = (D, period) => {
+    const doc = D.credit || {};
+    const dc = doc.deposit_credit || (D.micro || {}).deposit_credit || {};
+    const history = Array.isArray(dc.history) ? dc.history : [];
+    const selected = history.filter((p) => p.date >= period.start && p.date <= period.end);
+    const hasOverlay = selected.length > 0;
+    const credit = dc.credit_loan_eok ?? dc.credit_balance_eok;
+    return `
+    <section class="fin-block fin-block-wide ms-credit-period">
+        <div class="ms-section-head">
+            <div><h2>같은 기간의 신용공여 · 미수금</h2>
+                <p>시장 전체 공표값입니다. 가격대별·개인/외국인별 수급이 아니며, 같은 기간에 함께 비교하는 보조 지표입니다.</p></div>
+            <button class="mm-view-btn" data-ms-modal="credit_history">전체 창 열기</button>
+        </div>
+        <div class="fin-cards">
+            ${msCard('투자자예탁금', Number.isFinite(Number(dc.investor_deposit_jo)) ? `${Number(dc.investor_deposit_jo).toFixed(1)}조` : '—', `기준 ${finEsc(dc.as_of || '—')}`, 'credit_history')}
+            ${msCard('신용거래융자', Number.isFinite(Number(credit)) ? `${(Number(credit) / 10000).toFixed(1)}조` : '—', `예탁금 대비 ${Number.isFinite(Number(dc.credit_over_deposit_pct)) ? `${Number(dc.credit_over_deposit_pct).toFixed(1)}%` : '—'}`, 'credit_history')}
+            ${msCard('위탁매매미수금', Number.isFinite(Number(dc.uncollected_eok)) ? `${Number(dc.uncollected_eok).toLocaleString('ko-KR', { maximumFractionDigits: 0 })}억` : '—', `예탁금 대비 ${Number.isFinite(Number(dc.uncollected_over_deposit_pct)) ? `${Number(dc.uncollected_over_deposit_pct).toFixed(2)}%` : '—'}`, 'credit_history')}
+            ${msCard('반대매매금액', Number.isFinite(Number(dc.forced_sale_eok)) ? `${Number(dc.forced_sale_eok).toLocaleString('ko-KR', { maximumFractionDigits: 0 })}억` : '—', `미수 대비 ${Number.isFinite(Number(dc.forced_sale_over_uncollected_pct)) ? `${Number(dc.forced_sale_over_uncollected_pct).toFixed(2)}%` : '—'}`, 'credit_history')}
+        </div>
+        ${hasOverlay ? msHistoryChart(`선택 구간 (${period.start} ~ ${period.end}) · 예탁금·신용융자`, selected, [
+            { label: '예탁금', color: '#38bdf8', value: (p) => Number(p.investor_deposit_eok) / 10000 },
+            { label: '신용융자', color: '#f472b6', value: (p) => Number(p.credit_loan_eok) / 10000 },
+        ], { unit: '조', empty: '선택 기간의 신용공여 시계열이 없습니다.' }) :
+            `<p class="fin-note ms-credit-lag">선택 수급 구간 ${finEsc(period.start)} ~ ${finEsc(period.end)}와 겹치는 FreeSIS 시계열이 아직 없습니다. 위 값은 최신 공표 기준 ${finEsc(dc.as_of || '—')}이며, 이를 해당 가격대의 포지션으로 해석하면 안 됩니다.</p>`}
+        <p class="fin-note">${finEsc((dc.ui_display || {}).scale_note_ko || dc.note_ko || '예탁금·신용·미수·반대매매는 각기 공표 시점과 단위가 다릅니다.')}</p>
+    </section>`;
+};
+
 const msLevelsTab = (D) => {
     const lv = D.levels || {};
     const kl = lv.kospi_index_levels || {};
     const tickers = lv.tickers || {};
     const isIndex = !MS_TICKER;
     const src = isIndex ? kl : (tickers[MS_TICKER] || {});
-    const bins = Array.isArray(src.bins_by_close) ? src.bins_by_close : [];
-    const unitEok = isIndex;
-
+    const period = msLevelPeriod(src.days || []);
+    const rows = msPriceLevelRows(period.days, src, isIndex);
     const table = MS_UNIVERSE === 'high_vol' ? (lv.close_day_table_high_vol || []) : (lv.close_day_table_marcap || []);
     const L = kl.latest || {};
-
-    const rows = bins.filter((b) => b.n_days > 0).map((b) => ({
-        label: `${msNum(b.price_lo)} ~ ${msNum(b.price_hi)}`,
-        sub: `${b.n_days}일`,
-        series: [
-            { key: 'retail', name: '개인', value: unitEok ? b.retail_net_krw : b.retail_net_shares,
-                display: unitEok ? msEok(b.retail_net_krw / 1e8) : msShares(b.retail_net_shares) },
-            { key: 'foreign', name: '외국인', value: unitEok ? b.foreign_net_krw : b.foreign_net_shares,
-                display: unitEok ? msEok(b.foreign_net_krw / 1e8) : msShares(b.foreign_net_shares) },
-            { key: 'inst', name: '기관', value: unitEok ? b.institution_net_krw : b.institution_net_shares,
-                display: unitEok ? msEok(b.institution_net_krw / 1e8) : msShares(b.institution_net_shares) },
-        ],
-    }));
+    const allStart = period.allDays?.[0]?.date || '';
+    const allEnd = period.allDays?.[period.allDays.length - 1]?.date || '';
+    const label = isIndex ? 'KOSPI' : (src.label_ko || MS_TICKER || '선택 종목');
 
     return `
     <section class="fin-block fin-block-wide">
         <h2>가격대별 누적 수급 <span class="ms-q">${finEsc(src.quality || '')}</span></h2>
         <p class="fin-lead">
-            어느 가격대에서 누가 사고 팔았는지를 실측 일별 수급으로 쌓은 것입니다.
-            <strong>체결 단위 매집도가 아닙니다</strong> — 그 데이터는 공개되지 않습니다.
+            같은 가격이라도 다른 국면의 수급을 섞지 않도록, 선택한 <strong>연속 거래일</strong>만 재집계합니다.
+            체결 단위 매집도가 아니라 실측 일별 순매수를 그날 종가 구간에 귀속한 값입니다.
         </p>
         <div class="co-struct-toggle">
             <button class="mm-view-btn ${isIndex ? 'on' : ''}" data-ms-ticker="">코스피 지수</button>
             ${Object.keys(tickers).slice(0, 8).map((tk) => `<button class="mm-view-btn ${MS_TICKER === tk ? 'on' : ''}"
                 data-ms-ticker="${finEsc(tk)}">${finEsc(tickers[tk].label_ko || tk)}</button>`).join('')}
         </div>
-        ${src.headline_ko ? `<p class="ms-lead-strong">${finEsc(src.headline_ko)}</p>` : ''}
+        <div class="ms-period-controls" aria-label="수급 집계 기간">
+            ${[['5d', '최근 5일'], ['20d', '최근 20일'], ['60d', '최근 60일'], ['all', '전체']].map(([id, name]) =>
+                `<button class="mm-view-btn ${!MS_LEVEL_RANGE && MS_LEVEL_WINDOW === id ? 'on' : ''}" data-ms-level-window="${id}">${name}</button>`).join('')}
+            <label>시작 <input type="date" data-ms-level-date="start" min="${finEsc(allStart)}" max="${finEsc(allEnd)}" value="${finEsc(period.start)}"></label>
+            <label>종료 <input type="date" data-ms-level-date="end" min="${finEsc(allStart)}" max="${finEsc(allEnd)}" value="${finEsc(period.end)}"></label>
+        </div>
+        ${msLevelRangeChart(period, label)}
         ${rows.length ? msDivergingBars(rows, {
             legend: [{ key: 'retail', name: '개인' }, { key: 'foreign', name: '외국인' }, { key: 'inst', name: '기관' }],
         }) : `<p class="fin-note">${msMissing('구간별 수급 없음')}</p>`}
         <p class="fin-note">
-            ${finEsc(src.method_ko || '')} 단위 ${finEsc(unitEok ? (kl.unit || '억원') : '주')} ·
-            ${src.n_days || 0}일 (${finEsc(src.date_start || '')} ~ ${finEsc(src.date_end || '')})
+            ${finEsc(src.method_ko || '')} 단위 ${finEsc(isIndex ? (kl.unit || '억원') : '주')} ·
+            선택 ${period.days.length}일 / 원본 ${period.total || 0}일 (${finEsc(allStart)} ~ ${finEsc(allEnd)})
         </p>
     </section>
+
+    ${msCreditForPeriod(D, period)}
 
     <section class="fin-block fin-block-wide">
         <h2>종가일 수급</h2>
@@ -7434,11 +7591,21 @@ const renderMicrostructure = async (host) => {
         });
         on('[data-ms-univ]', (b) => { MS_UNIVERSE = b.dataset.msUniv; paint(); });
         on('[data-ms-ticker]', (b) => { MS_TICKER = b.dataset.msTicker || null; MS_TAB = 'levels'; paint(); });
+        on('[data-ms-level-window]', (b) => { MS_LEVEL_WINDOW = b.dataset.msLevelWindow; MS_LEVEL_RANGE = null; paint(); });
+        host.querySelectorAll('[data-ms-level-date]').forEach((input) => input.addEventListener('change', () => {
+            const start = host.querySelector('[data-ms-level-date="start"]')?.value;
+            const end = host.querySelector('[data-ms-level-date="end"]')?.value;
+            if (!start || !end) return;
+            MS_LEVEL_RANGE = start <= end ? { start, end } : { start: end, end: start };
+            MS_LEVEL_WINDOW = 'custom';
+            paint();
+        }));
         // :not([data-ms-stock]) because that combination is handled above --
         // otherwise this listener would double-fire on the same click and
         // paint() twice.
         on('[data-ms-modal]:not([data-ms-stock])', (b) => { MS_MODAL = msModalFor(b.dataset.msModal, D); paint(); });
         on('[data-ms-modal-close]', (b, e) => { if (e.target === b) { MS_MODAL = null; paint(); } });
+        msWireLevelBrush(host, (range) => { MS_LEVEL_RANGE = range; MS_LEVEL_WINDOW = 'custom'; paint(); });
         msWireFlowTooltips(host);
         mmWireCharts(host);
     };
