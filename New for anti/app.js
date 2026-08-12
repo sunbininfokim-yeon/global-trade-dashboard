@@ -7125,7 +7125,7 @@ const msCard = (title, value, sub, modalKey, cls) => `
         <span class="fin-card-title">${finEsc(title)}</span>
         <span class="fin-card-value ${cls || ''}">${value}</span>
         ${sub ? `<p class="fin-card-plain">${sub}</p>` : ''}
-        ${modalKey ? '<span class="ms-more">표 보기 →</span>' : ''}
+        ${modalKey ? `<span class="ms-more">${String(modalKey).startsWith('conc:') ? '추이 보기' : '표 보기'} →</span>` : ''}
     </button>`;
 
 const msTable = (head, rows) => `
@@ -7166,6 +7166,72 @@ const msDivergingBars = (rows, opts = {}) => {
     </div>`;
 };
 
+// Price-level distribution chart: the index path and the net-buying profile
+// share one vertical price axis, so "where the index spent time" and "where
+// retail actually bought" are read off the same rows. Two independent x scales
+// overlay in one plot -- time for the line, net-buying value for the bars.
+const msPriceLevelChart = (days, bins, opts = {}) => {
+    const pts = (days || []).filter((d) => Number.isFinite(d.close));
+    const rows = (bins || []).filter((b) => b.n_days > 0 && Number.isFinite(b.price_lo));
+    if (pts.length < 2 || !rows.length) return '';
+
+    const W = 760, H = 400, L = 62, R = 96, T = 30, B = 34;
+    const key = opts.valueKey || 'retail_net_krw';
+
+    const lo = Math.min(...pts.map((d) => d.close), ...rows.map((b) => b.price_lo));
+    const hi = Math.max(...pts.map((d) => d.close), ...rows.map((b) => b.price_hi));
+    const padY = (hi - lo) * 0.04;
+    const yLo = lo - padY, yHi = hi + padY;
+    const sy = (v) => T + (1 - (v - yLo) / (yHi - yLo)) * (H - T - B);
+
+    // Bars are centred on the plot so net selling reads left of the axis.
+    const vals = rows.map((b) => Number(b[key])).filter(Number.isFinite);
+    const vMax = Math.max(...vals.map(Math.abs), 1);
+    const cx = L + (W - L - R) / 2;
+    const halfW = (W - L - R) / 2;
+    const sbx = (v) => (v / vMax) * halfW * 0.92;
+
+    const sx = (i) => L + (i / Math.max(pts.length - 1, 1)) * (W - L - R);
+    let line = '', pen = false;
+    pts.forEach((d, i) => { line += `${pen ? 'L' : 'M'}${sx(i).toFixed(1)},${sy(d.close).toFixed(1)}`; pen = true; });
+
+    const yTicks = 6;
+    const grid = Array.from({ length: yTicks + 1 }, (_, i) => yLo + (yHi - yLo) * (i / yTicks));
+    const xTicks = [-1, -0.5, 0, 0.5, 1];
+
+    return `
+    <div class="ms-plc-box">
+        <svg class="ms-plc" viewBox="0 0 ${W} ${H}" role="img"
+             aria-label="${finEsc(opts.label || '가격대별 순매수 분포')}">
+            ${grid.map((g) => `
+                <line x1="${L}" y1="${sy(g).toFixed(1)}" x2="${W - R}" y2="${sy(g).toFixed(1)}" class="mm-grid"/>
+                <text x="${L - 8}" y="${(sy(g) + 3.5).toFixed(1)}" class="mm-tick" text-anchor="end">${msNum(Math.round(g))}</text>`).join('')}
+            ${xTicks.map((t) => `
+                <text x="${(cx + t * halfW * 0.92).toFixed(1)}" y="${H - 10}" class="mm-tick" text-anchor="middle">${
+                    opts.fmtX ? opts.fmtX(t * vMax) : msEok(t * vMax)}</text>`).join('')}
+            ${rows.map((b) => {
+                const v = Number(b[key]);
+                if (!Number.isFinite(v)) return '';
+                const y0 = sy(b.price_hi), y1 = sy(b.price_lo);
+                const h = Math.max(Math.abs(y1 - y0) - 2, 2);
+                const w = Math.abs(sbx(v));
+                return `<rect class="ms-plc-bar${v < 0 ? ' neg' : ''}" x="${(v < 0 ? cx - w : cx).toFixed(1)}"
+                    y="${(Math.min(y0, y1) + 1).toFixed(1)}" width="${w.toFixed(1)}" height="${h.toFixed(1)}"
+                    data-plc-lo="${b.price_lo}" data-plc-hi="${b.price_hi}" data-plc-v="${v}" data-plc-days="${b.n_days}"><title>${
+                    msNum(b.price_lo)}~${msNum(b.price_hi)} · ${msEok(v)} · ${b.n_days}일</title></rect>`;
+            }).join('')}
+            <line x1="${cx.toFixed(1)}" y1="${T}" x2="${cx.toFixed(1)}" y2="${H - B}" class="mm-zero"/>
+            <path d="${line}" class="ms-plc-line"/>
+            <text x="${L - 8}" y="${T - 12}" class="mm-tick" text-anchor="end">${finEsc(opts.yLabel || '(pt)')}</text>
+            <text x="${W - R + 8}" y="${(H - B).toFixed(1)}" class="mm-tick">${finEsc(opts.xLabel || '순매수')}</text>
+        </svg>
+        <p class="mm-legend-note">
+            <i class="ms-plc-sw-line"></i>${finEsc(opts.lineName || '코스피 종가')}
+            <i class="ms-plc-sw-bar"></i>${finEsc(opts.barName || '구간별 순매수 규모')}
+        </p>
+    </div>`;
+};
+
 // --- ① 수급 꼬임 -------------------------------------------------------------
 // distortion_squeeze is documented as the top-level block, but the shipped
 // snapshot has not produced it yet -- the same numbers live at the document's
@@ -7198,33 +7264,33 @@ const msTangle = (D) => {
         <p class="fin-lead">지수가 몇 종목에 얼마나 매달려 있는지입니다. 높을수록 그 종목의 사정이 곧 시장의 사정이 됩니다.</p>
         <div class="fin-cards">
             ${msCard('상위 2 (삼성·하닉)', Number.isFinite(conc.conc_top2_samsung_hynix_pct) ? conc.conc_top2_samsung_hynix_pct.toFixed(1) + '%' : '—',
-                (conc.top5_tickers || []).slice(0, 2).join(' · '), 'conc')}
+                (conc.top5_tickers || []).slice(0, 2).join(' · '), 'conc:top2')}
             ${msCard('상위 5', Number.isFinite(conc.conc_top5_pct) ? conc.conc_top5_pct.toFixed(1) + '%' : '—',
-                (conc.top5_tickers || []).join(' · '), 'conc')}
+                (conc.top5_tickers || []).join(' · '), 'conc:top5')}
             ${msCard('상위 10', Number.isFinite(conc.conc_top10_pct) ? conc.conc_top10_pct.toFixed(1) + '%' : '—',
-                `종목 ${msNum((D.conc || {}).latest?.n_names)}개 기준`, 'conc')}
+                `종목 ${msNum((D.conc || {}).latest?.n_names)}개 기준`, 'conc:top10')}
         </div>
     </section>
 
     <section class="fin-block fin-block-wide">
         <h2>B · 시장 전체</h2>
+        <p class="fin-lead">
+            아래 비율의 분모는 <strong>코스피 현물 거래대금</strong>, 분자는 <strong>레버리지·인버스 ETF 거래대금</strong>입니다.
+            서로 다른 두 시장의 거래대금을 나눈 값이라 "시장의 몇 %를 레버리지 ETF가 차지한다"는 뜻이 아닙니다.
+            일반(비레버리지) ETF는 분자에 들어가지 않습니다.
+        </p>
         <div class="fin-cards">
-            ${msCard('레버·곱버스 거래대금 / 코스피 현물', Number.isFinite(ratios.levered_inverse_etf_tv_over_kospi_cash_tv_pct) ? ratios.levered_inverse_etf_tv_over_kospi_cash_tv_pct.toFixed(1) + '%' : '—',
-                `롱 ${msJo(ratios.long_tv_jo * 1e12)} · 인버스 ${msJo(ratios.inverse_tv_jo * 1e12)}`, 'letf_cat')}
-            ${msCard('외국인 vs 개인 순매수', msEok((fvr.foreign_net_krw ?? 0) / 1e8),
-                `개인 ${msEok((fvr.retail_net_krw ?? 0) / 1e8)} · 기관 ${msEok((fvr.institution_net_krw ?? 0) / 1e8)}${fvr.quality === 'estimated' ? ' · 추정' : ''}`, null,
-                fvr.foreign_net_krw >= 0 ? 'fin-up' : 'fin-down')}
-            ${msCard('신용융자 / 예탁금', Number.isFinite(dc.credit_over_deposit_pct) ? dc.credit_over_deposit_pct.toFixed(1) + '%' : '—',
-                `예탁금 ${msEok(dc.investor_deposit_eok)} · 신용 ${msEok(dc.credit_balance_eok)} (${finEsc(dc.as_of || '')})`, null)}
+            ${msCard('레버리지·인버스 ETF 거래대금 ÷ 코스피 현물 거래대금', Number.isFinite(ratios.levered_inverse_etf_tv_over_kospi_cash_tv_pct) ? ratios.levered_inverse_etf_tv_over_kospi_cash_tv_pct.toFixed(1) + '%' : '—',
+                `정방향 ${msJo(ratios.long_tv_jo * 1e12)} · 인버스 ${msJo(ratios.inverse_tv_jo * 1e12)}`, 'letf_cat')}
         </div>
     </section>
 
     <section class="fin-block fin-block-wide">
-        <h2>D · 방향별 레버리지 상품 (곱버스 분리)</h2>
-        <p class="fin-lead">인버스 안에서도 <strong>2배 곱버스</strong>는 따로 셉니다. 되사고 되파는 압력이 방향에 따라 다르게 쌓입니다.</p>
+        <h2>D · 방향별 레버리지 상품</h2>
+        <p class="fin-lead">인버스 안에서도 <strong>-2배</strong>는 따로 셉니다. 되사고 되파는 압력이 방향에 따라 다르게 쌓입니다.</p>
         ${Object.keys(byDir).length ? `
         <div class="fin-cards">
-            ${[['long', '롱(추종)'], ['inverse', '인버스(1X)'], ['inverse_2x', '인버스(2X)'], ['gobus_inverse_2x', '곱버스(2X)']].map(([k, ko]) => {
+            ${[['long', '정방향 레버리지 (Long)'], ['inverse', '인버스 (-1X)'], ['inverse_2x', '인버스 (-2X)'], ['gobus_inverse_2x', '지수 인버스 (-2X)']].map(([k, ko]) => {
                 const b = byDir[k]; if (!b) return '';
                 return msCard(ko, msJo(b.trading_value_krw), `상품 ${msNum(b.n_products)}종 · 코스피 거래대금의 ${(b.share_of_kospi_tv_pct ?? 0).toFixed(1)}%`, null);
             }).join('')}
@@ -7278,6 +7344,7 @@ const msLevelsTab = (D) => {
     const lv = D.levels || {};
     const kl = lv.kospi_index_levels || {};
     const tickers = lv.tickers || {};
+    const dc = (D.micro || {}).deposit_credit || {};
     const isIndex = !MS_TICKER;
     const src = isIndex ? kl : (tickers[MS_TICKER] || {});
     const bins = Array.isArray(src.bins_by_close) ? src.bins_by_close : [];
@@ -7312,6 +7379,15 @@ const msLevelsTab = (D) => {
                 data-ms-ticker="${finEsc(tk)}">${finEsc(tickers[tk].label_ko || tk)}</button>`).join('')}
         </div>
         ${src.headline_ko ? `<p class="ms-lead-strong">${finEsc(src.headline_ko)}</p>` : ''}
+        ${msPriceLevelChart(src.days || [], bins, {
+            label: `${isIndex ? '코스피' : (tickers[MS_TICKER] || {}).label_ko || MS_TICKER} 가격대별 개인 순매수 분포`,
+            lineName: isIndex ? '코스피 종가' : '종가',
+            barName: '구간별 개인 순매수 규모',
+            valueKey: unitEok ? 'retail_net_krw' : 'retail_net_shares',
+            yLabel: isIndex ? '(pt)' : '(원)',
+            xLabel: unitEok ? '순매수(억원)' : '순매수(주)',
+            fmtX: unitEok ? ((v) => msEok(v)) : ((v) => msShares(v)),
+        })}
         ${rows.length ? msDivergingBars(rows, {
             legend: [{ key: 'retail', name: '개인' }, { key: 'foreign', name: '외국인' }, { key: 'inst', name: '기관' }],
         }) : `<p class="fin-note">${msMissing('구간별 수급 없음')}</p>`}
@@ -7337,6 +7413,25 @@ const msLevelsTab = (D) => {
                 tickers[r.ticker] ? `<button class="mm-view-btn" data-ms-ticker="${finEsc(r.ticker)}">가격대별</button>` : '',
             ])) : `<p class="fin-note">${msMissing('종가일 표 없음')}</p>`}
         <p class="fin-note">지수 순매수 최근일: 개인 ${msEok(L.retail_net_eok)} · 외국인 ${msEok(L.foreign_net_eok)} · 기관 ${msEok(L.institution_net_eok)} (${finEsc(L.date || '')})</p>
+    </section>
+
+    <section class="fin-block fin-block-wide">
+        <h2>투자자 예탁금 · 신용공여</h2>
+        <p class="fin-lead">
+            개인이 얼마를 들고 대기 중이고 얼마를 빌려서 사고 있는지입니다. 위 가격대별 수급이 <em>어디서</em> 샀는지라면,
+            이건 <em>무슨 돈으로</em> 샀는지입니다.
+        </p>
+        <div class="fin-cards">
+            ${msCard('신용공여 잔고 / 투자자 예탁금', Number.isFinite(dc.credit_over_deposit_pct) ? dc.credit_over_deposit_pct.toFixed(1) + '%' : '—',
+                `기준일 ${finEsc(dc.as_of || '—')}`, null)}
+            ${msCard('투자자 예탁금', msEok(dc.investor_deposit_eok),
+                Number.isFinite(dc.investor_deposit_chg_eok) ? `전주 대비 ${msEok(dc.investor_deposit_chg_eok)}` : '', null)}
+            ${msCard('신용융자 잔고', msEok(dc.credit_balance_eok),
+                Number.isFinite(dc.credit_balance_chg_eok) ? `전주 대비 ${msEok(dc.credit_balance_chg_eok)}` : '', null)}
+            ${msCard('미수금 · 반대매매', msMissing('공개 데이터 없음'),
+                '증권사 미수금과 반대매매 금액은 이 공개 표에 포함되지 않습니다.', null)}
+        </div>
+        <p class="fin-note">${finEsc(dc.note_ko || '')} 시계열이 아니라 최신 주간 스냅샷입니다.</p>
         ${(lv.cannot_do_ko || []).length ? `
         <details class="mm-limits">
             <summary>이 데이터로 할 수 없는 것</summary>
@@ -7541,14 +7636,28 @@ const msModalFor = (key, D) => {
                 ['K200 풋옵션', `${msNum(options.put_volume)}계약`, msJo(options.put_trading_value_krw), finEsc(options.coverage_ko || '—')],
             ]) + '<p class="fin-note">시장 전체 체결 합계입니다. 외국인·개인·기관별 거래를 뜻하지 않으며 OI도 아닙니다.</p>' };
     }
-    if (key === 'conc') {
+    if (key === 'conc' || key.startsWith('conc:')) {
         const pts = (D.conc || {}).points || [];
-        return { title: '코스피 집중도 추이',
-            html: msTable(['날짜', '상위 2', '상위 5', '상위 10', '종목 수'],
-                pts.slice(-24).reverse().map((p) => [finEsc(p.date),
-                    `${(p.conc_top2_samsung_hynix_pct ?? 0).toFixed(2)}%`,
-                    `${(p.conc_top5_pct ?? 0).toFixed(2)}%`,
-                    `${(p.conc_top10_pct ?? 0).toFixed(2)}%`, msNum(p.n_names)])) };
+        const which = key.split(':')[1] || 'top2';
+        const spec = {
+            top2: { f: 'conc_top2_samsung_hynix_pct', ko: '상위 2 (삼성·하닉)' },
+            top5: { f: 'conc_top5_pct', ko: '상위 5' },
+            top10: { f: 'conc_top10_pct', ko: '상위 10' },
+        }[which] || { f: 'conc_top2_samsung_hynix_pct', ko: '상위 2 (삼성·하닉)' };
+        const st = (D.conc || {}).stats || {};
+        const dates = pts.map((p) => p.date);
+        const values = pts.map((p) => Number(p[spec.f]));
+        return { title: `코스피 집중도 · ${spec.ko} 시가총액 비중 추이`,
+            html: mmLineChart(dates, values, { unit: '%', label: spec.ko })
+                + `<p class="fin-note">${pts.length}거래일 (${finEsc(dates[0] || '')} ~ ${finEsc(dates[dates.length - 1] || '')})`
+                + (which === 'top2' && Number.isFinite(st.conc_top2_chg_60d)
+                    ? ` · 60일 변화 ${st.conc_top2_chg_60d > 0 ? '+' : ''}${st.conc_top2_chg_60d.toFixed(2)}%p` : '')
+                + `. 유니버스 시가총액 대비 비중이며 지수 산출 가중치가 아닙니다.</p>`
+                + msTable(['날짜', '상위 2', '상위 5', '상위 10', '종목 수'],
+                    pts.slice(-24).reverse().map((p) => [finEsc(p.date),
+                        `${(p.conc_top2_samsung_hynix_pct ?? 0).toFixed(2)}%`,
+                        `${(p.conc_top5_pct ?? 0).toFixed(2)}%`,
+                        `${(p.conc_top10_pct ?? 0).toFixed(2)}%`, msNum(p.n_names)])) };
     }
     if (key === 'letf_cat') {
         const by = ((m.letf_category_share || {}).by_category) || {};
@@ -7563,7 +7672,7 @@ const msModalFor = (key, D) => {
         return { title: `${sel.name} 단일종목 ETF 상품별`,
             html: msTable(['상품', '배수', '순자산(AUM)', '거래대금', '방향'],
                 (sel.products || []).map((p) => [finEsc(p.name), `${p.L > 0 ? '+' : ''}${p.L}배`,
-                    msJo(p.aum), msJo(p.trading_value), p.direction === 'long' ? '롱' : '인버스']))
+                    msJo(p.aum), msJo(p.trading_value), p.direction === 'long' ? '정방향' : '인버스']))
                 + '<p class="fin-note">NAV는 공개 스냅샷에 없습니다. 순자산과 거래대금만 실측입니다.</p>' };
     }
     if (key.startsWith('ev:')) {
