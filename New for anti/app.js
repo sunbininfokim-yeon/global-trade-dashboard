@@ -6954,6 +6954,7 @@ const msTangle = (D) => {
 const msLevelsTab = (D) => {
     const lv = D.levels || {};
     const kl = lv.kospi_index_levels || {};
+    const credit = lv.market_credit || {};
     const tickers = lv.tickers || {};
     const isIndex = !MS_TICKER;
     const src = isIndex ? kl : (tickers[MS_TICKER] || {});
@@ -6962,6 +6963,8 @@ const msLevelsTab = (D) => {
 
     const table = MS_UNIVERSE === 'high_vol' ? (lv.close_day_table_high_vol || []) : (lv.close_day_table_marcap || []);
     const L = kl.latest || {};
+    const creditObserved = credit.quality === 'observed';
+    const creditEok = (value) => Number.isFinite(value) ? `${Math.round(value).toLocaleString('ko-KR')}억` : '—';
 
     const rows = bins.filter((b) => b.n_days > 0).map((b) => ({
         label: `${msNum(b.price_lo)} ~ ${msNum(b.price_hi)}`,
@@ -6980,9 +6983,18 @@ const msLevelsTab = (D) => {
     <section class="fin-block fin-block-wide">
         <h2>가격대별 누적 수급 <span class="ms-q">${finEsc(src.quality || '')}</span></h2>
         <p class="fin-lead">
-            어느 가격대에서 누가 사고 팔았는지를 실측 일별 수급으로 쌓은 것입니다.
-            <strong>체결 단위 매집도가 아닙니다</strong> — 그 데이터는 공개되지 않습니다.
+            어느 가격대에서 개인·외국인·기관이 <strong>순매수·순매도</strong>했는지를 실측 일별 수급으로 쌓은 것입니다.
+            <strong>총매수·총매도 또는 체결 단위 매집도가 아닙니다</strong> — 그 데이터는 공개되지 않습니다.
         </p>
+        <div class="fin-cards">
+            ${msCard('시장 신용융자 잔고', creditObserved ? creditEok(credit.credit_balance_eok) : msMissing('미수집'),
+                creditObserved ? `기준 ${finEsc(credit.as_of || '')} · 전일 ${msEok(credit.credit_balance_chg_eok)}` : '', null)}
+            ${msCard('고객예탁금', creditObserved ? creditEok(credit.investor_deposit_eok) : msMissing('미수집'),
+                creditObserved ? `전일 ${msEok(credit.investor_deposit_chg_eok)}` : '', null)}
+            ${msCard('신용 / 예탁금', creditObserved ? msPct(Number(credit.credit_over_deposit_pct) / 100) : msMissing('미수집'),
+                '시장 전체 잔고 비율', null)}
+        </div>
+        <p class="fin-note">${finEsc(credit.note_ko || '신용공여 자료 없음')}</p>
         <div class="co-struct-toggle">
             <button class="mm-view-btn ${isIndex ? 'on' : ''}" data-ms-ticker="">코스피 지수</button>
             ${Object.keys(tickers).slice(0, 8).map((tk) => `<button class="mm-view-btn ${MS_TICKER === tk ? 'on' : ''}"
@@ -6999,12 +7011,12 @@ const msLevelsTab = (D) => {
     </section>
 
     <section class="fin-block fin-block-wide">
-        <h2>종가일 수급</h2>
+        <h2>종가일 순매수</h2>
         <div class="co-struct-toggle">
             <button class="mm-view-btn ${MS_UNIVERSE === 'marcap' ? 'on' : ''}" data-ms-univ="marcap">시총 상위</button>
             <button class="mm-view-btn ${MS_UNIVERSE === 'high_vol' ? 'on' : ''}" data-ms-univ="high_vol">시총 100위 내 고변동</button>
         </div>
-        ${table.length ? msTable(['종목', '날짜', '종가', '개인(주)', '외국인(주)', '기관(주)', ''],
+        ${table.length ? msTable(['종목', '날짜', '종가', '개인 순매수(주)', '외국인 순매수(주)', '기관 순매수(주)', ''],
             table.map((r) => [
                 `${finEsc(r.label_ko)} <span class="co-hint">${finEsc(r.ticker)}</span>`,
                 finEsc(r.date || ''), msNum(r.close),
@@ -7239,12 +7251,24 @@ let MM_INDEX = null;
 let MM_COUNTRY = null;          // currently opened country payload
 let MM_TAB = 'liquidity';
 let MM_CHART = null;            // { indicatorId, window }
+let MM_QUALITY_PROMISE = null;  // U.S. official-document layer; loaded only for USA
 
 const mmFetch = async (iso3) => {
     const q = iso3 ? `?country=${encodeURIComponent(iso3)}` : '';
     const res = await fetch(`/api/macro-monitor${q}`);
     if (!res.ok) throw new Error(`매크로 데이터를 못 받았습니다 (${res.status})`);
     return res.json();
+};
+
+const mmQualityFetch = async () => {
+    if (!MM_QUALITY_PROMISE) {
+        MM_QUALITY_PROMISE = fetch('/public/data/us_macro_quality_v1.json', { cache: 'no-cache' })
+            .then((res) => {
+                if (!res.ok) throw new Error(`정책 문서 데이터를 못 받았습니다 (${res.status})`);
+                return res.json();
+            });
+    }
+    return MM_QUALITY_PROMISE;
 };
 
 const mmDelta = (v) => {
@@ -7259,6 +7283,30 @@ const mmFmt = (v, digits) => {
     const a = Math.abs(v);
     const dg = digits ?? (a >= 1000 ? 0 : (a >= 10 ? 1 : 2));
     return v.toLocaleString('ko-KR', { minimumFractionDigits: dg, maximumFractionDigits: dg });
+};
+
+// Values are not all refreshed on the same schedule.  Keep the state visible
+// instead of allowing a synthetic or official-document snapshot to read as a
+// live market quote.
+const MM_STATUS = {
+    live: { label: '실데이터', cls: 'live' },
+    live_latest: { label: '최근값 실데이터', cls: 'latest' },
+    official_snapshot: { label: '공식 문서 스냅샷', cls: 'official' },
+    delayed_official: { label: '공식 지연 데이터', cls: 'delayed' },
+    demo: { label: '데모·합성', cls: 'demo' },
+    unknown: { label: '상태 미확인', cls: 'unknown' },
+};
+
+const mmStatus = (status) => MM_STATUS[status] || MM_STATUS.unknown;
+const mmStatusBadge = (status) => {
+    const s = mmStatus(status);
+    return `<span class="mm-data-status mm-data-status-${s.cls}">${s.label}</span>`;
+};
+
+const mmTiming = (item) => {
+    if (item.observed_at) return `관측 ${String(item.observed_at).slice(0, 10)}`;
+    if (item.data_status === 'demo' && item.asof) return `합성 기준 ${String(item.asof).slice(0, 10)}`;
+    return item.asof ? `기준 ${String(item.asof).slice(0, 10)}` : '';
 };
 
 // Inline SVG rather than a charting library: the drawer opens and closes on
@@ -7402,6 +7450,23 @@ const mmCompareView = (ind) => {
         highlight: s.id === 'current',
     }));
     const table = c.table || [];
+    const qra = ind.qra_details || {};
+    const qraQuarter = (q) => {
+        if (!q) return '—';
+        const borrowing = Number.isFinite(q.net_borrowing_bn) ? `$${mmFmt(q.net_borrowing_bn, 0)}B` : '—';
+        const cash = Number.isFinite(q.end_cash_balance_bn) ? `기말현금 $${mmFmt(q.end_cash_balance_bn, 0)}B` : '기말현금 —';
+        return `${q.period || '—'} · 순발행 ${borrowing} · ${cash}`;
+    };
+    const stance = (v) => ({ maintain: '유지', increase: '확대', decrease: '축소', change_bias: '변경 검토' }[v] || '—');
+    const qraFacts = (qra.current_quarter || qra.next_quarter || qra.bill_stance || qra.coupon_stance) ? `
+        <div class="mm-qra-facts">
+            <p class="mm-view-title">공시 방침 분리</p>
+            <div class="mm-qra-fact"><span>이번 분기 순발행·기말현금</span><strong>${finEsc(qraQuarter(qra.current_quarter))}</strong></div>
+            <div class="mm-qra-fact"><span>다음 분기 순발행·기말현금</span><strong>${finEsc(qraQuarter(qra.next_quarter))}</strong></div>
+            <div class="mm-qra-fact"><span>T-Bill 입찰 방침</span><strong>${finEsc(stance(qra.bill_stance))}</strong></div>
+            <div class="mm-qra-fact"><span>이표채 발행 방침</span><strong>${finEsc(stance(qra.coupon_stance))}</strong></div>
+            <p class="fin-note">QRA의 기말현금 계획과 실제 TGA 잔고는 별도 값입니다. 이 화면은 둘을 자동 예측 관계로 해석하지 않습니다.</p>
+        </div>` : '';
     return `
         ${c.title_ko ? `<p class="mm-view-title">${finEsc(c.title_ko)}</p>` : ''}
         ${mmBars(rows, { unit: 'B' })}
@@ -7423,6 +7488,7 @@ const mmCompareView = (ind) => {
                 </tbody>
             </table>
         </div>` : ''}
+        ${qraFacts}
         ${c.note_ko ? `<p class="fin-note">${finEsc(c.note_ko)}</p>` : ''}`;
 };
 
@@ -7492,7 +7558,8 @@ const mmChartDrawer = () => {
 
     const meta = [
         ind.display != null ? String(ind.display) : null,
-        ind.asof ? `기준 ${ind.asof}` : null,
+        mmTiming(ind) || null,
+        ind.retrieved_at ? `수집 ${String(ind.retrieved_at).slice(0, 10)}` : null,
         ind.source ? (typeof ind.source === 'string' ? ind.source : ind.source.name) : null,
         ind.refresh_tier || null,
     ].filter(Boolean);
@@ -7504,7 +7571,7 @@ const mmChartDrawer = () => {
         <div class="mm-drawer-head">
             <div>
                 <h3>${finEsc(ind.label_ko)}</h3>
-                <p class="mm-drawer-sub">${meta.map((m) => finEsc(m)).join(' · ')}</p>
+                <p class="mm-drawer-sub">${mmStatusBadge(ind.data_status)} ${meta.map((m) => finEsc(m)).join(' · ')}</p>
             </div>
             <div class="mm-drawer-actions">
                 ${dual ? `<div class="pf-mode">
@@ -7581,6 +7648,76 @@ const mmOfficials = (off) => {
     </div>`;
 };
 
+const mmExcerpt = (value, max = 210) => {
+    const text = String(value || '').replace(/\s+/g, ' ').trim();
+    return text.length > max ? `${text.slice(0, max).trimEnd()}…` : text;
+};
+
+// This is an evidence panel, not an FOMC forecast panel. It lives inside the
+// existing U.S. overlay so the published vote and the Beige Book context are
+// read next to the ordinary macro indicators rather than as a second dashboard.
+const mmUsPolicyQuality = (quality) => {
+    if (!quality || quality.schema_version !== 'us-macro-quality-v1') return '';
+    const policy = quality.policy_committee || {};
+    const cmp = policy.comparison || {};
+    const roster = policy.current_roster || {};
+    const documents = ((quality.official_documents || {}).items || []);
+    const latestStatement = documents.find((row) => row.document_type === 'fomc_statement');
+    const beige = documents.find((row) => row.document_type === 'beige_book' && row.extracted_evidence);
+    const evidence = (beige || {}).extracted_evidence || {};
+    const dissent = cmp.current_dissents || {};
+    const direction = Object.entries(dissent.directions || {}).map(([key, value]) => {
+        const label = ({ tighter: '인상 선호', easier: '인하 선호', other_public_dissent: '기타 공개 반대' })[key] || key;
+        return `${label} ${value}명`;
+    }).join(' · ') || '공개 반대 없음';
+    const transitions = cmp.public_vote_transitions || [];
+    const sections = evidence.national_sections || [];
+    const districts = evidence.districts || [];
+    const sourceDate = beige ? String(beige.reference_period || '').slice(0, 10) : '';
+
+    if (!cmp.current_meeting && !beige && !roster.members) return '';
+    return `
+    <section class="mm-quality" aria-label="미국 정책 및 현장 진단">
+        <div class="mm-quality-head">
+            <div>
+                <p class="mm-quality-kicker">공식 문서 · 공개 표결</p>
+                <h3>정책·현장 진단</h3>
+            </div>
+            <span class="mm-quality-status">예측·성향 점수 아님</span>
+        </div>
+        <div class="mm-quality-grid">
+            <div class="mm-quality-card">
+                <span class="mm-quality-label">FOMC 공개 표결</span>
+                <strong>${finEsc(cmp.previous_meeting || '—')} → ${finEsc(cmp.current_meeting || '—')}</strong>
+                <p>반대 ${Number(dissent.count || 0)}명 · ${finEsc(direction)}</p>
+                ${transitions.length ? `<div class="mm-quality-names">${transitions.map((row) =>
+                    `<span>${finEsc(row.name)} · ${finEsc(({ tighter: '인상 선호', easier: '인하 선호' })[row.to_direction] || '공개 반대')}</span>`
+                ).join('')}</div>` : '<span class="mm-quality-muted">직전 회의 대비 공개 표결 변화 없음</span>'}
+                ${latestStatement ? `<a class="mm-quality-link" href="${finEsc(latestStatement.source_url)}" target="_blank" rel="noopener noreferrer">최근 결정문 보기 ↗</a>` : ''}
+            </div>
+            <div class="mm-quality-card">
+                <span class="mm-quality-label">투표권 구성</span>
+                <strong>${finEsc(String(roster.roster_year || ''))}년 ${Array.isArray(roster.members) ? roster.members.length : 0}명</strong>
+                <p>위원 변화는 공개 투표권 기준으로만 비교합니다.</p>
+                ${Array.isArray(roster.members) && roster.members.length ? `<details class="mm-quality-details">
+                    <summary>현재 투표권자 보기</summary>
+                    <p>${roster.members.map((member) => `${member.name} (${member.role})`).join(' · ')}</p>
+                </details>` : ''}
+            </div>
+            <div class="mm-quality-card mm-quality-beige">
+                <span class="mm-quality-label">Beige Book ${finEsc(sourceDate)}</span>
+                <strong>${districts.length ? `12개 District 현장 의견` : '공식 현장 보고서'}</strong>
+                ${sections.length ? `<details class="mm-quality-details">
+                    <summary>전국 요약 보기</summary>
+                    ${sections.map((section) => `<p><b>${finEsc(section.section)}</b> ${finEsc(mmExcerpt(section.text))}</p>`).join('')}
+                </details>` : '<p class="mm-quality-muted">발행본 수집 대기</p>'}
+                ${beige ? `<a class="mm-quality-link" href="${finEsc(beige.source_url)}" target="_blank" rel="noopener noreferrer">원문 보기 ↗</a>` : ''}
+            </div>
+        </div>
+        <p class="mm-quality-foot">공개 표결은 회의 당시의 행동 기록이고, Beige Book은 접촉자 의견입니다. 둘 다 다음 회의나 시장의 방향을 자동 예측하지 않습니다.</p>
+    </section>`;
+};
+
 const mmOverlay = () => {
     if (!MM_COUNTRY) return '';
     const c = MM_COUNTRY.country;
@@ -7591,14 +7728,18 @@ const mmOverlay = () => {
     const chips = (c.categories || {})[active] || [];
     const tabMeta = tabs.find((t) => t.id === active) || {};
     const lim = c.limitations || {};
+    const statusSummary = c.data_status_summary || {};
+    const hasDemo = Number(statusSummary.demo || 0) > 0;
 
     return `
     <div class="mm-overlay" role="dialog" aria-label="${finEsc(c.name_ko)} 매크로">
         <div class="mm-head">
             <div class="mm-title">
                 <h2>${finEsc(c.name_ko)}
-                    ${c.benchmark ? '<span class="mm-badge">벤치마크</span>' : ''}</h2>
+                    ${c.benchmark ? '<span class="mm-badge">벤치마크</span>' : ''}
+                    ${hasDemo ? mmStatusBadge('demo') : ''}</h2>
                 <p>${finEsc(c.name_en || '')} · 기준 ${finEsc(c.asof || '')} · 키트 <code>${finEsc(c.kit || '')}</code></p>
+                ${hasDemo ? '<p class="mm-data-warning">이 국가 팩에는 합성 시계열이 포함됩니다. 각 칩의 상태·관측일을 확인하세요.</p>' : ''}
                 ${mmOfficials(c.officials)}
             </div>
             <button class="mm-close" data-mm-close="1" aria-label="닫기">✕</button>
@@ -7612,6 +7753,8 @@ const mmOverlay = () => {
                     <span class="mm-headline-value">${finEsc(h.display ?? '—')}</span>
                 </button>`).join('')}
         </div>` : ''}
+
+        ${c.iso3 === 'USA' ? mmUsPolicyQuality(MM_COUNTRY.quality) : ''}
 
         <div class="mm-tabs" role="tablist">
             ${tabs.map((t) => {
@@ -7632,6 +7775,7 @@ const mmOverlay = () => {
                         ${mmDelta(ch.change_1m_pct)}<span class="mm-chip-win">1M</span>
                         ${mmDelta(ch.change_1y_pct)}<span class="mm-chip-win">1Y</span>
                     </span>
+                    <span class="mm-chip-meta">${mmStatusBadge(ch.data_status)}${mmTiming(ch) ? ` ${finEsc(mmTiming(ch))}` : ''}</span>
                     ${ch.note_ko ? `<span class="mm-chip-note">${finEsc(ch.note_ko)}</span>` : ''}
                 </button>`).join('')
               : '<p class="fin-note">이 항목은 이 국가에서 아직 제공되지 않습니다.</p>'}
@@ -7727,7 +7871,12 @@ const mmOpenCountry = async (iso3) => {
         host.classList.add('mm-open');
     }
     try {
-        MM_COUNTRY = await mmFetch(iso3);
+        const [countryPayload, quality] = await Promise.all([
+            mmFetch(iso3),
+            iso3 === 'USA' ? mmQualityFetch().catch(() => null) : Promise.resolve(null),
+        ]);
+        MM_COUNTRY = countryPayload;
+        if (quality) MM_COUNTRY.quality = quality;
         MM_TAB = (MM_COUNTRY.country.active_categories || ['liquidity'])[0];
         MM_CHART = null;
     } catch (err) {

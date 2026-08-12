@@ -9,6 +9,7 @@ from .cpi import assess_current_cpi_pathway
 from .documents import build_document_index
 from .employment import classify_employment_quality
 from .fomc import compare_fomc_meetings
+from .fed import build_fed_official_input
 from .gdp import classify_gdp_quality
 
 __all__ = [
@@ -19,4 +20,5 @@ __all__ = [
     "classify_employment_quality",
     "classify_gdp_quality",
     "compare_fomc_meetings",
+    "build_fed_official_input",
 ]

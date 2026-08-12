@@ -103,7 +103,15 @@ def _to_month_map(points: list[tuple[date, float]]) -> dict[str, float]:
     return out
 
 
-def _overlay_history(ind: dict[str, Any], dates: list[str], month_map: dict[str, float], source: str) -> bool:
+def _overlay_history(
+    ind: dict[str, Any],
+    dates: list[str],
+    month_map: dict[str, float],
+    source: str,
+    *,
+    observed_at: str,
+    retrieved_at: str,
+) -> bool:
     vals: list[float | None] = []
     for ds in dates:
         if ds in month_map:
@@ -142,11 +150,21 @@ def _overlay_history(ind: dict[str, Any], dates: list[str], month_map: dict[str,
             ind["history"][key]["ma5"] = ma
     ind["source"] = source
     ind["quality"] = "live"
-    ind["asof"] = dates[-1]
+    ind["asof"] = observed_at
+    ind["observed_at"] = observed_at
+    ind["retrieved_at"] = retrieved_at
+    ind["data_status"] = "live"
     return True
 
 
-def _pin_latest(ind: dict[str, Any], value: float, source: str, asof_s: str) -> None:
+def _pin_latest(
+    ind: dict[str, Any],
+    value: float,
+    source: str,
+    observed_at: str,
+    *,
+    retrieved_at: str,
+) -> None:
     for key in ("5y", "10y"):
         if key in ind.get("history", {}) and ind["history"][key].get("values"):
             ind["history"][key]["values"][-1] = round(value, 6)
@@ -156,7 +174,10 @@ def _pin_latest(ind: dict[str, Any], value: float, source: str, asof_s: str) -> 
         ind["display"] = format_value(value, fmt)
     ind["source"] = source
     ind["quality"] = "live_latest"
-    ind["asof"] = asof_s
+    ind["asof"] = observed_at
+    ind["observed_at"] = observed_at
+    ind["retrieved_at"] = retrieved_at
+    ind["data_status"] = "live_latest"
 
 
 def _sync_chips(pack: dict[str, Any], ind: dict[str, Any]) -> None:
@@ -166,12 +187,17 @@ def _sync_chips(pack: dict[str, Any], ind: dict[str, Any]) -> None:
                 ch["display"] = ind.get("display_chip") or ind["display"]
                 ch["value"] = ind["value"]
                 ch["asof"] = ind["asof"]
+                ch["observed_at"] = ind.get("observed_at")
+                ch["retrieved_at"] = ind.get("retrieved_at")
+                ch["source"] = ind.get("source")
+                ch["data_status"] = ind.get("data_status")
 
 
 def overlay_live(universe: dict[str, Any], *, asof: date | None = None) -> dict[str, Any]:
     asof = asof or date.today()
     dates = month_ends(asof, 120)
     stats = {"ok": [], "fail": [], "skip": []}
+    retrieved_at = datetime.utcnow().replace(microsecond=0).isoformat() + "Z"
     by_country = {c["iso3"]: c for c in universe.get("countries") or []}
 
     # Yahoo histories
@@ -187,7 +213,15 @@ def overlay_live(universe: dict[str, Any], *, asof: date | None = None) -> dict[
         print(f"  yahoo {iso3}:{sid} {symbol}", flush=True)
         try:
             pts = fetch_yahoo_monthly(symbol)
-            if _overlay_history(ind, dates, _to_month_map(pts), f"yahoo:{symbol}"):
+            observed_at = pts[-1][0].isoformat() if pts else ""
+            if _overlay_history(
+                ind,
+                dates,
+                _to_month_map(pts),
+                f"yahoo:{symbol}",
+                observed_at=observed_at,
+                retrieved_at=retrieved_at,
+            ):
                 stats["ok"].append(f"{iso3}:{sid}")
                 _sync_chips(pack, ind)
             else:
@@ -209,7 +243,13 @@ def overlay_live(universe: dict[str, Any], *, asof: date | None = None) -> dict[
             try:
                 d, raw = fetch_fred_worker_latest(meta["id"])
                 val = raw * float(meta.get("scale") or 1.0)
-                _pin_latest(by_id[sid], val, f"fred_worker:{meta['id']}", dates[-1])
+                _pin_latest(
+                    by_id[sid],
+                    val,
+                    f"fred_worker:{meta['id']}",
+                    d.isoformat(),
+                    retrieved_at=retrieved_at,
+                )
                 # If not already live history, keep fixture path but mark latest
                 if by_id[sid].get("quality") != "live":
                     by_id[sid]["quality"] = "live_latest"
@@ -229,14 +269,34 @@ def overlay_live(universe: dict[str, Any], *, asof: date | None = None) -> dict[
             ):
                 net = float(fed) - float(tga) / 1000.0 - float(rrp) / 1000.0
                 if "net_liquidity" in by_id:
-                    _pin_latest(by_id["net_liquidity"], net, "derived:live_latest", dates[-1])
+                    observed_at = min(
+                        str(by_id[k].get("observed_at") or by_id[k].get("asof"))
+                        for k in ("fed_total_assets", "tga", "on_rrp")
+                    )
+                    _pin_latest(
+                        by_id["net_liquidity"],
+                        net,
+                        "derived:live_latest",
+                        observed_at,
+                        retrieved_at=retrieved_at,
+                    )
                     _sync_chips(usa, by_id["net_liquidity"])
                     stats["ok"].append("USA:net_liquidity:latest")
 
         if all(k in by_id and by_id[k].get("quality", "").startswith("live") for k in ("bond_10y", "bond_2y")):
             if "spread_10y2y" in by_id:
                 sp = (float(by_id["bond_10y"]["value"]) - float(by_id["bond_2y"]["value"])) * 100.0
-                _pin_latest(by_id["spread_10y2y"], sp, "derived:live", dates[-1])
+                observed_at = min(
+                    str(by_id[k].get("observed_at") or by_id[k].get("asof"))
+                    for k in ("bond_10y", "bond_2y")
+                )
+                _pin_latest(
+                    by_id["spread_10y2y"],
+                    sp,
+                    "derived:live",
+                    observed_at,
+                    retrieved_at=retrieved_at,
+                )
                 _sync_chips(usa, by_id["spread_10y2y"])
                 stats["ok"].append("USA:spread_10y2y")
 
@@ -252,7 +312,13 @@ def overlay_live(universe: dict[str, Any], *, asof: date | None = None) -> dict[
                     continue
                 _cycle, val = bok[name]
                 # Prefer yahoo history for kospi/usdkrw; still pin BOK latest
-                _pin_latest(by_id[sid], val, "bok:ecos_keystat", dates[-1])
+                _pin_latest(
+                    by_id[sid],
+                    val,
+                    "bok:ecos_keystat",
+                    _cycle,
+                    retrieved_at=retrieved_at,
+                )
                 if by_id[sid].get("quality") == "live":
                     by_id[sid]["quality"] = "live"
                 _sync_chips(pack, by_id[sid])
@@ -281,7 +347,10 @@ def overlay_live(universe: dict[str, Any], *, asof: date | None = None) -> dict[
             ind["source"] = hit["source"]
             ind["quality"] = hit["quality"]
             ind["note_ko"] = hit["note_ko"]
-            ind["asof"] = dates[-1]
+            ind["asof"] = retrieved_at[:10]
+            ind["observed_at"] = None
+            ind["retrieved_at"] = retrieved_at
+            ind["data_status"] = "live_latest"
             # keep a numeric placeholder for schema; not used for display
             if ind.get("value") is None:
                 ind["value"] = 0.0
@@ -311,10 +380,16 @@ def overlay_live(universe: dict[str, Any], *, asof: date | None = None) -> dict[
                 if hit.get("components") and len(hit["components"]) >= 6:
                     ind["components"] = hit["components"]
                 ind["chart_type"] = "bar"
-                ind["quality"] = "live"
+                # Treasury documents are official snapshots.  Do not call them
+                # live market data simply because the local QRA file refreshed.
+                ind["quality"] = "engine"
                 ind["source"] = hit.get("source") or "qra_engine_v1"
                 ind["note_ko"] = hit.get("summary_ko") or ind.get("note_ko")
                 ind["asof"] = (hit.get("asof") or "")[:10] or dates[-1]
+                ind["observed_at"] = None
+                ind["retrieved_at"] = hit.get("asof") or retrieved_at
+                ind["data_status"] = "official_snapshot"
+                ind["qra_details"] = hit.get("details") or {}
                 if hit.get("compare"):
                     ind["compare"] = hit["compare"]
                     ind["ui"] = {
@@ -362,6 +437,13 @@ def overlay_live(universe: dict[str, Any], *, asof: date | None = None) -> dict[
             stats["skip"].append("USA:qra_issuance_no_json")
     except Exception as exc:  # noqa: BLE001
         stats["fail"].append(f"QRA:{exc}")
+
+    for pack in universe.get("countries") or []:
+        summary: dict[str, int] = {}
+        for ind in pack.get("indicators") or []:
+            status = str(ind.get("data_status") or "unknown")
+            summary[status] = summary.get(status, 0) + 1
+        pack["data_status_summary"] = summary
 
     live_n = len(stats["ok"])
     universe["source"] = {

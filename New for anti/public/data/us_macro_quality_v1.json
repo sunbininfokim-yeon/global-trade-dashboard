@@ -1,18 +1,145 @@
 {
   "schema_version": "us-macro-quality-v1",
-  "generated_at": "2026-08-12T05:26:53Z",
+  "generated_at": "2026-08-12T09:22:08Z",
   "source": {
     "kind": "point_in_time_official_release_extracts",
-    "quality": "partial_or_empty"
+    "quality": "observed"
   },
   "contract_audit": {
-    "release_count": 0,
+    "release_count": 36,
     "invalid_release_count": 0,
     "invalid_releases": []
   },
   "policy_committee": {
-    "comparison": null,
-    "meeting_count": 0
+    "comparison": {
+      "previous_meeting": "2026-06-17",
+      "current_meeting": "2026-07-29",
+      "previous_dissents": {
+        "count": 0,
+        "directions": {}
+      },
+      "current_dissents": {
+        "count": 3,
+        "directions": {
+          "tighter": 3
+        }
+      },
+      "roster_changes": {
+        "new_voters": [],
+        "lost_vote": []
+      },
+      "public_vote_transitions": [
+        {
+          "person_id": "beth-m-hammack",
+          "name": "Beth M. Hammack",
+          "from_vote": "for",
+          "to_vote": "against",
+          "from_direction": "none",
+          "to_direction": "tighter",
+          "evidence": "official_statement"
+        },
+        {
+          "person_id": "lorie-k-logan",
+          "name": "Lorie K. Logan",
+          "from_vote": "for",
+          "to_vote": "against",
+          "from_direction": "none",
+          "to_direction": "tighter",
+          "evidence": "official_statement"
+        },
+        {
+          "person_id": "neel-kashkari",
+          "name": "Neel Kashkari",
+          "from_vote": "for",
+          "to_vote": "against",
+          "from_direction": "none",
+          "to_direction": "tighter",
+          "evidence": "official_statement"
+        }
+      ],
+      "interpretation": "public_votes_only_no_latent_preference_inference"
+    },
+    "meeting_count": 13,
+    "current_roster": {
+      "roster_year": 2026,
+      "source_url": "https://www.federalreserve.gov/monetarypolicy/fomc.htm",
+      "members": [
+        {
+          "person_id": "kevin-warsh",
+          "name": "Kevin Warsh",
+          "role": "Board of Governors, Chairman"
+        },
+        {
+          "person_id": "john-c-williams",
+          "name": "John C. Williams",
+          "role": "New York, Vice Chair"
+        },
+        {
+          "person_id": "michael-s-barr",
+          "name": "Michael S. Barr",
+          "role": "Board of Governors"
+        },
+        {
+          "person_id": "michelle-w-bowman",
+          "name": "Michelle W. Bowman",
+          "role": "Board of Governors"
+        },
+        {
+          "person_id": "lisa-d-cook",
+          "name": "Lisa D. Cook",
+          "role": "Board of Governors"
+        },
+        {
+          "person_id": "beth-m-hammack",
+          "name": "Beth M. Hammack",
+          "role": "Cleveland"
+        },
+        {
+          "person_id": "philip-n-jefferson",
+          "name": "Philip N. Jefferson",
+          "role": "Board of Governors"
+        },
+        {
+          "person_id": "neel-kashkari",
+          "name": "Neel Kashkari",
+          "role": "Minneapolis"
+        },
+        {
+          "person_id": "lorie-k-logan",
+          "name": "Lorie K. Logan",
+          "role": "Dallas"
+        },
+        {
+          "person_id": "anna-paulson",
+          "name": "Anna Paulson",
+          "role": "Philadelphia"
+        },
+        {
+          "person_id": "jerome-h-powell",
+          "name": "Jerome H. Powell",
+          "role": "Board of Governors"
+        },
+        {
+          "person_id": "christopher-j-waller",
+          "name": "Christopher J. Waller",
+          "role": "Board of Governors"
+        }
+      ],
+      "policy": "official_current_voting_members_only"
+    },
+    "collector": {
+      "source_urls": [
+        "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
+        "https://www.federalreserve.gov/monetarypolicy/fomc.htm",
+        "https://www.federalreserve.gov/monetarypolicy/publications/beige-book-default.htm"
+      ],
+      "years": [
+        2025,
+        2026
+      ],
+      "errors": [],
+      "policy": "official_facts_only_no_preference_or_sentiment_score"
+    }
   },
   "employment_quality": null,
   "gdp_quality": null,
@@ -76,7 +203,550 @@
     "lag_evidence": []
   },
   "official_documents": {
-    "items": [],
+    "items": [
+      {
+        "source_id": "fed_fomc_statement",
+        "release_id": "fomc-statement-2026-07-29",
+        "published_at": "2026-07-29T18:00:00Z",
+        "reference_period": "2026-07-29",
+        "vintage": "first",
+        "source_url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260729a.htm",
+        "quality": "parsed",
+        "retrieved_at": "2026-08-12T09:22:02Z",
+        "document_type": "fomc_statement",
+        "artifact_sha256": "7fb22babde9a08231b2c23f22b3771ea94b7ad3c6f2a02133279758bce3e24a6",
+        "extracted_evidence": {
+          "decision_text": "maintain the target range for the federal funds rate at 3-1/2 to 3-3/4 percent, in support of the Federal Reserve's dual mandate",
+          "vote_count": 12,
+          "dissent_count": 3
+        }
+      },
+      {
+        "source_id": "fed_beige_book",
+        "release_id": "beige-book-2026-07-15",
+        "published_at": "2026-07-15T18:00:00Z",
+        "reference_period": "2026-07-15",
+        "vintage": "first",
+        "source_url": "https://www.federalreserve.gov/monetarypolicy/beigebook202607-summary.htm",
+        "quality": "parsed",
+        "retrieved_at": "2026-08-12T09:22:02Z",
+        "document_type": "beige_book",
+        "artifact_sha256": "9cee6cff50a28eefc3c42cb335e9e42acb833ca426acbe7dc0769391090b5fa4",
+        "extracted_evidence": {
+          "source_url": "https://www.federalreserve.gov/monetarypolicy/beigebook202607-summary.htm",
+          "national_sections": [
+            {
+              "section": "Overall Economic Activity",
+              "text": "Economic activity increased at a slight to moderate pace in eleven of twelve Federal Reserve Districts in late May and June, while one District reported no change. The pace of growth was quite close to that of last period, when activity expanded in ten Districts, was flat in one, and down in one. Consumer spending edged up as higher prices, particularly for fuel, dampened sales in other categories. Several Districts noted declines in spending on discretionary items or trading down to more affordable varieties. Tourism was up, with some Districts receiving a boost from World Cup visitors. Auto dealers reported little change in sales, but spending on repairs grew as consumers held onto vehicles for longer. Agricultural conditions deteriorated due to lower commodity prices, higher input costs, and tighter credit. In the energy sector, oil and gas drilling increased. Manufacturing production grew modestly to moderately in most Districts, led by stronger orders from the data center, machinery, and defense sectors. Manufacturers in several Districts said supply chain issues were more common. Construction and real estate activity increased slightly overall, with several Districts noting growth in data center building. Financial conditions were stable on net, and commercial and consumer loan volumes were both up modestly. Commercial loan quality was stable, but consumer loan quality ticked down. Transportation activity increased modestly amidst ongoing supply chain changes related to higher tariffs and the conflict in the Middle East. Overall, activity in other service industries also was up modestly, with Districts highlighting growth in health care and professional services. Social service providers were adjusting to funding declines while demand for basic supports—housing, food, health care—remained high. Contacts generally expected the economy to continue to expand in the coming months, but several Districts noted elevated uncertainty in the outlook for fuel costs."
+            },
+            {
+              "section": "Labor Markets",
+              "text": "Employment rose on balance, with five Districts showing modest, moderate, or solid gains in employment, and with seven Districts experiencing little to no change. In the previous report, only one District had modest, moderate, or solid employment gains. Employment rose in a variety of industries, including manufacturing, construction, and retail. Skilled workers were difficult to find in a range of fields, notably technicians and tradespeople. Though there were reports of lower employment in a couple of Districts, the declines were small. Wage growth was modest to moderate in most Districts, though two saw only slight wage increases. Some wage increases were attributed to increased competition for skilled workers. A few Districts noted that firms had increased their usage of AI, either in the hiring and screening of potential employees or to boost worker productivity."
+            },
+            {
+              "section": "Prices",
+              "text": "Prices increased moderately overall, with nine Districts reporting moderate growth, two robust growth, and one slight growth; compared with the last reporting period, price growth was the same or slower in all Districts. Non-labor input costs increased for a variety of industries—including services, construction, and manufacturing—and reflected in part higher costs for energy, transportation, and raw materials. Some contacts tied these cost increases to the conflict in the Middle East; others mentioned tariffs. Consumer prices continued to rise, and a few Districts said contacts saw greater price sensitivity among their customers. A couple of Districts reported that selling prices grew less than input costs over the period, crimping margins. Expectations for price growth over the coming months varied across Districts, with contacts in some expecting inflation to continue at its current pace, while contacts in others expected inflation to slow, in part due to falling fuel prices."
+            }
+          ],
+          "districts": [
+            {
+              "name": "Federal Reserve Bank of Boston",
+              "source_url": "https://www.federalreserve.gov/monetarypolicy/beigebook202607-boston.htm"
+            },
+            {
+              "name": "Federal Reserve Bank of New York",
+              "source_url": "https://www.federalreserve.gov/monetarypolicy/beigebook202607-new-york.htm"
+            },
+            {
+              "name": "Federal Reserve Bank of Philadelphia",
+              "source_url": "https://www.federalreserve.gov/monetarypolicy/beigebook202607-philadelphia.htm"
+            },
+            {
+              "name": "Federal Reserve Bank of Cleveland",
+              "source_url": "https://www.federalreserve.gov/monetarypolicy/beigebook202607-cleveland.htm"
+            },
+            {
+              "name": "Federal Reserve Bank of Richmond",
+              "source_url": "https://www.federalreserve.gov/monetarypolicy/beigebook202607-richmond.htm"
+            },
+            {
+              "name": "Federal Reserve Bank of Atlanta",
+              "source_url": "https://www.federalreserve.gov/monetarypolicy/beigebook202607-atlanta.htm"
+            },
+            {
+              "name": "Federal Reserve Bank of Chicago",
+              "source_url": "https://www.federalreserve.gov/monetarypolicy/beigebook202607-chicago.htm"
+            },
+            {
+              "name": "Federal Reserve Bank of St. Louis",
+              "source_url": "https://www.federalreserve.gov/monetarypolicy/beigebook202607-st-louis.htm"
+            },
+            {
+              "name": "Federal Reserve Bank of Minneapolis",
+              "source_url": "https://www.federalreserve.gov/monetarypolicy/beigebook202607-minneapolis.htm"
+            },
+            {
+              "name": "Federal Reserve Bank of Kansas City",
+              "source_url": "https://www.federalreserve.gov/monetarypolicy/beigebook202607-kansas-city.htm"
+            },
+            {
+              "name": "Federal Reserve Bank of Dallas",
+              "source_url": "https://www.federalreserve.gov/monetarypolicy/beigebook202607-dallas.htm"
+            },
+            {
+              "name": "Federal Reserve Bank of San Francisco",
+              "source_url": "https://www.federalreserve.gov/monetarypolicy/beigebook202607-san-francisco.htm"
+            }
+          ]
+        }
+      },
+      {
+        "source_id": "fed_fomc_statement",
+        "release_id": "fomc-statement-2026-06-17",
+        "published_at": "2026-06-17T18:00:00Z",
+        "reference_period": "2026-06-17",
+        "vintage": "first",
+        "source_url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260617a.htm",
+        "quality": "parsed",
+        "retrieved_at": "2026-08-12T09:22:02Z",
+        "document_type": "fomc_statement",
+        "artifact_sha256": "7428773cd6d9dc1402fcd1a540584e3031580d61682b6529b3a978324f518a36",
+        "extracted_evidence": {
+          "decision_text": "maintain the target range for the federal funds rate at 3-1/2 to 3-3/4 percent, in support of the Federal Reserve's dual mandate",
+          "vote_count": 12,
+          "dissent_count": 0
+        }
+      },
+      {
+        "source_id": "fed_fomc_minutes",
+        "release_id": "fomc-minutes-2026-06-17",
+        "published_at": "2026-06-17T18:00:00Z",
+        "reference_period": "2026-06-17",
+        "vintage": "first",
+        "source_url": "https://www.federalreserve.gov/monetarypolicy/fomcminutes20260617.htm",
+        "quality": "parsed",
+        "retrieved_at": "2026-08-12T09:22:02Z",
+        "document_type": "fomc_minutes"
+      },
+      {
+        "source_id": "fed_sep",
+        "release_id": "fomc-sep-2026-06-17",
+        "published_at": "2026-06-17T18:00:00Z",
+        "reference_period": "2026-06-17",
+        "vintage": "first",
+        "source_url": "https://www.federalreserve.gov/monetarypolicy/fomcprojtabl20260617.htm",
+        "quality": "parsed",
+        "retrieved_at": "2026-08-12T09:22:02Z",
+        "document_type": "sep"
+      },
+      {
+        "source_id": "fed_beige_book",
+        "release_id": "beige-book-2026-06-03",
+        "published_at": "2026-06-03T18:00:00Z",
+        "reference_period": "2026-06-03",
+        "vintage": "first",
+        "source_url": "https://www.federalreserve.gov/monetarypolicy/beigebook202605-summary.htm",
+        "quality": "parsed",
+        "retrieved_at": "2026-08-12T09:22:02Z",
+        "document_type": "beige_book"
+      },
+      {
+        "source_id": "fed_fomc_statement",
+        "release_id": "fomc-statement-2026-04-29",
+        "published_at": "2026-04-29T18:00:00Z",
+        "reference_period": "2026-04-29",
+        "vintage": "first",
+        "source_url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260429a.htm",
+        "quality": "parsed",
+        "retrieved_at": "2026-08-12T09:22:02Z",
+        "document_type": "fomc_statement",
+        "artifact_sha256": "b6641a411b478c7322bd64e1b315e29a4b555571600b307110d3e639346c035c",
+        "extracted_evidence": {
+          "decision_text": "maintain the target range for the federal funds rate at 3‑1/2 to 3‑3/4 percent",
+          "vote_count": 12,
+          "dissent_count": 4
+        }
+      },
+      {
+        "source_id": "fed_fomc_minutes",
+        "release_id": "fomc-minutes-2026-04-29",
+        "published_at": "2026-04-29T18:00:00Z",
+        "reference_period": "2026-04-29",
+        "vintage": "first",
+        "source_url": "https://www.federalreserve.gov/monetarypolicy/fomcminutes20260429.htm",
+        "quality": "parsed",
+        "retrieved_at": "2026-08-12T09:22:02Z",
+        "document_type": "fomc_minutes"
+      },
+      {
+        "source_id": "fed_beige_book",
+        "release_id": "beige-book-2026-04-15",
+        "published_at": "2026-04-15T18:00:00Z",
+        "reference_period": "2026-04-15",
+        "vintage": "first",
+        "source_url": "https://www.federalreserve.gov/monetarypolicy/beigebook202604-summary.htm",
+        "quality": "parsed",
+        "retrieved_at": "2026-08-12T09:22:02Z",
+        "document_type": "beige_book"
+      },
+      {
+        "source_id": "fed_fomc_statement",
+        "release_id": "fomc-statement-2026-03-18",
+        "published_at": "2026-03-18T18:00:00Z",
+        "reference_period": "2026-03-18",
+        "vintage": "first",
+        "source_url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260318a.htm",
+        "quality": "parsed",
+        "retrieved_at": "2026-08-12T09:22:02Z",
+        "document_type": "fomc_statement",
+        "artifact_sha256": "38ab2d9b8210b650e7fd15d63de4fb2b3fb1dcfba7b1ca9e8ab104c295e05eb9",
+        "extracted_evidence": {
+          "decision_text": "maintain the target range for the federal funds rate at 3‑1/2 to 3‑3/4 percent",
+          "vote_count": 12,
+          "dissent_count": 1
+        }
+      },
+      {
+        "source_id": "fed_fomc_minutes",
+        "release_id": "fomc-minutes-2026-03-18",
+        "published_at": "2026-03-18T18:00:00Z",
+        "reference_period": "2026-03-18",
+        "vintage": "first",
+        "source_url": "https://www.federalreserve.gov/monetarypolicy/fomcminutes20260318.htm",
+        "quality": "parsed",
+        "retrieved_at": "2026-08-12T09:22:02Z",
+        "document_type": "fomc_minutes"
+      },
+      {
+        "source_id": "fed_sep",
+        "release_id": "fomc-sep-2026-03-18",
+        "published_at": "2026-03-18T18:00:00Z",
+        "reference_period": "2026-03-18",
+        "vintage": "first",
+        "source_url": "https://www.federalreserve.gov/monetarypolicy/fomcprojtabl20260318.htm",
+        "quality": "parsed",
+        "retrieved_at": "2026-08-12T09:22:02Z",
+        "document_type": "sep"
+      },
+      {
+        "source_id": "fed_beige_book",
+        "release_id": "beige-book-2026-03-04",
+        "published_at": "2026-03-04T19:00:00Z",
+        "reference_period": "2026-03-04",
+        "vintage": "first",
+        "source_url": "https://www.federalreserve.gov/monetarypolicy/beigebook202602-summary.htm",
+        "quality": "parsed",
+        "retrieved_at": "2026-08-12T09:22:02Z",
+        "document_type": "beige_book"
+      },
+      {
+        "source_id": "fed_fomc_statement",
+        "release_id": "fomc-statement-2026-01-28",
+        "published_at": "2026-01-28T19:00:00Z",
+        "reference_period": "2026-01-28",
+        "vintage": "first",
+        "source_url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260128a.htm",
+        "quality": "parsed",
+        "retrieved_at": "2026-08-12T09:22:02Z",
+        "document_type": "fomc_statement",
+        "artifact_sha256": "19d99457efa512ee4cf000f9ebb52a82ac9a694fdc01744bc1732358abf1b484",
+        "extracted_evidence": {
+          "decision_text": "maintain the target range for the federal funds rate at 3‑1/2 to 3‑3/4 percent",
+          "vote_count": 12,
+          "dissent_count": 2
+        }
+      },
+      {
+        "source_id": "fed_fomc_minutes",
+        "release_id": "fomc-minutes-2026-01-28",
+        "published_at": "2026-01-28T19:00:00Z",
+        "reference_period": "2026-01-28",
+        "vintage": "first",
+        "source_url": "https://www.federalreserve.gov/monetarypolicy/fomcminutes20260128.htm",
+        "quality": "parsed",
+        "retrieved_at": "2026-08-12T09:22:02Z",
+        "document_type": "fomc_minutes"
+      },
+      {
+        "source_id": "fed_beige_book",
+        "release_id": "beige-book-2026-01-14",
+        "published_at": "2026-01-14T19:00:00Z",
+        "reference_period": "2026-01-14",
+        "vintage": "first",
+        "source_url": "https://www.federalreserve.gov/monetarypolicy/beigebook202601-summary.htm",
+        "quality": "parsed",
+        "retrieved_at": "2026-08-12T09:22:02Z",
+        "document_type": "beige_book"
+      },
+      {
+        "source_id": "fed_fomc_statement",
+        "release_id": "fomc-statement-2025-12-10",
+        "published_at": "2025-12-10T19:00:00Z",
+        "reference_period": "2025-12-10",
+        "vintage": "first",
+        "source_url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20251210a.htm",
+        "quality": "parsed",
+        "retrieved_at": "2026-08-12T09:22:02Z",
+        "document_type": "fomc_statement",
+        "artifact_sha256": "e279bf634d4ad5062bd9c175e7ab01dd71082c426d507a0e7315a4537ff24747",
+        "extracted_evidence": {
+          "decision_text": "lower the target range for the federal funds rate by 1/4 percentage point to 3-1/2 to 3‑3/4 percent",
+          "vote_count": 12,
+          "dissent_count": 3
+        }
+      },
+      {
+        "source_id": "fed_fomc_minutes",
+        "release_id": "fomc-minutes-2025-12-10",
+        "published_at": "2025-12-10T19:00:00Z",
+        "reference_period": "2025-12-10",
+        "vintage": "first",
+        "source_url": "https://www.federalreserve.gov/monetarypolicy/fomcminutes20251210.htm",
+        "quality": "parsed",
+        "retrieved_at": "2026-08-12T09:22:02Z",
+        "document_type": "fomc_minutes"
+      },
+      {
+        "source_id": "fed_sep",
+        "release_id": "fomc-sep-2025-12-10",
+        "published_at": "2025-12-10T19:00:00Z",
+        "reference_period": "2025-12-10",
+        "vintage": "first",
+        "source_url": "https://www.federalreserve.gov/monetarypolicy/fomcprojtabl20251210.htm",
+        "quality": "parsed",
+        "retrieved_at": "2026-08-12T09:22:02Z",
+        "document_type": "sep"
+      },
+      {
+        "source_id": "fed_fomc_statement",
+        "release_id": "fomc-statement-2025-10-29",
+        "published_at": "2025-10-29T18:00:00Z",
+        "reference_period": "2025-10-29",
+        "vintage": "first",
+        "source_url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20251029a.htm",
+        "quality": "parsed",
+        "retrieved_at": "2026-08-12T09:22:02Z",
+        "document_type": "fomc_statement",
+        "artifact_sha256": "066bd19a9262822374d855fc12c4ae5b979d0d44d353f52329819a41823f0be6",
+        "extracted_evidence": {
+          "decision_text": "lower the target range for the federal funds rate by 1/4 percentage point to 3-3/4 to 4 percent",
+          "vote_count": 11,
+          "dissent_count": 1
+        }
+      },
+      {
+        "source_id": "fed_fomc_minutes",
+        "release_id": "fomc-minutes-2025-10-29",
+        "published_at": "2025-10-29T18:00:00Z",
+        "reference_period": "2025-10-29",
+        "vintage": "first",
+        "source_url": "https://www.federalreserve.gov/monetarypolicy/fomcminutes20251029.htm",
+        "quality": "parsed",
+        "retrieved_at": "2026-08-12T09:22:02Z",
+        "document_type": "fomc_minutes"
+      },
+      {
+        "source_id": "fed_fomc_statement",
+        "release_id": "fomc-statement-2025-09-17",
+        "published_at": "2025-09-17T18:00:00Z",
+        "reference_period": "2025-09-17",
+        "vintage": "first",
+        "source_url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20250917a.htm",
+        "quality": "parsed",
+        "retrieved_at": "2026-08-12T09:22:02Z",
+        "document_type": "fomc_statement",
+        "artifact_sha256": "c98ba34b4b7ae516d09980e198de7e96d4515c2f590e644277076b3836b4713d",
+        "extracted_evidence": {
+          "decision_text": "lower the target range for the federal funds rate by 1/4 percentage point to 4 to 4‑1/4 percent",
+          "vote_count": 12,
+          "dissent_count": 1
+        }
+      },
+      {
+        "source_id": "fed_fomc_minutes",
+        "release_id": "fomc-minutes-2025-09-17",
+        "published_at": "2025-09-17T18:00:00Z",
+        "reference_period": "2025-09-17",
+        "vintage": "first",
+        "source_url": "https://www.federalreserve.gov/monetarypolicy/fomcminutes20250917.htm",
+        "quality": "parsed",
+        "retrieved_at": "2026-08-12T09:22:02Z",
+        "document_type": "fomc_minutes"
+      },
+      {
+        "source_id": "fed_sep",
+        "release_id": "fomc-sep-2025-09-17",
+        "published_at": "2025-09-17T18:00:00Z",
+        "reference_period": "2025-09-17",
+        "vintage": "first",
+        "source_url": "https://www.federalreserve.gov/monetarypolicy/fomcprojtabl20250917.htm",
+        "quality": "parsed",
+        "retrieved_at": "2026-08-12T09:22:02Z",
+        "document_type": "sep"
+      },
+      {
+        "source_id": "fed_fomc_statement",
+        "release_id": "fomc-statement-2025-07-30",
+        "published_at": "2025-07-30T18:00:00Z",
+        "reference_period": "2025-07-30",
+        "vintage": "first",
+        "source_url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20250730a.htm",
+        "quality": "parsed",
+        "retrieved_at": "2026-08-12T09:22:02Z",
+        "document_type": "fomc_statement",
+        "artifact_sha256": "57b54e007dd850947ccb79eaa26caf76d6f0e2fd8d4c46d2d4ea0955c2178e70",
+        "extracted_evidence": {
+          "decision_text": "maintain the target range for the federal funds rate at 4-1/4 to 4-1/2 percent",
+          "vote_count": 11,
+          "dissent_count": 2
+        }
+      },
+      {
+        "source_id": "fed_fomc_minutes",
+        "release_id": "fomc-minutes-2025-07-30",
+        "published_at": "2025-07-30T18:00:00Z",
+        "reference_period": "2025-07-30",
+        "vintage": "first",
+        "source_url": "https://www.federalreserve.gov/monetarypolicy/fomcminutes20250730.htm",
+        "quality": "parsed",
+        "retrieved_at": "2026-08-12T09:22:02Z",
+        "document_type": "fomc_minutes"
+      },
+      {
+        "source_id": "fed_fomc_statement",
+        "release_id": "fomc-statement-2025-06-18",
+        "published_at": "2025-06-18T18:00:00Z",
+        "reference_period": "2025-06-18",
+        "vintage": "first",
+        "source_url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20250618a.htm",
+        "quality": "parsed",
+        "retrieved_at": "2026-08-12T09:22:02Z",
+        "document_type": "fomc_statement",
+        "artifact_sha256": "fd2de626e131d17a0b41f6f2e0e6ac42b61ddebbed27eb7b6994ce5d236ed2f2",
+        "extracted_evidence": {
+          "decision_text": "maintain the target range for the federal funds rate at 4-1/4 to 4-1/2 percent",
+          "vote_count": 12,
+          "dissent_count": 0
+        }
+      },
+      {
+        "source_id": "fed_fomc_minutes",
+        "release_id": "fomc-minutes-2025-06-18",
+        "published_at": "2025-06-18T18:00:00Z",
+        "reference_period": "2025-06-18",
+        "vintage": "first",
+        "source_url": "https://www.federalreserve.gov/monetarypolicy/fomcminutes20250618.htm",
+        "quality": "parsed",
+        "retrieved_at": "2026-08-12T09:22:02Z",
+        "document_type": "fomc_minutes"
+      },
+      {
+        "source_id": "fed_sep",
+        "release_id": "fomc-sep-2025-06-18",
+        "published_at": "2025-06-18T18:00:00Z",
+        "reference_period": "2025-06-18",
+        "vintage": "first",
+        "source_url": "https://www.federalreserve.gov/monetarypolicy/fomcprojtabl20250618.htm",
+        "quality": "parsed",
+        "retrieved_at": "2026-08-12T09:22:02Z",
+        "document_type": "sep"
+      },
+      {
+        "source_id": "fed_fomc_statement",
+        "release_id": "fomc-statement-2025-05-07",
+        "published_at": "2025-05-07T18:00:00Z",
+        "reference_period": "2025-05-07",
+        "vintage": "first",
+        "source_url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20250507a.htm",
+        "quality": "parsed",
+        "retrieved_at": "2026-08-12T09:22:02Z",
+        "document_type": "fomc_statement",
+        "artifact_sha256": "5bc20823ebca5a46932fae3df587a4f4dd59acdc5815dee880115141597f71d1",
+        "extracted_evidence": {
+          "decision_text": "maintain the target range for the federal funds rate at 4-1/4 to 4-1/2 percent",
+          "vote_count": 12,
+          "dissent_count": 0
+        }
+      },
+      {
+        "source_id": "fed_fomc_minutes",
+        "release_id": "fomc-minutes-2025-05-07",
+        "published_at": "2025-05-07T18:00:00Z",
+        "reference_period": "2025-05-07",
+        "vintage": "first",
+        "source_url": "https://www.federalreserve.gov/monetarypolicy/fomcminutes20250507.htm",
+        "quality": "parsed",
+        "retrieved_at": "2026-08-12T09:22:02Z",
+        "document_type": "fomc_minutes"
+      },
+      {
+        "source_id": "fed_fomc_statement",
+        "release_id": "fomc-statement-2025-03-19",
+        "published_at": "2025-03-19T18:00:00Z",
+        "reference_period": "2025-03-19",
+        "vintage": "first",
+        "source_url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20250319a.htm",
+        "quality": "parsed",
+        "retrieved_at": "2026-08-12T09:22:02Z",
+        "document_type": "fomc_statement",
+        "artifact_sha256": "676d3a73b98adb4c918767add9d48692bdc14d2203deaf0c7a63874c452bfdbd",
+        "extracted_evidence": {
+          "decision_text": "maintain the target range for the federal funds rate at 4-1/4 to 4-1/2 percent",
+          "vote_count": 12,
+          "dissent_count": 1
+        }
+      },
+      {
+        "source_id": "fed_fomc_minutes",
+        "release_id": "fomc-minutes-2025-03-19",
+        "published_at": "2025-03-19T18:00:00Z",
+        "reference_period": "2025-03-19",
+        "vintage": "first",
+        "source_url": "https://www.federalreserve.gov/monetarypolicy/fomcminutes20250319.htm",
+        "quality": "parsed",
+        "retrieved_at": "2026-08-12T09:22:02Z",
+        "document_type": "fomc_minutes"
+      },
+      {
+        "source_id": "fed_sep",
+        "release_id": "fomc-sep-2025-03-19",
+        "published_at": "2025-03-19T18:00:00Z",
+        "reference_period": "2025-03-19",
+        "vintage": "first",
+        "source_url": "https://www.federalreserve.gov/monetarypolicy/fomcprojtabl20250319.htm",
+        "quality": "parsed",
+        "retrieved_at": "2026-08-12T09:22:02Z",
+        "document_type": "sep"
+      },
+      {
+        "source_id": "fed_fomc_statement",
+        "release_id": "fomc-statement-2025-01-29",
+        "published_at": "2025-01-29T19:00:00Z",
+        "reference_period": "2025-01-29",
+        "vintage": "first",
+        "source_url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20250129a.htm",
+        "quality": "parsed",
+        "retrieved_at": "2026-08-12T09:22:02Z",
+        "document_type": "fomc_statement",
+        "artifact_sha256": "d1f8630c5a0adb636646b61e2a54506b5c7f5d8ea1ea899f1977fd4a10c83630",
+        "extracted_evidence": {
+          "decision_text": "maintain the target range for the federal funds rate at 4-1/4 to 4-1/2 percent",
+          "vote_count": 12,
+          "dissent_count": 0
+        }
+      },
+      {
+        "source_id": "fed_fomc_minutes",
+        "release_id": "fomc-minutes-2025-01-29",
+        "published_at": "2025-01-29T19:00:00Z",
+        "reference_period": "2025-01-29",
+        "vintage": "first",
+        "source_url": "https://www.federalreserve.gov/monetarypolicy/fomcminutes20250129.htm",
+        "quality": "parsed",
+        "retrieved_at": "2026-08-12T09:22:02Z",
+        "document_type": "fomc_minutes"
+      }
+    ],
     "rejected": [],
     "policy": "official_extracted_evidence_separate_from_derived_summary"
   },

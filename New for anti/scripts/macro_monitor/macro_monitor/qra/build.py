@@ -370,6 +370,12 @@ def load_latest_issuance(path: Optional[Path] = None) -> Optional[Dict[str, Any]
     comps = latest.get("qra_issuance_components") or []
     if not comps:
         return None
+    event = next((x for x in (data.get("events") or []) if x.get("id") == latest.get("id")), {})
+    policy = event.get("policy") or {}
+    estimates = latest.get("estimates_quarters") or []
+    planned = [q for q in estimates if q.get("kind") == "estimate"]
+    current = planned[0] if planned else None
+    next_quarter = planned[1] if len(planned) > 1 else None
     return {
         "components": comps,
         "asof": data.get("generated_at"),
@@ -377,11 +383,20 @@ def load_latest_issuance(path: Optional[Path] = None) -> Optional[Dict[str, Any]
         "source": "qra_engine_v1",
         "event_id": latest.get("id"),
         "urls": latest.get("urls") or {},
-        "quarters": latest.get("estimates_quarters") or [],
+        "quarters": estimates,
         "sources_uses": latest.get("sources_uses_latest_estimates") or [],
         "tbac": latest.get("tbac_recommendation_months") or [],
         "tga_vs_qra": data.get("tga_vs_qra"),
         "compare": latest.get("compare"),
         "history_net_borrowing": data.get("history_net_borrowing") or [],
         "flags": latest.get("flags") or [],
+        # Keep the four things a QRA reader needs separate.  These are facts
+        # from the current official release, not a TGA forecast.
+        "details": {
+            "current_quarter": current,
+            "next_quarter": next_quarter,
+            "bill_stance": policy.get("bill_stance"),
+            "coupon_stance": policy.get("coupon_stance"),
+            "stance_snippets": policy.get("stance_snippets") or [],
+        },
     }

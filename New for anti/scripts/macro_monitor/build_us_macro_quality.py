@@ -101,7 +101,12 @@ def build_snapshot(inputs: dict[str, Any], spec: dict[str, Any], *, generated_at
             "invalid_release_count": len(invalid),
             "invalid_releases": invalid,
         },
-        "policy_committee": {"comparison": fomc, "meeting_count": len(meetings)},
+        "policy_committee": {
+            "comparison": fomc,
+            "meeting_count": len(meetings),
+            "current_roster": inputs.get("fomc_current_roster"),
+            "collector": inputs.get("collector"),
+        },
         "employment_quality": employment,
         "gdp_quality": gdp,
         "inflation_quality": {

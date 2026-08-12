@@ -15,6 +15,14 @@ from macro_monitor.us_quality import (
     classify_gdp_quality,
     compare_fomc_meetings,
 )
+from macro_monitor.us_quality.fed import (  # noqa: E402
+    BEIGE_BOOK_URL,
+    FOMC_CALENDAR_URL,
+    FOMC_MEMBERS_URL,
+    build_fed_official_input,
+    parse_beige_book_index,
+    parse_fomc_statement,
+)
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -161,6 +169,73 @@ class TestUsMacroQuality(unittest.TestCase):
         candidates = doc["inflation_quality"]["relationship_policy"]["internal_candidates"]
         self.assertTrue(all(row["status"] == "hypothesis" for row in candidates))
         self.assertEqual(doc["inflation_quality"]["lag_evidence"], [])
+
+    def test_fed_official_collector_keeps_votes_roster_and_beige_evidence_separate(self):
+        members = "".join(
+            f"<li><a>Member {number}</a>, Board of Governors</li>" for number in range(1, 9)
+        )
+        calendar = """
+        <h4><a>2026 FOMC Meetings</a></h4>
+        <div class="row fomc-meeting"><div class="fomc-meeting__month"><strong>June</strong></div>
+        <strong>Statement:</strong><a href="/newsevents/pressreleases/monetary20260617a.htm">HTML</a>
+        <a href="/monetarypolicy/fomcminutes20260617.htm">HTML</a></div>
+        <div class="row fomc-meeting"><div class="fomc-meeting__month"><strong>July</strong></div>
+        <strong>Statement:</strong><a href="/newsevents/pressreleases/monetary20260729a.htm">HTML</a>
+        <a href="/monetarypolicy/fomcminutes20260729.htm">HTML</a></div>
+        """
+        prior = """
+        <p>The Federal Open Market Committee approved the following statement for release by a 8 – 0 vote:</p>
+        <p>The Committee decided to maintain the target range.</p>
+        <p>Voting for the monetary policy action were Member 1, Member 2, Member 3, Member 4, Member 5, Member 6, Member 7, and Member 8.</p>
+        """
+        current = """
+        <p>The Federal Open Market Committee approved the following statement for release by a 7 – 1 vote:</p>
+        <p>The Committee decided to maintain the target range.</p>
+        <p>Voting against the monetary policy action was Member 8, who preferred to raise the target range.</p>
+        """
+        district_links = "".join(
+            f'<a href="/monetarypolicy/beigebook202607-d{number}.htm">Federal Reserve Bank of D{number}</a>'
+            for number in range(1, 13)
+        )
+        beige_summary = f"""
+        <h4>Overall Economic Activity</h4><p>Activity expanded modestly.</p>
+        <h4>Labor Markets</h4><p>Employment was little changed.</p>
+        <h4>Prices</h4><p>Prices increased moderately.</p>{district_links}
+        """
+        pages = {
+            FOMC_CALENDAR_URL: calendar,
+            FOMC_MEMBERS_URL: f"<h4>2026 Committee Members</h4><ul>{members}</ul>",
+            BEIGE_BOOK_URL: '<td>July 15: <a href="/monetarypolicy/beigebook202607-summary.htm">HTML</a></td>',
+            "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260617a.htm": prior,
+            "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260729a.htm": current,
+            "https://www.federalreserve.gov/monetarypolicy/beigebook202607-summary.htm": beige_summary,
+        }
+        inputs = build_fed_official_input(years=[2026], fetcher=pages.__getitem__, retrieved_at="2026-08-12T00:00:00Z")
+        self.assertEqual(len(inputs["fomc_meetings"]), 2)
+        latest = inputs["fomc_meetings"][-1]
+        self.assertEqual(len(latest["votes"]), 8)
+        self.assertEqual(sum(vote["vote"] == "against" for vote in latest["votes"]), 1)
+        self.assertEqual(next(vote for vote in latest["votes"] if vote["vote"] == "against")["dissent_direction"], "tighter")
+        self.assertEqual(len(inputs["fomc_current_roster"]["members"]), 8)
+        beige = next(row for row in inputs["official_documents"] if row["document_type"] == "beige_book")
+        self.assertEqual(len(beige["extracted_evidence"]["districts"]), 12)
+        snapshot = build_snapshot(inputs, SPEC, generated_at="2026-08-12T00:00:00Z")
+        self.assertEqual(snapshot["policy_committee"]["comparison"]["current_dissents"]["count"], 1)
+        self.assertEqual(snapshot["policy_committee"]["current_roster"]["roster_year"], 2026)
+
+    def test_beige_book_release_date_is_not_inferred_from_report_code_month(self):
+        rows = parse_beige_book_index(
+            '<td>March 4: <a href="/monetarypolicy/beigebook202602-summary.htm">HTML</a></td>'
+        )
+        self.assertEqual(rows[0]["release_date"], "2026-03-04")
+
+    def test_fomc_dissent_names_keep_initials_and_oxford_comma(self):
+        statement = """
+        <p>The Federal Open Market Committee approved the following statement for release by a 9 – 3 vote:</p>
+        <p>Voting against the monetary policy action were Beth M. Hammack, Neel Kashkari, and Lorie K. Logan, who preferred to raise the target range.</p>
+        """
+        parsed = parse_fomc_statement(statement, meeting_date="2026-07-29", source_url="https://example.test")
+        self.assertEqual([vote["name"] for vote in parsed["votes"]], ["Beth M. Hammack", "Neel Kashkari", "Lorie K. Logan"])
 
 
 if __name__ == "__main__":

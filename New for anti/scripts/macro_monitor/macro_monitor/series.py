@@ -11,6 +11,15 @@ from typing import Any
 def month_ends(end: date, n_months: int) -> list[str]:
     y, m = end.year, end.month
     cur = date(y, 12, 31) if m == 12 else date(y, m + 1, 1) - timedelta(days=1)
+    # A monthly observation cannot be dated at the end of a month that has not
+    # happened yet.  This used to label a run on (for example) 12 August as
+    # 31 August, which made a live overlay look newer than its source data.
+    if end < cur:
+        m -= 1
+        if m == 0:
+            y -= 1
+            m = 12
+        cur = date(y, 12, 31) if m == 12 else date(y, m + 1, 1) - timedelta(days=1)
     out: list[date] = []
     for _ in range(n_months):
         out.append(cur)
@@ -417,6 +426,13 @@ def build_indicator(
         "change_1m_pct": delta_vs(values, 1),
         "change_1y_pct": delta_vs(values, 12),
         "asof": dates[-1],
+        # `asof` remains for existing readers.  The explicit fields below are
+        # the operational contract: this builder starts from synthetic data,
+        # and a live overlay must replace them with source dates/status.
+        "observed_at": None,
+        "snapshot_asof": dates[-1],
+        "retrieved_at": None,
+        "data_status": "demo",
         "history": histories,
         "source": "fixture_synth",
         "quality": "demo",

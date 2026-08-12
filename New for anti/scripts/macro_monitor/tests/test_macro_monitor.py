@@ -13,6 +13,7 @@ import sys
 sys.path.insert(0, str(ROOT))
 
 from macro_monitor.engine import build_universe, resolve_country  # noqa: E402
+from macro_monitor.series import month_ends  # noqa: E402
 
 
 class TestUsMacroKit(unittest.TestCase):
@@ -204,6 +205,47 @@ class TestUsMacroKit(unittest.TestCase):
 
     def test_limitations_present(self):
         self.assertGreaterEqual(len(self.doc["limitations"]["items"]), 3)
+
+    def test_provenance_contract_is_explicit_and_propagated_to_chips(self):
+        """A fixture value must never arrive at the UI without its data state."""
+        allowed = {
+            "live",
+            "live_latest",
+            "official_snapshot",
+            "delayed_official",
+            "demo",
+            "unknown",
+        }
+        self.assertIn("demo", self.doc["data_status_legend"])
+        for pack in self.doc["countries"]:
+            self.assertTrue(pack.get("data_status_summary"), pack["iso3"])
+            by_id = {i["id"]: i for i in pack["indicators"]}
+            for ind in by_id.values():
+                self.assertIn(ind.get("data_status"), allowed, ind["id"])
+                self.assertIn("observed_at", ind, ind["id"])
+                self.assertIn("retrieved_at", ind, ind["id"])
+            for chips in pack["categories"].values():
+                for chip in chips:
+                    ind = by_id[chip["id"]]
+                    self.assertEqual(chip["data_status"], ind["data_status"])
+                    self.assertEqual(chip["observed_at"], ind["observed_at"])
+
+        usa = resolve_country(self.doc, "USA")
+        assert usa is not None
+        cpi = next(i for i in usa["indicators"] if i["id"] == "cpi_yoy")
+        self.assertEqual(cpi["data_status"], "demo")
+        self.assertIsNone(cpi["observed_at"])
+        self.assertTrue(cpi["snapshot_asof"])
+        qra = next(i for i in usa["indicators"] if i["id"] == "qra_issuance")
+        self.assertEqual(qra["data_status"], "official_snapshot")
+        self.assertIsNone(qra["observed_at"])
+        self.assertIn("current_quarter", qra["qra_details"])
+        self.assertIn("next_quarter", qra["qra_details"])
+        self.assertEqual(qra["qra_details"]["bill_stance"], "maintain")
+        self.assertEqual(qra["qra_details"]["coupon_stance"], "change_bias")
+
+    def test_month_end_builder_never_labels_an_unfinished_month_as_observed(self):
+        self.assertEqual(month_ends(date(2026, 8, 12), 2), ["2026-06-30", "2026-07-31"])
 
     def test_brazil_full_kit(self):
         bra = resolve_country(self.doc, "Brazil")
