@@ -26,6 +26,19 @@ def model_delever_path(
         result["status"] = "omitted"
         result["reasons"] = ["need net_debt, positive ebitda, fcf"]
         return result
+    if net_debt <= 0:
+        result["status"] = "not_applicable"
+        result["value"] = {
+            "start_nd_ebitda": net_debt / ebitda,
+            "end_nd_ebitda": net_debt / ebitda,
+            "annual_fcf_applied": None,
+        }
+        result["components"]["path"] = [
+            {"year": 0, "net_debt": float(net_debt), "net_debt_to_ebitda": net_debt / ebitda}
+        ]
+        result["series"] = result["components"]["path"]
+        result["reasons"] = ["net_cash_or_zero_net_debt_no_deleveraging_path"]
+        return result
     path = []
     nd = float(net_debt)
     annual_pay = float(fcf) * ret
@@ -74,6 +87,9 @@ def model_coverage_capacity(
         headroom["nd_ebitda_vs_target"] = t_nd - nd_ebitda
     result["components"]["headroom"] = headroom
     result["status"] = "ok"
+    if interest_coverage is None or nd_ebitda is None:
+        result["status"] = "partial"
+        result["reasons"].append("one_of_interest_coverage_or_net_debt_to_ebitda_missing")
     if not headroom:
         result["reasons"].append("no targets set — showing current levels only")
     return result

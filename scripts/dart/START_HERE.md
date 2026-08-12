@@ -14,25 +14,30 @@
 4. **DCF 현실화**: g 상한 3%, 시드=공시, bear/bull 델타 명시, WACC 민감도 필수, 목표가 없음
 
 ## 문서
-- `docs/VIEWS_AND_MODELS.md` — 모드·카드·모델
-- `docs/DCF_REALISM.md` — FCFF 규칙
 - `docs/UI_HANDOFF.md` — UI 연동 계약
+
+> 배포 패키지에는 아직 `docs/VIEWS_AND_MODELS.md`, `docs/DCF_REALISM.md`,
+> `sec_facts.py`, `dart_facts.py`, `fetch_live.py`가 포함되지 않았습니다.
+> 이 문서가 그 파일들이 존재한다고 말하는 것은 배포 상태와 맞지 않습니다.
+> `derived_cards.py`와 `enrich_snapshot.py`는 외부 API 없이 정규화된 pack 또는
+> 기존 JSON 스냅샷을 계산할 수 있지만, 누락된 원천 계정은 추정하지 않습니다.
 
 ## 코드
 - `dart_kfa/view_presets.py` — 카드·모델 필터
 - `dart_kfa/accounting_pack.py` — 기본 회계·유동성 스켈레톤
 - `dart_kfa/model_contracts.py` — 모델 기본 가정·스텁
-- `dart_kfa/sec_facts.py` — SEC companyfacts → accounting_pack
-- `dart_kfa/dart_facts.py` — OpenDART → accounting_pack (DART_API_KEY env)
-- `fetch_live.py` — CLI
+- `dart_kfa/derived_cards.py` — 전문가 카드·9개 모델·기간정렬 게이트
+- `enrich_snapshot.py` — 오프라인 JSON 보강 CLI
 
-## Basic 채움 상태
-- SEC + OpenDART: P&L, CFO, Capex, FCF(+series), 현금, 순차입, 1년 만기, 유동성 커버리지, 유동비율, CCC
-- Sample UI JSON: `public/data/kfa_aapl_v1.json`, `public/data/kfa_005930_v1.json`
+## 현재 데이터 상태
+- 배포된 샘플은 `New for anti/public/data/kfa_005930_v1.json` 하나이며,
+  원시 공시 facts와 D&A·세금·이자비용·NWC·시가총액·세그먼트를 모두 담고 있지 않습니다.
+- 따라서 이 샘플에서 가능한 카드만 계산하고 나머지는 `null + reason`으로 남깁니다.
+- 새 JSON은 반드시 `New for anti/public/data/kfa_<code>_v1.json` 아래에 둡니다.
+  저장소 루트 `public/data/`는 Cloudflare asset root가 아닙니다.
 
 ```bash
 cd scripts/dart
 python3 -m unittest discover -s tests -v
-python3 fetch_live.py --ticker AAPL
-DART_API_KEY=… python3 fetch_live.py --kr --stock 005930
+python3 enrich_snapshot.py ../../New\ for\ anti/public/data/kfa_005930_v1.json --output /tmp/kfa_005930_enriched.json
 ```

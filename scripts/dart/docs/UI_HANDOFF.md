@@ -22,6 +22,35 @@ pe.models.{delever_path,coverage_capacity,fcf_yield_entry}
 deal.models.{fcff_dcf,trading_comps,sotp_or_ev_bridge}
 ```
 
+`basic_cards` remains the UI card bag for every view.  A non-Basic card must
+always have `value`, `series`, and `reason`; use `null + reason` when the
+normalised source fact is unavailable.  Do not present a zero as a substitute
+for unavailable D&A, interest expense, tax, market cap, peer observations or
+segment disclosures.
+
+## Provenance / period gate
+
+- A calculation input must be `CFS` or `OFS` consistently for its issuer; do
+  not mix consolidated and separate facts inside a ratio or a model.
+- A ratio series may only divide values with the same fiscal end date.  Annual
+  figures cannot be joined to a quarter simply because the calendar year
+  matches.
+- `as_of` is the latest fiscal period end, not an API request date.
+- `data_quality.raw_filing_facts_embedded=false` means a sample was derived
+  from a UI snapshot, not recomputed from raw SEC/OpenDART facts.
+- `market_cap`, peer multiples and segment values are optional source inputs.
+  If absent, the relevant card/model must be partial or omitted with a reason.
+
+## Model guardrails
+
+- No target price, recommendation, or buy/sell/overpay wording in outputs.
+- `fcff_dcf` emits bear/base/bull enterprise/equity values and the 7–11% WACC
+  sensitivity table.  Terminal growth is capped at 3%; base is 2%.
+- D&A/maintenance Capex uses the clearly labelled `min(abs(D&A), abs(capex))`
+  proxy only when both reported values are available.
+- SOTP is calculated only from provided source/user segment values; otherwise
+  it is an EV bridge or `omitted`, never an invented business mix.
+
 ## Card click → chart
 Each metric prefers `series: [{year, end, value}, ...]` aligned to one fiscal timeline.
 
@@ -30,6 +59,7 @@ Each metric prefers `series: [{year, end, value}, ...]` aligned to one fiscal ti
 
 ## CLI
 ```
-python3 scripts/dart/fetch_live.py --ticker AAPL
-DART_API_KEY=… python3 scripts/dart/fetch_live.py --kr --stock 005930
+python3 scripts/dart/enrich_snapshot.py \
+  "New for anti/public/data/kfa_005930_v1.json" \
+  --output /tmp/kfa_005930_enriched.json
 ```
