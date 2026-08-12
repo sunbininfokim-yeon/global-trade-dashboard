@@ -1,6 +1,6 @@
 {
   "schema_version": "ticker-v1",
-  "generated_at": "2026-08-11T15:33:22.703251+00:00",
+  "generated_at": "2026-08-12T05:18:24.440977+00:00",
   "model": {
     "name": "commodity_diplomacy_rss_v1",
     "description": "RSS multi-region ticker: regional priority (MENA/IN/TR/JP/CN/TW/RU + commodity specialists) over Western majors; politics admitted with diplomacy+trade bridge, elections, governance polls, cabinet reshuffles; horse-race national polls rejected; importance = country-tier × info-grade; main display language Korean.",
@@ -73,21 +73,21 @@
     "cabinet_reshuffle": true
   },
   "stats": {
-    "sources_ok": 36,
-    "sources_failed": 2,
-    "raw_items": 842,
-    "scored_items": 99,
+    "sources_ok": 35,
+    "sources_failed": 3,
+    "raw_items": 802,
+    "scored_items": 98,
     "selected_items": 24,
     "region_histogram": {
-      "india": 2,
-      "commodity_specialist": 7,
+      "commodity_specialist": 8,
       "russia": 2,
-      "turkey": 2,
       "mena": 4,
-      "china": 2,
-      "west": 1,
+      "india": 2,
       "japan": 2,
-      "taiwan": 2
+      "west": 1,
+      "turkey": 1,
+      "taiwan": 2,
+      "china": 2
     },
     "min_importance": 0.35
   },
@@ -96,7 +96,7 @@
       "source_id": "aljazeera_en",
       "ok": true,
       "count": 25,
-      "elapsed_ms": 143,
+      "elapsed_ms": 130,
       "error": null,
       "mode": "live"
     },
@@ -104,7 +104,7 @@
       "source_id": "iran_intl",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 305,
+      "elapsed_ms": 485,
       "error": null,
       "mode": "live"
     },
@@ -112,7 +112,7 @@
       "source_id": "arab_news",
       "ok": true,
       "count": 10,
-      "elapsed_ms": 114,
+      "elapsed_ms": 151,
       "error": null,
       "mode": "live"
     },
@@ -120,7 +120,7 @@
       "source_id": "tehran_times",
       "ok": true,
       "count": 30,
-      "elapsed_ms": 1193,
+      "elapsed_ms": 1222,
       "error": null,
       "mode": "live"
     },
@@ -128,7 +128,7 @@
       "source_id": "middle_east_eye",
       "ok": true,
       "count": 20,
-      "elapsed_ms": 123,
+      "elapsed_ms": 450,
       "error": null,
       "mode": "live"
     },
@@ -136,23 +136,23 @@
       "source_id": "aa_world",
       "ok": true,
       "count": 30,
-      "elapsed_ms": 3405,
+      "elapsed_ms": 2735,
       "error": null,
       "mode": "live"
     },
     {
       "source_id": "daily_sabah",
-      "ok": true,
-      "count": 40,
-      "elapsed_ms": 865,
-      "error": null,
+      "ok": false,
+      "count": 0,
+      "elapsed_ms": 328,
+      "error": "HTTPError: HTTP Error 403: Forbidden",
       "mode": "live"
     },
     {
       "source_id": "hurriyet_daily",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 342,
+      "elapsed_ms": 210,
       "error": null,
       "mode": "live"
     },
@@ -160,7 +160,7 @@
       "source_id": "the_hindu",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 115,
+      "elapsed_ms": 91,
       "error": null,
       "mode": "live"
     },
@@ -168,7 +168,7 @@
       "source_id": "indian_express_world",
       "ok": false,
       "count": 0,
-      "elapsed_ms": 148,
+      "elapsed_ms": 125,
       "error": "HTTPError: HTTP Error 403: Forbidden",
       "mode": "live"
     },
@@ -176,7 +176,7 @@
       "source_id": "et_commodities",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 521,
+      "elapsed_ms": 363,
       "error": null,
       "mode": "live"
     },
@@ -184,7 +184,7 @@
       "source_id": "business_standard_markets",
       "ok": true,
       "count": 35,
-      "elapsed_ms": 158,
+      "elapsed_ms": 169,
       "error": null,
       "mode": "live"
     },
@@ -192,7 +192,7 @@
       "source_id": "ndtv_world",
       "ok": true,
       "count": 20,
-      "elapsed_ms": 412,
+      "elapsed_ms": 248,
       "error": null,
       "mode": "live"
     },
@@ -200,7 +200,7 @@
       "source_id": "xinhua_world",
       "ok": true,
       "count": 20,
-      "elapsed_ms": 903,
+      "elapsed_ms": 780,
       "error": null,
       "mode": "live"
     },
@@ -208,7 +208,7 @@
       "source_id": "china_daily_world",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 1165,
+      "elapsed_ms": 1657,
       "error": null,
       "mode": "live"
     },
@@ -216,7 +216,7 @@
       "source_id": "cgtn_world",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 440,
+      "elapsed_ms": 653,
       "error": null,
       "mode": "live"
     },
@@ -224,7 +224,7 @@
       "source_id": "scmp",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 616,
+      "elapsed_ms": 511,
       "error": null,
       "mode": "live"
     },
@@ -232,7 +232,7 @@
       "source_id": "nhk_business",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 442,
+      "elapsed_ms": 512,
       "error": null,
       "mode": "live"
     },
@@ -240,7 +240,7 @@
       "source_id": "nhk_top",
       "ok": true,
       "count": 7,
-      "elapsed_ms": 53,
+      "elapsed_ms": 175,
       "error": null,
       "mode": "live"
     },
@@ -248,7 +248,7 @@
       "source_id": "japan_times",
       "ok": true,
       "count": 30,
-      "elapsed_ms": 344,
+      "elapsed_ms": 704,
       "error": null,
       "mode": "live"
     },
@@ -256,7 +256,7 @@
       "source_id": "nikkei_asia",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 118,
+      "elapsed_ms": 127,
       "error": null,
       "mode": "live"
     },
@@ -264,7 +264,7 @@
       "source_id": "cna",
       "ok": true,
       "count": 20,
-      "elapsed_ms": 167,
+      "elapsed_ms": 97,
       "error": null,
       "mode": "live"
     },
@@ -272,7 +272,7 @@
       "source_id": "taipei_times",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 117,
+      "elapsed_ms": 159,
       "error": null,
       "mode": "live"
     },
@@ -280,7 +280,7 @@
       "source_id": "ltn",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 129,
+      "elapsed_ms": 961,
       "error": null,
       "mode": "live"
     },
@@ -288,7 +288,7 @@
       "source_id": "udn",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 369,
+      "elapsed_ms": 314,
       "error": null,
       "mode": "live"
     },
@@ -296,7 +296,7 @@
       "source_id": "tass_en",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 1024,
+      "elapsed_ms": 921,
       "error": null,
       "mode": "live"
     },
@@ -304,7 +304,7 @@
       "source_id": "tass_ru",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 1392,
+      "elapsed_ms": 1057,
       "error": null,
       "mode": "live"
     },
@@ -312,7 +312,7 @@
       "source_id": "interfax_ru",
       "ok": true,
       "count": 25,
-      "elapsed_ms": 2231,
+      "elapsed_ms": 1556,
       "error": null,
       "mode": "live"
     },
@@ -320,7 +320,7 @@
       "source_id": "rt_ru",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 2196,
+      "elapsed_ms": 1617,
       "error": null,
       "mode": "live"
     },
@@ -328,7 +328,7 @@
       "source_id": "ship_and_bunker",
       "ok": true,
       "count": 10,
-      "elapsed_ms": 420,
+      "elapsed_ms": 214,
       "error": null,
       "mode": "live"
     },
@@ -336,7 +336,7 @@
       "source_id": "oilprice",
       "ok": true,
       "count": 15,
-      "elapsed_ms": 645,
+      "elapsed_ms": 430,
       "error": null,
       "mode": "live"
     },
@@ -344,7 +344,7 @@
       "source_id": "mining_com",
       "ok": false,
       "count": 0,
-      "elapsed_ms": 118,
+      "elapsed_ms": 112,
       "error": "HTTPError: HTTP Error 403: Forbidden",
       "mode": "live"
     },
@@ -352,7 +352,7 @@
       "source_id": "world_grain",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 379,
+      "elapsed_ms": 238,
       "error": null,
       "mode": "live"
     },
@@ -360,7 +360,7 @@
       "source_id": "hellenic_shipping",
       "ok": true,
       "count": 20,
-      "elapsed_ms": 143,
+      "elapsed_ms": 123,
       "error": null,
       "mode": "live"
     },
@@ -368,7 +368,7 @@
       "source_id": "seatrade",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 613,
+      "elapsed_ms": 955,
       "error": null,
       "mode": "live"
     },
@@ -376,7 +376,7 @@
       "source_id": "bbc_business",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 529,
+      "elapsed_ms": 31,
       "error": null,
       "mode": "live"
     },
@@ -384,7 +384,7 @@
       "source_id": "bloomberg_markets",
       "ok": true,
       "count": 20,
-      "elapsed_ms": 528,
+      "elapsed_ms": 433,
       "error": null,
       "mode": "live"
     },
@@ -392,85 +392,126 @@
       "source_id": "ft_commodities",
       "ok": true,
       "count": 25,
-      "elapsed_ms": 728,
+      "elapsed_ms": 275,
       "error": null,
       "mode": "live"
     }
   ],
   "items": [
     {
-      "id": "4f0599660b3c5cf9",
-      "published_at": "2026-08-11T12:26:40+00:00",
-      "source": {
-        "id": "business_standard_markets",
-        "name": "Business Standard Markets",
-        "region": "india",
-        "slant": null
-      },
-      "url": "https://www.business-standard.com/markets/capital-market-news/inr-extends-downside-amid-sharp-rise-in-oil-prices-126081101531_1.html",
-      "category": "commodity_diplomacy",
-      "commodities": [
-        "oil",
-        "shipping"
-      ],
-      "title": {
-        "original": "INR extends downside amid sharp rise in oil prices",
-        "original_lang": "en",
-        "ko": "INR은 유가가 급격히 상승하는 가운데 하락폭을 확대합니다."
-      },
-      "summary": "The Indian rupee declined 13 paise to settle at 95.43 (provisional) against the US dollar on Tuesday, tracking a sharp rise in global crude oil prices amid geopolitical uncertainties. However, recent foreign capital inflows provided some support to the local unit. Local shares en",
-      "scores": {
-        "commodity": 4.0,
-        "diplomacy": 1.0,
-        "election": 0.0,
-        "region_weight": 1.3,
-        "freshness": 0.917,
-        "importance": 4.32,
-        "final": 4.904
-      },
-      "rank_reasons": [
-        "region:india*1.30",
-        "category:commodity_diplomacy",
-        "tier:A*1.00/g2",
-        "commodity:oil:3",
-        "commodity:shipping:1",
-        "diplomacy:1",
-        "bridge:1"
-      ],
-      "translation_status": "ok",
-      "country_tier": "A",
-      "info_grade": "2",
-      "country_hint": "USA"
-    },
-    {
-      "id": "da8e8235e6cdfdd9",
-      "published_at": "2026-08-11T12:30:00+00:00",
+      "id": "9d927cc13e943253",
+      "published_at": "2026-08-11T21:00:00+00:00",
       "source": {
         "id": "oilprice",
         "name": "OilPrice.com",
         "region": "commodity_specialist",
         "slant": null
       },
-      "url": "https://oilprice.com/Latest-Energy-News/World-News/OPEC-Output-Climbs-Again-But-Still-Trails-Quota-Targets.html",
+      "url": "https://oilprice.com/Energy/Energy-General/Middle-East-War-Pushes-China-Toward-the-Arctic-Trade-Route.html",
+      "category": "commodity_diplomacy",
+      "commodities": [
+        "shipping"
+      ],
+      "title": {
+        "original": "Middle East War Pushes China Toward the Arctic Trade Route",
+        "original_lang": "en",
+        "ko": "중동 전쟁, 북극 무역로를 향해 중국을 밀어붙이다"
+      },
+      "summary": "The Middle East conflict and the heightened threats to shipping in the Red Sea have prompted China to boost the use of the Arctic to move containers from the Chinese east coast to Europe. The fast-melting Arctic ice offers an alternative shipping route in the summer as the Houthi",
+      "scores": {
+        "commodity": 2.0,
+        "diplomacy": 1.0,
+        "election": 0.0,
+        "region_weight": 1.35,
+        "freshness": 0.794,
+        "importance": 3.242,
+        "final": 3.752
+      },
+      "rank_reasons": [
+        "region:commodity_specialist*1.35",
+        "category:commodity_diplomacy",
+        "tier:A*1.00/g1",
+        "commodity:shipping:2",
+        "diplomacy:1",
+        "bridge:1"
+      ],
+      "translation_status": "ok",
+      "country_tier": "A",
+      "info_grade": "1",
+      "country_hint": "CHN"
+    },
+    {
+      "id": "bb0f841716adb2c0",
+      "published_at": "2026-08-11T18:00:00+00:00",
+      "source": {
+        "id": "oilprice",
+        "name": "OilPrice.com",
+        "region": "commodity_specialist",
+        "slant": null
+      },
+      "url": "https://oilprice.com/Latest-Energy-News/World-News/Iran-Says-Hormuz-Will-Stay-Closed-Until-US-Meets-Its-Conditions.html",
+      "category": "commodity",
+      "commodities": [
+        "oil",
+        "shipping"
+      ],
+      "title": {
+        "original": "Iran Says Hormuz Will Stay Closed Until U.S. Meets Its Conditions",
+        "original_lang": "en",
+        "ko": "이란은 호르무즈가 미국이 조건을 충족할 때까지 폐쇄 상태를 유지할 것이라고 말한다."
+      },
+      "summary": "Iran said Tuesday that the Strait of Hormuz will remain closed unless the United States ends the war and meets Tehran’s conditions, raising the bar for a deal that would restore more oil traffic through the key waterway. Mohsen Rezaei, secretary of Iran’s Supreme National Securit",
+      "scores": {
+        "commodity": 2.0,
+        "diplomacy": 2.0,
+        "election": 0.0,
+        "region_weight": 1.35,
+        "freshness": 0.731,
+        "importance": 2.995,
+        "final": 3.467
+      },
+      "rank_reasons": [
+        "region:commodity_specialist*1.35",
+        "category:commodity",
+        "tier:A*1.00/g1",
+        "commodity:oil:1",
+        "commodity:shipping:1",
+        "diplomacy:2"
+      ],
+      "translation_status": "ok",
+      "country_tier": "A",
+      "info_grade": "1",
+      "country_hint": "USA"
+    },
+    {
+      "id": "e59238b0e3a23f9a",
+      "published_at": "2026-08-11T21:00:59+00:00",
+      "source": {
+        "id": "hellenic_shipping",
+        "name": "Hellenic Shipping News",
+        "region": "commodity_specialist",
+        "slant": null
+      },
+      "url": "https://www.hellenicshippingnews.com/engine-east-of-suez-fuel-availability-outlook-6/",
       "category": "commodity_diplomacy",
       "commodities": [
         "oil",
         "shipping"
       ],
       "title": {
-        "original": "OPEC Output Climbs Again, But Still Trails Quota Targets",
+        "original": "ENGINE: East of Suez Fuel Availability Outlook",
         "original_lang": "en",
-        "ko": "OPEC 출력이 다시 상승하지만 할당량 목표를 추적합니다"
+        "ko": "엔진: 수에즈 동부 연료 가용성 전망"
       },
-      "summary": "OPEC’s total oil production jumped by 1.17 million barrels per day in July from June as many Gulf producers restored some output that was shut in for three months due to the closed Strait of Hormuz. Output at the 11-member OPEC rose to 19.85 million bpd in July, extending the mon",
+      "summary": "Singapore and Malaysia VLSFO availability in Singapore remains tight, with suppliers now recommending lead times of 12–21 days, compared with 12–24 days last week. Supply continues to face pressure as the port’s fuel oil inventories have yet to recover to pre-conflict levels, whi",
       "scores": {
         "commodity": 2.0,
-        "diplomacy": 2.0,
+        "diplomacy": 1.0,
         "election": 0.0,
         "region_weight": 1.35,
-        "freshness": 0.919,
-        "importance": 3.291,
-        "final": 3.81
+        "freshness": 0.794,
+        "importance": 2.494,
+        "final": 2.887
       },
       "rank_reasons": [
         "region:commodity_specialist*1.35",
@@ -478,50 +519,6 @@
         "tier:A*1.00/g2",
         "commodity:oil:1",
         "commodity:shipping:1",
-        "diplomacy:2",
-        "bridge:1"
-      ],
-      "translation_status": "ok",
-      "country_tier": "A",
-      "info_grade": "2",
-      "country_hint": "USA"
-    },
-    {
-      "id": "94cf0b1fb5d8efd0",
-      "published_at": "2026-08-11T00:00:00+00:00",
-      "source": {
-        "id": "oilprice",
-        "name": "OilPrice.com",
-        "region": "commodity_specialist",
-        "slant": null
-      },
-      "url": "https://oilprice.com/Energy/Energy-General/The-Hormuz-Shock-Is-Far-From-Over.html",
-      "category": "commodity_diplomacy",
-      "commodities": [
-        "oil",
-        "shipping"
-      ],
-      "title": {
-        "original": "The Hormuz Shock Is Far From Over",
-        "original_lang": "en",
-        "ko": "호르무즈의 충격은 끝나지 않았습니다"
-      },
-      "summary": "The latest Bloomberg data show that shipping transits through the Strait of Hormuz remained largely disrupted Monday morning, even as Iran and Oman reportedly moved closer to a deal. Brent crude futures traded near $85 a barrel as markets priced in the possibility that a deal to ",
-      "scores": {
-        "commodity": 4.0,
-        "diplomacy": 1.0,
-        "election": 0.0,
-        "region_weight": 1.35,
-        "freshness": 0.649,
-        "importance": 3.241,
-        "final": 3.751
-      },
-      "rank_reasons": [
-        "region:commodity_specialist*1.35",
-        "category:commodity_diplomacy",
-        "tier:A*1.00/g2",
-        "commodity:oil:2",
-        "commodity:shipping:2",
         "diplomacy:1",
         "bridge:2"
       ],
@@ -531,497 +528,293 @@
       "country_hint": "USA"
     },
     {
-      "id": "41f619c1fff23a1f",
-      "published_at": "2026-08-11T10:00:51+00:00",
+      "id": "2b21c919f693a5e6",
+      "published_at": "2026-08-11T21:00:35+00:00",
       "source": {
         "id": "hellenic_shipping",
         "name": "Hellenic Shipping News",
         "region": "commodity_specialist",
         "slant": null
       },
-      "url": "https://www.hellenicshippingnews.com/south-korea-to-import-argentine-crude-from-2027-after-trial-shipments/",
+      "url": "https://www.hellenicshippingnews.com/wheat-market-weighs-supply-risks-and-weak-demand/",
       "category": "commodity_diplomacy",
       "commodities": [
-        "oil"
+        "wheat",
+        "shipping"
       ],
       "title": {
-        "original": "South Korea to import Argentine crude from 2027 after trial shipments",
+        "original": "Wheat Market Weighs Supply Risks and Weak Demand",
         "original_lang": "en",
-        "ko": "한국, 시험 배송 후 2027년부터 아르헨티나 원유 수입 예정"
+        "ko": "밀 시장은 공급 위험과 수요 약화를 저울질합니다"
       },
-      "summary": "South Korea plans to begin importing crude oil from Argentina in 2027, after several domestic refining and petrochemical companies completed trial shipments and feedstock testing, paving the way for the country to further diversify its supply sources beyond the Persian Gulf, acco",
+      "summary": "Wheat prices fluctuated around $6.40 per bushel, remaining more than 10% below the two-year high of $7.08 on July 22, as weaker Russian prices, subdued international demand and alternative export routes eased concerns over Black Sea disruptions. Hopes for progress in negotiations",
       "scores": {
         "commodity": 2.0,
         "diplomacy": 1.0,
         "election": 0.0,
         "region_weight": 1.35,
-        "freshness": 0.858,
-        "importance": 2.692,
-        "final": 3.116
+        "freshness": 0.794,
+        "importance": 2.494,
+        "final": 2.886
       },
       "rank_reasons": [
         "region:commodity_specialist*1.35",
         "category:commodity_diplomacy",
         "tier:A*1.00/g2",
-        "commodity:oil:2",
+        "commodity:wheat:1",
+        "commodity:shipping:1",
         "diplomacy:1",
         "bridge:2"
       ],
       "translation_status": "ok",
       "country_tier": "A",
       "info_grade": "2",
-      "country_hint": "KOR"
+      "country_hint": "USA"
     },
     {
-      "id": "c58d3bbcfd87690e",
-      "published_at": "2026-08-11T11:57:02+00:00",
+      "id": "ea51cc6a8e196a89",
+      "published_at": "2026-08-11T21:00:33+00:00",
+      "source": {
+        "id": "hellenic_shipping",
+        "name": "Hellenic Shipping News",
+        "region": "commodity_specialist",
+        "slant": null
+      },
+      "url": "https://www.hellenicshippingnews.com/european-gas-extends-rally-past-61-euro-as-hormuz-impasse-drives-supply-fears/",
+      "category": "commodity_diplomacy",
+      "commodities": [
+        "gas",
+        "shipping"
+      ],
+      "title": {
+        "original": "European gas extends rally past 61-euro as Hormuz impasse drives supply fears",
+        "original_lang": "en",
+        "ko": "호르무즈 임파스 (Hormuz impasse) 가 공급에 대한 두려움을 유발함에 따라 유럽 가스가 61유로를 넘어 집회를 연장합니다."
+      },
+      "summary": "European natural gas prices surged on Tuesday, extending an aggressive two-day rally as a complete breakdown in Middle East diplomatic mediation reignited fears over persistent winter supply shortages. Benchmark Dutch front-month futures jumped as high as 61.80 per megawatt-hour,",
+      "scores": {
+        "commodity": 2.0,
+        "diplomacy": 1.0,
+        "election": 0.0,
+        "region_weight": 1.35,
+        "freshness": 0.794,
+        "importance": 2.494,
+        "final": 2.886
+      },
+      "rank_reasons": [
+        "region:commodity_specialist*1.35",
+        "category:commodity_diplomacy",
+        "tier:A*1.00/g2",
+        "commodity:gas:1",
+        "commodity:shipping:1",
+        "diplomacy:1",
+        "bridge:2"
+      ],
+      "translation_status": "ok",
+      "country_tier": "A",
+      "info_grade": "2",
+      "country_hint": "USA"
+    },
+    {
+      "id": "b4e83376549cb18c",
+      "published_at": "2026-08-11T23:58:27+00:00",
       "source": {
         "id": "tass_en",
         "name": "TASS",
         "region": "russia",
         "slant": null
       },
-      "url": "https://tass.com/world/2171405",
-      "category": "commodity",
-      "commodities": [
-        "shipping"
-      ],
+      "url": "https://tass.com/world/2171613",
+      "category": "cabinet_reshuffle",
+      "commodities": [],
       "title": {
-        "original": "Qatar rejects using Strait of Hormuz as an instrument of political pressure",
+        "original": "Rubio says Trump nominated him for Secretary of State without prior discussion",
         "original_lang": "en",
-        "ko": "카타르는 호르무즈 해협을 정치적 압력의 도구로 사용하는 것을 거부합니다"
+        "ko": "루비오는 트럼프가 사전 논의 없이 그를 국무장관 후보로 지명했다고 말한다."
       },
-      "summary": "According to Foreign Ministry’s Spokesman Majed bin Mohammed al-Ansari, the position of the members of the Cooperation Council for the Arab States of the Gulf is that there is a need to return to the pre-war situation and ensure freedom of navigation",
+      "summary": "The US president called him and said he was going to be the secretary of state, the politician said",
       "scores": {
-        "commodity": 1.0,
-        "diplomacy": 2.0,
-        "election": 0.0,
+        "commodity": 0,
+        "diplomacy": 0.0,
+        "election": 1.2,
         "region_weight": 1.25,
-        "freshness": 0.905,
-        "importance": 2.669,
-        "final": 2.97
+        "freshness": 0.862,
+        "importance": 2.409,
+        "final": 2.68
       },
       "rank_reasons": [
         "region:russia*1.25",
-        "category:commodity",
+        "category:cabinet_reshuffle",
         "tier:A*1.00/g1",
-        "commodity:shipping:1",
-        "diplomacy:2"
+        "election:cabinet_reshuffle:1.2",
+        "cabinet_reshuffle"
       ],
       "translation_status": "ok",
       "country_tier": "A",
       "info_grade": "1",
-      "country_hint": "RUS"
+      "country_hint": "RUS",
+      "election_type": "cabinet_reshuffle"
     },
     {
-      "id": "17e9ee3b08769b92",
-      "published_at": "2026-08-11T04:39:37+00:00",
+      "id": "b567c9b57aa8acf0",
+      "published_at": "2026-08-11T16:00:00+00:00",
       "source": {
         "id": "oilprice",
         "name": "OilPrice.com",
         "region": "commodity_specialist",
         "slant": null
       },
-      "url": "https://oilprice.com/Latest-Energy-News/World-News/Oil-Prices-Climb-as-US-Iran-Peace-Hopes-Fade.html",
+      "url": "https://oilprice.com/Energy/Gas-Prices/IEA-Numbers-Point-to-a-Two-Speed-Recovery-in-Global-Fuel-Prices.html",
       "category": "commodity",
       "commodities": [
         "oil"
       ],
       "title": {
-        "original": "Oil Prices Climb as U.S.-Iran Peace Hopes Fade",
+        "original": "IEA Numbers Point to a Two-Speed Recovery in Global Fuel Prices",
         "original_lang": "en",
-        "ko": "미국-이란 평화 희망이 사라지면서 유가 상승"
+        "ko": "IEA 번호는 글로벌 연료 가격의 2단 회복을 가리킵니다"
       },
-      "summary": "Crude oil prices moved higher today as the chances of a lasting peace between the United States and Iran shriveled following Iran’s release of six conditions earlier this week and President Trump’s unsurprising reaction to them. At the time of writing, Brent crude traded at $87.7",
-      "scores": {
-        "commodity": 3.0,
-        "diplomacy": 0.0,
-        "election": 0.0,
-        "region_weight": 1.35,
-        "freshness": 0.739,
-        "importance": 2.55,
-        "final": 2.951
-      },
-      "rank_reasons": [
-        "region:commodity_specialist*1.35",
-        "category:commodity",
-        "tier:A*1.00/g1",
-        "commodity:oil:3"
-      ],
-      "translation_status": "ok",
-      "country_tier": "A",
-      "info_grade": "1",
-      "country_hint": "USA"
-    },
-    {
-      "id": "5e9bf46669f7a082",
-      "published_at": "2026-08-11T10:00:47+00:00",
-      "source": {
-        "id": "hellenic_shipping",
-        "name": "Hellenic Shipping News",
-        "region": "commodity_specialist",
-        "slant": null
-      },
-      "url": "https://www.hellenicshippingnews.com/oil-pops-on-hormuz-jitters-u-s-emergency-crude-stocks-fall-below-300-mln-barrels/",
-      "category": "commodity",
-      "commodities": [
-        "oil",
-        "shipping"
-      ],
-      "title": {
-        "original": "Oil pops on Hormuz jitters; U.S. emergency crude stocks fall below 300 mln barrels",
-        "original_lang": "en",
-        "ko": "호르무즈 지터에 기름 튀김; 미국 비상 원유 재고가 3억 배럴 아래로 떨어짐"
-      },
-      "summary": "Oil prices advanced nearly 5% on Monday following a steep weekly loss, after Iran ruled out direct talks with the U.S. and said a full reopening of the Strait of Hormuz would only be possible after Washington met certain conditions. Meanwhile, Iran-backed Houthi attacks on Saudi ",
-      "scores": {
-        "commodity": 4.0,
-        "diplomacy": 1.0,
-        "election": 0.0,
-        "region_weight": 1.35,
-        "freshness": 0.857,
-        "importance": 2.264,
-        "final": 2.62
-      },
-      "rank_reasons": [
-        "region:commodity_specialist*1.35",
-        "category:commodity",
-        "tier:A*1.00/g3",
-        "commodity:oil:2",
-        "commodity:shipping:2",
-        "diplomacy:1"
-      ],
-      "translation_status": "ok",
-      "country_tier": "A",
-      "info_grade": "3",
-      "country_hint": "USA"
-    },
-    {
-      "id": "0a736a56321d4ebd",
-      "published_at": "2026-08-11T14:52:00+00:00",
-      "source": {
-        "id": "oilprice",
-        "name": "OilPrice.com",
-        "region": "commodity_specialist",
-        "slant": null
-      },
-      "url": "https://oilprice.com/Energy/Energy-General/Brent-Could-Hit-100-as-Hormuz-Crisis-Flares-Again.html",
-      "category": "commodity",
-      "commodities": [
-        "oil",
-        "shipping"
-      ],
-      "title": {
-        "original": "Brent Could Hit $100 as Hormuz Crisis Flares Again",
-        "original_lang": "en",
-        "ko": "브렌트, 다시 호르무즈 위기 신호탄으로 $ 100 타격 가능"
-      },
-      "summary": "Hormuz tensions are flaring again as Iranian exports collapse, pushing Brent toward $87 and raising the risk of another run toward $100. China’s Crude Drawdown Puts Iranian Barrels Back in Demand - Shrinking crude inventories in China might spur a buying spree over the upcoming w",
-      "scores": {
-        "commodity": 4.0,
-        "diplomacy": 0.0,
-        "election": 0.0,
-        "region_weight": 1.35,
-        "freshness": 0.981,
-        "importance": 2.167,
-        "final": 2.508
-      },
-      "rank_reasons": [
-        "region:commodity_specialist*1.35",
-        "category:commodity",
-        "tier:A*1.00/g3",
-        "commodity:oil:3",
-        "commodity:shipping:1"
-      ],
-      "translation_status": "ok",
-      "country_tier": "A",
-      "info_grade": "3",
-      "country_hint": "CHN"
-    },
-    {
-      "id": "590b01ca43491e63",
-      "published_at": "2026-08-11T08:13:55+00:00",
-      "source": {
-        "id": "seatrade",
-        "name": "Seatrade Maritime",
-        "region": "commodity_specialist",
-        "slant": null
-      },
-      "url": "https://www.seatrade-maritime.com/sustainability/chokepoint-paradox-oil-and-gas-disruption-drives-renewable-energy",
-      "category": "commodity",
-      "commodities": [
-        "shipping",
-        "oil"
-      ],
-      "title": {
-        "original": "Chokepoint paradox – oil and gas disruption drives renewable energy",
-        "original_lang": "en",
-        "ko": "초크포인트 역설 – 석유 및 가스 중단이 신재생 에너지를 이끈다"
-      },
-      "summary": "How Strait of Hormuz and the Red Sea conflicts have lit the fuse on an irreversible energy transition",
-      "scores": {
-        "commodity": 4.0,
-        "diplomacy": 1.0,
-        "election": 0.0,
-        "region_weight": 1.35,
-        "freshness": 0.816,
-        "importance": 2.155,
-        "final": 2.494
-      },
-      "rank_reasons": [
-        "region:commodity_specialist*1.35",
-        "category:commodity",
-        "tier:A*1.00/g3",
-        "commodity:oil:1",
-        "commodity:shipping:3",
-        "diplomacy:1"
-      ],
-      "translation_status": "ok",
-      "country_tier": "A",
-      "info_grade": "3",
-      "country_hint": "USA"
-    },
-    {
-      "id": "d48f7937ac6055da",
-      "published_at": "2026-08-11T08:45:00+00:00",
-      "source": {
-        "id": "daily_sabah",
-        "name": "Daily Sabah",
-        "region": "turkey",
-        "slant": null
-      },
-      "url": "https://www.dailysabah.com/business/energy/brent-oil-tests-90-as-hopes-for-us-iran-deal-diminish",
-      "category": "commodity",
-      "commodities": [
-        "oil"
-      ],
-      "title": {
-        "original": "Brent oil tests $90 as hopes for US-Iran deal diminish",
-        "original_lang": "en",
-        "ko": "미국-이란 거래에 대한 희망으로 브렌트유 테스트 $ 90 감소"
-      },
-      "summary": "Brent North Sea crude, the benchmark for international oil prices, rose briefly above $90 on Tuesday as hopes of a U.S.-Iran agreement to bring the war to an end continued to dimin...",
-      "scores": {
-        "commodity": 3.0,
-        "diplomacy": 0.0,
-        "election": 0.0,
-        "region_weight": 1.3,
-        "freshness": 0.828,
-        "importance": 2.057,
-        "final": 2.334
-      },
-      "rank_reasons": [
-        "region:turkey*1.30",
-        "category:commodity",
-        "tier:B*0.72/g1",
-        "commodity:oil:3"
-      ],
-      "translation_status": "ok",
-      "country_tier": "B",
-      "info_grade": "1",
-      "country_hint": "TUR"
-    },
-    {
-      "id": "e17ca23eb918f47e",
-      "published_at": "2026-08-11T13:07:03+00:00",
-      "source": {
-        "id": "middle_east_eye",
-        "name": "Middle East Eye",
-        "region": "mena",
-        "slant": null
-      },
-      "url": "https://www.middleeasteye.net/live-blog/live-blog-update/iran-says-us-went-demanding-surrender-seeking-talks-oil-price-rises",
-      "category": "commodity",
-      "commodities": [
-        "oil",
-        "shipping"
-      ],
-      "title": {
-        "original": "Iran says US went from demanding surrender to seeking talks as oil price rises",
-        "original_lang": "en",
-        "ko": "이란은 미국이 유가 상승에 따라 항복을 요구하는 것에서 회담을 모색하는 것으로 넘어갔다고 말한다."
-      },
-      "summary": "Iran says US went from demanding surrender to seeking talks as oil price rises Iranian Foreign Minister Abbas Araghchi says Iran has proved itself “a tough and invincible power” by resisting the US and Israel , as collapsing shipping traffic through the Strait of Hormuz pushes oi",
+      "summary": "Five months after the U.S. and Israel opened a war with Iran, global fuel markets still haven't settled down, and the latest IEA data prove it. The IEA's monthly end-use price tracker, updated Aug. 7 and covering prices through July, shows the average per-liter cost of automotive",
       "scores": {
         "commodity": 2.0,
-        "diplomacy": 2.0,
+        "diplomacy": 1.0,
         "election": 0.0,
-        "region_weight": 1.4,
-        "freshness": 0.935,
-        "importance": 1.84,
+        "region_weight": 1.35,
+        "freshness": 0.691,
+        "importance": 2.212,
+        "final": 2.56
+      },
+      "rank_reasons": [
+        "region:commodity_specialist*1.35",
+        "category:commodity",
+        "tier:A*1.00/g1",
+        "commodity:oil:2",
+        "diplomacy:1"
+      ],
+      "translation_status": "ok",
+      "country_tier": "A",
+      "info_grade": "1",
+      "country_hint": "USA"
+    },
+    {
+      "id": "937670226d0d470a",
+      "published_at": "2026-08-11T19:00:00+00:00",
+      "source": {
+        "id": "oilprice",
+        "name": "OilPrice.com",
+        "region": "commodity_specialist",
+        "slant": null
+      },
+      "url": "https://oilprice.com/Geopolitics/Asia/Armenia-Azerbaijan-Peace-Plan-Stalls-One-Year-After-Washington-Breakthrough.html",
+      "category": "cabinet_reshuffle",
+      "commodities": [],
+      "title": {
+        "original": "Armenia-Azerbaijan Peace Plan Stalls One Year After Washington Breakthrough",
+        "original_lang": "en",
+        "ko": "아르메니아-아제르바이잔 평화 계획 (Armenia-Azerbaijan Peace Plan) 은 워싱턴의 돌파구 이후 1년이 지난"
+      },
+      "summary": "One year after the signing of a provisional peace deal in Washington, DC, American, Armenian, and Azerbaijani officials continue to exude optimism about the potential for stability and prosperity in the South Caucasus. But movement toward implementing the joint declaration has be",
+      "scores": {
+        "commodity": 0,
+        "diplomacy": 0.0,
+        "election": 1.2,
+        "region_weight": 1.35,
+        "freshness": 0.751,
+        "importance": 2.098,
+        "final": 2.428
+      },
+      "rank_reasons": [
+        "region:commodity_specialist*1.35",
+        "category:cabinet_reshuffle",
+        "tier:A*1.00/g1",
+        "election:cabinet_reshuffle:1.2",
+        "cabinet_reshuffle"
+      ],
+      "translation_status": "ok",
+      "country_tier": "A",
+      "info_grade": "1",
+      "country_hint": "USA",
+      "election_type": "cabinet_reshuffle"
+    },
+    {
+      "id": "a5f64bc5ed51783e",
+      "published_at": "2026-08-11T17:31:03+00:00",
+      "source": {
+        "id": "tass_en",
+        "name": "TASS",
+        "region": "russia",
+        "slant": null
+      },
+      "url": "https://tass.com/world/2171557",
+      "category": "cabinet_reshuffle",
+      "commodities": [],
+      "title": {
+        "original": "US lawmaker Luna lauds Russia’s release of Gilman",
+        "original_lang": "en",
+        "ko": "미국 국회의원 루나는 러시아의 길먼 석방에 찬사를 보낸다."
+      },
+      "summary": "The lawmaker noted the contribution of US Secretary of State Marco Rubio, special envoy to the US President Steve Witkoff and \"all parties involved\"",
+      "scores": {
+        "commodity": 0,
+        "diplomacy": 0.0,
+        "election": 1.2,
+        "region_weight": 1.25,
+        "freshness": 0.721,
+        "importance": 2.013,
+        "final": 2.24
+      },
+      "rank_reasons": [
+        "region:russia*1.25",
+        "category:cabinet_reshuffle",
+        "tier:A*1.00/g1",
+        "election:cabinet_reshuffle:1.2",
+        "cabinet_reshuffle"
+      ],
+      "translation_status": "ok",
+      "country_tier": "A",
+      "info_grade": "1",
+      "country_hint": "RUS",
+      "election_type": "cabinet_reshuffle"
+    },
+    {
+      "id": "c4cd3b62c124418d",
+      "published_at": "2026-08-11T17:00:00+00:00",
+      "source": {
+        "id": "oilprice",
+        "name": "OilPrice.com",
+        "region": "commodity_specialist",
+        "slant": null
+      },
+      "url": "https://oilprice.com/Metals/Gold/Gold-Nears-Two-Month-High-Ahead-of-Wednesdays-CPI-Report.html",
+      "category": "commodity",
+      "commodities": [
+        "oil",
+        "gold",
+        "silver",
+        "shipping"
+      ],
+      "title": {
+        "original": "Gold Nears Two-Month High Ahead of Wednesday's CPI Report",
+        "original_lang": "en",
+        "ko": "수요일 CPI 보고서를 앞두고 Gold Nears 2개월 최고치"
+      },
+      "summary": "Gold pushed toward $4,450 an ounce Tuesday, its best level in about two months, as a stalled U.S.-Iran deal to reopen the Strait of Hormuz kept oil elevated and traders braced for a Wednesday inflation report that could decide whether a September Fed rate hike is really off the t",
+      "scores": {
+        "commodity": 4.0,
+        "diplomacy": 1.0,
+        "election": 0.0,
+        "region_weight": 1.35,
+        "freshness": 0.711,
+        "importance": 1.876,
         "final": 2.171
       },
       "rank_reasons": [
-        "region:mena*1.40",
+        "region:commodity_specialist*1.35",
         "category:commodity",
         "tier:A*1.00/g3",
         "commodity:oil:1",
-        "commodity:shipping:1",
-        "diplomacy:2"
-      ],
-      "translation_status": "ok",
-      "country_tier": "A",
-      "info_grade": "3",
-      "country_hint": "USA"
-    },
-    {
-      "id": "96a70c40dc9a7d89",
-      "published_at": "2026-08-11T08:09:24+00:00",
-      "source": {
-        "id": "ndtv_world",
-        "name": "NDTV World",
-        "region": "india",
-        "slant": null
-      },
-      "url": "https://www.ndtv.com/world-news/us-iran-war-6-ships-cross-hormuz-down-from-140-in-pre-war-days-amid-us-iran-deadlock-11893236#publisher=newsstand",
-      "category": "commodity",
-      "commodities": [
-        "shipping"
-      ],
-      "title": {
-        "original": "6 Ships Cross Hormuz, Down From 140 In Pre-War Days Amid US-Iran Deadlock",
-        "original_lang": "en",
-        "ko": "6척 호르무즈 교차, 미국-이란 교착 상태 속에서 전쟁 전 140일 만에 감소"
-      },
-      "summary": "In pre-war days, about 130 to 140 ships typically transited the strait.",
-      "scores": {
-        "commodity": 1.0,
-        "diplomacy": 1.0,
-        "election": 0.0,
-        "region_weight": 1.3,
-        "freshness": 0.814,
-        "importance": 1.67,
-        "final": 1.895
-      },
-      "rank_reasons": [
-        "region:india*1.30",
-        "category:commodity",
-        "tier:A*1.00/g1",
-        "commodity:shipping:1",
-        "diplomacy:1"
-      ],
-      "translation_status": "ok",
-      "country_tier": "A",
-      "info_grade": "1",
-      "country_hint": "IND"
-    },
-    {
-      "id": "3f0f85d76d27a3ec",
-      "published_at": "2026-08-11T05:30:09+00:00",
-      "source": {
-        "id": "scmp",
-        "name": "South China Morning Post",
-        "region": "china",
-        "slant": null
-      },
-      "url": "https://www.scmp.com/week-asia/politics/article/3363590/brics-stiffest-test-can-india-china-rally-bloc-resolve-strait-hormuz-crisis?utm_source=rss_feed",
-      "category": "commodity",
-      "commodities": [
-        "shipping"
-      ],
-      "title": {
-        "original": "Brics’ ‘stiffest test’: can India, China rally bloc to resolve Strait of Hormuz crisis?",
-        "original_lang": "en",
-        "ko": "브릭스의 ’가장 엄격한 테스트’: 인도, 중국이 호르무즈 해협 위기를 해결하기 위해 블록을 결집할 수 있을까?"
-      },
-      "summary": "A summit next month by the Brics grouping of nations has raised hopes that major players India and China will align to rally member states to resolve the Strait of Hormuz crisis, with the United States making little headway. Analysts say the forum from September 12 to 13 amid the",
-      "scores": {
-        "commodity": 1.0,
-        "diplomacy": 3.0,
-        "election": 0.0,
-        "region_weight": 1.25,
-        "freshness": 0.757,
-        "importance": 1.398,
-        "final": 1.555
-      },
-      "rank_reasons": [
-        "region:china*1.25",
-        "category:commodity",
-        "tier:A*1.00/g3",
-        "commodity:shipping:1",
-        "diplomacy:3"
-      ],
-      "translation_status": "ok",
-      "country_tier": "A",
-      "info_grade": "3",
-      "country_hint": "USA"
-    },
-    {
-      "id": "c024e462885ce24e",
-      "published_at": "2026-08-11T11:09:56+00:00",
-      "source": {
-        "id": "middle_east_eye",
-        "name": "Middle East Eye",
-        "region": "mena",
-        "slant": null
-      },
-      "url": "https://www.middleeasteye.net/live-blog/live-blog-update/three-killed-houthi-attack-cargo-ship-bab-al-mandab",
-      "category": "commodity",
-      "commodities": [
-        "shipping"
-      ],
-      "title": {
-        "original": "Three killed in Houthi attack on cargo ship in Bab al-Mandab",
-        "original_lang": "en",
-        "ko": "바브알만다브 화물선 후티 공격으로 3명 사망"
-      },
-      "summary": "Three killed in Houthi attack on cargo ship in Bab al-Mandab The United Kingdom Maritime Trade Operations centre (UKMTO), the international reference point for maritime security incidents, has received a report of an attack on a cargo ship in Bab al-Mandab off the coast of Mocha ",
-      "scores": {
-        "commodity": 2.0,
-        "diplomacy": 0.0,
-        "election": 0.0,
-        "region_weight": 1.4,
-        "freshness": 0.885,
-        "importance": 1.126,
-        "final": 1.329
-      },
-      "rank_reasons": [
-        "region:mena*1.40",
-        "category:commodity",
-        "tier:A*1.00/g3",
-        "commodity:shipping:2",
-        "bridge:1"
-      ],
-      "translation_status": "ok",
-      "country_tier": "A",
-      "info_grade": "3",
-      "country_hint": "GBR"
-    },
-    {
-      "id": "0aa224c26a1e305f",
-      "published_at": "2026-08-11T15:24:14+00:00",
-      "source": {
-        "id": "bloomberg_markets",
-        "name": "Bloomberg Markets",
-        "region": "west",
-        "slant": null
-      },
-      "url": "https://www.bloomberg.com/news/videos/2026-08-11/s-p-500-hovers-near-record-highs-on-us-iran-hopes-video",
-      "category": "commodity",
-      "commodities": [
-        "oil",
-        "shipping"
-      ],
-      "title": {
-        "original": "S&P 500 Hovers Near Record Highs on US-Iran Hopes",
-        "original_lang": "en",
-        "ko": "미국-이란 호프의 S&P 500 호버 사상 최고치"
-      },
-      "summary": "Stocks traded near all-time highs and bonds rose as hopes for a deal to revive the Strait of Hormuz trimmed a rally in oil prices. Eric Freedman, CIO at Northern Trust, discusses the current market landscape. (Source: Bloomberg)",
-      "scores": {
-        "commodity": 2.0,
-        "diplomacy": 1.0,
-        "election": 0.0,
-        "region_weight": 0.55,
-        "freshness": 0.996,
-        "importance": 1.53,
-        "final": 1.22
-      },
-      "rank_reasons": [
-        "region:west*0.55",
-        "category:commodity",
-        "tier:A*1.00/g3",
-        "commodity:oil:1",
+        "commodity:gold:1",
+        "commodity:silver:1",
         "commodity:shipping:1",
         "diplomacy:1"
       ],
@@ -1031,40 +824,40 @@
       "country_hint": "USA"
     },
     {
-      "id": "88632bdd3960bfe9",
-      "published_at": "2026-08-11T12:27:15+00:00",
+      "id": "4b2549bdec418522",
+      "published_at": "2026-08-12T03:41:42+00:00",
       "source": {
         "id": "aljazeera_en",
         "name": "Al Jazeera",
         "region": "mena",
         "slant": null
       },
-      "url": "https://www.aljazeera.com/news/2026/8/11/iran-us-set-new-conditions-during-hormuz-talks-what-does-this-mean?traffic_source=rss",
+      "url": "https://www.aljazeera.com/economy/2026/8/12/oil-prices-rise-as-attacks-dent-hopes-for-strait-of-hormuz-reopening?traffic_source=rss",
       "category": "commodity",
       "commodities": [
         "oil",
         "shipping"
       ],
       "title": {
-        "original": "Iran, US set new conditions during Hormuz talks: What does this mean?",
+        "original": "Oil prices rise as attacks dent hopes for Strait of Hormuz reopening",
         "original_lang": "en",
-        "ko": "이란, 미국, 호르무즈 회담 중 새로운 조건 설정: 이것은 무엇을 의미합니까?"
+        "ko": "호르무즈 해협 재개에 대한 공격에 따라 유가 상승"
       },
-      "summary": "Oil prices surge as talks stall over competing demands, hampering prospects for reopening crucial strait.",
+      "summary": "Brent crude climbs as renewed violence dampens hopes for a return to stability in energy markets.",
       "scores": {
-        "commodity": 2.0,
+        "commodity": 4.0,
         "diplomacy": 1.0,
         "election": 0.0,
         "region_weight": 1.4,
-        "freshness": 0.918,
-        "importance": 1.015,
-        "final": 1.198
+        "freshness": 0.956,
+        "importance": 1.818,
+        "final": 2.145
       },
       "rank_reasons": [
         "region:mena*1.40",
         "category:commodity",
         "tier:B*0.72/g3",
-        "commodity:oil:1",
+        "commodity:oil:3",
         "commodity:shipping:1",
         "diplomacy:1"
       ],
@@ -1074,39 +867,205 @@
       "country_hint": "SAU"
     },
     {
-      "id": "15f7f2f8fc1c1da7",
-      "published_at": "2026-08-11T09:49:00+00:00",
+      "id": "e1acfeea59556c86",
+      "published_at": "2026-08-12T00:00:00+00:00",
       "source": {
-        "id": "daily_sabah",
-        "name": "Daily Sabah",
-        "region": "turkey",
+        "id": "aljazeera_en",
+        "name": "Al Jazeera",
+        "region": "mena",
         "slant": null
       },
-      "url": "https://www.dailysabah.com/business/economy/europes-energy-crisis-far-from-over-as-winter-gas-risks-return",
+      "url": "https://www.aljazeera.com/news/liveblog/2026/8/12/iran-war-live-us-fires-missiles-at-cargo-ship-violating-iran-blockade?traffic_source=rss",
       "category": "commodity",
       "commodities": [
-        "gas"
+        "shipping"
       ],
       "title": {
-        "original": "Europe's energy crisis far from over as winter gas risks return",
+        "original": "Iran war live: Trump claims US in ‘total control’ of Strait of Hormuz",
         "original_lang": "en",
-        "ko": "겨울철 가스 위험이 회복됨에 따라 유럽의 에너지 위기"
+        "ko": "이란 전쟁 생중계: 트럼프, 미국이 호르무즈 해협을 ‘완전히 장악’ 했다고 주장"
       },
-      "summary": "Four years after Russia's invasion of Ukraine triggered an energy crisis, European countries are facing fresh questions about natural gas security as the war in the Middle Eas...",
+      "summary": "Qatar says negotiations between Oman, Iran over future of shipping through Strait of Hormuz are making major progress.",
       "scores": {
         "commodity": 1.0,
+        "diplomacy": 1.0,
+        "election": 0.0,
+        "region_weight": 1.4,
+        "freshness": 0.863,
+        "importance": 1.274,
+        "final": 1.503
+      },
+      "rank_reasons": [
+        "region:mena*1.40",
+        "category:commodity",
+        "tier:B*0.72/g1",
+        "commodity:shipping:1",
+        "diplomacy:1"
+      ],
+      "translation_status": "ok",
+      "country_tier": "B",
+      "info_grade": "1",
+      "country_hint": "SAU"
+    },
+    {
+      "id": "20d77a144ca44f8b",
+      "published_at": "2026-08-11T23:57:55+00:00",
+      "source": {
+        "id": "aljazeera_en",
+        "name": "Al Jazeera",
+        "region": "mena",
+        "slant": null
+      },
+      "url": "https://www.aljazeera.com/video/newsfeed/2026/8/11/cargo-ship-in-flames-after-houthi-attack-in-bab-al-mandeb-strait?traffic_source=rss",
+      "category": "commodity_diplomacy",
+      "commodities": [
+        "shipping"
+      ],
+      "title": {
+        "original": "Cargo ship in flames after Houthi attack in Bab al-Mandeb strait",
+        "original_lang": "en",
+        "ko": "바브 알만데브 해협에서 후티가 공격한 후 화물선이 화염에 휩싸였다."
+      },
+      "summary": "Footage shows an Egyptian-owned cargo vessel in flames in the Bab al-Mandeb strait after a suspected Houthi attack.",
+      "scores": {
+        "commodity": 1.0,
+        "diplomacy": 1.0,
+        "election": 0.0,
+        "region_weight": 1.4,
+        "freshness": 0.862,
+        "importance": 1.199,
+        "final": 1.415
+      },
+      "rank_reasons": [
+        "region:mena*1.40",
+        "category:commodity_diplomacy",
+        "tier:B*0.72/g2",
+        "commodity:shipping:1",
+        "diplomacy:1",
+        "bridge:1"
+      ],
+      "translation_status": "ok",
+      "country_tier": "B",
+      "info_grade": "2",
+      "country_hint": "SAU"
+    },
+    {
+      "id": "b0c11f429484c499",
+      "published_at": "2026-08-12T04:34:56+00:00",
+      "source": {
+        "id": "business_standard_markets",
+        "name": "Business Standard Markets",
+        "region": "india",
+        "slant": null
+      },
+      "url": "https://www.business-standard.com/markets/commodities/gold-rises-1-182-on-mcx-silver-gains-2-314-on-investment-demand-126081200395_1.html",
+      "category": "commodity",
+      "commodities": [
+        "gold",
+        "silver"
+      ],
+      "title": {
+        "original": "Gold rises ₹1,182 on MCX, silver gains ₹2,314 on investment demand",
+        "original_lang": "en",
+        "ko": "금은 MCX에서 ₹ 1,182 상승, 은은 투자 수요에 따라 ₹ 2,314 상승"
+      },
+      "summary": "In the global market, gold was trading near $4,475 per ounce on Comex, while silver was around $66 per ounce",
+      "scores": {
+        "commodity": 2.0,
         "diplomacy": 0.0,
         "election": 0.0,
         "region_weight": 1.3,
-        "freshness": 0.853,
-        "importance": 0.981,
-        "final": 1.113
+        "freshness": 0.98,
+        "importance": 1.082,
+        "final": 1.228
       },
       "rank_reasons": [
-        "region:turkey*1.30",
+        "region:india*1.30",
+        "category:commodity",
+        "tier:A*1.00/g3",
+        "commodity:gold:1",
+        "commodity:silver:1"
+      ],
+      "translation_status": "ok",
+      "country_tier": "A",
+      "info_grade": "3",
+      "country_hint": "IND"
+    },
+    {
+      "id": "d5c35e25b75b4d5e",
+      "published_at": "2026-08-12T04:20:07+00:00",
+      "source": {
+        "id": "business_standard_markets",
+        "name": "Business Standard Markets",
+        "region": "india",
+        "slant": null
+      },
+      "url": "https://www.business-standard.com/markets/capital-market-news/indices-edge-lower-in-early-trade-breadth-positive-126081200372_1.html",
+      "category": "commodity",
+      "commodities": [
+        "oil"
+      ],
+      "title": {
+        "original": "Indices edge lower in early trade; breadth positive",
+        "original_lang": "en",
+        "ko": "조기 거래에서 지수 우위 하향, 폭 긍정적"
+      },
+      "summary": "The Nifty traded below the 24,550 mark, while sentiment remained subdued amid a lack of strong directional cues. Investors continued to monitor movements in crude oil prices and developments on the global geopolitical front for further indications on the market's near-term trajec",
+      "scores": {
+        "commodity": 2.0,
+        "diplomacy": 0.0,
+        "election": 0.0,
+        "region_weight": 1.3,
+        "freshness": 0.974,
+        "importance": 1.075,
+        "final": 1.22
+      },
+      "rank_reasons": [
+        "region:india*1.30",
+        "category:commodity",
+        "tier:A*1.00/g3",
+        "commodity:oil:2"
+      ],
+      "translation_status": "ok",
+      "country_tier": "A",
+      "info_grade": "3",
+      "country_hint": "IND"
+    },
+    {
+      "id": "449923d0e47aa090",
+      "published_at": "2026-08-10T06:05:58+00:00",
+      "source": {
+        "id": "arab_news",
+        "name": "Arab News",
+        "region": "mena",
+        "slant": null
+      },
+      "url": "https://www.arabnews.com/node/2654125/world",
+      "category": "commodity",
+      "commodities": [
+        "oil"
+      ],
+      "title": {
+        "original": "Ukrainian drone attack on Russian oil hub kills 13",
+        "original_lang": "en",
+        "ko": "러시아 석유 허브에 대한 우크라이나 드론 공격으로 13명 사망"
+      },
+      "summary": "Ukraine attacked the petroleum hub of Nizhnekamsk in central Russia’s Tatarstan region on Monday, killing 13 people and injuring 75 others, local authorities said, in one of the deadliest attacks in the country in the 4-year-old war. The Ukrainian military said it hit an oil refi",
+      "scores": {
+        "commodity": 2.0,
+        "diplomacy": 0.0,
+        "election": 0.0,
+        "region_weight": 1.4,
+        "freshness": 0.35,
+        "importance": 0.927,
+        "final": 1.094
+      },
+      "rank_reasons": [
+        "region:mena*1.40",
         "category:commodity",
         "tier:A*1.00/g1",
-        "commodity:gas:1"
+        "commodity:oil:2",
+        "bridge:1"
       ],
       "translation_status": "ok",
       "country_tier": "A",
@@ -1154,77 +1113,120 @@
       "election_type": "cabinet_reshuffle"
     },
     {
-      "id": "1d610fa014fb9213",
-      "published_at": "2026-08-11T14:41:00+00:00",
+      "id": "8bf7b09b5ae6cb38",
+      "published_at": "2026-08-11T23:35:34+00:00",
       "source": {
-        "id": "interfax_ru",
-        "name": "Interfax",
-        "region": "russia",
+        "id": "bloomberg_markets",
+        "name": "Bloomberg Markets",
+        "region": "west",
         "slant": null
       },
-      "url": "https://www.interfax.ru/world/1108732",
+      "url": "https://www.bloomberg.com/news/articles/2026-08-11/gold-steadies-as-traders-watch-us-inflation-for-rate-hike-clues",
       "category": "commodity",
       "commodities": [
-        "rice"
+        "gold",
+        "shipping"
       ],
       "title": {
-        "original": "Глава МИД Испании посоветовал мигрантам не рисковать жизнями и возвращаться в Марокко",
-        "original_lang": "ru",
-        "ko": "스페인 외무장관은 이주민들에게 목숨을 걸고 모로코로 돌아가지 말 것을 권고했다."
+        "original": "Gold Advances as Traders Watch US Inflation for Rate-Hike Clues",
+        "original_lang": "en",
+        "ko": "트레이더들이 금리 인상 단서를 찾기 위해 미국 인플레이션을 지켜보면서 금의 선진화"
       },
-      "summary": "Министр иностранных дел Испании Хосе Мануэль Альбарес призвал нелегальных мигрантов из Марокко не рисковать жизнями и вернуться из Сеуты - испанского анклава в Северной Африке - по домам, пишет Guardian.",
+      "summary": "Gold advanced, as traders weighed prospects for a deal to reopen the Strait of Hormuz while awaiting US inflation data that could provide fresh clues on the Federal Reserve’s interest-rate path.",
       "scores": {
-        "commodity": 1.0,
+        "commodity": 2.0,
         "diplomacy": 1.0,
         "election": 0.0,
-        "region_weight": 1.25,
-        "freshness": 0.976,
-        "importance": 0.961,
-        "final": 1.069
+        "region_weight": 0.55,
+        "freshness": 0.853,
+        "importance": 1.311,
+        "final": 1.045
       },
       "rank_reasons": [
-        "region:russia*1.25",
+        "region:west*0.55",
         "category:commodity",
         "tier:A*1.00/g3",
-        "commodity:rice:1",
+        "commodity:gold:1",
+        "commodity:shipping:1",
         "diplomacy:1"
       ],
       "translation_status": "ok",
       "country_tier": "A",
       "info_grade": "3",
-      "country_hint": "RUS"
+      "country_hint": "USA"
     },
     {
-      "id": "d04247a0393ecf18",
-      "published_at": "2026-08-11T10:46:14+00:00",
+      "id": "822af05edd59dd69",
+      "published_at": "2026-08-11T22:12:00+00:00",
       "source": {
-        "id": "middle_east_eye",
-        "name": "Middle East Eye",
-        "region": "mena",
+        "id": "japan_times",
+        "name": "Japan Times",
+        "region": "japan",
         "slant": null
       },
-      "url": "https://www.middleeasteye.net/live-blog/live-blog-update/qatar-says-oman-iran-talks-hormuz-advanced-stage",
+      "url": "https://www.japantimes.co.jp/news/2026/08/12/world/politics/pakistan-deal-iran-us/",
       "category": "commodity",
       "commodities": [
         "shipping"
       ],
       "title": {
-        "original": "Qatar says Oman-Iran talks on Hormuz at advanced stage",
+        "original": "Pakistan says deal is close even as Iran, U.S. harden stances",
         "original_lang": "en",
-        "ko": "카타르, 고급 단계에서 호르무즈에서 오만-이란 회담"
+        "ko": "파키스탄은 이란과도 거래가 가까워졌다고 말하지만, 미국은 강경한 입장을 취하고 있다."
       },
-      "summary": "Qatar says Oman-Iran talks on Hormuz at advanced stage Talks between Oman and Iran on the future of shipping in the Strait of Hormuz are now at an advanced stage, Qatar's foreign ministry spokesperson said in a briefing on Tuesday.",
+      "summary": "While Tehran and Oman may be nearing an agreement, it remains unclear how that would affect the reopening of the Strait of Hormuz.",
+      "scores": {
+        "commodity": 1.0,
+        "diplomacy": 1.0,
+        "election": 0.0,
+        "region_weight": 1.25,
+        "freshness": 0.821,
+        "importance": 0.808,
+        "final": 0.899
+      },
+      "rank_reasons": [
+        "region:japan*1.25",
+        "category:commodity",
+        "tier:A*1.00/g3",
+        "commodity:shipping:1",
+        "diplomacy:1"
+      ],
+      "translation_status": "ok",
+      "country_tier": "A",
+      "info_grade": "3",
+      "country_hint": "JPN"
+    },
+    {
+      "id": "3a95d7b92cff7629",
+      "published_at": "2026-08-11T11:26:54+00:00",
+      "source": {
+        "id": "aa_world",
+        "name": "Anadolu Agency",
+        "region": "turkey",
+        "slant": null
+      },
+      "url": "https://www.aa.com.tr/en/world/qatar-says-iran-oman-hormuz-talks-reached-advanced-stage-urges-reopening/4024135",
+      "category": "commodity",
+      "commodities": [
+        "shipping"
+      ],
+      "title": {
+        "original": "Qatar says Iran-Oman Hormuz talks reached ‘advanced stage,’ urges reopening",
+        "original_lang": "en",
+        "ko": "카타르는 이란-오만 호르무즈 회담이 ‘진전된 단계‘ 에 이르렀다고 말하며, 재개통을 촉구한다."
+      },
+      "summary": "Foreign Ministry spokesman says negotiations on Strait of Hormuz arrangements at ‘critical juncture’",
       "scores": {
         "commodity": 1.0,
         "diplomacy": 2.0,
         "election": 0.0,
-        "region_weight": 1.4,
-        "freshness": 0.876,
-        "importance": 0.893,
-        "final": 1.054
+        "region_weight": 1.3,
+        "freshness": 0.609,
+        "importance": 0.621,
+        "final": 0.705
       },
       "rank_reasons": [
-        "region:mena*1.40",
+        "region:turkey*1.30",
         "category:commodity",
         "tier:B*0.72/g3",
         "commodity:shipping:1",
@@ -1233,7 +1235,7 @@
       "translation_status": "ok",
       "country_tier": "B",
       "info_grade": "3",
-      "country_hint": "SAU"
+      "country_hint": "TUR"
     },
     {
       "id": "d71187eb78df84df",
@@ -1260,9 +1262,9 @@
         "diplomacy": 2.0,
         "election": 0.0,
         "region_weight": 1.25,
-        "freshness": 0.877,
-        "importance": 0.894,
-        "final": 0.995
+        "freshness": 0.598,
+        "importance": 0.61,
+        "final": 0.679
       },
       "rank_reasons": [
         "region:taiwan*1.25",
@@ -1277,80 +1279,40 @@
       "country_hint": "TWN"
     },
     {
-      "id": "f1319e5f3e34cfd1",
-      "published_at": "2026-08-11T06:23:00+00:00",
-      "source": {
-        "id": "japan_times",
-        "name": "Japan Times",
-        "region": "japan",
-        "slant": null
-      },
-      "url": "https://www.japantimes.co.jp/business/2026/08/11/companies/russia-richest-woman-business/",
-      "category": "commodity",
-      "commodities": [
-        "oil"
-      ],
-      "title": {
-        "original": "She is Russia’s richest woman. Her business empire is going up in flames.",
-        "original_lang": "en",
-        "ko": "그녀는 러시아에서 가장 부유한 여성입니다. 그녀의 사업 제국이 불길에 휩싸이고 있습니다."
-      },
-      "summary": "After months of attacks on Russian oil refineries, Kyiv has now targeted at least 23 Wildberries facilities in an attempt to bring the war home for more Russians.",
-      "scores": {
-        "commodity": 1.0,
-        "diplomacy": 0.0,
-        "election": 0.0,
-        "region_weight": 1.25,
-        "freshness": 0.775,
-        "importance": 0.892,
-        "final": 0.992
-      },
-      "rank_reasons": [
-        "region:japan*1.25",
-        "category:commodity",
-        "tier:A*1.00/g1",
-        "commodity:oil:1"
-      ],
-      "translation_status": "ok",
-      "country_tier": "A",
-      "info_grade": "1",
-      "country_hint": "RUS"
-    },
-    {
-      "id": "e34f685261e21be8",
-      "published_at": "2026-08-10T13:11:03+00:00",
+      "id": "541728f5df545f50",
+      "published_at": "2026-08-11T04:24:46+00:00",
       "source": {
         "id": "cgtn_world",
         "name": "CGTN",
         "region": "china",
         "slant": null
       },
-      "url": "https://news.cgtn.com/news/2026-08-10/Iran-says-fees-should-be-charged-for-passage-through-Strait-of-Hormuz-1Pv2OZZw4lG/p.html?UTM_Source=cgtn&UTM_Medium=rss&UTM_Campaign=World",
+      "url": "https://news.cgtn.com/news/2026-08-11/Hopes-for-Hormuz-deal-fade-as-Trump-demands-Iranian-reparations-1Pw4ROMTlf2/p.html?UTM_Source=cgtn&UTM_Medium=rss&UTM_Campaign=World",
       "category": "commodity",
       "commodities": [
         "shipping"
       ],
       "title": {
-        "original": "Iran says fees should be charged for passage through Strait of Hormuz",
+        "original": "Hopes for Hormuz deal fade as Trump demands Iranian reparations",
         "original_lang": "en",
-        "ko": "이란은 호르무즈 해협을 통과하는 데 수수료가 부과되어야 한다고 말한다."
+        "ko": "트럼프가 이란의 배상을 요구함에 따라 호르무즈 거래에 대한 희망은 사라진다."
       },
-      "summary": "Fees should be charged for maritime services provided in the Strait of Hormuz, Iranian Foreign Ministry spokesman Esmaeil Baghaei said on Monday.",
+      "summary": "US President Donald Trump on Monday responded to Iran's conditions for a peace deal with his own demands ​that Iran pay compensation for people killed in wars, attacks and protests, in a rhetorical escalation likely to complicate efforts to reopen the Strait of ‌Hormuz.",
       "scores": {
         "commodity": 1.0,
-        "diplomacy": 2.0,
+        "diplomacy": 1.0,
         "election": 0.0,
         "region_weight": 1.25,
-        "freshness": 0.481,
-        "importance": 0.681,
-        "final": 0.757
+        "freshness": 0.501,
+        "importance": 0.493,
+        "final": 0.548
       },
       "rank_reasons": [
         "region:china*1.25",
         "category:commodity",
         "tier:A*1.00/g3",
         "commodity:shipping:1",
-        "diplomacy:2"
+        "diplomacy:1"
       ],
       "translation_status": "ok",
       "country_tier": "A",
@@ -1358,33 +1320,33 @@
       "country_hint": "CHN"
     },
     {
-      "id": "6787ca712a13eb17",
-      "published_at": "2026-08-11T14:34:14+00:00",
+      "id": "2126e45d048564f3",
+      "published_at": "2026-08-12T05:03:00+00:00",
       "source": {
         "id": "ltn",
         "name": "Liberty Times",
         "region": "taiwan",
         "slant": "pan_green"
       },
-      "url": "https://ec.ltn.com.tw/article/breakingnews/5536543",
+      "url": "https://estate.ltn.com.tw/article/28610",
       "category": "commodity",
       "commodities": [
         "silver"
       ],
       "title": {
-        "original": "國票證副董兼雷虎董座 金管會：未直接違反產金分離規定",
+        "original": "土地不在自己名下仍有優惠？符合「這條件」 出售照享10％土增稅率",
         "original_lang": "zh-TW",
-        "ko": "Thunder Tiger의 National Securities and Financial Supervisory Board 부국장: 생산 및 금 규제의 분리를 직접적으로 위반하지 않음"
+        "ko": "토지가 자신의 이름으로 거래를하지 않습니까? 이 조건을 충족하는 면허 판매에 대한 10% 토지세 인상"
       },
-      "summary": "國票證券副董事長陳冠如同時擔任雷虎科技董事長，且兼任國票金控董事，引發外界關注是否涉及違反「產金分離」或競業禁止等規定？對此，金管會表示，金控和銀行的「產金分離」相關規定...…",
+      "summary": "土地信託給銀行，名義人都變了，出售時還能享10％土地增值稅優惠嗎？地方稅務局表示，若委託人與受益人為同一人，屬於「自益信託」，且符合自用住宅用地相關規定，即使土地已登記在受託人名下，出售時仍可申請按10％優惠稅率課徵土地增值稅。…",
       "scores": {
         "commodity": 1.0,
         "diplomacy": 0.0,
         "election": 0.0,
         "region_weight": 1.25,
-        "freshness": 0.973,
-        "importance": 0.387,
-        "final": 0.43
+        "freshness": 0.993,
+        "importance": 0.395,
+        "final": 0.439
       },
       "rank_reasons": [
         "region:taiwan*1.25",
@@ -1396,6 +1358,47 @@
       "country_tier": "B",
       "info_grade": "3",
       "country_hint": "TWN"
+    },
+    {
+      "id": "621791074a99726f",
+      "published_at": "2026-08-10T02:57:33+00:00",
+      "source": {
+        "id": "cgtn_world",
+        "name": "CGTN",
+        "region": "china",
+        "slant": null
+      },
+      "url": "https://news.cgtn.com/news/2026-08-10/US-low-keying-negotiations-as-Iran-reshuffles-key-security-posts-1Pul2C2apnW/p.html?UTM_Source=cgtn&UTM_Medium=rss&UTM_Campaign=World",
+      "category": "commodity",
+      "commodities": [
+        "shipping"
+      ],
+      "title": {
+        "original": "US 'low-keying' negotiations as Iran reshuffles key security posts",
+        "original_lang": "en",
+        "ko": "이란이 주요 안보 초소를 재편하면서 미국의 '저조한' 협상"
+      },
+      "summary": "The US and Iran appear to be adjusting their respective positions as uncertainty continues to surround the future of their confrontation, with the reopening of the Strait of Hormuz remaining a key sticking point in negotiations.",
+      "scores": {
+        "commodity": 1.0,
+        "diplomacy": 1.0,
+        "election": 0.0,
+        "region_weight": 1.25,
+        "freshness": 0.35,
+        "importance": 0.344,
+        "final": 0.383
+      },
+      "rank_reasons": [
+        "region:china*1.25",
+        "category:commodity",
+        "tier:A*1.00/g3",
+        "commodity:shipping:1",
+        "diplomacy:1"
+      ],
+      "translation_status": "ok",
+      "country_tier": "A",
+      "info_grade": "3",
+      "country_hint": "CHN"
     }
   ]
 }
