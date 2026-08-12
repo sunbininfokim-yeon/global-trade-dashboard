@@ -1,0 +1,67 @@
+{
+  "iso3": "FRA",
+  "as_of": "2026-08-08",
+  "priority_tier": 2,
+  "region": "europe",
+  "system": "presidential",
+  "map_spectrum": "centrist",
+  "head": {
+    "role": "president",
+    "name_en": "Emmanuel Macron",
+    "party_id": "renaissance",
+    "spectrum": "centrist",
+    "sources": [
+      {
+        "org": "GOV.UK MSC readout",
+        "url": "https://www.gov.uk/government/news/pm-meeting-with-chancellor-merz-of-germany-and-president-macron-of-france-13-february-2026",
+        "date": "2026-02-13"
+      }
+    ]
+  },
+  "parties": [
+    {
+      "id": "renaissance",
+      "abbr": "RE",
+      "name_en": "Renaissance / Ensemble",
+      "role": "ruling",
+      "spectrum": "centrist",
+      "confidence": "medium"
+    },
+    {
+      "id": "rn",
+      "abbr": "RN",
+      "name_en": "Rassemblement National",
+      "role": "main_opposition",
+      "spectrum": "conservative",
+      "confidence": "medium"
+    }
+  ],
+  "legislature": {
+    "chambers": [
+      "assemblee_nationale",
+      "senat"
+    ],
+    "member_roster_source": {
+      "id": "an_groups",
+      "extract_file": "extracted/fra_assemblee.json",
+      "status": "extracted"
+    }
+  },
+  "elections": {
+    "calendar_file": "calendars/fra_2026.json"
+  },
+  "polls": {
+    "admit": [
+      "presidential_job_approval"
+    ],
+    "reject": [
+      "national_horserace_headline"
+    ],
+    "status": "slot_or_wired"
+  },
+  "ingest": {
+    "mode": "document_text_extract",
+    "wave": "2a_europe",
+    "depth": "legislature_composition_v1"
+  }
+}

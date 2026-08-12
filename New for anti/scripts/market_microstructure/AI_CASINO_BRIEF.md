@@ -157,7 +157,7 @@ KR LETF AUM **3.435조** ($2.45bn) · 일거래 **0.666조** · 노셔널 $4.91b
 | 0195S0 | TIGER SK하이닉스단일종목레버리지 | 2.0 | 1.117 | 0.150 |
 | 0197X0 | SOL SK하이닉스선물단일종목인버스2X | -2.0 | 0.134 | 0.201 |
 
-HK notional $3.35bn (64.7% of spot ADV) · crypto OI $0.37bn — 비율은 규모 비교용. HK/코인 체결이 곧바로 KRX 현물 리밸런싱은 아님.
+HK notional $3.35bn (64.7% of spot ADV) · crypto OI $0.37bn — 규모 비교용. 스왑→한국 기관 헷지 경로 가능 (YouTube wag reverse / 유튜브 하닉 레버 역산 계열).
 
 ## Ranked leverage ETFs (click / open detail)
 
@@ -189,10 +189,11 @@ HK notional $3.35bn (64.7% of spot ADV) · crypto OI $0.37bn — 비율은 규�
 
 | # | ticker | und | OI $bn | 24h vol $bn |
 |--:|--------|-----|-------:|------------:|
-| 1 | SKHYNIXUSDT | 000660 | 0.37 | 0.81 |
-| 2 | SOXLUSDT | SOXL | 0.09 | 1.25 |
-| 3 | KORUUSDT | KORU | 0.05 | 0.66 |
-| 4 | SAMSUNGUSDT | 005930 | 0.02 | 0.1 |
+| 1 | SKHYNIXUSDT | 000660 | 0.37 | 0.13 |
+| 2 | SOXLUSDT | SOXL | 0.09 | 0.11 |
+| 3 | KORUUSDT | KORU | 0.05 | 0.04 |
+| 4 | SAMSUNGUSDT | 005930 | 0.02 | 0.01 |
+| 5 | SOXSUSDT | SOXS | 0.01 | 0.02 |
 
 ## Stock microstructure cards
 

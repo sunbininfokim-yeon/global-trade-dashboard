@@ -1,6 +1,6 @@
 {
   "schema_version": "official-reports-v1",
-  "generated_at": "2026-08-10T05:12:03.382726+00:00",
+  "generated_at": "2026-08-12T05:50:17.980059+00:00",
   "model": {
     "name": "official_reports_learnable_v1",
     "description": "Official sources only (US/JP/CN/EU/UK public RSS·HTML). Domains: economy/finance/diplomacy/security/agriculture. Series catalog + label_history for collaborative learning. No Dropbox.",
@@ -20,7 +20,7 @@
     "raw_items": 169,
     "scored": 168,
     "selected": 40,
-    "indicators": 14
+    "indicators": 15
   },
   "feed_status": [
     {
@@ -47,14 +47,14 @@
     {
       "source_id": "us_eia",
       "ok": true,
-      "count": 14,
+      "count": 15,
       "error": null,
       "mode": "live"
     },
     {
       "source_id": "us_treasury_press_list",
       "ok": true,
-      "count": 13,
+      "count": 12,
       "error": null,
       "mode": "live"
     },
@@ -276,6 +276,20 @@
       ],
       "title": "Monetary Base and the Bank of Japan's Transactions (July)",
       "url": "http://www.boj.or.jp/en/statistics/boj/other/mbt/mbt2607.pdf",
+      "published_at": "2026-08-06T23:50:00+00:00",
+      "site_slot": "finance.policy",
+      "significance": 2.306
+    },
+    {
+      "series_id": "JP_BOJ_POLICY",
+      "label_ko": "일본은행 정책·공표",
+      "country": "JPN",
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "title": "Bank of Japan's Transactions with the Government (July)",
+      "url": "http://www.boj.or.jp/en/statistics/boj/other/tseifu/release/2026/seifu2607.pdf",
       "published_at": "2026-08-06T23:50:00+00:00",
       "site_slot": "finance.policy",
       "significance": 2.306
@@ -1225,41 +1239,6 @@
       "site_slot": null
     },
     {
-      "id": "139010fd65f0e41c",
-      "published_at": "2026-07-30T13:18:36+00:00",
-      "source": {
-        "id": "us_whitehouse",
-        "name": "White House",
-        "region": "usa",
-        "slant": null
-      },
-      "url": "https://www.whitehouse.gov/releases/2026/07/the-white-house-government-transparency-task-force-fact-sheet/",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "security",
-        "economy",
-        "diplomacy"
-      ],
-      "series_id": null,
-      "title": {
-        "original": "The White House Government Transparency Task Force Fact Sheet",
-        "original_lang": "en",
-        "ko": "[USA·안보] The White House Government Transparency Task Force Fact Sheet"
-      },
-      "summary": "The White House Government Transparency Task Force releases the following fact sheet approved by the directors of the Office of the Director of National Intelligence, the National Security Agency, the Central Intelligence Agency, and the Department of Homeland Security relating t",
-      "scores": {
-        "significance": 2.438,
-        "final": 2.438
-      },
-      "rank_reasons": [
-        "domains:economy,diplomacy,security"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
-    },
-    {
       "id": "06fdfda7dc2bc85e",
       "published_at": "2026-07-23T16:00:00+00:00",
       "source": {
@@ -1679,9 +1658,68 @@
       "translation_status": "skipped",
       "event_type": "official_report",
       "site_slot": "finance.policy"
+    },
+    {
+      "id": "8e5469f1b87939a7",
+      "published_at": "2026-08-06T23:50:00+00:00",
+      "source": {
+        "id": "jp_boj_whatsnew",
+        "name": "Bank of Japan",
+        "region": "jpn",
+        "slant": null
+      },
+      "url": "http://www.boj.or.jp/en/statistics/boj/other/tseifu/release/2026/seifu2607.pdf",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": "JP_BOJ_POLICY",
+      "title": {
+        "original": "Bank of Japan's Transactions with the Government (July)",
+        "original_lang": "en",
+        "ko": "[JPN·경제] Bank of Japan's Transactions with the Government (July)"
+      },
+      "summary": "",
+      "scores": {
+        "significance": 2.306,
+        "final": 2.306
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "series:JP_BOJ_POLICY"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": "finance.policy"
     }
   ],
   "pending_review": [
+    {
+      "title": "August 11, 2026",
+      "url": "https://home.treasury.gov/news/press-releases/sb0603",
+      "country": "USA",
+      "domains": [
+        "economy",
+        "finance",
+        "diplomacy"
+      ],
+      "significance": 2.291,
+      "suggest": "label promote|keep|drop + series_id later"
+    },
+    {
+      "title": "August 11, 2026",
+      "url": "https://home.treasury.gov/news/press-releases/sb0602",
+      "country": "USA",
+      "domains": [
+        "economy",
+        "finance",
+        "diplomacy"
+      ],
+      "significance": 2.291,
+      "suggest": "label promote|keep|drop + series_id later"
+    },
     {
       "title": "August 7, 2026",
       "url": "https://home.treasury.gov/news/press-releases/sb0599",
@@ -1695,20 +1733,8 @@
       "suggest": "label promote|keep|drop + series_id later"
     },
     {
-      "title": "August 7, 2026",
-      "url": "https://home.treasury.gov/news/press-releases/sb0596",
-      "country": "USA",
-      "domains": [
-        "economy",
-        "finance",
-        "diplomacy"
-      ],
-      "significance": 2.291,
-      "suggest": "label promote|keep|drop + series_id later"
-    },
-    {
-      "title": "August 7, 2026",
-      "url": "https://home.treasury.gov/news/press-releases/sb0598",
+      "title": "August 10, 2026",
+      "url": "https://home.treasury.gov/news/press-releases/sb0601",
       "country": "USA",
       "domains": [
         "economy",
@@ -1733,18 +1759,6 @@
     {
       "title": "August 6, 2026",
       "url": "https://home.treasury.gov/news/press-releases/sb0595",
-      "country": "USA",
-      "domains": [
-        "economy",
-        "finance",
-        "diplomacy"
-      ],
-      "significance": 2.291,
-      "suggest": "label promote|keep|drop + series_id later"
-    },
-    {
-      "title": "July 27, 2026",
-      "url": "https://home.treasury.gov/news/press-releases/sb0579",
       "country": "USA",
       "domains": [
         "economy",
@@ -1780,7 +1794,7 @@
     },
     {
       "title": "August 7, 2026",
-      "url": "https://home.treasury.gov/news/press-releases/sb0597",
+      "url": "https://home.treasury.gov/news/press-releases/sb0598",
       "country": "USA",
       "domains": [
         "economy",
@@ -1791,8 +1805,20 @@
       "suggest": "label promote|keep|drop + series_id later"
     },
     {
-      "title": "August 5, 2026",
-      "url": "https://home.treasury.gov/news/press-releases/sb0594",
+      "title": "August 7, 2026",
+      "url": "https://home.treasury.gov/news/press-releases/sb0596",
+      "country": "USA",
+      "domains": [
+        "economy",
+        "finance",
+        "diplomacy"
+      ],
+      "significance": 2.291,
+      "suggest": "label promote|keep|drop + series_id later"
+    },
+    {
+      "title": "August 7, 2026",
+      "url": "https://home.treasury.gov/news/press-releases/sb0597",
       "country": "USA",
       "domains": [
         "economy",
@@ -2747,41 +2773,6 @@
       "site_slot": null
     },
     {
-      "id": "139010fd65f0e41c",
-      "published_at": "2026-07-30T13:18:36+00:00",
-      "source": {
-        "id": "us_whitehouse",
-        "name": "White House",
-        "region": "usa",
-        "slant": null
-      },
-      "url": "https://www.whitehouse.gov/releases/2026/07/the-white-house-government-transparency-task-force-fact-sheet/",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "security",
-        "economy",
-        "diplomacy"
-      ],
-      "series_id": null,
-      "title": {
-        "original": "The White House Government Transparency Task Force Fact Sheet",
-        "original_lang": "en",
-        "ko": "[USA·안보] The White House Government Transparency Task Force Fact Sheet"
-      },
-      "summary": "The White House Government Transparency Task Force releases the following fact sheet approved by the directors of the Office of the Director of National Intelligence, the National Security Agency, the Central Intelligence Agency, and the Department of Homeland Security relating t",
-      "scores": {
-        "significance": 2.438,
-        "final": 2.438
-      },
-      "rank_reasons": [
-        "domains:economy,diplomacy,security"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
-    },
-    {
       "id": "06fdfda7dc2bc85e",
       "published_at": "2026-07-23T16:00:00+00:00",
       "source": {
@@ -3188,6 +3179,41 @@
         "original": "Monetary Base and the Bank of Japan's Transactions (July)",
         "original_lang": "en",
         "ko": "[JPN·경제] Monetary Base and the Bank of Japan's Transactions (July)"
+      },
+      "summary": "",
+      "scores": {
+        "significance": 2.306,
+        "final": 2.306
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "series:JP_BOJ_POLICY"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": "finance.policy"
+    },
+    {
+      "id": "8e5469f1b87939a7",
+      "published_at": "2026-08-06T23:50:00+00:00",
+      "source": {
+        "id": "jp_boj_whatsnew",
+        "name": "Bank of Japan",
+        "region": "jpn",
+        "slant": null
+      },
+      "url": "http://www.boj.or.jp/en/statistics/boj/other/tseifu/release/2026/seifu2607.pdf",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": "JP_BOJ_POLICY",
+      "title": {
+        "original": "Bank of Japan's Transactions with the Government (July)",
+        "original_lang": "en",
+        "ko": "[JPN·경제] Bank of Japan's Transactions with the Government (July)"
       },
       "summary": "",
       "scores": {

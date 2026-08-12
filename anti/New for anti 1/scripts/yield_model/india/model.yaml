@@ -1,0 +1,48 @@
+# 인도 — 국가 모델 매니페스트
+# 규격: ../MODEL_MANIFEST.md · 이 파일만 고치면 UI 코드 수정 없이 반영된다.
+
+country: india
+iso: IND
+label_ko: 인도
+label_en: India
+panel_mode: forecast
+model_status: training
+status_note_ko: "라벨(ICRISAT)이 2019년에서 끊겨 2026년을 7년 전 추세로 외삽 중. 3개 산지 중 2개는 기상 피처 생성 실패로 예측 없음. 통과한 펀자브 밀도 추세 대비 개선이 0.9%에 불과."
+data_file: india_yield_forecast.json
+
+view:
+  longitude: 78
+  latitude: 23.5
+  zoom: 3.8
+
+regions:
+  - key: punjab_wheat
+    label_ko: "펀자브·하리아나 (밀)"
+    ui_name: Punjab (India)   # app.js 산지 식별자 (레지스트리 전환 중 유지)
+    coordinates: [75.8, 30.4]
+    crops_region_keys: [punjab_wheat]
+  - key: mp_soybean
+    label_ko: 마디아프라데시 (대두)
+    ui_name: Madhya Pradesh (India)   # app.js 산지 식별자 (레지스트리 전환 중 유지)
+    coordinates: [77, 23.2]
+    crops_region_keys: [mp_soybean]
+  - key: vidarbha_cotton
+    label_ko: "비다르바·마라트와다·구자라트 (면화)"
+    ui_name: Vidarbha (India)   # app.js 산지 식별자 (레지스트리 전환 중 유지)
+    coordinates: [76.5, 21]
+    crops_region_keys: [vidarbha_cotton]
+
+sources:
+  labels:
+    name: ICRISAT District Level Database
+    url: http://data.icrisat.org/dld/
+    updated: "2019-12-31"
+  climate:
+    name: NASA POWER (daily)
+    url: https://power.larc.nasa.gov/
+    updated: "2026-08-06"
+
+trade_policy:
+  restricted: true
+  prohibited_crops: []
+  note_ko: "수출 인허가·쿼터 등 제한적 조치 (seed)"

@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://global-trade-dashboard.example/schemas/liquidity_intel_v1.schema.json",
+  "title": "Liquidity Official Intel v1",
+  "type": "object",
+  "required": ["schema_version", "generated_at", "model", "liquidity", "ticker_items"],
+  "properties": {
+    "schema_version": {"const": "liquidity-intel-v1"},
+    "liquidity": {
+      "type": "object",
+      "required": ["bias", "headline_ko", "finance_panel_fields"],
+      "properties": {
+        "bias": {"enum": ["tightening", "easing", "mixed", "neutral"]},
+        "qra": {"type": ["object", "null"]},
+        "finance_panel_fields": {"type": "object"}
+      }
+    },
+    "ticker_items": {"type": "array"}
+  }
+}

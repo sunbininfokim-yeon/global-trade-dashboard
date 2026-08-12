@@ -3,19 +3,33 @@
   "$id": "https://global-trade-dashboard.example/schemas/shipping_capacity_v1.schema.json",
   "title": "Shipping Capacity Snapshot v1",
   "type": "object",
-  "required": ["schema_version", "generated_at", "model", "fleet", "routes", "scenario_summary"],
+  "required": ["schema_version", "artifact_type", "bundle_id", "generated_at", "artifact_manifest", "coverage_summary", "model", "fleet", "lng_fleet", "routes", "route_catalog", "scenarios", "scenario_summary", "ui_scenario_grid", "live_display", "live_data_quality", "environment", "comtrade_routes", "portwatch_port_context", "market_signals", "pdf_reports"],
   "properties": {
     "schema_version": {"const": "shipping-capacity-v1"},
+    "artifact_type": {"const": "screen_snapshot"},
+    "bundle_id": {"type": "string", "minLength": 20, "maxLength": 20},
     "generated_at": {"type": "string", "format": "date-time"},
+    "artifact_manifest": {
+      "type": "object",
+      "required": ["screen", "diagnostics", "backtests"]
+    },
+    "coverage_summary": {
+      "type": "object",
+      "required": ["modeled_route_count", "public_flow_route_count", "bidirectional_service_count", "cargo_segments"]
+    },
     "fleet": {
       "type": "object",
       "required": ["as_of", "world_total_dwt", "fleet_by_type"]
+    },
+    "lng_fleet": {
+      "type": "object",
+      "required": ["status", "liquefied_gas_carriers_dwt", "lng_only_dwt", "model_use", "warning_ko"]
     },
     "routes": {
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["id", "ship_type", "input_status", "baseline", "stress_tests"],
+        "required": ["id", "ship_type", "cargo_segment", "input_status", "baseline"],
         "properties": {
           "service_type": {"type": "string"},
           "vessel_class": {"type": ["string", "null"]},
@@ -28,7 +42,8 @@
                 "annual_cargo_tonnes": {"type": ["number", "null"], "minimum": 0}
               }
             }
-          }
+          },
+          "cargo_segment": {"type": "string"}
         }
       }
     },
@@ -39,6 +54,221 @@
         "required": ["id", "ship_type", "vessel_class", "name_ko", "model_status"]
       }
     },
-    "scenario_summary": {"type": "array"}
+    "event_observations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["event_id", "chokepoint_id", "status", "as_of", "observations", "warning_ko"],
+        "properties": {
+          "status": {"const": "official_observation_timeline"},
+          "as_of": {"type": "string", "format": "date"},
+          "observations": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["date", "metric", "value", "qualifier", "scope", "source_name", "source_url"],
+              "properties": {
+                "date": {"type": "string", "format": "date"},
+                "value": {"type": ["number", "null"], "minimum": 0},
+                "display_value": {"type": "string"},
+                "source_url": {"type": "string", "format": "uri"}
+              }
+            }
+          }
+        }
+      }
+    },
+    "live_display": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "chokepoint_id",
+          "metric_key",
+          "headline_label_ko",
+          "trade_volume_shortfall_fraction",
+          "trade_volume_shortfall_pct_rounded",
+          "basis_label_ko",
+          "residual_label_ko",
+          "remaining_trade_volume_ratio",
+          "remaining_trade_volume_pct_rounded",
+          "metric_unit",
+          "signal_type",
+          "stale_days",
+          "is_stale",
+          "fallback_used",
+          "warning_ko"
+        ],
+        "properties": {
+          "trade_volume_shortfall_fraction": {"type": "number", "minimum": 0, "maximum": 1},
+          "remaining_trade_volume_ratio": {"type": "number", "minimum": 0, "maximum": 1},
+          "metric_unit": {"const": "estimated_trade_tonnes_per_day"},
+          "signal_type": {"const": "observed_estimated_trade_volume_shortfall"}
+        }
+      }
+    },
+    "live_data_quality": {
+      "type": "object",
+      "required": ["freshness_threshold_days", "fresh_count", "stale_count", "fallback_count", "status"]
+    },
+    "scenario_signal_comparison": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["scenario_id", "observed_trade_volume_shortfall_fraction", "preset_scenario_blockage_fraction", "absolute_gap_percentage_points", "scope", "comparison_status", "not_validated_fields"],
+        "properties": {
+          "observed_trade_volume_shortfall_fraction": {"type": "number", "minimum": 0, "maximum": 1},
+          "preset_scenario_blockage_fraction": {"type": "number", "minimum": 0, "maximum": 1},
+          "comparison_status": {"const": "not_empirical_calibration"}
+        }
+      }
+    },
+    "model_review": {
+      "type": "object",
+      "required": ["model_version", "status", "roles", "source_of_truth", "provisional_assumptions"]
+    },
+    "environment": {
+      "type": "object",
+      "required": ["status", "methodology_ko", "warnings_ko", "sources", "scenarios"],
+      "properties": {
+        "scenarios": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "id",
+              "year",
+              "status",
+              "physical_allocated_dwt",
+              "effective_service_capacity_dwt",
+              "effective_dwt_loss",
+              "effective_capacity_retention_rate",
+              "same_service_required_dwt",
+              "scope",
+              "effective_capacity_retention_rate_range",
+              "same_service_required_dwt_range"
+            ]
+          }
+        }
+      }
+    },
+    "container": {
+      "type": "object",
+      "required": ["status", "sources", "quality_gates", "context", "fetch_errors", "route_volume_status"]
+    },
+    "comtrade_routes": {
+      "type": "object",
+      "required": ["status", "route_count", "history"]
+    },
+    "portwatch_port_context": {
+      "type": "object",
+      "required": ["status", "groups", "identification_boundary"]
+    },
+    "market_signals": {
+      "type": "object",
+      "required": ["status", "signals", "identification_boundary", "warning_ko"]
+    },
+    "pdf_reports": {
+      "type": "object",
+      "required": ["status", "sources", "errors"]
+    },
+    "event_response_profiles": {
+      "type": "object",
+      "required": ["status", "profiles", "warning_ko"]
+    },
+    "historical_event_calibration": {
+      "type": "object",
+      "required": ["status", "generated_at", "identification_boundary", "events", "profile_evidence"],
+      "properties": {
+        "status": {"const": "throughput_calibrated_behavior_partition_partially_identified"},
+        "generated_at": {"type": "string", "format": "date-time"},
+        "events": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": ["event_id", "event_type", "chokepoint_id", "start_date", "end_date", "primary_metric", "primary_result", "metrics", "throughput_calibration_status", "behavior_partition_status"],
+            "properties": {
+              "start_date": {"type": "string", "format": "date"},
+              "end_date": {"type": "string", "format": "date"},
+              "throughput_calibration_status": {"const": "calibrated_observed_throughput"},
+              "behavior_partition_status": {"const": "not_identified_by_single_chokepoint_throughput"},
+              "primary_result": {
+                "type": "object",
+                "required": ["status", "observed_event_to_baseline_ratio", "observed_mean_shortfall_fraction", "bootstrap", "placebo_test", "evidence_grade"]
+              }
+            }
+          }
+        },
+        "profile_evidence": {"type": "object", "minProperties": 1}
+      }
+    },
+    "scenarios": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "chokepoint_id",
+          "event_type",
+          "closure_fraction",
+          "residual_throughput_rate",
+          "duration_days",
+          "horizon_days"
+        ],
+        "properties": {
+          "event_type": {"type": "string"},
+          "closure_fraction": {"type": "number", "minimum": 0, "maximum": 1},
+          "residual_throughput_rate": {"type": "number", "minimum": 0, "maximum": 1},
+          "insurance_unavailable_share": {"type": "number", "minimum": 0, "maximum": 1},
+          "onboard_waiting_share": {"type": "number", "minimum": 0, "maximum": 1},
+          "trapped_days": {"type": "number", "minimum": 0}
+        }
+      }
+    },
+    "scenario_summary": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "event_type",
+          "effective_blockage_fraction",
+          "residual_throughput_rate",
+          "backlog_cargo_tonnes_horizon",
+          "rerouted_in_transit_cargo_tonnes_horizon",
+          "trapped_loaded_dwt",
+          "commercially_available_dwt",
+          "weighted_served_flow_index"
+        ],
+        "properties": {
+          "behavior_sensitivity": {
+            "type": "object",
+            "required": ["status", "event_throughput_held_fixed", "path_count", "paths", "ranges", "warning_ko"],
+            "properties": {
+              "status": {"const": "deterministic_joint_paths_not_probability_interval"},
+              "event_throughput_held_fixed": {"const": true},
+              "path_count": {"type": "integer", "minimum": 2},
+              "paths": {"type": "array", "minItems": 2},
+              "ranges": {"type": "object"}
+            }
+          }
+        }
+      }
+    },
+    "ui_scenario_grid": {
+      "type": "object",
+      "required": ["status", "closure_pct_options", "duration_day_options", "fixed_horizon_days", "rows"],
+      "properties": {
+        "status": {"const": "precomputed_python_engine"},
+        "rows": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["key", "base_scenario_id", "closure_pct", "duration_days", "horizon_days", "summary", "routes"]
+          }
+        }
+      }
+    }
   }
 }

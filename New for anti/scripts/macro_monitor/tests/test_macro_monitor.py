@@ -55,7 +55,7 @@ class TestUsMacroKit(unittest.TestCase):
         usa = resolve_country(self.doc, "USA")
         assert usa is not None
         by_id = {i["id"]: i for i in usa["indicators"]}
-        self.assertEqual(self.doc["engine_version"], "0.31.0")
+        self.assertEqual(self.doc["engine_version"], "0.34.0")
         self.assertEqual(self.doc["source"]["kind"], "fixture_synth")
         self.assertEqual(self.doc["source"].get("quality"), "demo_not_live")
         self.assertIn("refresh_policy", self.doc)
@@ -115,17 +115,39 @@ class TestUsMacroKit(unittest.TestCase):
         cmp = by_id["qra_issuance"].get("compare") or {}
         self.assertTrue(cmp.get("series"))
         self.assertEqual(by_id["qra_issuance"].get("ui", {}).get("click_view"), "compare_bar_table")
+        layers = by_id["qra_issuance"].get("issuance_layers") or {}
+        self.assertEqual(layers.get("kind"), "issuance_layers")
+        self.assertGreaterEqual(len(layers.get("layers") or []), 8)
+        self.assertEqual(layers.get("ui", {}).get("default_layer_id"), "A1_compare")
+        band_ids = {b["id"] for b in layers.get("bands") or []}
+        self.assertTrue({"static_dissect", "diachronic", "context"} <= band_ids)
 
-        # Headlines prefer core CPI over PCE
+        # Headlines prefer core CPI over PCE; unified roles
         hl = {h["id"] for h in usa["headlines"]}
         self.assertIn("core_cpi_yoy", hl)
         self.assertNotIn("core_pce_yoy", hl)
+        roles = {h["role"] for h in usa["headlines"]}
+        self.assertTrue(
+            {"growth", "policy_rate", "inflation", "credit_rating", "fx", "key"}.issubset(roles)
+        )
+
+        # TGA: line + QRA maturity secondary
+        self.assertEqual(by_id["tga"].get("chart_type"), "line")
+        self.assertEqual(by_id["tga"].get("ui", {}).get("secondary_view"), "qra_maturity_bar_table")
+        self.assertTrue(by_id["tga"].get("maturity_components"))
+        self.assertIn("dts_marketable_net", by_id)
+        self.assertIn("mts_deficit", by_id)
+        self.assertIn("public_debt_outstanding", by_id)
 
         # Trade prices + GDP components
         self.assertIn("export_price_yoy", by_id)
         self.assertIn("import_price_yoy", by_id)
         self.assertTrue(by_id["gdp"].get("components"))
         self.assertGreaterEqual(len(by_id["gdp"]["components"]), 3)
+
+        # USA explainers (not old "한계" framing)
+        self.assertEqual(usa["limitations"].get("kind"), "explainers")
+        self.assertIn("설명", usa["limitations"]["title_ko"])
 
     def test_officials_central_bank_and_finance(self):
         usa = resolve_country(self.doc, "USA")
@@ -205,6 +227,17 @@ class TestUsMacroKit(unittest.TestCase):
     def test_limitations_present(self):
         self.assertGreaterEqual(len(self.doc["limitations"]["items"]), 3)
 
+    def test_all_countries_explainers(self):
+        for pack in self.doc["countries"]:
+            lim = pack.get("limitations") or {}
+            self.assertEqual(lim.get("kind"), "explainers", pack["iso3"])
+            self.assertIn("설명", lim.get("title_ko", ""), pack["iso3"])
+            self.assertGreaterEqual(len(lim.get("items") or []), 6, pack["iso3"])
+            for it in lim["items"]:
+                self.assertTrue(it.get("title_ko"), pack["iso3"])
+                self.assertTrue(it.get("body_ko"), pack["iso3"])
+
+
     def test_brazil_full_kit(self):
         bra = resolve_country(self.doc, "Brazil")
         self.assertIsNotNone(bra)
@@ -230,7 +263,11 @@ class TestUsMacroKit(unittest.TestCase):
             self.assertIn(sid, by_id)
         self.assertEqual(by_id["selic_rate"]["display"], "13.25%")
         self.assertEqual(by_id["usdbrl"]["display"], "5.550")
-        self.assertEqual(len(bra["limitations"]["items"]), 3)
+        self.assertEqual(bra["limitations"].get("kind"), "explainers")
+
+        self.assertIn("설명", bra["limitations"]["title_ko"])
+
+        self.assertGreaterEqual(len(bra["limitations"]["items"]), 6)
 
     def test_vietnam_full_kit(self):
         vnm = resolve_country(self.doc, "Vietnam")
@@ -255,7 +292,11 @@ class TestUsMacroKit(unittest.TestCase):
         self.assertEqual(by_id["usdvnd"]["display"], "25,450")
         self.assertEqual(by_id["sbv_refinancing"]["display"], "4.50%")
         self.assertEqual(by_id["credit_growth_quota"]["display"], "15.0%")
-        self.assertEqual(len(vnm["limitations"]["items"]), 3)
+        self.assertEqual(vnm["limitations"].get("kind"), "explainers")
+
+        self.assertIn("설명", vnm["limitations"]["title_ko"])
+
+        self.assertGreaterEqual(len(vnm["limitations"]["items"]), 6)
 
     def test_kazakhstan_full_kit(self):
         kaz = resolve_country(self.doc, "Kazakhstan")
@@ -280,7 +321,11 @@ class TestUsMacroKit(unittest.TestCase):
         self.assertEqual(by_id["nbk_base_rate"]["display"], "14.25%")
         self.assertEqual(by_id["usdkzt"]["display"], "485")
         self.assertEqual(by_id["nfrk_assets"]["display"], "+62B")
-        self.assertEqual(len(kaz["limitations"]["items"]), 3)
+        self.assertEqual(kaz["limitations"].get("kind"), "explainers")
+
+        self.assertIn("설명", kaz["limitations"]["title_ko"])
+
+        self.assertGreaterEqual(len(kaz["limitations"]["items"]), 6)
 
     def test_taiwan_full_kit(self):
         twn = resolve_country(self.doc, "Taiwan")
@@ -303,7 +348,11 @@ class TestUsMacroKit(unittest.TestCase):
             self.assertIn(sid, by_id)
         self.assertEqual(by_id["cbc_discount"]["display"], "2.00%")
         self.assertEqual(by_id["hedge_ratio"]["display"], "55.0%")
-        self.assertEqual(len(twn["limitations"]["items"]), 4)
+        self.assertEqual(twn["limitations"].get("kind"), "explainers")
+
+        self.assertIn("설명", twn["limitations"]["title_ko"])
+
+        self.assertGreaterEqual(len(twn["limitations"]["items"]), 6)
 
     def test_korea_full_kit(self):
         kor = resolve_country(self.doc, "한국")
@@ -332,7 +381,11 @@ class TestUsMacroKit(unittest.TestCase):
         self.assertEqual(by_id["us_fx_watch"]["display"], "관찰대상")
         growth_ids = [c["id"] for c in kor["categories"]["growth"]]
         self.assertLess(growth_ids.index("export_yoy_kr"), growth_ids.index("semi_export_yoy"))
-        self.assertEqual(len(kor["limitations"]["items"]), 3)
+        self.assertEqual(kor["limitations"].get("kind"), "explainers")
+
+        self.assertIn("설명", kor["limitations"]["title_ko"])
+
+        self.assertGreaterEqual(len(kor["limitations"]["items"]), 6)
 
     def test_canada_full_kit(self):
         can = resolve_country(self.doc, "Canada")
@@ -355,7 +408,11 @@ class TestUsMacroKit(unittest.TestCase):
             self.assertIn(sid, by_id)
         self.assertEqual(by_id["boc_overnight"]["display"], "2.75%")
         self.assertEqual(by_id["hh_debt_income"]["display"], "175%")
-        self.assertEqual(len(can["limitations"]["items"]), 3)
+        self.assertEqual(can["limitations"].get("kind"), "explainers")
+
+        self.assertIn("설명", can["limitations"]["title_ko"])
+
+        self.assertGreaterEqual(len(can["limitations"]["items"]), 6)
 
     def test_australia_full_kit(self):
         aus = resolve_country(self.doc, "Australia")
@@ -379,7 +436,11 @@ class TestUsMacroKit(unittest.TestCase):
             self.assertIn(sid, by_id)
         self.assertEqual(by_id["rba_cash_rate"]["display"], "3.85%")
         self.assertEqual(by_id["hh_debt_income"]["display"], "185%")
-        self.assertEqual(len(aus["limitations"]["items"]), 3)
+        self.assertEqual(aus["limitations"].get("kind"), "explainers")
+
+        self.assertIn("설명", aus["limitations"]["title_ko"])
+
+        self.assertGreaterEqual(len(aus["limitations"]["items"]), 6)
 
     def test_switzerland_full_kit(self):
         che = resolve_country(self.doc, "Switzerland")
@@ -402,7 +463,11 @@ class TestUsMacroKit(unittest.TestCase):
             self.assertIn(sid, by_id)
         self.assertEqual(by_id["snb_policy_rate"]["display"], "1.00%")
         self.assertEqual(by_id["eurchf"]["display"], "0.940")
-        self.assertEqual(len(che["limitations"]["items"]), 3)
+        self.assertEqual(che["limitations"].get("kind"), "explainers")
+
+        self.assertIn("설명", che["limitations"]["title_ko"])
+
+        self.assertGreaterEqual(len(che["limitations"]["items"]), 6)
 
     def test_japan_full_kit(self):
         jpn = resolve_country(self.doc, "Japan")
@@ -439,7 +504,11 @@ class TestUsMacroKit(unittest.TestCase):
             (by_id["bond_30y"]["value"] - by_id["bond_10y"]["value"]) * 100.0,
             places=2,
         )
-        self.assertEqual(len(jpn["limitations"]["items"]), 3)
+        self.assertEqual(jpn["limitations"].get("kind"), "explainers")
+
+        self.assertIn("설명", jpn["limitations"]["title_ko"])
+
+        self.assertGreaterEqual(len(jpn["limitations"]["items"]), 6)
         self.assertEqual(by_id["bond_10y"]["display"], "1.15%")
 
     def test_rates_order_and_spreads(self):
@@ -519,7 +588,11 @@ class TestUsMacroKit(unittest.TestCase):
             "services_cpi",
         ):
             self.assertIn(sid, by_id)
-        self.assertEqual(len(gbr["limitations"]["items"]), 3)
+        self.assertEqual(gbr["limitations"].get("kind"), "explainers")
+
+        self.assertIn("설명", gbr["limitations"]["title_ko"])
+
+        self.assertGreaterEqual(len(gbr["limitations"]["items"]), 6)
         self.assertEqual(by_id["bond_30y"]["display"], "5.05%")
         rids = [c["id"] for c in gbr["categories"]["rates"]]
         self.assertLess(rids.index("bond_2y"), rids.index("bond_10y"))
@@ -549,7 +622,11 @@ class TestUsMacroKit(unittest.TestCase):
             by_id["m1_yoy"]["value"] - by_id["m2_yoy"]["value"],
             places=4,
         )
-        self.assertEqual(len(chn["limitations"]["items"]), 4)
+        self.assertEqual(chn["limitations"].get("kind"), "explainers")
+
+        self.assertIn("설명", chn["limitations"]["title_ko"])
+
+        self.assertGreaterEqual(len(chn["limitations"]["items"]), 6)
         self.assertEqual(by_id["ppi_yoy"]["display"], "-2.5%")
         # A주 → H주 → Connect flows (B주 칩 없음)
         eids = [c["id"] for c in chn["categories"]["equity"]]
@@ -586,7 +663,11 @@ class TestUsMacroKit(unittest.TestCase):
             places=2,
         )
         self.assertEqual(by_id["tpi_active"]["display"], "미가동")
-        self.assertEqual(len(emu["limitations"]["items"]), 3)
+        self.assertEqual(emu["limitations"].get("kind"), "explainers")
+
+        self.assertIn("설명", emu["limitations"]["title_ko"])
+
+        self.assertGreaterEqual(len(emu["limitations"]["items"]), 6)
 
     def test_russia_full_kit(self):
         rus = resolve_country(self.doc, "Russia")
@@ -607,7 +688,11 @@ class TestUsMacroKit(unittest.TestCase):
             self.assertIn(sid, by_id)
         self.assertNotIn("household_inf_exp", by_id)
         self.assertEqual(by_id["cbr_key_rate"]["display"], "21.00%")
-        self.assertEqual(len(rus["limitations"]["items"]), 3)
+        self.assertEqual(rus["limitations"].get("kind"), "explainers")
+
+        self.assertIn("설명", rus["limitations"]["title_ko"])
+
+        self.assertGreaterEqual(len(rus["limitations"]["items"]), 6)
 
     def test_hongkong_full_kit(self):
         hkg = resolve_country(self.doc, "Hong Kong")
@@ -628,7 +713,11 @@ class TestUsMacroKit(unittest.TestCase):
         ):
             self.assertIn(sid, by_id)
         self.assertEqual(by_id["usdhkd"]["display"], "7.8120")
-        self.assertEqual(len(hkg["limitations"]["items"]), 3)
+        self.assertEqual(hkg["limitations"].get("kind"), "explainers")
+
+        self.assertIn("설명", hkg["limitations"]["title_ko"])
+
+        self.assertGreaterEqual(len(hkg["limitations"]["items"]), 6)
         # LERS weak-side proximity check (demo level inside band)
         self.assertGreater(by_id["usdhkd"]["value"], 7.75)
         self.assertLess(by_id["usdhkd"]["value"], 7.85)
@@ -652,7 +741,11 @@ class TestUsMacroKit(unittest.TestCase):
         ):
             self.assertIn(sid, by_id)
         self.assertEqual(by_id["sora"]["display"], "3.10%")
-        self.assertEqual(len(sgp["limitations"]["items"]), 3)
+        self.assertEqual(sgp["limitations"].get("kind"), "explainers")
+
+        self.assertIn("설명", sgp["limitations"]["title_ko"])
+
+        self.assertGreaterEqual(len(sgp["limitations"]["items"]), 6)
 
     def test_south_africa_full_kit(self):
         zaf = resolve_country(self.doc, "South Africa")
@@ -674,7 +767,11 @@ class TestUsMacroKit(unittest.TestCase):
         ):
             self.assertIn(sid, by_id)
         self.assertEqual(by_id["sarb_repo"]["display"], "7.50%")
-        self.assertEqual(len(zaf["limitations"]["items"]), 3)
+        self.assertEqual(zaf["limitations"].get("kind"), "explainers")
+
+        self.assertIn("설명", zaf["limitations"]["title_ko"])
+
+        self.assertGreaterEqual(len(zaf["limitations"]["items"]), 6)
 
     def test_israel_full_kit(self):
         isr = resolve_country(self.doc, "Israel")
@@ -693,7 +790,11 @@ class TestUsMacroKit(unittest.TestCase):
             "cpi_yoy",
         ):
             self.assertIn(sid, by_id)
-        self.assertEqual(len(isr["limitations"]["items"]), 4)
+        self.assertEqual(isr["limitations"].get("kind"), "explainers")
+
+        self.assertIn("설명", isr["limitations"]["title_ko"])
+
+        self.assertGreaterEqual(len(isr["limitations"]["items"]), 6)
         rids = [c["id"] for c in isr["categories"]["rates"]]
         self.assertEqual(rids[0], "boi_rate")
         self.assertIn("sovereign_cds_5y", rids)
@@ -702,8 +803,12 @@ class TestUsMacroKit(unittest.TestCase):
         self.assertIn("high_tech_export_yoy", gids)
         self.assertLess(gids.index("gdp"), gids.index("high_tech_export_yoy"))
         self.assertLess(gids.index("high_tech_export_yoy"), gids.index("ism_mfg"))
-        hl = [h["id"] for h in isr["headlines"]]
-        self.assertEqual(hl[0], "sovereign_cds_5y")
+        hl = [h["id"] for h in isr["headlines"] if h.get("role") == "key"]
+        self.assertEqual(hl[0], "high_tech_export_yoy")
+        roles = [h["role"] for h in isr["headlines"]]
+        self.assertIn("growth", roles)
+        self.assertIn("policy_rate", roles)
+        self.assertIn("fx", roles)
 
     def test_india_full_kit(self):
         ind = resolve_country(self.doc, "India")
@@ -725,7 +830,11 @@ class TestUsMacroKit(unittest.TestCase):
         ):
             self.assertIn(sid, by_id)
         self.assertEqual(by_id["rbi_repo"]["display"], "6.50%")
-        self.assertEqual(len(ind["limitations"]["items"]), 3)
+        self.assertEqual(ind["limitations"].get("kind"), "explainers")
+
+        self.assertIn("설명", ind["limitations"]["title_ko"])
+
+        self.assertGreaterEqual(len(ind["limitations"]["items"]), 6)
 
     def test_no_nonfinite_history_values(self):
         """Signed / zero-crossing series must not emit Inf/NaN (breaks JSON.parse)."""

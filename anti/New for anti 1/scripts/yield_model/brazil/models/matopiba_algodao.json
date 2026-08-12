@@ -1,0 +1,408 @@
+{
+  "key": "matopiba_algodao",
+  "label": "MATOPIBA cotton",
+  "crop": "algodao",
+  "states": [
+    [
+      "BA",
+      0.75
+    ],
+    [
+      "MA",
+      0.15
+    ],
+    [
+      "PI",
+      0.08
+    ],
+    [
+      "TO",
+      0.02
+    ]
+  ],
+  "doc": "Regions/브라질/MATOPIBA/면화/면화_상세분석_및_수식.md",
+  "caveat": "Yield only. The guide's second target -- fibre quality/Micronaire -- has no open data series, so the two-output structure collapses to one. The NDVI classifier that would date flowering is replaced by the degree-day threshold from the same guide. Training starts in 2000: the pre-2000 smallholder crop is a different system. Untested hypothesis, not a finding: this model carries no soil-moisture or root-zone water-storage feature for cotton at all -- only rainfall, heat and VPD. MATOPIBA's Cerrado soils are sandy (the soybean guide's own Effective_Water_Capacity logic assumes this, but that treatment was only applied to soy here, never to cotton), which is exactly where plant-available water can diverge sharply from rainfall received. NASA POWER's root-zone wetness parameter (GWETROOT) -- used by the earlier brazil_soy_model but never fetched by this package -- would test this at zero added cost. Satellite soil moisture or GRACE total water storage would extend it further.",
+  "non_weather_drivers": "The 1999-2000 jump is a change of production system -- relocation to the Cerrado, new cultivars, scale and management -- not a good weather year. Note it is not irrigation: about 92% of Brazil's cotton area is rainfed, and Brazil leads the world in rainfed lint yield. The largest single non-weather driver inside the modern era is the boll weevil, which can take up to 70% of a crop and whose pressure depends on planting-date coordination and control programmes rather than on climate. Published work also finds MODIS NDVI adds little to upland cotton yield models over a trend baseline (Johnson, ORNL), so satellite greenness is unlikely to recover what is missing here.",
+  "trained_years": [
+    2000,
+    2024
+  ],
+  "n_seasons": 25,
+  "regime_start": 2000,
+  "trend": {
+    "log_poly_coef": [
+      0.019601976584797936,
+      -31.26433270401905
+    ],
+    "degree": 1,
+    "form": "recent20",
+    "window": 20,
+    "space": "log(kg/ha)"
+  },
+  "features": [
+    "flowering_heat_penalty",
+    "boll_heat_penalty",
+    "harvest_rainfall"
+  ],
+  "feature_set": "core",
+  "trend_form": "recent20",
+  "scaler": {
+    "mean": [
+      39.738520817476044,
+      103.35461021158076,
+      5.4658
+    ],
+    "scale": [
+      45.77441084653942,
+      82.4818871386665,
+      5.166671509976224
+    ]
+  },
+  "ridge": {
+    "alpha": 8.376776400682925,
+    "coef": [
+      -0.03284331132672536,
+      -0.008875375781362013,
+      0.010573998457071186
+    ],
+    "intercept": -1.1984080790127545e-14
+  },
+  "beats_trend": true,
+  "recent_skill_vs_trend": 0.1456178141275163,
+  "skill_vs_best_trend": 0.1456178141275163,
+  "best_trend_baseline_rmse": 367.5881856432086,
+  "weather_skill": 0.1456178141275163,
+  "non_weather_features": [],
+  "trend_plus_lags_rmse": null,
+  "recent_trend_bias_kg_ha": 37.74948550315162,
+  "recent_folds": 10,
+  "uncertainty": {
+    "sigma_kg_ha": 314.0607975507449,
+    "basis": "out-of-sample RMSE over the last 10 forward-chaining folds"
+  },
+  "validation": {
+    "all_deg1_loo": {
+      "rmse": 284.29818943951597,
+      "mae": 218.0447395670803,
+      "detrended_r2": 0.26550098364069574,
+      "skill_vs_trend": 0.14330316541613797,
+      "baseline_rmse": 331.8539043950279,
+      "recent_rmse": 303.8600538964428,
+      "recent_baseline_rmse": 351.199605029539,
+      "recent_trend_bias": 42.75367468071413,
+      "n": 25,
+      "years": [
+        2000,
+        2024
+      ],
+      "degree": 1,
+      "window": null,
+      "trend_form": "deg1"
+    },
+    "all_deg1_forward": {
+      "rmse": 404.3559501152061,
+      "mae": 320.0434778350684,
+      "detrended_r2": -0.16537660199657012,
+      "skill_vs_trend": -0.04393826151219726,
+      "baseline_rmse": 387.3370342126134,
+      "recent_rmse": 404.3559501152061,
+      "recent_baseline_rmse": 387.3370342126134,
+      "recent_trend_bias": 98.63457408024593,
+      "n": 10,
+      "years": [
+        2015,
+        2024
+      ],
+      "degree": 1,
+      "window": null,
+      "trend_form": "deg1"
+    },
+    "all_deg2_loo": {
+      "rmse": 275.3337298733076,
+      "mae": 205.27793611894631,
+      "detrended_r2": 0.3386354740909584,
+      "skill_vs_trend": 0.18695988461286273,
+      "baseline_rmse": 338.6471647124136,
+      "recent_rmse": 307.5921163031272,
+      "recent_baseline_rmse": 366.48154415303395,
+      "recent_trend_bias": -0.35948811085554555,
+      "n": 25,
+      "years": [
+        2000,
+        2024
+      ],
+      "degree": 2,
+      "window": null,
+      "trend_form": "deg2"
+    },
+    "all_deg2_forward": {
+      "rmse": 515.2309285349543,
+      "mae": 441.0523573063542,
+      "detrended_r2": -0.44079260690870226,
+      "skill_vs_trend": 0.07772343921715519,
+      "baseline_rmse": 558.6512229017477,
+      "recent_rmse": 515.2309285349543,
+      "recent_baseline_rmse": 558.6512229017477,
+      "recent_trend_bias": -357.5518982595384,
+      "n": 10,
+      "years": [
+        2015,
+        2024
+      ],
+      "degree": 2,
+      "window": null,
+      "trend_form": "deg2"
+    },
+    "all_recent20_loo": {
+      "rmse": 274.8811257107298,
+      "mae": 207.19044904891845,
+      "detrended_r2": 0.29127343975123865,
+      "skill_vs_trend": 0.16363708099141017,
+      "baseline_rmse": 328.6624974198631,
+      "recent_rmse": 230.53860478548052,
+      "recent_baseline_rmse": 352.5005448250099,
+      "recent_trend_bias": -25.670303125946976,
+      "n": 25,
+      "years": [
+        2000,
+        2024
+      ],
+      "degree": 1,
+      "window": 20,
+      "trend_form": "recent20"
+    },
+    "all_recent20_forward": {
+      "rmse": 347.6708280696646,
+      "mae": 237.6309620259472,
+      "detrended_r2": 0.09589696796224845,
+      "skill_vs_trend": 0.05418388933989393,
+      "baseline_rmse": 367.5881856432086,
+      "recent_rmse": 347.6708280696646,
+      "recent_baseline_rmse": 367.5881856432086,
+      "recent_trend_bias": 37.74948550315162,
+      "n": 10,
+      "years": [
+        2015,
+        2024
+      ],
+      "degree": 1,
+      "window": 20,
+      "trend_form": "recent20"
+    },
+    "all_recent10_loo": {
+      "rmse": 279.23984360450356,
+      "mae": 226.33382262799387,
+      "detrended_r2": 0.40109364110620416,
+      "skill_vs_trend": 0.263287221131002,
+      "baseline_rmse": 379.034885255001,
+      "recent_rmse": 279.98055466429594,
+      "recent_baseline_rmse": 421.8148613813283,
+      "recent_trend_bias": 11.470908457742507,
+      "n": 25,
+      "years": [
+        2000,
+        2024
+      ],
+      "degree": 1,
+      "window": 10,
+      "trend_form": "recent10"
+    },
+    "all_recent10_forward": {
+      "rmse": 493.02617127162273,
+      "mae": 421.9828725991104,
+      "detrended_r2": -0.10770829850922414,
+      "skill_vs_trend": -0.047614298564358615,
+      "baseline_rmse": 470.61802415952263,
+      "recent_rmse": 493.02617127162273,
+      "recent_baseline_rmse": 470.61802415952263,
+      "recent_trend_bias": -45.18804851081195,
+      "n": 10,
+      "years": [
+        2015,
+        2024
+      ],
+      "degree": 1,
+      "window": 10,
+      "trend_form": "recent10"
+    },
+    "core_deg1_loo": {
+      "rmse": 308.1893254863082,
+      "mae": 244.8760838368754,
+      "detrended_r2": 0.13686601786121666,
+      "skill_vs_trend": 0.07131023198856257,
+      "baseline_rmse": 331.8539043950279,
+      "recent_rmse": 286.2795801656641,
+      "recent_baseline_rmse": 351.199605029539,
+      "recent_trend_bias": 42.75367468071413,
+      "n": 25,
+      "years": [
+        2000,
+        2024
+      ],
+      "degree": 1,
+      "window": null,
+      "trend_form": "deg1"
+    },
+    "core_deg1_forward": {
+      "rmse": 328.1658796758091,
+      "mae": 246.76587688382045,
+      "detrended_r2": 0.2324167900786528,
+      "skill_vs_trend": 0.1527639995929866,
+      "baseline_rmse": 387.3370342126134,
+      "recent_rmse": 328.1658796758091,
+      "recent_baseline_rmse": 387.3370342126134,
+      "recent_trend_bias": 98.63457408024593,
+      "n": 10,
+      "years": [
+        2015,
+        2024
+      ],
+      "degree": 1,
+      "window": null,
+      "trend_form": "deg1"
+    },
+    "core_deg2_loo": {
+      "rmse": 292.08459381509095,
+      "mae": 227.12821073471244,
+      "detrended_r2": 0.25571483742153023,
+      "skill_vs_trend": 0.13749582382260483,
+      "baseline_rmse": 338.6471647124136,
+      "recent_rmse": 293.8891263826817,
+      "recent_baseline_rmse": 366.48154415303395,
+      "recent_trend_bias": -0.35948811085554555,
+      "n": 25,
+      "years": [
+        2000,
+        2024
+      ],
+      "degree": 2,
+      "window": null,
+      "trend_form": "deg2"
+    },
+    "core_deg2_forward": {
+      "rmse": 523.0398829116531,
+      "mae": 411.05491795705603,
+      "detrended_r2": -0.48479751836748464,
+      "skill_vs_trend": 0.063745210840356,
+      "baseline_rmse": 558.6512229017477,
+      "recent_rmse": 523.0398829116531,
+      "recent_baseline_rmse": 558.6512229017477,
+      "recent_trend_bias": -357.5518982595384,
+      "n": 10,
+      "years": [
+        2015,
+        2024
+      ],
+      "degree": 2,
+      "window": null,
+      "trend_form": "deg2"
+    },
+    "core_recent20_loo": {
+      "rmse": 304.6491593450068,
+      "mae": 228.57722032185785,
+      "detrended_r2": 0.12945979089595205,
+      "skill_vs_trend": 0.07306382159014468,
+      "baseline_rmse": 328.6624974198631,
+      "recent_rmse": 280.782550316335,
+      "recent_baseline_rmse": 352.5005448250099,
+      "recent_trend_bias": -25.670303125946976,
+      "n": 25,
+      "years": [
+        2000,
+        2024
+      ],
+      "degree": 1,
+      "window": 20,
+      "trend_form": "recent20"
+    },
+    "core_recent20_forward": {
+      "rmse": 314.0607975507449,
+      "mae": 238.23546407147984,
+      "detrended_r2": 0.26225057405479035,
+      "skill_vs_trend": 0.1456178141275163,
+      "baseline_rmse": 367.5881856432086,
+      "recent_rmse": 314.0607975507449,
+      "recent_baseline_rmse": 367.5881856432086,
+      "recent_trend_bias": 37.74948550315162,
+      "n": 10,
+      "years": [
+        2015,
+        2024
+      ],
+      "degree": 1,
+      "window": 20,
+      "trend_form": "recent20"
+    },
+    "core_recent10_loo": {
+      "rmse": 384.58686525665564,
+      "mae": 298.8213447557034,
+      "detrended_r2": -0.13603849429323533,
+      "skill_vs_trend": -0.014647675498046908,
+      "baseline_rmse": 379.034885255001,
+      "recent_rmse": 414.3557101721074,
+      "recent_baseline_rmse": 421.8148613813283,
+      "recent_trend_bias": 11.470908457742507,
+      "n": 25,
+      "years": [
+        2000,
+        2024
+      ],
+      "degree": 1,
+      "window": 10,
+      "trend_form": "recent10"
+    },
+    "core_recent10_forward": {
+      "rmse": 424.30128599289884,
+      "mae": 353.4886844866736,
+      "detrended_r2": 0.17958393040344178,
+      "skill_vs_trend": 0.09841683868640794,
+      "baseline_rmse": 470.61802415952263,
+      "recent_rmse": 424.30128599289884,
+      "recent_baseline_rmse": 470.61802415952263,
+      "recent_trend_bias": -45.18804851081195,
+      "n": 10,
+      "years": [
+        2015,
+        2024
+      ],
+      "degree": 1,
+      "window": 10,
+      "trend_form": "recent10"
+    }
+  },
+  "forward": {
+    "rmse": 314.0607975507449,
+    "mae": 238.23546407147984,
+    "detrended_r2": 0.26225057405479035,
+    "skill_vs_trend": 0.1456178141275163,
+    "baseline_rmse": 367.5881856432086,
+    "recent_rmse": 314.0607975507449,
+    "recent_baseline_rmse": 367.5881856432086,
+    "recent_trend_bias": 37.74948550315162,
+    "n": 10,
+    "years": [
+      2015,
+      2024
+    ],
+    "degree": 1,
+    "window": 20,
+    "trend_form": "recent20"
+  },
+  "top_effects": [
+    {
+      "feature": "flowering_heat_penalty",
+      "effect_pct": -3.23,
+      "is_weather": true
+    },
+    {
+      "feature": "harvest_rainfall",
+      "effect_pct": 1.06,
+      "is_weather": true
+    },
+    {
+      "feature": "boll_heat_penalty",
+      "effect_pct": -0.88,
+      "is_weather": true
+    }
+  ]
+}

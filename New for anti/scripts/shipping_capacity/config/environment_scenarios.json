@@ -1,0 +1,93 @@
+{
+  "status": "illustrative_response_path_pending_grok_review",
+  "methodology_ko": "IMO·EU 규제 자체가 감속률을 지정한다고 가정하지 않는다. 규제 대응으로 감속을 선택하는 선대 비중과 감속률, 개조 휴항률을 잠정 시나리오로 입력해 대표 항로의 유효 서비스 DWT를 계산한다.",
+  "warnings_ko": [
+    "물리적 선대 DWT가 감소하는 것이 아니라 같은 기간 제공 가능한 서비스 용량이 감소한다.",
+    "EU ETS와 FuelEU는 비용·연료 집약도 규제이며 직접적인 속도 제한으로 계산하지 않는다.",
+    "속도 대응 비중과 감속률은 공공 관측값이 아닌 민감도 시드로 다음 Codex EXTRA 재평가 대상이다."
+  ],
+  "sources": [
+    {
+      "name": "IMO EEXI and CII FAQ",
+      "url": "https://www.imo.org/en/mediacentre/hottopics/pages/eexi-cii-faq.aspx"
+    },
+    {
+      "name": "IMO Resolution MEPC.400(83), CII reduction factors 2027–2030",
+      "url": "https://wwwcdn.imo.org/localresources/en/KnowledgeCentre/IndexofIMOResolutions/MEPCDocuments/MEPC.400%2883%29.pdf"
+    },
+    {
+      "name": "European Commission — EU ETS maritime transport",
+      "url": "https://climate.ec.europa.eu/eu-action/transport-decarbonisation/reducing-emissions-shipping-sector_en"
+    },
+    {
+      "name": "European Commission — FuelEU Maritime",
+      "url": "https://transport.ec.europa.eu/transport-modes/maritime/decarbonising-maritime-transport-fueleu-maritime_en"
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "regulatory_response_2026_base",
+      "name_ko": "2026 규제 대응 감속·개조 기준 시나리오",
+      "year": 2026,
+      "status": "scenario_provisional",
+      "regulatory_facts": {
+        "cii_reduction_vs_2019_pct": 11.0,
+        "fueleu_in_force": true,
+        "eu_ets_note": "해운 배출량 단계적 편입; 속도 제한 규정으로 해석하지 않음"
+      },
+      "ship_type_assumptions": {
+        "container": {"speed_response_share": 0.25, "speed_reduction_fraction": 0.02, "retrofit_offhire_share": 0.005, "retirement_share": 0.002},
+        "dry_bulk": {"speed_response_share": 0.30, "speed_reduction_fraction": 0.03, "retrofit_offhire_share": 0.005, "retirement_share": 0.003},
+        "tanker": {"speed_response_share": 0.30, "speed_reduction_fraction": 0.03, "retrofit_offhire_share": 0.005, "retirement_share": 0.003}
+      }
+    },
+    {
+      "id": "regulatory_response_2027_base",
+      "name_ko": "2027 규제 대응 감속·개조 기준 시나리오",
+      "year": 2027,
+      "status": "scenario_provisional",
+      "regulatory_facts": {"cii_reduction_vs_2019_pct": 13.625, "fueleu_in_force": true, "eu_ets_note": "100% 단계 적용 구간; 속도 반응은 모델 가정"},
+      "ship_type_assumptions": {
+        "container": {"speed_response_share": 0.30, "speed_reduction_fraction": 0.025, "retrofit_offhire_share": 0.006, "retirement_share": 0.003},
+        "dry_bulk": {"speed_response_share": 0.35, "speed_reduction_fraction": 0.035, "retrofit_offhire_share": 0.006, "retirement_share": 0.004},
+        "tanker": {"speed_response_share": 0.35, "speed_reduction_fraction": 0.035, "retrofit_offhire_share": 0.006, "retirement_share": 0.004}
+      }
+    },
+    {
+      "id": "regulatory_response_2028_base",
+      "name_ko": "2028 규제 대응 감속·개조 기준 시나리오",
+      "year": 2028,
+      "status": "scenario_provisional",
+      "regulatory_facts": {"cii_reduction_vs_2019_pct": 16.25, "fueleu_in_force": true, "eu_ets_note": "비용 신호와 CII 강화의 복합 대응 가정"},
+      "ship_type_assumptions": {
+        "container": {"speed_response_share": 0.35, "speed_reduction_fraction": 0.03, "retrofit_offhire_share": 0.007, "retirement_share": 0.004},
+        "dry_bulk": {"speed_response_share": 0.40, "speed_reduction_fraction": 0.04, "retrofit_offhire_share": 0.007, "retirement_share": 0.006},
+        "tanker": {"speed_response_share": 0.40, "speed_reduction_fraction": 0.04, "retrofit_offhire_share": 0.007, "retirement_share": 0.006}
+      }
+    },
+    {
+      "id": "regulatory_response_2029_base",
+      "name_ko": "2029 규제 대응 감속·개조 기준 시나리오",
+      "year": 2029,
+      "status": "scenario_provisional",
+      "regulatory_facts": {"cii_reduction_vs_2019_pct": 18.875, "fueleu_in_force": true, "eu_ets_note": "비용 신호와 CII 강화의 복합 대응 가정"},
+      "ship_type_assumptions": {
+        "container": {"speed_response_share": 0.40, "speed_reduction_fraction": 0.035, "retrofit_offhire_share": 0.008, "retirement_share": 0.005},
+        "dry_bulk": {"speed_response_share": 0.45, "speed_reduction_fraction": 0.045, "retrofit_offhire_share": 0.008, "retirement_share": 0.008},
+        "tanker": {"speed_response_share": 0.45, "speed_reduction_fraction": 0.045, "retrofit_offhire_share": 0.008, "retirement_share": 0.008}
+      }
+    },
+    {
+      "id": "regulatory_response_2030_base",
+      "name_ko": "2030 규제 대응 감속·개조 기준 시나리오",
+      "year": 2030,
+      "status": "scenario_provisional",
+      "regulatory_facts": {"cii_reduction_vs_2019_pct": 21.5, "fueleu_in_force": true, "eu_ets_note": "비용 신호와 CII 강화의 복합 대응 가정"},
+      "ship_type_assumptions": {
+        "container": {"speed_response_share": 0.45, "speed_reduction_fraction": 0.04, "retrofit_offhire_share": 0.01, "retirement_share": 0.007},
+        "dry_bulk": {"speed_response_share": 0.50, "speed_reduction_fraction": 0.05, "retrofit_offhire_share": 0.01, "retirement_share": 0.010},
+        "tanker": {"speed_response_share": 0.50, "speed_reduction_fraction": 0.05, "retrofit_offhire_share": 0.01, "retirement_share": 0.010}
+      }
+    }
+  ]
+}

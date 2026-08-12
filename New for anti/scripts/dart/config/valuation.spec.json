@@ -1,0 +1,107 @@
+{
+  "schema_version": "dart-valuation-spec-1.0.0",
+  "engine_version": "kfa-val-1.0.0",
+  "disclaimer_ko": "가정에 따른 모형 산출이며 투자 권유·목표가·시가 추종이 아닙니다. 공시에서 Capex·DA·세율을 시드해도 WACC·성장·배수에 결과가 민감합니다.",
+  "models": {
+    "fcff_dcf": {
+      "label_ko": "FCFF DCF",
+      "label_en": "Unlevered DCF",
+      "pros_ko": [
+        "현금흐름 본위라 회계 이익 왜곡에 상대적으로 강함",
+        "가정·민감도를 명시적으로 드러냄"
+      ],
+      "cons_ko": [
+        "WACC·영구성장률에 결과가 민감",
+        "사이클 업종(해운)은 정규화 이익 가정이 핵심"
+      ],
+      "user_assumptions": [
+        "projection_years",
+        "revenue_cagr",
+        "ebit_margin",
+        "tax_rate",
+        "sales_to_nwc",
+        "capex_to_sales",
+        "da_to_sales",
+        "wacc",
+        "terminal_growth",
+        "net_debt",
+        "shares_out"
+      ]
+    },
+    "ev_ebitda": {
+      "label_ko": "EV/EBITDA 배수",
+      "label_en": "Exit / Peer Multiple",
+      "pros_ko": [
+        "단순하고 peer 비교에 익숙함",
+        "단기 상대가치 스크린에 유용"
+      ],
+      "cons_ko": [
+        "회계·리스·일회성 EBITDA 왜곡",
+        "피어 선정과 사이클 위치에 좌우"
+      ],
+      "user_assumptions": [
+        "ebitda",
+        "ev_ebitda_multiple",
+        "net_debt",
+        "shares_out"
+      ]
+    }
+  },
+  "default_scenarios": [
+    {
+      "id": "base",
+      "name_ko": "기본",
+      "status": "scenario",
+      "assumptions": {
+        "projection_years": 5,
+        "revenue_cagr": 0.04,
+        "ebit_margin": 0.12,
+        "tax_rate": 0.25,
+        "sales_to_nwc": 0.15,
+        "capex_to_sales": 0.08,
+        "da_to_sales": 0.05,
+        "wacc": 0.09,
+        "terminal_growth": 0.02,
+        "ev_ebitda_multiple": 8.0
+      }
+    },
+    {
+      "id": "bull",
+      "name_ko": "낙관",
+      "status": "scenario",
+      "assumptions": {
+        "projection_years": 5,
+        "revenue_cagr": 0.08,
+        "ebit_margin": 0.15,
+        "tax_rate": 0.25,
+        "sales_to_nwc": 0.12,
+        "capex_to_sales": 0.07,
+        "da_to_sales": 0.05,
+        "wacc": 0.08,
+        "terminal_growth": 0.025,
+        "ev_ebitda_multiple": 10.0
+      }
+    },
+    {
+      "id": "bear",
+      "name_ko": "보수",
+      "status": "scenario",
+      "assumptions": {
+        "projection_years": 5,
+        "revenue_cagr": 0.0,
+        "ebit_margin": 0.08,
+        "tax_rate": 0.25,
+        "sales_to_nwc": 0.18,
+        "capex_to_sales": 0.09,
+        "da_to_sales": 0.05,
+        "wacc": 0.11,
+        "terminal_growth": 0.015,
+        "ev_ebitda_multiple": 6.0
+      }
+    }
+  ],
+  "sensitivity": {
+    "wacc_deltas": [-0.01, 0.0, 0.01],
+    "terminal_growth_deltas": [-0.005, 0.0, 0.005]
+  }
+}

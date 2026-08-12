@@ -1,0 +1,3182 @@
+{
+  "schema_version": "official-reports-v1",
+  "generated_at": "2026-08-08T21:50:50.217230+00:00",
+  "model": {
+    "name": "official_reports_learnable_v1",
+    "description": "Official sources only (US/JP/CN/EU/UK public RSS·HTML). Domains: economy/finance/diplomacy/security/agriculture. Series catalog + label_history for collaborative learning. No Dropbox.",
+    "learning": {
+      "label_file": "scripts/official_reports/cache/label_history.jsonl",
+      "labels": [
+        "promote",
+        "keep",
+        "drop"
+      ],
+      "how": "Append JSONL rows when you decide a report is 의미 있음/없음; next build adjusts series multipliers. New series go into series_catalog.json."
+    }
+  },
+  "stats": {
+    "sources_ok": 9,
+    "sources_failed": 0,
+    "raw_items": 169,
+    "scored": 168,
+    "selected": 40,
+    "indicators": 14
+  },
+  "feed_status": [
+    {
+      "source_id": "us_fed_all",
+      "ok": true,
+      "count": 20,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "us_fed_monetary",
+      "ok": true,
+      "count": 15,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "us_whitehouse",
+      "ok": true,
+      "count": 30,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "us_eia",
+      "ok": true,
+      "count": 14,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "us_treasury_press_list",
+      "ok": true,
+      "count": 13,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "jp_boj_whatsnew",
+      "ok": true,
+      "count": 30,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "eu_ecb_press",
+      "ok": true,
+      "count": 15,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "uk_boe_news",
+      "ok": true,
+      "count": 30,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "cn_stats_en_hub",
+      "ok": true,
+      "count": 2,
+      "error": null,
+      "mode": "live"
+    }
+  ],
+  "dashboard_fields": {},
+  "indicators": [
+    {
+      "series_id": "JP_BOJ_POLICY",
+      "label_ko": "일본은행 정책·공표",
+      "country": "JPN",
+      "domains": [
+        "finance",
+        "economy"
+      ],
+      "title": "Minutes of the Monetary Policy Meeting on June 15 and 16, 2026",
+      "url": "http://www.boj.or.jp/en/mopo/mpmsche_minu/minu_2026/g260616.pdf",
+      "published_at": "2026-08-04T23:50:00+00:00",
+      "site_slot": "finance.policy",
+      "significance": 4.271
+    },
+    {
+      "series_id": "US_FED_FOMC",
+      "label_ko": "FOMC 성명·의사록",
+      "country": "USA",
+      "domains": [
+        "finance",
+        "economy"
+      ],
+      "title": "Federal Reserve issues FOMC statement",
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260729a.htm",
+      "published_at": "2026-07-29T18:00:00+00:00",
+      "site_slot": "finance.policy",
+      "significance": 3.445
+    },
+    {
+      "series_id": "JP_BOJ_POLICY",
+      "label_ko": "일본은행 정책·공표",
+      "country": "JPN",
+      "domains": [
+        "finance",
+        "economy"
+      ],
+      "title": "Statement on Monetary Policy",
+      "url": "http://www.boj.or.jp/en/mopo/mpmdeci/mpr_2026/k260731a.pdf",
+      "published_at": "2026-07-31T04:25:00+00:00",
+      "site_slot": "finance.policy",
+      "significance": 3.326
+    },
+    {
+      "series_id": "JP_BOJ_POLICY",
+      "label_ko": "일본은행 정책·공표",
+      "country": "JPN",
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "title": "Outlook for Economic Activity and Prices (July 2026, full text)",
+      "url": "http://www.boj.or.jp/en/mopo/outlook/gor2607b.pdf",
+      "published_at": "2026-08-03T05:00:00+00:00",
+      "site_slot": "finance.policy",
+      "significance": 3.251
+    },
+    {
+      "series_id": "JP_BOJ_POLICY",
+      "label_ko": "일본은행 정책·공표",
+      "country": "JPN",
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "title": "Outlook for Economic Activity and Prices (July 2026, The Bank's View)",
+      "url": "http://www.boj.or.jp/en/mopo/outlook/gor2607a.pdf",
+      "published_at": "2026-07-31T04:25:00+00:00",
+      "site_slot": "finance.policy",
+      "significance": 3.251
+    },
+    {
+      "series_id": "US_FED_FOMC",
+      "label_ko": "FOMC 성명·의사록",
+      "country": "USA",
+      "domains": [
+        "finance"
+      ],
+      "title": "Federal Reserve issues FOMC statement",
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260617a.htm",
+      "published_at": "2026-06-17T18:00:00+00:00",
+      "site_slot": "finance.policy",
+      "significance": 2.842
+    },
+    {
+      "series_id": "US_FED_FOMC",
+      "label_ko": "FOMC 성명·의사록",
+      "country": "USA",
+      "domains": [
+        "finance"
+      ],
+      "title": "Federal Reserve Board and Federal Open Market Committee release economic projections from the June 16-17 FOMC meeting",
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260617b.htm",
+      "published_at": "2026-06-17T18:00:00+00:00",
+      "site_slot": "finance.policy",
+      "significance": 2.842
+    },
+    {
+      "series_id": "US_FED_FOMC",
+      "label_ko": "FOMC 성명·의사록",
+      "country": "USA",
+      "domains": [
+        "finance"
+      ],
+      "title": "Federal Reserve issues FOMC statement",
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260429a.htm",
+      "published_at": "2026-04-29T18:00:00+00:00",
+      "site_slot": "finance.policy",
+      "significance": 2.842
+    },
+    {
+      "series_id": "US_FED_FOMC",
+      "label_ko": "FOMC 성명·의사록",
+      "country": "USA",
+      "domains": [
+        "finance"
+      ],
+      "title": "Federal Reserve issues FOMC statement",
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260318a.htm",
+      "published_at": "2026-03-18T18:00:00+00:00",
+      "site_slot": "finance.policy",
+      "significance": 2.842
+    },
+    {
+      "series_id": "US_FED_FOMC",
+      "label_ko": "FOMC 성명·의사록",
+      "country": "USA",
+      "domains": [
+        "finance"
+      ],
+      "title": "Federal Reserve Board and Federal Open Market Committee release economic projections from the March 17-18 FOMC meeting",
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260318b.htm",
+      "published_at": "2026-03-18T18:00:00+00:00",
+      "site_slot": "finance.policy",
+      "significance": 2.842
+    },
+    {
+      "series_id": "EU_ECB_POLICY",
+      "label_ko": "ECB 정책",
+      "country": "EUR",
+      "domains": [
+        "finance",
+        "economy"
+      ],
+      "title": "Monetary policy decisions",
+      "url": "https://www.ecb.europa.eu//press/pr/date/2026/html/ecb.mp260723~29f24d99bc.en.html",
+      "published_at": "2026-07-23T12:15:00+00:00",
+      "site_slot": "finance.policy",
+      "significance": 2.64
+    },
+    {
+      "series_id": "JP_BOJ_POLICY",
+      "label_ko": "일본은행 정책·공표",
+      "country": "JPN",
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "title": "Market Operations by the Bank of Japan (July)",
+      "url": "http://www.boj.or.jp/en/statistics/boj/fm/ope/m_release/2026/ope2607.xlsx",
+      "published_at": "2026-08-06T23:50:00+00:00",
+      "site_slot": "finance.policy",
+      "significance": 2.306
+    },
+    {
+      "series_id": "JP_BOJ_POLICY",
+      "label_ko": "일본은행 정책·공표",
+      "country": "JPN",
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "title": "Monetary Base and the Bank of Japan's Transactions (July)",
+      "url": "http://www.boj.or.jp/en/statistics/boj/other/mbt/mbt2607.pdf",
+      "published_at": "2026-08-06T23:50:00+00:00",
+      "site_slot": "finance.policy",
+      "significance": 2.306
+    },
+    {
+      "series_id": "JP_BOJ_POLICY",
+      "label_ko": "일본은행 정책·공표",
+      "country": "JPN",
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "title": "Bank of Japan's Transactions with the Government (July)",
+      "url": "http://www.boj.or.jp/en/statistics/boj/other/tseifu/release/2026/seifu2607.pdf",
+      "published_at": "2026-08-06T23:50:00+00:00",
+      "site_slot": "finance.policy",
+      "significance": 2.306
+    }
+  ],
+  "ticker_items": [
+    {
+      "id": "afe5133851ec90cd",
+      "published_at": "2026-08-04T23:50:00+00:00",
+      "source": {
+        "id": "jp_boj_whatsnew",
+        "name": "Bank of Japan",
+        "region": "jpn",
+        "slant": null
+      },
+      "url": "http://www.boj.or.jp/en/mopo/mpmsche_minu/minu_2026/g260616.pdf",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "finance",
+        "economy"
+      ],
+      "series_id": "JP_BOJ_POLICY",
+      "title": {
+        "original": "Minutes of the Monetary Policy Meeting on June 15 and 16, 2026",
+        "original_lang": "en",
+        "ko": "[JPN·금융] Minutes of the Monetary Policy Meeting on June 15 and 16, 2026"
+      },
+      "summary": "",
+      "scores": {
+        "significance": 4.271,
+        "final": 4.271
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "series:JP_BOJ_POLICY",
+        "boost:1"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": "finance.policy"
+    },
+    {
+      "id": "e26f4bb4c3f411e3",
+      "published_at": "2026-07-28T05:00:00+00:00",
+      "source": {
+        "id": "jp_boj_whatsnew",
+        "name": "Bank of Japan",
+        "region": "jpn",
+        "slant": null
+      },
+      "url": "http://www.boj.or.jp/en/research/research_data/cpi/index.htm",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "Indicators for Core CPI",
+        "original_lang": "en",
+        "ko": "[JPN·경제] Indicators for Core CPI"
+      },
+      "summary": "",
+      "scores": {
+        "significance": 3.591,
+        "final": 3.591
+      },
+      "rank_reasons": [
+        "domains:economy,finance"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
+      "id": "91b2b7c9cb218a0f",
+      "published_at": "2026-08-06T21:04:59+00:00",
+      "source": {
+        "id": "us_whitehouse",
+        "name": "White House",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.whitehouse.gov/fact-sheets/2026/08/fact-sheet-president-donald-j-trump-bolsters-national-security-and-strengthens-u-s-supply-chains-by-imposing-tariffs-on-polysilicon-and-its-derivatives/",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "security",
+        "economy",
+        "diplomacy"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "Fact Sheet: President Donald J. Trump Bolsters National Security and Strengthens U.S. Supply Chains by Imposing Tariffs on Polysilicon and its Derivatives",
+        "original_lang": "en",
+        "ko": "[USA·안보] Fact Sheet: President Donald J. Trump Bolsters National Security and Strengthens U.S. Supply Chains by Imposing Tariffs on Polysilicon and its Derivatives"
+      },
+      "summary": "DEFENDING THE AMERICAN INDUSTRIAL BASE: Today, President Donald J. Trump signed a Proclamation to protect America’s polysilicon industry and supply chain from imports that threaten national security. STRENGTHENING ECONOMIC AND NATIONAL SECURITY: President Trump’s polysilicon tari",
+      "scores": {
+        "significance": 3.473,
+        "final": 3.473
+      },
+      "rank_reasons": [
+        "domains:economy,diplomacy,security"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
+      "id": "bde8c9fa455dbd71",
+      "published_at": "2026-07-29T18:00:00+00:00",
+      "source": {
+        "id": "us_fed_all",
+        "name": "Federal Reserve",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260729a.htm",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "finance",
+        "economy"
+      ],
+      "series_id": "US_FED_FOMC",
+      "title": {
+        "original": "Federal Reserve issues FOMC statement",
+        "original_lang": "en",
+        "ko": "[USA·금융] Federal Reserve issues FOMC statement"
+      },
+      "summary": "Federal Reserve issues FOMC statement",
+      "scores": {
+        "significance": 3.445,
+        "final": 3.445
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "series:US_FED_FOMC"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": "finance.policy"
+    },
+    {
+      "id": "f737748098fd3679",
+      "published_at": "2026-07-31T04:25:00+00:00",
+      "source": {
+        "id": "jp_boj_whatsnew",
+        "name": "Bank of Japan",
+        "region": "jpn",
+        "slant": null
+      },
+      "url": "http://www.boj.or.jp/en/mopo/mpmdeci/mpr_2026/k260731a.pdf",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "finance",
+        "economy"
+      ],
+      "series_id": "JP_BOJ_POLICY",
+      "title": {
+        "original": "Statement on Monetary Policy",
+        "original_lang": "en",
+        "ko": "[JPN·금융] Statement on Monetary Policy"
+      },
+      "summary": "",
+      "scores": {
+        "significance": 3.326,
+        "final": 3.326
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "series:JP_BOJ_POLICY"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": "finance.policy"
+    },
+    {
+      "id": "1b7e57b7ecbfe7b0",
+      "published_at": "2026-08-03T05:00:00+00:00",
+      "source": {
+        "id": "jp_boj_whatsnew",
+        "name": "Bank of Japan",
+        "region": "jpn",
+        "slant": null
+      },
+      "url": "http://www.boj.or.jp/en/mopo/outlook/gor2607b.pdf",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": "JP_BOJ_POLICY",
+      "title": {
+        "original": "Outlook for Economic Activity and Prices (July 2026, full text)",
+        "original_lang": "en",
+        "ko": "[JPN·경제] Outlook for Economic Activity and Prices (July 2026, full text)"
+      },
+      "summary": "",
+      "scores": {
+        "significance": 3.251,
+        "final": 3.251
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "series:JP_BOJ_POLICY",
+        "boost:1"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": "finance.policy"
+    },
+    {
+      "id": "b74d740aeee9f0cc",
+      "published_at": "2026-07-31T04:25:00+00:00",
+      "source": {
+        "id": "jp_boj_whatsnew",
+        "name": "Bank of Japan",
+        "region": "jpn",
+        "slant": null
+      },
+      "url": "http://www.boj.or.jp/en/mopo/outlook/gor2607a.pdf",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": "JP_BOJ_POLICY",
+      "title": {
+        "original": "Outlook for Economic Activity and Prices (July 2026, The Bank's View)",
+        "original_lang": "en",
+        "ko": "[JPN·경제] Outlook for Economic Activity and Prices (July 2026, The Bank's View)"
+      },
+      "summary": "",
+      "scores": {
+        "significance": 3.251,
+        "final": 3.251
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "series:JP_BOJ_POLICY",
+        "boost:1"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": "finance.policy"
+    },
+    {
+      "id": "f85efaa133bbcbbc",
+      "published_at": "2026-07-09T19:00:00+00:00",
+      "source": {
+        "id": "us_fed_all",
+        "name": "Federal Reserve",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260709a.htm",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "finance",
+        "economy"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "Federal Reserve announces the leadership and objectives of its task forces to advance the conduct of monetary policy",
+        "original_lang": "en",
+        "ko": "[USA·금융] Federal Reserve announces the leadership and objectives of its task forces to advance the conduct of monetary policy"
+      },
+      "summary": "Federal Reserve announces the leadership and objectives of its task forces to advance the conduct of monetary policy",
+      "scores": {
+        "significance": 3.051,
+        "final": 3.051
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "boost:1"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
+      "id": "f2558ae30ce31143",
+      "published_at": "2026-06-17T18:00:00+00:00",
+      "source": {
+        "id": "us_fed_monetary",
+        "name": "Federal Reserve",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260617a.htm",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "finance"
+      ],
+      "series_id": "US_FED_FOMC",
+      "title": {
+        "original": "Federal Reserve issues FOMC statement",
+        "original_lang": "en",
+        "ko": "[USA·금융] Federal Reserve issues FOMC statement"
+      },
+      "summary": "Federal Reserve issues FOMC statement",
+      "scores": {
+        "significance": 2.842,
+        "final": 2.842
+      },
+      "rank_reasons": [
+        "domains:finance",
+        "series:US_FED_FOMC"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": "finance.policy"
+    },
+    {
+      "id": "73ad9608ccf9f1e1",
+      "published_at": "2026-06-17T18:00:00+00:00",
+      "source": {
+        "id": "us_fed_monetary",
+        "name": "Federal Reserve",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260617b.htm",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "finance"
+      ],
+      "series_id": "US_FED_FOMC",
+      "title": {
+        "original": "Federal Reserve Board and Federal Open Market Committee release economic projections from the June 16-17 FOMC meeting",
+        "original_lang": "en",
+        "ko": "[USA·금융] Federal Reserve Board and Federal Open Market Committee release economic projections from the June 16-17 FOMC meeting"
+      },
+      "summary": "Federal Reserve Board and Federal Open Market Committee release economic projections from the June 16-17 FOMC meeting",
+      "scores": {
+        "significance": 2.842,
+        "final": 2.842
+      },
+      "rank_reasons": [
+        "domains:finance",
+        "series:US_FED_FOMC"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": "finance.policy"
+    },
+    {
+      "id": "eaa3e60f961857cc",
+      "published_at": "2026-04-29T18:00:00+00:00",
+      "source": {
+        "id": "us_fed_monetary",
+        "name": "Federal Reserve",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260429a.htm",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "finance"
+      ],
+      "series_id": "US_FED_FOMC",
+      "title": {
+        "original": "Federal Reserve issues FOMC statement",
+        "original_lang": "en",
+        "ko": "[USA·금융] Federal Reserve issues FOMC statement"
+      },
+      "summary": "Federal Reserve issues FOMC statement",
+      "scores": {
+        "significance": 2.842,
+        "final": 2.842
+      },
+      "rank_reasons": [
+        "domains:finance",
+        "series:US_FED_FOMC"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": "finance.policy"
+    },
+    {
+      "id": "f91e4f22a2eeab5f",
+      "published_at": "2026-03-18T18:00:00+00:00",
+      "source": {
+        "id": "us_fed_monetary",
+        "name": "Federal Reserve",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260318a.htm",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "finance"
+      ],
+      "series_id": "US_FED_FOMC",
+      "title": {
+        "original": "Federal Reserve issues FOMC statement",
+        "original_lang": "en",
+        "ko": "[USA·금융] Federal Reserve issues FOMC statement"
+      },
+      "summary": "Federal Reserve issues FOMC statement",
+      "scores": {
+        "significance": 2.842,
+        "final": 2.842
+      },
+      "rank_reasons": [
+        "domains:finance",
+        "series:US_FED_FOMC"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": "finance.policy"
+    },
+    {
+      "id": "26cd5209acf0dba3",
+      "published_at": "2026-03-18T18:00:00+00:00",
+      "source": {
+        "id": "us_fed_monetary",
+        "name": "Federal Reserve",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260318b.htm",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "finance"
+      ],
+      "series_id": "US_FED_FOMC",
+      "title": {
+        "original": "Federal Reserve Board and Federal Open Market Committee release economic projections from the March 17-18 FOMC meeting",
+        "original_lang": "en",
+        "ko": "[USA·금융] Federal Reserve Board and Federal Open Market Committee release economic projections from the March 17-18 FOMC meeting"
+      },
+      "summary": "Federal Reserve Board and Federal Open Market Committee release economic projections from the March 17-18 FOMC meeting",
+      "scores": {
+        "significance": 2.842,
+        "final": 2.842
+      },
+      "rank_reasons": [
+        "domains:finance",
+        "series:US_FED_FOMC"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": "finance.policy"
+    },
+    {
+      "id": "671365e0e4e3d4cd",
+      "published_at": "2026-07-23T12:15:00+00:00",
+      "source": {
+        "id": "eu_ecb_press",
+        "name": "ECB",
+        "region": "eur",
+        "slant": null
+      },
+      "url": "https://www.ecb.europa.eu//press/pr/date/2026/html/ecb.mp260723~29f24d99bc.en.html",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "finance",
+        "economy"
+      ],
+      "series_id": "EU_ECB_POLICY",
+      "title": {
+        "original": "Monetary policy decisions",
+        "original_lang": "en",
+        "ko": "[EUR·금융] Monetary policy decisions"
+      },
+      "summary": "",
+      "scores": {
+        "significance": 2.64,
+        "final": 2.64
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "series:EU_ECB_POLICY"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": "finance.policy"
+    },
+    {
+      "id": "a5c20705f701aa97",
+      "published_at": "2026-07-30T11:00:00+00:00",
+      "source": {
+        "id": "uk_boe_news",
+        "name": "Bank of England",
+        "region": "gbr",
+        "slant": null
+      },
+      "url": "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2026/july-2026",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "finance",
+        "economy"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "Bank Rate maintained at 3.75% - July 2026 Monetary Policy Summary and Minutes",
+        "original_lang": "en",
+        "ko": "[GBR·금융] Bank Rate maintained at 3.75% - July 2026 Monetary Policy Summary and Minutes"
+      },
+      "summary": "The Bank of England’s Monetary Policy Committee is responsible for making decisions about Bank Rate.",
+      "scores": {
+        "significance": 2.599,
+        "final": 2.599
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "boost:1"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
+      "id": "829ddb1a83887c58",
+      "published_at": "2026-06-18T12:30:00+00:00",
+      "source": {
+        "id": "uk_boe_news",
+        "name": "Bank of England",
+        "region": "gbr",
+        "slant": null
+      },
+      "url": "https://www.bankofengland.co.uk/news/2026/june/the-governor-interview-transcript-18-june-2026",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "finance",
+        "economy"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "Transcript of the Governor's pooled broadcast interview given on 18 June 2026",
+        "original_lang": "en",
+        "ko": "[GBR·금융] Transcript of the Governor's pooled broadcast interview given on 18 June 2026"
+      },
+      "summary": "Following the publication of the Monetary Policy Summary and minutes of the Monetary Policy Committee meeting",
+      "scores": {
+        "significance": 2.599,
+        "final": 2.599
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "boost:1"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
+      "id": "74d6fe6f876e88fc",
+      "published_at": "2026-06-18T11:00:00+00:00",
+      "source": {
+        "id": "uk_boe_news",
+        "name": "Bank of England",
+        "region": "gbr",
+        "slant": null
+      },
+      "url": "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2026/june-2026",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "finance",
+        "economy"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "Bank Rate maintained at 3.75% - June 2026 Monetary Policy Summary and Minutes",
+        "original_lang": "en",
+        "ko": "[GBR·금융] Bank Rate maintained at 3.75% - June 2026 Monetary Policy Summary and Minutes"
+      },
+      "summary": "The Bank of England’s Monetary Policy Committee is responsible for making decisions about Bank Rate.",
+      "scores": {
+        "significance": 2.599,
+        "final": 2.599
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "boost:1"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
+      "id": "316363c27cb36e6f",
+      "published_at": "2026-08-06T21:03:35+00:00",
+      "source": {
+        "id": "us_whitehouse",
+        "name": "White House",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.whitehouse.gov/presidential-actions/2026/08/adjusting-imports-of-polysilicon-and-its-derivatives-into-the-united-states/",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "security",
+        "economy",
+        "diplomacy"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "Adjusting Imports of Polysilicon and its Derivatives into the United States",
+        "original_lang": "en",
+        "ko": "[USA·안보] Adjusting Imports of Polysilicon and its Derivatives into the United States"
+      },
+      "summary": "BY THE PRESIDENT OF THE UNITED STATES OF AMERICA A PROCLAMATION 1. Polysilicon is the base material underpinning the security of America’s semiconductor and solar-power supply chains. Yet for decades, America has allowed foreign countries to weaken United States producers in the ",
+      "scores": {
+        "significance": 2.438,
+        "final": 2.438
+      },
+      "rank_reasons": [
+        "domains:economy,diplomacy,security"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
+      "id": "8faef3a230902e89",
+      "published_at": "2026-08-06T20:54:24+00:00",
+      "source": {
+        "id": "us_whitehouse",
+        "name": "White House",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.whitehouse.gov/presidential-actions/2026/08/national-purple-heart-day-2026/",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "security",
+        "economy",
+        "diplomacy"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "National Purple Heart Day, 2026",
+        "original_lang": "en",
+        "ko": "[USA·안보] National Purple Heart Day, 2026"
+      },
+      "summary": "BY THE PRESIDENT OF THE UNITED STATES OF AMERICA A PROCLAMATION On National Purple Heart Day, we honor the immeasurable sacrifices of every valiant service member wounded or killed in combat in defense of our Nation and we reaffirm our eternal gratitude for their unrivaled herois",
+      "scores": {
+        "significance": 2.438,
+        "final": 2.438
+      },
+      "rank_reasons": [
+        "domains:economy,diplomacy,security"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
+      "id": "5835de6164ee7a23",
+      "published_at": "2026-08-06T19:59:11+00:00",
+      "source": {
+        "id": "us_whitehouse",
+        "name": "White House",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.whitehouse.gov/releases/2026/08/private-sector-answers-president-trumps-call-to-lower-prices-for-american-families/",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "diplomacy",
+        "security"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "Private Sector Answers President Trump’s Call to Lower Prices for American Families",
+        "original_lang": "en",
+        "ko": "[USA·경제] Private Sector Answers President Trump’s Call to Lower Prices for American Families"
+      },
+      "summary": "President Donald J. Trump inherited an economy battered by years of inflation that crushed working families. Through bold action to restore American energy dominance, slash red tape, and secure fair trade, the Trump Administration is quickly rebuilding the foundation for lasting ",
+      "scores": {
+        "significance": 2.438,
+        "final": 2.438
+      },
+      "rank_reasons": [
+        "domains:economy,diplomacy,security"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
+      "id": "f6f7e943d1706e9f",
+      "published_at": "2026-08-04T21:33:29+00:00",
+      "source": {
+        "id": "us_whitehouse",
+        "name": "White House",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.whitehouse.gov/releases/2026/08/manufacturing-jobs-flock-to-the-u-s-thanks-to-president-trumps-america-first-economic-agenda/",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "diplomacy",
+        "security"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "Manufacturing Jobs Flock to the U.S. Thanks to President Trump’s America First Economic Agenda",
+        "original_lang": "en",
+        "ko": "[USA·경제] Manufacturing Jobs Flock to the U.S. Thanks to President Trump’s America First Economic Agenda"
+      },
+      "summary": "With President Trump’s economic agenda taking effect, the United States is seeing an economic revival across our manufacturing industry. July saw the strongest expansion in domestic manufacturing activity in more than four years, marking seven consecutive months of growth in the ",
+      "scores": {
+        "significance": 2.438,
+        "final": 2.438
+      },
+      "rank_reasons": [
+        "domains:economy,diplomacy,security"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
+      "id": "2cc71ebd41edb9f5",
+      "published_at": "2026-08-03T19:41:16+00:00",
+      "source": {
+        "id": "us_whitehouse",
+        "name": "White House",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.whitehouse.gov/releases/2026/08/under-president-trump-u-s-factories-expand-at-fastest-clip-in-more-than-four-years/",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "diplomacy",
+        "security"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "Under President Trump, U.S. Factories Expand at Fastest Clip in More Than Four Years",
+        "original_lang": "en",
+        "ko": "[USA·경제] Under President Trump, U.S. Factories Expand at Fastest Clip in More Than Four Years"
+      },
+      "summary": "U.S. manufacturing activity surged in July at the strongest rate in more than four years — driven by soaring demand, record production, and a wave of new hiring. This is the latest clear result of President Donald J. Trump’s economic agenda delivering an industrial renaissance ac",
+      "scores": {
+        "significance": 2.438,
+        "final": 2.438
+      },
+      "rank_reasons": [
+        "domains:economy,diplomacy,security"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
+      "id": "f3bbc4fc82fea2a9",
+      "published_at": "2026-08-03T19:13:55+00:00",
+      "source": {
+        "id": "us_whitehouse",
+        "name": "White House",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.whitehouse.gov/presidential-actions/2026/08/establishing-the-presidents-military-spouse-commission-af64/",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "security",
+        "economy",
+        "diplomacy"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "Establishing the President’s Military Spouse Commission",
+        "original_lang": "en",
+        "ko": "[USA·안보] Establishing the President’s Military Spouse Commission"
+      },
+      "summary": "By the authority vested in me as President by the Constitution and the laws of the United States of America, it is hereby ordered: Section 1. Purpose and Policy. Military spouses are intrinsically linked to the good order, readiness, and retention of our military. Their support a",
+      "scores": {
+        "significance": 2.438,
+        "final": 2.438
+      },
+      "rank_reasons": [
+        "domains:economy,diplomacy,security"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
+      "id": "47c0b82e9f10380b",
+      "published_at": "2026-08-03T18:55:57+00:00",
+      "source": {
+        "id": "us_whitehouse",
+        "name": "White House",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.whitehouse.gov/fact-sheets/2026/08/fact-sheet-president-donald-j-trump-establishes-the-presidents-military-spouse-commission/",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "security",
+        "economy",
+        "diplomacy"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "Fact Sheet: President Donald J. Trump Establishes the President’s Military Spouse Commission",
+        "original_lang": "en",
+        "ko": "[USA·안보] Fact Sheet: President Donald J. Trump Establishes the President’s Military Spouse Commission"
+      },
+      "summary": "STRENGTHENING MILITARY READINESS: Today, President Donald J. Trump signed an Executive Order establishing the Military Spouse Commission to strengthen military readiness by improving the quality of life for military spouses and families. PRIORITIZING MILITARY EXCELLENCE: Presiden",
+      "scores": {
+        "significance": 2.438,
+        "final": 2.438
+      },
+      "rank_reasons": [
+        "domains:economy,diplomacy,security"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
+      "id": "298c6099d7d712ef",
+      "published_at": "2026-07-30T20:34:56+00:00",
+      "source": {
+        "id": "us_whitehouse",
+        "name": "White House",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.whitehouse.gov/fact-sheets/2026/07/fact-sheet-president-donald-j-trump-delegates-defense-production-act-authority-with-respect-to-recoverable-critical-minerals-and-materials-that-are-essential-to-our-national-defense/",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "security",
+        "economy",
+        "diplomacy"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "Fact Sheet: President Donald J. Trump Delegates Defense Production Act Authority with Respect to Recoverable Critical Minerals and Materials That Are Essential to Our National Defense",
+        "original_lang": "en",
+        "ko": "[USA·안보] Fact Sheet: President Donald J. Trump Delegates Defense Production Act Authority with Respect to Recoverable Critical Minerals and Materials That Are Essential to Our National Defense"
+      },
+      "summary": "SECURING AMERICA’S SUPPLY CHAINS: Today, President Donald J. Trump signed a Presidential Determination delegating authority under the Defense Production Act to institute export restrictions on recoverable critical minerals and materials (CMMs). ENSURING OUR NATIONAL DEFENSE: Pres",
+      "scores": {
+        "significance": 2.438,
+        "final": 2.438
+      },
+      "rank_reasons": [
+        "domains:economy,diplomacy,security"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
+      "id": "f03a89b71528ccd7",
+      "published_at": "2026-07-30T20:33:26+00:00",
+      "source": {
+        "id": "us_whitehouse",
+        "name": "White House",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.whitehouse.gov/presidential-actions/2026/07/presidential-determination-pursuant-to-section-101-of-the-defense-production-act-of-1950-as-amended-on-recoverable-critical-minerals-and-materials/",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "security",
+        "economy",
+        "diplomacy"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "Presidential Determination Pursuant to Section 101 of the Defense Production Act of 1950, as Amended, on Recoverable Critical Minerals and Materials",
+        "original_lang": "en",
+        "ko": "[USA·안보] Presidential Determination Pursuant to Section 101 of the Defense Production Act of 1950, as Amended, on Recoverable Critical Minerals and Materials"
+      },
+      "summary": "MEMORANDUM FOR THE SECRETARY OF COMMERCE SUBJECT: Presidential Determination Pursuant to Section 101 of the Defense Production Act of 1950, as Amended, on Recoverable Critical Minerals and Materials Section 1. Policy and General Findings. (a) Recoverable critical minerals and mat",
+      "scores": {
+        "significance": 2.438,
+        "final": 2.438
+      },
+      "rank_reasons": [
+        "domains:economy,diplomacy,security"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
+      "id": "139010fd65f0e41c",
+      "published_at": "2026-07-30T13:18:36+00:00",
+      "source": {
+        "id": "us_whitehouse",
+        "name": "White House",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.whitehouse.gov/releases/2026/07/the-white-house-government-transparency-task-force-fact-sheet/",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "security",
+        "economy",
+        "diplomacy"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "The White House Government Transparency Task Force Fact Sheet",
+        "original_lang": "en",
+        "ko": "[USA·안보] The White House Government Transparency Task Force Fact Sheet"
+      },
+      "summary": "The White House Government Transparency Task Force releases the following fact sheet approved by the directors of the Office of the Director of National Intelligence, the National Security Agency, the Central Intelligence Agency, and the Department of Homeland Security relating t",
+      "scores": {
+        "significance": 2.438,
+        "final": 2.438
+      },
+      "rank_reasons": [
+        "domains:economy,diplomacy,security"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
+      "id": "06fdfda7dc2bc85e",
+      "published_at": "2026-07-23T16:00:00+00:00",
+      "source": {
+        "id": "uk_boe_news",
+        "name": "Bank of England",
+        "region": "gbr",
+        "slant": null
+      },
+      "url": "https://www.bankofengland.co.uk/letter/2026/letter-from-the-governor-to-the-daily-mail",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "security",
+        "economy",
+        "finance"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "Letter from the Governor to the Daily Mail",
+        "original_lang": "en",
+        "ko": "[GBR·안보] Letter from the Governor to the Daily Mail"
+      },
+      "summary": "Letter from Governor Andrew Bailey to the Daily Mail on the subject of AI and cyber-attacks",
+      "scores": {
+        "significance": 2.438,
+        "final": 2.438
+      },
+      "rank_reasons": [
+        "domains:economy,finance,security"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
+      "id": "2ca916a480fc4e7d",
+      "published_at": "2026-08-07T19:44:19+00:00",
+      "source": {
+        "id": "us_whitehouse",
+        "name": "White House",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.whitehouse.gov/fact-sheets/2026/08/fact-sheet-president-donald-j-trump-announces-billions-in-new-deals-and-investments-to-power-american-mining/",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "diplomacy",
+        "security"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "Fact Sheet: President Donald J. Trump Announces Billions in New Deals and Investments to Power American Mining",
+        "original_lang": "en",
+        "ko": "[USA·경제] Fact Sheet: President Donald J. Trump Announces Billions in New Deals and Investments to Power American Mining"
+      },
+      "summary": "BOLSTERING AMERICAN MINING: Today, President Donald J. Trump held a historic roundtable with the mining industry where he announced over $2 billion in critical mining and mining-related projects to revitalize the industry and over $180 million in mining school investments to bols",
+      "scores": {
+        "significance": 2.392,
+        "final": 2.392
+      },
+      "rank_reasons": [
+        "domains:economy,diplomacy,security",
+        "boost:1"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
+      "id": "f4c861363297d5e2",
+      "published_at": "2026-08-07T14:00:00+00:00",
+      "source": {
+        "id": "us_eia",
+        "name": "EIA",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.eia.gov/todayinenergy/detail.php?id=67925",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "security",
+        "agriculture"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "Battery storage capacity averaged 70% growth over the last three years",
+        "original_lang": "en",
+        "ko": "[USA·경제] Battery storage capacity averaged 70% growth over the last three years"
+      },
+      "summary": "Utility-scale battery storage capacity in the United States increased significantly during the last three years, with an annual average growth rate of 70%. By the end of 2025, the U.S. power system had operational battery storage capacity of 43.6 gigawatts (GW). During the first ",
+      "scores": {
+        "significance": 2.332,
+        "final": 2.332
+      },
+      "rank_reasons": [
+        "domains:economy,security,agriculture"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
+      "id": "050d5992a5bd064d",
+      "published_at": "2026-08-04T20:30:00+00:00",
+      "source": {
+        "id": "us_fed_all",
+        "name": "Federal Reserve",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/orders20260804c.htm",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "Federal Reserve Board announces approval of the application by Coastal Bend Bancshares, Inc.",
+        "original_lang": "en",
+        "ko": "[USA·경제] Federal Reserve Board announces approval of the application by Coastal Bend Bancshares, Inc."
+      },
+      "summary": "Federal Reserve Board announces approval of the application by Coastal Bend Bancshares, Inc.",
+      "scores": {
+        "significance": 2.322,
+        "final": 2.322
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "boost:1"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
+      "id": "e7755a9b18b98a15",
+      "published_at": "2026-08-04T20:30:00+00:00",
+      "source": {
+        "id": "us_fed_all",
+        "name": "Federal Reserve",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/orders20260804b.htm",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "Federal Reserve Board announces approval of the application by FS Bancorp, Inc.",
+        "original_lang": "en",
+        "ko": "[USA·경제] Federal Reserve Board announces approval of the application by FS Bancorp, Inc."
+      },
+      "summary": "Federal Reserve Board announces approval of the application by FS Bancorp, Inc.",
+      "scores": {
+        "significance": 2.322,
+        "final": 2.322
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "boost:1"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
+      "id": "aa37b7321f23ff09",
+      "published_at": "2026-08-04T20:30:00+00:00",
+      "source": {
+        "id": "us_fed_all",
+        "name": "Federal Reserve",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/orders20260804a.htm",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "Federal Reserve Board announces approval of the application by Banco Santander, S.A. and Santander Holdings USA, Inc.",
+        "original_lang": "en",
+        "ko": "[USA·경제] Federal Reserve Board announces approval of the application by Banco Santander, S.A. and Santander Holdings USA, Inc."
+      },
+      "summary": "Federal Reserve Board announces approval of the application by Banco Santander, S.A. and Santander Holdings USA, Inc.",
+      "scores": {
+        "significance": 2.322,
+        "final": 2.322
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "boost:1"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
+      "id": "2b3963fd4f0ee6c1",
+      "published_at": "2026-07-14T18:00:00+00:00",
+      "source": {
+        "id": "us_fed_all",
+        "name": "Federal Reserve",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260714a.htm",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "Minutes of the Board's discount rate meetings on June 8 and June 17, 2026",
+        "original_lang": "en",
+        "ko": "[USA·경제] Minutes of the Board's discount rate meetings on June 8 and June 17, 2026"
+      },
+      "summary": "Minutes of the Board's discount rate meetings on June 8 and June 17, 2026",
+      "scores": {
+        "significance": 2.322,
+        "final": 2.322
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "boost:1"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
+      "id": "ecc42c8d5b21cabf",
+      "published_at": "2026-07-08T18:00:00+00:00",
+      "source": {
+        "id": "us_fed_all",
+        "name": "Federal Reserve",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260708a.htm",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "Minutes of the Federal Open Market Committee, June 16-17, 2026",
+        "original_lang": "en",
+        "ko": "[USA·경제] Minutes of the Federal Open Market Committee, June 16-17, 2026"
+      },
+      "summary": "Minutes of the Federal Open Market Committee, June 16-17, 2026",
+      "scores": {
+        "significance": 2.322,
+        "final": 2.322
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "boost:1"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
+      "id": "073d31db4d63c8b3",
+      "published_at": "2026-07-02T15:00:00+00:00",
+      "source": {
+        "id": "us_fed_all",
+        "name": "Federal Reserve",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/enforcement20260702a.htm",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "Federal Reserve Board issues enforcement action with Small Business Bank and announces termination enforcement actions with BNP Paribas S.A., BNP Paribas USA, Inc., BNP Paribas Securities Corp., and Community Bankshares, Inc.",
+        "original_lang": "en",
+        "ko": "[USA·경제] Federal Reserve Board issues enforcement action with Small Business Bank and announces termination enforcement actions with BNP Paribas S.A., BNP Paribas USA, Inc., BNP Paribas Securities Corp., and Community Bankshares, Inc."
+      },
+      "summary": "Federal Reserve Board issues enforcement action with Small Business Bank and announces termination enforcement actions with BNP Paribas S.A., BNP Paribas USA, Inc., BNP Paribas Securities Corp., and Community Bankshares, Inc.",
+      "scores": {
+        "significance": 2.322,
+        "final": 2.322
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "boost:1"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
+      "id": "4338a33ea980fef3",
+      "published_at": "2026-06-25T15:00:00+00:00",
+      "source": {
+        "id": "us_fed_all",
+        "name": "Federal Reserve",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/enforcement20260625a.htm",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "Federal Reserve Board announces termination of enforcement action with Jiko Group, Inc.",
+        "original_lang": "en",
+        "ko": "[USA·경제] Federal Reserve Board announces termination of enforcement action with Jiko Group, Inc."
+      },
+      "summary": "Federal Reserve Board announces termination of enforcement action with Jiko Group, Inc.",
+      "scores": {
+        "significance": 2.322,
+        "final": 2.322
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "boost:1"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
+      "id": "bb33d29faeed4fea",
+      "published_at": "2026-08-06T23:50:00+00:00",
+      "source": {
+        "id": "jp_boj_whatsnew",
+        "name": "Bank of Japan",
+        "region": "jpn",
+        "slant": null
+      },
+      "url": "http://www.boj.or.jp/en/statistics/boj/fm/ope/m_release/2026/ope2607.xlsx",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": "JP_BOJ_POLICY",
+      "title": {
+        "original": "Market Operations by the Bank of Japan (July)",
+        "original_lang": "en",
+        "ko": "[JPN·경제] Market Operations by the Bank of Japan (July)"
+      },
+      "summary": "",
+      "scores": {
+        "significance": 2.306,
+        "final": 2.306
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "series:JP_BOJ_POLICY"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": "finance.policy"
+    },
+    {
+      "id": "e09b0a0e55552062",
+      "published_at": "2026-08-06T23:50:00+00:00",
+      "source": {
+        "id": "jp_boj_whatsnew",
+        "name": "Bank of Japan",
+        "region": "jpn",
+        "slant": null
+      },
+      "url": "http://www.boj.or.jp/en/statistics/boj/other/mbt/mbt2607.pdf",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": "JP_BOJ_POLICY",
+      "title": {
+        "original": "Monetary Base and the Bank of Japan's Transactions (July)",
+        "original_lang": "en",
+        "ko": "[JPN·경제] Monetary Base and the Bank of Japan's Transactions (July)"
+      },
+      "summary": "",
+      "scores": {
+        "significance": 2.306,
+        "final": 2.306
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "series:JP_BOJ_POLICY"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": "finance.policy"
+    },
+    {
+      "id": "8e5469f1b87939a7",
+      "published_at": "2026-08-06T23:50:00+00:00",
+      "source": {
+        "id": "jp_boj_whatsnew",
+        "name": "Bank of Japan",
+        "region": "jpn",
+        "slant": null
+      },
+      "url": "http://www.boj.or.jp/en/statistics/boj/other/tseifu/release/2026/seifu2607.pdf",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": "JP_BOJ_POLICY",
+      "title": {
+        "original": "Bank of Japan's Transactions with the Government (July)",
+        "original_lang": "en",
+        "ko": "[JPN·경제] Bank of Japan's Transactions with the Government (July)"
+      },
+      "summary": "",
+      "scores": {
+        "significance": 2.306,
+        "final": 2.306
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "series:JP_BOJ_POLICY"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": "finance.policy"
+    }
+  ],
+  "pending_review": [
+    {
+      "title": "August 7, 2026",
+      "url": "https://home.treasury.gov/news/press-releases/sb0599",
+      "country": "USA",
+      "domains": [
+        "economy",
+        "finance",
+        "diplomacy"
+      ],
+      "significance": 2.291,
+      "suggest": "label promote|keep|drop + series_id later"
+    },
+    {
+      "title": "August 7, 2026",
+      "url": "https://home.treasury.gov/news/press-releases/sb0596",
+      "country": "USA",
+      "domains": [
+        "economy",
+        "finance",
+        "diplomacy"
+      ],
+      "significance": 2.291,
+      "suggest": "label promote|keep|drop + series_id later"
+    },
+    {
+      "title": "August 7, 2026",
+      "url": "https://home.treasury.gov/news/press-releases/sb0598",
+      "country": "USA",
+      "domains": [
+        "economy",
+        "finance",
+        "diplomacy"
+      ],
+      "significance": 2.291,
+      "suggest": "label promote|keep|drop + series_id later"
+    },
+    {
+      "title": "August 7, 2026",
+      "url": "https://home.treasury.gov/news/press-releases/sb0600",
+      "country": "USA",
+      "domains": [
+        "economy",
+        "finance",
+        "diplomacy"
+      ],
+      "significance": 2.291,
+      "suggest": "label promote|keep|drop + series_id later"
+    },
+    {
+      "title": "August 6, 2026",
+      "url": "https://home.treasury.gov/news/press-releases/sb0595",
+      "country": "USA",
+      "domains": [
+        "economy",
+        "finance",
+        "diplomacy"
+      ],
+      "significance": 2.291,
+      "suggest": "label promote|keep|drop + series_id later"
+    },
+    {
+      "title": "July 27, 2026",
+      "url": "https://home.treasury.gov/news/press-releases/sb0579",
+      "country": "USA",
+      "domains": [
+        "economy",
+        "finance",
+        "diplomacy"
+      ],
+      "significance": 2.291,
+      "suggest": "label promote|keep|drop + series_id later"
+    },
+    {
+      "title": "Statements & Remarks",
+      "url": "https://home.treasury.gov/news/press-releases/readouts",
+      "country": "USA",
+      "domains": [
+        "economy",
+        "finance",
+        "diplomacy"
+      ],
+      "significance": 2.291,
+      "suggest": "label promote|keep|drop + series_id later"
+    },
+    {
+      "title": "testimonies",
+      "url": "https://home.treasury.gov/news/press-releases/testimonies",
+      "country": "USA",
+      "domains": [
+        "economy",
+        "finance",
+        "diplomacy"
+      ],
+      "significance": 2.291,
+      "suggest": "label promote|keep|drop + series_id later"
+    }
+  ],
+  "items": [
+    {
+      "id": "afe5133851ec90cd",
+      "published_at": "2026-08-04T23:50:00+00:00",
+      "source": {
+        "id": "jp_boj_whatsnew",
+        "name": "Bank of Japan",
+        "region": "jpn",
+        "slant": null
+      },
+      "url": "http://www.boj.or.jp/en/mopo/mpmsche_minu/minu_2026/g260616.pdf",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "finance",
+        "economy"
+      ],
+      "series_id": "JP_BOJ_POLICY",
+      "title": {
+        "original": "Minutes of the Monetary Policy Meeting on June 15 and 16, 2026",
+        "original_lang": "en",
+        "ko": "[JPN·금융] Minutes of the Monetary Policy Meeting on June 15 and 16, 2026"
+      },
+      "summary": "",
+      "scores": {
+        "significance": 4.271,
+        "final": 4.271
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "series:JP_BOJ_POLICY",
+        "boost:1"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": "finance.policy"
+    },
+    {
+      "id": "e26f4bb4c3f411e3",
+      "published_at": "2026-07-28T05:00:00+00:00",
+      "source": {
+        "id": "jp_boj_whatsnew",
+        "name": "Bank of Japan",
+        "region": "jpn",
+        "slant": null
+      },
+      "url": "http://www.boj.or.jp/en/research/research_data/cpi/index.htm",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "Indicators for Core CPI",
+        "original_lang": "en",
+        "ko": "[JPN·경제] Indicators for Core CPI"
+      },
+      "summary": "",
+      "scores": {
+        "significance": 3.591,
+        "final": 3.591
+      },
+      "rank_reasons": [
+        "domains:economy,finance"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
+      "id": "91b2b7c9cb218a0f",
+      "published_at": "2026-08-06T21:04:59+00:00",
+      "source": {
+        "id": "us_whitehouse",
+        "name": "White House",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.whitehouse.gov/fact-sheets/2026/08/fact-sheet-president-donald-j-trump-bolsters-national-security-and-strengthens-u-s-supply-chains-by-imposing-tariffs-on-polysilicon-and-its-derivatives/",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "security",
+        "economy",
+        "diplomacy"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "Fact Sheet: President Donald J. Trump Bolsters National Security and Strengthens U.S. Supply Chains by Imposing Tariffs on Polysilicon and its Derivatives",
+        "original_lang": "en",
+        "ko": "[USA·안보] Fact Sheet: President Donald J. Trump Bolsters National Security and Strengthens U.S. Supply Chains by Imposing Tariffs on Polysilicon and its Derivatives"
+      },
+      "summary": "DEFENDING THE AMERICAN INDUSTRIAL BASE: Today, President Donald J. Trump signed a Proclamation to protect America’s polysilicon industry and supply chain from imports that threaten national security. STRENGTHENING ECONOMIC AND NATIONAL SECURITY: President Trump’s polysilicon tari",
+      "scores": {
+        "significance": 3.473,
+        "final": 3.473
+      },
+      "rank_reasons": [
+        "domains:economy,diplomacy,security"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
+      "id": "bde8c9fa455dbd71",
+      "published_at": "2026-07-29T18:00:00+00:00",
+      "source": {
+        "id": "us_fed_all",
+        "name": "Federal Reserve",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260729a.htm",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "finance",
+        "economy"
+      ],
+      "series_id": "US_FED_FOMC",
+      "title": {
+        "original": "Federal Reserve issues FOMC statement",
+        "original_lang": "en",
+        "ko": "[USA·금융] Federal Reserve issues FOMC statement"
+      },
+      "summary": "Federal Reserve issues FOMC statement",
+      "scores": {
+        "significance": 3.445,
+        "final": 3.445
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "series:US_FED_FOMC"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": "finance.policy"
+    },
+    {
+      "id": "f737748098fd3679",
+      "published_at": "2026-07-31T04:25:00+00:00",
+      "source": {
+        "id": "jp_boj_whatsnew",
+        "name": "Bank of Japan",
+        "region": "jpn",
+        "slant": null
+      },
+      "url": "http://www.boj.or.jp/en/mopo/mpmdeci/mpr_2026/k260731a.pdf",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "finance",
+        "economy"
+      ],
+      "series_id": "JP_BOJ_POLICY",
+      "title": {
+        "original": "Statement on Monetary Policy",
+        "original_lang": "en",
+        "ko": "[JPN·금융] Statement on Monetary Policy"
+      },
+      "summary": "",
+      "scores": {
+        "significance": 3.326,
+        "final": 3.326
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "series:JP_BOJ_POLICY"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": "finance.policy"
+    },
+    {
+      "id": "1b7e57b7ecbfe7b0",
+      "published_at": "2026-08-03T05:00:00+00:00",
+      "source": {
+        "id": "jp_boj_whatsnew",
+        "name": "Bank of Japan",
+        "region": "jpn",
+        "slant": null
+      },
+      "url": "http://www.boj.or.jp/en/mopo/outlook/gor2607b.pdf",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": "JP_BOJ_POLICY",
+      "title": {
+        "original": "Outlook for Economic Activity and Prices (July 2026, full text)",
+        "original_lang": "en",
+        "ko": "[JPN·경제] Outlook for Economic Activity and Prices (July 2026, full text)"
+      },
+      "summary": "",
+      "scores": {
+        "significance": 3.251,
+        "final": 3.251
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "series:JP_BOJ_POLICY",
+        "boost:1"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": "finance.policy"
+    },
+    {
+      "id": "b74d740aeee9f0cc",
+      "published_at": "2026-07-31T04:25:00+00:00",
+      "source": {
+        "id": "jp_boj_whatsnew",
+        "name": "Bank of Japan",
+        "region": "jpn",
+        "slant": null
+      },
+      "url": "http://www.boj.or.jp/en/mopo/outlook/gor2607a.pdf",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": "JP_BOJ_POLICY",
+      "title": {
+        "original": "Outlook for Economic Activity and Prices (July 2026, The Bank's View)",
+        "original_lang": "en",
+        "ko": "[JPN·경제] Outlook for Economic Activity and Prices (July 2026, The Bank's View)"
+      },
+      "summary": "",
+      "scores": {
+        "significance": 3.251,
+        "final": 3.251
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "series:JP_BOJ_POLICY",
+        "boost:1"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": "finance.policy"
+    },
+    {
+      "id": "f85efaa133bbcbbc",
+      "published_at": "2026-07-09T19:00:00+00:00",
+      "source": {
+        "id": "us_fed_all",
+        "name": "Federal Reserve",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260709a.htm",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "finance",
+        "economy"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "Federal Reserve announces the leadership and objectives of its task forces to advance the conduct of monetary policy",
+        "original_lang": "en",
+        "ko": "[USA·금융] Federal Reserve announces the leadership and objectives of its task forces to advance the conduct of monetary policy"
+      },
+      "summary": "Federal Reserve announces the leadership and objectives of its task forces to advance the conduct of monetary policy",
+      "scores": {
+        "significance": 3.051,
+        "final": 3.051
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "boost:1"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
+      "id": "f2558ae30ce31143",
+      "published_at": "2026-06-17T18:00:00+00:00",
+      "source": {
+        "id": "us_fed_monetary",
+        "name": "Federal Reserve",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260617a.htm",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "finance"
+      ],
+      "series_id": "US_FED_FOMC",
+      "title": {
+        "original": "Federal Reserve issues FOMC statement",
+        "original_lang": "en",
+        "ko": "[USA·금융] Federal Reserve issues FOMC statement"
+      },
+      "summary": "Federal Reserve issues FOMC statement",
+      "scores": {
+        "significance": 2.842,
+        "final": 2.842
+      },
+      "rank_reasons": [
+        "domains:finance",
+        "series:US_FED_FOMC"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": "finance.policy"
+    },
+    {
+      "id": "73ad9608ccf9f1e1",
+      "published_at": "2026-06-17T18:00:00+00:00",
+      "source": {
+        "id": "us_fed_monetary",
+        "name": "Federal Reserve",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260617b.htm",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "finance"
+      ],
+      "series_id": "US_FED_FOMC",
+      "title": {
+        "original": "Federal Reserve Board and Federal Open Market Committee release economic projections from the June 16-17 FOMC meeting",
+        "original_lang": "en",
+        "ko": "[USA·금융] Federal Reserve Board and Federal Open Market Committee release economic projections from the June 16-17 FOMC meeting"
+      },
+      "summary": "Federal Reserve Board and Federal Open Market Committee release economic projections from the June 16-17 FOMC meeting",
+      "scores": {
+        "significance": 2.842,
+        "final": 2.842
+      },
+      "rank_reasons": [
+        "domains:finance",
+        "series:US_FED_FOMC"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": "finance.policy"
+    },
+    {
+      "id": "eaa3e60f961857cc",
+      "published_at": "2026-04-29T18:00:00+00:00",
+      "source": {
+        "id": "us_fed_monetary",
+        "name": "Federal Reserve",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260429a.htm",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "finance"
+      ],
+      "series_id": "US_FED_FOMC",
+      "title": {
+        "original": "Federal Reserve issues FOMC statement",
+        "original_lang": "en",
+        "ko": "[USA·금융] Federal Reserve issues FOMC statement"
+      },
+      "summary": "Federal Reserve issues FOMC statement",
+      "scores": {
+        "significance": 2.842,
+        "final": 2.842
+      },
+      "rank_reasons": [
+        "domains:finance",
+        "series:US_FED_FOMC"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": "finance.policy"
+    },
+    {
+      "id": "f91e4f22a2eeab5f",
+      "published_at": "2026-03-18T18:00:00+00:00",
+      "source": {
+        "id": "us_fed_monetary",
+        "name": "Federal Reserve",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260318a.htm",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "finance"
+      ],
+      "series_id": "US_FED_FOMC",
+      "title": {
+        "original": "Federal Reserve issues FOMC statement",
+        "original_lang": "en",
+        "ko": "[USA·금융] Federal Reserve issues FOMC statement"
+      },
+      "summary": "Federal Reserve issues FOMC statement",
+      "scores": {
+        "significance": 2.842,
+        "final": 2.842
+      },
+      "rank_reasons": [
+        "domains:finance",
+        "series:US_FED_FOMC"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": "finance.policy"
+    },
+    {
+      "id": "26cd5209acf0dba3",
+      "published_at": "2026-03-18T18:00:00+00:00",
+      "source": {
+        "id": "us_fed_monetary",
+        "name": "Federal Reserve",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260318b.htm",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "finance"
+      ],
+      "series_id": "US_FED_FOMC",
+      "title": {
+        "original": "Federal Reserve Board and Federal Open Market Committee release economic projections from the March 17-18 FOMC meeting",
+        "original_lang": "en",
+        "ko": "[USA·금융] Federal Reserve Board and Federal Open Market Committee release economic projections from the March 17-18 FOMC meeting"
+      },
+      "summary": "Federal Reserve Board and Federal Open Market Committee release economic projections from the March 17-18 FOMC meeting",
+      "scores": {
+        "significance": 2.842,
+        "final": 2.842
+      },
+      "rank_reasons": [
+        "domains:finance",
+        "series:US_FED_FOMC"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": "finance.policy"
+    },
+    {
+      "id": "671365e0e4e3d4cd",
+      "published_at": "2026-07-23T12:15:00+00:00",
+      "source": {
+        "id": "eu_ecb_press",
+        "name": "ECB",
+        "region": "eur",
+        "slant": null
+      },
+      "url": "https://www.ecb.europa.eu//press/pr/date/2026/html/ecb.mp260723~29f24d99bc.en.html",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "finance",
+        "economy"
+      ],
+      "series_id": "EU_ECB_POLICY",
+      "title": {
+        "original": "Monetary policy decisions",
+        "original_lang": "en",
+        "ko": "[EUR·금융] Monetary policy decisions"
+      },
+      "summary": "",
+      "scores": {
+        "significance": 2.64,
+        "final": 2.64
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "series:EU_ECB_POLICY"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": "finance.policy"
+    },
+    {
+      "id": "a5c20705f701aa97",
+      "published_at": "2026-07-30T11:00:00+00:00",
+      "source": {
+        "id": "uk_boe_news",
+        "name": "Bank of England",
+        "region": "gbr",
+        "slant": null
+      },
+      "url": "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2026/july-2026",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "finance",
+        "economy"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "Bank Rate maintained at 3.75% - July 2026 Monetary Policy Summary and Minutes",
+        "original_lang": "en",
+        "ko": "[GBR·금융] Bank Rate maintained at 3.75% - July 2026 Monetary Policy Summary and Minutes"
+      },
+      "summary": "The Bank of England’s Monetary Policy Committee is responsible for making decisions about Bank Rate.",
+      "scores": {
+        "significance": 2.599,
+        "final": 2.599
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "boost:1"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
+      "id": "829ddb1a83887c58",
+      "published_at": "2026-06-18T12:30:00+00:00",
+      "source": {
+        "id": "uk_boe_news",
+        "name": "Bank of England",
+        "region": "gbr",
+        "slant": null
+      },
+      "url": "https://www.bankofengland.co.uk/news/2026/june/the-governor-interview-transcript-18-june-2026",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "finance",
+        "economy"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "Transcript of the Governor's pooled broadcast interview given on 18 June 2026",
+        "original_lang": "en",
+        "ko": "[GBR·금융] Transcript of the Governor's pooled broadcast interview given on 18 June 2026"
+      },
+      "summary": "Following the publication of the Monetary Policy Summary and minutes of the Monetary Policy Committee meeting",
+      "scores": {
+        "significance": 2.599,
+        "final": 2.599
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "boost:1"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
+      "id": "74d6fe6f876e88fc",
+      "published_at": "2026-06-18T11:00:00+00:00",
+      "source": {
+        "id": "uk_boe_news",
+        "name": "Bank of England",
+        "region": "gbr",
+        "slant": null
+      },
+      "url": "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2026/june-2026",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "finance",
+        "economy"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "Bank Rate maintained at 3.75% - June 2026 Monetary Policy Summary and Minutes",
+        "original_lang": "en",
+        "ko": "[GBR·금융] Bank Rate maintained at 3.75% - June 2026 Monetary Policy Summary and Minutes"
+      },
+      "summary": "The Bank of England’s Monetary Policy Committee is responsible for making decisions about Bank Rate.",
+      "scores": {
+        "significance": 2.599,
+        "final": 2.599
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "boost:1"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
+      "id": "316363c27cb36e6f",
+      "published_at": "2026-08-06T21:03:35+00:00",
+      "source": {
+        "id": "us_whitehouse",
+        "name": "White House",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.whitehouse.gov/presidential-actions/2026/08/adjusting-imports-of-polysilicon-and-its-derivatives-into-the-united-states/",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "security",
+        "economy",
+        "diplomacy"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "Adjusting Imports of Polysilicon and its Derivatives into the United States",
+        "original_lang": "en",
+        "ko": "[USA·안보] Adjusting Imports of Polysilicon and its Derivatives into the United States"
+      },
+      "summary": "BY THE PRESIDENT OF THE UNITED STATES OF AMERICA A PROCLAMATION 1. Polysilicon is the base material underpinning the security of America’s semiconductor and solar-power supply chains. Yet for decades, America has allowed foreign countries to weaken United States producers in the ",
+      "scores": {
+        "significance": 2.438,
+        "final": 2.438
+      },
+      "rank_reasons": [
+        "domains:economy,diplomacy,security"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
+      "id": "8faef3a230902e89",
+      "published_at": "2026-08-06T20:54:24+00:00",
+      "source": {
+        "id": "us_whitehouse",
+        "name": "White House",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.whitehouse.gov/presidential-actions/2026/08/national-purple-heart-day-2026/",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "security",
+        "economy",
+        "diplomacy"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "National Purple Heart Day, 2026",
+        "original_lang": "en",
+        "ko": "[USA·안보] National Purple Heart Day, 2026"
+      },
+      "summary": "BY THE PRESIDENT OF THE UNITED STATES OF AMERICA A PROCLAMATION On National Purple Heart Day, we honor the immeasurable sacrifices of every valiant service member wounded or killed in combat in defense of our Nation and we reaffirm our eternal gratitude for their unrivaled herois",
+      "scores": {
+        "significance": 2.438,
+        "final": 2.438
+      },
+      "rank_reasons": [
+        "domains:economy,diplomacy,security"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
+      "id": "5835de6164ee7a23",
+      "published_at": "2026-08-06T19:59:11+00:00",
+      "source": {
+        "id": "us_whitehouse",
+        "name": "White House",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.whitehouse.gov/releases/2026/08/private-sector-answers-president-trumps-call-to-lower-prices-for-american-families/",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "diplomacy",
+        "security"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "Private Sector Answers President Trump’s Call to Lower Prices for American Families",
+        "original_lang": "en",
+        "ko": "[USA·경제] Private Sector Answers President Trump’s Call to Lower Prices for American Families"
+      },
+      "summary": "President Donald J. Trump inherited an economy battered by years of inflation that crushed working families. Through bold action to restore American energy dominance, slash red tape, and secure fair trade, the Trump Administration is quickly rebuilding the foundation for lasting ",
+      "scores": {
+        "significance": 2.438,
+        "final": 2.438
+      },
+      "rank_reasons": [
+        "domains:economy,diplomacy,security"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
+      "id": "f6f7e943d1706e9f",
+      "published_at": "2026-08-04T21:33:29+00:00",
+      "source": {
+        "id": "us_whitehouse",
+        "name": "White House",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.whitehouse.gov/releases/2026/08/manufacturing-jobs-flock-to-the-u-s-thanks-to-president-trumps-america-first-economic-agenda/",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "diplomacy",
+        "security"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "Manufacturing Jobs Flock to the U.S. Thanks to President Trump’s America First Economic Agenda",
+        "original_lang": "en",
+        "ko": "[USA·경제] Manufacturing Jobs Flock to the U.S. Thanks to President Trump’s America First Economic Agenda"
+      },
+      "summary": "With President Trump’s economic agenda taking effect, the United States is seeing an economic revival across our manufacturing industry. July saw the strongest expansion in domestic manufacturing activity in more than four years, marking seven consecutive months of growth in the ",
+      "scores": {
+        "significance": 2.438,
+        "final": 2.438
+      },
+      "rank_reasons": [
+        "domains:economy,diplomacy,security"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
+      "id": "2cc71ebd41edb9f5",
+      "published_at": "2026-08-03T19:41:16+00:00",
+      "source": {
+        "id": "us_whitehouse",
+        "name": "White House",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.whitehouse.gov/releases/2026/08/under-president-trump-u-s-factories-expand-at-fastest-clip-in-more-than-four-years/",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "diplomacy",
+        "security"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "Under President Trump, U.S. Factories Expand at Fastest Clip in More Than Four Years",
+        "original_lang": "en",
+        "ko": "[USA·경제] Under President Trump, U.S. Factories Expand at Fastest Clip in More Than Four Years"
+      },
+      "summary": "U.S. manufacturing activity surged in July at the strongest rate in more than four years — driven by soaring demand, record production, and a wave of new hiring. This is the latest clear result of President Donald J. Trump’s economic agenda delivering an industrial renaissance ac",
+      "scores": {
+        "significance": 2.438,
+        "final": 2.438
+      },
+      "rank_reasons": [
+        "domains:economy,diplomacy,security"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
+      "id": "f3bbc4fc82fea2a9",
+      "published_at": "2026-08-03T19:13:55+00:00",
+      "source": {
+        "id": "us_whitehouse",
+        "name": "White House",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.whitehouse.gov/presidential-actions/2026/08/establishing-the-presidents-military-spouse-commission-af64/",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "security",
+        "economy",
+        "diplomacy"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "Establishing the President’s Military Spouse Commission",
+        "original_lang": "en",
+        "ko": "[USA·안보] Establishing the President’s Military Spouse Commission"
+      },
+      "summary": "By the authority vested in me as President by the Constitution and the laws of the United States of America, it is hereby ordered: Section 1. Purpose and Policy. Military spouses are intrinsically linked to the good order, readiness, and retention of our military. Their support a",
+      "scores": {
+        "significance": 2.438,
+        "final": 2.438
+      },
+      "rank_reasons": [
+        "domains:economy,diplomacy,security"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
+      "id": "47c0b82e9f10380b",
+      "published_at": "2026-08-03T18:55:57+00:00",
+      "source": {
+        "id": "us_whitehouse",
+        "name": "White House",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.whitehouse.gov/fact-sheets/2026/08/fact-sheet-president-donald-j-trump-establishes-the-presidents-military-spouse-commission/",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "security",
+        "economy",
+        "diplomacy"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "Fact Sheet: President Donald J. Trump Establishes the President’s Military Spouse Commission",
+        "original_lang": "en",
+        "ko": "[USA·안보] Fact Sheet: President Donald J. Trump Establishes the President’s Military Spouse Commission"
+      },
+      "summary": "STRENGTHENING MILITARY READINESS: Today, President Donald J. Trump signed an Executive Order establishing the Military Spouse Commission to strengthen military readiness by improving the quality of life for military spouses and families. PRIORITIZING MILITARY EXCELLENCE: Presiden",
+      "scores": {
+        "significance": 2.438,
+        "final": 2.438
+      },
+      "rank_reasons": [
+        "domains:economy,diplomacy,security"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
+      "id": "298c6099d7d712ef",
+      "published_at": "2026-07-30T20:34:56+00:00",
+      "source": {
+        "id": "us_whitehouse",
+        "name": "White House",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.whitehouse.gov/fact-sheets/2026/07/fact-sheet-president-donald-j-trump-delegates-defense-production-act-authority-with-respect-to-recoverable-critical-minerals-and-materials-that-are-essential-to-our-national-defense/",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "security",
+        "economy",
+        "diplomacy"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "Fact Sheet: President Donald J. Trump Delegates Defense Production Act Authority with Respect to Recoverable Critical Minerals and Materials That Are Essential to Our National Defense",
+        "original_lang": "en",
+        "ko": "[USA·안보] Fact Sheet: President Donald J. Trump Delegates Defense Production Act Authority with Respect to Recoverable Critical Minerals and Materials That Are Essential to Our National Defense"
+      },
+      "summary": "SECURING AMERICA’S SUPPLY CHAINS: Today, President Donald J. Trump signed a Presidential Determination delegating authority under the Defense Production Act to institute export restrictions on recoverable critical minerals and materials (CMMs). ENSURING OUR NATIONAL DEFENSE: Pres",
+      "scores": {
+        "significance": 2.438,
+        "final": 2.438
+      },
+      "rank_reasons": [
+        "domains:economy,diplomacy,security"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
+      "id": "f03a89b71528ccd7",
+      "published_at": "2026-07-30T20:33:26+00:00",
+      "source": {
+        "id": "us_whitehouse",
+        "name": "White House",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.whitehouse.gov/presidential-actions/2026/07/presidential-determination-pursuant-to-section-101-of-the-defense-production-act-of-1950-as-amended-on-recoverable-critical-minerals-and-materials/",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "security",
+        "economy",
+        "diplomacy"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "Presidential Determination Pursuant to Section 101 of the Defense Production Act of 1950, as Amended, on Recoverable Critical Minerals and Materials",
+        "original_lang": "en",
+        "ko": "[USA·안보] Presidential Determination Pursuant to Section 101 of the Defense Production Act of 1950, as Amended, on Recoverable Critical Minerals and Materials"
+      },
+      "summary": "MEMORANDUM FOR THE SECRETARY OF COMMERCE SUBJECT: Presidential Determination Pursuant to Section 101 of the Defense Production Act of 1950, as Amended, on Recoverable Critical Minerals and Materials Section 1. Policy and General Findings. (a) Recoverable critical minerals and mat",
+      "scores": {
+        "significance": 2.438,
+        "final": 2.438
+      },
+      "rank_reasons": [
+        "domains:economy,diplomacy,security"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
+      "id": "139010fd65f0e41c",
+      "published_at": "2026-07-30T13:18:36+00:00",
+      "source": {
+        "id": "us_whitehouse",
+        "name": "White House",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.whitehouse.gov/releases/2026/07/the-white-house-government-transparency-task-force-fact-sheet/",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "security",
+        "economy",
+        "diplomacy"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "The White House Government Transparency Task Force Fact Sheet",
+        "original_lang": "en",
+        "ko": "[USA·안보] The White House Government Transparency Task Force Fact Sheet"
+      },
+      "summary": "The White House Government Transparency Task Force releases the following fact sheet approved by the directors of the Office of the Director of National Intelligence, the National Security Agency, the Central Intelligence Agency, and the Department of Homeland Security relating t",
+      "scores": {
+        "significance": 2.438,
+        "final": 2.438
+      },
+      "rank_reasons": [
+        "domains:economy,diplomacy,security"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
+      "id": "06fdfda7dc2bc85e",
+      "published_at": "2026-07-23T16:00:00+00:00",
+      "source": {
+        "id": "uk_boe_news",
+        "name": "Bank of England",
+        "region": "gbr",
+        "slant": null
+      },
+      "url": "https://www.bankofengland.co.uk/letter/2026/letter-from-the-governor-to-the-daily-mail",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "security",
+        "economy",
+        "finance"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "Letter from the Governor to the Daily Mail",
+        "original_lang": "en",
+        "ko": "[GBR·안보] Letter from the Governor to the Daily Mail"
+      },
+      "summary": "Letter from Governor Andrew Bailey to the Daily Mail on the subject of AI and cyber-attacks",
+      "scores": {
+        "significance": 2.438,
+        "final": 2.438
+      },
+      "rank_reasons": [
+        "domains:economy,finance,security"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
+      "id": "2ca916a480fc4e7d",
+      "published_at": "2026-08-07T19:44:19+00:00",
+      "source": {
+        "id": "us_whitehouse",
+        "name": "White House",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.whitehouse.gov/fact-sheets/2026/08/fact-sheet-president-donald-j-trump-announces-billions-in-new-deals-and-investments-to-power-american-mining/",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "diplomacy",
+        "security"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "Fact Sheet: President Donald J. Trump Announces Billions in New Deals and Investments to Power American Mining",
+        "original_lang": "en",
+        "ko": "[USA·경제] Fact Sheet: President Donald J. Trump Announces Billions in New Deals and Investments to Power American Mining"
+      },
+      "summary": "BOLSTERING AMERICAN MINING: Today, President Donald J. Trump held a historic roundtable with the mining industry where he announced over $2 billion in critical mining and mining-related projects to revitalize the industry and over $180 million in mining school investments to bols",
+      "scores": {
+        "significance": 2.392,
+        "final": 2.392
+      },
+      "rank_reasons": [
+        "domains:economy,diplomacy,security",
+        "boost:1"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
+      "id": "f4c861363297d5e2",
+      "published_at": "2026-08-07T14:00:00+00:00",
+      "source": {
+        "id": "us_eia",
+        "name": "EIA",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.eia.gov/todayinenergy/detail.php?id=67925",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "security",
+        "agriculture"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "Battery storage capacity averaged 70% growth over the last three years",
+        "original_lang": "en",
+        "ko": "[USA·경제] Battery storage capacity averaged 70% growth over the last three years"
+      },
+      "summary": "Utility-scale battery storage capacity in the United States increased significantly during the last three years, with an annual average growth rate of 70%. By the end of 2025, the U.S. power system had operational battery storage capacity of 43.6 gigawatts (GW). During the first ",
+      "scores": {
+        "significance": 2.332,
+        "final": 2.332
+      },
+      "rank_reasons": [
+        "domains:economy,security,agriculture"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
+      "id": "050d5992a5bd064d",
+      "published_at": "2026-08-04T20:30:00+00:00",
+      "source": {
+        "id": "us_fed_all",
+        "name": "Federal Reserve",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/orders20260804c.htm",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "Federal Reserve Board announces approval of the application by Coastal Bend Bancshares, Inc.",
+        "original_lang": "en",
+        "ko": "[USA·경제] Federal Reserve Board announces approval of the application by Coastal Bend Bancshares, Inc."
+      },
+      "summary": "Federal Reserve Board announces approval of the application by Coastal Bend Bancshares, Inc.",
+      "scores": {
+        "significance": 2.322,
+        "final": 2.322
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "boost:1"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
+      "id": "e7755a9b18b98a15",
+      "published_at": "2026-08-04T20:30:00+00:00",
+      "source": {
+        "id": "us_fed_all",
+        "name": "Federal Reserve",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/orders20260804b.htm",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "Federal Reserve Board announces approval of the application by FS Bancorp, Inc.",
+        "original_lang": "en",
+        "ko": "[USA·경제] Federal Reserve Board announces approval of the application by FS Bancorp, Inc."
+      },
+      "summary": "Federal Reserve Board announces approval of the application by FS Bancorp, Inc.",
+      "scores": {
+        "significance": 2.322,
+        "final": 2.322
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "boost:1"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
+      "id": "aa37b7321f23ff09",
+      "published_at": "2026-08-04T20:30:00+00:00",
+      "source": {
+        "id": "us_fed_all",
+        "name": "Federal Reserve",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/orders20260804a.htm",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "Federal Reserve Board announces approval of the application by Banco Santander, S.A. and Santander Holdings USA, Inc.",
+        "original_lang": "en",
+        "ko": "[USA·경제] Federal Reserve Board announces approval of the application by Banco Santander, S.A. and Santander Holdings USA, Inc."
+      },
+      "summary": "Federal Reserve Board announces approval of the application by Banco Santander, S.A. and Santander Holdings USA, Inc.",
+      "scores": {
+        "significance": 2.322,
+        "final": 2.322
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "boost:1"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
+      "id": "2b3963fd4f0ee6c1",
+      "published_at": "2026-07-14T18:00:00+00:00",
+      "source": {
+        "id": "us_fed_all",
+        "name": "Federal Reserve",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260714a.htm",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "Minutes of the Board's discount rate meetings on June 8 and June 17, 2026",
+        "original_lang": "en",
+        "ko": "[USA·경제] Minutes of the Board's discount rate meetings on June 8 and June 17, 2026"
+      },
+      "summary": "Minutes of the Board's discount rate meetings on June 8 and June 17, 2026",
+      "scores": {
+        "significance": 2.322,
+        "final": 2.322
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "boost:1"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
+      "id": "ecc42c8d5b21cabf",
+      "published_at": "2026-07-08T18:00:00+00:00",
+      "source": {
+        "id": "us_fed_all",
+        "name": "Federal Reserve",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260708a.htm",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "Minutes of the Federal Open Market Committee, June 16-17, 2026",
+        "original_lang": "en",
+        "ko": "[USA·경제] Minutes of the Federal Open Market Committee, June 16-17, 2026"
+      },
+      "summary": "Minutes of the Federal Open Market Committee, June 16-17, 2026",
+      "scores": {
+        "significance": 2.322,
+        "final": 2.322
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "boost:1"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
+      "id": "073d31db4d63c8b3",
+      "published_at": "2026-07-02T15:00:00+00:00",
+      "source": {
+        "id": "us_fed_all",
+        "name": "Federal Reserve",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/enforcement20260702a.htm",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "Federal Reserve Board issues enforcement action with Small Business Bank and announces termination enforcement actions with BNP Paribas S.A., BNP Paribas USA, Inc., BNP Paribas Securities Corp., and Community Bankshares, Inc.",
+        "original_lang": "en",
+        "ko": "[USA·경제] Federal Reserve Board issues enforcement action with Small Business Bank and announces termination enforcement actions with BNP Paribas S.A., BNP Paribas USA, Inc., BNP Paribas Securities Corp., and Community Bankshares, Inc."
+      },
+      "summary": "Federal Reserve Board issues enforcement action with Small Business Bank and announces termination enforcement actions with BNP Paribas S.A., BNP Paribas USA, Inc., BNP Paribas Securities Corp., and Community Bankshares, Inc.",
+      "scores": {
+        "significance": 2.322,
+        "final": 2.322
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "boost:1"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
+      "id": "4338a33ea980fef3",
+      "published_at": "2026-06-25T15:00:00+00:00",
+      "source": {
+        "id": "us_fed_all",
+        "name": "Federal Reserve",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/enforcement20260625a.htm",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "Federal Reserve Board announces termination of enforcement action with Jiko Group, Inc.",
+        "original_lang": "en",
+        "ko": "[USA·경제] Federal Reserve Board announces termination of enforcement action with Jiko Group, Inc."
+      },
+      "summary": "Federal Reserve Board announces termination of enforcement action with Jiko Group, Inc.",
+      "scores": {
+        "significance": 2.322,
+        "final": 2.322
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "boost:1"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
+      "id": "bb33d29faeed4fea",
+      "published_at": "2026-08-06T23:50:00+00:00",
+      "source": {
+        "id": "jp_boj_whatsnew",
+        "name": "Bank of Japan",
+        "region": "jpn",
+        "slant": null
+      },
+      "url": "http://www.boj.or.jp/en/statistics/boj/fm/ope/m_release/2026/ope2607.xlsx",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": "JP_BOJ_POLICY",
+      "title": {
+        "original": "Market Operations by the Bank of Japan (July)",
+        "original_lang": "en",
+        "ko": "[JPN·경제] Market Operations by the Bank of Japan (July)"
+      },
+      "summary": "",
+      "scores": {
+        "significance": 2.306,
+        "final": 2.306
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "series:JP_BOJ_POLICY"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": "finance.policy"
+    },
+    {
+      "id": "e09b0a0e55552062",
+      "published_at": "2026-08-06T23:50:00+00:00",
+      "source": {
+        "id": "jp_boj_whatsnew",
+        "name": "Bank of Japan",
+        "region": "jpn",
+        "slant": null
+      },
+      "url": "http://www.boj.or.jp/en/statistics/boj/other/mbt/mbt2607.pdf",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": "JP_BOJ_POLICY",
+      "title": {
+        "original": "Monetary Base and the Bank of Japan's Transactions (July)",
+        "original_lang": "en",
+        "ko": "[JPN·경제] Monetary Base and the Bank of Japan's Transactions (July)"
+      },
+      "summary": "",
+      "scores": {
+        "significance": 2.306,
+        "final": 2.306
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "series:JP_BOJ_POLICY"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": "finance.policy"
+    },
+    {
+      "id": "8e5469f1b87939a7",
+      "published_at": "2026-08-06T23:50:00+00:00",
+      "source": {
+        "id": "jp_boj_whatsnew",
+        "name": "Bank of Japan",
+        "region": "jpn",
+        "slant": null
+      },
+      "url": "http://www.boj.or.jp/en/statistics/boj/other/tseifu/release/2026/seifu2607.pdf",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": "JP_BOJ_POLICY",
+      "title": {
+        "original": "Bank of Japan's Transactions with the Government (July)",
+        "original_lang": "en",
+        "ko": "[JPN·경제] Bank of Japan's Transactions with the Government (July)"
+      },
+      "summary": "",
+      "scores": {
+        "significance": 2.306,
+        "final": 2.306
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "series:JP_BOJ_POLICY"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": "finance.policy"
+    }
+  ]
+}

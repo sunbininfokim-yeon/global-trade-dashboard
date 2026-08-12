@@ -1,0 +1,70 @@
+{
+  "version": 1,
+  "notes": "Cold priority: major-country tier-3 can outrank minor-country tier-2. Tunable via label_history multipliers.",
+  "formula": "base * country_tier_weight * info_grade_weight * freshness * learned_series_mult",
+  "country_tiers": {
+    "A": {
+      "weight": 1.0,
+      "label_ko": "주요국",
+      "countries": ["USA", "CHN", "JPN", "DEU", "GBR", "FRA", "KOR", "IND", "RUS", "BRA", "EUR"],
+      "regions": ["china", "japan", "india", "russia", "korea", "west"]
+    },
+    "B": {
+      "weight": 0.72,
+      "label_ko": "준주요국",
+      "countries": ["TWN", "TUR", "AUS", "CAN", "MEX", "SAU", "IRN", "IDN", "ARE", "ZAF", "ARG"],
+      "regions": ["taiwan", "turkey", "mena", "sea", "latam"]
+    },
+    "C": {
+      "weight": 0.42,
+      "label_ko": "기타",
+      "countries": [],
+      "regions": ["africa", "global_wire"]
+    }
+  },
+  "info_grades": {
+    "1": {
+      "weight": 1.0,
+      "label_ko": "1급 — 시장·안보 즉시성 높음",
+      "match_categories": ["liquidity_official", "official_report"],
+      "match_election_types": ["presidential"],
+      "match_event_types": ["qra", "fomc", "cabinet_reshuffle"],
+      "keywords": [
+        "fomc", "marketable borrowing", "invasion", "war", "nuclear",
+        "default", "bank holiday", "martial law", "개각", "cabinet reshuffle",
+        "export ban", "entity list"
+      ]
+    },
+    "2": {
+      "weight": 0.7,
+      "label_ko": "2급 — 구조적·중기",
+      "match_categories": ["commodity_diplomacy", "diplomacy"],
+      "match_election_types": ["general", "party_leadership", "by_election", "governance_poll"],
+      "match_event_types": ["beige_book", "liquidity_indicator", "election_betting", "governance_poll"],
+      "keywords": ["sanction", "tariff", "treaty", "total election", "총선", "당대표"]
+    },
+    "3": {
+      "weight": 0.48,
+      "label_ko": "3급 — 참고·지역",
+      "match_categories": ["commodity", "election"],
+      "match_election_types": ["local"],
+      "match_event_types": ["press"],
+      "keywords": []
+    }
+  },
+  "example": "USA grade3: 1.0*0.48=0.48  >  TIER_C grade2: 0.42*0.7=0.294",
+  "ticker_cap": 24,
+  "min_importance": 0.35,
+  "region_to_country_hint": {
+    "west": "USA",
+    "china": "CHN",
+    "japan": "JPN",
+    "india": "IND",
+    "russia": "RUS",
+    "korea": "KOR",
+    "taiwan": "TWN",
+    "turkey": "TUR",
+    "mena": "SAU",
+    "commodity_specialist": "USA"
+  }
+}

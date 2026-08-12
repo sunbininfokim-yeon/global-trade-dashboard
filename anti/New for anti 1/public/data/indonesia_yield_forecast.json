@@ -1,0 +1,935 @@
+{
+  "generated_at": "2026-08-03T14:32:29.575078+00:00",
+  "season": 2026,
+  "country": "Indonesia",
+  "methodology": "FAOSTAT national yield/area/production trend plus NASA POWER climate deviations from a leak-free prior-20-year normal. Ridge strength is selected inside each training fold; skill is forward-chained against a trend-only baseline. Weak weather models publish the trend, not an unvalidated climate adjustment.",
+  "regions": {
+    "indonesia_rice": {
+      "label": "Indonesia rice",
+      "label_ko": "인도네시아 쌀",
+      "headline": {
+        "production_tonnes": {
+          "point": 52171111.1,
+          "range_68": [
+            51413431.0,
+            52928791.1
+          ],
+          "range_95": [
+            50686058.2,
+            53656163.9
+          ],
+          "diagnostic_trend": 52171111.1,
+          "weather_effect": 0.0,
+          "sigma_used": 757680.0,
+          "model_sigma": 757680.0,
+          "forecast_gate": {
+            "publishable": true,
+            "recent_operational_mape": 0.011332369708318461,
+            "latest_operational_ape": 0.0017674441227771053,
+            "maximum_publish_mape": 0.15,
+            "status": "publishable_baseline"
+          },
+          "climate_gate": {
+            "status": "stopped_insufficient_sample",
+            "candidate_configuration": "core__recent_10_linear",
+            "candidate_features": [
+              "onset_delay_anom",
+              "soil_growth_anom",
+              "edd_growth_anom",
+              "precip_main_anom",
+              "oni_season"
+            ],
+            "available_seasons": 19,
+            "required_seasons": 30,
+            "candidate_skill_vs_trend": -0.4653023671540615
+          }
+        }
+      },
+      "yield_kg_ha": {
+        "point": 5265.4,
+        "range_68": [
+          5188.1,
+          5342.7
+        ],
+        "range_95": [
+          5113.9,
+          5416.9
+        ],
+        "diagnostic_trend": 5265.4,
+        "weather_effect": 0.0,
+        "sigma_used": 77.3,
+        "model_sigma": 77.3,
+        "forecast_gate": {
+          "publishable": true,
+          "recent_operational_mape": 0.014477059971275862,
+          "latest_operational_ape": 0.012445686954077667,
+          "maximum_publish_mape": 0.15,
+          "status": "publishable_baseline"
+        },
+        "climate_gate": {
+          "status": "stopped_insufficient_sample",
+          "candidate_configuration": "all__recent_15_linear",
+          "candidate_features": [
+            "onset_delay_anom",
+            "precip_main_anom",
+            "soil_growth_anom",
+            "edd_growth_anom",
+            "solar_growth_anom",
+            "dry_spell_growth_anom",
+            "oni_season"
+          ],
+          "available_seasons": 19,
+          "required_seasons": 40,
+          "candidate_skill_vs_trend": 0.0006267153519542434
+        }
+      },
+      "area_ha": {
+        "point": 9639162.3,
+        "range_68": [
+          9555996.2,
+          9722328.5
+        ],
+        "range_95": [
+          9476156.7,
+          9802167.9
+        ],
+        "diagnostic_trend": 9639162.3,
+        "weather_effect": 0.0,
+        "sigma_used": 83166.1,
+        "model_sigma": 83166.1,
+        "forecast_gate": {
+          "publishable": true,
+          "recent_operational_mape": 0.006814738000470483,
+          "latest_operational_ape": 0.004893960626774348,
+          "maximum_publish_mape": 0.15,
+          "status": "publishable_baseline"
+        },
+        "climate_gate": {
+          "status": "stopped_insufficient_sample",
+          "candidate_configuration": "weather__full_quadratic",
+          "candidate_features": [
+            "onset_delay_anom",
+            "soil_growth_anom",
+            "precip_main_anom",
+            "oni_season"
+          ],
+          "available_seasons": 19,
+          "required_seasons": 25,
+          "candidate_skill_vs_trend": -0.18174826812733103
+        }
+      },
+      "production_crosscheck_tonnes": 50754187.7,
+      "last_actual": {
+        "year": 2024,
+        "yield_kg_ha": 5289.9,
+        "area_ha": 10046135.0,
+        "production_tonnes": 53142727.0,
+        "flags": {
+          "yield": "A",
+          "area": "A",
+          "production": "A"
+        }
+      },
+      "season_progress": {
+        "critical_days": {
+          "observed": 0,
+          "forecast": 0,
+          "climatology": 0
+        },
+        "observed_share": 1.0
+      },
+      "weather_through": null,
+      "skill": {
+        "yield": {
+          "skill_vs_trend_only": 0.0,
+          "detrended_r2": -0.003,
+          "forward_folds": 29,
+          "weather_applied": false,
+          "feature_set": "trend_only",
+          "features": [],
+          "trained_years": [
+            1986,
+            2024
+          ],
+          "low_confidence": true,
+          "climate_gate": {
+            "status": "stopped_insufficient_sample",
+            "candidate_configuration": "all__recent_15_linear",
+            "candidate_features": [
+              "onset_delay_anom",
+              "precip_main_anom",
+              "soil_growth_anom",
+              "edd_growth_anom",
+              "solar_growth_anom",
+              "dry_spell_growth_anom",
+              "oni_season"
+            ],
+            "available_seasons": 19,
+            "required_seasons": 40,
+            "candidate_skill_vs_trend": 0.0006267153519542434
+          },
+          "forecast_gate": {
+            "publishable": true,
+            "recent_operational_mape": 0.014477059971275862,
+            "latest_operational_ape": 0.012445686954077667,
+            "maximum_publish_mape": 0.15,
+            "status": "publishable_baseline"
+          }
+        },
+        "production": {
+          "skill_vs_trend_only": 0.0,
+          "detrended_r2": -0.093,
+          "forward_folds": 29,
+          "weather_applied": false,
+          "feature_set": "trend_only",
+          "features": [],
+          "trained_years": [
+            1986,
+            2024
+          ],
+          "low_confidence": true,
+          "climate_gate": {
+            "status": "stopped_insufficient_sample",
+            "candidate_configuration": "core__recent_10_linear",
+            "candidate_features": [
+              "onset_delay_anom",
+              "soil_growth_anom",
+              "edd_growth_anom",
+              "precip_main_anom",
+              "oni_season"
+            ],
+            "available_seasons": 19,
+            "required_seasons": 30,
+            "candidate_skill_vs_trend": -0.4653023671540615
+          },
+          "forecast_gate": {
+            "publishable": true,
+            "recent_operational_mape": 0.011332369708318461,
+            "latest_operational_ape": 0.0017674441227771053,
+            "maximum_publish_mape": 0.15,
+            "status": "publishable_baseline"
+          }
+        },
+        "area": {
+          "skill_vs_trend_only": 0.0,
+          "detrended_r2": -0.005,
+          "forward_folds": 29,
+          "weather_applied": false,
+          "feature_set": "trend_only",
+          "features": [],
+          "trained_years": [
+            1986,
+            2024
+          ],
+          "low_confidence": true,
+          "climate_gate": {
+            "status": "stopped_insufficient_sample",
+            "candidate_configuration": "weather__full_quadratic",
+            "candidate_features": [
+              "onset_delay_anom",
+              "soil_growth_anom",
+              "precip_main_anom",
+              "oni_season"
+            ],
+            "available_seasons": 19,
+            "required_seasons": 25,
+            "candidate_skill_vs_trend": -0.18174826812733103
+          },
+          "forecast_gate": {
+            "publishable": true,
+            "recent_operational_mape": 0.006814738000470483,
+            "latest_operational_ape": 0.004893960626774348,
+            "maximum_publish_mape": 0.15,
+            "status": "publishable_baseline"
+          }
+        }
+      },
+      "provenance": {
+        "guide": "Regions/인도네시아/자바/쌀/쌀_상세분석_및_수식.md",
+        "caveat": "FAOSTAT national yield mixes irrigated and rainfed rice and several crop cycles. Weather is production-weighted across five major belts, not a Java-only label.",
+        "non_weather_drivers": "Irrigation releases, fertilizer, varietal change, KSA area revisions and policy."
+      }
+    },
+    "indonesia_oil_palm": {
+      "label": "Indonesia oil palm fruit",
+      "label_ko": "인도네시아 팜유 과실",
+      "headline": {
+        "production_tonnes": {
+          "point": null,
+          "range_68": null,
+          "range_95": null,
+          "diagnostic_trend": 293262726.7,
+          "weather_effect": null,
+          "sigma_used": 27077613.9,
+          "model_sigma": 27077613.9,
+          "forecast_gate": {
+            "publishable": false,
+            "recent_operational_mape": 0.09423994185128767,
+            "latest_operational_ape": 0.1526743361854519,
+            "maximum_publish_mape": 0.15,
+            "status": "stopped_poor_recent_backtest"
+          },
+          "climate_gate": {
+            "status": "stopped_insufficient_sample",
+            "candidate_configuration": "core__full_quadratic",
+            "candidate_features": [
+              "soil_dry_lag1_anom",
+              "soil_dry_lag2_anom",
+              "vpd_dry_lag1_anom",
+              "oni_season"
+            ],
+            "available_seasons": 19,
+            "required_seasons": 25,
+            "candidate_skill_vs_trend": 2.9967736238534215e-05
+          }
+        }
+      },
+      "yield_kg_ha": {
+        "point": 16812.2,
+        "range_68": [
+          16236.3,
+          17388.2
+        ],
+        "range_95": [
+          15683.3,
+          17941.2
+        ],
+        "diagnostic_trend": 16812.2,
+        "weather_effect": 0.0,
+        "sigma_used": 576.0,
+        "model_sigma": 576.0,
+        "forecast_gate": {
+          "publishable": true,
+          "recent_operational_mape": 0.0284162997594171,
+          "latest_operational_ape": 0.005030005577644701,
+          "maximum_publish_mape": 0.15,
+          "status": "publishable_baseline"
+        },
+        "climate_gate": {
+          "status": "stopped_insufficient_sample",
+          "candidate_configuration": "core__full_linear",
+          "candidate_features": [
+            "soil_dry_lag1_anom",
+            "soil_dry_lag2_anom",
+            "vpd_dry_lag1_anom",
+            "oni_season"
+          ],
+          "available_seasons": 19,
+          "required_seasons": 25,
+          "candidate_skill_vs_trend": -3.715621733491048e-05
+        }
+      },
+      "area_ha": {
+        "point": null,
+        "range_68": null,
+        "range_95": null,
+        "diagnostic_trend": 17969622.0,
+        "weather_effect": null,
+        "sigma_used": 1496737.1,
+        "model_sigma": 1496737.1,
+        "forecast_gate": {
+          "publishable": false,
+          "recent_operational_mape": 0.09269126638549137,
+          "latest_operational_ape": 0.15926722693908504,
+          "maximum_publish_mape": 0.15,
+          "status": "stopped_poor_recent_backtest"
+        },
+        "climate_gate": {
+          "status": "not_evaluated_no_weather_features",
+          "candidate_configuration": null,
+          "candidate_features": [],
+          "available_seasons": 39,
+          "required_seasons": null,
+          "candidate_skill_vs_trend": null
+        }
+      },
+      "production_crosscheck_tonnes": null,
+      "last_actual": {
+        "year": 2024,
+        "yield_kg_ha": 16969.3,
+        "area_ha": 14320000.0,
+        "production_tonnes": 243000000.0,
+        "flags": {
+          "yield": "E",
+          "area": "X",
+          "production": "E"
+        }
+      },
+      "season_progress": {
+        "critical_days": {
+          "observed": 0,
+          "forecast": 0,
+          "climatology": 0
+        },
+        "observed_share": 1.0
+      },
+      "weather_through": null,
+      "skill": {
+        "yield": {
+          "skill_vs_trend_only": 0.0,
+          "detrended_r2": -0.014,
+          "forward_folds": 29,
+          "weather_applied": false,
+          "feature_set": "trend_only",
+          "features": [],
+          "trained_years": [
+            1986,
+            2024
+          ],
+          "low_confidence": true,
+          "climate_gate": {
+            "status": "stopped_insufficient_sample",
+            "candidate_configuration": "core__full_linear",
+            "candidate_features": [
+              "soil_dry_lag1_anom",
+              "soil_dry_lag2_anom",
+              "vpd_dry_lag1_anom",
+              "oni_season"
+            ],
+            "available_seasons": 19,
+            "required_seasons": 25,
+            "candidate_skill_vs_trend": -3.715621733491048e-05
+          },
+          "forecast_gate": {
+            "publishable": true,
+            "recent_operational_mape": 0.0284162997594171,
+            "latest_operational_ape": 0.005030005577644701,
+            "maximum_publish_mape": 0.15,
+            "status": "publishable_baseline"
+          }
+        },
+        "production": {
+          "skill_vs_trend_only": 0.0,
+          "detrended_r2": -0.26,
+          "forward_folds": 29,
+          "weather_applied": false,
+          "feature_set": "trend_only",
+          "features": [],
+          "trained_years": [
+            1986,
+            2024
+          ],
+          "low_confidence": true,
+          "climate_gate": {
+            "status": "stopped_insufficient_sample",
+            "candidate_configuration": "core__full_quadratic",
+            "candidate_features": [
+              "soil_dry_lag1_anom",
+              "soil_dry_lag2_anom",
+              "vpd_dry_lag1_anom",
+              "oni_season"
+            ],
+            "available_seasons": 19,
+            "required_seasons": 25,
+            "candidate_skill_vs_trend": 2.9967736238534215e-05
+          },
+          "forecast_gate": {
+            "publishable": false,
+            "recent_operational_mape": 0.09423994185128767,
+            "latest_operational_ape": 0.1526743361854519,
+            "maximum_publish_mape": 0.15,
+            "status": "stopped_poor_recent_backtest"
+          }
+        },
+        "area": {
+          "skill_vs_trend_only": 0.0,
+          "detrended_r2": -0.032,
+          "forward_folds": 29,
+          "weather_applied": false,
+          "feature_set": "trend_only",
+          "features": [],
+          "trained_years": [
+            1986,
+            2024
+          ],
+          "low_confidence": true,
+          "climate_gate": {
+            "status": "not_evaluated_no_weather_features",
+            "candidate_configuration": null,
+            "candidate_features": [],
+            "available_seasons": 39,
+            "required_seasons": null,
+            "candidate_skill_vs_trend": null
+          },
+          "forecast_gate": {
+            "publishable": false,
+            "recent_operational_mape": 0.09269126638549137,
+            "latest_operational_ape": 0.15926722693908504,
+            "maximum_publish_mape": 0.15,
+            "status": "stopped_poor_recent_backtest"
+          }
+        }
+      },
+      "provenance": {
+        "guide": "Regions/인도네시아/수마트라_칼리만탄/팜유/팜유_상세분석_및_수식.md",
+        "caveat": "The FAOSTAT oil-palm series is national and recent production/yield values are flagged estimated; solar anomaly is a haze proxy, not an AOD observation.",
+        "non_weather_drivers": "Mature-tree share, replanting, fertilizer, labour and milling capacity."
+      }
+    },
+    "indonesia_coffee": {
+      "label": "Indonesia green coffee",
+      "label_ko": "인도네시아 커피",
+      "headline": {
+        "production_tonnes": {
+          "point": 856873.4,
+          "range_68": [
+            824700.9,
+            889046.0
+          ],
+          "range_95": [
+            793815.2,
+            919931.6
+          ],
+          "diagnostic_trend": 856873.4,
+          "weather_effect": 0.0,
+          "sigma_used": 32172.5,
+          "model_sigma": 32172.5,
+          "forecast_gate": {
+            "publishable": true,
+            "recent_operational_mape": 0.036584249735989685,
+            "latest_operational_ape": 0.02103616250319522,
+            "maximum_publish_mape": 0.15,
+            "status": "publishable_baseline"
+          },
+          "climate_gate": {
+            "status": "stopped_insufficient_sample",
+            "candidate_configuration": "all__recent_10_linear",
+            "candidate_features": [
+              "soil_flower_lag_anom",
+              "vpd_flower_lag_anom",
+              "precip_flower_anom",
+              "fungal_risk_anom",
+              "wet_days_anom",
+              "solar_wet_anom",
+              "oni_season"
+            ],
+            "available_seasons": 19,
+            "required_seasons": 40,
+            "candidate_skill_vs_trend": -0.09234233813440018
+          }
+        }
+      },
+      "yield_kg_ha": {
+        "point": 632.3,
+        "range_68": [
+          616.6,
+          648.1
+        ],
+        "range_95": [
+          601.4,
+          663.2
+        ],
+        "diagnostic_trend": 632.3,
+        "weather_effect": 0.0,
+        "sigma_used": 15.8,
+        "model_sigma": 15.8,
+        "forecast_gate": {
+          "publishable": true,
+          "recent_operational_mape": 0.024798291810149222,
+          "latest_operational_ape": 0.0330399260677557,
+          "maximum_publish_mape": 0.15,
+          "status": "publishable_baseline"
+        },
+        "climate_gate": {
+          "status": "stopped_insufficient_sample",
+          "candidate_configuration": "core__recent_15_linear",
+          "candidate_features": [
+            "soil_flower_lag_anom",
+            "vpd_flower_lag_anom",
+            "precip_flower_anom",
+            "fungal_risk_anom",
+            "oni_season"
+          ],
+          "available_seasons": 19,
+          "required_seasons": 30,
+          "candidate_skill_vs_trend": 0.018523918183728116
+        }
+      },
+      "area_ha": {
+        "point": 1286406.8,
+        "range_68": [
+          1264866.2,
+          1307947.4
+        ],
+        "range_95": [
+          1244187.2,
+          1328626.4
+        ],
+        "diagnostic_trend": 1286406.8,
+        "weather_effect": 0.0,
+        "sigma_used": 21540.6,
+        "model_sigma": 21540.6,
+        "forecast_gate": {
+          "publishable": true,
+          "recent_operational_mape": 0.012212031633843979,
+          "latest_operational_ape": 0.00665492331857505,
+          "maximum_publish_mape": 0.15,
+          "status": "publishable_baseline"
+        },
+        "climate_gate": {
+          "status": "not_evaluated_no_weather_features",
+          "candidate_configuration": null,
+          "candidate_features": [],
+          "available_seasons": 39,
+          "required_seasons": null,
+          "candidate_skill_vs_trend": null
+        }
+      },
+      "production_crosscheck_tonnes": 813437.5,
+      "last_actual": {
+        "year": 2024,
+        "yield_kg_ha": 636.2,
+        "area_ha": 1269354.0,
+        "production_tonnes": 807578.0,
+        "flags": {
+          "yield": "A",
+          "area": "A",
+          "production": "A"
+        }
+      },
+      "season_progress": {
+        "critical_days": {
+          "observed": 0,
+          "forecast": 0,
+          "climatology": 0
+        },
+        "observed_share": 1.0
+      },
+      "weather_through": null,
+      "skill": {
+        "yield": {
+          "skill_vs_trend_only": 0.0,
+          "detrended_r2": -0.104,
+          "forward_folds": 29,
+          "weather_applied": false,
+          "feature_set": "trend_only",
+          "features": [],
+          "trained_years": [
+            1986,
+            2024
+          ],
+          "low_confidence": true,
+          "climate_gate": {
+            "status": "stopped_insufficient_sample",
+            "candidate_configuration": "core__recent_15_linear",
+            "candidate_features": [
+              "soil_flower_lag_anom",
+              "vpd_flower_lag_anom",
+              "precip_flower_anom",
+              "fungal_risk_anom",
+              "oni_season"
+            ],
+            "available_seasons": 19,
+            "required_seasons": 30,
+            "candidate_skill_vs_trend": 0.018523918183728116
+          },
+          "forecast_gate": {
+            "publishable": true,
+            "recent_operational_mape": 0.024798291810149222,
+            "latest_operational_ape": 0.0330399260677557,
+            "maximum_publish_mape": 0.15,
+            "status": "publishable_baseline"
+          }
+        },
+        "production": {
+          "skill_vs_trend_only": 0.0,
+          "detrended_r2": -0.003,
+          "forward_folds": 29,
+          "weather_applied": false,
+          "feature_set": "trend_only",
+          "features": [],
+          "trained_years": [
+            1986,
+            2024
+          ],
+          "low_confidence": true,
+          "climate_gate": {
+            "status": "stopped_insufficient_sample",
+            "candidate_configuration": "all__recent_10_linear",
+            "candidate_features": [
+              "soil_flower_lag_anom",
+              "vpd_flower_lag_anom",
+              "precip_flower_anom",
+              "fungal_risk_anom",
+              "wet_days_anom",
+              "solar_wet_anom",
+              "oni_season"
+            ],
+            "available_seasons": 19,
+            "required_seasons": 40,
+            "candidate_skill_vs_trend": -0.09234233813440018
+          },
+          "forecast_gate": {
+            "publishable": true,
+            "recent_operational_mape": 0.036584249735989685,
+            "latest_operational_ape": 0.02103616250319522,
+            "maximum_publish_mape": 0.15,
+            "status": "publishable_baseline"
+          }
+        },
+        "area": {
+          "skill_vs_trend_only": 0.0,
+          "detrended_r2": -0.014,
+          "forward_folds": 29,
+          "weather_applied": false,
+          "feature_set": "trend_only",
+          "features": [],
+          "trained_years": [
+            1986,
+            2024
+          ],
+          "low_confidence": true,
+          "climate_gate": {
+            "status": "not_evaluated_no_weather_features",
+            "candidate_configuration": null,
+            "candidate_features": [],
+            "available_seasons": 39,
+            "required_seasons": null,
+            "candidate_skill_vs_trend": null
+          },
+          "forecast_gate": {
+            "publishable": true,
+            "recent_operational_mape": 0.012212031633843979,
+            "latest_operational_ape": 0.00665492331857505,
+            "maximum_publish_mape": 0.15,
+            "status": "publishable_baseline"
+          }
+        }
+      },
+      "provenance": {
+        "guide": "Regions/인도네시아/수마트라/고무_커피/고무_커피_상세분석_및_수식.md",
+        "caveat": "The national label mixes Arabica and Robusta and cannot identify local disease outbreaks.",
+        "non_weather_drivers": "Biennial bearing, tree age, pruning, farm-gate price and harvest labour."
+      }
+    },
+    "indonesia_rubber": {
+      "label": "Indonesia natural rubber",
+      "label_ko": "인도네시아 천연고무",
+      "headline": {
+        "production_tonnes": {
+          "point": null,
+          "range_68": null,
+          "range_95": null,
+          "diagnostic_trend": 2208269.7,
+          "weather_effect": null,
+          "sigma_used": 618392.3,
+          "model_sigma": 618392.3,
+          "forecast_gate": {
+            "publishable": false,
+            "recent_operational_mape": 0.22832504728559339,
+            "latest_operational_ape": 0.15905468693327687,
+            "maximum_publish_mape": 0.15,
+            "status": "stopped_poor_recent_backtest"
+          },
+          "climate_gate": {
+            "status": "stopped_insufficient_sample",
+            "candidate_configuration": "core__full_quadratic",
+            "candidate_features": [
+              "wet_tapping_days_anom",
+              "fungal_risk_anom",
+              "soil_dry_lag_anom",
+              "vpd_dry_lag_anom",
+              "oni_season"
+            ],
+            "available_seasons": 19,
+            "required_seasons": 30,
+            "candidate_skill_vs_trend": -7.424802762101557e-05
+          }
+        }
+      },
+      "yield_kg_ha": {
+        "point": 679.8,
+        "range_68": [
+          554.7,
+          805.0
+        ],
+        "range_95": [
+          434.5,
+          925.2
+        ],
+        "diagnostic_trend": 679.8,
+        "weather_effect": 0.0,
+        "sigma_used": 125.2,
+        "model_sigma": 125.2,
+        "forecast_gate": {
+          "publishable": true,
+          "recent_operational_mape": 0.14964548746614362,
+          "latest_operational_ape": 0.049887024488123634,
+          "maximum_publish_mape": 0.15,
+          "status": "publishable_baseline"
+        },
+        "climate_gate": {
+          "status": "stopped_insufficient_sample",
+          "candidate_configuration": "all__recent_10_linear",
+          "candidate_features": [
+            "wet_tapping_days_anom",
+            "fungal_risk_anom",
+            "soil_dry_lag_anom",
+            "vpd_dry_lag_anom",
+            "precip_tapping_anom",
+            "oni_season"
+          ],
+          "available_seasons": 19,
+          "required_seasons": 35,
+          "candidate_skill_vs_trend": 0.019797320641504967
+        }
+      },
+      "area_ha": {
+        "point": 3248276.3,
+        "range_68": [
+          2940276.2,
+          3556276.5
+        ],
+        "range_95": [
+          2644596.0,
+          3851956.6
+        ],
+        "diagnostic_trend": 3248276.3,
+        "weather_effect": 0.0,
+        "sigma_used": 308000.2,
+        "model_sigma": 308000.2,
+        "forecast_gate": {
+          "publishable": true,
+          "recent_operational_mape": 0.07092973746495779,
+          "latest_operational_ape": 0.10396192821318553,
+          "maximum_publish_mape": 0.15,
+          "status": "publishable_baseline"
+        },
+        "climate_gate": {
+          "status": "not_evaluated_no_weather_features",
+          "candidate_configuration": null,
+          "candidate_features": [],
+          "available_seasons": 39,
+          "required_seasons": null,
+          "candidate_skill_vs_trend": null
+        }
+      },
+      "production_crosscheck_tonnes": 2208336.8,
+      "last_actual": {
+        "year": 2024,
+        "yield_kg_ha": 718.3,
+        "area_ha": 3149277.0,
+        "production_tonnes": 2262088.0,
+        "flags": {
+          "yield": "A",
+          "area": "A",
+          "production": "A"
+        }
+      },
+      "season_progress": {
+        "critical_days": {
+          "observed": 0,
+          "forecast": 0,
+          "climatology": 0
+        },
+        "observed_share": 1.0
+      },
+      "weather_through": null,
+      "skill": {
+        "yield": {
+          "skill_vs_trend_only": 0.0,
+          "detrended_r2": -0.024,
+          "forward_folds": 29,
+          "weather_applied": false,
+          "feature_set": "trend_only",
+          "features": [],
+          "trained_years": [
+            1986,
+            2024
+          ],
+          "low_confidence": true,
+          "climate_gate": {
+            "status": "stopped_insufficient_sample",
+            "candidate_configuration": "all__recent_10_linear",
+            "candidate_features": [
+              "wet_tapping_days_anom",
+              "fungal_risk_anom",
+              "soil_dry_lag_anom",
+              "vpd_dry_lag_anom",
+              "precip_tapping_anom",
+              "oni_season"
+            ],
+            "available_seasons": 19,
+            "required_seasons": 35,
+            "candidate_skill_vs_trend": 0.019797320641504967
+          },
+          "forecast_gate": {
+            "publishable": true,
+            "recent_operational_mape": 0.14964548746614362,
+            "latest_operational_ape": 0.049887024488123634,
+            "maximum_publish_mape": 0.15,
+            "status": "publishable_baseline"
+          }
+        },
+        "production": {
+          "skill_vs_trend_only": 0.0,
+          "detrended_r2": -0.143,
+          "forward_folds": 29,
+          "weather_applied": false,
+          "feature_set": "trend_only",
+          "features": [],
+          "trained_years": [
+            1986,
+            2024
+          ],
+          "low_confidence": true,
+          "climate_gate": {
+            "status": "stopped_insufficient_sample",
+            "candidate_configuration": "core__full_quadratic",
+            "candidate_features": [
+              "wet_tapping_days_anom",
+              "fungal_risk_anom",
+              "soil_dry_lag_anom",
+              "vpd_dry_lag_anom",
+              "oni_season"
+            ],
+            "available_seasons": 19,
+            "required_seasons": 30,
+            "candidate_skill_vs_trend": -7.424802762101557e-05
+          },
+          "forecast_gate": {
+            "publishable": false,
+            "recent_operational_mape": 0.22832504728559339,
+            "latest_operational_ape": 0.15905468693327687,
+            "maximum_publish_mape": 0.15,
+            "status": "stopped_poor_recent_backtest"
+          }
+        },
+        "area": {
+          "skill_vs_trend_only": 0.0,
+          "detrended_r2": -0.111,
+          "forward_folds": 29,
+          "weather_applied": false,
+          "feature_set": "trend_only",
+          "features": [],
+          "trained_years": [
+            1986,
+            2024
+          ],
+          "low_confidence": true,
+          "climate_gate": {
+            "status": "not_evaluated_no_weather_features",
+            "candidate_configuration": null,
+            "candidate_features": [],
+            "available_seasons": 39,
+            "required_seasons": null,
+            "candidate_skill_vs_trend": null
+          },
+          "forecast_gate": {
+            "publishable": true,
+            "recent_operational_mape": 0.07092973746495779,
+            "latest_operational_ape": 0.10396192821318553,
+            "maximum_publish_mape": 0.15,
+            "status": "publishable_baseline"
+          }
+        }
+      },
+      "provenance": {
+        "guide": "Regions/인도네시아/수마트라/고무_커피/고무_커피_상세분석_및_수식.md",
+        "caveat": "Fungal-risk days are a weather proxy and are not observed Pestalotiopsis incidence.",
+        "non_weather_drivers": "Rubber price, tapping intensity, labour, mature area and disease control."
+      }
+    }
+  },
+  "skipped": {}
+}

@@ -1,7 +1,7 @@
 {
   "version": 1,
-  "methodology_note_ko": "현금 min/max와 10일 VaR 예산은 소매 투자 성향(보수·균형·공격)에 맞춘 제품 정책 휴리스틱입니다. Kelly 공식·CAPM·단일 학술 논문에서 유도한 최적 현금 비중이 아닙니다. HRP 조절 제안의 현금 비중이 밴드를 넘을 수 있습니다 — 밴드는 성향 목표, HRP는 위험 평탄화 제안입니다.",
-  "methodology_note_en": "Cash min/max and 10-day VaR budgets are product policy heuristics for retail risk styles (conservative / balanced / aggressive). They are not an optimal-cash formula from Kelly, CAPM, or a single paper. HRP cash suggestions can exceed the band — the band is the style target; HRP is a risk-flattening proposal.",
+  "methodology_note_ko": "현금 min/max·총노출 안내선·10일 VaR 예산은 소매 투자 성향(보수·균형·공격)에 맞춘 제품 정책 휴리스틱입니다. Kelly 공식·CAPM·단일 학술 논문에서 유도한 최적 비중이 아닙니다. 모두 차단 규칙이 아니라 위험 수준 표시이며, HRP 조절 제안의 현금 비중이 밴드를 넘을 수 있습니다 — 밴드는 성향 목표, HRP는 위험 평탄화 제안입니다.",
+  "methodology_note_en": "Cash min/max, gross-exposure guide rails, and 10-day VaR budgets are product policy heuristics for retail risk styles (conservative / balanced / aggressive). They are not optimal weights from Kelly, CAPM, or a single paper. They are warnings rather than trade-blocking rules. HRP cash suggestions can exceed the band — the band is the style target; HRP is a risk-flattening proposal.",
   "profiles": {
     "conservative": {
       "label_ko": "보수적",
@@ -13,6 +13,7 @@
       "equity_like_max": 0.50,
       "single_name_max": 0.10,
       "leveraged_max": 0.05,
+      "gross_exposure_max": 1.10,
       "var_10d_budget": 0.03,
       "why_cash_band_ko": "보수형 소매 자문에서 흔한 두터운 현금 완충(약 25–45%)에 맞춘 정책 구간입니다.",
       "why_cash_band_en": "Policy band aligned with the thick cash cushion (~25–45%) common in conservative retail advisory practice.",
@@ -29,6 +30,7 @@
       "equity_like_max": 0.70,
       "single_name_max": 0.15,
       "leveraged_max": 0.10,
+      "gross_exposure_max": 1.30,
       "var_10d_budget": 0.05,
       "why_cash_band_ko": "균형형에서 흔히 쓰는 중간 현금 완충(약 10–25%)에 맞춘 정책 구간입니다.",
       "why_cash_band_en": "Policy band aligned with the mid cash cushion (~10–25%) common for balanced retail styles.",
@@ -45,6 +47,7 @@
       "equity_like_max": 0.95,
       "single_name_max": 0.25,
       "leveraged_max": 0.15,
+      "gross_exposure_max": 1.50,
       "var_10d_budget": 0.08,
       "why_cash_band_ko": "공격형에서 흔한 얇은 현금 완충(약 0–10%)에 맞춘 정책 구간입니다.",
       "why_cash_band_en": "Policy band aligned with the thin cash cushion (~0–10%) common for aggressive retail styles.",

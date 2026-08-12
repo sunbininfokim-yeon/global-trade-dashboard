@@ -1,0 +1,1367 @@
+{
+  "schema_version": "shipping-capacity-backtests-v1",
+  "artifact_type": "historical_backtests",
+  "bundle_id": "2691320fc9eda557aa31",
+  "generated_at": "2026-08-10T07:20:17.625581+00:00",
+  "event_observations": [
+    {
+      "event_id": "hormuz_2026_conflict",
+      "chokepoint_id": "hormuz",
+      "status": "official_observation_timeline",
+      "as_of": "2026-07-16",
+      "observations": [
+        {
+          "date": "2026-04-24",
+          "metric": "vessels_remaining_in_gulf",
+          "value": 1600,
+          "qualifier": "around",
+          "scope": "all_vessel_types",
+          "source_name": "IMO — No safe transit through Strait of Hormuz",
+          "source_url": "https://www.imo.org/en/mediacentre/pressbriefings/pages/no-safe-transit-through-hormuz-imo-secretary-general.aspx"
+        },
+        {
+          "date": "2026-06-26",
+          "metric": "vessels_evacuated_cumulative",
+          "value": 136,
+          "qualifier": "reported_total",
+          "scope": "IMO_safe_evacuation_framework",
+          "source_name": "IMO — Middle East / Strait of Hormuz updates",
+          "source_url": "https://www.imo.org/en/mediacentre/hottopics/pages/middle-east-strait-of-hormuz.aspx"
+        },
+        {
+          "date": "2026-07-08",
+          "metric": "vessels_remaining_stranded",
+          "value": null,
+          "display_value": "hundreds",
+          "qualifier": "non_numeric_official_description",
+          "scope": "all_vessel_types",
+          "source_name": "IMO — Secretary-General condemns new attacks on ships",
+          "source_url": "https://www.imo.org/en/mediacentre/pressbriefings/pages/imo-secretary-general-condemns-new-attacks-on-ships-in-strait-of-hormuz.aspx"
+        },
+        {
+          "date": "2026-07-08",
+          "metric": "seafarers_remaining_stranded",
+          "value": 6000,
+          "qualifier": "nearly",
+          "scope": "on_vessels_unable_to_depart_safely",
+          "source_name": "IMO — Secretary-General condemns new attacks on ships",
+          "source_url": "https://www.imo.org/en/mediacentre/pressbriefings/pages/imo-secretary-general-condemns-new-attacks-on-ships-in-strait-of-hormuz.aspx"
+        }
+      ],
+      "warning_ko": "IMO 수치는 전 선종 합계이며 VLCC·탱커·컨테이너선별 척수 또는 DWT가 아니다. 날짜가 다른 관측치를 서로 빼서 현재 억류 척수로 간주하지 않는다."
+    }
+  ],
+  "scenario_signal_comparison": [
+    {
+      "scenario_id": "suez_50pct_28d",
+      "chokepoint_id": "suez",
+      "metric_key": "all",
+      "observation_latest_date": "2026-08-02",
+      "observed_trade_volume_shortfall_fraction": 0.045352,
+      "preset_scenario_blockage_fraction": 0.5,
+      "absolute_gap_percentage_points": 45.4648,
+      "scope": "magnitude comparison only; observed trade volume and scenario blockage are different concepts",
+      "comparison_status": "not_empirical_calibration",
+      "not_validated_fields": [
+        "physical_closure_fraction",
+        "route_flow_disruption_fraction",
+        "insurance_unavailable_share",
+        "onboard_waiting_share",
+        "trapped_days"
+      ]
+    },
+    {
+      "scenario_id": "suez_100pct_28d",
+      "chokepoint_id": "suez",
+      "metric_key": "all",
+      "observation_latest_date": "2026-08-02",
+      "observed_trade_volume_shortfall_fraction": 0.045352,
+      "preset_scenario_blockage_fraction": 1.0,
+      "absolute_gap_percentage_points": 95.4648,
+      "scope": "magnitude comparison only; observed trade volume and scenario blockage are different concepts",
+      "comparison_status": "not_empirical_calibration",
+      "not_validated_fields": [
+        "physical_closure_fraction",
+        "route_flow_disruption_fraction",
+        "insurance_unavailable_share",
+        "onboard_waiting_share",
+        "trapped_days"
+      ]
+    },
+    {
+      "scenario_id": "panama_50pct_28d",
+      "chokepoint_id": "panama",
+      "metric_key": "all",
+      "observation_latest_date": "2026-08-02",
+      "observed_trade_volume_shortfall_fraction": 0.095182,
+      "preset_scenario_blockage_fraction": 0.5,
+      "absolute_gap_percentage_points": 40.4818,
+      "scope": "magnitude comparison only; observed trade volume and scenario blockage are different concepts",
+      "comparison_status": "not_empirical_calibration",
+      "not_validated_fields": [
+        "physical_closure_fraction",
+        "route_flow_disruption_fraction",
+        "insurance_unavailable_share",
+        "onboard_waiting_share",
+        "trapped_days"
+      ]
+    },
+    {
+      "scenario_id": "bosporus_100pct_14d",
+      "chokepoint_id": "bosporus",
+      "metric_key": "all",
+      "observation_latest_date": "2026-08-02",
+      "observed_trade_volume_shortfall_fraction": 0.251508,
+      "preset_scenario_blockage_fraction": 1.0,
+      "absolute_gap_percentage_points": 74.8492,
+      "scope": "magnitude comparison only; observed trade volume and scenario blockage are different concepts",
+      "comparison_status": "not_empirical_calibration",
+      "not_validated_fields": [
+        "physical_closure_fraction",
+        "route_flow_disruption_fraction",
+        "insurance_unavailable_share",
+        "onboard_waiting_share",
+        "trapped_days"
+      ]
+    },
+    {
+      "scenario_id": "hormuz_50pct_28d",
+      "chokepoint_id": "hormuz",
+      "metric_key": "tanker",
+      "observation_latest_date": "2026-08-02",
+      "observed_trade_volume_shortfall_fraction": 0.80828,
+      "preset_scenario_blockage_fraction": 0.5,
+      "absolute_gap_percentage_points": 30.828,
+      "scope": "magnitude comparison only; observed trade volume and scenario blockage are different concepts",
+      "comparison_status": "not_empirical_calibration",
+      "not_validated_fields": [
+        "physical_closure_fraction",
+        "route_flow_disruption_fraction",
+        "insurance_unavailable_share",
+        "onboard_waiting_share",
+        "trapped_days"
+      ]
+    },
+    {
+      "scenario_id": "hormuz_effective_80pct_28d",
+      "chokepoint_id": "hormuz",
+      "metric_key": "tanker",
+      "observation_latest_date": "2026-08-02",
+      "observed_trade_volume_shortfall_fraction": 0.80828,
+      "preset_scenario_blockage_fraction": 0.8,
+      "absolute_gap_percentage_points": 0.828,
+      "scope": "magnitude comparison only; observed trade volume and scenario blockage are different concepts",
+      "comparison_status": "not_empirical_calibration",
+      "not_validated_fields": [
+        "physical_closure_fraction",
+        "route_flow_disruption_fraction",
+        "insurance_unavailable_share",
+        "onboard_waiting_share",
+        "trapped_days"
+      ]
+    },
+    {
+      "scenario_id": "hormuz_100pct_28d",
+      "chokepoint_id": "hormuz",
+      "metric_key": "tanker",
+      "observation_latest_date": "2026-08-02",
+      "observed_trade_volume_shortfall_fraction": 0.80828,
+      "preset_scenario_blockage_fraction": 1.0,
+      "absolute_gap_percentage_points": 19.172,
+      "scope": "magnitude comparison only; observed trade volume and scenario blockage are different concepts",
+      "comparison_status": "not_empirical_calibration",
+      "not_validated_fields": [
+        "physical_closure_fraction",
+        "route_flow_disruption_fraction",
+        "insurance_unavailable_share",
+        "onboard_waiting_share",
+        "trapped_days"
+      ]
+    }
+  ],
+  "historical_event_calibration": {
+    "status": "throughput_calibrated_behavior_partition_partially_identified",
+    "generated_at": "2026-08-10T06:46:56.285048+00:00",
+    "source": "IMF PortWatch daily chokepoint estimated trade volume and official event windows",
+    "method": {
+      "baseline": "28 observations immediately before each event window",
+      "uncertainty": "moving-block bootstrap 95% interval",
+      "rarity": "same-length rolling placebo windows in the preceding year",
+      "rarity_warning": "overlapping placebo windows are dependent and the empirical p-value is diagnostic",
+      "recovery": "first post-resolution 7d mean >=90% of baseline for 3 consecutive days"
+    },
+    "identification_boundary": "Observed throughput severity, duration and recovery are calibrated. Reroute/wait/cancel/insurance shares are not uniquely identifiable from a single passage series.",
+    "fetch_errors": [],
+    "events": [
+      {
+        "event_id": "suez_ever_given_2021",
+        "event_type": "physical_chokepoint_closure",
+        "chokepoint_id": "suez",
+        "portwatch_id": "chokepoint1",
+        "start_date": "2021-03-23",
+        "end_date": "2021-03-29",
+        "window_end_is_resolution": true,
+        "date_quality": "official_dates",
+        "primary_metric": "all",
+        "metrics": {
+          "all": {
+            "status": "calibrated_observed_throughput",
+            "metric": "all",
+            "field": "capacity",
+            "unit": "estimated_trade_tonnes_per_day",
+            "baseline_start_date": "2021-02-23",
+            "baseline_end_date": "2021-03-22",
+            "baseline_observation_count": 28,
+            "event_observation_count": 7,
+            "event_expected_calendar_days": 7,
+            "event_coverage_ratio": 1.0,
+            "baseline_mean_estimated_trade_tonnes": 2603954.607143,
+            "event_mean_estimated_trade_tonnes": 463247.142857,
+            "observed_event_to_baseline_ratio": 0.177901,
+            "observed_mean_shortfall_fraction": 0.822099,
+            "observed_peak_7d_shortfall_fraction": 0.822099,
+            "observed_vessel_count_ratio": 0.288582,
+            "trade_volume_vs_vessel_ratio_gap": -0.110681,
+            "bootstrap": {
+              "status": "available",
+              "method": "deterministic moving-block bootstrap",
+              "iterations": 2000,
+              "block_days_max": 7,
+              "ratio_ci_95_low": 0.06981,
+              "ratio_ci_95_high": 0.257867,
+              "shortfall_ci_95_low": 0.742133,
+              "shortfall_ci_95_high": 0.93019
+            },
+            "placebo_test": {
+              "status": "available",
+              "method": "rolling pre-event windows with the same observation count",
+              "lookback_days": 365,
+              "sample_count": 331,
+              "event_shortfall_percentile": 1.0,
+              "one_sided_empirical_p_value": 0.003012,
+              "placebo_shortfall_median": -0.005948,
+              "placebo_shortfall_p95": 0.136832,
+              "warning": "Overlapping rolling windows are dependent; this is an empirical rarity diagnostic, not a formal independent-sample causal p-value."
+            },
+            "recovery_definition": "first 7d mean at or above 90% of baseline, confirmed for 3 days",
+            "recovery_days_after_window_end": 7,
+            "evidence_grade": "strong_event_signal"
+          },
+          "container": {
+            "status": "calibrated_observed_throughput",
+            "metric": "container",
+            "field": "capacity_container",
+            "unit": "estimated_trade_tonnes_per_day",
+            "baseline_start_date": "2021-02-23",
+            "baseline_end_date": "2021-03-22",
+            "baseline_observation_count": 28,
+            "event_observation_count": 7,
+            "event_expected_calendar_days": 7,
+            "event_coverage_ratio": 1.0,
+            "baseline_mean_estimated_trade_tonnes": 1053072.535714,
+            "event_mean_estimated_trade_tonnes": 281285.142857,
+            "observed_event_to_baseline_ratio": 0.267109,
+            "observed_mean_shortfall_fraction": 0.732891,
+            "observed_peak_7d_shortfall_fraction": 0.732891,
+            "observed_vessel_count_ratio": 0.288582,
+            "trade_volume_vs_vessel_ratio_gap": -0.021473,
+            "bootstrap": {
+              "status": "available",
+              "method": "deterministic moving-block bootstrap",
+              "iterations": 2000,
+              "block_days_max": 7,
+              "ratio_ci_95_low": 0.097376,
+              "ratio_ci_95_high": 0.449912,
+              "shortfall_ci_95_low": 0.550088,
+              "shortfall_ci_95_high": 0.902624
+            },
+            "placebo_test": {
+              "status": "available",
+              "method": "rolling pre-event windows with the same observation count",
+              "lookback_days": 365,
+              "sample_count": 331,
+              "event_shortfall_percentile": 1.0,
+              "one_sided_empirical_p_value": 0.003012,
+              "placebo_shortfall_median": -0.011975,
+              "placebo_shortfall_p95": 0.11488,
+              "warning": "Overlapping rolling windows are dependent; this is an empirical rarity diagnostic, not a formal independent-sample causal p-value."
+            },
+            "recovery_definition": "first 7d mean at or above 90% of baseline, confirmed for 3 days",
+            "recovery_days_after_window_end": 7,
+            "evidence_grade": "strong_event_signal"
+          },
+          "dry_bulk": {
+            "status": "calibrated_observed_throughput",
+            "metric": "dry_bulk",
+            "field": "capacity_dry_bulk",
+            "unit": "estimated_trade_tonnes_per_day",
+            "baseline_start_date": "2021-02-23",
+            "baseline_end_date": "2021-03-22",
+            "baseline_observation_count": 28,
+            "event_observation_count": 7,
+            "event_expected_calendar_days": 7,
+            "event_coverage_ratio": 1.0,
+            "baseline_mean_estimated_trade_tonnes": 774772.714286,
+            "event_mean_estimated_trade_tonnes": 51194.142857,
+            "observed_event_to_baseline_ratio": 0.066076,
+            "observed_mean_shortfall_fraction": 0.933924,
+            "observed_peak_7d_shortfall_fraction": 0.933924,
+            "observed_vessel_count_ratio": 0.288582,
+            "trade_volume_vs_vessel_ratio_gap": -0.222506,
+            "bootstrap": {
+              "status": "available",
+              "method": "deterministic moving-block bootstrap",
+              "iterations": 2000,
+              "block_days_max": 7,
+              "ratio_ci_95_low": 0.012123,
+              "ratio_ci_95_high": 0.115932,
+              "shortfall_ci_95_low": 0.884068,
+              "shortfall_ci_95_high": 0.987877
+            },
+            "placebo_test": {
+              "status": "available",
+              "method": "rolling pre-event windows with the same observation count",
+              "lookback_days": 365,
+              "sample_count": 331,
+              "event_shortfall_percentile": 1.0,
+              "one_sided_empirical_p_value": 0.003012,
+              "placebo_shortfall_median": -0.006699,
+              "placebo_shortfall_p95": 0.2211,
+              "warning": "Overlapping rolling windows are dependent; this is an empirical rarity diagnostic, not a formal independent-sample causal p-value."
+            },
+            "recovery_definition": "first 7d mean at or above 90% of baseline, confirmed for 3 days",
+            "recovery_days_after_window_end": 7,
+            "evidence_grade": "strong_event_signal"
+          },
+          "tanker": {
+            "status": "calibrated_observed_throughput",
+            "metric": "tanker",
+            "field": "capacity_tanker",
+            "unit": "estimated_trade_tonnes_per_day",
+            "baseline_start_date": "2021-02-23",
+            "baseline_end_date": "2021-03-22",
+            "baseline_observation_count": 28,
+            "event_observation_count": 7,
+            "event_expected_calendar_days": 7,
+            "event_coverage_ratio": 1.0,
+            "baseline_mean_estimated_trade_tonnes": 739962.928571,
+            "event_mean_estimated_trade_tonnes": 110644.428571,
+            "observed_event_to_baseline_ratio": 0.149527,
+            "observed_mean_shortfall_fraction": 0.850473,
+            "observed_peak_7d_shortfall_fraction": 0.850473,
+            "observed_vessel_count_ratio": 0.288582,
+            "trade_volume_vs_vessel_ratio_gap": -0.139055,
+            "bootstrap": {
+              "status": "available",
+              "method": "deterministic moving-block bootstrap",
+              "iterations": 2000,
+              "block_days_max": 7,
+              "ratio_ci_95_low": 0.04622,
+              "ratio_ci_95_high": 0.225484,
+              "shortfall_ci_95_low": 0.774516,
+              "shortfall_ci_95_high": 0.95378
+            },
+            "placebo_test": {
+              "status": "available",
+              "method": "rolling pre-event windows with the same observation count",
+              "lookback_days": 365,
+              "sample_count": 331,
+              "event_shortfall_percentile": 1.0,
+              "one_sided_empirical_p_value": 0.003012,
+              "placebo_shortfall_median": 0.014834,
+              "placebo_shortfall_p95": 0.282941,
+              "warning": "Overlapping rolling windows are dependent; this is an empirical rarity diagnostic, not a formal independent-sample causal p-value."
+            },
+            "recovery_definition": "first 7d mean at or above 90% of baseline, confirmed for 3 days",
+            "recovery_days_after_window_end": 7,
+            "evidence_grade": "strong_event_signal"
+          }
+        },
+        "qualitative_behavior_constraints": [
+          "A material waiting queue was observed; UNCTAD reports 367 vessels blocked by the end of the rescue phase.",
+          "Public official sources do not identify a reroute/wait/cancel percentage partition."
+        ],
+        "sources": [
+          {
+            "name": "IMO — MV Ever Given incident",
+            "url": "https://www.imo.org/en/MediaCentre/SecretaryGeneral/Pages/MV-Ever-Given-incident.aspx"
+          },
+          {
+            "name": "Suez Canal Authority — navigation back in both directions",
+            "url": "https://www.suezcanal.gov.eg/English/MediaCenter/News/Pages/31-3-2021.aspx"
+          },
+          {
+            "name": "UNCTAD resilient maritime logistics case study",
+            "url": "https://resilientmaritimelogistics.unctad.org/guidebook/case-study-3-port-port-said-egypt"
+          }
+        ],
+        "duration_calendar_days": 7,
+        "primary_result": {
+          "status": "calibrated_observed_throughput",
+          "metric": "all",
+          "field": "capacity",
+          "unit": "estimated_trade_tonnes_per_day",
+          "baseline_start_date": "2021-02-23",
+          "baseline_end_date": "2021-03-22",
+          "baseline_observation_count": 28,
+          "event_observation_count": 7,
+          "event_expected_calendar_days": 7,
+          "event_coverage_ratio": 1.0,
+          "baseline_mean_estimated_trade_tonnes": 2603954.607143,
+          "event_mean_estimated_trade_tonnes": 463247.142857,
+          "observed_event_to_baseline_ratio": 0.177901,
+          "observed_mean_shortfall_fraction": 0.822099,
+          "observed_peak_7d_shortfall_fraction": 0.822099,
+          "observed_vessel_count_ratio": 0.288582,
+          "trade_volume_vs_vessel_ratio_gap": -0.110681,
+          "bootstrap": {
+            "status": "available",
+            "method": "deterministic moving-block bootstrap",
+            "iterations": 2000,
+            "block_days_max": 7,
+            "ratio_ci_95_low": 0.06981,
+            "ratio_ci_95_high": 0.257867,
+            "shortfall_ci_95_low": 0.742133,
+            "shortfall_ci_95_high": 0.93019
+          },
+          "placebo_test": {
+            "status": "available",
+            "method": "rolling pre-event windows with the same observation count",
+            "lookback_days": 365,
+            "sample_count": 331,
+            "event_shortfall_percentile": 1.0,
+            "one_sided_empirical_p_value": 0.003012,
+            "placebo_shortfall_median": -0.005948,
+            "placebo_shortfall_p95": 0.136832,
+            "warning": "Overlapping rolling windows are dependent; this is an empirical rarity diagnostic, not a formal independent-sample causal p-value."
+          },
+          "recovery_definition": "first 7d mean at or above 90% of baseline, confirmed for 3 days",
+          "recovery_days_after_window_end": 7,
+          "evidence_grade": "strong_event_signal"
+        },
+        "throughput_calibration_status": "calibrated_observed_throughput",
+        "behavior_partition_status": "not_identified_by_single_chokepoint_throughput",
+        "behavior_partition_warning": "PortWatch observes passage trade volume and vessel count, but cannot uniquely separate rerouting, waiting, cancellation, or insurance exclusion."
+      },
+      {
+        "event_id": "panama_drought_restrictions_2023_24",
+        "event_type": "operational_restriction",
+        "chokepoint_id": "panama",
+        "portwatch_id": "chokepoint2",
+        "start_date": "2023-11-01",
+        "end_date": "2024-01-15",
+        "window_end_is_resolution": false,
+        "date_quality": "official_policy_phase",
+        "primary_metric": "all",
+        "metrics": {
+          "all": {
+            "status": "calibrated_observed_throughput",
+            "metric": "all",
+            "field": "capacity",
+            "unit": "estimated_trade_tonnes_per_day",
+            "baseline_start_date": "2023-10-04",
+            "baseline_end_date": "2023-10-31",
+            "baseline_observation_count": 28,
+            "event_observation_count": 76,
+            "event_expected_calendar_days": 76,
+            "event_coverage_ratio": 1.0,
+            "baseline_mean_estimated_trade_tonnes": 811413.857143,
+            "event_mean_estimated_trade_tonnes": 568301.315789,
+            "observed_event_to_baseline_ratio": 0.700384,
+            "observed_mean_shortfall_fraction": 0.299616,
+            "observed_peak_7d_shortfall_fraction": 0.391597,
+            "observed_vessel_count_ratio": 0.739905,
+            "trade_volume_vs_vessel_ratio_gap": -0.039521,
+            "bootstrap": {
+              "status": "available",
+              "method": "deterministic moving-block bootstrap",
+              "iterations": 2000,
+              "block_days_max": 7,
+              "ratio_ci_95_low": 0.636799,
+              "ratio_ci_95_high": 0.759162,
+              "shortfall_ci_95_low": 0.240838,
+              "shortfall_ci_95_high": 0.363201
+            },
+            "placebo_test": {
+              "status": "available",
+              "method": "rolling pre-event windows with the same observation count",
+              "lookback_days": 365,
+              "sample_count": 262,
+              "event_shortfall_percentile": 1.0,
+              "one_sided_empirical_p_value": 0.003802,
+              "placebo_shortfall_median": 0.017595,
+              "placebo_shortfall_p95": 0.096912,
+              "warning": "Overlapping rolling windows are dependent; this is an empirical rarity diagnostic, not a formal independent-sample causal p-value."
+            },
+            "recovery_definition": "first 7d mean at or above 90% of baseline, confirmed for 3 days",
+            "recovery_days_after_window_end": null,
+            "evidence_grade": "strong_event_signal"
+          },
+          "container": {
+            "status": "calibrated_observed_throughput",
+            "metric": "container",
+            "field": "capacity_container",
+            "unit": "estimated_trade_tonnes_per_day",
+            "baseline_start_date": "2023-10-04",
+            "baseline_end_date": "2023-10-31",
+            "baseline_observation_count": 28,
+            "event_observation_count": 76,
+            "event_expected_calendar_days": 76,
+            "event_coverage_ratio": 1.0,
+            "baseline_mean_estimated_trade_tonnes": 264205.178571,
+            "event_mean_estimated_trade_tonnes": 213317.592105,
+            "observed_event_to_baseline_ratio": 0.807394,
+            "observed_mean_shortfall_fraction": 0.192606,
+            "observed_peak_7d_shortfall_fraction": 0.381746,
+            "observed_vessel_count_ratio": 0.739905,
+            "trade_volume_vs_vessel_ratio_gap": 0.067489,
+            "bootstrap": {
+              "status": "available",
+              "method": "deterministic moving-block bootstrap",
+              "iterations": 2000,
+              "block_days_max": 7,
+              "ratio_ci_95_low": 0.745341,
+              "ratio_ci_95_high": 0.889181,
+              "shortfall_ci_95_low": 0.110819,
+              "shortfall_ci_95_high": 0.254659
+            },
+            "placebo_test": {
+              "status": "available",
+              "method": "rolling pre-event windows with the same observation count",
+              "lookback_days": 365,
+              "sample_count": 262,
+              "event_shortfall_percentile": 1.0,
+              "one_sided_empirical_p_value": 0.003802,
+              "placebo_shortfall_median": -0.002296,
+              "placebo_shortfall_p95": 0.084375,
+              "warning": "Overlapping rolling windows are dependent; this is an empirical rarity diagnostic, not a formal independent-sample causal p-value."
+            },
+            "recovery_definition": "first 7d mean at or above 90% of baseline, confirmed for 3 days",
+            "recovery_days_after_window_end": null,
+            "evidence_grade": "strong_event_signal"
+          },
+          "dry_bulk": {
+            "status": "calibrated_observed_throughput",
+            "metric": "dry_bulk",
+            "field": "capacity_dry_bulk",
+            "unit": "estimated_trade_tonnes_per_day",
+            "baseline_start_date": "2023-10-04",
+            "baseline_end_date": "2023-10-31",
+            "baseline_observation_count": 28,
+            "event_observation_count": 76,
+            "event_expected_calendar_days": 76,
+            "event_coverage_ratio": 1.0,
+            "baseline_mean_estimated_trade_tonnes": 205073.178571,
+            "event_mean_estimated_trade_tonnes": 92203.342105,
+            "observed_event_to_baseline_ratio": 0.449612,
+            "observed_mean_shortfall_fraction": 0.550388,
+            "observed_peak_7d_shortfall_fraction": 0.863537,
+            "observed_vessel_count_ratio": 0.739905,
+            "trade_volume_vs_vessel_ratio_gap": -0.290293,
+            "bootstrap": {
+              "status": "available",
+              "method": "deterministic moving-block bootstrap",
+              "iterations": 2000,
+              "block_days_max": 7,
+              "ratio_ci_95_low": 0.346242,
+              "ratio_ci_95_high": 0.608677,
+              "shortfall_ci_95_low": 0.391323,
+              "shortfall_ci_95_high": 0.653758
+            },
+            "placebo_test": {
+              "status": "available",
+              "method": "rolling pre-event windows with the same observation count",
+              "lookback_days": 365,
+              "sample_count": 262,
+              "event_shortfall_percentile": 1.0,
+              "one_sided_empirical_p_value": 0.003802,
+              "placebo_shortfall_median": 0.079636,
+              "placebo_shortfall_p95": 0.256601,
+              "warning": "Overlapping rolling windows are dependent; this is an empirical rarity diagnostic, not a formal independent-sample causal p-value."
+            },
+            "recovery_definition": "first 7d mean at or above 90% of baseline, confirmed for 3 days",
+            "recovery_days_after_window_end": null,
+            "evidence_grade": "strong_event_signal"
+          },
+          "tanker": {
+            "status": "calibrated_observed_throughput",
+            "metric": "tanker",
+            "field": "capacity_tanker",
+            "unit": "estimated_trade_tonnes_per_day",
+            "baseline_start_date": "2023-10-04",
+            "baseline_end_date": "2023-10-31",
+            "baseline_observation_count": 28,
+            "event_observation_count": 76,
+            "event_expected_calendar_days": 76,
+            "event_coverage_ratio": 1.0,
+            "baseline_mean_estimated_trade_tonnes": 320245.035714,
+            "event_mean_estimated_trade_tonnes": 246374.276316,
+            "observed_event_to_baseline_ratio": 0.769331,
+            "observed_mean_shortfall_fraction": 0.230669,
+            "observed_peak_7d_shortfall_fraction": 0.402585,
+            "observed_vessel_count_ratio": 0.739905,
+            "trade_volume_vs_vessel_ratio_gap": 0.029426,
+            "bootstrap": {
+              "status": "available",
+              "method": "deterministic moving-block bootstrap",
+              "iterations": 2000,
+              "block_days_max": 7,
+              "ratio_ci_95_low": 0.657315,
+              "ratio_ci_95_high": 0.821528,
+              "shortfall_ci_95_low": 0.178472,
+              "shortfall_ci_95_high": 0.342685
+            },
+            "placebo_test": {
+              "status": "available",
+              "method": "rolling pre-event windows with the same observation count",
+              "lookback_days": 365,
+              "sample_count": 262,
+              "event_shortfall_percentile": 1.0,
+              "one_sided_empirical_p_value": 0.003802,
+              "placebo_shortfall_median": -0.020447,
+              "placebo_shortfall_p95": 0.050429,
+              "warning": "Overlapping rolling windows are dependent; this is an empirical rarity diagnostic, not a formal independent-sample causal p-value."
+            },
+            "recovery_definition": "first 7d mean at or above 90% of baseline, confirmed for 3 days",
+            "recovery_days_after_window_end": null,
+            "evidence_grade": "strong_event_signal"
+          }
+        },
+        "qualitative_behavior_constraints": [
+          "The authority reduced daily transit slots because of the precipitation deficit.",
+          "The selected end date closes a policy phase and is not full operational normalization."
+        ],
+        "sources": [
+          {
+            "name": "Panama Canal Authority — A-48-2023 transit reductions",
+            "url": "https://pancanal.com/en/maritime-services/advisory-to-shipping/"
+          },
+          {
+            "name": "Panama Canal Authority — January transit update",
+            "url": "https://pancanal.com/canal-de-panama-aumentara-a-24-los-transitos-diarios-a-partir-de-enero/"
+          }
+        ],
+        "duration_calendar_days": 76,
+        "primary_result": {
+          "status": "calibrated_observed_throughput",
+          "metric": "all",
+          "field": "capacity",
+          "unit": "estimated_trade_tonnes_per_day",
+          "baseline_start_date": "2023-10-04",
+          "baseline_end_date": "2023-10-31",
+          "baseline_observation_count": 28,
+          "event_observation_count": 76,
+          "event_expected_calendar_days": 76,
+          "event_coverage_ratio": 1.0,
+          "baseline_mean_estimated_trade_tonnes": 811413.857143,
+          "event_mean_estimated_trade_tonnes": 568301.315789,
+          "observed_event_to_baseline_ratio": 0.700384,
+          "observed_mean_shortfall_fraction": 0.299616,
+          "observed_peak_7d_shortfall_fraction": 0.391597,
+          "observed_vessel_count_ratio": 0.739905,
+          "trade_volume_vs_vessel_ratio_gap": -0.039521,
+          "bootstrap": {
+            "status": "available",
+            "method": "deterministic moving-block bootstrap",
+            "iterations": 2000,
+            "block_days_max": 7,
+            "ratio_ci_95_low": 0.636799,
+            "ratio_ci_95_high": 0.759162,
+            "shortfall_ci_95_low": 0.240838,
+            "shortfall_ci_95_high": 0.363201
+          },
+          "placebo_test": {
+            "status": "available",
+            "method": "rolling pre-event windows with the same observation count",
+            "lookback_days": 365,
+            "sample_count": 262,
+            "event_shortfall_percentile": 1.0,
+            "one_sided_empirical_p_value": 0.003802,
+            "placebo_shortfall_median": 0.017595,
+            "placebo_shortfall_p95": 0.096912,
+            "warning": "Overlapping rolling windows are dependent; this is an empirical rarity diagnostic, not a formal independent-sample causal p-value."
+          },
+          "recovery_definition": "first 7d mean at or above 90% of baseline, confirmed for 3 days",
+          "recovery_days_after_window_end": null,
+          "evidence_grade": "strong_event_signal"
+        },
+        "throughput_calibration_status": "calibrated_observed_throughput",
+        "behavior_partition_status": "not_identified_by_single_chokepoint_throughput",
+        "behavior_partition_warning": "PortWatch observes passage trade volume and vessel count, but cannot uniquely separate rerouting, waiting, cancellation, or insurance exclusion."
+      },
+      {
+        "event_id": "red_sea_initial_rerouting_2023_24",
+        "event_type": "commercial_war_risk",
+        "chokepoint_id": "bab_el_mandeb",
+        "portwatch_id": "chokepoint4",
+        "start_date": "2023-12-15",
+        "end_date": "2024-02-29",
+        "window_end_is_resolution": false,
+        "date_quality": "official_attack_timeline_analysis_window",
+        "primary_metric": "all",
+        "metrics": {
+          "all": {
+            "status": "calibrated_observed_throughput",
+            "metric": "all",
+            "field": "capacity",
+            "unit": "estimated_trade_tonnes_per_day",
+            "baseline_start_date": "2023-11-17",
+            "baseline_end_date": "2023-12-14",
+            "baseline_observation_count": 28,
+            "event_observation_count": 77,
+            "event_expected_calendar_days": 77,
+            "event_coverage_ratio": 1.0,
+            "baseline_mean_estimated_trade_tonnes": 3410687.214286,
+            "event_mean_estimated_trade_tonnes": 1679645.649351,
+            "observed_event_to_baseline_ratio": 0.492465,
+            "observed_mean_shortfall_fraction": 0.507535,
+            "observed_peak_7d_shortfall_fraction": 0.667991,
+            "observed_vessel_count_ratio": 0.539349,
+            "trade_volume_vs_vessel_ratio_gap": -0.046883,
+            "bootstrap": {
+              "status": "available",
+              "method": "deterministic moving-block bootstrap",
+              "iterations": 2000,
+              "block_days_max": 7,
+              "ratio_ci_95_low": 0.413962,
+              "ratio_ci_95_high": 0.551696,
+              "shortfall_ci_95_low": 0.448304,
+              "shortfall_ci_95_high": 0.586038
+            },
+            "placebo_test": {
+              "status": "available",
+              "method": "rolling pre-event windows with the same observation count",
+              "lookback_days": 365,
+              "sample_count": 261,
+              "event_shortfall_percentile": 1.0,
+              "one_sided_empirical_p_value": 0.003817,
+              "placebo_shortfall_median": -0.026717,
+              "placebo_shortfall_p95": 0.07283,
+              "warning": "Overlapping rolling windows are dependent; this is an empirical rarity diagnostic, not a formal independent-sample causal p-value."
+            },
+            "recovery_definition": "first 7d mean at or above 90% of baseline, confirmed for 3 days",
+            "recovery_days_after_window_end": null,
+            "evidence_grade": "strong_event_signal"
+          },
+          "container": {
+            "status": "calibrated_observed_throughput",
+            "metric": "container",
+            "field": "capacity_container",
+            "unit": "estimated_trade_tonnes_per_day",
+            "baseline_start_date": "2023-11-17",
+            "baseline_end_date": "2023-12-14",
+            "baseline_observation_count": 28,
+            "event_observation_count": 77,
+            "event_expected_calendar_days": 77,
+            "event_coverage_ratio": 1.0,
+            "baseline_mean_estimated_trade_tonnes": 950997.785714,
+            "event_mean_estimated_trade_tonnes": 77718.545455,
+            "observed_event_to_baseline_ratio": 0.081723,
+            "observed_mean_shortfall_fraction": 0.918277,
+            "observed_peak_7d_shortfall_fraction": 0.963243,
+            "observed_vessel_count_ratio": 0.539349,
+            "trade_volume_vs_vessel_ratio_gap": -0.457626,
+            "bootstrap": {
+              "status": "available",
+              "method": "deterministic moving-block bootstrap",
+              "iterations": 2000,
+              "block_days_max": 7,
+              "ratio_ci_95_low": 0.058558,
+              "ratio_ci_95_high": 0.092732,
+              "shortfall_ci_95_low": 0.907268,
+              "shortfall_ci_95_high": 0.941442
+            },
+            "placebo_test": {
+              "status": "available",
+              "method": "rolling pre-event windows with the same observation count",
+              "lookback_days": 365,
+              "sample_count": 261,
+              "event_shortfall_percentile": 1.0,
+              "one_sided_empirical_p_value": 0.003817,
+              "placebo_shortfall_median": -0.027454,
+              "placebo_shortfall_p95": 0.03286,
+              "warning": "Overlapping rolling windows are dependent; this is an empirical rarity diagnostic, not a formal independent-sample causal p-value."
+            },
+            "recovery_definition": "first 7d mean at or above 90% of baseline, confirmed for 3 days",
+            "recovery_days_after_window_end": null,
+            "evidence_grade": "strong_event_signal"
+          },
+          "dry_bulk": {
+            "status": "calibrated_observed_throughput",
+            "metric": "dry_bulk",
+            "field": "capacity_dry_bulk",
+            "unit": "estimated_trade_tonnes_per_day",
+            "baseline_start_date": "2023-11-17",
+            "baseline_end_date": "2023-12-14",
+            "baseline_observation_count": 28,
+            "event_observation_count": 77,
+            "event_expected_calendar_days": 77,
+            "event_coverage_ratio": 1.0,
+            "baseline_mean_estimated_trade_tonnes": 1097138.107143,
+            "event_mean_estimated_trade_tonnes": 774086.142857,
+            "observed_event_to_baseline_ratio": 0.70555,
+            "observed_mean_shortfall_fraction": 0.29445,
+            "observed_peak_7d_shortfall_fraction": 0.559567,
+            "observed_vessel_count_ratio": 0.539349,
+            "trade_volume_vs_vessel_ratio_gap": 0.166202,
+            "bootstrap": {
+              "status": "available",
+              "method": "deterministic moving-block bootstrap",
+              "iterations": 2000,
+              "block_days_max": 7,
+              "ratio_ci_95_low": 0.567375,
+              "ratio_ci_95_high": 0.799251,
+              "shortfall_ci_95_low": 0.200749,
+              "shortfall_ci_95_high": 0.432625
+            },
+            "placebo_test": {
+              "status": "available",
+              "method": "rolling pre-event windows with the same observation count",
+              "lookback_days": 365,
+              "sample_count": 261,
+              "event_shortfall_percentile": 1.0,
+              "one_sided_empirical_p_value": 0.003817,
+              "placebo_shortfall_median": -0.038685,
+              "placebo_shortfall_p95": 0.171514,
+              "warning": "Overlapping rolling windows are dependent; this is an empirical rarity diagnostic, not a formal independent-sample causal p-value."
+            },
+            "recovery_definition": "first 7d mean at or above 90% of baseline, confirmed for 3 days",
+            "recovery_days_after_window_end": null,
+            "evidence_grade": "strong_event_signal"
+          },
+          "tanker": {
+            "status": "calibrated_observed_throughput",
+            "metric": "tanker",
+            "field": "capacity_tanker",
+            "unit": "estimated_trade_tonnes_per_day",
+            "baseline_start_date": "2023-11-17",
+            "baseline_end_date": "2023-12-14",
+            "baseline_observation_count": 28,
+            "event_observation_count": 77,
+            "event_expected_calendar_days": 77,
+            "event_coverage_ratio": 1.0,
+            "baseline_mean_estimated_trade_tonnes": 1312532.357143,
+            "event_mean_estimated_trade_tonnes": 800862.922078,
+            "observed_event_to_baseline_ratio": 0.610166,
+            "observed_mean_shortfall_fraction": 0.389834,
+            "observed_peak_7d_shortfall_fraction": 0.636446,
+            "observed_vessel_count_ratio": 0.539349,
+            "trade_volume_vs_vessel_ratio_gap": 0.070818,
+            "bootstrap": {
+              "status": "available",
+              "method": "deterministic moving-block bootstrap",
+              "iterations": 2000,
+              "block_days_max": 7,
+              "ratio_ci_95_low": 0.50343,
+              "ratio_ci_95_high": 0.701491,
+              "shortfall_ci_95_low": 0.298509,
+              "shortfall_ci_95_high": 0.49657
+            },
+            "placebo_test": {
+              "status": "available",
+              "method": "rolling pre-event windows with the same observation count",
+              "lookback_days": 365,
+              "sample_count": 261,
+              "event_shortfall_percentile": 1.0,
+              "one_sided_empirical_p_value": 0.003817,
+              "placebo_shortfall_median": -0.00184,
+              "placebo_shortfall_p95": 0.097157,
+              "warning": "Overlapping rolling windows are dependent; this is an empirical rarity diagnostic, not a formal independent-sample causal p-value."
+            },
+            "recovery_definition": "first 7d mean at or above 90% of baseline, confirmed for 3 days",
+            "recovery_days_after_window_end": null,
+            "evidence_grade": "strong_event_signal"
+          }
+        },
+        "qualitative_behavior_constraints": [
+          "IMO explicitly reported rerouting by several globally operating companies in response to the threat.",
+          "The analysis window represents the initial response and is not the end of the security event."
+        ],
+        "sources": [
+          {
+            "name": "IMO — Red Sea statement, 19 December 2023",
+            "url": "https://www.imo.org/en/mediacentre/secretarygeneral/pages/red-sea-statement-19-december-2023.aspx"
+          },
+          {
+            "name": "IMO — Red Sea incident list",
+            "url": "https://wwwcdn.imo.org/localresources/en/MediaCentre/HotTopics/Documents/Red%20Sea/Incidents%20in%20the%20Red%20Sea%20%20-%20up%20to%2014%20March%202024.pdf"
+          }
+        ],
+        "duration_calendar_days": 77,
+        "primary_result": {
+          "status": "calibrated_observed_throughput",
+          "metric": "all",
+          "field": "capacity",
+          "unit": "estimated_trade_tonnes_per_day",
+          "baseline_start_date": "2023-11-17",
+          "baseline_end_date": "2023-12-14",
+          "baseline_observation_count": 28,
+          "event_observation_count": 77,
+          "event_expected_calendar_days": 77,
+          "event_coverage_ratio": 1.0,
+          "baseline_mean_estimated_trade_tonnes": 3410687.214286,
+          "event_mean_estimated_trade_tonnes": 1679645.649351,
+          "observed_event_to_baseline_ratio": 0.492465,
+          "observed_mean_shortfall_fraction": 0.507535,
+          "observed_peak_7d_shortfall_fraction": 0.667991,
+          "observed_vessel_count_ratio": 0.539349,
+          "trade_volume_vs_vessel_ratio_gap": -0.046883,
+          "bootstrap": {
+            "status": "available",
+            "method": "deterministic moving-block bootstrap",
+            "iterations": 2000,
+            "block_days_max": 7,
+            "ratio_ci_95_low": 0.413962,
+            "ratio_ci_95_high": 0.551696,
+            "shortfall_ci_95_low": 0.448304,
+            "shortfall_ci_95_high": 0.586038
+          },
+          "placebo_test": {
+            "status": "available",
+            "method": "rolling pre-event windows with the same observation count",
+            "lookback_days": 365,
+            "sample_count": 261,
+            "event_shortfall_percentile": 1.0,
+            "one_sided_empirical_p_value": 0.003817,
+            "placebo_shortfall_median": -0.026717,
+            "placebo_shortfall_p95": 0.07283,
+            "warning": "Overlapping rolling windows are dependent; this is an empirical rarity diagnostic, not a formal independent-sample causal p-value."
+          },
+          "recovery_definition": "first 7d mean at or above 90% of baseline, confirmed for 3 days",
+          "recovery_days_after_window_end": null,
+          "evidence_grade": "strong_event_signal"
+        },
+        "throughput_calibration_status": "calibrated_observed_throughput",
+        "behavior_partition_status": "not_identified_by_single_chokepoint_throughput",
+        "behavior_partition_warning": "PortWatch observes passage trade volume and vessel count, but cannot uniquely separate rerouting, waiting, cancellation, or insurance exclusion."
+      },
+      {
+        "event_id": "hormuz_conflict_2026",
+        "event_type": "military_physical_closure",
+        "chokepoint_id": "hormuz",
+        "portwatch_id": "chokepoint6",
+        "start_date": "2026-03-01",
+        "end_date": "2026-06-18",
+        "window_end_is_resolution": true,
+        "date_quality": "start_inferred_from_official_eighth_week_statement_end_official",
+        "primary_metric": "tanker",
+        "metrics": {
+          "all": {
+            "status": "calibrated_observed_throughput",
+            "metric": "all",
+            "field": "capacity",
+            "unit": "estimated_trade_tonnes_per_day",
+            "baseline_start_date": "2026-02-01",
+            "baseline_end_date": "2026-02-28",
+            "baseline_observation_count": 28,
+            "event_observation_count": 110,
+            "event_expected_calendar_days": 110,
+            "event_coverage_ratio": 1.0,
+            "baseline_mean_estimated_trade_tonnes": 2685689.714286,
+            "event_mean_estimated_trade_tonnes": 107593.2,
+            "observed_event_to_baseline_ratio": 0.040062,
+            "observed_mean_shortfall_fraction": 0.959938,
+            "observed_peak_7d_shortfall_fraction": 0.99264,
+            "observed_vessel_count_ratio": 0.053041,
+            "trade_volume_vs_vessel_ratio_gap": -0.012979,
+            "bootstrap": {
+              "status": "available",
+              "method": "deterministic moving-block bootstrap",
+              "iterations": 2000,
+              "block_days_max": 7,
+              "ratio_ci_95_low": 0.025449,
+              "ratio_ci_95_high": 0.049341,
+              "shortfall_ci_95_low": 0.950659,
+              "shortfall_ci_95_high": 0.974551
+            },
+            "placebo_test": {
+              "status": "available",
+              "method": "rolling pre-event windows with the same observation count",
+              "lookback_days": 365,
+              "sample_count": 228,
+              "event_shortfall_percentile": 1.0,
+              "one_sided_empirical_p_value": 0.004367,
+              "placebo_shortfall_median": 0.102405,
+              "placebo_shortfall_p95": 0.224434,
+              "warning": "Overlapping rolling windows are dependent; this is an empirical rarity diagnostic, not a formal independent-sample causal p-value."
+            },
+            "recovery_definition": "first 7d mean at or above 90% of baseline, confirmed for 3 days",
+            "recovery_days_after_window_end": null,
+            "evidence_grade": "strong_event_signal"
+          },
+          "container": {
+            "status": "calibrated_observed_throughput",
+            "metric": "container",
+            "field": "capacity_container",
+            "unit": "estimated_trade_tonnes_per_day",
+            "baseline_start_date": "2026-02-01",
+            "baseline_end_date": "2026-02-28",
+            "baseline_observation_count": 28,
+            "event_observation_count": 110,
+            "event_expected_calendar_days": 110,
+            "event_coverage_ratio": 1.0,
+            "baseline_mean_estimated_trade_tonnes": 339566.714286,
+            "event_mean_estimated_trade_tonnes": 7871.872727,
+            "observed_event_to_baseline_ratio": 0.023182,
+            "observed_mean_shortfall_fraction": 0.976818,
+            "observed_peak_7d_shortfall_fraction": 1.0,
+            "observed_vessel_count_ratio": 0.053041,
+            "trade_volume_vs_vessel_ratio_gap": -0.029859,
+            "bootstrap": {
+              "status": "available",
+              "method": "deterministic moving-block bootstrap",
+              "iterations": 2000,
+              "block_days_max": 7,
+              "ratio_ci_95_low": 0.008915,
+              "ratio_ci_95_high": 0.037358,
+              "shortfall_ci_95_low": 0.962642,
+              "shortfall_ci_95_high": 0.991085
+            },
+            "placebo_test": {
+              "status": "available",
+              "method": "rolling pre-event windows with the same observation count",
+              "lookback_days": 365,
+              "sample_count": 228,
+              "event_shortfall_percentile": 1.0,
+              "one_sided_empirical_p_value": 0.004367,
+              "placebo_shortfall_median": 0.111354,
+              "placebo_shortfall_p95": 0.246659,
+              "warning": "Overlapping rolling windows are dependent; this is an empirical rarity diagnostic, not a formal independent-sample causal p-value."
+            },
+            "recovery_definition": "first 7d mean at or above 90% of baseline, confirmed for 3 days",
+            "recovery_days_after_window_end": null,
+            "evidence_grade": "strong_event_signal"
+          },
+          "dry_bulk": {
+            "status": "calibrated_observed_throughput",
+            "metric": "dry_bulk",
+            "field": "capacity_dry_bulk",
+            "unit": "estimated_trade_tonnes_per_day",
+            "baseline_start_date": "2026-02-01",
+            "baseline_end_date": "2026-02-28",
+            "baseline_observation_count": 28,
+            "event_observation_count": 110,
+            "event_expected_calendar_days": 110,
+            "event_coverage_ratio": 1.0,
+            "baseline_mean_estimated_trade_tonnes": 446780.571429,
+            "event_mean_estimated_trade_tonnes": 42783.963636,
+            "observed_event_to_baseline_ratio": 0.095761,
+            "observed_mean_shortfall_fraction": 0.904239,
+            "observed_peak_7d_shortfall_fraction": 1.0,
+            "observed_vessel_count_ratio": 0.053041,
+            "trade_volume_vs_vessel_ratio_gap": 0.042719,
+            "bootstrap": {
+              "status": "available",
+              "method": "deterministic moving-block bootstrap",
+              "iterations": 2000,
+              "block_days_max": 7,
+              "ratio_ci_95_low": 0.05947,
+              "ratio_ci_95_high": 0.110243,
+              "shortfall_ci_95_low": 0.889757,
+              "shortfall_ci_95_high": 0.94053
+            },
+            "placebo_test": {
+              "status": "available",
+              "method": "rolling pre-event windows with the same observation count",
+              "lookback_days": 365,
+              "sample_count": 228,
+              "event_shortfall_percentile": 1.0,
+              "one_sided_empirical_p_value": 0.004367,
+              "placebo_shortfall_median": 0.068838,
+              "placebo_shortfall_p95": 0.193338,
+              "warning": "Overlapping rolling windows are dependent; this is an empirical rarity diagnostic, not a formal independent-sample causal p-value."
+            },
+            "recovery_definition": "first 7d mean at or above 90% of baseline, confirmed for 3 days",
+            "recovery_days_after_window_end": null,
+            "evidence_grade": "strong_event_signal"
+          },
+          "tanker": {
+            "status": "calibrated_observed_throughput",
+            "metric": "tanker",
+            "field": "capacity_tanker",
+            "unit": "estimated_trade_tonnes_per_day",
+            "baseline_start_date": "2026-02-01",
+            "baseline_end_date": "2026-02-28",
+            "baseline_observation_count": 28,
+            "event_observation_count": 110,
+            "event_expected_calendar_days": 110,
+            "event_coverage_ratio": 1.0,
+            "baseline_mean_estimated_trade_tonnes": 1874366.071429,
+            "event_mean_estimated_trade_tonnes": 55442.263636,
+            "observed_event_to_baseline_ratio": 0.029579,
+            "observed_mean_shortfall_fraction": 0.970421,
+            "observed_peak_7d_shortfall_fraction": 0.999584,
+            "observed_vessel_count_ratio": 0.053041,
+            "trade_volume_vs_vessel_ratio_gap": -0.023462,
+            "bootstrap": {
+              "status": "available",
+              "method": "deterministic moving-block bootstrap",
+              "iterations": 2000,
+              "block_days_max": 7,
+              "ratio_ci_95_low": 0.017187,
+              "ratio_ci_95_high": 0.040829,
+              "shortfall_ci_95_low": 0.959171,
+              "shortfall_ci_95_high": 0.982813
+            },
+            "placebo_test": {
+              "status": "available",
+              "method": "rolling pre-event windows with the same observation count",
+              "lookback_days": 365,
+              "sample_count": 228,
+              "event_shortfall_percentile": 1.0,
+              "one_sided_empirical_p_value": 0.004367,
+              "placebo_shortfall_median": 0.09961,
+              "placebo_shortfall_p95": 0.231139,
+              "warning": "Overlapping rolling windows are dependent; this is an empirical rarity diagnostic, not a formal independent-sample causal p-value."
+            },
+            "recovery_definition": "first 7d mean at or above 90% of baseline, confirmed for 3 days",
+            "recovery_days_after_window_end": null,
+            "evidence_grade": "strong_event_signal"
+          }
+        },
+        "qualitative_behavior_constraints": [
+          "IMO reported about 1,600 vessels remaining in the Gulf and no safe transit on 24 April 2026.",
+          "The controlled evacuation corridor means residual passage must not be interpreted as normal commercial transit.",
+          "Public data do not identify tanker-only stranded DWT or insurance coverage status."
+        ],
+        "sources": [
+          {
+            "name": "IMO — No safe transit through Strait of Hormuz",
+            "url": "https://www.imo.org/en/mediacentre/pressbriefings/pages/no-safe-transit-through-hormuz-imo-secretary-general.aspx"
+          },
+          {
+            "name": "JMIC — Strait of Hormuz Open, 18 June 2026",
+            "url": "https://wwwcdn.imo.org/localresources/en/MediaCentre/HotTopics/Documents/JMIC%20Advisory%20Note%2000926%20SoH%20open.pdf"
+          }
+        ],
+        "duration_calendar_days": 110,
+        "primary_result": {
+          "status": "calibrated_observed_throughput",
+          "metric": "tanker",
+          "field": "capacity_tanker",
+          "unit": "estimated_trade_tonnes_per_day",
+          "baseline_start_date": "2026-02-01",
+          "baseline_end_date": "2026-02-28",
+          "baseline_observation_count": 28,
+          "event_observation_count": 110,
+          "event_expected_calendar_days": 110,
+          "event_coverage_ratio": 1.0,
+          "baseline_mean_estimated_trade_tonnes": 1874366.071429,
+          "event_mean_estimated_trade_tonnes": 55442.263636,
+          "observed_event_to_baseline_ratio": 0.029579,
+          "observed_mean_shortfall_fraction": 0.970421,
+          "observed_peak_7d_shortfall_fraction": 0.999584,
+          "observed_vessel_count_ratio": 0.053041,
+          "trade_volume_vs_vessel_ratio_gap": -0.023462,
+          "bootstrap": {
+            "status": "available",
+            "method": "deterministic moving-block bootstrap",
+            "iterations": 2000,
+            "block_days_max": 7,
+            "ratio_ci_95_low": 0.017187,
+            "ratio_ci_95_high": 0.040829,
+            "shortfall_ci_95_low": 0.959171,
+            "shortfall_ci_95_high": 0.982813
+          },
+          "placebo_test": {
+            "status": "available",
+            "method": "rolling pre-event windows with the same observation count",
+            "lookback_days": 365,
+            "sample_count": 228,
+            "event_shortfall_percentile": 1.0,
+            "one_sided_empirical_p_value": 0.004367,
+            "placebo_shortfall_median": 0.09961,
+            "placebo_shortfall_p95": 0.231139,
+            "warning": "Overlapping rolling windows are dependent; this is an empirical rarity diagnostic, not a formal independent-sample causal p-value."
+          },
+          "recovery_definition": "first 7d mean at or above 90% of baseline, confirmed for 3 days",
+          "recovery_days_after_window_end": null,
+          "evidence_grade": "strong_event_signal"
+        },
+        "throughput_calibration_status": "calibrated_observed_throughput",
+        "behavior_partition_status": "not_identified_by_single_chokepoint_throughput",
+        "behavior_partition_warning": "PortWatch observes passage trade volume and vessel count, but cannot uniquely separate rerouting, waiting, cancellation, or insurance exclusion."
+      }
+    ],
+    "profile_evidence": {
+      "physical_chokepoint_closure": {
+        "event_count": 1,
+        "calibrated_event_count": 1,
+        "event_ids": [
+          "suez_ever_given_2021"
+        ],
+        "mean_shortfall_range": {
+          "minimum": 0.822099,
+          "maximum": 0.822099
+        },
+        "evidence_grade": "single_event_reference",
+        "throughput_severity_status": "empirically_calibrated",
+        "behavior_multiplier_status": "prior_not_numerically_identified"
+      },
+      "operational_restriction": {
+        "event_count": 1,
+        "calibrated_event_count": 1,
+        "event_ids": [
+          "panama_drought_restrictions_2023_24"
+        ],
+        "mean_shortfall_range": {
+          "minimum": 0.299616,
+          "maximum": 0.299616
+        },
+        "evidence_grade": "single_event_reference",
+        "throughput_severity_status": "empirically_calibrated",
+        "behavior_multiplier_status": "prior_not_numerically_identified"
+      },
+      "commercial_war_risk": {
+        "event_count": 1,
+        "calibrated_event_count": 1,
+        "event_ids": [
+          "red_sea_initial_rerouting_2023_24"
+        ],
+        "mean_shortfall_range": {
+          "minimum": 0.507535,
+          "maximum": 0.507535
+        },
+        "evidence_grade": "single_event_reference",
+        "throughput_severity_status": "empirically_calibrated",
+        "behavior_multiplier_status": "prior_not_numerically_identified"
+      },
+      "military_physical_closure": {
+        "event_count": 1,
+        "calibrated_event_count": 1,
+        "event_ids": [
+          "hormuz_conflict_2026"
+        ],
+        "mean_shortfall_range": {
+          "minimum": 0.970421,
+          "maximum": 0.970421
+        },
+        "evidence_grade": "single_event_reference",
+        "throughput_severity_status": "empirically_calibrated",
+        "behavior_multiplier_status": "prior_not_numerically_identified"
+      }
+    },
+    "scenario_comparisons": [
+      {
+        "event_id": "suez_ever_given_2021",
+        "historical_event_type": "physical_chokepoint_closure",
+        "scenario_id": "suez_50pct_28d",
+        "scenario_event_type": "operational_restriction",
+        "event_type_matches": false,
+        "historical_window_days": 7,
+        "scenario_duration_days": 28,
+        "historical_mean_shortfall_fraction": 0.822099,
+        "historical_peak_7d_shortfall_fraction": 0.822099,
+        "historical_shortfall_ci_95": [
+          0.742133,
+          0.93019
+        ],
+        "scenario_closure_fraction": 0.5,
+        "scenario_minus_historical_mean_percentage_points": -32.209861,
+        "scenario_within_historical_mean_ci": false,
+        "comparison_status": "less_severe_than_historical_mean_ci",
+        "warning": "Severity comparison only. Different duration/event type and unobserved behavior shares prevent direct replay equivalence."
+      },
+      {
+        "event_id": "suez_ever_given_2021",
+        "historical_event_type": "physical_chokepoint_closure",
+        "scenario_id": "suez_100pct_28d",
+        "scenario_event_type": "physical_chokepoint_closure",
+        "event_type_matches": true,
+        "historical_window_days": 7,
+        "scenario_duration_days": 28,
+        "historical_mean_shortfall_fraction": 0.822099,
+        "historical_peak_7d_shortfall_fraction": 0.822099,
+        "historical_shortfall_ci_95": [
+          0.742133,
+          0.93019
+        ],
+        "scenario_closure_fraction": 1.0,
+        "scenario_minus_historical_mean_percentage_points": 17.790139,
+        "scenario_within_historical_mean_ci": false,
+        "comparison_status": "more_severe_than_historical_mean_ci",
+        "warning": "Severity comparison only. Different duration/event type and unobserved behavior shares prevent direct replay equivalence."
+      },
+      {
+        "event_id": "panama_drought_restrictions_2023_24",
+        "historical_event_type": "operational_restriction",
+        "scenario_id": "panama_50pct_28d",
+        "scenario_event_type": "operational_restriction",
+        "event_type_matches": true,
+        "historical_window_days": 76,
+        "scenario_duration_days": 28,
+        "historical_mean_shortfall_fraction": 0.299616,
+        "historical_peak_7d_shortfall_fraction": 0.391597,
+        "historical_shortfall_ci_95": [
+          0.240838,
+          0.363201
+        ],
+        "scenario_closure_fraction": 0.5,
+        "scenario_minus_historical_mean_percentage_points": 20.038404,
+        "scenario_within_historical_mean_ci": false,
+        "comparison_status": "more_severe_than_historical_mean_ci",
+        "warning": "Severity comparison only. Different duration/event type and unobserved behavior shares prevent direct replay equivalence."
+      },
+      {
+        "event_id": "hormuz_conflict_2026",
+        "historical_event_type": "military_physical_closure",
+        "scenario_id": "hormuz_50pct_28d",
+        "scenario_event_type": "commercial_war_risk",
+        "event_type_matches": false,
+        "historical_window_days": 110,
+        "scenario_duration_days": 28,
+        "historical_mean_shortfall_fraction": 0.970421,
+        "historical_peak_7d_shortfall_fraction": 0.999584,
+        "historical_shortfall_ci_95": [
+          0.959171,
+          0.982813
+        ],
+        "scenario_closure_fraction": 0.5,
+        "scenario_minus_historical_mean_percentage_points": -47.042079,
+        "scenario_within_historical_mean_ci": false,
+        "comparison_status": "less_severe_than_historical_mean_ci",
+        "warning": "Severity comparison only. Different duration/event type and unobserved behavior shares prevent direct replay equivalence."
+      },
+      {
+        "event_id": "hormuz_conflict_2026",
+        "historical_event_type": "military_physical_closure",
+        "scenario_id": "hormuz_effective_80pct_28d",
+        "scenario_event_type": "commercial_war_risk",
+        "event_type_matches": false,
+        "historical_window_days": 110,
+        "scenario_duration_days": 28,
+        "historical_mean_shortfall_fraction": 0.970421,
+        "historical_peak_7d_shortfall_fraction": 0.999584,
+        "historical_shortfall_ci_95": [
+          0.959171,
+          0.982813
+        ],
+        "scenario_closure_fraction": 0.8,
+        "scenario_minus_historical_mean_percentage_points": -17.042079,
+        "scenario_within_historical_mean_ci": false,
+        "comparison_status": "less_severe_than_historical_mean_ci",
+        "warning": "Severity comparison only. Different duration/event type and unobserved behavior shares prevent direct replay equivalence."
+      },
+      {
+        "event_id": "hormuz_conflict_2026",
+        "historical_event_type": "military_physical_closure",
+        "scenario_id": "hormuz_100pct_28d",
+        "scenario_event_type": "military_physical_closure",
+        "event_type_matches": true,
+        "historical_window_days": 110,
+        "scenario_duration_days": 28,
+        "historical_mean_shortfall_fraction": 0.970421,
+        "historical_peak_7d_shortfall_fraction": 0.999584,
+        "historical_shortfall_ci_95": [
+          0.959171,
+          0.982813
+        ],
+        "scenario_closure_fraction": 1.0,
+        "scenario_minus_historical_mean_percentage_points": 2.957921,
+        "scenario_within_historical_mean_ci": false,
+        "comparison_status": "more_severe_than_historical_mean_ci",
+        "warning": "Severity comparison only. Different duration/event type and unobserved behavior shares prevent direct replay equivalence."
+      }
+    ]
+  }
+}

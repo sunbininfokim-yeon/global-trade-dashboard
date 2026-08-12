@@ -1,0 +1,76 @@
+# russia — 국가 모델 매니페스트 (scaffold_manifest.py 생성)
+# 규격: ../MODEL_MANIFEST.md
+#
+# TODO 로 표시된 항목은 사람이 채워야 합니다. 추정으로 채우면 화면에
+# 그럴듯한 오류가 남으므로 비워 둡니다.
+
+country: russia
+iso: RUS
+label_ko: 러시아
+label_en: Russia
+panel_mode: forecast
+data_file: russia_yield_forecast.json
+model_status: provisional
+status_note_ko: "산지 5곳 검증 통과 / 3곳은 추세를 이기지 못함."
+
+view:                # 국가 클릭 시 카메라
+  longitude: 42.0
+  latitude: 50.5
+  zoom: 4.2
+
+regions:
+  - key: southern_winter_wheat
+    label_ko: "남부 곡창지대 (겨울밀)"
+    ui_name: southern_winter_wheat
+    coordinates: [40.22, 45.77]   # [경도, 위도]
+    crops_region_keys: [southern_winter_wheat]
+  - key: cbe_winter_wheat
+    label_ko: "중앙흑토 (겨울밀)"
+    ui_name: cbe_winter_wheat
+    coordinates: [38.35, 51.68]
+    crops_region_keys: [cbe_winter_wheat]
+  - key: russia_winter_wheat
+    label_ko: "러시아 겨울밀 벨트 (가중 전국)"
+    ui_name: russia_winter_wheat
+    coordinates: [39.38, 48.43]   # [경도, 위도]
+    crops_region_keys: [russia_winter_wheat]
+  - key: volga_winter_wheat
+    label_ko: "볼가 (겨울밀)"
+    ui_name: volga_winter_wheat
+    coordinates: [46.9, 51.15]
+    crops_region_keys: [volga_winter_wheat]
+  - key: southern_sunflower
+    label_ko: "남부 (해바라기)"
+    ui_name: southern_sunflower
+    coordinates: [42.02, 44.47]   # [경도, 위도]
+    crops_region_keys: [southern_sunflower]
+  - key: cbe_sunflower
+    label_ko: "중앙흑토 (해바라기)"
+    ui_name: cbe_sunflower
+    coordinates: [40.15, 50.38]
+    crops_region_keys: [cbe_sunflower]
+  - key: volga_sunflower
+    label_ko: "볼가 (해바라기)"
+    ui_name: volga_sunflower
+    coordinates: [48.7, 49.85]
+    crops_region_keys: [volga_sunflower]
+  - key: russia_sunflower
+    label_ko: "러시아 해바라기 벨트 (가중 전국)"
+    ui_name: russia_sunflower
+    coordinates: [44.06, 47.36]   # [경도, 위도]
+    crops_region_keys: [russia_sunflower]
+
+sources:
+  labels:
+    name: "Rosstat 작물 통계"
+    url: https://rosstat.gov.ru/enterprise_economy
+    updated: "2024-12-31"
+  climate:
+    name: NASA POWER (daily)
+    url: https://power.larc.nasa.gov/
+    updated: "2026-08-07"
+
+trade_policy:
+  restricted: true
+  prohibited_crops: []
+  note_ko: "밀 수출세·쿼터 운용 (seed)"

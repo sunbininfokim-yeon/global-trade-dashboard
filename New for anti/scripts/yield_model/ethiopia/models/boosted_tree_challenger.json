@@ -1,0 +1,40 @@
+{
+  "model_family": "sklearn GradientBoostingRegressor (XGBoost-like challenger; not XGBoost)",
+  "selection_protocol": "feature/hyperparameter selection through 2014; 2015-2024 opened once",
+  "selected": {
+    "feature_set": "water_demand",
+    "features": [
+      "root_sm_mar_jul",
+      "vpd_mar_jul_kpa"
+    ],
+    "params": {
+      "max_depth": 1,
+      "n_estimators": 30,
+      "learning_rate": 0.03
+    },
+    "development": {
+      "n_folds": 7,
+      "rmse_kg_ha": 73.42975111404141,
+      "baseline_rmse_kg_ha": 69.09691057073549,
+      "skill_vs_trend": -0.06270671883181134,
+      "detrended_r2": -4.398641595368939
+    }
+  },
+  "holdout_2015_2024": {
+    "n_folds": 10,
+    "rmse_kg_ha": 39.23294031052163,
+    "baseline_rmse_kg_ha": 36.6846421793554,
+    "skill_vs_trend": -0.06946498533929568,
+    "detrended_r2": -0.39933941627754654
+  },
+  "ridge_holdout_2015_2024": {
+    "n_folds": 10,
+    "rmse_kg_ha": 36.70398548419792,
+    "baseline_rmse_kg_ha": 36.6846421793554,
+    "skill_vs_trend": -0.0005272861800846851,
+    "detrended_r2": -0.22475099596010129
+  },
+  "adoption_rule": "holdout skill >=10% and >=5% RMSE gain versus Ridge",
+  "adopted": false,
+  "decision": "reject_overfit_or_no_gain"
+}

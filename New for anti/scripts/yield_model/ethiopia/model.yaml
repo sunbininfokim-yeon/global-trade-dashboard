@@ -1,0 +1,34 @@
+country: ethiopia
+iso: ETH
+label_ko: 에티오피아
+label_en: Ethiopia
+panel_mode: reference
+data_file: ethiopia_yield_forecast.json
+model_status: training
+status_note_ko: "2015~2024 홀드아웃에서 기후+주기 skill -0.1%, 부스팅 -6.9%. Forecast를 발행하지 않고 기관 전망·갱신·지역 기후 위험을 표시합니다."
+model_name: 에티오피아 아라비카 (참고)
+view:
+  longitude: 38.2
+  latitude: 7.5
+  zoom: 4.7
+regions:
+  - key: national_arabica_belt
+    label_ko: 에티오피아 아라비카 벨트
+    coordinates: [36.8, 7.5]
+    crops: [coffee]
+sources:
+  labels:
+    name: "FAOSTAT QCL via Our World in Data"
+    url: "https://ourworldindata.org/grapher/coffee-yields"
+    updated: "2026-02-25"
+  climate:
+    name: "Google Earth Engine CHIRPS + ERA5-Land"
+    url: "https://developers.google.com/earth-engine/datasets/catalog/UCSB-CHG_CHIRPS_DAILY"
+    updated: "2026-08-10"
+method_refs: "USDA/FAS ET2026-0005 · ECTA regional production and stumping context"
+trade_policy:
+  restricted: false
+  prohibited_crops: []
+  note_ko: "생산·기후 모델이며 수출 제한 모델이 아닙니다."
+notes_ko: |
+  stumping 비율은 최신 구조 시나리오로만 표시하며 장기 시계열이 없어 학습계수로 사용하지 않습니다.

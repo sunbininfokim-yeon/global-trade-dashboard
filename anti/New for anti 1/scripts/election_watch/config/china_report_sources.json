@@ -1,0 +1,91 @@
+{
+  "version": 2,
+  "updated": "2026-08-08",
+  "notes": [
+    "User pointer: USNI index of Pentagon CMPR — https://news.usni.org/2025/12/24/pentagon-annual-report-on-chinese-military-and-security-developments-2",
+    "DoD/군·정보기관 발행물 + 양회/당 공시. PDF는 raw/china/ (gitignore).",
+    "media.defense.gov 직접 다운로드는 이 환경에서 Access Denied → Erickson mirror로 CMPR_2025.pdf 확보."
+  ],
+  "us_government_reports": [
+    {
+      "id": "dod_cmpr_2025",
+      "org": "U.S. Department of Defense",
+      "title": "Annual Report to Congress: Military and Security Developments Involving the People's Republic of China (2025)",
+      "aka": ["China Military Power Report", "CMPR", "PLA commanders report pattern"],
+      "url": "https://media.defense.gov/2025/Dec/23/2003849070/-1/-1/1/ANNUAL-REPORT-TO-CONGRESS-MILITARY-AND-SECURITY-DEVELOPMENTS-INVOLVING-THE-PEOPLES-REPUBLIC-OF-CHINA-2025.PDF",
+      "press_index": "https://news.usni.org/2025/12/24/pentagon-annual-report-on-chinese-military-and-security-developments-2",
+      "mirror": "http://www.andrewerickson.com/wp-content/uploads/2025/12/China-Military-Power-Report_20251223.pdf",
+      "mirror_index": "https://www.andrewerickson.com/2025/12/u-s-department-of-defense-war-annual-reports-to-congress-on-chinas-military-power-2000-to-2025-download-complete-set-read-highlights-here/",
+      "analysis": "https://fas.org/publication/the-pentagons-slimmed-down-2025-china-military-power-report/",
+      "local_cache": "raw/china/CMPR_2025.pdf",
+      "extract_status": "theater_leadership_done",
+      "extract_file": "china_leadership_extracted.json",
+      "grade": "us_official_report"
+    },
+    {
+      "id": "odni_ata_2025",
+      "org": "ODNI (U.S. Intelligence Community)",
+      "title": "2025 Annual Threat Assessment",
+      "url": "https://www.dni.gov/files/ODNI/documents/assessments/ATA-2025-Unclassified-Report.pdf",
+      "landing": "https://www.odni.gov/index.php/newsroom/reports-publications/reports-publications-2025/4058-2025-annual-threat-assessment.",
+      "extract_targets": ["China as pacing threat", "PLA modernization milestones 2027/2035"],
+      "grade": "us_intel_community",
+      "local_cache_status": "download_blocked_here_use_browser"
+    },
+    {
+      "id": "uscc_2025",
+      "org": "U.S.-China Economic and Security Review Commission",
+      "title": "2025 Annual Report to Congress",
+      "url": "https://www.uscc.gov/annual-report/2025-annual-report-congress",
+      "extract_targets": ["security/foreign affairs year in review", "named officials in chapters"],
+      "grade": "us_official_report"
+    },
+    {
+      "id": "state_dept_china",
+      "org": "U.S. Department of State",
+      "url": "https://www.state.gov/countries-areas/china/",
+      "grade": "us_official"
+    }
+  ],
+  "press_and_navy_indexes": [
+    {
+      "id": "usni_cmpr_2025",
+      "org": "USNI News",
+      "url": "https://news.usni.org/2025/12/24/pentagon-annual-report-on-chinese-military-and-security-developments-2",
+      "role": "index_and_summary_to_DoD_PDF",
+      "note": "User-provided entry point; Cloudflare may block automated fetch"
+    }
+  ],
+  "prc_official_announcements": [
+    {
+      "id": "npc_two_sessions",
+      "org": "全国人大 / 양회",
+      "url": "http://www.npc.gov.cn/",
+      "extract_targets": ["NPC Standing Committee", "deputy lists", "state council nominations"]
+    },
+    {
+      "id": "xinhua_party",
+      "org": "新华社",
+      "url": "https://www.news.cn/",
+      "extract_targets": ["Politburo / PSC after plenum", "CMC appointments"]
+    },
+    {
+      "id": "gov_cn",
+      "url": "https://www.gov.cn/",
+      "extract_targets": ["State Council leadership"]
+    }
+  ],
+  "entity_slots_to_fill": {
+    "party": ["general_secretary", "politburo_standing_committee", "politburo"],
+    "state": ["president", "premier", "state_councilors"],
+    "military": [
+      "cmc_chair",
+      "cmc_vice_chairs",
+      "theater_commanders",
+      "theater_political_commissars",
+      "service_commanders"
+    ]
+  },
+  "ingest_mode": "pdf_html_text_extract_then_curate",
+  "status": "cmpr_theater_extracted_psc_todo"
+}

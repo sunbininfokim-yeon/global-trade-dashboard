@@ -1,0 +1,345 @@
+{
+  "version": 1,
+  "as_of": "2026-08-08",
+  "method": "document_text_extract",
+  "method_note_ko": "시계열 숫자 API 재학습이 아니라 출처등급·필드 정규화·교정 키 스티커. 한국 딥패스와 같은 차원으로 15국을 채점.",
+  "score_dimensions": [
+    "head",
+    "spectrum",
+    "legislature_live",
+    "subnational",
+    "calendar_2026",
+    "governance_poll",
+    "factions_or_pla_or_power",
+    "extract_pipe"
+  ],
+  "depth_scale": {
+    "deep": "의회 조성+수장(+총리/의장) + 캘린더 + 거버넌스 지지율 1개 이상",
+    "composition": "의회 조성 배선. 지지율 todo 또는 얇음",
+    "scaffold": "head+정당+얇은 캘린더",
+    "leadership_doc": "선거 아님: PLA/권력카드",
+    "thin_calendar": "캘린더·프로필 활성, 의원 명단 light 또는 미추출"
+  },
+  "board_as_of": "2026-08-08T12:39:03.861133+00:00",
+  "countries": 15,
+  "scorecard": {
+    "USA": {
+      "tier": 1,
+      "depth": "deep",
+      "map_spectrum": "conservative",
+      "head": {"name": "Donald J. Trump", "party": "gop", "grade": "high"},
+      "legislature_live": "done (Congress house/senate + floor leadership)",
+      "subnational": "done (50 governors + state legs)",
+      "calendar_2026": "done (~17 midterms + House/Senate specials)",
+      "poll": {"kind": "presidential_job_approval", "value": 41, "pollster": "Gallup", "confidence": "medium"},
+      "factions": "factions_board USA / HFC snapshot",
+      "extract_files": ["usa_congress.json", "usa_governors.json", "usa_state_legislatures.json"],
+      "coverage": 7,
+      "max": 8,
+      "stickers": [
+        "spectrum:USA:gop=conservative",
+        "extract:usa_house_party",
+        "extract:usa_senate_floor",
+        "poll:governance_only",
+        "null:usa-fl20/tx23=불명"
+      ],
+      "remaining": ["FL-20 TX-23 special dates", "NCSL seat cross-check", "full state-leg specials"]
+    },
+    "JPN": {
+      "tier": 1,
+      "depth": "deep",
+      "map_spectrum": "conservative",
+      "head": {"name": "Sanae Takaichi", "party": "ldp", "grade": "high"},
+      "legislature_live": "done (shugiin 465 + sangiin wiki)",
+      "subnational": "done (47 governors)",
+      "calendar_2026": "done (~20: 51st Shugiin + gov races + by-election windows)",
+      "poll": {"kind": "cabinet_approval", "value": 58, "pollster": "NHK", "confidence": "high"},
+      "factions": "jpn_ldp_factions + factions_board",
+      "extract_files": ["jpn_shugiin.json", "jpn_governors.json"],
+      "coverage": 7,
+      "max": 8,
+      "stickers": [
+        "spectrum:JPN:ldp=conservative",
+        "extract:jpn_pm",
+        "extract:jpn_sangiin_wiki",
+        "null:jpn-apr-byelection=없음"
+      ],
+      "remaining": ["official sangiin roster", "Oct by-election districts", "prefectural assemblies"]
+    },
+    "CHN": {
+      "tier": 1,
+      "depth": "leadership_doc",
+      "map_spectrum": "authoritarian_cpc",
+      "head": {"name": "Xi Jinping", "party": "cpc", "grade": "high"},
+      "legislature_live": "n/a competitive",
+      "subnational": "n/a",
+      "calendar_2026": "none (correct for mode)",
+      "poll": "none (gate: quality)",
+      "pla": "done_cmpr_rule_parse bios=21",
+      "extract_files": ["china_pla_bios.json"],
+      "config_alt": ["china_leadership_extracted.json"],
+      "coverage": 5,
+      "max": 8,
+      "stickers": [
+        "spectrum:CHN:cpc=authoritarian_cpc",
+        "source:dod_cmpr",
+        "extract:pla_shandong_flag"
+      ],
+      "remaining": ["PSC/Politburo beyond Xi", "Anti lit merge", "combat ties 불명 until sourced"]
+    },
+    "RUS": {
+      "tier": 1,
+      "depth": "thin_calendar",
+      "map_spectrum": "authoritarian_ur",
+      "head": {"name": "Vladimir Putin", "party": "ur", "grade": "high"},
+      "legislature_live": "light approximate 430/450 pre-2026-09",
+      "subnational": "todo",
+      "calendar_2026": "done (Duma 2026-09-18..20 + regions)",
+      "poll": "none",
+      "extract_files": ["rus_duma.json"],
+      "coverage": 4,
+      "max": 8,
+      "stickers": [
+        "spectrum:RUS:ur=authoritarian_ur",
+        "confidence:rus_duma=approximate_pre_election"
+      ],
+      "remaining": ["CIKRF post-election seats", "regional heads", "governance poll gate"]
+    },
+    "GBR": {
+      "tier": 2,
+      "depth": "deep",
+      "map_spectrum": "progressive",
+      "head": {"name": "Andy Burnham", "party": "lab", "since": "2026-07-20", "grade": "high"},
+      "sticker_critical": "head:GBR:pm ≠ Keir Starmer — demote any Starmer-as-incumbent extracts after 2026-07-20",
+      "legislature_live": "done (Commons StateOfTheParties Lab405)",
+      "calendar_2026": "done (locals/Scotland/Senedd May 7 + PM succession)",
+      "poll": [
+        {"kind": "pm_approval", "net": 19, "subject": "Burnham", "confidence": "medium"},
+        {"kind": "pm_favourability_exit_snapshot", "approve": 22, "subject": "Starmer exit", "confidence": "high"}
+      ],
+      "extract_files": ["gbr_commons.json"],
+      "coverage": 6,
+      "max": 8,
+      "remaining": ["Speaker name if filled", "classic approve/disapprove for Burnham"]
+    },
+    "ISR": {
+      "tier": 2,
+      "depth": "deep",
+      "map_spectrum": "conservative",
+      "head": {"name": "Benjamin Netanyahu", "party": "likud", "grade": "high"},
+      "legislature_live": "done (Knesset 25 = 120)",
+      "calendar_2026": "done (lists 09-09, election 10-27)",
+      "poll": {"kind": "pm_preferred", "value": 38, "note": "not classic job approval", "confidence": "medium"},
+      "extract_files": ["isr_knesset.json"],
+      "coverage": 6,
+      "max": 8,
+      "stickers": ["poll:isr_preferred_pm_not_job_approval"],
+      "remaining": ["post-election 26th Knesset roster after Oct"]
+    },
+    "KOR": {
+      "tier": 2,
+      "depth": "deep",
+      "map_spectrum": "progressive",
+      "head": {"name": "Lee Jae Myung", "party": "dpk", "since": "2025-06-04", "grade": "high"},
+      "prime_minister": {"name": "Han Seong-sook", "since": "2026-07-01", "grade": "high", "source": "opm.go.kr"},
+      "legislature_live": "done (22nd NA 300; DPK161 PPP109 as of 2026-07-16)",
+      "subnational": "local_2026 light (metro 12/4)",
+      "calendar_2026": "done (6·3 local + by-elections + speaker half + vacancy Gangneung 불명)",
+      "poll": [
+        {"kind": "presidential_job_approval", "value": 51, "pollster": "Gallup Korea", "confidence": "high"},
+        {"kind": "presidential_job_approval_secondary", "value": 45.9, "pollster": "Realmeter", "confidence": "medium"}
+      ],
+      "extract_files": ["kor_assembly.json", "kor_local_2026.json"],
+      "coverage": 7,
+      "max": 8,
+      "stickers": [
+        "spectrum:KOR:dpk=progressive",
+        "extract:kor_na_22",
+        "head:KOR:pm=Han Seong-sook",
+        "poll:gallup_primary_realmeter_secondary"
+      ],
+      "remaining": ["NEC by-election district matrix", "Gangneung date", "full basic local chiefs"]
+    },
+    "DEU": {
+      "tier": 2,
+      "depth": "composition",
+      "map_spectrum": "conservative",
+      "head": {"name": "Friedrich Merz", "party": "cdu", "grade": "high"},
+      "legislature_live": "done (Bundestag 630 BWL 2025 final)",
+      "calendar_2026": "done (Landtag pack; federal general 없음)",
+      "poll": {"kind": "chancellor_approval", "status": "todo"},
+      "extract_files": ["deu_bundestag.json"],
+      "coverage": 5,
+      "max": 8,
+      "remaining": ["chancellor approval series (Forschungsgruppe etc.)", "Bundesrat live optional"]
+    },
+    "FRA": {
+      "tier": 2,
+      "depth": "composition",
+      "map_spectrum": "centrist",
+      "head": {"name": "Emmanuel Macron", "party": "renaissance", "grade": "high"},
+      "legislature_live": "done (AN groups sum 577)",
+      "calendar_2026": "done (municipal + senate; presidential/AN general 없음)",
+      "poll": {"kind": "presidential_job_approval", "status": "todo"},
+      "pm": "불명 in extract",
+      "extract_files": ["fra_assemblee.json"],
+      "coverage": 4,
+      "max": 8,
+      "stickers": ["map:FRA=centrist_not_blue_red_binary"],
+      "remaining": ["PM identity", "Ifop/Elabe job approval", "Sénat seat matrix"]
+    },
+    "BRA": {
+      "tier": 2,
+      "depth": "composition",
+      "map_spectrum": "progressive",
+      "head": {"name": "Luiz Inácio Lula da Silva", "party": "pt", "grade": "high"},
+      "legislature_live": "done (chamber/senate midyear media cross-check)",
+      "calendar_2026": "done (general 10-04 / runoff 10-25)",
+      "poll": {"kind": "presidential_job_approval", "status": "todo"},
+      "extract_files": ["bra_congress.json"],
+      "coverage": 4,
+      "max": 8,
+      "stickers": ["grade:bra_congress=media_until_TSE"],
+      "remaining": ["TSE open data seats", "Datafolha job approval"]
+    },
+    "TWN": {
+      "tier": 2,
+      "depth": "scaffold",
+      "map_spectrum": "progressive",
+      "head": {"name": "Lai Ching-te", "since": "2024-05-20", "grade": "high"},
+      "legislature_live": "todo",
+      "calendar_2026": "national 없음",
+      "poll": "todo",
+      "coverage": 2,
+      "max": 8,
+      "remaining": ["LY party seats", "presidential approval series"]
+    },
+    "TUR": {
+      "tier": 2,
+      "depth": "scaffold",
+      "map_spectrum": "conservative",
+      "head": {"name": "Recep Tayyip Erdoğan", "grade": "high"},
+      "legislature_live": "todo",
+      "calendar_2026": "national 불명",
+      "poll": "todo",
+      "coverage": 2,
+      "max": 8,
+      "remaining": ["YSK calendar when announced", "TBMM seats"]
+    },
+    "IND": {
+      "tier": 2,
+      "depth": "scaffold",
+      "map_spectrum": "conservative",
+      "head": {"name": "Narendra Modi", "grade": "high"},
+      "legislature_live": "todo",
+      "calendar_2026": "Lok Sabha 없음; state pack 불명",
+      "poll": "todo",
+      "coverage": 2,
+      "max": 8,
+      "remaining": ["ECI state election pack", "Lok Sabha seat matrix"]
+    },
+    "SAU": {
+      "tier": 3,
+      "depth": "leadership_doc",
+      "map_spectrum": "authoritarian_monarchy",
+      "head": {"name": "Salman bin Abdulaziz Al Saud", "grade": "high"},
+      "power": "MbS de facto + 2017 succession event (not coup label)",
+      "calendar_2026": "elections 없음",
+      "coverage": 3,
+      "max": 8,
+      "remaining": ["none critical — brief mode"]
+    },
+    "ARE": {
+      "tier": 3,
+      "depth": "leadership_doc",
+      "map_spectrum": "authoritarian_monarchy",
+      "head": {"name": "Mohamed bin Zayed Al Nahyan", "grade": "high"},
+      "emirates": 7,
+      "calendar_2026": "elections 없음",
+      "coverage": 3,
+      "max": 8,
+      "remaining": ["none critical — brief mode"]
+    }
+  },
+  "aggregate": {
+    "deep": ["USA", "JPN", "GBR", "ISR", "KOR"],
+    "composition": ["DEU", "FRA", "BRA"],
+    "thin_calendar": ["RUS"],
+    "leadership_doc": ["CHN", "SAU", "ARE"],
+    "scaffold": ["TWN", "TUR", "IND"],
+    "coverage_mean_approx": 4.7,
+    "legislature_live_count": 9,
+    "governance_poll_wired_with_number": ["USA", "JPN", "GBR", "ISR", "KOR"],
+    "poll_todo_slots": ["DEU", "FRA", "BRA"],
+    "intentionally_no_irn": true
+  },
+  "cross_country_lessons": [
+    {
+      "id": "L1_head_churn",
+      "ko": "의원내각제·준내각제는 수장 급변 (GBR Starmer→Burnham). extract에 as_of/since 필수.",
+      "sticker": "promote:head_with_since"
+    },
+    {
+      "id": "L2_poll_kind",
+      "ko": "거버넌스만. ISR preferred-PM·GBR exit favourability는 kind를 분리해 경마와 구분.",
+      "sticker": "poll:governance_only"
+    },
+    {
+      "id": "L3_null_convention",
+      "ko": "없음=해당없음, 불명=미확정. FL-20/강릉 보궐/TUR 일정에 적용.",
+      "sticker": "null:없음_vs_불명"
+    },
+    {
+      "id": "L4_grade_chain",
+      "ko": "official > media_cross_check > aggregator_wikipedia > approximate. BRA 하원·RUS 두마는 승급 대기.",
+      "sticker": "source:grade_ladder"
+    },
+    {
+      "id": "L5_authoritarian_mode",
+      "ko": "CHN/SAU/ARE는 선거 캘린더 비움이 정상. PLA/power 카드로 학습.",
+      "sticker": "mode:non_electoral_ok"
+    },
+    {
+      "id": "L6_kor_pattern",
+      "ko": "KOR 딥패스 템플릿: assembly seats + floor leadership + local highlight + dual poll houses + calendar nulls.",
+      "sticker": "template:kor_deep_reusable_for_TWN"
+    },
+    {
+      "id": "L7_jpn_usa_ceiling",
+      "ko": "Tier1 심화 상한은 subnational+factions. Tier2 composition국은 여론이 다음 승급 레버.",
+      "sticker": "queue:poll_then_roster"
+    }
+  ],
+  "correction_keys": [
+    {"key": "head:GBR:pm", "value": "Andy Burnham", "since": "2026-07-20", "action": "promote"},
+    {"key": "head:GBR:pm_starmer_incumbent", "action": "demote_after", "date": "2026-07-20"},
+    {"key": "head:KOR:president", "value": "Lee Jae Myung", "since": "2025-06-04", "action": "promote"},
+    {"key": "head:KOR:pm", "value": "Han Seong-sook", "since": "2026-07-01", "action": "promote"},
+    {"key": "spectrum:USA:gop", "value": "conservative", "action": "promote"},
+    {"key": "spectrum:JPN:ldp", "value": "conservative", "action": "promote"},
+    {"key": "spectrum:KOR:dpk", "value": "progressive", "action": "promote"},
+    {"key": "spectrum:CHN:cpc", "value": "authoritarian_cpc", "action": "promote"},
+    {"key": "spectrum:RUS:ur", "value": "authoritarian_ur", "action": "promote"},
+    {"key": "poll:reject_horserace", "action": "drop"},
+    {"key": "extract:rus_duma_light", "confidence": "approximate", "action": "hold_until_cikrf"},
+    {"key": "extract:bra_congress_midyear", "grade": "media_cross_check", "action": "hold_until_tse"}
+  ],
+  "next_learning_queue": [
+    {"priority": 1, "iso3": "DEU", "task": "chancellor_approval series", "template": "poll_slot_fill"},
+    {"priority": 1, "iso3": "FRA", "task": "presidential job approval + PM name", "template": "poll_slot_fill"},
+    {"priority": 1, "iso3": "BRA", "task": "job approval + TSE seats", "template": "tse_upgrade"},
+    {"priority": 2, "iso3": "TWN", "task": "LY composition deep like KOR", "template": "kor_deep"},
+    {"priority": 2, "iso3": "RUS", "task": "post-September CIKRF seats", "template": "post_election"},
+    {"priority": 3, "iso3": "IND", "task": "state election pack from ECI", "template": "calendar_fill"},
+    {"priority": 3, "iso3": "TUR", "task": "YSK when announced", "template": "calendar_fill"}
+  ],
+  "pipes": {
+    "usa_jpn_rosters": "python3 -m election_watch.extract_rosters",
+    "gbr_isr": "python3 -m election_watch.extract_gbr_isr",
+    "kor": "python3 -m election_watch.extract_kor",
+    "tier2_composition": "python3 -m election_watch.extract_tier2_fill",
+    "china_pla": "python3 -m election_watch.build_china_pla_bios",
+    "factions": "python3 -m election_watch.build_factions",
+    "board": "python3 build_board.py --no-betting --print-stats"
+  }
+}

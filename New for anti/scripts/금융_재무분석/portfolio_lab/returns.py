@@ -17,6 +17,7 @@ def _to_base_price(
     base_ccy: str,
     fx_usdkrw: pd.Series | None,
     fx_usdjpy: pd.Series | None = None,
+    fx_eurusd: pd.Series | None = None,
 ) -> pd.Series:
     """Convert local-currency price series into base currency units."""
     if local_ccy == base_ccy:
@@ -44,6 +45,15 @@ def _to_base_price(
             raise ValueError("no overlap for JPY conversion")
         px, usdkrw, usdjpy = aligned.iloc[:, 0], aligned.iloc[:, 1], aligned.iloc[:, 2]
         return px * (usdkrw / usdjpy)
+    if local_ccy == "EUR" and base_ccy == "KRW":
+        if fx_usdkrw is None or fx_eurusd is None:
+            raise ValueError("FX USDKRW and EURUSD required for EUR")
+        # KRW per EUR ≈ EURUSD * USDKRW
+        aligned = pd.concat([local, fx_eurusd, fx_usdkrw], axis=1, join="inner").dropna()
+        if aligned.empty:
+            raise ValueError("no overlap for EUR conversion")
+        px, eurusd, usdkrw = aligned.iloc[:, 0], aligned.iloc[:, 1], aligned.iloc[:, 2]
+        return px * eurusd * usdkrw
     raise ValueError(f"unsupported conversion {local_ccy}->{base_ccy}")
 
 
@@ -70,8 +80,10 @@ def aligned_returns(
         for p in positions
     )
     need_jpy = any(p["instrument"]["currency"] == "JPY" for p in positions)
+    need_eur = any(p["instrument"]["currency"] == "EUR" for p in positions)
     fx = None
     fx_jpy = None
+    fx_eur = None
     if need_fx or base_currency == "KRW":
         try:
             fx = load_price_series(
@@ -93,6 +105,14 @@ def aligned_returns(
             cache_only=cache_only,
         )
         meta["price_sources"]["fx:USDJPY=X"] = str(fx_jpy.attrs.get("source") or "unknown")
+    if need_eur:
+        fx_eur = load_price_series(
+            "EURUSD=X",
+            cache_dir,
+            years=years,
+            cache_only=cache_only,
+        )
+        meta["price_sources"]["fx:EURUSD=X"] = str(fx_eur.attrs.get("source") or "unknown")
 
     calendar_src = fx
     price_cols: dict[str, pd.Series] = {}
@@ -137,6 +157,7 @@ def aligned_returns(
                     base_ccy=base_currency,
                     fx_usdkrw=fx,
                     fx_usdjpy=fx_jpy,
+                    fx_eurusd=fx_eur,
                 ).rename(iid)
             price_cols[iid] = s
             if calendar_src is None:
@@ -147,16 +168,25 @@ def aligned_returns(
     if not price_cols:
         raise RuntimeError(f"no price series loaded: {meta['errors']}")
 
+    # Union index + ffill bridges exchange holidays; Yahoo FX also has weekend prints.
+    # Keep Mon–Fri only so weekend FX moves are not paired with zero equity returns.
     prices = pd.DataFrame(price_cols).sort_index().ffill().dropna(how="any")
+    prices = prices[prices.index.dayofweek < 5]
     rets = np.log(prices / prices.shift(1)).dropna(how="any")
+    # Drop residual weekend rows if any slipped through before the filter.
+    rets = rets[rets.index.dayofweek < 5]
     for p in positions:
         inst = p["instrument"]
         iid = inst["id"]
         if iid not in rets.columns:
             continue
         if inst.get("synthetic_leverage"):
+            # Daily leverage is defined on *simple* returns (like a 2x ETF),
+            # not on log returns. 2 * log(1+r) ≠ log(1+2r).
             lf = float(inst.get("leverage_factor") or 2.0)
-            rets[iid] = rets[iid] * lf
+            simple = np.expm1(rets[iid])
+            levered_simple = (lf * simple).clip(lower=-0.999999)
+            rets[iid] = np.log1p(levered_simple)
             meta.setdefault("synthetic_leverage", {})[iid] = lf
     w = pd.Series(weights, dtype="float64")
     w = w.reindex(rets.columns).fillna(0.0)

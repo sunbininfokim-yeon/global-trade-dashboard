@@ -1,0 +1,51 @@
+{
+  "schema": "race_aggregation_compare_v1",
+  "as_of": "2026-08-08",
+  "generated_at": "2026-08-08T13:23:31.300416+00:00",
+  "question_ko": "미국처럼 단위를 동일 가중으로 넣나, 한국 전당대회처럼 비중(가중)이 들어가나?",
+  "rows": [
+    {
+      "iso3": "KOR",
+      "race": "DPK 당대표 전당대회 2026",
+      "model_id": "weighted_convention_hybrid",
+      "equal_unit_weight": false,
+      "final_formula": "0.70×(대의원·권리당원) + 0.30×(국민여론조사) ± 지역5%가중(TK·경남 당원쪽)",
+      "what_rolling_total_means": "권리당원 1순위 단순 누적 — 최종식 미적용",
+      "ui_should_show": "가중 칩 70/30 + “중간≠최종” + 권역 표 비례"
+    },
+    {
+      "iso3": "KOR",
+      "race": "PPP 당대표 (2025 완료 / 현 지도부)",
+      "model_id": "weighted_convention_hybrid",
+      "equal_unit_weight": false,
+      "final_formula": "0.80×당원 + 0.20×여론 (당시 규정)",
+      "what_rolling_total_means": "없음(완료)",
+      "ui_should_show": "incumbent only"
+    },
+    {
+      "iso3": "USA",
+      "race": "2026 중간선거 주별 프라이머리",
+      "model_id": "independent_jurisdiction_first_past_post",
+      "equal_unit_weight": "progress_counter_only",
+      "final_formula": "관할별 독립 다수결 공천 → 총선 후보. 전국 가중합 없음",
+      "what_rolling_total_means": "실시 주 개수 진척(1주=1 카운트)",
+      "ui_should_show": "주 타임라인 + 클릭 시 승자 / “전국 점수 아님”"
+    },
+    {
+      "iso3": "USA",
+      "race": "대선 후보 경선 (2028; 참고)",
+      "model_id": "delegate_allocation_by_party_state_rules",
+      "equal_unit_weight": false,
+      "final_formula": "주·당 규칙으로 대표 배분 → 전국 대표 과반",
+      "what_rolling_total_means": "대표(delegate) 누적 — 주 균등 아님",
+      "ui_should_show": "2028 시즌에 별도 race_progress",
+      "in_2026_board": false
+    }
+  ],
+  "decision_tree_ko": [
+    "전당대회·당대표(한국형) → weighted_convention_hybrid (비중 필수 표시)",
+    "미국 중간 공천 프라이머리 → independent per state (진척만 동등 카운트)",
+    "미국 대선 경선 → delegate math (주 인구·규칙 가중; 2028)",
+    "일반 총선 의석 → seat count (표 비중 ≠ 의석 비중)"
+  ]
+}

@@ -1,0 +1,59 @@
+{
+  "generated_at": "2026-08-05T15:07:50.650926+00:00",
+  "season": 2026,
+  "country": "India",
+  "source_note": "Yields: ICRISAT District Level Database, district level, aggregated to region by actual production / actual area. Weather: NASA POWER daily, area-weighted across each region's growing points, ET0 by FAO-56 Penman-Monteith. ENSO: NOAA CPC ONI. IOD: NOAA PSL HadISST Dipole Mode Index.",
+  "methodology_note": "One model per region-crop, each implementing the derived variables of its own guide in Regions/인도. Yield is a log technology trend plus a weather deviation; only the deviation is modelled. Skill is measured by forward chaining with the trend refit inside every fold, scored over the most recent folds. Each guide names an ML method (Random Forest, an ENSO-coupled LSTM, XGBoost) that the labelled record here -- roughly thirty seasons per region -- cannot support without fitting noise; the guide's own derived variables are computed in full and fed to the same ridge regression used throughout this repo instead. See each config's caveat below.",
+  "regions": {
+    "punjab_wheat": {
+      "label": "Punjab + Haryana wheat",
+      "crop": "wheat",
+      "season": 2026,
+      "unit": "kg/ha",
+      "point": 5340.7,
+      "range_68": [
+        5067.0,
+        5614.4
+      ],
+      "range_95": [
+        4804.2,
+        5877.1
+      ],
+      "trend": 5302.8,
+      "weather_effect_pct": 0.71,
+      "last_actual": {
+        "year": 2019,
+        "yield": 4871.490387791504
+      },
+      "enso": {
+        "state": "neutral",
+        "oni_growing_season": -0.4
+      },
+      "iod": {
+        "state": "unknown",
+        "dmi_growing_season": null
+      },
+      "skill": {
+        "method": "forward chaining, trend refit inside each fold, scored on the most recent folds",
+        "skill_vs_trend_only": 0.009,
+        "weather_skill": 0.009,
+        "weather_driven": true,
+        "non_weather_features": [],
+        "beats_trend": true,
+        "sigma_kg_ha": 273.7
+      },
+      "provenance": {
+        "guide": "Regions/인도/북서부_펀자브/밀/밀_상세분석_및_수식.md",
+        "caveat": "The guide's Hybrid LASSO-Random Forest is replaced by the same ridge-on-log-yield used across this repo. With ~40 seasons, LASSO variable selection over daily weather would select on noise; the weekly-resolution heat tensor it is meant to search is collapsed to the guide's own named windows instead. MODIS LST and NDVI from §3 are omitted -- MODIS starts in 2000 and would halve the record.",
+        "non_weather_drivers": "Punjab and Haryana wheat yields are shaped by the procurement system as much as by weather: assured MSP purchase, subsidised power for tubewells and canal rotation schedules set both the input intensity and the sowing window, and none of it is visible in a weather feed. Groundwater depletion is a slow constraint moving underneath the whole series, and it enters the technology trend rather than any seasonal feature.",
+        "weather_through": "2026-07-31",
+        "critical_window_observed": 1.0,
+        "season_complete": true
+      }
+    }
+  },
+  "skipped": {
+    "mp_soybean": "features unavailable: flowering_stress, harvest_waterlog, oni_season, dmi_season",
+    "vidarbha_cotton": "features unavailable: moisture_deficit, pest_risk_days, harvest_rain"
+  }
+}

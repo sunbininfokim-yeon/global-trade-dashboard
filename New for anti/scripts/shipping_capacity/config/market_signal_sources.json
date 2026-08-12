@@ -1,0 +1,61 @@
+{
+  "status": "free_source_registry",
+  "identification_boundary": "A price/index movement can externally corroborate market stress, but it cannot by itself identify waiting, rerouting, cancellation, trapped loaded DWT, or insurance-excluded DWT. No registry entry recalibrates scenario behavior coefficients.",
+  "warning_ko": "Baltic·Worldscale·선박 용선·전쟁위험보험의 정량 시계열은 대체로 상업 라이선스 대상입니다. 허가 없는 화면 스크래핑을 하지 않으며, 무료 공개 원천은 연간 PDF 또는 공급망 압력 프록시로만 보존합니다.",
+  "sources": [
+    {
+      "id": "unctad_freight_rate_review",
+      "signal_class": "freight_rate",
+      "ship_type": "all",
+      "source_name": "UNCTAD Review of Maritime Transport 2025, Chapter 3",
+      "source_url": "https://unctad.org/system/files/official-document/rmt2025ch3_en.pdf",
+      "access": "public_pdf",
+      "reason": "Official annual freight-rate context; a reproducible daily/weekly redistributable series is not provided by this source."
+    },
+    {
+      "id": "nyfed_gscpi",
+      "signal_class": "supply_chain_pressure_proxy",
+      "ship_type": "all",
+      "source_name": "Federal Reserve Bank of New York Global Supply Chain Pressure Index",
+      "source_url": "https://www.newyorkfed.org/research/policy/gscpi",
+      "access": "public_pdf",
+      "reason": "Public global supply-chain stress proxy that incorporates transportation-cost inputs; it is not a route-level freight, charter, or insurance price series."
+    },
+    {
+      "id": "baltic_dry_and_tanker_assessments",
+      "signal_class": "charter_rate",
+      "ship_type": "dry_bulk",
+      "source_name": "Baltic Exchange market information",
+      "source_url": "https://www.balticexchange.com/en/data-services/market-information0.html",
+      "access": "commercial_or_license_required",
+      "reason": "Benchmark assessments are visible as market information but redistribution/API rights must be licensed."
+    },
+    {
+      "id": "jwc_listed_areas_2026",
+      "signal_class": "insurance_area_status",
+      "ship_type": "all",
+      "source_name": "LMA/IUA Joint War Committee Listed Areas JWLA-033",
+      "source_url": "https://lmalloyds.com/specialist-areas/underwriting/listed-areas/",
+      "access": "public_web_page",
+      "reason": "Public war-risk area designation. Application to an individual insurance contract remains subject to negotiation and it is not a quoted premium series."
+    },
+    {
+      "id": "iumi_global_marine_insurance_2025",
+      "signal_class": "marine_insurance_market_aggregate",
+      "ship_type": "all",
+      "source_name": "IUMI Global Marine Insurance Report 2025",
+      "source_url": "https://iumi.com/wp-content/uploads/2026/02/IUMI-Stats-Report-2025-2.pdf",
+      "access": "public_pdf",
+      "reason": "Public global premium and loss-ratio aggregates by insurance line; not route-level war-risk pricing or bindability."
+    },
+    {
+      "id": "war_risk_premium",
+      "signal_class": "war_risk_insurance_premium",
+      "ship_type": "tanker",
+      "source_name": "War-risk insurance premium market",
+      "source_url": "https://www.imo.org/en/mediacentre/hottopics/pages/middle-east-strait-of-hormuz.aspx",
+      "access": "commercial_or_license_required",
+      "reason": "Official safety notices can identify affected areas, but public official data do not publish vessel-level quoted war-risk premiums or bindability."
+    }
+  ]
+}

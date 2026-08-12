@@ -1,0 +1,47 @@
+{
+  "status": "free_context_connected_route_volume_pending",
+  "year_range": "2020:2025",
+  "country_groups": [
+    {
+      "id": "east_asia_container_ports",
+      "name_ko": "동아시아 주요 컨테이너 항만국",
+      "countries": ["CHN", "HKG", "JPN", "KOR", "MYS", "SGP", "VNM"],
+      "minimum_coverage_ratio": 0.7
+    },
+    {
+      "id": "north_europe_container_ports",
+      "name_ko": "북유럽 주요 컨테이너 항만국",
+      "countries": ["BEL", "DEU", "DNK", "FIN", "FRA", "GBR", "NLD", "NOR", "POL", "SWE"],
+      "minimum_coverage_ratio": 0.7
+    },
+    {
+      "id": "united_states_container_ports",
+      "name_ko": "미국 컨테이너 항만",
+      "countries": ["USA"],
+      "minimum_coverage_ratio": 1.0
+    }
+  ],
+  "sources": [
+    {
+      "name": "World Bank Container port traffic (TEU), IS.SHP.GOOD.TU",
+      "url": "https://api.worldbank.org/v2/indicator/IS.SHP.GOOD.TU?format=json",
+      "role": "country port throughput context; not bilateral route cargo"
+    },
+    {
+      "name": "UN Comtrade Plus methodology — mode of transport and net weight",
+      "url": "https://comtradeapi.un.org/files/v1/app/wiki/MethodologyGuideforComtradePlus.pdf",
+      "role": "future sea-mode bilateral weight adapter; reporting coverage varies by country"
+    },
+    {
+      "name": "UNCTAD Liner Shipping Connectivity Index",
+      "url": "https://unctadstat.unctad.org/insights/theme/246",
+      "role": "route connectivity and service availability; not cargo volume"
+    }
+  ],
+  "quality_gates": [
+    "World Bank TEU is never allocated directly to a bilateral route",
+    "Comtrade rows without reported sea/water mode remain all-mode proxies",
+    "netWgt estimated share must be disclosed before replacing a route seed",
+    "TEU and DWT are not added or converted without an explicit cargo-weight assumption"
+  ]
+}

@@ -31,7 +31,7 @@ def _fetch_trading_share() -> dict:
     etfs = fdr.StockListing("ETF/KR")
     kospi = fdr.StockListing("KOSPI")
     kosdaq = fdr.StockListing("KOSDAQ")
-    lev = etfs[etfs["Name"].astype(str).str.contains("레버리지|인버스", na=False)]
+    lev = etfs[etfs["Name"].astype(str).str.contains("레버리지|인버스|곱버스", na=False)]
     ss = etfs[etfs["Name"].astype(str).str.contains("단일종목", na=False)]
     kospi_tv = float(kospi["Amount"].sum())
     kosdaq_tv = float(kosdaq["Amount"].sum())

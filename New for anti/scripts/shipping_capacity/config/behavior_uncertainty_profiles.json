@@ -1,0 +1,156 @@
+{
+  "status": "deterministic_joint_behavior_paths_not_statistical_correlation",
+  "methodology_ko": "우회·대기·취소·선적 후 억류·보험 제외를 독립 난수로 뽑지 않고, 사건 메커니즘별로 함께 움직이는 세 개의 민감도 경로로 계산한다. 경로별 최소·최대는 민감도 범위이며 확률구간이 아니다.",
+  "identification_boundary": "Free public data do not identify route-level quoted war-risk premiums, insurance bindability, cancellations, waiting and rerouting jointly. Path weights and probabilities are intentionally omitted.",
+  "insurance_data_availability": {
+    "public_war_risk_area_status": "available_from_lma_iua_jwc",
+    "public_global_premium_and_loss_aggregates": "available_from_iumi",
+    "public_official_safety_and_insurance_cost_context": "available_from_imo",
+    "route_level_quoted_additional_premium_rate": "not_available_as_open_series",
+    "vessel_level_bindability_or_denial_rate": "not_available_as_open_series",
+    "model_mapping": "public sources constrain scenario meaning but do not numerically calibrate insurance_unavailable_share"
+  },
+  "sources": [
+    {
+      "name": "LMA/IUA Joint War Committee Listed Areas",
+      "url": "https://lmalloyds.com/specialist-areas/underwriting/listed-areas/",
+      "use": "public enhanced-risk area status; rating remains individual negotiation"
+    },
+    {
+      "name": "IUMI Stats Report 2025",
+      "url": "https://iumi.com/wp-content/uploads/2026/02/IUMI-Stats-Report-2025-2.pdf",
+      "use": "global marine premium and loss-ratio context, not route-level war-risk pricing"
+    },
+    {
+      "name": "IMO Middle East and Strait of Hormuz updates",
+      "url": "https://www.imo.org/en/mediacentre/hottopics/pages/middle-east-strait-of-hormuz.aspx",
+      "use": "official incident, transit and safety context"
+    }
+  ],
+  "profiles": {
+    "operational_restriction": {
+      "paths": [
+        {
+          "id": "continuity_response",
+          "name_ko": "운항 연속성 우선",
+          "response_multiplier_factors": {"reroute_multiplier": 1.1, "wait_multiplier": 1.15, "cancel_multiplier": 0.75},
+          "waiting_days_factor": 0.8,
+          "trapped_days_factor": 0.8,
+          "onboard_waiting_share_factor": 0.8,
+          "insurance_unavailable_share_factor": 1.0
+        },
+        {
+          "id": "central",
+          "name_ko": "현재 중앙 가정",
+          "response_multiplier_factors": {"reroute_multiplier": 1.0, "wait_multiplier": 1.0, "cancel_multiplier": 1.0},
+          "waiting_days_factor": 1.0,
+          "trapped_days_factor": 1.0,
+          "onboard_waiting_share_factor": 1.0,
+          "insurance_unavailable_share_factor": 1.0
+        },
+        {
+          "id": "prolonged_queue",
+          "name_ko": "대기 장기화",
+          "response_multiplier_factors": {"reroute_multiplier": 0.9, "wait_multiplier": 1.2, "cancel_multiplier": 1.15},
+          "waiting_days_factor": 1.3,
+          "trapped_days_factor": 1.3,
+          "onboard_waiting_share_factor": 1.0,
+          "insurance_unavailable_share_factor": 1.0
+        }
+      ]
+    },
+    "physical_chokepoint_closure": {
+      "paths": [
+        {
+          "id": "reroute_dominant",
+          "name_ko": "우회 우세",
+          "response_multiplier_factors": {"reroute_multiplier": 1.3, "wait_multiplier": 0.8, "cancel_multiplier": 0.75},
+          "waiting_days_factor": 0.8,
+          "trapped_days_factor": 0.8,
+          "onboard_waiting_share_factor": 0.8,
+          "insurance_unavailable_share_factor": 1.0
+        },
+        {
+          "id": "central",
+          "name_ko": "현재 중앙 가정",
+          "response_multiplier_factors": {"reroute_multiplier": 1.0, "wait_multiplier": 1.0, "cancel_multiplier": 1.0},
+          "waiting_days_factor": 1.0,
+          "trapped_days_factor": 1.0,
+          "onboard_waiting_share_factor": 1.0,
+          "insurance_unavailable_share_factor": 1.0
+        },
+        {
+          "id": "wait_cancel_dominant",
+          "name_ko": "대기·취소 우세",
+          "response_multiplier_factors": {"reroute_multiplier": 0.7, "wait_multiplier": 1.2, "cancel_multiplier": 1.4},
+          "waiting_days_factor": 1.3,
+          "trapped_days_factor": 1.3,
+          "onboard_waiting_share_factor": 1.0,
+          "insurance_unavailable_share_factor": 1.0
+        }
+      ]
+    },
+    "commercial_war_risk": {
+      "paths": [
+        {
+          "id": "insured_continuity",
+          "name_ko": "보험 유지·운항 연속",
+          "response_multiplier_factors": {"reroute_multiplier": 1.15, "wait_multiplier": 1.15, "cancel_multiplier": 0.7},
+          "waiting_days_factor": 0.75,
+          "trapped_days_factor": 0.75,
+          "onboard_waiting_share_factor": 0.75,
+          "insurance_unavailable_share_factor": 0.5
+        },
+        {
+          "id": "central",
+          "name_ko": "현재 중앙 가정",
+          "response_multiplier_factors": {"reroute_multiplier": 1.0, "wait_multiplier": 1.0, "cancel_multiplier": 1.0},
+          "waiting_days_factor": 1.0,
+          "trapped_days_factor": 1.0,
+          "onboard_waiting_share_factor": 1.0,
+          "insurance_unavailable_share_factor": 1.0
+        },
+        {
+          "id": "market_withdrawal",
+          "name_ko": "보험·선복 시장 이탈",
+          "response_multiplier_factors": {"reroute_multiplier": 0.75, "wait_multiplier": 0.85, "cancel_multiplier": 1.6},
+          "waiting_days_factor": 1.25,
+          "trapped_days_factor": 1.25,
+          "onboard_waiting_share_factor": 1.15,
+          "insurance_unavailable_share_factor": 1.25
+        }
+      ]
+    },
+    "military_physical_closure": {
+      "paths": [
+        {
+          "id": "controlled_evacuation",
+          "name_ko": "제한적 안전통항·대기 해소",
+          "response_multiplier_factors": {"reroute_multiplier": 1.0, "wait_multiplier": 1.2, "cancel_multiplier": 0.7},
+          "waiting_days_factor": 0.75,
+          "trapped_days_factor": 0.75,
+          "onboard_waiting_share_factor": 0.8,
+          "insurance_unavailable_share_factor": 0.75
+        },
+        {
+          "id": "central",
+          "name_ko": "현재 중앙 가정",
+          "response_multiplier_factors": {"reroute_multiplier": 1.0, "wait_multiplier": 1.0, "cancel_multiplier": 1.0},
+          "waiting_days_factor": 1.0,
+          "trapped_days_factor": 1.0,
+          "onboard_waiting_share_factor": 1.0,
+          "insurance_unavailable_share_factor": 1.0
+        },
+        {
+          "id": "full_market_withdrawal",
+          "name_ko": "보험·상업운항 전면 이탈",
+          "response_multiplier_factors": {"reroute_multiplier": 0.5, "wait_multiplier": 0.75, "cancel_multiplier": 1.8},
+          "waiting_days_factor": 1.25,
+          "trapped_days_factor": 1.25,
+          "onboard_waiting_share_factor": 1.2,
+          "insurance_unavailable_share_factor": 1.0
+        }
+      ]
+    }
+  }
+}
