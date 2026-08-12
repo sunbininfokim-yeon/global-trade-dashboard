@@ -748,6 +748,15 @@
 
         const content = `
             ${env.methodology_ko ? `<div class="shipping-callout info">${escapeHtml(env.methodology_ko)}</div>` : ''}
+            ${scenarios.length ? `
+            <section class="shipping-panel shipping-chart-panel" id="shipping-section-environment-chart">
+                <div class="shipping-panel-heading">
+                    <div><p class="shipping-panel-kicker">CAPACITY OVER TIME</p><h2>연도별 유효 선복량 변화</h2></div>
+                    <span class="shipping-badge observed">모델 시나리오</span>
+                </div>
+                <div class="shipping-chart-wrap"><canvas id="shipping-environment-chart"></canvas></div>
+                <p class="shipping-note">막대 전체 높이가 정상 배치 선복량, 파란 구간이 규제 대응 후에도 유지되는 유효 용량, 주황 구간이 그해 손실분(중앙값)입니다. 저·고손실 시나리오 범위는 아래 표에 있습니다.</p>
+            </section>` : ''}
             <section class="shipping-panel" id="shipping-section-environment-table">
                 <div class="shipping-panel-heading">
                     <div><p class="shipping-panel-kicker">SCENARIO OUTLOOK</p><h2>규제 대응 시나리오별 유효 선복량</h2></div>
@@ -791,6 +800,37 @@
         `;
         root.innerHTML = shell(data, 'shipping_environment', content);
         bindInternalNavigation(root);
+
+        if (scenarios.length) {
+            createChart(root, 'shipping-environment-chart', {
+                type: 'bar',
+                data: {
+                    labels: scenarios.map(sc => String(sc.year || sc.id)),
+                    datasets: [
+                        {
+                            label: '유효 용량 (규제 대응 후)',
+                            data: scenarios.map(sc => (sc.effective_service_capacity_dwt || 0) / 1e6),
+                            backgroundColor: '#38bdf8',
+                            stack: 'dwt'
+                        },
+                        {
+                            label: '손실분 (중앙값)',
+                            data: scenarios.map(sc => (sc.effective_dwt_loss || 0) / 1e6),
+                            backgroundColor: '#f59e0b',
+                            stack: 'dwt',
+                            borderRadius: 4
+                        }
+                    ]
+                },
+                options: {
+                    ...chartOptions({ unit: 'M DWT' }),
+                    scales: {
+                        x: { stacked: true, grid: { color: 'rgba(148, 163, 184, 0.06)' }, ticks: { color: '#94a3b8' } },
+                        y: { stacked: true, grid: { color: 'rgba(148, 163, 184, 0.08)' }, ticks: { color: '#94a3b8' } }
+                    }
+                }
+            });
+        }
     };
 
     const chartOptions = ({ horizontal = false, unit = '', rotateLabels = false, zeroLine = false } = {}) => ({
