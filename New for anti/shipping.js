@@ -8,7 +8,8 @@ let shippingData = null;
 const loadShippingData = async () => {
   if (shippingData) return shippingData;
   try {
-    const resp = await fetch('data/shipping_capacity_v1.json?v=' + Date.now());
+    const resp = await fetch('/public/data/shipping_capacity_v1.json?v=' + Date.now());
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
     shippingData = await resp.json();
     return shippingData;
   } catch (e) {
