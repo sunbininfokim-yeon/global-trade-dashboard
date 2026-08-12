@@ -5970,11 +5970,14 @@ const renderPfResult = async (host) => {
     const dq = data.data_quality || {};
 
     const baseCcy = data.base_currency || 'KRW';
+    const acct = data.accounting || null;
     const cash = data.cash_breakdown || null;
-    const nav = (data.nav ?? null);
-    const gross = (data.gross_exposure ?? null);
+    const nav = acct ? (acct.net_asset_value ?? null) : null;
+    const gross = acct ? (acct.gross_exposure ?? null) : null;
+    const grossOfNav = acct ? (acct.gross_exposure_of_nav ?? null) : null;
+    const creditUsed = acct ? (acct.credit_used ?? null) : null;
     const varShort = data.risk && data.risk.short;
-    const varOfNav = varShort ? (varShort.var_10d_95_of_nav ?? varShort.var_10d_95 ?? null) : null;
+    const varOfNav = varShort ? (varShort.var_10d_95 ?? null) : null;
     const sizeGuide = data.size_guide || null;
 
     host.innerHTML = `
@@ -6009,11 +6012,13 @@ const renderPfResult = async (host) => {
             <div class="fin-card">
                 <span class="fin-card-title">순자산(NAV)</span>
                 <span class="fin-card-value">${finEsc(baseCcy)} ${Number(nav).toLocaleString()}</span>
+                ${creditUsed ? `<p class="fin-card-plain">신용·미수 ${finEsc(baseCcy)} ${Number(creditUsed).toLocaleString()}은 이미 뺀 값입니다.</p>` : ''}
             </div>` : ''}
             ${gross !== null ? `
             <div class="fin-card">
                 <span class="fin-card-title">총 노출(gross)</span>
-                <span class="fin-card-value">${finEsc(baseCcy)} ${Number(gross).toLocaleString()}${(nav) ? ` · ${finPct(gross / nav)}` : ''}</span>
+                <span class="fin-card-value">${finEsc(baseCcy)} ${Number(gross).toLocaleString()}${(grossOfNav !== null) ? ` · NAV 대비 ${finPct(grossOfNav)}` : ''}</span>
+                <p class="fin-card-plain">공매도·신용을 포함한 총 노출입니다. NAV와 다를 수 있습니다.</p>
             </div>` : ''}
             ${varOfNav !== null ? `
             <div class="fin-card">
@@ -6026,11 +6031,10 @@ const renderPfResult = async (host) => {
         <section class="fin-block fin-block-wide">
             <h2>현금 구성</h2>
             <p class="fin-p">
-                성향 현금(${finEsc(baseCcy)}) ${finPct(cash.band_cash_weight)}
-                ${cash.band_ok === false ? '<span class="fin-tag fin-tag-warn">밴드 이탈</span>' : ''}
-                · 외화 현금(환위험) ${finPct(cash.foreign_cash_weight)}
+                성향 현금(${finEsc(baseCcy)}) ${finPct(cash.base_cash_weight_of_nav)}
+                · 외화 현금(환위험) ${finPct(cash.foreign_cash_weight_of_nav)}
             </p>
-            <p class="fin-note">성향 현금 밴드는 기준통화 현금만 검사합니다. 외화 현금은 환율 노출로 별도 표시됩니다.</p>
+            <p class="fin-note">${finEsc(cash.policy_ko || '성향 현금 밴드는 기준통화 현금만 검사합니다. 외화 현금은 환율 노출로 별도 표시됩니다.')}</p>
         </section>` : ''}
 
         <div class="fin-cards">
