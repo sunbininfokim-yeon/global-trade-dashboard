@@ -6256,15 +6256,10 @@ const loadCompany = async (out, inst) => {
     const sym = String(inst.yahoo || '').toUpperCase();
     out.innerHTML = `<div class="fin-block fin-block-wide"><p class="fin-loading">공시 자료를 받는 중…</p></div>`;
 
-    // A Korean listing carries a market suffix Yahoo uses and SEC does not.
+    // A Korean listing carries a market suffix Yahoo uses and SEC does not;
+    // the 6-digit code before it is what the DART-side engine names its files by.
     if (/\.(KS|KQ)$/.test(sym)) {
-        out.innerHTML = `
-            <div class="fin-empty">
-                <p class="fin-empty-title">한국 상장사는 아직 연결되지 않았습니다</p>
-                <p>${finEsc(inst.name_ko)}는 DART 공시가 필요합니다. API 키가 연결되면 같은 화면에서 열립니다.<br>
-                   지금은 미국 상장사(SEC 공시)만 계산됩니다.</p>
-            </div>`;
-        return;
+        return loadKfaCompany(out, inst, sym.replace(/\.(KS|KQ)$/, ''));
     }
 
     let data;
@@ -6352,6 +6347,170 @@ const loadCompany = async (out, inst) => {
         }
         paint();
     }).catch(() => { CO_PRICE.status = 'fail'; paint(); });
+};
+
+// --- 한국 상장사 (DART/KFA) ---------------------------------------------------
+// scripts/dart owns the extraction (OpenDART -> normalized cards); this side
+// only fetches the static per-company snapshot it produces and renders
+// whichever view the payload's own view_presets describe. No card copy comes
+// from the engine, so the Korean label/plain-text for each metric key lives
+// here, same as CO_LEVELS does for the SEC calculator.
+const KFA_VIEW_LABELS = { basic: '기본', investor: '투자자', pe: 'PE', deal: '딜' };
+
+const KFA_CARD_META = {
+    revenue: { label: '매출', unit: 'money', plain: '한 해 동안 벌어들인 전체 매출입니다.' },
+    operating_income: { label: '영업이익', unit: 'money', plain: '매출에서 원가·판관비를 뺀, 본업으로 남긴 돈입니다.' },
+    net_income: { label: '순이익', unit: 'money', plain: '세금·이자 등을 모두 뺀 최종 이익입니다.' },
+    cfo: { label: '영업활동현금흐름', unit: 'money', plain: '실제로 영업에서 걷어들인 현금입니다. 회계상 이익과 다를 수 있습니다.' },
+    fcf: { label: '잉여현금흐름(FCF)', unit: 'money', plain: '영업현금흐름에서 설비투자를 뺀, 자유롭게 쓸 수 있는 현금입니다.' },
+    cash: { label: '현금성자산', unit: 'money', plain: '즉시 쓸 수 있는 현금·예금입니다.' },
+    net_debt: { label: '순부채', unit: 'money', plain: '이자부 부채에서 현금·단기금융상품을 뺀 값입니다. 음수면 순현금 상태입니다.' },
+    current_ratio: { label: '유동비율', unit: 'ratio', plain: '1년 내 갚을 부채 대비 1년 내 현금화할 자산의 비율입니다.' },
+    debt_due_within_1y: { label: '1년 내 만기부채', unit: 'money', plain: '앞으로 1년 안에 갚아야 하는 차입금입니다.' },
+    liquidity_coverage_1y: { label: '유동성 커버리지', unit: 'ratio', plain: '1년 내 만기부채를 현금성자산으로 얼마나 덮을 수 있는지입니다.' },
+    interest_coverage: { label: '이자보상배율', unit: 'ratio', plain: '영업이익이 이자비용의 몇 배인지입니다. 낮을수록 이자 부담이 큽니다.' },
+    ccc_days: { label: '현금전환주기(CCC)', unit: 'days', plain: '재고·매출을 현금으로 바꾸는 데 걸리는 평균 일수입니다.' },
+    owner_earnings: { label: '오너어닝스', unit: 'money', plain: '버핏식으로 어림한 실질 이익입니다.' },
+    earnings_quality: { label: '이익의 질', unit: 'ratio', plain: '회계상 이익이 실제 현금흐름으로 얼마나 뒷받침되는지입니다.' },
+    margins_trend: { label: '마진 추이', unit: 'text', plain: '최근 몇 년간 이익률이 개선·악화되는 방향입니다.' },
+    capex_to_da: { label: '설비투자/감가상각', unit: 'ratio', plain: '설비투자가 감가상각을 웃도는지, 자산이 늘고 있는지 봅니다.' },
+    net_debt_to_oe: { label: '순부채/오너어닝스', unit: 'ratio', plain: '오너어닝스 기준으로 부채를 갚는 데 몇 년 걸리는지입니다.' },
+    ebitda_or_op: { label: 'EBITDA(또는 영업이익)', unit: 'money', plain: '감가상각 반영 전 영업 현금창출력입니다.' },
+    net_debt_to_ebitda: { label: '순부채/EBITDA', unit: 'ratio', plain: 'PE 딜에서 흔히 쓰는 레버리지 배수입니다.' },
+    fcf_to_ebitda: { label: 'FCF/EBITDA', unit: 'ratio', plain: '벌어들인 현금창출력 중 실제 자유현금흐름으로 남는 비율입니다.' },
+    maint_capex_burden: { label: '유지보수 설비투자 부담', unit: 'ratio', plain: '현상 유지에 필요한 설비투자가 얼마나 무거운지입니다.' },
+    nwc_change_to_sales: { label: '운전자본 변동/매출', unit: 'ratio', plain: '매출 대비 운전자본이 얼마나 늘거나 줄었는지입니다.' },
+    ebitda: { label: 'EBITDA', unit: 'money', plain: '이자·세금·감가상각 전 이익입니다.' },
+    trading_multiples: { label: '거래 배수', unit: 'text', plain: 'EV/EBITDA 등 비교기업 대비 밸류에이션 배수입니다.' },
+    ev_bridge: { label: 'EV 브릿지', unit: 'text', plain: '시가총액에서 기업가치(EV)까지의 조정 항목입니다.' },
+    qoe_flags: { label: '이익품질 플래그', unit: 'text', plain: '일회성 항목 등 이익의 질을 흔드는 신호입니다.' },
+    segment: { label: '세그먼트', unit: 'text', plain: '사업부문별 실적 분해입니다.' },
+    nwc_to_sales: { label: '운전자본/매출', unit: 'ratio', plain: '매출 대비 운전자본이 차지하는 비중입니다.' },
+};
+
+const kfaFmt = (key, v, currency) => {
+    if (v === null || v === undefined || Number.isNaN(v)) return '—';
+    const unit = (KFA_CARD_META[key] || {}).unit;
+    if (unit === 'money') return coNum(v, currency || 'KRW');
+    if (unit === 'days') return `${Math.round(v)}일`;
+    if (unit === 'ratio') return `${v.toFixed(2)}배`;
+    return String(v);
+};
+
+/** Same inline-SVG sparkline shape used elsewhere, mapped to the KFA {year, value} series. */
+const kfaSpark = (series, w = 280, h = 56) => {
+    const pts = (series || []).slice().sort((a, b) => a.year - b.year);
+    if (pts.length < 2) return '';
+    const vals = pts.map((p) => p.value);
+    const lo = Math.min(...vals), hi = Math.max(...vals);
+    const span = hi - lo || 1;
+    const x = (i) => (i / (pts.length - 1)) * w;
+    const y = (v) => h - ((v - lo) / span) * h;
+    const d = pts.map((p, i) => `${i ? 'L' : 'M'}${x(i).toFixed(1)},${y(p.value).toFixed(1)}`).join('');
+    return `<svg class="kfa-spark" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none">
+        <path d="${d}" fill="none" stroke="#7dd3fc" stroke-width="1.4"/>
+        ${pts.map((p, i) => `<circle cx="${x(i).toFixed(1)}" cy="${y(p.value).toFixed(1)}" r="2" fill="#38bdf8">
+            <title>${p.year}: ${finEsc(kfaFmt('_', p.value))}</title></circle>`).join('')}
+    </svg>`;
+};
+
+let KFA_VIEW = 'basic';
+let KFA_OPEN_CARD = null;
+
+const renderKfaResult = (out, data) => {
+    const views = (data.view_presets && data.view_presets.views) || {};
+    const viewIds = Object.keys(views);
+    if (!viewIds.includes(KFA_VIEW)) KFA_VIEW = data.view_presets?.default_view || viewIds[0] || 'basic';
+    const cardKeys = (views[KFA_VIEW] && views[KFA_VIEW].cards) || [];
+    const models = (views[KFA_VIEW] && views[KFA_VIEW].models) || [];
+    const cards = data.basic_cards || {};
+    const currency = data.currency || 'KRW';
+
+    out.innerHTML = `
+        <div class="fin-head fin-head-sub">
+            <p class="fin-headline">${finEsc(data.meta?.entity || data.label)}
+               <span class="fin-chip">${finEsc(data.meta?.ticker || data.label)}</span></p>
+            <div class="fin-meta">
+                <span>DART 공시 (${finEsc(data.meta?.fs_div || '')}) 기준 ${finEsc(data.as_of || '')}</span>
+                ${data.reasons?.length ? `<span class="fin-meta-sep">·</span><span>${finEsc(data.reasons.join(' · '))}</span>` : ''}
+            </div>
+        </div>
+
+        <div class="pf-mode" role="tablist" aria-label="분석 단계">
+            ${viewIds.map((v) => `<button type="button" class="pf-mode-btn ${v === KFA_VIEW ? 'on' : ''}"
+                data-kfa-view="${finEsc(v)}">${finEsc(KFA_VIEW_LABELS[v] || v)}</button>`).join('')}
+        </div>
+
+        <div class="fin-cards co-kfa-cards">
+            ${cardKeys.map((key) => {
+                const meta = KFA_CARD_META[key] || { label: key, unit: 'text', plain: '' };
+                const card = cards[key];
+                if (!card) return `
+                    <div class="fin-card co-kfa-card co-kfa-pending">
+                        <span class="fin-card-title">${finEsc(meta.label)}</span>
+                        <span class="fin-card-value">준비 중</span>
+                        <p class="fin-card-plain">엔진이 아직 이 항목을 계산하지 않았습니다.</p>
+                    </div>`;
+                const open = KFA_OPEN_CARD === key;
+                return `
+                    <div class="fin-card co-kfa-card ${open ? 'open' : ''}" data-kfa-card="${finEsc(key)}">
+                        <span class="fin-card-title">${finEsc(meta.label)}</span>
+                        <span class="fin-card-value">${kfaFmt(key, card.value, currency)}</span>
+                        <p class="fin-card-plain">${finEsc(meta.plain)}${card.reason ? ` (${finEsc(card.reason)})` : ''}</p>
+                        ${(card.series && card.series.length >= 2) ? `
+                            <button type="button" class="co-kfa-toggle">${open ? '차트 접기' : '연도별 추이 보기'}</button>
+                            ${open ? `<div class="co-kfa-chart">${kfaSpark(card.series)}</div>` : ''}` : ''}
+                    </div>`;
+            }).join('')}
+        </div>
+
+        ${models.length ? `
+        <div class="fin-note">이 단계는 다음 모델도 다룹니다: ${models.map(finEsc).join(', ')} —
+            계산 로직은 아직 엔진에 없어 카드 값만 우선 표시합니다.</div>` : ''}
+
+        <div class="fin-foot">
+            <p class="fin-disclaimer">투자 판단의 책임은 본인에게 있습니다. 목표주가·매수매도 의견을 포함하지 않습니다.</p>
+            <p class="fin-engine">엔진: <code>scripts/dart</code> (OpenDART) · 스키마 ${finEsc(data.schema || '')}</p>
+        </div>`;
+
+    out.querySelectorAll('[data-kfa-view]').forEach((b) => b.addEventListener('click', () => {
+        if (b.dataset.kfaView === KFA_VIEW) return;
+        KFA_VIEW = b.dataset.kfaView;
+        KFA_OPEN_CARD = null;
+        renderKfaResult(out, data);
+    }));
+
+    out.querySelectorAll('.co-kfa-toggle').forEach((b) => b.addEventListener('click', () => {
+        const key = b.closest('[data-kfa-card]')?.dataset.kfaCard;
+        KFA_OPEN_CARD = (KFA_OPEN_CARD === key) ? null : key;
+        renderKfaResult(out, data);
+    }));
+};
+
+const loadKfaCompany = async (out, inst, code) => {
+    out.innerHTML = `<div class="fin-block fin-block-wide"><p class="fin-loading">DART 공시 자료를 받는 중…</p></div>`;
+
+    let data = null;
+    for (const path of [`/public/data/kfa_${code}_v1.json`, `/data/kfa_${code}_v1.json`]) {
+        try {
+            const res = await fetch(path, { cache: 'no-store' });
+            if (res.ok) { data = await res.json(); break; }
+        } catch (_) { /* try next */ }
+    }
+
+    if (!data) {
+        out.innerHTML = `
+            <div class="fin-empty">
+                <p class="fin-empty-title">${finEsc(inst.name_ko)}는 아직 DART 데이터가 없습니다</p>
+                <p>지금은 <code>scripts/dart</code> 엔진이 생성한 스냅샷이 있는 종목만 열립니다 (현재 삼성전자 샘플만 있음).
+                   엔진이 새 종목을 생성하면 <code>public/data/kfa_${finEsc(code)}_v1.json</code> 경로에 자동으로 연결됩니다.</p>
+            </div>`;
+        return;
+    }
+
+    KFA_VIEW = data.view_presets?.default_view || 'basic';
+    KFA_OPEN_CARD = null;
+    renderKfaResult(out, data);
 };
 
 const coTable = (rows, cols) => `

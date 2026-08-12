@@ -2331,6 +2331,19 @@ body.finance-mode #chart-view::-webkit-scrollbar-thumb { background: rgba(148, 1
 .co-table td.co-label { color: #94a3b8; }
 .co-hint { display: block; font-size: 10px; color: #475569; margin-top: 2px; }
 
+.co-kfa-cards { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+.co-kfa-pending { opacity: .55; }
+.co-kfa-pending .fin-card-value { color: #64748b; font-size: 15px; }
+.co-kfa-toggle {
+    margin-top: 8px; background: none; border: 1px solid var(--border); border-radius: 6px;
+    color: #7dd3fc; font-size: 11px; padding: 5px 9px; cursor: pointer; font-family: inherit;
+}
+.co-kfa-toggle:hover { background: rgba(56, 189, 248, .1); }
+.co-kfa-card.open { grid-column: span 2; }
+.co-kfa-chart { margin-top: 10px; }
+.kfa-spark { width: 100%; height: 56px; display: block; }
+@media (max-width: 900px) { .co-kfa-card.open { grid-column: span 1; } }
+
 /* ── 매크로 모니터 ────────────────────────────────────────────────────────
    지도가 주인공. 좌·우 대시보드를 쓰지 않고 오버레이만 지도 위에 띄운다. */
 body.macro-mode .left-pane,
