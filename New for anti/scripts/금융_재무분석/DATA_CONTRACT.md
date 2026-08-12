@@ -6,6 +6,11 @@ UI는 숫자 객체와 함께 카피 블록을 우선 렌더하세요.
 모드: **`basic`** (`ui_copy_basic_ko` / `ui_copy_basic_en`) vs **`expert`** (`ui_copy_ko` / `ui_copy_en`).  
 로케일만 바꿔 같은 카드 구조를 쓰면 됩니다 (`_ko` ↔ `_en`).
 
+공개 UI의 기본 사용자 흐름은 `UI_HANDOFF.md`를 따릅니다. 즉, 직접 입력이
+기본 화면이고 Basic/Expert는 **그 입력의 계산 결과**를 설명하는 두 보기입니다.
+`portfolio_analysis_v1.json`은 엔진 산출·회귀용 참조물일 수 있으나, 방문자의
+포트폴리오인 것처럼 기본 탭에서 표시하면 안 됩니다.
+
 ## Top-level
 
 | 필드 | 설명 |
