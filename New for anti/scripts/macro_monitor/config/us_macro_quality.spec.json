@@ -1,0 +1,96 @@
+{
+  "schema_version": "us-macro-quality-spec-v1",
+  "country": "USA",
+  "principles": {
+    "point_in_time_required": true,
+    "single_score_forbidden": true,
+    "causal_language_forbidden": true,
+    "adp_bls_aggregation_forbidden": true
+  },
+  "official_sources": {
+    "bls_cpi": "https://www.bls.gov/news.release/cpi.toc.htm",
+    "bls_ces": "https://www.bls.gov/news.release/empsit.toc.htm",
+    "bea_gdp": "https://www.bea.gov/data/gdp/gross-domestic-product",
+    "fomc": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
+    "beige_book": "https://www.federalreserve.gov/monetarypolicy/publications/beige-book-default.htm"
+  },
+  "employment": {
+    "government_support_share_pct": 35.0,
+    "defensive_lead_share_pct": 50.0,
+    "breadth_floor_pct": 50.0,
+    "hours_drop_floor": -0.1,
+    "states": [
+      "private_broadening",
+      "private_narrowing",
+      "government_supported",
+      "defensive_services_led",
+      "mixed",
+      "insufficient_data"
+    ]
+  },
+  "gdp": {
+    "private_demand_floor": 1.0,
+    "dominance_margin_pp": 0.25,
+    "states": [
+      "private_demand_led",
+      "government_inventory_supported",
+      "external_trade_led",
+      "mixed",
+      "insufficient_data"
+    ]
+  },
+  "cpi_relationship_policy": {
+    "types": [
+      "accounting",
+      "measurement_link",
+      "market_hypothesis",
+      "common_driver",
+      "external_input_required"
+    ],
+    "lag_validation_eligible": ["market_hypothesis"],
+    "signal_ineligible": [
+      "accounting",
+      "measurement_link",
+      "common_driver",
+      "external_input_required"
+    ],
+    "internal_candidates": [
+      {
+        "id": "vehicle_parts_to_repair",
+        "expected_direction": "positive",
+        "candidate_lags_months": [0, 1, 2, 3, 4, 5, 6, 9, 12],
+        "status": "hypothesis"
+      },
+      {
+        "id": "auto_cost_to_insurance",
+        "expected_direction": "positive",
+        "candidate_lags_months": [6, 9, 12, 15, 18, 21, 24],
+        "status": "hypothesis"
+      }
+    ],
+    "external_candidates_deferred": [
+      "jet_fuel_to_airline_fares",
+      "market_rent_to_cpi_rent_oer",
+      "food_inputs_wages_to_food_prices",
+      "import_prices_freight_to_core_goods"
+    ]
+  },
+  "backtest": {
+    "minimum_oos": 36,
+    "minimum_training_observations": 60,
+    "minimum_adjacent_lags": 2,
+    "minimum_sign_stability": 0.67,
+    "minimum_oos_improvement_pct": 5.0,
+    "validation": "expanding_window_walk_forward",
+    "baselines": ["last_value", "seasonal_naive", "ar1"],
+    "statuses": [
+      "hypothesis",
+      "historically_supported",
+      "conditional",
+      "unstable",
+      "rejected",
+      "inconclusive",
+      "invalid_leakage"
+    ]
+  }
+}

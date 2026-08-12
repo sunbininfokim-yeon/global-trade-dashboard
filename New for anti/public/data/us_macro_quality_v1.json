@@ -1,0 +1,88 @@
+{
+  "schema_version": "us-macro-quality-v1",
+  "generated_at": "2026-08-12T05:26:53Z",
+  "source": {
+    "kind": "point_in_time_official_release_extracts",
+    "quality": "partial_or_empty"
+  },
+  "contract_audit": {
+    "release_count": 0,
+    "invalid_release_count": 0,
+    "invalid_releases": []
+  },
+  "policy_committee": {
+    "comparison": null,
+    "meeting_count": 0
+  },
+  "employment_quality": null,
+  "gdp_quality": null,
+  "inflation_quality": {
+    "relationship_policy": {
+      "types": [
+        "accounting",
+        "measurement_link",
+        "market_hypothesis",
+        "common_driver",
+        "external_input_required"
+      ],
+      "lag_validation_eligible": [
+        "market_hypothesis"
+      ],
+      "signal_ineligible": [
+        "accounting",
+        "measurement_link",
+        "common_driver",
+        "external_input_required"
+      ],
+      "internal_candidates": [
+        {
+          "id": "vehicle_parts_to_repair",
+          "expected_direction": "positive",
+          "candidate_lags_months": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            9,
+            12
+          ],
+          "status": "hypothesis"
+        },
+        {
+          "id": "auto_cost_to_insurance",
+          "expected_direction": "positive",
+          "candidate_lags_months": [
+            6,
+            9,
+            12,
+            15,
+            18,
+            21,
+            24
+          ],
+          "status": "hypothesis"
+        }
+      ],
+      "external_candidates_deferred": [
+        "jet_fuel_to_airline_fares",
+        "market_rent_to_cpi_rent_oer",
+        "food_inputs_wages_to_food_prices",
+        "import_prices_freight_to_core_goods"
+      ]
+    },
+    "lag_evidence": []
+  },
+  "official_documents": {
+    "items": [],
+    "rejected": [],
+    "policy": "official_extracted_evidence_separate_from_derived_summary"
+  },
+  "limitations": [
+    "구성 상태는 전망·투자신호·좋고 나쁨의 점수가 아닙니다.",
+    "CPI 관계는 point-in-time 표본외 검증을 통과하기 전까지 가설입니다.",
+    "FOMC는 공개 표결과 공식 문서만 사용하며 숨은 성향을 추정하지 않습니다."
+  ]
+}

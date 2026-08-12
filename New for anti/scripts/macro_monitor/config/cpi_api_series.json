@@ -1,0 +1,31 @@
+{
+  "schema_version": "us-cpi-api-series-v1",
+  "source": {
+    "publisher": "U.S. Bureau of Labor Statistics",
+    "endpoint": "https://api.bls.gov/publicAPI/v2/timeseries/data/",
+    "retrieval_note": "BLS API supplies published index levels. It does not supply Table 6/7 effect-on-All-Items contributions or release-vintage relative importances."
+  },
+  "series": [
+    {"id": "all_items", "series_id": "CUSR0000SA0", "label_ko": "전체 CPI", "label_en": "All items"},
+    {"id": "core", "series_id": "CUSR0000SA0L1E", "label_ko": "근원 CPI", "label_en": "All items less food and energy"},
+    {"id": "food", "series_id": "CUSR0000SAF1", "label_ko": "식품", "label_en": "Food"},
+    {"id": "food_at_home", "series_id": "CUSR0000SAF11", "label_ko": "가정식", "label_en": "Food at home"},
+    {"id": "energy", "series_id": "CUSR0000SA0E", "label_ko": "에너지", "label_en": "Energy"},
+    {"id": "core_goods", "series_id": "CUSR0000SACL1E", "label_ko": "근원 상품", "label_en": "Commodities less food and energy commodities"},
+    {"id": "core_services", "series_id": "CUSR0000SASLE", "label_ko": "에너지 제외 서비스", "label_en": "Services less energy services"},
+    {"id": "shelter", "series_id": "CUSR0000SAH1", "label_ko": "주거", "label_en": "Shelter"},
+    {"id": "rent_primary", "series_id": "CUSR0000SEHA", "label_ko": "주거 임차료", "label_en": "Rent of primary residence"},
+    {"id": "owners_equivalent_rent", "series_id": "CUSR0000SEHC", "label_ko": "자가주거비(OER)", "label_en": "Owners' equivalent rent of residences"},
+    {"id": "new_vehicles", "series_id": "CUSR0000SETA01", "label_ko": "신차", "label_en": "New vehicles"},
+    {"id": "used_cars_and_trucks", "series_id": "CUSR0000SETA02", "label_ko": "중고차·트럭", "label_en": "Used cars and trucks"},
+    {"id": "motor_vehicle_parts", "series_id": "CUSR0000SETC", "label_ko": "자동차 부품·장비", "label_en": "Motor vehicle parts and equipment"},
+    {"id": "motor_vehicle_maintenance", "series_id": "CUSR0000SETD", "label_ko": "자동차 정비·수리", "label_en": "Motor vehicle maintenance and repair"},
+    {"id": "motor_vehicle_insurance", "series_id": "CUSR0000SETE", "label_ko": "자동차 보험", "label_en": "Motor vehicle insurance"},
+    {"id": "motor_fuel", "series_id": "CUSR0000SETB", "label_ko": "자동차 연료", "label_en": "Motor fuel"},
+    {"id": "medical_care", "series_id": "CUSR0000SAM", "label_ko": "의료", "label_en": "Medical care"},
+    {"id": "medical_care_commodities", "series_id": "CUSR0000SAM1", "label_ko": "의료 상품", "label_en": "Medical care commodities"},
+    {"id": "education_communication", "series_id": "CUSR0000SAE", "label_ko": "교육·통신", "label_en": "Education and communication"},
+    {"id": "college_tuition", "series_id": "CUSR0000SEEB01", "label_ko": "대학 등록금", "label_en": "College tuition and fees"},
+    {"id": "public_transportation", "series_id": "CUSR0000SETG", "label_ko": "대중교통", "label_en": "Public transportation"}
+  ]
+}

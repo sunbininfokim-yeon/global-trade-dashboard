@@ -24,7 +24,39 @@ python3 -m unittest discover -s tests -v
 python3 build_macro_monitor.py --print-stats          # fixture only
 python3 build_macro_monitor.py --live --print-stats   # Yahoo + Worker FRED/BOK overlay
 # → ../../public/data/macro_monitor_v1.json
+
+# U.S. quality decision layer (empty contract or extracted point-in-time input)
+python3 build_us_macro_quality.py --print-stats
+python3 build_us_macro_quality.py --input cache/us_macro_quality/input.json --print-stats
+# → ../../public/data/us_macro_quality_v1.json
+
+# U.S. CPI release structure: use Table 6/7 effects for contribution ranking.
+# BLS may block unattended requests, so saved HTML from the SAME release is a
+# first-class input path. Table 2 is optional detail only, never a driver rank.
+python3 build_us_cpi_structure.py \
+  --table2-html cache/cpi/2026-07/cpi.t02.htm \
+  --table6-html cache/cpi/2026-07/cpi.t06.htm \
+  --table7-html cache/cpi/2026-07/cpi.t07.htm \
+  --print-stats
+# → ../../public/data/us_cpi_structure_v1.json
+
+# BLS API observed CPI index history (keep the key outside Git and this repo)
+BLS_API_KEY='...' python3 build_us_cpi_api_history.py --start-year 2011 --print-stats
+# → ../../public/data/us_cpi_api_history_v1.json
+
+# Official external Fed indicators: display provider values separately from
+# our own CPI relationship evidence. No API key is required.
+python3 build_us_official_inflation_sources.py --print-stats
+# → ../../public/data/us_official_inflation_sources_v1.json
 ```
+
+`us_cpi_structure_v1.json`은 같은 발표 빈티지의 All Items 기여도 상·하위 3개와
+CPI 내부 관계 카탈로그를 분리한다. 관계는 신호·인과·예측이 아니며, 시차 검증 전에는
+`market_hypothesis`도 활성 경로에 표시되지 않는다.
+
+`us_official_inflation_sources_v1.json`은 Cleveland Fed가 직접 공개한 나우캐스트·
+Median/Trimmed-Mean CPI와 SF Fed의 주거비 선행지표 연구를 **출처·방법론·갱신시각과
+함께** 보관한다. 이 값은 대시보드 자체 예측이나 항목간 인과판정으로 재표기하지 않는다.
 
 실데이터 범위: [`LIVE_DATA.md`](./LIVE_DATA.md)
 
