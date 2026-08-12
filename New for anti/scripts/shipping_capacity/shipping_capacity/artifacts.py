@@ -170,6 +170,7 @@ def build_artifact_bundle(snapshot: dict[str, Any]) -> dict[str, dict[str, Any]]
                 "data_policy",
                 "sources",
                 "fleet",
+                "lng_fleet",
                 "chokepoints",
                 "chokepoints_live",
                 "live_display",
@@ -179,6 +180,9 @@ def build_artifact_bundle(snapshot: dict[str, Any]) -> dict[str, dict[str, Any]]
                 "scenarios",
                 "scenario_summary",
                 "comtrade_routes",
+                "portwatch_port_context",
+                "market_signals",
+                "pdf_reports",
             )
         },
         "routes": [_screen_route(route) for route in routes],

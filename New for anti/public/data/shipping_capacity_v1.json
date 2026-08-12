@@ -1,8 +1,8 @@
 {
   "schema_version": "shipping-capacity-v1",
   "artifact_type": "screen_snapshot",
-  "bundle_id": "84a17e2188dd8b776f1b",
-  "generated_at": "2026-08-11T20:31:28.086684+00:00",
+  "bundle_id": "2691320fc9eda557aa31",
+  "generated_at": "2026-08-10T07:20:17.625581+00:00",
   "artifact_manifest": {
     "screen": "shipping_capacity_v1.json",
     "diagnostics": "shipping_capacity_diagnostics_v1.json",
@@ -164,7 +164,7 @@
     "suez": {
       "portwatch_id": "chokepoint1",
       "portname": "Suez Canal",
-      "latest_date": "2026-08-09",
+      "latest_date": "2026-08-02",
       "quality": "observed_estimated_trade_volume_shortfall_7d_vs_prior_28d",
       "current_window_days": 7,
       "baseline_window_days": 28,
@@ -177,56 +177,56 @@
           "field": "capacity_container",
           "unit": "estimated_trade_tonnes_per_day",
           "definition": "PortWatch estimated daily trade volume in metric tonnes, derived from vessel DWT and estimated payload/utilization; not observed vessel DWT.",
-          "current_7d_mean_estimated_trade_tonnes": 387981.285714,
-          "prior_28d_mean_estimated_trade_tonnes": 289160.535714,
-          "estimated_trade_volume_ratio": 1.34175,
-          "observed_trade_volume_shortfall_fraction": 0.0,
-          "remaining_trade_volume_ratio": 1.0,
-          "change_pct": 34.175047
+          "current_7d_mean_estimated_trade_tonnes": 273836.285714,
+          "prior_28d_mean_estimated_trade_tonnes": 276954.0,
+          "estimated_trade_volume_ratio": 0.988743,
+          "observed_trade_volume_shortfall_fraction": 0.011257,
+          "remaining_trade_volume_ratio": 0.988743,
+          "change_pct": -1.125716
         },
         "dry_bulk": {
           "field": "capacity_dry_bulk",
           "unit": "estimated_trade_tonnes_per_day",
           "definition": "PortWatch estimated daily trade volume in metric tonnes, derived from vessel DWT and estimated payload/utilization; not observed vessel DWT.",
-          "current_7d_mean_estimated_trade_tonnes": 485368.714286,
-          "prior_28d_mean_estimated_trade_tonnes": 501631.142857,
-          "estimated_trade_volume_ratio": 0.967581,
-          "observed_trade_volume_shortfall_fraction": 0.032419,
-          "remaining_trade_volume_ratio": 0.967581,
-          "change_pct": -3.24191
+          "current_7d_mean_estimated_trade_tonnes": 439422.0,
+          "prior_28d_mean_estimated_trade_tonnes": 549807.357143,
+          "estimated_trade_volume_ratio": 0.799229,
+          "observed_trade_volume_shortfall_fraction": 0.200771,
+          "remaining_trade_volume_ratio": 0.799229,
+          "change_pct": -20.077097
         },
         "general_cargo": {
           "field": "capacity_general_cargo",
           "unit": "estimated_trade_tonnes_per_day",
           "definition": "PortWatch estimated daily trade volume in metric tonnes, derived from vessel DWT and estimated payload/utilization; not observed vessel DWT.",
-          "current_7d_mean_estimated_trade_tonnes": 23770.714286,
-          "prior_28d_mean_estimated_trade_tonnes": 19679.785714,
-          "estimated_trade_volume_ratio": 1.207875,
+          "current_7d_mean_estimated_trade_tonnes": 27285.0,
+          "prior_28d_mean_estimated_trade_tonnes": 20378.392857,
+          "estimated_trade_volume_ratio": 1.338918,
           "observed_trade_volume_shortfall_fraction": 0.0,
           "remaining_trade_volume_ratio": 1.0,
-          "change_pct": 20.787465
+          "change_pct": 33.891815
         },
         "tanker": {
           "field": "capacity_tanker",
           "unit": "estimated_trade_tonnes_per_day",
           "definition": "PortWatch estimated daily trade volume in metric tonnes, derived from vessel DWT and estimated payload/utilization; not observed vessel DWT.",
-          "current_7d_mean_estimated_trade_tonnes": 532879.428571,
-          "prior_28d_mean_estimated_trade_tonnes": 747334.642857,
-          "estimated_trade_volume_ratio": 0.71304,
-          "observed_trade_volume_shortfall_fraction": 0.28696,
-          "remaining_trade_volume_ratio": 0.71304,
-          "change_pct": -28.696009
+          "current_7d_mean_estimated_trade_tonnes": 774138.857143,
+          "prior_28d_mean_estimated_trade_tonnes": 738351.107143,
+          "estimated_trade_volume_ratio": 1.04847,
+          "observed_trade_volume_shortfall_fraction": 0.0,
+          "remaining_trade_volume_ratio": 1.0,
+          "change_pct": 4.846983
         },
         "all": {
           "field": "capacity",
           "unit": "estimated_trade_tonnes_per_day",
           "definition": "PortWatch estimated daily trade volume in metric tonnes, derived from vessel DWT and estimated payload/utilization; not observed vessel DWT.",
-          "current_7d_mean_estimated_trade_tonnes": 1433503.857143,
-          "prior_28d_mean_estimated_trade_tonnes": 1561216.857143,
-          "estimated_trade_volume_ratio": 0.918197,
-          "observed_trade_volume_shortfall_fraction": 0.081803,
-          "remaining_trade_volume_ratio": 0.918197,
-          "change_pct": -8.18035
+          "current_7d_mean_estimated_trade_tonnes": 1516660.714286,
+          "prior_28d_mean_estimated_trade_tonnes": 1588712.714286,
+          "estimated_trade_volume_ratio": 0.954648,
+          "observed_trade_volume_shortfall_fraction": 0.045352,
+          "remaining_trade_volume_ratio": 0.954648,
+          "change_pct": -4.535244
         }
       },
       "signal_validation": {
@@ -238,11 +238,11 @@
           "test_count": 138,
           "feature": "signed current 7-observation estimated trade-volume gap vs preceding 28",
           "target": "signed next 7-observation estimated trade-volume gap vs same preceding 28",
-          "ols_intercept": -0.012471,
-          "ols_slope": -0.053097,
-          "test_r2": -0.177453,
-          "test_mae_fraction": 0.142572,
-          "persistence_mae_fraction": 0.168244,
+          "ols_intercept": -0.013491,
+          "ols_slope": -0.06186,
+          "test_r2": -0.114299,
+          "test_mae_fraction": 0.141647,
+          "persistence_mae_fraction": 0.161702,
           "beats_persistence": true,
           "warning": "Exploratory chronological validation; not a causal model or closure probability."
         },
@@ -254,11 +254,11 @@
           "test_count": 138,
           "feature": "signed current 7-observation estimated trade-volume gap vs preceding 28",
           "target": "signed next 7-observation estimated trade-volume gap vs same preceding 28",
-          "ols_intercept": -0.009183,
-          "ols_slope": 0.157415,
-          "test_r2": -0.002398,
-          "test_mae_fraction": 0.137462,
-          "persistence_mae_fraction": 0.18077,
+          "ols_intercept": -0.006642,
+          "ols_slope": 0.174429,
+          "test_r2": -0.043237,
+          "test_mae_fraction": 0.13003,
+          "persistence_mae_fraction": 0.182355,
           "beats_persistence": true,
           "warning": "Exploratory chronological validation; not a causal model or closure probability."
         },
@@ -270,11 +270,11 @@
           "test_count": 138,
           "feature": "signed current 7-observation estimated trade-volume gap vs preceding 28",
           "target": "signed next 7-observation estimated trade-volume gap vs same preceding 28",
-          "ols_intercept": -0.020712,
-          "ols_slope": 0.008933,
-          "test_r2": -0.000198,
-          "test_mae_fraction": 0.320137,
-          "persistence_mae_fraction": 0.3491,
+          "ols_intercept": -0.017723,
+          "ols_slope": 0.004199,
+          "test_r2": -9.8e-05,
+          "test_mae_fraction": 0.30733,
+          "persistence_mae_fraction": 0.355408,
           "beats_persistence": true,
           "warning": "Exploratory chronological validation; not a causal model or closure probability."
         },
@@ -286,11 +286,11 @@
           "test_count": 138,
           "feature": "signed current 7-observation estimated trade-volume gap vs preceding 28",
           "target": "signed next 7-observation estimated trade-volume gap vs same preceding 28",
-          "ols_intercept": -0.010048,
-          "ols_slope": 0.290349,
-          "test_r2": 0.101888,
-          "test_mae_fraction": 0.108588,
-          "persistence_mae_fraction": 0.125538,
+          "ols_intercept": -0.013577,
+          "ols_slope": 0.262784,
+          "test_r2": 0.166742,
+          "test_mae_fraction": 0.108207,
+          "persistence_mae_fraction": 0.118035,
           "beats_persistence": true,
           "warning": "Exploratory chronological validation; not a causal model or closure probability."
         },
@@ -302,11 +302,11 @@
           "test_count": 138,
           "feature": "signed current 7-observation estimated trade-volume gap vs preceding 28",
           "target": "signed next 7-observation estimated trade-volume gap vs same preceding 28",
-          "ols_intercept": -0.007704,
-          "ols_slope": 0.27151,
-          "test_r2": -0.078746,
-          "test_mae_fraction": 0.082013,
-          "persistence_mae_fraction": 0.106834,
+          "ols_intercept": -0.008712,
+          "ols_slope": 0.258787,
+          "test_r2": -0.039379,
+          "test_mae_fraction": 0.081085,
+          "persistence_mae_fraction": 0.105495,
           "beats_persistence": true,
           "warning": "Exploratory chronological validation; not a causal model or closure probability."
         }
@@ -332,55 +332,55 @@
           "beats_persistence_by_5pct": true,
           "beats_best_simple_baseline_by_5pct": false,
           "backtest_beats_best_simple_baseline_by_5pct": false,
-          "backtest_positive_r2": false,
+          "backtest_positive_r2": true,
           "models": [
             {
               "model": "persistence",
               "cv_mae_symmetric_gap": null,
-              "test_mae_symmetric_gap": 0.106164,
-              "test_rmse_symmetric_gap": 0.13392,
-              "test_r2": -1.007646,
-              "stress_direction_accuracy": 0.789855
+              "test_mae_symmetric_gap": 0.104749,
+              "test_rmse_symmetric_gap": 0.133076,
+              "test_r2": -0.954091,
+              "stress_direction_accuracy": 0.797101
             },
             {
               "model": "zero_shortfall",
               "cv_mae_symmetric_gap": null,
-              "test_mae_symmetric_gap": 0.079984,
-              "test_rmse_symmetric_gap": 0.095223,
-              "test_r2": -0.015026,
-              "stress_direction_accuracy": 0.869565
+              "test_mae_symmetric_gap": 0.080377,
+              "test_rmse_symmetric_gap": 0.095854,
+              "test_r2": -0.013823,
+              "stress_direction_accuracy": 0.862319
             },
             {
               "model": "linear",
-              "cv_mae_symmetric_gap": 0.08282,
-              "test_mae_symmetric_gap": 0.081838,
-              "test_rmse_symmetric_gap": 0.097774,
-              "test_r2": -0.070148,
-              "stress_direction_accuracy": 0.869565
+              "cv_mae_symmetric_gap": 0.080624,
+              "test_mae_symmetric_gap": 0.08256,
+              "test_rmse_symmetric_gap": 0.099121,
+              "test_r2": -0.084113,
+              "stress_direction_accuracy": 0.862319
             },
             {
               "model": "ridge",
-              "cv_mae_symmetric_gap": 0.082844,
-              "test_mae_symmetric_gap": 0.081824,
-              "test_rmse_symmetric_gap": 0.097743,
-              "test_r2": -0.069472,
-              "stress_direction_accuracy": 0.869565
+              "cv_mae_symmetric_gap": 0.080651,
+              "test_mae_symmetric_gap": 0.082527,
+              "test_rmse_symmetric_gap": 0.099066,
+              "test_r2": -0.082915,
+              "stress_direction_accuracy": 0.862319
             },
             {
               "model": "random_forest",
-              "cv_mae_symmetric_gap": 0.088454,
-              "test_mae_symmetric_gap": 0.082326,
-              "test_rmse_symmetric_gap": 0.099908,
-              "test_r2": -0.117357,
-              "stress_direction_accuracy": 0.855072
+              "cv_mae_symmetric_gap": 0.085946,
+              "test_mae_symmetric_gap": 0.081969,
+              "test_rmse_symmetric_gap": 0.100121,
+              "test_r2": -0.106103,
+              "stress_direction_accuracy": 0.862319
             },
             {
               "model": "gradient_boosting",
-              "cv_mae_symmetric_gap": 0.085714,
-              "test_mae_symmetric_gap": 0.080783,
-              "test_rmse_symmetric_gap": 0.096296,
-              "test_r2": -0.038032,
-              "stress_direction_accuracy": 0.869565
+              "cv_mae_symmetric_gap": 0.082996,
+              "test_mae_symmetric_gap": 0.080299,
+              "test_rmse_symmetric_gap": 0.096273,
+              "test_r2": -0.022713,
+              "stress_direction_accuracy": 0.862319
             }
           ],
           "walk_forward_backtest": {
@@ -396,12 +396,12 @@
                 "purged_count": 7,
                 "test_count": 56,
                 "model_mae_symmetric_gap": {
-                  "persistence": 0.09007,
-                  "zero_shortfall": 0.14053,
-                  "linear": 0.127386,
-                  "ridge": 0.127485,
-                  "random_forest": 0.144016,
-                  "gradient_boosting": 0.143845
+                  "persistence": 0.093966,
+                  "zero_shortfall": 0.129164,
+                  "linear": 0.118999,
+                  "ridge": 0.119102,
+                  "random_forest": 0.137236,
+                  "gradient_boosting": 0.134155
                 }
               },
               {
@@ -410,12 +410,12 @@
                 "purged_count": 7,
                 "test_count": 56,
                 "model_mae_symmetric_gap": {
-                  "persistence": 0.126779,
-                  "zero_shortfall": 0.094784,
-                  "linear": 0.10846,
-                  "ridge": 0.108344,
-                  "random_forest": 0.107944,
-                  "gradient_boosting": 0.101588
+                  "persistence": 0.124019,
+                  "zero_shortfall": 0.096944,
+                  "linear": 0.101663,
+                  "ridge": 0.1016,
+                  "random_forest": 0.102857,
+                  "gradient_boosting": 0.099386
                 }
               },
               {
@@ -424,12 +424,12 @@
                 "purged_count": 7,
                 "test_count": 56,
                 "model_mae_symmetric_gap": {
-                  "persistence": 0.097451,
-                  "zero_shortfall": 0.062607,
-                  "linear": 0.064263,
-                  "ridge": 0.064275,
-                  "random_forest": 0.066382,
-                  "gradient_boosting": 0.061886
+                  "persistence": 0.092219,
+                  "zero_shortfall": 0.065062,
+                  "linear": 0.068771,
+                  "ridge": 0.068747,
+                  "random_forest": 0.069142,
+                  "gradient_boosting": 0.066618
                 }
               },
               {
@@ -438,12 +438,12 @@
                 "purged_count": 7,
                 "test_count": 56,
                 "model_mae_symmetric_gap": {
-                  "persistence": 0.105586,
-                  "zero_shortfall": 0.092499,
-                  "linear": 0.088527,
-                  "ridge": 0.088549,
-                  "random_forest": 0.08774,
-                  "gradient_boosting": 0.091255
+                  "persistence": 0.109072,
+                  "zero_shortfall": 0.083656,
+                  "linear": 0.081957,
+                  "ridge": 0.081964,
+                  "random_forest": 0.082392,
+                  "gradient_boosting": 0.081994
                 }
               }
             ],
@@ -451,77 +451,77 @@
               {
                 "model": "persistence",
                 "cv_mae_symmetric_gap": null,
-                "test_mae_symmetric_gap": 0.104972,
-                "test_rmse_symmetric_gap": 0.130756,
-                "test_r2": -0.297081,
-                "stress_direction_accuracy": 0.767857,
-                "mean_fold_mae_symmetric_gap": 0.104972,
+                "test_mae_symmetric_gap": 0.104819,
+                "test_rmse_symmetric_gap": 0.130438,
+                "test_r2": -0.355641,
+                "stress_direction_accuracy": 0.785714,
+                "mean_fold_mae_symmetric_gap": 0.104819,
                 "fold_wins_vs_best_simple_baseline": null
               },
               {
                 "model": "zero_shortfall",
                 "cv_mae_symmetric_gap": null,
-                "test_mae_symmetric_gap": 0.097605,
-                "test_rmse_symmetric_gap": 0.11527,
-                "test_r2": -0.008036,
-                "stress_direction_accuracy": 0.75,
-                "mean_fold_mae_symmetric_gap": 0.097605,
+                "test_mae_symmetric_gap": 0.093707,
+                "test_rmse_symmetric_gap": 0.112165,
+                "test_r2": -0.00243,
+                "stress_direction_accuracy": 0.772321,
+                "mean_fold_mae_symmetric_gap": 0.093707,
                 "fold_wins_vs_best_simple_baseline": null
               },
               {
                 "model": "linear",
                 "cv_mae_symmetric_gap": null,
-                "test_mae_symmetric_gap": 0.097159,
-                "test_rmse_symmetric_gap": 0.114996,
-                "test_r2": -0.003259,
-                "stress_direction_accuracy": 0.75,
-                "mean_fold_mae_symmetric_gap": 0.097159,
+                "test_mae_symmetric_gap": 0.092848,
+                "test_rmse_symmetric_gap": 0.111012,
+                "test_r2": 0.018073,
+                "stress_direction_accuracy": 0.772321,
+                "mean_fold_mae_symmetric_gap": 0.092848,
                 "fold_wins_vs_best_simple_baseline": 1
               },
               {
                 "model": "ridge",
                 "cv_mae_symmetric_gap": null,
-                "test_mae_symmetric_gap": 0.097163,
-                "test_rmse_symmetric_gap": 0.114997,
-                "test_r2": -0.003281,
-                "stress_direction_accuracy": 0.75,
-                "mean_fold_mae_symmetric_gap": 0.097163,
+                "test_mae_symmetric_gap": 0.092853,
+                "test_rmse_symmetric_gap": 0.111017,
+                "test_r2": 0.017989,
+                "stress_direction_accuracy": 0.772321,
+                "mean_fold_mae_symmetric_gap": 0.092853,
                 "fold_wins_vs_best_simple_baseline": 1
               },
               {
                 "model": "random_forest",
                 "cv_mae_symmetric_gap": null,
-                "test_mae_symmetric_gap": 0.10152,
-                "test_rmse_symmetric_gap": 0.122951,
-                "test_r2": -0.146867,
-                "stress_direction_accuracy": 0.741071,
-                "mean_fold_mae_symmetric_gap": 0.10152,
+                "test_mae_symmetric_gap": 0.097907,
+                "test_rmse_symmetric_gap": 0.120354,
+                "test_r2": -0.154127,
+                "stress_direction_accuracy": 0.763393,
+                "mean_fold_mae_symmetric_gap": 0.097907,
                 "fold_wins_vs_best_simple_baseline": 1
               },
               {
                 "model": "gradient_boosting",
                 "cv_mae_symmetric_gap": null,
-                "test_mae_symmetric_gap": 0.099644,
-                "test_rmse_symmetric_gap": 0.119383,
-                "test_r2": -0.081265,
-                "stress_direction_accuracy": 0.75,
-                "mean_fold_mae_symmetric_gap": 0.099644,
-                "fold_wins_vs_best_simple_baseline": 2
+                "test_mae_symmetric_gap": 0.095538,
+                "test_rmse_symmetric_gap": 0.115631,
+                "test_r2": -0.065335,
+                "stress_direction_accuracy": 0.772321,
+                "mean_fold_mae_symmetric_gap": 0.095538,
+                "fold_wins_vs_best_simple_baseline": 1
               }
             ]
           },
           "feature_importance": [
             {
               "feature": "symmetric_gap_7_vs_prior_28",
-              "importance": 0.005204
+              "importance": 0.009542
             },
             {
               "feature": "symmetric_week_over_week_gap",
-              "importance": 0.004268
+              "importance": 0.002503
             },
             {
               "feature": "volatility_cv_14",
-              "importance": 0.000508
+              "importance": 0.000394
             },
             {
               "feature": "symmetric_gap_3_vs_prior_14",
@@ -532,22 +532,22 @@
               "importance": 0.0
             }
           ],
-          "candidate_next_7d_symmetric_gap": 0.021607,
-          "candidate_next_7d_shortfall_fraction": 0.021377,
+          "candidate_next_7d_symmetric_gap": 0.025824,
+          "candidate_next_7d_shortfall_fraction": 0.025495,
           "published_next_7d_shortfall_fraction": null,
           "candidate_prediction_interval": {
-            "p10_symmetric_gap": -0.093399,
-            "p90_symmetric_gap": 0.129363,
+            "p10_symmetric_gap": -0.089593,
+            "p90_symmetric_gap": 0.142497,
             "method": "holdout residual empirical interval on symmetric gap scale"
           },
           "current_regime": {
             "label": "capacity_stress",
             "cluster": 1,
-            "cluster_mean_symmetric_gap": 0.07719
+            "cluster_mean_symmetric_gap": 0.079884
           },
           "current_anomaly": {
-            "score": -0.105916,
-            "historical_percentile": 0.278665,
+            "score": -0.06962,
+            "historical_percentile": 0.605225,
             "is_anomaly_at_90pct": false,
             "method": "IsolationForest contamination=0.10"
           },
@@ -555,16 +555,16 @@
         }
       },
       "multi_model_primary_metric": "all",
-      "fetched_at": "2026-08-11T20:31:28.086684+00:00",
-      "stale_days": 2,
-      "is_stale": false,
-      "fallback_used": false,
-      "source_status": "api_observation_fresh"
+      "fetched_at": "2026-08-10T06:47:05.058878+00:00",
+      "stale_days": 8,
+      "is_stale": true,
+      "fallback_used": true,
+      "source_status": "cached_fallback"
     },
     "panama": {
       "portwatch_id": "chokepoint2",
       "portname": "Panama Canal",
-      "latest_date": "2026-08-09",
+      "latest_date": "2026-08-02",
       "quality": "observed_estimated_trade_volume_shortfall_7d_vs_prior_28d",
       "current_window_days": 7,
       "baseline_window_days": 28,
@@ -577,56 +577,56 @@
           "field": "capacity_container",
           "unit": "estimated_trade_tonnes_per_day",
           "definition": "PortWatch estimated daily trade volume in metric tonnes, derived from vessel DWT and estimated payload/utilization; not observed vessel DWT.",
-          "current_7d_mean_estimated_trade_tonnes": 298585.857143,
-          "prior_28d_mean_estimated_trade_tonnes": 331852.821429,
-          "estimated_trade_volume_ratio": 0.899754,
-          "observed_trade_volume_shortfall_fraction": 0.100246,
-          "remaining_trade_volume_ratio": 0.899754,
-          "change_pct": -10.024614
+          "current_7d_mean_estimated_trade_tonnes": 329719.714286,
+          "prior_28d_mean_estimated_trade_tonnes": 329720.642857,
+          "estimated_trade_volume_ratio": 0.999997,
+          "observed_trade_volume_shortfall_fraction": 3e-06,
+          "remaining_trade_volume_ratio": 0.999997,
+          "change_pct": -0.000282
         },
         "dry_bulk": {
           "field": "capacity_dry_bulk",
           "unit": "estimated_trade_tonnes_per_day",
           "definition": "PortWatch estimated daily trade volume in metric tonnes, derived from vessel DWT and estimated payload/utilization; not observed vessel DWT.",
-          "current_7d_mean_estimated_trade_tonnes": 160866.285714,
-          "prior_28d_mean_estimated_trade_tonnes": 215296.785714,
-          "estimated_trade_volume_ratio": 0.747184,
-          "observed_trade_volume_shortfall_fraction": 0.252816,
-          "remaining_trade_volume_ratio": 0.747184,
-          "change_pct": -25.281613
+          "current_7d_mean_estimated_trade_tonnes": 187641.571429,
+          "prior_28d_mean_estimated_trade_tonnes": 227875.571429,
+          "estimated_trade_volume_ratio": 0.823439,
+          "observed_trade_volume_shortfall_fraction": 0.176561,
+          "remaining_trade_volume_ratio": 0.823439,
+          "change_pct": -17.656127
         },
         "general_cargo": {
           "field": "capacity_general_cargo",
           "unit": "estimated_trade_tonnes_per_day",
           "definition": "PortWatch estimated daily trade volume in metric tonnes, derived from vessel DWT and estimated payload/utilization; not observed vessel DWT.",
-          "current_7d_mean_estimated_trade_tonnes": 8510.571429,
-          "prior_28d_mean_estimated_trade_tonnes": 11925.75,
-          "estimated_trade_volume_ratio": 0.71363,
-          "observed_trade_volume_shortfall_fraction": 0.28637,
-          "remaining_trade_volume_ratio": 0.71363,
-          "change_pct": -28.637013
+          "current_7d_mean_estimated_trade_tonnes": 10615.857143,
+          "prior_28d_mean_estimated_trade_tonnes": 12711.0,
+          "estimated_trade_volume_ratio": 0.835171,
+          "observed_trade_volume_shortfall_fraction": 0.164829,
+          "remaining_trade_volume_ratio": 0.835171,
+          "change_pct": -16.482911
         },
         "tanker": {
           "field": "capacity_tanker",
           "unit": "estimated_trade_tonnes_per_day",
           "definition": "PortWatch estimated daily trade volume in metric tonnes, derived from vessel DWT and estimated payload/utilization; not observed vessel DWT.",
-          "current_7d_mean_estimated_trade_tonnes": 378886.714286,
-          "prior_28d_mean_estimated_trade_tonnes": 355607.857143,
-          "estimated_trade_volume_ratio": 1.065462,
-          "observed_trade_volume_shortfall_fraction": 0.0,
-          "remaining_trade_volume_ratio": 1.0,
-          "change_pct": 6.546216
+          "current_7d_mean_estimated_trade_tonnes": 333083.285714,
+          "prior_28d_mean_estimated_trade_tonnes": 378028.928571,
+          "estimated_trade_volume_ratio": 0.881105,
+          "observed_trade_volume_shortfall_fraction": 0.118895,
+          "remaining_trade_volume_ratio": 0.881105,
+          "change_pct": -11.889472
         },
         "all": {
           "field": "capacity",
           "unit": "estimated_trade_tonnes_per_day",
           "definition": "PortWatch estimated daily trade volume in metric tonnes, derived from vessel DWT and estimated payload/utilization; not observed vessel DWT.",
-          "current_7d_mean_estimated_trade_tonnes": 854584.285714,
-          "prior_28d_mean_estimated_trade_tonnes": 926331.857143,
-          "estimated_trade_volume_ratio": 0.922547,
-          "observed_trade_volume_shortfall_fraction": 0.077453,
-          "remaining_trade_volume_ratio": 0.922547,
-          "change_pct": -7.745342
+          "current_7d_mean_estimated_trade_tonnes": 868794.714286,
+          "prior_28d_mean_estimated_trade_tonnes": 960187.535714,
+          "estimated_trade_volume_ratio": 0.904818,
+          "observed_trade_volume_shortfall_fraction": 0.095182,
+          "remaining_trade_volume_ratio": 0.904818,
+          "change_pct": -9.518226
         }
       },
       "signal_validation": {
@@ -638,11 +638,11 @@
           "test_count": 138,
           "feature": "signed current 7-observation estimated trade-volume gap vs preceding 28",
           "target": "signed next 7-observation estimated trade-volume gap vs same preceding 28",
-          "ols_intercept": -0.003245,
-          "ols_slope": 0.116939,
-          "test_r2": 0.039544,
-          "test_mae_fraction": 0.091817,
-          "persistence_mae_fraction": 0.112662,
+          "ols_intercept": -0.003469,
+          "ols_slope": 0.12159,
+          "test_r2": 0.0341,
+          "test_mae_fraction": 0.093039,
+          "persistence_mae_fraction": 0.115284,
           "beats_persistence": true,
           "warning": "Exploratory chronological validation; not a causal model or closure probability."
         },
@@ -654,11 +654,11 @@
           "test_count": 138,
           "feature": "signed current 7-observation estimated trade-volume gap vs preceding 28",
           "target": "signed next 7-observation estimated trade-volume gap vs same preceding 28",
-          "ols_intercept": -0.019324,
-          "ols_slope": 0.145808,
-          "test_r2": 0.099811,
-          "test_mae_fraction": 0.232568,
-          "persistence_mae_fraction": 0.197027,
+          "ols_intercept": -0.016456,
+          "ols_slope": 0.150213,
+          "test_r2": 0.119489,
+          "test_mae_fraction": 0.221374,
+          "persistence_mae_fraction": 0.200815,
           "beats_persistence": false,
           "warning": "Exploratory chronological validation; not a causal model or closure probability."
         },
@@ -670,11 +670,11 @@
           "test_count": 138,
           "feature": "signed current 7-observation estimated trade-volume gap vs preceding 28",
           "target": "signed next 7-observation estimated trade-volume gap vs same preceding 28",
-          "ols_intercept": -0.020532,
-          "ols_slope": 0.105891,
-          "test_r2": 0.009721,
-          "test_mae_fraction": 0.284148,
-          "persistence_mae_fraction": 0.348432,
+          "ols_intercept": -0.020947,
+          "ols_slope": 0.105489,
+          "test_r2": 0.005691,
+          "test_mae_fraction": 0.269623,
+          "persistence_mae_fraction": 0.332077,
           "beats_persistence": true,
           "warning": "Exploratory chronological validation; not a causal model or closure probability."
         },
@@ -686,11 +686,11 @@
           "test_count": 138,
           "feature": "signed current 7-observation estimated trade-volume gap vs preceding 28",
           "target": "signed next 7-observation estimated trade-volume gap vs same preceding 28",
-          "ols_intercept": -0.007229,
-          "ols_slope": 0.206306,
-          "test_r2": 0.124539,
-          "test_mae_fraction": 0.121754,
-          "persistence_mae_fraction": 0.124207,
+          "ols_intercept": -0.004192,
+          "ols_slope": 0.211823,
+          "test_r2": 0.113585,
+          "test_mae_fraction": 0.124145,
+          "persistence_mae_fraction": 0.126885,
           "beats_persistence": true,
           "warning": "Exploratory chronological validation; not a causal model or closure probability."
         },
@@ -702,11 +702,11 @@
           "test_count": 138,
           "feature": "signed current 7-observation estimated trade-volume gap vs preceding 28",
           "target": "signed next 7-observation estimated trade-volume gap vs same preceding 28",
-          "ols_intercept": -0.006533,
-          "ols_slope": 0.259008,
-          "test_r2": 0.177108,
-          "test_mae_fraction": 0.088414,
-          "persistence_mae_fraction": 0.073911,
+          "ols_intercept": -0.004675,
+          "ols_slope": 0.269183,
+          "test_r2": 0.187796,
+          "test_mae_fraction": 0.084484,
+          "persistence_mae_fraction": 0.076251,
           "beats_persistence": false,
           "warning": "Exploratory chronological validation; not a causal model or closure probability."
         }
@@ -737,50 +737,50 @@
             {
               "model": "persistence",
               "cv_mae_symmetric_gap": null,
-              "test_mae_symmetric_gap": 0.071505,
-              "test_rmse_symmetric_gap": 0.098394,
-              "test_r2": 0.258997,
-              "stress_direction_accuracy": 0.84058
+              "test_mae_symmetric_gap": 0.073555,
+              "test_rmse_symmetric_gap": 0.100371,
+              "test_r2": 0.19492,
+              "stress_direction_accuracy": 0.855072
             },
             {
               "model": "zero_shortfall",
               "cv_mae_symmetric_gap": null,
-              "test_mae_symmetric_gap": 0.096687,
-              "test_rmse_symmetric_gap": 0.116627,
-              "test_r2": -0.041076,
-              "stress_direction_accuracy": 0.73913
+              "test_mae_symmetric_gap": 0.09179,
+              "test_rmse_symmetric_gap": 0.112654,
+              "test_r2": -0.01417,
+              "stress_direction_accuracy": 0.789855
             },
             {
               "model": "linear",
-              "cv_mae_symmetric_gap": 0.063002,
-              "test_mae_symmetric_gap": 0.092742,
-              "test_rmse_symmetric_gap": 0.114007,
-              "test_r2": 0.005182,
-              "stress_direction_accuracy": 0.73913
+              "cv_mae_symmetric_gap": 0.062977,
+              "test_mae_symmetric_gap": 0.091366,
+              "test_rmse_symmetric_gap": 0.114289,
+              "test_r2": -0.043826,
+              "stress_direction_accuracy": 0.789855
             },
             {
               "model": "ridge",
-              "cv_mae_symmetric_gap": 0.062948,
-              "test_mae_symmetric_gap": 0.092752,
-              "test_rmse_symmetric_gap": 0.113984,
-              "test_r2": 0.00558,
-              "stress_direction_accuracy": 0.73913
+              "cv_mae_symmetric_gap": 0.062921,
+              "test_mae_symmetric_gap": 0.091358,
+              "test_rmse_symmetric_gap": 0.114244,
+              "test_r2": -0.043001,
+              "stress_direction_accuracy": 0.789855
             },
             {
               "model": "random_forest",
-              "cv_mae_symmetric_gap": 0.069088,
-              "test_mae_symmetric_gap": 0.092695,
-              "test_rmse_symmetric_gap": 0.111295,
-              "test_r2": 0.05195,
-              "stress_direction_accuracy": 0.73913
+              "cv_mae_symmetric_gap": 0.069516,
+              "test_mae_symmetric_gap": 0.086199,
+              "test_rmse_symmetric_gap": 0.106522,
+              "test_r2": 0.093224,
+              "stress_direction_accuracy": 0.789855
             },
             {
               "model": "gradient_boosting",
-              "cv_mae_symmetric_gap": 0.064057,
-              "test_mae_symmetric_gap": 0.089506,
-              "test_rmse_symmetric_gap": 0.107708,
-              "test_r2": 0.112072,
-              "stress_direction_accuracy": 0.73913
+              "cv_mae_symmetric_gap": 0.06382,
+              "test_mae_symmetric_gap": 0.085182,
+              "test_rmse_symmetric_gap": 0.104158,
+              "test_r2": 0.133025,
+              "stress_direction_accuracy": 0.789855
             }
           ],
           "walk_forward_backtest": {
@@ -796,12 +796,12 @@
                 "purged_count": 7,
                 "test_count": 56,
                 "model_mae_symmetric_gap": {
-                  "persistence": 0.084078,
-                  "zero_shortfall": 0.080954,
-                  "linear": 0.074328,
-                  "ridge": 0.074332,
-                  "random_forest": 0.073146,
-                  "gradient_boosting": 0.074283
+                  "persistence": 0.060757,
+                  "zero_shortfall": 0.061486,
+                  "linear": 0.053396,
+                  "ridge": 0.05341,
+                  "random_forest": 0.053139,
+                  "gradient_boosting": 0.055027
                 }
               },
               {
@@ -810,12 +810,12 @@
                 "purged_count": 7,
                 "test_count": 56,
                 "model_mae_symmetric_gap": {
-                  "persistence": 0.080261,
-                  "zero_shortfall": 0.048432,
-                  "linear": 0.052676,
-                  "ridge": 0.052625,
-                  "random_forest": 0.051602,
-                  "gradient_boosting": 0.048673
+                  "persistence": 0.096104,
+                  "zero_shortfall": 0.063434,
+                  "linear": 0.067343,
+                  "ridge": 0.067302,
+                  "random_forest": 0.070046,
+                  "gradient_boosting": 0.063688
                 }
               },
               {
@@ -824,12 +824,12 @@
                 "purged_count": 7,
                 "test_count": 56,
                 "model_mae_symmetric_gap": {
-                  "persistence": 0.043557,
-                  "zero_shortfall": 0.082079,
-                  "linear": 0.062677,
-                  "ridge": 0.062738,
-                  "random_forest": 0.069202,
-                  "gradient_boosting": 0.072894
+                  "persistence": 0.045449,
+                  "zero_shortfall": 0.070038,
+                  "linear": 0.05786,
+                  "ridge": 0.057898,
+                  "random_forest": 0.062348,
+                  "gradient_boosting": 0.063907
                 }
               },
               {
@@ -838,12 +838,12 @@
                 "purged_count": 7,
                 "test_count": 56,
                 "model_mae_symmetric_gap": {
-                  "persistence": 0.098362,
-                  "zero_shortfall": 0.130159,
-                  "linear": 0.140437,
-                  "ridge": 0.140395,
-                  "random_forest": 0.124953,
-                  "gradient_boosting": 0.119078
+                  "persistence": 0.102307,
+                  "zero_shortfall": 0.131628,
+                  "linear": 0.140974,
+                  "ridge": 0.140922,
+                  "random_forest": 0.129525,
+                  "gradient_boosting": 0.121992
                 }
               }
             ],
@@ -851,61 +851,61 @@
               {
                 "model": "persistence",
                 "cv_mae_symmetric_gap": null,
-                "test_mae_symmetric_gap": 0.076565,
-                "test_rmse_symmetric_gap": 0.104064,
-                "test_r2": 0.053992,
-                "stress_direction_accuracy": 0.84375,
-                "mean_fold_mae_symmetric_gap": 0.076565,
+                "test_mae_symmetric_gap": 0.076155,
+                "test_rmse_symmetric_gap": 0.103829,
+                "test_r2": 0.00418,
+                "stress_direction_accuracy": 0.852679,
+                "mean_fold_mae_symmetric_gap": 0.076155,
                 "fold_wins_vs_best_simple_baseline": null
               },
               {
                 "model": "zero_shortfall",
                 "cv_mae_symmetric_gap": null,
-                "test_mae_symmetric_gap": 0.085406,
-                "test_rmse_symmetric_gap": 0.107128,
-                "test_r2": -0.002545,
-                "stress_direction_accuracy": 0.8125,
-                "mean_fold_mae_symmetric_gap": 0.085406,
+                "test_mae_symmetric_gap": 0.081646,
+                "test_rmse_symmetric_gap": 0.104053,
+                "test_r2": -0.000115,
+                "stress_direction_accuracy": 0.84375,
+                "mean_fold_mae_symmetric_gap": 0.081646,
                 "fold_wins_vs_best_simple_baseline": null
               },
               {
                 "model": "linear",
                 "cv_mae_symmetric_gap": null,
-                "test_mae_symmetric_gap": 0.082529,
-                "test_rmse_symmetric_gap": 0.105515,
-                "test_r2": 0.027427,
-                "stress_direction_accuracy": 0.8125,
-                "mean_fold_mae_symmetric_gap": 0.082529,
+                "test_mae_symmetric_gap": 0.079893,
+                "test_rmse_symmetric_gap": 0.103577,
+                "test_r2": 0.009016,
+                "stress_direction_accuracy": 0.84375,
+                "mean_fold_mae_symmetric_gap": 0.079893,
                 "fold_wins_vs_best_simple_baseline": 1
               },
               {
                 "model": "ridge",
                 "cv_mae_symmetric_gap": null,
-                "test_mae_symmetric_gap": 0.082522,
-                "test_rmse_symmetric_gap": 0.105488,
-                "test_r2": 0.027926,
-                "stress_direction_accuracy": 0.8125,
-                "mean_fold_mae_symmetric_gap": 0.082522,
+                "test_mae_symmetric_gap": 0.079883,
+                "test_rmse_symmetric_gap": 0.103546,
+                "test_r2": 0.009607,
+                "stress_direction_accuracy": 0.84375,
+                "mean_fold_mae_symmetric_gap": 0.079883,
                 "fold_wins_vs_best_simple_baseline": 1
               },
               {
                 "model": "random_forest",
                 "cv_mae_symmetric_gap": null,
-                "test_mae_symmetric_gap": 0.079726,
-                "test_rmse_symmetric_gap": 0.100381,
-                "test_r2": 0.119761,
-                "stress_direction_accuracy": 0.8125,
-                "mean_fold_mae_symmetric_gap": 0.079726,
+                "test_mae_symmetric_gap": 0.078764,
+                "test_rmse_symmetric_gap": 0.100202,
+                "test_r2": 0.072547,
+                "stress_direction_accuracy": 0.84375,
+                "mean_fold_mae_symmetric_gap": 0.078764,
                 "fold_wins_vs_best_simple_baseline": 1
               },
               {
                 "model": "gradient_boosting",
                 "cv_mae_symmetric_gap": null,
-                "test_mae_symmetric_gap": 0.078732,
-                "test_rmse_symmetric_gap": 0.099045,
-                "test_r2": 0.14303,
-                "stress_direction_accuracy": 0.8125,
-                "mean_fold_mae_symmetric_gap": 0.078732,
+                "test_mae_symmetric_gap": 0.076154,
+                "test_rmse_symmetric_gap": 0.097141,
+                "test_r2": 0.128343,
+                "stress_direction_accuracy": 0.84375,
+                "mean_fold_mae_symmetric_gap": 0.076154,
                 "fold_wins_vs_best_simple_baseline": 1
               }
             ]
@@ -913,7 +913,7 @@
           "feature_importance": [
             {
               "feature": "symmetric_gap_7_vs_prior_28",
-              "importance": 0.014662
+              "importance": 0.011026
             },
             {
               "feature": "symmetric_gap_3_vs_prior_14",
@@ -932,22 +932,22 @@
               "importance": 0.0
             }
           ],
-          "candidate_next_7d_symmetric_gap": 0.034837,
-          "candidate_next_7d_shortfall_fraction": 0.03424,
+          "candidate_next_7d_symmetric_gap": 0.046345,
+          "candidate_next_7d_shortfall_fraction": 0.045295,
           "published_next_7d_shortfall_fraction": null,
           "candidate_prediction_interval": {
-            "p10_symmetric_gap": -0.085718,
-            "p90_symmetric_gap": 0.153889,
+            "p10_symmetric_gap": -0.08068,
+            "p90_symmetric_gap": 0.165406,
             "method": "holdout residual empirical interval on symmetric gap scale"
           },
           "current_regime": {
             "label": "capacity_stress",
             "cluster": 2,
-            "cluster_mean_symmetric_gap": 0.062947
+            "cluster_mean_symmetric_gap": 0.061684
           },
           "current_anomaly": {
-            "score": -0.08248,
-            "historical_percentile": 0.526851,
+            "score": -0.04037,
+            "historical_percentile": 0.822932,
             "is_anomaly_at_90pct": false,
             "method": "IsolationForest contamination=0.10"
           },
@@ -955,16 +955,16 @@
         }
       },
       "multi_model_primary_metric": "all",
-      "fetched_at": "2026-08-11T20:31:28.086684+00:00",
-      "stale_days": 2,
-      "is_stale": false,
-      "fallback_used": false,
-      "source_status": "api_observation_fresh"
+      "fetched_at": "2026-08-10T06:47:05.058878+00:00",
+      "stale_days": 8,
+      "is_stale": true,
+      "fallback_used": true,
+      "source_status": "cached_fallback"
     },
     "bosporus": {
       "portwatch_id": "chokepoint3",
       "portname": "Bosporus Strait",
-      "latest_date": "2026-08-09",
+      "latest_date": "2026-08-02",
       "quality": "observed_estimated_trade_volume_shortfall_7d_vs_prior_28d",
       "current_window_days": 7,
       "baseline_window_days": 28,
@@ -977,56 +977,56 @@
           "field": "capacity_container",
           "unit": "estimated_trade_tonnes_per_day",
           "definition": "PortWatch estimated daily trade volume in metric tonnes, derived from vessel DWT and estimated payload/utilization; not observed vessel DWT.",
-          "current_7d_mean_estimated_trade_tonnes": 49976.857143,
-          "prior_28d_mean_estimated_trade_tonnes": 65372.892857,
-          "estimated_trade_volume_ratio": 0.764489,
-          "observed_trade_volume_shortfall_fraction": 0.235511,
-          "remaining_trade_volume_ratio": 0.764489,
-          "change_pct": -23.551101
+          "current_7d_mean_estimated_trade_tonnes": 61662.142857,
+          "prior_28d_mean_estimated_trade_tonnes": 65879.892857,
+          "estimated_trade_volume_ratio": 0.935978,
+          "observed_trade_volume_shortfall_fraction": 0.064022,
+          "remaining_trade_volume_ratio": 0.935978,
+          "change_pct": -6.402181
         },
         "dry_bulk": {
           "field": "capacity_dry_bulk",
           "unit": "estimated_trade_tonnes_per_day",
           "definition": "PortWatch estimated daily trade volume in metric tonnes, derived from vessel DWT and estimated payload/utilization; not observed vessel DWT.",
-          "current_7d_mean_estimated_trade_tonnes": 276094.142857,
-          "prior_28d_mean_estimated_trade_tonnes": 398501.571429,
-          "estimated_trade_volume_ratio": 0.692831,
-          "observed_trade_volume_shortfall_fraction": 0.307169,
-          "remaining_trade_volume_ratio": 0.692831,
-          "change_pct": -30.716925
+          "current_7d_mean_estimated_trade_tonnes": 361518.428571,
+          "prior_28d_mean_estimated_trade_tonnes": 438414.964286,
+          "estimated_trade_volume_ratio": 0.824603,
+          "observed_trade_volume_shortfall_fraction": 0.175397,
+          "remaining_trade_volume_ratio": 0.824603,
+          "change_pct": -17.539669
         },
         "general_cargo": {
           "field": "capacity_general_cargo",
           "unit": "estimated_trade_tonnes_per_day",
           "definition": "PortWatch estimated daily trade volume in metric tonnes, derived from vessel DWT and estimated payload/utilization; not observed vessel DWT.",
-          "current_7d_mean_estimated_trade_tonnes": 62363.285714,
-          "prior_28d_mean_estimated_trade_tonnes": 68978.535714,
-          "estimated_trade_volume_ratio": 0.904097,
-          "observed_trade_volume_shortfall_fraction": 0.095903,
-          "remaining_trade_volume_ratio": 0.904097,
-          "change_pct": -9.590302
+          "current_7d_mean_estimated_trade_tonnes": 49440.714286,
+          "prior_28d_mean_estimated_trade_tonnes": 76951.535714,
+          "estimated_trade_volume_ratio": 0.642492,
+          "observed_trade_volume_shortfall_fraction": 0.357508,
+          "remaining_trade_volume_ratio": 0.642492,
+          "change_pct": -35.750841
         },
         "tanker": {
           "field": "capacity_tanker",
           "unit": "estimated_trade_tonnes_per_day",
           "definition": "PortWatch estimated daily trade volume in metric tonnes, derived from vessel DWT and estimated payload/utilization; not observed vessel DWT.",
-          "current_7d_mean_estimated_trade_tonnes": 272638.428571,
-          "prior_28d_mean_estimated_trade_tonnes": 373023.321429,
-          "estimated_trade_volume_ratio": 0.730888,
-          "observed_trade_volume_shortfall_fraction": 0.269112,
-          "remaining_trade_volume_ratio": 0.730888,
-          "change_pct": -26.911157
+          "current_7d_mean_estimated_trade_tonnes": 296846.857143,
+          "prior_28d_mean_estimated_trade_tonnes": 446783.285714,
+          "estimated_trade_volume_ratio": 0.664409,
+          "observed_trade_volume_shortfall_fraction": 0.335591,
+          "remaining_trade_volume_ratio": 0.664409,
+          "change_pct": -33.559095
         },
         "all": {
           "field": "capacity",
           "unit": "estimated_trade_tonnes_per_day",
           "definition": "PortWatch estimated daily trade volume in metric tonnes, derived from vessel DWT and estimated payload/utilization; not observed vessel DWT.",
-          "current_7d_mean_estimated_trade_tonnes": 661234.857143,
-          "prior_28d_mean_estimated_trade_tonnes": 906128.75,
-          "estimated_trade_volume_ratio": 0.729736,
-          "observed_trade_volume_shortfall_fraction": 0.270264,
-          "remaining_trade_volume_ratio": 0.729736,
-          "change_pct": -27.02639
+          "current_7d_mean_estimated_trade_tonnes": 769630.571429,
+          "prior_28d_mean_estimated_trade_tonnes": 1028241.892857,
+          "estimated_trade_volume_ratio": 0.748492,
+          "observed_trade_volume_shortfall_fraction": 0.251508,
+          "remaining_trade_volume_ratio": 0.748492,
+          "change_pct": -25.150825
         }
       },
       "signal_validation": {
@@ -1038,27 +1038,27 @@
           "test_count": 138,
           "feature": "signed current 7-observation estimated trade-volume gap vs preceding 28",
           "target": "signed next 7-observation estimated trade-volume gap vs same preceding 28",
-          "ols_intercept": -0.004987,
-          "ols_slope": 0.287546,
-          "test_r2": -0.174024,
-          "test_mae_fraction": 0.136619,
-          "persistence_mae_fraction": 0.197999,
+          "ols_intercept": -0.006777,
+          "ols_slope": 0.298897,
+          "test_r2": -0.248265,
+          "test_mae_fraction": 0.133823,
+          "persistence_mae_fraction": 0.20159,
           "beats_persistence": true,
           "warning": "Exploratory chronological validation; not a causal model or closure probability."
         },
         "dry_bulk": {
-          "status": "exploratory_no_proven_skill",
-          "forecast_use": "descriptive_only",
+          "status": "exploratory_positive_skill",
+          "forecast_use": "eligible_for_exploratory_forecast",
           "sample_count": 689,
           "train_count": 551,
           "test_count": 138,
           "feature": "signed current 7-observation estimated trade-volume gap vs preceding 28",
           "target": "signed next 7-observation estimated trade-volume gap vs same preceding 28",
-          "ols_intercept": -0.006185,
-          "ols_slope": 0.243762,
-          "test_r2": -0.047154,
-          "test_mae_fraction": 0.130172,
-          "persistence_mae_fraction": 0.148264,
+          "ols_intercept": -0.003882,
+          "ols_slope": 0.237247,
+          "test_r2": 0.033437,
+          "test_mae_fraction": 0.129268,
+          "persistence_mae_fraction": 0.159142,
           "beats_persistence": true,
           "warning": "Exploratory chronological validation; not a causal model or closure probability."
         },
@@ -1070,11 +1070,11 @@
           "test_count": 138,
           "feature": "signed current 7-observation estimated trade-volume gap vs preceding 28",
           "target": "signed next 7-observation estimated trade-volume gap vs same preceding 28",
-          "ols_intercept": -0.00184,
-          "ols_slope": 0.224578,
-          "test_r2": 0.091392,
-          "test_mae_fraction": 0.124383,
-          "persistence_mae_fraction": 0.136847,
+          "ols_intercept": 0.000147,
+          "ols_slope": 0.228132,
+          "test_r2": 0.094758,
+          "test_mae_fraction": 0.122774,
+          "persistence_mae_fraction": 0.139761,
           "beats_persistence": true,
           "warning": "Exploratory chronological validation; not a causal model or closure probability."
         },
@@ -1086,11 +1086,11 @@
           "test_count": 138,
           "feature": "signed current 7-observation estimated trade-volume gap vs preceding 28",
           "target": "signed next 7-observation estimated trade-volume gap vs same preceding 28",
-          "ols_intercept": -0.003489,
-          "ols_slope": 0.100772,
-          "test_r2": 0.050301,
-          "test_mae_fraction": 0.170014,
-          "persistence_mae_fraction": 0.186735,
+          "ols_intercept": -0.001808,
+          "ols_slope": 0.071047,
+          "test_r2": 0.04818,
+          "test_mae_fraction": 0.170828,
+          "persistence_mae_fraction": 0.187318,
           "beats_persistence": true,
           "warning": "Exploratory chronological validation; not a causal model or closure probability."
         },
@@ -1102,11 +1102,11 @@
           "test_count": 138,
           "feature": "signed current 7-observation estimated trade-volume gap vs preceding 28",
           "target": "signed next 7-observation estimated trade-volume gap vs same preceding 28",
-          "ols_intercept": -0.002954,
-          "ols_slope": 0.221892,
-          "test_r2": 0.101705,
-          "test_mae_fraction": 0.12476,
-          "persistence_mae_fraction": 0.12891,
+          "ols_intercept": -0.001178,
+          "ols_slope": 0.187188,
+          "test_r2": 0.121676,
+          "test_mae_fraction": 0.122856,
+          "persistence_mae_fraction": 0.130657,
           "beats_persistence": true,
           "warning": "Exploratory chronological validation; not a causal model or closure probability."
         }
@@ -1128,459 +1128,59 @@
             "zero_capacity_share_14"
           ],
           "model_selection": "lowest three-split TimeSeriesSplit CV MAE on training window",
-          "selected_model": "gradient_boosting",
-          "beats_persistence_by_5pct": false,
-          "beats_best_simple_baseline_by_5pct": false,
-          "backtest_beats_best_simple_baseline_by_5pct": false,
-          "backtest_positive_r2": false,
-          "models": [
-            {
-              "model": "persistence",
-              "cv_mae_symmetric_gap": null,
-              "test_mae_symmetric_gap": 0.135193,
-              "test_rmse_symmetric_gap": 0.167088,
-              "test_r2": 0.1727,
-              "stress_direction_accuracy": 0.688406
-            },
-            {
-              "model": "zero_shortfall",
-              "cv_mae_symmetric_gap": null,
-              "test_mae_symmetric_gap": 0.141397,
-              "test_rmse_symmetric_gap": 0.194842,
-              "test_r2": -0.124957,
-              "stress_direction_accuracy": 0.637681
-            },
-            {
-              "model": "linear",
-              "cv_mae_symmetric_gap": 0.11516,
-              "test_mae_symmetric_gap": 0.126222,
-              "test_rmse_symmetric_gap": 0.167885,
-              "test_r2": 0.164797,
-              "stress_direction_accuracy": 0.695652
-            },
-            {
-              "model": "ridge",
-              "cv_mae_symmetric_gap": 0.115109,
-              "test_mae_symmetric_gap": 0.126314,
-              "test_rmse_symmetric_gap": 0.168012,
-              "test_r2": 0.163531,
-              "stress_direction_accuracy": 0.695652
-            },
-            {
-              "model": "random_forest",
-              "cv_mae_symmetric_gap": 0.117602,
-              "test_mae_symmetric_gap": 0.131595,
-              "test_rmse_symmetric_gap": 0.172969,
-              "test_r2": 0.113445,
-              "stress_direction_accuracy": 0.644928
-            },
-            {
-              "model": "gradient_boosting",
-              "cv_mae_symmetric_gap": 0.11344,
-              "test_mae_symmetric_gap": 0.133778,
-              "test_rmse_symmetric_gap": 0.179241,
-              "test_r2": 0.047986,
-              "stress_direction_accuracy": 0.695652
-            }
-          ],
-          "walk_forward_backtest": {
-            "status": "completed",
-            "method": "four-fold expanding-window backtest with non-overlapping 56-sample test blocks",
-            "fold_count": 4,
-            "purge_gap_samples": 7,
-            "total_test_predictions": 224,
-            "folds": [
-              {
-                "fold": 1,
-                "train_count": 458,
-                "purged_count": 7,
-                "test_count": 56,
-                "model_mae_symmetric_gap": {
-                  "persistence": 0.147719,
-                  "zero_shortfall": 0.206272,
-                  "linear": 0.209413,
-                  "ridge": 0.209402,
-                  "random_forest": 0.216397,
-                  "gradient_boosting": 0.21489
-                }
-              },
-              {
-                "fold": 2,
-                "train_count": 514,
-                "purged_count": 7,
-                "test_count": 56,
-                "model_mae_symmetric_gap": {
-                  "persistence": 0.148677,
-                  "zero_shortfall": 0.131883,
-                  "linear": 0.11973,
-                  "ridge": 0.119837,
-                  "random_forest": 0.152371,
-                  "gradient_boosting": 0.134448
-                }
-              },
-              {
-                "fold": 3,
-                "train_count": 570,
-                "purged_count": 7,
-                "test_count": 56,
-                "model_mae_symmetric_gap": {
-                  "persistence": 0.124161,
-                  "zero_shortfall": 0.099602,
-                  "linear": 0.099344,
-                  "ridge": 0.09935,
-                  "random_forest": 0.106863,
-                  "gradient_boosting": 0.103769
-                }
-              },
-              {
-                "fold": 4,
-                "train_count": 626,
-                "purged_count": 7,
-                "test_count": 56,
-                "model_mae_symmetric_gap": {
-                  "persistence": 0.152048,
-                  "zero_shortfall": 0.188336,
-                  "linear": 0.159668,
-                  "ridge": 0.159806,
-                  "random_forest": 0.164688,
-                  "gradient_boosting": 0.16838
-                }
-              }
-            ],
-            "models": [
-              {
-                "model": "persistence",
-                "cv_mae_symmetric_gap": null,
-                "test_mae_symmetric_gap": 0.143151,
-                "test_rmse_symmetric_gap": 0.179708,
-                "test_r2": 0.205157,
-                "stress_direction_accuracy": 0.709821,
-                "mean_fold_mae_symmetric_gap": 0.143151,
-                "fold_wins_vs_best_simple_baseline": null
-              },
-              {
-                "model": "zero_shortfall",
-                "cv_mae_symmetric_gap": null,
-                "test_mae_symmetric_gap": 0.156523,
-                "test_rmse_symmetric_gap": 0.207199,
-                "test_r2": -0.056629,
-                "stress_direction_accuracy": 0.65625,
-                "mean_fold_mae_symmetric_gap": 0.156523,
-                "fold_wins_vs_best_simple_baseline": null
-              },
-              {
-                "model": "linear",
-                "cv_mae_symmetric_gap": null,
-                "test_mae_symmetric_gap": 0.147038,
-                "test_rmse_symmetric_gap": 0.191329,
-                "test_r2": 0.099032,
-                "stress_direction_accuracy": 0.691964,
-                "mean_fold_mae_symmetric_gap": 0.147038,
-                "fold_wins_vs_best_simple_baseline": 2
-              },
-              {
-                "model": "ridge",
-                "cv_mae_symmetric_gap": null,
-                "test_mae_symmetric_gap": 0.147099,
-                "test_rmse_symmetric_gap": 0.191399,
-                "test_r2": 0.098371,
-                "stress_direction_accuracy": 0.691964,
-                "mean_fold_mae_symmetric_gap": 0.147099,
-                "fold_wins_vs_best_simple_baseline": 2
-              },
-              {
-                "model": "random_forest",
-                "cv_mae_symmetric_gap": null,
-                "test_mae_symmetric_gap": 0.16008,
-                "test_rmse_symmetric_gap": 0.203569,
-                "test_r2": -0.01993,
-                "stress_direction_accuracy": 0.651786,
-                "mean_fold_mae_symmetric_gap": 0.16008,
-                "fold_wins_vs_best_simple_baseline": 0
-              },
-              {
-                "model": "gradient_boosting",
-                "cv_mae_symmetric_gap": null,
-                "test_mae_symmetric_gap": 0.155372,
-                "test_rmse_symmetric_gap": 0.202059,
-                "test_r2": -0.004856,
-                "stress_direction_accuracy": 0.6875,
-                "mean_fold_mae_symmetric_gap": 0.155372,
-                "fold_wins_vs_best_simple_baseline": 0
-              }
-            ]
-          },
-          "feature_importance": [
-            {
-              "feature": "symmetric_gap_7_vs_prior_28",
-              "importance": 0.013952
-            },
-            {
-              "feature": "symmetric_gap_3_vs_prior_14",
-              "importance": 1.7e-05
-            },
-            {
-              "feature": "symmetric_week_over_week_gap",
-              "importance": 0.0
-            },
-            {
-              "feature": "volatility_cv_14",
-              "importance": 0.0
-            },
-            {
-              "feature": "zero_capacity_share_14",
-              "importance": 0.0
-            }
-          ],
-          "candidate_next_7d_symmetric_gap": 0.093777,
-          "candidate_next_7d_shortfall_fraction": 0.089577,
-          "published_next_7d_shortfall_fraction": null,
-          "candidate_prediction_interval": {
-            "p10_symmetric_gap": -0.041539,
-            "p90_symmetric_gap": 0.300225,
-            "method": "holdout residual empirical interval on symmetric gap scale"
-          },
-          "current_regime": {
-            "label": "normal_variation",
-            "cluster": 2,
-            "cluster_mean_symmetric_gap": 0.076825
-          },
-          "current_anomaly": {
-            "score": -0.029221,
-            "historical_percentile": 0.854862,
-            "is_anomaly_at_90pct": false,
-            "method": "IsolationForest contamination=0.10"
-          },
-          "warning": "Exploratory ML with purged chronological validation; no causal claim. Candidate is unpublished unless it beats both simple baselines by 5% and has positive R2 in both holdout and walk-forward backtests."
-        }
-      },
-      "multi_model_primary_metric": "all",
-      "fetched_at": "2026-08-11T20:31:28.086684+00:00",
-      "stale_days": 2,
-      "is_stale": false,
-      "fallback_used": false,
-      "source_status": "api_observation_fresh"
-    },
-    "bab_el_mandeb": {
-      "portwatch_id": "chokepoint4",
-      "portname": "Bab el-Mandeb Strait",
-      "latest_date": "2026-08-09",
-      "quality": "observed_estimated_trade_volume_shortfall_7d_vs_prior_28d",
-      "current_window_days": 7,
-      "baseline_window_days": 28,
-      "metric_unit": "estimated_trade_tonnes_per_day",
-      "metric_definition": "PortWatch estimated daily trade volume in metric tonnes, derived from vessel DWT and estimated payload/utilization; not observed vessel DWT.",
-      "interpretation": "Short-term estimated trade-volume anomaly used as a disruption signal; not observed DWT and not proof of literal physical closure.",
-      "observation_count": 730,
-      "metrics": {
-        "container": {
-          "field": "capacity_container",
-          "unit": "estimated_trade_tonnes_per_day",
-          "definition": "PortWatch estimated daily trade volume in metric tonnes, derived from vessel DWT and estimated payload/utilization; not observed vessel DWT.",
-          "current_7d_mean_estimated_trade_tonnes": 77754.0,
-          "prior_28d_mean_estimated_trade_tonnes": 76919.857143,
-          "estimated_trade_volume_ratio": 1.010844,
-          "observed_trade_volume_shortfall_fraction": 0.0,
-          "remaining_trade_volume_ratio": 1.0,
-          "change_pct": 1.084431
-        },
-        "dry_bulk": {
-          "field": "capacity_dry_bulk",
-          "unit": "estimated_trade_tonnes_per_day",
-          "definition": "PortWatch estimated daily trade volume in metric tonnes, derived from vessel DWT and estimated payload/utilization; not observed vessel DWT.",
-          "current_7d_mean_estimated_trade_tonnes": 350262.857143,
-          "prior_28d_mean_estimated_trade_tonnes": 474253.642857,
-          "estimated_trade_volume_ratio": 0.738556,
-          "observed_trade_volume_shortfall_fraction": 0.261444,
-          "remaining_trade_volume_ratio": 0.738556,
-          "change_pct": -26.144403
-        },
-        "general_cargo": {
-          "field": "capacity_general_cargo",
-          "unit": "estimated_trade_tonnes_per_day",
-          "definition": "PortWatch estimated daily trade volume in metric tonnes, derived from vessel DWT and estimated payload/utilization; not observed vessel DWT.",
-          "current_7d_mean_estimated_trade_tonnes": 28125.857143,
-          "prior_28d_mean_estimated_trade_tonnes": 32043.357143,
-          "estimated_trade_volume_ratio": 0.877744,
-          "observed_trade_volume_shortfall_fraction": 0.122256,
-          "remaining_trade_volume_ratio": 0.877744,
-          "change_pct": -12.225623
-        },
-        "tanker": {
-          "field": "capacity_tanker",
-          "unit": "estimated_trade_tonnes_per_day",
-          "definition": "PortWatch estimated daily trade volume in metric tonnes, derived from vessel DWT and estimated payload/utilization; not observed vessel DWT.",
-          "current_7d_mean_estimated_trade_tonnes": 372044.142857,
-          "prior_28d_mean_estimated_trade_tonnes": 644250.642857,
-          "estimated_trade_volume_ratio": 0.577484,
-          "observed_trade_volume_shortfall_fraction": 0.422516,
-          "remaining_trade_volume_ratio": 0.577484,
-          "change_pct": -42.251646
-        },
-        "all": {
-          "field": "capacity",
-          "unit": "estimated_trade_tonnes_per_day",
-          "definition": "PortWatch estimated daily trade volume in metric tonnes, derived from vessel DWT and estimated payload/utilization; not observed vessel DWT.",
-          "current_7d_mean_estimated_trade_tonnes": 832910.142857,
-          "prior_28d_mean_estimated_trade_tonnes": 1232492.464286,
-          "estimated_trade_volume_ratio": 0.675793,
-          "observed_trade_volume_shortfall_fraction": 0.324207,
-          "remaining_trade_volume_ratio": 0.675793,
-          "change_pct": -32.420671
-        }
-      },
-      "signal_validation": {
-        "container": {
-          "status": "exploratory_positive_skill",
-          "forecast_use": "eligible_for_exploratory_forecast",
-          "sample_count": 689,
-          "train_count": 551,
-          "test_count": 138,
-          "feature": "signed current 7-observation estimated trade-volume gap vs preceding 28",
-          "target": "signed next 7-observation estimated trade-volume gap vs same preceding 28",
-          "ols_intercept": -0.002546,
-          "ols_slope": 0.003704,
-          "test_r2": 0.000746,
-          "test_mae_fraction": 0.169289,
-          "persistence_mae_fraction": 0.177005,
-          "beats_persistence": true,
-          "warning": "Exploratory chronological validation; not a causal model or closure probability."
-        },
-        "dry_bulk": {
-          "status": "exploratory_positive_skill",
-          "forecast_use": "eligible_for_exploratory_forecast",
-          "sample_count": 689,
-          "train_count": 551,
-          "test_count": 138,
-          "feature": "signed current 7-observation estimated trade-volume gap vs preceding 28",
-          "target": "signed next 7-observation estimated trade-volume gap vs same preceding 28",
-          "ols_intercept": -0.010939,
-          "ols_slope": 0.098535,
-          "test_r2": 0.034744,
-          "test_mae_fraction": 0.154504,
-          "persistence_mae_fraction": 0.188224,
-          "beats_persistence": true,
-          "warning": "Exploratory chronological validation; not a causal model or closure probability."
-        },
-        "general_cargo": {
-          "status": "exploratory_positive_skill",
-          "forecast_use": "eligible_for_exploratory_forecast",
-          "sample_count": 689,
-          "train_count": 551,
-          "test_count": 138,
-          "feature": "signed current 7-observation estimated trade-volume gap vs preceding 28",
-          "target": "signed next 7-observation estimated trade-volume gap vs same preceding 28",
-          "ols_intercept": -0.018212,
-          "ols_slope": 0.160045,
-          "test_r2": 0.058758,
-          "test_mae_fraction": 0.20181,
-          "persistence_mae_fraction": 0.254372,
-          "beats_persistence": true,
-          "warning": "Exploratory chronological validation; not a causal model or closure probability."
-        },
-        "tanker": {
-          "status": "exploratory_positive_skill",
-          "forecast_use": "eligible_for_exploratory_forecast",
-          "sample_count": 689,
-          "train_count": 551,
-          "test_count": 138,
-          "feature": "signed current 7-observation estimated trade-volume gap vs preceding 28",
-          "target": "signed next 7-observation estimated trade-volume gap vs same preceding 28",
-          "ols_intercept": -0.021683,
-          "ols_slope": 0.207179,
-          "test_r2": 0.055329,
-          "test_mae_fraction": 0.134624,
-          "persistence_mae_fraction": 0.142282,
-          "beats_persistence": true,
-          "warning": "Exploratory chronological validation; not a causal model or closure probability."
-        },
-        "all": {
-          "status": "exploratory_positive_skill",
-          "forecast_use": "eligible_for_exploratory_forecast",
-          "sample_count": 689,
-          "train_count": 551,
-          "test_count": 138,
-          "feature": "signed current 7-observation estimated trade-volume gap vs preceding 28",
-          "target": "signed next 7-observation estimated trade-volume gap vs same preceding 28",
-          "ols_intercept": -0.013311,
-          "ols_slope": 0.172009,
-          "test_r2": 0.075111,
-          "test_mae_fraction": 0.09833,
-          "persistence_mae_fraction": 0.10408,
-          "beats_persistence": true,
-          "warning": "Exploratory chronological validation; not a causal model or closure probability."
-        }
-      },
-      "multi_model_analysis": {
-        "all": {
-          "status": "ml_does_not_beat_baseline",
-          "forecast_use": "descriptive_only",
-          "sample_count": 689,
-          "train_count": 544,
-          "purged_count": 7,
-          "test_count": 138,
-          "target_scale": "symmetric capacity gap in [-2, 2]; positive means shortfall",
-          "feature_names": [
-            "symmetric_gap_7_vs_prior_28",
-            "symmetric_gap_3_vs_prior_14",
-            "symmetric_week_over_week_gap",
-            "volatility_cv_14",
-            "zero_capacity_share_14"
-          ],
-          "model_selection": "lowest three-split TimeSeriesSplit CV MAE on training window",
-          "selected_model": "gradient_boosting",
-          "beats_persistence_by_5pct": false,
-          "beats_best_simple_baseline_by_5pct": false,
+          "selected_model": "ridge",
+          "beats_persistence_by_5pct": true,
+          "beats_best_simple_baseline_by_5pct": true,
           "backtest_beats_best_simple_baseline_by_5pct": false,
           "backtest_positive_r2": true,
           "models": [
             {
               "model": "persistence",
               "cv_mae_symmetric_gap": null,
-              "test_mae_symmetric_gap": 0.109606,
-              "test_rmse_symmetric_gap": 0.141526,
-              "test_r2": 0.356368,
-              "stress_direction_accuracy": 0.811594
+              "test_mae_symmetric_gap": 0.1338,
+              "test_rmse_symmetric_gap": 0.166406,
+              "test_r2": 0.151641,
+              "stress_direction_accuracy": 0.688406
             },
             {
               "model": "zero_shortfall",
               "cv_mae_symmetric_gap": null,
-              "test_mae_symmetric_gap": 0.111651,
-              "test_rmse_symmetric_gap": 0.180129,
-              "test_r2": -0.042634,
-              "stress_direction_accuracy": 0.811594
+              "test_mae_symmetric_gap": 0.133882,
+              "test_rmse_symmetric_gap": 0.184256,
+              "test_r2": -0.040123,
+              "stress_direction_accuracy": 0.688406
             },
             {
               "model": "linear",
-              "cv_mae_symmetric_gap": 0.094892,
-              "test_mae_symmetric_gap": 0.104063,
-              "test_rmse_symmetric_gap": 0.162396,
-              "test_r2": 0.152545,
-              "stress_direction_accuracy": 0.818841
+              "cv_mae_symmetric_gap": 0.113897,
+              "test_mae_symmetric_gap": 0.122865,
+              "test_rmse_symmetric_gap": 0.164988,
+              "test_r2": 0.166043,
+              "stress_direction_accuracy": 0.695652
             },
             {
               "model": "ridge",
-              "cv_mae_symmetric_gap": 0.09483,
-              "test_mae_symmetric_gap": 0.104085,
-              "test_rmse_symmetric_gap": 0.162471,
-              "test_r2": 0.15176,
-              "stress_direction_accuracy": 0.818841
+              "cv_mae_symmetric_gap": 0.113855,
+              "test_mae_symmetric_gap": 0.122929,
+              "test_rmse_symmetric_gap": 0.165072,
+              "test_r2": 0.165195,
+              "stress_direction_accuracy": 0.695652
             },
             {
               "model": "random_forest",
-              "cv_mae_symmetric_gap": 0.094113,
-              "test_mae_symmetric_gap": 0.110133,
-              "test_rmse_symmetric_gap": 0.169352,
-              "test_r2": 0.078389,
-              "stress_direction_accuracy": 0.804348
+              "cv_mae_symmetric_gap": 0.118596,
+              "test_mae_symmetric_gap": 0.132649,
+              "test_rmse_symmetric_gap": 0.178534,
+              "test_r2": 0.02348,
+              "stress_direction_accuracy": 0.695652
             },
             {
               "model": "gradient_boosting",
-              "cv_mae_symmetric_gap": 0.093623,
-              "test_mae_symmetric_gap": 0.110348,
-              "test_rmse_symmetric_gap": 0.175562,
-              "test_r2": 0.009566,
-              "stress_direction_accuracy": 0.811594
+              "cv_mae_symmetric_gap": 0.113995,
+              "test_mae_symmetric_gap": 0.131432,
+              "test_rmse_symmetric_gap": 0.176772,
+              "test_r2": 0.042656,
+              "stress_direction_accuracy": 0.702899
             }
           ],
           "walk_forward_backtest": {
@@ -1596,12 +1196,12 @@
                 "purged_count": 7,
                 "test_count": 56,
                 "model_mae_symmetric_gap": {
-                  "persistence": 0.15011,
-                  "zero_shortfall": 0.103274,
-                  "linear": 0.102112,
-                  "ridge": 0.102143,
-                  "random_forest": 0.095987,
-                  "gradient_boosting": 0.100026
+                  "persistence": 0.129187,
+                  "zero_shortfall": 0.199079,
+                  "linear": 0.200573,
+                  "ridge": 0.200585,
+                  "random_forest": 0.207295,
+                  "gradient_boosting": 0.205114
                 }
               },
               {
@@ -1610,12 +1210,12 @@
                 "purged_count": 7,
                 "test_count": 56,
                 "model_mae_symmetric_gap": {
-                  "persistence": 0.101955,
-                  "zero_shortfall": 0.101154,
-                  "linear": 0.099223,
-                  "ridge": 0.099182,
-                  "random_forest": 0.108072,
-                  "gradient_boosting": 0.103672
+                  "persistence": 0.172011,
+                  "zero_shortfall": 0.142557,
+                  "linear": 0.136202,
+                  "ridge": 0.13628,
+                  "random_forest": 0.172842,
+                  "gradient_boosting": 0.149987
                 }
               },
               {
@@ -1624,12 +1224,12 @@
                 "purged_count": 7,
                 "test_count": 56,
                 "model_mae_symmetric_gap": {
-                  "persistence": 0.101173,
-                  "zero_shortfall": 0.058723,
-                  "linear": 0.061493,
-                  "ridge": 0.061498,
-                  "random_forest": 0.078099,
-                  "gradient_boosting": 0.068772
+                  "persistence": 0.123614,
+                  "zero_shortfall": 0.08959,
+                  "linear": 0.094034,
+                  "ridge": 0.093991,
+                  "random_forest": 0.095032,
+                  "gradient_boosting": 0.093181
                 }
               },
               {
@@ -1638,12 +1238,12 @@
                 "purged_count": 7,
                 "test_count": 56,
                 "model_mae_symmetric_gap": {
-                  "persistence": 0.136615,
-                  "zero_shortfall": 0.18452,
-                  "linear": 0.165937,
-                  "ridge": 0.165986,
-                  "random_forest": 0.163708,
-                  "gradient_boosting": 0.172721
+                  "persistence": 0.146284,
+                  "zero_shortfall": 0.162177,
+                  "linear": 0.14619,
+                  "ridge": 0.146265,
+                  "random_forest": 0.157177,
+                  "gradient_boosting": 0.156994
                 }
               }
             ],
@@ -1651,103 +1251,103 @@
               {
                 "model": "persistence",
                 "cv_mae_symmetric_gap": null,
-                "test_mae_symmetric_gap": 0.122463,
-                "test_rmse_symmetric_gap": 0.15314,
-                "test_r2": 0.140984,
-                "stress_direction_accuracy": 0.78125,
-                "mean_fold_mae_symmetric_gap": 0.122463,
+                "test_mae_symmetric_gap": 0.142774,
+                "test_rmse_symmetric_gap": 0.179484,
+                "test_r2": 0.148558,
+                "stress_direction_accuracy": 0.6875,
+                "mean_fold_mae_symmetric_gap": 0.142774,
                 "fold_wins_vs_best_simple_baseline": null
               },
               {
                 "model": "zero_shortfall",
                 "cv_mae_symmetric_gap": null,
-                "test_mae_symmetric_gap": 0.111918,
-                "test_rmse_symmetric_gap": 0.165996,
-                "test_r2": -0.009296,
-                "stress_direction_accuracy": 0.825893,
-                "mean_fold_mae_symmetric_gap": 0.111918,
+                "test_mae_symmetric_gap": 0.148351,
+                "test_rmse_symmetric_gap": 0.198529,
+                "test_r2": -0.041714,
+                "stress_direction_accuracy": 0.678571,
+                "mean_fold_mae_symmetric_gap": 0.148351,
                 "fold_wins_vs_best_simple_baseline": null
               },
               {
                 "model": "linear",
                 "cv_mae_symmetric_gap": null,
-                "test_mae_symmetric_gap": 0.107191,
-                "test_rmse_symmetric_gap": 0.154107,
-                "test_r2": 0.130105,
-                "stress_direction_accuracy": 0.825893,
-                "mean_fold_mae_symmetric_gap": 0.107191,
+                "test_mae_symmetric_gap": 0.14425,
+                "test_rmse_symmetric_gap": 0.190256,
+                "test_r2": 0.043297,
+                "stress_direction_accuracy": 0.683036,
+                "mean_fold_mae_symmetric_gap": 0.14425,
                 "fold_wins_vs_best_simple_baseline": 2
               },
               {
                 "model": "ridge",
                 "cv_mae_symmetric_gap": null,
-                "test_mae_symmetric_gap": 0.107202,
-                "test_rmse_symmetric_gap": 0.154143,
-                "test_r2": 0.12969,
-                "stress_direction_accuracy": 0.825893,
-                "mean_fold_mae_symmetric_gap": 0.107202,
+                "test_mae_symmetric_gap": 0.14428,
+                "test_rmse_symmetric_gap": 0.190296,
+                "test_r2": 0.042892,
+                "stress_direction_accuracy": 0.683036,
+                "mean_fold_mae_symmetric_gap": 0.14428,
                 "fold_wins_vs_best_simple_baseline": 2
               },
               {
                 "model": "random_forest",
                 "cv_mae_symmetric_gap": null,
-                "test_mae_symmetric_gap": 0.111466,
-                "test_rmse_symmetric_gap": 0.158726,
-                "test_r2": 0.077173,
-                "stress_direction_accuracy": 0.825893,
-                "mean_fold_mae_symmetric_gap": 0.111466,
-                "fold_wins_vs_best_simple_baseline": 1
+                "test_mae_symmetric_gap": 0.158087,
+                "test_rmse_symmetric_gap": 0.203382,
+                "test_r2": -0.093268,
+                "stress_direction_accuracy": 0.638393,
+                "mean_fold_mae_symmetric_gap": 0.158087,
+                "fold_wins_vs_best_simple_baseline": 0
               },
               {
                 "model": "gradient_boosting",
                 "cv_mae_symmetric_gap": null,
-                "test_mae_symmetric_gap": 0.111298,
-                "test_rmse_symmetric_gap": 0.162621,
-                "test_r2": 0.031322,
-                "stress_direction_accuracy": 0.825893,
-                "mean_fold_mae_symmetric_gap": 0.111298,
-                "fold_wins_vs_best_simple_baseline": 1
+                "test_mae_symmetric_gap": 0.151319,
+                "test_rmse_symmetric_gap": 0.1994,
+                "test_r2": -0.050871,
+                "stress_direction_accuracy": 0.678571,
+                "mean_fold_mae_symmetric_gap": 0.151319,
+                "fold_wins_vs_best_simple_baseline": 0
               }
             ]
           },
           "feature_importance": [
             {
               "feature": "symmetric_gap_7_vs_prior_28",
-              "importance": 0.003127
+              "importance": 0.024445
             },
             {
               "feature": "symmetric_week_over_week_gap",
-              "importance": 0.001203
-            },
-            {
-              "feature": "symmetric_gap_3_vs_prior_14",
-              "importance": 0.00047
+              "importance": 0.001839
             },
             {
               "feature": "volatility_cv_14",
-              "importance": 0.000329
+              "importance": 0.001029
+            },
+            {
+              "feature": "symmetric_gap_3_vs_prior_14",
+              "importance": 0.00045
             },
             {
               "feature": "zero_capacity_share_14",
               "importance": 0.0
             }
           ],
-          "candidate_next_7d_symmetric_gap": 0.246077,
-          "candidate_next_7d_shortfall_fraction": 0.219117,
+          "candidate_next_7d_symmetric_gap": 0.201736,
+          "candidate_next_7d_shortfall_fraction": 0.183252,
           "published_next_7d_shortfall_fraction": null,
           "candidate_prediction_interval": {
-            "p10_symmetric_gap": 0.138821,
-            "p90_symmetric_gap": 0.465613,
+            "p10_symmetric_gap": 0.053233,
+            "p90_symmetric_gap": 0.398898,
             "method": "holdout residual empirical interval on symmetric gap scale"
           },
           "current_regime": {
             "label": "capacity_stress",
             "cluster": 1,
-            "cluster_mean_symmetric_gap": 0.143866
+            "cluster_mean_symmetric_gap": 0.162091
           },
           "current_anomaly": {
-            "score": 0.058039,
-            "historical_percentile": 0.96807,
+            "score": 0.0321,
+            "historical_percentile": 0.931785,
             "is_anomaly_at_90pct": true,
             "method": "IsolationForest contamination=0.10"
           },
@@ -1755,16 +1355,16 @@
         }
       },
       "multi_model_primary_metric": "all",
-      "fetched_at": "2026-08-11T20:31:28.086684+00:00",
-      "stale_days": 2,
-      "is_stale": false,
-      "fallback_used": false,
-      "source_status": "api_observation_fresh"
+      "fetched_at": "2026-08-10T06:47:05.058878+00:00",
+      "stale_days": 8,
+      "is_stale": true,
+      "fallback_used": true,
+      "source_status": "cached_fallback"
     },
-    "hormuz": {
-      "portwatch_id": "chokepoint6",
-      "portname": "Strait of Hormuz",
-      "latest_date": "2026-08-09",
+    "bab_el_mandeb": {
+      "portwatch_id": "chokepoint4",
+      "portname": "Bab el-Mandeb Strait",
+      "latest_date": "2026-08-02",
       "quality": "observed_estimated_trade_volume_shortfall_7d_vs_prior_28d",
       "current_window_days": 7,
       "baseline_window_days": 28,
@@ -1777,56 +1377,456 @@
           "field": "capacity_container",
           "unit": "estimated_trade_tonnes_per_day",
           "definition": "PortWatch estimated daily trade volume in metric tonnes, derived from vessel DWT and estimated payload/utilization; not observed vessel DWT.",
-          "current_7d_mean_estimated_trade_tonnes": 2008.571429,
-          "prior_28d_mean_estimated_trade_tonnes": 11311.821429,
-          "estimated_trade_volume_ratio": 0.177564,
-          "observed_trade_volume_shortfall_fraction": 0.822436,
-          "remaining_trade_volume_ratio": 0.177564,
-          "change_pct": -82.243607
+          "current_7d_mean_estimated_trade_tonnes": 82882.714286,
+          "prior_28d_mean_estimated_trade_tonnes": 77978.678571,
+          "estimated_trade_volume_ratio": 1.062889,
+          "observed_trade_volume_shortfall_fraction": 0.0,
+          "remaining_trade_volume_ratio": 1.0,
+          "change_pct": 6.288944
         },
         "dry_bulk": {
           "field": "capacity_dry_bulk",
           "unit": "estimated_trade_tonnes_per_day",
           "definition": "PortWatch estimated daily trade volume in metric tonnes, derived from vessel DWT and estimated payload/utilization; not observed vessel DWT.",
-          "current_7d_mean_estimated_trade_tonnes": 107953.285714,
-          "prior_28d_mean_estimated_trade_tonnes": 49516.535714,
-          "estimated_trade_volume_ratio": 2.180146,
-          "observed_trade_volume_shortfall_fraction": 0.0,
-          "remaining_trade_volume_ratio": 1.0,
-          "change_pct": 118.014617
+          "current_7d_mean_estimated_trade_tonnes": 398953.285714,
+          "prior_28d_mean_estimated_trade_tonnes": 512517.035714,
+          "estimated_trade_volume_ratio": 0.77842,
+          "observed_trade_volume_shortfall_fraction": 0.22158,
+          "remaining_trade_volume_ratio": 0.77842,
+          "change_pct": -22.158044
         },
         "general_cargo": {
           "field": "capacity_general_cargo",
           "unit": "estimated_trade_tonnes_per_day",
           "definition": "PortWatch estimated daily trade volume in metric tonnes, derived from vessel DWT and estimated payload/utilization; not observed vessel DWT.",
-          "current_7d_mean_estimated_trade_tonnes": 790.0,
-          "prior_28d_mean_estimated_trade_tonnes": 2529.0,
-          "estimated_trade_volume_ratio": 0.312376,
-          "observed_trade_volume_shortfall_fraction": 0.687624,
-          "remaining_trade_volume_ratio": 0.312376,
-          "change_pct": -68.762357
+          "current_7d_mean_estimated_trade_tonnes": 32905.285714,
+          "prior_28d_mean_estimated_trade_tonnes": 27151.642857,
+          "estimated_trade_volume_ratio": 1.211908,
+          "observed_trade_volume_shortfall_fraction": 0.0,
+          "remaining_trade_volume_ratio": 1.0,
+          "change_pct": 21.190772
         },
         "tanker": {
           "field": "capacity_tanker",
           "unit": "estimated_trade_tonnes_per_day",
           "definition": "PortWatch estimated daily trade volume in metric tonnes, derived from vessel DWT and estimated payload/utilization; not observed vessel DWT.",
-          "current_7d_mean_estimated_trade_tonnes": 10049.714286,
-          "prior_28d_mean_estimated_trade_tonnes": 162633.071429,
-          "estimated_trade_volume_ratio": 0.061794,
-          "observed_trade_volume_shortfall_fraction": 0.938206,
-          "remaining_trade_volume_ratio": 0.061794,
-          "change_pct": -93.820621
+          "current_7d_mean_estimated_trade_tonnes": 390659.714286,
+          "prior_28d_mean_estimated_trade_tonnes": 751270.285714,
+          "estimated_trade_volume_ratio": 0.519999,
+          "observed_trade_volume_shortfall_fraction": 0.480001,
+          "remaining_trade_volume_ratio": 0.519999,
+          "change_pct": -48.000111
         },
         "all": {
           "field": "capacity",
           "unit": "estimated_trade_tonnes_per_day",
           "definition": "PortWatch estimated daily trade volume in metric tonnes, derived from vessel DWT and estimated payload/utilization; not observed vessel DWT.",
-          "current_7d_mean_estimated_trade_tonnes": 120802.285714,
-          "prior_28d_mean_estimated_trade_tonnes": 225991.142857,
-          "estimated_trade_volume_ratio": 0.534544,
-          "observed_trade_volume_shortfall_fraction": 0.465456,
-          "remaining_trade_volume_ratio": 0.534544,
-          "change_pct": -46.545566
+          "current_7d_mean_estimated_trade_tonnes": 908653.428571,
+          "prior_28d_mean_estimated_trade_tonnes": 1373814.035714,
+          "estimated_trade_volume_ratio": 0.661409,
+          "observed_trade_volume_shortfall_fraction": 0.338591,
+          "remaining_trade_volume_ratio": 0.661409,
+          "change_pct": -33.859066
+        }
+      },
+      "signal_validation": {
+        "container": {
+          "status": "exploratory_no_proven_skill",
+          "forecast_use": "descriptive_only",
+          "sample_count": 689,
+          "train_count": 551,
+          "test_count": 138,
+          "feature": "signed current 7-observation estimated trade-volume gap vs preceding 28",
+          "target": "signed next 7-observation estimated trade-volume gap vs same preceding 28",
+          "ols_intercept": -0.00559,
+          "ols_slope": -0.009398,
+          "test_r2": -0.010731,
+          "test_mae_fraction": 0.176299,
+          "persistence_mae_fraction": 0.18052,
+          "beats_persistence": true,
+          "warning": "Exploratory chronological validation; not a causal model or closure probability."
+        },
+        "dry_bulk": {
+          "status": "exploratory_positive_skill",
+          "forecast_use": "eligible_for_exploratory_forecast",
+          "sample_count": 689,
+          "train_count": 551,
+          "test_count": 138,
+          "feature": "signed current 7-observation estimated trade-volume gap vs preceding 28",
+          "target": "signed next 7-observation estimated trade-volume gap vs same preceding 28",
+          "ols_intercept": -0.008601,
+          "ols_slope": 0.108739,
+          "test_r2": 0.012812,
+          "test_mae_fraction": 0.140082,
+          "persistence_mae_fraction": 0.194306,
+          "beats_persistence": true,
+          "warning": "Exploratory chronological validation; not a causal model or closure probability."
+        },
+        "general_cargo": {
+          "status": "exploratory_positive_skill",
+          "forecast_use": "eligible_for_exploratory_forecast",
+          "sample_count": 689,
+          "train_count": 551,
+          "test_count": 138,
+          "feature": "signed current 7-observation estimated trade-volume gap vs preceding 28",
+          "target": "signed next 7-observation estimated trade-volume gap vs same preceding 28",
+          "ols_intercept": -0.010651,
+          "ols_slope": 0.157325,
+          "test_r2": 0.04983,
+          "test_mae_fraction": 0.218238,
+          "persistence_mae_fraction": 0.270098,
+          "beats_persistence": true,
+          "warning": "Exploratory chronological validation; not a causal model or closure probability."
+        },
+        "tanker": {
+          "status": "exploratory_positive_skill",
+          "forecast_use": "eligible_for_exploratory_forecast",
+          "sample_count": 689,
+          "train_count": 551,
+          "test_count": 138,
+          "feature": "signed current 7-observation estimated trade-volume gap vs preceding 28",
+          "target": "signed next 7-observation estimated trade-volume gap vs same preceding 28",
+          "ols_intercept": -0.019979,
+          "ols_slope": 0.20629,
+          "test_r2": 0.049953,
+          "test_mae_fraction": 0.118142,
+          "persistence_mae_fraction": 0.142129,
+          "beats_persistence": true,
+          "warning": "Exploratory chronological validation; not a causal model or closure probability."
+        },
+        "all": {
+          "status": "exploratory_positive_skill",
+          "forecast_use": "eligible_for_exploratory_forecast",
+          "sample_count": 689,
+          "train_count": 551,
+          "test_count": 138,
+          "feature": "signed current 7-observation estimated trade-volume gap vs preceding 28",
+          "target": "signed next 7-observation estimated trade-volume gap vs same preceding 28",
+          "ols_intercept": -0.011211,
+          "ols_slope": 0.182305,
+          "test_r2": 0.036526,
+          "test_mae_fraction": 0.082432,
+          "persistence_mae_fraction": 0.105357,
+          "beats_persistence": true,
+          "warning": "Exploratory chronological validation; not a causal model or closure probability."
+        }
+      },
+      "multi_model_analysis": {
+        "all": {
+          "status": "ml_does_not_beat_baseline",
+          "forecast_use": "descriptive_only",
+          "sample_count": 689,
+          "train_count": 544,
+          "purged_count": 7,
+          "test_count": 138,
+          "target_scale": "symmetric capacity gap in [-2, 2]; positive means shortfall",
+          "feature_names": [
+            "symmetric_gap_7_vs_prior_28",
+            "symmetric_gap_3_vs_prior_14",
+            "symmetric_week_over_week_gap",
+            "volatility_cv_14",
+            "zero_capacity_share_14"
+          ],
+          "model_selection": "lowest three-split TimeSeriesSplit CV MAE on training window",
+          "selected_model": "gradient_boosting",
+          "beats_persistence_by_5pct": true,
+          "beats_best_simple_baseline_by_5pct": false,
+          "backtest_beats_best_simple_baseline_by_5pct": false,
+          "backtest_positive_r2": true,
+          "models": [
+            {
+              "model": "persistence",
+              "cv_mae_symmetric_gap": null,
+              "test_mae_symmetric_gap": 0.107583,
+              "test_rmse_symmetric_gap": 0.137613,
+              "test_r2": -0.176986,
+              "stress_direction_accuracy": 0.804348
+            },
+            {
+              "model": "zero_shortfall",
+              "cv_mae_symmetric_gap": null,
+              "test_mae_symmetric_gap": 0.086808,
+              "test_rmse_symmetric_gap": 0.126917,
+              "test_r2": -0.00113,
+              "stress_direction_accuracy": 0.862319
+            },
+            {
+              "model": "linear",
+              "cv_mae_symmetric_gap": 0.09514,
+              "test_mae_symmetric_gap": 0.085555,
+              "test_rmse_symmetric_gap": 0.121983,
+              "test_r2": 0.075186,
+              "stress_direction_accuracy": 0.862319
+            },
+            {
+              "model": "ridge",
+              "cv_mae_symmetric_gap": 0.095098,
+              "test_mae_symmetric_gap": 0.085539,
+              "test_rmse_symmetric_gap": 0.121981,
+              "test_r2": 0.075224,
+              "stress_direction_accuracy": 0.862319
+            },
+            {
+              "model": "random_forest",
+              "cv_mae_symmetric_gap": 0.095469,
+              "test_mae_symmetric_gap": 0.090292,
+              "test_rmse_symmetric_gap": 0.124231,
+              "test_r2": 0.040795,
+              "stress_direction_accuracy": 0.855072
+            },
+            {
+              "model": "gradient_boosting",
+              "cv_mae_symmetric_gap": 0.094585,
+              "test_mae_symmetric_gap": 0.087434,
+              "test_rmse_symmetric_gap": 0.125476,
+              "test_r2": 0.021467,
+              "stress_direction_accuracy": 0.862319
+            }
+          ],
+          "walk_forward_backtest": {
+            "status": "completed",
+            "method": "four-fold expanding-window backtest with non-overlapping 56-sample test blocks",
+            "fold_count": 4,
+            "purge_gap_samples": 7,
+            "total_test_predictions": 224,
+            "folds": [
+              {
+                "fold": 1,
+                "train_count": 458,
+                "purged_count": 7,
+                "test_count": 56,
+                "model_mae_symmetric_gap": {
+                  "persistence": 0.146859,
+                  "zero_shortfall": 0.085085,
+                  "linear": 0.087574,
+                  "ridge": 0.08758,
+                  "random_forest": 0.085461,
+                  "gradient_boosting": 0.085075
+                }
+              },
+              {
+                "fold": 2,
+                "train_count": 514,
+                "purged_count": 7,
+                "test_count": 56,
+                "model_mae_symmetric_gap": {
+                  "persistence": 0.114895,
+                  "zero_shortfall": 0.118172,
+                  "linear": 0.112205,
+                  "ridge": 0.112179,
+                  "random_forest": 0.113166,
+                  "gradient_boosting": 0.113988
+                }
+              },
+              {
+                "fold": 3,
+                "train_count": 570,
+                "purged_count": 7,
+                "test_count": 56,
+                "model_mae_symmetric_gap": {
+                  "persistence": 0.099263,
+                  "zero_shortfall": 0.055478,
+                  "linear": 0.059945,
+                  "ridge": 0.059942,
+                  "random_forest": 0.076828,
+                  "gradient_boosting": 0.065948
+                }
+              },
+              {
+                "fold": 4,
+                "train_count": 626,
+                "purged_count": 7,
+                "test_count": 56,
+                "model_mae_symmetric_gap": {
+                  "persistence": 0.122512,
+                  "zero_shortfall": 0.121159,
+                  "linear": 0.110054,
+                  "ridge": 0.110074,
+                  "random_forest": 0.107153,
+                  "gradient_boosting": 0.110639
+                }
+              }
+            ],
+            "models": [
+              {
+                "model": "persistence",
+                "cv_mae_symmetric_gap": null,
+                "test_mae_symmetric_gap": 0.120882,
+                "test_rmse_symmetric_gap": 0.150807,
+                "test_r2": -0.316102,
+                "stress_direction_accuracy": 0.767857,
+                "mean_fold_mae_symmetric_gap": 0.120882,
+                "fold_wins_vs_best_simple_baseline": null
+              },
+              {
+                "model": "zero_shortfall",
+                "cv_mae_symmetric_gap": null,
+                "test_mae_symmetric_gap": 0.094973,
+                "test_rmse_symmetric_gap": 0.131472,
+                "test_r2": -0.000264,
+                "stress_direction_accuracy": 0.857143,
+                "mean_fold_mae_symmetric_gap": 0.094973,
+                "fold_wins_vs_best_simple_baseline": null
+              },
+              {
+                "model": "linear",
+                "cv_mae_symmetric_gap": null,
+                "test_mae_symmetric_gap": 0.092445,
+                "test_rmse_symmetric_gap": 0.125245,
+                "test_r2": 0.092248,
+                "stress_direction_accuracy": 0.857143,
+                "mean_fold_mae_symmetric_gap": 0.092445,
+                "fold_wins_vs_best_simple_baseline": 2
+              },
+              {
+                "model": "ridge",
+                "cv_mae_symmetric_gap": null,
+                "test_mae_symmetric_gap": 0.092444,
+                "test_rmse_symmetric_gap": 0.125257,
+                "test_r2": 0.092084,
+                "stress_direction_accuracy": 0.857143,
+                "mean_fold_mae_symmetric_gap": 0.092444,
+                "fold_wins_vs_best_simple_baseline": 2
+              },
+              {
+                "model": "random_forest",
+                "cv_mae_symmetric_gap": null,
+                "test_mae_symmetric_gap": 0.095652,
+                "test_rmse_symmetric_gap": 0.128324,
+                "test_r2": 0.047067,
+                "stress_direction_accuracy": 0.852679,
+                "mean_fold_mae_symmetric_gap": 0.095652,
+                "fold_wins_vs_best_simple_baseline": 2
+              },
+              {
+                "model": "gradient_boosting",
+                "cv_mae_symmetric_gap": null,
+                "test_mae_symmetric_gap": 0.093912,
+                "test_rmse_symmetric_gap": 0.128113,
+                "test_r2": 0.050197,
+                "stress_direction_accuracy": 0.857143,
+                "mean_fold_mae_symmetric_gap": 0.093912,
+                "fold_wins_vs_best_simple_baseline": 3
+              }
+            ]
+          },
+          "feature_importance": [
+            {
+              "feature": "symmetric_week_over_week_gap",
+              "importance": 0.000954
+            },
+            {
+              "feature": "symmetric_gap_7_vs_prior_28",
+              "importance": 2e-06
+            },
+            {
+              "feature": "symmetric_gap_3_vs_prior_14",
+              "importance": 0.0
+            },
+            {
+              "feature": "volatility_cv_14",
+              "importance": 0.0
+            },
+            {
+              "feature": "zero_capacity_share_14",
+              "importance": 0.0
+            }
+          ],
+          "candidate_next_7d_symmetric_gap": 0.026211,
+          "candidate_next_7d_shortfall_fraction": 0.025872,
+          "published_next_7d_shortfall_fraction": null,
+          "candidate_prediction_interval": {
+            "p10_symmetric_gap": -0.081957,
+            "p90_symmetric_gap": 0.170193,
+            "method": "holdout residual empirical interval on symmetric gap scale"
+          },
+          "current_regime": {
+            "label": "capacity_stress",
+            "cluster": 0,
+            "cluster_mean_symmetric_gap": 0.110159
+          },
+          "current_anomaly": {
+            "score": 0.112823,
+            "historical_percentile": 0.988389,
+            "is_anomaly_at_90pct": true,
+            "method": "IsolationForest contamination=0.10"
+          },
+          "warning": "Exploratory ML with purged chronological validation; no causal claim. Candidate is unpublished unless it beats both simple baselines by 5% and has positive R2 in both holdout and walk-forward backtests."
+        }
+      },
+      "multi_model_primary_metric": "all",
+      "fetched_at": "2026-08-10T06:47:05.058878+00:00",
+      "stale_days": 8,
+      "is_stale": true,
+      "fallback_used": true,
+      "source_status": "cached_fallback"
+    },
+    "hormuz": {
+      "portwatch_id": "chokepoint6",
+      "portname": "Strait of Hormuz",
+      "latest_date": "2026-08-02",
+      "quality": "observed_estimated_trade_volume_shortfall_7d_vs_prior_28d",
+      "current_window_days": 7,
+      "baseline_window_days": 28,
+      "metric_unit": "estimated_trade_tonnes_per_day",
+      "metric_definition": "PortWatch estimated daily trade volume in metric tonnes, derived from vessel DWT and estimated payload/utilization; not observed vessel DWT.",
+      "interpretation": "Short-term estimated trade-volume anomaly used as a disruption signal; not observed DWT and not proof of literal physical closure.",
+      "observation_count": 730,
+      "metrics": {
+        "container": {
+          "field": "capacity_container",
+          "unit": "estimated_trade_tonnes_per_day",
+          "definition": "PortWatch estimated daily trade volume in metric tonnes, derived from vessel DWT and estimated payload/utilization; not observed vessel DWT.",
+          "current_7d_mean_estimated_trade_tonnes": 12082.0,
+          "prior_28d_mean_estimated_trade_tonnes": 16906.714286,
+          "estimated_trade_volume_ratio": 0.714627,
+          "observed_trade_volume_shortfall_fraction": 0.285373,
+          "remaining_trade_volume_ratio": 0.714627,
+          "change_pct": -28.537268
+        },
+        "dry_bulk": {
+          "field": "capacity_dry_bulk",
+          "unit": "estimated_trade_tonnes_per_day",
+          "definition": "PortWatch estimated daily trade volume in metric tonnes, derived from vessel DWT and estimated payload/utilization; not observed vessel DWT.",
+          "current_7d_mean_estimated_trade_tonnes": 64576.285714,
+          "prior_28d_mean_estimated_trade_tonnes": 81573.714286,
+          "estimated_trade_volume_ratio": 0.791631,
+          "observed_trade_volume_shortfall_fraction": 0.208369,
+          "remaining_trade_volume_ratio": 0.791631,
+          "change_pct": -20.836894
+        },
+        "general_cargo": {
+          "field": "capacity_general_cargo",
+          "unit": "estimated_trade_tonnes_per_day",
+          "definition": "PortWatch estimated daily trade volume in metric tonnes, derived from vessel DWT and estimated payload/utilization; not observed vessel DWT.",
+          "current_7d_mean_estimated_trade_tonnes": 2687.571429,
+          "prior_28d_mean_estimated_trade_tonnes": 3477.321429,
+          "estimated_trade_volume_ratio": 0.772886,
+          "observed_trade_volume_shortfall_fraction": 0.227114,
+          "remaining_trade_volume_ratio": 0.772886,
+          "change_pct": -22.711447
+        },
+        "tanker": {
+          "field": "capacity_tanker",
+          "unit": "estimated_trade_tonnes_per_day",
+          "definition": "PortWatch estimated daily trade volume in metric tonnes, derived from vessel DWT and estimated payload/utilization; not observed vessel DWT.",
+          "current_7d_mean_estimated_trade_tonnes": 63188.428571,
+          "prior_28d_mean_estimated_trade_tonnes": 329587.821429,
+          "estimated_trade_volume_ratio": 0.19172,
+          "observed_trade_volume_shortfall_fraction": 0.80828,
+          "remaining_trade_volume_ratio": 0.19172,
+          "change_pct": -80.828045
+        },
+        "all": {
+          "field": "capacity",
+          "unit": "estimated_trade_tonnes_per_day",
+          "definition": "PortWatch estimated daily trade volume in metric tonnes, derived from vessel DWT and estimated payload/utilization; not observed vessel DWT.",
+          "current_7d_mean_estimated_trade_tonnes": 142535.0,
+          "prior_28d_mean_estimated_trade_tonnes": 431546.357143,
+          "estimated_trade_volume_ratio": 0.330289,
+          "observed_trade_volume_shortfall_fraction": 0.669711,
+          "remaining_trade_volume_ratio": 0.330289,
+          "change_pct": -66.971103
         }
       },
       "signal_validation": {
@@ -1838,11 +1838,11 @@
           "test_count": 138,
           "feature": "signed current 7-observation estimated trade-volume gap vs preceding 28",
           "target": "signed next 7-observation estimated trade-volume gap vs same preceding 28",
-          "ols_intercept": 0.019586,
-          "ols_slope": 0.677888,
-          "test_r2": 0.433284,
-          "test_mae_fraction": 1.453672,
-          "persistence_mae_fraction": 1.511244,
+          "ols_intercept": 0.016493,
+          "ols_slope": 0.593832,
+          "test_r2": 0.405186,
+          "test_mae_fraction": 1.486986,
+          "persistence_mae_fraction": 1.493471,
           "beats_persistence": true,
           "warning": "Exploratory chronological validation; not a causal model or closure probability."
         },
@@ -1854,11 +1854,11 @@
           "test_count": 138,
           "feature": "signed current 7-observation estimated trade-volume gap vs preceding 28",
           "target": "signed next 7-observation estimated trade-volume gap vs same preceding 28",
-          "ols_intercept": 0.025937,
-          "ols_slope": 0.430016,
-          "test_r2": 0.271771,
-          "test_mae_fraction": 0.876785,
-          "persistence_mae_fraction": 0.851278,
+          "ols_intercept": 0.016863,
+          "ols_slope": 0.299417,
+          "test_r2": 0.202468,
+          "test_mae_fraction": 0.947643,
+          "persistence_mae_fraction": 0.837944,
           "beats_persistence": false,
           "warning": "Exploratory chronological validation; not a causal model or closure probability."
         },
@@ -1870,11 +1870,11 @@
           "test_count": 138,
           "feature": "signed current 7-observation estimated trade-volume gap vs preceding 28",
           "target": "signed next 7-observation estimated trade-volume gap vs same preceding 28",
-          "ols_intercept": 0.017477,
-          "ols_slope": 0.209984,
-          "test_r2": 0.091409,
-          "test_mae_fraction": 1.725264,
-          "persistence_mae_fraction": 1.576829,
+          "ols_intercept": 0.003438,
+          "ols_slope": 0.129215,
+          "test_r2": 0.032291,
+          "test_mae_fraction": 1.787511,
+          "persistence_mae_fraction": 1.560914,
           "beats_persistence": false,
           "warning": "Exploratory chronological validation; not a causal model or closure probability."
         },
@@ -1886,11 +1886,11 @@
           "test_count": 138,
           "feature": "signed current 7-observation estimated trade-volume gap vs preceding 28",
           "target": "signed next 7-observation estimated trade-volume gap vs same preceding 28",
-          "ols_intercept": 0.022413,
-          "ols_slope": 0.578466,
-          "test_r2": 0.483122,
-          "test_mae_fraction": 1.621662,
-          "persistence_mae_fraction": 1.299131,
+          "ols_intercept": 0.018595,
+          "ols_slope": 0.471852,
+          "test_r2": 0.405545,
+          "test_mae_fraction": 1.741676,
+          "persistence_mae_fraction": 1.294641,
           "beats_persistence": false,
           "warning": "Exploratory chronological validation; not a causal model or closure probability."
         },
@@ -1902,11 +1902,11 @@
           "test_count": 138,
           "feature": "signed current 7-observation estimated trade-volume gap vs preceding 28",
           "target": "signed next 7-observation estimated trade-volume gap vs same preceding 28",
-          "ols_intercept": 0.020681,
-          "ols_slope": 0.679936,
-          "test_r2": 0.482602,
-          "test_mae_fraction": 1.132741,
-          "persistence_mae_fraction": 0.988936,
+          "ols_intercept": 0.017855,
+          "ols_slope": 0.579808,
+          "test_r2": 0.429859,
+          "test_mae_fraction": 1.220222,
+          "persistence_mae_fraction": 0.984556,
           "beats_persistence": false,
           "warning": "Exploratory chronological validation; not a causal model or closure probability."
         }
@@ -1937,50 +1937,50 @@
             {
               "model": "persistence",
               "cv_mae_symmetric_gap": null,
-              "test_mae_symmetric_gap": 0.670148,
-              "test_rmse_symmetric_gap": 1.007268,
-              "test_r2": 0.392535,
+              "test_mae_symmetric_gap": 0.656362,
+              "test_rmse_symmetric_gap": 1.003001,
+              "test_r2": 0.4071,
               "stress_direction_accuracy": 0.73913
             },
             {
               "model": "zero_shortfall",
               "cv_mae_symmetric_gap": null,
-              "test_mae_symmetric_gap": 1.214143,
-              "test_rmse_symmetric_gap": 1.345323,
-              "test_r2": -0.083638,
+              "test_mae_symmetric_gap": 1.224134,
+              "test_rmse_symmetric_gap": 1.357948,
+              "test_r2": -0.086789,
               "stress_direction_accuracy": 0.449275
             },
             {
               "model": "linear",
-              "cv_mae_symmetric_gap": 0.208998,
-              "test_mae_symmetric_gap": 1.278542,
-              "test_rmse_symmetric_gap": 1.572656,
-              "test_r2": -0.480807,
-              "stress_direction_accuracy": 0.565217
+              "cv_mae_symmetric_gap": 0.186766,
+              "test_mae_symmetric_gap": 9.35929,
+              "test_rmse_symmetric_gap": 10.633545,
+              "test_r2": -65.639994,
+              "stress_direction_accuracy": 0.572464
             },
             {
               "model": "ridge",
-              "cv_mae_symmetric_gap": 0.208802,
-              "test_mae_symmetric_gap": 1.27631,
-              "test_rmse_symmetric_gap": 1.570315,
-              "test_r2": -0.476402,
-              "stress_direction_accuracy": 0.565217
+              "cv_mae_symmetric_gap": 0.186651,
+              "test_mae_symmetric_gap": 9.341874,
+              "test_rmse_symmetric_gap": 10.613371,
+              "test_r2": -65.387372,
+              "stress_direction_accuracy": 0.572464
             },
             {
               "model": "random_forest",
-              "cv_mae_symmetric_gap": 0.218685,
-              "test_mae_symmetric_gap": 1.248664,
-              "test_rmse_symmetric_gap": 1.620255,
-              "test_r2": -0.571801,
-              "stress_direction_accuracy": 0.550725
+              "cv_mae_symmetric_gap": 0.191104,
+              "test_mae_symmetric_gap": 1.121571,
+              "test_rmse_symmetric_gap": 1.230222,
+              "test_r2": 0.108039,
+              "stress_direction_accuracy": 0.572464
             },
             {
               "model": "gradient_boosting",
-              "cv_mae_symmetric_gap": 0.219156,
-              "test_mae_symmetric_gap": 1.105044,
-              "test_rmse_symmetric_gap": 1.443064,
-              "test_r2": -0.246816,
-              "stress_direction_accuracy": 0.550725
+              "cv_mae_symmetric_gap": 0.190143,
+              "test_mae_symmetric_gap": 1.206215,
+              "test_rmse_symmetric_gap": 1.32316,
+              "test_r2": -0.031819,
+              "stress_direction_accuracy": 0.644928
             }
           ],
           "walk_forward_backtest": {
@@ -1996,12 +1996,12 @@
                 "purged_count": 7,
                 "test_count": 56,
                 "model_mae_symmetric_gap": {
-                  "persistence": 0.169138,
-                  "zero_shortfall": 0.129747,
-                  "linear": 0.144798,
-                  "ridge": 0.144835,
-                  "random_forest": 0.141746,
-                  "gradient_boosting": 0.14307
+                  "persistence": 0.18345,
+                  "zero_shortfall": 0.131946,
+                  "linear": 0.144467,
+                  "ridge": 0.14449,
+                  "random_forest": 0.144934,
+                  "gradient_boosting": 0.138759
                 }
               },
               {
@@ -2010,12 +2010,12 @@
                 "purged_count": 7,
                 "test_count": 56,
                 "model_mae_symmetric_gap": {
-                  "persistence": 0.465211,
-                  "zero_shortfall": 1.385553,
-                  "linear": 1.165604,
-                  "ridge": 1.166184,
-                  "random_forest": 1.288522,
-                  "gradient_boosting": 1.330097
+                  "persistence": 0.471872,
+                  "zero_shortfall": 1.295635,
+                  "linear": 1.157217,
+                  "ridge": 1.157448,
+                  "random_forest": 1.193728,
+                  "gradient_boosting": 1.247746
                 }
               },
               {
@@ -2024,12 +2024,12 @@
                 "purged_count": 7,
                 "test_count": 56,
                 "model_mae_symmetric_gap": {
-                  "persistence": 0.739494,
-                  "zero_shortfall": 0.807826,
-                  "linear": 0.821611,
-                  "ridge": 0.821682,
-                  "random_forest": 0.934936,
-                  "gradient_boosting": 0.773306
+                  "persistence": 0.733768,
+                  "zero_shortfall": 0.73542,
+                  "linear": 1.07573,
+                  "ridge": 1.075025,
+                  "random_forest": 1.977878,
+                  "gradient_boosting": 1.584636
                 }
               },
               {
@@ -2038,12 +2038,12 @@
                 "purged_count": 7,
                 "test_count": 56,
                 "model_mae_symmetric_gap": {
-                  "persistence": 0.767439,
-                  "zero_shortfall": 1.53196,
-                  "linear": 0.898148,
-                  "ridge": 0.901261,
-                  "random_forest": 1.024066,
-                  "gradient_boosting": 1.123236
+                  "persistence": 0.741956,
+                  "zero_shortfall": 1.520233,
+                  "linear": 0.892688,
+                  "ridge": 0.894833,
+                  "random_forest": 1.012858,
+                  "gradient_boosting": 1.152551
                 }
               }
             ],
@@ -2051,61 +2051,61 @@
               {
                 "model": "persistence",
                 "cv_mae_symmetric_gap": null,
-                "test_mae_symmetric_gap": 0.535321,
-                "test_rmse_symmetric_gap": 0.860306,
-                "test_r2": 0.432296,
-                "stress_direction_accuracy": 0.75,
-                "mean_fold_mae_symmetric_gap": 0.535321,
+                "test_mae_symmetric_gap": 0.532762,
+                "test_rmse_symmetric_gap": 0.859024,
+                "test_r2": 0.408668,
+                "stress_direction_accuracy": 0.723214,
+                "mean_fold_mae_symmetric_gap": 0.532762,
                 "fold_wins_vs_best_simple_baseline": null
               },
               {
                 "model": "zero_shortfall",
                 "cv_mae_symmetric_gap": null,
-                "test_mae_symmetric_gap": 0.963771,
-                "test_rmse_symmetric_gap": 1.200824,
-                "test_r2": -0.10605,
+                "test_mae_symmetric_gap": 0.920808,
+                "test_rmse_symmetric_gap": 1.164498,
+                "test_r2": -0.08667,
                 "stress_direction_accuracy": 0.53125,
-                "mean_fold_mae_symmetric_gap": 0.963771,
+                "mean_fold_mae_symmetric_gap": 0.920808,
                 "fold_wins_vs_best_simple_baseline": null
               },
               {
                 "model": "linear",
                 "cv_mae_symmetric_gap": null,
-                "test_mae_symmetric_gap": 0.75754,
-                "test_rmse_symmetric_gap": 1.003896,
-                "test_r2": 0.226976,
-                "stress_direction_accuracy": 0.714286,
-                "mean_fold_mae_symmetric_gap": 0.75754,
+                "test_mae_symmetric_gap": 0.817525,
+                "test_rmse_symmetric_gap": 1.0887,
+                "test_r2": 0.05019,
+                "stress_direction_accuracy": 0.669643,
+                "mean_fold_mae_symmetric_gap": 0.817525,
                 "fold_wins_vs_best_simple_baseline": 0
               },
               {
                 "model": "ridge",
                 "cv_mae_symmetric_gap": null,
-                "test_mae_symmetric_gap": 0.75849,
-                "test_rmse_symmetric_gap": 1.004512,
-                "test_r2": 0.226027,
-                "stress_direction_accuracy": 0.709821,
-                "mean_fold_mae_symmetric_gap": 0.75849,
+                "test_mae_symmetric_gap": 0.817949,
+                "test_rmse_symmetric_gap": 1.088728,
+                "test_r2": 0.050141,
+                "stress_direction_accuracy": 0.669643,
+                "mean_fold_mae_symmetric_gap": 0.817949,
                 "fold_wins_vs_best_simple_baseline": 0
               },
               {
                 "model": "random_forest",
                 "cv_mae_symmetric_gap": null,
-                "test_mae_symmetric_gap": 0.847317,
-                "test_rmse_symmetric_gap": 1.135091,
-                "test_r2": 0.011726,
-                "stress_direction_accuracy": 0.683036,
-                "mean_fold_mae_symmetric_gap": 0.847317,
+                "test_mae_symmetric_gap": 1.082349,
+                "test_rmse_symmetric_gap": 1.401941,
+                "test_r2": -0.574997,
+                "stress_direction_accuracy": 0.651786,
+                "mean_fold_mae_symmetric_gap": 1.082349,
                 "fold_wins_vs_best_simple_baseline": 0
               },
               {
                 "model": "gradient_boosting",
                 "cv_mae_symmetric_gap": null,
-                "test_mae_symmetric_gap": 0.842427,
-                "test_rmse_symmetric_gap": 1.071604,
-                "test_r2": 0.119186,
-                "stress_direction_accuracy": 0.598214,
-                "mean_fold_mae_symmetric_gap": 0.842427,
+                "test_mae_symmetric_gap": 1.030923,
+                "test_rmse_symmetric_gap": 1.317091,
+                "test_r2": -0.390118,
+                "stress_direction_accuracy": 0.522321,
+                "mean_fold_mae_symmetric_gap": 1.030923,
                 "fold_wins_vs_best_simple_baseline": 0
               }
             ]
@@ -2113,15 +2113,11 @@
           "feature_importance": [
             {
               "feature": "symmetric_gap_3_vs_prior_14",
-              "importance": 0.064898
-            },
-            {
-              "feature": "zero_capacity_share_14",
-              "importance": 0.049691
+              "importance": 0.005229
             },
             {
               "feature": "symmetric_week_over_week_gap",
-              "importance": 0.009432
+              "importance": 0.000716
             },
             {
               "feature": "symmetric_gap_7_vs_prior_28",
@@ -2130,36 +2126,40 @@
             {
               "feature": "volatility_cv_14",
               "importance": 0.0
+            },
+            {
+              "feature": "zero_capacity_share_14",
+              "importance": 0.0
             }
           ],
-          "candidate_next_7d_symmetric_gap": 1.631432,
-          "candidate_next_7d_shortfall_fraction": 0.898506,
+          "candidate_next_7d_symmetric_gap": 0.686658,
+          "candidate_next_7d_shortfall_fraction": 0.511162,
           "published_next_7d_shortfall_fraction": null,
           "candidate_prediction_interval": {
-            "p10_symmetric_gap": 0.453526,
-            "p90_symmetric_gap": 2.0,
+            "p10_symmetric_gap": -0.488151,
+            "p90_symmetric_gap": 1.685459,
             "method": "holdout residual empirical interval on symmetric gap scale"
           },
           "current_regime": {
             "label": "capacity_stress",
             "cluster": 1,
-            "cluster_mean_symmetric_gap": 1.60502
+            "cluster_mean_symmetric_gap": 1.608263
           },
           "current_anomaly": {
-            "score": -0.021679,
-            "historical_percentile": 0.846154,
-            "is_anomaly_at_90pct": false,
+            "score": 0.017576,
+            "historical_percentile": 0.928882,
+            "is_anomaly_at_90pct": true,
             "method": "IsolationForest contamination=0.10"
           },
           "warning": "Exploratory ML with purged chronological validation; no causal claim. Candidate is unpublished unless it beats both simple baselines by 5% and has positive R2 in both holdout and walk-forward backtests."
         }
       },
       "multi_model_primary_metric": "tanker",
-      "fetched_at": "2026-08-11T20:31:28.086684+00:00",
-      "stale_days": 2,
-      "is_stale": false,
-      "fallback_used": false,
-      "source_status": "api_observation_fresh"
+      "fetched_at": "2026-08-10T06:47:05.058878+00:00",
+      "stale_days": 8,
+      "is_stale": true,
+      "fallback_used": true,
+      "source_status": "cached_fallback"
     }
   },
   "live_display": [
@@ -2168,18 +2168,18 @@
       "name_ko": "수에즈 운하",
       "metric_key": "all",
       "headline_label_ko": "추정 교역량 감소율",
-      "trade_volume_shortfall_fraction": 0.081803,
-      "trade_volume_shortfall_pct_rounded": 8,
+      "trade_volume_shortfall_fraction": 0.045352,
+      "trade_volume_shortfall_pct_rounded": 5,
       "basis_label_ko": "최근 7일 전체 추정 교역량 기준",
       "comparison_label_ko": "직전 28일 평균 대비",
       "residual_label_ko": "잔존 추정 교역량",
-      "remaining_trade_volume_ratio": 0.918197,
-      "remaining_trade_volume_pct_rounded": 92,
-      "latest_date": "2026-08-09",
-      "stale_days": 2,
-      "is_stale": false,
-      "fallback_used": false,
-      "source_status": "api_observation_fresh",
+      "remaining_trade_volume_ratio": 0.954648,
+      "remaining_trade_volume_pct_rounded": 95,
+      "latest_date": "2026-08-02",
+      "stale_days": 8,
+      "is_stale": true,
+      "fallback_used": true,
+      "source_status": "cached_fallback",
       "metric_unit": "estimated_trade_tonnes_per_day",
       "signal_type": "observed_estimated_trade_volume_shortfall",
       "warning_ko": "DWT와 추정 적재율로 산출한 교역량 신호이며 실제 통항 DWT, 물리적 봉쇄율 또는 보험 미확보율 관측치가 아님"
@@ -2189,18 +2189,18 @@
       "name_ko": "파나마 운하",
       "metric_key": "all",
       "headline_label_ko": "추정 교역량 감소율",
-      "trade_volume_shortfall_fraction": 0.077453,
-      "trade_volume_shortfall_pct_rounded": 8,
+      "trade_volume_shortfall_fraction": 0.095182,
+      "trade_volume_shortfall_pct_rounded": 10,
       "basis_label_ko": "최근 7일 전체 추정 교역량 기준",
       "comparison_label_ko": "직전 28일 평균 대비",
       "residual_label_ko": "잔존 추정 교역량",
-      "remaining_trade_volume_ratio": 0.922547,
-      "remaining_trade_volume_pct_rounded": 92,
-      "latest_date": "2026-08-09",
-      "stale_days": 2,
-      "is_stale": false,
-      "fallback_used": false,
-      "source_status": "api_observation_fresh",
+      "remaining_trade_volume_ratio": 0.904818,
+      "remaining_trade_volume_pct_rounded": 90,
+      "latest_date": "2026-08-02",
+      "stale_days": 8,
+      "is_stale": true,
+      "fallback_used": true,
+      "source_status": "cached_fallback",
       "metric_unit": "estimated_trade_tonnes_per_day",
       "signal_type": "observed_estimated_trade_volume_shortfall",
       "warning_ko": "DWT와 추정 적재율로 산출한 교역량 신호이며 실제 통항 DWT, 물리적 봉쇄율 또는 보험 미확보율 관측치가 아님"
@@ -2210,18 +2210,18 @@
       "name_ko": "보스포루스 해협",
       "metric_key": "all",
       "headline_label_ko": "추정 교역량 감소율",
-      "trade_volume_shortfall_fraction": 0.270264,
-      "trade_volume_shortfall_pct_rounded": 27,
+      "trade_volume_shortfall_fraction": 0.251508,
+      "trade_volume_shortfall_pct_rounded": 25,
       "basis_label_ko": "최근 7일 전체 추정 교역량 기준",
       "comparison_label_ko": "직전 28일 평균 대비",
       "residual_label_ko": "잔존 추정 교역량",
-      "remaining_trade_volume_ratio": 0.729736,
-      "remaining_trade_volume_pct_rounded": 73,
-      "latest_date": "2026-08-09",
-      "stale_days": 2,
-      "is_stale": false,
-      "fallback_used": false,
-      "source_status": "api_observation_fresh",
+      "remaining_trade_volume_ratio": 0.748492,
+      "remaining_trade_volume_pct_rounded": 75,
+      "latest_date": "2026-08-02",
+      "stale_days": 8,
+      "is_stale": true,
+      "fallback_used": true,
+      "source_status": "cached_fallback",
       "metric_unit": "estimated_trade_tonnes_per_day",
       "signal_type": "observed_estimated_trade_volume_shortfall",
       "warning_ko": "DWT와 추정 적재율로 산출한 교역량 신호이며 실제 통항 DWT, 물리적 봉쇄율 또는 보험 미확보율 관측치가 아님"
@@ -2231,18 +2231,18 @@
       "name_ko": "바벨만데브 해협",
       "metric_key": "all",
       "headline_label_ko": "추정 교역량 감소율",
-      "trade_volume_shortfall_fraction": 0.324207,
-      "trade_volume_shortfall_pct_rounded": 32,
+      "trade_volume_shortfall_fraction": 0.338591,
+      "trade_volume_shortfall_pct_rounded": 34,
       "basis_label_ko": "최근 7일 전체 추정 교역량 기준",
       "comparison_label_ko": "직전 28일 평균 대비",
       "residual_label_ko": "잔존 추정 교역량",
-      "remaining_trade_volume_ratio": 0.675793,
-      "remaining_trade_volume_pct_rounded": 68,
-      "latest_date": "2026-08-09",
-      "stale_days": 2,
-      "is_stale": false,
-      "fallback_used": false,
-      "source_status": "api_observation_fresh",
+      "remaining_trade_volume_ratio": 0.661409,
+      "remaining_trade_volume_pct_rounded": 66,
+      "latest_date": "2026-08-02",
+      "stale_days": 8,
+      "is_stale": true,
+      "fallback_used": true,
+      "source_status": "cached_fallback",
       "metric_unit": "estimated_trade_tonnes_per_day",
       "signal_type": "observed_estimated_trade_volume_shortfall",
       "warning_ko": "DWT와 추정 적재율로 산출한 교역량 신호이며 실제 통항 DWT, 물리적 봉쇄율 또는 보험 미확보율 관측치가 아님"
@@ -2252,18 +2252,18 @@
       "name_ko": "호르무즈 해협",
       "metric_key": "tanker",
       "headline_label_ko": "추정 교역량 감소율",
-      "trade_volume_shortfall_fraction": 0.938206,
-      "trade_volume_shortfall_pct_rounded": 94,
+      "trade_volume_shortfall_fraction": 0.80828,
+      "trade_volume_shortfall_pct_rounded": 81,
       "basis_label_ko": "최근 7일 탱커 추정 교역량 기준",
       "comparison_label_ko": "직전 28일 평균 대비",
       "residual_label_ko": "잔존 추정 교역량",
-      "remaining_trade_volume_ratio": 0.061794,
-      "remaining_trade_volume_pct_rounded": 6,
-      "latest_date": "2026-08-09",
-      "stale_days": 2,
-      "is_stale": false,
-      "fallback_used": false,
-      "source_status": "api_observation_fresh",
+      "remaining_trade_volume_ratio": 0.19172,
+      "remaining_trade_volume_pct_rounded": 19,
+      "latest_date": "2026-08-02",
+      "stale_days": 8,
+      "is_stale": true,
+      "fallback_used": true,
+      "source_status": "cached_fallback",
       "metric_unit": "estimated_trade_tonnes_per_day",
       "signal_type": "observed_estimated_trade_volume_shortfall",
       "warning_ko": "DWT와 추정 적재율로 산출한 교역량 신호이며 실제 통항 DWT, 물리적 봉쇄율 또는 보험 미확보율 관측치가 아님"
@@ -2272,10 +2272,10 @@
   "live_fetch_errors": [],
   "live_data_quality": {
     "freshness_threshold_days": 7,
-    "fresh_count": 5,
-    "stale_count": 0,
-    "fallback_count": 0,
-    "status": "fresh"
+    "fresh_count": 0,
+    "stale_count": 5,
+    "fallback_count": 5,
+    "status": "stale_or_fallback"
   },
   "route_catalog": [
     {
@@ -10428,7 +10428,7 @@
         "cii_reduction_vs_2019_pct": 13.625,
         "representative_route_count": 21,
         "physical_allocated_dwt": 271481079.266903,
-        "effective_service_capacity_dwt": 265994209.185382,
+        "effective_service_capacity_dwt": 265994209.185383,
         "effective_dwt_loss": 5486870.081521,
         "effective_capacity_retention_rate": 0.979789,
         "effective_capacity_retention_rate_range": {

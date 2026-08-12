@@ -3,7 +3,7 @@
   "$id": "https://global-trade-dashboard.example/schemas/shipping_capacity_v1.schema.json",
   "title": "Shipping Capacity Snapshot v1",
   "type": "object",
-  "required": ["schema_version", "artifact_type", "bundle_id", "generated_at", "artifact_manifest", "coverage_summary", "model", "fleet", "routes", "route_catalog", "scenarios", "scenario_summary", "ui_scenario_grid", "live_display", "live_data_quality", "environment", "comtrade_routes"],
+  "required": ["schema_version", "artifact_type", "bundle_id", "generated_at", "artifact_manifest", "coverage_summary", "model", "fleet", "lng_fleet", "routes", "route_catalog", "scenarios", "scenario_summary", "ui_scenario_grid", "live_display", "live_data_quality", "environment", "comtrade_routes", "portwatch_port_context", "market_signals", "pdf_reports"],
   "properties": {
     "schema_version": {"const": "shipping-capacity-v1"},
     "artifact_type": {"const": "screen_snapshot"},
@@ -20,6 +20,10 @@
     "fleet": {
       "type": "object",
       "required": ["as_of", "world_total_dwt", "fleet_by_type"]
+    },
+    "lng_fleet": {
+      "type": "object",
+      "required": ["status", "liquefied_gas_carriers_dwt", "lng_only_dwt", "model_use", "warning_ko"]
     },
     "routes": {
       "type": "array",
@@ -154,7 +158,19 @@
     },
     "comtrade_routes": {
       "type": "object",
-      "required": ["status", "route_count"]
+      "required": ["status", "route_count", "history"]
+    },
+    "portwatch_port_context": {
+      "type": "object",
+      "required": ["status", "groups", "identification_boundary"]
+    },
+    "market_signals": {
+      "type": "object",
+      "required": ["status", "signals", "identification_boundary", "warning_ko"]
+    },
+    "pdf_reports": {
+      "type": "object",
+      "required": ["status", "sources", "errors"]
     },
     "event_response_profiles": {
       "type": "object",
@@ -224,7 +240,20 @@
           "trapped_loaded_dwt",
           "commercially_available_dwt",
           "weighted_served_flow_index"
-        ]
+        ],
+        "properties": {
+          "behavior_sensitivity": {
+            "type": "object",
+            "required": ["status", "event_throughput_held_fixed", "path_count", "paths", "ranges", "warning_ko"],
+            "properties": {
+              "status": {"const": "deterministic_joint_paths_not_probability_interval"},
+              "event_throughput_held_fixed": {"const": true},
+              "path_count": {"type": "integer", "minimum": 2},
+              "paths": {"type": "array", "minItems": 2},
+              "ranges": {"type": "object"}
+            }
+          }
+        }
       }
     },
     "ui_scenario_grid": {

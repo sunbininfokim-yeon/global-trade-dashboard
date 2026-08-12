@@ -17,6 +17,10 @@ PORTWATCH_QUERY_URL = (
     "https://services9.arcgis.com/weJ1QsnbMYJlCHdG/ArcGIS/rest/services/"
     "Daily_Chokepoints_Data/FeatureServer/0/query"
 )
+PORTWATCH_PORTS_QUERY_URL = (
+    "https://services9.arcgis.com/weJ1QsnbMYJlCHdG/ArcGIS/rest/services/"
+    "Daily_Ports_Data/FeatureServer/0/query"
+)
 
 CAPACITY_FIELDS = {
     "container": "capacity_container",
@@ -207,6 +211,126 @@ class PortWatchClient:
 
     def fetch_status(self, portwatch_id: str) -> dict[str, Any]:
         return summarize_series(self.fetch_series(portwatch_id), portwatch_id)
+
+
+class PortWatchPortClient:
+    """Read public PortWatch port-call observations for a configured country group.
+
+    The public Daily_Ports_Data layer exposes calls and estimated import/export
+    volume, but no anchorage count, berth queue, or vessel waiting-time field.
+    This client keeps that boundary explicit rather than converting port calls
+    into a fabricated waiting-vessel count.
+    """
+
+    def __init__(self, timeout_seconds: int = 30) -> None:
+        self.timeout_seconds = timeout_seconds
+
+    def fetch_country_group_series(
+        self, iso3_codes: list[str], *, record_count: int = 730
+    ) -> list[dict[str, Any]]:
+        if not iso3_codes:
+            raise ValueError("at least one ISO3 code is required")
+        safe_codes = [code.strip().upper() for code in iso3_codes if code.strip().isalpha()]
+        if len(safe_codes) != len(iso3_codes):
+            raise ValueError("ISO3 codes must contain letters only")
+        # ArcGIS SQL values are supplied from a checked ISO3-only list.
+        where = "ISO3 IN (" + ",".join(f"'{code}'" for code in safe_codes) + ")"
+        params = {
+            "where": where,
+            "outStatistics": json.dumps(
+                [
+                    {"statisticType": "sum", "onStatisticField": field, "outStatisticFieldName": field}
+                    for field in (
+                        "portcalls",
+                        "portcalls_container",
+                        "portcalls_dry_bulk",
+                        "portcalls_tanker",
+                        "import",
+                        "export",
+                        "import_container",
+                        "export_container",
+                        "import_dry_bulk",
+                        "export_dry_bulk",
+                        "import_tanker",
+                        "export_tanker",
+                    )
+                ]
+            ),
+            "groupByFieldsForStatistics": "date",
+            "orderByFields": "date DESC",
+            "returnGeometry": "false",
+            "resultRecordCount": str(min(1000, record_count)),
+            "f": "json",
+        }
+        request = urllib.request.Request(
+            PORTWATCH_PORTS_QUERY_URL + "?" + urllib.parse.urlencode(params),
+            headers={"User-Agent": "global-trade-dashboard/1.0"},
+        )
+        with urllib.request.urlopen(request, timeout=self.timeout_seconds) as response:
+            payload = json.load(response)
+        if "error" in payload:
+            raise RuntimeError(f"PortWatch ports API error: {payload['error']}")
+        rows = [feature["attributes"] for feature in payload.get("features", [])]
+        rows.sort(key=lambda row: _date_key(row.get("date")))
+        return rows
+
+    def fetch_group_status(self, group: dict[str, Any]) -> dict[str, Any]:
+        rows = self.fetch_country_group_series(
+            list(group.get("iso3_codes", [])),
+            record_count=int(group.get("record_count", 365)),
+        )
+        return summarize_port_context(rows, group)
+
+
+def summarize_port_context(rows: list[dict[str, Any]], group: dict[str, Any]) -> dict[str, Any]:
+    """Summarize port-call and estimated cargo anomalies without relabeling them.
+
+    A falling port-call count can be useful corroborating context for a route
+    disruption. It is not a direct backlog measure, and no output from this
+    function enters scenario behavior shares.
+    """
+
+    valid = [row for row in rows if _date_key(row.get("date")) != float("-inf")]
+    valid.sort(key=lambda row: _date_key(row.get("date")))
+    metrics: dict[str, Any] = {}
+    current = valid[-7:]
+    baseline = valid[-35:-7] if len(valid) >= 35 else valid[:-7]
+    field_by_ship_type = {
+        "container": ("portcalls_container", "import_container", "export_container"),
+        "dry_bulk": ("portcalls_dry_bulk", "import_dry_bulk", "export_dry_bulk"),
+        "tanker": ("portcalls_tanker", "import_tanker", "export_tanker"),
+        "all": ("portcalls", "import", "export"),
+    }
+    for ship_type, fields in field_by_ship_type.items():
+        calls_current = _mean(current, fields[0])
+        calls_baseline = _mean(baseline, fields[0])
+        imports_current = _mean(current, fields[1])
+        exports_current = _mean(current, fields[2])
+        if calls_current is None or calls_baseline in (None, 0):
+            continue
+        ratio = calls_current / calls_baseline
+        metrics[ship_type] = {
+            "portcalls_field": fields[0],
+            "current_7d_mean_port_calls": calls_current,
+            "prior_28d_mean_port_calls": calls_baseline,
+            "port_call_ratio": ratio,
+            "port_call_shortfall_fraction": max(0.0, min(1.0, 1.0 - ratio)),
+            "current_7d_mean_estimated_import_tonnes": imports_current,
+            "current_7d_mean_estimated_export_tonnes": exports_current,
+        }
+    return {
+        "group_id": group.get("id"),
+        "name_ko": group.get("name_ko"),
+        "iso3_codes": group.get("iso3_codes", []),
+        "source_url": PORTWATCH_PORTS_QUERY_URL,
+        "latest_date": _iso_date(valid[-1].get("date")) if valid else None,
+        "observation_count": len(valid),
+        "status": "observed_port_calls_and_estimated_trade_volume" if metrics else "insufficient_history",
+        "waiting_anchorage_status": "not_published_in_public_portwatch_daily_ports_layer",
+        "waiting_anchorage_warning_ko": "공개 PortWatch Daily_Ports_Data에는 정박 대수·대기시간 필드가 없어, 입항량을 대기·백로그로 환산하지 않습니다.",
+        "use_in_model": "diagnostic_context_only_not_behavior_calibration",
+        "metrics": metrics,
+    }
 
 
 def normalize_status_contract(status: dict[str, Any]) -> dict[str, Any]:

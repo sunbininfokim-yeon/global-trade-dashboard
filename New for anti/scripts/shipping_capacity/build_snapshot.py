@@ -12,13 +12,20 @@ from typing import Any
 
 from shipping_capacity.engine import estimate_interval, simulate_route
 from shipping_capacity.artifacts import build_artifact_bundle
+from shipping_capacity.behavior_sensitivity import behavior_paths_for_scenario
 from shipping_capacity.comtrade_routes import apply_route_flows
 from shipping_capacity.container import WorldBankContainerClient
+from shipping_capacity.lng_fleet import load_lng_fleet_context
+from shipping_capacity.market_signals import load_market_signal_registry
 from shipping_capacity.environment import (
     aggregate_environment_scenario,
     simulate_environment_route_range,
 )
-from shipping_capacity.portwatch import PortWatchClient, normalize_status_contract
+from shipping_capacity.portwatch import (
+    PortWatchClient,
+    PortWatchPortClient,
+    normalize_status_contract,
+)
 
 
 def load_json(path: Path) -> Any:
@@ -98,6 +105,70 @@ def aggregate_scenario(scenario: dict[str, Any], results: list[dict[str, Any]]) 
         "cargo_accounting_residual_tonnes": sum(
             row["cargo_accounting_residual_tonnes"] for row in affected
         ),
+    }
+
+
+BEHAVIOR_SENSITIVITY_METRICS = (
+    "commercial_capacity_gap_dwt",
+    "commercially_available_dwt",
+    "insurance_excluded_dwt",
+    "trapped_loaded_dwt",
+    "backlog_cargo_tonnes_horizon",
+    "lost_cargo_tonnes_horizon",
+    "weighted_served_flow_index",
+)
+
+
+def build_behavior_sensitivity(
+    routes: list[dict[str, Any]],
+    scenario: dict[str, Any],
+    fleet_by_type: dict[str, float],
+    config: dict[str, Any],
+) -> dict[str, Any] | None:
+    """Run named joint response paths while holding event throughput fixed."""
+
+    variants = behavior_paths_for_scenario(scenario, config)
+    if not variants:
+        return None
+    path_results = []
+    for variant in variants:
+        route_results = [
+            simulate_route(route, variant, fleet_by_type[route["ship_type"]])
+            for route in routes
+        ]
+        summary = aggregate_scenario(variant, route_results)
+        path_results.append(
+            {
+                "path_id": variant["behavior_sensitivity_path_id"],
+                "name_ko": variant["behavior_sensitivity_path_name_ko"],
+                "assumptions": {
+                    "response_adjustment": variant.get("response_adjustment", {}),
+                    "waiting_days": variant.get("waiting_days"),
+                    "trapped_days": variant.get("trapped_days"),
+                    "onboard_waiting_share": variant.get("onboard_waiting_share"),
+                    "insurance_unavailable_share": variant.get(
+                        "insurance_unavailable_share"
+                    ),
+                },
+                "results": {
+                    metric: summary[metric] for metric in BEHAVIOR_SENSITIVITY_METRICS
+                },
+                "cargo_accounting_residual_tonnes": summary[
+                    "cargo_accounting_residual_tonnes"
+                ],
+            }
+        )
+    ranges = {}
+    for metric in BEHAVIOR_SENSITIVITY_METRICS:
+        values = [float(row["results"][metric]) for row in path_results]
+        ranges[metric] = {"minimum": min(values), "maximum": max(values)}
+    return {
+        "status": "deterministic_joint_paths_not_probability_interval",
+        "event_throughput_held_fixed": True,
+        "path_count": len(path_results),
+        "paths": path_results,
+        "ranges": ranges,
+        "warning_ko": "행동변수 동시변화에 대한 민감도 범위이며 발생확률·신뢰구간·예측구간이 아닙니다.",
     }
 
 
@@ -321,6 +392,8 @@ def build_snapshot(
     *,
     fetch_portwatch: bool = False,
     fallback_live_status: dict[str, Any] | None = None,
+    fetch_portwatch_port_context: bool = False,
+    fallback_portwatch_port_context: dict[str, Any] | None = None,
     fetch_container_context: bool = False,
     fallback_container_context: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
@@ -332,6 +405,22 @@ def build_snapshot(
     comtrade_route_data = (
         load_json(comtrade_route_path) if comtrade_route_path.exists() else None
     )
+    comtrade_history_path = config_dir / "comtrade_route_history.json"
+    comtrade_history = load_json(comtrade_history_path) if comtrade_history_path.exists() else {}
+    port_context_config_path = config_dir / "portwatch_port_context.json"
+    port_context_config = load_json(port_context_config_path) if port_context_config_path.exists() else {}
+    lng_fleet_path = config_dir / "lng_fleet_2025.json"
+    lng_fleet = load_lng_fleet_context(lng_fleet_path) if lng_fleet_path.exists() else {}
+    market_sources_path = config_dir / "market_signal_sources.json"
+    market_signals = (
+        load_market_signal_registry(market_sources_path) if market_sources_path.exists() else {}
+    )
+    pdf_snapshot_path = config_dir / "pdf_report_snapshots.json"
+    pdf_reports = load_json(pdf_snapshot_path) if pdf_snapshot_path.exists() else {
+        "status": "not_fetched",
+        "sources": [],
+        "errors": [],
+    }
     routes = apply_route_flows(routes, comtrade_route_data)
     route_catalog_path = config_dir / "route_catalog.json"
     route_catalog = load_json(route_catalog_path) if route_catalog_path.exists() else []
@@ -367,6 +456,12 @@ def build_snapshot(
     response_profile_config = (
         load_json(response_profile_path) if response_profile_path.exists() else {"profiles": {}}
     )
+    behavior_uncertainty_path = config_dir / "behavior_uncertainty_profiles.json"
+    behavior_uncertainty_config = (
+        load_json(behavior_uncertainty_path)
+        if behavior_uncertainty_path.exists()
+        else {"status": "not_configured", "profiles": {}}
+    )
     event_calibration_path = config_dir / "event_calibration.json"
     event_calibration = (
         load_json(event_calibration_path)
@@ -400,6 +495,32 @@ def build_snapshot(
                 freshly_fetched_ids.add(chokepoint["id"])
             except Exception as exc:  # A partial upstream outage must not erase the snapshot.
                 live_errors.append({"chokepoint_id": chokepoint["id"], "error": str(exc)})
+
+    portwatch_port_context: dict[str, Any] = fallback_portwatch_port_context or {
+        "status": port_context_config.get("status", "not_configured"),
+        "source": port_context_config.get("source", {}),
+        "groups": [],
+        "identification_boundary": port_context_config.get("identification_boundary"),
+    }
+    port_context_errors: list[dict[str, str]] = []
+    if fetch_portwatch_port_context and port_context_config:
+        client = PortWatchPortClient()
+        observed_groups = []
+        for group in port_context_config.get("groups", []):
+            try:
+                observed_groups.append({
+                    **client.fetch_group_status(group),
+                    "scope_warning_ko": group.get("scope_warning_ko"),
+                })
+            except Exception as exc:
+                port_context_errors.append({"group_id": str(group.get("id")), "error": str(exc)})
+        portwatch_port_context = {
+            "status": "fetched" if not port_context_errors else "partial_quality_gated",
+            "source": port_context_config.get("source", {}),
+            "groups": observed_groups,
+            "errors": port_context_errors,
+            "identification_boundary": port_context_config.get("identification_boundary"),
+        }
 
     for chokepoint_id, status in live_status.items():
         latest_date = status.get("latest_date")
@@ -582,9 +703,18 @@ def build_snapshot(
             }
         )
 
-    scenario_summary = [
-        aggregate_scenario(scenario, scenario_rows[scenario["id"]]) for scenario in scenarios
-    ]
+    scenario_summary = []
+    for scenario in scenarios:
+        summary = aggregate_scenario(scenario, scenario_rows[scenario["id"]])
+        sensitivity = build_behavior_sensitivity(
+            routes,
+            scenario,
+            fleet_by_type,
+            behavior_uncertainty_config,
+        )
+        if sensitivity is not None:
+            summary["behavior_sensitivity"] = sensitivity
+        scenario_summary.append(summary)
     ui_scenario_grid = build_ui_scenario_grid(routes, scenarios, fleet_by_type)
     environment_results: list[dict[str, Any]] = []
     for environment_scenario in environment_config.get("scenarios", []):
@@ -632,6 +762,7 @@ def build_snapshot(
                     "chronological OLS signal diagnostic",
                     "chronological multi-model regression comparison",
                     "historical event-window throughput calibration",
+                    "deterministic joint behavior sensitivity paths",
                     "K-Means regime classification",
                     "Isolation Forest anomaly scoring",
                 ],
@@ -640,7 +771,7 @@ def build_snapshot(
                 "observed": "UNCTAD fleet baseline and optional IMF PortWatch daily estimated trade volume",
                 "estimated": "route DWT derived from cargo flow, distance, speed, utilization and reserve",
                 "scenario": "effective blockage, residual throughput, reroute, backlog, trapped DWT, insurance and cancellation assumptions",
-                "warning": "Route capacity is DWT-equivalent demand, not a vessel-by-vessel AIS inventory. Trapped and insurance-excluded DWT are scenario estimates unless an explicit observed source is attached.",
+                "warning": "Route capacity is DWT-equivalent demand, not a vessel-by-vessel AIS inventory. Trapped and insurance-excluded DWT are scenario estimates. Behavior sensitivity ranges are deterministic joint paths, not probabilities or empirically estimated correlations.",
             },
             "sources": [
                 {
@@ -661,6 +792,7 @@ def build_snapshot(
                 },
             ],
             "fleet": fleet,
+            "lng_fleet": lng_fleet,
             "chokepoints": chokepoints,
             "chokepoints_live": live_status,
             "live_display": live_display,
@@ -720,8 +852,21 @@ def build_snapshot(
                 "fetched_at": (comtrade_route_data or {}).get("fetched_at"),
                 "method": (comtrade_route_data or {}).get("method"),
                 "route_count": len((comtrade_route_data or {}).get("routes", [])),
+                "history": {
+                    "status": comtrade_history.get("status", "not_fetched"),
+                    "periods": comtrade_history.get("periods", []),
+                    "route_count": len(
+                        comtrade_history.get("route_history_summary", {}).get("routes", [])
+                    ),
+                    "identification_boundary": comtrade_history.get("identification_boundary"),
+                },
             },
+            "comtrade_route_history": comtrade_history,
+            "portwatch_port_context": portwatch_port_context,
+            "market_signals": market_signals,
+            "pdf_reports": pdf_reports,
             "event_response_profiles": response_profile_config,
+            "behavior_uncertainty": behavior_uncertainty_config,
             "historical_event_calibration": event_calibration,
             "route_catalog": route_catalog,
             "routes": route_outputs,
@@ -745,16 +890,21 @@ def main() -> None:
         default=Path(__file__).resolve().parent / "generated" / "shipping_capacity_v1.json",
     )
     parser.add_argument("--fetch-portwatch", action="store_true")
+    parser.add_argument("--fetch-portwatch-port-context", action="store_true")
     parser.add_argument("--fetch-container-context", action="store_true")
     parser.add_argument("--diagnostics-output", type=Path)
     parser.add_argument("--backtests-output", type=Path)
     args = parser.parse_args()
     fallback_live_status: dict[str, Any] = {}
+    fallback_portwatch_port_context: dict[str, Any] = {}
     fallback_container_context: dict[str, Any] = {}
     if args.output.exists():
         try:
             previous_snapshot = load_json(args.output)
             fallback_live_status = previous_snapshot.get("chokepoints_live", {})
+            fallback_portwatch_port_context = previous_snapshot.get(
+                "portwatch_port_context", {}
+            )
             fallback_container_context = previous_snapshot.get("container", {}).get(
                 "context",
                 {},
@@ -762,11 +912,14 @@ def main() -> None:
         except (OSError, ValueError, TypeError):
             # A malformed prior artifact must not prevent a clean rebuild.
             fallback_live_status = {}
+            fallback_portwatch_port_context = {}
             fallback_container_context = {}
     snapshot = build_snapshot(
         args.config_dir,
         fetch_portwatch=args.fetch_portwatch,
         fallback_live_status=fallback_live_status,
+        fetch_portwatch_port_context=args.fetch_portwatch_port_context,
+        fallback_portwatch_port_context=fallback_portwatch_port_context,
         fetch_container_context=args.fetch_container_context,
         fallback_container_context=fallback_container_context,
     )
