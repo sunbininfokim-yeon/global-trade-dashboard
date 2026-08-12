@@ -6817,9 +6817,9 @@ const MS_FILES = {
 };
 
 const MS_TABS = [
-    { id: 'tangle', label: '수급 꼬임', blurb: '집중도와 단일종목 레버리지 ETF' },
-    { id: 'levels', label: '가격대별 수급', blurb: '어느 가격에서 누가 샀는가' },
-    { id: 'uskr',   label: 'US → KR 조기경보', blurb: '미국 옵션 레짐이 한국으로' },
+    { id: 'tangle', label: '수급 불균형', blurb: '집중도와 단일종목 레버리지 ETF (Distortion & Squeeze)' },
+    { id: 'levels', label: '가격대별 체결', blurb: '어느 가격에서 누가 샀는가 (Volume Profile)' },
+    { id: 'uskr',   label: '해외-국내 선행', blurb: '미국 옵션 레짐이 한국으로 (Global Spillover)' },
 ];
 
 let MS_DATA = null;
@@ -6896,57 +6896,109 @@ const msDivergingBars = (rows, opts = {}) => {
 };
 
 // --- ① 수급 꼬임 -------------------------------------------------------------
+// distortion_squeeze is documented as the top-level block, but the shipped
+// snapshot has not produced it yet -- the same numbers live at the document's
+// root instead (concentration, market_letf_derivatives_ratios,
+// global_leverage_stack, stocks[]). DISTORTION_SQUEEZE.md names this fallback
+// explicitly, so this reads the root fields rather than waiting on a key that
+// may never land under that exact name.
 const msTangle = (D) => {
     const m = D.micro || {};
-    const conc = D.conc || {};
-    const L = conc.latest || {};
+    const conc = m.concentration || (D.conc || {}).latest || {};
     const stocks = Array.isArray(m.stocks) ? m.stocks : [];
     const sel = stocks.find((x) => x.ticker === MS_STOCK) || stocks[0] || null;
-    const cat = m.letf_category_share || {};
+    const ratios = m.market_letf_derivatives_ratios || {};
+    const stack = m.global_leverage_stack || {};
+    const fvr = m.foreign_vs_retail || {};
+    const dc = m.deposit_credit || {};
+    const byDir = ratios.by_direction || {};
+    const bands = m.ir_bands || {};
+
+    // Stress-sorted: the row worth looking at first is the one with the
+    // biggest 10%-down impact, not the biggest name.
+    const ranked = [...stocks].sort((a, b) =>
+        (b.scenarios?.r_minus_10pct?.ir_pct ?? -1) - (a.scenarios?.r_minus_10pct?.ir_pct ?? -1));
+
+    const bandCls = { low: 'ms-lv-1', mid: 'ms-lv-2', watch: 'ms-lv-2', high: 'ms-lv-3' };
 
     return `
     <section class="fin-block fin-block-wide">
-        <h2>코스피 집중도</h2>
+        <h2>A · 코스피 집중도</h2>
         <p class="fin-lead">지수가 몇 종목에 얼마나 매달려 있는지입니다. 높을수록 그 종목의 사정이 곧 시장의 사정이 됩니다.</p>
         <div class="fin-cards">
-            ${msCard('상위 2 (삼성·하닉)', Number.isFinite(L.conc_top2_samsung_hynix_pct) ? L.conc_top2_samsung_hynix_pct.toFixed(1) + '%' : '—', `${conc.n_points || 0}일 시계열`, 'conc')}
-            ${msCard('상위 5', Number.isFinite(L.conc_top5_pct) ? L.conc_top5_pct.toFixed(1) + '%' : '—', (conc.stats ? `60일 변화 ${conc.stats.conc_top2_chg_60d > 0 ? '+' : ''}${(conc.stats.conc_top2_chg_60d ?? 0).toFixed(1)}%p` : ''), 'conc')}
-            ${msCard('상위 10', Number.isFinite(L.conc_top10_pct) ? L.conc_top10_pct.toFixed(1) + '%' : '—', `종목 ${msNum(L.n_names)}개 기준`, 'conc')}
-            ${msCard('레버·인버스 거래대금', cat.levered_inverse_tv_jo ? `${cat.levered_inverse_tv_jo}조` : '—',
-                cat.kospi_cash_tv_jo ? `코스피 현물 ${cat.kospi_cash_tv_jo}조 대비` : '', 'letf_cat')}
+            ${msCard('상위 2 (삼성·하닉)', Number.isFinite(conc.conc_top2_samsung_hynix_pct) ? conc.conc_top2_samsung_hynix_pct.toFixed(1) + '%' : '—',
+                (conc.top5_tickers || []).slice(0, 2).join(' · '), 'conc')}
+            ${msCard('상위 5', Number.isFinite(conc.conc_top5_pct) ? conc.conc_top5_pct.toFixed(1) + '%' : '—',
+                (conc.top5_tickers || []).join(' · '), 'conc')}
+            ${msCard('상위 10', Number.isFinite(conc.conc_top10_pct) ? conc.conc_top10_pct.toFixed(1) + '%' : '—',
+                `종목 ${msNum((D.conc || {}).latest?.n_names)}개 기준`, 'conc')}
         </div>
-        ${(conc.points || []).length ? mmLineChart(conc.points.map((p) => p.date), conc.points.map((p) => p.conc_top2_samsung_hynix_pct), { unit: '%', label: '상위 2 집중도' }) : ''}
     </section>
 
     <section class="fin-block fin-block-wide">
-        <h2>단일종목 레버리지 ETF</h2>
-        <p class="fin-lead">
-            2배 ETF 1좌는 기초자산 2좌만큼의 노출을 만듭니다. 그래서 규모는 AUM이 아니라 <strong>AUM × 배수</strong>로 세야 하고,
-            매일 리밸런싱하는 구조라 기초자산이 흔들릴수록 되사고 되파는 양이 늘어납니다.
-        </p>
-        ${stocks.length ? `
-        <div class="co-struct-toggle">
-            ${stocks.map((st) => `<button class="mm-view-btn ${(sel && sel.ticker === st.ticker) ? 'on' : ''}"
-                data-ms-stock="${finEsc(st.ticker)}">${finEsc(st.name)}</button>`).join('')}
-        </div>
+        <h2>B · 시장 전체</h2>
         <div class="fin-cards">
-            ${msCard('LETF 순자산 합계', msJo(sel.letf_aum_sum_krw),
-                `롱 ${msJo(sel.letf_aum_long_krw)} · 인버스 ${msJo(sel.letf_aum_inverse_krw)}`, 'letf_products')}
-            ${msCard('LETF 거래대금', msJo(sel.letf_trading_value_krw), '단일종목 레버·인버스 합계', 'letf_products')}
-            ${msCard('현물 대비 회전율', msPct(sel.letf_turnover_ratio),
-                `LETF 거래대금 ÷ 현물 거래대금 ${msJo(sel.adv_spot_krw)}`, 'letf_products')}
-            ${msCard('유통시총 대비 노출', msPct((sel.leverage_exposure_pct ?? 0) / 100),
-                `유통시총 ${msJo(sel.free_float_mcap_krw)}`, 'letf_products')}
+            ${msCard('레버·곱버스 거래대금 / 코스피 현물', Number.isFinite(ratios.levered_inverse_etf_tv_over_kospi_cash_tv_pct) ? ratios.levered_inverse_etf_tv_over_kospi_cash_tv_pct.toFixed(1) + '%' : '—',
+                `롱 ${msJo(ratios.long_tv_jo * 1e12)} · 인버스 ${msJo(ratios.inverse_tv_jo * 1e12)}`, 'letf_cat')}
+            ${msCard('외국인 vs 개인 순매수', msEok((fvr.foreign_net_krw ?? 0) / 1e8),
+                `개인 ${msEok((fvr.retail_net_krw ?? 0) / 1e8)} · 기관 ${msEok((fvr.institution_net_krw ?? 0) / 1e8)}${fvr.quality === 'estimated' ? ' · 추정' : ''}`, null,
+                fvr.foreign_net_krw >= 0 ? 'fin-up' : 'fin-down')}
+            ${msCard('신용융자 / 예탁금', Number.isFinite(dc.credit_over_deposit_pct) ? dc.credit_over_deposit_pct.toFixed(1) + '%' : '—',
+                `예탁금 ${msEok(dc.investor_deposit_eok)} · 신용 ${msEok(dc.credit_balance_eok)} (${finEsc(dc.as_of || '')})`, null)}
         </div>
+    </section>
+
+    <section class="fin-block fin-block-wide">
+        <h2>D · 방향별 레버리지 상품 (곱버스 분리)</h2>
+        <p class="fin-lead">인버스 안에서도 <strong>2배 곱버스</strong>는 따로 셉니다. 되사고 되파는 압력이 방향에 따라 다르게 쌓입니다.</p>
+        ${Object.keys(byDir).length ? `
         <div class="fin-cards">
-            ${msCard('외국인 보유 비중', Number.isFinite(sel.foreign_hold_ratio_pct) ? sel.foreign_hold_ratio_pct.toFixed(1) + '%' : msMissing('미제공'), '', null)}
-            ${msCard('공매도 잔고 비중', Number.isFinite(sel.short_ratio_pct) ? sel.short_ratio_pct.toFixed(2) + '%' : msMissing('미수집'), (m.short_interest_meta || {}).note_ko ? '' : '', null)}
-            ${msCard('당일 등락', Number.isFinite(sel.day_return) ? msPct(sel.day_return, 2) : '—', `종가 ${msNum(sel.close)}원`, null, sel.day_return >= 0 ? 'fin-up' : 'fin-down')}
-        </div>
+            ${[['long', '롱(추종)'], ['inverse', '인버스(1X)'], ['inverse_2x', '인버스(2X)'], ['gobus_inverse_2x', '곱버스(2X)']].map(([k, ko]) => {
+                const b = byDir[k]; if (!b) return '';
+                return msCard(ko, msJo(b.trading_value_krw), `상품 ${msNum(b.n_products)}종 · 코스피 거래대금의 ${(b.share_of_kospi_tv_pct ?? 0).toFixed(1)}%`, null);
+            }).join('')}
+        </div>` : `<p class="fin-note">${msMissing('라이브 재빌드 후 표시')}</p>`}
+        ${stack.global_stack_usd ? `
         <p class="fin-note">
-            NAV는 공개 스냅샷에 없어 표시하지 않습니다 — 상품별 순자산(AUM)과 거래대금만 실측입니다.
-            ${finEsc((m.broker_leverage_disclosure || {}).note_ko || '증권사 고객 레버리지 공시가 아닙니다.')}
-        </p>` : `<p class="fin-note">${msMissing('단일종목 LETF 데이터 없음')}</p>`}
+            해외 레버 스택(규모 비교용, 국내 회전율에 합산하지 않음): KR $${(stack.kr_single_stock_letf_notional_usd / 1e9).toFixed(1)}B ·
+            HK $${(stack.hk_swap_letf_notional_usd / 1e9).toFixed(1)}B · US $${(stack.us_levered_etf_notional_usd / 1e9).toFixed(1)}B ·
+            crypto $${(stack.crypto_perp_oi_notional_usd / 1e6).toFixed(0)}M. ${finEsc(stack.hedge_channel_ko || '')}
+        </p>` : ''}
+    </section>
+
+    <section class="fin-block fin-block-wide">
+        <h2>E · 종목 스트레스</h2>
+        <p class="fin-lead">
+            2배 ETF 1좌는 기초자산 2좌만큼의 노출을 만듭니다. IR(Implied Rebalancing)은 그 노출을 되사고 되팔 때
+            현물 ADV 대비 얼마나 큰 물량이 나오는지를 잽니다 — 클수록 리밸런싱 자체가 가격을 흔들 수 있습니다.
+        </p>
+        ${stocks.length ? msTable(
+            ['종목', '회전율', 'wag-the-dog', '인버스 비중', '−5% IR', '−10% IR', '밴드', ''],
+            ranked.map((st) => {
+                const t = st.flow_tangle || {};
+                const s10 = st.scenarios?.r_minus_10pct, s5 = st.scenarios?.r_minus_5pct;
+                return [
+                    `${finEsc(st.name)} <span class="co-hint">${finEsc(st.ticker)}</span>`,
+                    msPct(st.letf_turnover_ratio),
+                    `<span class="ms-badge ${bandCls[t.wag_the_dog_band] || ''}">${finEsc(t.wag_the_dog_band || '—')}</span>`,
+                    msPct(t.inverse_tv_share),
+                    Number.isFinite(s5?.ir_pct) ? s5.ir_pct.toFixed(1) + '%' : '—',
+                    Number.isFinite(s10?.ir_pct) ? `<span class="ms-badge ${bandCls[s10.band] || ''}">${s10.ir_pct.toFixed(1)}%</span>` : '—',
+                    `<span class="ms-badge ${bandCls[t.realized_band] || ''}">${finEsc(t.realized_band || '—')}</span>`,
+                    `<button class="mm-view-btn" data-ms-stock="${finEsc(st.ticker)}" data-ms-modal="letf_products">상품별</button>`,
+                ];
+            })) : `<p class="fin-note">${msMissing('종목 스트레스 데이터 없음')}</p>`}
+        <p class="fin-note">IR 밴드: watch ≥ ${bands.watch_lt_pct ?? 10}% · low &lt; ${bands.low_lt_pct ?? 3}%. NAV는 공개 스냅샷에 없어 표시하지 않습니다 — 상품별 순자산(AUM)과 거래대금만 실측입니다.</p>
+    </section>
+
+    <section class="fin-block fin-block-wide">
+        <h2>F · 해석 힌트</h2>
+        <ul class="fin-list">
+            <li>wag-the-dog=high → LETF 거래대금이 현물 거래대금에 육박 → 리밸런싱이 현물가에 영향을 줄 수 있는 상태</li>
+            <li>−10% IR ≥ ${bands.watch_lt_pct ?? 10}% → 기초자산이 10% 빠지면 리밸런싱 되팔기가 현물 ADV의 그만큼을 추가로 밀어냄</li>
+            <li>인버스 비중이 높을수록 기초자산 하락 시 오히려 매수(숏커버 성격) 압력이 커짐</li>
+        </ul>
+        <p class="fin-note">${finEsc((m.broker_leverage_disclosure || {}).note_ko || '증권사 고객 레버리지 공시가 아닙니다. 공개 LETF AUM·거래대금 기반 프록시입니다.')}</p>
     </section>`;
 };
 
@@ -7025,6 +7077,7 @@ const msLevelsTab = (D) => {
 // --- ③ US → KR 조기경보 ------------------------------------------------------
 const msUsKr = (D) => {
     const t = D.transmission || {};
+    const gs = t.global_spillover || {};
     const a = D.alerts || {};
     const b = D.board || {};
     const ch = t.channels || {};
@@ -7033,15 +7086,16 @@ const msUsKr = (D) => {
     const ev = Array.isArray(t.evidence_us) ? t.evidence_us : [];
     const letf = a.kr_hynix_letf || {};
     const vix = a.us_vix_to_kr || {};
+    const hit = gs.open30m_hit || {};
 
     return `
     <section class="fin-block fin-block-wide">
         <h2>왜 지금 ${finEsc(dirKo)}인가</h2>
         <div class="ms-headline">
-            <span class="ms-head-level ${MS_LEVEL_CLASS[lvl] || ''}">${finEsc(t.headline_ko || `${lvl} · ${dirKo}`)}</span>
-            <span class="ms-head-meta">기준 ${finEsc(t.as_of || '')} · 모델 ${finEsc(t.model_version || '')}</span>
+            <span class="ms-head-level ${MS_LEVEL_CLASS[lvl] || ''}">${finEsc(gs.headline_ko || t.headline_ko || `${lvl} · ${dirKo}`)}</span>
+            <span class="ms-head-meta">기준 ${finEsc(gs.as_of || t.as_of || '')} · 모델 ${finEsc(t.model_version || '')}</span>
         </div>
-        ${t.why_ko ? `<p class="ms-why">${finEsc(t.why_ko)}</p>` : ''}
+        ${gs.why_short_ko || t.why_ko ? `<p class="ms-why">${finEsc(gs.why_short_ko || t.why_ko)}</p>` : ''}
         <p class="fin-note ms-warn">
             <strong>하방 ≠ 미국 주가 급락.</strong> 공개 옵션에서 풋 쪽이 두드러진 상태가 한국 링크로 이어져 있다는 뜻입니다.
             주체를 특정하지 않으며, 방향을 맞힌다는 주장도 아닙니다.
@@ -7097,8 +7151,31 @@ const msUsKr = (D) => {
             VIX 알림은 Cboe 공식 VIX의 전일 대비 변화율입니다 — <strong>풋 미결제약정(OI)이 아닙니다.</strong>
             종목 단위 풋 OI 히스토리가 공개되지 않아 그 임계값은 만들 수 없습니다.
         </p>
-        <p class="fin-note">${finEsc(t.disclaimer_ko || '')}</p>
-    </section>`;
+    </section>
+
+    ${Number.isFinite(hit.downside_hit_rate_mean) ? `
+    <section class="fin-block fin-block-wide">
+        <h2>장초 30분 백테스트</h2>
+        <div class="fin-cards">
+            ${msCard('하방 적중률', msPct(hit.downside_hit_rate_mean),
+                '하방 드라이버가 뜬 날, 익일 KR 개장 30분 수익률이 실제로 음수였던 비율')}
+            ${msCard('하방일 평균 개장 수익률', msPct(hit.downside_mean_open_r, 2), '', null,
+                hit.downside_mean_open_r >= 0 ? 'fin-up' : 'fin-down')}
+        </div>
+        <p class="fin-note ms-warn">${finEsc(hit.note_ko || '옵션 히스토리가 아니라 수익률 버킷 프록시입니다. 과대해석하지 마세요.')}</p>
+    </section>` : ''}
+
+    ${(gs.read_ko || []).length || (gs.data_limits_ko || []).length ? `
+    <section class="fin-block fin-block-wide">
+        ${(gs.read_ko || []).length ? `
+        <h3 class="fin-sub">해석 힌트</h3>
+        <ul class="fin-list">${gs.read_ko.map((x) => `<li>${finEsc(x)}</li>`).join('')}</ul>` : ''}
+        ${(gs.data_limits_ko || []).length ? `
+        <h3 class="fin-sub">이 데이터로 할 수 없는 것</h3>
+        <ul class="fin-list">${gs.data_limits_ko.map((x) => `<li>${finEsc(x)}</li>`).join('')}</ul>` : ''}
+    </section>` : ''}
+
+    <p class="mm-disclaimer">${finEsc(t.disclaimer_ko || '')}</p>`;
 };
 
 // --- 모달 --------------------------------------------------------------------
@@ -7166,7 +7243,7 @@ const msModalFor = (key, D) => {
 };
 
 const renderMicrostructure = async (host) => {
-    host.innerHTML = `<div class="fin-wrap"><p class="fin-loading">시장 미시구조 자료를 받는 중…</p></div>`;
+    host.innerHTML = `<div class="fin-wrap"><p class="fin-loading">호가 및 유동성 자료를 받는 중…</p></div>`;
 
     if (!MS_DATA) {
         const keys = Object.keys(MS_FILES);
@@ -7176,7 +7253,7 @@ const renderMicrostructure = async (host) => {
     }
     const D = MS_DATA;
     if (!Object.values(D).some(Boolean)) {
-        host.innerHTML = finPlaceholder('시장 미시구조', '집중도 · 가격대별 수급 · US→KR 전이',
+        host.innerHTML = finPlaceholder('호가 및 유동성', '수급 불균형 · 가격대별 체결 · 해외-국내 선행',
             '스냅샷 JSON을 찾지 못했습니다. 일일 워크플로가 <code>public/data/</code> 에 산출합니다.');
         return;
     }
@@ -7186,7 +7263,8 @@ const renderMicrostructure = async (host) => {
         host.innerHTML = `
         <div class="fin-wrap">
             <div class="fin-head">
-                <h1>시장 미시구조</h1>
+                <h1>호가 및 유동성</h1>
+                <p class="fin-head-en">Market Micro-metrics</p>
                 <p>공개·지연 데이터입니다. 값이 없는 항목은 채우지 않고 비워 둡니다. 투자 권유가 아닙니다.</p>
             </div>
             <div class="mm-tabs" role="tablist">
@@ -7208,10 +7286,19 @@ const renderMicrostructure = async (host) => {
 
         const on = (sel, fn) => host.querySelectorAll(sel).forEach((b) => b.addEventListener('click', (e) => fn(b, e)));
         on('[data-ms-tab]', (b) => { MS_TAB = b.dataset.msTab; MS_MODAL = null; paint(); });
-        on('[data-ms-stock]', (b) => { MS_STOCK = b.dataset.msStock; paint(); });
+        on('[data-ms-stock]', (b) => {
+            MS_STOCK = b.dataset.msStock;
+            // The row's own button doubles as ticker-select + drilldown open,
+            // so the modal has to look up the ticker that was just picked.
+            if (b.dataset.msModal) MS_MODAL = msModalFor(b.dataset.msModal, D);
+            paint();
+        });
         on('[data-ms-univ]', (b) => { MS_UNIVERSE = b.dataset.msUniv; paint(); });
         on('[data-ms-ticker]', (b) => { MS_TICKER = b.dataset.msTicker || null; MS_TAB = 'levels'; paint(); });
-        on('[data-ms-modal]', (b) => { MS_MODAL = msModalFor(b.dataset.msModal, D); paint(); });
+        // :not([data-ms-stock]) because that combination is handled above --
+        // otherwise this listener would double-fire on the same click and
+        // paint() twice.
+        on('[data-ms-modal]:not([data-ms-stock])', (b) => { MS_MODAL = msModalFor(b.dataset.msModal, D); paint(); });
         on('[data-ms-modal-close]', (b, e) => { if (e.target === b) { MS_MODAL = null; paint(); } });
         mmWireCharts(host);
     };
