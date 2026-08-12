@@ -210,8 +210,16 @@ class InstrumentRegistry:
 def resolve_portfolio(
     portfolio: dict[str, Any],
     registry: InstrumentRegistry,
+    *,
+    net_asset_value: float | None = None,
 ) -> tuple[list[dict[str, Any]], list[str]]:
-    """Return resolved positions with weights and unresolved queries."""
+    """Return resolved positions with signed weights.
+
+    When a positive ``net_asset_value`` is supplied, values are divided by NAV rather
+    than by gross exposure.  This preserves the risk of a credit-funded or long/short
+    book (for example, a 130% long funded with 30% credit remains a 130% exposure).
+    The gross-normalized fallback is retained for legacy callers and pure weight input.
+    """
     positions_in = portfolio.get("positions") or []
     unresolved: list[str] = []
     resolved: list[dict[str, Any]] = []
@@ -280,8 +288,11 @@ def resolve_portfolio(
                 "side": "short" if val < 0 else "long",
             }
     gross = sum(abs(x["value"]) for x in merged.values())
+    denom = float(net_asset_value) if net_asset_value is not None else gross
+    if denom <= 0:
+        raise ValueError("net_asset_value must be positive when resolving value positions")
     for row in merged.values():
-        row["weight"] = row["value"] / gross  # gross-exposure weights; shorts negative
+        row["weight"] = row["value"] / denom  # NAV weights when supplied; shorts negative
         row["side"] = "short" if row["value"] < 0 else "long"
         resolved.append(row)
     return resolved, unresolved
