@@ -67,7 +67,8 @@
     });
 
     const formatDwt = value => {
-        const number = Number(value || 0);
+        if (value == null) return '—';
+        const number = Number(value);
         if (number >= 1e9) return `${(number / 1e9).toFixed(2)}B DWT`;
         if (number >= 1e6) return `${(number / 1e6).toFixed(1)}M DWT`;
         if (number >= 1e3) return `${(number / 1e3).toFixed(0)}K DWT`;
@@ -75,7 +76,8 @@
     };
 
     const formatTonnes = value => {
-        const number = Number(value || 0);
+        if (value == null) return '—';
+        const number = Number(value);
         if (number >= 1e9) return `${(number / 1e9).toFixed(2)}B t`;
         if (number >= 1e6) return `${(number / 1e6).toFixed(1)}M t`;
         if (number >= 1e3) return `${(number / 1e3).toFixed(0)}K t`;
@@ -234,13 +236,13 @@
                          role="button" tabindex="0" title="차트에서 벌크선 강조">
                     <span class="shipping-kpi-label">벌크선</span>
                     <strong>${formatDwt(rows.find(row => row.ship_type === 'dry_bulk')?.dwt)}</strong>
-                    <small>세계 선대 42.5%</small>
+                    <small>세계 선대 ${formatPct(rows.find(row => row.ship_type === 'dry_bulk')?.share_pct, 1)}</small>
                 </article>
                 <article class="shipping-kpi is-clickable" data-shipping-kpi="fleet-tanker"
                          role="button" tabindex="0" title="차트에서 유조선 강조">
                     <span class="shipping-kpi-label">유조선</span>
                     <strong>${formatDwt(rows.find(row => row.ship_type === 'tanker')?.dwt)}</strong>
-                    <small>세계 선대 27.5%</small>
+                    <small>세계 선대 ${formatPct(rows.find(row => row.ship_type === 'tanker')?.share_pct, 1)}</small>
                 </article>
                 <article class="shipping-kpi is-clickable" data-shipping-kpi="fleet-mix"
                          role="button" tabindex="0" title="선복량 차트로 이동">
@@ -534,7 +536,7 @@
                         <div><span>${escapeHtml(point.name_en)}</span><h3>${escapeHtml(point.name_ko)}</h3></div>
                         <span class="shipping-status ${status.cls}">${status.label}</span>
                     </div>
-                    <strong class="shipping-change ${change < 0 ? 'negative' : 'positive'}">${change === null ? '—' : formatPct(change)}</strong>
+                    <strong class="shipping-change ${change === null ? 'neutral' : change < 0 ? 'negative' : 'positive'}">${change === null ? '—' : formatPct(change)}</strong>
                     <p>전체 통항 capacity · 최근 7일 vs 직전 28일</p>
                     <div class="shipping-mini-metrics">
                         <span>컨테이너 <b>${point.live?.metrics?.container ? formatPct(point.live.metrics.container.change_pct) : '—'}</b></span>
@@ -591,154 +593,126 @@
         });
     };
 
-    const simulateRoute = (route, scenario) => {
-        const exposure = route.chokepoints?.find(item => item.id === scenario.chokepoint_id);
-        if (!exposure) return null;
-        const input = route.model_inputs || {};
-        const horizonDays = 28;
-        const durationFactor = Math.min(scenario.duration_days / horizonDays, 1);
-        const affected = (exposure.exposure_share || 1) * scenario.closure_fraction * durationFactor;
-        const rerouted = affected * (exposure.response?.reroute || 0);
-        const waiting = affected * (exposure.response?.wait || 0);
-        const cancelled = affected * (exposure.response?.cancel || 0);
-        const extraCycleDays = 2 * (exposure.reroute_extra_nm_one_way || 0) / (input.speed_knots || 1) / 24;
-        const annualCargo = route.annual_cargo_tonnes || 0;
-        const utilization = input.utilization || 1;
-        const baseline = route.baseline.baseline_required_dwt || 0;
-        const allocated = baseline * (1 + (input.reserve_margin || 0));
-        const retainedBase = baseline * (1 - cancelled);
-        const delayCapacity = annualCargo / (365 * utilization)
-            * (rerouted * extraCycleDays + waiting * scenario.waiting_days);
-        const disrupted = retainedBase + delayCapacity;
-        const capacityGap = Math.max(0, disrupted - allocated);
-        const coverage = disrupted > 0 ? Math.min(1, allocated / disrupted) : 1;
-        const deliverable = (1 - cancelled) * coverage;
-        return {
-            route,
-            affected,
-            rerouted,
-            waiting,
-            cancelled,
-            baseline,
-            disrupted,
-            absorbed: Math.max(0, delayCapacity),
-            capacityGap,
-            deliverable,
-            trafficChangePct: (deliverable - 1) * 100,
-            lostCargo: annualCargo / 365 * horizonDays * cancelled
-        };
-    };
-
-    const scenarioResultMarkup = (results, scenario) => {
-        if (!results.length) {
-            return '<div class="shipping-empty">이 초크포인트에 연결된 대표 항로가 없습니다.</div>';
-        }
-        const baselineTotal = results.reduce((sum, row) => sum + row.baseline, 0);
-        const absorbed = results.reduce((sum, row) => sum + row.absorbed, 0);
-        const gap = results.reduce((sum, row) => sum + row.capacityGap, 0);
-        const lost = results.reduce((sum, row) => sum + row.lostCargo, 0);
-        const deliverable = results.reduce((sum, row) => sum + row.deliverable * row.baseline, 0) / baselineTotal;
-        return `
-            <section class="shipping-kpi-grid scenario-kpis">
-                <article class="shipping-kpi featured"><span class="shipping-kpi-label">추가로 묶이는 선복량</span><strong>${formatDwt(absorbed)}</strong><small>우회 + 대기 총흡수</small></article>
-                <article class="shipping-kpi"><span class="shipping-kpi-label">예비분 초과 부족</span><strong>${formatDwt(gap)}</strong><small>capacity gap</small></article>
-                <article class="shipping-kpi"><span class="shipping-kpi-label">28일 손실 화물</span><strong>${formatTonnes(lost)}</strong><small>취소 가정 반영</small></article>
-                <article class="shipping-kpi"><span class="shipping-kpi-label">배송가능 트래픽 변화</span><strong class="negative-text">${formatPct((deliverable - 1) * 100)}</strong><small>${formatNumber(scenario.duration_days)}일 충격</small></article>
-            </section>
-            <section class="shipping-grid two-columns wide-first">
-                <article class="shipping-panel shipping-chart-panel">
-                    <div class="shipping-panel-heading"><div><p class="shipping-panel-kicker">CAPACITY BEFORE / AFTER</p><h2>영향 항로 선복량 변화</h2></div><span>백만 DWT</span></div>
-                    <div class="shipping-chart-wrap tall"><canvas id="shipping-scenario-chart"></canvas></div>
-                </article>
-                <article class="shipping-panel">
-                    <div class="shipping-panel-heading"><div><p class="shipping-panel-kicker">AFFECTED ROUTES</p><h2>항로별 충격</h2></div></div>
-                    <div class="shipping-table-wrap">
-                        <table class="shipping-table compact-table">
-                            <thead><tr><th>항로</th><th>흡수 DWT</th><th>트래픽</th></tr></thead>
-                            <tbody>${results.map(row => `
-                                <tr><td>${escapeHtml(row.route.name_ko)}</td><td>${formatDwt(row.absorbed)}</td><td class="negative-text">${formatPct(row.trafficChangePct)}</td></tr>
-                            `).join('')}</tbody>
-                        </table>
-                    </div>
-                </article>
-            </section>
-        `;
-    };
-
+    /**
+     * Every number here comes from ui_scenario_grid.rows, which the Python
+     * engine precomputes for a fixed set of (base scenario x closure% x
+     * duration) combinations -- see status: "precomputed_python_engine" in
+     * the JSON. The controls below only pick a row to display; nothing here
+     * simulates or recomputes a chokepoint outcome in the browser.
+     */
     const renderScenarios = (data, root) => {
-        const scenarios = data.scenarios?.length ? data.scenarios : data.scenario_summary;
-        const initial = scenarios.find(item => item.id === 'suez_100pct_28d') || scenarios[0];
+        const grid = data.ui_scenario_grid || {};
+        const gridRows = grid.rows || [];
+        const closureOptions = grid.closure_pct_options || [];
+        const durationOptions = grid.duration_day_options || [];
+        const baseScenarios = data.scenario_summary?.length ? data.scenario_summary : (data.scenarios || []);
+        const routeNameById = new Map((data.routes || []).map(r => [r.id, r.name_ko || r.id]));
+
+        if (!gridRows.length || !baseScenarios.length || !closureOptions.length || !durationOptions.length) {
+            root.innerHTML = shell(data, 'shipping_scenarios', '<p class="shipping-empty">시나리오 격자 데이터 없음</p>');
+            bindInternalNavigation(root);
+            return;
+        }
+
+        const nearest = (value, options) => options.reduce(
+            (best, opt) => Math.abs(opt - value) < Math.abs(best - value) ? opt : best, options[0]
+        );
+        const initialBase = baseScenarios.find(item => item.id === 'suez_100pct_28d') || baseScenarios[0];
+        const initialClosure = nearest(Math.round((initialBase.closure_fraction ?? 1) * 100), closureOptions);
+        const initialDuration = nearest(initialBase.duration_days || durationOptions.at(-1), durationOptions);
+
         const content = `
-            <div class="shipping-callout warning"><strong>시나리오 모델:</strong> 봉쇄 가능성을 예측하는 것이 아니라, 입력한 봉쇄가 발생했을 때 필요한 선복량과 배송가능 트래픽을 계산합니다.</div>
+            <div class="shipping-callout warning"><strong>시나리오 모델:</strong> 봉쇄 가능성을 예측하는 것이 아니라, Python 엔진이 미리 계산해 둔 격자에서 선택한 조합의 값을 그대로 표시합니다.</div>
             <section class="shipping-simulator-controls">
                 <label>기준 시나리오
                     <select id="shipping-scenario-preset" class="shipping-select">
-                        ${scenarios.map(item => `<option value="${escapeHtml(item.id)}" ${item.id === initial.id ? 'selected' : ''}>${escapeHtml(item.name_ko || item.id)}</option>`).join('')}
+                        ${baseScenarios.map(item => `<option value="${escapeHtml(item.id)}" ${item.id === initialBase.id ? 'selected' : ''}>${escapeHtml(item.name_ko || item.id)}</option>`).join('')}
                     </select>
                 </label>
-                <label>봉쇄율 <output id="shipping-closure-output" aria-live="polite">${Math.round(initial.closure_fraction * 100)}%</output>
-                    <input id="shipping-closure-range" aria-label="봉쇄율" type="range" min="0" max="100" step="5" value="${Math.round(initial.closure_fraction * 100)}">
+                <label>봉쇄율
+                    <select id="shipping-closure-select" class="shipping-select">
+                        ${closureOptions.map(pct => `<option value="${pct}" ${pct === initialClosure ? 'selected' : ''}>${pct}%</option>`).join('')}
+                    </select>
                 </label>
-                <label>지속기간 <output id="shipping-duration-output" aria-live="polite">${initial.duration_days}일</output>
-                    <input id="shipping-duration-range" aria-label="지속기간" type="range" min="1" max="28" step="1" value="${Math.min(initial.duration_days, 28)}">
-                </label>
-                <label>평균 대기 <output id="shipping-wait-output" aria-live="polite">${initial.waiting_days || 7}일</output>
-                    <input id="shipping-wait-range" aria-label="평균 대기" type="range" min="0" max="28" step="1" value="${initial.waiting_days || 7}">
+                <label>지속기간
+                    <select id="shipping-duration-select" class="shipping-select">
+                        ${durationOptions.map(d => `<option value="${d}" ${d === initialDuration ? 'selected' : ''}>${d}일</option>`).join('')}
+                    </select>
                 </label>
             </section>
             <div id="shipping-scenario-results"></div>
-            <p class="shipping-note footer-note">우회·대기·취소 비율은 항로 설정값을 사용합니다. ‘추가로 묶이는 선복량’은 gross absorption, ‘예비분 초과 부족’은 실제 capacity gap입니다.</p>
+            <p class="shipping-note footer-note">봉쇄율·기간은 엔진이 미리 계산해 둔 조합(${closureOptions.join('/')}% × ${durationOptions.join('/')}일)만 고를 수 있습니다. ‘추가로 묶이는 선복량’은 gross absorption, ‘예비분 초과 부족’은 실제 capacity gap입니다.</p>
         `;
         root.innerHTML = shell(data, 'shipping_scenarios', content);
         bindInternalNavigation(root);
 
         const presetEl = root.querySelector('#shipping-scenario-preset');
-        const closureEl = root.querySelector('#shipping-closure-range');
-        const durationEl = root.querySelector('#shipping-duration-range');
-        const waitEl = root.querySelector('#shipping-wait-range');
+        const closureEl = root.querySelector('#shipping-closure-select');
+        const durationEl = root.querySelector('#shipping-duration-select');
         const resultsEl = root.querySelector('#shipping-scenario-results');
 
         const update = () => {
-            const preset = scenarios.find(item => item.id === presetEl.value) || scenarios[0];
-            const scenario = {
-                chokepoint_id: preset.chokepoint_id,
-                closure_fraction: Number(closureEl.value) / 100,
-                duration_days: Number(durationEl.value),
-                waiting_days: Number(waitEl.value)
-            };
-            const setOutputValue = (selector, label, value) => {
-                const output = root.querySelector(selector);
-                output.value = value;
-                output.textContent = value;
-                output.setAttribute('aria-label', `${label}: ${value}`);
-            };
-            setOutputValue('#shipping-closure-output', '봉쇄율', `${closureEl.value}%`);
-            setOutputValue('#shipping-duration-output', '지속기간', `${durationEl.value}일`);
-            setOutputValue('#shipping-wait-output', '평균 대기', `${waitEl.value}일`);
-            const results = data.routes.map(route => simulateRoute(route, scenario)).filter(Boolean)
-                .sort((a, b) => b.absorbed - a.absorbed);
-            resultsEl.innerHTML = scenarioResultMarkup(results, scenario);
-            createChart(root, 'shipping-scenario-chart', {
-                type: 'bar',
-                data: {
-                    labels: results.map(row => row.route.name_ko),
-                    datasets: [
-                        { label: '정상 필요 DWT', data: results.map(row => row.baseline / 1e6), backgroundColor: 'rgba(100, 116, 139, 0.7)', borderRadius: 4 },
-                        { label: '충격 후 필요 DWT', data: results.map(row => row.disrupted / 1e6), backgroundColor: '#38bdf8', borderRadius: 4 }
-                    ]
-                },
-                options: chartOptions({ unit: 'M DWT', rotateLabels: true })
-            });
+            const row = gridRows.find(r => r.base_scenario_id === presetEl.value
+                && String(r.closure_pct) === closureEl.value
+                && String(r.duration_days) === durationEl.value);
+
+            if (!row) {
+                resultsEl.innerHTML = '<div class="shipping-empty">해당 조합의 격자 데이터가 없습니다.</div>';
+                return;
+            }
+            const s = row.summary || {};
+            const routes = (row.routes || []).slice()
+                .sort((a, b) => (b.operational_capacity_absorbed_dwt || 0) - (a.operational_capacity_absorbed_dwt || 0));
+
+            resultsEl.innerHTML = `
+                <section class="shipping-kpi-grid scenario-kpis">
+                    <article class="shipping-kpi featured"><span class="shipping-kpi-label">추가로 묶이는 선복량</span><strong>${formatDwt(s.operational_capacity_absorbed_dwt)}</strong><small>우회 + 대기 총흡수</small></article>
+                    <article class="shipping-kpi"><span class="shipping-kpi-label">예비분 초과 부족</span><strong>${formatDwt(s.commercial_capacity_gap_dwt)}</strong><small>capacity gap</small></article>
+                    <article class="shipping-kpi"><span class="shipping-kpi-label">지평 내 손실 화물</span><strong>${formatTonnes(s.lost_cargo_tonnes_horizon)}</strong><small>취소 가정 반영</small></article>
+                    <article class="shipping-kpi"><span class="shipping-kpi-label">배송가능 트래픽 변화</span><strong class="negative-text">${formatPct(s.weighted_traffic_change_pct)}</strong><small>${row.duration_days}일 충격</small></article>
+                </section>
+                ${routes.length ? `
+                <section class="shipping-grid two-columns wide-first">
+                    <article class="shipping-panel shipping-chart-panel">
+                        <div class="shipping-panel-heading"><div><p class="shipping-panel-kicker">CAPACITY BEFORE / AFTER</p><h2>영향 항로 선복량 변화</h2></div><span>백만 DWT</span></div>
+                        <div class="shipping-chart-wrap tall"><canvas id="shipping-scenario-chart"></canvas></div>
+                    </article>
+                    <article class="shipping-panel">
+                        <div class="shipping-panel-heading"><div><p class="shipping-panel-kicker">AFFECTED ROUTES</p><h2>항로별 충격</h2></div></div>
+                        <div class="shipping-table-wrap">
+                            <table class="shipping-table compact-table">
+                                <thead><tr><th>항로</th><th>흡수 DWT</th><th>트래픽</th></tr></thead>
+                                <tbody>${routes.map(r => `
+                                    <tr><td>${escapeHtml(routeNameById.get(r.route_id) || r.route_id)}</td><td>${formatDwt(r.operational_capacity_absorbed_dwt)}</td><td class="negative-text">${formatPct(r.traffic_change_pct)}</td></tr>
+                                `).join('')}</tbody>
+                            </table>
+                        </div>
+                    </article>
+                </section>` : '<div class="shipping-empty">이 조합에 연결된 대표 항로가 없습니다.</div>'}
+            `;
+
+            if (routes.length) {
+                createChart(root, 'shipping-scenario-chart', {
+                    type: 'bar',
+                    data: {
+                        labels: routes.map(r => (routeNameById.get(r.route_id) || r.route_id).replace(' → ', '→')),
+                        datasets: [
+                            { label: '정상 필요 DWT', data: routes.map(r => (r.baseline_required_dwt || 0) / 1e6), backgroundColor: 'rgba(100, 116, 139, 0.7)', borderRadius: 4 },
+                            { label: '충격 후 필요 DWT', data: routes.map(r => (r.continuity_required_dwt || 0) / 1e6), backgroundColor: '#38bdf8', borderRadius: 4 }
+                        ]
+                    },
+                    options: chartOptions({ unit: 'M DWT', rotateLabels: true })
+                });
+            }
         };
 
         presetEl.addEventListener('change', () => {
-            const preset = scenarios.find(item => item.id === presetEl.value) || scenarios[0];
-            closureEl.value = Math.round(preset.closure_fraction * 100);
-            durationEl.value = Math.min(preset.duration_days, 28);
-            waitEl.value = preset.waiting_days || 7;
+            const base = baseScenarios.find(item => item.id === presetEl.value) || baseScenarios[0];
+            closureEl.value = String(nearest(Math.round((base.closure_fraction ?? 1) * 100), closureOptions));
+            durationEl.value = String(nearest(base.duration_days || durationOptions.at(-1), durationOptions));
             update();
         });
-        [closureEl, durationEl, waitEl].forEach(input => input.addEventListener('input', update));
+        [closureEl, durationEl].forEach(el => el.addEventListener('change', update));
         update();
     };
 
@@ -822,18 +796,12 @@
                         }
                     ]
                 },
-                options: {
-                    ...chartOptions({ unit: 'M DWT' }),
-                    scales: {
-                        x: { stacked: true, grid: { color: 'rgba(148, 163, 184, 0.06)' }, ticks: { color: '#94a3b8' } },
-                        y: { stacked: true, grid: { color: 'rgba(148, 163, 184, 0.08)' }, ticks: { color: '#94a3b8' } }
-                    }
-                }
+                options: chartOptions({ unit: 'M DWT', stacked: true })
             });
         }
     };
 
-    const chartOptions = ({ horizontal = false, unit = '', rotateLabels = false, zeroLine = false } = {}) => ({
+    const chartOptions = ({ horizontal = false, unit = '', rotateLabels = false, zeroLine = false, stacked = false } = {}) => ({
         responsive: true,
         maintainAspectRatio: false,
         indexAxis: horizontal ? 'y' : 'x',
@@ -849,10 +817,12 @@
         },
         scales: {
             x: {
+                stacked,
                 grid: { color: zeroLine ? 'rgba(148, 163, 184, 0.12)' : 'rgba(148, 163, 184, 0.06)' },
                 ticks: { color: '#94a3b8', maxRotation: rotateLabels ? 35 : 0, minRotation: 0 }
             },
             y: {
+                stacked,
                 grid: { color: 'rgba(148, 163, 184, 0.08)' },
                 ticks: { color: '#94a3b8' }
             }
