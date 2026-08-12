@@ -121,6 +121,17 @@
     return Number.isNaN(parsed.getTime()) ? escapeHtml(value) : parsed.toLocaleDateString('ko-KR');
   };
 
+  // Why each passage is a chokepoint at all. Geography, not current events --
+  // a hardcoded news line would be stale within weeks, and the snapshot
+  // carries no cause field.
+  const CHOKEPOINT_CONTEXT = {
+    suez: '아시아–유럽 최단 해로. 우회하려면 희망봉을 돌아 편도 9,000km·약 10일이 더 걸리고, 그만큼 선복이 항해에 묶입니다. 남쪽 입구가 바벨만데브라 두 통로는 사실상 한 묶음으로 움직입니다.',
+    bab_el_mandeb: '홍해의 남쪽 관문. 여기가 막히면 수에즈로 들어갈 배가 애초에 도달하지 못하므로, 수에즈 통계보다 먼저 반응하는 경우가 많습니다.',
+    hormuz: '페르시아만의 유일한 출구. 사우디·이라크·UAE·쿠웨이트·카타르의 원유와 LNG가 모두 이 좁은 수로를 지나며, 대체 파이프라인 용량은 수출량의 일부만 감당합니다.',
+    panama: '태평양–대서양 지름길이자 담수 갑문. 가툰 호 수위가 낮아지면 통항 척수와 흘수가 제한돼, 봉쇄가 아니어도 통과량이 줄어듭니다.',
+    bosporus: '흑해의 유일한 출구. 우크라이나·러시아 곡물과 러시아산 원유가 이 해협을 거치며, 폭이 좁은 구간은 700m 남짓이라 기상·사고에 민감합니다.'
+  };
+
   const statusMeta = status => INPUT_STATUS[status]
     || (String(status || '').startsWith('scenario_seed')
       ? ['시나리오 시드', 'scenario', '공공 화물량 연결 전의 초기 가정']
@@ -184,6 +195,117 @@
         ${body}
       </div>
     </span>`;
+
+  // Coastline for the detail map. Same source app.js already uses, so the
+  // browser cache is usually warm by the time a chokepoint is opened.
+  const COUNTRIES_GEOJSON = 'https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json';
+  let worldGeoPromise = null;
+  const loadWorldGeo = () => {
+    if (!worldGeoPromise) {
+      worldGeoPromise = fetch(COUNTRIES_GEOJSON, { cache: 'force-cache' })
+        .then(response => response.ok ? response.json() : Promise.reject(new Error(`HTTP ${response.status}`)))
+        .catch(error => { worldGeoPromise = null; throw error; });
+    }
+    return worldGeoPromise;
+  };
+
+  /**
+   * Equirectangular mini map centred on one chokepoint.
+   *
+   * Built as inline SVG rather than a deck.gl layer: this sits inside a
+   * scrolling panel that deck does not own, and the view never pans or zooms,
+   * so a full map engine would cost a canvas and a controller for a picture.
+   */
+  const renderMiniMap = async (host, point, spanDeg = 13) => {
+    const [lon, lat] = point.coordinates || [];
+    if (!finite(lon) || !finite(lat)) {
+      host.innerHTML = '<p class="shipping-empty">좌표 없음</p>';
+      return;
+    }
+
+    const W = 300;
+    const H = 300;
+    const lonSpan = spanDeg;
+    const latSpan = spanDeg * (H / W) * Math.cos(lat * Math.PI / 180);
+    const x = lo => ((lo - (lon - lonSpan / 2)) / lonSpan) * W;
+    const y = la => H - ((la - (lat - latSpan / 2)) / latSpan) * H;
+
+    let paths = '';
+    try {
+      const geo = await loadWorldGeo();
+      const ringToPath = ring => {
+        // Skip rings entirely outside the frame before projecting them.
+        let inside = false;
+        for (const [lo, la] of ring) {
+          if (Math.abs(lo - lon) < lonSpan && Math.abs(la - lat) < latSpan) { inside = true; break; }
+        }
+        if (!inside) return '';
+        return 'M' + ring.map(([lo, la]) => `${x(lo).toFixed(1)},${y(la).toFixed(1)}`).join('L') + 'Z';
+      };
+      const d = (geo.features || []).map(feature => {
+        const g = feature.geometry || {};
+        if (g.type === 'Polygon') return g.coordinates.map(ringToPath).join('');
+        if (g.type === 'MultiPolygon') return g.coordinates.map(poly => poly.map(ringToPath).join('')).join('');
+        return '';
+      }).join('');
+      paths = `<path d="${d}" fill="#1e293b" stroke="#334155" stroke-width="0.7" />`;
+    } catch (_) {
+      paths = '';
+    }
+
+    host.innerHTML = `
+      <svg viewBox="0 0 ${W} ${H}" class="shipping-minimap-svg" role="img"
+           aria-label="${escapeHtml(point.name_ko)} 위치">
+        <rect width="${W}" height="${H}" fill="#0b1220" />
+        ${paths}
+        <circle cx="${W / 2}" cy="${H / 2}" r="16" fill="none" stroke="#38bdf8" stroke-width="1" opacity="0.35" />
+        <circle cx="${W / 2}" cy="${H / 2}" r="7" fill="#38bdf8" fill-opacity="0.25" stroke="#38bdf8" stroke-width="1.5" />
+        <circle cx="${W / 2}" cy="${H / 2}" r="2.5" fill="#e0f2fe" />
+      </svg>
+      <p class="shipping-note">${formatNumber(Math.abs(lat), 2)}°${lat >= 0 ? 'N' : 'S'} · ${formatNumber(Math.abs(lon), 2)}°${lon >= 0 ? 'E' : 'W'}</p>`;
+  };
+
+  /**
+   * Daily series for the detail chart.
+   *
+   * The engine already pulls 730 daily observations per chokepoint
+   * (portwatch.fetch_series) but summarize_series keeps only the two window
+   * means, so the snapshot has no series to plot. Until it carries one, this
+   * reconstructs a shape between the two real anchors and labels itself as an
+   * illustration -- the anchors and the baseline are real, the daily wiggle is
+   * not.
+   */
+  const chokepointSeries = point => {
+    const real = asArray(point.live?.history).filter(row => finite(row?.value));
+    if (real.length) {
+      return {
+        real: true,
+        points: real.map(row => ({ date: row.date, value: Number(row.value) }))
+      };
+    }
+
+    const current = Number(point.metric?.current_7d_mean_estimated_trade_tonnes);
+    const baseline = Number(point.metric?.prior_28d_mean_estimated_trade_tonnes);
+    if (!finite(current) || !finite(baseline)) return { real: false, points: [] };
+
+    const end = new Date(point.display?.latest_date || point.live?.latest_date || Date.now());
+    const days = 35;
+    // Deterministic jitter: the same chokepoint always draws the same shape,
+    // so a reader does not see the "data" change between visits.
+    const seed = [...String(point.id)].reduce((acc, ch) => acc + ch.charCodeAt(0), 0);
+    const wiggle = i => Math.sin((i + seed) * 1.7) * 0.045 + Math.sin((i + seed) * 0.6) * 0.03;
+
+    const points = [];
+    for (let i = 0; i < days; i += 1) {
+      const date = new Date(end);
+      date.setDate(end.getDate() - (days - 1 - i));
+      // Baseline window, then a transition into the current window.
+      const t = i < days - 7 ? 0 : (i - (days - 8)) / 7;
+      const level = baseline + (current - baseline) * Math.min(1, Math.max(0, t));
+      points.push({ date: date.toISOString().slice(0, 10), value: level * (1 + wiggle(i)) });
+    }
+    return { real: false, points, baseline, current };
+  };
 
   const bindPopovers = root => {
     const close = pop => {
@@ -562,7 +684,8 @@
       const remainingPct = point.remaining === null ? null : point.remaining * 100;
       const isStale = Boolean(display.is_stale);
       const severity = shortfallPct === null ? 'neutral' : shortfallPct >= 25 ? 'negative' : shortfallPct >= 10 ? 'warn' : 'positive';
-      return `<article class="shipping-chokepoint-card">
+      return `<article class="shipping-chokepoint-card" data-chokepoint="${escapeHtml(point.id)}"
+                       role="button" tabindex="0" aria-expanded="false">
         <div class="shipping-chokepoint-head">
           <div><span>${escapeHtml(point.name_en)}</span><h3>${escapeHtml(point.name_ko)}</h3></div>
           ${badge(isStale ? '기준일 경과' : '최근 신호', isStale ? 'neutral' : 'observed')}
@@ -603,6 +726,7 @@
           ${badge('PortWatch 추정', 'estimated')}
         </div>`)}
       <div class="shipping-chokepoint-grid">${cards}</div>
+      <div id="shipping-chokepoint-detail"></div>
       <p class="shipping-note">호르무즈는 탱커, 나머지 통로는 전체 추정 교역량을 대표 지표로 씁니다. 따라서 호르무즈 수치는 “최근 7일 탱커 추정 교역량 감소율”이며 시나리오 봉쇄율과 같은 숫자가 아닙니다.</p>`;
 
     root.innerHTML = pageShell('shipping_chokepoints', body, data);
@@ -627,6 +751,87 @@
       options: chartOptions({ unit: '%' })
     });
 
+    // Detail: location on the left third, daily series on the right two.
+    const detail = root.querySelector('#shipping-chokepoint-detail');
+    const cardEls = [...root.querySelectorAll('[data-chokepoint]')];
+    let openId = null;
+
+    const openDetail = async id => {
+      openId = openId === id ? null : id;
+      cardEls.forEach(card => {
+        const on = card.dataset.chokepoint === openId;
+        card.classList.toggle('is-active', on);
+        card.setAttribute('aria-expanded', String(on));
+      });
+      if (!openId) { detail.innerHTML = ''; return; }
+
+      const point = points.find(p => p.id === openId);
+      const series = chokepointSeries(point);
+      const shortfallPct = point.shortfall === null ? null : point.shortfall * 100;
+
+      detail.innerHTML = `
+        <div class="shipping-detail-grid">
+          ${panel('LOCATION', point.name_ko, '<div id="shipping-minimap"><p class="shipping-empty">지도를 불러오는 중…</p></div>')}
+          ${panel('DAILY SERIES', '최근 35일 추정 교역량', `
+            ${series.real ? '' : '<div class="shipping-callout warning" style="margin-bottom:14px"><strong>이 선그래프는 예시입니다.</strong> 스냅샷에는 최근 7일·직전 28일 평균 두 값만 기록되어 있어, 그 두 실측 지점을 잇는 형태로 그렸습니다. 기준선과 현재 수준은 실제 값이고, 하루하루의 오르내림은 실제 관측이 아닙니다. 엔진이 이미 730일치를 받아오므로 스냅샷에 담기면 바로 실데이터로 바뀝니다.</div>'}
+            <div class="shipping-chart-wrap"><canvas id="shipping-detail-chart"></canvas></div>
+            ${definitionRows([
+              ['직전 28일 기준선', `${formatTonnes(point.metric.prior_28d_mean_estimated_trade_tonnes)}/일`],
+              ['최근 7일 평균', `${formatTonnes(point.metric.current_7d_mean_estimated_trade_tonnes)}/일`],
+              ['기준선 대비', shortfallPct === null ? '—' : `${formatPct(-shortfallPct, 1)} (잔존 ${formatPct((point.remaining || 0) * 100, 0)})`]
+            ])}
+            <p class="shipping-note"><strong>왜 이 통로인가:</strong> ${escapeHtml(CHOKEPOINT_CONTEXT[point.id] || '이 통로에 대한 설명이 아직 없습니다.')}</p>`,
+            series.real ? badge('PortWatch 관측', 'observed') : badge('예시 시계열', 'neutral', '두 실측 평균을 잇는 형태이며 일별 관측이 아닙니다'))}
+        </div>`;
+
+      detail.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      renderMiniMap(detail.querySelector('#shipping-minimap'), point);
+
+      const baseline = Number(point.metric.prior_28d_mean_estimated_trade_tonnes);
+      createChart(detail, 'shipping-detail-chart', {
+        type: 'line',
+        data: {
+          labels: series.points.map(p => p.date.slice(5)),
+          datasets: [
+            {
+              label: '추정 교역량 (t/일)',
+              data: series.points.map(p => p.value / 1000),
+              borderColor: '#38bdf8',
+              backgroundColor: 'rgba(56, 189, 248, 0.10)',
+              borderWidth: 2,
+              pointRadius: 0,
+              fill: true,
+              tension: 0.3
+            },
+            {
+              label: '직전 28일 기준선',
+              data: series.points.map(() => baseline / 1000),
+              borderColor: '#94a3b8',
+              borderDash: [6, 5],
+              borderWidth: 1.5,
+              pointRadius: 0,
+              fill: false
+            }
+          ]
+        },
+        options: {
+          ...chartOptions({ unit: 'K t', legend: true }),
+          scales: {
+            x: { grid: { color: 'transparent' }, ticks: { color: INK.muted, font: { size: 10 }, maxTicksLimit: 8, autoSkip: true } },
+            y: { grid: { color: GRID_LINE }, ticks: { color: INK.muted, font: { size: 11 }, callback: v => `${formatNumber(v, 0)}K` } }
+          }
+        }
+      });
+    };
+
+    cardEls.forEach(card => {
+      const run = () => openDetail(card.dataset.chokepoint);
+      card.addEventListener('click', run);
+      card.addEventListener('keydown', event => {
+        if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); run(); }
+      });
+    });
+
     bindPopovers(root);
   };
 
@@ -643,7 +848,7 @@
   };
 
   const scenarioKpis = summary => `<div class="shipping-kpi-grid scenario-kpis">
-    ${kpi('추가 흡수 선복량', formatDWT(summary.operational_capacity_absorbed_dwt), '우회 + 대기', { featured: true, key: 'absorbed' })}
+    ${kpi('추가 흡수 선복량', formatDWT(summary.operational_capacity_absorbed_dwt), '우회 + 대기', { key: 'absorbed' })}
     ${kpi('상업적 선복 갭', formatDWT(summary.commercial_capacity_gap_dwt), '예비분 초과 부족', { key: 'gap' })}
     ${kpi('기간 말 백로그', formatTonnes(summary.backlog_cargo_tonnes_horizon), '미운송 화물', { key: 'backlog' })}
     ${kpi('선적 후 억류 DWT', formatDWT(summary.trapped_loaded_dwt), 'AIS 실제 척수 아님', { key: 'trapped' })}
@@ -798,20 +1003,83 @@
     update();
   };
 
+  /**
+   * Reduction pathways the reader can compare.
+   *
+   * Only the first one exists in the snapshot: the engine computes a single
+   * schedule at IMO's currently adopted +2.625%p per year. The other two are
+   * different reduction schedules, and the loss they imply is an engine
+   * calculation over route-level speed and utilisation inputs -- not something
+   * this file may extrapolate from five published points. They stay declared
+   * but empty until `environment.scenarios[].pathway_id` arrives.
+   */
+  const NET_ZERO_PATHWAYS = [
+    {
+      id: 'imo_adopted',
+      label: '현행 유지',
+      sub: 'IMO 채택 · 연 +2.625%p',
+      note: 'MEPC.400(83)이 확정한 2027–2030 감축 계수입니다. 2030년 21.5%에 도달합니다.'
+    },
+    {
+      id: 'accelerated',
+      label: '목표 고도화',
+      sub: '연 +2.8%p 가정',
+      note: '같은 기간에 더 가파르게 조이는 경우입니다. 2030년 22.9% 수준이 되며, 감속 대응 폭이 커져 잠식도 함께 커집니다.'
+    },
+    {
+      id: 'eu_reinforced',
+      label: 'EU 넷제로 강화',
+      sub: 'ETS·FuelEU 동시 강화',
+      note: 'EU 기항 항로에만 추가 비용·연료집약도 규제가 겹치는 경우입니다. 전 항로가 아니라 EU 노출 항로에서만 잠식이 더 커지므로, 항로별로 다르게 계산해야 합니다.'
+    }
+  ];
+
   const renderEnvironment = (data, root) => {
     const env = data.ui.environment;
-    const scenarios = asArray(env?.scenarios);
+    const allScenarios = asArray(env?.scenarios);
 
-    if (!scenarios.length) {
+    if (!allScenarios.length) {
       root.innerHTML = pageShell('shipping_environment', '<p class="shipping-empty">환경규제 시나리오 데이터가 없습니다.</p>', data);
       return;
     }
 
+    // Scenarios without a pathway_id belong to the adopted schedule -- that is
+    // the only one the engine has ever produced.
+    const byPathway = id => allScenarios.filter(sc =>
+      (sc.pathway_id || 'imo_adopted') === id);
+    const scenarios = byPathway('imo_adopted');
+
     const last = scenarios[scenarios.length - 1];
     const first = scenarios[0];
 
+    const pathwayCards = NET_ZERO_PATHWAYS.map(path => {
+      const rows = byPathway(path.id);
+      const ready = rows.length > 0;
+      const last = ready ? rows[rows.length - 1] : null;
+      return `
+        <article class="shipping-pathway${ready ? '' : ' is-pending'}${path.id === 'imo_adopted' ? ' is-active' : ''}"
+                 data-pathway="${escapeHtml(path.id)}" role="button" tabindex="0"
+                 aria-pressed="${path.id === 'imo_adopted'}">
+          <div class="shipping-pathway-head">
+            <strong>${escapeHtml(path.label)}</strong>
+            ${ready ? badge('계산 완료', 'observed') : badge('엔진 계산 대기', 'neutral', '이 경로의 손실값은 아직 산출되지 않았습니다')}
+          </div>
+          <span class="shipping-pathway-sub">${escapeHtml(path.sub)}</span>
+          <p class="shipping-pathway-value">${ready ? formatDWT(last.effective_dwt_loss) : '—'}</p>
+          <small>${ready ? `${last.year}년 잠식` : '값 없음'}</small>
+        </article>`;
+    }).join('');
+
     const body = `
       <div class="shipping-callout warning"><strong>선박별 예측이 아닙니다.</strong> ${escapeHtml(env.methodology_ko || '')}</div>
+      ${panel('PATHWAY COMPARE', '감축 경로 비교', `
+        <div class="shipping-pathway-grid">${pathwayCards}</div>
+        <div class="shipping-metric-note" id="shipping-pathway-note"></div>`,
+        `<div class="shipping-panel-tools">
+          ${popover('path-def', '경로란', '감축 경로를 비교한다는 뜻', `
+            <p class="shipping-note" style="margin:0">IMO는 2019년 탄소집약도 대비 매년 일정 비율씩 더 줄이도록 요구합니다. 현재 확정된 계수는 연 +2.625%p이고, 이보다 빠르게 조이거나 EU가 별도로 규제를 겹치면 같은 선대가 실어나를 수 있는 양이 더 줄어듭니다.</p>
+            <p class="shipping-note">각 경로의 잠식폭은 항로별 속도·적재율까지 다시 계산해야 나오는 값이라, 이 화면은 엔진이 산출한 경로만 숫자로 보여주고 나머지는 대기 상태로 둡니다.</p>`)}
+        </div>`)}
       <div class="shipping-kpi-grid">
         ${kpi(`${first.year}년 손실`, formatDWT(first.effective_dwt_loss), `유효 용량 ${formatPct((first.effective_capacity_retention_rate || 0) * 100, 1)} 유지`)}
         ${kpi(`${last.year}년 손실`, formatDWT(last.effective_dwt_loss), `유효 용량 ${formatPct((last.effective_capacity_retention_rate || 0) * 100, 1)} 유지`, { featured: true })}
@@ -961,6 +1229,34 @@
         }
       }
     });
+
+    const pathNote = root.querySelector('#shipping-pathway-note');
+    const pathCards = [...root.querySelectorAll('[data-pathway]')];
+    const showPathway = id => {
+      const path = NET_ZERO_PATHWAYS.find(p => p.id === id);
+      if (!path) return;
+      const ready = byPathway(id).length > 0;
+      pathCards.forEach(card => {
+        const on = card.dataset.pathway === id;
+        card.classList.toggle('is-active', on);
+        card.setAttribute('aria-pressed', String(on));
+      });
+      pathNote.innerHTML = `
+        <strong>${escapeHtml(path.label)} · ${escapeHtml(path.sub)}</strong>
+        <p>${escapeHtml(path.note)}</p>
+        ${ready
+          ? '<p>아래 차트와 표가 이 경로의 산출값입니다.</p>'
+          : '<p>이 경로는 아직 엔진이 계산하지 않아 아래 차트는 현행 유지 경로를 계속 보여줍니다. 항로별 속도·적재율을 다시 돌려야 나오는 값이라 화면에서 추정하지 않습니다.</p>'}`;
+    };
+
+    pathCards.forEach(card => {
+      const run = () => showPathway(card.dataset.pathway);
+      card.addEventListener('click', run);
+      card.addEventListener('keydown', event => {
+        if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); run(); }
+      });
+    });
+    showPathway('imo_adopted');
 
     bindPopovers(root);
   };
