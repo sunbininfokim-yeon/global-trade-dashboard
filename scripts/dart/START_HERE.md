@@ -14,18 +14,19 @@
 4. **DCF 현실화**: g 상한 3%, 시드=공시, bear/bull 델타 명시, WACC 민감도 필수, 목표가 없음
 
 ## 문서
+- `docs/VIEWS_AND_MODELS.md` — 모드·카드·모델 계약
+- `docs/DCF_REALISM.md` — FCFF 규칙과 산업 적용 한계
 - `docs/UI_HANDOFF.md` — UI 연동 계약
 
-> 배포 패키지에는 아직 `docs/VIEWS_AND_MODELS.md`, `docs/DCF_REALISM.md`,
-> `sec_facts.py`, `dart_facts.py`, `fetch_live.py`가 포함되지 않았습니다.
-> 이 문서가 그 파일들이 존재한다고 말하는 것은 배포 상태와 맞지 않습니다.
-> `derived_cards.py`와 `enrich_snapshot.py`는 외부 API 없이 정규화된 pack 또는
-> 기존 JSON 스냅샷을 계산할 수 있지만, 누락된 원천 계정은 추정하지 않습니다.
+> 배포 패키지에는 아직 `sec_facts.py`, `dart_facts.py`, `fetch_live.py`가
+> 포함되지 않았습니다. `derived_cards.py`와 `enrich_snapshot.py`는 외부 API
+> 없이 정규화된 pack 또는 기존 JSON 스냅샷을 계산할 수 있지만, 누락된 원천
+> 계정은 추정하지 않습니다.
 
 ## 코드
 - `dart_kfa/view_presets.py` — 카드·모델 필터
 - `dart_kfa/accounting_pack.py` — 기본 회계·유동성 스켈레톤
-- `dart_kfa/model_contracts.py` — 모델 기본 가정·스텁
+- `dart_kfa/model_contracts.py` — 모델 기본 가정·계산 계약
 - `dart_kfa/derived_cards.py` — 전문가 카드·9개 모델·기간정렬 게이트
 - `enrich_snapshot.py` — 오프라인 JSON 보강 CLI
 
