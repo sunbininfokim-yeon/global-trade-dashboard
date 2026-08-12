@@ -2,7 +2,7 @@
 """Build market_microstructure_v1.json (+ TABLES.md).
 
 Live:
-  export KRX_API=...   # optional; Cloudflare secret name
+  export KRX_API=...   # optional; GitHub Actions secret / local environment variable
   python build_market_microstructure.py --live --source auto --print-stats
 """
 

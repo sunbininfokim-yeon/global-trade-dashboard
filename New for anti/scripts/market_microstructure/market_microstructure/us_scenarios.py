@@ -356,6 +356,43 @@ def build_transmission(
         "edge_type": "etf_beta=수익률 링크(옵션 포지션 아님). discovered_corr=통계 발견.",
         "not_price_crash": "당일 미국 주가 급락이 없어도 P/C 상승만으로 하방 레짐이 뜰 수 있음.",
     }
+    backtest_downside = ((open30m_backtest or {}).get("channel_summary") or {}).get("downside") or {}
+    global_spillover = {
+        "panel": "global_spillover",
+        "title_ko": "해외-국내 선행 지표",
+        "title_en": "Global Spillover Effect",
+        "as_of": us_snap.get("as_of"),
+        "headline": headline,
+        "headline_ko": headline_ko_map.get(headline, headline),
+        "why_short_ko": why_ko,
+        "channels_summary": {
+            channel: {
+                "level": block.get("level"),
+                "heat": block.get("heat"),
+                "kr_tickers": block.get("kr_tickers") or [],
+            }
+            for channel, block in channels_out.items()
+        },
+        "top_edges": [
+            {key: edge.get(key) for key in ("us", "kr", "heat", "edge_type", "channel")}
+            for edge in sorted(edges_active, key=lambda edge: -edge["heat"])[:12]
+        ],
+        "evidence_us_top": evidence_us[:6],
+        "open30m_hit": {
+            "downside_hit_rate_mean": backtest_downside.get("hit_rate_mean"),
+            "downside_mean_open_r": backtest_downside.get("mean_of_means"),
+            "note_ko": backtest_downside.get("note_ko") or "옵션 히스토리가 아닌 US 수익률 버킷 프록시.",
+        },
+        "read_ko": [
+            "headline은 공개 옵션 P/C 레짐과 KR 링크 heat의 요약이며 매매·가격 예측이 아님.",
+            "open30m은 옵션 히스토리 없이 US 수익률 버킷으로 만든 프록시 검토치.",
+            "HK/US/crypto 노셔널은 규모 비교용이며 KR 현물 IR에 합산하지 않음.",
+        ],
+        "data_limits_ko": [
+            "미국 개별주 옵션 풀체인과 주체별 포지션은 공개 무료 데이터로 완결되지 않음.",
+            "P/C와 FINRA short는 포지션·감마·딜러 헤지의 직접 관측값이 아님.",
+        ],
+    }
 
     return {
         "schema_version": "us-kr-transmission-v1",
@@ -364,6 +401,8 @@ def build_transmission(
         "headline": headline,
         "headline_ko": headline_ko_map.get(headline, headline),
         "why_ko": why_ko,
+        "why_short_ko": why_ko,
+        "global_spillover": global_spillover,
         "meaning_ko": meaning_ko,
         "evidence_us": evidence_us,
         "channels": channels_out,

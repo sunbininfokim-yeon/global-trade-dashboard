@@ -83,6 +83,9 @@ class TestUsScenarios(unittest.TestCase):
         self.assertEqual(tx["schema_version"], "us-kr-transmission-v1")
         self.assertTrue(tx["channels"]["downside"]["heat"] > 0)
         self.assertIn("000660", tx["channels"]["downside"]["kr_tickers"])
+        self.assertEqual(tx["global_spillover"]["title_en"], "Global Spillover Effect")
+        self.assertEqual(tx["global_spillover"]["headline"], tx["headline"])
+        self.assertEqual(tx["why_short_ko"], tx["why_ko"])
         # no banned nicknames in payload
         blob = json.dumps(tx, ensure_ascii=False).lower()
         self.assertNotIn("leopold", blob)

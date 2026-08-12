@@ -97,6 +97,15 @@ class TestSnapshot(unittest.TestCase):
         self.assertIn("concentration", self.snap)
         self.assertEqual(len(self.snap["stocks"]), 2)
 
+    def test_distortion_squeeze_canonical_contract_is_additive(self):
+        block = self.snap["distortion_squeeze"]
+        self.assertEqual(block["schema_version"], "distortion-squeeze-v1")
+        self.assertEqual(block["observed_as_of"], self.snap["as_of"])
+        self.assertIn("concentration", block)
+        self.assertIn("deposit_credit", block["market"])
+        self.assertEqual(len(block["stocks"]), 2)
+        self.assertIn("data_limits", block)
+
     def test_concentration_top2(self):
         # (400+250)/1250 = 52%
         self.assertAlmostEqual(self.snap["concentration"]["conc_top2_samsung_hynix_pct"], 52.0, places=1)

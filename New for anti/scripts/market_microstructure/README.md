@@ -39,7 +39,7 @@ export KRX_API='…'   # optional
 # 이후 매일: --append-only
 
 # 스케줄러 (UI 제외)
-./run_daily.sh    # conc append + L3 live
+./run_daily.sh    # conc + D&S + FreeSIS credit + L3 + derivatives + investor×price
 ./run_weekly.sh   # conc backfill + discovery + hitrate + regime-proxy
 
 # 페이퍼 대비 검증 + (가격경로) 이벤트 스터디

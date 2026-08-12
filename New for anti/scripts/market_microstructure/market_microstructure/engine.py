@@ -45,6 +45,81 @@ def _scenario_block(
     }
 
 
+def _distortion_squeeze_block(snapshot: dict[str, Any]) -> dict[str, Any]:
+    """Canonical UI block while retaining the original top-level v1 fields.
+
+    Older consumers read the top-level fields.  The dedicated block is an
+    additive contract, so a refresh cannot silently strand either consumer.
+    """
+    raw_stocks = snapshot.get("stocks") or []
+    stocks = []
+    for stock in raw_stocks:
+        tangle = stock.get("flow_tangle") or {}
+        scenarios = stock.get("scenarios") or {}
+        minus_5 = scenarios.get("r_minus_5pct") or {}
+        minus_10 = scenarios.get("r_minus_10pct") or {}
+        stocks.append(
+            {
+                "ticker": stock.get("ticker"),
+                "name": stock.get("name"),
+                "letf_turnover_ratio": stock.get("letf_turnover_ratio"),
+                "wag_the_dog_band": tangle.get("wag_the_dog_band"),
+                "long_aum_share": tangle.get("long_aum_share"),
+                "inverse_aum_share": tangle.get("inverse_aum_share"),
+                "inverse_tv_share": tangle.get("inverse_tv_share"),
+                "realized_ir_pct": tangle.get("realized_ir_pct"),
+                "ir_if_minus_5pct": minus_5.get("ir_pct"),
+                "ir_if_minus_10pct": minus_10.get("ir_pct"),
+                "ir_if_minus_10pct_band": minus_10.get("band"),
+                "products": stock.get("products") or [],
+                "external_vs_spot": stock.get("external_vs_spot"),
+                "quality": stock.get("quality"),
+            }
+        )
+    stocks.sort(key=lambda row: float(row.get("ir_if_minus_10pct") or -1), reverse=True)
+
+    extras = snapshot.get("public_extras") or {}
+    short_meta = snapshot.get("short_interest_meta") or {}
+    return {
+        "schema_version": "distortion-squeeze-v1",
+        "observed_as_of": snapshot.get("as_of"),
+        "concentration": snapshot.get("concentration"),
+        "market": {
+            "levered_etf_aum_usd": (snapshot.get("market_levered_etf") or {}).get("aum_usd"),
+            "letf_category_share": snapshot.get("letf_category_share"),
+            "by_direction": (snapshot.get("market_letf_derivatives_ratios") or {}).get("by_direction"),
+            "foreign_vs_retail": snapshot.get("foreign_vs_retail"),
+            "flows_kospi_market": snapshot.get("flows_kospi_market"),
+            "deposit_credit": snapshot.get("deposit_credit"),
+        },
+        "stocks": stocks,
+        "ir_bands": snapshot.get("ir_bands"),
+        "data_limits": {
+            "customer_leverage": {
+                "quality": "missing",
+                "note_ko": "증권사 고객별 레버리지·파생 포지션은 공시되지 않음.",
+            },
+            "kr_options": {
+                "quality": "missing",
+                "note_ko": "KRX 옵션 OI/외국인 수급은 파생 보드에서 별도 수집하며 없으면 missing.",
+            },
+            "short_interest": {
+                "quality": short_meta.get("quality", "missing"),
+                "note_ko": short_meta.get("note_ko"),
+            },
+        },
+        "read_ko": [
+            "IR은 공개 LETF AUM·거래대금으로 계산한 재조정 압력 규모이며 실제 체결·가격충격의 관측값이 아님.",
+            "HK/US/crypto 노셔널은 규모 비교·전이 경로 가설용이며 KR 현물 IR에 합산하지 않음.",
+            "예탁·신용·미수·반대매매는 시장 전체 집계이며 특정 종목·주체의 포지션이 아님.",
+        ],
+        "source_quality": {
+            "public_extras_errors": extras.get("errors") or [],
+            "snapshot_quality": "observed" if raw_stocks else "missing",
+        },
+    }
+
+
 def build_snapshot(day: dict[str, Any], *, anchors: dict[str, Any] | None = None) -> dict[str, Any]:
     """day fixture → paper-aligned metric tables + calibration rows."""
     anchors = anchors or load_json(CONFIG / "paper_anchors.json")
@@ -350,7 +425,7 @@ def build_snapshot(day: dict[str, Any], *, anchors: dict[str, Any] | None = None
         "source": cat.get("source"),
     }
 
-    return {
+    snapshot = {
         "schema_version": "market-microstructure-v1",
         "as_of": day["as_of"],
         "disclaimer_ko": "공개 상품 AUM·거래대금 기반 추정. 증권사 고객 레버리지 공시가 아님. 투자 권유 아님.",
@@ -393,6 +468,8 @@ def build_snapshot(day: dict[str, Any], *, anchors: dict[str, Any] | None = None
             "하이닉스 HK 2x 메인=7709.HK. 7708 아님."
         ),
     }
+    snapshot["distortion_squeeze"] = _distortion_squeeze_block(snapshot)
+    return snapshot
 
 
 def markdown_tables(snap: dict[str, Any]) -> str:
