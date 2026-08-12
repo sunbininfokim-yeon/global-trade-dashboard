@@ -7560,7 +7560,9 @@ const msUsKr = (D) => {
                 `<span class="ms-badge ${MS_LEVEL_CLASS[letf.today_level] || ''}">${finEsc(letf.today_level || '—')}</span> ${Number.isFinite(letf.today_ratio) ? msPct(letf.today_ratio) : ''}`,
                 finEsc(letf.metric_ko || ''), 'alert_letf')}
             ${msCard('US VIX → KR',
-                `<span class="ms-badge ${MS_LEVEL_CLASS[vix.today_level] || ''}">${finEsc(vix.today_level || '—')}</span>`,
+                `<span class="ms-badge ${MS_LEVEL_CLASS[vix.latest_level] || ''}">${finEsc(vix.latest_level || '—')}</span>${
+                    Number.isFinite(vix.latest_vix) ? ` VIX ${vix.latest_vix.toFixed(1)}` : ''}${
+                    Number.isFinite(vix.latest_vix_r) ? ` (${(vix.latest_vix_r * 100).toFixed(1)}%)` : ''}`,
                 finEsc(vix.metric_ko || ''), 'alert_vix')}
             ${msCard('US OI 룰 헤드라인',
                 `<span class="ms-badge ${MS_LEVEL_CLASS[(b.us_kr_rules || {}).headline_level] || ''}">${finEsc((b.us_kr_rules || {}).headline_level || '—')}</span>`,
@@ -7708,7 +7710,15 @@ const msModalFor = (key, D) => {
             top5: (m.concentration || {}).top5_tickers,
             top10: (m.concentration || {}).top10_tickers }[which] || [];
         const known = (D.levels || {}).tickers || {};
-        const label = (tk) => (known[tk] || {}).label_ko ? `${known[tk].label_ko} (${tk})` : tk;
+        (m.stocks || []).forEach((s) => { if (s.ticker && !known[s.ticker]) known[s.ticker] = { label_ko: s.name }; });
+        // KRX preferred shares share the first five digits with the common
+        // stock, so a name the payload never carried is still recoverable.
+        const label = (tk) => {
+            const hit = (known[tk] || {}).label_ko;
+            if (hit) return `${hit} (${tk})`;
+            const base = Object.keys(known).find((k) => k !== tk && k.slice(0, 5) === String(tk).slice(0, 5));
+            return base ? `${known[base].label_ko}우 (${tk})` : tk;
+        };
         return { title: `코스피 집중도 · ${spec.ko} 시가총액 비중 추이`,
             html: mmLineChart(dates, values, { unit: '%', label: spec.ko })
                 + (names.length ? `<p class="ms-lead-strong">구성 종목 · ${names.map((t) => finEsc(label(t))).join(' · ')}</p>` : '')
