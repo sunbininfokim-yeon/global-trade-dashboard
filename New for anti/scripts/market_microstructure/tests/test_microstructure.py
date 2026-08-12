@@ -208,12 +208,20 @@ class TestSnapshot(unittest.TestCase):
         self.assertIsNotNone(brief["free_float_leverage"]["kr_all_levered_etf_aum_over_kospi_ff_pct"])
 
     def test_letf_name_classify(self):
-        from fetch_kr_public_extras import classify_letf_name
+        from fetch_kr_public_extras import classify_letf_direction, classify_letf_name
 
         self.assertEqual(classify_letf_name("KODEX SK하이닉스단일종목레버리지"), "single_stock")
         self.assertEqual(classify_letf_name("KODEX 반도체레버리지"), "sector")
         self.assertEqual(classify_letf_name("TIGER 미국나스닥100레버리지(합성)"), "overseas")
         self.assertEqual(classify_letf_name("KODEX 레버리지"), "index")
+        self.assertEqual(classify_letf_name("KODEX 곱버스"), "index")
+        self.assertEqual(classify_letf_direction("KODEX 곱버스"), "gobus_inverse_2x")
+        self.assertEqual(
+            classify_letf_direction("KODEX 200선물인버스2X"), "gobus_inverse_2x"
+        )
+        self.assertEqual(classify_letf_direction("SOL SK하이닉스선물단일종목인버스2X"), "inverse_2x")
+        self.assertEqual(classify_letf_direction("KODEX 레버리지"), "long")
+        self.assertEqual(classify_letf_direction("KODEX 인버스"), "inverse")
 
     def test_public_extras_in_snapshot_from_fixture(self):
         day = json.loads((ROOT / "tests/fixtures/demo_day.json").read_text(encoding="utf-8"))

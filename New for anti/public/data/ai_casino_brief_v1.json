@@ -197,8 +197,8 @@
             "hk_notional_usd_bn": 3.35,
             "hk_over_spot_adv": 0.6467,
             "crypto_oi_usd_bn": 0.37,
-            "crypto_oi_over_spot_adv": 0.0717,
-            "note_ko": "비율은 규모 비교용. HK/코인 체결이 곧바로 KRX 현물 리밸런싱은 아님."
+            "crypto_oi_over_spot_adv": 0.0723,
+            "note_ko": "규모 비교용. 스왑→한국 기관 헷지 경로 가능 (YouTube wag reverse / 유튜브 하닉 레버 역산 계열)."
           }
         },
         "top3_etf_by_aum_nav": [
@@ -255,28 +255,44 @@
           }
         ],
         "global_stack": {
-          "note_ko": "venue 분리. KR cash wag-the-dog ≠ HK swap ≠ crypto perp. 합산은 글로벌 노출 상한 참고용.",
+          "note_ko": "venue 분리: KR cash 회전율 식에 HK/US/crypto 합산 금지. 다만 Distortion·Spillover에서는 해외 롱/인버스 노셔널을 1급으로 표시 (스왑 상대 헷지 → 국내 압력).",
+          "hedge_channel_ko": "홍콩/미국 레버 펀드·옵션 레짐 변화 → 스왑 상대(한국·글로벌 기관) 헷지 요청 → 국내 현물·선물·국내 LETF에 압력이 붙을 수 있음 (유튜브 wag-the-dog reverse 계열).",
           "kr_single_stock_letf_notional_usd": 8310571428.57,
+          "kr_single_stock_long_notional_usd": 8082142857.14,
+          "kr_single_stock_inverse_notional_usd": 228428571.43,
           "hk_swap_letf_notional_usd": 4312317226.67,
-          "crypto_perp_oi_notional_usd": 526057636.9,
-          "crypto_perp_quote_volume_24h_usd": 2816964663.18,
-          "global_stack_usd": 13148946292.14,
+          "hk_direction_split": {
+            "long_notional_usd": 4309749431.79,
+            "inverse_notional_usd": 2567794.87
+          },
+          "us_levered_etf_notional_usd": 186331499568.0,
+          "us_direction_split": {
+            "long_notional_usd": 176039647104.0,
+            "inverse_notional_usd": 10291852464.0
+          },
+          "crypto_perp_oi_notional_usd": 537779897.58,
+          "crypto_perp_quote_volume_24h_usd": 312178082.35,
+          "global_stack_usd": 199492168120.82,
           "by_underlying_usd": {
             "000660": {
               "hk_usd": 3351317267.692308,
-              "crypto_usd": 371494150.6763
+              "crypto_usd": 374545898.8544
             },
             "005930": {
               "hk_usd": 960999958.9743589,
-              "crypto_usd": 21571034.037299998
+              "crypto_usd": 22064145.1356
             },
             "KORU": {
               "hk_usd": 0.0,
-              "crypto_usd": 46104490.10919999
+              "crypto_usd": 46931594.37100001
             },
             "SOXL": {
               "hk_usd": 0.0,
-              "crypto_usd": 86887962.07550001
+              "crypto_usd": 86507171.7075
+            },
+            "SOXS": {
+              "hk_usd": 0.0,
+              "crypto_usd": 7731087.51
             }
           },
           "hk_products": [
@@ -301,10 +317,10 @@
                 "name": "XL2CSOPHYNIX",
                 "aum": 13070137344.0,
                 "currency": "HKD",
-                "nav": 4.0585,
+                "nav": 3.6292,
                 "previous_close": 31.5,
                 "volume": 322215780,
-                "average_volume": 151901414,
+                "average_volume": 154648418,
                 "last_bar": {
                   "close": 31.059999465942383,
                   "volume": 322215680.0,
@@ -337,10 +353,10 @@
                 "name": "XL2CSOPSMSN",
                 "aum": 3737885440.0,
                 "currency": "HKD",
-                "nav": 7.9025,
+                "nav": 7.9036,
                 "previous_close": 62.08,
                 "volume": 17057011,
-                "average_volume": 23008131,
+                "average_volume": 22912143,
                 "last_bar": {
                   "close": 63.720001220703125,
                   "volume": 17056911.0,
@@ -376,7 +392,7 @@
                 "nav": 0.144,
                 "previous_close": 1.016,
                 "volume": 25039870,
-                "average_volume": 428638480,
+                "average_volume": 422128796,
                 "last_bar": {
                   "close": 1.0,
                   "volume": 25038070.0,
@@ -399,22 +415,22 @@
               "structure": "tradifi_perp",
               "bucket": "single_stock_kr",
               "L_max": 50.0,
-              "open_interest_notional_usd": 371494150.6763,
-              "notional_exposure_usd": 371494150.6763,
-              "quote_volume_24h_usd": 809860769.0953,
-              "price": 1010.27,
+              "open_interest_notional_usd": 374545898.8544,
+              "notional_exposure_usd": 374545898.8544,
+              "quote_volume_24h_usd": 132861776.6924,
+              "price": 1018.24,
               "last_funding_rate": 0.0,
-              "price_change_pct_24h": -2.691,
+              "price_change_pct_24h": 0.661,
               "kr_spot_impact": "indirect_synthetic",
               "note": "TRADIFI_PERPETUAL / underlyingType=KR_EQUITY. USD share price ≈ KRW/FX. Not a 2x ETF.",
               "binance": {
                 "symbol": "SKHYNIXUSDT",
-                "price": 1010.27,
-                "open_interest_contracts": 367717.69,
-                "open_interest_notional_usdt": 371494150.6763,
-                "quote_volume_24h_usdt": 809860769.0953,
-                "price_change_pct_24h": -2.691,
-                "mark_price": 1010.27,
+                "price": 1018.24,
+                "open_interest_contracts": 367836.56,
+                "open_interest_notional_usdt": 374545898.8544,
+                "quote_volume_24h_usdt": 132861776.6924,
+                "price_change_pct_24h": 0.661,
+                "mark_price": 1018.48,
                 "last_funding_rate": 0.0,
                 "source": "Binance USD-M futures public API",
                 "quality": "observed"
@@ -431,22 +447,22 @@
               "structure": "tradifi_perp",
               "bucket": "single_stock_kr",
               "L_max": 50.0,
-              "open_interest_notional_usd": 21571034.037299998,
-              "notional_exposure_usd": 21571034.037299998,
-              "quote_volume_24h_usd": 97768082.542,
-              "price": 166.29,
+              "open_interest_notional_usd": 22064145.1356,
+              "notional_exposure_usd": 22064145.1356,
+              "quote_volume_24h_usd": 11485933.296,
+              "price": 167.48,
               "last_funding_rate": 0.0,
-              "price_change_pct_24h": 0.429,
+              "price_change_pct_24h": 0.679,
               "kr_spot_impact": "indirect_synthetic",
               "note": "TRADIFI_PERPETUAL / KR_EQUITY. Not a 2x ETF.",
               "binance": {
                 "symbol": "SAMSUNGUSDT",
-                "price": 166.29,
-                "open_interest_contracts": 129719.37,
-                "open_interest_notional_usdt": 21571034.037299998,
-                "quote_volume_24h_usdt": 97768082.542,
-                "price_change_pct_24h": 0.429,
-                "mark_price": 166.2787602,
+                "price": 167.48,
+                "open_interest_contracts": 131741.97,
+                "open_interest_notional_usdt": 22064145.1356,
+                "quote_volume_24h_usdt": 11485933.296,
+                "price_change_pct_24h": 0.679,
+                "mark_price": 167.48,
                 "last_funding_rate": 0.0,
                 "source": "Binance USD-M futures public API",
                 "quality": "observed"
@@ -463,23 +479,23 @@
               "structure": "tradifi_perp",
               "bucket": "regime_proxy",
               "L_max": 50.0,
-              "open_interest_notional_usd": 46104490.10919999,
-              "notional_exposure_usd": 46104490.10919999,
-              "quote_volume_24h_usd": 664040029.335,
-              "price": 16.99,
-              "last_funding_rate": -5.901e-05,
-              "price_change_pct_24h": -1.507,
+              "open_interest_notional_usd": 46931594.37100001,
+              "notional_exposure_usd": 46931594.37100001,
+              "quote_volume_24h_usd": 39900009.9195,
+              "price": 17.26,
+              "last_funding_rate": -0.0003312,
+              "price_change_pct_24h": 0.349,
               "kr_spot_impact": "indirect_synthetic",
               "note": "Regime proxy only — stacked on US 3x ETF, not single-stock Hynix.",
               "binance": {
                 "symbol": "KORUUSDT",
-                "price": 16.99,
-                "open_interest_contracts": 2713625.08,
-                "open_interest_notional_usdt": 46104490.10919999,
-                "quote_volume_24h_usdt": 664040029.335,
-                "price_change_pct_24h": -1.507,
-                "mark_price": 16.99197435,
-                "last_funding_rate": -5.901e-05,
+                "price": 17.26,
+                "open_interest_contracts": 2719095.85,
+                "open_interest_notional_usdt": 46931594.37100001,
+                "quote_volume_24h_usdt": 39900009.9195,
+                "price_change_pct_24h": 0.349,
+                "mark_price": 17.26,
+                "last_funding_rate": -0.0003312,
                 "source": "Binance USD-M futures public API",
                 "quality": "observed"
               },
@@ -495,23 +511,55 @@
               "structure": "tradifi_perp",
               "bucket": "regime_proxy",
               "L_max": 50.0,
-              "open_interest_notional_usd": 86887962.07550001,
-              "notional_exposure_usd": 86887962.07550001,
-              "quote_volume_24h_usd": 1245295782.2035,
-              "price": 139.55,
-              "last_funding_rate": 0.0,
-              "price_change_pct_24h": 1.454,
+              "open_interest_notional_usd": 86507171.7075,
+              "notional_exposure_usd": 86507171.7075,
+              "quote_volume_24h_usd": 109008187.5135,
+              "price": 142.95,
+              "last_funding_rate": -9.68e-05,
+              "price_change_pct_24h": 1.433,
               "kr_spot_impact": "indirect_synthetic",
               "note": "Regime proxy only — not single-stock KR.",
               "binance": {
                 "symbol": "SOXLUSDT",
-                "price": 139.55,
-                "open_interest_contracts": 622629.61,
-                "open_interest_notional_usdt": 86887962.07550001,
-                "quote_volume_24h_usdt": 1245295782.2035,
-                "price_change_pct_24h": 1.454,
-                "mark_price": 139.53175525,
-                "last_funding_rate": 0.0,
+                "price": 142.95,
+                "open_interest_contracts": 605156.85,
+                "open_interest_notional_usdt": 86507171.7075,
+                "quote_volume_24h_usdt": 109008187.5135,
+                "price_change_pct_24h": 1.433,
+                "mark_price": 142.93969568,
+                "last_funding_rate": -9.68e-05,
+                "source": "Binance USD-M futures public API",
+                "quality": "observed"
+              },
+              "quality": "observed",
+              "source": "Binance USD-M futures public API"
+            },
+            {
+              "ticker": "SOXSUSDT",
+              "name": "Binance SOXS 3x Semis Bear ETF perp (if listed)",
+              "underlying": "SOXS",
+              "venue": "crypto",
+              "exchange": "binance",
+              "structure": "tradifi_perp",
+              "bucket": "regime_proxy",
+              "L_max": 50.0,
+              "open_interest_notional_usd": 7731087.51,
+              "notional_exposure_usd": 7731087.51,
+              "quote_volume_24h_usd": 18922174.9278,
+              "price": 41.0,
+              "last_funding_rate": 2.542e-05,
+              "price_change_pct_24h": -1.773,
+              "kr_spot_impact": "indirect_synthetic",
+              "note": "Optional; quality=error if delisted.",
+              "binance": {
+                "symbol": "SOXSUSDT",
+                "price": 41.0,
+                "open_interest_contracts": 188563.11,
+                "open_interest_notional_usdt": 7731087.51,
+                "quote_volume_24h_usdt": 18922174.9278,
+                "price_change_pct_24h": -1.773,
+                "mark_price": 41.00048887,
+                "last_funding_rate": 2.542e-05,
                 "source": "Binance USD-M futures public API",
                 "quality": "observed"
               },
@@ -526,16 +574,17 @@
               "underlying": "SOX",
               "venue": "us",
               "L": 3.0,
+              "direction": "long",
               "structure": "swap",
               "aum_usd": 19438153728.0,
               "notional_exposure_usd": 58314461184.0,
-              "kr_spot_impact": "regime_proxy",
+              "kr_spot_impact": "regime_proxy_and_dealer_hedge",
               "yahoo": {
                 "symbol": "SOXL",
                 "name": "Direxion Daily Semiconductor Bu",
                 "aum": 19438153728.0,
                 "currency": "USD",
-                "nav": 132.191,
+                "nav": 140.438,
                 "previous_close": 132.33,
                 "volume": 58340691,
                 "average_volume": 65840604,
@@ -548,7 +597,40 @@
                 "quality": "observed"
               },
               "quality": "observed",
-              "source": "Yahoo Finance (yfinance)"
+              "source": "Yahoo Finance (yfinance)",
+              "channel_ko": "레버·인버스 ETF + 옵션 레짐. 스왑 상대·글로벌 데스크 헷지가 한국 링크로 번질 수 있음 (spillover)."
+            },
+            {
+              "ticker": "SOXS",
+              "name": "Direxion Daily Semiconductor Bear 3X",
+              "underlying": "SOX",
+              "venue": "us",
+              "L": -3.0,
+              "direction": "inverse",
+              "structure": "swap",
+              "aum_usd": 1363733888.0,
+              "notional_exposure_usd": 4091201664.0,
+              "kr_spot_impact": "regime_proxy_and_dealer_hedge",
+              "yahoo": {
+                "symbol": "SOXS",
+                "name": "Direxion Daily Semiconductor Be",
+                "aum": 1363733888.0,
+                "currency": "USD",
+                "nav": 42.032,
+                "previous_close": 44.76,
+                "volume": 57051463,
+                "average_volume": 58270707,
+                "last_bar": {
+                  "close": 42.08000183105469,
+                  "volume": 57308900.0,
+                  "as_of": "2026-08-07"
+                },
+                "source": "Yahoo Finance (yfinance)",
+                "quality": "observed"
+              },
+              "quality": "observed",
+              "source": "Yahoo Finance (yfinance)",
+              "channel_ko": "레버·인버스 ETF + 옵션 레짐. 스왑 상대·글로벌 데스크 헷지가 한국 링크로 번질 수 있음 (spillover)."
             },
             {
               "ticker": "KORU",
@@ -556,16 +638,17 @@
               "underlying": "EWY",
               "venue": "us",
               "L": 3.0,
+              "direction": "long",
               "structure": "swap",
               "aum_usd": 1274471552.0,
               "notional_exposure_usd": 3823414656.0,
-              "kr_spot_impact": "regime_proxy",
+              "kr_spot_impact": "regime_proxy_and_dealer_hedge",
               "yahoo": {
                 "symbol": "KORU",
                 "name": "Direxion Daily South Korea Bull",
                 "aum": 1274471552.0,
                 "currency": "USD",
-                "nav": 16.78,
+                "nav": 17.341,
                 "previous_close": 16.81,
                 "volume": 28669935,
                 "average_volume": 28060695,
@@ -578,12 +661,141 @@
                 "quality": "observed"
               },
               "quality": "observed",
-              "source": "Yahoo Finance (yfinance)"
+              "source": "Yahoo Finance (yfinance)",
+              "channel_ko": "레버·인버스 ETF + 옵션 레짐. 스왑 상대·글로벌 데스크 헷지가 한국 링크로 번질 수 있음 (spillover)."
+            },
+            {
+              "ticker": "TECL",
+              "name": "Direxion Daily Technology Bull 3X",
+              "underlying": "XLK",
+              "venue": "us",
+              "L": 3.0,
+              "direction": "long",
+              "structure": "swap",
+              "aum_usd": 5136074240.0,
+              "notional_exposure_usd": 15408222720.0,
+              "kr_spot_impact": "regime_proxy_and_dealer_hedge",
+              "yahoo": {
+                "symbol": "TECL",
+                "name": "Direxion Daily Technology Bull ",
+                "aum": 5136074240.0,
+                "currency": "USD",
+                "nav": 211.565,
+                "previous_close": 203.42,
+                "volume": 481054,
+                "average_volume": 1065885,
+                "last_bar": {
+                  "close": 211.63999938964844,
+                  "volume": 491000.0,
+                  "as_of": "2026-08-07"
+                },
+                "source": "Yahoo Finance (yfinance)",
+                "quality": "observed"
+              },
+              "quality": "observed",
+              "source": "Yahoo Finance (yfinance)",
+              "channel_ko": "레버·인버스 ETF + 옵션 레짐. 스왑 상대·글로벌 데스크 헷지가 한국 링크로 번질 수 있음 (spillover)."
+            },
+            {
+              "ticker": "TECS",
+              "name": "Direxion Daily Technology Bear 3X",
+              "underlying": "XLK",
+              "venue": "us",
+              "L": -3.0,
+              "direction": "inverse",
+              "structure": "swap",
+              "aum_usd": 69636112.0,
+              "notional_exposure_usd": 208908336.0,
+              "kr_spot_impact": "regime_proxy_and_dealer_hedge",
+              "yahoo": {
+                "symbol": "TECS",
+                "name": "Direxion Technology Bear 3X ETF",
+                "aum": 69636112.0,
+                "currency": "USD",
+                "nav": 60.174,
+                "previous_close": 62.87,
+                "volume": 242598,
+                "average_volume": 864289,
+                "last_bar": {
+                  "close": 60.220001220703125,
+                  "volume": 243200.0,
+                  "as_of": "2026-08-07"
+                },
+                "source": "Yahoo Finance (yfinance)",
+                "quality": "observed"
+              },
+              "quality": "observed",
+              "source": "Yahoo Finance (yfinance)",
+              "channel_ko": "레버·인버스 ETF + 옵션 레짐. 스왑 상대·글로벌 데스크 헷지가 한국 링크로 번질 수 있음 (spillover)."
+            },
+            {
+              "ticker": "TQQQ",
+              "name": "ProShares UltraPro QQQ 3X",
+              "underlying": "QQQ",
+              "venue": "us",
+              "L": 3.0,
+              "direction": "long",
+              "structure": "swap",
+              "aum_usd": 32831182848.0,
+              "notional_exposure_usd": 98493548544.0,
+              "kr_spot_impact": "regime_proxy_and_dealer_hedge",
+              "yahoo": {
+                "symbol": "TQQQ",
+                "name": "ProShares UltraPro QQQ",
+                "aum": 32831182848.0,
+                "currency": "USD",
+                "nav": 74.4978,
+                "previous_close": 72.03,
+                "volume": 58991597,
+                "average_volume": 71377387,
+                "last_bar": {
+                  "close": 74.47000122070312,
+                  "volume": 59134100.0,
+                  "as_of": "2026-08-07"
+                },
+                "source": "Yahoo Finance (yfinance)",
+                "quality": "observed"
+              },
+              "quality": "observed",
+              "source": "Yahoo Finance (yfinance)",
+              "channel_ko": "레버·인버스 ETF + 옵션 레짐. 스왑 상대·글로벌 데스크 헷지가 한국 링크로 번질 수 있음 (spillover)."
+            },
+            {
+              "ticker": "SQQQ",
+              "name": "ProShares UltraPro Short QQQ 3X",
+              "underlying": "QQQ",
+              "venue": "us",
+              "L": -3.0,
+              "direction": "inverse",
+              "structure": "swap",
+              "aum_usd": 1997247488.0,
+              "notional_exposure_usd": 5991742464.0,
+              "kr_spot_impact": "regime_proxy_and_dealer_hedge",
+              "yahoo": {
+                "symbol": "SQQQ",
+                "name": "ProShares UltraPro Short QQQ",
+                "aum": 1997247488.0,
+                "currency": "USD",
+                "nav": 37.3925,
+                "previous_close": 38.7,
+                "volume": 51716914,
+                "average_volume": 65663154,
+                "last_bar": {
+                  "close": 37.400001525878906,
+                  "volume": 52337300.0,
+                  "as_of": "2026-08-07"
+                },
+                "source": "Yahoo Finance (yfinance)",
+                "quality": "observed"
+              },
+              "quality": "observed",
+              "source": "Yahoo Finance (yfinance)",
+              "channel_ko": "레버·인버스 ETF + 옵션 레짐. 스왑 상대·글로벌 데스크 헷지가 한국 링크로 번질 수 있음 (spillover)."
             }
           ],
           "quality": "observed",
-          "source": "Yahoo HK + Binance perps",
-          "disclaimer_ko": "HK·코인은 국내 현물 호가에 직접 리밸런싱하지 않음(스왑/합성). venue 분리 필수. 투자 권유 아님."
+          "source": "Yahoo HK/US + Binance perps (+ options via us_regime)",
+          "disclaimer_ko": "HK·US 레버/인버스=스왑 합성, 코인=퍼프 OI. 국내 cash LETF 회전율 식에 합산 금지. 다만 헷지 데스크→KR 현물/선물 간접 압력(spillover)은 Distortion·Spillover 탭에서 반드시 표시. 투자 권유 아님."
         },
         "paper_calibration": [
           {
@@ -1085,6 +1297,13 @@
     "kospi_cash_tv_jo": 24.73,
     "levered_inverse_tv_krw": 6317994000000.0,
     "levered_inverse_tv_jo": 6.32,
+    "long_tv_krw": 3547503000000.0,
+    "long_tv_jo": 3.548,
+    "inverse_tv_krw": 2770491000000.0,
+    "inverse_tv_jo": 2.77,
+    "gobus_tv_krw": 930059000000.0,
+    "gobus_tv_jo": 0.93,
+    "inverse_share_of_lev_tv_pct": 43.85,
     "by_category": {
       "index": {
         "n_products": 53,
@@ -1119,59 +1338,187 @@
         "share_of_kospi_tv_pct": 3.4
       }
     },
+    "by_direction": {
+      "gobus_inverse_2x": {
+        "n_products": 8,
+        "trading_value_krw": 930059000000.0,
+        "trading_value_jo": 0.93,
+        "aum_proxy_krw": 10913000000.0,
+        "share_of_lev_tv_pct": 14.72,
+        "share_of_kospi_tv_pct": 3.761
+      },
+      "inverse": {
+        "n_products": 31,
+        "trading_value_krw": 1626179000000.0,
+        "trading_value_jo": 1.626,
+        "aum_proxy_krw": 15506000000.0,
+        "share_of_lev_tv_pct": 25.74,
+        "share_of_kospi_tv_pct": 6.576
+      },
+      "inverse_2x": {
+        "n_products": 2,
+        "trading_value_krw": 214253000000.0,
+        "trading_value_jo": 0.214,
+        "aum_proxy_krw": 1599000000.0,
+        "share_of_lev_tv_pct": 3.39,
+        "share_of_kospi_tv_pct": 0.866
+      },
+      "long": {
+        "n_products": 62,
+        "trading_value_krw": 3547503000000.0,
+        "trading_value_jo": 3.548,
+        "aum_proxy_krw": 200986000000.0,
+        "share_of_lev_tv_pct": 56.15,
+        "share_of_kospi_tv_pct": 14.345
+      }
+    },
     "top_products_by_tv": [
       {
         "ticker": "122630",
         "name": "KODEX 레버리지",
         "category": "index",
+        "direction": "long",
         "trading_value_jo": 1.542
       },
       {
         "ticker": "114800",
         "name": "KODEX 인버스",
         "category": "index",
+        "direction": "inverse",
         "trading_value_jo": 1.446
       },
       {
         "ticker": "252670",
         "name": "KODEX 200선물인버스2X",
         "category": "index",
+        "direction": "gobus_inverse_2x",
         "trading_value_jo": 0.909
       },
       {
         "ticker": "233740",
         "name": "KODEX 코스닥150레버리지",
         "category": "index",
+        "direction": "long",
         "trading_value_jo": 0.772
       },
       {
         "ticker": "0193T0",
         "name": "KODEX SK하이닉스단일종목레버리지",
         "category": "single_stock",
+        "direction": "long",
         "trading_value_jo": 0.306
       },
       {
         "ticker": "494310",
         "name": "KODEX 반도체레버리지",
         "category": "sector",
+        "direction": "long",
         "trading_value_jo": 0.268
       },
       {
         "ticker": "0197X0",
         "name": "SOL SK하이닉스선물단일종목인버스2X",
         "category": "single_stock",
+        "direction": "inverse_2x",
         "trading_value_jo": 0.201
       },
       {
         "ticker": "251340",
         "name": "KODEX 코스닥150선물인버스",
         "category": "index",
+        "direction": "inverse",
         "trading_value_jo": 0.163
+      },
+      {
+        "ticker": "0195S0",
+        "name": "TIGER SK하이닉스단일종목레버리지",
+        "category": "single_stock",
+        "direction": "long",
+        "trading_value_jo": 0.15
+      },
+      {
+        "ticker": "0193W0",
+        "name": "KODEX 삼성전자단일종목레버리지",
+        "category": "single_stock",
+        "direction": "long",
+        "trading_value_jo": 0.107
+      },
+      {
+        "ticker": "488080",
+        "name": "TIGER 반도체TOP10레버리지",
+        "category": "sector",
+        "direction": "long",
+        "trading_value_jo": 0.087
+      },
+      {
+        "ticker": "462330",
+        "name": "KODEX 2차전지산업레버리지",
+        "category": "sector",
+        "direction": "long",
+        "trading_value_jo": 0.083
+      }
+    ],
+    "top_inverse_gobus_by_tv": [
+      {
+        "ticker": "114800",
+        "name": "KODEX 인버스",
+        "category": "index",
+        "direction": "inverse",
+        "trading_value_jo": 1.446202
+      },
+      {
+        "ticker": "252670",
+        "name": "KODEX 200선물인버스2X",
+        "category": "index",
+        "direction": "gobus_inverse_2x",
+        "trading_value_jo": 0.909404
+      },
+      {
+        "ticker": "0197X0",
+        "name": "SOL SK하이닉스선물단일종목인버스2X",
+        "category": "single_stock",
+        "direction": "inverse_2x",
+        "trading_value_jo": 0.201499
+      },
+      {
+        "ticker": "251340",
+        "name": "KODEX 코스닥150선물인버스",
+        "category": "index",
+        "direction": "inverse",
+        "trading_value_jo": 0.163115
+      },
+      {
+        "ticker": "252710",
+        "name": "TIGER 200선물인버스2X",
+        "category": "index",
+        "direction": "gobus_inverse_2x",
+        "trading_value_jo": 0.01796
+      },
+      {
+        "ticker": "0193L0",
+        "name": "PLUS 삼성전자선물단일종목인버스2X",
+        "category": "single_stock",
+        "direction": "inverse_2x",
+        "trading_value_jo": 0.012754
+      },
+      {
+        "ticker": "123310",
+        "name": "TIGER 인버스",
+        "category": "index",
+        "direction": "inverse",
+        "trading_value_jo": 0.008458
+      },
+      {
+        "ticker": "465350",
+        "name": "RISE 2차전지TOP10인버스(합성)",
+        "category": "sector",
+        "direction": "inverse",
+        "trading_value_jo": 0.002939
       }
     ],
     "quality": "observed",
     "source": "FinanceDataReader ETF/KR Amount(백만원) + Name classify",
-    "note_ko": "지수/섹터 레버는 단일종목 wag-the-dog 분모와 다름. 카테고리 비중은 거래대금 기준."
+    "note_ko": "이름에 레버리지|인버스|곱버스 포함 ETF 전부. 곱버스=지수 인버스2X 계열. 지수/섹터 레버는 단일종목 wag-the-dog 분모와 다름. 카테고리·방향 비중은 거래대금 기준."
   },
   "short_interest": {
     "by_ticker": {},
@@ -1182,9 +1529,9 @@
   "global_leverage_stack_usd_bn": {
     "kr_single_stock_letf_notional": 8.31,
     "hk_swap_letf_notional": 4.31,
-    "crypto_perp_oi": 0.53,
-    "stack_sum_reference": 13.15,
-    "note_ko": "venue 분리. KR cash wag-the-dog ≠ HK swap ≠ crypto perp. 합산은 글로벌 노출 상한 참고용."
+    "crypto_perp_oi": 0.54,
+    "stack_sum_reference": 199.49,
+    "note_ko": "venue 분리: KR cash 회전율 식에 HK/US/crypto 합산 금지. 다만 Distortion·Spillover에서는 해외 롱/인버스 노셔널을 1급으로 표시 (스왑 상대 헷지 → 국내 압력)."
   },
   "stocks": [
     {
@@ -1202,10 +1549,11 @@
       "foreign_net_krw": -80139654000,
       "external_vs_spot": {
         "hk_notional_usd": 3351317267.69,
-        "crypto_oi_usd": 371494150.68,
+        "crypto_oi_usd": 374545898.85,
         "hk_over_spot_adv": 0.6467,
-        "crypto_oi_over_spot_adv": 0.0717,
-        "note_ko": "비율은 규모 비교용. HK/코인 체결이 곧바로 KRX 현물 리밸런싱은 아님."
+        "crypto_oi_over_spot_adv": 0.0723,
+        "note_ko": "규모 비교용. 스왑→한국 기관 헷지 경로 가능 (YouTube wag reverse / 유튜브 하닉 레버 역산 계열).",
+        "ticker_note_ko": "HK 하닉 2x 메인=7709.HK. products=국내, products_hk=홍콩."
       }
     },
     {
@@ -1223,10 +1571,11 @@
       "foreign_net_krw": -401331777000,
       "external_vs_spot": {
         "hk_notional_usd": 960999958.97,
-        "crypto_oi_usd": 21571034.04,
+        "crypto_oi_usd": 22064145.14,
         "hk_over_spot_adv": 0.2808,
-        "crypto_oi_over_spot_adv": 0.0063,
-        "note_ko": "비율은 규모 비교용. HK/코인 체결이 곧바로 KRX 현물 리밸런싱은 아님."
+        "crypto_oi_over_spot_adv": 0.0064,
+        "note_ko": "규모 비교용. 스왑→한국 기관 헷지 경로 가능 (YouTube wag reverse / 유튜브 하닉 레버 역산 계열).",
+        "ticker_note_ko": "HK 하닉 2x 메인=7709.HK. products=국내, products_hk=홍콩."
       }
     }
   ],
@@ -1324,8 +1673,8 @@
       "hk_notional_usd_bn": 3.35,
       "hk_over_spot_adv": 0.6467,
       "crypto_oi_usd_bn": 0.37,
-      "crypto_oi_over_spot_adv": 0.0717,
-      "note_ko": "비율은 규모 비교용. HK/코인 체결이 곧바로 KRX 현물 리밸런싱은 아님."
+      "crypto_oi_over_spot_adv": 0.0723,
+      "note_ko": "규모 비교용. 스왑→한국 기관 헷지 경로 가능 (YouTube wag reverse / 유튜브 하닉 레버 역산 계열)."
     }
   },
   "top3_etf_by_aum_nav": [
@@ -1747,8 +2096,8 @@
       "ticker": "SKHYNIXUSDT",
       "underlying": "000660",
       "bucket": "single_stock_kr",
-      "open_interest_notional_usd": 371494150.68,
-      "quote_volume_24h_usd": 809860769.1,
+      "open_interest_notional_usd": 374545898.85,
+      "quote_volume_24h_usd": 132861776.69,
       "last_funding_rate": 0.0,
       "kr_spot_impact": "indirect_synthetic",
       "note_ko": "TradFi perp — ETF 아님. OI는 노출 프록시.",
@@ -1759,9 +2108,9 @@
       "ticker": "SOXLUSDT",
       "underlying": "SOXL",
       "bucket": "regime_proxy",
-      "open_interest_notional_usd": 86887962.08,
-      "quote_volume_24h_usd": 1245295782.2,
-      "last_funding_rate": 0.0,
+      "open_interest_notional_usd": 86507171.71,
+      "quote_volume_24h_usd": 109008187.51,
+      "last_funding_rate": -9.68e-05,
       "kr_spot_impact": "indirect_synthetic",
       "note_ko": "TradFi perp — ETF 아님. OI는 노출 프록시.",
       "rank": 2
@@ -1771,9 +2120,9 @@
       "ticker": "KORUUSDT",
       "underlying": "KORU",
       "bucket": "regime_proxy",
-      "open_interest_notional_usd": 46104490.11,
-      "quote_volume_24h_usd": 664040029.34,
-      "last_funding_rate": -5.901e-05,
+      "open_interest_notional_usd": 46931594.37,
+      "quote_volume_24h_usd": 39900009.92,
+      "last_funding_rate": -0.0003312,
       "kr_spot_impact": "indirect_synthetic",
       "note_ko": "TradFi perp — ETF 아님. OI는 노출 프록시.",
       "rank": 3
@@ -1783,12 +2132,24 @@
       "ticker": "SAMSUNGUSDT",
       "underlying": "005930",
       "bucket": "single_stock_kr",
-      "open_interest_notional_usd": 21571034.04,
-      "quote_volume_24h_usd": 97768082.54,
+      "open_interest_notional_usd": 22064145.14,
+      "quote_volume_24h_usd": 11485933.3,
       "last_funding_rate": 0.0,
       "kr_spot_impact": "indirect_synthetic",
       "note_ko": "TradFi perp — ETF 아님. OI는 노출 프록시.",
       "rank": 4
+    },
+    {
+      "venue": "CRYPTO",
+      "ticker": "SOXSUSDT",
+      "underlying": "SOXS",
+      "bucket": "regime_proxy",
+      "open_interest_notional_usd": 7731087.51,
+      "quote_volume_24h_usd": 18922174.93,
+      "last_funding_rate": 2.542e-05,
+      "kr_spot_impact": "indirect_synthetic",
+      "note_ko": "TradFi perp — ETF 아님. OI는 노출 프록시.",
+      "rank": 5
     }
   ],
   "largest_etf": {
