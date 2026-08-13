@@ -6662,14 +6662,30 @@ const loadKfaCompany = async (out, inst, code) => {
         } catch (_) { /* try next */ }
     }
 
+    // No pre-generated snapshot for this ticker (only a handful exist under
+    // public/data/) -- fall back to a live OpenDART lookup, which covers
+    // every KRX-listed filer but only the 12 Basic-view cards (see
+    // handleDartFinancials in _worker.js for why Investor/PE/Deal stay
+    // "준비 중" here instead of getting a parallel calculation port).
+    let liveOnly = false;
+    if (!data) {
+        try {
+            const res = await fetch(`/api/dart-financials?symbol=${encodeURIComponent(code)}`, { cache: 'no-store' });
+            if (res.ok) { data = await res.json(); liveOnly = true; }
+        } catch (_) { /* fall through to empty state */ }
+    }
+
     if (!data) {
         out.innerHTML = `
             <div class="fin-empty">
                 <p class="fin-empty-title">${finEsc(inst.name_ko)}는 아직 DART 데이터가 없습니다</p>
-                <p>지금은 <code>scripts/dart</code> 엔진이 생성한 스냅샷이 있는 종목만 열립니다 (현재 삼성전자 샘플만 있음).
-                   엔진이 새 종목을 생성하면 <code>public/data/kfa_${finEsc(code)}_v1.json</code> 경로에 자동으로 연결됩니다.</p>
+                <p>OpenDART에 이 종목의 연결재무제표 공시가 없거나(최근 2개 회계연도 기준), 상장 종목이 아닙니다.</p>
             </div>`;
         return;
+    }
+
+    if (liveOnly) {
+        data.reasons = [...(data.reasons || []), '실시간 조회: 기본 12개 지표만 제공 (투자자/PE/딜 카드는 준비 중)'];
     }
 
     KFA_VIEW = data.view_presets?.default_view || 'basic';
