@@ -580,27 +580,148 @@ const loadEiaStocks = async () => {
     return out;
 };
 
+// Bumped per chart instance so two sparklines open at once don't fight over
+// the same data-* payload -- wireSparkCharts looks its data up by this id.
+let sparkChartSeq = 0;
+const sparkChartData = new Map();
+
+/**
+ * Sparkline with a real y-axis and a hover readout, for a value series in
+ * chronological order.
+ *
+ * A level plus a rising/falling arrow says "falling", not "falling off a
+ * cliff over three months" or "still near its year high" -- the shape and the
+ * scale are both part of that answer, which a trend-only sparkline (no axis,
+ * no hover) could not give. Axis labels sit beside the chart as plain HTML
+ * rather than inside the SVG as <text>: this box is stretched to its
+ * container with preserveAspectRatio="none" so line and area shapes stay
+ * geometrically fine, but any <text> inside the same viewBox would stretch
+ * with it and read as squashed or elongated depending on the panel's width.
+ *
+ * points: [{label, value}] oldest-first. unit/formatValue control how the
+ * hover readout and axis labels are worded.
+ */
+const sparkChartHtml = ({ points, unit, formatValue, ariaLabel, footNote }) => {
+    if (!points || points.length < 2) return '';
+    const W = 100, H = 54, PAD = 3;
+    const vals = points.map((p) => p.value);
+    const min = Math.min(...vals);
+    const max = Math.max(...vals);
+    // A flat series must not divide by zero, and drawing it mid-height is
+    // more honest than pinning it to the top or bottom of the box.
+    const span = max - min || 1;
+    const x = (i) => PAD + (i / (points.length - 1)) * (W - PAD * 2);
+    const y = (v) => PAD + (1 - (v - min) / span) * (H - PAD * 2);
+    const fmt = formatValue || ((v) => String(v));
+
+    const line = points.map((p, i) => `${i ? 'L' : 'M'}${x(i).toFixed(2)},${y(p.value).toFixed(2)}`).join('');
+    const area = `${line}L${x(points.length - 1).toFixed(2)},${H - PAD}L${x(0).toFixed(2)},${H - PAD}Z`;
+    const last = points[points.length - 1];
+    const rising = last.value >= points[0].value;
+
+    const id = `spk${++sparkChartSeq}`;
+    sparkChartData.set(id, { points, x, y, unit: unit || '', fmt });
+
+    return `<div class="spark2-wrap">
+        <div class="spark2-row">
+            <div class="spark2-axis">
+                <span>${fmt(max)}</span>
+                <span>${fmt(min)}</span>
+            </div>
+            <div class="spark2-chart" data-spark-id="${id}">
+                <svg viewBox="0 0 ${W} ${H}" class="spark2-svg ${rising ? 'up' : 'down'}"
+                     preserveAspectRatio="none" role="img" aria-label="${ariaLabel || ''}">
+                    <line class="spark2-grid" x1="${PAD}" y1="${PAD}" x2="${W - PAD}" y2="${PAD}"/>
+                    <line class="spark2-grid" x1="${PAD}" y1="${H - PAD}" x2="${W - PAD}" y2="${H - PAD}"/>
+                    <path class="spark2-area" d="${area}"/>
+                    <path class="spark2-line" d="${line}" vector-effect="non-scaling-stroke"/>
+                    <path class="spark2-dot-end" d="M${x(points.length - 1).toFixed(2)},${y(last.value).toFixed(2)}h0"/>
+                    <line class="spark2-cross" x1="0" y1="${PAD}" x2="0" y2="${H - PAD}" style="display:none"/>
+                    <path class="spark2-dot-hover" d="M0,0h0" style="display:none"/>
+                </svg>
+                <div class="spark2-tip" style="display:none"></div>
+            </div>
+        </div>
+        <div class="spark2-foot">
+            <span>${points[0].label}</span>
+            ${footNote ? `<span class="spark2-footnote">${footNote}</span>` : ''}
+            <span>${last.label}</span>
+        </div>
+    </div>`;
+};
+
+/**
+ * Attaches hover tracking to every `.spark2-chart` under `root`. Call once
+ * after inserting HTML built with sparkChartHtml -- innerHTML replacement
+ * drops any listeners the previous copy had.
+ */
+const wireSparkCharts = (root = document) => {
+    root.querySelectorAll('.spark2-chart[data-spark-id]').forEach((box) => {
+        const data = sparkChartData.get(box.dataset.sparkId);
+        const svg = box.querySelector('svg');
+        const cross = box.querySelector('.spark2-cross');
+        const dot = box.querySelector('.spark2-dot-hover');
+        const tip = box.querySelector('.spark2-tip');
+        if (!data || !svg || !cross || !dot || !tip) return;
+
+        const hide = () => { cross.style.display = 'none'; dot.style.display = 'none'; tip.style.display = 'none'; };
+
+        box.addEventListener('mousemove', (e) => {
+            const r = box.getBoundingClientRect();
+            if (!r.width) return;
+            const t = (e.clientX - r.left) / r.width;
+            const i = Math.max(0, Math.min(data.points.length - 1, Math.round(t * (data.points.length - 1))));
+            const p = data.points[i];
+            const px = data.x(i), py = data.y(p.value);
+            cross.setAttribute('x1', px); cross.setAttribute('x2', px);
+            cross.style.display = '';
+            dot.setAttribute('d', `M${px.toFixed(2)},${py.toFixed(2)}h0`);
+            dot.style.display = '';
+            tip.innerHTML = `<span class="spark2-tip-date">${p.label}</span>`
+                + `<span class="spark2-tip-val">${data.fmt(p.value)}${data.unit}</span>`;
+            tip.style.display = '';
+            // Flip before the tooltip would run off either edge of the box.
+            const leftPct = (px / 100) * 100;
+            tip.style.left = `${Math.min(Math.max(leftPct, 4), 96)}%`;
+            tip.classList.toggle('is-right', leftPct > 60);
+        });
+        box.addEventListener('mouseleave', hide);
+    });
+};
+
 /** Only meaningful for crude; other commodities have no equivalent series. */
 const renderEmergencyStocks = async () => {
     const host = document.getElementById('news-content');
     if (!host || currentCommodity !== 'oil') return;
     const stocks = await loadEiaStocks();
     if (!stocks.length || currentCommodity !== 'oil') return;
+    const weeks = stocks[0]?.history?.length || 0;
     host.insertAdjacentHTML('beforeend', `
         <div class="stock-card">
             <p class="section-title" style="margin:0 0 6px;">글로벌 비상 재고 · EIA 주간</p>
             ${stocks.map((s) => {
                 const up = s.change != null && s.change > 0;
-                return `<div class="stock-row">
-                    <span class="nm">${s.label_ko}</span>
-                    <span class="vl">${(s.value / 1000).toFixed(1)}<em>백만 배럴</em></span>
-                    <span class="ch ${s.change == null ? '' : (up ? 'up' : 'down')}">
-                        ${s.change == null ? '—'
-                            : `${up ? '+' : ''}${(s.change / 1000).toFixed(1)}`}</span>
+                const chart = sparkChartHtml({
+                    points: s.history.map((h) => ({ label: h.period, value: h.value / 1000 })),
+                    unit: 'M bbl',
+                    formatValue: (v) => v.toFixed(1),
+                    ariaLabel: `최근 ${s.history.length}주 추이`,
+                });
+                return `<div class="stock-item">
+                    <div class="stock-row${chart ? ' is-clickable' : ''}"
+                         ${chart ? `role="button" tabindex="0" data-stock-toggle="${s.id}"` : ''}>
+                        <span class="nm">${s.label_ko}${chart ? '<i class="stock-caret"></i>' : ''}</span>
+                        <span class="vl">${(s.value / 1000).toFixed(1)}<em>백만 배럴</em></span>
+                        <span class="ch ${s.change == null ? '' : (up ? 'up' : 'down')}">
+                            ${s.change == null ? '—'
+                                : `${up ? '+' : ''}${(s.change / 1000).toFixed(1)}`}</span>
+                    </div>
+                    ${chart}
                 </div>`;
             }).join('')}
-            <div class="stock-note">${stocks[0]?.period || ''} 기준 · 전주 대비 증감 · 출처 EIA</div>
+            <div class="stock-note">${stocks[0]?.period || ''} 기준 · 전주 대비 증감 · 이름을 누르면 최근 ${weeks}주 추이(그래프 위에 마우스를 올리면 날짜·수량) · 출처 EIA</div>
         </div>`);
+    wireSparkCharts(host);
 };
 
 // A country's export total and import total are different questions --
@@ -653,6 +774,118 @@ const renderTradeWorldPanel = (arcs) => {
             <div class="trade-rank-list">${importRows || '<p class="empty-state">무역 루트 없음</p>'}</div>
         </div>`;
     renderEmergencyStocks();
+};
+
+const futuresCache = new Map();
+
+/**
+ * Front-month futures beside the flow ranking (world view, Stage 1).
+ *
+ * Fetched by commodity key, not by symbol -- the ranking already knows which
+ * commodity is on screen, and keeping the Yahoo symbol server-side means a
+ * bad ticker never leaks into a browser network tab.
+ */
+const renderFuturesCard = async (commodity) => {
+    const slot = document.getElementById('futures-slot');
+    if (!slot || !commodity) return;
+
+    let doc = futuresCache.get(commodity);
+    if (doc === undefined) {
+        try {
+            const res = await fetch(`/api/futures?commodity=${encodeURIComponent(commodity)}`);
+            doc = res.ok ? await res.json() : null;
+        } catch (err) {
+            console.warn('[futures] unavailable', err);
+            doc = null;
+        }
+        futuresCache.set(commodity, doc);
+    }
+    // The panel may have been rebuilt (or the commodity switched) while the
+    // fetch was in flight -- re-fetch the live slot, and bail if it is gone
+    // or if the visible commodity has since moved on.
+    const live = document.getElementById('futures-slot');
+    if (!live || currentCommodity !== commodity) return;
+    if (!doc) { live.innerHTML = ''; return; }
+
+    if (doc.priced === false) {
+        live.innerHTML = `<div class="fut-card fut-none">
+            <span class="fut-k">선물가</span>
+            <span class="fut-none-note">${doc.reason}</span>
+        </div>`;
+        return;
+    }
+    if (!doc.priced) { live.innerHTML = ''; return; }
+
+    const up = (doc.change_pct ?? 0) >= 0;
+    live.innerHTML = `
+        <div class="fut-card is-clickable" role="button" tabindex="0"
+             data-fut-toggle="${doc.commodity}" data-fut-symbol="${doc.symbol}" data-fut-unit="${doc.unit}">
+            <div class="fut-main">
+                <span class="fut-px">$${doc.price.toLocaleString(undefined, { maximumFractionDigits: 4 })}</span>
+                <span class="fut-unit">/ ${doc.unit}</span>
+                ${doc.change_pct === null ? '' : `<span class="fut-chg ${up ? 'up' : 'down'}">
+                    ${up ? '+' : ''}${doc.change_pct}%</span>`}
+                <i class="stock-caret fut-caret"></i>
+            </div>
+            <div class="fut-meta">${doc.exchange} ${doc.symbol}
+                ${doc.proxy ? ` · ${doc.proxy}` : ''} · 지연 시세 · 누르면 1년 추이</div>
+        </div>
+        <div class="fut-history"></div>`;
+};
+
+const futuresHistoryCache = new Map();
+
+/**
+ * 1-year daily history for whichever futures symbol is currently shown,
+ * reusing the portfolio calculator's own history route (`/api/quote/history`)
+ * rather than adding a second Yahoo-chart proxy -- the front-month card
+ * already tells the browser the exact symbol, so there is nothing this needs
+ * that route does not already fetch.
+ */
+const renderFuturesHistory = async (box) => {
+    const symbol = box.dataset.futSymbol;
+    const unit = box.dataset.futUnit || '';
+    const host = box.nextElementSibling;
+    if (!symbol || !host || !host.classList.contains('fut-history')) return;
+
+    const opening = !box.classList.contains('is-open');
+    box.classList.toggle('is-open', opening);
+    if (!opening) { host.innerHTML = ''; return; }
+
+    let doc = futuresHistoryCache.get(symbol);
+    if (doc === undefined) {
+        host.innerHTML = '<p class="empty-state" style="margin:6px 0;">불러오는 중…</p>';
+        try {
+            const res = await fetch(`/api/quote/history?symbol=${encodeURIComponent(symbol)}&range=1y`);
+            doc = res.ok ? await res.json() : null;
+        } catch (err) {
+            console.warn('[futures history] unavailable', err);
+            doc = null;
+        }
+        futuresHistoryCache.set(symbol, doc);
+    }
+    // The card may have been collapsed (or the panel rebuilt) while the fetch
+    // was in flight.
+    if (!box.classList.contains('is-open') || !box.isConnected) return;
+
+    const points = (doc?.points || [])
+        // Yahoo prices futures quoted in US cents (USX) the same way it does
+        // equities; handleFutures already normalises the headline price, but
+        // /api/quote/history does not, so cents-per-pound would otherwise
+        // read 100x too high against the $/lb the card shows above it.
+        .map(([ts, px]) => [ts, doc.currency === 'USX' ? px / 100 : px])
+        .map(([ts, px]) => ({
+            label: new Date(ts * 1000).toISOString().slice(0, 10),
+            value: px,
+        }));
+
+    const chart = sparkChartHtml({
+        points, unit: ` ${unit === '배럴' ? '$/bbl' : unit}`,
+        formatValue: (v) => v.toLocaleString(undefined, { maximumFractionDigits: 2 }),
+        ariaLabel: '최근 1년 가격 추이',
+    });
+    host.innerHTML = chart || '<p class="empty-state" style="margin:6px 0;">가격 이력을 불러오지 못했습니다.</p>';
+    wireSparkCharts(host);
 };
 
 const updateNewsPanel = (countryName) => {
@@ -1697,6 +1930,36 @@ document.getElementById('news-content')?.addEventListener('click', (e) => {
     const row = e.target instanceof Element ? e.target.closest('.trade-bar-row[data-partner]') : null;
     if (!row) return;
     row.classList.toggle('is-expanded');
+});
+
+// SPR / Cushing rows open their 12-week sparkline underneath.
+const toggleStockRow = (row) => {
+    row.classList.toggle('is-open');
+    row.closest('.stock-item')?.classList.toggle('is-open');
+};
+document.getElementById('news-content')?.addEventListener('click', (e) => {
+    const row = e.target instanceof Element ? e.target.closest('[data-stock-toggle]') : null;
+    if (row) toggleStockRow(row);
+});
+document.getElementById('news-content')?.addEventListener('keydown', (e) => {
+    if (e.key !== 'Enter' && e.key !== ' ') return;
+    const row = e.target instanceof Element ? e.target.closest('[data-stock-toggle]') : null;
+    if (!row) return;
+    e.preventDefault();
+    toggleStockRow(row);
+});
+
+// Futures price card opens its 1-year history underneath, same pattern.
+document.getElementById('news-content')?.addEventListener('click', (e) => {
+    const box = e.target instanceof Element ? e.target.closest('[data-fut-toggle]') : null;
+    if (box) renderFuturesHistory(box);
+});
+document.getElementById('news-content')?.addEventListener('keydown', (e) => {
+    if (e.key !== 'Enter' && e.key !== ' ') return;
+    const box = e.target instanceof Element ? e.target.closest('[data-fut-toggle]') : null;
+    if (!box) return;
+    e.preventDefault();
+    renderFuturesHistory(box);
 });
 
 // Ranking rows focus a country, same as clicking it on the globe.
