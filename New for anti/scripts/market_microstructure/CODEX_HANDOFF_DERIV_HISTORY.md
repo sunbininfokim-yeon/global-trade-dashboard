@@ -26,12 +26,15 @@ UI에서 시계열 차트를 못 그림. 아래 3개 히스토리 파일을 일�
  "kospi_cash_tv_krw": 24730513259160.0,
  "levered_inverse_etf_tv_over_kospi_cash_tv_pct": 25.547,
  "by_direction": {
-   "long":            {"trading_value_krw": 3547503000000.0, "share_of_lev_tv_pct": 56.15},
-   "inverse":         {"trading_value_krw": 2770491000000.0, "share_of_lev_tv_pct": 25.74},
-   "inverse_2x":      {"trading_value_krw": 214253000000.0,  "share_of_lev_tv_pct": 3.39},
-   "gobus_inverse_2x":{"trading_value_krw": 930059000000.0,  "share_of_lev_tv_pct": 14.72}
+   "long":            {"trading_value_krw": 3547503000000.0, "share_of_lev_tv_pct": 56.15, "share_of_kospi_tv_pct": 14.34},
+   "inverse":         {"trading_value_krw": 2770491000000.0, "share_of_lev_tv_pct": 25.74, "share_of_kospi_tv_pct": 6.57},
+   "inverse_2x":      {"trading_value_krw": 214253000000.0,  "share_of_lev_tv_pct": 3.39,  "share_of_kospi_tv_pct": 0.87},
+   "gobus_inverse_2x":{"trading_value_krw": 930059000000.0,  "share_of_lev_tv_pct": 14.72, "share_of_kospi_tv_pct": 3.76}
  }}
 ```
+
+`share_of_kospi_tv_pct`(코스피 현물 거래대금 대비)와 `share_of_lev_tv_pct`(레버 풀 내부 비중)는
+서로 다른 분모다. UI가 둘 다 별도 차트로 그리니 **둘 다** 저장해줘.
 
 ## 3. `hynix_letf_history_v1.jsonl` — 하닉 LETF 추이
 
