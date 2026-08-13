@@ -2809,6 +2809,19 @@ body.macro-mode .map-pane { flex: 1 1 100%; }
 /* Per-day columns over the close line, carrying that day's flow tooltip. */
 .ms-plc-hit { fill: transparent; }
 .ms-plc-hit:hover { fill: rgba(148,163,184,.12); }
+/* Full-width row behind the bars -- click opens that band's breakdown modal. */
+.ms-plc-band-hit { fill: transparent; cursor: pointer; }
+.ms-plc-band-hit:hover { fill: rgba(56,189,248,.08); }
+
+/* Period row: window buttons left, the credit toggle pushed to the right. */
+.ms-period-row { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; }
+.ms-period-spacer { flex: 1 1 auto; min-width: 12px; }
+.ms-credit-panel {
+    margin: 10px 0 4px; padding: 12px 14px 4px;
+    border: 1px solid rgba(148,163,184,.18); border-radius: 10px;
+    background: rgba(148,163,184,.05);
+}
+.ms-credit-panel .fin-sub { margin: 0 0 2px; }
 @media (max-width: 720px) { .ms-plc { height: 320px; } }
 
 /* 예탁금·신용융자 추이 (dual axis: 조원 left, 신용/예탁 % right) */

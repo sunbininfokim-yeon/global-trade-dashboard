@@ -7241,6 +7241,7 @@ let MS_STOCK = null;          // 수급 꼬임 탭에서 선택한 종목
 let MS_MODAL = null;          // { title, html }
 let MS_MODAL_KEY = null;      // 열려 있는 모달의 키 (기간 전환 시 재렌더용)
 let MS_PERIOD = '1m';         // 가격대별 표시 구간 — 1m / 2m / all
+let MS_CREDIT_ON = false;     // 가격대별 탭에서 예탁·신용 추이를 펼쳤는지
 
 const msGet = async (name) => {
     for (const base of ['/public/data/', '/data/']) {
@@ -7469,7 +7470,9 @@ const MS_PLC_SERIES = [
 
 const msPriceLevelChart = (pts, rows, opts = {}) => {
     if (pts.length < 2 || !rows.length) return '';
-    const W = 760, H = 420, L = 62, R = 96, T = 30, B = 34;
+    // Wide: the bars fan out horizontally from a centre axis, so width is what
+    // separates 개인/외국인/기관 at a glance -- a narrow box collapses them.
+    const W = 1180, H = 440, L = 70, R = 110, T = 30, B = 34;
     const show = opts.series || MS_PLC_SERIES;
 
     const lo = Math.min(...pts.map((d) => d.close), ...rows.map((b) => b.price_lo));
@@ -7501,11 +7504,17 @@ const msPriceLevelChart = (pts, rows, opts = {}) => {
                 <text x="${L - 8}" y="${(sy(g) + 3.5).toFixed(1)}" class="mm-tick" text-anchor="end">${msNum(Math.round(g))}</text>`).join('')}
             ${[-1, -0.5, 0, 0.5, 1].map((t) => `
                 <text x="${(cx + t * halfW * 0.92).toFixed(1)}" y="${H - 10}" class="mm-tick" text-anchor="middle">${fmt(t * vMax)}</text>`).join('')}
-            ${rows.map((b) => {
+            ${rows.map((b, bi) => {
                 const y0 = sy(b.price_hi), y1 = sy(b.price_lo);
                 const band = Math.abs(y1 - y0);
                 const h = Math.max(band / show.length - 1.5, 1.5);
-                return show.map((s, si) => {
+                // rows here is msLevelsCompute's `bins` array, index-aligned with
+                // the `rows` (label/series-shaped) array the modal reads --
+                // "band:i" is only meaningful within one render, which is all
+                // a click needs since it fires before the next repaint.
+                const bandHit = opts.clickable === false ? '' : `<rect class="ms-plc-band-hit" data-ms-modal="band:${bi}"
+                        x="${L}" y="${Math.min(y0, y1).toFixed(1)}" width="${(W - L - R).toFixed(1)}" height="${band.toFixed(1)}"/>`;
+                return bandHit + show.map((s, si) => {
                     const v = Number(b[s.key]);
                     if (!Number.isFinite(v) || v === 0) return '';
                     const w = Math.abs(sbx(v));
@@ -7783,10 +7792,17 @@ const msLevelsTab = (D) => {
                 data-ms-ticker="${finEsc(tk)}">${finEsc(tickers[tk].label_ko || tk)}</button>`).join('')}
         </div>
         ${src.headline_ko && MS_PERIOD === 'all' ? `<p class="ms-lead-strong">${finEsc(src.headline_ko)}</p>` : ''}
-        <div class="co-struct-toggle">
+        <div class="co-struct-toggle ms-period-row">
             ${[['1m', '최근 1개월'], ['2m', '최근 2개월'], ['all', `전체 (${allDays.length}일)`]].map(([k, ko]) =>
                 `<button class="mm-view-btn ${MS_PERIOD === k ? 'on' : ''}" data-ms-period="${k}">${finEsc(ko)}</button>`).join('')}
+            <span class="ms-period-spacer"></span>
+            <button class="mm-view-btn ${MS_CREDIT_ON ? 'on' : ''}" data-ms-credit="1">예탁금 · 신용공여 ${MS_CREDIT_ON ? '▲' : '▼'}</button>
         </div>
+        ${MS_CREDIT_ON ? `<div class="ms-credit-panel">
+            <h3 class="fin-sub">투자자 예탁금 · 신용공여 추이</h3>
+            <p class="fin-note">위 그래프가 <em>어디서</em> 샀는지라면, 이건 <em>무슨 돈으로</em> 샀는지입니다. 시장 전체 집계이며 종목별이 아닙니다.</p>
+            ${msCreditChart(dc)}
+        </div>` : ''}
         ${msPriceLevelChart(pts, bins, {
             label: `${isIndex ? '코스피' : (tickers[MS_TICKER] || {}).label_ko || MS_TICKER} 가격대별 투자자 순매수 분포`,
             lineName: isIndex ? '코스피 종가' : '종가',
@@ -7818,7 +7834,8 @@ const msLevelsTab = (D) => {
                 `<span class="${r.retail_net_shares >= 0 ? 'fin-up' : 'fin-down'}">${msShares(r.retail_net_shares)}</span>`,
                 `<span class="${r.foreign_net_shares >= 0 ? 'fin-up' : 'fin-down'}">${msShares(r.foreign_net_shares)}</span>`,
                 `<span class="${r.institution_net_shares >= 0 ? 'fin-up' : 'fin-down'}">${msShares(r.institution_net_shares)}</span>`,
-                tickers[r.ticker] ? `<button class="mm-view-btn" data-ms-ticker="${finEsc(r.ticker)}">가격대별</button>` : '',
+                tickers[r.ticker] ? `<button class="mm-view-btn" data-ms-ticker="${finEsc(r.ticker)}">가격대별</button>
+                    <button class="mm-view-btn" data-ms-modal="week:${finEsc(r.ticker)}:${finEsc(r.date)}">그 주 →</button>` : '',
             ])) : `<p class="fin-note">${msMissing('종가일 표 없음')}</p>`}
         <p class="fin-note">지수 순매수 최근일: 개인 ${msEok(L.retail_net_eok)} · 외국인 ${msEok(L.foreign_net_eok)} · 기관 ${msEok(L.institution_net_eok)} (${finEsc(L.date || '')})</p>
     </section>
@@ -7841,8 +7858,8 @@ const msLevelsTab = (D) => {
             ${msCard('반대매매', msEokLevel(dc.forced_sale_eok),
                 Number.isFinite(dc.forced_sale_over_uncollected_pct) ? `미수금 대비 ${dc.forced_sale_over_uncollected_pct.toFixed(1)}%` : '', null)}
         </div>
-        ${msCreditChart(dc)}
-        <p class="fin-note">${finEsc(dc.note_ko || '')}</p>
+        <p class="fin-note">${finEsc(dc.note_ko || '')}
+            추이 그래프는 위 <strong>가격대별 누적 수급</strong>의 “예탁금 · 신용공여” 버튼에 있습니다.</p>
         ${(lv.cannot_do_ko || []).length ? `
         <details class="mm-limits">
             <summary>이 데이터로 할 수 없는 것</summary>
@@ -8205,6 +8222,55 @@ const msModalFor = (key, D) => {
                일별 순매수를 종가 레벨에 귀속해 합산한 값이며, 체결 단위 매집도가 아닙니다.
                quality ${finEsc(src.quality || '—')} · 출처 ${finEsc(src.source || '—')}.</p>`, key };
     }
+    // One price band, opened from a click on its row in the chart: which days
+    // the price sat in that band, and who was buying on each of them. The
+    // chart can only show the band's total, which hides a band where one
+    // group bought early and sold late back to roughly zero.
+    if (key.startsWith('band:')) {
+        const { isIndex, tickers, pts, bins, rows } = msLevelsCompute(D);
+        const bi = Number(key.slice(5));
+        const band = bins[bi], row = rows[bi];
+        if (!band || !row) return null;
+        const who = isIndex ? '코스피 지수' : (tickers[MS_TICKER] || {}).label_ko || MS_TICKER;
+        const inBand = pts.filter((d) => d.close >= band.price_lo && d.close < band.price_hi);
+        const cell = (v) => `<span class="${v >= 0 ? 'fin-up' : 'fin-down'}">${msEok(v)}</span>`;
+        return { title: `${who} · ${msNum(band.price_lo)} ~ ${msNum(band.price_hi)} 구간`,
+            html: msDivergingBars([row], { legend: [{ key: 'retail', name: '개인' }, { key: 'foreign', name: '외국인' }, { key: 'inst', name: '기관' }] })
+                + `<h3 class="fin-sub">이 구간에 있었던 ${inBand.length}거래일</h3>`
+                + msTable(['날짜', '종가', '개인', '외국인', '기관'],
+                    inBand.map((d) => [finEsc(d.date), msNum(d.close), cell(d._retail), cell(d._foreign), cell(d._inst)]))
+                + `<p class="fin-note">단위 억원 · 위 막대는 이 구간 전체 합계, 아래 표는 그 합계를 만든 하루하루입니다.
+                   합계가 0에 가까워도 안에서 크게 사고 판 날이 있을 수 있습니다.</p>`, key };
+    }
+    // "종가일 수급" names one day; a single day's net-buying has no price
+    // spread to attribute it to, so this widens to the 5 trading days ending
+    // there -- what the price-level chart calls a bin, here a single week is
+    // short enough that per-day rows read cleaner than binning them again.
+    if (key.startsWith('week:')) {
+        const [, ticker, anchorDate] = key.split(':');
+        const info = ((D.levels || {}).tickers || {})[ticker];
+        const days = (info || {}).days || [];
+        const idx = days.findIndex((d) => d.date === anchorDate);
+        if (idx < 0) return { title: `${(info || {}).label_ko || ticker} 그 주`, html: `<p class="fin-note">${msMissing('해당 날짜 없음')}</p>`, key };
+        const week = days.slice(Math.max(0, idx - 4), idx + 1);
+        const rows = week.map((d) => ({
+            label: finEsc(d.date), sub: `종가 ${msNum(d.close)}`,
+            series: [
+                { key: 'retail', name: '개인', value: (d.retail_net_krw || 0) / 1e8 },
+                { key: 'foreign', name: '외국인', value: (d.foreign_net_krw || 0) / 1e8 },
+                { key: 'inst', name: '기관', value: (d.institution_net_krw || 0) / 1e8 },
+            ],
+            valueText: `개인 ${msEok((d.retail_net_krw || 0) / 1e8)} · 외인 ${msEok((d.foreign_net_krw || 0) / 1e8)}`,
+        }));
+        return { title: `${(info || {}).label_ko || ticker} · ${finEsc(anchorDate)} 포함 그 주 (${week.length}거래일)`,
+            html: msDivergingBars(rows, { legend: [{ key: 'retail', name: '개인' }, { key: 'foreign', name: '외국인' }, { key: 'inst', name: '기관' }] })
+                + msTable(['날짜', '종가', '개인', '외국인', '기관'],
+                    week.map((d) => {
+                        const cell = (v) => `<span class="${v >= 0 ? 'fin-up' : 'fin-down'}">${msEok(v / 1e8)}</span>`;
+                        return [finEsc(d.date), msNum(d.close), cell(d.retail_net_krw || 0), cell(d.foreign_net_krw || 0), cell(d.institution_net_krw || 0)];
+                    }))
+                + `<p class="fin-note">단위 억원 · 하루하루의 실측 순매수이며 체결 단위 매집도가 아닙니다.</p>`, key };
+    }
     if (key === 'letf_products') {
         const stocks = Array.isArray(m.stocks) ? m.stocks : [];
         const sel = stocks.find((x) => x.ticker === MS_STOCK) || stocks[0];
@@ -8347,6 +8413,7 @@ const renderMicrostructure = async (host) => {
             paint();
         });
         on('[data-ms-ticker]', (b) => { MS_TICKER = b.dataset.msTicker || null; MS_TAB = 'levels'; paint(); });
+        on('[data-ms-credit]', () => { MS_CREDIT_ON = !MS_CREDIT_ON; paint(); });
         // :not([data-ms-stock]) because that combination is handled above --
         // otherwise this listener would double-fire on the same click and
         // paint() twice.
