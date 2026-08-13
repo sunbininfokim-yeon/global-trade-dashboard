@@ -641,6 +641,16 @@ const renderTradeWorldPanel = (arcs) => {
     const exportRows = worldRankRows(exportRank);
     const importRows = worldRankRows(importRank);
 
+    // Replaces data.js's hand-written topExporter string the moment real arcs
+    // are in: that string could go stale or, worse, name a country the map
+    // has no route for (Switzerland's gold arcs were missing entirely before
+    // the Comtrade area-code fix, so the label and the map disagreed). Left
+    // untouched while arcs is still empty/loading, so the static string
+    // serves as the loading placeholder instead of flashing blank.
+    if (topExporterEl && exportRank.ranked.length) {
+        topExporterEl.textContent = exportRank.ranked[0][0];
+    }
+
     if (!newsContentEl) return;
     const newsTitle = document.querySelector('#news-panel .section-title');
     if (newsTitle) newsTitle.textContent = '주요 수출국 · 수입국';
@@ -4679,8 +4689,16 @@ const renderMapLayers = (arcs, opts = {}) => {
     let filteredArcs = arcs.filter((arc) => arc.volume > 0);
     arcVolumeMax = filteredArcs.reduce((m, a) => Math.max(m, a.volume), 1);
     // The mockup drops flows under a threshold rather than drawing every pair.
-    // Below ~1.5% of the largest route a line adds noise, not information.
-    const arcFloor = arcVolumeMax * 0.015;
+    // This used to be 1.5% of the single largest route, which reads fine for a
+    // commodity with several comparable exporters but erases everything on a
+    // commodity with one dominant route: lithium's Chile->China arc alone cut
+    // 151 routes down to 5, chromium's South Africa arc cut 253 down to 6 --
+    // countries that genuinely trade (Argentina, China, Turkey, Kazakhstan)
+    // vanished from the map though they were still in the ranking list beside
+    // it. Total-relative instead of max-relative: a dominant route still sets
+    // most of the total, but the bar it sets for everyone else is far lower.
+    const arcTotal = filteredArcs.reduce((s, a) => s + a.volume, 0) || 1;
+    const arcFloor = arcTotal * 0.001;
     filteredArcs = filteredArcs.filter((a) => a.volume >= arcFloor);
 
     if (focus) {
