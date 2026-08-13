@@ -565,17 +565,11 @@ const loadEiaStocks = async () => {
             const latest = Number(rows[0]?.value);
             const prev = rows.length > 1 ? Number(rows[1]?.value) : null;
             if (!Number.isFinite(latest)) continue;
-            // EIA returns newest-first; charts read left-to-right in time.
-            const history = rows
-                .map((r) => ({ period: r.period, value: Number(r.value) }))
-                .filter((r) => r.period && Number.isFinite(r.value))
-                .reverse();
             out.push({
                 ...s,
                 value: latest,
                 period: rows[0]?.period || '',
                 change: Number.isFinite(prev) ? latest - prev : null,
-                history,
             });
         } catch (err) {
             // The map is the point; a missing buffer card is not worth failing over.
@@ -584,51 +578,6 @@ const loadEiaStocks = async () => {
     }
     eiaStocksCache = out;
     return out;
-};
-
-/**
- * 12-week sparkline for one stock series.
- *
- * A level plus a week-on-week arrow says "falling", not "falling off a cliff
- * for three months" -- the shape is the part that distinguishes a blip from a
- * drawdown. Deliberately small and axis-light: this sits under a row in a side
- * panel, so it carries first/last labels and a min-max band rather than a full
- * grid, which at this size would be more ink than signal.
- */
-const stockSparkline = (history) => {
-    if (!history || history.length < 2) return '';
-    const W = 240;
-    const H = 54;
-    const PAD = 4;
-    const vals = history.map((h) => h.value);
-    const min = Math.min(...vals);
-    const max = Math.max(...vals);
-    // A flat series must not divide by zero, and drawing it mid-height is
-    // more honest than pinning it to the top or bottom of the box.
-    const span = max - min || 1;
-    const x = (i) => PAD + (i / (history.length - 1)) * (W - PAD * 2);
-    const y = (v) => PAD + (1 - (v - min) / span) * (H - PAD * 2);
-
-    const line = history.map((h, i) => `${i ? 'L' : 'M'}${x(i).toFixed(1)},${y(h.value).toFixed(1)}`).join('');
-    const area = `${line}L${x(history.length - 1).toFixed(1)},${H - PAD}L${x(0).toFixed(1)},${H - PAD}Z`;
-    const last = history[history.length - 1];
-    const rising = last.value >= history[0].value;
-    const mb = (v) => (v / 1000).toFixed(1);
-
-    return `<div class="stock-spark">
-        <svg viewBox="0 0 ${W} ${H}" class="sspark-svg ${rising ? 'up' : 'down'}"
-             preserveAspectRatio="none" role="img"
-             aria-label="최근 ${history.length}주 추이">
-            <path class="sspark-area" d="${area}"/>
-            <path class="sspark-line" d="${line}"/>
-            <path class="sspark-dot" d="M${x(history.length - 1).toFixed(1)},${y(last.value).toFixed(1)}h0"/>
-        </svg>
-        <div class="sspark-foot">
-            <span>${history[0].period}</span>
-            <span class="sspark-range">최저 ${mb(min)} · 최고 ${mb(max)} 백만 배럴</span>
-            <span>${last.period}</span>
-        </div>
-    </div>`;
 };
 
 /** Only meaningful for crude; other commodities have no equivalent series. */
@@ -642,20 +591,15 @@ const renderEmergencyStocks = async () => {
             <p class="section-title" style="margin:0 0 6px;">글로벌 비상 재고 · EIA 주간</p>
             ${stocks.map((s) => {
                 const up = s.change != null && s.change > 0;
-                const chart = stockSparkline(s.history);
-                return `<div class="stock-item">
-                    <div class="stock-row${chart ? ' is-clickable' : ''}"
-                         ${chart ? `role="button" tabindex="0" data-stock-toggle="${s.id}"` : ''}>
-                        <span class="nm">${s.label_ko}${chart ? '<i class="stock-caret"></i>' : ''}</span>
-                        <span class="vl">${(s.value / 1000).toFixed(1)}<em>백만 배럴</em></span>
-                        <span class="ch ${s.change == null ? '' : (up ? 'up' : 'down')}">
-                            ${s.change == null ? '—'
-                                : `${up ? '+' : ''}${(s.change / 1000).toFixed(1)}`}</span>
-                    </div>
-                    ${chart}
+                return `<div class="stock-row">
+                    <span class="nm">${s.label_ko}</span>
+                    <span class="vl">${(s.value / 1000).toFixed(1)}<em>백만 배럴</em></span>
+                    <span class="ch ${s.change == null ? '' : (up ? 'up' : 'down')}">
+                        ${s.change == null ? '—'
+                            : `${up ? '+' : ''}${(s.change / 1000).toFixed(1)}`}</span>
                 </div>`;
             }).join('')}
-            <div class="stock-note">${stocks[0]?.period || ''} 기준 · 전주 대비 증감 · 이름을 누르면 최근 12주 추이 · 출처 EIA</div>
+            <div class="stock-note">${stocks[0]?.period || ''} 기준 · 전주 대비 증감 · 출처 EIA</div>
         </div>`);
 };
 
@@ -697,84 +641,18 @@ const renderTradeWorldPanel = (arcs) => {
     const exportRows = worldRankRows(exportRank);
     const importRows = worldRankRows(importRank);
 
-    // Replaces data.js's hand-written topExporter string the moment real arcs
-    // are in: that string could go stale or, worse, name a country the map
-    // has no route for (Switzerland's gold arcs were missing entirely before
-    // the Comtrade area-code fix, so the label and the map disagreed). Left
-    // untouched while arcs is still empty/loading, so the static string
-    // serves as the loading placeholder instead of flashing blank.
-    if (topExporterEl && exportRank.ranked.length) {
-        topExporterEl.textContent = exportRank.ranked[0][0];
-    }
-
     if (!newsContentEl) return;
     const newsTitle = document.querySelector('#news-panel .section-title');
     if (newsTitle) newsTitle.textContent = '주요 수출국 · 수입국';
     newsContentEl.innerHTML = `
         <div class="trade-focus-card">
-            <div id="futures-slot"></div>
             <p class="trade-focus-sub">비중% · 막대는 각 방향 내 상대 물동량 · 국가를 누르면 그 나라 노선만 남습니다</p>
             <p class="trade-rank-group-head">주요 수출국</p>
             <div class="trade-rank-list">${exportRows || '<p class="empty-state">무역 루트 없음</p>'}</div>
             <p class="trade-rank-group-head">주요 수입국</p>
             <div class="trade-rank-list">${importRows || '<p class="empty-state">무역 루트 없음</p>'}</div>
         </div>`;
-    renderFuturesCard(currentCommodity);
     renderEmergencyStocks();
-};
-
-const futuresCache = new Map();
-
-/**
- * Front-month futures beside the flow ranking (world view, Stage 1).
- *
- * Fetched by commodity key, not by symbol -- the ranking already knows which
- * commodity is on screen, and keeping the Yahoo symbol server-side means a
- * bad ticker never leaks into a browser network tab.
- */
-const renderFuturesCard = async (commodity) => {
-    const slot = document.getElementById('futures-slot');
-    if (!slot || !commodity) return;
-
-    let doc = futuresCache.get(commodity);
-    if (doc === undefined) {
-        try {
-            const res = await fetch(`/api/futures?commodity=${encodeURIComponent(commodity)}`);
-            doc = res.ok ? await res.json() : null;
-        } catch (err) {
-            console.warn('[futures] unavailable', err);
-            doc = null;
-        }
-        futuresCache.set(commodity, doc);
-    }
-    // The panel may have been rebuilt (or the commodity switched) while the
-    // fetch was in flight -- re-fetch the live slot, and bail if it is gone
-    // or if the visible commodity has since moved on.
-    const live = document.getElementById('futures-slot');
-    if (!live || currentCommodity !== commodity) return;
-    if (!doc) { live.innerHTML = ''; return; }
-
-    if (doc.priced === false) {
-        live.innerHTML = `<div class="fut-card fut-none">
-            <span class="fut-k">선물가</span>
-            <span class="fut-none-note">${doc.reason}</span>
-        </div>`;
-        return;
-    }
-    if (!doc.priced) { live.innerHTML = ''; return; }
-
-    const up = (doc.change_pct ?? 0) >= 0;
-    live.innerHTML = `
-        <div class="fut-card">
-            <div class="fut-main">
-                <span class="fut-px">$${doc.price.toLocaleString(undefined, { maximumFractionDigits: 4 })}</span>
-                <span class="fut-unit">/ ${doc.unit}</span>
-                ${doc.change_pct === null ? '' : `<span class="fut-chg ${up ? 'up' : 'down'}">
-                    ${up ? '+' : ''}${doc.change_pct}%</span>`}
-            </div>
-            <div class="fut-meta">${doc.exchange} ${doc.symbol}
-                ${doc.proxy ? ` · ${doc.proxy}` : ''} · 지연 시세</div>
-        </div>`;
 };
 
 const updateNewsPanel = (countryName) => {
@@ -1819,23 +1697,6 @@ document.getElementById('news-content')?.addEventListener('click', (e) => {
     const row = e.target instanceof Element ? e.target.closest('.trade-bar-row[data-partner]') : null;
     if (!row) return;
     row.classList.toggle('is-expanded');
-});
-
-// SPR / Cushing rows open their 12-week sparkline underneath.
-const toggleStockRow = (row) => {
-    row.classList.toggle('is-open');
-    row.closest('.stock-item')?.classList.toggle('is-open');
-};
-document.getElementById('news-content')?.addEventListener('click', (e) => {
-    const row = e.target instanceof Element ? e.target.closest('[data-stock-toggle]') : null;
-    if (row) toggleStockRow(row);
-});
-document.getElementById('news-content')?.addEventListener('keydown', (e) => {
-    if (e.key !== 'Enter' && e.key !== ' ') return;
-    const row = e.target instanceof Element ? e.target.closest('[data-stock-toggle]') : null;
-    if (!row) return;
-    e.preventDefault();
-    toggleStockRow(row);
 });
 
 // Ranking rows focus a country, same as clicking it on the globe.
@@ -4818,16 +4679,8 @@ const renderMapLayers = (arcs, opts = {}) => {
     let filteredArcs = arcs.filter((arc) => arc.volume > 0);
     arcVolumeMax = filteredArcs.reduce((m, a) => Math.max(m, a.volume), 1);
     // The mockup drops flows under a threshold rather than drawing every pair.
-    // This used to be 1.5% of the single largest route, which reads fine for a
-    // commodity with several comparable exporters but erases everything on a
-    // commodity with one dominant route: lithium's Chile->China arc alone cut
-    // 151 routes down to 5, chromium's South Africa arc cut 253 down to 6 --
-    // countries that genuinely trade (Argentina, China, Turkey, Kazakhstan)
-    // vanished from the map though they were still in the ranking list beside
-    // it. Total-relative instead of max-relative: a dominant route still sets
-    // most of the total, but the bar it sets for everyone else is far lower.
-    const arcTotal = filteredArcs.reduce((s, a) => s + a.volume, 0) || 1;
-    const arcFloor = arcTotal * 0.001;
+    // Below ~1.5% of the largest route a line adds noise, not information.
+    const arcFloor = arcVolumeMax * 0.015;
     filteredArcs = filteredArcs.filter((a) => a.volume >= arcFloor);
 
     if (focus) {
@@ -5671,6 +5524,17 @@ const pfSearchLocal = (q) => {
 // by typing its 6-digit code. The OpenDART filer index that /api/dart-financials
 // already resolves against doubles as the missing name index: every KRX-listed
 // filer, keyed by the same code the endpoint takes.
+// DART's own registered entity name is what row[1] carries, and for a
+// handful of large caps that name is plain English (NAVER, S-Oil) -- a user
+// typing the Korean brand name would never match it by substring. Covers
+// only names actually asked about or high-traffic; not an attempt at full
+// English->Korean coverage for all 86 ASCII-registered filers.
+const KRX_NAME_ALIASES = {
+    '035420': ['네이버'],       // NAVER
+    '010950': ['에쓰오일', '에스오일'], // S-Oil
+    '033780': ['KT&G'],         // 케이티앤지 already Korean; alias covers the reverse
+};
+
 let KRX_FILERS = null;
 const krxLoadFilers = async () => {
     if (KRX_FILERS) return KRX_FILERS;
@@ -5683,6 +5547,7 @@ const krxLoadFilers = async () => {
                 .map(([code, row]) => ({
                     id: `krx:${code}`, name_ko: (row || [])[1] || code,
                     yahoo: code, asset_class: 'equity',
+                    aliases: KRX_NAME_ALIASES[code] || [],
                 }));
             return KRX_FILERS;
         } catch (_) { /* try the next base */ }
@@ -5700,9 +5565,10 @@ const krxSearchLocal = (q) => {
     const exact = [], starts = [], contains = [];
     for (const it of KRX_FILERS) {
         const name = it.name_ko.toLowerCase();
+        const aliasHit = (it.aliases || []).some((a) => a.toLowerCase().includes(s));
         if (name === s || it.yahoo === s) exact.push(it);
         else if (name.startsWith(s) || it.yahoo.startsWith(s)) starts.push(it);
-        else if (name.includes(s)) contains.push(it);
+        else if (name.includes(s) || aliasHit) contains.push(it);
     }
     return [...exact, ...starts, ...contains].slice(0, 6);
 };
