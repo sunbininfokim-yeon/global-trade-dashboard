@@ -87,13 +87,14 @@ export default {
     }
 };
 
-// One commodity costs ceil(64 reporters / REPORTER_CHUNK_SIZE) upstream calls,
+// One commodity costs ceil(76 reporters / REPORTER_CHUNK_SIZE) upstream calls,
 // and a Worker invocation may only make so many subrequests. Refilling every
 // commodity in a single run exceeded that once the metals were added, and the
 // overflow fails silently inside waitUntil -- the tail of the list would simply
 // never warm, with nothing in the metrics to say so. Capping the run keeps each
-// night inside the ceiling; whatever is left stays cold for a night and gets
-// picked up by the next run, because entries already in KV are skipped.
+// tick inside the ceiling; whatever is left stays cold until the next tick
+// (four a day, see wrangler.jsonc) and gets picked up then, because entries
+// already in KV are skipped.
 const WARM_FETCH_BUDGET = 8;
 
 async function warmComtradeCache(env) {
