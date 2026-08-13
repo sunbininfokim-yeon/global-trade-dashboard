@@ -18,10 +18,24 @@
 - `docs/DCF_REALISM.md` — FCFF 규칙과 산업 적용 한계
 - `docs/UI_HANDOFF.md` — UI 연동 계약
 
-> 배포 패키지에는 아직 `sec_facts.py`, `dart_facts.py`, `fetch_live.py`가
-> 포함되지 않았습니다. `derived_cards.py`와 `enrich_snapshot.py`는 외부 API
-> 없이 정규화된 pack 또는 기존 JSON 스냅샷을 계산할 수 있지만, 누락된 원천
-> 계정은 추정하지 않습니다.
+> `derived_cards.py`와 `enrich_snapshot.py`는 외부 API 없이 정규화된 pack 또는
+> 기존 JSON 스냅샷을 계산할 수 있지만, 누락된 원천 계정은 추정하지 않습니다.
+> `sec_facts.py`, `fetch_live.py`는 아직 없음. `dart_facts.py`는 2026-08-13부터
+> 있음 (아래 소유권 절 참고) — `DART_API_KEY` 환경변수가 없으면 조용히
+> 빈 facts를 반환하고 네트워크 호출을 하지 않습니다.
+
+## 소유권 / 핸드오프 (2026-08-13)
+
+- `dart_facts.py` (OpenDART 어댑터)는 **임시로 Claude가 재개**했습니다.
+  UI/배포 소유권과는 별개이며, 이 엔진의 정식 소유자(Grok/Cursor/사용자)가
+  정해지면 언제든 그대로 넘길 수 있게 짰습니다:
+  - `dart_kfa/__init__.py`가 기대하는 심볼(`fetch_accounting_pack_kr`) 계약만
+    지키면 내부 구현은 자유롭게 바꿔도 됩니다.
+  - API 키는 코드에 없습니다 — 실행 전 `export DART_API_KEY=...`.
+  - UI(`New for anti/app.js`)나 다른 엔진 파일(`accounting_pack.py`,
+    `derived_cards.py` 등 이미 있던 파일)은 건드리지 않았습니다.
+- 다음 사람이 이어받을 때 볼 것: `dart_kfa/dart_facts.py` 상단 docstring +
+  `XBRL_TAGS` 매핑 (아직 OpenDART 실제 계정과목명으로 검증 안 됨 — 추정치).
 
 ## 코드
 - `dart_kfa/view_presets.py` — 카드·모델 필터
