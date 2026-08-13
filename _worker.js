@@ -57,6 +57,12 @@ export default {
             return await handleFinancials(request, env);
         }
 
+        // Live OpenDART lookup for KRX-listed filers with no pre-generated
+        // kfa_<code>_v1.json snapshot (see handleDartFinancials).
+        if (url.pathname.startsWith('/api/dart-financials')) {
+            return await handleDartFinancials(request, env);
+        }
+
         // Multi-country official reports (US/JP/CN/EU…)
         if (url.pathname.startsWith('/api/official-reports')) {
             return await handleOfficialReports(request, env);
@@ -1038,6 +1044,296 @@ async function handleFinancials(request, env) {
                     currency: 'USD',
                     statements,
                     tags_used: used,
+                },
+            };
+        });
+    } catch (err) {
+        return new Response(JSON.stringify({ error: err.message }), { status: 500, headers: JSON_HEADERS });
+    }
+}
+
+// --- Korean listings (DART/KFA), live fetch --------------------------------
+// scripts/dart/fetch_kfa_snapshot.py pre-generates a handful of full
+// kfa_<code>_v1.json snapshots (16 expert cards + 9 valuation models) into
+// public/data/. This covers the other ~3,978 KRX-listed filers on demand,
+// but deliberately only the 12 Basic-view cards -- app.js already renders an
+// uncomputed card as "준비 중" (see renderKfaResult), so Investor/PE/Deal
+// stay pending here rather than needing a parallel JS port of that heavier
+// calculation logic (CAGR, aligned ratio series, DCF models, ...), which is
+// out of scope for this endpoint. app.js falls back here only when the
+// static snapshot 404s (see loadKfaCompany).
+//
+// Mirrors scripts/dart/dart_kfa/dart_facts.py's XBRL_TAGS -- keep both in
+// sync if a tag mapping changes. Verified live against Samsung Electronics
+// (00126380) and SK Hynix (00164779), FY2025 CFS.
+const DART_XBRL_TAGS = {
+    revenue: ['ifrs-full_Revenue'],
+    operating_income: ['dart_OperatingIncomeLoss', 'ifrs-full_OperatingIncomeLoss'],
+    net_income: ['ifrs-full_ProfitLoss'],
+    interest_expense: ['ifrs-full_FinanceCosts'],
+    cfo: ['ifrs-full_CashFlowsFromUsedInOperatingActivities'],
+    capex: ['ifrs-full_PurchaseOfPropertyPlantAndEquipmentClassifiedAsInvestingActivities'],
+    cash: ['ifrs-full_CashAndCashEquivalents'],
+    current_assets: ['ifrs-full_CurrentAssets'],
+    current_liabilities: ['ifrs-full_CurrentLiabilities'],
+    // Samsung Electronics' short-term borrowings has no standard XBRL id at
+    // all ("-표준계정코드 미사용-") -- null + reason for that filer is
+    // correct, not a bug. SK Hynix and most other filers do carry this tag.
+    short_term_debt: ['ifrs-full_CurrentBorrowingsAndCurrentPortionOfNoncurrentBorrowings'],
+    long_term_debt: ['ifrs-full_NoncurrentPortionOfNoncurrentLoansReceived', 'ifrs-full_LongtermBorrowings'],
+};
+// Rows filed under Statement of Changes in Equity repeat the same account_id
+// once per equity column with genuinely different values -- keying a flat
+// dict by account_id on this section would silently pick whichever column
+// happened to be inserted last.
+const DART_COLLIDING_SJ_DIV = new Set(['SCE']);
+
+// public/data/dart_corp_codes_v1.json is a one-time offline export of
+// OpenDART's corpCode.xml (see scripts/dart/ for how it was built): the KRX
+// 6-digit stock code -> [OpenDART 8-digit corp_code, entity name] for every
+// listed filer. Refreshed rarely (new listings/delistings only), so a day of
+// KV staleness is invisible -- same reasoning as secIndex() below.
+async function dartCorpIndex(env, origin) {
+    const KEY = 'dart:corp_codes:v1';
+    if (env.API_CACHE) {
+        try {
+            const hit = await env.API_CACHE.get(KEY, 'json');
+            if (hit) return hit;
+        } catch (_) { /* fall through to asset fetch */ }
+    }
+    for (const path of ['/public/data/dart_corp_codes_v1.json', '/data/dart_corp_codes_v1.json']) {
+        try {
+            const res = await env.ASSETS.fetch(new Request(new URL(path, origin).toString()));
+            if (!res.ok) continue;
+            const doc = await res.json();
+            const index = doc.index || {};
+            if (env.API_CACHE) {
+                try { await env.API_CACHE.put(KEY, JSON.stringify(index), { expirationTtl: 86400 }); } catch (_) { /* ignore */ }
+            }
+            return index;
+        } catch (_) { /* try next */ }
+    }
+    return {};
+}
+
+function dartPick(facts, candidates) {
+    for (const tag of candidates) {
+        const raw = facts[tag];
+        if (raw === undefined || raw === null) continue;
+        const num = Number(raw);
+        if (Number.isFinite(num)) return num;
+    }
+    return null;
+}
+
+async function fetchDartXbrlFacts(env, corpCode, year, fsDiv) {
+    // Missing key must degrade to {} (no network call), same contract as the
+    // Python adapter -- a snapshot without a live key still has to render.
+    if (!env.DART_API_KEY) return {};
+    const params = new URLSearchParams({
+        crtfc_key: env.DART_API_KEY,
+        corp_code: corpCode,
+        bsns_year: String(year),
+        reprt_code: '11011', // 사업보고서 (annual report)
+        fs_div: fsDiv,
+    });
+    try {
+        const res = await fetch(`https://opendart.fss.or.kr/api/fnlttSinglAcntAll.json?${params}`);
+        if (!res.ok) return {};
+        const data = await res.json();
+        if (data.status !== '000') return {};
+        const facts = {};
+        for (const item of data.list || []) {
+            if (DART_COLLIDING_SJ_DIV.has(item.sj_div)) continue;
+            const accountId = item.account_id;
+            const amount = item.thstrm_amount;
+            if (!accountId || accountId.startsWith('-') || amount === undefined || amount === null) continue;
+            if (!(accountId in facts)) facts[accountId] = amount;
+        }
+        return facts;
+    } catch (_) {
+        return {};
+    }
+}
+
+// Ported from dart_kfa/dart_facts.py's map_facts_to_pack() and
+// dart_kfa/derived_cards.py's basic_cards_from_pack(), collapsed into one
+// function since the Worker only ever needs the flat basic_cards bag, not
+// the intermediate accounting_pack shape. A single OpenDART call is one
+// fiscal year, so every series is one point and yoy is always null -- that
+// is designed degradation (see the file-level comment above), not a bug.
+function dartBasicCardsFromFacts(facts, year) {
+    const end = `${year}-12-31`;
+    const point = (key) => {
+        const v = dartPick(facts, DART_XBRL_TAGS[key]);
+        return v === null
+            ? { value: null, series: [], reason: 'missing:not_in_opendart' }
+            : { value: v, series: [{ year, end, value: v }] };
+    };
+
+    const revenue = point('revenue');
+    const operatingIncome = point('operating_income');
+    const netIncome = point('net_income');
+    const cfo = point('cfo');
+    const capex = point('capex');
+    const cash = point('cash');
+
+    const revV = revenue.value, opV = operatingIncome.value, niV = netIncome.value;
+    revenue.yoy = null;
+    operatingIncome.margin = (opV !== null && revV) ? opV / revV : null;
+    netIncome.margin = (niV !== null && revV) ? niV / revV : null;
+
+    const capexV = capex.value, cfoV = cfo.value;
+    const fcfValue = (cfoV !== null && capexV !== null) ? cfoV - Math.abs(capexV) : null;
+    const fcf = {
+        value: fcfValue,
+        definition: 'cfo - abs(capex)',
+        series: fcfValue !== null ? [{ year, end, value: fcfValue }] : [],
+    };
+    if (fcfValue === null) fcf.reason = 'missing:cfo_or_capex';
+
+    const currentAssets = dartPick(facts, DART_XBRL_TAGS.current_assets);
+    const currentLiabilities = dartPick(facts, DART_XBRL_TAGS.current_liabilities);
+    const currentRatio = (currentAssets !== null && currentLiabilities)
+        ? { value: currentAssets / currentLiabilities, series: [] }
+        : { value: null, series: [], reason: 'missing:current_assets_or_current_liabilities' };
+
+    const shortTerm = dartPick(facts, DART_XBRL_TAGS.short_term_debt);
+    const longTerm = dartPick(facts, DART_XBRL_TAGS.long_term_debt);
+    const cashV = cash.value;
+    let netDebt;
+    if ((shortTerm !== null || longTerm !== null) && cashV !== null) {
+        const interestBearing = (shortTerm || 0) + (longTerm || 0);
+        netDebt = {
+            value: interestBearing - cashV,
+            series: [],
+            definition: 'short_term_borrowings + long_term_debt - cash_and_equivalents (marketable_securities not fetched)',
+        };
+    } else {
+        netDebt = { value: null, series: [], reason: 'missing:interest_bearing_debt_or_cash' };
+    }
+
+    // Only the short-term-borrowings component is ever fetchable here --
+    // current_portion_lt_debt/leases_current have no verified tag, so the
+    // total stays null rather than presenting a partial sum as complete.
+    const debtDueWithin1y = {
+        value: null,
+        components: { short_term_borrowings: shortTerm, current_portion_lt_debt: null, leases_current: null },
+        reason: shortTerm !== null
+            ? 'missing:current_portion_lt_debt_and_lease_current_not_separately_tagged'
+            : 'missing:not_in_opendart',
+    };
+
+    const interestExpense = dartPick(facts, DART_XBRL_TAGS.interest_expense);
+    const interestCoverage = (opV !== null && interestExpense)
+        ? {
+            value: opV / Math.abs(interestExpense),
+            series: [{ year, end, value: opV / Math.abs(interestExpense) }],
+            reason: 'approx:ifrs_finance_costs_not_pure_interest',
+            definition: 'operating_income / abs(interest_expense)',
+        }
+        : { value: null, series: [], reason: 'missing:operating_income_or_nonzero_interest_expense' };
+
+    return {
+        revenue, operating_income: operatingIncome, net_income: netIncome, cfo, fcf, cash,
+        net_debt: netDebt,
+        current_ratio: currentRatio,
+        debt_due_within_1y: debtDueWithin1y,
+        liquidity_coverage_1y: {
+            value: null, status: null,
+            rule: 'buffer / debt_due_within_1y; <1 stressed, 1–1.5 tight, >2 comfortable',
+        },
+        interest_coverage: interestCoverage,
+        ccc_days: { value: null, series: [], reason: 'missing:dso_dio_dpo_inputs_not_fetched' },
+    };
+}
+
+// Mirrors dart_kfa/view_presets.py's get_view_presets() -- Investor/PE/Deal
+// list their real card/model keys so the UI's tabs and "준비 중" fallback
+// look identical to a full snapshot, even though this endpoint only ever
+// populates the Basic 12.
+const DART_VIEW_PRESETS = {
+    default_view: 'basic',
+    views: {
+        basic: {
+            cards: ['revenue', 'operating_income', 'net_income', 'cfo', 'fcf', 'cash',
+                'net_debt', 'current_ratio', 'debt_due_within_1y', 'liquidity_coverage_1y',
+                'interest_coverage', 'ccc_days'],
+            models: [],
+        },
+        investor: {
+            cards: ['revenue', 'operating_income', 'net_income', 'fcf', 'owner_earnings',
+                'earnings_quality', 'margins_trend', 'capex_to_da', 'net_debt_to_oe', 'interest_coverage'],
+            models: ['oe_hurdle', 'reverse_dcf', 'oe_yield'],
+        },
+        pe: {
+            cards: ['revenue', 'ebitda_or_op', 'fcf', 'net_debt_to_ebitda', 'fcf_to_ebitda',
+                'interest_coverage', 'maint_capex_burden', 'nwc_change_to_sales',
+                'debt_due_within_1y', 'liquidity_coverage_1y'],
+            models: ['delever_path', 'coverage_capacity', 'fcf_yield_entry'],
+        },
+        deal: {
+            cards: ['revenue', 'operating_income', 'ebitda', 'trading_multiples', 'ev_bridge',
+                'qoe_flags', 'segment', 'nwc_to_sales', 'net_debt'],
+            models: ['fcff_dcf', 'trading_comps', 'sotp_or_ev_bridge'],
+        },
+    },
+    rules: { overlap_allowed: true, max_models_per_non_basic_view: 3, no_price_target: true, null_with_reason: true },
+};
+
+async function handleDartFinancials(request, env) {
+    const url = new URL(request.url);
+    const symbol = (url.searchParams.get('symbol') || '').trim();
+    if (!/^\d{6}$/.test(symbol)) {
+        return new Response(JSON.stringify({ error: 'symbol must be a 6-digit KRX stock code' }), { status: 400, headers: JSON_HEADERS });
+    }
+
+    try {
+        return await kvCachedJson(env, `fin:dart:${symbol}`, 86400, async () => {
+            const index = await dartCorpIndex(env, url.origin);
+            const hit = index[symbol];
+            if (!hit) return { ok: false, status: 404, statusText: 'not a KRX-listed filer' };
+            const [corpCode, nameKo] = hit;
+
+            // Annual reports for FY(Y) file the following spring; before that
+            // OpenDART has nothing for FY(currentYear-1) yet, so start one
+            // year further back and fall back one more year if even that is
+            // not filed (e.g. a recent listing).
+            const now = new Date();
+            const firstYear = now.getUTCFullYear() - (now.getUTCMonth() >= 3 ? 1 : 2);
+
+            let year = firstYear;
+            let facts = await fetchDartXbrlFacts(env, corpCode, year, 'CFS');
+            if (Object.keys(facts).length === 0) {
+                year = firstYear - 1;
+                facts = await fetchDartXbrlFacts(env, corpCode, year, 'CFS');
+            }
+            if (Object.keys(facts).length === 0) {
+                return { ok: false, status: 404, statusText: 'no OpenDART CFS facts for the last two fiscal years' };
+            }
+
+            return {
+                ok: true,
+                body: {
+                    schema: 'kfa_engine_v1',
+                    label: symbol,
+                    view_presets: DART_VIEW_PRESETS,
+                    as_of: `${year}-12-31`,
+                    currency: 'KRW',
+                    meta: {
+                        ticker: symbol, corp_code: corpCode, entity: nameKo, entity_eng: null,
+                        stock_code: symbol, source: 'opendart', fs_div: 'CFS', acc_mt: '12',
+                        shares_outstanding: null,
+                    },
+                    basic_cards: dartBasicCardsFromFacts(facts, year),
+                    data_quality: {
+                        input_kind: 'live_fetch_single_fiscal_year',
+                        source_claim: 'opendart',
+                        raw_filing_facts_embedded: true,
+                        period_alignment: 'single_fiscal_year_no_history',
+                        facts_fetched: Object.keys(facts).length,
+                        live_key_present: Boolean(env.DART_API_KEY),
+                    },
                 },
             };
         });
