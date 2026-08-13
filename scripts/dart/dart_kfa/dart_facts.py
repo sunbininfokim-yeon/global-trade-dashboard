@@ -8,6 +8,15 @@ for US filings) -- whoever owns the KFA calculation engine can pick it up
 without needing to know anything Claude-specific: it has no UI coupling, no
 hardcoded secrets, and its only external contract is the function signature
 `__init__.py` already imports (`fetch_accounting_pack_kr`).
+
+Tag mapping verified 2026-08-13 against live OpenDART responses for two
+companies (Samsung Electronics 00126380, SK Hynix 00164779, FY2024 CFS).
+The endpoint below (fnlttSinglAcntAll.json) is the real one -- an earlier
+draft of this file called a non-existent `/api/xbrlTaxonomy` path that
+returns HTTP-level "invalid URL", and separately built its lookup dict keyed
+by the Korean `account_nm` while querying it with English field names, so it
+could never have returned a value even with a working endpoint and a valid
+key. Both bugs are fixed here.
 """
 
 from __future__ import annotations
@@ -26,49 +35,86 @@ OPENDART_BASE = "https://opendart.fss.or.kr/api"
 # raise -- a UI snapshot without a live key still has to render.
 OPENDART_API_KEY = os.environ.get("DART_API_KEY", "")
 
-# XBRL 태그 매핑: corp_code → P&L/CF/Balance sheet facts
-XBRL_TAGS = {
+# account_id (XBRL taxonomy element) candidates per field, in priority order.
+# Verified against real filings, not guessed: Samsung and SK Hynix agree on
+# every id below except where noted. A field with an empty candidate list is
+# a documented gap, not an oversight -- see the notes after the table.
+XBRL_TAGS: dict[str, list[str]] = {
     # P&L
-    "revenue": ["ifrs_Revenue", "dart_Revenue"],
-    "gross_profit": ["ifrs_GrossProfitLoss"],
-    "operating_income": ["ifrs_OperatingProfitLoss"],
-    "ebitda": ["dart_EBITDA"],  # if available, else derive
-    "net_income": ["ifrs_ProfitLoss"],
-    "profit_before_tax": ["ifrs_ProfitLossBeforeTax"],
-    "income_tax_expense": ["ifrs_IncomeTaxExpense"],
-    "interest_expense": ["ifrs_FinanceCostsExclusive"],
-    "eps": ["ifrs_BasicEarningsPerShare"],
+    "revenue": ["ifrs-full_Revenue"],
+    "gross_profit": ["ifrs-full_GrossProfit"],
+    # dart_OperatingIncomeLoss is DART's own (non-IFRS-standard) tag; both
+    # verified companies file operating income under it, not the IFRS one.
+    # ifrs-full_OperatingIncomeLoss is kept as a fallback for filers that do
+    # use the standard tag.
+    "operating_income": ["dart_OperatingIncomeLoss", "ifrs-full_OperatingIncomeLoss"],
+    "net_income": ["ifrs-full_ProfitLoss"],
+    "profit_before_tax": ["ifrs-full_ProfitLossBeforeTax"],
+    "income_tax_expense": ["ifrs-full_IncomeTaxExpenseContinuingOperations"],
+    # IFRS FinanceCosts is broader than "interest expense" (FX losses on
+    # borrowings, unwind of discount, etc. can be bundled in) -- it is the
+    # closest available P&L proxy, not a clean interest-expense figure. Kept
+    # as an explicit approximation; see reason string set below.
+    "interest_expense": ["ifrs-full_FinanceCosts"],
+    "eps": ["ifrs-full_BasicEarningsLossPerShare"],
 
     # CF
-    "cfo": ["ifrs_CashFlowsFromOperatingActivities"],
-    "capex": ["ifrs_PurchasesOfPropertyPlantAndEquipment"],
-    "depreciation_and_amortization": ["ifrs_DepreciationAndAmortisationExpense"],
+    "cfo": ["ifrs-full_CashFlowsFromUsedInOperatingActivities"],
+    "capex": ["ifrs-full_PurchaseOfPropertyPlantAndEquipmentClassifiedAsInvestingActivities"],
+    # Neither verified company discloses D&A as a separate XBRL fact (K-IFRS
+    # filers using a by-function P&L often fold it into COGS/SG&A with no
+    # standalone tag). Left empty on purpose -- do not guess a tag here.
+    "depreciation_and_amortization": [],
 
     # Balance Sheet
-    "cash": ["ifrs_CashAndCashEquivalents"],
-    "current_assets": ["ifrs_CurrentAssets"],
-    "current_liabilities": ["ifrs_CurrentLiabilities"],
-    "short_term_debt": ["ifrs_ShortTermBorrowings"],
-    "long_term_debt": ["ifrs_LongTermBorrowings"],
-    "nwc": ["dart_NetWorkingCapital"],
+    "cash": ["ifrs-full_CashAndCashEquivalents"],
+    "current_assets": ["ifrs-full_CurrentAssets"],
+    "current_liabilities": ["ifrs-full_CurrentLiabilities"],
+    # Short/long-term borrowings are the least standardised tags in the whole
+    # set. Samsung's 단기차입금 (short-term borrowings) ships with
+    # account_id "-표준계정코드 미사용-" -- OpenDART itself has no XBRL id
+    # for that line in Samsung's filing, so it is not fetchable by id at all
+    # for that company. SK Hynix uses a completely different pair of ids.
+    # All observed candidates are listed; a company matching none of them
+    # must resolve to null + reason, not a wrong number.
+    "short_term_debt": ["ifrs-full_CurrentBorrowingsAndCurrentPortionOfNoncurrentBorrowings"],
+    "long_term_debt": ["ifrs-full_NoncurrentPortionOfNoncurrentLoansReceived", "ifrs-full_LongtermBorrowings"],
+    # Never reported as a single fact by any filer -- always derive from
+    # operating current assets/liabilities elsewhere, never fetch here.
+    "nwc": [],
 }
 
+# Rows filed under this sj_div are Statement of Changes in Equity: the same
+# account_id repeats once per equity column (share capital, retained
+# earnings, NCI, ...) with genuinely different values, so keying a flat dict
+# by account_id on this section silently picks whichever column happened to
+# be inserted last. Every other section (BS/IS/CIS/CF) either has one row per
+# id or repeats the same figure consistently (e.g. net income cross-referenced
+# from CF), so excluding only SCE is sufficient.
+_COLLIDING_SJ_DIV = {"SCE"}
 
-def fetch_xbrl_facts(corp_code: str, year: int) -> dict[str, Any]:
+
+def fetch_xbrl_facts(corp_code: str, year: int, fs_div: str = "CFS") -> dict[str, str]:
     """Fetch XBRL facts for a given corp_code and fiscal year.
 
-    Returns dict of {tag: value} for the fiscal year end (일반기업).
-    Returns {} without a network call if DART_API_KEY is not set.
+    Returns {account_id: thstrm_amount} for the current-period column of the
+    annual report (사업보고서, reprt_code 11011). fs_div defaults to CFS
+    (consolidated); pass "OFS" for separate/standalone statements on filers
+    with no consolidated subsidiaries.
+
+    Returns {} without a network call if DART_API_KEY is not set, and {} on
+    any API- or network-level failure -- callers must treat an empty dict as
+    "no live data", not distinguish it from "company has no operations".
     """
     if not OPENDART_API_KEY:
         return {}
-    url = f"{OPENDART_BASE}/xbrlTaxonomy"
+    url = f"{OPENDART_BASE}/fnlttSinglAcntAll.json"
     params = {
         "crtfc_key": OPENDART_API_KEY,
         "corp_code": corp_code,
         "bsns_year": year,
-        "reprt_code": "11011",  # 일반기업 정기보고
-        "lang": "ko",
+        "reprt_code": "11011",  # 사업보고서 (annual report)
+        "fs_div": fs_div,
     }
     try:
         resp = requests.get(url, params=params, timeout=10)
@@ -76,55 +122,81 @@ def fetch_xbrl_facts(corp_code: str, year: int) -> dict[str, Any]:
         data = resp.json()
         if data.get("status") != "000":
             return {}
-        # API returns list of facts; flatten to {tag: {value, unit}}
-        facts = {}
+        facts: dict[str, str] = {}
         for item in data.get("list", []):
-            facts[item.get("account_nm", "")] = item.get("thstrm_amount")  # 당기 금액
+            if item.get("sj_div") in _COLLIDING_SJ_DIV:
+                continue
+            account_id = item.get("account_id")
+            amount = item.get("thstrm_amount")
+            # "-표준계정코드 미사용-" means OpenDART has no XBRL id for this
+            # company-specific line; it is not a usable lookup key.
+            if not account_id or account_id.startswith("-") or amount is None:
+                continue
+            facts.setdefault(account_id, amount)
         return facts
     except Exception as e:
-        print(f"DART XBRL fetch failed: {e}")
+        print(f"DART fnlttSinglAcntAll fetch failed: {e}")
         return {}
 
 
-def map_facts_to_pack(facts: dict[str, Any], currency: str = "KRW") -> dict[str, Any]:
+def _pick(facts: dict[str, str], candidates: list[str]) -> float | None:
+    for tag in candidates:
+        raw = facts.get(tag)
+        if raw is None:
+            continue
+        try:
+            return float(raw)
+        except (TypeError, ValueError):
+            continue
+    return None
+
+
+def map_facts_to_pack(facts: dict[str, str], currency: str = "KRW") -> dict[str, Any]:
     """Map XBRL facts → accounting_pack structure.
 
     Missing facts remain null with reason="missing:not_in_opendart".
     """
     pack = empty_accounting_pack(currency)
 
+    def set_value(section: dict[str, Any], field: str, key: str, reason: str | None = None) -> None:
+        value = _pick(facts, XBRL_TAGS[key])
+        section[field]["value"] = value
+        if value is None and reason:
+            section[field]["reason"] = reason
+
     # P&L
-    pack["pnl"]["revenue"]["value"] = facts.get("revenue")
-    pack["pnl"]["operating_income"]["value"] = facts.get("operating_income")
-    pack["pnl"]["net_income"]["value"] = facts.get("net_income")
-    pack["pnl"]["profit_before_tax"]["value"] = facts.get("profit_before_tax")
-    pack["pnl"]["income_tax_expense"]["value"] = facts.get("income_tax_expense")
-    pack["pnl"]["interest_expense"]["value"] = facts.get("interest_expense")
+    set_value(pack["pnl"], "revenue", "revenue", "missing:not_in_opendart")
+    set_value(pack["pnl"], "gross_profit", "gross_profit", "missing:not_in_opendart")
+    set_value(pack["pnl"], "operating_income", "operating_income", "missing:not_in_opendart")
+    set_value(pack["pnl"], "net_income", "net_income", "missing:not_in_opendart")
+    set_value(pack["pnl"], "profit_before_tax", "profit_before_tax", "missing:not_in_opendart")
+    set_value(pack["pnl"], "income_tax_expense", "income_tax_expense", "missing:not_in_opendart")
+    set_value(pack["pnl"], "eps", "eps", "missing:not_in_opendart")
+
+    interest = _pick(facts, XBRL_TAGS["interest_expense"])
+    pack["pnl"]["interest_expense"]["value"] = interest
     pack["pnl"]["interest_expense"]["reason"] = (
-        None if facts.get("interest_expense") else "missing:not_in_opendart"
+        "approx:ifrs_finance_costs_not_pure_interest" if interest is not None
+        else "missing:not_in_opendart"
     )
 
     # CF
-    pack["cash_flow"]["cfo"]["value"] = facts.get("cfo")
-    pack["cash_flow"]["capex"]["value"] = facts.get("capex")
-    pack["cash_flow"]["depreciation_and_amortization"]["value"] = facts.get(
-        "depreciation_and_amortization"
-    )
-    pack["cash_flow"]["depreciation_and_amortization"]["reason"] = (
-        None if facts.get("depreciation_and_amortization") else "missing:not_in_opendart"
-    )
+    set_value(pack["cash_flow"], "cfo", "cfo", "missing:not_in_opendart")
+    set_value(pack["cash_flow"], "capex", "capex", "missing:not_in_opendart")
+    pack["cash_flow"]["depreciation_and_amortization"]["value"] = None
+    pack["cash_flow"]["depreciation_and_amortization"]["reason"] = "missing:not_disclosed_separately"
 
     # Liquidity
-    pack["liquidity"]["cash_and_equivalents"]["value"] = facts.get("cash")
+    set_value(pack["liquidity"], "cash_and_equivalents", "cash", "missing:not_in_opendart")
 
-    # Debt
-    pack["debt_structure"]["short_term_borrowings"] = facts.get("short_term_debt")
-    pack["debt_structure"]["long_term_debt"] = facts.get("long_term_debt")
+    # Debt -- least standardised fields; see XBRL_TAGS comment.
+    pack["debt_structure"]["short_term_borrowings"] = _pick(facts, XBRL_TAGS["short_term_debt"])
+    pack["debt_structure"]["long_term_debt"] = _pick(facts, XBRL_TAGS["long_term_debt"])
 
     return pack
 
 
-def fetch_accounting_pack_kr(corp_code: str, year: int = 2025) -> dict[str, Any]:
+def fetch_accounting_pack_kr(corp_code: str, year: int = 2025, fs_div: str = "CFS") -> dict[str, Any]:
     """One-shot: corp_code → full accounting_pack from OpenDART.
 
     This is the symbol `dart_kfa/__init__.py` imports as an optional source
@@ -136,7 +208,7 @@ def fetch_accounting_pack_kr(corp_code: str, year: int = 2025) -> dict[str, Any]
     - as_of: fiscal year end (e.g. 2025-12-31)
     - meta: source info, including whether a live key was present
     """
-    facts = fetch_xbrl_facts(corp_code, year)
+    facts = fetch_xbrl_facts(corp_code, year, fs_div)
     pack = map_facts_to_pack(facts)
 
     # Default FYE to Dec 31 (한국 일반기업 표준)
@@ -149,6 +221,8 @@ def fetch_accounting_pack_kr(corp_code: str, year: int = 2025) -> dict[str, Any]
             "source": "opendart",
             "corp_code": corp_code,
             "year": year,
+            "fs_div": fs_div,
             "live_key_present": bool(OPENDART_API_KEY),
+            "facts_fetched": len(facts),
         },
     }

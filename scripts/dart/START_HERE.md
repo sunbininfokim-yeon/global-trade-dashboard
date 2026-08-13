@@ -34,8 +34,17 @@
   - API 키는 코드에 없습니다 — 실행 전 `export DART_API_KEY=...`.
   - UI(`New for anti/app.js`)나 다른 엔진 파일(`accounting_pack.py`,
     `derived_cards.py` 등 이미 있던 파일)은 건드리지 않았습니다.
+- 2026-08-13: `XBRL_TAGS`는 실제 OpenDART 응답(삼성전자 00126380·SK하이닉스
+  00164779, FY2024 CFS) 두 건으로 검증 완료. 엔드포인트도 존재하지 않는
+  `/api/xbrlTaxonomy`에서 실제 경로 `/api/fnlttSinglAcntAll.json`로 교체.
+  **알려진 한계**: 단기·장기차입금은 회사마다 태그가 다르고, 삼성전자
+  단기차입금처럼 아예 표준 XBRL 코드가 없는 경우가 있음(`None`으로 정직하게
+  남음). D&A는 두 회사 모두 별도 태그로 공시하지 않아 항상 비어 있음.
+  이자비용은 IFRS `FinanceCosts`(순수 이자보다 넓은 범위)로 근사한 것이라
+  `reason: approx:ifrs_finance_costs_not_pure_interest`가 붙음.
 - 다음 사람이 이어받을 때 볼 것: `dart_kfa/dart_facts.py` 상단 docstring +
-  `XBRL_TAGS` 매핑 (아직 OpenDART 실제 계정과목명으로 검증 안 됨 — 추정치).
+  `XBRL_TAGS` 코멘트. 새 회사를 검증 없이 추가하면 이 두 회사에서 이미 드러난
+  회사별 태그 불일치를 그대로 반복할 위험이 있음 — 최소 1개 회사로 실측 확인.
 
 ## 코드
 - `dart_kfa/view_presets.py` — 카드·모델 필터
