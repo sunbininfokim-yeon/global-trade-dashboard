@@ -1120,8 +1120,24 @@ async function dartCorpIndex(env, origin) {
 // locally, and the Worker secret has also been stored as OPEN_DART_API.
 // Accept both -- a naming mismatch would make every lookup return "no facts",
 // which is indistinguishable from a company genuinely having no filing.
-function dartApiKey(env) {
-    return env.OPEN_DART_API || env.DART_API_KEY || '';
+// A binding is either a plain string (Workers "Secret" / plaintext var) or a
+// Secrets Store binding object, which only yields its value via async get().
+// Interpolating the object form into a URL throws instead of stringifying, so
+// both shapes have to be unwrapped here. Trimmed because a secret pasted into
+// the dashboard often carries a trailing newline, which OpenDART rejects as a
+// malformed key.
+async function dartApiKey(env) {
+    for (const binding of [env.OPEN_DART_API, env.DART_API_KEY]) {
+        if (!binding) continue;
+        if (typeof binding === 'string') return binding.trim();
+        if (typeof binding.get === 'function') {
+            try {
+                const value = await binding.get();
+                if (value) return String(value).trim();
+            } catch (_) { /* try the next binding */ }
+        }
+    }
+    return '';
 }
 
 function dartPick(facts, candidates) {
@@ -1142,7 +1158,7 @@ function dartPick(facts, candidates) {
 async function fetchDartXbrlFacts(env, corpCode, year, fsDiv) {
     // Missing key must degrade to empty (no network call), same contract as
     // the Python adapter -- a snapshot without a live key still has to render.
-    const key = dartApiKey(env);
+    const key = await dartApiKey(env);
     if (!key) return { facts: {}, reason: 'no_key_bound' };
     const params = new URLSearchParams({
         crtfc_key: key,
@@ -1152,7 +1168,9 @@ async function fetchDartXbrlFacts(env, corpCode, year, fsDiv) {
         fs_div: fsDiv,
     });
     try {
-        const res = await fetch(`https://opendart.fss.or.kr/api/fnlttSinglAcntAll.json?${params}`);
+        const res = await fetch(`https://opendart.fss.or.kr/api/fnlttSinglAcntAll.json?${params}`, {
+            headers: { 'User-Agent': 'global-trade-dashboard/1.0', Accept: 'application/json' },
+        });
         if (!res.ok) return { facts: {}, reason: `http_${res.status}` };
         const data = await res.json();
         // OpenDART's own status codes: 013 = no data for this query, 020 =
@@ -1168,7 +1186,10 @@ async function fetchDartXbrlFacts(env, corpCode, year, fsDiv) {
         }
         return { facts, reason: Object.keys(facts).length ? 'ok' : 'no_usable_account_ids' };
     } catch (err) {
-        return { facts: {}, reason: `fetch_failed:${err.name}` };
+        // Workers put the failing URL in fetch error messages, and this one
+        // carries crtfc_key -- the reason travels to the client, so redact.
+        const detail = String(err.message || '').split(key).join('<key>');
+        return { facts: {}, reason: `fetch_failed:${err.name}:${detail}` };
     }
 }
 
@@ -1351,7 +1372,8 @@ async function handleDartFinancials(request, env) {
                         raw_filing_facts_embedded: true,
                         period_alignment: 'single_fiscal_year_no_history',
                         facts_fetched: Object.keys(facts).length,
-                        live_key_present: Boolean(dartApiKey(env)),
+                        // Reaching here at all required a keyed OpenDART fetch.
+                        live_key_present: true,
                     },
                 },
             };
