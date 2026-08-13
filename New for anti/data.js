@@ -273,16 +273,31 @@
         // the map entirely. 840 is kept mapped so any legacy rows still resolve.
         842: "USA", 840: "USA",
         156: "China", 76: "Brazil", 32: "Argentina", 643: "Russia", 804: "Ukraine",
-        356: "India", 124: "Canada", 36: "Australia", 250: "France", 276: "Germany", 360: "Indonesia",
+        // Comtrade runs its own area codes for these five, distinct from plain
+        // M49/ISO -- querying the geographic code returns zero rows for every
+        // commodity and year, exactly like 840 above. Found by noticing these
+        // five never once appeared as reporter *or* partner across ~22,000 rows
+        // spanning 8 commodities: France 250->251, India 356->699,
+        // Norway 578->579, Taiwan 158->490 ("Other Asia, nes"),
+        // Switzerland 756->757 (erased ~$60B of gold trade alone). The old
+        // codes are kept mapped so any legacy cached rows still resolve.
+        699: "India", 356: "India",
+        124: "Canada", 36: "Australia", 251: "France", 250: "France", 276: "Germany", 360: "Indonesia",
         458: "Malaysia", 764: "Thailand", 704: "Vietnam", 818: "Egypt", 484: "Mexico", 392: "Japan",
         410: "South Korea", 826: "UK", 380: "Italy", 724: "Spain", 792: "Turkey", 682: "Saudi Arabia",
         784: "UAE", 710: "South Africa", 566: "Nigeria", 586: "Pakistan", 50: "Bangladesh", 608: "Philippines",
         364: "Iran", 12: "Algeria", 504: "Morocco", 616: "Poland", 528: "Netherlands", 56: "Belgium",
-        756: "Switzerland", 170: "Colombia", 604: "Peru", 152: "Chile", 554: "New Zealand", 398: "Kazakhstan",
+        757: "Switzerland", 756: "Switzerland", 170: "Colombia", 604: "Peru", 152: "Chile", 554: "New Zealand", 398: "Kazakhstan",
         642: "Romania", 348: "Hungary", 112: "Belarus", 600: "Paraguay", 858: "Uruguay", 231: "Ethiopia",
-        800: "Uganda", 634: "Qatar", 578: "Norway", 368: "Iraq", 344: "Hong Kong", 180: "Congo DR",
-        158: "Taiwan", 404: "Kenya", 834: "Tanzania", 104: "Myanmar", 116: "Cambodia", 384: "Ivory Coast",
-        288: "Ghana", 686: "Senegal", 860: "Uzbekistan"
+        800: "Uganda", 634: "Qatar", 579: "Norway", 578: "Norway", 368: "Iraq", 344: "Hong Kong", 180: "Congo DR",
+        490: "Taiwan", 158: "Taiwan", 404: "Kenya", 834: "Tanzania", 104: "Myanmar", 116: "Cambodia", 384: "Ivory Coast",
+        288: "Ghana", 686: "Senegal", 860: "Uzbekistan",
+        // Producers the country list was missing entirely -- invisible even as
+        // a trading partner, not just filtered out. Gabon (manganese ore,
+        // world #2), Mozambique/Madagascar (graphite), Zambia/Finland
+        // (cobalt), Bolivia (refined tin), Rwanda (tin concentrate).
+        266: "Gabon", 508: "Mozambique", 450: "Madagascar", 894: "Zambia",
+        246: "Finland", 68: "Bolivia", 646: "Rwanda"
     };
 
     const ALL_M49_CODES = Object.keys(M49_MAP).join(",");
@@ -352,9 +367,21 @@
         // China's graphite and rare-earth licensing, the DRC on cobalt -- so
         // without them the control data had nowhere to show.
         nickel: { hsCode: "7502", colorScheme: { source: [148, 163, 184], target: [203, 213, 225] } },
-        cobalt: { hsCode: "8105", colorScheme: { source: [96, 165, 250], target: [147, 197, 253] } },
-        lithium: { hsCode: "283691", colorScheme: { source: [167, 139, 250], target: [196, 181, 253] } },
-        graphite: { hsCode: "2504", colorScheme: { source: [100, 116, 139], target: [148, 163, 184] } },
+        // 8105 alone is almost entirely mirror data: DRC self-reports only $54M
+        // of cobalt mattes/unwrought (8105) but $4,779M of cobalt oxides and
+        // hydroxides (2822) -- the form it actually leaves the country in.
+        // 283329 (cobalt sulphate) is the battery-precursor trade the export
+        // control layer's DRC entry is actually about.
+        cobalt: { hsCode: "8105,2822,283329", colorScheme: { source: [96, 165, 250], target: [147, 197, 253] } },
+        // 283691 (lithium carbonate) alone reads as Chile-only because
+        // Australia's lithium leaves as spodumene concentrate (2530), not
+        // carbonate -- Australia exports $0 of 283691 by design, not by gap.
+        // 282520 (lithium hydroxide) is China's battery-grade export line.
+        lithium: { hsCode: "283691,2530,282520", colorScheme: { source: [167, 139, 250], target: [196, 181, 253] } },
+        // 2504 (natural graphite) misses artificial/synthetic graphite (3801),
+        // which is larger for China (2504 $285M vs 3801 $2,072M) and is the
+        // form China's export-licensing regime actually covers.
+        graphite: { hsCode: "2504,3801", colorScheme: { source: [100, 116, 139], target: [148, 163, 184] } },
         rare_earths: { hsCode: "280530", colorScheme: { source: [217, 70, 239], target: [232, 121, 249] } },
 
         // Steel chain. Iron ore and manganese are the two largest dry-bulk
@@ -373,7 +400,10 @@
 
         // Remaining industrial metals, and the platinum group as a precious
         // metal distinct from gold and silver.
-        tin: { hsCode: "8001", colorScheme: { source: [113, 113, 122], target: [161, 161, 170] } },
+        // 8001 (unwrought tin metal) misses the ore/concentrate stage (2609)
+        // that Africa's tin producers actually export -- DRC's real line is
+        // 2609 ($192M) against a few million under metal alone.
+        tin: { hsCode: "8001,2609", colorScheme: { source: [113, 113, 122], target: [161, 161, 170] } },
         lead: { hsCode: "7801", colorScheme: { source: [82, 82, 91], target: [113, 113, 122] } },
         platinum: { hsCode: "7110", colorScheme: { source: [226, 232, 240], target: [241, 245, 249] } }
     };
