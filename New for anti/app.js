@@ -7204,7 +7204,14 @@ const MS_FILES = {
     brief: 'ai_casino_brief_v1.json',
     levels: 'investor_price_levels_v1.json',
     micro: 'market_microstructure_v1.json',
+    // The micro snapshot carries a thin, older copy of deposit_credit: no
+    // 미수금/반대매매 and no daily series. This is the full FreeSIS table.
+    credit: 'deposit_credit_v1.json',
 };
+
+// Prefer the standalone FreeSIS table, falling back to the micro snapshot's
+// copy so the panel still renders if the daily publish has not run.
+const msCredit = (D) => ((D.credit || {}).deposit_credit) || (D.micro || {}).deposit_credit || {};
 
 const MS_TABS = [
     { id: 'tangle', label: '수급 불균형', blurb: '집중도와 단일종목 레버리지 ETF (Distortion & Squeeze)' },
@@ -7358,6 +7365,9 @@ const msNum = (v, d = 0) => Number.isFinite(v) ? v.toLocaleString('ko-KR', { max
 const msJo = (v) => Number.isFinite(v) ? `${(v / 1e12).toFixed(2)}조` : '—';
 const msSignedJo = (v) => Number.isFinite(v) ? `${v >= 0 ? '+' : ''}${(v / 1e12).toFixed(2)}조` : '—';
 const msEok = (v) => Number.isFinite(v) ? `${v >= 0 ? '+' : ''}${Math.round(v).toLocaleString('ko-KR')}억` : '—';
+// msEok signs its output because it reports net flows. A balance is not a
+// flow -- "+999,765억" of 예탁금 reads as an inflow of the entire deposit pool.
+const msEokLevel = (v) => Number.isFinite(v) ? `${Math.round(v).toLocaleString('ko-KR')}억` : '—';
 const msShares = (v) => Number.isFinite(v) ? `${v >= 0 ? '+' : ''}${Math.round(v).toLocaleString('ko-KR')}` : '—';
 const msPct = (v, d = 1) => Number.isFinite(v) ? `${(v * 100).toFixed(d)}%` : '—';
 const MS_LEVEL_CLASS = { '경계': 'ms-lv-3', '주의': 'ms-lv-2', '관찰': 'ms-lv-1', high: 'ms-lv-3', mid: 'ms-lv-2', watch: 'ms-lv-2', low: 'ms-lv-1', quiet: 'ms-lv-1' };
@@ -7495,6 +7505,10 @@ const msPriceLevelChart = (pts, rows, opts = {}) => {
             }).join('')}
             <line x1="${cx.toFixed(1)}" y1="${T}" x2="${cx.toFixed(1)}" y2="${H - B}" class="mm-zero"/>
             <path d="${line}" class="ms-plc-line"/>
+            ${pts.map((d, i) => `<rect x="${(sx(i) - (W - L - R) / pts.length / 2).toFixed(1)}" y="${T}"
+                width="${((W - L - R) / pts.length).toFixed(1)}" height="${(H - T - B).toFixed(1)}" class="ms-plc-hit"><title>${
+                finEsc(d.date)} · ${finEsc(opts.lineName || '종가')} ${msNum(d.close)} · 개인 ${fmt(d._retail)} · 외국인 ${
+                fmt(d._foreign)} · 기관 ${fmt(d._inst)}</title></rect>`).join('')}
             <text x="${L - 8}" y="${T - 12}" class="mm-tick" text-anchor="end">${finEsc(opts.yLabel || '(pt)')}</text>
             <text x="${W - R + 8}" y="${(H - B).toFixed(1)}" class="mm-tick">${finEsc(opts.xLabel || '순매수')}</text>
         </svg>
@@ -7520,7 +7534,7 @@ const msTangle = (D) => {
     const ratios = m.market_letf_derivatives_ratios || {};
     const stack = m.global_leverage_stack || {};
     const fvr = m.foreign_vs_retail || {};
-    const dc = m.deposit_credit || {};
+    const dc = msCredit(D);
     const byDir = ratios.by_direction || {};
     const bands = m.ir_bands || {};
 
@@ -7626,6 +7640,74 @@ const msTangle = (D) => {
     </section>`;
 };
 
+// Deposit and credit each get their own axis. Sharing one would be the honest
+// default if they were comparable, but 예탁 ~104조 against 신용 ~29조 means a
+// single axis wide enough for deposit flattens credit into a straight line --
+// its whole 28~35조 swing lands inside one gridline. Separate axes let each
+// series show its own movement; the ratio between them is on the card above.
+// 미수(~1조)·반대매매(~100억) stay on cards for the same reason, several orders
+// worse: on any axis holding 예탁 they would be indistinguishable from zero.
+const msCreditChart = (dc) => {
+    const hist = (dc.history || []).filter((d) => Number.isFinite(d.investor_deposit_eok));
+    if (hist.length < 2) return `<p class="fin-note">${msMissing('예탁·신용 시계열 없음')}</p>`;
+
+    const W = 900, H = 300, L = 62, R = 62, T = 18, B = 34;
+    const jo = (v) => (Number.isFinite(v) ? v / 10000 : null);
+    // One scale builder, used once per axis.
+    const axis = (values) => {
+        const lo = Math.min(...values), hi = Math.max(...values);
+        const pad = (hi - lo) * 0.15 || 1;
+        const min = lo - pad, max = hi + pad;
+        return {
+            at: (v) => T + (1 - (v - min) / (max - min)) * (H - T - B),
+            ticks: Array.from({ length: 5 }, (_, i) => min + (max - min) * (i / 4)),
+        };
+    };
+    const depAxis = axis(hist.map((d) => jo(d.investor_deposit_eok)).filter(Number.isFinite));
+    const creditVals = hist.map((d) => jo(d.credit_loan_eok)).filter(Number.isFinite);
+    const crAxis = axis(creditVals.length ? creditVals : [0, 1]);
+    const sy = depAxis.at, syR = crAxis.at;
+
+    const sx = (i) => L + (i / Math.max(hist.length - 1, 1)) * (W - L - R);
+    const path = (pick, scale) => {
+        let d = '', pen = false;
+        hist.forEach((row, i) => {
+            const v = pick(row);
+            if (!Number.isFinite(v)) { pen = false; return; }
+            d += `${pen ? 'L' : 'M'}${sx(i).toFixed(1)},${scale(v).toFixed(1)}`;
+            pen = true;
+        });
+        return d;
+    };
+
+    const grid = depAxis.ticks, rGrid = crAxis.ticks;
+    const ticks = [0, Math.floor(hist.length / 2), hist.length - 1];
+
+    return `
+    <div class="ms-plc-box">
+        <svg class="ms-cc" viewBox="0 0 ${W} ${H}" role="img" aria-label="투자자 예탁금과 신용거래융자 추이">
+            ${grid.map((g, i) => `
+                <line x1="${L}" y1="${sy(g).toFixed(1)}" x2="${W - R}" y2="${sy(g).toFixed(1)}" class="mm-grid"/>
+                <text x="${L - 8}" y="${(sy(g) + 3.5).toFixed(1)}" class="mm-tick" text-anchor="end">${g.toFixed(0)}조</text>
+                <text x="${W - R + 8}" y="${(syR(rGrid[i]) + 3.5).toFixed(1)}" class="mm-tick">${rGrid[i].toFixed(1)}조</text>`).join('')}
+            ${ticks.map((i) => `<text x="${sx(i).toFixed(1)}" y="${H - 10}" class="mm-tick" text-anchor="middle">${finEsc(hist[i].date)}</text>`).join('')}
+            <path d="${path((r) => jo(r.investor_deposit_eok), sy)}" class="ms-cc-deposit"/>
+            <path d="${path((r) => jo(r.credit_loan_eok), syR)}" class="ms-cc-credit"/>
+            ${hist.map((d, i) => `<rect x="${(sx(i) - (W - L - R) / hist.length / 2).toFixed(1)}" y="${T}"
+                width="${((W - L - R) / hist.length).toFixed(1)}" height="${(H - T - B).toFixed(1)}" class="ms-cc-hit"><title>${
+                finEsc(d.date)} · 예탁금 ${msEokLevel(d.investor_deposit_eok)} · 신용융자 ${msEokLevel(d.credit_loan_eok)} · 미수금 ${
+                msEokLevel(d.uncollected_eok)} · 반대매매 ${msEokLevel(d.forced_sale_eok)}</title></rect>`).join('')}
+        </svg>
+        <p class="mm-legend-note">
+            <i class="ms-cc-sw ms-cc-sw-deposit"></i>투자자 예탁금(좌축·조원)
+            <i class="ms-cc-sw ms-cc-sw-credit"></i>신용거래융자(우축·조원)
+        </p>
+        <p class="fin-note">${finEsc(hist[0].date)} ~ ${finEsc(hist[hist.length - 1].date)} · ${hist.length}거래일.
+            좌우 축의 눈금이 다릅니다 — 두 선의 높이가 아니라 <em>각자의 기울기</em>를 보는 그래프입니다.
+            마우스를 올리면 그날의 예탁금·신용융자·미수금·반대매매가 나옵니다.</p>
+    </div>`;
+};
+
 // --- ② 가격대별 수급 ---------------------------------------------------------
 // Shared by the chart (msLevelsTab) and its detail modal so the two never
 // disagree about which days/step/bins the ticker+period selection means.
@@ -7668,7 +7750,7 @@ const msLevelsCompute = (D) => {
 
 const msLevelsTab = (D) => {
     const lv = D.levels || {};
-    const dc = (D.micro || {}).deposit_credit || {};
+    const dc = msCredit(D);
     const kl = lv.kospi_index_levels || {};
     const { isIndex, src, tickers, allDays, pts, bins, rows } = msLevelsCompute(D);
 
@@ -7737,14 +7819,17 @@ const msLevelsTab = (D) => {
         <div class="fin-cards">
             ${msCard('신용공여 잔고 / 투자자 예탁금', Number.isFinite(dc.credit_over_deposit_pct) ? dc.credit_over_deposit_pct.toFixed(1) + '%' : '—',
                 `기준일 ${finEsc(dc.as_of || '—')}`, null)}
-            ${msCard('투자자 예탁금', msEok(dc.investor_deposit_eok),
+            ${msCard('투자자 예탁금', msEokLevel(dc.investor_deposit_eok),
                 Number.isFinite(dc.investor_deposit_chg_eok) ? `전주 대비 ${msEok(dc.investor_deposit_chg_eok)}` : '', null)}
-            ${msCard('신용융자 잔고', msEok(dc.credit_balance_eok),
+            ${msCard('신용융자 잔고', msEokLevel(dc.credit_balance_eok),
                 Number.isFinite(dc.credit_balance_chg_eok) ? `전주 대비 ${msEok(dc.credit_balance_chg_eok)}` : '', null)}
-            ${msCard('미수금 · 반대매매', msMissing('공개 데이터 없음'),
-                '증권사 미수금과 반대매매 금액은 이 공개 표에 포함되지 않습니다.', null)}
+            ${msCard('위탁매매 미수금', msEokLevel(dc.uncollected_eok),
+                Number.isFinite(dc.uncollected_over_deposit_pct) ? `예탁금 대비 ${dc.uncollected_over_deposit_pct.toFixed(2)}%` : '', null)}
+            ${msCard('반대매매', msEokLevel(dc.forced_sale_eok),
+                Number.isFinite(dc.forced_sale_over_uncollected_pct) ? `미수금 대비 ${dc.forced_sale_over_uncollected_pct.toFixed(1)}%` : '', null)}
         </div>
-        <p class="fin-note">${finEsc(dc.note_ko || '')} 시계열이 아니라 최신 주간 스냅샷입니다.</p>
+        ${msCreditChart(dc)}
+        <p class="fin-note">${finEsc(dc.note_ko || '')}</p>
         ${(lv.cannot_do_ko || []).length ? `
         <details class="mm-limits">
             <summary>이 데이터로 할 수 없는 것</summary>
