@@ -818,9 +818,10 @@ async function handleMacro(request, env, ctx) {
             }
 
             const freq = EIA_ROUTES[route].frequency;
-            // Stocks move weekly and the panel shows a change, so keep a short
-            // history rather than one point.
-            const length = freq === 'weekly' ? 12 : 1;
+            // Stocks move weekly and the panel shows a change, so keep a
+            // year of history (52 points) rather than one point -- long
+            // enough to tell a seasonal drawdown from a genuine trend.
+            const length = freq === 'weekly' ? 52 : 1;
             return kvCachedJson(env, `eia:${route}:${seriesId}:${length}`, 3600, async () => {
                 const eiaUrl = `https://api.eia.gov/v2/${route}?api_key=${EIA_KEY}&frequency=${freq}&data[0]=value&facets[series][]=${encodeURIComponent(seriesId)}&sort[0][column]=period&sort[0][direction]=desc&offset=0&length=${length}`;
                 const res = await fetch(eiaUrl);
