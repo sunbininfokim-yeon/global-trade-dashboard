@@ -7119,7 +7119,9 @@ const msGet = async (name) => {
 const MS_HIST_FILES = {
     activity: 'derivatives_activity_history_v1.jsonl',
     direction: 'leverage_direction_history_v1.jsonl',
-    hynix: 'hynix_letf_history_v1.jsonl',
+    // One file, many tickers (000660 SK하이닉스, 005930 삼성전자, ...) -- both
+    // are single-stock LETF names, so a per-ticker file per name does not scale.
+    stockLetf: 'stock_letf_history_v1.jsonl',
 };
 
 let MS_HIST = null;
@@ -7137,10 +7139,12 @@ const msGetJsonl = async (name) => {
                 if (!s) return;
                 try { rows.push(JSON.parse(s)); } catch (_) { /* one bad line must not void the log */ }
             });
-            // A repeated date means the day was re-observed; the later line wins.
-            const byDate = new Map();
-            rows.forEach((row) => { if (row && row.date) byDate.set(row.date, row); });
-            return [...byDate.values()].sort((a, b) => String(a.date).localeCompare(String(b.date)));
+            // A repeated (date, ticker) means the day was re-observed; the later
+            // line wins. Files with no ticker field (activity, direction) key
+            // on date alone, which is the same thing when ticker is always ''.
+            const byKey = new Map();
+            rows.forEach((row) => { if (row && row.date) byKey.set(`${row.date}|${row.ticker || ''}`, row); });
+            return [...byKey.values()].sort((a, b) => String(a.date).localeCompare(String(b.date)));
         } catch (_) { /* next base */ }
     }
     return [];
@@ -7163,12 +7167,17 @@ const MS_HIST_SERIES = {
 
     'lev:ratio':    { file: 'direction', label: '레버리지·인버스 ETF 거래대금 ÷ 코스피 현물 거래대금', unit: '%', pick: (r) => msFinite(r.levered_inverse_etf_tv_over_kospi_cash_tv_pct) },
     'lev:kospi_tv': { file: 'direction', label: '코스피 현물 거래대금', unit: '조', pick: (r) => msToJo(r.kospi_cash_tv_krw) },
-
-    'hyx:letf_tv':  { file: 'hynix', label: 'SK하이닉스 LETF 거래대금', unit: '조', pick: (r) => msToJo(r.letf_trading_value_krw) },
-    'hyx:spot_tv':  { file: 'hynix', label: 'SK하이닉스 현물 거래대금', unit: '조', pick: (r) => msToJo(r.spot_trading_value_krw) },
-    'hyx:ratio':    { file: 'hynix', label: 'LETF / 현물 거래대금 비율', unit: '%', pick: (r) => Number.isFinite(r.letf_turnover_ratio) ? r.letf_turnover_ratio * 100 : null },
-    'hyx:aum':      { file: 'hynix', label: 'SK하이닉스 LETF 합계 AUM', unit: '조', pick: (r) => msToJo(r.letf_aum_sum_krw) },
 };
+
+// stock_letf_history_v1.jsonl carries every single-stock LETF ticker in one
+// log (currently 000660 SK하이닉스, 005930 삼성전자), so the series has to
+// filter to one ticker's rows rather than assume the file is already scoped.
+const msStockLetfSeries = (ticker, ko) => [
+    { file: 'stockLetf', filter: (r) => r.ticker === ticker, label: `${ko} LETF 거래대금`, unit: '조', pick: (r) => msToJo(r.letf_trading_value_krw) },
+    { file: 'stockLetf', filter: (r) => r.ticker === ticker, label: `${ko} 현물 거래대금`, unit: '조', pick: (r) => msToJo(r.spot_trading_value_krw) },
+    { file: 'stockLetf', filter: (r) => r.ticker === ticker, label: `${ko} LETF / 현물 거래대금 비율`, unit: '%', pick: (r) => Number.isFinite(r.letf_turnover_ratio) ? r.letf_turnover_ratio * 100 : null },
+    { file: 'stockLetf', filter: (r) => r.ticker === ticker, label: `${ko} LETF 합계 순자산 (AUM)`, unit: '조', pick: (r) => msToJo(r.letf_aum_sum_krw) },
+];
 
 const msDirSeries = (dir, ko) => [
     { file: 'direction', label: `${ko} · 거래대금`, unit: '조', pick: (r) => msToJo(r.by_direction?.[dir]?.trading_value_krw) },
@@ -7176,6 +7185,10 @@ const msDirSeries = (dir, ko) => [
 ];
 
 const msHistRows = (file) => (MS_HIST || {})[file] || [];
+// Filtering has to happen before the last-N-trading-days window is cut, or
+// "last 30 days" on a shared multi-ticker file would mean 30 rows of mixed
+// tickers rather than 30 observations of the one being charted.
+const msSpecRows = (spec) => spec.filter ? msHistRows(spec.file).filter(spec.filter) : msHistRows(spec.file);
 
 const msHistPeriodBar = () => `
     <div class="ms-hist-period" role="group" aria-label="표시 기간">
@@ -7186,7 +7199,7 @@ const msHistPeriodBar = () => `
 // the count of days actually observed. Non-trading days are absent rows and
 // stay absent -- the x-axis is observations, never a filled calendar.
 const msHistChart = (spec) => {
-    const all = msHistRows(spec.file);
+    const all = msSpecRows(spec);
     const win = MS_HIST_PERIOD === 'all' ? all : all.slice(-Number(MS_HIST_PERIOD));
     const values = win.map(spec.pick);
     const usable = values.filter(Number.isFinite).length;
@@ -7211,7 +7224,7 @@ const msHistChart = (spec) => {
 const msHistBlock = (specs) => {
     const list = specs.filter(Boolean);
     const drawable = list.some((s) => {
-        const all = msHistRows(s.file);
+        const all = msSpecRows(s);
         const win = MS_HIST_PERIOD === 'all' ? all : all.slice(-Number(MS_HIST_PERIOD));
         return win.map(s.pick).filter(Number.isFinite).length >= 2;
     });
@@ -7235,7 +7248,7 @@ const msCard = (title, value, sub, modalKey, cls) => `
         <span class="fin-card-title">${finEsc(title)}</span>
         <span class="fin-card-value ${cls || ''}">${value}</span>
         ${sub ? `<p class="fin-card-plain">${sub}</p>` : ''}
-        ${modalKey ? `<span class="ms-more">${/^(conc:|hist:|dir:|letf_cat$|alert_letf$)/.test(String(modalKey)) ? '추이 보기' : '표 보기'} →</span>` : ''}
+        ${modalKey ? `<span class="ms-more">${/^(conc:|hist:|dir:|stock_letf:|letf_cat$|alert_letf$)/.test(String(modalKey)) ? '추이 보기' : '표 보기'} →</span>` : ''}
     </button>`;
 
 const msTable = (head, rows) => `
@@ -7470,9 +7483,12 @@ const msTangle = (D) => {
                     Number.isFinite(s10?.ir_pct) ? `<span class="ms-badge ${bandCls[s10.band] || ''}">${s10.ir_pct.toFixed(1)}%</span>` : '—',
                     `<span class="ms-badge ${bandCls[t.realized_band] || ''}">${finEsc(t.realized_band || '—')}</span>`,
                     `<button class="mm-view-btn" data-ms-stock="${finEsc(st.ticker)}" data-ms-modal="letf_products">상품별</button>`
-                    // The ratio's own history only exists for the alert-level
-                    // ticker, so only that row can offer the trend.
-                    + (st.ticker === '000660' ? ` <button class="mm-view-btn" data-ms-modal="alert_letf">추이</button>` : ''),
+                    // Any stock with an LETF turnover ratio can offer a trend
+                    // (rows just may not exist yet); Hynix alone routes to the
+                    // richer alert-bucket view since that engine covers only it.
+                    + (Number.isFinite(st.letf_turnover_ratio)
+                        ? ` <button class="mm-view-btn" data-ms-modal="${st.ticker === '000660' ? 'alert_letf' : `stock_letf:${finEsc(st.ticker)}`}">추이</button>`
+                        : ''),
                 ];
             })) : `<p class="fin-note">${msMissing('종목 스트레스 데이터 없음')}</p>`}
         <p class="fin-note">IR 밴드: watch ≥ ${bands.watch_lt_pct ?? 10}% · low &lt; ${bands.low_lt_pct ?? 3}%. NAV는 공개 스냅샷에 없어 표시하지 않습니다 — 상품별 순자산(AUM)과 거래대금만 실측입니다.</p>
@@ -7885,8 +7901,7 @@ const msModalFor = (key, D) => {
         const h = (D.alerts || {}).kr_hynix_letf || {};
         const s = h.sample || {};
         return { title: 'SK하이닉스 단일종목 레버·인버스 ETF 비율',
-            html: msHistBlock([MS_HIST_SERIES['hyx:ratio'], MS_HIST_SERIES['hyx:letf_tv'],
-                MS_HIST_SERIES['hyx:spot_tv'], MS_HIST_SERIES['hyx:aum']])
+            html: msHistBlock(msStockLetfSeries('000660', 'SK하이닉스'))
             + `<h3 class="fin-sub">오늘 값</h3>`
             + msTable(['항목', '값'], [
                 ['오늘 비율', Number.isFinite(h.today_ratio) ? `${(h.today_ratio * 100).toFixed(2)}%` : '—'],
@@ -7907,7 +7922,27 @@ const msModalFor = (key, D) => {
                 + `<p class="fin-note">표본 ${msNum((h.sample || {}).n_active_days)}일은 통계로 쓰기에 짧습니다. 구간별 하락 비율이 서로 비슷해 이 지표만으로 방향을 예측할 수 없습니다.</p>` : '')
             + `<p class="fin-note">${finEsc(s.note_ko || '')} ${finEsc(h.limitation_ko || '')}
                출처 ${finEsc(h.data_source || '—')} · 관측일 ${finEsc((D.alerts || {}).as_of || '—')}.
-               ${msHistRows('hynix').length < 2 ? '일별 이력이 아직 쌓이지 않아 오늘 값과 표본 통계만 있습니다.' : '위 추이는 저장된 일별 관측치이며, 아래 표본 통계와는 별개입니다.'}</p>` };
+               ${msHistRows('stockLetf').filter((r) => r.ticker === '000660').length < 2 ? '일별 이력이 아직 쌓이지 않아 오늘 값과 표본 통계만 있습니다.' : '위 추이는 저장된 일별 관측치이며, 아래 표본 통계와는 별개입니다.'}</p>` };
+    }
+    // Samsung Electronics carries the same single-stock LETF fields as Hynix
+    // but has no alert-bucket engine behind it -- just the trend plus today's
+    // snapshot from market_microstructure_v1, not the win-rate-by-bucket table.
+    if (key.startsWith('stock_letf:')) {
+        const ticker = key.slice(11);
+        const stocks = Array.isArray(m.stocks) ? m.stocks : [];
+        const st = stocks.find((x) => x.ticker === ticker) || {};
+        const ko = st.name || ticker;
+        return { title: `${ko} 단일종목 레버·인버스 ETF 비율`,
+            html: msHistBlock(msStockLetfSeries(ticker, ko))
+            + `<h3 class="fin-sub">오늘 값</h3>`
+            + msTable(['항목', '값'], [
+                ['LETF 거래대금', msJo(st.letf_trading_value_krw)],
+                ['현물 거래대금 (ADV)', msJo(st.adv_spot_krw)],
+                ['LETF / 현물 비율', msPct(st.letf_turnover_ratio)],
+                ['LETF 합계 순자산 (AUM)', msJo(st.letf_aum_sum_krw)],
+            ])
+            + `<p class="fin-note">관측일 ${finEsc(m.as_of || '—')}. 거래대금 기준 관측치이며 보유 포지션이나 다음 가격 방향이 아닙니다.
+               ${msHistRows('stockLetf').filter((r) => r.ticker === ticker).length < 2 ? '일별 이력이 아직 쌓이지 않아 오늘 값만 있습니다.' : ''}</p>` };
     }
     if (key === 'letf_cat') {
         const by = ((m.letf_category_share || {}).by_category) || {};

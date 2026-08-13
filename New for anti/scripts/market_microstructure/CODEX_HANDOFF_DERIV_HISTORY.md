@@ -36,10 +36,12 @@ UI에서 시계열 차트를 못 그림. 아래 3개 히스토리 파일을 일�
 `share_of_kospi_tv_pct`(코스피 현물 거래대금 대비)와 `share_of_lev_tv_pct`(레버 풀 내부 비중)는
 서로 다른 분모다. UI가 둘 다 별도 차트로 그리니 **둘 다** 저장해줘.
 
-## 3. `hynix_letf_history_v1.jsonl` — 하닉 LETF 추이
+## 3. `stock_letf_history_v1.jsonl` — 단일종목 LETF 추이 (하닉 + 삼성전자)
 
-`market_microstructure_v1.json.stocks[hynix]` 필드 재사용 (`letf_aum_sum_krw`, `letf_trading_value_krw`,
-`letf_turnover_ratio` = LETF거래대금/현물거래대금).
+`market_microstructure_v1.json.stocks[]`에 단일종목 LETF 필드가 있는 종목은 **하닉(000660)과
+삼성전자(005930) 둘 다**다. 종목별 파일을 나누지 말고, 한 파일에 `ticker`로 구분해서 하루당
+종목 수만큼 줄을 씀 (오늘 2종목 관측이면 하루에 2줄). 필드는 `letf_aum_sum_krw`,
+`letf_trading_value_krw`, `letf_turnover_ratio`(=LETF거래대금/현물거래대금) 재사용.
 
 ```json
 {"date": "2026-08-12", "as_of": "2026-08-12", "source": "FinanceDataReader/KRX", "quality": "observed",
@@ -52,21 +54,33 @@ UI에서 시계열 차트를 못 그림. 아래 3개 히스토리 파일을 일�
  "letf_aum_inverse_krw": 133600000000.0,
  "products": [{"ticker": "252670", "name": "KODEX 200선물인버스2X", "aum_krw": null, "trading_value_krw": null}]
 }
+{"date": "2026-08-12", "as_of": "2026-08-12", "source": "FinanceDataReader/KRX", "quality": "observed",
+ "ticker": "005930",
+ "spot_trading_value_krw": 4791580972001.0,
+ "letf_trading_value_krw": 175057000000.0,
+ "letf_turnover_ratio": 0.0365,
+ "letf_aum_sum_krw": 2382300000000.0,
+ "letf_aum_long_krw": 2356000000000.0,
+ "letf_aum_inverse_krw": 26300000000.0
+}
 ```
 `products[]` AUM·거래대금 개별 확보 안 되면 필드 자체를 비우지 말고 값만 `null` + 해당 관측치
 `quality: "partial"`로 표시. 통짜로 스킵 금지 (UI가 "부분 관측"으로 구분 렌더링함).
+새 단일종목 LETF 이름이 추가되면 이 파일에 `ticker`만 늘려서 append — 새 파일 만들 필요 없음.
 
 ## 공통 규칙
 
 - **날짜 키는 KST 거래일 기준**, 휴장일은 아예 줄 자체를 넣지 않음 (UI가 임의 보간 안 함)
 - 파일당 스키마 검증: 필수 키(`date`, `as_of`, `source`, `quality`) 없으면 append 실패시켜야 함
 - 데모/추정값이 섞이면 `quality: "estimated"`로 명시 — UI가 실측과 다른 스타일로 렌더링
-- append-only, 기존 줄 수정 금지 (날짜 중복 시 최신 관측치로 override는 허용)
+- append-only, 기존 줄 수정 금지 (날짜+ticker 중복 시 최신 관측치로 override는 허용)
 - 초기 히스토리가 하루치뿐이면 그대로 1줄만 커밋 — UI 쪽에서 "히스토리 축적 중" 배지로 처리함
 
-## UI 쪽(Claude) 진행 상황
+## UI 쪽(Claude) 진행 상황 — 완료
 
-파일이 생기는 대로 아래를 붙여서 렌더링:
-- B/C 섹션 클릭 가능한 시계열 라인 차트 (기본 30거래일, 90일/전체 토글)
-- 하닉 LETF 모달에 추이 탭 추가
-- 데이터 1~2일치뿐이면 차트 대신 "히스토리 축적 중 (n일 관측)" 문구
+파일이 아직 없어도 UI는 안 깨짐 (404 → 빈 배열 → "히스토리 축적 중 · 관측 N일" 배지).
+파일이 생기는 즉시 코드 수정 없이 아래가 살아남:
+- B/C 섹션 카드 클릭 → 시계열 라인 차트 (기본 30거래일, 90일/전체 토글, 모달당 토글 1개)
+- 수급 불균형 탭 D 섹션: LETF 비율이 있는 모든 종목 행에 "추이" 버튼 (하닉은 알림-레벨 버킷 모달,
+  그 외 — 지금은 삼성전자 — 는 `stock_letf:<ticker>` 제네릭 추이 모달로 라우팅)
+- 추정·부분 관측(quality ≠ observed)은 실측과 별도로 카운트해 각주에 표시
