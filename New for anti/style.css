@@ -924,7 +924,12 @@ body.trade-map-mode .left-pane {
 .shipping-kpi.is-active {
     border-color: rgba(56, 189, 248, 0.55);
     box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.25) inset;
+    /* The selected card carries the accent fill. `.featured` uses the same
+       treatment, so a featured-and-unselected card would otherwise look
+       permanently active and steal the selection cue. */
+    background: linear-gradient(145deg, rgba(8, 47, 73, 0.82), rgba(15, 23, 42, 0.94));
 }
+.shipping-kpi.is-active .shipping-kpi-label { color: #7dd3fc; }
 .shipping-kpi:focus-visible {
     outline: 2px solid rgba(56, 189, 248, 0.55);
     outline-offset: 2px;
@@ -1125,6 +1130,140 @@ body.trade-map-mode .left-pane {
 .shipping-change { display: block; font-size: 27px; margin: 20px 0 4px; letter-spacing: -0.03em; }
 .shipping-change.negative, .negative-text { color: #f87171 !important; }
 .shipping-change.positive, .positive-text { color: #4ade80 !important; }
+.shipping-change.warn { color: #fbbf24 !important; }
+.shipping-change.neutral { color: #94a3b8 !important; }
+
+/* Scenario KPIs sit inside a panel rather than at page width, so they need a
+   tighter track than the page-level .shipping-kpi-grid. */
+.shipping-kpi-grid.scenario-kpis { grid-template-columns: repeat(auto-fit, minmax(168px, 1fr)); }
+.shipping-kpi-grid.scenario-kpis .shipping-kpi { min-height: 108px; padding: 16px; }
+.shipping-kpi-grid.scenario-kpis .shipping-kpi strong { font-size: clamp(17px, 1.4vw, 21px); }
+
+/* Explanation shown when a scenario KPI is selected. */
+.shipping-metric-note {
+    margin-top: 14px;
+    padding: 15px 17px;
+    border-radius: 12px;
+    border: 1px solid rgba(56, 189, 248, 0.20);
+    background: rgba(8, 47, 73, 0.34);
+}
+.shipping-metric-note strong { color: #7dd3fc; font-size: 12px; letter-spacing: 0.04em; }
+.shipping-metric-note p { margin: 7px 0 0; color: #cbd5e1; font-size: 12.5px; line-height: 1.7; }
+.shipping-metric-note strong + p strong { color: #f1f5f9; }
+
+/* Panel header tools: a popover trigger sitting beside the status badge. */
+.shipping-panel-tools { display: flex; align-items: center; gap: 10px; }
+
+.shipping-pop { position: relative; display: inline-flex; }
+.shipping-pop-trigger {
+    border: 1px solid rgba(148, 163, 184, 0.22);
+    background: rgba(15, 23, 42, 0.7);
+    color: #94a3b8;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 5px 10px;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: color 0.15s ease, border-color 0.15s ease;
+}
+.shipping-pop-trigger:hover { color: #e2e8f0; border-color: rgba(56, 189, 248, 0.45); }
+.shipping-pop-trigger[aria-expanded="true"] { color: #7dd3fc; border-color: rgba(56, 189, 248, 0.55); }
+
+.shipping-pop-body {
+    position: absolute;
+    top: calc(100% + 9px);
+    right: 0;
+    z-index: 60;
+    width: min(360px, 78vw);
+    padding: 15px 17px;
+    border-radius: 13px;
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    background: rgba(9, 14, 24, 0.98);
+    box-shadow: 0 22px 54px rgba(0, 0, 0, 0.45);
+    text-align: left;
+    cursor: default;
+}
+.shipping-pop-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 10px; }
+.shipping-pop-head strong { color: #f1f5f9; font-size: 13px; }
+.shipping-pop-close {
+    border: 0; background: transparent; color: #64748b;
+    font-size: 12px; cursor: pointer; padding: 2px 4px; line-height: 1;
+}
+.shipping-pop-close:hover { color: #e2e8f0; }
+.shipping-pop-body .shipping-note { margin-top: 10px; }
+
+/* Colour-threshold legend under the chokepoint chart. */
+.shipping-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 20px;
+    margin-top: 14px;
+    color: #94a3b8;
+    font-size: 11.5px;
+}
+.shipping-legend span { display: inline-flex; align-items: center; gap: 7px; }
+.shipping-legend i { width: 10px; height: 10px; border-radius: 3px; display: inline-block; }
+
+/* Reduction-pathway selector on the Net Zero screen. */
+.shipping-pathway-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+    gap: 12px;
+}
+.shipping-pathway {
+    padding: 16px 17px;
+    border-radius: 13px;
+    border: 1px solid rgba(148, 163, 184, 0.14);
+    background: rgba(15, 23, 42, 0.68);
+    cursor: pointer;
+    transition: border-color 0.15s ease, transform 0.15s ease, background 0.15s ease;
+}
+.shipping-pathway:hover { border-color: rgba(56, 189, 248, 0.4); transform: translateY(-1px); }
+.shipping-pathway:focus-visible { outline: 2px solid rgba(56, 189, 248, 0.55); outline-offset: 2px; }
+.shipping-pathway.is-active {
+    border-color: rgba(56, 189, 248, 0.55);
+    background: linear-gradient(145deg, rgba(8, 47, 73, 0.8), rgba(15, 23, 42, 0.94));
+}
+/* Pending pathways stay legible but visibly lighter than computed ones, so a
+   dash is never mistaken for a real zero. */
+.shipping-pathway.is-pending { opacity: 0.72; }
+.shipping-pathway.is-pending .shipping-pathway-value { color: #64748b; }
+
+.shipping-pathway-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.shipping-pathway-head strong { color: #f1f5f9; font-size: 13.5px; }
+.shipping-pathway-sub { display: block; margin-top: 5px; color: #94a3b8; font-size: 11.5px; }
+.shipping-pathway-value {
+    margin: 13px 0 0;
+    color: #fcd34d;
+    font-size: clamp(19px, 1.6vw, 24px);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+}
+.shipping-pathway small { color: #64748b; font-size: 11px; }
+
+/* Chokepoint detail: map on the left third, series on the right two thirds. */
+.shipping-detail-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+    gap: 18px;
+    margin-top: 16px;
+}
+@media (max-width: 900px) { .shipping-detail-grid { grid-template-columns: minmax(0, 1fr); } }
+
+.shipping-minimap-svg {
+    width: 100%;
+    height: auto;
+    border-radius: 10px;
+    border: 1px solid rgba(148, 163, 184, 0.14);
+    display: block;
+}
+.shipping-chokepoint-card.is-active {
+    border-color: rgba(56, 189, 248, 0.55);
+    box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.22) inset;
+}
+.shipping-chokepoint-card { cursor: pointer; transition: border-color 0.15s ease, transform 0.15s ease; }
+.shipping-chokepoint-card:hover { border-color: rgba(56, 189, 248, 0.38); transform: translateY(-1px); }
+.shipping-chokepoint-card:focus-visible { outline: 2px solid rgba(56, 189, 248, 0.55); outline-offset: 2px; }
 .warning-text { color: #fbbf24 !important; }
 .shipping-chokepoint-card > p { color: #64748b; font-size: 10px; line-height: 1.5; }
 .shipping-chokepoint-card > small { display: block; color: #475569; font-size: 9px; margin-top: 12px; }
