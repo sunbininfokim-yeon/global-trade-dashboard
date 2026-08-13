@@ -7506,16 +7506,14 @@ const msTangle = (D) => {
 };
 
 // --- ② 가격대별 수급 ---------------------------------------------------------
-const msLevelsTab = (D) => {
+// Shared by the chart (msLevelsTab) and its detail modal so the two never
+// disagree about which days/step/bins the ticker+period selection means.
+const msLevelsCompute = (D) => {
     const lv = D.levels || {};
     const kl = lv.kospi_index_levels || {};
     const tickers = lv.tickers || {};
-    const dc = (D.micro || {}).deposit_credit || {};
     const isIndex = !MS_TICKER;
     const src = isIndex ? kl : (tickers[MS_TICKER] || {});
-
-    const table = MS_UNIVERSE === 'high_vol' ? (lv.close_day_table_high_vol || []) : (lv.close_day_table_marcap || []);
-    const L = kl.latest || {};
 
     // Everything is normalised to 억원 so the index (already 억) and a single
     // ticker (raw 원) can be read on one axis without a unit toggle.
@@ -7544,6 +7542,18 @@ const msLevelsTab = (D) => {
         valueText: `개인 ${msEok(b.retail)} · 외인 ${msEok(b.foreign)}`,
     }));
 
+    return { isIndex, src, tickers, allDays, pts, bins, rows };
+};
+
+const msLevelsTab = (D) => {
+    const lv = D.levels || {};
+    const dc = (D.micro || {}).deposit_credit || {};
+    const kl = lv.kospi_index_levels || {};
+    const { isIndex, src, tickers, allDays, pts, bins, rows } = msLevelsCompute(D);
+
+    const table = MS_UNIVERSE === 'high_vol' ? (lv.close_day_table_high_vol || []) : (lv.close_day_table_marcap || []);
+    const L = kl.latest || {};
+
     return `
     <section class="fin-block fin-block-wide">
         <h2>가격대별 누적 수급 <span class="ms-q">${finEsc(src.quality || '')}</span></h2>
@@ -7569,9 +7579,9 @@ const msLevelsTab = (D) => {
         })}
         ${pts.length ? `<p class="fin-note">표시 구간 ${finEsc(pts[0].date)} ~ ${finEsc(pts[pts.length - 1].date)} · ${pts.length}거래일.
             막대는 이 구간의 일별 순매수를 종가 레벨에 귀속해 다시 합산한 값입니다.</p>` : ''}
-        ${rows.length ? msDivergingBars(rows, {
-            legend: [{ key: 'retail', name: '개인' }, { key: 'foreign', name: '외국인' }, { key: 'inst', name: '기관' }],
-        }) : `<p class="fin-note">${msMissing('구간별 수급 없음')}</p>`}
+        ${rows.length
+            ? `<button class="mm-view-btn" data-ms-modal="price_level_detail">가격대별 상세 표 (${rows.length}개 구간) →</button>`
+            : `<p class="fin-note">${msMissing('구간별 수급 없음')}</p>`}
         <p class="fin-note">
             ${finEsc(src.method_ko || '')} 단위 억원 · quality ${finEsc(src.quality || '—')} ·
             원본 ${src.n_days || 0}일 (${finEsc(src.date_start || '')} ~ ${finEsc(src.date_end || '')}) ·
@@ -7954,6 +7964,28 @@ const msModalFor = (key, D) => {
             + `<p class="fin-note">분자는 레버리지·인버스 ETF 거래대금, 분모는 코스피 현물 거래대금입니다.
                서로 다른 두 시장을 나눈 값이라 시장 점유율이 아닙니다.</p>` };
     }
+    // The chart already shows the shape of this distribution; the modal is for
+    // reading exact per-band figures, so it adds the numeric columns the bars
+    // cannot carry rather than repeating the bars alone.
+    if (key === 'price_level_detail') {
+        const { isIndex, src, pts, rows } = msLevelsCompute(D);
+        const who = isIndex ? '코스피 지수' : ((D.levels || {}).tickers || {})[MS_TICKER]?.label_ko || MS_TICKER;
+        if (!rows.length) return { title: `${who} 가격대별 상세`, html: `<p class="fin-note">${msMissing('구간별 수급 없음')}</p>`, key };
+        return { title: `${who} 가격대별 상세 · ${pts.length}거래일`,
+            html: msDivergingBars(rows, {
+                legend: [{ key: 'retail', name: '개인' }, { key: 'foreign', name: '외국인' }, { key: 'inst', name: '기관' }],
+            })
+            + msTable(['가격대', '거래일', '개인', '외국인', '기관', '합계'],
+                rows.map((r) => {
+                    const [rt, fg, it] = r.series.map((s) => s.value);
+                    const sum = rt + fg + it;
+                    const cell = (v) => `<span class="${v >= 0 ? 'fin-up' : 'fin-down'}">${msEok(v)}</span>`;
+                    return [finEsc(r.label), finEsc(r.sub), cell(rt), cell(fg), cell(it), cell(sum)];
+                }))
+            + `<p class="fin-note">표시 구간 ${finEsc(pts[0]?.date || '')} ~ ${finEsc(pts[pts.length - 1]?.date || '')} · 단위 억원.
+               일별 순매수를 종가 레벨에 귀속해 합산한 값이며, 체결 단위 매집도가 아닙니다.
+               quality ${finEsc(src.quality || '—')} · 출처 ${finEsc(src.source || '—')}.</p>`, key };
+    }
     if (key === 'letf_products') {
         const stocks = Array.isArray(m.stocks) ? m.stocks : [];
         const sel = stocks.find((x) => x.ticker === MS_STOCK) || stocks[0];
@@ -8088,7 +8120,13 @@ const renderMicrostructure = async (host) => {
             paint();
         });
         on('[data-ms-univ]', (b) => { MS_UNIVERSE = b.dataset.msUniv; paint(); });
-        on('[data-ms-period]', (b) => { MS_PERIOD = b.dataset.msPeriod; paint(); });
+        // The price-level modal is computed from MS_PERIOD, so it has to be
+        // rebuilt when the window changes rather than left showing stale bands.
+        on('[data-ms-period]', (b) => {
+            MS_PERIOD = b.dataset.msPeriod;
+            if (MS_MODAL_KEY === 'price_level_detail') MS_MODAL = msModalFor(MS_MODAL_KEY, D);
+            paint();
+        });
         on('[data-ms-ticker]', (b) => { MS_TICKER = b.dataset.msTicker || null; MS_TAB = 'levels'; paint(); });
         // :not([data-ms-stock]) because that combination is handled above --
         // otherwise this listener would double-fire on the same click and
