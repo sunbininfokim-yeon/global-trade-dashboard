@@ -1116,6 +1116,14 @@ async function dartCorpIndex(env, origin) {
     return {};
 }
 
+// Same credential under either name: scripts/dart/ reads DART_API_KEY
+// locally, and the Worker secret has also been stored as OPEN_DART_API.
+// Accept both -- a naming mismatch would make every lookup return "no facts",
+// which is indistinguishable from a company genuinely having no filing.
+function dartApiKey(env) {
+    return env.OPEN_DART_API || env.DART_API_KEY || '';
+}
+
 function dartPick(facts, candidates) {
     for (const tag of candidates) {
         const raw = facts[tag];
@@ -1126,12 +1134,18 @@ function dartPick(facts, candidates) {
     return null;
 }
 
+// Returns { facts, reason }. Every failure path used to collapse to a bare
+// {}, which made four very different problems -- no secret bound, OpenDART
+// refusing the Worker's egress, a rejected key, a company with no filing --
+// look identical from the outside and impossible to tell apart without
+// redeploying. reason names which one it was; it never carries the key.
 async function fetchDartXbrlFacts(env, corpCode, year, fsDiv) {
-    // Missing key must degrade to {} (no network call), same contract as the
-    // Python adapter -- a snapshot without a live key still has to render.
-    if (!env.DART_API_KEY) return {};
+    // Missing key must degrade to empty (no network call), same contract as
+    // the Python adapter -- a snapshot without a live key still has to render.
+    const key = dartApiKey(env);
+    if (!key) return { facts: {}, reason: 'no_key_bound' };
     const params = new URLSearchParams({
-        crtfc_key: env.DART_API_KEY,
+        crtfc_key: key,
         corp_code: corpCode,
         bsns_year: String(year),
         reprt_code: '11011', // 사업보고서 (annual report)
@@ -1139,9 +1153,11 @@ async function fetchDartXbrlFacts(env, corpCode, year, fsDiv) {
     });
     try {
         const res = await fetch(`https://opendart.fss.or.kr/api/fnlttSinglAcntAll.json?${params}`);
-        if (!res.ok) return {};
+        if (!res.ok) return { facts: {}, reason: `http_${res.status}` };
         const data = await res.json();
-        if (data.status !== '000') return {};
+        // OpenDART's own status codes: 013 = no data for this query, 020 =
+        // rate limited, 100/800/900 = bad key or unregistered caller.
+        if (data.status !== '000') return { facts: {}, reason: `dart_status_${data.status}` };
         const facts = {};
         for (const item of data.list || []) {
             if (DART_COLLIDING_SJ_DIV.has(item.sj_div)) continue;
@@ -1150,9 +1166,9 @@ async function fetchDartXbrlFacts(env, corpCode, year, fsDiv) {
             if (!accountId || accountId.startsWith('-') || amount === undefined || amount === null) continue;
             if (!(accountId in facts)) facts[accountId] = amount;
         }
-        return facts;
-    } catch (_) {
-        return {};
+        return { facts, reason: Object.keys(facts).length ? 'ok' : 'no_usable_account_ids' };
+    } catch (err) {
+        return { facts: {}, reason: `fetch_failed:${err.name}` };
     }
 }
 
@@ -1303,13 +1319,16 @@ async function handleDartFinancials(request, env) {
             const firstYear = now.getUTCFullYear() - (now.getUTCMonth() >= 3 ? 1 : 2);
 
             let year = firstYear;
-            let facts = await fetchDartXbrlFacts(env, corpCode, year, 'CFS');
+            let { facts, reason } = await fetchDartXbrlFacts(env, corpCode, year, 'CFS');
             if (Object.keys(facts).length === 0) {
                 year = firstYear - 1;
-                facts = await fetchDartXbrlFacts(env, corpCode, year, 'CFS');
+                ({ facts, reason } = await fetchDartXbrlFacts(env, corpCode, year, 'CFS'));
             }
             if (Object.keys(facts).length === 0) {
-                return { ok: false, status: 404, statusText: 'no OpenDART CFS facts for the last two fiscal years' };
+                return {
+                    ok: false, status: 404,
+                    statusText: `no OpenDART CFS facts for FY${firstYear}/FY${firstYear - 1} (${reason})`,
+                };
             }
 
             return {
@@ -1332,7 +1351,7 @@ async function handleDartFinancials(request, env) {
                         raw_filing_facts_embedded: true,
                         period_alignment: 'single_fiscal_year_no_history',
                         facts_fetched: Object.keys(facts).length,
-                        live_key_present: Boolean(env.DART_API_KEY),
+                        live_key_present: Boolean(dartApiKey(env)),
                     },
                 },
             };
