@@ -59,7 +59,13 @@ Each metric prefers `series: [{year, end, value}, ...]` aligned to one fiscal ti
 
 ## CLI
 ```
+# enrich an existing snapshot's basic_cards into the 16 expert cards + models
 python3 scripts/dart/enrich_snapshot.py \
   "New for anti/public/data/kfa_005930_v1.json" \
   --output /tmp/kfa_005930_enriched.json
+
+# fetch a new company live from OpenDART and write the full UI snapshot
+# (requires DART_API_KEY; produces single-fiscal-year data -- see START_HERE.md)
+export DART_API_KEY=...
+python3 scripts/dart/fetch_kfa_snapshot.py 00164779 000660 "SK하이닉스" "SK Hynix Inc." --year 2025
 ```

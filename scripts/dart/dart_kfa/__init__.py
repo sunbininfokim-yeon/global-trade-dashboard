@@ -16,6 +16,7 @@ from .model_contracts import (
 )
 from .derived_cards import (
     accounting_pack_from_snapshot,
+    basic_cards_from_pack,
     build_expert_cards,
     enrich_snapshot,
     run_kfa_analysis,
@@ -32,6 +33,11 @@ try:  # optional source adapter, uses DART_API_KEY at runtime only
 except ImportError:  # pragma: no cover - depends on deployment package
     fetch_accounting_pack_kr = None
 
+try:  # optional orchestration on top of dart_facts; same degrade-to-None rule
+    from .snapshot_builder import build_kfa_snapshot
+except ImportError:  # pragma: no cover - depends on deployment package
+    build_kfa_snapshot = None
+
 __all__ = [
     "get_view_presets",
     "DEFAULT_VIEW",
@@ -45,10 +51,12 @@ __all__ = [
     "pe_models_stub",
     "deal_models_stub",
     "accounting_pack_from_snapshot",
+    "basic_cards_from_pack",
     "build_expert_cards",
     "enrich_snapshot",
     "run_kfa_analysis",
     "fetch_accounting_pack",
     "build_accounting_pack_from_facts",
     "fetch_accounting_pack_kr",
+    "build_kfa_snapshot",
 ]
