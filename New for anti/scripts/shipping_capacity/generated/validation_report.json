@@ -1,0 +1,359 @@
+{
+  "generated_at": "2026-08-12T03:30:22.303005+00:00",
+  "snapshot_model_version": "1.7.0",
+  "snapshot_generated_at": "2026-08-12T03:30:20.349188+00:00",
+  "simulator_validation": {
+    "status": "passed",
+    "scope": "temporary validation values only; never published as observed data or scenario presets",
+    "temporary_grid": {
+      "closure_fractions": [
+        0.0,
+        0.25,
+        0.5,
+        0.8,
+        1.0
+      ],
+      "duration_days": [
+        0,
+        7,
+        14,
+        28
+      ],
+      "insurance_unavailable_shares": [
+        0.0,
+        0.5,
+        1.0
+      ],
+      "waiting_days": 14,
+      "onboard_waiting_share": 0.6,
+      "trapped_days": 14
+    },
+    "route_count": 21,
+    "exposure_count": 15,
+    "case_count": 900,
+    "accounting_failure_count": 0,
+    "monotonic_failure_count": 0,
+    "accounting_failures": [],
+    "monotonic_failures": [],
+    "representative_cases": {
+      "container": {
+        "route_id": "asia_north_europe_container",
+        "chokepoint_id": "suez",
+        "temporary_inputs": {
+          "id": "temporary_validation_only",
+          "chokepoint_id": "suez",
+          "event_type": "temporary_validation_only",
+          "closure_fraction": 0.8,
+          "residual_throughput_rate": 0.19999999999999996,
+          "duration_days": 28,
+          "horizon_days": 28,
+          "waiting_days": 14,
+          "onboard_waiting_share": 0.6,
+          "trapped_days": 14,
+          "insurance_unavailable_share": 0.5
+        },
+        "served_flow_index": 0.7041428571428568,
+        "backlog_cargo_tonnes_horizon": 139311.27206032674,
+        "trapped_loaded_dwt": 46484.0834720795,
+        "insurance_excluded_dwt": 2768353.6097718976,
+        "commercially_available_dwt": 3059759.252905782,
+        "commercial_capacity_gap_dwt": 3603203.5171861523
+      },
+      "dry_bulk": {
+        "route_id": "us_gulf_ne_asia_grain",
+        "chokepoint_id": "panama",
+        "temporary_inputs": {
+          "id": "temporary_validation_only",
+          "chokepoint_id": "panama",
+          "event_type": "temporary_validation_only",
+          "closure_fraction": 0.8,
+          "residual_throughput_rate": 0.19999999999999996,
+          "duration_days": 28,
+          "horizon_days": 28,
+          "waiting_days": 14,
+          "onboard_waiting_share": 0.6,
+          "trapped_days": 14,
+          "insurance_unavailable_share": 0.5
+        },
+        "served_flow_index": 0.4479999999999998,
+        "backlog_cargo_tonnes_horizon": 583995.8349219419,
+        "trapped_loaded_dwt": 213657.01277632022,
+        "insurance_excluded_dwt": 3017650.951878885,
+        "commercially_available_dwt": 4526476.427818326,
+        "commercial_capacity_gap_dwt": 4598342.030572072
+      },
+      "tanker": {
+        "route_id": "persian_gulf_europe_crude",
+        "chokepoint_id": "hormuz",
+        "temporary_inputs": {
+          "id": "temporary_validation_only",
+          "chokepoint_id": "hormuz",
+          "event_type": "temporary_validation_only",
+          "closure_fraction": 0.8,
+          "residual_throughput_rate": 0.19999999999999996,
+          "duration_days": 28,
+          "horizon_days": 28,
+          "waiting_days": 14,
+          "onboard_waiting_share": 0.6,
+          "trapped_days": 14,
+          "insurance_unavailable_share": 0.5
+        },
+        "served_flow_index": 0.19999999999999984,
+        "backlog_cargo_tonnes_horizon": 1979507.4916020446,
+        "trapped_loaded_dwt": 674832.0994097879,
+        "insurance_excluded_dwt": 3730768.2003746117,
+        "commercially_available_dwt": 3730768.2003746117,
+        "commercial_capacity_gap_dwt": 4092663.0497782836
+      }
+    }
+  },
+  "environment_simulator_validation": {
+    "status": "passed",
+    "scope": "temporary environmental response values only; physical DWT remains unchanged",
+    "temporary_grid": {
+      "speed_response_shares": [
+        0.0,
+        0.5,
+        1.0
+      ],
+      "speed_reduction_fractions": [
+        0.0,
+        0.1,
+        0.2
+      ],
+      "retrofit_offhire_shares": [
+        0.0,
+        0.05,
+        0.1
+      ]
+    },
+    "route_count": 21,
+    "case_count": 567,
+    "accounting_failure_count": 0,
+    "monotonic_failure_count": 0,
+    "accounting_failures": [],
+    "monotonic_failures": [],
+    "representative_cases": {
+      "container": {
+        "route_id": "asia_north_europe_container",
+        "temporary_inputs": {
+          "speed_response_share": 1.0,
+          "speed_reduction_fraction": 0.1,
+          "retrofit_offhire_share": 0.05
+        },
+        "physical_allocated_dwt": 5874596.946149759,
+        "effective_service_capacity_dwt": 5105841.93235521,
+        "effective_dwt_loss": 768755.0137945488,
+        "effective_capacity_retention_rate": 0.8691391050583658,
+        "same_service_required_dwt": 6437236.803483404
+      },
+      "dry_bulk": {
+        "route_id": "us_gulf_ne_asia_grain",
+        "temporary_inputs": {
+          "speed_response_share": 1.0,
+          "speed_reduction_fraction": 0.1,
+          "retrofit_offhire_share": 0.05
+        },
+        "physical_allocated_dwt": 7757784.392473532,
+        "effective_service_capacity_dwt": 6714676.8964585075,
+        "effective_dwt_loss": 1043107.4960150244,
+        "effective_capacity_retention_rate": 0.8655405405405403,
+        "same_service_required_dwt": 8618207.605882445
+      },
+      "tanker": {
+        "route_id": "persian_gulf_europe_crude",
+        "temporary_inputs": {
+          "speed_response_share": 1.0,
+          "speed_reduction_fraction": 0.1,
+          "retrofit_offhire_share": 0.05
+        },
+        "physical_allocated_dwt": 8136368.500159011,
+        "effective_service_capacity_dwt": 7062356.07746302,
+        "effective_dwt_loss": 1074012.4226959916,
+        "effective_capacity_retention_rate": 0.8679985520966753,
+        "same_service_required_dwt": 9013184.677849028
+      }
+    }
+  },
+  "portwatch_backtests": {
+    "status": "available",
+    "chokepoint_count": 5,
+    "results": [
+      {
+        "chokepoint_id": "suez",
+        "metric": "all",
+        "latest_date": "2026-08-02",
+        "selected_model": "linear",
+        "forecast_use": "descriptive_only",
+        "published_next_7d_shortfall_fraction": null,
+        "holdout_beats_best_simple_baseline_by_5pct": false,
+        "walk_forward_beats_best_simple_baseline_by_5pct": false,
+        "walk_forward_positive_r2": true,
+        "walk_forward_selected_model_metrics": {
+          "model": "linear",
+          "cv_mae_symmetric_gap": null,
+          "test_mae_symmetric_gap": 0.092848,
+          "test_rmse_symmetric_gap": 0.111012,
+          "test_r2": 0.018073,
+          "stress_direction_accuracy": 0.772321,
+          "mean_fold_mae_symmetric_gap": 0.092848,
+          "fold_wins_vs_best_simple_baseline": 1
+        },
+        "walk_forward_method": "four-fold expanding-window backtest with non-overlapping 56-sample test blocks"
+      },
+      {
+        "chokepoint_id": "panama",
+        "metric": "all",
+        "latest_date": "2026-08-02",
+        "selected_model": "ridge",
+        "forecast_use": "descriptive_only",
+        "published_next_7d_shortfall_fraction": null,
+        "holdout_beats_best_simple_baseline_by_5pct": false,
+        "walk_forward_beats_best_simple_baseline_by_5pct": false,
+        "walk_forward_positive_r2": true,
+        "walk_forward_selected_model_metrics": {
+          "model": "ridge",
+          "cv_mae_symmetric_gap": null,
+          "test_mae_symmetric_gap": 0.079883,
+          "test_rmse_symmetric_gap": 0.103546,
+          "test_r2": 0.009607,
+          "stress_direction_accuracy": 0.84375,
+          "mean_fold_mae_symmetric_gap": 0.079883,
+          "fold_wins_vs_best_simple_baseline": 1
+        },
+        "walk_forward_method": "four-fold expanding-window backtest with non-overlapping 56-sample test blocks"
+      },
+      {
+        "chokepoint_id": "bosporus",
+        "metric": "all",
+        "latest_date": "2026-08-02",
+        "selected_model": "ridge",
+        "forecast_use": "descriptive_only",
+        "published_next_7d_shortfall_fraction": null,
+        "holdout_beats_best_simple_baseline_by_5pct": true,
+        "walk_forward_beats_best_simple_baseline_by_5pct": false,
+        "walk_forward_positive_r2": true,
+        "walk_forward_selected_model_metrics": {
+          "model": "ridge",
+          "cv_mae_symmetric_gap": null,
+          "test_mae_symmetric_gap": 0.14428,
+          "test_rmse_symmetric_gap": 0.190296,
+          "test_r2": 0.042892,
+          "stress_direction_accuracy": 0.683036,
+          "mean_fold_mae_symmetric_gap": 0.14428,
+          "fold_wins_vs_best_simple_baseline": 2
+        },
+        "walk_forward_method": "four-fold expanding-window backtest with non-overlapping 56-sample test blocks"
+      },
+      {
+        "chokepoint_id": "bab_el_mandeb",
+        "metric": "all",
+        "latest_date": "2026-08-02",
+        "selected_model": "gradient_boosting",
+        "forecast_use": "descriptive_only",
+        "published_next_7d_shortfall_fraction": null,
+        "holdout_beats_best_simple_baseline_by_5pct": false,
+        "walk_forward_beats_best_simple_baseline_by_5pct": false,
+        "walk_forward_positive_r2": true,
+        "walk_forward_selected_model_metrics": {
+          "model": "gradient_boosting",
+          "cv_mae_symmetric_gap": null,
+          "test_mae_symmetric_gap": 0.093912,
+          "test_rmse_symmetric_gap": 0.128113,
+          "test_r2": 0.050197,
+          "stress_direction_accuracy": 0.857143,
+          "mean_fold_mae_symmetric_gap": 0.093912,
+          "fold_wins_vs_best_simple_baseline": 3
+        },
+        "walk_forward_method": "four-fold expanding-window backtest with non-overlapping 56-sample test blocks"
+      },
+      {
+        "chokepoint_id": "hormuz",
+        "metric": "tanker",
+        "latest_date": "2026-08-02",
+        "selected_model": "ridge",
+        "forecast_use": "descriptive_only",
+        "published_next_7d_shortfall_fraction": null,
+        "holdout_beats_best_simple_baseline_by_5pct": false,
+        "walk_forward_beats_best_simple_baseline_by_5pct": false,
+        "walk_forward_positive_r2": true,
+        "walk_forward_selected_model_metrics": {
+          "model": "ridge",
+          "cv_mae_symmetric_gap": null,
+          "test_mae_symmetric_gap": 0.817949,
+          "test_rmse_symmetric_gap": 1.088728,
+          "test_r2": 0.050141,
+          "stress_direction_accuracy": 0.669643,
+          "mean_fold_mae_symmetric_gap": 0.817949,
+          "fold_wins_vs_best_simple_baseline": 0
+        },
+        "walk_forward_method": "four-fold expanding-window backtest with non-overlapping 56-sample test blocks"
+      }
+    ]
+  },
+  "historical_event_calibration_validation": {
+    "status": "passed",
+    "event_count": 4,
+    "failure_count": 0,
+    "failures": [],
+    "identification_boundary": "Observed throughput severity, duration and recovery are calibrated. Reroute/wait/cancel/insurance shares are not uniquely identifiable from a single passage series.",
+    "events": [
+      {
+        "event_id": "suez_ever_given_2021",
+        "event_type": "physical_chokepoint_closure",
+        "metric": "all",
+        "mean_shortfall_fraction": 0.822099,
+        "peak_7d_shortfall_fraction": 0.822099,
+        "shortfall_ci_95": [
+          0.742133,
+          0.93019
+        ],
+        "placebo_p_value": 0.003012,
+        "recovery_days_after_window_end": 7,
+        "behavior_partition_status": "not_identified_by_single_chokepoint_throughput"
+      },
+      {
+        "event_id": "panama_drought_restrictions_2023_24",
+        "event_type": "operational_restriction",
+        "metric": "all",
+        "mean_shortfall_fraction": 0.299616,
+        "peak_7d_shortfall_fraction": 0.391597,
+        "shortfall_ci_95": [
+          0.240838,
+          0.363201
+        ],
+        "placebo_p_value": 0.003802,
+        "recovery_days_after_window_end": null,
+        "behavior_partition_status": "not_identified_by_single_chokepoint_throughput"
+      },
+      {
+        "event_id": "red_sea_initial_rerouting_2023_24",
+        "event_type": "commercial_war_risk",
+        "metric": "all",
+        "mean_shortfall_fraction": 0.507535,
+        "peak_7d_shortfall_fraction": 0.667991,
+        "shortfall_ci_95": [
+          0.448304,
+          0.586038
+        ],
+        "placebo_p_value": 0.003817,
+        "recovery_days_after_window_end": null,
+        "behavior_partition_status": "not_identified_by_single_chokepoint_throughput"
+      },
+      {
+        "event_id": "hormuz_conflict_2026",
+        "event_type": "military_physical_closure",
+        "metric": "tanker",
+        "mean_shortfall_fraction": 0.970421,
+        "peak_7d_shortfall_fraction": 0.999584,
+        "shortfall_ci_95": [
+          0.959171,
+          0.982813
+        ],
+        "placebo_p_value": 0.004367,
+        "recovery_days_after_window_end": null,
+        "behavior_partition_status": "not_identified_by_single_chokepoint_throughput"
+      }
+    ]
+  }
+}

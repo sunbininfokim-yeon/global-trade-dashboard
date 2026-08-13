@@ -1,0 +1,102 @@
+{
+  "iso3": "RUS",
+  "year": 2026,
+  "as_of": "2026-08-08",
+  "null_policy": {
+    "없음": "해당 일정/선거 없음",
+    "불명": "발표·확정 전 또는 출처에 날짜 없음"
+  },
+  "sources": [
+    {
+      "id": "kremlin_decree_2026-06-16",
+      "org": "President of Russia",
+      "url": "http://en.kremlin.ru/acts/news/80036",
+      "covers": [
+        "state_duma_date"
+      ],
+      "retrieved": "2026-08-08"
+    },
+    {
+      "id": "tass_2026-06-16",
+      "org": "TASS",
+      "url": "https://tass.com/politics/2146991",
+      "covers": [
+        "duma_and_regional_bundle"
+      ]
+    },
+    {
+      "id": "cikrf",
+      "org": "Central Election Commission",
+      "url": "http://www.cikrf.ru/",
+      "covers": [
+        "calendar",
+        "rosters"
+      ],
+      "note": "CEC multi-day voting 18–20 Sep 2026"
+    }
+  ],
+  "notes": [
+    "Putin decree 2026-06-16 sets State Duma election day 2026-09-20.",
+    "CEC approved three-day voting 2026-09-18..20.",
+    "Single voting day bundles regional heads (~11) and regional legislatures (~39) per TASS."
+  ],
+  "events": [
+    {
+      "id": "rus-2026-ur-congress",
+      "type": "party_leadership",
+      "party_id": "ur",
+      "label_ko": "통합러시아 전당·명부 절차",
+      "date": "불명",
+      "status": "tentative",
+      "notes": "두마 전 당 명부; 공개 경쟁적 당대표 교체와 다름. CIKRF/UR 공고 todo"
+    },
+    {
+      "id": "rus-2026-duma",
+      "type": "general",
+      "label_ko": "국가두마 선거(제9기)",
+      "date": "2026-09-20",
+      "date_span": [
+        "2026-09-18",
+        "2026-09-20"
+      ],
+      "status": "scheduled",
+      "notes": "450 seats; decree day 09-20; voting 18–20 Sep.",
+      "sources": [
+        "kremlin_decree_2026-06-16",
+        "cikrf",
+        "tass_2026-06-16",
+        "invest_lens_elections"
+      ],
+      "market_significance_invest_lens": 1
+    },
+    {
+      "id": "rus-2026-single-voting-day-regions",
+      "type": "local",
+      "label_ko": "단일투표일 지방(주지사·주의회 등)",
+      "date": "2026-09-20",
+      "date_span": [
+        "2026-09-18",
+        "2026-09-20"
+      ],
+      "status": "scheduled",
+      "notes": "Bundled with Duma day. Exact subject list = CIKRF extract todo.",
+      "sources": [
+        "tass_2026-06-16",
+        "cikrf",
+        "invest_lens_elections"
+      ],
+      "market_significance_invest_lens": 1
+    },
+    {
+      "id": "rus-2026-presidential",
+      "type": "presidential",
+      "label_ko": "대선",
+      "date": "없음",
+      "status": "없음",
+      "notes": "Next after 2024 cycle — not in 2026.",
+      "sources": [
+        "kremlin_decree_2026-06-16"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,679 @@
+{
+  "schema": "kfa_engine_v1",
+  "label": "000660",
+  "view_presets": {
+    "default_view": "basic",
+    "views": {
+      "basic": {
+        "cards": [
+          "revenue",
+          "operating_income",
+          "net_income",
+          "cfo",
+          "fcf",
+          "cash",
+          "net_debt",
+          "current_ratio",
+          "debt_due_within_1y",
+          "liquidity_coverage_1y",
+          "interest_coverage",
+          "ccc_days"
+        ],
+        "models": []
+      },
+      "investor": {
+        "cards": [
+          "revenue",
+          "operating_income",
+          "net_income",
+          "fcf",
+          "owner_earnings",
+          "earnings_quality",
+          "margins_trend",
+          "capex_to_da",
+          "net_debt_to_oe",
+          "interest_coverage"
+        ],
+        "models": [
+          "oe_hurdle",
+          "reverse_dcf",
+          "oe_yield"
+        ]
+      },
+      "pe": {
+        "cards": [
+          "revenue",
+          "ebitda_or_op",
+          "fcf",
+          "net_debt_to_ebitda",
+          "fcf_to_ebitda",
+          "interest_coverage",
+          "maint_capex_burden",
+          "nwc_change_to_sales",
+          "debt_due_within_1y",
+          "liquidity_coverage_1y"
+        ],
+        "models": [
+          "delever_path",
+          "coverage_capacity",
+          "fcf_yield_entry"
+        ]
+      },
+      "deal": {
+        "cards": [
+          "revenue",
+          "operating_income",
+          "ebitda",
+          "trading_multiples",
+          "ev_bridge",
+          "qoe_flags",
+          "segment",
+          "nwc_to_sales",
+          "net_debt"
+        ],
+        "models": [
+          "fcff_dcf",
+          "trading_comps",
+          "sotp_or_ev_bridge"
+        ]
+      }
+    },
+    "rules": {
+      "overlap_allowed": true,
+      "max_models_per_non_basic_view": 3,
+      "no_price_target": true,
+      "null_with_reason": true
+    }
+  },
+  "as_of": "2025-12-31",
+  "currency": "KRW",
+  "meta": {
+    "ticker": "000660",
+    "corp_code": "00164779",
+    "entity": "SK하이닉스",
+    "entity_eng": "SK Hynix Inc.",
+    "stock_code": "000660",
+    "source": "opendart",
+    "fs_div": "CFS",
+    "acc_mt": "12",
+    "shares_outstanding": null
+  },
+  "basic_cards": {
+    "revenue": {
+      "value": 97146675000000.0,
+      "series": [
+        {
+          "year": 2025,
+          "end": "2025-12-31",
+          "value": 97146675000000.0
+        }
+      ],
+      "yoy": null
+    },
+    "operating_income": {
+      "value": 47206319000000.0,
+      "series": [
+        {
+          "year": 2025,
+          "end": "2025-12-31",
+          "value": 47206319000000.0
+        }
+      ],
+      "margin": 0.4859283037736495
+    },
+    "net_income": {
+      "value": 42947902000000.0,
+      "series": [
+        {
+          "year": 2025,
+          "end": "2025-12-31",
+          "value": 42947902000000.0
+        }
+      ],
+      "margin": 0.4420933809623438
+    },
+    "cfo": {
+      "value": 53373126000000.0,
+      "series": [
+        {
+          "year": 2025,
+          "end": "2025-12-31",
+          "value": 53373126000000.0
+        }
+      ]
+    },
+    "fcf": {
+      "value": 25854202000000.0,
+      "definition": "cfo - abs(capex)",
+      "series": [
+        {
+          "year": 2025,
+          "end": "2025-12-31",
+          "value": 25854202000000.0
+        }
+      ]
+    },
+    "cash": {
+      "value": 14923766000000.0,
+      "series": [
+        {
+          "year": 2025,
+          "end": "2025-12-31",
+          "value": 14923766000000.0
+        }
+      ]
+    },
+    "net_debt": {
+      "value": 7324139000000.0,
+      "series": [],
+      "definition": "short_term_borrowings + long_term_debt - cash_and_equivalents (marketable_securities not fetched by this adapter)"
+    },
+    "current_ratio": {
+      "value": 1.8582111575540052,
+      "series": []
+    },
+    "debt_due_within_1y": {
+      "value": null,
+      "components": {
+        "short_term_borrowings": 8161757000000.0,
+        "current_portion_lt_debt": null,
+        "leases_current": null
+      },
+      "reason": "missing:current_portion_lt_debt_and_lease_current_not_separately_tagged"
+    },
+    "liquidity_coverage_1y": {
+      "value": null,
+      "status": null,
+      "rule": "buffer / debt_due_within_1y; <1 stressed, 1–1.5 tight, >2 comfortable"
+    },
+    "interest_coverage": {
+      "value": 3.7749961255491606,
+      "series": [
+        {
+          "year": 2025,
+          "end": "2025-12-31",
+          "value": 3.7749961255491606
+        }
+      ],
+      "reason": null,
+      "definition": "operating_income / abs(interest_expense)"
+    },
+    "ccc_days": {
+      "value": null,
+      "series": [],
+      "reason": "missing:dso_dio_dpo_inputs_not_fetched"
+    },
+    "owner_earnings": {
+      "value": null,
+      "series": [],
+      "reason": "missing:depreciation_and_amortization"
+    },
+    "earnings_quality": {
+      "value": 1.2427411704534486,
+      "series": [
+        {
+          "year": 2025,
+          "end": "2025-12-31",
+          "value": 1.2427411704534486
+        }
+      ],
+      "reason": null
+    },
+    "margins_trend": {
+      "value": "2025 48.6%",
+      "series": [
+        {
+          "year": 2025,
+          "end": "2025-12-31",
+          "value": 0.4859283037736495
+        }
+      ],
+      "reason": null
+    },
+    "capex_to_da": {
+      "value": null,
+      "series": [],
+      "reason": "missing:aligned_series"
+    },
+    "net_debt_to_oe": {
+      "value": null,
+      "series": [],
+      "reason": "missing:net_debt_or_owner_earnings"
+    },
+    "ebitda_or_op": {
+      "value": 47206319000000.0,
+      "series": [
+        {
+          "year": 2025,
+          "end": "2025-12-31",
+          "value": 47206319000000.0
+        }
+      ],
+      "reason": "proxy:operating_income_used_because_ebitda_unavailable"
+    },
+    "net_debt_to_ebitda": {
+      "value": 0.15515166518279047,
+      "series": [],
+      "reason": "proxy:operating_income_used_because_ebitda_unavailable"
+    },
+    "fcf_to_ebitda": {
+      "value": null,
+      "series": [],
+      "reason": "proxy:operating_income_used_because_ebitda_unavailable"
+    },
+    "maint_capex_burden": {
+      "value": null,
+      "series": [],
+      "reason": "missing:aligned_depreciation_capex_and_revenue"
+    },
+    "nwc_change_to_sales": {
+      "value": null,
+      "series": [],
+      "reason": "missing:aligned_two_year_nwc_and_revenue"
+    },
+    "ebitda": {
+      "value": 47206319000000.0,
+      "series": [
+        {
+          "year": 2025,
+          "end": "2025-12-31",
+          "value": 47206319000000.0
+        }
+      ],
+      "reason": "proxy:operating_income_used_because_ebitda_unavailable"
+    },
+    "trading_multiples": {
+      "value": null,
+      "series": [],
+      "reason": "missing:positive_market_cap"
+    },
+    "ev_bridge": {
+      "value": null,
+      "series": [],
+      "reason": "missing:market_cap"
+    },
+    "qoe_flags": {
+      "value": "CFO/순이익 1.24x",
+      "series": [],
+      "reason": "limited_to_cash_conversion; one_off_items_and_note_reconciliations_unmapped"
+    },
+    "segment": {
+      "value": null,
+      "series": [],
+      "reason": "missing:segment_disclosure"
+    },
+    "nwc_to_sales": {
+      "value": null,
+      "series": [],
+      "reason": "missing:net_working_capital_or_revenue"
+    }
+  },
+  "accounting_pack": {
+    "as_of": "2025-12-31",
+    "currency": "KRW",
+    "years": [],
+    "pnl": {
+      "revenue": {
+        "value": 97146675000000.0,
+        "yoy": null,
+        "series": [
+          {
+            "year": 2025,
+            "end": "2025-12-31",
+            "value": 97146675000000.0
+          }
+        ]
+      },
+      "gross_profit": {
+        "value": 58690790000000.0,
+        "margin": null,
+        "series": [
+          {
+            "year": 2025,
+            "end": "2025-12-31",
+            "value": 58690790000000.0
+          }
+        ]
+      },
+      "operating_income": {
+        "value": 47206319000000.0,
+        "margin": null,
+        "series": [
+          {
+            "year": 2025,
+            "end": "2025-12-31",
+            "value": 47206319000000.0
+          }
+        ]
+      },
+      "ebitda": {
+        "value": null,
+        "margin": null,
+        "series": []
+      },
+      "net_income": {
+        "value": 42947902000000.0,
+        "margin": null,
+        "series": [
+          {
+            "year": 2025,
+            "end": "2025-12-31",
+            "value": 42947902000000.0
+          }
+        ]
+      },
+      "profit_before_tax": {
+        "value": 50465552000000.0,
+        "series": [
+          {
+            "year": 2025,
+            "end": "2025-12-31",
+            "value": 50465552000000.0
+          }
+        ]
+      },
+      "income_tax_expense": {
+        "value": 7517650000000.0,
+        "series": [
+          {
+            "year": 2025,
+            "end": "2025-12-31",
+            "value": 7517650000000.0
+          }
+        ]
+      },
+      "effective_tax_rate": {
+        "value": null,
+        "series": []
+      },
+      "interest_expense": {
+        "value": 12504998000000.0,
+        "series": [
+          {
+            "year": 2025,
+            "end": "2025-12-31",
+            "value": 12504998000000.0
+          }
+        ],
+        "reason": "approx:ifrs_finance_costs_not_pure_interest"
+      },
+      "eps": {
+        "value": 62044.0,
+        "series": [
+          {
+            "year": 2025,
+            "end": "2025-12-31",
+            "value": 62044.0
+          }
+        ]
+      }
+    },
+    "cash_flow": {
+      "cfo": {
+        "value": 53373126000000.0,
+        "series": [
+          {
+            "year": 2025,
+            "end": "2025-12-31",
+            "value": 53373126000000.0
+          }
+        ]
+      },
+      "depreciation_and_amortization": {
+        "value": null,
+        "series": [],
+        "reason": "missing:not_disclosed_separately"
+      },
+      "capex": {
+        "value": 27518924000000.0,
+        "abs_value": null,
+        "series": [
+          {
+            "year": 2025,
+            "end": "2025-12-31",
+            "value": 27518924000000.0
+          }
+        ],
+        "sign_note": "stored as reported; FCF uses abs"
+      },
+      "fcf": {
+        "value": null,
+        "definition": "cfo - abs(capex)",
+        "series": []
+      },
+      "fcf_conversion_ni": {
+        "value": null,
+        "series": []
+      }
+    },
+    "liquidity": {
+      "cash_and_equivalents": {
+        "value": 14923766000000.0,
+        "series": [
+          {
+            "year": 2025,
+            "end": "2025-12-31",
+            "value": 14923766000000.0
+          }
+        ]
+      },
+      "marketable_securities_current": {
+        "value": null,
+        "series": []
+      },
+      "undrawn_revolver": {
+        "value": null,
+        "reason": null
+      },
+      "liquidity_buffer": {
+        "value": null,
+        "components": {}
+      },
+      "debt_due_within_1y": {
+        "value": null,
+        "components": {
+          "short_term_borrowings": 8161757000000.0,
+          "current_portion_lt_debt": null,
+          "leases_current": null
+        },
+        "reason": "missing:current_portion_lt_debt_and_lease_current_not_separately_tagged"
+      },
+      "liquidity_coverage_1y": {
+        "value": null,
+        "status": null,
+        "rule": "buffer / debt_due_within_1y; <1 stressed, 1–1.5 tight, >2 comfortable"
+      },
+      "current_ratio": {
+        "value": 1.8582111575540052,
+        "series": []
+      },
+      "interest_coverage": {
+        "value": null,
+        "series": []
+      }
+    },
+    "debt_structure": {
+      "short_term_borrowings": 8161757000000.0,
+      "current_portion_lt_debt": null,
+      "long_term_debt": 14086148000000.0,
+      "lease_liabilities_current": null,
+      "lease_liabilities_noncurrent": null,
+      "total_interest_bearing": null,
+      "net_debt": {
+        "value": 7324139000000.0,
+        "definition": "short_term_borrowings + long_term_debt - cash_and_equivalents (marketable_securities not fetched by this adapter)",
+        "series": []
+      },
+      "maturity_ladder": {
+        "due_1y": null,
+        "due_1_3y": null,
+        "due_3_5y": null,
+        "due_after_5y": null,
+        "source": null,
+        "reason": null
+      }
+    },
+    "working_capital": {
+      "net_working_capital": {
+        "value": null,
+        "series": [],
+        "definition": "operating_current_assets - operating_current_liabilities",
+        "reason": null
+      },
+      "dso": {
+        "value": null,
+        "series": []
+      },
+      "dio": {
+        "value": null,
+        "series": []
+      },
+      "dpo": {
+        "value": null,
+        "series": []
+      },
+      "ccc_days": {
+        "value": null,
+        "series": []
+      },
+      "nwc_to_sales": {
+        "value": null,
+        "series": []
+      }
+    },
+    "reasons": []
+  },
+  "investor": {
+    "models": {
+      "oe_hurdle": {
+        "id": "oe_hurdle",
+        "status": "omitted",
+        "value": null,
+        "components": {},
+        "series": [],
+        "assumptions": {},
+        "reasons": [
+          "missing:owner_earnings"
+        ]
+      },
+      "reverse_dcf": {
+        "id": "reverse_dcf",
+        "status": "omitted",
+        "value": null,
+        "components": {},
+        "series": [],
+        "assumptions": {},
+        "reasons": [
+          "missing:positive_market_cap"
+        ]
+      },
+      "oe_yield": {
+        "id": "oe_yield",
+        "status": "omitted",
+        "value": null,
+        "components": {},
+        "series": [],
+        "assumptions": {},
+        "reasons": [
+          "missing:owner_earnings",
+          "missing:positive_market_cap"
+        ]
+      }
+    }
+  },
+  "pe": {
+    "models": {
+      "delever_path": {
+        "id": "delever_path",
+        "status": "omitted",
+        "value": null,
+        "components": {},
+        "series": [],
+        "assumptions": {
+          "fcf_retention": 1.0,
+          "horizon_years": 5,
+          "note": "assumes constant FCF; no new debt / buybacks / M&A"
+        },
+        "reasons": [
+          "need net_debt, positive ebitda, fcf"
+        ]
+      },
+      "coverage_capacity": {
+        "id": "coverage_capacity",
+        "status": "ok",
+        "value": {
+          "interest_coverage": 3.7749961255491606,
+          "net_debt_to_ebitda": 0.15515166518279047
+        },
+        "components": {
+          "headroom": {}
+        },
+        "series": [],
+        "assumptions": {
+          "target_interest_coverage": null,
+          "target_net_debt_ebitda": null,
+          "note": "targets are user assumptions, not engine opinions"
+        },
+        "reasons": [
+          "no targets set — showing current levels only"
+        ]
+      },
+      "fcf_yield_entry": {
+        "id": "fcf_yield_entry",
+        "status": "omitted",
+        "value": null,
+        "components": {},
+        "series": [],
+        "assumptions": {},
+        "reasons": [
+          "fcf missing"
+        ]
+      }
+    }
+  },
+  "deal": {
+    "models": {
+      "fcff_dcf": {
+        "id": "fcff_dcf",
+        "status": "omitted",
+        "value": null,
+        "components": {},
+        "series": [],
+        "assumptions": {},
+        "reasons": [
+          "missing:reported_revenue_cagr"
+        ]
+      },
+      "trading_comps": {
+        "id": "trading_comps",
+        "status": "omitted",
+        "value": null,
+        "components": {},
+        "series": [],
+        "assumptions": {},
+        "reasons": [
+          "missing:positive_market_cap"
+        ]
+      },
+      "sotp_or_ev_bridge": {
+        "id": "sotp_or_ev_bridge",
+        "status": "omitted",
+        "value": null,
+        "components": {},
+        "series": [],
+        "assumptions": {},
+        "reasons": [
+          "missing:market_cap_or_segment_values"
+        ]
+      }
+    }
+  },
+  "data_quality": {
+    "input_kind": "live_fetch_single_fiscal_year",
+    "source_claim": "opendart",
+    "raw_filing_facts_embedded": true,
+    "period_alignment": "single_fiscal_year_no_history",
+    "facts_fetched": 114,
+    "live_key_present": true
+  }
+}

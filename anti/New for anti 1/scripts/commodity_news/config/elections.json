@@ -1,0 +1,67 @@
+{
+  "version": 1,
+  "notes": "Domestic politics is still mostly out, except defined election types. Party leadership caps: presidential systems= ruling + main opposition; parliamentary= up to 4 major parties (curated per country seed).",
+  "election_types": {
+    "presidential": {
+      "label_ko": "대통령선거",
+      "ticker_tag": "대선",
+      "priority": 100
+    },
+    "general": {
+      "label_ko": "총선(의회선거)",
+      "ticker_tag": "총선",
+      "priority": 95
+    },
+    "local": {
+      "label_ko": "지방선거",
+      "ticker_tag": "지선",
+      "priority": 80
+    },
+    "by_election": {
+      "label_ko": "재보궐선거",
+      "ticker_tag": "재보궐",
+      "priority": 75
+    },
+    "party_leadership": {
+      "label_ko": "당대표·당수 선거",
+      "ticker_tag": "당대표",
+      "priority": 85,
+      "rules": {
+        "presidential_system": {
+          "max_parties": 2,
+          "roles": ["ruling", "main_opposition"],
+          "description_ko": "대통령제: 여당 + 제1야당 당대표 선거까지"
+        },
+        "parliamentary_system": {
+          "max_parties": 4,
+          "roles": ["major_1", "major_2", "major_3", "major_4"],
+          "description_ko": "의원내각제: 주요 정당 최대 4개 당대표(당수) 선거"
+        }
+      }
+    }
+  },
+  "admission_terms": [
+    "presidential election", "general election", "parliamentary election", "midterm election",
+    "legislative election", "local election", "municipal election", "gubernatorial election",
+    "state election", "provincial election", "by-election", "byelection", "by election",
+    "special election", "runoff election", "second round", "electoral college",
+    "party leadership", "leadership contest", "leadership race", "party leader election",
+    "party chair", "party chairman", "party chairperson", "party president election",
+    "congress leadership", "primary for party leader", "selects new leader",
+    "opposition leader race", "ruling party leader",
+    "대통령 선거", "대선", "총선", "총선거", "국회의원 선거", "지방선거", "지선",
+    "광역단체장", "기초단체장", "재보궐", "보궐선거", "재선거",
+    "당대표", "당대표 선거", "당대표 경선", "전당대회", "대표 경선", "원내대표 경선",
+    "당수", "당수 선거", "야당 대표", "여당 대표", "총재 선거",
+    "انتخابات رئاسية", "انتخابات برلمانية", "انتخابات محلية", "انتخابات فرعية", "زعيم الحزب",
+    "总统选举", "大选", "议会选举", "地方选举", "补选", "党魁", "党主席选举", "党代表",
+    "総統選", "大統領選", "総選挙", "衆院選", "参院選", "地方選", "補欠選挙", "党首選", "党代表選",
+    "президентск", "парламентск", "местн", "досрочн", "выборы", "лидер партии", "председатель партии",
+    "cumhurbaşkanlığı seçimi", "genel seçim", "yerel seçim", "ara seçim", "genel başkan"
+  ],
+  "non_election_domestic_reject": [
+    "cabinet reshuffle drama", "parliamentary brawl", "impeachment hearing without election",
+    "tabloid politics", "celebrity politician dating",
+    "탄핵 정국", "국회 몸싸움", "개각 혼선", "네거티브 상호 비방만"
+  ]
+}

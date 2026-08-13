@@ -2,178 +2,416 @@
   "schema_version": "derivatives-board-v1",
   "kr": {
     "schema_version": "kr-derivatives-v1",
-    "as_of": "2026-08-07",
-    "fetched_at": "2026-08-08T09:59:26.235161+00:00",
-    "kospi200_futures_oi": {
-      "quality": "missing"
+    "as_of": "2026-08-11",
+    "fetched_at": "2026-08-12T09:19:34.274597+00:00",
+    "kospi200_futures": {
+      "product": "KOSPI200_futures",
+      "volume": 117061.0,
+      "trading_value_krw": 28804638312500.0,
+      "n_contracts": 26,
+      "quality": "observed",
+      "coverage_ko": "코스피200 선물 전 결제월 합계. 미니코스피200 제외.",
+      "source": "KRX OpenAPI drv/fut_bydd_trd"
     },
     "kospi200_options": {
-      "quality": "missing"
+      "call_volume": 244075.0,
+      "put_volume": 164860.0,
+      "call_trading_value_krw": 136370282500.0,
+      "put_trading_value_krw": 152200352500.0,
+      "put_call_volume": 0.6754,
+      "put_call_trading_value": 1.1161,
+      "n_call_contracts": 5420,
+      "n_put_contracts": 5420,
+      "quality": "observed",
+      "coverage_ko": "코스피200 표준·위클리 옵션 합계. 미니코스피200·코스닥150 제외.",
+      "source": "KRX OpenAPI drv/opt_bydd_trd",
+      "bas_dd": "20260811"
     },
-    "equity_options_oi_skew": [],
     "investor_nets": {
-      "note_ko": "UI 시드는 권리유형=전체. 콜/풋 분리는 CSV 2회 export 후 --csv-opt-call/--csv-opt-put 로 주입.",
-      "unit": "백만원",
-      "futures": [
-        {
-          "date": "2026-08-01",
-          "foreign_net_mn_krw": null,
-          "note": "선물 CSV 필요"
+      "note_ko": "KRX 공개 대시보드는 코스피200 선물 및 옵션 전체의 투자자별 매수·매도·순매수를 제공한다. 옵션 콜/풋 분리는 인증이 필요한 data.krx 「투자자별 거래실적」 CSV를 콜·풋 각각 export해야 한다.",
+      "public_dashboard": {
+        "source": "KRX 공개 대시보드 MDCMAIN00103",
+        "coverage_ko": "KOSPI200 선물 및 KOSPI200 옵션 전체의 투자자별 매수·매도·순매수. 옵션 콜/풋 분리 아님.",
+        "unit": "KRW",
+        "futures": {
+          "as_of": "2026-08-12",
+          "observed_at_krx": "2026.08.12 PM 06:19:33",
+          "investors": {
+            "institution": {
+              "buy_krw": 3717000000000,
+              "sell_krw": 3863000000000,
+              "net_krw": -146000000000
+            },
+            "foreign": {
+              "buy_krw": 28402000000000,
+              "sell_krw": 28682000000000,
+              "net_krw": -279000000000
+            },
+            "retail": {
+              "buy_krw": 5136000000000,
+              "sell_krw": 4873000000000,
+              "net_krw": 263000000000
+            }
+          },
+          "quality": "observed"
         },
-        {
-          "date": "2026-08-07",
-          "foreign_net_mn_krw": null
-        }
-      ],
-      "options_call": [
-        {
-          "date": "2026-08-01",
-          "foreign_net_mn_krw": null
+        "options_total": {
+          "as_of": "2026-08-12",
+          "observed_at_krx": "2026.08.12 PM 06:19:34",
+          "investors": {
+            "institution": {
+              "buy_krw": 12000000000,
+              "sell_krw": 17000000000,
+              "net_krw": -5000000000
+            },
+            "foreign": {
+              "buy_krw": 287000000000,
+              "sell_krw": 278000000000,
+              "net_krw": 8000000000
+            },
+            "retail": {
+              "buy_krw": 82000000000,
+              "sell_krw": 82000000000,
+              "net_krw": 0
+            }
+          },
+          "quality": "observed"
         },
-        {
-          "date": "2026-08-07",
-          "foreign_net_mn_krw": null
-        }
-      ],
-      "options_put": [
-        {
-          "date": "2026-08-01",
-          "foreign_net_mn_krw": null
-        },
-        {
-          "date": "2026-08-07",
-          "foreign_net_mn_krw": null
-        }
-      ],
-      "quality": "demo",
-      "options_total_seed_from_ui": [
-        {
-          "date": "2026-08-01",
-          "foreign_net_mn_krw": 9346
-        },
-        {
-          "date": "2026-08-02",
-          "foreign_net_mn_krw": -5445
-        },
-        {
-          "date": "2026-08-05",
-          "foreign_net_mn_krw": 6617
-        },
-        {
-          "date": "2026-08-06",
-          "foreign_net_mn_krw": -2281
-        },
-        {
-          "date": "2026-08-07",
-          "foreign_net_mn_krw": -421
-        }
-      ]
+        "quality": "partial_observed"
+      },
+      "unit": "CSV 세부 순매수는 백만원; 공개 대시보드 매수·매도·순매수는 KRW",
+      "futures": null,
+      "options_call": null,
+      "options_put": null,
+      "quality": "partial_observed"
     },
     "source_priority_used": [
-      "fixture_seed"
+      "krx_fut_bydd_trd",
+      "krx_opt_bydd_trd",
+      "krx_public_investor_dashboard"
     ],
-    "errors": [
-      "KRX_API unset — OpenAPI OI/skew not fetched"
-    ],
+    "errors": [],
     "disclaimer_ko": "공개·신청 API / CSV. 투자 권유 아님."
   },
   "us_oi_snap": {
     "schema_version": "us-oi-daily-v1",
-    "as_of": "2026-08-08",
-    "fetched_at": "2026-08-08T09:59:31.515484+00:00",
+    "as_of": "2026-08-12",
+    "fetched_at": "2026-08-12T09:19:06.842572+00:00",
     "names": [
       {
         "symbol": "MU",
-        "quality": "missing",
-        "error": "HTTP Error 429: Too Many Requests"
+        "put_call_oi": 1.1312,
+        "put_call_volume": 0.8231,
+        "put_oi": 1809468.0,
+        "call_oi": 1599663.0,
+        "put_volume": 300001.0,
+        "call_volume": 364469.0,
+        "atm_call_iv": 0.7253,
+        "total_volume": 664470.0,
+        "source": "Cboe delayed_quotes/options (CDN)",
+        "quality": "observed"
       },
       {
         "symbol": "NVDA",
-        "quality": "missing",
-        "error": "HTTP Error 429: Too Many Requests"
+        "put_call_oi": 0.8316,
+        "put_call_volume": 0.685,
+        "put_oi": 6624707.0,
+        "call_oi": 7966085.0,
+        "put_volume": 906427.0,
+        "call_volume": 1323258.0,
+        "atm_call_iv": 0.395,
+        "total_volume": 2229685.0,
+        "source": "Cboe delayed_quotes/options (CDN)",
+        "quality": "observed"
       },
       {
         "symbol": "AMD",
-        "quality": "missing",
-        "error": "HTTP Error 429: Too Many Requests"
+        "put_call_oi": 1.169,
+        "put_call_volume": 0.7212,
+        "put_oi": 1699859.0,
+        "call_oi": 1454113.0,
+        "put_volume": 142348.0,
+        "call_volume": 197372.0,
+        "atm_call_iv": 0.6269,
+        "total_volume": 339720.0,
+        "source": "Cboe delayed_quotes/options (CDN)",
+        "quality": "observed"
       },
       {
         "symbol": "AMZN",
-        "quality": "missing",
-        "error": "HTTP Error 429: Too Many Requests"
+        "put_call_oi": 0.6476,
+        "put_call_volume": 0.5416,
+        "put_oi": 1883984.0,
+        "call_oi": 2909056.0,
+        "put_volume": 199784.0,
+        "call_volume": 368892.0,
+        "atm_call_iv": 0.3184,
+        "total_volume": 568676.0,
+        "source": "Cboe delayed_quotes/options (CDN)",
+        "quality": "observed"
       },
       {
         "symbol": "SOXL",
-        "quality": "missing",
-        "error": "HTTP Error 429: Too Many Requests"
+        "put_call_oi": 2.223,
+        "put_call_volume": 2.3131,
+        "put_oi": 1067936.0,
+        "call_oi": 480400.0,
+        "put_volume": 104397.0,
+        "call_volume": 45133.0,
+        "atm_call_iv": 1.5194,
+        "total_volume": 149530.0,
+        "source": "Cboe delayed_quotes/options (CDN)",
+        "quality": "observed"
       },
       {
         "symbol": "SMH",
-        "quality": "missing",
-        "error": "HTTP Error 429: Too Many Requests"
+        "put_call_oi": 1.9781,
+        "put_call_volume": 1.5447,
+        "put_oi": 1486787.0,
+        "call_oi": 751623.0,
+        "put_volume": 67816.0,
+        "call_volume": 43902.0,
+        "atm_call_iv": 0.4321,
+        "total_volume": 111718.0,
+        "source": "Cboe delayed_quotes/options (CDN)",
+        "quality": "observed"
       },
       {
         "symbol": "AVGO",
-        "quality": "missing",
-        "error": "HTTP Error 429: Too Many Requests"
+        "put_call_oi": 1.099,
+        "put_call_volume": 1.2772,
+        "put_oi": 1060801.0,
+        "call_oi": 965283.0,
+        "put_volume": 81659.0,
+        "call_volume": 63938.0,
+        "atm_call_iv": 0.4291,
+        "total_volume": 145597.0,
+        "source": "Cboe delayed_quotes/options (CDN)",
+        "quality": "observed"
       },
       {
         "symbol": "TSM",
-        "quality": "missing",
-        "error": "HTTP Error 429: Too Many Requests"
+        "put_call_oi": 1.1247,
+        "put_call_volume": 1.3278,
+        "put_oi": 1099983.0,
+        "call_oi": 978058.0,
+        "put_volume": 53532.0,
+        "call_volume": 40317.0,
+        "atm_call_iv": 0.406,
+        "total_volume": 93849.0,
+        "source": "Cboe delayed_quotes/options (CDN)",
+        "quality": "observed"
       }
     ],
     "vol_indices": {
-      "fetched_at": "2026-08-08T09:59:31.515443+00:00",
+      "fetched_at": "2026-08-12T09:19:06.842538+00:00",
       "indices": {
         "VIX": {
-          "as_of": "08/07/2026",
-          "close": 14.9,
-          "prev_close": 15.15,
-          "day_return": -0.016502,
+          "as_of": "08/11/2026",
+          "close": 15.28,
+          "prev_close": 15.46,
+          "day_return": -0.011643,
           "source": "Cboe VIX_History.csv",
           "quality": "observed"
         },
         "VVIX": {
-          "as_of": "08/07/2026",
-          "close": 90.42,
-          "prev_close": 88.72,
-          "day_return": 0.019161,
+          "as_of": "08/11/2026",
+          "close": 90.9,
+          "prev_close": 92.51,
+          "day_return": -0.017404,
           "source": "Cboe VVIX_History.csv",
           "quality": "observed"
         },
         "SKEW": {
-          "as_of": "08/07/2026",
-          "close": 132.57,
-          "prev_close": 134.73,
-          "day_return": -0.016032,
+          "as_of": "08/11/2026",
+          "close": 135.59,
+          "prev_close": 137.13,
+          "day_return": -0.01123,
           "source": "Cboe SKEW_History.csv",
+          "quality": "observed"
+        },
+        "VIX_quote": {
+          "price": 15.32,
+          "change_pct": 0.2618,
+          "timestamp": "2026-08-12 09:18:15",
+          "source": "Cboe delayed_quotes/_VIX",
           "quality": "observed"
         }
       },
-      "errors": [
-        "VIX_quote:HTTP Error 429: Too Many Requests"
-      ],
+      "errors": [],
       "source": "cboe_cdn"
     },
-    "errors": [
-      "MU:HTTP Error 429: Too Many Requests",
-      "NVDA:HTTP Error 429: Too Many Requests",
-      "AMD:HTTP Error 429: Too Many Requests",
-      "AMZN:HTTP Error 429: Too Many Requests",
-      "SOXL:HTTP Error 429: Too Many Requests",
-      "SMH:HTTP Error 429: Too Many Requests",
-      "AVGO:HTTP Error 429: Too Many Requests",
-      "TSM:HTTP Error 429: Too Many Requests"
-    ],
+    "errors": [],
     "disclaimer_ko": "Cboe 지연 스냅샷 일별 적재. 투자 권유 아님."
   },
   "us_kr_rules": {
     "schema_version": "us-oi-kr-rules-v1",
-    "as_of": "2026-08-08",
-    "headline_level": "관찰",
-    "alerts": [],
-    "by_kr": {},
+    "as_of": "2026-08-12",
+    "headline_level": "경계",
+    "alerts": [
+      {
+        "channel": "downside",
+        "level": "경계",
+        "us": "SOXL",
+        "kr": "000660",
+        "edge_type": "etf_beta",
+        "reasons": [
+          "P/C vol=2.31 (≥1.5) vol=149530"
+        ],
+        "metrics": {
+          "put_call_oi": 2.223,
+          "put_call_volume": 2.3131,
+          "put_oi": 1067936.0,
+          "call_oi": 480400.0
+        }
+      },
+      {
+        "channel": "downside",
+        "level": "경계",
+        "us": "SMH",
+        "kr": "000660",
+        "edge_type": "etf_beta",
+        "reasons": [
+          "P/C vol=1.54 (≥1.5) vol=111718"
+        ],
+        "metrics": {
+          "put_call_oi": 1.9781,
+          "put_call_volume": 1.5447,
+          "put_oi": 1486787.0,
+          "call_oi": 751623.0
+        }
+      },
+      {
+        "channel": "downside",
+        "level": "경계",
+        "us": "SOXL",
+        "kr": "005930",
+        "edge_type": "etf_beta",
+        "reasons": [
+          "P/C vol=2.31 (≥1.5) vol=149530"
+        ],
+        "metrics": {
+          "put_call_oi": 2.223,
+          "put_call_volume": 2.3131,
+          "put_oi": 1067936.0,
+          "call_oi": 480400.0
+        }
+      },
+      {
+        "channel": "upside",
+        "level": "주의",
+        "us": "AMZN",
+        "kr": "000660",
+        "edge_type": "demand_hyperscaler",
+        "reasons": [
+          "call-heavy P/C vol=0.54"
+        ],
+        "metrics": {
+          "put_call_volume": 0.5416,
+          "call_volume": 368892.0
+        }
+      },
+      {
+        "channel": "downside",
+        "level": "주의",
+        "us": "TSM",
+        "kr": "005930",
+        "edge_type": "peer_foundry_logic",
+        "reasons": [
+          "P/C vol=1.33 (≥1.1)"
+        ],
+        "metrics": {
+          "put_call_oi": 1.1247,
+          "put_call_volume": 1.3278,
+          "put_oi": 1099983.0,
+          "call_oi": 978058.0
+        }
+      }
+    ],
+    "by_kr": {
+      "000660": [
+        {
+          "channel": "upside",
+          "level": "주의",
+          "us": "AMZN",
+          "kr": "000660",
+          "edge_type": "demand_hyperscaler",
+          "reasons": [
+            "call-heavy P/C vol=0.54"
+          ],
+          "metrics": {
+            "put_call_volume": 0.5416,
+            "call_volume": 368892.0
+          }
+        },
+        {
+          "channel": "downside",
+          "level": "경계",
+          "us": "SOXL",
+          "kr": "000660",
+          "edge_type": "etf_beta",
+          "reasons": [
+            "P/C vol=2.31 (≥1.5) vol=149530"
+          ],
+          "metrics": {
+            "put_call_oi": 2.223,
+            "put_call_volume": 2.3131,
+            "put_oi": 1067936.0,
+            "call_oi": 480400.0
+          }
+        },
+        {
+          "channel": "downside",
+          "level": "경계",
+          "us": "SMH",
+          "kr": "000660",
+          "edge_type": "etf_beta",
+          "reasons": [
+            "P/C vol=1.54 (≥1.5) vol=111718"
+          ],
+          "metrics": {
+            "put_call_oi": 1.9781,
+            "put_call_volume": 1.5447,
+            "put_oi": 1486787.0,
+            "call_oi": 751623.0
+          }
+        }
+      ],
+      "005930": [
+        {
+          "channel": "downside",
+          "level": "주의",
+          "us": "TSM",
+          "kr": "005930",
+          "edge_type": "peer_foundry_logic",
+          "reasons": [
+            "P/C vol=1.33 (≥1.1)"
+          ],
+          "metrics": {
+            "put_call_oi": 1.1247,
+            "put_call_volume": 1.3278,
+            "put_oi": 1099983.0,
+            "call_oi": 978058.0
+          }
+        },
+        {
+          "channel": "downside",
+          "level": "경계",
+          "us": "SOXL",
+          "kr": "005930",
+          "edge_type": "etf_beta",
+          "reasons": [
+            "P/C vol=2.31 (≥1.5) vol=149530"
+          ],
+          "metrics": {
+            "put_call_oi": 2.223,
+            "put_call_volume": 2.3131,
+            "put_oi": 1067936.0,
+            "call_oi": 480400.0
+          }
+        }
+      ]
+    },
     "rule_ko": {
       "경계": "링크된 US 종목 P/C 거래량≥1.5 & 옵션거래≥5만",
       "주의": "P/C vol≥1.1 또는 P/C OI≥1.3",

@@ -1,0 +1,30 @@
+{
+  "version": 1,
+  "notes": "Liquidity bias is rule-based from QRA/TGA/Fed + reporter-mined indicators.",
+  "qra_borrowing_up_threshold_bn": 25,
+  "qra_borrowing_down_threshold_bn": -25,
+  "tga_high_bn": 900,
+  "tga_low_bn": 500,
+  "bias_weights": {
+    "qra_net_borrowing_up": 1.0,
+    "qra_net_borrowing_down": -1.0,
+    "tga_cash_high": 0.6,
+    "tga_cash_low": -0.4,
+    "beige_book_tight": 0.3,
+    "beige_book_soft": -0.3,
+    "reporter_tightening_theme": 0.25,
+    "reporter_easing_theme": -0.25,
+    "reporter_tga_focus": 0.15,
+    "reporter_rrp_focus": 0.1,
+    "reporter_fx_intervention": 0.1,
+    "reporter_fima_focus": 0.15
+  },
+  "beige_soft_terms": [
+    "slowed", "slowing", "weak", "weaker", "modest", "slight", "declined", "softening",
+    "cooling", "muted", "deteriorat"
+  ],
+  "beige_firm_terms": [
+    "strong", "strengthening", "robust", "solid", "expanded briskly", "tight labor",
+    "price pressures elevated", "inflation remain"
+  ]
+}

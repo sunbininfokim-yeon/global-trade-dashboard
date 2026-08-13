@@ -1,0 +1,53 @@
+# 미국 — 국가 모델 매니페스트
+# 규격: ../MODEL_MANIFEST.md · 이 파일만 고치면 UI 코드 수정 없이 반영된다.
+
+country: us
+iso: USA
+label_ko: 미국
+label_en: United States
+panel_mode: forecast
+model_status: validated
+data_file: yield_forecast.json
+model_name: US Corn Belt Model
+
+view:
+  longitude: -96
+  latitude: 39.5
+  zoom: 3.6
+
+regions:
+  - key: corn_belt
+    label_ko: "콘벨트 (옥수수·대두)"
+    ui_name: US Corn Belt   # app.js 산지 식별자 (레지스트리 전환 중 유지)
+    coordinates: [-91, 41.5]
+    crops_region_keys: [corn_belt]
+  - key: great_plains
+    label_ko: 대평원 (겨울밀)
+    ui_name: US Great Plains   # app.js 산지 식별자 (레지스트리 전환 중 유지)
+    coordinates: [-99, 38]
+    crops_region_keys: [great_plains]
+  - key: northern_plains
+    label_ko: 북부대평원 (봄밀)
+    ui_name: US Northern Plains   # app.js 산지 식별자 (레지스트리 전환 중 유지)
+    coordinates: [-100.5, 47]
+    crops_region_keys: [northern_plains]
+  - key: cotton_belt
+    label_ko: 남부 텍사스 (면화)
+    ui_name: US Cotton Belt   # app.js 산지 식별자 (레지스트리 전환 중 유지)
+    coordinates: [-101.9, 33.6]
+    crops_region_keys: [cotton_belt]
+
+sources:
+  labels:
+    name: USDA NASS
+    url: https://quickstats.nass.usda.gov/
+    updated: "2025-12-01"
+  climate:
+    name: NASA POWER (daily)
+    url: https://power.larc.nasa.gov/
+    updated: "2026-08-06"
+
+trade_policy:
+  restricted: false
+  prohibited_crops: []
+  note_ko: 정상 수출

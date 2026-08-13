@@ -1,0 +1,348 @@
+{
+  "key": "commercial_maize_belt",
+  "crop": "corn",
+  "target": {
+    "variable": "commercial_maize_yield_kg_ha",
+    "source": "Crop Estimates Committee via SAGIS historic production workbook",
+    "spatial_scale": "South Africa commercial maize, climate proxied by core belt",
+    "area_basis": "planted area"
+  },
+  "trained_years": [
+    1992,
+    2025
+  ],
+  "n_seasons": 34,
+  "selection_protocol": {
+    "feature_selection_years": "2007-2015 forward folds only",
+    "untouched_holdout_years": "2016-2025",
+    "trend_ensemble": "equal weight: full-history + rolling 20-season log trends"
+  },
+  "feature_sets": {
+    "rain_heat": [
+      "rain_critical_mm_z",
+      "edd29_critical_c_days_z"
+    ],
+    "soil_heat": [
+      "root_sm_critical_z",
+      "edd29_critical_c_days_z"
+    ],
+    "water_demand": [
+      "root_sm_critical_z",
+      "vpd_critical_kpa_z"
+    ],
+    "phase_rain_heat": [
+      "rain_planting_mm_z",
+      "rain_critical_mm_z",
+      "edd29_critical_c_days_z"
+    ]
+  },
+  "development_validation_runs": {
+    "rain_heat": {
+      "all": {
+        "n_folds": 19,
+        "rmse_kg_ha": 959.2410558323945,
+        "baseline_rmse_kg_ha": 999.1586690776679,
+        "skill_vs_trend": 0.03995122544662666,
+        "detrended_r2": -0.5507631693276798
+      },
+      "development_2007_2015": {
+        "n_folds": 9,
+        "rmse_kg_ha": 897.2863341279497,
+        "baseline_rmse_kg_ha": 1002.3002810765108,
+        "skill_vs_trend": 0.10477293973795154,
+        "detrended_r2": -0.31948692084176034
+      },
+      "holdout_2016_2025": {
+        "n_folds": 10,
+        "rmse_kg_ha": 1011.7618184127886,
+        "baseline_rmse_kg_ha": 996.3227485535801,
+        "skill_vs_trend": -0.01549605274156618,
+        "detrended_r2": -0.7707872755627398
+      }
+    },
+    "soil_heat": {
+      "all": {
+        "n_folds": 19,
+        "rmse_kg_ha": 943.0840959209644,
+        "baseline_rmse_kg_ha": 999.1586690776679,
+        "skill_vs_trend": 0.05612179015417684,
+        "detrended_r2": -0.49896262081373144
+      },
+      "development_2007_2015": {
+        "n_folds": 9,
+        "rmse_kg_ha": 879.6415165869297,
+        "baseline_rmse_kg_ha": 1002.3002810765108,
+        "skill_vs_trend": 0.12237726238871316,
+        "detrended_r2": -0.26810267946697186
+      },
+      "holdout_2016_2025": {
+        "n_folds": 10,
+        "rmse_kg_ha": 996.7357647978729,
+        "baseline_rmse_kg_ha": 996.3227485535801,
+        "skill_vs_trend": -0.0004145406143665209,
+        "detrended_r2": -0.7185805965029795
+      }
+    },
+    "water_demand": {
+      "all": {
+        "n_folds": 19,
+        "rmse_kg_ha": 747.4384148618029,
+        "baseline_rmse_kg_ha": 999.1586690776679,
+        "skill_vs_trend": 0.2519322125766372,
+        "detrended_r2": 0.05845563030801515
+      },
+      "development_2007_2015": {
+        "n_folds": 9,
+        "rmse_kg_ha": 674.6210033556182,
+        "baseline_rmse_kg_ha": 1002.3002810765108,
+        "skill_vs_trend": 0.3269272531470827,
+        "detrended_r2": 0.25413075604183855
+      },
+      "holdout_2016_2025": {
+        "n_folds": 10,
+        "rmse_kg_ha": 807.3783507559821,
+        "baseline_rmse_kg_ha": 996.3227485535801,
+        "skill_vs_trend": 0.1896417582273412,
+        "detrended_r2": -0.12762324600397057
+      }
+    },
+    "phase_rain_heat": {
+      "all": {
+        "n_folds": 19,
+        "rmse_kg_ha": 982.9135777168626,
+        "baseline_rmse_kg_ha": 999.1586690776679,
+        "skill_vs_trend": 0.016258770367074238,
+        "detrended_r2": -0.628248286318053
+      },
+      "development_2007_2015": {
+        "n_folds": 9,
+        "rmse_kg_ha": 889.4818735933438,
+        "baseline_rmse_kg_ha": 1002.3002810765108,
+        "skill_vs_trend": 0.11255948902059121,
+        "detrended_r2": -0.29663334892317894
+      },
+      "holdout_2016_2025": {
+        "n_folds": 10,
+        "rmse_kg_ha": 1059.9840042605817,
+        "baseline_rmse_kg_ha": 996.3227485535801,
+        "skill_vs_trend": -0.06389621816767943,
+        "detrended_r2": -0.9436069508135729
+      }
+    }
+  },
+  "selected_feature_set": "water_demand",
+  "selected_features": [
+    "root_sm_critical_z",
+    "vpd_critical_kpa_z"
+  ],
+  "component_validation": {
+    "full_history": {
+      "all": {
+        "n_folds": 19,
+        "rmse_kg_ha": 747.4384148618029,
+        "baseline_rmse_kg_ha": 999.1586690776679,
+        "skill_vs_trend": 0.2519322125766372,
+        "detrended_r2": 0.05845563030801515
+      },
+      "development_2007_2015": {
+        "n_folds": 9,
+        "rmse_kg_ha": 674.6210033556182,
+        "baseline_rmse_kg_ha": 1002.3002810765108,
+        "skill_vs_trend": 0.3269272531470827,
+        "detrended_r2": 0.25413075604183855
+      },
+      "holdout_2016_2025": {
+        "n_folds": 10,
+        "rmse_kg_ha": 807.3783507559821,
+        "baseline_rmse_kg_ha": 996.3227485535801,
+        "skill_vs_trend": 0.1896417582273412,
+        "detrended_r2": -0.12762324600397057
+      }
+    },
+    "rolling_20": {
+      "all": {
+        "n_folds": 19,
+        "rmse_kg_ha": 692.2486873645184,
+        "baseline_rmse_kg_ha": 831.3188755248744,
+        "skill_vs_trend": 0.16728862083463514,
+        "detrended_r2": 0.21338153504849644
+      },
+      "development_2007_2015": {
+        "n_folds": 9,
+        "rmse_kg_ha": 705.4360042790814,
+        "baseline_rmse_kg_ha": 916.3374920329854,
+        "skill_vs_trend": 0.23015699956355407,
+        "detrended_r2": 0.1379972119958407
+      },
+      "holdout_2016_2025": {
+        "n_folds": 10,
+        "rmse_kg_ha": 680.1615288151007,
+        "baseline_rmse_kg_ha": 746.5695406006848,
+        "skill_vs_trend": 0.08895087218821263,
+        "detrended_r2": 0.15967359072669451
+      }
+    }
+  },
+  "ensemble_validation": {
+    "all": {
+      "n_folds": 19,
+      "rmse_kg_ha": 695.74887448696,
+      "baseline_rmse_kg_ha": 892.0807326910788,
+      "skill_vs_trend": 0.2200830608815617,
+      "detrended_r2": 0.16975303552479137
+    },
+    "development_2007_2015": {
+      "n_folds": 9,
+      "rmse_kg_ha": 685.3046053371778,
+      "baseline_rmse_kg_ha": 954.5228069655903,
+      "skill_vs_trend": 0.2820448077969473,
+      "detrended_r2": 0.1986577132939903
+    },
+    "holdout_2016_2025": {
+      "n_folds": 10,
+      "rmse_kg_ha": 705.0164403601136,
+      "baseline_rmse_kg_ha": 831.8851205531421,
+      "skill_vs_trend": 0.1525074521211176,
+      "detrended_r2": 0.11249040954150469
+    }
+  },
+  "operational_choice": "trend_ensemble_ridge_weather",
+  "beats_trend": true,
+  "low_confidence": true,
+  "model_warnings": [
+    "Selected weather predictors are strongly correlated; coefficient signs are not causal.",
+    "The untouched evaluation set contains only ten seasons (2016-2025)."
+  ],
+  "selected_feature_max_abs_correlation": 0.8352614375329072,
+  "skill": {
+    "rmse_kg_ha": 705.0164403601136,
+    "baseline_rmse_kg_ha": 831.8851205531421,
+    "skill_vs_trend": 0.1525074521211176,
+    "detrended_r2": 0.11249040954150469,
+    "evaluation_period": "untouched holdout 2016-2025",
+    "n_folds": 10
+  },
+  "components": [
+    {
+      "name": "full_history",
+      "train_window_years": null,
+      "trained_years": [
+        1992,
+        2025
+      ],
+      "n_seasons": 34,
+      "trend": {
+        "form": "log_linear",
+        "log_poly_coef": [
+          0.03648983070253413,
+          -65.06092329451751
+        ]
+      },
+      "scaler": {
+        "mean": [
+          -0.020901227630472342,
+          0.007829927041200084
+        ],
+        "scale": [
+          1.1453875831711884,
+          1.0882632678129738
+        ]
+      },
+      "ridge": {
+        "alpha": 0.701703828670383,
+        "intercept": 2.013427377112992e-14,
+        "coef": [
+          -0.09141299219660609,
+          -0.2304582689434315
+        ]
+      }
+    },
+    {
+      "name": "rolling_20",
+      "train_window_years": 20,
+      "trained_years": [
+        2006,
+        2025
+      ],
+      "n_seasons": 20,
+      "trend": {
+        "form": "log_linear",
+        "log_poly_coef": [
+          0.024687150369906038,
+          -41.26751261761309
+        ]
+      },
+      "scaler": {
+        "mean": [
+          -0.08608625433926957,
+          0.16366241505197213
+        ],
+        "scale": [
+          1.1592875763048005,
+          1.1280186591265702
+        ]
+      },
+      "ridge": {
+        "alpha": 1.0,
+        "intercept": 1.4740028790518198e-14,
+        "coef": [
+          -0.030789584647151313,
+          -0.1260126778550199
+        ]
+      }
+    }
+  ],
+  "uncertainty": {
+    "basis": "absolute errors on untouched 2016-2025 holdout",
+    "q68_kg_ha": 434.6119229648484,
+    "q95_kg_ha": 1568.4564911675607
+  },
+  "anomaly": {
+    "window_years": 20,
+    "minimum_prior_years": 10
+  },
+  "caveats": [
+    "The target is national commercial maize yield; the three provinces supply only the climate proxy.",
+    "The six locations use fixed mean 2023-2025 production weights, not historical annual weights.",
+    "Irrigated Northern Cape maize is intentionally excluded from the climate proxy.",
+    "Selected weather predictors are strongly correlated; coefficient signs are not causal.",
+    "The untouched evaluation set contains only ten seasons (2016-2025)."
+  ],
+  "challengers": {
+    "boosted_tree": {
+      "model": "sklearn GradientBoostingRegressor",
+      "selected_candidate": "selected_water_demand_d1_n60_lr0.03",
+      "selected_result": {
+        "features": [
+          "root_sm_critical_z",
+          "vpd_critical_kpa_z"
+        ],
+        "params": {
+          "max_depth": 1,
+          "n_estimators": 60,
+          "learning_rate": 0.03,
+          "min_samples_leaf": 4,
+          "subsample": 0.8,
+          "loss": "huber",
+          "random_state": 42
+        },
+        "development": {
+          "n_folds": 9,
+          "rmse_kg_ha": 691.1696512563001,
+          "baseline_rmse_kg_ha": 954.5228069655903,
+          "skill_vs_trend": 0.2759003281927699
+        },
+        "holdout": {
+          "n_folds": 10,
+          "rmse_kg_ha": 882.6420451404093,
+          "baseline_rmse_kg_ha": 831.8851205531421,
+          "skill_vs_trend": -0.061014343607345145
+        }
+      },
+      "operational_ridge_holdout_rmse_kg_ha": 705.0164403601136,
+      "adoption_rule": "holdout skill >=10% and RMSE at least 5% below Ridge",
+      "adopted": false,
+      "decision": "reject_overfit"
+    }
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "status": "configured_official_pdf_extraction",
+  "methodology": "Download only configured HTTPS official PDFs, verify PDF magic bytes and checksum, extract text with pypdf, and require source-specific patterns. The original PDF is not committed; evidence remains reproducible from URL and checksum.",
+  "sources": [
+    {
+      "id": "unctad_rmt_2025_chapter_2_fleet",
+      "publisher": "UN Trade and Development (UNCTAD)",
+      "title": "Review of Maritime Transport 2025, Chapter 2",
+      "pdf_url": "https://unctad.org/system/files/official-document/rmt2025ch2_en.pdf",
+      "max_pages": 70,
+      "required_patterns": ["Trends in world fleet capacity by vessel type", "Liquefied gas carriers", "World total"]
+    },
+    {
+      "id": "imo_mepc_400_83_cii",
+      "publisher": "International Maritime Organization",
+      "title": "Resolution MEPC.400(83)",
+      "pdf_url": "https://wwwcdn.imo.org/localresources/en/KnowledgeCentre/IndexofIMOResolutions/MEPCDocuments/MEPC.400%2883%29.pdf",
+      "max_pages": 20,
+      "required_patterns": ["MEPC.400\\(83\\)", "2027", "2030"]
+    },
+    {
+      "id": "unctad_rmt_2025_chapter_3_freight",
+      "publisher": "UN Trade and Development (UNCTAD)",
+      "title": "Review of Maritime Transport 2025, Chapter 3",
+      "pdf_url": "https://unctad.org/system/files/official-document/rmt2025ch3_en.pdf",
+      "max_pages": 70,
+      "required_patterns": ["Freight rates", "container", "tanker"]
+    },
+    {
+      "id": "iumi_stats_report_2025",
+      "publisher": "International Union of Marine Insurance",
+      "title": "IUMI Stats Report 2025",
+      "pdf_url": "https://iumi.com/wp-content/uploads/2026/02/IUMI-Stats-Report-2025-2.pdf",
+      "max_pages": 80,
+      "required_patterns": ["Global marine insurance", "Hull", "war"]
+    }
+  ]
+}

@@ -1,0 +1,84 @@
+{
+  "iso3": "ISR",
+  "as_of": "2026-08-08",
+  "priority_tier": 2,
+  "region": "middle_east",
+  "system": "parliamentary",
+  "map_spectrum": "conservative",
+  "head": {
+    "role": "prime_minister",
+    "name_en": "Benjamin Netanyahu",
+    "party_id": "likud",
+    "spectrum": "conservative",
+    "sources": [
+      {
+        "org": "Wikipedia 25th Knesset",
+        "url": "https://en.wikipedia.org/wiki/List_of_members_of_the_twenty-fifth_Knesset",
+        "note": "Likud faction leader / PM listing"
+      },
+      {
+        "org": "Central Elections Committee portal",
+        "url": "https://www.bechirot.gov.il/"
+      }
+    ]
+  },
+  "parties": [
+    {
+      "id": "likud",
+      "abbr": "Likud",
+      "name_en": "Likud",
+      "role": "ruling",
+      "spectrum": "conservative",
+      "confidence": "high"
+    },
+    {
+      "id": "yesh_atid",
+      "abbr": "YA",
+      "name_en": "Yesh Atid",
+      "role": "main_opposition",
+      "spectrum": "centrist",
+      "confidence": "medium"
+    },
+    {
+      "id": "shas",
+      "abbr": "Shas",
+      "name_en": "Shas",
+      "role": "major_3",
+      "spectrum": "conservative",
+      "confidence": "medium"
+    },
+    {
+      "id": "blue_white",
+      "abbr": "BW",
+      "name_en": "Blue and White",
+      "role": "major_4",
+      "spectrum": "centrist",
+      "confidence": "medium",
+      "notes": "National Unity split labels remain fluid into 2026 campaign"
+    }
+  ],
+  "legislature": {
+    "chambers": ["knesset"],
+    "member_roster_source": {
+      "id": "wiki_25th_knesset",
+      "url": "https://en.wikipedia.org/wiki/List_of_members_of_the_twenty-fifth_Knesset",
+      "status": "extracted",
+      "extract_file": "extracted/isr_knesset.json",
+      "note": "Cross-check CEC when 26th lists lock (2026-09)"
+    }
+  },
+  "elections": {
+    "calendar_file": "calendars/isr_2026.json"
+  },
+  "polls": {
+    "admit": ["pm_approval", "pm_preferred", "party_support"],
+    "reject": ["national_horserace_headline"],
+    "status": "snapshot_wired",
+    "extract": "extracted/governance_polls.json"
+  },
+  "ingest": {
+    "mode": "document_text_extract",
+    "wave": "2b_israel",
+    "depth": "knesset_composition_plus_pm_poll"
+  }
+}

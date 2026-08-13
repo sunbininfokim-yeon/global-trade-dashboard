@@ -39,15 +39,21 @@
         {"ticker": "SKHYNIXUSDT", "name": "Binance SK Hynix TradFi perpetual (KR equity)", "underlying": "000660", "L_max": 50, "structure": "tradifi_perp", "direction": "both", "exchange": "binance", "note": "TRADIFI_PERPETUAL / underlyingType=KR_EQUITY. USD share price ≈ KRW/FX. Not a 2x ETF."},
         {"ticker": "SAMSUNGUSDT", "name": "Binance Samsung TradFi perpetual (KR equity)", "underlying": "005930", "L_max": 50, "structure": "tradifi_perp", "direction": "both", "exchange": "binance", "note": "TRADIFI_PERPETUAL / KR_EQUITY. Not a 2x ETF."},
         {"ticker": "KORUUSDT", "name": "Binance KORU 3x Korea ETF perp", "underlying": "KORU", "L_max": 50, "structure": "tradifi_perp", "direction": "both", "exchange": "binance", "note": "Regime proxy only — stacked on US 3x ETF, not single-stock Hynix."},
-        {"ticker": "SOXLUSDT", "name": "Binance SOXL 3x Semis ETF perp", "underlying": "SOXL", "L_max": 50, "structure": "tradifi_perp", "direction": "both", "exchange": "binance", "note": "Regime proxy only — not single-stock KR."}
+        {"ticker": "SOXLUSDT", "name": "Binance SOXL 3x Semis ETF perp", "underlying": "SOXL", "L_max": 50, "structure": "tradifi_perp", "direction": "both", "exchange": "binance", "note": "Regime proxy only — not single-stock KR."},
+        {"ticker": "SOXSUSDT", "name": "Binance SOXS 3x Semis Bear ETF perp (if listed)", "underlying": "SOXS", "L_max": 50, "structure": "tradifi_perp", "direction": "both", "exchange": "binance", "note": "Optional; quality=error if delisted."}
       ]
     },
     "us": {
       "currency": "USD",
-      "note": "US levered ETFs as regime proxies (not single-stock KR).",
+      "note": "US levered / inverse ETFs as regime + spillover proxies (swap). Pair with options OI in us_regime / transmission. Not KR single-stock TR.",
       "products": [
         {"ticker": "SOXL", "name": "Direxion Daily Semiconductor Bull 3X", "underlying": "SOX", "L": 3, "structure": "swap", "direction": "long", "yahoo": "SOXL"},
-        {"ticker": "KORU", "name": "Direxion Daily South Korea Bull 3X", "underlying": "EWY", "L": 3, "structure": "swap", "direction": "long", "yahoo": "KORU"}
+        {"ticker": "SOXS", "name": "Direxion Daily Semiconductor Bear 3X", "underlying": "SOX", "L": -3, "structure": "swap", "direction": "inverse", "yahoo": "SOXS"},
+        {"ticker": "KORU", "name": "Direxion Daily South Korea Bull 3X", "underlying": "EWY", "L": 3, "structure": "swap", "direction": "long", "yahoo": "KORU"},
+        {"ticker": "TECL", "name": "Direxion Daily Technology Bull 3X", "underlying": "XLK", "L": 3, "structure": "swap", "direction": "long", "yahoo": "TECL"},
+        {"ticker": "TECS", "name": "Direxion Daily Technology Bear 3X", "underlying": "XLK", "L": -3, "structure": "swap", "direction": "inverse", "yahoo": "TECS"},
+        {"ticker": "TQQQ", "name": "ProShares UltraPro QQQ 3X", "underlying": "QQQ", "L": 3, "structure": "swap", "direction": "long", "yahoo": "TQQQ"},
+        {"ticker": "SQQQ", "name": "ProShares UltraPro Short QQQ 3X", "underlying": "QQQ", "L": -3, "structure": "swap", "direction": "inverse", "yahoo": "SQQQ"}
       ]
     }
   }

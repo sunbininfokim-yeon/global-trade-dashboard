@@ -1,0 +1,268 @@
+{
+  "model": "sklearn GradientBoostingRegressor",
+  "role": "XGBoost-family nonlinear challenger; not labelled as XGBoost",
+  "selection_period": "2007-2015 forward folds",
+  "untouched_holdout": "2016-2025",
+  "selected_candidate": "selected_water_demand_d1_n60_lr0.03",
+  "selected_result": {
+    "features": [
+      "root_sm_critical_z",
+      "vpd_critical_kpa_z"
+    ],
+    "params": {
+      "max_depth": 1,
+      "n_estimators": 60,
+      "learning_rate": 0.03,
+      "min_samples_leaf": 4,
+      "subsample": 0.8,
+      "loss": "huber",
+      "random_state": 42
+    },
+    "development": {
+      "n_folds": 9,
+      "rmse_kg_ha": 691.1696512563001,
+      "baseline_rmse_kg_ha": 954.5228069655903,
+      "skill_vs_trend": 0.2759003281927699
+    },
+    "holdout": {
+      "n_folds": 10,
+      "rmse_kg_ha": 882.6420451404093,
+      "baseline_rmse_kg_ha": 831.8851205531421,
+      "skill_vs_trend": -0.061014343607345145
+    }
+  },
+  "operational_ridge_holdout_rmse_kg_ha": 705.0164403601136,
+  "adoption_rule": "holdout skill >=10% and RMSE at least 5% below Ridge",
+  "adopted": false,
+  "decision": "reject_overfit",
+  "all_candidates": {
+    "selected_water_demand_d1_n30_lr0.03": {
+      "features": [
+        "root_sm_critical_z",
+        "vpd_critical_kpa_z"
+      ],
+      "params": {
+        "max_depth": 1,
+        "n_estimators": 30,
+        "learning_rate": 0.03,
+        "min_samples_leaf": 4,
+        "subsample": 0.8,
+        "loss": "huber",
+        "random_state": 42
+      },
+      "development": {
+        "n_folds": 9,
+        "rmse_kg_ha": 714.5967663258245,
+        "baseline_rmse_kg_ha": 954.5228069655903,
+        "skill_vs_trend": 0.2513570539005622
+      },
+      "holdout": {
+        "n_folds": 10,
+        "rmse_kg_ha": 835.051291730467,
+        "baseline_rmse_kg_ha": 831.8851205531421,
+        "skill_vs_trend": -0.003806019724477805
+      }
+    },
+    "selected_water_demand_d1_n60_lr0.03": {
+      "features": [
+        "root_sm_critical_z",
+        "vpd_critical_kpa_z"
+      ],
+      "params": {
+        "max_depth": 1,
+        "n_estimators": 60,
+        "learning_rate": 0.03,
+        "min_samples_leaf": 4,
+        "subsample": 0.8,
+        "loss": "huber",
+        "random_state": 42
+      },
+      "development": {
+        "n_folds": 9,
+        "rmse_kg_ha": 691.1696512563001,
+        "baseline_rmse_kg_ha": 954.5228069655903,
+        "skill_vs_trend": 0.2759003281927699
+      },
+      "holdout": {
+        "n_folds": 10,
+        "rmse_kg_ha": 882.6420451404093,
+        "baseline_rmse_kg_ha": 831.8851205531421,
+        "skill_vs_trend": -0.061014343607345145
+      }
+    },
+    "selected_water_demand_d2_n30_lr0.03": {
+      "features": [
+        "root_sm_critical_z",
+        "vpd_critical_kpa_z"
+      ],
+      "params": {
+        "max_depth": 2,
+        "n_estimators": 30,
+        "learning_rate": 0.03,
+        "min_samples_leaf": 4,
+        "subsample": 0.8,
+        "loss": "huber",
+        "random_state": 42
+      },
+      "development": {
+        "n_folds": 9,
+        "rmse_kg_ha": 719.142404384757,
+        "baseline_rmse_kg_ha": 954.5228069655903,
+        "skill_vs_trend": 0.2465948438980763
+      },
+      "holdout": {
+        "n_folds": 10,
+        "rmse_kg_ha": 843.0934867884652,
+        "baseline_rmse_kg_ha": 831.8851205531421,
+        "skill_vs_trend": -0.013473454397008977
+      }
+    },
+    "selected_water_demand_d1_n40_lr0.05": {
+      "features": [
+        "root_sm_critical_z",
+        "vpd_critical_kpa_z"
+      ],
+      "params": {
+        "max_depth": 1,
+        "n_estimators": 40,
+        "learning_rate": 0.05,
+        "min_samples_leaf": 5,
+        "subsample": 0.8,
+        "loss": "huber",
+        "random_state": 42
+      },
+      "development": {
+        "n_folds": 9,
+        "rmse_kg_ha": 785.7818361039543,
+        "baseline_rmse_kg_ha": 954.5228069655903,
+        "skill_vs_trend": 0.17678044948769778
+      },
+      "holdout": {
+        "n_folds": 10,
+        "rmse_kg_ha": 919.3149037651488,
+        "baseline_rmse_kg_ha": 831.8851205531421,
+        "skill_vs_trend": -0.10509838564472984
+      }
+    },
+    "all_weather_d1_n30_lr0.03": {
+      "features": [
+        "edd29_critical_c_days_z",
+        "rain_critical_mm_z",
+        "rain_planting_mm_z",
+        "root_sm_critical_z",
+        "vpd_critical_kpa_z"
+      ],
+      "params": {
+        "max_depth": 1,
+        "n_estimators": 30,
+        "learning_rate": 0.03,
+        "min_samples_leaf": 4,
+        "subsample": 0.8,
+        "loss": "huber",
+        "random_state": 42
+      },
+      "development": {
+        "n_folds": 9,
+        "rmse_kg_ha": 751.9022796430554,
+        "baseline_rmse_kg_ha": 954.5228069655903,
+        "skill_vs_trend": 0.21227416028608237
+      },
+      "holdout": {
+        "n_folds": 10,
+        "rmse_kg_ha": 839.6206333594774,
+        "baseline_rmse_kg_ha": 831.8851205531421,
+        "skill_vs_trend": -0.009298775293867356
+      }
+    },
+    "all_weather_d1_n60_lr0.03": {
+      "features": [
+        "edd29_critical_c_days_z",
+        "rain_critical_mm_z",
+        "rain_planting_mm_z",
+        "root_sm_critical_z",
+        "vpd_critical_kpa_z"
+      ],
+      "params": {
+        "max_depth": 1,
+        "n_estimators": 60,
+        "learning_rate": 0.03,
+        "min_samples_leaf": 4,
+        "subsample": 0.8,
+        "loss": "huber",
+        "random_state": 42
+      },
+      "development": {
+        "n_folds": 9,
+        "rmse_kg_ha": 747.3140787478857,
+        "baseline_rmse_kg_ha": 954.5228069655903,
+        "skill_vs_trend": 0.2170809609844916
+      },
+      "holdout": {
+        "n_folds": 10,
+        "rmse_kg_ha": 850.4542250706135,
+        "baseline_rmse_kg_ha": 831.8851205531421,
+        "skill_vs_trend": -0.02232171733655286
+      }
+    },
+    "all_weather_d2_n30_lr0.03": {
+      "features": [
+        "edd29_critical_c_days_z",
+        "rain_critical_mm_z",
+        "rain_planting_mm_z",
+        "root_sm_critical_z",
+        "vpd_critical_kpa_z"
+      ],
+      "params": {
+        "max_depth": 2,
+        "n_estimators": 30,
+        "learning_rate": 0.03,
+        "min_samples_leaf": 4,
+        "subsample": 0.8,
+        "loss": "huber",
+        "random_state": 42
+      },
+      "development": {
+        "n_folds": 9,
+        "rmse_kg_ha": 773.236915911339,
+        "baseline_rmse_kg_ha": 954.5228069655903,
+        "skill_vs_trend": 0.1899230586543612
+      },
+      "holdout": {
+        "n_folds": 10,
+        "rmse_kg_ha": 823.4053363369088,
+        "baseline_rmse_kg_ha": 831.8851205531421,
+        "skill_vs_trend": 0.010193455811055796
+      }
+    },
+    "all_weather_d1_n40_lr0.05": {
+      "features": [
+        "edd29_critical_c_days_z",
+        "rain_critical_mm_z",
+        "rain_planting_mm_z",
+        "root_sm_critical_z",
+        "vpd_critical_kpa_z"
+      ],
+      "params": {
+        "max_depth": 1,
+        "n_estimators": 40,
+        "learning_rate": 0.05,
+        "min_samples_leaf": 5,
+        "subsample": 0.8,
+        "loss": "huber",
+        "random_state": 42
+      },
+      "development": {
+        "n_folds": 9,
+        "rmse_kg_ha": 839.6984270996147,
+        "baseline_rmse_kg_ha": 954.5228069655903,
+        "skill_vs_trend": 0.12029506160360914
+      },
+      "holdout": {
+        "n_folds": 10,
+        "rmse_kg_ha": 846.8664184882736,
+        "baseline_rmse_kg_ha": 831.8851205531421,
+        "skill_vs_trend": -0.01800885430571242
+      }
+    }
+  }
+}

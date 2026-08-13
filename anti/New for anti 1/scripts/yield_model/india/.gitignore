@@ -1,0 +1,14 @@
+# Raw upstream downloads: reproducible by re-running collect.py (and, for the
+# ICRISAT blob specifically, icrisat.load_raw()). The training tables and
+# model JSONs are the artefacts worth tracking, not the bytes they came from.
+#
+# The ICRISAT raw JSON is kept out of git for another reason too: fetching it
+# has proven unreliable (the upstream server drops most transfers before
+# completion), so the cached copy in a contributor's own cache/ is valuable
+# precisely because it does not need to be re-fetched -- but that is a local
+# convenience, not something to commit.
+cache/
+
+# Date-stamped live pulls from predict.py, one per point per run day.
+cache/live_*.csv
+__pycache__/

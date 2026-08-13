@@ -1,0 +1,50 @@
+{
+  "iso3": "CHN",
+  "as_of": "2026-08-08",
+  "priority_tier": 1,
+  "system": "other",
+  "mode": "leadership_pla_document_extract",
+  "map_spectrum": "authoritarian_cpc",
+  "head": {
+    "role": "general_secretary_and_president",
+    "name_en": "Xi Jinping",
+    "name_zh": "习近平",
+    "party_id": "cpc",
+    "spectrum": "authoritarian_cpc",
+    "sources": [
+      {
+        "org": "DoD CMPR 2025",
+        "url": "https://media.defense.gov/2025/Dec/23/2003849070/-1/-1/1/ANNUAL-REPORT-TO-CONGRESS-MILITARY-AND-SECURITY-DEVELOPMENTS-INVOLVING-THE-PEOPLES-REPUBLIC-OF-CHINA-2025.PDF",
+        "note": "Treats Xi as CCP General Secretary / paramount leader throughout"
+      }
+    ],
+    "status": "seed_ok_full_psc_pla_todo"
+  },
+  "parties": [
+    {
+      "id": "cpc",
+      "name_en": "Communist Party of China",
+      "name_zh": "中国共产党",
+      "role": "ruling",
+      "spectrum": "authoritarian_cpc"
+    }
+  ],
+  "document_ingest": {
+    "catalog": "china_report_sources.json",
+    "extract_file": "china_leadership_extracted.json",
+    "local_pdf": "raw/china/CMPR_2025.pdf",
+    "workspace_pdf_found": true,
+    "press_index": "https://news.usni.org/2025/12/24/pentagon-annual-report-on-chinese-military-and-security-developments-2",
+    "slots": ["politburo_standing_committee", "politburo", "cmc", "theater_commanders", "political_commissars"],
+    "done": ["theater_commanders_as_of_2024-12-31", "cmc_purge_mentions"],
+    "todo": ["psc7", "uscc_2025_parse", "odni_ata_china"]
+  },
+  "pla": {
+    "source": "china_leadership_extracted.json",
+    "theaters_loaded": true
+  },
+  "polls": {
+    "admit": [],
+    "note": "No competitive national governance poll track for now"
+  }
+}

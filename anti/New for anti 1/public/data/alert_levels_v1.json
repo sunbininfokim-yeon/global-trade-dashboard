@@ -1,0 +1,121 @@
+{
+  "schema_version": "alert-levels-v1",
+  "as_of": "2026-08-08",
+  "fetched_at": "2026-08-08T09:59:25.959689+00:00",
+  "put_oi": {
+    "put_oi_ko": "풋 OI(Put Open Interest) = 아직 청산되지 않은 풋옵션 계약 수. ‘오늘 거래량’이 아니라 ‘남아 있는 미결제 계약’이다. 풋 OI·풋 거래량이 늘면 하방 헤지/공격 수요가 커졌다는 해석을 할 수 있지만, 주체를 알 수는 없다.",
+    "availability_ko": "종목별 풋 OI 시계열은 공개 Cboe 히스토리 CSV가 막혀 있어(403) 우리 엔진으로는 백테스트 임계값을 만들 수 없다. 당일 지연 체인의 집계만 가능."
+  },
+  "cannot_do_ko": [
+    "미국 개별주/ETF 풋·콜 OI·거래량 히스토리 기반 임계값 (공개 시계열 없음)",
+    "SOXL/MU 가격 급락을 ‘옵션 포지션 변화’로 바꿔 쓴 프록시 백테스트 (금지)",
+    "딜러 GEX·누가 걸었는지 주체 특정"
+  ],
+  "kr_hynix_letf": {
+    "schema": "kr-hynix-letf-alert-levels-v1",
+    "metric_ko": "하닉 단일종목 레버·인버스 ETF 거래대금 ÷ 하닉 현물 거래대금",
+    "data_source": "FinanceDataReader ETF/KR Amount(당일) + Close×Volume(히스토리)",
+    "sample": {
+      "start": "2026-05-27",
+      "n_active_days": 49,
+      "note_ko": "단일종목 하닉 LETF는 2026-05-27 상장. 표본 ~50거래일로 짧음.",
+      "baseline": {
+        "n": 49,
+        "frac_next_down2": 0.4286,
+        "mean_next_abs": 0.0663,
+        "mean_next_r": -0.0061
+      }
+    },
+    "levels": {
+      "관찰": {
+        "metric": "hynix_letf_tv / hynix_spot_tv",
+        "ratio_min": null,
+        "ratio_max": 0.5,
+        "n": 16,
+        "frac_next_down2": 0.4375,
+        "mean_next_abs": 0.0569,
+        "mean_next_r": -0.0081,
+        "ratio_median_in_bucket": 0.3571
+      },
+      "주의": {
+        "metric": "hynix_letf_tv / hynix_spot_tv",
+        "ratio_min": 0.5,
+        "ratio_max": 0.75,
+        "n": 19,
+        "frac_next_down2": 0.4211,
+        "mean_next_abs": 0.0631,
+        "mean_next_r": -0.0081,
+        "ratio_median_in_bucket": 0.6095
+      },
+      "경계": {
+        "metric": "hynix_letf_tv / hynix_spot_tv",
+        "ratio_min": 0.75,
+        "ratio_max": null,
+        "n": 14,
+        "frac_next_down2": 0.4286,
+        "mean_next_abs": 0.0815,
+        "mean_next_r": -0.0011,
+        "ratio_median_in_bucket": 0.8662
+      }
+    },
+    "rule_ko": {
+      "관찰": "비율 < 0.50 (현물 거래 대비 레버 ETF < 50%)",
+      "주의": "0.50 ≤ 비율 < 0.75",
+      "경계": "비율 ≥ 0.75 — 표본에서 익일 |R|·−2% 비율이 뚜렷히 상승"
+    },
+    "today_ratio": 0.0918,
+    "today_level": "관찰",
+    "limitation_ko": "표본 짧음. 인덱스 레버 비중은 선행지표로 유의하지 않아 채택하지 않음."
+  },
+  "us_vix_to_kr": {
+    "schema": "us-vix-kr-alert-levels-v1",
+    "metric_ko": "Cboe 공식 VIX 전일 대비 변화율 → 익일 하닉 overnight open",
+    "data_source": "cdn.cboe.com VIX_History.csv + Yahoo 000660.KS OHLC",
+    "not_put_oi": true,
+    "put_oi_status_ko": "종목 풋 OI 히스토리 없음 → 임계값 불가. VIX는 옵션시장 변동성 지수(공식).",
+    "sample": {
+      "start": "2025-01-01",
+      "baseline": {
+        "n": 408,
+        "frac_neg": 0.4583,
+        "mean": 0.004759
+      }
+    },
+    "levels": {
+      "관찰": {
+        "metric": "Cboe VIX daily return",
+        "vix_r_min": null,
+        "vix_r_max": 0.05,
+        "n": 326,
+        "frac_kr_open_neg": 0.3896,
+        "mean_kr_open": 0.010581
+      },
+      "주의": {
+        "metric": "Cboe VIX daily return",
+        "vix_r_min": 0.05,
+        "vix_r_max": 0.1,
+        "n": 37,
+        "frac_kr_open_neg": 0.6486,
+        "mean_kr_open": -0.004946
+      },
+      "경계": {
+        "metric": "Cboe VIX daily return",
+        "vix_r_min": 0.1,
+        "vix_r_max": null,
+        "n": 45,
+        "frac_kr_open_neg": 0.8,
+        "mean_kr_open": -0.029443
+      }
+    },
+    "rule_ko": {
+      "관찰": "VIX 일변화 < +5%",
+      "주의": "+5% ≤ VIX 일변화 < +10%",
+      "경계": "VIX 일변화 ≥ +10%"
+    },
+    "latest_vix": 14.9,
+    "latest_vix_r": -0.0165,
+    "latest_level": "관찰",
+    "limitation_ko": "VIX는 개별주 풋/콜 OI·공매 동시 포지션이 아님. SOXL 가격·수익률로 옵션 스트레스를 대체하지 않음."
+  },
+  "disclaimer_ko": "실측 공개 데이터 기반 통계 임계값. 투자 권유 아님. 표본 한계 명시."
+}

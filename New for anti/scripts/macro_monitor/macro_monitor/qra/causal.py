@@ -227,6 +227,8 @@ def auctions_to_issuance_components(auctions: List[Dict[str, Any]]) -> List[Dict
             "id": cid,
             "label_ko": label,
             "tenor": tenor.replace("-year", "y"),
+            "kind": "coupon",
+            "instrument": a.get("instrument") or "note",
             "value": float(a["amount_bn"]),
         }
     order = ["c2y", "c3y", "c5y", "c7y", "c10y", "c20y", "c30y"]

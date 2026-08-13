@@ -1,0 +1,96 @@
+{
+  "iso3": "BRA",
+  "year": 2026,
+  "as_of": "2026-08-08",
+  "null_policy": {
+    "없음": "해당 일정/선거 없음",
+    "불명": "발표·확정 전 또는 출처에 날짜 없음"
+  },
+  "region": "americas",
+  "sources": [
+    {
+      "id": "wiki_bra_2026",
+      "url": "https://en.wikipedia.org/wiki/2026_Brazilian_general_election"
+    },
+    {
+      "id": "tse",
+      "org": "TSE",
+      "url": "https://dadosabertos.tse.jus.br/",
+      "quality": "best_open_data"
+    }
+  ],
+  "notes": [
+    "General: president + Congress + governors 2026-10-04; runoff 2026-10-25 if needed."
+  ],
+  "events": [
+    {
+      "id": "bra-2026-pl-ticket",
+      "type": "party_leadership",
+      "party_id": "pl",
+      "party_abbr": "PL",
+      "label_ko": "PL 대선 후보 라인 (볼소나루 계열)",
+      "date": "불명",
+      "status": "tentative",
+      "notes": "Flávio Bolsonaro 유력 보도 — 공식 전당 일자 TSE/당 공고 확인 필요",
+      "candidates": [
+        {
+          "name_en": "Flávio Bolsonaro",
+          "status": "reported_pref"
+        }
+      ]
+    },
+    {
+      "id": "bra-2026-pt-convention",
+      "type": "party_leadership",
+      "party_id": "pt",
+      "party_abbr": "PT",
+      "label_ko": "PT 전국전당대회 (대선 후보 공천)",
+      "date": "2026-08-02",
+      "status": "completed",
+      "office": "presidential_nomination",
+      "venue": "상파울루 Expo Center Norte",
+      "result_summary": {
+        "presidential_nominee": "Luiz Inácio Lula da Silva",
+        "running_mate": "Geraldo Alckmin (PSB)",
+        "coalition": [
+          "PT",
+          "PSB",
+          "PCdoB",
+          "PV",
+          "Rede",
+          "PSOL",
+          "PDT"
+        ]
+      },
+      "notes": "대선 티켓 공식 지명 (당대표 경선과 별개이나 전당대회).",
+      "sources": [
+        "https://agenciabrasil.ebc.com.br/en/politica/noticia/2026-08/workers-party-officially-nominates-lula-presidential-candidate"
+      ]
+    },
+    {
+      "id": "bra-2026-general-r1",
+      "type": "general",
+      "label_ko": "총선·대선 1차(대통령·의회·주지사)",
+      "date": "2026-10-04",
+      "status": "scheduled",
+      "sources": [
+        "wiki_bra_2026",
+        "tse",
+        "invest_lens_elections"
+      ],
+      "market_significance_invest_lens": 3
+    },
+    {
+      "id": "bra-2026-general-r2",
+      "type": "general",
+      "label_ko": "대선·주지사 결선(해당 시)",
+      "date": "2026-10-25",
+      "status": "tentative",
+      "notes": "1차 과반 미달 시",
+      "sources": [
+        "wiki_bra_2026",
+        "tse"
+      ]
+    }
+  ]
+}

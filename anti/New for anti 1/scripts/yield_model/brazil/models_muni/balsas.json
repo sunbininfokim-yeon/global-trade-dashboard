@@ -1,0 +1,70 @@
+{
+  "key": "balsas",
+  "crop": "soja",
+  "n_seasons": 41,
+  "trained_years": [
+    1984,
+    2024
+  ],
+  "features": [
+    "days_late",
+    "precip_rep",
+    "heat_vpd_stress",
+    "gwetroot_rep_mean"
+  ],
+  "trend": {
+    "log_poly_coef": [
+      0.003196789538027068,
+      1.4900793107097539
+    ],
+    "degree": 1,
+    "form": "recent20",
+    "window": 20
+  },
+  "scaler": {
+    "mean": [
+      13.55,
+      379.55550000000005,
+      1.4749828932334133,
+      0.5316905367231638
+    ],
+    "scale": [
+      18.86126984060193,
+      104.08890149650922,
+      1.8180193885595277,
+      0.06522717094324752
+    ]
+  },
+  "ridge": {
+    "alpha": 70.1703828670383,
+    "coef": [
+      -0.01999596729287829,
+      -0.00786511915390915,
+      -0.015368115259554468,
+      -0.004982367430608535
+    ],
+    "intercept": -2.44434722351083e-15
+  },
+  "beats_trend": false,
+  "skill_vs_trend_full": -0.02210837557587264,
+  "skill_vs_trend_recent": -0.017022958578671643,
+  "sigma_kg_ha": 629.4401864190437,
+  "top_effects": [
+    {
+      "feature": "days_late",
+      "effect_pct": -1.98
+    },
+    {
+      "feature": "heat_vpd_stress",
+      "effect_pct": -1.53
+    },
+    {
+      "feature": "precip_rep",
+      "effect_pct": -0.78
+    },
+    {
+      "feature": "gwetroot_rep_mean",
+      "effect_pct": -0.5
+    }
+  ]
+}

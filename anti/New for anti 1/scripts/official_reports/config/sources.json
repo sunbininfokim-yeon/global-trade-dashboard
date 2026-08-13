@@ -1,0 +1,157 @@
+{
+  "version": 1,
+  "user_agent": "GlobalTradeDashboard-OfficialReports/1.0 (+research; official sources only)",
+  "fetch_timeout_sec": 22,
+  "max_items_per_source": 30,
+  "notes": "Dropbox bulk ingest is out of scope. Only public official feeds / list pages. Sources can be added after discussion.",
+  "sources": [
+    {
+      "id": "us_fed_all",
+      "country": "USA",
+      "agency": "Federal Reserve",
+      "domains": ["finance", "economy"],
+      "kind": "rss",
+      "url": "https://www.federalreserve.gov/feeds/press_all.xml",
+      "lang": "en",
+      "enabled": true,
+      "weight": 1.35
+    },
+    {
+      "id": "us_fed_monetary",
+      "country": "USA",
+      "agency": "Federal Reserve",
+      "domains": ["finance"],
+      "kind": "rss",
+      "url": "https://www.federalreserve.gov/feeds/press_monetary.xml",
+      "lang": "en",
+      "enabled": true,
+      "weight": 1.4
+    },
+    {
+      "id": "us_whitehouse",
+      "country": "USA",
+      "agency": "White House",
+      "domains": ["diplomacy", "economy", "security"],
+      "kind": "rss",
+      "url": "https://www.whitehouse.gov/news/feed/",
+      "lang": "en",
+      "enabled": true,
+      "weight": 1.15
+    },
+    {
+      "id": "us_eia",
+      "country": "USA",
+      "agency": "EIA",
+      "domains": ["economy", "agriculture", "security"],
+      "kind": "rss",
+      "url": "https://www.eia.gov/rss/todayinenergy.xml",
+      "lang": "en",
+      "enabled": true,
+      "weight": 1.1,
+      "notes": "Energy proxy bordering agri-logistics and export markets"
+    },
+    {
+      "id": "us_treasury_press_list",
+      "country": "USA",
+      "agency": "U.S. Treasury",
+      "domains": ["finance", "economy", "diplomacy"],
+      "kind": "html_list",
+      "url": "https://home.treasury.gov/news/press-releases",
+      "lang": "en",
+      "enabled": true,
+      "weight": 1.45,
+      "html": {
+        "item_href_re": "/news/press-releases/[a-z0-9]+",
+        "base": "https://home.treasury.gov",
+        "max_items": 25
+      }
+    },
+    {
+      "id": "jp_boj_whatsnew",
+      "country": "JPN",
+      "agency": "Bank of Japan",
+      "domains": ["finance", "economy"],
+      "kind": "rss",
+      "url": "https://www.boj.or.jp/en/rss/whatsnew.xml",
+      "lang": "en",
+      "enabled": true,
+      "weight": 1.35
+    },
+    {
+      "id": "eu_ecb_press",
+      "country": "EUR",
+      "agency": "ECB",
+      "domains": ["finance", "economy"],
+      "kind": "rss",
+      "url": "https://www.ecb.europa.eu/rss/press.html",
+      "lang": "en",
+      "enabled": true,
+      "weight": 1.2
+    },
+    {
+      "id": "uk_boe_news",
+      "country": "GBR",
+      "agency": "Bank of England",
+      "domains": ["finance", "economy"],
+      "kind": "rss",
+      "url": "https://www.bankofengland.co.uk/rss/news",
+      "lang": "en",
+      "enabled": true,
+      "weight": 1.15
+    },
+    {
+      "id": "cn_stats_en_hub",
+      "country": "CHN",
+      "agency": "NBS (China)",
+      "domains": ["economy", "agriculture"],
+      "kind": "html_list",
+      "url": "https://www.stats.gov.cn/english/",
+      "lang": "en",
+      "enabled": true,
+      "weight": 1.25,
+      "html": {
+        "item_href_re": "https?://[^\"']+|/[^\"]+\\.html",
+        "prefer_keywords": ["CPI", "PPI", "GDP", "industrial", "PMI", "trade", "agriculture", "grain"],
+        "base": "https://www.stats.gov.cn",
+        "max_items": 20
+      },
+      "notes": "NBS English hub is HTML; improve selectors collaboratively"
+    },
+    {
+      "id": "cn_gov_en_hub",
+      "country": "CHN",
+      "agency": "State Council English",
+      "domains": ["diplomacy", "economy", "security", "agriculture"],
+      "kind": "html_list",
+      "url": "https://english.www.gov.cn/",
+      "lang": "en",
+      "enabled": false,
+      "weight": 1.2,
+      "notes": "Enable after stable selector is confirmed"
+    },
+    {
+      "id": "jp_mofa_disabled",
+      "country": "JPN",
+      "agency": "MOFA",
+      "domains": ["diplomacy", "security"],
+      "kind": "rss",
+      "url": "https://www.mofa.go.jp/rss/index.xml",
+      "lang": "en",
+      "enabled": false,
+      "weight": 1.2,
+      "notes": "Often 403 from datacenter IPs — try later or HTML mirror"
+    },
+    {
+      "id": "us_usda_disabled",
+      "country": "USA",
+      "agency": "USDA",
+      "domains": ["agriculture"],
+      "kind": "rss",
+      "url": "https://www.usda.gov/rss/latest-releases.xml",
+      "lang": "en",
+      "enabled": false,
+      "weight": 1.3,
+      "notes": "403 from some networks; WASDE via FAS HTML planned"
+    }
+  ]
+}

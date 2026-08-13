@@ -19,6 +19,25 @@ jobs:
         with:
           python-version: '3.12'
 
+      - name: Install model and validation dependencies
+        working-directory: New for anti/scripts/shipping_capacity
+        run: python -m pip install -r requirements-ml.txt
+
+      - name: Refresh UN Comtrade route weights when secret is available
+        working-directory: New for anti/scripts/shipping_capacity
+        env:
+          COMTRADE_SUBSCRIPTION_KEY: ${{ secrets.COMTRADE_SUBSCRIPTION_KEY }}
+        run: |
+          if [ -n "$COMTRADE_SUBSCRIPTION_KEY" ]; then
+            python shipping_capacity/comtrade_routes.py
+          else
+            echo "COMTRADE_SUBSCRIPTION_KEY is not configured; preserving checked-in route weights"
+          fi
+
+      - name: Refresh historical chokepoint event calibration
+        working-directory: New for anti/scripts/shipping_capacity
+        run: python -m shipping_capacity.historical_calibration
+
       - name: Run model tests
         working-directory: New for anti/scripts/shipping_capacity
         run: python -m unittest discover -s tests -v
@@ -28,13 +47,24 @@ jobs:
         run: >-
           python build_snapshot.py
           --fetch-portwatch
+          --fetch-container-context
           --output ../../public/data/shipping_capacity_v1.json
+
+      - name: Validate simulator and snapshot schema
+        working-directory: New for anti/scripts/shipping_capacity
+        run: |
+          python validate_model.py
+          python validate_schema.py
 
       - name: Commit refreshed snapshot
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add "New for anti/public/data/shipping_capacity_v1.json"
+          git add "New for anti/public/data/shipping_capacity_diagnostics_v1.json"
+          git add "New for anti/public/data/shipping_capacity_backtests_v1.json"
+          git add "New for anti/scripts/shipping_capacity/config/comtrade_route_flows.json"
+          git add "New for anti/scripts/shipping_capacity/config/event_calibration.json"
+          git add "New for anti/scripts/shipping_capacity/generated/validation_report.json"
           git commit -m "chore: refresh shipping capacity snapshot" || exit 0
           git push
-

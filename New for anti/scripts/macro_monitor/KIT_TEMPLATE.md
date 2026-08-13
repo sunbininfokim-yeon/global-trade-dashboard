@@ -88,11 +88,11 @@ fixture_synth → 실어댑터 링크 (DATA_SOURCES)
 
 ---
 
-## 5. 한계(limitations) 규칙
+## 5. 지표 설명(limitations → explainers) 규칙
 
-- 제목: `지표 분석·추론의 한계 (<국가>)`
-- **3항 기본**, 지정학·특수구조면 4항(대만)
-- 각 항: **인과 단절**을 명시 (지표 A↑ ≠ 결과 B)
+- `kind: explainers`, 제목: `지표 설명 (<국가>)`
+- 추론 한계 문구가 아니라 **칩이 무엇을 재는지** 설명
+- 국가 핵심 지표 6항 이상 (정책금리·환율·주식·GDP·물가·등급 + 특화)
 
 ---
 
@@ -104,6 +104,6 @@ fixture_synth → 실어댑터 링크 (DATA_SOURCES)
 - [ ] USD 교차환율
 - [ ] 대표 주가지수
 - [ ] GDP + CPI
-- [ ] 한계 ≥ 3
+- [ ] 지표 설명(explainers) ≥ 6
 - [ ] `featured: true` · kit = `xx_macro_v1`
 - [ ] DATA_SOURCES에 무료 소스 1절

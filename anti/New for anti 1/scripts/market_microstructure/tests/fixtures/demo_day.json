@@ -1,0 +1,83 @@
+{
+  "as_of": "2026-07-31",
+  "fx_usdkrw": 1400,
+  "note": "Demo day calibrated toward Market Ear leverage-reset anchors. Replace with live KRX pulls; quality=demo.",
+  "kospi": {
+    "total_mcap_krw": 1250000000000000,
+    "free_float_mcap_krw": 1733333333333333,
+    "constituent_mcaps_krw": {
+      "005930": 400000000000000,
+      "000660": 250000000000000,
+      "000270": 45000000000000,
+      "105560": 40000000000000,
+      "005380": 38000000000000,
+      "035420": 35000000000000,
+      "006400": 32000000000000,
+      "051910": 30000000000000,
+      "068270": 28000000000000,
+      "055550": 26000000000000,
+      "012450": 20000000000000
+    },
+    "source": "fixture_calibrated_to_paper_concentration",
+    "quality": "demo"
+  },
+  "market_levered_etf": {
+    "aum_krw": 36400000000000,
+    "source": "paper_anchor_ai_casino_26bn_usd_x_fx",
+    "quality": "paper_anchor"
+  },
+  "flows": {
+    "scope": "kospi_cash",
+    "foreign_net_krw": -850000000000,
+    "retail_net_krw": 620000000000,
+    "institution_net_krw": 230000000000,
+    "source": "fixture_illustrative_foreign_vs_retail",
+    "quality": "demo"
+  },
+  "stocks": [
+    {
+      "ticker": "000660",
+      "name": "SK하이닉스",
+      "market_cap_krw": 250000000000000,
+      "free_float_mcap_krw": 180000000000000,
+      "adv_spot_krw": 12000000000000,
+      "letf_trading_value_krw": 9800000000000,
+      "short_interest_shares": 8500000,
+      "short_ratio_pct": 1.2,
+      "source": "fixture",
+      "quality": "demo",
+      "letf_products": [
+        {"ticker": "0193T0", "name": "KODEX SK하이닉스단일종목레버리지", "L": 2, "aum": 2500000000000, "trading_value": 3500000000000, "beta": 1.0, "structure": "cash", "direction": "long"},
+        {"ticker": "0195S0", "name": "TIGER SK하이닉스단일종목레버리지", "L": 2, "aum": 1200000000000, "trading_value": 2200000000000, "beta": 1.0, "structure": "cash", "direction": "long"},
+        {"ticker": "0194T0", "name": "ACE SK하이닉스단일종목레버리지", "L": 2, "aum": 400000000000, "trading_value": 800000000000, "beta": 1.0, "structure": "cash", "direction": "long"},
+        {"ticker": "0192L0", "name": "RISE SK하이닉스단일종목레버리지", "L": 2, "aum": 350000000000, "trading_value": 700000000000, "beta": 1.0, "structure": "cash", "direction": "long"},
+        {"ticker": "0197W0", "name": "SOL SK하이닉스단일종목레버리지", "L": 2, "aum": 300000000000, "trading_value": 600000000000, "beta": 1.0, "structure": "cash", "direction": "long"},
+        {"ticker": "0194R0", "name": "KIWOOM SK하이닉스선물단일종목레버리지", "L": 2, "aum": 280000000000, "trading_value": 500000000000, "beta": 1.0, "structure": "futures", "direction": "long"},
+        {"ticker": "0198D0", "name": "1Q SK하이닉스선물단일종목레버리지", "L": 2, "aum": 200000000000, "trading_value": 400000000000, "beta": 1.0, "structure": "futures", "direction": "long"},
+        {"ticker": "0197X0", "name": "SOL SK하이닉스선물단일종목인버스2X", "L": -2, "aum": 180000000000, "trading_value": 1000000000000, "beta": 1.0, "structure": "futures", "direction": "inverse"}
+      ]
+    },
+    {
+      "ticker": "005930",
+      "name": "삼성전자",
+      "market_cap_krw": 400000000000000,
+      "free_float_mcap_krw": 280000000000000,
+      "adv_spot_krw": 9000000000000,
+      "letf_trading_value_krw": 5500000000000,
+      "short_interest_shares": 12000000,
+      "short_ratio_pct": 0.8,
+      "source": "fixture",
+      "quality": "demo",
+      "letf_products": [
+        {"ticker": "0193W0", "name": "KODEX 삼성전자단일종목레버리지", "L": 2, "aum": 1800000000000, "trading_value": 1800000000000, "beta": 1.0, "structure": "cash", "direction": "long"},
+        {"ticker": "0195R0", "name": "TIGER 삼성전자단일종목레버리지", "L": 2, "aum": 1000000000000, "trading_value": 1200000000000, "beta": 1.0, "structure": "cash", "direction": "long"},
+        {"ticker": "0194M0", "name": "ACE 삼성전자단일종목레버리지", "L": 2, "aum": 450000000000, "trading_value": 600000000000, "beta": 1.0, "structure": "cash", "direction": "long"},
+        {"ticker": "0192M0", "name": "RISE 삼성전자단일종목레버리지", "L": 2, "aum": 400000000000, "trading_value": 500000000000, "beta": 1.0, "structure": "cash", "direction": "long"},
+        {"ticker": "0193K0", "name": "PLUS 삼성전자단일종목레버리지", "L": 2, "aum": 350000000000, "trading_value": 400000000000, "beta": 1.0, "structure": "cash", "direction": "long"},
+        {"ticker": "0194N0", "name": "KIWOOM 삼성전자선물단일종목레버리지", "L": 2, "aum": 250000000000, "trading_value": 350000000000, "beta": 1.0, "structure": "futures", "direction": "long"},
+        {"ticker": "0198B0", "name": "1Q 삼성전자선물단일종목레버리지", "L": 2, "aum": 200000000000, "trading_value": 300000000000, "beta": 1.0, "structure": "futures", "direction": "long"},
+        {"ticker": "0193L0", "name": "PLUS 삼성전자선물단일종목인버스2X", "L": -2, "aum": 150000000000, "trading_value": 650000000000, "beta": 1.0, "structure": "futures", "direction": "inverse"}
+      ]
+    }
+  ]
+}

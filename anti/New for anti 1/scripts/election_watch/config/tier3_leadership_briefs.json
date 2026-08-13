@@ -1,0 +1,33 @@
+{
+  "version": 1,
+  "as_of": "2026-08-08",
+  "label_ko": "3급 — 비경쟁·제한 선거 국가 간략 지도자 카드",
+  "rules": {
+    "depth": "minimal",
+    "required_fields": [
+      "iso3",
+      "name_ko",
+      "priority_tier=3",
+      "mode=leadership_brief|leadership_brief_emirates",
+      "regime",
+      "head.name_en",
+      "power.elections_national",
+      "power.power_event (승계·쿠데타·건국 등 1줄)"
+    ],
+    "skip": [
+      "full legislature roster",
+      "factions",
+      "governance polls",
+      "by-election calendars",
+      "party_leadership races"
+    ],
+    "coup_note": "독재·군사정권은 power_event에 type=coup + date. 왕정 승계는 succession/succession_reshuffle.",
+    "iran": "IRN은 의도적으로 deferred — 작성하지 않음"
+  },
+  "active": ["SAU", "ARE"],
+  "templates": {
+    "absolute_monarchy": "head + de_facto + succession event",
+    "federal_emirates": "federal president + emirates[] rulers",
+    "military_dictatorship": "head + coup date + elections_national=없음"
+  }
+}

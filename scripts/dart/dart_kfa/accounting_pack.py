@@ -23,10 +23,25 @@ def empty_accounting_pack(currency: str | None = None) -> dict[str, Any]:
             "operating_income": {"value": None, "margin": None, "series": _series_placeholder()},
             "ebitda": {"value": None, "margin": None, "series": _series_placeholder()},
             "net_income": {"value": None, "margin": None, "series": _series_placeholder()},
+            # Kept separate from net income so the FCFF tax input is traceable to
+            # reported PBT / tax expense rather than a hidden engine default.
+            "profit_before_tax": {"value": None, "series": _series_placeholder()},
+            "income_tax_expense": {"value": None, "series": _series_placeholder()},
+            "effective_tax_rate": {"value": None, "series": _series_placeholder()},
+            "interest_expense": {
+                "value": None,
+                "series": _series_placeholder(),
+                "reason": None,
+            },
             "eps": {"value": None, "series": _series_placeholder()},
         },
         "cash_flow": {
             "cfo": {"value": None, "series": _series_placeholder()},
+            "depreciation_and_amortization": {
+                "value": None,
+                "series": _series_placeholder(),
+                "reason": None,
+            },
             "capex": {
                 "value": None,
                 "abs_value": None,
@@ -80,6 +95,14 @@ def empty_accounting_pack(currency: str | None = None) -> dict[str, Any]:
             },
         },
         "working_capital": {
+            # NWC is operating current assets less operating current liabilities.
+            # Cash and interest-bearing debt must not be silently mixed into it.
+            "net_working_capital": {
+                "value": None,
+                "series": _series_placeholder(),
+                "definition": "operating_current_assets - operating_current_liabilities",
+                "reason": None,
+            },
             "dso": {"value": None, "series": _series_placeholder()},
             "dio": {"value": None, "series": _series_placeholder()},
             "dpo": {"value": None, "series": _series_placeholder()},

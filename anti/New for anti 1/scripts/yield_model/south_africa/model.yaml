@@ -1,0 +1,42 @@
+country: south_africa
+iso: ZAF
+label_ko: 남아프리카공화국
+label_en: South Africa
+panel_mode: forecast
+data_file: south_africa_yield_forecast.json
+model_name: South Africa Commercial Maize Belt
+model_status: provisional
+status_note_ko: "2016~2025 완전 홀드아웃 skill +15.3%, RMSE 705kg/ha. 부스팅 트리는 홀드아웃 −6.1%로 기각되어 Ridge 추세 앙상블을 유지합니다."
+
+view:
+  longitude: 27.2
+  latitude: -28.3
+  zoom: 4.4
+
+regions:
+  - key: commercial_maize_belt
+    label_ko: 상업용 옥수수 벨트
+    coordinates: [27.4, -27.0]
+    crops: [corn]
+
+sources:
+  labels:
+    name: "South Africa Crop Estimates Committee via SAGIS"
+    url: "https://www.sagis.org.za/non-sagis-historic-info/"
+    updated: "2026-07-30"
+  climate:
+    name: "Google Earth Engine: CHIRPS Daily + ERA5-Land Daily Aggregated"
+    url: "https://developers.google.com/earth-engine/datasets/"
+    updated: "2026-08-10"
+
+method_refs: "Schlenker & Roberts (2009) · Lobell et al. (2014) · CEC commercial maize statistics"
+
+trade_policy:
+  restricted: false
+  prohibited_crops: []
+  note_ko: "옥수수 수출은 통상·검역 조건에 따르며 현재 전면 수출금지는 반영하지 않습니다."
+
+notes_ko: |
+  Free State·North West·Mpumalanga의 생산가중 기후를 전국 상업용 옥수수
+  단수와 연결합니다. 지방별 장기 단수 정답이 없어 지방별 숫자를 만들지 않으며,
+  세 지역은 하나의 옥수수 벨트로 표시합니다.
