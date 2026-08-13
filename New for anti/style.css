@@ -2316,6 +2316,41 @@ body.trade-map-mode .left-pane {
 .stock-row .ch.down { color: #fca5a5; }
 .stock-note { font-size: 9.5px; color: #64748b; margin-top: 6px; }
 
+/* SPR·쿠싱 12주 추이 — 기본은 접힌 상태, 행을 누르면 아래로 펼친다. */
+.stock-row.is-clickable { cursor: pointer; }
+.stock-row.is-clickable:hover .nm { color: #e2e8f0; }
+.stock-row.is-clickable:focus-visible { outline: 1px solid rgba(56,189,248,.5); outline-offset: 2px; }
+.stock-caret {
+    display: inline-block; margin-left: 5px; border-style: solid;
+    border-width: 3.5px 3px 0; border-color: #64748b transparent transparent;
+    vertical-align: middle; transition: transform .15s;
+}
+.stock-item.is-open .stock-caret { transform: rotate(180deg); border-top-color: #7dd3fc; }
+
+.stock-spark { display: none; padding: 8px 0 10px; }
+.stock-item.is-open .stock-spark { display: block; }
+.sspark-svg { width: 100%; height: 54px; display: block; overflow: visible; }
+.sspark-line {
+    fill: none; stroke: #7dd3fc; stroke-width: 1.6;
+    stroke-linejoin: round; stroke-linecap: round;
+    vector-effect: non-scaling-stroke;
+}
+.sspark-area { fill: rgba(125,211,252,.11); stroke: none; }
+/* 끝점은 길이 0인 path에 둥근 선끝. viewBox를 가로로 늘여도(preserveAspectRatio
+   none) 원이 타원으로 찌그러지지 않는다 — 선 굵기는 화면 좌표계에서 고정. */
+.sspark-dot {
+    fill: none; stroke: #7dd3fc; stroke-width: 5.5;
+    stroke-linecap: round; vector-effect: non-scaling-stroke;
+}
+.sspark-svg.down .sspark-line, .sspark-svg.down .sspark-dot { stroke: #fca5a5; }
+.sspark-svg.down .sspark-area { fill: rgba(252,165,165,.1); }
+.sspark-foot {
+    display: flex; justify-content: space-between; gap: 8px;
+    font-size: 9px; color: #64748b; margin-top: 4px;
+    font-variant-numeric: tabular-nums;
+}
+.sspark-range { color: #475569; }
+
 /* ── 금융 진단 (포트폴리오 / 기업 가치) ─────────────────────────────────────
    Full-bleed document surface, same treatment as shipping: these views have no
    map, so the globe would only take room away from the numbers. */
