@@ -646,13 +646,69 @@ const renderTradeWorldPanel = (arcs) => {
     if (newsTitle) newsTitle.textContent = '주요 수출국 · 수입국';
     newsContentEl.innerHTML = `
         <div class="trade-focus-card">
+            <div id="futures-slot"></div>
             <p class="trade-focus-sub">비중% · 막대는 각 방향 내 상대 물동량 · 국가를 누르면 그 나라 노선만 남습니다</p>
             <p class="trade-rank-group-head">주요 수출국</p>
             <div class="trade-rank-list">${exportRows || '<p class="empty-state">무역 루트 없음</p>'}</div>
             <p class="trade-rank-group-head">주요 수입국</p>
             <div class="trade-rank-list">${importRows || '<p class="empty-state">무역 루트 없음</p>'}</div>
         </div>`;
+    renderFuturesCard(currentCommodity);
     renderEmergencyStocks();
+};
+
+const futuresCache = new Map();
+
+/**
+ * Front-month futures beside the flow ranking (world view, Stage 1).
+ *
+ * Fetched by commodity key, not by symbol -- the ranking already knows which
+ * commodity is on screen, and keeping the Yahoo symbol server-side means a
+ * bad ticker never leaks into a browser network tab.
+ */
+const renderFuturesCard = async (commodity) => {
+    const slot = document.getElementById('futures-slot');
+    if (!slot || !commodity) return;
+
+    let doc = futuresCache.get(commodity);
+    if (doc === undefined) {
+        try {
+            const res = await fetch(`/api/futures?commodity=${encodeURIComponent(commodity)}`);
+            doc = res.ok ? await res.json() : null;
+        } catch (err) {
+            console.warn('[futures] unavailable', err);
+            doc = null;
+        }
+        futuresCache.set(commodity, doc);
+    }
+    // The panel may have been rebuilt (or the commodity switched) while the
+    // fetch was in flight -- re-fetch the live slot, and bail if it is gone
+    // or if the visible commodity has since moved on.
+    const live = document.getElementById('futures-slot');
+    if (!live || currentCommodity !== commodity) return;
+    if (!doc) { live.innerHTML = ''; return; }
+
+    if (doc.priced === false) {
+        live.innerHTML = `<div class="fut-card fut-none">
+            <span class="fut-k">선물가</span>
+            <span class="fut-none-note">${doc.reason}</span>
+        </div>`;
+        return;
+    }
+    if (!doc.priced) { live.innerHTML = ''; return; }
+
+    const up = (doc.change_pct ?? 0) >= 0;
+    live.innerHTML = `
+        <div class="fut-card">
+            <div class="fut-main">
+                <span class="fut-px">$${doc.price.toLocaleString(undefined, { maximumFractionDigits: 4 })}</span>
+                <span class="fut-unit">/ ${doc.unit}</span>
+                ${doc.change_pct === null ? '' : `<span class="fut-chg ${up ? 'up' : 'down'}">
+                    ${up ? '+' : ''}${doc.change_pct}%</span>`}
+            </div>
+            <div class="fut-meta">${doc.exchange} ${doc.symbol}
+                ${doc.proxy ? ` · ${doc.proxy}` : ''} · 지연 시세</div>
+        </div>`;
 };
 
 const updateNewsPanel = (countryName) => {
