@@ -368,7 +368,20 @@ async function kvCachedJson(env, cacheKey, ttlSeconds, doFetch) {
 // drifted, every "warmed" entry would be a key nobody reads.
 // 842 is the US: Comtrade reports US trade as "USA, PR and USVI" (842), and
 // querying the plain geographic code 840 returns zero rows.
-const DEFAULT_M49_CODES = "842,840,156,76,32,643,804,356,124,36,250,276,360,458,764,704,818,484,392,410,826,380,724,792,682,784,710,566,586,50,608,364,12,504,616,528,56,756,170,604,152,554,398,642,348,112,600,858,231,800,634,578,368,344,180,158,404,834,104,116,384,288,686,860";
+//
+// Five more countries carry the same trap, found by noticing they never once
+// appeared as reporter or partner across ~22,000 rows spanning 8 commodities:
+// France 250->251, India 356->699, Norway 578->579, Taiwan 158->490
+// ("Other Asia, nes"), Switzerland 756->757 (this one alone was erasing
+// ~$60B of gold trade -- the map's own "top exporter: Switzerland" label
+// pointed at a country the map could never draw a route for). Old codes stay
+// in the list so any legacy cache entry still resolves; see M49_MAP in
+// data.js for the matching name table. Also added seven producers that were
+// invisible even as a trading partner, not filtered out: Gabon (266,
+// manganese ore), Mozambique (508) and Madagascar (450, graphite), Zambia
+// (894) and Finland (246, cobalt), Bolivia (68, refined tin), Rwanda
+// (646, tin concentrate).
+const DEFAULT_M49_CODES = "842,840,156,76,32,643,804,699,356,124,36,251,250,276,360,458,764,704,818,484,392,410,826,380,724,792,682,784,710,566,586,50,608,364,12,504,616,528,56,757,756,170,604,152,554,398,642,348,112,600,858,231,800,634,579,578,368,344,180,490,158,404,834,104,116,384,288,686,860,266,508,450,894,246,68,646";
 
 // Every commodity the dashboard can show, keyed by HS code -> cache TTL.
 // Doubles as the work list for the scheduled cache warm-up.
@@ -391,14 +404,14 @@ const COMTRADE_TTL = {
     // Battery and steel-chain minerals. Annual Comtrade data that moves once a
     // year, so a week of staleness costs nothing.
     "7502": 604800,  // Nickel
-    "8105": 604800,  // Cobalt
-    "283691": 604800,// Lithium carbonate
-    "2504": 604800,  // Graphite
+    "8105,2822,283329": 604800, // Cobalt: mattes + oxides/hydroxides + sulphate
+    "283691,2530,282520": 604800, // Lithium: carbonate + spodumene ore + hydroxide
+    "2504,3801": 604800, // Graphite: natural + artificial
     "280530": 604800,// Rare earths
     "2601": 604800,  // Iron ore
     "2602,720211,720219": 604800, // Manganese: ore + ferromanganese
     "2610,720241,720249": 604800, // Chromium: ore + ferrochromium
-    "8001": 604800,  // Tin
+    "8001,2609": 604800, // Tin: unwrought metal + ore/concentrate
     "7801": 604800,  // Lead
     "7110": 604800   // Platinum group
 };
@@ -586,9 +599,17 @@ function shortHash(str) {
     return h.toString(36);
 }
 
+// Bumped whenever DEFAULT_M49_CODES changes. The 'default' scope below
+// collapses the whole reporter/partner list to a literal token -- cheap, but
+// it means the cache key for the default list never changes on its own even
+// when the list's *contents* do, so a code fix (e.g. Switzerland 756->757)
+// would keep serving the pre-fix cached payload for up to COMTRADE_TTL
+// without this. Bump on any DEFAULT_M49_CODES edit; nothing else needs to.
+const DEFAULT_SCOPE_VERSION = 2;
+
 function comtradeCacheKey(hs, reporters, partners, period, freq) {
     const scope = (reporters === DEFAULT_M49_CODES && partners === DEFAULT_M49_CODES)
-        ? 'default'
+        ? `default${DEFAULT_SCOPE_VERSION}`
         : shortHash(`${reporters}|${partners}`);
     return `comtrade:${freq}:${hs}:${period}:${scope}`;
 }
