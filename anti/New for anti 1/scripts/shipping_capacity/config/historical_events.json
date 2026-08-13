@@ -1,0 +1,118 @@
+{
+  "status": "official_event_windows_for_portwatch_calibration",
+  "record_count_per_chokepoint": 4000,
+  "baseline_days": 28,
+  "placebo_lookback_days": 365,
+  "bootstrap_iterations": 2000,
+  "events": [
+    {
+      "event_id": "suez_ever_given_2021",
+      "event_type": "physical_chokepoint_closure",
+      "chokepoint_id": "suez",
+      "portwatch_id": "chokepoint1",
+      "start_date": "2021-03-23",
+      "end_date": "2021-03-29",
+      "window_end_is_resolution": true,
+      "date_quality": "official_dates",
+      "primary_metric": "all",
+      "metrics": ["all", "container", "dry_bulk", "tanker"],
+      "qualitative_behavior_constraints": [
+        "A material waiting queue was observed; UNCTAD reports 367 vessels blocked by the end of the rescue phase.",
+        "Public official sources do not identify a reroute/wait/cancel percentage partition."
+      ],
+      "sources": [
+        {
+          "name": "IMO — MV Ever Given incident",
+          "url": "https://www.imo.org/en/MediaCentre/SecretaryGeneral/Pages/MV-Ever-Given-incident.aspx"
+        },
+        {
+          "name": "Suez Canal Authority — navigation back in both directions",
+          "url": "https://www.suezcanal.gov.eg/English/MediaCenter/News/Pages/31-3-2021.aspx"
+        },
+        {
+          "name": "UNCTAD resilient maritime logistics case study",
+          "url": "https://resilientmaritimelogistics.unctad.org/guidebook/case-study-3-port-port-said-egypt"
+        }
+      ]
+    },
+    {
+      "event_id": "panama_drought_restrictions_2023_24",
+      "event_type": "operational_restriction",
+      "chokepoint_id": "panama",
+      "portwatch_id": "chokepoint2",
+      "start_date": "2023-11-01",
+      "end_date": "2024-01-15",
+      "window_end_is_resolution": false,
+      "date_quality": "official_policy_phase",
+      "primary_metric": "all",
+      "metrics": ["all", "container", "dry_bulk", "tanker"],
+      "qualitative_behavior_constraints": [
+        "The authority reduced daily transit slots because of the precipitation deficit.",
+        "The selected end date closes a policy phase and is not full operational normalization."
+      ],
+      "sources": [
+        {
+          "name": "Panama Canal Authority — A-48-2023 transit reductions",
+          "url": "https://pancanal.com/en/maritime-services/advisory-to-shipping/"
+        },
+        {
+          "name": "Panama Canal Authority — January transit update",
+          "url": "https://pancanal.com/canal-de-panama-aumentara-a-24-los-transitos-diarios-a-partir-de-enero/"
+        }
+      ]
+    },
+    {
+      "event_id": "red_sea_initial_rerouting_2023_24",
+      "event_type": "commercial_war_risk",
+      "chokepoint_id": "bab_el_mandeb",
+      "portwatch_id": "chokepoint4",
+      "start_date": "2023-12-15",
+      "end_date": "2024-02-29",
+      "window_end_is_resolution": false,
+      "date_quality": "official_attack_timeline_analysis_window",
+      "primary_metric": "all",
+      "metrics": ["all", "container", "dry_bulk", "tanker"],
+      "qualitative_behavior_constraints": [
+        "IMO explicitly reported rerouting by several globally operating companies in response to the threat.",
+        "The analysis window represents the initial response and is not the end of the security event."
+      ],
+      "sources": [
+        {
+          "name": "IMO — Red Sea statement, 19 December 2023",
+          "url": "https://www.imo.org/en/mediacentre/secretarygeneral/pages/red-sea-statement-19-december-2023.aspx"
+        },
+        {
+          "name": "IMO — Red Sea incident list",
+          "url": "https://wwwcdn.imo.org/localresources/en/MediaCentre/HotTopics/Documents/Red%20Sea/Incidents%20in%20the%20Red%20Sea%20%20-%20up%20to%2014%20March%202024.pdf"
+        }
+      ]
+    },
+    {
+      "event_id": "hormuz_conflict_2026",
+      "event_type": "military_physical_closure",
+      "chokepoint_id": "hormuz",
+      "portwatch_id": "chokepoint6",
+      "start_date": "2026-03-01",
+      "end_date": "2026-06-18",
+      "window_end_is_resolution": true,
+      "date_quality": "start_inferred_from_official_eighth_week_statement_end_official",
+      "primary_metric": "tanker",
+      "metrics": ["all", "container", "dry_bulk", "tanker"],
+      "qualitative_behavior_constraints": [
+        "IMO reported about 1,600 vessels remaining in the Gulf and no safe transit on 24 April 2026.",
+        "The controlled evacuation corridor means residual passage must not be interpreted as normal commercial transit.",
+        "Public data do not identify tanker-only stranded DWT or insurance coverage status."
+      ],
+      "sources": [
+        {
+          "name": "IMO — No safe transit through Strait of Hormuz",
+          "url": "https://www.imo.org/en/mediacentre/pressbriefings/pages/no-safe-transit-through-hormuz-imo-secretary-general.aspx"
+        },
+        {
+          "name": "JMIC — Strait of Hormuz Open, 18 June 2026",
+          "url": "https://wwwcdn.imo.org/localresources/en/MediaCentre/HotTopics/Documents/JMIC%20Advisory%20Note%2000926%20SoH%20open.pdf"
+        }
+      ]
+    }
+  ]
+}

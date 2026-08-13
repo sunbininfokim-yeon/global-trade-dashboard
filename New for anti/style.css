@@ -924,7 +924,12 @@ body.trade-map-mode .left-pane {
 .shipping-kpi.is-active {
     border-color: rgba(56, 189, 248, 0.55);
     box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.25) inset;
+    /* The selected card carries the accent fill. `.featured` uses the same
+       treatment, so a featured-and-unselected card would otherwise look
+       permanently active and steal the selection cue. */
+    background: linear-gradient(145deg, rgba(8, 47, 73, 0.82), rgba(15, 23, 42, 0.94));
 }
+.shipping-kpi.is-active .shipping-kpi-label { color: #7dd3fc; }
 .shipping-kpi:focus-visible {
     outline: 2px solid rgba(56, 189, 248, 0.55);
     outline-offset: 2px;
@@ -1125,6 +1130,140 @@ body.trade-map-mode .left-pane {
 .shipping-change { display: block; font-size: 27px; margin: 20px 0 4px; letter-spacing: -0.03em; }
 .shipping-change.negative, .negative-text { color: #f87171 !important; }
 .shipping-change.positive, .positive-text { color: #4ade80 !important; }
+.shipping-change.warn { color: #fbbf24 !important; }
+.shipping-change.neutral { color: #94a3b8 !important; }
+
+/* Scenario KPIs sit inside a panel rather than at page width, so they need a
+   tighter track than the page-level .shipping-kpi-grid. */
+.shipping-kpi-grid.scenario-kpis { grid-template-columns: repeat(auto-fit, minmax(168px, 1fr)); }
+.shipping-kpi-grid.scenario-kpis .shipping-kpi { min-height: 108px; padding: 16px; }
+.shipping-kpi-grid.scenario-kpis .shipping-kpi strong { font-size: clamp(17px, 1.4vw, 21px); }
+
+/* Explanation shown when a scenario KPI is selected. */
+.shipping-metric-note {
+    margin-top: 14px;
+    padding: 15px 17px;
+    border-radius: 12px;
+    border: 1px solid rgba(56, 189, 248, 0.20);
+    background: rgba(8, 47, 73, 0.34);
+}
+.shipping-metric-note strong { color: #7dd3fc; font-size: 12px; letter-spacing: 0.04em; }
+.shipping-metric-note p { margin: 7px 0 0; color: #cbd5e1; font-size: 12.5px; line-height: 1.7; }
+.shipping-metric-note strong + p strong { color: #f1f5f9; }
+
+/* Panel header tools: a popover trigger sitting beside the status badge. */
+.shipping-panel-tools { display: flex; align-items: center; gap: 10px; }
+
+.shipping-pop { position: relative; display: inline-flex; }
+.shipping-pop-trigger {
+    border: 1px solid rgba(148, 163, 184, 0.22);
+    background: rgba(15, 23, 42, 0.7);
+    color: #94a3b8;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 5px 10px;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: color 0.15s ease, border-color 0.15s ease;
+}
+.shipping-pop-trigger:hover { color: #e2e8f0; border-color: rgba(56, 189, 248, 0.45); }
+.shipping-pop-trigger[aria-expanded="true"] { color: #7dd3fc; border-color: rgba(56, 189, 248, 0.55); }
+
+.shipping-pop-body {
+    position: absolute;
+    top: calc(100% + 9px);
+    right: 0;
+    z-index: 60;
+    width: min(360px, 78vw);
+    padding: 15px 17px;
+    border-radius: 13px;
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    background: rgba(9, 14, 24, 0.98);
+    box-shadow: 0 22px 54px rgba(0, 0, 0, 0.45);
+    text-align: left;
+    cursor: default;
+}
+.shipping-pop-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 10px; }
+.shipping-pop-head strong { color: #f1f5f9; font-size: 13px; }
+.shipping-pop-close {
+    border: 0; background: transparent; color: #64748b;
+    font-size: 12px; cursor: pointer; padding: 2px 4px; line-height: 1;
+}
+.shipping-pop-close:hover { color: #e2e8f0; }
+.shipping-pop-body .shipping-note { margin-top: 10px; }
+
+/* Colour-threshold legend under the chokepoint chart. */
+.shipping-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 20px;
+    margin-top: 14px;
+    color: #94a3b8;
+    font-size: 11.5px;
+}
+.shipping-legend span { display: inline-flex; align-items: center; gap: 7px; }
+.shipping-legend i { width: 10px; height: 10px; border-radius: 3px; display: inline-block; }
+
+/* Reduction-pathway selector on the Net Zero screen. */
+.shipping-pathway-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+    gap: 12px;
+}
+.shipping-pathway {
+    padding: 16px 17px;
+    border-radius: 13px;
+    border: 1px solid rgba(148, 163, 184, 0.14);
+    background: rgba(15, 23, 42, 0.68);
+    cursor: pointer;
+    transition: border-color 0.15s ease, transform 0.15s ease, background 0.15s ease;
+}
+.shipping-pathway:hover { border-color: rgba(56, 189, 248, 0.4); transform: translateY(-1px); }
+.shipping-pathway:focus-visible { outline: 2px solid rgba(56, 189, 248, 0.55); outline-offset: 2px; }
+.shipping-pathway.is-active {
+    border-color: rgba(56, 189, 248, 0.55);
+    background: linear-gradient(145deg, rgba(8, 47, 73, 0.8), rgba(15, 23, 42, 0.94));
+}
+/* Pending pathways stay legible but visibly lighter than computed ones, so a
+   dash is never mistaken for a real zero. */
+.shipping-pathway.is-pending { opacity: 0.72; }
+.shipping-pathway.is-pending .shipping-pathway-value { color: #64748b; }
+
+.shipping-pathway-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.shipping-pathway-head strong { color: #f1f5f9; font-size: 13.5px; }
+.shipping-pathway-sub { display: block; margin-top: 5px; color: #94a3b8; font-size: 11.5px; }
+.shipping-pathway-value {
+    margin: 13px 0 0;
+    color: #fcd34d;
+    font-size: clamp(19px, 1.6vw, 24px);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+}
+.shipping-pathway small { color: #64748b; font-size: 11px; }
+
+/* Chokepoint detail: map on the left third, series on the right two thirds. */
+.shipping-detail-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+    gap: 18px;
+    margin-top: 16px;
+}
+@media (max-width: 900px) { .shipping-detail-grid { grid-template-columns: minmax(0, 1fr); } }
+
+.shipping-minimap-svg {
+    width: 100%;
+    height: auto;
+    border-radius: 10px;
+    border: 1px solid rgba(148, 163, 184, 0.14);
+    display: block;
+}
+.shipping-chokepoint-card.is-active {
+    border-color: rgba(56, 189, 248, 0.55);
+    box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.22) inset;
+}
+.shipping-chokepoint-card { cursor: pointer; transition: border-color 0.15s ease, transform 0.15s ease; }
+.shipping-chokepoint-card:hover { border-color: rgba(56, 189, 248, 0.38); transform: translateY(-1px); }
+.shipping-chokepoint-card:focus-visible { outline: 2px solid rgba(56, 189, 248, 0.55); outline-offset: 2px; }
 .warning-text { color: #fbbf24 !important; }
 .shipping-chokepoint-card > p { color: #64748b; font-size: 10px; line-height: 1.5; }
 .shipping-chokepoint-card > small { display: block; color: #475569; font-size: 9px; margin-top: 12px; }
@@ -2025,6 +2164,86 @@ body.trade-map-mode .left-pane {
     pointer-events: none;
 }
 .dropdown.dropdown-grouped .dd-head:first-child { border-top: 0; margin-top: 0; }
+
+/* 「원자재」 3열 드롭다운.
+   에너지·금속·농산물이 한 패널 안에 나란히 서므로 flex-direction을 row로
+   되돌린다(.dropdown 기본값은 column). 금속 열이 20개 항목으로 가장 길고
+   나머지 두 열은 짧아서, 열마다 높이를 맞추지 않고 위쪽 정렬로 둔다. */
+.dropdown.dropdown-columns {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 4px;
+    padding: 6px;
+    min-width: max-content;
+    /* 금속 열이 20개 항목으로 가장 길다. 일반적인 노트북 높이에서 스크롤 없이
+       한 번에 보이도록 잡되, 더 낮은 화면에서는 스크롤로 넘긴다. */
+    max-height: min(84vh, 760px);
+    overflow-y: auto;
+    border-radius: 0 0 10px 10px;
+}
+.dropdown.dropdown-columns .dd-col {
+    display: flex;
+    flex-direction: column;
+    min-width: 158px;
+    flex: 0 0 auto;
+}
+.dropdown.dropdown-columns .dd-col + .dd-col,
+.dropdown.dropdown-columns .dd-col-group + .dd-col {
+    border-left: 1px solid rgba(255, 255, 255, 0.07);
+    padding-left: 4px;
+}
+
+/* 금속·광물처럼 한 분류가 너무 길 때, 제목 하나를 공유하는 두 개의 얇은
+   하위 열로 쪼갠다. 하위 열 사이에는 구분선을 넣지 않는다 -- 같은 분류의
+   연속이지 다른 분류의 시작이 아니기 때문에, 열 경계선은 .dd-col-group과
+   그 옆 형제 사이에서만 그린다(위 선택자). */
+.dropdown.dropdown-columns .dd-col-group {
+    display: flex;
+    flex-direction: column;
+    min-width: 316px;
+    flex: 0 0 auto;
+}
+.dropdown.dropdown-columns .dd-col-group-body {
+    display: flex;
+    flex-direction: row;
+    gap: 4px;
+}
+.dropdown.dropdown-columns .dd-col-group-body .dd-col { min-width: 158px; }
+/* 열 제목은 기존 분류명(에너지·금속·광물·농산물)을 그대로 쓴다. */
+.dropdown.dropdown-columns .dd-head {
+    display: block;
+    padding: 8px 14px 7px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .06em;
+    color: #cbd5e1;
+    pointer-events: none;
+}
+/* 금속 열 안의 소분류. 열 제목보다 한 단 낮게 보이도록 작고 흐리게. */
+.dropdown.dropdown-columns .dd-sub {
+    display: block;
+    padding: 9px 14px 4px;
+    font-size: 9.5px;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: rgba(148, 163, 184, .7);
+    border-top: 1px solid rgba(255, 255, 255, .07);
+    margin-top: 3px;
+    pointer-events: none;
+}
+.dropdown.dropdown-columns .dd-sub:first-of-type { border-top: 0; margin-top: 0; }
+.dropdown.dropdown-columns a { padding: 7.5px 14px; border-radius: 6px; }
+/* 작황 모니터는 「원자재」 클릭 시 열리는 기본 화면이라 눈에 띄게 둔다. */
+.dropdown.dropdown-columns .dd-feature {
+    color: #4ade80;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 6px 6px 0 0;
+    margin-bottom: 4px;
+}
+.dropdown.dropdown-columns::-webkit-scrollbar { width: 6px; }
+.dropdown.dropdown-columns::-webkit-scrollbar-thumb {
+    background: rgba(148, 163, 184, .25); border-radius: 999px;
+}
 .dropdown.dropdown-grouped::-webkit-scrollbar { width: 6px; }
 .dropdown.dropdown-grouped::-webkit-scrollbar-thumb {
     background: rgba(148, 163, 184, .25); border-radius: 999px;
@@ -2208,3 +2427,452 @@ body.finance-mode #chart-view::-webkit-scrollbar-thumb { background: rgba(148, 1
     font-variant-numeric: tabular-nums; letter-spacing: .02em;
 }
 .dep-note { margin: 4px 0 0; font-size: 9.5px; line-height: 1.45; color: rgba(148, 163, 184, .62); }
+
+/* ── 포트폴리오 입력 ─────────────────────────────────────────────────────── */
+.pf-tabs { display: flex; gap: 4px; margin-bottom: 18px; border-bottom: 1px solid var(--border); }
+.pf-tab {
+    background: none; border: 0; border-bottom: 2px solid transparent; cursor: pointer;
+    padding: 9px 15px; font-size: 13px; font-weight: 560; color: #64748b;
+    font-family: inherit; transition: color .15s, border-color .15s;
+}
+.pf-tab:hover { color: #cbd5e1; }
+.pf-tab.on { color: #7dd3fc; border-bottom-color: #38bdf8; }
+
+.fin-head-sub { border-bottom: 0; padding-bottom: 0; margin-bottom: 18px; }
+.fin-headline { font-size: 14px; line-height: 1.65; color: #cbd5e1; margin: 0 0 12px; max-width: 78ch; }
+
+.pf-input { margin-bottom: 15px; }
+.pf-input h2 { display: flex; align-items: baseline; gap: 8px; }
+.pf-count { font-size: 11.5px; font-weight: 400; color: #64748b; }
+
+.pf-profiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 9px; }
+.pf-profile {
+    display: block; cursor: pointer; padding: 12px 14px; border-radius: 9px;
+    background: rgba(30, 41, 59, .35); border: 1px solid var(--border); transition: border-color .15s, background .15s;
+}
+.pf-profile:hover { border-color: rgba(56, 189, 248, .35); }
+.pf-profile.on { border-color: rgba(56, 189, 248, .55); background: rgba(56, 189, 248, .08); }
+.pf-profile input { position: absolute; opacity: 0; pointer-events: none; }
+.pf-profile-label { display: block; font-size: 13px; font-weight: 600; color: #e2e8f0; margin-bottom: 4px; }
+.pf-profile-blurb { display: block; font-size: 11.5px; line-height: 1.55; color: #64748b; }
+
+.pf-add { display: flex; gap: 8px; flex-wrap: wrap; align-items: flex-start; }
+.pf-search-wrap { position: relative; flex: 1 1 260px; min-width: 200px; }
+.pf-field {
+    width: 100%; box-sizing: border-box; padding: 9px 12px; border-radius: 8px;
+    background: rgba(15, 23, 42, .75); border: 1px solid var(--border);
+    color: #e2e8f0; font-size: 13px; font-family: inherit; outline: none;
+}
+.pf-field:focus { border-color: rgba(56, 189, 248, .5); }
+.pf-field::placeholder { color: #475569; }
+.pf-amt { flex: 0 1 170px; text-align: right; font-variant-numeric: tabular-nums; }
+.pf-side { flex: 0 0 100px; cursor: pointer; }
+.pf-side option { background: #0f172a; }
+
+.pf-sug {
+    position: absolute; top: calc(100% + 4px); left: 0; right: 0; z-index: 20;
+    background: #111827; border: 1px solid rgba(148, 163, 184, .25); border-radius: 9px;
+    overflow: hidden; box-shadow: 0 14px 34px rgba(0, 0, 0, .55);
+}
+.pf-sug.hidden { display: none; }
+.pf-sug-item {
+    display: flex; justify-content: space-between; align-items: center; gap: 10px; width: 100%;
+    padding: 9px 13px; background: none; border: 0; cursor: pointer; text-align: left;
+    color: #e2e8f0; font-size: 12.5px; font-family: inherit;
+}
+.pf-sug-item:hover { background: rgba(56, 189, 248, .12); }
+.pf-sug-meta { font-size: 11px; color: #64748b; white-space: nowrap; }
+
+.pf-btn {
+    padding: 9px 17px; border-radius: 8px; border: 1px solid rgba(148, 163, 184, .28);
+    background: rgba(148, 163, 184, .12); color: #cbd5e1;
+    font-size: 12.5px; font-weight: 560; font-family: inherit; cursor: pointer; white-space: nowrap;
+}
+.pf-btn:hover:not(:disabled) { background: rgba(148, 163, 184, .2); }
+.pf-btn:disabled { opacity: .4; cursor: not-allowed; }
+.pf-btn-primary { background: rgba(56, 189, 248, .18); border-color: rgba(56, 189, 248, .45); color: #7dd3fc; }
+.pf-btn-primary:hover:not(:disabled) { background: rgba(56, 189, 248, .27); }
+.pf-btn-ghost { background: none; border-color: rgba(148, 163, 184, .2); color: #64748b; }
+.pf-picked { font-size: 11.5px; color: #7dd3fc; margin: 9px 0 0; min-height: 15px; }
+
+.pf-rows { display: flex; flex-direction: column; gap: 5px; }
+.pf-row {
+    display: grid; grid-template-columns: 1fr auto 58px 30px; gap: 12px; align-items: center;
+    padding: 8px 11px; border-radius: 7px; background: rgba(30, 41, 59, .35);
+}
+.pf-row-name { font-size: 12.5px; color: #e2e8f0; }
+.pf-row-val { font-size: 12.5px; color: #cbd5e1; font-variant-numeric: tabular-nums; }
+.pf-row-w { font-size: 12px; color: #64748b; text-align: right; font-variant-numeric: tabular-nums; }
+.pf-del {
+    background: none; border: 0; color: #475569; cursor: pointer; font-size: 13px;
+    padding: 2px 5px; border-radius: 4px; font-family: inherit;
+}
+.pf-del:hover { color: #fca5a5; background: rgba(239, 68, 68, .1); }
+
+.pf-total {
+    display: flex; justify-content: space-between; align-items: baseline;
+    margin-top: 12px; padding-top: 11px; border-top: 1px solid var(--border);
+    font-size: 13px; color: #94a3b8;
+}
+.pf-total strong { font-size: 16px; color: #f1f5f9; font-variant-numeric: tabular-nums; }
+.pf-actions { display: flex; gap: 8px; margin-top: 15px; }
+.pf-privacy { margin-top: 11px !important; color: #475569 !important; }
+
+@media (max-width: 900px) {
+    .pf-add { flex-direction: column; }
+    .pf-search-wrap, .pf-amt, .pf-side, .pf-btn { flex: 1 1 auto; width: 100%; }
+    .pf-row { grid-template-columns: 1fr auto 30px; }
+    .pf-row-w { display: none; }
+}
+.pf-limit { font-size: 11.5px; color: #fcd34d; margin: 9px 0 0; }
+.pf-mode { display: flex; flex: 0 0 auto; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+.pf-mode-btn {
+    background: rgba(15, 23, 42, .75); border: 0; cursor: pointer; padding: 9px 14px;
+    font-size: 12.5px; color: #64748b; font-family: inherit; white-space: nowrap;
+}
+.pf-mode-btn + .pf-mode-btn { border-left: 1px solid var(--border); }
+.pf-mode-btn:hover { color: #cbd5e1; }
+.pf-mode-btn.on { background: rgba(56, 189, 248, .16); color: #7dd3fc; }
+.pf-picked-warn { color: #fcd34d !important; }
+.pf-row-sub { display: block; font-size: 10.5px; color: #64748b; margin-top: 3px; }
+@media (max-width: 900px) { .pf-mode { width: 100%; } .pf-mode-btn { flex: 1; } }
+
+/* ── 기업 가치 계산기 ─────────────────────────────────────────────────────── */
+.co-levels { display: inline-flex; margin: 0 0 4px; }
+.co-blurb { margin: 0 0 16px !important; }
+.co-table-wrap { overflow-x: auto; }
+.co-table { width: 100%; border-collapse: collapse; font-size: 12.5px; font-variant-numeric: tabular-nums; }
+.co-table th, .co-table td { padding: 8px 10px; text-align: right; white-space: nowrap; }
+.co-table thead th { font-size: 11px; color: #64748b; border-bottom: 1px solid var(--border); font-weight: 600; }
+.co-table thead th:first-child, .co-table td.co-label { text-align: left; }
+.co-table tbody tr + tr td { border-top: 1px solid rgba(255, 255, 255, .05); }
+.co-table td { color: #cbd5e1; }
+.co-table td.co-label { color: #94a3b8; }
+.co-hint { display: block; font-size: 10px; color: #475569; margin-top: 2px; }
+
+.co-kfa-cards { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+.co-kfa-pending { opacity: .55; }
+.co-kfa-pending .fin-card-value { color: #64748b; font-size: 15px; }
+.co-kfa-toggle {
+    margin-top: 8px; background: none; border: 1px solid var(--border); border-radius: 6px;
+    color: #7dd3fc; font-size: 11px; padding: 5px 9px; cursor: pointer; font-family: inherit;
+}
+.co-kfa-toggle:hover { background: rgba(56, 189, 248, .1); }
+.co-kfa-card.open { grid-column: span 2; }
+.co-kfa-chart { margin-top: 10px; }
+.kfa-spark { width: 100%; height: 56px; display: block; }
+@media (max-width: 900px) { .co-kfa-card.open { grid-column: span 1; } }
+
+/* ── 매크로 모니터 ────────────────────────────────────────────────────────
+   지도가 주인공. 좌·우 대시보드를 쓰지 않고 오버레이만 지도 위에 띄운다. */
+body.macro-mode .left-pane,
+body.macro-mode #right-pane-container { display: none !important; }
+body.macro-mode .map-pane { flex: 1 1 100%; }
+
+#macro-layer {
+    position: absolute; inset: 0; z-index: 30;
+    pointer-events: none; display: flex;
+    align-items: flex-end; justify-content: center;
+    padding: 0 16px 22px;
+}
+#macro-layer.mm-open { align-items: center; padding: 20px 16px; }
+#macro-layer > * { pointer-events: auto; }
+
+.mm-hint {
+    display: flex; align-items: center; gap: 9px;
+    background: rgba(15, 23, 42, .82); border: 1px solid var(--border);
+    backdrop-filter: blur(8px); border-radius: 999px;
+    padding: 9px 18px; font-size: 12.5px; color: #cbd5e1;
+}
+.mm-hint-warn { color: #fca5a5; border-color: rgba(239, 68, 68, .35); }
+.mm-hint-dot { width: 7px; height: 7px; border-radius: 50%; background: #38bdf8; box-shadow: 0 0 0 4px rgba(56,189,248,.18); }
+.mm-hint-count { color: #64748b; font-size: 11.5px; }
+.mm-tip { background: rgba(15,23,42,.95); color: #e2e8f0; padding: 5px 9px; border-radius: 6px; font-size: 12px; }
+
+.mm-overlay {
+    width: min(1080px, 100%); max-height: calc(100vh - 190px); overflow-y: auto;
+    background: rgba(11, 17, 30, .93); backdrop-filter: blur(14px);
+    border: 1px solid rgba(148, 163, 184, .22); border-radius: 14px;
+    padding: 20px 22px 22px; box-shadow: 0 26px 70px rgba(0, 0, 0, .6);
+}
+.mm-overlay::-webkit-scrollbar { width: 7px; }
+.mm-overlay::-webkit-scrollbar-thumb { background: rgba(148,163,184,.3); border-radius: 999px; }
+
+.mm-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 14px; margin-bottom: 15px; }
+.mm-title h2 { font-size: 19px; font-weight: 650; margin: 0 0 5px; display: flex; align-items: center; gap: 9px; }
+.mm-title p { font-size: 11.5px; color: #64748b; margin: 0; }
+.mm-title code { background: rgba(148,163,184,.12); padding: 1px 5px; border-radius: 3px; font-size: 10.5px; }
+.mm-badge {
+    font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 999px;
+    background: rgba(56,189,248,.16); color: #7dd3fc; border: 1px solid rgba(56,189,248,.32);
+}
+.mm-close {
+    background: none; border: 0; color: #64748b; font-size: 15px; cursor: pointer;
+    padding: 4px 8px; border-radius: 6px; font-family: inherit; flex: 0 0 auto;
+}
+.mm-close:hover { color: #e2e8f0; background: rgba(148,163,184,.14); }
+
+.mm-headlines { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 8px; margin-bottom: 16px; }
+.mm-headline {
+    text-align: left; background: rgba(30,41,59,.5); border: 1px solid var(--border);
+    border-radius: 9px; padding: 9px 12px; cursor: pointer; font-family: inherit;
+}
+.mm-headline:hover { border-color: rgba(56,189,248,.4); }
+.mm-headline-label { display: block; font-size: 10.5px; color: #64748b; margin-bottom: 3px; }
+.mm-headline-value { display: block; font-size: 16px; font-weight: 620; color: #f1f5f9; font-variant-numeric: tabular-nums; }
+
+.mm-tabs { display: flex; flex-wrap: wrap; gap: 3px; border-bottom: 1px solid var(--border); margin-bottom: 10px; }
+.mm-tab {
+    background: none; border: 0; border-bottom: 2px solid transparent; cursor: pointer;
+    padding: 8px 14px; font-size: 12.5px; font-weight: 560; color: #64748b; font-family: inherit;
+}
+.mm-tab:hover:not(:disabled) { color: #cbd5e1; }
+.mm-tab.on { color: #7dd3fc; border-bottom-color: #38bdf8; }
+.mm-tab:disabled { opacity: .3; cursor: not-allowed; }
+.mm-tab-desc { font-size: 11.5px; color: #64748b; margin: 0 0 14px; }
+
+.mm-chips { display: grid; grid-template-columns: repeat(auto-fill, minmax(178px, 1fr)); gap: 8px; }
+.mm-chip {
+    text-align: left; background: rgba(30,41,59,.42); border: 1px solid var(--border);
+    border-radius: 9px; padding: 11px 13px; cursor: pointer; font-family: inherit;
+    display: flex; flex-direction: column; gap: 3px; transition: border-color .15s, background .15s;
+}
+.mm-chip:hover { border-color: rgba(56,189,248,.45); background: rgba(56,189,248,.07); }
+.mm-chip-label { font-size: 11px; color: #94a3b8; }
+.mm-chip-value { font-size: 17px; font-weight: 620; color: #f1f5f9; font-variant-numeric: tabular-nums; }
+.mm-chip-foot { display: flex; align-items: baseline; gap: 4px; font-size: 10.5px; }
+.mm-chip-win { color: #475569; margin-right: 5px; }
+.mm-chip-note { font-size: 10.5px; color: #64748b; line-height: 1.45; margin-top: 3px; }
+.mm-delta { font-variant-numeric: tabular-nums; font-weight: 600; }
+.mm-up { color: var(--positive); } .mm-down { color: var(--negative); } .mm-flat { color: #64748b; }
+
+.mm-drawer {
+    margin-top: 14px; background: rgba(15,23,42,.66);
+    border: 1px solid rgba(56,189,248,.24); border-radius: 11px; padding: 15px 17px;
+}
+.mm-drawer-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 10px; }
+.mm-drawer-head h3 { font-size: 14px; font-weight: 620; margin: 0 0 3px; color: #e2e8f0; }
+.mm-drawer-sub { font-size: 11px; color: #64748b; margin: 0; }
+.mm-drawer-actions { display: flex; align-items: center; gap: 8px; }
+.mm-chart { width: 100%; height: 210px; display: block; }
+.mm-line { fill: none; stroke: #38bdf8; stroke-width: 2; stroke-linejoin: round; vector-effect: non-scaling-stroke; }
+.mm-dot { fill: #7dd3fc; stroke: #0b111e; stroke-width: 2; }
+.mm-axis { stroke: rgba(148,163,184,.22); stroke-width: 1; vector-effect: non-scaling-stroke; }
+.mm-tick { fill: #475569; font-size: 10px; font-family: inherit; }
+
+.mm-limits { margin-top: 16px; border-top: 1px solid var(--border); padding-top: 13px; }
+.mm-limits summary { cursor: pointer; font-size: 12.5px; font-weight: 560; color: #94a3b8; }
+.mm-limits summary:hover { color: #cbd5e1; }
+.mm-limit { margin-top: 11px; }
+.mm-limit strong { display: block; font-size: 12px; color: #cbd5e1; margin-bottom: 3px; }
+.mm-limit p { font-size: 11.5px; line-height: 1.65; color: #64748b; margin: 0; }
+.mm-disclaimer { font-size: 10.5px; color: #475569; margin: 14px 0 0; line-height: 1.6; }
+
+@media (max-width: 900px) {
+    .mm-overlay { padding: 15px 14px; max-height: calc(100vh - 150px); }
+    .mm-chips { grid-template-columns: repeat(auto-fill, minmax(148px, 1fr)); }
+}
+
+/* ── 매크로: 오버레이 확대 · 차트 · 관료 · 뉴스 레일 ─────────────────────── */
+.mm-overlay {
+    width: min(1180px, 94vw);
+    max-height: min(84vh, calc(100vh - 130px));
+    padding: 22px 24px 24px;
+}
+
+.mm-officials { display: flex; flex-wrap: wrap; gap: 6px 18px; margin-top: 9px; align-items: baseline; }
+.mm-official { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 8px; font-size: 11.5px; }
+.mm-off-inst { color: #64748b; }
+.mm-off-person { color: #94a3b8; }
+.mm-off-person strong { color: #e2e8f0; font-weight: 600; }
+.mm-off-date { color: #475569; font-size: 10px; margin-left: 4px; }
+.mm-off-asof { font-size: 10px; color: #334155; }
+
+.mm-views { display: flex; gap: 4px; margin: 2px 0 12px; }
+.mm-view-btn {
+    background: rgba(148,163,184,.09); border: 1px solid transparent; border-radius: 7px;
+    padding: 5px 12px; font-size: 11.5px; color: #64748b; cursor: pointer; font-family: inherit;
+}
+.mm-view-btn:hover { color: #cbd5e1; }
+.mm-view-btn.on { background: rgba(56,189,248,.15); border-color: rgba(56,189,248,.32); color: #7dd3fc; }
+.mm-view-title { font-size: 12px; color: #94a3b8; margin: 0 0 11px; }
+
+.mm-drawer-body { display: grid; grid-template-columns: minmax(0, 62fr) minmax(210px, 38fr); gap: 18px; }
+.mm-drawer-main { min-width: 0; }
+
+.mm-chart-box { position: relative; }
+.mm-chart { width: 100%; height: 260px; display: block; overflow: visible; }
+.mm-grid { stroke: rgba(148,163,184,.10); stroke-width: 1; vector-effect: non-scaling-stroke; }
+.mm-zero { stroke: rgba(148,163,184,.34); stroke-width: 1; stroke-dasharray: 3 3; vector-effect: non-scaling-stroke; }
+.mm-ma { fill: none; stroke: #fbbf24; stroke-width: 1.6; stroke-dasharray: 4 3; vector-effect: non-scaling-stroke; }
+.mm-cross { stroke: rgba(125,211,252,.5); stroke-width: 1; stroke-dasharray: 3 3; vector-effect: non-scaling-stroke; pointer-events: none; }
+.mm-hover-dot { fill: #7dd3fc; stroke: #0b111e; stroke-width: 2; pointer-events: none; }
+.mm-tip-box {
+    position: absolute; top: 4px; transform: translateX(-50%);
+    background: rgba(2, 6, 16, .95); border: 1px solid rgba(148,163,184,.3);
+    border-radius: 7px; padding: 6px 10px; pointer-events: none; white-space: nowrap; z-index: 3;
+}
+.mm-tip-date { display: block; font-size: 10px; color: #64748b; }
+.mm-tip-val { display: block; font-size: 13px; font-weight: 620; color: #f1f5f9; font-variant-numeric: tabular-nums; }
+.mm-tip-ma { display: block; font-size: 10.5px; color: #fbbf24; }
+.mm-legend-note { font-size: 10.5px; color: #64748b; margin: 6px 0 0; display: flex; align-items: center; gap: 6px; }
+.mm-swatch-ma { display: inline-block; width: 14px; height: 0; border-top: 1.6px dashed #fbbf24; }
+
+.ms-sub-h { font-size: 12px; font-weight: 620; color: #cbd5e1; margin: 16px 0 6px; }
+
+/* Price-level distribution: index path + net-buying profile on one price axis */
+.ms-plc-box { position: relative; margin: 14px 0 4px; }
+.ms-plc { width: 100%; height: 400px; display: block; overflow: visible; }
+.ms-plc-bar { fill: rgba(148,163,184,.45); }
+.ms-plc-bar.neg { fill-opacity: .55; }
+.ms-plc-bar:hover { fill-opacity: 1; }
+.ms-plc-retail { fill: rgba(56,189,248,.72); }
+.ms-plc-foreign { fill: rgba(244,114,182,.72); }
+.ms-plc-inst { fill: rgba(167,139,250,.72); }
+.ms-plc-line { fill: none; stroke: #e2e8f0; stroke-width: 2; stroke-linejoin: round; vector-effect: non-scaling-stroke; }
+.ms-plc-sw-line { display: inline-block; width: 14px; height: 0; border-top: 2px solid #e2e8f0; }
+.ms-plc-sw { display: inline-block; width: 11px; height: 9px; margin-left: 8px; }
+.ms-plc-sw.ms-plc-retail { background: rgba(56,189,248,.72); }
+.ms-plc-sw.ms-plc-foreign { background: rgba(244,114,182,.72); }
+.ms-plc-sw.ms-plc-inst { background: rgba(167,139,250,.72); }
+@media (max-width: 720px) { .ms-plc { height: 320px; } }
+
+.mm-bars { display: flex; flex-direction: column; gap: 7px; }
+.mm-bar-row { display: grid; grid-template-columns: minmax(110px, 1.3fr) 3fr minmax(74px, auto); gap: 11px; align-items: center; }
+.mm-bar-label { font-size: 12px; color: #cbd5e1; }
+.mm-bar-sub { display: block; font-size: 10px; color: #64748b; }
+.mm-bar-track { height: 15px; background: rgba(148,163,184,.09); border-radius: 4px; overflow: hidden; }
+.mm-bar-fill { display: block; height: 100%; border-radius: 4px; background: linear-gradient(90deg, #38bdf8, #818cf8); }
+.mm-bar-neg { background: linear-gradient(90deg, #f87171, #fb923c); }
+.mm-bar-hi .mm-bar-fill { background: linear-gradient(90deg, #22d3ee, #38bdf8); box-shadow: 0 0 0 1px rgba(56,189,248,.4) inset; }
+.mm-bar-hi .mm-bar-label { color: #e2e8f0; font-weight: 560; }
+.mm-bar-value { font-size: 12px; color: #e2e8f0; text-align: right; font-variant-numeric: tabular-nums; }
+.mm-table { margin-top: 14px; }
+.mm-note { margin-top: 12px !important; }
+
+.mm-news { border-left: 1px solid var(--border); padding-left: 16px; min-width: 0; }
+.mm-news-head { font-size: 11px; color: #64748b; letter-spacing: .06em; margin: 0 0 10px; }
+.mm-news-item { display: block; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,.05); text-decoration: none; }
+.mm-news-title { display: block; font-size: 12px; color: #cbd5e1; line-height: 1.5; }
+.mm-news-meta { display: block; font-size: 10px; color: #64748b; margin-top: 3px; }
+.mm-news-empty { font-size: 11.5px; color: #64748b; margin: 0 0 8px; }
+.mm-news-q { font-size: 10.5px; color: #475569; margin: 0; }
+.mm-news-q code { background: rgba(148,163,184,.1); padding: 1px 4px; border-radius: 3px; }
+.mm-news-foot { font-size: 10px; color: #334155; margin: 14px 0 0; line-height: 1.5; }
+
+@media (max-width: 900px) {
+    .mm-overlay { width: 96vw; max-height: calc(100vh - 110px); padding: 15px 14px; }
+    .mm-drawer-body { grid-template-columns: 1fr; }
+    .mm-news { border-left: 0; border-top: 1px solid var(--border); padding: 14px 0 0; }
+    .mm-bar-row { grid-template-columns: minmax(84px, 1fr) 2fr minmax(62px, auto); gap: 8px; }
+}
+
+/* ── 기업 계산기: 누적 레벨 · DCF · 구조 ──────────────────────────────────── */
+.co-sep { border: 0; border-top: 1px solid var(--border); margin: 26px 0; }
+.co-struct-toggle { display: flex; gap: 6px; margin-bottom: 14px; }
+.co-share { display: block; font-size: 10px; color: #64748b; }
+.mm-bars-compact .mm-bar-row { grid-template-columns: minmax(120px, 1.4fr) 3fr minmax(90px, auto); }
+
+.co-dcf-inputs { display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-end; margin-bottom: 18px; }
+.co-dcf-input { display: flex; flex-direction: column; gap: 4px; font-size: 11px; color: #94a3b8; position: relative; }
+.co-dcf-input input {
+    width: 130px; padding: 8px 26px 8px 11px; border-radius: 8px;
+    background: rgba(15, 23, 42, .75); border: 1px solid var(--border);
+    color: #e2e8f0; font-size: 13px; font-family: inherit;
+    font-variant-numeric: tabular-nums; outline: none;
+}
+.co-dcf-input input:focus { border-color: rgba(56, 189, 248, .5); }
+.co-dcf-input i { position: absolute; right: 10px; bottom: 9px; font-style: normal; font-size: 11.5px; color: #64748b; }
+
+/* ── 시장 미시구조 ────────────────────────────────────────────────────────── */
+.ms-missing { color: #64748b; font-size: 13px; font-weight: 400; }
+.ms-hist-period { display: flex; gap: 6px; margin: 2px 0 12px; flex-wrap: wrap; }
+.ms-hist-period .mm-tab { font-size: 11.5px; padding: 4px 12px; }
+.ms-hist-empty {
+    border: 1px dashed #334155; border-radius: 10px; padding: 16px 18px;
+    background: rgba(30, 41, 59, 0.35); margin: 4px 0 14px;
+}
+.ms-hist-empty strong { display: block; font-size: 13px; color: #cbd5e1; margin-bottom: 5px; }
+.ms-hist-empty p { margin: 0; font-size: 12px; line-height: 1.65; color: #64748b; }
+.ms-q { font-size: 10.5px; color: #64748b; font-weight: 400; margin-left: 6px; }
+.ms-badge {
+    display: inline-block; padding: 2px 10px; border-radius: 999px;
+    font-size: 12px; font-weight: 600; border: 1px solid transparent;
+}
+.ms-lv-1 { background: rgba(148,163,184,.14); color: #cbd5e1; border-color: rgba(148,163,184,.28); }
+.ms-lv-2 { background: rgba(251,191,36,.14); color: #fcd34d; border-color: rgba(251,191,36,.32); }
+.ms-lv-3 { background: rgba(239,68,68,.14); color: #fca5a5; border-color: rgba(239,68,68,.34); }
+
+.ms-headline { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 14px; }
+.ms-head-level { padding: 3px 12px; border-radius: 999px; font-size: 13px; font-weight: 650; }
+.ms-head-dir { font-size: 17px; font-weight: 620; color: #f1f5f9; }
+.ms-head-meta { font-size: 11px; color: #64748b; }
+
+.ms-channels { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 8px; margin-bottom: 14px; }
+.ms-channel {
+    background: rgba(30,41,59,.4); border: 1px solid var(--border); border-radius: 9px;
+    padding: 10px 12px; display: flex; flex-direction: column; gap: 3px;
+}
+.ms-channel.on { border-color: rgba(239,68,68,.4); background: rgba(239,68,68,.07); }
+.ms-ch-name { font-size: 11px; color: #94a3b8; }
+.ms-ch-heat { font-size: 17px; font-weight: 620; color: #f1f5f9; font-variant-numeric: tabular-nums; }
+.ms-ch-lv { font-size: 10.5px; color: #64748b; }
+
+.ms-chips-row { display: flex; align-items: center; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; }
+.ms-row-label { font-size: 11px; color: #64748b; }
+.ms-tick {
+    font-size: 12px; padding: 3px 10px; border-radius: 6px; font-variant-numeric: tabular-nums;
+    background: rgba(56,189,248,.12); color: #7dd3fc; border: 1px solid rgba(56,189,248,.26);
+}
+
+.ms-brief { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 10px; }
+.ms-brief-card { background: rgba(30,41,59,.4); border: 1px solid var(--border); border-radius: 10px; padding: 13px 15px; }
+.ms-brief-title { display: block; font-size: 12px; color: #94a3b8; margin-bottom: 4px; }
+.ms-brief-stat { display: block; font-size: 16px; font-weight: 620; color: #f1f5f9; margin-bottom: 6px; font-variant-numeric: tabular-nums; }
+.ms-brief-card p { font-size: 11.5px; line-height: 1.6; color: #64748b; margin: 0; }
+.co-sens td { font-variant-numeric: tabular-nums; }
+.co-sens thead th:first-child { font-size: 10.5px; color: #475569; }
+
+/* ── 미시구조 3분할 · 클릭 드릴다운 ───────────────────────────────────────── */
+.ms-card { text-align: left; width: 100%; font-family: inherit; cursor: default; }
+.ms-card:disabled { opacity: 1; }
+.ms-clickable { cursor: pointer; transition: border-color .15s, background .15s; }
+.ms-clickable:hover { border-color: rgba(56,189,248,.45); background: rgba(56,189,248,.07); }
+.ms-more { display: block; font-size: 10.5px; color: #38bdf8; margin-top: 7px; }
+.ms-link { background: none; border: 0; color: #7dd3fc; cursor: pointer; font-family: inherit; font-size: 12.5px; padding: 0; text-decoration: underline dotted; }
+.ms-lead-strong { font-size: 13px; color: #cbd5e1; line-height: 1.6; margin: 0 0 14px; }
+.ms-why { font-size: 13px; line-height: 1.75; color: #cbd5e1; margin: 0 0 12px; }
+.ms-warn { border-left: 2px solid rgba(251,191,36,.45); padding-left: 11px; }
+.ms-ch-tick { font-size: 10px; color: #64748b; margin-top: 2px; }
+.ms-channel { text-align: left; width: 100%; font-family: inherit; }
+
+/* 0을 가운데 둔 발산형 막대: 순매수/순매도가 한눈에 갈려야 한다 */
+.ms-dist { display: flex; flex-direction: column; gap: 5px; }
+.ms-dist-row { display: grid; grid-template-columns: minmax(120px, 1.1fr) 2.4fr minmax(150px, auto); gap: 12px; align-items: center; }
+.ms-dist-row.on .ms-dist-label { color: #e2e8f0; }
+.ms-dist-label { font-size: 11.5px; color: #94a3b8; font-variant-numeric: tabular-nums; }
+.ms-dist-label span { display: block; font-size: 10px; color: #475569; }
+.ms-dist-bars { display: flex; flex-direction: column; gap: 2px; }
+.ms-dist-track { position: relative; height: 9px; background: rgba(148,163,184,.07); border-radius: 2px; }
+.ms-dist-track::before { content: ''; position: absolute; left: 50%; top: 0; bottom: 0; width: 1px; background: rgba(148,163,184,.25); }
+.ms-dist-fill { position: absolute; top: 0; bottom: 0; border-radius: 2px; }
+.ms-retail { background: #38bdf8; } .ms-foreign { background: #f472b6; } .ms-inst { background: #a78bfa; }
+.ms-dist-fill.neg { opacity: .55; }
+.ms-dist-val { font-size: 10.5px; color: #64748b; text-align: right; font-variant-numeric: tabular-nums; }
+.ms-dist-legend { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 10px; font-size: 10.5px; color: #64748b; }
+.ms-sw { display: inline-block; width: 9px; height: 9px; border-radius: 2px; margin-right: 5px; vertical-align: middle; }
+.ms-dist-zero { color: #475569; }
+
+.ms-modal-back {
+    position: fixed; inset: 0; z-index: 60; background: rgba(2,6,16,.72);
+    display: flex; align-items: center; justify-content: center; padding: 24px;
+}
+.ms-modal {
+    width: min(860px, 94vw); max-height: 82vh; overflow-y: auto;
+    background: rgba(11,17,30,.98); border: 1px solid rgba(148,163,184,.25);
+    border-radius: 13px; padding: 20px 22px; box-shadow: 0 26px 70px rgba(0,0,0,.65);
+}
+.ms-modal-head { display: flex; justify-content: space-between; align-items: center; gap: 14px; margin-bottom: 14px; }
+.ms-modal-head h3 { font-size: 15px; font-weight: 620; margin: 0; color: #e2e8f0; }
+@media (max-width: 900px) { .ms-dist-row { grid-template-columns: minmax(88px, 1fr) 2fr; } .ms-dist-val { display: none; } }
+.fin-head-en { font-size: 11px; color: #64748b; letter-spacing: .04em; margin: -4px 0 8px; }

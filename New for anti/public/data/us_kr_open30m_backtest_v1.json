@@ -1,0 +1,474 @@
+{
+  "schema_version": "us-kr-open30m-backtest-v1",
+  "as_of": "2026-08-12",
+  "fetched_at": "2026-08-12T10:46:39.852478+00:00",
+  "kr": "000660",
+  "kr_yahoo": "000660.KS",
+  "period": "1y",
+  "down_thr": -0.02,
+  "up_thr": 0.02,
+  "channel_summary": {
+    "downside": {
+      "n_driver_buckets": 5,
+      "drivers": [
+        "MU",
+        "NVDA",
+        "SOXL",
+        "SMH",
+        "AMZN"
+      ],
+      "mean_of_means": -0.027714,
+      "hit_rate_mean": 0.8319,
+      "note_ko": "하방=익일 KR open R<0 비율 평균; 상방=R>0 비율 평균"
+    },
+    "upside": {
+      "n_driver_buckets": 5,
+      "drivers": [
+        "MU",
+        "NVDA",
+        "SOXL",
+        "SMH",
+        "AMZN"
+      ],
+      "mean_of_means": 0.031038,
+      "hit_rate_mean": 0.7207,
+      "note_ko": "하방=익일 KR open R<0 비율 평균; 상방=R>0 비율 평균"
+    },
+    "vol_up": {
+      "proxy": "VIX_day_return>=5%",
+      "open_overnight": {
+        "baseline": {
+          "label": "all",
+          "n": 248,
+          "mean": 0.006679,
+          "median": 0.001776,
+          "p10": -0.039705,
+          "p90": 0.056963,
+          "frac_neg": 0.4798,
+          "frac_pos": 0.5202
+        },
+        "vix_up": {
+          "label": "vix_up",
+          "n": 52,
+          "mean": -0.019028,
+          "median": -0.024476,
+          "p10": -0.054548,
+          "p90": 0.018412,
+          "frac_neg": 0.7308,
+          "frac_pos": 0.2692
+        }
+      },
+      "quality": "estimated"
+    }
+  },
+  "per_driver": [
+    {
+      "us": "MU",
+      "kr": "000660",
+      "open30m": {
+        "baseline": {
+          "label": "all",
+          "n": 61,
+          "mean": 0.006717,
+          "median": -0.002062,
+          "p10": -0.070444,
+          "p90": 0.080122,
+          "frac_neg": 0.5246,
+          "frac_pos": 0.4754
+        },
+        "us_down": {
+          "label": "us_down",
+          "n": 20,
+          "mean": -0.029119,
+          "median": -0.009617,
+          "p10": -0.085977,
+          "p90": 0.011732,
+          "frac_neg": 0.65,
+          "frac_pos": 0.35
+        },
+        "us_up": {
+          "label": "us_up",
+          "n": 21,
+          "mean": 0.036991,
+          "median": 0.034965,
+          "p10": -0.025847,
+          "p90": 0.089005,
+          "frac_neg": 0.4286,
+          "frac_pos": 0.5714
+        },
+        "us_quiet": {
+          "label": "us_quiet",
+          "n": 9,
+          "mean": 0.008869,
+          "median": 0.009772,
+          "p10": -0.028429,
+          "p90": 0.04241,
+          "frac_neg": 0.4444,
+          "frac_pos": 0.5556
+        },
+        "n_aligned": 61
+      },
+      "open_overnight": {
+        "baseline": {
+          "label": "all",
+          "n": 247,
+          "mean": 0.006566,
+          "median": 0.001511,
+          "p10": -0.039856,
+          "p90": 0.057214,
+          "frac_neg": 0.4818,
+          "frac_pos": 0.5182
+        },
+        "us_down": {
+          "label": "us_down",
+          "n": 67,
+          "mean": -0.023437,
+          "median": -0.022617,
+          "p10": -0.065642,
+          "p90": 0.013313,
+          "frac_neg": 0.806,
+          "frac_pos": 0.194
+        },
+        "us_up": {
+          "label": "us_up",
+          "n": 96,
+          "mean": 0.031382,
+          "median": 0.023892,
+          "p10": -0.010111,
+          "p90": 0.08242,
+          "frac_neg": 0.2396,
+          "frac_pos": 0.7604
+        },
+        "n_aligned": 247
+      },
+      "proxy_note_ko": "옵션 레짐 대신 US 종가 수익률 버킷(±2%)."
+    },
+    {
+      "us": "NVDA",
+      "kr": "000660",
+      "open30m": {
+        "baseline": {
+          "label": "all",
+          "n": 61,
+          "mean": 0.006717,
+          "median": -0.002062,
+          "p10": -0.070444,
+          "p90": 0.080122,
+          "frac_neg": 0.5246,
+          "frac_pos": 0.4754
+        },
+        "us_down": {
+          "label": "us_down",
+          "n": 12,
+          "mean": -0.018025,
+          "median": -0.006977,
+          "p10": -0.076599,
+          "p90": 0.009772,
+          "frac_neg": 0.5833,
+          "frac_pos": 0.4167
+        },
+        "us_up": {
+          "label": "us_up",
+          "n": 16,
+          "mean": 0.033758,
+          "median": 0.03225,
+          "p10": -0.056781,
+          "p90": 0.104879,
+          "frac_neg": 0.4375,
+          "frac_pos": 0.5625
+        },
+        "us_quiet": {
+          "label": "us_quiet",
+          "n": 17,
+          "mean": 0.008758,
+          "median": 0.006236,
+          "p10": -0.023083,
+          "p90": 0.077537,
+          "frac_neg": 0.4118,
+          "frac_pos": 0.5882
+        },
+        "n_aligned": 61
+      },
+      "open_overnight": {
+        "baseline": {
+          "label": "all",
+          "n": 247,
+          "mean": 0.006566,
+          "median": 0.001511,
+          "p10": -0.039856,
+          "p90": 0.057214,
+          "frac_neg": 0.4818,
+          "frac_pos": 0.5182
+        },
+        "us_down": {
+          "label": "us_down",
+          "n": 41,
+          "mean": -0.030441,
+          "median": -0.028551,
+          "p10": -0.07074,
+          "p90": 0.014993,
+          "frac_neg": 0.878,
+          "frac_pos": 0.122
+        },
+        "us_up": {
+          "label": "us_up",
+          "n": 48,
+          "mean": 0.028568,
+          "median": 0.017995,
+          "p10": -0.026497,
+          "p90": 0.079684,
+          "frac_neg": 0.2708,
+          "frac_pos": 0.7292
+        },
+        "n_aligned": 247
+      },
+      "proxy_note_ko": "옵션 레짐 대신 US 종가 수익률 버킷(±2%)."
+    },
+    {
+      "us": "SOXL",
+      "kr": "000660",
+      "open30m": {
+        "baseline": {
+          "label": "all",
+          "n": 61,
+          "mean": 0.006717,
+          "median": -0.002062,
+          "p10": -0.070444,
+          "p90": 0.080122,
+          "frac_neg": 0.5246,
+          "frac_pos": 0.4754
+        },
+        "us_down": {
+          "label": "us_down",
+          "n": 24,
+          "mean": -0.026594,
+          "median": -0.015372,
+          "p10": -0.083457,
+          "p90": 0.010891,
+          "frac_neg": 0.6667,
+          "frac_pos": 0.3333
+        },
+        "us_up": {
+          "label": "us_up",
+          "n": 26,
+          "mean": 0.042138,
+          "median": 0.036919,
+          "p10": -0.023544,
+          "p90": 0.088941,
+          "frac_neg": 0.3077,
+          "frac_pos": 0.6923
+        },
+        "us_quiet": {
+          "label": "us_quiet",
+          "n": 7,
+          "mean": -0.009619,
+          "median": -0.00943,
+          "p10": -0.059632,
+          "p90": 0.03579,
+          "frac_neg": 0.7143,
+          "frac_pos": 0.2857
+        },
+        "n_aligned": 61
+      },
+      "open_overnight": {
+        "baseline": {
+          "label": "all",
+          "n": 247,
+          "mean": 0.006566,
+          "median": 0.001511,
+          "p10": -0.039856,
+          "p90": 0.057214,
+          "frac_neg": 0.4818,
+          "frac_pos": 0.5182
+        },
+        "us_down": {
+          "label": "us_down",
+          "n": 68,
+          "mean": -0.028692,
+          "median": -0.027766,
+          "p10": -0.068741,
+          "p90": 0.00527,
+          "frac_neg": 0.8676,
+          "frac_pos": 0.1324
+        },
+        "us_up": {
+          "label": "us_up",
+          "n": 113,
+          "mean": 0.029021,
+          "median": 0.022641,
+          "p10": -0.015833,
+          "p90": 0.077118,
+          "frac_neg": 0.2478,
+          "frac_pos": 0.7522
+        },
+        "n_aligned": 247
+      },
+      "proxy_note_ko": "옵션 레짐 대신 US 종가 수익률 버킷(±2%)."
+    },
+    {
+      "us": "SMH",
+      "kr": "000660",
+      "open30m": {
+        "baseline": {
+          "label": "all",
+          "n": 61,
+          "mean": 0.006717,
+          "median": -0.002062,
+          "p10": -0.070444,
+          "p90": 0.080122,
+          "frac_neg": 0.5246,
+          "frac_pos": 0.4754
+        },
+        "us_down": {
+          "label": "us_down",
+          "n": 17,
+          "mean": -0.018187,
+          "median": -0.004336,
+          "p10": -0.078952,
+          "p90": 0.012819,
+          "frac_neg": 0.5294,
+          "frac_pos": 0.4706
+        },
+        "us_up": {
+          "label": "us_up",
+          "n": 16,
+          "mean": 0.049784,
+          "median": 0.048007,
+          "p10": -0.021887,
+          "p90": 0.104879,
+          "frac_neg": 0.3125,
+          "frac_pos": 0.6875
+        },
+        "us_quiet": {
+          "label": "us_quiet",
+          "n": 13,
+          "mean": 0.000628,
+          "median": -0.00602,
+          "p10": -0.039665,
+          "p90": 0.043318,
+          "frac_neg": 0.6154,
+          "frac_pos": 0.3846
+        },
+        "n_aligned": 61
+      },
+      "open_overnight": {
+        "baseline": {
+          "label": "all",
+          "n": 247,
+          "mean": 0.006566,
+          "median": 0.001511,
+          "p10": -0.039856,
+          "p90": 0.057214,
+          "frac_neg": 0.4818,
+          "frac_pos": 0.5182
+        },
+        "us_down": {
+          "label": "us_down",
+          "n": 43,
+          "mean": -0.035379,
+          "median": -0.035316,
+          "p10": -0.076033,
+          "p90": -0.001212,
+          "frac_neg": 0.8837,
+          "frac_pos": 0.1163
+        },
+        "us_up": {
+          "label": "us_up",
+          "n": 49,
+          "mean": 0.0431,
+          "median": 0.031019,
+          "p10": -0.017597,
+          "p90": 0.096097,
+          "frac_neg": 0.1837,
+          "frac_pos": 0.8163
+        },
+        "n_aligned": 247
+      },
+      "proxy_note_ko": "옵션 레짐 대신 US 종가 수익률 버킷(±2%)."
+    },
+    {
+      "us": "AMZN",
+      "kr": "000660",
+      "open30m": {
+        "baseline": {
+          "label": "all",
+          "n": 61,
+          "mean": 0.006717,
+          "median": -0.002062,
+          "p10": -0.070444,
+          "p90": 0.080122,
+          "frac_neg": 0.5246,
+          "frac_pos": 0.4754
+        },
+        "us_down": {
+          "label": "us_down",
+          "n": 11,
+          "mean": -0.007211,
+          "median": -0.010723,
+          "p10": -0.044815,
+          "p90": 0.038873,
+          "frac_neg": 0.6364,
+          "frac_pos": 0.3636
+        },
+        "us_up": {
+          "label": "us_up",
+          "n": 10,
+          "mean": 0.012216,
+          "median": -0.004222,
+          "p10": -0.085567,
+          "p90": 0.06887,
+          "frac_neg": 0.6,
+          "frac_pos": 0.4
+        },
+        "us_quiet": {
+          "label": "us_quiet",
+          "n": 23,
+          "mean": 0.021009,
+          "median": 0.01137,
+          "p10": -0.024363,
+          "p90": 0.083945,
+          "frac_neg": 0.3913,
+          "frac_pos": 0.6087
+        },
+        "n_aligned": 61
+      },
+      "open_overnight": {
+        "baseline": {
+          "label": "all",
+          "n": 247,
+          "mean": 0.006566,
+          "median": 0.001511,
+          "p10": -0.039856,
+          "p90": 0.057214,
+          "frac_neg": 0.4818,
+          "frac_pos": 0.5182
+        },
+        "us_down": {
+          "label": "us_down",
+          "n": 29,
+          "mean": -0.020621,
+          "median": -0.018842,
+          "p10": -0.072392,
+          "p90": 0.02014,
+          "frac_neg": 0.7241,
+          "frac_pos": 0.2759
+        },
+        "us_up": {
+          "label": "us_up",
+          "n": 33,
+          "mean": 0.02312,
+          "median": 0.01992,
+          "p10": -0.026593,
+          "p90": 0.062689,
+          "frac_neg": 0.4545,
+          "frac_pos": 0.5455
+        },
+        "n_aligned": 247
+      },
+      "proxy_note_ko": "옵션 레짐 대신 US 종가 수익률 버킷(±2%)."
+    }
+  ],
+  "open30m_note_ko": "Yahoo 30분봉은 ~60일로 짧음. 장기는 overnight open으로 보완.",
+  "disclaimer_ko": "백테스트 추정. 투자 권유 아님.",
+  "source": "yfinance"
+}

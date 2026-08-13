@@ -1,0 +1,60 @@
+{
+  "model_version": "1.7.0",
+  "status": "provisional_active_codex_owned",
+  "status_ko": "다음 주 재평가 전까지 Codex가 담당하는 잠정 모델",
+  "review_window": "2026-08-17 week",
+  "roles": {
+    "model_iteration": "Codex through the next shipping review",
+    "formal_model_and_seed_review": "Codex EXTRA review scheduled before new requirements",
+    "ui_commit_and_release": "Claude Code"
+  },
+  "handoff_protocol": {
+    "mode": "codex_primary_until_next_review",
+    "rule": "새 요구사항 전에 Codex가 미완료 분석과 EXTRA 전체 재평가를 먼저 수행하고, Claude는 UI·PR 통합을 검토한다.",
+    "no_parallel_model_copy": true
+  },
+  "source_of_truth": {
+    "model_dir": "New for anti/scripts/shipping_capacity",
+    "published_artifact": "New for anti/public/data/shipping_capacity_v1.json",
+    "diagnostics_artifact": "New for anti/public/data/shipping_capacity_diagnostics_v1.json",
+    "backtests_artifact": "New for anti/public/data/shipping_capacity_backtests_v1.json",
+    "legacy_model_dir_status": "archived_reference_only"
+  },
+  "provisional_assumptions": [
+    {
+      "config": "environment_scenarios.json",
+      "fields": ["speed_response_share", "speed_reduction_fraction", "retrofit_offhire_share", "retirement_share"]
+    },
+    {
+      "model": "PortWatch multi-model validation",
+      "fields": ["feature window", "ML eligibility threshold", "regime interpretation"]
+    },
+    {
+      "config": "event_response_profiles.json",
+      "fields": ["reroute_multiplier", "wait_multiplier", "cancel_multiplier"],
+      "status": "throughput severity calibrated; behavioral partition remains a prior"
+    },
+    {
+      "scenario_id": "hormuz_50pct_28d",
+      "fields": ["onboard_waiting_share", "insurance_unavailable_share", "trapped_days"]
+    },
+    {
+      "scenario_id": "hormuz_effective_80pct_28d",
+      "fields": ["onboard_waiting_share", "insurance_unavailable_share", "trapped_days"]
+    },
+    {
+      "scenario_id": "hormuz_100pct_28d",
+      "fields": ["onboard_waiting_share", "insurance_unavailable_share", "trapped_days"]
+    }
+  ],
+  "review_acceptance_checks": [
+    "closure_fraction + residual_throughput_rate = 1",
+    "served_flow_index + backlog_flow_share + rerouted_in_transit_flow_share + cancelled_flow_share = 1",
+    "historical event throughput ratio + shortfall = 1",
+    "reroute/wait/cancel/insurance shares are not claimed as PortWatch observations",
+    "scenario assumptions remain separate from PortWatch and IMO observations",
+    "all shipping-capacity unit tests pass",
+    "screen and diagnostics artifacts pass the golden value contract",
+    "all public-flow route inputs pass Comtrade quality gates"
+  ]
+}

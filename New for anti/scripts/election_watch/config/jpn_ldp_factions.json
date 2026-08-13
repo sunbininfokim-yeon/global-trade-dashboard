@@ -1,0 +1,240 @@
+{
+  "version": 1,
+  "party": "LDP",
+  "party_ko": "자유민주당",
+  "as_of": "2026-08-08",
+  "notes": [
+    "総務省/선관위는 파벌 명단을 내지 않음 → 전원 언론·정당 보도 교차.",
+    "2024–2025 비자금 스캔들 이후 대부분 파벌은 정치단체로 해산. 공식 존속은 아소파(志公会)만.",
+    "해산 후에도 '旧○○派' 회동·인맥은 언론이 계속 추적 → 우리는 ex_faction 으로 남김.",
+    "인원수는 언론 시점마다 들쭉날쭉. count는 estimate + source 필수. 전체 명단 하드코딩은 보류(변동 심함)."
+  ],
+  "policy": {
+    "official_election_commission": false,
+    "require_media_crosscheck": true,
+    "min_sources_for_count": 2,
+    "refresh": "after_ldp_president_race_or_general_election"
+  },
+  "factions": [
+    {
+      "id": "aso",
+      "name_ko": "아소파",
+      "name_ja": "志公会（麻生派）",
+      "status": "active_formal_faction",
+      "head_figures": [{"name_ja": "麻生太郎", "name_ko": "아소 다로", "role": "faction_head"}],
+      "spectrum_note": "보수소류·킹메이커 역할(언론 서술)",
+      "confidence": "high_status_medium_count",
+      "counts": [
+        {
+          "as_of": "2025-07",
+          "n_approx": 43,
+          "unit": "diet_members_approx",
+          "source": {
+            "org": "파이낸셜뉴스(현지 언론 종합)",
+            "url": "https://www.fnnews.com/news/202507221145054949",
+            "note": "참의원 선거 반영 세력 구도 인용"
+          }
+        },
+        {
+          "as_of": "2026-05",
+          "n_approx": 60,
+          "unit": "diet_members_approx",
+          "source": {
+            "org": "연합뉴스←마이니치",
+            "url": "https://www.yna.co.kr/view/AKR20260528085500073",
+            "note": "중의원 선거 후 가입 수요로 60명대"
+          }
+        }
+      ],
+      "crosscheck_sources": [
+        {
+          "org": "読売",
+          "url": "https://www.yomiuri.co.jp/politics/20250625-OYT1T50143/",
+          "claim": "旧安倍派 해산 후 잔존 공식 파벌은 아소파만"
+        },
+        {
+          "org": "47NEWS",
+          "url": "https://www.47news.jp/12772067.html",
+          "claim": "동일: 존속 파벌 = 아소파만"
+        }
+      ],
+      "members_snapshot": null
+    },
+    {
+      "id": "ex_abe",
+      "name_ko": "옛 아베파",
+      "name_ja": "旧安倍派 / 旧清和政策研究会",
+      "status": "dissolved_formal_still_informal_bloc",
+      "dissolved": {
+        "as_of": "2025-06-25",
+        "sources": [
+          {
+            "org": "読売",
+            "url": "https://www.yomiuri.co.jp/politics/20250625-OYT1T50143/"
+          },
+          {
+            "org": "47NEWS",
+            "url": "https://www.47news.jp/12772067.html"
+          }
+        ]
+      },
+      "head_figures_historical": [
+        {"name_ja": "安倍晋三", "note": "historical"},
+        {"name_ja": "萩生田光一", "name_ko": "하기우다 고이치", "note": "언론상 구심 중 하나"}
+      ],
+      "confidence": "high_dissolution_medium_bloc_size",
+      "counts": [
+        {
+          "as_of": "2025-07",
+          "n_approx": 53,
+          "source": {
+            "org": "파이낸셜뉴스",
+            "url": "https://www.fnnews.com/news/202507221145054949"
+          }
+        }
+      ],
+      "crosscheck_sources": [
+        {
+          "org": "뉴시스←요미우리/아사히",
+          "url": "https://www.newsis.com/view/NISX20260227_0003528806",
+          "claim": "2026-02 총선 후 옛 아베파 회동·초선 포섭 보도"
+        }
+      ],
+      "members_snapshot": null
+    },
+    {
+      "id": "ex_motegi",
+      "name_ko": "옛 모테기파",
+      "name_ja": "旧茂木派 / 旧平成研究会",
+      "status": "dissolved_formal_still_informal_bloc",
+      "dissolved": {
+        "as_of": "2024-12-27",
+        "sources": [
+          {
+            "org": "日経",
+            "url": "https://www.nikkei.com/article/DGXZQOUA222L10S5A120C2000000/"
+          }
+        ]
+      },
+      "head_figures": [{"name_ja": "茂木敏充", "name_ko": "모테기 도시미쓰"}],
+      "confidence": "high_dissolution_medium_bloc_size",
+      "counts": [
+        {
+          "as_of": "2025-07",
+          "n_approx": 44,
+          "source": {
+            "org": "파이낸셜뉴스",
+            "url": "https://www.fnnews.com/news/202507221145054949"
+          }
+        }
+      ],
+      "crosscheck_sources": [
+        {
+          "org": "뉴시스",
+          "url": "https://www.newsis.com/view/NISX20260227_0003528806",
+          "claim": "2026-02 옛 모테기파 오찬 회동(~15명+초선)"
+        },
+        {
+          "org": "한국일보",
+          "url": "https://www.hankookilbo.com/news/article/A2025090909350003602",
+          "claim": "총재선 국면에서 옛 모테기파 회동"
+        }
+      ],
+      "members_snapshot": null
+    },
+    {
+      "id": "ex_kishida",
+      "name_ko": "옛 기시다파",
+      "name_ja": "旧岸田派 / 旧宏池会系",
+      "status": "dissolved_formal_still_informal_bloc",
+      "head_figures_historical": [{"name_ja": "岸田文雄", "name_ko": "기시다 후미오"}],
+      "confidence": "medium",
+      "counts": [
+        {
+          "as_of": "2025-07",
+          "n_approx": 37,
+          "source": {
+            "org": "파이낸셜뉴스",
+            "url": "https://www.fnnews.com/news/202507221145054949"
+          }
+        }
+      ],
+      "crosscheck_sources": [
+        {
+          "org": "한국일보",
+          "url": "https://www.hankookilbo.com/news/article/A2025090909350003602",
+          "claim": "하야시 등 옛 기시다파 회동 보도"
+        }
+      ],
+      "members_snapshot": null
+    },
+    {
+      "id": "ex_nikai",
+      "name_ko": "옛 니카이파",
+      "name_ja": "旧二階派",
+      "status": "dissolved_formal_still_informal_bloc",
+      "head_figures_historical": [{"name_ja": "二階俊博", "name_ko": "니카이 도시히로"}],
+      "confidence": "medium",
+      "counts": [
+        {
+          "as_of": "2025-07",
+          "n_approx": 29,
+          "source": {
+            "org": "파이낸셜뉴스",
+            "url": "https://www.fnnews.com/news/202507221145054949"
+          }
+        }
+      ],
+      "crosscheck_sources": [
+        {
+          "org": "뉴시스",
+          "url": "https://www.newsis.com/view/NISX20260227_0003528806",
+          "claim": "2026-02 옛 니카이파 회식·초선 초청"
+        }
+      ],
+      "members_snapshot": null
+    },
+    {
+      "id": "ex_moriyama",
+      "name_ko": "옛 모리야마파",
+      "name_ja": "旧森山派",
+      "status": "dissolved_formal",
+      "confidence": "medium",
+      "counts": [
+        {
+          "as_of": "2025-07",
+          "n_approx": 7,
+          "source": {
+            "org": "파이낸셜뉴스",
+            "url": "https://www.fnnews.com/news/202507221145054949"
+          }
+        }
+      ],
+      "members_snapshot": null
+    },
+    {
+      "id": "takaichi_support_groups",
+      "name_ko": "다카이치 지원 신그룹(언론)",
+      "name_ja": "国力研究会 등 (報道上)",
+      "status": "emerging_policy_group_not_classic_faction",
+      "confidence": "low",
+      "crosscheck_sources": [
+        {
+          "org": "아시아투데이",
+          "url": "https://www.asiatoday.co.kr/kn/view.php?key=20260508010001815",
+          "claim": "다카이치 지원 국력연구회 출범 보도"
+        }
+      ],
+      "members_snapshot": null,
+      "note": "고전 파벌과 동일 취급 금지. 관측용 슬롯만."
+    }
+  ],
+  "secondary_rosters": [
+    {
+      "id": "data_cafe_faction_list",
+      "url": "https://data-cafe.com/election/faction.htm",
+      "grade": "curated_third_party",
+      "use": "명단 대조용 2차 — 1차로 쓰지 말 것"
+    }
+  ]
+}

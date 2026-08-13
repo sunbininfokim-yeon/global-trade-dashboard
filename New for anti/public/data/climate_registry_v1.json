@@ -1,6 +1,6 @@
 {
   "schema_version": "climate-registry-v1",
-  "generated_at": "2026-08-07T14:25:24.764462+09:00",
+  "generated_at": "2026-08-11T10:09:35.684579+00:00",
   "note": "Generated from scripts/yield_model/*/model.yaml. Do not edit by hand.",
   "countries": {
     "Argentina": {
@@ -119,7 +119,7 @@
       "label_en": "Australia",
       "panel_mode": "forecast",
       "model_status": "provisional",
-      "status_note_ko": "산지 3곳 모두 검증 통과. 다만 2곳은 기상 피처 생성 실패로 예측 없음.",
+      "status_note_ko": "밀 3곳과 WA·VIC 보리/카놀라는 검증 통과. SA 보리·카놀라는 수치 예측 없이 참고 신호만 제공. 면화 모델은 종료.",
       "data_file": "australia_yield_forecast.json",
       "model_name": "Wheat Belt Model",
       "view": {
@@ -130,38 +130,44 @@
       "regions": [
         {
           "key": "wa_wheat",
-          "label_ko": "서호주 밀",
+          "label_ko": "서호주 겨울작물",
           "ui_name": "WA wheat (Australia)",
           "coordinates": [
             117,
             -31.5
           ],
           "crops_region_keys": [
-            "wa_wheat"
+            "wa_wheat",
+            "wa_barley",
+            "wa_canola"
           ]
         },
         {
           "key": "sa_wheat",
-          "label_ko": "남호주 밀",
+          "label_ko": "남호주 겨울작물",
           "ui_name": "SA wheat (Australia)",
           "coordinates": [
             138,
             -34
           ],
           "crops_region_keys": [
-            "sa_wheat"
+            "sa_wheat",
+            "sa_barley",
+            "sa_canola"
           ]
         },
         {
           "key": "vic_wheat",
-          "label_ko": "빅토리아 밀",
+          "label_ko": "빅토리아 겨울작물",
           "ui_name": "VIC wheat (Australia)",
           "coordinates": [
             143,
             -36.5
           ],
           "crops_region_keys": [
-            "vic_wheat"
+            "vic_wheat",
+            "vic_barley",
+            "vic_canola"
           ]
         }
       ],
@@ -174,7 +180,7 @@
         "climate": {
           "name": "NASA POWER (daily)",
           "url": "https://power.larc.nasa.gov/",
-          "updated": "2026-08-06"
+          "updated": "2026-08-10"
         }
       },
       "trade_policy": {
@@ -459,6 +465,54 @@
         ],
         "note_ko": "주요 곡물 수출 제한 seed (2+ → 적)"
       }
+    },
+    "Ethiopia": {
+      "country": "ethiopia",
+      "iso": "ETH",
+      "label_ko": "에티오피아",
+      "label_en": "Ethiopia",
+      "panel_mode": "reference",
+      "data_file": "ethiopia_yield_forecast.json",
+      "model_status": "training",
+      "status_note_ko": "2015~2024 홀드아웃에서 기후+주기 skill -0.1%, 부스팅 -6.9%. Forecast를 발행하지 않고 기관 전망·갱신·지역 기후 위험을 표시합니다.",
+      "model_name": "에티오피아 아라비카 (참고)",
+      "view": {
+        "longitude": 38.2,
+        "latitude": 7.5,
+        "zoom": 4.7
+      },
+      "regions": [
+        {
+          "key": "national_arabica_belt",
+          "label_ko": "에티오피아 아라비카 벨트",
+          "coordinates": [
+            36.8,
+            7.5
+          ],
+          "crops": [
+            "coffee"
+          ]
+        }
+      ],
+      "sources": {
+        "labels": {
+          "name": "FAOSTAT QCL via Our World in Data",
+          "url": "https://ourworldindata.org/grapher/coffee-yields",
+          "updated": "2026-02-25"
+        },
+        "climate": {
+          "name": "Google Earth Engine CHIRPS + ERA5-Land",
+          "url": "https://developers.google.com/earth-engine/datasets/catalog/UCSB-CHG_CHIRPS_DAILY",
+          "updated": "2026-08-10"
+        }
+      },
+      "method_refs": "USDA/FAS ET2026-0005 · ECTA regional production and stumping context",
+      "trade_policy": {
+        "restricted": false,
+        "prohibited_crops": [],
+        "note_ko": "생산·기후 모델이며 수출 제한 모델이 아닙니다."
+      },
+      "notes_ko": "|"
     },
     "India": {
       "country": "india",
@@ -745,6 +799,54 @@
         "note_ko": "밀 수출세·쿼터 운용 (seed)"
       }
     },
+    "South Africa": {
+      "country": "south_africa",
+      "iso": "ZAF",
+      "label_ko": "남아프리카공화국",
+      "label_en": "South Africa",
+      "panel_mode": "forecast",
+      "data_file": "south_africa_yield_forecast.json",
+      "model_name": "South Africa Commercial Maize Belt",
+      "model_status": "provisional",
+      "status_note_ko": "2016~2025 완전 홀드아웃 skill +15.3%, RMSE 705kg/ha. 부스팅 트리는 홀드아웃 −6.1%로 기각되어 Ridge 추세 앙상블을 유지합니다.",
+      "view": {
+        "longitude": 27.2,
+        "latitude": -28.3,
+        "zoom": 4.4
+      },
+      "regions": [
+        {
+          "key": "commercial_maize_belt",
+          "label_ko": "상업용 옥수수 벨트",
+          "coordinates": [
+            27.4,
+            -27.0
+          ],
+          "crops": [
+            "corn"
+          ]
+        }
+      ],
+      "sources": {
+        "labels": {
+          "name": "South Africa Crop Estimates Committee via SAGIS",
+          "url": "https://www.sagis.org.za/non-sagis-historic-info/",
+          "updated": "2026-07-30"
+        },
+        "climate": {
+          "name": "Google Earth Engine: CHIRPS Daily + ERA5-Land Daily Aggregated",
+          "url": "https://developers.google.com/earth-engine/datasets/",
+          "updated": "2026-08-10"
+        }
+      },
+      "method_refs": "Schlenker & Roberts (2009) · Lobell et al. (2014) · CEC commercial maize statistics",
+      "trade_policy": {
+        "restricted": false,
+        "prohibited_crops": [],
+        "note_ko": "옥수수 수출은 통상·검역 조건에 따르며 현재 전면 수출금지는 반영하지 않습니다."
+      },
+      "notes_ko": "|"
+    },
     "Thailand": {
       "country": "thailand",
       "iso": "THA",
@@ -839,6 +941,54 @@
         "restricted": false,
         "prohibited_crops": [],
         "note_ko": "정상 수출 (seed)"
+      },
+      "notes_ko": "|"
+    },
+    "Uganda": {
+      "country": "uganda",
+      "iso": "UGA",
+      "label_ko": "우간다",
+      "label_en": "Uganda",
+      "panel_mode": "reference",
+      "data_file": "uganda_yield_forecast.json",
+      "model_status": "training",
+      "status_note_ko": "2015~2024 홀드아웃에서 Ridge skill -3.9%, 부스팅 -86.7%. Forecast를 발행하지 않고 기관 전망·원인·기후 위험만 참고로 표시합니다.",
+      "model_name": "우간다 커피 (참고)",
+      "view": {
+        "longitude": 32.3,
+        "latitude": 1.2,
+        "zoom": 5.3
+      },
+      "regions": [
+        {
+          "key": "national_coffee_belt",
+          "label_ko": "우간다 커피 벨트",
+          "coordinates": [
+            32.3,
+            1.1
+          ],
+          "crops": [
+            "coffee"
+          ]
+        }
+      ],
+      "sources": {
+        "labels": {
+          "name": "FAOSTAT QCL via Our World in Data",
+          "url": "https://ourworldindata.org/grapher/coffee-yields",
+          "updated": "2026-02-25"
+        },
+        "climate": {
+          "name": "Google Earth Engine: CHIRPS Daily + ERA5-Land Daily Aggregated",
+          "url": "https://developers.google.com/earth-engine/datasets/catalog/UCSB-CHG_CHIRPS_DAILY",
+          "updated": "2026-08-10"
+        }
+      },
+      "method_refs": "Lwiza & Barkley (2025), Regional Environmental Change 25:50 · USDA/FAS Uganda Coffee Annual",
+      "trade_policy": {
+        "restricted": false,
+        "prohibited_crops": [],
+        "note_ko": "커피 수출 제한 모델이 아니라 생산·기후 참고 모델"
       },
       "notes_ko": "|"
     },

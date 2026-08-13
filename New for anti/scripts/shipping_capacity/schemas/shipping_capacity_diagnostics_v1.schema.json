@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://global-trade-dashboard.example/schemas/shipping_capacity_diagnostics_v1.schema.json",
+  "title": "Shipping Capacity Diagnostics v1",
+  "type": "object",
+  "required": ["schema_version", "artifact_type", "bundle_id", "generated_at", "model", "routes", "scenarios", "scenario_summary", "environment", "model_review", "comtrade_route_history", "portwatch_port_context", "market_signals", "pdf_reports", "lng_fleet", "behavior_uncertainty"],
+  "properties": {
+    "schema_version": {"const": "shipping-capacity-diagnostics-v1"},
+    "artifact_type": {"const": "model_diagnostics"},
+    "bundle_id": {"type": "string", "minLength": 20, "maxLength": 20},
+    "generated_at": {"type": "string", "format": "date-time"},
+    "routes": {"type": "array", "minItems": 1},
+    "scenarios": {"type": "array", "minItems": 1},
+    "scenario_summary": {"type": "array", "minItems": 1},
+    "environment": {
+      "type": "object",
+      "required": ["status", "identification_boundary", "scenarios"]
+    }
+  }
+}

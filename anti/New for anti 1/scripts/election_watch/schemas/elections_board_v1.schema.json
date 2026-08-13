@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://global-trade-dashboard.example/schemas/elections_board_v1.schema.json",
+  "title": "World Elections Board v1",
+  "type": "object",
+  "required": ["schema_version", "year", "countries"],
+  "properties": {
+    "schema_version": {"const": "elections-board-v1"},
+    "year": {"type": "integer"},
+    "countries": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["iso3", "system", "parties_tracked", "events"],
+        "properties": {
+          "system": {"enum": ["presidential", "parliamentary", "semi_presidential", "other"]},
+          "events": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "enum": [
+                    "presidential",
+                    "general",
+                    "local",
+                    "by_election",
+                    "party_leadership"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "live_election_news": {"type": "array"},
+    "betting_markets": {
+      "type": "object",
+      "properties": {
+        "enabled": {"type": "boolean"},
+        "source": {"type": "string"},
+        "markets": {"type": "array"},
+        "ticker_hints": {"type": "array"}
+      }
+    }
+  }
+}

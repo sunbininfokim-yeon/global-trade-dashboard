@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>선거 중간 진행 — race_progress</title>
+  <style>
+    :root {
+      --bg: #0f1419;
+      --panel: #1a222c;
+      --line: #2a3542;
+      --text: #e8eef4;
+      --muted: #8b9aab;
+      --accent: #3d9cf0;
+      --ok: #3db88a;
+      --warn: #d4a017;
+      --d: #4a7fc1;
+      --r: #c45c5c;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Pretendard", "Apple SD Gothic Neo", "Noto Sans KR", system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.45;
+    }
+    header {
+      padding: 1.25rem 1.5rem;
+      border-bottom: 1px solid var(--line);
+      background: linear-gradient(180deg, #15202b, var(--bg));
+    }
+    header h1 { margin: 0 0 0.35rem; font-size: 1.25rem; font-weight: 650; }
+    header p { margin: 0; color: var(--muted); font-size: 0.9rem; }
+    main { display: grid; gap: 1rem; padding: 1rem 1.5rem 2rem; max-width: 1100px; margin: 0 auto; }
+    .tabs { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+    .tabs button {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      color: var(--text);
+      padding: 0.45rem 0.9rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+    .tabs button.active { border-color: var(--accent); color: var(--accent); }
+    section.panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 1rem 1.1rem;
+    }
+    .cumul {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 0.75rem;
+      margin: 0.75rem 0 1rem;
+    }
+    .stat {
+      background: #12181f;
+      border-radius: 8px;
+      padding: 0.65rem 0.75rem;
+    }
+    .stat .k { color: var(--muted); font-size: 0.75rem; }
+    .stat .v { font-size: 1.15rem; font-weight: 650; margin-top: 0.15rem; }
+    .leader-bar {
+      display: flex;
+      height: 10px;
+      border-radius: 5px;
+      overflow: hidden;
+      background: #12181f;
+      margin: 0.5rem 0 1rem;
+    }
+    .leader-bar span { display: block; height: 100%; }
+    ul.units { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.4rem; }
+    ul.units li {
+      display: grid;
+      grid-template-columns: 5.5rem 1fr auto;
+      gap: 0.6rem;
+      align-items: center;
+      padding: 0.55rem 0.7rem;
+      border-radius: 8px;
+      border: 1px solid var(--line);
+      background: #12181f;
+      cursor: pointer;
+    }
+    ul.units li:hover, ul.units li.selected { border-color: var(--accent); }
+    ul.units li.completed { border-left: 3px solid var(--ok); }
+    ul.units li.scheduled { border-left: 3px solid var(--warn); opacity: 0.92; }
+    .date { color: var(--muted); font-size: 0.8rem; font-variant-numeric: tabular-nums; }
+    .label { font-weight: 600; font-size: 0.92rem; }
+    .headline { color: var(--muted); font-size: 0.8rem; text-align: right; max-width: 18rem; }
+    .detail {
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--line);
+      min-height: 4rem;
+    }
+    .detail h3 { margin: 0 0 0.5rem; font-size: 1rem; }
+    .detail table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+    .detail th, .detail td { text-align: left; padding: 0.35rem 0.4rem; border-bottom: 1px solid var(--line); }
+    .party-D { color: var(--d); }
+    .party-R { color: var(--r); }
+    .err { color: #e07070; }
+    .note { color: var(--muted); font-size: 0.85rem; margin-top: 0.5rem; }
+    .agg {
+      margin: 0.75rem 0 1rem;
+      padding: 0.75rem 0.9rem;
+      border-radius: 8px;
+      border: 1px solid var(--line);
+      background: #12181f;
+      font-size: 0.88rem;
+    }
+    .agg .badge {
+      display: inline-block;
+      margin: 0 0.35rem 0.35rem 0;
+      padding: 0.15rem 0.5rem;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      border: 1px solid var(--line);
+    }
+    .agg .badge.weighted { color: #e0b35a; border-color: #6a5520; }
+    .agg .badge.equalish { color: var(--ok); border-color: #2a6a50; }
+    .agg .badge.warn { color: #e07070; border-color: #6a3030; }
+    .agg ul { margin: 0.4rem 0 0; padding-left: 1.1rem; color: var(--muted); }
+    .agg li { margin: 0.2rem 0; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>진행 중 선거 · 중간 데이터</h1>
+    <p id="meta">bundle 로딩 중…</p>
+  </header>
+  <main>
+    <div class="tabs" id="tabs"></div>
+    <section class="panel" id="view"></section>
+  </main>
+  <script>
+    const $ = (sel, el = document) => el.querySelector(sel);
+
+    async function load() {
+      const res = await fetch('./race_progress_bundle_v1.json', { cache: 'no-store' });
+      if (!res.ok) throw new Error('bundle 로드 실패: ' + res.status);
+      return res.json();
+    }
+
+    function pctBar(share) {
+      if (!share) return '';
+      const entries = Object.entries(share);
+      const colors = ['#3d9cf0', '#e07a5f', '#8b9aab', '#3db88a'];
+      let html = '<div class="leader-bar">';
+      entries.forEach(([name, p], i) => {
+        html += `<span style="width:${p}%;background:${colors[i % colors.length]}" title="${name} ${p}%"></span>`;
+      });
+      return html + '</div>';
+    }
+
+    function aggBox(race) {
+      const a = race.aggregation || {};
+      if (!a.model_id) return '';
+      const equal = a.like_usa_equal_units === true;
+      const comps = (a.components || []).map(c => {
+        const w = c.final_weight_pct != null ? ` <strong>${c.final_weight_pct}%</strong>` : '';
+        const mod = c.modifier_pct != null ? ` (+${c.modifier_pct}% ${ (c.applies_to||[]).join('·') || ''})` : '';
+        return `<li>${c.label_ko || c.id}${w}${mod}</li>`;
+      }).join('');
+      const caution = a.interim_display?.user_caution_ko || '';
+      return `
+        <div class="agg">
+          <span class="badge ${equal ? 'equalish' : 'weighted'}">${equal ? '동일가중(진척)' : '비중·가중 합산'}</span>
+          <span class="badge">${a.model_label_ko || a.model_id}</span>
+          ${a.interim_display?.is_final_score === false ? '<span class="badge warn">중간 ≠ 최종</span>' : ''}
+          <div style="margin-top:.35rem">${a.summary_ko || ''}</div>
+          ${comps ? `<ul>${comps}</ul>` : ''}
+          ${caution ? `<p class="note" style="margin:.5rem 0 0">${caution}</p>` : ''}
+        </div>`;
+    }
+
+    function renderKor(race, root) {
+      const c = race.cumulative || {};
+      const share = c.share_pct || {};
+      root.innerHTML = `
+        <h2 style="margin:0 0 .35rem;font-size:1.05rem">${race.race?.label_ko || 'KOR'}</h2>
+        <p class="note">as_of ${race.as_of} · 최종 ${race.race?.final_date || '—'} · ${c.scope || ''}</p>
+        ${aggBox(race)}
+        <div class="cumul">
+          <div class="stat"><div class="k">누적 선두</div><div class="v">${c.leader || '불명'}</div></div>
+          <div class="stat"><div class="k">격차</div><div class="v">${c.margin_pp != null ? c.margin_pp + 'pp' : '불명'}</div></div>
+          <div class="stat"><div class="k">권역</div><div class="v">${c.stops_completed || 0} / ${(c.stops_completed||0)+(c.stops_remaining||0)}</div></div>
+        </div>
+        ${pctBar(share)}
+        <div style="display:flex;gap:1rem;flex-wrap:wrap;font-size:.9rem;margin-bottom:.75rem">
+          ${Object.entries(share).map(([n,p]) => `<span><strong>${n}</strong> ${p}%</span>`).join('')}
+        </div>
+        <ul class="units" id="unit-list"></ul>
+        <div class="detail" id="detail"><p class="note">권역을 클릭하면 해당 중간 집계를 표시합니다.</p></div>
+      `;
+      const list = $('#unit-list', root);
+      const detail = $('#detail', root);
+      (race.units || []).forEach((u, idx) => {
+        const li = document.createElement('li');
+        li.className = u.status || '';
+        li.innerHTML = `
+          <span class="date">${u.date || ''}</span>
+          <span class="label">${u.label_ko || u.id}</span>
+          <span class="headline">${u.status === 'completed' ? (u.winner || '집계') : (u.status || '예정')}</span>
+        `;
+        li.onclick = () => {
+          list.querySelectorAll('li').forEach(x => x.classList.remove('selected'));
+          li.classList.add('selected');
+          const rows = (u.results || []).map(r =>
+            `<tr><td>${r.name_ko}</td><td>${r.pct != null ? r.pct + '%' : '불명'}</td><td>${r.votes != null ? r.votes.toLocaleString() : '불명'}</td></tr>`
+          ).join('');
+          const subs = (u.subunits || []).map(s => {
+            const top = (s.results || [])[0];
+            return `<tr><td colspan="3" style="color:var(--muted)">${s.label_ko || s.id}: ${top ? top.name_ko + ' ' + (top.pct||'') + '%' : '불명'}</td></tr>`;
+          }).join('');
+          detail.innerHTML = `
+            <h3>${u.label_ko || u.id} · ${u.date || ''}</h3>
+            <p class="note">${u.status === 'completed' ? '중간 집계 (순회)' : '미실시 · 일정만'}</p>
+            <table>
+              <thead><tr><th>후보</th><th>비중</th><th>표</th></tr></thead>
+              <tbody>${rows || '<tr><td colspan="3">없음</td></tr>'}${subs}</tbody>
+            </table>
+          `;
+        };
+        list.appendChild(li);
+        if (idx === 0 && u.status === 'completed') li.click();
+      });
+    }
+
+    function renderUsa(race, root) {
+      const c = race.cumulative || {};
+      root.innerHTML = `
+        <h2 style="margin:0 0 .35rem;font-size:1.05rem">${race.race?.label_ko || 'USA'}</h2>
+        <p class="note">${race.race?.note_ko || ''}</p>
+        ${aggBox(race)}
+        <div class="cumul">
+          <div class="stat"><div class="k">완료 주</div><div class="v">${c.states_completed || 0} / ${c.states_in_calendar || 0}</div></div>
+          <div class="stat"><div class="k">남음</div><div class="v">${c.states_pending || 0}</div></div>
+          <div class="stat"><div class="k">총선</div><div class="v">${c.general_election || '—'}</div></div>
+          <div class="stat"><div class="k">주 전체 승자</div><div class="v">${c.states_with_statewide_winners_parsed || 0}</div></div>
+        </div>
+        <ul class="units" id="unit-list"></ul>
+        <div class="detail" id="detail"><p class="note">주를 클릭하면 상원·주지사·하원 샘플 승자를 표시합니다.</p></div>
+      `;
+      const list = $('#unit-list', root);
+      const detail = $('#detail', root);
+      (race.units || []).forEach((u) => {
+        const li = document.createElement('li');
+        li.className = u.status || '';
+        li.innerHTML = `
+          <span class="date">${u.date || ''}</span>
+          <span class="label">${u.name_ko || u.id} <span style="color:var(--muted);font-weight:400">${u.id}</span></span>
+          <span class="headline">${u.headline || ''}</span>
+        `;
+        li.onclick = () => {
+          list.querySelectorAll('li').forEach(x => x.classList.remove('selected'));
+          li.classList.add('selected');
+          const contests = u.contests || [];
+          const rows = contests.map(ct => {
+            const lab = ct.office_kind === 'senate' ? '상원' : ct.office_kind === 'governor' ? '주지사' : (ct.office || '하원');
+            return `<tr>
+              <td>${lab}</td>
+              <td class="party-${ct.party}">${ct.party}</td>
+              <td>${ct.winner || '불명'}</td>
+            </tr>`;
+          }).join('');
+          detail.innerHTML = `
+            <h3>${u.name_ko || u.id} (${u.id}) · ${u.date}</h3>
+            <p class="note">${u.status === 'completed' ? '프라이머리 집계' : '일정 대기'}</p>
+            <table>
+              <thead><tr><th>직위</th><th>당</th><th>승자</th></tr></thead>
+              <tbody>${rows || '<tr><td colspan="3">' + (u.status === 'completed' ? '주전체 승자 파싱 없음 · 하원 확장 중' : '미실시') + '</td></tr>'}</tbody>
+            </table>
+          `;
+        };
+        list.appendChild(li);
+      });
+      const firstDone = (race.units || []).find(u => u.status === 'completed' && (u.contests_statewide||[]).length);
+      if (firstDone) {
+        const idx = race.units.indexOf(firstDone);
+        list.children[idx]?.click();
+      }
+    }
+
+    function render(race, root) {
+      if (race.iso3 === 'KOR') return renderKor(race, root);
+      if (race.iso3 === 'USA') return renderUsa(race, root);
+      root.innerHTML = `<pre>${JSON.stringify(race, null, 2)}</pre>`;
+    }
+
+    load().then(bundle => {
+      $('#meta').textContent = `as_of ${bundle.as_of || '—'} · schema ${bundle.schema || ''}`;
+      const tabs = $('#tabs');
+      const view = $('#view');
+      const races = bundle.races || [];
+      races.forEach((r, i) => {
+        const b = document.createElement('button');
+        b.textContent = `${r.iso3} · ${r.race?.label_ko || r.mode || 'race'}`;
+        b.onclick = () => {
+          tabs.querySelectorAll('button').forEach(x => x.classList.remove('active'));
+          b.classList.add('active');
+          render(r, view);
+        };
+        tabs.appendChild(b);
+        if (i === 0) b.click();
+      });
+      if (!races.length) view.innerHTML = '<p class="err">진행 중 race 없음</p>';
+    }).catch(err => {
+      $('#meta').innerHTML = `<span class="err">${err.message}</span> · 로컬에서 public/data 로 서빙하세요.`;
+    });
+  </script>
+</body>
+</html>

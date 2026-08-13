@@ -1,0 +1,97 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://global-trade-dashboard.example/schemas/ticker_v1.schema.json",
+  "title": "Commodity Diplomacy Ticker v1",
+  "type": "object",
+  "required": ["schema_version", "generated_at", "model", "items"],
+  "properties": {
+    "schema_version": {"const": "ticker-v1"},
+    "generated_at": {"type": "string"},
+    "model": {
+      "type": "object",
+      "required": ["name", "main_display_lang", "ip_lang_map"],
+      "properties": {
+        "name": {"type": "string"},
+        "main_display_lang": {"type": "string"},
+        "ip_lang_map": {"type": "object"},
+        "default_lang": {"type": "string"}
+      }
+    },
+    "stats": {"type": "object"},
+    "feed_status": {"type": "array"},
+    "items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "url", "category", "title", "source", "scores"],
+        "properties": {
+          "id": {"type": "string"},
+          "published_at": {"type": ["string", "null"]},
+          "url": {"type": "string"},
+          "category": {
+            "enum": [
+              "commodity",
+              "diplomacy",
+              "commodity_diplomacy",
+              "election",
+              "cabinet_reshuffle",
+              "liquidity_official",
+              "priority_reporter"
+            ]
+          },
+          "election_type": {
+            "enum": [
+              "presidential",
+              "general",
+              "local",
+              "by_election",
+              "party_leadership",
+              "governance_poll",
+              "cabinet_reshuffle"
+            ]
+          },
+          "country_tier": {"enum": ["A", "B", "C"]},
+          "info_grade": {"enum": ["1", "2", "3"]},
+          "country_hint": {"type": ["string", "null"]},
+          "commodities": {
+            "type": "array",
+            "items": {"type": "string"}
+          },
+          "title": {
+            "type": "object",
+            "required": ["original", "original_lang"],
+            "properties": {
+              "original": {"type": "string"},
+              "original_lang": {"type": "string"},
+              "ko": {"type": ["string", "null"]}
+            }
+          },
+          "source": {
+            "type": "object",
+            "required": ["id", "name", "region"],
+            "properties": {
+              "id": {"type": "string"},
+              "name": {"type": "string"},
+              "region": {"type": "string"},
+              "slant": {"type": ["string", "null"]}
+            }
+          },
+          "scores": {
+            "type": "object",
+            "required": ["final"],
+            "properties": {
+              "commodity": {"type": "number"},
+              "diplomacy": {"type": "number"},
+              "election": {"type": "number"},
+              "region_weight": {"type": "number"},
+              "freshness": {"type": "number"},
+              "importance": {"type": "number"},
+              "final": {"type": "number"}
+            }
+          },
+          "translation_status": {"type": "string"}
+        }
+      }
+    }
+  }
+}

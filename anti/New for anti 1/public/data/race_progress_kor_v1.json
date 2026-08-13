@@ -1,0 +1,370 @@
+{
+  "schema": "race_progress_v1",
+  "iso3": "KOR",
+  "as_of": "2026-08-08",
+  "as_of_iso": "2026-08-08T13:12:52.991135+00:00",
+  "mode": "party_leadership_tour_interim",
+  "status": "ongoing",
+  "race": {
+    "id": "kor-2026-dpk-convention",
+    "label_ko": "더불어민주당 전당대회 당대표",
+    "final_date": "2026-08-17",
+    "venue_final": "대전컨벤션센터",
+    "ui_hint": "list_stops_click_for_regional_pct"
+  },
+  "rules": {
+    "member_weight_pct": 70,
+    "public_poll_weight_pct": 30,
+    "tour_publishes": "rights_member_first_preference_only",
+    "final_includes": "delegates_online + public_poll + member_votes",
+    "regional_bonus_pct": 5,
+    "regional_bonus_targets": [
+      "대구",
+      "경북",
+      "경남"
+    ],
+    "aggregation_model": "weighted_convention_hybrid"
+  },
+  "candidates": [
+    {
+      "id": "kim",
+      "name_ko": "김민석",
+      "name_en": "Kim Min-seok",
+      "ballot_no": 3
+    },
+    {
+      "id": "chung",
+      "name_ko": "정청래",
+      "name_en": "Chung Chung-rae",
+      "ballot_no": 2
+    },
+    {
+      "id": "song",
+      "name_ko": "송영길",
+      "name_en": "Song Young-gil",
+      "ballot_no": 1
+    }
+  ],
+  "cumulative": {
+    "as_of": "2026-08-08",
+    "scope": "권리당원 순회 1순위 누적 (경남 5% 가중 미반영)",
+    "is_final": false,
+    "leader": "김민석",
+    "share_pct": {
+      "김민석": 45.42,
+      "정청래": 44.56,
+      "송영길": 10.02
+    },
+    "votes": {
+      "김민석": 76844,
+      "정청래": 75380,
+      "송영길": null
+    },
+    "margin_votes": 1464,
+    "margin_pp": 0.86,
+    "stops_completed": 3,
+    "stops_remaining": 3,
+    "source": "https://en.sedaily.com/politics/2026/08/08/kim-min-seok-wins-incheon-to-retake-lead-over-jung-chung-rae"
+  },
+  "units": [
+    {
+      "id": "chungcheong",
+      "label_ko": "충청(충남·충북·대전·세종)",
+      "date": "2026-08-01",
+      "status": "completed",
+      "winner": "김민석",
+      "results": [
+        {
+          "name_ko": "김민석",
+          "pct": 45.06,
+          "votes": 30632
+        },
+        {
+          "name_ko": "정청래",
+          "pct": 44.61,
+          "votes": 30329
+        },
+        {
+          "name_ko": "송영길",
+          "pct": 10.34,
+          "votes": 7027
+        }
+      ],
+      "total_votes": 67988,
+      "subunits": [
+        {
+          "id": "chungnam",
+          "label_ko": "충남",
+          "results_pct": {
+            "김민석": 45.65,
+            "정청래": 43.28,
+            "송영길": null
+          },
+          "winner": "김민석"
+        },
+        {
+          "id": "chungbuk",
+          "label_ko": "충북",
+          "results_pct": {
+            "김민석": 47.39,
+            "정청래": 41.86,
+            "송영길": null
+          },
+          "winner": "김민석"
+        },
+        {
+          "id": "daejeon",
+          "label_ko": "대전",
+          "results_pct": {
+            "김민석": 42.71,
+            "정청래": 48.23,
+            "송영길": null
+          },
+          "winner": "정청래"
+        },
+        {
+          "id": "sejong",
+          "label_ko": "세종",
+          "results_pct": {
+            "김민석": 40.68,
+            "정청래": 50.28,
+            "송영길": null
+          },
+          "winner": "정청래"
+        }
+      ],
+      "source": "https://www.newsis.com/view/NISX20260802_0003733231"
+    },
+    {
+      "id": "bug",
+      "label_ko": "부울경(부산·울산·경남)",
+      "date": "2026-08-02",
+      "status": "completed",
+      "winner": "정청래",
+      "results": [
+        {
+          "name_ko": "정청래",
+          "pct": 46.65,
+          "votes": 25189
+        },
+        {
+          "name_ko": "김민석",
+          "pct": 43.85,
+          "votes": 23675
+        },
+        {
+          "name_ko": "송영길",
+          "pct": 9.5,
+          "votes": 5129
+        }
+      ],
+      "total_votes": 53993,
+      "turnout_pct": 54.69,
+      "note": "경남 5% 가중은 최종 집계 때만 반영 예정; 이 단위는 미가중",
+      "subunits": [
+        {
+          "id": "busan",
+          "label_ko": "부산",
+          "results_pct": {
+            "정청래": 48.76,
+            "김민석": 43.28,
+            "송영길": 7.96
+          },
+          "winner": "정청래"
+        },
+        {
+          "id": "ulsan",
+          "label_ko": "울산",
+          "results_pct": {
+            "김민석": 46.32,
+            "정청래": 43.3,
+            "송영길": 10.38
+          },
+          "winner": "김민석"
+        },
+        {
+          "id": "gyeongnam",
+          "label_ko": "경남",
+          "results_pct": {
+            "정청래": 46.08,
+            "김민석": 43.38,
+            "송영길": 10.54
+          },
+          "winner": "정청래"
+        }
+      ],
+      "cumulative_after": {
+        "정청래": 45.51,
+        "김민석": 44.52,
+        "송영길": 9.97,
+        "leader": "정청래"
+      },
+      "source": "https://en.infomaxai.com/news/articleView.html?idxno=133191"
+    },
+    {
+      "id": "jeju_incheon",
+      "label_ko": "제주·인천",
+      "date": "2026-08-08",
+      "status": "completed",
+      "winner": "김민석",
+      "results": [
+        {
+          "name_ko": "김민석",
+          "pct": 47.75,
+          "votes": 22537
+        },
+        {
+          "name_ko": "정청래",
+          "pct": 42.08,
+          "votes": 19862
+        },
+        {
+          "name_ko": "송영길",
+          "pct": 10.17,
+          "votes": 4799
+        }
+      ],
+      "subunits": [
+        {
+          "id": "jeju",
+          "label_ko": "제주",
+          "results_pct": {
+            "김민석": 52.64,
+            "정청래": 39.89,
+            "송영길": 7.47
+          },
+          "winner": "김민석"
+        },
+        {
+          "id": "incheon",
+          "label_ko": "인천",
+          "results_pct": {
+            "김민석": 45.09,
+            "정청래": 43.27,
+            "송영길": 11.63
+          },
+          "winner": "김민석",
+          "votes": {
+            "김민석": 13795,
+            "정청래": 13237
+          }
+        }
+      ],
+      "source": "https://www.asiae.co.kr/en/article/2026080819353764193"
+    },
+    {
+      "id": "gangwon_tk",
+      "label_ko": "강원·대구·경북",
+      "date": "2026-08-09",
+      "status": "scheduled",
+      "winner": "불명",
+      "results": []
+    },
+    {
+      "id": "honam",
+      "label_ko": "전북·전남광주",
+      "date": "2026-08-15",
+      "status": "scheduled",
+      "winner": "불명",
+      "results": []
+    },
+    {
+      "id": "capital",
+      "label_ko": "경기·서울",
+      "date": "2026-08-16",
+      "status": "scheduled",
+      "winner": "불명",
+      "results": []
+    }
+  ],
+  "ui": {
+    "summary_card": "cumulative.share_pct + leader + margin_pp",
+    "list": "units[] status + winner",
+    "detail_on_click": "units[i].results + subunits[]",
+    "null_policy": {
+      "없음": "해당 없음",
+      "불명": "미개표/미발표"
+    }
+  },
+  "aggregation": {
+    "model_id": "weighted_convention_hybrid",
+    "model_label_ko": "가중·혼합형 전당대회",
+    "like_usa_equal_units": false,
+    "summary_ko": "단위(권역) 1표가 아님. 최종 당선은 권리당원·대의원 득표군 70%와 국민여론조사 30%를 합산. 순회 중 공개 수치는 그 중 권리당원 1순위만의 단순 누적(표·%)이며, 지역 5% 가·감점과 여론 30%는 최종에 따로 들어간다.",
+    "components": [
+      {
+        "id": "party_vote_bloc",
+        "label_ko": "대의원·권리당원 투표",
+        "final_weight_pct": 70,
+        "unit": "표 / 선호투표 합산",
+        "equal_weight_across_regions": false,
+        "notes_ko": [
+          "1인1표·선호투표 구조(당 규정)",
+          "권역 순회는 중간 공개용 — 권역 점수를 균등(1/6) 가중합하는 모델 아님",
+          "권역별 표 수가 다르면 누적 비중도 표 수에 비례 (인구·당원 규모 반영)"
+        ]
+      },
+      {
+        "id": "public_poll",
+        "label_ko": "국민 여론조사",
+        "final_weight_pct": 30,
+        "unit": "조사 지지율 → 당 배점",
+        "equal_weight_across_regions": null,
+        "applies_when": "final_convention_only",
+        "notes_ko": [
+          "순회 중간 공개에는 미포함",
+          "전당대회 당일(또는 당이 정한 시점)에 70:30 최종 합산"
+        ]
+      },
+      {
+        "id": "regional_bonus",
+        "label_ko": "지역 가중 (대의원·권리당원)",
+        "final_weight_pct": null,
+        "modifier_pct": 5,
+        "applies_to": [
+          "대구",
+          "경북",
+          "경남"
+        ],
+        "applies_when": "final_member_bloc",
+        "equal_weight_across_regions": false,
+        "notes_ko": [
+          "당 규정: TK·경남 대의원·권리당원 득표에 5% 가중",
+          "보도되는 순회 누적(예: 부울경 집계)은 대개 미가중 1순위 %"
+        ]
+      }
+    ],
+    "interim_display": {
+      "what_we_show": "rights_member_first_preference_running_total",
+      "is_final_score": false,
+      "includes_public_poll_30": false,
+      "includes_regional_5pct": false,
+      "includes_delegate_online": "불명_or_partial",
+      "user_caution_ko": "지금 보는 누적 선두 ≠ 확정. 8/17 최종은 30% 여론 + 지역가중 반영."
+    },
+    "unit_aggregation": {
+      "unit": "tour_stop_region",
+      "cross_unit_method": "sum_raw_votes_or_share_as_published",
+      "not": "equal_weight_per_stop",
+      "contrast_usa": "미국 주처럼 주=1 단위로 균등 합산하지 않음"
+    },
+    "compare_party_variants": {
+      "DPK_2026": {
+        "member_pct": 70,
+        "public_pct": 30,
+        "regional_bonus": "TK+경남 5%"
+      },
+      "PPP_2025": {
+        "member_pct": 80,
+        "public_pct": 20,
+        "regional_bonus": "없음_이_스냅샷",
+        "status": "completed_incumbent"
+      }
+    },
+    "sources": [
+      "config/extracted/kor_party_leadership.json",
+      "config/calendars/kor_2026.json rules_summary",
+      "media cross on DPK 전당 규정"
+    ]
+  }
+}

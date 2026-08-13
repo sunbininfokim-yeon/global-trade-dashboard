@@ -1,0 +1,156 @@
+{
+  "generated_at": "2026-08-10T05:45:27.216251+00:00",
+  "season": "FAOSTAT 2024 actual / USDA MY 2026/27 outlook",
+  "country": "Ethiopia",
+  "forecast_available": false,
+  "panel_mode": "reference",
+  "government_outlooks": [
+    {
+      "agency": "USDA FAS",
+      "agency_ko": "USDA FAS (GAIN)",
+      "season": "MY 2026/27",
+      "metric_ko": "생두 생산 전망",
+      "value": 12.1,
+      "unit": "million 60kg bags",
+      "status_ko": "Post 전망 · 모델 학습 제외",
+      "note_ko": "수확면적 80만 ha, 단수 0.91 t/ha. 정상적 강우·남부 생산주기 반등·stumping 및 묘목 효과를 전제.",
+      "url": "https://apps.fas.usda.gov/newgainapi/api/Report/DownloadReportByFileName?fileName=Coffee+Annual_Addis+Ababa_Ethiopia_ET2026-0005.pdf",
+      "url_label": "USDA Ethiopia Coffee Annual 2026"
+    }
+  ],
+  "sources": [
+    {
+      "name": "FAOSTAT QCL via OWID",
+      "url": "https://ourworldindata.org/grapher/coffee-yields",
+      "supports": "국가 단수·생산·면적"
+    },
+    {
+      "name": "USDA FAS Ethiopia Coffee Annual 2026",
+      "url": "https://apps.fas.usda.gov/newgainapi/api/Report/DownloadReportByFileName?fileName=Coffee+Annual_Addis+Ababa_Ethiopia_ET2026-0005.pdf",
+      "supports": "지역 비중, stumping, 노령목, MY 2026/27 전망"
+    },
+    {
+      "name": "GEE CHIRPS + ERA5-Land",
+      "url": "https://developers.google.com/earth-engine/datasets/catalog/UCSB-CHG_CHIRPS_DAILY",
+      "supports": "산지 강수·열·토양수분·VPD"
+    }
+  ],
+  "regions": {
+    "national_arabica_belt": {
+      "label": "Ethiopia national Arabica belt",
+      "label_ko": "에티오피아 아라비카 벨트",
+      "zones": [
+        "Oromia",
+        "South-West Ethiopia",
+        "Sidama",
+        "South Ethiopia",
+        "Central Ethiopia",
+        "Gambella",
+        "Amhara"
+      ],
+      "crops": {
+        "coffee": {
+          "label_ko": "아라비카 생두",
+          "unit": "kg/ha",
+          "last_actual": {
+            "year": 2024,
+            "yield": 667.1
+          },
+          "official_outlook": {
+            "agency": "USDA FAS",
+            "agency_ko": "USDA FAS (GAIN)",
+            "season": "MY 2026/27",
+            "metric_ko": "생두 생산 전망",
+            "value": 12.1,
+            "unit": "million 60kg bags",
+            "status_ko": "Post 전망 · 모델 학습 제외",
+            "note_ko": "수확면적 80만 ha, 단수 0.91 t/ha. 정상적 강우·남부 생산주기 반등·stumping 및 묘목 효과를 전제.",
+            "url": "https://apps.fas.usda.gov/newgainapi/api/Report/DownloadReportByFileName?fileName=Coffee+Annual_Addis+Ababa_Ethiopia_ET2026-0005.pdf",
+            "url_label": "USDA Ethiopia Coffee Annual 2026"
+          },
+          "structural_context": {
+            "source": "USDA/FAS ET2026-0005 citing ECTA",
+            "old_tree_share_approx": 0.7,
+            "stumped_area_share_2025_26": 0.15,
+            "regional_stumping_rates": {
+              "Oromia": 0.19,
+              "South Ethiopia": 0.14,
+              "Sidama": 0.13
+            },
+            "reason_not_fitted": "one recent snapshot, no causal annual regional history"
+          },
+          "climate_risk_monitor": {
+            "period": "2025-08-01 through 2026-07-31",
+            "source_latest_dates": {
+              "chirps": "2026-06-30",
+              "era5_land": "2026-08-02"
+            },
+            "anomalies_vs_1993_2024": {
+              "rain_prev_aug_dec_mm_z": 0.693,
+              "rain_flowering_mar_may_mm_z": 1.95,
+              "rain_filling_jun_jul_mm_z": null,
+              "hot30_mar_jul_c_days_z": -0.699,
+              "root_sm_mar_jul_z": 0.398,
+              "vpd_mar_jul_kpa_z": -0.182
+            },
+            "coverage_warnings": [
+              "CHIRPS Jun-Jul filling-rain window incomplete; do not read the partial sum as drought."
+            ],
+            "note_ko": "생산가중 국가 기후 위험값이며 단수 예측이 아닙니다. 미완성 창은 null 처리합니다."
+          },
+          "model_diagnostics": {
+            "selected": "rain_heat_cycle",
+            "holdout_skill_vs_trend": -0.001,
+            "holdout_rmse_kg_ha": 36.7,
+            "trend_rmse_kg_ha": 36.7,
+            "cycle_only_rmse_kg_ha": 36.7,
+            "weather_incremental_skill_vs_cycle": -0.0,
+            "decision": "no_forecast_reference",
+            "candidate_2026_kg_ha": 660.9,
+            "trend_2026_kg_ha": 660.9,
+            "boosted_tree": {
+              "development_skill_vs_trend": -0.063,
+              "holdout_skill_vs_trend": -0.069,
+              "holdout_rmse_kg_ha": 39.2,
+              "decision": "reject_overfit_or_no_gain"
+            }
+          },
+          "regional_context": {
+            "weights_period": "MY 2023/24-2025/26 three-year average",
+            "shares": {
+              "Oromia": 0.595,
+              "South-West Ethiopia": 0.137,
+              "Sidama": 0.129,
+              "South Ethiopia": 0.071,
+              "Central Ethiopia": 0.037,
+              "Gambella": 0.015,
+              "Amhara": 0.011
+            }
+          },
+          "forecast_available": false,
+          "reason_ko": "기후+생산주기 모델이 미사용 홀드아웃에서 추세와 비기상 주기 기준을 동시에 이기지 못해 Forecast를 발행하지 않습니다."
+        }
+      }
+    }
+  },
+  "title_ko": "에티오피아 커피 참고자료",
+  "reason_ko": "기후+생산주기 모델이 미사용 홀드아웃에서 추세와 비기상 주기 기준을 동시에 이기지 못해 Forecast를 발행하지 않습니다.",
+  "research_notes": [
+    {
+      "title_ko": "모델 판정",
+      "body_ko": "선택 모델 rain_heat_cycle의 홀드아웃 추세 대비 skill은 -0.1%, 비기상 cycle-only 대비 추가 skill은 -0.0%입니다. 부스팅 홀드아웃 skill도 -6.9%로 기각했습니다."
+    },
+    {
+      "title_ko": "나무 연령·갱신",
+      "body_ko": "노령목 약 70%, 2025/26 stumping 면적 15%(Oromia 19%, South Ethiopia 14%, Sidama 13%)라는 최신 단면은 중요하지만 장기 연도별 패널이 아니므로 학습계수로 쓰지 않았습니다."
+    },
+    {
+      "title_ko": "지역 상쇄",
+      "body_ko": "2025/26에는 Sidama·Yirgacheffe·Guji 등 남부가 생산주기와 늦은 강우로 저조한 반면 Jimma·Limmu·Kaffa·Bench Maji·Sheka는 수분 조건과 수확기 건조 날씨가 양호해 전국 합계에서 상쇄됐습니다. 국가 단수 한 줄로는 이 차이를 학습하기 어렵습니다."
+    },
+    {
+      "title_ko": "기후와 구조의 구분",
+      "body_ko": "강수·열·토양수분·VPD는 위험 모니터로 유지합니다. stumping, 묘목 성숙, 가지치기, 면적 확대와 가격투자는 구조 요인이며 기후 효과로 귀속하지 않습니다."
+    }
+  ]
+}

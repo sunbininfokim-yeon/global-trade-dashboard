@@ -438,9 +438,31 @@ const updateCountryStatsPanel = async (countryName) => {
  * monitor keeps full names -- it reads as a country workspace, not a league
  * table.
  */
+// Static ISO3 fallback for the reporter/partner names Comtrade uses most.
+// resolveCountry needs the world GeoJSON in memory; when the trade panel
+// renders before that fetch resolves, every unresolved name fell back to its
+// first three letters, so "United States" and "United Arab Emirates" both
+// showed as "UNI". This table keeps the code correct regardless of load order.
+const ISO3_FALLBACK = {
+    'united states': 'USA', 'usa': 'USA', 'us': 'USA', 'america': 'USA',
+    'united arab emirates': 'ARE', 'uae': 'ARE',
+    'united kingdom': 'GBR', 'uk': 'GBR', 'great britain': 'GBR',
+    'south korea': 'KOR', 'korea rep': 'KOR', 'republic of korea': 'KOR',
+    'north korea': 'PRK',
+    'russia': 'RUS', 'russian federation': 'RUS',
+    'china': 'CHN',
+    'south africa': 'ZAF',
+    'saudi arabia': 'SAU',
+    'ivory coast': 'CIV', 'cote d ivoire': 'CIV',
+    'democratic republic of the congo': 'COD',
+    'republic of the congo': 'COG',
+};
+
 const countryCode = (name) => {
     const r = resolveCountry(name);
     if (r?.iso) return r.iso;
+    const fallback = ISO3_FALLBACK[normCountryName(name)];
+    if (fallback) return fallback;
     return String(name || '').slice(0, 3).toUpperCase();
 };
 
@@ -4978,8 +5000,965 @@ const finRiskRows = (data) => {
         </div>`).join('');
 };
 
-const renderPortfolioLab = async (host) => {
-    host.innerHTML = `<div class="fin-wrap"><p class="fin-loading">포트폴리오 진단 불러오는 중…</p></div>`;
+// Holdings never leave the browser. The engine that produced the reference
+// payload runs offline; this input path keeps the portfolio in localStorage so
+// there is no server that could hold someone else's positions. Price lookups
+// still go through the Worker, which sees the tickers but not the amounts.
+const PF_STORE = 'portfolioLab.v1';
+
+const pfLoad = () => {
+    try {
+        const raw = localStorage.getItem(PF_STORE);
+        if (!raw) return null;
+        const p = JSON.parse(raw);
+        return (p && Array.isArray(p.positions)) ? p : null;
+    } catch (_) { return null; }
+};
+
+const pfSave = (p) => {
+    try { localStorage.setItem(PF_STORE, JSON.stringify(p)); } catch (_) { /* quota */ }
+};
+
+const pfBlank = () => ({ risk_profile: 'balanced', base_currency: 'KRW', positions: [] });
+
+// Covariance from ~250 daily observations needs comfortably more rows than
+// assets or the estimate turns to noise -- and noisy covariance is exactly what
+// the risk-contribution number is built on. 20 keeps that ratio above 12 while
+// still fitting any portfolio a person actually holds.
+const PF_MAX = 20;
+
+let PF_REGISTRY = null;
+let PF_PROFILES = null;
+
+const pfLoadRefs = async () => {
+    if (PF_REGISTRY && PF_PROFILES) return;
+    const grab = async (name) => {
+        for (const base of ['/public/data/', '/data/']) {
+            try {
+                const r = await fetch(base + name, { cache: 'no-store' });
+                if (r.ok) return await r.json();
+            } catch (_) { /* next */ }
+        }
+        return null;
+    };
+    const [reg, prof, ko] = await Promise.all([
+        grab('instruments_v1.json'), grab('risk_profiles_v1.json'), grab('aliases_ko_v1.json'),
+    ]);
+    PF_PROFILES = (prof && prof.profiles) || {};
+
+    // Neither Yahoo nor SEC indexes Korean names -- searching 삼성전자 through
+    // either returns nothing at all. So the Korean table is not a convenience
+    // layer over remote search, it is the only way a Korean name resolves.
+    const engine = (reg && reg.instruments) || [];
+    const known = new Set(engine.map((x) => String(x.yahoo || '').toUpperCase()));
+    const koRows = ((ko && ko.instruments) || [])
+        .filter((x) => !known.has(String(x.symbol).toUpperCase()))
+        .map((x) => ({
+            id: `ko:${x.symbol}`,
+            name_ko: x.name_ko,
+            yahoo: x.symbol,
+            currency: 'USD',
+            asset_class: x.asset_class || 'equity',
+            aliases: [...(x.aliases || []), x.symbol],
+            // TQQQ and SOXL are real funds: their quoted price already carries
+            // the 3x. Multiplying returns again would triple-count it. The flag
+            // is here for the risk-profile limit, not for the return maths --
+            // which is why synthetic_leverage stays false.
+            leveraged: !!x.leveraged,
+            synthetic_leverage: false,
+        }));
+
+    // Engine entries first: only they carry proxy flags and leverage factors
+    // that a plain ticker lookup cannot know.
+    PF_REGISTRY = [...engine, ...koRows];
+};
+
+const pfKrw = (n) => (n === null || n === undefined || Number.isNaN(n))
+    ? '—' : `${Math.round(n).toLocaleString('ko-KR')}원`;
+
+// A holding is entered either as "how much it is worth" or "how many I hold".
+// Shares are the honest unit for a stock -- the amount drifts with the price
+// while the share count does not -- so the value is derived, and the price it
+// was derived from is kept alongside it to show how stale the figure is.
+const pfValueOf = (p) => {
+    if (!p) return null;
+    if (p.mode === 'shares') {
+        if (!(p.shares > 0) || !(p.price > 0)) return null;
+        return p.shares * p.price * (p.fx || 1);
+    }
+    const v = Number(p.value);
+    return Number.isFinite(v) && v !== 0 ? v : null;
+};
+
+const pfPriceCache = new Map();
+
+// Last close plus the exchange rate that puts it in KRW. Base-currency cash has
+// neither, so it is priced at 1 and multiplied by nothing.
+const pfSpot = async (symbol, currency) => {
+    if (!symbol) return { price: 1, fx: 1, currency: 'KRW' };
+    const key = `${symbol}|${currency || ''}`;
+    if (pfPriceCache.has(key)) return pfPriceCache.get(key);
+    const task = (async () => {
+        const j = await pfFetchHistory(symbol, '1y');
+        const cur = j.currency || currency || 'KRW';
+        let fx = 1;
+        const fxSym = pfFxSymbol(cur);
+        if (fxSym && fxSym !== symbol) {
+            const f = await pfFetchHistory(fxSym, '1y');
+            fx = f.price || 1;
+        }
+        return { price: j.price, fx, currency: cur };
+    })();
+    pfPriceCache.set(key, task);
+    return task;
+};
+
+// --- 계산 -------------------------------------------------------------------
+// Runs entirely in the browser. The Worker only proxies public price series, so
+// nobody's holdings reach a server. Deliberately mirrors the Python engine in
+// scripts/금융_재무분석 so the two can be cross-checked -- that comparison is
+// what surfaced the leverage bug in returns.py, and it only works if the
+// formulas stay recognisably the same on both sides.
+const PF_TRADING_DAYS = 252;
+const PF_RF_ANNUAL = 0.03;
+const PF_Z95 = 1.6448536269514722;
+
+const pfQuoteCache = new Map();
+
+const pfFetchHistory = async (symbol, range = '2y') => {
+    const key = `${symbol}|${range}`;
+    if (pfQuoteCache.has(key)) return pfQuoteCache.get(key);
+    const p = (async () => {
+        const res = await fetch(`/api/quote/history?symbol=${encodeURIComponent(symbol)}&range=${range}`);
+        if (!res.ok) throw new Error(`${symbol}: 가격을 못 받았습니다 (${res.status})`);
+        const j = await res.json();
+        if (!j.points || j.points.length < 60) throw new Error(`${symbol}: 가격 이력이 너무 짧습니다`);
+        return j;
+    })();
+    pfQuoteCache.set(key, p);
+    return p;
+};
+
+// Yahoo quotes each instrument in its home currency, so a KRW-based portfolio
+// has to convert before returns can be compared. Fetched as its own series
+// because the exchange rate is a risk the holder actually carries.
+const pfFxSymbol = (cur) => (!cur || cur === 'KRW') ? null : `${cur}KRW=X`;
+
+const pfAlign = (series) => {
+    // Intersect on trading days: markets keep different holidays, and pairing a
+    // stale carried-forward close against a live one invents correlation.
+    const keys = Object.keys(series);
+    if (!keys.length) return { dates: [], cols: {} };
+    let common = null;
+    for (const k of keys) {
+        const s = new Set(series[k].map(([t]) => Math.floor(t / 86400)));
+        common = common === null ? s : new Set([...common].filter((d) => s.has(d)));
+    }
+    const dates = [...common].sort((a, b) => a - b);
+    const cols = {};
+    for (const k of keys) {
+        const m = new Map(series[k].map(([t, v]) => [Math.floor(t / 86400), v]));
+        cols[k] = dates.map((d) => m.get(d));
+    }
+    return { dates, cols };
+};
+
+const pfSimpleReturns = (arr) => {
+    const out = [];
+    for (let i = 1; i < arr.length; i++) out.push(arr[i] / arr[i - 1] - 1);
+    return out;
+};
+
+const pfMean = (a) => a.reduce((x, y) => x + y, 0) / (a.length || 1);
+
+const pfStd = (a) => {
+    if (a.length < 2) return 0;
+    const m = pfMean(a);
+    return Math.sqrt(a.reduce((s, x) => s + (x - m) ** 2, 0) / (a.length - 1));
+};
+
+const pfCov = (cols) => {
+    const n = cols.length;
+    const means = cols.map(pfMean);
+    const T = cols[0].length;
+    const S = Array.from({ length: n }, () => new Array(n).fill(0));
+    for (let i = 0; i < n; i++) {
+        for (let j = i; j < n; j++) {
+            let s = 0;
+            for (let t = 0; t < T; t++) s += (cols[i][t] - means[i]) * (cols[j][t] - means[j]);
+            const v = s / Math.max(T - 1, 1);
+            S[i][j] = v; S[j][i] = v;
+        }
+    }
+    return S;
+};
+
+const pfMatVec = (S, w) => S.map((row) => row.reduce((s, v, j) => s + v * w[j], 0));
+const pfDot = (a, b) => a.reduce((s, v, i) => s + v * b[i], 0);
+const pfQuantile = (sorted, p) => {
+    if (!sorted.length) return 0;
+    const i = (sorted.length - 1) * p;
+    const lo = Math.floor(i), hi = Math.ceil(i);
+    return lo === hi ? sorted[lo] : sorted[lo] + (sorted[hi] - sorted[lo]) * (i - lo);
+};
+
+// Assets that move together are one bet wearing several names. Single-link
+// union-find over a correlation threshold, same as the Python side.
+const pfClusters = (names, corr, thr = 0.6) => {
+    const parent = names.map((_, i) => i);
+    const find = (a) => { while (parent[a] !== a) { parent[a] = parent[parent[a]]; a = parent[a]; } return a; };
+    const union = (a, b) => { const ra = find(a), rb = find(b); if (ra !== rb) parent[rb] = ra; };
+    for (let i = 0; i < names.length; i++) {
+        for (let j = i + 1; j < names.length; j++) if (corr[i][j] >= thr) union(i, j);
+    }
+    const groups = new Map();
+    names.forEach((_, i) => {
+        const r = find(i);
+        if (!groups.has(r)) groups.set(r, []);
+        groups.get(r).push(i);
+    });
+    return [...groups.values()].filter((g) => g.length > 1);
+};
+
+// --- HRP (Hierarchical Risk Parity) ------------------------------------------
+// López de Prado's method, and the reason it fits here: it never asks what an
+// asset will return. Mean-variance optimisation needs expected returns, those
+// guesses are usually wrong, and being wrong there moves the answer a lot. HRP
+// uses only the covariance -- so the suggestion is "spread the risk more
+// evenly", never "this will go up".
+
+// Distance that turns correlation into a metric: identical series are 0 apart,
+// perfectly opposed ones are 1.
+const pfCorrDist = (corr) => corr.map((row) => row.map((c) =>
+    Math.sqrt(Math.max(0, 0.5 * (1 - Math.min(Math.max(c, -1), 1))))));
+
+// Single-linkage agglomerative clustering, returning the merge order.
+const pfLinkage = (dist) => {
+    const n = dist.length;
+    const active = new Map();
+    for (let i = 0; i < n; i++) active.set(i, [i]);
+    const d = dist.map((r) => r.slice());
+    const merges = [];
+    let nextId = n;
+
+    while (active.size > 1) {
+        let best = Infinity, bi = -1, bj = -1;
+        const ids = [...active.keys()];
+        for (let a = 0; a < ids.length; a++) {
+            for (let b = a + 1; b < ids.length; b++) {
+                const i = ids[a], j = ids[b];
+                let m = Infinity;
+                for (const x of active.get(i)) for (const y of active.get(j)) m = Math.min(m, d[x][y]);
+                if (m < best) { best = m; bi = i; bj = j; }
+            }
+        }
+        const merged = [...active.get(bi), ...active.get(bj)];
+        merges.push([bi, bj, nextId]);
+        active.delete(bi); active.delete(bj);
+        active.set(nextId++, merged);
+    }
+    return { merges, order: [...active.values()][0] || [] };
+};
+
+const pfIvp = (cov, idx) => {
+    // Inverse-variance weights inside a cluster.
+    const inv = idx.map((i) => (cov[i][i] > 0 ? 1 / cov[i][i] : 0));
+    const s = inv.reduce((a, b) => a + b, 0);
+    return s > 0 ? inv.map((v) => v / s) : idx.map(() => 1 / idx.length);
+};
+
+const pfClusterVar = (cov, idx) => {
+    const w = pfIvp(cov, idx);
+    let v = 0;
+    for (let a = 0; a < idx.length; a++) {
+        for (let b = 0; b < idx.length; b++) v += w[a] * cov[idx[a]][idx[b]] * w[b];
+    }
+    return v;
+};
+
+// Recursive bisection: split the ordered list, then give the safer half more.
+const pfHrp = (cov, order) => {
+    const w = new Array(cov.length).fill(0);
+    order.forEach((i) => { w[i] = 1; });
+    const stack = [order];
+    while (stack.length) {
+        const grp = stack.pop();
+        if (grp.length <= 1) continue;
+        const half = Math.floor(grp.length / 2);
+        const left = grp.slice(0, half), right = grp.slice(half);
+        const vl = pfClusterVar(cov, left), vr = pfClusterVar(cov, right);
+        const alpha = (vl + vr) > 0 ? 1 - vl / (vl + vr) : 0.5;
+        left.forEach((i) => { w[i] *= alpha; });
+        right.forEach((i) => { w[i] *= (1 - alpha); });
+        stack.push(left, right);
+    }
+    const s = w.reduce((a, b) => a + b, 0);
+    return s > 0 ? w.map((x) => x / s) : w;
+};
+
+const pfCompute = async (pf, onProgress) => {
+    const rows = pf.positions.filter((p) => pfValueOf(p) !== null && pfValueOf(p) !== 0);
+    if (rows.length < 2) throw new Error('종목이 2개 이상이어야 계산할 수 있습니다.');
+
+    // Cash in the base currency has no price series of its own; it is the
+    // thing everything else is measured against.
+    const needed = new Set();
+    for (const p of rows) {
+        const it = pfInstOf(p);
+        p._sym = it.yahoo || null;
+        p._cur = it.currency || 'KRW';
+        p._lev = Number(it.leverage_factor) || 1;
+        p._name = it.name_ko || p.id;
+        if (p._sym) needed.add(p._sym);
+        const fx = pfFxSymbol(p._cur);
+        if (fx && p._sym !== fx) needed.add(fx);
+    }
+
+    let done = 0;
+    const fetched = {};
+    for (const sym of needed) {
+        onProgress && onProgress(`가격 받는 중… ${++done}/${needed.size}`);
+        fetched[sym] = await pfFetchHistory(sym);
+    }
+
+    const series = {};
+    for (const [sym, j] of Object.entries(fetched)) series[sym] = j.points;
+    const { dates, cols } = pfAlign(series);
+    if (dates.length < 60) throw new Error('공통 거래일이 60일 미만이라 계산이 불안정합니다.');
+
+    // Each holding becomes one KRW-denominated return series.
+    const names = [], weights = [], meta = [];
+    const retCols = [];
+    const total = rows.reduce((a, p) => a + Math.abs(pfValueOf(p)), 0);
+
+    for (const p of rows) {
+        const signed = (p.side === 'short' ? -1 : 1) * Math.abs(pfValueOf(p));
+        const fxSym = pfFxSymbol(p._cur);
+
+        let krwPath;
+        if (!p._sym) {
+            // Base-currency cash: flat in KRW terms.
+            krwPath = dates.map(() => 1);
+        } else if (p._sym === fxSym) {
+            krwPath = cols[p._sym];                        // holding the currency itself
+        } else if (fxSym) {
+            krwPath = cols[p._sym].map((v, i) => v * cols[fxSym][i]);
+        } else {
+            krwPath = cols[p._sym];
+        }
+
+        let r = pfSimpleReturns(krwPath);
+        // A daily-rebalanced 2x fund doubles the SIMPLE return each day. Doubling
+        // log returns instead squares the price path and quietly drops volatility
+        // decay -- the exact bug found in the Python engine (returns.py:158).
+        if (p._lev !== 1) r = r.map((x) => p._lev * x);
+
+        names.push(p._name);
+        weights.push(signed / total);
+        retCols.push(r);
+        meta.push({ name: p._name, currency: p._cur, side: p.side, lev: p._lev,
+                    signed, weight: signed / total });
+    }
+
+    const T = Math.min(...retCols.map((c) => c.length));
+    const cut = retCols.map((c) => c.slice(c.length - T));
+
+    const logCols = cut.map((c) => c.map((x) => Math.log1p(Math.max(x, -0.999999))));
+    const S = pfCov(logCols);
+    const portVar = pfDot(weights, pfMatVec(S, weights));
+    const dailyVol = Math.sqrt(Math.max(portVar, 0));
+    const annVol = dailyVol * Math.sqrt(PF_TRADING_DAYS);
+
+    const mrc = pfMatVec(S, weights);
+    const rc = portVar > 0 ? weights.map((w, i) => w * mrc[i] / portVar) : weights.map(() => 0);
+
+    // Portfolio return is a weighted sum of simple returns; compounding that
+    // daily series is what an actual account does.
+    const portR = [];
+    for (let t = 0; t < T; t++) portR.push(weights.reduce((s, w, i) => s + w * cut[i][t], 0));
+
+    const sorted = [...portR].sort((a, b) => a - b);
+    const var1d = -pfQuantile(sorted, 0.05);
+    const cvar1d = -pfMean(sorted.slice(0, Math.max(1, Math.floor(sorted.length * 0.05))));
+    const var10d = PF_Z95 * dailyVol * Math.sqrt(10);
+
+    const window = Math.min(PF_TRADING_DAYS, portR.length);
+    const ret1y = portR.slice(-window).reduce((a, x) => a * (1 + x), 1) - 1;
+    const annRet = window >= PF_TRADING_DAYS ? ret1y
+        : Math.pow(1 + ret1y, PF_TRADING_DAYS / window) - 1;
+    const sharpe = annVol > 0 ? (annRet - PF_RF_ANNUAL) / annVol : null;
+
+    const sd = logCols.map(pfStd);
+    const corr = S.map((row, i) => row.map((v, j) =>
+        (sd[i] > 0 && sd[j] > 0) ? v / (sd[i] * sd[j]) : 0));
+
+    const krwWeight = meta.filter((m) => m.currency === 'KRW')
+        .reduce((a, m) => a + Math.abs(m.weight), 0);
+
+    // HRP is defined over long-only weights, so shorts are compared on the size
+    // of the bet rather than its direction, and the suggestion is read back as
+    // "carry more/less of this" rather than "flip it".
+    let target = null, deltas = null;
+    try {
+        // Cash has no variance, so inverse-variance weighting is undefined for
+        // it -- and worse than undefined: a zero-variance cluster drives the
+        // bisection's alpha to 0 and zeroes out whatever sits opposite it. How
+        // much cash to hold is a policy question anyway, not something a
+        // covariance matrix can answer, so it keeps its weight and HRP runs on
+        // the risky sleeve alone.
+        const risky = [], riskless = [];
+        for (let i = 0; i < names.length; i++) {
+            (S[i][i] > 1e-12 ? risky : riskless).push(i);
+        }
+        const gross = weights.reduce((a, w) => a + Math.abs(w), 0) || 1;
+        const heldRiskless = riskless.reduce((a, i) => a + Math.abs(weights[i]), 0);
+        const sleeve = gross - heldRiskless;
+
+        if (risky.length >= 2 && sleeve > 0) {
+            const subCorr = risky.map((i) => risky.map((j) => corr[i][j]));
+            const subCov = risky.map((i) => risky.map((j) => S[i][j]));
+            const { order } = pfLinkage(pfCorrDist(subCorr));
+            const hrp = pfHrp(subCov, order);
+
+            target = new Array(names.length).fill(0);
+            riskless.forEach((i) => { target[i] = Math.abs(weights[i]); });
+            risky.forEach((idx, k) => { target[idx] = hrp[k] * sleeve; });
+
+            deltas = names.map((n, i) => ({
+                name: n,
+                delta: target[i] - Math.abs(weights[i]),
+                from: Math.abs(weights[i]),
+                to: target[i],
+                riskless: riskless.includes(i),
+            })).sort((a, b) => b.delta - a.delta);
+        }
+    } catch (_) { /* suggestion is optional; the diagnosis is not */ }
+
+    return {
+        names, weights, rc, meta, corr, total, target, deltas,
+        obs: T,
+        start: new Date(dates[dates.length - T] * 86400000).toISOString().slice(0, 10),
+        end: new Date(dates[dates.length - 1] * 86400000).toISOString().slice(0, 10),
+        annVol, annRet, sharpe,
+        var1d, cvar1d, var10d,
+        var10dKrw: var10d * total,
+        krwWeight, foreignWeight: 1 - krwWeight,
+        clusters: pfClusters(names, corr).map((g) => ({
+            members: g.map((i) => names[i]),
+            weight: g.reduce((a, i) => a + Math.abs(weights[i]), 0),
+        })),
+    };
+};
+
+// Alias match, not fuzzy search: the registry carries hand-written Korean
+// aliases ("삼전", "하이닉스") precisely so a substring test is enough. These
+// entries come first in the picker because only they carry the things the
+// registry knows and a ticker lookup cannot -- leverage factors, proxy flags,
+// and which instrument stands in for a Korean name.
+const pfSearchLocal = (q) => {
+    const s = (q || '').trim().toLowerCase();
+    if (!s) return [];
+    return PF_REGISTRY.filter((it) =>
+        (it.name_ko || '').toLowerCase().includes(s) ||
+        (it.id || '').toLowerCase().includes(s) ||
+        (it.aliases || []).some((a) => String(a).toLowerCase().includes(s))
+    ).slice(0, 6);
+};
+
+// Anything the registry does not know, looked up by ticker or company name.
+const pfSearchRemote = async (q) => {
+    try {
+        const res = await fetch(`/api/quote/search?q=${encodeURIComponent(q)}`);
+        if (!res.ok) return { quotes: [], degraded: true };
+        const j = await res.json();
+        return { quotes: j.quotes || [], degraded: !!j.degraded };
+    } catch (_) {
+        return { quotes: [], degraded: true };
+    }
+};
+
+// A remote hit becomes a registry-shaped record so the rest of the panel does
+// not need to care where a holding came from.
+const pfFromQuote = (qt) => ({
+    id: `yf:${qt.symbol}`,
+    name_ko: qt.name || qt.symbol,
+    yahoo: qt.symbol,
+    currency: qt.currency || null,     // resolved on first price fetch
+    asset_class: (qt.type || '').toLowerCase() === 'etf' ? 'etf' : 'equity',
+    aliases: [qt.symbol],
+    leveraged: false,
+    _remote: true,
+    _exchange: qt.exchange || '',
+});
+
+const PF_CLASS_KO = { cash: '현금', equity: '주식', etf: 'ETF', bond: '채권', commodity: '원자재', fx: '환율' };
+
+// A holding carries its own instrument record once added, because a ticker
+// found through search is not in the registry and would otherwise be
+// unresolvable on the next page load.
+const pfInstOf = (p) => p.inst || PF_REGISTRY.find((x) => x.id === p.id) || { name_ko: p.id };
+
+// Adding a holding re-renders the whole form, so the unit toggle has to live
+// outside it. Kept local once, it silently reverted to 금액 after every add and
+// the next "5" meant five won instead of five shares.
+let pfMode = 'value';
+
+// Weight says where the money sits; risk contribution says where the account's
+// movement comes from. Same pairing as the reference panel -- it is the one
+// view that shows a small position driving most of the swings.
+const pfRenderResult = (host, R, profile) => {
+    const rows = R.names
+        .map((n, i) => ({ n, rc: R.rc[i], w: R.weights[i], m: R.meta[i] }))
+        .sort((a, b) => b.rc - a.rc);
+    const max = Math.max(...rows.map((r) => Math.abs(r.rc)), 0.0001);
+
+    const top = rows[0];
+    const breaches = [];
+    if (profile) {
+        if (R.var10d > profile.var_10d_budget) {
+            breaches.push(`10일 VaR ${finPct(R.var10d)}가 성향 한도 ${finPct(profile.var_10d_budget)}를 넘습니다.`);
+        }
+        const peak = rows.reduce((a, b) => Math.abs(b.w) > Math.abs(a.w) ? b : a, rows[0]);
+        if (Math.abs(peak.w) > profile.single_name_max) {
+            breaches.push(`'${peak.n}' 비중 ${finPct(Math.abs(peak.w))}가 단일종목 한도 ${finPct(profile.single_name_max)}를 넘습니다.`);
+        }
+        const lev = rows.filter((r) => r.m.lev !== 1).reduce((a, r) => a + Math.abs(r.w), 0);
+        if (lev > profile.leveraged_max) {
+            breaches.push(`레버리지 비중 ${finPct(lev)}가 한도 ${finPct(profile.leveraged_max)}를 넘습니다.`);
+        }
+    }
+
+    host.innerHTML = `
+        <div class="fin-head fin-head-sub">
+            <p class="fin-headline">
+                전체 변동의 약 ${finPct(Math.abs(top.rc))}가 '${finEsc(top.n)}'에서 나옵니다
+                (비중은 ${finPct(Math.abs(top.w))}).
+            </p>
+            <div class="fin-meta">
+                <span class="fin-chip">${finEsc(profile ? profile.label_ko : '')}</span>
+                <span>관측 ${R.obs}일 (${finEsc(R.start)} ~ ${finEsc(R.end)})</span>
+                <span class="fin-meta-sep">·</span>
+                <span>평가액 ${pfKrw(R.total)}</span>
+            </div>
+        </div>
+
+        ${breaches.length ? `
+        <div class="fin-alert">
+            <span class="fin-alert-mark">성향 한도 초과</span>
+            <ul>${breaches.map((b) => `<li>${finEsc(b)}</li>`).join('')}</ul>
+        </div>` : ''}
+
+        <div class="fin-cards">
+            <div class="fin-card">
+                <span class="fin-card-title">변동성 (연환산)</span>
+                <span class="fin-card-value">${finPct(R.annVol)}</span>
+                <p class="fin-card-plain">한 해 기준으로 포트폴리오 가치가 대략 ±${finPct(R.annVol)} 범위에서 움직일 수 있다는 뜻입니다.</p>
+            </div>
+            <div class="fin-card">
+                <span class="fin-card-title">10일 VaR (95%)</span>
+                <span class="fin-card-value">${finPct(R.var10d)} · ${pfKrw(R.var10dKrw)}</span>
+                <p class="fin-card-plain">최근과 비슷한 장세라면 앞으로 약 2주 동안 이 정도까지 손실이 날 수 있다고 보는 눈금입니다.</p>
+            </div>
+            <div class="fin-card">
+                <span class="fin-card-title">샤프 비율</span>
+                <span class="fin-card-value">${R.sharpe === null ? '—' : R.sharpe.toFixed(2)}</span>
+                <p class="fin-card-plain">예금·국채 수준을 웃돈 수익을 변동성으로 나눈 값입니다. 과거 성적이지 앞으로의 보장은 아닙니다.</p>
+            </div>
+            <div class="fin-card">
+                <span class="fin-card-title">최근 1년 수익률</span>
+                <span class="fin-card-value">${finPct(R.annRet)}</span>
+                <p class="fin-card-plain">지금 비중을 그대로 유지했다고 가정한 값입니다. 실제 매매 내역은 반영하지 않습니다.</p>
+            </div>
+        </div>
+
+        <div class="fin-grid">
+            <section class="fin-block fin-block-wide">
+                <h2>위험이 어디서 나오는가</h2>
+                <p class="fin-lead">비중은 어디에 돈을 넣었는지, 위험 기여는 계좌 변동에 실제로 얼마나 영향을 주는지입니다. 둘은 자주 다릅니다.</p>
+                <div class="fin-legend">
+                    <span><i class="fin-swatch fin-bar-risk"></i>위험 기여</span>
+                    <span><i class="fin-swatch fin-bar-weight"></i>비중</span>
+                </div>
+                <div class="fin-risk-list">
+                    ${rows.map((r) => `
+                        <div class="fin-risk-row">
+                            <div class="fin-risk-name">
+                                ${finEsc(r.n)}
+                                ${r.m.lev !== 1 ? '<span class="fin-tag fin-tag-warn">레버리지</span>' : ''}
+                                ${r.m.side === 'short' ? '<span class="fin-tag fin-tag-warn">공매도</span>' : ''}
+                            </div>
+                            <div class="fin-risk-bars">
+                                <div class="fin-bar-track"><div class="fin-bar fin-bar-risk"
+                                     style="width:${Math.abs(r.rc) / max * 100}%"></div></div>
+                                <div class="fin-bar-track"><div class="fin-bar fin-bar-weight"
+                                     style="width:${Math.abs(r.w) / max * 100}%"></div></div>
+                            </div>
+                            <div class="fin-risk-nums">
+                                <span class="fin-risk-rc">${finPct(r.rc)}</span>
+                                <span class="fin-risk-w">${finPct(r.w)}</span>
+                            </div>
+                        </div>`).join('')}
+                </div>
+            </section>
+
+            <section class="fin-block">
+                <h2>통화 노출</h2>
+                <p class="fin-p">원화에 묶인 비중 약 ${finPct(R.krwWeight)}, 외화 쪽 약 ${finPct(R.foreignWeight)}입니다.
+                   달러 현금도 안전자산처럼 보여도 환율만큼은 흔들립니다.</p>
+            </section>
+
+            <section class="fin-block">
+                <h2>함께 움직이는 묶음</h2>
+                ${R.clusters.length
+                    ? R.clusters.map((c) => `<p class="fin-p">'${finEsc(c.members.join(', '))}'이(가) 함께 움직이는 편이라,
+                        종목 수와 달리 사실상 한 덩어리 위험(합 비중 약 ${finPct(c.weight)})일 수 있습니다.</p>`).join('')
+                    : '<p class="fin-p">상관 0.6 이상으로 묶이는 무리는 없습니다.</p>'}
+            </section>
+        </div>
+
+        ${R.deltas ? (() => {
+            const up = R.deltas.filter((d) => d.delta > 0.005).slice(0, 4);
+            const down = R.deltas.filter((d) => d.delta < -0.005).reverse().slice(0, 4);
+            if (!up.length && !down.length) return '';
+            return `
+        <section class="fin-block fin-block-wide">
+            <h2>조절 제안</h2>
+            <p class="fin-note">
+                미래 수익 예상이 아니라, <strong>위험을 더 고르게 나누는 방향</strong>입니다.
+                기대수익을 가정하지 않는 방식(HRP)이라 "무엇이 오를지"는 말하지 않습니다.
+                비중을 옮길 때는 수수료·세금·환전 비용이 있으니, 제안치를 한 번에 맞추기보다 큰 쏠림부터 줄이는 편이 현실적입니다.
+            </p>
+            <div class="fin-moves">
+                <div class="fin-moves-col">
+                    <h3 class="fin-sub fin-sub-up">비중을 키우는 방향</h3>
+                    ${up.length ? up.map((d) => `
+                        <div class="fin-move">
+                            <div class="fin-move-head">
+                                <span>${finEsc(d.name)}</span>
+                                <span class="fin-move-delta fin-up">${finSignedPct(d.delta)}</span>
+                            </div>
+                            <p>위험이 한곳에 몰리는 걸 줄이려면 ${finPct(d.from)} → ${finPct(d.to)} 방향입니다.</p>
+                        </div>`).join('') : '<p class="fin-p">키울 쪽은 뚜렷하지 않습니다.</p>'}
+                </div>
+                <div class="fin-moves-col">
+                    <h3 class="fin-sub fin-sub-down">비중을 줄이는 방향</h3>
+                    ${down.length ? down.map((d) => `
+                        <div class="fin-move">
+                            <div class="fin-move-head">
+                                <span>${finEsc(d.name)}</span>
+                                <span class="fin-move-delta fin-down">${finSignedPct(d.delta)}</span>
+                            </div>
+                            <p>변동이 여기에 몰려 있어 ${finPct(d.from)} → ${finPct(d.to)} 로 줄이면 분산에 도움이 됩니다.</p>
+                        </div>`).join('') : '<p class="fin-p">줄일 쪽은 뚜렷하지 않습니다.</p>'}
+                </div>
+            </div>
+        </section>`;
+        })() : ''}
+
+        <div class="fin-foot">
+            <p>이 화면의 숫자는 과거 가격으로 돌린 계산 결과입니다. 매수·매도 지시가 아니며, '위험이 어디에 몰렸는지'를 보는 데 초점이 있습니다.</p>
+            <p class="fin-disclaimer">투자 판단의 책임은 본인에게 있습니다. 과거 성과는 미래를 보장하지 않습니다.</p>
+            <p class="fin-engine">계산: 브라우저에서 수행 · 가격 출처 Yahoo Finance ·
+               ${R.obs}일 일간 종가(수정주가) 기준 · 무위험수익률 ${finPct(PF_RF_ANNUAL)} 가정</p>
+        </div>`;
+};
+
+const renderPfInput = (root, onDone) => {
+    const pf = pfLoad() || pfBlank();
+    const total = pf.positions.reduce((a, p) => a + Math.abs(pfValueOf(p) || 0), 0);
+
+    root.innerHTML = `
+        <section class="fin-block fin-block-wide pf-input">
+            <h2>투자 성향</h2>
+            <p class="fin-note">성향은 한도 판정에만 씁니다. 목표 수익률은 받지 않습니다 — 기대수익 가정이 틀리기 쉬워서입니다.</p>
+            <div class="pf-profiles">
+                ${Object.entries(PF_PROFILES).map(([id, p]) => `
+                    <label class="pf-profile ${pf.risk_profile === id ? 'on' : ''}">
+                        <input type="radio" name="pf-profile" value="${finEsc(id)}" ${pf.risk_profile === id ? 'checked' : ''}>
+                        <span class="pf-profile-label">${finEsc(p.label_ko)}</span>
+                        <span class="pf-profile-blurb">${finEsc(p.blurb_ko)}</span>
+                    </label>`).join('')}
+            </div>
+        </section>
+
+        <section class="fin-block fin-block-wide pf-input">
+            <h2>종목 추가</h2>
+            <div class="pf-add">
+                <div class="pf-search-wrap">
+                    <input type="text" id="pf-q" class="pf-field" autocomplete="off"
+                           placeholder="종목명·티커로 검색 (예: 삼전, 엔비디아, 달러)">
+                    <div id="pf-sug" class="pf-sug hidden"></div>
+                </div>
+                <div class="pf-mode" role="group" aria-label="입력 단위">
+                    <button type="button" class="pf-mode-btn ${pfMode === 'value' ? 'on' : ''}" data-mode="value">금액</button>
+                    <button type="button" class="pf-mode-btn ${pfMode === 'shares' ? 'on' : ''}" data-mode="shares">주수</button>
+                </div>
+                <input type="text" id="pf-amt" class="pf-field pf-amt" inputmode="numeric"
+                       placeholder="${pfMode === 'shares' ? '보유 주수' : '평가금액 (원)'}">
+                <select id="pf-side" class="pf-field pf-side">
+                    <option value="long">매수</option>
+                    <option value="short">공매도</option>
+                </select>
+                <button id="pf-add" class="pf-btn" disabled>추가</button>
+            </div>
+            <p id="pf-picked" class="pf-picked"></p>
+            <p class="fin-note">
+                등록된 종목만 넣을 수 있습니다 (${PF_REGISTRY.length}종). 없는 종목은 엔진 쪽 종목표에 추가해야 합니다.
+                최대 ${PF_MAX}종까지 — 종목이 더 늘면 과거 가격만으로는 종목 간 관계를 안정적으로 못 잡습니다.
+            </p>
+            ${pf.positions.length >= PF_MAX
+                ? `<p class="pf-limit">${PF_MAX}종을 채웠습니다. 더 넣으려면 기존 종목을 지워 주세요.</p>` : ''}
+        </section>
+
+        <section class="fin-block fin-block-wide pf-input">
+            <h2>보유 목록 <span class="pf-count">${pf.positions.length}건</span></h2>
+            ${pf.positions.length ? `
+            <div class="pf-rows">
+                ${pf.positions.map((p, i) => {
+                    const it = pfInstOf(p);
+                    const val = pfValueOf(p);
+                    const w = (total && val !== null) ? Math.abs(val) / total : 0;
+                    return `
+                    <div class="pf-row">
+                        <span class="pf-row-name">
+                            ${finEsc(it.name_ko || p.id)}
+                            <span class="fin-tag">${finEsc(PF_CLASS_KO[it.asset_class] || it.asset_class || '')}</span>
+                            ${it.leveraged ? '<span class="fin-tag fin-tag-warn">레버리지</span>' : ''}
+                            ${it.proxy || it.synthetic_leverage ? '<span class="fin-tag">프록시</span>' : ''}
+                            ${p.side === 'short' ? '<span class="fin-tag fin-tag-warn">공매도</span>' : ''}
+                            ${p.mode === 'shares'
+                                ? `<span class="pf-row-sub">${p.shares.toLocaleString('ko-KR')}주 ·
+                                   ${pfKrw(p.price * (p.fx || 1))} 기준 (${finEsc(p.pricedAt || '')})</span>`
+                                : ''}
+                        </span>
+                        <span class="pf-row-val">${pfKrw(val)}</span>
+                        <span class="pf-row-w">${(w * 100).toFixed(1)}%</span>
+                        <button class="pf-del" data-i="${i}" aria-label="삭제">✕</button>
+                    </div>`;
+                }).join('')}
+            </div>
+            <div class="pf-total"><span>합계</span><strong>${pfKrw(total)}</strong></div>
+            <div class="pf-actions">
+                <button id="pf-run" class="pf-btn pf-btn-primary">계산하기</button>
+                <button id="pf-clear" class="pf-btn pf-btn-ghost">전부 지우기</button>
+            </div>
+            <p class="fin-note pf-privacy">
+                입력한 내역은 이 브라우저에만 저장됩니다. 서버로 보내지 않습니다.
+                가격 조회만 서버를 거치며, 종목은 지나가되 금액은 지나가지 않습니다.
+            </p>
+            ` : `<p class="fin-note">아직 없습니다. 위에서 종목을 추가하세요.</p>`}
+        </section>`;
+
+    const qEl = root.querySelector('#pf-q');
+    const sugEl = root.querySelector('#pf-sug');
+    const amtEl = root.querySelector('#pf-amt');
+    const addEl = root.querySelector('#pf-add');
+    const pickedEl = root.querySelector('#pf-picked');
+    let picked = null;
+    let spot = null;          // { price, fx, currency } for the picked instrument
+    let mode = pfMode;
+
+    const numOf = () => Number(String(amtEl.value).replace(/[^0-9.]/g, ''));
+
+    const refreshAdd = () => {
+        const full = (pfLoad() || pfBlank()).positions.length >= PF_MAX;
+        const ready = mode === 'shares' ? (spot && spot.price > 0) : true;
+        addEl.disabled = full || !picked || !(numOf() > 0) || !ready;
+    };
+
+    // In share mode the amount is unknown until a price arrives, so show the
+    // arithmetic rather than a number that appeared from nowhere.
+    const curOf = () => picked && (picked.currency || (spot && spot.currency) || '');
+
+    const showPicked = () => {
+        if (!picked) { pickedEl.textContent = ''; pickedEl.className = 'pf-picked'; return; }
+        const cur = curOf();
+        const label = `선택: ${picked.name_ko}${cur ? ` (${cur})` : ''}`;
+        pickedEl.className = 'pf-picked';
+        if (!spot && (mode === 'shares' || picked._remote)) {
+            pickedEl.textContent = `${label} · 조회 중…`;
+            return;
+        }
+        if (spot && !(spot.price > 0)) {
+            pickedEl.textContent = `${label} · 가격을 못 받았습니다 — 다른 종목을 골라 주세요`;
+            pickedEl.className = 'pf-picked pf-picked-warn';
+            return;
+        }
+        if (mode !== 'shares') { pickedEl.textContent = label; return; }
+        const n = numOf();
+        const unit = spot.price * (spot.fx || 1);
+        pickedEl.textContent = n > 0
+            ? `${label} · 현재가 ${pfKrw(unit)} × ${n.toLocaleString('ko-KR')}주 = ${pfKrw(unit * n)}`
+            : `${label} · 현재가 ${pfKrw(unit)}`;
+    };
+
+    // A ticker found through search arrives without a currency, and the whole
+    // portfolio is measured in KRW -- so the price call runs even in 금액 mode,
+    // where its only job is to tell us what currency the thing trades in.
+    const loadSpot = async () => {
+        if (!picked) return;
+        if (mode !== 'shares' && !picked._remote) return;
+        spot = null; showPicked(); refreshAdd();
+        try {
+            spot = await pfSpot(picked.yahoo || null, picked.currency);
+            if (spot && spot.currency && !picked.currency) picked.currency = spot.currency;
+        } catch (_) {
+            spot = { price: 0, fx: 1, currency: picked.currency };
+        }
+        showPicked(); refreshAdd();
+    };
+
+    root.querySelectorAll('.pf-mode-btn').forEach((b) => b.addEventListener('click', () => {
+        mode = pfMode = b.dataset.mode;
+        root.querySelectorAll('.pf-mode-btn').forEach((x) => x.classList.toggle('on', x.dataset.mode === mode));
+        amtEl.placeholder = mode === 'shares' ? '보유 주수' : '평가금액 (원)';
+        amtEl.value = '';
+        loadSpot();
+        showPicked();
+        refreshAdd();
+    }));
+
+    // Remote results are keyed by index into this array; registry hits keep
+    // their own id so the two can share one click handler.
+    let shown = [];
+    let searchSeq = 0;
+    let searchTimer = null;
+
+    const paintSuggestions = (hits, note) => {
+        shown = hits;
+        if (!hits.length) {
+            sugEl.innerHTML = note ? `<p class="pf-sug-note">${finEsc(note)}</p>` : '';
+            sugEl.classList.toggle('hidden', !note);
+            return;
+        }
+        sugEl.innerHTML = hits.map((h, i) => `
+            <button class="pf-sug-item" data-i="${i}">
+                <span>${finEsc(h.name_ko)}</span>
+                <span class="pf-sug-meta">${finEsc(
+                    h._remote ? `${h.yahoo}${h._exchange ? ' · ' + h._exchange : ''}`
+                              : `${PF_CLASS_KO[h.asset_class] || ''} · ${h.currency}`)}</span>
+            </button>`).join('') + (note ? `<p class="pf-sug-note">${finEsc(note)}</p>` : '');
+        sugEl.classList.remove('hidden');
+    };
+
+    qEl.addEventListener('input', () => {
+        picked = null; spot = null; pickedEl.textContent = ''; refreshAdd();
+        const q = qEl.value.trim();
+        clearTimeout(searchTimer);
+        if (q.length < 1) { sugEl.classList.add('hidden'); return; }
+
+        const local = pfSearchLocal(q);
+        paintSuggestions(local, local.length ? '' : '찾는 중…');
+
+        // The registry answers instantly; the network lookup is debounced so a
+        // burst of keystrokes does not fire a request each.
+        const seq = ++searchSeq;
+        searchTimer = setTimeout(async () => {
+            const { quotes, degraded } = await pfSearchRemote(q);
+            if (seq !== searchSeq) return;             // a later keystroke won
+            const ids = new Set(local.map((x) => (x.yahoo || '').toUpperCase()));
+            const remote = quotes
+                .filter((qt) => !ids.has(String(qt.symbol).toUpperCase()))
+                .map(pfFromQuote);
+            const all = [...local, ...remote];
+            paintSuggestions(all, all.length
+                ? (degraded ? '검색이 제한돼 미국 상장사만 나옵니다' : '')
+                : '검색 결과가 없습니다. 티커를 직접 넣어 보세요.');
+        }, 250);
+    });
+
+    sugEl.addEventListener('click', (e) => {
+        const b = e.target.closest('.pf-sug-item');
+        if (!b) return;
+        picked = shown[Number(b.dataset.i)] || null;
+        qEl.value = picked ? picked.name_ko : '';
+        sugEl.classList.add('hidden');
+        showPicked();
+        loadSpot();
+        amtEl.focus();
+        refreshAdd();
+    });
+
+    // Thousands separators while typing; the raw number is parsed back on add.
+    amtEl.addEventListener('input', () => {
+        const raw = String(amtEl.value).replace(/[^0-9]/g, '');
+        amtEl.value = raw ? Number(raw).toLocaleString('ko-KR') : '';
+        showPicked();
+        refreshAdd();
+    });
+
+    addEl.addEventListener('click', () => {
+        const n = numOf();
+        if (!picked || !(n > 0)) return;
+        const side = root.querySelector('#pf-side').value;
+        const next = pfLoad() || pfBlank();
+        next.risk_profile = root.querySelector('input[name="pf-profile"]:checked')?.value || next.risk_profile;
+
+        const same = (p) => p.id === picked.id && p.side === side && (p.mode || 'value') === mode;
+        const existing = next.positions.findIndex(same);
+        // Carry the instrument with the holding: a searched ticker is not in the
+        // registry, so nothing could resolve it on the next page load.
+        const inst = {
+            name_ko: picked.name_ko,
+            yahoo: picked.yahoo || null,
+            currency: picked.currency || (spot && spot.currency) || 'KRW',
+            asset_class: picked.asset_class || 'equity',
+            leveraged: !!picked.leveraged,
+            leverage_factor: picked.synthetic_leverage ? (picked.leverage_factor || 2) : 1,
+            proxy: !!(picked.proxy || picked.synthetic_leverage),
+        };
+        const row = mode === 'shares'
+            ? { id: picked.id, side, mode: 'shares', shares: n, inst,
+                price: spot.price, fx: spot.fx, pricedAt: new Date().toISOString().slice(0, 10) }
+            : { id: picked.id, side, mode: 'value', value: n, inst };
+
+        // Topping up something already held is fine at the cap; only new rows count.
+        if (existing >= 0) {
+            if (mode === 'shares') {
+                next.positions[existing].shares += n;
+                next.positions[existing].price = spot.price;
+                next.positions[existing].fx = spot.fx;
+                next.positions[existing].pricedAt = row.pricedAt;
+            } else {
+                next.positions[existing].value += n;
+            }
+        } else if (next.positions.length < PF_MAX) {
+            next.positions.push(row);
+        } else return;
+
+        pfSave(next);
+        renderPfInput(root, onDone);
+    });
+
+    root.querySelectorAll('.pf-del').forEach((b) => b.addEventListener('click', () => {
+        const next = pfLoad() || pfBlank();
+        next.positions.splice(Number(b.dataset.i), 1);
+        pfSave(next);
+        renderPfInput(root, onDone);
+    }));
+
+    root.querySelectorAll('input[name="pf-profile"]').forEach((r) => r.addEventListener('change', () => {
+        const next = pfLoad() || pfBlank();
+        next.risk_profile = r.value;
+        pfSave(next);
+        renderPfInput(root, onDone);
+    }));
+
+    root.querySelector('#pf-clear')?.addEventListener('click', () => {
+        if (!confirm('보유 목록을 전부 지웁니다. 되돌릴 수 없습니다.')) return;
+        pfSave(pfBlank());
+        renderPfInput(root, onDone);
+    });
+
+    root.querySelector('#pf-run')?.addEventListener('click', () => onDone && onDone());
+};
+
+const PF_MODE_KEY = 'portfolioLab.mode';
+const pfGetMode = () => (localStorage.getItem(PF_MODE_KEY) === 'expert') ? 'expert' : 'basic';
+const pfSetMode = (m) => { try { localStorage.setItem(PF_MODE_KEY, m); } catch (_) { /* quota */ } };
+
+const renderPfResult = async (host) => {
+    host.innerHTML = `<p class="fin-loading">진단 리포트 불러오는 중…</p>`;
 
     let data = null;
     for (const path of ['/public/data/portfolio_analysis_v1.json', '/data/portfolio_analysis_v1.json']) {
@@ -4990,33 +5969,52 @@ const renderPortfolioLab = async (host) => {
     }
 
     if (!data) {
-        host.innerHTML = finPlaceholder(
-            '포트폴리오 진단',
-            '보유 자산의 위험이 어디에 몰려 있는지 진단합니다',
-            `분석 결과 파일이 배포본에 없습니다. 개인 보유 내역이라 저장소에 커밋하지 않습니다.<br>
-             로컬에서 <code>python3 run_pipeline.py</code> 를 돌리면
-             <code>public/data/portfolio_analysis_v1.json</code> 이 생성되고 이 화면이 채워집니다.<br>
-             계약: <code>scripts/금융_재무분석/DATA_CONTRACT.md</code>`);
+        host.innerHTML = `
+            <div class="fin-empty">
+                <p class="fin-empty-title">진단 리포트가 없습니다</p>
+                <p>로컬에서 <code>scripts/금융_재무분석/run_pipeline.py</code> 를 돌리면
+                   <code>public/data/portfolio_analysis_v1.json</code> 이 만들어지고 여기에 표시됩니다.</p>
+                <p class="fin-note pf-privacy">이 파일은 <code>.gitignore</code> 처리돼 커밋·배포되지 않습니다 —
+                   실제 보유 내역은 본인 컴퓨터에만 남고, 대시보드 운영자를 포함해 누구에게도 전송되지 않습니다.</p>
+            </div>`;
         return;
     }
 
-    const u = data[`ui_copy_${FIN_LOCALE}`] || {};
+    const mode = pfGetMode();
+    const u = (mode === 'expert' ? data[`ui_copy_${FIN_LOCALE}`] : data[`ui_copy_basic_${FIN_LOCALE}`])
+        || data[`ui_copy_${FIN_LOCALE}`] || {};
     const S = (k) => u[`${k}_${FIN_LOCALE}`];
     const cards = u.metric_cards || [];
-    const breaches = S('profile_breaches') || [];
+    const breaches = (data.profile_check && data.profile_check[`breaches_${FIN_LOCALE}`]) || S('profile_breaches') || [];
     const movesUp = S('moves_up') || [];
     const movesDown = S('moves_down') || [];
     const proxies = (data.data_quality && data.data_quality.proxies) || [];
     const dq = data.data_quality || {};
 
+    const baseCcy = data.base_currency || 'KRW';
+    const acct = data.accounting || null;
+    const cash = data.cash_breakdown || null;
+    const nav = acct ? (acct.net_asset_value ?? null) : null;
+    const gross = acct ? (acct.gross_exposure ?? null) : null;
+    const grossOfNav = acct ? (acct.gross_exposure_of_nav ?? null) : null;
+    const creditUsed = acct ? (acct.credit_used ?? null) : null;
+    const varShort = data.risk && data.risk.short;
+    const varOfNav = varShort ? (varShort.var_10d_95 ?? null) : null;
+    const sizeGuide = data.size_guide || null;
+
     host.innerHTML = `
-    <div class="fin-wrap">
-        <div class="fin-head">
-            <h1>포트폴리오 진단</h1>
-            <p>${finEsc(S('headline'))}</p>
+        <div class="pf-mode" role="group" aria-label="보기 수준">
+            <button type="button" class="pf-mode-btn ${mode === 'basic' ? 'on' : ''}" data-mode="basic">기본</button>
+            <button type="button" class="pf-mode-btn ${mode === 'expert' ? 'on' : ''}" data-mode="expert">전문가</button>
+        </div>
+
+        <div class="fin-head fin-head-sub">
+            <p class="fin-headline">${finEsc(S('headline'))}</p>
             <div class="fin-meta">
                 <span class="fin-chip">${finEsc(u.profile?.[`label_${FIN_LOCALE}`] || data.risk_profile_id)}</span>
                 <span>${finEsc(u.profile?.[`blurb_${FIN_LOCALE}`] || '')}</span>
+                <span class="fin-meta-sep">·</span>
+                <span>기준통화 ${finEsc(baseCcy)}</span>
                 <span class="fin-meta-sep">·</span>
                 <span>기준 ${finEsc((data.generated_at || '').slice(0, 10))}</span>
                 <span class="fin-meta-sep">·</span>
@@ -5029,6 +6027,37 @@ const renderPortfolioLab = async (host) => {
             <span class="fin-alert-mark">성향 한도 초과</span>
             <ul>${breaches.map((b) => `<li>${finEsc(b)}</li>`).join('')}</ul>
         </div>` : ''}
+
+        ${(nav !== null || gross !== null || varOfNav !== null) ? `
+        <div class="fin-cards">
+            ${nav !== null ? `
+            <div class="fin-card">
+                <span class="fin-card-title">순자산(NAV)</span>
+                <span class="fin-card-value">${finEsc(baseCcy)} ${Number(nav).toLocaleString()}</span>
+                ${creditUsed ? `<p class="fin-card-plain">신용·미수 ${finEsc(baseCcy)} ${Number(creditUsed).toLocaleString()}은 이미 뺀 값입니다.</p>` : ''}
+            </div>` : ''}
+            ${gross !== null ? `
+            <div class="fin-card">
+                <span class="fin-card-title">총 노출(gross)</span>
+                <span class="fin-card-value">${finEsc(baseCcy)} ${Number(gross).toLocaleString()}${(grossOfNav !== null) ? ` · NAV 대비 ${finPct(grossOfNav)}` : ''}</span>
+                <p class="fin-card-plain">공매도·신용을 포함한 총 노출입니다. NAV와 다를 수 있습니다.</p>
+            </div>` : ''}
+            ${varOfNav !== null ? `
+            <div class="fin-card">
+                <span class="fin-card-title">10일 VaR (95%, NAV 대비)</span>
+                <span class="fin-card-value">${finPct(varOfNav)}</span>
+            </div>` : ''}
+        </div>` : ''}
+
+        ${cash ? `
+        <section class="fin-block fin-block-wide">
+            <h2>현금 구성</h2>
+            <p class="fin-p">
+                성향 현금(${finEsc(baseCcy)}) ${finPct(cash.base_cash_weight_of_nav)}
+                · 외화 현금(환위험) ${finPct(cash.foreign_cash_weight_of_nav)}
+            </p>
+            <p class="fin-note">${finEsc(cash.policy_ko || '성향 현금 밴드는 기준통화 현금만 검사합니다. 외화 현금은 환율 노출로 별도 표시됩니다.')}</p>
+        </section>` : ''}
 
         <div class="fin-cards">
             ${cards.map((c) => `
@@ -5103,27 +6132,1985 @@ const renderPortfolioLab = async (host) => {
         <div class="fin-foot">
             <p>${finEsc(S('footer'))}</p>
             <p class="fin-disclaimer">${finEsc(data[`disclaimer_${FIN_LOCALE}`])}</p>
+            ${sizeGuide ? `<p class="fin-note">${finEsc(sizeGuide[`footnote_${FIN_LOCALE}`] || '')}
+               (보유 ${sizeGuide.vs_actual?.n_names ?? '—'}종 · 권장 ${sizeGuide.names_min ?? '—'}–${sizeGuide.names_max ?? '—'}종)</p>` : ''}
             ${proxies.length ? `<p class="fin-proxy">프록시 사용: ${proxies.map((p) =>
                 finEsc(typeof p === 'string' ? p : (p.name_ko || p.id || JSON.stringify(p)))).join(' · ')}</p>` : ''}
             <p class="fin-engine">엔진: <code>scripts/금융_재무분석</code> ·
                방식: ${finEsc((data.advice && data.advice.method) || '')} ·
                스키마 ${finEsc(data.schema_version || '')}</p>
+            <p class="pf-privacy">이 리포트는 로컬 파일만 읽습니다 — 서버에 저장되지 않고, 대시보드 운영자는 이 데이터를 볼 수 없습니다.</p>
+        </div>`;
+
+    host.querySelectorAll('.pf-mode-btn').forEach((b) => b.addEventListener('click', () => {
+        if (b.dataset.mode === mode) return;
+        pfSetMode(b.dataset.mode);
+        renderPfResult(host);
+    }));
+};
+
+const PF_VIEW_KEY = 'portfolioLab.view';
+const pfGetView = () => (localStorage.getItem(PF_VIEW_KEY) === 'manual') ? 'manual' : 'report';
+const pfSetView = (v) => { try { localStorage.setItem(PF_VIEW_KEY, v); } catch (_) { /* quota */ } };
+
+const renderPortfolioLab = async (host) => {
+    host.innerHTML = `<div class="fin-wrap"><p class="fin-loading">불러오는 중…</p></div>`;
+    await pfLoadRefs();
+
+    const view = pfGetView();
+
+    host.innerHTML = `
+    <div class="fin-wrap">
+        <div class="fin-head">
+            <h1>포트폴리오 진단</h1>
+            <p>보유 자산의 위험이 어디에 몰려 있는지 봅니다. 수익 예측이 아닙니다.</p>
+        </div>
+        <div class="pf-mode pf-view-tabs" role="tablist" aria-label="보기 방식">
+            <button type="button" class="pf-mode-btn ${view === 'report' ? 'on' : ''}" data-view="report">진단 리포트</button>
+            <button type="button" class="pf-mode-btn ${view === 'manual' ? 'on' : ''}" data-view="manual">직접 입력</button>
+        </div>
+        <div id="pf-panel"></div>
+    </div>`;
+
+    const panel = host.querySelector('#pf-panel');
+
+    const renderManual = () => {
+        panel.innerHTML = `<div id="pf-form"></div><div id="pf-out"></div>`;
+        const form = panel.querySelector('#pf-form');
+        const out = panel.querySelector('#pf-out');
+
+        const run = async () => {
+            const pf = pfLoad() || pfBlank();
+            out.innerHTML = `<div class="fin-block fin-block-wide"><p class="fin-loading" id="pf-prog">계산 준비 중…</p></div>`;
+            out.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            const prog = out.querySelector('#pf-prog');
+            try {
+                const R = await pfCompute(pf, (msg) => { if (prog) prog.textContent = msg; });
+                pfRenderResult(out, R, PF_PROFILES[pf.risk_profile]);
+            } catch (err) {
+                out.innerHTML = `
+                    <div class="fin-block fin-block-wide">
+                        <h2>계산하지 못했습니다</h2>
+                        <p class="fin-p">${finEsc(err.message || String(err))}</p>
+                        <p class="fin-note">가격 조회가 일시적으로 막혔을 수 있습니다. 잠시 뒤 다시 눌러 보세요.</p>
+                    </div>`;
+            }
+        };
+
+        renderPfInput(form, run);
+
+        // A saved portfolio is a standing request to see its numbers.
+        const saved = pfLoad();
+        if (saved && saved.positions.length >= 2) run();
+    };
+
+    const renderReport = () => renderPfResult(panel);
+
+    host.querySelectorAll('.pf-view-tabs .pf-mode-btn').forEach((b) => b.addEventListener('click', () => {
+        const v = b.dataset.view;
+        if (v === pfGetView()) return;
+        pfSetView(v);
+        host.querySelectorAll('.pf-view-tabs .pf-mode-btn').forEach((x) => x.classList.toggle('on', x === b));
+        if (v === 'manual') renderManual(); else renderReport();
+    }));
+
+    if (view === 'manual') renderManual(); else renderReport();
+};
+
+// --- 기업 가치 계산기 ---------------------------------------------------------
+// The same statements read at three depths. Named for what each view is for,
+// not for who is supposed to be reading it -- a label like "취준생용" tells the
+// reader what the site thinks of them rather than what the numbers show.
+const CO_LEVELS = [
+    { id: 'health',    label: '재무 건전성', blurb: '빚을 감당할 수 있는가, 이익은 나는가' },
+    { id: 'valuation', label: '투자 판단',   blurb: '벌어들이는 현금 대비 값이 어떤가' },
+    { id: 'deep',      label: '심층 분석',   blurb: '자산과 부채가 실제로 어떤 모양인가' },
+];
+
+// Levels stack rather than replace. Moving up a level is a request for more,
+// not for something else -- valuation still wants the health numbers in view.
+const CO_LEVEL_ORDER = CO_LEVELS.map((l) => l.id);
+const coLevelsUpTo = (id) => CO_LEVEL_ORDER.slice(0, CO_LEVEL_ORDER.indexOf(id) + 1);
+
+const coNum = (v, currency = 'KRW') => {
+    if (v === null || v === undefined || Number.isNaN(v)) return '—';
+    const a = Math.abs(v);
+    if (currency === 'KRW') {
+        if (a >= 1e12) return `${(v / 1e12).toFixed(2)}조원`;
+        if (a >= 1e8) return `${(v / 1e8).toFixed(1)}억원`;
+        if (a >= 1e4) return `${(v / 1e4).toFixed(0)}만원`;
+        return `${Math.round(v).toLocaleString('ko-KR')}원`;
+    }
+    const sym = currency === 'USD' ? '$' : `${currency} `;
+    if (a >= 1e9) return `${sym}${(v / 1e9).toFixed(1)}B`;
+    if (a >= 1e6) return `${sym}${(v / 1e6).toFixed(1)}M`;
+    if (a >= 1e3) return `${sym}${(v / 1e3).toFixed(1)}K`;
+    return `${sym}${Math.round(v).toLocaleString('en-US')}`;
+};
+
+const coRatio = (v, digits = 1) =>
+    (v === null || v === undefined || !Number.isFinite(v)) ? '—' : `${v.toFixed(digits)}`;
+
+const coPct = (v, digits = 1) =>
+    (v === null || v === undefined || !Number.isFinite(v)) ? '—' : `${(v * 100).toFixed(digits)}%`;
+
+const coDiv = (a, b) => (a === null || b === null || !b) ? null : a / b;
+
+// Ratios follow the same definitions the KFA engine uses, so the two can be
+// checked against each other the way the portfolio maths already is.
+const coDerive = (s) => {
+    const sum = (...xs) => {
+        const vals = xs.filter((x) => Number.isFinite(x));
+        return vals.length ? vals.reduce((a, b) => a + b, 0) : null;
+    };
+    const interestBearingShort = sum(s.debt_short, s.debt_current_portion);
+    const debtTotal = sum(interestBearingShort, s.debt_long);
+    return {
+        fy: s.fy,
+        current_ratio: coDiv(s.assets_current, s.liabilities_current),
+        quick_ratio: coDiv(sum(s.cash, s.securities_current, s.receivables), s.liabilities_current),
+        debt_ratio: coDiv(s.liabilities, s.assets),
+        equity_ratio: coDiv(s.equity, s.assets),
+        roe: coDiv(s.net_income, s.equity),
+        roa: coDiv(s.net_income, s.assets),
+        operating_margin: coDiv(s.operating_income, s.revenue),
+        net_margin: coDiv(s.net_income, s.revenue),
+        fcf: (s.cfo === null || s.capex === null) ? null : s.cfo - s.capex,
+        fcf_margin: (s.cfo === null || s.capex === null) ? null : coDiv(s.cfo - s.capex, s.revenue),
+        // Net debt counts what carries interest, not every payable.
+        interest_bearing_short: interestBearingShort,
+        debt_total: debtTotal,
+        net_debt: (debtTotal === null) ? null : debtTotal - (s.cash ?? 0) - (s.securities_current ?? 0),
+        // How much of the interest-bearing debt falls due inside a year.
+        short_share: coDiv(interestBearingShort, debtTotal),
+        interest_cover: coDiv(s.operating_income, s.interest_expense),
+        effective_tax: coDiv(s.tax_expense, sum(s.net_income, s.tax_expense)),
+        raw: s,
+    };
+};
+
+const renderCompanyCalc = async (host) => {
+    host.innerHTML = `<div class="fin-wrap"><p class="fin-loading">불러오는 중…</p></div>`;
+    await pfLoadRefs();
+
+    host.innerHTML = `
+    <div class="fin-wrap">
+        <div class="fin-head">
+            <h1>기업 가치 계산기</h1>
+            <p>공시된 재무제표를 세 단계 깊이로 읽습니다. 투자 의견이 아니라, 그 단계에서 봐야 할 항목입니다.</p>
+        </div>
+        <section class="fin-block fin-block-wide pf-input">
+            <h2>기업 찾기</h2>
+            <div class="pf-add">
+                <div class="pf-search-wrap">
+                    <input type="text" id="co-q" class="pf-field" autocomplete="off"
+                           placeholder="기업명·티커로 검색 (예: 애플, AAPL, NVDA)">
+                    <div id="co-sug" class="pf-sug hidden"></div>
+                </div>
+            </div>
+            <p id="co-picked" class="pf-picked"></p>
+            <p class="fin-note">
+                미국 상장사는 SEC 공시로 바로 계산됩니다. <strong>한국 상장사는 DART 키가 연결되면</strong> 같은 화면에서 열립니다.
+            </p>
+        </section>
+        <div id="co-out"></div>
+    </div>`;
+
+    const qEl = host.querySelector('#co-q');
+    const sugEl = host.querySelector('#co-sug');
+    const pickedEl = host.querySelector('#co-picked');
+    const out = host.querySelector('#co-out');
+    let shown = [], seq = 0, timer = null;
+
+    qEl.addEventListener('input', () => {
+        const q = qEl.value.trim();
+        clearTimeout(timer);
+        if (!q) { sugEl.classList.add('hidden'); return; }
+        const local = pfSearchLocal(q).filter((x) => x.asset_class === 'equity');
+        shown = local;
+        sugEl.innerHTML = local.map((h, i) =>
+            `<button class="pf-sug-item" data-i="${i}"><span>${finEsc(h.name_ko)}</span>
+             <span class="pf-sug-meta">${finEsc(h.yahoo || '')}</span></button>`).join('') || '<p class="pf-sug-note">찾는 중…</p>';
+        sugEl.classList.remove('hidden');
+
+        const my = ++seq;
+        timer = setTimeout(async () => {
+            const { quotes } = await pfSearchRemote(q);
+            if (my !== seq) return;
+            const have = new Set(local.map((x) => String(x.yahoo || '').toUpperCase()));
+            const remote = quotes
+                .filter((c) => (c.type || '').toUpperCase() === 'EQUITY')
+                .filter((c) => !have.has(String(c.symbol).toUpperCase()))
+                .map(pfFromQuote);
+            shown = [...local, ...remote];
+            sugEl.innerHTML = shown.map((h, i) =>
+                `<button class="pf-sug-item" data-i="${i}"><span>${finEsc(h.name_ko)}</span>
+                 <span class="pf-sug-meta">${finEsc(h.yahoo || '')}${h._exchange ? ' · ' + finEsc(h._exchange) : ''}</span></button>`
+            ).join('') || '<p class="pf-sug-note">결과가 없습니다. 티커를 직접 넣어 보세요.</p>';
+        }, 250);
+    });
+
+    sugEl.addEventListener('click', async (e) => {
+        const b = e.target.closest('.pf-sug-item');
+        if (!b) return;
+        const it = shown[Number(b.dataset.i)];
+        if (!it) return;
+        qEl.value = it.name_ko;
+        sugEl.classList.add('hidden');
+        pickedEl.textContent = `선택: ${it.name_ko} (${it.yahoo})`;
+        await loadCompany(out, it);
+    });
+};
+
+const loadCompany = async (out, inst) => {
+    const sym = String(inst.yahoo || '').toUpperCase();
+    out.innerHTML = `<div class="fin-block fin-block-wide"><p class="fin-loading">공시 자료를 받는 중…</p></div>`;
+
+    // A Korean listing carries a market suffix Yahoo uses and SEC does not;
+    // the 6-digit code before it is what the DART-side engine names its files by.
+    if (/\.(KS|KQ)$/.test(sym)) {
+        return loadKfaCompany(out, inst, sym.replace(/\.(KS|KQ)$/, ''));
+    }
+
+    let data;
+    try {
+        const res = await fetch(`/api/financials?symbol=${encodeURIComponent(sym)}`);
+        if (!res.ok) throw new Error(res.status === 502 ? '공시를 찾지 못했습니다' : `조회 실패 (${res.status})`);
+        data = await res.json();
+    } catch (err) {
+        out.innerHTML = `<div class="fin-block fin-block-wide"><h2>불러오지 못했습니다</h2>
+            <p class="fin-p">${finEsc(err.message)}</p>
+            <p class="fin-note">미국 상장사가 아니거나 공시 형식이 달라 항목을 못 찾은 경우입니다.</p></div>`;
+        return;
+    }
+
+    const rows = (data.statements || []).map(coDerive);
+    if (!rows.length) {
+        out.innerHTML = `<div class="fin-block fin-block-wide"><h2>공시 항목을 찾지 못했습니다</h2>
+            <p class="fin-note">${finEsc(data.name || sym)}의 연차보고서에서 표준 항목을 읽지 못했습니다.</p></div>`;
+        return;
+    }
+
+    let level = 'health';
+    CO_DCF.growth = null;      // 새 기업이면 그 기업의 이력에서 다시 잡는다
+    CO_STRUCT_OPEN = null;
+    CO_DATA = data;
+    CO_PRICE.value = null;
+    CO_PRICE.status = 'loading';
+    const paint = () => {
+        out.innerHTML = `
+        <div class="fin-head fin-head-sub">
+            <p class="fin-headline">${finEsc(data.name)} · ${finEsc(data.symbol)}</p>
+            <div class="fin-meta">
+                <span class="fin-chip">${finEsc(data.source)}</span>
+                <span>${rows[rows.length - 1].fy}~${rows[0].fy} 회계연도 · ${finEsc(data.currency)}</span>
+            </div>
+        </div>
+        <div class="pf-mode co-levels" role="tablist">
+            ${CO_LEVELS.map((L) => `
+                <button type="button" class="pf-mode-btn ${L.id === level ? 'on' : ''}" data-level="${L.id}">
+                    ${finEsc(L.label)}
+                </button>`).join('')}
+        </div>
+        <p class="fin-note co-blurb">${finEsc(CO_LEVELS.find((L) => L.id === level).blurb)}</p>
+        ${coRenderLevel(level, rows, data)}`;
+
+        out.querySelectorAll('[data-level]').forEach((b) => b.addEventListener('click', () => {
+            level = b.dataset.level; paint();
+        }));
+
+        out.querySelectorAll('[data-co-struct]').forEach((b) => b.addEventListener('click', () => {
+            const k = b.dataset.coStruct;
+            CO_STRUCT_OPEN = CO_STRUCT_OPEN === k ? null : k;
+            paint();
+        }));
+
+        // Recompute on change rather than on every keystroke: a half-typed
+        // discount rate briefly reads as 0 and the numbers jump.
+        out.querySelectorAll('[data-co-dcf]').forEach((el) => el.addEventListener('change', () => {
+            const v = Number(el.value);
+            if (Number.isFinite(v)) CO_DCF[el.dataset.coDcf] = v;
+            paint();
+        }));
+        out.querySelector('[data-co-dcf-reset]')?.addEventListener('click', () => {
+            CO_DCF.growth = null; CO_DCF.terminal = 2.5; CO_DCF.discount = 9.0;
+            paint();
+        });
+        out.querySelector('[data-co-price]')?.addEventListener('change', (e) => {
+            const v = Number(e.target.value);
+            CO_PRICE.value = Number.isFinite(v) && v > 0 ? v : null;
+            CO_PRICE.status = 'manual';
+            paint();
+        });
+    };
+    paint();
+
+    // The reverse DCF needs a price, and the quote proxy already exists for the
+    // portfolio panel. Fetched after first paint so the statements are not held
+    // up by a second network call.
+    pfSpot(sym, data.currency).then((sp) => {
+        if (CO_DATA !== data) return;                 // 사용자가 그새 다른 기업을 골랐다
+        if (sp && Number.isFinite(sp.price) && sp.price > 0) {
+            CO_PRICE.value = sp.price; CO_PRICE.status = 'ok';
+        } else {
+            CO_PRICE.status = 'fail';
+        }
+        paint();
+    }).catch(() => { CO_PRICE.status = 'fail'; paint(); });
+};
+
+// --- 한국 상장사 (DART/KFA) ---------------------------------------------------
+// scripts/dart owns the extraction (OpenDART -> normalized cards); this side
+// only fetches the static per-company snapshot it produces and renders
+// whichever view the payload's own view_presets describe. No card copy comes
+// from the engine, so the Korean label/plain-text for each metric key lives
+// here, same as CO_LEVELS does for the SEC calculator.
+const KFA_VIEW_LABELS = { basic: '기본', investor: '투자자', pe: 'PE', deal: '딜' };
+
+const KFA_CARD_META = {
+    revenue: { label: '매출', unit: 'money', plain: '한 해 동안 벌어들인 전체 매출입니다.' },
+    operating_income: { label: '영업이익', unit: 'money', plain: '매출에서 원가·판관비를 뺀, 본업으로 남긴 돈입니다.' },
+    net_income: { label: '순이익', unit: 'money', plain: '세금·이자 등을 모두 뺀 최종 이익입니다.' },
+    cfo: { label: '영업활동현금흐름', unit: 'money', plain: '실제로 영업에서 걷어들인 현금입니다. 회계상 이익과 다를 수 있습니다.' },
+    fcf: { label: '잉여현금흐름(FCF)', unit: 'money', plain: '영업현금흐름에서 설비투자를 뺀, 자유롭게 쓸 수 있는 현금입니다.' },
+    cash: { label: '현금성자산', unit: 'money', plain: '즉시 쓸 수 있는 현금·예금입니다.' },
+    net_debt: { label: '순부채', unit: 'money', plain: '이자부 부채에서 현금·단기금융상품을 뺀 값입니다. 음수면 순현금 상태입니다.' },
+    current_ratio: { label: '유동비율', unit: 'ratio', plain: '1년 내 갚을 부채 대비 1년 내 현금화할 자산의 비율입니다.' },
+    debt_due_within_1y: { label: '1년 내 만기부채', unit: 'money', plain: '앞으로 1년 안에 갚아야 하는 차입금입니다.' },
+    liquidity_coverage_1y: { label: '유동성 커버리지', unit: 'ratio', plain: '1년 내 만기부채를 현금성자산으로 얼마나 덮을 수 있는지입니다.' },
+    interest_coverage: { label: '이자보상배율', unit: 'ratio', plain: '영업이익이 이자비용의 몇 배인지입니다. 낮을수록 이자 부담이 큽니다.' },
+    ccc_days: { label: '현금전환주기(CCC)', unit: 'days', plain: '재고·매출을 현금으로 바꾸는 데 걸리는 평균 일수입니다.' },
+    owner_earnings: { label: '오너어닝스', unit: 'money', plain: '버핏식으로 어림한 실질 이익입니다.' },
+    earnings_quality: { label: '이익의 질', unit: 'ratio', plain: '회계상 이익이 실제 현금흐름으로 얼마나 뒷받침되는지입니다.' },
+    margins_trend: { label: '마진 추이', unit: 'text', plain: '최근 몇 년간 이익률이 개선·악화되는 방향입니다.' },
+    capex_to_da: { label: '설비투자/감가상각', unit: 'ratio', plain: '설비투자가 감가상각을 웃도는지, 자산이 늘고 있는지 봅니다.' },
+    net_debt_to_oe: { label: '순부채/오너어닝스', unit: 'ratio', plain: '오너어닝스 기준으로 부채를 갚는 데 몇 년 걸리는지입니다.' },
+    ebitda_or_op: { label: 'EBITDA(또는 영업이익)', unit: 'money', plain: '감가상각 반영 전 영업 현금창출력입니다.' },
+    net_debt_to_ebitda: { label: '순부채/EBITDA', unit: 'ratio', plain: 'PE 딜에서 흔히 쓰는 레버리지 배수입니다.' },
+    fcf_to_ebitda: { label: 'FCF/EBITDA', unit: 'ratio', plain: '벌어들인 현금창출력 중 실제 자유현금흐름으로 남는 비율입니다.' },
+    maint_capex_burden: { label: '유지보수 설비투자 부담', unit: 'ratio', plain: '현상 유지에 필요한 설비투자가 얼마나 무거운지입니다.' },
+    nwc_change_to_sales: { label: '운전자본 변동/매출', unit: 'ratio', plain: '매출 대비 운전자본이 얼마나 늘거나 줄었는지입니다.' },
+    ebitda: { label: 'EBITDA', unit: 'money', plain: '이자·세금·감가상각 전 이익입니다.' },
+    trading_multiples: { label: '거래 배수', unit: 'text', plain: 'EV/EBITDA 등 비교기업 대비 밸류에이션 배수입니다.' },
+    ev_bridge: { label: 'EV 브릿지', unit: 'text', plain: '시가총액에서 기업가치(EV)까지의 조정 항목입니다.' },
+    qoe_flags: { label: '이익품질 플래그', unit: 'text', plain: '일회성 항목 등 이익의 질을 흔드는 신호입니다.' },
+    segment: { label: '세그먼트', unit: 'text', plain: '사업부문별 실적 분해입니다.' },
+    nwc_to_sales: { label: '운전자본/매출', unit: 'ratio', plain: '매출 대비 운전자본이 차지하는 비중입니다.' },
+};
+
+const kfaFmt = (key, v, currency) => {
+    if (v === null || v === undefined || Number.isNaN(v)) return '—';
+    const unit = (KFA_CARD_META[key] || {}).unit;
+    if (unit === 'money') return coNum(v, currency || 'KRW');
+    if (unit === 'days') return `${Math.round(v)}일`;
+    if (unit === 'ratio') return `${v.toFixed(2)}배`;
+    return String(v);
+};
+
+/** Same inline-SVG sparkline shape used elsewhere, mapped to the KFA {year, value} series. */
+const kfaSpark = (series, w = 280, h = 56) => {
+    const pts = (series || []).slice().sort((a, b) => a.year - b.year);
+    if (pts.length < 2) return '';
+    const vals = pts.map((p) => p.value);
+    const lo = Math.min(...vals), hi = Math.max(...vals);
+    const span = hi - lo || 1;
+    const x = (i) => (i / (pts.length - 1)) * w;
+    const y = (v) => h - ((v - lo) / span) * h;
+    const d = pts.map((p, i) => `${i ? 'L' : 'M'}${x(i).toFixed(1)},${y(p.value).toFixed(1)}`).join('');
+    return `<svg class="kfa-spark" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none">
+        <path d="${d}" fill="none" stroke="#7dd3fc" stroke-width="1.4"/>
+        ${pts.map((p, i) => `<circle cx="${x(i).toFixed(1)}" cy="${y(p.value).toFixed(1)}" r="2" fill="#38bdf8">
+            <title>${p.year}: ${finEsc(kfaFmt('_', p.value))}</title></circle>`).join('')}
+    </svg>`;
+};
+
+let KFA_VIEW = 'basic';
+let KFA_OPEN_CARD = null;
+
+const renderKfaResult = (out, data) => {
+    const views = (data.view_presets && data.view_presets.views) || {};
+    const viewIds = Object.keys(views);
+    if (!viewIds.includes(KFA_VIEW)) KFA_VIEW = data.view_presets?.default_view || viewIds[0] || 'basic';
+    const cardKeys = (views[KFA_VIEW] && views[KFA_VIEW].cards) || [];
+    const models = (views[KFA_VIEW] && views[KFA_VIEW].models) || [];
+    const cards = data.basic_cards || {};
+    const currency = data.currency || 'KRW';
+
+    out.innerHTML = `
+        <div class="fin-head fin-head-sub">
+            <p class="fin-headline">${finEsc(data.meta?.entity || data.label)}
+               <span class="fin-chip">${finEsc(data.meta?.ticker || data.label)}</span></p>
+            <div class="fin-meta">
+                <span>DART 공시 (${finEsc(data.meta?.fs_div || '')}) 기준 ${finEsc(data.as_of || '')}</span>
+                ${data.reasons?.length ? `<span class="fin-meta-sep">·</span><span>${finEsc(data.reasons.join(' · '))}</span>` : ''}
+            </div>
+        </div>
+
+        <div class="pf-mode" role="tablist" aria-label="분석 단계">
+            ${viewIds.map((v) => `<button type="button" class="pf-mode-btn ${v === KFA_VIEW ? 'on' : ''}"
+                data-kfa-view="${finEsc(v)}">${finEsc(KFA_VIEW_LABELS[v] || v)}</button>`).join('')}
+        </div>
+
+        <div class="fin-cards co-kfa-cards">
+            ${cardKeys.map((key) => {
+                const meta = KFA_CARD_META[key] || { label: key, unit: 'text', plain: '' };
+                const card = cards[key];
+                if (!card) return `
+                    <div class="fin-card co-kfa-card co-kfa-pending">
+                        <span class="fin-card-title">${finEsc(meta.label)}</span>
+                        <span class="fin-card-value">준비 중</span>
+                        <p class="fin-card-plain">엔진이 아직 이 항목을 계산하지 않았습니다.</p>
+                    </div>`;
+                const open = KFA_OPEN_CARD === key;
+                return `
+                    <div class="fin-card co-kfa-card ${open ? 'open' : ''}" data-kfa-card="${finEsc(key)}">
+                        <span class="fin-card-title">${finEsc(meta.label)}</span>
+                        <span class="fin-card-value">${kfaFmt(key, card.value, currency)}</span>
+                        <p class="fin-card-plain">${finEsc(meta.plain)}${card.reason ? ` (${finEsc(card.reason)})` : ''}</p>
+                        ${(card.series && card.series.length >= 2) ? `
+                            <button type="button" class="co-kfa-toggle">${open ? '차트 접기' : '연도별 추이 보기'}</button>
+                            ${open ? `<div class="co-kfa-chart">${kfaSpark(card.series)}</div>` : ''}` : ''}
+                    </div>`;
+            }).join('')}
+        </div>
+
+        ${models.length ? `
+        <div class="fin-note">이 단계는 다음 모델도 다룹니다: ${models.map(finEsc).join(', ')} —
+            계산 로직은 아직 엔진에 없어 카드 값만 우선 표시합니다.</div>` : ''}
+
+        <div class="fin-foot">
+            <p class="fin-disclaimer">투자 판단의 책임은 본인에게 있습니다. 목표주가·매수매도 의견을 포함하지 않습니다.</p>
+            <p class="fin-engine">엔진: <code>scripts/dart</code> (OpenDART) · 스키마 ${finEsc(data.schema || '')}</p>
+        </div>`;
+
+    out.querySelectorAll('[data-kfa-view]').forEach((b) => b.addEventListener('click', () => {
+        if (b.dataset.kfaView === KFA_VIEW) return;
+        KFA_VIEW = b.dataset.kfaView;
+        KFA_OPEN_CARD = null;
+        renderKfaResult(out, data);
+    }));
+
+    out.querySelectorAll('.co-kfa-toggle').forEach((b) => b.addEventListener('click', () => {
+        const key = b.closest('[data-kfa-card]')?.dataset.kfaCard;
+        KFA_OPEN_CARD = (KFA_OPEN_CARD === key) ? null : key;
+        renderKfaResult(out, data);
+    }));
+};
+
+const loadKfaCompany = async (out, inst, code) => {
+    out.innerHTML = `<div class="fin-block fin-block-wide"><p class="fin-loading">DART 공시 자료를 받는 중…</p></div>`;
+
+    let data = null;
+    for (const path of [`/public/data/kfa_${code}_v1.json`, `/data/kfa_${code}_v1.json`]) {
+        try {
+            const res = await fetch(path, { cache: 'no-store' });
+            if (res.ok) { data = await res.json(); break; }
+        } catch (_) { /* try next */ }
+    }
+
+    if (!data) {
+        out.innerHTML = `
+            <div class="fin-empty">
+                <p class="fin-empty-title">${finEsc(inst.name_ko)}는 아직 DART 데이터가 없습니다</p>
+                <p>지금은 <code>scripts/dart</code> 엔진이 생성한 스냅샷이 있는 종목만 열립니다 (현재 삼성전자 샘플만 있음).
+                   엔진이 새 종목을 생성하면 <code>public/data/kfa_${finEsc(code)}_v1.json</code> 경로에 자동으로 연결됩니다.</p>
+            </div>`;
+        return;
+    }
+
+    KFA_VIEW = data.view_presets?.default_view || 'basic';
+    KFA_OPEN_CARD = null;
+    renderKfaResult(out, data);
+};
+
+const coTable = (rows, cols) => `
+    <div class="co-table-wrap">
+        <table class="co-table">
+            <thead><tr><th>항목</th>${rows.map((r) => `<th>${r.fy}</th>`).join('')}</tr></thead>
+            <tbody>
+                ${cols.map((c) => `
+                    <tr>
+                        <td class="co-label">${finEsc(c.label)}${c.hint ? `<span class="co-hint">${finEsc(c.hint)}</span>` : ''}</td>
+                        ${rows.map((r) => `<td>${c.fmt(r)}</td>`).join('')}
+                    </tr>`).join('')}
+            </tbody>
+        </table>
+    </div>`;
+
+// --- DCF ---------------------------------------------------------------------
+// Every number here is a consequence of three inputs the reader chooses. That is
+// not a flaw to hide behind a single "fair value" figure -- it is the whole
+// point, so the assumptions stay on screen and adjustable.
+const CO_DCF = { growth: null, terminal: 2.5, discount: 9.0, years: 5 };
+const CO_PRICE = { value: null, status: 'idle' };
+let CO_DATA = null;   // 현재 렌더 중인 기업 페이로드 (통화 등)
+
+const coDcf = (rows) => {
+    const latest = rows[0];
+    const base = latest.fcf;
+    if (!Number.isFinite(base) || base <= 0) return null;
+
+    const g = (CO_DCF.growth ?? 0) / 100;
+    const tg = CO_DCF.terminal / 100;
+    const r = CO_DCF.discount / 100;
+    if (!(r > tg)) return { invalid: '할인율이 영구성장률보다 커야 합니다.' };
+
+    const flows = [];
+    let f = base;
+    for (let i = 1; i <= CO_DCF.years; i++) {
+        f = f * (1 + g);
+        flows.push({ year: i, fcf: f, pv: f / Math.pow(1 + r, i) });
+    }
+    const tail = flows[flows.length - 1].fcf * (1 + tg) / (r - tg);
+    const tailPv = tail / Math.pow(1 + r, CO_DCF.years);
+    const ev = flows.reduce((a, x) => a + x.pv, 0) + tailPv;
+    const equity = ev - (latest.net_debt ?? 0);
+    const shares = latest.raw.shares;
+    return {
+        base, flows, tail, tailPv, ev, equity,
+        tailShare: tailPv / ev,
+        perShare: Number.isFinite(shares) && shares > 0 ? equity / shares : null,
+        shares,
+    };
+};
+
+// Historical FCF growth, as a starting point for the input rather than a
+// forecast. Clamped because a single recovery year can imply 300% forever.
+const coDefaultGrowth = (rows) => {
+    const fcfs = rows.map((r) => r.fcf).filter((x) => Number.isFinite(x) && x > 0);
+    if (fcfs.length < 3) return 5;
+    const newest = fcfs[0], oldest = fcfs[fcfs.length - 1], n = fcfs.length - 1;
+    const cagr = (Math.pow(newest / oldest, 1 / n) - 1) * 100;
+    return Math.max(-10, Math.min(20, Math.round(cagr * 10) / 10));
+};
+
+// Forward DCF answers "what is it worth if I am right about growth". Reverse
+// DCF asks the better question: at today's price, what growth is already being
+// assumed? That turns a number the reader must trust into one they can judge.
+const coImpliedGrowth = (rows, marketCap) => {
+    if (!Number.isFinite(marketCap) || marketCap <= 0) return null;
+    const latest = rows[0];
+    const base = latest.fcf;
+    if (!Number.isFinite(base) || base <= 0) return null;
+    const targetEv = marketCap + (latest.net_debt ?? 0);
+
+    const evAt = (g) => {
+        const tg = CO_DCF.terminal / 100, r = CO_DCF.discount / 100;
+        if (!(r > tg)) return null;
+        let f = base, pv = 0;
+        for (let i = 1; i <= CO_DCF.years; i++) { f *= (1 + g); pv += f / Math.pow(1 + r, i); }
+        return pv + (f * (1 + tg) / (r - tg)) / Math.pow(1 + r, CO_DCF.years);
+    };
+    if (evAt(0) === null) return null;
+
+    // EV rises monotonically in g below the discount rate, so bisection is both
+    // sufficient and stable here.
+    let lo = -0.5, hi = (CO_DCF.discount / 100) - 0.001;
+    if (evAt(hi) < targetEv) return { unreachable: true, cap: hi * 100 };
+    if (evAt(lo) > targetEv) return { unreachable: true, below: true, cap: lo * 100 };
+    for (let k = 0; k < 60; k++) {
+        const mid = (lo + hi) / 2;
+        if (evAt(mid) < targetEv) lo = mid; else hi = mid;
+    }
+    return { growth: (lo + hi) / 2 * 100 };
+};
+
+const coSensitivity = (rows) => {
+    const latest = rows[0];
+    const base = latest.fcf;
+    if (!Number.isFinite(base) || base <= 0) return null;
+    const shares = latest.raw.shares;
+    if (!Number.isFinite(shares) || shares <= 0) return null;
+
+    const gs = [-5, 0, 5, 10, 15];
+    const rs = [7, 8, 9, 10, 12];
+    const tg = CO_DCF.terminal / 100;
+    const cells = rs.map((rp) => ({
+        r: rp,
+        row: gs.map((gp) => {
+            const g = gp / 100, r = rp / 100;
+            if (!(r > tg)) return null;
+            let f = base, pv = 0;
+            for (let i = 1; i <= CO_DCF.years; i++) { f *= (1 + g); pv += f / Math.pow(1 + r, i); }
+            const ev = pv + (f * (1 + tg) / (r - tg)) / Math.pow(1 + r, CO_DCF.years);
+            return (ev - (latest.net_debt ?? 0)) / shares;
+        }),
+    }));
+    return { gs, cells };
+};
+
+const coSensPanel = (rows, CUR) => {
+    const sens = coSensitivity(rows);
+    if (!sens) return '';
+    const flat = sens.cells.flatMap((c) => c.row).filter(Number.isFinite);
+    const lo = Math.min(...flat), hi = Math.max(...flat);
+    const tone = (v) => {
+        if (!Number.isFinite(v) || hi === lo) return '';
+        const t = (v - lo) / (hi - lo);
+        return `background: rgba(56,189,248,${(0.05 + t * 0.24).toFixed(3)})`;
+    };
+    return `
+    <h3 class="fin-sub">민감도 — 주당 가치</h3>
+    <p class="fin-note">가로: 성장률 · 세로: 할인율 · 영구성장률 ${CO_DCF.terminal}% 고정.
+       한 칸만 옮겨도 값이 크게 달라진다면, 그건 이 방법의 성질이지 계산 오류가 아닙니다.</p>
+    <div class="co-table-wrap">
+        <table class="co-table co-sens">
+            <thead><tr><th>할인율 \\ 성장률</th>${sens.gs.map((g) => `<th>${g}%</th>`).join('')}</tr></thead>
+            <tbody>
+                ${sens.cells.map((c) => `
+                    <tr><td class="co-label">${c.r}%</td>
+                        ${c.row.map((v) => `<td style="${tone(v)}">${Number.isFinite(v) ? coNum(v, CUR) : '—'}</td>`).join('')}
+                    </tr>`).join('')}
+            </tbody>
+        </table>
+    </div>`;
+};
+
+const coReversePanel = (rows, CUR, data) => {
+    const price = CO_PRICE.value;
+    const shares = rows[0].raw.shares;
+    const mcap = (Number.isFinite(price) && Number.isFinite(shares)) ? price * shares : null;
+    const imp = mcap ? coImpliedGrowth(rows, mcap) : null;
+
+    return `
+    <h3 class="fin-sub">역방향 DCF — 시장은 몇 %를 가정하고 있나</h3>
+    <p class="fin-note">
+        위가 "이 가정이면 얼마인가" 라면, 이건 "지금 값이 맞으려면 무엇을 믿어야 하나" 입니다.
+        ${CO_PRICE.status === 'loading' ? '현재가 조회 중…'
+          : CO_PRICE.status === 'fail' ? `현재가를 못 받았습니다 — 직접 넣어 보세요.` : ''}
+    </p>
+    <div class="co-dcf-inputs">
+        <label class="co-dcf-input">
+            <span>현재 주가 (${finEsc(data.currency || '')})</span>
+            <input type="number" data-co-price="1" value="${Number.isFinite(price) ? price : ''}" step="0.01" min="0">
+        </label>
+    </div>
+    ${!Number.isFinite(price) ? `<p class="fin-note">주가를 넣으면 역산합니다.</p>`
+      : !Number.isFinite(shares) ? `<p class="fin-note">희석주식수를 못 읽어 시가총액을 낼 수 없습니다.</p>`
+      : !imp ? `<p class="fin-note">잉여현금흐름이 없거나 음수라 역산할 수 없습니다.</p>`
+      : imp.unreachable ? `
+        <div class="fin-cards">
+            <div class="fin-card"><span class="fin-card-title">시가총액</span>
+                <span class="fin-card-value">${coNum(mcap, data.currency)}</span>
+                <p class="fin-card-plain">주가 × 희석주식수 ${mmFmt(shares, 0)}</p></div>
+            <div class="fin-card"><span class="fin-card-title">FCF 배수</span>
+                <span class="fin-card-value">${(mcap / rows[0].fcf).toFixed(0)}배</span>
+                <p class="fin-card-plain">시가총액 ÷ 최근 잉여현금흐름입니다.</p></div>
+            <div class="fin-card"><span class="fin-card-title">필요 영구성장률</span>
+                <span class="fin-card-value">${(() => {
+                    // 성장률로는 못 닿으니, 영구성장률을 역산해 격차의 크기를 보인다.
+                    const r = CO_DCF.discount / 100, base = rows[0].fcf;
+                    const target = mcap + (rows[0].net_debt ?? 0);
+                    let lo = 0, hi = r - 0.0005;
+                    const ev = (tg) => {
+                        let f = base, pv = 0;
+                        for (let i = 1; i <= CO_DCF.years; i++) { f *= (1 + tg); pv += f / Math.pow(1 + r, i); }
+                        return pv + (f * (1 + tg) / (r - tg)) / Math.pow(1 + r, CO_DCF.years);
+                    };
+                    if (ev(hi) < target) return '해당 없음';
+                    for (let k = 0; k < 60; k++) { const m = (lo + hi) / 2; if (ev(m) < target) lo = m; else hi = m; }
+                    return `${((lo + hi) / 2 * 100).toFixed(1)}%`;
+                })()}</span>
+                <p class="fin-card-plain">할인율 ${CO_DCF.discount}% 를 유지할 때, 지금 값이 설명되려면 현금흐름이 영구히 이만큼 자라야 합니다.</p></div>
+        </div>
+        <p class="fin-note">
+            ${imp.below ? '이 주가를 설명할 만큼 낮은 성장률이 없습니다.'
+            : `성장률만으로는 닿지 않습니다 — 할인율(${CO_DCF.discount}%) 근처까지 올려도 지금 시가총액에 못 미칩니다.
+               <strong>모델이 틀렸다기보다 가정이 시장과 다르다</strong>는 뜻입니다.
+               장기 성장을 더 믿거나, 할인율을 더 낮게 보거나, 현금흐름 외의 것에 값이 매겨져 있거나입니다.`}
+        </p>`
+      : `
+        <div class="fin-cards">
+            <div class="fin-card"><span class="fin-card-title">시가총액</span>
+                <span class="fin-card-value">${coNum(mcap, data.currency)}</span>
+                <p class="fin-card-plain">주가 × 희석주식수 ${mmFmt(shares, 0)}</p></div>
+            <div class="fin-card"><span class="fin-card-title">시장 내재 성장률</span>
+                <span class="fin-card-value">${imp.growth.toFixed(1)}%</span>
+                <p class="fin-card-plain">향후 5년 FCF가 매년 이만큼 늘어야 지금 값이 설명됩니다.</p></div>
+            <div class="fin-card"><span class="fin-card-title">과거 5년 실적</span>
+                <span class="fin-card-value">${coDefaultGrowth(rows).toFixed(1)}%</span>
+                <p class="fin-card-plain">같은 기간 실제 FCF 연평균 증가율입니다.</p></div>
+        </div>
+        <p class="fin-note">
+            두 숫자의 간격이 이 주식에 걸린 기대입니다. 어느 쪽이 맞는지는 이 화면이 답하지 않습니다 —
+            <strong>판단은 보는 사람의 몫</strong>이고, 이 도구는 그 판단이 무엇에 대한 것인지만 분명히 합니다.
+        </p>`}`;
+};
+
+const coDcfPanel = (rows, CUR) => {
+    if (CO_DCF.growth === null) CO_DCF.growth = coDefaultGrowth(rows);
+    const d = coDcf(rows);
+    const input = (key, label, step, min, max) => `
+        <label class="co-dcf-input">
+            <span>${finEsc(label)}</span>
+            <input type="number" data-co-dcf="${key}" value="${CO_DCF[key]}"
+                   step="${step}" min="${min}" max="${max}"><i>%</i>
+        </label>`;
+
+    return `
+    <section class="fin-block fin-block-wide">
+        <h2>DCF — 현금흐름 할인</h2>
+        <p class="fin-lead">
+            앞으로 벌어들일 잉여현금흐름을 오늘 가치로 당겨 더한 값입니다.
+            <strong>세 가지 가정이 결과를 지배합니다</strong> — 그래서 숨기지 않고 여기 둡니다. 직접 바꿔 보세요.
+        </p>
+        <div class="co-dcf-inputs">
+            ${input('growth', '향후 5년 FCF 성장률', 0.5, -30, 60)}
+            ${input('terminal', '영구성장률', 0.1, 0, 5)}
+            ${input('discount', '할인율 (WACC)', 0.25, 1, 30)}
+            <button class="pf-btn pf-btn-ghost" data-co-dcf-reset="1">기본값</button>
+        </div>
+        ${!d ? '<p class="fin-note">잉여현금흐름이 음수이거나 없어 DCF를 낼 수 없습니다. 현금을 쓰는 국면의 기업에는 이 방법이 맞지 않습니다.</p>'
+          : d.invalid ? `<p class="fin-note">${finEsc(d.invalid)}</p>` : `
+        <div class="fin-cards">
+            <div class="fin-card"><span class="fin-card-title">기업가치 (EV)</span>
+                <span class="fin-card-value">${coNum(d.ev, CUR)}</span>
+                <p class="fin-card-plain">향후 현금흐름 + 잔존가치의 현재가치 합입니다.</p></div>
+            <div class="fin-card"><span class="fin-card-title">주주가치</span>
+                <span class="fin-card-value">${coNum(d.equity, CUR)}</span>
+                <p class="fin-card-plain">기업가치에서 순부채를 뺀 값입니다.</p></div>
+            <div class="fin-card"><span class="fin-card-title">주당 가치</span>
+                <span class="fin-card-value">${d.perShare === null ? '—' : coNum(d.perShare, CUR)}</span>
+                <p class="fin-card-plain">${d.shares ? `희석주식수 ${mmFmt(d.shares, 0)}주 기준` : '주식수를 못 읽어 계산하지 못했습니다.'}</p></div>
+            <div class="fin-card"><span class="fin-card-title">잔존가치 비중</span>
+                <span class="fin-card-value">${coPct(d.tailShare)}</span>
+                <p class="fin-card-plain">전체 가치 중 6년차 이후가 차지하는 몫입니다. 이 값이 높을수록 결과가 영구성장률 가정에 좌우됩니다.</p></div>
+        </div>
+        <div class="co-table-wrap">
+            <table class="co-table">
+                <thead><tr><th>연차</th>${d.flows.map((f) => `<th>${f.year}년</th>`).join('')}<th>잔존</th></tr></thead>
+                <tbody>
+                    <tr><td class="co-label">예상 FCF</td>${d.flows.map((f) => `<td>${coNum(f.fcf, CUR)}</td>`).join('')}<td>${coNum(d.tail, CUR)}</td></tr>
+                    <tr><td class="co-label">현재가치</td>${d.flows.map((f) => `<td>${coNum(f.pv, CUR)}</td>`).join('')}<td>${coNum(d.tailPv, CUR)}</td></tr>
+                </tbody>
+            </table>
+        </div>
+        <p class="fin-note">
+            기준 FCF ${coNum(d.base, CUR)} (FY${rows[0].fy} 실적) 에서 출발합니다.
+        </p>
+        ${coSensPanel(rows, CUR)}`}
+        ${coReversePanel(rows, CUR, CO_DATA || {})}
+    </section>`;
+};
+
+// --- 구조 (심층) --------------------------------------------------------------
+const coStructRows = (r, CUR) => {
+    const R = r.raw;
+    const liab = [
+        ['단기차입금·기업어음', R.debt_short],
+        ['유동성 장기부채', R.debt_current_portion],
+        ['매입채무', R.payables],
+        ['미지급비용', R.accrued],
+        ['이연수익(선수금)', R.deferred_revenue],
+        ['리스부채 (유동)', R.lease_current],
+        ['기타 유동부채', R.other_current],
+        ['장기차입금', R.debt_long],
+        ['리스부채 (비유동)', R.lease_noncurrent],
+        ['이연법인세', R.deferred_tax],
+        ['기타 비유동부채', R.other_noncurrent],
+    ].filter(([, v]) => Number.isFinite(v));
+    const asset = [
+        ['현금성자산', R.cash],
+        ['단기투자·유가증권', R.securities_current],
+        ['매출채권', R.receivables],
+        ['재고자산', R.inventory],
+        ['유형자산', R.ppe],
+        ['영업권', R.goodwill],
+        ['무형자산', R.intangibles],
+    ].filter(([, v]) => Number.isFinite(v));
+    return { liab, asset };
+};
+
+const coBarList = (rows, total, CUR) => {
+    const max = Math.max(...rows.map(([, v]) => Math.abs(v)), 1);
+    return `<div class="mm-bars mm-bars-compact">
+        ${rows.map(([label, v]) => `
+            <div class="mm-bar-row">
+                <span class="mm-bar-label">${finEsc(label)}</span>
+                <span class="mm-bar-track"><span class="mm-bar-fill" style="width:${(Math.abs(v) / max * 100).toFixed(1)}%"></span></span>
+                <span class="mm-bar-value">${coNum(v, CUR)}${total ? `<span class="co-share">${(v / total * 100).toFixed(0)}%</span>` : ''}</span>
+            </div>`).join('')}
+    </div>`;
+};
+
+let CO_STRUCT_OPEN = null;   // 'liab' | 'asset' | null
+
+const coDeepPanel = (rowsDesc, CUR) => {
+    const rows = [...rowsDesc].reverse();
+    const latest = rowsDesc[0];
+    const { liab, asset } = coStructRows(latest, CUR);
+
+    return `
+    <section class="fin-block fin-block-wide">
+        <h2>부채 구조 — 언제 갚아야 하는가</h2>
+        <p class="fin-lead">
+            부채비율 하나로는 보이지 않는 것이 있습니다. 회사를 어렵게 만드는 건 <strong>얼마를 빚졌는지가 아니라 언제 갚아야 하는지</strong>입니다.
+        </p>
+        <div class="fin-cards">
+            <div class="fin-card"><span class="fin-card-title">이자부 부채 합계</span>
+                <span class="fin-card-value">${coNum(latest.debt_total, CUR)}</span>
+                <p class="fin-card-plain">매입채무 같은 영업부채를 뺀, 이자를 무는 빚만 모은 값입니다.</p></div>
+            <div class="fin-card"><span class="fin-card-title">1년 내 만기 비중</span>
+                <span class="fin-card-value">${coPct(latest.short_share)}</span>
+                <p class="fin-card-plain">이자부 부채 중 1년 안에 갚거나 차환해야 하는 몫입니다. 높을수록 금리·자금시장 경색에 민감합니다.</p></div>
+            <div class="fin-card"><span class="fin-card-title">이자보상배율</span>
+                <span class="fin-card-value">${coRatio(latest.interest_cover, 1)}배</span>
+                <p class="fin-card-plain">영업이익이 이자비용의 몇 배인가. 1배 아래면 본업으로 이자도 못 냅니다.</p></div>
+            <div class="fin-card"><span class="fin-card-title">당좌비율</span>
+                <span class="fin-card-value">${coPct(latest.quick_ratio)}</span>
+                <p class="fin-card-plain">재고를 뺀 유동자산으로 단기부채를 갚을 수 있는 정도입니다.</p></div>
+        </div>
+        ${coTable(rows, [
+            { label: '이자부 부채', fmt: (r) => coNum(r.debt_total, CUR) },
+            { label: '1년 내 만기', fmt: (r) => coNum(r.interest_bearing_short, CUR) },
+            { label: '순부채', fmt: (r) => coNum(r.net_debt, CUR) },
+            { label: '이자보상배율', fmt: (r) => coRatio(r.interest_cover, 1) },
+        ])}
+    </section>
+
+    <section class="fin-block fin-block-wide">
+        <h2>자산·자본 구조</h2>
+        <p class="fin-lead">항목을 눌러 구성을 펼쳐 보세요.</p>
+        <div class="co-struct-toggle">
+            <button class="mm-view-btn ${CO_STRUCT_OPEN === 'asset' ? 'on' : ''}" data-co-struct="asset">자산 구성 (${asset.length})</button>
+            <button class="mm-view-btn ${CO_STRUCT_OPEN === 'liab' ? 'on' : ''}" data-co-struct="liab">부채 구성 (${liab.length})</button>
+        </div>
+        ${CO_STRUCT_OPEN === 'asset' ? `
+            ${coBarList(asset, latest.raw.assets, CUR)}
+            <p class="fin-note">비율은 총자산 ${coNum(latest.raw.assets, CUR)} 대비입니다. 합이 100%가 되지 않는 것은 위에 없는 잔여 항목이 있기 때문입니다.</p>`
+        : CO_STRUCT_OPEN === 'liab' ? `
+            ${coBarList(liab, latest.raw.liabilities, CUR)}
+            <p class="fin-note">비율은 총부채 ${coNum(latest.raw.liabilities, CUR)} 대비입니다.</p>`
+        : ''}
+        ${coTable(rows, [
+            { label: '총자산', fmt: (r) => coNum(r.raw.assets, CUR) },
+            { label: '총부채', fmt: (r) => coNum(r.raw.liabilities, CUR) },
+            { label: '자기자본', fmt: (r) => coNum(r.raw.equity, CUR) },
+            { label: '이익잉여금', fmt: (r) => coNum(r.raw.retained_earnings, CUR) },
+            { label: '자기자본비율', fmt: (r) => coPct(r.equity_ratio) },
+        ])}
+    </section>`;
+};
+
+const coHealthPanel = (rowsDesc, CUR) => {
+    const rows = [...rowsDesc].reverse();
+    const latest = rowsDesc[0];
+    return `
+        <div class="fin-cards">
+            <div class="fin-card"><span class="fin-card-title">유동비율</span>
+                <span class="fin-card-value">${coPct(latest.current_ratio)}</span>
+                <p class="fin-card-plain">1년 안에 갚을 빚 대비 1년 안에 현금이 되는 자산. 100%를 밑돌면 단기 자금이 빠듯하다는 뜻입니다.</p></div>
+            <div class="fin-card"><span class="fin-card-title">부채비율 (부채/자산)</span>
+                <span class="fin-card-value">${coPct(latest.debt_ratio)}</span>
+                <p class="fin-card-plain">자산 중 남의 돈이 차지하는 비율입니다. 업종마다 정상 범위가 크게 달라 같은 업종끼리 비교해야 합니다.</p></div>
+            <div class="fin-card"><span class="fin-card-title">영업이익률</span>
+                <span class="fin-card-value">${coPct(latest.operating_margin)}</span>
+                <p class="fin-card-plain">매출 100원으로 본업에서 남긴 이익입니다.</p></div>
+            <div class="fin-card"><span class="fin-card-title">ROE</span>
+                <span class="fin-card-value">${coPct(latest.roe)}</span>
+                <p class="fin-card-plain">주주 돈으로 낸 수익률입니다. 빚을 많이 쓰면 자연히 높아지므로 부채비율과 같이 봐야 합니다.</p></div>
+        </div>
+        <section class="fin-block fin-block-wide">
+            <h2>연도별 추이</h2>
+            ${coTable(rows, [
+                { label: '매출', fmt: (r) => coNum(r.raw.revenue, CUR) },
+                { label: '영업이익', fmt: (r) => coNum(r.raw.operating_income, CUR) },
+                { label: '순이익', fmt: (r) => coNum(r.raw.net_income, CUR) },
+                { label: '영업이익률', fmt: (r) => coPct(r.operating_margin) },
+                { label: '유동비율', fmt: (r) => coPct(r.current_ratio) },
+                { label: '부채비율', fmt: (r) => coPct(r.debt_ratio) },
+            ])}
+        </section>`;
+};
+
+const coValuationPanel = (rowsDesc, CUR) => {
+    const rows = [...rowsDesc].reverse();
+    const latest = rowsDesc[0];
+    return `
+        <div class="fin-cards">
+            <div class="fin-card"><span class="fin-card-title">잉여현금흐름 (FCF)</span>
+                <span class="fin-card-value">${coNum(latest.fcf, CUR)}</span>
+                <p class="fin-card-plain">영업으로 번 현금에서 설비투자를 뺀 값입니다. 배당·자사주·부채상환에 쓸 수 있는 실제 여윳돈입니다.</p></div>
+            <div class="fin-card"><span class="fin-card-title">FCF 마진</span>
+                <span class="fin-card-value">${coPct(latest.fcf_margin)}</span>
+                <p class="fin-card-plain">매출이 현금으로 남는 비율입니다. 이익은 나는데 이 값이 낮으면 회계 이익과 현금이 어긋난다는 신호입니다.</p></div>
+            <div class="fin-card"><span class="fin-card-title">순부채</span>
+                <span class="fin-card-value">${coNum(latest.net_debt, CUR)}</span>
+                <p class="fin-card-plain">이자부 부채에서 현금·단기투자를 뺀 값입니다. 음수면 빚보다 현금이 많다는 뜻입니다.</p></div>
+            <div class="fin-card"><span class="fin-card-title">ROA</span>
+                <span class="fin-card-value">${coPct(latest.roa)}</span>
+                <p class="fin-card-plain">자산 전체로 낸 수익률입니다. ROE와 벌어지면 그 차이가 레버리지에서 옵니다.</p></div>
+        </div>
+        <section class="fin-block fin-block-wide">
+            <h2>현금 흐름</h2>
+            ${coTable(rows, [
+                { label: '영업현금흐름', fmt: (r) => coNum(r.raw.cfo, CUR) },
+                { label: '설비투자 (CapEx)', fmt: (r) => coNum(r.raw.capex, CUR) },
+                { label: '잉여현금흐름', fmt: (r) => coNum(r.fcf, CUR) },
+                { label: 'FCF 마진', fmt: (r) => coPct(r.fcf_margin) },
+                { label: '순이익', hint: '현금과 비교', fmt: (r) => coNum(r.raw.net_income, CUR) },
+            ])}
+            <p class="fin-note">
+                순이익과 영업현금흐름이 오래 벌어져 있으면 이유를 봐야 합니다 — 매출채권이 쌓였거나, 재고가 늘었거나,
+                회계상 이익이 현금으로 들어오지 않는 구조일 수 있습니다.
+            </p>
+        </section>
+        ${coDcfPanel(rowsDesc, CUR)}`;
+};
+
+const coRenderLevel = (level, rowsDesc, data) => {
+    const CUR = data.currency || 'KRW';
+    const parts = coLevelsUpTo(level).map((id) => {
+        if (id === 'health') return coHealthPanel(rowsDesc, CUR);
+        if (id === 'valuation') return coValuationPanel(rowsDesc, CUR);
+        return coDeepPanel(rowsDesc, CUR);
+    });
+    return parts.join('\n<hr class="co-sep">\n');
+};
+
+// === 시장 미시구조 / US→KR 관찰 ==============================================
+//
+// Engine and snapshots are Cursor's (scripts/market_microstructure); this file
+// only reads them. Four tabs, because the four questions are separate ones:
+// how tangled Korean flow is, where foreigners actually bought, and whether the
+// US options tape is leaning on Korea. The rule throughout: a null stays blank.
+// A plausible-looking number in a positioning panel is worse than an empty one.
+const MS_FILES = {
+    transmission: 'us_kr_transmission_v1.json',
+    alerts: 'alert_levels_v1.json',
+    conc: 'kospi_concentration_history_v1.json',
+    board: 'derivatives_board_v1.json',
+    brief: 'ai_casino_brief_v1.json',
+    levels: 'investor_price_levels_v1.json',
+    micro: 'market_microstructure_v1.json',
+};
+
+const MS_TABS = [
+    { id: 'tangle', label: '수급 불균형', blurb: '집중도와 단일종목 레버리지 ETF (Distortion & Squeeze)' },
+    { id: 'levels', label: '가격대별 체결', blurb: '어느 가격에서 누가 샀는가 (Volume Profile)' },
+    { id: 'uskr',   label: '해외-국내 선행', blurb: '미국 옵션 레짐이 한국으로 (Global Spillover)' },
+    { id: 'derivatives', label: '파생 수급', blurb: '외국인 K200 선물·옵션 수급과 시장 전체 거래 활동' },
+];
+
+let MS_DATA = null;
+let MS_TAB = 'tangle';
+let MS_UNIVERSE = 'marcap';
+let MS_TICKER = null;         // 가격대별 탭에서 선택한 종목 (null = 코스피 지수)
+let MS_STOCK = null;          // 수급 꼬임 탭에서 선택한 종목
+let MS_MODAL = null;          // { title, html }
+let MS_MODAL_KEY = null;      // 열려 있는 모달의 키 (기간 전환 시 재렌더용)
+let MS_PERIOD = '1m';         // 가격대별 표시 구간 — 1m / 2m / all
+
+const msGet = async (name) => {
+    for (const base of ['/public/data/', '/data/']) {
+        try {
+            const r = await fetch(base + name, { cache: 'no-store' });
+            if (r.ok) return await r.json();
+        } catch (_) { /* next */ }
+    }
+    return null;
+};
+
+// --- 일별 히스토리 (JSONL) ----------------------------------------------------
+// Everything above is one trading day per file. A trend needs an append-only
+// log, which the daily job writes a line at a time. A missing log is the normal
+// state until that job has run, so absence degrades to an observation count
+// rather than an error -- and never to a drawn line through days nobody saw.
+const MS_HIST_FILES = {
+    activity: 'derivatives_activity_history_v1.jsonl',
+    direction: 'leverage_direction_history_v1.jsonl',
+    // One file, many tickers (000660 SK하이닉스, 005930 삼성전자, ...) -- both
+    // are single-stock LETF names, so a per-ticker file per name does not scale.
+    stockLetf: 'stock_letf_history_v1.jsonl',
+};
+
+let MS_HIST = null;
+let MS_HIST_PERIOD = '30';
+const MS_HIST_PERIODS = [['30', '30거래일'], ['90', '90거래일'], ['all', '전체']];
+
+const msGetJsonl = async (name) => {
+    for (const base of ['/public/data/', '/data/']) {
+        try {
+            const r = await fetch(base + name, { cache: 'no-store' });
+            if (!r.ok) continue;
+            const rows = [];
+            (await r.text()).split('\n').forEach((ln) => {
+                const s = ln.trim();
+                if (!s) return;
+                try { rows.push(JSON.parse(s)); } catch (_) { /* one bad line must not void the log */ }
+            });
+            // A repeated (date, ticker) means the day was re-observed; the later
+            // line wins. Files with no ticker field (activity, direction) key
+            // on date alone, which is the same thing when ticker is always ''.
+            const byKey = new Map();
+            rows.forEach((row) => { if (row && row.date) byKey.set(`${row.date}|${row.ticker || ''}`, row); });
+            return [...byKey.values()].sort((a, b) => String(a.date).localeCompare(String(b.date)));
+        } catch (_) { /* next base */ }
+    }
+    return [];
+};
+
+const msFinite = (v) => Number.isFinite(v) ? v : null;
+const msToJo = (v) => Number.isFinite(v) ? v / 1e12 : null;
+
+// key → which log, which number, how it is labelled. Field names match the
+// snapshot schemas so the ingestion side does not need a second vocabulary.
+const MS_HIST_SERIES = {
+    'act:fut_tv':   { file: 'activity', label: 'K200 선물 거래대금', unit: '조', pick: (r) => msToJo(r.kospi200_futures?.trading_value_krw) },
+    'act:fut_vol':  { file: 'activity', label: 'K200 선물 거래량', unit: '계약', pick: (r) => msFinite(r.kospi200_futures?.volume) },
+    'act:call_tv':  { file: 'activity', label: 'K200 콜옵션 거래대금', unit: '조', pick: (r) => msToJo(r.kospi200_options?.call_trading_value_krw) },
+    'act:call_vol': { file: 'activity', label: 'K200 콜옵션 거래량', unit: '계약', pick: (r) => msFinite(r.kospi200_options?.call_volume) },
+    'act:put_tv':   { file: 'activity', label: 'K200 풋옵션 거래대금', unit: '조', pick: (r) => msToJo(r.kospi200_options?.put_trading_value_krw) },
+    'act:put_vol':  { file: 'activity', label: 'K200 풋옵션 거래량', unit: '계약', pick: (r) => msFinite(r.kospi200_options?.put_volume) },
+    'act:pc_vol':   { file: 'activity', label: '풋/콜 거래량 비율', unit: '', pick: (r) => msFinite(r.kospi200_options?.put_call_volume) },
+    'act:pc_tv':    { file: 'activity', label: '풋/콜 거래대금 비율', unit: '', pick: (r) => msFinite(r.kospi200_options?.put_call_trading_value) },
+
+    'lev:ratio':    { file: 'direction', label: '레버리지·인버스 ETF 거래대금 ÷ 코스피 현물 거래대금', unit: '%', pick: (r) => msFinite(r.levered_inverse_etf_tv_over_kospi_cash_tv_pct) },
+    'lev:kospi_tv': { file: 'direction', label: '코스피 현물 거래대금', unit: '조', pick: (r) => msToJo(r.kospi_cash_tv_krw) },
+};
+
+// stock_letf_history_v1.jsonl carries every single-stock LETF ticker in one
+// log (currently 000660 SK하이닉스, 005930 삼성전자), so the series has to
+// filter to one ticker's rows rather than assume the file is already scoped.
+const msStockLetfSeries = (ticker, ko) => [
+    { file: 'stockLetf', filter: (r) => r.ticker === ticker, label: `${ko} LETF 거래대금`, unit: '조', pick: (r) => msToJo(r.letf_trading_value_krw) },
+    { file: 'stockLetf', filter: (r) => r.ticker === ticker, label: `${ko} 현물 거래대금`, unit: '조', pick: (r) => msToJo(r.spot_trading_value_krw) },
+    { file: 'stockLetf', filter: (r) => r.ticker === ticker, label: `${ko} LETF / 현물 거래대금 비율`, unit: '%', pick: (r) => Number.isFinite(r.letf_turnover_ratio) ? r.letf_turnover_ratio * 100 : null },
+    { file: 'stockLetf', filter: (r) => r.ticker === ticker, label: `${ko} LETF 합계 순자산 (AUM)`, unit: '조', pick: (r) => msToJo(r.letf_aum_sum_krw) },
+];
+
+const msDirSeries = (dir, ko) => [
+    { file: 'direction', label: `${ko} · 거래대금`, unit: '조', pick: (r) => msToJo(r.by_direction?.[dir]?.trading_value_krw) },
+    { file: 'direction', label: `${ko} · 코스피 거래대금 대비 비율`, unit: '%', pick: (r) => msFinite(r.by_direction?.[dir]?.share_of_kospi_tv_pct) },
+];
+
+const msHistRows = (file) => (MS_HIST || {})[file] || [];
+// Filtering has to happen before the last-N-trading-days window is cut, or
+// "last 30 days" on a shared multi-ticker file would mean 30 rows of mixed
+// tickers rather than 30 observations of the one being charted.
+const msSpecRows = (spec) => spec.filter ? msHistRows(spec.file).filter(spec.filter) : msHistRows(spec.file);
+
+const msHistPeriodBar = () => `
+    <div class="ms-hist-period" role="group" aria-label="표시 기간">
+        ${MS_HIST_PERIODS.map(([id, ko]) => `<button class="mm-tab ${id === MS_HIST_PERIOD ? 'on' : ''}" data-ms-hist-period="${id}">${finEsc(ko)}</button>`).join('')}
+    </div>`;
+
+// Two points make a segment, not a trend, so below that the honest output is
+// the count of days actually observed. Non-trading days are absent rows and
+// stay absent -- the x-axis is observations, never a filled calendar.
+const msHistChart = (spec) => {
+    const all = msSpecRows(spec);
+    const win = MS_HIST_PERIOD === 'all' ? all : all.slice(-Number(MS_HIST_PERIOD));
+    const values = win.map(spec.pick);
+    const usable = values.filter(Number.isFinite).length;
+    if (usable < 2) {
+        return `<div class="ms-hist-empty">
+            <strong>히스토리 축적 중</strong>
+            <p>${finEsc(spec.label)} — 현재 관측 ${usable}일. 일별 로그가 2거래일 이상 쌓이면 추이선이 자동으로 표시됩니다.
+            없는 날짜를 채워 그리지 않습니다.</p>
+        </div>`;
+    }
+    const soft = win.filter((r) => r.quality && r.quality !== 'observed').length;
+    const last = win[win.length - 1] || {};
+    return `
+        ${mmLineChart(win.map((r) => r.date), values, { unit: spec.unit, label: spec.label })}
+        <p class="fin-note">${finEsc(spec.label)} · 관측 ${usable}거래일 (${finEsc(win[0].date || '')} ~ ${finEsc(last.date || '')}) ·
+            출처 ${finEsc(last.source || '—')}${soft ? ` · <span class="ms-missing">추정·부분 관측 ${soft}일 포함</span>` : ' · 전 구간 실측'}.
+            휴장일은 채우지 않습니다.</p>`;
+};
+
+// One window control per modal: the charts under it all read the same global,
+// so repeating the buttons per chart would imply they can be set separately.
+const msHistBlock = (specs) => {
+    const list = specs.filter(Boolean);
+    const drawable = list.some((s) => {
+        const all = msSpecRows(s);
+        const win = MS_HIST_PERIOD === 'all' ? all : all.slice(-Number(MS_HIST_PERIOD));
+        return win.map(s.pick).filter(Number.isFinite).length >= 2;
+    });
+    return (drawable ? msHistPeriodBar() : '')
+        + list.map((s, i) => (i ? `<h3 class="fin-sub">${finEsc(s.label)}</h3>` : '') + msHistChart(s)).join('');
+};
+
+const msMissing = (label) => `<span class="ms-missing">${finEsc(label || '데이터 없음')}</span>`;
+const msNum = (v, d = 0) => Number.isFinite(v) ? v.toLocaleString('ko-KR', { maximumFractionDigits: d }) : '—';
+const msJo = (v) => Number.isFinite(v) ? `${(v / 1e12).toFixed(2)}조` : '—';
+const msSignedJo = (v) => Number.isFinite(v) ? `${v >= 0 ? '+' : ''}${(v / 1e12).toFixed(2)}조` : '—';
+const msEok = (v) => Number.isFinite(v) ? `${v >= 0 ? '+' : ''}${Math.round(v).toLocaleString('ko-KR')}억` : '—';
+const msShares = (v) => Number.isFinite(v) ? `${v >= 0 ? '+' : ''}${Math.round(v).toLocaleString('ko-KR')}` : '—';
+const msPct = (v, d = 1) => Number.isFinite(v) ? `${(v * 100).toFixed(d)}%` : '—';
+const MS_LEVEL_CLASS = { '경계': 'ms-lv-3', '주의': 'ms-lv-2', '관찰': 'ms-lv-1', high: 'ms-lv-3', mid: 'ms-lv-2', watch: 'ms-lv-2', low: 'ms-lv-1', quiet: 'ms-lv-1' };
+
+// Every summary box is a button that opens the table behind it. A card that
+// shows a number but cannot be opened reads as data without an explanation.
+const msCard = (title, value, sub, modalKey, cls) => `
+    <button class="fin-card ms-card${modalKey ? ' ms-clickable' : ''}" ${modalKey ? `data-ms-modal="${finEsc(modalKey)}"` : 'disabled'}>
+        <span class="fin-card-title">${finEsc(title)}</span>
+        <span class="fin-card-value ${cls || ''}">${value}</span>
+        ${sub ? `<p class="fin-card-plain">${sub}</p>` : ''}
+        ${modalKey ? `<span class="ms-more">${/^(conc:|hist:|dir:|stock_letf:|letf_cat$|alert_letf$)/.test(String(modalKey)) ? '추이 보기' : '표 보기'} →</span>` : ''}
+    </button>`;
+
+const msTable = (head, rows) => `
+    <div class="co-table-wrap">
+        <table class="co-table">
+            <thead><tr>${head.map((h) => `<th>${finEsc(h)}</th>`).join('')}</tr></thead>
+            <tbody>${rows.map((r) => `<tr>${r.map((c, i) => `<td${i === 0 ? ' class="co-label"' : ''}>${c}</td>`).join('')}</tr>`).join('')}</tbody>
+        </table>
+    </div>`;
+
+// Horizontal bars centred on zero: the Infomax-style read is "who bought at
+// which price", and buying versus selling has to be legible at a glance.
+const msDivergingBars = (rows, opts = {}) => {
+    const all = rows.flatMap((r) => r.series.map((s) => s.value)).filter(Number.isFinite);
+    const max = Math.max(...all.map(Math.abs), 1);
+    return `
+    <div class="ms-dist">
+        ${rows.map((r) => `
+            <div class="ms-dist-row${r.highlight ? ' on' : ''}">
+                <span class="ms-dist-label">${finEsc(r.label)}${r.sub ? `<span>${finEsc(r.sub)}</span>` : ''}</span>
+                <span class="ms-dist-bars">
+                    ${r.series.map((sx) => {
+                        const v = Number(sx.value);
+                        const w = Number.isFinite(v) ? Math.abs(v) / max * 50 : 0;
+                        const neg = v < 0;
+                        return `<span class="ms-dist-track" title="${finEsc(sx.name)} ${msNum(v)}">
+                            <span class="ms-dist-fill ms-${sx.key}${neg ? ' neg' : ''}"
+                                  style="width:${w.toFixed(2)}%; ${neg ? 'right:50%' : 'left:50%'}"></span>
+                        </span>`;
+                    }).join('')}
+                </span>
+                <span class="ms-dist-val">${finEsc(r.valueText || '')}</span>
+            </div>`).join('')}
+        <div class="ms-dist-legend">
+            ${(opts.legend || []).map((l) => `<span><i class="ms-sw ms-${l.key}"></i>${finEsc(l.name)}</span>`).join('')}
+            <span class="ms-dist-zero">가운데가 0 · 왼쪽 순매도 / 오른쪽 순매수</span>
         </div>
     </div>`;
 };
 
-const renderFinanceView = async (target, host) => {
-    if (target === 'fin_portfolio') return renderPortfolioLab(host);
+// Bins are recomputed here rather than read from the snapshot because the
+// shipped bins cover the whole 60-day window. Once the period can be narrowed,
+// the bars have to be re-attributed over the same days the line is drawn from,
+// or the profile would describe a window the chart is not showing.
+const msBinDays = (pts, step) => {
+    if (!pts.length) return [];
+    const lo = Math.min(...pts.map((d) => d.close));
+    const hi = Math.max(...pts.map((d) => d.close));
+    const base = Math.floor(lo / step) * step;
+    const map = new Map();
+    pts.forEach((d) => {
+        const b = Math.floor((d.close - base) / step);
+        const cur = map.get(b) || { n_days: 0, retail: 0, foreign: 0, inst: 0 };
+        cur.n_days += 1;
+        cur.retail += d._retail || 0;
+        cur.foreign += d._foreign || 0;
+        cur.inst += d._inst || 0;
+        map.set(b, cur);
+    });
+    return [...map.entries()].map(([b, v]) => ({
+        price_lo: base + b * step, price_hi: base + (b + 1) * step, ...v,
+    })).sort((a, b) => a.price_lo - b.price_lo).filter((r) => r.price_lo <= hi);
+};
 
-    if (target === 'fin_valuation') {
-        host.innerHTML = finPlaceholder(
-            '기업 가치 진단',
-            'DART 공시 재무제표 기반 기업 재무 상태·현금흐름 진단',
-            `엔진(<code>scripts/dart</code>)은 <code>cursor/ml-dart-kfa</code> 브랜치에서 작업 중입니다.
-             DART API 키 발급 후 <code>public/data/dart_*.json</code> 이 나오면 이 화면이 연결됩니다.<br>
-             설계: <code>LEVELS_OUTPUT.md</code> · <code>OUTPUT_SCHEMA.md</code>`);
+// Price-level distribution: the index path and the net-buying profile share one
+// vertical price axis, so "where the index spent time" and "where each investor
+// group actually bought" are read off the same rows. Two independent x scales
+// overlay in one plot -- time for the line, net-buying value for the bars.
+const MS_PLC_SERIES = [
+    { key: 'retail', ko: '개인', cls: 'retail' },
+    { key: 'foreign', ko: '외국인', cls: 'foreign' },
+    { key: 'inst', ko: '기관', cls: 'inst' },
+];
+
+const msPriceLevelChart = (pts, rows, opts = {}) => {
+    if (pts.length < 2 || !rows.length) return '';
+    const W = 760, H = 420, L = 62, R = 96, T = 30, B = 34;
+    const show = opts.series || MS_PLC_SERIES;
+
+    const lo = Math.min(...pts.map((d) => d.close), ...rows.map((b) => b.price_lo));
+    const hi = Math.max(...pts.map((d) => d.close), ...rows.map((b) => b.price_hi));
+    const padY = (hi - lo) * 0.04 || 1;
+    const yLo = lo - padY, yHi = hi + padY;
+    const sy = (v) => T + (1 - (v - yLo) / (yHi - yLo)) * (H - T - B);
+
+    // Bars are centred so net selling reads left of the axis.
+    const vals = rows.flatMap((b) => show.map((s) => Number(b[s.key]))).filter(Number.isFinite);
+    const vMax = Math.max(...vals.map(Math.abs), 1);
+    const cx = L + (W - L - R) / 2;
+    const halfW = (W - L - R) / 2;
+    const sbx = (v) => (v / vMax) * halfW * 0.92;
+
+    const sx = (i) => L + (i / Math.max(pts.length - 1, 1)) * (W - L - R);
+    let line = '', pen = false;
+    pts.forEach((d, i) => { line += `${pen ? 'L' : 'M'}${sx(i).toFixed(1)},${sy(d.close).toFixed(1)}`; pen = true; });
+
+    const grid = Array.from({ length: 7 }, (_, i) => yLo + (yHi - yLo) * (i / 6));
+    const fmt = opts.fmtX || msEok;
+
+    return `
+    <div class="ms-plc-box">
+        <svg class="ms-plc" viewBox="0 0 ${W} ${H}" role="img"
+             aria-label="${finEsc(opts.label || '가격대별 순매수 분포')}">
+            ${grid.map((g) => `
+                <line x1="${L}" y1="${sy(g).toFixed(1)}" x2="${W - R}" y2="${sy(g).toFixed(1)}" class="mm-grid"/>
+                <text x="${L - 8}" y="${(sy(g) + 3.5).toFixed(1)}" class="mm-tick" text-anchor="end">${msNum(Math.round(g))}</text>`).join('')}
+            ${[-1, -0.5, 0, 0.5, 1].map((t) => `
+                <text x="${(cx + t * halfW * 0.92).toFixed(1)}" y="${H - 10}" class="mm-tick" text-anchor="middle">${fmt(t * vMax)}</text>`).join('')}
+            ${rows.map((b) => {
+                const y0 = sy(b.price_hi), y1 = sy(b.price_lo);
+                const band = Math.abs(y1 - y0);
+                const h = Math.max(band / show.length - 1.5, 1.5);
+                return show.map((s, si) => {
+                    const v = Number(b[s.key]);
+                    if (!Number.isFinite(v) || v === 0) return '';
+                    const w = Math.abs(sbx(v));
+                    const y = Math.min(y0, y1) + si * (band / show.length) + 0.75;
+                    return `<rect class="ms-plc-bar ms-plc-${s.cls}${v < 0 ? ' neg' : ''}"
+                        x="${(v < 0 ? cx - w : cx).toFixed(1)}" y="${y.toFixed(1)}"
+                        width="${w.toFixed(1)}" height="${h.toFixed(1)}"><title>${
+                        msNum(b.price_lo)}~${msNum(b.price_hi)} · ${s.ko} ${fmt(v)} · ${b.n_days}일</title></rect>`;
+                }).join('');
+            }).join('')}
+            <line x1="${cx.toFixed(1)}" y1="${T}" x2="${cx.toFixed(1)}" y2="${H - B}" class="mm-zero"/>
+            <path d="${line}" class="ms-plc-line"/>
+            <text x="${L - 8}" y="${T - 12}" class="mm-tick" text-anchor="end">${finEsc(opts.yLabel || '(pt)')}</text>
+            <text x="${W - R + 8}" y="${(H - B).toFixed(1)}" class="mm-tick">${finEsc(opts.xLabel || '순매수')}</text>
+        </svg>
+        <p class="mm-legend-note">
+            <i class="ms-plc-sw-line"></i>${finEsc(opts.lineName || '코스피 종가')}
+            ${show.map((s) => `<i class="ms-plc-sw ms-plc-${s.cls}"></i>${finEsc(s.ko)}`).join('')}
+        </p>
+    </div>`;
+};
+
+// --- ① 수급 꼬임 -------------------------------------------------------------
+// distortion_squeeze is documented as the top-level block, but the shipped
+// snapshot has not produced it yet -- the same numbers live at the document's
+// root instead (concentration, market_letf_derivatives_ratios,
+// global_leverage_stack, stocks[]). DISTORTION_SQUEEZE.md names this fallback
+// explicitly, so this reads the root fields rather than waiting on a key that
+// may never land under that exact name.
+const msTangle = (D) => {
+    const m = D.micro || {};
+    const conc = m.concentration || (D.conc || {}).latest || {};
+    const stocks = Array.isArray(m.stocks) ? m.stocks : [];
+    const sel = stocks.find((x) => x.ticker === MS_STOCK) || stocks[0] || null;
+    const ratios = m.market_letf_derivatives_ratios || {};
+    const stack = m.global_leverage_stack || {};
+    const fvr = m.foreign_vs_retail || {};
+    const dc = m.deposit_credit || {};
+    const byDir = ratios.by_direction || {};
+    const bands = m.ir_bands || {};
+
+    // Stress-sorted: the row worth looking at first is the one with the
+    // biggest 10%-down impact, not the biggest name.
+    const ranked = [...stocks].sort((a, b) =>
+        (b.scenarios?.r_minus_10pct?.ir_pct ?? -1) - (a.scenarios?.r_minus_10pct?.ir_pct ?? -1));
+
+    const bandCls = { low: 'ms-lv-1', mid: 'ms-lv-2', watch: 'ms-lv-2', high: 'ms-lv-3' };
+
+    return `
+    <section class="fin-block fin-block-wide">
+        <h2>A · 코스피 집중도</h2>
+        <p class="fin-lead">지수가 몇 종목에 얼마나 매달려 있는지입니다. 높을수록 그 종목의 사정이 곧 시장의 사정이 됩니다.</p>
+        <div class="fin-cards">
+            ${msCard('상위 2', Number.isFinite(conc.conc_top2_samsung_hynix_pct) ? conc.conc_top2_samsung_hynix_pct.toFixed(1) + '%' : '—',
+                `상위 2종목 합계 · 전체 ${msNum((D.conc || {}).latest?.n_names)}종목 기준`, 'conc:top2')}
+            ${msCard('상위 5', Number.isFinite(conc.conc_top5_pct) ? conc.conc_top5_pct.toFixed(1) + '%' : '—',
+                `상위 5종목 합계 · 전체 ${msNum((D.conc || {}).latest?.n_names)}종목 기준`, 'conc:top5')}
+            ${msCard('상위 10', Number.isFinite(conc.conc_top10_pct) ? conc.conc_top10_pct.toFixed(1) + '%' : '—',
+                `상위 10종목 합계 · 전체 ${msNum((D.conc || {}).latest?.n_names)}종목 기준`, 'conc:top10')}
+        </div>
+    </section>
+
+    <section class="fin-block fin-block-wide">
+        <h2>B · 시장 전체</h2>
+        <p class="fin-lead">
+            아래 비율의 분모는 <strong>코스피 현물 거래대금</strong>, 분자는 <strong>레버리지·인버스 ETF 거래대금</strong>입니다.
+            서로 다른 두 시장의 거래대금을 나눈 값이라 "시장의 몇 %를 레버리지 ETF가 차지한다"는 뜻이 아닙니다.
+            일반(비레버리지) ETF는 분자에 들어가지 않습니다.
+        </p>
+        <div class="fin-cards">
+            ${msCard('레버리지·인버스 ETF 거래대금 ÷ 코스피 현물 거래대금', Number.isFinite(ratios.levered_inverse_etf_tv_over_kospi_cash_tv_pct) ? ratios.levered_inverse_etf_tv_over_kospi_cash_tv_pct.toFixed(1) + '%' : '—',
+                `정방향 ${msJo(ratios.long_tv_jo * 1e12)} · 인버스 ${msJo(ratios.inverse_tv_jo * 1e12)}`, 'letf_cat')}
+        </div>
+        <p class="fin-note">
+            quality ${finEsc(ratios.quality || '—')} · 관측일 ${finEsc(m.as_of || '—')} · 출처 ${finEsc(ratios.source || '—')}.
+            ${msHistRows('direction').length < 2 ? '일별 이력이 쌓이는 중입니다 — 카드를 열면 관측일수가 표시되고, 2거래일 이상 쌓이면 추이선이 나타납니다.' : '카드를 열면 일별 추이가 표시됩니다.'}
+        </p>
+    </section>
+
+    <section class="fin-block fin-block-wide">
+        <h2>C · 방향별 레버리지 상품</h2>
+        <p class="fin-lead">인버스 안에서도 <strong>-2배</strong>는 따로 셉니다. 되사고 되파는 압력이 방향에 따라 다르게 쌓입니다.</p>
+        ${Object.keys(byDir).length ? `
+        <div class="fin-cards">
+            ${[['long', '정방향 레버리지 (Long)'], ['inverse', '인버스 (-1X)'], ['inverse_2x', '인버스 (-2X)'], ['gobus_inverse_2x', '지수 인버스 (-2X)']].map(([k, ko]) => {
+                const b = byDir[k]; if (!b) return '';
+                return msCard(ko, msJo(b.trading_value_krw), `상품 ${msNum(b.n_products)}종 · 코스피 거래대금의 ${(b.share_of_kospi_tv_pct ?? 0).toFixed(1)}%`, `dir:${k}`);
+            }).join('')}
+        </div>` : `<p class="fin-note">${msMissing('라이브 재빌드 후 표시')}</p>`}
+        <p class="fin-note">
+            quality ${finEsc(ratios.quality || '—')} · 관측일 ${finEsc(m.as_of || '—')} · 출처 ${finEsc(ratios.source || '—')}.
+            ${msHistRows('direction').length < 2 ? '일별 이력이 쌓이는 중입니다 — 카드를 열면 관측일수가 표시되고, 2거래일 이상 쌓이면 추이선이 나타납니다.' : '카드를 열면 일별 추이가 표시됩니다.'}
+        </p>
+        ${stack.global_stack_usd ? `
+        <p class="fin-note">
+            해외 레버 스택(규모 비교용, 국내 회전율에 합산하지 않음): KR $${(stack.kr_single_stock_letf_notional_usd / 1e9).toFixed(1)}B ·
+            HK $${(stack.hk_swap_letf_notional_usd / 1e9).toFixed(1)}B · US $${(stack.us_levered_etf_notional_usd / 1e9).toFixed(1)}B ·
+            crypto $${(stack.crypto_perp_oi_notional_usd / 1e6).toFixed(0)}M. ${finEsc(stack.hedge_channel_ko || '')}
+        </p>` : ''}
+    </section>
+
+    <section class="fin-block fin-block-wide">
+        <h2>D · 종목 스트레스</h2>
+        <p class="fin-lead">
+            2배 ETF 1좌는 기초자산 2좌만큼의 노출을 만듭니다. IR(Implied Rebalancing)은 그 노출을 되사고 되팔 때
+            현물 ADV 대비 얼마나 큰 물량이 나오는지를 잽니다 — 클수록 리밸런싱 자체가 가격을 흔들 수 있습니다.
+        </p>
+        ${stocks.length ? msTable(
+            ['종목', '회전율', 'wag-the-dog', '인버스 비중', '−5% IR', '−10% IR', '밴드', ''],
+            ranked.map((st) => {
+                const t = st.flow_tangle || {};
+                const s10 = st.scenarios?.r_minus_10pct, s5 = st.scenarios?.r_minus_5pct;
+                return [
+                    `${finEsc(st.name)} <span class="co-hint">${finEsc(st.ticker)}</span>`,
+                    msPct(st.letf_turnover_ratio),
+                    `<span class="ms-badge ${bandCls[t.wag_the_dog_band] || ''}">${finEsc(t.wag_the_dog_band || '—')}</span>`,
+                    msPct(t.inverse_tv_share),
+                    Number.isFinite(s5?.ir_pct) ? s5.ir_pct.toFixed(1) + '%' : '—',
+                    Number.isFinite(s10?.ir_pct) ? `<span class="ms-badge ${bandCls[s10.band] || ''}">${s10.ir_pct.toFixed(1)}%</span>` : '—',
+                    `<span class="ms-badge ${bandCls[t.realized_band] || ''}">${finEsc(t.realized_band || '—')}</span>`,
+                    `<button class="mm-view-btn" data-ms-stock="${finEsc(st.ticker)}" data-ms-modal="letf_products">상품별</button>`
+                    // Any stock with an LETF turnover ratio can offer a trend
+                    // (rows just may not exist yet); Hynix alone routes to the
+                    // richer alert-bucket view since that engine covers only it.
+                    + (Number.isFinite(st.letf_turnover_ratio)
+                        ? ` <button class="mm-view-btn" data-ms-modal="${st.ticker === '000660' ? 'alert_letf' : `stock_letf:${finEsc(st.ticker)}`}">추이</button>`
+                        : ''),
+                ];
+            })) : `<p class="fin-note">${msMissing('종목 스트레스 데이터 없음')}</p>`}
+        <p class="fin-note">IR 밴드: watch ≥ ${bands.watch_lt_pct ?? 10}% · low &lt; ${bands.low_lt_pct ?? 3}%. NAV는 공개 스냅샷에 없어 표시하지 않습니다 — 상품별 순자산(AUM)과 거래대금만 실측입니다.</p>
+    </section>
+
+    <section class="fin-block fin-block-wide">
+        <h2>E · 해석 힌트</h2>
+        <ul class="fin-list">
+            <li>wag-the-dog=high → LETF 거래대금이 현물 거래대금에 육박 → 리밸런싱이 현물가에 영향을 줄 수 있는 상태</li>
+            <li>−10% IR ≥ ${bands.watch_lt_pct ?? 10}% → 기초자산이 10% 빠지면 리밸런싱 되팔기가 현물 ADV의 그만큼을 추가로 밀어냄</li>
+            <li>인버스 비중이 높을수록 기초자산 하락 시 오히려 매수(숏커버 성격) 압력이 커짐</li>
+        </ul>
+        <p class="fin-note">${finEsc((m.broker_leverage_disclosure || {}).note_ko || '증권사 고객 레버리지 공시가 아닙니다. 공개 LETF AUM·거래대금 기반 프록시입니다.')}</p>
+    </section>`;
+};
+
+// --- ② 가격대별 수급 ---------------------------------------------------------
+const msLevelsTab = (D) => {
+    const lv = D.levels || {};
+    const kl = lv.kospi_index_levels || {};
+    const tickers = lv.tickers || {};
+    const dc = (D.micro || {}).deposit_credit || {};
+    const isIndex = !MS_TICKER;
+    const src = isIndex ? kl : (tickers[MS_TICKER] || {});
+
+    const table = MS_UNIVERSE === 'high_vol' ? (lv.close_day_table_high_vol || []) : (lv.close_day_table_marcap || []);
+    const L = kl.latest || {};
+
+    // Everything is normalised to 억원 so the index (already 억) and a single
+    // ticker (raw 원) can be read on one axis without a unit toggle.
+    const allDays = (src.days || []).filter((d) => Number.isFinite(d.close)).map((d) => ({
+        date: d.date, close: d.close,
+        _retail: isIndex ? d.retail_net_eok : (d.retail_net_krw || 0) / 1e8,
+        _foreign: isIndex ? d.foreign_net_eok : (d.foreign_net_krw || 0) / 1e8,
+        _inst: isIndex ? d.institution_net_eok : (d.institution_net_krw || 0) / 1e8,
+    }));
+    const nWindow = { '1m': 21, '2m': 42, all: allDays.length }[MS_PERIOD] ?? allDays.length;
+    const pts = allDays.slice(-Math.max(nWindow, 2));
+    // Index bins follow the published psychological step; a single name has no
+    // such convention, so its range is split into a comparable number of rows.
+    const step = isIndex ? (kl.step || 250)
+        : Math.max((Math.max(...pts.map((d) => d.close)) - Math.min(...pts.map((d) => d.close))) / 12, 1);
+    const bins = msBinDays(pts, step);
+
+    const rows = bins.filter((b) => b.n_days > 0).map((b) => ({
+        label: `${msNum(b.price_lo)} ~ ${msNum(b.price_hi)}`,
+        sub: `${b.n_days}일`,
+        series: [
+            { key: 'retail', name: '개인', value: b.retail },
+            { key: 'foreign', name: '외국인', value: b.foreign },
+            { key: 'inst', name: '기관', value: b.inst },
+        ],
+        valueText: `개인 ${msEok(b.retail)} · 외인 ${msEok(b.foreign)}`,
+    }));
+
+    return `
+    <section class="fin-block fin-block-wide">
+        <h2>가격대별 누적 수급 <span class="ms-q">${finEsc(src.quality || '')}</span></h2>
+        <p class="fin-lead">
+            어느 가격대에서 누가 사고 팔았는지를 실측 일별 수급으로 쌓은 것입니다.
+            <strong>체결 단위 매집도가 아닙니다</strong> — 그 데이터는 공개되지 않습니다.
+        </p>
+        <div class="co-struct-toggle">
+            <button class="mm-view-btn ${isIndex ? 'on' : ''}" data-ms-ticker="">코스피 지수</button>
+            ${Object.keys(tickers).slice(0, 8).map((tk) => `<button class="mm-view-btn ${MS_TICKER === tk ? 'on' : ''}"
+                data-ms-ticker="${finEsc(tk)}">${finEsc(tickers[tk].label_ko || tk)}</button>`).join('')}
+        </div>
+        ${src.headline_ko && MS_PERIOD === 'all' ? `<p class="ms-lead-strong">${finEsc(src.headline_ko)}</p>` : ''}
+        <div class="co-struct-toggle">
+            ${[['1m', '최근 1개월'], ['2m', '최근 2개월'], ['all', `전체 (${allDays.length}일)`]].map(([k, ko]) =>
+                `<button class="mm-view-btn ${MS_PERIOD === k ? 'on' : ''}" data-ms-period="${k}">${finEsc(ko)}</button>`).join('')}
+        </div>
+        ${msPriceLevelChart(pts, bins, {
+            label: `${isIndex ? '코스피' : (tickers[MS_TICKER] || {}).label_ko || MS_TICKER} 가격대별 투자자 순매수 분포`,
+            lineName: isIndex ? '코스피 종가' : '종가',
+            yLabel: isIndex ? '(pt)' : '(원)',
+            xLabel: '순매수(억원)',
+        })}
+        ${pts.length ? `<p class="fin-note">표시 구간 ${finEsc(pts[0].date)} ~ ${finEsc(pts[pts.length - 1].date)} · ${pts.length}거래일.
+            막대는 이 구간의 일별 순매수를 종가 레벨에 귀속해 다시 합산한 값입니다.</p>` : ''}
+        ${rows.length ? msDivergingBars(rows, {
+            legend: [{ key: 'retail', name: '개인' }, { key: 'foreign', name: '외국인' }, { key: 'inst', name: '기관' }],
+        }) : `<p class="fin-note">${msMissing('구간별 수급 없음')}</p>`}
+        <p class="fin-note">
+            ${finEsc(src.method_ko || '')} 단위 억원 · quality ${finEsc(src.quality || '—')} ·
+            원본 ${src.n_days || 0}일 (${finEsc(src.date_start || '')} ~ ${finEsc(src.date_end || '')}) ·
+            출처 ${finEsc(src.source || '—')}
+        </p>
+    </section>
+
+    <section class="fin-block fin-block-wide">
+        <h2>종가일 수급</h2>
+        <div class="co-struct-toggle">
+            <button class="mm-view-btn ${MS_UNIVERSE === 'marcap' ? 'on' : ''}" data-ms-univ="marcap">시총 상위</button>
+            <button class="mm-view-btn ${MS_UNIVERSE === 'high_vol' ? 'on' : ''}" data-ms-univ="high_vol">시총 100위 내 고변동</button>
+        </div>
+        ${table.length ? msTable(['종목', '날짜', '종가', '개인(주)', '외국인(주)', '기관(주)', ''],
+            table.map((r) => [
+                `${finEsc(r.label_ko)} <span class="co-hint">${finEsc(r.ticker)}</span>`,
+                finEsc(r.date || ''), msNum(r.close),
+                `<span class="${r.retail_net_shares >= 0 ? 'fin-up' : 'fin-down'}">${msShares(r.retail_net_shares)}</span>`,
+                `<span class="${r.foreign_net_shares >= 0 ? 'fin-up' : 'fin-down'}">${msShares(r.foreign_net_shares)}</span>`,
+                `<span class="${r.institution_net_shares >= 0 ? 'fin-up' : 'fin-down'}">${msShares(r.institution_net_shares)}</span>`,
+                tickers[r.ticker] ? `<button class="mm-view-btn" data-ms-ticker="${finEsc(r.ticker)}">가격대별</button>` : '',
+            ])) : `<p class="fin-note">${msMissing('종가일 표 없음')}</p>`}
+        <p class="fin-note">지수 순매수 최근일: 개인 ${msEok(L.retail_net_eok)} · 외국인 ${msEok(L.foreign_net_eok)} · 기관 ${msEok(L.institution_net_eok)} (${finEsc(L.date || '')})</p>
+    </section>
+
+    <section class="fin-block fin-block-wide">
+        <h2>투자자 예탁금 · 신용공여</h2>
+        <p class="fin-lead">
+            개인이 얼마를 들고 대기 중이고 얼마를 빌려서 사고 있는지입니다. 위 가격대별 수급이 <em>어디서</em> 샀는지라면,
+            이건 <em>무슨 돈으로</em> 샀는지입니다.
+        </p>
+        <div class="fin-cards">
+            ${msCard('신용공여 잔고 / 투자자 예탁금', Number.isFinite(dc.credit_over_deposit_pct) ? dc.credit_over_deposit_pct.toFixed(1) + '%' : '—',
+                `기준일 ${finEsc(dc.as_of || '—')}`, null)}
+            ${msCard('투자자 예탁금', msEok(dc.investor_deposit_eok),
+                Number.isFinite(dc.investor_deposit_chg_eok) ? `전주 대비 ${msEok(dc.investor_deposit_chg_eok)}` : '', null)}
+            ${msCard('신용융자 잔고', msEok(dc.credit_balance_eok),
+                Number.isFinite(dc.credit_balance_chg_eok) ? `전주 대비 ${msEok(dc.credit_balance_chg_eok)}` : '', null)}
+            ${msCard('미수금 · 반대매매', msMissing('공개 데이터 없음'),
+                '증권사 미수금과 반대매매 금액은 이 공개 표에 포함되지 않습니다.', null)}
+        </div>
+        <p class="fin-note">${finEsc(dc.note_ko || '')} 시계열이 아니라 최신 주간 스냅샷입니다.</p>
+        ${(lv.cannot_do_ko || []).length ? `
+        <details class="mm-limits">
+            <summary>이 데이터로 할 수 없는 것</summary>
+            ${lv.cannot_do_ko.map((x) => `<div class="mm-limit"><p>${finEsc(x)}</p></div>`).join('')}
+        </details>` : ''}
+    </section>`;
+};
+
+// --- ③ US → KR 관찰 ----------------------------------------------------------
+const msUsKr = (D) => {
+    const t = D.transmission || {};
+    const gs = t.global_spillover || {};
+    const a = D.alerts || {};
+    const b = D.board || {};
+    const ch = t.channels || {};
+    const [lvl, dir] = String(t.headline || '').split(':');
+    const dirKo = { downside: '하방', upside: '상방', vol_up: '변동성 확대', vol_down: '변동성 축소' }[dir] || dir || '';
+    const ev = Array.isArray(t.evidence_us) ? t.evidence_us : [];
+    const letf = a.kr_hynix_letf || {};
+    const vix = a.us_vix_to_kr || {};
+    const hit = gs.open30m_hit || {};
+
+    return `
+    <section class="fin-block fin-block-wide">
+        <h2>현재 관찰되는 US → KR 연결</h2>
+        <div class="ms-headline">
+            <span class="ms-head-level ${MS_LEVEL_CLASS[lvl] || ''}">${finEsc(gs.headline_ko || t.headline_ko || `${lvl} · ${dirKo}`)}</span>
+            <span class="ms-head-meta">기준 ${finEsc(gs.as_of || t.as_of || '')} · 모델 ${finEsc(t.model_version || '')}</span>
+        </div>
+        ${gs.why_short_ko || t.why_ko ? `<p class="ms-why">${finEsc(gs.why_short_ko || t.why_ko)}</p>` : ''}
+        <p class="fin-note ms-warn">
+            이는 공개 옵션·가격 데이터에서 잡힌 <strong>현재의 연결 상태</strong>입니다. 미래 수익률·방향을 예측하지 않으며,
+            투자 주체나 실제 헤지 목적도 특정하지 않습니다.
+        </p>
+        ${ev.length ? `
+        <h3 class="fin-sub">미국 쪽 실측 근거</h3>
+        ${msTable(['심볼', '레짐', '스트레스', 'P/C 거래량', 'P/C OI', '옵션 거래량', '공매 증감'],
+            ev.map((e) => [
+                `<button class="ms-link" data-ms-modal="ev:${finEsc(e.symbol)}">${finEsc(e.symbol)}</button>`,
+                (e.regimes || []).join(', '),
+                `<span class="ms-badge ${MS_LEVEL_CLASS[e.stress_level] || ''}">${finEsc(e.stress_level || '')}</span>`,
+                Number.isFinite(e.put_call_volume) ? e.put_call_volume.toFixed(2) : '—',
+                Number.isFinite(e.put_call_oi) ? e.put_call_oi.toFixed(2) : '—',
+                msNum(e.options_total_volume),
+                Number.isFinite(e.short_chg_pct) ? `<span class="${e.short_chg_pct >= 0 ? 'fin-down' : 'fin-up'}">${e.short_chg_pct.toFixed(1)}%</span>` : '—',
+            ]))}
+        <p class="fin-note">P/C = 풋 ÷ 콜입니다. 1보다 크면 그날 풋 거래가 상대적으로 많았다는 관찰값일 뿐, 하락 예측이 아닙니다. 심볼을 누르면 산식이 나옵니다.</p>` : ''}
+    </section>
+
+    <section class="fin-block fin-block-wide">
+        <h2>연결 채널</h2>
+        <div class="ms-channels">
+            ${[['downside', '하방'], ['upside', '상방'], ['vol_up', '변동성 확대'], ['vol_down', '변동성 축소']].map(([k, ko]) => {
+                const c = ch[k] || {};
+                return `
+                <button class="ms-channel${k === dir ? ' on' : ''}${(c.drivers || []).length ? ' ms-clickable' : ''}"
+                        ${(c.drivers || []).length ? `data-ms-modal="ch:${k}"` : 'disabled'}>
+                    <span class="ms-ch-name">${finEsc(ko)}</span>
+                    <span class="ms-ch-heat">${Number.isFinite(c.heat) ? c.heat.toFixed(1) : '—'}</span>
+                    <span class="ms-ch-lv">${finEsc(c.level || '—')}</span>
+                    ${(c.kr_tickers || []).length ? `<span class="ms-ch-tick">${c.kr_tickers.map(finEsc).join(' · ')}</span>` : ''}
+                </button>`;
+            }).join('')}
+        </div>
+        <p class="fin-note">heat는 미국 쪽 레짐 강도 × 링크 가중의 합입니다. 채널을 누르면 어떤 연결이 얼마나 기여했는지 나옵니다.</p>
+    </section>
+
+    <section class="fin-block fin-block-wide">
+        <h2>알림 레벨</h2>
+        <div class="fin-cards">
+            ${msCard('하닉 레버리지 ETF 비율',
+                `<span class="ms-badge ${MS_LEVEL_CLASS[letf.today_level] || ''}">${finEsc(letf.today_level || '—')}</span> ${Number.isFinite(letf.today_ratio) ? msPct(letf.today_ratio) : ''}`,
+                finEsc(letf.metric_ko || ''), 'alert_letf')}
+            ${msCard('US VIX → KR',
+                `<span class="ms-badge ${MS_LEVEL_CLASS[vix.latest_level] || ''}">${finEsc(vix.latest_level || '—')}</span>${
+                    Number.isFinite(vix.latest_vix) ? ` VIX ${vix.latest_vix.toFixed(1)}` : ''}${
+                    Number.isFinite(vix.latest_vix_r) ? ` (${(vix.latest_vix_r * 100).toFixed(1)}%)` : ''}`,
+                finEsc(vix.metric_ko || ''), 'alert_vix')}
+            ${msCard('US OI 룰 헤드라인',
+                `<span class="ms-badge ${MS_LEVEL_CLASS[(b.us_kr_rules || {}).headline_level] || ''}">${finEsc((b.us_kr_rules || {}).headline_level || '—')}</span>`,
+                '', null)}
+        </div>
+        <p class="fin-note">
+            VIX 알림은 Cboe 공식 VIX의 전일 대비 변화율입니다 — <strong>풋 미결제약정(OI)이 아닙니다.</strong>
+            종목 단위 풋 OI 히스토리가 공개되지 않아 그 임계값은 만들 수 없습니다.
+        </p>
+    </section>
+
+    ${Number.isFinite(hit.downside_hit_rate_mean) ? `
+    <section class="fin-block fin-block-wide">
+        <h2>장초 30분 백테스트</h2>
+        <div class="fin-cards">
+            ${msCard('하방 적중률', msPct(hit.downside_hit_rate_mean),
+                '하방 드라이버가 뜬 날, 익일 KR 개장 30분 수익률이 실제로 음수였던 비율')}
+            ${msCard('하방일 평균 개장 수익률', msPct(hit.downside_mean_open_r, 2), '', null,
+                hit.downside_mean_open_r >= 0 ? 'fin-up' : 'fin-down')}
+        </div>
+        <p class="fin-note ms-warn">${finEsc(hit.note_ko || '옵션 히스토리가 아니라 수익률 버킷 프록시입니다. 과대해석하지 마세요.')}</p>
+    </section>` : ''}
+
+    ${(gs.read_ko || []).length || (gs.data_limits_ko || []).length ? `
+    <section class="fin-block fin-block-wide">
+        ${(gs.read_ko || []).length ? `
+        <h3 class="fin-sub">해석 힌트</h3>
+        <ul class="fin-list">${gs.read_ko.map((x) => `<li>${finEsc(x)}</li>`).join('')}</ul>` : ''}
+        ${(gs.data_limits_ko || []).length ? `
+        <h3 class="fin-sub">이 데이터로 할 수 없는 것</h3>
+        <ul class="fin-list">${gs.data_limits_ko.map((x) => `<li>${finEsc(x)}</li>`).join('')}</ul>` : ''}
+    </section>` : ''}
+
+    <p class="mm-disclaimer">${finEsc(t.disclaimer_ko || '')}</p>`;
+};
+
+// --- ④ KRX 파생 수급 --------------------------------------------------------
+// The public KRX dashboard identifies the foreign investor's K200 futures and
+// options-total flow. It does *not* split that foreign options flow into calls
+// and puts, so those two cells stay visibly missing until authenticated KRX
+// investor-detail CSVs are supplied. Never infer the split from market volume.
+const msDerivatives = (D) => {
+    const kr = (D.board || {}).kr || {};
+    const dashboard = (kr.investor_nets || {}).public_dashboard || {};
+    const futuresFlow = ((dashboard.futures || {}).investors || {}).foreign || {};
+    const optionsFlow = ((dashboard.options_total || {}).investors || {}).foreign || {};
+    const futures = kr.kospi200_futures || {};
+    const options = kr.kospi200_options || {};
+    const observedAt = (dashboard.futures || {}).observed_at_krx
+        || (dashboard.options_total || {}).observed_at_krx || '—';
+    const sourceNote = (kr.investor_nets || {}).note_ko
+        || '공개 대시보드는 옵션 전체만 제공하며 콜/풋별 외국인 수급은 제공하지 않습니다.';
+
+    const flowRow = (label, data, quality) => [
+        finEsc(label),
+        msJo(data.sell_krw),
+        msJo(data.buy_krw),
+        `<span class="${data.net_krw >= 0 ? 'fin-up' : 'fin-down'}">${msSignedJo(data.net_krw)}</span>`,
+        finEsc(quality),
+    ];
+    const missingSplitRow = (label) => [
+        finEsc(label), '—', '—', '—', msMissing('인증된 KRX 상세 CSV 필요'),
+    ];
+
+    return `
+    <section class="fin-block fin-block-wide">
+        <h2>당일 외국인 KOSPI200 파생 수급</h2>
+        <p class="fin-lead">매도·매수·순매수는 KRX 공개 대시보드의 당일 누적 거래대금입니다. 기준 표출 시각 ${finEsc(observedAt)}.</p>
+        <div class="fin-cards">
+            ${msCard('외국인 K200 선물 순매수', `<span class="${futuresFlow.net_krw >= 0 ? 'fin-up' : 'fin-down'}">${msSignedJo(futuresFlow.net_krw)}</span>`,
+                `매수 ${msJo(futuresFlow.buy_krw)} · 매도 ${msJo(futuresFlow.sell_krw)}`, 'kr_investor')}
+            ${msCard('외국인 K200 옵션 전체 순매수', `<span class="${optionsFlow.net_krw >= 0 ? 'fin-up' : 'fin-down'}">${msSignedJo(optionsFlow.net_krw)}</span>`,
+                `매수 ${msJo(optionsFlow.buy_krw)} · 매도 ${msJo(optionsFlow.sell_krw)} · 콜/풋 미분리`, 'kr_investor')}
+        </div>
+        ${msTable(['구분', '매도', '매수', '순매수', '데이터 상태'], [
+            flowRow('K200 선물', futuresFlow, (dashboard.futures || {}).quality === 'observed' ? '실측' : '—'),
+            missingSplitRow('K200 콜옵션'),
+            missingSplitRow('K200 풋옵션'),
+            flowRow('K200 옵션 전체 (참고)', optionsFlow, (dashboard.options_total || {}).quality === 'observed' ? '실측 · 콜/풋 미분리' : '—'),
+        ])}
+        <p class="fin-note ms-warn">${finEsc(sourceNote)} 콜/풋 행은 옵션 전체를 배분해 추정하지 않습니다. 이 표는 당일 거래 흐름이지 미결제약정(OI), 보유 포지션, 헤지 의도 또는 다음 가격 방향이 아닙니다.</p>
+    </section>
+
+    <section class="fin-block fin-block-wide">
+        <h2>KOSPI200 시장 전체 거래 활동</h2>
+        <p class="fin-lead">아래는 투자자별 수급과 별개인 시장 전체 체결 합계입니다. 활동 규모를 보되, 외국인 거래로 읽으면 안 됩니다.</p>
+        <div class="fin-cards">
+            ${msCard('K200 선물 거래대금', msJo(futures.trading_value_krw),
+                `거래량 ${msNum(futures.volume)}계약 · ${finEsc(futures.coverage_ko || '')}`, 'hist:act:fut_tv')}
+            ${msCard('K200 콜옵션 거래량', Number.isFinite(options.call_volume) ? `${msNum(options.call_volume)}계약` : '—',
+                `거래대금 ${msJo(options.call_trading_value_krw)}`, 'hist:act:call_vol')}
+            ${msCard('K200 풋옵션 거래량', Number.isFinite(options.put_volume) ? `${msNum(options.put_volume)}계약` : '—',
+                `거래대금 ${msJo(options.put_trading_value_krw)}`, 'hist:act:put_vol')}
+            ${msCard('풋/콜 거래량 비율', Number.isFinite(options.put_call_volume) ? options.put_call_volume.toFixed(2) : '—',
+                '시장 전체 풋 거래량 ÷ 콜 거래량', 'hist:act:pc_vol')}
+            ${msCard('오늘 전체 활동 표', '한 번에 보기', '선물·콜·풋 거래량과 거래대금', 'kr_activity')}
+        </div>
+        <p class="fin-note">기준일 ${finEsc(kr.as_of || options.bas_dd || '—')} · 선물 ${finEsc(futures.source || '출처 미표기')} · 옵션 ${finEsc(options.source || '출처 미표기')}. 이 보드에서는 한국 OI를 표시하지 않습니다.
+            ${msHistRows('activity').length < 2 ? ' 일별 이력이 쌓이는 중이라 카드를 열면 추이 대신 관측일수가 표시됩니다.' : ' 카드를 열면 일별 추이가 표시됩니다.'}</p>
+    </section>
+
+    <p class="mm-disclaimer">${finEsc(kr.disclaimer_ko || '공개·신청 API 기반 관측값입니다. 투자 권유가 아닙니다.')}</p>`;
+};
+
+// --- 모달 --------------------------------------------------------------------
+const msModalFor = (key, D) => {
+    const t = D.transmission || {};
+    const m = D.micro || {};
+    const kr = (D.board || {}).kr || {};
+    if (key === 'kr_investor') {
+        const dashboard = (kr.investor_nets || {}).public_dashboard || {};
+        const futures = ((dashboard.futures || {}).investors || {}).foreign || {};
+        const options = ((dashboard.options_total || {}).investors || {}).foreign || {};
+        return { title: '외국인 KOSPI200 파생 수급 — 원자료 구분',
+            html: msTable(['구분', '매도', '매수', '순매수', '출처'], [
+                ['K200 선물', msJo(futures.sell_krw), msJo(futures.buy_krw), msSignedJo(futures.net_krw), 'KRX 공개 대시보드'],
+                ['K200 콜옵션', '—', '—', '—', msMissing('인증된 KRX 상세 CSV 필요')],
+                ['K200 풋옵션', '—', '—', '—', msMissing('인증된 KRX 상세 CSV 필요')],
+                ['K200 옵션 전체', msJo(options.sell_krw), msJo(options.buy_krw), msSignedJo(options.net_krw), 'KRX 공개 대시보드 · 콜/풋 미분리'],
+            ]) + '<p class="fin-note">공개 대시보드의 옵션 전체 금액을 콜·풋으로 나누어 추정하지 않습니다. 매수·매도·순매수는 당일 거래 흐름이며 보유 포지션이나 헤지 방향이 아닙니다.</p>' };
+    }
+    if (key === 'kr_activity') {
+        const futures = kr.kospi200_futures || {};
+        const options = kr.kospi200_options || {};
+        return { title: 'KOSPI200 시장 전체 거래 활동',
+            html: msTable(['상품', '거래량', '거래대금', '범위'], [
+                ['K200 선물', `${msNum(futures.volume)}계약`, msJo(futures.trading_value_krw), finEsc(futures.coverage_ko || '—')],
+                ['K200 콜옵션', `${msNum(options.call_volume)}계약`, msJo(options.call_trading_value_krw), finEsc(options.coverage_ko || '—')],
+                ['K200 풋옵션', `${msNum(options.put_volume)}계약`, msJo(options.put_trading_value_krw), finEsc(options.coverage_ko || '—')],
+            ]) + '<p class="fin-note">시장 전체 체결 합계입니다. 외국인·개인·기관별 거래를 뜻하지 않으며 OI도 아닙니다.</p>' };
+    }
+    // A metric's own trend, plus the paired one that gives it scale: volume
+    // beside turnover, a ratio beside the denominator it is drawn against.
+    if (key.startsWith('hist:')) {
+        const which = key.slice(5);
+        const paired = {
+            'act:fut_tv': 'act:fut_vol', 'act:fut_vol': 'act:fut_tv',
+            'act:call_tv': 'act:call_vol', 'act:call_vol': 'act:call_tv',
+            'act:put_tv': 'act:put_vol', 'act:put_vol': 'act:put_tv',
+            'act:pc_vol': 'act:pc_tv', 'act:pc_tv': 'act:pc_vol',
+            'lev:ratio': 'lev:kospi_tv',
+        }[which];
+        const specs = [MS_HIST_SERIES[which], paired ? MS_HIST_SERIES[paired] : null].filter(Boolean);
+        if (!specs.length) return { title: '추이', html: '<p class="fin-note">알 수 없는 계열입니다.</p>', key };
+        return { title: `${specs[0].label} 추이`,
+            html: msHistBlock(specs)
+                + '<p class="fin-note">당일 거래 흐름의 추이입니다. 미결제약정(OI)이나 보유 포지션이 아닙니다.</p>', key };
+    }
+    if (key === 'conc' || key.startsWith('conc:')) {
+        const pts = (D.conc || {}).points || [];
+        const which = key.split(':')[1] || 'top2';
+        const spec = {
+            top2: { f: 'conc_top2_samsung_hynix_pct', ko: '상위 2 (삼성·하닉)' },
+            top5: { f: 'conc_top5_pct', ko: '상위 5' },
+            top10: { f: 'conc_top10_pct', ko: '상위 10' },
+        }[which] || { f: 'conc_top2_samsung_hynix_pct', ko: '상위 2 (삼성·하닉)' };
+        const st = (D.conc || {}).stats || {};
+        const latest = (D.conc || {}).latest || {};
+        const dates = pts.map((p) => p.date);
+        const values = pts.map((p) => Number(p[spec.f]));
+        // The constituent names live on the snapshot, not on the history rows,
+        // so they describe the latest ranking rather than the whole window.
+        const names = { top2: (m.concentration || {}).top5_tickers?.slice(0, 2),
+            top5: (m.concentration || {}).top5_tickers,
+            top10: (m.concentration || {}).top10_tickers }[which] || [];
+        const known = (D.levels || {}).tickers || {};
+        (m.stocks || []).forEach((s) => { if (s.ticker && !known[s.ticker]) known[s.ticker] = { label_ko: s.name }; });
+        // KRX preferred shares share the first five digits with the common
+        // stock, so a name the payload never carried is still recoverable.
+        const label = (tk) => {
+            const hit = (known[tk] || {}).label_ko;
+            if (hit) return `${hit} (${tk})`;
+            const base = Object.keys(known).find((k) => k !== tk && k.slice(0, 5) === String(tk).slice(0, 5));
+            return base ? `${known[base].label_ko}우 (${tk})` : tk;
+        };
+        return { title: `코스피 집중도 · ${spec.ko} 시가총액 비중 추이`,
+            html: mmLineChart(dates, values, { unit: '%', label: spec.ko })
+                + (names.length ? `<p class="ms-lead-strong">구성 종목 · ${names.map((t) => finEsc(label(t))).join(' · ')}</p>` : '')
+                + `<p class="fin-note">${pts.length}거래일 (${finEsc(dates[0] || '')} ~ ${finEsc(dates[dates.length - 1] || '')})`
+                + (which === 'top2' && Number.isFinite(st.conc_top2_chg_60d)
+                    ? ` · 60일 변화 ${st.conc_top2_chg_60d > 0 ? '+' : ''}${st.conc_top2_chg_60d.toFixed(2)}%p` : '')
+                + ` · quality ${finEsc(latest.quality || '—')} · 출처 ${finEsc(latest.source || '—')}`
+                + `. 유니버스 시가총액 대비 비중이며 지수 산출 가중치가 아닙니다. 구성 종목은 최신일(${finEsc(latest.date || '—')}) 기준입니다.</p>` };
+    }
+    if (key.startsWith('dir:')) {
+        const which = key.slice(4);
+        const r = m.market_letf_derivatives_ratios || {};
+        const b = (r.by_direction || {})[which] || {};
+        const ko = { long: '정방향 레버리지 (Long)', inverse: '인버스 (-1X)',
+            inverse_2x: '인버스 (-2X)', gobus_inverse_2x: '지수 인버스 (-2X)' }[which] || which;
+        const named = (r.top_inverse_gobus_by_tv || []).filter((p) => p.direction === which);
+        return { title: `${ko} — 추이와 구성`,
+            html: msHistBlock(msDirSeries(which, ko))
+            + `<h3 class="fin-sub">오늘 구성</h3>`
+            + msTable(['항목', '값'], [
+                ['거래대금', msJo(b.trading_value_krw)],
+                ['상품 수', `${msNum(b.n_products)}종`],
+                ['레버리지·인버스 거래대금 내 비중', `${(b.share_of_lev_tv_pct ?? 0).toFixed(2)}%`],
+                ['코스피 현물 거래대금 대비', `${(b.share_of_kospi_tv_pct ?? 0).toFixed(2)}%`],
+                ['순자산 프록시(AUM)', msJo(b.aum_proxy_krw)],
+            ])
+            + (named.length ? `<h4 class="ms-sub-h">거래대금 상위 상품</h4>` + msTable(['상품', '종목코드', '분류', '거래대금'],
+                named.map((p) => [finEsc(p.name), finEsc(p.ticker), finEsc(p.category), msJo((p.trading_value_jo || 0) * 1e12)])) : '')
+            + `<p class="fin-note">quality ${finEsc(r.quality || '—')} · 관측일 ${finEsc(m.as_of || '—')} · 출처 ${finEsc(r.source || '—')}.
+               거래대금이며 미결제약정(OI)이나 보유 포지션이 아닙니다.</p>` };
+    }
+    if (key === 'alert_letf') {
+        const h = (D.alerts || {}).kr_hynix_letf || {};
+        const s = h.sample || {};
+        return { title: 'SK하이닉스 단일종목 레버·인버스 ETF 비율',
+            html: msHistBlock(msStockLetfSeries('000660', 'SK하이닉스'))
+            + `<h3 class="fin-sub">오늘 값</h3>`
+            + msTable(['항목', '값'], [
+                ['오늘 비율', Number.isFinite(h.today_ratio) ? `${(h.today_ratio * 100).toFixed(2)}%` : '—'],
+                ['관찰 레벨', finEsc(h.today_level || '—')],
+                ['정의', finEsc(h.metric_ko || '—')],
+                ['표본 시작', finEsc(s.start || '—')],
+                ['표본 거래일', s.n_active_days ? `${msNum(s.n_active_days)}일` : '—'],
+            ])
+            + (h.levels ? `<h4 class="ms-sub-h">관찰 레벨 구간 (과거 표본 기준)</h4>` + msTable(
+                ['레벨', '비율 구간', '표본일', '구간 중앙값', '다음날 -2% 이상 하락 비율'],
+                Object.entries(h.levels).map(([k, v]) => [
+                    finEsc(k),
+                    `${Number.isFinite(v.ratio_min) ? (v.ratio_min * 100).toFixed(0) + '%' : '0%'} ~ ${Number.isFinite(v.ratio_max) ? (v.ratio_max * 100).toFixed(0) + '%' : '이상'}`,
+                    `${msNum(v.n)}일`,
+                    Number.isFinite(v.ratio_median_in_bucket) ? `${(v.ratio_median_in_bucket * 100).toFixed(1)}%` : '—',
+                    Number.isFinite(v.frac_next_down2) ? `${(v.frac_next_down2 * 100).toFixed(1)}%` : '—',
+                ]))
+                + `<p class="fin-note">표본 ${msNum((h.sample || {}).n_active_days)}일은 통계로 쓰기에 짧습니다. 구간별 하락 비율이 서로 비슷해 이 지표만으로 방향을 예측할 수 없습니다.</p>` : '')
+            + `<p class="fin-note">${finEsc(s.note_ko || '')} ${finEsc(h.limitation_ko || '')}
+               출처 ${finEsc(h.data_source || '—')} · 관측일 ${finEsc((D.alerts || {}).as_of || '—')}.
+               ${msHistRows('stockLetf').filter((r) => r.ticker === '000660').length < 2 ? '일별 이력이 아직 쌓이지 않아 오늘 값과 표본 통계만 있습니다.' : '위 추이는 저장된 일별 관측치이며, 아래 표본 통계와는 별개입니다.'}</p>` };
+    }
+    // Samsung Electronics carries the same single-stock LETF fields as Hynix
+    // but has no alert-bucket engine behind it -- just the trend plus today's
+    // snapshot from market_microstructure_v1, not the win-rate-by-bucket table.
+    if (key.startsWith('stock_letf:')) {
+        const ticker = key.slice(11);
+        const stocks = Array.isArray(m.stocks) ? m.stocks : [];
+        const st = stocks.find((x) => x.ticker === ticker) || {};
+        const ko = st.name || ticker;
+        return { title: `${ko} 단일종목 레버·인버스 ETF 비율`,
+            html: msHistBlock(msStockLetfSeries(ticker, ko))
+            + `<h3 class="fin-sub">오늘 값</h3>`
+            + msTable(['항목', '값'], [
+                ['LETF 거래대금', msJo(st.letf_trading_value_krw)],
+                ['현물 거래대금 (ADV)', msJo(st.adv_spot_krw)],
+                ['LETF / 현물 비율', msPct(st.letf_turnover_ratio)],
+                ['LETF 합계 순자산 (AUM)', msJo(st.letf_aum_sum_krw)],
+            ])
+            + `<p class="fin-note">관측일 ${finEsc(m.as_of || '—')}. 거래대금 기준 관측치이며 보유 포지션이나 다음 가격 방향이 아닙니다.
+               ${msHistRows('stockLetf').filter((r) => r.ticker === ticker).length < 2 ? '일별 이력이 아직 쌓이지 않아 오늘 값만 있습니다.' : ''}</p>` };
+    }
+    if (key === 'letf_cat') {
+        const by = ((m.letf_category_share || {}).by_category) || {};
+        return { title: '레버리지·인버스 ETF 거래대금 비율 추이',
+            html: msHistBlock([MS_HIST_SERIES['lev:ratio'], MS_HIST_SERIES['lev:kospi_tv']])
+            + (Object.keys(by).length ? `<h3 class="fin-sub">오늘 분류별 거래대금</h3>`
+                + msTable(['분류', '상품 수', '거래대금'],
+                    Object.entries(by).map(([k, v]) => [finEsc(k), msNum(v.n_products), msJo(v.trading_value_krw)])) : '')
+            + `<p class="fin-note">분자는 레버리지·인버스 ETF 거래대금, 분모는 코스피 현물 거래대금입니다.
+               서로 다른 두 시장을 나눈 값이라 시장 점유율이 아닙니다.</p>` };
+    }
+    if (key === 'letf_products') {
+        const stocks = Array.isArray(m.stocks) ? m.stocks : [];
+        const sel = stocks.find((x) => x.ticker === MS_STOCK) || stocks[0];
+        if (!sel) return null;
+        return { title: `${sel.name} 단일종목 ETF 상품별`,
+            html: msTable(['상품', '배수', '순자산(AUM)', '거래대금', '방향'],
+                (sel.products || []).map((p) => [finEsc(p.name), `${p.L > 0 ? '+' : ''}${p.L}배`,
+                    msJo(p.aum), msJo(p.trading_value), p.direction === 'long' ? '정방향' : '인버스']))
+                + '<p class="fin-note">NAV는 공개 스냅샷에 없습니다. 순자산과 거래대금만 실측입니다.</p>' };
+    }
+    if (key.startsWith('ev:')) {
+        const sym = key.slice(3);
+        const e = (t.evidence_us || []).find((x) => x.symbol === sym);
+        if (!e) return null;
+        return { title: `${sym} — 판정 근거`,
+            html: msTable(['항목', '값'], [
+                ['P/C 거래량', Number.isFinite(e.put_call_volume) ? e.put_call_volume.toFixed(4) : '—'],
+                ['P/C 미결제약정', Number.isFinite(e.put_call_oi) ? e.put_call_oi.toFixed(4) : '—'],
+                ['옵션 총 거래량', msNum(e.options_total_volume)],
+                ['공매도 잔고 증감', Number.isFinite(e.short_chg_pct) ? `${e.short_chg_pct.toFixed(3)}%` : '—'],
+                ['당일 수익률', Number.isFinite(e.day_return) ? msPct(e.day_return, 3) : '—'],
+                ['레짐', (e.regimes || []).join(', ')],
+                ['스트레스', finEsc(e.stress_level || '')],
+            ]) + `<p class="fin-note">${finEsc(e.rule_ko || '')}</p>` };
+    }
+    if (key.startsWith('ch:')) {
+        const c = (t.channels || {})[key.slice(3)] || {};
+        return { title: '관찰 채널 구성',
+            html: msTable(['US', 'KR', 'heat', '연결 유형', 'tier', '레짐'],
+                (c.drivers || []).map((d) => [finEsc(d.us), finEsc(d.kr),
+                    Number.isFinite(d.heat) ? d.heat.toFixed(3) : '—',
+                    finEsc(d.edge_type || ''), finEsc(d.tier || ''), (d.regimes || []).join(', ')]))
+            + '<p class="fin-note"><code>etf_beta</code>는 미국 ETF 수익률과 국내 종목의 통계적 연동입니다 — 옵션 포지션이 아닙니다. <code>discovered_corr</code>(tier B)는 상관에서 발견된 것이라 가중이 낮습니다.</p>' };
+    }
+    if (key === 'alert_vix') {
+        const a = (D.alerts || {}).us_vix_to_kr || {};
+        const rows = Object.entries(a)
+            .filter(([, v]) => typeof v !== 'object')
+            .map(([k, v]) => [finEsc(k), finEsc(String(v))]);
+        return { title: 'VIX → KR 알림 임계값', html: msTable(['항목', '값'], rows) };
+    }
+    if (key === 'kr_investor') {
+        const kr = (D.board || {}).kr || {};
+        const flow = ((kr.investor_nets || {}).public_dashboard) || {};
+        const futures = (((flow.futures || {}).investors || {}).foreign) || {};
+        const options = (((flow.options_total || {}).investors || {}).foreign) || {};
+        const observed = (flow.futures || {}).observed_at_krx || (flow.options_total || {}).observed_at_krx || '—';
+        return { title: `외국인 K200 파생 매매 — ${observed}`,
+            html: msTable(['구분', '매도', '매수', '순매수'], [
+                ['KOSPI200 선물', msJo(futures.sell_krw), msJo(futures.buy_krw), msSignedJo(futures.net_krw)],
+                ['KOSPI200 옵션 전체', msJo(options.sell_krw), msJo(options.buy_krw), msSignedJo(options.net_krw)],
+                ['콜 옵션', '—', '—', '상세 CSV 필요'],
+                ['풋 옵션', '—', '—', '상세 CSV 필요'],
+            ]) + '<p class="fin-note">KRX 공개 대시보드의 당일 집계입니다. 옵션 전체는 콜·풋 합계이며, 순매수는 포지션·방향·헤지 목적을 뜻하지 않습니다.</p>' };
+    }
+    if (key === 'kr_activity') {
+        const kr = (D.board || {}).kr || {};
+        const f = kr.kospi200_futures || {};
+        const o = kr.kospi200_options || {};
+        return { title: `코스피200 파생 거래 활동 — ${kr.as_of || '—'}`,
+            html: msTable(['구분', '거래량', '거래대금'], [
+                ['선물', msNum(f.volume), msJo(f.trading_value_krw)],
+                ['콜 옵션', msNum(o.call_volume), msJo(o.call_trading_value_krw)],
+                ['풋 옵션', msNum(o.put_volume), msJo(o.put_trading_value_krw)],
+                ['풋 ÷ 콜', Number.isFinite(o.put_call_volume) ? o.put_call_volume.toFixed(4) : '—',
+                    Number.isFinite(o.put_call_trading_value) ? o.put_call_trading_value.toFixed(4) : '—'],
+            ]) + `<p class="fin-note">${finEsc(o.coverage_ko || '')} 미결제약정(OI)은 이 보드에서 사용하지 않습니다. 투자자별 수급은 별도 외국인 카드에서 확인합니다.</p>` };
+    }
+    return null;
+};
+
+const renderMicrostructure = async (host) => {
+    host.innerHTML = `<div class="fin-wrap"><p class="fin-loading">호가 및 유동성 자료를 받는 중…</p></div>`;
+
+    if (!MS_DATA) {
+        const keys = Object.keys(MS_FILES);
+        const got = await Promise.all(keys.map((k) => msGet(MS_FILES[k])));
+        MS_DATA = {};
+        keys.forEach((k, i) => { MS_DATA[k] = got[i]; });
+    }
+    // The append-only logs are optional: absent until the daily job writes them,
+    // so a failure here must not keep the snapshot panels from rendering.
+    if (!MS_HIST) {
+        const hk = Object.keys(MS_HIST_FILES);
+        const hgot = await Promise.all(hk.map((k) => msGetJsonl(MS_HIST_FILES[k])));
+        MS_HIST = {};
+        hk.forEach((k, i) => { MS_HIST[k] = hgot[i]; });
+    }
+    const D = MS_DATA;
+    if (!Object.values(D).some(Boolean)) {
+        host.innerHTML = finPlaceholder('호가 및 유동성', '수급 불균형 · 가격대별 체결 · 해외-국내 선행',
+            '스냅샷 JSON을 찾지 못했습니다. 일일 워크플로가 <code>public/data/</code> 에 산출합니다.');
         return;
     }
+
+    const paint = () => {
+        const tab = MS_TABS.find((x) => x.id === MS_TAB) || MS_TABS[0];
+        host.innerHTML = `
+        <div class="fin-wrap">
+            <div class="fin-head">
+                <h1>호가 및 유동성</h1>
+                <p class="fin-head-en">Market Micro-metrics</p>
+                <p>공개·지연 데이터입니다. 값이 없는 항목은 채우지 않고 비워 둡니다. 투자 권유가 아닙니다.</p>
+            </div>
+            <div class="mm-tabs" role="tablist">
+                ${MS_TABS.map((x) => `<button class="mm-tab ${x.id === MS_TAB ? 'on' : ''}" data-ms-tab="${x.id}">${finEsc(x.label)}</button>`).join('')}
+            </div>
+            <p class="mm-tab-desc">${finEsc(tab.blurb)}</p>
+            ${MS_TAB === 'tangle' ? msTangle(D)
+                : MS_TAB === 'levels' ? msLevelsTab(D)
+                : MS_TAB === 'derivatives' ? msDerivatives(D)
+                : msUsKr(D)}
+            ${MS_MODAL ? `
+            <div class="ms-modal-back" data-ms-modal-close="1">
+                <div class="ms-modal" role="dialog">
+                    <div class="ms-modal-head">
+                        <h3>${finEsc(MS_MODAL.title)}</h3>
+                        <button class="mm-close" data-ms-modal-close="1" aria-label="닫기">✕</button>
+                    </div>
+                    ${MS_MODAL.html}
+                </div>
+            </div>` : ''}
+        </div>`;
+
+        const on = (sel, fn) => host.querySelectorAll(sel).forEach((b) => b.addEventListener('click', (e) => fn(b, e)));
+        on('[data-ms-tab]', (b) => { MS_TAB = b.dataset.msTab; MS_MODAL = null; paint(); });
+        on('[data-ms-stock]', (b) => {
+            MS_STOCK = b.dataset.msStock;
+            // The row's own button doubles as ticker-select + drilldown open,
+            // so the modal has to look up the ticker that was just picked.
+            if (b.dataset.msModal) { MS_MODAL_KEY = b.dataset.msModal; MS_MODAL = msModalFor(MS_MODAL_KEY, D); }
+            paint();
+        });
+        on('[data-ms-univ]', (b) => { MS_UNIVERSE = b.dataset.msUniv; paint(); });
+        on('[data-ms-period]', (b) => { MS_PERIOD = b.dataset.msPeriod; paint(); });
+        on('[data-ms-ticker]', (b) => { MS_TICKER = b.dataset.msTicker || null; MS_TAB = 'levels'; paint(); });
+        // :not([data-ms-stock]) because that combination is handled above --
+        // otherwise this listener would double-fire on the same click and
+        // paint() twice.
+        on('[data-ms-modal]:not([data-ms-stock])', (b) => { MS_MODAL_KEY = b.dataset.msModal; MS_MODAL = msModalFor(MS_MODAL_KEY, D); paint(); });
+        // Switching the window re-renders the modal that is already open, so the
+        // chart changes under the same heading rather than closing.
+        on('[data-ms-hist-period]', (b) => {
+            MS_HIST_PERIOD = b.dataset.msHistPeriod;
+            if (MS_MODAL_KEY) MS_MODAL = msModalFor(MS_MODAL_KEY, D);
+            paint();
+        });
+        on('[data-ms-modal-close]', (b, e) => { if (e.target === b) { MS_MODAL = null; MS_MODAL_KEY = null; paint(); } });
+        mmWireCharts(host);
+    };
+    paint();
+};
+
+const renderFinanceView = async (target, host) => {
+    if (target === 'fin_portfolio') return renderPortfolioLab(host);
+    if (target === 'fin_valuation') return renderCompanyCalc(host);
+    if (target === 'fin_derivatives') return renderMicrostructure(host);
 
     host.innerHTML = finPlaceholder(
         '옵션·공매도 동향',
@@ -5132,9 +8119,615 @@ const renderFinanceView = async (target, host) => {
          <code>derivatives_intel</code> 파이프라인 결과가 <code>public/data/</code> 에 들어오면 연결됩니다.`);
 };
 
+// === 매크로 모니터 =========================================================
+//
+// Engine and schema are Cursor's (scripts/macro_monitor); this file only draws.
+// The map is the view -- no side dashboards -- so a country opens as an overlay
+// on top of the globe rather than pushing it aside.
+let MM_INDEX = null;
+let MM_COUNTRY = null;          // currently opened country payload
+let MM_TAB = 'liquidity';
+let MM_CHART = null;            // { indicatorId, window }
+
+const mmFetch = async (iso3) => {
+    const q = iso3 ? `?country=${encodeURIComponent(iso3)}` : '';
+    const res = await fetch(`/api/macro-monitor${q}`);
+    if (!res.ok) throw new Error(`매크로 데이터를 못 받았습니다 (${res.status})`);
+    return res.json();
+};
+
+const mmDelta = (v) => {
+    if (v === null || v === undefined || !Number.isFinite(v)) return '';
+    const cls = v > 0 ? 'mm-up' : (v < 0 ? 'mm-down' : 'mm-flat');
+    const sign = v > 0 ? '+' : '';
+    return `<span class="mm-delta ${cls}">${sign}${v.toFixed(1)}%</span>`;
+};
+
+const mmFmt = (v, digits) => {
+    if (!Number.isFinite(v)) return '—';
+    const a = Math.abs(v);
+    const dg = digits ?? (a >= 1000 ? 0 : (a >= 10 ? 1 : 2));
+    return v.toLocaleString('ko-KR', { minimumFractionDigits: dg, maximumFractionDigits: dg });
+};
+
+// Inline SVG rather than a charting library: the drawer opens and closes on
+// every chip click, and avoiding a canvas lifecycle at that rate is worth more
+// than the features a library would add. Hover is wired after paint (mmWire).
+const MM_W = 760, MM_H = 260, MM_L = 52, MM_R = 16, MM_T = 14, MM_B = 30;
+
+const mmLineChart = (dates, values, opts = {}) => {
+    const idx = values.map((v, i) => [i, v]).filter(([, v]) => Number.isFinite(v));
+    if (idx.length < 2) return '<p class="fin-note">그릴 수 있는 시계열이 없습니다.</p>';
+    const ma = Array.isArray(opts.ma5) ? opts.ma5 : null;
+
+    const ys = idx.map(([, y]) => y).concat(ma ? ma.filter(Number.isFinite) : []);
+    let lo = Math.min(...ys), hi = Math.max(...ys);
+    if (lo === hi) { lo -= 1; hi += 1; }
+    const pad = (hi - lo) * 0.08;
+    lo -= pad; hi += pad;
+    // A series that crosses zero reads wrong without the zero line on the axis.
+    if (lo > 0 && lo < (hi - lo) * 0.5) lo = 0;
+
+    const n = values.length;
+    const sx = (i) => MM_L + (i / Math.max(n - 1, 1)) * (MM_W - MM_L - MM_R);
+    const sy = (v) => MM_T + (1 - (v - lo) / (hi - lo)) * (MM_H - MM_T - MM_B);
+
+    const path = (arr) => {
+        let dstr = '', pen = false;
+        arr.forEach((v, i) => {
+            if (!Number.isFinite(v)) { pen = false; return; }
+            dstr += `${pen ? 'L' : 'M'}${sx(i).toFixed(1)},${sy(v).toFixed(1)}`;
+            pen = true;
+        });
+        return dstr;
+    };
+
+    const line = path(values);
+    const first = idx[0][0], last = idx[idx.length - 1][0];
+    const area = `${line}L${sx(last).toFixed(1)},${sy(lo).toFixed(1)}L${sx(first).toFixed(1)},${sy(lo).toFixed(1)}Z`;
+
+    const ticks = [0, 0.25, 0.5, 0.75, 1].map((t) => lo + (hi - lo) * t);
+    const xAt = [0, Math.floor((n - 1) / 2), n - 1];
+
+    return `
+    <div class="mm-chart-box" data-mm-chart-box="1"
+         data-dates='${finEsc(JSON.stringify(dates))}'
+         data-values='${finEsc(JSON.stringify(values.map((v) => Number.isFinite(v) ? v : null)))}'
+         ${ma ? `data-ma='${finEsc(JSON.stringify(ma.map((v) => Number.isFinite(v) ? v : null)))}'` : ''}
+         data-geom='${finEsc(JSON.stringify({ lo, hi, n }))}'
+         data-unit="${finEsc(opts.unit || '')}">
+        <svg class="mm-chart" viewBox="0 0 ${MM_W} ${MM_H}" preserveAspectRatio="none" role="img"
+             aria-label="${finEsc(opts.label || '시계열')} 차트">
+            <defs><linearGradient id="mmg" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.26"/>
+                <stop offset="100%" stop-color="#38bdf8" stop-opacity="0"/>
+            </linearGradient></defs>
+            ${ticks.map((t) => `
+                <line x1="${MM_L}" y1="${sy(t).toFixed(1)}" x2="${MM_W - MM_R}" y2="${sy(t).toFixed(1)}" class="mm-grid"/>
+                <text x="${MM_L - 7}" y="${(sy(t) + 3.5).toFixed(1)}" class="mm-tick" text-anchor="end">${mmFmt(t)}</text>`).join('')}
+            ${(lo < 0 && hi > 0) ? `<line x1="${MM_L}" y1="${sy(0).toFixed(1)}" x2="${MM_W - MM_R}" y2="${sy(0).toFixed(1)}" class="mm-zero"/>` : ''}
+            <path d="${area}" fill="url(#mmg)"/>
+            ${ma ? `<path d="${path(ma)}" class="mm-ma"/>` : ''}
+            <path d="${line}" class="mm-line"/>
+            ${xAt.map((i) => `<text x="${sx(i).toFixed(1)}" y="${MM_H - 8}" class="mm-tick"
+                text-anchor="${i === 0 ? 'start' : (i === n - 1 ? 'end' : 'middle')}">${finEsc(dates[i] || '')}</text>`).join('')}
+            <line class="mm-cross" x1="0" y1="${MM_T}" x2="0" y2="${MM_H - MM_B}" style="display:none"/>
+            <circle class="mm-hover-dot" r="4" style="display:none"/>
+        </svg>
+        <div class="mm-tip-box" style="display:none"></div>
+        ${ma ? '<p class="mm-legend-note"><i class="mm-swatch-ma"></i>MA5 (5기간 이동평균)</p>' : ''}
+    </div>`;
+};
+
+// Grouped bars for a handful of labelled values -- QRA compare, energy mix,
+// FedWatch outcomes and maturity buckets all reduce to this shape.
+const mmBars = (rows, opts = {}) => {
+    const vals = rows.map((r) => Number(r.value)).filter(Number.isFinite);
+    if (!vals.length) return '<p class="fin-note">표시할 값이 없습니다.</p>';
+    const hi = Math.max(...vals, 0), lo = Math.min(...vals, 0);
+    const span = (hi - lo) || 1;
+    return `
+    <div class="mm-bars ${opts.compact ? 'mm-bars-compact' : ''}">
+        ${rows.map((r) => {
+            const v = Number(r.value);
+            const w = Number.isFinite(v) ? Math.abs(v) / span * 100 : 0;
+            return `
+            <div class="mm-bar-row${r.highlight ? ' mm-bar-hi' : ''}">
+                <span class="mm-bar-label">${finEsc(r.label)}${r.sub ? `<span class="mm-bar-sub">${finEsc(r.sub)}</span>` : ''}</span>
+                <span class="mm-bar-track"><span class="mm-bar-fill${v < 0 ? ' mm-bar-neg' : ''}" style="width:${w.toFixed(1)}%"></span></span>
+                <span class="mm-bar-value">${finEsc(r.display ?? (mmFmt(v) + (opts.unit || '')))}</span>
+            </div>`;
+        }).join('')}
+    </div>`;
+};
+
+// Which panels an indicator can show, in the order they should appear. The
+// engine names the primary view (ui.click_view); chart_type covers the rest.
+const mmViewsFor = (ind) => {
+    const views = [];
+    const cv = (ind.ui || {}).click_view;
+    const has = (a) => Array.isArray(a) && a.length;
+
+    if (cv === 'compare_bar_table' && has((ind.compare || {}).series)) {
+        views.push({ id: 'compare', label: '비교' });
+    }
+    if (cv === 'energy_mix' && has((ind.energy_mix || {}).series)) {
+        views.push({ id: 'mix', label: '연료 비중' });
+    }
+    if (ind.chart_type === 'stack' && has(ind.components)) {
+        views.push({ id: 'stack', label: '구성' });
+    }
+    if (ind.chart_type === 'bar' && has(ind.outcomes)) {
+        views.push({ id: 'outcomes', label: '확률' });
+    }
+    if (has(((ind.history || {})['5y'] || {}).values) || ind.modes) {
+        views.push({ id: 'history', label: '추이' });
+    }
+    // Secondary panels come last so the engine's primary view stays default.
+    const sv = (ind.ui || {}).secondary_view;
+    if (sv === 'maturity_components' && has(ind.components)) {
+        views.push({ id: 'components', label: '만기별' });
+    } else if (has(ind.components) && !views.some((v) => v.id === 'stack')
+               && ind.chart_type === 'line+components') {
+        views.push({ id: 'components', label: '구성' });
+    }
+    return views.length ? views : [{ id: 'history', label: '추이' }];
+};
+
+// GDP arrives as two series under `modes`; the drawer swaps between them
+// rather than showing an annualised figure the engine deliberately dropped.
+const mmModeSeries = (ind, mode) => {
+    const m = (ind.modes || {})[mode];
+    return m || null;
+};
+
+const mmCompareView = (ind) => {
+    const c = ind.compare || {};
+    const rows = (c.series || []).map((s) => ({
+        label: s.label_ko,
+        sub: s.period,
+        value: s.value,
+        display: `${mmFmt(s.value, 0)}B`,
+        highlight: s.id === 'current',
+    }));
+    const table = c.table || [];
+    return `
+        ${c.title_ko ? `<p class="mm-view-title">${finEsc(c.title_ko)}</p>` : ''}
+        ${mmBars(rows, { unit: 'B' })}
+        ${table.length ? `
+        <div class="co-table-wrap mm-table">
+            <table class="co-table">
+                <thead><tr>
+                    <th>구분</th><th>대상 분기</th><th>순발행 ($B)</th><th>기말 현금 ($B)</th><th>공시일</th>
+                </tr></thead>
+                <tbody>
+                    ${table.map((r) => `
+                        <tr>
+                            <td class="co-label">${finEsc(r.label_ko)}</td>
+                            <td>${finEsc(r.period || '—')}</td>
+                            <td>${mmFmt(r.net_borrowing_bn, 0)}</td>
+                            <td>${mmFmt(r.end_cash_bn, 0)}</td>
+                            <td>${finEsc(r.announcement_date || '—')}</td>
+                        </tr>`).join('')}
+                </tbody>
+            </table>
+        </div>` : ''}
+        ${c.note_ko ? `<p class="fin-note">${finEsc(c.note_ko)}</p>` : ''}`;
+};
+
+const mmMixView = (ind) => {
+    const em = ind.energy_mix || {};
+    const rows = (em.series || []).map((s) => ({
+        label: s.label_ko || s.id,
+        value: s.value,
+        display: `${mmFmt(s.value, 1)}%${Number.isFinite(s.twh) ? ` · ${mmFmt(s.twh, 0)}TWh` : ''}`,
+    }));
+    return `
+        <p class="mm-view-title">연료별 발전 비중${em.asof_year ? ` · ${em.asof_year}년` : ''}</p>
+        ${mmBars(rows, { unit: '%' })}
+        <p class="fin-note">발전량 기준 비중입니다. 설비용량이 아니라 실제로 만들어낸 전력의 몫입니다.</p>`;
+};
+
+const mmComponentsView = (ind, title) => mmBars(
+    (ind.components || []).map((c) => ({
+        label: c.label_ko || c.id,
+        value: c.value,
+        display: c.display ?? (mmFmt(c.value, 0) + (c.unit === 'pct' ? '%' : '')),
+    })), {}) + (title ? `<p class="fin-note">${finEsc(title)}</p>` : '');
+
+const mmOutcomesView = (ind) => {
+    const rows = (ind.outcomes || []).map((o) => ({
+        label: o.label_ko,
+        value: o.prob,
+        display: `${mmFmt(o.prob, 0)}%`,
+        highlight: o.prob === Math.max(...ind.outcomes.map((x) => x.prob)),
+    }));
+    return `
+        <p class="mm-view-title">회의 결과별 시장 내재 확률</p>
+        ${mmBars(rows, { unit: '%' })}
+        <p class="fin-note">선물 가격에서 역산한 확률입니다. 예측이 아니라 시장이 지금 무엇에 값을 매기고 있는지입니다.</p>`;
+};
+
+const mmChartDrawer = () => {
+    if (!MM_CHART || !MM_COUNTRY) return '';
+    const ind = (MM_COUNTRY.country.indicators || []).find((x) => x.id === MM_CHART.indicatorId);
+    if (!ind) return '';
+
+    const views = mmViewsFor(ind);
+    const view = views.some((v) => v.id === MM_CHART.view) ? MM_CHART.view : views[0].id;
+    MM_CHART.view = view;
+
+    const dual = (ind.ui || {}).dual;
+    const mode = MM_CHART.mode || (ind.ui || {}).default || (dual ? dual[0] : null);
+    const modeSeries = dual ? mmModeSeries(ind, mode) : null;
+
+    let body = '';
+    if (view === 'compare') body = mmCompareView(ind);
+    else if (view === 'mix') body = mmMixView(ind);
+    else if (view === 'outcomes') body = mmOutcomesView(ind);
+    else if (view === 'stack') body = mmComponentsView(ind, '연준이 보유한 국채를 잔존만기로 나눈 잔액입니다. 시장금리가 아니라 대차대조표입니다.');
+    else if (view === 'components') body = mmComponentsView(ind, ind.chart_type === 'line+components' ? '' : '만기별 발행 구성입니다.');
+    else {
+        const src = modeSeries || ind;
+        const hist = (src.history || {})[MM_CHART.window] || {};
+        // VIX and other fear gauges have no moving average by design: a smoothed
+        // fear index invites reading a trend into what is meant to be a level.
+        body = mmLineChart(hist.dates || [], hist.values || [], {
+            ma5: hist.ma5,
+            unit: src.unit === 'pct' ? '%' : (src.unit || ''),
+            label: src.label_ko || ind.label_ko,
+        });
+    }
+
+    const meta = [
+        ind.display != null ? String(ind.display) : null,
+        ind.asof ? `기준 ${ind.asof}` : null,
+        ind.source ? (typeof ind.source === 'string' ? ind.source : ind.source.name) : null,
+        ind.refresh_tier || null,
+    ].filter(Boolean);
+
+    const showWindow = view === 'history';
+
+    return `
+    <div class="mm-drawer" role="dialog" aria-label="${finEsc(ind.label_ko)}">
+        <div class="mm-drawer-head">
+            <div>
+                <h3>${finEsc(ind.label_ko)}</h3>
+                <p class="mm-drawer-sub">${meta.map((m) => finEsc(m)).join(' · ')}</p>
+            </div>
+            <div class="mm-drawer-actions">
+                ${dual ? `<div class="pf-mode">
+                    ${dual.map((m) => `<button type="button" class="pf-mode-btn ${m === mode ? 'on' : ''}"
+                        data-mm-mode="${finEsc(m)}">${finEsc(((ind.modes || {})[m] || {}).label_ko || m.toUpperCase())}</button>`).join('')}
+                </div>` : ''}
+                ${showWindow ? `<div class="pf-mode">
+                    ${['5y', '10y'].map((w) => `<button type="button" class="pf-mode-btn ${MM_CHART.window === w ? 'on' : ''}"
+                        data-mm-window="${w}">${w === '5y' ? '5년' : '10년'}</button>`).join('')}
+                </div>` : ''}
+                <button class="mm-close" data-mm-chart-close="1" aria-label="닫기">✕</button>
+            </div>
+        </div>
+
+        ${views.length > 1 ? `<div class="mm-views">
+            ${views.map((v) => `<button class="mm-view-btn ${v.id === view ? 'on' : ''}"
+                data-mm-view="${finEsc(v.id)}">${finEsc(v.label)}</button>`).join('')}
+        </div>` : ''}
+
+        <div class="mm-drawer-body">
+            <div class="mm-drawer-main">
+                ${body}
+                ${ind.note_ko ? `<p class="fin-note mm-note">${finEsc(ind.note_ko)}</p>` : ''}
+                ${ind.reference ? `<p class="fin-note">${finEsc(typeof ind.reference === 'string' ? ind.reference : JSON.stringify(ind.reference))}</p>` : ''}
+            </div>
+            ${mmNewsRail(ind)}
+        </div>
+    </div>`;
+};
+
+// The news API is not wired yet. An empty rail that says so is honest; a
+// spinner that never resolves is not, and fabricated articles would be worse.
+const mmNewsRail = (ind) => {
+    const items = Array.isArray(ind.news) ? ind.news : null;
+    return `
+    <aside class="mm-news">
+        <p class="mm-news-head">관련 뉴스</p>
+        ${items && items.length ? items.map((it) => `
+            <a class="mm-news-item" href="${finEsc(it.url)}" target="_blank" rel="noopener noreferrer">
+                <span class="mm-news-title">${finEsc(it.title)}</span>
+                <span class="mm-news-meta">${finEsc(it.source || '')}${it.published_at ? ` · ${finEsc(String(it.published_at).slice(0, 10))}` : ''}</span>
+            </a>`).join('')
+        : `<p class="mm-news-empty">관련 뉴스 없음 · API 연결 대기</p>
+           ${ind.news_query ? `<p class="mm-news-q">검색어: <code>${finEsc(ind.news_query)}</code></p>` : ''}`}
+        <p class="mm-news-foot">투자 권유 아님 · 뉴스 요약은 참고용</p>
+    </aside>`;
+};
+
+// Central bank head + finance minister only. Financial-supervision chiefs are
+// deliberately left out, and Korea's slot is the finance ministry rather than
+// the budget office or the financial regulator. China names two people per
+// institution -- party secretary and governor/minister -- with separate
+// appointment dates even when it is the same person.
+const mmPerson = (p) => `${finEsc(p.title_ko || '')} <strong>${finEsc(p.name_ko || '')}</strong>`
+    + (p.appointed ? `<span class="mm-off-date">${finEsc(p.appointed)} 임명</span>` : '');
+
+const mmOfficialSlot = (slot) => {
+    if (!slot) return '';
+    const people = Array.isArray(slot.set) ? slot.set : [slot];
+    return `
+    <div class="mm-official">
+        <span class="mm-off-inst">${finEsc(slot.institution_ko || '')}</span>
+        ${people.map((p) => `<span class="mm-off-person">${mmPerson(p)}</span>`).join('')}
+    </div>`;
+};
+
+const mmOfficials = (off) => {
+    if (!off || (!off.central_bank && !off.finance)) return '';
+    return `
+    <div class="mm-officials">
+        ${mmOfficialSlot(off.central_bank)}
+        ${mmOfficialSlot(off.finance)}
+        ${off.asof ? `<span class="mm-off-asof">${finEsc(off.asof)} 기준</span>` : ''}
+    </div>`;
+};
+
+const mmOverlay = () => {
+    if (!MM_COUNTRY) return '';
+    const c = MM_COUNTRY.country;
+    const tabs = (MM_INDEX.ui && MM_INDEX.ui.category_tabs) || [];
+    const active = (c.active_categories || []).includes(MM_TAB) ? MM_TAB
+        : (c.active_categories || [])[0] || 'liquidity';
+    MM_TAB = active;
+    const chips = (c.categories || {})[active] || [];
+    const tabMeta = tabs.find((t) => t.id === active) || {};
+    const lim = c.limitations || {};
+
+    return `
+    <div class="mm-overlay" role="dialog" aria-label="${finEsc(c.name_ko)} 매크로">
+        <div class="mm-head">
+            <div class="mm-title">
+                <h2>${finEsc(c.name_ko)}
+                    ${c.benchmark ? '<span class="mm-badge">벤치마크</span>' : ''}</h2>
+                <p>${finEsc(c.name_en || '')} · 기준 ${finEsc(c.asof || '')} · 키트 <code>${finEsc(c.kit || '')}</code></p>
+                ${mmOfficials(c.officials)}
+            </div>
+            <button class="mm-close" data-mm-close="1" aria-label="닫기">✕</button>
+        </div>
+
+        ${(c.headlines || []).length ? `
+        <div class="mm-headlines">
+            ${c.headlines.map((h) => `
+                <button class="mm-headline" data-mm-tab="${finEsc(h.category)}">
+                    <span class="mm-headline-label">${finEsc(h.label_ko)}</span>
+                    <span class="mm-headline-value">${finEsc(h.display ?? '—')}</span>
+                </button>`).join('')}
+        </div>` : ''}
+
+        <div class="mm-tabs" role="tablist">
+            ${tabs.map((t) => {
+                const on = t.id === active;
+                const has = (c.active_categories || []).includes(t.id);
+                return `<button class="mm-tab ${on ? 'on' : ''}" data-mm-tab="${finEsc(t.id)}"
+                        ${has ? '' : 'disabled'} role="tab">${finEsc(t.label_ko)}</button>`;
+            }).join('')}
+        </div>
+        ${tabMeta.description_ko ? `<p class="mm-tab-desc">${finEsc(tabMeta.description_ko)}</p>` : ''}
+
+        <div class="mm-chips">
+            ${chips.length ? chips.map((ch) => `
+                <button class="mm-chip" data-mm-chip="${finEsc(ch.id)}">
+                    <span class="mm-chip-label">${finEsc(ch.label_ko)}</span>
+                    <span class="mm-chip-value">${finEsc(ch.display ?? '—')}</span>
+                    <span class="mm-chip-foot">
+                        ${mmDelta(ch.change_1m_pct)}<span class="mm-chip-win">1M</span>
+                        ${mmDelta(ch.change_1y_pct)}<span class="mm-chip-win">1Y</span>
+                    </span>
+                    ${ch.note_ko ? `<span class="mm-chip-note">${finEsc(ch.note_ko)}</span>` : ''}
+                </button>`).join('')
+              : '<p class="fin-note">이 항목은 이 국가에서 아직 제공되지 않습니다.</p>'}
+        </div>
+
+        ${mmChartDrawer()}
+
+        ${(lim.items || []).length ? `
+        <details class="mm-limits">
+            <summary>${finEsc(lim.title_ko || '해석의 한계')}</summary>
+            ${lim.items.map((it) => `
+                <div class="mm-limit">
+                    <strong>${finEsc(it.title_ko)}</strong>
+                    <p>${finEsc(it.body_ko)}</p>
+                </div>`).join('')}
+        </details>` : ''}
+
+        <p class="mm-disclaimer">${finEsc(MM_COUNTRY.disclaimer_ko || MM_INDEX.disclaimer_ko || '')}</p>
+    </div>`;
+};
+
+// Re-run after every paint: mmPaint replaces innerHTML, so listeners attached
+// to the previous SVG are gone with it.
+const mmWireCharts = (host) => {
+    host.querySelectorAll('[data-mm-chart-box]').forEach((box) => {
+        const svg = box.querySelector('svg');
+        const cross = box.querySelector('.mm-cross');
+        const dot = box.querySelector('.mm-hover-dot');
+        const tip = box.querySelector('.mm-tip-box');
+        if (!svg || !cross || !dot || !tip) return;
+
+        let dates, values, ma, geom, unit;
+        try {
+            dates = JSON.parse(box.dataset.dates);
+            values = JSON.parse(box.dataset.values);
+            ma = box.dataset.ma ? JSON.parse(box.dataset.ma) : null;
+            geom = JSON.parse(box.dataset.geom);
+            unit = box.dataset.unit || '';
+        } catch (_) { return; }
+
+        const hide = () => {
+            cross.style.display = 'none';
+            dot.style.display = 'none';
+            tip.style.display = 'none';
+        };
+
+        svg.addEventListener('mousemove', (e) => {
+            const r = svg.getBoundingClientRect();
+            if (!r.width) return;
+            // Pointer is in CSS pixels; the chart is drawn in viewBox units.
+            const vx = (e.clientX - r.left) / r.width * MM_W;
+            const t = (vx - MM_L) / (MM_W - MM_L - MM_R);
+            let i = Math.round(t * (geom.n - 1));
+            i = Math.max(0, Math.min(geom.n - 1, i));
+            if (!Number.isFinite(values[i])) { hide(); return; }
+
+            const px = MM_L + (i / Math.max(geom.n - 1, 1)) * (MM_W - MM_L - MM_R);
+            const py = MM_T + (1 - (values[i] - geom.lo) / (geom.hi - geom.lo)) * (MM_H - MM_T - MM_B);
+            cross.setAttribute('x1', px); cross.setAttribute('x2', px);
+            cross.style.display = '';
+            dot.setAttribute('cx', px); dot.setAttribute('cy', py);
+            dot.style.display = '';
+
+            const maTxt = (ma && Number.isFinite(ma[i])) ? `<span class="mm-tip-ma">MA5 ${mmFmt(ma[i])}${unit}</span>` : '';
+            tip.innerHTML = `<span class="mm-tip-date">${finEsc(dates[i] || '')}</span>`
+                + `<span class="mm-tip-val">${mmFmt(values[i])}${unit}</span>${maTxt}`;
+            tip.style.display = '';
+            // Flip before the tooltip would run off the right edge.
+            const leftPct = px / MM_W * 100;
+            tip.style.left = `${Math.min(Math.max(leftPct, 4), 78)}%`;
+        });
+        svg.addEventListener('mouseleave', hide);
+    });
+};
+
+const mmPaint = () => {
+    const host = document.getElementById('macro-layer');
+    if (!host) return;
+    host.innerHTML = MM_COUNTRY ? mmOverlay() : `
+        <div class="mm-hint">
+            <span class="mm-hint-dot"></span>
+            국가를 클릭하세요 · <strong>미국</strong>은 벤치마크입니다
+            <span class="mm-hint-count">${(MM_INDEX?.countries_index || []).length}개국</span>
+        </div>`;
+    host.classList.toggle('mm-open', !!MM_COUNTRY);
+    mmWireCharts(host);
+};
+
+const mmOpenCountry = async (iso3) => {
+    const host = document.getElementById('macro-layer');
+    if (host) {
+        host.innerHTML = `<div class="mm-overlay"><p class="fin-loading">${finEsc(iso3)} 지표를 받는 중…</p></div>`;
+        host.classList.add('mm-open');
+    }
+    try {
+        MM_COUNTRY = await mmFetch(iso3);
+        MM_TAB = (MM_COUNTRY.country.active_categories || ['liquidity'])[0];
+        MM_CHART = null;
+    } catch (err) {
+        if (host) host.innerHTML = `<div class="mm-overlay"><p class="fin-p">${finEsc(err.message)}</p>
+            <button class="mm-close" data-mm-close="1">✕</button></div>`;
+        return;
+    }
+    mmPaint();
+};
+
+const mmDrawMap = () => {
+    const rows = (MM_INDEX?.countries_index || []).filter((c) => c.coords);
+    deckgl.setProps({
+        views: [new MapView({ id: 'map', controller: true, repeat: true })],
+        viewState: currentViewState,
+        controller: { dragRotate: false, touchRotate: false },
+        onHover: null,
+        getTooltip: ({ object }) => object && object.name_ko
+            ? { html: `<div class="mm-tip">${finEsc(object.name_ko)}${object.benchmark ? ' · 벤치마크' : ''}</div>` }
+            : null,
+        onClick: ({ object }) => { if (object && object.iso3) mmOpenCountry(object.iso3); },
+        layers: [
+            ...worldBaseLayers({ id: 'macro' }),
+            new ScatterplotLayer({
+                id: 'macro-pins',
+                data: rows,
+                pickable: true,
+                stroked: true,
+                filled: true,
+                opacity: 0.9,
+                radiusMinPixels: 9,
+                radiusMaxPixels: 26,
+                lineWidthMinPixels: 2,
+                getPosition: (d) => [d.coords.lon, d.coords.lat],
+                // The benchmark is the one everything else is read against, so
+                // it is the only marker that differs.
+                getRadius: (d) => d.benchmark ? 220000 : 150000,
+                getFillColor: (d) => d.benchmark ? [56, 189, 248, 230] : [148, 163, 184, 200],
+                getLineColor: (d) => d.benchmark ? [255, 255, 255, 230] : [255, 255, 255, 120],
+                autoHighlight: true,
+                highlightColor: [125, 211, 252, 220],
+            }),
+        ],
+    });
+};
+
+const renderMacroMonitor = async () => {
+    currentCommodity = 'macro_monitor';
+    stopTradeAnim();
+    stopRotation();
+    document.body.classList.remove('trade-map-mode', 'shipping-mode', 'finance-mode');
+    document.body.classList.add('macro-mode');
+    togglePanels({ left: false, right: false, chart: false, map: true });
+    if (mapContainer) {
+        mapContainer.style.display = 'block';
+        mapContainer.style.pointerEvents = 'auto';
+    }
+
+    let host = document.getElementById('macro-layer');
+    if (!host) {
+        host = document.createElement('div');
+        host.id = 'macro-layer';
+        (mapContainer || document.body).appendChild(host);
+        host.addEventListener('click', (e) => {
+            const t = e.target instanceof Element ? e.target : null;
+            if (!t) return;
+            if (t.closest('[data-mm-close]')) { MM_COUNTRY = null; MM_CHART = null; mmPaint(); return; }
+            if (t.closest('[data-mm-chart-close]')) { MM_CHART = null; mmPaint(); return; }
+            const tab = t.closest('[data-mm-tab]');
+            if (tab) { MM_TAB = tab.getAttribute('data-mm-tab'); MM_CHART = null; mmPaint(); return; }
+            const chip = t.closest('[data-mm-chip]');
+            if (chip) {
+                const id = chip.getAttribute('data-mm-chip');
+                MM_CHART = (MM_CHART && MM_CHART.indicatorId === id)
+                    ? null : { indicatorId: id, window: '5y', view: null, mode: null };
+                mmPaint();
+                return;
+            }
+            const win = t.closest('[data-mm-window]');
+            if (win && MM_CHART) { MM_CHART.window = win.getAttribute('data-mm-window'); mmPaint(); return; }
+            const vw = t.closest('[data-mm-view]');
+            if (vw && MM_CHART) { MM_CHART.view = vw.getAttribute('data-mm-view'); mmPaint(); return; }
+            const md = t.closest('[data-mm-mode]');
+            if (md && MM_CHART) { MM_CHART.mode = md.getAttribute('data-mm-mode'); mmPaint(); return; }
+        });
+    }
+
+    currentViewState = clampGlobeView({ ...currentViewState, zoom: GLOBE_ZOOM });
+
+    if (!MM_INDEX) {
+        host.innerHTML = `<div class="mm-hint">매크로 지표를 받는 중…</div>`;
+        try {
+            MM_INDEX = await mmFetch(null);
+        } catch (err) {
+            host.innerHTML = `<div class="mm-hint mm-hint-warn">${finEsc(err.message)}</div>`;
+            return;
+        }
+    }
+    MM_COUNTRY = null;
+    MM_CHART = null;
+    mmDrawMap();
+    mmPaint();
+};
+
 const setView = (target) => {
     const isShippingView = target && target.startsWith('shipping_');
     const isFinanceView = target && target.startsWith('fin_');
+    if (target !== 'macro_monitor') {
+        document.body.classList.remove('macro-mode');
+        document.getElementById('macro-layer')?.remove();
+    }
     if (!isShippingView && window.ShippingDashboard) {
         window.ShippingDashboard.unmount(chartView);
     }
@@ -5217,6 +8810,9 @@ const setView = (target) => {
             chartView.style.zIndex = '40';
         }
         window.ShippingDashboard.render(target, chartView);
+
+    } else if (target === 'macro_monitor') {
+        renderMacroMonitor();
 
     } else if (isFinanceView) {
         // Document-style panel, same full-bleed treatment as shipping: there is

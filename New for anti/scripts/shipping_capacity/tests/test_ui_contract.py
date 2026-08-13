@@ -1,0 +1,58 @@
+"""Regression checks for fields consumed by the static shipping UI."""
+
+from __future__ import annotations
+
+import json
+import unittest
+from pathlib import Path
+
+
+ROOT = Path(__file__).resolve().parents[1]
+SNAPSHOT = ROOT.parent.parent / "public" / "data" / "shipping_capacity_v1.json"
+
+
+class ShippingUiContractTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.snapshot = json.loads(SNAPSHOT.read_text(encoding="utf-8"))
+
+    def test_fleet_and_route_cards_have_explicit_display_fields(self) -> None:
+        fleet_rows = self.snapshot["fleet"]["fleet_by_type"]
+        self.assertTrue(all(row["ship_type"] and row["dwt"] > 0 for row in fleet_rows))
+
+        for route in self.snapshot["routes"]:
+            self.assertIn(route["input_status"], {
+                "observed_bilateral_sea_weight",
+                "observed_bilateral_weight_with_route_allocation_proxy",
+                "comtrade_manufactured_weight_extrapolation_proxy",
+            })
+            interval = route["baseline"]["interval"]["baseline_required_dwt"]
+            self.assertLessEqual(interval["p10"], interval["p50"])
+            self.assertLessEqual(interval["p50"], interval["p90"])
+
+    def test_chokepoint_display_uses_the_declared_portwatch_metric(self) -> None:
+        live_by_id = self.snapshot["chokepoints_live"]
+        for display in self.snapshot["live_display"]:
+            metric = live_by_id[display["chokepoint_id"]]["metrics"][display["metric_key"]]
+            self.assertEqual(display["metric_unit"], "estimated_trade_tonnes_per_day")
+            self.assertIn("추정", display["headline_label_ko"])
+            self.assertAlmostEqual(display["trade_volume_shortfall_fraction"], metric["observed_trade_volume_shortfall_fraction"])
+            self.assertAlmostEqual(display["remaining_trade_volume_ratio"], metric["remaining_trade_volume_ratio"])
+
+    def test_scenario_grid_has_backlog_and_commercial_constraint_metrics(self) -> None:
+        base_ids = {row["id"] for row in self.snapshot["scenario_summary"]}
+        for row in self.snapshot["ui_scenario_grid"]["rows"]:
+            self.assertIn(row["base_scenario_id"], base_ids)
+            for field in (
+                "operational_capacity_absorbed_dwt",
+                "commercial_capacity_gap_dwt",
+                "backlog_cargo_tonnes_horizon",
+                "trapped_loaded_dwt",
+                "insurance_excluded_dwt",
+                "weighted_traffic_change_pct",
+            ):
+                self.assertIn(field, row["summary"])
+
+
+if __name__ == "__main__":
+    unittest.main()

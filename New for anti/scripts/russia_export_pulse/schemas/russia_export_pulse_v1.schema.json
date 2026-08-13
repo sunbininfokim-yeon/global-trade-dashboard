@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://global-trade-dashboard.example/schemas/russia_export_pulse_v1.schema.json",
+  "title": "russia_export_pulse_v1",
+  "type": "object",
+  "required": ["schema_version", "generated_at", "commodities", "chokepoint_proxy", "out_of_scope"],
+  "properties": {
+    "schema_version": { "const": "russia-export-pulse-v1" },
+    "generated_at": { "type": "string" },
+    "commodities": {
+      "type": "object",
+      "required": ["wheat"],
+      "properties": {
+        "wheat": { "type": "object" },
+        "sunflowerseed_oil": { "type": "object" }
+      }
+    },
+    "monthly_comtrade": { "type": "object" },
+    "chokepoint_proxy": { "type": "object" },
+    "policy_events": { "type": "array" },
+    "out_of_scope": {
+      "type": "array",
+      "items": { "type": "string" }
+    }
+  }
+}

@@ -1,0 +1,299 @@
+{
+  "iso3": "JPN",
+  "as_of": "2026-08-08",
+  "priority_tier": 1,
+  "system": "parliamentary",
+  "map_spectrum": "conservative",
+  "display": {
+    "party_label": "abbr"
+  },
+  "head": {
+    "role": "prime_minister",
+    "name_en": "Sanae Takaichi",
+    "name_ja": "高市早苗",
+    "name_ko": "다카이치 사나에",
+    "party_id": "ldp",
+    "party_abbr": "LDP",
+    "spectrum": "conservative",
+    "sources": [
+      {
+        "org": "Kantei",
+        "url": "https://japan.kantei.go.jp/105/diplomatic/202603/20usa.html",
+        "date": "2026-03-19",
+        "note": "Official PM office readout: TAKAICHI Sanae, Prime Minister of Japan"
+      },
+      {
+        "org": "MOFA Japan",
+        "url": "https://www.mofa.go.jp/na/na1/us/pageite_000001_00007.html",
+        "date": "2026-03-19"
+      }
+    ]
+  },
+  "parties": [
+    {
+      "id": "ldp",
+      "abbr": "LDP",
+      "name_en": "Liberal Democratic Party",
+      "name_ja": "自由民主党",
+      "name_ko": "자민당",
+      "role": "ruling",
+      "spectrum": "conservative",
+      "confidence": "high",
+      "factions_file": "jpn_ldp_factions.json"
+    },
+    {
+      "id": "cdp",
+      "abbr": "CDP",
+      "name_en": "Constitutional Democratic Party",
+      "name_ja": "立憲民主党",
+      "name_ko": "입헌민주당",
+      "role": "main_opposition",
+      "spectrum": "progressive",
+      "confidence": "medium"
+    },
+    {
+      "id": "ishin",
+      "abbr": "Ishin",
+      "name_en": "Japan Innovation Party",
+      "name_ja": "日本維新の会",
+      "name_ko": "일본유신회",
+      "role": "major_3",
+      "spectrum": "conservative",
+      "confidence": "medium"
+    },
+    {
+      "id": "komei",
+      "abbr": "Komeito",
+      "name_en": "Komeito",
+      "name_ja": "公明党",
+      "name_ko": "공명당",
+      "role": "major_4",
+      "spectrum": "centrist",
+      "confidence": "medium"
+    }
+  ],
+  "legislature": {
+    "chambers": [
+      "house_of_representatives",
+      "house_of_councillors"
+    ],
+    "member_roster_sources": [
+      {
+        "id": "shugiin",
+        "url": "https://www.shugiin.go.jp/"
+      },
+      {
+        "id": "sangiin",
+        "url": "https://www.sangiin.go.jp/"
+      },
+      {
+        "id": "ndl_kokkai_api",
+        "url": "https://kokkai.ndl.go.jp/api.html"
+      }
+    ],
+    "status": "sources_ready_roster_extract_todo"
+  },
+  "subnational": {
+    "level": "prefecture",
+    "includes": [
+      "governor",
+      "prefectural_assembly"
+    ],
+    "excludes": [
+      "municipal_basic"
+    ],
+    "sources": [
+      {
+        "id": "mic_local",
+        "url": "https://www.soumu.go.jp/senkyo/senkyo_s/data/chihou/ichiran.html"
+      }
+    ],
+    "status": "sources_ready_roster_extract_todo"
+  },
+  "elections": {
+    "calendar_file": "calendars/jpn_2026.json",
+    "calendar_extract": "extracted/calendars_2026.json",
+    "events_2026": [
+      {
+        "id": "jpn-2026-gov-fukui",
+        "type": "local",
+        "label_ko": "후쿠이현 지사",
+        "date": "2026-01-25",
+        "level": "prefecture_governor",
+        "sources": [
+          "local_senkyo_2026"
+        ],
+        "status": "completed"
+      },
+      {
+        "id": "jpn-2026-shugiin-51",
+        "type": "general",
+        "label_ko": "제51회 중의원 총선거",
+        "date": "2026-02-08",
+        "chamber": "house_of_representatives",
+        "notes": "해산 2026-01-23 · 공시 2026-01-27 · 투개표 2026-02-08.",
+        "result": "LDP 316 seats (고시 전 198→316)",
+        "sources": [
+          "wiki_shugiin_51"
+        ],
+        "status": "completed"
+      },
+      {
+        "id": "jpn-2026-gov-osaka",
+        "type": "local",
+        "label_ko": "오사카부 지사",
+        "date": "2026-02-08",
+        "level": "prefecture_governor",
+        "notes": "중의원 총선과 동시.",
+        "sources": [
+          "local_senkyo_2026"
+        ],
+        "status": "completed"
+      },
+      {
+        "id": "jpn-2026-gov-yamaguchi",
+        "type": "local",
+        "label_ko": "야마구치현 지사",
+        "date": "2026-02-08",
+        "level": "prefecture_governor",
+        "notes": "중의원 총선과 동시.",
+        "sources": [
+          "local_senkyo_2026"
+        ],
+        "status": "completed"
+      },
+      {
+        "id": "jpn-2026-gov-nagasaki",
+        "type": "local",
+        "label_ko": "나가사키현 지사",
+        "date": "2026-02-08",
+        "level": "prefecture_governor",
+        "notes": "중의원 총선과 동시.",
+        "sources": [
+          "local_senkyo_2026"
+        ],
+        "status": "completed"
+      },
+      {
+        "id": "jpn-2026-gov-ishikawa",
+        "type": "local",
+        "label_ko": "이시카와현 지사",
+        "date": "2026-03-08",
+        "level": "prefecture_governor",
+        "sources": [
+          "local_senkyo_2026"
+        ],
+        "status": "completed"
+      },
+      {
+        "id": "jpn-2026-gov-kyoto",
+        "type": "local",
+        "label_ko": "교토부 지사",
+        "date": "2026-04-05",
+        "level": "prefecture_governor",
+        "sources": [
+          "local_senkyo_2026"
+        ],
+        "status": "completed"
+      },
+      {
+        "id": "jpn-2026-national-by-apr",
+        "type": "by_election",
+        "label_ko": "국정 재보궐(4월 통일창)",
+        "date": "없음",
+        "status": "completed",
+        "notes": "창 일자였을 날짜 2026-04-26(4월 제4일요일). 실시 요건 미충족으로 실시 없음.",
+        "sources": [
+          "wiki_jpn_hoketsu_2026",
+          "kouhou_33_2",
+          "mic_hoketsu"
+        ]
+      },
+      {
+        "id": "jpn-2026-gov-niigata",
+        "type": "local",
+        "label_ko": "니가타현 지사",
+        "date": "2026-05-31",
+        "level": "prefecture_governor",
+        "notes": "집계사이트에 05-14/05-31 병기 — 일요일 05-31 채택; 현 선관위 고시로 재확인 권장.",
+        "sources": [
+          "local_senkyo_2026"
+        ],
+        "status": "completed"
+      },
+      {
+        "id": "jpn-2026-gov-shiga",
+        "type": "local",
+        "label_ko": "시가현 지사",
+        "date": "2026-07-05",
+        "level": "prefecture_governor",
+        "sources": [
+          "local_senkyo_2026"
+        ],
+        "status": "completed"
+      },
+      {
+        "id": "jpn-2026-sangiin-regular",
+        "type": "general",
+        "label_ko": "참의원 통상선거",
+        "date": "없음",
+        "status": "completed",
+        "chamber": "house_of_councillors",
+        "notes": "2026년 통상선거 일정 없음(다음 개헌 주기는 2028년 계열).",
+        "sources": [
+          "kouhou_33_2"
+        ]
+      },
+      {
+        "id": "jpn-2026-national-by-oct",
+        "type": "by_election",
+        "label_ko": "국정 재보궐(10월 통일창)",
+        "date": "2026-10-25",
+        "status": "tentative",
+        "notes": "10월 제4일요일 창. 대상 좌석·실시 여부는 제2기간(3/16–9/15) 결원 확정 전까지 불명. 결원 없으면 없음.",
+        "sources": [
+          "kouhou_33_2",
+          "mic_hoketsu",
+          "wiki_jpn_hoketsu_2026"
+        ]
+      },
+      {
+        "id": "jpn-2026-fukushima-governor",
+        "type": "local",
+        "label_ko": "후쿠시마현 지사 선거",
+        "date": "2026-10-25",
+        "level": "prefecture_governor",
+        "notes": "임기만료. 고시 2026-10-08.",
+        "sources": [
+          "fukushima_gov_2026",
+          "jiji_fukushima_2026"
+        ],
+        "status": "scheduled"
+      },
+      {
+        "id": "jpn-2026-fukushima-assembly-by",
+        "type": "by_election",
+        "label_ko": "후쿠시마현의회 보궐(3선거구)",
+        "date": "2026-10-25",
+        "notes": "후쿠시마시·고리야마시·이와키시 각 결원1. 고시 2026-10-16.",
+        "sources": [
+          "fukushima_gov_2026"
+        ],
+        "status": "scheduled"
+      }
+    ]
+  },
+  "polls": {
+    "admit": [
+      "cabinet_approval",
+      "party_support"
+    ],
+    "example_series": [
+      "NHK cabinet approval"
+    ],
+    "status": "series_wire_todo"
+  },
+  "ingest": {
+    "mode": "document_text_extract"
+  }
+}

@@ -1,0 +1,319 @@
+{
+  "period": "2024",
+  "history_periods": ["2019", "2020", "2021", "2022", "2023", "2024"],
+  "classification": "HS",
+  "water_transport_code": 2100,
+  "total_transport_code": 0,
+  "manufactured_goods_hs2": [
+    "39", "40", "61", "62", "63", "64", "73", "84", "85", "90", "94", "95"
+  ],
+  "manufactured_goods_hs4_sample": [
+    "3901", "3907", "3920", "3923", "3926", "4011", "6109", "6110", "6203", "6204",
+    "6205", "6206", "6403", "7308", "7318", "7326", "8414", "8415", "8421", "8429",
+    "8431", "8471", "8473", "8481", "8483", "8501", "8504", "8517", "8528", "8536",
+    "8541", "8542", "8544", "9001", "9018", "9021", "9401", "9403", "9503"
+  ],
+  "routes": [
+    {
+      "route_id": "asia_north_europe_container",
+      "directions": [
+        {
+          "direction_id": "east_asia_to_north_europe",
+          "reporter_codes": [156, 392, 410, 704],
+          "partner_codes": [56, 250, 276, 528, 826],
+          "cmd_codes_ref": "manufactured_goods_hs4_sample",
+          "value_cmd_codes_ref": "manufactured_goods_hs2",
+          "allocation_fraction": 1.0,
+          "minimum_annual_cargo_tonnes": 1000000,
+          "maximum_annual_cargo_tonnes": 500000000,
+          "allocation_basis": "bilateral manufactured-goods net weight; water mode preferred"
+        },
+        {
+          "direction_id": "north_europe_to_east_asia",
+          "reporter_codes": [56, 250, 276, 528, 826],
+          "partner_codes": [156, 392, 410, 704],
+          "cmd_codes_ref": "manufactured_goods_hs4_sample",
+          "value_cmd_codes_ref": "manufactured_goods_hs2",
+          "allocation_fraction": 1.0,
+          "minimum_annual_cargo_tonnes": 1000000,
+          "maximum_annual_cargo_tonnes": 500000000,
+          "allocation_basis": "bilateral manufactured-goods net weight; water mode preferred"
+        }
+      ]
+    },
+    {
+      "route_id": "asia_us_east_container",
+      "directions": [
+        {
+          "direction_id": "east_asia_to_us_east",
+          "reporter_codes": [156, 392, 410, 704],
+          "partner_codes": [842],
+          "cmd_codes_ref": "manufactured_goods_hs4_sample",
+          "value_cmd_codes_ref": "manufactured_goods_hs2",
+          "allocation_fraction": 0.35,
+          "minimum_annual_cargo_tonnes": 1000000,
+          "maximum_annual_cargo_tonnes": 300000000,
+          "allocation_basis": "35% scenario allocation of US bilateral sea-weight proxy to East/Gulf services"
+        },
+        {
+          "direction_id": "us_east_to_east_asia",
+          "reporter_codes": [842],
+          "partner_codes": [156, 392, 410, 704],
+          "cmd_codes_ref": "manufactured_goods_hs4_sample",
+          "value_cmd_codes_ref": "manufactured_goods_hs2",
+          "allocation_fraction": 0.35,
+          "minimum_annual_cargo_tonnes": 100000,
+          "maximum_annual_cargo_tonnes": 200000000,
+          "allocation_basis": "35% scenario allocation of US bilateral sea-weight proxy to East/Gulf services"
+        }
+      ]
+    },
+    {
+      "route_id": "us_gulf_ne_asia_grain",
+      "reporter_codes": [842],
+      "partner_codes": [156, 392, 410, 490],
+      "cmd_codes": ["1001", "1003", "1005", "1201"],
+      "allocation_fraction": 0.60,
+      "minimum_annual_cargo_tonnes": 5000000,
+      "maximum_annual_cargo_tonnes": 100000000,
+      "allocation_basis": "60% scenario allocation of US bilateral grain sea-weight proxy to Gulf loadings"
+    },
+    {
+      "route_id": "black_sea_mena_grain",
+      "reporter_codes": [100, 642, 643, 804],
+      "partner_codes": [12, 376, 400, 504, 682, 784, 788, 792, 818],
+      "cmd_codes": ["1001", "1003", "1005"],
+      "allocation_fraction": 0.65,
+      "minimum_annual_cargo_tonnes": 5000000,
+      "maximum_annual_cargo_tonnes": 120000000,
+      "allocation_basis": "65% scenario allocation for Black Sea loadings; Russia includes non-Black-Sea ports"
+    },
+    {
+      "route_id": "black_sea_east_asia_grain",
+      "reporter_codes": [100, 642, 643, 804],
+      "partner_codes": [156, 392, 410, 490],
+      "cmd_codes": ["1001", "1003", "1005"],
+      "allocation_fraction": 0.65,
+      "minimum_annual_cargo_tonnes": 1000000,
+      "maximum_annual_cargo_tonnes": 60000000,
+      "allocation_basis": "65% scenario allocation for Black Sea loadings; Russia includes non-Black-Sea ports"
+    },
+    {
+      "route_id": "persian_gulf_europe_crude",
+      "reporter_codes": [40, 56, 208, 246, 250, 276, 300, 372, 380, 528, 578, 616, 620, 724, 752, 826],
+      "partner_codes": [364, 368, 414, 512, 634, 682, 784],
+      "flow_code": "M",
+      "cmd_codes": ["2709"],
+      "allocation_fraction": 1.0,
+      "minimum_annual_cargo_tonnes": 20000000,
+      "maximum_annual_cargo_tonnes": 500000000,
+      "allocation_basis": "bilateral crude net weight; water mode preferred"
+    },
+    {
+      "route_id": "persian_gulf_east_asia_crude",
+      "reporter_codes": [156, 392, 410, 490],
+      "partner_codes": [364, 368, 414, 512, 634, 682, 784],
+      "flow_code": "M",
+      "cmd_codes": ["2709"],
+      "allocation_fraction": 1.0,
+      "minimum_annual_cargo_tonnes": 100000000,
+      "maximum_annual_cargo_tonnes": 900000000,
+      "allocation_basis": "bilateral crude net weight; water mode preferred"
+    },
+    {
+      "route_id": "brazil_china_soy",
+      "reporter_codes": [76],
+      "partner_codes": [156],
+      "cmd_codes": ["1201"],
+      "allocation_fraction": 1.0,
+      "minimum_annual_cargo_tonnes": 50000000,
+      "maximum_annual_cargo_tonnes": 120000000,
+      "allocation_basis": "bilateral soybean net weight; water mode preferred"
+    },
+    {
+      "route_id": "asia_mediterranean_container",
+      "directions": [
+        {
+          "direction_id": "east_asia_to_mediterranean",
+          "reporter_codes": [156, 392, 410, 704],
+          "partner_codes": [300, 380, 724, 792],
+          "cmd_codes_ref": "manufactured_goods_hs4_sample",
+          "value_cmd_codes_ref": "manufactured_goods_hs2",
+          "allocation_fraction": 1.0,
+          "minimum_annual_cargo_tonnes": 500000,
+          "maximum_annual_cargo_tonnes": 250000000,
+          "allocation_basis": "bilateral manufactured-goods weight proxy for Mediterranean partners"
+        },
+        {
+          "direction_id": "mediterranean_to_east_asia",
+          "reporter_codes": [300, 380, 724, 792],
+          "partner_codes": [156, 392, 410, 704],
+          "cmd_codes_ref": "manufactured_goods_hs4_sample",
+          "value_cmd_codes_ref": "manufactured_goods_hs2",
+          "allocation_fraction": 1.0,
+          "minimum_annual_cargo_tonnes": 100000,
+          "maximum_annual_cargo_tonnes": 200000000,
+          "allocation_basis": "reverse-direction bilateral manufactured-goods weight proxy"
+        }
+      ]
+    },
+    {
+      "route_id": "asia_us_west_container",
+      "directions": [
+        {
+          "direction_id": "east_asia_to_us_west",
+          "reporter_codes": [156, 392, 410, 704],
+          "partner_codes": [842],
+          "cmd_codes_ref": "manufactured_goods_hs4_sample",
+          "value_cmd_codes_ref": "manufactured_goods_hs2",
+          "allocation_fraction": 0.65,
+          "minimum_annual_cargo_tonnes": 1000000,
+          "maximum_annual_cargo_tonnes": 300000000,
+          "allocation_basis": "65% scenario allocation of US bilateral proxy to West Coast services"
+        },
+        {
+          "direction_id": "us_west_to_east_asia",
+          "reporter_codes": [842],
+          "partner_codes": [156, 392, 410, 704],
+          "cmd_codes_ref": "manufactured_goods_hs4_sample",
+          "value_cmd_codes_ref": "manufactured_goods_hs2",
+          "allocation_fraction": 0.65,
+          "minimum_annual_cargo_tonnes": 100000,
+          "maximum_annual_cargo_tonnes": 200000000,
+          "allocation_basis": "65% scenario allocation of reverse US bilateral proxy to West Coast services"
+        }
+      ]
+    },
+    {
+      "route_id": "north_europe_us_east_container",
+      "directions": [
+        {
+          "direction_id": "north_europe_to_us_east",
+          "reporter_codes": [56, 250, 276, 528, 826],
+          "partner_codes": [842],
+          "cmd_codes_ref": "manufactured_goods_hs4_sample",
+          "value_cmd_codes_ref": "manufactured_goods_hs2",
+          "allocation_fraction": 0.90,
+          "minimum_annual_cargo_tonnes": 500000,
+          "maximum_annual_cargo_tonnes": 250000000,
+          "allocation_basis": "90% allocation of North Europe-US manufactured-goods proxy to Atlantic services"
+        },
+        {
+          "direction_id": "us_east_to_north_europe",
+          "reporter_codes": [842],
+          "partner_codes": [56, 250, 276, 528, 826],
+          "cmd_codes_ref": "manufactured_goods_hs4_sample",
+          "value_cmd_codes_ref": "manufactured_goods_hs2",
+          "allocation_fraction": 0.90,
+          "minimum_annual_cargo_tonnes": 100000,
+          "maximum_annual_cargo_tonnes": 200000000,
+          "allocation_basis": "90% allocation of reverse bilateral proxy to Atlantic services"
+        }
+      ]
+    },
+    {
+      "route_id": "c2_tubarao_rotterdam_iron_ore",
+      "reporter_codes": [76],
+      "partner_codes": [56, 250, 276, 528, 826],
+      "cmd_codes": ["2601"],
+      "allocation_fraction": 0.60,
+      "minimum_annual_cargo_tonnes": 1000000,
+      "maximum_annual_cargo_tonnes": 100000000,
+      "allocation_basis": "60% Tubarao corridor allocation of Brazil-North Europe iron-ore weight proxy"
+    },
+    {
+      "route_id": "c3_tubarao_qingdao_iron_ore",
+      "reporter_codes": [76],
+      "partner_codes": [156],
+      "cmd_codes": ["2601"],
+      "allocation_fraction": 0.65,
+      "minimum_annual_cargo_tonnes": 30000000,
+      "maximum_annual_cargo_tonnes": 300000000,
+      "allocation_basis": "65% Tubarao corridor allocation of Brazil-China iron-ore weight proxy"
+    },
+    {
+      "route_id": "c5_west_australia_qingdao_iron_ore",
+      "reporter_codes": [36],
+      "partner_codes": [156],
+      "cmd_codes": ["2601"],
+      "allocation_fraction": 0.85,
+      "minimum_annual_cargo_tonnes": 300000000,
+      "maximum_annual_cargo_tonnes": 1000000000,
+      "allocation_basis": "85% West Australia corridor allocation of Australia-China iron-ore weight proxy"
+    },
+    {
+      "route_id": "c7_bolivar_rotterdam_coal",
+      "reporter_codes": [170],
+      "partner_codes": [56, 250, 276, 528, 826],
+      "cmd_codes": ["2701"],
+      "allocation_fraction": 0.80,
+      "minimum_annual_cargo_tonnes": 1000000,
+      "maximum_annual_cargo_tonnes": 100000000,
+      "allocation_basis": "80% Puerto Bolivar allocation of Colombia-North Europe coal weight proxy"
+    },
+    {
+      "route_id": "c17_saldanha_qingdao_iron_ore",
+      "reporter_codes": [710],
+      "partner_codes": [156],
+      "cmd_codes": ["2601"],
+      "allocation_fraction": 0.85,
+      "minimum_annual_cargo_tonnes": 5000000,
+      "maximum_annual_cargo_tonnes": 150000000,
+      "allocation_basis": "85% Saldanha allocation of South Africa-China iron-ore weight proxy"
+    },
+    {
+      "route_id": "west_africa_east_asia_crude",
+      "reporter_codes": [156, 392, 410],
+      "partner_codes": [24, 178, 226, 266, 566],
+      "flow_code": "M",
+      "cmd_codes": ["2709"],
+      "allocation_fraction": 1.0,
+      "minimum_annual_cargo_tonnes": 5000000,
+      "maximum_annual_cargo_tonnes": 300000000,
+      "allocation_basis": "East Asia imports of West African crude net weight"
+    },
+    {
+      "route_id": "us_gulf_east_asia_crude",
+      "reporter_codes": [156, 392, 410],
+      "partner_codes": [842],
+      "flow_code": "M",
+      "cmd_codes": ["2709"],
+      "allocation_fraction": 0.90,
+      "minimum_annual_cargo_tonnes": 1000000,
+      "maximum_annual_cargo_tonnes": 200000000,
+      "allocation_basis": "90% US Gulf allocation of East Asia imports of US crude"
+    },
+    {
+      "route_id": "black_sea_mediterranean_crude",
+      "reporter_codes": [31, 398, 642, 643],
+      "partner_codes": [300, 380, 792],
+      "cmd_codes": ["2709"],
+      "allocation_fraction": 0.65,
+      "minimum_annual_cargo_tonnes": 1000000,
+      "maximum_annual_cargo_tonnes": 250000000,
+      "allocation_basis": "65% Black Sea loading allocation of bilateral crude weight proxy"
+    },
+    {
+      "route_id": "west_africa_north_europe_crude",
+      "reporter_codes": [56, 250, 276, 528, 826],
+      "partner_codes": [24, 178, 226, 266, 566],
+      "flow_code": "M",
+      "cmd_codes": ["2709"],
+      "allocation_fraction": 1.0,
+      "minimum_annual_cargo_tonnes": 5000000,
+      "maximum_annual_cargo_tonnes": 300000000,
+      "allocation_basis": "North Europe imports of West African crude net weight"
+    },
+    {
+      "route_id": "persian_gulf_east_asia_lng",
+      "reporter_codes": [156, 392, 410],
+      "partner_codes": [364, 414, 512, 634, 682, 784],
+      "flow_code": "M",
+      "cmd_codes": ["271111"],
+      "allocation_fraction": 1.0,
+      "minimum_annual_cargo_tonnes": 5000000,
+      "maximum_annual_cargo_tonnes": 200000000,
+      "allocation_basis": "East Asia imports of Persian Gulf liquefied natural gas net weight"
+    }
+  ]
+}

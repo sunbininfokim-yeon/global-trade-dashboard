@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://global-trade-dashboard.example/schemas/shipping_capacity_backtests_v1.schema.json",
+  "title": "Shipping Capacity Historical Backtests v1",
+  "type": "object",
+  "required": ["schema_version", "artifact_type", "bundle_id", "generated_at", "event_observations", "scenario_signal_comparison", "historical_event_calibration"],
+  "properties": {
+    "schema_version": {"const": "shipping-capacity-backtests-v1"},
+    "artifact_type": {"const": "historical_backtests"},
+    "bundle_id": {"type": "string", "minLength": 20, "maxLength": 20},
+    "generated_at": {"type": "string", "format": "date-time"},
+    "event_observations": {"type": "array"},
+    "scenario_signal_comparison": {"type": "array"},
+    "historical_event_calibration": {
+      "type": "object",
+      "required": ["status", "events", "profile_evidence"]
+    }
+  }
+}

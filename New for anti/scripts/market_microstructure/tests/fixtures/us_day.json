@@ -1,0 +1,740 @@
+{
+  "schema_version": "us-microstructure-v1",
+  "as_of": "2026-08-12",
+  "fetched_at": "2026-08-12T10:46:35.884374+00:00",
+  "source_priority_used": [
+    "cboe_vol_indices",
+    "finra_short",
+    "cboe_spot",
+    "yahoo_spot_options_fallback",
+    "cboe_options"
+  ],
+  "vol_indices": {
+    "fetched_at": "2026-08-12T10:46:14.811500+00:00",
+    "indices": {
+      "VIX": {
+        "as_of": "08/11/2026",
+        "close": 15.28,
+        "prev_close": 15.46,
+        "day_return": -0.011643,
+        "source": "Cboe VIX_History.csv",
+        "quality": "observed"
+      },
+      "VVIX": {
+        "as_of": "08/11/2026",
+        "close": 90.9,
+        "prev_close": 92.51,
+        "day_return": -0.017404,
+        "source": "Cboe VVIX_History.csv",
+        "quality": "observed"
+      },
+      "SKEW": {
+        "as_of": "08/11/2026",
+        "close": 135.59,
+        "prev_close": 137.13,
+        "day_return": -0.01123,
+        "source": "Cboe SKEW_History.csv",
+        "quality": "observed"
+      },
+      "VIX_quote": {
+        "price": 15.4,
+        "change_pct": 0.7853,
+        "timestamp": "2026-08-12 10:45:19",
+        "source": "Cboe delayed_quotes/_VIX",
+        "quality": "observed"
+      }
+    },
+    "errors": [],
+    "source": "cboe_cdn"
+  },
+  "names": [
+    {
+      "symbol": "MU",
+      "finra_short": {
+        "symbol": "MU",
+        "settlement_date": "2026-07-31",
+        "short_shares": 29892897.0,
+        "short_shares_prev": 36211849.0,
+        "short_chg_pct": -17.45,
+        "days_to_cover": 1,
+        "avg_daily_volume": 49585985,
+        "quality": "observed",
+        "source": "FINRA consolidatedShortInterest",
+        "history_n": 26
+      },
+      "spot": {
+        "price": 867.0,
+        "prev_close": 868.52,
+        "day_return": -0.00175,
+        "premarket_price": 893.0,
+        "premarket_gap": 0.037166,
+        "quality": "observed",
+        "source": "Cboe delayed_quotes (+ Yahoo premarket if any)"
+      },
+      "yahoo_short_supplement": {
+        "short_ratio": 0.63,
+        "short_percent_of_float": 0.026500002,
+        "shares_short": 29892897,
+        "shares_short_prior": 31669690,
+        "source": "Yahoo info (supplement)",
+        "quality": "estimated"
+      },
+      "options": {
+        "nearest_expiry": "2026-08-12",
+        "n_expiries_listed": 24,
+        "call_volume": 364469.0,
+        "put_volume": 300001.0,
+        "call_oi": 1599663.0,
+        "put_oi": 1809468.0,
+        "put_call_volume": 0.8231,
+        "put_call_oi": 1.1312,
+        "atm_call_iv": 0.7253,
+        "total_volume": 664470.0,
+        "n_contracts": 12266,
+        "quality": "observed",
+        "source": "Cboe delayed_quotes/options (CDN)",
+        "note_ko": "지연 공개 체인. Open-Close/고객분류 아님.",
+        "timestamp": "2026-08-12 10:45:32"
+      }
+    },
+    {
+      "symbol": "NVDA",
+      "finra_short": {
+        "symbol": "NVDA",
+        "settlement_date": "2026-07-31",
+        "short_shares": 292667375.0,
+        "short_shares_prev": 324052767.0,
+        "short_chg_pct": -9.685,
+        "days_to_cover": 2.3,
+        "avg_daily_volume": 127011756,
+        "quality": "observed",
+        "source": "FINRA consolidatedShortInterest",
+        "history_n": 26
+      },
+      "spot": {
+        "price": 218.04,
+        "prev_close": 217.5,
+        "day_return": 0.002483,
+        "premarket_price": 220.0081,
+        "premarket_gap": 0.011299,
+        "quality": "observed",
+        "source": "Cboe delayed_quotes (+ Yahoo premarket if any)"
+      },
+      "yahoo_short_supplement": {
+        "short_ratio": 2.23,
+        "short_percent_of_float": 0.0126,
+        "shares_short": 292667375,
+        "shares_short_prior": 310126785,
+        "source": "Yahoo info (supplement)",
+        "quality": "estimated"
+      },
+      "options": {
+        "nearest_expiry": "2026-08-12",
+        "n_expiries_listed": 23,
+        "call_volume": 1323258.0,
+        "put_volume": 906427.0,
+        "call_oi": 7966085.0,
+        "put_oi": 6624707.0,
+        "put_call_volume": 0.685,
+        "put_call_oi": 0.8316,
+        "atm_call_iv": 0.395,
+        "total_volume": 2229685.0,
+        "n_contracts": 3796,
+        "quality": "observed",
+        "source": "Cboe delayed_quotes/options (CDN)",
+        "note_ko": "지연 공개 체인. Open-Close/고객분류 아님.",
+        "timestamp": "2026-08-12 10:34:11"
+      }
+    },
+    {
+      "symbol": "AMD",
+      "finra_short": {
+        "symbol": "AMD",
+        "settlement_date": "2026-07-31",
+        "short_shares": 37752132.0,
+        "short_shares_prev": 39768152.0,
+        "short_chg_pct": -5.069,
+        "days_to_cover": 1.3,
+        "avg_daily_volume": 29041226,
+        "quality": "observed",
+        "source": "FINRA consolidatedShortInterest",
+        "history_n": 26
+      },
+      "spot": {
+        "price": 480.65,
+        "prev_close": 474.32,
+        "day_return": 0.013345,
+        "premarket_price": 480.7,
+        "premarket_gap": 0.023724,
+        "quality": "observed",
+        "source": "Cboe delayed_quotes (+ Yahoo premarket if any)"
+      },
+      "yahoo_short_supplement": {
+        "short_ratio": 1.34,
+        "short_percent_of_float": 0.0232,
+        "shares_short": 37752132,
+        "shares_short_prior": 41583210,
+        "source": "Yahoo info (supplement)",
+        "quality": "estimated"
+      },
+      "options": {
+        "nearest_expiry": "2026-08-12",
+        "n_expiries_listed": 24,
+        "call_volume": 197372.0,
+        "put_volume": 142348.0,
+        "call_oi": 1502641.0,
+        "put_oi": 1731870.0,
+        "put_call_volume": 0.7212,
+        "put_call_oi": 1.1526,
+        "atm_call_iv": 0.6324,
+        "total_volume": 339720.0,
+        "n_contracts": 6906,
+        "quality": "observed",
+        "source": "Cboe delayed_quotes/options (CDN)",
+        "note_ko": "지연 공개 체인. Open-Close/고객분류 아님.",
+        "timestamp": "2026-08-12 10:30:46"
+      }
+    },
+    {
+      "symbol": "AMZN",
+      "finra_short": {
+        "symbol": "AMZN",
+        "settlement_date": "2026-07-31",
+        "short_shares": 98434174.0,
+        "short_shares_prev": 106566350.0,
+        "short_chg_pct": -7.631,
+        "days_to_cover": 1.93,
+        "avg_daily_volume": 51021310,
+        "quality": "observed",
+        "source": "FINRA consolidatedShortInterest",
+        "history_n": 26
+      },
+      "spot": {
+        "price": 272.26,
+        "prev_close": 272.27,
+        "day_return": -3.7e-05,
+        "premarket_price": 273.5045,
+        "premarket_gap": -0.016489,
+        "quality": "observed",
+        "source": "Cboe delayed_quotes (+ Yahoo premarket if any)"
+      },
+      "yahoo_short_supplement": {
+        "short_ratio": 2.1,
+        "short_percent_of_float": 0.01,
+        "shares_short": 98434174,
+        "shares_short_prior": 100349673,
+        "source": "Yahoo info (supplement)",
+        "quality": "estimated"
+      },
+      "options": {
+        "nearest_expiry": "2026-08-12",
+        "n_expiries_listed": 24,
+        "call_volume": 368892.0,
+        "put_volume": 199784.0,
+        "call_oi": 2939064.0,
+        "put_oi": 1939063.0,
+        "put_call_volume": 0.5416,
+        "put_call_oi": 0.6598,
+        "atm_call_iv": 0.3209,
+        "total_volume": 568676.0,
+        "n_contracts": 2630,
+        "quality": "observed",
+        "source": "Cboe delayed_quotes/options (CDN)",
+        "note_ko": "지연 공개 체인. Open-Close/고객분류 아님.",
+        "timestamp": "2026-08-12 10:31:11"
+      }
+    },
+    {
+      "symbol": "MSFT",
+      "finra_short": {
+        "symbol": "MSFT",
+        "settlement_date": "2026-07-31",
+        "short_shares": 81311791.0,
+        "short_shares_prev": 92373474.0,
+        "short_chg_pct": -11.975,
+        "days_to_cover": 2.03,
+        "avg_daily_volume": 40018336,
+        "quality": "observed",
+        "source": "FINRA consolidatedShortInterest",
+        "history_n": 26
+      },
+      "spot": {
+        "price": 502.2337,
+        "prev_close": 503.81,
+        "day_return": -0.003129,
+        "premarket_price": 500.2591,
+        "premarket_gap": -0.011463,
+        "quality": "observed",
+        "source": "Cboe delayed_quotes (+ Yahoo premarket if any)"
+      },
+      "yahoo_short_supplement": {
+        "short_ratio": 2.17,
+        "short_percent_of_float": 0.011,
+        "shares_short": 81311791,
+        "shares_short_prior": 89063316,
+        "source": "Yahoo info (supplement)",
+        "quality": "estimated"
+      },
+      "options": {
+        "nearest_expiry": "2026-08-12",
+        "n_expiries_listed": 23,
+        "call_volume": 235412.0,
+        "put_volume": 181021.0,
+        "call_oi": 2828272.0,
+        "put_oi": 1474857.0,
+        "put_call_volume": 0.769,
+        "put_call_oi": 0.5215,
+        "atm_call_iv": 0.2801,
+        "total_volume": 416433.0,
+        "n_contracts": 4104,
+        "quality": "observed",
+        "source": "Cboe delayed_quotes/options (CDN)",
+        "note_ko": "지연 공개 체인. Open-Close/고객분류 아님.",
+        "timestamp": "2026-08-12 10:33:01"
+      }
+    },
+    {
+      "symbol": "GOOGL",
+      "finra_short": {
+        "symbol": "GOOGL",
+        "settlement_date": "2026-07-31",
+        "short_shares": 70493725.0,
+        "short_shares_prev": 78667609.0,
+        "short_chg_pct": -10.39,
+        "days_to_cover": 2.03,
+        "avg_daily_volume": 34702519,
+        "quality": "observed",
+        "source": "FINRA consolidatedShortInterest",
+        "history_n": 26
+      },
+      "spot": {
+        "price": 345.08,
+        "prev_close": 343.8,
+        "day_return": 0.003723,
+        "premarket_price": 346.24,
+        "premarket_gap": -0.031551,
+        "quality": "observed",
+        "source": "Cboe delayed_quotes (+ Yahoo premarket if any)"
+      },
+      "yahoo_short_supplement": {
+        "short_ratio": 2.36,
+        "short_percent_of_float": 0.012,
+        "shares_short": 70493725,
+        "shares_short_prior": 85860436,
+        "source": "Yahoo info (supplement)",
+        "quality": "estimated"
+      },
+      "options": {
+        "nearest_expiry": "2026-08-12",
+        "n_expiries_listed": 24,
+        "call_volume": 336232.0,
+        "put_volume": 208654.0,
+        "call_oi": 2032181.0,
+        "put_oi": 1426029.0,
+        "put_call_volume": 0.6206,
+        "put_call_oi": 0.7017,
+        "atm_call_iv": 0.3448,
+        "total_volume": 544886.0,
+        "n_contracts": 5008,
+        "quality": "observed",
+        "source": "Cboe delayed_quotes/options (CDN)",
+        "note_ko": "지연 공개 체인. Open-Close/고객분류 아님.",
+        "timestamp": "2026-08-12 09:38:48"
+      }
+    },
+    {
+      "symbol": "META",
+      "finra_short": {
+        "symbol": "META",
+        "settlement_date": "2026-07-31",
+        "short_shares": 31458758.0,
+        "short_shares_prev": 37847633.0,
+        "short_chg_pct": -16.881,
+        "days_to_cover": 1.84,
+        "avg_daily_volume": 17110190,
+        "quality": "observed",
+        "source": "FINRA consolidatedShortInterest",
+        "history_n": 26
+      },
+      "spot": {
+        "price": 599.8,
+        "prev_close": 599.12,
+        "day_return": 0.001135,
+        "premarket_price": 603.75,
+        "premarket_gap": 0.014842,
+        "quality": "observed",
+        "source": "Cboe delayed_quotes (+ Yahoo premarket if any)"
+      },
+      "yahoo_short_supplement": {
+        "short_ratio": 1.55,
+        "short_percent_of_float": 0.0143,
+        "shares_short": 31458758,
+        "shares_short_prior": 34489980,
+        "source": "Yahoo info (supplement)",
+        "quality": "estimated"
+      },
+      "options": {
+        "nearest_expiry": "2026-08-12",
+        "n_expiries_listed": 24,
+        "call_volume": 356200.0,
+        "put_volume": 152893.0,
+        "call_oi": 2299708.0,
+        "put_oi": 996635.0,
+        "put_call_volume": 0.4292,
+        "put_call_oi": 0.4334,
+        "atm_call_iv": 0.3859,
+        "total_volume": 509093.0,
+        "n_contracts": 7504,
+        "quality": "observed",
+        "source": "Cboe delayed_quotes/options (CDN)",
+        "note_ko": "지연 공개 체인. Open-Close/고객분류 아님.",
+        "timestamp": "2026-08-12 10:25:36"
+      }
+    },
+    {
+      "symbol": "TSM",
+      "finra_short": {
+        "symbol": "TSM",
+        "settlement_date": "2026-07-31",
+        "short_shares": 33191967.0,
+        "short_shares_prev": 33350090.0,
+        "short_chg_pct": -0.474,
+        "days_to_cover": 2.03,
+        "avg_daily_volume": 16326172,
+        "quality": "observed",
+        "source": "FINRA consolidatedShortInterest",
+        "history_n": 26
+      },
+      "spot": {
+        "price": 422.0,
+        "prev_close": 422.06,
+        "day_return": -0.000142,
+        "premarket_price": 428.2239,
+        "premarket_gap": 0.023308,
+        "quality": "observed",
+        "source": "Cboe delayed_quotes (+ Yahoo premarket if any)"
+      },
+      "yahoo_short_supplement": {
+        "short_ratio": 2.16,
+        "short_percent_of_float": 0.0069,
+        "shares_short": 33191967,
+        "shares_short_prior": 27731361,
+        "source": "Yahoo info (supplement)",
+        "quality": "estimated"
+      },
+      "options": {
+        "nearest_expiry": "2026-08-14",
+        "n_expiries_listed": 19,
+        "call_volume": 40317.0,
+        "put_volume": 53532.0,
+        "call_oi": 991984.0,
+        "put_oi": 1112008.0,
+        "put_call_volume": 1.3278,
+        "put_call_oi": 1.121,
+        "atm_call_iv": 0.4064,
+        "total_volume": 93849.0,
+        "n_contracts": 2540,
+        "quality": "observed",
+        "source": "Cboe delayed_quotes/options (CDN)",
+        "note_ko": "지연 공개 체인. Open-Close/고객분류 아님.",
+        "timestamp": "2026-08-12 09:22:32"
+      }
+    },
+    {
+      "symbol": "SOXL",
+      "finra_short": {
+        "symbol": "SOXL",
+        "settlement_date": "2026-07-31",
+        "short_shares": 30488090.0,
+        "short_shares_prev": 18086765.0,
+        "short_chg_pct": 68.566,
+        "days_to_cover": 1,
+        "avg_daily_volume": 87118209,
+        "quality": "observed",
+        "source": "FINRA consolidatedShortInterest",
+        "history_n": 26
+      },
+      "spot": {
+        "price": 133.0,
+        "prev_close": 133.0,
+        "day_return": 0.0,
+        "premarket_price": 140.74,
+        "premarket_gap": 0.082615,
+        "quality": "observed",
+        "source": "Cboe delayed_quotes (+ Yahoo premarket if any)"
+      },
+      "yahoo_short_supplement": {
+        "short_ratio": null,
+        "short_percent_of_float": null,
+        "shares_short": null,
+        "shares_short_prior": null,
+        "source": "Yahoo info (supplement)",
+        "quality": "estimated"
+      },
+      "options": {
+        "nearest_expiry": "2026-08-14",
+        "n_expiries_listed": 12,
+        "call_volume": 45133.0,
+        "put_volume": 104397.0,
+        "call_oi": 490622.0,
+        "put_oi": 1085540.0,
+        "put_call_volume": 2.3131,
+        "put_call_oi": 2.2126,
+        "atm_call_iv": 1.5192,
+        "total_volume": 149530.0,
+        "n_contracts": 3290,
+        "quality": "observed",
+        "source": "Cboe delayed_quotes/options (CDN)",
+        "note_ko": "지연 공개 체인. Open-Close/고객분류 아님.",
+        "timestamp": "2026-08-12 10:02:01"
+      }
+    },
+    {
+      "symbol": "SMH",
+      "finra_short": {
+        "symbol": "SMH",
+        "settlement_date": "2026-07-31",
+        "short_shares": 11105545.0,
+        "short_shares_prev": 16200547.0,
+        "short_chg_pct": -31.45,
+        "days_to_cover": 1,
+        "avg_daily_volume": 15284591,
+        "quality": "observed",
+        "source": "FINRA consolidatedShortInterest",
+        "history_n": 26
+      },
+      "spot": {
+        "price": 574.4,
+        "prev_close": 572.93,
+        "day_return": 0.002566,
+        "premarket_price": 582.21,
+        "premarket_gap": 0.022479,
+        "quality": "observed",
+        "source": "Cboe delayed_quotes (+ Yahoo premarket if any)"
+      },
+      "yahoo_short_supplement": {
+        "short_ratio": null,
+        "short_percent_of_float": null,
+        "shares_short": null,
+        "shares_short_prior": null,
+        "source": "Yahoo info (supplement)",
+        "quality": "estimated"
+      },
+      "options": {
+        "nearest_expiry": "2026-08-12",
+        "n_expiries_listed": 24,
+        "call_volume": 43902.0,
+        "put_volume": 67816.0,
+        "call_oi": 768763.0,
+        "put_oi": 1511712.0,
+        "put_call_volume": 1.5447,
+        "put_call_oi": 1.9664,
+        "atm_call_iv": 0.4324,
+        "total_volume": 111718.0,
+        "n_contracts": 7176,
+        "quality": "observed",
+        "source": "Cboe delayed_quotes/options (CDN)",
+        "note_ko": "지연 공개 체인. Open-Close/고객분류 아님.",
+        "timestamp": "2026-08-12 10:35:01"
+      }
+    },
+    {
+      "symbol": "KORU",
+      "finra_short": {
+        "symbol": "KORU",
+        "settlement_date": "2026-07-31",
+        "short_shares": 31477143.0,
+        "short_shares_prev": 15522765.0,
+        "short_chg_pct": 102.781,
+        "days_to_cover": 1,
+        "avg_daily_volume": 42556243,
+        "quality": "observed",
+        "source": "FINRA consolidatedShortInterest",
+        "history_n": 26
+      },
+      "spot": {
+        "price": 17.64,
+        "prev_close": 17.64,
+        "day_return": 0.0,
+        "premarket_price": 19.1587,
+        "premarket_gap": 0.167502,
+        "quality": "observed",
+        "source": "Cboe delayed_quotes (+ Yahoo premarket if any)"
+      },
+      "yahoo_short_supplement": {
+        "short_ratio": null,
+        "short_percent_of_float": null,
+        "shares_short": null,
+        "shares_short_prior": null,
+        "source": "Yahoo info (supplement)",
+        "quality": "estimated"
+      },
+      "options": {
+        "nearest_expiry": "2026-08-14",
+        "n_expiries_listed": 13,
+        "call_volume": 19486.0,
+        "put_volume": 23286.0,
+        "call_oi": 312871.0,
+        "put_oi": 252308.0,
+        "put_call_volume": 1.195,
+        "put_call_oi": 0.8064,
+        "atm_call_iv": 1.4725,
+        "total_volume": 42772.0,
+        "n_contracts": 3050,
+        "quality": "observed",
+        "source": "Cboe delayed_quotes/options (CDN)",
+        "note_ko": "지연 공개 체인. Open-Close/고객분류 아님.",
+        "timestamp": "2026-08-12 10:06:10"
+      }
+    },
+    {
+      "symbol": "EWY",
+      "finra_short": {
+        "symbol": "EWY",
+        "settlement_date": "2026-07-31",
+        "short_shares": 21064734.0,
+        "short_shares_prev": 36969319.0,
+        "short_chg_pct": -43.021,
+        "days_to_cover": 1,
+        "avg_daily_volume": 28449100,
+        "quality": "observed",
+        "source": "FINRA consolidatedShortInterest",
+        "history_n": 26
+      },
+      "spot": {
+        "price": 167.24,
+        "prev_close": 167.24,
+        "day_return": 0.0,
+        "premarket_price": 172.14,
+        "premarket_gap": 0.055297,
+        "quality": "observed",
+        "source": "Cboe delayed_quotes (+ Yahoo premarket if any)"
+      },
+      "yahoo_short_supplement": {
+        "short_ratio": null,
+        "short_percent_of_float": null,
+        "shares_short": null,
+        "shares_short_prior": null,
+        "source": "Yahoo info (supplement)",
+        "quality": "estimated"
+      },
+      "options": {
+        "nearest_expiry": "2026-08-14",
+        "n_expiries_listed": 14,
+        "call_volume": 45710.0,
+        "put_volume": 50624.0,
+        "call_oi": 649436.0,
+        "put_oi": 700691.0,
+        "put_call_volume": 1.1075,
+        "put_call_oi": 1.0789,
+        "atm_call_iv": 0.5604,
+        "total_volume": 96334.0,
+        "n_contracts": 2166,
+        "quality": "observed",
+        "source": "Cboe delayed_quotes/options (CDN)",
+        "note_ko": "지연 공개 체인. Open-Close/고객분류 아님.",
+        "timestamp": "2026-08-12 10:03:46"
+      }
+    },
+    {
+      "symbol": "SPY",
+      "finra_short": {
+        "symbol": "SPY",
+        "settlement_date": "2026-07-31",
+        "short_shares": 94367939.0,
+        "short_shares_prev": 96827747.0,
+        "short_chg_pct": -2.54,
+        "days_to_cover": 1.84,
+        "avg_daily_volume": 51300058,
+        "quality": "observed",
+        "source": "FINRA consolidatedShortInterest",
+        "history_n": 26
+      },
+      "spot": {
+        "price": 770.56,
+        "prev_close": 770.56,
+        "day_return": 0.0,
+        "premarket_price": 772.4316,
+        "premarket_gap": -0.000774,
+        "quality": "observed",
+        "source": "Cboe delayed_quotes (+ Yahoo premarket if any)"
+      },
+      "yahoo_short_supplement": {
+        "short_ratio": null,
+        "short_percent_of_float": null,
+        "shares_short": null,
+        "shares_short_prior": null,
+        "source": "Yahoo info (supplement)",
+        "quality": "estimated"
+      },
+      "options": {
+        "nearest_expiry": "2026-08-11",
+        "n_expiries_listed": 36,
+        "call_volume": 5074992.0,
+        "put_volume": 5440718.0,
+        "call_oi": 6753123.0,
+        "put_oi": 14230909.0,
+        "put_call_volume": 1.0721,
+        "put_call_oi": 2.1073,
+        "atm_call_iv": 0.1397,
+        "total_volume": 10515710.0,
+        "n_contracts": 14672,
+        "quality": "observed",
+        "source": "Cboe delayed_quotes/options (CDN)",
+        "note_ko": "지연 공개 체인. Open-Close/고객분류 아님.",
+        "timestamp": "2026-08-12 10:42:52"
+      }
+    },
+    {
+      "symbol": "QQQ",
+      "finra_short": {
+        "symbol": "QQQ",
+        "settlement_date": "2026-07-31",
+        "short_shares": 73194861.0,
+        "short_shares_prev": 67036554.0,
+        "short_chg_pct": 9.186,
+        "days_to_cover": 1.65,
+        "avg_daily_volume": 44348794,
+        "quality": "observed",
+        "source": "FINRA consolidatedShortInterest",
+        "history_n": 26
+      },
+      "spot": {
+        "price": 718.99,
+        "prev_close": 718.45,
+        "day_return": 0.000752,
+        "premarket_price": 723.37,
+        "premarket_gap": 0.003468,
+        "quality": "observed",
+        "source": "Cboe delayed_quotes (+ Yahoo premarket if any)"
+      },
+      "yahoo_short_supplement": {
+        "short_ratio": null,
+        "short_percent_of_float": null,
+        "shares_short": null,
+        "shares_short_prior": null,
+        "source": "Yahoo info (supplement)",
+        "quality": "estimated"
+      },
+      "options": {
+        "nearest_expiry": "2026-08-11",
+        "n_expiries_listed": 35,
+        "call_volume": 3413959.0,
+        "put_volume": 3471919.0,
+        "call_oi": 5352817.0,
+        "put_oi": 6424376.0,
+        "put_call_volume": 1.017,
+        "put_call_oi": 1.2002,
+        "atm_call_iv": 0.1026,
+        "total_volume": 6885878.0,
+        "n_contracts": 12890,
+        "quality": "observed",
+        "source": "Cboe delayed_quotes/options (CDN)",
+        "note_ko": "지연 공개 체인. Open-Close/고객분류 아님.",
+        "timestamp": "2026-08-12 10:46:22"
+      }
+    }
+  ],
+  "errors": [],
+  "disclaimer_ko": "공개·지연 데이터. 투자 권유 아님. 주체 특정 아님."
+}

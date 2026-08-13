@@ -1,0 +1,410 @@
+{
+  "key": "henan_wheat",
+  "label": "Henan + Huang-Huai-Hai winter wheat",
+  "doc": "Regions/중국/중부_허난/밀/겨울밀_상세분석_및_수식.md",
+  "target_label": "wheat yield",
+  "target_unit": "kg/ha",
+  "label_source": "USDA PSD, national",
+  "region_share": "Henan alone is about a quarter of Chinese wheat and the Huang-Huai-Hai plain as a whole roughly three quarters, so the national target is closer to a regional one here than for any other config in the set.",
+  "caveat": "SIF (solar-induced fluorescence) from §2A is omitted: the satellite record starts in 2007 and would cut the series roughly in half. The guide's proposal to reverse-engineer bad years from UN Comtrade milling-wheat imports is implemented as a separate diagnostic in imports.py rather than as a second label, because rewriting the target from trade data would make the yield model unfalsifiable.",
+  "non_weather_drivers": "The guide's own example is the point: in 2023 Beijing reported a 0.9% wheat decline while quality collapsed and milling-wheat imports hit a record. A tonnage yield series cannot represent a quality failure, so the single most consequential Henan weather event of the last decade is largely invisible in this target by construction.",
+  "trained_years": [
+    1984,
+    2025
+  ],
+  "n_seasons": 42,
+  "regime_start": null,
+  "trend": {
+    "log_poly_coef": [
+      -6.661428641962852e-05,
+      0.2860211714842616,
+      -297.3071486535828
+    ],
+    "degree": 2,
+    "form": "deg2",
+    "window": null,
+    "space": "log(kg/ha)"
+  },
+  "features": [
+    "dhw_days",
+    "dhw_severity",
+    "preharvest_rain",
+    "preharvest_rain_excess",
+    "late_may_rain",
+    "winterkill_days",
+    "heat_excess_fill",
+    "precip_jointing",
+    "gdd_spring",
+    "oni_season",
+    "spi3_spring"
+  ],
+  "feature_set": "all",
+  "trend_form": "deg2",
+  "scaler": {
+    "mean": [
+      0.8247619047619048,
+      4.277214285714287,
+      32.392433333333344,
+      11.797583333333334,
+      62.11933095238096,
+      0.8359523809523811,
+      23.849952380952384,
+      62.43750476190476,
+      1667.785104761905,
+      0.036726190476190475,
+      0.0036569209150751664
+    ],
+    "scale": [
+      0.8848170058191966,
+      4.826363961497677,
+      22.904185715649973,
+      17.26421149703183,
+      33.578065299590534,
+      0.9983726270758486,
+      14.997719065597597,
+      26.3522618937563,
+      88.1628285790308,
+      0.5663869639084992,
+      1.0006535060542259
+    ]
+  },
+  "ridge": {
+    "alpha": 10000.0,
+    "coef": [
+      -3.938115579022278e-06,
+      -2.1451425143974565e-06,
+      -2.4695573538740125e-05,
+      -2.4997398103859185e-05,
+      -1.8686300063261785e-05,
+      -1.982875386211975e-05,
+      4.486680401950656e-06,
+      -1.4290095211781082e-05,
+      -8.537968755796695e-06,
+      2.124421646200217e-05,
+      -7.647624795237884e-06
+    ],
+    "intercept": -2.0320251961270232e-13
+  },
+  "beats_trend": false,
+  "recent_skill_vs_trend": -1.1952359876166652,
+  "skill_vs_best_trend": -0.044980048383387095,
+  "best_trend_baseline_rmse": 162.85431511176273,
+  "weather_skill": -1.1952359876166652,
+  "non_weather_features": [],
+  "trend_plus_lags_rmse": null,
+  "recent_trend_bias": 181.63032401960382,
+  "recent_folds": 10,
+  "uncertainty": {
+    "sigma": 90.34315834973955,
+    "unit": "kg/ha",
+    "basis": "trend-only baseline RMSE over the last 10 folds (model showed no skill)"
+  },
+  "validation": {
+    "all_deg1_loo": {
+      "rmse": 157.32480284170137,
+      "mae": 122.39477117755771,
+      "detrended_r2": -0.0008618353204818963,
+      "skill_vs_trend": -0.0004290569947245082,
+      "baseline_rmse": 157.25733048408546,
+      "recent_rmse": 174.3142883959003,
+      "recent_baseline_rmse": 174.23815452478405,
+      "recent_trend_bias": 74.0204061183118,
+      "n": 42,
+      "years": [
+        1984,
+        2025
+      ],
+      "degree": 1,
+      "window": null,
+      "trend_form": "deg1"
+    },
+    "all_deg1_forward": {
+      "rmse": 174.39062675442617,
+      "mae": 133.96971713422857,
+      "detrended_r2": -0.037361141209932835,
+      "skill_vs_trend": 0.001054862184708849,
+      "baseline_rmse": 174.57477908728924,
+      "recent_rmse": 204.51773306726488,
+      "recent_baseline_rmse": 204.52602607223977,
+      "recent_trend_bias": 163.08444365653514,
+      "n": 20,
+      "years": [
+        2006,
+        2025
+      ],
+      "degree": 1,
+      "window": null,
+      "trend_form": "deg1"
+    },
+    "all_deg2_loo": {
+      "rmse": 148.2907453267752,
+      "mae": 117.31182029835034,
+      "detrended_r2": -0.0010410833220670934,
+      "skill_vs_trend": -0.0004895746523319033,
+      "baseline_rmse": 148.21818146211663,
+      "recent_rmse": 132.5803800030568,
+      "recent_baseline_rmse": 132.57457206302922,
+      "recent_trend_bias": 28.5139123132386,
+      "n": 42,
+      "years": [
+        1984,
+        2025
+      ],
+      "degree": 2,
+      "window": null,
+      "trend_form": "deg2"
+    },
+    "all_deg2_forward": {
+      "rmse": 170.17951008493318,
+      "mae": 144.37482934797055,
+      "detrended_r2": -0.2653303778698197,
+      "skill_vs_trend": 0.0018964635433550425,
+      "baseline_rmse": 170.50286254779274,
+      "recent_rmse": 198.3245524442993,
+      "recent_baseline_rmse": 198.41895908480404,
+      "recent_trend_bias": 181.63032401960382,
+      "n": 20,
+      "years": [
+        2006,
+        2025
+      ],
+      "degree": 2,
+      "window": null,
+      "trend_form": "deg2"
+    },
+    "all_recent20_loo": {
+      "rmse": 275.00007290492346,
+      "mae": 246.7165595432752,
+      "detrended_r2": -0.6373649363342184,
+      "skill_vs_trend": 0.03385913074473679,
+      "baseline_rmse": 284.637656532327,
+      "recent_rmse": 299.52116414128244,
+      "recent_baseline_rmse": 106.99577953774848,
+      "recent_trend_bias": 2.022530378355077,
+      "n": 42,
+      "years": [
+        1984,
+        2025
+      ],
+      "degree": 1,
+      "window": 20,
+      "trend_form": "recent20"
+    },
+    "all_recent20_forward": {
+      "rmse": 180.3967011562357,
+      "mae": 139.79483193008454,
+      "detrended_r2": -0.3479229117332192,
+      "skill_vs_trend": -0.10771827588623673,
+      "baseline_rmse": 162.85431511176273,
+      "recent_rmse": 225.95771634456227,
+      "recent_baseline_rmse": 194.78969864322065,
+      "recent_trend_bias": 173.47109762011215,
+      "n": 20,
+      "years": [
+        2006,
+        2025
+      ],
+      "degree": 1,
+      "window": 20,
+      "trend_form": "recent20"
+    },
+    "all_recent10_loo": {
+      "rmse": 428.3814051274479,
+      "mae": 387.622002373096,
+      "detrended_r2": -0.467792336785152,
+      "skill_vs_trend": 0.22955789001237858,
+      "baseline_rmse": 556.0202376974574,
+      "recent_rmse": 493.43177461177015,
+      "recent_baseline_rmse": 75.88690825197058,
+      "recent_trend_bias": 2.3526991757689757,
+      "n": 42,
+      "years": [
+        1984,
+        2025
+      ],
+      "degree": 1,
+      "window": 10,
+      "trend_form": "recent10"
+    },
+    "all_recent10_forward": {
+      "rmse": 435.7914230160511,
+      "mae": 318.9606001142093,
+      "detrended_r2": -5.971407893589409,
+      "skill_vs_trend": -1.6139091222936344,
+      "baseline_rmse": 166.7201890453085,
+      "recent_rmse": 204.07402945195844,
+      "recent_baseline_rmse": 90.34315834973955,
+      "recent_trend_bias": 60.768654665023675,
+      "n": 20,
+      "years": [
+        2006,
+        2025
+      ],
+      "degree": 1,
+      "window": 10,
+      "trend_form": "recent10"
+    },
+    "core_deg1_loo": {
+      "rmse": 163.5017089271173,
+      "mae": 127.63190394097596,
+      "detrended_r2": -0.08099660342452553,
+      "skill_vs_trend": -0.03970802775177318,
+      "baseline_rmse": 157.25733048408546,
+      "recent_rmse": 179.99976623920264,
+      "recent_baseline_rmse": 174.23815452478405,
+      "recent_trend_bias": 74.0204061183118,
+      "n": 42,
+      "years": [
+        1984,
+        2025
+      ],
+      "degree": 1,
+      "window": null,
+      "trend_form": "deg1"
+    },
+    "core_deg1_forward": {
+      "rmse": 176.70212742832882,
+      "mae": 134.72081644763688,
+      "detrended_r2": -0.06504327667598542,
+      "skill_vs_trend": -0.012185885911824013,
+      "baseline_rmse": 174.57477908728924,
+      "recent_rmse": 208.18184923265468,
+      "recent_baseline_rmse": 204.52602607223977,
+      "recent_trend_bias": 163.08444365653514,
+      "n": 20,
+      "years": [
+        2006,
+        2025
+      ],
+      "degree": 1,
+      "window": null,
+      "trend_form": "deg1"
+    },
+    "core_deg2_loo": {
+      "rmse": 148.2373800355988,
+      "mae": 117.24610902249367,
+      "detrended_r2": -0.0003207249947716484,
+      "skill_vs_trend": -0.00012952913935904142,
+      "baseline_rmse": 148.21818146211663,
+      "recent_rmse": 132.6051134403635,
+      "recent_baseline_rmse": 132.57457206302922,
+      "recent_trend_bias": 28.5139123132386,
+      "n": 42,
+      "years": [
+        1984,
+        2025
+      ],
+      "degree": 2,
+      "window": null,
+      "trend_form": "deg2"
+    },
+    "core_deg2_forward": {
+      "rmse": 170.76293797893817,
+      "mae": 143.97378354284268,
+      "detrended_r2": -0.2740211359490503,
+      "skill_vs_trend": -0.0015253434884268113,
+      "baseline_rmse": 170.50286254779274,
+      "recent_rmse": 196.51811571492502,
+      "recent_baseline_rmse": 198.41895908480404,
+      "recent_trend_bias": 181.63032401960382,
+      "n": 20,
+      "years": [
+        2006,
+        2025
+      ],
+      "degree": 2,
+      "window": null,
+      "trend_form": "deg2"
+    },
+    "core_recent20_loo": {
+      "rmse": 255.90371487962875,
+      "mae": 229.93316314735165,
+      "detrended_r2": -0.4178590149800312,
+      "skill_vs_trend": 0.10094919274827174,
+      "baseline_rmse": 284.637656532327,
+      "recent_rmse": 306.39101325664694,
+      "recent_baseline_rmse": 106.99577953774848,
+      "recent_trend_bias": 2.022530378355077,
+      "n": 42,
+      "years": [
+        1984,
+        2025
+      ],
+      "degree": 1,
+      "window": 20,
+      "trend_form": "recent20"
+    },
+    "core_recent20_forward": {
+      "rmse": 186.56080362345338,
+      "mae": 148.93413818698596,
+      "detrended_r2": -0.44161296717242604,
+      "skill_vs_trend": -0.1455686850877822,
+      "baseline_rmse": 162.85431511176273,
+      "recent_rmse": 226.15927514906915,
+      "recent_baseline_rmse": 194.78969864322065,
+      "recent_trend_bias": 173.47109762011215,
+      "n": 20,
+      "years": [
+        2006,
+        2025
+      ],
+      "degree": 1,
+      "window": 20,
+      "trend_form": "recent20"
+    },
+    "core_recent10_loo": {
+      "rmse": 436.0803010168572,
+      "mae": 395.6180870851548,
+      "detrended_r2": -0.5210249271976359,
+      "skill_vs_trend": 0.21571145895207888,
+      "baseline_rmse": 556.0202376974574,
+      "recent_rmse": 618.2538239065325,
+      "recent_baseline_rmse": 75.88690825197058,
+      "recent_trend_bias": 2.3526991757689757,
+      "n": 42,
+      "years": [
+        1984,
+        2025
+      ],
+      "degree": 1,
+      "window": 10,
+      "trend_form": "recent10"
+    },
+    "core_recent10_forward": {
+      "rmse": 402.19392211725193,
+      "mae": 331.2077377687041,
+      "detrended_r2": -4.937917284367986,
+      "skill_vs_trend": -1.4123888319725344,
+      "baseline_rmse": 166.7201890453085,
+      "recent_rmse": 299.9138317589728,
+      "recent_baseline_rmse": 90.34315834973955,
+      "recent_trend_bias": 60.768654665023675,
+      "n": 20,
+      "years": [
+        2006,
+        2025
+      ],
+      "degree": 1,
+      "window": 10,
+      "trend_form": "recent10"
+    }
+  },
+  "forward": {
+    "rmse": 170.17951008493318,
+    "mae": 144.37482934797055,
+    "detrended_r2": -0.2653303778698197,
+    "skill_vs_trend": 0.0018964635433550425,
+    "baseline_rmse": 170.50286254779274,
+    "recent_rmse": 198.3245524442993,
+    "recent_baseline_rmse": 198.41895908480404,
+    "recent_trend_bias": 181.63032401960382,
+    "n": 20,
+    "years": [
+      2006,
+      2025
+    ],
+    "degree": 2,
+    "window": null,
+    "trend_form": "deg2"
+  }
+}

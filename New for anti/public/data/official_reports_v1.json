@@ -1,6 +1,6 @@
 {
   "schema_version": "official-reports-v1",
-  "generated_at": "2026-08-07T08:33:10.340940+00:00",
+  "generated_at": "2026-08-12T22:25:16.480096+00:00",
   "model": {
     "name": "official_reports_learnable_v1",
     "description": "Official sources only (US/JP/CN/EU/UK public RSS·HTML). Domains: economy/finance/diplomacy/security/agriculture. Series catalog + label_history for collaborative learning. No Dropbox.",
@@ -17,10 +17,10 @@
   "stats": {
     "sources_ok": 9,
     "sources_failed": 0,
-    "raw_items": 169,
-    "scored": 168,
+    "raw_items": 170,
+    "scored": 169,
     "selected": 40,
-    "indicators": 15
+    "indicators": 16
   },
   "feed_status": [
     {
@@ -47,14 +47,14 @@
     {
       "source_id": "us_eia",
       "ok": true,
-      "count": 13,
+      "count": 16,
       "error": null,
       "mode": "live"
     },
     {
       "source_id": "us_treasury_press_list",
       "ok": true,
-      "count": 14,
+      "count": 12,
       "error": null,
       "mode": "live"
     },
@@ -116,6 +116,20 @@
       "published_at": "2026-07-29T18:00:00+00:00",
       "site_slot": "finance.policy",
       "significance": 3.445
+    },
+    {
+      "series_id": "JP_BOJ_POLICY",
+      "label_ko": "일본은행 정책·공표",
+      "country": "JPN",
+      "domains": [
+        "finance",
+        "economy"
+      ],
+      "title": "Summary of Opinions at the Monetary Policy Meeting on July 30 and 31, 2026",
+      "url": "http://www.boj.or.jp/en/mopo/mpmsche_minu/opinion_2026/opi260731.pdf",
+      "published_at": "2026-08-09T23:50:00+00:00",
+      "site_slot": "finance.policy",
+      "significance": 3.326
     },
     {
       "series_id": "JP_BOJ_POLICY",
@@ -333,34 +347,71 @@
       "site_slot": "finance.policy"
     },
     {
-      "id": "e26f4bb4c3f411e3",
-      "published_at": "2026-07-28T05:00:00+00:00",
+      "id": "fc726848eeb05fe7",
+      "published_at": "2026-08-12T21:43:13+00:00",
       "source": {
-        "id": "jp_boj_whatsnew",
-        "name": "Bank of Japan",
-        "region": "jpn",
+        "id": "us_whitehouse",
+        "name": "White House",
+        "region": "usa",
         "slant": null
       },
-      "url": "http://www.boj.or.jp/en/research/research_data/cpi/index.htm",
+      "url": "https://www.whitehouse.gov/presidential-actions/2026/08/expanding-capabilities-to-combat-transnational-cyber-enabled-crime/",
       "category": "official_report",
       "commodities": [],
       "domains": [
+        "finance",
+        "security",
         "economy",
-        "finance"
+        "diplomacy"
       ],
       "series_id": null,
       "title": {
-        "original": "Indicators for Core CPI",
+        "original": "Expanding Capabilities to Combat Transnational Cyber-Enabled Crime",
         "original_lang": "en",
-        "ko": "[JPN·경제] Indicators for Core CPI"
+        "ko": "[USA·금융] Expanding Capabilities to Combat Transnational Cyber-Enabled Crime"
       },
-      "summary": "",
+      "summary": "MEMORANDUM FOR THE VICE PRESIDENT THE SECRETARY OF STATE THE SECRETARY OF THE TREASURY THE SECRETARY OF WAR THE ATTORNEY GENERAL THE SECRETARY OF COMMERCE THE SECRETARY OF ENERGY THE SECRETARY OF HOMELAND SECURITY THE ASSISTANT TO THE PRESIDENT AND CHIEF OF STAFF THE DIRECTOR OF ",
       "scores": {
-        "significance": 3.591,
-        "final": 3.591
+        "significance": 3.473,
+        "final": 3.473
       },
       "rank_reasons": [
-        "domains:economy,finance"
+        "domains:economy,finance,diplomacy"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
+      "id": "dcd9d4db1a9e8e54",
+      "published_at": "2026-08-12T21:43:04+00:00",
+      "source": {
+        "id": "us_whitehouse",
+        "name": "White House",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.whitehouse.gov/fact-sheets/2026/08/fact-sheet-president-donald-j-trump-expands-capabilities-to-combat-transnational-cyber-enabled-crime/",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "security",
+        "economy",
+        "diplomacy"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "Fact Sheet: President Donald J. Trump Expands Capabilities to Combat Transnational Cyber-Enabled Crime",
+        "original_lang": "en",
+        "ko": "[USA·안보] Fact Sheet: President Donald J. Trump Expands Capabilities to Combat Transnational Cyber-Enabled Crime"
+      },
+      "summary": "THWARTING CYBER CRIMES: Today, President Donald J. Trump signed a National Security Presidential Memorandum (NSPM) empowering U.S. Federal law enforcement to use cyber tools to disrupt transnational criminal organizations (TCOs) that operate in foreign jurisdictions to attack Ame",
+      "scores": {
+        "significance": 3.473,
+        "final": 3.473
+      },
+      "rank_reasons": [
+        "domains:economy,diplomacy,security"
       ],
       "translation_status": "skipped",
       "event_type": "official_report",
@@ -431,6 +482,41 @@
       "rank_reasons": [
         "domains:economy,finance",
         "series:US_FED_FOMC"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": "finance.policy"
+    },
+    {
+      "id": "0f9273d9472286ee",
+      "published_at": "2026-08-09T23:50:00+00:00",
+      "source": {
+        "id": "jp_boj_whatsnew",
+        "name": "Bank of Japan",
+        "region": "jpn",
+        "slant": null
+      },
+      "url": "http://www.boj.or.jp/en/mopo/mpmsche_minu/opinion_2026/opi260731.pdf",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "finance",
+        "economy"
+      ],
+      "series_id": "JP_BOJ_POLICY",
+      "title": {
+        "original": "Summary of Opinions at the Monetary Policy Meeting on July 30 and 31, 2026",
+        "original_lang": "en",
+        "ko": "[JPN·금융] Summary of Opinions at the Monetary Policy Meeting on July 30 and 31, 2026"
+      },
+      "summary": "",
+      "scores": {
+        "significance": 3.326,
+        "final": 3.326
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "series:JP_BOJ_POLICY"
       ],
       "translation_status": "skipped",
       "event_type": "official_report",
@@ -1134,111 +1220,6 @@
       "site_slot": null
     },
     {
-      "id": "298c6099d7d712ef",
-      "published_at": "2026-07-30T20:34:56+00:00",
-      "source": {
-        "id": "us_whitehouse",
-        "name": "White House",
-        "region": "usa",
-        "slant": null
-      },
-      "url": "https://www.whitehouse.gov/fact-sheets/2026/07/fact-sheet-president-donald-j-trump-delegates-defense-production-act-authority-with-respect-to-recoverable-critical-minerals-and-materials-that-are-essential-to-our-national-defense/",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "security",
-        "economy",
-        "diplomacy"
-      ],
-      "series_id": null,
-      "title": {
-        "original": "Fact Sheet: President Donald J. Trump Delegates Defense Production Act Authority with Respect to Recoverable Critical Minerals and Materials That Are Essential to Our National Defense",
-        "original_lang": "en",
-        "ko": "[USA·안보] Fact Sheet: President Donald J. Trump Delegates Defense Production Act Authority with Respect to Recoverable Critical Minerals and Materials That Are Essential to Our National Defense"
-      },
-      "summary": "SECURING AMERICA’S SUPPLY CHAINS: Today, President Donald J. Trump signed a Presidential Determination delegating authority under the Defense Production Act to institute export restrictions on recoverable critical minerals and materials (CMMs). ENSURING OUR NATIONAL DEFENSE: Pres",
-      "scores": {
-        "significance": 2.438,
-        "final": 2.438
-      },
-      "rank_reasons": [
-        "domains:economy,diplomacy,security"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
-    },
-    {
-      "id": "f03a89b71528ccd7",
-      "published_at": "2026-07-30T20:33:26+00:00",
-      "source": {
-        "id": "us_whitehouse",
-        "name": "White House",
-        "region": "usa",
-        "slant": null
-      },
-      "url": "https://www.whitehouse.gov/presidential-actions/2026/07/presidential-determination-pursuant-to-section-101-of-the-defense-production-act-of-1950-as-amended-on-recoverable-critical-minerals-and-materials/",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "security",
-        "economy",
-        "diplomacy"
-      ],
-      "series_id": null,
-      "title": {
-        "original": "Presidential Determination Pursuant to Section 101 of the Defense Production Act of 1950, as Amended, on Recoverable Critical Minerals and Materials",
-        "original_lang": "en",
-        "ko": "[USA·안보] Presidential Determination Pursuant to Section 101 of the Defense Production Act of 1950, as Amended, on Recoverable Critical Minerals and Materials"
-      },
-      "summary": "MEMORANDUM FOR THE SECRETARY OF COMMERCE SUBJECT: Presidential Determination Pursuant to Section 101 of the Defense Production Act of 1950, as Amended, on Recoverable Critical Minerals and Materials Section 1. Policy and General Findings. (a) Recoverable critical minerals and mat",
-      "scores": {
-        "significance": 2.438,
-        "final": 2.438
-      },
-      "rank_reasons": [
-        "domains:economy,diplomacy,security"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
-    },
-    {
-      "id": "139010fd65f0e41c",
-      "published_at": "2026-07-30T13:18:36+00:00",
-      "source": {
-        "id": "us_whitehouse",
-        "name": "White House",
-        "region": "usa",
-        "slant": null
-      },
-      "url": "https://www.whitehouse.gov/releases/2026/07/the-white-house-government-transparency-task-force-fact-sheet/",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "security",
-        "economy",
-        "diplomacy"
-      ],
-      "series_id": null,
-      "title": {
-        "original": "The White House Government Transparency Task Force Fact Sheet",
-        "original_lang": "en",
-        "ko": "[USA·안보] The White House Government Transparency Task Force Fact Sheet"
-      },
-      "summary": "The White House Government Transparency Task Force releases the following fact sheet approved by the directors of the Office of the Director of National Intelligence, the National Security Agency, the Central Intelligence Agency, and the Department of Homeland Security relating t",
-      "scores": {
-        "significance": 2.438,
-        "final": 2.438
-      },
-      "rank_reasons": [
-        "domains:economy,diplomacy,security"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
-    },
-    {
       "id": "06fdfda7dc2bc85e",
       "published_at": "2026-07-23T16:00:00+00:00",
       "source": {
@@ -1274,15 +1255,15 @@
       "site_slot": null
     },
     {
-      "id": "ea152d4f78bc4c43",
-      "published_at": "2026-07-27T13:04:29+00:00",
+      "id": "2ca916a480fc4e7d",
+      "published_at": "2026-08-07T19:44:19+00:00",
       "source": {
         "id": "us_whitehouse",
         "name": "White House",
         "region": "usa",
         "slant": null
       },
-      "url": "https://www.whitehouse.gov/briefings-statements/2026/07/first-lady-melania-trump-announces-opening-of-christmas-volunteer-performer-applications-be30/",
+      "url": "https://www.whitehouse.gov/fact-sheets/2026/08/fact-sheet-president-donald-j-trump-announces-billions-in-new-deals-and-investments-to-power-american-mining/",
       "category": "official_report",
       "commodities": [],
       "domains": [
@@ -1292,11 +1273,11 @@
       ],
       "series_id": null,
       "title": {
-        "original": "First Lady Melania Trump Announces Opening of Christmas Volunteer & Performer Applications",
+        "original": "Fact Sheet: President Donald J. Trump Announces Billions in New Deals and Investments to Power American Mining",
         "original_lang": "en",
-        "ko": "[USA·경제] First Lady Melania Trump Announces Opening of Christmas Volunteer & Performer Applications"
+        "ko": "[USA·경제] Fact Sheet: President Donald J. Trump Announces Billions in New Deals and Investments to Power American Mining"
       },
-      "summary": "Christmas planning is underway at the White House, and President Donald J. Trump and First Lady Melania Trump are excited to continue the cherished tradition of welcoming volunteers to help celebrate the holiday season at the People’s House. Starting today, applications are open ",
+      "summary": "BOLSTERING AMERICAN MINING: Today, President Donald J. Trump held a historic roundtable with the mining industry where he announced over $2 billion in critical mining and mining-related projects to revitalize the industry and over $180 million in mining school investments to bols",
       "scores": {
         "significance": 2.392,
         "final": 2.392
@@ -1304,6 +1285,41 @@
       "rank_reasons": [
         "domains:economy,diplomacy,security",
         "boost:1"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
+      "id": "f4c861363297d5e2",
+      "published_at": "2026-08-07T14:00:00+00:00",
+      "source": {
+        "id": "us_eia",
+        "name": "EIA",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.eia.gov/todayinenergy/detail.php?id=67925",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "security",
+        "agriculture"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "Battery storage capacity averaged 70% growth over the last three years",
+        "original_lang": "en",
+        "ko": "[USA·경제] Battery storage capacity averaged 70% growth over the last three years"
+      },
+      "summary": "Utility-scale battery storage capacity in the United States increased significantly during the last three years, with an annual average growth rate of 70%. By the end of 2025, the U.S. power system had operational battery storage capacity of 43.6 gigawatts (GW). During the first ",
+      "scores": {
+        "significance": 2.332,
+        "final": 2.332
+      },
+      "rank_reasons": [
+        "domains:economy,security,agriculture"
       ],
       "translation_status": "skipped",
       "event_type": "official_report",
@@ -1697,8 +1713,8 @@
   ],
   "pending_review": [
     {
-      "title": "August 5, 2026",
-      "url": "https://home.treasury.gov/news/press-releases/sb0594",
+      "title": "August 11, 2026",
+      "url": "https://home.treasury.gov/news/press-releases/sb0603",
       "country": "USA",
       "domains": [
         "economy",
@@ -1709,8 +1725,8 @@
       "suggest": "label promote|keep|drop + series_id later"
     },
     {
-      "title": "August 5, 2026",
-      "url": "https://home.treasury.gov/news/press-releases/sb0593",
+      "title": "August 11, 2026",
+      "url": "https://home.treasury.gov/news/press-releases/sb0602",
       "country": "USA",
       "domains": [
         "economy",
@@ -1721,8 +1737,32 @@
       "suggest": "label promote|keep|drop + series_id later"
     },
     {
-      "title": "August 5, 2026",
-      "url": "https://home.treasury.gov/news/press-releases/sb0592",
+      "title": "August 7, 2026",
+      "url": "https://home.treasury.gov/news/press-releases/sb0599",
+      "country": "USA",
+      "domains": [
+        "economy",
+        "finance",
+        "diplomacy"
+      ],
+      "significance": 2.291,
+      "suggest": "label promote|keep|drop + series_id later"
+    },
+    {
+      "title": "August 10, 2026",
+      "url": "https://home.treasury.gov/news/press-releases/sb0601",
+      "country": "USA",
+      "domains": [
+        "economy",
+        "finance",
+        "diplomacy"
+      ],
+      "significance": 2.291,
+      "suggest": "label promote|keep|drop + series_id later"
+    },
+    {
+      "title": "August 7, 2026",
+      "url": "https://home.treasury.gov/news/press-releases/sb0600",
       "country": "USA",
       "domains": [
         "economy",
@@ -1735,30 +1775,6 @@
     {
       "title": "August 6, 2026",
       "url": "https://home.treasury.gov/news/press-releases/sb0595",
-      "country": "USA",
-      "domains": [
-        "economy",
-        "finance",
-        "diplomacy"
-      ],
-      "significance": 2.291,
-      "suggest": "label promote|keep|drop + series_id later"
-    },
-    {
-      "title": "July 27, 2026",
-      "url": "https://home.treasury.gov/news/press-releases/sb0579",
-      "country": "USA",
-      "domains": [
-        "economy",
-        "finance",
-        "diplomacy"
-      ],
-      "significance": 2.291,
-      "suggest": "label promote|keep|drop + series_id later"
-    },
-    {
-      "title": "July 22, 2026",
-      "url": "https://home.treasury.gov/news/press-releases/sb0571",
       "country": "USA",
       "domains": [
         "economy",
@@ -1793,8 +1809,44 @@
       "suggest": "label promote|keep|drop + series_id later"
     },
     {
+      "title": "August 7, 2026",
+      "url": "https://home.treasury.gov/news/press-releases/sb0598",
+      "country": "USA",
+      "domains": [
+        "economy",
+        "finance",
+        "diplomacy"
+      ],
+      "significance": 2.291,
+      "suggest": "label promote|keep|drop + series_id later"
+    },
+    {
+      "title": "August 7, 2026",
+      "url": "https://home.treasury.gov/news/press-releases/sb0596",
+      "country": "USA",
+      "domains": [
+        "economy",
+        "finance",
+        "diplomacy"
+      ],
+      "significance": 2.291,
+      "suggest": "label promote|keep|drop + series_id later"
+    },
+    {
+      "title": "August 7, 2026",
+      "url": "https://home.treasury.gov/news/press-releases/sb0597",
+      "country": "USA",
+      "domains": [
+        "economy",
+        "finance",
+        "diplomacy"
+      ],
+      "significance": 2.291,
+      "suggest": "label promote|keep|drop + series_id later"
+    },
+    {
       "title": "August 5, 2026",
-      "url": "https://home.treasury.gov/news/press-releases/sb0590",
+      "url": "https://home.treasury.gov/news/press-releases/sb0594",
       "country": "USA",
       "domains": [
         "economy",
@@ -1843,34 +1895,71 @@
       "site_slot": "finance.policy"
     },
     {
-      "id": "e26f4bb4c3f411e3",
-      "published_at": "2026-07-28T05:00:00+00:00",
+      "id": "fc726848eeb05fe7",
+      "published_at": "2026-08-12T21:43:13+00:00",
       "source": {
-        "id": "jp_boj_whatsnew",
-        "name": "Bank of Japan",
-        "region": "jpn",
+        "id": "us_whitehouse",
+        "name": "White House",
+        "region": "usa",
         "slant": null
       },
-      "url": "http://www.boj.or.jp/en/research/research_data/cpi/index.htm",
+      "url": "https://www.whitehouse.gov/presidential-actions/2026/08/expanding-capabilities-to-combat-transnational-cyber-enabled-crime/",
       "category": "official_report",
       "commodities": [],
       "domains": [
+        "finance",
+        "security",
         "economy",
-        "finance"
+        "diplomacy"
       ],
       "series_id": null,
       "title": {
-        "original": "Indicators for Core CPI",
+        "original": "Expanding Capabilities to Combat Transnational Cyber-Enabled Crime",
         "original_lang": "en",
-        "ko": "[JPN·경제] Indicators for Core CPI"
+        "ko": "[USA·금융] Expanding Capabilities to Combat Transnational Cyber-Enabled Crime"
       },
-      "summary": "",
+      "summary": "MEMORANDUM FOR THE VICE PRESIDENT THE SECRETARY OF STATE THE SECRETARY OF THE TREASURY THE SECRETARY OF WAR THE ATTORNEY GENERAL THE SECRETARY OF COMMERCE THE SECRETARY OF ENERGY THE SECRETARY OF HOMELAND SECURITY THE ASSISTANT TO THE PRESIDENT AND CHIEF OF STAFF THE DIRECTOR OF ",
       "scores": {
-        "significance": 3.591,
-        "final": 3.591
+        "significance": 3.473,
+        "final": 3.473
       },
       "rank_reasons": [
-        "domains:economy,finance"
+        "domains:economy,finance,diplomacy"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
+      "id": "dcd9d4db1a9e8e54",
+      "published_at": "2026-08-12T21:43:04+00:00",
+      "source": {
+        "id": "us_whitehouse",
+        "name": "White House",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.whitehouse.gov/fact-sheets/2026/08/fact-sheet-president-donald-j-trump-expands-capabilities-to-combat-transnational-cyber-enabled-crime/",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "security",
+        "economy",
+        "diplomacy"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "Fact Sheet: President Donald J. Trump Expands Capabilities to Combat Transnational Cyber-Enabled Crime",
+        "original_lang": "en",
+        "ko": "[USA·안보] Fact Sheet: President Donald J. Trump Expands Capabilities to Combat Transnational Cyber-Enabled Crime"
+      },
+      "summary": "THWARTING CYBER CRIMES: Today, President Donald J. Trump signed a National Security Presidential Memorandum (NSPM) empowering U.S. Federal law enforcement to use cyber tools to disrupt transnational criminal organizations (TCOs) that operate in foreign jurisdictions to attack Ame",
+      "scores": {
+        "significance": 3.473,
+        "final": 3.473
+      },
+      "rank_reasons": [
+        "domains:economy,diplomacy,security"
       ],
       "translation_status": "skipped",
       "event_type": "official_report",
@@ -1941,6 +2030,41 @@
       "rank_reasons": [
         "domains:economy,finance",
         "series:US_FED_FOMC"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": "finance.policy"
+    },
+    {
+      "id": "0f9273d9472286ee",
+      "published_at": "2026-08-09T23:50:00+00:00",
+      "source": {
+        "id": "jp_boj_whatsnew",
+        "name": "Bank of Japan",
+        "region": "jpn",
+        "slant": null
+      },
+      "url": "http://www.boj.or.jp/en/mopo/mpmsche_minu/opinion_2026/opi260731.pdf",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "finance",
+        "economy"
+      ],
+      "series_id": "JP_BOJ_POLICY",
+      "title": {
+        "original": "Summary of Opinions at the Monetary Policy Meeting on July 30 and 31, 2026",
+        "original_lang": "en",
+        "ko": "[JPN·금융] Summary of Opinions at the Monetary Policy Meeting on July 30 and 31, 2026"
+      },
+      "summary": "",
+      "scores": {
+        "significance": 3.326,
+        "final": 3.326
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "series:JP_BOJ_POLICY"
       ],
       "translation_status": "skipped",
       "event_type": "official_report",
@@ -2644,111 +2768,6 @@
       "site_slot": null
     },
     {
-      "id": "298c6099d7d712ef",
-      "published_at": "2026-07-30T20:34:56+00:00",
-      "source": {
-        "id": "us_whitehouse",
-        "name": "White House",
-        "region": "usa",
-        "slant": null
-      },
-      "url": "https://www.whitehouse.gov/fact-sheets/2026/07/fact-sheet-president-donald-j-trump-delegates-defense-production-act-authority-with-respect-to-recoverable-critical-minerals-and-materials-that-are-essential-to-our-national-defense/",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "security",
-        "economy",
-        "diplomacy"
-      ],
-      "series_id": null,
-      "title": {
-        "original": "Fact Sheet: President Donald J. Trump Delegates Defense Production Act Authority with Respect to Recoverable Critical Minerals and Materials That Are Essential to Our National Defense",
-        "original_lang": "en",
-        "ko": "[USA·안보] Fact Sheet: President Donald J. Trump Delegates Defense Production Act Authority with Respect to Recoverable Critical Minerals and Materials That Are Essential to Our National Defense"
-      },
-      "summary": "SECURING AMERICA’S SUPPLY CHAINS: Today, President Donald J. Trump signed a Presidential Determination delegating authority under the Defense Production Act to institute export restrictions on recoverable critical minerals and materials (CMMs). ENSURING OUR NATIONAL DEFENSE: Pres",
-      "scores": {
-        "significance": 2.438,
-        "final": 2.438
-      },
-      "rank_reasons": [
-        "domains:economy,diplomacy,security"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
-    },
-    {
-      "id": "f03a89b71528ccd7",
-      "published_at": "2026-07-30T20:33:26+00:00",
-      "source": {
-        "id": "us_whitehouse",
-        "name": "White House",
-        "region": "usa",
-        "slant": null
-      },
-      "url": "https://www.whitehouse.gov/presidential-actions/2026/07/presidential-determination-pursuant-to-section-101-of-the-defense-production-act-of-1950-as-amended-on-recoverable-critical-minerals-and-materials/",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "security",
-        "economy",
-        "diplomacy"
-      ],
-      "series_id": null,
-      "title": {
-        "original": "Presidential Determination Pursuant to Section 101 of the Defense Production Act of 1950, as Amended, on Recoverable Critical Minerals and Materials",
-        "original_lang": "en",
-        "ko": "[USA·안보] Presidential Determination Pursuant to Section 101 of the Defense Production Act of 1950, as Amended, on Recoverable Critical Minerals and Materials"
-      },
-      "summary": "MEMORANDUM FOR THE SECRETARY OF COMMERCE SUBJECT: Presidential Determination Pursuant to Section 101 of the Defense Production Act of 1950, as Amended, on Recoverable Critical Minerals and Materials Section 1. Policy and General Findings. (a) Recoverable critical minerals and mat",
-      "scores": {
-        "significance": 2.438,
-        "final": 2.438
-      },
-      "rank_reasons": [
-        "domains:economy,diplomacy,security"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
-    },
-    {
-      "id": "139010fd65f0e41c",
-      "published_at": "2026-07-30T13:18:36+00:00",
-      "source": {
-        "id": "us_whitehouse",
-        "name": "White House",
-        "region": "usa",
-        "slant": null
-      },
-      "url": "https://www.whitehouse.gov/releases/2026/07/the-white-house-government-transparency-task-force-fact-sheet/",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "security",
-        "economy",
-        "diplomacy"
-      ],
-      "series_id": null,
-      "title": {
-        "original": "The White House Government Transparency Task Force Fact Sheet",
-        "original_lang": "en",
-        "ko": "[USA·안보] The White House Government Transparency Task Force Fact Sheet"
-      },
-      "summary": "The White House Government Transparency Task Force releases the following fact sheet approved by the directors of the Office of the Director of National Intelligence, the National Security Agency, the Central Intelligence Agency, and the Department of Homeland Security relating t",
-      "scores": {
-        "significance": 2.438,
-        "final": 2.438
-      },
-      "rank_reasons": [
-        "domains:economy,diplomacy,security"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
-    },
-    {
       "id": "06fdfda7dc2bc85e",
       "published_at": "2026-07-23T16:00:00+00:00",
       "source": {
@@ -2784,15 +2803,15 @@
       "site_slot": null
     },
     {
-      "id": "ea152d4f78bc4c43",
-      "published_at": "2026-07-27T13:04:29+00:00",
+      "id": "2ca916a480fc4e7d",
+      "published_at": "2026-08-07T19:44:19+00:00",
       "source": {
         "id": "us_whitehouse",
         "name": "White House",
         "region": "usa",
         "slant": null
       },
-      "url": "https://www.whitehouse.gov/briefings-statements/2026/07/first-lady-melania-trump-announces-opening-of-christmas-volunteer-performer-applications-be30/",
+      "url": "https://www.whitehouse.gov/fact-sheets/2026/08/fact-sheet-president-donald-j-trump-announces-billions-in-new-deals-and-investments-to-power-american-mining/",
       "category": "official_report",
       "commodities": [],
       "domains": [
@@ -2802,11 +2821,11 @@
       ],
       "series_id": null,
       "title": {
-        "original": "First Lady Melania Trump Announces Opening of Christmas Volunteer & Performer Applications",
+        "original": "Fact Sheet: President Donald J. Trump Announces Billions in New Deals and Investments to Power American Mining",
         "original_lang": "en",
-        "ko": "[USA·경제] First Lady Melania Trump Announces Opening of Christmas Volunteer & Performer Applications"
+        "ko": "[USA·경제] Fact Sheet: President Donald J. Trump Announces Billions in New Deals and Investments to Power American Mining"
       },
-      "summary": "Christmas planning is underway at the White House, and President Donald J. Trump and First Lady Melania Trump are excited to continue the cherished tradition of welcoming volunteers to help celebrate the holiday season at the People’s House. Starting today, applications are open ",
+      "summary": "BOLSTERING AMERICAN MINING: Today, President Donald J. Trump held a historic roundtable with the mining industry where he announced over $2 billion in critical mining and mining-related projects to revitalize the industry and over $180 million in mining school investments to bols",
       "scores": {
         "significance": 2.392,
         "final": 2.392
@@ -2814,6 +2833,41 @@
       "rank_reasons": [
         "domains:economy,diplomacy,security",
         "boost:1"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
+      "id": "f4c861363297d5e2",
+      "published_at": "2026-08-07T14:00:00+00:00",
+      "source": {
+        "id": "us_eia",
+        "name": "EIA",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.eia.gov/todayinenergy/detail.php?id=67925",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "security",
+        "agriculture"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "Battery storage capacity averaged 70% growth over the last three years",
+        "original_lang": "en",
+        "ko": "[USA·경제] Battery storage capacity averaged 70% growth over the last three years"
+      },
+      "summary": "Utility-scale battery storage capacity in the United States increased significantly during the last three years, with an annual average growth rate of 70%. By the end of 2025, the U.S. power system had operational battery storage capacity of 43.6 gigawatts (GW). During the first ",
+      "scores": {
+        "significance": 2.332,
+        "final": 2.332
+      },
+      "rank_reasons": [
+        "domains:economy,security,agriculture"
       ],
       "translation_status": "skipped",
       "event_type": "official_report",

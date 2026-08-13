@@ -1,0 +1,173 @@
+{
+  "crop": "soybeans",
+  "region": "US Corn Belt (8 states, production-weighted)",
+  "unit": "bu/acre",
+  "trained_years": [
+    1992,
+    2025
+  ],
+  "n_seasons": 34,
+  "trend": {
+    "slope_per_year": 0.6039304812834149,
+    "intercept": -1165.959812834209
+  },
+  "features": [
+    "august_edd_anom",
+    "august_precip_anom",
+    "august_soil_anom",
+    "august_tmean_anom",
+    "august_vpd_anom",
+    "julaug_edd_anom",
+    "julaug_gdd_anom",
+    "julaug_precip_anom",
+    "julaug_soil_anom",
+    "julaug_vpd_anom",
+    "july_edd_anom",
+    "july_precip_anom",
+    "july_soil_anom",
+    "july_tmean_anom",
+    "july_vpd_anom",
+    "june_edd_anom",
+    "june_precip_anom",
+    "june_soil_anom",
+    "june_tmean_anom",
+    "june_vpd_anom",
+    "preseason_precip_anom",
+    "oni_growing"
+  ],
+  "scaler": {
+    "mean": [
+      -0.03788551442891935,
+      0.019041887781481137,
+      0.1301017995852544,
+      0.06108432683809756,
+      -0.051862819563119604,
+      -0.010653612917083907,
+      0.11801183947754748,
+      0.07742526546143924,
+      0.1122566102257569,
+      -0.042688567128894836,
+      0.03466673900454722,
+      0.12271051212781367,
+      0.08547299842973304,
+      0.06384312607567544,
+      -0.014081943678388574,
+      0.1412281691278085,
+      0.10013639105788386,
+      -0.01028573356852744,
+      0.2781293741841646,
+      0.058838099366578626,
+      0.006734766768197044,
+      0.015999999999999983
+    ],
+    "scale": [
+      0.7500289581117773,
+      0.6110120233042495,
+      0.9684085404312907,
+      0.7940678861372499,
+      0.8051683371975343,
+      0.9733788518154671,
+      0.910508784736414,
+      0.7684340912942637,
+      0.98484582294804,
+      0.9178844802783345,
+      1.143540959874166,
+      0.9579519124074583,
+      0.9487401660767962,
+      1.0300699313771808,
+      1.002627743528784,
+      1.0813018813019395,
+      0.8662106740515207,
+      0.7859784381401151,
+      0.7465290421588171,
+      0.9169137276363067,
+      0.7681207222989079,
+      0.6172285304678725
+    ]
+  },
+  "ridge": {
+    "alpha": 4.1246263829013525,
+    "coef": [
+      -0.572320489396314,
+      0.5435569952482143,
+      -0.20968438322725796,
+      -0.2889977848346531,
+      -0.3347404595075317,
+      -0.5459474186863033,
+      0.32229161220597247,
+      -0.12058401487618588,
+      -0.4549464721586972,
+      -0.6020281860704929,
+      -0.5273070283301268,
+      0.2459636916899561,
+      -0.6761696886336256,
+      0.03351843178471188,
+      -0.7423721523854449,
+      -0.019891943890501702,
+      0.080902565975895,
+      -0.523282841172553,
+      1.1517981125081502,
+      -0.1476434609568822,
+      -0.4467132338762481,
+      -0.14644074491472447
+    ],
+    "intercept": -2.8878366505662625e-13
+  },
+  "uncertainty": {
+    "sigma": 2.091003416785726,
+    "basis": "out-of-sample forward-chaining RMSE"
+  },
+  "validation": {
+    "all_loo": {
+      "rmse": 2.567582780176718,
+      "baseline_rmse": 3.176077259749912,
+      "skill_vs_trend": 0.1915868002597353,
+      "detrended_r2": 0.3464264094699445,
+      "detrended_r": 0.5903977693928532,
+      "n": 34
+    },
+    "all_forward": {
+      "rmse": 2.091003416785726,
+      "baseline_rmse": 3.4311651353224923,
+      "skill_vs_trend": 0.39058502452718746,
+      "detrended_r2": 0.5518683791120182,
+      "detrended_r": 0.7619022858457435,
+      "n": 14,
+      "years": [
+        2012,
+        2025
+      ]
+    },
+    "core_loo": {
+      "rmse": 2.617562881607612,
+      "baseline_rmse": 3.176077259749912,
+      "skill_vs_trend": 0.17585037531054204,
+      "detrended_r2": 0.3207340682900778,
+      "detrended_r": 0.5676270560504656,
+      "n": 34
+    },
+    "core_forward": {
+      "rmse": 2.791762172415604,
+      "baseline_rmse": 3.4311651353224923,
+      "skill_vs_trend": 0.1863515563050251,
+      "detrended_r2": 0.20117262120781543,
+      "detrended_r": 0.6628796262325377,
+      "n": 14,
+      "years": [
+        2012,
+        2025
+      ]
+    }
+  },
+  "methodology": {
+    "trend": "Thompson (1969, 1986) via FAO review: regression on time absorbs technology (genetics, management, fertiliser); weather is related to deviations from that trend.",
+    "heat": "Schlenker & Roberts (2009): nonlinear damage, entered as extreme degree days above the crop threshold rather than counts of hot days.",
+    "vpd": "Urban et al. (2015), Roberts et al. (2012), Lobell et al. (2014): vapour pressure deficit as a combined heat/dryness predictor.",
+    "anomalies": "All weather features are anomalies against a trailing 20-year climatology, so multi-decade climate drift is not read as a yield signal."
+  },
+  "sources": {
+    "yield": "USDA NASS Quick Stats (state, SURVEY, annual)",
+    "weather": "NASA POWER daily, 1981-",
+    "enso": "NOAA CPC ONI"
+  }
+}
