@@ -565,11 +565,17 @@ const loadEiaStocks = async () => {
             const latest = Number(rows[0]?.value);
             const prev = rows.length > 1 ? Number(rows[1]?.value) : null;
             if (!Number.isFinite(latest)) continue;
+            // EIA returns newest-first; charts read left-to-right in time.
+            const history = rows
+                .map((r) => ({ period: r.period, value: Number(r.value) }))
+                .filter((r) => r.period && Number.isFinite(r.value))
+                .reverse();
             out.push({
                 ...s,
                 value: latest,
                 period: rows[0]?.period || '',
                 change: Number.isFinite(prev) ? latest - prev : null,
+                history,
             });
         } catch (err) {
             // The map is the point; a missing buffer card is not worth failing over.
@@ -580,27 +586,148 @@ const loadEiaStocks = async () => {
     return out;
 };
 
+// Bumped per chart instance so two sparklines open at once don't fight over
+// the same data-* payload -- wireSparkCharts looks its data up by this id.
+let sparkChartSeq = 0;
+const sparkChartData = new Map();
+
+/**
+ * Sparkline with a real y-axis and a hover readout, for a value series in
+ * chronological order.
+ *
+ * A level plus a rising/falling arrow says "falling", not "falling off a
+ * cliff over three months" or "still near its year high" -- the shape and the
+ * scale are both part of that answer, which a trend-only sparkline (no axis,
+ * no hover) could not give. Axis labels sit beside the chart as plain HTML
+ * rather than inside the SVG as <text>: this box is stretched to its
+ * container with preserveAspectRatio="none" so line and area shapes stay
+ * geometrically fine, but any <text> inside the same viewBox would stretch
+ * with it and read as squashed or elongated depending on the panel's width.
+ *
+ * points: [{label, value}] oldest-first. unit/formatValue control how the
+ * hover readout and axis labels are worded.
+ */
+const sparkChartHtml = ({ points, unit, formatValue, ariaLabel, footNote }) => {
+    if (!points || points.length < 2) return '';
+    const W = 100, H = 54, PAD = 3;
+    const vals = points.map((p) => p.value);
+    const min = Math.min(...vals);
+    const max = Math.max(...vals);
+    // A flat series must not divide by zero, and drawing it mid-height is
+    // more honest than pinning it to the top or bottom of the box.
+    const span = max - min || 1;
+    const x = (i) => PAD + (i / (points.length - 1)) * (W - PAD * 2);
+    const y = (v) => PAD + (1 - (v - min) / span) * (H - PAD * 2);
+    const fmt = formatValue || ((v) => String(v));
+
+    const line = points.map((p, i) => `${i ? 'L' : 'M'}${x(i).toFixed(2)},${y(p.value).toFixed(2)}`).join('');
+    const area = `${line}L${x(points.length - 1).toFixed(2)},${H - PAD}L${x(0).toFixed(2)},${H - PAD}Z`;
+    const last = points[points.length - 1];
+    const rising = last.value >= points[0].value;
+
+    const id = `spk${++sparkChartSeq}`;
+    sparkChartData.set(id, { points, x, y, unit: unit || '', fmt });
+
+    return `<div class="spark2-wrap">
+        <div class="spark2-row">
+            <div class="spark2-axis">
+                <span>${fmt(max)}</span>
+                <span>${fmt(min)}</span>
+            </div>
+            <div class="spark2-chart" data-spark-id="${id}">
+                <svg viewBox="0 0 ${W} ${H}" class="spark2-svg ${rising ? 'up' : 'down'}"
+                     preserveAspectRatio="none" role="img" aria-label="${ariaLabel || ''}">
+                    <line class="spark2-grid" x1="${PAD}" y1="${PAD}" x2="${W - PAD}" y2="${PAD}"/>
+                    <line class="spark2-grid" x1="${PAD}" y1="${H - PAD}" x2="${W - PAD}" y2="${H - PAD}"/>
+                    <path class="spark2-area" d="${area}"/>
+                    <path class="spark2-line" d="${line}" vector-effect="non-scaling-stroke"/>
+                    <path class="spark2-dot-end" d="M${x(points.length - 1).toFixed(2)},${y(last.value).toFixed(2)}h0"/>
+                    <line class="spark2-cross" x1="0" y1="${PAD}" x2="0" y2="${H - PAD}" style="display:none"/>
+                    <path class="spark2-dot-hover" d="M0,0h0" style="display:none"/>
+                </svg>
+                <div class="spark2-tip" style="display:none"></div>
+            </div>
+        </div>
+        <div class="spark2-foot">
+            <span>${points[0].label}</span>
+            ${footNote ? `<span class="spark2-footnote">${footNote}</span>` : ''}
+            <span>${last.label}</span>
+        </div>
+    </div>`;
+};
+
+/**
+ * Attaches hover tracking to every `.spark2-chart` under `root`. Call once
+ * after inserting HTML built with sparkChartHtml -- innerHTML replacement
+ * drops any listeners the previous copy had.
+ */
+const wireSparkCharts = (root = document) => {
+    root.querySelectorAll('.spark2-chart[data-spark-id]').forEach((box) => {
+        const data = sparkChartData.get(box.dataset.sparkId);
+        const svg = box.querySelector('svg');
+        const cross = box.querySelector('.spark2-cross');
+        const dot = box.querySelector('.spark2-dot-hover');
+        const tip = box.querySelector('.spark2-tip');
+        if (!data || !svg || !cross || !dot || !tip) return;
+
+        const hide = () => { cross.style.display = 'none'; dot.style.display = 'none'; tip.style.display = 'none'; };
+
+        box.addEventListener('mousemove', (e) => {
+            const r = box.getBoundingClientRect();
+            if (!r.width) return;
+            const t = (e.clientX - r.left) / r.width;
+            const i = Math.max(0, Math.min(data.points.length - 1, Math.round(t * (data.points.length - 1))));
+            const p = data.points[i];
+            const px = data.x(i), py = data.y(p.value);
+            cross.setAttribute('x1', px); cross.setAttribute('x2', px);
+            cross.style.display = '';
+            dot.setAttribute('d', `M${px.toFixed(2)},${py.toFixed(2)}h0`);
+            dot.style.display = '';
+            tip.innerHTML = `<span class="spark2-tip-date">${p.label}</span>`
+                + `<span class="spark2-tip-val">${data.fmt(p.value)}${data.unit}</span>`;
+            tip.style.display = '';
+            // Flip before the tooltip would run off either edge of the box.
+            const leftPct = (px / 100) * 100;
+            tip.style.left = `${Math.min(Math.max(leftPct, 4), 96)}%`;
+            tip.classList.toggle('is-right', leftPct > 60);
+        });
+        box.addEventListener('mouseleave', hide);
+    });
+};
+
 /** Only meaningful for crude; other commodities have no equivalent series. */
 const renderEmergencyStocks = async () => {
     const host = document.getElementById('news-content');
     if (!host || currentCommodity !== 'oil') return;
     const stocks = await loadEiaStocks();
     if (!stocks.length || currentCommodity !== 'oil') return;
+    const weeks = stocks[0]?.history?.length || 0;
     host.insertAdjacentHTML('beforeend', `
         <div class="stock-card">
             <p class="section-title" style="margin:0 0 6px;">글로벌 비상 재고 · EIA 주간</p>
             ${stocks.map((s) => {
                 const up = s.change != null && s.change > 0;
-                return `<div class="stock-row">
-                    <span class="nm">${s.label_ko}</span>
-                    <span class="vl">${(s.value / 1000).toFixed(1)}<em>백만 배럴</em></span>
-                    <span class="ch ${s.change == null ? '' : (up ? 'up' : 'down')}">
-                        ${s.change == null ? '—'
-                            : `${up ? '+' : ''}${(s.change / 1000).toFixed(1)}`}</span>
+                const chart = sparkChartHtml({
+                    points: s.history.map((h) => ({ label: h.period, value: h.value / 1000 })),
+                    unit: 'M bbl',
+                    formatValue: (v) => v.toFixed(1),
+                    ariaLabel: `최근 ${s.history.length}주 추이`,
+                });
+                return `<div class="stock-item">
+                    <div class="stock-row${chart ? ' is-clickable' : ''}"
+                         ${chart ? `role="button" tabindex="0" data-stock-toggle="${s.id}"` : ''}>
+                        <span class="nm">${s.label_ko}${chart ? '<i class="stock-caret"></i>' : ''}</span>
+                        <span class="vl">${(s.value / 1000).toFixed(1)}<em>백만 배럴</em></span>
+                        <span class="ch ${s.change == null ? '' : (up ? 'up' : 'down')}">
+                            ${s.change == null ? '—'
+                                : `${up ? '+' : ''}${(s.change / 1000).toFixed(1)}`}</span>
+                    </div>
+                    ${chart}
                 </div>`;
             }).join('')}
-            <div class="stock-note">${stocks[0]?.period || ''} 기준 · 전주 대비 증감 · 출처 EIA</div>
+            <div class="stock-note">${stocks[0]?.period || ''} 기준 · 전주 대비 증감 · 이름을 누르면 최근 ${weeks}주 추이(그래프 위에 마우스를 올리면 날짜·수량) · 출처 EIA</div>
         </div>`);
+    wireSparkCharts(host);
 };
 
 // A country's export total and import total are different questions --
@@ -641,18 +768,142 @@ const renderTradeWorldPanel = (arcs) => {
     const exportRows = worldRankRows(exportRank);
     const importRows = worldRankRows(importRank);
 
+    // Replaces data.js's hand-written topExporter string the moment real arcs
+    // are in: that string could go stale or, worse, name a country the map
+    // has no route for (Switzerland's gold arcs were missing entirely before
+    // the Comtrade area-code fix, so the label and the map disagreed). Left
+    // untouched while arcs is still empty/loading, so the static string
+    // serves as the loading placeholder instead of flashing blank.
+    if (topExporterEl && exportRank.ranked.length) {
+        topExporterEl.textContent = exportRank.ranked[0][0];
+    }
+
     if (!newsContentEl) return;
     const newsTitle = document.querySelector('#news-panel .section-title');
     if (newsTitle) newsTitle.textContent = '주요 수출국 · 수입국';
     newsContentEl.innerHTML = `
         <div class="trade-focus-card">
+            <div id="futures-slot"></div>
             <p class="trade-focus-sub">비중% · 막대는 각 방향 내 상대 물동량 · 국가를 누르면 그 나라 노선만 남습니다</p>
             <p class="trade-rank-group-head">주요 수출국</p>
             <div class="trade-rank-list">${exportRows || '<p class="empty-state">무역 루트 없음</p>'}</div>
             <p class="trade-rank-group-head">주요 수입국</p>
             <div class="trade-rank-list">${importRows || '<p class="empty-state">무역 루트 없음</p>'}</div>
         </div>`;
+    renderFuturesCard(currentCommodity);
     renderEmergencyStocks();
+};
+
+const futuresCache = new Map();
+
+/**
+ * Front-month futures beside the flow ranking (world view, Stage 1).
+ *
+ * Fetched by commodity key, not by symbol -- the ranking already knows which
+ * commodity is on screen, and keeping the Yahoo symbol server-side means a
+ * bad ticker never leaks into a browser network tab.
+ */
+const renderFuturesCard = async (commodity) => {
+    const slot = document.getElementById('futures-slot');
+    if (!slot || !commodity) return;
+
+    let doc = futuresCache.get(commodity);
+    if (doc === undefined) {
+        try {
+            const res = await fetch(`/api/futures?commodity=${encodeURIComponent(commodity)}`);
+            doc = res.ok ? await res.json() : null;
+        } catch (err) {
+            console.warn('[futures] unavailable', err);
+            doc = null;
+        }
+        futuresCache.set(commodity, doc);
+    }
+    // The panel may have been rebuilt (or the commodity switched) while the
+    // fetch was in flight -- re-fetch the live slot, and bail if it is gone
+    // or if the visible commodity has since moved on.
+    const live = document.getElementById('futures-slot');
+    if (!live || currentCommodity !== commodity) return;
+    if (!doc) { live.innerHTML = ''; return; }
+
+    if (doc.priced === false) {
+        live.innerHTML = `<div class="fut-card fut-none">
+            <span class="fut-k">선물가</span>
+            <span class="fut-none-note">${doc.reason}</span>
+        </div>`;
+        return;
+    }
+    if (!doc.priced) { live.innerHTML = ''; return; }
+
+    const up = (doc.change_pct ?? 0) >= 0;
+    live.innerHTML = `
+        <div class="fut-card is-clickable" role="button" tabindex="0"
+             data-fut-toggle="${doc.commodity}" data-fut-symbol="${doc.symbol}" data-fut-unit="${doc.unit}">
+            <div class="fut-main">
+                <span class="fut-px">$${doc.price.toLocaleString(undefined, { maximumFractionDigits: 4 })}</span>
+                <span class="fut-unit">/ ${doc.unit}</span>
+                ${doc.change_pct === null ? '' : `<span class="fut-chg ${up ? 'up' : 'down'}">
+                    ${up ? '+' : ''}${doc.change_pct}%</span>`}
+                <i class="stock-caret fut-caret"></i>
+            </div>
+            <div class="fut-meta">${doc.exchange} ${doc.symbol}
+                ${doc.proxy ? ` · ${doc.proxy}` : ''} · 지연 시세 · 누르면 1년 추이</div>
+        </div>
+        <div class="fut-history"></div>`;
+};
+
+const futuresHistoryCache = new Map();
+
+/**
+ * 1-year daily history for whichever futures symbol is currently shown,
+ * reusing the portfolio calculator's own history route (`/api/quote/history`)
+ * rather than adding a second Yahoo-chart proxy -- the front-month card
+ * already tells the browser the exact symbol, so there is nothing this needs
+ * that route does not already fetch.
+ */
+const renderFuturesHistory = async (box) => {
+    const symbol = box.dataset.futSymbol;
+    const unit = box.dataset.futUnit || '';
+    const host = box.nextElementSibling;
+    if (!symbol || !host || !host.classList.contains('fut-history')) return;
+
+    const opening = !box.classList.contains('is-open');
+    box.classList.toggle('is-open', opening);
+    if (!opening) { host.innerHTML = ''; return; }
+
+    let doc = futuresHistoryCache.get(symbol);
+    if (doc === undefined) {
+        host.innerHTML = '<p class="empty-state" style="margin:6px 0;">불러오는 중…</p>';
+        try {
+            const res = await fetch(`/api/quote/history?symbol=${encodeURIComponent(symbol)}&range=1y`);
+            doc = res.ok ? await res.json() : null;
+        } catch (err) {
+            console.warn('[futures history] unavailable', err);
+            doc = null;
+        }
+        futuresHistoryCache.set(symbol, doc);
+    }
+    // The card may have been collapsed (or the panel rebuilt) while the fetch
+    // was in flight.
+    if (!box.classList.contains('is-open') || !box.isConnected) return;
+
+    const points = (doc?.points || [])
+        // Yahoo prices futures quoted in US cents (USX) the same way it does
+        // equities; handleFutures already normalises the headline price, but
+        // /api/quote/history does not, so cents-per-pound would otherwise
+        // read 100x too high against the $/lb the card shows above it.
+        .map(([ts, px]) => [ts, doc.currency === 'USX' ? px / 100 : px])
+        .map(([ts, px]) => ({
+            label: new Date(ts * 1000).toISOString().slice(0, 10),
+            value: px,
+        }));
+
+    const chart = sparkChartHtml({
+        points, unit: ` ${unit === '배럴' ? '$/bbl' : unit}`,
+        formatValue: (v) => v.toLocaleString(undefined, { maximumFractionDigits: 2 }),
+        ariaLabel: '최근 1년 가격 추이',
+    });
+    host.innerHTML = chart || '<p class="empty-state" style="margin:6px 0;">가격 이력을 불러오지 못했습니다.</p>';
+    wireSparkCharts(host);
 };
 
 const updateNewsPanel = (countryName) => {
@@ -1697,6 +1948,36 @@ document.getElementById('news-content')?.addEventListener('click', (e) => {
     const row = e.target instanceof Element ? e.target.closest('.trade-bar-row[data-partner]') : null;
     if (!row) return;
     row.classList.toggle('is-expanded');
+});
+
+// SPR / Cushing rows open their 12-week sparkline underneath.
+const toggleStockRow = (row) => {
+    row.classList.toggle('is-open');
+    row.closest('.stock-item')?.classList.toggle('is-open');
+};
+document.getElementById('news-content')?.addEventListener('click', (e) => {
+    const row = e.target instanceof Element ? e.target.closest('[data-stock-toggle]') : null;
+    if (row) toggleStockRow(row);
+});
+document.getElementById('news-content')?.addEventListener('keydown', (e) => {
+    if (e.key !== 'Enter' && e.key !== ' ') return;
+    const row = e.target instanceof Element ? e.target.closest('[data-stock-toggle]') : null;
+    if (!row) return;
+    e.preventDefault();
+    toggleStockRow(row);
+});
+
+// Futures price card opens its 1-year history underneath, same pattern.
+document.getElementById('news-content')?.addEventListener('click', (e) => {
+    const box = e.target instanceof Element ? e.target.closest('[data-fut-toggle]') : null;
+    if (box) renderFuturesHistory(box);
+});
+document.getElementById('news-content')?.addEventListener('keydown', (e) => {
+    if (e.key !== 'Enter' && e.key !== ' ') return;
+    const box = e.target instanceof Element ? e.target.closest('[data-fut-toggle]') : null;
+    if (!box) return;
+    e.preventDefault();
+    renderFuturesHistory(box);
 });
 
 // Ranking rows focus a country, same as clicking it on the globe.
@@ -4679,8 +4960,16 @@ const renderMapLayers = (arcs, opts = {}) => {
     let filteredArcs = arcs.filter((arc) => arc.volume > 0);
     arcVolumeMax = filteredArcs.reduce((m, a) => Math.max(m, a.volume), 1);
     // The mockup drops flows under a threshold rather than drawing every pair.
-    // Below ~1.5% of the largest route a line adds noise, not information.
-    const arcFloor = arcVolumeMax * 0.015;
+    // This used to be 1.5% of the single largest route, which reads fine for a
+    // commodity with several comparable exporters but erases everything on a
+    // commodity with one dominant route: lithium's Chile->China arc alone cut
+    // 151 routes down to 5, chromium's South Africa arc cut 253 down to 6 --
+    // countries that genuinely trade (Argentina, China, Turkey, Kazakhstan)
+    // vanished from the map though they were still in the ranking list beside
+    // it. Total-relative instead of max-relative: a dominant route still sets
+    // most of the total, but the bar it sets for everyone else is far lower.
+    const arcTotal = filteredArcs.reduce((s, a) => s + a.volume, 0) || 1;
+    const arcFloor = arcTotal * 0.001;
     filteredArcs = filteredArcs.filter((a) => a.volume >= arcFloor);
 
     if (focus) {
@@ -5524,17 +5813,6 @@ const pfSearchLocal = (q) => {
 // by typing its 6-digit code. The OpenDART filer index that /api/dart-financials
 // already resolves against doubles as the missing name index: every KRX-listed
 // filer, keyed by the same code the endpoint takes.
-// DART's own registered entity name is what row[1] carries, and for a
-// handful of large caps that name is plain English (NAVER, S-Oil) -- a user
-// typing the Korean brand name would never match it by substring. Covers
-// only names actually asked about or high-traffic; not an attempt at full
-// English->Korean coverage for all 86 ASCII-registered filers.
-const KRX_NAME_ALIASES = {
-    '035420': ['네이버'],       // NAVER
-    '010950': ['에쓰오일', '에스오일'], // S-Oil
-    '033780': ['KT&G'],         // 케이티앤지 already Korean; alias covers the reverse
-};
-
 let KRX_FILERS = null;
 const krxLoadFilers = async () => {
     if (KRX_FILERS) return KRX_FILERS;
@@ -5547,7 +5825,6 @@ const krxLoadFilers = async () => {
                 .map(([code, row]) => ({
                     id: `krx:${code}`, name_ko: (row || [])[1] || code,
                     yahoo: code, asset_class: 'equity',
-                    aliases: KRX_NAME_ALIASES[code] || [],
                 }));
             return KRX_FILERS;
         } catch (_) { /* try the next base */ }
@@ -5565,10 +5842,9 @@ const krxSearchLocal = (q) => {
     const exact = [], starts = [], contains = [];
     for (const it of KRX_FILERS) {
         const name = it.name_ko.toLowerCase();
-        const aliasHit = (it.aliases || []).some((a) => a.toLowerCase().includes(s));
         if (name === s || it.yahoo === s) exact.push(it);
         else if (name.startsWith(s) || it.yahoo.startsWith(s)) starts.push(it);
-        else if (name.includes(s) || aliasHit) contains.push(it);
+        else if (name.includes(s)) contains.push(it);
     }
     return [...exact, ...starts, ...contains].slice(0, 6);
 };
@@ -7217,14 +7493,7 @@ const MS_FILES = {
     brief: 'ai_casino_brief_v1.json',
     levels: 'investor_price_levels_v1.json',
     micro: 'market_microstructure_v1.json',
-    // The micro snapshot carries a thin, older copy of deposit_credit: no
-    // 미수금/반대매매 and no daily series. This is the full FreeSIS table.
-    credit: 'deposit_credit_v1.json',
 };
-
-// Prefer the standalone FreeSIS table, falling back to the micro snapshot's
-// copy so the panel still renders if the daily publish has not run.
-const msCredit = (D) => ((D.credit || {}).deposit_credit) || (D.micro || {}).deposit_credit || {};
 
 const MS_TABS = [
     { id: 'tangle', label: '수급 불균형', blurb: '집중도와 단일종목 레버리지 ETF (Distortion & Squeeze)' },
@@ -7378,9 +7647,6 @@ const msNum = (v, d = 0) => Number.isFinite(v) ? v.toLocaleString('ko-KR', { max
 const msJo = (v) => Number.isFinite(v) ? `${(v / 1e12).toFixed(2)}조` : '—';
 const msSignedJo = (v) => Number.isFinite(v) ? `${v >= 0 ? '+' : ''}${(v / 1e12).toFixed(2)}조` : '—';
 const msEok = (v) => Number.isFinite(v) ? `${v >= 0 ? '+' : ''}${Math.round(v).toLocaleString('ko-KR')}억` : '—';
-// msEok signs its output because it reports net flows. A balance is not a
-// flow -- "+999,765억" of 예탁금 reads as an inflow of the entire deposit pool.
-const msEokLevel = (v) => Number.isFinite(v) ? `${Math.round(v).toLocaleString('ko-KR')}억` : '—';
 const msShares = (v) => Number.isFinite(v) ? `${v >= 0 ? '+' : ''}${Math.round(v).toLocaleString('ko-KR')}` : '—';
 const msPct = (v, d = 1) => Number.isFinite(v) ? `${(v * 100).toFixed(d)}%` : '—';
 const MS_LEVEL_CLASS = { '경계': 'ms-lv-3', '주의': 'ms-lv-2', '관찰': 'ms-lv-1', high: 'ms-lv-3', mid: 'ms-lv-2', watch: 'ms-lv-2', low: 'ms-lv-1', quiet: 'ms-lv-1' };
@@ -7518,10 +7784,6 @@ const msPriceLevelChart = (pts, rows, opts = {}) => {
             }).join('')}
             <line x1="${cx.toFixed(1)}" y1="${T}" x2="${cx.toFixed(1)}" y2="${H - B}" class="mm-zero"/>
             <path d="${line}" class="ms-plc-line"/>
-            ${pts.map((d, i) => `<rect x="${(sx(i) - (W - L - R) / pts.length / 2).toFixed(1)}" y="${T}"
-                width="${((W - L - R) / pts.length).toFixed(1)}" height="${(H - T - B).toFixed(1)}" class="ms-plc-hit"><title>${
-                finEsc(d.date)} · ${finEsc(opts.lineName || '종가')} ${msNum(d.close)} · 개인 ${fmt(d._retail)} · 외국인 ${
-                fmt(d._foreign)} · 기관 ${fmt(d._inst)}</title></rect>`).join('')}
             <text x="${L - 8}" y="${T - 12}" class="mm-tick" text-anchor="end">${finEsc(opts.yLabel || '(pt)')}</text>
             <text x="${W - R + 8}" y="${(H - B).toFixed(1)}" class="mm-tick">${finEsc(opts.xLabel || '순매수')}</text>
         </svg>
@@ -7547,7 +7809,7 @@ const msTangle = (D) => {
     const ratios = m.market_letf_derivatives_ratios || {};
     const stack = m.global_leverage_stack || {};
     const fvr = m.foreign_vs_retail || {};
-    const dc = msCredit(D);
+    const dc = m.deposit_credit || {};
     const byDir = ratios.by_direction || {};
     const bands = m.ir_bands || {};
 
@@ -7653,74 +7915,6 @@ const msTangle = (D) => {
     </section>`;
 };
 
-// Deposit and credit each get their own axis. Sharing one would be the honest
-// default if they were comparable, but 예탁 ~104조 against 신용 ~29조 means a
-// single axis wide enough for deposit flattens credit into a straight line --
-// its whole 28~35조 swing lands inside one gridline. Separate axes let each
-// series show its own movement; the ratio between them is on the card above.
-// 미수(~1조)·반대매매(~100억) stay on cards for the same reason, several orders
-// worse: on any axis holding 예탁 they would be indistinguishable from zero.
-const msCreditChart = (dc) => {
-    const hist = (dc.history || []).filter((d) => Number.isFinite(d.investor_deposit_eok));
-    if (hist.length < 2) return `<p class="fin-note">${msMissing('예탁·신용 시계열 없음')}</p>`;
-
-    const W = 900, H = 300, L = 62, R = 62, T = 18, B = 34;
-    const jo = (v) => (Number.isFinite(v) ? v / 10000 : null);
-    // One scale builder, used once per axis.
-    const axis = (values) => {
-        const lo = Math.min(...values), hi = Math.max(...values);
-        const pad = (hi - lo) * 0.15 || 1;
-        const min = lo - pad, max = hi + pad;
-        return {
-            at: (v) => T + (1 - (v - min) / (max - min)) * (H - T - B),
-            ticks: Array.from({ length: 5 }, (_, i) => min + (max - min) * (i / 4)),
-        };
-    };
-    const depAxis = axis(hist.map((d) => jo(d.investor_deposit_eok)).filter(Number.isFinite));
-    const creditVals = hist.map((d) => jo(d.credit_loan_eok)).filter(Number.isFinite);
-    const crAxis = axis(creditVals.length ? creditVals : [0, 1]);
-    const sy = depAxis.at, syR = crAxis.at;
-
-    const sx = (i) => L + (i / Math.max(hist.length - 1, 1)) * (W - L - R);
-    const path = (pick, scale) => {
-        let d = '', pen = false;
-        hist.forEach((row, i) => {
-            const v = pick(row);
-            if (!Number.isFinite(v)) { pen = false; return; }
-            d += `${pen ? 'L' : 'M'}${sx(i).toFixed(1)},${scale(v).toFixed(1)}`;
-            pen = true;
-        });
-        return d;
-    };
-
-    const grid = depAxis.ticks, rGrid = crAxis.ticks;
-    const ticks = [0, Math.floor(hist.length / 2), hist.length - 1];
-
-    return `
-    <div class="ms-plc-box">
-        <svg class="ms-cc" viewBox="0 0 ${W} ${H}" role="img" aria-label="투자자 예탁금과 신용거래융자 추이">
-            ${grid.map((g, i) => `
-                <line x1="${L}" y1="${sy(g).toFixed(1)}" x2="${W - R}" y2="${sy(g).toFixed(1)}" class="mm-grid"/>
-                <text x="${L - 8}" y="${(sy(g) + 3.5).toFixed(1)}" class="mm-tick" text-anchor="end">${g.toFixed(0)}조</text>
-                <text x="${W - R + 8}" y="${(syR(rGrid[i]) + 3.5).toFixed(1)}" class="mm-tick">${rGrid[i].toFixed(1)}조</text>`).join('')}
-            ${ticks.map((i) => `<text x="${sx(i).toFixed(1)}" y="${H - 10}" class="mm-tick" text-anchor="middle">${finEsc(hist[i].date)}</text>`).join('')}
-            <path d="${path((r) => jo(r.investor_deposit_eok), sy)}" class="ms-cc-deposit"/>
-            <path d="${path((r) => jo(r.credit_loan_eok), syR)}" class="ms-cc-credit"/>
-            ${hist.map((d, i) => `<rect x="${(sx(i) - (W - L - R) / hist.length / 2).toFixed(1)}" y="${T}"
-                width="${((W - L - R) / hist.length).toFixed(1)}" height="${(H - T - B).toFixed(1)}" class="ms-cc-hit"><title>${
-                finEsc(d.date)} · 예탁금 ${msEokLevel(d.investor_deposit_eok)} · 신용융자 ${msEokLevel(d.credit_loan_eok)} · 미수금 ${
-                msEokLevel(d.uncollected_eok)} · 반대매매 ${msEokLevel(d.forced_sale_eok)}</title></rect>`).join('')}
-        </svg>
-        <p class="mm-legend-note">
-            <i class="ms-cc-sw ms-cc-sw-deposit"></i>투자자 예탁금(좌축·조원)
-            <i class="ms-cc-sw ms-cc-sw-credit"></i>신용거래융자(우축·조원)
-        </p>
-        <p class="fin-note">${finEsc(hist[0].date)} ~ ${finEsc(hist[hist.length - 1].date)} · ${hist.length}거래일.
-            좌우 축의 눈금이 다릅니다 — 두 선의 높이가 아니라 <em>각자의 기울기</em>를 보는 그래프입니다.
-            마우스를 올리면 그날의 예탁금·신용융자·미수금·반대매매가 나옵니다.</p>
-    </div>`;
-};
-
 // --- ② 가격대별 수급 ---------------------------------------------------------
 // Shared by the chart (msLevelsTab) and its detail modal so the two never
 // disagree about which days/step/bins the ticker+period selection means.
@@ -7763,7 +7957,7 @@ const msLevelsCompute = (D) => {
 
 const msLevelsTab = (D) => {
     const lv = D.levels || {};
-    const dc = msCredit(D);
+    const dc = (D.micro || {}).deposit_credit || {};
     const kl = lv.kospi_index_levels || {};
     const { isIndex, src, tickers, allDays, pts, bins, rows } = msLevelsCompute(D);
 
@@ -7832,17 +8026,14 @@ const msLevelsTab = (D) => {
         <div class="fin-cards">
             ${msCard('신용공여 잔고 / 투자자 예탁금', Number.isFinite(dc.credit_over_deposit_pct) ? dc.credit_over_deposit_pct.toFixed(1) + '%' : '—',
                 `기준일 ${finEsc(dc.as_of || '—')}`, null)}
-            ${msCard('투자자 예탁금', msEokLevel(dc.investor_deposit_eok),
+            ${msCard('투자자 예탁금', msEok(dc.investor_deposit_eok),
                 Number.isFinite(dc.investor_deposit_chg_eok) ? `전주 대비 ${msEok(dc.investor_deposit_chg_eok)}` : '', null)}
-            ${msCard('신용융자 잔고', msEokLevel(dc.credit_balance_eok),
+            ${msCard('신용융자 잔고', msEok(dc.credit_balance_eok),
                 Number.isFinite(dc.credit_balance_chg_eok) ? `전주 대비 ${msEok(dc.credit_balance_chg_eok)}` : '', null)}
-            ${msCard('위탁매매 미수금', msEokLevel(dc.uncollected_eok),
-                Number.isFinite(dc.uncollected_over_deposit_pct) ? `예탁금 대비 ${dc.uncollected_over_deposit_pct.toFixed(2)}%` : '', null)}
-            ${msCard('반대매매', msEokLevel(dc.forced_sale_eok),
-                Number.isFinite(dc.forced_sale_over_uncollected_pct) ? `미수금 대비 ${dc.forced_sale_over_uncollected_pct.toFixed(1)}%` : '', null)}
+            ${msCard('미수금 · 반대매매', msMissing('공개 데이터 없음'),
+                '증권사 미수금과 반대매매 금액은 이 공개 표에 포함되지 않습니다.', null)}
         </div>
-        ${msCreditChart(dc)}
-        <p class="fin-note">${finEsc(dc.note_ko || '')}</p>
+        <p class="fin-note">${finEsc(dc.note_ko || '')} 시계열이 아니라 최신 주간 스냅샷입니다.</p>
         ${(lv.cannot_do_ko || []).length ? `
         <details class="mm-limits">
             <summary>이 데이터로 할 수 없는 것</summary>

@@ -806,6 +806,18 @@ body.trade-map-mode .left-pane {
 .fut-none { display: flex; align-items: baseline; gap: 8px; border-color: rgba(148,163,184,.14); background: rgba(15,23,42,.4); }
 .fut-k { font-size: 10.5px; color: #64748b; }
 .fut-none-note { font-size: 10.5px; color: rgba(148,163,184,.7); }
+
+/* 클릭하면 1년치 가격 이력이 카드 바로 아래(.fut-history)에 펼쳐진다. */
+.fut-card.is-clickable { cursor: pointer; }
+.fut-card.is-clickable:hover { border-color: rgba(56,189,248,.35); }
+.fut-card.is-clickable:focus-visible { outline: 1px solid rgba(56,189,248,.5); outline-offset: 2px; }
+.fut-caret { margin-left: 2px; }
+.fut-card.is-open .fut-caret { transform: rotate(180deg); border-top-color: #7dd3fc; }
+.fut-history:not(:empty) {
+    margin: -4px 0 10px; padding: 8px 10px 4px;
+    border: 1px solid rgba(56,189,248,.14); border-top: 0;
+    border-radius: 0 0 7px 7px; background: rgba(15,23,42,.3);
+}
 .trade-rank-list { display: flex; flex-direction: column; gap: 2px; }
 .trade-rank-group-head {
     font-size: 10px; font-weight: 700; letter-spacing: .06em;
@@ -2329,27 +2341,54 @@ body.trade-map-mode .left-pane {
 
 .stock-spark { display: none; padding: 8px 0 10px; }
 .stock-item.is-open .stock-spark { display: block; }
-.sspark-svg { width: 100%; height: 54px; display: block; overflow: visible; }
-.sspark-line {
+
+/* Reusable sparkline (SPR/쿠싱 + 선물가 1년 이력): real y-axis, hover
+   crosshair + tooltip. Axis labels and the tooltip are plain HTML, not SVG
+   <text> -- the chart stretches to its container with
+   preserveAspectRatio="none", which is fine for line/area geometry but would
+   squash or elongate text sitting in the same viewBox. */
+.spark2-wrap { padding: 8px 0 10px; }
+.spark2-row { display: flex; align-items: stretch; gap: 6px; }
+.spark2-axis {
+    flex: 0 0 32px; display: flex; flex-direction: column; justify-content: space-between;
+    height: 54px; font-size: 9px; color: #64748b; font-variant-numeric: tabular-nums;
+    text-align: right; line-height: 1;
+}
+.spark2-chart { position: relative; overflow: hidden; flex: 1 1 auto; min-width: 0; height: 54px; }
+.spark2-svg { width: 100%; height: 54px; display: block; overflow: visible; cursor: crosshair; }
+.spark2-grid { stroke: rgba(148,163,184,.14); stroke-width: 1; vector-effect: non-scaling-stroke; }
+.spark2-line {
     fill: none; stroke: #7dd3fc; stroke-width: 1.6;
     stroke-linejoin: round; stroke-linecap: round;
-    vector-effect: non-scaling-stroke;
 }
-.sspark-area { fill: rgba(125,211,252,.11); stroke: none; }
-/* 끝점은 길이 0인 path에 둥근 선끝. viewBox를 가로로 늘여도(preserveAspectRatio
-   none) 원이 타원으로 찌그러지지 않는다 — 선 굵기는 화면 좌표계에서 고정. */
-.sspark-dot {
+.spark2-area { fill: rgba(125,211,252,.11); stroke: none; }
+/* 끝점/호버점은 길이 0인 path에 둥근 선끝. viewBox를 가로로 늘여도
+   (preserveAspectRatio none) 원이 타원으로 찌그러지지 않는다 — 선 굵기는
+   화면 좌표계에서 고정. */
+.spark2-dot-end, .spark2-dot-hover {
     fill: none; stroke: #7dd3fc; stroke-width: 5.5;
     stroke-linecap: round; vector-effect: non-scaling-stroke;
 }
-.sspark-svg.down .sspark-line, .sspark-svg.down .sspark-dot { stroke: #fca5a5; }
-.sspark-svg.down .sspark-area { fill: rgba(252,165,165,.1); }
-.sspark-foot {
+.spark2-dot-hover { stroke-width: 6.5; }
+.spark2-cross { stroke: rgba(125,211,252,.55); stroke-width: 1; vector-effect: non-scaling-stroke; }
+.spark2-svg.down .spark2-line, .spark2-svg.down .spark2-dot-end, .spark2-svg.down .spark2-dot-hover,
+.spark2-svg.down .spark2-cross { stroke: #fca5a5; }
+.spark2-svg.down .spark2-area { fill: rgba(252,165,165,.1); }
+.spark2-tip {
+    position: absolute; top: -4px; transform: translate(-50%, -100%);
+    background: rgba(2,6,16,.95); border: 1px solid rgba(148,163,184,.3);
+    border-radius: 6px; padding: 4px 7px; pointer-events: none;
+    white-space: nowrap; z-index: 2;
+}
+.spark2-tip.is-right { transform: translate(-80%, -100%); }
+.spark2-tip-date { display: block; font-size: 9px; color: #64748b; }
+.spark2-tip-val { display: block; font-size: 11.5px; font-weight: 650; color: #f1f5f9; font-variant-numeric: tabular-nums; }
+.spark2-foot {
     display: flex; justify-content: space-between; gap: 8px;
-    font-size: 9px; color: #64748b; margin-top: 4px;
+    margin-left: 38px; font-size: 9px; color: #64748b; margin-top: 4px;
     font-variant-numeric: tabular-nums;
 }
-.sspark-range { color: #475569; }
+.spark2-footnote { color: #475569; }
 
 /* ── 금융 진단 (포트폴리오 / 기업 가치) ─────────────────────────────────────
    Full-bleed document surface, same treatment as shipping: these views have no
@@ -2806,25 +2845,7 @@ body.macro-mode .map-pane { flex: 1 1 100%; }
 .ms-plc-sw.ms-plc-retail { background: rgba(56,189,248,.72); }
 .ms-plc-sw.ms-plc-foreign { background: rgba(244,114,182,.72); }
 .ms-plc-sw.ms-plc-inst { background: rgba(167,139,250,.72); }
-/* Per-day columns over the close line, carrying that day's flow tooltip. */
-.ms-plc-hit { fill: transparent; }
-.ms-plc-hit:hover { fill: rgba(148,163,184,.12); }
 @media (max-width: 720px) { .ms-plc { height: 320px; } }
-
-/* 예탁금·신용융자 추이 (dual axis: 조원 left, 신용/예탁 % right) */
-.ms-cc { width: 100%; height: 300px; display: block; overflow: visible; }
-.ms-cc path { fill: none; stroke-width: 2; stroke-linejoin: round; vector-effect: non-scaling-stroke; }
-.ms-cc-deposit { stroke: #38bdf8; }
-.ms-cc-credit { stroke: #f472b6; }
-.ms-cc-ratio { stroke: #fbbf24; stroke-dasharray: 4 3; }
-/* Invisible per-day columns exist only to carry the <title> tooltip. */
-.ms-cc-hit { fill: transparent; }
-.ms-cc-hit:hover { fill: rgba(148,163,184,.12); }
-.ms-cc-sw { display: inline-block; width: 14px; height: 0; border-top: 2px solid; margin-left: 8px; }
-.ms-cc-sw-deposit { border-color: #38bdf8; }
-.ms-cc-sw-credit { border-color: #f472b6; }
-.ms-cc-sw-ratio { border-top-style: dashed; border-color: #fbbf24; }
-@media (max-width: 720px) { .ms-cc { height: 240px; } }
 
 .mm-bars { display: flex; flex-direction: column; gap: 7px; }
 .mm-bar-row { display: grid; grid-template-columns: minmax(110px, 1.3fr) 3fr minmax(74px, auto); gap: 11px; align-items: center; }
