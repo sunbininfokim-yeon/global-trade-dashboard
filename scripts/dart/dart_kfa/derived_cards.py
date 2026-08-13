@@ -414,6 +414,70 @@ def run_kfa_analysis(
     }
 
 
+def basic_cards_from_pack(pack: dict[str, Any]) -> dict[str, dict[str, Any]]:
+    """Build the flat UI `basic_cards` bag directly from an accounting_pack.
+
+    This is the mirror of accounting_pack_from_snapshot (legacy snapshot ->
+    pack): here a freshly-fetched pack (e.g. dart_facts.fetch_accounting_pack_kr)
+    goes the other way, into the card bag the UI actually renders. A pack built
+    from a single OpenDART fetch has one-point series and no prior period, so
+    yoy is always None and CAGR/quality-trend expert cards resolve to
+    null + reason downstream in run_kfa_analysis -- that is correct behaviour
+    for one fiscal year, not a bug to work around here.
+    """
+    def card(section: str, key: str, extra: dict[str, Any] | None = None) -> dict[str, Any]:
+        metric = _metric(pack, section, key)
+        out: dict[str, Any] = {"value": _value(metric), "series": _series(metric)}
+        if extra:
+            out.update(extra)
+        if metric.get("reason"):
+            out["reason"] = metric["reason"]
+        return out
+
+    rev_v = _value(_metric(pack, "pnl", "revenue"))
+    op_v = _value(_metric(pack, "pnl", "operating_income"))
+    ni_v = _value(_metric(pack, "pnl", "net_income"))
+
+    revenue = card("pnl", "revenue", {"yoy": None})
+    operating_income = card("pnl", "operating_income", {
+        "margin": (op_v / rev_v) if op_v is not None and rev_v not in (None, 0) else None,
+    })
+    net_income = card("pnl", "net_income", {
+        "margin": (ni_v / rev_v) if ni_v is not None and rev_v not in (None, 0) else None,
+    })
+
+    cfo_metric = _metric(pack, "cash_flow", "cfo")
+    cfo_v = _value(cfo_metric)
+    capex_v = _value(_metric(pack, "cash_flow", "capex"))
+    cfo_rows = _series(cfo_metric)
+    fcf_value = None if cfo_v is None or capex_v is None else cfo_v - abs(capex_v)
+    fcf_series = [{**cfo_rows[-1], "value": fcf_value}] if fcf_value is not None and cfo_rows else []
+    fcf = {"value": fcf_value, "definition": "cfo - abs(capex)", "series": fcf_series}
+    if fcf_value is None:
+        fcf["reason"] = "missing:cfo_or_capex"
+
+    ccc_days = card("working_capital", "ccc_days")
+    if ccc_days["value"] is None and not ccc_days.get("reason"):
+        ccc_days["reason"] = "missing:dso_dio_dpo_inputs_not_fetched"
+
+    return {
+        "revenue": revenue,
+        "operating_income": operating_income,
+        "net_income": net_income,
+        "cfo": card("cash_flow", "cfo"),
+        "fcf": fcf,
+        "cash": card("liquidity", "cash_and_equivalents"),
+        "net_debt": card("debt_structure", "net_debt", {
+            "definition": pack.get("debt_structure", {}).get("net_debt", {}).get("definition"),
+        }),
+        "current_ratio": card("liquidity", "current_ratio"),
+        "debt_due_within_1y": deepcopy(pack.get("liquidity", {}).get("debt_due_within_1y", {})),
+        "liquidity_coverage_1y": deepcopy(pack.get("liquidity", {}).get("liquidity_coverage_1y", {})),
+        "interest_coverage": derive_interest_coverage(pack),
+        "ccc_days": ccc_days,
+    }
+
+
 def accounting_pack_from_snapshot(payload: dict[str, Any]) -> dict[str, Any]:
     """Adapt the legacy UI sample shape to the normalised calculation input.
 

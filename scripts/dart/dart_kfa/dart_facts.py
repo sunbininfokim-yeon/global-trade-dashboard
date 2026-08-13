@@ -151,18 +151,26 @@ def _pick(facts: dict[str, str], candidates: list[str]) -> float | None:
     return None
 
 
-def map_facts_to_pack(facts: dict[str, str], currency: str = "KRW") -> dict[str, Any]:
+def map_facts_to_pack(facts: dict[str, str], year: int, currency: str = "KRW") -> dict[str, Any]:
     """Map XBRL facts → accounting_pack structure.
 
-    Missing facts remain null with reason="missing:not_in_opendart".
+    Missing facts remain null with reason="missing:not_in_opendart". `year` is
+    the fiscal year the facts were fetched for -- a single OpenDART call only
+    ever returns one period, so every populated field gets a single-point
+    `series` (not a multi-year history; that needs one fetch per year, done by
+    a caller that loops, not by this function).
     """
     pack = empty_accounting_pack(currency)
+    end = f"{year}-12-31"
 
-    def set_value(section: dict[str, Any], field: str, key: str, reason: str | None = None) -> None:
+    def set_value(section: dict[str, Any], field: str, key: str, reason: str | None = None) -> float | None:
         value = _pick(facts, XBRL_TAGS[key])
         section[field]["value"] = value
-        if value is None and reason:
+        if value is not None:
+            section[field]["series"] = [{"year": year, "end": end, "value": value}]
+        elif reason:
             section[field]["reason"] = reason
+        return value
 
     # P&L
     set_value(pack["pnl"], "revenue", "revenue", "missing:not_in_opendart")
@@ -175,23 +183,55 @@ def map_facts_to_pack(facts: dict[str, str], currency: str = "KRW") -> dict[str,
 
     interest = _pick(facts, XBRL_TAGS["interest_expense"])
     pack["pnl"]["interest_expense"]["value"] = interest
-    pack["pnl"]["interest_expense"]["reason"] = (
-        "approx:ifrs_finance_costs_not_pure_interest" if interest is not None
-        else "missing:not_in_opendart"
-    )
+    if interest is not None:
+        pack["pnl"]["interest_expense"]["series"] = [{"year": year, "end": end, "value": interest}]
+        pack["pnl"]["interest_expense"]["reason"] = "approx:ifrs_finance_costs_not_pure_interest"
+    else:
+        pack["pnl"]["interest_expense"]["reason"] = "missing:not_in_opendart"
 
     # CF
-    set_value(pack["cash_flow"], "cfo", "cfo", "missing:not_in_opendart")
-    set_value(pack["cash_flow"], "capex", "capex", "missing:not_in_opendart")
+    cfo = set_value(pack["cash_flow"], "cfo", "cfo", "missing:not_in_opendart")
+    capex = set_value(pack["cash_flow"], "capex", "capex", "missing:not_in_opendart")
     pack["cash_flow"]["depreciation_and_amortization"]["value"] = None
     pack["cash_flow"]["depreciation_and_amortization"]["reason"] = "missing:not_disclosed_separately"
 
     # Liquidity
-    set_value(pack["liquidity"], "cash_and_equivalents", "cash", "missing:not_in_opendart")
+    cash = set_value(pack["liquidity"], "cash_and_equivalents", "cash", "missing:not_in_opendart")
+
+    current_assets = _pick(facts, XBRL_TAGS["current_assets"])
+    current_liabilities = _pick(facts, XBRL_TAGS["current_liabilities"])
+    if current_assets is not None and current_liabilities not in (None, 0):
+        pack["liquidity"]["current_ratio"]["value"] = current_assets / current_liabilities
+    else:
+        pack["liquidity"]["current_ratio"]["reason"] = "missing:current_assets_or_current_liabilities"
 
     # Debt -- least standardised fields; see XBRL_TAGS comment.
-    pack["debt_structure"]["short_term_borrowings"] = _pick(facts, XBRL_TAGS["short_term_debt"])
-    pack["debt_structure"]["long_term_debt"] = _pick(facts, XBRL_TAGS["long_term_debt"])
+    short_term = _pick(facts, XBRL_TAGS["short_term_debt"])
+    long_term = _pick(facts, XBRL_TAGS["long_term_debt"])
+    pack["debt_structure"]["short_term_borrowings"] = short_term
+    pack["debt_structure"]["long_term_debt"] = long_term
+
+    # debt_due_within_1y only ever gets the short-term-borrowings component from
+    # this endpoint -- current_portion_lt_debt and lease_current have no
+    # verified tag yet, so summing what we have would understate the true
+    # figure. Leave .value null rather than present a partial sum as complete.
+    pack["liquidity"]["debt_due_within_1y"]["components"]["short_term_borrowings"] = short_term
+    pack["liquidity"]["debt_due_within_1y"]["reason"] = (
+        "missing:current_portion_lt_debt_and_lease_current_not_separately_tagged"
+        if short_term is not None else "missing:not_in_opendart"
+    )
+
+    interest_bearing = None
+    if short_term is not None or long_term is not None:
+        interest_bearing = (short_term or 0.0) + (long_term or 0.0)
+    if interest_bearing is not None and cash is not None:
+        pack["debt_structure"]["net_debt"]["value"] = interest_bearing - cash
+        pack["debt_structure"]["net_debt"]["definition"] = (
+            "short_term_borrowings + long_term_debt - cash_and_equivalents "
+            "(marketable_securities not fetched by this adapter)"
+        )
+    else:
+        pack["debt_structure"]["net_debt"]["reason"] = "missing:interest_bearing_debt_or_cash"
 
     return pack
 
@@ -209,7 +249,7 @@ def fetch_accounting_pack_kr(corp_code: str, year: int = 2025, fs_div: str = "CF
     - meta: source info, including whether a live key was present
     """
     facts = fetch_xbrl_facts(corp_code, year, fs_div)
-    pack = map_facts_to_pack(facts)
+    pack = map_facts_to_pack(facts, year)
 
     # Default FYE to Dec 31 (한국 일반기업 표준)
     pack["as_of"] = f"{year}-12-31"
