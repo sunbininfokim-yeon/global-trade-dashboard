@@ -326,14 +326,23 @@ const focusTradeCountry = (countryName) => {
         // every percentage smaller than it is.
         const denom = (isIn ? importVol : exportVol) || 1;
         const share = (a.volume / denom) * 100;
+        // netWeightMt comes straight off the Comtrade row (data.js); the % bar
+        // alone can't distinguish "49.9% of a small trade" from "49.9% of a
+        // huge one" -- tonnage is what answers that, so put it one click away
+        // instead of burying it in the title-attribute tooltip only.
+        const mt = Number.isFinite(a.netWeightMt) && a.netWeightMt > 0 ? a.netWeightMt : null;
+        const volLabel = mt != null
+            ? `${a.volume.toLocaleString()} ${unit} · ${mt.toLocaleString(undefined, { maximumFractionDigits: 2 })} Mt`
+            : `${a.volume.toLocaleString()} ${unit}`;
         return `<div class="trade-rank-row trade-bar-row${isIn ? ' is-inbound' : ''}"
-                     data-partner="${partner}" title="${isIn ? '수입' : '수출'} · ${partner} · ${a.volume.toLocaleString()} ${unit}">
+                     role="button" tabindex="0" data-partner="${partner}"
+                     title="${isIn ? '수입' : '수출'} · ${partner} · ${volLabel}">
             <span class="tr-i">${i + 1}</span>
             <span class="tr-dir" aria-label="${isIn ? '수입' : '수출'}"></span>
             <span class="tr-name tr-code">${countryCode(partner)}</span>
             <span class="tr-bar"><i style="width:${Math.max(3, (a.volume / maxVol) * 100)}%"></i></span>
             <span class="tr-pct">${share.toFixed(1)}%</span>
-            <span class="tr-vol">${a.volume.toLocaleString()}</span>
+            <span class="tr-vol">${volLabel}</span>
         </div>`;
     }).join('');
 
@@ -594,36 +603,54 @@ const renderEmergencyStocks = async () => {
         </div>`);
 };
 
-const renderTradeWorldPanel = (arcs) => {
-    const byExporter = new Map();
+// A country's export total and import total are different questions --
+// Australia sells the most iron ore, China buys the most. Ranking only
+// exporters used to hide the second answer entirely: China's ~$2B of
+// re-export/border trade put it at #6 on the exporter list while its
+// $128B+ of actual imports (the far bigger, more important number) never
+// appeared anywhere on this screen.
+const rankPartners = (arcs, side) => {
+    const byCountry = new Map();
     for (const a of arcs) {
         if (!(a.volume > 0)) continue;
-        const key = resolveCountry(a.sourceName)?.label || a.sourceName;
-        byExporter.set(key, (byExporter.get(key) || 0) + a.volume);
+        const raw = side === 'export' ? a.sourceName : a.targetName;
+        const key = resolveCountry(raw)?.label || raw;
+        byCountry.set(key, (byCountry.get(key) || 0) + a.volume);
     }
-    const ranked = [...byExporter.entries()].sort((x, y) => y[1] - x[1]);
+    const ranked = [...byCountry.entries()].sort((x, y) => y[1] - x[1]);
     const total = ranked.reduce((s, [, v]) => s + v, 0) || 1;
     const max = ranked[0]?.[1] || 1;
+    return { ranked, total, max };
+};
 
-    const rows = ranked.slice(0, 10).map(([name, vol], i) => {
-        const share = (vol / total) * 100;
-        return `<div class="trade-rank-row trade-bar-row is-world climate-click"
-                     role="button" tabindex="0" data-trade-country="${name}"
-                     title="${name} · ${share.toFixed(1)}%">
-            <span class="tr-i">${i + 1}</span>
-            <span class="tr-name tr-code">${countryCode(name)}</span>
-            <span class="tr-bar"><i style="width:${Math.max(3, (vol / max) * 100)}%"></i></span>
-            <span class="tr-pct">${share.toFixed(1)}%</span>
-        </div>`;
-    }).join('');
+const worldRankRows = ({ ranked, total, max }, n = 10) => ranked.slice(0, n).map(([name, vol], i) => {
+    const share = (vol / total) * 100;
+    return `<div class="trade-rank-row trade-bar-row is-world climate-click"
+                 role="button" tabindex="0" data-trade-country="${name}"
+                 title="${name} · ${share.toFixed(1)}%">
+        <span class="tr-i">${i + 1}</span>
+        <span class="tr-name tr-code">${countryCode(name)}</span>
+        <span class="tr-bar"><i style="width:${Math.max(3, (vol / max) * 100)}%"></i></span>
+        <span class="tr-pct">${share.toFixed(1)}%</span>
+    </div>`;
+}).join('');
+
+const renderTradeWorldPanel = (arcs) => {
+    const exportRank = rankPartners(arcs, 'export');
+    const importRank = rankPartners(arcs, 'import');
+    const exportRows = worldRankRows(exportRank);
+    const importRows = worldRankRows(importRank);
 
     if (!newsContentEl) return;
     const newsTitle = document.querySelector('#news-panel .section-title');
-    if (newsTitle) newsTitle.textContent = '주요 수출국 · 물동량 상위';
+    if (newsTitle) newsTitle.textContent = '주요 수출국 · 수입국';
     newsContentEl.innerHTML = `
         <div class="trade-focus-card">
-            <p class="trade-focus-sub">비중% · 막대는 상대 물동량 · 국가를 누르면 그 나라 노선만 남습니다</p>
-            <div class="trade-rank-list">${rows || '<p class="empty-state">무역 루트 없음</p>'}</div>
+            <p class="trade-focus-sub">비중% · 막대는 각 방향 내 상대 물동량 · 국가를 누르면 그 나라 노선만 남습니다</p>
+            <p class="trade-rank-group-head">주요 수출국</p>
+            <div class="trade-rank-list">${exportRows || '<p class="empty-state">무역 루트 없음</p>'}</div>
+            <p class="trade-rank-group-head">주요 수입국</p>
+            <div class="trade-rank-list">${importRows || '<p class="empty-state">무역 루트 없음</p>'}</div>
         </div>`;
     renderEmergencyStocks();
 };
@@ -1663,6 +1690,15 @@ document.getElementById('trade-flow-toggle')?.addEventListener('click', (e) => {
     if (arcs?.length) renderMapLayers(arcs, { focus: tradeFocusCountry, keepView: true });
 });
 
+// Partner rows (country focus, Stage 2): click reveals the exact USD + tonnage
+// behind the % bar. A separate listener from the one below because this one
+// must not also re-focus the country the list is already showing.
+document.getElementById('news-content')?.addEventListener('click', (e) => {
+    const row = e.target instanceof Element ? e.target.closest('.trade-bar-row[data-partner]') : null;
+    if (!row) return;
+    row.classList.toggle('is-expanded');
+});
+
 // Ranking rows focus a country, same as clicking it on the globe.
 document.getElementById('news-content')?.addEventListener('click', (e) => {
     const row = e.target instanceof Element ? e.target.closest('[data-trade-country]') : null;
@@ -1670,8 +1706,12 @@ document.getElementById('news-content')?.addEventListener('click', (e) => {
     const label = row.getAttribute('data-trade-country');
     const arcs = window.TradeData?.[currentCommodity]?.arcs || [];
     // Rows carry the display label; find whatever spelling the data uses.
-    const hit = arcs.find((a) => (resolveCountry(a.sourceName)?.label || a.sourceName) === label);
-    if (hit) focusTradeCountry(hit.sourceName);
+    // Checks both sides -- an importer-ranking row (e.g. China on iron ore)
+    // can have zero arcs where it is the source, and source-only used to
+    // make those rows a silent no-op click.
+    const matches = (name) => (resolveCountry(name)?.label || name) === label;
+    const hit = arcs.find((a) => matches(a.sourceName) || matches(a.targetName));
+    if (hit) focusTradeCountry(matches(hit.sourceName) ? hit.sourceName : hit.targetName);
 });
 
 // Widget-stack swipe. Delegated on a durable root so it survives the panel
@@ -4483,7 +4523,12 @@ const DASH_STEPS = 8;
 const DASH_SPAN = 0.06;
 const DASH_RES = 72;
 
-const buildTradeDashes = (arcs, phase) => {
+// RGB inversion, not a hue-rotate: cheap, deterministic, and reads as
+// "the other direction" against the same background regardless of which
+// commodity's base color it's inverting.
+const complementaryColor = (c) => [255 - c[0], 255 - c[1], 255 - c[2]];
+
+const buildTradeDashes = (arcs, phase, inboundKeys) => {
     const out = [];
     const n = Math.min(arcs.length, 60);
     for (let i = 0; i < n; i++) {
@@ -4499,7 +4544,15 @@ const buildTradeDashes = (arcs, phase) => {
             path.push(full[Math.round(f * DASH_RES)]);
         }
         if (path.length < 2) continue;
-        const c = arc.sourceColor || [125, 211, 252];
+        // Only relative to a focused country do "export" and "import" mean
+        // anything -- on the unfocused world map every arc is somebody's
+        // export, so it stays the commodity's base color there. Focused,
+        // inbound routes (this country buying) flip to the complementary
+        // color so they read apart from outbound (this country selling)
+        // instead of only the flow-particle direction telling them apart.
+        const base = arc.sourceColor || [125, 211, 252];
+        const isIn = inboundKeys && inboundKeys.has(`${arc.sourceName}>${arc.targetName}`);
+        const c = isIn ? complementaryColor(base) : base;
         out.push({
             path,
             color: [Math.min(255, c[0] + 70), Math.min(255, c[1] + 70),
@@ -4742,11 +4795,12 @@ const renderMapLayers = (arcs, opts = {}) => {
                 const key = `${d.sourceName}>${d.targetName}`;
                 if (focus && !opts._focusedSet?.has(key)) return [90, 110, 140, 12];
                 // With both directions shown, colour carries which is which:
-                // outbound keeps the commodity colour, inbound goes slate.
-                if (focus && opts._inbound?.has(key)) {
-                    return [148, 163, 184, arcAlpha(d.volume)];
-                }
-                const c = d.sourceColor || [56, 189, 248];
+                // outbound keeps the commodity colour, inbound flips to its
+                // complement (same rule the animated dash trail uses), so
+                // export/import read apart by colour and not only by which
+                // way the flow particles happen to be moving.
+                const base = d.sourceColor || [56, 189, 248];
+                const c = (focus && opts._inbound?.has(key)) ? complementaryColor(base) : base;
                 return [c[0], c[1], c[2], arcAlpha(d.volume)];
             },
             updateTriggers: { getWidth: [focus], getColor: [focus] },
@@ -4799,7 +4853,7 @@ const renderMapLayers = (arcs, opts = {}) => {
     ];
 
     const trailData = () => (tradeFlowOn
-        ? buildTradeDashes(opts._focusedList || filteredArcs.slice(0, 40), tradeAnimPhase)
+        ? buildTradeDashes(opts._focusedList || filteredArcs.slice(0, 40), tradeAnimPhase, opts._inbound)
         : []);
 
     deckgl.setProps({

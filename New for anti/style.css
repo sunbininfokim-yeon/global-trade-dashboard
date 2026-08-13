@@ -790,6 +790,12 @@ body.trade-map-mode .left-pane {
 .trade-focus-clear:hover { border-color: #38bdf8; color: #e2e8f0; }
 .trade-focus-sub { font-size: 11px; color: #94a3b8; margin: 0 0 10px; }
 .trade-rank-list { display: flex; flex-direction: column; gap: 2px; }
+.trade-rank-group-head {
+    font-size: 10px; font-weight: 700; letter-spacing: .06em;
+    color: #64748b; text-transform: uppercase;
+    margin: 14px 0 4px;
+}
+.trade-rank-group-head:first-of-type { margin-top: 0; }
 .trade-rank-row {
     display: grid; grid-template-columns: 22px 1fr auto auto; gap: 8px; align-items: center;
     padding: 7px 4px; border-bottom: 1px solid rgba(255,255,255,.06); font-size: 12.5px;
@@ -2038,8 +2044,21 @@ body.trade-map-mode .left-pane {
 .trade-bar-row .tr-name {
     min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
-/* 물동량 숫자는 막대와 %가 이미 말해준다. 정확한 값은 행 툴팁에. */
+/* 물동량 숫자는 막대와 %가 이미 말해준다. 기본은 숨기고, 행을 클릭하면
+   (.is-expanded) USD·톤수를 함께 펼친다 -- 49.9%가 큰 무역의 절반인지
+   작은 무역의 절반인지는 % 막대만으로 구분이 안 된다. */
 .trade-bar-row .tr-vol { display: none; }
+.trade-bar-row.is-expanded {
+    grid-template-columns: 15px 8px 30px minmax(0, 1fr) 46px auto;
+}
+.trade-bar-row.is-expanded .tr-vol {
+    display: block;
+    font-size: 10.5px;
+    color: #94a3b8;
+    white-space: nowrap;
+    padding-left: 6px;
+    font-variant-numeric: tabular-nums;
+}
 
 /* 데이터 출처 태그 (seed 인지 live 인지 화면에서 구분) */
 .climate-card h3 .src-tag {
