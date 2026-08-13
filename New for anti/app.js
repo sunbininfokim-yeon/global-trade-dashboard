@@ -5524,6 +5524,17 @@ const pfSearchLocal = (q) => {
 // by typing its 6-digit code. The OpenDART filer index that /api/dart-financials
 // already resolves against doubles as the missing name index: every KRX-listed
 // filer, keyed by the same code the endpoint takes.
+// DART's own registered entity name is what row[1] carries, and for a
+// handful of large caps that name is plain English (NAVER, S-Oil) -- a user
+// typing the Korean brand name would never match it by substring. Covers
+// only names actually asked about or high-traffic; not an attempt at full
+// English->Korean coverage for all 86 ASCII-registered filers.
+const KRX_NAME_ALIASES = {
+    '035420': ['네이버'],       // NAVER
+    '010950': ['에쓰오일', '에스오일'], // S-Oil
+    '033780': ['KT&G'],         // 케이티앤지 already Korean; alias covers the reverse
+};
+
 let KRX_FILERS = null;
 const krxLoadFilers = async () => {
     if (KRX_FILERS) return KRX_FILERS;
@@ -5536,6 +5547,7 @@ const krxLoadFilers = async () => {
                 .map(([code, row]) => ({
                     id: `krx:${code}`, name_ko: (row || [])[1] || code,
                     yahoo: code, asset_class: 'equity',
+                    aliases: KRX_NAME_ALIASES[code] || [],
                 }));
             return KRX_FILERS;
         } catch (_) { /* try the next base */ }
@@ -5553,9 +5565,10 @@ const krxSearchLocal = (q) => {
     const exact = [], starts = [], contains = [];
     for (const it of KRX_FILERS) {
         const name = it.name_ko.toLowerCase();
+        const aliasHit = (it.aliases || []).some((a) => a.toLowerCase().includes(s));
         if (name === s || it.yahoo === s) exact.push(it);
         else if (name.startsWith(s) || it.yahoo.startsWith(s)) starts.push(it);
-        else if (name.includes(s)) contains.push(it);
+        else if (name.includes(s) || aliasHit) contains.push(it);
     }
     return [...exact, ...starts, ...contains].slice(0, 6);
 };
