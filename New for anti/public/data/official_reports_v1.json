@@ -1,6 +1,6 @@
 {
   "schema_version": "official-reports-v1",
-  "generated_at": "2026-08-13T11:14:37.386425+00:00",
+  "generated_at": "2026-08-13T15:37:53.921508+00:00",
   "model": {
     "name": "official_reports_learnable_v1",
     "description": "Official sources only (US/JP/CN/EU/UK public RSS·HTML). Domains: economy/finance/diplomacy/security/agriculture. Series catalog + label_history for collaborative learning. No Dropbox.",
@@ -20,7 +20,7 @@
     "raw_items": 170,
     "scored": 170,
     "selected": 40,
-    "indicators": 16
+    "indicators": 17
   },
   "feed_status": [
     {
@@ -305,6 +305,20 @@
       "title": "Bank of Japan's Transactions with the Government (July)",
       "url": "http://www.boj.or.jp/en/statistics/boj/other/tseifu/release/2026/seifu2607.pdf",
       "published_at": "2026-08-06T23:50:00+00:00",
+      "site_slot": "finance.policy",
+      "significance": 2.306
+    },
+    {
+      "series_id": "JP_BOJ_POLICY",
+      "label_ko": "일본은행 정책·공표",
+      "country": "JPN",
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "title": "Japanese Government Bonds Held by the Bank of Japan",
+      "url": "http://www.boj.or.jp/en/statistics/boj/other/mei/release/2026/mei260731.xlsx",
+      "published_at": "2026-08-04T08:00:00+00:00",
       "site_slot": "finance.policy",
       "significance": 2.306
     }
@@ -1500,41 +1514,6 @@
       "site_slot": null
     },
     {
-      "id": "4338a33ea980fef3",
-      "published_at": "2026-06-25T15:00:00+00:00",
-      "source": {
-        "id": "us_fed_all",
-        "name": "Federal Reserve",
-        "region": "usa",
-        "slant": null
-      },
-      "url": "https://www.federalreserve.gov/newsevents/pressreleases/enforcement20260625a.htm",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "series_id": null,
-      "title": {
-        "original": "Federal Reserve Board announces termination of enforcement action with Jiko Group, Inc.",
-        "original_lang": "en",
-        "ko": "[USA·경제] Federal Reserve Board announces termination of enforcement action with Jiko Group, Inc."
-      },
-      "summary": "Federal Reserve Board announces termination of enforcement action with Jiko Group, Inc.",
-      "scores": {
-        "significance": 2.322,
-        "final": 2.322
-      },
-      "rank_reasons": [
-        "domains:economy,finance",
-        "boost:1"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
-    },
-    {
       "id": "2bb1542a7f0edf49",
       "published_at": "2026-08-13T08:00:00+00:00",
       "source": {
@@ -1708,9 +1687,56 @@
       "translation_status": "skipped",
       "event_type": "official_report",
       "site_slot": "finance.policy"
+    },
+    {
+      "id": "fa6f77c43801bb2a",
+      "published_at": "2026-08-04T08:00:00+00:00",
+      "source": {
+        "id": "jp_boj_whatsnew",
+        "name": "Bank of Japan",
+        "region": "jpn",
+        "slant": null
+      },
+      "url": "http://www.boj.or.jp/en/statistics/boj/other/mei/release/2026/mei260731.xlsx",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": "JP_BOJ_POLICY",
+      "title": {
+        "original": "Japanese Government Bonds Held by the Bank of Japan",
+        "original_lang": "en",
+        "ko": "[JPN·경제] Japanese Government Bonds Held by the Bank of Japan"
+      },
+      "summary": "",
+      "scores": {
+        "significance": 2.306,
+        "final": 2.306
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "series:JP_BOJ_POLICY"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": "finance.policy"
     }
   ],
   "pending_review": [
+    {
+      "title": "August 12, 2026",
+      "url": "https://home.treasury.gov/news/press-releases/sb0604",
+      "country": "USA",
+      "domains": [
+        "economy",
+        "finance",
+        "diplomacy"
+      ],
+      "significance": 2.291,
+      "suggest": "label promote|keep|drop + series_id later"
+    },
     {
       "title": "August 11, 2026",
       "url": "https://home.treasury.gov/news/press-releases/sb0603",
@@ -1726,18 +1752,6 @@
     {
       "title": "August 11, 2026",
       "url": "https://home.treasury.gov/news/press-releases/sb0602",
-      "country": "USA",
-      "domains": [
-        "economy",
-        "finance",
-        "diplomacy"
-      ],
-      "significance": 2.291,
-      "suggest": "label promote|keep|drop + series_id later"
-    },
-    {
-      "title": "August 7, 2026",
-      "url": "https://home.treasury.gov/news/press-releases/sb0599",
       "country": "USA",
       "domains": [
         "economy",
@@ -1798,6 +1812,18 @@
     {
       "title": "testimonies",
       "url": "https://home.treasury.gov/news/press-releases/testimonies",
+      "country": "USA",
+      "domains": [
+        "economy",
+        "finance",
+        "diplomacy"
+      ],
+      "significance": 2.291,
+      "suggest": "label promote|keep|drop + series_id later"
+    },
+    {
+      "title": "August 7, 2026",
+      "url": "https://home.treasury.gov/news/press-releases/sb0599",
       "country": "USA",
       "domains": [
         "economy",
@@ -3035,41 +3061,6 @@
       "site_slot": null
     },
     {
-      "id": "4338a33ea980fef3",
-      "published_at": "2026-06-25T15:00:00+00:00",
-      "source": {
-        "id": "us_fed_all",
-        "name": "Federal Reserve",
-        "region": "usa",
-        "slant": null
-      },
-      "url": "https://www.federalreserve.gov/newsevents/pressreleases/enforcement20260625a.htm",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "series_id": null,
-      "title": {
-        "original": "Federal Reserve Board announces termination of enforcement action with Jiko Group, Inc.",
-        "original_lang": "en",
-        "ko": "[USA·경제] Federal Reserve Board announces termination of enforcement action with Jiko Group, Inc."
-      },
-      "summary": "Federal Reserve Board announces termination of enforcement action with Jiko Group, Inc.",
-      "scores": {
-        "significance": 2.322,
-        "final": 2.322
-      },
-      "rank_reasons": [
-        "domains:economy,finance",
-        "boost:1"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
-    },
-    {
       "id": "2bb1542a7f0edf49",
       "published_at": "2026-08-13T08:00:00+00:00",
       "source": {
@@ -3230,6 +3221,41 @@
         "original": "Bank of Japan's Transactions with the Government (July)",
         "original_lang": "en",
         "ko": "[JPN·경제] Bank of Japan's Transactions with the Government (July)"
+      },
+      "summary": "",
+      "scores": {
+        "significance": 2.306,
+        "final": 2.306
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "series:JP_BOJ_POLICY"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": "finance.policy"
+    },
+    {
+      "id": "fa6f77c43801bb2a",
+      "published_at": "2026-08-04T08:00:00+00:00",
+      "source": {
+        "id": "jp_boj_whatsnew",
+        "name": "Bank of Japan",
+        "region": "jpn",
+        "slant": null
+      },
+      "url": "http://www.boj.or.jp/en/statistics/boj/other/mei/release/2026/mei260731.xlsx",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": "JP_BOJ_POLICY",
+      "title": {
+        "original": "Japanese Government Bonds Held by the Bank of Japan",
+        "original_lang": "en",
+        "ko": "[JPN·경제] Japanese Government Bonds Held by the Bank of Japan"
       },
       "summary": "",
       "scores": {
