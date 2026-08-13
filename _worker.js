@@ -52,6 +52,11 @@ export default {
             return await handleQuote(request, env);
         }
 
+        // Front-month futures quote for the commodity currently on screen
+        if (url.pathname.startsWith('/api/futures')) {
+            return await handleFutures(request, env);
+        }
+
         // Filed financial statements for the company calculator
         if (url.pathname.startsWith('/api/financials')) {
             return await handleFinancials(request, env);
@@ -363,7 +368,20 @@ async function kvCachedJson(env, cacheKey, ttlSeconds, doFetch) {
 // drifted, every "warmed" entry would be a key nobody reads.
 // 842 is the US: Comtrade reports US trade as "USA, PR and USVI" (842), and
 // querying the plain geographic code 840 returns zero rows.
-const DEFAULT_M49_CODES = "842,840,156,76,32,643,804,356,124,36,250,276,360,458,764,704,818,484,392,410,826,380,724,792,682,784,710,566,586,50,608,364,12,504,616,528,56,756,170,604,152,554,398,642,348,112,600,858,231,800,634,578,368,344,180,158,404,834,104,116,384,288,686,860";
+//
+// Five more countries carry the same trap, found by noticing they never once
+// appeared as reporter or partner across ~22,000 rows spanning 8 commodities:
+// France 250->251, India 356->699, Norway 578->579, Taiwan 158->490
+// ("Other Asia, nes"), Switzerland 756->757 (this one alone was erasing
+// ~$60B of gold trade -- the map's own "top exporter: Switzerland" label
+// pointed at a country the map could never draw a route for). Old codes stay
+// in the list so any legacy cache entry still resolves; see M49_MAP in
+// data.js for the matching name table. Also added seven producers that were
+// invisible even as a trading partner, not filtered out: Gabon (266,
+// manganese ore), Mozambique (508) and Madagascar (450, graphite), Zambia
+// (894) and Finland (246, cobalt), Bolivia (68, refined tin), Rwanda
+// (646, tin concentrate).
+const DEFAULT_M49_CODES = "842,840,156,76,32,643,804,699,356,124,36,251,250,276,360,458,764,704,818,484,392,410,826,380,724,792,682,784,710,566,586,50,608,364,12,504,616,528,56,757,756,170,604,152,554,398,642,348,112,600,858,231,800,634,579,578,368,344,180,490,158,404,834,104,116,384,288,686,860,266,508,450,894,246,68,646";
 
 // Every commodity the dashboard can show, keyed by HS code -> cache TTL.
 // Doubles as the work list for the scheduled cache warm-up.
@@ -386,14 +404,14 @@ const COMTRADE_TTL = {
     // Battery and steel-chain minerals. Annual Comtrade data that moves once a
     // year, so a week of staleness costs nothing.
     "7502": 604800,  // Nickel
-    "8105": 604800,  // Cobalt
-    "283691": 604800,// Lithium carbonate
-    "2504": 604800,  // Graphite
+    "8105,2822,283329": 604800, // Cobalt: mattes + oxides/hydroxides + sulphate
+    "283691,2530,282520": 604800, // Lithium: carbonate + spodumene ore + hydroxide
+    "2504,3801": 604800, // Graphite: natural + artificial
     "280530": 604800,// Rare earths
     "2601": 604800,  // Iron ore
     "2602,720211,720219": 604800, // Manganese: ore + ferromanganese
     "2610,720241,720249": 604800, // Chromium: ore + ferrochromium
-    "8001": 604800,  // Tin
+    "8001,2609": 604800, // Tin: unwrought metal + ore/concentrate
     "7801": 604800,  // Lead
     "7110": 604800   // Platinum group
 };
@@ -581,9 +599,17 @@ function shortHash(str) {
     return h.toString(36);
 }
 
+// Bumped whenever DEFAULT_M49_CODES changes. The 'default' scope below
+// collapses the whole reporter/partner list to a literal token -- cheap, but
+// it means the cache key for the default list never changes on its own even
+// when the list's *contents* do, so a code fix (e.g. Switzerland 756->757)
+// would keep serving the pre-fix cached payload for up to COMTRADE_TTL
+// without this. Bump on any DEFAULT_M49_CODES edit; nothing else needs to.
+const DEFAULT_SCOPE_VERSION = 2;
+
 function comtradeCacheKey(hs, reporters, partners, period, freq) {
     const scope = (reporters === DEFAULT_M49_CODES && partners === DEFAULT_M49_CODES)
-        ? 'default'
+        ? `default${DEFAULT_SCOPE_VERSION}`
         : shortHash(`${reporters}|${partners}`);
     return `comtrade:${freq}:${hs}:${period}:${scope}`;
 }
@@ -1116,6 +1142,30 @@ async function dartCorpIndex(env, origin) {
     return {};
 }
 
+// Same credential under either name: scripts/dart/ reads DART_API_KEY
+// locally, and the Worker secret has also been stored as OPEN_DART_API.
+// Accept both -- a naming mismatch would make every lookup return "no facts",
+// which is indistinguishable from a company genuinely having no filing.
+// A binding is either a plain string (Workers "Secret" / plaintext var) or a
+// Secrets Store binding object, which only yields its value via async get().
+// Interpolating the object form into a URL throws instead of stringifying, so
+// both shapes have to be unwrapped here. Trimmed because a secret pasted into
+// the dashboard often carries a trailing newline, which OpenDART rejects as a
+// malformed key.
+async function dartApiKey(env) {
+    for (const binding of [env.OPEN_DART_API, env.DART_API_KEY]) {
+        if (!binding) continue;
+        if (typeof binding === 'string') return binding.trim();
+        if (typeof binding.get === 'function') {
+            try {
+                const value = await binding.get();
+                if (value) return String(value).trim();
+            } catch (_) { /* try the next binding */ }
+        }
+    }
+    return '';
+}
+
 function dartPick(facts, candidates) {
     for (const tag of candidates) {
         const raw = facts[tag];
@@ -1126,22 +1176,32 @@ function dartPick(facts, candidates) {
     return null;
 }
 
+// Returns { facts, reason }. Every failure path used to collapse to a bare
+// {}, which made four very different problems -- no secret bound, OpenDART
+// refusing the Worker's egress, a rejected key, a company with no filing --
+// look identical from the outside and impossible to tell apart without
+// redeploying. reason names which one it was; it never carries the key.
 async function fetchDartXbrlFacts(env, corpCode, year, fsDiv) {
-    // Missing key must degrade to {} (no network call), same contract as the
-    // Python adapter -- a snapshot without a live key still has to render.
-    if (!env.DART_API_KEY) return {};
+    // Missing key must degrade to empty (no network call), same contract as
+    // the Python adapter -- a snapshot without a live key still has to render.
+    const key = await dartApiKey(env);
+    if (!key) return { facts: {}, reason: 'no_key_bound' };
     const params = new URLSearchParams({
-        crtfc_key: env.DART_API_KEY,
+        crtfc_key: key,
         corp_code: corpCode,
         bsns_year: String(year),
         reprt_code: '11011', // 사업보고서 (annual report)
         fs_div: fsDiv,
     });
     try {
-        const res = await fetch(`https://opendart.fss.or.kr/api/fnlttSinglAcntAll.json?${params}`);
-        if (!res.ok) return {};
+        const res = await fetch(`https://opendart.fss.or.kr/api/fnlttSinglAcntAll.json?${params}`, {
+            headers: { 'User-Agent': 'global-trade-dashboard/1.0', Accept: 'application/json' },
+        });
+        if (!res.ok) return { facts: {}, reason: `http_${res.status}` };
         const data = await res.json();
-        if (data.status !== '000') return {};
+        // OpenDART's own status codes: 013 = no data for this query, 020 =
+        // rate limited, 100/800/900 = bad key or unregistered caller.
+        if (data.status !== '000') return { facts: {}, reason: `dart_status_${data.status}` };
         const facts = {};
         for (const item of data.list || []) {
             if (DART_COLLIDING_SJ_DIV.has(item.sj_div)) continue;
@@ -1150,9 +1210,12 @@ async function fetchDartXbrlFacts(env, corpCode, year, fsDiv) {
             if (!accountId || accountId.startsWith('-') || amount === undefined || amount === null) continue;
             if (!(accountId in facts)) facts[accountId] = amount;
         }
-        return facts;
-    } catch (_) {
-        return {};
+        return { facts, reason: Object.keys(facts).length ? 'ok' : 'no_usable_account_ids' };
+    } catch (err) {
+        // Workers put the failing URL in fetch error messages, and this one
+        // carries crtfc_key -- the reason travels to the client, so redact.
+        const detail = String(err.message || '').split(key).join('<key>');
+        return { facts: {}, reason: `fetch_failed:${err.name}:${detail}` };
     }
 }
 
@@ -1303,13 +1366,16 @@ async function handleDartFinancials(request, env) {
             const firstYear = now.getUTCFullYear() - (now.getUTCMonth() >= 3 ? 1 : 2);
 
             let year = firstYear;
-            let facts = await fetchDartXbrlFacts(env, corpCode, year, 'CFS');
+            let { facts, reason } = await fetchDartXbrlFacts(env, corpCode, year, 'CFS');
             if (Object.keys(facts).length === 0) {
                 year = firstYear - 1;
-                facts = await fetchDartXbrlFacts(env, corpCode, year, 'CFS');
+                ({ facts, reason } = await fetchDartXbrlFacts(env, corpCode, year, 'CFS'));
             }
             if (Object.keys(facts).length === 0) {
-                return { ok: false, status: 404, statusText: 'no OpenDART CFS facts for the last two fiscal years' };
+                return {
+                    ok: false, status: 404,
+                    statusText: `no OpenDART CFS facts for FY${firstYear}/FY${firstYear - 1} (${reason})`,
+                };
             }
 
             return {
@@ -1332,7 +1398,8 @@ async function handleDartFinancials(request, env) {
                         raw_filing_facts_embedded: true,
                         period_alignment: 'single_fiscal_year_no_history',
                         facts_fetched: Object.keys(facts).length,
-                        live_key_present: Boolean(env.DART_API_KEY),
+                        // Reaching here at all required a keyed OpenDART fetch.
+                        live_key_present: true,
                     },
                 },
             };
@@ -1457,6 +1524,107 @@ async function secSearch(env, q) {
     return [...starts, ...contains].slice(0, 12).map(([symbol, name]) => ({
         symbol, name, exchange: 'SEC', type: 'EQUITY',
     }));
+}
+
+/**
+ * Front-month futures/proxy price beside the trade-flow ranking.
+ *
+ * A flow map says who ships to whom and nothing about what the cargo is worth
+ * today, which is the number that moves first when a route is threatened.
+ *
+ * Where there is no free price the response says which and why rather than
+ * pretending: LME's real-time feed is licensed, so nickel, tin, lead and zinc
+ * are absent instead of being filled with a COMEX contract that is not the
+ * same benchmark, and cobalt, lithium, graphite and rare earths have no
+ * liquid contract at all -- those are assessed prices sold by Fastmarkets and
+ * Benchmark Mineral. Manganese and chromium have no contract either. Naming
+ * the gap is more useful than hiding it behind an empty card.
+ *
+ * Yahoo publishes agricultural contracts in US cents (`USX`); wheat comes
+ * back as 638.25 meaning $6.3825/bu. The conversion happens once, here.
+ */
+const FUTURES = {
+    oil:       { symbol: "CL=F",  unit: "배럴",      exchange: "NYMEX" },
+    gas:       { symbol: "NG=F",  unit: "MMBtu",     exchange: "NYMEX" },
+    wheat:     { symbol: "ZW=F",  unit: "부셸",      exchange: "CBOT" },
+    corn:      { symbol: "ZC=F",  unit: "부셸",      exchange: "CBOT" },
+    soybeans:  { symbol: "ZS=F",  unit: "부셸",      exchange: "CBOT" },
+    sugar:     { symbol: "SB=F",  unit: "파운드",    exchange: "ICE" },
+    coffee:    { symbol: "KC=F",  unit: "파운드",    exchange: "ICE" },
+    copper:    { symbol: "HG=F",  unit: "파운드",    exchange: "COMEX" },
+    gold:      { symbol: "GC=F",  unit: "온스",      exchange: "COMEX" },
+    silver:    { symbol: "SI=F",  unit: "온스",      exchange: "COMEX" },
+    platinum:  { symbol: "PL=F",  unit: "온스",      exchange: "NYMEX" },
+    aluminum:  { symbol: "ALI=F", unit: "톤",        exchange: "COMEX" },
+    // SGX/DCE iron-ore swaps have no free real-time Yahoo ticker; CME's
+    // HRC (hot-rolled coil steel) futures track the same demand cycle and are
+    // the closest free proxy, labelled as one rather than passed off as an
+    // iron-ore price.
+    iron_ore:  { symbol: "HRC=F", unit: "톤",        exchange: "COMEX", proxy: "철광석 대신 열연코일(HRC) 선물 프록시" },
+};
+
+// No free real-time source. Named so the panel can say which and why, rather
+// than rendering an empty box that looks like a bug.
+const FUTURES_UNPRICED = {
+    nickel: "LME 실시간 시세는 유료입니다 (라이선스 제한)",
+    tin: "LME 실시간 시세는 유료입니다 (라이선스 제한)",
+    lead: "LME 실시간 시세는 유료입니다 (라이선스 제한)",
+    zinc: "LME 실시간 시세는 유료입니다 (라이선스 제한)",
+    cobalt: "유동성 있는 선물 계약이 없습니다 (Fastmarkets 등 유료 평가가)",
+    lithium: "유동성 있는 선물 계약이 없습니다 (Fastmarkets 등 유료 평가가)",
+    graphite: "유동성 있는 선물 계약이 없습니다 (Benchmark Mineral 등 유료 평가가)",
+    rare_earths: "유동성 있는 선물 계약이 없습니다 (Benchmark Mineral 등 유료 평가가)",
+    manganese: "거래되는 선물 계약이 없습니다",
+    chromium: "거래되는 선물 계약이 없습니다",
+    thermal_coal: "무료로 확인 가능한 실시간 선물가가 없습니다 (장외 지수 가격)",
+    met_coal: "무료로 확인 가능한 실시간 선물가가 없습니다 (장외 지수 가격)",
+};
+
+async function handleFutures(request, env) {
+    const url = new URL(request.url);
+    const want = (url.searchParams.get('commodity') || '').trim();
+
+    if (want && FUTURES_UNPRICED[want]) {
+        return new Response(
+            JSON.stringify({ commodity: want, priced: false, reason: FUTURES_UNPRICED[want] }),
+            { headers: JSON_HEADERS });
+    }
+    const cfg = FUTURES[want];
+    if (!cfg) {
+        return new Response(JSON.stringify({ error: `no futures config for: ${want}` }),
+            { status: 404, headers: JSON_HEADERS });
+    }
+
+    // 15 minutes: this is a delayed quote, and a dashboard reload should not
+    // cost an upstream call every time.
+    return kvCachedJson(env, `futures:${want}`, 900, async () => {
+        const res = await fetch(
+            `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(cfg.symbol)}?interval=1d&range=5d`,
+            { headers: YF_HEADERS });
+        if (!res.ok) return { ok: false, status: res.status };
+        const meta = (await res.json())?.chart?.result?.[0]?.meta;
+        const last = Number(meta?.regularMarketPrice);
+        if (!Number.isFinite(last)) return { ok: false, status: 502, statusText: 'no price in Yahoo response' };
+
+        // USX is US cents; normalise once so the panel never has to remember.
+        const cents = meta.currency === 'USX';
+        const prev = Number(meta?.chartPreviousClose);
+        const px = cents ? last / 100 : last;
+        return {
+            ok: true,
+            body: {
+                commodity: want, priced: true, symbol: cfg.symbol,
+                exchange: cfg.exchange, proxy: cfg.proxy || null,
+                price: Math.round(px * 10000) / 10000,
+                currency: "USD", unit: cfg.unit,
+                change_pct: Number.isFinite(prev) && prev > 0
+                    ? Math.round(((last - prev) / prev) * 1000) / 10 : null,
+                as_of: meta?.regularMarketTime
+                    ? new Date(meta.regularMarketTime * 1000).toISOString() : null,
+                source: "Yahoo Finance", delayed: true,
+            },
+        };
+    });
 }
 
 async function handleQuote(request, env) {

@@ -697,18 +697,84 @@ const renderTradeWorldPanel = (arcs) => {
     const exportRows = worldRankRows(exportRank);
     const importRows = worldRankRows(importRank);
 
+    // Replaces data.js's hand-written topExporter string the moment real arcs
+    // are in: that string could go stale or, worse, name a country the map
+    // has no route for (Switzerland's gold arcs were missing entirely before
+    // the Comtrade area-code fix, so the label and the map disagreed). Left
+    // untouched while arcs is still empty/loading, so the static string
+    // serves as the loading placeholder instead of flashing blank.
+    if (topExporterEl && exportRank.ranked.length) {
+        topExporterEl.textContent = exportRank.ranked[0][0];
+    }
+
     if (!newsContentEl) return;
     const newsTitle = document.querySelector('#news-panel .section-title');
     if (newsTitle) newsTitle.textContent = '주요 수출국 · 수입국';
     newsContentEl.innerHTML = `
         <div class="trade-focus-card">
+            <div id="futures-slot"></div>
             <p class="trade-focus-sub">비중% · 막대는 각 방향 내 상대 물동량 · 국가를 누르면 그 나라 노선만 남습니다</p>
             <p class="trade-rank-group-head">주요 수출국</p>
             <div class="trade-rank-list">${exportRows || '<p class="empty-state">무역 루트 없음</p>'}</div>
             <p class="trade-rank-group-head">주요 수입국</p>
             <div class="trade-rank-list">${importRows || '<p class="empty-state">무역 루트 없음</p>'}</div>
         </div>`;
+    renderFuturesCard(currentCommodity);
     renderEmergencyStocks();
+};
+
+const futuresCache = new Map();
+
+/**
+ * Front-month futures beside the flow ranking (world view, Stage 1).
+ *
+ * Fetched by commodity key, not by symbol -- the ranking already knows which
+ * commodity is on screen, and keeping the Yahoo symbol server-side means a
+ * bad ticker never leaks into a browser network tab.
+ */
+const renderFuturesCard = async (commodity) => {
+    const slot = document.getElementById('futures-slot');
+    if (!slot || !commodity) return;
+
+    let doc = futuresCache.get(commodity);
+    if (doc === undefined) {
+        try {
+            const res = await fetch(`/api/futures?commodity=${encodeURIComponent(commodity)}`);
+            doc = res.ok ? await res.json() : null;
+        } catch (err) {
+            console.warn('[futures] unavailable', err);
+            doc = null;
+        }
+        futuresCache.set(commodity, doc);
+    }
+    // The panel may have been rebuilt (or the commodity switched) while the
+    // fetch was in flight -- re-fetch the live slot, and bail if it is gone
+    // or if the visible commodity has since moved on.
+    const live = document.getElementById('futures-slot');
+    if (!live || currentCommodity !== commodity) return;
+    if (!doc) { live.innerHTML = ''; return; }
+
+    if (doc.priced === false) {
+        live.innerHTML = `<div class="fut-card fut-none">
+            <span class="fut-k">선물가</span>
+            <span class="fut-none-note">${doc.reason}</span>
+        </div>`;
+        return;
+    }
+    if (!doc.priced) { live.innerHTML = ''; return; }
+
+    const up = (doc.change_pct ?? 0) >= 0;
+    live.innerHTML = `
+        <div class="fut-card">
+            <div class="fut-main">
+                <span class="fut-px">$${doc.price.toLocaleString(undefined, { maximumFractionDigits: 4 })}</span>
+                <span class="fut-unit">/ ${doc.unit}</span>
+                ${doc.change_pct === null ? '' : `<span class="fut-chg ${up ? 'up' : 'down'}">
+                    ${up ? '+' : ''}${doc.change_pct}%</span>`}
+            </div>
+            <div class="fut-meta">${doc.exchange} ${doc.symbol}
+                ${doc.proxy ? ` · ${doc.proxy}` : ''} · 지연 시세</div>
+        </div>`;
 };
 
 const updateNewsPanel = (countryName) => {
@@ -4752,8 +4818,16 @@ const renderMapLayers = (arcs, opts = {}) => {
     let filteredArcs = arcs.filter((arc) => arc.volume > 0);
     arcVolumeMax = filteredArcs.reduce((m, a) => Math.max(m, a.volume), 1);
     // The mockup drops flows under a threshold rather than drawing every pair.
-    // Below ~1.5% of the largest route a line adds noise, not information.
-    const arcFloor = arcVolumeMax * 0.015;
+    // This used to be 1.5% of the single largest route, which reads fine for a
+    // commodity with several comparable exporters but erases everything on a
+    // commodity with one dominant route: lithium's Chile->China arc alone cut
+    // 151 routes down to 5, chromium's South Africa arc cut 253 down to 6 --
+    // countries that genuinely trade (Argentina, China, Turkey, Kazakhstan)
+    // vanished from the map though they were still in the ranking list beside
+    // it. Total-relative instead of max-relative: a dominant route still sets
+    // most of the total, but the bar it sets for everyone else is far lower.
+    const arcTotal = filteredArcs.reduce((s, a) => s + a.volume, 0) || 1;
+    const arcFloor = arcTotal * 0.001;
     filteredArcs = filteredArcs.filter((a) => a.volume >= arcFloor);
 
     if (focus) {
@@ -5592,6 +5666,51 @@ const pfSearchLocal = (q) => {
     ).slice(0, 6);
 };
 
+// Yahoo returns nothing for a Korean company name and the alias table above
+// carries no KRX rows, so before this a Korean listing could only be reached
+// by typing its 6-digit code. The OpenDART filer index that /api/dart-financials
+// already resolves against doubles as the missing name index: every KRX-listed
+// filer, keyed by the same code the endpoint takes.
+let KRX_FILERS = null;
+const krxLoadFilers = async () => {
+    if (KRX_FILERS) return KRX_FILERS;
+    for (const base of ['/public/data/', '/data/']) {
+        try {
+            const r = await fetch(`${base}dart_corp_codes_v1.json`);
+            if (!r.ok) continue;
+            const doc = await r.json();
+            KRX_FILERS = Object.entries(doc.index || {})
+                .map(([code, row]) => ({
+                    id: `krx:${code}`, name_ko: (row || [])[1] || code,
+                    yahoo: code, asset_class: 'equity',
+                }));
+            return KRX_FILERS;
+        } catch (_) { /* try the next base */ }
+    }
+    KRX_FILERS = [];
+    return KRX_FILERS;
+};
+
+// Exact, then prefix, then substring. Korean group names are prefixes of their
+// affiliates' names, so plain substring order buries the parent: 카카오 has to
+// lead over 카카오게임즈, and 삼성전 has to reach 삼성전자.
+const krxSearchLocal = (q) => {
+    const s = (q || '').trim().toLowerCase();
+    if (!s || !KRX_FILERS) return [];
+    const exact = [], starts = [], contains = [];
+    for (const it of KRX_FILERS) {
+        const name = it.name_ko.toLowerCase();
+        if (name === s || it.yahoo === s) exact.push(it);
+        else if (name.startsWith(s) || it.yahoo.startsWith(s)) starts.push(it);
+        else if (name.includes(s)) contains.push(it);
+    }
+    return [...exact, ...starts, ...contains].slice(0, 6);
+};
+
+// A KRX listing arrives either bare (from the filer index) or suffixed (from
+// Yahoo); both name the same company, so dedupe has to compare them stripped.
+const coSymKey = (sym) => String(sym || '').toUpperCase().replace(/\.(KS|KQ)$/, '');
+
 // Anything the registry does not know, looked up by ticker or company name.
 const pfSearchRemote = async (q) => {
     try {
@@ -6418,7 +6537,7 @@ const coDerive = (s) => {
 
 const renderCompanyCalc = async (host) => {
     host.innerHTML = `<div class="fin-wrap"><p class="fin-loading">불러오는 중…</p></div>`;
-    await pfLoadRefs();
+    await Promise.all([pfLoadRefs(), krxLoadFilers()]);
 
     host.innerHTML = `
     <div class="fin-wrap">
@@ -6431,13 +6550,14 @@ const renderCompanyCalc = async (host) => {
             <div class="pf-add">
                 <div class="pf-search-wrap">
                     <input type="text" id="co-q" class="pf-field" autocomplete="off"
-                           placeholder="기업명·티커로 검색 (예: 애플, AAPL, NVDA)">
+                           placeholder="기업명·티커로 검색 (예: 삼성전자, 009150, AAPL)">
                     <div id="co-sug" class="pf-sug hidden"></div>
                 </div>
             </div>
             <p id="co-picked" class="pf-picked"></p>
             <p class="fin-note">
-                미국 상장사는 SEC 공시로 바로 계산됩니다. <strong>한국 상장사는 DART 키가 연결되면</strong> 같은 화면에서 열립니다.
+                미국 상장사는 SEC 공시로, <strong>한국 상장사는 DART 공시로</strong> 같은 화면에서 열립니다.
+                한글 이름으로 찾지 못하면 6자리 종목코드를 그대로 넣으면 됩니다.
             </p>
         </section>
         <div id="co-out"></div>
@@ -6453,7 +6573,10 @@ const renderCompanyCalc = async (host) => {
         const q = qEl.value.trim();
         clearTimeout(timer);
         if (!q) { sugEl.classList.add('hidden'); return; }
-        const local = pfSearchLocal(q).filter((x) => x.asset_class === 'equity');
+        const local = [
+            ...pfSearchLocal(q).filter((x) => x.asset_class === 'equity'),
+            ...krxSearchLocal(q),
+        ];
         shown = local;
         sugEl.innerHTML = local.map((h, i) =>
             `<button class="pf-sug-item" data-i="${i}"><span>${finEsc(h.name_ko)}</span>
@@ -6464,10 +6587,10 @@ const renderCompanyCalc = async (host) => {
         timer = setTimeout(async () => {
             const { quotes } = await pfSearchRemote(q);
             if (my !== seq) return;
-            const have = new Set(local.map((x) => String(x.yahoo || '').toUpperCase()));
+            const have = new Set(local.map((x) => coSymKey(x.yahoo)));
             const remote = quotes
                 .filter((c) => (c.type || '').toUpperCase() === 'EQUITY')
-                .filter((c) => !have.has(String(c.symbol).toUpperCase()))
+                .filter((c) => !have.has(coSymKey(c.symbol)))
                 .map(pfFromQuote);
             shown = [...local, ...remote];
             sugEl.innerHTML = shown.map((h, i) =>
@@ -6494,8 +6617,10 @@ const loadCompany = async (out, inst) => {
     out.innerHTML = `<div class="fin-block fin-block-wide"><p class="fin-loading">공시 자료를 받는 중…</p></div>`;
 
     // A Korean listing carries a market suffix Yahoo uses and SEC does not;
-    // the 6-digit code before it is what the DART-side engine names its files by.
-    if (/\.(KS|KQ)$/.test(sym)) {
+    // the 6-digit code before it is what the DART-side engine names its files
+    // by. The filer index yields that code bare, with no market suffix to
+    // guess at, so both spellings have to route to DART.
+    if (/\.(KS|KQ)$/.test(sym) || /^\d{6}$/.test(sym)) {
         return loadKfaCompany(out, inst, sym.replace(/\.(KS|KQ)$/, ''));
     }
 
