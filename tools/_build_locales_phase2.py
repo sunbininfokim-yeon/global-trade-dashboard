@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""Merge Phase-2 panel body strings into locales/{ko,en}.json. Run from repo root."""
+"""Merge Phase-2 panel body strings into New for anti/public/locales/{ko,en}.json. Run from repo root."""
 from __future__ import annotations
 
 import json
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-KO_PATH = ROOT / "locales" / "ko.json"
-EN_PATH = ROOT / "locales" / "en.json"
+KO_PATH = ROOT / "New for anti" / "public" / "locales" / "ko.json"
+EN_PATH = ROOT / "New for anti" / "public" / "locales" / "en.json"
 
 # (key, ko, en) — full paragraphs where app.js concatenates fragments.
 PAIRS: list[tuple[str, str, str]] = [

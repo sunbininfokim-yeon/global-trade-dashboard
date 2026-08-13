@@ -37,14 +37,15 @@ fi
 echo
 
 echo "=== latest HANDOFF (first entry) ==="
-if [[ -f docs/ops/HANDOFF.md ]]; then
+LATEST_HANDOFF="$(ls -1 docs/ops/handoff/*.md 2>/dev/null | grep -v README | tail -n 1)"
+if [[ -n "${LATEST_HANDOFF:-}" && -f "$LATEST_HANDOFF" ]]; then
   awk '
     BEGIN { n=0 }
     /^## [0-9]{4}-/ { n++; if (n>1) exit }
     n>=1 { print }
-  ' docs/ops/HANDOFF.md | head -n 40
+  ' "$LATEST_HANDOFF" | head -n 40
 else
-  echo "(missing docs/ops/HANDOFF.md)"
+  echo "(no handoff yet — docs/ops/handoff/)"
 fi
 echo
 

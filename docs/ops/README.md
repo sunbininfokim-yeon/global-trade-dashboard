@@ -19,7 +19,7 @@
 | 3 | [`TASKS.md`](./TASKS.md) | 현재 할 일 보드 |
 | 4 | [`PIPELINE.md`](./PIPELINE.md) | GitHub Actions · Cloudflare 데이터 흐름 |
 | 4b | [`DATA_CADENCE.md`](./DATA_CADENCE.md) | API·속보·기상·위성 폴링 주기 / 저장 / 학습 전략 |
-| 5 | [`HANDOFF.md`](./HANDOFF.md) | 직전 에이전트 인수인계 |
+| 5 | [`handoff/`](./handoff/) | 인수인계 — **에이전트별 파일**. 공유 파일 금지 (README 참조) |
 | 6 | [`START_PROMPTS.md`](./START_PROMPTS.md) | 터미널별 시작 프롬프트 복붙 |
 
 데이터 스키마(예측 JSON 등)는 이 문서가 아니라  

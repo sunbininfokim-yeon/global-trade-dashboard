@@ -359,9 +359,17 @@
 
         // Steel chain. Iron ore and manganese are the two largest dry-bulk
         // flows after coal, which the shipping screens already model.
+        //
+        // Manganese and chromium carry their ferroalloys alongside the ore,
+        // because the ore alone describes a trade that mostly is not happening.
+        // Countries with no smelter buy the alloy, not the rock: US imports of
+        // chrome ore run $32M against $373M of ferrochromium, and manganese ore
+        // $5M against $203M of ferromanganese. On ore alone the United States
+        // read as a country that barely touches chromium, which is the opposite
+        // of true -- it has mined no chromite since 1961 and imports all of it.
         iron_ore: { hsCode: "2601", colorScheme: { source: [180, 83, 9], target: [217, 119, 6] } },
-        manganese: { hsCode: "2602", colorScheme: { source: [161, 98, 7], target: [202, 138, 4] } },
-        chromium: { hsCode: "2610", colorScheme: { source: [120, 113, 108], target: [168, 162, 158] } },
+        manganese: { hsCode: "2602,720211,720219", colorScheme: { source: [161, 98, 7], target: [202, 138, 4] } },
+        chromium: { hsCode: "2610,720241,720249", colorScheme: { source: [120, 113, 108], target: [168, 162, 158] } },
 
         // Remaining industrial metals, and the platinum group as a precious
         // metal distinct from gold and silver.
