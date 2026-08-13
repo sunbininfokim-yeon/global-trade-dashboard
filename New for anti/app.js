@@ -565,11 +565,17 @@ const loadEiaStocks = async () => {
             const latest = Number(rows[0]?.value);
             const prev = rows.length > 1 ? Number(rows[1]?.value) : null;
             if (!Number.isFinite(latest)) continue;
+            // EIA returns newest-first; charts read left-to-right in time.
+            const history = rows
+                .map((r) => ({ period: r.period, value: Number(r.value) }))
+                .filter((r) => r.period && Number.isFinite(r.value))
+                .reverse();
             out.push({
                 ...s,
                 value: latest,
                 period: rows[0]?.period || '',
                 change: Number.isFinite(prev) ? latest - prev : null,
+                history,
             });
         } catch (err) {
             // The map is the point; a missing buffer card is not worth failing over.
@@ -578,6 +584,51 @@ const loadEiaStocks = async () => {
     }
     eiaStocksCache = out;
     return out;
+};
+
+/**
+ * 12-week sparkline for one stock series.
+ *
+ * A level plus a week-on-week arrow says "falling", not "falling off a cliff
+ * for three months" -- the shape is the part that distinguishes a blip from a
+ * drawdown. Deliberately small and axis-light: this sits under a row in a side
+ * panel, so it carries first/last labels and a min-max band rather than a full
+ * grid, which at this size would be more ink than signal.
+ */
+const stockSparkline = (history) => {
+    if (!history || history.length < 2) return '';
+    const W = 240;
+    const H = 54;
+    const PAD = 4;
+    const vals = history.map((h) => h.value);
+    const min = Math.min(...vals);
+    const max = Math.max(...vals);
+    // A flat series must not divide by zero, and drawing it mid-height is
+    // more honest than pinning it to the top or bottom of the box.
+    const span = max - min || 1;
+    const x = (i) => PAD + (i / (history.length - 1)) * (W - PAD * 2);
+    const y = (v) => PAD + (1 - (v - min) / span) * (H - PAD * 2);
+
+    const line = history.map((h, i) => `${i ? 'L' : 'M'}${x(i).toFixed(1)},${y(h.value).toFixed(1)}`).join('');
+    const area = `${line}L${x(history.length - 1).toFixed(1)},${H - PAD}L${x(0).toFixed(1)},${H - PAD}Z`;
+    const last = history[history.length - 1];
+    const rising = last.value >= history[0].value;
+    const mb = (v) => (v / 1000).toFixed(1);
+
+    return `<div class="stock-spark">
+        <svg viewBox="0 0 ${W} ${H}" class="sspark-svg ${rising ? 'up' : 'down'}"
+             preserveAspectRatio="none" role="img"
+             aria-label="최근 ${history.length}주 추이">
+            <path class="sspark-area" d="${area}"/>
+            <path class="sspark-line" d="${line}"/>
+            <path class="sspark-dot" d="M${x(history.length - 1).toFixed(1)},${y(last.value).toFixed(1)}h0"/>
+        </svg>
+        <div class="sspark-foot">
+            <span>${history[0].period}</span>
+            <span class="sspark-range">최저 ${mb(min)} · 최고 ${mb(max)} 백만 배럴</span>
+            <span>${last.period}</span>
+        </div>
+    </div>`;
 };
 
 /** Only meaningful for crude; other commodities have no equivalent series. */
@@ -591,15 +642,20 @@ const renderEmergencyStocks = async () => {
             <p class="section-title" style="margin:0 0 6px;">글로벌 비상 재고 · EIA 주간</p>
             ${stocks.map((s) => {
                 const up = s.change != null && s.change > 0;
-                return `<div class="stock-row">
-                    <span class="nm">${s.label_ko}</span>
-                    <span class="vl">${(s.value / 1000).toFixed(1)}<em>백만 배럴</em></span>
-                    <span class="ch ${s.change == null ? '' : (up ? 'up' : 'down')}">
-                        ${s.change == null ? '—'
-                            : `${up ? '+' : ''}${(s.change / 1000).toFixed(1)}`}</span>
+                const chart = stockSparkline(s.history);
+                return `<div class="stock-item">
+                    <div class="stock-row${chart ? ' is-clickable' : ''}"
+                         ${chart ? `role="button" tabindex="0" data-stock-toggle="${s.id}"` : ''}>
+                        <span class="nm">${s.label_ko}${chart ? '<i class="stock-caret"></i>' : ''}</span>
+                        <span class="vl">${(s.value / 1000).toFixed(1)}<em>백만 배럴</em></span>
+                        <span class="ch ${s.change == null ? '' : (up ? 'up' : 'down')}">
+                            ${s.change == null ? '—'
+                                : `${up ? '+' : ''}${(s.change / 1000).toFixed(1)}`}</span>
+                    </div>
+                    ${chart}
                 </div>`;
             }).join('')}
-            <div class="stock-note">${stocks[0]?.period || ''} 기준 · 전주 대비 증감 · 출처 EIA</div>
+            <div class="stock-note">${stocks[0]?.period || ''} 기준 · 전주 대비 증감 · 이름을 누르면 최근 12주 추이 · 출처 EIA</div>
         </div>`);
 };
 
@@ -1697,6 +1753,23 @@ document.getElementById('news-content')?.addEventListener('click', (e) => {
     const row = e.target instanceof Element ? e.target.closest('.trade-bar-row[data-partner]') : null;
     if (!row) return;
     row.classList.toggle('is-expanded');
+});
+
+// SPR / Cushing rows open their 12-week sparkline underneath.
+const toggleStockRow = (row) => {
+    row.classList.toggle('is-open');
+    row.closest('.stock-item')?.classList.toggle('is-open');
+};
+document.getElementById('news-content')?.addEventListener('click', (e) => {
+    const row = e.target instanceof Element ? e.target.closest('[data-stock-toggle]') : null;
+    if (row) toggleStockRow(row);
+});
+document.getElementById('news-content')?.addEventListener('keydown', (e) => {
+    if (e.key !== 'Enter' && e.key !== ' ') return;
+    const row = e.target instanceof Element ? e.target.closest('[data-stock-toggle]') : null;
+    if (!row) return;
+    e.preventDefault();
+    toggleStockRow(row);
 });
 
 // Ranking rows focus a country, same as clicking it on the globe.
