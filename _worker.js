@@ -52,6 +52,11 @@ export default {
             return await handleQuote(request, env);
         }
 
+        // Front-month futures quote for the commodity currently on screen
+        if (url.pathname.startsWith('/api/futures')) {
+            return await handleFutures(request, env);
+        }
+
         // Filed financial statements for the company calculator
         if (url.pathname.startsWith('/api/financials')) {
             return await handleFinancials(request, env);
@@ -1519,6 +1524,107 @@ async function secSearch(env, q) {
     return [...starts, ...contains].slice(0, 12).map(([symbol, name]) => ({
         symbol, name, exchange: 'SEC', type: 'EQUITY',
     }));
+}
+
+/**
+ * Front-month futures/proxy price beside the trade-flow ranking.
+ *
+ * A flow map says who ships to whom and nothing about what the cargo is worth
+ * today, which is the number that moves first when a route is threatened.
+ *
+ * Where there is no free price the response says which and why rather than
+ * pretending: LME's real-time feed is licensed, so nickel, tin, lead and zinc
+ * are absent instead of being filled with a COMEX contract that is not the
+ * same benchmark, and cobalt, lithium, graphite and rare earths have no
+ * liquid contract at all -- those are assessed prices sold by Fastmarkets and
+ * Benchmark Mineral. Manganese and chromium have no contract either. Naming
+ * the gap is more useful than hiding it behind an empty card.
+ *
+ * Yahoo publishes agricultural contracts in US cents (`USX`); wheat comes
+ * back as 638.25 meaning $6.3825/bu. The conversion happens once, here.
+ */
+const FUTURES = {
+    oil:       { symbol: "CL=F",  unit: "배럴",      exchange: "NYMEX" },
+    gas:       { symbol: "NG=F",  unit: "MMBtu",     exchange: "NYMEX" },
+    wheat:     { symbol: "ZW=F",  unit: "부셸",      exchange: "CBOT" },
+    corn:      { symbol: "ZC=F",  unit: "부셸",      exchange: "CBOT" },
+    soybeans:  { symbol: "ZS=F",  unit: "부셸",      exchange: "CBOT" },
+    sugar:     { symbol: "SB=F",  unit: "파운드",    exchange: "ICE" },
+    coffee:    { symbol: "KC=F",  unit: "파운드",    exchange: "ICE" },
+    copper:    { symbol: "HG=F",  unit: "파운드",    exchange: "COMEX" },
+    gold:      { symbol: "GC=F",  unit: "온스",      exchange: "COMEX" },
+    silver:    { symbol: "SI=F",  unit: "온스",      exchange: "COMEX" },
+    platinum:  { symbol: "PL=F",  unit: "온스",      exchange: "NYMEX" },
+    aluminum:  { symbol: "ALI=F", unit: "톤",        exchange: "COMEX" },
+    // SGX/DCE iron-ore swaps have no free real-time Yahoo ticker; CME's
+    // HRC (hot-rolled coil steel) futures track the same demand cycle and are
+    // the closest free proxy, labelled as one rather than passed off as an
+    // iron-ore price.
+    iron_ore:  { symbol: "HRC=F", unit: "톤",        exchange: "COMEX", proxy: "철광석 대신 열연코일(HRC) 선물 프록시" },
+};
+
+// No free real-time source. Named so the panel can say which and why, rather
+// than rendering an empty box that looks like a bug.
+const FUTURES_UNPRICED = {
+    nickel: "LME 실시간 시세는 유료입니다 (라이선스 제한)",
+    tin: "LME 실시간 시세는 유료입니다 (라이선스 제한)",
+    lead: "LME 실시간 시세는 유료입니다 (라이선스 제한)",
+    zinc: "LME 실시간 시세는 유료입니다 (라이선스 제한)",
+    cobalt: "유동성 있는 선물 계약이 없습니다 (Fastmarkets 등 유료 평가가)",
+    lithium: "유동성 있는 선물 계약이 없습니다 (Fastmarkets 등 유료 평가가)",
+    graphite: "유동성 있는 선물 계약이 없습니다 (Benchmark Mineral 등 유료 평가가)",
+    rare_earths: "유동성 있는 선물 계약이 없습니다 (Benchmark Mineral 등 유료 평가가)",
+    manganese: "거래되는 선물 계약이 없습니다",
+    chromium: "거래되는 선물 계약이 없습니다",
+    thermal_coal: "무료로 확인 가능한 실시간 선물가가 없습니다 (장외 지수 가격)",
+    met_coal: "무료로 확인 가능한 실시간 선물가가 없습니다 (장외 지수 가격)",
+};
+
+async function handleFutures(request, env) {
+    const url = new URL(request.url);
+    const want = (url.searchParams.get('commodity') || '').trim();
+
+    if (want && FUTURES_UNPRICED[want]) {
+        return new Response(
+            JSON.stringify({ commodity: want, priced: false, reason: FUTURES_UNPRICED[want] }),
+            { headers: JSON_HEADERS });
+    }
+    const cfg = FUTURES[want];
+    if (!cfg) {
+        return new Response(JSON.stringify({ error: `no futures config for: ${want}` }),
+            { status: 404, headers: JSON_HEADERS });
+    }
+
+    // 15 minutes: this is a delayed quote, and a dashboard reload should not
+    // cost an upstream call every time.
+    return kvCachedJson(env, `futures:${want}`, 900, async () => {
+        const res = await fetch(
+            `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(cfg.symbol)}?interval=1d&range=5d`,
+            { headers: YF_HEADERS });
+        if (!res.ok) return { ok: false, status: res.status };
+        const meta = (await res.json())?.chart?.result?.[0]?.meta;
+        const last = Number(meta?.regularMarketPrice);
+        if (!Number.isFinite(last)) return { ok: false, status: 502, statusText: 'no price in Yahoo response' };
+
+        // USX is US cents; normalise once so the panel never has to remember.
+        const cents = meta.currency === 'USX';
+        const prev = Number(meta?.chartPreviousClose);
+        const px = cents ? last / 100 : last;
+        return {
+            ok: true,
+            body: {
+                commodity: want, priced: true, symbol: cfg.symbol,
+                exchange: cfg.exchange, proxy: cfg.proxy || null,
+                price: Math.round(px * 10000) / 10000,
+                currency: "USD", unit: cfg.unit,
+                change_pct: Number.isFinite(prev) && prev > 0
+                    ? Math.round(((last - prev) / prev) * 1000) / 10 : null,
+                as_of: meta?.regularMarketTime
+                    ? new Date(meta.regularMarketTime * 1000).toISOString() : null,
+                source: "Yahoo Finance", delayed: true,
+            },
+        };
+    });
 }
 
 async function handleQuote(request, env) {
