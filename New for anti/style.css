@@ -2845,6 +2845,35 @@ body.macro-mode .map-pane { flex: 1 1 100%; }
 .ms-plc-sw.ms-plc-retail { background: rgba(56,189,248,.72); }
 .ms-plc-sw.ms-plc-foreign { background: rgba(244,114,182,.72); }
 .ms-plc-sw.ms-plc-inst { background: rgba(167,139,250,.72); }
+/* Per-day columns over the close line, carrying that day's flow tooltip. */
+.ms-plc-hit { fill: transparent; }
+.ms-plc-hit:hover { fill: rgba(148,163,184,.12); }
+/* Full-width row behind the bars -- click opens that band's breakdown modal. */
+.ms-plc-band-hit { fill: transparent; cursor: pointer; }
+.ms-plc-band-hit:hover { fill: rgba(56,189,248,.08); }
+
+/* 예탁금·신용융자 추이 (dual axis: 예탁 left 조원, 신용 right 조원) */
+.ms-cc { width: 100%; height: 300px; display: block; overflow: visible; }
+.ms-cc path { fill: none; stroke-width: 2; stroke-linejoin: round; vector-effect: non-scaling-stroke; }
+.ms-cc-deposit { stroke: #38bdf8; }
+.ms-cc-credit { stroke: #f472b6; }
+/* Invisible per-day columns exist only to carry the <title> tooltip. */
+.ms-cc-hit { fill: transparent; }
+.ms-cc-hit:hover { fill: rgba(148,163,184,.12); }
+.ms-cc-sw { display: inline-block; width: 14px; height: 0; border-top: 2px solid; margin-left: 8px; }
+.ms-cc-sw-deposit { border-color: #38bdf8; }
+.ms-cc-sw-credit { border-color: #f472b6; }
+@media (max-width: 720px) { .ms-cc { height: 240px; } }
+
+/* Period row: window buttons left, the credit toggle pushed to the right. */
+.ms-period-row { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; }
+.ms-period-spacer { flex: 1 1 auto; min-width: 12px; }
+.ms-credit-panel {
+    margin: 10px 0 4px; padding: 12px 14px 4px;
+    border: 1px solid rgba(148,163,184,.18); border-radius: 10px;
+    background: rgba(148,163,184,.05);
+}
+.ms-credit-panel .fin-sub { margin: 0 0 2px; }
 @media (max-width: 720px) { .ms-plc { height: 320px; } }
 
 .mm-bars { display: flex; flex-direction: column; gap: 7px; }
