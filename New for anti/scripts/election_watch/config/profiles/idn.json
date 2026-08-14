@@ -1,0 +1,59 @@
+{
+  "iso3": "IDN",
+  "as_of": "2026-08-09",
+  "priority_tier": 2,
+  "region": "southeast_asia",
+  "system": "presidential",
+  "head": {
+    "role": "president",
+    "name_ko": "프라보워 수비안토",
+    "name_en": "Prabowo Subianto",
+    "party_id": "gerindra",
+    "sources": [
+      {
+        "org": "KPU",
+        "url": "https://www.kpu.go.id/",
+        "note": "Official election portal; use for subsequent electoral updates."
+      }
+    ]
+  },
+  "parties": [
+    {
+      "id": "gerindra",
+      "abbr": "Gerindra",
+      "name_en": "Great Indonesia Movement Party",
+      "role": "ruling",
+      "confidence": "medium"
+    }
+  ],
+  "political_context": {
+    "ruling_ko": "Gerindra 주축 거대 연정 (초다수 — Nasdem·골카르 등 흡수)",
+    "opposition_ko": "의회 내 약세·흡수 후 잔여. 학생·시민 항의가 사실상 야권 역할",
+    "source_pack": "tier2_remaining_light.json#countries.IDN"
+  },
+  "source_review": {
+    "as_of": "2026-08-14",
+    "portal_snapshot": "extracted/idn_kpu_data_portal_snapshot.json",
+    "status": "official_data_portal_index_reviewed",
+    "verified": [
+      "KPU data portal exposes 2024 presidential and local-election entry points"
+    ],
+    "not_confirmed": [
+      "2026 national calendar",
+      "current party register"
+    ]
+  },
+  "elections": {
+    "calendar_file": "calendars/idn_2026.json"
+  },
+  "polls": {
+    "admit": ["presidential_job_approval"],
+    "reject": ["national_horserace_headline"],
+    "status": "todo"
+  },
+  "ingest": {
+    "mode": "document_text_extract",
+    "wave": "2d_light_connection",
+    "depth": "head_and_parties_only"
+  }
+}

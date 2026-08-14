@@ -67,7 +67,8 @@ sources.yaml / official_sources.json
 | BRA | pt / Lula | progressive |
 | CHN | cpc | authoritarian_cpc |
 | RUS | ur | authoritarian_ur |
-| SAU/ARE | Al Saud / Al Nahyan | authoritarian_monarchy |
+| SAU | Al Saud / MbS | authoritarian_monarchy |
+| ARE | Al Nahyan | authoritarian_monarchy |
 
 ### 교정 스티커 (human_labels)
 
@@ -83,7 +84,7 @@ sources.yaml / official_sources.json
 | `poll:reject_horserace` | 전국 대선 경마 헤드라인 drop |
 | `null:없음_vs_불명` | 없음=해당없음 · 불명=미확정 |
 
-## 15국 학습 스코어카드 (2026-08-08 보드 기준)
+## 19국 학습 스코어카드 (2026-08-14 보드 기준)
 
 차원 8: head · spectrum · legislature_live · subnational · calendar · governance_poll · factions/pla/power · extract_pipe  
 상세 수치: `learning_analysis_v1.json`.
@@ -112,10 +113,12 @@ sources.yaml / official_sources.json
 |-----|------|----------|
 | **RUS** | thin + Duma light 430/450 | 9월 후 CIKRF 교체 전 hold |
 | **CHN** | PLA doc (bios 21) | 선거 캘린더 비움 = 정상 |
-| **SAU/ARE** | power brief | 선거 없음; ARE 7 토호 |
+| **SAU/IRN** | 2급 geopolitical core | SAU는 왕실·에너지·승계·안보, IRN은 최고지도자·행정부·마줄리스·전문가회의·IRGC/SNSC·계파 팩 연결 |
+| **ARE** | 3급 power·leadership brief | 7개 토후국·연방 지도자 카드 중심 |
 | **TWN/TUR/IND** | scaffold | 수장만; KOR 템플릿 재사용 대기 (특히 TWN) |
+| **IDN/ZAF/NGA** | light connected | 수장·정당·캘린더 연결 완료; KPU/IEC/INEC 원문 수집 후 승급 |
 
-**의도적 제외:** IRN.
+`capture_sources.py`는 원문 캐시만 만들며, 검토 전에는 숫자·명단·날짜를 자동 반영하지 않는다.
 
 ### 교차 교훈 (L1–L7)
 

@@ -1,8 +1,8 @@
 {
   "version": 1,
   "as_of": "2026-08-08",
-  "map_rule": "Color country by head.spectrum: progressive=blue, conservative=red",
-  "notes": "Party/head spectrum is curated political classification for map UX — not an election-commission field.",
+  "map_rule": "Color country by head.spectrum: progressive=blue, conservative or nationalist_conservative=red, centrist or catch_all_governing_party=neutral, and authoritarian/theocratic systems use a distinct palette or hatch.",
+  "notes": "Party/head spectrum is a curated political classification for map UX — not an election-commission field. Map colour represents the national executive's political base, not every partner in a governing coalition.",
   "by_party": {
     "USA:dem": {
       "spectrum": "progressive",
@@ -127,6 +127,31 @@
     "KOR:rkp": {
       "spectrum": "progressive",
       "confidence": "medium"
+    },
+    "ZAF:anc": {
+      "spectrum": "progressive",
+      "confidence": "medium",
+      "map_note": "Blue denotes the ANC president's broad national-democratic / social-justice tradition, not every party in the GNU coalition.",
+      "sources": [
+        "https://www.anc1912.org.za/anc-constitution-2002/"
+      ]
+    },
+    "IDN:gerindra": {
+      "spectrum": "nationalist_conservative",
+      "confidence": "medium",
+      "map_note": "Use a red-family colour with a nationalism annotation. Gerindra's Pancasila-nationalist and sovereignty orientation is not an authoritarian-system classification.",
+      "sources": [
+        "https://gerindra.org/?page_id=20"
+      ]
+    },
+    "NGA:apc": {
+      "spectrum": "catch_all_governing_party",
+      "confidence": "medium",
+      "map_note": "Use neutral gold/gray rather than infer a stable left-right position from a broad governing coalition and mixed manifesto.",
+      "sources": [
+        "https://www.allprogressivescongress.org/manifesto/",
+        "https://statehouse.gov.ng/speech-by-his-excellency-president-bola-ahmed-tinubu-gcfr-at-the-4th-elective-national-convention-of-the-all-progressives-congress-apc-friday-27th-march-2026-eagles-square-abuja/"
+      ]
     }
   },
   "by_iso3_default_from_head_party": true

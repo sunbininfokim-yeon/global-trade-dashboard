@@ -1,7 +1,7 @@
 # Election watch — 세계 선거 창 (scaffold)
 
-> **소유 (2026-08-13):** 데이터·파이프라인 파일은 dart 클론에 `import_pipeline.py` 로 재이관됨.  
-> UI·배포 = **Claude** (`HANDOFF_CLAUDE_ELECTIONS_UI.md`). 브랜치 변경·app.js 금지.
+**소유: 데이터/파이프 = Grok · UI = Claude**
+Grok 이관 문서: `HANDOFF_GROK.md` · UI 이관: `HANDOFF_CLAUDE_ELECTIONS_UI_V2.md`
 
 이후 UI에 **「선거」패널**을 붙일 때 읽는 계약입니다.
 
@@ -17,6 +17,8 @@
 6. **미국 예측시장**(Polymarket 등)을 선거 사이클 중 참고 확률 파이프라인으로
 7. **주요 개각**은 속보·보드 모두 가치 있음 (1급)
 
+깊이는 국가별 차등 적용한다. 미국만 연방+주 deep, 다른 1급은 국가별 특수 구조, 2급은 국가 단위와 선택적 광역 요약이다. 이란·사우디는 2급 지정학 특수형으로 권력기관·안보·에너지 축을 추가하고, 3급은 국가수반·집권축·핵심 일정이 기본이다. 한국을 포함한 각국 지방의원 개별 명단은 기본 범위가 아니다.
+
 ## 지금 하는 일 / 안 하는 일
 
 | 함 | 안 함 |
@@ -30,30 +32,12 @@
 
 ```bash
 cd "New for anti/scripts/election_watch"
-python3 build_board.py --no-betting --print-stats
+python3 run_refresh_cycle.py --build-derived
 # ticker_v1.json 이 있으면 election / cabinet / governance 헤드라인 live 부착
+# --no-betting 으로 Polymarket 호출 생략
 ```
 
-산출: `public/data/elections_board_v1.json`
-
-## 다른 클론으로 파이프라인 뜯어오기
-
-Grok/다른 워크스페이스가 스캐폴드만 있을 때, 채워진 트리에서 학습 JSON·extract·보드를 복사한다. 날짜 추측 병합 없음. dest가 스캐폴드이거나 구조가 빈약할 때만 덮는다.
-
-```bash
-# dart 등 빈 클론으로 (이 레포 = source)
-python3 import_pipeline.py --dest "/Users/yeoninair/Documents/New for anti-dart"
-
-# 미리보기만
-python3 import_pipeline.py --dest "/Users/yeoninair/Documents/New for anti-dart" --dry-run
-
-# Grok이 JSON/MD를 폴더로 내보낸 뒤 (캘린더에 자동 합치지 않음)
-python3 import_pipeline.py --dest "/Users/yeoninair/Documents/New for anti-dart" \
-  --grok-pack "/path/to/grok_export"
-```
-
-리포트: `config/extracted/import_report_v1.json`  
-raw HTML/PDF 캐시(~18MB)는 기본 제외. 필요하면 `--include-raw`.
+산출: `public/data/elections_board_v1.json`, `elections_calendar_master_v1.json`, `elections_ui_manifest_v1.json`. UI는 매니페스트를 먼저 읽고 `ready / partial / disabled` 계약을 따른다.
 
 ## 속보 연동 (commodity_news)
 
@@ -100,7 +84,8 @@ raw HTML/PDF 캐시(~18MB)는 기본 제외. 필요하면 `--include-raw`.
 **2급 deep:** `GBR`·`ISR` (`extract_gbr_isr`) · `KOR` (`extract_kor`).  
 **2급 composition:** `DEU`·`FRA`·`BRA` (`extract_tier2_fill`) — 여론 숫자 todo.  
 **2급 scaffold:** `TWN`·`TUR`·`IND`.  
-**3급 간략:** `SAU`·`ARE` — 선거 `없음`. `IRN` 미작성. → `tier3_leadership_briefs.json`.  
+**2급 지정학 핵심:** `SAU`·`IRN` — 선거 경쟁성보다 왕실·최고지도자·안보·에너지·권력기관 중심. → `tier3_leadership_briefs.json` 특수 팩 + 각 프로필.
+**3급 간략:** `ARE` — 연방 왕정·7개 토후국 지도자 카드 중심.
 **학습 분석 정본:** `LEARNING.md` + `config/extracted/learning_analysis_v1.json` + `human_labels.jsonl`.
 
 미국: 당대표 선거 없음 → 원내대표만. HFC는 공식 명단 없음 → NADA(2025-04) + Ballotpedia/Pew/CDC 교차로 32명 스냅샷 남김.

@@ -1,247 +1,189 @@
-# HANDOFF → Grok — 선거 데이터·파이프라인 전부 (Cursor 사용량 소진)
+# HANDOFF → Grok — election_watch 데이터·파이프 (Cursor 이관)
 
-**as_of:** 2026-08-09  
-**보낸이:** Cursor (Auto) — 세션 종료 / 사용량 소진  
-**받는이:** **Grok**  
-**사용자:** 선빈 (Researcher)
-
-이 문서 한 장으로 **Cursor가 맡아 오던 선거 코드·데이터·수정 권한·상태·다음 큐 전부**를 Grok에 이전한다.
+**as_of:** 2026-08-13
+**상태:** Grok 세션 축적분 포함. **최신 이관 정본 → `MIGRATION_HANDOFF_2026-08-13.md`**
+**UI·배포:** Claude 전용 (`HANDOFF_CLAUDE_ELECTIONS_UI_V2.md`). **절대 손대지 말 것.**
 
 ---
 
-## 1. 권한 이전 (소유 매트릭스)
+## 0. 소유권 (고정)
 
-### 1.1 Grok이 **수정 가능** (Cursor 이관 범위)
+| 영역 | 소유 | 경로 |
+|------|------|------|
+| **데이터·파이프·추출·빌드** | **Grok** | `scripts/election_watch/**` 전체 |
+| **선거 관련 public 데이터** | **Grok** | `public/data/elections_*.json`, `race_progress_*.json`, `race_aggregation_compare_v1.json`, `invest_lens_elections.json` 등 |
+| **UI / app.js / 배포 / wrangler** | **Claude** | `app.js`, `style.css`, `index.html`, workflows 등 |
 
-| 경로 | 내용 |
-|------|------|
-| `New for anti/scripts/election_watch/**` | 전체: extract, build, config, calendars, profiles, LEARNING, schemas |
-| `New for anti/public/data/elections_board_v1.json` | 보드 빌드 산출물 |
-| `New for anti/public/data/race_progress_*.json` | 중간 집계 |
-| `New for anti/public/data/race_aggregation_compare_v1.json` | 가중 비교 |
-| `New for anti/public/data/race_progress_preview.html` | 정적 UX 미리보기 (대시보드 아님) |
-| `New for anti/public/data/elections_calendar_master_v1.json` | 마스터 캘린더 |
-| `New for anti/public/data/invest_lens_elections.json` | Invest Lens 2차 소스 |
-| (같은 이름이 `scripts/election_watch/config/extracted/` 에도 있으면) 둘 다 갱신 | extracted 정본 → public 복사 패턴 유지 |
+README.md 맨 위에도 한 줄: **데이터/파이프 = Grok · UI = Claude**.
 
-**운영 루트 (자주 쓰는 cwd):**
-```text
-…/New for anti/New for anti/scripts/election_watch
-```
-(로컬 clone 경로에 공백: `Documents/New for anti` — 반드시 따옴표.)
-
-### 1.2 Grok이 **수정 금지** (Claude Code 단독)
-
-| 경로 | 이유 |
-|------|------|
-| `New for anti/app.js` | UI 소유 Claude — 충돌·롤백 사고 (2026-08-05) |
-| `New for anti/style.css` | 동일 |
-| `New for anti/index.html` | 동일 |
-| `New for anti/data.js` | 동일 |
-| `New for anti/shipping.js` | 동일 |
-| `_worker.js`, `wrangler.jsonc` | 배포 Claude |
-| `.github/workflows/**` | 배포 Claude |
-| `docs/ops/OWNERS.md`, `docs/ops/TASKS.md` | Claude/ops — claim 없이 대규모 수정 금지 |
-| `CLAUDE.md` | Claude |
-
-**UI가 필요하면:** `HANDOFF_CLAUDE_ELECTIONS_UI.md` 만 넘기고 Grok은 **데이터 계약 유지**만 한다.
-
-### 1.3 yield_model (별 트랙 — 이번 선거 핸드오프와 무관)
-
-국가 스캐폴드/수확 예측은:
-`New for anti/scripts/yield_model/**` + `public/data/*_yield_forecast.json`  
-규칙은 `DATA_LAYOUT.md` · `MODEL_MANIFEST.md`.  
-**Grok이 선거만 받을 거면 yield_model은 건드리지 말 것.**
-
-### 1.4 브랜치 / 커밋
-
-- `main` 직접 push 금지 · force-push 금지  
-- 커밋은 **선빈이 요청할 때만**  
-- 브랜치 이름 예: `grok/election-<주제>` (기존: `cursor/…`, `claude/ui-…`)  
-- Claude `claude/*` 브랜치 checkout **질문 없이 금지** (사용자 규칙)
+**금지:** `app.js` 수정, UI 패널 구현, force-push, LLM으로 숫자 발명.
 
 ---
 
-## 2. 제품 규칙 (깨면 안 됨)
+## 1. 제품 목표 (요약)
 
-1. **거버넌스 지지율만** (국정/총리 직무). 전국 **대선 경마형 평균 배제**.  
-2. Null 표기: **`없음`** = 해당 없음 · **`불명`** = 아직 모름. 가짜 날짜 ** invent 금지**.  
-3. 전당·당대표: 제품 seed 정책상 경쟁 선거국 **always_include** (미국 예외: 당대표 선거 없음 → 원내).  
-4. 지도 색: `config/spectrum_rules.json` — 수장당 spectrum.  
-5. 정확성 스티커 (UI·JSON 모두):
+1. 올해 어디서 선거·당대표·재보궐이 있는지
+2. 집권 정당 / 추적 정당
+3. 당대표 선거 범위 (대통령제: 여+제1야 / 의원내각: 주요 최대 4)
+4. 여론조사: **전국 대선 경마형 배제**, 통치(국정) 지지율만
+5. 미국 예측시장(Polymarket) 참고 확률 파이프
+6. 주요 개각은 속보·보드 모두 가치 (1급)
 
-| 키 | 값 |
-|----|-----|
-| 영국 총리 | **Andy Burnham** (2026-07-20~). Starmer 현직 금지 |
-| 한국 대통령 | **이재명** (2025-06-04~) |
-| 한국 총리 | **한성숙** (2026-07-01~) |
-| 미국 2026 | **중간선거 프라이머리** (대선 경선은 **2028**). 선거인단 식으로 주 점수 합산 **금지** |
-| 한국 민주 전당 누적 | 권리당원 **1순위 중간** · 최종은 **70% 당원/대의원 + 30% 여론** · TK·경남 당원 **+5%** → **중간 ≠ 최종** |
+철학: **숫자·명단은 공개 문서/공식 소스에서만**. null + reason. LLM 발명 금지. (KFA와 동일 정신)
 
 ---
 
-## 3. 파이프라인 (명령)
+## 2. 핵심 파이프 명령
 
 ```bash
-cd "/path/to/New for anti/New for anti/scripts/election_watch"
+cd "New for anti/scripts/election_watch"
 
-# 보드 재생성 (배팅 API 생략 권장)
-python3 build_board.py --no-betting --print-stats
-# → public/data/elections_board_v1.json
+# 클로드 인수용 전체 산출물 재생성 및 UI 게이트 검증
+python3 run_refresh_cycle.py --build-derived
 
-# 국가별 extract (네트워크 필요할 수 있음)
-python3 -m election_watch.extract_rosters      # 미·일 등
-python3 -m election_watch.extract_gbr_isr      # 영국·이스라엘
-python3 -m election_watch.extract_kor          # 한국
-python3 -m election_watch.extract_tier2_fill   # 독일·프랑스·브라질 composition
-python3 -m election_watch.build_factions
+# 보드 재생성 (Polymarket 생략 가능)
+python3 build_board.py --print-stats
+python3 build_board.py --no-betting
+
+# race_progress (KOR 스냅 유지, USA 재생성)
+python3 -m election_watch.build_race_progress
+
+# 중국 PLA 바이오 (규칙 파싱, LLM 아님)
 python3 -m election_watch.build_china_pla_bios
-python3 -m election_watch.build_race_progress  # 미국 프라이머리 진척 재생성 (한국 스냅 유지)
+
+# 추출기들 (필요 시)
+python3 -m election_watch.extract_kor
+python3 -m election_watch.extract_gbr_isr
+python3 -m election_watch.extract_tier2_fill
+python3 -m election_watch.extract_rosters
+python3 -m election_watch.build_factions
 ```
 
-**흐름:**
-```
-profiles + calendars/*.json + extracted/*.json
-        ↓
-   build_board.py
-        ↓
-public/data/elections_board_v1.json
-  (한국·미국 행에 race_progress 부착)
-```
-
-중간 진척 전용:
-```
-race_progress_kor_v1 / usa_v1 → bundle → (보드 재빌드 시 부착)
-aggregation: 가중 규칙 메타
-```
-
-문서:
-- `README.md` — 개요  
-- `LEARNING.md` — 문서 추출형 학습  
-- `HANDOFF_CLAUDE_ELECTIONS_UI.md` — UI P0 (데이터 freeze 가정; Grok이 데이터 재개하면 Claude에 “계약 버전 올림”만 통지)  
-- `config/tier1_status.json` · `config/extracted/learning_analysis_v1.json` — 깊이·다음 큐  
-
----
-
-## 4. 현재 데이터 상태 (동결 스냅 · 2026-08-08~09)
-
-### 4.1 보드 커버리지 (~15국)
-
-| 깊이 | 국가 (풀네임) |
-|------|----------------|
-| deep | 미국, 일본, 영국, 이스라엘, **한국** |
-| composition | 독일, 프랑스, 브라질 |
-| thin | 러시아 (두마 light, 9월 선거 후 승급 대기) |
-| scaffold | 대만, 튀르키예, 인도 |
-| leadership_doc (비선거) | 중국(PLA), 사우디, 아랍에미리트 |
-| 의도적 미작성 | 이란 |
-
-### 4.2 race_progress (진행 중 중간 집계)
-
-| 국가 | 모드 | 요지 |
-|------|------|------|
-| 한국 | 전당 순회 중간 | 김민석 누적 선두(중간) · 최종 8/17 · **가중 혼합** |
-| 미국 | 주별 중간 프라이머리 | 주 일정 누적 + 클릭 시 승자 · **관할 독립**, UI만 1주=1 진척 |
-
-파일:
-- `public/data/race_progress_kor_v1.json`
-- `public/data/race_progress_usa_v1.json`
-- `public/data/race_progress_bundle_v1.json` (+ aggregation_compare)
+산출:
+- `public/data/elections_board_v1.json` (메인 보드)
+- `public/data/race_progress_{kor,usa,bundle}_v1.json`
 - `public/data/race_aggregation_compare_v1.json`
-- `public/data/race_progress_preview.html`
-
-미국 승자 파서: The Midterm Project 텍스트 → **다음 House `XX-##` 코드로 주 태깅**.  
-원본 스크랩 보관: `scripts/election_watch/raw/usa/themidtermproject_results_2026-08-08.txt`
-
-### 4.3 기타 public 산출
-
-- `elections_calendar_master_v1.json`
-- `invest_lens_elections.json` (invest-lens.io; 일본 총선 날짜 IL과 내부 불일치 있음 — 덮어쓰지 말 것)
-
-### 4.4 보드에 이미 붙은 필드
-
-- `countries[].race_progress` — 한국·미국  
-- `summary.countries_with_race_progress`  
-- 의회 `legislature_live`, 한국 `party_leadership_live` 등  
+- `public/data/elections_calendar_master_v1.json`
+- `public/data/elections_ui_manifest_v1.json` (UI별 ready/partial/disabled + 국가 등급별 최대 깊이)
 
 ---
 
-## 5. 코드 진입점 (파일)
+## 3. 19개국 깊이 정책 (현재)
+
+**1급 deep (완료/유지):**
+- **USA** — 중간선거 2026 프라이머리 + 하원/상원/주지사, HFC 파벌 스냅
+- **JPN** — 중의원 465 + 참의원 + 지사 47, 자민 파벌(공식 아소 + 旧블록)
+- **CHN** — CMPR + PLA 바이오 21명 (선거 없음, 리더십/군)
+- **RUS** — 두마 2026-09-20, 라이트 구성
+
+**2급 deep:** GBR · ISR · KOR
+**2급 composition:** DEU · FRA · BRA (여론 숫자 todo)
+**2급 scaffold:** TWN · TUR · IND
+**2급 지정학 핵심:** SAU · IRN (leadership/energy/security core). **3급:** ARE (emirates brief)
+
+UI 깊이는 데이터 깊이와 별도 게이트를 둔다. USA만 주 단위 deep, 다른 1급은 국가별 특수 구조, 2급은 국가 단위+선택적 광역 요약, 이란·사우디는 권력기관·안보·에너지 특수축을 추가하고, 3급은 국가 권력 브리프다. 지방의원 개별 명단은 기본 수집 대상이 아니다.
+
+상태 정본: `config/tier1_status.json`
+우선순위: `config/priority_tiers.json`
+
+---
+
+## 4. race_progress · 가중 규칙 (중요)
+
+| 레이스 | model_id | 가중 |
+|--------|----------|------|
+| KOR 민주 전당 | `weighted_convention_hybrid` | **최종 70%** 대의원·권리당원 + **30%** 국민여론. TK·경남 당원 **+5%**. 중간 누적 = 권리당원 1순위 단순합 (≠최종) |
+| KOR 국민의힘 (2025) | 동일 계열 | 80/20 (완료) |
+| USA 2026 중간 프라이머리 | `independent_jurisdiction_first_past_post` | 관할 **독립**. UI 진척만 1주=1. **전국 가중합 없음** |
+| USA 대선 경선 (2028) | delegate_allocation… | 2026 보드 밖 |
+
+비교 정본: `public/data/race_aggregation_compare_v1.json`
+UI는 반드시 aggregation 배지(주의 문장) 표시. Grok은 데이터 쪽에서 `aggregation.*` 필드를 정확히 유지.
+
+- KOR units: 권역 순회, 클릭 → %/득표·시도 서브
+- USA units: 주, 클릭 → 상원·주지사·하원 샘플 승자 (The Midterm Project 파싱)
+
+---
+
+## 5. 정확성 스티커 (절대 틀리지 말 것)
+
+| 키 | 올바른 값 |
+|----|-----------|
+| 영국 총리 | **Andy Burnham** (2026-07-20~). **Starmer 현직 금지** |
+| 한국 대통령 | 이재명 (2025-06-04~) |
+| 한국 총리 | **한성숙** (2026-07-01~) |
+| 미국 2026 | **중간선거 프라이머리** (대선 경선은 2028). 선거인단 점수 표현 금지 |
+| 한국 전당 누적 | “권리당원 1순위 중간 · 최종 70/30 전” |
+| 일본 파벌 | 공식 존속 = 아소파만. 旧아베·모테기 등은 `ex_*` 회동 블록 |
+
+출처 교차 필수. 추측 날짜·명단 금지.
+
+---
+
+## 6. 다음에 팔 나라 큐 (재개 시 순서)
+
+1. **브라질** (10월 대선) — composition → deep, TSE 좌석 업그레이드
+2. **독일** (9월 주의회 + 총리 지지)
+3. **프랑스** (총리 신원 + 지지율)
+4. 대만 입법위 (KOR 템플릿 재사용)
+5. 인도 주 캘린더
+6. 튀르키예 (일정 발표 시)
+
+3급 ARE: 조사 불필요. SAU/IRN은 2급 지정학 핵심으로 월간 원문 검토.
+
+재개 시 `config/tier1_status.json`의 `remaining`과 `tier2_activation.remaining` 갱신.
+
+---
+
+## 7. 주요 설정·스키마 파일
 
 | 파일 | 역할 |
 |------|------|
-| `build_board.py` | 보드 조립 · 한국/미국 `race_progress` 로드 |
-| `election_watch/extract_kor.py` | 한국 의회·지방·전당·갤럽 등 |
-| `election_watch/extract_gbr_isr.py` | 영국·이스라엘 |
-| `election_watch/extract_tier2_fill.py` | 독일·프랑스·브라질·러시아 light |
-| `election_watch/extract_rosters.py` | 미국·일본 roster |
-| `election_watch/build_race_progress.py` | 미국 unit 재생성 |
-| `election_watch/betting.py` | Polymarket (보드 `--no-betting` 권장 시 스킵) |
-| `config/country_seed.json` | 시드 이벤트 |
-| `config/calendars/{iso}_2026.json` | 연도 일정 **정본** |
-| `config/profiles/{iso}.json` | 체제·수장·모드 |
-| `config/extracted/*` | extract 출력 정본 |
-| `schemas/elections_board_v1.schema.json` | 보드 스키마 |
+| `config/country_seed.json` | 국가 골격 |
+| `config/calendars/{iso}_2026.json` | 연도 일정 (우선) |
+| `config/profiles/{iso}.json` | 프로필 |
+| `config/spectrum_rules.json` | 지도색 (conservative→빨강 등) |
+| `config/official_sources.json` | 선관위·공식 포털 |
+| `config/betting.json` | Polymarket 검색 |
+| `config/usa_house_factions.json` | HFC 등 |
+| `config/jpn_ldp_factions.json` | 자민 파벌 |
+| `config/china_pla_bios.json` | PLA 한국어 바이오 |
+| `schemas/` | 검증용 |
+| `LEARNING.md` | 학습·추출 철학 정본 |
+
+속보 연동: commodity_news (election / cabinet_reshuffle / governance_poll 통과, 경마형 배제).
 
 ---
 
-## 6. 나중에 조사 큐 (실행은 Grok·사람 판단)
-
-**사용량 위해 일괄 딥 금지. 우선순위:**
-
-1. **브라질** — 2026-10-04 대선·총선 · 국정 지지율 + TSE 좌석 승급  
-2. **독일** — 9월 주의회 3 · 총리 지지율  
-3. **프랑스** — 총리 신원 + 대통령 직무 지지  
-4. **대만** — 입법위 deep (한국 템플릿)  
-5. **인도** — 주 선거 일정 팩트만  
-6. **튀르키예** — YSK 발표 시에만  
-7. **사우디·아랍에미리트** — 브리프 유지, 신규 조사 불필요  
-
-UI 패널은 Claude P0 (`HANDOFF_CLAUDE_ELECTIONS_UI.md`). Grok은 데이터 계약 깨지 말 것.
-
----
-
-## 7. 작업 중 사용량 통제 (Grok 권장)
-
-1. 세션당 **한 국가 또는 한 스크립트**.  
-2. `build_board.py` 전후 diff만 확인 — 전체 JSON 컨텍스트 덤프 지양.  
-3. UI·deploy 경로 열지 않기.  
-4. 날짜·의석 **출처 URL + grade** 남기기 (`official` > `media_cross_check` > `aggregator` > `approximate`).  
-5. 한국/미국 race_progress 갱신 시 **aggregation 블록 유지**.  
-
----
-
-## 8. Grok 첫 프롬프트 (복붙)
+## 8. Grok 첫 프롬프트 (복붙용)
 
 ```
-너는 Grok이다. 레포 global-trade-dashboard의 선거 데이터·파이프라인 소유를 Cursor에서 이관받았다.
+이관 받음. HANDOFF_GROK.md 기준.
 
-필수 읽기 (순서):
-1) New for anti/scripts/election_watch/HANDOFF_GROK.md  (이 문서)
-2) New for anti/scripts/election_watch/README.md
-3) New for anti/scripts/election_watch/HANDOFF_CLAUDE_ELECTIONS_UI.md  (UI 경계만)
+소유: scripts/election_watch/** + 선거 public/data/*
+금지: app.js 및 UI/배포 (Claude)
 
-수정 가능: scripts/election_watch/** 과 위 public/data 선거 JSON/HTML
-수정 금지: app.js, style.css, index.html, data.js, shipping.js, _worker.js, wrangler, workflows
+현재 상태 확인:
+1. python3 build_board.py --print-stats  (또는 --no-betting)
+2. race_progress_kor/usa/bundle 존재·스키마 점검
+3. 스티커 검증 (Burnham / 한성숙 / 미국 midterms)
+4. tier1_status.json remaining 확인
 
-규칙: 없음/불명, 경마형 여론 금지, 영국=Andy Burnham, 한국 총리=한성숙,
-미국 2026=중간 프라이머리(전국 가중 점수 아님), 한국 전당=70/30 가중.
+다음 작업 후보 (사람 지시 후):
+- 브라질 composition→deep + TSE
+- DEU/FRA governance poll 숫자
+- FRA PM 신원
+또는 race_progress 갱신 / 캘린더 보강
 
-첫 작업은 사람 지시 전까지: status 확인만
-  cd "…/scripts/election_watch" && python3 build_board.py --no-betting --print-stats
-커밋/푸시는 사람 요청 시에만.
+숫자·명단은 공식 소스만. LLM 발명 금지. null+reason.
 ```
 
 ---
 
-## 9. Cursor 측 종료 메모
+## 9. 한 줄 요약
 
-- Cursor는 이 선거 세션 **권한·작업 중단**.  
-- 미커밋 변경이 로컬에 남아 있을 수 있음 → 선빈이 `git status`로 확인 후 Grok/사람 PR.  
-- Claude UI 티켓은 별도; 데이터 freeze 문구는 Grok이 보드를 다시 쓰는 순간 **버전 올려 통지**하면 됨.
+**데이터·파이프 = Grok. UI = Claude.**
+19개국 골격 + KOR/USA race_progress + 가중 규칙 + 스티커는 이미 있다.
+Cursor는 접었다. 신규 국가는 큐 순서대로, 사람 지시 후에만 진행.
 
----
-
-## 10. 한 줄
-
-**Grok = `election_watch` 코드 + 선거 public 데이터 전권. Claude = UI/배포. Cursor = 사용 종료.**
+관련: `README.md` · `LEARNING.md` · `HANDOFF_CLAUDE_ELECTIONS_UI.md` (UI만) · `HANDOFF_ANTIGRAVITY_CHINA_LIT.md` (중국 문헌 전용)

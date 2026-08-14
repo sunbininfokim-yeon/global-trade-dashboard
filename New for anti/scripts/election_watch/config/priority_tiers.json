@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "notes": "1급 경쟁/문서 심화. 2급 경쟁선거(유럽·이스라엘·브라질…). 3급=비경쟁·제한선거 leadership_brief. IRN 미작성.",
+  "notes": "1급 경쟁/문서 심화. 2급은 경쟁선거 국가와 지정학·에너지·안보 핵심 국가를 포함한다. 3급은 기본 지도자 카드 중심이다.",
   "tiers": {
     "1": {
       "label_ko": "1급",
@@ -19,7 +19,7 @@
       ]
     },
     "2": {
-      "label_ko": "2급 (경쟁 선거)",
+      "label_ko": "2급 (경쟁 선거·지정학 핵심)",
       "iso3": [
         "BRA",
         "DEU",
@@ -42,7 +42,9 @@
           "TUR"
         ],
         "middle_east": [
-          "ISR"
+          "ISR",
+          "IRN",
+          "SAU"
         ],
         "americas": [
           "BRA"
@@ -91,6 +93,10 @@
           "TWN",
           "TUR",
           "IND"
+        ],
+        "2e_geopolitical_core": [
+          "IRN",
+          "SAU"
         ]
       },
       "iso3_active": [
@@ -102,25 +108,22 @@
         "ISR",
         "KOR",
         "TUR",
-        "TWN"
+        "TWN",
+        "IDN",
+        "ZAF",
+        "NGA",
+        "IRN",
+        "SAU"
       ]
     },
     "3": {
       "label_ko": "3급 (비경쟁·제한 선거 — 지도자 카드)",
       "doc": "tier3_leadership_briefs.json",
-      "iso3": [
-        "SAU",
-        "ARE"
-      ],
-      "deferred": [
-        "IRN"
-      ],
-      "deferred_note": "IRN managed — 의도적 미작성",
+      "iso3": ["ARE"],
+      "deferred": [],
+      "deferred_note": "IRN unlocked 2026-08-09 china-style pack",
       "mode": "leadership_brief",
-      "iso3_active": [
-        "SAU",
-        "ARE"
-      ],
+      "iso3_active": ["ARE"],
       "depth": "minimal_head_emirs_power_event_only"
     }
   },
@@ -177,7 +180,9 @@
       "status": "active",
       "region": "middle_east",
       "mode": "leadership_brief",
-      "tier": 3
+      "tier": 2,
+      "wave": "2e_geopolitical_core",
+      "depth": "leadership_energy_security_core"
     },
     "ARE": {
       "status": "active",
@@ -186,9 +191,12 @@
       "tier": 3
     },
     "IRN": {
-      "status": "deferred",
-      "mode": "managed_document_extract",
-      "note": "의도적 미작성"
+      "status": "active",
+      "tier": 2,
+      "mode": "china_style_leadership_extract",
+      "pack": "iran_leadership_extracted.json",
+      "wave": "2e_geopolitical_core",
+      "depth": "party_state_security_core"
     },
     "KOR": {
       "status": "active",

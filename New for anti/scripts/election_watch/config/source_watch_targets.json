@@ -1,0 +1,105 @@
+{
+  "version": 1,
+  "as_of": "2026-08-14",
+  "policy_ko": "지정된 공개 페이지를 원문 캐시로만 수집한다. 수치·인명·일정은 원문을 검토한 뒤에만 profile/calendar/extracted에 반영하며 LLM이 빈 값을 추정하지 않는다.",
+  "targets": [
+    {
+      "id": "idn_kpu_portal",
+      "iso3": "IDN",
+      "url": "https://www.kpu.go.id/",
+      "raw_path": "raw/idn/kpu_portal.html",
+      "role": "calendar_and_certified_results",
+      "review_fields": ["election_calendar", "official_results", "party_notices"]
+    },
+    {
+      "id": "idn_kpu_open_data",
+      "iso3": "IDN",
+      "url": "https://satupetadata.kpu.go.id/",
+      "raw_path": "raw/idn/kpu_open_data.html",
+      "role": "official_open_data_index",
+      "review_fields": ["election_calendar", "official_results_dataset", "party_data"]
+    },
+    {
+      "id": "zaf_iec_portal",
+      "iso3": "ZAF",
+      "url": "https://www.elections.org.za/",
+      "raw_path": "raw/zaf/iec_portal.html",
+      "role": "calendar_and_certified_results",
+      "review_fields": ["election_calendar", "official_results", "party_notices"]
+    },
+    {
+      "id": "zaf_iec_party_statistics",
+      "iso3": "ZAF",
+      "url": "https://www.elections.org.za/pw/StatsData/Political-Parties-Statistics",
+      "raw_path": "raw/zaf/iec_party_statistics.html",
+      "role": "party_registration_and_statistics",
+      "review_fields": ["registered_parties", "party_status", "election_context"]
+    },
+    {
+      "id": "nga_inec_portal",
+      "iso3": "NGA",
+      "url": "https://www.inecnigeria.org/",
+      "raw_path": "raw/nga/inec_portal.html",
+      "role": "calendar_and_certified_results",
+      "review_fields": ["election_calendar", "certified_results", "party_registration_notices"]
+    },
+    {
+      "id": "nga_inec_party_documents",
+      "iso3": "NGA",
+      "url": "https://www.inecnigeria.org/political-party-documents/",
+      "raw_path": "raw/nga/inec_party_documents.html",
+      "role": "party_registration_and_documents",
+      "review_fields": ["party_registration", "party_documents", "legal_status"]
+    },
+    {
+      "id": "nga_inec_party_guidelines_2026",
+      "iso3": "NGA",
+      "url": "https://www.inecnigeria.org/wp-content/uploads/Regulations-and-Guidelines-2026_UPDATED.pdf",
+      "raw_path": "raw/nga/inec_party_guidelines_2026.pdf",
+      "role": "official_party_regulations",
+      "review_fields": ["party_registration", "party_regulation_changes", "legal_status"]
+    },
+    {
+      "id": "nga_inec_party_list",
+      "iso3": "NGA",
+      "url": "https://www.inecnigeria.org/list-of-political-parties/",
+      "raw_path": "raw/nga/inec_party_list.html",
+      "role": "official_party_list",
+      "review_fields": ["registered_parties", "party_status", "legal_status"]
+    },
+    {
+      "id": "nga_inec_election_results",
+      "iso3": "NGA",
+      "url": "https://www.inecnigeria.org/election-results/",
+      "raw_path": "raw/nga/inec_election_results.html",
+      "role": "official_results_index",
+      "review_fields": ["certified_results", "result_documents", "election_calendar"]
+    },
+    {
+      "id": "irn_moi_portal",
+      "iso3": "IRN",
+      "url": "https://www.moi.ir/",
+      "raw_path": "raw/irn/moi_portal.html",
+      "role": "managed_election_notices",
+      "review_fields": ["election_calendar", "ministry_notices"]
+    },
+    {
+      "id": "irn_irna_english",
+      "iso3": "IRN",
+      "url": "https://lite.irna.ir/en/",
+      "raw_path": "raw/irn/irna_lite_english.html",
+      "role": "state_news_leadership_cross_check",
+      "review_fields": ["leadership_changes", "security_axis", "election_notices"],
+      "source_grade": "state_media_supplemental_not_election_certification"
+    },
+    {
+      "id": "irn_parliament_english",
+      "iso3": "IRN",
+      "url": "https://www.ipu.org/parliament/IR",
+      "raw_path": "raw/irn/ipu_parliament_ir.html",
+      "role": "official_parliament_cross_check",
+      "review_fields": ["majles_leadership", "legislature_notices"],
+      "source_grade": "international_parliamentary_cross_check"
+    }
+  ]
+}

@@ -66,9 +66,12 @@
           "id": "kor-2025-ppp-convention",
           "type": "party_leadership",
           "label_ko": "국민의힘 제6차 전당대회 (현 대표 선출)",
-          "date": "2025-08-22",
+          "date": "2025-08-26",
+          "date_start": "2025-08-22",
+          "first_round_date": "2025-08-22",
+          "runoff_date": "2025-08-26",
           "status": "completed",
-          "notes": "2026 보드: 제1야당 현 지도부. 2026년 정기 전당대회 없음.",
+          "notes": "2025-08-22 1차 후 장동혁·김문수 결선 진출, 2025-08-26 장동혁 최종 선출. 2026 보드: 제1야당 현 지도부. 2026년 정기 전당대회 없음.",
           "party_id": "ppp",
           "party_abbr": "PPP",
           "winner": {
@@ -1071,7 +1074,7 @@
     {
       "iso3": "SAU",
       "name_ko": "사우디아라비아",
-      "priority_tier": 3,
+      "priority_tier": 2,
       "region": "middle_east",
       "system": "other",
       "mode": "leadership_brief",
@@ -1085,12 +1088,12 @@
           "status": "없음"
         }
       ],
-      "notes": "Tier3 absolute monarchy brief. Canonical profile: profiles/sau.json"
+      "notes": "Tier2 geopolitical core: absolute monarchy brief plus energy/security axis. Canonical profile: profiles/sau.json"
     },
     {
       "iso3": "ARE",
       "name_ko": "아랍에미리트",
-      "priority_tier": 3,
+      "priority_tier": 2,
       "region": "middle_east",
       "system": "other",
       "mode": "leadership_brief_emirates",
@@ -1105,6 +1108,90 @@
         }
       ],
       "notes": "Tier3 federal emirates brief. Canonical profile: profiles/are.json"
+    },
+    {
+      "iso3": "IDN",
+      "name_ko": "인도네시아",
+      "priority_tier": 2,
+      "region": "southeast_asia",
+      "system": "presidential",
+      "ruling_party": {
+        "id": "gerindra",
+        "abbr": "Gerindra",
+        "role": "ruling"
+      },
+      "parties_tracked": [
+        {
+          "id": "gerindra",
+          "abbr": "Gerindra",
+          "role": "ruling"
+        }
+      ],
+      "events_2026_note": "Canonical: config/calendars/idn_2026.json; 2026 national-election date is not bundled.",
+      "ingest_wave": "2d_light_connection"
+    },
+    {
+      "iso3": "ZAF",
+      "name_ko": "남아프리카공화국",
+      "priority_tier": 2,
+      "region": "africa",
+      "system": "parliamentary",
+      "ruling_party": {
+        "id": "anc",
+        "abbr": "ANC",
+        "role": "ruling"
+      },
+      "parties_tracked": [
+        {
+          "id": "anc",
+          "abbr": "ANC",
+          "role": "ruling"
+        },
+        {
+          "id": "eff",
+          "abbr": "EFF",
+          "role": "main_opposition"
+        }
+      ],
+      "events_2026_note": "Canonical: config/calendars/zaf_2026.json; party-event dates require IEC/party notices.",
+      "ingest_wave": "2d_light_connection"
+    },
+    {
+      "iso3": "NGA",
+      "name_ko": "나이지리아",
+      "priority_tier": 2,
+      "region": "africa",
+      "system": "presidential",
+      "ruling_party": {
+        "id": "apc",
+        "abbr": "APC",
+        "role": "ruling"
+      },
+      "parties_tracked": [
+        {
+          "id": "apc",
+          "abbr": "APC",
+          "role": "ruling"
+        },
+        {
+          "id": "pdp",
+          "abbr": "PDP",
+          "role": "main_opposition"
+        }
+      ],
+      "events_2026_note": "Canonical: config/calendars/nga_2026.json; opposition alignment remains fluid.",
+      "ingest_wave": "2d_light_connection"
+    },
+    {
+      "iso3": "IRN",
+      "name_ko": "이란",
+      "priority_tier": 3,
+      "region": "middle_east",
+      "system": "other",
+      "mode": "china_style_leadership_extract",
+      "parties_tracked": [],
+      "events_2026_note": "Canonical: config/calendars/irn_2026.json; leadership detail: config/iran_leadership_extracted.json.",
+      "ingest_wave": "2e_geopolitical_core"
     }
   ],
   "leadership_policy": {
@@ -1151,15 +1238,19 @@
       },
       "SAU": {
         "mode": "leadership_brief",
-        "tier": 3
+        "tier": 2,
+        "depth": "leadership_energy_security_core"
       },
       "ARE": {
         "mode": "leadership_brief_emirates",
         "tier": 3
       },
       "IRN": {
-        "status": "deferred",
-        "note": "의도적 미작성"
+        "status": "active",
+        "mode": "china_style_leadership_extract",
+        "leadership_pack": "iran_leadership_extracted.json",
+        "tier": 2,
+        "depth": "party_state_security_core"
       }
     }
   }
