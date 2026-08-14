@@ -762,29 +762,17 @@ const renderTradeWorldPanel = (arcs) => {
     const exportRows = worldRankRows(exportRank);
     const importRows = worldRankRows(importRank);
 
-    // Replaces data.js's hand-written topExporter string the moment real arcs
-    // are in: that string could go stale or, worse, name a country the map
-    // has no route for (Switzerland's gold arcs were missing entirely before
-    // the Comtrade area-code fix, so the label and the map disagreed). Left
-    // untouched while arcs is still empty/loading, so the static string
-    // serves as the loading placeholder instead of flashing blank.
-    if (topExporterEl && exportRank.ranked.length) {
-        topExporterEl.textContent = exportRank.ranked[0][0];
-    }
-
     if (!newsContentEl) return;
     const newsTitle = document.querySelector('#news-panel .section-title');
     if (newsTitle) newsTitle.textContent = '주요 수출국 · 수입국';
     newsContentEl.innerHTML = `
         <div class="trade-focus-card">
-            <div id="futures-slot"></div>
             <p class="trade-focus-sub">비중% · 막대는 각 방향 내 상대 물동량 · 국가를 누르면 그 나라 노선만 남습니다</p>
             <p class="trade-rank-group-head">주요 수출국</p>
             <div class="trade-rank-list">${exportRows || '<p class="empty-state">무역 루트 없음</p>'}</div>
             <p class="trade-rank-group-head">주요 수입국</p>
             <div class="trade-rank-list">${importRows || '<p class="empty-state">무역 루트 없음</p>'}</div>
         </div>`;
-    renderFuturesCard(currentCommodity);
     renderEmergencyStocks();
 };
 
@@ -7767,6 +7755,43 @@ const msPriceLevelChart = (pts, rows, opts = {}) => {
     let line = '', pen = false;
     pts.forEach((d, i) => { line += `${pen ? 'L' : 'M'}${sx(i).toFixed(1)},${sy(d.close).toFixed(1)}`; pen = true; });
 
+    // Credit rides the same date axis as the close line, so a deposit drain and
+    // the index move it paid for line up vertically. It needs its own right
+    // scale, and that scale has to be log: 예탁금 ~100조 against 미수금 ~0.9조
+    // is over 100x, and on a linear axis 미수금 is a flat line on the floor --
+    // which is exactly the series whose *slope* signals forced selling.
+    const creditByDate = new Map((opts.credit || []).map((r) => [r.date, r]));
+    const CREDIT_SERIES = [
+        { key: 'investor_deposit_eok', ko: '투자자 예탁금', cls: 'deposit' },
+        { key: 'credit_loan_eok', ko: '신용융자', cls: 'credit' },
+        { key: 'uncollected_eok', ko: '미수금', cls: 'uncollected' },
+    ];
+    const creditJo = (d, key) => {
+        const row = creditByDate.get(d.date);
+        const v = row && row[key];
+        return Number.isFinite(v) && v > 0 ? v / 10000 : null;
+    };
+    const creditVals = pts.flatMap((d) => CREDIT_SERIES.map((s) => creditJo(d, s.key))).filter(Number.isFinite);
+    const hasCredit = creditVals.length > 1;
+    const lgLo = hasCredit ? Math.log10(Math.min(...creditVals)) : 0;
+    const lgHi = hasCredit ? Math.log10(Math.max(...creditVals)) : 1;
+    const lgPad = (lgHi - lgLo) * 0.08 || 0.1;
+    const syC = (v) => T + (1 - (Math.log10(v) - (lgLo - lgPad)) / ((lgHi + lgPad) - (lgLo - lgPad))) * (H - T - B);
+    const creditPath = (key) => {
+        let d = '', p = false;
+        pts.forEach((pt, i) => {
+            const v = creditJo(pt, key);
+            if (v === null) { p = false; return; }
+            d += `${p ? 'L' : 'M'}${sx(i).toFixed(1)},${syC(v).toFixed(1)}`;
+            p = true;
+        });
+        return d;
+    };
+    const creditTicks = hasCredit
+        ? Array.from({ length: 5 }, (_, i) => 10 ** ((lgLo - lgPad) + ((lgHi + lgPad) - (lgLo - lgPad)) * (i / 4)))
+        : [];
+    const joLabel = (v) => (v >= 10 ? v.toFixed(0) : v.toFixed(1)) + '조';
+
     const grid = Array.from({ length: 7 }, (_, i) => yLo + (yHi - yLo) * (i / 6));
     const fmt = opts.fmtX || msEok;
 
@@ -7802,16 +7827,24 @@ const msPriceLevelChart = (pts, rows, opts = {}) => {
             }).join('')}
             <line x1="${cx.toFixed(1)}" y1="${T}" x2="${cx.toFixed(1)}" y2="${H - B}" class="mm-zero"/>
             <path d="${line}" class="ms-plc-line"/>
+            ${hasCredit ? CREDIT_SERIES.map((s) => `<path d="${creditPath(s.key)}" class="ms-plc-cr ms-plc-cr-${s.cls}"/>`).join('') : ''}
+            ${hasCredit ? creditTicks.map((v) => `
+                <text x="${W - R + 10}" y="${(syC(v) + 3.5).toFixed(1)}" class="mm-tick">${joLabel(v)}</text>`).join('') : ''}
             ${pts.map((d, i) => `<rect x="${(sx(i) - (W - L - R) / pts.length / 2).toFixed(1)}" y="${T}"
                 width="${((W - L - R) / pts.length).toFixed(1)}" height="${(H - T - B).toFixed(1)}" class="ms-plc-hit"><title>${
                 finEsc(d.date)} · ${finEsc(opts.lineName || '종가')} ${msNum(d.close)} · 개인 ${fmt(d._retail)} · 외국인 ${
-                fmt(d._foreign)} · 기관 ${fmt(d._inst)}</title></rect>`).join('')}
+                fmt(d._foreign)} · 기관 ${fmt(d._inst)}${hasCredit ? CREDIT_SERIES.map((s) => {
+                    const v = creditJo(d, s.key);
+                    return v === null ? '' : ` · ${s.ko} ${v >= 10 ? v.toFixed(1) : v.toFixed(2)}조`;
+                }).join('') : ''}</title></rect>`).join('')}
             <text x="${L - 8}" y="${T - 12}" class="mm-tick" text-anchor="end">${finEsc(opts.yLabel || '(pt)')}</text>
             <text x="${W - R + 8}" y="${(H - B).toFixed(1)}" class="mm-tick">${finEsc(opts.xLabel || '순매수')}</text>
         </svg>
         <p class="mm-legend-note">
             <i class="ms-plc-sw-line"></i>${finEsc(opts.lineName || '코스피 종가')}
             ${show.map((s) => `<i class="ms-plc-sw ms-plc-${s.cls}"></i>${finEsc(s.ko)}`).join('')}
+            ${hasCredit ? CREDIT_SERIES.map((s) =>
+                `<i class="ms-plc-sw-cr ms-plc-cr-${s.cls}"></i>${finEsc(s.ko)}`).join('') + '<span class="mm-legend-axis">(우축·로그·조원)</span>' : ''}
         </p>
     </div>`;
 };
@@ -7937,73 +7970,6 @@ const msTangle = (D) => {
     </section>`;
 };
 
-// Deposit and credit each get their own axis. Sharing one would be the honest
-// default if they were comparable, but 예탁 ~104조 against 신용 ~29조 means a
-// single axis wide enough for deposit flattens credit into a straight line --
-// its whole 28~35조 swing lands inside one gridline. Separate axes let each
-// series show its own movement; the ratio between them is on the card above.
-// 미수(~1조)·반대매매(~100억) stay on cards for the same reason, several orders
-// worse: on any axis holding 예탁 they would be indistinguishable from zero.
-const msCreditChart = (dc) => {
-    const hist = (dc.history || []).filter((d) => Number.isFinite(d.investor_deposit_eok));
-    if (hist.length < 2) return `<p class="fin-note">${msMissing('예탁·신용 시계열 없음')}</p>`;
-
-    const W = 900, H = 300, L = 62, R = 62, T = 18, B = 34;
-    const jo = (v) => (Number.isFinite(v) ? v / 10000 : null);
-    // One scale builder, used once per axis.
-    const axis = (values) => {
-        const lo = Math.min(...values), hi = Math.max(...values);
-        const pad = (hi - lo) * 0.15 || 1;
-        const min = lo - pad, max = hi + pad;
-        return {
-            at: (v) => T + (1 - (v - min) / (max - min)) * (H - T - B),
-            ticks: Array.from({ length: 5 }, (_, i) => min + (max - min) * (i / 4)),
-        };
-    };
-    const depAxis = axis(hist.map((d) => jo(d.investor_deposit_eok)).filter(Number.isFinite));
-    const creditVals = hist.map((d) => jo(d.credit_loan_eok)).filter(Number.isFinite);
-    const crAxis = axis(creditVals.length ? creditVals : [0, 1]);
-    const sy = depAxis.at, syR = crAxis.at;
-
-    const sx = (i) => L + (i / Math.max(hist.length - 1, 1)) * (W - L - R);
-    const path = (pick, scale) => {
-        let d = '', pen = false;
-        hist.forEach((row, i) => {
-            const v = pick(row);
-            if (!Number.isFinite(v)) { pen = false; return; }
-            d += `${pen ? 'L' : 'M'}${sx(i).toFixed(1)},${scale(v).toFixed(1)}`;
-            pen = true;
-        });
-        return d;
-    };
-
-    const grid = depAxis.ticks, rGrid = crAxis.ticks;
-    const ticks = [0, Math.floor(hist.length / 2), hist.length - 1];
-
-    return `
-    <div class="ms-plc-box">
-        <svg class="ms-cc" viewBox="0 0 ${W} ${H}" role="img" aria-label="투자자 예탁금과 신용거래융자 추이">
-            ${grid.map((g, i) => `
-                <line x1="${L}" y1="${sy(g).toFixed(1)}" x2="${W - R}" y2="${sy(g).toFixed(1)}" class="mm-grid"/>
-                <text x="${L - 8}" y="${(sy(g) + 3.5).toFixed(1)}" class="mm-tick" text-anchor="end">${g.toFixed(0)}조</text>
-                <text x="${W - R + 8}" y="${(syR(rGrid[i]) + 3.5).toFixed(1)}" class="mm-tick">${rGrid[i].toFixed(1)}조</text>`).join('')}
-            ${ticks.map((i) => `<text x="${sx(i).toFixed(1)}" y="${H - 10}" class="mm-tick" text-anchor="middle">${finEsc(hist[i].date)}</text>`).join('')}
-            <path d="${path((r) => jo(r.investor_deposit_eok), sy)}" class="ms-cc-deposit"/>
-            <path d="${path((r) => jo(r.credit_loan_eok), syR)}" class="ms-cc-credit"/>
-            ${hist.map((d, i) => `<rect x="${(sx(i) - (W - L - R) / hist.length / 2).toFixed(1)}" y="${T}"
-                width="${((W - L - R) / hist.length).toFixed(1)}" height="${(H - T - B).toFixed(1)}" class="ms-cc-hit"><title>${
-                finEsc(d.date)} · 예탁금 ${msEokLevel(d.investor_deposit_eok)} · 신용융자 ${msEokLevel(d.credit_loan_eok)} · 미수금 ${
-                msEokLevel(d.uncollected_eok)} · 반대매매 ${msEokLevel(d.forced_sale_eok)}</title></rect>`).join('')}
-        </svg>
-        <p class="mm-legend-note">
-            <i class="ms-cc-sw ms-cc-sw-deposit"></i>투자자 예탁금(좌축·조원)
-            <i class="ms-cc-sw ms-cc-sw-credit"></i>신용거래융자(우축·조원)
-        </p>
-        <p class="fin-note">${finEsc(hist[0].date)} ~ ${finEsc(hist[hist.length - 1].date)} · ${hist.length}거래일.
-            좌우 축의 눈금이 다릅니다 — 두 선의 높이가 아니라 <em>각자의 기울기</em>를 보는 그래프입니다.
-            마우스를 올리면 그날의 예탁금·신용융자·미수금·반대매매가 나옵니다.</p>
-    </div>`;
-};
 
 // --- ② 가격대별 수급 ---------------------------------------------------------
 // Shared by the chart (msLevelsTab) and its detail modal so the two never
@@ -8073,16 +8039,16 @@ const msLevelsTab = (D) => {
             <span class="ms-period-spacer"></span>
             <button class="mm-view-btn ${MS_CREDIT_ON ? 'on' : ''}" data-ms-credit="1">예탁금 · 신용공여 ${MS_CREDIT_ON ? '▲' : '▼'}</button>
         </div>
-        ${MS_CREDIT_ON ? `<div class="ms-credit-panel">
-            <h3 class="fin-sub">투자자 예탁금 · 신용공여 추이</h3>
-            <p class="fin-note">위 그래프가 <em>어디서</em> 샀는지라면, 이건 <em>무슨 돈으로</em> 샀는지입니다. 시장 전체 집계이며 종목별이 아닙니다.</p>
-            ${msCreditChart(dc)}
-        </div>` : ''}
+        ${MS_CREDIT_ON ? `<p class="fin-note ms-credit-hint">
+            아래 그래프에 예탁금 · 신용융자 · 미수금이 <strong>같은 날짜축</strong>으로 겹쳐집니다.
+            셋의 규모가 100배 넘게 차이나서 오른쪽 눈금은 로그입니다 — 높이가 아니라 <em>기울기</em>를 보세요.
+            시장 전체 집계이며 종목별이 아닙니다.</p>` : ''}
         ${msPriceLevelChart(pts, bins, {
             label: `${isIndex ? '코스피' : (tickers[MS_TICKER] || {}).label_ko || MS_TICKER} 가격대별 투자자 순매수 분포`,
             lineName: isIndex ? '코스피 종가' : '종가',
             yLabel: isIndex ? '(pt)' : '(원)',
             xLabel: '순매수(억원)',
+            credit: MS_CREDIT_ON ? (dc.history || []) : null,
         })}
         ${pts.length ? `<p class="fin-note">표시 구간 ${finEsc(pts[0].date)} ~ ${finEsc(pts[pts.length - 1].date)} · ${pts.length}거래일.
             막대는 이 구간의 일별 순매수를 종가 레벨에 귀속해 다시 합산한 값입니다.</p>` : ''}
