@@ -6,6 +6,23 @@ const { SphereGeometry } = luma;
 
 // DOM Elements
 const tooltipEl = document.getElementById('tooltip');
+
+/**
+ * deck.gl's onHover `info.x`/`info.y` are relative to the map canvas
+ * container (id="map", the element deck.gl was constructed with as its
+ * `container`). #tooltip itself sits outside .map-pane in the DOM (a
+ * sibling of <main>) with no positioned ancestor of its own, so its
+ * `position: absolute` resolves against the viewport instead -- using
+ * info.x/info.y directly landed the tooltip offset by roughly the width of
+ * the left sidebar. This adds the map container's own viewport offset back
+ * in before positioning.
+ */
+const positionTooltipAt = (info, offset = 12) => {
+    const mapEl = document.getElementById('map');
+    const rect = mapEl ? mapEl.getBoundingClientRect() : { left: 0, top: 0 };
+    tooltipEl.style.left = `${rect.left + info.x + offset}px`;
+    tooltipEl.style.top = `${rect.top + info.y + offset}px`;
+};
 const newsContentEl = document.getElementById('news-content');
 const newsPanelEl = document.getElementById('news-panel');
 const forecastPanelEl = document.getElementById('climate-forecast-panel');
@@ -202,8 +219,7 @@ queueMicrotask(redrawOnBasemapReady);
 const handleHover = (info) => {
     if (info.object) {
         const { sourceName, targetName, volume, percentage } = info.object;
-        tooltipEl.style.left = `${info.x}px`;
-        tooltipEl.style.top = `${info.y}px`;
+        positionTooltipAt(info, 0);
         tooltipEl.classList.remove('hidden');
         
         tooltipEl.innerHTML = `
@@ -1833,8 +1849,7 @@ const sstWashLayer = (_unused, id = 'climate-sst') => {
         onHover: (info) => {
             if (!info.object) return;
             const a = info.object.properties.a;
-            tooltipEl.style.left = `${info.x + 12}px`;
-            tooltipEl.style.top = `${info.y + 12}px`;
+            positionTooltipAt(info);
             tooltipEl.classList.remove('hidden');
             tooltipEl.innerHTML = `<div class="tooltip-title">해수면 수온 편차</div>
                 <div class="tooltip-stat"><span>편차</span>
@@ -3900,8 +3915,7 @@ const showClimateTooltip = async (info, name, cfg) => {
     const lv = tradePolicyLevel(name);
     const pol = CLIMATE_TRADE_POLICY[name] || {};
     const color = s?.meanPct != null && s.meanPct < 0 ? '#fca5a5' : '#4ade80';
-    tooltipEl.style.left = `${info.x + 12}px`;
-    tooltipEl.style.top = `${info.y + 12}px`;
+    positionTooltipAt(info);
     tooltipEl.classList.remove('hidden');
     const body = s?.reference
         ? `<div class="tooltip-stat"><span>모드</span>
@@ -4033,8 +4047,7 @@ const showClimateCountry = async (countryName) => {
             }
             const d = info.object;
             if (!tooltipEl) return;
-            tooltipEl.style.left = `${info.x + 10}px`;
-            tooltipEl.style.top = `${info.y + 10}px`;
+            positionTooltipAt(info, 10);
             tooltipEl.classList.remove('hidden');
             const pctStr = d.meanPct == null ? '—'
                 : `${d.meanPct >= 0 ? '+' : ''}${d.meanPct.toFixed(1)}%`;
@@ -5097,8 +5110,7 @@ const renderMapLayers = (arcs, opts = {}) => {
                 const share = focus
                     ? ((d.volume / totalFocus) * 100).toFixed(1)
                     : d.percentage;
-                tooltipEl.style.left = `${info.x + 12}px`;
-                tooltipEl.style.top = `${info.y + 12}px`;
+                positionTooltipAt(info);
                 tooltipEl.classList.remove('hidden');
                 tooltipEl.innerHTML = `
                     <div class="tooltip-title">${d.sourceName} → ${d.targetName}</div>
