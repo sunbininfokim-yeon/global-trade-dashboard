@@ -393,6 +393,33 @@ def normalize_status_contract(status: dict[str, Any]) -> dict[str, Any]:
                 "signed next 7-observation estimated trade-volume gap vs same preceding 28"
             )
 
+    history = normalized.get("history")
+    if not isinstance(history, list):
+        history = []
+    normalized["history"] = history
+    inferred_metric_key = (
+        "tanker"
+        if "tanker" in normalized.get("metrics", {})
+        and "all" not in normalized.get("metrics", {})
+        else "all"
+    )
+    history_metric_key = normalized.get("history_metric_key", inferred_metric_key)
+    normalized["history_metric_key"] = history_metric_key
+    normalized["history_field"] = normalized.get(
+        "history_field",
+        CAPACITY_FIELDS.get(history_metric_key, CAPACITY_FIELDS["all"]),
+    )
+    normalized["history_unit"] = PORTWATCH_METRIC_UNIT
+    normalized["history_point_count"] = len(history)
+    normalized["history_status"] = normalized.get(
+        "history_status",
+        (
+            "observed_daily_estimated_trade_volume"
+            if history
+            else "unavailable_cached_summary_only"
+        ),
+    )
+
     normalized["quality"] = "observed_estimated_trade_volume_shortfall_7d_vs_prior_28d"
     normalized["metric_unit"] = PORTWATCH_METRIC_UNIT
     normalized["metric_definition"] = PORTWATCH_METRIC_DEFINITION
@@ -408,12 +435,29 @@ def summarize_series(rows: list[dict[str, Any]], portwatch_id: str) -> dict[str,
 
     valid = [row for row in rows if _date_key(row.get("date")) != float("-inf")]
     valid.sort(key=lambda row: _date_key(row.get("date")))
+    history_metric_key = ML_PRIMARY_METRIC.get(portwatch_id, "all")
+    history_field = CAPACITY_FIELDS[history_metric_key]
+    history = [
+        {
+            "date": _iso_date(row.get("date")),
+            "value": float(row[history_field]),
+        }
+        for row in valid
+        if _iso_date(row.get("date")) is not None
+        and isinstance(row.get(history_field), (int, float))
+    ]
     if len(valid) < 14:
         return {
             "portwatch_id": portwatch_id,
             "quality": "insufficient_history",
             "observation_count": len(valid),
             "metrics": {},
+            "history": history,
+            "history_metric_key": history_metric_key,
+            "history_field": history_field,
+            "history_unit": PORTWATCH_METRIC_UNIT,
+            "history_point_count": len(history),
+            "history_status": "observed_daily_estimated_trade_volume",
         }
     current = valid[-7:]
     baseline = valid[-35:-7] if len(valid) >= 35 else valid[:-7]
@@ -462,8 +506,18 @@ def summarize_series(rows: list[dict[str, Any]], portwatch_id: str) -> dict[str,
             "not observed DWT and not proof of literal physical closure."
         ),
         "observation_count": len(valid),
+        "history": history,
+        "history_metric_key": history_metric_key,
+        "history_field": history_field,
+        "history_unit": PORTWATCH_METRIC_UNIT,
+        "history_point_count": len(history),
+        "history_status": "observed_daily_estimated_trade_volume",
+        "history_warning": (
+            "Daily PortWatch transit-volume estimate in metric tonnes; subject to "
+            "AIS coverage and upstream revisions, and not observed DWT."
+        ),
         "metrics": metrics,
         "signal_validation": validation,
         "multi_model_analysis": multi_model_analysis,
-        "multi_model_primary_metric": ML_PRIMARY_METRIC.get(portwatch_id, "all"),
+        "multi_model_primary_metric": history_metric_key,
     }

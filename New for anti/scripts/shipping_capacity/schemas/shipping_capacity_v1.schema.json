@@ -3,7 +3,7 @@
   "$id": "https://global-trade-dashboard.example/schemas/shipping_capacity_v1.schema.json",
   "title": "Shipping Capacity Snapshot v1",
   "type": "object",
-  "required": ["schema_version", "artifact_type", "bundle_id", "generated_at", "artifact_manifest", "coverage_summary", "model", "fleet", "lng_fleet", "routes", "route_catalog", "scenarios", "scenario_summary", "ui_scenario_grid", "live_display", "live_data_quality", "environment", "comtrade_routes", "portwatch_port_context", "market_signals", "pdf_reports"],
+  "required": ["schema_version", "artifact_type", "bundle_id", "generated_at", "artifact_manifest", "coverage_summary", "model", "fleet", "lng_fleet", "chokepoints", "chokepoints_live", "routes", "route_catalog", "scenarios", "scenario_summary", "ui_scenario_grid", "live_display", "live_data_quality", "environment", "comtrade_routes", "portwatch_port_context", "market_signals", "pdf_reports"],
   "properties": {
     "schema_version": {"const": "shipping-capacity-v1"},
     "artifact_type": {"const": "screen_snapshot"},
@@ -29,7 +29,7 @@
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["id", "ship_type", "cargo_segment", "input_status", "baseline"],
+        "required": ["id", "ship_type", "cargo_segment", "input_status", "baseline", "operational_profile"],
         "properties": {
           "service_type": {"type": "string"},
           "vessel_class": {"type": ["string", "null"]},
@@ -43,7 +43,62 @@
               }
             }
           },
-          "cargo_segment": {"type": "string"}
+          "cargo_segment": {"type": "string"},
+          "operational_profile": {
+            "type": "object",
+            "required": ["normal", "chokepoint_alternatives", "method", "input_status", "warning"],
+            "properties": {
+              "normal": {
+                "type": "object",
+                "required": ["distance_nm_one_way", "speed_knots", "sea_days_one_way", "port_days_round_trip", "cycle_days_round_trip"]
+              },
+              "chokepoint_alternatives": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": ["chokepoint_id", "reroute_available", "baseline_distance_nm_one_way", "reroute_extra_nm_one_way", "rerouted_distance_nm_one_way", "baseline_sea_days_one_way", "reroute_extra_days_one_way", "rerouted_sea_days_one_way", "baseline_cycle_days", "reroute_extra_cycle_days", "rerouted_cycle_days", "cycle_increase_pct", "exposure_share", "input_status", "warning"],
+                  "properties": {
+                    "reroute_extra_nm_one_way": {"type": ["number", "null"], "minimum": 0},
+                    "rerouted_distance_nm_one_way": {"type": ["number", "null"], "minimum": 0},
+                    "reroute_extra_days_one_way": {"type": ["number", "null"], "minimum": 0},
+                    "rerouted_sea_days_one_way": {"type": ["number", "null"], "minimum": 0},
+                    "reroute_extra_cycle_days": {"type": ["number", "null"], "minimum": 0},
+                    "rerouted_cycle_days": {"type": ["number", "null"], "minimum": 0},
+                    "cycle_increase_pct": {"type": ["number", "null"], "minimum": 0}
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "chokepoints": {
+      "type": "array",
+      "items": {"type": "object", "required": ["id", "portwatch_id", "coordinates"]}
+    },
+    "chokepoints_live": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["metrics", "history", "history_metric_key", "history_field", "history_unit", "history_point_count", "history_status"],
+        "properties": {
+          "history": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["date", "value"],
+              "properties": {
+                "date": {"type": "string", "format": "date"},
+                "value": {"type": "number", "minimum": 0}
+              }
+            }
+          },
+          "history_metric_key": {"enum": ["all", "container", "dry_bulk", "general_cargo", "tanker"]},
+          "history_field": {"type": "string"},
+          "history_unit": {"const": "estimated_trade_tonnes_per_day"},
+          "history_point_count": {"type": "integer", "minimum": 0},
+          "history_status": {"enum": ["observed_daily_estimated_trade_volume", "unavailable_cached_summary_only"]}
         }
       }
     },
@@ -239,6 +294,13 @@
           "rerouted_in_transit_cargo_tonnes_horizon",
           "trapped_loaded_dwt",
           "commercially_available_dwt",
+          "affected_allocated_dwt_with_reserve",
+          "relevant_global_type_fleet_dwt",
+          "operational_capacity_absorbed_pct_of_affected_allocated",
+          "operational_capacity_absorbed_pct_of_relevant_global_type_fleet",
+          "commercially_unavailable_pct_of_affected_allocated",
+          "commercially_available_pct_of_affected_allocated",
+          "capacity_denominator_warning",
           "weighted_served_flow_index"
         ],
         "properties": {
@@ -265,7 +327,20 @@
           "type": "array",
           "items": {
             "type": "object",
-            "required": ["key", "base_scenario_id", "closure_pct", "duration_days", "horizon_days", "summary", "routes"]
+            "required": ["key", "base_scenario_id", "closure_pct", "duration_days", "horizon_days", "summary", "routes"],
+            "properties": {
+              "summary": {
+                "type": "object",
+                "required": ["operational_capacity_absorbed_dwt", "affected_allocated_dwt_with_reserve", "relevant_global_type_fleet_dwt", "operational_capacity_absorbed_pct_of_affected_allocated", "operational_capacity_absorbed_pct_of_relevant_global_type_fleet", "commercially_unavailable_pct_of_affected_allocated", "commercially_available_pct_of_affected_allocated", "capacity_denominator_warning"]
+              },
+              "routes": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": ["route_id", "baseline_required_dwt", "allocated_dwt_with_reserve", "continuity_required_dwt", "operational_capacity_absorbed_dwt", "operational_capacity_absorbed_pct_of_route_allocated", "commercially_unavailable_dwt", "commercially_unavailable_pct_of_route_allocated", "traffic_change_pct"]
+                }
+              }
+            }
           }
         }
       }

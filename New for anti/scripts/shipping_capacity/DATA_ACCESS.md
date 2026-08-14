@@ -2,7 +2,7 @@
 
 ## 현재 키 없이 연결됨
 
-- IMF PortWatch ArcGIS REST: 초크포인트별 일일 선종 추정 교역량(metric tonnes). 730일 ML 창과 2019년 이후 전체 역사 사건 보정 창을 분리해 사용합니다. `capacity_*`는 관측 DWT가 아닙니다.
+- IMF PortWatch ArcGIS REST: 초크포인트별 일일 선종 추정 교역량(metric tonnes). 730일 수집 이력 중 화면에는 최근 180개 관측을, 진단 산출물에는 전체를 보존합니다. 2019년 이후 전체 역사 사건 보정 창은 별도로 사용합니다. `capacity_*`는 관측 DWT가 아닙니다.
 - World Bank `IS.SHP.GOOD.TU`: 국가별 컨테이너 항만 처리량 TEU.
 - IMO·EU 공식 문서: CII/EEXI, EU ETS, FuelEU 규제 사실.
 - UNCTAD 공개 데이터·문서: 선대 기준과 연결성 보조지표.
