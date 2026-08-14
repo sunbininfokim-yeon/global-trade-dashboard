@@ -10,7 +10,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-from shipping_capacity.engine import estimate_interval, simulate_route
+from shipping_capacity.engine import estimate_interval, route_operational_profile, simulate_route
 from shipping_capacity.artifacts import build_artifact_bundle
 from shipping_capacity.behavior_sensitivity import behavior_paths_for_scenario
 from shipping_capacity.comtrade_routes import apply_route_flows
@@ -46,6 +46,11 @@ def rounded(value: Any) -> Any:
 def aggregate_scenario(scenario: dict[str, Any], results: list[dict[str, Any]]) -> dict[str, Any]:
     affected = [row for row in results if row["affected_flow_share"] > 0]
     baseline = sum(row["baseline_required_dwt"] for row in affected)
+    allocated = sum(row["allocated_dwt_with_reserve"] for row in affected)
+    global_type_fleet_by_ship_type = {
+        row["ship_type"]: row["global_type_fleet_dwt"] for row in affected
+    }
+    relevant_global_type_fleet = sum(global_type_fleet_by_ship_type.values())
     disrupted = sum(row["disrupted_required_dwt"] for row in affected)
     absorbed = sum(row["operational_capacity_absorbed_dwt"] for row in affected)
     gap = sum(row["capacity_gap_dwt"] for row in affected)
@@ -85,8 +90,18 @@ def aggregate_scenario(scenario: dict[str, Any], results: list[dict[str, Any]]) 
         "duration_days": scenario["duration_days"],
         "affected_route_count": len(affected),
         "affected_baseline_dwt": baseline,
+        "affected_allocated_dwt_with_reserve": allocated,
+        "relevant_global_type_fleet_dwt": relevant_global_type_fleet,
         "disrupted_required_dwt": disrupted,
         "operational_capacity_absorbed_dwt": absorbed,
+        "operational_capacity_absorbed_pct_of_affected_allocated": (
+            absorbed / allocated * 100.0 if allocated > 0 else None
+        ),
+        "operational_capacity_absorbed_pct_of_relevant_global_type_fleet": (
+            absorbed / relevant_global_type_fleet * 100.0
+            if relevant_global_type_fleet > 0
+            else None
+        ),
         "capacity_gap_dwt": gap,
         "commercial_capacity_gap_dwt": gap,
         "trapped_loaded_dwt": trapped,
@@ -94,7 +109,13 @@ def aggregate_scenario(scenario: dict[str, Any], results: list[dict[str, Any]]) 
         "trapped_vessel_equivalent_warning": "Reference-class DWT equivalent, not an observed AIS vessel count.",
         "insurance_excluded_dwt": insurance_excluded,
         "commercially_unavailable_dwt": unavailable,
+        "commercially_unavailable_pct_of_affected_allocated": (
+            unavailable / allocated * 100.0 if allocated > 0 else None
+        ),
         "commercially_available_dwt": available,
+        "commercially_available_pct_of_affected_allocated": (
+            available / allocated * 100.0 if allocated > 0 else None
+        ),
         "served_cargo_tonnes_horizon": served_cargo,
         "backlog_cargo_tonnes_horizon": backlog,
         "rerouted_in_transit_cargo_tonnes_horizon": rerouted_in_transit,
@@ -104,6 +125,11 @@ def aggregate_scenario(scenario: dict[str, Any], results: list[dict[str, Any]]) 
         "weighted_traffic_change_pct": (deliverable - 1.0) * 100.0,
         "cargo_accounting_residual_tonnes": sum(
             row["cargo_accounting_residual_tonnes"] for row in affected
+        ),
+        "capacity_denominator_warning": (
+            "Affected allocated DWT is the sum of representative route-model "
+            "allocations, not an AIS-observed unique-vessel inventory. Relevant "
+            "global type fleet counts each affected ship type once."
         ),
     }
 
@@ -184,12 +210,16 @@ def build_ui_scenario_grid(
         "route_id",
         "ship_type",
         "baseline_required_dwt",
+        "allocated_dwt_with_reserve",
         "continuity_required_dwt",
         "operational_capacity_absorbed_dwt",
+        "operational_capacity_absorbed_pct_of_route_allocated",
         "commercial_capacity_gap_dwt",
         "trapped_loaded_dwt",
         "insurance_excluded_dwt",
         "commercially_available_dwt",
+        "commercially_unavailable_dwt",
+        "commercially_unavailable_pct_of_route_allocated",
         "served_flow_index",
         "traffic_change_pct",
         "served_cargo_tonnes_horizon",
@@ -695,6 +725,7 @@ def build_snapshot(
                     "reserve_margin": route["reserve_margin"],
                     "uncertainty": route.get("uncertainty", {}),
                 },
+                "operational_profile": route_operational_profile(route),
                 "chokepoints": route.get("chokepoints", []),
                 "baseline": {**baseline, "interval": baseline_interval},
                 "stress_tests": stress_results,

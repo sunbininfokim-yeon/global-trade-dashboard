@@ -120,11 +120,13 @@ python3 build_snapshot.py --fetch-portwatch \
 
 - `fleet.fleet_by_type[]`: 세계 선대 관측 기준.
 - `routes[].baseline`: 항로별 필요 DWT와 P10/P50/P90.
+- `routes[].operational_profile`: 정상 편도 거리·항해일·왕복주기와 초크포인트별 우회 추가 거리·추가 항해일. 모두 항로 설정 가정이며 실제 선사 스케줄이 아닙니다.
 - `routes[].stress_tests[]`: 진단 JSON에 해당 항로가 노출된 시나리오만 수록.
 - `routes[].stress_tests[].daily_flow_timeline[]`: 직접 도착·우회 출항/도착/항해 중·대기열 유입/해소·취소의 일별 stock-flow.
 - `routes[].live_observed[]`: 최근 7일 추정 교역량 감소율을 7일 항로 충격으로 적용한 결과. 관측창과 분석창이 모두 7일이며 물리적 봉쇄율이나 관측 DWT가 아닙니다.
 - `routes[].live_persistence_28d[]`: 같은 최근 7일 감소율이 28일 내내 지속된다고 가정한 별도 스트레스 시나리오. 관측 결과가 아닙니다.
 - `live_display[]`: UI가 그대로 읽는 관측 신호 계약. 호르무즈는 `추정 교역량 감소율 / 최근 7일 탱커 추정 교역량 기준 / 잔존 추정 교역량` 순서로 표시합니다.
+- `chokepoints_live[id].history[]`: PortWatch API의 일자·추정 교역량 관측값. 화면 JSON은 최근 180개 관측만 두고 `history_source_point_count`로 원본 730개 수집 여부를 표시하며, 진단 JSON에는 전체 이력을 보존합니다. 보간·예시값을 넣지 않습니다.
 - `live_data_quality`: 최신 관측의 7일 freshness 기준, stale·fallback 개수. stale 관측은 화면에 기준일과 경고를 함께 표시합니다.
 - `comtrade_routes`: 항로 입력 갱신 상태·기준연도·경로 수. 상세 출처와 불확실성은 각 `routes[].data_provenance`에 있습니다.
 - `comtrade_routes.history`: 2019–2024 수집 상태와 연도 범위. 상세 관측·품질오류·각 항로 first-to-last 변화율은 진단 JSON `comtrade_route_history`에만 둡니다.
@@ -133,6 +135,7 @@ python3 build_snapshot.py --fetch-portwatch \
 - `pdf_reports`: 마지막으로 성공한 공식 PDF의 checksum·문구 검증 상태. 화면에는 상태만, 추출 근거는 진단 JSON에 보관합니다.
 - `lng_fleet`: UNCTAD liquefied-gas carrier 합계와 LNG 전용 DWT의 식별 경계를 함께 표시합니다.
 - `ui_scenario_grid.rows[]`: 봉쇄율 0/25/50/75/80/100% × 지속일 7/14/28일의 Python 사전 계산 결과. 브라우저는 모델식을 재구현하지 않습니다.
+- `ui_scenario_grid.rows[].summary`: 추가 흡수 DWT와 함께 `affected_allocated_dwt_with_reserve` 및 `relevant_global_type_fleet_dwt` 두 분모와 각각의 비율을 제공합니다. 전자는 대표 항로 모델 배치량 합, 후자는 영향 선종의 세계 선대를 선종별 한 번만 합한 값입니다.
 - `event_response_profiles`: 운영제약·물리봉쇄·전쟁위험별 우회/대기/취소 행동 prior. 역사 사건으로 통항 강도는 보정했지만 이 행동 배수 자체는 관측계수가 아닙니다.
 - `historical_event_calibration.events[]`: 백테스트 JSON에 수에즈 2021·파나마 2023–24·홍해 2023–24·호르무즈 2026의 사건 평균/최대 7일 통항 위축, bootstrap 구간, placebo p-value와 회복일을 둡니다.
 - `scenario_signal_comparison[]`: PortWatch 추정 교역량 감소율과 시나리오 봉쇄율의 크기만 나란히 비교합니다. 두 값은 서로 다른 개념이며 경험적 보정이나 보험·억류 시드 검증으로 사용하지 않습니다.

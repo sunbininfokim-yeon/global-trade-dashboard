@@ -65,6 +65,101 @@ def route_cycle_days(route: dict[str, Any]) -> float:
     return (2.0 * distance / speed / 24.0) + port_days
 
 
+def route_operational_profile(route: dict[str, Any]) -> dict[str, Any]:
+    """Expose normal and chokepoint-detour transit assumptions transparently.
+
+    The route configuration already contains a normal one-way distance and a
+    chokepoint-specific extra distance.  The simulator uses those inputs to
+    calculate extra cycle capacity; this profile publishes the same arithmetic
+    for the UI without claiming a port-by-port schedule or observed voyage time.
+    """
+
+    distance = _number(
+        route["distance_nm_one_way"],
+        "distance_nm_one_way",
+        minimum=0.0,
+    )
+    speed = _number(route["speed_knots"], "speed_knots", minimum=0.01)
+    port_days = _number(
+        route.get("port_days_round_trip", 0),
+        "port_days_round_trip",
+        minimum=0.0,
+    )
+    baseline_sea_days_one_way = distance / speed / 24.0
+    baseline_cycle = route_cycle_days(route)
+    alternatives = []
+    for exposure in route.get("chokepoints", []):
+        reroute_available = bool(exposure.get("reroute_available", True))
+        extra_nm = _number(
+            exposure.get("reroute_extra_nm_one_way", 0),
+            "reroute_extra_nm_one_way",
+            minimum=0.0,
+        )
+        if not reroute_available:
+            extra_nm = 0.0
+        extra_days_one_way = extra_nm / speed / 24.0
+        extra_cycle_days = 2.0 * extra_days_one_way
+        alternatives.append(
+            {
+                "chokepoint_id": exposure["id"],
+                "reroute_available": reroute_available,
+                "baseline_distance_nm_one_way": distance,
+                "reroute_extra_nm_one_way": extra_nm if reroute_available else None,
+                "rerouted_distance_nm_one_way": (
+                    distance + extra_nm if reroute_available else None
+                ),
+                "baseline_sea_days_one_way": baseline_sea_days_one_way,
+                "reroute_extra_days_one_way": (
+                    extra_days_one_way if reroute_available else None
+                ),
+                "rerouted_sea_days_one_way": (
+                    baseline_sea_days_one_way + extra_days_one_way
+                    if reroute_available
+                    else None
+                ),
+                "baseline_cycle_days": baseline_cycle,
+                "reroute_extra_cycle_days": (
+                    extra_cycle_days if reroute_available else None
+                ),
+                "rerouted_cycle_days": (
+                    baseline_cycle + extra_cycle_days
+                    if reroute_available
+                    else None
+                ),
+                "cycle_increase_pct": (
+                    extra_cycle_days / baseline_cycle * 100.0
+                    if reroute_available and baseline_cycle > 0
+                    else None
+                ),
+                "exposure_share": _share(
+                    exposure.get("exposure_share", 1.0),
+                    "exposure_share",
+                ),
+                "input_status": "route_config_distance_assumption",
+                "warning": (
+                    "Distance/speed model assumption; not an observed schedule, "
+                    "port-call itinerary or carrier quotation."
+                ),
+            }
+        )
+    return {
+        "normal": {
+            "distance_nm_one_way": distance,
+            "speed_knots": speed,
+            "sea_days_one_way": baseline_sea_days_one_way,
+            "port_days_round_trip": port_days,
+            "cycle_days_round_trip": baseline_cycle,
+        },
+        "chokepoint_alternatives": alternatives,
+        "method": "configured nautical miles divided by service speed",
+        "input_status": "route_config_distance_assumption",
+        "warning": (
+            "Transit times are route-level assumptions and exclude named intermediate "
+            "port-call schedules unless explicitly represented in port_days_round_trip."
+        ),
+    }
+
+
 def _route_flow_profile(route: dict[str, Any]) -> dict[str, Any]:
     """Return the capacity-driving flow without double-counting a two-way service.
 
@@ -338,6 +433,7 @@ def simulate_route(
         "baseline_cycle_days": base_cycle,
         "baseline_required_dwt": baseline_required,
         "allocated_dwt_with_reserve": allocated_capacity,
+        "global_type_fleet_dwt": global_fleet,
         "route_share_of_type_fleet_pct": baseline_required / global_fleet * 100.0,
         "event_type": "normal",
         "effective_blockage_fraction": 0.0,
@@ -361,6 +457,8 @@ def simulate_route(
         "commercial_capacity_gap_dwt": 0.0,
         "disrupted_required_dwt": baseline_required,
         "operational_capacity_absorbed_dwt": 0.0,
+        "operational_capacity_absorbed_pct_of_route_allocated": 0.0,
+        "commercially_unavailable_pct_of_route_allocated": 0.0,
         "net_required_capacity_change_dwt": 0.0,
         "capacity_gap_dwt": 0.0,
         "global_type_fleet_absorption_pct": 0.0,
@@ -503,6 +601,16 @@ def simulate_route(
             # Backward-compatible aliases consumed by the current UI.
             "disrupted_required_dwt": continuity_required,
             "operational_capacity_absorbed_dwt": operational_absorbed,
+            "operational_capacity_absorbed_pct_of_route_allocated": (
+                operational_absorbed / allocated_capacity * 100.0
+                if allocated_capacity > 0
+                else 0.0
+            ),
+            "commercially_unavailable_pct_of_route_allocated": (
+                commercially_unavailable / allocated_capacity * 100.0
+                if allocated_capacity > 0
+                else 0.0
+            ),
             "net_required_capacity_change_dwt": continuity_required - baseline_required,
             "capacity_gap_dwt": commercial_capacity_gap,
             "global_type_fleet_absorption_pct": operational_absorbed / global_fleet * 100.0,

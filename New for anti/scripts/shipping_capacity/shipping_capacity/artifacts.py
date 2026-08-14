@@ -7,6 +7,9 @@ import json
 from typing import Any
 
 
+SCREEN_HISTORY_POINT_LIMIT = 180
+
+
 def _bundle_id(snapshot: dict[str, Any]) -> str:
     identity = {
         "generated_at": snapshot["generated_at"],
@@ -46,6 +49,7 @@ def _screen_route(route: dict[str, Any]) -> dict[str, Any]:
             "input_status",
             "annual_cargo_tonnes",
             "model_inputs",
+            "operational_profile",
         )
     } | {
         "baseline": {
@@ -54,22 +58,60 @@ def _screen_route(route: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+def _screen_chokepoints_live(
+    live_status: dict[str, dict[str, Any]],
+) -> dict[str, dict[str, Any]]:
+    """Keep the public screen artifact compact while diagnostics retain 730 days."""
+
+    screen_status: dict[str, dict[str, Any]] = {}
+    for chokepoint_id, status in live_status.items():
+        full_history = status.get("history", [])
+        history = (
+            full_history[-SCREEN_HISTORY_POINT_LIMIT:]
+            if isinstance(full_history, list)
+            else []
+        )
+        screen_status[chokepoint_id] = {
+            **status,
+            "history": history,
+            "history_point_count": len(history),
+            "history_source_point_count": (
+                len(full_history) if isinstance(full_history, list) else 0
+            ),
+            "history_screen_point_limit": SCREEN_HISTORY_POINT_LIMIT,
+        }
+    return screen_status
+
+
 def _screen_grid(grid: dict[str, Any]) -> dict[str, Any]:
     summary_fields = (
         "operational_capacity_absorbed_dwt",
+        "affected_allocated_dwt_with_reserve",
+        "relevant_global_type_fleet_dwt",
+        "operational_capacity_absorbed_pct_of_affected_allocated",
+        "operational_capacity_absorbed_pct_of_relevant_global_type_fleet",
         "commercial_capacity_gap_dwt",
+        "commercially_unavailable_dwt",
+        "commercially_unavailable_pct_of_affected_allocated",
+        "commercially_available_dwt",
+        "commercially_available_pct_of_affected_allocated",
         "backlog_cargo_tonnes_horizon",
         "rerouted_in_transit_cargo_tonnes_horizon",
         "trapped_loaded_dwt",
         "insurance_excluded_dwt",
         "lost_cargo_tonnes_horizon",
         "weighted_traffic_change_pct",
+        "capacity_denominator_warning",
     )
     route_fields = (
         "route_id",
         "baseline_required_dwt",
+        "allocated_dwt_with_reserve",
         "continuity_required_dwt",
         "operational_capacity_absorbed_dwt",
+        "operational_capacity_absorbed_pct_of_route_allocated",
+        "commercially_unavailable_dwt",
+        "commercially_unavailable_pct_of_route_allocated",
         "traffic_change_pct",
     )
     return {
@@ -172,7 +214,6 @@ def build_artifact_bundle(snapshot: dict[str, Any]) -> dict[str, dict[str, Any]]
                 "fleet",
                 "lng_fleet",
                 "chokepoints",
-                "chokepoints_live",
                 "live_display",
                 "live_fetch_errors",
                 "live_data_quality",
@@ -185,6 +226,9 @@ def build_artifact_bundle(snapshot: dict[str, Any]) -> dict[str, dict[str, Any]]
                 "pdf_reports",
             )
         },
+        "chokepoints_live": _screen_chokepoints_live(
+            snapshot.get("chokepoints_live", {})
+        ),
         "routes": [_screen_route(route) for route in routes],
         "ui_scenario_grid": _screen_grid(snapshot["ui_scenario_grid"]),
         "environment": _screen_environment(snapshot.get("environment", {})),
