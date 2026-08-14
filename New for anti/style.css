@@ -2765,6 +2765,7 @@ body.macro-mode .map-pane { flex: 1 1 100%; }
 .mm-swatch { display: inline-block; width: 10px; height: 10px; margin: 0 4px 0 8px; vertical-align: middle; }
 .mm-swatch-president { background: rgba(251,113,133,.45); }
 .mm-swatch-midterm   { background: rgba(148,163,184,.45); }
+.mm-swatch-synthetic { background: none; border-top: 1.6px dashed #64748b; height: 0; width: 14px; }
 
 /* Headline row is too narrow for the text pill -- same colors, as a dot. */
 .mm-headline-dot {
@@ -2831,6 +2832,11 @@ body.macro-mode .map-pane { flex: 1 1 100%; }
 .mm-drawer-actions { display: flex; align-items: center; gap: 8px; }
 .mm-chart { width: 100%; height: 210px; display: block; }
 .mm-line { fill: none; stroke: #38bdf8; stroke-width: 2; stroke-linejoin: round; vector-effect: non-scaling-stroke; }
+/* Fixture history glued to one real point (_pin_latest): muted/dashed run,
+   a divider where the fixture stops, and a marker on the one real value. */
+.mm-line-synthetic { stroke: #64748b; stroke-dasharray: 5 4; stroke-width: 1.6; opacity: .75; }
+.mm-real-divider { stroke: rgba(148,163,184,.4); stroke-width: 1; stroke-dasharray: 2 3; vector-effect: non-scaling-stroke; }
+.mm-real-point { fill: #38bdf8; stroke: #0b111e; stroke-width: 1.5; }
 .mm-dot { fill: #7dd3fc; stroke: #0b111e; stroke-width: 2; }
 .mm-axis { stroke: rgba(148,163,184,.22); stroke-width: 1; vector-effect: non-scaling-stroke; }
 .mm-tick { fill: #475569; font-size: 10px; font-family: inherit; }
@@ -2891,6 +2897,7 @@ body.macro-mode .map-pane { flex: 1 1 100%; }
 .mm-tip-val { display: block; font-size: 13px; font-weight: 620; color: #f1f5f9; font-variant-numeric: tabular-nums; }
 .mm-tip-ma { display: block; font-size: 10.5px; color: #fbbf24; }
 .mm-legend-note { font-size: 10.5px; color: #64748b; margin: 6px 0 0; display: flex; align-items: center; gap: 6px; }
+.mm-legend-warn { color: #fb7185; }
 .mm-swatch-ma { display: inline-block; width: 14px; height: 0; border-top: 1.6px dashed #fbbf24; }
 
 .ms-sub-h { font-size: 12px; font-weight: 620; color: #cbd5e1; margin: 16px 0 6px; }

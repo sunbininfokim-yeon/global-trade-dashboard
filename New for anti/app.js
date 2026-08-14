@@ -8854,13 +8854,14 @@ const mmLineChart = (dates, values, opts = {}) => {
     const sx = (i) => MM_L + (i / Math.max(n - 1, 1)) * (MM_W - MM_L - MM_R);
     const sy = (v) => MM_T + (1 - (v - lo) / (hi - lo)) * (MM_H - MM_T - MM_B);
 
-    const path = (arr) => {
+    const path = (arr, loI = 0, hiI = arr.length - 1) => {
         let dstr = '', pen = false;
-        arr.forEach((v, i) => {
-            if (!Number.isFinite(v)) { pen = false; return; }
+        for (let i = loI; i <= hiI; i++) {
+            const v = arr[i];
+            if (!Number.isFinite(v)) { pen = false; continue; }
             dstr += `${pen ? 'L' : 'M'}${sx(i).toFixed(1)},${sy(v).toFixed(1)}`;
             pen = true;
-        });
+        }
         return dstr;
     };
 
@@ -8871,6 +8872,17 @@ const mmLineChart = (dates, values, opts = {}) => {
     const ticks = [0, 0.25, 0.5, 0.75, 1].map((t) => lo + (hi - lo) * t);
     const xAt = [0, Math.floor((n - 1) / 2), n - 1];
     const bands = opts.electionBands ? mmUsElectionBands(dates) : [];
+
+    // _pin_latest() (macro_monitor/live_overlay.py) only overwrites the last
+    // realFromEnd points; everything before that is fixture_synth wearing the
+    // same "live_latest" badge. Drawing it as one uninterrupted line reads as
+    // a real trend -- or a real cliff, if the fixture tail happens to sit far
+    // from the one real value, which is exactly what on_rrp did. The synthetic
+    // run gets its own muted/dashed style and the real tail gets a marker, so
+    // the eye doesn't read a drop that never happened.
+    const realFromEnd = Number.isInteger(opts.realFromEnd) && opts.realFromEnd > 0 && opts.realFromEnd < n
+        ? opts.realFromEnd : null;
+    const realStartIdx = realFromEnd ? n - realFromEnd : null;
 
     return `
     <div class="mm-chart-box" data-mm-chart-box="1"
@@ -8894,7 +8906,13 @@ const mmLineChart = (dates, values, opts = {}) => {
             ${(lo < 0 && hi > 0) ? `<line x1="${MM_L}" y1="${sy(0).toFixed(1)}" x2="${MM_W - MM_R}" y2="${sy(0).toFixed(1)}" class="mm-zero"/>` : ''}
             <path d="${area}" fill="url(#mmg)"/>
             ${ma ? `<path d="${path(ma)}" class="mm-ma"/>` : ''}
-            <path d="${line}" class="mm-line"/>
+            ${realFromEnd ? `
+                <path d="${path(values, 0, realStartIdx)}" class="mm-line mm-line-synthetic"/>
+                <line x1="${sx(realStartIdx).toFixed(1)}" y1="${MM_T}" x2="${sx(realStartIdx).toFixed(1)}" y2="${MM_H - MM_B}" class="mm-real-divider"/>
+                <circle cx="${sx(n - 1).toFixed(1)}" cy="${sy(values[n - 1]).toFixed(1)}" r="4" class="mm-real-point">
+                    <title>실측값 (이전 구간은 합성)</title>
+                </circle>`
+                : `<path d="${line}" class="mm-line"/>`}
             ${xAt.map((i) => `<text x="${sx(i).toFixed(1)}" y="${MM_H - 8}" class="mm-tick"
                 text-anchor="${i === 0 ? 'start' : (i === n - 1 ? 'end' : 'middle')}">${finEsc(dates[i] || '')}</text>`).join('')}
             <line class="mm-cross" x1="0" y1="${MM_T}" x2="0" y2="${MM_H - MM_B}" style="display:none"/>
@@ -8905,6 +8923,9 @@ const mmLineChart = (dates, values, opts = {}) => {
         ${bands.length ? `<p class="mm-legend-note">
             <i class="mm-swatch mm-swatch-president"></i>대통령선거 직전 3개월
             <i class="mm-swatch mm-swatch-midterm"></i>중간선거 직전 3개월
+        </p>` : ''}
+        ${realFromEnd ? `<p class="mm-legend-note mm-legend-warn">
+            <i class="mm-swatch mm-swatch-synthetic"></i>회색 구간은 합성 데이터 · 마지막 점(●)만 실측치입니다
         </p>` : ''}
     </div>`;
 };
@@ -8936,10 +8957,14 @@ const mmBars = (rows, opts = {}) => {
 // pack carries the outcome ("관찰대상") but not the per-test figures, so the
 // tests are listed with their thresholds and each is marked 미공개 rather than
 // filled with a plausible number.
+// Thresholds as of the 2024-06 semiannual report ($20bn / 2% / 2%, verified
+// 2026-08-14) -- Treasury has moved these before (the trade-surplus bar was
+// $15bn in earlier vintages) and will again, so re-check against the current
+// report before trusting this without a date check.
 const MM_FX_WATCH_TESTS = [
-    { ko: '대미 무역흑자', rule: '150억 달러 이상', key: 'trade_surplus_bn' },
-    { ko: '경상수지 흑자', rule: 'GDP 대비 3% 이상', key: 'current_account_pct_gdp' },
-    { ko: '일방향 외환개입', rule: '12개월 중 8개월 순매수 · GDP 대비 2% 이상', key: 'fx_intervention_pct_gdp' },
+    { ko: '대미 무역흑자', rule: '200억 달러 이상', key: 'trade_surplus_bn' },
+    { ko: '경상수지 흑자', rule: 'GDP 대비 2% 이상', key: 'current_account_pct_gdp' },
+    { ko: '일방향 외환개입', rule: '지속적·일방향 순매수 · GDP 대비 2% 이상', key: 'fx_intervention_pct_gdp' },
 ];
 
 const mmFxWatchView = (ind) => {
@@ -9152,6 +9177,7 @@ const mmChartDrawer = () => {
             unit: src.unit === 'pct' ? '%' : (src.unit || ''),
             label: src.label_ko || ind.label_ko,
             electionBands: ind.id === 'tga',
+            realFromEnd: hist.real_points_from_end,
         });
     }
 
