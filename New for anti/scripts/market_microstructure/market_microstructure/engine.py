@@ -129,7 +129,7 @@ def build_snapshot(day: dict[str, Any], *, anchors: dict[str, Any] | None = None
                 if turn is None
                 else ("high" if turn >= 0.5 else "mid" if turn >= 0.2 else "low")
             ),
-            "note_ko": "LETF 거래대금이 현물 ADV에 육박하면 wag-the-dog; 롱/인버스 AUM·거래 비대칭이 리밸런싱 방향을 왜곡.",
+            "note_ko": "LETF 거래대금 ÷ 현물 당일 거래대금과 롱·인버스 AUM·거래 비중을 함께 기록한 관측 프록시입니다. 실제 리밸런싱 체결·가격 영향·투자자 포지션은 이 값만으로 확인할 수 없습니다.",
         }
 
         stocks_out.append(
