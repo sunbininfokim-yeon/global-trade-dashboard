@@ -30,6 +30,24 @@ class ShippingUiContractTests(unittest.TestCase):
             self.assertLessEqual(interval["p10"], interval["p50"])
             self.assertLessEqual(interval["p50"], interval["p90"])
 
+    def test_operating_service_detail_has_timing_inputs_and_container_directions(self) -> None:
+        """Keep the fields behind the route-detail UI from silently disappearing."""
+        for route in self.snapshot["routes"]:
+            inputs = route["model_inputs"]
+            self.assertGreater(inputs["distance_nm_one_way"], 0)
+            self.assertGreater(inputs["speed_knots"], 0)
+            self.assertGreaterEqual(inputs["port_days_round_trip"], 0)
+            self.assertGreater(route["baseline"]["baseline_cycle_days"], 0)
+
+        containers = [route for route in self.snapshot["routes"] if route["ship_type"] == "container"]
+        self.assertTrue(containers)
+        for route in containers:
+            directions = route["directions"]
+            self.assertGreaterEqual(len(directions), 2)
+            direction_ids = {row["id"] for row in directions}
+            self.assertIn(route["baseline"]["capacity_driver_direction_id"], direction_ids)
+            self.assertTrue(all(row["annual_cargo_tonnes"] > 0 for row in directions))
+
     def test_chokepoint_display_uses_the_declared_portwatch_metric(self) -> None:
         live_by_id = self.snapshot["chokepoints_live"]
         for display in self.snapshot["live_display"]:

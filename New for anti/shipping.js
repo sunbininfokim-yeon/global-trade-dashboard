@@ -18,8 +18,8 @@
     },
     shipping_routes: {
       eyebrow: 'ROUTE CAPACITY',
-      title: '항로별 선복량',
-      desc: '대표 항로가 묶어두는 선복량을 연간 화물톤·왕복주기·적재율로 역산한 추정치입니다. 세계 선대 관측 DWT와 직접 합산할 수 없습니다.'
+      title: '항로 운항 선복량',
+      desc: '특정 화물 흐름을 유지하려면 서비스에 얼마나 많은 선복량이 계속 배치돼야 하는지를 연간 화물톤·왕복주기·적재율로 역산합니다. 현재 선박 위치 목록이 아니며, 세계 선대 관측 DWT와 직접 합산할 수 없습니다.'
     },
     shipping_chokepoints: {
       eyebrow: 'CHOKEPOINT MONITOR',
@@ -40,7 +40,7 @@
 
   const VIEW_ORDER = [
     ['shipping_fleet', '글로벌 선대'],
-    ['shipping_routes', '항로별 선복량'],
+    ['shipping_routes', '항로 운항 선복량'],
     ['shipping_chokepoints', '초크포인트'],
     ['shipping_scenarios', '봉쇄 시뮬레이터'],
     ['shipping_environment', 'Net Zero']
@@ -132,6 +132,27 @@
     bosporus: '흑해의 유일한 출구. 우크라이나·러시아 곡물과 러시아산 원유가 이 해협을 거치며, 폭이 좁은 구간은 700m 남짓이라 기상·사고에 민감합니다.'
   };
 
+  // Geographic labels are static orientation aids, not live traffic points.
+  // They intentionally include only countries and well-known nearby ports so a
+  // reader can locate a passage without implying a detailed port-call model.
+  const CHOKEPOINT_MAP_LABELS = {
+    suez: [
+      [31.24, 30.82, '이집트'], [32.30, 31.27, 'Port Said'], [32.55, 29.97, 'Suez']
+    ],
+    panama: [
+      [-80.05, 8.90, '파나마'], [-79.90, 9.36, 'Colón'], [-79.52, 8.98, 'Panama City']
+    ],
+    bosporus: [
+      [29.00, 41.02, 'Istanbul'], [28.62, 40.63, '튀르키예']
+    ],
+    bab_el_mandeb: [
+      [43.15, 11.60, 'Djibouti'], [45.03, 12.79, 'Aden'], [43.00, 13.10, '예멘']
+    ],
+    hormuz: [
+      [56.35, 26.85, '이란'], [56.35, 25.15, 'Fujairah'], [55.45, 25.30, 'UAE'], [56.45, 26.25, '오만']
+    ]
+  };
+
   const statusMeta = status => INPUT_STATUS[status]
     || (String(status || '').startsWith('scenario_seed')
       ? ['시나리오 시드', 'scenario', '공공 화물량 연결 전의 초기 가정']
@@ -150,6 +171,33 @@
     }
     return '—';
   };
+
+  // These are presentation-only derivations from the engine's published route
+  // inputs. They do not re-run capacity or traffic calculations in the browser.
+  // Port days are deliberately labelled as a round-trip modelling assumption:
+  // the snapshot does not identify each individual port call.
+  const routeOperationalTiming = route => {
+    const input = route.model_inputs || {};
+    const distance = Number(input.distance_nm_one_way);
+    const speed = Number(input.speed_knots);
+    const portRoundTrip = Number(input.port_days_round_trip);
+    const seaOneWay = finite(distance) && finite(speed) && speed > 0
+      ? distance / speed / 24 : null;
+    const portOneWay = finite(portRoundTrip) ? portRoundTrip / 2 : null;
+    const oneWayTotal = finite(seaOneWay) && finite(portOneWay) ? seaOneWay + portOneWay : null;
+    const cycleDays = Number(route.baseline?.baseline_cycle_days);
+    return {
+      distance,
+      speed,
+      seaOneWay,
+      portRoundTrip,
+      portOneWay,
+      oneWayTotal,
+      cycleDays: finite(cycleDays) ? cycleDays : null
+    };
+  };
+
+  const formatDays = value => finite(value) ? `${formatNumber(value, 1)}일` : '—';
 
   // ------------------------------------------------------------- components
 
@@ -253,6 +301,14 @@
       paths = '';
     }
 
+    const labels = asArray(CHOKEPOINT_MAP_LABELS[point.id]).map(([labelLon, labelLat, label]) => {
+      const labelX = x(labelLon);
+      const labelY = y(labelLat);
+      if (labelX < 4 || labelX > W - 4 || labelY < 10 || labelY > H - 4) return '';
+      const anchor = labelX > W * 0.72 ? 'end' : labelX < W * 0.28 ? 'start' : 'middle';
+      return `<text x="${labelX.toFixed(1)}" y="${labelY.toFixed(1)}" text-anchor="${anchor}" class="shipping-minimap-label">${escapeHtml(label)}</text>`;
+    }).join('');
+
     host.innerHTML = `
       <svg viewBox="0 0 ${W} ${H}" class="shipping-minimap-svg" role="img"
            aria-label="${escapeHtml(point.name_ko)} 위치">
@@ -261,6 +317,7 @@
         <circle cx="${W / 2}" cy="${H / 2}" r="16" fill="none" stroke="#38bdf8" stroke-width="1" opacity="0.35" />
         <circle cx="${W / 2}" cy="${H / 2}" r="7" fill="#38bdf8" fill-opacity="0.25" stroke="#38bdf8" stroke-width="1.5" />
         <circle cx="${W / 2}" cy="${H / 2}" r="2.5" fill="#e0f2fe" />
+        ${labels}
       </svg>
       <p class="shipping-note">${formatNumber(Math.abs(lat), 2)}°${lat >= 0 ? 'N' : 'S'} · ${formatNumber(Math.abs(lon), 2)}°${lon >= 0 ? 'E' : 'W'}</p>`;
   };
@@ -500,16 +557,17 @@
           ['대표 항로', `${formatNumber(routes.length)}개`],
           ['최대 선형', `${formatNumber(teuCeiling / 1000, 0)}K TEU`],
           ['선형 구분', [...new Set(sorted.map(r => r.vessel_class_ko).filter(Boolean))].join(' · ') || '—'],
-          ['배치 선복량 합', formatDWT(sorted.reduce((s, r) => s + (r.baseline?.baseline_required_dwt || 0), 0))]
+          ['대표 항로 모델 배치량', formatDWT(sorted.reduce((s, r) => s + (r.baseline?.baseline_required_dwt || 0), 0))]
         ])
       : definitionRows([
           ['대표 항로', `${formatNumber(routes.length)}개`],
           ['선형 구분', [...new Set(sorted.map(r => r.vessel_class_ko).filter(Boolean))].join(' · ') || '—'],
-          ['배치 선복량 합', formatDWT(sorted.reduce((s, r) => s + (r.baseline?.baseline_required_dwt || 0), 0))]
+          ['대표 항로 모델 배치량', formatDWT(sorted.reduce((s, r) => s + (r.baseline?.baseline_required_dwt || 0), 0))]
         ]);
 
     return `
       ${isContainer ? '<div class="shipping-callout info"><strong>컨테이너선은 TEU로 셉니다.</strong> 박스 적재 능력이 곧 서비스 용량이라 스냅샷도 컨테이너 항로에는 DWT 대신 TEU 선형만 기록합니다. 아래 필요 선복량은 비교를 위해 DWT-equivalent로 환산한 값입니다.</div>' : ''}
+      <p class="shipping-note">대표 항로 모델 배치량은 각 항로의 필요량을 단순 합산한 참고값입니다. 하나의 선박 서비스가 복수 대표 흐름과 겹칠 수 있어 세계 선대와 합산하거나 점유율로 해석하면 안 됩니다.</p>
       <div class="shipping-grid two-columns" style="margin-top:16px">
         ${panel(isContainer ? 'CONTAINER ROUTES' : 'SEGMENT ROUTES', `${label} 대표 항로`, table(
           [
@@ -623,54 +681,160 @@
   };
 
   const renderRoutes = (data, root) => {
-    const routes = [...data.ui.routes]
+    const allRoutes = [...data.ui.routes]
       .sort((a, b) => (b.baseline?.baseline_required_dwt || 0) - (a.baseline?.baseline_required_dwt || 0));
-    const top = routes.slice(0, 12);
-    const observedCount = routes.filter(r => statusMeta(r.input_status)[1] === 'observed').length;
+    const FILTERS = [
+      ['all', '전체'],
+      ['tanker', '유조선'],
+      ['dry_bulk', '벌크선'],
+      ['container', '컨테이너선']
+    ];
+    let selectedType = 'all';
+    let selectedRouteId = null;
+    let routeChart = null;
 
-    const body = `
-      <div class="shipping-callout warning"><strong>항로 필요 선복량은 모델 추정치입니다.</strong> 연간 화물톤·왕복주기·적재율로 계산한 DWT-equivalent이며, 세계 선대 관측 DWT와 같은 종류의 수치가 아닙니다.</div>
-      <div class="shipping-kpi-grid">
-        ${kpi('대표 항로', `${formatNumber(routes.length)}개`, '용량 계산이 연결된 항로', { featured: true })}
-        ${kpi('관측 기반 입력', `${formatNumber(observedCount)}개`, '나머지는 배분·확장 추정')}
-        ${kpi('최대 필요 선복량', formatDWT(top[0]?.baseline?.baseline_required_dwt), escapeHtml(top[0]?.name_ko || ''))}
-      </div>
-      ${panel('ROUTE CAPACITY', '상위 항로 필요 선복량', '<div class="shipping-chart-wrap tall"><canvas id="shipping-routes-chart"></canvas></div>', badge('모델 추정', 'estimated', '화물톤 ÷ 왕복주기 ÷ 적재율'))}
-      ${panel('ALL ROUTES', '항로별 상세', table(
-        ['항로', '선종·선형', { label: '연간 화물량', align: 'right' }, { label: '필요 DWT', align: 'right' }, { label: 'P10–P90', align: 'right' }, '입력 성격'],
-        routes.map(route => {
-          const baseline = route.baseline || {};
-          const interval = baseline.interval?.baseline_required_dwt || {};
-          const [label, tier, note] = statusMeta(route.input_status);
+    const routeRows = routes => routes.map(route => {
+      const baseline = route.baseline || {};
+      const interval = baseline.interval?.baseline_required_dwt || {};
+      const [label, tier, note] = statusMeta(route.input_status);
+      const isSelected = selectedRouteId === route.id;
+      return `<tr class="shipping-route-row${isSelected ? ' is-active' : ''}" data-route-id="${escapeHtml(route.id)}" role="button" tabindex="0" aria-expanded="${isSelected}">
+        <td style="font-weight:500;color:#f1f5f9">${escapeHtml(route.name_ko || route.id)}<br><small style="color:#64748b">클릭하여 운항 서비스 상세 보기</small></td>
+        <td>${escapeHtml(SHIP_TYPE_LABELS[route.ship_type] || route.ship_type)}<br><small style="color:#64748b">${escapeHtml(route.vessel_class_ko || '—')} · ${formatReferenceSize(route.reference_size)}</small></td>
+        <td style="text-align:right">${formatTonnes(route.annual_cargo_tonnes)}</td>
+        <td style="text-align:right;font-weight:600">${formatDWT(baseline.baseline_required_dwt)}</td>
+        <td style="text-align:right;color:#94a3b8">${formatDWT(interval.p10)} – ${formatDWT(interval.p90)}</td>
+        <td>${badge(label, tier, note)}</td>
+      </tr>`;
+    }).join('');
+
+    const routeDetail = route => {
+      if (!route) return '';
+      const baseline = route.baseline || {};
+      const timing = routeOperationalTiming(route);
+      const directions = asArray(route.directions);
+      const driverId = baseline.capacity_driver_direction_id;
+      const isContainer = route.ship_type === 'container';
+      const flowRows = directions.length
+        ? directions.map(direction => {
+          const isDriver = direction.id === driverId;
+          const [inputLabel, inputTier, inputNote] = statusMeta(direction.input_status || route.input_status);
           return `<tr>
-            <td style="font-weight:500;color:#f1f5f9">${escapeHtml(route.name_ko || route.id)}</td>
-            <td>${escapeHtml(SHIP_TYPE_LABELS[route.ship_type] || route.ship_type)}<br><small style="color:#64748b">${escapeHtml(route.vessel_class_ko || '—')} · ${formatReferenceSize(route.reference_size)}</small></td>
-            <td style="text-align:right">${formatTonnes(route.annual_cargo_tonnes)}</td>
-            <td style="text-align:right;font-weight:600">${formatDWT(baseline.baseline_required_dwt)}</td>
-            <td style="text-align:right;color:#94a3b8">${formatDWT(interval.p10)} – ${formatDWT(interval.p90)}</td>
-            <td>${badge(label, tier, note)}</td>
+            <td style="font-weight:500;color:#f1f5f9">${escapeHtml(direction.name_ko || `${direction.origin || '—'} → ${direction.destination || '—'}`)}</td>
+            <td style="text-align:right">${formatTonnes(direction.annual_cargo_tonnes)}</td>
+            <td>${isDriver ? badge('필요 선복량 결정 흐름', 'estimated', '양방향 서비스 중 이 흐름의 화물량·적재율이 배치 선복량 산식에 사용됩니다.') : badge('반대 방향 흐름', 'neutral')}</td>
+            <td>${badge(inputLabel, inputTier, inputNote)}</td>
           </tr>`;
         }).join('')
-      ))}
-      <p class="shipping-note">P10–P90은 화물량·속도·적재율 입력 범위에서 계산된 불확실성 구간입니다.</p>`;
+        : `<tr><td style="font-weight:500;color:#f1f5f9">${escapeHtml(route.name_ko || route.id)}</td><td style="text-align:right">${formatTonnes(route.annual_cargo_tonnes)}</td><td>${badge('대표 단방향 화물 흐름', 'neutral')}</td><td>${badge(...statusMeta(route.input_status))}</td></tr>`;
+
+      return `
+        <section class="shipping-route-detail" id="shipping-route-detail" aria-live="polite">
+          <div class="shipping-route-detail-head">
+            <div>
+              <p class="shipping-panel-kicker">OPERATING SERVICE</p>
+              <h2>${escapeHtml(route.name_ko || route.id)}</h2>
+              <p>${escapeHtml(SHIP_TYPE_LABELS[route.ship_type] || route.ship_type)} · ${escapeHtml(route.vessel_class_ko || '—')} · ${formatReferenceSize(route.reference_size)}</p>
+            </div>
+            ${badge(isContainer ? '양방향 컨테이너 서비스' : '대표 화물 서비스', isContainer ? 'observed' : 'estimated')}
+          </div>
+          <div class="shipping-grid two-columns">
+            ${panel('NORMAL SERVICE CYCLE', '정상 운항시간', definitionRows([
+              ['편도 거리', finite(timing.distance) ? `${formatNumber(timing.distance)} nm` : '—'],
+              ['가정 항해속도', finite(timing.speed) ? `${formatNumber(timing.speed, 1)} kn` : '—'],
+              ['편도 해상 항해', formatDays(timing.seaOneWay)],
+              ['편도 항만·기항 체류 가정', formatDays(timing.portOneWay)],
+              ['편도 서비스 시간', formatDays(timing.oneWayTotal)],
+              ['왕복 운항주기', formatDays(timing.cycleDays)]
+            ]) + '<p class="shipping-note">해상 항해일은 거리 ÷ 속도로 표시합니다. 항만·기항 시간은 개별 항구 일정이 아니라 엔진의 왕복 가정값을 반으로 나눈 값입니다.</p>')}
+            ${panel('CAPACITY REQUIREMENT', '정상 배치 기준', definitionRows([
+              ['연간 대표 화물량', formatTonnes(route.annual_cargo_tonnes)],
+              ['적재율 가정', formatPct(Number(route.model_inputs?.utilization) * 100, 0)],
+              ['예비 선복 여유', formatPct(Number(route.model_inputs?.reserve_margin) * 100, 0)],
+              ['정상 필요 DWT', formatDWT(baseline.baseline_required_dwt)],
+              ['여유 포함 배치 DWT', formatDWT(baseline.allocated_dwt_with_reserve)],
+              ['동 선종 세계 선대 대비', formatPct(baseline.route_share_of_type_fleet_pct, 2)]
+            ]) + '<p class="shipping-note">필요 DWT는 해당 서비스가 연간 화물 흐름을 유지하기 위한 모델상 배치량입니다. 실제 특정 선박의 위치·계약 목록이 아닙니다.</p>')}
+          </div>
+          ${panel(isContainer ? 'DIRECTIONAL FLOWS' : 'CARGO FLOW', isContainer ? '방향별 화물 흐름과 용량 결정 방향' : '대표 화물 흐름', table(
+            ['방향', { label: '연간 화물량', align: 'right' }, '서비스 역할', '입력 성격'], flowRows
+          ), isContainer ? badge('TEU 선형 · DWT-equivalent 산식', 'estimated') : badge('대표 화물 항로', 'estimated'))}
+        </section>`;
+    };
+
+    const body = `
+      <div class="shipping-callout warning"><strong>항로 운항 선복량은 모델 추정치입니다.</strong> 연간 화물톤·왕복주기·적재율로 계산한 DWT-equivalent입니다. 현재 선박이 어디에 있는지를 세는 화면도, 세계 선대 관측 DWT를 그대로 나눠 갖는 화면도 아닙니다.</div>
+      <div class="shipping-route-filter" role="tablist" aria-label="선종별 항로 운항 서비스">
+        ${FILTERS.map(([id, label]) => `<button type="button" class="shipping-route-filter-button${id === selectedType ? ' is-active' : ''}" data-route-type="${id}" role="tab" aria-selected="${id === selectedType}">${label}</button>`).join('')}
+      </div>
+      <div id="shipping-route-results"></div>`;
 
     root.innerHTML = pageShell('shipping_routes', body, data);
+    const result = root.querySelector('#shipping-route-results');
 
-    createChart(root, 'shipping-routes-chart', {
-      type: 'bar',
-      data: {
-        labels: top.map(route => (route.name_ko || route.id).replace(' → ', '→')),
-        datasets: [{
-          label: '필요 선복량',
-          data: top.map(route => (route.baseline?.baseline_required_dwt || 0) / 1e6),
-          backgroundColor: top.map(route => SHIP_TYPE_COLORS[route.ship_type] || SHIP_TYPE_COLORS.other),
-          borderRadius: 5,
-          borderSkipped: false,
-          barThickness: 16
-        }]
-      },
-      options: chartOptions({ horizontal: true, unit: 'M DWT' })
+    const renderResult = () => {
+      const routes = allRoutes.filter(route => selectedType === 'all' || route.ship_type === selectedType);
+      const top = routes.slice(0, 12);
+      const observedCount = routes.filter(r => statusMeta(r.input_status)[1] === 'observed').length;
+      if (selectedRouteId && !routes.some(route => route.id === selectedRouteId)) selectedRouteId = null;
+      const selectedRoute = routes.find(route => route.id === selectedRouteId);
+
+      result.innerHTML = `
+        <div class="shipping-kpi-grid">
+          ${kpi('대표 항로', `${formatNumber(routes.length)}개`, `${selectedType === 'all' ? '전체' : SHIP_TYPE_LABELS[selectedType]} 서비스`, { featured: true })}
+          ${kpi('관측 기반 입력', `${formatNumber(observedCount)}개`, '나머지는 배분·확장 추정')}
+          ${kpi('최대 필요 선복량', formatDWT(top[0]?.baseline?.baseline_required_dwt), escapeHtml(top[0]?.name_ko || '—'))}
+          ${kpi('표시 단위', selectedType === 'container' ? 'TEU 선형 + DWT-e' : 'DWT-equivalent', selectedType === 'container' ? '선형은 TEU, 필요량은 비교용 환산값' : '서비스 필요량을 DWT로 표현')}
+        </div>
+        ${panel('ROUTE CAPACITY', `${selectedType === 'all' ? '상위 항로' : SHIP_TYPE_LABELS[selectedType]} 필요 선복량`, '<div class="shipping-chart-wrap tall"><canvas id="shipping-routes-chart"></canvas></div>', badge('모델 추정', 'estimated', '화물톤 ÷ 왕복주기 ÷ 적재율'))}
+        ${panel('OPERATING SERVICES', '선종별 운항 서비스', table(
+          ['항로', '선종·선형', { label: '연간 화물량', align: 'right' }, { label: '필요 DWT', align: 'right' }, { label: 'P10–P90', align: 'right' }, '입력 성격'], routeRows(routes)
+        ))}
+        <p class="shipping-note">행을 클릭하면 정상 운항시간과 화물 흐름을 봅니다. P10–P90은 화물량·속도·적재율 입력 범위의 불확실성 구간입니다.</p>
+        ${routeDetail(selectedRoute)}`;
+
+      if (routeChart) { try { routeChart.destroy(); } catch (_) { /* canvas removed */ } }
+      routeChart = createChart(result, 'shipping-routes-chart', {
+        type: 'bar',
+        data: {
+          labels: top.map(route => (route.name_ko || route.id).replaceAll(' → ', '→').replaceAll(' ↔ ', '↔')),
+          datasets: [{
+            label: '필요 선복량',
+            data: top.map(route => (route.baseline?.baseline_required_dwt || 0) / 1e6),
+            backgroundColor: top.map(route => SHIP_TYPE_COLORS[route.ship_type] || SHIP_TYPE_COLORS.other),
+            borderRadius: 5,
+            borderSkipped: false,
+            barThickness: 16
+          }]
+        },
+        options: chartOptions({ horizontal: true, unit: 'M DWT' })
+      });
+
+      result.querySelectorAll('[data-route-id]').forEach(row => {
+        const run = () => {
+          selectedRouteId = selectedRouteId === row.dataset.routeId ? null : row.dataset.routeId;
+          renderResult();
+          if (selectedRouteId) root.querySelector('#shipping-route-detail')?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        };
+        row.addEventListener('click', run);
+        row.addEventListener('keydown', event => {
+          if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); run(); }
+        });
+      });
+    };
+
+    root.querySelectorAll('[data-route-type]').forEach(button => {
+      button.addEventListener('click', () => {
+        selectedType = button.dataset.routeType;
+        root.querySelectorAll('[data-route-type]').forEach(item => {
+          const active = item.dataset.routeType === selectedType;
+          item.classList.toggle('is-active', active);
+          item.setAttribute('aria-selected', String(active));
+        });
+        renderResult();
+      });
     });
+    renderResult();
   };
 
   const renderChokepoints = (data, root) => {
@@ -841,7 +1005,7 @@
   const SCENARIO_METRIC_NOTES = {
     absorbed: ['추가 흡수 선복량', '봉쇄로 우회하거나 대기하면서 <strong>추가로 묶이는 선복량</strong>입니다. 같은 화물을 나르는 데 배가 더 오래 매여 있으니, 그만큼 시장에서 빠집니다. 선박이 사라지는 것이 아니라 회전이 느려지는 몫입니다.'],
     gap: ['상업적 선복 갭', '위 흡수량 중 <strong>예비 선복으로 흡수되지 못하고 남는 부족분</strong>입니다. 선사가 통상 유지하는 여유분을 넘어선 순간부터 운임에 압력이 생깁니다.'],
-    backlog: ['기간 말 백로그', '분석 지평이 끝나는 시점에 <strong>아직 실려나가지 못한 화물</strong>입니다. 봉쇄가 풀려도 이 물량이 해소되기까지 시간이 더 걸립니다.'],
+    backlog: ['분석 종료 시 미도착 화물', '분석 지평이 끝나는 시점에 <strong>아직 실려나가지 못했거나 도착하지 못한 화물</strong>입니다. 봉쇄가 풀려도 이 물량이 해소되기까지 시간이 더 걸립니다.'],
     trapped: ['선적 후 억류 DWT', '화물을 실은 채 통로 안쪽에 <strong>묶인 선복량</strong>입니다. 대표 선형 DWT로 환산한 값이며, AIS로 센 실제 척수가 아닙니다.'],
     insurance: ['보험 제외 DWT', '전쟁위험 보험·안전 정책 때문에 <strong>해당 구간에 투입할 수 없다고 가정한 선복량</strong>입니다. 관측이 아니라 시나리오 가정입니다.'],
     traffic: ['트래픽 변화', '영향 항로 전체에서 <strong>실제로 배송 가능한 화물 흐름의 변화율</strong>입니다. 필요 선복량 대비 실제 공급 가능량을 화물 기준으로 가중평균한 값입니다.']
@@ -850,7 +1014,7 @@
   const scenarioKpis = summary => `<div class="shipping-kpi-grid scenario-kpis">
     ${kpi('추가 흡수 선복량', formatDWT(summary.operational_capacity_absorbed_dwt), '우회 + 대기', { key: 'absorbed' })}
     ${kpi('상업적 선복 갭', formatDWT(summary.commercial_capacity_gap_dwt), '예비분 초과 부족', { key: 'gap' })}
-    ${kpi('기간 말 백로그', formatTonnes(summary.backlog_cargo_tonnes_horizon), '미운송 화물', { key: 'backlog' })}
+    ${kpi('분석 종료 시 미도착 화물', formatTonnes(summary.backlog_cargo_tonnes_horizon), '미운송·미도착 화물', { key: 'backlog' })}
     ${kpi('선적 후 억류 DWT', formatDWT(summary.trapped_loaded_dwt), 'AIS 실제 척수 아님', { key: 'trapped' })}
     ${kpi('보험 제외 DWT', formatDWT(summary.insurance_excluded_dwt), '보험·안전 제약 가정', { key: 'insurance' })}
     ${kpi('트래픽 변화', formatPct(summary.weighted_traffic_change_pct, 1), '배송가능 흐름', { key: 'traffic' })}
@@ -905,33 +1069,34 @@
           ['실효 봉쇄율', formatPct(Number(summary.closure_fraction) * 100, 0)],
           ['잔존 통항률', formatPct(Number(summary.residual_throughput_rate) * 100, 0)],
           ['지속기간', `${formatNumber(summary.duration_days, 0)}일`],
-          ['기간 말 백로그', formatTonnes(summary.backlog_cargo_tonnes_horizon)],
+          ['분석 종료 시 미도착 화물', formatTonnes(summary.backlog_cargo_tonnes_horizon)],
           ['보험 제외 DWT', formatDWT(summary.insurance_excluded_dwt)]
         ])}
       </article>`).join('');
 
     const body = `
       <div class="shipping-callout warning"><strong>봉쇄 충격은 가정 기반 시나리오입니다.</strong> PortWatch 관측 신호와 물리 봉쇄율을 동일시하지 않으며, 보험 제외·억류·우회는 공개 AIS 원장이 아닌 명시된 모델 가정입니다.</div>
-      ${panel('SHOCK SIMULATOR', '사전 계산 시나리오 조회', `
+      ${panel('SHOCK SIMULATOR', '사전 계산 사건 설정 조회', `
         <div class="shipping-simulator-controls">
-          <label>기준 시나리오
+          <label>초크포인트·사건 설정
             <select id="shipping-scenario-preset" class="shipping-select">
               ${baseScenarios.map(item => `<option value="${escapeHtml(item.id)}"${item.id === initial.id ? ' selected' : ''}>${escapeHtml(item.name_ko || item.id)}</option>`).join('')}
             </select>
           </label>
-          <label>봉쇄율
+          <label>실효 봉쇄율
             <select id="shipping-closure-select" class="shipping-select">
               ${closureOptions.map(v => `<option value="${v}"${v === initialClosure ? ' selected' : ''}>${v}%</option>`).join('')}
             </select>
           </label>
-          <label>지속기간
+          <label>제약 지속 기간
             <select id="shipping-duration-select" class="shipping-select">
               ${durationOptions.map(v => `<option value="${v}"${v === initialDuration ? ' selected' : ''}>${v}일</option>`).join('')}
             </select>
           </label>
         </div>
+        <p class="shipping-note">실효 봉쇄율은 이 사건 설정에서 통과하지 못한다고 가정한 흐름의 비율입니다. 지속 기간은 그 제약이 이어지는 일수이며, 분석 지평 안에서 대기·우회·미도착 화물이 누적되는 방식에 영향을 줍니다.</p>
         <div id="shipping-scenario-result"></div>`)}
-      ${panel('SCENARIO SUMMARY', '기준 시나리오 전체 영향', `<div class="shipping-grid" style="grid-template-columns:repeat(auto-fit,minmax(260px,1fr))">${summaryCards}</div>`)}`;
+      ${panel('SCENARIO SUMMARY', '사전 정의 사건 설정별 영향', `<div class="shipping-grid" style="grid-template-columns:repeat(auto-fit,minmax(260px,1fr))">${summaryCards}</div>`)}`;
 
     root.innerHTML = pageShell('shipping_scenarios', body, data);
 
@@ -960,7 +1125,7 @@
         ${routes.length ? `
           <div class="shipping-chart-wrap" style="margin-top:18px"><canvas id="shipping-scenario-chart"></canvas></div>
           ${table(
-            ['영향 항로', { label: '정상 필요 DWT', align: 'right' }, { label: '충격 후 필요 DWT', align: 'right' }, { label: '트래픽', align: 'right' }],
+            ['영향 항로', { label: '정상 필요 DWT', align: 'right' }, { label: '연속 운항 필요 DWT', align: 'right' }, { label: '트래픽', align: 'right' }],
             routes.map(r => `<tr>
               <td>${escapeHtml(nameById.get(r.route_id) || r.route_id)}</td>
               <td style="text-align:right;color:#94a3b8">${formatDWT(r.baseline_required_dwt)}</td>
@@ -984,7 +1149,7 @@
                 barThickness: 14
               },
               {
-                label: '충격 후 필요 DWT',
+                label: '연속 운항 필요 DWT',
                 data: routes.map(r => (r.continuity_required_dwt || 0) / 1e6),
                 backgroundColor: '#38bdf8',
                 borderRadius: 4,
