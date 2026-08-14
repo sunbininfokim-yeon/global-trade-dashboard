@@ -23,7 +23,7 @@
       "put_call_oi": 2.1516,
       "options_total_volume": 287365.0,
       "short_chg_pct": 68.566,
-      "day_return": 0.0,
+      "day_return": 0.004989,
       "rule_ko": "풋/콜 거래량비 ≥1.1 이고 (당일 약세 또는 풋/콜 OI≥1.0) → downside_put_bid"
     },
     {
@@ -36,7 +36,7 @@
       "put_call_oi": 1.9767,
       "options_total_volume": 171584.0,
       "short_chg_pct": -31.45,
-      "day_return": 0.001494,
+      "day_return": 0.002311,
       "rule_ko": "풋/콜 거래량비 ≥1.1 이고 (당일 약세 또는 풋/콜 OI≥1.0) → downside_put_bid"
     }
   ],
@@ -93,7 +93,7 @@
     },
     "upside": {
       "level": "quiet",
-      "heat": 0.435,
+      "heat": 0.5877,
       "kr_tickers": [
         "000660",
         "005930"
@@ -118,12 +118,22 @@
           "regimes": [
             "quiet"
           ]
+        },
+        {
+          "us": "EWY",
+          "kr": "000660",
+          "heat": 0.1527,
+          "edge_type": "discovered_corr",
+          "tier": "B",
+          "regimes": [
+            "quiet"
+          ]
         }
       ]
     },
     "vol_up": {
       "level": "high",
-      "heat": 3.5344,
+      "heat": 2.7672,
       "kr_tickers": [
         "000660",
         "005930"
@@ -149,16 +159,6 @@
           "regimes": [
             "vol_long_straddle",
             "vol_short_strangle"
-          ]
-        },
-        {
-          "us": "EWY",
-          "kr": "000660",
-          "heat": 0.4072,
-          "edge_type": "discovered_corr",
-          "tier": "B",
-          "regimes": [
-            "vol_long_straddle"
           ]
         },
         {
@@ -209,16 +209,6 @@
           "kr": "000660",
           "heat": 0.36,
           "edge_type": "demand_ai_gpu",
-          "tier": "A",
-          "regimes": [
-            "vol_long_straddle"
-          ]
-        },
-        {
-          "us": "EWY",
-          "kr": "005930",
-          "heat": 0.36,
-          "edge_type": "korea_country",
           "tier": "A",
           "regimes": [
             "vol_long_straddle"
@@ -392,22 +382,6 @@
       "us_stress_level": "quiet"
     },
     {
-      "edge_id": "disc_ewy_000660",
-      "us": "EWY",
-      "kr": "000660",
-      "edge_type": "discovered_corr",
-      "tier": "B",
-      "quality": "estimated",
-      "channel": "vol_up",
-      "weight": 0.509,
-      "us_score": 0.8,
-      "heat": 0.4072,
-      "us_regimes": [
-        "vol_long_straddle"
-      ],
-      "us_stress_level": "quiet"
-    },
-    {
       "edge_id": "tsm_samsung_peer",
       "us": "TSM",
       "kr": "005930",
@@ -479,22 +453,6 @@
       "us": "AMD",
       "kr": "000660",
       "edge_type": "demand_ai_gpu",
-      "tier": "A",
-      "quality": "structural",
-      "channel": "vol_up",
-      "weight": 0.45,
-      "us_score": 0.8,
-      "heat": 0.36,
-      "us_regimes": [
-        "vol_long_straddle"
-      ],
-      "us_stress_level": "quiet"
-    },
-    {
-      "edge_id": "ewy_korea_beta",
-      "us": "EWY",
-      "kr": "005930",
-      "edge_type": "korea_country",
       "tier": "A",
       "quality": "structural",
       "channel": "vol_up",
@@ -618,6 +576,22 @@
       "weight": 0.55,
       "us_score": 0.3,
       "heat": 0.165,
+      "us_regimes": [
+        "quiet"
+      ],
+      "us_stress_level": "quiet"
+    },
+    {
+      "edge_id": "disc_ewy_000660",
+      "us": "EWY",
+      "kr": "000660",
+      "edge_type": "discovered_corr",
+      "tier": "B",
+      "quality": "estimated",
+      "channel": "upside",
+      "weight": 0.509,
+      "us_score": 0.3,
+      "heat": 0.1527,
       "us_regimes": [
         "quiet"
       ],
@@ -817,23 +791,23 @@
       "open_overnight": {
         "baseline": {
           "label": "all",
-          "n": 245,
-          "mean": 0.006996,
-          "median": 0.002451,
-          "p10": -0.038785,
-          "p90": 0.057715,
-          "frac_neg": 0.4776,
-          "frac_pos": 0.5224
+          "n": 248,
+          "mean": 0.007219,
+          "median": 0.002561,
+          "p10": -0.039705,
+          "p90": 0.059661,
+          "frac_neg": 0.4758,
+          "frac_pos": 0.5242
         },
         "vix_up": {
           "label": "vix_up",
-          "n": 51,
-          "mean": -0.019146,
-          "median": -0.025358,
-          "p10": -0.054618,
-          "p90": 0.018587,
-          "frac_neg": 0.7255,
-          "frac_pos": 0.2745
+          "n": 52,
+          "mean": -0.019028,
+          "median": -0.024476,
+          "p10": -0.054548,
+          "p90": 0.018412,
+          "frac_neg": 0.7308,
+          "frac_pos": 0.2692
         }
       },
       "quality": "estimated"

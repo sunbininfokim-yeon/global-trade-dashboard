@@ -6,8 +6,8 @@ Sources: cboe_vol_indices, finra_short, cboe_spot, yahoo_spot_options_fallback, 
 
 ## Channels
 - downside: high heat=4.3065 kr=['000660', '005930']
-- upside: quiet heat=0.435 kr=['000660', '005930']
-- vol_up: high heat=3.5344 kr=['000660', '005930']
+- upside: quiet heat=0.5877 kr=['000660', '005930']
+- vol_up: high heat=2.7672 kr=['000660', '005930']
 - vol_down: watch heat=1.5126 kr=['000660', '005930']
 
 ## Hit-rate (overnight open, any driver ≤−2%)
