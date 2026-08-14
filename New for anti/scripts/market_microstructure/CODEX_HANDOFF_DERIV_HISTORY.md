@@ -84,3 +84,13 @@ UI에서 시계열 차트를 못 그림. 아래 3개 히스토리 파일을 일�
 - 수급 불균형 탭 D 섹션: LETF 비율이 있는 모든 종목 행에 "추이" 버튼 (하닉은 알림-레벨 버킷 모달,
   그 외 — 지금은 삼성전자 — 는 `stock_letf:<ticker>` 제네릭 추이 모달로 라우팅)
 - 추정·부분 관측(quality ≠ observed)은 실측과 별도로 카운트해 각주에 표시
+
+## 구현 경로 (Codex data pipeline)
+
+- `append_derivatives_history.py`가 두 일일 스냅샷에서 위 세 로그를 생성·검증한다.
+- `run_daily.sh`는 `build_market_microstructure.py` → `build_derivatives_board.py` →
+  `append_derivatives_history.py` 순서로 실행해야 한다.
+- 최초 커밋에는 실제 최신 관측치만 들어가며, 2거래일 전까지 UI는 의도대로
+  “히스토리 축적 중”을 표시한다. 과거 그래프를 채우기 위한 데모 백필은 금지한다.
+- GitHub Actions의 스케줄·`KRX_API` Secret 연결과 배포는 UI/배포 소유자가 이 스크립트를
+  실행하도록 설정한다. 이 스크립트는 Secret을 읽거나 출력하지 않는다.

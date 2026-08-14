@@ -45,8 +45,30 @@ def _key() -> str | None:
 
 def _bas_dd(day: str | None = None) -> str:
     if day:
-        return day.replace("-", "")
+        compact = day.replace("-", "")
+        if not re.fullmatch(r"\d{8}", compact):
+            raise ValueError(f"basDd must be YYYYMMDD, got {day}")
+        return compact
     return (datetime.now() - timedelta(days=1)).strftime("%Y%m%d")
+
+
+def derivative_day_candidates(
+    bas_dd: str | None = None,
+    *,
+    now: datetime | None = None,
+    max_lookback: int = 10,
+) -> list[str]:
+    """Requested KRX day, or recent candidates for weekends/market holidays.
+
+    KRX derivatives EOD normally lags the close, so the automatic run starts
+    at yesterday.  On Monday that first candidate is Sunday; probing backwards
+    avoids silently losing Friday's observation.  An explicit ``bas_dd`` is
+    never rewritten, which keeps manual historical reruns reproducible.
+    """
+    if bas_dd:
+        return [_bas_dd(bas_dd)]
+    ref = now or datetime.now()
+    return [(ref - timedelta(days=offset)).strftime("%Y%m%d") for offset in range(1, max_lookback + 1)]
 
 
 def krx_drv(endpoint: str, bas_dd: str) -> list[dict[str, Any]]:
@@ -289,20 +311,36 @@ def fetch_kr_derivatives_bundle(
     opt_agg = {"quality": "missing"}
 
     if _key():
-        try:
-            fut_rows = krx_drv("fut_bydd_trd", day)
-            futures_activity = aggregate_k200_futures_activity(fut_rows)
-            sources.append("krx_fut_bydd_trd")
-        except Exception as e:  # noqa: BLE001
-            errors.append(f"fut:{e}")
-        try:
-            opt_rows = krx_drv("opt_bydd_trd", day)
-            opt_agg = aggregate_k200_options_activity(opt_rows)
+        candidates = derivative_day_candidates(bas_dd)
+        for candidate in candidates:
+            try:
+                fut_rows = krx_drv("fut_bydd_trd", candidate)
+                opt_rows = krx_drv("opt_bydd_trd", candidate)
+            except Exception as e:  # noqa: BLE001
+                # An auth/subscription failure will not improve on a prior day;
+                # keep one actionable error instead of sending repeated calls.
+                errors.append(f"derivatives:{e}")
+                break
+            candidate_futures = aggregate_k200_futures_activity(fut_rows)
+            candidate_options = aggregate_k200_options_activity(opt_rows)
+            if (
+                candidate_futures.get("quality") != "observed"
+                or candidate_options.get("quality") != "observed"
+            ):
+                continue
+            day = candidate
+            futures_activity = candidate_futures
+            opt_agg = candidate_options
             opt_agg["source"] = "KRX OpenAPI drv/opt_bydd_trd"
             opt_agg["bas_dd"] = day
-            sources.append("krx_opt_bydd_trd")
-        except Exception as e:  # noqa: BLE001
-            errors.append(f"opt:{e}")
+            sources.extend(("krx_fut_bydd_trd", "krx_opt_bydd_trd"))
+            break
+        if futures_activity.get("quality") != "observed" or opt_agg.get("quality") != "observed":
+            if not errors:
+                errors.append(
+                    "derivatives:no usable KOSPI200 futures/options EOD rows in "
+                    + ", ".join(candidates)
+                )
     else:
         errors.append("KRX_API unset — KRX OpenAPI EOD futures/options activity not fetched")
 
