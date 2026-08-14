@@ -40,20 +40,44 @@ def parse_close_krw(s: Any) -> float | None:
 
 
 def fetch_naver_investor_trend(ticker: str, *, page_size: int = 60) -> list[dict[str, Any]]:
+    """Daily investor net-buying rows, newest first.
+
+    Naver caps a single request at 60 rows -- pageSize=90 is a hard 400, and
+    `page` is accepted but ignored (page=2 returns the same newest 60). The
+    only way further back is `bizdate`, which returns the 60 rows *before* that
+    date, so a longer window is walked one 60-row page at a time.
+    """
     import requests
 
     url = f"https://m.stock.naver.com/api/stock/{ticker}/trend"
-    r = requests.get(
-        url,
-        params={"pageSize": page_size},
-        headers={"User-Agent": "Mozilla/5.0"},
-        timeout=30,
-    )
-    r.raise_for_status()
-    data = r.json()
-    if not isinstance(data, list):
-        raise ValueError(f"unexpected trend payload for {ticker}: {type(data)}")
-    return data
+    headers = {"User-Agent": "Mozilla/5.0"}
+    out: list[dict[str, Any]] = []
+    seen: set[str] = set()
+    bizdate: str | None = None
+
+    while len(out) < page_size:
+        params: dict[str, Any] = {"pageSize": 60}
+        if bizdate:
+            params["bizdate"] = bizdate
+        r = requests.get(url, params=params, headers=headers, timeout=30)
+        r.raise_for_status()
+        data = r.json()
+        if not isinstance(data, list):
+            raise ValueError(f"unexpected trend payload for {ticker}: {type(data)}")
+
+        fresh = [row for row in data if row.get("bizdate") not in seen]
+        if not fresh:
+            break                       # walked past the start of the history
+        for row in fresh:
+            seen.add(row.get("bizdate"))
+        out.extend(fresh)
+
+        oldest = fresh[-1].get("bizdate")
+        if not oldest:
+            break
+        bizdate = oldest                # next page ends just before this row
+
+    return out[:page_size]
 
 
 def fetch_ohlc_panel(ticker: str, start: str) -> pd.DataFrame:

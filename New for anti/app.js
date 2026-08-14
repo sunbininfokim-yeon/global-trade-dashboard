@@ -7524,7 +7524,7 @@ let MS_TICKER = null;         // 가격대별 탭에서 선택한 종목 (null =
 let MS_STOCK = null;          // 수급 꼬임 탭에서 선택한 종목
 let MS_MODAL = null;          // { title, html }
 let MS_MODAL_KEY = null;      // 열려 있는 모달의 키 (기간 전환 시 재렌더용)
-let MS_PERIOD = '1m';         // 가격대별 표시 구간 — 1m / 2m / all
+let MS_PERIOD = '3m';         // 가격대별 표시 구간 — 1m / 2m / 3m / 6m / all
 let MS_CREDIT_ON = false;     // 가격대별 탭에서 예탁·신용 추이를 펼쳤는지
 
 const msGet = async (name) => {
@@ -7777,10 +7777,16 @@ const msPriceLevelChart = (pts, rows, opts = {}) => {
     pts.forEach((d, i) => { line += `${pen ? 'L' : 'M'}${sx(i).toFixed(1)},${sy(d.close).toFixed(1)}`; pen = true; });
 
     // Credit rides the same date axis as the close line, so a deposit drain and
-    // the index move it paid for line up vertically. It needs its own right
-    // scale, and that scale has to be log: 예탁금 ~100조 against 미수금 ~0.9조
-    // is over 100x, and on a linear axis 미수금 is a flat line on the floor --
-    // which is exactly the series whose *slope* signals forced selling.
+    // the index move it paid for line up vertically.
+    //
+    // Each series gets its OWN vertical range rather than a shared one. A shared
+    // axis -- linear or log -- has to span 예탁금 ~127조 down to 미수금 ~1.9조,
+    // and inside that span 신용융자 falling 38조 -> 27조 is a barely-tilted line,
+    // even though a 29% drawdown in margin debt is the whole point of looking.
+    // Normalising per series spends the full plot height on each one's own
+    // move, so every slope is readable. The cost is that heights are no longer
+    // comparable between lines -- which the legend and the note say outright,
+    // and the hover still carries the real 조원 figures.
     const creditByDate = new Map((opts.credit || []).map((r) => [r.date, r]));
     const CREDIT_SERIES = [
         { key: 'investor_deposit_eok', ko: '투자자 예탁금', cls: 'deposit' },
@@ -7792,26 +7798,32 @@ const msPriceLevelChart = (pts, rows, opts = {}) => {
         const v = row && row[key];
         return Number.isFinite(v) && v > 0 ? v / 10000 : null;
     };
-    const creditVals = pts.flatMap((d) => CREDIT_SERIES.map((s) => creditJo(d, s.key))).filter(Number.isFinite);
-    const hasCredit = creditVals.length > 1;
-    const lgLo = hasCredit ? Math.log10(Math.min(...creditVals)) : 0;
-    const lgHi = hasCredit ? Math.log10(Math.max(...creditVals)) : 1;
-    const lgPad = (lgHi - lgLo) * 0.08 || 0.1;
-    const syC = (v) => T + (1 - (Math.log10(v) - (lgLo - lgPad)) / ((lgHi + lgPad) - (lgLo - lgPad))) * (H - T - B);
+    // Per-series span over the visible window, plus first/last for the legend.
+    const creditStats = new Map(CREDIT_SERIES.map((s) => {
+        const seen = pts.map((d) => creditJo(d, s.key)).filter((v) => v !== null);
+        if (!seen.length) return [s.key, null];
+        const lo2 = Math.min(...seen), hi2 = Math.max(...seen);
+        const pad = (hi2 - lo2) * 0.12 || Math.abs(hi2) * 0.02 || 0.1;
+        return [s.key, { lo: lo2 - pad, hi: hi2 + pad, first: seen[0], last: seen[seen.length - 1], min: lo2, max: hi2 }];
+    }));
+    const hasCredit = [...creditStats.values()].some((v) => v && v.hi > v.lo);
+    const syC = (key, v) => {
+        const st = creditStats.get(key);
+        if (!st || st.hi === st.lo) return T + (H - T - B) / 2;
+        return T + (1 - (v - st.lo) / (st.hi - st.lo)) * (H - T - B);
+    };
     const creditPath = (key) => {
         let d = '', p = false;
         pts.forEach((pt, i) => {
             const v = creditJo(pt, key);
             if (v === null) { p = false; return; }
-            d += `${p ? 'L' : 'M'}${sx(i).toFixed(1)},${syC(v).toFixed(1)}`;
+            d += `${p ? 'L' : 'M'}${sx(i).toFixed(1)},${syC(key, v).toFixed(1)}`;
             p = true;
         });
         return d;
     };
-    const creditTicks = hasCredit
-        ? Array.from({ length: 5 }, (_, i) => 10 ** ((lgLo - lgPad) + ((lgHi + lgPad) - (lgLo - lgPad)) * (i / 4)))
-        : [];
     const joLabel = (v) => (v >= 10 ? v.toFixed(0) : v.toFixed(1)) + '조';
+    const pctChg = (st) => (st && st.first ? ((st.last - st.first) / st.first) * 100 : null);
 
     const grid = Array.from({ length: 7 }, (_, i) => yLo + (yHi - yLo) * (i / 6));
     const fmt = opts.fmtX || msEok;
@@ -7849,8 +7861,14 @@ const msPriceLevelChart = (pts, rows, opts = {}) => {
             <line x1="${cx.toFixed(1)}" y1="${T}" x2="${cx.toFixed(1)}" y2="${H - B}" class="mm-zero"/>
             <path d="${line}" class="ms-plc-line"/>
             ${hasCredit ? CREDIT_SERIES.map((s) => `<path d="${creditPath(s.key)}" class="ms-plc-cr ms-plc-cr-${s.cls}"/>`).join('') : ''}
-            ${hasCredit ? creditTicks.map((v) => `
-                <text x="${W - R + 10}" y="${(syC(v) + 3.5).toFixed(1)}" class="mm-tick">${joLabel(v)}</text>`).join('') : ''}
+            ${hasCredit ? CREDIT_SERIES.map((s) => {
+                const st = creditStats.get(s.key);
+                if (!st) return '';
+                // Each line ends at its own value, so the label goes at the line
+                // end rather than on a shared axis that no longer exists.
+                return `<text x="${W - R + 8}" y="${(syC(s.key, st.last) + 3.5).toFixed(1)}"
+                    class="mm-tick ms-plc-cr-lab ms-plc-cr-${s.cls}">${joLabel(st.last)}</text>`;
+            }).join('') : ''}
             ${pts.map((d, i) => `<rect x="${(sx(i) - (W - L - R) / pts.length / 2).toFixed(1)}" y="${T}"
                 width="${((W - L - R) / pts.length).toFixed(1)}" height="${(H - T - B).toFixed(1)}" class="ms-plc-hit"><title>${
                 finEsc(d.date)} · ${finEsc(opts.lineName || '종가')} ${msNum(d.close)} · 개인 ${fmt(d._retail)} · 외국인 ${
@@ -7864,9 +7882,18 @@ const msPriceLevelChart = (pts, rows, opts = {}) => {
         <p class="mm-legend-note">
             <i class="ms-plc-sw-line"></i>${finEsc(opts.lineName || '코스피 종가')}
             ${show.map((s) => `<i class="ms-plc-sw ms-plc-${s.cls}"></i>${finEsc(s.ko)}`).join('')}
-            ${hasCredit ? CREDIT_SERIES.map((s) =>
-                `<i class="ms-plc-sw-cr ms-plc-cr-${s.cls}"></i>${finEsc(s.ko)}`).join('') + '<span class="mm-legend-axis">(우축·로그·조원)</span>' : ''}
         </p>
+        ${hasCredit ? `<p class="mm-legend-note ms-plc-cr-legend">
+            ${CREDIT_SERIES.map((s) => {
+                const st = creditStats.get(s.key);
+                if (!st) return '';
+                const pc = pctChg(st);
+                const cls = pc === null ? '' : (pc >= 0 ? 'fin-up' : 'fin-down');
+                return `<span class="ms-plc-cr-item"><i class="ms-plc-sw-cr ms-plc-cr-${s.cls}"></i>${finEsc(s.ko)}
+                    ${joLabel(st.first)} → ${joLabel(st.last)}
+                    ${pc === null ? '' : `<b class="${cls}">${pc >= 0 ? '+' : ''}${pc.toFixed(1)}%</b>`}</span>`;
+            }).join('')}
+        </p>` : ''}
     </div>`;
 };
 
@@ -8010,7 +8037,7 @@ const msLevelsCompute = (D) => {
         _foreign: isIndex ? d.foreign_net_eok : (d.foreign_net_krw || 0) / 1e8,
         _inst: isIndex ? d.institution_net_eok : (d.institution_net_krw || 0) / 1e8,
     }));
-    const nWindow = { '1m': 21, '2m': 42, all: allDays.length }[MS_PERIOD] ?? allDays.length;
+    const nWindow = { '1m': 21, '2m': 42, '3m': 63, '6m': 126, all: allDays.length }[MS_PERIOD] ?? allDays.length;
     const pts = allDays.slice(-Math.max(nWindow, 2));
     // Index bins follow the published psychological step; a single name has no
     // such convention, so its range is split into a comparable number of rows.
@@ -8055,14 +8082,17 @@ const msLevelsTab = (D) => {
         </div>
         ${src.headline_ko && MS_PERIOD === 'all' ? `<p class="ms-lead-strong">${finEsc(src.headline_ko)}</p>` : ''}
         <div class="co-struct-toggle ms-period-row">
-            ${[['1m', '최근 1개월'], ['2m', '최근 2개월'], ['all', `전체 (${allDays.length}일)`]].map(([k, ko]) =>
+            ${[['1m', '1개월'], ['2m', '2개월'], ['3m', '3개월'], ['6m', '6개월'], ['all', `전체 (${allDays.length}일)`]]
+                .filter(([k]) => k === 'all' || ({ '1m': 21, '2m': 42, '3m': 63, '6m': 126 })[k] < allDays.length)
+                .map(([k, ko]) =>
                 `<button class="mm-view-btn ${MS_PERIOD === k ? 'on' : ''}" data-ms-period="${k}">${finEsc(ko)}</button>`).join('')}
             <span class="ms-period-spacer"></span>
             <button class="mm-view-btn ${MS_CREDIT_ON ? 'on' : ''}" data-ms-credit="1">예탁금 · 신용공여 ${MS_CREDIT_ON ? '▲' : '▼'}</button>
         </div>
         ${MS_CREDIT_ON ? `<p class="fin-note ms-credit-hint">
             아래 그래프에 예탁금 · 신용융자 · 미수금이 <strong>같은 날짜축</strong>으로 겹쳐집니다.
-            셋의 규모가 100배 넘게 차이나서 오른쪽 눈금은 로그입니다 — 높이가 아니라 <em>기울기</em>를 보세요.
+            셋은 규모가 100배 넘게 차이나서 <strong>각자의 범위로</strong> 그렸습니다 —
+            선끼리 높이를 비교하지 마시고 <em>기울기</em>만 보세요. 실제 금액은 아래 범례와 마우스 올린 값에 있습니다.
             시장 전체 집계이며 종목별이 아닙니다.</p>` : ''}
         ${msPriceLevelChart(pts, bins, {
             label: `${isIndex ? '코스피' : (tickers[MS_TICKER] || {}).label_ko || MS_TICKER} 가격대별 투자자 순매수 분포`,
