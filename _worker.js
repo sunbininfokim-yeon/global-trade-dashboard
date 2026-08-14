@@ -1489,6 +1489,7 @@ async function handleMacroMonitor(request, env) {
                             asof: c.asof,
                             active_categories: c.active_categories || [],
                             headlines: c.headlines || [],
+                            data_status_summary: c.data_status_summary || {},
                         })),
                     },
                 };
@@ -1503,6 +1504,9 @@ async function handleMacroMonitor(request, env) {
                     generated_at: doc.generated_at,
                     source: doc.source,
                     disclaimer_ko: doc.disclaimer_ko,
+                    // The badge on every chip resolves against this legend, so
+                    // it has to ride along with the per-country payload too.
+                    data_status_legend: doc.data_status_legend || {},
                     country,
                 },
             };

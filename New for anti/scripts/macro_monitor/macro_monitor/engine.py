@@ -16,6 +16,43 @@ from .series import build_indicator, format_value, month_ends
 _CONFIG_DIR = Path(__file__).resolve().parents[1] / "config"
 
 
+def _status_for_indicator(ind: dict[str, Any]) -> str:
+    """Return the public data-state label; never infer live from a value.
+
+    Most of this pack is synthetic: build_indicator() starts every indicator at
+    fixture_synth/demo, and only the handful listed in live_catalog get a real
+    value pinned over the last point. Without an explicit label a fixture and a
+    live quote render identically, which is how "당국 공표·추정" ended up on a
+    number nobody ever fetched.
+    """
+    quality = str(ind.get("quality") or "").lower()
+    source = str(ind.get("source") or "").lower()
+    if quality.startswith("live"):
+        return "live" if quality == "live" else "live_latest"
+    if quality == "ember_yearly":
+        return "delayed_official"
+    if quality == "engine" or source == "qra_engine_v1":
+        return "official_snapshot"
+    if quality == "demo" or source in {"fixture_synth", "derived"}:
+        return "demo"
+    return "unknown"
+
+
+def _mark_indicator_provenance(ind: dict[str, Any]) -> None:
+    """Normalise provenance fields shared by JSON, Worker and UI readers."""
+    ind["data_status"] = _status_for_indicator(ind)
+    ind.setdefault("observed_at", ind.get("asof"))
+    ind.setdefault("retrieved_at", None)
+
+
+def _status_summary(indicators: list[dict[str, Any]]) -> dict[str, int]:
+    out: dict[str, int] = {}
+    for ind in indicators:
+        status = str(ind.get("data_status") or "unknown")
+        out[status] = out.get(status, 0) + 1
+    return out
+
+
 @lru_cache(maxsize=1)
 def _load_officials() -> dict[str, Any]:
     path = _CONFIG_DIR / "officials.json"
@@ -1115,6 +1152,9 @@ def build_country_pack(
             tga["maturity_table"] = qind.get("table")
         attach_issuance_layers(qind, sibling_ids=set(by_id.keys()))
 
+    for ind in indicators:
+        _mark_indicator_provenance(ind)
+
     by_category: dict[str, list[dict[str, Any]]] = {c: [] for c in CATEGORIES_ORDER}
     for ind in indicators:
         if (ind.get("ui") or {}).get("chip") is False:
@@ -1131,6 +1171,11 @@ def build_country_pack(
             "change_1m_pct": ind["change_1m_pct"],
             "change_1y_pct": ind["change_1y_pct"],
             "asof": ind["asof"],
+            "observed_at": ind.get("observed_at"),
+            "retrieved_at": ind.get("retrieved_at"),
+            "source": ind.get("source"),
+            "data_status": ind.get("data_status"),
+            "chart_type": ind.get("chart_type"),
             "note_ko": ind.get("note_ko"),
         }
         if ind.get("reference"):
@@ -1203,6 +1248,7 @@ def build_country_pack(
             )
         ),
         "asof": dates[-1],
+        "data_status_summary": _status_summary(indicators),
         "active_categories": active_cats,
         "headlines": headlines,
         "categories": {k: by_category[k] for k in active_cats},
@@ -1246,6 +1292,7 @@ def build_universe(
             "benchmark": pack["benchmark"],
             "featured": pack.get("featured", False),
             "headlines": pack["headlines"],
+            "data_status_summary": pack.get("data_status_summary") or {},
         }
         if pack.get("officials"):
             entry["officials"] = pack["officials"]
@@ -1262,6 +1309,14 @@ def build_universe(
                 "데모용 합성 시계열이다. 실시간이 아니며 KOSPI·주가 등은 base를 "
                 "대략 맞춘 수준일 뿐 확정치가 아니다. 실데이터 어댑터(FRED/ECOS/yfinance) 이전."
             ),
+        },
+        "data_status_legend": {
+            "live": "실데이터 시계열",
+            "live_latest": "최근 관측치 실데이터 · 이전 이력은 아직 완전 교체 전",
+            "official_snapshot": "공식 문서에서 파싱한 스냅샷 · 자동 실시간 값 아님",
+            "delayed_official": "공식 연간/월간 데이터 · 발표 시차 존재",
+            "demo": "합성 데모 데이터 · 시장 판단에 사용 금지",
+            "unknown": "상태 미확인",
         },
         "disclaimer_ko": "데모·연구용 매크로 스냅샷입니다. 투자 권유가 아니며 실시간이 아닙니다.",
         "purpose_ko": (

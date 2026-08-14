@@ -8708,6 +8708,31 @@ const mmDelta = (v) => {
     return `<span class="mm-delta ${cls}">${sign}${v.toFixed(1)}%</span>`;
 };
 
+// Most of this pack is synthetic. Without a visible state a fixture and a real
+// quote look identical, and the per-metric note ("당국 공표·추정") then reads as
+// a source claim for a number nobody fetched. The badge carries the state; the
+// note stays as the metric's definition.
+const MM_STATUS = {
+    live: { label: '실데이터', cls: 'live' },
+    live_latest: { label: '최근값 실데이터', cls: 'latest' },
+    official_snapshot: { label: '공식 문서 스냅샷', cls: 'official' },
+    delayed_official: { label: '공식 지연 데이터', cls: 'delayed' },
+    demo: { label: '합성 데모', cls: 'demo' },
+    unknown: { label: '상태 미확인', cls: 'unknown' },
+};
+const mmStatus = (s) => MM_STATUS[s] || MM_STATUS.unknown;
+const mmStatusBadge = (s) => {
+    const st = mmStatus(s);
+    return `<span class="mm-data-status mm-data-status-${st.cls}">${st.label}</span>`;
+};
+// A synthetic series has no observation behind it, so its note has to be read
+// as "what this metric means", never as "where this number came from".
+const mmNoteWithState = (item) => {
+    const note = item.note_ko || '';
+    if (item.data_status !== 'demo') return note;
+    return `${note ? note + ' ' : ''}— 이 값은 합성 데모입니다. 위 설명은 지표의 정의이지 이 숫자의 출처가 아닙니다.`;
+};
+
 const mmFmt = (v, digits) => {
     if (!Number.isFinite(v)) return '—';
     const a = Math.abs(v);
@@ -8806,12 +8831,96 @@ const mmBars = (rows, opts = {}) => {
     </div>`;
 };
 
+// The Treasury's FX report is a three-test rule, and the designation only means
+// something once you know which tests a country actually tripped. The published
+// pack carries the outcome ("관찰대상") but not the per-test figures, so the
+// tests are listed with their thresholds and each is marked 미공개 rather than
+// filled with a plausible number.
+const MM_FX_WATCH_TESTS = [
+    { ko: '대미 무역흑자', rule: '150억 달러 이상', key: 'trade_surplus_bn' },
+    { ko: '경상수지 흑자', rule: 'GDP 대비 3% 이상', key: 'current_account_pct_gdp' },
+    { ko: '일방향 외환개입', rule: '12개월 중 8개월 순매수 · GDP 대비 2% 이상', key: 'fx_intervention_pct_gdp' },
+];
+
+const mmFxWatchView = (ind) => {
+    const c = ind.criteria || {};
+    const met = MM_FX_WATCH_TESTS.filter((t) => c[t.key] && c[t.key].met === true).length;
+    const known = MM_FX_WATCH_TESTS.filter((t) => c[t.key] && typeof c[t.key].met === 'boolean').length;
+    return `
+    <div class="mm-status-view">
+        <div class="mm-status-headline">
+            <span class="mm-status-big">${finEsc(ind.display || '—')}</span>
+            <span class="mm-status-sub">${known ? `3개 요건 중 ${met}개 충족` : '요건별 충족 여부 미공개'}</span>
+        </div>
+        <div class="mm-crit-list">
+            ${MM_FX_WATCH_TESTS.map((t) => {
+                const hit = c[t.key] || {};
+                const state = hit.met === true ? 'on' : (hit.met === false ? 'off' : 'unknown');
+                const mark = state === 'on' ? '충족' : (state === 'off' ? '미충족' : '미공개');
+                return `<div class="mm-crit mm-crit-${state}">
+                    <span class="mm-crit-dot" aria-hidden="true"></span>
+                    <span class="mm-crit-body">
+                        <strong>${finEsc(t.ko)}</strong>
+                        <span class="mm-crit-rule">기준 ${finEsc(t.rule)}</span>
+                    </span>
+                    <span class="mm-crit-mark">${mark}${hit.display ? ` · ${finEsc(hit.display)}` : ''}</span>
+                </div>`;
+            }).join('')}
+        </div>
+        <p class="fin-note">
+            2개 충족이면 관찰대상, 3개 모두면 심층분석 대상입니다.
+            이 스냅샷에는 요건별 수치가 들어 있지 않아 충족 여부를 채우지 않았습니다 — 추정하지 않습니다.
+        </p>
+    </div>`;
+};
+
+const mmRatingView = (ind) => {
+    const rows = (ind.components || []).filter((c) => c.rating);
+    if (!rows.length) return `<p class="fin-note">${finEsc(ind.display || '—')}</p>`;
+    return `
+    <div class="mm-status-view">
+        <div class="mm-status-headline">
+            <span class="mm-status-big">${finEsc(ind.display || '—')}</span>
+            <span class="mm-status-sub">3대 평가사 현재 등급</span>
+        </div>
+        <div class="mm-rating-grid">
+            ${rows.map((r) => `
+                <div class="mm-rating-cell">
+                    <span class="mm-rating-agency">${finEsc(r.label_ko || r.agency || r.id)}</span>
+                    <span class="mm-rating-grade">${finEsc(r.rating)}</span>
+                    <span class="mm-rating-outlook">${finEsc(r.outlook || '—')}</span>
+                </div>`).join('')}
+        </div>
+        <p class="fin-note">등급은 사건이 있을 때만 바뀝니다. 추세선이 아니라 현재 상태와 전망으로 읽습니다.</p>
+    </div>`;
+};
+
+const mmStatusView = (ind) => {
+    if (ind.id === 'us_fx_watch') return mmFxWatchView(ind);
+    if ((ind.components || []).some((c) => c.rating)) return mmRatingView(ind);
+    return `
+    <div class="mm-status-view">
+        <div class="mm-status-headline">
+            <span class="mm-status-big">${finEsc(ind.display || '—')}</span>
+        </div>
+        <p class="fin-note">상태 지표입니다. 시계열 추세로 읽지 않습니다.</p>
+    </div>`;
+};
+
 // Which panels an indicator can show, in the order they should appear. The
 // engine names the primary view (ui.click_view); chart_type covers the rest.
 const mmViewsFor = (ind) => {
     const views = [];
     const cv = (ind.ui || {}).click_view;
     const has = (a) => Array.isArray(a) && a.length;
+
+    // A rating and a watch-list designation are states, not quantities. Drawing
+    // them as a line asks the reader to see a slope in AA -> AA, and the engine
+    // even emits change_1m_pct on them (-100% for a rating that never moved).
+    // These get their own panel and no history tab.
+    if (ind.chart_type === 'status') {
+        return [{ id: 'status', label: '상태' }];
+    }
 
     if (cv === 'compare_bar_table' && has((ind.compare || {}).series)) {
         views.push({ id: 'compare', label: '비교' });
@@ -8927,7 +9036,8 @@ const mmChartDrawer = () => {
     const modeSeries = dual ? mmModeSeries(ind, mode) : null;
 
     let body = '';
-    if (view === 'compare') body = mmCompareView(ind);
+    if (view === 'status') body = mmStatusView(ind);
+    else if (view === 'compare') body = mmCompareView(ind);
     else if (view === 'mix') body = mmMixView(ind);
     else if (view === 'outcomes') body = mmOutcomesView(ind);
     else if (view === 'stack') body = mmComponentsView(ind, '연준이 보유한 국채를 잔존만기로 나눈 잔액입니다. 시장금리가 아니라 대차대조표입니다.');
@@ -8957,7 +9067,7 @@ const mmChartDrawer = () => {
     <div class="mm-drawer" role="dialog" aria-label="${finEsc(ind.label_ko)}">
         <div class="mm-drawer-head">
             <div>
-                <h3>${finEsc(ind.label_ko)}</h3>
+                <h3>${finEsc(ind.label_ko)} ${mmStatusBadge(ind.data_status)}</h3>
                 <p class="mm-drawer-sub">${meta.map((m) => finEsc(m)).join(' · ')}</p>
             </div>
             <div class="mm-drawer-actions">
@@ -8981,7 +9091,7 @@ const mmChartDrawer = () => {
         <div class="mm-drawer-body">
             <div class="mm-drawer-main">
                 ${body}
-                ${ind.note_ko ? `<p class="fin-note mm-note">${finEsc(ind.note_ko)}</p>` : ''}
+                ${mmNoteWithState(ind) ? `<p class="fin-note mm-note">${finEsc(mmNoteWithState(ind))}</p>` : ''}
                 ${ind.reference ? `<p class="fin-note">${finEsc(typeof ind.reference === 'string' ? ind.reference : JSON.stringify(ind.reference))}</p>` : ''}
             </div>
             ${mmNewsRail(ind)}
@@ -9061,8 +9171,11 @@ const mmOverlay = () => {
         ${(c.headlines || []).length ? `
         <div class="mm-headlines">
             ${c.headlines.map((h) => `
-                <button class="mm-headline" data-mm-tab="${finEsc(h.category)}">
-                    <span class="mm-headline-label">${finEsc(h.label_ko)}</span>
+                <button class="mm-headline" data-mm-tab="${finEsc(h.category)}"
+                        title="${finEsc(mmStatus(h.data_status).label)}">
+                    <span class="mm-headline-label">
+                        <i class="mm-headline-dot mm-data-status-${mmStatus(h.data_status).cls}"></i>${finEsc(h.label_ko)}
+                    </span>
                     <span class="mm-headline-value">${finEsc(h.display ?? '—')}</span>
                 </button>`).join('')}
         </div>` : ''}
@@ -9083,10 +9196,13 @@ const mmOverlay = () => {
                     <span class="mm-chip-label">${finEsc(ch.label_ko)}</span>
                     <span class="mm-chip-value">${finEsc(ch.display ?? '—')}</span>
                     <span class="mm-chip-foot">
-                        ${mmDelta(ch.change_1m_pct)}<span class="mm-chip-win">1M</span>
-                        ${mmDelta(ch.change_1y_pct)}<span class="mm-chip-win">1Y</span>
+                        ${ch.chart_type === 'status' ? '' : `
+                            ${mmDelta(ch.change_1m_pct)}<span class="mm-chip-win">1M</span>
+                            ${mmDelta(ch.change_1y_pct)}<span class="mm-chip-win">1Y</span>
+                        `}
+                        ${mmStatusBadge(ch.data_status)}
                     </span>
-                    ${ch.note_ko ? `<span class="mm-chip-note">${finEsc(ch.note_ko)}</span>` : ''}
+                    ${mmNoteWithState(ch) ? `<span class="mm-chip-note">${finEsc(mmNoteWithState(ch))}</span>` : ''}
                 </button>`).join('')
               : '<p class="fin-note">이 항목은 이 국가에서 아직 제공되지 않습니다.</p>'}
         </div>
