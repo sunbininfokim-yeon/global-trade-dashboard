@@ -56,7 +56,14 @@ def fetch_freesis_funding_credit(
     if end is None:
         end = datetime.now().strftime("%Y%m%d")
     if start is None:
-        start = (datetime.now() - timedelta(days=100)).strftime("%Y%m%d")
+        # The price-level chart's date axis and this series must line up on
+        # every date the index line is drawn, including its widest window
+        # (전체, currently ~180 trading days). 280 calendar days clears 180
+        # trading days with room for holidays -- FreeSIS itself goes back
+        # over a year; 100 days was just this fetch's own self-imposed cap,
+        # short enough that 전체 and 6개월 both drew a broken credit line for
+        # their oldest stretch.
+        start = (datetime.now() - timedelta(days=280)).strftime("%Y%m%d")
 
     def _pull(obj_nm: str, service_id: str) -> list[dict[str, Any]]:
         url = "https://freesis.kofia.or.kr/meta/getMetaDataList.do"
