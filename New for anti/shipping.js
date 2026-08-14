@@ -153,6 +153,38 @@
     ]
   };
 
+  // A stable interpretation guide for the five monitored passages. This is
+  // deliberately not a claim about today's cause of disruption: the live
+  // PortWatch value measures estimated trade volume only. It tells the reader
+  // which kind of event the simulator's scenario label is trying to represent.
+  const CHOKEPOINT_CONSTRAINT_PROFILES = {
+    suez: {
+      constraint: '안보·우회 제약',
+      mechanism: '운하 또는 홍해 접근부의 안전 문제가 커지면 선사는 수에즈 통과 대신 희망봉 우회를 택할 수 있습니다. 이 경우 배가 사라지는 것이 아니라 항해 시간이 늘어 서비스에 더 오래 묶입니다.',
+      simulator: '운영상 제약은 부분 통과·우회를, 전면 봉쇄는 물리적 통항 불가를 가정합니다.'
+    },
+    panama: {
+      constraint: '수문·흘수·예약 슬롯 제약',
+      mechanism: '파나마는 군사적 봉쇄가 아니어도 가뭄·저수지 수위·흘수·일일 통과 슬롯 제약으로 처리량이 줄 수 있습니다. 따라서 이 화면의 감소 신호를 전쟁 봉쇄로 읽으면 안 됩니다.',
+      simulator: '통항능력 감소는 물리적으로 운하가 사라진다는 뜻이 아니라, 일정 기간 처리 가능한 흐름이 줄어드는 가정입니다.'
+    },
+    bosporus: {
+      constraint: '항행 안전·기상·통항 규제 제약',
+      mechanism: '좁은 수로의 기상, 안전 통제, 사고 또는 통항 규정 변화는 대기와 일방 통항을 늘릴 수 있습니다. 통항량 신호만으로 원인을 특정하지 않습니다.',
+      simulator: '전면 봉쇄 시나리오는 잔존 통과량 0%를 가정하는 별도 극단값입니다.'
+    },
+    bab_el_mandeb: {
+      constraint: '해상 안보·상업 운항 제약',
+      mechanism: '통로 자체가 물리적으로 열려 있어도 선사·화주·보험사가 안전상 이유로 홍해 진입을 피하면 수에즈 서비스가 우회할 수 있습니다.',
+      simulator: '현재 스냅샷에는 바벨만데브 전용 사건 격자가 없습니다. 관측 신호와 지리적 노출만 표시합니다.'
+    },
+    hormuz: {
+      constraint: '해상 안보·보험·상업 운항 제약',
+      mechanism: '물리적으로 모든 선박이 멈추지 않아도 전쟁위험 보험, 선사 안전 정책, 용선·화주 승인 조건이 겹치면 상업적으로 배정 가능한 선복량이 줄 수 있습니다.',
+      simulator: '상업적 제약은 일부 잔존 통항을 둔 가정이고, 물리적 완전 봉쇄는 잔존 통항 0%인 별도 사건 설정입니다.'
+    }
+  };
+
   const statusMeta = status => INPUT_STATUS[status]
     || (String(status || '').startsWith('scenario_seed')
       ? ['시나리오 시드', 'scenario', '공공 화물량 연결 전의 초기 가정']
@@ -932,6 +964,12 @@
       const point = points.find(p => p.id === openId);
       const series = chokepointSeries(point);
       const shortfallPct = point.shortfall === null ? null : point.shortfall * 100;
+      const constraint = CHOKEPOINT_CONSTRAINT_PROFILES[point.id] || {
+        constraint: '운영 제약',
+        mechanism: '이 통로의 세부 제약 분류가 아직 없습니다.',
+        simulator: '사전 계산된 사건 설정이 있는 경우에만 시뮬레이터에서 조회할 수 있습니다.'
+      };
+      const scenario = data.ui.baseScenarios.find(item => item.chokepoint_id === point.id);
 
       detail.innerHTML = `
         <div class="shipping-detail-grid">
@@ -946,6 +984,21 @@
             ])}
             <p class="shipping-note"><strong>왜 이 통로인가:</strong> ${escapeHtml(CHOKEPOINT_CONTEXT[point.id] || '이 통로에 대한 설명이 아직 없습니다.')}</p>`,
             series.real ? badge('PortWatch 관측', 'observed') : badge('예시 시계열', 'neutral', '두 실측 평균을 잇는 형태이며 일별 관측이 아닙니다'))}
+        </div>
+        ${panel('CONSTRAINT INTERPRETATION', '운영 제약을 읽는 법', `
+          <div class="shipping-grid two-columns">
+            <div class="shipping-constraint-copy">
+              <strong>${escapeHtml(constraint.constraint)}</strong>
+              <p>${escapeHtml(constraint.mechanism)}</p>
+            </div>
+            <div class="shipping-constraint-copy">
+              <strong>시나리오와 관측을 구분</strong>
+              <p>${escapeHtml(constraint.simulator)}</p>
+            </div>
+          </div>
+          <p class="shipping-note">위의 최근 7일 지표는 추정 교역량 변화이며, 물리적 봉쇄율·보험 거절률·대기 선박 수를 관측한 값이 아닙니다.</p>
+          ${scenario ? `<button type="button" class="shipping-scenario-jump" data-shipping-open-simulator="${escapeHtml(scenario.id)}">${escapeHtml(point.name_ko)} 사건 설정 열기</button>` : ''}`,
+          badge('해석 가이드', 'neutral'))}
         </div>`;
 
       detail.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
@@ -985,6 +1038,12 @@
             y: { grid: { color: GRID_LINE }, ticks: { color: INK.muted, font: { size: 11 }, callback: v => `${formatNumber(v, 0)}K` } }
           }
         }
+      });
+
+      detail.querySelector('[data-shipping-open-simulator]')?.addEventListener('click', event => {
+        const scenarioId = event.currentTarget.dataset.shippingOpenSimulator;
+        try { window.sessionStorage.setItem('shippingScenarioPreset', scenarioId); } catch (_) { /* storage is optional */ }
+        document.querySelector('.dropdown a[data-target="shipping_scenarios"]')?.click();
       });
     };
 
@@ -1054,7 +1113,14 @@
       return;
     }
 
-    const initial = baseScenarios.find(item => item.id === 'hormuz_effective_80pct_28d') || baseScenarios[0];
+    let requestedScenarioId = null;
+    try { requestedScenarioId = window.sessionStorage.getItem('shippingScenarioPreset'); } catch (_) { /* storage is optional */ }
+    const initial = baseScenarios.find(item => item.id === requestedScenarioId)
+      || baseScenarios.find(item => item.id === 'hormuz_effective_80pct_28d')
+      || baseScenarios[0];
+    if (requestedScenarioId) {
+      try { window.sessionStorage.removeItem('shippingScenarioPreset'); } catch (_) { /* storage is optional */ }
+    }
     const initialClosure = closureOptions.includes(80) ? 80 : Math.round(Number(initial.closure_fraction || 0) * 100);
     const initialDuration = durationOptions.includes(Number(initial.duration_days))
       ? Number(initial.duration_days) : durationOptions.at(-1);
@@ -1164,7 +1230,17 @@
       bindScenarioKpis(resultEl);
     };
 
-    [presetEl, closureEl, durationEl].forEach(el => el?.addEventListener('change', update));
+    presetEl?.addEventListener('change', () => {
+      const preset = baseScenarios.find(item => item.id === presetEl.value);
+      if (preset) {
+        const closure = Math.round(Number(preset.closure_fraction || 0) * 100);
+        if (closureOptions.includes(closure)) closureEl.value = String(closure);
+        if (durationOptions.includes(Number(preset.duration_days))) durationEl.value = String(preset.duration_days);
+      }
+      try { window.sessionStorage.removeItem('shippingScenarioPreset'); } catch (_) { /* storage is optional */ }
+      update();
+    });
+    [closureEl, durationEl].forEach(el => el?.addEventListener('change', update));
     update();
   };
 
