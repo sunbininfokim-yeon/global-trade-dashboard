@@ -8766,6 +8766,35 @@ const mmFmt = (v, digits) => {
 // than the features a library would add. Hover is wired after paint (mmWire).
 const MM_W = 760, MM_H = 260, MM_L = 52, MM_R = 16, MM_T = 14, MM_B = 30;
 
+// US general elections are on a fixed public schedule (first Tue after first
+// Mon in Nov), not something to fetch or estimate -- presidential years are
+// divisible by 4, midterms are the even years between. Shaded as the 3 months
+// running into the vote, matching how a pre-election cash drawdown would
+// actually show up in TGA: a fiscal decision made ahead of it, not on the day.
+const mmUsElectionBands = (dates) => {
+    if (!dates.length) return [];
+    const years = dates.map((d) => Number(String(d).slice(0, 4)));
+    const yLo = Math.min(...years), yHi = Math.max(...years);
+    const months = [];
+    for (let y = yLo - 1; y <= yHi + 1; y++) {
+        if (y % 2 !== 0) continue;
+        const kind = y % 4 === 0 ? 'president' : 'midterm';
+        for (let m = 9; m <= 11; m++) months.push({ ym: `${y}-${String(m).padStart(2, '0')}`, kind });
+    }
+    const bands = [];
+    let cur = null;
+    dates.forEach((d, i) => {
+        const ym = String(d).slice(0, 7);
+        const hit = months.find((m) => m.ym === ym);
+        if (hit) {
+            if (cur && cur.kind === hit.kind && i === cur.end + 1) cur.end = i;
+            else { if (cur) bands.push(cur); cur = { start: i, end: i, kind: hit.kind }; }
+        } else if (cur) { bands.push(cur); cur = null; }
+    });
+    if (cur) bands.push(cur);
+    return bands;
+};
+
 const mmLineChart = (dates, values, opts = {}) => {
     const idx = values.map((v, i) => [i, v]).filter(([, v]) => Number.isFinite(v));
     if (idx.length < 2) return '<p class="fin-note">그릴 수 있는 시계열이 없습니다.</p>';
@@ -8799,6 +8828,7 @@ const mmLineChart = (dates, values, opts = {}) => {
 
     const ticks = [0, 0.25, 0.5, 0.75, 1].map((t) => lo + (hi - lo) * t);
     const xAt = [0, Math.floor((n - 1) / 2), n - 1];
+    const bands = opts.electionBands ? mmUsElectionBands(dates) : [];
 
     return `
     <div class="mm-chart-box" data-mm-chart-box="1"
@@ -8813,6 +8843,9 @@ const mmLineChart = (dates, values, opts = {}) => {
                 <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.26"/>
                 <stop offset="100%" stop-color="#38bdf8" stop-opacity="0"/>
             </linearGradient></defs>
+            ${bands.map((b) => `<rect x="${sx(b.start).toFixed(1)}" y="${MM_T}"
+                width="${(sx(b.end) - sx(b.start) + 1).toFixed(1)}" height="${(MM_H - MM_T - MM_B).toFixed(1)}"
+                class="mm-election-band mm-election-${b.kind}"><title>${b.kind === 'president' ? '대통령선거' : '중간선거'} 직전 3개월</title></rect>`).join('')}
             ${ticks.map((t) => `
                 <line x1="${MM_L}" y1="${sy(t).toFixed(1)}" x2="${MM_W - MM_R}" y2="${sy(t).toFixed(1)}" class="mm-grid"/>
                 <text x="${MM_L - 7}" y="${(sy(t) + 3.5).toFixed(1)}" class="mm-tick" text-anchor="end">${mmFmt(t)}</text>`).join('')}
@@ -8827,6 +8860,10 @@ const mmLineChart = (dates, values, opts = {}) => {
         </svg>
         <div class="mm-tip-box" style="display:none"></div>
         ${ma ? '<p class="mm-legend-note"><i class="mm-swatch-ma"></i>MA5 (5기간 이동평균)</p>' : ''}
+        ${bands.length ? `<p class="mm-legend-note">
+            <i class="mm-swatch mm-swatch-president"></i>대통령선거 직전 3개월
+            <i class="mm-swatch mm-swatch-midterm"></i>중간선거 직전 3개월
+        </p>` : ''}
     </div>`;
 };
 
@@ -9072,6 +9109,7 @@ const mmChartDrawer = () => {
             ma5: hist.ma5,
             unit: src.unit === 'pct' ? '%' : (src.unit || ''),
             label: src.label_ko || ind.label_ko,
+            electionBands: ind.id === 'tga',
         });
     }
 
