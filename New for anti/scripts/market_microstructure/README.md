@@ -39,7 +39,7 @@ export KRX_API='…'   # optional
 # 이후 매일: --append-only
 
 # 스케줄러 (UI 제외)
-./run_daily.sh    # conc append + L3 live
+./run_daily.sh    # conc append + L3 + microstructure + derivatives history
 ./run_weekly.sh   # conc backfill + discovery + hitrate + regime-proxy
 
 # 페이퍼 대비 검증 + (가격경로) 이벤트 스터디
@@ -50,6 +50,22 @@ export KRX_API='…'   # optional
 # → public/data/alert_levels_v1.json · ALERT_LEVELS.md
 # 주의: SOXL 수익률로 옵션 스트레스를 대체한 백테스트는 사용하지 말 것
 ```
+
+## 파생·LETF 일별 히스토리
+
+```bash
+# 두 스냅샷을 먼저 실측으로 갱신한 뒤 JSONL 세 개에 append한다.
+../../.venv/bin/python build_market_microstructure.py --live --source auto
+../../.venv/bin/python build_derivatives_board.py --live
+../../.venv/bin/python append_derivatives_history.py --print-stats
+# → public/data/derivatives_activity_history_v1.jsonl
+# → public/data/leverage_direction_history_v1.jsonl
+# → public/data/stock_letf_history_v1.jsonl
+```
+
+한 줄은 한 KST 거래일의 실측 관측이다. 휴장일·API 실패일은 줄을 만들지 않는다.
+첫 1거래일은 UI에서 “히스토리 축적 중”으로 보이고, 2거래일부터 차트가 연결된다.
+`build_derivatives_board.py --bas-dd YYYYMMDD`는 재현 가능한 수동 일자 실행용이다.
 
 공개 extras (`fetch_kr_public_extras.py`): 증권사 고객 레버(비공시) 제외.
 

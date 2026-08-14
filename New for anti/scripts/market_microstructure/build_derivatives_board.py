@@ -4,6 +4,7 @@
   export KRX_API=...   # for KR futures/options EOD activity via OpenAPI
   # optional CSVs from data.krx 투자자별 거래실적 (콜/풋/선물 각각):
   #   --csv-opt-call path --csv-opt-put path --csv-fut path
+  #   --bas-dd 20260813  # explicit KRX EOD day (manual rerun/backfill)
 
   ../../.venv/bin/python build_derivatives_board.py --live --print-stats
 """
@@ -86,6 +87,7 @@ def main() -> int:
     p.add_argument("--csv-opt-call", type=Path, default=None)
     p.add_argument("--csv-opt-put", type=Path, default=None)
     p.add_argument("--csv-fut", type=Path, default=None)
+    p.add_argument("--bas-dd", default=None, help="KRX EOD day YYYYMMDD (optional)")
     p.add_argument("--print-stats", action="store_true")
     args = p.parse_args()
 
@@ -93,6 +95,7 @@ def main() -> int:
     graph = json.loads((ROOT / "config/us_kr_link_graph.json").read_text(encoding="utf-8"))
 
     kr = fetch_kr_derivatives_bundle(
+        bas_dd=args.bas_dd,
         investor_opt_call_csv=args.csv_opt_call,
         investor_opt_put_csv=args.csv_opt_put,
         investor_fut_csv=args.csv_fut,

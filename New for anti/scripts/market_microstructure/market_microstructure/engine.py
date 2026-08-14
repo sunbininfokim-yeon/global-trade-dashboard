@@ -138,6 +138,10 @@ def build_snapshot(day: dict[str, Any], *, anchors: dict[str, Any] | None = None
                 "name": st.get("name"),
                 "venue": "kr",
                 "adv_spot_krw": adv,
+                # The source is the single-day FDR Amount / KRX ACC_TRDVAL,
+                # despite the legacy ``adv`` name.  Keep both keys so the UI
+                # history contract can state its denominator unambiguously.
+                "spot_trading_value_krw": adv,
                 "free_float_mcap_krw": ff,
                 "free_float_ratio_assumed": st.get("free_float_ratio_assumed"),
                 "market_cap_krw": float(st.get("market_cap_krw", ff)),

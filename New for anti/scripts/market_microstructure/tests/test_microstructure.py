@@ -6,6 +6,8 @@ from __future__ import annotations
 import json
 import unittest
 from pathlib import Path
+from types import SimpleNamespace
+from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[1]
 import sys
@@ -105,6 +107,7 @@ class TestSnapshot(unittest.TestCase):
         h = next(s for s in self.snap["stocks"] if s["ticker"] == "000660")
         # 9.8e12 / 12e12
         self.assertAlmostEqual(h["letf_turnover_ratio"], 9.8 / 12.0, places=3)
+        self.assertEqual(h["spot_trading_value_krw"], h["adv_spot_krw"])
 
     def test_paper_aum_calibration_near_26bn(self):
         row = next(r for r in self.snap["paper_calibration"] if r["field"] == "levered_etf_aum_usd")
@@ -222,6 +225,23 @@ class TestSnapshot(unittest.TestCase):
         self.assertEqual(classify_letf_direction("SOL SK하이닉스선물단일종목인버스2X"), "inverse_2x")
         self.assertEqual(classify_letf_direction("KODEX 레버리지"), "long")
         self.assertEqual(classify_letf_direction("KODEX 인버스"), "inverse")
+
+    def test_letf_category_history_has_four_fixed_direction_buckets(self):
+        import pandas as pd
+
+        from fetch_kr_public_extras import fetch_letf_category_share
+
+        etfs = pd.DataFrame([
+            {"Symbol": "A", "Name": "KODEX 레버리지", "Amount": 100, "MarCap": 10},
+            {"Symbol": "B", "Name": "KODEX 인버스", "Amount": 50, "MarCap": 5},
+        ])
+        kospi = pd.DataFrame([{"Amount": 1_000_000_000}])
+        fake_fdr = SimpleNamespace(StockListing=lambda market: etfs if market == "ETF/KR" else kospi)
+        with patch.dict(sys.modules, {"FinanceDataReader": fake_fdr}):
+            out = fetch_letf_category_share()
+        self.assertEqual(out["by_direction"]["long"]["trading_value_krw"], 100_000_000.0)
+        self.assertEqual(out["by_direction"]["inverse_2x"]["n_products"], 0)
+        self.assertEqual(out["by_direction"]["gobus_inverse_2x"]["share_of_kospi_tv_pct"], 0.0)
 
     def test_public_extras_in_snapshot_from_fixture(self):
         day = json.loads((ROOT / "tests/fixtures/demo_day.json").read_text(encoding="utf-8"))

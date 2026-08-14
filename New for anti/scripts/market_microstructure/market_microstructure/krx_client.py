@@ -1,8 +1,8 @@
 """KRX Data Marketplace OpenAPI client.
 
 Auth: Cloudflare / local secret name ``KRX_API`` (Workers: ``env.KRX_API``).
-Never hardcode the key. Official docs put AUTH_KEY in the request header;
-query-param AUTH_KEY is also accepted by some gateways — we send both.
+Never hardcode the key or place it in a URL; the documented AUTH_KEY header is
+used so proxy, exception, and CI URL logs cannot expose it.
 """
 
 from __future__ import annotations
@@ -57,8 +57,7 @@ def krx_get(category: str, endpoint: str, bas_dd: str, *, timeout: int = 45) -> 
         "User-Agent": "market-microstructure/1.0",
         "Accept": "application/json",
     }
-    # Header is the documented path; param mirrors pykrx-openapi clients.
-    params = {"basDd": bas_dd, "AUTH_KEY": key}
+    params = {"basDd": bas_dd}
     r = requests.get(url, headers=headers, params=params, timeout=timeout)
     if r.status_code == 401:
         raise KRXAuthError("KRX_API rejected (401 Unauthorized) — check key + API 이용신청")
