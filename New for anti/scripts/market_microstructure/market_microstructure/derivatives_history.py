@@ -13,6 +13,8 @@ from datetime import date
 from pathlib import Path
 from typing import Any, Iterable
 
+from .formulas import impact_ratio, total_rebalance
+
 
 COMMON_FIELDS = ("date", "as_of", "source", "quality")
 DIRECTIONS = ("long", "inverse", "inverse_2x", "gobus_inverse_2x")
@@ -122,6 +124,30 @@ def validate_stock_record(record: dict[str, Any]) -> None:
             allow_none=True,
         )
 
+    # These fields are an explicitly modelled *estimate*, not a confirmed ETF
+    # rebalance.  They were added after the first two observed rows, so legacy
+    # rows remain valid until the KRX backfill replaces them.
+    implied_keys = (
+        "underlying_day_return",
+        "implied_rebalance_krw",
+        "implied_rebalance_abs_krw",
+        "implied_rebalance_ir_pct",
+        "implied_rebalance_quality",
+        "implied_rebalance_formula",
+    )
+    present = [key for key in implied_keys if key in record]
+    if present and len(present) != len(implied_keys):
+        raise HistoryValidationError("implied rebalance fields must be written together")
+    if present:
+        for key in implied_keys[:4]:
+            _number(record[key], field=key, allow_none=True)
+        if record["implied_rebalance_quality"] != "estimated":
+            raise HistoryValidationError("implied_rebalance_quality must be estimated")
+        if not isinstance(record["implied_rebalance_formula"], str) or not record[
+            "implied_rebalance_formula"
+        ].strip():
+            raise HistoryValidationError("implied_rebalance_formula must be a non-empty string")
+
 
 def _quality(*values: Any) -> str:
     """Preserve the weakest source quality without manufacturing precision."""
@@ -204,11 +230,66 @@ def direction_record_from_micro(snapshot: dict[str, Any]) -> dict[str, Any] | No
 
 
 def _product_record(product: dict[str, Any]) -> dict[str, Any]:
-    return {
+    out = {
         "ticker": product.get("ticker"),
         "name": product.get("name"),
         "aum_krw": product.get("aum"),
         "trading_value_krw": product.get("trading_value"),
+    }
+    # Retain the daily-reset inputs so that the stored series can be audited
+    # and the realised-return scenario can be reproduced later.
+    if product.get("L") is not None:
+        out["L"] = product.get("L")
+    if product.get("direction") is not None:
+        out["direction"] = product.get("direction")
+    return out
+
+
+def _implied_rebalance(stock: dict[str, Any], products: list[dict[str, Any]]) -> dict[str, Any]:
+    """Return a transparent daily-reset proxy; never label it as a trade."""
+    r = stock.get("day_return")
+    spot_tv = stock.get("spot_trading_value_krw", stock.get("adv_spot_krw"))
+    if r is None or spot_tv is None:
+        return {
+            "underlying_day_return": r,
+            "implied_rebalance_krw": None,
+            "implied_rebalance_abs_krw": None,
+            "implied_rebalance_ir_pct": None,
+            "implied_rebalance_quality": "estimated",
+            "implied_rebalance_formula": "Σ AUM × (L² − L) × underlying daily return; model estimate, not observed ETF trades",
+        }
+    model_products = []
+    for product in products:
+        aum = product.get("aum_krw")
+        leverage = product.get("L")
+        if aum is None or leverage is None:
+            return {
+                "underlying_day_return": r,
+                "implied_rebalance_krw": None,
+                "implied_rebalance_abs_krw": None,
+                "implied_rebalance_ir_pct": None,
+                "implied_rebalance_quality": "estimated",
+                "implied_rebalance_formula": "Σ AUM × (L² − L) × underlying daily return; model estimate, not observed ETF trades",
+            }
+        model_products.append({"aum": aum, "L": leverage})
+    if not model_products:
+        return {
+            "underlying_day_return": r,
+            "implied_rebalance_krw": None,
+            "implied_rebalance_abs_krw": None,
+            "implied_rebalance_ir_pct": None,
+            "implied_rebalance_quality": "estimated",
+            "implied_rebalance_formula": "Σ AUM × (L² − L) × underlying daily return; model estimate, not observed ETF trades",
+        }
+    totals = total_rebalance(model_products, r=float(r))
+    signed = totals["tr_total"]
+    return {
+        "underlying_day_return": float(r),
+        "implied_rebalance_krw": signed,
+        "implied_rebalance_abs_krw": totals["tr_abs_sum"],
+        "implied_rebalance_ir_pct": impact_ratio(totals["tr_abs_sum"], float(spot_tv)),
+        "implied_rebalance_quality": "estimated",
+        "implied_rebalance_formula": "Σ AUM × (L² − L) × underlying daily return; model estimate, not observed ETF trades",
     }
 
 
@@ -244,6 +325,7 @@ def stock_records_from_micro(snapshot: dict[str, Any]) -> list[dict[str, Any]]:
             "letf_aum_inverse_krw": stock.get("letf_aum_inverse_krw"),
             "products": products,
         }
+        record.update(_implied_rebalance(stock, products))
         validate_stock_record(record)
         records.append(record)
     return records

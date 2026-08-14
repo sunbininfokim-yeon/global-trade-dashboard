@@ -79,8 +79,16 @@ def _micro() -> dict:
                 "letf_aum_sum_krw": 500.0,
                 "letf_aum_long_krw": 400.0,
                 "letf_aum_inverse_krw": 100.0,
+                "day_return": -0.05,
                 "products": [
-                    {"ticker": "A", "name": "A LETF", "aum": 500.0, "trading_value": 100.0}
+                    {
+                        "ticker": "A",
+                        "name": "A LETF",
+                        "L": 2.0,
+                        "direction": "long",
+                        "aum": 500.0,
+                        "trading_value": 100.0,
+                    }
                 ],
             },
             {
@@ -111,6 +119,11 @@ class TestDerivativesHistory(unittest.TestCase):
         self.assertEqual(activity["kospi200_options"]["put_call_volume"], 0.5)
         self.assertEqual(direction["by_direction"]["long"]["share_of_lev_tv_pct"], 25.0)
         self.assertEqual(stocks[0]["spot_trading_value_krw"], 1_000.0)
+        self.assertEqual(stocks[0]["underlying_day_return"], -0.05)
+        self.assertEqual(stocks[0]["implied_rebalance_krw"], -50.0)
+        self.assertEqual(stocks[0]["implied_rebalance_abs_krw"], 50.0)
+        self.assertEqual(stocks[0]["implied_rebalance_ir_pct"], 5.0)
+        self.assertEqual(stocks[0]["implied_rebalance_quality"], "estimated")
         self.assertEqual(stocks[1]["quality"], "partial")
         self.assertIn("aum_krw", stocks[1]["products"][0])
 

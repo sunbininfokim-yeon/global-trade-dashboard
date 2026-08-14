@@ -273,8 +273,15 @@ def build_day_from_krx(
     underlyings: list[str] | None = None,
     fx_usdkrw: float = 1400.0,
     bas_dd: str | None = None,
+    include_naver_flows: bool = True,
 ) -> dict[str, Any]:
-    """KRX OpenAPI (env ``KRX_API``) + Naver flows."""
+    """KRX OpenAPI day input, with optional current-only Naver investor flows.
+
+    Historical LETF backfills must not ask Naver for a past investor snapshot:
+    the KRX stock/ETF EOD fields are sufficient for AUM, turnover and the
+    modelled rebalance proxy.  ``include_naver_flows=False`` keeps that
+    backfill reproducible and avoids presenting current investor data as past.
+    """
     from market_microstructure.krx_client import (
         etf_metrics,
         fetch_etf_daily,
@@ -307,6 +314,11 @@ def build_day_from_krx(
     univ_products = universe.get("venues", {}).get("kr", {}).get("products", [])
     products_by: dict[str, list[dict[str, Any]]] = {u: [] for u in underlyings}
     market_lev_aum = 0.0
+    stock_source = (
+        "KRX OpenAPI stk_bydd_trd + etf_bydd_trd (KRX_API) + Naver flows"
+        if include_naver_flows
+        else "KRX OpenAPI stk_bydd_trd + etf_bydd_trd (KRX_API)"
+    )
 
     for row in etf_rows:
         name = str(row.get("ISU_NM") or row.get("ISU_ABBRV") or "")
@@ -379,7 +391,16 @@ def build_day_from_krx(
         adv = float(sm["adv_spot_krw"] or 0.0)
         close = float(sm["close"] or 0.0)
         ff_r = float(ff_ratios.get(code, ff_ratios.get("_default", 0.7)))
-        nv = _attach_naver_flows(code, close)
+        nv = (
+            _attach_naver_flows(code, close)
+            if include_naver_flows
+            else {
+                "foreign_hold_ratio_pct": None,
+                "flows_shares": {"as_of": None, "foreign_net": None, "institution_net": None, "retail_net": None},
+                "flows_krw": {"foreign_net_krw": None, "institution_net_krw": None, "retail_net_krw": None},
+                "deal_trend_history": [],
+            }
+        )
         products = products_by.get(code, [])
         letf_tv = sum(float(p["trading_value"]) for p in products)
         stocks.append(
@@ -400,7 +421,7 @@ def build_day_from_krx(
                 "short_interest_shares": None,
                 "short_ratio_pct": None,
                 "letf_products": products,
-                "source": "KRX OpenAPI stk_bydd_trd + etf_bydd_trd (KRX_API) + Naver flows",
+                "source": stock_source,
                 "quality": "observed",
             }
         )
@@ -415,7 +436,11 @@ def build_day_from_krx(
         "fx_usdkrw": fx_usdkrw,
         "fetched_at": datetime.now(timezone.utc).isoformat(),
         "source_mode": "krx",
-        "note": "KRX_API OpenAPI day input. Free-float assumed. Flows from Naver.",
+        "note": (
+            "KRX_API OpenAPI day input. Free-float assumed. Flows from Naver."
+            if include_naver_flows
+            else "KRX_API OpenAPI historical day input. Naver investor flows intentionally omitted."
+        ),
         "kospi": {
             "total_mcap_krw": total_mcap,
             "free_float_mcap_krw": total_mcap * float(ff_ratios.get("_kospi_default", 0.75)),
@@ -430,11 +455,11 @@ def build_day_from_krx(
         },
         "flows": {
             "scope": "covered_underlyings_spot",
-            "foreign_net_krw": f_net,
-            "retail_net_krw": r_net,
-            "institution_net_krw": i_net,
-            "source": "Naver dealTrendInfos (share nets × close)",
-            "quality": "estimated",
+            "foreign_net_krw": f_net if include_naver_flows else None,
+            "retail_net_krw": r_net if include_naver_flows else None,
+            "institution_net_krw": i_net if include_naver_flows else None,
+            "source": "Naver dealTrendInfos (share nets × close)" if include_naver_flows else "not requested for historical LETF backfill",
+            "quality": "estimated" if include_naver_flows else "missing",
         },
         "stocks": stocks,
     }
