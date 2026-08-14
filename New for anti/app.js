@@ -18,8 +18,7 @@ const tooltipEl = document.getElementById('tooltip');
  * in before positioning.
  */
 const positionTooltipAt = (info, offset = 12) => {
-    const mapEl = document.getElementById('map');
-    const rect = mapEl ? mapEl.getBoundingClientRect() : { left: 0, top: 0 };
+    const rect = mapContainer ? mapContainer.getBoundingClientRect() : { left: 0, top: 0 };
     tooltipEl.style.left = `${rect.left + info.x + offset}px`;
     tooltipEl.style.top = `${rect.top + info.y + offset}px`;
 };
