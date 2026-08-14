@@ -184,25 +184,71 @@
     },
     "environment": {
       "type": "object",
-      "required": ["status", "methodology_ko", "warnings_ko", "sources", "scenarios"],
+      "required": ["contract_version", "status", "methodology_ko", "warnings_ko", "sources", "pathways", "scenarios"],
       "properties": {
+        "contract_version": {"const": "environment-pathways-v1"},
+        "pathways": {
+          "type": "array",
+          "minItems": 3,
+          "maxItems": 3,
+          "items": {
+            "type": "object",
+            "required": ["id", "name_ko", "policy_status", "description_ko"],
+            "properties": {
+              "id": {"enum": ["imo_adopted", "accelerated", "deferred"]},
+              "policy_status": {"enum": ["official_adopted_path", "counterfactual_not_adopted"]}
+            }
+          }
+        },
         "scenarios": {
           "type": "array",
+          "minItems": 15,
+          "maxItems": 15,
           "items": {
             "type": "object",
             "required": [
               "id",
               "year",
               "status",
+              "pathway_id",
+              "pathway_name_ko",
+              "pathway_policy_status",
+              "behavior_assumption_status",
+              "regulatory_inputs",
               "physical_allocated_dwt",
               "effective_service_capacity_dwt",
               "effective_dwt_loss",
               "effective_capacity_retention_rate",
+              "baseline_required_dwt",
               "same_service_required_dwt",
+              "additional_required_vs_baseline_dwt",
+              "capacity_gap_vs_allocated_dwt",
+              "ship_type_breakdown",
               "scope",
               "effective_capacity_retention_rate_range",
               "same_service_required_dwt_range"
-            ]
+            ],
+            "properties": {
+              "year": {"type": "integer", "minimum": 2026, "maximum": 2030},
+              "pathway_id": {"enum": ["imo_adopted", "accelerated", "deferred"]},
+              "behavior_assumption_status": {"const": "provisional_sensitivity_seed_not_observed_operator_behavior"},
+              "regulatory_inputs": {
+                "type": "object",
+                "required": ["cii_reduction_vs_2019_pct", "cii_status", "fueleu_ghg_intensity_reduction_vs_2020_pct", "fueleu_status", "eu_ets_emissions_coverage_for_reporting_year_pct", "eu_ets_status", "eu_ets_gases"]
+              },
+              "ship_type_breakdown": {
+                "type": "array",
+                "minItems": 3,
+                "maxItems": 3,
+                "items": {
+                  "type": "object",
+                  "required": ["ship_type", "representative_route_count", "physical_allocated_dwt", "effective_service_capacity_dwt", "effective_dwt_loss", "effective_capacity_retention_rate", "same_service_required_dwt", "additional_required_vs_baseline_dwt", "capacity_gap_vs_allocated_dwt"],
+                  "properties": {
+                    "ship_type": {"enum": ["container", "dry_bulk", "tanker"]}
+                  }
+                }
+              }
+            }
           }
         }
       }

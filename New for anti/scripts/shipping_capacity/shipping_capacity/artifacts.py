@@ -149,6 +149,12 @@ def _screen_environment(environment: dict[str, Any]) -> dict[str, Any]:
         "name_ko",
         "year",
         "status",
+        "pathway_id",
+        "pathway_name_ko",
+        "pathway_policy_status",
+        "pathway_description_ko",
+        "behavior_assumption_status",
+        "regulatory_inputs",
         "cii_reduction_vs_2019_pct",
         "representative_route_count",
         "physical_allocated_dwt",
@@ -156,16 +162,22 @@ def _screen_environment(environment: dict[str, Any]) -> dict[str, Any]:
         "effective_dwt_loss",
         "effective_capacity_retention_rate",
         "effective_capacity_retention_rate_range",
+        "baseline_required_dwt",
         "same_service_required_dwt",
         "same_service_required_dwt_range",
+        "additional_required_vs_baseline_dwt",
+        "capacity_gap_vs_allocated_dwt",
+        "ship_type_breakdown",
         "scope",
     )
     return {
+        "contract_version": environment.get("contract_version"),
         "status": environment.get("status"),
         "methodology_ko": environment.get("methodology_ko"),
         "warnings_ko": environment.get("warnings_ko", []),
         "sources": environment.get("sources", []),
         "identification_boundary": environment.get("identification_boundary", {}),
+        "pathways": environment.get("pathways", []),
         "scenarios": [
             {field: row.get(field) for field in aggregate_fields}
             for row in environment.get("scenarios", [])
@@ -284,4 +296,18 @@ def golden_contract_failures(
         for field, value in route.get("baseline", {}).items():
             if value != source.get("baseline", {}).get(field):
                 failures.append(f"route_baseline_mismatch:{route['id']}:{field}")
+    diagnostic_environment = {
+        row["id"]: row
+        for row in diagnostics.get("environment", {}).get("scenarios", [])
+    }
+    for scenario in screen.get("environment", {}).get("scenarios", []):
+        source = diagnostic_environment.get(scenario["id"])
+        if source is None:
+            failures.append(f"missing_diagnostic_environment:{scenario['id']}")
+            continue
+        for field, value in scenario.items():
+            if value != source.get(field):
+                failures.append(
+                    f"environment_scenario_mismatch:{scenario['id']}:{field}"
+                )
     return failures

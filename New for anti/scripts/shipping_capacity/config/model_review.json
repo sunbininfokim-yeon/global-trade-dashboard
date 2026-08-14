@@ -1,5 +1,5 @@
 {
-  "model_version": "1.8.0",
+  "model_version": "1.9.0",
   "status": "provisional_active_codex_owned",
   "status_ko": "다음 주 재평가 전까지 Codex가 담당하는 잠정 모델",
   "review_window": "2026-08-17 week",
@@ -11,7 +11,9 @@
   "handoff_protocol": {
     "mode": "codex_primary_until_next_review",
     "rule": "새 요구사항 전에 Codex가 미완료 분석과 EXTRA 전체 재평가를 먼저 수행하고, Claude는 UI·PR 통합을 검토한다.",
-    "no_parallel_model_copy": true
+    "no_parallel_model_copy": true,
+    "ui_calculation_rule": "Claude renders, groups and formats published fields only; no shipping formula or policy-to-speed conversion is implemented in JavaScript.",
+    "environment_contract": "environment-pathways-v1"
   },
   "source_of_truth": {
     "model_dir": "New for anti/scripts/shipping_capacity",
@@ -58,6 +60,10 @@
     "scenario assumptions remain separate from PortWatch and IMO observations",
     "all shipping-capacity unit tests pass",
     "screen and diagnostics artifacts pass the golden value contract",
+    "environment publishes exactly three pathways and five annual points per pathway",
+    "environment physical allocated DWT is invariant across pathways for the same year",
+    "accelerated effective capacity <= adopted effective capacity <= deferred effective capacity",
+    "environment ship-type bars are engine aggregates and require no UI summation",
     "all public-flow route inputs pass Comtrade quality gates"
   ]
 }

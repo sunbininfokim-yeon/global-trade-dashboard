@@ -1,8 +1,8 @@
 {
   "schema_version": "shipping-capacity-v1",
   "artifact_type": "screen_snapshot",
-  "bundle_id": "2e70d58ff1633dfeb017",
-  "generated_at": "2026-08-14T06:10:09.300132+00:00",
+  "bundle_id": "df473a9508cbe1ed0f27",
+  "generated_at": "2026-08-14T06:53:50.252353+00:00",
   "artifact_manifest": {
     "screen": "shipping_capacity_v1.json",
     "diagnostics": "shipping_capacity_diagnostics_v1.json",
@@ -24,7 +24,7 @@
   },
   "model": {
     "name": "Route Cycle Capacity + Chokepoint Shock",
-    "version": "1.8.0",
+    "version": "1.9.0",
     "formula": "one-way: cargo * cycle / (365 * utilization); bidirectional: max(direction cargo / utilization) * cycle / 365",
     "uncertainty": "P10/P50/P90 parameter range; not an event-probability forecast",
     "shock_state_model": "throughput, cargo backlog and commercially available DWT are separate states",
@@ -190,8 +190,8 @@
       "latest_date": "2026-08-09",
       "stale_days": 5,
       "is_stale": false,
-      "fallback_used": false,
-      "source_status": "api_observation_fresh",
+      "fallback_used": true,
+      "source_status": "cached_fallback",
       "metric_unit": "estimated_trade_tonnes_per_day",
       "signal_type": "observed_estimated_trade_volume_shortfall",
       "warning_ko": "DWT와 추정 적재율로 산출한 교역량 신호이며 실제 통항 DWT, 물리적 봉쇄율 또는 보험 미확보율 관측치가 아님"
@@ -211,8 +211,8 @@
       "latest_date": "2026-08-09",
       "stale_days": 5,
       "is_stale": false,
-      "fallback_used": false,
-      "source_status": "api_observation_fresh",
+      "fallback_used": true,
+      "source_status": "cached_fallback",
       "metric_unit": "estimated_trade_tonnes_per_day",
       "signal_type": "observed_estimated_trade_volume_shortfall",
       "warning_ko": "DWT와 추정 적재율로 산출한 교역량 신호이며 실제 통항 DWT, 물리적 봉쇄율 또는 보험 미확보율 관측치가 아님"
@@ -232,8 +232,8 @@
       "latest_date": "2026-08-09",
       "stale_days": 5,
       "is_stale": false,
-      "fallback_used": false,
-      "source_status": "api_observation_fresh",
+      "fallback_used": true,
+      "source_status": "cached_fallback",
       "metric_unit": "estimated_trade_tonnes_per_day",
       "signal_type": "observed_estimated_trade_volume_shortfall",
       "warning_ko": "DWT와 추정 적재율로 산출한 교역량 신호이며 실제 통항 DWT, 물리적 봉쇄율 또는 보험 미확보율 관측치가 아님"
@@ -253,8 +253,8 @@
       "latest_date": "2026-08-09",
       "stale_days": 5,
       "is_stale": false,
-      "fallback_used": false,
-      "source_status": "api_observation_fresh",
+      "fallback_used": true,
+      "source_status": "cached_fallback",
       "metric_unit": "estimated_trade_tonnes_per_day",
       "signal_type": "observed_estimated_trade_volume_shortfall",
       "warning_ko": "DWT와 추정 적재율로 산출한 교역량 신호이며 실제 통항 DWT, 물리적 봉쇄율 또는 보험 미확보율 관측치가 아님"
@@ -274,8 +274,8 @@
       "latest_date": "2026-08-09",
       "stale_days": 5,
       "is_stale": false,
-      "fallback_used": false,
-      "source_status": "api_observation_fresh",
+      "fallback_used": true,
+      "source_status": "cached_fallback",
       "metric_unit": "estimated_trade_tonnes_per_day",
       "signal_type": "observed_estimated_trade_volume_shortfall",
       "warning_ko": "DWT와 추정 적재율로 산출한 교역량 신호이며 실제 통항 DWT, 물리적 봉쇄율 또는 보험 미확보율 관측치가 아님"
@@ -286,8 +286,8 @@
     "freshness_threshold_days": 7,
     "fresh_count": 5,
     "stale_count": 0,
-    "fallback_count": 0,
-    "status": "fresh"
+    "fallback_count": 5,
+    "status": "stale_or_fallback"
   },
   "route_catalog": [
     {
@@ -1961,7 +1961,7 @@
   },
   "market_signals": {
     "status": "source_registry_only_no_unlicensed_scraping",
-    "generated_at": "2026-08-14T06:10:09.302096+00:00",
+    "generated_at": "2026-08-14T06:53:50.253015+00:00",
     "signals": [
       {
         "id": "unctad_freight_rate_review",
@@ -3279,9 +3279,9 @@
       "fetched_at": "2026-08-14T06:10:09.300132+00:00",
       "stale_days": 5,
       "is_stale": false,
-      "fallback_used": false,
-      "source_status": "api_observation_fresh",
-      "history_source_point_count": 730,
+      "fallback_used": true,
+      "source_status": "cached_fallback",
+      "history_source_point_count": 180,
       "history_screen_point_limit": 180
     },
     "panama": {
@@ -4409,9 +4409,9 @@
       "fetched_at": "2026-08-14T06:10:09.300132+00:00",
       "stale_days": 5,
       "is_stale": false,
-      "fallback_used": false,
-      "source_status": "api_observation_fresh",
-      "history_source_point_count": 730,
+      "fallback_used": true,
+      "source_status": "cached_fallback",
+      "history_source_point_count": 180,
       "history_screen_point_limit": 180
     },
     "bosporus": {
@@ -5539,9 +5539,9 @@
       "fetched_at": "2026-08-14T06:10:09.300132+00:00",
       "stale_days": 5,
       "is_stale": false,
-      "fallback_used": false,
-      "source_status": "api_observation_fresh",
-      "history_source_point_count": 730,
+      "fallback_used": true,
+      "source_status": "cached_fallback",
+      "history_source_point_count": 180,
       "history_screen_point_limit": 180
     },
     "bab_el_mandeb": {
@@ -6669,9 +6669,9 @@
       "fetched_at": "2026-08-14T06:10:09.300132+00:00",
       "stale_days": 5,
       "is_stale": false,
-      "fallback_used": false,
-      "source_status": "api_observation_fresh",
-      "history_source_point_count": 730,
+      "fallback_used": true,
+      "source_status": "cached_fallback",
+      "history_source_point_count": 180,
       "history_screen_point_limit": 180
     },
     "hormuz": {
@@ -7799,9 +7799,9 @@
       "fetched_at": "2026-08-14T06:10:09.300132+00:00",
       "stale_days": 5,
       "is_stale": false,
-      "fallback_used": false,
-      "source_status": "api_observation_fresh",
-      "history_source_point_count": 730,
+      "fallback_used": true,
+      "source_status": "cached_fallback",
+      "history_source_point_count": 180,
       "history_screen_point_limit": 180
     }
   },
@@ -18155,12 +18155,14 @@
     ]
   },
   "environment": {
+    "contract_version": "environment-pathways-v1",
     "status": "route_segmented_scenario_ranges",
     "methodology_ko": "무료 공공자료로 완전한 선박별 CII·건조연도·연료 패널을 만들 수 없으므로, 관측 가능한 선종·선형·항로 EU 노출과 명시적인 저손실·중앙·고손실 행동범위를 결합한다. 결과는 선박별 예측이 아니라 항로 유효 DWT 범위다.",
     "warnings_ko": [
       "물리적 선대 DWT가 감소하는 것이 아니라 같은 기간 제공 가능한 서비스 용량이 감소한다.",
       "EU ETS와 FuelEU는 비용·연료 집약도 규제이며 직접적인 속도 제한으로 계산하지 않는다.",
-      "속도 대응 비중과 감속률은 공공 관측값이 아닌 민감도 시드로 다음 Codex EXTRA 재평가 대상이다."
+      "강화 및 유예·완화 경로는 채택된 규정이 아닌 반사실 정책 민감도다.",
+      "속도 대응 비중·감속률·개조 휴항률·퇴출률은 관측 선박 패널이 아닌 공개용 민감도 시드다."
     ],
     "sources": [
       {
@@ -18194,12 +18196,50 @@
         "owner_compliance_choice"
       ]
     },
+    "pathways": [
+      {
+        "id": "imo_adopted",
+        "name_ko": "현행 규제 유지",
+        "policy_status": "official_adopted_path",
+        "description_ko": "IMO가 채택한 2026~2030 CII 감축계수와 현행 EU ETS·FuelEU 일정을 유지한다."
+      },
+      {
+        "id": "accelerated",
+        "name_ko": "규제 강화",
+        "policy_status": "counterfactual_not_adopted",
+        "description_ko": "CII 감축계수를 2027년부터 매년 2.8%p 높이고 FuelEU 강도를 앞당기는 반사실 민감도다."
+      },
+      {
+        "id": "deferred",
+        "name_ko": "규제 유예·완화",
+        "policy_status": "counterfactual_not_adopted",
+        "description_ko": "2027년 이후 CII 강화와 2030년 FuelEU 상향을 1년 늦추는 반사실 민감도다."
+      }
+    ],
     "scenarios": [
       {
-        "id": "regulatory_response_2026_base",
-        "name_ko": "2026 규제 대응 감속·개조 기준 시나리오",
+        "id": "imo_adopted_2026",
+        "name_ko": "2026 현행 규제 유지",
         "year": 2026,
         "status": "scenario_provisional",
+        "pathway_id": "imo_adopted",
+        "pathway_name_ko": "현행 규제 유지",
+        "pathway_policy_status": "official_adopted_path",
+        "pathway_description_ko": "IMO가 채택한 2026~2030 CII 감축계수와 현행 EU ETS·FuelEU 일정을 유지한다.",
+        "behavior_assumption_status": "provisional_sensitivity_seed_not_observed_operator_behavior",
+        "regulatory_inputs": {
+          "cii_reduction_vs_2019_pct": 11.0,
+          "cii_status": "official_adopted",
+          "fueleu_ghg_intensity_reduction_vs_2020_pct": 2.0,
+          "fueleu_status": "official_in_force",
+          "eu_ets_emissions_coverage_for_reporting_year_pct": 100.0,
+          "eu_ets_status": "official_in_force",
+          "eu_ets_gases": [
+            "CO2",
+            "CH4",
+            "N2O"
+          ]
+        },
         "cii_reduction_vs_2019_pct": 11.0,
         "representative_route_count": 21,
         "physical_allocated_dwt": 271481079.266903,
@@ -18211,23 +18251,112 @@
           "central": 0.984523,
           "high": 0.992837
         },
+        "baseline_required_dwt": 260841606.409877,
         "same_service_required_dwt": 264943167.604062,
         "same_service_required_dwt_range": {
           "low": 262723851.934856,
           "central": 264943167.604062,
           "high": 267987607.967927
         },
+        "additional_required_vs_baseline_dwt": 4101561.194185,
+        "capacity_gap_vs_allocated_dwt": 0.0,
+        "ship_type_breakdown": [
+          {
+            "ship_type": "container",
+            "representative_route_count": 5,
+            "physical_allocated_dwt": 16073516.179019,
+            "effective_service_capacity_dwt": 15888590.136305,
+            "effective_dwt_loss": 184926.042714,
+            "effective_capacity_retention_rate": 0.988495,
+            "effective_capacity_retention_rate_range": {
+              "low": 0.979924,
+              "central": 0.988495,
+              "high": 0.994533
+            },
+            "baseline_required_dwt": 15308110.646685,
+            "same_service_required_dwt": 15486285.556968,
+            "same_service_required_dwt_range": {
+              "low": 15392258.122372,
+              "central": 15486285.556968,
+              "high": 15621771.931733
+            },
+            "additional_required_vs_baseline_dwt": 178174.910283,
+            "capacity_gap_vs_allocated_dwt": 0.0
+          },
+          {
+            "ship_type": "dry_bulk",
+            "representative_route_count": 9,
+            "physical_allocated_dwt": 144152542.805968,
+            "effective_service_capacity_dwt": 141894915.463125,
+            "effective_dwt_loss": 2257627.342844,
+            "effective_capacity_retention_rate": 0.984339,
+            "effective_capacity_retention_rate_range": {
+              "low": 0.973112,
+              "central": 0.984339,
+              "high": 0.992751
+            },
+            "baseline_required_dwt": 138608214.236508,
+            "same_service_required_dwt": 140813586.9755,
+            "same_service_required_dwt_range": {
+              "low": 139620266.826946,
+              "central": 140813586.9755,
+              "high": 142438283.928824
+            },
+            "additional_required_vs_baseline_dwt": 2205372.738992,
+            "capacity_gap_vs_allocated_dwt": 0.0
+          },
+          {
+            "ship_type": "tanker",
+            "representative_route_count": 7,
+            "physical_allocated_dwt": 111255020.281915,
+            "effective_service_capacity_dwt": 109495748.391616,
+            "effective_dwt_loss": 1759271.8903,
+            "effective_capacity_retention_rate": 0.984187,
+            "effective_capacity_retention_rate_range": {
+              "low": 0.97269,
+              "central": 0.984187,
+              "high": 0.992702
+            },
+            "baseline_required_dwt": 106925281.526684,
+            "same_service_required_dwt": 108643295.071594,
+            "same_service_required_dwt_range": {
+              "low": 107711326.985537,
+              "central": 108643295.071594,
+              "high": 109927552.10737
+            },
+            "additional_required_vs_baseline_dwt": 1718013.54491,
+            "capacity_gap_vs_allocated_dwt": 0.0
+          }
+        ],
         "scope": "active representative routes, not the full world fleet"
       },
       {
-        "id": "regulatory_response_2027_base",
-        "name_ko": "2027 규제 대응 감속·개조 기준 시나리오",
+        "id": "imo_adopted_2027",
+        "name_ko": "2027 현행 규제 유지",
         "year": 2027,
         "status": "scenario_provisional",
+        "pathway_id": "imo_adopted",
+        "pathway_name_ko": "현행 규제 유지",
+        "pathway_policy_status": "official_adopted_path",
+        "pathway_description_ko": "IMO가 채택한 2026~2030 CII 감축계수와 현행 EU ETS·FuelEU 일정을 유지한다.",
+        "behavior_assumption_status": "provisional_sensitivity_seed_not_observed_operator_behavior",
+        "regulatory_inputs": {
+          "cii_reduction_vs_2019_pct": 13.625,
+          "cii_status": "official_adopted",
+          "fueleu_ghg_intensity_reduction_vs_2020_pct": 2.0,
+          "fueleu_status": "official_in_force",
+          "eu_ets_emissions_coverage_for_reporting_year_pct": 100.0,
+          "eu_ets_status": "official_in_force",
+          "eu_ets_gases": [
+            "CO2",
+            "CH4",
+            "N2O"
+          ]
+        },
         "cii_reduction_vs_2019_pct": 13.625,
         "representative_route_count": 21,
         "physical_allocated_dwt": 271481079.266903,
-        "effective_service_capacity_dwt": 265994209.185382,
+        "effective_service_capacity_dwt": 265994209.185383,
         "effective_dwt_loss": 5486870.081521,
         "effective_capacity_retention_rate": 0.979789,
         "effective_capacity_retention_rate_range": {
@@ -18235,19 +18364,108 @@
           "central": 0.979789,
           "high": 0.990737
         },
+        "baseline_required_dwt": 260841606.409877,
         "same_service_required_dwt": 266223369.008311,
         "same_service_required_dwt_range": {
           "low": 263280641.604778,
           "central": 266223369.008311,
           "high": 270288068.711527
         },
+        "additional_required_vs_baseline_dwt": 5381762.598435,
+        "capacity_gap_vs_allocated_dwt": 0.0,
+        "ship_type_breakdown": [
+          {
+            "ship_type": "container",
+            "representative_route_count": 5,
+            "physical_allocated_dwt": 16073516.179019,
+            "effective_service_capacity_dwt": 15821685.340105,
+            "effective_dwt_loss": 251830.838915,
+            "effective_capacity_retention_rate": 0.984333,
+            "effective_capacity_retention_rate_range": {
+              "low": 0.972414,
+              "central": 0.984333,
+              "high": 0.992725
+            },
+            "baseline_required_dwt": 15308110.646685,
+            "same_service_required_dwt": 15551776.69954,
+            "same_service_required_dwt_range": {
+              "low": 15420298.507007,
+              "central": 15551776.69954,
+              "high": 15742451.160694
+            },
+            "additional_required_vs_baseline_dwt": 243666.052855,
+            "capacity_gap_vs_allocated_dwt": 0.0
+          },
+          {
+            "ship_type": "dry_bulk",
+            "representative_route_count": 9,
+            "physical_allocated_dwt": 144152542.805968,
+            "effective_service_capacity_dwt": 141210381.3964,
+            "effective_dwt_loss": 2942161.409569,
+            "effective_capacity_retention_rate": 0.97959,
+            "effective_capacity_retention_rate_range": {
+              "low": 0.964838,
+              "central": 0.97959,
+              "high": 0.990641
+            },
+            "baseline_required_dwt": 138608214.236508,
+            "same_service_required_dwt": 141496230.259162,
+            "same_service_required_dwt_range": {
+              "low": 139917782.072766,
+              "central": 141496230.259162,
+              "high": 143659893.130998
+            },
+            "additional_required_vs_baseline_dwt": 2888016.022654,
+            "capacity_gap_vs_allocated_dwt": 0.0
+          },
+          {
+            "ship_type": "tanker",
+            "representative_route_count": 7,
+            "physical_allocated_dwt": 111255020.281915,
+            "effective_service_capacity_dwt": 108962142.448878,
+            "effective_dwt_loss": 2292877.833038,
+            "effective_capacity_retention_rate": 0.979391,
+            "effective_capacity_retention_rate_range": {
+              "low": 0.964286,
+              "central": 0.979391,
+              "high": 0.990576
+            },
+            "baseline_required_dwt": 106925281.526684,
+            "same_service_required_dwt": 109175362.04961,
+            "same_service_required_dwt_range": {
+              "low": 107942561.025005,
+              "central": 109175362.04961,
+              "high": 110885724.419835
+            },
+            "additional_required_vs_baseline_dwt": 2250080.522926,
+            "capacity_gap_vs_allocated_dwt": 0.0
+          }
+        ],
         "scope": "active representative routes, not the full world fleet"
       },
       {
-        "id": "regulatory_response_2028_base",
-        "name_ko": "2028 규제 대응 감속·개조 기준 시나리오",
+        "id": "imo_adopted_2028",
+        "name_ko": "2028 현행 규제 유지",
         "year": 2028,
         "status": "scenario_provisional",
+        "pathway_id": "imo_adopted",
+        "pathway_name_ko": "현행 규제 유지",
+        "pathway_policy_status": "official_adopted_path",
+        "pathway_description_ko": "IMO가 채택한 2026~2030 CII 감축계수와 현행 EU ETS·FuelEU 일정을 유지한다.",
+        "behavior_assumption_status": "provisional_sensitivity_seed_not_observed_operator_behavior",
+        "regulatory_inputs": {
+          "cii_reduction_vs_2019_pct": 16.25,
+          "cii_status": "official_adopted",
+          "fueleu_ghg_intensity_reduction_vs_2020_pct": 2.0,
+          "fueleu_status": "official_in_force",
+          "eu_ets_emissions_coverage_for_reporting_year_pct": 100.0,
+          "eu_ets_status": "official_in_force",
+          "eu_ets_gases": [
+            "CO2",
+            "CH4",
+            "N2O"
+          ]
+        },
         "cii_reduction_vs_2019_pct": 16.25,
         "representative_route_count": 21,
         "physical_allocated_dwt": 271481079.266903,
@@ -18259,19 +18477,108 @@
           "central": 0.973716,
           "high": 0.988212
         },
+        "baseline_required_dwt": 260841606.409877,
         "same_service_required_dwt": 267884400.92764,
         "same_service_required_dwt_range": {
           "low": 263953681.891554,
           "central": 267884400.92764,
           "high": 273353725.869844
         },
+        "additional_required_vs_baseline_dwt": 7042794.517763,
+        "capacity_gap_vs_allocated_dwt": 0.0,
+        "ship_type_breakdown": [
+          {
+            "ship_type": "container",
+            "representative_route_count": 5,
+            "physical_allocated_dwt": 16073516.179019,
+            "effective_service_capacity_dwt": 15748075.642822,
+            "effective_dwt_loss": 325440.536198,
+            "effective_capacity_retention_rate": 0.979753,
+            "effective_capacity_retention_rate_range": {
+              "low": 0.964153,
+              "central": 0.979753,
+              "high": 0.990728
+            },
+            "baseline_required_dwt": 15308110.646685,
+            "same_service_required_dwt": 15624476.203326,
+            "same_service_required_dwt_range": {
+              "low": 15451374.29054,
+              "central": 15624476.203326,
+              "high": 15877392.558563
+            },
+            "additional_required_vs_baseline_dwt": 316365.556641,
+            "capacity_gap_vs_allocated_dwt": 0.0
+          },
+          {
+            "ship_type": "dry_bulk",
+            "representative_route_count": 9,
+            "physical_allocated_dwt": 144152542.805968,
+            "effective_service_capacity_dwt": 140324722.943183,
+            "effective_dwt_loss": 3827819.862785,
+            "effective_capacity_retention_rate": 0.973446,
+            "effective_capacity_retention_rate_range": {
+              "low": 0.953922,
+              "central": 0.973446,
+              "high": 0.988089
+            },
+            "baseline_required_dwt": 138608214.236508,
+            "same_service_required_dwt": 142389333.066753,
+            "same_service_required_dwt_range": {
+              "low": 140279076.201263,
+              "central": 142389333.066753,
+              "high": 145303938.100933
+            },
+            "additional_required_vs_baseline_dwt": 3781118.830245,
+            "capacity_gap_vs_allocated_dwt": 0.0
+          },
+          {
+            "ship_type": "tanker",
+            "representative_route_count": 7,
+            "physical_allocated_dwt": 111255020.281915,
+            "effective_service_capacity_dwt": 108272691.853499,
+            "effective_dwt_loss": 2982328.428416,
+            "effective_capacity_retention_rate": 0.973194,
+            "effective_capacity_retention_rate_range": {
+              "low": 0.953227,
+              "central": 0.973194,
+              "high": 0.988007
+            },
+            "baseline_required_dwt": 106925281.526684,
+            "same_service_required_dwt": 109870591.657561,
+            "same_service_required_dwt_range": {
+              "low": 108223231.399751,
+              "central": 109870591.657561,
+              "high": 112172395.210347
+            },
+            "additional_required_vs_baseline_dwt": 2945310.130877,
+            "capacity_gap_vs_allocated_dwt": 0.0
+          }
+        ],
         "scope": "active representative routes, not the full world fleet"
       },
       {
-        "id": "regulatory_response_2029_base",
-        "name_ko": "2029 규제 대응 감속·개조 기준 시나리오",
+        "id": "imo_adopted_2029",
+        "name_ko": "2029 현행 규제 유지",
         "year": 2029,
         "status": "scenario_provisional",
+        "pathway_id": "imo_adopted",
+        "pathway_name_ko": "현행 규제 유지",
+        "pathway_policy_status": "official_adopted_path",
+        "pathway_description_ko": "IMO가 채택한 2026~2030 CII 감축계수와 현행 EU ETS·FuelEU 일정을 유지한다.",
+        "behavior_assumption_status": "provisional_sensitivity_seed_not_observed_operator_behavior",
+        "regulatory_inputs": {
+          "cii_reduction_vs_2019_pct": 18.875,
+          "cii_status": "official_adopted",
+          "fueleu_ghg_intensity_reduction_vs_2020_pct": 2.0,
+          "fueleu_status": "official_in_force",
+          "eu_ets_emissions_coverage_for_reporting_year_pct": 100.0,
+          "eu_ets_status": "official_in_force",
+          "eu_ets_gases": [
+            "CO2",
+            "CH4",
+            "N2O"
+          ]
+        },
         "cii_reduction_vs_2019_pct": 18.875,
         "representative_route_count": 21,
         "physical_allocated_dwt": 271481079.266903,
@@ -18283,19 +18590,108 @@
           "central": 0.967235,
           "high": 0.985494
         },
+        "baseline_required_dwt": 260841606.409877,
         "same_service_required_dwt": 269680097.580097,
         "same_service_required_dwt_range": {
           "low": 264681831.355897,
           "central": 269680097.580097,
           "high": 276690557.791946
         },
+        "additional_required_vs_baseline_dwt": 8838491.17022,
+        "capacity_gap_vs_allocated_dwt": 0.0,
+        "ship_type_breakdown": [
+          {
+            "ship_type": "container",
+            "representative_route_count": 5,
+            "physical_allocated_dwt": 16073516.179019,
+            "effective_service_capacity_dwt": 15667784.002867,
+            "effective_dwt_loss": 405732.176153,
+            "effective_capacity_retention_rate": 0.974758,
+            "effective_capacity_retention_rate_range": {
+              "low": 0.955147,
+              "central": 0.974758,
+              "high": 0.988544
+            },
+            "baseline_required_dwt": 15308110.646685,
+            "same_service_required_dwt": 15704556.889942,
+            "same_service_required_dwt_range": {
+              "low": 15485519.863899,
+              "central": 15704556.889942,
+              "high": 16027194.718731
+            },
+            "additional_required_vs_baseline_dwt": 396446.243257,
+            "capacity_gap_vs_allocated_dwt": 0.0
+          },
+          {
+            "ship_type": "dry_bulk",
+            "representative_route_count": 9,
+            "physical_allocated_dwt": 144152542.805968,
+            "effective_service_capacity_dwt": 139380684.712383,
+            "effective_dwt_loss": 4771858.093585,
+            "effective_capacity_retention_rate": 0.966897,
+            "effective_capacity_retention_rate_range": {
+              "low": 0.942333,
+              "central": 0.966897,
+              "high": 0.985346
+            },
+            "baseline_required_dwt": 138608214.236508,
+            "same_service_required_dwt": 143353822.898149,
+            "same_service_required_dwt_range": {
+              "low": 140669612.792877,
+              "central": 143353822.898149,
+              "high": 147091136.931746
+            },
+            "additional_required_vs_baseline_dwt": 4745608.661641,
+            "capacity_gap_vs_allocated_dwt": 0.0
+          },
+          {
+            "ship_type": "tanker",
+            "representative_route_count": 7,
+            "physical_allocated_dwt": 111255020.281915,
+            "effective_service_capacity_dwt": 107537556.462946,
+            "effective_dwt_loss": 3717463.818969,
+            "effective_capacity_retention_rate": 0.966586,
+            "effective_capacity_retention_rate_range": {
+              "low": 0.94148,
+              "central": 0.966586,
+              "high": 0.985244
+            },
+            "baseline_required_dwt": 106925281.526684,
+            "same_service_required_dwt": 110621717.792005,
+            "same_service_required_dwt_range": {
+              "low": 108526698.69912,
+              "central": 110621717.792005,
+              "high": 113572226.141469
+            },
+            "additional_required_vs_baseline_dwt": 3696436.265322,
+            "capacity_gap_vs_allocated_dwt": 0.0
+          }
+        ],
         "scope": "active representative routes, not the full world fleet"
       },
       {
-        "id": "regulatory_response_2030_base",
-        "name_ko": "2030 규제 대응 감속·개조 기준 시나리오",
+        "id": "imo_adopted_2030",
+        "name_ko": "2030 현행 규제 유지",
         "year": 2030,
         "status": "scenario_provisional",
+        "pathway_id": "imo_adopted",
+        "pathway_name_ko": "현행 규제 유지",
+        "pathway_policy_status": "official_adopted_path",
+        "pathway_description_ko": "IMO가 채택한 2026~2030 CII 감축계수와 현행 EU ETS·FuelEU 일정을 유지한다.",
+        "behavior_assumption_status": "provisional_sensitivity_seed_not_observed_operator_behavior",
+        "regulatory_inputs": {
+          "cii_reduction_vs_2019_pct": 21.5,
+          "cii_status": "official_adopted",
+          "fueleu_ghg_intensity_reduction_vs_2020_pct": 6.0,
+          "fueleu_status": "official_in_force",
+          "eu_ets_emissions_coverage_for_reporting_year_pct": 100.0,
+          "eu_ets_status": "official_in_force",
+          "eu_ets_gases": [
+            "CO2",
+            "CH4",
+            "N2O"
+          ]
+        },
         "cii_reduction_vs_2019_pct": 21.5,
         "representative_route_count": 21,
         "physical_allocated_dwt": 271481079.266903,
@@ -18307,12 +18703,1213 @@
           "central": 0.959315,
           "high": 0.981974
         },
+        "baseline_required_dwt": 260841606.409877,
         "same_service_required_dwt": 271907012.716397,
         "same_service_required_dwt_range": {
           "low": 265630614.290883,
           "central": 271907012.716397,
           "high": 280779224.985927
         },
+        "additional_required_vs_baseline_dwt": 11065406.30652,
+        "capacity_gap_vs_allocated_dwt": 425933.449494,
+        "ship_type_breakdown": [
+          {
+            "ship_type": "container",
+            "representative_route_count": 5,
+            "physical_allocated_dwt": 16073516.179019,
+            "effective_service_capacity_dwt": 15548609.442298,
+            "effective_dwt_loss": 524906.736721,
+            "effective_capacity_retention_rate": 0.967343,
+            "effective_capacity_retention_rate_range": {
+              "low": 0.941898,
+              "central": 0.967343,
+              "high": 0.985314
+            },
+            "baseline_required_dwt": 15308110.646685,
+            "same_service_required_dwt": 15824944.804022,
+            "same_service_required_dwt_range": {
+              "low": 15536284.053363,
+              "central": 15824944.804022,
+              "high": 16252786.555972
+            },
+            "additional_required_vs_baseline_dwt": 516834.157337,
+            "capacity_gap_vs_allocated_dwt": 0.0
+          },
+          {
+            "ship_type": "dry_bulk",
+            "representative_route_count": 9,
+            "physical_allocated_dwt": 144152542.805968,
+            "effective_service_capacity_dwt": 138238916.636842,
+            "effective_dwt_loss": 5913626.169127,
+            "effective_capacity_retention_rate": 0.958977,
+            "effective_capacity_retention_rate_range": {
+              "low": 0.928664,
+              "central": 0.958977,
+              "high": 0.981819
+            },
+            "baseline_required_dwt": 138608214.236508,
+            "same_service_required_dwt": 144537941.476252,
+            "same_service_required_dwt_range": {
+              "low": 141175022.610465,
+              "central": 144537941.476252,
+              "high": 149256508.936285
+            },
+            "additional_required_vs_baseline_dwt": 5929727.239744,
+            "capacity_gap_vs_allocated_dwt": 385398.670283
+          },
+          {
+            "ship_type": "tanker",
+            "representative_route_count": 7,
+            "physical_allocated_dwt": 111255020.281915,
+            "effective_service_capacity_dwt": 106648336.95101,
+            "effective_dwt_loss": 4606683.330906,
+            "effective_capacity_retention_rate": 0.958593,
+            "effective_capacity_retention_rate_range": {
+              "low": 0.927617,
+              "central": 0.958593,
+              "high": 0.981693
+            },
+            "baseline_required_dwt": 106925281.526684,
+            "same_service_required_dwt": 111544126.436123,
+            "same_service_required_dwt_range": {
+              "low": 108919307.627054,
+              "central": 111544126.436123,
+              "high": 115269929.493671
+            },
+            "additional_required_vs_baseline_dwt": 4618844.90944,
+            "capacity_gap_vs_allocated_dwt": 289106.154208
+          }
+        ],
+        "scope": "active representative routes, not the full world fleet"
+      },
+      {
+        "id": "accelerated_2026",
+        "name_ko": "2026 규제 강화",
+        "year": 2026,
+        "status": "scenario_provisional",
+        "pathway_id": "accelerated",
+        "pathway_name_ko": "규제 강화",
+        "pathway_policy_status": "counterfactual_not_adopted",
+        "pathway_description_ko": "CII 감축계수를 2027년부터 매년 2.8%p 높이고 FuelEU 강도를 앞당기는 반사실 민감도다.",
+        "behavior_assumption_status": "provisional_sensitivity_seed_not_observed_operator_behavior",
+        "regulatory_inputs": {
+          "cii_reduction_vs_2019_pct": 11.0,
+          "cii_status": "counterfactual_not_adopted",
+          "fueleu_ghg_intensity_reduction_vs_2020_pct": 2.5,
+          "fueleu_status": "counterfactual_not_adopted",
+          "eu_ets_emissions_coverage_for_reporting_year_pct": 100.0,
+          "eu_ets_status": "official_in_force",
+          "eu_ets_gases": [
+            "CO2",
+            "CH4",
+            "N2O"
+          ]
+        },
+        "cii_reduction_vs_2019_pct": 11.0,
+        "representative_route_count": 21,
+        "physical_allocated_dwt": 271481079.266903,
+        "effective_service_capacity_dwt": 266523684.322596,
+        "effective_dwt_loss": 4957394.944307,
+        "effective_capacity_retention_rate": 0.981739,
+        "effective_capacity_retention_rate_range": {
+          "low": 0.968579,
+          "central": 0.981739,
+          "high": 0.99152
+        },
+        "baseline_required_dwt": 260841606.409877,
+        "same_service_required_dwt": 265694539.227087,
+        "same_service_required_dwt_range": {
+          "low": 263072859.002595,
+          "central": 265694539.227087,
+          "high": 269306181.04889
+        },
+        "additional_required_vs_baseline_dwt": 4852932.81721,
+        "capacity_gap_vs_allocated_dwt": 0.0,
+        "ship_type_breakdown": [
+          {
+            "ship_type": "container",
+            "representative_route_count": 5,
+            "physical_allocated_dwt": 16073516.179019,
+            "effective_service_capacity_dwt": 15856929.087707,
+            "effective_dwt_loss": 216587.091313,
+            "effective_capacity_retention_rate": 0.986525,
+            "effective_capacity_retention_rate_range": {
+              "low": 0.976487,
+              "central": 0.986525,
+              "high": 0.993584
+            },
+            "baseline_required_dwt": 15308110.646685,
+            "same_service_required_dwt": 15517208.780045,
+            "same_service_required_dwt_range": {
+              "low": 15406961.989419,
+              "central": 15517208.780045,
+              "high": 15676770.69305
+            },
+            "additional_required_vs_baseline_dwt": 209098.13336,
+            "capacity_gap_vs_allocated_dwt": 0.0
+          },
+          {
+            "ship_type": "dry_bulk",
+            "representative_route_count": 9,
+            "physical_allocated_dwt": 144152542.805968,
+            "effective_service_capacity_dwt": 141488319.123932,
+            "effective_dwt_loss": 2664223.682036,
+            "effective_capacity_retention_rate": 0.981518,
+            "effective_capacity_retention_rate_range": {
+              "low": 0.968303,
+              "central": 0.981518,
+              "high": 0.991416
+            },
+            "baseline_required_dwt": 138608214.236508,
+            "same_service_required_dwt": 141218264.232506,
+            "same_service_required_dwt_range": {
+              "low": 139808345.856749,
+              "central": 141218264.232506,
+              "high": 143145738.491763
+            },
+            "additional_required_vs_baseline_dwt": 2610049.995998,
+            "capacity_gap_vs_allocated_dwt": 0.0
+          },
+          {
+            "ship_type": "tanker",
+            "representative_route_count": 7,
+            "physical_allocated_dwt": 111255020.281915,
+            "effective_service_capacity_dwt": 109178436.110957,
+            "effective_dwt_loss": 2076584.170958,
+            "effective_capacity_retention_rate": 0.981335,
+            "effective_capacity_retention_rate_range": {
+              "low": 0.967795,
+              "central": 0.981335,
+              "high": 0.991357
+            },
+            "baseline_required_dwt": 106925281.526684,
+            "same_service_required_dwt": 108959066.214536,
+            "same_service_required_dwt_range": {
+              "low": 107857551.156427,
+              "central": 108959066.214536,
+              "high": 110483671.864077
+            },
+            "additional_required_vs_baseline_dwt": 2033784.687852,
+            "capacity_gap_vs_allocated_dwt": 0.0
+          }
+        ],
+        "scope": "active representative routes, not the full world fleet"
+      },
+      {
+        "id": "accelerated_2027",
+        "name_ko": "2027 규제 강화",
+        "year": 2027,
+        "status": "scenario_provisional",
+        "pathway_id": "accelerated",
+        "pathway_name_ko": "규제 강화",
+        "pathway_policy_status": "counterfactual_not_adopted",
+        "pathway_description_ko": "CII 감축계수를 2027년부터 매년 2.8%p 높이고 FuelEU 강도를 앞당기는 반사실 민감도다.",
+        "behavior_assumption_status": "provisional_sensitivity_seed_not_observed_operator_behavior",
+        "regulatory_inputs": {
+          "cii_reduction_vs_2019_pct": 13.8,
+          "cii_status": "counterfactual_not_adopted",
+          "fueleu_ghg_intensity_reduction_vs_2020_pct": 3.0,
+          "fueleu_status": "counterfactual_not_adopted",
+          "eu_ets_emissions_coverage_for_reporting_year_pct": 100.0,
+          "eu_ets_status": "official_in_force",
+          "eu_ets_gases": [
+            "CO2",
+            "CH4",
+            "N2O"
+          ]
+        },
+        "cii_reduction_vs_2019_pct": 13.8,
+        "representative_route_count": 21,
+        "physical_allocated_dwt": 271481079.266903,
+        "effective_service_capacity_dwt": 265000057.503437,
+        "effective_dwt_loss": 6481021.763466,
+        "effective_capacity_retention_rate": 0.976127,
+        "effective_capacity_retention_rate_range": {
+          "low": 0.95878,
+          "central": 0.976127,
+          "high": 0.989017
+        },
+        "baseline_required_dwt": 260841606.409877,
+        "same_service_required_dwt": 267222488.532508,
+        "same_service_required_dwt_range": {
+          "low": 263738816.159587,
+          "central": 267222488.532508,
+          "high": 272059501.158579
+        },
+        "additional_required_vs_baseline_dwt": 6380882.122632,
+        "capacity_gap_vs_allocated_dwt": 0.0,
+        "ship_type_breakdown": [
+          {
+            "ship_type": "container",
+            "representative_route_count": 5,
+            "physical_allocated_dwt": 16073516.179019,
+            "effective_service_capacity_dwt": 15778063.610156,
+            "effective_dwt_loss": 295452.568864,
+            "effective_capacity_retention_rate": 0.981619,
+            "effective_capacity_retention_rate_range": {
+              "low": 0.967647,
+              "central": 0.981619,
+              "high": 0.99144
+            },
+            "baseline_required_dwt": 15308110.646685,
+            "same_service_required_dwt": 15594777.226536,
+            "same_service_required_dwt_range": {
+              "low": 15440279.997505,
+              "central": 15594777.226536,
+              "high": 15820049.221624
+            },
+            "additional_required_vs_baseline_dwt": 286666.579851,
+            "capacity_gap_vs_allocated_dwt": 0.0
+          },
+          {
+            "ship_type": "dry_bulk",
+            "representative_route_count": 9,
+            "physical_allocated_dwt": 144152542.805968,
+            "effective_service_capacity_dwt": 140676519.436185,
+            "effective_dwt_loss": 3476023.369783,
+            "effective_capacity_retention_rate": 0.975886,
+            "effective_capacity_retention_rate_range": {
+              "low": 0.958512,
+              "central": 0.975886,
+              "high": 0.988898
+            },
+            "baseline_required_dwt": 138608214.236508,
+            "same_service_required_dwt": 142033239.976487,
+            "same_service_required_dwt_range": {
+              "low": 140164291.036325,
+              "central": 142033239.976487,
+              "high": 144608104.470166
+            },
+            "additional_required_vs_baseline_dwt": 3425025.739979,
+            "capacity_gap_vs_allocated_dwt": 0.0
+          },
+          {
+            "ship_type": "tanker",
+            "representative_route_count": 7,
+            "physical_allocated_dwt": 111255020.281915,
+            "effective_service_capacity_dwt": 108545474.457096,
+            "effective_dwt_loss": 2709545.82482,
+            "effective_capacity_retention_rate": 0.975646,
+            "effective_capacity_retention_rate_range": {
+              "low": 0.957847,
+              "central": 0.975646,
+              "high": 0.98882
+            },
+            "baseline_required_dwt": 106925281.526684,
+            "same_service_required_dwt": 109594471.329485,
+            "same_service_required_dwt_range": {
+              "low": 108134245.125757,
+              "central": 109594471.329485,
+              "high": 111631347.466789
+            },
+            "additional_required_vs_baseline_dwt": 2669189.802801,
+            "capacity_gap_vs_allocated_dwt": 0.0
+          }
+        ],
+        "scope": "active representative routes, not the full world fleet"
+      },
+      {
+        "id": "accelerated_2028",
+        "name_ko": "2028 규제 강화",
+        "year": 2028,
+        "status": "scenario_provisional",
+        "pathway_id": "accelerated",
+        "pathway_name_ko": "규제 강화",
+        "pathway_policy_status": "counterfactual_not_adopted",
+        "pathway_description_ko": "CII 감축계수를 2027년부터 매년 2.8%p 높이고 FuelEU 강도를 앞당기는 반사실 민감도다.",
+        "behavior_assumption_status": "provisional_sensitivity_seed_not_observed_operator_behavior",
+        "regulatory_inputs": {
+          "cii_reduction_vs_2019_pct": 16.6,
+          "cii_status": "counterfactual_not_adopted",
+          "fueleu_ghg_intensity_reduction_vs_2020_pct": 4.0,
+          "fueleu_status": "counterfactual_not_adopted",
+          "eu_ets_emissions_coverage_for_reporting_year_pct": 100.0,
+          "eu_ets_status": "official_in_force",
+          "eu_ets_gases": [
+            "CO2",
+            "CH4",
+            "N2O"
+          ]
+        },
+        "cii_reduction_vs_2019_pct": 16.6,
+        "representative_route_count": 21,
+        "physical_allocated_dwt": 271481079.266903,
+        "effective_service_capacity_dwt": 263063080.298641,
+        "effective_dwt_loss": 8417998.968262,
+        "effective_capacity_retention_rate": 0.968992,
+        "effective_capacity_retention_rate_range": {
+          "low": 0.946118,
+          "central": 0.968992,
+          "high": 0.98602
+        },
+        "baseline_required_dwt": 260841606.409877,
+        "same_service_required_dwt": 269190888.179699,
+        "same_service_required_dwt_range": {
+          "low": 264540612.205766,
+          "central": 269190888.179699,
+          "high": 275702794.687107
+        },
+        "additional_required_vs_baseline_dwt": 8349281.769822,
+        "capacity_gap_vs_allocated_dwt": 0.0,
+        "ship_type_breakdown": [
+          {
+            "ship_type": "container",
+            "representative_route_count": 5,
+            "physical_allocated_dwt": 16073516.179019,
+            "effective_service_capacity_dwt": 15690960.70194,
+            "effective_dwt_loss": 382555.47708,
+            "effective_capacity_retention_rate": 0.9762,
+            "effective_capacity_retention_rate_range": {
+              "low": 0.957886,
+              "central": 0.9762,
+              "high": 0.989065
+            },
+            "baseline_required_dwt": 15308110.646685,
+            "same_service_required_dwt": 15681357.09353,
+            "same_service_required_dwt_range": {
+              "low": 15477364.688516,
+              "central": 15681357.09353,
+              "high": 15981343.439806
+            },
+            "additional_required_vs_baseline_dwt": 373246.446845,
+            "capacity_gap_vs_allocated_dwt": 0.0
+          },
+          {
+            "ship_type": "dry_bulk",
+            "representative_route_count": 9,
+            "physical_allocated_dwt": 144152542.805968,
+            "effective_service_capacity_dwt": 139636498.663799,
+            "effective_dwt_loss": 4516044.142169,
+            "effective_capacity_retention_rate": 0.968672,
+            "effective_capacity_retention_rate_range": {
+              "low": 0.945743,
+              "central": 0.968672,
+              "high": 0.985872
+            },
+            "baseline_required_dwt": 138608214.236508,
+            "same_service_required_dwt": 143091188.731723,
+            "same_service_required_dwt_range": {
+              "low": 140594627.003483,
+              "central": 143091188.731723,
+              "high": 146560771.765171
+            },
+            "additional_required_vs_baseline_dwt": 4482974.495215,
+            "capacity_gap_vs_allocated_dwt": 0.0
+          },
+          {
+            "ship_type": "tanker",
+            "representative_route_count": 7,
+            "physical_allocated_dwt": 111255020.281915,
+            "effective_service_capacity_dwt": 107735620.932903,
+            "effective_dwt_loss": 3519399.349013,
+            "effective_capacity_retention_rate": 0.968366,
+            "effective_capacity_retention_rate_range": {
+              "low": 0.944904,
+              "central": 0.968366,
+              "high": 0.985772
+            },
+            "baseline_required_dwt": 106925281.526684,
+            "same_service_required_dwt": 110418342.354446,
+            "same_service_required_dwt_range": {
+              "low": 108468620.513767,
+              "central": 110418342.354446,
+              "high": 113160679.48213
+            },
+            "additional_required_vs_baseline_dwt": 3493060.827762,
+            "capacity_gap_vs_allocated_dwt": 0.0
+          }
+        ],
+        "scope": "active representative routes, not the full world fleet"
+      },
+      {
+        "id": "accelerated_2029",
+        "name_ko": "2029 규제 강화",
+        "year": 2029,
+        "status": "scenario_provisional",
+        "pathway_id": "accelerated",
+        "pathway_name_ko": "규제 강화",
+        "pathway_policy_status": "counterfactual_not_adopted",
+        "pathway_description_ko": "CII 감축계수를 2027년부터 매년 2.8%p 높이고 FuelEU 강도를 앞당기는 반사실 민감도다.",
+        "behavior_assumption_status": "provisional_sensitivity_seed_not_observed_operator_behavior",
+        "regulatory_inputs": {
+          "cii_reduction_vs_2019_pct": 19.4,
+          "cii_status": "counterfactual_not_adopted",
+          "fueleu_ghg_intensity_reduction_vs_2020_pct": 5.5,
+          "fueleu_status": "counterfactual_not_adopted",
+          "eu_ets_emissions_coverage_for_reporting_year_pct": 100.0,
+          "eu_ets_status": "official_in_force",
+          "eu_ets_gases": [
+            "CO2",
+            "CH4",
+            "N2O"
+          ]
+        },
+        "cii_reduction_vs_2019_pct": 19.4,
+        "representative_route_count": 21,
+        "physical_allocated_dwt": 271481079.266903,
+        "effective_service_capacity_dwt": 260990477.260842,
+        "effective_dwt_loss": 10490602.006061,
+        "effective_capacity_retention_rate": 0.961358,
+        "effective_capacity_retention_rate_range": {
+          "low": 0.932624,
+          "central": 0.961358,
+          "high": 0.982786
+        },
+        "baseline_required_dwt": 260841606.409877,
+        "same_service_required_dwt": 271329591.271893,
+        "same_service_required_dwt_range": {
+          "low": 265411171.937634,
+          "central": 271329591.271893,
+          "high": 279694850.43722
+        },
+        "additional_required_vs_baseline_dwt": 10487984.862016,
+        "capacity_gap_vs_allocated_dwt": 0.0,
+        "ship_type_breakdown": [
+          {
+            "ship_type": "container",
+            "representative_route_count": 5,
+            "physical_allocated_dwt": 16073516.179019,
+            "effective_service_capacity_dwt": 15595652.812063,
+            "effective_dwt_loss": 477863.366957,
+            "effective_capacity_retention_rate": 0.97027,
+            "effective_capacity_retention_rate_range": {
+              "low": 0.947213,
+              "central": 0.97027,
+              "high": 0.986458
+            },
+            "baseline_required_dwt": 15308110.646685,
+            "same_service_required_dwt": 15777205.116361,
+            "same_service_required_dwt_range": {
+              "low": 15518266.691957,
+              "central": 15777205.116361,
+              "high": 16161553.907134
+            },
+            "additional_required_vs_baseline_dwt": 469094.469676,
+            "capacity_gap_vs_allocated_dwt": 0.0
+          },
+          {
+            "ship_type": "dry_bulk",
+            "representative_route_count": 9,
+            "physical_allocated_dwt": 144152542.805968,
+            "effective_service_capacity_dwt": 138524992.956143,
+            "effective_dwt_loss": 5627549.849826,
+            "effective_capacity_retention_rate": 0.960961,
+            "effective_capacity_retention_rate_range": {
+              "low": 0.932155,
+              "central": 0.960961,
+              "high": 0.982609
+            },
+            "baseline_required_dwt": 138608214.236508,
+            "same_service_required_dwt": 144239445.859895,
+            "same_service_required_dwt_range": {
+              "low": 141061457.50754,
+              "central": 144239445.859895,
+              "high": 148697603.837693
+            },
+            "additional_required_vs_baseline_dwt": 5631231.623387,
+            "capacity_gap_vs_allocated_dwt": 86903.053927
+          },
+          {
+            "ship_type": "tanker",
+            "representative_route_count": 7,
+            "physical_allocated_dwt": 111255020.281915,
+            "effective_service_capacity_dwt": 106869831.492637,
+            "effective_dwt_loss": 4385188.789279,
+            "effective_capacity_retention_rate": 0.960584,
+            "effective_capacity_retention_rate_range": {
+              "low": 0.931125,
+              "central": 0.960584,
+              "high": 0.982486
+            },
+            "baseline_required_dwt": 106925281.526684,
+            "same_service_required_dwt": 111312940.295637,
+            "same_service_required_dwt_range": {
+              "low": 108831447.738136,
+              "central": 111312940.295637,
+              "high": 114835692.692394
+            },
+            "additional_required_vs_baseline_dwt": 4387658.768953,
+            "capacity_gap_vs_allocated_dwt": 57920.013722
+          }
+        ],
+        "scope": "active representative routes, not the full world fleet"
+      },
+      {
+        "id": "accelerated_2030",
+        "name_ko": "2030 규제 강화",
+        "year": 2030,
+        "status": "scenario_provisional",
+        "pathway_id": "accelerated",
+        "pathway_name_ko": "규제 강화",
+        "pathway_policy_status": "counterfactual_not_adopted",
+        "pathway_description_ko": "CII 감축계수를 2027년부터 매년 2.8%p 높이고 FuelEU 강도를 앞당기는 반사실 민감도다.",
+        "behavior_assumption_status": "provisional_sensitivity_seed_not_observed_operator_behavior",
+        "regulatory_inputs": {
+          "cii_reduction_vs_2019_pct": 22.2,
+          "cii_status": "counterfactual_not_adopted",
+          "fueleu_ghg_intensity_reduction_vs_2020_pct": 8.0,
+          "fueleu_status": "counterfactual_not_adopted",
+          "eu_ets_emissions_coverage_for_reporting_year_pct": 100.0,
+          "eu_ets_status": "official_in_force",
+          "eu_ets_gases": [
+            "CO2",
+            "CH4",
+            "N2O"
+          ]
+        },
+        "cii_reduction_vs_2019_pct": 22.2,
+        "representative_route_count": 21,
+        "physical_allocated_dwt": 271481079.266903,
+        "effective_service_capacity_dwt": 258463202.794229,
+        "effective_dwt_loss": 13017876.472674,
+        "effective_capacity_retention_rate": 0.952049,
+        "effective_capacity_retention_rate_range": {
+          "low": 0.916555,
+          "central": 0.952049,
+          "high": 0.978618
+        },
+        "baseline_required_dwt": 260841606.409877,
+        "same_service_required_dwt": 273983307.431196,
+        "same_service_required_dwt_range": {
+          "low": 266541721.098314,
+          "central": 273983307.431196,
+          "high": 284600502.742213
+        },
+        "additional_required_vs_baseline_dwt": 13141701.021319,
+        "capacity_gap_vs_allocated_dwt": 2502228.164293,
+        "ship_type_breakdown": [
+          {
+            "ship_type": "container",
+            "representative_route_count": 5,
+            "physical_allocated_dwt": 16073516.179019,
+            "effective_service_capacity_dwt": 15456069.600575,
+            "effective_dwt_loss": 617446.578444,
+            "effective_capacity_retention_rate": 0.961586,
+            "effective_capacity_retention_rate_range": {
+              "low": 0.931737,
+              "central": 0.961586,
+              "high": 0.982648
+            },
+            "baseline_required_dwt": 15308110.646685,
+            "same_service_required_dwt": 15919715.386688,
+            "same_service_required_dwt_range": {
+              "low": 15578436.572504,
+              "central": 15919715.386688,
+              "high": 16430210.904785
+            },
+            "additional_required_vs_baseline_dwt": 611604.740003,
+            "capacity_gap_vs_allocated_dwt": 0.0
+          },
+          {
+            "ship_type": "dry_bulk",
+            "representative_route_count": 9,
+            "physical_allocated_dwt": 144152542.805968,
+            "effective_service_capacity_dwt": 137182832.843749,
+            "effective_dwt_loss": 6969709.962219,
+            "effective_capacity_retention_rate": 0.95165,
+            "effective_capacity_retention_rate_range": {
+              "low": 0.91615,
+              "central": 0.95165,
+              "high": 0.978431
+            },
+            "baseline_required_dwt": 138608214.236508,
+            "same_service_required_dwt": 145650806.466954,
+            "same_service_required_dwt_range": {
+              "low": 141663821.238359,
+              "central": 145650806.466954,
+              "high": 151295866.020533
+            },
+            "additional_required_vs_baseline_dwt": 7042592.230446,
+            "capacity_gap_vs_allocated_dwt": 1498263.660985
+          },
+          {
+            "ship_type": "tanker",
+            "representative_route_count": 7,
+            "physical_allocated_dwt": 111255020.281915,
+            "effective_service_capacity_dwt": 105824300.349905,
+            "effective_dwt_loss": 5430719.932011,
+            "effective_capacity_retention_rate": 0.951187,
+            "effective_capacity_retention_rate_range": {
+              "low": 0.914887,
+              "central": 0.951187,
+              "high": 0.978279
+            },
+            "baseline_required_dwt": 106925281.526684,
+            "same_service_required_dwt": 112412785.577554,
+            "same_service_required_dwt_range": {
+              "low": 109299463.28745,
+              "central": 112412785.577554,
+              "high": 116874425.816895
+            },
+            "additional_required_vs_baseline_dwt": 5487504.05087,
+            "capacity_gap_vs_allocated_dwt": 1157765.295639
+          }
+        ],
+        "scope": "active representative routes, not the full world fleet"
+      },
+      {
+        "id": "deferred_2026",
+        "name_ko": "2026 규제 유예·완화",
+        "year": 2026,
+        "status": "scenario_provisional",
+        "pathway_id": "deferred",
+        "pathway_name_ko": "규제 유예·완화",
+        "pathway_policy_status": "counterfactual_not_adopted",
+        "pathway_description_ko": "2027년 이후 CII 강화와 2030년 FuelEU 상향을 1년 늦추는 반사실 민감도다.",
+        "behavior_assumption_status": "provisional_sensitivity_seed_not_observed_operator_behavior",
+        "regulatory_inputs": {
+          "cii_reduction_vs_2019_pct": 11.0,
+          "cii_status": "counterfactual_not_adopted",
+          "fueleu_ghg_intensity_reduction_vs_2020_pct": 2.0,
+          "fueleu_status": "counterfactual_not_adopted",
+          "eu_ets_emissions_coverage_for_reporting_year_pct": 100.0,
+          "eu_ets_status": "official_in_force",
+          "eu_ets_gases": [
+            "CO2",
+            "CH4",
+            "N2O"
+          ]
+        },
+        "cii_reduction_vs_2019_pct": 11.0,
+        "representative_route_count": 21,
+        "physical_allocated_dwt": 271481079.266903,
+        "effective_service_capacity_dwt": 268509402.22193,
+        "effective_dwt_loss": 2971677.044973,
+        "effective_capacity_retention_rate": 0.989054,
+        "effective_capacity_retention_rate_range": {
+          "low": 0.981189,
+          "central": 0.989054,
+          "high": 0.994902
+        },
+        "baseline_required_dwt": 260841606.409877,
+        "same_service_required_dwt": 263728985.853371,
+        "same_service_required_dwt_range": {
+          "low": 262178398.677709,
+          "central": 263728985.853371,
+          "high": 265843439.225757
+        },
+        "additional_required_vs_baseline_dwt": 2887379.443494,
+        "capacity_gap_vs_allocated_dwt": 0.0,
+        "ship_type_breakdown": [
+          {
+            "ship_type": "container",
+            "representative_route_count": 5,
+            "physical_allocated_dwt": 16073516.179019,
+            "effective_service_capacity_dwt": 15941109.04429,
+            "effective_dwt_loss": 132407.13473,
+            "effective_capacity_retention_rate": 0.991762,
+            "effective_capacity_retention_rate_range": {
+              "low": 0.985669,
+              "central": 0.991762,
+              "high": 0.996056
+            },
+            "baseline_required_dwt": 15308110.646685,
+            "same_service_required_dwt": 15435262.584126,
+            "same_service_required_dwt_range": {
+              "low": 15368724.357486,
+              "central": 15435262.584126,
+              "high": 15530706.370322
+            },
+            "additional_required_vs_baseline_dwt": 127151.937441,
+            "capacity_gap_vs_allocated_dwt": 0.0
+          },
+          {
+            "ship_type": "dry_bulk",
+            "representative_route_count": 9,
+            "physical_allocated_dwt": 144152542.805968,
+            "effective_service_capacity_dwt": 142556725.155547,
+            "effective_dwt_loss": 1595817.650422,
+            "effective_capacity_retention_rate": 0.98893,
+            "effective_capacity_retention_rate_range": {
+              "low": 0.981037,
+              "central": 0.98893,
+              "high": 0.994844
+            },
+            "baseline_required_dwt": 138608214.236508,
+            "same_service_required_dwt": 140159849.087975,
+            "same_service_required_dwt_range": {
+              "low": 139326547.975838,
+              "central": 140159849.087975,
+              "high": 141287559.601211
+            },
+            "additional_required_vs_baseline_dwt": 1551634.851467,
+            "capacity_gap_vs_allocated_dwt": 0.0
+          },
+          {
+            "ship_type": "tanker",
+            "representative_route_count": 7,
+            "physical_allocated_dwt": 111255020.281915,
+            "effective_service_capacity_dwt": 110011568.022094,
+            "effective_dwt_loss": 1243452.259822,
+            "effective_capacity_retention_rate": 0.988823,
+            "effective_capacity_retention_rate_range": {
+              "low": 0.98074,
+              "central": 0.988823,
+              "high": 0.99481
+            },
+            "baseline_required_dwt": 106925281.526684,
+            "same_service_required_dwt": 108133874.18127,
+            "same_service_required_dwt_range": {
+              "low": 107483126.344385,
+              "central": 108133874.18127,
+              "high": 109025173.254225
+            },
+            "additional_required_vs_baseline_dwt": 1208592.654586,
+            "capacity_gap_vs_allocated_dwt": 0.0
+          }
+        ],
+        "scope": "active representative routes, not the full world fleet"
+      },
+      {
+        "id": "deferred_2027",
+        "name_ko": "2027 규제 유예·완화",
+        "year": 2027,
+        "status": "scenario_provisional",
+        "pathway_id": "deferred",
+        "pathway_name_ko": "규제 유예·완화",
+        "pathway_policy_status": "counterfactual_not_adopted",
+        "pathway_description_ko": "2027년 이후 CII 강화와 2030년 FuelEU 상향을 1년 늦추는 반사실 민감도다.",
+        "behavior_assumption_status": "provisional_sensitivity_seed_not_observed_operator_behavior",
+        "regulatory_inputs": {
+          "cii_reduction_vs_2019_pct": 11.0,
+          "cii_status": "counterfactual_not_adopted",
+          "fueleu_ghg_intensity_reduction_vs_2020_pct": 2.0,
+          "fueleu_status": "counterfactual_not_adopted",
+          "eu_ets_emissions_coverage_for_reporting_year_pct": 100.0,
+          "eu_ets_status": "official_in_force",
+          "eu_ets_gases": [
+            "CO2",
+            "CH4",
+            "N2O"
+          ]
+        },
+        "cii_reduction_vs_2019_pct": 11.0,
+        "representative_route_count": 21,
+        "physical_allocated_dwt": 271481079.266903,
+        "effective_service_capacity_dwt": 267608997.644761,
+        "effective_dwt_loss": 3872081.622142,
+        "effective_capacity_retention_rate": 0.985737,
+        "effective_capacity_retention_rate_range": {
+          "low": 0.975387,
+          "central": 0.985737,
+          "high": 0.993426
+        },
+        "baseline_required_dwt": 260841606.409877,
+        "same_service_required_dwt": 264616462.331331,
+        "same_service_required_dwt_range": {
+          "low": 262567948.501248,
+          "central": 264616462.331331,
+          "high": 267425211.159717
+        },
+        "additional_required_vs_baseline_dwt": 3774855.921454,
+        "capacity_gap_vs_allocated_dwt": 0.0,
+        "ship_type_breakdown": [
+          {
+            "ship_type": "container",
+            "representative_route_count": 5,
+            "physical_allocated_dwt": 16073516.179019,
+            "effective_service_capacity_dwt": 15894025.088697,
+            "effective_dwt_loss": 179491.090323,
+            "effective_capacity_retention_rate": 0.988833,
+            "effective_capacity_retention_rate_range": {
+              "low": 0.980388,
+              "central": 0.988833,
+              "high": 0.994777
+            },
+            "baseline_required_dwt": 15308110.646685,
+            "same_service_required_dwt": 15480989.766815,
+            "same_service_required_dwt_range": {
+              "low": 15388478.725487,
+              "central": 15480989.766815,
+              "high": 15614373.338138
+            },
+            "additional_required_vs_baseline_dwt": 172879.12013,
+            "capacity_gap_vs_allocated_dwt": 0.0
+          },
+          {
+            "ship_type": "dry_bulk",
+            "representative_route_count": 9,
+            "physical_allocated_dwt": 144152542.805968,
+            "effective_service_capacity_dwt": 142077188.046507,
+            "effective_dwt_loss": 2075354.759461,
+            "effective_capacity_retention_rate": 0.985603,
+            "effective_capacity_retention_rate_range": {
+              "low": 0.975241,
+              "central": 0.985603,
+              "high": 0.993361
+            },
+            "baseline_required_dwt": 138608214.236508,
+            "same_service_required_dwt": 140632929.890266,
+            "same_service_required_dwt_range": {
+              "low": 139534635.520401,
+              "central": 140632929.890266,
+              "high": 142127259.357486
+            },
+            "additional_required_vs_baseline_dwt": 2024715.653758,
+            "capacity_gap_vs_allocated_dwt": 0.0
+          },
+          {
+            "ship_type": "tanker",
+            "representative_route_count": 7,
+            "physical_allocated_dwt": 111255020.281915,
+            "effective_service_capacity_dwt": 109637784.509557,
+            "effective_dwt_loss": 1617235.772358,
+            "effective_capacity_retention_rate": 0.985464,
+            "effective_capacity_retention_rate_range": {
+              "low": 0.974854,
+              "central": 0.985464,
+              "high": 0.993316
+            },
+            "baseline_required_dwt": 106925281.526684,
+            "same_service_required_dwt": 108502542.674249,
+            "same_service_required_dwt_range": {
+              "low": 107644834.255359,
+              "central": 108502542.674249,
+              "high": 109683578.464094
+            },
+            "additional_required_vs_baseline_dwt": 1577261.147566,
+            "capacity_gap_vs_allocated_dwt": 0.0
+          }
+        ],
+        "scope": "active representative routes, not the full world fleet"
+      },
+      {
+        "id": "deferred_2028",
+        "name_ko": "2028 규제 유예·완화",
+        "year": 2028,
+        "status": "scenario_provisional",
+        "pathway_id": "deferred",
+        "pathway_name_ko": "규제 유예·완화",
+        "pathway_policy_status": "counterfactual_not_adopted",
+        "pathway_description_ko": "2027년 이후 CII 강화와 2030년 FuelEU 상향을 1년 늦추는 반사실 민감도다.",
+        "behavior_assumption_status": "provisional_sensitivity_seed_not_observed_operator_behavior",
+        "regulatory_inputs": {
+          "cii_reduction_vs_2019_pct": 13.625,
+          "cii_status": "counterfactual_not_adopted",
+          "fueleu_ghg_intensity_reduction_vs_2020_pct": 2.0,
+          "fueleu_status": "counterfactual_not_adopted",
+          "eu_ets_emissions_coverage_for_reporting_year_pct": 100.0,
+          "eu_ets_status": "official_in_force",
+          "eu_ets_gases": [
+            "CO2",
+            "CH4",
+            "N2O"
+          ]
+        },
+        "cii_reduction_vs_2019_pct": 13.625,
+        "representative_route_count": 21,
+        "physical_allocated_dwt": 271481079.266903,
+        "effective_service_capacity_dwt": 266454464.451749,
+        "effective_dwt_loss": 5026614.815155,
+        "effective_capacity_retention_rate": 0.981484,
+        "effective_capacity_retention_rate_range": {
+          "low": 0.967802,
+          "central": 0.981484,
+          "high": 0.991655
+        },
+        "baseline_required_dwt": 260841606.409877,
+        "same_service_required_dwt": 265763361.229488,
+        "same_service_required_dwt_range": {
+          "low": 263037045.971713,
+          "central": 265763361.229488,
+          "high": 269522030.318303
+        },
+        "additional_required_vs_baseline_dwt": 4921754.819612,
+        "capacity_gap_vs_allocated_dwt": 0.0,
+        "ship_type_breakdown": [
+          {
+            "ship_type": "container",
+            "representative_route_count": 5,
+            "physical_allocated_dwt": 16073516.179019,
+            "effective_service_capacity_dwt": 15842346.553825,
+            "effective_dwt_loss": 231169.625195,
+            "effective_capacity_retention_rate": 0.985618,
+            "effective_capacity_retention_rate_range": {
+              "low": 0.974589,
+              "central": 0.985618,
+              "high": 0.993371
+            },
+            "baseline_required_dwt": 15308110.646685,
+            "same_service_required_dwt": 15531493.061401,
+            "same_service_required_dwt_range": {
+              "low": 15410272.793303,
+              "central": 15531493.061401,
+              "high": 15707310.717814
+            },
+            "additional_required_vs_baseline_dwt": 223382.414716,
+            "capacity_gap_vs_allocated_dwt": 0.0
+          },
+          {
+            "ship_type": "dry_bulk",
+            "representative_route_count": 9,
+            "physical_allocated_dwt": 144152542.805968,
+            "effective_service_capacity_dwt": 141457058.343039,
+            "effective_dwt_loss": 2695484.462929,
+            "effective_capacity_retention_rate": 0.981301,
+            "effective_capacity_retention_rate_range": {
+              "low": 0.967587,
+              "central": 0.981301,
+              "high": 0.991572
+            },
+            "baseline_required_dwt": 138608214.236508,
+            "same_service_required_dwt": 141249469.840077,
+            "same_service_required_dwt_range": {
+              "low": 139786389.182415,
+              "central": 141249469.840077,
+              "high": 143251572.013631
+            },
+            "additional_required_vs_baseline_dwt": 2641255.603569,
+            "capacity_gap_vs_allocated_dwt": 0.0
+          },
+          {
+            "ship_type": "tanker",
+            "representative_route_count": 7,
+            "physical_allocated_dwt": 111255020.281915,
+            "effective_service_capacity_dwt": 109155059.554885,
+            "effective_dwt_loss": 2099960.727031,
+            "effective_capacity_retention_rate": 0.981125,
+            "effective_capacity_retention_rate_range": {
+              "low": 0.967099,
+              "central": 0.981125,
+              "high": 0.991514
+            },
+            "baseline_required_dwt": 106925281.526684,
+            "same_service_required_dwt": 108982398.32801,
+            "same_service_required_dwt_range": {
+              "low": 107840383.995994,
+              "central": 108982398.32801,
+              "high": 110563147.586857
+            },
+            "additional_required_vs_baseline_dwt": 2057116.801326,
+            "capacity_gap_vs_allocated_dwt": 0.0
+          }
+        ],
+        "scope": "active representative routes, not the full world fleet"
+      },
+      {
+        "id": "deferred_2029",
+        "name_ko": "2029 규제 유예·완화",
+        "year": 2029,
+        "status": "scenario_provisional",
+        "pathway_id": "deferred",
+        "pathway_name_ko": "규제 유예·완화",
+        "pathway_policy_status": "counterfactual_not_adopted",
+        "pathway_description_ko": "2027년 이후 CII 강화와 2030년 FuelEU 상향을 1년 늦추는 반사실 민감도다.",
+        "behavior_assumption_status": "provisional_sensitivity_seed_not_observed_operator_behavior",
+        "regulatory_inputs": {
+          "cii_reduction_vs_2019_pct": 16.25,
+          "cii_status": "counterfactual_not_adopted",
+          "fueleu_ghg_intensity_reduction_vs_2020_pct": 2.0,
+          "fueleu_status": "counterfactual_not_adopted",
+          "eu_ets_emissions_coverage_for_reporting_year_pct": 100.0,
+          "eu_ets_status": "official_in_force",
+          "eu_ets_gases": [
+            "CO2",
+            "CH4",
+            "N2O"
+          ]
+        },
+        "cii_reduction_vs_2019_pct": 16.25,
+        "representative_route_count": 21,
+        "physical_allocated_dwt": 271481079.266903,
+        "effective_service_capacity_dwt": 265223331.14987,
+        "effective_dwt_loss": 6257748.117034,
+        "effective_capacity_retention_rate": 0.97695,
+        "effective_capacity_retention_rate_range": {
+          "low": 0.959736,
+          "central": 0.97695,
+          "high": 0.989752
+        },
+        "baseline_required_dwt": 260841606.409877,
+        "same_service_required_dwt": 266997390.153332,
+        "same_service_required_dwt_range": {
+          "low": 263542828.514196,
+          "central": 266997390.153332,
+          "high": 271788212.281081
+        },
+        "additional_required_vs_baseline_dwt": 6155783.743455,
+        "capacity_gap_vs_allocated_dwt": 0.0,
+        "ship_type_breakdown": [
+          {
+            "ship_type": "container",
+            "representative_route_count": 5,
+            "physical_allocated_dwt": 16073516.179019,
+            "effective_service_capacity_dwt": 15786083.137615,
+            "effective_dwt_loss": 287433.041404,
+            "effective_capacity_retention_rate": 0.982118,
+            "effective_capacity_retention_rate_range": {
+              "low": 0.968274,
+              "central": 0.982118,
+              "high": 0.991836
+            },
+            "baseline_required_dwt": 15308110.646685,
+            "same_service_required_dwt": 15586854.30812,
+            "same_service_required_dwt_range": {
+              "low": 15434123.281125,
+              "central": 15586854.30812,
+              "high": 15809795.128699
+            },
+            "additional_required_vs_baseline_dwt": 278743.661434,
+            "capacity_gap_vs_allocated_dwt": 0.0
+          },
+          {
+            "ship_type": "dry_bulk",
+            "representative_route_count": 9,
+            "physical_allocated_dwt": 144152542.805968,
+            "effective_service_capacity_dwt": 140796530.320458,
+            "effective_dwt_loss": 3356012.48551,
+            "effective_capacity_retention_rate": 0.976719,
+            "effective_capacity_retention_rate_range": {
+              "low": 0.95946,
+              "central": 0.976719,
+              "high": 0.989652
+            },
+            "baseline_required_dwt": 138608214.236508,
+            "same_service_required_dwt": 141912156.456996,
+            "same_service_required_dwt_range": {
+              "low": 140057602.144716,
+              "central": 141912156.456996,
+              "high": 144465172.705631
+            },
+            "additional_required_vs_baseline_dwt": 3303942.220488,
+            "capacity_gap_vs_allocated_dwt": 0.0
+          },
+          {
+            "ship_type": "tanker",
+            "representative_route_count": 7,
+            "physical_allocated_dwt": 111255020.281915,
+            "effective_service_capacity_dwt": 108640717.691796,
+            "effective_dwt_loss": 2614302.590119,
+            "effective_capacity_retention_rate": 0.976502,
+            "effective_capacity_retention_rate_range": {
+              "low": 0.958861,
+              "central": 0.976502,
+              "high": 0.989581
+            },
+            "baseline_required_dwt": 106925281.526684,
+            "same_service_required_dwt": 109498379.388216,
+            "same_service_required_dwt_range": {
+              "low": 108051103.088355,
+              "central": 109498379.388216,
+              "high": 111513244.446751
+            },
+            "additional_required_vs_baseline_dwt": 2573097.861532,
+            "capacity_gap_vs_allocated_dwt": 0.0
+          }
+        ],
+        "scope": "active representative routes, not the full world fleet"
+      },
+      {
+        "id": "deferred_2030",
+        "name_ko": "2030 규제 유예·완화",
+        "year": 2030,
+        "status": "scenario_provisional",
+        "pathway_id": "deferred",
+        "pathway_name_ko": "규제 유예·완화",
+        "pathway_policy_status": "counterfactual_not_adopted",
+        "pathway_description_ko": "2027년 이후 CII 강화와 2030년 FuelEU 상향을 1년 늦추는 반사실 민감도다.",
+        "behavior_assumption_status": "provisional_sensitivity_seed_not_observed_operator_behavior",
+        "regulatory_inputs": {
+          "cii_reduction_vs_2019_pct": 18.875,
+          "cii_status": "counterfactual_not_adopted",
+          "fueleu_ghg_intensity_reduction_vs_2020_pct": 2.0,
+          "fueleu_status": "counterfactual_not_adopted",
+          "eu_ets_emissions_coverage_for_reporting_year_pct": 100.0,
+          "eu_ets_status": "official_in_force",
+          "eu_ets_gases": [
+            "CO2",
+            "CH4",
+            "N2O"
+          ]
+        },
+        "cii_reduction_vs_2019_pct": 18.875,
+        "representative_route_count": 21,
+        "physical_allocated_dwt": 271481079.266903,
+        "effective_service_capacity_dwt": 263704128.025695,
+        "effective_dwt_loss": 7776951.241208,
+        "effective_capacity_retention_rate": 0.971354,
+        "effective_capacity_retention_rate_range": {
+          "low": 0.950017,
+          "central": 0.971354,
+          "high": 0.98726
+        },
+        "baseline_required_dwt": 260841606.409877,
+        "same_service_required_dwt": 268535779.917735,
+        "same_service_required_dwt_range": {
+          "low": 264208203.807236,
+          "central": 268535779.917735,
+          "high": 274569424.883598
+        },
+        "additional_required_vs_baseline_dwt": 7694173.507858,
+        "capacity_gap_vs_allocated_dwt": 0.0,
+        "ship_type_breakdown": [
+          {
+            "ship_type": "container",
+            "representative_route_count": 5,
+            "physical_allocated_dwt": 16073516.179019,
+            "effective_service_capacity_dwt": 15701689.520285,
+            "effective_dwt_loss": 371826.658734,
+            "effective_capacity_retention_rate": 0.976867,
+            "effective_capacity_retention_rate_range": {
+              "low": 0.95888,
+              "central": 0.976867,
+              "high": 0.98954
+            },
+            "baseline_required_dwt": 15308110.646685,
+            "same_service_required_dwt": 15670639.320542,
+            "same_service_required_dwt_range": {
+              "low": 15469933.936749,
+              "central": 15670639.320542,
+              "high": 15964755.106736
+            },
+            "additional_required_vs_baseline_dwt": 362528.673857,
+            "capacity_gap_vs_allocated_dwt": 0.0
+          },
+          {
+            "ship_type": "dry_bulk",
+            "representative_route_count": 9,
+            "physical_allocated_dwt": 144152542.805968,
+            "effective_service_capacity_dwt": 139989908.92081,
+            "effective_dwt_loss": 4162633.885158,
+            "effective_capacity_retention_rate": 0.971123,
+            "effective_capacity_retention_rate_range": {
+              "low": 0.94978,
+              "central": 0.971123,
+              "high": 0.987154
+            },
+            "baseline_required_dwt": 138608214.236508,
+            "same_service_required_dwt": 142729901.39502,
+            "same_service_required_dwt_range": {
+              "low": 140411948.415007,
+              "central": 142729901.39502,
+              "high": 145937629.046097
+            },
+            "additional_required_vs_baseline_dwt": 4121687.158512,
+            "capacity_gap_vs_allocated_dwt": 0.0
+          },
+          {
+            "ship_type": "tanker",
+            "representative_route_count": 7,
+            "physical_allocated_dwt": 111255020.281915,
+            "effective_service_capacity_dwt": 108012529.5846,
+            "effective_dwt_loss": 3242490.697315,
+            "effective_capacity_retention_rate": 0.970855,
+            "effective_capacity_retention_rate_range": {
+              "low": 0.949043,
+              "central": 0.970855,
+              "high": 0.987067
+            },
+            "baseline_required_dwt": 106925281.526684,
+            "same_service_required_dwt": 110135239.202174,
+            "same_service_required_dwt_range": {
+              "low": 108326321.455481,
+              "central": 110135239.202174,
+              "high": 112667040.730765
+            },
+            "additional_required_vs_baseline_dwt": 3209957.67549,
+            "capacity_gap_vs_allocated_dwt": 0.0
+          }
+        ],
         "scope": "active representative routes, not the full world fleet"
       }
     ]

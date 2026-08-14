@@ -1,10 +1,12 @@
 {
-  "status": "illustrative_response_path_pending_grok_review",
-  "methodology_ko": "IMO·EU 규제 자체가 감속률을 지정한다고 가정하지 않는다. 규제 대응으로 감속을 선택하는 선대 비중과 감속률, 개조 휴항률을 잠정 시나리오로 입력해 대표 항로의 유효 서비스 DWT를 계산한다.",
+  "contract_version": "environment-pathways-v1",
+  "status": "engine_computed_three_pathway_sensitivity",
+  "methodology_ko": "IMO·EU 규제 자체를 속도 제한으로 환산하지 않는다. 공식 규제 경로와 반사실 정책 경로를 먼저 구분하고, 각 경로에 명시한 선사 대응 민감도만 대표 항로의 유효 서비스 DWT 계산에 사용한다.",
   "warnings_ko": [
     "물리적 선대 DWT가 감소하는 것이 아니라 같은 기간 제공 가능한 서비스 용량이 감소한다.",
     "EU ETS와 FuelEU는 비용·연료 집약도 규제이며 직접적인 속도 제한으로 계산하지 않는다.",
-    "속도 대응 비중과 감속률은 공공 관측값이 아닌 민감도 시드로 다음 Codex EXTRA 재평가 대상이다."
+    "강화 및 유예·완화 경로는 채택된 규정이 아닌 반사실 정책 민감도다.",
+    "속도 대응 비중·감속률·개조 휴항률·퇴출률은 관측 선박 패널이 아닌 공개용 민감도 시드다."
   ],
   "sources": [
     {
@@ -24,17 +26,72 @@
       "url": "https://transport.ec.europa.eu/transport-modes/maritime/decarbonising-maritime-transport-fueleu-maritime_en"
     }
   ],
+  "pathways": [
+    {
+      "id": "imo_adopted",
+      "name_ko": "현행 규제 유지",
+      "policy_status": "official_adopted_path",
+      "description_ko": "IMO가 채택한 2026~2030 CII 감축계수와 현행 EU ETS·FuelEU 일정을 유지한다.",
+      "response_multipliers": {
+        "speed_response_share": 1.0,
+        "speed_reduction_fraction": 1.0,
+        "retrofit_offhire_share": 1.0,
+        "retirement_share": 1.0
+      },
+      "regulatory_path": {
+        "2026": {"cii_reduction_vs_2019_pct": 11.0, "cii_status": "official_adopted", "fueleu_ghg_intensity_reduction_vs_2020_pct": 2.0, "fueleu_status": "official_in_force", "eu_ets_emissions_coverage_for_reporting_year_pct": 100.0, "eu_ets_status": "official_in_force", "eu_ets_gases": ["CO2", "CH4", "N2O"]},
+        "2027": {"cii_reduction_vs_2019_pct": 13.625, "cii_status": "official_adopted", "fueleu_ghg_intensity_reduction_vs_2020_pct": 2.0, "fueleu_status": "official_in_force", "eu_ets_emissions_coverage_for_reporting_year_pct": 100.0, "eu_ets_status": "official_in_force", "eu_ets_gases": ["CO2", "CH4", "N2O"]},
+        "2028": {"cii_reduction_vs_2019_pct": 16.25, "cii_status": "official_adopted", "fueleu_ghg_intensity_reduction_vs_2020_pct": 2.0, "fueleu_status": "official_in_force", "eu_ets_emissions_coverage_for_reporting_year_pct": 100.0, "eu_ets_status": "official_in_force", "eu_ets_gases": ["CO2", "CH4", "N2O"]},
+        "2029": {"cii_reduction_vs_2019_pct": 18.875, "cii_status": "official_adopted", "fueleu_ghg_intensity_reduction_vs_2020_pct": 2.0, "fueleu_status": "official_in_force", "eu_ets_emissions_coverage_for_reporting_year_pct": 100.0, "eu_ets_status": "official_in_force", "eu_ets_gases": ["CO2", "CH4", "N2O"]},
+        "2030": {"cii_reduction_vs_2019_pct": 21.5, "cii_status": "official_adopted", "fueleu_ghg_intensity_reduction_vs_2020_pct": 6.0, "fueleu_status": "official_in_force", "eu_ets_emissions_coverage_for_reporting_year_pct": 100.0, "eu_ets_status": "official_in_force", "eu_ets_gases": ["CO2", "CH4", "N2O"]}
+      }
+    },
+    {
+      "id": "accelerated",
+      "name_ko": "규제 강화",
+      "policy_status": "counterfactual_not_adopted",
+      "description_ko": "CII 감축계수를 2027년부터 매년 2.8%p 높이고 FuelEU 강도를 앞당기는 반사실 민감도다.",
+      "response_multipliers": {
+        "speed_response_share": 1.12,
+        "speed_reduction_fraction": 1.10,
+        "retrofit_offhire_share": 1.15,
+        "retirement_share": 1.10
+      },
+      "regulatory_path": {
+        "2026": {"cii_reduction_vs_2019_pct": 11.0, "cii_status": "counterfactual_not_adopted", "fueleu_ghg_intensity_reduction_vs_2020_pct": 2.5, "fueleu_status": "counterfactual_not_adopted", "eu_ets_emissions_coverage_for_reporting_year_pct": 100.0, "eu_ets_status": "official_in_force", "eu_ets_gases": ["CO2", "CH4", "N2O"]},
+        "2027": {"cii_reduction_vs_2019_pct": 13.8, "cii_status": "counterfactual_not_adopted", "fueleu_ghg_intensity_reduction_vs_2020_pct": 3.0, "fueleu_status": "counterfactual_not_adopted", "eu_ets_emissions_coverage_for_reporting_year_pct": 100.0, "eu_ets_status": "official_in_force", "eu_ets_gases": ["CO2", "CH4", "N2O"]},
+        "2028": {"cii_reduction_vs_2019_pct": 16.6, "cii_status": "counterfactual_not_adopted", "fueleu_ghg_intensity_reduction_vs_2020_pct": 4.0, "fueleu_status": "counterfactual_not_adopted", "eu_ets_emissions_coverage_for_reporting_year_pct": 100.0, "eu_ets_status": "official_in_force", "eu_ets_gases": ["CO2", "CH4", "N2O"]},
+        "2029": {"cii_reduction_vs_2019_pct": 19.4, "cii_status": "counterfactual_not_adopted", "fueleu_ghg_intensity_reduction_vs_2020_pct": 5.5, "fueleu_status": "counterfactual_not_adopted", "eu_ets_emissions_coverage_for_reporting_year_pct": 100.0, "eu_ets_status": "official_in_force", "eu_ets_gases": ["CO2", "CH4", "N2O"]},
+        "2030": {"cii_reduction_vs_2019_pct": 22.2, "cii_status": "counterfactual_not_adopted", "fueleu_ghg_intensity_reduction_vs_2020_pct": 8.0, "fueleu_status": "counterfactual_not_adopted", "eu_ets_emissions_coverage_for_reporting_year_pct": 100.0, "eu_ets_status": "official_in_force", "eu_ets_gases": ["CO2", "CH4", "N2O"]}
+      }
+    },
+    {
+      "id": "deferred",
+      "name_ko": "규제 유예·완화",
+      "policy_status": "counterfactual_not_adopted",
+      "description_ko": "2027년 이후 CII 강화와 2030년 FuelEU 상향을 1년 늦추는 반사실 민감도다.",
+      "response_multipliers": {
+        "speed_response_share": 0.80,
+        "speed_reduction_fraction": 0.85,
+        "retrofit_offhire_share": 0.75,
+        "retirement_share": 0.70
+      },
+      "regulatory_path": {
+        "2026": {"cii_reduction_vs_2019_pct": 11.0, "cii_status": "counterfactual_not_adopted", "fueleu_ghg_intensity_reduction_vs_2020_pct": 2.0, "fueleu_status": "counterfactual_not_adopted", "eu_ets_emissions_coverage_for_reporting_year_pct": 100.0, "eu_ets_status": "official_in_force", "eu_ets_gases": ["CO2", "CH4", "N2O"]},
+        "2027": {"cii_reduction_vs_2019_pct": 11.0, "cii_status": "counterfactual_not_adopted", "fueleu_ghg_intensity_reduction_vs_2020_pct": 2.0, "fueleu_status": "counterfactual_not_adopted", "eu_ets_emissions_coverage_for_reporting_year_pct": 100.0, "eu_ets_status": "official_in_force", "eu_ets_gases": ["CO2", "CH4", "N2O"]},
+        "2028": {"cii_reduction_vs_2019_pct": 13.625, "cii_status": "counterfactual_not_adopted", "fueleu_ghg_intensity_reduction_vs_2020_pct": 2.0, "fueleu_status": "counterfactual_not_adopted", "eu_ets_emissions_coverage_for_reporting_year_pct": 100.0, "eu_ets_status": "official_in_force", "eu_ets_gases": ["CO2", "CH4", "N2O"]},
+        "2029": {"cii_reduction_vs_2019_pct": 16.25, "cii_status": "counterfactual_not_adopted", "fueleu_ghg_intensity_reduction_vs_2020_pct": 2.0, "fueleu_status": "counterfactual_not_adopted", "eu_ets_emissions_coverage_for_reporting_year_pct": 100.0, "eu_ets_status": "official_in_force", "eu_ets_gases": ["CO2", "CH4", "N2O"]},
+        "2030": {"cii_reduction_vs_2019_pct": 18.875, "cii_status": "counterfactual_not_adopted", "fueleu_ghg_intensity_reduction_vs_2020_pct": 2.0, "fueleu_status": "counterfactual_not_adopted", "eu_ets_emissions_coverage_for_reporting_year_pct": 100.0, "eu_ets_status": "official_in_force", "eu_ets_gases": ["CO2", "CH4", "N2O"]}
+      }
+    }
+  ],
   "scenarios": [
     {
       "id": "regulatory_response_2026_base",
-      "name_ko": "2026 규제 대응 감속·개조 기준 시나리오",
+      "name_ko": "2026 규제 대응 기준 시드",
       "year": 2026,
       "status": "scenario_provisional",
-      "regulatory_facts": {
-        "cii_reduction_vs_2019_pct": 11.0,
-        "fueleu_in_force": true,
-        "eu_ets_note": "해운 배출량 단계적 편입; 속도 제한 규정으로 해석하지 않음"
-      },
+      "regulatory_facts": {"cii_reduction_vs_2019_pct": 11.0},
       "ship_type_assumptions": {
         "container": {"speed_response_share": 0.25, "speed_reduction_fraction": 0.02, "retrofit_offhire_share": 0.005, "retirement_share": 0.002},
         "dry_bulk": {"speed_response_share": 0.30, "speed_reduction_fraction": 0.03, "retrofit_offhire_share": 0.005, "retirement_share": 0.003},
@@ -43,10 +100,10 @@
     },
     {
       "id": "regulatory_response_2027_base",
-      "name_ko": "2027 규제 대응 감속·개조 기준 시나리오",
+      "name_ko": "2027 규제 대응 기준 시드",
       "year": 2027,
       "status": "scenario_provisional",
-      "regulatory_facts": {"cii_reduction_vs_2019_pct": 13.625, "fueleu_in_force": true, "eu_ets_note": "100% 단계 적용 구간; 속도 반응은 모델 가정"},
+      "regulatory_facts": {"cii_reduction_vs_2019_pct": 13.625},
       "ship_type_assumptions": {
         "container": {"speed_response_share": 0.30, "speed_reduction_fraction": 0.025, "retrofit_offhire_share": 0.006, "retirement_share": 0.003},
         "dry_bulk": {"speed_response_share": 0.35, "speed_reduction_fraction": 0.035, "retrofit_offhire_share": 0.006, "retirement_share": 0.004},
@@ -55,10 +112,10 @@
     },
     {
       "id": "regulatory_response_2028_base",
-      "name_ko": "2028 규제 대응 감속·개조 기준 시나리오",
+      "name_ko": "2028 규제 대응 기준 시드",
       "year": 2028,
       "status": "scenario_provisional",
-      "regulatory_facts": {"cii_reduction_vs_2019_pct": 16.25, "fueleu_in_force": true, "eu_ets_note": "비용 신호와 CII 강화의 복합 대응 가정"},
+      "regulatory_facts": {"cii_reduction_vs_2019_pct": 16.25},
       "ship_type_assumptions": {
         "container": {"speed_response_share": 0.35, "speed_reduction_fraction": 0.03, "retrofit_offhire_share": 0.007, "retirement_share": 0.004},
         "dry_bulk": {"speed_response_share": 0.40, "speed_reduction_fraction": 0.04, "retrofit_offhire_share": 0.007, "retirement_share": 0.006},
@@ -67,10 +124,10 @@
     },
     {
       "id": "regulatory_response_2029_base",
-      "name_ko": "2029 규제 대응 감속·개조 기준 시나리오",
+      "name_ko": "2029 규제 대응 기준 시드",
       "year": 2029,
       "status": "scenario_provisional",
-      "regulatory_facts": {"cii_reduction_vs_2019_pct": 18.875, "fueleu_in_force": true, "eu_ets_note": "비용 신호와 CII 강화의 복합 대응 가정"},
+      "regulatory_facts": {"cii_reduction_vs_2019_pct": 18.875},
       "ship_type_assumptions": {
         "container": {"speed_response_share": 0.40, "speed_reduction_fraction": 0.035, "retrofit_offhire_share": 0.008, "retirement_share": 0.005},
         "dry_bulk": {"speed_response_share": 0.45, "speed_reduction_fraction": 0.045, "retrofit_offhire_share": 0.008, "retirement_share": 0.008},
@@ -79,10 +136,10 @@
     },
     {
       "id": "regulatory_response_2030_base",
-      "name_ko": "2030 규제 대응 감속·개조 기준 시나리오",
+      "name_ko": "2030 규제 대응 기준 시드",
       "year": 2030,
       "status": "scenario_provisional",
-      "regulatory_facts": {"cii_reduction_vs_2019_pct": 21.5, "fueleu_in_force": true, "eu_ets_note": "비용 신호와 CII 강화의 복합 대응 가정"},
+      "regulatory_facts": {"cii_reduction_vs_2019_pct": 21.5},
       "ship_type_assumptions": {
         "container": {"speed_response_share": 0.45, "speed_reduction_fraction": 0.04, "retrofit_offhire_share": 0.01, "retirement_share": 0.007},
         "dry_bulk": {"speed_response_share": 0.50, "speed_reduction_fraction": 0.05, "retrofit_offhire_share": 0.01, "retirement_share": 0.010},

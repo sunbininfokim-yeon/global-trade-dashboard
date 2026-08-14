@@ -19,6 +19,7 @@ from shipping_capacity.lng_fleet import load_lng_fleet_context
 from shipping_capacity.market_signals import load_market_signal_registry
 from shipping_capacity.environment import (
     aggregate_environment_scenario,
+    expand_environment_scenarios,
     simulate_environment_route_range,
 )
 from shipping_capacity.portwatch import (
@@ -748,7 +749,8 @@ def build_snapshot(
         scenario_summary.append(summary)
     ui_scenario_grid = build_ui_scenario_grid(routes, scenarios, fleet_by_type)
     environment_results: list[dict[str, Any]] = []
-    for environment_scenario in environment_config.get("scenarios", []):
+    environment_scenarios = expand_environment_scenarios(environment_config)
+    for environment_scenario in environment_scenarios:
         route_results = []
         for route, route_output in zip(routes, route_outputs):
             environment_route = dict(route)
@@ -852,6 +854,9 @@ def build_snapshot(
             "event_observations": event_observations,
             "model_review": model_review,
             "environment": {
+                "contract_version": environment_config.get(
+                    "contract_version", "environment-legacy"
+                ),
                 "status": environment_profiles.get(
                     "status", environment_config.get("status", "not_configured")
                 ),
@@ -863,6 +868,18 @@ def build_snapshot(
                 "identification_boundary": environment_profiles.get(
                     "identification_boundary", {}
                 ),
+                "pathways": [
+                    {
+                        key: pathway.get(key)
+                        for key in (
+                            "id",
+                            "name_ko",
+                            "policy_status",
+                            "description_ko",
+                        )
+                    }
+                    for pathway in environment_config.get("pathways", [])
+                ],
                 "scenarios": environment_results,
             },
             "container": {
