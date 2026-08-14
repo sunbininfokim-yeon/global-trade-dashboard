@@ -38,10 +38,18 @@ jobs:
       - name: US→KR L3
         run: python build_us_kr_l3.py --live --print-stats
 
+      - name: Market microstructure snapshot
+        env:
+          KRX_API: ${{ secrets.KRX_API }}
+        run: python build_market_microstructure.py --live --source auto --print-stats
+
       - name: Derivatives board + US OI archive
         env:
           KRX_API: ${{ secrets.KRX_API }}
         run: python build_derivatives_board.py --live --print-stats
+
+      - name: Append derivatives and LETF history
+        run: python append_derivatives_history.py --print-stats
 
       - name: Investor × price levels (real data; marcap + high-vol in top100)
         run: python build_investor_price_levels.py --live --universe both --top 10 --pool 100 --print-stats
@@ -62,9 +70,16 @@ jobs:
             "New for anti/public/data/us_kr_regime_proxy_backtest_v1.json" \
             "New for anti/public/data/derivatives_board_v1.json" \
             "New for anti/public/data/us_oi_daily_archive.jsonl" \
+            "New for anti/public/data/market_microstructure_v1.json" \
+            "New for anti/public/data/ai_casino_brief_v1.json" \
+            "New for anti/public/data/derivatives_activity_history_v1.jsonl" \
+            "New for anti/public/data/leverage_direction_history_v1.jsonl" \
+            "New for anti/public/data/stock_letf_history_v1.jsonl" \
             "New for anti/public/data/investor_price_levels_v1.json" \
             "New for anti/scripts/market_microstructure/US_KR_L3.md" \
             "New for anti/scripts/market_microstructure/DERIVATIVES_BOARD.md" \
+            "New for anti/scripts/market_microstructure/TABLES.md" \
+            "New for anti/scripts/market_microstructure/AI_CASINO_BRIEF.md" \
             "New for anti/scripts/market_microstructure/INVESTOR_PRICE_LEVELS.md" \
             "New for anti/scripts/market_microstructure/tests/fixtures/us_day.json" \
             || true
