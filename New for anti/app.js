@@ -756,23 +756,44 @@ const worldRankRows = ({ ranked, total, max }, n = 10) => ranked.slice(0, n).map
     </div>`;
 }).join('');
 
+// NOTICE FOR ANY BRANCH MERGING HERE FROM A STALE BASE: this function and
+// its neighbors (renderFuturesCard, renderFuturesHistory, sparkChartHtml,
+// wireSparkCharts, renderEmergencyStocks below) have been silently deleted
+// by squash-merges from out-of-date branches three times in one day
+// (2026-08-13, PRs #73/#75/#78 -- none touched trade code on purpose, all
+// three carried a stale pre-fork copy of this file). If your branch is more
+// than a few hours old, `git fetch origin main && git merge origin/main`
+// before merging, and diff this function against origin/main afterward --
+// don't trust a squash merge to catch this on its own, it won't conflict.
 const renderTradeWorldPanel = (arcs) => {
     const exportRank = rankPartners(arcs, 'export');
     const importRank = rankPartners(arcs, 'import');
     const exportRows = worldRankRows(exportRank);
     const importRows = worldRankRows(importRank);
 
+    // Replaces data.js's hand-written topExporter string the moment real arcs
+    // are in: that string could go stale or, worse, name a country the map
+    // has no route for (Switzerland's gold arcs were missing entirely before
+    // the Comtrade area-code fix, so the label and the map disagreed). Left
+    // untouched while arcs is still empty/loading, so the static string
+    // serves as the loading placeholder instead of flashing blank.
+    if (topExporterEl && exportRank.ranked.length) {
+        topExporterEl.textContent = exportRank.ranked[0][0];
+    }
+
     if (!newsContentEl) return;
     const newsTitle = document.querySelector('#news-panel .section-title');
     if (newsTitle) newsTitle.textContent = '주요 수출국 · 수입국';
     newsContentEl.innerHTML = `
         <div class="trade-focus-card">
+            <div id="futures-slot"></div>
             <p class="trade-focus-sub">비중% · 막대는 각 방향 내 상대 물동량 · 국가를 누르면 그 나라 노선만 남습니다</p>
             <p class="trade-rank-group-head">주요 수출국</p>
             <div class="trade-rank-list">${exportRows || '<p class="empty-state">무역 루트 없음</p>'}</div>
             <p class="trade-rank-group-head">주요 수입국</p>
             <div class="trade-rank-list">${importRows || '<p class="empty-state">무역 루트 없음</p>'}</div>
         </div>`;
+    renderFuturesCard(currentCommodity);
     renderEmergencyStocks();
 };
 
