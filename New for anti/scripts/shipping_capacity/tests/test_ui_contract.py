@@ -9,12 +9,45 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 SNAPSHOT = ROOT.parent.parent / "public" / "data" / "shipping_capacity_v1.json"
+SHIPPING_UI = ROOT.parent.parent / "shipping.js"
+INDEX_HTML = ROOT.parent.parent / "index.html"
 
 
 class ShippingUiContractTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         cls.snapshot = json.loads(SNAPSHOT.read_text(encoding="utf-8"))
+        cls.shipping_ui_source = SHIPPING_UI.read_text(encoding="utf-8")
+        cls.index_html_source = INDEX_HTML.read_text(encoding="utf-8")
+
+    def test_shipping_ui_consumes_delivery_v2_without_shadow_calculations(self) -> None:
+        source = self.shipping_ui_source
+        for required_token in (
+            "shipping-ui-delivery-v2",
+            "ui_delivery_contract",
+            "ship_type_breakdown",
+            "risk_context",
+            "env?.pathways",
+            "operational_profile",
+        ):
+            self.assertIn(required_token, source)
+
+        for retired_ui_assumption in (
+            "NET_ZERO_PATHWAYS",
+            "eu_reinforced",
+            "1 - shortfall",
+            "CHOKEPOINT_CONTEXT",
+        ):
+            self.assertNotIn(retired_ui_assumption, source)
+
+    def test_shipping_navigation_matches_the_three_screen_information_architecture(self) -> None:
+        source = self.index_html_source
+        for target in ("shipping_fleet", "shipping_routes", "shipping_chokepoints"):
+            self.assertIn(f'data-target="{target}"', source)
+        self.assertIn(">항로 운항 선복량</a>", source)
+        self.assertNotIn('data-target="shipping_scenarios"', source)
+        self.assertNotIn('data-target="shipping_environment"', source)
+        self.assertIn('shipping.js?v=18', source)
 
     def test_fleet_and_route_cards_have_explicit_display_fields(self) -> None:
         fleet_rows = self.snapshot["fleet"]["fleet_by_type"]

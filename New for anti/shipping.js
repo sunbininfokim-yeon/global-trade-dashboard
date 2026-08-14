@@ -2,7 +2,7 @@
 //
 // The Python engine owns every calculation. This layer normalizes the static
 // shipping_capacity_v1 snapshot, labels each number with how it was produced
-// (observed / estimated / scenario), and renders five dashboard views.
+// (observed / estimated / scenario), and renders three dashboard views.
 //
 // The data-contract boundary below (normalizeSnapshot, INPUT_STATUS) comes from
 // the Codex foundation and is deliberately the only place snapshot fields are
@@ -18,8 +18,8 @@
     },
     shipping_routes: {
       eyebrow: 'ROUTE CAPACITY',
-      title: '항로별 선복량',
-      desc: '대표 항로가 묶어두는 선복량을 연간 화물톤·왕복주기·적재율로 역산한 추정치입니다. 세계 선대 관측 DWT와 직접 합산할 수 없습니다.'
+      title: '항로 운항 선복량',
+      desc: '현재 선박 위치가 아니라, 대표 화물 흐름을 유지하기 위해 항로에 계속 배치되어야 하는 모델상 서비스 선복량입니다.'
     },
     shipping_chokepoints: {
       eyebrow: 'CHOKEPOINT MONITOR',
@@ -40,10 +40,8 @@
 
   const VIEW_ORDER = [
     ['shipping_fleet', '글로벌 선대'],
-    ['shipping_routes', '항로별 선복량'],
-    ['shipping_chokepoints', '초크포인트'],
-    ['shipping_scenarios', '봉쇄 시뮬레이터'],
-    ['shipping_environment', 'Net Zero']
+    ['shipping_routes', '항로 운항 선복량'],
+    ['shipping_chokepoints', '초크포인트']
   ];
 
   const SHIP_TYPE_LABELS = {
@@ -119,17 +117,6 @@
     if (!value) return '—';
     const parsed = new Date(value);
     return Number.isNaN(parsed.getTime()) ? escapeHtml(value) : parsed.toLocaleDateString('ko-KR');
-  };
-
-  // Why each passage is a chokepoint at all. Geography, not current events --
-  // a hardcoded news line would be stale within weeks, and the snapshot
-  // carries no cause field.
-  const CHOKEPOINT_CONTEXT = {
-    suez: '아시아–유럽 최단 해로. 우회하려면 희망봉을 돌아 편도 9,000km·약 10일이 더 걸리고, 그만큼 선복이 항해에 묶입니다. 남쪽 입구가 바벨만데브라 두 통로는 사실상 한 묶음으로 움직입니다.',
-    bab_el_mandeb: '홍해의 남쪽 관문. 여기가 막히면 수에즈로 들어갈 배가 애초에 도달하지 못하므로, 수에즈 통계보다 먼저 반응하는 경우가 많습니다.',
-    hormuz: '페르시아만의 유일한 출구. 사우디·이라크·UAE·쿠웨이트·카타르의 원유와 LNG가 모두 이 좁은 수로를 지나며, 대체 파이프라인 용량은 수출량의 일부만 감당합니다.',
-    panama: '태평양–대서양 지름길이자 담수 갑문. 가툰 호 수위가 낮아지면 통항 척수와 흘수가 제한돼, 봉쇄가 아니어도 통과량이 줄어듭니다.',
-    bosporus: '흑해의 유일한 출구. 우크라이나·러시아 곡물과 러시아산 원유가 이 해협을 거치며, 폭이 좁은 구간은 700m 남짓이라 기상·사고에 민감합니다.'
   };
 
   const statusMeta = status => INPUT_STATUS[status]
@@ -443,8 +430,7 @@
       const remaining = finite(display.remaining_trade_volume_ratio)
         ? Number(display.remaining_trade_volume_ratio)
         : finite(metric.remaining_trade_volume_ratio)
-          ? Number(metric.remaining_trade_volume_ratio)
-          : shortfall === null ? null : 1 - shortfall;
+          ? Number(metric.remaining_trade_volume_ratio) : null;
       return { ...point, live, display, metricKey, metric, shortfall, remaining };
     });
 
@@ -467,6 +453,9 @@
           if (!response.ok) throw new Error(`HTTP ${response.status}`);
           const payload = await response.json();
           if (payload.schema_version !== 'shipping-capacity-v1') throw new Error('지원하지 않는 선복량 데이터 버전입니다.');
+          if (payload.ui_delivery_contract?.contract_version !== 'shipping-ui-delivery-v2') {
+            throw new Error('해운 화면 데이터 계약 버전이 일치하지 않습니다.');
+          }
           return normalizeSnapshot(payload);
         })
         .catch(error => {
@@ -567,7 +556,8 @@
           <td style="text-align:right">${formatPct(row.share_pct, 1)}</td>
           <td>${badge('연간 관측', 'observed')}</td>
         </tr>`).join('')
-      ))}`;
+      ))}
+      <div id="shipping-fleet-environment" style="margin-top:32px"></div>`;
 
     root.innerHTML = pageShell('shipping_fleet', body, data);
 
@@ -620,57 +610,91 @@
     });
 
     bindPopovers(root);
+    renderEnvironmentInto(data, root.querySelector('#shipping-fleet-environment'));
   };
 
   const renderRoutes = (data, root) => {
-    const routes = [...data.ui.routes]
-      .sort((a, b) => (b.baseline?.baseline_required_dwt || 0) - (a.baseline?.baseline_required_dwt || 0));
-    const top = routes.slice(0, 12);
-    const observedCount = routes.filter(r => statusMeta(r.input_status)[1] === 'observed').length;
+    const contractTabs = asArray(data.ui_delivery_contract?.views?.route_service?.tabs);
+    const tabs = contractTabs.length ? contractTabs : ['all', 'container', 'dry_bulk', 'tanker'];
+    const tabLabels = { all: '전체', container: '컨테이너선', dry_bulk: '벌크선', tanker: '유조선' };
+    const chokepointNames = new Map(data.ui.chokepoints.map(point => [point.id, point.name_ko]));
+    let activeType = 'all';
+    let routeChart = null;
 
-    const body = `
-      <div class="shipping-callout warning"><strong>항로 필요 선복량은 모델 추정치입니다.</strong> 연간 화물톤·왕복주기·적재율로 계산한 DWT-equivalent이며, 세계 선대 관측 DWT와 같은 종류의 수치가 아닙니다.</div>
-      <div class="shipping-kpi-grid">
-        ${kpi('대표 항로', `${formatNumber(routes.length)}개`, '용량 계산이 연결된 항로', { featured: true })}
-        ${kpi('관측 기반 입력', `${formatNumber(observedCount)}개`, '나머지는 배분·확장 추정')}
-        ${kpi('최대 필요 선복량', formatDWT(top[0]?.baseline?.baseline_required_dwt), escapeHtml(top[0]?.name_ko || ''))}
-      </div>
-      ${panel('ROUTE CAPACITY', '상위 항로 필요 선복량', '<div class="shipping-chart-wrap tall"><canvas id="shipping-routes-chart"></canvas></div>', badge('모델 추정', 'estimated', '화물톤 ÷ 왕복주기 ÷ 적재율'))}
-      ${panel('ALL ROUTES', '항로별 상세', table(
-        ['항로', '선종·선형', { label: '연간 화물량', align: 'right' }, { label: '필요 DWT', align: 'right' }, { label: 'P10–P90', align: 'right' }, '입력 성격'],
-        routes.map(route => {
-          const baseline = route.baseline || {};
-          const interval = baseline.interval?.baseline_required_dwt || {};
-          const [label, tier, note] = statusMeta(route.input_status);
-          return `<tr>
-            <td style="font-weight:500;color:#f1f5f9">${escapeHtml(route.name_ko || route.id)}</td>
-            <td>${escapeHtml(SHIP_TYPE_LABELS[route.ship_type] || route.ship_type)}<br><small style="color:#64748b">${escapeHtml(route.vessel_class_ko || '—')} · ${formatReferenceSize(route.reference_size)}</small></td>
-            <td style="text-align:right">${formatTonnes(route.annual_cargo_tonnes)}</td>
-            <td style="text-align:right;font-weight:600">${formatDWT(baseline.baseline_required_dwt)}</td>
-            <td style="text-align:right;color:#94a3b8">${formatDWT(interval.p10)} – ${formatDWT(interval.p90)}</td>
-            <td>${badge(label, tier, note)}</td>
-          </tr>`;
-        }).join('')
-      ))}
-      <p class="shipping-note">P10–P90은 화물량·속도·적재율 입력 범위에서 계산된 불확실성 구간입니다.</p>`;
+    const draw = () => {
+      if (routeChart) {
+        routeChart.destroy();
+        activeCharts = activeCharts.filter(chart => chart !== routeChart);
+      }
+      const routes = [...data.ui.routes]
+        .filter(route => activeType === 'all' || route.ship_type === activeType)
+        .sort((a, b) => (b.baseline?.baseline_required_dwt || 0) - (a.baseline?.baseline_required_dwt || 0));
+      const top = routes.slice(0, 12);
+      const observedCount = routes.filter(route => statusMeta(route.input_status)[1] === 'observed').length;
+      const tabMarkup = `<div class="shipping-tabs" role="tablist">${tabs.map(type => `
+        <button class="shipping-tab${type === activeType ? ' active' : ''}" data-route-ship-type="${escapeHtml(type)}" role="tab" aria-selected="${type === activeType}">
+          ${escapeHtml(tabLabels[type] || type)}
+        </button>`).join('')}</div>`;
 
-    root.innerHTML = pageShell('shipping_routes', body, data);
+      const body = `
+        <div class="shipping-callout warning"><strong>현재 선박 위치가 아닙니다.</strong> 연간 화물 흐름을 유지하기 위해 항로에 계속 배치되어야 하는 DWT-equivalent 서비스 선복량입니다.</div>
+        ${tabMarkup}
+        <div class="shipping-kpi-grid">
+          ${kpi('선택 항로', `${formatNumber(routes.length)}개`, `${tabLabels[activeType] || activeType} 운항 서비스`, { featured: true })}
+          ${kpi('관측 기반 입력', `${formatNumber(observedCount)}개`, '나머지는 배분·확장 추정')}
+          ${kpi('최대 필요 선복량', formatDWT(top[0]?.baseline?.baseline_required_dwt), escapeHtml(top[0]?.name_ko || '—'))}
+        </div>
+        ${panel('ROUTE SERVICE CAPACITY', `${tabLabels[activeType] || activeType} 필요 선복량`, '<div class="shipping-chart-wrap tall"><canvas id="shipping-routes-chart"></canvas></div>', badge('모델 추정', 'estimated'))}
+        ${panel('SERVICE DETAIL', '정상·우회 운항 조건', table(
+          ['항로', '선종·선형', { label: '정상 편도', align: 'right' }, { label: '우회 시 추가', align: 'right' }, { label: '필요 DWT', align: 'right' }, '입력 성격'],
+          routes.map(route => {
+            const baseline = route.baseline || {};
+            const normal = route.operational_profile?.normal || {};
+            const alternatives = asArray(route.operational_profile?.chokepoint_alternatives)
+              .filter(item => item.reroute_available && finite(item.reroute_extra_days_one_way));
+            const detour = alternatives.length
+              ? alternatives.map(item => `${escapeHtml(chokepointNames.get(item.chokepoint_id) || item.chokepoint_id)} +${formatNumber(item.reroute_extra_days_one_way, 1)}일`).join('<br>')
+              : '대체항로 없음·비대상';
+            const [label, tier, note] = statusMeta(route.input_status);
+            return `<tr>
+              <td style="font-weight:500;color:#f1f5f9">${escapeHtml(route.name_ko || route.id)}</td>
+              <td>${escapeHtml(SHIP_TYPE_LABELS[route.ship_type] || route.ship_type)}<br><small style="color:#64748b">${escapeHtml(route.vessel_class_ko || '—')} · ${formatReferenceSize(route.reference_size)}</small></td>
+              <td style="text-align:right">${formatNumber(normal.sea_days_one_way, 1)}일<br><small style="color:#64748b">왕복주기 ${formatNumber(normal.cycle_days_round_trip, 1)}일</small></td>
+              <td style="text-align:right">${detour}</td>
+              <td style="text-align:right;font-weight:600">${formatDWT(baseline.baseline_required_dwt)}</td>
+              <td>${badge(label, tier, note)}</td>
+            </tr>`;
+          }).join('')
+        ))}
+        <p class="shipping-note">운항기간은 설정된 거리·서비스 속도로 계산한 항로 수준 가정이며, 선사 스케줄이나 실제 기항 일정이 아닙니다.</p>`;
 
-    createChart(root, 'shipping-routes-chart', {
-      type: 'bar',
-      data: {
-        labels: top.map(route => (route.name_ko || route.id).replace(' → ', '→')),
-        datasets: [{
-          label: '필요 선복량',
-          data: top.map(route => (route.baseline?.baseline_required_dwt || 0) / 1e6),
-          backgroundColor: top.map(route => SHIP_TYPE_COLORS[route.ship_type] || SHIP_TYPE_COLORS.other),
-          borderRadius: 5,
-          borderSkipped: false,
-          barThickness: 16
-        }]
-      },
-      options: chartOptions({ horizontal: true, unit: 'M DWT' })
-    });
+      root.innerHTML = pageShell('shipping_routes', body, data);
+      routeChart = createChart(root, 'shipping-routes-chart', {
+        type: 'bar',
+        data: {
+          labels: top.map(route => (route.name_ko || route.id).replace(' → ', '→')),
+          datasets: [{
+            label: '필요 선복량',
+            data: top.map(route => (route.baseline?.baseline_required_dwt || 0) / 1e6),
+            backgroundColor: top.map(route => SHIP_TYPE_COLORS[route.ship_type] || SHIP_TYPE_COLORS.other),
+            borderRadius: 5,
+            borderSkipped: false,
+            barThickness: 16
+          }]
+        },
+        options: chartOptions({ horizontal: true, unit: 'M DWT' })
+      });
+      root.querySelectorAll('[data-route-ship-type]').forEach(button => {
+        button.addEventListener('click', () => {
+          activeType = button.dataset.routeShipType;
+          draw();
+        });
+      });
+      // Ship-type filtering replaces the page shell, so restore the top-level
+      // shipping view listeners on the newly rendered buttons as well.
+      bindTabs(root);
+    };
+    draw();
   };
 
   const renderChokepoints = (data, root) => {
@@ -768,6 +792,7 @@
       const point = points.find(p => p.id === openId);
       const series = chokepointSeries(point);
       const shortfallPct = point.shortfall === null ? null : point.shortfall * 100;
+      const risk = point.risk_context || {};
 
       detail.innerHTML = `
         <div class="shipping-detail-grid">
@@ -780,9 +805,11 @@
               ['최근 7일 평균', `${formatTonnes(point.metric.current_7d_mean_estimated_trade_tonnes)}/일`],
               ['기준선 대비', shortfallPct === null ? '—' : `${formatPct(-shortfallPct, 1)} (잔존 ${formatPct((point.remaining || 0) * 100, 0)})`]
             ])}
-            <p class="shipping-note"><strong>왜 이 통로인가:</strong> ${escapeHtml(CHOKEPOINT_CONTEXT[point.id] || '이 통로에 대한 설명이 아직 없습니다.')}</p>`,
+            <p class="shipping-note"><strong>${escapeHtml(risk.primary_constraint_label_ko || '주요 제약')}:</strong> ${escapeHtml(risk.mechanism_ko || '제약 설명이 제공되지 않았습니다.')}</p>
+            <p class="shipping-note">${escapeHtml(risk.scenario_interpretation_ko || '')}</p>`,
             series.real ? badge('PortWatch 관측', 'observed') : badge('예시 시계열', 'neutral', '두 실측 평균을 잇는 형태이며 일별 관측이 아닙니다'))}
-        </div>`;
+        </div>
+        <div id="shipping-inline-simulator"></div>`;
 
       detail.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
       renderMiniMap(detail.querySelector('#shipping-minimap'), point);
@@ -822,6 +849,11 @@
           }
         }
       });
+      renderScenarioSimulatorInto(
+        data,
+        detail.querySelector('#shipping-inline-simulator'),
+        point.id
+      );
     };
 
     cardEls.forEach(card => {
@@ -879,14 +911,17 @@
     });
   };
 
-  const renderScenarios = (data, root) => {
+  const renderScenarioSimulatorInto = (data, mount, chokepointId = null) => {
+    if (!mount) return;
     const grid = data.ui_scenario_grid || {};
-    const baseScenarios = data.ui.baseScenarios;
+    const baseScenarios = data.ui.baseScenarios.filter(item =>
+      !chokepointId || item.chokepoint_id === chokepointId);
     const closureOptions = asArray(grid.closure_pct_options);
     const durationOptions = asArray(grid.duration_day_options);
+    const labels = data.ui_delivery_contract?.views?.chokepoint_detail?.labels_ko || {};
 
     if (!baseScenarios.length || !asArray(grid.rows).length) {
-      root.innerHTML = pageShell('shipping_scenarios', '<p class="shipping-empty">시나리오 격자 데이터가 없습니다.</p>', data);
+      mount.innerHTML = '<p class="shipping-empty">이 통로에 연결된 시나리오 격자 데이터가 없습니다.</p>';
       return;
     }
 
@@ -895,50 +930,32 @@
     const initialDuration = durationOptions.includes(Number(initial.duration_days))
       ? Number(initial.duration_days) : durationOptions.at(-1);
 
-    const summaryCards = baseScenarios.map(summary => `
-      <article class="shipping-panel">
-        <div class="shipping-panel-heading">
-          <div><h2 style="font-size:14px">${escapeHtml(summary.name_ko || summary.id)}</h2></div>
-          ${badge('가정 기반', 'neutral', '관측이 아니라 명시된 모델 가정입니다')}
-        </div>
-        ${definitionRows([
-          ['실효 봉쇄율', formatPct(Number(summary.closure_fraction) * 100, 0)],
-          ['잔존 통항률', formatPct(Number(summary.residual_throughput_rate) * 100, 0)],
-          ['지속기간', `${formatNumber(summary.duration_days, 0)}일`],
-          ['기간 말 백로그', formatTonnes(summary.backlog_cargo_tonnes_horizon)],
-          ['보험 제외 DWT', formatDWT(summary.insurance_excluded_dwt)]
-        ])}
-      </article>`).join('');
-
-    const body = `
-      <div class="shipping-callout warning"><strong>봉쇄 충격은 가정 기반 시나리오입니다.</strong> PortWatch 관측 신호와 물리 봉쇄율을 동일시하지 않으며, 보험 제외·억류·우회는 공개 AIS 원장이 아닌 명시된 모델 가정입니다.</div>
-      ${panel('SHOCK SIMULATOR', '사전 계산 시나리오 조회', `
+    mount.innerHTML = panel('SHOCK SIMULATOR', '봉쇄·통항제약 시뮬레이터', `
+      <div class="shipping-callout warning"><strong>가정 기반 스트레스입니다.</strong> PortWatch 관측 신호와 물리 봉쇄율을 동일시하지 않습니다.</div>
         <div class="shipping-simulator-controls">
           <label>기준 시나리오
             <select id="shipping-scenario-preset" class="shipping-select">
               ${baseScenarios.map(item => `<option value="${escapeHtml(item.id)}"${item.id === initial.id ? ' selected' : ''}>${escapeHtml(item.name_ko || item.id)}</option>`).join('')}
             </select>
           </label>
-          <label>봉쇄율
+          <label>${escapeHtml(labels.closure_pct || '실효 통행제약률')}
             <select id="shipping-closure-select" class="shipping-select">
               ${closureOptions.map(v => `<option value="${v}"${v === initialClosure ? ' selected' : ''}>${v}%</option>`).join('')}
             </select>
           </label>
-          <label>지속기간
+          <label>${escapeHtml(labels.duration_days || '제약 지속일')}
             <select id="shipping-duration-select" class="shipping-select">
               ${durationOptions.map(v => `<option value="${v}"${v === initialDuration ? ' selected' : ''}>${v}일</option>`).join('')}
             </select>
           </label>
         </div>
-        <div id="shipping-scenario-result"></div>`)}
-      ${panel('SCENARIO SUMMARY', '기준 시나리오 전체 영향', `<div class="shipping-grid" style="grid-template-columns:repeat(auto-fit,minmax(260px,1fr))">${summaryCards}</div>`)}`;
+        <div id="shipping-scenario-result"></div>`);
 
-    root.innerHTML = pageShell('shipping_scenarios', body, data);
-
-    const presetEl = root.querySelector('#shipping-scenario-preset');
-    const closureEl = root.querySelector('#shipping-closure-select');
-    const durationEl = root.querySelector('#shipping-duration-select');
-    const resultEl = root.querySelector('#shipping-scenario-result');
+    const presetEl = mount.querySelector('#shipping-scenario-preset');
+    const closureEl = mount.querySelector('#shipping-closure-select');
+    const durationEl = mount.querySelector('#shipping-duration-select');
+    const resultEl = mount.querySelector('#shipping-scenario-result');
+    let scenarioChart = null;
 
     const update = () => {
       const row = asArray(grid.rows).find(item => item.base_scenario_id === presetEl.value
@@ -949,50 +966,50 @@
         resultEl.innerHTML = '<p class="shipping-empty">선택한 조합의 사전 계산 결과가 없습니다.</p>';
         return;
       }
-      // Cards are rebuilt on every lookup, so their handlers are rebound below.
-
-      const routes = asArray(row.routes).slice()
-        .sort((a, b) => (b.operational_capacity_absorbed_dwt || 0) - (a.operational_capacity_absorbed_dwt || 0));
-      const nameById = new Map(data.ui.routes.map(r => [r.id, r.name_ko || r.id]));
+      if (scenarioChart) {
+        scenarioChart.destroy();
+        activeCharts = activeCharts.filter(chart => chart !== scenarioChart);
+      }
+      const breakdown = asArray(row.summary?.ship_type_breakdown);
 
       resultEl.innerHTML = `
         ${scenarioKpis(row.summary || {})}
-        ${routes.length ? `
+        ${breakdown.length ? `
           <div class="shipping-chart-wrap" style="margin-top:18px"><canvas id="shipping-scenario-chart"></canvas></div>
           ${table(
-            ['영향 항로', { label: '정상 필요 DWT', align: 'right' }, { label: '충격 후 필요 DWT', align: 'right' }, { label: '트래픽', align: 'right' }],
-            routes.map(r => `<tr>
-              <td>${escapeHtml(nameById.get(r.route_id) || r.route_id)}</td>
-              <td style="text-align:right;color:#94a3b8">${formatDWT(r.baseline_required_dwt)}</td>
-              <td style="text-align:right;font-weight:600">${formatDWT(r.continuity_required_dwt)}</td>
-              <td style="text-align:right" class="negative-text">${formatPct(r.traffic_change_pct, 1)}</td>
+            ['선종', { label: '영향 항로 배치 DWT', align: 'right' }, { label: '사용 불가 DWT', align: 'right' }, { label: '추가 흡수 / 세계 선대', align: 'right' }, { label: '28일 말 백로그', align: 'right' }, { label: '트래픽', align: 'right' }],
+            breakdown.map(item => `<tr>
+              <td><span class="shipping-color-dot" style="background:${SHIP_TYPE_COLORS[item.ship_type] || SHIP_TYPE_COLORS.other}"></span>${escapeHtml(SHIP_TYPE_LABELS[item.ship_type] || item.ship_type)}</td>
+              <td style="text-align:right">${formatDWT(item.affected_allocated_dwt_with_reserve)}</td>
+              <td style="text-align:right;font-weight:600">${formatDWT(item.commercially_unavailable_dwt)}<br><small style="color:#64748b">${formatPct(item.commercially_unavailable_pct_of_affected_allocated, 1)}</small></td>
+              <td style="text-align:right">${formatPct(item.operational_capacity_absorbed_pct_of_relevant_global_type_fleet, 2)}</td>
+              <td style="text-align:right">${formatTonnes(item.backlog_cargo_tonnes_horizon)}</td>
+              <td style="text-align:right" class="negative-text">${formatPct(item.weighted_traffic_change_pct, 1)}</td>
             </tr>`).join('')
-          )}` : '<p class="shipping-empty">이 조합에 영향받는 대표 항로가 없습니다.</p>'}
-        <p class="shipping-note">이 값은 브라우저에서 새로 계산하지 않습니다. Python 엔진이 사전 계산한 ${formatNumber(row.horizon_days, 0)}일 분석 지평의 격자 결과입니다.</p>`;
+          )}` : '<p class="shipping-empty">이 조합에 영향받는 대표 선종이 없습니다.</p>'}
+        <p class="shipping-note">${escapeHtml(labels.backlog_cargo_tonnes_horizon || '분석기간 말 미운송 화물')}입니다. 모든 값은 Python 엔진이 사전 계산한 ${formatNumber(row.horizon_days, 0)}일 격자 결과입니다.</p>`;
 
-      if (routes.length) {
-        createChart(root, 'shipping-scenario-chart', {
+      if (breakdown.length) {
+        scenarioChart = createChart(resultEl, 'shipping-scenario-chart', {
           type: 'bar',
           data: {
-            labels: routes.map(r => (nameById.get(r.route_id) || r.route_id).replace(' → ', '→')),
+            labels: breakdown.map(item => SHIP_TYPE_LABELS[item.ship_type] || item.ship_type),
             datasets: [
               {
-                label: '정상 필요 DWT',
-                data: routes.map(r => (r.baseline_required_dwt || 0) / 1e6),
-                backgroundColor: 'rgba(100, 116, 139, 0.65)',
-                borderRadius: 4,
-                barThickness: 14
+                label: '상업적 사용 가능 DWT',
+                data: breakdown.map(item => (item.commercially_available_dwt || 0) / 1e6),
+                backgroundColor: '#38bdf8',
+                stack: 'availability'
               },
               {
-                label: '충격 후 필요 DWT',
-                data: routes.map(r => (r.continuity_required_dwt || 0) / 1e6),
-                backgroundColor: '#38bdf8',
-                borderRadius: 4,
-                barThickness: 14
+                label: '상업적 사용 불가 DWT',
+                data: breakdown.map(item => (item.commercially_unavailable_dwt || 0) / 1e6),
+                backgroundColor: '#f87171',
+                stack: 'availability'
               }
             ]
           },
-          options: chartOptions({ horizontal: true, unit: 'M DWT', legend: true })
+          options: chartOptions({ unit: 'M DWT', stacked: true, legend: true })
         });
       }
 
@@ -1003,268 +1020,138 @@
     update();
   };
 
-  /**
-   * Reduction pathways the reader can compare.
-   *
-   * Only the first one exists in the snapshot: the engine computes a single
-   * schedule at IMO's currently adopted +2.625%p per year. The other two are
-   * different reduction schedules, and the loss they imply is an engine
-   * calculation over route-level speed and utilisation inputs -- not something
-   * this file may extrapolate from five published points. They stay declared
-   * but empty until `environment.scenarios[].pathway_id` arrives.
-   */
-  const NET_ZERO_PATHWAYS = [
-    {
-      id: 'imo_adopted',
-      label: '현행 유지',
-      sub: 'IMO 채택 · 연 +2.625%p',
-      note: 'MEPC.400(83)이 확정한 2027–2030 감축 계수입니다. 2030년 21.5%에 도달합니다.'
-    },
-    {
-      id: 'accelerated',
-      label: '목표 고도화',
-      sub: '연 +2.8%p 가정',
-      note: '같은 기간에 더 가파르게 조이는 경우입니다. 2030년 22.9% 수준이 되며, 감속 대응 폭이 커져 잠식도 함께 커집니다.'
-    },
-    {
-      id: 'eu_reinforced',
-      label: 'EU 넷제로 강화',
-      sub: 'ETS·FuelEU 동시 강화',
-      note: 'EU 기항 항로에만 추가 비용·연료집약도 규제가 겹치는 경우입니다. 전 항로가 아니라 EU 노출 항로에서만 잠식이 더 커지므로, 항로별로 다르게 계산해야 합니다.'
-    }
-  ];
+  const renderScenarios = (data, root) => {
+    root.innerHTML = pageShell(
+      'shipping_scenarios',
+      '<div id="shipping-standalone-simulator"></div>',
+      data
+    );
+    renderScenarioSimulatorInto(data, root.querySelector('#shipping-standalone-simulator'));
+  };
 
-  const renderEnvironment = (data, root) => {
+  const renderEnvironmentInto = (data, mount) => {
+    if (!mount) return;
     const env = data.ui.environment;
     const allScenarios = asArray(env?.scenarios);
+    const pathways = asArray(env?.pathways);
 
-    if (!allScenarios.length) {
-      root.innerHTML = pageShell('shipping_environment', '<p class="shipping-empty">환경규제 시나리오 데이터가 없습니다.</p>', data);
+    if (!allScenarios.length || !pathways.length) {
+      mount.innerHTML = '<p class="shipping-empty">환경규제 시나리오 데이터가 없습니다.</p>';
       return;
     }
 
-    // Scenarios without a pathway_id belong to the adopted schedule -- that is
-    // the only one the engine has ever produced.
-    const byPathway = id => allScenarios.filter(sc =>
-      (sc.pathway_id || 'imo_adopted') === id);
-    const scenarios = byPathway('imo_adopted');
+    let activePathwayId = pathways.find(path => path.id === 'imo_adopted')?.id || pathways[0].id;
+    let environmentCharts = [];
+    const byPathway = id => allScenarios
+      .filter(scenario => scenario.pathway_id === id)
+      .sort((a, b) => Number(a.year) - Number(b.year));
 
-    const last = scenarios[scenarios.length - 1];
-    const first = scenarios[0];
-
-    const pathwayCards = NET_ZERO_PATHWAYS.map(path => {
-      const rows = byPathway(path.id);
-      const ready = rows.length > 0;
-      const last = ready ? rows[rows.length - 1] : null;
-      return `
-        <article class="shipping-pathway${ready ? '' : ' is-pending'}${path.id === 'imo_adopted' ? ' is-active' : ''}"
-                 data-pathway="${escapeHtml(path.id)}" role="button" tabindex="0"
-                 aria-pressed="${path.id === 'imo_adopted'}">
+    const draw = () => {
+      environmentCharts.forEach(chart => chart.destroy());
+      activeCharts = activeCharts.filter(chart => !environmentCharts.includes(chart));
+      environmentCharts = [];
+      const scenarios = byPathway(activePathwayId);
+      const first = scenarios[0];
+      const last = scenarios.at(-1);
+      if (!first || !last) {
+        mount.innerHTML = '<p class="shipping-empty">선택한 환경 경로의 산출값이 없습니다.</p>';
+        return;
+      }
+      const latestBreakdown = asArray(last.ship_type_breakdown);
+      const pathwayCards = pathways.map(path => {
+        const rows = byPathway(path.id);
+        const latest = rows.at(-1);
+        const adopted = path.policy_status === 'official_adopted_path';
+        return `<article class="shipping-pathway${path.id === activePathwayId ? ' is-active' : ''}"
+          data-pathway="${escapeHtml(path.id)}" role="button" tabindex="0" aria-pressed="${path.id === activePathwayId}">
           <div class="shipping-pathway-head">
-            <strong>${escapeHtml(path.label)}</strong>
-            ${ready ? badge('계산 완료', 'observed') : badge('엔진 계산 대기', 'neutral', '이 경로의 손실값은 아직 산출되지 않았습니다')}
+            <strong>${escapeHtml(path.name_ko || path.id)}</strong>
+            ${badge(adopted ? '채택 경로' : '반사실 민감도', adopted ? 'observed' : 'neutral')}
           </div>
-          <span class="shipping-pathway-sub">${escapeHtml(path.sub)}</span>
-          <p class="shipping-pathway-value">${ready ? formatDWT(last.effective_dwt_loss) : '—'}</p>
-          <small>${ready ? `${last.year}년 잠식` : '값 없음'}</small>
+          <span class="shipping-pathway-sub">${escapeHtml(path.description_ko || '')}</span>
+          <p class="shipping-pathway-value">${latest ? formatDWT(latest.effective_dwt_loss) : '—'}</p>
+          <small>${latest ? `${latest.year}년 유효 DWT 손실` : '값 없음'}</small>
         </article>`;
-    }).join('');
+      }).join('');
 
-    const body = `
-      <div class="shipping-callout warning"><strong>선박별 예측이 아닙니다.</strong> ${escapeHtml(env.methodology_ko || '')}</div>
-      ${panel('PATHWAY COMPARE', '감축 경로 비교', `
-        <div class="shipping-pathway-grid">${pathwayCards}</div>
-        <div class="shipping-metric-note" id="shipping-pathway-note"></div>`,
-        `<div class="shipping-panel-tools">
-          ${popover('path-def', '경로란', '감축 경로를 비교한다는 뜻', `
-            <p class="shipping-note" style="margin:0">IMO는 2019년 탄소집약도 대비 매년 일정 비율씩 더 줄이도록 요구합니다. 현재 확정된 계수는 연 +2.625%p이고, 이보다 빠르게 조이거나 EU가 별도로 규제를 겹치면 같은 선대가 실어나를 수 있는 양이 더 줄어듭니다.</p>
-            <p class="shipping-note">각 경로의 잠식폭은 항로별 속도·적재율까지 다시 계산해야 나오는 값이라, 이 화면은 엔진이 산출한 경로만 숫자로 보여주고 나머지는 대기 상태로 둡니다.</p>`)}
-        </div>`)}
-      <div class="shipping-kpi-grid">
-        ${kpi(`${first.year}년 손실`, formatDWT(first.effective_dwt_loss), `유효 용량 ${formatPct((first.effective_capacity_retention_rate || 0) * 100, 1)} 유지`)}
-        ${kpi(`${last.year}년 손실`, formatDWT(last.effective_dwt_loss), `유효 용량 ${formatPct((last.effective_capacity_retention_rate || 0) * 100, 1)} 유지`, { featured: true })}
-        ${kpi('CII 감축 목표', formatPct(last.cii_reduction_vs_2019_pct, 1), `${last.year}년 · 2019년 대비`)}
-        ${kpi('대상 항로', `${formatNumber(last.representative_route_count)}개`, '대표 항로 기준')}
-      </div>
-      ${panel('CAPACITY OVER TIME', '연도별 유효 선복량 잠식', `
-        <div class="shipping-chart-wrap"><canvas id="shipping-environment-chart"></canvas></div>
-        <p class="shipping-note">막대 전체가 정상 배치 선복량이고, 파란 구간이 규제 대응 후에도 남는 유효 용량, 주황 구간이 그해 잠식되는 몫입니다.</p>`,
-        `<div class="shipping-panel-tools">
-          ${popover('env-def', '숫자 읽는 법', 'Net Zero 지표 읽는 법', `
-            ${definitionRows([
-              ['CII 감축', 'IMO가 정한 2019년 대비 탄소집약도 감축률'],
-              ['유효 선복량 손실', '감속·개조로 같은 기간에 실어나를 수 없게 되는 몫'],
-              ['용량 유지율', '정상 대비 남는 서비스 용량 (저·중·고 행동 가정)']
-            ])}
-            <p class="shipping-note">물리적 선대가 줄어드는 것이 아니라, 같은 배가 더 느리게 돌아 실질 공급이 줄어드는 구조입니다.</p>`)}
-          ${badge('모델 시나리오', 'neutral', '관측이 아니라 명시된 행동 가정 범위')}
-        </div>`)}
-      <div class="shipping-grid two-columns">
-        ${panel('PATHWAY', 'CII 감축 일정 대비 잠식', `
-          <div class="shipping-chart-wrap"><canvas id="shipping-env-pathway-chart"></canvas></div>
-          <p class="shipping-note">감축 계수가 올라갈수록 잠식폭이 비선형으로 커집니다. 2030년 21.5% 감축 지점에서 손실이 2026년의 2.6배입니다.</p>`)}
-        ${panel('UNCERTAINTY BAND', '같은 서비스 유지에 필요한 선복량', `
-          <div class="shipping-chart-wrap"><canvas id="shipping-env-band-chart"></canvas></div>
-          <p class="shipping-note">선사가 감속에 얼마나 공격적으로 대응하는지에 따른 범위입니다. 위쪽 선일수록 대응이 크고 필요 선복량도 커집니다.</p>`)}
-      </div>
-      ${panel('SCENARIO TABLE', '시나리오별 상세', table(
-        ['시나리오', { label: 'CII 감축', align: 'right' }, { label: '유효 선복량 손실', align: 'right' }, { label: '용량 유지율 (저·중·고)', align: 'right' }, { label: '대상 항로', align: 'right' }],
-        scenarios.map(sc => {
-          const range = sc.effective_capacity_retention_rate_range || {};
-          return `<tr>
-            <td style="font-weight:500;color:#f1f5f9">${escapeHtml(sc.name_ko || sc.id)}<br><small style="color:#64748b">${sc.year || ''} · ${sc.status === 'scenario_provisional' ? '잠정' : escapeHtml(sc.status || '')}</small></td>
-            <td style="text-align:right">${formatPct(sc.cii_reduction_vs_2019_pct, 2)}</td>
-            <td style="text-align:right;font-weight:600;color:#fcd34d">${formatDWT(sc.effective_dwt_loss)}</td>
-            <td style="text-align:right;color:#94a3b8">${formatPct((range.low || 0) * 100, 1)} · <strong style="color:#f1f5f9">${formatPct((range.central || 0) * 100, 1)}</strong> · ${formatPct((range.high || 0) * 100, 1)}</td>
-            <td style="text-align:right">${formatNumber(sc.representative_route_count)}개</td>
-          </tr>`;
-        }).join('')
-      ))}
-      ${asArray(env.warnings_ko).length ? panel('CAVEATS', '해석 시 주의', `
-        <ul class="shipping-note" style="margin:0;padding-left:1.1rem;line-height:1.9">
-          ${env.warnings_ko.map(w => `<li>${escapeHtml(w)}</li>`).join('')}
-        </ul>`) : ''}
-      ${asArray(env.sources).length ? `<p class="shipping-note">출처: ${env.sources.map(s => `<a class="shipping-source-link" href="${escapeHtml(s.url)}" target="_blank" rel="noopener">${escapeHtml(s.name)}</a>`).join(' · ')}</p>` : ''}`;
+      mount.innerHTML = `
+        <div class="shipping-callout warning"><strong>물리적 선대 감소가 아닙니다.</strong> ${escapeHtml(env.methodology_ko || '')}</div>
+        ${panel('ENVIRONMENT PATHWAYS', '환경 규제 경로 비교', `<div class="shipping-pathway-grid">${pathwayCards}</div>`)}
+        <div class="shipping-kpi-grid">
+          ${kpi(`${last.year}년 유효 DWT 손실`, formatDWT(last.effective_dwt_loss), escapeHtml(last.pathway_name_ko || activePathwayId), { featured: true })}
+          ${kpi('유효 용량 유지율', formatPct(last.effective_capacity_retention_rate * 100, 1), '대표 항로 모델 기준')}
+          ${kpi('같은 서비스 추가 필요', formatDWT(last.additional_required_vs_baseline_dwt), '기준 서비스 유지 가정')}
+          ${kpi('CII 감축 경로', formatPct(last.regulatory_inputs?.cii_reduction_vs_2019_pct, 2), `${last.year}년 · 2019년 대비`)}
+        </div>
+        <div class="shipping-grid two-columns">
+          ${panel('CAPACITY OVER TIME', `${escapeHtml(last.pathway_name_ko || activePathwayId)} · 연도별 유효 선복량`, '<div class="shipping-chart-wrap"><canvas id="shipping-environment-chart"></canvas></div><p class="shipping-note">파란색은 서비스 가능한 DWT, 주황색은 감속·개조·퇴출 가정으로 잠식되는 서비스 상당 DWT입니다.</p>')}
+          ${panel('SHIP TYPE IMPACT', `${last.year}년 선종별 유효 DWT 손실`, '<div class="shipping-chart-wrap"><canvas id="shipping-env-shiptype-chart"></canvas></div><p class="shipping-note">컨테이너·벌크·탱커 대표 항로의 엔진 합계이며 세계 선대 전체 예측이 아닙니다.</p>')}
+        </div>
+        ${panel('REGULATORY INPUTS', '연도별 규제 입력과 선복량 영향', table(
+          ['연도', { label: 'CII 감축', align: 'right' }, { label: 'FuelEU 감축', align: 'right' }, { label: '유효 DWT 손실', align: 'right' }, { label: '같은 서비스 필요 DWT', align: 'right' }, '정책 상태'],
+          scenarios.map(scenario => `<tr>
+            <td>${formatNumber(scenario.year)}</td>
+            <td style="text-align:right">${formatPct(scenario.regulatory_inputs?.cii_reduction_vs_2019_pct, 3)}</td>
+            <td style="text-align:right">${formatPct(scenario.regulatory_inputs?.fueleu_ghg_intensity_reduction_vs_2020_pct, 1)}</td>
+            <td style="text-align:right;font-weight:600;color:#fcd34d">${formatDWT(scenario.effective_dwt_loss)}</td>
+            <td style="text-align:right">${formatDWT(scenario.same_service_required_dwt)}</td>
+            <td>${badge(scenario.pathway_policy_status === 'official_adopted_path' ? '채택' : '반사실', scenario.pathway_policy_status === 'official_adopted_path' ? 'observed' : 'neutral')}</td>
+          </tr>`).join('')
+        ))}
+        <p class="shipping-note">범위: ${escapeHtml(last.scope || '')}</p>
+        ${asArray(env.warnings_ko).length ? panel('CAVEATS', '해석 시 주의', `<ul class="shipping-note" style="margin:0;padding-left:1.1rem;line-height:1.9">${env.warnings_ko.map(warning => `<li>${escapeHtml(warning)}</li>`).join('')}</ul>`) : ''}`;
 
-    root.innerHTML = pageShell('shipping_environment', body, data);
-
-    createChart(root, 'shipping-environment-chart', {
-      type: 'bar',
-      data: {
-        labels: scenarios.map(sc => String(sc.year || sc.id)),
-        datasets: [
-          {
-            label: '유효 용량 (규제 대응 후)',
-            data: scenarios.map(sc => (sc.effective_service_capacity_dwt || 0) / 1e6),
-            backgroundColor: '#38bdf8',
-            stack: 'dwt',
-            barThickness: 46
-          },
-          {
-            label: '잠식된 선복량',
-            data: scenarios.map(sc => (sc.effective_dwt_loss || 0) / 1e6),
-            backgroundColor: '#fbbf24',
-            stack: 'dwt',
-            borderRadius: 4,
-            barThickness: 46
-          }
-        ]
-      },
-      options: chartOptions({ unit: 'M DWT', stacked: true, legend: true })
-    });
-
-    const years = scenarios.map(sc => String(sc.year || sc.id));
-
-    // Loss against the regulatory schedule that drives it. Two units, so the
-    // reduction schedule rides a second axis -- the only place in this file
-    // that is justified, since the pairing is the whole point of the panel.
-    createChart(root, 'shipping-env-pathway-chart', {
-      type: 'bar',
-      data: {
-        labels: years,
-        datasets: [
-          {
-            label: '유효 선복량 손실 (M DWT)',
-            data: scenarios.map(sc => (sc.effective_dwt_loss || 0) / 1e6),
-            backgroundColor: '#fbbf24',
-            borderRadius: 4,
-            barThickness: 28,
-            yAxisID: 'y'
-          },
-          {
-            label: 'CII 감축률 (%)',
-            type: 'line',
-            data: scenarios.map(sc => Number(sc.cii_reduction_vs_2019_pct || 0)),
-            borderColor: '#38bdf8',
-            backgroundColor: '#38bdf8',
-            borderWidth: 2,
-            pointRadius: 4,
-            pointBackgroundColor: '#0f172a',
-            pointBorderWidth: 2,
-            tension: 0.25,
-            yAxisID: 'y1'
-          }
-        ]
-      },
-      options: {
-        ...chartOptions({ legend: true }),
-        scales: {
-          x: { grid: { color: 'transparent' }, ticks: { color: INK.muted, font: { size: 11 } } },
-          y: {
-            position: 'left',
-            grid: { color: GRID_LINE },
-            ticks: { color: '#fbbf24', font: { size: 11 }, callback: v => `${v}M` }
-          },
-          y1: {
-            position: 'right',
-            grid: { display: false },
-            ticks: { color: '#38bdf8', font: { size: 11 }, callback: v => `${v}%` }
-          }
-        }
-      }
-    });
-
-    // The low/central/high band, drawn as three lines rather than a shaded
-    // area: the engine publishes three named behaviour paths, not a
-    // distribution, and a filled band would imply a confidence interval.
-    const band = key => scenarios.map(sc => (sc.same_service_required_dwt_range?.[key] || 0) / 1e6);
-    createChart(root, 'shipping-env-band-chart', {
-      type: 'line',
-      data: {
-        labels: years,
-        datasets: [
-          { label: '고대응', data: band('high'), borderColor: '#f472b6', borderDash: [5, 4], borderWidth: 2, pointRadius: 3, tension: 0.25 },
-          { label: '중앙', data: band('central'), borderColor: '#38bdf8', borderWidth: 2.5, pointRadius: 4, tension: 0.25 },
-          { label: '저대응', data: band('low'), borderColor: '#34d399', borderDash: [5, 4], borderWidth: 2, pointRadius: 3, tension: 0.25 }
-        ]
-      },
-      options: {
-        ...chartOptions({ unit: 'M DWT', legend: true }),
-        scales: {
-          x: { grid: { color: 'transparent' }, ticks: { color: INK.muted, font: { size: 11 } } },
-          y: {
-            grid: { color: GRID_LINE },
-            ticks: { color: INK.muted, font: { size: 11 }, callback: v => `${v}M` }
-          }
-        }
-      }
-    });
-
-    const pathNote = root.querySelector('#shipping-pathway-note');
-    const pathCards = [...root.querySelectorAll('[data-pathway]')];
-    const showPathway = id => {
-      const path = NET_ZERO_PATHWAYS.find(p => p.id === id);
-      if (!path) return;
-      const ready = byPathway(id).length > 0;
-      pathCards.forEach(card => {
-        const on = card.dataset.pathway === id;
-        card.classList.toggle('is-active', on);
-        card.setAttribute('aria-pressed', String(on));
+      const capacityChart = createChart(mount, 'shipping-environment-chart', {
+        type: 'bar',
+        data: {
+          labels: scenarios.map(scenario => String(scenario.year)),
+          datasets: [
+            { label: '유효 서비스 DWT', data: scenarios.map(scenario => scenario.effective_service_capacity_dwt / 1e6), backgroundColor: '#38bdf8', stack: 'dwt' },
+            { label: '유효 DWT 손실', data: scenarios.map(scenario => scenario.effective_dwt_loss / 1e6), backgroundColor: '#fbbf24', stack: 'dwt' }
+          ]
+        },
+        options: chartOptions({ unit: 'M DWT', stacked: true, legend: true })
       });
-      pathNote.innerHTML = `
-        <strong>${escapeHtml(path.label)} · ${escapeHtml(path.sub)}</strong>
-        <p>${escapeHtml(path.note)}</p>
-        ${ready
-          ? '<p>아래 차트와 표가 이 경로의 산출값입니다.</p>'
-          : '<p>이 경로는 아직 엔진이 계산하지 않아 아래 차트는 현행 유지 경로를 계속 보여줍니다. 항로별 속도·적재율을 다시 돌려야 나오는 값이라 화면에서 추정하지 않습니다.</p>'}`;
+      const shipTypeChart = createChart(mount, 'shipping-env-shiptype-chart', {
+        type: 'bar',
+        data: {
+          labels: latestBreakdown.map(item => SHIP_TYPE_LABELS[item.ship_type] || item.ship_type),
+          datasets: [{
+            label: '유효 DWT 손실',
+            data: latestBreakdown.map(item => item.effective_dwt_loss / 1e6),
+            backgroundColor: latestBreakdown.map(item => SHIP_TYPE_COLORS[item.ship_type] || SHIP_TYPE_COLORS.other),
+            borderRadius: 5
+          }]
+        },
+        options: chartOptions({ unit: 'M DWT' })
+      });
+      environmentCharts = [capacityChart, shipTypeChart].filter(Boolean);
+
+      mount.querySelectorAll('[data-pathway]').forEach(card => {
+        const run = () => {
+          activePathwayId = card.dataset.pathway;
+          draw();
+        };
+        card.addEventListener('click', run);
+        card.addEventListener('keydown', event => {
+          if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); run(); }
+        });
+      });
     };
+    draw();
+  };
 
-    pathCards.forEach(card => {
-      const run = () => showPathway(card.dataset.pathway);
-      card.addEventListener('click', run);
-      card.addEventListener('keydown', event => {
-        if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); run(); }
-      });
-    });
-    showPathway('imo_adopted');
-
-    bindPopovers(root);
+  const renderEnvironment = (data, root) => {
+    root.innerHTML = pageShell('shipping_environment', '<div id="shipping-environment-standalone"></div>', data);
+    renderEnvironmentInto(data, root.querySelector('#shipping-environment-standalone'));
   };
 
   // --------------------------------------------------------------- lifecycle
 
   const bindTabs = (root) => {
     root.querySelectorAll('[data-shipping-view]').forEach(button => {
+      if (button.dataset.shippingViewBound === 'true') return;
+      button.dataset.shippingViewBound = 'true';
       button.addEventListener('click', () => {
         const link = document.querySelector(`.dropdown a[data-target="${button.dataset.shippingView}"]`);
         if (link) link.click();
