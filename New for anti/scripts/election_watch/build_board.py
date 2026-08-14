@@ -15,6 +15,23 @@ if str(ROOT) not in sys.path:
 from election_watch.betting import fetch_us_election_markets  # noqa: E402
 
 
+USA_STATE_ABBR = {
+    "Alabama": "AL", "Alaska": "AK", "Arizona": "AZ", "Arkansas": "AR",
+    "California": "CA", "Colorado": "CO", "Connecticut": "CT", "Delaware": "DE",
+    "Florida": "FL", "Georgia": "GA", "Hawaii": "HI", "Idaho": "ID",
+    "Illinois": "IL", "Indiana": "IN", "Iowa": "IA", "Kansas": "KS",
+    "Kentucky": "KY", "Louisiana": "LA", "Maine": "ME", "Maryland": "MD",
+    "Massachusetts": "MA", "Michigan": "MI", "Minnesota": "MN", "Mississippi": "MS",
+    "Missouri": "MO", "Montana": "MT", "Nebraska": "NE", "Nevada": "NV",
+    "New Hampshire": "NH", "New Jersey": "NJ", "New Mexico": "NM", "New York": "NY",
+    "North Carolina": "NC", "North Dakota": "ND", "Ohio": "OH", "Oklahoma": "OK",
+    "Oregon": "OR", "Pennsylvania": "PA", "Rhode Island": "RI",
+    "South Carolina": "SC", "South Dakota": "SD", "Tennessee": "TN", "Texas": "TX",
+    "Utah": "UT", "Vermont": "VT", "Virginia": "VA", "Washington": "WA",
+    "West Virginia": "WV", "Wisconsin": "WI", "Wyoming": "WY",
+}
+
+
 def load_json(path: Path) -> Dict[str, Any]:
     return json.loads(path.read_text(encoding="utf-8"))
 
@@ -77,6 +94,85 @@ def resolve_events(
         ):
             out.append(e)
     return out
+
+
+def build_usa_state_drilldown(
+    congress: Dict[str, Any],
+    governors: Dict[str, Any],
+    state_legislatures: Dict[str, Any],
+    race_progress: Optional[Dict[str, Any]],
+) -> Dict[str, Any]:
+    """Pre-join USA state cards so the browser only renders reviewed facts."""
+    members = congress.get("members") or []
+    governors_by_state = {
+        row.get("state"): row for row in (governors.get("governors") or []) if row.get("state")
+    }
+    legislatures_by_state = {
+        row.get("state"): row
+        for row in (state_legislatures.get("states") or [])
+        if row.get("state")
+    }
+    races_by_abbr = {
+        row.get("id"): row
+        for row in ((race_progress or {}).get("units") or [])
+        if row.get("id")
+    }
+    state_cards: List[Dict[str, Any]] = []
+    for state, abbr in USA_STATE_ABBR.items():
+        state_members = [row for row in members if row.get("state") == state]
+        state_cards.append(
+            {
+                "id": abbr,
+                "state": state,
+                "map_feature_code": f"US-{abbr}",
+                "governor": governors_by_state.get(state),
+                "lieutenant_governor": "불명",
+                "attorney_general": "불명",
+                "state_legislature": legislatures_by_state.get(state),
+                "federal_delegation": {
+                    "house_members": [
+                        row for row in state_members if row.get("chamber") == "house"
+                    ],
+                    "senators": [
+                        row for row in state_members if row.get("chamber") == "senate"
+                    ],
+                    "senate_term_end": "불명",
+                },
+                "primary_2026": races_by_abbr.get(abbr),
+                "missing_fields": [
+                    "lieutenant_governor",
+                    "attorney_general",
+                    "state_legislature_member_rosters",
+                    "federal_senate_term_end",
+                ],
+            }
+        )
+
+    state_names = set(USA_STATE_ABBR)
+    territory_names = sorted(
+        {row.get("state") for row in members if row.get("state") and row.get("state") not in state_names}
+    )
+    return {
+        "join_key": "map_feature_code ↔ admin1 feature.properties.code",
+        "states": state_cards,
+        "territories_and_district": [
+            {
+                "name": name,
+                "house_members": [
+                    row
+                    for row in members
+                    if row.get("state") == name and row.get("chamber") == "house"
+                ],
+            }
+            for name in territory_names
+        ],
+        "source_as_of": {
+            "congress": congress.get("as_of"),
+            "governors": governors.get("as_of"),
+            "state_legislatures": state_legislatures.get("as_of"),
+            "race_progress": (race_progress or {}).get("as_of"),
+        },
+    }
 
 
 def build_board(
@@ -192,6 +288,10 @@ def build_board(
             row["mode"] = profile["mode"]
         if profile.get("regime"):
             row["regime"] = profile["regime"]
+        if profile.get("political_context"):
+            row["political_context"] = profile["political_context"]
+        if profile.get("source_review"):
+            row["source_review"] = profile["source_review"]
         # Tier-3 / non-electoral briefs: power card + optional emirates list
         if profile.get("power"):
             row["power"] = profile["power"]
@@ -208,9 +308,14 @@ def build_board(
                 "todo": profile["document_ingest"].get("todo"),
             }
         if iso3 == "USA":
+            usa_rp = load_extracted("race_progress_usa_v1.json")
             row["legislature_live"] = {
                 "summary": usa_congress.get("summary"),
                 "floor_leadership": usa_congress.get("floor_leadership"),
+                # Public member roster is intentionally included so a state drill-down
+                # can list its House delegation and senators without the browser
+                # reaching into scripts/election_watch/config.
+                "members": usa_congress.get("members"),
                 "source": (usa_congress.get("source") or {}),
             }
             row["subnational_live"] = {
@@ -228,9 +333,33 @@ def build_board(
                 "parties": {},
                 "note": "불명 — factions_board.json 미생성",
             }
-            usa_rp = load_extracted("race_progress_usa_v1.json")
             if usa_rp:
                 row["race_progress"] = usa_rp
+            row["ui_ready"] = {
+                "state_drilldown": build_usa_state_drilldown(
+                    usa_congress, usa_gov, usa_state_legs, usa_rp
+                ),
+                "congress": {
+                    "summary": usa_congress.get("summary"),
+                    "floor_leadership": usa_congress.get("floor_leadership"),
+                    "house_members": [
+                        member
+                        for member in (usa_congress.get("members") or [])
+                        if member.get("chamber") == "house"
+                    ],
+                    "senate_members": [
+                        member
+                        for member in (usa_congress.get("members") or [])
+                        if member.get("chamber") == "senate"
+                    ],
+                    "committees": "불명",
+                    "missing_fields": [
+                        "standing_committees",
+                        "committee_chairs",
+                        "committee_member_rosters",
+                    ],
+                },
+            }
         if iso3 == "JPN":
             row["legislature_live"] = {
                 "shugiin_members": (jpn_shugiin.get("summary") or {}).get("members"),
@@ -319,8 +448,9 @@ def build_board(
             kor_rp = load_extracted("race_progress_kor_v1.json")
             if kor_rp:
                 row["race_progress"] = kor_rp
-            if profile.get("prime_minister"):
-                row["prime_minister"] = profile["prime_minister"]
+        # prime_minister (any country that has it in profile — KOR, FRA, …)
+        if profile.get("prime_minister"):
+            row["prime_minister"] = profile["prime_minister"]
         # attach governance polls for this country
         series = [
             s
@@ -338,11 +468,27 @@ def build_board(
                     bios = load_json(bios_alt)
             if pla_path.exists():
                 pla = load_json(pla_path)
+                # China is a three-axis view (Party / state / military), not a
+                # conventional presidency + legislature view.  Keep the complete
+                # reviewed leadership structure on the public board so the UI can
+                # render the CCP and military tabs without importing config files.
+                row["leadership"] = {
+                    "as_of": pla.get("as_of"),
+                    "review_cadence": pla.get("review_cadence"),
+                    "next_full_review": pla.get("next_full_review"),
+                    "display_rules": pla.get("display_rules"),
+                    "party_state": pla.get("party_state"),
+                    "cmc": pla.get("cmc"),
+                    "security_organs": pla.get("security_organs"),
+                    "service_branches": pla.get("service_branches"),
+                    "theater_commands": pla.get("theater_commands"),
+                    "todo_next": pla.get("todo_next"),
+                }
                 row["pla"] = {
                     "as_of": pla.get("as_of"),
                     "source_primary": pla.get("source_primary"),
                     "theater_commands": pla.get("theater_commands"),
-                    "cmc_members_mentioned": (pla.get("cmc") or {}).get("members_mentioned"),
+                    "cmc_members_mentioned": (pla.get("cmc") or {}).get("active_core"),
                     "bios": {
                         "count": bios.get("count"),
                         "method": bios.get("method"),
@@ -352,6 +498,27 @@ def build_board(
                     }
                     if bios
                     else None,
+                }
+        if iso3 == "IRN":
+            iran_path = ROOT / "config" / "iran_leadership_extracted.json"
+            if iran_path.exists():
+                iran = load_json(iran_path)
+                row["leadership"] = {
+                    "as_of": iran.get("as_of"),
+                    "mode": iran.get("mode"),
+                    "confidence_overall": iran.get("confidence_overall"),
+                    "system_note_ko": iran.get("system_note_ko"),
+                    "supreme_leader": iran.get("supreme_leader"),
+                    "elected_executive": iran.get("elected_executive"),
+                    "security_axis": iran.get("security_axis"),
+                    "clerical_institutions": iran.get("clerical_institutions"),
+                    "legislature": iran.get("legislature"),
+                    "analytical_factions": iran.get("analytical_factions"),
+                    "election_system": iran.get("election_system"),
+                    "power_event_2026": iran.get("power_event_2026"),
+                    "elections_national": iran.get("elections_national"),
+                    "factions_light_ko": iran.get("factions_light_ko"),
+                    "todo_next": iran.get("todo_next"),
                 }
         if iso3 == "RUS":
             row["mode"] = profile.get("mode") or c.get("mode") or "managed_elections_document_extract"

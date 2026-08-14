@@ -46,7 +46,17 @@ FRED_WORKER_LATEST: dict[str, dict] = {
     "spread_10y3m": {"id": "T10Y3M"},
     "fed_total_assets": {"id": "WALCL", "scale": 1e-6},  # mn → tn
     "tga": {"id": "WTREGEN", "scale": 1e-3},  # mn → bn
-    "on_rrp": {"id": "RRPONTSYD", "scale": 1e-3},
+    # RRPONTSYD is the ON RRP *award rate* (percent) -- fine as a level around
+    # 4-5, catastrophic if pinned onto a balance series scaled in bn USD. The
+    # August pin did exactly that: on_rrp's fixture history ran ~150-170bn,
+    # then the live overlay wrote 0.00125 (= 4.25% * 1e-3) over the last point,
+    # reading as the balance collapsing to zero. RRPONTTLD is the actual daily
+    # ON RRP balance -- and FRED already reports it in bn USD, not millions,
+    # so it takes no rescaling (a second 1e-3 here would repeat the same class
+    # of bug on the fixed series). The real balance genuinely is near zero as
+    # of 2026-08 ($0.45bn on 08-13) -- usage has drained the way it did in
+    # 2023-24, this indicator just wasn't reading the number that shows it.
+    "on_rrp": {"id": "RRPONTTLD"},
     "fed_mbs": {"id": "WSHOMCB", "scale": 1e-3},
     "unemployment": {"id": "UNRATE"},
     "sahm": {"id": "SAHMREALTIME"},

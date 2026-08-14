@@ -1,206 +1,755 @@
 {
-  "version": 1,
-  "as_of": "2024-12-31",
-  "extracted_at": "2026-08-08",
-  "source_primary": {
-    "id": "dod_cmpr_2025",
-    "title": "Annual Report to Congress: Military and Security Developments Involving the PRC (2025)",
-    "official_url": "https://media.defense.gov/2025/Dec/23/2003849070/-1/-1/1/ANNUAL-REPORT-TO-CONGRESS-MILITARY-AND-SECURITY-DEVELOPMENTS-INVOLVING-THE-PEOPLES-REPUBLIC-OF-CHINA-2025.PDF",
-    "local_cache": "raw/china/CMPR_2025.pdf",
-    "local_via": "andrewerickson.com mirror (media.defense.gov returned Access Denied from this environment)",
-    "press_index": "https://news.usni.org/2025/12/24/pentagon-annual-report-on-chinese-military-and-security-developments-2",
-    "leadership_cutoff_note": "Theater leadership names current as of 2024-12-31 per CMPR"
+  "version": 5,
+  "as_of": "2026-08-09",
+  "extracted_at": "2026-08-09",
+  "review_cadence": "monthly",
+  "next_full_review": "2026-09-09",
+  "display_rules": {
+    "fallen_style": "strikethrough",
+    "note_ko": "실각·조사자: display=strikethrough → UI에서 이름 삭선. 태그는 _internal 전용(비공개)."
   },
+  "merge_note": "CMPR 2025 + MND 2025-10 purge + 2026-01 Zhang Youxia investigation + Xinhua PSC + 중조부/중선부/중통부 공개 보도 + 군종 위키/SCMP/CNA 교차. Anti lit 종료 → Grok 직접 병합.",
   "party_state": {
     "general_secretary": {
       "name_en": "Xi Jinping",
       "name_zh": "习近平",
+      "name_ko": "시진핑",
       "status": "incumbent",
       "confidence": "high",
-      "sources": ["dod_cmpr_2025"]
+      "_internal": {
+        "xi_tie": "self"
+      }
+    },
+    "politburo_standing_committee": {
+      "n": 7,
+      "confidence": "high",
+      "source": "xinhua_20th_leaders",
+      "rank_order": [
+        {
+          "name_en": "Xi Jinping",
+          "name_zh": "习近平",
+          "name_ko": "시진핑",
+          "role_ko": "총서기·국가주석·군위주석",
+          "title_ko": "총서기"
+        },
+        {
+          "name_en": "Li Qiang",
+          "name_zh": "李强",
+          "name_ko": "리창",
+          "role_ko": "국무원 총리",
+          "title_ko": "국무원 총리",
+          "_internal": {
+            "xi_tie_public": "절강"
+          }
+        },
+        {
+          "name_en": "Zhao Leji",
+          "name_zh": "赵乐际",
+          "name_ko": "자오러지",
+          "role_ko": "전인대 상무위원장",
+          "title_ko": "전인대 상무위원장",
+          "_internal": {
+            "xi_tie_public": "불명"
+          }
+        },
+        {
+          "name_en": "Wang Huning",
+          "name_zh": "王沪宁",
+          "name_ko": "왕후닝",
+          "role_ko": "정협 주석",
+          "title_ko": "정협 주석",
+          "_internal": {
+            "xi_tie_public": "불명"
+          }
+        },
+        {
+          "name_en": "Cai Qi",
+          "name_zh": "蔡奇",
+          "name_ko": "차이치",
+          "role_ko": "중앙서기처 제1서기",
+          "title_ko": "중앙서기처 제1서기",
+          "_internal": {
+            "xi_tie_public": "복건"
+          }
+        },
+        {
+          "name_en": "Ding Xuexiang",
+          "name_zh": "丁薛祥",
+          "name_ko": "딩쉐샹",
+          "role_ko": "상무부총리",
+          "title_ko": "상무부총리",
+          "_internal": {
+            "xi_tie_public": "상하이"
+          }
+        },
+        {
+          "name_en": "Li Xi",
+          "name_zh": "李希",
+          "name_ko": "리시",
+          "role_ko": "중기위 서기",
+          "title_ko": "중기위 서기",
+          "_internal": {
+            "xi_tie_public": "기율"
+          }
+        }
+      ]
+    },
+    "politburo": {
+      "original_n_20th": 24,
+      "active_n_approx": 21,
+      "note_ko": "20차 정치국 원래 24명. 허웨이둥 제명·장유샤 조사·마싱루이 제명으로 축소.",
+      "active": [
+        {
+          "name_en": "Xi Jinping",
+          "name_zh": "习近平",
+          "name_ko": "시진핑"
+        },
+        {
+          "name_en": "Li Qiang",
+          "name_zh": "李强",
+          "name_ko": "리창"
+        },
+        {
+          "name_en": "Zhao Leji",
+          "name_zh": "赵乐际",
+          "name_ko": "자오러지"
+        },
+        {
+          "name_en": "Wang Huning",
+          "name_zh": "王沪宁",
+          "name_ko": "왕후닝"
+        },
+        {
+          "name_en": "Cai Qi",
+          "name_zh": "蔡奇",
+          "name_ko": "차이치"
+        },
+        {
+          "name_en": "Ding Xuexiang",
+          "name_zh": "丁薛祥",
+          "name_ko": "딩쉐샹"
+        },
+        {
+          "name_en": "Li Xi",
+          "name_zh": "李希",
+          "name_ko": "리시"
+        },
+        {
+          "name_en": "Wang Yi",
+          "name_zh": "王毅",
+          "name_ko": "왕이",
+          "role_ko": "외교·중앙외사판공실",
+          "title_ko": "외교·중앙외사판공실"
+        },
+        {
+          "name_en": "Shi Taifeng",
+          "name_zh": "石泰峰",
+          "name_ko": "스타이펑",
+          "role_ko": "중앙조직부장",
+          "title_ko": "중앙조직부장"
+        },
+        {
+          "name_en": "Li Ganjie",
+          "name_zh": "李干杰",
+          "name_ko": "리간제",
+          "role_ko": "중앙통전부장",
+          "title_ko": "중앙통전부장"
+        },
+        {
+          "name_en": "Li Shulei",
+          "name_zh": "李书磊",
+          "name_ko": "리수레이",
+          "role_ko": "중앙선전부장",
+          "title_ko": "중앙선전부장"
+        },
+        {
+          "name_en": "Chen Wenqing",
+          "name_zh": "陈文清",
+          "name_ko": "천원칭",
+          "role_ko": "정법위 서기",
+          "title_ko": "정법위 서기"
+        },
+        {
+          "name_en": "Chen Jining",
+          "name_zh": "陈吉宁",
+          "name_ko": "천지닝",
+          "role_ko": "상하이 서기",
+          "title_ko": "상하이 서기"
+        },
+        {
+          "name_en": "Chen Min'er",
+          "name_zh": "陈敏尔",
+          "name_ko": "천민얼",
+          "role_ko": "톈진 서기",
+          "title_ko": "톈진 서기"
+        },
+        {
+          "name_en": "Huang Kunming",
+          "name_zh": "黄坤明",
+          "name_ko": "황쿤밍",
+          "role_ko": "광둥 서기",
+          "title_ko": "광둥 서기"
+        },
+        {
+          "name_en": "Yin Li",
+          "name_zh": "尹力",
+          "name_ko": "인리",
+          "role_ko": "베이징 서기",
+          "title_ko": "베이징 서기"
+        },
+        {
+          "name_en": "Yuan Jiajun",
+          "name_zh": "袁家军",
+          "name_ko": "위안자쥔"
+        },
+        {
+          "name_en": "Zhang Guoqing",
+          "name_zh": "张国清",
+          "name_ko": "장궈칭",
+          "role_ko": "부총리",
+          "title_ko": "부총리"
+        },
+        {
+          "name_en": "He Lifeng",
+          "name_zh": "何立峰",
+          "name_ko": "허리펑",
+          "role_ko": "부총리",
+          "title_ko": "부총리"
+        },
+        {
+          "name_en": "Liu Guozhong",
+          "name_zh": "刘国中",
+          "name_ko": "류궈중",
+          "role_ko": "부총리",
+          "title_ko": "부총리"
+        },
+        {
+          "name_en": "Li Hongzhong",
+          "name_zh": "李鸿忠",
+          "name_ko": "리홍중"
+        }
+      ],
+      "fallen": [
+        {
+          "name_en": "He Weidong",
+          "name_zh": "何卫东",
+          "name_ko": "허웨이둥",
+          "status": "expelled_2025-10",
+          "was": "정치국·군위부주석",
+          "title_ko": "군위부주석",
+          "fallen": true,
+          "display": "strikethrough"
+        },
+        {
+          "name_en": "Zhang Youxia",
+          "name_zh": "张又侠",
+          "name_ko": "장유샤",
+          "status": "investigating_2026-01_de_facto_fallen",
+          "was": "정치국·군위1부주석",
+          "title_ko": "군위1부주석",
+          "fallen": true,
+          "display": "strikethrough"
+        },
+        {
+          "name_en": "Ma Xingrui",
+          "name_zh": "马兴瑞",
+          "name_ko": "마싱루이",
+          "status": "expelled_2026-07",
+          "was": "정치국·신장 서기",
+          "title_ko": "신장 서기",
+          "fallen": true,
+          "display": "strikethrough"
+        }
+      ]
+    },
+    "central_departments": {
+      "note_ko": "공산당 3대 핵심 부서 + 정법.",
+      "organization_department": {
+        "title_ko": "중앙조직부",
+        "minister": {
+          "name_en": "Shi Taifeng",
+          "name_zh": "石泰峰",
+          "name_ko": "스타이펑",
+          "since": "2025-03-31",
+          "also": [
+            "정치국위원",
+            "중앙서기처 서기"
+          ],
+          "confidence": "high",
+          "note": "2025-03 리간제와 조직↔통선 맞교대. 2026-07 공개 활동 확인.",
+          "title_ko": "중앙조직부장",
+          "_internal": {
+            "xi_tie_public": "불명"
+          }
+        }
+      },
+      "propaganda_department": {
+        "title_ko": "중앙선전부",
+        "minister": {
+          "name_en": "Li Shulei",
+          "name_zh": "李书磊",
+          "name_ko": "리수레이",
+          "since": "2022-10",
+          "also": [
+            "정치국위원",
+            "중앙서기처 서기"
+          ],
+          "confidence": "high",
+          "title_ko": "중앙선전부장",
+          "_internal": {
+            "xi_tie_public": "불명"
+          }
+        }
+      },
+      "united_front_work_department": {
+        "title_ko": "중앙통전부",
+        "minister": {
+          "name_en": "Li Ganjie",
+          "name_zh": "李干杰",
+          "name_ko": "리간제",
+          "since": "2025-04",
+          "also": [
+            "정치국위원",
+            "중앙서기처 서기"
+          ],
+          "confidence": "high",
+          "note": "스타이펑과 2025 맞교대 후 통전부장.",
+          "title_ko": "중앙통전부장",
+          "_internal": {
+            "xi_tie_public": "불명"
+          }
+        }
+      },
+      "political_and_legal_affairs": {
+        "title_ko": "중앙정법위원회",
+        "secretary": {
+          "name_en": "Chen Wenqing",
+          "name_zh": "陈文清",
+          "name_ko": "천원칭",
+          "also": [
+            "정치국위원"
+          ],
+          "confidence": "high",
+          "title_ko": "중앙정법위 서기",
+          "_internal": {
+            "xi_tie_public": "기율"
+          }
+        }
+      }
+    },
+    "state_council": {
+      "premier": {
+        "name_en": "Li Qiang",
+        "name_zh": "李强",
+        "name_ko": "리창",
+        "_internal": {
+          "xi_tie": "close_aide_25y"
+        }
+      },
+      "vice_premiers": [
+        {
+          "name_en": "Ding Xuexiang",
+          "name_zh": "丁薛祥"
+        },
+        {
+          "name_en": "He Lifeng",
+          "name_zh": "何立峰"
+        },
+        {
+          "name_en": "Zhang Guoqing",
+          "name_zh": "张国清"
+        },
+        {
+          "name_en": "Liu Guozhong",
+          "name_zh": "刘国中"
+        }
+      ]
     }
   },
   "cmc": {
-    "notes": "CMPR describes turbulence/purges; several members suspended or removed. Slots need refresh after each plenum.",
-    "members_mentioned": [
+    "notes_ko": "실무 활성은 시진핑+장성민. 조사·제명은 이름 앞에 '-'.",
+    "active_core": [
       {
         "name_en": "Xi Jinping",
-        "role": "cmc_chair",
+        "name_zh": "习近平",
+        "name_ko": "시진핑",
+        "role_ko": "군위주석",
         "status": "incumbent",
-        "confidence": "high"
+        "confidence": "high",
+        "title_ko": "군위주석"
       },
+      {
+        "name_en": "Zhang Shengmin",
+        "name_zh": "张升民",
+        "name_ko": "장성민",
+        "role_ko": "군위부주석",
+        "status": "incumbent",
+        "since": "2025-10-23",
+        "background": "로켓군·정치위원·군위기율",
+        "confidence": "high",
+        "note": "작전 지휘 경력 거의 없음.",
+        "title_ko": "군위부주석",
+        "_internal": {
+          "xi_tie_public": "기율"
+        }
+      }
+    ],
+    "fallen": [
       {
         "name_en": "Zhang Youxia",
         "name_zh": "张又侠",
-        "role": "cmc_vice_chairman",
-        "status": "incumbent_as_of_report",
+        "name_ko": "장유샤",
+        "role_ko": "군위1부주석(구)",
+        "status": "investigating_2026-01_de_facto_fallen",
         "confidence": "high",
-        "note": "CMPR: took more direct oversight after He Weidong issues"
+        "title_ko": "군위1부주석",
+        "fallen": true,
+        "display": "strikethrough",
+        "_internal": {
+          "xi_tie_public": "불명"
+        }
+      },
+      {
+        "name_en": "Liu Zhenli",
+        "name_zh": "刘振立",
+        "name_ko": "류전리",
+        "role_ko": "군위위원·합참장(구)",
+        "status": "investigating_2026-01_de_facto_fallen",
+        "confidence": "high",
+        "title_ko": "군위위원·합참장",
+        "fallen": true,
+        "display": "strikethrough",
+        "_internal": {
+          "xi_tie_public": "불명"
+        }
       },
       {
         "name_en": "He Weidong",
         "name_zh": "何卫东",
-        "role": "cmc_vice_chairman",
-        "status": "reportedly_detained_or_suspended_2025",
-        "confidence": "medium",
-        "note": "CMPR: absent early 2025; March 2025 reportedly detained"
+        "name_ko": "허웨이둥",
+        "role_ko": "군위부주석(구)",
+        "status": "expelled_2025-10-17",
+        "confidence": "high",
+        "title_ko": "군위부주석",
+        "fallen": true,
+        "display": "strikethrough",
+        "_internal": {
+          "xi_tie_public": "31집단군"
+        }
       },
       {
         "name_en": "Miao Hua",
         "name_zh": "苗华",
-        "role": "cmc_political_work_department_director",
-        "status": "investigated_suspended_2024-11",
-        "confidence": "high"
-      },
-      {
-        "name_en": "Dong Jun",
-        "name_zh": "董军",
-        "role": "minister_of_national_defense",
-        "status": "appointed_2023-12_not_on_cmc",
+        "name_ko": "먀오화",
+        "role_ko": "정치공작부 주임(구)",
+        "status": "expelled_2025-10-17",
         "confidence": "high",
-        "note": "Unusual: defense minister not seated on CMC"
+        "title_ko": "정치공작부 주임",
+        "fallen": true,
+        "display": "strikethrough",
+        "_internal": {
+          "xi_tie_public": "31집단군"
+        }
       },
       {
         "name_en": "Li Shangfu",
         "name_zh": "李尚福",
-        "role": "former_minister_of_national_defense_cmc",
-        "status": "removed_2023-10",
-        "confidence": "high"
+        "name_ko": "리상푸",
+        "role_ko": "전 국방부장·군위",
+        "status": "removed_sentenced_death_reprieve_2026-05",
+        "confidence": "high",
+        "title_ko": "전 국방부장·군위",
+        "fallen": true,
+        "display": "strikethrough",
+        "_internal": {
+          "xi_tie_public": "불명"
+        }
+      },
+      {
+        "name_en": "Lin Xiangyang",
+        "name_zh": "林向阳",
+        "name_ko": "린샹양",
+        "role_ko": "동부전구 사령관(구)",
+        "status": "expelled_2025-10-17",
+        "confidence": "high",
+        "title_ko": "동부전구 사령관",
+        "fallen": true,
+        "display": "strikethrough",
+        "_internal": {
+          "xi_tie_public": "31집단군"
+        }
       }
-    ]
+    ],
+    "defense_minister": {
+      "name_en": "Dong Jun",
+      "name_zh": "董军",
+      "name_ko": "둥쥔",
+      "status": "incumbent",
+      "on_cmc": false,
+      "confidence": "high",
+      "title_ko": "국방부장",
+      "_internal": {
+        "xi_tie_public": "불명"
+      }
+    }
+  },
+  "service_branches": {
+    "note_ko": "전구(战区)와 별도 — 육·해·공·로켓·무경 등 군종(军种) 사령. 숙청으로 다수 공석·대리.",
+    "army": {
+      "name_ko": "육군",
+      "commander": {
+        "name_en": "vacant_or_unclear",
+        "name_ko": "공석·불명",
+        "confidence": "low",
+        "note": "리차오밍 등 NPC 자격 박탈. 정식 사령 미확정."
+      },
+      "political_commissar": {
+        "name_en": "Chen Hui",
+        "name_zh": "陈辉",
+        "name_ko": "천후이",
+        "confidence": "medium"
+      }
+    },
+    "navy": {
+      "name_ko": "해군",
+      "commander": {
+        "name_en": "Hu Zhongming",
+        "name_zh": "胡中明",
+        "name_ko": "후중밍",
+        "confidence": "medium",
+        "note": "위키 2023-12~. SCMP는 장정 대리 설.",
+        "title_ko": "해군사령관"
+      },
+      "alt_reported": {
+        "name_en": "Zhang Zheng",
+        "name_zh": "张峥",
+        "note": "SCMP/CNA 공개 출현 기반 추정. 공식 미확인."
+      }
+    },
+    "air_force": {
+      "name_ko": "공군",
+      "commander": {
+        "name_en": "Wang Gang",
+        "name_zh": "王刚",
+        "name_ko": "왕강",
+        "since": "2026-07-03",
+        "rank": "General",
+        "confidence": "medium-high",
+        "note": "2026-07-03 상장 진급·사령 보도.",
+        "title_ko": "공군사령관",
+        "_internal": {
+          "xi_tie_public": "숙청후승진"
+        }
+      }
+    },
+    "rocket_force": {
+      "name_ko": "로켓군 (전략미사일)",
+      "commander": {
+        "name_en": "Lei Kai",
+        "name_zh": "雷凯",
+        "name_ko": "레이카이",
+        "status": "acting_or_provisional",
+        "since": "2025-12",
+        "confidence": "medium",
+        "note": "전임 -왕허우빈 제명. 참모장 출신.",
+        "title_ko": "로켓군 사령관(대리)",
+        "_internal": {
+          "xi_tie_public": "숙청후승진"
+        }
+      },
+      "political_commissar": {
+        "name_en": "Xu Xisheng",
+        "name_zh": "徐西盛",
+        "name_ko": "쉬시성",
+        "confidence": "medium"
+      },
+      "fallen_commanders": [
+        {
+          "name_en": "Wei Fenghe",
+          "fallen": true,
+          "display": "strikethrough"
+        },
+        {
+          "name_en": "Zhou Yaning",
+          "fallen": true,
+          "display": "strikethrough"
+        },
+        {
+          "name_en": "Li Yuchao",
+          "fallen": true,
+          "display": "strikethrough"
+        },
+        {
+          "name_en": "Wang Houbin",
+          "note": "4연속 사령 숙청",
+          "fallen": true,
+          "display": "strikethrough"
+        }
+      ]
+    },
+    "armed_police": {
+      "name_ko": "무장경찰",
+      "commander": {
+        "name_en": "vacant_after_Wang_Chunning",
+        "name_ko": "공석(전 -왕춘닝 제명)",
+        "confidence": "low"
+      }
+    }
   },
   "theater_commands": [
     {
       "id": "eastern",
-      "name_en": "Eastern Theater Command",
-      "as_of": "2024-12-31",
+      "name_ko": "동부전구 (대만)",
       "commander": {
-        "name_en": "Lin Xiangyang",
-        "name_zh": "林向阳",
-        "rank": "General",
-        "previous": "Commander, Central Theater Command"
+        "name_en": "Yang Zhibin",
+        "name_zh": "杨志斌",
+        "name_ko": "양즈빈",
+        "since": "2025-10",
+        "confidence": "medium-high",
+        "title_ko": "동부전구 사령관",
+        "_internal": {
+          "xi_tie_public": "숙청후승진"
+        }
       },
       "political_commissar": {
         "name_en": "Liu Qingsong",
         "name_zh": "刘青松",
-        "rank": "Admiral",
-        "previous": "Political Commissar, Northern Theater Command"
+        "name_ko": "류칭쑹",
+        "hometown": "Jinan Shandong",
+        "confidence": "medium"
       },
-      "chief_of_staff": {
-        "name_en": "Hong Jiangqiang",
-        "name_zh": "洪江强",
-        "rank": "Lt General"
-      },
-      "confidence": "high",
-      "source": "dod_cmpr_2025"
+      "fallen": [
+        {
+          "name_en": "Lin Xiangyang",
+          "status": "expelled_2025-10",
+          "fallen": true,
+          "display": "strikethrough"
+        }
+      ]
     },
     {
       "id": "southern",
-      "name_en": "Southern Theater Command",
-      "as_of": "2024-12-31",
+      "name_ko": "남부전구",
       "commander": {
         "name_en": "Wu Yanan",
         "name_zh": "吴亚男",
-        "rank": "General",
-        "appointed": "2024-07",
-        "previous": "Commander, Central Theater Command"
+        "name_ko": "우야난",
+        "confidence": "low"
       },
       "political_commissar": {
         "name_en": "Wang Wenquan",
-        "name_zh": "王文全",
-        "rank": "General"
-      },
-      "chief_of_staff": {
-        "name_en": "Jia Jiancheng",
-        "name_zh": "贾建成",
-        "rank": "Lt Gen"
-      },
-      "confidence": "high",
-      "source": "dod_cmpr_2025"
+        "confidence": "low"
+      }
     },
     {
       "id": "western",
-      "name_en": "Western Theater Command",
-      "as_of": "2024-12-31",
+      "name_ko": "서부전구",
       "commander": {
         "name_en": "Wang Haijiang",
         "name_zh": "汪海江",
-        "rank": "General",
-        "appointed": "2021-09"
+        "name_ko": "왕하이장",
+        "confidence": "low-medium"
       },
       "political_commissar": {
         "name_en": "Li Fengbiao",
         "name_zh": "李凤彪",
-        "rank": "General"
-      },
-      "chief_of_staff": {
-        "name_en": "Zhang Jian",
-        "name_zh": "张践",
-        "rank": "Lt General"
-      },
-      "confidence": "high",
-      "source": "dod_cmpr_2025"
+        "status": "likely_removed_2026",
+        "confidence": "medium",
+        "fallen": true,
+        "display": "strikethrough"
+      }
     },
     {
       "id": "central",
-      "name_en": "Central Theater Command",
-      "as_of": "2024-12-31",
+      "name_ko": "중부전구",
       "commander": {
-        "name_en": "Wang Qiang",
-        "name_zh": "王强",
-        "rank": "General",
-        "appointed": "2024-08",
-        "previous": "Commander, Northern Theater Command"
+        "name_en": "Han Shengyan",
+        "name_zh": "韩胜延",
+        "name_ko": "한성옌",
+        "since": "2025-12",
+        "confidence": "medium-high",
+        "title_ko": "중부전구 사령관",
+        "_internal": {
+          "xi_tie_public": "숙청후승진"
+        }
       },
       "political_commissar": {
         "name_en": "Xu Deqing",
         "name_zh": "徐德清",
-        "rank": "General"
-      },
-      "chief_of_staff": {
-        "name_en": "Wang Changjiang",
-        "name_zh": "王长江",
-        "rank": "Vice Admiral"
-      },
-      "confidence": "high",
-      "source": "dod_cmpr_2025"
+        "name_ko": "쉬더칭",
+        "confidence": "medium"
+      }
     },
     {
       "id": "northern",
-      "name_en": "Northern Theater Command",
-      "as_of": "2024-12-31",
+      "name_ko": "북부전구",
       "commander": {
         "name_en": "Huang Ming",
         "name_zh": "黄铭",
-        "rank": "General",
-        "appointed": "2024-08"
+        "name_ko": "황밍",
+        "confidence": "low-medium"
       },
       "political_commissar": {
         "name_en": "Zheng Xuan",
-        "name_zh": "郑璇",
-        "rank": "General"
-      },
-      "chief_of_staff": {
-        "name_en": "Jiang Guoping",
-        "name_zh": "姜国平",
-        "rank": "Vice Admiral"
-      },
-      "confidence": "high",
-      "source": "dod_cmpr_2025"
+        "confidence": "low"
+      }
     }
   ],
-  "service_notes": [
-    {
-      "topic": "PLARF_purges",
-      "names": ["Li Yuchao", "Xu Zhongbo"],
-      "note": "Former PLARF commander / political commissar removed; CMPR details corruption campaign",
-      "confidence": "high"
-    }
-  ],
+  "xi_connection_taxonomy": {
+    "internal_only": true,
+    "note_ko": "시 연계 태그는 공개하지 않음. 운영자만 _internal 조회."
+  },
   "todo_next": [
-    "PSC 7 members from latest plenum / Xinhua",
-    "Refresh CMC after He/Miao outcomes",
-    "Parse USCC 2025 annual PDF chapters",
-    "ODNI ATA 2025 China section (elite/PLA posture)"
-  ]
+    "2026-09 월간 전수: 군종 사령 공식 임명",
+    "육군·무경 사령 확정명",
+    "해군 후중밍 vs 장정 확정",
+    "CMC 신규 위원 진입"
+  ],
+  "security_organs": {
+    "note_ko": "안보·공안 라인. title_ko = 최고·대중 직함 1개.",
+    "central_political_and_legal_affairs_commission": {
+      "name_ko": "천원칭",
+      "name_zh": "陈文清",
+      "name_en": "Chen Wenqing",
+      "title_ko": "중앙정법위 서기",
+      "status": "incumbent",
+      "also_hidden": [
+        "정치국위원",
+        "중앙서기처"
+      ],
+      "confidence": "high",
+      "_internal": {
+        "xi_tie_public": "기율"
+      }
+    },
+    "ministry_of_public_security": {
+      "name_ko": "왕샤오훙",
+      "name_zh": "王小洪",
+      "name_en": "Wang Xiaohong",
+      "title_ko": "공안부장",
+      "status": "incumbent",
+      "also_hidden": [
+        "국무위원",
+        "중앙서기처 서기",
+        "정법위 부서기"
+      ],
+      "confidence": "high",
+      "note": "시 복건 공안 라인. 2026-07 공개 활동 확인.",
+      "_internal": {
+        "xi_tie_public": "복건"
+      }
+    },
+    "ministry_of_state_security": {
+      "name_ko": "천이신",
+      "name_zh": "陈一新",
+      "name_en": "Chen Yixin",
+      "title_ko": "국가안전부장",
+      "status": "incumbent",
+      "confidence": "high",
+      "note": "2022-10~ 천원칭 후임. 2026 공개 회동 확인.",
+      "_internal": {
+        "xi_tie_public": "불명"
+      }
+    }
+  }
 }

@@ -1,0 +1,81 @@
+{
+  "version": 1,
+  "as_of": "2026-08-09",
+  "reference_ui": "https://invest-lens.io/geopolitics/elections",
+  "goal_ko": "전세계 선거 캘린더(날짜순) + 국가 클릭 시 의석·지도자·전당대회·여론. invest-lens 스타일.",
+  "event_types_required": [
+    "general",
+    "presidential",
+    "midterm",
+    "local",
+    "party_leadership",
+    "referendum"
+  ],
+  "party_conventions": {
+    "include": true,
+    "note_ko": "전당대회·당대표 경선은 캘린더·국가 상세에 필수 포함 (2급·3급 일부도 동일)."
+  },
+  "depth_by_tier": {
+    "tier1": {
+      "min": [
+        "head",
+        "legislature_party_seats",
+        "polls",
+        "calendar",
+        "party_conventions",
+        "security_or_factions_if_relevant"
+      ],
+      "examples": [
+        "USA",
+        "JPN",
+        "CHN",
+        "RUS"
+      ]
+    },
+    "tier2": {
+      "min": [
+        "head",
+        "legislature_party_seats",
+        "polls",
+        "calendar",
+        "party_conventions"
+      ],
+      "no_factions_state_legislature": true,
+      "examples": [
+        "GBR",
+        "KOR",
+        "ISR",
+        "BRA",
+        "DEU",
+        "FRA",
+        "TWN",
+        "IND",
+        "TUR",
+        "IRN",
+        "SAU"
+      ]
+    },
+    "tier3_partial": {
+      "min": [
+        "head",
+        "calendar",
+        "party_conventions_if_any"
+      ],
+      "optional": [
+        "legislature_party_seats",
+        "polls"
+      ],
+      "examples": ["ARE"],
+      "note_ko": "3급 전부 동일 깊이 강요 안 함. 시장·안보 관련국은 2급 최소 깊이 유지."
+    }
+  },
+  "calendar_fields": [
+    "date",
+    "iso3",
+    "type",
+    "label_ko",
+    "significance",
+    "status"
+  ],
+  "monthly_refresh": true
+}

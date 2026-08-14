@@ -1,168 +1,409 @@
 {
-  "version": 1,
+  "version": 4,
   "chamber": "US House",
-  "as_of": "2026-08-08",
+  "chamber_ko": "미국 하원",
+  "as_of": "2026-08-14",
   "notes": [
-    "공식 선관위 데이터 아님.",
-    "공개 코커스 = 코커스 사이트 1차. 비공개(HFC/RSC) = 언론·업계·Ballotpedia 교차, confidence 필수.",
-    "명단은 스냅샷 — Congress 중 변동. 재검증 주기: 분기 또는 리더십 선거 직후."
+    "정당별로 정파(코커스) 분리. 공식 선관위 데이터 아님.",
+    "공개 코커스=사이트 1차. HFC 등 비공개=언론 교차, confidence 필수.",
+    "명단 스냅샷 — 회기 중 변동. 재검증: 분기 또는 리더십 선거 직후."
   ],
-  "spectrum_axis": "progressive_blue_to_conservative_red",
-  "floor_leadership_offices": [
-    {"id": "speaker", "chamber": "house"},
-    {"id": "majority_leader", "chamber": "house"},
-    {"id": "majority_whip", "chamber": "house"},
-    {"id": "minority_leader", "chamber": "house"},
-    {"id": "minority_whip", "chamber": "house"},
-    {"id": "senate_majority_leader", "chamber": "senate"},
-    {"id": "senate_minority_leader", "chamber": "senate"}
-  ],
-  "parties": {
-    "dem": {
+  "spectrum_axis": "progressive → center → conservative",
+  "by_party": {
+    "Democratic": {
+      "party_ko": "민주당",
+      "party_en": "Democratic Party",
       "factions": [
         {
           "id": "cpc",
-          "name_en": "Congressional Progressive Caucus",
+          "name_ko": "진보코커스",
+          "name_en": "Congressional Progressive Caucus (CPC)",
           "spectrum": "progressive",
+          "spectrum_ko": "진보",
           "roster_mode": "official_caucus_site",
           "confidence": "high",
           "url": "https://progressives.house.gov/caucus-members",
+          "display_count": {
+            "value": 100,
+            "scope": "house_members",
+            "official_total_including_senate": 101,
+            "method": "official total 101 minus the single listed Senate member, Bernie Sanders",
+            "as_of": "2026-08-14",
+            "source": "https://progressives.house.gov/about-the-cpc",
+            "confidence": "high_with_explicit_one_member_derivation",
+            "overlap_allowed": true
+          },
           "members_snapshot": null,
-          "note": "Pull live from site; do not hardcode full roster here."
+          "note": "공식 사이트에서 라이브 수집. 전체 명단 하드코딩 안 함."
         },
         {
           "id": "newdem",
+          "name_ko": "뉴민주연대",
           "name_en": "New Democrat Coalition",
           "spectrum": "center_left",
+          "spectrum_ko": "중도좌파",
           "roster_mode": "official_caucus_site",
           "confidence": "high",
-          "url": "https://newdemocratcoalition.house.gov/members"
+          "url": "https://newdemocratcoalition.house.gov/members",
+          "display_count": {
+            "value": 114,
+            "scope": "official_house_coalition_members",
+            "as_of": "2026-08-14",
+            "source": "https://newdemocratcoalition.house.gov/about-us",
+            "confidence": "high",
+            "overlap_allowed": true
+          },
+          "members_snapshot": null
         },
         {
           "id": "bluedog",
+          "name_ko": "블루독",
           "name_en": "Blue Dog Coalition",
           "spectrum": "center",
+          "spectrum_ko": "중도",
           "roster_mode": "official_caucus_site",
           "confidence": "high",
-          "url": "https://bluedogcaucus.house.gov/"
+          "url": "https://bluedogcaucus.house.gov/",
+          "display_count": {
+            "value": 10,
+            "scope": "official_house_coalition_members",
+            "as_of": "2026-08-14",
+            "source": "https://bluedogs-gluesenkampperez.house.gov/",
+            "confidence": "high",
+            "overlap_allowed": true
+          },
+          "members_snapshot": null
+        },
+        {
+          "id": "dsa_bloc",
+          "name_ko": "민주사회주의(DSA) 블록",
+          "name_en": "DSA-aligned / Mamdani wing",
+          "spectrum": "democratic_socialist",
+          "spectrum_ko": "민주사회주의 (CPC보다 좌)",
+          "status": "informal_not_official_cmo",
+          "roster_official": false,
+          "confidence": "medium",
+          "display_count": {
+            "value": 2,
+            "scope": "current_house_dsa_members",
+            "as_of": "2026-08-14",
+            "source": "curated source cross-check in sources[]",
+            "confidence": "medium",
+            "overlap_allowed": true
+          },
+          "note_ko": "하원 공식 CMO 아님. DSA 당원·동조 + 맘다니 시장 지원 슬레이트를 언론이 'Mamdani wing' / 'Squad 2.0' / '좌측 Freedom Caucus'로 부름. 비공식이지만 규모·영향이 커서 계파 슬롯에 합리적 추론으로 유지.",
+          "current_house_dsa_members": {
+            "as_of": "2026-08",
+            "n": 2,
+            "members": [
+              {
+                "name": "Alexandria Ocasio-Cortez",
+                "state": "NY",
+                "district": "NY-14"
+              },
+              {
+                "name": "Rashida Tlaib",
+                "state": "MI",
+                "district": "MI-12"
+              }
+            ]
+          },
+          "primary_winners_2026_safe_D": {
+            "note": "민주 강세 구역 예비선거 승리 → 11월 사실상 당선 유력. DSA 당원/동조 기준.",
+            "n_on_track": 3,
+            "candidates": [
+              {
+                "name": "Claire Valdez",
+                "state": "NY",
+                "note": "Velázquez 은퇴 구역, DSA"
+              },
+              {
+                "name": "Darializa Avila Chevalier",
+                "state": "NY",
+                "note": "Espaillat 현역 낙마, DSA, 맘다니 지지"
+              },
+              {
+                "name": "Chris Rabb",
+                "state": "PA",
+                "note": "필라델피아, DSA"
+              }
+            ],
+            "projected_house_dsa_after_2026": "약 5명 (현 2 + 3)"
+          },
+          "broader_mamdani_aligned": {
+            "note_ko": "DSA 당원 아닌 진보이나 맘다니 지지·Squad 확장으로 묶이는 경우. 추론 구간.",
+            "examples": [
+              "Brad Lander (NY, Goldman 낙마)",
+              "Analilia Mejia (NJ special)"
+            ],
+            "media_labels": [
+              "Mamdani wing",
+              "Squad 2.0",
+              "Freedom Caucus of the left"
+            ]
+          },
+          "compare_official": {
+            "cpc_house_approx": "95~99 (공식 진보코커스, 2026-04 기준 위키)",
+            "dsa_is_subset_or_left_of_cpc": true
+          },
+          "sources": [
+            "Newsweek 2026-06 socialists surge",
+            "CNN/Politico/Axios 2026-06 Mamdani primary night",
+            "NYT DSA aiming Congress 2026-06"
+          ]
+        },
+        {
+          "id": "squad",
+          "name_ko": "스쿼드",
+          "name_en": "The Squad",
+          "spectrum": "left_progressive",
+          "spectrum_ko": "좌파 진보 (비공식)",
+          "status": "informal_media_label",
+          "roster_official": false,
+          "confidence": "medium",
+          "display_count": {
+            "value": 4,
+            "scope": "current_media_label_members",
+            "as_of": "2026-06-25",
+            "source": "https://www.axios.com/2026/06/25/mamdani-democrats-new-york-left-socialists-house",
+            "confidence": "medium",
+            "overlap_allowed": true
+          },
+          "note_ko": "공식 코커스 아님. 언론 라벨. DSA 블록·CPC 좌측과 중첩. Squad 2.0 = 2026 예비 승리 확장분.",
+          "members_snapshot": null
         }
       ]
     },
-    "gop": {
+    "Republican": {
+      "party_ko": "공화당",
+      "party_en": "Republican Party",
       "factions": [
         {
           "id": "hfc",
-          "name_en": "House Freedom Caucus",
-          "spectrum": "conservative",
+          "name_ko": "프리덤코커스",
+          "name_en": "House Freedom Caucus (HFC)",
+          "spectrum": "hard_right",
+          "spectrum_ko": "강경보수",
           "roster_mode": "media_crosscheck",
           "roster_official": false,
           "confidence": "medium",
-          "caveat": "Invitation-only; no official public roster. Snapshot below is cross-checked media/industry list — incomplete risk.",
-          "crosscheck_sources": [
-            {
-              "id": "nada_119_2025-04-22",
-              "org": "NADA compiled list (industry briefing)",
-              "title": "House Freedom Caucus Members, 119th Congress",
-              "date": "2025-04-22",
-              "url": "https://www.nada.org/media/16927/download?inline=",
-              "role": "primary_snapshot"
-            },
-            {
-              "id": "ballotpedia_hfc",
-              "org": "Ballotpedia",
-              "url": "https://ballotpedia.org/House_Freedom_Caucus",
-              "role": "secondary_crosscheck",
-              "note": "Explicitly says caucus does not disclose roster; cites news lists."
-            },
-            {
-              "id": "pew_118",
-              "org": "Pew Research Center",
-              "url": "https://www.pewresearch.org/short-reads/2023/01/23/freedom-caucus-likely-to-play-a-bigger-role-in-new-gop-led-house-so-who-are-they/",
-              "role": "historical_118th_baseline"
-            },
-            {
-              "id": "cdc_bioguide",
-              "org": "Congressional Data Coalition",
-              "url": "https://congressionaldata.org/presenting-caucus-membership-as-data/",
-              "role": "aggregated_bioguide_join",
-              "note": "Uses Wikipedia/Ballotpedia/press for HFC."
-            }
-          ],
+          "display_count": {
+            "value": 31,
+            "scope": "reported_current_members_estimate",
+            "as_of": "2026-08-14",
+            "source": "https://en.wikipedia.org/wiki/Freedom_Caucus",
+            "confidence": "medium_nonofficial_roster",
+            "overlap_allowed": true
+          },
+          "caveat": "초청제·공식 명단 비공개. 언론·업계 교차 스냅샷.",
+          "url": "https://freedomcaucus.house.gov/",
           "members_snapshot": {
             "congress": 119,
             "snapshot_date": "2025-04-22",
-            "source_id": "nada_119_2025-04-22",
+            "source": "NADA + Ballotpedia crosscheck",
             "count": 32,
+            "note_2026": "2026-07 위키 약 31명. Biggs/Roy/Donalds 등 2026 출마로 이탈 예정.",
             "members": [
-              {"name": "Barry Moore", "state": "AL"},
-              {"name": "Gary Palmer", "state": "AL"},
-              {"name": "Andy Biggs", "state": "AZ"},
-              {"name": "Eli Crane", "state": "AZ"},
-              {"name": "Paul Gosar", "state": "AZ"},
-              {"name": "Lauren Boebert", "state": "CO"},
-              {"name": "Byron Donalds", "state": "FL"},
-              {"name": "Greg Steube", "state": "FL"},
-              {"name": "Andrew Clyde", "state": "GA"},
-              {"name": "Mike Collins", "state": "GA"},
-              {"name": "Russ Fulcher", "state": "ID"},
-              {"name": "Mary Miller", "state": "IL"},
-              {"name": "Marlin Stutzman", "state": "IN"},
-              {"name": "Clay Higgins", "state": "LA"},
-              {"name": "Andy Harris", "state": "MD"},
-              {"name": "Eric Burlison", "state": "MO"},
-              {"name": "Jim Jordan", "state": "OH"},
-              {"name": "Josh Brecheen", "state": "OK"},
-              {"name": "Scott Perry", "state": "PA"},
-              {"name": "Ralph Norman", "state": "SC"},
-              {"name": "Scott DesJarlais", "state": "TN"},
-              {"name": "Mark Green", "state": "TN"},
-              {"name": "Diana Harshbarger", "state": "TN"},
-              {"name": "Andy Ogles", "state": "TN"},
-              {"name": "Michael Cloud", "state": "TX"},
-              {"name": "Brandon Gill", "state": "TX"},
-              {"name": "Chip Roy", "state": "TX"},
-              {"name": "Keith Self", "state": "TX"},
-              {"name": "Ben Cline", "state": "VA"},
-              {"name": "Morgan Griffith", "state": "VA"},
-              {"name": "Tom Tiffany", "state": "WI"},
-              {"name": "Harriet Hageman", "state": "WY"}
+              {
+                "name": "Barry Moore",
+                "state": "AL"
+              },
+              {
+                "name": "Gary Palmer",
+                "state": "AL"
+              },
+              {
+                "name": "Andy Biggs",
+                "state": "AZ"
+              },
+              {
+                "name": "Eli Crane",
+                "state": "AZ"
+              },
+              {
+                "name": "Paul Gosar",
+                "state": "AZ"
+              },
+              {
+                "name": "Lauren Boebert",
+                "state": "CO"
+              },
+              {
+                "name": "Byron Donalds",
+                "state": "FL"
+              },
+              {
+                "name": "Greg Steube",
+                "state": "FL"
+              },
+              {
+                "name": "Andrew Clyde",
+                "state": "GA"
+              },
+              {
+                "name": "Mike Collins",
+                "state": "GA"
+              },
+              {
+                "name": "Russ Fulcher",
+                "state": "ID"
+              },
+              {
+                "name": "Mary Miller",
+                "state": "IL"
+              },
+              {
+                "name": "Marlin Stutzman",
+                "state": "IN"
+              },
+              {
+                "name": "Clay Higgins",
+                "state": "LA"
+              },
+              {
+                "name": "Andy Harris",
+                "state": "MD",
+                "role": "Chair"
+              },
+              {
+                "name": "Eric Burlison",
+                "state": "MO"
+              },
+              {
+                "name": "Jim Jordan",
+                "state": "OH"
+              },
+              {
+                "name": "Josh Brecheen",
+                "state": "OK"
+              },
+              {
+                "name": "Scott Perry",
+                "state": "PA"
+              },
+              {
+                "name": "Ralph Norman",
+                "state": "SC"
+              },
+              {
+                "name": "Scott DesJarlais",
+                "state": "TN"
+              },
+              {
+                "name": "Mark Green",
+                "state": "TN"
+              },
+              {
+                "name": "Diana Harshbarger",
+                "state": "TN"
+              },
+              {
+                "name": "Andy Ogles",
+                "state": "TN"
+              },
+              {
+                "name": "Michael Cloud",
+                "state": "TX"
+              },
+              {
+                "name": "Brandon Gill",
+                "state": "TX"
+              },
+              {
+                "name": "Chip Roy",
+                "state": "TX"
+              },
+              {
+                "name": "Keith Self",
+                "state": "TX"
+              },
+              {
+                "name": "Ben Cline",
+                "state": "VA"
+              },
+              {
+                "name": "Morgan Griffith",
+                "state": "VA"
+              },
+              {
+                "name": "Tom Tiffany",
+                "state": "WI"
+              },
+              {
+                "name": "Harriet Hageman",
+                "state": "WY"
+              }
             ]
           }
         },
         {
           "id": "rsc",
-          "name_en": "Republican Study Committee",
+          "name_ko": "공화연구위원회",
+          "name_en": "Republican Study Committee (RSC)",
           "spectrum": "conservative",
+          "spectrum_ko": "보수",
           "roster_mode": "media_crosscheck",
           "roster_official": false,
           "confidence": "low",
           "url": "https://rsc-hern.house.gov/",
-          "caveat": "119th에서 공개 명단 축소·비공개 경향. 프레스 릴리스·CDC 교차만.",
-          "crosscheck_sources": [
-            {
-              "id": "cdc_bioguide",
-              "url": "https://congressionaldata.org/presenting-caucus-membership-as-data/"
-            }
-          ],
+          "caveat": "119대에서 공개 명단 축소. 프레스·CDC 교차만.",
           "members_snapshot": null
         },
         {
           "id": "mainstreet",
+          "name_ko": "메인스트리트",
           "name_en": "Republican Main Street Caucus",
           "spectrum": "center_right",
+          "spectrum_ko": "중도우파",
           "roster_mode": "caucus_or_org_site",
           "confidence": "medium",
-          "url": "https://www.republicanmainstreet.org/"
+          "url": "https://www.republicanmainstreet.org/",
+          "members_snapshot": null
         },
         {
           "id": "tuesday",
-          "name_en": "Tuesday Group / governance moderates",
+          "name_ko": "화요일그룹",
+          "name_en": "Tuesday Group",
           "spectrum": "center_right",
+          "spectrum_ko": "중도우파(온건)",
           "roster_mode": "media_curated",
           "confidence": "low",
           "members_snapshot": null
         }
       ]
     }
+  },
+  "ui_notes_ko": {
+    "map_layers": [
+      "1단계: 대통령 정당 색 (주 단위)",
+      "2단계: 주지사 정당 색",
+      "토글 전환"
+    ],
+    "congress_panel": "우측 위키 스타일 반원(hemicycle) — 상원·하원 탭",
+    "click_flow": "의석 수(여/야) → 계파 분해 (공식 코커스 + 비공식 DSA/Squad 등 confidence 표시)",
+    "calendar": "전체 선거 일정 마스터 별도 패널/타임라인"
+  },
+  "scope": {
+    "house_factions": true,
+    "senate_factions": "light_party_plus_notable_only",
+    "state_legislatures": "party_only",
+    "state_legislatures_note_ko": "주의회(상·하원)는 정당 의석만. 계파/코커스 분해 안 함 — 복잡도·데이터 품질 대비 과함."
+  },
+  "refresh": {
+    "cadence": "monthly",
+    "day_of_month": 1,
+    "auto": true,
+    "targets": [
+      "official_caucus_urls_if_reachable",
+      "hfc_media_crosscheck_snapshot",
+      "dsa_bloc_primary_outcomes_until_nov2026",
+      "house_senate_party_seat_totals"
+    ],
+    "skip": [
+      "state_legislature_factions"
+    ],
+    "next_run": "2026-09-01",
+    "note_ko": "매월 1일 자동 재수집. 주의회는 정당 집계만. 계파는 연방 하원(+상원 라이트)만.",
+    "last_run": "2026-08-14"
   }
 }

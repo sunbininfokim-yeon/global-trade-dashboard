@@ -1,8 +1,8 @@
 {
   "version": 1,
-  "as_of": "2026-08-08",
+  "as_of": "2026-08-14",
   "method": "document_text_extract",
-  "method_note_ko": "시계열 숫자 API 재학습이 아니라 출처등급·필드 정규화·교정 키 스티커. 한국 딥패스와 같은 차원으로 15국을 채점.",
+  "method_note_ko": "시계열 숫자 API 재학습이 아니라 출처등급·필드 정규화·교정 키 스티커. 19국 보드이며 IDN·ZAF·NGA·IRN은 연결 레이어를 먼저 열고 원문 검토로 승급한다.",
   "score_dimensions": [
     "head",
     "spectrum",
@@ -20,8 +20,8 @@
     "leadership_doc": "선거 아님: PLA/권력카드",
     "thin_calendar": "캘린더·프로필 활성, 의원 명단 light 또는 미추출"
   },
-  "board_as_of": "2026-08-08T12:39:03.861133+00:00",
-  "countries": 15,
+  "board_as_of": "2026-08-14",
+  "countries": 19,
   "scorecard": {
     "USA": {
       "tier": 1,
@@ -239,15 +239,15 @@
       "remaining": ["ECI state election pack", "Lok Sabha seat matrix"]
     },
     "SAU": {
-      "tier": 3,
-      "depth": "leadership_doc",
+      "tier": 2,
+      "depth": "leadership_energy_security_core",
       "map_spectrum": "authoritarian_monarchy",
       "head": {"name": "Salman bin Abdulaziz Al Saud", "grade": "high"},
       "power": "MbS de facto + 2017 succession event (not coup label)",
       "calendar_2026": "elections 없음",
       "coverage": 3,
       "max": 8,
-      "remaining": ["none critical — brief mode"]
+      "remaining": ["energy-ministry and succession-source monthly review", "no competitive national legislature track"]
     },
     "ARE": {
       "tier": 3,
@@ -259,19 +259,55 @@
       "coverage": 3,
       "max": 8,
       "remaining": ["none critical — brief mode"]
+    },
+    "IDN": {
+      "tier": 2,
+      "depth": "light_connected",
+      "head": "done (bundled light pack)",
+      "calendar_2026": "connected; dated party events pending direct review",
+      "extract_pipe": "official KPU capture target added",
+      "remaining": ["KPU text capture", "party notices", "legislature composition if promoted"]
+    },
+    "ZAF": {
+      "tier": 2,
+      "depth": "light_connected",
+      "head": "done (bundled light pack)",
+      "calendar_2026": "connected; dated party events pending direct review",
+      "extract_pipe": "official IEC capture target added",
+      "remaining": ["IEC text capture", "GNU composition verification", "party notices"]
+    },
+    "NGA": {
+      "tier": 2,
+      "depth": "light_connected",
+      "head": "done (bundled light pack)",
+      "calendar_2026": "connected; dated party events pending direct review",
+      "extract_pipe": "official INEC capture target added",
+      "remaining": ["INEC text capture", "party-registration/legal-status review", "2027 calendar when announced"]
+    },
+    "IRN": {
+      "tier": 2,
+      "depth": "party_state_security_core",
+      "head": "done (iran_leadership_extracted.json; confidence carried in pack)",
+      "calendar_2026": "connected; no dated national event bundled",
+      "factions_or_pla_or_power": "supreme leader + IRGC/SNSC/security-axis pack attached",
+      "extract_pipe": "MOI capture target added",
+      "remaining": ["IRGC command verification", "Quds Force leadership verification", "monthly public-source review"]
     }
   },
   "aggregate": {
     "deep": ["USA", "JPN", "GBR", "ISR", "KOR"],
     "composition": ["DEU", "FRA", "BRA"],
     "thin_calendar": ["RUS"],
-    "leadership_doc": ["CHN", "SAU", "ARE"],
+    "leadership_doc": ["CHN", "ARE"],
+    "geopolitical_core": ["SAU", "IRN"],
     "scaffold": ["TWN", "TUR", "IND"],
     "coverage_mean_approx": 4.7,
     "legislature_live_count": 9,
     "governance_poll_wired_with_number": ["USA", "JPN", "GBR", "ISR", "KOR"],
     "poll_todo_slots": ["DEU", "FRA", "BRA"],
-    "intentionally_no_irn": true
+    "light_connected": ["IDN", "ZAF", "NGA"],
+    "iran_connected": true,
+    "coverage_mean_approx_note": "4.7 is the pre-connection 15-country scored baseline; connection-layer countries are not assigned synthetic coverage scores."
   },
   "cross_country_lessons": [
     {
@@ -296,7 +332,7 @@
     },
     {
       "id": "L5_authoritarian_mode",
-      "ko": "CHN/SAU/ARE는 선거 캘린더 비움이 정상. PLA/power 카드로 학습.",
+      "ko": "CHN/ARE는 선거 캘린더 비움이 정상. SAU/IRN은 2급 지정학 핵심으로 power·energy·security 카드를 함께 관리.",
       "sticker": "mode:non_electoral_ok"
     },
     {

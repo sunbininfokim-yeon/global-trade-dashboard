@@ -324,12 +324,13 @@ def party_leadership_snapshot() -> Dict[str, Any]:
             "note_ko": "대통령제: 여당+제1야당 전당대회·당대표. 경마형 여론 평균은 배제, 선관위/당 발표 일정·후보·규칙·중간 순회 집계는 수집.",
         },
         "source": {
-            "id": "dpk_ppp_convention_media_cross",
-            "grade": "media_cross_check",
+            "id": "dpk_ppp_convention_official_and_media_cross",
+            "grade": "official_party_plus_media_cross",
             "urls": [
                 "https://www.yna.co.kr/view/AKR20260723181951001",
                 "https://www.inews24.com/view/1993155",
-                "https://ko.wikipedia.org/wiki/%EA%B5%AD%EB%AF%BC%EC%9D%98%ED%9E%98_%EC%A0%9C6%EC%B0%A8_%EC%A0%84%EB%8B%B9%EB%8C%80%ED%9A%8C",
+                "https://www.peoplepowerparty.kr/news/comment_view/BBSDD0001/108751?page=1",
+                "https://www.peoplepowerparty.kr/news/comment_view_all/108719?gubun_list=all&page=364",
             ],
         },
         "parties": [
@@ -428,8 +429,9 @@ def party_leadership_snapshot() -> Dict[str, Any]:
                 "convention": {
                     "id": "kor-2025-ppp-convention",
                     "label_ko": "국민의힘 제6차 전당대회 (현 지도부 출처)",
-                    "final_date": "2025-08-22",
-                    "runoff_announced": "2025-08-26",
+                    "first_round_date": "2025-08-22",
+                    "final_date": "2025-08-26",
+                    "runoff_date": "2025-08-26",
                     "status": "completed",
                     "year_on_2026_board": "prior_year_result_for_incumbent_leader",
                     "rules": {

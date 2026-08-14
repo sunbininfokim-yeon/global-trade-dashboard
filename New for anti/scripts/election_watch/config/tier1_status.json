@@ -1,9 +1,9 @@
 {
   "version": 1,
-  "as_of": "2026-08-08",
+  "as_of": "2026-08-09",
   "learning_analysis": "config/extracted/learning_analysis_v1.json",
   "tier1_completion": {
-    "summary_ko": "미·일 deep + 중 PLA + 러 캘린더·두마 light. 학습 분석 v1 반영.",
+    "summary_ko": "미·일 deep + 중 PLA/당 + 러 안보회의·통합러시아·두마2026 일정. 러는 9월 선거 후 의석 확정. 1급 분석 패키지 완료(선거 결과만 후속).",
     "USA": {
       "congress_members": "done",
       "house_floor_leadership": "done",
@@ -13,10 +13,13 @@
       "governance_poll": "done_snapshot",
       "calendar_2026": "done_midterms_plus_house_senate_specials",
       "remaining": [
-        "TX-23 / FL-20 special dates when set",
+        "TX-23 / FL-20 special dates still TBD on FEC (notes refreshed 2026-08-09)",
         "NCSL official seat counts cross-check",
         "full state-legislative special list (aggregator only)"
-      ]
+      ],
+      "governor_name_parse": "fixed_2026-08-09 (wiki list suffix stripped)",
+      "state_legislatures_display": "party_only_no_factions",
+      "faction_refresh": "monthly_auto_federal_only"
     },
     "JPN": {
       "shugiin_official_full_465": "done",
@@ -27,20 +30,27 @@
       "calendar_2026": "done_51st_general_plus_national_byelection_windows_plus_governor_races",
       "remaining": [
         "Oct 2026 national by-election district list if vacancies appear",
-        "official sangiin roster HTML",
-        "prefectural assembly seats",
-        "MIC confirm Shiga governor vote day"
-      ]
+        "official sangiin roster HTML (currently wikipedia composition)",
+        "prefectural assembly seats"
+      ],
+      "shiga_governor": "confirmed_completed_2026-07-05 (三日月大造 4選) — removed from remaining",
+      "governor_name_parse": "fixed_2026-08-09 (一覧/date ISO cleaned)"
     },
     "CHN": {
       "cmpr_pdf_txt": "done",
-      "leadership_slots": "done",
-      "pla_bios_ko_schema": "done_cmpr_rule_parse",
-      "bios_count": 21,
-      "shandong_flagged": ["Liu Qingsong", "Jiang Guoping"],
+      "leadership_slots": "done_merged_2026-08-09",
+      "pla_bios_ko_schema": "done_cmpr_rule_parse_plus_purge_refresh",
+      "bios_count": 22,
+      "psc_7": "done_xinhua",
+      "cmc_active_core": "Xi + Zhang Shengmin (Zhang Youxia/Liu Zhenli investigating)",
+      "shandong_flagged": [
+        "Liu Qingsong",
+        "Jiang Guoping"
+      ],
       "remaining": [
-        "think-tank lit merge (Anti → Cursor patch)",
-        "PSC/Politburo beyond Xi seed",
+        "Anti think-tank lit formal merge when file arrives",
+        "Southern/Western/Northern TC 2026 open-source refresh",
+        "CMC new members after Zhang Shengmin (Zhang Shuguang etc.)",
         "combat/Peng ties remain 불명 until sourced"
       ]
     },
@@ -51,38 +61,46 @@
       "spectrum": "authoritarian_ur",
       "duma_composition_light": "done_approximate_430_of_450",
       "remaining": [
-        "CIKRF party-list / SMC roster extract post 2026-09",
-        "replace light seats after election",
-        "regional heads roster on single voting day",
-        "governance poll series (quality gate)"
-      ]
+        "CIKRF roster post 2026-09-20",
+        "regional heads single voting day",
+        "replace light seat counts after election"
+      ],
+      "governance_poll": "done_snapshot_levada_2026-06_74pct",
+      "leadership_pack": "done_2026-08-09_china_style",
+      "security_council": "done_permanent_members",
+      "united_russia_list_top5": "done_medvedev_congress_2026-06",
+      "duma_2026": "scheduled_2026-09-18_20"
     }
   },
   "tier2_activation": {
-    "as_of": "2026-08-08",
+    "as_of": "2026-08-09",
     "policy_ko": "경쟁선거 우선. deep=GBR·ISR·KOR / composition=DEU·FRA·BRA / scaffold=TWN·TUR·IND.",
     "active": {
       "GBR": {
         "depth": "deep",
         "head": "Andy Burnham (PM since 2026-07-20)",
-        "commons": "StateOfTheParties API Lab405 Con118",
+        "commons": "Lab405 Con118 LD71 Reform7 (wiki Jul 2026)",
         "events": 5,
-        "polls": "Burnham net+19 + Starmer exit Ipsos"
+        "polls": "Ipsos/LBC Burnham job sat 29%; capable 36%",
+        "last_refresh": "2026-08-09"
       },
       "ISR": {
         "depth": "deep",
         "head": "Benjamin Netanyahu",
         "knesset_25": "120 seats parsed",
         "events": 2,
-        "polls": "preferred PM Midgam 38%"
+        "polls": "Maariv Aug: Yashar23 Likud22; Eisenkot preferred PM 47 vs Bibi 38",
+        "last_refresh": "2026-08-09"
       },
       "KOR": {
         "depth": "deep",
         "head": "Lee Jae Myung since 2025-06-04",
         "pm": "Han Seong-sook since 2026-07-01",
-        "assembly": "22nd DPK161 PPP109 / 300 as of 2026-07-16",
+        "assembly": "DPK161 PPP109 ReformKorea12 etc (2026-07-16)",
         "local": "2026-06-03 DPK12 PPP4 metro heads",
-        "polls": "Gallup 51% primary + Realmeter 45.9% secondary"
+        "polls": "Gallup prez ~51% (Jul); Realmeter 46.5% (Jun)",
+        "last_refresh": "2026-08-09",
+        "party_convention": "DPK 8/17 in progress — Kim Min-seok vs Jung Chung-rae vs Song"
       },
       "DEU": {
         "depth": "composition",
@@ -91,7 +109,8 @@
       },
       "FRA": {
         "depth": "composition",
-        "assemblee": "groups wired, PM 불명",
+        "assemblee": "groups wired",
+        "head_pm": "Sébastien Lecornu (since 2025-10-10 re-appointment)",
         "poll": "todo"
       },
       "BRA": {
@@ -99,20 +118,152 @@
         "congress": "midyear media grade; TSE upgrade pending",
         "poll": "todo"
       },
-      "TWN": {"depth": "scaffold"},
-      "TUR": {"depth": "scaffold"},
-      "IND": {"depth": "scaffold"}
+      "TWN": {
+        "depth": "scaffold"
+      },
+      "TUR": {
+        "depth": "scaffold"
+      },
+      "IND": {
+        "depth": "scaffold"
+      }
     },
     "remaining": [
       "DEU/FRA/BRA governance poll numbers",
-      "FRA PM identity",
       "TWN LY deep (reuse KOR template)",
       "BRA TSE open data seat upgrade"
-    ]
+    ],
+    "priority1_refresh": {
+      "order": [
+        "GBR",
+        "KOR",
+        "ISR"
+      ],
+      "done_at": "2026-08-09",
+      "artifact": "config/tier2_priority1_snapshot.json"
+    },
+    "remaining_light_done": {
+      "as_of": "2026-08-09",
+      "isos": [
+        "BRA",
+        "DEU",
+        "FRA",
+        "TWN",
+        "IND",
+        "TUR",
+        "IDN",
+        "ZAF",
+        "NGA"
+      ],
+      "depth": "head_ruling_opposition_only",
+      "artifact": "config/tier2_remaining_light.json"
+    }
+  },
+  "tier2_geopolitical_core": {
+    "SAU": "leadership + energy/security core",
+    "IRN": "china_style party-state-security pack_2026-08-09"
   },
   "tier3": {
-    "SAU": "leadership_brief",
-    "ARE": "leadership_brief + 7 emirates",
-    "IRN": "intentionally_deferred"
+    "ARE": "leadership_brief + 7 emirates"
+  },
+  "auto_update": {
+    "cadence": "monthly",
+    "next_run": "2026-09-01",
+    "includes": [
+      "USA factions federal only",
+      "JPN LDP factions",
+      "state legislatures party-only",
+      "CHN leadership"
+    ]
+  },
+  "USA": {
+    "congress_members": "done",
+    "house_floor_leadership": "done",
+    "senate_floor_leadership": "done",
+    "governors_50": "done",
+    "state_legislatures_50": "done",
+    "governance_poll": "done_snapshot",
+    "calendar_2026": "done_midterms_plus_house_senate_specials",
+    "remaining": [
+      "TX-23 / FL-20 special dates still TBD on FEC (notes refreshed 2026-08-09)",
+      "NCSL official seat counts cross-check",
+      "full state-legislative special list (aggregator only)"
+    ],
+    "governor_name_parse": "fixed_2026-08-09 (wiki list suffix stripped)",
+    "state_legislatures_display": "party_only_no_factions",
+    "faction_refresh": "monthly_auto_federal_only"
+  },
+  "tier2_selection": {
+    "as_of": "2026-08-09",
+    "policy_ko": "경쟁선거·시장 영향·동맹 우선. 1급 완료 후 2급 심화.",
+    "selected": [
+      {
+        "iso": "GBR",
+        "depth": "deep",
+        "priority": 1,
+        "why_ko": "이미 deep. 버넘 PM 스티커."
+      },
+      {
+        "iso": "KOR",
+        "depth": "deep",
+        "priority": 1,
+        "why_ko": "이미 deep. 한성숙 PM."
+      },
+      {
+        "iso": "ISR",
+        "depth": "deep",
+        "priority": 1,
+        "why_ko": "이미 deep. 크네셋·지지율."
+      },
+      {
+        "iso": "DEU",
+        "depth": "composition→deep",
+        "priority": 2,
+        "why_ko": "유럽 핵심, 분데스탁 구성 있음, 여론조사 보강."
+      },
+      {
+        "iso": "FRA",
+        "depth": "composition→deep",
+        "priority": 2,
+        "why_ko": "레코르누 PM 확정, 의회 그룹, 여론조사 보강."
+      },
+      {
+        "iso": "BRA",
+        "depth": "composition→deep",
+        "priority": 2,
+        "why_ko": "큐 선두(HANDOFF). TSE 의석 업그레이드."
+      },
+      {
+        "iso": "TWN",
+        "depth": "scaffold→composition",
+        "priority": 3,
+        "why_ko": "안보·양안. LY는 KOR 템플릿 재사용."
+      },
+      {
+        "iso": "IND",
+        "depth": "scaffold→composition",
+        "priority": 3,
+        "why_ko": "규모·시장. 총선 주기 길면 composition 유지."
+      },
+      {
+        "iso": "TUR",
+        "depth": "scaffold→composition",
+        "priority": 3,
+        "why_ko": "나토·중동 접점."
+      }
+    ],
+    "queue_next_work": [
+      "BRA",
+      "DEU",
+      "FRA",
+      "TWN",
+      "IND",
+      "TUR"
+    ],
+    "not_in_tier2_now": [
+      "SAU",
+      "ARE",
+      "IRN"
+    ]
   }
 }

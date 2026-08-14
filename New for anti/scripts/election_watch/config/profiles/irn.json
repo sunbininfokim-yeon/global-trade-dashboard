@@ -1,0 +1,50 @@
+{
+  "iso3": "IRN",
+  "as_of": "2026-08-09",
+  "priority_tier": 2,
+  "region": "middle_east",
+  "system": "other",
+  "mode": "china_style_leadership_extract",
+  "map_spectrum": "theocratic_authoritarian",
+  "map_spectrum_note": "Use a distinct theocratic-system palette or hatch; do not force a Western left-right colour.",
+  "head": {
+    "role": "supreme_leader",
+    "name_ko": "모주타바 하메네이",
+    "name_en": "Mojtaba Khamenei",
+    "sources": [
+      {
+        "org": "Iran leadership extract",
+        "url": "config/iran_leadership_extracted.json",
+        "note": "Bundled open-source synthesis; named security posts carry their pack-level confidence."
+      }
+    ]
+  },
+  "parties": [],
+  "leadership_extract": {
+    "file": "iran_leadership_extracted.json",
+    "mode": "china_style_leadership_extract",
+    "confidence_overall": "medium"
+  },
+  "election_system": {
+    "mode": "managed_competition",
+    "institutions": [
+      "presidential",
+      "majlis",
+      "assembly_of_experts"
+    ],
+    "candidate_filter": "guardian_council",
+    "note_ko": "선거는 존재하나 감시평의회 후보 심사와 최고지도자·안보축의 비선출 권한을 함께 표시한다."
+  },
+  "elections": {
+    "calendar_file": "calendars/irn_2026.json"
+  },
+  "polls": {
+    "admit": [],
+    "note": "No competitive national governance-poll track."
+  },
+  "ingest": {
+    "mode": "document_text_extract",
+    "wave": "2e_geopolitical_core",
+    "depth": "china_style_party_state_security_and_factions"
+  }
+}

@@ -1,0 +1,58 @@
+{
+  "schema": "election_party_registry_snapshot_v1",
+  "iso3": "NGA",
+  "as_of": "2026-08-14",
+  "confidence": "medium",
+  "method": "manual_review_of_cached_official_inec_pages",
+  "sources": [
+    {
+      "url": "https://www.inecnigeria.org/list-of-political-parties/",
+      "raw_path": "raw/nga/inec_party_list.html",
+      "fetched_at": "2026-08-14T05:49:55.403453+00:00",
+      "observation": "The rendered page exposes party cards for Accord (A), Action Alliance (AA), Action Democratic Party (ADP), Action Peoples Party (APP), African Action Congress (AAC), African Democratic Congress (ADC), All Progressives Congress (APC), All Progressives Grand Alliance (APGA), Allied Peoples Movement (APM), and Boot Party (BP).",
+      "scope_limit": "This is a page-level visible-card snapshot. It does not establish the full count of registered parties, pagination state, or the legal status of parties not visible in this cached response."
+    },
+    {
+      "url": "https://www.inecnigeria.org/political-party-documents/",
+      "raw_path": "raw/nga/inec_party_documents.html",
+      "fetched_at": "2026-08-14T05:48:51.069496+00:00",
+      "observation": "The page links INEC's 'Regulations and Guidelines For Political Parties 2026'."
+    },
+    {
+      "url": "https://www.inecnigeria.org/wp-content/uploads/Regulations-and-Guidelines-2026_UPDATED.pdf",
+      "raw_path": "raw/nga/inec_party_guidelines_2026.pdf",
+      "fetched_at": "2026-08-14T05:55:17.390632+00:00",
+      "document": "Regulations and Guidelines for Political Parties, 2026",
+      "pages": 34,
+      "observed_sections": [
+        "registration and merger of political parties",
+        "political party operations and congress/convention notices",
+        "conduct of party primaries",
+        "party finance reporting",
+        "deregistration"
+      ]
+    }
+  ],
+  "verified_party_cards_partial": [
+    {"abbr": "A", "name_en": "Accord"},
+    {"abbr": "AA", "name_en": "Action Alliance"},
+    {"abbr": "ADP", "name_en": "Action Democratic Party"},
+    {"abbr": "APP", "name_en": "Action Peoples Party"},
+    {"abbr": "AAC", "name_en": "African Action Congress"},
+    {"abbr": "ADC", "name_en": "African Democratic Congress"},
+    {"abbr": "APC", "name_en": "All Progressives Congress"},
+    {"abbr": "APGA", "name_en": "All Progressives Grand Alliance"},
+    {"abbr": "APM", "name_en": "Allied Peoples Movement"},
+    {"abbr": "BP", "name_en": "Boot Party"}
+  ],
+  "not_asserted": [
+    "full official register count",
+    "PDP or Labour Party legal status from this page snapshot",
+    "2027 candidate or election calendar"
+  ],
+  "next_review": [
+    "Capture any additional list pages or official search endpoint before publishing a complete registry.",
+    "Review individual official party pages for APC, PDP, Labour Party, and ADC only when relevant to a specific update.",
+    "Keep opposition alignment as fluid until an official filing or directly sourced party announcement supports a change."
+  ]
+}
