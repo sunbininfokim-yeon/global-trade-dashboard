@@ -1,7 +1,7 @@
 # Election watch — 세계 선거 창 (scaffold)
 
-> **소유 (2026-08-09):** 데이터·파이프라인 = **Grok** (`HANDOFF_GROK.md`).  
-> UI·배포 = **Claude** (`HANDOFF_CLAUDE_ELECTIONS_UI.md`). Cursor 사용량 종료·이관 완료.
+> **소유 (2026-08-13):** 데이터·파이프라인 파일은 dart 클론에 `import_pipeline.py` 로 재이관됨.  
+> UI·배포 = **Claude** (`HANDOFF_CLAUDE_ELECTIONS_UI.md`). 브랜치 변경·app.js 금지.
 
 이후 UI에 **「선거」패널**을 붙일 때 읽는 계약입니다.
 
@@ -30,12 +30,30 @@
 
 ```bash
 cd "New for anti/scripts/election_watch"
-python3 build_board.py --print-stats
+python3 build_board.py --no-betting --print-stats
 # ticker_v1.json 이 있으면 election / cabinet / governance 헤드라인 live 부착
-# --no-betting 으로 Polymarket 호출 생략
 ```
 
 산출: `public/data/elections_board_v1.json`
+
+## 다른 클론으로 파이프라인 뜯어오기
+
+Grok/다른 워크스페이스가 스캐폴드만 있을 때, 채워진 트리에서 학습 JSON·extract·보드를 복사한다. 날짜 추측 병합 없음. dest가 스캐폴드이거나 구조가 빈약할 때만 덮는다.
+
+```bash
+# dart 등 빈 클론으로 (이 레포 = source)
+python3 import_pipeline.py --dest "/Users/yeoninair/Documents/New for anti-dart"
+
+# 미리보기만
+python3 import_pipeline.py --dest "/Users/yeoninair/Documents/New for anti-dart" --dry-run
+
+# Grok이 JSON/MD를 폴더로 내보낸 뒤 (캘린더에 자동 합치지 않음)
+python3 import_pipeline.py --dest "/Users/yeoninair/Documents/New for anti-dart" \
+  --grok-pack "/path/to/grok_export"
+```
+
+리포트: `config/extracted/import_report_v1.json`  
+raw HTML/PDF 캐시(~18MB)는 기본 제외. 필요하면 `--include-raw`.
 
 ## 속보 연동 (commodity_news)
 
