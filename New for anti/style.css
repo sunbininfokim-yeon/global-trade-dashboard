@@ -2354,7 +2354,11 @@ body.trade-map-mode .left-pane {
     height: 54px; font-size: 9px; color: #64748b; font-variant-numeric: tabular-nums;
     text-align: right; line-height: 1;
 }
-.spark2-chart { position: relative; overflow: hidden; flex: 1 1 auto; min-width: 0; height: 54px; }
+/* overflow must stay visible: the hover tooltip sits above the box
+   (top:-4px + translateY(-100%)) so it doesn't cover the line it's
+   describing, and `overflow:hidden` here was clipping it out of view
+   entirely -- the crosshair still moved, but no date/value ever showed. */
+.spark2-chart { position: relative; flex: 1 1 auto; min-width: 0; height: 54px; }
 .spark2-svg { width: 100%; height: 54px; display: block; overflow: visible; cursor: crosshair; }
 .spark2-grid { stroke: rgba(148,163,184,.14); stroke-width: 1; vector-effect: non-scaling-stroke; }
 .spark2-line {
@@ -2868,12 +2872,6 @@ body.macro-mode .map-pane { flex: 1 1 100%; }
 /* Period row: window buttons left, the credit toggle pushed to the right. */
 .ms-period-row { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; }
 .ms-period-spacer { flex: 1 1 auto; min-width: 12px; }
-.ms-credit-panel {
-    margin: 10px 0 4px; padding: 12px 14px 4px;
-    border: 1px solid rgba(148,163,184,.18); border-radius: 10px;
-    background: rgba(148,163,184,.05);
-}
-.ms-credit-panel .fin-sub { margin: 0 0 2px; }
 @media (max-width: 720px) { .ms-plc { height: 320px; } }
 
 .mm-bars { display: flex; flex-direction: column; gap: 7px; }
