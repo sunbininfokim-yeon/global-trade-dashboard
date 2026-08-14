@@ -26,9 +26,9 @@ Conc_topN = Σ(시총 TopN) / KOSPI 전체시총 ×100. constituent 표는 Top30
 
 | actor | net_krw | scope | quality |
 |-------|--------:|-------|---------|
-| foreign | 927628734000 | covered_underlyings_spot | estimated |
-| retail | -2620231137000 | covered_underlyings_spot | estimated |
-| institution | 1739460873000 | covered_underlyings_spot | estimated |
+| foreign | 2507580288000 | covered_underlyings_spot | estimated |
+| retail | -1441590952000 | covered_underlyings_spot | estimated |
+| institution | -1024116947000 | covered_underlyings_spot | estimated |
 
 ## 3. Leveraged ETF AUM (paper: leverage reset)
 
@@ -48,8 +48,8 @@ Conc_topN = Σ(시총 TopN) / KOSPI 전체시총 ×100. constituent 표는 Top30
 
 | ticker | day_R | wag_the_dog | long_aum% | inv_aum% | inv_tv% | retail_net | foreign_net | realized IR% |
 |--------|------:|:-----------:|----------:|---------:|--------:|-----------:|------------:|-------------:|
-| 000660 | 0.0592 | low | 98.2 | 1.8 | 25.3 | -1254221469000 | 1035198306000 | 6.4661 |
-| 005930 | 0.0489 | low | 99.5 | 0.5 | 3.0 | -1366009668000 | -107569572000 | 3.0932 |
+| 000660 | 0.0592 | low | 98.2 | 1.8 | 25.3 | -624398652000 | 1190780244000 | 6.4661 |
+| 005930 | 0.0489 | low | 99.5 | 0.5 | 3.0 | -817192300000 | 1316800044000 | 3.0932 |
 
 해석 힌트: `wag_the_dog=high`면 LETF 거래가 현물을 잠식. 인버스 거래비중(`inv_tv%`)이 AUM 비중보다 크면 하락일에 리밸런싱 압력이 비대칭.
 
@@ -93,9 +93,9 @@ venue 분리: KR cash 회전율 식에 HK/US/crypto 합산 금지. 다만 Distor
 
 | HK product | underlying | L | AUM USD | TV USD | impact |
 |------------|------------|--:|--------:|-------:|--------|
-| 7709.HK CSOP SK Hynix Daily Max (2x) | 000660 | 2.0 | 704821563.0769231 | 744161927.5452365 | indirect_swap |
-| 7747.HK CSOP Samsung Electronics Daily Max (2x) | 005930 | 2.0 | 150034691.2820513 | 98740085.34408276 | indirect_swap |
-| 7347.HK CSOP Samsung Electronics Daily Max (-2x) | 005930 | -2.0 | 1283897.435897436 | 4399797.444649079 | indirect_swap |
+| 7709.HK CSOP SK Hynix Daily Max (2x) | 000660 | 2.0 | 704821563.0769231 | 870398054.616214 | indirect_swap |
+| 7747.HK CSOP Samsung Electronics Daily Max (2x) | 005930 | 2.0 | 150034691.2820513 | 121886228.05321522 | indirect_swap |
+| 7347.HK CSOP Samsung Electronics Daily Max (-2x) | 005930 | -2.0 | 1283897.435897436 | 5559510.546281934 | indirect_swap |
 
 | Crypto product | underlying | OI USD | 24h vol USD | funding | impact |
 |---------------|------------|-------:|------------:|--------:|--------|
@@ -140,9 +140,9 @@ venue 분리: KR cash 회전율 식에 HK/US/crypto 합산 금지. 다만 Distor
 
 | actor | net_krw | date | quality |
 |-------|--------:|------|---------|
-| foreign | 3054900000000.0 | 26.08.14 | observed |
-| retail | -1887800000000.0 | 26.08.14 | observed |
-| institution | -1141300000000.0 | 26.08.14 | observed |
+| foreign | 3038700000000.0 | 26.08.14 | observed |
+| retail | -1982000000000.0 | 26.08.14 | observed |
+| institution | -1029800000000.0 | 26.08.14 | observed |
 
 ## 9. Levered ETF TV by category
 
@@ -150,10 +150,10 @@ venue 분리: KR cash 회전율 식에 HK/US/crypto 합산 금지. 다만 Distor
 
 | category | n | TV 조 | % of lev TV | % of KOSPI TV |
 |----------|--:|------:|------------:|--------------:|
-| index | 53 | 4.485 | 74.5 | 22.275 |
-| overseas | 26 | 0.018 | 0.3 | 0.089 |
-| sector | 8 | 0.682 | 11.33 | 3.389 |
-| single_stock | 16 | 0.834 | 13.86 | 4.144 |
+| index | 53 | 4.53 | 74.51 | 16.656 |
+| overseas | 26 | 0.018 | 0.3 | 0.067 |
+| sector | 8 | 0.688 | 11.32 | 2.531 |
+| single_stock | 16 | 0.843 | 13.87 | 3.1 |
 
 ## 10. Short interest
 

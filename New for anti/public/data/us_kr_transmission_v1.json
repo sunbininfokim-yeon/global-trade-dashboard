@@ -4,7 +4,7 @@
   "model_version": "uskr-scenario-2026-08",
   "headline": "high:downside",
   "headline_ko": "높음 · 하방",
-  "why_ko": "하방 경보는 ‘미국 종목이 빠졌다’가 아니라, 공개 옵션에서 풋 거래·OI가 콜보다 두드러진 이름(SOXL/SMH/EWY 등)이 한국 반도체·대형주 링크(Tier A/B)로 연결된 상태다. 근거: SOXL P/C거래량=2.4911 P/C OI=2.1727 공매증감%=68.566 · SMH P/C거래량=1.3252 P/C OI=2.0102 공매증감%=-31.45 · 전이: SOXL→000660(heat 1.4062, etf_beta), SOXL→005930(heat 1.125, etf_beta), SMH→000660(heat 0.9108, etf_beta), SMH→005930(heat 0.8644, discovered_corr)",
+  "why_ko": "하방 경보는 ‘미국 종목이 빠졌다’가 아니라, 공개 옵션에서 풋 거래·OI가 콜보다 두드러진 이름(SOXL/SMH/EWY 등)이 한국 반도체·대형주 링크(Tier A/B)로 연결된 상태다. 근거: SOXL P/C거래량=2.4911 P/C OI=2.1516 공매증감%=68.566 · SMH P/C거래량=1.3252 P/C OI=1.9767 공매증감%=-31.45 · 전이: SOXL→000660(heat 1.4062, etf_beta), SOXL→005930(heat 1.125, etf_beta), SMH→000660(heat 0.9108, etf_beta), SMH→005930(heat 0.8644, discovered_corr)",
   "meaning_ko": {
     "headline": "오늘 US 레짐×KR 링크 heat의 최강 채널 요약. 투자 권유 아님.",
     "channels": "채널별 heat 합. 카드 클릭 시 drivers·US 옵션/숏 실측값 표를 열 것.",
@@ -20,7 +20,7 @@
       ],
       "stress_level": "watch",
       "put_call_volume": 2.4911,
-      "put_call_oi": 2.1727,
+      "put_call_oi": 2.1516,
       "options_total_volume": 287365.0,
       "short_chg_pct": 68.566,
       "day_return": 0.0,
@@ -33,7 +33,7 @@
       ],
       "stress_level": "watch",
       "put_call_volume": 1.3252,
-      "put_call_oi": 2.0102,
+      "put_call_oi": 1.9767,
       "options_total_volume": 171584.0,
       "short_chg_pct": -31.45,
       "day_return": 0.001494,
@@ -93,9 +93,33 @@
     },
     "upside": {
       "level": "quiet",
-      "heat": 0.0,
-      "kr_tickers": [],
-      "drivers": []
+      "heat": 0.435,
+      "kr_tickers": [
+        "000660",
+        "005930"
+      ],
+      "drivers": [
+        {
+          "us": "MU",
+          "kr": "000660",
+          "heat": 0.27,
+          "edge_type": "peer_memory",
+          "tier": "A",
+          "regimes": [
+            "quiet"
+          ]
+        },
+        {
+          "us": "MU",
+          "kr": "005930",
+          "heat": 0.165,
+          "edge_type": "peer_memory",
+          "tier": "A",
+          "regimes": [
+            "quiet"
+          ]
+        }
+      ]
     },
     "vol_up": {
       "level": "high",
@@ -566,6 +590,38 @@
         "vol_short_strangle"
       ],
       "us_stress_level": "quiet"
+    },
+    {
+      "edge_id": "mu_hynix_peer",
+      "us": "MU",
+      "kr": "000660",
+      "edge_type": "peer_memory",
+      "tier": "A",
+      "quality": "structural",
+      "channel": "upside",
+      "weight": 0.9,
+      "us_score": 0.3,
+      "heat": 0.27,
+      "us_regimes": [
+        "quiet"
+      ],
+      "us_stress_level": "quiet"
+    },
+    {
+      "edge_id": "mu_samsung_peer",
+      "us": "MU",
+      "kr": "005930",
+      "edge_type": "peer_memory",
+      "tier": "A",
+      "quality": "structural",
+      "channel": "upside",
+      "weight": 0.55,
+      "us_score": 0.3,
+      "heat": 0.165,
+      "us_regimes": [
+        "quiet"
+      ],
+      "us_stress_level": "quiet"
     }
   ],
   "tier_b_edges_fired": 11,
@@ -601,8 +657,8 @@
           "median": 0.002451,
           "p10": -0.039856,
           "p90": 0.059976,
-          "frac_neg": 0.4737,
-          "frac_pos": 0.5263
+          "frac_neg": 0.4777,
+          "frac_pos": 0.5223
         },
         "open30m_us_down": {
           "label": "us_down",
@@ -653,8 +709,8 @@
           "median": 0.002451,
           "p10": -0.039856,
           "p90": 0.059976,
-          "frac_neg": 0.4737,
-          "frac_pos": 0.5263
+          "frac_neg": 0.4777,
+          "frac_pos": 0.5223
         },
         "open30m_us_down": {
           "label": "us_down",
@@ -705,8 +761,8 @@
           "median": 0.002451,
           "p10": -0.039856,
           "p90": 0.059976,
-          "frac_neg": 0.4737,
-          "frac_pos": 0.5263
+          "frac_neg": 0.4777,
+          "frac_pos": 0.5223
         },
         "open30m_us_down": {
           "label": "us_down",
@@ -761,23 +817,23 @@
       "open_overnight": {
         "baseline": {
           "label": "all",
-          "n": 249,
-          "mean": 0.007125,
+          "n": 245,
+          "mean": 0.006996,
           "median": 0.002451,
-          "p10": -0.039553,
-          "p90": 0.059347,
-          "frac_neg": 0.4739,
-          "frac_pos": 0.5261
+          "p10": -0.038785,
+          "p90": 0.057715,
+          "frac_neg": 0.4776,
+          "frac_pos": 0.5224
         },
         "vix_up": {
           "label": "vix_up",
-          "n": 52,
-          "mean": -0.019028,
-          "median": -0.024476,
-          "p10": -0.054548,
-          "p90": 0.018412,
-          "frac_neg": 0.7308,
-          "frac_pos": 0.2692
+          "n": 51,
+          "mean": -0.019146,
+          "median": -0.025358,
+          "p10": -0.054618,
+          "p90": 0.018587,
+          "frac_neg": 0.7255,
+          "frac_pos": 0.2745
         }
       },
       "quality": "estimated"
