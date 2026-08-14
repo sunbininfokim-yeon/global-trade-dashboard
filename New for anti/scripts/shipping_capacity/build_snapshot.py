@@ -77,6 +77,76 @@ def aggregate_scenario(scenario: dict[str, Any], results: list[dict[str, Any]]) 
         ) / baseline
     else:
         deliverable = 1.0
+
+    ship_type_breakdown = []
+    for ship_type in ("container", "dry_bulk", "tanker"):
+        rows = [row for row in affected if row["ship_type"] == ship_type]
+        if not rows:
+            continue
+        type_baseline = sum(row["baseline_required_dwt"] for row in rows)
+        type_allocated = sum(row["allocated_dwt_with_reserve"] for row in rows)
+        type_disrupted = sum(row["disrupted_required_dwt"] for row in rows)
+        type_absorbed = sum(row["operational_capacity_absorbed_dwt"] for row in rows)
+        type_gap = sum(row["capacity_gap_dwt"] for row in rows)
+        type_unavailable = sum(row["commercially_unavailable_dwt"] for row in rows)
+        type_available = sum(row["commercially_available_dwt"] for row in rows)
+        type_backlog = sum(row["backlog_cargo_tonnes_horizon"] for row in rows)
+        type_rerouted = sum(
+            row["rerouted_in_transit_cargo_tonnes_horizon"] for row in rows
+        )
+        type_served = sum(row["served_cargo_tonnes_horizon"] for row in rows)
+        type_lost = sum(row["lost_cargo_tonnes_horizon"] for row in rows)
+        type_global_fleet = rows[0]["global_type_fleet_dwt"]
+        type_deliverable = (
+            sum(row["deliverable_flow_index"] * row["baseline_required_dwt"] for row in rows)
+            / type_baseline
+            if type_baseline > 0
+            else 1.0
+        )
+        ship_type_breakdown.append(
+            {
+                "ship_type": ship_type,
+                "affected_route_count": len(rows),
+                "affected_baseline_dwt": type_baseline,
+                "affected_allocated_dwt_with_reserve": type_allocated,
+                "relevant_global_type_fleet_dwt": type_global_fleet,
+                "disrupted_required_dwt": type_disrupted,
+                "operational_capacity_absorbed_dwt": type_absorbed,
+                "operational_capacity_absorbed_pct_of_affected_allocated": (
+                    type_absorbed / type_allocated * 100.0
+                    if type_allocated > 0
+                    else None
+                ),
+                "operational_capacity_absorbed_pct_of_relevant_global_type_fleet": (
+                    type_absorbed / type_global_fleet * 100.0
+                    if type_global_fleet > 0
+                    else None
+                ),
+                "commercial_capacity_gap_dwt": type_gap,
+                "commercially_unavailable_dwt": type_unavailable,
+                "commercially_available_dwt": type_available,
+                "commercially_unavailable_pct_of_affected_allocated": (
+                    type_unavailable / type_allocated * 100.0
+                    if type_allocated > 0
+                    else None
+                ),
+                "commercially_available_pct_of_affected_allocated": (
+                    type_available / type_allocated * 100.0
+                    if type_allocated > 0
+                    else None
+                ),
+                "served_cargo_tonnes_horizon": type_served,
+                "backlog_cargo_tonnes_horizon": type_backlog,
+                "rerouted_in_transit_cargo_tonnes_horizon": type_rerouted,
+                "lost_cargo_tonnes_horizon": type_lost,
+                "weighted_served_flow_index": type_deliverable,
+                "weighted_traffic_change_pct": (type_deliverable - 1.0) * 100.0,
+                "scope": (
+                    "Representative route-model allocations for this ship type; "
+                    "not an AIS-observed unique-vessel inventory."
+                ),
+            }
+        )
     return {
         "id": scenario["id"],
         "name_ko": scenario["name_ko"],
@@ -127,6 +197,7 @@ def aggregate_scenario(scenario: dict[str, Any], results: list[dict[str, Any]]) 
         "cargo_accounting_residual_tonnes": sum(
             row["cargo_accounting_residual_tonnes"] for row in affected
         ),
+        "ship_type_breakdown": ship_type_breakdown,
         "capacity_denominator_warning": (
             "Affected allocated DWT is the sum of representative route-model "
             "allocations, not an AIS-observed unique-vessel inventory. Relevant "
@@ -315,6 +386,100 @@ def build_live_display(
             }
         )
     return cards
+
+
+def build_ui_delivery_contract() -> dict[str, Any]:
+    """Publish the no-browser-calculation boundary for the shipping UI.
+
+    Paths are relative to the screen snapshot root.  They are intentionally
+    presentation instructions, not an alternate calculation layer.
+    """
+
+    return {
+        "contract_version": "shipping-ui-delivery-v2",
+        "calculation_owner": "python_shipping_capacity_engine",
+        "unavailable_value_rule": (
+            "Render unavailable or the supplied warning when a value is null or a "
+            "status says unavailable; never substitute zero or derive a replacement."
+        ),
+        "views": {
+            "global_fleet": {
+                "title_ko": "글로벌 선대",
+                "data_paths": ["fleet.fleet_by_type", "lng_fleet"],
+                "render_only_rule": "Use the published DWT or TEU context fields without reclassification.",
+            },
+            "route_service": {
+                "title_ko": "항로 운항 선복량",
+                "subtitle_ko": "선종별 운항 서비스",
+                "tabs": ["all", "container", "dry_bulk", "tanker"],
+                "data_paths": [
+                    "routes[]",
+                    "routes[].baseline",
+                    "routes[].operational_profile.normal",
+                    "routes[].operational_profile.chokepoint_alternatives[]",
+                ],
+                "primary_metrics": [
+                    "baseline.baseline_required_dwt",
+                    "baseline.allocated_dwt_with_reserve",
+                    "operational_profile.normal.cycle_days_round_trip",
+                ],
+                "render_only_rule": (
+                    "This is service capacity continuously required by the modeled flow, "
+                    "not an AIS vessel-position inventory."
+                ),
+                "container_teu_rule": (
+                    "Use fleet DWT for cross-ship-type global comparison. For container "
+                    "service size, show routes[].reference_size.teu_min/teu_max; do not "
+                    "invent a global container-TEU fleet total when it is not published."
+                ),
+            },
+            "chokepoint_detail": {
+                "title_ko": "초크포인트 상세 및 봉쇄 시뮬레이터",
+                "data_paths": [
+                    "chokepoints[]",
+                    "live_display[]",
+                    "chokepoints_live.<id>.history[]",
+                    "scenarios[]",
+                    "ui_scenario_grid.rows[]",
+                ],
+                "input_fields": [
+                    "base_scenario_id",
+                    "closure_pct",
+                    "duration_days",
+                ],
+                "result_fields": [
+                    "summary.affected_baseline_dwt",
+                    "summary.operational_capacity_absorbed_dwt",
+                    "summary.operational_capacity_absorbed_pct_of_affected_allocated",
+                    "summary.commercially_unavailable_dwt",
+                    "summary.backlog_cargo_tonnes_horizon",
+                    "summary.ship_type_breakdown[]",
+                ],
+                "labels_ko": {
+                    "closure_pct": "실효 통행제약률",
+                    "duration_days": "제약 지속일",
+                    "backlog_cargo_tonnes_horizon": "28일 분석기간 말 미운송 화물",
+                    "commercially_unavailable_dwt": "상업적으로 사용 불가한 모델상 DWT",
+                },
+                "render_only_rule": (
+                    "Match a precomputed row by all three input fields. Do not calculate "
+                    "closure, traffic, backlog, insurance exclusion or ship-type totals in JavaScript."
+                ),
+            },
+            "environment": {
+                "title_ko": "환경 규제 시나리오",
+                "data_paths": [
+                    "environment.pathways[]",
+                    "environment.scenarios[]",
+                    "environment.scenarios[].ship_type_breakdown[]",
+                ],
+                "render_only_rule": (
+                    "Filter by pathway_id and order by year only. Regulation targets, "
+                    "operator-response assumptions and effective DWT are already separated."
+                ),
+            },
+        },
+    }
 
 
 def build_scenario_signal_comparison(
@@ -853,6 +1018,7 @@ def build_snapshot(
             },
             "event_observations": event_observations,
             "model_review": model_review,
+            "ui_delivery_contract": build_ui_delivery_contract(),
             "environment": {
                 "contract_version": environment_config.get(
                     "contract_version", "environment-legacy"

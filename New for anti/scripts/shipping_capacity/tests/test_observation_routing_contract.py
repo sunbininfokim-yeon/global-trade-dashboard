@@ -190,6 +190,41 @@ class RouteOperationalContractTests(unittest.TestCase):
         )
         self.assertIsNone(summary["commercially_available_pct_of_affected_allocated"])
 
+    def test_grid_ship_type_breakdown_is_precomputed_and_reconciles(self) -> None:
+        hormuz = next(
+            item
+            for item in self.screen["ui_scenario_grid"]["rows"]
+            if item["base_scenario_id"] == "hormuz_effective_80pct_28d"
+            and item["closure_pct"] == 80
+            and item["duration_days"] == 28
+        )
+        self.assertEqual(
+            {item["ship_type"] for item in hormuz["summary"]["ship_type_breakdown"]},
+            {"tanker"},
+        )
+        for row in self.screen["ui_scenario_grid"]["rows"]:
+            summary = row["summary"]
+            breakdown = summary["ship_type_breakdown"]
+            if summary["affected_baseline_dwt"] == 0:
+                self.assertEqual(breakdown, [])
+                continue
+            self.assertTrue(breakdown)
+            self.assertAlmostEqual(
+                sum(item["affected_baseline_dwt"] for item in breakdown),
+                summary["affected_baseline_dwt"],
+                delta=0.01,
+            )
+            self.assertAlmostEqual(
+                sum(item["operational_capacity_absorbed_dwt"] for item in breakdown),
+                summary["operational_capacity_absorbed_dwt"],
+                delta=0.01,
+            )
+            self.assertAlmostEqual(
+                sum(item["backlog_cargo_tonnes_horizon"] for item in breakdown),
+                summary["backlog_cargo_tonnes_horizon"],
+                delta=0.01,
+            )
+
 
 if __name__ == "__main__":
     unittest.main()

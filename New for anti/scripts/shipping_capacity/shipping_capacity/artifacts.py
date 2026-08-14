@@ -85,6 +85,8 @@ def _screen_chokepoints_live(
 
 def _screen_grid(grid: dict[str, Any]) -> dict[str, Any]:
     summary_fields = (
+        "affected_route_count",
+        "affected_baseline_dwt",
         "operational_capacity_absorbed_dwt",
         "affected_allocated_dwt_with_reserve",
         "relevant_global_type_fleet_dwt",
@@ -101,10 +103,12 @@ def _screen_grid(grid: dict[str, Any]) -> dict[str, Any]:
         "insurance_excluded_dwt",
         "lost_cargo_tonnes_horizon",
         "weighted_traffic_change_pct",
+        "ship_type_breakdown",
         "capacity_denominator_warning",
     )
     route_fields = (
         "route_id",
+        "ship_type",
         "baseline_required_dwt",
         "allocated_dwt_with_reserve",
         "continuity_required_dwt",
@@ -221,6 +225,7 @@ def build_artifact_bundle(snapshot: dict[str, Any]) -> dict[str, dict[str, Any]]
             key: snapshot[key]
             for key in (
                 "model",
+                "ui_delivery_contract",
                 "data_policy",
                 "sources",
                 "fleet",
@@ -259,7 +264,6 @@ def build_artifact_bundle(snapshot: dict[str, Any]) -> dict[str, dict[str, Any]]
                 "generated_at",
                 "event_observations",
                 "historical_event_calibration",
-                "ui_scenario_grid",
             }
         },
     }
@@ -310,4 +314,30 @@ def golden_contract_failures(
                 failures.append(
                     f"environment_scenario_mismatch:{scenario['id']}:{field}"
                 )
+    diagnostic_grid = {
+        row["key"]: row for row in diagnostics.get("ui_scenario_grid", {}).get("rows", [])
+    }
+    for row in screen.get("ui_scenario_grid", {}).get("rows", []):
+        source = diagnostic_grid.get(row["key"])
+        if source is None:
+            failures.append(f"missing_diagnostic_grid:{row['key']}")
+            continue
+        for field, value in row.get("summary", {}).items():
+            if value != source.get("summary", {}).get(field):
+                failures.append(f"grid_summary_mismatch:{row['key']}:{field}")
+        diagnostic_grid_routes = {
+            route["route_id"]: route for route in source.get("routes", [])
+        }
+        for route in row.get("routes", []):
+            diagnostic_route = diagnostic_grid_routes.get(route["route_id"])
+            if diagnostic_route is None:
+                failures.append(
+                    f"missing_diagnostic_grid_route:{row['key']}:{route['route_id']}"
+                )
+                continue
+            for field, value in route.items():
+                if value != diagnostic_route.get(field):
+                    failures.append(
+                        f"grid_route_mismatch:{row['key']}:{route['route_id']}:{field}"
+                    )
     return failures

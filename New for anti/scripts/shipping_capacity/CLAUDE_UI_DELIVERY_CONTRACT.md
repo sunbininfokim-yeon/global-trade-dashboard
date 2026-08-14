@@ -9,6 +9,7 @@ This contract is the handoff boundary between the Python shipping model and Clau
 - Backtests: `public/data/shipping_capacity_backtests_v1.json`
 - All three files must share the same `bundle_id`.
 - The browser must not read model configuration files directly.
+- The machine-readable screen map is `ui_delivery_contract` in the screen data. It supersedes hard-coded view field lists.
 
 Claude owns layout, interaction, formatting and navigation. Python owns every shipping calculation. JavaScript must not reproduce route-cycle formulas, convert policy targets into speed changes, sum route rows into an environmental total, or replace missing values with zero.
 
@@ -37,8 +38,13 @@ The panel scope is representative modeled routes, not the full world fleet. Keep
 ## Remaining screens
 
 - Route service cards use `routes[].baseline` and `routes[].operational_profile`.
+- The route page title is `항로 운항 선복량`; it means the modeled DWT continuously needed to serve the stated flow, not live ship positions. Render the four published tabs: all/container/dry-bulk/tanker.
+- Compare global ship types using `fleet.fleet_by_type[].dwt`. Container service class belongs in its own TEU range from `routes[].reference_size`; no global container-TEU total is currently published, so do not create one in the UI.
 - Chokepoint observed cards use `chokepoints_live` and `live_display`; the UI does not interpolate history.
 - Chokepoint simulator values come only from `ui_scenario_grid.rows[]`. Match a row by `base_scenario_id`, `closure_pct`, and `duration_days`.
+- Render `summary.ship_type_breakdown[]` for container/dry-bulk/tanker comparisons. Do not sum the route rows in the browser.
+- Use `ui_delivery_contract.views.chokepoint_detail.labels_ko` for the control and backlog labels. The duration is the duration of the assumed constraint; the published backlog is the unserved cargo remaining at the fixed 28-day analysis horizon.
+- Use `chokepoints[].risk_context` for the commercial/operational explanation. It distinguishes security-driven constraints from Panama's water-availability/traffic-management case.
 - Scenario cards use `scenario_summary`; do not recompute them from route rows.
 
 ## Release gates

@@ -3,7 +3,7 @@
   "$id": "https://global-trade-dashboard.example/schemas/shipping_capacity_v1.schema.json",
   "title": "Shipping Capacity Snapshot v1",
   "type": "object",
-  "required": ["schema_version", "artifact_type", "bundle_id", "generated_at", "artifact_manifest", "coverage_summary", "model", "fleet", "lng_fleet", "chokepoints", "chokepoints_live", "routes", "route_catalog", "scenarios", "scenario_summary", "ui_scenario_grid", "live_display", "live_data_quality", "environment", "comtrade_routes", "portwatch_port_context", "market_signals", "pdf_reports"],
+  "required": ["schema_version", "artifact_type", "bundle_id", "generated_at", "artifact_manifest", "coverage_summary", "model", "ui_delivery_contract", "fleet", "lng_fleet", "chokepoints", "chokepoints_live", "routes", "route_catalog", "scenarios", "scenario_summary", "ui_scenario_grid", "live_display", "live_data_quality", "environment", "comtrade_routes", "portwatch_port_context", "market_signals", "pdf_reports"],
   "properties": {
     "schema_version": {"const": "shipping-capacity-v1"},
     "artifact_type": {"const": "screen_snapshot"},
@@ -16,6 +16,18 @@
     "coverage_summary": {
       "type": "object",
       "required": ["modeled_route_count", "public_flow_route_count", "bidirectional_service_count", "cargo_segments"]
+    },
+    "ui_delivery_contract": {
+      "type": "object",
+      "required": ["contract_version", "calculation_owner", "unavailable_value_rule", "views"],
+      "properties": {
+        "contract_version": {"const": "shipping-ui-delivery-v2"},
+        "calculation_owner": {"const": "python_shipping_capacity_engine"},
+        "views": {
+          "type": "object",
+          "required": ["global_fleet", "route_service", "chokepoint_detail", "environment"]
+        }
+      }
     },
     "fleet": {
       "type": "object",
@@ -75,7 +87,16 @@
     },
     "chokepoints": {
       "type": "array",
-      "items": {"type": "object", "required": ["id", "portwatch_id", "coordinates"]}
+      "items": {
+        "type": "object",
+        "required": ["id", "portwatch_id", "coordinates", "risk_context"],
+        "properties": {
+          "risk_context": {
+            "type": "object",
+            "required": ["primary_constraint_type", "primary_constraint_label_ko", "mechanism_ko", "scenario_interpretation_ko"]
+          }
+        }
+      }
     },
     "chokepoints_live": {
       "type": "object",
@@ -347,6 +368,7 @@
           "commercially_unavailable_pct_of_affected_allocated",
           "commercially_available_pct_of_affected_allocated",
           "capacity_denominator_warning",
+          "ship_type_breakdown",
           "weighted_served_flow_index"
         ],
         "properties": {
@@ -377,13 +399,25 @@
             "properties": {
               "summary": {
                 "type": "object",
-                "required": ["operational_capacity_absorbed_dwt", "affected_allocated_dwt_with_reserve", "relevant_global_type_fleet_dwt", "operational_capacity_absorbed_pct_of_affected_allocated", "operational_capacity_absorbed_pct_of_relevant_global_type_fleet", "commercially_unavailable_pct_of_affected_allocated", "commercially_available_pct_of_affected_allocated", "capacity_denominator_warning"]
+                "required": ["affected_route_count", "affected_baseline_dwt", "operational_capacity_absorbed_dwt", "affected_allocated_dwt_with_reserve", "relevant_global_type_fleet_dwt", "operational_capacity_absorbed_pct_of_affected_allocated", "operational_capacity_absorbed_pct_of_relevant_global_type_fleet", "commercially_unavailable_pct_of_affected_allocated", "commercially_available_pct_of_affected_allocated", "ship_type_breakdown", "capacity_denominator_warning"],
+                "properties": {
+                  "ship_type_breakdown": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "required": ["ship_type", "affected_route_count", "affected_baseline_dwt", "affected_allocated_dwt_with_reserve", "relevant_global_type_fleet_dwt", "operational_capacity_absorbed_dwt", "operational_capacity_absorbed_pct_of_affected_allocated", "commercially_unavailable_dwt", "commercially_available_dwt", "backlog_cargo_tonnes_horizon", "weighted_traffic_change_pct", "scope"],
+                      "properties": {
+                        "ship_type": {"enum": ["container", "dry_bulk", "tanker"]}
+                      }
+                    }
+                  }
+                }
               },
               "routes": {
                 "type": "array",
                 "items": {
                   "type": "object",
-                  "required": ["route_id", "baseline_required_dwt", "allocated_dwt_with_reserve", "continuity_required_dwt", "operational_capacity_absorbed_dwt", "operational_capacity_absorbed_pct_of_route_allocated", "commercially_unavailable_dwt", "commercially_unavailable_pct_of_route_allocated", "traffic_change_pct"]
+                  "required": ["route_id", "ship_type", "baseline_required_dwt", "allocated_dwt_with_reserve", "continuity_required_dwt", "operational_capacity_absorbed_dwt", "operational_capacity_absorbed_pct_of_route_allocated", "commercially_unavailable_dwt", "commercially_unavailable_pct_of_route_allocated", "traffic_change_pct"]
                 }
               }
             }
