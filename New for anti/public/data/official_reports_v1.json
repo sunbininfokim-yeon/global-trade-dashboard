@@ -1,6 +1,6 @@
 {
   "schema_version": "official-reports-v1",
-  "generated_at": "2026-08-15T05:13:16.658928+00:00",
+  "generated_at": "2026-08-15T09:09:25.266322+00:00",
   "model": {
     "name": "official_reports_learnable_v1",
     "description": "Official sources only (US/JP/CN/EU/UK public RSS·HTML). Domains: economy/finance/diplomacy/security/agriculture. Series catalog + label_history for collaborative learning. No Dropbox.",
@@ -15,10 +15,10 @@
     }
   },
   "stats": {
-    "sources_ok": 8,
-    "sources_failed": 1,
-    "raw_items": 155,
-    "scored": 155,
+    "sources_ok": 9,
+    "sources_failed": 0,
+    "raw_items": 170,
+    "scored": 170,
     "selected": 40,
     "indicators": 17
   },
@@ -67,9 +67,9 @@
     },
     {
       "source_id": "eu_ecb_press",
-      "ok": false,
-      "count": 0,
-      "error": "URLError: <urlopen error timed out>",
+      "ok": true,
+      "count": 15,
+      "error": null,
       "mode": "live"
     },
     {
@@ -211,6 +211,20 @@
       "significance": 2.842
     },
     {
+      "series_id": "EU_ECB_POLICY",
+      "label_ko": "ECB 정책",
+      "country": "EUR",
+      "domains": [
+        "finance",
+        "economy"
+      ],
+      "title": "Monetary policy decisions",
+      "url": "https://www.ecb.europa.eu//press/pr/date/2026/html/ecb.mp260723~29f24d99bc.en.html",
+      "published_at": "2026-07-23T12:15:00+00:00",
+      "site_slot": "finance.policy",
+      "significance": 2.64
+    },
+    {
       "series_id": "JP_BOJ_POLICY",
       "label_ko": "일본은행 정책·공표",
       "country": "JPN",
@@ -305,20 +319,6 @@
       "title": "Collateral Accepted by the Bank of Japan (End of July)",
       "url": "http://www.boj.or.jp/en/statistics/boj/other/col/col2607.xlsx",
       "published_at": "2026-08-04T08:00:00+00:00",
-      "site_slot": "finance.policy",
-      "significance": 2.306
-    },
-    {
-      "series_id": "JP_BOJ_POLICY",
-      "label_ko": "일본은행 정책·공표",
-      "country": "JPN",
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "title": "(BOJ Review) Impact of the Bank of Japan's Reductions in JGB Purchases on the JGB Markets",
-      "url": "http://www.boj.or.jp/en/research/wps_rev/rev_2026/rev26e10.htm",
-      "published_at": "2026-08-04T06:30:00+00:00",
       "site_slot": "finance.policy",
       "significance": 2.306
     }
@@ -813,6 +813,41 @@
       "site_slot": "finance.policy"
     },
     {
+      "id": "671365e0e4e3d4cd",
+      "published_at": "2026-07-23T12:15:00+00:00",
+      "source": {
+        "id": "eu_ecb_press",
+        "name": "ECB",
+        "region": "eur",
+        "slant": null
+      },
+      "url": "https://www.ecb.europa.eu//press/pr/date/2026/html/ecb.mp260723~29f24d99bc.en.html",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "finance",
+        "economy"
+      ],
+      "series_id": "EU_ECB_POLICY",
+      "title": {
+        "original": "Monetary policy decisions",
+        "original_lang": "en",
+        "ko": "[EUR·금융] Monetary policy decisions"
+      },
+      "summary": "",
+      "scores": {
+        "significance": 2.64,
+        "final": 2.64
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "series:EU_ECB_POLICY"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": "finance.policy"
+    },
+    {
       "id": "a5c20705f701aa97",
       "published_at": "2026-07-30T11:00:00+00:00",
       "source": {
@@ -1687,41 +1722,6 @@
       "translation_status": "skipped",
       "event_type": "official_report",
       "site_slot": "finance.policy"
-    },
-    {
-      "id": "3ccd9778bd23b3bc",
-      "published_at": "2026-08-04T06:30:00+00:00",
-      "source": {
-        "id": "jp_boj_whatsnew",
-        "name": "Bank of Japan",
-        "region": "jpn",
-        "slant": null
-      },
-      "url": "http://www.boj.or.jp/en/research/wps_rev/rev_2026/rev26e10.htm",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "series_id": "JP_BOJ_POLICY",
-      "title": {
-        "original": "(BOJ Review) Impact of the Bank of Japan's Reductions in JGB Purchases on the JGB Markets",
-        "original_lang": "en",
-        "ko": "[JPN·경제] (BOJ Review) Impact of the Bank of Japan's Reductions in JGB Purchases on the JGB Markets"
-      },
-      "summary": "",
-      "scores": {
-        "significance": 2.306,
-        "final": 2.306
-      },
-      "rank_reasons": [
-        "domains:economy,finance",
-        "series:JP_BOJ_POLICY"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": "finance.policy"
     }
   ],
   "pending_review": [
@@ -1870,25 +1870,14 @@
       "suggest": "label promote|keep|drop + series_id later"
     },
     {
-      "title": "PRA and FCA propose new captive insurance regime to drive UK growth and competitiveness",
-      "url": "https://www.bankofengland.co.uk/news/2026/july/pra-and-fca-propose-new-captive-insurance-regime-to-drive-uk-growth-and-competitiveness",
-      "country": "GBR",
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "significance": 2.024,
-      "suggest": "label promote|keep|drop + series_id later"
-    },
-    {
-      "title": "UK financial regulators to begin overseeing Critical Third Parties announced by HM Treasury",
-      "url": "https://www.bankofengland.co.uk/news/2026/july/uk-financial-regulators-to-begin-overseeing-critical-third-parties-announced-by-hmt",
-      "country": "GBR",
+      "title": "Christine Lagarde, Boris Vujčić: Monetary policy statement (with Q&A)",
+      "url": "https://www.ecb.europa.eu//press/press_conference/monetary-policy-statement/2026/html/ecb.is260723~b6fadd48f4.en.html",
+      "country": "EUR",
       "domains": [
         "finance",
         "economy"
       ],
-      "significance": 2.024,
+      "significance": 2.112,
       "suggest": "label promote|keep|drop + series_id later"
     }
   ],
@@ -2382,6 +2371,41 @@
       "site_slot": "finance.policy"
     },
     {
+      "id": "671365e0e4e3d4cd",
+      "published_at": "2026-07-23T12:15:00+00:00",
+      "source": {
+        "id": "eu_ecb_press",
+        "name": "ECB",
+        "region": "eur",
+        "slant": null
+      },
+      "url": "https://www.ecb.europa.eu//press/pr/date/2026/html/ecb.mp260723~29f24d99bc.en.html",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "finance",
+        "economy"
+      ],
+      "series_id": "EU_ECB_POLICY",
+      "title": {
+        "original": "Monetary policy decisions",
+        "original_lang": "en",
+        "ko": "[EUR·금융] Monetary policy decisions"
+      },
+      "summary": "",
+      "scores": {
+        "significance": 2.64,
+        "final": 2.64
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "series:EU_ECB_POLICY"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": "finance.policy"
+    },
+    {
       "id": "a5c20705f701aa97",
       "published_at": "2026-07-30T11:00:00+00:00",
       "source": {
@@ -3243,41 +3267,6 @@
         "original": "Collateral Accepted by the Bank of Japan (End of July)",
         "original_lang": "en",
         "ko": "[JPN·경제] Collateral Accepted by the Bank of Japan (End of July)"
-      },
-      "summary": "",
-      "scores": {
-        "significance": 2.306,
-        "final": 2.306
-      },
-      "rank_reasons": [
-        "domains:economy,finance",
-        "series:JP_BOJ_POLICY"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": "finance.policy"
-    },
-    {
-      "id": "3ccd9778bd23b3bc",
-      "published_at": "2026-08-04T06:30:00+00:00",
-      "source": {
-        "id": "jp_boj_whatsnew",
-        "name": "Bank of Japan",
-        "region": "jpn",
-        "slant": null
-      },
-      "url": "http://www.boj.or.jp/en/research/wps_rev/rev_2026/rev26e10.htm",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "series_id": "JP_BOJ_POLICY",
-      "title": {
-        "original": "(BOJ Review) Impact of the Bank of Japan's Reductions in JGB Purchases on the JGB Markets",
-        "original_lang": "en",
-        "ko": "[JPN·경제] (BOJ Review) Impact of the Bank of Japan's Reductions in JGB Purchases on the JGB Markets"
       },
       "summary": "",
       "scores": {
