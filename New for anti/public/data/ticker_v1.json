@@ -1,6 +1,6 @@
 {
   "schema_version": "ticker-v1",
-  "generated_at": "2026-08-16T09:04:24.348582+00:00",
+  "generated_at": "2026-08-16T09:57:06.402041+00:00",
   "model": {
     "name": "commodity_diplomacy_rss_v1",
     "description": "RSS multi-region ticker: regional priority (MENA/IN/TR/JP/CN/TW/RU + commodity specialists) over Western majors; politics admitted with diplomacy+trade bridge, elections, governance polls, cabinet reshuffles; horse-race national polls rejected; importance = country-tier × info-grade; main display language Korean.",
@@ -73,19 +73,19 @@
     "cabinet_reshuffle": true
   },
   "stats": {
-    "sources_ok": 36,
-    "sources_failed": 2,
-    "raw_items": 822,
-    "scored_items": 67,
+    "sources_ok": 35,
+    "sources_failed": 3,
+    "raw_items": 802,
+    "scored_items": 66,
     "selected_items": 24,
     "region_histogram": {
-      "mena": 4,
       "india": 2,
       "west": 1,
+      "mena": 4,
       "commodity_specialist": 8,
       "japan": 2,
-      "russia": 2,
-      "turkey": 2,
+      "russia": 3,
+      "turkey": 1,
       "china": 2,
       "taiwan": 1
     },
@@ -96,7 +96,7 @@
       "source_id": "aljazeera_en",
       "ok": true,
       "count": 25,
-      "elapsed_ms": 117,
+      "elapsed_ms": 120,
       "error": null,
       "mode": "live"
     },
@@ -104,7 +104,7 @@
       "source_id": "iran_intl",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 396,
+      "elapsed_ms": 622,
       "error": null,
       "mode": "live"
     },
@@ -112,7 +112,7 @@
       "source_id": "arab_news",
       "ok": true,
       "count": 10,
-      "elapsed_ms": 4778,
+      "elapsed_ms": 94,
       "error": null,
       "mode": "live"
     },
@@ -120,15 +120,15 @@
       "source_id": "tehran_times",
       "ok": true,
       "count": 30,
-      "elapsed_ms": 833,
+      "elapsed_ms": 1136,
       "error": null,
       "mode": "live"
     },
     {
       "source_id": "middle_east_eye",
       "ok": true,
-      "count": 0,
-      "elapsed_ms": 269,
+      "count": 20,
+      "elapsed_ms": 54,
       "error": null,
       "mode": "live"
     },
@@ -136,23 +136,23 @@
       "source_id": "aa_world",
       "ok": true,
       "count": 30,
-      "elapsed_ms": 2235,
+      "elapsed_ms": 2969,
       "error": null,
       "mode": "live"
     },
     {
       "source_id": "daily_sabah",
-      "ok": true,
-      "count": 40,
-      "elapsed_ms": 602,
-      "error": null,
+      "ok": false,
+      "count": 0,
+      "elapsed_ms": 354,
+      "error": "HTTPError: HTTP Error 403: Forbidden",
       "mode": "live"
     },
     {
       "source_id": "hurriyet_daily",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 302,
+      "elapsed_ms": 271,
       "error": null,
       "mode": "live"
     },
@@ -160,7 +160,7 @@
       "source_id": "the_hindu",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 150,
+      "elapsed_ms": 120,
       "error": null,
       "mode": "live"
     },
@@ -168,7 +168,7 @@
       "source_id": "indian_express_world",
       "ok": false,
       "count": 0,
-      "elapsed_ms": 138,
+      "elapsed_ms": 64,
       "error": "HTTPError: HTTP Error 403: Forbidden",
       "mode": "live"
     },
@@ -176,7 +176,7 @@
       "source_id": "et_commodities",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 548,
+      "elapsed_ms": 478,
       "error": null,
       "mode": "live"
     },
@@ -184,7 +184,7 @@
       "source_id": "business_standard_markets",
       "ok": true,
       "count": 35,
-      "elapsed_ms": 89,
+      "elapsed_ms": 190,
       "error": null,
       "mode": "live"
     },
@@ -192,7 +192,7 @@
       "source_id": "ndtv_world",
       "ok": true,
       "count": 20,
-      "elapsed_ms": 122,
+      "elapsed_ms": 231,
       "error": null,
       "mode": "live"
     },
@@ -200,7 +200,7 @@
       "source_id": "xinhua_world",
       "ok": true,
       "count": 20,
-      "elapsed_ms": 1686,
+      "elapsed_ms": 917,
       "error": null,
       "mode": "live"
     },
@@ -208,7 +208,7 @@
       "source_id": "china_daily_world",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 1235,
+      "elapsed_ms": 890,
       "error": null,
       "mode": "live"
     },
@@ -216,7 +216,7 @@
       "source_id": "cgtn_world",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 436,
+      "elapsed_ms": 634,
       "error": null,
       "mode": "live"
     },
@@ -224,7 +224,7 @@
       "source_id": "scmp",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 811,
+      "elapsed_ms": 575,
       "error": null,
       "mode": "live"
     },
@@ -232,7 +232,7 @@
       "source_id": "nhk_business",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 362,
+      "elapsed_ms": 960,
       "error": null,
       "mode": "live"
     },
@@ -240,7 +240,7 @@
       "source_id": "nhk_top",
       "ok": true,
       "count": 7,
-      "elapsed_ms": 43,
+      "elapsed_ms": 95,
       "error": null,
       "mode": "live"
     },
@@ -248,7 +248,7 @@
       "source_id": "japan_times",
       "ok": true,
       "count": 30,
-      "elapsed_ms": 205,
+      "elapsed_ms": 600,
       "error": null,
       "mode": "live"
     },
@@ -256,7 +256,7 @@
       "source_id": "nikkei_asia",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 114,
+      "elapsed_ms": 94,
       "error": null,
       "mode": "live"
     },
@@ -264,7 +264,7 @@
       "source_id": "cna",
       "ok": true,
       "count": 20,
-      "elapsed_ms": 278,
+      "elapsed_ms": 341,
       "error": null,
       "mode": "live"
     },
@@ -272,7 +272,7 @@
       "source_id": "taipei_times",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 122,
+      "elapsed_ms": 637,
       "error": null,
       "mode": "live"
     },
@@ -280,7 +280,7 @@
       "source_id": "ltn",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 69,
+      "elapsed_ms": 105,
       "error": null,
       "mode": "live"
     },
@@ -288,7 +288,7 @@
       "source_id": "udn",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 386,
+      "elapsed_ms": 347,
       "error": null,
       "mode": "live"
     },
@@ -296,7 +296,7 @@
       "source_id": "tass_en",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 641,
+      "elapsed_ms": 919,
       "error": null,
       "mode": "live"
     },
@@ -304,7 +304,7 @@
       "source_id": "tass_ru",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 727,
+      "elapsed_ms": 1154,
       "error": null,
       "mode": "live"
     },
@@ -312,7 +312,7 @@
       "source_id": "interfax_ru",
       "ok": true,
       "count": 25,
-      "elapsed_ms": 1003,
+      "elapsed_ms": 1654,
       "error": null,
       "mode": "live"
     },
@@ -320,7 +320,7 @@
       "source_id": "rt_ru",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 4604,
+      "elapsed_ms": 1549,
       "error": null,
       "mode": "live"
     },
@@ -328,7 +328,7 @@
       "source_id": "ship_and_bunker",
       "ok": true,
       "count": 10,
-      "elapsed_ms": 285,
+      "elapsed_ms": 352,
       "error": null,
       "mode": "live"
     },
@@ -336,7 +336,7 @@
       "source_id": "oilprice",
       "ok": true,
       "count": 15,
-      "elapsed_ms": 418,
+      "elapsed_ms": 637,
       "error": null,
       "mode": "live"
     },
@@ -344,7 +344,7 @@
       "source_id": "mining_com",
       "ok": false,
       "count": 0,
-      "elapsed_ms": 116,
+      "elapsed_ms": 90,
       "error": "HTTPError: HTTP Error 403: Forbidden",
       "mode": "live"
     },
@@ -352,7 +352,7 @@
       "source_id": "world_grain",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 124,
+      "elapsed_ms": 338,
       "error": null,
       "mode": "live"
     },
@@ -360,7 +360,7 @@
       "source_id": "hellenic_shipping",
       "ok": true,
       "count": 20,
-      "elapsed_ms": 110,
+      "elapsed_ms": 183,
       "error": null,
       "mode": "live"
     },
@@ -368,7 +368,7 @@
       "source_id": "seatrade",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 398,
+      "elapsed_ms": 1234,
       "error": null,
       "mode": "live"
     },
@@ -376,7 +376,7 @@
       "source_id": "bbc_business",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 181,
+      "elapsed_ms": 275,
       "error": null,
       "mode": "live"
     },
@@ -384,7 +384,7 @@
       "source_id": "bloomberg_markets",
       "ok": true,
       "count": 20,
-      "elapsed_ms": 332,
+      "elapsed_ms": 466,
       "error": null,
       "mode": "live"
     },
@@ -392,56 +392,12 @@
       "source_id": "ft_commodities",
       "ok": true,
       "count": 25,
-      "elapsed_ms": 247,
+      "elapsed_ms": 313,
       "error": null,
       "mode": "live"
     }
   ],
   "items": [
-    {
-      "id": "1db2e6f0642835e2",
-      "published_at": "2026-06-18T10:03:46+00:00",
-      "source": {
-        "id": "arab_news",
-        "name": "Arab News",
-        "region": "mena",
-        "slant": null
-      },
-      "url": "https://www.arabnews.com/node/2647650/business-economy",
-      "category": "commodity_diplomacy",
-      "commodities": [
-        "oil",
-        "shipping"
-      ],
-      "title": {
-        "original": "Oil falls to 3-1/2-month low after US, Iran sign ceasefire deal",
-        "original_lang": "en",
-        "ko": "미국, 이란, 휴전 협정 체결 후 석유 가격 3-1/2개월 최저치로 하락"
-      },
-      "summary": "BEIJING/SINGAPORE: Oil prices ​fell by more than $2 per barrel on Thursday after the US and Iran signed an interim agreement that ‌would end the Iran war, reopen the Strait of Hormuz and waive US sanctions on Tehran’s oil, boosting the oil supply outlook. Brent crude futures were",
-      "scores": {
-        "commodity": 4.0,
-        "diplomacy": 3.0,
-        "election": 0.0,
-        "region_weight": 1.4,
-        "freshness": 0.35,
-        "importance": 3.22,
-        "final": 3.8
-      },
-      "rank_reasons": [
-        "region:mena*1.40",
-        "category:commodity_diplomacy",
-        "tier:A*1.00/g1",
-        "commodity:oil:3",
-        "commodity:shipping:1",
-        "diplomacy:3",
-        "bridge:2"
-      ],
-      "translation_status": "ok",
-      "country_tier": "A",
-      "info_grade": "1",
-      "country_hint": "CHN"
-    },
     {
       "id": "37a2e43d713785e2",
       "published_at": "2026-08-16T04:46:22+00:00",
@@ -468,9 +424,9 @@
         "diplomacy": 1.0,
         "election": 0.0,
         "region_weight": 1.3,
-        "freshness": 0.888,
-        "importance": 2.343,
-        "final": 2.66
+        "freshness": 0.866,
+        "importance": 2.287,
+        "final": 2.595
       },
       "rank_reasons": [
         "region:india*1.30",
@@ -511,9 +467,9 @@
         "diplomacy": 1.0,
         "election": 0.0,
         "region_weight": 0.55,
-        "freshness": 0.95,
-        "importance": 3.041,
-        "final": 2.425
+        "freshness": 0.927,
+        "importance": 2.968,
+        "final": 2.367
       },
       "rank_reasons": [
         "region:west*0.55",
@@ -553,9 +509,9 @@
         "diplomacy": 2.0,
         "election": 0.0,
         "region_weight": 1.4,
-        "freshness": 0.778,
-        "importance": 1.652,
-        "final": 1.949
+        "freshness": 0.759,
+        "importance": 1.612,
+        "final": 1.902
       },
       "rank_reasons": [
         "region:mena*1.40",
@@ -639,9 +595,9 @@
         "diplomacy": 1.0,
         "election": 0.0,
         "region_weight": 1.35,
-        "freshness": 0.399,
-        "importance": 1.277,
-        "final": 1.478
+        "freshness": 0.39,
+        "importance": 1.246,
+        "final": 1.443
       },
       "rank_reasons": [
         "region:commodity_specialist*1.35",
@@ -682,9 +638,9 @@
         "diplomacy": 2.0,
         "election": 0.0,
         "region_weight": 1.25,
-        "freshness": 0.515,
-        "importance": 1.297,
-        "final": 1.443
+        "freshness": 0.502,
+        "importance": 1.266,
+        "final": 1.409
       },
       "rank_reasons": [
         "region:japan*1.25",
@@ -725,9 +681,9 @@
         "diplomacy": 1.0,
         "election": 0.0,
         "region_weight": 1.25,
-        "freshness": 0.807,
-        "importance": 1.239,
-        "final": 1.379
+        "freshness": 0.787,
+        "importance": 1.21,
+        "final": 1.346
       },
       "rank_reasons": [
         "region:russia*1.25",
@@ -767,9 +723,9 @@
         "diplomacy": 2.0,
         "election": 0.0,
         "region_weight": 1.35,
-        "freshness": 0.367,
-        "importance": 1.084,
-        "final": 1.254
+        "freshness": 0.358,
+        "importance": 1.058,
+        "final": 1.224
       },
       "rank_reasons": [
         "region:commodity_specialist*1.35",
@@ -850,9 +806,9 @@
         "diplomacy": 0.0,
         "election": 0.0,
         "region_weight": 1.3,
-        "freshness": 0.919,
-        "importance": 1.014,
-        "final": 1.151
+        "freshness": 0.897,
+        "importance": 0.99,
+        "final": 1.124
       },
       "rank_reasons": [
         "region:india*1.30",
@@ -890,9 +846,9 @@
         "diplomacy": 1.0,
         "election": 0.0,
         "region_weight": 1.35,
-        "freshness": 0.64,
-        "importance": 0.983,
-        "final": 1.138
+        "freshness": 0.625,
+        "importance": 0.959,
+        "final": 1.11
       },
       "rank_reasons": [
         "region:commodity_specialist*1.35",
@@ -1033,84 +989,45 @@
       "country_hint": "USA"
     },
     {
-      "id": "1c8b52b5bae2d7e1",
-      "published_at": "2026-08-14T22:02:00+00:00",
+      "id": "30871e82f609d08e",
+      "published_at": "2026-08-16T03:12:12+00:00",
       "source": {
-        "id": "daily_sabah",
-        "name": "Daily Sabah",
-        "region": "turkey",
+        "id": "middle_east_eye",
+        "name": "Middle East Eye",
+        "region": "mena",
         "slant": null
       },
-      "url": "https://www.dailysabah.com/world/americas/trump-says-us-will-claim-strait-of-hormuz-after-iran-war",
+      "url": "https://www.middleeasteye.net/live-blog/live-blog-update/iran-and-oman-defining-temporary-route-now-araghchi-says",
       "category": "commodity",
       "commodities": [
         "shipping"
       ],
       "title": {
-        "original": "Trump says US will claim Strait of Hormuz after Iran war",
+        "original": "Iran and Oman defining a temporary route for now, Araghchi says",
         "original_lang": "en",
-        "ko": "트럼프 대통령은 이란 전쟁 후 미국이 호르무즈 해협을 주장할 것이라고 말했습니다."
+        "ko": "Araghchi는 이란과 오만이 현재 임시 경로를 정의하고 있다고 말합니다."
       },
-      "summary": "U.S. President Donald Trump said Friday he plans to claim the Strait of Hormuz as U.S. territory after the war with Iran ends, without explaining how Washington would pursue such a...",
+      "summary": "Iran and Oman defining a temporary route for now, Araghchi says Iran’s foreign minister, Abbas Araghchi has reiterated that talks with Oman and reopening of Hormuz were “two separate issues”. In his comments carried by Shahrara News, he said: “Our negotiations with Oman are ongoi",
       "scores": {
         "commodity": 1.0,
-        "diplomacy": 1.0,
+        "diplomacy": 2.0,
         "election": 0.0,
-        "region_weight": 1.3,
-        "freshness": 0.378,
-        "importance": 0.775,
-        "final": 0.879
+        "region_weight": 1.4,
+        "freshness": 0.829,
+        "importance": 0.845,
+        "final": 0.998
       },
       "rank_reasons": [
-        "region:turkey*1.30",
+        "region:mena*1.40",
         "category:commodity",
-        "tier:A*1.00/g1",
+        "tier:B*0.72/g3",
         "commodity:shipping:1",
-        "diplomacy:1"
+        "diplomacy:2"
       ],
       "translation_status": "ok",
-      "country_tier": "A",
-      "info_grade": "1",
-      "country_hint": "USA"
-    },
-    {
-      "id": "83b91d058c6e9f20",
-      "published_at": "2026-08-16T08:12:00+00:00",
-      "source": {
-        "id": "interfax_ru",
-        "name": "Interfax",
-        "region": "russia",
-        "slant": null
-      },
-      "url": "https://www.interfax.ru/russia/1109598",
-      "category": "election",
-      "commodities": [],
-      "title": {
-        "original": "В России завершается регистрация кандидатов на выборы в Госдуму",
-        "original_lang": "ru",
-        "ko": "러시아에서는 주 두마 선거 후보자 등록이 완료되고 있습니다."
-      },
-      "summary": "Центризбирком России и окружные избирательные комиссии завершают регистрацию федеральных списков кандидатов и кандидатов по одномандатным округам на выборах депутатов Госдумы девятого созыва; она проходила с 6 июля по 16 августа.",
-      "scores": {
-        "commodity": 0,
-        "diplomacy": 0.0,
-        "election": 1.0,
-        "region_weight": 1.25,
-        "freshness": 0.976,
-        "importance": 0.753,
-        "final": 0.838
-      },
-      "rank_reasons": [
-        "region:russia*1.25",
-        "category:election",
-        "tier:A*1.00/g2",
-        "election:general:1"
-      ],
-      "translation_status": "ok",
-      "country_tier": "A",
-      "info_grade": "2",
-      "country_hint": "RUS",
-      "election_type": "general"
+      "country_tier": "B",
+      "info_grade": "3",
+      "country_hint": "SAU"
     },
     {
       "id": "449b43c37fecf4c3",
@@ -1154,6 +1071,86 @@
       "country_hint": "USA"
     },
     {
+      "id": "83b91d058c6e9f20",
+      "published_at": "2026-08-16T08:12:00+00:00",
+      "source": {
+        "id": "interfax_ru",
+        "name": "Interfax",
+        "region": "russia",
+        "slant": null
+      },
+      "url": "https://www.interfax.ru/russia/1109598",
+      "category": "election",
+      "commodities": [],
+      "title": {
+        "original": "В России завершается регистрация кандидатов на выборы в Госдуму",
+        "original_lang": "ru",
+        "ko": "러시아에서는 주 두마 선거 후보자 등록이 완료되고 있습니다."
+      },
+      "summary": "Центризбирком России и окружные избирательные комиссии завершают регистрацию федеральных списков кандидатов и кандидатов по одномандатным округам на выборах депутатов Госдумы девятого созыва; она проходила с 6 июля по 16 августа.",
+      "scores": {
+        "commodity": 0,
+        "diplomacy": 0.0,
+        "election": 1.0,
+        "region_weight": 1.25,
+        "freshness": 0.953,
+        "importance": 0.735,
+        "final": 0.818
+      },
+      "rank_reasons": [
+        "region:russia*1.25",
+        "category:election",
+        "tier:A*1.00/g2",
+        "election:general:1"
+      ],
+      "translation_status": "ok",
+      "country_tier": "A",
+      "info_grade": "2",
+      "country_hint": "RUS",
+      "election_type": "general"
+    },
+    {
+      "id": "8b5b0c128a125e5d",
+      "published_at": "2026-08-16T06:48:59+00:00",
+      "source": {
+        "id": "middle_east_eye",
+        "name": "Middle East Eye",
+        "region": "mena",
+        "slant": null
+      },
+      "url": "https://www.middleeasteye.net/live-blog/live-blog-update/morning-recap-154",
+      "category": "commodity",
+      "commodities": [
+        "shipping"
+      ],
+      "title": {
+        "original": "Morning recap",
+        "original_lang": "en",
+        "ko": "오전 요약"
+      },
+      "summary": "Morning recap Iran’s foreign minister, Abbas Araghchi, has reiterated that talks with Oman and reopening of Hormuz were “two separate issues” and the two countries “may reach an outcome soon”. “The routes that existed previously are no longer functional, so a new route needs to b",
+      "scores": {
+        "commodity": 1.0,
+        "diplomacy": 1.0,
+        "election": 0.0,
+        "region_weight": 1.4,
+        "freshness": 0.917,
+        "importance": 0.65,
+        "final": 0.766
+      },
+      "rank_reasons": [
+        "region:mena*1.40",
+        "category:commodity",
+        "tier:B*0.72/g3",
+        "commodity:shipping:1",
+        "diplomacy:1"
+      ],
+      "translation_status": "ok",
+      "country_tier": "B",
+      "info_grade": "3",
+      "country_hint": "SAU"
+    },
+    {
       "id": "a90ff45c419fd088",
       "published_at": "2026-08-15T18:05:55+00:00",
       "source": {
@@ -1178,9 +1175,9 @@
         "diplomacy": 1.0,
         "election": 0.0,
         "region_weight": 1.4,
-        "freshness": 0.66,
-        "importance": 0.649,
-        "final": 0.766
+        "freshness": 0.644,
+        "importance": 0.634,
+        "final": 0.748
       },
       "rank_reasons": [
         "region:mena*1.40",
@@ -1193,6 +1190,47 @@
       "country_tier": "A",
       "info_grade": "3",
       "country_hint": "USA"
+    },
+    {
+      "id": "7b1c28ecbbe809ba",
+      "published_at": "2026-08-16T07:12:06+00:00",
+      "source": {
+        "id": "tass_en",
+        "name": "TASS",
+        "region": "russia",
+        "slant": null
+      },
+      "url": "https://tass.com/defense/2173821",
+      "category": "commodity",
+      "commodities": [
+        "oil"
+      ],
+      "title": {
+        "original": "Russian forces strike defense industry facilities, oil refinery, steel plant",
+        "original_lang": "en",
+        "ko": "러시아군은 방위 산업 시설, 정유 공장, 철강 공장을 공격합니다"
+      },
+      "summary": "According to the Russian Defense Ministry, Russian troops also struck the UkrDefens company in Kyiv, which produces components for attack drones, Khrushch interceptor drones, and Harpia anti-aircraft missiles",
+      "scores": {
+        "commodity": 1.0,
+        "diplomacy": 0.0,
+        "election": 0.0,
+        "region_weight": 1.25,
+        "freshness": 0.927,
+        "importance": 0.667,
+        "final": 0.742
+      },
+      "rank_reasons": [
+        "region:russia*1.25",
+        "category:commodity",
+        "tier:A*1.00/g3",
+        "commodity:oil:1",
+        "bridge:1"
+      ],
+      "translation_status": "ok",
+      "country_tier": "A",
+      "info_grade": "3",
+      "country_hint": "RUS"
     },
     {
       "id": "3cade8435e41862a",
@@ -1219,9 +1257,9 @@
         "diplomacy": 2.0,
         "election": 0.0,
         "region_weight": 1.3,
-        "freshness": 0.61,
-        "importance": 0.622,
-        "final": 0.706
+        "freshness": 0.595,
+        "importance": 0.607,
+        "final": 0.689
       },
       "rank_reasons": [
         "region:turkey*1.30",
@@ -1260,9 +1298,9 @@
         "diplomacy": 1.0,
         "election": 0.0,
         "region_weight": 1.25,
-        "freshness": 0.568,
-        "importance": 0.559,
-        "final": 0.622
+        "freshness": 0.555,
+        "importance": 0.546,
+        "final": 0.607
       },
       "rank_reasons": [
         "region:china*1.25",
@@ -1301,9 +1339,9 @@
         "diplomacy": 0.0,
         "election": 0.0,
         "region_weight": 1.25,
-        "freshness": 0.996,
-        "importance": 0.55,
-        "final": 0.612
+        "freshness": 0.972,
+        "importance": 0.537,
+        "final": 0.597
       },
       "rank_reasons": [
         "region:taiwan*1.25",
@@ -1315,47 +1353,6 @@
       "country_tier": "A",
       "info_grade": "3",
       "country_hint": "CHN"
-    },
-    {
-      "id": "8fb60d76db9d21da",
-      "published_at": "2026-08-15T12:32:12+00:00",
-      "source": {
-        "id": "tehran_times",
-        "name": "Tehran Times",
-        "region": "mena",
-        "slant": null
-      },
-      "url": "https://www.tehrantimes.com/news/529077/Iran-Tajikistan-agree-on-mechanism-for-oil-product-exports",
-      "category": "commodity",
-      "commodities": [
-        "oil"
-      ],
-      "title": {
-        "original": "Iran, Tajikistan agree on mechanism for oil product exports, crude supply",
-        "original_lang": "en",
-        "ko": "이란, 타지키스탄, 석유 제품 수출 메커니즘 합의, 원유 공급"
-      },
-      "summary": "TEHRAN- Iran and Tajikistan have taken a significant step toward deepening their energy partnership, with both sides agreeing to establish a working group to examine mechanisms for exporting Iran's surplus oil products and supplying crude oil needed by Tajikistan's refineries.",
-      "scores": {
-        "commodity": 2.0,
-        "diplomacy": 0.0,
-        "election": 0.0,
-        "region_weight": 1.4,
-        "freshness": 0.565,
-        "importance": 0.518,
-        "final": 0.611
-      },
-      "rank_reasons": [
-        "region:mena*1.40",
-        "category:commodity",
-        "tier:B*0.72/g3",
-        "commodity:oil:2",
-        "bridge:1"
-      ],
-      "translation_status": "ok",
-      "country_tier": "B",
-      "info_grade": "3",
-      "country_hint": "SAU"
     },
     {
       "id": "3f22dfabb748a8a6",
@@ -1382,9 +1379,9 @@
         "diplomacy": 1.0,
         "election": 0.0,
         "region_weight": 1.25,
-        "freshness": 0.446,
-        "importance": 0.439,
-        "final": 0.488
+        "freshness": 0.435,
+        "importance": 0.428,
+        "final": 0.476
       },
       "rank_reasons": [
         "region:china*1.25",
