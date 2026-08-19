@@ -235,11 +235,18 @@ const loadEiaStocks = async () => {
             const latest = Number(rows[0]?.value);
             const prev = rows.length > 1 ? Number(rows[1]?.value) : null;
             if (!Number.isFinite(latest)) continue;
+            // rows arrive newest-first from EIA; the sparkline wants
+            // oldest-first, so reverse after taking the most recent weeks.
+            const history = rows.slice(0, 26)
+                .map((row) => ({ period: row.period, value: Number(row.value) }))
+                .filter((row) => Number.isFinite(row.value))
+                .reverse();
             out.push({
                 ...s,
                 value: latest,
                 period: rows[0]?.period || '',
                 change: Number.isFinite(prev) ? latest - prev : null,
+                history,
             });
         } catch (err) {
             // The map is the point; a missing buffer card is not worth failing over.
