@@ -8805,6 +8805,29 @@ const mmStatusBadge = (s) => {
 };
 // A synthetic series has no observation behind it, so its note has to be read
 // as "what this metric means", never as "where this number came from".
+// A monthly inflation print is read as four numbers: this month's YoY and MoM,
+// each against what the market expected. Consensus has no free public source,
+// so its slot renders as a dash -- an empty expectation is information, an
+// invented one is not.
+const mmPrintPair = (item) => {
+    const modes = item.modes || {};
+    if (!modes.yoy && !modes.mom) return '';
+    const f = item.forecast || {};
+    const cell = (mode, fc, tag) => {
+        if (!mode) return '';
+        const exp = Number.isFinite(fc) ? `${fc.toFixed(2)}%` : '—';
+        return `<span class="mm-print">
+            <span class="mm-print-tag">${tag}</span>
+            <span class="mm-print-act">${finEsc(mode.display ?? '—')}</span>
+            <span class="mm-print-exp">(${exp})</span>
+        </span>`;
+    };
+    return `<span class="mm-prints">
+        ${cell(modes.yoy, f.yoy_pct, 'YoY')}
+        ${cell(modes.mom, f.mom_pct, 'MoM')}
+    </span>`;
+};
+
 const mmNoteWithState = (item) => {
     const note = item.note_ko || '';
     if (item.data_status !== 'demo') return note;
@@ -8850,6 +8873,56 @@ const mmUsElectionBands = (dates) => {
     });
     if (cur) bands.push(cur);
     return bands;
+};
+
+// Monthly prints (CPI, PCE) are discrete releases, not a continuous level: a
+// line between two months implies values in between that were never measured,
+// and MoM in particular crosses zero every few months, where a filled line
+// reads as one shape instead of alternating months of rises and falls.
+const mmBarSeries = (dates, values, opts = {}) => {
+    const idx = values.map((v, i) => [i, v]).filter(([, v]) => Number.isFinite(v));
+    if (!idx.length) return '<p class="fin-note">그릴 수 있는 시계열이 없습니다.</p>';
+
+    const ys = idx.map(([, y]) => y);
+    let lo = Math.min(...ys, 0), hi = Math.max(...ys, 0);
+    if (lo === hi) { lo -= 1; hi += 1; }
+    const pad = (hi - lo) * 0.08;
+    lo -= pad; hi += pad;
+
+    const n = values.length;
+    const sx = (i) => MM_L + (i / Math.max(n - 1, 1)) * (MM_W - MM_L - MM_R);
+    const sy = (v) => MM_T + (1 - (v - lo) / (hi - lo)) * (MM_H - MM_T - MM_B);
+    const bw = Math.max((MM_W - MM_L - MM_R) / Math.max(n, 1) * 0.72, 1);
+    const zero = sy(0);
+
+    const ticks = [0, 0.25, 0.5, 0.75, 1].map((t) => lo + (hi - lo) * t);
+    const xAt = [0, Math.floor((n - 1) / 2), n - 1];
+
+    return `
+    <div class="mm-chart-box" data-mm-chart-box="1"
+         data-dates='${finEsc(JSON.stringify(dates))}'
+         data-values='${finEsc(JSON.stringify(values.map((v) => Number.isFinite(v) ? v : null)))}'
+         data-geom='${finEsc(JSON.stringify({ lo, hi, n }))}'
+         data-unit="${finEsc(opts.unit || '')}">
+        <svg class="mm-chart" viewBox="0 0 ${MM_W} ${MM_H}" preserveAspectRatio="none" role="img"
+             aria-label="${finEsc(opts.label || '월별 시계열')} 막대 차트">
+            ${ticks.map((t) => `
+                <line x1="${MM_L}" y1="${sy(t).toFixed(1)}" x2="${MM_W - MM_R}" y2="${sy(t).toFixed(1)}" class="mm-grid"/>
+                <text x="${MM_L - 7}" y="${(sy(t) + 3.5).toFixed(1)}" class="mm-tick" text-anchor="end">${mmFmt(t)}</text>`).join('')}
+            ${idx.map(([i, v]) => {
+                const y = sy(v);
+                return `<rect class="mm-bar-col${v < 0 ? ' neg' : ''}"
+                    x="${(sx(i) - bw / 2).toFixed(1)}" y="${Math.min(y, zero).toFixed(1)}"
+                    width="${bw.toFixed(1)}" height="${Math.max(Math.abs(zero - y), 0.6).toFixed(1)}"/>`;
+            }).join('')}
+            <line x1="${MM_L}" y1="${zero.toFixed(1)}" x2="${MM_W - MM_R}" y2="${zero.toFixed(1)}" class="mm-zero"/>
+            ${xAt.map((i) => `<text x="${sx(i).toFixed(1)}" y="${MM_H - 8}" class="mm-tick"
+                text-anchor="${i === 0 ? 'start' : (i === n - 1 ? 'end' : 'middle')}">${finEsc(dates[i] || '')}</text>`).join('')}
+            <line class="mm-cross" x1="0" y1="${MM_T}" x2="0" y2="${MM_H - MM_B}" style="display:none"/>
+            <circle class="mm-hover-dot" r="4" style="display:none"/>
+        </svg>
+        <div class="mm-tip-box" style="display:none"></div>
+    </div>`;
 };
 
 const mmLineChart = (dates, values, opts = {}) => {
@@ -9047,6 +9120,35 @@ const mmStatusView = (ind) => {
     </div>`;
 };
 
+// Which items moved most in the latest print. Ranked on each item's own MoM,
+// not on its weighted contribution to the headline -- the published artifact
+// carries no relative-importance weights, and calling an unweighted mover a
+// "contribution" would overstate how much it moved the index.
+const mmMoversView = (ind) => {
+    const mv = ind.movers || {};
+    const row = (r, dir) => `
+        <div class="mm-mover mm-mover-${dir}">
+            <span class="mm-mover-name">${finEsc(r.label_ko)}</span>
+            <span class="mm-mover-mom">${r.mom_pct >= 0 ? '+' : ''}${r.mom_pct.toFixed(2)}%</span>
+            <span class="mm-mover-yoy">YoY ${r.yoy_pct === null ? '—' : `${r.yoy_pct >= 0 ? '+' : ''}${r.yoy_pct.toFixed(1)}%`}</span>
+        </div>`;
+    if (!(mv.up || []).length && !(mv.down || []).length) {
+        return `<p class="fin-note">${finEsc('항목별 변동 자료가 없습니다.')}</p>`;
+    }
+    return `
+    <div class="mm-movers">
+        <div class="mm-mover-col">
+            <h4 class="mm-mover-head">가장 오른 항목</h4>
+            ${(mv.up || []).map((r) => row(r, 'up')).join('')}
+        </div>
+        <div class="mm-mover-col">
+            <h4 class="mm-mover-head">가장 내린 항목</h4>
+            ${(mv.down || []).map((r) => row(r, 'down')).join('')}
+        </div>
+    </div>
+    <p class="fin-note">${finEsc(mv.reference_period || '')} 발표 기준. ${finEsc(mv.note_ko || '')}</p>`;
+};
+
 // Which panels an indicator can show, in the order they should appear. The
 // engine names the primary view (ui.click_view); chart_type covers the rest.
 const mmViewsFor = (ind) => {
@@ -9073,6 +9175,9 @@ const mmViewsFor = (ind) => {
     }
     if (ind.chart_type === 'bar' && has(ind.outcomes)) {
         views.push({ id: 'outcomes', label: '확률' });
+    }
+    if (has((ind.movers || {}).up) || has((ind.movers || {}).down)) {
+        views.push({ id: 'movers', label: '항목별' });
     }
     if (has(((ind.history || {})['5y'] || {}).values) || ind.modes) {
         views.push({ id: 'history', label: '추이' });
@@ -9176,7 +9281,8 @@ const mmChartDrawer = () => {
     const modeSeries = dual ? mmModeSeries(ind, mode) : null;
 
     let body = '';
-    if (view === 'status') body = mmStatusView(ind);
+    if (view === 'movers') body = mmMoversView(ind);
+    else if (view === 'status') body = mmStatusView(ind);
     else if (view === 'compare') body = mmCompareView(ind);
     else if (view === 'mix') body = mmMixView(ind);
     else if (view === 'outcomes') body = mmOutcomesView(ind);
@@ -9185,6 +9291,12 @@ const mmChartDrawer = () => {
     else {
         const src = modeSeries || ind;
         const hist = (src.history || {})[MM_CHART.window] || {};
+        if (ind.chart_type === 'bar') {
+            body = mmBarSeries(hist.dates || [], hist.values || [], {
+                unit: src.unit === 'pct' ? '%' : (src.unit || ''),
+                label: src.label_ko || ind.label_ko,
+            });
+        } else
         // VIX and other fear gauges have no moving average by design: a smoothed
         // fear index invites reading a trend into what is meant to be a level.
         body = mmLineChart(hist.dates || [], hist.values || [], {
@@ -9339,7 +9451,8 @@ const mmOverlay = () => {
                         <span class="mm-chip-label">${finEsc(ch.label_ko)}</span>
                         ${mmStatusBadge(ch.data_status)}
                     </span>
-                    <span class="mm-chip-value">${finEsc(ch.display ?? '—')}</span>
+                    ${ch.modes ? mmPrintPair(ch)
+                        : `<span class="mm-chip-value">${finEsc(ch.display ?? '—')}</span>`}
                     ${ch.chart_type === 'status' ? '' : `
                         <span class="mm-chip-foot">
                             ${mmDelta(ch.change_1m_pct)}<span class="mm-chip-win">1M</span>
