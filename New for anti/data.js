@@ -129,7 +129,9 @@
     let macroData = {};
     try {
         const fredPromises = series.map(async (s) => {
-            const url = `/api/macro?source=fred&series_id=${s.id}${s.daily ? '&limit=6' : ''}`;
+            // 30 rows rather than 1: the newest reading may be a "." (see below),
+            // and the panel draws a sparkline from the same rows.
+            const url = `/api/macro?source=fred&series_id=${s.id}&limit=30`;
             const res = await fetch(url);
             const data = await res.json();
             // Observations arrive newest first. FRED marks a missing reading
@@ -137,10 +139,16 @@
             // that actually carries a number.
             const rows = data.observations || [];
             const row = rows.find(o => o && o.value && o.value !== ".");
+            // Sparklines read oldest-first; drop the gap rows entirely rather
+            // than interpolating a value FRED never published.
+            const history = rows
+                .filter(o => o && o.value && o.value !== "." && isFinite(parseFloat(o.value)))
+                .map(o => ({ label: o.date, value: parseFloat(o.value) }))
+                .reverse();
             if (row) {
-                return { name: s.name, value: row.value, date: row.date };
+                return { name: s.name, value: row.value, date: row.date, history };
             }
-            return { name: s.name, value: "N/A", date: "N/A" };
+            return { name: s.name, value: "N/A", date: "N/A", history: [] };
         });
         const fredResults = await Promise.all(fredPromises);
         fredResults.forEach(r => {
@@ -153,7 +161,7 @@
             // `date` keeps the annotated string the legacy tiles print verbatim;
             // `asOf` is the bare observation date the 오늘 신호 slots render as
             // "as of 2026-08-15" without having to strip the annotation back off.
-            macroData[r.name] = { value: r.value, date: normalizedDate, asOf: r.date };
+            macroData[r.name] = { value: r.value, date: normalizedDate, asOf: r.date, history: r.history || [] };
         });
     } catch(e) {
         console.error("FRED API Error:", e);
@@ -191,25 +199,36 @@
         };
 
         const fetchYahooDaily = async (symbol) => {
-            const res = await fetch(`/api/macro?source=yfinance&symbol=${encodeURIComponent(symbol)}&interval=1d&range=5d`);
+            const res = await fetch(`/api/macro?source=yfinance&symbol=${encodeURIComponent(symbol)}&interval=1d&range=3mo`);
             if (!res.ok) return null;
             const body = await res.json();
             const result = body?.chart?.result?.[0];
             const timestamps = result?.timestamp || [];
             const closes = result?.indicators?.quote?.[0]?.close || [];
-            for (let i = closes.length - 1; i >= 0; i--) {
+            const history = [];
+            for (let i = 0; i < closes.length; i++) {
                 if (closes[i] !== null && closes[i] !== undefined) {
-                    return { value: closes[i], date: new Date(timestamps[i] * 1000).toISOString().slice(0, 10) };
+                    history.push({ label: new Date(timestamps[i] * 1000).toISOString().slice(0, 10), value: closes[i] });
                 }
             }
-            return null;
+            if (!history.length) return null;
+            const last = history[history.length - 1];
+            return { value: last.value, date: last.label, history };
         };
 
         await Promise.all(bondSymbols.map(async (b) => {
-            const picked = await fetchCnbcQuote(b.symbol).catch(() => null)
-                || await fetchYahooDaily(b.symbol).catch(() => null);
+            // Yahoo first here (CNBC second, unlike the value-only ordering
+            // before): CNBC returns a single quote, Yahoo a series, and the
+            // slot now draws a sparkline beside the number.
+            const picked = await fetchYahooDaily(b.symbol).catch(() => null)
+                || await fetchCnbcQuote(b.symbol).catch(() => null);
             if (picked) {
-                macroData[b.name] = { value: picked.value, date: picked.date + " (UTC 00:00 Normalized)", asOf: picked.date };
+                macroData[b.name] = {
+                    value: picked.value,
+                    date: picked.date + " (UTC 00:00 Normalized)",
+                    asOf: picked.date,
+                    history: picked.history || macroData[b.name]?.history || []
+                };
             }
         }));
     } catch(e) {
@@ -257,6 +276,12 @@
         macroData["BOK_RATE"] = { value: "N/A", date: "N/A" };
     }
 
+    // EIA returns rows newest-first; sparklines want oldest-first.
+    const eiaHistory = (rows) => (rows || [])
+        .map(r => ({ label: r.period, value: parseFloat(r.value) }))
+        .filter(r => isFinite(r.value))
+        .reverse();
+
     // 0.6 Fetch real-time Macro Data from EIA (WTI Crude Oil Price)
     try {
         // Fetch Daily WTI Spot Price
@@ -277,7 +302,8 @@
                 macroData["WTI_OIL"] = {
                     value: wtiData.value,
                     date: wtiData.period + " (UTC 00:00 Normalized)",
-                    asOf: wtiData.period
+                    asOf: wtiData.period,
+                    history: eiaHistory(eiaData.response.data)
                 };
             } else {
                 macroData["WTI_OIL"] = { value: "데이터 없음", date: new Date().toISOString() + " (UTC 00:00 Normalized)" };
@@ -293,7 +319,8 @@
                 macroData["NAT_GAS"] = {
                     value: natGasData.value,
                     date: natGasData.period + " (UTC 00:00 Normalized)",
-                    asOf: natGasData.period
+                    asOf: natGasData.period,
+                    history: eiaHistory(gasData.response.data)
                 };
             } else {
                 macroData["NAT_GAS"] = { value: "데이터 없음", date: new Date().toISOString() + " (UTC 00:00 Normalized)" };

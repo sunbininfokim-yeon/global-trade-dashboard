@@ -203,6 +203,36 @@ const signalFormat = (fmt, raw) => {
     }
 };
 
+// Compact sparkline for a signal slot: shape only, no axis or hover readout.
+// The wide spark2 component in trade.js answers "how far from its range is
+// this?" and needs the room to do it; here the number beside it already gives
+// the level, and the line only has to say which way it has been going. Clicking
+// through to the chart modal is where the full picture lives.
+const signalSparkHtml = (points) => {
+    if (!points || points.length < 3) return '';
+    const W = 96, H = 34, PAD = 2;
+    const vals = points.map(p => p.value);
+    const min = Math.min(...vals);
+    const max = Math.max(...vals);
+    // A flat series must not divide by zero; drawing it mid-box is more honest
+    // than pinning it to an edge.
+    const span = max - min || 1;
+    const x = (i) => PAD + (i / (points.length - 1)) * (W - PAD * 2);
+    const y = (v) => PAD + (1 - (v - min) / span) * (H - PAD * 2);
+
+    const line = points.map((p, i) => `${i ? 'L' : 'M'}${x(i).toFixed(1)},${y(p.value).toFixed(1)}`).join('');
+    const area = `${line}L${x(points.length - 1).toFixed(1)},${H - PAD}L${x(0).toFixed(1)},${H - PAD}Z`;
+    const last = points[points.length - 1];
+    const rising = last.value >= points[0].value;
+
+    return `<svg class="signal-spark ${rising ? 'up' : 'down'}" viewBox="0 0 ${W} ${H}"
+                 preserveAspectRatio="none" aria-hidden="true">
+        <path class="signal-spark-area" d="${area}"/>
+        <path class="signal-spark-line" d="${line}" vector-effect="non-scaling-stroke"/>
+        <circle class="signal-spark-dot" cx="${x(points.length - 1).toFixed(1)}" cy="${y(last.value).toFixed(1)}" r="1.6"/>
+    </svg>`;
+};
+
 const signalSlotHtml = (slot) => {
     const macro = window.MacroData || {};
     const entry = slot.value ? macro[slot.value] : null;
@@ -225,12 +255,19 @@ const signalSlotHtml = (slot) => {
         ? (asOf ? `as of ${signalEsc(asOf)}` : (slot.note ? signalEsc(slot.note) : ''))
         : (!slot.value && slot.symbol ? '차트만 제공' : '');
 
+    // Only a slot showing a real number gets a line; a sparkline over a
+    // pending tile would imply data the panel does not have.
+    const spark = shown ? signalSparkHtml(entry.history) : '';
+
     return `<div class="signal-slot${clickable ? ' is-clickable' : ''}"${
         clickable ? ` role="button" tabindex="0" data-symbol="${signalEsc(slot.symbol)}" data-label="${signalEsc(slot.label)}"` : ''
     }>
-        <span class="signal-slot-label">${signalEsc(slot.label)}</span>
-        ${body}
-        <span class="signal-slot-foot">${foot}</span>
+        <div class="signal-slot-main">
+            <span class="signal-slot-label">${signalEsc(slot.label)}</span>
+            ${body}
+            <span class="signal-slot-foot">${foot}</span>
+        </div>
+        <div class="signal-slot-chart">${spark}</div>
     </div>`;
 };
 
@@ -324,7 +361,7 @@ const signalRenderFixed = (state) => {
     ].join('');
 };
 
-// Fixed-card state, filled in by the two async loaders below. Both start as
+// Fixed-card state, filled in by the async loaders below. All three start as
 // honest placeholders so the panel is never blank while data is in flight.
 const signalFixedState = {
     enso: {
@@ -336,8 +373,8 @@ const signalFixedState = {
         value: '불러오는 중', sub: 'IMF PortWatch 7일 vs 28일', target: 'shipping_chokepoints'
     },
     kospi: {
-        id: 'signal-kospi', title: '코스피 리스크',
-        value: '분석 예정', sub: '파생 분석 후 연동', tone: 'muted'
+        id: 'signal-kospi', title: 'K200 옵션 풋콜 비율',
+        value: '불러오는 중', sub: 'KRX 코스피200 옵션 거래량', target: 'fin_derivatives'
     }
 };
 
@@ -404,6 +441,40 @@ const signalLoadChokepoints = async () => {
     signalRenderFixed(signalFixedState);
 };
 
+// KOSPI200 option put/call volume ratio. Ratio above 1 means more puts than
+// calls traded -- the usual shorthand for hedging demand outpacing upside bets.
+// The board is written by the KRX OpenAPI job (scripts/market_microstructure),
+// so this card only reads what that job published; a missing file leaves the
+// placeholder rather than reconstructing a ratio from anything else.
+const signalLoadPutCall = async () => {
+    try {
+        const res = await fetch('/public/data/derivatives_board_v1.json', { cache: 'no-cache' });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const kr = (await res.json()).kr || {};
+        const opts = kr.kospi200_options || {};
+        const ratio = Number(opts.put_call_volume);
+        if (!isFinite(ratio)) throw new Error('풋콜 비율 없음');
+
+        const contracts = (n) => Number(n).toLocaleString(undefined, { maximumFractionDigits: 0 });
+        const asOf = signalAsOf(opts.bas_dd || kr.as_of);
+        signalFixedState.kospi = {
+            ...signalFixedState.kospi,
+            value: ratio.toFixed(2),
+            sub: `콜 ${contracts(opts.call_volume)} · 풋 ${contracts(opts.put_volume)} 계약`,
+            foot: asOf ? `as of ${asOf} · KRX` : 'KRX',
+            // Puts outnumbering calls is the state worth flagging.
+            tone: ratio >= 1 ? 'warn' : null
+        };
+    } catch (e) {
+        console.error('K200 풋콜 비율 로드 실패:', e);
+        signalFixedState.kospi = {
+            ...signalFixedState.kospi,
+            value: '연동 예정', sub: 'KRX 파생 보드 없음', tone: 'muted'
+        };
+    }
+    signalRenderFixed(signalFixedState);
+};
+
 // ---- wiring --------------------------------------------------------------
 
 function initSignalPanel() {
@@ -464,6 +535,7 @@ function initSignalPanel() {
     // rather than being downloaded twice.
     signalLoadEnso();
     signalLoadChokepoints();
+    signalLoadPutCall();
 }
 
 // Deck.GL Map Initialization

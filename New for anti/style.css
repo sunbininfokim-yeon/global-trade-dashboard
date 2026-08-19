@@ -3242,19 +3242,22 @@ body.macro-mode .map-pane { flex: 1 1 100%; }
 
 /* The stage owns the height because its pages are absolutely stacked mid-flip;
    without a fixed box the panel below it would jump on every rotation. */
+/* Four stacked wide rows -- same width and rhythm as the fixed cards above,
+   so the eye does not have to recalibrate between the two zones. Each row
+   pairs a value on the left with a sparkline on the right, the way an EIA
+   storage tile does: the number gives the level, the line gives the trend. */
 .signal-stage {
     position: relative;
-    height: 178px;
+    height: 336px;
     perspective: 900px;
 }
 
 .signal-page {
     position: absolute;
     inset: 0;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    grid-template-rows: 1fr 1fr;
-    gap: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
     transform-origin: 50% 100%;
     transition: transform 0.62s cubic-bezier(0.22, 0.61, 0.36, 1), opacity 0.5s ease;
 }
@@ -3268,11 +3271,12 @@ body.macro-mode .map-pane { flex: 1 1 100%; }
 }
 
 .signal-slot {
+    flex: 1 1 auto;
     display: flex;
-    flex-direction: column;
-    justify-content: center;
-    gap: 2px;
-    padding: 10px 12px;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 10px 14px;
     border: 1px solid var(--border);
     border-radius: 8px;
     background: rgba(255, 255, 255, 0.02);
@@ -3288,6 +3292,14 @@ body.macro-mode .map-pane { flex: 1 1 100%; }
     outline: none;
 }
 
+.signal-slot-main {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+    flex: 1 1 auto;
+}
+
 .signal-slot-label {
     font-size: 11px;
     color: var(--text-secondary);
@@ -3297,7 +3309,7 @@ body.macro-mode .map-pane { flex: 1 1 100%; }
 }
 
 .signal-slot-value {
-    font-size: 17px;
+    font-size: 18px;
     font-weight: 700;
     color: var(--text-primary);
     white-space: nowrap;
@@ -3330,6 +3342,22 @@ body.macro-mode .map-pane { flex: 1 1 100%; }
     text-overflow: ellipsis;
     min-height: 12px;
 }
+
+/* Empty on a pending slot -- signalSparkHtml returns '' with no feed behind it
+   -- so the row just loses the right column rather than showing a blank box. */
+.signal-slot-chart {
+    flex: 0 0 auto;
+    width: 100px;
+    height: 34px;
+}
+
+.signal-spark { width: 100%; height: 100%; display: block; overflow: visible; }
+.signal-spark-line { fill: none; stroke: var(--positive); stroke-width: 1.6; stroke-linejoin: round; stroke-linecap: round; }
+.signal-spark-area { fill: rgba(16, 185, 129, 0.12); stroke: none; }
+.signal-spark-dot { fill: var(--positive); }
+.signal-spark.down .signal-spark-line,
+.signal-spark.down .signal-spark-dot { stroke: var(--negative); fill: var(--negative); }
+.signal-spark.down .signal-spark-area { fill: rgba(239, 68, 68, 0.1); }
 
 .signal-fixed-foot {
     font-size: 10px;

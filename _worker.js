@@ -791,10 +791,11 @@ async function handleMacro(request, env, ctx) {
             // FRED writes "." for a day a daily series has no reading -- weekends
             // and market holidays on DGS10, DEXJPUS and friends. With limit=1 the
             // newest observation is then a dot and the tile has nothing to show,
-            // so callers may ask for a few extra rows and take the first real one.
-            // Capped at 10: this route exists to fill one tile, not to serve history.
+            // so callers ask for extra rows and take the first real one. The home
+            // panel's sparklines read the same rows as a short series, which is
+            // why the cap is a few hundred rather than a handful.
             const limitParam = parseInt(url.searchParams.get('limit'), 10);
-            const limit = Number.isFinite(limitParam) ? Math.min(Math.max(limitParam, 1), 10) : 1;
+            const limit = Number.isFinite(limitParam) ? Math.min(Math.max(limitParam, 1), 400) : 1;
 
             return kvCachedJson(env, `fred:${series_id}:${limit}`, 3600, async () => {
                 const fredUrl = `https://api.stlouisfed.org/fred/series/observations?series_id=${encodeURIComponent(series_id)}&api_key=${FRED_KEY}&file_type=json&sort_order=desc&limit=${limit}`;
@@ -830,7 +831,9 @@ async function handleMacro(request, env, ctx) {
             // Stocks move weekly and the panel shows a change, so keep a
             // year of history (52 points) rather than one point -- long
             // enough to tell a seasonal drawdown from a genuine trend.
-            const length = freq === 'weekly' ? 52 : 1;
+            // Daily spot prices carry a shorter window for the same reason:
+            // the home panel draws a sparkline beside the latest print.
+            const length = freq === 'weekly' ? 52 : 30;
             return kvCachedJson(env, `eia:${route}:${seriesId}:${length}`, 3600, async () => {
                 const eiaUrl = `https://api.eia.gov/v2/${route}?api_key=${EIA_KEY}&frequency=${freq}&data[0]=value&facets[series][]=${encodeURIComponent(seriesId)}&sort[0][column]=period&sort[0][direction]=desc&offset=0&length=${length}`;
                 const res = await fetch(eiaUrl);
