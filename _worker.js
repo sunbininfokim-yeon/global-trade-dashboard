@@ -1099,6 +1099,11 @@ const DART_XBRL_TAGS = {
     operating_income: ['dart_OperatingIncomeLoss', 'ifrs-full_OperatingIncomeLoss'],
     net_income: ['ifrs-full_ProfitLoss'],
     interest_expense: ['ifrs-full_FinanceCosts'],
+    // Present in dart_facts.py's XBRL_TAGS but never ported to this Worker --
+    // the live path has been shipping one fewer field than the Python source
+    // it mirrors. No new endpoint needed: already inside the same
+    // fnlttSinglAcntAll response every other tag here reads from.
+    eps: ['ifrs-full_BasicEarningsLossPerShare'],
     cfo: ['ifrs-full_CashFlowsFromUsedInOperatingActivities'],
     capex: ['ifrs-full_PurchaseOfPropertyPlantAndEquipmentClassifiedAsInvestingActivities'],
     cash: ['ifrs-full_CashAndCashEquivalents'],
@@ -1109,6 +1114,10 @@ const DART_XBRL_TAGS = {
     // correct, not a bug. SK Hynix and most other filers do carry this tag.
     short_term_debt: ['ifrs-full_CurrentBorrowingsAndCurrentPortionOfNoncurrentBorrowings'],
     long_term_debt: ['ifrs-full_NoncurrentPortionOfNoncurrentLoansReceived', 'ifrs-full_LongtermBorrowings'],
+    // Not in dart_facts.py's verified table (only P&L/CF/short-debt tags were
+    // checked live there) -- ifrs-full_Equity is the standard IFRS total-
+    // equity element, added for PBR's denominator. Confirmed live below.
+    equity: ['ifrs-full_Equity'],
 };
 // Rows filed under Statement of Changes in Equity repeat the same account_id
 // once per equity column with genuinely different values -- keying a flat
@@ -1178,12 +1187,20 @@ function dartPick(facts, candidates) {
     return null;
 }
 
+const dartSleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
 // Returns { facts, reason }. Every failure path used to collapse to a bare
 // {}, which made four very different problems -- no secret bound, OpenDART
 // refusing the Worker's egress, a rejected key, a company with no filing --
 // look identical from the outside and impossible to tell apart without
 // redeploying. reason names which one it was; it never carries the key.
-async function fetchDartXbrlFacts(env, corpCode, year, fsDiv) {
+//
+// One retry on status 020 (rate limited): the multi-year loop this now feeds
+// makes 3+ sequential OpenDART calls per request where there used to be at
+// most 2, so a transient throttle is more likely to be hit mid-loop than it
+// was for a single fetch. A second 020 is treated as real backpressure, not
+// retried further.
+async function fetchDartXbrlFacts(env, corpCode, year, fsDiv, { retriedOn020 = false } = {}) {
     // Missing key must degrade to empty (no network call), same contract as
     // the Python adapter -- a snapshot without a live key still has to render.
     const key = await dartApiKey(env);
@@ -1203,6 +1220,10 @@ async function fetchDartXbrlFacts(env, corpCode, year, fsDiv) {
         const data = await res.json();
         // OpenDART's own status codes: 013 = no data for this query, 020 =
         // rate limited, 100/800/900 = bad key or unregistered caller.
+        if (data.status === '020' && !retriedOn020) {
+            await dartSleep(400);
+            return fetchDartXbrlFacts(env, corpCode, year, fsDiv, { retriedOn020: true });
+        }
         if (data.status !== '000') return { facts: {}, reason: `dart_status_${data.status}` };
         const facts = {};
         for (const item of data.list || []) {
@@ -1221,19 +1242,119 @@ async function fetchDartXbrlFacts(env, corpCode, year, fsDiv) {
     }
 }
 
+// Returns { sharesOutstanding, reason }. OpenDART's "주식의 총수 현황"
+// (stockTotqySttus) disclosure has one row per share class (보통주/우선주)
+// plus a 합계 (total) row; the total row is what market_cap needs, not a
+// single class. No prior integration of this endpoint exists anywhere in
+// this repo (checked both engines) -- the row-shape assumptions below (a
+// `se` field marking the total row, `distb_stock_co` as the outstanding-
+// share count) are unverified against a live response and MUST be confirmed
+// against real output for at least one filer before this ships; see the
+// verification note in the PR.
+async function fetchDartSharesOutstanding(env, corpCode, year) {
+    const key = await dartApiKey(env);
+    if (!key) return { sharesOutstanding: null, reason: 'no_key_bound' };
+    const params = new URLSearchParams({
+        crtfc_key: key,
+        corp_code: corpCode,
+        bsns_year: String(year),
+        reprt_code: '11011',
+    });
+    try {
+        const res = await fetch(`https://opendart.fss.or.kr/api/stockTotqySttus.json?${params}`, {
+            headers: { 'User-Agent': 'global-trade-dashboard/1.0', Accept: 'application/json' },
+        });
+        if (!res.ok) return { sharesOutstanding: null, reason: `http_${res.status}` };
+        const data = await res.json();
+        if (data.status !== '000') return { sharesOutstanding: null, reason: `dart_status_${data.status}` };
+        const rows = data.list || [];
+        const toNum = (s) => {
+            const n = Number(String(s ?? '').replace(/,/g, ''));
+            return Number.isFinite(n) ? n : null;
+        };
+        // Prefer an explicit total row; some filers omit it, so fall back to
+        // summing 보통주+우선주 rows rather than reporting nothing.
+        const totalRow = rows.find((r) => String(r.se || '').includes('합계'));
+        let shares = totalRow ? toNum(totalRow.distb_stock_co) : null;
+        if (shares === null) {
+            const classRows = rows.filter((r) => /보통주|우선주/.test(String(r.se || '')));
+            if (classRows.length) {
+                const summed = classRows.reduce((acc, r) => {
+                    const v = toNum(r.distb_stock_co);
+                    return v === null ? acc : acc + v;
+                }, 0);
+                shares = summed > 0 ? summed : null;
+            }
+        }
+        return {
+            sharesOutstanding: shares,
+            reason: shares !== null ? 'ok' : 'no_usable_row',
+        };
+    } catch (err) {
+        const detail = String(err.message || '').split(key).join('<key>');
+        return { sharesOutstanding: null, reason: `fetch_failed:${err.name}:${detail}` };
+    }
+}
+
+// Returns { price, reason }. Reuses the Yahoo chart endpoint the futures/
+// history quote paths already call (see YF_HEADERS above) rather than adding
+// a new price source -- market_cap/PE/PB are the only cards that need a live
+// price, and this Worker otherwise has no reason to know today's quote for
+// an arbitrary DART filer. The DART corp-code index carries no market field
+// (KOSPI vs KOSDAQ), so this tries `.KS` then falls back to `.KQ`.
+//
+// Deliberately NOT wrapped in kvCachedJson: that helper returns a Response
+// object (it's built for top-level HTTP handlers), not a plain value, so
+// nesting it here would hand the caller a Response instead of {price,
+// reason}. It would also be redundant -- the whole /api/dart-financials
+// response this feeds is already cached for 24h by its own kvCachedJson
+// call, so a separate short-TTL cache on just the price leg buys nothing.
+async function fetchDartKrPrice(symbol) {
+    for (const suffix of ['.KS', '.KQ']) {
+        try {
+            const res = await fetch(
+                `https://query1.finance.yahoo.com/v8/finance/chart/${symbol}${suffix}?interval=1d&range=5d`,
+                { headers: YF_HEADERS });
+            if (!res.ok) continue;
+            const meta = (await res.json())?.chart?.result?.[0]?.meta;
+            const price = Number(meta?.regularMarketPrice);
+            if (Number.isFinite(price)) return { price, reason: 'ok', exchange_suffix: suffix };
+        } catch { /* try the next suffix */ }
+    }
+    return { price: null, reason: 'no_price_ks_or_kq' };
+}
+
 // Ported from dart_kfa/dart_facts.py's map_facts_to_pack() and
 // dart_kfa/derived_cards.py's basic_cards_from_pack(), collapsed into one
 // function since the Worker only ever needs the flat basic_cards bag, not
-// the intermediate accounting_pack shape. A single OpenDART call is one
-// fiscal year, so every series is one point and yoy is always null -- that
-// is designed degradation (see the file-level comment above), not a bug.
-function dartBasicCardsFromFacts(facts, year) {
-    const end = `${year}-12-31`;
+// the intermediate accounting_pack shape.
+//
+// `factsByYear` is `{year: facts}` for every fiscal year the caller managed
+// to fetch (see handleDartFinancials' bsns_year loop) and `years` is that
+// same set, descending -- years[0] is "as of". A year with no filing simply
+// has no key in factsByYear; series are built by filtering, not by assuming
+// every year in `years` produced a point, so a gap (recent listing, a filing
+// OpenDART hasn't ingested yet) leaves a shorter series rather than a null.
+function dartBasicCardsFromFacts(factsByYear, years, { sharesOutstanding = null, price = null } = {}) {
+    const latestYear = years[0];
+    const factsOf = (y) => factsByYear[y] || {};
+    const latestFacts = factsOf(latestYear);
+
+    // One year's value for `key`, or null if that year's facts don't carry it.
+    const valueIn = (y, key) => dartPick(factsOf(y), DART_XBRL_TAGS[key]);
+
+    const seriesFor = (key) => years
+        .map((y) => {
+            const v = valueIn(y, key);
+            return v === null ? null : { year: y, end: `${y}-12-31`, value: v };
+        })
+        .filter(Boolean)
+        .sort((a, b) => a.year - b.year); // oldest first, so [-2]/[-1] below is prev/latest
+
     const point = (key) => {
-        const v = dartPick(facts, DART_XBRL_TAGS[key]);
-        return v === null
-            ? { value: null, series: [], reason: 'missing:not_in_opendart' }
-            : { value: v, series: [{ year, end, value: v }] };
+        const series = seriesFor(key);
+        if (!series.length) return { value: null, series: [], reason: 'missing:not_in_opendart' };
+        return { value: series[series.length - 1].value, series };
     };
 
     const revenue = point('revenue');
@@ -1242,29 +1363,43 @@ function dartBasicCardsFromFacts(facts, year) {
     const cfo = point('cfo');
     const capex = point('capex');
     const cash = point('cash');
+    const eps = point('eps');
 
     const revV = revenue.value, opV = operatingIncome.value, niV = netIncome.value;
-    revenue.yoy = null;
+    // yoy compares the series' own last two points, not two calendar years --
+    // a missing filing in between should not silently compare non-adjacent
+    // years as if they were consecutive.
+    if (revenue.series.length >= 2) {
+        const [prev, last] = revenue.series.slice(-2);
+        revenue.yoy = prev.value ? (last.value - prev.value) / Math.abs(prev.value) : null;
+    } else {
+        revenue.yoy = null;
+    }
     operatingIncome.margin = (opV !== null && revV) ? opV / revV : null;
     netIncome.margin = (niV !== null && revV) ? niV / revV : null;
 
     const capexV = capex.value, cfoV = cfo.value;
     const fcfValue = (cfoV !== null && capexV !== null) ? cfoV - Math.abs(capexV) : null;
-    const fcf = {
-        value: fcfValue,
-        definition: 'cfo - abs(capex)',
-        series: fcfValue !== null ? [{ year, end, value: fcfValue }] : [],
-    };
+    const fcfSeries = years
+        .map((y) => {
+            const c = valueIn(y, 'cfo'), cx = valueIn(y, 'capex');
+            return (c !== null && cx !== null) ? { year: y, end: `${y}-12-31`, value: c - Math.abs(cx) } : null;
+        })
+        .filter(Boolean)
+        .sort((a, b) => a.year - b.year);
+    const fcf = { value: fcfValue, definition: 'cfo - abs(capex)', series: fcfSeries };
     if (fcfValue === null) fcf.reason = 'missing:cfo_or_capex';
 
-    const currentAssets = dartPick(facts, DART_XBRL_TAGS.current_assets);
-    const currentLiabilities = dartPick(facts, DART_XBRL_TAGS.current_liabilities);
+    // Balance-sheet levels and the ratios built from them stay latest-year
+    // point-in-time (a multi-year BS series is future work, not this pass).
+    const currentAssets = dartPick(latestFacts, DART_XBRL_TAGS.current_assets);
+    const currentLiabilities = dartPick(latestFacts, DART_XBRL_TAGS.current_liabilities);
     const currentRatio = (currentAssets !== null && currentLiabilities)
         ? { value: currentAssets / currentLiabilities, series: [] }
         : { value: null, series: [], reason: 'missing:current_assets_or_current_liabilities' };
 
-    const shortTerm = dartPick(facts, DART_XBRL_TAGS.short_term_debt);
-    const longTerm = dartPick(facts, DART_XBRL_TAGS.long_term_debt);
+    const shortTerm = dartPick(latestFacts, DART_XBRL_TAGS.short_term_debt);
+    const longTerm = dartPick(latestFacts, DART_XBRL_TAGS.long_term_debt);
     const cashV = cash.value;
     let netDebt;
     if ((shortTerm !== null || longTerm !== null) && cashV !== null) {
@@ -1289,18 +1424,52 @@ function dartBasicCardsFromFacts(facts, year) {
             : 'missing:not_in_opendart',
     };
 
-    const interestExpense = dartPick(facts, DART_XBRL_TAGS.interest_expense);
-    const interestCoverage = (opV !== null && interestExpense)
+    const interestCoverageSeries = years
+        .map((y) => {
+            const op = valueIn(y, 'operating_income');
+            const ie = valueIn(y, 'interest_expense');
+            if (op === null || !ie) return null;
+            const v = op / Math.abs(ie);
+            return Number.isFinite(v) ? { year: y, end: `${y}-12-31`, value: v } : null;
+        })
+        .filter(Boolean)
+        .sort((a, b) => a.year - b.year);
+    const interestCoverage = interestCoverageSeries.length
         ? {
-            value: opV / Math.abs(interestExpense),
-            series: [{ year, end, value: opV / Math.abs(interestExpense) }],
+            value: interestCoverageSeries[interestCoverageSeries.length - 1].value,
+            series: interestCoverageSeries,
             reason: 'approx:ifrs_finance_costs_not_pure_interest',
             definition: 'operating_income / abs(interest_expense)',
         }
         : { value: null, series: [], reason: 'missing:operating_income_or_nonzero_interest_expense' };
 
+    // market_cap/pe_ratio/pb_ratio need a live price this endpoint does not
+    // otherwise fetch (see handleDartFinancials); shares_outstanding comes
+    // from a separate stockTotqySttus call. Either being unavailable nulls
+    // just these three cards, never the filing-only ones above.
+    const marketCap = (price !== null && sharesOutstanding !== null)
+        ? { value: price * sharesOutstanding, series: [], definition: 'price × shares_outstanding' }
+        : {
+            value: null, series: [],
+            reason: price === null ? 'missing:price' : 'missing:shares_outstanding',
+        };
+
+    const epsV = eps.value;
+    const peRatio = (price !== null && epsV)
+        ? { value: price / epsV, series: [], definition: 'price / eps (trailing FY, basic EPS)' }
+        : { value: null, series: [], reason: price === null ? 'missing:price' : 'missing:eps' };
+
+    const equityV = dartPick(latestFacts, DART_XBRL_TAGS.equity);
+    const bps = (equityV !== null && sharesOutstanding) ? equityV / sharesOutstanding : null;
+    const pbRatio = (price !== null && bps !== null)
+        ? { value: price / bps, series: [], definition: 'price / (equity / shares_outstanding)' }
+        : {
+            value: null, series: [],
+            reason: price === null ? 'missing:price' : (equityV === null ? 'missing:equity' : 'missing:shares_outstanding'),
+        };
+
     return {
-        revenue, operating_income: operatingIncome, net_income: netIncome, cfo, fcf, cash,
+        revenue, operating_income: operatingIncome, net_income: netIncome, cfo, fcf, cash, eps,
         net_debt: netDebt,
         current_ratio: currentRatio,
         debt_due_within_1y: debtDueWithin1y,
@@ -1310,20 +1479,26 @@ function dartBasicCardsFromFacts(facts, year) {
         },
         interest_coverage: interestCoverage,
         ccc_days: { value: null, series: [], reason: 'missing:dso_dio_dpo_inputs_not_fetched' },
+        market_cap: marketCap,
+        pe_ratio: peRatio,
+        pb_ratio: pbRatio,
     };
 }
 
 // Mirrors dart_kfa/view_presets.py's get_view_presets() -- Investor/PE/Deal
 // list their real card/model keys so the UI's tabs and "준비 중" fallback
 // look identical to a full snapshot, even though this endpoint only ever
-// populates the Basic 12.
+// populates the Basic view's cards (filing facts + eps/market_cap/pe/pb;
+// margins_trend/earnings_quality/owner_earnings and friends in the other
+// views have no calc logic here yet -- multi-year facts alone don't fill
+// those in, they need dedicated derivation code this pass didn't add).
 const DART_VIEW_PRESETS = {
     default_view: 'basic',
     views: {
         basic: {
-            cards: ['revenue', 'operating_income', 'net_income', 'cfo', 'fcf', 'cash',
+            cards: ['revenue', 'operating_income', 'net_income', 'eps', 'cfo', 'fcf', 'cash',
                 'net_debt', 'current_ratio', 'debt_due_within_1y', 'liquidity_coverage_1y',
-                'interest_coverage', 'ccc_days'],
+                'interest_coverage', 'ccc_days', 'market_cap', 'pe_ratio', 'pb_ratio'],
             models: [],
         },
         investor: {
@@ -1362,23 +1537,42 @@ async function handleDartFinancials(request, env) {
 
             // Annual reports for FY(Y) file the following spring; before that
             // OpenDART has nothing for FY(currentYear-1) yet, so start one
-            // year further back and fall back one more year if even that is
-            // not filed (e.g. a recent listing).
+            // year further back. firstYear is recomputed from the clock on
+            // every cold-cache run, not hardcoded, so this keeps rolling
+            // forward on its own each spring.
             const now = new Date();
             const firstYear = now.getUTCFullYear() - (now.getUTCMonth() >= 3 ? 1 : 2);
+            const candidateYears = [firstYear, firstYear - 1, firstYear - 2];
 
-            let year = firstYear;
-            let { facts, reason } = await fetchDartXbrlFacts(env, corpCode, year, 'CFS');
-            if (Object.keys(facts).length === 0) {
-                year = firstYear - 1;
-                ({ facts, reason } = await fetchDartXbrlFacts(env, corpCode, year, 'CFS'));
+            // Sequential, not Promise.all: each fetchDartXbrlFacts call may
+            // itself retry once on a 020 (rate-limited) response, so racing
+            // three of these against the same key risks tripping the limit
+            // rather than backing off from it.
+            const factsByYear = {};
+            const failReasons = [];
+            for (const y of candidateYears) {
+                const { facts, reason } = await fetchDartXbrlFacts(env, corpCode, y, 'CFS');
+                if (Object.keys(facts).length > 0) {
+                    factsByYear[y] = facts;
+                } else {
+                    failReasons.push(`FY${y}:${reason}`);
+                }
             }
-            if (Object.keys(facts).length === 0) {
+            const years = candidateYears.filter((y) => y in factsByYear);
+            if (!years.length) {
                 return {
                     ok: false, status: 404,
-                    statusText: `no OpenDART CFS facts for FY${firstYear}/FY${firstYear - 1} (${reason})`,
+                    statusText: `no OpenDART CFS facts for FY${candidateYears.join('/FY')} (${failReasons.join(', ')})`,
                 };
             }
+            const latestYear = years[0];
+
+            // Independent of the facts loop above -- neither blocks the other,
+            // and either failing still leaves the filing-derived cards intact.
+            const [sharesResult, priceResult] = await Promise.all([
+                fetchDartSharesOutstanding(env, corpCode, latestYear),
+                fetchDartKrPrice(symbol),
+            ]);
 
             return {
                 ok: true,
@@ -1386,20 +1580,28 @@ async function handleDartFinancials(request, env) {
                     schema: 'kfa_engine_v1',
                     label: symbol,
                     view_presets: DART_VIEW_PRESETS,
-                    as_of: `${year}-12-31`,
+                    as_of: `${latestYear}-12-31`,
                     currency: 'KRW',
                     meta: {
                         ticker: symbol, corp_code: corpCode, entity: nameKo, entity_eng: null,
                         stock_code: symbol, source: 'opendart', fs_div: 'CFS', acc_mt: '12',
-                        shares_outstanding: null,
+                        shares_outstanding: sharesResult.sharesOutstanding,
+                        shares_outstanding_reason: sharesResult.sharesOutstanding === null ? sharesResult.reason : undefined,
+                        price: priceResult.price,
+                        price_reason: priceResult.price === null ? priceResult.reason : undefined,
                     },
-                    basic_cards: dartBasicCardsFromFacts(facts, year),
+                    basic_cards: dartBasicCardsFromFacts(factsByYear, years, {
+                        sharesOutstanding: sharesResult.sharesOutstanding,
+                        price: priceResult.price,
+                    }),
                     data_quality: {
-                        input_kind: 'live_fetch_single_fiscal_year',
+                        input_kind: years.length > 1 ? 'live_fetch_multi_fiscal_year' : 'live_fetch_single_fiscal_year',
                         source_claim: 'opendart',
                         raw_filing_facts_embedded: true,
-                        period_alignment: 'single_fiscal_year_no_history',
-                        facts_fetched: Object.keys(facts).length,
+                        period_alignment: years.length > 1 ? 'multi_fiscal_year' : 'single_fiscal_year_no_history',
+                        fiscal_years_fetched: years,
+                        fiscal_years_missing: candidateYears.filter((y) => !years.includes(y)),
+                        facts_fetched: years.reduce((sum, y) => sum + Object.keys(factsByYear[y]).length, 0),
                         // Reaching here at all required a keyed OpenDART fetch.
                         live_key_present: true,
                     },
