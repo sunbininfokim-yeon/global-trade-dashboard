@@ -1078,7 +1078,7 @@
         <div class="shipping-callout warning"><strong>물리적 선대 감소가 아닙니다.</strong> ${escapeHtml(env.methodology_ko || '')}</div>
         ${panel('ENVIRONMENT PATHWAYS', '환경 규제 경로 비교', `<div class="shipping-pathway-grid">${pathwayCards}</div>`)}
         <div class="shipping-kpi-grid">
-          ${kpi(`${last.year}년 유효 DWT 손실`, formatDWT(last.effective_dwt_loss), escapeHtml(last.pathway_name_ko || activePathwayId), { featured: true })}
+          ${kpi(`${last.year}년 유효 DWT 손실`, formatDWT(last.effective_dwt_loss), escapeHtml(last.pathway_name_ko || activePathwayId))}
           ${kpi('유효 용량 유지율', formatPct(last.effective_capacity_retention_rate * 100, 1), '대표 항로 모델 기준')}
           ${kpi('같은 서비스 추가 필요', formatDWT(last.additional_required_vs_baseline_dwt), '기준 서비스 유지 가정')}
           ${kpi('CII 감축 경로', formatPct(last.regulatory_inputs?.cii_reduction_vs_2019_pct, 2), `${last.year}년 · 2019년 대비`)}

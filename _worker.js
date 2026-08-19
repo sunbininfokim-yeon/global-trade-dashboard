@@ -453,7 +453,8 @@ async function fetchEsrCountries(env) {
  * instead of guessing. Cached for a week -- this list changes about never.
  */
 /**
- * Static assets, with HTML held out of every cache.
+ * Static assets, with HTML -- and unversioned public/data/*.json -- held out
+ * of every cache.
  *
  * A deployed update was not reaching visitors: the site was serving
  * `cache-control: public, max-age=0, must-revalidate` for index.html and
@@ -462,15 +463,22 @@ async function fetchEsrCountries(env) {
  * build, whose <script src="app.js?v=..."> pointed at the previous bundle. The
  * versioned query strings only bust caches if the HTML naming them is fresh.
  *
- * So HTML is `no-store`: it is small, it changes on every deploy, and it is the
- * one file that decides which version of everything else the browser loads.
- * Fingerprinted assets keep their long cache, which is where caching earns its
- * keep anyway.
+ * public/data/*.json (e.g. shipping_capacity_v1.json) has the same exposure:
+ * daily bots overwrite it in place at a URL with no version query string, so
+ * the same stale-HIT behavior would keep serving yesterday's snapshot under
+ * today's already-fresh HTML/JS.
+ *
+ * So both are `no-store`: they are small, they change on every deploy or
+ * daily refresh, and index.html is the one file that decides which version of
+ * everything else the browser loads. Fingerprinted assets keep their long
+ * cache, which is where caching earns its keep anyway.
  */
 async function serveAsset(request, env) {
     const res = await env.ASSETS.fetch(request);
     const type = res.headers.get('content-type') || '';
-    if (!type.includes('text/html')) return res;
+    const url = new URL(request.url);
+    const isVersionlessData = url.pathname.startsWith('/public/data/') && url.pathname.endsWith('.json');
+    if (!type.includes('text/html') && !isVersionlessData) return res;
 
     const headers = new Headers(res.headers);
     headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0');
