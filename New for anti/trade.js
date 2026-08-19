@@ -372,6 +372,11 @@ const renderEmergencyStocks = async () => {
     if (!host || currentCommodity !== 'oil') return;
     const stocks = await loadEiaStocks();
     if (!stocks.length || currentCommodity !== 'oil') return;
+    // renderTradeWorldPanel can call this more than once before the first
+    // call's await resolves (e.g. a second data refresh landing mid-fetch);
+    // each call is otherwise appending, not replacing, so drop any card a
+    // previous call already left behind instead of stacking a duplicate.
+    host.querySelector('.stock-card')?.remove();
     const weeks = stocks[0]?.history?.length || 0;
     host.insertAdjacentHTML('beforeend', `
         <div class="stock-card">
