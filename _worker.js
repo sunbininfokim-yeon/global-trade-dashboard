@@ -973,6 +973,14 @@ const SEC_TAGS = {
     dna: ['DepreciationDepletionAndAmortization'],
 };
 
+// Which SEC_TAGS keys are period flows rather than point-in-time balances.
+// Only a flow can be summed across quarters, and only a flow has a missing
+// fiscal Q4 to reconstruct (see secFillFiscalQ4). Mirrors DART_FLOW_KEYS.
+const SEC_FLOW_KEYS = new Set([
+    'revenue', 'operating_income', 'net_income', 'cfo', 'capex',
+    'interest_expense', 'tax_expense', 'dna',
+]);
+
 // Merges every candidate tag by year instead of committing to the first one
 // that has any data. Filers migrate between concepts mid-history -- NVIDIA
 // reports capex under PropertyPlantAndEquipment in older years and
@@ -1037,11 +1045,48 @@ function secPickAnnual(facts, names) {
         // concept is the better match and must not be overwritten by a fallback.
         const perTag = new Map();
         for (const p of annual.slice().sort((a, b) => String(a.filed).localeCompare(String(b.filed)))) {
-            perTag.set(secFiscalYear(p), p.val);
+            perTag.set(secFiscalYear(p), { val: p.val, start: p.start, end: p.end });
         }
-        for (const [fy, val] of perTag) if (!byYear.has(fy)) byYear.set(fy, val);
+        for (const [fy, row] of perTag) if (!byYear.has(fy)) byYear.set(fy, row);
     }
-    return byYear.size ? { tag: used.join('+'), unit, years: byYear } : null;
+    if (!byYear.size) return null;
+    // `years` stays a fy -> value map so existing callers are unaffected;
+    // `bounds` carries the period each annual figure covers, which is what
+    // lets the fiscal-Q4 fill below know which quarters belong to which year
+    // without having to guess a filer's fiscal calendar.
+    return {
+        tag: used.join('+'),
+        unit,
+        years: new Map([...byYear].map(([fy, r]) => [fy, r.val])),
+        bounds: new Map([...byYear].map(([fy, r]) => [fy, { start: r.start, end: r.end }])),
+    };
+}
+
+// A fiscal Q4 is never filed as its own 10-Q, and the 10-K reports the full
+// year rather than restating that quarter -- so a quarterly series built from
+// filings alone is missing every fourth point (verified live: NVDA had 5 of 18
+// quarters empty, all of them its fiscal Q4). The missing quarter is the
+// arithmetic remainder: FY minus the three quarters that fall inside the same
+// annual period.
+//
+// Bounds come from the annual fact itself, so this works for a January or June
+// fiscal year without knowing anything about the filer's calendar. It fills
+// only when exactly three quarters are present -- with two, the remainder
+// would silently be a half-year on a bar labelled as one quarter.
+function secFillFiscalQ4(quarterlyMap, annualYears, annualBounds) {
+    if (!quarterlyMap || !annualBounds) return quarterlyMap;
+    for (const [fy, bounds] of annualBounds) {
+        const total = annualYears.get(fy);
+        if (!Number.isFinite(total) || !bounds.start || !bounds.end) continue;
+        const inYear = [...quarterlyMap.entries()]
+            .filter(([, row]) => row.end > bounds.start && row.end <= bounds.end);
+        if (inYear.length !== 3) continue;
+        const label = secQuarterLabel({ end: bounds.end });
+        if (!label || quarterlyMap.has(label)) continue;
+        const sum = inYear.reduce((acc, [, row]) => acc + row.value, 0);
+        quarterlyMap.set(label, { value: total - sum, end: bounds.end, form: 'derived:FY-9M' });
+    }
+    return quarterlyMap;
 }
 
 // Same shape and precedence rules as secPickAnnual, keyed by `2025Q3` instead
@@ -1049,10 +1094,11 @@ function secPickAnnual(facts, names) {
 // response the annual one is read from -- it was simply filtered out by the
 // `form === '10-K'` test, so no extra upstream call is needed for any of this.
 //
-// 10-K is included alongside 10-Q on purpose: a fiscal Q4 is never filed as
-// its own 10-Q, so a quarterly series built from 10-Q alone silently drops
-// every fourth point. The annual report restates Q4 as a three-month period,
-// which secIsOneQuarter picks up.
+// 10-K is included alongside 10-Q because some filers do restate a
+// three-month period inside the annual report. Most do not: a fiscal Q4 is
+// never filed as its own 10-Q, and the 10-K carries the full year instead --
+// verified live, NVDA had 5 of 18 quarters empty and every one was its fiscal
+// Q4. secFillFiscalQ4 reconstructs those by subtraction after the fact.
 function secPickQuarterly(facts, names) {
     const byQuarter = new Map();
     for (const tag of names) {
@@ -1097,10 +1143,10 @@ async function handleFinancials(request, env) {
             const doc = await res.json();
             const gaap = (doc.facts && doc.facts['us-gaap']) || {};
 
-            const picked = {}, used = {};
+            const picked = {}, used = {}, bounds = {};
             for (const [key, names] of Object.entries(SEC_TAGS)) {
                 const got = secPickAnnual(gaap, names);
-                if (got) { picked[key] = got.years; used[key] = got.tag; }
+                if (got) { picked[key] = got.years; used[key] = got.tag; bounds[key] = got.bounds; }
             }
 
             const years = [...new Set(Object.values(picked).flatMap((m) => [...m.keys()]))]
@@ -1121,7 +1167,13 @@ async function handleFinancials(request, env) {
             const quarterlyByKey = {};
             for (const [key, names] of Object.entries(SEC_TAGS)) {
                 const got = secPickQuarterly(gaap, names);
-                if (got) quarterlyByKey[key] = got;
+                if (!got) continue;
+                // Balance-sheet keys are point-in-time and already complete --
+                // there is no "missing Q4 balance" to reconstruct, and the
+                // subtraction would be meaningless on a level anyway.
+                quarterlyByKey[key] = (picked[key] && bounds[key] && SEC_FLOW_KEYS.has(key))
+                    ? secFillFiscalQ4(got, picked[key], bounds[key])
+                    : got;
             }
             const oldestKeptYear = years.length ? Math.min(...years) : null;
             const quarterLabels = [...new Set(Object.values(quarterlyByKey).flatMap((m) => [...m.keys()]))]
