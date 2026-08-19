@@ -1143,7 +1143,7 @@ body.trade-map-mode .left-pane {
 
 .shipping-chokepoint-grid {
     display: grid;
-    grid-template-columns: repeat(5, minmax(0, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 12px;
 }
 
@@ -1757,7 +1757,6 @@ body.trade-map-mode .left-pane {
     .logo { margin-right: 16px; }
     .main-menu { gap: 13px; margin-left: 0; }
     .date-picker-container { padding-right: 0; }
-    .shipping-chokepoint-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 }
 
 @media (max-width: 1180px) {
