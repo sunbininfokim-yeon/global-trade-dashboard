@@ -126,12 +126,15 @@ const SIGNAL_PAGES = [
         ]
     },
     {
+        // Japan/UK are OECD monthly series (see data.js) -- everything else on
+        // this page is a daily constant-maturity yield, so those two carry an
+        // `as of` month where the US pair carries an `as of` day.
         key: 'D', name: '금리',
         slots: [
-            { label: '미 기준금리 상단', value: 'FED_TARGET', fmt: 'pct2' },
+            { label: '미 국채 2년', value: 'US2Y', fmt: 'pct2' },
             { label: '미 국채 10년', value: 'US10Y', fmt: 'pct2' },
-            { label: 'FED 대차대조표', value: 'FED_BS', fmt: 'trillion' },
-            { label: 'TGA 잔액', value: 'TGA', fmt: 'billion' }
+            { label: '일본 국채 10년', value: 'JP10Y', fmt: 'pct2' },
+            { label: '영국 길트 10년', value: 'UK10Y', fmt: 'pct2' }
         ]
     },
     {

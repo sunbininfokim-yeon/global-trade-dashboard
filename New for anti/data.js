@@ -103,8 +103,6 @@
         { id: "DEXUSEU", name: "EUR/USD", daily: true },
         { id: "DEXJPUS", name: "USD/JPY", daily: true },
         { id: "NASDAQCOM", name: "NASDAQ", daily: true },
-        { id: "WALCL", name: "FED_BS" },
-        { id: "WTREGEN", name: "TGA" },
         // A 에너지
         { id: "DCOILBRENTEU", name: "BRENT", daily: true },
         // B 농산물 -- IMF monthly commodity prices, USD per metric tonne.
@@ -117,9 +115,14 @@
         // C 환율 -- FRED has no DXY (ICE licenses it); the Fed's own broad
         // dollar index is the standard public stand-in.
         { id: "DTWEXBGS", name: "DXY_BROAD", daily: true },
-        // D 금리
-        { id: "DFEDTARU", name: "FED_TARGET", daily: true },
+        // D 금리 -- US 2Y/10Y are Treasury constant-maturity daily series.
+        // Japan and UK 10Y are OECD long-term government bond yields, which
+        // FRED only carries monthly, so those two always show an `as of`
+        // month rather than a daily print.
+        { id: "DGS2", name: "US2Y", daily: true },
         { id: "DGS10", name: "US10Y", daily: true },
+        { id: "IRLTLT01JPM156N", name: "JP10Y" },
+        { id: "IRLTLT01GBM156N", name: "UK10Y" },
         // E 주식
         { id: "SP500", name: "SP500", daily: true }
     ];
