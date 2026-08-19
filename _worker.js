@@ -1079,15 +1079,24 @@ function secPickAnnual(facts, names) {
 // each key label its own quarters, is what stops two different tags from
 // disagreeing on what "Q3" means.
 //
-// Every 3-month period across every SEC_TAGS candidate tag is pooled here,
-// not just one key's -- some concepts are reported in fewer filings than
-// revenue, so pooling finds more of the four quarters per year than any
-// single tag would on its own.
-function secFiscalCalendar(gaap, annualBounds) {
+// `anchorNames` restricts the quarter-end dates pooled here to one tag
+// family (normally SEC_TAGS.revenue) rather than every SEC_TAGS candidate.
+// Pooling everything was tried first and is wrong: verified live on Cisco,
+// where a handful of unrelated concepts report period boundaries a day or two
+// off from revenue's own, and one stray date shifted an entire fiscal year's
+// grouping by one slot -- every quarter sum came out ~$1B short of the
+// annual figure, silently, because the derived Q4 absorbed the drift. A
+// concept filed less often than revenue simply locates fewer of its own
+// four quarters; it does not need a different concept's dates standing in
+// for the ones it is missing. Falls back to pooling only when the caller has
+// no revenue bounds to anchor to at all (a filer that never reports revenue
+// under any of the standard tags).
+function secFiscalCalendar(gaap, annualBounds, anchorNames) {
     if (!annualBounds || !annualBounds.size) return null;
 
     const latestEnd = new Map(); // "start|end" -> {end, filed}
-    for (const names of Object.values(SEC_TAGS)) {
+    const tagLists = anchorNames ? [anchorNames] : Object.values(SEC_TAGS);
+    for (const names of tagLists) {
         for (const tag of names) {
             const node = gaap[tag];
             if (!node || !node.units) continue;
@@ -1202,13 +1211,13 @@ async function handleFinancials(request, env) {
             // `statements`: the two cover different spans (a quarter is not a
             // year) and a row carrying both would invite summing across them.
             //
-            // One calendar for the whole company (anchored to whichever key
-            // has the richest annual history, normally revenue), so every
-            // key's quarters land on the same four dates instead of each tag
-            // guessing its own -- see secFiscalCalendar for why a per-tag
-            // calendar-month label was wrong.
+            // One calendar for the whole company, anchored to revenue's own
+            // filed quarters (falls back to whatever annual bounds exist, and
+            // to pooling every tag, only when a filer has no revenue at all)
+            // -- see secFiscalCalendar for why pooling by default corrupted
+            // the grouping.
             const calendarBasis = bounds.revenue || Object.values(bounds).find(Boolean);
-            const fiscalCalendar = secFiscalCalendar(gaap, calendarBasis);
+            const fiscalCalendar = secFiscalCalendar(gaap, calendarBasis, bounds.revenue ? SEC_TAGS.revenue : null);
             const quarterlyByKey = {};
             for (const [key, names] of Object.entries(SEC_TAGS)) {
                 const got = secQuarterlyFromCalendar(gaap, names, fiscalCalendar, picked[key], SEC_FLOW_KEYS.has(key));
