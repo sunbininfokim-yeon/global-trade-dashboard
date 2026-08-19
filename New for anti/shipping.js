@@ -640,7 +640,7 @@
         <div class="shipping-callout warning"><strong>현재 선박 위치가 아닙니다.</strong> 연간 화물 흐름을 유지하기 위해 항로에 계속 배치되어야 하는 DWT-equivalent 서비스 선복량입니다.</div>
         ${tabMarkup}
         <div class="shipping-kpi-grid">
-          ${kpi('선택 항로', `${formatNumber(routes.length)}개`, `${tabLabels[activeType] || activeType} 운항 서비스`, { featured: true })}
+          ${kpi('선택 항로', `${formatNumber(routes.length)}개`, `${tabLabels[activeType] || activeType} 운항 서비스`)}
           ${kpi('관측 기반 입력', `${formatNumber(observedCount)}개`, '나머지는 배분·확장 추정')}
           ${kpi('최대 필요 선복량', formatDWT(top[0]?.baseline?.baseline_required_dwt), escapeHtml(top[0]?.name_ko || '—'))}
         </div>
