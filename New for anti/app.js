@@ -5879,13 +5879,18 @@ const loadCompany = async (out, inst) => {
             paint();
         }));
 
-        out.querySelectorAll('.co-series-toggle').forEach((b) => b.addEventListener('click', () => {
-            const k = b.closest('[data-co-card]')?.dataset.coCard;
+        // Whole card opens its chart on click, same as the DART side -- the
+        // mode-toggle buttons inside an open card are excluded so pressing
+        // 연도별/분기별 does not also re-close the card.
+        out.querySelectorAll('.co-kfa-card.co-clickable').forEach((el) => el.addEventListener('click', (e) => {
+            if (e.target.closest('[data-fin-mode]')) return;
+            const k = el.dataset.coCard;
             CO_OPEN_CARD = (CO_OPEN_CARD === k) ? null : k;
             paint();
         }));
 
-        out.querySelectorAll('[data-fin-mode]').forEach((b) => b.addEventListener('click', () => {
+        out.querySelectorAll('[data-fin-mode]').forEach((b) => b.addEventListener('click', (e) => {
+            e.stopPropagation();
             FIN_SERIES_MODE = b.dataset.finMode;
             paint();
         }));
@@ -6002,45 +6007,102 @@ const finNormPeriods = (pts, kind) => (pts || [])
 
 let FIN_SERIES_MODE = 'annual';   // 'annual' | 'quarterly' -- 카드 차트 공통
 
-// Chart alone, no toggle. `fmt` formats a value for the hover label so the
-// caller's own units (원/USD/배/%) survive rather than being re-guessed here.
+// One shared tooltip element for every bar chart on the page, positioned by
+// mousemove rather than relying on the browser's native <title> (which has a
+// fixed delay before showing and cannot be styled -- the user asked
+// specifically for "a small box next to the cursor", not the OS default).
+// mouseenter/mouseleave do not bubble, so delegation uses mousemove + closest
+// on document instead of a per-chart listener that would need re-attaching
+// on every re-render.
+let FIN_TIP_EL = null;
+const finTipEnsure = () => {
+    if (FIN_TIP_EL) return;
+    FIN_TIP_EL = document.createElement('div');
+    FIN_TIP_EL.className = 'fin-tip';
+    document.body.appendChild(FIN_TIP_EL);
+    document.addEventListener('mousemove', (e) => {
+        const bar = e.target instanceof Element ? e.target.closest('.fin-bar') : null;
+        if (!bar) { FIN_TIP_EL.classList.remove('show'); return; }
+        FIN_TIP_EL.innerHTML = `<b>${bar.dataset.tipPeriod}</b><br>${bar.dataset.tipValue}`;
+        const pad = 14;
+        let left = e.clientX + pad, top = e.clientY + pad;
+        // Keep the box on-screen when the bar sits near the right/bottom edge
+        // rather than letting it render half off the viewport.
+        if (left + 140 > window.innerWidth) left = e.clientX - 140 - pad;
+        if (top + 46 > window.innerHeight) top = e.clientY - 46 - pad;
+        FIN_TIP_EL.style.left = `${left}px`;
+        FIN_TIP_EL.style.top = `${top}px`;
+        FIN_TIP_EL.classList.add('show');
+    });
+    document.addEventListener('mouseleave', () => FIN_TIP_EL.classList.remove('show'));
+};
+
+// Chart alone, no toggle. `fmt` formats a value both for the always-visible
+// per-bar label and the hover box, so the caller's own units (원/USD/배/%)
+// survive rather than being re-guessed here.
+//
+// Period labels render as their own HTML row below the <svg> rather than as
+// SVG text inside it -- a label sitting a few px above the plot's own bottom
+// edge still reads as "inside the chart" at a glance, and the user asked for
+// the years to sit clearly outside/under it instead.
 const finPeriodBars = (pts, fmt) => {
     if (!pts.length) return '';
-    const W = 640, H = 150, PAD_B = 22, PAD_T = 10;
+    finTipEnsure();
+    const W = 640, H = 120, PAD_T = 12;
     const vals = pts.map((p) => p.value);
     const hi = Math.max(...vals, 0);
     const lo = Math.min(...vals, 0);
     const span = (hi - lo) || Math.abs(hi) || 1;
-    const plotH = H - PAD_B - PAD_T;
+    const plotH = H - PAD_T;
     const y = (v) => PAD_T + (1 - (v - lo) / span) * plotH;
     const zeroY = y(0);
     const slot = W / pts.length;
     const bw = Math.max(2, Math.min(slot * 0.62, 46));
 
-    // A dense quarterly axis cannot show every label without overlapping, so
-    // thin it to roughly eight ticks and keep the first and last.
+    // Permanent value labels only when there is real room for them -- a dense
+    // quarterly series (up to 20 bars) would turn into an unreadable smear of
+    // overlapping numbers, and that density is exactly what the hover box is
+    // for. A short annual series (almost always <=8) gets every value shown
+    // at a glance, matching what was asked for.
+    const showValueLabels = pts.length <= 8;
+
+    // Same 8-ish-tick thinning as before, just for the label row instead of
+    // SVG text -- a dense axis still cannot show every period without labels
+    // colliding.
     const step = Math.max(1, Math.ceil(pts.length / 8));
 
-    return `<svg class="fin-bars" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" role="img">
-        <line class="fin-bars-zero" x1="0" x2="${W}" y1="${zeroY.toFixed(1)}" y2="${zeroY.toFixed(1)}"/>
-        ${pts.map((p, i) => {
-            const cx = slot * (i + 0.5);
-            const top = p.value >= 0 ? y(p.value) : zeroY;
-            const h = Math.max(1, Math.abs(y(p.value) - zeroY));
-            return `<rect class="fin-bar ${p.value < 0 ? 'neg' : 'pos'}"
+    const bars = pts.map((p, i) => {
+        const cx = slot * (i + 0.5);
+        const top = p.value >= 0 ? y(p.value) : zeroY;
+        const h = Math.max(1, Math.abs(y(p.value) - zeroY));
+        const valLabelY = p.value >= 0 ? top - 4 : top + h + 11;
+        return `<rect class="fin-bar ${p.value < 0 ? 'neg' : 'pos'}"
+                data-tip-period="${finEsc(p.label)}" data-tip-value="${finEsc(fmt(p.value))}"
                 x="${(cx - bw / 2).toFixed(1)}" y="${top.toFixed(1)}"
-                width="${bw.toFixed(1)}" height="${h.toFixed(1)}"
-                ><title>${finEsc(p.label)}: ${finEsc(fmt(p.value))}</title></rect>`;
-        }).join('')}
-        ${pts.map((p, i) => ((i % step === 0 || i === pts.length - 1)
-            ? `<text class="fin-bars-x" x="${(slot * (i + 0.5)).toFixed(1)}" y="${H - 6}" text-anchor="middle">${finEsc(p.label)}</text>`
-            : '')).join('')}
-    </svg>`;
+                width="${bw.toFixed(1)}" height="${h.toFixed(1)}"></rect>
+            ${showValueLabels
+                ? `<text class="fin-bars-val" x="${cx.toFixed(1)}" y="${valLabelY.toFixed(1)}" text-anchor="middle">${finEsc(fmt(p.value))}</text>`
+                : ''}`;
+    }).join('');
+
+    const labels = pts.map((p, i) => `<span class="fin-bars-lbl" style="width:${(100 / pts.length).toFixed(3)}%">
+        ${(i % step === 0 || i === pts.length - 1) ? finEsc(p.label) : ''}</span>`).join('');
+
+    return `<div class="fin-bars-wrap">
+        <svg class="fin-bars" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" role="img">
+            <line class="fin-bars-zero" x1="0" x2="${W}" y1="${zeroY.toFixed(1)}" y2="${zeroY.toFixed(1)}"/>
+            ${bars}
+        </svg>
+        <div class="fin-bars-labels">${labels}</div>
+    </div>`;
 };
 
-// Toggle + chart + range caption. `annual`/`quarterly` are the two raw series;
-// either may be empty, and the toggle only appears when both exist -- offering
-// a 분기별 button that opens an empty chart would read as a broken control.
+// Chart + optional 연도별/분기별 toggle + range caption. No open/close toggle
+// of its own -- the card that hosts this decides when to render it, and
+// renders it immediately when open (see coSeriesCard / renderKfaResult).
+// `annual`/`quarterly` are the two raw series; either may be empty, and the
+// mode toggle only appears when both exist -- offering a 분기별 button that
+// opens an empty chart would read as a broken control.
 const finSeriesBlock = (annual, quarterly, fmt) => {
     const a = finNormPeriods(annual, 'annual');
     const q = finNormPeriods(quarterly, 'quarterly');
@@ -6097,15 +6159,15 @@ const renderKfaResult = (out, data) => {
                         <p class="fin-card-plain">엔진이 아직 이 항목을 계산하지 않았습니다.</p>
                     </div>`;
                 const open = KFA_OPEN_CARD === key;
+                const hasSeries = (card.series || []).length >= 2 || (card.quarterly || []).length >= 2;
                 return `
-                    <div class="fin-card co-kfa-card ${open ? 'open' : ''}" data-kfa-card="${finEsc(key)}">
+                    <div class="fin-card co-kfa-card ${open ? 'open' : ''} ${hasSeries ? 'co-clickable' : ''}"
+                        data-kfa-card="${finEsc(key)}">
                         <span class="fin-card-title">${finEsc(meta.label)}</span>
                         <span class="fin-card-value">${kfaFmt(key, card.value, currency)}</span>
                         <p class="fin-card-plain">${finEsc(meta.plain)}${card.reason ? ` (${finEsc(card.reason)})` : ''}</p>
-                        ${((card.series || []).length >= 2 || (card.quarterly || []).length >= 2) ? `
-                            <button type="button" class="co-kfa-toggle">${open ? '차트 접기' : '추이 보기'}</button>
-                            ${open ? `<div class="co-kfa-chart">${finSeriesBlock(card.series, card.quarterly,
-                                (v) => kfaFmt(key, v, currency))}</div>` : ''}` : ''}
+                        ${hasSeries && open ? `<div class="co-kfa-chart">${finSeriesBlock(card.series, card.quarterly,
+                            (v) => kfaFmt(key, v, currency))}</div>` : ''}
                     </div>`;
             }).join('')}
         </div>
@@ -6126,13 +6188,19 @@ const renderKfaResult = (out, data) => {
         renderKfaResult(out, data);
     }));
 
-    out.querySelectorAll('.co-kfa-toggle').forEach((b) => b.addEventListener('click', () => {
-        const key = b.closest('[data-kfa-card]')?.dataset.kfaCard;
+    // The whole card opens its chart on click -- no separate "추이 보기"
+    // button, so one press is one action. The mode toggle buttons live
+    // inside the open card, so their clicks are excluded here or every
+    // 연도별/분기별 press would also re-close the card it lives in.
+    out.querySelectorAll('.co-kfa-card.co-clickable').forEach((el) => el.addEventListener('click', (e) => {
+        if (e.target.closest('[data-fin-mode]')) return;
+        const key = el.dataset.kfaCard;
         KFA_OPEN_CARD = (KFA_OPEN_CARD === key) ? null : key;
         renderKfaResult(out, data);
     }));
 
-    out.querySelectorAll('[data-fin-mode]').forEach((b) => b.addEventListener('click', () => {
+    out.querySelectorAll('[data-fin-mode]').forEach((b) => b.addEventListener('click', (e) => {
+        e.stopPropagation();
         FIN_SERIES_MODE = b.dataset.finMode;
         renderKfaResult(out, data);
     }));
@@ -6638,12 +6706,12 @@ const coSeriesCard = (key, title, plain, pick, fmt) => {
     const open = CO_OPEN_CARD === key;
     const hasSeries = a.length >= 2 || q.length >= 2;
 
-    return `<div class="fin-card co-kfa-card ${open ? 'open' : ''}" data-co-card="${finEsc(key)}">
+    return `<div class="fin-card co-kfa-card ${open ? 'open' : ''} ${hasSeries ? 'co-clickable' : ''}"
+        data-co-card="${finEsc(key)}">
         <span class="fin-card-title">${finEsc(title)}</span>
         <span class="fin-card-value">${latest ? fmt(pick(latest)) : '—'}</span>
         <p class="fin-card-plain">${finEsc(plain)}</p>
-        ${hasSeries ? `<button type="button" class="co-series-toggle">${open ? '차트 접기' : '추이 보기'}</button>
-            ${open ? `<div class="co-kfa-chart">${finSeriesBlock(a, q, fmt)}</div>` : ''}` : ''}
+        ${hasSeries && open ? `<div class="co-kfa-chart">${finSeriesBlock(a, q, fmt)}</div>` : ''}
     </div>`;
 };
 
