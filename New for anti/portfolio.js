@@ -5,7 +5,56 @@
 // a squash merge replaces whole regions instead of diffing them. This domain
 // calls nothing outside itself.
 //
-// Relies on globals still in app.js: finEsc, finFmt, and the DOM helpers.
+// Relies on globals still in app.js: finEsc, finPct, and the DOM helpers.
+
+// --- 금융 진단 ---------------------------------------------------------------
+// The engines live outside this file: portfolio risk in
+// scripts/금융_재무분석 (portfolio_analysis_v1.json), corporate financials in
+// scripts/dart. This side only renders. Per DATA_CONTRACT.md the wording comes
+// from the payload's own ui_copy_* block rather than being written here, so the
+// engine stays the single source of both the numbers and how they read.
+const FIN_LOCALE = 'ko';
+
+const finSignedPct = (x, digits = 1) => {
+    if (x === null || x === undefined || Number.isNaN(x)) return '—';
+    const v = x * 100;
+    return `${v >= 0 ? '+' : ''}${v.toFixed(digits)}%p`;
+};
+
+// Weight says where the money sits; risk contribution says where the account's
+// movement actually comes from. Showing them on one row is the whole point of
+// the panel -- a 5% position driving half the volatility is invisible otherwise.
+const finRiskRows = (data) => {
+    const contrib = (data.structure && data.structure.risk_contribution) || {};
+    const byName = new Map((data.positions || []).map((p) => [p.name_ko, p]));
+    const rows = Object.entries(contrib)
+        .map(([name, rc]) => ({ name, rc, w: (byName.get(name) || {}).weight ?? null,
+                                lev: (byName.get(name) || {}).leveraged,
+                                proxy: (byName.get(name) || {}).proxy }))
+        .sort((a, b) => b.rc - a.rc);
+    const max = Math.max(...rows.map((r) => Math.abs(r.rc)), 0.0001);
+
+    return rows.map((r) => `
+        <div class="fin-risk-row">
+            <div class="fin-risk-name">
+                ${finEsc(r.name)}
+                ${r.lev ? '<span class="fin-tag fin-tag-warn">레버리지</span>' : ''}
+                ${r.proxy ? '<span class="fin-tag">프록시</span>' : ''}
+            </div>
+            <div class="fin-risk-bars">
+                <div class="fin-bar-track" title="위험 기여 ${finPct(r.rc)}">
+                    <div class="fin-bar fin-bar-risk" style="width:${Math.abs(r.rc) / max * 100}%"></div>
+                </div>
+                <div class="fin-bar-track" title="비중 ${finPct(r.w)}">
+                    <div class="fin-bar fin-bar-weight" style="width:${(Math.abs(r.w ?? 0)) / max * 100}%"></div>
+                </div>
+            </div>
+            <div class="fin-risk-nums">
+                <span class="fin-risk-rc">${finPct(r.rc)}</span>
+                <span class="fin-risk-w">${finPct(r.w)}</span>
+            </div>
+        </div>`).join('');
+};
 
 // Holdings never leave the browser. The engine that produced the reference
 // payload runs offline; this input path keeps the portfolio in localStorage so
@@ -670,10 +719,556 @@ const pfRenderResult = (host, R, profile) => {
         </div>`;
 };
 
+const renderPfInput = (root, onDone) => {
+    const pf = pfLoad() || pfBlank();
+    const total = pf.positions.reduce((a, p) => a + Math.abs(pfValueOf(p) || 0), 0);
+
+    root.innerHTML = `
+        <section class="fin-block fin-block-wide pf-input">
+            <h2>투자 성향</h2>
+            <p class="fin-note">성향은 한도 판정에만 씁니다. 목표 수익률은 받지 않습니다 — 기대수익 가정이 틀리기 쉬워서입니다.</p>
+            <div class="pf-profiles">
+                ${Object.entries(PF_PROFILES).map(([id, p]) => `
+                    <label class="pf-profile ${pf.risk_profile === id ? 'on' : ''}">
+                        <input type="radio" name="pf-profile" value="${finEsc(id)}" ${pf.risk_profile === id ? 'checked' : ''}>
+                        <span class="pf-profile-label">${finEsc(p.label_ko)}</span>
+                        <span class="pf-profile-blurb">${finEsc(p.blurb_ko)}</span>
+                    </label>`).join('')}
+            </div>
+        </section>
+
+        <section class="fin-block fin-block-wide pf-input">
+            <h2>종목 추가</h2>
+            <div class="pf-add">
+                <div class="pf-search-wrap">
+                    <input type="text" id="pf-q" class="pf-field" autocomplete="off"
+                           placeholder="종목명·티커로 검색 (예: 삼전, 엔비디아, 달러)">
+                    <div id="pf-sug" class="pf-sug hidden"></div>
+                </div>
+                <div class="pf-mode" role="group" aria-label="입력 단위">
+                    <button type="button" class="pf-mode-btn ${pfMode === 'value' ? 'on' : ''}" data-mode="value">금액</button>
+                    <button type="button" class="pf-mode-btn ${pfMode === 'shares' ? 'on' : ''}" data-mode="shares">주수</button>
+                </div>
+                <input type="text" id="pf-amt" class="pf-field pf-amt" inputmode="numeric"
+                       placeholder="${pfMode === 'shares' ? '보유 주수' : '평가금액 (원)'}">
+                <select id="pf-side" class="pf-field pf-side">
+                    <option value="long">매수</option>
+                    <option value="short">공매도</option>
+                </select>
+                <button id="pf-add" class="pf-btn" disabled>추가</button>
+            </div>
+            <p id="pf-picked" class="pf-picked"></p>
+            <p class="fin-note">
+                등록된 종목만 넣을 수 있습니다 (${PF_REGISTRY.length}종). 없는 종목은 엔진 쪽 종목표에 추가해야 합니다.
+                최대 ${PF_MAX}종까지 — 종목이 더 늘면 과거 가격만으로는 종목 간 관계를 안정적으로 못 잡습니다.
+            </p>
+            ${pf.positions.length >= PF_MAX
+                ? `<p class="pf-limit">${PF_MAX}종을 채웠습니다. 더 넣으려면 기존 종목을 지워 주세요.</p>` : ''}
+        </section>
+
+        <section class="fin-block fin-block-wide pf-input">
+            <h2>보유 목록 <span class="pf-count">${pf.positions.length}건</span></h2>
+            ${pf.positions.length ? `
+            <div class="pf-rows">
+                ${pf.positions.map((p, i) => {
+                    const it = pfInstOf(p);
+                    const val = pfValueOf(p);
+                    const w = (total && val !== null) ? Math.abs(val) / total : 0;
+                    return `
+                    <div class="pf-row">
+                        <span class="pf-row-name">
+                            ${finEsc(it.name_ko || p.id)}
+                            <span class="fin-tag">${finEsc(PF_CLASS_KO[it.asset_class] || it.asset_class || '')}</span>
+                            ${it.leveraged ? '<span class="fin-tag fin-tag-warn">레버리지</span>' : ''}
+                            ${it.proxy || it.synthetic_leverage ? '<span class="fin-tag">프록시</span>' : ''}
+                            ${p.side === 'short' ? '<span class="fin-tag fin-tag-warn">공매도</span>' : ''}
+                            ${p.mode === 'shares'
+                                ? `<span class="pf-row-sub">${p.shares.toLocaleString('ko-KR')}주 ·
+                                   ${pfKrw(p.price * (p.fx || 1))} 기준 (${finEsc(p.pricedAt || '')})</span>`
+                                : ''}
+                        </span>
+                        <span class="pf-row-val">${pfKrw(val)}</span>
+                        <span class="pf-row-w">${(w * 100).toFixed(1)}%</span>
+                        <button class="pf-del" data-i="${i}" aria-label="삭제">✕</button>
+                    </div>`;
+                }).join('')}
+            </div>
+            <div class="pf-total"><span>합계</span><strong>${pfKrw(total)}</strong></div>
+            <div class="pf-actions">
+                <button id="pf-run" class="pf-btn pf-btn-primary">계산하기</button>
+                <button id="pf-clear" class="pf-btn pf-btn-ghost">전부 지우기</button>
+            </div>
+            <p class="fin-note pf-privacy">
+                입력한 내역은 이 브라우저에만 저장됩니다. 서버로 보내지 않습니다.
+                가격 조회만 서버를 거치며, 종목은 지나가되 금액은 지나가지 않습니다.
+            </p>
+            ` : `<p class="fin-note">아직 없습니다. 위에서 종목을 추가하세요.</p>`}
+        </section>`;
+
+    const qEl = root.querySelector('#pf-q');
+    const sugEl = root.querySelector('#pf-sug');
+    const amtEl = root.querySelector('#pf-amt');
+    const addEl = root.querySelector('#pf-add');
+    const pickedEl = root.querySelector('#pf-picked');
+    let picked = null;
+    let spot = null;          // { price, fx, currency } for the picked instrument
+    let mode = pfMode;
+
+    const numOf = () => Number(String(amtEl.value).replace(/[^0-9.]/g, ''));
+
+    const refreshAdd = () => {
+        const full = (pfLoad() || pfBlank()).positions.length >= PF_MAX;
+        const ready = mode === 'shares' ? (spot && spot.price > 0) : true;
+        addEl.disabled = full || !picked || !(numOf() > 0) || !ready;
+    };
+
+    // In share mode the amount is unknown until a price arrives, so show the
+    // arithmetic rather than a number that appeared from nowhere.
+    const curOf = () => picked && (picked.currency || (spot && spot.currency) || '');
+
+    const showPicked = () => {
+        if (!picked) { pickedEl.textContent = ''; pickedEl.className = 'pf-picked'; return; }
+        const cur = curOf();
+        const label = `선택: ${picked.name_ko}${cur ? ` (${cur})` : ''}`;
+        pickedEl.className = 'pf-picked';
+        if (!spot && (mode === 'shares' || picked._remote)) {
+            pickedEl.textContent = `${label} · 조회 중…`;
+            return;
+        }
+        if (spot && !(spot.price > 0)) {
+            pickedEl.textContent = `${label} · 가격을 못 받았습니다 — 다른 종목을 골라 주세요`;
+            pickedEl.className = 'pf-picked pf-picked-warn';
+            return;
+        }
+        if (mode !== 'shares') { pickedEl.textContent = label; return; }
+        const n = numOf();
+        const unit = spot.price * (spot.fx || 1);
+        pickedEl.textContent = n > 0
+            ? `${label} · 현재가 ${pfKrw(unit)} × ${n.toLocaleString('ko-KR')}주 = ${pfKrw(unit * n)}`
+            : `${label} · 현재가 ${pfKrw(unit)}`;
+    };
+
+    // A ticker found through search arrives without a currency, and the whole
+    // portfolio is measured in KRW -- so the price call runs even in 금액 mode,
+    // where its only job is to tell us what currency the thing trades in.
+    const loadSpot = async () => {
+        if (!picked) return;
+        if (mode !== 'shares' && !picked._remote) return;
+        spot = null; showPicked(); refreshAdd();
+        try {
+            spot = await pfSpot(picked.yahoo || null, picked.currency);
+            if (spot && spot.currency && !picked.currency) picked.currency = spot.currency;
+        } catch (_) {
+            spot = { price: 0, fx: 1, currency: picked.currency };
+        }
+        showPicked(); refreshAdd();
+    };
+
+    root.querySelectorAll('.pf-mode-btn').forEach((b) => b.addEventListener('click', () => {
+        mode = pfMode = b.dataset.mode;
+        root.querySelectorAll('.pf-mode-btn').forEach((x) => x.classList.toggle('on', x.dataset.mode === mode));
+        amtEl.placeholder = mode === 'shares' ? '보유 주수' : '평가금액 (원)';
+        amtEl.value = '';
+        loadSpot();
+        showPicked();
+        refreshAdd();
+    }));
+
+    // Remote results are keyed by index into this array; registry hits keep
+    // their own id so the two can share one click handler.
+    let shown = [];
+    let searchSeq = 0;
+    let searchTimer = null;
+
+    const paintSuggestions = (hits, note) => {
+        shown = hits;
+        if (!hits.length) {
+            sugEl.innerHTML = note ? `<p class="pf-sug-note">${finEsc(note)}</p>` : '';
+            sugEl.classList.toggle('hidden', !note);
+            return;
+        }
+        sugEl.innerHTML = hits.map((h, i) => `
+            <button class="pf-sug-item" data-i="${i}">
+                <span>${finEsc(h.name_ko)}</span>
+                <span class="pf-sug-meta">${finEsc(
+                    h._remote ? `${h.yahoo}${h._exchange ? ' · ' + h._exchange : ''}`
+                              : `${PF_CLASS_KO[h.asset_class] || ''} · ${h.currency}`)}</span>
+            </button>`).join('') + (note ? `<p class="pf-sug-note">${finEsc(note)}</p>` : '');
+        sugEl.classList.remove('hidden');
+    };
+
+    qEl.addEventListener('input', () => {
+        picked = null; spot = null; pickedEl.textContent = ''; refreshAdd();
+        const q = qEl.value.trim();
+        clearTimeout(searchTimer);
+        if (q.length < 1) { sugEl.classList.add('hidden'); return; }
+
+        const local = pfSearchLocal(q);
+        paintSuggestions(local, local.length ? '' : '찾는 중…');
+
+        // The registry answers instantly; the network lookup is debounced so a
+        // burst of keystrokes does not fire a request each.
+        const seq = ++searchSeq;
+        searchTimer = setTimeout(async () => {
+            const { quotes, degraded } = await pfSearchRemote(q);
+            if (seq !== searchSeq) return;             // a later keystroke won
+            const ids = new Set(local.map((x) => (x.yahoo || '').toUpperCase()));
+            const remote = quotes
+                .filter((qt) => !ids.has(String(qt.symbol).toUpperCase()))
+                .map(pfFromQuote);
+            const all = [...local, ...remote];
+            paintSuggestions(all, all.length
+                ? (degraded ? '검색이 제한돼 미국 상장사만 나옵니다' : '')
+                : '검색 결과가 없습니다. 티커를 직접 넣어 보세요.');
+        }, 250);
+    });
+
+    sugEl.addEventListener('click', (e) => {
+        const b = e.target.closest('.pf-sug-item');
+        if (!b) return;
+        picked = shown[Number(b.dataset.i)] || null;
+        qEl.value = picked ? picked.name_ko : '';
+        sugEl.classList.add('hidden');
+        showPicked();
+        loadSpot();
+        amtEl.focus();
+        refreshAdd();
+    });
+
+    // Thousands separators while typing; the raw number is parsed back on add.
+    amtEl.addEventListener('input', () => {
+        const raw = String(amtEl.value).replace(/[^0-9]/g, '');
+        amtEl.value = raw ? Number(raw).toLocaleString('ko-KR') : '';
+        showPicked();
+        refreshAdd();
+    });
+
+    addEl.addEventListener('click', () => {
+        const n = numOf();
+        if (!picked || !(n > 0)) return;
+        const side = root.querySelector('#pf-side').value;
+        const next = pfLoad() || pfBlank();
+        next.risk_profile = root.querySelector('input[name="pf-profile"]:checked')?.value || next.risk_profile;
+
+        const same = (p) => p.id === picked.id && p.side === side && (p.mode || 'value') === mode;
+        const existing = next.positions.findIndex(same);
+        // Carry the instrument with the holding: a searched ticker is not in the
+        // registry, so nothing could resolve it on the next page load.
+        const inst = {
+            name_ko: picked.name_ko,
+            yahoo: picked.yahoo || null,
+            currency: picked.currency || (spot && spot.currency) || 'KRW',
+            asset_class: picked.asset_class || 'equity',
+            leveraged: !!picked.leveraged,
+            leverage_factor: picked.synthetic_leverage ? (picked.leverage_factor || 2) : 1,
+            proxy: !!(picked.proxy || picked.synthetic_leverage),
+        };
+        const row = mode === 'shares'
+            ? { id: picked.id, side, mode: 'shares', shares: n, inst,
+                price: spot.price, fx: spot.fx, pricedAt: new Date().toISOString().slice(0, 10) }
+            : { id: picked.id, side, mode: 'value', value: n, inst };
+
+        // Topping up something already held is fine at the cap; only new rows count.
+        if (existing >= 0) {
+            if (mode === 'shares') {
+                next.positions[existing].shares += n;
+                next.positions[existing].price = spot.price;
+                next.positions[existing].fx = spot.fx;
+                next.positions[existing].pricedAt = row.pricedAt;
+            } else {
+                next.positions[existing].value += n;
+            }
+        } else if (next.positions.length < PF_MAX) {
+            next.positions.push(row);
+        } else return;
+
+        pfSave(next);
+        renderPfInput(root, onDone);
+    });
+
+    root.querySelectorAll('.pf-del').forEach((b) => b.addEventListener('click', () => {
+        const next = pfLoad() || pfBlank();
+        next.positions.splice(Number(b.dataset.i), 1);
+        pfSave(next);
+        renderPfInput(root, onDone);
+    }));
+
+    root.querySelectorAll('input[name="pf-profile"]').forEach((r) => r.addEventListener('change', () => {
+        const next = pfLoad() || pfBlank();
+        next.risk_profile = r.value;
+        pfSave(next);
+        renderPfInput(root, onDone);
+    }));
+
+    root.querySelector('#pf-clear')?.addEventListener('click', () => {
+        if (!confirm('보유 목록을 전부 지웁니다. 되돌릴 수 없습니다.')) return;
+        pfSave(pfBlank());
+        renderPfInput(root, onDone);
+    });
+
+    root.querySelector('#pf-run')?.addEventListener('click', () => onDone && onDone());
+};
+
 const PF_MODE_KEY = 'portfolioLab.mode';
 const pfGetMode = () => (localStorage.getItem(PF_MODE_KEY) === 'expert') ? 'expert' : 'basic';
 const pfSetMode = (m) => { try { localStorage.setItem(PF_MODE_KEY, m); } catch (_) { /* quota */ } };
 
+const renderPfResult = async (host) => {
+    host.innerHTML = `<p class="fin-loading">진단 리포트 불러오는 중…</p>`;
+
+    let data = null;
+    for (const path of ['/public/data/portfolio_analysis_v1.json', '/data/portfolio_analysis_v1.json']) {
+        try {
+            const res = await fetch(path, { cache: 'no-store' });
+            if (res.ok) { data = await res.json(); break; }
+        } catch (_) { /* try next */ }
+    }
+
+    if (!data) {
+        host.innerHTML = `
+            <div class="fin-empty">
+                <p class="fin-empty-title">진단 리포트가 없습니다</p>
+                <p>로컬에서 <code>scripts/금융_재무분석/run_pipeline.py</code> 를 돌리면
+                   <code>public/data/portfolio_analysis_v1.json</code> 이 만들어지고 여기에 표시됩니다.</p>
+                <p class="fin-note pf-privacy">이 파일은 <code>.gitignore</code> 처리돼 커밋·배포되지 않습니다 —
+                   실제 보유 내역은 본인 컴퓨터에만 남고, 대시보드 운영자를 포함해 누구에게도 전송되지 않습니다.</p>
+            </div>`;
+        return;
+    }
+
+    const mode = pfGetMode();
+    const u = (mode === 'expert' ? data[`ui_copy_${FIN_LOCALE}`] : data[`ui_copy_basic_${FIN_LOCALE}`])
+        || data[`ui_copy_${FIN_LOCALE}`] || {};
+    const S = (k) => u[`${k}_${FIN_LOCALE}`];
+    const cards = u.metric_cards || [];
+    const breaches = (data.profile_check && data.profile_check[`breaches_${FIN_LOCALE}`]) || S('profile_breaches') || [];
+    const movesUp = S('moves_up') || [];
+    const movesDown = S('moves_down') || [];
+    const proxies = (data.data_quality && data.data_quality.proxies) || [];
+    const dq = data.data_quality || {};
+
+    const baseCcy = data.base_currency || 'KRW';
+    const acct = data.accounting || null;
+    const cash = data.cash_breakdown || null;
+    const nav = acct ? (acct.net_asset_value ?? null) : null;
+    const gross = acct ? (acct.gross_exposure ?? null) : null;
+    const grossOfNav = acct ? (acct.gross_exposure_of_nav ?? null) : null;
+    const creditUsed = acct ? (acct.credit_used ?? null) : null;
+    const varShort = data.risk && data.risk.short;
+    const varOfNav = varShort ? (varShort.var_10d_95 ?? null) : null;
+    const sizeGuide = data.size_guide || null;
+
+    host.innerHTML = `
+        <div class="pf-mode" role="group" aria-label="보기 수준">
+            <button type="button" class="pf-mode-btn ${mode === 'basic' ? 'on' : ''}" data-mode="basic">기본</button>
+            <button type="button" class="pf-mode-btn ${mode === 'expert' ? 'on' : ''}" data-mode="expert">전문가</button>
+        </div>
+
+        <div class="fin-head fin-head-sub">
+            <p class="fin-headline">${finEsc(S('headline'))}</p>
+            <div class="fin-meta">
+                <span class="fin-chip">${finEsc(u.profile?.[`label_${FIN_LOCALE}`] || data.risk_profile_id)}</span>
+                <span>${finEsc(u.profile?.[`blurb_${FIN_LOCALE}`] || '')}</span>
+                <span class="fin-meta-sep">·</span>
+                <span>기준통화 ${finEsc(baseCcy)}</span>
+                <span class="fin-meta-sep">·</span>
+                <span>기준 ${finEsc((data.generated_at || '').slice(0, 10))}</span>
+                <span class="fin-meta-sep">·</span>
+                <span>관측 ${dq.n_obs ?? '—'}일 (${finEsc(dq.start || '')} ~ ${finEsc(dq.end || '')})</span>
+            </div>
+        </div>
+
+        ${breaches.length ? `
+        <div class="fin-alert">
+            <span class="fin-alert-mark">성향 한도 초과</span>
+            <ul>${breaches.map((b) => `<li>${finEsc(b)}</li>`).join('')}</ul>
+        </div>` : ''}
+
+        ${(nav !== null || gross !== null || varOfNav !== null) ? `
+        <div class="fin-cards">
+            ${nav !== null ? `
+            <div class="fin-card">
+                <span class="fin-card-title">순자산(NAV)</span>
+                <span class="fin-card-value">${finEsc(baseCcy)} ${Number(nav).toLocaleString()}</span>
+                ${creditUsed ? `<p class="fin-card-plain">신용·미수 ${finEsc(baseCcy)} ${Number(creditUsed).toLocaleString()}은 이미 뺀 값입니다.</p>` : ''}
+            </div>` : ''}
+            ${gross !== null ? `
+            <div class="fin-card">
+                <span class="fin-card-title">총 노출(gross)</span>
+                <span class="fin-card-value">${finEsc(baseCcy)} ${Number(gross).toLocaleString()}${(grossOfNav !== null) ? ` · NAV 대비 ${finPct(grossOfNav)}` : ''}</span>
+                <p class="fin-card-plain">공매도·신용을 포함한 총 노출입니다. NAV와 다를 수 있습니다.</p>
+            </div>` : ''}
+            ${varOfNav !== null ? `
+            <div class="fin-card">
+                <span class="fin-card-title">10일 VaR (95%, NAV 대비)</span>
+                <span class="fin-card-value">${finPct(varOfNav)}</span>
+            </div>` : ''}
+        </div>` : ''}
+
+        ${cash ? `
+        <section class="fin-block fin-block-wide">
+            <h2>현금 구성</h2>
+            <p class="fin-p">
+                성향 현금(${finEsc(baseCcy)}) ${finPct(cash.base_cash_weight_of_nav)}
+                · 외화 현금(환위험) ${finPct(cash.foreign_cash_weight_of_nav)}
+            </p>
+            <p class="fin-note">${finEsc(cash.policy_ko || '성향 현금 밴드는 기준통화 현금만 검사합니다. 외화 현금은 환율 노출로 별도 표시됩니다.')}</p>
+        </section>` : ''}
+
+        <div class="fin-cards">
+            ${cards.map((c) => `
+                <div class="fin-card">
+                    <span class="fin-card-title">${finEsc(c[`title_${FIN_LOCALE}`])}</span>
+                    <span class="fin-card-value">${finEsc(c[`value_${FIN_LOCALE}`])}</span>
+                    <p class="fin-card-plain">${finEsc(c[`plain_${FIN_LOCALE}`])}</p>
+                    <p class="fin-card-analogy">${finEsc(c[`analogy_${FIN_LOCALE}`])}</p>
+                </div>`).join('')}
+        </div>
+
+        <div class="fin-grid">
+            <section class="fin-block fin-block-wide">
+                <h2>위험이 어디서 나오는가</h2>
+                <p class="fin-lead">${finEsc(S('risk_contribution_plain'))}</p>
+                <div class="fin-legend">
+                    <span><i class="fin-swatch fin-bar-risk"></i>위험 기여</span>
+                    <span><i class="fin-swatch fin-bar-weight"></i>비중</span>
+                </div>
+                <div class="fin-risk-list">${finRiskRows(data)}</div>
+            </section>
+
+            <section class="fin-block">
+                <h2>이 숫자 보는 법</h2>
+                <ul class="fin-list">
+                    ${(S('how_to_read') || []).map((x) => `<li>${finEsc(x)}</li>`).join('')}
+                </ul>
+            </section>
+
+            <section class="fin-block">
+                <h2>함께 움직이는 묶음</h2>
+                ${(S('clusters_plain') || []).map((x) => `<p class="fin-p">${finEsc(x)}</p>`).join('')}
+                <h3 class="fin-sub">통화 노출</h3>
+                <p class="fin-p">${finEsc(S('currency_plain'))}</p>
+            </section>
+
+            <section class="fin-block">
+                <h2>과거 급락 구간 대입</h2>
+                ${(S('stress_plain') || []).map((x) => `<p class="fin-p">${finEsc(x)}</p>`).join('')}
+            </section>
+
+            <section class="fin-block fin-block-wide">
+                <h2>조절 제안</h2>
+                <p class="fin-note">${finEsc(S('rebalance_note'))}</p>
+                <div class="fin-moves">
+                    <div class="fin-moves-col">
+                        <h3 class="fin-sub fin-sub-up">비중을 키우는 방향</h3>
+                        ${movesUp.map((m) => `
+                            <div class="fin-move">
+                                <div class="fin-move-head">
+                                    <span>${finEsc(m[`name_${FIN_LOCALE}`])}</span>
+                                    <span class="fin-move-delta fin-up">${finSignedPct(m.delta)}</span>
+                                </div>
+                                <p>${finEsc(m[`plain_${FIN_LOCALE}`])}</p>
+                            </div>`).join('')}
+                    </div>
+                    <div class="fin-moves-col">
+                        <h3 class="fin-sub fin-sub-down">비중을 줄이는 방향</h3>
+                        ${movesDown.map((m) => `
+                            <div class="fin-move">
+                                <div class="fin-move-head">
+                                    <span>${finEsc(m[`name_${FIN_LOCALE}`])}</span>
+                                    <span class="fin-move-delta fin-down">${finSignedPct(m.delta)}</span>
+                                </div>
+                                <p>${finEsc(m[`plain_${FIN_LOCALE}`])}</p>
+                            </div>`).join('')}
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <div class="fin-foot">
+            <p>${finEsc(S('footer'))}</p>
+            <p class="fin-disclaimer">${finEsc(data[`disclaimer_${FIN_LOCALE}`])}</p>
+            ${sizeGuide ? `<p class="fin-note">${finEsc(sizeGuide[`footnote_${FIN_LOCALE}`] || '')}
+               (보유 ${sizeGuide.vs_actual?.n_names ?? '—'}종 · 권장 ${sizeGuide.names_min ?? '—'}–${sizeGuide.names_max ?? '—'}종)</p>` : ''}
+            ${proxies.length ? `<p class="fin-proxy">프록시 사용: ${proxies.map((p) =>
+                finEsc(typeof p === 'string' ? p : (p.name_ko || p.id || JSON.stringify(p)))).join(' · ')}</p>` : ''}
+            <p class="fin-engine">엔진: <code>scripts/금융_재무분석</code> ·
+               방식: ${finEsc((data.advice && data.advice.method) || '')} ·
+               스키마 ${finEsc(data.schema_version || '')}</p>
+            <p class="pf-privacy">이 리포트는 로컬 파일만 읽습니다 — 서버에 저장되지 않고, 대시보드 운영자는 이 데이터를 볼 수 없습니다.</p>
+        </div>`;
+
+    host.querySelectorAll('.pf-mode-btn').forEach((b) => b.addEventListener('click', () => {
+        if (b.dataset.mode === mode) return;
+        pfSetMode(b.dataset.mode);
+        renderPfResult(host);
+    }));
+};
+
 const PF_VIEW_KEY = 'portfolioLab.view';
 const pfGetView = () => (localStorage.getItem(PF_VIEW_KEY) === 'manual') ? 'manual' : 'report';
 const pfSetView = (v) => { try { localStorage.setItem(PF_VIEW_KEY, v); } catch (_) { /* quota */ } };
+
+const renderPortfolioLab = async (host) => {
+    host.innerHTML = `<div class="fin-wrap"><p class="fin-loading">불러오는 중…</p></div>`;
+    await pfLoadRefs();
+
+    const view = pfGetView();
+
+    host.innerHTML = `
+    <div class="fin-wrap">
+        <div class="fin-head">
+            <h1>포트폴리오 진단</h1>
+            <p>보유 자산의 위험이 어디에 몰려 있는지 봅니다. 수익 예측이 아닙니다.</p>
+        </div>
+        <div class="pf-mode pf-view-tabs" role="tablist" aria-label="보기 방식">
+            <button type="button" class="pf-mode-btn ${view === 'report' ? 'on' : ''}" data-view="report">진단 리포트</button>
+            <button type="button" class="pf-mode-btn ${view === 'manual' ? 'on' : ''}" data-view="manual">직접 입력</button>
+        </div>
+        <div id="pf-panel"></div>
+    </div>`;
+
+    const panel = host.querySelector('#pf-panel');
+
+    const renderManual = () => {
+        panel.innerHTML = `<div id="pf-form"></div><div id="pf-out"></div>`;
+        const form = panel.querySelector('#pf-form');
+        const out = panel.querySelector('#pf-out');
+
+        const run = async () => {
+            const pf = pfLoad() || pfBlank();
+            out.innerHTML = `<div class="fin-block fin-block-wide"><p class="fin-loading" id="pf-prog">계산 준비 중…</p></div>`;
+            out.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            const prog = out.querySelector('#pf-prog');
+            try {
+                const R = await pfCompute(pf, (msg) => { if (prog) prog.textContent = msg; });
+                pfRenderResult(out, R, PF_PROFILES[pf.risk_profile]);
+            } catch (err) {
+                out.innerHTML = `
+                    <div class="fin-block fin-block-wide">
+                        <h2>계산하지 못했습니다</h2>
+                        <p class="fin-p">${finEsc(err.message || String(err))}</p>
+                        <p class="fin-note">가격 조회가 일시적으로 막혔을 수 있습니다. 잠시 뒤 다시 눌러 보세요.</p>
+                    </div>`;
+            }
+        };
+
+        renderPfInput(form, run);
+
+        // A saved portfolio is a standing request to see its numbers.
+        const saved = pfLoad();
+        if (saved && saved.positions.length >= 2) run();
+    };
+
+    const renderReport = () => renderPfResult(panel);
+
+    host.querySelectorAll('.pf-view-tabs .pf-mode-btn').forEach((b) => b.addEventListener('click', () => {
+        const v = b.dataset.view;
+        if (v === pfGetView()) return;
+        pfSetView(v);
+        host.querySelectorAll('.pf-view-tabs .pf-mode-btn').forEach((x) => x.classList.toggle('on', x === b));
+        if (v === 'manual') renderManual(); else renderReport();
+    }));
+
+    if (view === 'manual') renderManual(); else renderReport();
+};

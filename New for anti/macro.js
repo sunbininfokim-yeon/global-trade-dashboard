@@ -9,7 +9,7 @@
 // Loaded BEFORE market-microstructure.js and calculator.js, which call
 // mmLineChart and mmFmt from here. Non-module scripts share one global scope,
 // so these top-level declarations are visible to them the same as before.
-// Relies on globals still in app.js: finEsc, finFmt, and the DOM helpers.
+// Relies on globals still in app.js: finEsc and the DOM helpers.
 
 const mmFetch = async (iso3) => {
     const q = iso3 ? `?country=${encodeURIComponent(iso3)}` : '';
@@ -838,4 +838,62 @@ const mmDrawMap = () => {
             }),
         ],
     });
+};
+
+const renderMacroMonitor = async () => {
+    currentCommodity = 'macro_monitor';
+    stopTradeAnim();
+    stopRotation();
+    document.body.classList.remove('trade-map-mode', 'shipping-mode', 'finance-mode');
+    document.body.classList.add('macro-mode');
+    togglePanels({ left: false, right: false, chart: false, map: true });
+    if (mapContainer) {
+        mapContainer.style.display = 'block';
+        mapContainer.style.pointerEvents = 'auto';
+    }
+
+    let host = document.getElementById('macro-layer');
+    if (!host) {
+        host = document.createElement('div');
+        host.id = 'macro-layer';
+        (mapContainer || document.body).appendChild(host);
+        host.addEventListener('click', (e) => {
+            const t = e.target instanceof Element ? e.target : null;
+            if (!t) return;
+            if (t.closest('[data-mm-close]')) { MM_COUNTRY = null; MM_CHART = null; mmPaint(); return; }
+            if (t.closest('[data-mm-chart-close]')) { MM_CHART = null; mmPaint(); return; }
+            const tab = t.closest('[data-mm-tab]');
+            if (tab) { MM_TAB = tab.getAttribute('data-mm-tab'); MM_CHART = null; mmPaint(); return; }
+            const chip = t.closest('[data-mm-chip]');
+            if (chip) {
+                const id = chip.getAttribute('data-mm-chip');
+                MM_CHART = (MM_CHART && MM_CHART.indicatorId === id)
+                    ? null : { indicatorId: id, window: '5y', view: null, mode: null };
+                mmPaint();
+                return;
+            }
+            const win = t.closest('[data-mm-window]');
+            if (win && MM_CHART) { MM_CHART.window = win.getAttribute('data-mm-window'); mmPaint(); return; }
+            const vw = t.closest('[data-mm-view]');
+            if (vw && MM_CHART) { MM_CHART.view = vw.getAttribute('data-mm-view'); mmPaint(); return; }
+            const md = t.closest('[data-mm-mode]');
+            if (md && MM_CHART) { MM_CHART.mode = md.getAttribute('data-mm-mode'); mmPaint(); return; }
+        });
+    }
+
+    currentViewState = clampGlobeView({ ...currentViewState, zoom: GLOBE_ZOOM });
+
+    if (!MM_INDEX) {
+        host.innerHTML = `<div class="mm-hint">매크로 지표를 받는 중…</div>`;
+        try {
+            MM_INDEX = await mmFetch(null);
+        } catch (err) {
+            host.innerHTML = `<div class="mm-hint mm-hint-warn">${finEsc(err.message)}</div>`;
+            return;
+        }
+    }
+    MM_COUNTRY = null;
+    MM_CHART = null;
+    mmDrawMap();
+    mmPaint();
 };

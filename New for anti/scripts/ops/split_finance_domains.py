@@ -4,9 +4,16 @@
 app.js is edited by several parallel sessions at once, and a squash merge
 replaces whole regions instead of diffing them -- which is how the trade panel
 silently vanished from main once already (see trade.js's header). The macro
-monitor, market microstructure, company calculator, and portfolio lab never
-call into each other beyond four calls, so keeping them in one 9.4k-line file
-buys nothing and costs a collision surface.
+monitor, market microstructure, company calculator, and portfolio lab barely
+touch each other, so keeping them in one 9.4k-line file buys nothing and costs
+a collision surface.
+
+A domain has to take its whole screen with it for that to pay off. Splitting on
+the name prefix alone leaves each screen's setup behind -- renderPfInput and
+loadCompany are named for what they render, not for their domain -- and a
+portfolio session would still be editing app.js, which is the collision this
+exists to remove. Hence EXPLICIT below: the entry points and the helper chains
+that only one screen ever calls. What stays is what more than one caller reads.
 
 Extraction is positional, not a rewrite: each top-level declaration keeps its
 own bytes, and the leading comment block above it travels with it so the "why"
@@ -14,10 +21,10 @@ stays attached to the code it explains. The script asserts that header plus
 every span concatenates back to the original file before writing anything --
 if that fails, nothing is written.
 
-Load order matters and is enforced by index.html, not by imports: these are
-plain scripts sharing one global scope. macro.js must precede
-market-microstructure.js and calculator.js (both call mmFmt/mmLineChart), and
-all four must precede app.js, whose render* entry points call into them.
+index.html lists the files so each follows the ones it reads (macro, then
+portfolio before calculator, then app.js). Every cross-file reference sits
+inside a function body, so that order documents the dependency rather than
+enforcing it -- no file calls into another while it is still loading.
 """
 
 from __future__ import annotations
@@ -51,7 +58,7 @@ HEADERS = {
 // Loaded BEFORE market-microstructure.js and calculator.js, which call
 // mmLineChart and mmFmt from here. Non-module scripts share one global scope,
 // so these top-level declarations are visible to them the same as before.
-// Relies on globals still in app.js: finEsc, finFmt, and the DOM helpers.""",
+// Relies on globals still in app.js: finEsc and the DOM helpers.""",
     "ms": """// Market microstructure for Global Trade Dashboard -- order-book pressure,
 // funding and credit, price levels, and the derivatives/short-selling views.
 //
@@ -61,7 +68,7 @@ HEADERS = {
 // merges overwrite whole regions.
 //
 // Loaded AFTER macro.js -- msHistChart and msModalFor draw with mmLineChart.
-// Relies on globals still in app.js: finEsc, finFmt, and the DOM helpers.""",
+// Relies on globals still in app.js: finEsc and the DOM helpers.""",
     "calc": """// Company valuation calculator for Global Trade Dashboard -- DART filing
 // cards, DCF and reverse-DCF panels, sensitivity, and the level-by-level
 // breakdown.
@@ -70,8 +77,8 @@ HEADERS = {
 // a squash merge replaces whole regions instead of diffing them.
 //
 // Loaded AFTER macro.js -- coDcfPanel and coReversePanel format with mmFmt.
-// Relies on globals still in app.js: finEsc, finFmt, FIN_SERIES_MODE, and the
-// DOM helpers. Shows no price target by design.""",
+// Relies on globals still in app.js: finEsc, FIN_SERIES_MODE, and the DOM
+// helpers. Shows no price target by design.""",
     "pf": """// Portfolio lab for Global Trade Dashboard -- holdings input, covariance and
 // correlation, HRP/IVP allocation, and the risk views.
 //
@@ -79,11 +86,54 @@ HEADERS = {
 // a squash merge replaces whole regions instead of diffing them. This domain
 // calls nothing outside itself.
 //
-// Relies on globals still in app.js: finEsc, finFmt, and the DOM helpers.""",
+// Relies on globals still in app.js: finEsc, finPct, and the DOM helpers.""",
 }
 
 
+# Prefixes carry most of the split, but a domain's own UI entry points are
+# named for what they render (renderPfInput, loadCompany) rather than by the
+# domain prefix, and leaving them behind defeats the point: a portfolio session
+# would still be editing app.js, which is the collision this split exists to
+# remove. Listed by name because there is no prefix that catches them without
+# also catching app.js's own render* dispatch.
+EXPLICIT: dict[str, str] = {
+    # Each screen's own setup. renderFinanceView dispatches to these four and
+    # stays behind as the router; these belong to the screen they build.
+    "renderMacroMonitor": "macro",
+    "renderMicrostructure": "ms",
+    "renderPortfolioLab": "pf",
+    "renderCompanyCalc": "calc",
+    # Portfolio lab's input form and result view.
+    "renderPfInput": "pf",
+    "renderPfResult": "pf",
+    "finRiskRows": "pf",
+    "finSignedPct": "pf",
+    "FIN_LOCALE": "pf",
+    # Company calculator: the DART/quote loader and the KRX filer index behind
+    # its search box. Nothing outside the calculator reads these.
+    "loadCompany": "calc",
+    "krxLoadFilers": "calc",
+    "krxSearchLocal": "calc",
+    "KRX_NAME_ALIASES": "calc",
+    # The period-bar series block and its helper chain. Named fin* like the
+    # shared helpers, but only the calculator's cards ever draw one.
+    "finSeriesBlock": "calc",
+    "finNormPeriods": "calc",
+    "finPeriodBars": "calc",
+    "finTipEnsure": "calc",
+}
+
+# Genuinely shared, so they stay: finEsc is called from all four domains and
+# app.js itself, finPct from app.js and the portfolio, finPlaceholder only from
+# app.js. renderFinanceView is the router that dispatches to the four screens.
+KEEP_IN_APP = {"renderFinanceView", "finEsc", "finPct", "finPlaceholder"}
+
+
 def domain_of(name: str) -> str | None:
+    if name in KEEP_IN_APP:
+        return None
+    if name in EXPLICIT:
+        return EXPLICIT[name]
     if re.match(r"^mm[A-Z]", name) or name.startswith("MM_"):
         return "macro"
     if re.match(r"^ms[A-Z]", name) or name.startswith("MS_"):

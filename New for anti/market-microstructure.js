@@ -7,7 +7,7 @@
 // merges overwrite whole regions.
 //
 // Loaded AFTER macro.js -- msHistChart and msModalFor draw with mmLineChart.
-// Relies on globals still in app.js: finEsc, finFmt, and the DOM helpers.
+// Relies on globals still in app.js: finEsc and the DOM helpers.
 
 // === 시장 미시구조 / US→KR 관찰 ==============================================
 //
@@ -1171,4 +1171,93 @@ const msModalFor = (key, D) => {
             ]) + `<p class="fin-note">${finEsc(o.coverage_ko || '')} 미결제약정(OI)은 이 보드에서 사용하지 않습니다. 투자자별 수급은 별도 외국인 카드에서 확인합니다.</p>` };
     }
     return null;
+};
+
+const renderMicrostructure = async (host) => {
+    host.innerHTML = `<div class="fin-wrap"><p class="fin-loading">호가 및 유동성 자료를 받는 중…</p></div>`;
+
+    if (!MS_DATA) {
+        const keys = Object.keys(MS_FILES);
+        const got = await Promise.all(keys.map((k) => msGet(MS_FILES[k])));
+        MS_DATA = {};
+        keys.forEach((k, i) => { MS_DATA[k] = got[i]; });
+    }
+    // The append-only logs are optional: absent until the daily job writes them,
+    // so a failure here must not keep the snapshot panels from rendering.
+    if (!MS_HIST) {
+        const hk = Object.keys(MS_HIST_FILES);
+        const hgot = await Promise.all(hk.map((k) => msGetJsonl(MS_HIST_FILES[k])));
+        MS_HIST = {};
+        hk.forEach((k, i) => { MS_HIST[k] = hgot[i]; });
+    }
+    const D = MS_DATA;
+    if (!Object.values(D).some(Boolean)) {
+        host.innerHTML = finPlaceholder('호가 및 유동성', '수급 불균형 · 가격대별 체결 · 해외-국내 선행',
+            '스냅샷 JSON을 찾지 못했습니다. 일일 워크플로가 <code>public/data/</code> 에 산출합니다.');
+        return;
+    }
+
+    const paint = () => {
+        const tab = MS_TABS.find((x) => x.id === MS_TAB) || MS_TABS[0];
+        host.innerHTML = `
+        <div class="fin-wrap">
+            <div class="fin-head">
+                <h1>호가 및 유동성</h1>
+                <p class="fin-head-en">Market Micro-metrics</p>
+                <p>공개·지연 데이터입니다. 값이 없는 항목은 채우지 않고 비워 둡니다. 투자 권유가 아닙니다.</p>
+            </div>
+            <div class="mm-tabs" role="tablist">
+                ${MS_TABS.map((x) => `<button class="mm-tab ${x.id === MS_TAB ? 'on' : ''}" data-ms-tab="${x.id}">${finEsc(x.label)}</button>`).join('')}
+            </div>
+            <p class="mm-tab-desc">${finEsc(tab.blurb)}</p>
+            ${MS_TAB === 'tangle' ? msTangle(D)
+                : MS_TAB === 'levels' ? msLevelsTab(D)
+                : MS_TAB === 'derivatives' ? msDerivatives(D)
+                : msUsKr(D)}
+            ${MS_MODAL ? `
+            <div class="ms-modal-back" data-ms-modal-close="1">
+                <div class="ms-modal" role="dialog">
+                    <div class="ms-modal-head">
+                        <h3>${finEsc(MS_MODAL.title)}</h3>
+                        <button class="mm-close" data-ms-modal-close="1" aria-label="닫기">✕</button>
+                    </div>
+                    ${MS_MODAL.html}
+                </div>
+            </div>` : ''}
+        </div>`;
+
+        const on = (sel, fn) => host.querySelectorAll(sel).forEach((b) => b.addEventListener('click', (e) => fn(b, e)));
+        on('[data-ms-tab]', (b) => { MS_TAB = b.dataset.msTab; MS_MODAL = null; paint(); });
+        on('[data-ms-stock]', (b) => {
+            MS_STOCK = b.dataset.msStock;
+            // The row's own button doubles as ticker-select + drilldown open,
+            // so the modal has to look up the ticker that was just picked.
+            if (b.dataset.msModal) { MS_MODAL_KEY = b.dataset.msModal; MS_MODAL = msModalFor(MS_MODAL_KEY, D); }
+            paint();
+        });
+        on('[data-ms-univ]', (b) => { MS_UNIVERSE = b.dataset.msUniv; paint(); });
+        // The price-level modal is computed from MS_PERIOD, so it has to be
+        // rebuilt when the window changes rather than left showing stale bands.
+        on('[data-ms-period]', (b) => {
+            MS_PERIOD = b.dataset.msPeriod;
+            if (MS_MODAL_KEY === 'price_level_detail') MS_MODAL = msModalFor(MS_MODAL_KEY, D);
+            paint();
+        });
+        on('[data-ms-ticker]', (b) => { MS_TICKER = b.dataset.msTicker || null; MS_TAB = 'levels'; paint(); });
+        on('[data-ms-credit]', () => { MS_CREDIT_ON = !MS_CREDIT_ON; paint(); });
+        // :not([data-ms-stock]) because that combination is handled above --
+        // otherwise this listener would double-fire on the same click and
+        // paint() twice.
+        on('[data-ms-modal]:not([data-ms-stock])', (b) => { MS_MODAL_KEY = b.dataset.msModal; MS_MODAL = msModalFor(MS_MODAL_KEY, D); paint(); });
+        // Switching the window re-renders the modal that is already open, so the
+        // chart changes under the same heading rather than closing.
+        on('[data-ms-hist-period]', (b) => {
+            MS_HIST_PERIOD = b.dataset.msHistPeriod;
+            if (MS_MODAL_KEY) MS_MODAL = msModalFor(MS_MODAL_KEY, D);
+            paint();
+        });
+        on('[data-ms-modal-close]', (b, e) => { if (e.target === b) { MS_MODAL = null; MS_MODAL_KEY = null; paint(); } });
+        mmWireCharts(host);
+    };
+    paint();
 };

@@ -6,8 +6,62 @@
 // a squash merge replaces whole regions instead of diffing them.
 //
 // Loaded AFTER macro.js -- coDcfPanel and coReversePanel format with mmFmt.
-// Relies on globals still in app.js: finEsc, finFmt, FIN_SERIES_MODE, and the
-// DOM helpers. Shows no price target by design.
+// Relies on globals still in app.js: finEsc, FIN_SERIES_MODE, and the DOM
+// helpers. Shows no price target by design.
+
+// Yahoo returns nothing for a Korean company name and the alias table above
+// carries no KRX rows, so before this a Korean listing could only be reached
+// by typing its 6-digit code. The OpenDART filer index that /api/dart-financials
+// already resolves against doubles as the missing name index: every KRX-listed
+// filer, keyed by the same code the endpoint takes.
+// DART's own registered entity name is what row[1] carries, and for a
+// handful of large caps that name is plain English (NAVER, S-Oil) -- a user
+// typing the Korean brand name would never match it by substring. Covers
+// only names actually asked about or high-traffic; not an attempt at full
+// English->Korean coverage for all 86 ASCII-registered filers.
+const KRX_NAME_ALIASES = {
+    '035420': ['네이버'],       // NAVER
+    '010950': ['에쓰오일', '에스오일'], // S-Oil
+    '033780': ['KT&G'],         // 케이티앤지 already Korean; alias covers the reverse
+};
+
+let KRX_FILERS = null;
+const krxLoadFilers = async () => {
+    if (KRX_FILERS) return KRX_FILERS;
+    for (const base of ['/public/data/', '/data/']) {
+        try {
+            const r = await fetch(`${base}dart_corp_codes_v1.json`);
+            if (!r.ok) continue;
+            const doc = await r.json();
+            KRX_FILERS = Object.entries(doc.index || {})
+                .map(([code, row]) => ({
+                    id: `krx:${code}`, name_ko: (row || [])[1] || code,
+                    yahoo: code, asset_class: 'equity',
+                    aliases: KRX_NAME_ALIASES[code] || [],
+                }));
+            return KRX_FILERS;
+        } catch (_) { /* try the next base */ }
+    }
+    KRX_FILERS = [];
+    return KRX_FILERS;
+};
+
+// Exact, then prefix, then substring. Korean group names are prefixes of their
+// affiliates' names, so plain substring order buries the parent: 카카오 has to
+// lead over 카카오게임즈, and 삼성전 has to reach 삼성전자.
+const krxSearchLocal = (q) => {
+    const s = (q || '').trim().toLowerCase();
+    if (!s || !KRX_FILERS) return [];
+    const exact = [], starts = [], contains = [];
+    for (const it of KRX_FILERS) {
+        const name = it.name_ko.toLowerCase();
+        const aliasHit = (it.aliases || []).some((a) => a.toLowerCase().includes(s));
+        if (name === s || it.yahoo === s) exact.push(it);
+        else if (name.startsWith(s) || it.yahoo.startsWith(s)) starts.push(it);
+        else if (name.includes(s) || aliasHit) contains.push(it);
+    }
+    return [...exact, ...starts, ...contains].slice(0, 6);
+};
 
 // A KRX listing arrives either bare (from the filer index) or suffixed (from
 // Yahoo); both name the same company, so dedupe has to compare them stripped.
@@ -89,6 +143,203 @@ const coDerive = (s) => {
     };
 };
 
+const renderCompanyCalc = async (host) => {
+    host.innerHTML = `<div class="fin-wrap"><p class="fin-loading">불러오는 중…</p></div>`;
+    await Promise.all([pfLoadRefs(), krxLoadFilers()]);
+
+    host.innerHTML = `
+    <div class="fin-wrap">
+        <div class="fin-head">
+            <h1>기업 가치 계산기</h1>
+            <p>공시된 재무제표를 세 단계 깊이로 읽습니다. 투자 의견이 아니라, 그 단계에서 봐야 할 항목입니다.</p>
+        </div>
+        <section class="fin-block fin-block-wide pf-input">
+            <h2>기업 찾기</h2>
+            <div class="pf-add">
+                <div class="pf-search-wrap">
+                    <input type="text" id="co-q" class="pf-field" autocomplete="off"
+                           placeholder="기업명·티커로 검색 (예: 삼성전자, 009150, AAPL)">
+                    <div id="co-sug" class="pf-sug hidden"></div>
+                </div>
+            </div>
+            <p id="co-picked" class="pf-picked"></p>
+            <p class="fin-note">
+                미국 상장사는 SEC 공시로, <strong>한국 상장사는 DART 공시로</strong> 같은 화면에서 열립니다.
+                한글 이름으로 찾지 못하면 6자리 종목코드를 그대로 넣으면 됩니다.
+            </p>
+        </section>
+        <div id="co-out"></div>
+    </div>`;
+
+    const qEl = host.querySelector('#co-q');
+    const sugEl = host.querySelector('#co-sug');
+    const pickedEl = host.querySelector('#co-picked');
+    const out = host.querySelector('#co-out');
+    let shown = [], seq = 0, timer = null;
+
+    qEl.addEventListener('input', () => {
+        const q = qEl.value.trim();
+        clearTimeout(timer);
+        if (!q) { sugEl.classList.add('hidden'); return; }
+        const local = [
+            ...pfSearchLocal(q).filter((x) => x.asset_class === 'equity'),
+            ...krxSearchLocal(q),
+        ];
+        shown = local;
+        sugEl.innerHTML = local.map((h, i) =>
+            `<button class="pf-sug-item" data-i="${i}"><span>${finEsc(h.name_ko)}</span>
+             <span class="pf-sug-meta">${finEsc(h.yahoo || '')}</span></button>`).join('') || '<p class="pf-sug-note">찾는 중…</p>';
+        sugEl.classList.remove('hidden');
+
+        const my = ++seq;
+        timer = setTimeout(async () => {
+            const { quotes } = await pfSearchRemote(q);
+            if (my !== seq) return;
+            const have = new Set(local.map((x) => coSymKey(x.yahoo)));
+            const remote = quotes
+                .filter((c) => (c.type || '').toUpperCase() === 'EQUITY')
+                .filter((c) => !have.has(coSymKey(c.symbol)))
+                .map(pfFromQuote);
+            shown = [...local, ...remote];
+            sugEl.innerHTML = shown.map((h, i) =>
+                `<button class="pf-sug-item" data-i="${i}"><span>${finEsc(h.name_ko)}</span>
+                 <span class="pf-sug-meta">${finEsc(h.yahoo || '')}${h._exchange ? ' · ' + finEsc(h._exchange) : ''}</span></button>`
+            ).join('') || '<p class="pf-sug-note">결과가 없습니다. 티커를 직접 넣어 보세요.</p>';
+        }, 250);
+    });
+
+    sugEl.addEventListener('click', async (e) => {
+        const b = e.target.closest('.pf-sug-item');
+        if (!b) return;
+        const it = shown[Number(b.dataset.i)];
+        if (!it) return;
+        qEl.value = it.name_ko;
+        sugEl.classList.add('hidden');
+        pickedEl.textContent = `선택: ${it.name_ko} (${it.yahoo})`;
+        await loadCompany(out, it);
+    });
+};
+
+const loadCompany = async (out, inst) => {
+    const sym = String(inst.yahoo || '').toUpperCase();
+    out.innerHTML = `<div class="fin-block fin-block-wide"><p class="fin-loading">공시 자료를 받는 중…</p></div>`;
+
+    // A Korean listing carries a market suffix Yahoo uses and SEC does not;
+    // the 6-digit code before it is what the DART-side engine names its files
+    // by. The filer index yields that code bare, with no market suffix to
+    // guess at, so both spellings have to route to DART.
+    if (/\.(KS|KQ)$/.test(sym) || /^\d{6}$/.test(sym)) {
+        return loadKfaCompany(out, inst, sym.replace(/\.(KS|KQ)$/, ''));
+    }
+
+    let data;
+    try {
+        const res = await fetch(`/api/financials?symbol=${encodeURIComponent(sym)}`);
+        if (!res.ok) throw new Error(res.status === 502 ? '공시를 찾지 못했습니다' : `조회 실패 (${res.status})`);
+        data = await res.json();
+    } catch (err) {
+        out.innerHTML = `<div class="fin-block fin-block-wide"><h2>불러오지 못했습니다</h2>
+            <p class="fin-p">${finEsc(err.message)}</p>
+            <p class="fin-note">미국 상장사가 아니거나 공시 형식이 달라 항목을 못 찾은 경우입니다.</p></div>`;
+        return;
+    }
+
+    const rows = (data.statements || []).map(coDerive);
+    if (!rows.length) {
+        out.innerHTML = `<div class="fin-block fin-block-wide"><h2>공시 항목을 찾지 못했습니다</h2>
+            <p class="fin-note">${finEsc(data.name || sym)}의 연차보고서에서 표준 항목을 읽지 못했습니다.</p></div>`;
+        return;
+    }
+    // Same derivation, one row per 10-Q period. coDerive is per-row and has no
+    // notion of period length, so the ratios it computes hold for a quarter as
+    // readily as for a year -- what differs is only which filings fed the row.
+    const qrows = (data.quarterly || []).map(coDerive);
+
+    let level = 'health';
+    CO_DCF.growth = null;      // 새 기업이면 그 기업의 이력에서 다시 잡는다
+    CO_STRUCT_OPEN = null;
+    CO_OPEN_CARD = null;
+    CO_DATA = data;
+    CO_PRICE.value = null;
+    CO_PRICE.status = 'loading';
+    const paint = () => {
+        out.innerHTML = `
+        <div class="fin-head fin-head-sub">
+            <p class="fin-headline">${finEsc(data.name)} · ${finEsc(data.symbol)}</p>
+            <div class="fin-meta">
+                <span class="fin-chip">${finEsc(data.source)}</span>
+                <span>${rows[rows.length - 1].fy}~${rows[0].fy} 회계연도 · ${finEsc(data.currency)}</span>
+            </div>
+        </div>
+        <div class="pf-mode co-levels" role="tablist">
+            ${CO_LEVELS.map((L) => `
+                <button type="button" class="pf-mode-btn ${L.id === level ? 'on' : ''}" data-level="${L.id}">
+                    ${finEsc(L.label)}
+                </button>`).join('')}
+        </div>
+        <p class="fin-note co-blurb">${finEsc(CO_LEVELS.find((L) => L.id === level).blurb)}</p>
+        ${coRenderLevel(level, rows, data, qrows)}`;
+
+        out.querySelectorAll('[data-level]').forEach((b) => b.addEventListener('click', () => {
+            level = b.dataset.level; paint();
+        }));
+
+        out.querySelectorAll('[data-co-struct]').forEach((b) => b.addEventListener('click', () => {
+            const k = b.dataset.coStruct;
+            CO_STRUCT_OPEN = CO_STRUCT_OPEN === k ? null : k;
+            paint();
+        }));
+
+        // Whole card opens its chart on click, same as the DART side -- the
+        // mode-toggle buttons inside an open card are excluded so pressing
+        // 연도별/분기별 does not also re-close the card.
+        out.querySelectorAll('.co-kfa-card.co-clickable').forEach((el) => el.addEventListener('click', (e) => {
+            if (e.target.closest('[data-fin-mode]')) return;
+            const k = el.dataset.coCard;
+            CO_OPEN_CARD = (CO_OPEN_CARD === k) ? null : k;
+            paint();
+        }));
+
+        out.querySelectorAll('[data-fin-mode]').forEach((b) => b.addEventListener('click', (e) => {
+            e.stopPropagation();
+            FIN_SERIES_MODE = b.dataset.finMode;
+            paint();
+        }));
+
+        // Recompute on change rather than on every keystroke: a half-typed
+        // discount rate briefly reads as 0 and the numbers jump.
+        out.querySelectorAll('[data-co-dcf]').forEach((el) => el.addEventListener('change', () => {
+            const v = Number(el.value);
+            if (Number.isFinite(v)) CO_DCF[el.dataset.coDcf] = v;
+            paint();
+        }));
+        out.querySelector('[data-co-dcf-reset]')?.addEventListener('click', () => {
+            CO_DCF.growth = null; CO_DCF.terminal = 2.5; CO_DCF.discount = 9.0;
+            paint();
+        });
+        out.querySelector('[data-co-price]')?.addEventListener('change', (e) => {
+            const v = Number(e.target.value);
+            CO_PRICE.value = Number.isFinite(v) && v > 0 ? v : null;
+            CO_PRICE.status = 'manual';
+            paint();
+        });
+    };
+    paint();
+
+    // The reverse DCF needs a price, and the quote proxy already exists for the
+    // portfolio panel. Fetched after first paint so the statements are not held
+    // up by a second network call.
+    pfSpot(sym, data.currency).then((sp) => {
+        if (CO_DATA !== data) return;                 // 사용자가 그새 다른 기업을 골랐다
+        if (sp && Number.isFinite(sp.price) && sp.price > 0) {
+            CO_PRICE.value = sp.price; CO_PRICE.status = 'ok';
+        } else {
+            CO_PRICE.status = 'fail';
+        }
+        paint();
+    }).catch(() => { CO_PRICE.status = 'fail'; paint(); });
+};
+
 // --- 한국 상장사 (DART/KFA) ---------------------------------------------------
 // scripts/dart owns the extraction (OpenDART -> normalized cards); this side
 // only fetches the static per-company snapshot it produces and renders
@@ -140,6 +391,149 @@ const kfaFmt = (key, v, currency) => {
     if (unit === 'ratio') return `${v.toFixed(2)}배`;
     return String(v);
 };
+
+// --- 공통 재무 시계열 (SEC·DART 양쪽에서 사용) --------------------------------
+//
+// One chart component for both filers. The two sources disagree on almost
+// everything upstream -- US GAAP vs K-IFRS tags, 10-K/10-Q vs 사업/반기/분기
+// 보고서, USD vs KRW -- but by the time a number reaches this file it is just
+// a labelled point in a series, so the drawing code has no reason to know
+// which side it came from. Both paths normalise into {period, value} first.
+//
+// Bars rather than a line: these are flows per period (a quarter's revenue),
+// not a level being tracked, and a line implies interpolation between periods
+// that did not happen. Bars also read correctly when values cross zero, which
+// a loss-making quarter does.
+
+// Annual points arrive as {year, value} from DART and {fy, ...} from SEC;
+// quarterly as {period: '2025Q3', value}. Normalise to {period, value, label}.
+const finNormPeriods = (pts, kind) => (pts || [])
+    .map((p) => {
+        const period = String(p.period ?? p.year ?? p.fy ?? '');
+        if (!period || !Number.isFinite(p.value)) return null;
+        return { period, value: p.value, label: kind === 'quarterly' ? period.replace(/(\d{4})Q(\d)/, '$1 Q$2') : period };
+    })
+    .filter(Boolean)
+    .sort((a, b) => a.period.localeCompare(b.period));
+
+let FIN_SERIES_MODE = 'annual';   // 'annual' | 'quarterly' -- 카드 차트 공통
+
+// One shared tooltip element for every bar chart on the page, positioned by
+// mousemove rather than relying on the browser's native <title> (which has a
+// fixed delay before showing and cannot be styled -- the user asked
+// specifically for "a small box next to the cursor", not the OS default).
+// mouseenter/mouseleave do not bubble, so delegation uses mousemove + closest
+// on document instead of a per-chart listener that would need re-attaching
+// on every re-render.
+let FIN_TIP_EL = null;
+const finTipEnsure = () => {
+    if (FIN_TIP_EL) return;
+    FIN_TIP_EL = document.createElement('div');
+    FIN_TIP_EL.className = 'fin-tip';
+    document.body.appendChild(FIN_TIP_EL);
+    document.addEventListener('mousemove', (e) => {
+        const bar = e.target instanceof Element ? e.target.closest('.fin-bar') : null;
+        if (!bar) { FIN_TIP_EL.classList.remove('show'); return; }
+        FIN_TIP_EL.innerHTML = `<b>${bar.dataset.tipPeriod}</b><br>${bar.dataset.tipValue}`;
+        const pad = 14;
+        let left = e.clientX + pad, top = e.clientY + pad;
+        // Keep the box on-screen when the bar sits near the right/bottom edge
+        // rather than letting it render half off the viewport.
+        if (left + 140 > window.innerWidth) left = e.clientX - 140 - pad;
+        if (top + 46 > window.innerHeight) top = e.clientY - 46 - pad;
+        FIN_TIP_EL.style.left = `${left}px`;
+        FIN_TIP_EL.style.top = `${top}px`;
+        FIN_TIP_EL.classList.add('show');
+    });
+    document.addEventListener('mouseleave', () => FIN_TIP_EL.classList.remove('show'));
+};
+
+// Chart alone, no toggle. `fmt` formats a value both for the always-visible
+// per-bar label and the hover box, so the caller's own units (원/USD/배/%)
+// survive rather than being re-guessed here.
+//
+// Period labels render as their own HTML row below the <svg> rather than as
+// SVG text inside it -- a label sitting a few px above the plot's own bottom
+// edge still reads as "inside the chart" at a glance, and the user asked for
+// the years to sit clearly outside/under it instead.
+const finPeriodBars = (pts, fmt) => {
+    if (!pts.length) return '';
+    finTipEnsure();
+    const W = 640, H = 120, PAD_T = 12;
+    const vals = pts.map((p) => p.value);
+    const hi = Math.max(...vals, 0);
+    const lo = Math.min(...vals, 0);
+    const span = (hi - lo) || Math.abs(hi) || 1;
+    const plotH = H - PAD_T;
+    const y = (v) => PAD_T + (1 - (v - lo) / span) * plotH;
+    const zeroY = y(0);
+    const slot = W / pts.length;
+    const bw = Math.max(2, Math.min(slot * 0.62, 46));
+
+    // Permanent value labels only when there is real room for them -- a dense
+    // quarterly series (up to 20 bars) would turn into an unreadable smear of
+    // overlapping numbers, and that density is exactly what the hover box is
+    // for. A short annual series (almost always <=8) gets every value shown
+    // at a glance, matching what was asked for.
+    const showValueLabels = pts.length <= 8;
+
+    // Same 8-ish-tick thinning as before, just for the label row instead of
+    // SVG text -- a dense axis still cannot show every period without labels
+    // colliding.
+    const step = Math.max(1, Math.ceil(pts.length / 8));
+
+    const bars = pts.map((p, i) => {
+        const cx = slot * (i + 0.5);
+        const top = p.value >= 0 ? y(p.value) : zeroY;
+        const h = Math.max(1, Math.abs(y(p.value) - zeroY));
+        const valLabelY = p.value >= 0 ? top - 4 : top + h + 11;
+        return `<rect class="fin-bar ${p.value < 0 ? 'neg' : 'pos'}"
+                data-tip-period="${finEsc(p.label)}" data-tip-value="${finEsc(fmt(p.value))}"
+                x="${(cx - bw / 2).toFixed(1)}" y="${top.toFixed(1)}"
+                width="${bw.toFixed(1)}" height="${h.toFixed(1)}"></rect>
+            ${showValueLabels
+                ? `<text class="fin-bars-val" x="${cx.toFixed(1)}" y="${valLabelY.toFixed(1)}" text-anchor="middle">${finEsc(fmt(p.value))}</text>`
+                : ''}`;
+    }).join('');
+
+    const labels = pts.map((p, i) => `<span class="fin-bars-lbl" style="width:${(100 / pts.length).toFixed(3)}%">
+        ${(i % step === 0 || i === pts.length - 1) ? finEsc(p.label) : ''}</span>`).join('');
+
+    return `<div class="fin-bars-wrap">
+        <svg class="fin-bars" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" role="img">
+            <line class="fin-bars-zero" x1="0" x2="${W}" y1="${zeroY.toFixed(1)}" y2="${zeroY.toFixed(1)}"/>
+            ${bars}
+        </svg>
+        <div class="fin-bars-labels">${labels}</div>
+    </div>`;
+};
+
+// Chart + optional 연도별/분기별 toggle + range caption. No open/close toggle
+// of its own -- the card that hosts this decides when to render it, and
+// renders it immediately when open (see coSeriesCard / renderKfaResult).
+// `annual`/`quarterly` are the two raw series; either may be empty, and the
+// mode toggle only appears when both exist -- offering a 분기별 button that
+// opens an empty chart would read as a broken control.
+const finSeriesBlock = (annual, quarterly, fmt) => {
+    const a = finNormPeriods(annual, 'annual');
+    const q = finNormPeriods(quarterly, 'quarterly');
+    const both = a.length >= 2 && q.length >= 2;
+    const mode = (FIN_SERIES_MODE === 'quarterly' && q.length >= 2) ? 'quarterly' : 'annual';
+    const pts = mode === 'quarterly' ? q : a;
+    if (pts.length < 2) return '';
+
+    return `
+        ${both ? `<div class="fin-series-modes" role="group" aria-label="표시 주기">
+            <button type="button" class="mm-view-btn ${mode === 'annual' ? 'on' : ''}" data-fin-mode="annual">연도별</button>
+            <button type="button" class="mm-view-btn ${mode === 'quarterly' ? 'on' : ''}" data-fin-mode="quarterly">분기별</button>
+        </div>` : ''}
+        ${finPeriodBars(pts, fmt)}
+        <p class="fin-series-note">${finEsc(pts[0].label)} ~ ${finEsc(pts[pts.length - 1].label)} ·
+            ${pts.length}개 구간${mode === 'quarterly' ? ' · 분기 값 (누적 아님)' : ''}</p>`;
+};
+
+let KFA_VIEW = 'basic';
+let KFA_OPEN_CARD = null;
 
 const renderKfaResult = (out, data) => {
     const views = (data.view_presets && data.view_presets.views) || {};

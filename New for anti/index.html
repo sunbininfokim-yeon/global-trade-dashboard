@@ -347,14 +347,16 @@
     <script src="data.js?v=6"></script>
     <script src="shipping.js?v=18"></script>
     <!-- Finance domains, split out of app.js. Plain scripts sharing one global
-         scope, so load order is what resolves the cross-references: macro.js
-         first (market-microstructure.js and calculator.js draw with its
-         mmLineChart/mmFmt), then app.js, whose render* entry points call into
-         all four. -->
+         scope, listed so each file follows the ones it reads: macro.js first
+         (market-microstructure.js and calculator.js draw with mmLineChart and
+         mmFmt), portfolio.js before calculator.js (the calculator's search box
+         reuses pfSearchLocal/pfSpot), then app.js, whose renderFinanceView
+         dispatches to all four. Every cross-file reference is inside a function
+         body, so this order documents the dependency rather than enforcing it. -->
     <script src="macro.js?v=1"></script>
     <script src="market-microstructure.js?v=1"></script>
-    <script src="calculator.js?v=1"></script>
     <script src="portfolio.js?v=1"></script>
+    <script src="calculator.js?v=1"></script>
     <script src="app.js?v=102"></script>
     <script src="trade.js?v=1"></script>
 </body>

@@ -10,13 +10,18 @@
 
 | 파일 | 선언 수 | 내용 |
 |---|---|---|
-| `macro.js` | 34 | 매크로 모니터 (`mm*`, `MM_*`) |
-| `market-microstructure.js` | 38 | 시장 미시구조 (`ms*`, `MS_*`) |
-| `calculator.js` | 31 | 기업가치 계산기 (`co*`, `CO_*`, `kfa*`, `KFA_*`) |
-| `portfolio.js` | 43 | 포트폴리오 랩 (`pf*`, `PF_*`) |
-| `app.js` | 214 | 나머지 (지도/무역/기후/해운/공용 헬퍼) |
+| `macro.js` | 35 | 매크로 모니터 (`mm*`, `MM_*`, `renderMacroMonitor`) |
+| `market-microstructure.js` | 39 | 시장 미시구조 (`ms*`, `MS_*`, `renderMicrostructure`) |
+| `calculator.js` | 40 | 기업가치 계산기 (`co*`, `kfa*`, `krx*`, `loadCompany`, `finSeriesBlock` 체인) |
+| `portfolio.js` | 49 | 포트폴리오 랩 (`pf*`, `PF_*`, `renderPfInput/Result`, `finRiskRows`) |
+| `app.js` | 197 | 나머지 (지도/무역/기후/해운) + 진짜 공용 `finEsc`/`finPct`/`finPlaceholder` |
 
-`app.js`: 9,439줄 → 6,036줄.
+`app.js`: 9,439줄 → 4,900줄.
+
+접두사만으로 자르면 각 화면의 진입점(`renderPfInput`, `loadCompany` 등)이
+app.js에 남아 분리 목적이 무너진다 — 포트폴리오 세션이 여전히 app.js를 고치게
+된다. 그래서 스크립트의 `EXPLICIT` 목록에 진입점과 "한 화면만 쓰는 헬퍼 체인"을
+이름으로 지정했다. 남긴 것은 호출자가 둘 이상인 것뿐이다.
 
 UI 문구 변경 1건: 금융 드롭다운의 `파생상품` → `시장 미시구조`
 (파일명도 여기 맞춰 `market-microstructure.js`).
@@ -44,31 +49,30 @@ squash merge가 diff 대신 영역 전체를 덮어써서 **무역 패널 코드
   (파일당 1개, 각 파일 첫 코드 앞 `lstrip`)
 - `node --check`: 5개 파일 전부 통과
 - 브라우저: `ReferenceError`/`is not defined` **0건**
-- 4개 화면(`macro_monitor`/`fin_derivatives`/`fin_portfolio`/`fin_valuation`)
-  전부 렌더링 확인
+- **분리 전 버전과 나란히 비교**: 같은 서버에 분리 전 `app.js`를 올려
+  4개 화면의 렌더링 결과 텍스트를 해시로 대조 — 4개 모두 길이·해시 완전 일치
+  (`macro_monitor` 2374/571676123, `fin_derivatives` 4445/-449331506,
+  `fin_portfolio` 2622/70807976, `fin_valuation` 2512/-1760214612)
 
-## 로드 순서 (중요)
-
-`index.html`에서 순서가 곧 의존성 해결이다. 모듈이 아니라 평범한 스크립트라
-전역 스코프를 공유한다.
+## 로드 순서
 
 ```
-macro.js  →  market-microstructure.js  →  calculator.js  →  portfolio.js  →  app.js  →  trade.js
+macro.js → market-microstructure.js → portfolio.js → calculator.js → app.js → trade.js
 ```
 
-`macro.js`가 먼저여야 하는 이유 — 교차 호출이 **정확히 4건** 있고 전부
-macro를 향한다:
+읽는 쪽이 읽히는 쪽 뒤에 오도록 나열했다.
 
-| 호출하는 쪽 | 호출되는 것 |
+| 참조하는 파일 | 참조 대상 |
 |---|---|
-| `msHistChart` | `mmLineChart` |
-| `msModalFor` | `mmLineChart` |
-| `coDcfPanel` | `mmFmt` |
-| `coReversePanel` | `mmFmt` |
+| `market-microstructure.js` | `macro.js`: `mmLineChart`, `mmWireCharts` |
+| `calculator.js` | `macro.js`: `mmFmt` |
+| `calculator.js` | `portfolio.js`: `pfSearchLocal`, `pfSearchRemote`, `pfSpot`, `pfFromQuote`, `pfLoadRefs` (검색창이 포트폴리오의 시세 조회를 재사용) |
+| `macro.js` | `app.js`: `deckgl`, `worldBaseLayers`, `mapContainer` 등 지도 전역 |
+| `app.js` | 각 도메인의 `render*` 진입점 **4개뿐** (분리 전 41개에서 감소) |
 
-다만 이 4건은 모두 **함수 본문 안**이라 실행 시점에 해결된다. 로드 시점에
-다른 파일을 호출하는 최상위 초기화는 4개 파일 모두 0건임을 확인했다
-(그래서 순서가 틀려도 당장 깨지진 않지만, 위 순서를 지키는 게 맞다).
+교차 참조는 **전부 함수 본문 안**이라 실행 시점에 해결된다. 로드 시점에 다른
+파일을 참조하는 최상위 초기화는 4개 파일 모두 0건임을 확인했으므로, 위 순서는
+의존성을 문서화하는 것이지 강제하는 것은 아니다.
 
 ## 코덱스 검증 요청 사항
 
@@ -81,9 +85,12 @@ macro를 향한다:
    - 금융 › 기업 가치 계산기: 종목 검색 → 카드 → DCF/역DCF 패널
 2. **콘솔** — `ReferenceError` 계열이 하나라도 나오면 그게 분리 실패 신호다
    (`/api/*` 404는 로컬 정적 서버에선 정상)
-3. **놓친 도메인 코드** — `app.js`에 남은 214개 선언 중 금융 화면에서만
-   쓰이는 게 더 있는지. 특히 `fin*` prefix 헬퍼들은 4개 도메인이 공유해서
-   일부러 `app.js`에 남겼는데, 이 판단이 맞는지 봐 주면 좋겠다.
+3. **놓친 도메인 코드** — `app.js`에 남은 197개 선언 중 금융 화면에서만
+   쓰이는 게 더 있는지. `fin*` 중 `finEsc`(5개 파일 전부 사용),
+   `finPct`(app+포트폴리오), `finPlaceholder`(app만)는 공용이라 남겼고,
+   나머지 `fin*`(`finSeriesBlock`/`finPeriodBars`/`finNormPeriods`/`finTipEnsure`
+   → 계산기 전용, `finRiskRows`/`finSignedPct`/`FIN_LOCALE` → 포트폴리오 전용)는
+   옮겼다. 이 구분이 맞는지 봐 주면 좋겠다.
 
 ## 롤백
 
