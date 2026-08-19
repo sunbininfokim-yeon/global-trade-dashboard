@@ -9335,15 +9335,17 @@ const mmOverlay = () => {
         <div class="mm-chips">
             ${chips.length ? chips.map((ch) => `
                 <button class="mm-chip" data-mm-chip="${finEsc(ch.id)}">
-                    <span class="mm-chip-label">${finEsc(ch.label_ko)}</span>
-                    <span class="mm-chip-value">${finEsc(ch.display ?? '—')}</span>
-                    <span class="mm-chip-foot">
-                        ${ch.chart_type === 'status' ? '' : `
-                            ${mmDelta(ch.change_1m_pct)}<span class="mm-chip-win">1M</span>
-                            ${mmDelta(ch.change_1y_pct)}<span class="mm-chip-win">1Y</span>
-                        `}
+                    <span class="mm-chip-head">
+                        <span class="mm-chip-label">${finEsc(ch.label_ko)}</span>
                         ${mmStatusBadge(ch.data_status)}
                     </span>
+                    <span class="mm-chip-value">${finEsc(ch.display ?? '—')}</span>
+                    ${ch.chart_type === 'status' ? '' : `
+                        <span class="mm-chip-foot">
+                            ${mmDelta(ch.change_1m_pct)}<span class="mm-chip-win">1M</span>
+                            ${mmDelta(ch.change_1y_pct)}<span class="mm-chip-win">1Y</span>
+                        </span>
+                    `}
                     ${mmNoteWithState(ch) ? `<span class="mm-chip-note">${finEsc(mmNoteWithState(ch))}</span>` : ''}
                 </button>`).join('')
               : '<p class="fin-note">이 항목은 이 국가에서 아직 제공되지 않습니다.</p>'}
