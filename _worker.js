@@ -998,6 +998,25 @@ function secIsFullYear(p) {
     return days >= 340 && days <= 380;
 }
 
+// A discrete three-month span. Balance-sheet concepts carry no `start` at all
+// (they are a point in time, not a period), so those are excluded here rather
+// than being counted once per filing that restated them.
+function secIsOneQuarter(p) {
+    if (!p.start) return false;
+    const days = (new Date(p.end) - new Date(p.start)) / SEC_DAY;
+    return days >= 80 && days <= 100;
+}
+
+// Calendar quarter of the period end, as `2025Q3`. Fiscal quarter labels are
+// deliberately not reconstructed: a company whose FY ends in September would
+// need its own offset, and the end date is the only thing every filer agrees
+// on (same reasoning as secFiscalYear above).
+function secQuarterLabel(p) {
+    const end = p.end && new Date(p.end);
+    if (!end || Number.isNaN(end.getTime())) return null;
+    return `${end.getUTCFullYear()}Q${Math.floor(end.getUTCMonth() / 3) + 1}`;
+}
+
 function secPickAnnual(facts, names) {
     const byYear = new Map();
     const used = [];
@@ -1023,6 +1042,40 @@ function secPickAnnual(facts, names) {
         for (const [fy, val] of perTag) if (!byYear.has(fy)) byYear.set(fy, val);
     }
     return byYear.size ? { tag: used.join('+'), unit, years: byYear } : null;
+}
+
+// Same shape and precedence rules as secPickAnnual, keyed by `2025Q3` instead
+// of a fiscal year. The quarterly tape lives in the very same companyfacts
+// response the annual one is read from -- it was simply filtered out by the
+// `form === '10-K'` test, so no extra upstream call is needed for any of this.
+//
+// 10-K is included alongside 10-Q on purpose: a fiscal Q4 is never filed as
+// its own 10-Q, so a quarterly series built from 10-Q alone silently drops
+// every fourth point. The annual report restates Q4 as a three-month period,
+// which secIsOneQuarter picks up.
+function secPickQuarterly(facts, names) {
+    const byQuarter = new Map();
+    for (const tag of names) {
+        const node = facts[tag];
+        if (!node || !node.units) continue;
+        const u = Object.keys(node.units)[0];
+        const quarters = (node.units[u] || []).filter((p) =>
+            (p.form === '10-Q' || p.form === '10-K') && p.end && secQuarterLabel(p)
+            // A balance-sheet concept carries no `start` -- it is the value at
+            // one instant, already "the quarter's" figure, so the duration
+            // test that isolates a three-month flow must not be applied to it.
+            // Without this branch every ratio card (current ratio, ROE, ...)
+            // would have an empty quarterly series while revenue had a full one.
+            && (p.start ? secIsOneQuarter(p) : true));
+        if (!quarters.length) continue;
+
+        const perTag = new Map();
+        for (const p of quarters.slice().sort((a, b) => String(a.filed).localeCompare(String(b.filed)))) {
+            perTag.set(secQuarterLabel(p), { value: p.val, end: p.end, form: p.form });
+        }
+        for (const [q, row] of perTag) if (!byQuarter.has(q)) byQuarter.set(q, row);
+    }
+    return byQuarter.size ? byQuarter : null;
 }
 
 async function handleFinancials(request, env) {
@@ -1062,6 +1115,30 @@ async function handleFinancials(request, env) {
                 return row;
             });
 
+            // Quarterly runs on its own axis rather than being folded into
+            // `statements`: the two cover different spans (a quarter is not a
+            // year) and a row carrying both would invite summing across them.
+            const quarterlyByKey = {};
+            for (const [key, names] of Object.entries(SEC_TAGS)) {
+                const got = secPickQuarterly(gaap, names);
+                if (got) quarterlyByKey[key] = got;
+            }
+            const oldestKeptYear = years.length ? Math.min(...years) : null;
+            const quarterLabels = [...new Set(Object.values(quarterlyByKey).flatMap((m) => [...m.keys()]))]
+                // Same 5-year window the annual series uses, so the two views of
+                // one card cover the same stretch of history.
+                .filter((q) => oldestKeptYear === null || Number(q.slice(0, 4)) >= oldestKeptYear)
+                .sort();
+            const quarterly = quarterLabels.map((q) => {
+                const row = { period: q };
+                for (const key of Object.keys(SEC_TAGS)) {
+                    const got = quarterlyByKey[key] ? quarterlyByKey[key].get(q) : undefined;
+                    row[key] = got ? got.value : null;
+                    if (got && !row.end) row.end = got.end;
+                }
+                return row;
+            });
+
             return {
                 ok: true,
                 body: {
@@ -1071,6 +1148,7 @@ async function handleFinancials(request, env) {
                     name: doc.entityName || hit[1],
                     currency: 'USD',
                     statements,
+                    quarterly,
                     tags_used: used,
                 },
             };
@@ -1124,6 +1202,25 @@ const DART_XBRL_TAGS = {
 // dict by account_id on this section would silently pick whichever column
 // happened to be inserted last.
 const DART_COLLIDING_SJ_DIV = new Set(['SCE']);
+
+// OpenDART's four periodic report codes. Korean interim reports are
+// year-to-date cumulative, not standalone quarters: H1 covers Q1+Q2 and Q3
+// covers Q1..Q3, so a discrete quarter is a difference between neighbours
+// (see dartQuarterlySeries).
+const DART_REPRT = {
+    Q1: '11013', // 1분기보고서
+    H1: '11012', // 반기보고서   (cumulative through Q2)
+    Q3: '11014', // 3분기보고서 (cumulative through Q3)
+    FY: '11011', // 사업보고서   (full year)
+};
+
+// Which DART_XBRL_TAGS keys are period flows vs point-in-time balances.
+// Differencing a cumulative flow yields the quarter; differencing a balance
+// yields the change in that balance, which is a different quantity entirely
+// and must never be labelled "Q3 cash".
+const DART_FLOW_KEYS = new Set([
+    'revenue', 'operating_income', 'net_income', 'interest_expense', 'eps', 'cfo', 'capex',
+]);
 
 // public/data/dart_corp_codes_v1.json is a one-time offline export of
 // OpenDART's corpCode.xml (see scripts/dart/ for how it was built): the KRX
@@ -1200,7 +1297,7 @@ const dartSleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 // most 2, so a transient throttle is more likely to be hit mid-loop than it
 // was for a single fetch. A second 020 is treated as real backpressure, not
 // retried further.
-async function fetchDartXbrlFacts(env, corpCode, year, fsDiv, { retriedOn020 = false } = {}) {
+async function fetchDartXbrlFacts(env, corpCode, year, fsDiv, { retriedOn020 = false, reprtCode = DART_REPRT.FY } = {}) {
     // Missing key must degrade to empty (no network call), same contract as
     // the Python adapter -- a snapshot without a live key still has to render.
     const key = await dartApiKey(env);
@@ -1209,7 +1306,7 @@ async function fetchDartXbrlFacts(env, corpCode, year, fsDiv, { retriedOn020 = f
         crtfc_key: key,
         corp_code: corpCode,
         bsns_year: String(year),
-        reprt_code: '11011', // 사업보고서 (annual report)
+        reprt_code: reprtCode, // see DART_REPRT -- 11011 is the annual report
         fs_div: fsDiv,
     });
     try {
@@ -1222,14 +1319,25 @@ async function fetchDartXbrlFacts(env, corpCode, year, fsDiv, { retriedOn020 = f
         // rate limited, 100/800/900 = bad key or unregistered caller.
         if (data.status === '020' && !retriedOn020) {
             await dartSleep(400);
-            return fetchDartXbrlFacts(env, corpCode, year, fsDiv, { retriedOn020: true });
+            return fetchDartXbrlFacts(env, corpCode, year, fsDiv, { retriedOn020: true, reprtCode });
         }
         if (data.status !== '000') return { facts: {}, reason: `dart_status_${data.status}` };
         const facts = {};
+        const isInterim = reprtCode !== DART_REPRT.FY;
         for (const item of data.list || []) {
             if (DART_COLLIDING_SJ_DIV.has(item.sj_div)) continue;
             const accountId = item.account_id;
-            const amount = item.thstrm_amount;
+            // Korean interim filings report income-statement and cash-flow
+            // lines twice: thstrm_amount is that quarter alone (3 months) and
+            // thstrm_add_amount is the year-to-date cumulative. Which one a
+            // given filer populates is not consistent, so prefer the explicit
+            // cumulative field and fall back to the plain one. Balance-sheet
+            // rows are a point in time and carry no add_amount at all, which
+            // this fallback handles without a separate branch.
+            const amount = (isInterim && item.thstrm_add_amount !== undefined && item.thstrm_add_amount !== null
+                && String(item.thstrm_add_amount).trim() !== '')
+                ? item.thstrm_add_amount
+                : item.thstrm_amount;
             if (!accountId || accountId.startsWith('-') || amount === undefined || amount === null) continue;
             if (!(accountId in facts)) facts[accountId] = amount;
         }
@@ -1324,6 +1432,55 @@ async function fetchDartKrPrice(symbol) {
     return { price: null, reason: 'no_price_ks_or_kq' };
 }
 
+// Discrete quarterly series per card key, from the cumulative interim filings.
+//
+// `factsByPeriod` is {year: {Q1|H1|Q3|FY: facts}}. Korean interim reports are
+// year-to-date, so a standalone quarter is the difference between neighbouring
+// cumulatives -- Q2 = H1 - Q1, Q3 = 3Q - H1, Q4 = FY - 3Q. Only flows work that
+// way: a balance sheet line is already the value at that date, so differencing
+// it would produce the *change* in cash and label it "Q3 cash". Hence the
+// DART_FLOW_KEYS split.
+//
+// Quarter ends assume a December fiscal year (acc_mt '12'), which is what the
+// response's own meta claims and what nearly every KRX filer uses. A March-FY
+// filer would need its own offset; that is not handled here, and its quarters
+// would be labelled by calendar position.
+function dartQuarterlySeries(factsByPeriod, years) {
+    const QUARTER_END = { Q1: '03-31', Q2: '06-30', Q3: '09-30', Q4: '12-31' };
+    // Which cumulative to subtract to isolate each quarter. Q1 stands alone.
+    const FROM_CUMULATIVE = { Q1: ['Q1', null], Q2: ['H1', 'Q1'], Q3: ['Q3', 'H1'], Q4: ['FY', 'Q3'] };
+    const out = {};
+
+    for (const key of Object.keys(DART_XBRL_TAGS)) {
+        const points = [];
+        for (const year of [...years].sort((a, b) => a - b)) {
+            const buckets = factsByPeriod[year] || {};
+            for (const q of ['Q1', 'Q2', 'Q3', 'Q4']) {
+                const [curCode, prevCode] = FROM_CUMULATIVE[q];
+                const curFacts = buckets[curCode];
+                if (!curFacts) continue;
+                const cur = dartPick(curFacts, DART_XBRL_TAGS[key]);
+                if (cur === null) continue;
+
+                let value = cur;
+                if (DART_FLOW_KEYS.has(key) && prevCode) {
+                    const prevFacts = buckets[prevCode];
+                    // Without the prior cumulative the quarter cannot be
+                    // isolated. Emitting the raw cumulative here would put a
+                    // year-to-date figure on a bar labelled as one quarter.
+                    if (!prevFacts) continue;
+                    const prev = dartPick(prevFacts, DART_XBRL_TAGS[key]);
+                    if (prev === null) continue;
+                    value = cur - prev;
+                }
+                points.push({ period: `${year}${q}`, end: `${year}-${QUARTER_END[q]}`, value });
+            }
+        }
+        if (points.length) out[key] = points;
+    }
+    return out;
+}
+
 // Ported from dart_kfa/dart_facts.py's map_facts_to_pack() and
 // dart_kfa/derived_cards.py's basic_cards_from_pack(), collapsed into one
 // function since the Worker only ever needs the flat basic_cards bag, not
@@ -1335,7 +1492,7 @@ async function fetchDartKrPrice(symbol) {
 // has no key in factsByYear; series are built by filtering, not by assuming
 // every year in `years` produced a point, so a gap (recent listing, a filing
 // OpenDART hasn't ingested yet) leaves a shorter series rather than a null.
-function dartBasicCardsFromFacts(factsByYear, years, { sharesOutstanding = null, price = null } = {}) {
+function dartBasicCardsFromFacts(factsByYear, years, { sharesOutstanding = null, price = null, quarterly = {} } = {}) {
     const latestYear = years[0];
     const factsOf = (y) => factsByYear[y] || {};
     const latestFacts = factsOf(latestYear);
@@ -1468,7 +1625,7 @@ function dartBasicCardsFromFacts(factsByYear, years, { sharesOutstanding = null,
             reason: price === null ? 'missing:price' : (equityV === null ? 'missing:equity' : 'missing:shares_outstanding'),
         };
 
-    return {
+    const cards = {
         revenue, operating_income: operatingIncome, net_income: netIncome, cfo, fcf, cash, eps,
         net_debt: netDebt,
         current_ratio: currentRatio,
@@ -1483,6 +1640,25 @@ function dartBasicCardsFromFacts(factsByYear, years, { sharesOutstanding = null,
         pe_ratio: peRatio,
         pb_ratio: pbRatio,
     };
+
+    // Attached rather than merged into `series`: annual and quarterly points
+    // cover different spans, so one array holding both would be summable into
+    // nonsense. The UI toggles between them.
+    for (const [key, points] of Object.entries(quarterly)) {
+        if (cards[key]) cards[key].quarterly = points;
+    }
+    // FCF has no XBRL tag of its own -- it is cfo - |capex| at every period,
+    // so its quarterly series is derived the same way its annual one is.
+    const qCfo = quarterly.cfo || [];
+    const qCapex = new Map((quarterly.capex || []).map((p) => [p.period, p.value]));
+    const fcfQuarterly = qCfo
+        .map((p) => (qCapex.has(p.period)
+            ? { period: p.period, end: p.end, value: p.value - Math.abs(qCapex.get(p.period)) }
+            : null))
+        .filter(Boolean);
+    if (fcfQuarterly.length) cards.fcf.quarterly = fcfQuarterly;
+
+    return cards;
 }
 
 // Mirrors dart_kfa/view_presets.py's get_view_presets() -- Investor/PE/Deal
@@ -1567,6 +1743,22 @@ async function handleDartFinancials(request, env) {
             }
             const latestYear = years[0];
 
+            // Interim filings, for the quarterly view. Three more calls per
+            // year on top of the annual one, so this is the single most
+            // expensive part of a cold-cache request -- but the whole body is
+            // cached 24h, and a year whose interims are missing simply yields
+            // no quarterly points for that year rather than failing the
+            // request. Sequential for the same 020 reason as the loop above.
+            const factsByPeriod = {};
+            for (const y of years) {
+                factsByPeriod[y] = { FY: factsByYear[y] };
+                for (const code of ['Q1', 'H1', 'Q3']) {
+                    const { facts } = await fetchDartXbrlFacts(env, corpCode, y, 'CFS', { reprtCode: DART_REPRT[code] });
+                    if (Object.keys(facts).length > 0) factsByPeriod[y][code] = facts;
+                }
+            }
+            const quarterly = dartQuarterlySeries(factsByPeriod, years);
+
             // Independent of the facts loop above -- neither blocks the other,
             // and either failing still leaves the filing-derived cards intact.
             const [sharesResult, priceResult] = await Promise.all([
@@ -1593,6 +1785,7 @@ async function handleDartFinancials(request, env) {
                     basic_cards: dartBasicCardsFromFacts(factsByYear, years, {
                         sharesOutstanding: sharesResult.sharesOutstanding,
                         price: priceResult.price,
+                        quarterly,
                     }),
                     data_quality: {
                         input_kind: years.length > 1 ? 'live_fetch_multi_fiscal_year' : 'live_fetch_single_fiscal_year',
@@ -1602,6 +1795,12 @@ async function handleDartFinancials(request, env) {
                         fiscal_years_fetched: years,
                         fiscal_years_missing: candidateYears.filter((y) => !years.includes(y)),
                         facts_fetched: years.reduce((sum, y) => sum + Object.keys(factsByYear[y]).length, 0),
+                        // Which interim reports actually came back, per year --
+                        // a quarterly gap in the UI is explained here rather
+                        // than looking like a rendering bug.
+                        interim_reports_fetched: Object.fromEntries(
+                            years.map((y) => [y, Object.keys(factsByPeriod[y] || {}).filter((k) => k !== 'FY')])),
+                        quarterly_derivation: 'flows differenced from YTD cumulatives (Q2=H1-Q1, Q3=3Q-H1, Q4=FY-3Q); balances point-in-time',
                         // Reaching here at all required a keyed OpenDART fetch.
                         live_key_present: true,
                     },
