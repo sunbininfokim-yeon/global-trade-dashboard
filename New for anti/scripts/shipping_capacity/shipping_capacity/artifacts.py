@@ -7,6 +7,9 @@ import json
 from typing import Any
 
 
+SCREEN_HISTORY_POINT_LIMIT = 180
+
+
 def _bundle_id(snapshot: dict[str, Any]) -> str:
     identity = {
         "generated_at": snapshot["generated_at"],
@@ -46,6 +49,7 @@ def _screen_route(route: dict[str, Any]) -> dict[str, Any]:
             "input_status",
             "annual_cargo_tonnes",
             "model_inputs",
+            "operational_profile",
         )
     } | {
         "baseline": {
@@ -54,22 +58,64 @@ def _screen_route(route: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+def _screen_chokepoints_live(
+    live_status: dict[str, dict[str, Any]],
+) -> dict[str, dict[str, Any]]:
+    """Keep the public screen artifact compact while diagnostics retain 730 days."""
+
+    screen_status: dict[str, dict[str, Any]] = {}
+    for chokepoint_id, status in live_status.items():
+        full_history = status.get("history", [])
+        history = (
+            full_history[-SCREEN_HISTORY_POINT_LIMIT:]
+            if isinstance(full_history, list)
+            else []
+        )
+        screen_status[chokepoint_id] = {
+            **status,
+            "history": history,
+            "history_point_count": len(history),
+            "history_source_point_count": (
+                len(full_history) if isinstance(full_history, list) else 0
+            ),
+            "history_screen_point_limit": SCREEN_HISTORY_POINT_LIMIT,
+        }
+    return screen_status
+
+
 def _screen_grid(grid: dict[str, Any]) -> dict[str, Any]:
     summary_fields = (
+        "affected_route_count",
+        "affected_baseline_dwt",
         "operational_capacity_absorbed_dwt",
+        "affected_allocated_dwt_with_reserve",
+        "relevant_global_type_fleet_dwt",
+        "operational_capacity_absorbed_pct_of_affected_allocated",
+        "operational_capacity_absorbed_pct_of_relevant_global_type_fleet",
         "commercial_capacity_gap_dwt",
+        "commercially_unavailable_dwt",
+        "commercially_unavailable_pct_of_affected_allocated",
+        "commercially_available_dwt",
+        "commercially_available_pct_of_affected_allocated",
         "backlog_cargo_tonnes_horizon",
         "rerouted_in_transit_cargo_tonnes_horizon",
         "trapped_loaded_dwt",
         "insurance_excluded_dwt",
         "lost_cargo_tonnes_horizon",
         "weighted_traffic_change_pct",
+        "ship_type_breakdown",
+        "capacity_denominator_warning",
     )
     route_fields = (
         "route_id",
+        "ship_type",
         "baseline_required_dwt",
+        "allocated_dwt_with_reserve",
         "continuity_required_dwt",
         "operational_capacity_absorbed_dwt",
+        "operational_capacity_absorbed_pct_of_route_allocated",
+        "commercially_unavailable_dwt",
+        "commercially_unavailable_pct_of_route_allocated",
         "traffic_change_pct",
     )
     return {
@@ -107,6 +153,12 @@ def _screen_environment(environment: dict[str, Any]) -> dict[str, Any]:
         "name_ko",
         "year",
         "status",
+        "pathway_id",
+        "pathway_name_ko",
+        "pathway_policy_status",
+        "pathway_description_ko",
+        "behavior_assumption_status",
+        "regulatory_inputs",
         "cii_reduction_vs_2019_pct",
         "representative_route_count",
         "physical_allocated_dwt",
@@ -114,16 +166,22 @@ def _screen_environment(environment: dict[str, Any]) -> dict[str, Any]:
         "effective_dwt_loss",
         "effective_capacity_retention_rate",
         "effective_capacity_retention_rate_range",
+        "baseline_required_dwt",
         "same_service_required_dwt",
         "same_service_required_dwt_range",
+        "additional_required_vs_baseline_dwt",
+        "capacity_gap_vs_allocated_dwt",
+        "ship_type_breakdown",
         "scope",
     )
     return {
+        "contract_version": environment.get("contract_version"),
         "status": environment.get("status"),
         "methodology_ko": environment.get("methodology_ko"),
         "warnings_ko": environment.get("warnings_ko", []),
         "sources": environment.get("sources", []),
         "identification_boundary": environment.get("identification_boundary", {}),
+        "pathways": environment.get("pathways", []),
         "scenarios": [
             {field: row.get(field) for field in aggregate_fields}
             for row in environment.get("scenarios", [])
@@ -167,12 +225,12 @@ def build_artifact_bundle(snapshot: dict[str, Any]) -> dict[str, dict[str, Any]]
             key: snapshot[key]
             for key in (
                 "model",
+                "ui_delivery_contract",
                 "data_policy",
                 "sources",
                 "fleet",
                 "lng_fleet",
                 "chokepoints",
-                "chokepoints_live",
                 "live_display",
                 "live_fetch_errors",
                 "live_data_quality",
@@ -185,6 +243,9 @@ def build_artifact_bundle(snapshot: dict[str, Any]) -> dict[str, dict[str, Any]]
                 "pdf_reports",
             )
         },
+        "chokepoints_live": _screen_chokepoints_live(
+            snapshot.get("chokepoints_live", {})
+        ),
         "routes": [_screen_route(route) for route in routes],
         "ui_scenario_grid": _screen_grid(snapshot["ui_scenario_grid"]),
         "environment": _screen_environment(snapshot.get("environment", {})),
@@ -203,7 +264,6 @@ def build_artifact_bundle(snapshot: dict[str, Any]) -> dict[str, dict[str, Any]]
                 "generated_at",
                 "event_observations",
                 "historical_event_calibration",
-                "ui_scenario_grid",
             }
         },
     }
@@ -240,4 +300,44 @@ def golden_contract_failures(
         for field, value in route.get("baseline", {}).items():
             if value != source.get("baseline", {}).get(field):
                 failures.append(f"route_baseline_mismatch:{route['id']}:{field}")
+    diagnostic_environment = {
+        row["id"]: row
+        for row in diagnostics.get("environment", {}).get("scenarios", [])
+    }
+    for scenario in screen.get("environment", {}).get("scenarios", []):
+        source = diagnostic_environment.get(scenario["id"])
+        if source is None:
+            failures.append(f"missing_diagnostic_environment:{scenario['id']}")
+            continue
+        for field, value in scenario.items():
+            if value != source.get(field):
+                failures.append(
+                    f"environment_scenario_mismatch:{scenario['id']}:{field}"
+                )
+    diagnostic_grid = {
+        row["key"]: row for row in diagnostics.get("ui_scenario_grid", {}).get("rows", [])
+    }
+    for row in screen.get("ui_scenario_grid", {}).get("rows", []):
+        source = diagnostic_grid.get(row["key"])
+        if source is None:
+            failures.append(f"missing_diagnostic_grid:{row['key']}")
+            continue
+        for field, value in row.get("summary", {}).items():
+            if value != source.get("summary", {}).get(field):
+                failures.append(f"grid_summary_mismatch:{row['key']}:{field}")
+        diagnostic_grid_routes = {
+            route["route_id"]: route for route in source.get("routes", [])
+        }
+        for route in row.get("routes", []):
+            diagnostic_route = diagnostic_grid_routes.get(route["route_id"])
+            if diagnostic_route is None:
+                failures.append(
+                    f"missing_diagnostic_grid_route:{row['key']}:{route['route_id']}"
+                )
+                continue
+            for field, value in route.items():
+                if value != diagnostic_route.get(field):
+                    failures.append(
+                        f"grid_route_mismatch:{row['key']}:{route['route_id']}:{field}"
+                    )
     return failures

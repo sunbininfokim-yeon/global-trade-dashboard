@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import copy
 from typing import Any
 
 from shipping_capacity.engine import InputError, route_cycle_days
@@ -15,6 +16,76 @@ def _share(value: Any, name: str) -> float:
     if not 0.0 <= result <= 1.0:
         raise InputError(f"{name} must be between 0 and 1")
     return result
+
+
+def _nonnegative(value: Any, name: str) -> float:
+    try:
+        result = float(value)
+    except (TypeError, ValueError) as exc:
+        raise InputError(f"{name} must be numeric") from exc
+    if result < 0.0:
+        raise InputError(f"{name} must be nonnegative")
+    return result
+
+
+def expand_environment_scenarios(config: dict[str, Any]) -> list[dict[str, Any]]:
+    """Expand UI pathways into explicit, reproducible annual model scenarios.
+
+    Regulatory targets and operator responses intentionally remain separate.
+    The former describes an adopted or counterfactual policy path; only the
+    explicitly declared response multipliers alter model assumptions.
+    """
+
+    base_scenarios = config.get("scenarios", [])
+    pathways = config.get("pathways", [])
+    if not pathways:
+        return copy.deepcopy(base_scenarios)
+
+    expanded: list[dict[str, Any]] = []
+    for pathway in pathways:
+        pathway_id = pathway["id"]
+        response_multipliers = pathway.get("response_multipliers", {})
+        regulatory_path = pathway.get("regulatory_path", {})
+        for base in base_scenarios:
+            year = int(base["year"])
+            year_facts = regulatory_path.get(str(year))
+            if year_facts is None:
+                raise InputError(
+                    f"missing regulatory_path for {pathway_id} in {year}"
+                )
+            scenario = copy.deepcopy(base)
+            scenario.update(
+                {
+                    "id": f"{pathway_id}_{year}",
+                    "name_ko": f"{year} {pathway['name_ko']}",
+                    "pathway_id": pathway_id,
+                    "pathway_name_ko": pathway["name_ko"],
+                    "pathway_policy_status": pathway["policy_status"],
+                    "pathway_description_ko": pathway["description_ko"],
+                    "regulatory_facts": copy.deepcopy(year_facts),
+                    "behavior_assumption_status": (
+                        "provisional_sensitivity_seed_not_observed_operator_behavior"
+                    ),
+                }
+            )
+            scaled_by_type: dict[str, dict[str, float]] = {}
+            for ship_type, assumptions in base.get(
+                "ship_type_assumptions", {}
+            ).items():
+                scaled_by_type[ship_type] = {
+                    field: min(
+                        0.95,
+                        _share(value, field)
+                        * _nonnegative(
+                            response_multipliers.get(field, 1.0),
+                            f"response_multipliers.{field}",
+                        ),
+                    )
+                    for field, value in assumptions.items()
+                }
+            scenario["ship_type_assumptions"] = scaled_by_type
+            expanded.append(scenario)
+    return expanded
 
 
 def simulate_environment_route(
@@ -76,6 +147,7 @@ def simulate_environment_route(
         "route_id": route["id"],
         "ship_type": route["ship_type"],
         "scenario_id": scenario["id"],
+        "pathway_id": scenario.get("pathway_id", "legacy"),
         "year": scenario["year"],
         "physical_allocated_dwt": allocated,
         "baseline_required_dwt": baseline,
@@ -245,52 +317,72 @@ def aggregate_environment_scenario(
     scenario: dict[str, Any],
     results: list[dict[str, Any]],
 ) -> dict[str, Any]:
-    physical = sum(row["physical_allocated_dwt"] for row in results)
-    effective = sum(row["effective_service_capacity_dwt"] for row in results)
-    baseline = sum(row["baseline_required_dwt"] for row in results)
-    same_service = sum(row["same_service_required_dwt"] for row in results)
-    retention_range = {
-        key: (
-            sum(
-                row["physical_allocated_dwt"]
-                * row.get("effective_capacity_retention_rate_range", {}).get(
-                    key, row["effective_capacity_retention_rate"]
+    def summarize(rows: list[dict[str, Any]]) -> dict[str, Any]:
+        physical = sum(row["physical_allocated_dwt"] for row in rows)
+        effective = sum(row["effective_service_capacity_dwt"] for row in rows)
+        baseline = sum(row["baseline_required_dwt"] for row in rows)
+        same_service = sum(row["same_service_required_dwt"] for row in rows)
+        retention_range = {
+            key: (
+                sum(
+                    row["physical_allocated_dwt"]
+                    * row.get("effective_capacity_retention_rate_range", {}).get(
+                        key, row["effective_capacity_retention_rate"]
+                    )
+                    for row in rows
                 )
-                for row in results
+                / physical
+                if physical
+                else 1.0
             )
-            / physical
-            if physical
-            else 1.0
-        )
-        for key in ("low", "central", "high")
-    }
-    required_range = {
-        key: sum(
-            row.get("same_service_required_dwt_range", {}).get(
-                key, row["same_service_required_dwt"]
+            for key in ("low", "central", "high")
+        }
+        required_range = {
+            key: sum(
+                row.get("same_service_required_dwt_range", {}).get(
+                    key, row["same_service_required_dwt"]
+                )
+                for row in rows
             )
-            for row in results
-        )
-        for key in ("low", "central", "high")
-    }
+            for key in ("low", "central", "high")
+        }
+        return {
+            "representative_route_count": len(rows),
+            "physical_allocated_dwt": physical,
+            "effective_service_capacity_dwt": effective,
+            "effective_dwt_loss": physical - effective,
+            "effective_capacity_retention_rate": (
+                effective / physical if physical else 1.0
+            ),
+            "effective_capacity_retention_rate_range": retention_range,
+            "baseline_required_dwt": baseline,
+            "same_service_required_dwt": same_service,
+            "same_service_required_dwt_range": required_range,
+            "additional_required_vs_baseline_dwt": same_service - baseline,
+            "capacity_gap_vs_allocated_dwt": max(0.0, same_service - physical),
+        }
+
+    aggregate = summarize(results)
+    by_ship_type = []
+    for ship_type in ("container", "dry_bulk", "tanker"):
+        rows = [row for row in results if row["ship_type"] == ship_type]
+        if rows:
+            by_ship_type.append({"ship_type": ship_type, **summarize(rows)})
     return {
         "id": scenario["id"],
         "name_ko": scenario["name_ko"],
         "year": scenario["year"],
         "status": scenario["status"],
+        "pathway_id": scenario.get("pathway_id", "legacy"),
+        "pathway_name_ko": scenario.get("pathway_name_ko"),
+        "pathway_policy_status": scenario.get("pathway_policy_status"),
+        "pathway_description_ko": scenario.get("pathway_description_ko"),
+        "behavior_assumption_status": scenario.get("behavior_assumption_status"),
+        "regulatory_inputs": scenario["regulatory_facts"],
         "cii_reduction_vs_2019_pct": scenario["regulatory_facts"][
             "cii_reduction_vs_2019_pct"
         ],
-        "representative_route_count": len(results),
-        "physical_allocated_dwt": physical,
-        "effective_service_capacity_dwt": effective,
-        "effective_dwt_loss": physical - effective,
-        "effective_capacity_retention_rate": effective / physical if physical else 1.0,
-        "effective_capacity_retention_rate_range": retention_range,
-        "baseline_required_dwt": baseline,
-        "same_service_required_dwt": same_service,
-        "same_service_required_dwt_range": required_range,
-        "additional_required_vs_baseline_dwt": same_service - baseline,
-        "capacity_gap_vs_allocated_dwt": max(0.0, same_service - physical),
+        **aggregate,
+        "ship_type_breakdown": by_ship_type,
         "scope": "active representative routes, not the full world fleet",
     }

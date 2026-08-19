@@ -22,6 +22,7 @@ from shipping_capacity.comtrade_routes import (
 from shipping_capacity.container import summarize_world_bank_teu
 from shipping_capacity.engine import InputError, estimate_interval, required_capacity_dwt, simulate_route
 from shipping_capacity.environment import (
+    expand_environment_scenarios,
     simulate_environment_route,
     simulate_environment_route_range,
 )
@@ -441,6 +442,35 @@ class EngineTests(unittest.TestCase):
         self.assertEqual(len(result["response_cases"]), 3)
         self.assertEqual(result["regulatory_dimensions"]["vessel_size_class"], "ulcv")
 
+    def test_environment_pathways_expand_to_complete_annual_grid(self) -> None:
+        config = json.loads(
+            (ROOT / "config" / "environment_scenarios.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        scenarios = expand_environment_scenarios(config)
+        self.assertEqual(len(scenarios), 15)
+        self.assertEqual(
+            {row["pathway_id"] for row in scenarios},
+            {"imo_adopted", "accelerated", "deferred"},
+        )
+        for pathway_id in {row["pathway_id"] for row in scenarios}:
+            years = sorted(
+                row["year"] for row in scenarios if row["pathway_id"] == pathway_id
+            )
+            self.assertEqual(years, [2026, 2027, 2028, 2029, 2030])
+        accelerated_2030 = next(
+            row for row in scenarios if row["id"] == "accelerated_2030"
+        )
+        self.assertEqual(
+            accelerated_2030["regulatory_facts"]["cii_reduction_vs_2019_pct"],
+            22.2,
+        )
+        self.assertEqual(
+            accelerated_2030["pathway_policy_status"],
+            "counterfactual_not_adopted",
+        )
+
 
 class PortWatchTests(unittest.TestCase):
     def test_multi_model_analysis_uses_chronological_holdout_and_baselines(self) -> None:
@@ -678,6 +708,62 @@ class ScenarioGridTests(unittest.TestCase):
         )
         self.assertNotIn("historical_event_calibration", bundle["screen"])
         self.assertIn("historical_event_calibration", bundle["backtests"])
+
+    def test_environment_ui_contract_is_complete_and_monotonic(self) -> None:
+        snapshot = build_snapshot(ROOT / "config")
+        bundle = build_artifact_bundle(snapshot)
+        environment = bundle["screen"]["environment"]
+        self.assertEqual(environment["contract_version"], "environment-pathways-v1")
+        self.assertEqual(len(environment["pathways"]), 3)
+        self.assertEqual(len(environment["scenarios"]), 15)
+        scenarios = {
+            (row["pathway_id"], row["year"]): row
+            for row in environment["scenarios"]
+        }
+        for year in range(2026, 2031):
+            adopted = scenarios[("imo_adopted", year)]
+            accelerated = scenarios[("accelerated", year)]
+            deferred = scenarios[("deferred", year)]
+            self.assertEqual(
+                accelerated["physical_allocated_dwt"],
+                adopted["physical_allocated_dwt"],
+            )
+            self.assertEqual(
+                adopted["physical_allocated_dwt"],
+                deferred["physical_allocated_dwt"],
+            )
+            self.assertLessEqual(
+                accelerated["effective_service_capacity_dwt"],
+                adopted["effective_service_capacity_dwt"],
+            )
+            self.assertLessEqual(
+                adopted["effective_service_capacity_dwt"],
+                deferred["effective_service_capacity_dwt"],
+            )
+            self.assertEqual(
+                {row["ship_type"] for row in adopted["ship_type_breakdown"]},
+                {"container", "dry_bulk", "tanker"},
+            )
+            for scenario in (accelerated, adopted, deferred):
+                self.assertAlmostEqual(
+                    sum(
+                        row["physical_allocated_dwt"]
+                        for row in scenario["ship_type_breakdown"]
+                    ),
+                    scenario["physical_allocated_dwt"],
+                    delta=0.01,
+                )
+                self.assertAlmostEqual(
+                    sum(
+                        row["effective_service_capacity_dwt"]
+                        for row in scenario["ship_type_breakdown"]
+                    ),
+                    scenario["effective_service_capacity_dwt"],
+                    delta=0.01,
+                )
+        self.assertFalse(
+            golden_contract_failures(bundle["screen"], bundle["diagnostics"])
+        )
 
     def test_temporary_grid_preserves_accounting_and_monotonicity(self) -> None:
         routes = json.loads((ROOT / "config" / "routes.json").read_text(encoding="utf-8"))
