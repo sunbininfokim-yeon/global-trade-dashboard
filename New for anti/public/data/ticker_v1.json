@@ -1,6 +1,6 @@
 {
   "schema_version": "ticker-v1",
-  "generated_at": "2026-08-18T23:55:56.550751+00:00",
+  "generated_at": "2026-08-19T05:51:21.623927+00:00",
   "model": {
     "name": "commodity_diplomacy_rss_v1",
     "description": "RSS multi-region ticker: regional priority (MENA/IN/TR/JP/CN/TW/RU + commodity specialists) over Western majors; politics admitted with diplomacy+trade bridge, elections, governance polls, cabinet reshuffles; horse-race national polls rejected; importance = country-tier × info-grade; main display language Korean.",
@@ -73,20 +73,21 @@
     "cabinet_reshuffle": true
   },
   "stats": {
-    "sources_ok": 36,
-    "sources_failed": 2,
-    "raw_items": 842,
-    "scored_items": 109,
+    "sources_ok": 35,
+    "sources_failed": 3,
+    "raw_items": 802,
+    "scored_items": 113,
     "selected_items": 24,
     "region_histogram": {
-      "commodity_specialist": 8,
+      "commodity_specialist": 7,
       "mena": 4,
-      "china": 3,
+      "china": 2,
       "russia": 2,
       "india": 2,
       "west": 1,
       "japan": 2,
-      "turkey": 2
+      "turkey": 2,
+      "taiwan": 2
     },
     "min_importance": 0.35
   },
@@ -95,7 +96,7 @@
       "source_id": "aljazeera_en",
       "ok": true,
       "count": 25,
-      "elapsed_ms": 264,
+      "elapsed_ms": 192,
       "error": null,
       "mode": "live"
     },
@@ -103,7 +104,7 @@
       "source_id": "iran_intl",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 465,
+      "elapsed_ms": 451,
       "error": null,
       "mode": "live"
     },
@@ -111,7 +112,7 @@
       "source_id": "arab_news",
       "ok": true,
       "count": 10,
-      "elapsed_ms": 97,
+      "elapsed_ms": 121,
       "error": null,
       "mode": "live"
     },
@@ -119,7 +120,7 @@
       "source_id": "tehran_times",
       "ok": true,
       "count": 30,
-      "elapsed_ms": 1287,
+      "elapsed_ms": 1221,
       "error": null,
       "mode": "live"
     },
@@ -127,7 +128,7 @@
       "source_id": "middle_east_eye",
       "ok": true,
       "count": 20,
-      "elapsed_ms": 274,
+      "elapsed_ms": 321,
       "error": null,
       "mode": "live"
     },
@@ -135,23 +136,23 @@
       "source_id": "aa_world",
       "ok": true,
       "count": 30,
-      "elapsed_ms": 3242,
+      "elapsed_ms": 2551,
       "error": null,
       "mode": "live"
     },
     {
       "source_id": "daily_sabah",
-      "ok": true,
-      "count": 40,
-      "elapsed_ms": 760,
-      "error": null,
+      "ok": false,
+      "count": 0,
+      "elapsed_ms": 346,
+      "error": "HTTPError: HTTP Error 403: Forbidden",
       "mode": "live"
     },
     {
       "source_id": "hurriyet_daily",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 419,
+      "elapsed_ms": 374,
       "error": null,
       "mode": "live"
     },
@@ -159,7 +160,7 @@
       "source_id": "the_hindu",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 84,
+      "elapsed_ms": 156,
       "error": null,
       "mode": "live"
     },
@@ -167,7 +168,7 @@
       "source_id": "indian_express_world",
       "ok": false,
       "count": 0,
-      "elapsed_ms": 128,
+      "elapsed_ms": 133,
       "error": "HTTPError: HTTP Error 403: Forbidden",
       "mode": "live"
     },
@@ -175,7 +176,7 @@
       "source_id": "et_commodities",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 644,
+      "elapsed_ms": 422,
       "error": null,
       "mode": "live"
     },
@@ -183,7 +184,7 @@
       "source_id": "business_standard_markets",
       "ok": true,
       "count": 35,
-      "elapsed_ms": 148,
+      "elapsed_ms": 107,
       "error": null,
       "mode": "live"
     },
@@ -191,7 +192,7 @@
       "source_id": "ndtv_world",
       "ok": true,
       "count": 20,
-      "elapsed_ms": 276,
+      "elapsed_ms": 438,
       "error": null,
       "mode": "live"
     },
@@ -199,7 +200,7 @@
       "source_id": "xinhua_world",
       "ok": true,
       "count": 20,
-      "elapsed_ms": 789,
+      "elapsed_ms": 882,
       "error": null,
       "mode": "live"
     },
@@ -207,7 +208,7 @@
       "source_id": "china_daily_world",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 899,
+      "elapsed_ms": 1190,
       "error": null,
       "mode": "live"
     },
@@ -215,7 +216,7 @@
       "source_id": "cgtn_world",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 578,
+      "elapsed_ms": 506,
       "error": null,
       "mode": "live"
     },
@@ -223,7 +224,7 @@
       "source_id": "scmp",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 460,
+      "elapsed_ms": 608,
       "error": null,
       "mode": "live"
     },
@@ -231,7 +232,7 @@
       "source_id": "nhk_business",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 370,
+      "elapsed_ms": 428,
       "error": null,
       "mode": "live"
     },
@@ -239,7 +240,7 @@
       "source_id": "nhk_top",
       "ok": true,
       "count": 7,
-      "elapsed_ms": 54,
+      "elapsed_ms": 50,
       "error": null,
       "mode": "live"
     },
@@ -247,7 +248,7 @@
       "source_id": "japan_times",
       "ok": true,
       "count": 30,
-      "elapsed_ms": 165,
+      "elapsed_ms": 536,
       "error": null,
       "mode": "live"
     },
@@ -255,7 +256,7 @@
       "source_id": "nikkei_asia",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 83,
+      "elapsed_ms": 93,
       "error": null,
       "mode": "live"
     },
@@ -263,7 +264,7 @@
       "source_id": "cna",
       "ok": true,
       "count": 20,
-      "elapsed_ms": 140,
+      "elapsed_ms": 165,
       "error": null,
       "mode": "live"
     },
@@ -271,7 +272,7 @@
       "source_id": "taipei_times",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 131,
+      "elapsed_ms": 141,
       "error": null,
       "mode": "live"
     },
@@ -279,7 +280,7 @@
       "source_id": "ltn",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 459,
+      "elapsed_ms": 79,
       "error": null,
       "mode": "live"
     },
@@ -287,7 +288,7 @@
       "source_id": "udn",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 492,
+      "elapsed_ms": 273,
       "error": null,
       "mode": "live"
     },
@@ -295,7 +296,7 @@
       "source_id": "tass_en",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 1432,
+      "elapsed_ms": 5729,
       "error": null,
       "mode": "live"
     },
@@ -303,7 +304,7 @@
       "source_id": "tass_ru",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 3191,
+      "elapsed_ms": 1152,
       "error": null,
       "mode": "live"
     },
@@ -311,7 +312,7 @@
       "source_id": "interfax_ru",
       "ok": true,
       "count": 25,
-      "elapsed_ms": 2341,
+      "elapsed_ms": 2000,
       "error": null,
       "mode": "live"
     },
@@ -319,7 +320,7 @@
       "source_id": "rt_ru",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 2733,
+      "elapsed_ms": 2172,
       "error": null,
       "mode": "live"
     },
@@ -327,7 +328,7 @@
       "source_id": "ship_and_bunker",
       "ok": true,
       "count": 10,
-      "elapsed_ms": 237,
+      "elapsed_ms": 373,
       "error": null,
       "mode": "live"
     },
@@ -335,7 +336,7 @@
       "source_id": "oilprice",
       "ok": true,
       "count": 15,
-      "elapsed_ms": 759,
+      "elapsed_ms": 587,
       "error": null,
       "mode": "live"
     },
@@ -343,7 +344,7 @@
       "source_id": "mining_com",
       "ok": false,
       "count": 0,
-      "elapsed_ms": 88,
+      "elapsed_ms": 95,
       "error": "HTTPError: HTTP Error 403: Forbidden",
       "mode": "live"
     },
@@ -351,7 +352,7 @@
       "source_id": "world_grain",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 423,
+      "elapsed_ms": 484,
       "error": null,
       "mode": "live"
     },
@@ -359,7 +360,7 @@
       "source_id": "hellenic_shipping",
       "ok": true,
       "count": 20,
-      "elapsed_ms": 262,
+      "elapsed_ms": 156,
       "error": null,
       "mode": "live"
     },
@@ -367,7 +368,7 @@
       "source_id": "seatrade",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 623,
+      "elapsed_ms": 815,
       "error": null,
       "mode": "live"
     },
@@ -375,7 +376,7 @@
       "source_id": "bbc_business",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 352,
+      "elapsed_ms": 55,
       "error": null,
       "mode": "live"
     },
@@ -383,7 +384,7 @@
       "source_id": "bloomberg_markets",
       "ok": true,
       "count": 20,
-      "elapsed_ms": 546,
+      "elapsed_ms": 553,
       "error": null,
       "mode": "live"
     },
@@ -391,7 +392,7 @@
       "source_id": "ft_commodities",
       "ok": true,
       "count": 25,
-      "elapsed_ms": 440,
+      "elapsed_ms": 369,
       "error": null,
       "mode": "live"
     }
@@ -423,9 +424,9 @@
         "diplomacy": 1.0,
         "election": 0.0,
         "region_weight": 1.35,
-        "freshness": 0.825,
-        "importance": 5.55,
-        "final": 6.425
+        "freshness": 0.7,
+        "importance": 4.708,
+        "final": 5.45
       },
       "rank_reasons": [
         "region:commodity_specialist*1.35",
@@ -467,9 +468,9 @@
         "diplomacy": 1.0,
         "election": 0.0,
         "region_weight": 1.35,
-        "freshness": 0.78,
-        "importance": 4.398,
-        "final": 5.09
+        "freshness": 0.662,
+        "importance": 3.731,
+        "final": 4.318
       },
       "rank_reasons": [
         "region:commodity_specialist*1.35",
@@ -484,6 +485,49 @@
       "country_tier": "A",
       "info_grade": "2",
       "country_hint": "CHN"
+    },
+    {
+      "id": "50fdbb4e70262a78",
+      "published_at": "2026-08-19T05:40:00+00:00",
+      "source": {
+        "id": "oilprice",
+        "name": "OilPrice.com",
+        "region": "commodity_specialist",
+        "slant": null
+      },
+      "url": "https://oilprice.com/Latest-Energy-News/World-News/Oil-Prices-Rise-for-Fourth-Day-as-Hormuz-Traffic-Slows.html",
+      "category": "commodity",
+      "commodities": [
+        "oil",
+        "shipping"
+      ],
+      "title": {
+        "original": "Oil Prices Rise for Fourth Day as Hormuz Traffic Slows",
+        "original_lang": "en",
+        "ko": "호르무즈 트래픽이 느려짐에 따라 유가가 나흘째 상승"
+      },
+      "summary": "Crude oil prices extended their gains for the fourth day today as fresh tanker-tracking data suggests traffic via the Strait of Hormuz has slowed further amid harder rhetoric from both Iran and the United States, with both sides demonstrating an unwillingness to return to the neg",
+      "scores": {
+        "commodity": 5.0,
+        "diplomacy": 2.0,
+        "election": 0.0,
+        "region_weight": 1.35,
+        "freshness": 0.995,
+        "importance": 3.606,
+        "final": 4.174
+      },
+      "rank_reasons": [
+        "region:commodity_specialist*1.35",
+        "category:commodity",
+        "tier:A*1.00/g3",
+        "commodity:oil:3",
+        "commodity:shipping:2",
+        "diplomacy:2"
+      ],
+      "translation_status": "ok",
+      "country_tier": "A",
+      "info_grade": "3",
+      "country_hint": "USA"
     },
     {
       "id": "ccc59fdd2d1a70f5",
@@ -511,9 +555,9 @@
         "diplomacy": 1.0,
         "election": 0.0,
         "region_weight": 1.35,
-        "freshness": 0.872,
-        "importance": 3.561,
-        "final": 4.121
+        "freshness": 0.74,
+        "importance": 3.02,
+        "final": 3.496
       },
       "rank_reasons": [
         "region:commodity_specialist*1.35",
@@ -552,9 +596,9 @@
         "diplomacy": 1.0,
         "election": 1.2,
         "region_weight": 1.4,
-        "freshness": 0.907,
-        "importance": 3.392,
-        "final": 4.002
+        "freshness": 0.77,
+        "importance": 2.877,
+        "final": 3.395
       },
       "rank_reasons": [
         "region:mena*1.40",
@@ -593,9 +637,9 @@
         "diplomacy": 1.0,
         "election": 1.2,
         "region_weight": 1.25,
-        "freshness": 0.892,
-        "importance": 3.335,
-        "final": 3.71
+        "freshness": 0.757,
+        "importance": 2.829,
+        "final": 3.147
       },
       "rank_reasons": [
         "region:china*1.25",
@@ -610,6 +654,47 @@
       "info_grade": "1",
       "country_hint": "USA",
       "election_type": "cabinet_reshuffle"
+    },
+    {
+      "id": "8e3074322fd9f34e",
+      "published_at": "2026-08-19T00:00:00+00:00",
+      "source": {
+        "id": "oilprice",
+        "name": "OilPrice.com",
+        "region": "commodity_specialist",
+        "slant": null
+      },
+      "url": "https://oilprice.com/Energy/Energy-General/5-Energy-Stocks-Cashing-In-On-The-New-Energy-Crunch.html",
+      "category": "commodity",
+      "commodities": [
+        "oil"
+      ],
+      "title": {
+        "original": "5 Energy Stocks Cashing In On The New Energy Crunch",
+        "original_lang": "en",
+        "ko": "새로운 에너지 크런치를 현금화하는 5가지 에너지 재고"
+      },
+      "summary": "The Iran war has created an extraordinary earnings season for U.S. refiners. Brent crude has fallen to around $90 per barrel from a wartime peak of $126, but the shortage of refined fuels has only deepened. According to Reuters, Global refinery throughput in July was nearly 5 mil",
+      "scores": {
+        "commodity": 2.0,
+        "diplomacy": 0.0,
+        "election": 0.0,
+        "region_weight": 1.35,
+        "freshness": 0.85,
+        "importance": 2.253,
+        "final": 2.607
+      },
+      "rank_reasons": [
+        "region:commodity_specialist*1.35",
+        "category:commodity",
+        "tier:A*1.00/g1",
+        "commodity:oil:2",
+        "bridge:1"
+      ],
+      "translation_status": "ok",
+      "country_tier": "A",
+      "info_grade": "1",
+      "country_hint": "USA"
     },
     {
       "id": "1dd701652e9be96c",
@@ -637,9 +722,9 @@
         "diplomacy": 1.0,
         "election": 0.0,
         "region_weight": 1.35,
-        "freshness": 0.922,
-        "importance": 2.636,
-        "final": 3.051
+        "freshness": 0.782,
+        "importance": 2.236,
+        "final": 2.588
       },
       "rank_reasons": [
         "region:commodity_specialist*1.35",
@@ -656,84 +741,45 @@
       "country_hint": "RUS"
     },
     {
-      "id": "0f25e3f545603e08",
-      "published_at": "2026-08-18T18:33:53+00:00",
+      "id": "af4d7be569e1ddfd",
+      "published_at": "2026-08-19T02:37:32+00:00",
       "source": {
-        "id": "middle_east_eye",
-        "name": "Middle East Eye",
-        "region": "mena",
+        "id": "scmp",
+        "name": "South China Morning Post",
+        "region": "china",
         "slant": null
       },
-      "url": "https://www.middleeasteye.net/live-blog/live-blog-update/us-announces-sanctions-icc-president-and-senior-lawyer",
-      "category": "cabinet_reshuffle",
-      "commodities": [],
-      "title": {
-        "original": "US announces sanctions on ICC president and senior lawyer",
-        "original_lang": "en",
-        "ko": "미국, ICC 회장 겸 선임 변호사 제재 발표"
-      },
-      "summary": "US announces sanctions on ICC president and senior lawyer US Secretary of State Marco Rubio has announced sanctions against the president and a senior lawyer of the International Criminal Court (ICC). The US imposed sanctions on Tuesday on Tomoko Akane, a Japanese judge who is pr",
-      "scores": {
-        "commodity": 0,
-        "diplomacy": 1.0,
-        "election": 1.2,
-        "region_weight": 1.4,
-        "freshness": 0.862,
-        "importance": 2.319,
-        "final": 2.737
-      },
-      "rank_reasons": [
-        "region:mena*1.40",
-        "category:cabinet_reshuffle",
-        "tier:B*0.72/g1",
-        "diplomacy:1",
-        "election:cabinet_reshuffle:1.2",
-        "cabinet_reshuffle"
+      "url": "https://www.scmp.com/news/world/united-states-canada/article/3364501/why-trump-threatening-bomb-oman-iran-mediator-trying-clear-hormuz?utm_source=rss_feed",
+      "category": "commodity",
+      "commodities": [
+        "shipping"
       ],
-      "translation_status": "ok",
-      "country_tier": "B",
-      "info_grade": "1",
-      "country_hint": "SAU",
-      "election_type": "cabinet_reshuffle"
-    },
-    {
-      "id": "52cf81ab7dcb3979",
-      "published_at": "2026-08-18T23:15:37+00:00",
-      "source": {
-        "id": "rt_ru",
-        "name": "RT Russian",
-        "region": "russia",
-        "slant": null
-      },
-      "url": "https://russian.rt.com/ussr/news/1671432-fyodorov-zelenskii-vyzov?utm_source=rss&utm_medium=rss&utm_campaign=RSS",
-      "category": "election",
-      "commodities": [],
       "title": {
-        "original": "Дмитриев: Фёдоров бросил вызов Зеленскому призывом провести выборы на Украине",
-        "original_lang": "ru",
-        "ko": "드미트리예프: 페도로프는 우크라이나 선거를 요구하며 젤렌스키에게 반항했다."
+        "original": "Why is Trump threatening to bomb Oman, the Iran mediator trying to clear Hormuz?",
+        "original_lang": "en",
+        "ko": "왜 트럼프는 이란의 중재자인 오만을 폭격하겠다고 위협하는가?"
       },
-      "summary": "Глава РФПИ Кирилл Дмитриев заявил, что бывший министр обороны Украины Михаил Фёдоров, призвав провести выборы в стране, фактически обозначил свои президентские амбиции и бросил вызов Владимиру Зеленскому. Читать далее",
+      "summary": "The world knows that US President Donald Trump is angry with Iran. But he is not happy with the small country lying across the Strait of Hormuz from the Islamic Republic, either: Oman. Oman has played a relatively low profile role since the Iran war began, including as a mediator",
       "scores": {
-        "commodity": 0,
-        "diplomacy": 0.0,
-        "election": 2.0,
+        "commodity": 1.0,
+        "diplomacy": 1.0,
+        "election": 0.0,
         "region_weight": 1.25,
-        "freshness": 0.982,
-        "importance": 2.165,
-        "final": 2.408
+        "freshness": 0.914,
+        "importance": 1.874,
+        "final": 2.085
       },
       "rank_reasons": [
-        "region:russia*1.25",
-        "category:election",
+        "region:china*1.25",
+        "category:commodity",
         "tier:A*1.00/g1",
-        "election:presidential:2"
+        "commodity:shipping:1",
+        "diplomacy:1"
       ],
       "translation_status": "ok",
       "country_tier": "A",
       "info_grade": "1",
-      "country_hint": "RUS",
-      "election_type": "presidential"
+      "country_hint": "CHN"
     },
     {
       "id": "7ad2e48cdf3166c4",
@@ -760,9 +806,9 @@
         "diplomacy": 1.0,
         "election": 0.0,
         "region_weight": 1.35,
-        "freshness": 0.922,
-        "importance": 2.042,
-        "final": 2.363
+        "freshness": 0.782,
+        "importance": 1.732,
+        "final": 2.005
       },
       "rank_reasons": [
         "region:commodity_specialist*1.35",
@@ -771,93 +817,6 @@
         "commodity:shipping:1",
         "diplomacy:1",
         "bridge:2"
-      ],
-      "translation_status": "ok",
-      "country_tier": "A",
-      "info_grade": "2",
-      "country_hint": "USA"
-    },
-    {
-      "id": "941b2e050b670f17",
-      "published_at": "2026-08-18T21:00:49+00:00",
-      "source": {
-        "id": "hellenic_shipping",
-        "name": "Hellenic Shipping News",
-        "region": "commodity_specialist",
-        "slant": null
-      },
-      "url": "https://www.hellenicshippingnews.com/top-10-buyers-across-the-bulker-and-tanker-markets/",
-      "category": "commodity",
-      "commodities": [
-        "shipping",
-        "oil"
-      ],
-      "title": {
-        "original": "Top 10 Buyers across the Bulker and Tanker Markets",
-        "original_lang": "en",
-        "ko": "Bulker 및 Tanker 시장의 상위 10대 구매자"
-      },
-      "summary": "The Strait of Hormuz crisis has shaped sentiment across both the Tanker and Bulker markets this year, disrupting established trade routes and driving voyage costs as owners navigate rerouting, higher bunker expenses, and elevated risk. Despite these near-term pressures, buying ap",
-      "scores": {
-        "commodity": 3.0,
-        "diplomacy": 1.0,
-        "election": 0.0,
-        "region_weight": 1.35,
-        "freshness": 0.922,
-        "importance": 1.926,
-        "final": 2.229
-      },
-      "rank_reasons": [
-        "region:commodity_specialist*1.35",
-        "category:commodity",
-        "tier:A*1.00/g3",
-        "commodity:oil:1",
-        "commodity:shipping:2",
-        "diplomacy:1"
-      ],
-      "translation_status": "ok",
-      "country_tier": "A",
-      "info_grade": "3",
-      "country_hint": "USA"
-    },
-    {
-      "id": "625330d06bb8107a",
-      "published_at": "2026-08-18T07:15:16+00:00",
-      "source": {
-        "id": "seatrade",
-        "name": "Seatrade Maritime",
-        "region": "commodity_specialist",
-        "slant": null
-      },
-      "url": "https://www.seatrade-maritime.com/security/despite-pipeline-talks-hormuz-will-remain-key-to-iraq-s-oil-exports",
-      "category": "commodity_diplomacy",
-      "commodities": [
-        "oil",
-        "shipping"
-      ],
-      "title": {
-        "original": "Despite pipeline talks, Hormuz will remain key to Iraq’s oil exports",
-        "original_lang": "en",
-        "ko": "파이프라인 협상에도 불구하고, 호르무즈는 이라크 석유 수출의 핵심 요소로 남을 것입니다."
-      },
-      "summary": "Iraq’s oil exports to key markets in Asia rely on the Strait of Hormuz and alternative routes face considerable logistical challenges",
-      "scores": {
-        "commodity": 2.0,
-        "diplomacy": 1.0,
-        "election": 0.0,
-        "region_weight": 1.35,
-        "freshness": 0.629,
-        "importance": 1.799,
-        "final": 2.082
-      },
-      "rank_reasons": [
-        "region:commodity_specialist*1.35",
-        "category:commodity_diplomacy",
-        "tier:A*1.00/g2",
-        "commodity:oil:1",
-        "commodity:shipping:1",
-        "diplomacy:1",
-        "bridge:1"
       ],
       "translation_status": "ok",
       "country_tier": "A",
@@ -889,9 +848,9 @@
         "diplomacy": 1.0,
         "election": 0.0,
         "region_weight": 1.25,
-        "freshness": 0.898,
-        "importance": 1.84,
-        "final": 2.047
+        "freshness": 0.761,
+        "importance": 1.561,
+        "final": 1.736
       },
       "rank_reasons": [
         "region:russia*1.25",
@@ -904,46 +863,6 @@
       "country_tier": "A",
       "info_grade": "1",
       "country_hint": "RUS"
-    },
-    {
-      "id": "9e4f309b680f5940",
-      "published_at": "2026-08-18T14:00:09+00:00",
-      "source": {
-        "id": "scmp",
-        "name": "South China Morning Post",
-        "region": "china",
-        "slant": null
-      },
-      "url": "https://www.scmp.com/economy/global-economy/article/3364426/polar-pivot-china-debuts-regular-arctic-shipping-service-iran-war-drags?utm_source=rss_feed",
-      "category": "commodity",
-      "commodities": [
-        "shipping"
-      ],
-      "title": {
-        "original": "China debuts regular Arctic shipping service amid Iran war. Is this the Polar pivot?",
-        "original_lang": "en",
-        "ko": "중국은 이란 전쟁 중에 정기적인 북극 해운 서비스를 개시합니다. 이것이 Polar 피벗입니까?"
-      },
-      "summary": "As the Iran war spills over into the Red Sea – a crucial chokepoint for Asia-Europe trade – China has marked a milestone by launching its first regular service through the Arctic’s Northern Sea Route (NSR), a development welcomed by Russia. The route, which runs along Russia’s no",
-      "scores": {
-        "commodity": 2.0,
-        "diplomacy": 0.0,
-        "election": 0.0,
-        "region_weight": 1.25,
-        "freshness": 0.759,
-        "importance": 1.746,
-        "final": 1.942
-      },
-      "rank_reasons": [
-        "region:china*1.25",
-        "category:commodity",
-        "tier:A*1.00/g1",
-        "commodity:shipping:2"
-      ],
-      "translation_status": "ok",
-      "country_tier": "A",
-      "info_grade": "1",
-      "country_hint": "CHN"
     },
     {
       "id": "e7b2e931d2391526",
@@ -971,9 +890,9 @@
         "diplomacy": 2.0,
         "election": 0.0,
         "region_weight": 1.4,
-        "freshness": 0.826,
-        "importance": 1.626,
-        "final": 1.918
+        "freshness": 0.701,
+        "importance": 1.379,
+        "final": 1.627
       },
       "rank_reasons": [
         "region:mena*1.40",
@@ -989,85 +908,126 @@
       "country_hint": "USA"
     },
     {
-      "id": "9cd6124062511d9c",
-      "published_at": "2026-08-18T16:48:03+00:00",
+      "id": "d65747925f898401",
+      "published_at": "2026-08-19T01:08:12+00:00",
       "source": {
-        "id": "scmp",
-        "name": "South China Morning Post",
-        "region": "china",
+        "id": "middle_east_eye",
+        "name": "Middle East Eye",
+        "region": "mena",
         "slant": null
       },
-      "url": "https://www.scmp.com/news/world/middle-east/article/3364478/trump-posts-map-hormuz-new-us-territory-says-no-iran-talks-planned?utm_source=rss_feed",
+      "url": "https://www.middleeasteye.net/live-blog/live-blog-update/irans-top-security-official-ridicules-trumps-claims-over-hormuz-strait",
       "category": "commodity",
       "commodities": [
         "shipping"
       ],
       "title": {
-        "original": "Trump posts map with Hormuz as ‘new US territory’, says no Iran talks planned",
+        "original": "Iran’s top security official ridicules Trump’s claims over Hormuz Strait",
         "original_lang": "en",
-        "ko": "트럼프는 ‘새로운 미국 영토‘ 로 호르무즈와 함께 지도를 게시하고, 어떤 이란 회담도 계획되지 않았다고 말한다."
+        "ko": "이란의 최고 안보 관리가 호르무즈 해협에 대한 트럼프의 주장을 비웃고 있다."
       },
-      "summary": "US President Donald Trump said that Tuesday that no talks with Iran were under way or scheduled, as he posted a map showing the Strait of Hormuz as a new American territory in a fresh jibe at Tehran. Trump has been pressing his threat to claim sovereignty over the crucial energy ",
+      "summary": "Iran’s top security official ridicules Trump’s claims over Hormuz Strait Iran’s secretary of the Supreme National Security Council, Mohsen Rezaei, has ridiculed US President Donald Trump after he declared the Strait of Hormuz as a US territory. \"The gap between America’s inabilit",
       "scores": {
         "commodity": 1.0,
-        "diplomacy": 1.0,
+        "diplomacy": 2.0,
         "election": 0.0,
-        "region_weight": 1.25,
-        "freshness": 0.82,
-        "importance": 1.682,
-        "final": 1.871
+        "region_weight": 1.4,
+        "freshness": 0.877,
+        "importance": 1.242,
+        "final": 1.466
       },
       "rank_reasons": [
-        "region:china*1.25",
-        "category:commodity",
-        "tier:A*1.00/g1",
-        "commodity:shipping:1",
-        "diplomacy:1"
-      ],
-      "translation_status": "ok",
-      "country_tier": "A",
-      "info_grade": "1",
-      "country_hint": "USA"
-    },
-    {
-      "id": "fa57acc508b82465",
-      "published_at": "2026-08-18T21:00:59+00:00",
-      "source": {
-        "id": "hellenic_shipping",
-        "name": "Hellenic Shipping News",
-        "region": "commodity_specialist",
-        "slant": null
-      },
-      "url": "https://www.hellenicshippingnews.com/divergence-in-the-coal-market-offers-opportunities/",
-      "category": "commodity",
-      "commodities": [
-        "coal"
-      ],
-      "title": {
-        "original": "Divergence in the coal market offers opportunities",
-        "original_lang": "en",
-        "ko": "석탄 시장의 발산은 기회를 제공합니다."
-      },
-      "summary": "Global seaborne coal flows mask a sharp divergence between thermal and metallurgical coal markets. Thermal coal volumes declined as weaker European and U.S. demand offset resilient Asian imports, while met coal flows surged on stronger demand from China and Japan. Looking ahead, ",
-      "scores": {
-        "commodity": 3.0,
-        "diplomacy": 0.0,
-        "election": 0.0,
-        "region_weight": 1.35,
-        "freshness": 0.922,
-        "importance": 1.528,
-        "final": 1.768
-      },
-      "rank_reasons": [
-        "region:commodity_specialist*1.35",
+        "region:mena*1.40",
         "category:commodity",
         "tier:A*1.00/g3",
-        "commodity:coal:3"
+        "commodity:shipping:1",
+        "diplomacy:2"
       ],
       "translation_status": "ok",
       "country_tier": "A",
       "info_grade": "3",
-      "country_hint": "CHN"
+      "country_hint": "USA"
+    },
+    {
+      "id": "aa01911461629a1e",
+      "published_at": "2026-08-19T05:29:39+00:00",
+      "source": {
+        "id": "the_hindu",
+        "name": "The Hindu",
+        "region": "india",
+        "slant": null
+      },
+      "url": "https://www.thehindu.com/business/markets/markets-fall-in-early-trade-amid-rising-crude-oil-prices/article71363495.ece",
+      "category": "commodity",
+      "commodities": [
+        "oil"
+      ],
+      "title": {
+        "original": "Markets fall in early trade amid rising crude oil prices",
+        "original_lang": "en",
+        "ko": "원유 가격 상승으로 시장이 초기 거래에서 하락"
+      },
+      "summary": "The 30-share BSE Sensex was down 166.19 points to 77,070.93 in early trade; the 50-share NSE Nifty dropped 59 points to 24,096.75",
+      "scores": {
+        "commodity": 2.0,
+        "diplomacy": 0.0,
+        "election": 0.0,
+        "region_weight": 1.3,
+        "freshness": 0.99,
+        "importance": 1.093,
+        "final": 1.241
+      },
+      "rank_reasons": [
+        "region:india*1.30",
+        "category:commodity",
+        "tier:A*1.00/g3",
+        "commodity:oil:2"
+      ],
+      "translation_status": "ok",
+      "country_tier": "A",
+      "info_grade": "3",
+      "country_hint": "IND"
+    },
+    {
+      "id": "b89b87884febbf8c",
+      "published_at": "2026-08-18T21:05:52+00:00",
+      "source": {
+        "id": "tass_en",
+        "name": "TASS",
+        "region": "russia",
+        "slant": null
+      },
+      "url": "https://tass.com/world/2174875",
+      "category": "commodity",
+      "commodities": [
+        "shipping"
+      ],
+      "title": {
+        "original": "US claim for Strait of Hormuz far from its real capabilities — Iranian official",
+        "original_lang": "en",
+        "ko": "실제 능력과는 거리가 먼 호르무즈 해협에 대한 미국의 주장 — 이란 관료"
+      },
+      "summary": "Secretary of Iran’s Supreme National Security Council Mohsen Rezaei invited all interested parties to create a new cooperation framework in the region \"that will succeed the US hegemony in the Persian Gulf zone\"",
+      "scores": {
+        "commodity": 1.0,
+        "diplomacy": 2.0,
+        "election": 0.0,
+        "region_weight": 1.25,
+        "freshness": 0.784,
+        "importance": 1.11,
+        "final": 1.235
+      },
+      "rank_reasons": [
+        "region:russia*1.25",
+        "category:commodity",
+        "tier:A*1.00/g3",
+        "commodity:shipping:1",
+        "diplomacy:2"
+      ],
+      "translation_status": "ok",
+      "country_tier": "A",
+      "info_grade": "3",
+      "country_hint": "RUS"
     },
     {
       "id": "3321114448685c24",
@@ -1094,9 +1054,9 @@
         "diplomacy": 1.0,
         "election": 0.0,
         "region_weight": 1.4,
-        "freshness": 0.822,
-        "importance": 1.213,
-        "final": 1.431
+        "freshness": 0.697,
+        "importance": 1.029,
+        "final": 1.214
       },
       "rank_reasons": [
         "region:mena*1.40",
@@ -1111,123 +1071,40 @@
       "country_hint": "SAU"
     },
     {
-      "id": "abd08d387785d0c3",
-      "published_at": "2026-08-18T11:34:10+00:00",
-      "source": {
-        "id": "business_standard_markets",
-        "name": "Business Standard Markets",
-        "region": "india",
-        "slant": null
-      },
-      "url": "https://www.business-standard.com/markets/capital-market-news/nifty-hits-six-day-losing-streak-as-crude-tops-91-it-stocks-lead-market-selloff-126081800954_1.html",
-      "category": "commodity",
-      "commodities": [
-        "oil"
-      ],
-      "title": {
-        "original": "Nifty hits six-day losing streak as crude tops $91; IT stocks lead market selloff",
-        "original_lang": "en",
-        "ko": "NIFTY는 $ 91의 원유 탑으로 6일 연속 패배를 기록했고, IT 주식은 시장 매도를 이끌었습니다."
-      },
-      "summary": "Key benchmark indices extended their losses on Tuesday, with the Nifty falling for the sixth consecutive session, while the Sensex declined for the third straight day. Sentiment was weighed down by Brent crude rising above $91 a barrel amid renewed US-Iran tensions. Weak global c",
-      "scores": {
-        "commodity": 3.0,
-        "diplomacy": 0.0,
-        "election": 0.0,
-        "region_weight": 1.3,
-        "freshness": 0.71,
-        "importance": 1.175,
-        "final": 1.334
-      },
-      "rank_reasons": [
-        "region:india*1.30",
-        "category:commodity",
-        "tier:A*1.00/g3",
-        "commodity:oil:3"
-      ],
-      "translation_status": "ok",
-      "country_tier": "A",
-      "info_grade": "3",
-      "country_hint": "IND"
-    },
-    {
-      "id": "efec7ce5db52fde5",
-      "published_at": "2026-08-18T12:20:02+00:00",
-      "source": {
-        "id": "business_standard_markets",
-        "name": "Business Standard Markets",
-        "region": "india",
-        "slant": null
-      },
-      "url": "https://www.business-standard.com/markets/capital-market-news/inr-weighed-down-by-muted-local-equities-as-oil-prices-stay-elevated-126081801059_1.html",
-      "category": "commodity",
-      "commodities": [
-        "oil"
-      ],
-      "title": {
-        "original": "INR weighed down by muted local equities as oil prices stay elevated",
-        "original_lang": "en",
-        "ko": "INR은 유가가 계속 상승함에 따라 뮤트된 현지 주식에 의해 저울질되었습니다."
-      },
-      "summary": "The Indian rupee depreciated 7 paise to close at 95.68 (provisional) against the US dollar on Tuesday, weighed down by elevated crude oil prices and lingering geopolitical tensions in West Asia. Local shares also closed lower on Tuesday as rising oil prices and global bond yields",
-      "scores": {
-        "commodity": 2.0,
-        "diplomacy": 1.0,
-        "election": 0.0,
-        "region_weight": 1.3,
-        "freshness": 0.725,
-        "importance": 1.113,
-        "final": 1.263
-      },
-      "rank_reasons": [
-        "region:india*1.30",
-        "category:commodity",
-        "tier:A*1.00/g3",
-        "commodity:oil:2",
-        "diplomacy:1"
-      ],
-      "translation_status": "ok",
-      "country_tier": "A",
-      "info_grade": "3",
-      "country_hint": "IND"
-    },
-    {
-      "id": "1f7344d3e3445cf9",
-      "published_at": "2026-08-18T23:42:24+00:00",
+      "id": "3e4dbf9c18d8332f",
+      "published_at": "2026-08-19T04:00:16+00:00",
       "source": {
         "id": "bloomberg_markets",
         "name": "Bloomberg Markets",
         "region": "west",
         "slant": null
       },
-      "url": "https://www.bloomberg.com/news/articles/2026-08-18/gold-holds-losses-as-bond-selloff-hormuz-limbo-weigh-on-outlook",
+      "url": "https://www.bloomberg.com/news/articles/2026-08-19/chinese-coking-coal-futures-soar-as-shanxi-supply-crunch-worsens",
       "category": "commodity",
       "commodities": [
-        "gold",
-        "shipping"
+        "coal"
       ],
       "title": {
-        "original": "Gold Holds Losses as Bond Selloff, Hormuz Limbo Weigh on Outlook",
+        "original": "Chinese Coking Coal Futures Soar as Shanxi Supply Crunch Worsens",
         "original_lang": "en",
-        "ko": "금은 채권 매도로 손실을, 호르무즈 림보는 전망에 무게를 둡니다"
+        "ko": "산시 공급 위기 악화로 중국 코킹 석탄 선물 급증"
       },
-      "summary": "Gold steadied after a bond rout and deadlock in the Strait of Hormuz snapped a nascent uptrend.",
+      "summary": "Chinese coking coal prices are surging as supply continues to tighten after the deadly accident in the mining hub of Shanxi three months ago.",
       "scores": {
         "commodity": 2.0,
-        "diplomacy": 1.0,
+        "diplomacy": 0.0,
         "election": 0.0,
         "region_weight": 0.55,
-        "freshness": 0.994,
-        "importance": 1.527,
-        "final": 1.218
+        "freshness": 0.95,
+        "importance": 1.368,
+        "final": 1.091
       },
       "rank_reasons": [
         "region:west*0.55",
         "category:commodity",
         "tier:A*1.00/g3",
-        "commodity:gold:1",
-        "commodity:shipping:1",
-        "diplomacy:1"
+        "commodity:coal:2",
+        "bridge:2"
       ],
       "translation_status": "ok",
       "country_tier": "A",
@@ -1275,45 +1152,45 @@
       "election_type": "cabinet_reshuffle"
     },
     {
-      "id": "7dcee50e1edef6e9",
-      "published_at": "2026-08-18T22:07:00+00:00",
+      "id": "020de83200e638ba",
+      "published_at": "2026-08-19T05:34:28+00:00",
       "source": {
-        "id": "japan_times",
-        "name": "Japan Times",
-        "region": "japan",
+        "id": "business_standard_markets",
+        "name": "Business Standard Markets",
+        "region": "india",
         "slant": null
       },
-      "url": "https://www.japantimes.co.jp/news/2026/08/19/world/politics/trump-iran-hormuz-tensions/",
+      "url": "https://www.business-standard.com/markets/capital-market-news/prism-johnson-spurts-after-securing-additional-coal-linkages-worth-rs-70-49-crore-annually-126081900355_1.html",
       "category": "commodity",
       "commodities": [
-        "shipping"
+        "coal"
       ],
       "title": {
-        "original": "Trump takes Iran hard line as Hormuz tensions mark new normal",
+        "original": "Prism Johnson spurts after securing additional coal linkages worth Rs 70.49 crore annually",
         "original_lang": "en",
-        "ko": "트럼프는 호르무즈 긴장이 새로운 정상이 되면서 이란을 강경하게 받아들입니다."
+        "ko": "Prism Johnson은 매년 Rs 70.49 crore 상당의 추가 석탄 연계를 확보한 후 분출합니다."
       },
-      "summary": "His insistence that the U.S. has total control over the strait is directly at odds with the stance of Iranian officials.",
+      "summary": "Prism Johnson rose 7.05% to Rs 112.40 after the company was declared the successful bidder for supply of 1,28,000 metric tonnes (MT) of coal per annum by subsidiaries of Coal India.",
       "scores": {
         "commodity": 1.0,
-        "diplomacy": 1.0,
+        "diplomacy": 0.0,
         "election": 0.0,
-        "region_weight": 1.25,
-        "freshness": 0.951,
-        "importance": 0.936,
-        "final": 1.041
+        "region_weight": 1.3,
+        "freshness": 0.992,
+        "importance": 0.715,
+        "final": 0.811
       },
       "rank_reasons": [
-        "region:japan*1.25",
+        "region:india*1.30",
         "category:commodity",
         "tier:A*1.00/g3",
-        "commodity:shipping:1",
-        "diplomacy:1"
+        "commodity:coal:1",
+        "bridge:1"
       ],
       "translation_status": "ok",
       "country_tier": "A",
       "info_grade": "3",
-      "country_hint": "JPN"
+      "country_hint": "IND"
     },
     {
       "id": "d6b29ea2fb1a41eb",
@@ -1340,9 +1217,9 @@
         "diplomacy": 1.0,
         "election": 0.0,
         "region_weight": 1.3,
-        "freshness": 0.754,
-        "importance": 0.742,
-        "final": 0.842
+        "freshness": 0.64,
+        "importance": 0.63,
+        "final": 0.715
       },
       "rank_reasons": [
         "region:turkey*1.30",
@@ -1355,6 +1232,46 @@
       "country_tier": "A",
       "info_grade": "3",
       "country_hint": "USA"
+    },
+    {
+      "id": "13250567012e7eef",
+      "published_at": "2026-08-19T03:40:00+00:00",
+      "source": {
+        "id": "japan_times",
+        "name": "Japan Times",
+        "region": "japan",
+        "slant": null
+      },
+      "url": "https://www.japantimes.co.jp/paralympics/2026/08/19/united-states-paralympians-support/",
+      "category": "commodity",
+      "commodities": [
+        "silver"
+      ],
+      "title": {
+        "original": "U.S. Paralympian sees LA Games as chance to challenge China and change perceptions",
+        "original_lang": "en",
+        "ko": "미국 패럴림픽 출전 선수는 LA 대회를 중국에 도전하고 인식을 바꿀 수 있는 기회로 보고 있습니다."
+      },
+      "summary": "Truwit, who won two silver medals in Paris a year after losing her lower left leg in a shark attack, saw firsthand how French fans lifted local athletes to new heights.",
+      "scores": {
+        "commodity": 1.0,
+        "diplomacy": 0.0,
+        "election": 0.0,
+        "region_weight": 1.25,
+        "freshness": 0.941,
+        "importance": 0.52,
+        "final": 0.578
+      },
+      "rank_reasons": [
+        "region:japan*1.25",
+        "category:commodity",
+        "tier:A*1.00/g3",
+        "commodity:silver:1"
+      ],
+      "translation_status": "ok",
+      "country_tier": "A",
+      "info_grade": "3",
+      "country_hint": "CHN"
     },
     {
       "id": "e43b05233659007e",
@@ -1381,9 +1298,9 @@
         "diplomacy": 0.0,
         "election": 0.0,
         "region_weight": 1.3,
-        "freshness": 0.824,
-        "importance": 0.593,
-        "final": 0.673
+        "freshness": 0.699,
+        "importance": 0.503,
+        "final": 0.571
       },
       "rank_reasons": [
         "region:turkey*1.30",
@@ -1396,6 +1313,86 @@
       "country_tier": "A",
       "info_grade": "3",
       "country_hint": "RUS"
+    },
+    {
+      "id": "24fabf77e2d59ad1",
+      "published_at": "2026-08-19T05:24:35+00:00",
+      "source": {
+        "id": "ltn",
+        "name": "Liberty Times",
+        "region": "taiwan",
+        "slant": "pan_green"
+      },
+      "url": "https://news.ltn.com.tw/news/society/breakingnews/5545033",
+      "category": "commodity",
+      "commodities": [
+        "silver"
+      ],
+      "title": {
+        "original": "台中阿北帶5本存摺飯店開房間 妻驚覺不對勁…竟是假戶政詐騙",
+        "original_lang": "zh-TW",
+        "ko": "타이중 아 베이 벨트 5 예약 보증금 호텔 객실 아내는 뭔가 잘못되었다는 사실에 놀랐습니다... 그것은 가짜 행정 사기입니다"
+      },
+      "summary": "台中市王姓男子近日接獲自稱「台北戶政事務所」詐騙電話，對方謊稱他的身分遭冒用、涉及不明資金，還要求他配合「辦案」，王男深信不疑，隔天竟帶著家中5本銀行存摺前往住家附近飯店，準備...…",
+      "scores": {
+        "commodity": 1.0,
+        "diplomacy": 0.0,
+        "election": 0.0,
+        "region_weight": 1.25,
+        "freshness": 0.988,
+        "importance": 0.393,
+        "final": 0.437
+      },
+      "rank_reasons": [
+        "region:taiwan*1.25",
+        "category:commodity",
+        "tier:B*0.72/g3",
+        "commodity:silver:1"
+      ],
+      "translation_status": "ok",
+      "country_tier": "B",
+      "info_grade": "3",
+      "country_hint": "TWN"
+    },
+    {
+      "id": "b232ba10c3e7c322",
+      "published_at": "2026-08-19T05:20:17+00:00",
+      "source": {
+        "id": "ltn",
+        "name": "Liberty Times",
+        "region": "taiwan",
+        "slant": "pan_green"
+      },
+      "url": "https://sports.ltn.com.tw/news/breakingnews/5545023",
+      "category": "commodity",
+      "commodities": [
+        "silver"
+      ],
+      "title": {
+        "original": "舉重新星備戰世錦賽 長年指導教練卻被排除",
+        "original_lang": "zh-TW",
+        "ko": "리부트 스타워즈 월드 챔피언십 코칭 코치는 몇 년 동안 배제되었습니다"
+      },
+      "summary": "彰化舉重好手黃宜甄今年參加亞洲舉重錦標賽，奪下2金1銀佳績，目前正備戰2026 年世界舉重錦標賽，但中華民國舉重協會近日公告該賽事的代表選手及教練，黃宜甄雖在名單中，但長...…",
+      "scores": {
+        "commodity": 1.0,
+        "diplomacy": 0.0,
+        "election": 0.0,
+        "region_weight": 1.25,
+        "freshness": 0.986,
+        "importance": 0.392,
+        "final": 0.436
+      },
+      "rank_reasons": [
+        "region:taiwan*1.25",
+        "category:commodity",
+        "tier:B*0.72/g3",
+        "commodity:silver:1"
+      ],
+      "translation_status": "ok",
+      "country_tier": "B",
+      "info_grade": "3",
+      "country_hint": "TWN"
     }
   ]
 }
