@@ -3135,3 +3135,204 @@ body.macro-mode .map-pane { flex: 1 1 100%; }
 .ms-modal-head h3 { font-size: 15px; font-weight: 620; margin: 0; color: #e2e8f0; }
 @media (max-width: 900px) { .ms-dist-row { grid-template-columns: minmax(88px, 1fr) 2fr; } .ms-dist-val { display: none; } }
 .fin-head-en { font-size: 11px; color: #64748b; letter-spacing: .04em; margin: -4px 0 8px; }
+
+/* ==========================================================================
+   「오늘 신호」 panel (home right pane)
+   --------------------------------------------------------------------------
+   Two zones with deliberately different weights: the fixed three read as
+   standing conditions (state words, wide cards), the rotating four as a
+   readout (numbers in a 2x2 grid). The stage swaps a whole page on a drum
+   flip, so pages are absolutely positioned and the stage owns the height.
+   ========================================================================== */
+
+.signal-fixed {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 18px;
+}
+
+.signal-fixed-card {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    padding: 12px 14px;
+    border: 1px solid var(--border);
+    border-left: 3px solid rgba(255, 255, 255, 0.18);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.03);
+    transition: background 0.18s ease, border-color 0.18s ease;
+}
+
+.signal-fixed-card.is-clickable { cursor: pointer; }
+.signal-fixed-card.is-clickable:hover,
+.signal-fixed-card.is-clickable:focus-visible {
+    background: rgba(255, 255, 255, 0.07);
+    border-color: rgba(255, 255, 255, 0.28);
+    outline: none;
+}
+
+/* Tone marks the left rail only. The value itself stays high-contrast so a
+   warning state never costs legibility. */
+.signal-fixed-card.tone-warn { border-left-color: var(--negative); }
+.signal-fixed-card.tone-cool { border-left-color: var(--accent); }
+.signal-fixed-card.tone-muted { border-left-color: rgba(255, 255, 255, 0.12); }
+
+.signal-fixed-title {
+    font-size: 11px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+}
+
+.signal-fixed-value {
+    font-size: 19px;
+    font-weight: 700;
+    color: var(--text-primary);
+    line-height: 1.25;
+}
+
+.signal-fixed-card.tone-muted .signal-fixed-value {
+    color: var(--text-secondary);
+    font-weight: 600;
+}
+
+.signal-fixed-sub {
+    font-size: 11px;
+    color: var(--text-secondary);
+    line-height: 1.45;
+}
+
+/* ---- rotating pages ---- */
+
+.signal-rotator {
+    border-top: 1px solid var(--border);
+    padding-top: 14px;
+}
+
+.signal-rotator-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.signal-page-name {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-primary);
+    letter-spacing: 0.02em;
+}
+
+.signal-dots { display: flex; gap: 6px; }
+
+.signal-dot {
+    width: 6px;
+    height: 6px;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.22);
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.signal-dot:hover { background: rgba(255, 255, 255, 0.45); }
+.signal-dot.is-on { background: var(--accent); transform: scale(1.35); }
+
+/* The stage owns the height because its pages are absolutely stacked mid-flip;
+   without a fixed box the panel below it would jump on every rotation. */
+.signal-stage {
+    position: relative;
+    height: 178px;
+    perspective: 900px;
+}
+
+.signal-page {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    gap: 10px;
+    transform-origin: 50% 100%;
+    transition: transform 0.62s cubic-bezier(0.22, 0.61, 0.36, 1), opacity 0.5s ease;
+}
+
+.signal-page.is-entering { transform: rotateX(78deg); opacity: 0; }
+.signal-page.is-active   { transform: rotateX(0deg);  opacity: 1; }
+.signal-page.is-leaving  { transform: rotateX(-78deg); opacity: 0; transform-origin: 50% 0%; }
+
+@media (prefers-reduced-motion: reduce) {
+    .signal-page { transition: none; }
+}
+
+.signal-slot {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 2px;
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.02);
+    overflow: hidden;
+    transition: background 0.18s ease, border-color 0.18s ease;
+}
+
+.signal-slot.is-clickable { cursor: pointer; }
+.signal-slot.is-clickable:hover,
+.signal-slot.is-clickable:focus-visible {
+    background: rgba(255, 255, 255, 0.07);
+    border-color: rgba(255, 255, 255, 0.28);
+    outline: none;
+}
+
+.signal-slot-label {
+    font-size: 11px;
+    color: var(--text-secondary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.signal-slot-value {
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* A pending slot must not read as a number that happens to be missing, so it
+   drops to secondary weight and normal size rather than showing a dash. */
+.signal-slot-value.is-pending {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    white-space: normal;
+    line-height: 1.35;
+}
+
+.signal-slot-unit {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    margin-left: 2px;
+}
+
+.signal-slot-foot {
+    font-size: 10px;
+    color: rgba(148, 163, 184, 0.75);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-height: 12px;
+}
+
+.signal-fixed-foot {
+    font-size: 10px;
+    color: rgba(148, 163, 184, 0.7);
+    margin-top: 1px;
+}

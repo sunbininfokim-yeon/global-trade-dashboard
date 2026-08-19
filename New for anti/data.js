@@ -90,21 +90,52 @@
 
     window.loadMacroData = async function() {
     // 0. Fetch real-time Macro Data from FRED (key lives server-side in the Worker)
+    //
+    // The 「오늘 신호」 panel rotates six pages of four slots, so this list covers
+    // energy / agriculture / FX / rates / equities rather than the old flat tile
+    // column. Series that FRED does not carry (Singapore VLSFO, JKM, Newcastle
+    // coal, SCFI/BDI, KOSPI) stay out of here and render as placeholders --
+    // the panel labels them 연동 예정 rather than inventing a number.
+    //
+    // `daily: true` marks a series that skips weekends and holidays; those ask
+    // the Worker for a few extra rows so a "." reading can be stepped over.
     const series = [
-        { id: "DEXUSEU", name: "EUR/USD" },
-        { id: "DEXJPUS", name: "USD/JPY" },
-        { id: "NASDAQCOM", name: "NASDAQ" },
+        { id: "DEXUSEU", name: "EUR/USD", daily: true },
+        { id: "DEXJPUS", name: "USD/JPY", daily: true },
+        { id: "NASDAQCOM", name: "NASDAQ", daily: true },
         { id: "WALCL", name: "FED_BS" },
-        { id: "WTREGEN", name: "TGA" }
+        { id: "WTREGEN", name: "TGA" },
+        // A 에너지
+        { id: "DCOILBRENTEU", name: "BRENT", daily: true },
+        // B 농산물 -- IMF monthly commodity prices, USD per metric tonne.
+        // Monthly and published with a lag, which is why every slot on that
+        // page carries an `as of` date.
+        { id: "PWHEAMTUSDM", name: "WHEAT" },
+        { id: "PMAIZMTUSDM", name: "CORN" },
+        { id: "PSOYBUSDM", name: "SOYBEANS" },
+        { id: "PSUGAISAUSDM", name: "SUGAR" },
+        // C 환율 -- FRED has no DXY (ICE licenses it); the Fed's own broad
+        // dollar index is the standard public stand-in.
+        { id: "DTWEXBGS", name: "DXY_BROAD", daily: true },
+        // D 금리
+        { id: "DFEDTARU", name: "FED_TARGET", daily: true },
+        { id: "DGS10", name: "US10Y", daily: true },
+        // E 주식
+        { id: "SP500", name: "SP500", daily: true }
     ];
     let macroData = {};
     try {
         const fredPromises = series.map(async (s) => {
-            const url = `/api/macro?source=fred&series_id=${s.id}`;
+            const url = `/api/macro?source=fred&series_id=${s.id}${s.daily ? '&limit=6' : ''}`;
             const res = await fetch(url);
             const data = await res.json();
-            if (data.observations && data.observations.length > 0) {
-                return { name: s.name, value: data.observations[0].value, date: data.observations[0].date };
+            // Observations arrive newest first. FRED marks a missing reading
+            // with "." rather than omitting the row, so take the first one
+            // that actually carries a number.
+            const rows = data.observations || [];
+            const row = rows.find(o => o && o.value && o.value !== ".");
+            if (row) {
+                return { name: s.name, value: row.value, date: row.date };
             }
             return { name: s.name, value: "N/A", date: "N/A" };
         });
@@ -116,7 +147,10 @@
             if (r.date !== "N/A") {
                 normalizedDate = r.date + " (UTC 00:00 Normalized)";
             }
-            macroData[r.name] = { value: r.value, date: normalizedDate };
+            // `date` keeps the annotated string the legacy tiles print verbatim;
+            // `asOf` is the bare observation date the 오늘 신호 slots render as
+            // "as of 2026-08-15" without having to strip the annotation back off.
+            macroData[r.name] = { value: r.value, date: normalizedDate, asOf: r.date };
         });
     } catch(e) {
         console.error("FRED API Error:", e);
@@ -139,13 +173,13 @@
                 const bokRate = rows.find(r => r.KEYSTAT_NAME === "한국은행 기준금리");
                 
                 if (krwUsd) {
-                    macroData["KRW_USD"] = { value: krwUsd.DATA_VALUE, date: krwUsd.CYCLE + " (UTC 00:00 Normalized)" };
+                    macroData["KRW_USD"] = { value: krwUsd.DATA_VALUE, date: krwUsd.CYCLE + " (UTC 00:00 Normalized)", asOf: krwUsd.CYCLE };
                 } else {
                     macroData["KRW_USD"] = { value: "데이터 없음", date: new Date().toISOString() + " (UTC 00:00 Normalized)" };
                 }
                 
                 if (bokRate) {
-                    macroData["BOK_RATE"] = { value: bokRate.DATA_VALUE, date: bokRate.CYCLE + " (UTC 00:00 Normalized)" };
+                    macroData["BOK_RATE"] = { value: bokRate.DATA_VALUE, date: bokRate.CYCLE + " (UTC 00:00 Normalized)", asOf: bokRate.CYCLE };
                 } else {
                     macroData["BOK_RATE"] = { value: "데이터 없음", date: new Date().toISOString() + " (UTC 00:00 Normalized)" };
                 }
@@ -180,9 +214,10 @@
             const eiaData = await eiaRes.json();
             if (eiaData.response && eiaData.response.data && eiaData.response.data.length > 0) {
                 const wtiData = eiaData.response.data[0];
-                macroData["WTI_OIL"] = { 
-                    value: wtiData.value, 
-                    date: wtiData.period + " (UTC 00:00 Normalized)" 
+                macroData["WTI_OIL"] = {
+                    value: wtiData.value,
+                    date: wtiData.period + " (UTC 00:00 Normalized)",
+                    asOf: wtiData.period
                 };
             } else {
                 macroData["WTI_OIL"] = { value: "데이터 없음", date: new Date().toISOString() + " (UTC 00:00 Normalized)" };
@@ -195,9 +230,10 @@
             const gasData = await eiaGasRes.json();
             if (gasData.response && gasData.response.data && gasData.response.data.length > 0) {
                 const natGasData = gasData.response.data[0];
-                macroData["NAT_GAS"] = { 
-                    value: natGasData.value, 
-                    date: natGasData.period + " (UTC 00:00 Normalized)" 
+                macroData["NAT_GAS"] = {
+                    value: natGasData.value,
+                    date: natGasData.period + " (UTC 00:00 Normalized)",
+                    asOf: natGasData.period
                 };
             } else {
                 macroData["NAT_GAS"] = { value: "데이터 없음", date: new Date().toISOString() + " (UTC 00:00 Normalized)" };

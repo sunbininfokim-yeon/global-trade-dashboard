@@ -788,8 +788,16 @@ async function handleMacro(request, env, ctx) {
             const FRED_KEY = env.FRED_API_KEY;
             if (!FRED_KEY) return missingKey('FRED_API_KEY');
 
-            return kvCachedJson(env, `fred:${series_id}`, 3600, async () => {
-                const fredUrl = `https://api.stlouisfed.org/fred/series/observations?series_id=${encodeURIComponent(series_id)}&api_key=${FRED_KEY}&file_type=json&sort_order=desc&limit=1`;
+            // FRED writes "." for a day a daily series has no reading -- weekends
+            // and market holidays on DGS10, DEXJPUS and friends. With limit=1 the
+            // newest observation is then a dot and the tile has nothing to show,
+            // so callers may ask for a few extra rows and take the first real one.
+            // Capped at 10: this route exists to fill one tile, not to serve history.
+            const limitParam = parseInt(url.searchParams.get('limit'), 10);
+            const limit = Number.isFinite(limitParam) ? Math.min(Math.max(limitParam, 1), 10) : 1;
+
+            return kvCachedJson(env, `fred:${series_id}:${limit}`, 3600, async () => {
+                const fredUrl = `https://api.stlouisfed.org/fred/series/observations?series_id=${encodeURIComponent(series_id)}&api_key=${FRED_KEY}&file_type=json&sort_order=desc&limit=${limit}`;
                 const res = await fetch(fredUrl);
                 if (!res.ok) return { ok: false, status: res.status };
                 return { ok: true, body: await res.json() };

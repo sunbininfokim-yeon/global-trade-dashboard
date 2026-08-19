@@ -1199,5 +1199,8 @@
     host.innerHTML = '';
   };
 
-  window.ShippingDashboard = { render, unmount };
+  // loadData is exposed so the home 「오늘 신호」 chokepoint tile can read the
+  // same snapshot without fetching 1.1 MB a second time -- the promise is
+  // memoised here, so whichever screen asks first warms it for the other.
+  window.ShippingDashboard = { render, unmount, loadData: loadShippingData };
 })();
