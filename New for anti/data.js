@@ -161,19 +161,37 @@
 
     // 0.52 Japan / UK 10Y government bond yields: FRED only carries these
     // monthly (OECD), which is what "JP10Y"/"UK10Y" above just loaded as a
-    // fallback. Yahoo Finance quotes both daily (same tickers CNBC's
-    // /quotes/JP10Y and /quotes/UK10Y pages use), so try that second and
-    // overwrite the monthly baseline on success. If Yahoo is down or the
-    // symbol stops resolving, the panel just keeps last month's OECD print
-    // instead of going blank.
+    // fallback baseline. Two daily sources are tried on top of it, in order:
+    //
+    //   1. CNBC's quote API -- the same JP10Y/UK10Y tickers behind
+    //      cnbc.com/quotes/JP10Y and /UK10Y.
+    //   2. Yahoo Finance, if CNBC doesn't resolve.
+    //
+    // Either succeeding overwrites the FRED monthly value; both failing
+    // leaves it in place, so the tile degrades to last month's OECD print
+    // rather than going blank.
     try {
-        const yahooBonds = [
+        const bondSymbols = [
             { symbol: "JP10Y", name: "JP10Y" },
             { symbol: "UK10Y", name: "UK10Y" }
         ];
-        const yahooPromises = yahooBonds.map(async (b) => {
-            const url = `/api/macro?source=yfinance&symbol=${encodeURIComponent(b.symbol)}&interval=1d&range=5d`;
-            const res = await fetch(url);
+
+        const fetchCnbcQuote = async (symbol) => {
+            const res = await fetch(`/api/macro?source=cnbc&symbol=${encodeURIComponent(symbol)}`);
+            if (!res.ok) return null;
+            const body = await res.json();
+            const quote = body?.FormattedQuoteResult?.FormattedQuote?.[0];
+            const raw = quote?.last ?? quote?.last_price ?? quote?.previous_day_closing;
+            const value = parseFloat(raw);
+            if (!isFinite(value)) return null;
+            const dateStr = quote?.last_time_msec
+                ? new Date(Number(quote.last_time_msec)).toISOString().slice(0, 10)
+                : new Date().toISOString().slice(0, 10);
+            return { value, date: dateStr };
+        };
+
+        const fetchYahooDaily = async (symbol) => {
+            const res = await fetch(`/api/macro?source=yfinance&symbol=${encodeURIComponent(symbol)}&interval=1d&range=5d`);
             if (!res.ok) return null;
             const body = await res.json();
             const result = body?.chart?.result?.[0];
@@ -181,17 +199,21 @@
             const closes = result?.indicators?.quote?.[0]?.close || [];
             for (let i = closes.length - 1; i >= 0; i--) {
                 if (closes[i] !== null && closes[i] !== undefined) {
-                    const isoDate = new Date(timestamps[i] * 1000).toISOString().slice(0, 10);
-                    return { name: b.name, value: closes[i], date: isoDate };
+                    return { value: closes[i], date: new Date(timestamps[i] * 1000).toISOString().slice(0, 10) };
                 }
             }
             return null;
-        });
-        (await Promise.all(yahooPromises)).forEach(r => {
-            if (r) macroData[r.name] = { value: r.value, date: r.date + " (UTC 00:00 Normalized)", asOf: r.date };
-        });
+        };
+
+        await Promise.all(bondSymbols.map(async (b) => {
+            const picked = await fetchCnbcQuote(b.symbol).catch(() => null)
+                || await fetchYahooDaily(b.symbol).catch(() => null);
+            if (picked) {
+                macroData[b.name] = { value: picked.value, date: picked.date + " (UTC 00:00 Normalized)", asOf: picked.date };
+            }
+        }));
     } catch(e) {
-        console.error("Yahoo JP/UK 10Y Error:", e);
+        console.error("JP/UK 10Y daily fetch error:", e);
     }
 
     // 0.5 KRX (KOSPI) removed: the KRX Data Marketplace key returned

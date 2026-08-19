@@ -839,6 +839,27 @@ async function handleMacro(request, env, ctx) {
             });
         }
 
+        if (source === 'cnbc') {
+            // CNBC's unofficial quote API -- the same one behind cnbc.com/quotes/<symbol>
+            // -- for instruments Yahoo prices oddly or not at all, e.g. sovereign
+            // bond yields (JP10Y, UK10Y). No API key; a plain browser UA is enough
+            // to get past their edge. Not FRED/BOK/EIA-official, so callers treat a
+            // miss here as routine and fall back rather than surfacing an error.
+            const symbol = url.searchParams.get('symbol');
+            if (!symbol) return new Response(JSON.stringify({ error: "symbol required" }), { status: 400, headers: JSON_HEADERS });
+
+            return kvCachedJson(env, `cnbc:${symbol}`, 3600, async () => {
+                const cnbcUrl = `https://quote.cnbc.com/quote-html-webservice/restQuote/symbolType/symbol`
+                    + `?symbols=${encodeURIComponent(symbol)}&requestMethod=itv&noform=1&partnerId=2`
+                    + `&fund=1&exthrs=1&output=json&events=1`;
+                const res = await fetch(cnbcUrl, {
+                    headers: { "User-Agent": "Mozilla/5.0", "Accept": "application/json" }
+                });
+                if (!res.ok) return { ok: false, status: res.status };
+                return { ok: true, body: await res.json() };
+            });
+        }
+
         if (source === 'yfinance') {
             const symbol = url.searchParams.get('symbol');
 
