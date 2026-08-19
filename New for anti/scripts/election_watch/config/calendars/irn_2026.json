@@ -1,0 +1,55 @@
+{
+  "iso3": "IRN",
+  "year": 2026,
+  "as_of": "2026-08-09",
+  "region": "middle_east",
+  "mode": "china_style_leadership_extract",
+  "null_policy": {
+    "없음": "해당 일정/선거 없음",
+    "불명": "공개소스에서 아직 확정되지 않음"
+  },
+  "notes": [
+    "Managed electoral system: candidate vetting by the Guardian Council.",
+    "Iran has presidential, Majlis and Assembly of Experts elections, but the bundled 2026 pack does not contain a dated national-election event."
+  ],
+  "election_system": {
+    "mode": "managed_competition",
+    "institutions": [
+      {
+        "id": "presidential",
+        "name_ko": "대통령 선거",
+        "candidate_filter": "guardian_council"
+      },
+      {
+        "id": "majlis",
+        "name_ko": "이슬람협의회(마줄리스) 선거",
+        "candidate_filter": "guardian_council"
+      },
+      {
+        "id": "assembly_of_experts",
+        "name_ko": "전문가회의 선거",
+        "candidate_filter": "guardian_council",
+        "role": "supreme_leader_selection_and_oversight"
+      }
+    ],
+    "note_ko": "선거는 존재하지만 후보 자격 심사와 비선출기관 권한 때문에 자유경쟁 선거로 단순 표시하지 않는다."
+  },
+  "events": [
+    {
+      "id": "irn-2026-national",
+      "type": "general",
+      "label_ko": "전국 대선·마줄리스 선거",
+      "date": "없음",
+      "status": "not_in_2026_pack",
+      "notes": "National elections exist, but no dated 2026 event is bundled; keep the election-system card visible and the date as 불명/미수록 rather than implying no elections exist."
+    },
+    {
+      "id": "irn-2026-leadership-review",
+      "type": "leadership_review",
+      "label_ko": "최고지도자 승계·IRGC/국가안보회의 월간 검토",
+      "date": "불명",
+      "status": "ongoing",
+      "notes": "Use iran_leadership_extracted.json and direct public-source checks; do not infer names or events."
+    }
+  ]
+}

@@ -1,0 +1,203 @@
+{
+  "schema": "election_source_refresh_report_v1",
+  "generated_at": "2026-08-14T07:12:04.669172+00:00",
+  "fetch_requested": false,
+  "fetch_exit_code": null,
+  "policy_ko": "원문 캐시는 자동 갱신할 수 있으나 profile/calendar/extracted 반영은 사람의 공개원문 검토 후에만 한다.",
+  "sources": [
+    {
+      "target_id": "idn_kpu_portal",
+      "iso3": "IDN",
+      "url": "https://www.kpu.go.id/",
+      "raw_path": "raw/idn/kpu_portal.html",
+      "review_fields": [
+        "election_calendar",
+        "official_results",
+        "party_notices"
+      ],
+      "status": "pending_manual_text_review",
+      "fetched_at": "2026-08-14T05:45:50.045827+00:00",
+      "final_url": "https://www.kpu.go.id/",
+      "http_status": 200,
+      "bytes": 39994,
+      "sha256": "f1f35fb4457e2f4ecd1695543be5f4f4e373a3134810bf10d378823f7ed78fb1"
+    },
+    {
+      "target_id": "idn_kpu_open_data",
+      "iso3": "IDN",
+      "url": "https://satupetadata.kpu.go.id/",
+      "raw_path": "raw/idn/kpu_open_data.html",
+      "review_fields": [
+        "election_calendar",
+        "official_results_dataset",
+        "party_data"
+      ],
+      "status": "reviewed_official_data_portal_index",
+      "fetched_at": "2026-08-14T05:48:43.430222+00:00",
+      "final_url": "https://satupetadata.kpu.go.id/",
+      "http_status": 200,
+      "bytes": 3939,
+      "sha256": "6ff91b1131e1876eb139538c956718139d3f03fe84ca490280de28318c51a735"
+    },
+    {
+      "target_id": "zaf_iec_portal",
+      "iso3": "ZAF",
+      "url": "https://www.elections.org.za/",
+      "raw_path": "raw/zaf/iec_portal.html",
+      "review_fields": [
+        "election_calendar",
+        "official_results",
+        "party_notices"
+      ],
+      "status": "reviewed_official_calendar_event",
+      "fetched_at": "2026-08-14T05:45:53.267149+00:00",
+      "final_url": "https://www.elections.org.za/pw/",
+      "http_status": 200,
+      "bytes": 122540,
+      "sha256": "c9c536e87fd14f01f04ea7403c2110a131c98fe279280c43ba32e4bf686a21ed"
+    },
+    {
+      "target_id": "zaf_iec_party_statistics",
+      "iso3": "ZAF",
+      "url": "https://www.elections.org.za/pw/StatsData/Political-Parties-Statistics",
+      "raw_path": "raw/zaf/iec_party_statistics.html",
+      "review_fields": [
+        "registered_parties",
+        "party_status",
+        "election_context"
+      ],
+      "status": "redirected_to_home_no_party_statistics",
+      "fetched_at": "2026-08-14T05:49:49.355527+00:00",
+      "final_url": "https://www.elections.org.za/pw/Home",
+      "http_status": 200,
+      "bytes": 122545,
+      "sha256": "6eb530cb56c6a06dde95f8bbea7a5d7f1c194b0ae11c6aa6ff175964a8886195"
+    },
+    {
+      "target_id": "nga_inec_portal",
+      "iso3": "NGA",
+      "url": "https://www.inecnigeria.org/",
+      "raw_path": "raw/nga/inec_portal.html",
+      "review_fields": [
+        "election_calendar",
+        "certified_results",
+        "party_registration_notices"
+      ],
+      "status": "pending_manual_text_review",
+      "fetched_at": "2026-08-14T05:45:57.948786+00:00",
+      "final_url": "https://www.inecnigeria.org/",
+      "http_status": 200,
+      "bytes": 282221,
+      "sha256": "7ce21917ba21de5cfab812f94fe4e2b8a73683aa14f536b0ba81586394947c4e"
+    },
+    {
+      "target_id": "nga_inec_party_documents",
+      "iso3": "NGA",
+      "url": "https://www.inecnigeria.org/political-party-documents/",
+      "raw_path": "raw/nga/inec_party_documents.html",
+      "review_fields": [
+        "party_registration",
+        "party_documents",
+        "legal_status"
+      ],
+      "status": "reviewed_official_document_link",
+      "fetched_at": "2026-08-14T05:48:51.069496+00:00",
+      "final_url": "https://www.inecnigeria.org/political-party-documents/",
+      "http_status": 200,
+      "bytes": 217913,
+      "sha256": "3d39b45da26b44bdae7b144e35263a6d07ef36a5869608803aa1b309097ebb50"
+    },
+    {
+      "target_id": "nga_inec_party_guidelines_2026",
+      "iso3": "NGA",
+      "url": "https://www.inecnigeria.org/wp-content/uploads/Regulations-and-Guidelines-2026_UPDATED.pdf",
+      "raw_path": "raw/nga/inec_party_guidelines_2026.pdf",
+      "review_fields": [
+        "party_registration",
+        "party_regulation_changes",
+        "legal_status"
+      ],
+      "status": "reviewed_official_regulations",
+      "fetched_at": "2026-08-14T05:55:17.390632+00:00",
+      "final_url": "https://www.inecnigeria.org/wp-content/uploads/Regulations-and-Guidelines-2026_UPDATED.pdf",
+      "http_status": 200,
+      "bytes": 1586410,
+      "sha256": "cadfa1629181721cd06522e58b2a32576017aba194804ff9d1f33464f074e86e"
+    },
+    {
+      "target_id": "nga_inec_party_list",
+      "iso3": "NGA",
+      "url": "https://www.inecnigeria.org/list-of-political-parties/",
+      "raw_path": "raw/nga/inec_party_list.html",
+      "review_fields": [
+        "registered_parties",
+        "party_status",
+        "legal_status"
+      ],
+      "status": "reviewed_partial_official_registry",
+      "fetched_at": "2026-08-14T05:49:55.403453+00:00",
+      "final_url": "https://www.inecnigeria.org/list-of-political-parties/",
+      "http_status": 200,
+      "bytes": 247903,
+      "sha256": "058c4bccfb5bc06e4ea7bb2ce5944b308fc4c3977797415aae1e46c66c9b6fd8"
+    },
+    {
+      "target_id": "nga_inec_election_results",
+      "iso3": "NGA",
+      "url": "https://www.inecnigeria.org/election-results/",
+      "raw_path": "raw/nga/inec_election_results.html",
+      "review_fields": [
+        "certified_results",
+        "result_documents",
+        "election_calendar"
+      ],
+      "status": "pending_manual_text_review",
+      "fetched_at": "2026-08-14T05:48:55.091467+00:00",
+      "final_url": "https://www.inecnigeria.org/election-results/",
+      "http_status": 200,
+      "bytes": 235406,
+      "sha256": "cd7d859a96352e1e43c697e39d032dd45db5c5d52d810ef712cbe1a01f2c2594"
+    },
+    {
+      "target_id": "irn_moi_portal",
+      "iso3": "IRN",
+      "url": "https://www.moi.ir/",
+      "raw_path": "raw/irn/moi_portal.html",
+      "review_fields": [
+        "election_calendar",
+        "ministry_notices"
+      ],
+      "status": "fetch_failed_needs_alternative_source",
+      "attempted_at": "2026-08-14T06:01:58.004149+00:00",
+      "error": "HTTP Error 403: Forbidden"
+    },
+    {
+      "target_id": "irn_irna_english",
+      "iso3": "IRN",
+      "url": "https://lite.irna.ir/en/",
+      "raw_path": "raw/irn/irna_lite_english.html",
+      "review_fields": [
+        "leadership_changes",
+        "security_axis",
+        "election_notices"
+      ],
+      "status": "fetch_failed_needs_alternative_source",
+      "attempted_at": "2026-08-14T06:01:58.014702+00:00",
+      "error": "<urlopen error [Errno 8] nodename nor servname provided, or not known>"
+    },
+    {
+      "target_id": "irn_parliament_english",
+      "iso3": "IRN",
+      "url": "https://www.ipu.org/parliament/IR",
+      "raw_path": "raw/irn/ipu_parliament_ir.html",
+      "review_fields": [
+        "majles_leadership",
+        "legislature_notices"
+      ],
+      "status": "fetch_failed_needs_alternative_source",
+      "attempted_at": "2026-08-14T06:01:58.116780+00:00",
+      "error": "<urlopen error [SSL: TLSV1_ALERT_PROTOCOL_VERSION] tlsv1 alert protocol version (_ssl.c:1129)>"
+    }
+  ],
+  "next_action": "Review raw cache + metadata, patch verified fields, then run run_refresh_cycle.py --build-derived."
+}

@@ -147,9 +147,17 @@ def _overlay_history(ind: dict[str, Any], dates: list[str], month_map: dict[str,
 
 
 def _pin_latest(ind: dict[str, Any], value: float, source: str, asof_s: str) -> None:
+    # This overwrites exactly one point -- history[:-1] stays fixture_synth.
+    # quality="live_latest" says that in the schema, but a line chart drawn
+    # straight through fixture history into that one real point reads as a
+    # real trend (or a real cliff, if the fixture tail happened to sit far
+    # from the real value). real_points_from_end tells the chart where the
+    # observed data actually starts, so it can stop drawing history as if it
+    # were one continuous series.
     for key in ("5y", "10y"):
         if key in ind.get("history", {}) and ind["history"][key].get("values"):
             ind["history"][key]["values"][-1] = round(value, 6)
+            ind["history"][key]["real_points_from_end"] = 1
     ind["value"] = round(value, 6)
     fmt = ind.get("format") or "number1"
     if fmt not in ("rating", "fx_watch", "flag", "fedwatch"):

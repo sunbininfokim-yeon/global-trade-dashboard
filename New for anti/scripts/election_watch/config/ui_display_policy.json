@@ -1,0 +1,99 @@
+{
+  "version": 1,
+  "as_of": "2026-08-14",
+  "map": {
+    "layer_1": "presidential_party_by_state",
+    "layer_2": "governor_party_by_state",
+    "toggle": true
+  },
+  "congress": {
+    "chambers": [
+      "senate",
+      "house"
+    ],
+    "viz": "hemicycle_wikipedia_style",
+    "click": [
+      "party_seats",
+      "factions_federal_only"
+    ]
+  },
+  "state_legislatures": {
+    "show": "party_seats_only",
+    "factions": false,
+    "reason_ko": "주의회 계파는 자료 분절·변동 커 표시하지 않음. 정당 의석만."
+  },
+  "calendar": {
+    "source": "elections_calendar_master_v1",
+    "show": "global_timeline_date_sorted",
+    "include_party_conventions": true,
+    "significance_stars": true
+  },
+  "auto_update": {
+    "cadence": "monthly",
+    "day": 1,
+    "modules": [
+      "usa_house_factions",
+      "jpn_ldp_factions",
+      "usa_state_legislature_party_seats",
+      "congress_party_seat_totals",
+      "china_leadership_monthly_review"
+    ],
+    "next_run": "2026-09-01",
+    "owner": "Grok / election_watch pipe"
+  },
+  "reference_ui": "https://invest-lens.io/geopolitics/elections",
+  "depth": {
+    "tier1": {
+      "min": [
+        "head",
+        "legislature_party_seats",
+        "polls",
+        "calendar",
+        "party_conventions",
+        "security_or_factions_if_relevant"
+      ],
+      "examples": [
+        "USA",
+        "JPN",
+        "CHN",
+        "RUS"
+      ]
+    },
+    "tier2": {
+      "min": [
+        "head",
+        "legislature_party_seats",
+        "polls",
+        "calendar",
+        "party_conventions"
+      ],
+      "no_factions_state_legislature": true,
+      "examples": [
+        "GBR",
+        "KOR",
+        "ISR",
+        "BRA",
+        "DEU",
+        "FRA",
+        "TWN",
+        "IND",
+        "TUR",
+        "IRN",
+        "SAU"
+      ]
+    },
+    "tier3_partial": {
+      "min": [
+        "head",
+        "calendar",
+        "party_conventions_if_any"
+      ],
+      "optional": [
+        "legislature_party_seats",
+        "polls"
+      ],
+      "examples": ["ARE"],
+      "note_ko": "3급 전부 동일 깊이 강요 안 함. 시장·안보 관련국은 2급 최소 깊이 유지."
+    }
+  }
+}

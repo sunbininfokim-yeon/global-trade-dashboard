@@ -1,4 +1,4 @@
-# Market microstructure tables — 2026-08-13
+# Market microstructure tables — 2026-08-14
 
 공개 상품 AUM·거래대금 기반 추정. 증권사 고객 레버리지 공시가 아님. 투자 권유 아님.
 
@@ -14,11 +14,11 @@
 
 | metric | value | source | quality |
 |--------|------:|--------|---------|
-| Conc_top2 (005930+000660) % | 48.5932 | KRX OpenAPI sto/stk_bydd_trd basDd=20260813 | observed |
-| Conc_top5 % | 55.896 | KRX OpenAPI sto/stk_bydd_trd basDd=20260813 | observed |
-| Conc_top10 % | 62.38 | KRX OpenAPI sto/stk_bydd_trd basDd=20260813 | observed |
+| Conc_top2 (005930+000660) % | 48.7426 | KRX OpenAPI sto/stk_bydd_trd basDd=20260814 | observed |
+| Conc_top5 % | 56.1343 | KRX OpenAPI sto/stk_bydd_trd basDd=20260814 | observed |
+| Conc_top10 % | 62.5764 | KRX OpenAPI sto/stk_bydd_trd basDd=20260814 | observed |
 | Top5 tickers | 005930, 000660, 005935, 402340, 009150 | | |
-| Top10 tickers | 005930, 000660, 005935, 402340, 009150, 005380, 373220, 207940, 012450, 105560 | | |
+| Top10 tickers | 005930, 000660, 005935, 402340, 009150, 005380, 373220, 207940, 032830, 028260 | | |
 
 Conc_topN = Σ(시총 TopN) / KOSPI 전체시총 ×100. constituent 표는 Top30 보관이어도 분모는 전종목 합; Top10은 시총 정렬로 확정.
 
@@ -26,30 +26,30 @@ Conc_topN = Σ(시총 TopN) / KOSPI 전체시총 ×100. constituent 표는 Top30
 
 | actor | net_krw | scope | quality |
 |-------|--------:|-------|---------|
-| foreign | 927628734000 | covered_underlyings_spot | estimated |
-| retail | -2620231137000 | covered_underlyings_spot | estimated |
-| institution | 1739460873000 | covered_underlyings_spot | estimated |
+| foreign | 2578388018500 | covered_underlyings_spot | estimated |
+| retail | -1481793042500 | covered_underlyings_spot | estimated |
+| institution | -1053430595000 | covered_underlyings_spot | estimated |
 
 ## 3. Leveraged ETF AUM (paper: leverage reset)
 
 | metric | KRW | USD | source | quality |
 |--------|----:|----:|--------|---------|
-| total levered ETF AUM | 25,982,402,020,993 | 18,558,858,586.42 | KRX OpenAPI etp/etf_bydd_trd names 레버리지|인버스 basDd=20260813 | observed |
-| KR single-stock LETF AUM (listed) | 6,942,189,535,300 | 4,958,706,810.93 | sum products | observed |
+| total levered ETF AUM | 26,503,875,397,962 | 18,931,339,569.97 | KRX OpenAPI etp/etf_bydd_trd names 레버리지|인버스 basDd=20260814 | observed |
+| KR single-stock LETF AUM (listed) | 7,220,700,410,838 | 5,157,643,150.60 | sum products | observed |
 
 ## 4. Stock LETF turnover & leverage exposure
 
 | ticker | LETF AUM | ADV spot | LETF turnover / ADV | lev_exposure % free float | short_ratio % |
 |--------|---------:|---------:|--------------------:|--------------------------:|--------------:|
-| 000660 | 3,960,904,412,918 | 7,514,884,503,000 | 0.0826 | 0.9455 | None |
-| 005930 | 2,981,285,122,382 | 9,517,753,428,321 | 0.0284 | 0.5437 | None |
+| 000660 | 4,125,303,236,858 | 7,489,699,281,000 | 0.0794 | 0.9536 | None |
+| 005930 | 3,095,397,173,980 | 5,874,450,961,500 | 0.0426 | 0.5511 | None |
 
 ## 4b. Flow tangle (수급이 어떻게 꼬였는지)
 
 | ticker | day_R | wag_the_dog | long_aum% | inv_aum% | inv_tv% | retail_net | foreign_net | realized IR% |
 |--------|------:|:-----------:|----------:|---------:|--------:|-----------:|------------:|-------------:|
-| 000660 | 0.0592 | low | 98.2 | 1.8 | 25.3 | -1254221469000 | 1035198306000 | 6.4661 |
-| 005930 | 0.0489 | low | 99.5 | 0.5 | 3.0 | -1366009668000 | -107569572000 | 3.0932 |
+| 000660 | 0.0326 | low | 98.3 | 1.7 | 24.6 | -644780780000 | 1229650660000 | 3.7139 |
+| 005930 | 0.024300000000000002 | low | 99.6 | 0.4 | 3.1 | -837012262500 | 1348737358500 | 2.5835 |
 
 해석 힌트: `wag_the_dog=high`면 LETF 거래가 현물을 잠식. 인버스 거래비중(`inv_tv%`)이 AUM 비중보다 크면 하락일에 리밸런싱 압력이 비대칭.
 
@@ -57,22 +57,22 @@ Conc_topN = Σ(시총 TopN) / KOSPI 전체시총 ×100. constituent 표는 Top30
 
 | underlying | product | L | AUM | trading_value | structure |
 |------------|---------|--:|----:|--------------:|-----------|
-| 000660 | 0193T0 KODEX SK하이닉스단일종목레버리지 | 2.0 | 2,338,730,580,702 | 268,491,997,220 | cash |
-| 000660 | 0195S0 TIGER SK하이닉스단일종목레버리지 | 2.0 | 1,364,887,749,243 | 188,489,599,129 | cash |
-| 000660 | 0194T0 ACE SK하이닉스단일종목레버리지 | 2.0 | 55,181,107,146 | 1,330,688,475 | cash |
-| 000660 | 0192L0 RISE SK하이닉스단일종목레버리지 | 2.0 | 38,353,071,377 | 551,507,710 | cash |
-| 000660 | 0197W0 SOL SK하이닉스단일종목레버리지 | 2.0 | 53,776,989,473 | 4,008,593,905 | cash |
-| 000660 | 0194R0 KIWOOM SK하이닉스선물단일종목레버리지 | 2.0 | 12,592,860,958 | 256,302,155 | futures |
-| 000660 | 0198D0 1Q SK하이닉스선물단일종목레버리지 | 2.0 | 25,822,578,141 | 428,844,431 | futures |
-| 000660 | 0197X0 SOL SK하이닉스선물단일종목인버스2X | -2.0 | 71,559,475,878 | 157,185,517,968 | futures |
-| 005930 | 0193W0 KODEX 삼성전자단일종목레버리지 | 2.0 | 1,787,572,335,341 | 176,604,306,027 | cash |
-| 005930 | 0195R0 TIGER 삼성전자단일종목레버리지 | 2.0 | 1,029,413,715,810 | 82,771,436,097 | cash |
-| 005930 | 0194M0 ACE 삼성전자단일종목레버리지 | 2.0 | 57,733,147,238 | 1,111,863,744 | cash |
-| 005930 | 0192M0 RISE 삼성전자단일종목레버리지 | 2.0 | 35,435,889,629 | 882,950,820 | cash |
-| 005930 | 0193K0 PLUS 삼성전자단일종목레버리지 | 2.0 | 19,448,785,461 | 572,231,261 | cash |
-| 005930 | 0194N0 KIWOOM 삼성전자선물단일종목레버리지 | 2.0 | 10,421,830,322 | 186,640,608 | futures |
-| 005930 | 0198B0 1Q 삼성전자선물단일종목레버리지 | 2.0 | 26,779,415,077 | 418,437,678 | futures |
-| 005930 | 0193L0 PLUS 삼성전자선물단일종목인버스2X | -2.0 | 14,480,003,504 | 8,212,423,766 | futures |
+| 000660 | 0193T0 KODEX SK하이닉스단일종목레버리지 | 2.0 | 2,419,458,354,703 | 269,105,874,694 | cash |
+| 000660 | 0195S0 TIGER SK하이닉스단일종목레버리지 | 2.0 | 1,439,711,416,777 | 172,784,911,546 | cash |
+| 000660 | 0194T0 ACE SK하이닉스단일종목레버리지 | 2.0 | 58,044,622,115 | 2,660,462,985 | cash |
+| 000660 | 0192L0 RISE SK하이닉스단일종목레버리지 | 2.0 | 40,102,577,992 | 506,307,806 | cash |
+| 000660 | 0197W0 SOL SK하이닉스단일종목레버리지 | 2.0 | 57,128,422,914 | 2,155,980,659 | cash |
+| 000660 | 0194R0 KIWOOM SK하이닉스선물단일종목레버리지 | 2.0 | 13,351,836,066 | 327,644,512 | futures |
+| 000660 | 0198D0 1Q SK하이닉스선물단일종목레버리지 | 2.0 | 27,055,340,161 | 615,579,542 | futures |
+| 000660 | 0197X0 SOL SK하이닉스선물단일종목인버스2X | -2.0 | 70,450,666,130 | 146,254,019,697 | futures |
+| 005930 | 0193W0 KODEX 삼성전자단일종목레버리지 | 2.0 | 1,851,193,121,325 | 147,275,945,772 | cash |
+| 005930 | 0195R0 TIGER 삼성전자단일종목레버리지 | 2.0 | 1,076,053,310,383 | 90,898,867,285 | cash |
+| 005930 | 0194M0 ACE 삼성전자단일종목레버리지 | 2.0 | 59,128,415,857 | 2,778,165,325 | cash |
+| 005930 | 0192M0 RISE 삼성전자단일종목레버리지 | 2.0 | 36,698,200,670 | 301,054,245 | cash |
+| 005930 | 0193K0 PLUS 삼성전자단일종목레버리지 | 2.0 | 19,418,935,028 | 520,202,740 | cash |
+| 005930 | 0194N0 KIWOOM 삼성전자선물단일종목레버리지 | 2.0 | 10,994,046,914 | 255,070,890 | futures |
+| 005930 | 0198B0 1Q 삼성전자선물단일종목레버리지 | 2.0 | 28,241,061,673 | 396,803,617 | futures |
+| 005930 | 0193L0 PLUS 삼성전자선물단일종목인버스2X | -2.0 | 13,670,082,130 | 7,834,673,564 | futures |
 
 ## 4d. Global leverage stack (HK + crypto, venue-separated)
 
@@ -80,22 +80,22 @@ venue 분리: KR cash 회전율 식에 HK/US/crypto 합산 금지. 다만 Distor
 
 | venue | metric | USD |
 |-------|--------|----:|
-| KR single-stock LETF | notional AUM×\|L\| | 9917413621.86 |
+| KR single-stock LETF | notional AUM×\|L\| | 10315286301.2 |
 | HK CSOP swap LETF | notional AUM×\|L\| | 1712280303.59 |
 | Crypto Binance perps | OI notional | 0.0 |
 | Crypto Binance perps | 24h quote volume | 0.0 |
-| Stack (KR+HK+crypto OI) | sum (reference only) | 197961193493.45 |
+| Stack (KR+HK+crypto OI) | sum (reference only) | 198359066172.79 |
 
 | underlying | HK notional USD | Crypto OI USD | HK/spot ADV | Crypto OI/spot ADV |
 |------------|----------------:|--------------:|------------:|-------------------:|
-| 000660 | 1409643126.15 | 0.0 | 0.2626 | 0.0 |
-| 005930 | 302637177.44 | 0.0 | 0.0445 | 0.0 |
+| 000660 | 1409643126.15 | 0.0 | 0.2635 | 0.0 |
+| 005930 | 302637177.44 | 0.0 | 0.0721 | 0.0 |
 
 | HK product | underlying | L | AUM USD | TV USD | impact |
 |------------|------------|--:|--------:|-------:|--------|
-| 7709.HK CSOP SK Hynix Daily Max (2x) | 000660 | 2.0 | 704821563.0769231 | 744161927.5452365 | indirect_swap |
-| 7747.HK CSOP Samsung Electronics Daily Max (2x) | 005930 | 2.0 | 150034691.2820513 | 98740085.34408276 | indirect_swap |
-| 7347.HK CSOP Samsung Electronics Daily Max (-2x) | 005930 | -2.0 | 1283897.435897436 | 4399797.444649079 | indirect_swap |
+| 7709.HK CSOP SK Hynix Daily Max (2x) | 000660 | 2.0 | 704821563.0769231 | 1372858482.4623814 | indirect_swap |
+| 7747.HK CSOP Samsung Electronics Daily Max (2x) | 005930 | 2.0 | 150034691.2820513 | 172659626.05978158 | indirect_swap |
+| 7347.HK CSOP Samsung Electronics Daily Max (-2x) | 005930 | -2.0 | 1283897.435897436 | 7463691.333027758 | indirect_swap |
 
 | Crypto product | underlying | OI USD | 24h vol USD | funding | impact |
 |---------------|------------|-------:|------------:|--------:|--------|
@@ -109,22 +109,22 @@ venue 분리: KR cash 회전율 식에 HK/US/crypto 합산 금지. 다만 Distor
 
 | ticker | R | TR_abs | IR % | band |
 |--------|--:|-------:|-----:|------|
-| 000660 | -0.05 | 410,402,336,467 | 5.4612 | watch |
-| 000660 | -0.1 | 820,804,672,935 | 10.9224 | high |
-| 000660 | 0.05 | 410,402,336,467 | 5.4612 | watch |
-| 000660 | 0.0592 | 485,916,366,377 | 6.4661 | watch |
-| 005930 | -0.05 | 301,024,512,939 | 3.1628 | watch |
-| 005930 | -0.1 | 602,049,025,878 | 6.3255 | watch |
-| 005930 | 0.05 | 301,024,512,939 | 3.1628 | watch |
-| 005930 | 0.0489 | 294,401,973,654 | 3.0932 | watch |
+| 000660 | -0.05 | 426,620,456,912 | 5.6961 | watch |
+| 000660 | -0.1 | 853,240,913,824 | 11.3922 | high |
+| 000660 | 0.05 | 426,620,456,912 | 5.6961 | watch |
+| 000660 | 0.0326 | 278,156,537,906 | 3.7139 | watch |
+| 005930 | -0.05 | 312,273,733,824 | 5.3158 | watch |
+| 005930 | -0.1 | 624,547,467,648 | 10.6316 | high |
+| 005930 | 0.05 | 312,273,733,824 | 5.3158 | watch |
+| 005930 | 0.024300000000000002 | 151,765,034,638 | 2.5835 | low |
 
 ## 6. Paper calibration
 
 | field | paper_anchor | model_value | delta_pct | quality |
 |-------|-------------:|------------:|----------:|---------|
-| levered_etf_aum_usd | 26000000000.0 | 18558858586.42 | -28.62 | observed |
-| leverage_exposure_pct_aum_over_ff | 2.1 | 0.6165 | -70.64 | estimated |
-| leverage_exposure_pct_notional | None | 0.7177 |  | estimated |
+| levered_etf_aum_usd | 26000000000.0 | 18931339569.97 | -27.19 | observed |
+| leverage_exposure_pct_aum_over_ff | 2.1 | 0.6138 | -70.77 | estimated |
+| leverage_exposure_pct_notional | None | 0.7262 |  | estimated |
 
 ## 7. Deposit & credit (Naver / FreeSIS-style)
 
@@ -132,17 +132,17 @@ venue 분리: KR cash 회전율 식에 HK/US/crypto 합산 금지. 다만 Distor
 
 | metric | 억원 | as_of | quality |
 |--------|-----:|-------|---------|
-| 고객예탁금 | 1000683.83 | 2026-08-13 | observed |
-| 신용잔고 | 309262.66 | 2026-08-13 | observed |
-| 신용/예탁금 % | 30.905 |  |  |
+| 고객예탁금 | 1007103.32 | 2026-08-14 | observed |
+| 신용잔고 | 308675.1 | 2026-08-14 | observed |
+| 신용/예탁금 % | 30.65 |  |  |
 
 ## 8. KOSPI market investor flows
 
 | actor | net_krw | date | quality |
 |-------|--------:|------|---------|
-| foreign | 3054900000000.0 | 26.08.14 | observed |
-| retail | -1887800000000.0 | 26.08.14 | observed |
-| institution | -1141300000000.0 | 26.08.14 | observed |
+| foreign | 91400000000.0 | 26.08.18 | observed |
+| retail | 742000000000.0 | 26.08.18 | observed |
+| institution | -795100000000.0 | 26.08.18 | observed |
 
 ## 9. Levered ETF TV by category
 
@@ -150,10 +150,10 @@ venue 분리: KR cash 회전율 식에 HK/US/crypto 합산 금지. 다만 Distor
 
 | category | n | TV 조 | % of lev TV | % of KOSPI TV |
 |----------|--:|------:|------------:|--------------:|
-| index | 53 | 4.485 | 74.5 | 22.275 |
-| overseas | 26 | 0.018 | 0.3 | 0.089 |
-| sector | 8 | 0.682 | 11.33 | 3.389 |
-| single_stock | 16 | 0.834 | 13.86 | 4.144 |
+| index | 53 | 5.427 | 70.4 | 18.148 |
+| overseas | 26 | 0.021 | 0.28 | 0.071 |
+| sector | 8 | 1.066 | 13.83 | 3.565 |
+| single_stock | 16 | 1.194 | 15.49 | 3.993 |
 
 ## 10. Short interest
 

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-10T14:36:01.168733+00:00",
+  "generated_at": "2026-08-17T11:45:32.566126+00:00",
   "season": 2026,
   "country": "China",
   "source_note": "Targets: USDA PSD (grains, oilseeds) and FAOSTAT (vegetables), both national. China's own statistical bureau blocks automated access, so province-level official yields are unavailable and every guide's regional question is answered against a national series. Weather: NASA POWER daily, production-weighted across each region's growing points, ET0 by FAO-56 Penman-Monteith. ENSO: NOAA CPC ONI.",
@@ -48,7 +48,7 @@
         "region_share": "Henan alone is about a quarter of Chinese wheat and the Huang-Huai-Hai plain as a whole roughly three quarters, so the national target is closer to a regional one here than for any other config in the set.",
         "caveat": "SIF (solar-induced fluorescence) from §2A is omitted: the satellite record starts in 2007 and would cut the series roughly in half. The guide's proposal to reverse-engineer bad years from UN Comtrade milling-wheat imports is implemented as a separate diagnostic in imports.py rather than as a second label, because rewriting the target from trade data would make the yield model unfalsifiable.",
         "non_weather_drivers": "The guide's own example is the point: in 2023 Beijing reported a 0.9% wheat decline while quality collapsed and milling-wheat imports hit a record. A tonnage yield series cannot represent a quality failure, so the single most consequential Henan weather event of the last decade is largely invisible in this target by construction.",
-        "weather_through": "2026-08-05",
+        "weather_through": "2026-08-12",
         "critical_window_observed": 1.0,
         "season_complete": true,
         "notes": []
@@ -96,8 +96,8 @@
         "region_share": "The Yangtze basin provinces are the majority of Chinese rice, but the national series also averages single-season japonica in the Northeast against double-cropped indica in the far south -- three cropping systems with three different weather sensitivities in one number.",
         "caveat": "The guide's dynamic crop calendar -- back out each pixel's heading date from an NDVI time series -- is replaced by a fixed July-August heading window, because MODIS starts in 2000 and would halve the record. The Sentinel-1 inundation mask is replaced by the heaviest 7-day rainfall total, named max_7day_rain.",
         "non_weather_drivers": "Rice area has been shifting from double- to single-cropping for two decades, which raises measured yield per harvested hectare without any agronomic improvement. That composition drift sits inside the trend, not the weather features.",
-        "weather_through": "2026-08-05",
-        "critical_window_observed": 0.581,
+        "weather_through": "2026-08-12",
+        "critical_window_observed": 0.694,
         "season_complete": false,
         "notes": []
       }
@@ -144,7 +144,7 @@
         "region_share": "Shandong is around a tenth of national vegetable output. This is the weakest region-to-target match in the set, and unlike the other five the label cannot fall back on USDA: PSD carries no vegetables, so FAOSTAT's China figures -- compiled from the very NBS returns every guide says to distrust -- are the only series available.",
         "caveat": "The guide's actual method is Swin-UNet segmentation of Sentinel-2 and GF-2 imagery to map plastic greenhouse area, on the argument that built area sets the production ceiling and weather only modulates it. None of that is implemented; greenhouse expansion is left entirely to the technology trend, which is why the weather features here are expected to add little. This is the largest departure from any guide in the China set.",
         "non_weather_drivers": "Vegetable output is driven by how much protected-cultivation structure exists, which is an investment series, not a climate one. The guide says so itself in §1: greenhouse crops are largely insulated from outside weather, which is the reason the conventional climate model fails on them.",
-        "weather_through": "2026-08-05",
+        "weather_through": "2026-08-12",
         "critical_window_observed": 1.0,
         "season_complete": true,
         "notes": []

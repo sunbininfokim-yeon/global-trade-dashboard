@@ -2752,11 +2752,40 @@ body.macro-mode .map-pane { flex: 1 1 100%; }
     display: flex; flex-direction: column; gap: 3px; transition: border-color .15s, background .15s;
 }
 .mm-chip:hover { border-color: rgba(56,189,248,.45); background: rgba(56,189,248,.07); }
+.mm-chip-head { display: flex; align-items: baseline; justify-content: space-between; gap: 6px; }
 .mm-chip-label { font-size: 11px; color: #94a3b8; }
 .mm-chip-value { font-size: 17px; font-weight: 620; color: #f1f5f9; font-variant-numeric: tabular-nums; }
 .mm-chip-foot { display: flex; align-items: baseline; gap: 4px; font-size: 10.5px; }
 .mm-chip-win { color: #475569; margin-right: 5px; }
 .mm-chip-note { font-size: 10.5px; color: #64748b; line-height: 1.45; margin-top: 3px; }
+
+/* Monthly print: actual vs expected, for both YoY and MoM. */
+.mm-prints { display: flex; flex-direction: column; gap: 2px; }
+.mm-print { display: flex; align-items: baseline; gap: 5px; }
+.mm-print-tag { font-size: 9.5px; color: #64748b; min-width: 24px; }
+.mm-print-act { font-size: 15px; font-weight: 620; color: #f1f5f9; font-variant-numeric: tabular-nums; }
+/* Consensus has no free source -- rendered as a dash, muted so an empty
+   expectation never reads as a published one. */
+.mm-print-exp { font-size: 11px; color: #64748b; font-variant-numeric: tabular-nums; }
+
+/* Monthly release bars (CPI/PCE), zero-crossing. */
+.mm-bar-col { fill: rgba(56,189,248,.72); }
+.mm-bar-col.neg { fill: rgba(251,113,133,.72); }
+
+/* Biggest movers in the latest print. */
+.mm-movers { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 14px; margin: 4px 0 10px; }
+.mm-mover-col { display: flex; flex-direction: column; gap: 6px; }
+.mm-mover-head { font-size: 11.5px; color: #94a3b8; font-weight: 600; margin: 0 0 2px; }
+.mm-mover {
+    display: grid; grid-template-columns: 1fr auto; gap: 2px 8px;
+    padding: 8px 10px; border-radius: 8px;
+    border: 1px solid rgba(148,163,184,.16); background: rgba(148,163,184,.05);
+}
+.mm-mover-name { font-size: 12px; color: #e2e8f0; }
+.mm-mover-mom { font-size: 13px; font-weight: 650; font-variant-numeric: tabular-nums; text-align: right; }
+.mm-mover-up   .mm-mover-mom { color: #fb7185; }
+.mm-mover-down .mm-mover-mom { color: #34d399; }
+.mm-mover-yoy { grid-column: 1 / -1; font-size: 10px; color: #64748b; font-variant-numeric: tabular-nums; }
 
 /* TGA vs US elections: shaded window running into each vote. */
 .mm-election-band { pointer-events: all; }
@@ -2765,6 +2794,7 @@ body.macro-mode .map-pane { flex: 1 1 100%; }
 .mm-swatch { display: inline-block; width: 10px; height: 10px; margin: 0 4px 0 8px; vertical-align: middle; }
 .mm-swatch-president { background: rgba(251,113,133,.45); }
 .mm-swatch-midterm   { background: rgba(148,163,184,.45); }
+.mm-swatch-synthetic { background: none; border-top: 1.6px dashed #64748b; height: 0; width: 14px; }
 
 /* Headline row is too narrow for the text pill -- same colors, as a dot. */
 .mm-headline-dot {
@@ -2831,6 +2861,11 @@ body.macro-mode .map-pane { flex: 1 1 100%; }
 .mm-drawer-actions { display: flex; align-items: center; gap: 8px; }
 .mm-chart { width: 100%; height: 210px; display: block; }
 .mm-line { fill: none; stroke: #38bdf8; stroke-width: 2; stroke-linejoin: round; vector-effect: non-scaling-stroke; }
+/* Fixture history glued to one real point (_pin_latest): muted/dashed run,
+   a divider where the fixture stops, and a marker on the one real value. */
+.mm-line-synthetic { stroke: #64748b; stroke-dasharray: 5 4; stroke-width: 1.6; opacity: .75; }
+.mm-real-divider { stroke: rgba(148,163,184,.4); stroke-width: 1; stroke-dasharray: 2 3; vector-effect: non-scaling-stroke; }
+.mm-real-point { fill: #38bdf8; stroke: #0b111e; stroke-width: 1.5; }
 .mm-dot { fill: #7dd3fc; stroke: #0b111e; stroke-width: 2; }
 .mm-axis { stroke: rgba(148,163,184,.22); stroke-width: 1; vector-effect: non-scaling-stroke; }
 .mm-tick { fill: #475569; font-size: 10px; font-family: inherit; }
@@ -2891,6 +2926,7 @@ body.macro-mode .map-pane { flex: 1 1 100%; }
 .mm-tip-val { display: block; font-size: 13px; font-weight: 620; color: #f1f5f9; font-variant-numeric: tabular-nums; }
 .mm-tip-ma { display: block; font-size: 10.5px; color: #fbbf24; }
 .mm-legend-note { font-size: 10.5px; color: #64748b; margin: 6px 0 0; display: flex; align-items: center; gap: 6px; }
+.mm-legend-warn { color: #fb7185; }
 .mm-swatch-ma { display: inline-block; width: 14px; height: 0; border-top: 1.6px dashed #fbbf24; }
 
 .ms-sub-h { font-size: 12px; font-weight: 620; color: #cbd5e1; margin: 16px 0 6px; }
@@ -2928,6 +2964,15 @@ body.macro-mode .map-pane { flex: 1 1 100%; }
 .ms-plc-sw-cr.ms-plc-cr-credit { border-color: #fbbf24; }
 .ms-plc-sw-cr.ms-plc-cr-uncollected { border-color: #f87171; }
 .mm-legend-axis { margin-left: 6px; opacity: .65; }
+/* Line-end value labels: each series ends at its own level, so the number
+   rides the line rather than a shared axis. */
+.ms-plc-cr-lab { font-weight: 600; }
+.ms-plc-cr-lab.ms-plc-cr-deposit { fill: #38bdf8; }
+.ms-plc-cr-lab.ms-plc-cr-credit { fill: #fbbf24; }
+.ms-plc-cr-lab.ms-plc-cr-uncollected { fill: #f87171; }
+.ms-plc-cr-legend { display: flex; flex-wrap: wrap; gap: 4px 18px; margin-top: 2px; }
+.ms-plc-cr-item { white-space: nowrap; }
+.ms-plc-cr-item b { margin-left: 4px; }
 .ms-credit-hint { margin-top: 6px; }
 
 /* Period row: window buttons left, the credit toggle pushed to the right. */

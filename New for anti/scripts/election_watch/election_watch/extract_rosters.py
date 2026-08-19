@@ -49,7 +49,23 @@ def extract_usa_congress() -> Dict[str, Any]:
         terms = (m.get("terms") or {}).get("item") or []
         return (terms[-1].get("chamber") if terms else "") or "unknown"
 
-    house = Counter()
+    # congress.gov's current-member endpoint includes the six non-voting House
+    # delegates/resident commissioner.  Keep them as roster rows, but do not add
+    # them to the 435 voting-seat party breakdown used by the hemicycle UI.
+    voting_states = {
+        "Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado",
+        "Connecticut", "Delaware", "Florida", "Georgia", "Hawaii", "Idaho",
+        "Illinois", "Indiana", "Iowa", "Kansas", "Kentucky", "Louisiana",
+        "Maine", "Maryland", "Massachusetts", "Michigan", "Minnesota",
+        "Mississippi", "Missouri", "Montana", "Nebraska", "Nevada",
+        "New Hampshire", "New Jersey", "New Mexico", "New York", "North Carolina",
+        "North Dakota", "Ohio", "Oklahoma", "Oregon", "Pennsylvania",
+        "Rhode Island", "South Carolina", "South Dakota", "Tennessee", "Texas",
+        "Utah", "Vermont", "Virginia", "Washington", "West Virginia", "Wisconsin",
+        "Wyoming",
+    }
+    house_voting = Counter()
+    house_delegates = Counter()
     senate = Counter()
     rows = []
     for m in members:
@@ -57,7 +73,10 @@ def extract_usa_congress() -> Dict[str, Any]:
         party = m.get("partyName") or "Unknown"
         abbr = party_abbr_us(party)
         if "House" in ch:
-            house[abbr] += 1
+            if m.get("state") in voting_states:
+                house_voting[abbr] += 1
+            else:
+                house_delegates[abbr] += 1
             chamber = "house"
         elif "Senate" in ch:
             senate[abbr] += 1
@@ -86,8 +105,13 @@ def extract_usa_congress() -> Dict[str, Any]:
             "note": "DEMO_KEY pagination; house.gov + Wikipedia Senate leaders (senate.gov 403 here)",
         },
         "summary": {
-            "members_total": len(rows),
-            "house_by_party": dict(house),
+            "members_total_including_house_delegates": len(rows),
+            "house_voting_seats": 435,
+            "house_voting_members": sum(house_voting.values()),
+            "house_vacancies": 435 - sum(house_voting.values()),
+            "house_by_party": dict(house_voting),
+            "house_delegates_by_party": dict(house_delegates),
+            "house_roster_rows_including_delegates": sum(house_voting.values()) + sum(house_delegates.values()),
             "senate_by_party": dict(senate),
         },
         "floor_leadership": leadership,
@@ -305,7 +329,8 @@ def extract_usa_governors() -> Dict[str, Any]:
                 continue
             texts = [strip_tags(c) for c in cells]
             # State, Image, Governor, Party color junk, Party, ...
-            state = re.sub(r"\s*\(list\)$", "", texts[0], flags=re.I).strip()
+            # Wiki cells look like "Alabama ( list )" — spaces inside parens
+            state = re.sub(r"\s*\(\s*list\s*\)\s*$", "", texts[0], flags=re.I).strip()
             name = texts[2]
             party = next((t for t in texts[3:8] if t in {"Republican", "Democratic", "Independent"}), None)
             if not party:
@@ -586,19 +611,37 @@ def extract_jpn_governors() -> Dict[str, Any]:
             if len(cells) < 4:
                 continue
             texts = [strip_tags(c) for c in cells]
-            pref = re.sub(r"^\d+/", "", texts[0])
-            pref = re.sub(r"（一覧）|\(list\)", "", pref).strip()
-            name = texts[2]
-            # strip ruby reading in parens if doubled
-            name = re.sub(r"（[^）]+）", "", name).strip() or texts[2]
+            # "01/ 北海道 （ 一覧 ）" → "北海道"
+            pref = re.sub(r"^\d+\s*/\s*", "", texts[0])
+            pref = re.sub(r"[（(]\s*一覧\s*[）)]|[（(]\s*list\s*[）)]", "", pref, flags=re.I)
+            pref = re.sub(r"\s+", " ", pref).strip()
+            name_raw = texts[2]
+            # Drop dumped CSS / template noise then ruby reading in parens
+            name = re.sub(r"\.mw-parser-output\S*", " ", name_raw)
+            name = re.sub(r"\{[^}]*\}", " ", name)
+            name = re.sub(r"（[^）]+）|\([^)]+\)", "", name)
+            name = re.sub(r"\s+", " ", name).strip() or name_raw
             party = texts[7] if len(texts) > 7 else (texts[-1] if texts else "")
+            party = re.sub(r"\s+", " ", party).strip()
+
+            def _jp_date(s: Optional[str]) -> Optional[str]:
+                if not s:
+                    return None
+                m = re.search(r"(\d{4})\s*年\s*(\d{1,2})\s*/\s*(\d{1,2})", s)
+                if m:
+                    return f"{m.group(1)}-{int(m.group(2)):02d}-{int(m.group(3)):02d}"
+                m2 = re.search(r"(\d{4})\s*年\s*(\d{1,2})\s*月\s*(\d{1,2})\s*日", s)
+                if m2:
+                    return f"{m2.group(1)}-{int(m2.group(2)):02d}-{int(m2.group(3)):02d}"
+                return s.strip()
+
             govs.append(
                 {
                     "prefecture": pref,
                     "name": name,
                     "party": party,
-                    "term_start": texts[4] if len(texts) > 4 else None,
-                    "term_end": texts[5] if len(texts) > 5 else None,
+                    "term_start": _jp_date(texts[4] if len(texts) > 4 else None),
+                    "term_end": _jp_date(texts[5] if len(texts) > 5 else None),
                 }
             )
     return {
@@ -615,72 +658,85 @@ def extract_jpn_governors() -> Dict[str, Any]:
 
 def write_governance_polls() -> Dict[str, Any]:
     """Governance approval snapshots — document-sourced, not horserace."""
+    existing_path = OUT / "governance_polls.json"
+    existing: Dict[str, Any] = {}
+    if existing_path.exists():
+        existing = json.loads(existing_path.read_text(encoding="utf-8"))
+    generated = [
+        {
+            "iso3": "USA",
+            "kind": "presidential_job_approval",
+            "subject": "Donald J. Trump",
+            "pollster": "Gallup",
+            "approve_pct": 41,
+            "field_note": "Gallup Presidential Job Approval Center / recent articles cite Trump ~41% (2025–2026 tracking). Exact field dates vary by release.",
+            "sources": [
+                {
+                    "url": "https://news.gallup.com/interactives/507569/presidential-job-approval-center.aspx",
+                    "label": "Gallup Presidential Job Approval Center",
+                },
+                {
+                    "url": "https://news.gallup.com/poll/654197/congress-job-rating-sinks-trump-steady.aspx",
+                    "label": "Gallup: Congress 15%; Trump steady at 41% (URL may rotate)",
+                    "status": "url_may_404_use_center",
+                },
+            ],
+            "confidence": "medium",
+            "refresh": "manual_or_scrape_gallup_center",
+        },
+        {
+            "iso3": "JPN",
+            "kind": "cabinet_approval",
+            "subject": "Takaichi cabinet",
+            "pollster": "NHK",
+            "approve_pct": 58,
+            "disapprove_pct": 27,
+            "field_date": "2026-07",
+            "sources": [
+                {
+                    "url": "https://news.web.nhk/newsweb/na/na-k10015175451000",
+                    "label": "NHK: 高市内閣支持率58％ 不支持27％ (2026-07-13)",
+                },
+                {
+                    "url": "https://news.web.nhk/senkyo/shijiritsu/",
+                    "label": "NHK 内閣支持率 hub",
+                },
+            ],
+            "confidence": "high",
+            "refresh": "monthly_nhk",
+        },
+        {
+            "iso3": "KOR",
+            "kind": "presidential_job_approval",
+            "subject": "Lee Jae Myung",
+            "pollster": "Gallup Korea",
+            "approve_pct": 54,
+            "field_note": "Example governance series for KR-style presidential approval; refresh from Gallup Korea / NEC-reviewed polls",
+            "sources": [
+                {
+                    "url": "https://en.yna.co.kr/view/AEN20260703004600315",
+                    "label": "Yonhap citing Gallup Korea (~54%, early Jul 2026)",
+                }
+            ],
+            "confidence": "medium",
+            "refresh": "weekly_gallup_korea",
+        },
+    ]
+    generated_keys = {(row["iso3"], row["kind"]) for row in generated}
+    preserved = [
+        row
+        for row in (existing.get("series") or [])
+        if (row.get("iso3"), row.get("kind")) not in generated_keys
+    ]
+    admit = set((existing.get("policy") or {}).get("admit") or [])
+    admit.update(["presidential_job_approval", "cabinet_approval"])
     return {
         "as_of": now_iso(),
         "policy": {
-            "admit": ["presidential_job_approval", "cabinet_approval"],
+            "admit": sorted(admit),
             "reject": ["national_horserace_headline"],
         },
-        "series": [
-            {
-                "iso3": "USA",
-                "kind": "presidential_job_approval",
-                "subject": "Donald J. Trump",
-                "pollster": "Gallup",
-                "approve_pct": 41,
-                "field_note": "Gallup Presidential Job Approval Center / recent articles cite Trump ~41% (2025–2026 tracking). Exact field dates vary by release.",
-                "sources": [
-                    {
-                        "url": "https://news.gallup.com/interactives/507569/presidential-job-approval-center.aspx",
-                        "label": "Gallup Presidential Job Approval Center",
-                    },
-                    {
-                        "url": "https://news.gallup.com/poll/654197/congress-job-rating-sinks-trump-steady.aspx",
-                        "label": "Gallup: Congress 15%; Trump steady at 41% (URL may rotate)",
-                        "status": "url_may_404_use_center",
-                    },
-                ],
-                "confidence": "medium",
-                "refresh": "manual_or_scrape_gallup_center",
-            },
-            {
-                "iso3": "JPN",
-                "kind": "cabinet_approval",
-                "subject": "Takaichi cabinet",
-                "pollster": "NHK",
-                "approve_pct": 58,
-                "disapprove_pct": 27,
-                "field_date": "2026-07",
-                "sources": [
-                    {
-                        "url": "https://news.web.nhk/newsweb/na/na-k10015175451000",
-                        "label": "NHK: 高市内閣支持率58％ 不支持27％ (2026-07-13)",
-                    },
-                    {
-                        "url": "https://news.web.nhk/senkyo/shijiritsu/",
-                        "label": "NHK 内閣支持率 hub",
-                    },
-                ],
-                "confidence": "high",
-                "refresh": "monthly_nhk",
-            },
-            {
-                "iso3": "KOR",
-                "kind": "presidential_job_approval",
-                "subject": "Lee Jae Myung",
-                "pollster": "Gallup Korea",
-                "approve_pct": 54,
-                "field_note": "Example governance series for KR-style presidential approval; refresh from Gallup Korea / NEC-reviewed polls",
-                "sources": [
-                    {
-                        "url": "https://en.yna.co.kr/view/AEN20260703004600315",
-                        "label": "Yonhap citing Gallup Korea (~54%, early Jul 2026)",
-                    }
-                ],
-                "confidence": "medium",
-                "refresh": "weekly_gallup_korea",
-            },
-        ],
+        "series": generated + preserved,
     }
 
 

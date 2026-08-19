@@ -1,33 +1,117 @@
 {
-  "version": 1,
-  "as_of": "2026-08-08",
-  "label_ko": "3급 — 비경쟁·제한 선거 국가 간략 지도자 카드",
+  "version": 3,
+  "as_of": "2026-08-09",
+  "label_ko": "지정학 리더십 팩 — 2급 특수형 및 3급 국가 보조 데이터",
+  "cia_factbook": {
+    "status": "discontinued_2026-02",
+    "note_ko": "CIA World Factbook 공개 사이트는 2026-02-04 전후 중단(위키·보도). 3급 카드는 Factbook Government 필드 구조만 유지: government type, chief of state, head of government, elections/appointments, cabinet. 숫자는 각국 공식·SPA/WAM/u.ae 등에서만.",
+    "field_map": {
+      "government_type": "power.government_type_cia_style",
+      "chief_of_state": "power.head_of_state",
+      "head_of_government": "power.head_of_government",
+      "elections": "power.elections_national"
+    },
+    "archive_hint": "Mozilla Data Collective / Factbook Archive (1990–2025 snapshots) — 참고만, live 아님"
+  },
   "rules": {
-    "depth": "minimal",
+    "depth": "minimal_for_tier3; expanded_for_tier2_geopolitical_core",
     "required_fields": [
       "iso3",
-      "name_ko",
-      "priority_tier=3",
-      "mode=leadership_brief|leadership_brief_emirates",
       "regime",
-      "head.name_en",
+      "head",
+      "power.head_of_state",
+      "power.head_of_government",
       "power.elections_national",
-      "power.power_event (승계·쿠데타·건국 등 1줄)"
+      "power.power_event"
     ],
-    "skip": [
-      "full legislature roster",
+    "skip_for_tier3_only": [
+      "full legislature",
       "factions",
       "governance polls",
-      "by-election calendars",
-      "party_leadership races"
+      "party conventions"
     ],
-    "coup_note": "독재·군사정권은 power_event에 type=coup + date. 왕정 승계는 succession/succession_reshuffle.",
-    "iran": "IRN은 의도적으로 deferred — 작성하지 않음"
+    "tier2_geopolitical_core_overrides": {
+      "SAU": ["leadership", "energy", "succession", "security"],
+      "IRN": ["supreme_leader", "elected_executive", "majlis", "assembly_of_experts", "guardian_council", "IRGC", "factions"]
+    },
+    "iran": "IRN active as tier2 geopolitical core"
   },
-  "active": ["SAU", "ARE"],
-  "templates": {
-    "absolute_monarchy": "head + de_facto + succession event",
-    "federal_emirates": "federal president + emirates[] rulers",
-    "military_dictatorship": "head + coup date + elections_national=없음"
-  }
+  "active": {
+    "SAU": {
+      "iso3": "SAU",
+      "name_ko": "사우디아라비아",
+      "priority_tier": 2,
+      "mode": "leadership_brief",
+      "regime": "absolute_monarchy",
+      "government_type": "absolute monarchy",
+      "chief_of_state": {
+        "name_en": "Salman bin Abdulaziz Al Saud",
+        "name_ko": "살만 빈 압둘아지즈",
+        "title": "King"
+      },
+      "head_of_government": {
+        "name_en": "Mohammed bin Salman Al Saud",
+        "name_ko": "무함마드 빈 살만",
+        "title": "Crown Prince & Prime Minister",
+        "de_facto": true
+      },
+      "elections_national": "없음",
+      "power_event": {
+        "type": "succession_reshuffle",
+        "date": "2017-06-21",
+        "label_ko": "MbS 왕세자 지명(사실상 권력 공고화)"
+      },
+      "profile": "profiles/sau.json",
+      "sources": [
+        "SPA",
+        "my.gov.sa",
+        "Britannica bio MbS"
+      ]
+    },
+    "ARE": {
+      "iso3": "ARE",
+      "name_ko": "아랍에미리트",
+      "priority_tier": 3,
+      "mode": "leadership_brief_emirates",
+      "regime": "federal_monarchy",
+      "government_type": "federation of monarchies",
+      "chief_of_state": {
+        "name_en": "Mohamed bin Zayed Al Nahyan",
+        "name_ko": "무함마드 빈 자이드",
+        "title": "President (Ruler of Abu Dhabi)"
+      },
+      "head_of_government": {
+        "name_en": "Mohammed bin Rashid Al Maktoum",
+        "name_ko": "무함마드 빈 라시드",
+        "title": "VP & Prime Minister (Ruler of Dubai)"
+      },
+      "elections_national": "없음 (대통령은 연방최고회의 간선)",
+      "power_event": {
+        "type": "succession",
+        "date": "2022-05-14",
+        "label_ko": "MbZ 연방 대통령·아부다비 통치자 승계"
+      },
+      "emirates_count": 7,
+      "succession_watch": "Khaled bin Mohamed (Abu Dhabi CP)",
+      "profile": "profiles/are.json",
+      "sources": [
+        "u.ae",
+        "WAM"
+      ]
+    },
+    "IRN": {
+      "iso3": "IRN",
+      "name_ko": "이란",
+      "priority_tier": 2,
+      "mode": "china_style_leadership_extract",
+      "regime": "theocratic_republic_managed",
+      "pack": "config/iran_leadership_extracted.json",
+      "supreme_leader": "Mojtaba Khamenei (since 2026-03-08)",
+      "president": "Masoud Pezeshkian",
+      "security_axis": "IRGC + SNSC",
+      "note_ko": "이전 deferred 해제. 중국식 실권 구조 팩 작성."
+    }
+  },
+  "deferred": {},
+  "deferred_note_ko": "IRN deferred 해제(2026-08-09). 기타 deferred 없음."
 }

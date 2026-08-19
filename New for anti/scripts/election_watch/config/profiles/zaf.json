@@ -1,0 +1,66 @@
+{
+  "iso3": "ZAF",
+  "as_of": "2026-08-09",
+  "priority_tier": 2,
+  "region": "africa",
+  "system": "parliamentary",
+  "head": {
+    "role": "president",
+    "name_ko": "시릴 라마포사",
+    "name_en": "Cyril Ramaphosa",
+    "party_id": "anc",
+    "sources": [
+      {
+        "org": "IEC South Africa",
+        "url": "https://www.elections.org.za/",
+        "note": "Official election portal; use for results and calendar updates."
+      }
+    ]
+  },
+  "parties": [
+    {
+      "id": "anc",
+      "abbr": "ANC",
+      "name_en": "African National Congress",
+      "role": "ruling",
+      "confidence": "medium"
+    },
+    {
+      "id": "eff",
+      "abbr": "EFF",
+      "name_en": "Economic Freedom Fighters",
+      "role": "main_opposition",
+      "confidence": "medium"
+    }
+  ],
+  "political_context": {
+    "ruling_ko": "ANC 주축 국민통합정부(GNU) — DA 등 연정",
+    "opposition_ko": "EFF 등 GNU 밖 야당. DA는 연정 참여 중 마찰",
+    "source_pack": "tier2_remaining_light.json#countries.ZAF"
+  },
+  "source_review": {
+    "as_of": "2026-08-14",
+    "calendar_snapshot": "extracted/zaf_iec_lge_2026_snapshot.json",
+    "status": "official_calendar_event_reviewed",
+    "verified": [
+      "2026-11-04 Local Government Elections"
+    ],
+    "not_confirmed_from_redirected_statistics_target": [
+      "registered_party_count",
+      "party_status"
+    ]
+  },
+  "elections": {
+    "calendar_file": "calendars/zaf_2026.json"
+  },
+  "polls": {
+    "admit": ["presidential_job_approval"],
+    "reject": ["national_horserace_headline"],
+    "status": "todo"
+  },
+  "ingest": {
+    "mode": "document_text_extract",
+    "wave": "2d_light_connection",
+    "depth": "head_and_parties_only"
+  }
+}
