@@ -133,8 +133,8 @@ const SIGNAL_PAGES = [
         slots: [
             { label: '미 국채 2년', value: 'US2Y', fmt: 'pct2' },
             { label: '미 국채 10년', value: 'US10Y', fmt: 'pct2' },
-            { label: '일본 국채 10년', value: 'JP10Y', fmt: 'pct2' },
-            { label: '영국 길트 10년', value: 'UK10Y', fmt: 'pct2' }
+            { label: '일본 국채 10년', value: 'JP10Y', fmt: 'pct2', symbol: 'JP10Y' },
+            { label: '영국 길트 10년', value: 'UK10Y', fmt: 'pct2', symbol: 'UK10Y' }
         ]
     },
     {

@@ -842,11 +842,20 @@ async function handleMacro(request, env, ctx) {
         if (source === 'yfinance') {
             const symbol = url.searchParams.get('symbol');
 
-            return kvCachedJson(env, `yfinance:${symbol}`, 3600, async () => {
-                // Fetch 5 years of monthly data
-                const period1 = Math.floor(new Date().setFullYear(new Date().getFullYear() - 5) / 1000);
+            // The chart modal wants 5 years of monthly bars; the home panel's
+            // JP/UK 10Y bond tiles want just today's close, so they ask for
+            // interval=1d&range=5d instead. Both keep hitting this one route
+            // rather than duplicating the Yahoo fetch, and each combination
+            // gets its own cache entry.
+            const interval = url.searchParams.get('interval') || '1mo';
+            const rangeParam = url.searchParams.get('range');
+
+            return kvCachedJson(env, `yfinance:${symbol}:${interval}:${rangeParam || '5y'}`, 3600, async () => {
                 const period2 = Math.floor(Date.now() / 1000);
-                const yfUrl = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}?period1=${period1}&period2=${period2}&interval=1mo`;
+                const period1 = rangeParam === '5d'
+                    ? period2 - 5 * 86400
+                    : Math.floor(new Date().setFullYear(new Date().getFullYear() - 5) / 1000);
+                const yfUrl = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}?period1=${period1}&period2=${period2}&interval=${encodeURIComponent(interval)}`;
 
                 const res = await fetch(yfUrl, {
                     headers: { "User-Agent": "Mozilla/5.0", "Accept": "application/json" }

@@ -159,6 +159,41 @@
         console.error("FRED API Error:", e);
     }
 
+    // 0.52 Japan / UK 10Y government bond yields: FRED only carries these
+    // monthly (OECD), which is what "JP10Y"/"UK10Y" above just loaded as a
+    // fallback. Yahoo Finance quotes both daily (same tickers CNBC's
+    // /quotes/JP10Y and /quotes/UK10Y pages use), so try that second and
+    // overwrite the monthly baseline on success. If Yahoo is down or the
+    // symbol stops resolving, the panel just keeps last month's OECD print
+    // instead of going blank.
+    try {
+        const yahooBonds = [
+            { symbol: "JP10Y", name: "JP10Y" },
+            { symbol: "UK10Y", name: "UK10Y" }
+        ];
+        const yahooPromises = yahooBonds.map(async (b) => {
+            const url = `/api/macro?source=yfinance&symbol=${encodeURIComponent(b.symbol)}&interval=1d&range=5d`;
+            const res = await fetch(url);
+            if (!res.ok) return null;
+            const body = await res.json();
+            const result = body?.chart?.result?.[0];
+            const timestamps = result?.timestamp || [];
+            const closes = result?.indicators?.quote?.[0]?.close || [];
+            for (let i = closes.length - 1; i >= 0; i--) {
+                if (closes[i] !== null && closes[i] !== undefined) {
+                    const isoDate = new Date(timestamps[i] * 1000).toISOString().slice(0, 10);
+                    return { name: b.name, value: closes[i], date: isoDate };
+                }
+            }
+            return null;
+        });
+        (await Promise.all(yahooPromises)).forEach(r => {
+            if (r) macroData[r.name] = { value: r.value, date: r.date + " (UTC 00:00 Normalized)", asOf: r.date };
+        });
+    } catch(e) {
+        console.error("Yahoo JP/UK 10Y Error:", e);
+    }
+
     // 0.5 KRX (KOSPI) removed: the KRX Data Marketplace key returned
     // 401 "Unauthorized API Call" on every request, so the tile never had data.
 
