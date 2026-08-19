@@ -5706,6 +5706,10 @@ const coDerive = (s) => {
     const debtTotal = sum(interestBearingShort, s.debt_long);
     return {
         fy: s.fy,
+        // Annual rows are keyed by fiscal year, quarterly ones by `2025Q3`.
+        // Carrying both lets one derived row feed either series without the
+        // chart having to know which kind of filing produced it.
+        period: s.period ?? (s.fy === undefined ? undefined : String(s.fy)),
         current_ratio: coDiv(s.assets_current, s.liabilities_current),
         quick_ratio: coDiv(sum(s.cash, s.securities_current, s.receivables), s.liabilities_current),
         debt_ratio: coDiv(s.liabilities, s.assets),
@@ -5835,10 +5839,15 @@ const loadCompany = async (out, inst) => {
             <p class="fin-note">${finEsc(data.name || sym)}의 연차보고서에서 표준 항목을 읽지 못했습니다.</p></div>`;
         return;
     }
+    // Same derivation, one row per 10-Q period. coDerive is per-row and has no
+    // notion of period length, so the ratios it computes hold for a quarter as
+    // readily as for a year -- what differs is only which filings fed the row.
+    const qrows = (data.quarterly || []).map(coDerive);
 
     let level = 'health';
     CO_DCF.growth = null;      // 새 기업이면 그 기업의 이력에서 다시 잡는다
     CO_STRUCT_OPEN = null;
+    CO_OPEN_CARD = null;
     CO_DATA = data;
     CO_PRICE.value = null;
     CO_PRICE.status = 'loading';
@@ -5858,7 +5867,7 @@ const loadCompany = async (out, inst) => {
                 </button>`).join('')}
         </div>
         <p class="fin-note co-blurb">${finEsc(CO_LEVELS.find((L) => L.id === level).blurb)}</p>
-        ${coRenderLevel(level, rows, data)}`;
+        ${coRenderLevel(level, rows, data, qrows)}`;
 
         out.querySelectorAll('[data-level]').forEach((b) => b.addEventListener('click', () => {
             level = b.dataset.level; paint();
@@ -5867,6 +5876,17 @@ const loadCompany = async (out, inst) => {
         out.querySelectorAll('[data-co-struct]').forEach((b) => b.addEventListener('click', () => {
             const k = b.dataset.coStruct;
             CO_STRUCT_OPEN = CO_STRUCT_OPEN === k ? null : k;
+            paint();
+        }));
+
+        out.querySelectorAll('.co-series-toggle').forEach((b) => b.addEventListener('click', () => {
+            const k = b.closest('[data-co-card]')?.dataset.coCard;
+            CO_OPEN_CARD = (CO_OPEN_CARD === k) ? null : k;
+            paint();
+        }));
+
+        out.querySelectorAll('[data-fin-mode]').forEach((b) => b.addEventListener('click', () => {
+            FIN_SERIES_MODE = b.dataset.finMode;
             paint();
         }));
 
@@ -5956,21 +5976,87 @@ const kfaFmt = (key, v, currency) => {
     return String(v);
 };
 
-/** Same inline-SVG sparkline shape used elsewhere, mapped to the KFA {year, value} series. */
-const kfaSpark = (series, w = 280, h = 56) => {
-    const pts = (series || []).slice().sort((a, b) => a.year - b.year);
-    if (pts.length < 2) return '';
+// --- 공통 재무 시계열 (SEC·DART 양쪽에서 사용) --------------------------------
+//
+// One chart component for both filers. The two sources disagree on almost
+// everything upstream -- US GAAP vs K-IFRS tags, 10-K/10-Q vs 사업/반기/분기
+// 보고서, USD vs KRW -- but by the time a number reaches this file it is just
+// a labelled point in a series, so the drawing code has no reason to know
+// which side it came from. Both paths normalise into {period, value} first.
+//
+// Bars rather than a line: these are flows per period (a quarter's revenue),
+// not a level being tracked, and a line implies interpolation between periods
+// that did not happen. Bars also read correctly when values cross zero, which
+// a loss-making quarter does.
+
+// Annual points arrive as {year, value} from DART and {fy, ...} from SEC;
+// quarterly as {period: '2025Q3', value}. Normalise to {period, value, label}.
+const finNormPeriods = (pts, kind) => (pts || [])
+    .map((p) => {
+        const period = String(p.period ?? p.year ?? p.fy ?? '');
+        if (!period || !Number.isFinite(p.value)) return null;
+        return { period, value: p.value, label: kind === 'quarterly' ? period.replace(/(\d{4})Q(\d)/, '$1 Q$2') : period };
+    })
+    .filter(Boolean)
+    .sort((a, b) => a.period.localeCompare(b.period));
+
+let FIN_SERIES_MODE = 'annual';   // 'annual' | 'quarterly' -- 카드 차트 공통
+
+// Chart alone, no toggle. `fmt` formats a value for the hover label so the
+// caller's own units (원/USD/배/%) survive rather than being re-guessed here.
+const finPeriodBars = (pts, fmt) => {
+    if (!pts.length) return '';
+    const W = 640, H = 150, PAD_B = 22, PAD_T = 10;
     const vals = pts.map((p) => p.value);
-    const lo = Math.min(...vals), hi = Math.max(...vals);
-    const span = hi - lo || 1;
-    const x = (i) => (i / (pts.length - 1)) * w;
-    const y = (v) => h - ((v - lo) / span) * h;
-    const d = pts.map((p, i) => `${i ? 'L' : 'M'}${x(i).toFixed(1)},${y(p.value).toFixed(1)}`).join('');
-    return `<svg class="kfa-spark" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none">
-        <path d="${d}" fill="none" stroke="#7dd3fc" stroke-width="1.4"/>
-        ${pts.map((p, i) => `<circle cx="${x(i).toFixed(1)}" cy="${y(p.value).toFixed(1)}" r="2" fill="#38bdf8">
-            <title>${p.year}: ${finEsc(kfaFmt('_', p.value))}</title></circle>`).join('')}
+    const hi = Math.max(...vals, 0);
+    const lo = Math.min(...vals, 0);
+    const span = (hi - lo) || Math.abs(hi) || 1;
+    const plotH = H - PAD_B - PAD_T;
+    const y = (v) => PAD_T + (1 - (v - lo) / span) * plotH;
+    const zeroY = y(0);
+    const slot = W / pts.length;
+    const bw = Math.max(2, Math.min(slot * 0.62, 46));
+
+    // A dense quarterly axis cannot show every label without overlapping, so
+    // thin it to roughly eight ticks and keep the first and last.
+    const step = Math.max(1, Math.ceil(pts.length / 8));
+
+    return `<svg class="fin-bars" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" role="img">
+        <line class="fin-bars-zero" x1="0" x2="${W}" y1="${zeroY.toFixed(1)}" y2="${zeroY.toFixed(1)}"/>
+        ${pts.map((p, i) => {
+            const cx = slot * (i + 0.5);
+            const top = p.value >= 0 ? y(p.value) : zeroY;
+            const h = Math.max(1, Math.abs(y(p.value) - zeroY));
+            return `<rect class="fin-bar ${p.value < 0 ? 'neg' : 'pos'}"
+                x="${(cx - bw / 2).toFixed(1)}" y="${top.toFixed(1)}"
+                width="${bw.toFixed(1)}" height="${h.toFixed(1)}"
+                ><title>${finEsc(p.label)}: ${finEsc(fmt(p.value))}</title></rect>`;
+        }).join('')}
+        ${pts.map((p, i) => ((i % step === 0 || i === pts.length - 1)
+            ? `<text class="fin-bars-x" x="${(slot * (i + 0.5)).toFixed(1)}" y="${H - 6}" text-anchor="middle">${finEsc(p.label)}</text>`
+            : '')).join('')}
     </svg>`;
+};
+
+// Toggle + chart + range caption. `annual`/`quarterly` are the two raw series;
+// either may be empty, and the toggle only appears when both exist -- offering
+// a 분기별 button that opens an empty chart would read as a broken control.
+const finSeriesBlock = (annual, quarterly, fmt) => {
+    const a = finNormPeriods(annual, 'annual');
+    const q = finNormPeriods(quarterly, 'quarterly');
+    const both = a.length >= 2 && q.length >= 2;
+    const mode = (FIN_SERIES_MODE === 'quarterly' && q.length >= 2) ? 'quarterly' : 'annual';
+    const pts = mode === 'quarterly' ? q : a;
+    if (pts.length < 2) return '';
+
+    return `
+        ${both ? `<div class="fin-series-modes" role="group" aria-label="표시 주기">
+            <button type="button" class="mm-view-btn ${mode === 'annual' ? 'on' : ''}" data-fin-mode="annual">연도별</button>
+            <button type="button" class="mm-view-btn ${mode === 'quarterly' ? 'on' : ''}" data-fin-mode="quarterly">분기별</button>
+        </div>` : ''}
+        ${finPeriodBars(pts, fmt)}
+        <p class="fin-series-note">${finEsc(pts[0].label)} ~ ${finEsc(pts[pts.length - 1].label)} ·
+            ${pts.length}개 구간${mode === 'quarterly' ? ' · 분기 값 (누적 아님)' : ''}</p>`;
 };
 
 let KFA_VIEW = 'basic';
@@ -6016,9 +6102,10 @@ const renderKfaResult = (out, data) => {
                         <span class="fin-card-title">${finEsc(meta.label)}</span>
                         <span class="fin-card-value">${kfaFmt(key, card.value, currency)}</span>
                         <p class="fin-card-plain">${finEsc(meta.plain)}${card.reason ? ` (${finEsc(card.reason)})` : ''}</p>
-                        ${(card.series && card.series.length >= 2) ? `
-                            <button type="button" class="co-kfa-toggle">${open ? '차트 접기' : '연도별 추이 보기'}</button>
-                            ${open ? `<div class="co-kfa-chart">${kfaSpark(card.series)}</div>` : ''}` : ''}
+                        ${((card.series || []).length >= 2 || (card.quarterly || []).length >= 2) ? `
+                            <button type="button" class="co-kfa-toggle">${open ? '차트 접기' : '추이 보기'}</button>
+                            ${open ? `<div class="co-kfa-chart">${finSeriesBlock(card.series, card.quarterly,
+                                (v) => kfaFmt(key, v, currency))}</div>` : ''}` : ''}
                     </div>`;
             }).join('')}
         </div>
@@ -6042,6 +6129,11 @@ const renderKfaResult = (out, data) => {
     out.querySelectorAll('.co-kfa-toggle').forEach((b) => b.addEventListener('click', () => {
         const key = b.closest('[data-kfa-card]')?.dataset.kfaCard;
         KFA_OPEN_CARD = (KFA_OPEN_CARD === key) ? null : key;
+        renderKfaResult(out, data);
+    }));
+
+    out.querySelectorAll('[data-fin-mode]').forEach((b) => b.addEventListener('click', () => {
+        FIN_SERIES_MODE = b.dataset.finMode;
         renderKfaResult(out, data);
     }));
 };
@@ -6462,18 +6554,19 @@ const coHealthPanel = (rowsDesc, CUR) => {
     const latest = rowsDesc[0];
     return `
         <div class="fin-cards">
-            <div class="fin-card"><span class="fin-card-title">유동비율</span>
-                <span class="fin-card-value">${coPct(latest.current_ratio)}</span>
-                <p class="fin-card-plain">1년 안에 갚을 빚 대비 1년 안에 현금이 되는 자산. 100%를 밑돌면 단기 자금이 빠듯하다는 뜻입니다.</p></div>
-            <div class="fin-card"><span class="fin-card-title">부채비율 (부채/자산)</span>
-                <span class="fin-card-value">${coPct(latest.debt_ratio)}</span>
-                <p class="fin-card-plain">자산 중 남의 돈이 차지하는 비율입니다. 업종마다 정상 범위가 크게 달라 같은 업종끼리 비교해야 합니다.</p></div>
-            <div class="fin-card"><span class="fin-card-title">영업이익률</span>
-                <span class="fin-card-value">${coPct(latest.operating_margin)}</span>
-                <p class="fin-card-plain">매출 100원으로 본업에서 남긴 이익입니다.</p></div>
-            <div class="fin-card"><span class="fin-card-title">ROE</span>
-                <span class="fin-card-value">${coPct(latest.roe)}</span>
-                <p class="fin-card-plain">주주 돈으로 낸 수익률입니다. 빚을 많이 쓰면 자연히 높아지므로 부채비율과 같이 봐야 합니다.</p></div>
+            ${coSeriesCard('revenue', '매출', '한 해 동안 벌어들인 전체 매출입니다.',
+                (r) => r.raw.revenue, (v) => coNum(v, CUR))}
+            ${coSeriesCard('current_ratio', '유동비율',
+                '1년 안에 갚을 빚 대비 1년 안에 현금이 되는 자산. 100%를 밑돌면 단기 자금이 빠듯하다는 뜻입니다.',
+                (r) => r.current_ratio, (v) => coPct(v))}
+            ${coSeriesCard('debt_ratio', '부채비율 (부채/자산)',
+                '자산 중 남의 돈이 차지하는 비율입니다. 업종마다 정상 범위가 크게 달라 같은 업종끼리 비교해야 합니다.',
+                (r) => r.debt_ratio, (v) => coPct(v))}
+            ${coSeriesCard('operating_margin', '영업이익률', '매출 100원으로 본업에서 남긴 이익입니다.',
+                (r) => r.operating_margin, (v) => coPct(v))}
+            ${coSeriesCard('roe', 'ROE',
+                '주주 돈으로 낸 수익률입니다. 빚을 많이 쓰면 자연히 높아지므로 부채비율과 같이 봐야 합니다.',
+                (r) => r.roe, (v) => coPct(v))}
         </div>
         <section class="fin-block fin-block-wide">
             <h2>연도별 추이</h2>
@@ -6493,18 +6586,21 @@ const coValuationPanel = (rowsDesc, CUR) => {
     const latest = rowsDesc[0];
     return `
         <div class="fin-cards">
-            <div class="fin-card"><span class="fin-card-title">잉여현금흐름 (FCF)</span>
-                <span class="fin-card-value">${coNum(latest.fcf, CUR)}</span>
-                <p class="fin-card-plain">영업으로 번 현금에서 설비투자를 뺀 값입니다. 배당·자사주·부채상환에 쓸 수 있는 실제 여윳돈입니다.</p></div>
-            <div class="fin-card"><span class="fin-card-title">FCF 마진</span>
-                <span class="fin-card-value">${coPct(latest.fcf_margin)}</span>
-                <p class="fin-card-plain">매출이 현금으로 남는 비율입니다. 이익은 나는데 이 값이 낮으면 회계 이익과 현금이 어긋난다는 신호입니다.</p></div>
-            <div class="fin-card"><span class="fin-card-title">순부채</span>
-                <span class="fin-card-value">${coNum(latest.net_debt, CUR)}</span>
-                <p class="fin-card-plain">이자부 부채에서 현금·단기투자를 뺀 값입니다. 음수면 빚보다 현금이 많다는 뜻입니다.</p></div>
-            <div class="fin-card"><span class="fin-card-title">ROA</span>
-                <span class="fin-card-value">${coPct(latest.roa)}</span>
-                <p class="fin-card-plain">자산 전체로 낸 수익률입니다. ROE와 벌어지면 그 차이가 레버리지에서 옵니다.</p></div>
+            ${coSeriesCard('fcf', '잉여현금흐름 (FCF)',
+                '영업으로 번 현금에서 설비투자를 뺀 값입니다. 배당·자사주·부채상환에 쓸 수 있는 실제 여윳돈입니다.',
+                (r) => r.fcf, (v) => coNum(v, CUR))}
+            ${coSeriesCard('cfo', '영업활동현금흐름',
+                '실제로 영업에서 걷어들인 현금입니다. 회계상 이익과 다를 수 있습니다.',
+                (r) => r.raw.cfo, (v) => coNum(v, CUR))}
+            ${coSeriesCard('fcf_margin', 'FCF 마진',
+                '매출이 현금으로 남는 비율입니다. 이익은 나는데 이 값이 낮으면 회계 이익과 현금이 어긋난다는 신호입니다.',
+                (r) => r.fcf_margin, (v) => coPct(v))}
+            ${coSeriesCard('net_debt', '순부채',
+                '이자부 부채에서 현금·단기투자를 뺀 값입니다. 음수면 빚보다 현금이 많다는 뜻입니다.',
+                (r) => r.net_debt, (v) => coNum(v, CUR))}
+            ${coSeriesCard('roa', 'ROA',
+                '자산 전체로 낸 수익률입니다. ROE와 벌어지면 그 차이가 레버리지에서 옵니다.',
+                (r) => r.roa, (v) => coPct(v))}
         </div>
         <section class="fin-block fin-block-wide">
             <h2>현금 흐름</h2>
@@ -6523,8 +6619,42 @@ const coValuationPanel = (rowsDesc, CUR) => {
         ${coDcfPanel(rowsDesc, CUR)}`;
 };
 
-const coRenderLevel = (level, rowsDesc, data) => {
+// The SEC side's counterpart to the DART cards' 추이 보기 -- same component
+// underneath (finSeriesBlock), so one filer's chart cannot drift from the
+// other's. `pick` reads this card's value out of a derived row, which is what
+// lets a single definition serve both the headline figure and every point in
+// the series behind it.
+let CO_OPEN_CARD = null;
+let CO_SERIES_ROWS = { annual: [], quarterly: [] };
+
+const coSeriesCard = (key, title, plain, pick, fmt) => {
+    const { annual, quarterly } = CO_SERIES_ROWS;
+    const latest = annual.length ? annual[annual.length - 1] : null;
+    const toPoints = (rowsAsc) => rowsAsc
+        .map((r) => ({ period: r.period, value: pick(r) }))
+        .filter((p) => p.period && Number.isFinite(p.value));
+    const a = toPoints(annual);
+    const q = toPoints(quarterly);
+    const open = CO_OPEN_CARD === key;
+    const hasSeries = a.length >= 2 || q.length >= 2;
+
+    return `<div class="fin-card co-kfa-card ${open ? 'open' : ''}" data-co-card="${finEsc(key)}">
+        <span class="fin-card-title">${finEsc(title)}</span>
+        <span class="fin-card-value">${latest ? fmt(pick(latest)) : '—'}</span>
+        <p class="fin-card-plain">${finEsc(plain)}</p>
+        ${hasSeries ? `<button type="button" class="co-series-toggle">${open ? '차트 접기' : '추이 보기'}</button>
+            ${open ? `<div class="co-kfa-chart">${finSeriesBlock(a, q, fmt)}</div>` : ''}` : ''}
+    </div>`;
+};
+
+const coRenderLevel = (level, rowsDesc, data, qrowsDesc = []) => {
     const CUR = data.currency || 'KRW';
+    // Oldest-first is what the chart wants; the panels' own tables still take
+    // the descending list they were written against.
+    CO_SERIES_ROWS = {
+        annual: [...rowsDesc].reverse(),
+        quarterly: [...qrowsDesc].slice().sort((x, y) => String(x.period).localeCompare(String(y.period))),
+    };
     const parts = coLevelsUpTo(level).map((id) => {
         if (id === 'health') return coHealthPanel(rowsDesc, CUR);
         if (id === 'valuation') return coValuationPanel(rowsDesc, CUR);
