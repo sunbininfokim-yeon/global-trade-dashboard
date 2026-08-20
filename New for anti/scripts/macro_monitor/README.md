@@ -25,6 +25,9 @@ python3 build_macro_monitor.py --print-stats          # fixture only
 python3 build_macro_monitor.py --live --print-stats   # Yahoo + Worker FRED/BOK overlay
 # → ../../public/data/macro_monitor_v1.json
 
+# Japan growth: official ESRI + BOJ snapshot, then run build_macro_monitor.py
+python3 build_japan_growth_snapshot.py
+
 # U.S. quality decision layer (empty contract or extracted point-in-time input)
 python3 build_us_macro_quality.py --print-stats
 python3 build_us_macro_quality.py --input cache/us_macro_quality/input.json --print-stats
