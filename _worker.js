@@ -796,8 +796,17 @@ async function handleMacro(request, env, ctx) {
             const FRED_KEY = env.FRED_API_KEY;
             if (!FRED_KEY) return missingKey('FRED_API_KEY');
 
-            return kvCachedJson(env, `fred:${series_id}`, 3600, async () => {
-                const fredUrl = `https://api.stlouisfed.org/fred/series/observations?series_id=${encodeURIComponent(series_id)}&api_key=${FRED_KEY}&file_type=json&sort_order=desc&limit=1`;
+            // FRED writes "." for a day a daily series has no reading -- weekends
+            // and market holidays on DGS10, DEXJPUS and friends. With limit=1 the
+            // newest observation is then a dot and the tile has nothing to show,
+            // so callers ask for extra rows and take the first real one. The home
+            // panel's sparklines read the same rows as a short series, which is
+            // why the cap is a few hundred rather than a handful.
+            const limitParam = parseInt(url.searchParams.get('limit'), 10);
+            const limit = Number.isFinite(limitParam) ? Math.min(Math.max(limitParam, 1), 400) : 1;
+
+            return kvCachedJson(env, `fred:${series_id}:${limit}`, 3600, async () => {
+                const fredUrl = `https://api.stlouisfed.org/fred/series/observations?series_id=${encodeURIComponent(series_id)}&api_key=${FRED_KEY}&file_type=json&sort_order=desc&limit=${limit}`;
                 const res = await fetch(fredUrl);
                 if (!res.ok) return { ok: false, status: res.status };
                 return { ok: true, body: await res.json() };
@@ -830,7 +839,9 @@ async function handleMacro(request, env, ctx) {
             // Stocks move weekly and the panel shows a change, so keep a
             // year of history (52 points) rather than one point -- long
             // enough to tell a seasonal drawdown from a genuine trend.
-            const length = freq === 'weekly' ? 52 : 1;
+            // Daily spot prices carry a shorter window for the same reason:
+            // the home panel draws a sparkline beside the latest print.
+            const length = freq === 'weekly' ? 52 : 30;
             return kvCachedJson(env, `eia:${route}:${seriesId}:${length}`, 3600, async () => {
                 const eiaUrl = `https://api.eia.gov/v2/${route}?api_key=${EIA_KEY}&frequency=${freq}&data[0]=value&facets[series][]=${encodeURIComponent(seriesId)}&sort[0][column]=period&sort[0][direction]=desc&offset=0&length=${length}`;
                 const res = await fetch(eiaUrl);
@@ -839,14 +850,44 @@ async function handleMacro(request, env, ctx) {
             });
         }
 
+        if (source === 'cnbc') {
+            // CNBC's unofficial quote API -- the same one behind cnbc.com/quotes/<symbol>
+            // -- for instruments Yahoo prices oddly or not at all, e.g. sovereign
+            // bond yields (JP10Y, UK10Y). No API key; a plain browser UA is enough
+            // to get past their edge. Not FRED/BOK/EIA-official, so callers treat a
+            // miss here as routine and fall back rather than surfacing an error.
+            const symbol = url.searchParams.get('symbol');
+            if (!symbol) return new Response(JSON.stringify({ error: "symbol required" }), { status: 400, headers: JSON_HEADERS });
+
+            return kvCachedJson(env, `cnbc:${symbol}`, 3600, async () => {
+                const cnbcUrl = `https://quote.cnbc.com/quote-html-webservice/restQuote/symbolType/symbol`
+                    + `?symbols=${encodeURIComponent(symbol)}&requestMethod=itv&noform=1&partnerId=2`
+                    + `&fund=1&exthrs=1&output=json&events=1`;
+                const res = await fetch(cnbcUrl, {
+                    headers: { "User-Agent": "Mozilla/5.0", "Accept": "application/json" }
+                });
+                if (!res.ok) return { ok: false, status: res.status };
+                return { ok: true, body: await res.json() };
+            });
+        }
+
         if (source === 'yfinance') {
             const symbol = url.searchParams.get('symbol');
 
-            return kvCachedJson(env, `yfinance:${symbol}`, 3600, async () => {
-                // Fetch 5 years of monthly data
-                const period1 = Math.floor(new Date().setFullYear(new Date().getFullYear() - 5) / 1000);
+            // The chart modal wants 5 years of monthly bars; the home panel's
+            // JP/UK 10Y bond tiles want just today's close, so they ask for
+            // interval=1d&range=5d instead. Both keep hitting this one route
+            // rather than duplicating the Yahoo fetch, and each combination
+            // gets its own cache entry.
+            const interval = url.searchParams.get('interval') || '1mo';
+            const rangeParam = url.searchParams.get('range');
+
+            return kvCachedJson(env, `yfinance:${symbol}:${interval}:${rangeParam || '5y'}`, 3600, async () => {
                 const period2 = Math.floor(Date.now() / 1000);
-                const yfUrl = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}?period1=${period1}&period2=${period2}&interval=1mo`;
+                const period1 = rangeParam === '5d'
+                    ? period2 - 5 * 86400
+                    : Math.floor(new Date().setFullYear(new Date().getFullYear() - 5) / 1000);
+                const yfUrl = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}?period1=${period1}&period2=${period2}&interval=${encodeURIComponent(interval)}`;
 
                 const res = await fetch(yfUrl, {
                     headers: { "User-Agent": "Mozilla/5.0", "Accept": "application/json" }

@@ -63,7 +63,7 @@ let tradeAnimPhase = 0;
 window.initApp = function() {
     forecastData = window.ForecastData || {};
     if (window.MacroData) {
-        updateMacroPanel(window.MacroData);
+        refreshSignalMarkets();
     }
 };
 
@@ -71,44 +71,472 @@ if (window.MacroData) {
     window.initApp();
 }
 
-// Update Macro Panel with FRED Data
-const updateMacroPanel = (macro) => {
-    const formatVal = (id, val) => {
-        if (!val || val === "N/A") return "N/A";
-        const num = parseFloat(val);
-        if (id === "EUR/USD" || id === "USD/JPY") return num.toFixed(4);
-        if (id === "NASDAQ") return num.toLocaleString();
-        if (id === "WTI_OIL") {
-            if (isNaN(num)) return val;
-            return `$${num.toFixed(2)}`;
-        }
-        if (id === "NAT_GAS") {
-            if (isNaN(num)) return val;
-            return `$${num.toFixed(3)}`; // Natural Gas prices are typically quoted to 3 decimal places (e.g. $2.145)
-        }
-        if (id === "FED_BS") return `$${(num / 1000000).toFixed(2)} Trillion`;
-        if (id === "TGA") return `$${(num / 1000).toFixed(0)} Billion`;
-        if (id === "KRW_USD") return `${num.toLocaleString(undefined, {minimumFractionDigits: 1, maximumFractionDigits: 1})} 원`;
-        if (id === "BOK_RATE") return `${num.toFixed(2)}%`;
-        return val;
+// ==========================================
+// 「오늘 신호」 panel (home right pane)
+// ==========================================
+//
+// Replaces the old flat column of macro tiles. Two zones:
+//
+//   고정 3   ENSO / chokepoint pressure / KOSPI risk -- never rotate, and speak
+//            in state-and-deviation language (엘니뇨·중, −4.2%) because they are
+//            standing conditions rather than prices.
+//   순환 A–F Six pages of four slots, swapped a whole page at a time on a drum
+//            flip every 8s. These are plain numbers with units.
+//
+// A slot with no feed behind it renders as a labelled 연동 예정 placeholder.
+// That is deliberate: SCFI/BDI are licence-gated (see market_signals in the
+// shipping snapshot), KOSPI waits on a KRX key, and bunker quotes wait on the
+// weekly artifact -- none of them may be silently approximated from something
+// else. Anything published on a lag carries an `as of` date.
+
+const SIGNAL_ROTATE_MS = 8000;
+
+// value: key into window.MacroData. fmt: how to print it. symbol: Yahoo ticker,
+// which makes the slot clickable and opens the chart modal with a moving average.
+const SIGNAL_PAGES = [
+    {
+        key: 'A', name: '에너지',
+        slots: [
+            { label: 'Brent 원유', value: 'BRENT', fmt: 'usd2', unit: '/bbl', symbol: 'BZ=F' },
+            { label: 'Singapore VLSFO', pending: '주간 벙커 연동 예정' },
+            { label: 'Henry Hub 가스', value: 'NAT_GAS', fmt: 'usd3', unit: '/MMBtu', symbol: 'NG=F' },
+            { label: 'Newcastle 연료탄', pending: '주간 연동 예정' }
+        ]
+    },
+    {
+        // IMF monthly commodity prices: published with a lag, so every slot on
+        // this page shows the month it is quoting.
+        key: 'B', name: '농산물',
+        slots: [
+            { label: '밀', value: 'WHEAT', fmt: 'usd0', unit: '/t', symbol: 'ZW=F' },
+            { label: '옥수수', value: 'CORN', fmt: 'usd0', unit: '/t', symbol: 'ZC=F' },
+            { label: '대두', value: 'SOYBEANS', fmt: 'usd0', unit: '/t', symbol: 'ZS=F' },
+            { label: '설탕 No.11', value: 'SUGAR', fmt: 'cents2', unit: '/lb', symbol: 'SB=F' }
+        ]
+    },
+    {
+        key: 'C', name: '환율',
+        slots: [
+            // ICE licenses DXY itself; the Fed's broad dollar index is the
+            // standard public stand-in, hence the explicit label.
+            { label: '달러지수 (광의)', value: 'DXY_BROAD', fmt: 'idx2', note: 'Fed 광의 달러' },
+            { label: 'USD / JPY', value: 'USD/JPY', fmt: 'fx2', symbol: 'JPY=X' },
+            { label: 'EUR / USD', value: 'EUR/USD', fmt: 'fx4', symbol: 'EUR=X' },
+            { label: 'USD / KRW', value: 'KRW_USD', fmt: 'krw', symbol: 'KRW=X' }
+        ]
+    },
+    {
+        // Japan/UK are OECD monthly series (see data.js) -- everything else on
+        // this page is a daily constant-maturity yield, so those two carry an
+        // `as of` month where the US pair carries an `as of` day.
+        key: 'D', name: '금리',
+        slots: [
+            { label: '미 국채 2년', value: 'US2Y', fmt: 'pct2' },
+            { label: '미 국채 10년', value: 'US10Y', fmt: 'pct2' },
+            { label: '일본 국채 10년', value: 'JP10Y', fmt: 'pct2', symbol: 'JP10Y' },
+            { label: '영국 길트 10년', value: 'UK10Y', fmt: 'pct2', symbol: 'UK10Y' }
+        ]
+    },
+    {
+        key: 'E', name: '주식',
+        slots: [
+            { label: 'S&P 500', value: 'SP500', fmt: 'idx2', symbol: '^GSPC' },
+            { label: '나스닥 종합', value: 'NASDAQ', fmt: 'idx2', symbol: '^IXIC' },
+            // No cheap spot quote for these two, but the chart route serves any
+            // Yahoo symbol -- so the tile says 연동 예정 and the click still works.
+            { label: '필라델피아 반도체', pending: '지수 연동 예정', symbol: '^SOX' },
+            { label: 'KOSPI', pending: 'KRX 키 재발급 대기', symbol: '^KS11' }
+        ]
+    },
+    {
+        // Baltic Exchange and SCFI assessments need a redistribution licence,
+        // so these stay empty until the weekly artifact lands. Do not substitute.
+        key: 'F', name: '해운',
+        slots: [
+            { label: 'SCFI 컨테이너', pending: '주간 운임 연동 예정' },
+            { label: 'BDI 벌크', pending: '주간 운임 연동 예정' },
+            { label: 'CCFI 컨테이너', pending: '주간 운임 연동 예정' },
+            { label: '탱커 운임', pending: '주간 운임 연동 예정' }
+        ]
+    }
+];
+
+const signalEls = {
+    panel: () => document.getElementById('macro-panel'),
+    fixed: () => document.getElementById('signal-fixed'),
+    stage: () => document.getElementById('signal-stage'),
+    rotator: () => document.getElementById('signal-rotator'),
+    pageName: () => document.getElementById('signal-page-name'),
+    dots: () => document.getElementById('signal-dots')
+};
+
+const signalEsc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => (
+    { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]
+));
+
+// FRED and EIA hand back ISO dates; BOK hands back a compact CYCLE string
+// (20260818 daily, 202608 monthly). Normalise all three to YYYY-MM-DD / YYYY-MM.
+const signalAsOf = (raw) => {
+    const s = String(raw || '').trim();
+    if (!s || s === 'N/A') return '';
+    if (/^\d{8}$/.test(s)) return `${s.slice(0, 4)}-${s.slice(4, 6)}-${s.slice(6, 8)}`;
+    if (/^\d{6}$/.test(s)) return `${s.slice(0, 4)}-${s.slice(4, 6)}`;
+    return s.split(' ')[0];
+};
+
+const signalFormat = (fmt, raw) => {
+    const num = parseFloat(raw);
+    if (!isFinite(num)) return null;
+    switch (fmt) {
+        case 'usd0': return `$${num.toLocaleString(undefined, { maximumFractionDigits: 0 })}`;
+        case 'usd2': return `$${num.toFixed(2)}`;
+        case 'usd3': return `$${num.toFixed(3)}`;
+        case 'cents2': return `${num.toFixed(2)}¢`;
+        case 'fx2': return num.toFixed(2);
+        case 'fx4': return num.toFixed(4);
+        case 'idx2': return num.toLocaleString(undefined, { maximumFractionDigits: 2 });
+        case 'krw': return `${num.toLocaleString(undefined, { maximumFractionDigits: 1 })}원`;
+        case 'pct2': return `${num.toFixed(2)}%`;
+        case 'trillion': return `$${(num / 1000000).toFixed(2)}조`;
+        case 'billion': return `$${(num / 1000).toFixed(0)}B`;
+        default: return String(raw);
+    }
+};
+
+// Compact sparkline for a signal slot: shape only, no axis or hover readout.
+// The wide spark2 component in trade.js answers "how far from its range is
+// this?" and needs the room to do it; here the number beside it already gives
+// the level, and the line only has to say which way it has been going. Clicking
+// through to the chart modal is where the full picture lives.
+const signalSparkHtml = (points) => {
+    if (!points || points.length < 3) return '';
+    const W = 96, H = 34, PAD = 2;
+    const vals = points.map(p => p.value);
+    const min = Math.min(...vals);
+    const max = Math.max(...vals);
+    // A flat series must not divide by zero; drawing it mid-box is more honest
+    // than pinning it to an edge.
+    const span = max - min || 1;
+    const x = (i) => PAD + (i / (points.length - 1)) * (W - PAD * 2);
+    const y = (v) => PAD + (1 - (v - min) / span) * (H - PAD * 2);
+
+    const line = points.map((p, i) => `${i ? 'L' : 'M'}${x(i).toFixed(1)},${y(p.value).toFixed(1)}`).join('');
+    const area = `${line}L${x(points.length - 1).toFixed(1)},${H - PAD}L${x(0).toFixed(1)},${H - PAD}Z`;
+    const last = points[points.length - 1];
+    const rising = last.value >= points[0].value;
+
+    return `<svg class="signal-spark ${rising ? 'up' : 'down'}" viewBox="0 0 ${W} ${H}"
+                 preserveAspectRatio="none" aria-hidden="true">
+        <path class="signal-spark-area" d="${area}"/>
+        <path class="signal-spark-line" d="${line}" vector-effect="non-scaling-stroke"/>
+        <circle class="signal-spark-dot" cx="${x(points.length - 1).toFixed(1)}" cy="${y(last.value).toFixed(1)}" r="1.6"/>
+    </svg>`;
+};
+
+const signalSlotHtml = (slot) => {
+    const macro = window.MacroData || {};
+    const entry = slot.value ? macro[slot.value] : null;
+    const shown = entry ? signalFormat(slot.fmt, entry.value) : null;
+    const asOf = entry ? signalAsOf(entry.asOf || entry.date) : '';
+    const clickable = !!slot.symbol;
+
+    // A slot is pending either because it was declared that way, or because the
+    // feed answered with something unparseable -- both read the same to a viewer.
+    const body = shown
+        ? `<span class="signal-slot-value">${signalEsc(shown)}${
+              slot.unit ? `<span class="signal-slot-unit">${signalEsc(slot.unit)}</span>` : ''
+          }</span>`
+        : `<span class="signal-slot-value is-pending">${signalEsc(slot.pending || '연동 예정')}</span>`;
+
+    // "차트만 제공" belongs only to a slot that was declared without a feed and
+    // still has a chart behind it. A slot that has a feed and simply hasn't
+    // answered yet gets no footnote -- claiming it is chart-only would be wrong.
+    const foot = shown
+        ? (asOf ? `as of ${signalEsc(asOf)}` : (slot.note ? signalEsc(slot.note) : ''))
+        : (!slot.value && slot.symbol ? '차트만 제공' : '');
+
+    // Only a slot showing a real number gets a line; a sparkline over a
+    // pending tile would imply data the panel does not have.
+    const spark = shown ? signalSparkHtml(entry.history) : '';
+
+    return `<div class="signal-slot${clickable ? ' is-clickable' : ''}"${
+        clickable ? ` role="button" tabindex="0" data-symbol="${signalEsc(slot.symbol)}" data-label="${signalEsc(slot.label)}"` : ''
+    }>
+        <div class="signal-slot-main">
+            <span class="signal-slot-label">${signalEsc(slot.label)}</span>
+            ${body}
+            <span class="signal-slot-foot">${foot}</span>
+        </div>
+        <div class="signal-slot-chart">${spark}</div>
+    </div>`;
+};
+
+let signalIndex = 0;
+let signalTimer = null;
+let signalPaused = false;
+
+const signalBuildPage = (page) => {
+    const el = document.createElement('div');
+    el.className = 'signal-page';
+    el.innerHTML = page.slots.map(signalSlotHtml).join('');
+    return el;
+};
+
+const signalRenderDots = () => {
+    const host = signalEls.dots();
+    if (!host) return;
+    host.innerHTML = SIGNAL_PAGES.map((p, i) =>
+        `<button type="button" class="signal-dot${i === signalIndex ? ' is-on' : ''}" data-idx="${i}" aria-label="${signalEsc(p.name)} 페이지"></button>`
+    ).join('');
+};
+
+const signalShowPage = (idx, animate) => {
+    const stage = signalEls.stage();
+    if (!stage) return;
+    signalIndex = ((idx % SIGNAL_PAGES.length) + SIGNAL_PAGES.length) % SIGNAL_PAGES.length;
+    const page = SIGNAL_PAGES[signalIndex];
+    const name = signalEls.pageName();
+    if (name) name.textContent = page.name;
+
+    const prev = stage.querySelector('.signal-page.is-active');
+    const next = signalBuildPage(page);
+
+    const reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (!animate || !prev || reduced) {
+        stage.innerHTML = '';
+        stage.appendChild(next);
+        next.classList.add('is-active');
+    } else {
+        next.classList.add('is-entering');
+        stage.appendChild(next);
+        // Force layout so the browser has an "entering" frame to animate from;
+        // without it the class swap below collapses into no transition at all.
+        void next.offsetWidth;
+        next.classList.remove('is-entering');
+        next.classList.add('is-active');
+        prev.classList.remove('is-active');
+        prev.classList.add('is-leaving');
+        setTimeout(() => prev.remove(), 700);
+    }
+    signalRenderDots();
+};
+
+const signalTick = () => {
+    const panel = signalEls.panel();
+    // Hold position while the panel is off-screen (another view is up) or the
+    // tab is in the background -- rotating unseen just means the viewer comes
+    // back to an arbitrary page.
+    if (signalPaused || document.hidden) return;
+    if (!panel || panel.classList.contains('hidden')) return;
+    signalShowPage(signalIndex + 1, true);
+};
+
+// Re-renders the visible page in place. Called when macro data lands after the
+// first paint, so slots fill in without waiting for the next rotation.
+function refreshSignalMarkets() {
+    if (!signalEls.stage()) return;
+    signalShowPage(signalIndex, false);
+}
+
+// ---- 고정 3 --------------------------------------------------------------
+
+// `foot` carries the as-of date on its own line. Folding it into `sub` made the
+// date wrap mid-token (2026-08-\n09) once the worst-point name grew.
+const signalFixedCard = ({ id, title, value, sub, foot, tone, target }) => `
+    <div class="signal-fixed-card${target ? ' is-clickable' : ''}${tone ? ` tone-${tone}` : ''}"
+         id="${id}"${target ? ` role="button" tabindex="0" data-target="${signalEsc(target)}"` : ''}>
+        <span class="signal-fixed-title">${signalEsc(title)}</span>
+        <span class="signal-fixed-value">${signalEsc(value)}</span>
+        <span class="signal-fixed-sub">${signalEsc(sub)}</span>
+        ${foot ? `<span class="signal-fixed-foot">${signalEsc(foot)}</span>` : ''}
+    </div>`;
+
+const signalRenderFixed = (state) => {
+    const host = signalEls.fixed();
+    if (!host) return;
+    host.innerHTML = [
+        signalFixedCard(state.enso),
+        signalFixedCard(state.choke),
+        signalFixedCard(state.kospi)
+    ].join('');
+};
+
+// Fixed-card state, filled in by the async loaders below. All three start as
+// honest placeholders so the panel is never blank while data is in flight.
+const signalFixedState = {
+    enso: {
+        id: 'signal-enso', title: 'ENSO 엘니뇨·라니냐',
+        value: '불러오는 중', sub: 'NOAA CPC Niño 3.4', target: 'climate'
+    },
+    choke: {
+        id: 'signal-choke', title: '초크포인트 압력 (통합)',
+        value: '불러오는 중', sub: 'IMF PortWatch 7일 vs 28일', target: 'shipping_chokepoints'
+    },
+    kospi: {
+        id: 'signal-kospi', title: 'K200 옵션 풋콜 비율',
+        value: '불러오는 중', sub: 'KRX 코스피200 옵션 거래량', target: 'fin_derivatives'
+    }
+};
+
+const signalLoadEnso = async () => {
+    try {
+        const res = await fetch('/public/data/climate_global_v1.json', { cache: 'no-cache' });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const enso = (await res.json()).enso || {};
+        const c = Number(enso.latest_c);
+        if (!isFinite(c)) throw new Error('ONI 값 없음');
+        const signed = `${c >= 0 ? '+' : '−'}${Math.abs(c).toFixed(2)}°C`;
+        signalFixedState.enso = {
+            ...signalFixedState.enso,
+            value: enso.state_ko || 'ENSO 중립',
+            sub: `Niño 3.4 ${signed}${enso.season ? ` · ${enso.season}` : ''} · NOAA CPC`,
+            tone: c >= 0.5 ? 'warn' : (c <= -0.5 ? 'cool' : null)
+        };
+    } catch (e) {
+        console.error('ENSO 신호 로드 실패:', e);
+        signalFixedState.enso = { ...signalFixedState.enso, value: '연동 예정', sub: 'NOAA CPC 응답 없음', tone: 'muted' };
+    }
+    signalRenderFixed(signalFixedState);
+};
+
+const signalLoadChokepoints = async () => {
+    try {
+        const loader = window.ShippingDashboard && window.ShippingDashboard.loadData;
+        const data = loader
+            ? await loader()
+            : await fetch('/public/data/shipping_capacity_v1.json', { cache: 'no-cache' }).then(r => r.json());
+
+        const live = data.chokepoints_live || {};
+        const names = new Map((data.chokepoints || []).map(p => [p.id, p.name_ko || p.id]));
+
+        // Spec: one integrated stress index, not Suez alone. The snapshot has no
+        // composite field yet (Codex owns adding one), so until it does this is
+        // the arithmetic mean of every point's 7d-vs-28d change -- which the
+        // ticket explicitly allows as the first pass. Prefer a published
+        // composite the moment one appears.
+        const published = Number(data.chokepoint_composite?.change_pct);
+        const points = Object.entries(live)
+            .map(([id, v]) => ({ id, name: names.get(id) || id, chg: Number(v?.metrics?.all?.change_pct) }))
+            .filter(p => isFinite(p.chg));
+        if (!points.length) throw new Error('초크포인트 관측값 없음');
+
+        const worst = points.reduce((a, b) => (b.chg < a.chg ? b : a));
+        const composite = isFinite(published)
+            ? published
+            : points.reduce((sum, p) => sum + p.chg, 0) / points.length;
+
+        const asOf = signalAsOf(Object.values(live)[0]?.latest_date);
+        const pct = (n) => `${n >= 0 ? '+' : '−'}${Math.abs(n).toFixed(1)}%`;
+        signalFixedState.choke = {
+            ...signalFixedState.choke,
+            value: pct(composite),
+            sub: `${points.length}개 지점 평균 · 최악: ${worst.name} ${pct(worst.chg)}`,
+            foot: asOf ? `as of ${asOf}` : '',
+            tone: composite <= -10 ? 'warn' : null
+        };
+    } catch (e) {
+        console.error('초크포인트 신호 로드 실패:', e);
+        signalFixedState.choke = { ...signalFixedState.choke, value: '연동 예정', sub: 'PortWatch 스냅샷 없음', tone: 'muted' };
+    }
+    signalRenderFixed(signalFixedState);
+};
+
+// KOSPI200 option put/call volume ratio. Ratio above 1 means more puts than
+// calls traded -- the usual shorthand for hedging demand outpacing upside bets.
+// The board is written by the KRX OpenAPI job (scripts/market_microstructure),
+// so this card only reads what that job published; a missing file leaves the
+// placeholder rather than reconstructing a ratio from anything else.
+const signalLoadPutCall = async () => {
+    try {
+        const res = await fetch('/public/data/derivatives_board_v1.json', { cache: 'no-cache' });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const kr = (await res.json()).kr || {};
+        const opts = kr.kospi200_options || {};
+        const ratio = Number(opts.put_call_volume);
+        if (!isFinite(ratio)) throw new Error('풋콜 비율 없음');
+
+        const contracts = (n) => Number(n).toLocaleString(undefined, { maximumFractionDigits: 0 });
+        const asOf = signalAsOf(opts.bas_dd || kr.as_of);
+        signalFixedState.kospi = {
+            ...signalFixedState.kospi,
+            value: ratio.toFixed(2),
+            sub: `콜 ${contracts(opts.call_volume)} · 풋 ${contracts(opts.put_volume)} 계약`,
+            foot: asOf ? `as of ${asOf} · KRX` : 'KRX',
+            // Puts outnumbering calls is the state worth flagging.
+            tone: ratio >= 1 ? 'warn' : null
+        };
+    } catch (e) {
+        console.error('K200 풋콜 비율 로드 실패:', e);
+        signalFixedState.kospi = {
+            ...signalFixedState.kospi,
+            value: '연동 예정', sub: 'KRX 파생 보드 없음', tone: 'muted'
+        };
+    }
+    signalRenderFixed(signalFixedState);
+};
+
+// ---- wiring --------------------------------------------------------------
+
+function initSignalPanel() {
+    const stage = signalEls.stage();
+    const rotator = signalEls.rotator();
+    if (!stage || !rotator) return;
+
+    signalRenderFixed(signalFixedState);
+    signalShowPage(0, false);
+
+    if (signalTimer) clearInterval(signalTimer);
+    signalTimer = setInterval(signalTick, SIGNAL_ROTATE_MS);
+
+    // Reading a slot should not be a race against the drum.
+    rotator.addEventListener('mouseenter', () => { signalPaused = true; });
+    rotator.addEventListener('mouseleave', () => { signalPaused = false; });
+    rotator.addEventListener('focusin', () => { signalPaused = true; });
+    rotator.addEventListener('focusout', () => { signalPaused = false; });
+
+    const jump = (idx) => {
+        signalShowPage(idx, true);
+        // Restart the clock so a hand-picked page gets its full dwell.
+        if (signalTimer) clearInterval(signalTimer);
+        signalTimer = setInterval(signalTick, SIGNAL_ROTATE_MS);
     };
 
-    if(macro["EUR/USD"]) document.getElementById('macro-eur-usd').innerText = formatVal("EUR/USD", macro["EUR/USD"].value);
-    if(macro["USD/JPY"]) document.getElementById('macro-usd-jpy').innerText = formatVal("USD/JPY", macro["USD/JPY"].value);
-    if(macro["NASDAQ"]) document.getElementById('macro-nasdaq').innerText = formatVal("NASDAQ", macro["NASDAQ"].value);
-    if(macro["WTI_OIL"]) document.getElementById('macro-wti').innerText = formatVal("WTI_OIL", macro["WTI_OIL"].value);
-    if(macro["NAT_GAS"]) document.getElementById('macro-natgas').innerText = formatVal("NAT_GAS", macro["NAT_GAS"].value);
-    if(macro["FED_BS"]) {
-        document.getElementById('macro-fed-bs').innerText = formatVal("FED_BS", macro["FED_BS"].value);
-        document.getElementById('macro-fed-bs-date').innerText = `최근 업데이트: ${macro["FED_BS"].date}`;
-    }
-    if(macro["TGA"]) {
-        document.getElementById('macro-tga').innerText = formatVal("TGA", macro["TGA"].value);
-        document.getElementById('macro-tga-date').innerText = `최근 업데이트: ${macro["TGA"].date}`;
-    }
-    if(macro["KRW_USD"]) document.getElementById('macro-krw-usd').innerText = formatVal("KRW_USD", macro["KRW_USD"].value);
-    if(macro["BOK_RATE"]) document.getElementById('macro-bok-rate').innerText = formatVal("BOK_RATE", macro["BOK_RATE"].value);
-};
+    signalEls.dots().addEventListener('click', (e) => {
+        const dot = e.target.closest('.signal-dot');
+        if (dot) jump(Number(dot.dataset.idx));
+    });
+
+    const openSlot = (slot) => {
+        if (slot?.dataset.symbol) openChartModal(slot.dataset.label, slot.dataset.symbol);
+    };
+    stage.addEventListener('click', (e) => openSlot(e.target.closest('.signal-slot.is-clickable')));
+    stage.addEventListener('keydown', (e) => {
+        if (e.key !== 'Enter' && e.key !== ' ') return;
+        const slot = e.target.closest('.signal-slot.is-clickable');
+        if (!slot) return;
+        e.preventDefault();
+        openSlot(slot);
+    });
+
+    const followCard = (card) => {
+        if (card?.dataset.target) setView(card.dataset.target);
+    };
+    signalEls.fixed().addEventListener('click', (e) => followCard(e.target.closest('.signal-fixed-card.is-clickable')));
+    signalEls.fixed().addEventListener('keydown', (e) => {
+        if (e.key !== 'Enter' && e.key !== ' ') return;
+        const card = e.target.closest('.signal-fixed-card.is-clickable');
+        if (!card) return;
+        e.preventDefault();
+        followCard(card);
+    });
+
+    // Both feeds are fetched without blocking first paint. The shipping snapshot
+    // is ~1.1 MB, so it warms the same memoised promise the 해운 screens use
+    // rather than being downloaded twice.
+    signalLoadEnso();
+    signalLoadChokepoints();
+    signalLoadPutCall();
+}
 
 // Deck.GL Map Initialization
 //
@@ -4614,13 +5042,17 @@ const closeModal = document.getElementById('close-modal');
 const modalTitle = document.getElementById('modal-chart-title');
 let macroChartInstance = null;
 
-const openChartModal = async (indicatorTitle) => {
+// symbolOverride lets a caller name the Yahoo ticker outright. The 오늘 신호
+// slots carry their own symbol, so they no longer have to encode it in a title
+// string and hope the substring match below picks the right branch.
+const openChartModal = async (indicatorTitle, symbolOverride) => {
     modalTitle.textContent = `${indicatorTitle} (최근 5년 실데이터)`;
     chartModal.classList.remove('hidden');
-    
+
     // Map indicator title to Yahoo Finance Symbol
     let symbol = "";
-    if (indicatorTitle.includes('KRW/USD')) symbol = "KRW=X";
+    if (symbolOverride) symbol = symbolOverride;
+    else if (indicatorTitle.includes('KRW/USD')) symbol = "KRW=X";
     else if (indicatorTitle.includes('WTI')) symbol = "CL=F";
     else if (indicatorTitle.includes('NAT GAS')) symbol = "NG=F";
     else if (indicatorTitle.includes('EUR')) symbol = "EUR=X";
@@ -4668,12 +5100,23 @@ const openChartModal = async (indicatorTitle) => {
         return '#4ade80';
     });
 
+    // 12-month moving average. The series is monthly, so a 12-point window is a
+    // one-year trend line -- enough to tell a spike from a regime change. The
+    // first 11 points have no full window and stay null, which Chart.js skips.
+    const MA_WINDOW = 12;
+    let runningSum = 0;
+    const movingAvg = data.map((v, i) => {
+        runningSum += v;
+        if (i >= MA_WINDOW) runningSum -= data[i - MA_WINDOW];
+        return i >= MA_WINDOW - 1 ? runningSum / MA_WINDOW : null;
+    });
+
     const ctx = document.getElementById('macroChart').getContext('2d');
-    
+
     if (macroChartInstance) {
         macroChartInstance.destroy();
     }
-    
+
     macroChartInstance = new Chart(ctx, {
         type: 'line',
         data: {
@@ -4688,17 +5131,38 @@ const openChartModal = async (indicatorTitle) => {
                 pointBackgroundColor: pointColors,
                 pointBorderColor: '#ffffff',
                 pointHoverRadius: 8
+            }, {
+                label: '12개월 이동평균',
+                data: movingAvg,
+                borderColor: '#f59e0b',
+                borderWidth: 1.5,
+                borderDash: [6, 4],
+                tension: 0.2,
+                pointRadius: 0,
+                pointHoverRadius: 0,
+                spanGaps: false
             }]
         },
         options: {
             responsive: true,
             maintainAspectRatio: false,
             plugins: {
-                legend: { display: false },
+                legend: {
+                    display: true,
+                    labels: { color: '#94a3b8', boxWidth: 18, font: { size: 11 } }
+                },
                 tooltip: {
                     callbacks: {
                         label: (context) => {
-                            let label = context.parsed.y.toFixed(2);
+                            const val = context.parsed.y;
+                            if (val === null || val === undefined) return null;
+                            // The high/low marks belong to the price series only;
+                            // annotating them on the moving average would claim a
+                            // peak the averaged line never actually had.
+                            if (context.datasetIndex !== 0) {
+                                return `${context.dataset.label} ${val.toFixed(2)}`;
+                            }
+                            let label = val.toFixed(2);
                             if (context.dataIndex === maxIdx) label += ' (전고점)';
                             if (context.dataIndex === minIdx) label += ' (전저점)';
                             return label;
@@ -4737,6 +5201,10 @@ document.querySelectorAll('.indicator-item').forEach(item => {
         openChartModal(title);
     });
 });
+
+// The 오늘 신호 panel binds its own listeners; run it here, after openChartModal
+// and setView exist, since its slots and fixed cards call into both.
+initSignalPanel();
 
 // Event Listeners for Nav
 navLinks.forEach(link => {

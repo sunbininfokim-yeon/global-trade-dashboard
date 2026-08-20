@@ -14,7 +14,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
     <!-- Custom Styles -->
-    <link rel="stylesheet" href="style.css?v=59">
+    <link rel="stylesheet" href="style.css?v=60">
 </head>
 <body>
     <div id="app">
@@ -238,81 +238,29 @@
                     <div id="climate-right-content" class="climate-scroll"></div>
                 </div>
 
-                <!-- Macro Indicators Panel (Only visible on Home) -->
+                <!-- 「오늘 신호」 panel (home only).
+                     Two zones: three fixed cards that never rotate, and a stage
+                     that swaps a whole page of four slots at a time. Every slot
+                     is written by app.js -- nothing here is hardcoded copy, so
+                     an unavailable feed renders as a labelled placeholder
+                     instead of a stale number left in the markup. -->
                 <div class="panel-section" id="macro-panel">
                     <div class="panel-header">
-                        <h2>핵심 거시 지표</h2>
-                        <p>실시간 글로벌 금융 상황</p>
+                        <h2>오늘 신호</h2>
+                        <p>무역 · 작황 · 물류 상황실</p>
                     </div>
-                    
-                    <div class="indicators-list">
-                        <div class="indicator-item">
-                            <div class="ind-header">
-                                <span class="ind-title">EUR / USD (FRED)</span>
-                            </div>
-                            <div class="ind-value" id="macro-eur-usd">불러오는 중...</div>
-                        </div>
 
-                        <div class="indicator-item">
-                            <div class="ind-header">
-                                <span class="ind-title">KRW / USD (BOK)</span>
-                            </div>
-                            <div class="ind-value" id="macro-krw-usd">불러오는 중...</div>
-                        </div>
-                        
-                        <div class="indicator-item">
-                            <div class="ind-header">
-                                <span class="ind-title">USD / JPY (FRED)</span>
-                            </div>
-                            <div class="ind-value" id="macro-usd-jpy">불러오는 중...</div>
-                        </div>
-                        
-                        <div class="indicator-item">
-                            <div class="ind-header">
-                                <span class="ind-title">NASDAQ 지수 (FRED)</span>
-                            </div>
-                            <div class="ind-value" id="macro-nasdaq">불러오는 중...</div>
-                        </div>
+                    <div class="signal-fixed" id="signal-fixed"></div>
 
-                        <div class="indicator-item">
-                            <div class="ind-header">
-                                <span class="ind-title">한국은행 기준금리 (BOK)</span>
-                            </div>
-                            <div class="ind-value" id="macro-bok-rate" style="font-size: 16px; color: #f87171;">불러오는 중...</div>
+                    <div class="signal-rotator" id="signal-rotator">
+                        <div class="signal-rotator-head">
+                            <span class="signal-page-name" id="signal-page-name">시장</span>
+                            <div class="signal-dots" id="signal-dots"></div>
                         </div>
-
-                        <div class="indicator-item">
-                            <div class="ind-header">
-                                <span class="ind-title">WTI 원유 (EIA)</span>
-                            </div>
-                            <div class="ind-value" id="macro-wti" style="font-size: 16px;">불러오는 중...</div>
-                        </div>
-
-                        <div class="indicator-item">
-                            <div class="ind-header">
-                                <span class="ind-title">천연가스 (EIA Henry Hub)</span>
-                            </div>
-                            <div class="ind-value" id="macro-natgas" style="font-size: 16px;">불러오는 중...</div>
-                        </div>
-
-                        <div class="indicator-item">
-                            <div class="ind-header">
-                                <span class="ind-title">FED 대차대조표 (FRED)</span>
-                            </div>
-                            <div class="ind-value" id="macro-fed-bs" style="color: #cbd5e1; font-size: 18px;">불러오는 중...</div>
-                            <p class="ind-sub" id="macro-fed-bs-date"></p>
-                        </div>
-
-                        <div class="indicator-item">
-                            <div class="ind-header">
-                                <span class="ind-title">TGA 재무부 일반계정 (FRED)</span>
-                            </div>
-                            <div class="ind-value" id="macro-tga" style="color: #cbd5e1; font-size: 18px;">불러오는 중...</div>
-                            <p class="ind-sub" id="macro-tga-date"></p>
-                        </div>
+                        <div class="signal-stage" id="signal-stage"></div>
                     </div>
                 </div>
-                
+
                 <!-- Country Stats Panel -->
                 <div class="panel-section hidden" id="country-stats-panel">
                     <div class="panel-header" style="margin-bottom: 20px;">
@@ -344,8 +292,8 @@
     </div>
 
     <!-- Data and App Logic -->
-    <script src="data.js?v=6"></script>
-    <script src="shipping.js?v=18"></script>
+    <script src="data.js?v=7"></script>
+    <script src="shipping.js?v=19"></script>
     <!-- Finance domains, split out of app.js. Plain scripts sharing one global
          scope, listed so each file follows the ones it reads: macro.js first
          (market-microstructure.js and calculator.js draw with mmLineChart and

@@ -90,23 +90,65 @@
 
     window.loadMacroData = async function() {
     // 0. Fetch real-time Macro Data from FRED (key lives server-side in the Worker)
+    //
+    // The 「오늘 신호」 panel rotates six pages of four slots, so this list covers
+    // energy / agriculture / FX / rates / equities rather than the old flat tile
+    // column. Series that FRED does not carry (Singapore VLSFO, JKM, Newcastle
+    // coal, SCFI/BDI, KOSPI) stay out of here and render as placeholders --
+    // the panel labels them 연동 예정 rather than inventing a number.
+    //
+    // `daily: true` marks a series that skips weekends and holidays; those ask
+    // the Worker for a few extra rows so a "." reading can be stepped over.
     const series = [
-        { id: "DEXUSEU", name: "EUR/USD" },
-        { id: "DEXJPUS", name: "USD/JPY" },
-        { id: "NASDAQCOM", name: "NASDAQ" },
-        { id: "WALCL", name: "FED_BS" },
-        { id: "WTREGEN", name: "TGA" }
+        { id: "DEXUSEU", name: "EUR/USD", daily: true },
+        { id: "DEXJPUS", name: "USD/JPY", daily: true },
+        { id: "NASDAQCOM", name: "NASDAQ", daily: true },
+        // A 에너지
+        { id: "DCOILBRENTEU", name: "BRENT", daily: true },
+        // B 농산물 -- IMF monthly commodity prices, USD per metric tonne.
+        // Monthly and published with a lag, which is why every slot on that
+        // page carries an `as of` date.
+        { id: "PWHEAMTUSDM", name: "WHEAT" },
+        { id: "PMAIZMTUSDM", name: "CORN" },
+        { id: "PSOYBUSDM", name: "SOYBEANS" },
+        { id: "PSUGAISAUSDM", name: "SUGAR" },
+        // C 환율 -- FRED has no DXY (ICE licenses it); the Fed's own broad
+        // dollar index is the standard public stand-in.
+        { id: "DTWEXBGS", name: "DXY_BROAD", daily: true },
+        // D 금리 -- US 2Y/10Y are Treasury constant-maturity daily series.
+        // Japan and UK 10Y are OECD long-term government bond yields, which
+        // FRED only carries monthly, so those two always show an `as of`
+        // month rather than a daily print.
+        { id: "DGS2", name: "US2Y", daily: true },
+        { id: "DGS10", name: "US10Y", daily: true },
+        { id: "IRLTLT01JPM156N", name: "JP10Y" },
+        { id: "IRLTLT01GBM156N", name: "UK10Y" },
+        // E 주식
+        { id: "SP500", name: "SP500", daily: true }
     ];
     let macroData = {};
     try {
         const fredPromises = series.map(async (s) => {
-            const url = `/api/macro?source=fred&series_id=${s.id}`;
+            // 30 rows rather than 1: the newest reading may be a "." (see below),
+            // and the panel draws a sparkline from the same rows.
+            const url = `/api/macro?source=fred&series_id=${s.id}&limit=30`;
             const res = await fetch(url);
             const data = await res.json();
-            if (data.observations && data.observations.length > 0) {
-                return { name: s.name, value: data.observations[0].value, date: data.observations[0].date };
+            // Observations arrive newest first. FRED marks a missing reading
+            // with "." rather than omitting the row, so take the first one
+            // that actually carries a number.
+            const rows = data.observations || [];
+            const row = rows.find(o => o && o.value && o.value !== ".");
+            // Sparklines read oldest-first; drop the gap rows entirely rather
+            // than interpolating a value FRED never published.
+            const history = rows
+                .filter(o => o && o.value && o.value !== "." && isFinite(parseFloat(o.value)))
+                .map(o => ({ label: o.date, value: parseFloat(o.value) }))
+                .reverse();
+            if (row) {
+                return { name: s.name, value: row.value, date: row.date, history };
             }
-            return { name: s.name, value: "N/A", date: "N/A" };
+            return { name: s.name, value: "N/A", date: "N/A", history: [] };
         });
         const fredResults = await Promise.all(fredPromises);
         fredResults.forEach(r => {
@@ -116,10 +158,81 @@
             if (r.date !== "N/A") {
                 normalizedDate = r.date + " (UTC 00:00 Normalized)";
             }
-            macroData[r.name] = { value: r.value, date: normalizedDate };
+            // `date` keeps the annotated string the legacy tiles print verbatim;
+            // `asOf` is the bare observation date the 오늘 신호 slots render as
+            // "as of 2026-08-15" without having to strip the annotation back off.
+            macroData[r.name] = { value: r.value, date: normalizedDate, asOf: r.date, history: r.history || [] };
         });
     } catch(e) {
         console.error("FRED API Error:", e);
+    }
+
+    // 0.52 Japan / UK 10Y government bond yields: FRED only carries these
+    // monthly (OECD), which is what "JP10Y"/"UK10Y" above just loaded as a
+    // fallback baseline. Two daily sources are tried on top of it, in order:
+    //
+    //   1. CNBC's quote API -- the same JP10Y/UK10Y tickers behind
+    //      cnbc.com/quotes/JP10Y and /UK10Y.
+    //   2. Yahoo Finance, if CNBC doesn't resolve.
+    //
+    // Either succeeding overwrites the FRED monthly value; both failing
+    // leaves it in place, so the tile degrades to last month's OECD print
+    // rather than going blank.
+    try {
+        const bondSymbols = [
+            { symbol: "JP10Y", name: "JP10Y" },
+            { symbol: "UK10Y", name: "UK10Y" }
+        ];
+
+        const fetchCnbcQuote = async (symbol) => {
+            const res = await fetch(`/api/macro?source=cnbc&symbol=${encodeURIComponent(symbol)}`);
+            if (!res.ok) return null;
+            const body = await res.json();
+            const quote = body?.FormattedQuoteResult?.FormattedQuote?.[0];
+            const raw = quote?.last ?? quote?.last_price ?? quote?.previous_day_closing;
+            const value = parseFloat(raw);
+            if (!isFinite(value)) return null;
+            const dateStr = quote?.last_time_msec
+                ? new Date(Number(quote.last_time_msec)).toISOString().slice(0, 10)
+                : new Date().toISOString().slice(0, 10);
+            return { value, date: dateStr };
+        };
+
+        const fetchYahooDaily = async (symbol) => {
+            const res = await fetch(`/api/macro?source=yfinance&symbol=${encodeURIComponent(symbol)}&interval=1d&range=3mo`);
+            if (!res.ok) return null;
+            const body = await res.json();
+            const result = body?.chart?.result?.[0];
+            const timestamps = result?.timestamp || [];
+            const closes = result?.indicators?.quote?.[0]?.close || [];
+            const history = [];
+            for (let i = 0; i < closes.length; i++) {
+                if (closes[i] !== null && closes[i] !== undefined) {
+                    history.push({ label: new Date(timestamps[i] * 1000).toISOString().slice(0, 10), value: closes[i] });
+                }
+            }
+            if (!history.length) return null;
+            const last = history[history.length - 1];
+            return { value: last.value, date: last.label, history };
+        };
+
+        await Promise.all(bondSymbols.map(async (b) => {
+            // Yahoo first here (CNBC second, unlike the value-only ordering
+            // before): CNBC returns a single quote, Yahoo a series, and the
+            // slot now draws a sparkline beside the number.
+            const picked = await fetchYahooDaily(b.symbol).catch(() => null)
+                || await fetchCnbcQuote(b.symbol).catch(() => null);
+            if (picked) {
+                macroData[b.name] = {
+                    value: picked.value,
+                    date: picked.date + " (UTC 00:00 Normalized)",
+                    asOf: picked.date,
+                    history: picked.history || macroData[b.name]?.history || []
+                };
+            }
+        }));
+    } catch(e) {
+        console.error("JP/UK 10Y daily fetch error:", e);
     }
 
     // 0.5 KRX (KOSPI) removed: the KRX Data Marketplace key returned
@@ -139,13 +252,13 @@
                 const bokRate = rows.find(r => r.KEYSTAT_NAME === "한국은행 기준금리");
                 
                 if (krwUsd) {
-                    macroData["KRW_USD"] = { value: krwUsd.DATA_VALUE, date: krwUsd.CYCLE + " (UTC 00:00 Normalized)" };
+                    macroData["KRW_USD"] = { value: krwUsd.DATA_VALUE, date: krwUsd.CYCLE + " (UTC 00:00 Normalized)", asOf: krwUsd.CYCLE };
                 } else {
                     macroData["KRW_USD"] = { value: "데이터 없음", date: new Date().toISOString() + " (UTC 00:00 Normalized)" };
                 }
                 
                 if (bokRate) {
-                    macroData["BOK_RATE"] = { value: bokRate.DATA_VALUE, date: bokRate.CYCLE + " (UTC 00:00 Normalized)" };
+                    macroData["BOK_RATE"] = { value: bokRate.DATA_VALUE, date: bokRate.CYCLE + " (UTC 00:00 Normalized)", asOf: bokRate.CYCLE };
                 } else {
                     macroData["BOK_RATE"] = { value: "데이터 없음", date: new Date().toISOString() + " (UTC 00:00 Normalized)" };
                 }
@@ -162,6 +275,12 @@
         macroData["KRW_USD"] = { value: "N/A", date: "N/A" };
         macroData["BOK_RATE"] = { value: "N/A", date: "N/A" };
     }
+
+    // EIA returns rows newest-first; sparklines want oldest-first.
+    const eiaHistory = (rows) => (rows || [])
+        .map(r => ({ label: r.period, value: parseFloat(r.value) }))
+        .filter(r => isFinite(r.value))
+        .reverse();
 
     // 0.6 Fetch real-time Macro Data from EIA (WTI Crude Oil Price)
     try {
@@ -180,9 +299,11 @@
             const eiaData = await eiaRes.json();
             if (eiaData.response && eiaData.response.data && eiaData.response.data.length > 0) {
                 const wtiData = eiaData.response.data[0];
-                macroData["WTI_OIL"] = { 
-                    value: wtiData.value, 
-                    date: wtiData.period + " (UTC 00:00 Normalized)" 
+                macroData["WTI_OIL"] = {
+                    value: wtiData.value,
+                    date: wtiData.period + " (UTC 00:00 Normalized)",
+                    asOf: wtiData.period,
+                    history: eiaHistory(eiaData.response.data)
                 };
             } else {
                 macroData["WTI_OIL"] = { value: "데이터 없음", date: new Date().toISOString() + " (UTC 00:00 Normalized)" };
@@ -195,9 +316,11 @@
             const gasData = await eiaGasRes.json();
             if (gasData.response && gasData.response.data && gasData.response.data.length > 0) {
                 const natGasData = gasData.response.data[0];
-                macroData["NAT_GAS"] = { 
-                    value: natGasData.value, 
-                    date: natGasData.period + " (UTC 00:00 Normalized)" 
+                macroData["NAT_GAS"] = {
+                    value: natGasData.value,
+                    date: natGasData.period + " (UTC 00:00 Normalized)",
+                    asOf: natGasData.period,
+                    history: eiaHistory(gasData.response.data)
                 };
             } else {
                 macroData["NAT_GAS"] = { value: "데이터 없음", date: new Date().toISOString() + " (UTC 00:00 Normalized)" };
