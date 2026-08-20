@@ -202,106 +202,105 @@ const mmReservesRatio = (r, dates) => {
     </div>`;
 };
 
-const mmBalanceSheetView = (ind) => {
-    const bs = ind.balance_sheet;
-    const sides = (bs || {}).sides || [];
-    if (!sides.length) return '<p class="fin-note">대차대조표 구성 자료가 없습니다.</p>';
-
-    const dates = bs.dates || [];
-    // One scale across both sides: they are equal totals by definition, and
-    // separate scales would make one look larger than the other.
+// Assets and liabilities as two separate blocks -- separate tabs, separate
+// scroll position, separate scale -- rather than one panel with both stacks
+// glued together. Each still scales to its own max rather than a shared one:
+// once they are no longer side by side for a visual "same total" check, a
+// shared scale only wastes vertical room in whichever block has the smaller
+// swing across the window.
+const mmBalanceSideBlock = (side, dates) => {
     let hi = 0;
-    sides.forEach((s) => (s.layers || []).forEach((_, li) => {
-        dates.forEach((__, i) => {
-            const tot = (s.layers || []).reduce(
-                (acc, l) => acc + (Number.isFinite(l.values[i]) ? l.values[i] : 0), 0);
-            if (tot > hi) hi = tot;
-        });
-    }));
+    dates.forEach((_, i) => {
+        const tot = (side.layers || []).reduce(
+            (acc, l) => acc + (Number.isFinite(l.values[i]) ? l.values[i] : 0), 0);
+        if (tot > hi) hi = tot;
+    });
     hi *= 1.04;
 
     return `
-    <div class="mm-bs" data-mm-bs-root="1"
+    <div class="mm-bs mm-bs-solo" data-mm-bs-root="1"
          data-dates='${finEsc(JSON.stringify(dates))}'
-         data-sides='${finEsc(JSON.stringify(sides.map((s) => ({
-             label_ko: s.label_ko,
-             layers: (s.layers || []).map((l) => ({ label_ko: l.label_ko, color: l.color, values: l.values })),
-         }))))}'>
-        ${sides.map((s, k) => mmStackSide(s, dates, hi, k)).join('')}
+         data-side='${finEsc(JSON.stringify({
+             label_ko: side.label_ko,
+             layers: (side.layers || []).map((l) => ({ label_ko: l.label_ko, color: l.color, values: l.values })),
+         }))}'>
+        ${mmStackSide(side, dates, hi, 0)}
         <div class="mm-bs-tip" style="display:none"></div>
-    </div>
-    <p class="fin-note">${finEsc(bs.stack_note_ko || '')} ${finEsc(bs.sampling_note_ko || '')}</p>
-    ${bs.ratio ? mmReservesRatio(bs.ratio, dates) : ''}`;
+    </div>`;
 };
 
-// Hovering a stack reads the composition at that week for both sides at once:
-// the question "what was it made of then" is never about one side alone, and
-// the shares are what the eye cannot recover from band thickness.
+const mmBalanceAssetsView = (ind) => {
+    const bs = ind.balance_sheet;
+    const side = ((bs || {}).sides || []).find((s) => s.id === 'assets');
+    if (!side) return '<p class="fin-note">자산 구성 자료가 없습니다.</p>';
+    return `
+    ${mmBalanceSideBlock(side, bs.dates || [])}
+    <p class="fin-note">${finEsc(bs.stack_note_ko || '')} ${finEsc(bs.sampling_note_ko || '')}</p>`;
+};
+
+const mmBalanceLiabilitiesView = (ind) => {
+    const bs = ind.balance_sheet;
+    const side = ((bs || {}).sides || []).find((s) => s.id === 'liabilities');
+    if (!side) return '<p class="fin-note">부채 구성 자료가 없습니다.</p>';
+    return `
+    ${mmBalanceSideBlock(side, bs.dates || [])}
+    <p class="fin-note">${finEsc(bs.stack_note_ko || '')} ${finEsc(bs.sampling_note_ko || '')}</p>
+    ${bs.ratio ? mmReservesRatio(bs.ratio, bs.dates || []) : ''}`;
+};
+
+// Hovering a stack reads that block's own composition at the hovered week --
+// each block is a separate tab now, so there is never a second stack visible
+// to pair it with.
 const mmWireBalanceHover = (root) => {
     const dates = JSON.parse(root.getAttribute('data-dates') || '[]');
-    const sides = JSON.parse(root.getAttribute('data-sides') || '[]');
+    const side = JSON.parse(root.getAttribute('data-side') || 'null');
     const tip = root.querySelector('.mm-bs-tip');
-    const panels = Array.from(root.querySelectorAll('.mm-bs-side'));
-    if (!tip || !panels.length) return;
+    const panel = root.querySelector('.mm-bs-side');
+    if (!tip || !panel || !side) return;
 
+    const rows = JSON.parse(panel.getAttribute('data-rows') || '[]');
+    const svg = panel.querySelector('svg');
+    if (!svg || !rows.length) return;
+
+    const cross = panel.querySelector('.mm-bs-cross');
     const hide = () => {
         tip.style.display = 'none';
-        panels.forEach((p) => {
-            const c = p.querySelector('.mm-bs-cross');
-            if (c) c.style.display = 'none';
-        });
+        if (cross) cross.style.display = 'none';
     };
 
-    panels.forEach((panel) => {
-        const rows = JSON.parse(panel.getAttribute('data-rows') || '[]');
-        const svg = panel.querySelector('svg');
-        if (!svg || !rows.length) return;
+    svg.addEventListener('mousemove', (ev) => {
+        const box = svg.getBoundingClientRect();
+        const frac = (ev.clientX - box.left) / box.width;
+        const span = (MM_W - MM_L - MM_R) / MM_W;
+        const k = Math.round(((frac - MM_L / MM_W) / span) * (rows.length - 1));
+        const kk = Math.max(0, Math.min(rows.length - 1, k));
+        const i = rows[kk];
+        const x = MM_L + (kk / Math.max(rows.length - 1, 1)) * (MM_W - MM_L - MM_R);
 
-        svg.addEventListener('mousemove', (ev) => {
-            const box = svg.getBoundingClientRect();
-            const frac = (ev.clientX - box.left) / box.width;
-            const span = (MM_W - MM_L - MM_R) / MM_W;
-            const k = Math.round(((frac - MM_L / MM_W) / span) * (rows.length - 1));
-            const kk = Math.max(0, Math.min(rows.length - 1, k));
-            const i = rows[kk];
-            const x = MM_L + (kk / Math.max(rows.length - 1, 1)) * (MM_W - MM_L - MM_R);
+        if (cross) { cross.setAttribute('x1', x); cross.setAttribute('x2', x); cross.style.display = ''; }
 
-            panels.forEach((p) => {
-                const c = p.querySelector('.mm-bs-cross');
-                if (!c) return;
-                c.setAttribute('x1', x); c.setAttribute('x2', x);
-                c.style.display = '';
-            });
+        const rowsOut = side.layers.map((l) => [l, l.values[i]]).filter(([, v]) => Number.isFinite(v));
+        const tot = rowsOut.reduce((a, [, v]) => a + v, 0);
+        tip.innerHTML = `
+            <div class="mm-bs-tip-date">${finEsc(dates[i] || '')}</div>
+            <div class="mm-bs-tip-side">
+                <div class="mm-bs-tip-head">${finEsc(side.label_ko)}<b>${mmFmt(tot, 2)}조</b></div>
+                ${rowsOut.slice().reverse().map(([l, v]) => `
+                    <div class="mm-bs-tip-row">
+                        <i style="background:${finEsc(l.color)}"></i>
+                        <span>${finEsc(l.label_ko)}</span>
+                        <b>${mmFmt(v, 2)}조</b>
+                        <em>${tot ? (v / tot * 100).toFixed(1) : '—'}%</em>
+                    </div>`).join('')}
+            </div>`;
 
-            tip.innerHTML = `
-                <div class="mm-bs-tip-date">${finEsc(dates[i] || '')}</div>
-                ${sides.map((s) => {
-                    const rowsOut = s.layers.map((l) => [l, l.values[i]])
-                        .filter(([, v]) => Number.isFinite(v));
-                    const tot = rowsOut.reduce((a, [, v]) => a + v, 0);
-                    return `
-                    <div class="mm-bs-tip-side">
-                        <div class="mm-bs-tip-head">${finEsc(s.label_ko)}<b>${mmFmt(tot, 2)}조</b></div>
-                        ${rowsOut.slice().reverse().map(([l, v]) => `
-                            <div class="mm-bs-tip-row">
-                                <i style="background:${finEsc(l.color)}"></i>
-                                <span>${finEsc(l.label_ko)}</span>
-                                <b>${mmFmt(v, 2)}조</b>
-                                <em>${tot ? (v / tot * 100).toFixed(1) : '—'}%</em>
-                            </div>`).join('')}
-                    </div>`;
-                }).join('')}`;
-
-            tip.style.display = '';
-            const rootBox = root.getBoundingClientRect();
-            const px = ev.clientX - rootBox.left;
-            // Flip to the left of the cursor near the right edge so the panel
-            // never leaves the drawer.
-            tip.style.left = `${px > rootBox.width * 0.55 ? px - tip.offsetWidth - 14 : px + 14}px`;
-            tip.style.top = `${Math.max(4, ev.clientY - rootBox.top - 40)}px`;
-        });
-        svg.addEventListener('mouseleave', hide);
+        tip.style.display = '';
+        const rootBox = root.getBoundingClientRect();
+        const px = ev.clientX - rootBox.left;
+        tip.style.left = `${px > rootBox.width * 0.55 ? px - tip.offsetWidth - 14 : px + 14}px`;
+        tip.style.top = `${Math.max(4, ev.clientY - rootBox.top - 40)}px`;
     });
+    svg.addEventListener('mouseleave', hide);
 };
 
 // US general elections are on a fixed public schedule (first Tue after first
@@ -637,8 +636,11 @@ const mmViewsFor = (ind) => {
     if (has((ind.movers || {}).up) || has((ind.movers || {}).down)) {
         views.push({ id: 'movers', label: '항목별' });
     }
-    if (has((ind.balance_sheet || {}).layers)) {
-        views.push({ id: 'balance', label: '부채 구성' });
+    // Assets and liabilities are two separate blocks -- two tabs -- not one
+    // panel with both stacks in it.
+    if (has((ind.balance_sheet || {}).sides)) {
+        views.push({ id: 'balance_assets', label: '자산' });
+        views.push({ id: 'balance_liabilities', label: '부채' });
     }
     if (has(((ind.history || {})['5y'] || {}).values) || ind.modes) {
         views.push({ id: 'history', label: '추이' });
@@ -750,7 +752,8 @@ const mmChartDrawer = () => {
     const modeSeries = dual ? mmModeSeries(ind, mode) : null;
 
     let body = '';
-    if (view === 'balance') body = mmBalanceSheetView(ind);
+    if (view === 'balance_assets') body = mmBalanceAssetsView(ind);
+    else if (view === 'balance_liabilities') body = mmBalanceLiabilitiesView(ind);
     else if (view === 'movers') body = mmMoversView(ind);
     else if (view === 'status') body = mmStatusView(ind);
     else if (view === 'compare') body = mmCompareView(ind);
