@@ -115,6 +115,13 @@ EXPLICIT: dict[str, str] = {
     "krxLoadFilers": "calc",
     "krxSearchLocal": "calc",
     "KRX_NAME_ALIASES": "calc",
+    # These three are `let`. Before the let/var fix they moved by accident --
+    # swept into the tail of whatever calc declaration preceded them in
+    # app.js -- which is exactly the kind of position-dependent luck that fix
+    # was supposed to end. They read/write from calculator.js only.
+    "KRX_FILERS": "calc",
+    "FIN_SERIES_MODE": "calc",
+    "FIN_TIP_EL": "calc",
     # The period-bar series block and its helper chain. Named fin* like the
     # shared helpers, but only the calculator's cards ever draw one.
     "finSeriesBlock": "calc",
@@ -155,7 +162,15 @@ def main() -> int:
     for ln in lines[:-1]:
         offsets.append(offsets[-1] + len(ln) + 1)
 
-    decls = list(re.finditer(r"^(?:const|function|class)\s+([A-Za-z_$][A-Za-z0-9_$]*)", src, re.M))
+    # let/var matter as much as const here: MM_INDEX/MM_COUNTRY/MM_TAB/MM_CHART
+    # are `let` (mutable UI state), and the first cut's regex only recognized
+    # const/function/class -- so they were never their own span, just silently
+    # swept into whichever declaration happened to precede them in app.js.
+    # FIN_SERIES_MODE/KFA_OPEN_CARD/PF_PROFILES are also `let` and only ended up
+    # in the right file because a domain declaration happened to precede them;
+    # that was luck, not the rule working, and it would silently break the next
+    # time someone reorders app.js.
+    decls = list(re.finditer(r"^(?:const|let|var|function|class)\s+([A-Za-z_$][A-Za-z0-9_$]*)", src, re.M))
     if not decls:
         print("no top-level declarations found -- refusing to write")
         return 1

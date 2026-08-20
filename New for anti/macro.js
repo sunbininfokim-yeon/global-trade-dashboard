@@ -11,6 +11,16 @@
 // so these top-level declarations are visible to them the same as before.
 // Relies on globals still in app.js: finEsc and the DOM helpers.
 
+// === 매크로 모니터 =========================================================
+//
+// Engine and schema are Cursor's (scripts/macro_monitor); this file only draws.
+// The map is the view -- no side dashboards -- so a country opens as an overlay
+// on top of the globe rather than pushing it aside.
+let MM_INDEX = null;
+let MM_COUNTRY = null;          // currently opened country payload
+let MM_TAB = 'liquidity';
+let MM_CHART = null;            // { indicatorId, window }
+
 const mmFetch = async (iso3) => {
     const q = iso3 ? `?country=${encodeURIComponent(iso3)}` : '';
     const res = await fetch(`/api/macro-monitor${q}`);

@@ -4344,16 +4344,6 @@ const renderFinanceView = async (target, host) => {
          <code>derivatives_intel</code> 파이프라인 결과가 <code>public/data/</code> 에 들어오면 연결됩니다.`);
 };
 
-// === 매크로 모니터 =========================================================
-//
-// Engine and schema are Cursor's (scripts/macro_monitor); this file only draws.
-// The map is the view -- no side dashboards -- so a country opens as an overlay
-// on top of the globe rather than pushing it aside.
-let MM_INDEX = null;
-let MM_COUNTRY = null;          // currently opened country payload
-let MM_TAB = 'liquidity';
-let MM_CHART = null;            // { indicatorId, window }
-
 const setView = (target) => {
     const isShippingView = target && target.startsWith('shipping_');
     const isFinanceView = target && target.startsWith('fin_');
