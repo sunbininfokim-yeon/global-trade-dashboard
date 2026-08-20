@@ -89,7 +89,13 @@ if (window.MacroData) {
 // weekly artifact -- none of them may be silently approximated from something
 // else. Anything published on a lag carries an `as of` date.
 
-const SIGNAL_ROTATE_MS = 8000;
+// 3.5s per page. The flip itself runs 0.45s (see .signal-page in style.css),
+// leaving ~3s of still time to read four slots -- brisk, but the page name and
+// the dots make it clear another turn is coming, and hover freezes the drum.
+const SIGNAL_ROTATE_MS = 3500;
+// Kept in step with the CSS transition; the outgoing page is removed once it
+// has finished rotating away.
+const SIGNAL_FLIP_MS = 500;
 
 // value: key into window.MacroData. fmt: how to print it. symbol: Yahoo ticker,
 // which makes the slot clickable and opens the chart modal with a moving average.
@@ -316,7 +322,7 @@ const signalShowPage = (idx, animate) => {
         next.classList.add('is-active');
         prev.classList.remove('is-active');
         prev.classList.add('is-leaving');
-        setTimeout(() => prev.remove(), 700);
+        setTimeout(() => prev.remove(), SIGNAL_FLIP_MS);
     }
     signalRenderDots();
 };
