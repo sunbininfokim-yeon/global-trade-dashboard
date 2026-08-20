@@ -80,24 +80,49 @@ def build_snapshot(day: dict[str, Any], *, anchors: dict[str, Any] | None = None
     stocks_out: list[dict[str, Any]] = []
     for st in day["stocks"]:
         products = st["letf_products"]
+        known_aum_products = [p for p in products if p.get("aum") is not None]
+        aum_complete = bool(products) and len(known_aum_products) == len(products)
         adv = float(st["adv_spot_krw"])
         ff = float(st["free_float_mcap_krw"])
         letf_tv = float(st.get("letf_trading_value_krw", 0.0))
-        aum_sum = sum(float(p["aum"]) for p in products)
-        aum_long = sum(float(p["aum"]) for p in products if float(p["L"]) > 0)
-        aum_inv = sum(float(p["aum"]) for p in products if float(p["L"]) < 0)
+        aum_sum = (
+            sum(float(p["aum"]) for p in known_aum_products)
+            if known_aum_products
+            else None
+        )
+        aum_long = (
+            sum(float(p["aum"]) for p in known_aum_products if float(p["L"]) > 0)
+            if known_aum_products
+            else None
+        )
+        aum_inv = (
+            sum(float(p["aum"]) for p in known_aum_products if float(p["L"]) < 0)
+            if known_aum_products
+            else None
+        )
+        aum_qualities = [str(p.get("aum_quality") or "missing") for p in products]
+        if aum_qualities and all(q == "observed" for q in aum_qualities):
+            letf_aum_quality = "observed"
+        elif aum_qualities and all(q == "proxy" for q in aum_qualities):
+            letf_aum_quality = "proxy"
+        else:
+            letf_aum_quality = "partial"
         tv_long = sum(float(p.get("trading_value") or 0) for p in products if float(p["L"]) > 0)
         tv_inv = sum(float(p.get("trading_value") or 0) for p in products if float(p["L"]) < 0)
-        lev_pct = leverage_exposure_pct(products, ff)
+        lev_pct = leverage_exposure_pct(products, ff) if aum_complete else None
         turn = letf_turnover_ratio(letf_tv, adv)
         day_r = st.get("day_return")
-        scenarios = {
-            "r_minus_5pct": _scenario_block(products, adv, -0.05, low=low, high=high),
-            "r_minus_10pct": _scenario_block(products, adv, -0.10, low=low, high=high),
-            "r_plus_5pct": _scenario_block(products, adv, 0.05, low=low, high=high),
-        }
+        scenarios = (
+            {
+                "r_minus_5pct": _scenario_block(products, adv, -0.05, low=low, high=high),
+                "r_minus_10pct": _scenario_block(products, adv, -0.10, low=low, high=high),
+                "r_plus_5pct": _scenario_block(products, adv, 0.05, low=low, high=high),
+            }
+            if aum_complete
+            else {}
+        )
         realized = None
-        if day_r is not None:
+        if day_r is not None and aum_complete:
             realized = _scenario_block(products, adv, float(day_r), low=low, high=high)
             scenarios["r_realized"] = realized
 
@@ -108,8 +133,16 @@ def build_snapshot(day: dict[str, Any], *, anchors: dict[str, Any] | None = None
         # How flows are tangled: LETF turnover vs spot, long vs inverse, retail vs foreign
         tangle = {
             "letf_vs_spot_turnover": None if turn is None else round(turn, 4),
-            "long_aum_share": round(aum_long / aum_sum, 4) if aum_sum > 0 else None,
-            "inverse_aum_share": round(aum_inv / aum_sum, 4) if aum_sum > 0 else None,
+            "long_aum_share": (
+                round(float(aum_long) / float(aum_sum), 4)
+                if aum_long is not None and aum_sum is not None and aum_sum > 0
+                else None
+            ),
+            "inverse_aum_share": (
+                round(float(aum_inv) / float(aum_sum), 4)
+                if aum_inv is not None and aum_sum is not None and aum_sum > 0
+                else None
+            ),
             "long_tv_share": round(tv_long / letf_tv, 4) if letf_tv > 0 else None,
             "inverse_tv_share": round(tv_inv / letf_tv, 4) if letf_tv > 0 else None,
             "retail_vs_foreign_net_krw": {
@@ -150,6 +183,7 @@ def build_snapshot(day: dict[str, Any], *, anchors: dict[str, Any] | None = None
                 "letf_aum_sum_krw": aum_sum,
                 "letf_aum_long_krw": aum_long,
                 "letf_aum_inverse_krw": aum_inv,
+                "letf_aum_quality": letf_aum_quality,
                 "letf_trading_value_krw": letf_tv,
                 "leverage_exposure_pct": None if lev_pct is None else round(lev_pct, 4),
                 "letf_turnover_ratio": None if turn is None else round(turn, 4),
@@ -166,6 +200,8 @@ def build_snapshot(day: dict[str, Any], *, anchors: dict[str, Any] | None = None
                         "name": p.get("name"),
                         "L": p["L"],
                         "aum": p["aum"],
+                        "aum_source": p.get("aum_source"),
+                        "aum_quality": p.get("aum_quality", "missing"),
                         "trading_value": p.get("trading_value"),
                         "beta": p.get("beta", 1.0),
                         "structure": p.get("structure"),
@@ -180,9 +216,14 @@ def build_snapshot(day: dict[str, Any], *, anchors: dict[str, Any] | None = None
 
     # Market-wide levered AUM (KR single-stock focus + optional all-levered)
     all_products = [p for st in stocks_out for p in st["products"]]
-    kr_ss_aum = sum(float(p["aum"]) for p in all_products)
+    known_all_products = [p for p in all_products if p.get("aum") is not None]
+    all_aum_complete = bool(all_products) and len(known_all_products) == len(all_products)
+    kr_ss_aum = sum(float(p["aum"]) for p in known_all_products)
     market_lev = day.get("market_levered_etf", {})
-    total_lev_aum_krw = float(market_lev.get("aum_krw", kr_ss_aum))
+    market_lev_aum = market_lev.get("aum_krw")
+    total_lev_aum_krw = float(
+        kr_ss_aum if market_lev_aum is None else market_lev_aum
+    )
     total_lev_aum_usd = total_lev_aum_krw / fx
 
     flows = day.get("flows", {})
@@ -202,7 +243,11 @@ def build_snapshot(day: dict[str, Any], *, anchors: dict[str, Any] | None = None
 
     # Stock-level: brief formula with |L|
     ff_combo = sum(float(s["free_float_mcap_krw"]) for s in stocks_out)
-    lev_stock = leverage_exposure_pct(all_products, ff_combo) if ff_combo > 0 else None
+    lev_stock = (
+        leverage_exposure_pct(all_products, ff_combo)
+        if ff_combo > 0 and all_aum_complete
+        else None
+    )
 
     # Paper 2.1%: Soc Gen chart treats levered-ETF AUM / market free float
     # (not always ×|L|). Keep both; do not mutate the brief formula to force-fit.
@@ -238,7 +283,7 @@ def build_snapshot(day: dict[str, Any], *, anchors: dict[str, Any] | None = None
 
     ext = day.get("external_venues") or {}
     kr_ss_notional_usd = sum(
-        abs(float(p["L"])) * float(p["aum"]) / fx for p in all_products
+        abs(float(p["L"])) * float(p["aum"]) / fx for p in known_all_products
     )
     hk_notional = float((ext.get("hk") or {}).get("notional_exposure_usd_sum") or 0.0)
     crypto_oi = float((ext.get("crypto") or {}).get("open_interest_notional_usd_sum") or 0.0)
@@ -249,12 +294,12 @@ def build_snapshot(day: dict[str, Any], *, anchors: dict[str, Any] | None = None
     # KR single-stock long vs inverse notional
     kr_long_n = sum(
         abs(float(p["L"])) * float(p["aum"]) / fx
-        for p in all_products
+        for p in known_all_products
         if float(p["L"]) > 0
     )
     kr_inv_n = sum(
         abs(float(p["L"])) * float(p["aum"]) / fx
-        for p in all_products
+        for p in known_all_products
         if float(p["L"]) < 0
     )
     global_stack = {

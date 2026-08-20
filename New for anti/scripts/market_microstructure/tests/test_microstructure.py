@@ -135,6 +135,20 @@ class TestSnapshot(unittest.TestCase):
         self.assertEqual(h["flow_tangle"]["wag_the_dog_band"], "high")
         self.assertGreater(h["flow_tangle"]["long_aum_share"], 0.5)
 
+    def test_missing_product_aum_does_not_become_zero_or_partial_scenario(self):
+        day = json.loads(
+            (ROOT / "tests/fixtures/demo_day.json").read_text(encoding="utf-8")
+        )
+        product = day["stocks"][0]["letf_products"][0]
+        product["aum"] = None
+        product["aum_quality"] = "missing"
+        snap = build_snapshot(day)
+        stock = next(s for s in snap["stocks"] if s["ticker"] == day["stocks"][0]["ticker"])
+        self.assertEqual(stock["letf_aum_quality"], "partial")
+        self.assertIsNone(stock["leverage_exposure_pct"])
+        self.assertEqual(stock["scenarios"], {})
+        self.assertIsNone(stock["products"][0]["aum"])
+
     def test_global_stack_from_external(self):
         day = json.loads((ROOT / "tests/fixtures/demo_day.json").read_text(encoding="utf-8"))
         day["external_venues"] = {

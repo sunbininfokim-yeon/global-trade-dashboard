@@ -13,6 +13,10 @@ import sys
 from pathlib import Path
 from typing import Any
 
+from market_microstructure.derivatives_history import (
+    HistoryValidationError,
+    validate_stock_record,
+)
 
 ROOT = Path(__file__).resolve().parent
 DATA = ROOT / "../../public/data"
@@ -66,7 +70,14 @@ def validate_history(name: str, *, stock: bool = False) -> None:
             require(row, key, where=f"{name}:{line_no}")
         if stock:
             require(row, "ticker", where=f"{name}:{line_no}")
-            require(row, "spot_trading_value_krw", where=f"{name}:{line_no}")
+            if "spot_trading_value_krw" not in row:
+                raise ContractError(
+                    f"missing {name}:{line_no}.spot_trading_value_krw"
+                )
+            try:
+                validate_stock_record(row)
+            except HistoryValidationError as exc:
+                raise ContractError(f"invalid stock history: {path}:{line_no}: {exc}") from exc
 
 
 def validate() -> None:
