@@ -89,10 +89,11 @@ if (window.MacroData) {
 // weekly artifact -- none of them may be silently approximated from something
 // else. Anything published on a lag carries an `as of` date.
 
-// 3.5s per page. The flip itself runs 0.45s (see .signal-page in style.css),
-// leaving ~3s of still time to read four slots -- brisk, but the page name and
-// the dots make it clear another turn is coming, and hover freezes the drum.
-const SIGNAL_ROTATE_MS = 3500;
+// 4.5s per page (was 3.5s -- still too brisk to read four slots). The flip
+// itself runs 0.45s (see .signal-page in style.css), leaving ~4s of still
+// time; the page name and the dots make it clear another turn is coming, and
+// hover freezes the drum.
+const SIGNAL_ROTATE_MS = 4500;
 // Kept in step with the CSS transition; the outgoing page is removed once it
 // has finished rotating away.
 const SIGNAL_FLIP_MS = 500;
@@ -516,6 +517,41 @@ function initSignalPanel() {
     signalEls.dots().addEventListener('click', (e) => {
         const dot = e.target.closest('.signal-dot');
         if (dot) jump(Number(dot.dataset.idx));
+    });
+
+    // Drag the page name to step by hand: right reveals the page to its
+    // right (next), left reveals the page to its left (previous) -- the
+    // same order the dots already walk. Delegated on `stage` because the
+    // name node is rebuilt on every rotation (signalBuildPage), so a
+    // listener bound to the element itself would be gone after one flip.
+    const SIGNAL_SWIPE_PX = 32;
+    let dragStartX = null;
+
+    const onSignalDragMove = (e) => {
+        // Dragging the name text would otherwise also select it or, on
+        // touch, scroll the page horizontally.
+        if (dragStartX !== null) e.preventDefault();
+    };
+    const onSignalDragEnd = (e) => {
+        if (dragStartX === null) return;
+        const endX = e.clientX ?? e.changedTouches?.[0]?.clientX ?? dragStartX;
+        const deltaX = endX - dragStartX;
+        dragStartX = null;
+        window.removeEventListener('pointermove', onSignalDragMove);
+        window.removeEventListener('pointerup', onSignalDragEnd);
+        window.removeEventListener('pointercancel', onSignalDragEnd);
+        if (deltaX >= SIGNAL_SWIPE_PX) jump(signalIndex + 1);
+        else if (deltaX <= -SIGNAL_SWIPE_PX) jump(signalIndex - 1);
+    };
+    stage.addEventListener('pointerdown', (e) => {
+        if (!e.target.closest('.signal-page-name')) return;
+        dragStartX = e.clientX;
+        // Bound to window, not the name element: the pointer regularly ends
+        // up outside a small text label mid-drag, and the element itself may
+        // be mid-flip-out by the time the gesture finishes.
+        window.addEventListener('pointermove', onSignalDragMove, { passive: false });
+        window.addEventListener('pointerup', onSignalDragEnd);
+        window.addEventListener('pointercancel', onSignalDragEnd);
     });
 
     const openSlot = (slot) => {
