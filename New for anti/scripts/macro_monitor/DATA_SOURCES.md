@@ -82,6 +82,9 @@
 | Nikkei / TOPIX / Nikkei VI | 시세 API / JPX | ✅~⚠️ | |
 | 외국인 수급 | JPX / Quick | ⚠️ | 주간 |
 | GDP | Cabinet Office | ✅ | |
+| **설비투자/GDP** | Cabinet Office ESRI nominal national accounts | ✅ | `capex_gdp_ratio` = 민간기업 설비투자 / GDP. 연간 발표값. |
+| **순자금수요** | BOJ Flow of Funds API + Cabinet Office ESRI nominal GDP | ✅ | `net_funding_demand` = 민간 비금융법인 + 일반정부 금융잉여/부족의 4Q 합계 / 4Q GDP. 음수=순자금수요. |
+| **GDP 갭** | BOJ Output Gap (`gap.xlsx`) | ✅ | `gdp_gap`; 잠재 GDP 대비 %. |
 | Jibun PMI | S&P Global | ⚠️ | |
 | 춘투 | Rengo / Keidanren 연간 | ⚠️ | **연 1회** — 시계열 희소 |
 | 실질임금 | MHLW | ✅~⚠️ | |

@@ -24,6 +24,9 @@ python3 -m unittest discover -s tests -v
 python3 build_macro_monitor.py --print-stats          # fixture only
 python3 build_macro_monitor.py --live --print-stats   # Yahoo + Worker FRED/BOK overlay
 # → ../../public/data/macro_monitor_v1.json
+
+# Japan growth: official ESRI + BOJ snapshot, then run build_macro_monitor.py
+python3 build_japan_growth_snapshot.py
 ```
 
 실데이터 범위: [`LIVE_DATA.md`](./LIVE_DATA.md)
