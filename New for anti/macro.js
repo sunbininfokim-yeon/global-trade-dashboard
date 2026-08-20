@@ -637,12 +637,17 @@ const mmViewsFor = (ind) => {
         views.push({ id: 'movers', label: '항목별' });
     }
     // Assets and liabilities are two separate blocks -- two tabs -- not one
-    // panel with both stacks in it.
-    if (has((ind.balance_sheet || {}).sides)) {
-        views.push({ id: 'balance_assets', label: '자산' });
+    // panel with both stacks in it. 부채 first: the reserves-against-the-axis
+    // question is what this card exists to answer.
+    const hasBalanceSheet = has((ind.balance_sheet || {}).sides);
+    if (hasBalanceSheet) {
         views.push({ id: 'balance_liabilities', label: '부채' });
+        views.push({ id: 'balance_assets', label: '자산' });
     }
-    if (has(((ind.history || {})['5y'] || {}).values) || ind.modes) {
+    // A plain level line is redundant once the level is already visible as
+    // the top of a stack -- skipped here so fed_total_assets doesn't carry
+    // both '추이' and '자산'/'부채' saying the same 6.7T two different ways.
+    if (!hasBalanceSheet && (has(((ind.history || {})['5y'] || {}).values) || ind.modes)) {
         views.push({ id: 'history', label: '추이' });
     }
     // Secondary panels come last so the engine's primary view stays default.
@@ -838,13 +843,50 @@ const mmChartDrawer = () => {
                 ${mmNoteWithState(ind) ? `<p class="fin-note mm-note">${finEsc(mmNoteWithState(ind))}</p>` : ''}
                 ${ind.reference ? `<p class="fin-note">${finEsc(typeof ind.reference === 'string' ? ind.reference : JSON.stringify(ind.reference))}</p>` : ''}
             </div>
-            ${mmNewsRail(ind)}
+            ${view === 'balance_liabilities' && (ind.balance_sheet || {}).ratio
+                ? mmReservesRatioRail(ind.balance_sheet.ratio, ind.balance_sheet.dates || [])
+                : mmNewsRail(ind)}
         </div>
     </div>`;
 };
 
 // The news API is not wired yet. An empty rail that says so is honest; a
 // spinner that never resolves is not, and fabricated articles would be worse.
+// The 부채 tab's rail carries the reserves/GDP number instead of the news
+// stub: that ratio is the one figure the stack itself cannot show (a stack
+// draws levels, not a ratio against an outside series), and it belongs next
+// to the liabilities it is computed from rather than buried under the chart.
+const mmReservesRatioRail = (r, dates) => {
+    const vals = r.values || [];
+    const idx = vals.map((v, i) => [i, v]).filter(([, v]) => Number.isFinite(v));
+    if (!idx.length) return mmNewsRail({});
+    const [li, lv] = idx[idx.length - 1];
+    const th = Number.isFinite(r.threshold_pct) ? r.threshold_pct : null;
+    const under = th !== null && lv < th;
+
+    const RW = 160, RH = 60, RT = 4, RB = 4;
+    const sx = (i) => (i / Math.max(vals.length - 1, 1)) * RW;
+    const ys = idx.map(([, v]) => v).concat(th === null ? [] : [th]);
+    let lo = Math.min(...ys), hi = Math.max(...ys);
+    const pad = (hi - lo || 1) * 0.15;
+    lo = Math.max(0, lo - pad); hi += pad;
+    const sy = (v) => RT + (1 - (v - lo) / (hi - lo)) * (RH - RT - RB);
+    const path = idx.map(([i, v], k) => `${k ? 'L' : 'M'}${sx(i).toFixed(1)},${sy(v).toFixed(1)}`).join('');
+
+    return `
+    <aside class="mm-news mm-ratio-rail">
+        <p class="mm-news-head">${finEsc(r.label_ko || '')}</p>
+        <div class="mm-ratio-rail-now ${under ? 'is-under' : ''}">${mmFmt(lv, 2)}%</div>
+        <svg class="mm-ratio-rail-spark" viewBox="0 0 ${RW} ${RH}" preserveAspectRatio="none" role="img" aria-label="추이">
+            ${th === null ? '' : `<line x1="0" y1="${sy(th).toFixed(1)}" x2="${RW}" y2="${sy(th).toFixed(1)}" class="mm-threshold"/>`}
+            <path d="${path}" class="mm-ratio-line"/>
+            <circle cx="${sx(li).toFixed(1)}" cy="${sy(lv).toFixed(1)}" r="2.6" class="mm-ratio-dot"/>
+        </svg>
+        <p class="mm-news-empty">${finEsc(r.threshold_note_ko || '')}</p>
+        <p class="mm-news-foot">${finEsc(dates[li] || '')} 기준 · ${finEsc(r.threshold_label_ko || '')}</p>
+    </aside>`;
+};
+
 const mmNewsRail = (ind) => {
     const items = Array.isArray(ind.news) ? ind.news : null;
     return `
