@@ -2937,7 +2937,22 @@ body.macro-mode .map-pane { flex: 1 1 100%; }
 .mm-drawer-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 10px; }
 .mm-drawer-head h3 { font-size: 14px; font-weight: 620; margin: 0 0 3px; color: #e2e8f0; }
 .mm-drawer-sub { font-size: 11px; color: #64748b; margin: 0; }
-.mm-drawer-actions { display: flex; align-items: center; gap: 8px; }
+.mm-drawer-actions { display: flex; align-items: flex-start; gap: 8px; }
+/* The active window (YoY/MoM) beside the title, weighted down so the series
+   name stays the heading. */
+.mm-drawer-mode { font-size: 12px; font-weight: 500; color: #94a3b8; margin-left: 2px; }
+
+/* Toggles stack instead of running along one row. Three pairs side by side
+   pushed the close button off the head on narrower drawers, and a single row
+   reads as one long list of options rather than three separate choices. */
+.mm-toggle-grid { display: grid; grid-auto-flow: row; gap: 5px; justify-items: stretch; }
+.mm-toggle-grid .pf-mode { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; }
+.mm-toggle-grid .pf-mode-btn { white-space: nowrap; }
+@media (min-width: 900px) {
+    /* Wide enough for two pairs abreast; the third wraps under them. */
+    .mm-toggle-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .mm-toggle-grid .pf-mode:only-child { grid-column: 1 / -1; }
+}
 .mm-chart { width: 100%; height: 210px; display: block; }
 .mm-line { fill: none; stroke: #38bdf8; stroke-width: 2; stroke-linejoin: round; vector-effect: non-scaling-stroke; }
 /* Fixture history glued to one real point (_pin_latest): muted/dashed run,

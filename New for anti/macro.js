@@ -739,6 +739,14 @@ const mmChartDrawer = () => {
 
     const dual = (ind.ui || {}).dual;
     const mode = MM_CHART.mode || (ind.ui || {}).default || (dual ? dual[0] : null);
+    // Headline/core swap the series without closing the drawer. Only offered
+    // when both peers are actually in this country's indicator list -- a switch
+    // to a series that is not there would just blank the panel.
+    const byId = new Map((MM_COUNTRY.country.indicators || []).map((i) => [i.id, i]));
+    const rawPeers = ind.peers;
+    const peers = rawPeers && (rawPeers.options || []).filter((o) => byId.has(o.id)).length > 1
+        ? { ...rawPeers, options: rawPeers.options.filter((o) => byId.has(o.id)) }
+        : null;
     const modeSeries = dual ? mmModeSeries(ind, mode) : null;
 
     let body = '';
@@ -770,8 +778,19 @@ const mmChartDrawer = () => {
         });
     }
 
+    // With a mode selected the header has to follow it. The label carries the
+    // engine's default window ("근원 CPI YoY"), so on MoM the title claimed YoY
+    // while the bars below were monthly, and the value beside it stayed the YoY
+    // print. The mode buttons already name the window, so the title drops the
+    // suffix and the value comes from the active series.
+    const modeLabel = modeSeries ? (modeSeries.label_ko || String(mode).toUpperCase()) : null;
+    const title = modeLabel
+        ? `${finEsc(ind.label_ko.replace(/\s*(YoY|MoM|QoQ)\s*$/i, ''))} <span class="mm-drawer-mode">${finEsc(modeLabel)}</span>`
+        : finEsc(ind.label_ko);
+
     const meta = [
-        ind.display != null ? String(ind.display) : null,
+        (modeSeries ? modeSeries.display : ind.display) != null
+            ? String(modeSeries ? modeSeries.display : ind.display) : null,
         ind.asof ? `기준 ${ind.asof}` : null,
         ind.source ? (typeof ind.source === 'string' ? ind.source : ind.source.name) : null,
         ind.refresh_tier || null,
@@ -783,18 +802,24 @@ const mmChartDrawer = () => {
     <div class="mm-drawer" role="dialog" aria-label="${finEsc(ind.label_ko)}">
         <div class="mm-drawer-head">
             <div>
-                <h3>${finEsc(ind.label_ko)} ${mmStatusBadge(ind.data_status)}</h3>
+                <h3>${title} ${mmStatusBadge(ind.data_status)}</h3>
                 <p class="mm-drawer-sub">${meta.map((m) => finEsc(m)).join(' · ')}</p>
             </div>
             <div class="mm-drawer-actions">
-                ${dual ? `<div class="pf-mode">
-                    ${dual.map((m) => `<button type="button" class="pf-mode-btn ${m === mode ? 'on' : ''}"
-                        data-mm-mode="${finEsc(m)}">${finEsc(((ind.modes || {})[m] || {}).label_ko || m.toUpperCase())}</button>`).join('')}
-                </div>` : ''}
-                ${showWindow ? `<div class="pf-mode">
-                    ${['5y', '10y'].map((w) => `<button type="button" class="pf-mode-btn ${MM_CHART.window === w ? 'on' : ''}"
-                        data-mm-window="${w}">${w === '5y' ? '5년' : '10년'}</button>`).join('')}
-                </div>` : ''}
+                <div class="mm-toggle-grid">
+                    ${peers ? `<div class="pf-mode">
+                        ${peers.options.map((o) => `<button type="button" class="pf-mode-btn ${o.id === ind.id ? 'on' : ''}"
+                            data-mm-peer="${finEsc(o.id)}">${finEsc(o.label_ko)}</button>`).join('')}
+                    </div>` : ''}
+                    ${dual ? `<div class="pf-mode">
+                        ${dual.map((m) => `<button type="button" class="pf-mode-btn ${m === mode ? 'on' : ''}"
+                            data-mm-mode="${finEsc(m)}">${finEsc(((ind.modes || {})[m] || {}).label_ko || m.toUpperCase())}</button>`).join('')}
+                    </div>` : ''}
+                    ${showWindow ? `<div class="pf-mode">
+                        ${['5y', '10y'].map((w) => `<button type="button" class="pf-mode-btn ${MM_CHART.window === w ? 'on' : ''}"
+                            data-mm-window="${w}">${w === '5y' ? '5년' : '10년'}</button>`).join('')}
+                    </div>` : ''}
+                </div>
                 <button class="mm-close" data-mm-chart-close="1" aria-label="닫기">✕</button>
             </div>
         </div>
@@ -1102,6 +1127,14 @@ const renderMacroMonitor = async () => {
             if (vw && MM_CHART) { MM_CHART.view = vw.getAttribute('data-mm-view'); mmPaint(); return; }
             const md = t.closest('[data-mm-mode]');
             if (md && MM_CHART) { MM_CHART.mode = md.getAttribute('data-mm-mode'); mmPaint(); return; }
+            // Swapping headline for core keeps the window, view and YoY/MoM
+            // choice -- those are what the reader set up to make the comparison.
+            const pr = t.closest('[data-mm-peer]');
+            if (pr && MM_CHART) {
+                MM_CHART = { ...MM_CHART, indicatorId: pr.getAttribute('data-mm-peer') };
+                mmPaint();
+                return;
+            }
         });
     }
 
