@@ -718,6 +718,66 @@
       "note_ko": "칩: YoY | QoQ (QoQ는 비연율). 차트 토글 지원"
     },
     {
+      "id": "capex_gdp_ratio",
+      "category": "growth",
+      "label_ko": "GDP 대비 설비투자",
+      "unit": "%",
+      "format": "pct1",
+      "higher_is": "stronger",
+      "history_years": [5, 10],
+      "refresh_tier": "annual",
+      "chart_type": "line",
+      "note_ko": "명목 민간기업 설비투자 ÷ 명목 GDP. 내각부 국민계정의 연간 확정·추계치를 사용.",
+      "reference": {
+        "kind": "threshold",
+        "level": 18.0,
+        "relation": ">",
+        "unit": "%",
+        "label_ko": "18% 초과",
+        "source_ko": "일본 고압경제·설비투자 사이클 모니터링 기준선"
+      }
+    },
+    {
+      "id": "net_funding_demand",
+      "category": "growth",
+      "label_ko": "순자금수요",
+      "unit": "% of GDP",
+      "format": "pct1",
+      "higher_is": "weaker",
+      "history_years": [5, 10],
+      "refresh_tier": "quarterly",
+      "chart_type": "line",
+      "note_ko": "민간 비금융법인 자금잉여와 일반정부 재정수지를 합산한 4분기 이동 GDP 비율. 음수는 순자금수요(투자초과).",
+      "reference": {
+        "kind": "threshold",
+        "level": -5.0,
+        "relation": "≤",
+        "unit": "% of GDP",
+        "label_ko": "-5%",
+        "source_ko": "적극재정 하 고압경제 모니터링 기준선"
+      }
+    },
+    {
+      "id": "gdp_gap",
+      "category": "growth",
+      "label_ko": "GDP 갭 / 수급 갭",
+      "unit": "% of potential GDP",
+      "format": "pct1",
+      "higher_is": "stronger",
+      "history_years": [5, 10],
+      "refresh_tier": "quarterly",
+      "chart_type": "line",
+      "note_ko": "일본은행 추정 GDP 갭. 잠재 GDP 대비 실제 수요·공급의 초과/미달을 뜻함.",
+      "reference": {
+        "kind": "threshold",
+        "level": 2.0,
+        "relation": ">",
+        "unit": "% of potential GDP",
+        "label_ko": "+2% 초과",
+        "source_ko": "고압경제 상태 진입 모니터링 기준선"
+      }
+    },
+    {
       "id": "gdpnow",
       "category": "growth",
       "label_ko": "Atlanta GDPNow",
@@ -5870,6 +5930,15 @@
         "base": 0.9,
         "vol": 0.25,
         "drift": 0.0
+      },
+      "capex_gdp_ratio": {
+        "skip": true
+      },
+      "net_funding_demand": {
+        "skip": true
+      },
+      "gdp_gap": {
+        "skip": true
       },
       "ism_mfg": {
         "label_ko": "제조업 PMI",
