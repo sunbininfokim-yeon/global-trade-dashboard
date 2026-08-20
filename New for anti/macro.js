@@ -95,6 +95,120 @@ const mmFmt = (v, digits) => {
 // than the features a library would add. Hover is wired after paint (mmWire).
 const MM_W = 760, MM_H = 260, MM_L = 52, MM_R = 16, MM_T = 14, MM_B = 30;
 
+// The Fed balance sheet drawn as its liability stack, plus reserves as a share
+// of GDP beside it.
+//
+// The total-assets line answers "how big" but not "made of what", and the
+// composition is where the liquidity signal is: the same 6.7T means different
+// things depending on whether it sits in reserve balances (banks' usable cash)
+// or in currency and the TGA, which are not. Reserve balances are the bottom
+// band, against the axis, because the question is how much room is left before
+// reserves get scarce -- a band floating on top of three others has no readable
+// distance to zero.
+const mmBalanceStack = (bs) => {
+    const dates = bs.dates || [], layers = bs.layers || [];
+    const n = dates.length;
+    if (!n || !layers.length) return '<p class="fin-note">대차대조표 시계열이 없습니다.</p>';
+
+    // A week missing any layer cannot be stacked -- the bands above it would
+    // slide down and silently misattribute the gap to a neighbour.
+    const ok = [];
+    for (let i = 0; i < n; i++) {
+        if (layers.every((l) => Number.isFinite((l.values || [])[i]))) ok.push(i);
+    }
+    if (!ok.length) return '<p class="fin-note">완전한 주차가 없어 누적 그래프를 그릴 수 없습니다.</p>';
+
+    const tops = ok.map((i) => layers.reduce((s, l) => s + l.values[i], 0));
+    const hi = Math.max(...tops) * 1.04;
+    const sx = (k) => MM_L + (k / Math.max(ok.length - 1, 1)) * (MM_W - MM_L - MM_R);
+    const sy = (v) => MM_T + (1 - v / hi) * (MM_H - MM_T - MM_B);
+
+    // Each band is drawn as its own closed polygon between the running total
+    // below it and the running total including it, so the fills abut exactly.
+    let below = new Array(ok.length).fill(0);
+    const bands = layers.map((l) => {
+        const above = ok.map((i, k) => below[k] + l.values[i]);
+        const up = above.map((v, k) => `${sx(k).toFixed(1)},${sy(v).toFixed(1)}`);
+        const down = below.map((v, k) => `${sx(k).toFixed(1)},${sy(v).toFixed(1)}`).reverse();
+        below = above;
+        return `<polygon points="${up.concat(down).join(' ')}" fill="${finEsc(l.color)}" fill-opacity="0.82"/>`;
+    }).join('');
+
+    const ticks = [0, 0.25, 0.5, 0.75, 1].map((t) => hi * t);
+    const xAt = [0, Math.floor((ok.length - 1) / 2), ok.length - 1];
+    const last = ok.length - 1;
+
+    return `
+    <svg class="mm-chart" viewBox="0 0 ${MM_W} ${MM_H}" preserveAspectRatio="none" role="img"
+         aria-label="연준 부채 구성 누적 그래프">
+        ${ticks.map((t) => `
+            <line x1="${MM_L}" y1="${sy(t).toFixed(1)}" x2="${MM_W - MM_R}" y2="${sy(t).toFixed(1)}" class="mm-grid"/>
+            <text x="${MM_L - 7}" y="${(sy(t) + 3.5).toFixed(1)}" class="mm-tick" text-anchor="end">${mmFmt(t, 1)}</text>`).join('')}
+        ${bands}
+        ${xAt.map((k) => `<text x="${sx(k).toFixed(1)}" y="${MM_H - 8}" class="mm-tick"
+            text-anchor="${k === 0 ? 'start' : (k === last ? 'end' : 'middle')}">${finEsc(dates[ok[k]] || '')}</text>`).join('')}
+    </svg>
+    <div class="mm-stack-legend">
+        ${layers.map((l) => {
+            const v = l.values[ok[last]];
+            return `<span class="mm-stack-key" title="${finEsc(l.note_ko || '')}">
+                <i style="background:${finEsc(l.color)}"></i>${finEsc(l.label_ko)}
+                <b>${Number.isFinite(v) ? mmFmt(v, 2) : '—'}조</b></span>`;
+        }).reverse().join('')}
+    </div>`;
+};
+
+// Reserves as a share of nominal GDP, with the 10% reference line. The line is
+// drawn red because the ratio is currently under it, not to assert that
+// crossing it triggers anything -- the caption says so in as many words.
+const mmReservesRatio = (r, dates) => {
+    const vals = r.values || [];
+    const idx = vals.map((v, i) => [i, v]).filter(([, v]) => Number.isFinite(v));
+    if (!idx.length) return '';
+
+    const th = Number.isFinite(r.threshold_pct) ? r.threshold_pct : null;
+    const ys = idx.map(([, v]) => v).concat(th === null ? [] : [th]);
+    let lo = Math.min(...ys), hi = Math.max(...ys);
+    const pad = (hi - lo || 1) * 0.15;
+    lo = Math.max(0, lo - pad); hi += pad;
+
+    const H = 150, T = 10, B = 26;
+    const sx = (i) => MM_L + (i / Math.max(vals.length - 1, 1)) * (MM_W - MM_L - MM_R);
+    const sy = (v) => T + (1 - (v - lo) / (hi - lo)) * (H - T - B);
+    const path = idx.map(([i, v], k) => `${k ? 'L' : 'M'}${sx(i).toFixed(1)},${sy(v).toFixed(1)}`).join('');
+
+    const [li, lv] = idx[idx.length - 1];
+    const under = th !== null && lv < th;
+
+    return `
+    <div class="mm-ratio-panel">
+        <div class="mm-ratio-head">
+            <span class="mm-ratio-label">${finEsc(r.label_ko || '')}</span>
+            <span class="mm-ratio-now ${under ? 'is-under' : ''}">${mmFmt(lv, 2)}%</span>
+        </div>
+        <svg class="mm-chart mm-ratio-chart" viewBox="0 0 ${MM_W} ${H}" preserveAspectRatio="none" role="img"
+             aria-label="${finEsc(r.label_ko || '')} 추이">
+            ${th === null ? '' : `
+                <line x1="${MM_L}" y1="${sy(th).toFixed(1)}" x2="${MM_W - MM_R}" y2="${sy(th).toFixed(1)}" class="mm-threshold"/>
+                <text x="${MM_W - MM_R}" y="${(sy(th) - 5).toFixed(1)}" class="mm-threshold-tag" text-anchor="end">${finEsc(r.threshold_label_ko || '')}</text>`}
+            <path d="${path}" class="mm-ratio-line"/>
+            <circle cx="${sx(li).toFixed(1)}" cy="${sy(lv).toFixed(1)}" r="3.5" class="mm-ratio-dot"/>
+            <text x="${MM_L}" y="${H - 8}" class="mm-tick">${finEsc(dates[idx[0][0]] || '')}</text>
+            <text x="${MM_W - MM_R}" y="${H - 8}" class="mm-tick" text-anchor="end">${finEsc(dates[li] || '')}</text>
+        </svg>
+        <p class="fin-note">${finEsc(r.threshold_note_ko || '')} ${finEsc(r.gdp_note_ko || '')}</p>
+    </div>`;
+};
+
+const mmBalanceSheetView = (ind) => {
+    const bs = ind.balance_sheet;
+    if (!bs) return '<p class="fin-note">대차대조표 구성 자료가 없습니다.</p>';
+    return `
+    ${mmBalanceStack(bs)}
+    <p class="fin-note">${finEsc(bs.stack_note_ko || '')}</p>
+    ${bs.ratio ? mmReservesRatio(bs.ratio, bs.dates || []) : ''}`;
+};
+
 // US general elections are on a fixed public schedule (first Tue after first
 // Mon in Nov), not something to fetch or estimate -- presidential years are
 // divisible by 4, midterms are the even years between. Shaded as the 3 months
@@ -428,6 +542,9 @@ const mmViewsFor = (ind) => {
     if (has((ind.movers || {}).up) || has((ind.movers || {}).down)) {
         views.push({ id: 'movers', label: '항목별' });
     }
+    if (has((ind.balance_sheet || {}).layers)) {
+        views.push({ id: 'balance', label: '부채 구성' });
+    }
     if (has(((ind.history || {})['5y'] || {}).values) || ind.modes) {
         views.push({ id: 'history', label: '추이' });
     }
@@ -530,7 +647,8 @@ const mmChartDrawer = () => {
     const modeSeries = dual ? mmModeSeries(ind, mode) : null;
 
     let body = '';
-    if (view === 'movers') body = mmMoversView(ind);
+    if (view === 'balance') body = mmBalanceSheetView(ind);
+    else if (view === 'movers') body = mmMoversView(ind);
     else if (view === 'status') body = mmStatusView(ind);
     else if (view === 'compare') body = mmCompareView(ind);
     else if (view === 'mix') body = mmMixView(ind);

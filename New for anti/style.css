@@ -2822,6 +2822,26 @@ body.macro-mode .map-pane { flex: 1 1 100%; }
 .mm-mover-down .mm-mover-mom { color: #34d399; }
 .mm-mover-yoy { grid-column: 1 / -1; font-size: 10px; color: #64748b; font-variant-numeric: tabular-nums; }
 
+/* Fed balance sheet: liability bands, reserves against the axis. */
+.mm-stack-legend { display: flex; flex-wrap: wrap; gap: 8px 14px; margin: 8px 0 4px; }
+.mm-stack-key { display: inline-flex; align-items: center; gap: 6px; font-size: 11.5px; color: #cbd5e1; }
+.mm-stack-key i { width: 10px; height: 10px; border-radius: 2px; flex: none; }
+.mm-stack-key b { color: #f1f5f9; font-weight: 620; font-variant-numeric: tabular-nums; }
+
+/* Reserves / GDP, with the 10% reference line. */
+.mm-ratio-panel { margin-top: 16px; padding-top: 14px; border-top: 1px solid rgba(148,163,184,.14); }
+.mm-ratio-head { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; margin-bottom: 4px; }
+.mm-ratio-label { font-size: 12px; color: #94a3b8; }
+.mm-ratio-now { font-size: 17px; font-weight: 650; color: #f1f5f9; font-variant-numeric: tabular-nums; }
+/* Red only while the ratio sits below the reference line -- the colour tracks
+   the reading, it does not label the line itself as a danger level. */
+.mm-ratio-now.is-under { color: #fb7185; }
+.mm-ratio-chart { height: 150px; }
+.mm-ratio-line { fill: none; stroke: #38bdf8; stroke-width: 1.6; }
+.mm-ratio-dot { fill: #38bdf8; }
+.mm-threshold { stroke: #ef4444; stroke-width: 1.4; stroke-dasharray: 5 3; }
+.mm-threshold-tag { fill: #ef4444; font-size: 10px; }
+
 /* TGA vs US elections: shaded window running into each vote. */
 .mm-election-band { pointer-events: all; }
 .mm-election-president { fill: rgba(251,113,133,.14); }
