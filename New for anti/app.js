@@ -144,14 +144,16 @@ const SIGNAL_PAGES = [
         ]
     },
     {
+        // ma:true is exclusive to this page -- see the moving-average note in
+        // openChartModal for why equities get one and the other pages don't.
         key: 'E', name: '주식',
         slots: [
-            { label: 'S&P 500', value: 'SP500', fmt: 'idx2', symbol: '^GSPC' },
-            { label: '나스닥 종합', value: 'NASDAQ', fmt: 'idx2', symbol: '^IXIC' },
+            { label: 'S&P 500', value: 'SP500', fmt: 'idx2', symbol: '^GSPC', ma: true },
+            { label: '나스닥 종합', value: 'NASDAQ', fmt: 'idx2', symbol: '^IXIC', ma: true },
             // No cheap spot quote for these two, but the chart route serves any
             // Yahoo symbol -- so the tile says 연동 예정 and the click still works.
-            { label: '필라델피아 반도체', pending: '지수 연동 예정', symbol: '^SOX' },
-            { label: 'KOSPI', pending: 'KRX 키 재발급 대기', symbol: '^KS11' }
+            { label: '필라델피아 반도체', pending: '지수 연동 예정', symbol: '^SOX', ma: true },
+            { label: 'KOSPI', pending: 'KRX 키 재발급 대기', symbol: '^KS11', ma: true }
         ]
     },
     {
@@ -172,7 +174,6 @@ const signalEls = {
     fixed: () => document.getElementById('signal-fixed'),
     stage: () => document.getElementById('signal-stage'),
     rotator: () => document.getElementById('signal-rotator'),
-    pageName: () => document.getElementById('signal-page-name'),
     dots: () => document.getElementById('signal-dots')
 };
 
@@ -266,7 +267,9 @@ const signalSlotHtml = (slot) => {
     const spark = shown ? signalSparkHtml(entry.history) : '';
 
     return `<div class="signal-slot${clickable ? ' is-clickable' : ''}"${
-        clickable ? ` role="button" tabindex="0" data-symbol="${signalEsc(slot.symbol)}" data-label="${signalEsc(slot.label)}"` : ''
+        clickable
+            ? ` role="button" tabindex="0" data-symbol="${signalEsc(slot.symbol)}" data-label="${signalEsc(slot.label)}"${slot.ma ? ' data-ma="1"' : ''}`
+            : ''
     }>
         <div class="signal-slot-main">
             <span class="signal-slot-label">${signalEsc(slot.label)}</span>
@@ -284,7 +287,8 @@ let signalPaused = false;
 const signalBuildPage = (page) => {
     const el = document.createElement('div');
     el.className = 'signal-page';
-    el.innerHTML = page.slots.map(signalSlotHtml).join('');
+    el.innerHTML = `<span class="signal-page-name">${signalEsc(page.name)}</span>`
+        + page.slots.map(signalSlotHtml).join('');
     return el;
 };
 
@@ -301,8 +305,6 @@ const signalShowPage = (idx, animate) => {
     if (!stage) return;
     signalIndex = ((idx % SIGNAL_PAGES.length) + SIGNAL_PAGES.length) % SIGNAL_PAGES.length;
     const page = SIGNAL_PAGES[signalIndex];
-    const name = signalEls.pageName();
-    if (name) name.textContent = page.name;
 
     const prev = stage.querySelector('.signal-page.is-active');
     const next = signalBuildPage(page);
@@ -392,10 +394,14 @@ const signalLoadEnso = async () => {
         const c = Number(enso.latest_c);
         if (!isFinite(c)) throw new Error('ONI 값 없음');
         const signed = `${c >= 0 ? '+' : '−'}${Math.abs(c).toFixed(2)}°C`;
+        // Lead with the ONI reading itself -- "+1.39°C" is legible at a glance,
+        // where "엘니뇨 · 중" makes the viewer already know the NOAA state
+        // taxonomy to place it. The state word moves to the sub-line as
+        // context, not the headline.
         signalFixedState.enso = {
             ...signalFixedState.enso,
-            value: enso.state_ko || 'ENSO 중립',
-            sub: `Niño 3.4 ${signed}${enso.season ? ` · ${enso.season}` : ''} · NOAA CPC`,
+            value: `Niño 3.4 ${signed}`,
+            sub: `${enso.state_ko || 'ENSO 중립'}${enso.season ? ` · ${enso.season}` : ''} · NOAA CPC`,
             tone: c >= 0.5 ? 'warn' : (c <= -0.5 ? 'cool' : null)
         };
     } catch (e) {
@@ -513,7 +519,7 @@ function initSignalPanel() {
     });
 
     const openSlot = (slot) => {
-        if (slot?.dataset.symbol) openChartModal(slot.dataset.label, slot.dataset.symbol);
+        if (slot?.dataset.symbol) openChartModal(slot.dataset.label, slot.dataset.symbol, slot.dataset.ma === '1');
     };
     stage.addEventListener('click', (e) => openSlot(e.target.closest('.signal-slot.is-clickable')));
     stage.addEventListener('keydown', (e) => {
@@ -5051,7 +5057,9 @@ let macroChartInstance = null;
 // symbolOverride lets a caller name the Yahoo ticker outright. The 오늘 신호
 // slots carry their own symbol, so they no longer have to encode it in a title
 // string and hope the substring match below picks the right branch.
-const openChartModal = async (indicatorTitle, symbolOverride) => {
+// withMovingAverage is opt-in and only the equity slots set it -- see the
+// moving-average block below for why the other asset classes stay bare.
+const openChartModal = async (indicatorTitle, symbolOverride, withMovingAverage = false) => {
     modalTitle.textContent = `${indicatorTitle} (최근 5년 실데이터)`;
     chartModal.classList.remove('hidden');
 
@@ -5106,16 +5114,41 @@ const openChartModal = async (indicatorTitle, symbolOverride) => {
         return '#4ade80';
     });
 
-    // 12-month moving average. The series is monthly, so a 12-point window is a
-    // one-year trend line -- enough to tell a spike from a regime change. The
-    // first 11 points have no full window and stay null, which Chart.js skips.
+    // 12-month moving average -- equities only. A one-year average against a
+    // price index is a convention traders already read; drawn over a bond
+    // yield, an FX cross or a policy rate it suggests a signal those series
+    // are not conventionally judged by, so those charts stay bare.
     const MA_WINDOW = 12;
     let runningSum = 0;
-    const movingAvg = data.map((v, i) => {
+    const movingAvg = !withMovingAverage ? null : data.map((v, i) => {
         runningSum += v;
         if (i >= MA_WINDOW) runningSum -= data[i - MA_WINDOW];
         return i >= MA_WINDOW - 1 ? runningSum / MA_WINDOW : null;
     });
+
+    const priceDataset = {
+        label: indicatorTitle,
+        data: data,
+        borderColor: '#4ade80',
+        borderWidth: 2,
+        tension: 0.1,
+        pointRadius: pointRadius,
+        pointBackgroundColor: pointColors,
+        pointBorderColor: '#ffffff',
+        pointHoverRadius: 8
+    };
+    const maDataset = {
+        label: '12개월 이동평균',
+        data: movingAvg,
+        borderColor: '#f59e0b',
+        borderWidth: 1.5,
+        borderDash: [6, 4],
+        tension: 0.2,
+        pointRadius: 0,
+        pointHoverRadius: 0,
+        spanGaps: false
+    };
+    const datasets = movingAvg ? [priceDataset, maDataset] : [priceDataset];
 
     const ctx = document.getElementById('macroChart').getContext('2d');
 
@@ -5125,30 +5158,7 @@ const openChartModal = async (indicatorTitle, symbolOverride) => {
 
     macroChartInstance = new Chart(ctx, {
         type: 'line',
-        data: {
-            labels: labels,
-            datasets: [{
-                label: indicatorTitle,
-                data: data,
-                borderColor: '#4ade80',
-                borderWidth: 2,
-                tension: 0.1,
-                pointRadius: pointRadius,
-                pointBackgroundColor: pointColors,
-                pointBorderColor: '#ffffff',
-                pointHoverRadius: 8
-            }, {
-                label: '12개월 이동평균',
-                data: movingAvg,
-                borderColor: '#f59e0b',
-                borderWidth: 1.5,
-                borderDash: [6, 4],
-                tension: 0.2,
-                pointRadius: 0,
-                pointHoverRadius: 0,
-                spanGaps: false
-            }]
-        },
+        data: { labels: labels, datasets: datasets },
         options: {
             responsive: true,
             maintainAspectRatio: false,
