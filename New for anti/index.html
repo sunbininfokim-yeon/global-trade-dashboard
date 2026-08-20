@@ -14,7 +14,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
     <!-- Custom Styles -->
-    <link rel="stylesheet" href="style.css?v=60">
+    <link rel="stylesheet" href="style.css?v=62">
 </head>
 <body>
     <div id="app">
@@ -253,8 +253,11 @@
                     <div class="signal-fixed" id="signal-fixed"></div>
 
                     <div class="signal-rotator" id="signal-rotator">
+                        <!-- The page name lives inside each rotating page (app.js
+                             builds it), so the heading turns with its four slots
+                             as one face. Only the dots stay put -- they are
+                             navigation, not content. -->
                         <div class="signal-rotator-head">
-                            <span class="signal-page-name" id="signal-page-name">시장</span>
                             <div class="signal-dots" id="signal-dots"></div>
                         </div>
                         <div class="signal-stage" id="signal-stage"></div>
@@ -305,7 +308,7 @@
     <script src="market-microstructure.js?v=1"></script>
     <script src="portfolio.js?v=1"></script>
     <script src="calculator.js?v=1"></script>
-    <script src="app.js?v=102"></script>
+    <script src="app.js?v=104"></script>
     <script src="trade.js?v=1"></script>
 </body>
 </html>

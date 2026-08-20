@@ -3229,18 +3229,13 @@ body.macro-mode .map-pane { flex: 1 1 100%; }
     padding-top: 14px;
 }
 
+/* Only the dots live here now; the page heading rotates with its page.
+   Right-aligned so it keeps the position it held when the two shared a row. */
 .signal-rotator-head {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    margin-bottom: 10px;
-}
-
-.signal-page-name {
-    font-size: 12px;
-    font-weight: 600;
-    color: var(--text-primary);
-    letter-spacing: 0.02em;
+    justify-content: flex-end;
+    margin-bottom: 8px;
 }
 
 .signal-dots { display: flex; gap: 6px; }
@@ -3267,8 +3262,11 @@ body.macro-mode .map-pane { flex: 1 1 100%; }
    storage tile does: the number gives the level, the line gives the trend. */
 .signal-stage {
     position: relative;
-    height: 336px;
-    perspective: 900px;
+    height: 360px;
+    /* Shallow enough that the turning face reads as a solid box rather than a
+       flat card fading sideways. */
+    perspective: 1000px;
+    transform-style: preserve-3d;
 }
 
 .signal-page {
@@ -3277,13 +3275,32 @@ body.macro-mode .map-pane { flex: 1 1 100%; }
     display: flex;
     flex-direction: column;
     gap: 8px;
-    transform-origin: 50% 100%;
-    transition: transform 0.62s cubic-bezier(0.22, 0.61, 0.36, 1), opacity 0.5s ease;
+    /* One origin for all three states. Hinging on the shared edges (right for
+       the incoming face, left for the outgoing one) would model a real cube
+       more exactly, but switching transform-origin mid-transition snaps --
+       a centre origin plus the translateX below gives the same read without
+       the jump. */
+    transform-origin: 50% 50%;
+    backface-visibility: hidden;
+    transition: transform 0.45s cubic-bezier(0.22, 0.61, 0.36, 1), opacity 0.3s ease;
 }
 
-.signal-page.is-entering { transform: rotateX(78deg); opacity: 0; }
-.signal-page.is-active   { transform: rotateX(0deg);  opacity: 1; }
-.signal-page.is-leaving  { transform: rotateX(-78deg); opacity: 0; transform-origin: 50% 0%; }
+/* Turning a die to the left: the next face swings in from the right, the
+   current one carries on around and out to the left. translateX pushes each
+   face off-centre so it travels around the box instead of flattening in
+   place; the whole page -- heading and all four rows -- moves as one face. */
+.signal-page.is-entering { transform: translateX(58%) rotateY(72deg);   opacity: 0; }
+.signal-page.is-active   { transform: translateX(0)   rotateY(0deg);    opacity: 1; }
+.signal-page.is-leaving  { transform: translateX(-58%) rotateY(-72deg); opacity: 0; }
+
+.signal-page-name {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-primary);
+    letter-spacing: 0.02em;
+    margin-bottom: 2px;
+    flex: 0 0 auto;
+}
 
 @media (prefers-reduced-motion: reduce) {
     .signal-page { transition: none; }
