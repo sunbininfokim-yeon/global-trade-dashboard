@@ -1,7 +1,7 @@
 {
   "schema_version": "elections-ui-manifest-v1",
-  "generated_at": "2026-08-14T07:12:04.898779+00:00",
-  "board_generated_at": "2026-08-14T07:12:04.802786+00:00",
+  "generated_at": "2026-08-20T06:28:33.142782+00:00",
+  "board_generated_at": "2026-08-20T06:28:33.058356+00:00",
   "calendar_generated_at": "2026-08-14T07:12:04.854656+00:00",
   "claude_handoff_gate": {
     "can_start_ui": true,
@@ -59,27 +59,13 @@
   "coverage": {
     "tracked_countries": 19,
     "countries_with_spectrum": 19,
-    "countries_with_admin1_geometry": 6,
+    "countries_with_admin1_geometry": 19,
     "missing_spectrum": [],
-    "missing_admin1_geometry": [
-      "ARE",
-      "DEU",
-      "FRA",
-      "GBR",
-      "IRN",
-      "ISR",
-      "JPN",
-      "KOR",
-      "NGA",
-      "SAU",
-      "TUR",
-      "TWN",
-      "ZAF"
-    ],
+    "missing_admin1_geometry": [],
     "screen_counts": {
-      "ready": 72,
-      "partial": 18,
-      "disabled": 89
+      "ready": 75,
+      "partial": 28,
+      "disabled": 76
     }
   },
   "countries": {
@@ -119,24 +105,21 @@
         "subnational_map": {
           "status": "partial",
           "paths": [
+            "/public/data/admin1/JPN.json",
             "countries[JPN].subnational_live.governors"
           ],
           "missing": [
-            "admin1_geometry",
             "prefectural_assembly_detail"
           ],
-          "map_asset_exists": false,
+          "map_asset_exists": true,
           "political_overlay_exists": true
         },
         "executive": {
-          "status": "partial",
+          "status": "ready",
           "paths": [
-            "countries[JPN].head"
+            "countries[JPN].executive_live"
           ],
-          "missing": [
-            "cabinet",
-            "minister_party_affiliation"
-          ]
+          "missing": []
         },
         "legislature": {
           "status": "ready",
@@ -232,26 +215,21 @@
             "countries[USA].ui_ready.state_drilldown.states"
           ],
           "missing": [
-            "lieutenant_governors",
-            "state_attorneys_general",
-            "state_legislature_member_rosters",
-            "senate_term_end"
+            "senate_term_end",
+            "all_congressional_district_geometry"
           ],
           "map_join": "state.map_feature_code ↔ feature.properties.code",
-          "prejoined": true
+          "prejoined": true,
+          "map_asset_exists": true,
+          "political_overlay_exists": true
         },
         "executive": {
-          "status": "partial",
+          "status": "ready",
           "paths": [
-            "countries[USA].head"
+            "countries[USA].executive_live"
           ],
-          "missing": [
-            "vice_president",
-            "white_house_chief_of_staff",
-            "vice_president_chief_of_staff",
-            "national_security_advisor",
-            "cabinet"
-          ]
+          "missing": [],
+          "display_mode": "full_cabinet_plus_eop_core"
         },
         "legislature": {
           "status": "ready",
@@ -356,16 +334,13 @@
           "political_overlay_exists": false
         },
         "executive": {
-          "status": "partial",
+          "status": "ready",
           "paths": [
+            "countries[RUS].executive_live",
             "countries[RUS].head",
             "countries[RUS].prime_minister"
           ],
-          "missing": [
-            "full_executive_roster",
-            "cabinet",
-            "senior_staff"
-          ],
+          "missing": [],
           "display_mode": "full_executive_target"
         },
         "legislature": {
@@ -597,26 +572,26 @@
           "missing": []
         },
         "subnational_map": {
-          "status": "disabled",
+          "status": "partial",
           "paths": [
             "/public/data/admin1/DEU.json",
             "countries[DEU].subnational_live"
           ],
           "missing": [
-            "admin1_geometry",
             "political_overlay"
           ],
-          "map_asset_exists": false,
+          "map_asset_exists": true,
           "political_overlay_exists": false
         },
         "executive": {
           "status": "ready",
           "paths": [
+            "countries[DEU].executive_live",
             "countries[DEU].head",
             "countries[DEU].prime_minister"
           ],
           "missing": [],
-          "display_mode": "national_head_only"
+          "display_mode": "executive_core"
         },
         "legislature": {
           "status": "ready",
@@ -707,25 +682,23 @@
         "subnational_map": {
           "status": "partial",
           "paths": [
+            "/public/data/admin1/KOR.json",
             "countries[KOR].subnational_live"
           ],
           "missing": [
-            "admin1_geometry",
             "individual_mayors_governors",
             "local_legislature_detail"
           ],
-          "map_asset_exists": false,
+          "map_asset_exists": true,
           "political_overlay_exists": true
         },
         "executive": {
           "status": "partial",
           "paths": [
-            "countries[KOR].head",
-            "countries[KOR].prime_minister"
+            "countries[KOR].executive_live"
           ],
           "missing": [
-            "cabinet",
-            "presidential_senior_staff"
+            "cabinet_source_conflict_review"
           ]
         },
         "legislature": {
@@ -812,26 +785,26 @@
           "missing": []
         },
         "subnational_map": {
-          "status": "disabled",
+          "status": "partial",
           "paths": [
             "/public/data/admin1/GBR.json",
             "countries[GBR].subnational_live"
           ],
           "missing": [
-            "admin1_geometry",
             "political_overlay"
           ],
-          "map_asset_exists": false,
+          "map_asset_exists": true,
           "political_overlay_exists": false
         },
         "executive": {
           "status": "ready",
           "paths": [
+            "countries[GBR].executive_live",
             "countries[GBR].head",
             "countries[GBR].prime_minister"
           ],
           "missing": [],
-          "display_mode": "national_head_only"
+          "display_mode": "executive_core"
         },
         "legislature": {
           "status": "ready",
@@ -920,26 +893,26 @@
           "missing": []
         },
         "subnational_map": {
-          "status": "disabled",
+          "status": "partial",
           "paths": [
             "/public/data/admin1/FRA.json",
             "countries[FRA].subnational_live"
           ],
           "missing": [
-            "admin1_geometry",
             "political_overlay"
           ],
-          "map_asset_exists": false,
+          "map_asset_exists": true,
           "political_overlay_exists": false
         },
         "executive": {
           "status": "ready",
           "paths": [
+            "countries[FRA].executive_live",
             "countries[FRA].head",
             "countries[FRA].prime_minister"
           ],
           "missing": [],
-          "display_mode": "national_head_only"
+          "display_mode": "executive_core"
         },
         "legislature": {
           "status": "ready",
@@ -1028,13 +1001,12 @@
           "missing": []
         },
         "subnational_map": {
-          "status": "disabled",
+          "status": "partial",
           "paths": [
             "/public/data/admin1/IND.json",
             "countries[IND].subnational_live"
           ],
           "missing": [
-            "admin1_geometry",
             "political_overlay"
           ],
           "map_asset_exists": true,
@@ -1043,11 +1015,12 @@
         "executive": {
           "status": "ready",
           "paths": [
+            "countries[IND].executive_live",
             "countries[IND].head",
             "countries[IND].prime_minister"
           ],
           "missing": [],
-          "display_mode": "national_head_only"
+          "display_mode": "executive_core"
         },
         "legislature": {
           "status": "disabled",
@@ -1138,26 +1111,26 @@
           "missing": []
         },
         "subnational_map": {
-          "status": "disabled",
+          "status": "partial",
           "paths": [
             "/public/data/admin1/TWN.json",
             "countries[TWN].subnational_live"
           ],
           "missing": [
-            "admin1_geometry",
             "political_overlay"
           ],
-          "map_asset_exists": false,
+          "map_asset_exists": true,
           "political_overlay_exists": false
         },
         "executive": {
           "status": "ready",
           "paths": [
+            "countries[TWN].executive_live",
             "countries[TWN].head",
             "countries[TWN].prime_minister"
           ],
           "missing": [],
-          "display_mode": "national_head_only"
+          "display_mode": "executive_core"
         },
         "legislature": {
           "status": "disabled",
@@ -1248,13 +1221,12 @@
           "missing": []
         },
         "subnational_map": {
-          "status": "disabled",
+          "status": "partial",
           "paths": [
             "/public/data/admin1/BRA.json",
             "countries[BRA].subnational_live"
           ],
           "missing": [
-            "admin1_geometry",
             "political_overlay"
           ],
           "map_asset_exists": true,
@@ -1263,11 +1235,12 @@
         "executive": {
           "status": "ready",
           "paths": [
+            "countries[BRA].executive_live",
             "countries[BRA].head",
             "countries[BRA].prime_minister"
           ],
           "missing": [],
-          "display_mode": "national_head_only"
+          "display_mode": "executive_core"
         },
         "legislature": {
           "status": "ready",
@@ -1356,26 +1329,26 @@
           "missing": []
         },
         "subnational_map": {
-          "status": "disabled",
+          "status": "partial",
           "paths": [
             "/public/data/admin1/ZAF.json",
             "countries[ZAF].subnational_live"
           ],
           "missing": [
-            "admin1_geometry",
             "political_overlay"
           ],
-          "map_asset_exists": false,
+          "map_asset_exists": true,
           "political_overlay_exists": false
         },
         "executive": {
           "status": "ready",
           "paths": [
+            "countries[ZAF].executive_live",
             "countries[ZAF].head",
             "countries[ZAF].prime_minister"
           ],
           "missing": [],
-          "display_mode": "national_head_only"
+          "display_mode": "executive_core"
         },
         "legislature": {
           "status": "disabled",
@@ -1466,26 +1439,26 @@
           "missing": []
         },
         "subnational_map": {
-          "status": "disabled",
+          "status": "partial",
           "paths": [
             "/public/data/admin1/ISR.json",
             "countries[ISR].subnational_live"
           ],
           "missing": [
-            "admin1_geometry",
             "political_overlay"
           ],
-          "map_asset_exists": false,
+          "map_asset_exists": true,
           "political_overlay_exists": false
         },
         "executive": {
           "status": "ready",
           "paths": [
+            "countries[ISR].executive_live",
             "countries[ISR].head",
             "countries[ISR].prime_minister"
           ],
           "missing": [],
-          "display_mode": "national_head_only"
+          "display_mode": "executive_core"
         },
         "legislature": {
           "status": "ready",
@@ -1574,26 +1547,26 @@
           "missing": []
         },
         "subnational_map": {
-          "status": "disabled",
+          "status": "partial",
           "paths": [
             "/public/data/admin1/NGA.json",
             "countries[NGA].subnational_live"
           ],
           "missing": [
-            "admin1_geometry",
             "political_overlay"
           ],
-          "map_asset_exists": false,
+          "map_asset_exists": true,
           "political_overlay_exists": false
         },
         "executive": {
           "status": "ready",
           "paths": [
+            "countries[NGA].executive_live",
             "countries[NGA].head",
             "countries[NGA].prime_minister"
           ],
           "missing": [],
-          "display_mode": "national_head_only"
+          "display_mode": "executive_core"
         },
         "legislature": {
           "status": "disabled",
@@ -1686,16 +1659,15 @@
           "missing": []
         },
         "subnational_map": {
-          "status": "disabled",
+          "status": "partial",
           "paths": [
             "/public/data/admin1/IRN.json",
             "countries[IRN].subnational_live"
           ],
           "missing": [
-            "admin1_geometry",
             "political_overlay"
           ],
-          "map_asset_exists": false,
+          "map_asset_exists": true,
           "political_overlay_exists": false
         },
         "executive": {
@@ -1849,13 +1821,12 @@
           "missing": []
         },
         "subnational_map": {
-          "status": "disabled",
+          "status": "partial",
           "paths": [
             "/public/data/admin1/IDN.json",
             "countries[IDN].subnational_live"
           ],
           "missing": [
-            "admin1_geometry",
             "political_overlay"
           ],
           "map_asset_exists": true,
@@ -1864,11 +1835,12 @@
         "executive": {
           "status": "ready",
           "paths": [
+            "countries[IDN].executive_live",
             "countries[IDN].head",
             "countries[IDN].prime_minister"
           ],
           "missing": [],
-          "display_mode": "national_head_only"
+          "display_mode": "executive_core"
         },
         "legislature": {
           "status": "disabled",
@@ -1959,26 +1931,26 @@
           "missing": []
         },
         "subnational_map": {
-          "status": "disabled",
+          "status": "partial",
           "paths": [
             "/public/data/admin1/TUR.json",
             "countries[TUR].subnational_live"
           ],
           "missing": [
-            "admin1_geometry",
             "political_overlay"
           ],
-          "map_asset_exists": false,
+          "map_asset_exists": true,
           "political_overlay_exists": false
         },
         "executive": {
           "status": "ready",
           "paths": [
+            "countries[TUR].executive_live",
             "countries[TUR].head",
             "countries[TUR].prime_minister"
           ],
           "missing": [],
-          "display_mode": "national_head_only"
+          "display_mode": "executive_core"
         },
         "legislature": {
           "status": "disabled",
@@ -2069,26 +2041,26 @@
           "missing": []
         },
         "subnational_map": {
-          "status": "disabled",
+          "status": "partial",
           "paths": [
             "/public/data/admin1/SAU.json",
             "countries[SAU].subnational_live"
           ],
           "missing": [
-            "admin1_geometry",
             "political_overlay"
           ],
-          "map_asset_exists": false,
+          "map_asset_exists": true,
           "political_overlay_exists": false
         },
         "executive": {
           "status": "ready",
           "paths": [
+            "countries[SAU].executive_live",
             "countries[SAU].head",
             "countries[SAU].prime_minister"
           ],
           "missing": [],
-          "display_mode": "national_head_only"
+          "display_mode": "executive_core"
         },
         "legislature": {
           "status": "disabled",
@@ -2185,12 +2157,13 @@
           "missing": [
             "outside_tier_scope"
           ],
-          "map_asset_exists": false,
+          "map_asset_exists": true,
           "political_overlay_exists": false
         },
         "executive": {
           "status": "ready",
           "paths": [
+            "countries[ARE].executive_live",
             "countries[ARE].head",
             "countries[ARE].prime_minister"
           ],
