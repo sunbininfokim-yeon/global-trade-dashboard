@@ -1143,7 +1143,7 @@ body.trade-map-mode .left-pane {
 
 .shipping-chokepoint-grid {
     display: grid;
-    grid-template-columns: repeat(5, minmax(0, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 12px;
 }
 
@@ -1757,7 +1757,6 @@ body.trade-map-mode .left-pane {
     .logo { margin-right: 16px; }
     .main-menu { gap: 13px; margin-left: 0; }
     .date-picker-container { padding-right: 0; }
-    .shipping-chokepoint-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 }
 
 @media (max-width: 1180px) {
@@ -2667,17 +2666,14 @@ body.finance-mode #chart-view::-webkit-scrollbar-thumb { background: rgba(148, 1
 .co-kfa-cards { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
 .co-kfa-pending { opacity: .55; }
 .co-kfa-pending .fin-card-value { color: #64748b; font-size: 15px; }
-.co-kfa-toggle {
-    margin-top: 8px; background: none; border: 1px solid var(--border); border-radius: 6px;
-    color: #7dd3fc; font-size: 11px; padding: 5px 9px; cursor: pointer; font-family: inherit;
+/* One click on the card itself opens its chart -- no separate 추이 보기
+   button, so a small "▾ 추이" hint replaces it as a static affordance rather
+   than a second click target. Shared by both the DART and SEC cards. */
+.co-kfa-card.co-clickable { cursor: pointer; }
+.co-kfa-card.co-clickable::after {
+    content: '▾ 추이'; display: block; margin-top: 8px; font-size: 11px; color: #7dd3fc;
 }
-.co-kfa-toggle:hover { background: rgba(56, 189, 248, .1); }
-/* Same control on the SEC side; one rule so the two calculators cannot drift. */
-.co-series-toggle {
-    margin-top: 8px; background: none; border: 1px solid var(--border); border-radius: 6px;
-    color: #7dd3fc; font-size: 11px; padding: 5px 9px; cursor: pointer; font-family: inherit;
-}
-.co-series-toggle:hover { background: rgba(56, 189, 248, .1); }
+.co-kfa-card.co-clickable.open::after { content: '▴ 접기'; }
 .co-kfa-card.open { grid-column: span 2; }
 .co-kfa-chart { margin-top: 10px; }
 .kfa-spark { width: 100%; height: 56px; display: block; }
@@ -2685,13 +2681,36 @@ body.finance-mode #chart-view::-webkit-scrollbar-thumb { background: rgba(148, 1
 
 /* 연도별 / 분기별 시계열 막대 (SEC·DART 공통) */
 .fin-series-modes { display: flex; gap: 6px; margin-bottom: 8px; }
-.fin-bars { width: 100%; height: 150px; display: block; }
+.fin-bars-wrap { display: flex; flex-direction: column; }
+.fin-bars { width: 100%; height: 120px; display: block; }
 .fin-bars-zero { stroke: var(--border); stroke-width: 1; }
 .fin-bar.pos { fill: #38bdf8; }
 .fin-bar.neg { fill: #f87171; }
 .fin-bar:hover { fill: #7dd3fc; }
-.fin-bars-x { fill: #64748b; font-size: 9px; }
+.fin-bars-val { fill: #cbd5e1; font-size: 9px; }
+/* Period labels live outside the <svg> entirely, in their own row, so they
+   read unambiguously as "below the chart" rather than sitting a few px above
+   the plot's own bottom edge inside it. */
+.fin-bars-labels { display: flex; width: 100%; margin-top: 4px; }
+.fin-bars-lbl {
+    font-size: 9px; color: #64748b; text-align: center; overflow: hidden;
+    white-space: nowrap; text-overflow: ellipsis;
+}
 .fin-series-note { color: #64748b; font-size: 11px; margin: 6px 0 0; }
+
+/* Shared hover box for every bar chart -- see finTipEnsure() in app.js.
+   Positioned by mousemove in JS; this only styles the box itself. */
+.fin-tip {
+    position: fixed; z-index: 2000; pointer-events: none;
+    background: #0f172a; border: 1px solid var(--border); border-radius: 6px;
+    padding: 6px 10px; font-size: 11px; line-height: 1.5; color: #e2e8f0;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, .45);
+    opacity: 0; transform: translateY(4px);
+    transition: opacity .08s ease-out, transform .08s ease-out;
+    white-space: nowrap;
+}
+.fin-tip.show { opacity: 1; transform: translateY(0); }
+.fin-tip b { color: #7dd3fc; font-weight: 600; }
 
 /* ── 매크로 모니터 ────────────────────────────────────────────────────────
    지도가 주인공. 좌·우 대시보드를 쓰지 않고 오버레이만 지도 위에 띄운다. */

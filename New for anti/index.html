@@ -90,7 +90,7 @@
                     <div class="dropdown dropdown-grouped">
                         <span class="dd-head">매크로</span>
                         <a href="#" data-target="macro_monitor" style="color: #7dd3fc;">매크로 모니터</a>
-                        <span class="dd-head">파생상품</span>
+                        <span class="dd-head">시장 미시구조</span>
                         <a href="#" data-target="fin_derivatives">호가 및 유동성</a>
                         <span class="dd-head">계산기</span>
                         <a href="#" data-target="fin_portfolio">포트폴리오 계산기</a>
@@ -294,6 +294,17 @@
     <!-- Data and App Logic -->
     <script src="data.js?v=7"></script>
     <script src="shipping.js?v=19"></script>
+    <!-- Finance domains, split out of app.js. Plain scripts sharing one global
+         scope, listed so each file follows the ones it reads: macro.js first
+         (market-microstructure.js and calculator.js draw with mmLineChart and
+         mmFmt), portfolio.js before calculator.js (the calculator's search box
+         reuses pfSearchLocal/pfSpot), then app.js, whose renderFinanceView
+         dispatches to all four. Every cross-file reference is inside a function
+         body, so this order documents the dependency rather than enforcing it. -->
+    <script src="macro.js?v=1"></script>
+    <script src="market-microstructure.js?v=1"></script>
+    <script src="portfolio.js?v=1"></script>
+    <script src="calculator.js?v=1"></script>
     <script src="app.js?v=102"></script>
     <script src="trade.js?v=1"></script>
 </body>

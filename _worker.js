@@ -453,7 +453,8 @@ async function fetchEsrCountries(env) {
  * instead of guessing. Cached for a week -- this list changes about never.
  */
 /**
- * Static assets, with HTML held out of every cache.
+ * Static assets, with HTML -- and unversioned public/data/*.json -- held out
+ * of every cache.
  *
  * A deployed update was not reaching visitors: the site was serving
  * `cache-control: public, max-age=0, must-revalidate` for index.html and
@@ -462,15 +463,22 @@ async function fetchEsrCountries(env) {
  * build, whose <script src="app.js?v=..."> pointed at the previous bundle. The
  * versioned query strings only bust caches if the HTML naming them is fresh.
  *
- * So HTML is `no-store`: it is small, it changes on every deploy, and it is the
- * one file that decides which version of everything else the browser loads.
- * Fingerprinted assets keep their long cache, which is where caching earns its
- * keep anyway.
+ * public/data/*.json (e.g. shipping_capacity_v1.json) has the same exposure:
+ * daily bots overwrite it in place at a URL with no version query string, so
+ * the same stale-HIT behavior would keep serving yesterday's snapshot under
+ * today's already-fresh HTML/JS.
+ *
+ * So both are `no-store`: they are small, they change on every deploy or
+ * daily refresh, and index.html is the one file that decides which version of
+ * everything else the browser loads. Fingerprinted assets keep their long
+ * cache, which is where caching earns its keep anyway.
  */
 async function serveAsset(request, env) {
     const res = await env.ASSETS.fetch(request);
     const type = res.headers.get('content-type') || '';
-    if (!type.includes('text/html')) return res;
+    const url = new URL(request.url);
+    const isVersionlessData = url.pathname.startsWith('/public/data/') && url.pathname.endsWith('.json');
+    if (!type.includes('text/html') && !isVersionlessData) return res;
 
     const headers = new Headers(res.headers);
     headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0');
@@ -1016,7 +1024,7 @@ const SEC_TAGS = {
 
 // Which SEC_TAGS keys are period flows rather than point-in-time balances.
 // Only a flow can be summed across quarters, and only a flow has a missing
-// fiscal Q4 to reconstruct (see secFillFiscalQ4). Mirrors DART_FLOW_KEYS.
+// fiscal Q4 to reconstruct (see secQuarterlyFromCalendar). Mirrors DART_FLOW_KEYS.
 const SEC_FLOW_KEYS = new Set([
     'revenue', 'operating_income', 'net_income', 'cfo', 'capex',
     'interest_expense', 'tax_expense', 'dna',
@@ -1056,15 +1064,17 @@ function secIsOneQuarter(p) {
     return days >= 80 && days <= 100;
 }
 
-// Calendar quarter of the period end, as `2025Q3`. Fiscal quarter labels are
-// deliberately not reconstructed: a company whose FY ends in September would
-// need its own offset, and the end date is the only thing every filer agrees
-// on (same reasoning as secFiscalYear above).
-function secQuarterLabel(p) {
-    const end = p.end && new Date(p.end);
-    if (!end || Number.isNaN(end.getTime())) return null;
-    return `${end.getUTCFullYear()}Q${Math.floor(end.getUTCMonth() / 3) + 1}`;
-}
+// secQuarterLabel by calendar month of the period end was tried and is wrong:
+// verified live on Intel (fiscal Q1 ends early April -> calendar "Q2") and
+// would misfire the same way on any non-December fiscal year, AAPL included
+// (FY ends late September). Worse than a mislabel -- Intel's fiscal Q3 (10-Q,
+// end Oct 1, calendar "Q4") and its fiscal Q4 (10-K, end Dec 31, also calendar
+// "Q4") collided under one label, and the later-filed one silently won,
+// putting a full year's revenue on a bar marked as one quarter.
+//
+// Quarters are labelled instead by their ordinal position inside the fiscal
+// year that contains them (secFiscalCalendar), which needs no assumption
+// about which calendar month a filer's year starts in.
 
 function secPickAnnual(facts, names) {
     const byYear = new Map();
@@ -1103,64 +1113,100 @@ function secPickAnnual(facts, names) {
     };
 }
 
-// A fiscal Q4 is never filed as its own 10-Q, and the 10-K reports the full
-// year rather than restating that quarter -- so a quarterly series built from
-// filings alone is missing every fourth point (verified live: NVDA had 5 of 18
-// quarters empty, all of them its fiscal Q4). The missing quarter is the
-// arithmetic remainder: FY minus the three quarters that fall inside the same
-// annual period.
+// One fiscal-quarter calendar for the whole company: {fy: [q1End, q2End,
+// q3End, q4End]}, built once from `calendarBasis` (whichever key's annual
+// bounds the caller passes -- normally revenue) and shared by every SEC_TAGS
+// key below. Anchoring every key to the same four dates, rather than letting
+// each key label its own quarters, is what stops two different tags from
+// disagreeing on what "Q3" means.
 //
-// Bounds come from the annual fact itself, so this works for a January or June
-// fiscal year without knowing anything about the filer's calendar. It fills
-// only when exactly three quarters are present -- with two, the remainder
-// would silently be a half-year on a bar labelled as one quarter.
-function secFillFiscalQ4(quarterlyMap, annualYears, annualBounds) {
-    if (!quarterlyMap || !annualBounds) return quarterlyMap;
-    for (const [fy, bounds] of annualBounds) {
-        const total = annualYears.get(fy);
-        if (!Number.isFinite(total) || !bounds.start || !bounds.end) continue;
-        const inYear = [...quarterlyMap.entries()]
-            .filter(([, row]) => row.end > bounds.start && row.end <= bounds.end);
-        if (inYear.length !== 3) continue;
-        const label = secQuarterLabel({ end: bounds.end });
-        if (!label || quarterlyMap.has(label)) continue;
-        const sum = inYear.reduce((acc, [, row]) => acc + row.value, 0);
-        quarterlyMap.set(label, { value: total - sum, end: bounds.end, form: 'derived:FY-9M' });
+// `anchorNames` restricts the quarter-end dates pooled here to one tag
+// family (normally SEC_TAGS.revenue) rather than every SEC_TAGS candidate.
+// Pooling everything was tried first and is wrong: verified live on Cisco,
+// where a handful of unrelated concepts report period boundaries a day or two
+// off from revenue's own, and one stray date shifted an entire fiscal year's
+// grouping by one slot -- every quarter sum came out ~$1B short of the
+// annual figure, silently, because the derived Q4 absorbed the drift. A
+// concept filed less often than revenue simply locates fewer of its own
+// four quarters; it does not need a different concept's dates standing in
+// for the ones it is missing. Falls back to pooling only when the caller has
+// no revenue bounds to anchor to at all (a filer that never reports revenue
+// under any of the standard tags).
+function secFiscalCalendar(gaap, annualBounds, anchorNames) {
+    if (!annualBounds || !annualBounds.size) return null;
+
+    const latestEnd = new Map(); // "start|end" -> {end, filed}
+    const tagLists = anchorNames ? [anchorNames] : Object.values(SEC_TAGS);
+    for (const names of tagLists) {
+        for (const tag of names) {
+            const node = gaap[tag];
+            if (!node || !node.units) continue;
+            const u = Object.keys(node.units)[0];
+            for (const p of node.units[u] || []) {
+                if (!(p.form === '10-Q' || p.form === '10-K') || !secIsOneQuarter(p)) continue;
+                const key = `${p.start}|${p.end}`;
+                const prior = latestEnd.get(key);
+                if (!prior || String(p.filed) > String(prior.filed)) latestEnd.set(key, { end: p.end, filed: p.filed });
+            }
+        }
     }
-    return quarterlyMap;
+    const ends = [...new Set([...latestEnd.values()].map((r) => r.end))];
+
+    // Group each quarter's end date into the fiscal year whose annual period
+    // contains it, order by date, and number 1..3. The fourth quarter is
+    // appended rather than searched for -- it is never filed as its own
+    // 3-month period, its end date is simply the annual period's own end.
+    const calendar = {};
+    for (const [fy, b] of annualBounds) {
+        if (!b.start || !b.end) continue;
+        const inYear = ends.filter((e) => e > b.start && e <= b.end).sort();
+        if (inYear.length === 3) calendar[fy] = [...inYear, b.end];
+        else if (inYear.length === 4) calendar[fy] = inYear; // filer restated Q4 as its own 3mo period
+    }
+    return Object.keys(calendar).length ? calendar : null;
 }
 
-// Same shape and precedence rules as secPickAnnual, keyed by `2025Q3` instead
-// of a fiscal year. The quarterly tape lives in the very same companyfacts
-// response the annual one is read from -- it was simply filtered out by the
-// `form === '10-K'` test, so no extra upstream call is needed for any of this.
-//
-// 10-K is included alongside 10-Q because some filers do restate a
-// three-month period inside the annual report. Most do not: a fiscal Q4 is
-// never filed as its own 10-Q, and the 10-K carries the full year instead --
-// verified live, NVDA had 5 of 18 quarters empty and every one was its fiscal
-// Q4. secFillFiscalQ4 reconstructs those by subtraction after the fact.
-function secPickQuarterly(facts, names) {
-    const byQuarter = new Map();
+// Reads one SEC_TAGS key's value at each date in the shared fiscal calendar.
+// A flow (isFlow=true, has `start`) is read from a matching 3-month period
+// when one is filed, or derived as FY minus the other three quarters when it
+// is not -- filling exactly the fiscal Q4 that no filer submits on its own.
+// A balance (no `start`, a point-in-time instant) is read directly at the
+// date; there is nothing to derive because a balance is not summed across
+// quarters -- differencing one would produce the *change* in that balance,
+// not the balance itself.
+function secQuarterlyFromCalendar(gaap, names, calendar, annualByYear, isFlow) {
+    if (!calendar) return null;
+
+    const atEnd = new Map(); // end -> value, latest-filed wins
     for (const tag of names) {
-        const node = facts[tag];
+        const node = gaap[tag];
         if (!node || !node.units) continue;
         const u = Object.keys(node.units)[0];
-        const quarters = (node.units[u] || []).filter((p) =>
-            (p.form === '10-Q' || p.form === '10-K') && p.end && secQuarterLabel(p)
-            // A balance-sheet concept carries no `start` -- it is the value at
-            // one instant, already "the quarter's" figure, so the duration
-            // test that isolates a three-month flow must not be applied to it.
-            // Without this branch every ratio card (current ratio, ROE, ...)
-            // would have an empty quarterly series while revenue had a full one.
-            && (p.start ? secIsOneQuarter(p) : true));
-        if (!quarters.length) continue;
-
-        const perTag = new Map();
-        for (const p of quarters.slice().sort((a, b) => String(a.filed).localeCompare(String(b.filed)))) {
-            perTag.set(secQuarterLabel(p), { value: p.val, end: p.end, form: p.form });
+        for (const p of (node.units[u] || []).slice().sort((a, b) => String(a.filed).localeCompare(String(b.filed)))) {
+            if (!p.end) continue;
+            if (isFlow ? (!p.start || !secIsOneQuarter(p)) : !!p.start) continue;
+            atEnd.set(p.end, p.val);
         }
-        for (const [q, row] of perTag) if (!byQuarter.has(q)) byQuarter.set(q, row);
+    }
+    if (!atEnd.size) return null;
+
+    const byQuarter = new Map();
+    for (const [fy, dates] of Object.entries(calendar)) {
+        const total = isFlow ? annualByYear?.get(Number(fy)) : null;
+        const values = dates.map((d) => atEnd.get(d));
+        dates.forEach((end, i) => {
+            const label = `${fy}Q${i + 1}`;
+            if (Number.isFinite(values[i])) {
+                byQuarter.set(label, { value: values[i], end, form: 'filed' });
+                return;
+            }
+            // Only the fourth slot is ever derived, and only when the other
+            // three are all present -- two known quarters plus a remainder
+            // would silently be a half-year on a bar labelled as one quarter.
+            if (isFlow && i === 3 && Number.isFinite(total) && values.slice(0, 3).every(Number.isFinite)) {
+                byQuarter.set(label, { value: total - values.slice(0, 3).reduce((a, b) => a + b, 0), end, form: 'derived:FY-9M' });
+            }
+        });
     }
     return byQuarter.size ? byQuarter : null;
 }
@@ -1205,16 +1251,18 @@ async function handleFinancials(request, env) {
             // Quarterly runs on its own axis rather than being folded into
             // `statements`: the two cover different spans (a quarter is not a
             // year) and a row carrying both would invite summing across them.
+            //
+            // One calendar for the whole company, anchored to revenue's own
+            // filed quarters (falls back to whatever annual bounds exist, and
+            // to pooling every tag, only when a filer has no revenue at all)
+            // -- see secFiscalCalendar for why pooling by default corrupted
+            // the grouping.
+            const calendarBasis = bounds.revenue || Object.values(bounds).find(Boolean);
+            const fiscalCalendar = secFiscalCalendar(gaap, calendarBasis, bounds.revenue ? SEC_TAGS.revenue : null);
             const quarterlyByKey = {};
             for (const [key, names] of Object.entries(SEC_TAGS)) {
-                const got = secPickQuarterly(gaap, names);
-                if (!got) continue;
-                // Balance-sheet keys are point-in-time and already complete --
-                // there is no "missing Q4 balance" to reconstruct, and the
-                // subtraction would be meaningless on a level anyway.
-                quarterlyByKey[key] = (picked[key] && bounds[key] && SEC_FLOW_KEYS.has(key))
-                    ? secFillFiscalQ4(got, picked[key], bounds[key])
-                    : got;
+                const got = secQuarterlyFromCalendar(gaap, names, fiscalCalendar, picked[key], SEC_FLOW_KEYS.has(key));
+                if (got) quarterlyByKey[key] = got;
             }
             const oldestKeptYear = years.length ? Math.min(...years) : null;
             const quarterLabels = [...new Set(Object.values(quarterlyByKey).flatMap((m) => [...m.keys()]))]
