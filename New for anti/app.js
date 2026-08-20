@@ -4317,6 +4317,74 @@ const togglePanels = ({ macro = false, countryStats = false, news = false, forec
     mapContainer.style.display = map ? 'block' : 'none';
 };
 
+// Election UI deliberately lives in js/elections/.  This adapter is the only
+// bridge to the legacy application: it exposes the existing map and pane
+// controls without making the election modules depend on app.js internals.
+const electionTimelinePanelEl = document.getElementById('elections-timeline-panel');
+const electionCountryPanelEl = document.getElementById('elections-country-panel');
+
+const electionHost = () => ({
+    deckgl,
+    layers: { GeoJsonLayer },
+    MapView,
+    loadWorldGeo,
+    worldBaseLayers,
+    resolveIso3(feature) {
+        const direct = String(feature?.id ?? feature?.properties?.ISO_A3 ?? feature?.properties?.iso_a3 ?? '').toUpperCase();
+        if (direct && direct !== '-99') return direct;
+        const name = feature?.properties?.name || feature?.properties?.NAME;
+        return resolveCountry(name)?.iso || '';
+    },
+    setWorldMap(layers, onClick) {
+        currentViewState = clampGlobeView({ ...currentViewState, zoom: GLOBE_ZOOM });
+        deckgl.setProps({
+            views: [new MapView({ id: 'map', controller: true, repeat: true })],
+            viewState: currentViewState,
+            controller: { dragRotate: false, touchRotate: false },
+            onClick,
+            onHover: null,
+            layers,
+        });
+    },
+    setElectionMap(layers, onClick, viewState) {
+        if (viewState) currentViewState = viewState;
+        deckgl.setProps({
+            views: [new MapView({ id: 'map', controller: true, repeat: true })],
+            viewState: currentViewState,
+            controller: { dragRotate: false, touchRotate: false },
+            onClick,
+            onHover: null,
+            layers,
+        });
+    },
+    setPanels({ timeline = false, country = false, left = true, right = false }) {
+        togglePanels({ macro: false, countryStats: false, news: false, forecast: false, climateRight: false, left, right, chart: false, map: true });
+        panelHide(document.getElementById('commodity-info-panel'));
+        timeline ? panelShow(electionTimelinePanelEl) : panelHide(electionTimelinePanelEl);
+        country ? panelShow(electionCountryPanelEl) : panelHide(electionCountryPanelEl);
+    },
+    setHeader(title, description) {
+        currentViewTitle.textContent = title;
+        currentViewDesc.textContent = description;
+    },
+    roots: { timeline: electionTimelinePanelEl, country: electionCountryPanelEl },
+});
+
+const showElectionView = () => {
+    currentCommodity = 'elections';
+    stopTradeAnim();
+    stopRotation();
+    document.body.classList.remove('trade-map-mode', 'shipping-mode', 'finance-mode', 'macro-mode');
+    const render = () => window.ElectionApp?.openWorld?.(electionHost());
+    if (window.ElectionApp) {
+        render();
+    } else {
+        electionHost().setPanels({ timeline: true, country: false, left: true, right: false });
+        electionTimelinePanelEl.innerHTML = '<div class="panel-header"><h2>세계 선거 일정</h2><p>선거 모듈을 불러오는 중입니다.</p></div>';
+        window.addEventListener('electionapp:ready', render, { once: true });
+    }
+};
+
 // --- 금융 진단 ---------------------------------------------------------------
 // The engines live outside this file: portfolio risk in
 // scripts/금융_재무분석 (portfolio_analysis_v1.json), corporate financials in
@@ -8909,6 +8977,7 @@ const setView = (target) => {
         // Shipping owns chartView too, so only clear what this view wrote.
         if (chartView && chartView.querySelector('.fin-wrap')) chartView.innerHTML = '';
     }
+    if (target !== 'elections') window.ElectionApp?.unmount?.();
     if (!(window.TradeData && window.TradeData[target])) {
         stopTradeAnim();
         document.body.classList.remove('trade-map-mode');
@@ -8963,6 +9032,9 @@ const setView = (target) => {
 
         // Restart rotation
         startRotation();
+
+    } else if (target === 'elections') {
+        showElectionView();
 
     } else if (isShippingView) {
         currentCommodity = target;

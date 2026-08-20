@@ -124,12 +124,13 @@ def generic_country_manifest(country: dict[str, Any]) -> dict[str, Any]:
     has_legislature = bool(country.get("legislature_live"))
     has_factions = bool(country.get("factions"))
     has_race = bool(country.get("race_progress"))
+    has_executive = bool(country.get("executive_live"))
     has_power_structure = bool(country.get("leadership") or country.get("power") or country.get("emirates"))
 
     if has_map and has_subnational:
         sub_status = "partial"
         sub_missing = ["country_specific_subnational_detail_contract"]
-    elif has_map and tier == 1:
+    elif has_map:
         sub_status = "partial"
         sub_missing = ["political_overlay"]
     elif has_subnational:
@@ -167,10 +168,10 @@ def generic_country_manifest(country: dict[str, Any]) -> dict[str, Any]:
                 political_overlay_exists=has_subnational,
             ),
             "executive": screen(
-                "partial" if country.get("head") and tier == 1 else ("ready" if country.get("head") else "disabled"),
-                [f"countries[{iso3}].head", f"countries[{iso3}].prime_minister"],
-                ["full_executive_roster", "cabinet", "senior_staff"] if tier == 1 else [],
-                display_mode="full_executive_target" if tier == 1 else "national_head_only",
+                "ready" if has_executive else ("partial" if country.get("head") and tier == 1 else ("ready" if country.get("head") else "disabled")),
+                [f"countries[{iso3}].executive_live", f"countries[{iso3}].head", f"countries[{iso3}].prime_minister"],
+                [] if has_executive else (["full_executive_roster", "cabinet", "senior_staff"] if tier == 1 else []),
+                display_mode=("full_executive_target" if tier == 1 else "executive_core") if has_executive else ("full_executive_target" if tier == 1 else "national_head_only"),
             ),
             "legislature": screen(
                 "ready" if has_legislature else "disabled",
@@ -223,24 +224,19 @@ def apply_country_contracts(manifest: dict[str, dict[str, Any]]) -> None:
                         "countries[USA].ui_ready.state_drilldown.states",
                     ],
                     [
-                        "lieutenant_governors",
-                        "state_attorneys_general",
-                        "state_legislature_member_rosters",
                         "senate_term_end",
+                        "all_congressional_district_geometry",
                     ],
                     map_join="state.map_feature_code ↔ feature.properties.code",
                     prejoined=True,
+                    map_asset_exists=(PUBLIC / "admin1" / "USA.json").exists(),
+                    political_overlay_exists=True,
                 ),
                 "executive": screen(
-                    "partial",
-                    ["countries[USA].head"],
-                    [
-                        "vice_president",
-                        "white_house_chief_of_staff",
-                        "vice_president_chief_of_staff",
-                        "national_security_advisor",
-                        "cabinet",
-                    ],
+                    "ready",
+                    ["countries[USA].executive_live"],
+                    [],
+                    display_mode="full_cabinet_plus_eop_core",
                 ),
                 "legislature": screen(
                     "ready",
@@ -272,15 +268,15 @@ def apply_country_contracts(manifest: dict[str, dict[str, Any]]) -> None:
     jpn = manifest.get("JPN")
     if jpn:
         jpn["screens"]["executive"] = screen(
-            "partial",
-            ["countries[JPN].head"],
-            ["cabinet", "minister_party_affiliation"],
+            "ready",
+            ["countries[JPN].executive_live"],
+            [],
         )
         jpn["screens"]["subnational_map"] = screen(
             "partial",
-            ["countries[JPN].subnational_live.governors"],
-            ["admin1_geometry", "prefectural_assembly_detail"],
-            map_asset_exists=False,
+            ["/public/data/admin1/JPN.json", "countries[JPN].subnational_live.governors"],
+            ["prefectural_assembly_detail"],
+            map_asset_exists=(PUBLIC / "admin1" / "JPN.json").exists(),
             political_overlay_exists=True,
         )
 
@@ -288,14 +284,14 @@ def apply_country_contracts(manifest: dict[str, dict[str, Any]]) -> None:
     if kor:
         kor["screens"]["executive"] = screen(
             "partial",
-            ["countries[KOR].head", "countries[KOR].prime_minister"],
-            ["cabinet", "presidential_senior_staff"],
+            ["countries[KOR].executive_live"],
+            ["cabinet_source_conflict_review"],
         )
         kor["screens"]["subnational_map"] = screen(
             "partial",
-            ["countries[KOR].subnational_live"],
-            ["admin1_geometry", "individual_mayors_governors", "local_legislature_detail"],
-            map_asset_exists=False,
+            ["/public/data/admin1/KOR.json", "countries[KOR].subnational_live"],
+            ["individual_mayors_governors", "local_legislature_detail"],
+            map_asset_exists=(PUBLIC / "admin1" / "KOR.json").exists(),
             political_overlay_exists=True,
         )
         kor["screens"]["factions"] = screen(
