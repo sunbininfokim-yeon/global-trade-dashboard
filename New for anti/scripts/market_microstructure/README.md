@@ -29,6 +29,7 @@ export KRX_API='…'   # optional
 # → KR + Yahoo(7709/7747/7347) + Binance(SKHYNIXUSDT/SAMSUNGUSDT/…)
 # → public/data/market_microstructure_v1.json
 # → public/data/ai_casino_brief_v1.json  (유동시총 대비 레버 % + ETF 순위)
+# → public/data/external_venues_v1.json (HK/US 외부 스냅샷; 다음 단계에서 append)
 # → AI_CASINO_BRIEF.md / TABLES.md
 # 공개 추가분: 예탁금·신용잔고, 코스피 수급, 레버 카테고리 분해, 공매도(가능 시)
 # venue 분리 표: TABLES.md §4d Global leverage stack
@@ -61,7 +62,13 @@ export KRX_API='…'   # optional
 # → public/data/derivatives_activity_history_v1.jsonl
 # → public/data/leverage_direction_history_v1.jsonl
 # → public/data/stock_letf_history_v1.jsonl
+# → public/data/external_leverage_history_v1.jsonl (HK/US Yahoo ETF, partial 품질)
 ```
+
+외부 ETF 히스토리는 `append_external_history.py`가 별도로 기록한다. Yahoo의
+`totalAssets`는 현재 스냅샷이고 거래대금은 volume×close 프록시이므로 날짜가
+붙은 부분 관측(`quality=partial`)으로만 보관한다. Bloomberg/KRX가 실제 AUM·거래대금
+관측시점을 제공하면 같은 계약의 `source`/`aum_as_of`/`quality`를 교체·보강한다.
 
 한 줄은 한 KST 거래일의 실측 관측이다. 휴장일·API 실패일은 줄을 만들지 않는다.
 1~4거래일은 UI에서 “히스토리 축적 중”으로 표시하고, 최소 5거래일부터 차트를 연결한다.

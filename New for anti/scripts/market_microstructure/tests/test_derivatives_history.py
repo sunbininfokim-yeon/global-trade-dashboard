@@ -23,6 +23,11 @@ from market_microstructure.derivatives_history import (  # noqa: E402
     validate_direction_record,
     validate_stock_record,
 )
+from market_microstructure.external_history import (  # noqa: E402
+    append_external_history,
+    external_records_from_snapshot,
+    validate_external_record,
+)
 from fetch_kr_derivatives import derivative_day_candidates  # noqa: E402
 from backfill_single_stock_letf_history import trading_day_candidates  # noqa: E402
 
@@ -171,6 +176,65 @@ class TestDerivativesHistory(unittest.TestCase):
             trading_day_candidates(date(2026, 8, 14), date(2026, 8, 17)),
             [date(2026, 8, 14), date(2026, 8, 17)],
         )
+
+    def test_external_snapshot_keeps_aum_and_bar_provenance_separate(self):
+        snapshot = {
+            "fetched_at": "2026-08-20T08:00:00+00:00",
+            "fx": {"usdhkd": 7.8},
+            "hk": {
+                "products": [
+                    {
+                        "ticker": "7709.HK",
+                        "underlying": "000660",
+                        "L": 2.0,
+                        "direction": "long",
+                        "structure": "swap",
+                        "aum_usd": 700_000_000.0,
+                        "notional_exposure_usd": 1_400_000_000.0,
+                        "trading_value_usd": 12_000_000.0,
+                        "source": "Yahoo Finance (yfinance)",
+                        "quality": "observed",
+                        "yahoo": {
+                            "currency": "HKD",
+                            "last_bar": {
+                                "as_of": "2026-08-19",
+                                "close": 10.0,
+                                "volume": 100.0,
+                            },
+                        },
+                    }
+                ]
+            },
+            "us_proxy": {"products": []},
+        }
+        rows = external_records_from_snapshot(snapshot)
+        self.assertEqual(len(rows), 1)
+        self.assertEqual(rows[0]["date"], "2026-08-19")
+        self.assertEqual(rows[0]["quality"], "partial")
+        self.assertEqual(rows[0]["aum_quality"], "observed_snapshot_unstamped")
+        self.assertIsNone(rows[0]["aum_as_of"])
+        self.assertEqual(rows[0]["trading_value_quality"], "proxy")
+        validate_external_record(rows[0])
+
+    def test_external_history_dedupes_date_venue_ticker_only(self):
+        snapshot = {
+            "fetched_at": "2026-08-20T08:00:00+00:00",
+            "fx": {"usdhkd": 7.8},
+            "hk": {"products": [{
+                "ticker": "7709.HK", "aum_usd": 1.0,
+                "yahoo": {"last_bar": {"as_of": "2026-08-19", "close": 1.0, "volume": 1.0}},
+            }]},
+            "us_proxy": {"products": []},
+        }
+        row = external_records_from_snapshot(snapshot)[0]
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "external.jsonl"
+            append_external_history(path, [row])
+            newer = dict(row, aum_usd=2.0)
+            append_external_history(path, [newer])
+            records = [json.loads(line) for line in path.read_text(encoding="utf-8").splitlines()]
+        self.assertEqual(len(records), 1)
+        self.assertEqual(records[0]["aum_usd"], 2.0)
 
 
 if __name__ == "__main__":

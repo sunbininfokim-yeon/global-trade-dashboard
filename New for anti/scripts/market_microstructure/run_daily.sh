@@ -16,6 +16,7 @@ echo "[daily] $(date -Iseconds) conc append + US→KR L3 + microstructure + deri
 
 "$PY" build_us_kr_l3.py --live --print-stats
 "$PY" build_market_microstructure.py --live --source auto --print-stats
+"$PY" append_external_history.py --print-stats
 "$PY" build_derivatives_board.py --live --print-stats
 "$PY" append_derivatives_history.py --print-stats
 "$PY" build_investor_price_levels.py --live --universe both --top 10 --pool 100 --print-stats

@@ -32,14 +32,18 @@ def _scenario_block(
     *,
     low: float,
     high: float,
+    net_ir: bool = False,
 ) -> dict[str, Any]:
     tr = total_rebalance(products, r=r)
-    ir = impact_ratio(tr["tr_abs_sum"], adv)
+    ir_basis = "tr_total" if net_ir else "tr_abs_sum"
+    ir = impact_ratio(tr[ir_basis], adv)
     return {
         "R": r,
+        "tr_total": tr["tr_total"],
         "tr_abs_sum": tr["tr_abs_sum"],
         "tr_long": tr["tr_long"],
         "tr_inverse": tr["tr_inverse"],
+        "ir_basis": ir_basis,
         "ir_pct": None if ir is None else round(ir, 4),
         "band": ir_band(ir, low=low, high=high),
     }
@@ -123,7 +127,12 @@ def build_snapshot(day: dict[str, Any], *, anchors: dict[str, Any] | None = None
         )
         realized = None
         if day_r is not None and aum_complete:
-            realized = _scenario_block(products, adv, float(day_r), low=low, high=high)
+            # For the realized daily estimate, net the signed product flows
+            # first.  Stress scenarios retain the conservative absolute-sum
+            # view; the history contract exposes both values.
+            realized = _scenario_block(
+                products, adv, float(day_r), low=low, high=high, net_ir=True
+            )
             scenarios["r_realized"] = realized
 
         flows_krw = st.get("flows_krw") or {}
@@ -160,8 +169,13 @@ def build_snapshot(day: dict[str, Any], *, anchors: dict[str, Any] | None = None
             "wag_the_dog_band": (
                 None
                 if turn is None
-                else ("high" if turn >= 0.5 else "mid" if turn >= 0.2 else "low")
+                else ("high" if turn >= 0.10 else "mid" if turn >= 0.05 else "low")
             ),
+            "wag_the_dog_thresholds_pct": {
+                "low_lt_pct": 5.0,
+                "watch_lt_pct": 10.0,
+                "high_gte_pct": 10.0,
+            },
             "note_ko": "LETF 거래대금 ÷ 현물 당일 거래대금과 롱·인버스 AUM·거래 비중을 함께 기록한 관측 프록시입니다. 실제 리밸런싱 체결·가격 영향·투자자 포지션은 이 값만으로 확인할 수 없습니다.",
         }
 
