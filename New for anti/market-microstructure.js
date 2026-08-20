@@ -357,6 +357,10 @@ const msPriceLevelChart = (pts, rows, opts = {}) => {
         { key: 'investor_deposit_eok', ko: '투자자 예탁금', cls: 'deposit' },
         { key: 'credit_loan_eok', ko: '신용융자', cls: 'credit' },
         { key: 'uncollected_eok', ko: '미수금', cls: 'uncollected' },
+        // 반대매매 is two orders of magnitude below 미수금 and spikier than
+        // any of the others -- it is only legible at all because each series
+        // gets its own vertical range.
+        { key: 'forced_sale_eok', ko: '반대매매', cls: 'forced' },
     ];
     const creditJo = (d, key) => {
         const row = creditByDate.get(d.date);
@@ -387,7 +391,13 @@ const msPriceLevelChart = (pts, rows, opts = {}) => {
         });
         return d;
     };
-    const joLabel = (v) => (v >= 10 ? v.toFixed(0) : v.toFixed(1)) + '조';
+    // Everything here is carried in 조, but 반대매매 lives around 0.005~0.17조
+    // and would print as "0.0조" for most of the window -- a real number
+    // rendered as nothing. Below 0.5조 the label drops back to 억, its native
+    // unit in the source.
+    const joLabel = (v) => v < 0.5
+        ? `${Math.round(v * 10000).toLocaleString('ko-KR')}억`
+        : (v >= 10 ? v.toFixed(0) : v.toFixed(1)) + '조';
     const pctChg = (st) => (st && st.first ? ((st.last - st.first) / st.first) * 100 : null);
 
     const grid = Array.from({ length: 7 }, (_, i) => yLo + (yHi - yLo) * (i / 6));
@@ -439,7 +449,7 @@ const msPriceLevelChart = (pts, rows, opts = {}) => {
                 finEsc(d.date)} · ${finEsc(opts.lineName || '종가')} ${msNum(d.close)} · 개인 ${fmt(d._retail)} · 외국인 ${
                 fmt(d._foreign)} · 기관 ${fmt(d._inst)}${hasCredit ? CREDIT_SERIES.map((s) => {
                     const v = creditJo(d, s.key);
-                    return v === null ? '' : ` · ${s.ko} ${v >= 10 ? v.toFixed(1) : v.toFixed(2)}조`;
+                    return v === null ? '' : ` · ${s.ko} ${joLabel(v)}`;
                 }).join('') : ''}</title></rect>`).join('')}
             <text x="${L - 8}" y="${T - 12}" class="mm-tick" text-anchor="end">${finEsc(opts.yLabel || '(pt)')}</text>
             <text x="${W - R + 8}" y="${(H - B).toFixed(1)}" class="mm-tick">${finEsc(opts.xLabel || '순매수')}</text>
@@ -672,7 +682,7 @@ const msLevelsTab = (D) => {
             <button class="mm-view-btn ${MS_CREDIT_ON ? 'on' : ''}" data-ms-credit="1">예탁금 · 신용공여 ${MS_CREDIT_ON ? '▲' : '▼'}</button>
         </div>
         ${MS_CREDIT_ON ? `<p class="fin-note ms-credit-hint">
-            아래 그래프에 예탁금 · 신용융자 · 미수금이 <strong>같은 날짜축</strong>으로 겹쳐집니다.
+            아래 그래프에 예탁금 · 신용융자 · 미수금 · 반대매매가 <strong>같은 날짜축</strong>으로 겹쳐집니다.
             셋은 규모가 100배 넘게 차이나서 <strong>각자의 범위로</strong> 그렸습니다 —
             선끼리 높이를 비교하지 마시고 <em>기울기</em>만 보세요. 실제 금액은 아래 범례와 마우스 올린 값에 있습니다.
             시장 전체 집계이며 종목별이 아닙니다.</p>` : ''}
@@ -729,8 +739,8 @@ const msLevelsTab = (D) => {
                 Number.isFinite(dc.credit_balance_chg_eok) ? `전주 대비 ${msEok(dc.credit_balance_chg_eok)}` : '')}
             ${msCreditCard('위탁매매 미수금', msEokLevel(dc.uncollected_eok),
                 Number.isFinite(dc.uncollected_over_deposit_pct) ? `예탁금 대비 ${dc.uncollected_over_deposit_pct.toFixed(2)}%` : '')}
-            ${msCard('반대매매', msEokLevel(dc.forced_sale_eok),
-                Number.isFinite(dc.forced_sale_over_uncollected_pct) ? `미수금 대비 ${dc.forced_sale_over_uncollected_pct.toFixed(1)}%` : '', null)}
+            ${msCreditCard('반대매매', msEokLevel(dc.forced_sale_eok),
+                Number.isFinite(dc.forced_sale_over_uncollected_pct) ? `미수금 대비 ${dc.forced_sale_over_uncollected_pct.toFixed(1)}%` : '')}
         </div>
         <p class="fin-note">${finEsc(dc.note_ko || '')}
             추이 그래프는 위 <strong>가격대별 누적 수급</strong>의 “예탁금 · 신용공여” 버튼에 있습니다.</p>
