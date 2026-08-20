@@ -202,6 +202,18 @@ const msJo = (v) => Number.isFinite(v) ? `${(v / 1e12).toFixed(2)}조` : '—';
 // the overstatement this label exists to prevent.
 const msAumProvenance = (q) => q === 'observed' ? '(순자산총액 관측)'
     : (q === 'proxy' || q === 'partial') ? '(시가총액 기반 순자산 프록시)' : '';
+
+// Levered ETF turnover as a share of the two markets combined, rather than as
+// a multiple of cash alone. Safe to add the two: FDR's KOSPI listing (개별
+// 종목) and its ETF/KR listing are disjoint sets -- verified, zero overlapping
+// codes -- so no trade is counted twice. Still not "all trading": non-levered
+// ETFs and KOSDAQ are in neither term.
+const msLevShareOfCombined = (cs) => {
+    const cash = cs && cs.kospi_cash_tv_krw;
+    const lev = cs && cs.levered_inverse_tv_krw;
+    if (!Number.isFinite(cash) || !Number.isFinite(lev) || cash + lev <= 0) return null;
+    return lev / (cash + lev);
+};
 const msSignedJo = (v) => Number.isFinite(v) ? `${v >= 0 ? '+' : ''}${(v / 1e12).toFixed(2)}조` : '—';
 const msEok = (v) => Number.isFinite(v) ? `${v >= 0 ? '+' : ''}${Math.round(v).toLocaleString('ko-KR')}억` : '—';
 // msEok signs its output because it reports net flows. A balance is not a
@@ -468,6 +480,8 @@ const msTangle = (D) => {
     const dc = msCredit(D);
     const byDir = ratios.by_direction || {};
     const bands = m.ir_bands || {};
+    const cs = m.letf_category_share || {};
+    const ssCat = (cs.by_category || {}).single_stock || null;
 
     // Stress-sorted: the row worth looking at first is the one with the
     // biggest 10%-down impact, not the biggest name.
@@ -493,14 +507,26 @@ const msTangle = (D) => {
     <section class="fin-block fin-block-wide">
         <h2>B · 시장 전체</h2>
         <p class="fin-lead">
-            아래 비율의 분모는 <strong>코스피 현물 거래대금</strong>, 분자는 <strong>레버리지·인버스 ETF 거래대금</strong>입니다.
-            서로 다른 두 시장의 거래대금을 나눈 값이라 "시장의 몇 %를 레버리지 ETF가 차지한다"는 뜻이 아닙니다.
-            일반(비레버리지) ETF는 분자에 들어가지 않습니다.
+            같은 분자(<strong>레버리지·인버스 ETF 거래대금</strong>)를 두 가지 분모로 나눠 나란히 둡니다.
+            왼쪽은 코스피 현물만 분모로 둔 <em>배율</em>이라 100%를 넘을 수도 있고, 오른쪽은 둘을 합친
+            <em>몫</em>이라 100%를 넘지 않습니다. 일반(비레버리지) ETF는 어느 쪽 분자에도 들어가지 않습니다.
         </p>
         <div class="fin-cards">
-            ${msCard('레버리지·인버스 ETF 거래대금 ÷ 코스피 현물 거래대금', Number.isFinite(ratios.levered_inverse_etf_tv_over_kospi_cash_tv_pct) ? ratios.levered_inverse_etf_tv_over_kospi_cash_tv_pct.toFixed(1) + '%' : '—',
+            ${msCard('레버·인버스 ETF ÷ 코스피 현물', Number.isFinite(ratios.levered_inverse_etf_tv_over_kospi_cash_tv_pct) ? ratios.levered_inverse_etf_tv_over_kospi_cash_tv_pct.toFixed(1) + '%' : '—',
                 `정방향 ${msJo(ratios.long_tv_jo * 1e12)} · 인버스 ${msJo(ratios.inverse_tv_jo * 1e12)}`, 'letf_cat')}
+            ${msCard('레버·인버스 ETF ÷ (코스피 현물 + 레버·인버스 ETF)', msPct(msLevShareOfCombined(cs), 1),
+                Number.isFinite(cs.kospi_cash_tv_jo) && Number.isFinite(cs.levered_inverse_tv_jo)
+                    ? `분모 ${(cs.kospi_cash_tv_jo + cs.levered_inverse_tv_jo).toFixed(2)}조 (현물 ${cs.kospi_cash_tv_jo.toFixed(2)}조 + 레버 ${cs.levered_inverse_tv_jo.toFixed(2)}조)`
+                    : '', 'letf_cat')}
+            ${ssCat ? msCard('그중 단일종목 (삼전·하닉)', msJo(ssCat.trading_value_krw),
+                `레버·인버스 내 ${(ssCat.share_of_lev_tv_pct ?? 0).toFixed(1)}% · 코스피 현물 대비 ${(ssCat.share_of_kospi_tv_pct ?? 0).toFixed(2)}% · 상품 ${msNum(ssCat.n_products)}종`,
+                'letf_cat') : ''}
         </div>
+        <p class="fin-note">
+            25%대로 보이는 값은 대부분 <strong>지수</strong> 레버리지(KODEX 레버리지·인버스 등)입니다.
+            PDF/논문이 말하는 “AI 챔피언의 LETF 회전율”은 위 <strong>단일종목</strong> 카드 쪽입니다 —
+            두 숫자를 같은 것으로 읽지 마세요.
+        </p>
         <p class="fin-note">
             quality ${finEsc(ratios.quality || '—')} · 관측일 ${finEsc(m.as_of || '—')} · 출처 ${finEsc(ratios.source || '—')}.
             ${msHistRows('direction').length < MS_HIST_MIN_OBS ? '일별 이력이 쌓이는 중입니다 — 카드를 열면 관측일수가 표시되고, ' + MS_HIST_MIN_OBS + '거래일 이상 쌓이면 추이선이 나타납니다.' : '카드를 열면 일별 추이가 표시됩니다.'}
@@ -1062,14 +1088,25 @@ const msModalFor = (key, D) => {
                ${msHistRows('stockLetf').filter((r) => r.ticker === ticker).length < MS_HIST_MIN_OBS ? '일별 이력이 아직 쌓이지 않아 오늘 값만 있습니다.' : ''}</p>` };
     }
     if (key === 'letf_cat') {
-        const by = ((m.letf_category_share || {}).by_category) || {};
+        const cs = m.letf_category_share || {};
+        const by = cs.by_category || {};
+        const CAT_KO = { index: '지수', sector: '섹터', single_stock: '단일종목 (삼전·하닉)', overseas: '해외' };
+        // Sorted by size: the point of this table is that 지수 dwarfs the rest,
+        // which an insertion-ordered listing hides.
+        const catRows = Object.entries(by).sort((a, b) =>
+            (b[1].trading_value_krw || 0) - (a[1].trading_value_krw || 0));
         return { title: '레버리지·인버스 ETF 거래대금 비율 추이',
             html: msHistBlock([MS_HIST_SERIES['lev:ratio'], MS_HIST_SERIES['lev:kospi_tv']])
-            + (Object.keys(by).length ? `<h3 class="fin-sub">오늘 분류별 거래대금</h3>`
-                + msTable(['분류', '상품 수', '거래대금'],
-                    Object.entries(by).map(([k, v]) => [finEsc(k), msNum(v.n_products), msJo(v.trading_value_krw)])) : '')
-            + `<p class="fin-note">분자는 레버리지·인버스 ETF 거래대금, 분모는 코스피 현물 거래대금입니다.
-               서로 다른 두 시장을 나눈 값이라 시장 점유율이 아닙니다.</p>` };
+            + (catRows.length ? `<h3 class="fin-sub">오늘 분류별 거래대금</h3>`
+                + msTable(['분류', '상품 수', '거래대금', '레버·인버스 내 비중', '코스피 현물 대비'],
+                    catRows.map(([k, v]) => [
+                        finEsc(CAT_KO[k] || k), msNum(v.n_products), msJo(v.trading_value_krw),
+                        Number.isFinite(v.share_of_lev_tv_pct) ? `${v.share_of_lev_tv_pct.toFixed(1)}%` : '—',
+                        Number.isFinite(v.share_of_kospi_tv_pct) ? `${v.share_of_kospi_tv_pct.toFixed(2)}%` : '—',
+                    ])) : '')
+            + `<p class="fin-note">
+               <strong>레버·인버스 내 비중</strong> = 그 분류 ÷ 레버·인버스 ETF 전체(${msJo(cs.levered_inverse_tv_krw)}) — 네 분류를 더하면 100%입니다.<br>
+               <strong>코스피 현물 대비</strong> = 그 분류 ÷ 코스피 현물 거래대금(${msJo(cs.kospi_cash_tv_krw)}) — 분모가 다른 시장이라 점유율이 아니고, 다 더해도 100%가 되지 않습니다.</p>` };
     }
     // The chart already shows the shape of this distribution; the modal is for
     // reading exact per-band figures, so it adds the numeric columns the bars
