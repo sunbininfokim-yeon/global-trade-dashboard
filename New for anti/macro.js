@@ -20,6 +20,9 @@ let MM_INDEX = null;
 let MM_COUNTRY = null;          // currently opened country payload
 let MM_TAB = 'liquidity';
 let MM_CHART = null;            // { indicatorId, window }
+let MM_CPI_STRUCTURE = null;    // U.S. CPI relationship map/snapshot, loaded on demand
+let MM_CPI_STRUCTURE_PROMISE = null;
+let MM_CPI_STRUCTURE_ERROR = '';
 
 const mmFetch = async (iso3) => {
     const q = iso3 ? `?country=${encodeURIComponent(iso3)}` : '';
@@ -369,18 +372,250 @@ const mmStatusView = (ind) => {
     </div>`;
 };
 
+const MM_CPI_RELATION_TYPES = {
+    measurement_link: {
+        label: '측정상 연결', icon: '◇', cls: 'measurement',
+        state: '방법론으로 확인', stateCls: 'measured',
+    },
+    common_driver: {
+        label: '공통 요인', icon: '◎', cls: 'common',
+        state: '구조 후보', stateCls: 'candidate',
+    },
+    external_input_required: {
+        label: '외부 입력 필요', icon: '⊕', cls: 'external',
+        state: '외부 데이터 미결합', stateCls: 'candidate',
+    },
+    market_hypothesis: {
+        label: '시장 가설', icon: '⇢', cls: 'hypothesis',
+        state: '검증 전 후보 경로', stateCls: 'candidate',
+    },
+};
+
+const mmIsCpiStructureIndicator = (ind) => (
+    MM_COUNTRY?.country?.iso3 === 'USA'
+    && ['cpi_yoy', 'core_cpi_yoy'].includes(String(ind?.id || ''))
+);
+
+const mmCpiInlineStructure = (ind) => (
+    ind?.cpi_structure
+    || ind?.relationship_structure
+    || (Array.isArray(ind?.relationship_catalog) ? ind : null)
+    || (Array.isArray(ind?.relationships) ? ind : null)
+    || MM_COUNTRY?.country?.cpi_structure
+    || MM_COUNTRY?.cpi_structure
+    || null
+);
+
+// Prefer the release-vintage snapshot when it is published. The checked-in
+// map is a metadata-only fallback, so the UI still explains configured paths
+// without pretending that current effects or validations were calculated.
+const mmEnsureCpiStructure = async (ind) => {
+    const inline = mmCpiInlineStructure(ind);
+    if (inline) {
+        MM_CPI_STRUCTURE = inline;
+        MM_CPI_STRUCTURE_ERROR = '';
+        return inline;
+    }
+    if (MM_CPI_STRUCTURE) return MM_CPI_STRUCTURE;
+    if (MM_CPI_STRUCTURE_PROMISE) return MM_CPI_STRUCTURE_PROMISE;
+
+    const candidates = [
+        '/public/data/us_cpi_structure_v1.json',
+        '/scripts/macro_monitor/config/cpi_structure.map.json',
+    ];
+    MM_CPI_STRUCTURE_ERROR = '';
+    MM_CPI_STRUCTURE_PROMISE = (async () => {
+        let lastError = null;
+        for (const url of candidates) {
+            try {
+                const res = await fetch(url, { cache: 'no-cache' });
+                if (!res.ok) throw new Error(`${res.status}`);
+                const doc = await res.json();
+                const rows = doc.relationship_catalog || doc.relationships;
+                if (!Array.isArray(rows)) throw new Error('relationship 배열 없음');
+                return doc;
+            } catch (err) {
+                lastError = err;
+            }
+        }
+        throw new Error(`CPI 관계 지도를 못 받았습니다${lastError ? ` (${lastError.message})` : ''}`);
+    })()
+        .then((doc) => {
+            MM_CPI_STRUCTURE = doc;
+            return doc;
+        })
+        .catch((err) => {
+            MM_CPI_STRUCTURE_ERROR = err.message;
+            throw err;
+        })
+        .finally(() => {
+            MM_CPI_STRUCTURE_PROMISE = null;
+            if (MM_CHART && ['cpi_yoy', 'core_cpi_yoy'].includes(MM_CHART.indicatorId)) mmPaint();
+        });
+    return MM_CPI_STRUCTURE_PROMISE;
+};
+
+const mmCpiEndpointIds = (relation, side) => {
+    const ids = relation?.[`${side}_ids`];
+    if (Array.isArray(ids)) return ids.map(String);
+    const rows = relation?.[`${side}s`];
+    return Array.isArray(rows) ? rows.map((row) => String(row?.id || '')).filter(Boolean) : [];
+};
+
+const mmCpiItemIndex = (doc) => {
+    const index = new Map();
+    const add = (row) => {
+        if (!row?.id) return;
+        const id = String(row.id);
+        index.set(id, { ...index.get(id), ...row, id });
+    };
+    [...(doc?.driver_frontier || []), ...(doc?.items || []), ...(doc?.mapped_components || [])].forEach(add);
+    (doc?.relationship_catalog || []).forEach((rel) => {
+        [...(rel.sources || []), ...(rel.targets || [])].forEach(add);
+    });
+    return index;
+};
+
+const mmCpiRelationshipIndex = (doc) => {
+    const index = new Map();
+    const rows = doc?.relationship_catalog || doc?.relationships || [];
+    rows.forEach((relation) => {
+        const itemIds = new Set([
+            ...mmCpiEndpointIds(relation, 'source'),
+            ...mmCpiEndpointIds(relation, 'target'),
+        ]);
+        itemIds.forEach((itemId) => {
+            if (!index.has(itemId)) index.set(itemId, []);
+            index.get(itemId).push(relation);
+        });
+    });
+    return index;
+};
+
+const mmCpiRelationsForItem = (doc, itemId) => (
+    mmCpiRelationshipIndex(doc).get(String(itemId || '')) || []
+);
+
+const mmCpiItemLabel = (itemId, items, fallback = '') => (
+    items.get(String(itemId || ''))?.label_ko || fallback || String(itemId || '')
+);
+
+const mmCpiLagText = (lag) => {
+    if (!Array.isArray(lag) || !lag.length) return '고정 시차 없음';
+    if (lag.length === 1) return `${lag[0]}개월`;
+    const sorted = lag.map(Number).filter(Number.isFinite).sort((a, b) => a - b);
+    if (!sorted.length) return '고정 시차 없음';
+    return `${sorted[0]}–${sorted[sorted.length - 1]}개월 후보`;
+};
+
+const mmCpiPathNode = (itemId, items, selectedId) => `
+    <span class="mm-cpi-node ${itemId === selectedId ? 'is-selected' : ''}">
+        ${finEsc(mmCpiItemLabel(itemId, items))}
+    </span>`;
+
+const mmCpiPathCard = (relation, items, selectedId) => {
+    const type = MM_CPI_RELATION_TYPES[relation.type] || {
+        label: relation.type || '관계', icon: '·', cls: 'unknown', state: '상태 미확인', stateCls: 'candidate',
+    };
+    const sources = mmCpiEndpointIds(relation, 'source');
+    const targets = mmCpiEndpointIds(relation, 'target');
+    const neutral = ['measurement_link', 'common_driver'].includes(relation.type);
+    const mapping = relation.mapping_status && relation.mapping_status !== 'mapped'
+        ? `<span class="mm-cpi-map-state">${finEsc(relation.mapping_status)}</span>` : '';
+    return `
+    <article class="mm-cpi-path mm-cpi-path-${type.cls}">
+        <div class="mm-cpi-path-head">
+            <span class="mm-cpi-type"><i aria-hidden="true">${type.icon}</i>${finEsc(type.label)}</span>
+            <span class="mm-cpi-evidence mm-cpi-evidence-${type.stateCls}">${finEsc(type.state)}</span>
+        </div>
+        <div class="mm-cpi-flow" aria-label="${finEsc(type.label)} 관계 흐름">
+            <div class="mm-cpi-node-group"><small>출발 항목</small>${sources.map((id) => mmCpiPathNode(id, items, selectedId)).join('')}</div>
+            <span class="mm-cpi-arrow" aria-hidden="true">${neutral ? '—' : '→'}</span>
+            <div class="mm-cpi-relation-hub"><strong>${type.icon}</strong><span>${finEsc(type.label)}</span><small>${finEsc(mmCpiLagText(relation.lag_months))}</small></div>
+            <span class="mm-cpi-arrow" aria-hidden="true">${neutral ? '—' : '→'}</span>
+            <div class="mm-cpi-node-group"><small>연결 항목</small>${targets.map((id) => mmCpiPathNode(id, items, selectedId)).join('')}</div>
+        </div>
+        <p class="mm-cpi-mechanism">${finEsc(relation.mechanism_ko || '')}</p>
+        <details class="mm-cpi-validation">
+            <summary>근거·검증 조건 ${mapping}</summary>
+            ${relation.evidence_status ? `<p><b>현재 근거</b> ${finEsc(relation.evidence_status)}</p>` : ''}
+            ${relation.validation_required ? `<p><b>추가 검증</b> ${finEsc(relation.validation_required)}</p>` : ''}
+            ${relation.evidence_source ? `<p><b>근거 출처</b> ${finEsc(relation.evidence_source)}</p>` : ''}
+        </details>
+    </article>`;
+};
+
+const mmCpiPathPanel = (ind, movers) => {
+    if (!mmIsCpiStructureIndicator(ind)) return '';
+    const doc = mmCpiInlineStructure(ind) || MM_CPI_STRUCTURE;
+    if (!doc) {
+        if (MM_CPI_STRUCTURE_ERROR) return `<section class="mm-cpi-panel mm-cpi-panel-error">
+            <p>${finEsc(MM_CPI_STRUCTURE_ERROR)}</p><span>항목 수치는 그대로 표시되며 관계 경로만 사용할 수 없습니다.</span>
+        </section>`;
+        return `<section class="mm-cpi-panel mm-cpi-panel-loading"><span class="mm-cpi-spinner"></span>CPI 관계 지도를 불러오는 중…</section>`;
+    }
+
+    const items = mmCpiItemIndex(doc);
+    const relationIndex = mmCpiRelationshipIndex(doc);
+    const moverRows = [...(movers.up || []), ...(movers.down || [])];
+    const requested = MM_CHART?.cpiItemId;
+    const selected = moverRows.find((row) => row.id === requested)
+        || moverRows.find((row) => (relationIndex.get(row.id) || []).length)
+        || moverRows[0]
+        || null;
+    if (selected && MM_CHART) MM_CHART.cpiItemId = selected.id;
+    if (!selected) return '<section class="mm-cpi-panel"><p class="fin-note">선택할 CPI 항목이 없습니다.</p></section>';
+
+    const relations = mmCpiRelationsForItem(doc, selected.id);
+    const policy = doc.relationship_policy || doc.mapping_policy || {};
+    const configuredRule = String(policy.rule_ko || policy.rule || '');
+    const policyText = /[가-힣]/.test(configuredRule) ? configuredRule
+        : '표시된 관계는 인과관계·방향 신호·예측이 아닙니다. 시장 가설은 시점 보존 표본외 검증을 통과하기 전까지 후보 경로로만 읽습니다.';
+    return `
+    <section class="mm-cpi-panel" aria-live="polite">
+        <div class="mm-cpi-panel-head">
+            <div><span class="mm-cpi-kicker">선택 항목</span><h4>${finEsc(mmCpiItemLabel(selected.id, items, selected.label_ko))}</h4></div>
+            <span class="mm-cpi-count">관계 ${relations.length}개</span>
+        </div>
+        <div class="mm-cpi-legend" aria-label="관계 상태 범례">
+            <span class="mm-cpi-evidence mm-cpi-evidence-measured">측정상 연결</span>
+            <span class="mm-cpi-evidence mm-cpi-evidence-candidate">검증 전 후보</span>
+        </div>
+        ${relations.length ? relations.map((relation) => mmCpiPathCard(relation, items, selected.id)).join('')
+            : '<p class="mm-cpi-empty">이 항목에 직접 연결된 관계 정의가 없습니다. 상·하위 CPI 항목을 자동으로 인과 연결하지 않습니다.</p>'}
+        <p class="mm-cpi-policy">${finEsc(policyText)}</p>
+    </section>`;
+};
+
 // Which items moved most in the latest print. Ranked on each item's own MoM,
 // not on its weighted contribution to the headline -- the published artifact
 // carries no relative-importance weights, and calling an unweighted mover a
 // "contribution" would overstate how much it moved the index.
 const mmMoversView = (ind) => {
     const mv = ind.movers || {};
-    const row = (r, dir) => `
-        <div class="mm-mover mm-mover-${dir}">
+    const doc = mmCpiInlineStructure(ind) || MM_CPI_STRUCTURE;
+    const relationIndex = doc ? mmCpiRelationshipIndex(doc) : null;
+    const moverRows = [...(mv.up || []), ...(mv.down || [])];
+    if (doc && MM_CHART && mmIsCpiStructureIndicator(ind)
+        && !moverRows.some((row) => row.id === MM_CHART.cpiItemId)) {
+        MM_CHART.cpiItemId = moverRows.find((row) => (relationIndex.get(row.id) || []).length)?.id
+            || moverRows[0]?.id
+            || null;
+    }
+    const row = (r, dir) => {
+        const interactive = mmIsCpiStructureIndicator(ind);
+        const selected = MM_CHART?.cpiItemId === r.id;
+        const relationCount = relationIndex ? (relationIndex.get(r.id) || []).length : null;
+        const tag = interactive ? 'button' : 'div';
+        return `
+        <${tag} ${interactive ? 'type="button"' : ''} class="mm-mover mm-mover-${dir} ${selected ? 'is-selected' : ''}"
+                ${interactive ? `data-mm-cpi-item="${finEsc(r.id)}" aria-pressed="${selected}"` : ''}>
             <span class="mm-mover-name">${finEsc(r.label_ko)}</span>
             <span class="mm-mover-mom">${r.mom_pct >= 0 ? '+' : ''}${r.mom_pct.toFixed(2)}%</span>
             <span class="mm-mover-yoy">YoY ${r.yoy_pct === null ? '—' : `${r.yoy_pct >= 0 ? '+' : ''}${r.yoy_pct.toFixed(1)}%`}</span>
-        </div>`;
+            ${interactive ? `<span class="mm-mover-path-count">${relationCount === null ? '경로 확인' : `경로 ${relationCount}`}</span>` : ''}
+        </${tag}>`;
+    };
     if (!(mv.up || []).length && !(mv.down || []).length) {
         return `<p class="fin-note">${finEsc('항목별 변동 자료가 없습니다.')}</p>`;
     }
@@ -395,6 +630,7 @@ const mmMoversView = (ind) => {
             ${(mv.down || []).map((r) => row(r, 'down')).join('')}
         </div>
     </div>
+    ${mmCpiPathPanel(ind, mv)}
     <p class="fin-note">${finEsc(mv.reference_period || '')} 발표 기준. ${finEsc(mv.note_ko || '')}</p>`;
 };
 
@@ -879,6 +1115,17 @@ const renderMacroMonitor = async () => {
                 const id = chip.getAttribute('data-mm-chip');
                 MM_CHART = (MM_CHART && MM_CHART.indicatorId === id)
                     ? null : { indicatorId: id, window: '5y', view: null, mode: null };
+                const ind = (MM_COUNTRY?.country?.indicators || []).find((row) => row.id === id);
+                if (MM_CHART && mmIsCpiStructureIndicator(ind)) {
+                    mmEnsureCpiStructure(ind).catch(() => {});
+                }
+                mmPaint();
+                return;
+            }
+            const cpiItem = t.closest('[data-mm-cpi-item]');
+            if (cpiItem && MM_CHART) {
+                MM_CHART.cpiItemId = cpiItem.getAttribute('data-mm-cpi-item');
+                MM_CHART.view = 'movers';
                 mmPaint();
                 return;
             }

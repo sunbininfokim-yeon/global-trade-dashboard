@@ -2815,12 +2815,68 @@ body.macro-mode .map-pane { flex: 1 1 100%; }
     display: grid; grid-template-columns: 1fr auto; gap: 2px 8px;
     padding: 8px 10px; border-radius: 8px;
     border: 1px solid rgba(148,163,184,.16); background: rgba(148,163,184,.05);
+    width: 100%; text-align: left; font-family: inherit; color: inherit;
 }
+.mm-mover[data-mm-cpi-item] { cursor: pointer; transition: border-color .15s, background .15s, transform .15s; }
+.mm-mover[data-mm-cpi-item]:hover { border-color: rgba(56,189,248,.42); background: rgba(56,189,248,.07); transform: translateY(-1px); }
+.mm-mover.is-selected { border-color: rgba(56,189,248,.58); background: rgba(56,189,248,.1); box-shadow: inset 3px 0 0 #38bdf8; }
 .mm-mover-name { font-size: 12px; color: #e2e8f0; }
 .mm-mover-mom { font-size: 13px; font-weight: 650; font-variant-numeric: tabular-nums; text-align: right; }
 .mm-mover-up   .mm-mover-mom { color: #fb7185; }
 .mm-mover-down .mm-mover-mom { color: #34d399; }
 .mm-mover-yoy { grid-column: 1 / -1; font-size: 10px; color: #64748b; font-variant-numeric: tabular-nums; }
+.mm-mover-path-count { grid-column: 1 / -1; justify-self: end; font-size: 9.5px; color: #7dd3fc; }
+
+/* CPI relationship paths. These are structural/measurement annotations, not
+   causal arrows or forecasts; candidate and measured states stay distinct. */
+.mm-cpi-panel {
+    margin: 14px 0 10px; padding: 14px; border-radius: 10px;
+    border: 1px solid rgba(56,189,248,.2); background: rgba(2,6,23,.38);
+}
+.mm-cpi-panel-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 8px; }
+.mm-cpi-panel-head h4 { margin: 1px 0 0; color: #f1f5f9; font-size: 14px; }
+.mm-cpi-kicker { color: #64748b; font-size: 9.5px; text-transform: uppercase; letter-spacing: .08em; }
+.mm-cpi-count { color: #7dd3fc; font-size: 10.5px; font-variant-numeric: tabular-nums; }
+.mm-cpi-legend { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 10px; }
+.mm-cpi-evidence {
+    display: inline-flex; align-items: center; width: max-content; border-radius: 999px;
+    padding: 3px 7px; font-size: 9.5px; line-height: 1; border: 1px solid transparent;
+}
+.mm-cpi-evidence-measured { color: #7dd3fc; background: rgba(56,189,248,.1); border-color: rgba(56,189,248,.25); }
+.mm-cpi-evidence-candidate { color: #fbbf24; background: rgba(251,191,36,.08); border-color: rgba(251,191,36,.24); }
+.mm-cpi-path { padding: 12px; border-radius: 9px; border: 1px solid rgba(148,163,184,.16); background: rgba(15,23,42,.58); }
+.mm-cpi-path + .mm-cpi-path { margin-top: 9px; }
+.mm-cpi-path-measurement { border-left: 3px solid #38bdf8; }
+.mm-cpi-path-common { border-left: 3px solid #2dd4bf; }
+.mm-cpi-path-external { border-left: 3px solid #f59e0b; }
+.mm-cpi-path-hypothesis { border-left: 3px solid #c084fc; }
+.mm-cpi-path-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 10px; }
+.mm-cpi-type { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 620; color: #cbd5e1; }
+.mm-cpi-type i { display: grid; place-items: center; width: 20px; height: 20px; border-radius: 6px; background: rgba(148,163,184,.1); color: #7dd3fc; font-style: normal; }
+.mm-cpi-flow { display: grid; grid-template-columns: minmax(100px,1fr) auto minmax(84px,.7fr) auto minmax(100px,1fr); align-items: center; gap: 7px; }
+.mm-cpi-node-group { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.mm-cpi-node-group > small { color: #475569; font-size: 9px; }
+.mm-cpi-node { display: block; padding: 5px 7px; border-radius: 6px; background: rgba(148,163,184,.08); color: #94a3b8; font-size: 10px; line-height: 1.3; }
+.mm-cpi-node.is-selected { background: rgba(56,189,248,.15); color: #e0f2fe; outline: 1px solid rgba(56,189,248,.34); }
+.mm-cpi-arrow { color: #475569; font-size: 14px; }
+.mm-cpi-relation-hub { display: flex; flex-direction: column; align-items: center; gap: 2px; text-align: center; }
+.mm-cpi-relation-hub strong { color: #7dd3fc; font-size: 16px; }
+.mm-cpi-relation-hub span { color: #cbd5e1; font-size: 9.5px; }
+.mm-cpi-relation-hub small { color: #64748b; font-size: 8.5px; }
+.mm-cpi-mechanism { color: #94a3b8; font-size: 10.5px; line-height: 1.55; margin: 10px 0 0; }
+.mm-cpi-validation { margin-top: 8px; padding-top: 7px; border-top: 1px solid rgba(148,163,184,.12); }
+.mm-cpi-validation summary { color: #64748b; font-size: 9.5px; cursor: pointer; }
+.mm-cpi-validation p { color: #64748b; font-size: 9.5px; line-height: 1.5; margin: 5px 0 0; }
+.mm-cpi-validation b { color: #94a3b8; margin-right: 4px; }
+.mm-cpi-map-state { color: #fbbf24; margin-left: 4px; }
+.mm-cpi-policy { color: #64748b; font-size: 9.5px; line-height: 1.5; margin: 10px 0 0; }
+.mm-cpi-empty { color: #94a3b8; font-size: 10.5px; line-height: 1.55; margin: 8px 0; }
+.mm-cpi-panel-loading, .mm-cpi-panel-error { display: flex; align-items: center; gap: 8px; color: #94a3b8; font-size: 10.5px; }
+.mm-cpi-panel-error { display: block; border-color: rgba(251,113,133,.28); }
+.mm-cpi-panel-error p { color: #fb7185; margin: 0 0 4px; }
+.mm-cpi-panel-error span { color: #64748b; }
+.mm-cpi-spinner { width: 11px; height: 11px; border-radius: 50%; border: 2px solid rgba(148,163,184,.2); border-top-color: #38bdf8; animation: mm-cpi-spin .8s linear infinite; }
+@keyframes mm-cpi-spin { to { transform: rotate(360deg); } }
 
 /* TGA vs US elections: shaded window running into each vote. */
 .mm-election-band { pointer-events: all; }
@@ -2916,6 +2972,8 @@ body.macro-mode .map-pane { flex: 1 1 100%; }
 @media (max-width: 900px) {
     .mm-overlay { padding: 15px 14px; max-height: calc(100vh - 150px); }
     .mm-chips { grid-template-columns: repeat(auto-fill, minmax(148px, 1fr)); }
+    .mm-cpi-flow { grid-template-columns: 1fr; justify-items: stretch; }
+    .mm-cpi-arrow { transform: rotate(90deg); justify-self: center; }
 }
 
 /* ── 매크로: 오버레이 확대 · 차트 · 관료 · 뉴스 레일 ─────────────────────── */
