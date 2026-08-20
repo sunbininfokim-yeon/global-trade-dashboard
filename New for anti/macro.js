@@ -95,20 +95,25 @@ const mmFmt = (v, digits) => {
 // than the features a library would add. Hover is wired after paint (mmWire).
 const MM_W = 760, MM_H = 260, MM_L = 52, MM_R = 16, MM_T = 14, MM_B = 30;
 
-// The Fed balance sheet drawn as its liability stack, plus reserves as a share
-// of GDP beside it.
+// The Fed balance sheet drawn as two stacks -- what it bought, and who ended
+// up holding the cash it paid with -- plus reserves as a share of GDP.
 //
 // The total-assets line answers "how big" but not "made of what", and the
 // composition is where the liquidity signal is: the same 6.7T means different
-// things depending on whether it sits in reserve balances (banks' usable cash)
-// or in currency and the TGA, which are not. Reserve balances are the bottom
-// band, against the axis, because the question is how much room is left before
-// reserves get scarce -- a band floating on top of three others has no readable
-// distance to zero.
-const mmBalanceStack = (bs) => {
-    const dates = bs.dates || [], layers = bs.layers || [];
+// things depending on whether the liabilities sit in reserve balances (banks'
+// usable cash) or in currency and the TGA, which are not. Reserve balances are
+// the bottom band, against the axis, because the question is how much room is
+// left before reserves get scarce -- a band floating on three others has no
+// readable distance to zero.
+//
+// Both sides total the same by construction, so they share one y-scale. Drawing
+// them to separate scales would make the taller-looking side the bigger one and
+// invite a comparison that is not there.
+const MM_BS_H = 210, MM_BS_T = 12, MM_BS_B = 26;
+
+const mmStackSide = (side, dates, hi, sideIdx) => {
+    const layers = side.layers || [];
     const n = dates.length;
-    if (!n || !layers.length) return '<p class="fin-note">대차대조표 시계열이 없습니다.</p>';
 
     // A week missing any layer cannot be stacked -- the bands above it would
     // slide down and silently misattribute the gap to a neighbour.
@@ -118,43 +123,40 @@ const mmBalanceStack = (bs) => {
     }
     if (!ok.length) return '<p class="fin-note">완전한 주차가 없어 누적 그래프를 그릴 수 없습니다.</p>';
 
-    const tops = ok.map((i) => layers.reduce((s, l) => s + l.values[i], 0));
-    const hi = Math.max(...tops) * 1.04;
     const sx = (k) => MM_L + (k / Math.max(ok.length - 1, 1)) * (MM_W - MM_L - MM_R);
-    const sy = (v) => MM_T + (1 - v / hi) * (MM_H - MM_T - MM_B);
+    const sy = (v) => MM_BS_T + (1 - v / hi) * (MM_BS_H - MM_BS_T - MM_BS_B);
 
-    // Each band is drawn as its own closed polygon between the running total
-    // below it and the running total including it, so the fills abut exactly.
+    // Each band is its own closed polygon between the running total below it
+    // and the running total including it, so the fills abut exactly.
     let below = new Array(ok.length).fill(0);
     const bands = layers.map((l) => {
         const above = ok.map((i, k) => below[k] + l.values[i]);
         const up = above.map((v, k) => `${sx(k).toFixed(1)},${sy(v).toFixed(1)}`);
         const down = below.map((v, k) => `${sx(k).toFixed(1)},${sy(v).toFixed(1)}`).reverse();
         below = above;
-        return `<polygon points="${up.concat(down).join(' ')}" fill="${finEsc(l.color)}" fill-opacity="0.82"/>`;
+        return `<polygon points="${up.concat(down).join(' ')}" fill="${finEsc(l.color)}" fill-opacity="0.85"/>`;
     }).join('');
 
-    const ticks = [0, 0.25, 0.5, 0.75, 1].map((t) => hi * t);
-    const xAt = [0, Math.floor((ok.length - 1) / 2), ok.length - 1];
+    const ticks = [0, 0.5, 1].map((t) => hi * t);
     const last = ok.length - 1;
 
     return `
-    <svg class="mm-chart" viewBox="0 0 ${MM_W} ${MM_H}" preserveAspectRatio="none" role="img"
-         aria-label="연준 부채 구성 누적 그래프">
-        ${ticks.map((t) => `
-            <line x1="${MM_L}" y1="${sy(t).toFixed(1)}" x2="${MM_W - MM_R}" y2="${sy(t).toFixed(1)}" class="mm-grid"/>
-            <text x="${MM_L - 7}" y="${(sy(t) + 3.5).toFixed(1)}" class="mm-tick" text-anchor="end">${mmFmt(t, 1)}</text>`).join('')}
-        ${bands}
-        ${xAt.map((k) => `<text x="${sx(k).toFixed(1)}" y="${MM_H - 8}" class="mm-tick"
-            text-anchor="${k === 0 ? 'start' : (k === last ? 'end' : 'middle')}">${finEsc(dates[ok[k]] || '')}</text>`).join('')}
-    </svg>
-    <div class="mm-stack-legend">
-        ${layers.map((l) => {
-            const v = l.values[ok[last]];
-            return `<span class="mm-stack-key" title="${finEsc(l.note_ko || '')}">
-                <i style="background:${finEsc(l.color)}"></i>${finEsc(l.label_ko)}
-                <b>${Number.isFinite(v) ? mmFmt(v, 2) : '—'}조</b></span>`;
-        }).reverse().join('')}
+    <div class="mm-bs-side" data-mm-bs="${sideIdx}"
+         data-rows='${finEsc(JSON.stringify(ok))}'>
+        <div class="mm-bs-head">
+            <span class="mm-bs-title">${finEsc(side.label_ko || '')}</span>
+            <span class="mm-bs-sub">${finEsc(side.note_ko || '')}</span>
+        </div>
+        <svg class="mm-chart mm-bs-chart" viewBox="0 0 ${MM_W} ${MM_BS_H}" preserveAspectRatio="none"
+             role="img" aria-label="${finEsc(side.label_ko || '')} 구성 누적 그래프">
+            ${ticks.map((t) => `
+                <line x1="${MM_L}" y1="${sy(t).toFixed(1)}" x2="${MM_W - MM_R}" y2="${sy(t).toFixed(1)}" class="mm-grid"/>
+                <text x="${MM_L - 7}" y="${(sy(t) + 3.5).toFixed(1)}" class="mm-tick" text-anchor="end">${mmFmt(t, 1)}</text>`).join('')}
+            ${bands}
+            ${[0, Math.floor(last / 2), last].map((k) => `<text x="${sx(k).toFixed(1)}" y="${MM_BS_H - 7}"
+                class="mm-tick" text-anchor="${k === 0 ? 'start' : (k === last ? 'end' : 'middle')}">${finEsc(dates[ok[k]] || '')}</text>`).join('')}
+            <line class="mm-cross mm-bs-cross" x1="0" y1="${MM_BS_T}" x2="0" y2="${MM_BS_H - MM_BS_B}" style="display:none"/>
+        </svg>
     </div>`;
 };
 
@@ -202,11 +204,104 @@ const mmReservesRatio = (r, dates) => {
 
 const mmBalanceSheetView = (ind) => {
     const bs = ind.balance_sheet;
-    if (!bs) return '<p class="fin-note">대차대조표 구성 자료가 없습니다.</p>';
+    const sides = (bs || {}).sides || [];
+    if (!sides.length) return '<p class="fin-note">대차대조표 구성 자료가 없습니다.</p>';
+
+    const dates = bs.dates || [];
+    // One scale across both sides: they are equal totals by definition, and
+    // separate scales would make one look larger than the other.
+    let hi = 0;
+    sides.forEach((s) => (s.layers || []).forEach((_, li) => {
+        dates.forEach((__, i) => {
+            const tot = (s.layers || []).reduce(
+                (acc, l) => acc + (Number.isFinite(l.values[i]) ? l.values[i] : 0), 0);
+            if (tot > hi) hi = tot;
+        });
+    }));
+    hi *= 1.04;
+
     return `
-    ${mmBalanceStack(bs)}
-    <p class="fin-note">${finEsc(bs.stack_note_ko || '')}</p>
-    ${bs.ratio ? mmReservesRatio(bs.ratio, bs.dates || []) : ''}`;
+    <div class="mm-bs" data-mm-bs-root="1"
+         data-dates='${finEsc(JSON.stringify(dates))}'
+         data-sides='${finEsc(JSON.stringify(sides.map((s) => ({
+             label_ko: s.label_ko,
+             layers: (s.layers || []).map((l) => ({ label_ko: l.label_ko, color: l.color, values: l.values })),
+         }))))}'>
+        ${sides.map((s, k) => mmStackSide(s, dates, hi, k)).join('')}
+        <div class="mm-bs-tip" style="display:none"></div>
+    </div>
+    <p class="fin-note">${finEsc(bs.stack_note_ko || '')} ${finEsc(bs.sampling_note_ko || '')}</p>
+    ${bs.ratio ? mmReservesRatio(bs.ratio, dates) : ''}`;
+};
+
+// Hovering a stack reads the composition at that week for both sides at once:
+// the question "what was it made of then" is never about one side alone, and
+// the shares are what the eye cannot recover from band thickness.
+const mmWireBalanceHover = (root) => {
+    const dates = JSON.parse(root.getAttribute('data-dates') || '[]');
+    const sides = JSON.parse(root.getAttribute('data-sides') || '[]');
+    const tip = root.querySelector('.mm-bs-tip');
+    const panels = Array.from(root.querySelectorAll('.mm-bs-side'));
+    if (!tip || !panels.length) return;
+
+    const hide = () => {
+        tip.style.display = 'none';
+        panels.forEach((p) => {
+            const c = p.querySelector('.mm-bs-cross');
+            if (c) c.style.display = 'none';
+        });
+    };
+
+    panels.forEach((panel) => {
+        const rows = JSON.parse(panel.getAttribute('data-rows') || '[]');
+        const svg = panel.querySelector('svg');
+        if (!svg || !rows.length) return;
+
+        svg.addEventListener('mousemove', (ev) => {
+            const box = svg.getBoundingClientRect();
+            const frac = (ev.clientX - box.left) / box.width;
+            const span = (MM_W - MM_L - MM_R) / MM_W;
+            const k = Math.round(((frac - MM_L / MM_W) / span) * (rows.length - 1));
+            const kk = Math.max(0, Math.min(rows.length - 1, k));
+            const i = rows[kk];
+            const x = MM_L + (kk / Math.max(rows.length - 1, 1)) * (MM_W - MM_L - MM_R);
+
+            panels.forEach((p) => {
+                const c = p.querySelector('.mm-bs-cross');
+                if (!c) return;
+                c.setAttribute('x1', x); c.setAttribute('x2', x);
+                c.style.display = '';
+            });
+
+            tip.innerHTML = `
+                <div class="mm-bs-tip-date">${finEsc(dates[i] || '')}</div>
+                ${sides.map((s) => {
+                    const rowsOut = s.layers.map((l) => [l, l.values[i]])
+                        .filter(([, v]) => Number.isFinite(v));
+                    const tot = rowsOut.reduce((a, [, v]) => a + v, 0);
+                    return `
+                    <div class="mm-bs-tip-side">
+                        <div class="mm-bs-tip-head">${finEsc(s.label_ko)}<b>${mmFmt(tot, 2)}조</b></div>
+                        ${rowsOut.slice().reverse().map(([l, v]) => `
+                            <div class="mm-bs-tip-row">
+                                <i style="background:${finEsc(l.color)}"></i>
+                                <span>${finEsc(l.label_ko)}</span>
+                                <b>${mmFmt(v, 2)}조</b>
+                                <em>${tot ? (v / tot * 100).toFixed(1) : '—'}%</em>
+                            </div>`).join('')}
+                    </div>`;
+                }).join('')}`;
+
+            tip.style.display = '';
+            const rootBox = root.getBoundingClientRect();
+            const px = ev.clientX - rootBox.left;
+            // Flip to the left of the cursor near the right edge so the panel
+            // never leaves the drawer.
+            tip.style.left = `${px > rootBox.width * 0.55 ? px - tip.offsetWidth - 14 : px + 14}px`;
+            tip.style.top = `${Math.max(4, ev.clientY - rootBox.top - 40)}px`;
+        });
+        svg.addEventListener('mouseleave', hide);
+    });
 };
 
 // US general elections are on a fixed public schedule (first Tue after first
@@ -850,6 +945,7 @@ const mmOverlay = () => {
 // Re-run after every paint: mmPaint replaces innerHTML, so listeners attached
 // to the previous SVG are gone with it.
 const mmWireCharts = (host) => {
+    host.querySelectorAll('[data-mm-bs-root]').forEach(mmWireBalanceHover);
     host.querySelectorAll('[data-mm-chart-box]').forEach((box) => {
         const svg = box.querySelector('svg');
         const cross = box.querySelector('.mm-cross');

@@ -2822,11 +2822,35 @@ body.macro-mode .map-pane { flex: 1 1 100%; }
 .mm-mover-down .mm-mover-mom { color: #34d399; }
 .mm-mover-yoy { grid-column: 1 / -1; font-size: 10px; color: #64748b; font-variant-numeric: tabular-nums; }
 
-/* Fed balance sheet: liability bands, reserves against the axis. */
-.mm-stack-legend { display: flex; flex-wrap: wrap; gap: 8px 14px; margin: 8px 0 4px; }
-.mm-stack-key { display: inline-flex; align-items: center; gap: 6px; font-size: 11.5px; color: #cbd5e1; }
-.mm-stack-key i { width: 10px; height: 10px; border-radius: 2px; flex: none; }
-.mm-stack-key b { color: #f1f5f9; font-weight: 620; font-variant-numeric: tabular-nums; }
+/* Fed balance sheet: two stacks on one shared scale, reserves against the axis. */
+.mm-bs { position: relative; display: flex; flex-direction: column; gap: 14px; margin: 4px 0 8px; }
+.mm-bs-head { display: flex; align-items: baseline; gap: 8px; margin-bottom: 2px; }
+.mm-bs-title { font-size: 12.5px; font-weight: 640; color: #e2e8f0; }
+.mm-bs-sub { font-size: 10.5px; color: #64748b; }
+.mm-bs-chart { height: 210px; cursor: crosshair; }
+.mm-bs-cross { stroke: rgba(226,232,240,.5); stroke-width: 1; pointer-events: none; }
+
+/* Composition at the hovered week, both sides at once. */
+.mm-bs-tip {
+    position: absolute; z-index: 6; pointer-events: none; min-width: 210px;
+    padding: 9px 11px; border-radius: 9px;
+    background: rgba(2,6,23,.96); border: 1px solid rgba(148,163,184,.28);
+    box-shadow: 0 8px 26px rgba(0,0,0,.5);
+}
+.mm-bs-tip-date { font-size: 10.5px; color: #94a3b8; margin-bottom: 6px; }
+.mm-bs-tip-side + .mm-bs-tip-side { margin-top: 8px; padding-top: 7px; border-top: 1px solid rgba(148,163,184,.16); }
+.mm-bs-tip-head {
+    display: flex; justify-content: space-between; gap: 10px;
+    font-size: 11px; color: #94a3b8; margin-bottom: 4px;
+}
+.mm-bs-tip-head b { color: #f1f5f9; font-variant-numeric: tabular-nums; }
+.mm-bs-tip-row {
+    display: grid; grid-template-columns: 10px 1fr auto auto; gap: 7px;
+    align-items: center; font-size: 11px; color: #cbd5e1; line-height: 1.7;
+}
+.mm-bs-tip-row i { width: 9px; height: 9px; border-radius: 2px; }
+.mm-bs-tip-row b { color: #f1f5f9; font-weight: 600; font-variant-numeric: tabular-nums; }
+.mm-bs-tip-row em { font-style: normal; color: #64748b; font-variant-numeric: tabular-nums; min-width: 38px; text-align: right; }
 
 /* Reserves / GDP, with the 10% reference line. */
 .mm-ratio-panel { margin-top: 16px; padding-top: 14px; border-top: 1px solid rgba(148,163,184,.14); }
