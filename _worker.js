@@ -842,11 +842,31 @@ async function handleMacro(request, env, ctx) {
             // Daily spot prices carry a shorter window for the same reason:
             // the home panel draws a sparkline beside the latest print.
             const length = freq === 'weekly' ? 52 : 30;
-            return kvCachedJson(env, `eia:${route}:${seriesId}:${length}`, 3600, async () => {
+            // A weekly series cannot have new data more than once a week, so
+            // an hourly cache TTL was doing nothing but multiplying how often
+            // this Worker hits EIA's own API -- and each of those live calls
+            // is a chance to catch EIA mid-flake (occasional bare 502s from
+            // api.eia.gov itself, unrelated to this key). A day-long TTL cuts
+            // that exposure ~24x for no loss of freshness. Daily series keep
+            // the shorter window since they do change every day.
+            const ttlSeconds = freq === 'weekly' ? 86400 : 3600;
+            return kvCachedJson(env, `eia:${route}:${seriesId}:${length}`, ttlSeconds, async () => {
                 const eiaUrl = `https://api.eia.gov/v2/${route}?api_key=${EIA_KEY}&frequency=${freq}&data[0]=value&facets[series][]=${encodeURIComponent(seriesId)}&sort[0][column]=period&sort[0][direction]=desc&offset=0&length=${length}`;
-                const res = await fetch(eiaUrl);
-                if (!res.ok) return { ok: false, status: res.status };
-                return { ok: true, body: await res.json() };
+                // EIA's own API occasionally bounces a request with a bare
+                // 5xx/network error that succeeds a moment later -- one retry
+                // after a short pause absorbs that instead of surfacing a 502
+                // to every visitor until the next live fetch happens to land.
+                for (let attempt = 0; attempt < 2; attempt++) {
+                    try {
+                        const res = await fetch(eiaUrl);
+                        if (res.ok) return { ok: true, body: await res.json() };
+                        if (attempt === 0) { await new Promise((r) => setTimeout(r, 400)); continue; }
+                        return { ok: false, status: res.status };
+                    } catch (err) {
+                        if (attempt === 0) { await new Promise((r) => setTimeout(r, 400)); continue; }
+                        return { ok: false, status: 0, statusText: err.message };
+                    }
+                }
             });
         }
 
