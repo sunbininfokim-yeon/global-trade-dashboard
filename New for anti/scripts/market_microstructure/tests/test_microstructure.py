@@ -134,6 +134,30 @@ class TestSnapshot(unittest.TestCase):
         self.assertIn("flow_tangle", h)
         self.assertEqual(h["flow_tangle"]["wag_the_dog_band"], "high")
         self.assertGreater(h["flow_tangle"]["long_aum_share"], 0.5)
+        day = json.loads((ROOT / "tests/fixtures/demo_day.json").read_text(encoding="utf-8"))
+        day["stocks"][0]["day_return"] = -0.05
+        realized = next(s for s in build_snapshot(day)["stocks"] if s["ticker"] == "000660")
+        self.assertEqual(realized["scenarios"]["r_realized"]["ir_basis"], "tr_total")
+        self.assertEqual(realized["flow_tangle"]["realized_ir_pct"], realized["scenarios"]["r_realized"]["ir_pct"])
+
+    def test_wag_band_thresholds_match_paper_percent_units(self):
+        h = next(s for s in self.snap["stocks"] if s["ticker"] == "000660")
+        self.assertEqual(h["flow_tangle"]["wag_the_dog_thresholds_pct"]["low_lt_pct"], 5.0)
+        self.assertEqual(h["flow_tangle"]["wag_the_dog_thresholds_pct"]["high_gte_pct"], 10.0)
+
+    def test_missing_product_aum_does_not_become_zero_or_partial_scenario(self):
+        day = json.loads(
+            (ROOT / "tests/fixtures/demo_day.json").read_text(encoding="utf-8")
+        )
+        product = day["stocks"][0]["letf_products"][0]
+        product["aum"] = None
+        product["aum_quality"] = "missing"
+        snap = build_snapshot(day)
+        stock = next(s for s in snap["stocks"] if s["ticker"] == day["stocks"][0]["ticker"])
+        self.assertEqual(stock["letf_aum_quality"], "partial")
+        self.assertIsNone(stock["leverage_exposure_pct"])
+        self.assertEqual(stock["scenarios"], {})
+        self.assertIsNone(stock["products"][0]["aum"])
 
     def test_global_stack_from_external(self):
         day = json.loads((ROOT / "tests/fixtures/demo_day.json").read_text(encoding="utf-8"))

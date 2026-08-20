@@ -29,6 +29,7 @@ export KRX_API='…'   # optional
 # → KR + Yahoo(7709/7747/7347) + Binance(SKHYNIXUSDT/SAMSUNGUSDT/…)
 # → public/data/market_microstructure_v1.json
 # → public/data/ai_casino_brief_v1.json  (유동시총 대비 레버 % + ETF 순위)
+# → public/data/external_venues_v1.json (HK/US 외부 스냅샷; 다음 단계에서 append)
 # → AI_CASINO_BRIEF.md / TABLES.md
 # 공개 추가분: 예탁금·신용잔고, 코스피 수급, 레버 카테고리 분해, 공매도(가능 시)
 # venue 분리 표: TABLES.md §4d Global leverage stack
@@ -61,11 +62,34 @@ export KRX_API='…'   # optional
 # → public/data/derivatives_activity_history_v1.jsonl
 # → public/data/leverage_direction_history_v1.jsonl
 # → public/data/stock_letf_history_v1.jsonl
+# → public/data/external_leverage_history_v1.jsonl (HK/US Yahoo ETF, partial 품질)
 ```
 
+외부 ETF 히스토리는 `append_external_history.py`가 별도로 기록한다. Yahoo의
+`totalAssets`는 현재 스냅샷이고 거래대금은 volume×close 프록시이므로 날짜가
+붙은 부분 관측(`quality=partial`)으로만 보관한다. Bloomberg/KRX가 실제 AUM·거래대금
+관측시점을 제공하면 같은 계약의 `source`/`aum_as_of`/`quality`를 교체·보강한다.
+
 한 줄은 한 KST 거래일의 실측 관측이다. 휴장일·API 실패일은 줄을 만들지 않는다.
-첫 1거래일은 UI에서 “히스토리 축적 중”으로 보이고, 2거래일부터 차트가 연결된다.
+1~4거래일은 UI에서 “히스토리 축적 중”으로 표시하고, 최소 5거래일부터 차트를 연결한다.
 `build_derivatives_board.py --bas-dd YYYYMMDD`는 재현 가능한 수동 일자 실행용이다.
+
+```bash
+# 하이닉스·삼성 단일종목 LETF의 KRX EOD 과거 관측을 한 번만 백필한다.
+# Naver 현재 수급은 과거 날짜에 붙이지 않는다. 휴장일은 자동 skip한다.
+export KRX_API='…'
+../../.venv/bin/python backfill_single_stock_letf_history.py \
+  --start 2026-05-27 --end YYYY-MM-DD
+
+# B/C와 K200 시장 거래활동도 같은 방식으로 실제 KRX EOD만 백필한다.
+../../.venv/bin/python backfill_market_activity_history.py \
+  --start YYYY-MM-DD --end YYYY-MM-DD
+```
+
+단일종목 로그에는 관측값과 별도로 다음 일일 리셋 **추정치**를 저장한다.
+`implied_rebalance_krw = Σ[AUM×(L²−L)×기초자산 일수익률]`,
+`implied_ir_pct = |순합|/현물 당일 거래대금×100`. 입력이 하나라도 없으면 0이 아니라 `null`이다.
+KRX 순자산총액 필드가 없고 `MKTCAP`을 대신 쓴 경우 `aum_quality=proxy`, 전체 행은 `partial`이다.
 
 공개 extras (`fetch_kr_public_extras.py`): 증권사 고객 레버(비공시) 제외.
 
@@ -103,6 +127,8 @@ export KRX_API='…'   # optional
 - hit-rate: `us_kr_hitrate_v1.json` (주간 재캘리브용)
 - 설계: [`US_CROSS_MARKET.md`](./US_CROSS_MARKET.md)
 - 채널: downside / upside / vol_up / vol_down (하방 강조)
+- `vol_up`/`vol_down`은 비교 가능한 `atm_call_iv_change`가 있을 때만 판정한다.
+  현재처럼 IV 단일 스냅샷만 있으면 거래량으로 롱볼·숏볼을 추정하지 않고 `observable=false`다.
 
 ## 핵심 공식
 

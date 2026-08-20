@@ -13,6 +13,11 @@ import sys
 from pathlib import Path
 from typing import Any
 
+from market_microstructure.derivatives_history import (
+    HistoryValidationError,
+    validate_stock_record,
+)
+from market_microstructure.external_history import validate_external_record
 
 ROOT = Path(__file__).resolve().parent
 DATA = ROOT / "../../public/data"
@@ -66,7 +71,39 @@ def validate_history(name: str, *, stock: bool = False) -> None:
             require(row, key, where=f"{name}:{line_no}")
         if stock:
             require(row, "ticker", where=f"{name}:{line_no}")
-            require(row, "spot_trading_value_krw", where=f"{name}:{line_no}")
+            if "spot_trading_value_krw" not in row:
+                raise ContractError(
+                    f"missing {name}:{line_no}.spot_trading_value_krw"
+                )
+            try:
+                validate_stock_record(row)
+            except HistoryValidationError as exc:
+                raise ContractError(f"invalid stock history: {path}:{line_no}: {exc}") from exc
+
+
+def validate_optional_external_history() -> None:
+    """Validate external archive when the live venue step has produced it.
+
+    External venues are optional (Yahoo/Bloomberg can be unavailable), so a
+    missing file is not a failed daily run.  If present, every row must still
+    carry provenance and partial/observed quality honestly.
+    """
+    path = DATA / "external_leverage_history_v1.jsonl"
+    if not path.is_file():
+        return
+    for line_no, raw in enumerate(path.read_text(encoding="utf-8").splitlines(), start=1):
+        if not raw.strip():
+            continue
+        try:
+            row = json.loads(raw)
+        except json.JSONDecodeError as exc:
+            raise ContractError(f"invalid JSONL: {path}:{line_no}") from exc
+        if not isinstance(row, dict):
+            raise ContractError(f"JSONL row must be object: {path}:{line_no}")
+        try:
+            validate_external_record(row)
+        except HistoryValidationError as exc:
+            raise ContractError(f"invalid external history: {path}:{line_no}: {exc}") from exc
 
 
 def validate() -> None:
@@ -115,6 +152,7 @@ def validate() -> None:
     validate_history("derivatives_activity_history_v1.jsonl")
     validate_history("leverage_direction_history_v1.jsonl")
     validate_history("stock_letf_history_v1.jsonl", stock=True)
+    validate_optional_external_history()
 
 
 def main() -> int:
