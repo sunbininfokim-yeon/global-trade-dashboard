@@ -77,8 +77,8 @@ HEADERS = {
 // a squash merge replaces whole regions instead of diffing them.
 //
 // Loaded AFTER macro.js -- coDcfPanel and coReversePanel format with mmFmt.
-// Relies on globals still in app.js: finEsc, FIN_SERIES_MODE, and the DOM
-// helpers. Shows no price target by design.""",
+// Relies on globals still in app.js: finEsc and the DOM helpers. Shows no
+// price target by design.""",
     "pf": """// Portfolio lab for Global Trade Dashboard -- holdings input, covariance and
 // correlation, HRP/IVP allocation, and the risk views.
 //
