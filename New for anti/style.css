@@ -3300,7 +3300,16 @@ body.macro-mode .map-pane { flex: 1 1 100%; }
     letter-spacing: 0.02em;
     margin-bottom: 2px;
     flex: 0 0 auto;
+    /* Draggable to step pages by hand (app.js) -- grab/grabbing signals that,
+       and the two no-select/no-touch-scroll rules keep the gesture from also
+       selecting the text or panning the page on a touchscreen. */
+    cursor: grab;
+    user-select: none;
+    touch-action: pan-y;
+    width: fit-content;
 }
+
+.signal-page-name:active { cursor: grabbing; }
 
 @media (prefers-reduced-motion: reduce) {
     .signal-page { transition: none; }
