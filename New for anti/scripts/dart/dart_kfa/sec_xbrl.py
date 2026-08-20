@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from datetime import date
 from typing import Any
 
 # Standard account → preferred US-GAAP concept tags.
@@ -111,7 +112,7 @@ def _period_end_year(p: dict[str, Any]) -> int | None:
     return None
 
 
-def _annual_usd_points(concept: dict[str, Any]) -> list[dict[str, Any]]:
+def _annual_usd_points(concept: dict[str, Any], *, balance: bool) -> list[dict[str, Any]]:
     units = concept.get("units") or {}
     series = units.get("USD") or units.get("USD/shares") or []
     out = []
@@ -120,11 +121,26 @@ def _annual_usd_points(concept: dict[str, Any]) -> list[dict[str, Any]]:
             continue
         form = (p.get("form") or "").upper()
         fp = (p.get("fp") or "").upper()
-        # Prefer annual 10-K / FY
-        if form not in {"10-K", "10-K/A"} and fp != "FY":
+        # Annual statements must come from an annual filing.  ``fp=FY`` by
+        # itself is not enough because companyfacts can repeat contexts.
+        if form not in {"10-K", "10-K/A"} or (fp and fp != "FY"):
             continue
         if p.get("val") is None:
             continue
+        start, end = p.get("start"), p.get("end")
+        if balance:
+            if not end:
+                continue
+        else:
+            if not start or not end:
+                continue
+            try:
+                duration = (date.fromisoformat(str(end)) - date.fromisoformat(str(start))).days + 1
+            except ValueError:
+                continue
+            # Covers 52/53-week issuers while rejecting same-end quarterly facts.
+            if not 330 <= duration <= 380:
+                continue
         out.append(p)
     # sort by period end then filed
     out.sort(key=lambda x: (str(x.get("end") or ""), str(x.get("filed") or "")))
@@ -161,6 +177,7 @@ def _pick_tag_points(
     tags: list[str],
     *,
     prefer_fy: int | None = None,
+    balance: bool = False,
 ) -> tuple[str | None, list[dict[str, Any]]]:
     """Pick first tag that has annual USD points; if prefer_fy set, require that year."""
     gaap = (facts.get("facts") or {}).get("us-gaap") or {}
@@ -169,7 +186,7 @@ def _pick_tag_points(
         concept = gaap.get(tag)
         if not concept:
             continue
-        pts = _annual_usd_points(concept)
+        pts = _annual_usd_points(concept, balance=balance)
         if not pts:
             continue
         if prefer_fy is not None:
@@ -191,7 +208,7 @@ def facts_to_fnltt_payload(
     """Build a DART-shaped {status, list:[rows]} for analyze_payload()."""
     entity = facts.get("entityName") or ticker or "SEC"
     # determine latest FY from Assets period ends
-    _, asset_pts = _pick_tag_points(facts, US_GAAP_TAGS["TOTAL_ASSETS"])
+    _, asset_pts = _pick_tag_points(facts, US_GAAP_TAGS["TOTAL_ASSETS"], balance=True)
     if not asset_pts:
         raise ValueError("no annual Assets facts found")
     end_years = sorted({y for p in asset_pts if (y := _period_end_year(p)) is not None})
@@ -202,7 +219,12 @@ def facts_to_fnltt_payload(
 
     rows: list[dict[str, Any]] = []
     for std, tags in US_GAAP_TAGS.items():
-        tag, pts = _pick_tag_points(facts, tags, prefer_fy=fy)
+        tag, pts = _pick_tag_points(
+            facts,
+            tags,
+            prefer_fy=fy,
+            balance=SJ.get(std, "BS") == "BS",
+        )
         if not tag:
             continue
         th = _amount_at_year(pts, y0)
@@ -242,12 +264,17 @@ def facts_to_fnltt_payload(
     }
 
 
-def shares_outstanding(facts: dict[str, Any], *, fy: int | None = None) -> float | None:
-    """Best-effort common shares from DEI / us-gaap."""
+def shares_outstanding_fact(facts: dict[str, Any], *, fy: int | None = None) -> dict[str, Any] | None:
+    """Return an auditable point-in-time common-share fact.
+
+    Weighted-average EPS denominators are duration facts and are deliberately
+    excluded: they are not valid for a point-in-time market cap or equity-value
+    bridge.
+    """
     facts_root = facts.get("facts") or {}
     for taxonomy, tags in (
         ("dei", ["EntityCommonStockSharesOutstanding"]),
-        ("us-gaap", ["CommonStockSharesOutstanding", "WeightedAverageNumberOfSharesOutstandingBasic"]),
+        ("us-gaap", ["CommonStockSharesOutstanding"]),
     ):
         block = facts_root.get(taxonomy) or {}
         for tag in tags:
@@ -256,24 +283,49 @@ def shares_outstanding(facts: dict[str, Any], *, fy: int | None = None) -> float
                 continue
             units = concept.get("units") or {}
             pts = units.get("shares") or units.get("pure") or []
-            annual = [
+            point_facts = [
                 p
                 for p in pts
                 if isinstance(p, dict)
                 and p.get("val") is not None
+                and p.get("end")
+                and not p.get("start")
                 and (
                     (p.get("form") or "").upper() in {"10-K", "10-K/A"}
                     or (p.get("fp") or "").upper() == "FY"
                 )
             ]
-            if not annual:
-                annual = [p for p in pts if isinstance(p, dict) and p.get("val") is not None]
-            if not annual:
-                continue
-            annual.sort(key=lambda x: (int(x.get("fy") or 0), str(x.get("end") or "")))
             if fy is not None:
-                matched = [p for p in annual if int(p.get("fy") or 0) == fy]
-                if matched:
-                    return float(matched[-1]["val"])
-            return float(annual[-1]["val"])
+                matched = [
+                    p for p in point_facts
+                    if int(p.get("fy") or 0) == fy or _period_end_year(p) == fy
+                ]
+                point_facts = matched
+            if not point_facts:
+                continue
+            point_facts.sort(
+                key=lambda x: (
+                    str(x.get("end") or ""),
+                    str(x.get("filed") or ""),
+                    str(x.get("accn") or ""),
+                )
+            )
+            chosen = point_facts[-1]
+            return {
+                "value": float(chosen["val"]),
+                "share_basis": "point_in_time_basic",
+                "share_source_ref": f"SEC:{chosen.get('accn') or taxonomy + ':' + tag}",
+                "share_as_of": str(chosen["end"]),
+                "share_class": "common_stock",
+                "dilution_policy": "basic_outstanding_at_period_end",
+                "source_taxonomy": taxonomy,
+                "source_concept": tag,
+                "filed_at": chosen.get("filed"),
+            }
     return None
+
+
+def shares_outstanding(facts: dict[str, Any], *, fy: int | None = None) -> float | None:
+    """Backward-compatible numeric accessor for a verified point share fact."""
+    fact = shares_outstanding_fact(facts, fy=fy)
+    return None if fact is None else float(fact["value"])
