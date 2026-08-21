@@ -108,18 +108,7 @@ const SIGNAL_FLIP_MS = 500;
 // 대체 지표든 채워지면 SIGNAL_PAGES 배열에 다시 끼워 넣으면 된다.
 const SIGNAL_PAGES = [
     {
-        // IMF monthly commodity prices: published with a lag, so every slot on
-        // this page shows the month it is quoting.
-        key: 'B', name: '농산물',
-        slots: [
-            { label: '밀', value: 'WHEAT', fmt: 'usd0', unit: '/t', symbol: 'ZW=F' },
-            { label: '옥수수', value: 'CORN', fmt: 'usd0', unit: '/t', symbol: 'ZC=F' },
-            { label: '대두', value: 'SOYBEANS', fmt: 'usd0', unit: '/t', symbol: 'ZS=F' },
-            { label: '설탕 No.11', value: 'SUGAR', fmt: 'cents2', unit: '/lb', symbol: 'SB=F' }
-        ]
-    },
-    {
-        key: 'C', name: '환율',
+        key: 'B', name: '환율',
         slots: [
             // ICE licenses DXY itself; the Fed's broad dollar index is the
             // standard public stand-in, hence the explicit label.
@@ -133,7 +122,7 @@ const SIGNAL_PAGES = [
         // Japan/UK are OECD monthly series (see data.js) -- everything else on
         // this page is a daily constant-maturity yield, so those two carry an
         // `as of` month where the US pair carries an `as of` day.
-        key: 'D', name: '금리',
+        key: 'C', name: '금리',
         slots: [
             { label: '미 국채 2년', value: 'US2Y', fmt: 'pct2' },
             { label: '미 국채 10년', value: 'US10Y', fmt: 'pct2' },
@@ -144,7 +133,7 @@ const SIGNAL_PAGES = [
     {
         // ma:true is exclusive to this page -- see the moving-average note in
         // openChartModal for why equities get one and the other pages don't.
-        key: 'E', name: '주식',
+        key: 'D', name: '주식',
         slots: [
             { label: 'S&P 500', value: 'SP500', fmt: 'idx2', symbol: '^GSPC', ma: true },
             { label: '나스닥 종합', value: 'NASDAQ', fmt: 'idx2', symbol: '^IXIC', ma: true },
@@ -154,6 +143,17 @@ const SIGNAL_PAGES = [
             // derivatives board.
             { label: '필라델피아 반도체', value: 'SOX', fmt: 'idx2', symbol: '^SOX', ma: true },
             { label: 'KOSPI', value: 'KOSPI', fmt: 'idx2', symbol: '^KS11', ma: true }
+        ]
+    },
+    {
+        // IMF monthly commodity prices: published with a lag, so every slot on
+        // this page shows the month it is quoting.
+        key: 'E', name: '농산물',
+        slots: [
+            { label: '밀', value: 'WHEAT', fmt: 'usd0', unit: '/t', symbol: 'ZW=F' },
+            { label: '옥수수', value: 'CORN', fmt: 'usd0', unit: '/t', symbol: 'ZC=F' },
+            { label: '대두', value: 'SOYBEANS', fmt: 'usd0', unit: '/t', symbol: 'ZS=F' },
+            { label: '설탕 No.11', value: 'SUGAR', fmt: 'cents2', unit: '/lb', symbol: 'SB=F' }
         ]
     }
 ];
