@@ -3,9 +3,13 @@
 
 Baker Hughes publishes the drilling rig count -- the single most-watched
 leading indicator of upstream oil and gas activity -- but only as downloadable
-Excel workbooks from rigcount.bakerhughes.com. There is no public API, so the
-workbooks under scripts/rig_count/raw/ are manual exports and this script is
-the whole pipeline: re-export from Baker Hughes, drop the files in raw/, re-run.
+Excel workbooks from rigcount.bakerhughes.com, with no public API. Two of the
+four workbooks under scripts/rig_count/raw/ (NAM_latest.xlsx, WW_latest.xlsx)
+are refreshed automatically by fetch_latest.py (see that file, and
+.github/workflows/rig_count_intel.yml for the schedule); the other two are a
+one-time historical baseline that never needs re-fetching, see below. Running
+this script by hand after `python fetch_latest.py` (or just letting the
+scheduled workflow run both) is the whole pipeline.
 
 Two series come out of it:
 
@@ -21,10 +25,10 @@ lives in older exports that stop where they were taken. So each series is
 stitched from a pair -- a long-history file and a current file -- with the
 current file winning wherever the two overlap:
 
-  North America   08-29-2025 ...            2013-01 .. 2025-08   (fallback)
-                  ..._14-Aug-2026.xlsx      2024-01 .. 2026-08   (preferred)
-  Worldwide       July-2025 ...             2013-01 .. 2025-07   (fallback)
-                  July-2026 ...             2024-01 .. 2026-07   (preferred)
+  North America   08-29-2025 ...            2013-01 .. 2025-08   (fallback, static)
+                  NAM_latest.xlsx            2024-01 .. present   (preferred, auto-refreshed)
+  Worldwide       July-2025 ...             2013-01 .. 2025-07   (fallback, static)
+                  WW_latest.xlsx             2024-01 .. present   (preferred, auto-refreshed)
 
 Each workbook's Monthly sheet carries several title rows and a short
 rolling-window pivot summary (a handful of recent months by region) above the
@@ -92,20 +96,37 @@ if that basemap or those tables change, re-sync this snapshot.
 ON COMMITTING THE RAW WORKBOOKS
 -------------------------------
 The four .xlsx files (~21MB) ARE committed alongside this script. Three
-reasons: (1) there is no API behind them, so an uncommitted export is simply
-unreproducible -- Baker Hughes' site serves only the current report, and the
-2013-2023 history in the older pair cannot be re-downloaded once those files
-are gone; (2) .assetsignore already excludes scripts/** from the served asset
-bundle, so none of this reaches a visitor's browser or the Worker's asset
-budget -- the cost is git clone size only; (3) it matches the repo's existing
-habit of parking source snapshots under a feature's own raw/ folder. If the
-weight ever becomes a problem, the fix is git-lfs or pruning the superseded
-2025-dated pair, not deleting the pipeline's only input.
+reasons: (1) the two FALLBACK files are truly irreplaceable -- there is no
+API behind them, Baker Hughes' site serves only the current report, and the
+2013-2023 history they carry cannot be re-downloaded once they're gone (the
+two PREFERRED files ARE reproducible, via fetch_latest.py, but committing
+them too means a fresh clone builds identical output without hitting the
+network, and gives every refresh a reviewable diff); (2) .assetsignore
+already excludes scripts/** from the served asset bundle, so none of this
+reaches a visitor's browser or the Worker's asset budget -- the cost is git
+clone size only; (3) it matches the repo's existing habit of parking source
+snapshots under a feature's own raw/ folder. If the weight ever becomes a
+problem, the fix is git-lfs or pruning old history on the two FALLBACK files
+specifically, not the pipeline's only irreplaceable input.
 
-If Baker Hughes ever stops publishing these exports, EIA's API carries an
-International rig count dataset under its International category that would
-cover the non-US series. Not used here -- the Excel path is richer (86
-countries, monthly, back to 2013) and needs no key.
+AUTOMATED REFRESH
+------------------
+fetch_latest.py scrapes the "... - New Report" download links off
+rigcount.bakerhughes.com/na-rig-count and /intl-rig-count (the link text is
+stable; the underlying /static-files/<uuid> URL changes silently whenever
+Baker Hughes publishes a new report) and overwrites NAM_latest.xlsx /
+WW_latest.xlsx. It only overwrites a file if the download succeeds and looks
+like a real .xlsx (openpyxl can open it, has the expected sheet) -- a bad
+fetch (site markup change, network blip) leaves the previous good file in
+place rather than corrupting the pipeline's input. See
+.github/workflows/rig_count_intel.yml for the schedule (weekly; harmless to
+run more often, since a week with no new report just re-downloads the same
+file and produces an unchanged, uncommitted diff).
+
+If Baker Hughes ever stops publishing these exports (or blocks scraping),
+EIA's API carries an International rig count dataset under its International
+category that would cover the non-US series. Not used here -- the Excel path
+is richer (86 countries, monthly, back to 2013) and needs no key.
 
 Usage:
     python3 build_rig_count_v1.py [--raw-dir DIR] [--out FILE] [--print-stats]
@@ -140,9 +161,9 @@ DEFAULT_OUT = ROOT.parent.parent / "public" / "data" / "rig_count_v1.json"
 # column than the 2025 one (an added `Rig Status`), which is why this is a
 # per-file constant rather than a shared schema.
 NAM_FALLBACK = ("08-29-2025 North America Rig Count Report.xlsx", "NAM Monthly", 11, 11)
-NAM_PREFERRED = ("North_America_Rig_Count_Report_14-Aug-2026.xlsx", "NAM Monthly", 11, 11)
+NAM_PREFERRED = ("NAM_latest.xlsx", "NAM Monthly", 11, 11)
 WW_FALLBACK = ("July-2025  WorldWide Rig Count Report.xlsx", "WW Monthly", 12, 7)
-WW_PREFERRED = ("July-2026  WorldWide Rig Count Report.xlsx", "WW Monthly", 12, 8)
+WW_PREFERRED = ("WW_latest.xlsx", "WW Monthly", 12, 8)
 
 # Baker Hughes country labels -> a plain English name app.js's resolveCountry()
 # resolves to a basemap country. Only entries that need it are listed; anything

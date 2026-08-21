@@ -1,0 +1,40 @@
+name: Rig Count Intel
+
+# Baker Hughes releases the North America count weekly (Friday noon Central
+# Time) and the Worldwide/International count monthly (last working day of
+# the month's first week). Weekly is enough to catch both -- a week with no
+# new International report just re-downloads the same file and produces no
+# diff, same as any other "chore: refresh" workflow in this repo.
+on:
+  schedule:
+    - cron: '0 20 * * 5'
+  workflow_dispatch:
+
+jobs:
+  update-rig-count:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install dependencies
+        working-directory: New for anti/scripts/rig_count
+        run: python -m pip install -r requirements.txt
+      - name: Fetch latest Baker Hughes reports
+        working-directory: New for anti/scripts/rig_count
+        run: python fetch_latest.py --print-stats
+      - name: Build snapshot
+        working-directory: New for anti/scripts/rig_count
+        run: python build_rig_count_v1.py --print-stats
+      - name: Commit snapshot
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "New for anti/scripts/rig_count/raw/NAM_latest.xlsx"
+          git add "New for anti/scripts/rig_count/raw/WW_latest.xlsx"
+          git add "New for anti/public/data/rig_count_v1.json"
+          git commit -m "chore: refresh Baker Hughes rig count snapshot" || exit 0
+          git push
