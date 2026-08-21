@@ -726,10 +726,15 @@ const mmBars = (rows, opts = {}) => {
 // 2026-08-14) -- Treasury has moved these before (the trade-surplus bar was
 // $15bn in earlier vintages) and will again, so re-check against the current
 // report before trusting this without a date check.
+// Thresholds match the report currently wired in (July 2026): $15B and 3% of
+// GDP. Treasury has moved these over time -- $20B and 2% in earlier reports
+// -- so this isn't a fixed constant to set once; it has to track whichever
+// edition wire_us_fx_watch.py last pulled from, or the panel would show a
+// threshold the badge above it was never actually tested against.
 const MM_FX_WATCH_TESTS = [
-    { ko: '대미 무역흑자', rule: '200억 달러 이상', key: 'trade_surplus_bn' },
-    { ko: '경상수지 흑자', rule: 'GDP 대비 2% 이상', key: 'current_account_pct_gdp' },
-    { ko: '일방향 외환개입', rule: '지속적·일방향 순매수 · GDP 대비 2% 이상', key: 'fx_intervention_pct_gdp' },
+    { ko: '대미 무역흑자', rule: '150억 달러 이상', key: 'trade_surplus_bn' },
+    { ko: '경상수지 흑자', rule: 'GDP 대비 3% 이상', key: 'current_account_pct_gdp' },
+    { ko: '일방향 외환개입', rule: '12개월 중 8개월 이상 지속 · GDP 대비 2% 이상', key: 'fx_intervention_pct_gdp' },
 ];
 
 const mmFxWatchView = (ind) => {
@@ -758,8 +763,8 @@ const mmFxWatchView = (ind) => {
             }).join('')}
         </div>
         <p class="fin-note">
-            2개 충족이면 관찰대상, 3개 모두면 심층분석 대상입니다.
-            이 스냅샷에는 요건별 수치가 들어 있지 않아 충족 여부를 채우지 않았습니다 — 추정하지 않습니다.
+            2개 이상 충족하면 관찰대상, 3개 모두 충족하면 환율조작국입니다.
+            ${finEsc(ind.monitoring_note_ko || ind.manipulator_note_ko || '')}
         </p>
     </div>`;
 };
