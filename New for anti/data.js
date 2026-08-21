@@ -167,79 +167,6 @@
         console.error("FRED API Error:", e);
     }
 
-    // 0.52 Daily quotes with no clean FRED/EIA/BOK series behind them. Two
-    // sources are tried, in order:
-    //
-    //   1. Yahoo Finance -- gives back a real history, so the slot's
-    //      sparkline has something to draw.
-    //   2. CNBC's quote API, if Yahoo doesn't resolve (single point, no
-    //      sparkline that round).
-    //
-    // Japan/UK 10Y additionally have a FRED monthly baseline loaded above,
-    // which either source overwrites on success and which both failing
-    // leaves in place -- so those two degrade to last month's OECD print
-    // rather than going blank. SOX and KOSPI have no such baseline: Yahoo
-    // is a well-established public ticker for both (^SOX, ^KS11), so they
-    // were never worth wiring a fallback provider for.
-    try {
-        const bondSymbols = [
-            { symbol: "JP10Y", name: "JP10Y" },
-            { symbol: "UK10Y", name: "UK10Y" },
-            { symbol: "^SOX", name: "SOX" },
-            { symbol: "^KS11", name: "KOSPI" }
-        ];
-
-        const fetchCnbcQuote = async (symbol) => {
-            const res = await fetch(`/api/macro?source=cnbc&symbol=${encodeURIComponent(symbol)}`);
-            if (!res.ok) return null;
-            const body = await res.json();
-            const quote = body?.FormattedQuoteResult?.FormattedQuote?.[0];
-            const raw = quote?.last ?? quote?.last_price ?? quote?.previous_day_closing;
-            const value = parseFloat(raw);
-            if (!isFinite(value)) return null;
-            const dateStr = quote?.last_time_msec
-                ? new Date(Number(quote.last_time_msec)).toISOString().slice(0, 10)
-                : new Date().toISOString().slice(0, 10);
-            return { value, date: dateStr };
-        };
-
-        const fetchYahooDaily = async (symbol) => {
-            const res = await fetch(`/api/macro?source=yfinance&symbol=${encodeURIComponent(symbol)}&interval=1d&range=3mo`);
-            if (!res.ok) return null;
-            const body = await res.json();
-            const result = body?.chart?.result?.[0];
-            const timestamps = result?.timestamp || [];
-            const closes = result?.indicators?.quote?.[0]?.close || [];
-            const history = [];
-            for (let i = 0; i < closes.length; i++) {
-                if (closes[i] !== null && closes[i] !== undefined) {
-                    history.push({ label: new Date(timestamps[i] * 1000).toISOString().slice(0, 10), value: closes[i] });
-                }
-            }
-            if (!history.length) return null;
-            const last = history[history.length - 1];
-            return { value: last.value, date: last.label, history };
-        };
-
-        await Promise.all(bondSymbols.map(async (b) => {
-            // Yahoo first here (CNBC second, unlike the value-only ordering
-            // before): CNBC returns a single quote, Yahoo a series, and the
-            // slot now draws a sparkline beside the number.
-            const picked = await fetchYahooDaily(b.symbol).catch(() => null)
-                || await fetchCnbcQuote(b.symbol).catch(() => null);
-            if (picked) {
-                macroData[b.name] = {
-                    value: picked.value,
-                    date: picked.date + " (UTC 00:00 Normalized)",
-                    asOf: picked.date,
-                    history: picked.history || macroData[b.name]?.history || []
-                };
-            }
-        }));
-    } catch(e) {
-        console.error("Daily quote fetch error (JP10Y/UK10Y/SOX/KOSPI):", e);
-    }
-
     // 0.5 KRX (KOSPI) removed: the KRX Data Marketplace key returned
     // 401 "Unauthorized API Call" on every request, so the tile never had data.
 
@@ -279,6 +206,86 @@
         console.error("BOK API Error:", e);
         macroData["KRW_USD"] = { value: "N/A", date: "N/A" };
         macroData["BOK_RATE"] = { value: "N/A", date: "N/A" };
+    }
+
+    // 0.56 Daily quotes with no clean FRED/EIA/BOK series behind them. Two
+    // sources are tried, in order:
+    //
+    //   1. Yahoo Finance -- gives back a real history, so the slot's
+    //      sparkline has something to draw.
+    //   2. CNBC's quote API, if Yahoo doesn't resolve (single point, no
+    //      sparkline that round).
+    //
+    // Japan/UK 10Y and KRW_USD additionally have a baseline loaded above
+    // (FRED monthly for the bonds, BOK's single latest reading for KRW,
+    // just set above) -- either source overwrites that baseline on success,
+    // and both failing leaves it in place, so those degrade to last month's
+    // OECD print or the BOK snapshot rather than going blank. This block
+    // has to run after the BOK fetch for that fallback order to hold: BOK's
+    // KeyStatisticList endpoint returns only one snapshot with no history,
+    // so if this ran first, BOK would clobber Yahoo's richer entry (value
+    // and sparkline both) right back down to a bare snapshot. SOX and KOSPI
+    // have no baseline at all: Yahoo is a well-established public ticker for
+    // both (^SOX, ^KS11), so they were never worth wiring a fallback
+    // provider for.
+    try {
+        const dailyQuoteSymbols = [
+            { symbol: "JP10Y", name: "JP10Y" },
+            { symbol: "UK10Y", name: "UK10Y" },
+            { symbol: "^SOX", name: "SOX" },
+            { symbol: "^KS11", name: "KOSPI" },
+            { symbol: "KRW=X", name: "KRW_USD" }
+        ];
+
+        const fetchCnbcQuote = async (symbol) => {
+            const res = await fetch(`/api/macro?source=cnbc&symbol=${encodeURIComponent(symbol)}`);
+            if (!res.ok) return null;
+            const body = await res.json();
+            const quote = body?.FormattedQuoteResult?.FormattedQuote?.[0];
+            const raw = quote?.last ?? quote?.last_price ?? quote?.previous_day_closing;
+            const value = parseFloat(raw);
+            if (!isFinite(value)) return null;
+            const dateStr = quote?.last_time_msec
+                ? new Date(Number(quote.last_time_msec)).toISOString().slice(0, 10)
+                : new Date().toISOString().slice(0, 10);
+            return { value, date: dateStr };
+        };
+
+        const fetchYahooDaily = async (symbol) => {
+            const res = await fetch(`/api/macro?source=yfinance&symbol=${encodeURIComponent(symbol)}&interval=1d&range=3mo`);
+            if (!res.ok) return null;
+            const body = await res.json();
+            const result = body?.chart?.result?.[0];
+            const timestamps = result?.timestamp || [];
+            const closes = result?.indicators?.quote?.[0]?.close || [];
+            const history = [];
+            for (let i = 0; i < closes.length; i++) {
+                if (closes[i] !== null && closes[i] !== undefined) {
+                    history.push({ label: new Date(timestamps[i] * 1000).toISOString().slice(0, 10), value: closes[i] });
+                }
+            }
+            if (!history.length) return null;
+            const last = history[history.length - 1];
+            return { value: last.value, date: last.label, history };
+        };
+
+        await Promise.all(dailyQuoteSymbols.map(async (b) => {
+            // Yahoo first here (CNBC second, unlike the value-only ordering
+            // before): CNBC returns a single quote, Yahoo a series, and the
+            // slot now draws a sparkline beside the number.
+            const picked = await fetchYahooDaily(b.symbol).catch(() => null)
+                || await fetchCnbcQuote(b.symbol).catch(() => null);
+            if (picked) {
+                macroData[b.name] = {
+                    value: picked.value,
+                    date: picked.date + " (UTC 00:00 Normalized)",
+                    asOf: picked.date,
+                    history: picked.history || macroData[b.name]?.history || []
+                };
+            }
+        }));
+    } catch(e) {
+        console.error("Daily quote fetch error (JP10Y/UK10Y/SOX/KOSPI/KRW_USD):", e);
     }
 
     // EIA returns rows newest-first; sparklines want oldest-first.
