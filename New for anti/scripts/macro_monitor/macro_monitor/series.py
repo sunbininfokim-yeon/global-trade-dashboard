@@ -427,6 +427,13 @@ def build_indicator(
     reference = country_cfg.get("reference") or spec.get("reference")
     if reference:
         out["reference"] = reference
+    # Some indicators (capex_gdp_ratio: 18% and 20%) carry more than one
+    # curated reference line -- a separate field rather than overloading
+    # `reference` into sometimes-a-dict/sometimes-a-list, which every
+    # existing reader of `reference` would then have to guard against.
+    thresholds = country_cfg.get("thresholds") or spec.get("thresholds")
+    if thresholds:
+        out["thresholds"] = thresholds
     analog = country_cfg.get("analog_ko") or spec.get("analog_ko")
     if analog:
         out["analog_ko"] = analog

@@ -3122,15 +3122,7 @@ body.macro-mode .map-pane { flex: 1 1 100%; }
 .mm-bs-tip-row b { color: #f1f5f9; font-weight: 600; font-variant-numeric: tabular-nums; }
 .mm-bs-tip-row em { font-style: normal; color: #64748b; font-variant-numeric: tabular-nums; min-width: 38px; text-align: right; }
 
-/* Reserves / GDP, with the 10% reference line. */
-.mm-ratio-panel { margin-top: 16px; padding-top: 14px; border-top: 1px solid rgba(148,163,184,.14); }
-.mm-ratio-head { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; margin-bottom: 4px; }
-.mm-ratio-label { font-size: 12px; color: #94a3b8; }
-.mm-ratio-now { font-size: 17px; font-weight: 650; color: #f1f5f9; font-variant-numeric: tabular-nums; }
-/* Red only while the ratio sits below the reference line -- the colour tracks
-   the reading, it does not label the line itself as a danger level. */
-.mm-ratio-now.is-under { color: #fb7185; }
-.mm-ratio-chart { height: 150px; }
+/* Reserves / GDP spark line (mini rail block) and its threshold line. */
 .mm-ratio-line { fill: none; stroke: #38bdf8; stroke-width: 1.6; }
 .mm-ratio-dot { fill: #38bdf8; }
 .mm-threshold { stroke: #ef4444; stroke-width: 1.4; stroke-dasharray: 5 3; }
@@ -3141,6 +3133,10 @@ body.macro-mode .map-pane { flex: 1 1 100%; }
 .mm-ratio-rail-now { font-size: 22px; font-weight: 650; color: #f1f5f9; font-variant-numeric: tabular-nums; }
 .mm-ratio-rail-now.is-under { color: #fb7185; }
 .mm-ratio-rail-spark { width: 100%; height: 56px; display: block; }
+
+/* SOMA maturity mini-block in the 자산 tab's rail, replacing the news stub. */
+.mm-soma-rail { display: flex; flex-direction: column; gap: 4px; }
+.mm-soma-rail .mm-bs-tip-row { padding: 3px 0; }
 
 /* Monthly Fed Treasury/MBS purchases (+) vs runoff (-), diverging from zero. */
 .mm-qq-chart { height: 220px; cursor: crosshair; }

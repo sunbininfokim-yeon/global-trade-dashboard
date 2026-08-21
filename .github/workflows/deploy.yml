@@ -1,0 +1,40 @@
+name: Deploy to Cloudflare Workers
+
+# Every other workflow in this repo (macro_liquidity_intel.yml,
+# japan_growth_refresh.yml, the yield-forecast crons, ...) ends by pushing a
+# refreshed data file to main -- but nothing had ever deployed the Worker.
+# Confirmed 2026-08-19: the live site was serving a 2026-08-12 snapshot while
+# main had five days of merged PRs sitting in it, because merging to main and
+# shipping to Cloudflare were two unrelated events. This closes that gap: a
+# push to main deploys, same as the rest of this repo already assumes happens.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Deploy Worker
+        run: npx wrangler deploy
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      # macro_monitor_v1.json is a static asset baked into this deploy, but
+      # handleMacroMonitor() (in _worker.js) caches its response in KV for 6h
+      # regardless of when the underlying file changed -- so a fresh deploy
+      # alone does not make a fresh macro pack visible; the stale cache entry
+      # has to go too, or visitors keep getting the old snapshot until the
+      # existing entry's TTL happens to expire on its own.
+      - name: Purge macro cache
+        run: |
+          for key in $(npx wrangler kv key list --namespace-id 35315eb44cfc4cd480c25794c0623c04 --remote --prefix "macro:" | python3 -c "import json,sys; print(' '.join(k['name'] for k in json.load(sys.stdin)))"); do
+            npx wrangler kv key delete "$key" --namespace-id 35315eb44cfc4cd480c25794c0623c04 --remote
+          done
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}

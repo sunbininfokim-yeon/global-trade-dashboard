@@ -238,7 +238,9 @@
       "unit": "bn_usd",
       "format": "bn1",
       "higher_is": "more_supply",
-      "history_years": [5],
+      "history_years": [
+        5
+      ],
       "refresh_tier": "weekly",
       "chart_type": "bar",
       "note_ko": "DTS Public Debt Transactions — 당일 Marketable Bills/Notes/Bonds 발행−상환.",
@@ -253,7 +255,10 @@
       "unit": "tn_usd",
       "format": "tn2",
       "higher_is": "more_debt",
-      "history_years": [5, 10],
+      "history_years": [
+        5,
+        10
+      ],
       "refresh_tier": "weekly",
       "chart_type": "line",
       "note_ko": "Debt to the Penny — 시중보유+정부내보유."
@@ -265,7 +270,10 @@
       "unit": "bn_usd",
       "format": "bn0",
       "higher_is": "mixed",
-      "history_years": [5, 10],
+      "history_years": [
+        5,
+        10
+      ],
       "refresh_tier": "monthly",
       "chart_type": "line",
       "note_ko": "MTS On-Budget 흑자(+)/적자(-). 음수=적자."
@@ -277,7 +285,10 @@
       "unit": "bn_usd",
       "format": "bn0",
       "higher_is": "stronger",
-      "history_years": [5, 10],
+      "history_years": [
+        5,
+        10
+      ],
       "refresh_tier": "monthly",
       "chart_type": "line",
       "note_ko": "MTS Table 2 Total Receipts"
@@ -289,7 +300,10 @@
       "unit": "bn_usd",
       "format": "bn0",
       "higher_is": "more_spending",
-      "history_years": [5, 10],
+      "history_years": [
+        5,
+        10
+      ],
       "refresh_tier": "monthly",
       "chart_type": "line",
       "note_ko": "MTS Table 2 Total Outlays"
@@ -738,7 +752,25 @@
         "unit": "%",
         "label_ko": "18% 초과",
         "source_ko": "일본 고압경제·설비투자 사이클 모니터링 기준선"
-      }
+      },
+      "thresholds": [
+        {
+          "kind": "threshold",
+          "level": 18.0,
+          "relation": ">",
+          "unit": "%",
+          "label_ko": "18% 초과",
+          "source_ko": "일본 고압경제·설비투자 사이클 모니터링 기준선"
+        },
+        {
+          "kind": "threshold",
+          "level": 20.0,
+          "relation": ">",
+          "unit": "%",
+          "label_ko": "20%",
+          "source_ko": "설비투자 과열 경계 기준선(20%)"
+        }
+      ]
     },
     {
       "id": "net_funding_demand",
