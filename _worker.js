@@ -894,19 +894,28 @@ async function handleMacro(request, env, ctx) {
         if (source === 'yfinance') {
             const symbol = url.searchParams.get('symbol');
 
-            // The chart modal wants 5 years of monthly bars; the home panel's
-            // JP/UK 10Y bond tiles want just today's close, so they ask for
-            // interval=1d&range=5d instead. Both keep hitting this one route
-            // rather than duplicating the Yahoo fetch, and each combination
-            // gets its own cache entry.
+            // The chart modal's default view wants 5 years of monthly bars;
+            // the home panel's JP/UK 10Y bond tiles want just today's close
+            // (range=5d); the stock modal's moving averages want two years of
+            // daily bars (range=2y) -- enough trading days for a 240-day
+            // average to have visible history rather than a single dot. All
+            // three keep hitting this one route rather than duplicating the
+            // Yahoo fetch, and each combination gets its own cache entry.
             const interval = url.searchParams.get('interval') || '1mo';
             const rangeParam = url.searchParams.get('range');
+            const rangeMatch = /^(\d+)([dy])$/.exec(rangeParam || '');
 
             return kvCachedJson(env, `yfinance:${symbol}:${interval}:${rangeParam || '5y'}`, 3600, async () => {
                 const period2 = Math.floor(Date.now() / 1000);
-                const period1 = rangeParam === '5d'
-                    ? period2 - 5 * 86400
-                    : Math.floor(new Date().setFullYear(new Date().getFullYear() - 5) / 1000);
+                let period1;
+                if (rangeMatch) {
+                    const [, n, unit] = rangeMatch;
+                    period1 = unit === 'd'
+                        ? period2 - Number(n) * 86400
+                        : Math.floor(new Date().setFullYear(new Date().getFullYear() - Number(n)) / 1000);
+                } else {
+                    period1 = Math.floor(new Date().setFullYear(new Date().getFullYear() - 5) / 1000);
+                }
                 const yfUrl = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}?period1=${period1}&period2=${period2}&interval=${encodeURIComponent(interval)}`;
 
                 const res = await fetch(yfUrl, {
