@@ -20,12 +20,28 @@ let MM_INDEX = null;
 let MM_COUNTRY = null;          // currently opened country payload
 let MM_TAB = 'liquidity';
 let MM_CHART = null;            // { indicatorId, window }
+let MM_QUALITY_PROMISE = null;  // U.S. official-document layer; loaded only for USA
 
 const mmFetch = async (iso3) => {
     const q = iso3 ? `?country=${encodeURIComponent(iso3)}` : '';
     const res = await fetch(`/api/macro-monitor${q}`);
     if (!res.ok) throw new Error(`매크로 데이터를 못 받았습니다 (${res.status})`);
     return res.json();
+};
+
+// us_macro_quality_v1.json is built from point-in-time official-release
+// extracts (build_us_macro_quality.py), not the FRED/Yahoo overlay the rest
+// of the country pack uses -- fetched as its own static asset rather than
+// folded into /api/macro-monitor, which has no notion of this document layer.
+const mmQualityFetch = async () => {
+    if (!MM_QUALITY_PROMISE) {
+        MM_QUALITY_PROMISE = fetch('/public/data/us_macro_quality_v1.json', { cache: 'no-cache' })
+            .then((res) => {
+                if (!res.ok) throw new Error(`정책 문서 데이터를 못 받았습니다 (${res.status})`);
+                return res.json();
+            });
+    }
+    return MM_QUALITY_PROMISE;
 };
 
 const mmDelta = (v) => {
@@ -1209,6 +1225,76 @@ const mmOfficials = (off) => {
     </div>`;
 };
 
+const mmExcerpt = (value, max = 210) => {
+    const text = String(value || '').replace(/\s+/g, ' ').trim();
+    return text.length > max ? `${text.slice(0, max).trimEnd()}…` : text;
+};
+
+// This is an evidence panel, not an FOMC forecast panel. It lives inside the
+// existing U.S. overlay so the published vote and the Beige Book context are
+// read next to the ordinary macro indicators rather than as a second dashboard.
+const mmUsPolicyQuality = (quality) => {
+    if (!quality || quality.schema_version !== 'us-macro-quality-v1') return '';
+    const policy = quality.policy_committee || {};
+    const cmp = policy.comparison || {};
+    const roster = policy.current_roster || {};
+    const documents = ((quality.official_documents || {}).items || []);
+    const latestStatement = documents.find((row) => row.document_type === 'fomc_statement');
+    const beige = documents.find((row) => row.document_type === 'beige_book' && row.extracted_evidence);
+    const evidence = (beige || {}).extracted_evidence || {};
+    const dissent = cmp.current_dissents || {};
+    const direction = Object.entries(dissent.directions || {}).map(([key, value]) => {
+        const label = ({ tighter: '인상 선호', easier: '인하 선호', other_public_dissent: '기타 공개 반대' })[key] || key;
+        return `${label} ${value}명`;
+    }).join(' · ') || '공개 반대 없음';
+    const transitions = cmp.public_vote_transitions || [];
+    const sections = evidence.national_sections || [];
+    const districts = evidence.districts || [];
+    const sourceDate = beige ? String(beige.reference_period || '').slice(0, 10) : '';
+
+    if (!cmp.current_meeting && !beige && !roster.members) return '';
+    return `
+    <section class="mm-quality" aria-label="미국 정책 및 현장 진단">
+        <div class="mm-quality-head">
+            <div>
+                <p class="mm-quality-kicker">공식 문서 · 공개 표결</p>
+                <h3>정책·현장 진단</h3>
+            </div>
+            <span class="mm-quality-status">예측·성향 점수 아님</span>
+        </div>
+        <div class="mm-quality-grid">
+            <div class="mm-quality-card">
+                <span class="mm-quality-label">FOMC 공개 표결</span>
+                <strong>${finEsc(cmp.previous_meeting || '—')} → ${finEsc(cmp.current_meeting || '—')}</strong>
+                <p>반대 ${Number(dissent.count || 0)}명 · ${finEsc(direction)}</p>
+                ${transitions.length ? `<div class="mm-quality-names">${transitions.map((row) =>
+                    `<span>${finEsc(row.name)} · ${finEsc(({ tighter: '인상 선호', easier: '인하 선호' })[row.to_direction] || '공개 반대')}</span>`
+                ).join('')}</div>` : '<span class="mm-quality-muted">직전 회의 대비 공개 표결 변화 없음</span>'}
+                ${latestStatement ? `<a class="mm-quality-link" href="${finEsc(latestStatement.source_url)}" target="_blank" rel="noopener noreferrer">최근 결정문 보기 ↗</a>` : ''}
+            </div>
+            <div class="mm-quality-card">
+                <span class="mm-quality-label">투표권 구성</span>
+                <strong>${finEsc(String(roster.roster_year || ''))}년 ${Array.isArray(roster.members) ? roster.members.length : 0}명</strong>
+                <p>위원 변화는 공개 투표권 기준으로만 비교합니다.</p>
+                ${Array.isArray(roster.members) && roster.members.length ? `<details class="mm-quality-details">
+                    <summary>현재 투표권자 보기</summary>
+                    <p>${roster.members.map((member) => `${member.name} (${member.role})`).join(' · ')}</p>
+                </details>` : ''}
+            </div>
+            <div class="mm-quality-card mm-quality-beige">
+                <span class="mm-quality-label">Beige Book ${finEsc(sourceDate)}</span>
+                <strong>${districts.length ? `12개 District 현장 의견` : '공식 현장 보고서'}</strong>
+                ${sections.length ? `<details class="mm-quality-details">
+                    <summary>전국 요약 보기</summary>
+                    ${sections.map((section) => `<p><b>${finEsc(section.section)}</b> ${finEsc(mmExcerpt(section.text))}</p>`).join('')}
+                </details>` : '<p class="mm-quality-muted">발행본 수집 대기</p>'}
+                ${beige ? `<a class="mm-quality-link" href="${finEsc(beige.source_url)}" target="_blank" rel="noopener noreferrer">원문 보기 ↗</a>` : ''}
+            </div>
+        </div>
+        <p class="mm-quality-foot">공개 표결은 회의 당시의 행동 기록이고, Beige Book은 접촉자 의견입니다. 둘 다 다음 회의나 시장의 방향을 자동 예측하지 않습니다.</p>
+    </section>`;
+};
+
 const mmOverlay = () => {
     if (!MM_COUNTRY) return '';
     const c = MM_COUNTRY.country;
@@ -1243,6 +1329,8 @@ const mmOverlay = () => {
                     <span class="mm-headline-value">${finEsc(h.display ?? '—')}</span>
                 </button>`).join('')}
         </div>` : ''}
+
+        ${c.iso3 === 'USA' ? mmUsPolicyQuality(MM_COUNTRY.quality) : ''}
 
         <div class="mm-tabs" role="tablist">
             ${tabs.map((t) => {
@@ -1366,7 +1454,16 @@ const mmOpenCountry = async (iso3) => {
         host.classList.add('mm-open');
     }
     try {
-        MM_COUNTRY = await mmFetch(iso3);
+        // The quality/policy-document fetch is USA-only and independent of
+        // the country pack -- fetched alongside it, not blocking it, since a
+        // slow or missing document snapshot should never delay the ordinary
+        // indicator overlay every other country also needs.
+        const [countryPayload, quality] = await Promise.all([
+            mmFetch(iso3),
+            iso3 === 'USA' ? mmQualityFetch().catch(() => null) : Promise.resolve(null),
+        ]);
+        MM_COUNTRY = countryPayload;
+        if (quality) MM_COUNTRY.quality = quality;
         MM_TAB = (MM_COUNTRY.country.active_categories || ['liquidity'])[0];
         MM_CHART = null;
     } catch (err) {
