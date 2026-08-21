@@ -3138,6 +3138,13 @@ body.macro-mode .map-pane { flex: 1 1 100%; }
 .mm-ratio-rail-now.is-under { color: #fb7185; }
 .mm-ratio-rail-spark { width: 100%; height: 56px; display: block; }
 
+/* Equity moving-average overlay: price recedes to a thin neutral trace once
+   five colored MA lines are the thing actually being read. */
+.mm-ma-price { fill: none; stroke: #64748b; stroke-width: 1; }
+.mm-ma-legend { display: flex; flex-wrap: wrap; gap: 10px 14px; margin: 8px 0 4px; }
+.mm-ma-key { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; color: #cbd5e1; }
+.mm-ma-key i { width: 10px; height: 3px; border-radius: 2px; flex: none; }
+
 /* SOMA maturity mini-block in the 자산 tab's rail, replacing the news stub. */
 .mm-soma-rail { display: flex; flex-direction: column; gap: 4px; }
 .mm-soma-rail .mm-bs-tip-row { padding: 3px 0; }

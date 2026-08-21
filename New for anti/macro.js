@@ -594,6 +594,122 @@ const mmBarSeries = (dates, values, opts = {}) => {
     </div>`;
 };
 
+// Same fetch and computation as app.js's openChartModal (the 원자재/금융 home
+// chart modal): daily bars over the /api/macro?source=yfinance Worker route,
+// 5/20/60/120/240-day running-sum averages. Ported rather than shared because
+// that modal is Chart.js datasets and this drawer is hand-drawn SVG paths --
+// the fetch and the O(1)-per-point running sum are identical, only what
+// happens to the numbers afterward differs.
+const MM_MA_SPECS = [
+    { window: 5, label: '5일선', color: '#f87171' },
+    { window: 20, label: '20일선', color: '#facc15' },
+    { window: 60, label: '60일선', color: '#4ade80' },
+    { window: 120, label: '120일선', color: '#60a5fa' },
+    { window: 240, label: '240일선', color: '#c084fc' },
+];
+const MM_MA_CACHE = new Map();  // "symbol:range" -> { dates, close } | 'loading' | Error
+
+// range is the same '5y'/'10y' window string the rest of the drawer already
+// uses (windowOpts) -- MA240 only needs ~1 trading year of run-up, but once
+// the toggle exists there's no reason its two options should mean something
+// different here than they do on every other tab.
+const mmFetchDailyForMa = (symbol, range) => {
+    const key = `${symbol}:${range}`;
+    const cached = MM_MA_CACHE.get(key);
+    if (cached && cached !== 'loading') return cached;
+    if (cached === 'loading') return null;
+    MM_MA_CACHE.set(key, 'loading');
+    fetch(`/api/macro?source=yfinance&symbol=${encodeURIComponent(symbol)}&interval=1d&range=${encodeURIComponent(range)}`)
+        .then((res) => res.json())
+        .then((result) => {
+            const chart = (result.chart || {}).result || [];
+            const row = chart[0];
+            if (!row) throw new Error('no chart data');
+            const ts = row.timestamp || [];
+            const closes = ((row.indicators || {}).quote || [{}])[0].close || [];
+            const dates = [], close = [];
+            for (let i = 0; i < ts.length; i++) {
+                if (closes[i] === null || closes[i] === undefined) continue;
+                const d = new Date(ts[i] * 1000);
+                dates.push(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`);
+                close.push(closes[i]);
+            }
+            MM_MA_CACHE.set(key, { dates, close });
+        })
+        .catch((err) => MM_MA_CACHE.set(key, err))
+        // The fetch is fire-and-forget from the view's point of view: this
+        // repaints once the promise lands so the loading state resolves into
+        // a chart without the reader having to reopen the tab.
+        .finally(() => { if (MM_CHART) mmPaint(); });
+    return null;
+};
+
+const mmEquityMaView = (ind, range) => {
+    const symbol = String(ind.source || '').slice('yahoo:'.length);
+    if (!symbol) return '<p class="fin-note">연결된 시세 심볼이 없습니다.</p>';
+
+    const data = mmFetchDailyForMa(symbol, range);
+    if (data instanceof Error) {
+        return `<p class="fin-note">일봉 데이터를 못 받았습니다 — ${finEsc(data.message)}</p>`;
+    }
+    if (!data) {
+        return `<p class="fin-loading">일봉 ${finEsc(range.replace('y', '년'))}치를 불러오는 중…</p>`;
+    }
+    const { dates, close } = data;
+    if (close.length < 240) {
+        return `<p class="fin-note">일봉이 ${close.length}개뿐이라 240일선을 그릴 수 없습니다.</p>`;
+    }
+
+    const mas = MM_MA_SPECS.map((spec) => {
+        let sum = 0;
+        const series = close.map((v, i) => {
+            sum += v;
+            if (i >= spec.window) sum -= close[i - spec.window];
+            return i >= spec.window - 1 ? sum / spec.window : null;
+        });
+        return { ...spec, series };
+    });
+
+    const n = close.length;
+    const allVals = close.concat(...mas.map((m) => m.series)).filter(Number.isFinite);
+    let lo = Math.min(...allVals), hi = Math.max(...allVals);
+    const pad = (hi - lo) * 0.06;
+    lo -= pad; hi += pad;
+    const sx = (i) => MM_L + (i / Math.max(n - 1, 1)) * (MM_W - MM_L - MM_R);
+    const sy = (v) => MM_T + (1 - (v - lo) / (hi - lo)) * (MM_H - MM_T - MM_B);
+    const path = (arr) => {
+        let d = '', pen = false;
+        for (let i = 0; i < arr.length; i++) {
+            const v = arr[i];
+            if (!Number.isFinite(v)) { pen = false; continue; }
+            d += `${pen ? 'L' : 'M'}${sx(i).toFixed(1)},${sy(v).toFixed(1)}`;
+            pen = true;
+        }
+        return d;
+    };
+    const ticks = [0, 0.25, 0.5, 0.75, 1].map((t) => lo + (hi - lo) * t);
+    const xAt = [0, Math.floor((n - 1) / 2), n - 1];
+
+    // Moving averages exist to be read against price, so once there are five
+    // of them, price recedes to a thin neutral trace rather than competing
+    // with them in the same color -- same rule as the home chart modal.
+    return `
+    <svg class="mm-chart" viewBox="0 0 ${MM_W} ${MM_H}" preserveAspectRatio="none" role="img"
+         aria-label="${finEsc(ind.label_ko)} 일봉 및 이동평균">
+        ${ticks.map((t) => `
+            <line x1="${MM_L}" y1="${sy(t).toFixed(1)}" x2="${MM_W - MM_R}" y2="${sy(t).toFixed(1)}" class="mm-grid"/>
+            <text x="${MM_L - 7}" y="${(sy(t) + 3.5).toFixed(1)}" class="mm-tick" text-anchor="end">${mmFmt(t)}</text>`).join('')}
+        <path d="${path(close)}" class="mm-ma-price"/>
+        ${mas.map((m) => `<path d="${path(m.series)}" fill="none" stroke="${finEsc(m.color)}" stroke-width="1.5"/>`).join('')}
+        ${xAt.map((i) => `<text x="${sx(i).toFixed(1)}" y="${MM_H - 8}" class="mm-tick"
+            text-anchor="${i === 0 ? 'start' : (i === n - 1 ? 'end' : 'middle')}">${finEsc(dates[i] || '')}</text>`).join('')}
+    </svg>
+    <div class="mm-ma-legend">
+        ${mas.map((m) => `<span class="mm-ma-key"><i style="background:${finEsc(m.color)}"></i>${finEsc(m.label)}</span>`).join('')}
+    </div>
+    <p class="fin-note">일별 종가, 최근 ${finEsc(range.replace('y', '년'))}(${n}거래일) · Yahoo Finance ${finEsc(symbol)}. 5/20/60/120/240일 이동평균은 단순이동평균(SMA)입니다.</p>`;
+};
+
 const mmLineChart = (dates, values, opts = {}) => {
     const idx = values.map((v, i) => [i, v]).filter(([, v]) => Number.isFinite(v));
     if (idx.length < 2) return '<p class="fin-note">그릴 수 있는 시계열이 없습니다.</p>';
@@ -884,6 +1000,17 @@ const mmViewsFor = (ind) => {
     if (!hasBalanceSheet && !hasQeQt && (has(((ind.history || {})['5y'] || {}).values) || ind.modes)) {
         views.push({ id: 'history', label: '추이' });
     }
+    // 5/20/60/120/240-day moving averages are a daily-chart convention
+    // (Korean HTS terminology) and meaningless on the 5-year monthly bars
+    // every other indicator uses -- a 240-period average over monthly data
+    // would need 20 years of history to draw a single point. Offered only
+    // for the equity indices that actually have a Yahoo symbol behind them
+    // (source starts "yahoo:"); the equity ids with no live source yet
+    // (csi300, hsi, sensex, ...) have no daily bars to compute this from
+    // either, and this tab would just be a permanent loading spinner for them.
+    if (ind.category === 'equity' && String(ind.source || '').startsWith('yahoo:')) {
+        views.push({ id: 'ma', label: '이동평균' });
+    }
     // Secondary panels come last so the engine's primary view stays default.
     const sv = (ind.ui || {}).secondary_view;
     // fed_total_assets shares this ui flag with qra_issuance, but its own
@@ -995,7 +1122,8 @@ const mmChartDrawer = () => {
     const modeSeries = dual ? mmModeSeries(ind, mode) : null;
 
     let body = '';
-    if (view === 'balance_assets') body = mmBalanceAssetsView(ind);
+    if (view === 'ma') body = mmEquityMaView(ind, windowOpts.includes(MM_CHART.window) ? MM_CHART.window : '5y');
+    else if (view === 'balance_assets') body = mmBalanceAssetsView(ind);
     else if (view === 'balance_liabilities') body = mmBalanceLiabilitiesView(ind);
     else if (view === 'qeqt') body = mmQeQtBars(ind.qe_qt_history, MM_CHART.window || '5y');
     else if (view === 'movers') body = mmMoversView(ind);
@@ -1051,7 +1179,7 @@ const mmChartDrawer = () => {
     // everything -- 5y/20y actually brackets "recent" against "across
     // multiple QE/QT cycles" for this one.
     const windowOpts = view === 'qeqt' ? ['5y', '20y'] : ['5y', '10y'];
-    const showWindow = view === 'history' || view === 'qeqt';
+    const showWindow = view === 'history' || view === 'qeqt' || view === 'ma';
 
     return `
     <div class="mm-drawer" role="dialog" aria-label="${finEsc(ind.label_ko)}">
