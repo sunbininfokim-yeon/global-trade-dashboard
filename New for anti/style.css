@@ -2576,6 +2576,14 @@ body.trade-map-mode .left-pane {
     margin-top: 14px; padding-top: 12px;
     border-top: 1px solid rgba(255,255,255,.08);
 }
+
+/* 글로벌/국가별 Rig 수 (Baker Hughes 월간) -- .stock-card와 동일한 시각적
+   무게를 갖되, 별도 클래스로 두어 두 카드의 idempotency 제거 로직이 서로의
+   카드를 지우지 않도록 격리한다. */
+.rig-card {
+    margin-top: 14px; padding-top: 12px;
+    border-top: 1px solid rgba(255,255,255,.08);
+}
 .stock-row {
     display: grid; grid-template-columns: minmax(0,1fr) auto 46px;
     gap: 8px; align-items: baseline; padding: 5px 0;
