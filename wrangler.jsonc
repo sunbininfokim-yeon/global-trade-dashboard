@@ -1,6 +1,13 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "global-trade-dashboard",
+  // Pinned so wrangler never has to auto-detect the account via the
+  // Cloudflare /memberships endpoint. That auto-detect call is a second
+  // place a token can fail (its own permission, its own auth check) on top
+  // of the deploy call itself -- CI hit exactly that as "Authentication
+  // failed (status: 400) [code: 9106]" on 2026-08-21, before wrangler ever
+  // got to deploying anything.
+  "account_id": "ba17c5fee6a6c02df0bd8fb696b6b762",
   "compatibility_date": "2026-07-26",
   "compatibility_flags": ["nodejs_compat"],
   "observability": {
