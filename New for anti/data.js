@@ -167,21 +167,26 @@
         console.error("FRED API Error:", e);
     }
 
-    // 0.52 Japan / UK 10Y government bond yields: FRED only carries these
-    // monthly (OECD), which is what "JP10Y"/"UK10Y" above just loaded as a
-    // fallback baseline. Two daily sources are tried on top of it, in order:
+    // 0.52 Daily quotes with no clean FRED/EIA/BOK series behind them. Two
+    // sources are tried, in order:
     //
-    //   1. CNBC's quote API -- the same JP10Y/UK10Y tickers behind
-    //      cnbc.com/quotes/JP10Y and /UK10Y.
-    //   2. Yahoo Finance, if CNBC doesn't resolve.
+    //   1. Yahoo Finance -- gives back a real history, so the slot's
+    //      sparkline has something to draw.
+    //   2. CNBC's quote API, if Yahoo doesn't resolve (single point, no
+    //      sparkline that round).
     //
-    // Either succeeding overwrites the FRED monthly value; both failing
-    // leaves it in place, so the tile degrades to last month's OECD print
-    // rather than going blank.
+    // Japan/UK 10Y additionally have a FRED monthly baseline loaded above,
+    // which either source overwrites on success and which both failing
+    // leaves in place -- so those two degrade to last month's OECD print
+    // rather than going blank. SOX and KOSPI have no such baseline: Yahoo
+    // is a well-established public ticker for both (^SOX, ^KS11), so they
+    // were never worth wiring a fallback provider for.
     try {
         const bondSymbols = [
             { symbol: "JP10Y", name: "JP10Y" },
-            { symbol: "UK10Y", name: "UK10Y" }
+            { symbol: "UK10Y", name: "UK10Y" },
+            { symbol: "^SOX", name: "SOX" },
+            { symbol: "^KS11", name: "KOSPI" }
         ];
 
         const fetchCnbcQuote = async (symbol) => {
@@ -232,7 +237,7 @@
             }
         }));
     } catch(e) {
-        console.error("JP/UK 10Y daily fetch error:", e);
+        console.error("Daily quote fetch error (JP10Y/UK10Y/SOX/KOSPI):", e);
     }
 
     // 0.5 KRX (KOSPI) removed: the KRX Data Marketplace key returned
