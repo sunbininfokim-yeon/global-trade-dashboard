@@ -3293,9 +3293,32 @@ body.macro-mode .map-pane { flex: 1 1 100%; }
 .mm-limit p { font-size: 11.5px; line-height: 1.65; color: #64748b; margin: 0; }
 .mm-disclaimer { font-size: 10.5px; color: #475569; margin: 14px 0 0; line-height: 1.6; }
 
+/* FOMC public vote + Beige Book evidence panel (USA only). */
+.mm-quality { margin: 0 0 17px; padding: 14px; border: 1px solid rgba(167,139,250,.24); border-radius: 11px; background: linear-gradient(105deg, rgba(76,29,149,.13), rgba(15,23,42,.20) 48%, rgba(8,47,73,.16)); }
+.mm-quality-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 11px; }
+.mm-quality-kicker { margin: 0 0 2px; font-size: 9.5px; font-weight: 650; letter-spacing: .07em; color: #a78bfa; }
+.mm-quality-head h3 { margin: 0; font-size: 13px; font-weight: 620; color: #e2e8f0; }
+.mm-quality-status { flex: 0 0 auto; padding: 3px 7px; border: 1px solid rgba(196,181,253,.25); border-radius: 999px; color: #c4b5fd; background: rgba(167,139,250,.09); font-size: 9.5px; }
+.mm-quality-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.mm-quality-card { display: flex; min-width: 0; min-height: 125px; flex-direction: column; align-items: flex-start; padding: 11px 12px; border: 1px solid rgba(148,163,184,.14); border-radius: 8px; background: rgba(2,6,23,.26); }
+.mm-quality-label { display: block; margin-bottom: 5px; color: #94a3b8; font-size: 10px; }
+.mm-quality-card strong { color: #e2e8f0; font-size: 12px; font-weight: 600; line-height: 1.35; }
+.mm-quality-card p { margin: 6px 0 0; color: #94a3b8; font-size: 10.5px; line-height: 1.55; }
+.mm-quality-muted { margin-top: 7px; color: #64748b; font-size: 10.5px; }
+.mm-quality-names { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 7px; }
+.mm-quality-names span { padding: 2px 5px; border-radius: 4px; background: rgba(251,146,60,.10); color: #fdba74; font-size: 9.5px; line-height: 1.35; }
+.mm-quality-link { margin-top: auto; padding-top: 9px; color: #7dd3fc; font-size: 10.5px; text-decoration: none; }
+.mm-quality-link:hover { color: #bae6fd; text-decoration: underline; }
+.mm-quality-details { width: 100%; margin-top: 7px; }
+.mm-quality-details summary { cursor: pointer; color: #c4b5fd; font-size: 10.5px; }
+.mm-quality-details p { margin: 6px 0 0; }
+.mm-quality-details b { color: #cbd5e1; font-weight: 560; }
+.mm-quality-foot { margin: 10px 0 0; color: #64748b; font-size: 10px; line-height: 1.5; }
+
 @media (max-width: 900px) {
     .mm-overlay { padding: 15px 14px; max-height: calc(100vh - 150px); }
     .mm-chips { grid-template-columns: repeat(auto-fill, minmax(148px, 1fr)); }
+    .mm-quality-grid { grid-template-columns: 1fr; }
 }
 
 /* ── 매크로: 오버레이 확대 · 차트 · 관료 · 뉴스 레일 ─────────────────────── */
