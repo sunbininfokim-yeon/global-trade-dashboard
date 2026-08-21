@@ -163,6 +163,7 @@ const focusTradeCountry = (countryName) => {
             clearTradeFocus();
         });
     }
+    renderRigCountCountry(countryName);
 
     // Stage 2 stats become the country's, not the world's. "글로벌 무역량
     // 98.5 Million bpd" said the same thing on every country's screen, which
@@ -255,6 +256,25 @@ const loadEiaStocks = async () => {
     }
     eiaStocksCache = out;
     return out;
+};
+
+/**
+ * Baker Hughes drilling rig count -- global monthly total and per-country
+ * series, built offline from manually-exported Excel reports (no live API;
+ * see scripts/rig_count/build_rig_count_v1.py). A static JSON snapshot next
+ * to the app rather than a fetch proxy like the EIA cards above.
+ */
+let rigCountCache = null;
+const loadRigCount = async () => {
+    if (rigCountCache) return rigCountCache;
+    try {
+        const r = await fetch('/public/data/rig_count_v1.json', { cache: 'no-cache' });
+        rigCountCache = r.ok ? await r.json() : null;
+    } catch (err) {
+        console.warn('[Rig count] unavailable', err);
+        rigCountCache = null;
+    }
+    return rigCountCache;
 };
 
 // Bumped per chart instance so two sparklines open at once don't fight over
@@ -406,6 +426,104 @@ const renderEmergencyStocks = async () => {
     wireSparkCharts(host);
 };
 
+/**
+ * Global monthly rig count, world view -- directly below the SPR/Cushing
+ * card. Called only after renderEmergencyStocks() has resolved (see the
+ * `.then()` chain in renderTradeWorldPanel below): both cards insert with
+ * `insertAdjacentHTML('beforeend', ...)`, so without that ordering this
+ * card's local-JSON fetch (fast) could easily land before the SPR card's
+ * live EIA proxy fetch (slower) and print above it instead of below.
+ */
+const renderRigCountWorld = async () => {
+    const host = document.getElementById('news-content');
+    if (!host || currentCommodity !== 'oil') return;
+    const rig = await loadRigCount();
+    if (!rig?.global?.length || currentCommodity !== 'oil') return;
+    // Same idempotency guard the SPR/Cushing card needed after a real
+    // production bug (a second world-panel render landing mid-fetch would
+    // otherwise stack a duplicate card here too).
+    host.querySelector('.rig-card')?.remove();
+    const last = rig.global[rig.global.length - 1];
+    const chart = sparkChartHtml({
+        points: rig.global.map((p) => ({ label: p.period, value: p.value })),
+        unit: '기',
+        formatValue: (v) => v.toFixed(0),
+        ariaLabel: `${rig.global.length}개월 글로벌 Rig 수 추이`,
+    });
+    // Baker Hughes changed how it counts Saudi Arabia partway through this
+    // series (see build_rig_count_v1.py); the global total inherits that
+    // jump. Surfaced here, not just in the JSON, so it doesn't read as a
+    // sudden real drilling boom.
+    const saudiNote = (rig.data_quality_notes || []).some((n) => n.includes('Saudi Arabia'));
+    host.insertAdjacentHTML('beforeend', `
+        <div class="rig-card">
+            <p class="section-title" style="margin:0 0 6px;">글로벌 Rig 수 · Baker Hughes 월간</p>
+            <div class="stock-item">
+                <div class="stock-row">
+                    <span class="nm">가동 리그 수</span>
+                    <span class="vl">${last.value.toLocaleString()}<em>기</em></span>
+                </div>
+                ${chart}
+            </div>
+            <div class="stock-note">${last.period} 기준 · 출처 Baker Hughes${saudiNote
+                ? ' · 사우디아라비아 2024년경 집계 방식 변경(Active Rigs → Operating Rigs)으로 전체 합계에 단절 있음 — 실제 시추 급증 아님'
+                : ''}</div>
+        </div>`);
+    wireSparkCharts(host);
+};
+
+/**
+ * Rig-count sparkline for the country focus panel (country view). Baker
+ * Hughes covers roughly 90 countries; most focused countries have no series
+ * here and that is a normal, silent no-op, not an error.
+ */
+const renderRigCountCountry = async (countryName) => {
+    const host = document.getElementById('news-content');
+    if (!host || currentCommodity !== 'oil') return;
+    const target = resolveCountry(countryName);
+    const rig = await loadRigCount();
+    // The focus panel may have moved on to a different country (or the user
+    // left the trade view, or switched commodity) while this fetch was in
+    // flight -- a stale country's card landing inside whatever the panel now
+    // shows is the exact bug the SPR/Cushing card shipped once already.
+    if (currentCommodity !== 'oil' || tradeFocusCountry !== countryName) return;
+    const card = host.querySelector('.trade-focus-card');
+    card?.querySelector('.rig-card')?.remove();
+    if (!card || !target || !rig?.by_country) return;
+    // Identity match, not a raw key lookup: by_country's keys are built to
+    // already equal resolveCountry(...).label, but comparing by .key (the
+    // same pattern focusTradeCountry itself uses) survives that assumption
+    // ever drifting instead of silently going blank.
+    const entry = Object.entries(rig.by_country)
+        .find(([name]) => resolveCountry(name)?.key === target.key);
+    const series = entry?.[1];
+    if (!series || series.length < 2) return;
+    const last = series[series.length - 1];
+    const chart = sparkChartHtml({
+        points: series.map((p) => ({ label: p.period, value: p.value })),
+        unit: '기',
+        formatValue: (v) => v.toFixed(0),
+        ariaLabel: `${series.length}개월 ${target.label} Rig 수 추이`,
+    });
+    const saudiNote = target.key === 'Saudi Arabia'
+        && (rig.data_quality_notes || []).some((n) => n.includes('Saudi Arabia'));
+    card.insertAdjacentHTML('beforeend', `
+        <div class="rig-card">
+            <p class="section-title" style="margin:0 0 6px;">${target.label} Rig 수 · Baker Hughes 월간</p>
+            <div class="stock-item">
+                <div class="stock-row">
+                    <span class="nm">가동 리그 수</span>
+                    <span class="vl">${last.value.toLocaleString()}<em>기</em></span>
+                </div>
+                ${chart}
+            </div>
+            <div class="stock-note">${last.period} 기준 · 출처 Baker Hughes${saudiNote
+                ? ' · 2024년경 집계 방식 변경(Active Rigs → Operating Rigs)으로 이 시점에 단절 있음 — 실제 시추 급증 아님'
+                : ''}</div>
+        </div>`);
+    wireSparkCharts(card);
+};
+
 // A country's export total and import total are different questions --
 // Australia sells the most iron ore, China buys the most. Ranking only
 // exporters used to hide the second answer entirely: China's ~$2B of
@@ -476,7 +594,9 @@ const renderTradeWorldPanel = (arcs) => {
             <div class="trade-rank-list">${importRows || '<p class="empty-state">무역 루트 없음</p>'}</div>
         </div>`;
     renderFuturesCard(currentCommodity);
-    renderEmergencyStocks();
+    // Chained, not fired in parallel: renderRigCountWorld must not insert
+    // before renderEmergencyStocks's own card exists (see its own comment).
+    renderEmergencyStocks().then(renderRigCountWorld);
 };
 
 const futuresCache = new Map();
