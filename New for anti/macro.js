@@ -393,6 +393,67 @@ const mmQeQtBars = (qq, window) => {
     </div>`;
 };
 
+// Treasury buckets share their colors with the assets stack's own SOMA
+// bands (mmBalanceStack); MBS gets its own shades off the same purple the
+// assets stack already uses for MBS as a whole, so a reader who has seen
+// that chart recognizes the palette here.
+const MM_QQ_BUCKET_META = {
+    treasuries: {
+        le_1y: { label: '국채 ≤1년', color: '#38bdf8' },
+        '1_5y': { label: '국채 1–5년', color: '#0ea5e9' },
+        '5_10y': { label: '국채 5–10년', color: '#0369a1' },
+        gt_10y: { label: '국채 >10년', color: '#0c4a6e' },
+    },
+    mbs: {
+        '30yr': { label: 'MBS 30년물', color: '#8b5cf6' },
+        '15yr': { label: 'MBS 15년물', color: '#a78bfa' },
+        other: { label: 'MBS 기타', color: '#c4b5fd' },
+    },
+};
+
+// Slice size is each bucket's share of gross activity (sum of magnitudes) --
+// a pie can't show a bucket buying while another runs off in the same wedge
+// set, so sign lives in the label/legend instead, and the wedge only ever
+// answers "how much of this month's total activity was in this bucket."
+const mmQeQtPie = (buckets) => {
+    const rows = [];
+    for (const product of ['treasuries', 'mbs']) {
+        const vals = buckets[product] || {};
+        for (const [bid, v] of Object.entries(vals)) {
+            if (!Number.isFinite(v) || v === 0) continue;
+            const meta = (MM_QQ_BUCKET_META[product] || {})[bid];
+            if (!meta) continue;
+            rows.push({ ...meta, value: v });
+        }
+    }
+    if (!rows.length) return { svg: '', rows: [] };
+
+    const total = rows.reduce((a, r) => a + Math.abs(r.value), 0);
+    const R = 46, CX = 52, CY = 52;
+    let angle = -Math.PI / 2;
+    const arcs = rows.map((r) => {
+        const frac = Math.abs(r.value) / total;
+        const a0 = angle;
+        angle += frac * Math.PI * 2;
+        const a1 = angle;
+        const large = (a1 - a0) > Math.PI ? 1 : 0;
+        const x0 = CX + R * Math.cos(a0), y0 = CY + R * Math.sin(a0);
+        const x1 = CX + R * Math.cos(a1), y1 = CY + R * Math.sin(a1);
+        // A single-bucket month (frac ~1) draws as a degenerate arc back to
+        // its own start point -- drawn as a full circle instead so one active
+        // bucket doesn't render as an invisible sliver.
+        if (frac > 0.9995) {
+            return `<circle cx="${CX}" cy="${CY}" r="${R}" fill="${finEsc(r.color)}"/>`;
+        }
+        return `<path d="M${CX},${CY} L${x0.toFixed(2)},${y0.toFixed(2)} A${R},${R} 0 ${large} 1 ${x1.toFixed(2)},${y1.toFixed(2)} Z" fill="${finEsc(r.color)}"/>`;
+    }).join('');
+
+    return {
+        svg: `<svg class="mm-qq-pie" viewBox="0 0 104 104" role="img" aria-label="이번 달 매입·런오프 구성">${arcs}</svg>`,
+        rows: rows.map((r) => ({ ...r, share: total ? Math.abs(r.value) / total * 100 : 0 })),
+    };
+};
+
 // Empty state before any hover, and the filled state after -- same shape so
 // hovering only ever swaps numbers in, never restructures the panel.
 const mmQeQtRailBody = (row) => {
@@ -408,10 +469,31 @@ const mmQeQtRailBody = (row) => {
             <b class="${v > 0 ? 'mm-up' : (v < 0 ? 'mm-down' : '')}">${v >= 0 ? '+' : ''}${v.toFixed(1)}B</b>
             <em>${share(v)}</em>
         </div>`;
+
+    // Bucket detail only exists for the recent window this repo has pulled
+    // CUSIP-level holdings for; older months keep the two-line product-only
+    // breakdown with no pie, rather than a pie with invented slices.
+    const pie = row.buckets ? mmQeQtPie(row.buckets) : null;
+
     return `
         <p class="mm-qq-rail-month">${finEsc(row.month)}</p>
         ${row1('국채', t)}
-        ${row1('MBS', m)}`;
+        ${row1('MBS', m)}
+        ${pie && pie.rows.length ? `
+        <div class="mm-qq-pie-wrap">
+            ${pie.svg}
+            <div class="mm-qq-pie-legend">
+                ${pie.rows.map((r) => `
+                    <div class="mm-qq-pie-row">
+                        <i style="background:${finEsc(r.color)}"></i>
+                        <span>${finEsc(r.label)}</span>
+                        <b class="${r.value > 0 ? 'mm-up' : 'mm-down'}">${r.value >= 0 ? '+' : ''}${r.value.toFixed(1)}B</b>
+                        <em>${r.share.toFixed(0)}%</em>
+                    </div>`).join('')}
+            </div>
+        </div>
+        <p class="mm-qq-rail-note">만기별·상품별 매입 비중 (뉴욕연준 SOMA 실측, 위 국채·MBS 합계와 회계 기준 차이로 소폭 다를 수 있음)</p>`
+        : (row.buckets === undefined ? '' : '<p class="mm-qq-rail-note">이 달은 만기별 세부 자료가 없습니다.</p>')}`;
 };
 
 const mmQeQtRail = (row) => `

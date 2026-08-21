@@ -3167,6 +3167,20 @@ body.macro-mode .map-pane { flex: 1 1 100%; }
 }
 .mm-qq-rail-row b { font-variant-numeric: tabular-nums; font-weight: 620; }
 .mm-qq-rail-row em { font-style: normal; color: #64748b; font-variant-numeric: tabular-nums; min-width: 32px; text-align: right; }
+.mm-qq-rail-note { font-size: 10px; color: #64748b; line-height: 1.5; margin: 8px 0 0; }
+
+/* Hovered month's maturity x product breakdown, wedge size = share of gross
+   activity (buys + sells, unsigned) since a pie can't show direction. */
+.mm-qq-pie-wrap { display: flex; gap: 12px; align-items: flex-start; margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(148,163,184,.14); }
+.mm-qq-pie { width: 72px; height: 72px; flex: none; }
+.mm-qq-pie-legend { display: flex; flex-direction: column; gap: 3px; min-width: 0; flex: 1; }
+.mm-qq-pie-row {
+    display: grid; grid-template-columns: 9px 1fr auto auto; gap: 6px; align-items: center;
+    font-size: 10.5px; color: #cbd5e1;
+}
+.mm-qq-pie-row i { width: 8px; height: 8px; border-radius: 2px; }
+.mm-qq-pie-row b { font-variant-numeric: tabular-nums; font-weight: 600; }
+.mm-qq-pie-row em { font-style: normal; color: #64748b; font-variant-numeric: tabular-nums; min-width: 28px; text-align: right; }
 
 /* TGA vs US elections: shaded window running into each vote. */
 .mm-election-band { pointer-events: all; }

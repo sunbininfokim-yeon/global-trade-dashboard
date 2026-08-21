@@ -32,15 +32,19 @@ def main() -> int:
     usa = next(c for c in pack["countries"] if c["iso3"] == "USA")
     ops = next(i for i in usa["indicators"] if i["id"] == "fed_ust_ops")
 
-    # The headline had been set to a 3-month window (+84.0B, 2026-05-13 to
-    # 2026-08-12) by an earlier pass, while refresh_tier says monthly and this
-    # view's own chart is one bar per month -- a reader comparing the chip to
-    # the chart under it would find the chip matching no single bar. Latest
-    # calendar month replaces it so the two agree; the 3-month finding that
-    # motivated the fix moves into the note instead of the number on top.
+    # refresh_tier says monthly and this view's own chart is one bar per
+    # month, so the headline is the latest calendar month's total -- a reader
+    # comparing the chip to the chart under it should find the chip matching
+    # exactly one bar, not a multi-month window the chart doesn't draw.
+    #
+    # note_ko is written fresh from qq every run rather than read off the
+    # existing ops and appended to: this script is meant to be re-run as new
+    # months arrive (that's the point of keeping it instead of a one-off
+    # patch), and appending to whatever note happened to already be sitting
+    # there duplicated it on every re-run -- three copies of the same
+    # sentence, worse each time this ran again.
     last = qq["rows"][-1]
     month_total = round(last["treasuries_bn"] + last["mbs_bn"], 1)
-    three_mo_note = ops.get("note_ko", "")
     ops["value"] = month_total
     ops["display"] = f"{month_total:+.1f}B"
     ops["display_chip"] = ops["display"]
@@ -48,7 +52,7 @@ def main() -> int:
     ops["observed_at"] = ops["asof"]
     ops["reference_period"] = last["month"]
     ops["note_ko"] = (f"{last['month']} 한 달 순증감. 국채 {last['treasuries_bn']:+.1f}B, "
-                      f"MBS {last['mbs_bn']:+.1f}B. " + three_mo_note)
+                      f"MBS {last['mbs_bn']:+.1f}B.")
 
     ops["qe_qt_history"] = {
         "source": qq["source"],
@@ -59,6 +63,12 @@ def main() -> int:
         "rows": qq["rows"],
         "limitations": qq["limitations"],
     }
+    # Per-row `buckets` (merge_qeqt_buckets.py) only covers the recent window
+    # this repo has pulled CUSIP-level SOMA holdings for; bucket_detail
+    # documents that coverage and the label/limitation text the rail's pie
+    # chart cites, when present.
+    if qq.get("bucket_detail"):
+        ops["qe_qt_history"]["bucket_detail"] = qq["bucket_detail"]
 
     # Stale fixture fields this view replaces -- see module docstring for why
     # the deltas are dropped rather than recomputed.
