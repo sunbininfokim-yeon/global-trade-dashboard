@@ -607,14 +607,19 @@ const MM_MA_SPECS = [
     { window: 120, label: '120일선', color: '#60a5fa' },
     { window: 240, label: '240일선', color: '#c084fc' },
 ];
-const MM_MA_CACHE = new Map();  // symbol -> { dates, close } | 'loading' | Error
+const MM_MA_CACHE = new Map();  // "symbol:range" -> { dates, close } | 'loading' | Error
 
-const mmFetchDailyForMa = (symbol) => {
-    const cached = MM_MA_CACHE.get(symbol);
+// range is the same '5y'/'10y' window string the rest of the drawer already
+// uses (windowOpts) -- MA240 only needs ~1 trading year of run-up, but once
+// the toggle exists there's no reason its two options should mean something
+// different here than they do on every other tab.
+const mmFetchDailyForMa = (symbol, range) => {
+    const key = `${symbol}:${range}`;
+    const cached = MM_MA_CACHE.get(key);
     if (cached && cached !== 'loading') return cached;
     if (cached === 'loading') return null;
-    MM_MA_CACHE.set(symbol, 'loading');
-    fetch(`/api/macro?source=yfinance&symbol=${encodeURIComponent(symbol)}&interval=1d&range=2y`)
+    MM_MA_CACHE.set(key, 'loading');
+    fetch(`/api/macro?source=yfinance&symbol=${encodeURIComponent(symbol)}&interval=1d&range=${encodeURIComponent(range)}`)
         .then((res) => res.json())
         .then((result) => {
             const chart = (result.chart || {}).result || [];
@@ -629,9 +634,9 @@ const mmFetchDailyForMa = (symbol) => {
                 dates.push(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`);
                 close.push(closes[i]);
             }
-            MM_MA_CACHE.set(symbol, { dates, close });
+            MM_MA_CACHE.set(key, { dates, close });
         })
-        .catch((err) => MM_MA_CACHE.set(symbol, err))
+        .catch((err) => MM_MA_CACHE.set(key, err))
         // The fetch is fire-and-forget from the view's point of view: this
         // repaints once the promise lands so the loading state resolves into
         // a chart without the reader having to reopen the tab.
@@ -639,16 +644,16 @@ const mmFetchDailyForMa = (symbol) => {
     return null;
 };
 
-const mmEquityMaView = (ind) => {
+const mmEquityMaView = (ind, range) => {
     const symbol = String(ind.source || '').slice('yahoo:'.length);
     if (!symbol) return '<p class="fin-note">연결된 시세 심볼이 없습니다.</p>';
 
-    const data = mmFetchDailyForMa(symbol);
+    const data = mmFetchDailyForMa(symbol, range);
     if (data instanceof Error) {
         return `<p class="fin-note">일봉 데이터를 못 받았습니다 — ${finEsc(data.message)}</p>`;
     }
     if (!data) {
-        return '<p class="fin-loading">일봉 2년치를 불러오는 중…</p>';
+        return `<p class="fin-loading">일봉 ${finEsc(range.replace('y', '년'))}치를 불러오는 중…</p>`;
     }
     const { dates, close } = data;
     if (close.length < 240) {
@@ -702,7 +707,7 @@ const mmEquityMaView = (ind) => {
     <div class="mm-ma-legend">
         ${mas.map((m) => `<span class="mm-ma-key"><i style="background:${finEsc(m.color)}"></i>${finEsc(m.label)}</span>`).join('')}
     </div>
-    <p class="fin-note">일별 종가, 최근 2년(${n}거래일) · Yahoo Finance ${finEsc(symbol)}. 5/20/60/120/240일 이동평균은 단순이동평균(SMA)입니다.</p>`;
+    <p class="fin-note">일별 종가, 최근 ${finEsc(range.replace('y', '년'))}(${n}거래일) · Yahoo Finance ${finEsc(symbol)}. 5/20/60/120/240일 이동평균은 단순이동평균(SMA)입니다.</p>`;
 };
 
 const mmLineChart = (dates, values, opts = {}) => {
@@ -1117,7 +1122,7 @@ const mmChartDrawer = () => {
     const modeSeries = dual ? mmModeSeries(ind, mode) : null;
 
     let body = '';
-    if (view === 'ma') body = mmEquityMaView(ind);
+    if (view === 'ma') body = mmEquityMaView(ind, windowOpts.includes(MM_CHART.window) ? MM_CHART.window : '5y');
     else if (view === 'balance_assets') body = mmBalanceAssetsView(ind);
     else if (view === 'balance_liabilities') body = mmBalanceLiabilitiesView(ind);
     else if (view === 'qeqt') body = mmQeQtBars(ind.qe_qt_history, MM_CHART.window || '5y');
@@ -1174,7 +1179,7 @@ const mmChartDrawer = () => {
     // everything -- 5y/20y actually brackets "recent" against "across
     // multiple QE/QT cycles" for this one.
     const windowOpts = view === 'qeqt' ? ['5y', '20y'] : ['5y', '10y'];
-    const showWindow = view === 'history' || view === 'qeqt';
+    const showWindow = view === 'history' || view === 'qeqt' || view === 'ma';
 
     return `
     <div class="mm-drawer" role="dialog" aria-label="${finEsc(ind.label_ko)}">
