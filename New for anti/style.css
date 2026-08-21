@@ -413,6 +413,268 @@ body {
     font-weight: 600;
     margin-bottom: 4px;
 }
+
+/* === Elections module ==================================================== */
+/* Scoped styles: data rendering stays in js/elections/, never in app.js. */
+.elections-timeline,
+.elections-country {
+    gap: 14px;
+}
+.elections-panel-note,
+.elections-muted {
+    color: var(--text-secondary);
+    font-size: 12px;
+    line-height: 1.5;
+}
+.elections-month-nav,
+.elections-country-actions,
+.elections-tab-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+.elections-button,
+.elections-tab {
+    appearance: none;
+    border: 1px solid rgba(148, 163, 184, 0.35);
+    background: rgba(15, 23, 42, 0.7);
+    color: #cbd5e1;
+    border-radius: 6px;
+    padding: 6px 9px;
+    font: inherit;
+    font-size: 12px;
+    cursor: pointer;
+}
+.elections-button:hover,
+.elections-tab:hover,
+.elections-tab.is-active {
+    border-color: rgba(56, 189, 248, 0.75);
+    color: #e0f2fe;
+    background: rgba(14, 116, 144, 0.18);
+}
+.elections-day-group {
+    border-left: 2px solid rgba(56, 189, 248, 0.65);
+    padding-left: 10px;
+}
+.elections-day-label {
+    color: #e2e8f0;
+    font-size: 12px;
+    font-weight: 700;
+    margin-bottom: 7px;
+}
+.elections-event,
+.elections-card {
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    border-radius: 8px;
+    background: rgba(15, 23, 42, 0.55);
+    padding: 10px;
+}
+.elections-event + .elections-event { margin-top: 7px; }
+.elections-event-country {
+    color: #7dd3fc;
+    font-size: 11px;
+    margin-bottom: 3px;
+}
+.elections-event-title,
+.elections-card-title {
+    color: #f8fafc;
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.35;
+}
+.elections-event-meta {
+    color: #94a3b8;
+    font-size: 11px;
+    margin-top: 5px;
+}
+.elections-card-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+}
+.elections-card-label {
+    color: #94a3b8;
+    font-size: 11px;
+    margin-bottom: 3px;
+}
+.elections-card-value {
+    color: #e2e8f0;
+    font-size: 13px;
+    overflow-wrap: anywhere;
+}
+.elections-screen-list {
+    display: grid;
+    gap: 7px;
+}
+.elections-screen-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    color: #cbd5e1;
+    font-size: 12px;
+}
+.elections-screen-state {
+    color: #94a3b8;
+    white-space: nowrap;
+}
+.elections-detail-section {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+.elections-detail-section .section-title {
+    color: #e2e8f0;
+    font-size: 12px;
+    font-weight: 700;
+}
+.elections-member-list {
+    display: grid;
+    gap: 6px;
+}
+.elections-member-row {
+    display: grid;
+    grid-template-columns: 72px minmax(0, 1fr);
+    gap: 8px;
+    color: #cbd5e1;
+    font-size: 12px;
+    line-height: 1.35;
+    padding: 7px 0;
+    border-bottom: 1px solid rgba(148, 163, 184, 0.14);
+}
+.elections-member-row span:first-child { color: #7dd3fc; }
+.elections-disclosure {
+    border: 1px solid rgba(148, 163, 184, 0.18);
+    border-radius: 7px;
+    padding: 7px 9px;
+    color: #cbd5e1;
+    font-size: 12px;
+}
+.elections-disclosure summary {
+    cursor: pointer;
+    color: #93c5fd;
+    font-weight: 650;
+}
+.elections-disclosure-rows {
+    display: grid;
+    gap: 6px;
+    margin-top: 8px;
+    line-height: 1.4;
+}
+.elections-disclosure-rows div {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 10px;
+}
+.elections-disclosure-rows strong { color: #e2e8f0; font-weight: 600; text-align: right; }
+.elections-house-delegation { margin-top: 8px; }
+
+/* display_rules.fallen_style = strikethrough: 실각·조사자는 이름에 삭선만 긋고
+   원문 상태 표시는 그대로 옆에 남긴다 (재서술 금지). */
+.elections-fallen { text-decoration: line-through; opacity: 0.72; }
+.elections-person-mark {
+    flex: 0 0 auto;
+    font-size: 11px;
+    font-style: normal;
+    color: #94a3b8;
+    white-space: nowrap;
+}
+
+/* --- Country blocks and the window they open over the map ---------------- */
+
+.elections-block-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 8px;
+    margin: 10px 0 14px;
+}
+.elections-block {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 10px 12px;
+    text-align: left;
+    background: rgba(30, 41, 59, 0.85);
+    border: 1px solid #334155;
+    border-radius: 8px;
+    color: #e2e8f0;
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s, transform 0.15s;
+}
+.elections-block:hover { background: rgba(51, 65, 85, 0.95); border-color: #0e7490; transform: translateY(-1px); }
+.elections-block:focus-visible { outline: 2px solid #38bdf8; outline-offset: 2px; }
+.elections-block.is-active { border-color: #38bdf8; background: rgba(14, 116, 144, 0.35); }
+.elections-block[data-election-disabled="1"] { opacity: 0.62; }
+.elections-block-label { font-size: 13px; font-weight: 600; }
+.elections-block-state { font-size: 11px; color: #94a3b8; }
+
+/* Scoped to .map-pane (position: relative), so it covers the map and the map
+   legends (z-index 20) but never the header nav or the right pane. */
+.elections-modal-host {
+    position: absolute;
+    inset: 0;
+    z-index: 40;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    background: rgba(2, 6, 23, 0.66);
+    backdrop-filter: blur(3px);
+}
+.elections-modal-host.hidden { display: none; }
+.elections-modal {
+    display: flex;
+    flex-direction: column;
+    width: min(720px, 100%);
+    max-height: 100%;
+    background: #0f172a;
+    border: 1px solid #334155;
+    border-radius: 12px;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6);
+    overflow: hidden;
+}
+.elections-modal-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 14px 16px;
+    border-bottom: 1px solid #1e293b;
+    background: rgba(15, 23, 42, 0.98);
+}
+.elections-modal-heading h3 { margin: 0; font-size: 16px; color: #f1f5f9; }
+.elections-modal-sub { margin: 3px 0 0; font-size: 12px; color: #94a3b8; }
+.elections-modal-close {
+    flex: 0 0 auto;
+    width: 28px;
+    height: 28px;
+    border: 1px solid #334155;
+    border-radius: 6px;
+    background: transparent;
+    color: #cbd5e1;
+    font-size: 13px;
+    line-height: 1;
+    cursor: pointer;
+}
+.elections-modal-close:hover { background: #1e293b; color: #f1f5f9; }
+.elections-modal-close:focus-visible { outline: 2px solid #38bdf8; outline-offset: 2px; }
+.elections-modal-body {
+    padding: 16px;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+}
+/* Rosters run to hundreds of rows; cap them so the window scrolls internally
+   rather than growing past the map. */
+.elections-modal-body .elections-member-list { max-height: 320px; overflow-y: auto; }
+.elections-modal-body .elections-disclosure-rows { max-height: 320px; overflow-y: auto; }
+
+@media (max-width: 720px) {
+    .elections-modal-host { padding: 12px; }
+    .elections-modal-body { padding: 12px; }
+}
+
 .pane.legend-item span {
     font-size: 13px;
     color: var(--text-primary);
