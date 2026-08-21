@@ -117,27 +117,76 @@ const sectionContent = (country, section, status) => {
     return rows.length ? `<div class="elections-card-grid">${rows.map(([key, value]) => `<article class="elections-card"><div class="elections-card-label">${escapeHtml(key.replaceAll('_', ' '))}</div><div class="elections-card-value">${escapeHtml(value)}</div></article>`).join('')}</div>` : '<p class="elections-muted">확보된 공개 데이터 범위에서 표시할 요약 항목이 없습니다.</p>';
 };
 
-export const renderCountryShell = (root, { country, manifest, onBack }) => {
+// The map block is the one that must not be covered: opening a window on top
+// of the map to describe the map helps nobody, so it closes the window instead
+// and its short subnational summary sits in the right pane permanently.
+const MAP_SECTION = 'subnational_map';
+
+export const renderCountryShell = (root, { country, manifest, onBack, modal }) => {
     const tabs = sectionsFor(country.iso3);
-    let active = tabs[0][1];
+    const hasMapBlock = tabs.some(([, key]) => key === MAP_SECTION);
+    let active = null;
+
+    const screenFor = (key) => manifest?.countries?.[country.iso3]?.screens?.[key];
+
+    const openSection = (key) => {
+        const label = tabs.find(([, tabKey]) => tabKey === key)?.[0] || '';
+        const status = screenStatus(manifest, country.iso3, key);
+        const missing = screenFor(key)?.missing || [];
+        active = key;
+        markActive();
+        modal.open({
+            title: label,
+            subtitle: country.name_ko || country.iso3,
+            status: stateLabel(status),
+            body: sectionContent(country, key, status),
+            footnote: missing.length ? `미확보: ${missing.join(', ')}` : '',
+            onClose: () => { active = null; markActive(); },
+        });
+    };
+
+    const markActive = () => {
+        root.querySelectorAll('[data-election-tab]').forEach((button) => {
+            button.classList.toggle('is-active', button.dataset.electionTab === active);
+        });
+    };
+
     const draw = () => {
-        const screen = manifest?.countries?.[country.iso3]?.screens?.[active];
-        const status = screenStatus(manifest, country.iso3, active);
+        const mapStatus = hasMapBlock ? screenStatus(manifest, country.iso3, MAP_SECTION) : null;
         root.className = 'panel-section elections-country';
         root.innerHTML = `
             <div class="elections-country-actions"><button class="elections-button" type="button" data-election-back>← 세계 지도</button></div>
             <div class="panel-header"><h2>${escapeHtml(country.name_ko || country.iso3)}</h2><p>확보된 공개 데이터만 표시합니다.</p></div>
             ${overview(country)}
-            <div class="elections-tab-row">${tabs.map(([label, key]) => `<button class="elections-tab ${key === active ? 'is-active' : ''}" type="button" data-election-tab="${key}">${escapeHtml(label)}</button>`).join('')}</div>
-            <div class="elections-screen-row"><span>${escapeHtml(tabs.find(([, key]) => key === active)?.[0] || '')}</span><span class="elections-screen-state">${escapeHtml(stateLabel(status))}</span></div>
-            ${sectionContent(country, active, status)}
-            ${screen?.missing?.length ? `<p class="elections-panel-note">미확보: ${escapeHtml(screen.missing.join(', '))}</p>` : ''}
+            <p class="section-title">권력 구조 · 블록을 누르면 지도 위에 펼쳐집니다</p>
+            <div class="elections-block-grid">${tabs.map(([label, key]) => {
+                const status = screenStatus(manifest, country.iso3, key);
+                return `<button class="elections-block" type="button" data-election-tab="${key}" ${status === 'disabled' ? 'data-election-disabled="1"' : ''}>
+                    <span class="elections-block-label">${escapeHtml(label)}</span>
+                    <span class="elections-block-state">${escapeHtml(stateLabel(status))}</span>
+                </button>`;
+            }).join('')}</div>
+            ${hasMapBlock ? `<section class="elections-detail-section">
+                <p class="section-title">지도 요약</p>
+                ${sectionContent(country, MAP_SECTION, mapStatus)}
+            </section>` : ''}
         `;
-        root.querySelector('[data-election-back]')?.addEventListener('click', onBack);
+        root.querySelector('[data-election-back]')?.addEventListener('click', () => {
+            modal.close();
+            onBack();
+        });
         root.querySelectorAll('[data-election-tab]').forEach((button) => button.addEventListener('click', () => {
-            active = button.dataset.electionTab;
-            draw();
+            const key = button.dataset.electionTab;
+            if (key === MAP_SECTION) {
+                // Uncover the map rather than describing it in a window.
+                modal.close();
+                active = null;
+                markActive();
+                return;
+            }
+            openSection(key);
         }));
+        markActive();
     };
     draw();
 };

@@ -53,6 +53,7 @@ const openWorld = async (nextHost) => {
 };
 
 const unmount = () => {
+    explorer?.modal?.close();
     host?.roots?.timeline?.classList.add('hidden');
     host?.roots?.country?.classList.add('hidden');
 };

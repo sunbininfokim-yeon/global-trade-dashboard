@@ -581,6 +581,100 @@ body {
     color: #94a3b8;
     white-space: nowrap;
 }
+
+/* --- Country blocks and the window they open over the map ---------------- */
+
+.elections-block-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 8px;
+    margin: 10px 0 14px;
+}
+.elections-block {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 10px 12px;
+    text-align: left;
+    background: rgba(30, 41, 59, 0.85);
+    border: 1px solid #334155;
+    border-radius: 8px;
+    color: #e2e8f0;
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s, transform 0.15s;
+}
+.elections-block:hover { background: rgba(51, 65, 85, 0.95); border-color: #0e7490; transform: translateY(-1px); }
+.elections-block:focus-visible { outline: 2px solid #38bdf8; outline-offset: 2px; }
+.elections-block.is-active { border-color: #38bdf8; background: rgba(14, 116, 144, 0.35); }
+.elections-block[data-election-disabled="1"] { opacity: 0.62; }
+.elections-block-label { font-size: 13px; font-weight: 600; }
+.elections-block-state { font-size: 11px; color: #94a3b8; }
+
+/* Scoped to .map-pane (position: relative), so it covers the map and the map
+   legends (z-index 20) but never the header nav or the right pane. */
+.elections-modal-host {
+    position: absolute;
+    inset: 0;
+    z-index: 40;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    background: rgba(2, 6, 23, 0.66);
+    backdrop-filter: blur(3px);
+}
+.elections-modal-host.hidden { display: none; }
+.elections-modal {
+    display: flex;
+    flex-direction: column;
+    width: min(720px, 100%);
+    max-height: 100%;
+    background: #0f172a;
+    border: 1px solid #334155;
+    border-radius: 12px;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6);
+    overflow: hidden;
+}
+.elections-modal-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 14px 16px;
+    border-bottom: 1px solid #1e293b;
+    background: rgba(15, 23, 42, 0.98);
+}
+.elections-modal-heading h3 { margin: 0; font-size: 16px; color: #f1f5f9; }
+.elections-modal-sub { margin: 3px 0 0; font-size: 12px; color: #94a3b8; }
+.elections-modal-close {
+    flex: 0 0 auto;
+    width: 28px;
+    height: 28px;
+    border: 1px solid #334155;
+    border-radius: 6px;
+    background: transparent;
+    color: #cbd5e1;
+    font-size: 13px;
+    line-height: 1;
+    cursor: pointer;
+}
+.elections-modal-close:hover { background: #1e293b; color: #f1f5f9; }
+.elections-modal-close:focus-visible { outline: 2px solid #38bdf8; outline-offset: 2px; }
+.elections-modal-body {
+    padding: 16px;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+}
+/* Rosters run to hundreds of rows; cap them so the window scrolls internally
+   rather than growing past the map. */
+.elections-modal-body .elections-member-list { max-height: 320px; overflow-y: auto; }
+.elections-modal-body .elections-disclosure-rows { max-height: 320px; overflow-y: auto; }
+
+@media (max-width: 720px) {
+    .elections-modal-host { padding: 12px; }
+    .elections-modal-body { padding: 12px; }
+}
+
 .pane.legend-item span {
     font-size: 13px;
     color: var(--text-primary);

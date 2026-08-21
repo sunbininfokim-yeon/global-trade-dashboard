@@ -14,7 +14,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
     <!-- Custom Styles -->
-    <link rel="stylesheet" href="style.css?v=64">
+    <link rel="stylesheet" href="style.css?v=65">
 </head>
 <body>
     <div id="app">
@@ -189,6 +189,10 @@
             <!-- Center Pane: Map -->
             <div class="map-pane">
                 <div id="map"></div>
+
+                <!-- Election blocks open here: a window centred over the map,
+                     scoped to .map-pane so the nav and right pane stay usable. -->
+                <div class="elections-modal-host hidden" id="elections-modal-host"></div>
                 
                 <!-- Coal Legend -->
                 <div id="coal-legend" class="map-legend hidden">
@@ -320,8 +324,8 @@
     <script src="market-microstructure.js?v=1"></script>
     <script src="portfolio.js?v=1"></script>
     <script src="calculator.js?v=1"></script>
-    <script src="app.js?v=106"></script>
+    <script src="app.js?v=107"></script>
     <script src="trade.js?v=1"></script>
-    <script type="module" src="js/elections/index.js?v=1"></script>
+    <script type="module" src="js/elections/index.js?v=2"></script>
 </body>
 </html>

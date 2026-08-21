@@ -4798,6 +4798,7 @@ const togglePanels = ({ macro = false, countryStats = false, news = false, forec
 // controls without making the election modules depend on app.js internals.
 const electionTimelinePanelEl = document.getElementById('elections-timeline-panel');
 const electionCountryPanelEl = document.getElementById('elections-country-panel');
+const electionModalHostEl = document.getElementById('elections-modal-host');
 
 const electionHost = () => ({
     deckgl,
@@ -4843,7 +4844,7 @@ const electionHost = () => ({
         currentViewTitle.textContent = title;
         currentViewDesc.textContent = description;
     },
-    roots: { timeline: electionTimelinePanelEl, country: electionCountryPanelEl },
+    roots: { timeline: electionTimelinePanelEl, country: electionCountryPanelEl, modal: electionModalHostEl },
 });
 
 const showElectionView = () => {
