@@ -151,10 +151,12 @@ const SIGNAL_PAGES = [
         slots: [
             { label: 'S&P 500', value: 'SP500', fmt: 'idx2', symbol: '^GSPC', ma: true },
             { label: '나스닥 종합', value: 'NASDAQ', fmt: 'idx2', symbol: '^IXIC', ma: true },
-            // No cheap spot quote for these two, but the chart route serves any
-            // Yahoo symbol -- so the tile says 연동 예정 and the click still works.
-            { label: '필라델피아 반도체', pending: '지수 연동 예정', symbol: '^SOX', ma: true },
-            { label: 'KOSPI', pending: 'KRX 키 재발급 대기', symbol: '^KS11', ma: true }
+            // Yahoo daily quote (data.js) now backs both -- see the 0.52 block
+            // there. KOSPI here is the index level itself, distinct from the
+            // K200 옵션 풋콜 비율 fixed card, which reads the separate KRX
+            // derivatives board.
+            { label: '필라델피아 반도체', value: 'SOX', fmt: 'idx2', symbol: '^SOX', ma: true },
+            { label: 'KOSPI', value: 'KOSPI', fmt: 'idx2', symbol: '^KS11', ma: true }
         ]
     },
     {
