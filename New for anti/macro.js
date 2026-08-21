@@ -339,14 +339,35 @@ const mmUsElectionBands = (dates) => {
 // a policy-era calendar it doesn't have and would otherwise be guessing at.
 const MM_QQ_H = 220, MM_QQ_T = 12, MM_QQ_B = 24;
 
-const mmQeQtBars = (qq) => {
-    const rows = qq.rows || [];
-    if (!rows.length) return '<p class="fin-note">매입·런오프 시계열이 없습니다.</p>';
+// A percentile of a plain array, index-based (no interpolation -- fine at
+// this sample size and this is a display cap, not a statistic reported
+// anywhere).
+const mmPct = (sortedArr, q) => sortedArr[Math.min(sortedArr.length - 1, Math.floor(sortedArr.length * q))];
 
+const mmQeQtBars = (qq, window) => {
+    const allRows = qq.rows || [];
+    if (!allRows.length) return '<p class="fin-note">매입·런오프 시계열이 없습니다.</p>';
+
+    const years = window === '20y' ? 20 : 5;
+    const cutoff = allRows[allRows.length - 1].month.slice(0, 4) - years;
+    const rows = allRows.filter((r) => Number(r.month.slice(0, 4)) > cutoff);
     const n = rows.length;
-    const allVals = rows.flatMap((r) => [r.treasuries_bn, r.mbs_bn]).filter(Number.isFinite);
+
+    // COVID's two emergency months are ~5-10x every other month on record;
+    // scaling the axis to fit them would flatten every ordinary QE/QT month
+    // into a hairline. Cap is computed from whatever window is on screen
+    // (not a fixed COVID date) so it adapts if the window changes or new
+    // months arrive -- a bar past the cap is drawn clipped, marked with a
+    // break, and labelled with its real value rather than hidden.
+    const magnitudes = rows.flatMap((r) => [Math.abs(r.treasuries_bn), Math.abs(r.mbs_bn)])
+        .filter(Number.isFinite).sort((a, b) => a - b);
+    const cap = magnitudes.length ? mmPct(magnitudes, 0.95) * 2.2 : 0;
+    const hasBreak = magnitudes.length && magnitudes[magnitudes.length - 1] > cap;
+
+    const clamp = (v) => Math.max(-cap, Math.min(cap, v));
+    const allVals = rows.flatMap((r) => [clamp(r.treasuries_bn), clamp(r.mbs_bn)]).filter(Number.isFinite);
     let lo = Math.min(0, ...allVals), hi = Math.max(0, ...allVals);
-    const pad = (hi - lo || 1) * 0.08;
+    const pad = (hi - lo || 1) * 0.1;
     lo -= pad; hi += pad;
 
     const sx = (i) => MM_L + (i / Math.max(n - 1, 1)) * (MM_W - MM_L - MM_R);
@@ -355,19 +376,37 @@ const mmQeQtBars = (qq) => {
     const colW = (MM_W - MM_L - MM_R) / n;
     const bw = Math.max(colW * 0.42, 0.6);
 
+    // A short zigzag at the clipped edge -- the standard "broken axis" mark
+    // -- plus the real value written past it, so clipping a bar never hides
+    // its number, only its height.
+    const breakMark = (x, y, up) => {
+        const s = 3.2, dir = up ? -1 : 1;
+        const pts = [[x - bw / 2 - 1, y], [x - bw / 4, y + dir * s], [x, y - dir * s],
+                     [x + bw / 4, y + dir * s], [x + bw / 2 + 1, y]];
+        return `<polyline points="${pts.map(([px, py]) => `${px.toFixed(1)},${py.toFixed(1)}`).join(' ')}" class="mm-qq-break"/>`;
+    };
+
     const bar = (i, v, dx, cls) => {
         if (!Number.isFinite(v) || v === 0) return '';
-        const y = sy(v);
-        return `<rect class="${cls}" x="${(sx(i) + dx - bw / 2).toFixed(2)}" y="${Math.min(y, zero).toFixed(1)}"
+        const clipped = Math.abs(v) > cap;
+        const drawV = clamp(v);
+        const y = sy(drawV);
+        const x = sx(i) + dx;
+        const rect = `<rect class="${cls}${clipped ? ' mm-qq-clipped' : ''}" x="${(x - bw / 2).toFixed(2)}" y="${Math.min(y, zero).toFixed(1)}"
             width="${bw.toFixed(2)}" height="${Math.max(Math.abs(zero - y), 0.5).toFixed(1)}"/>`;
+        if (!clipped) return rect;
+        return rect + breakMark(x, y, v > 0)
+            + `<text x="${x.toFixed(1)}" y="${(v > 0 ? y - 5 : y + 11).toFixed(1)}" class="mm-qq-clip-label"
+                text-anchor="middle">${v > 0 ? '+' : ''}${v.toFixed(0)}B</text>`;
     };
 
     const ticks = [0, 0.25, 0.5, 0.75, 1].map((t) => lo + (hi - lo) * t);
     const yearTicks = [];
     let lastYear = null;
+    const yearStep = years > 10 ? 2 : 1;
     rows.forEach((r, i) => {
         const y = r.month.slice(0, 4);
-        if (y !== lastYear && Number(y) % 2 === 0) { yearTicks.push({ i, y }); lastYear = y; }
+        if (y !== lastYear && Number(y) % yearStep === 0) { yearTicks.push({ i, y }); lastYear = y; }
         else if (y !== lastYear) lastYear = y;
     });
 
@@ -388,7 +427,7 @@ const mmQeQtBars = (qq) => {
         <div class="mm-qq-legend">
             <span><i class="mm-qq-swatch mm-qq-treas"></i>국채</span>
             <span><i class="mm-qq-swatch mm-qq-mbs"></i>MBS</span>
-            <span class="mm-qq-legend-note">위 = 순매입 · 아래 = 런오프(만기상환 후 미재투자)</span>
+            <span class="mm-qq-legend-note">위 = 순매입 · 아래 = 런오프(만기상환 후 미재투자)${hasBreak ? ' · ⌇ 표시는 축을 벗어난 값(실제값 표기)' : ''}</span>
         </div>
     </div>`;
 };
@@ -882,7 +921,7 @@ const mmChartDrawer = () => {
     let body = '';
     if (view === 'balance_assets') body = mmBalanceAssetsView(ind);
     else if (view === 'balance_liabilities') body = mmBalanceLiabilitiesView(ind);
-    else if (view === 'qeqt') body = mmQeQtBars(ind.qe_qt_history);
+    else if (view === 'qeqt') body = mmQeQtBars(ind.qe_qt_history, MM_CHART.window || '5y');
     else if (view === 'movers') body = mmMoversView(ind);
     else if (view === 'status') body = mmStatusView(ind);
     else if (view === 'compare') body = mmCompareView(ind);
@@ -928,7 +967,12 @@ const mmChartDrawer = () => {
         ind.refresh_tier || null,
     ].filter(Boolean);
 
-    const showWindow = view === 'history';
+    // qeqt spans 2003-present (23+ years), so 5y/10y (built for shorter
+    // fixture-era series) would either show almost nothing or almost
+    // everything -- 5y/20y actually brackets "recent" against "across
+    // multiple QE/QT cycles" for this one.
+    const windowOpts = view === 'qeqt' ? ['5y', '20y'] : ['5y', '10y'];
+    const showWindow = view === 'history' || view === 'qeqt';
 
     return `
     <div class="mm-drawer" role="dialog" aria-label="${finEsc(ind.label_ko)}">
@@ -948,8 +992,8 @@ const mmChartDrawer = () => {
                             data-mm-mode="${finEsc(m)}">${finEsc(((ind.modes || {})[m] || {}).label_ko || m.toUpperCase())}</button>`).join('')}
                     </div>` : ''}
                     ${showWindow ? `<div class="pf-mode">
-                        ${['5y', '10y'].map((w) => `<button type="button" class="pf-mode-btn ${MM_CHART.window === w ? 'on' : ''}"
-                            data-mm-window="${w}">${w === '5y' ? '5년' : '10년'}</button>`).join('')}
+                        ${windowOpts.map((w) => `<button type="button" class="pf-mode-btn ${MM_CHART.window === w ? 'on' : ''}"
+                            data-mm-window="${w}">${w.replace('y', '년')}</button>`).join('')}
                     </div>` : ''}
                 </div>
                 <button class="mm-close" data-mm-chart-close="1" aria-label="닫기">✕</button>

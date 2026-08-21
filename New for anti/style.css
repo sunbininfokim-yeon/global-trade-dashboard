@@ -3144,6 +3144,13 @@ body.macro-mode .map-pane { flex: 1 1 100%; }
 .mm-qq-swatch { width: 9px; height: 9px; border-radius: 2px; display: inline-block; }
 .mm-qq-legend-note { color: #64748b; margin-left: auto; }
 
+/* Bars past the display cap: clipped fill, a zigzag break at the cut edge,
+   and the real value written past it -- clipping changes the height shown,
+   never the number. */
+.mm-qq-clipped { opacity: 0.55; }
+.mm-qq-break { fill: none; stroke: #0f172a; stroke-width: 1.6; }
+.mm-qq-clip-label { fill: #cbd5e1; font-size: 8.5px; font-variant-numeric: tabular-nums; }
+
 /* Hover-driven detail in the rail, in place of the news stub. */
 .mm-qq-rail-month { font-size: 13px; font-weight: 640; color: #f1f5f9; margin-bottom: 6px; }
 .mm-qq-rail-row {
@@ -3221,10 +3228,15 @@ body.macro-mode .map-pane { flex: 1 1 100%; }
     margin-top: 14px; background: rgba(15,23,42,.66);
     border: 1px solid rgba(56,189,248,.24); border-radius: 11px; padding: 15px 17px;
 }
-.mm-drawer-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 10px; }
+/* flex-wrap so a long title (e.g. "국채 매입·런오프 (월)") drops the toggle
+   row underneath it instead of squeezing the buttons into an unreadable
+   sliver -- caught by a "20년" button rendering as "2" when a two-line grid
+   of toggles had nowhere to go but a 35px-wide track. */
+.mm-drawer-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-start; gap: 8px 12px; margin-bottom: 10px; }
+.mm-drawer-head > div:first-child { flex: 1 1 240px; min-width: 0; }
 .mm-drawer-head h3 { font-size: 14px; font-weight: 620; margin: 0 0 3px; color: #e2e8f0; }
 .mm-drawer-sub { font-size: 11px; color: #64748b; margin: 0; }
-.mm-drawer-actions { display: flex; align-items: flex-start; gap: 8px; }
+.mm-drawer-actions { display: flex; flex: 0 1 auto; align-items: flex-start; gap: 8px; }
 /* The active window (YoY/MoM) beside the title, weighted down so the series
    name stays the heading. */
 .mm-drawer-mode { font-size: 12px; font-weight: 500; color: #94a3b8; margin-left: 2px; }
