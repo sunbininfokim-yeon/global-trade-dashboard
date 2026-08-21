@@ -297,8 +297,15 @@ const sparkChartData = new Map();
  *
  * points: [{label, value}] oldest-first. unit/formatValue control how the
  * hover readout and axis labels are worded.
+ *
+ * shadeFromLabel: optional point label (e.g. a period string like
+ * "2024-01") marking where a break in the series' own methodology begins --
+ * not a bounded event window like a recession bar, but "everything from
+ * here to the right edge was counted a different way." Shades that whole
+ * tail of the chart so a level jump reads as a definitional change instead
+ * of a real move, without needing a separate legend.
  */
-const sparkChartHtml = ({ points, unit, formatValue, ariaLabel, footNote }) => {
+const sparkChartHtml = ({ points, unit, formatValue, ariaLabel, footNote, shadeFromLabel }) => {
     if (!points || points.length < 2) return '';
     const W = 100, H = 54, PAD = 3;
     const vals = points.map((p) => p.value);
@@ -316,6 +323,18 @@ const sparkChartHtml = ({ points, unit, formatValue, ariaLabel, footNote }) => {
     const last = points[points.length - 1];
     const rising = last.value >= points[0].value;
 
+    // First point at or after the break, not the closest one either side --
+    // an exact label match always exists here (both callers pass the same
+    // "2024-01" the series itself is built from), but rounding to "at or
+    // after" keeps this from silently drawing nothing if that ever drifts.
+    const shadeIdx = shadeFromLabel
+        ? points.findIndex((p) => p.label >= shadeFromLabel)
+        : -1;
+    const shadeRect = shadeIdx > 0
+        ? `<rect class="spark2-shade" x="${x(shadeIdx).toFixed(2)}" y="${PAD}"
+               width="${(W - PAD - x(shadeIdx)).toFixed(2)}" height="${H - PAD * 2}"/>`
+        : '';
+
     const id = `spk${++sparkChartSeq}`;
     sparkChartData.set(id, { points, x, y, unit: unit || '', fmt });
 
@@ -330,6 +349,7 @@ const sparkChartHtml = ({ points, unit, formatValue, ariaLabel, footNote }) => {
                      preserveAspectRatio="none" role="img" aria-label="${ariaLabel || ''}">
                     <line class="spark2-grid" x1="${PAD}" y1="${PAD}" x2="${W - PAD}" y2="${PAD}"/>
                     <line class="spark2-grid" x1="${PAD}" y1="${H - PAD}" x2="${W - PAD}" y2="${H - PAD}"/>
+                    ${shadeRect}
                     <path class="spark2-area" d="${area}"/>
                     <path class="spark2-line" d="${line}" vector-effect="non-scaling-stroke"/>
                     <path class="spark2-dot-end" d="M${x(points.length - 1).toFixed(2)},${y(last.value).toFixed(2)}h0"/>
@@ -444,17 +464,18 @@ const renderRigCountWorld = async () => {
     // otherwise stack a duplicate card here too).
     host.querySelector('.rig-card')?.remove();
     const last = rig.global[rig.global.length - 1];
+    // Baker Hughes changed how it counts Saudi Arabia partway through this
+    // series (see build_rig_count_v1.py); the global total inherits that
+    // jump. Shaded on the chart itself, not just noted below it, so the
+    // level jump doesn't read as a sudden real drilling boom at a glance.
+    const saudiNote = (rig.data_quality_notes || []).some((n) => n.includes('Saudi Arabia'));
     const chart = sparkChartHtml({
         points: rig.global.map((p) => ({ label: p.period, value: p.value })),
         unit: '기',
         formatValue: (v) => v.toFixed(0),
         ariaLabel: `${rig.global.length}개월 글로벌 Rig 수 추이`,
+        shadeFromLabel: saudiNote ? '2024-01' : null,
     });
-    // Baker Hughes changed how it counts Saudi Arabia partway through this
-    // series (see build_rig_count_v1.py); the global total inherits that
-    // jump. Surfaced here, not just in the JSON, so it doesn't read as a
-    // sudden real drilling boom.
-    const saudiNote = (rig.data_quality_notes || []).some((n) => n.includes('Saudi Arabia'));
     host.insertAdjacentHTML('beforeend', `
         <div class="rig-card">
             <p class="section-title" style="margin:0 0 6px;">글로벌 Rig 수 · Baker Hughes 월간</p>
@@ -499,14 +520,15 @@ const renderRigCountCountry = async (countryName) => {
     const series = entry?.[1];
     if (!series || series.length < 2) return;
     const last = series[series.length - 1];
+    const saudiNote = target.key === 'Saudi Arabia'
+        && (rig.data_quality_notes || []).some((n) => n.includes('Saudi Arabia'));
     const chart = sparkChartHtml({
         points: series.map((p) => ({ label: p.period, value: p.value })),
         unit: '기',
         formatValue: (v) => v.toFixed(0),
         ariaLabel: `${series.length}개월 ${target.label} Rig 수 추이`,
+        shadeFromLabel: saudiNote ? '2024-01' : null,
     });
-    const saudiNote = target.key === 'Saudi Arabia'
-        && (rig.data_quality_notes || []).some((n) => n.includes('Saudi Arabia'));
     card.insertAdjacentHTML('beforeend', `
         <div class="rig-card">
             <p class="section-title" style="margin:0 0 6px;">${target.label} Rig 수 · Baker Hughes 월간</p>
