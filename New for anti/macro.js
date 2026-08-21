@@ -95,20 +95,25 @@ const mmFmt = (v, digits) => {
 // than the features a library would add. Hover is wired after paint (mmWire).
 const MM_W = 760, MM_H = 260, MM_L = 52, MM_R = 16, MM_T = 14, MM_B = 30;
 
-// The Fed balance sheet drawn as its liability stack, plus reserves as a share
-// of GDP beside it.
+// The Fed balance sheet drawn as two stacks -- what it bought, and who ended
+// up holding the cash it paid with -- plus reserves as a share of GDP.
 //
 // The total-assets line answers "how big" but not "made of what", and the
 // composition is where the liquidity signal is: the same 6.7T means different
-// things depending on whether it sits in reserve balances (banks' usable cash)
-// or in currency and the TGA, which are not. Reserve balances are the bottom
-// band, against the axis, because the question is how much room is left before
-// reserves get scarce -- a band floating on top of three others has no readable
-// distance to zero.
-const mmBalanceStack = (bs) => {
-    const dates = bs.dates || [], layers = bs.layers || [];
+// things depending on whether the liabilities sit in reserve balances (banks'
+// usable cash) or in currency and the TGA, which are not. Reserve balances are
+// the bottom band, against the axis, because the question is how much room is
+// left before reserves get scarce -- a band floating on three others has no
+// readable distance to zero.
+//
+// Both sides total the same by construction, so they share one y-scale. Drawing
+// them to separate scales would make the taller-looking side the bigger one and
+// invite a comparison that is not there.
+const MM_BS_H = 210, MM_BS_T = 12, MM_BS_B = 26;
+
+const mmStackSide = (side, dates, hi, sideIdx) => {
+    const layers = side.layers || [];
     const n = dates.length;
-    if (!n || !layers.length) return '<p class="fin-note">대차대조표 시계열이 없습니다.</p>';
 
     // A week missing any layer cannot be stacked -- the bands above it would
     // slide down and silently misattribute the gap to a neighbour.
@@ -118,43 +123,40 @@ const mmBalanceStack = (bs) => {
     }
     if (!ok.length) return '<p class="fin-note">완전한 주차가 없어 누적 그래프를 그릴 수 없습니다.</p>';
 
-    const tops = ok.map((i) => layers.reduce((s, l) => s + l.values[i], 0));
-    const hi = Math.max(...tops) * 1.04;
     const sx = (k) => MM_L + (k / Math.max(ok.length - 1, 1)) * (MM_W - MM_L - MM_R);
-    const sy = (v) => MM_T + (1 - v / hi) * (MM_H - MM_T - MM_B);
+    const sy = (v) => MM_BS_T + (1 - v / hi) * (MM_BS_H - MM_BS_T - MM_BS_B);
 
-    // Each band is drawn as its own closed polygon between the running total
-    // below it and the running total including it, so the fills abut exactly.
+    // Each band is its own closed polygon between the running total below it
+    // and the running total including it, so the fills abut exactly.
     let below = new Array(ok.length).fill(0);
     const bands = layers.map((l) => {
         const above = ok.map((i, k) => below[k] + l.values[i]);
         const up = above.map((v, k) => `${sx(k).toFixed(1)},${sy(v).toFixed(1)}`);
         const down = below.map((v, k) => `${sx(k).toFixed(1)},${sy(v).toFixed(1)}`).reverse();
         below = above;
-        return `<polygon points="${up.concat(down).join(' ')}" fill="${finEsc(l.color)}" fill-opacity="0.82"/>`;
+        return `<polygon points="${up.concat(down).join(' ')}" fill="${finEsc(l.color)}" fill-opacity="0.85"/>`;
     }).join('');
 
-    const ticks = [0, 0.25, 0.5, 0.75, 1].map((t) => hi * t);
-    const xAt = [0, Math.floor((ok.length - 1) / 2), ok.length - 1];
+    const ticks = [0, 0.5, 1].map((t) => hi * t);
     const last = ok.length - 1;
 
     return `
-    <svg class="mm-chart" viewBox="0 0 ${MM_W} ${MM_H}" preserveAspectRatio="none" role="img"
-         aria-label="연준 부채 구성 누적 그래프">
-        ${ticks.map((t) => `
-            <line x1="${MM_L}" y1="${sy(t).toFixed(1)}" x2="${MM_W - MM_R}" y2="${sy(t).toFixed(1)}" class="mm-grid"/>
-            <text x="${MM_L - 7}" y="${(sy(t) + 3.5).toFixed(1)}" class="mm-tick" text-anchor="end">${mmFmt(t, 1)}</text>`).join('')}
-        ${bands}
-        ${xAt.map((k) => `<text x="${sx(k).toFixed(1)}" y="${MM_H - 8}" class="mm-tick"
-            text-anchor="${k === 0 ? 'start' : (k === last ? 'end' : 'middle')}">${finEsc(dates[ok[k]] || '')}</text>`).join('')}
-    </svg>
-    <div class="mm-stack-legend">
-        ${layers.map((l) => {
-            const v = l.values[ok[last]];
-            return `<span class="mm-stack-key" title="${finEsc(l.note_ko || '')}">
-                <i style="background:${finEsc(l.color)}"></i>${finEsc(l.label_ko)}
-                <b>${Number.isFinite(v) ? mmFmt(v, 2) : '—'}조</b></span>`;
-        }).reverse().join('')}
+    <div class="mm-bs-side" data-mm-bs="${sideIdx}"
+         data-rows='${finEsc(JSON.stringify(ok))}'>
+        <div class="mm-bs-head">
+            <span class="mm-bs-title">${finEsc(side.label_ko || '')}</span>
+            <span class="mm-bs-sub">${finEsc(side.note_ko || '')}</span>
+        </div>
+        <svg class="mm-chart mm-bs-chart" viewBox="0 0 ${MM_W} ${MM_BS_H}" preserveAspectRatio="none"
+             role="img" aria-label="${finEsc(side.label_ko || '')} 구성 누적 그래프">
+            ${ticks.map((t) => `
+                <line x1="${MM_L}" y1="${sy(t).toFixed(1)}" x2="${MM_W - MM_R}" y2="${sy(t).toFixed(1)}" class="mm-grid"/>
+                <text x="${MM_L - 7}" y="${(sy(t) + 3.5).toFixed(1)}" class="mm-tick" text-anchor="end">${mmFmt(t, 1)}</text>`).join('')}
+            ${bands}
+            ${[0, Math.floor(last / 2), last].map((k) => `<text x="${sx(k).toFixed(1)}" y="${MM_BS_H - 7}"
+                class="mm-tick" text-anchor="${k === 0 ? 'start' : (k === last ? 'end' : 'middle')}">${finEsc(dates[ok[k]] || '')}</text>`).join('')}
+            <line class="mm-cross mm-bs-cross" x1="0" y1="${MM_BS_T}" x2="0" y2="${MM_BS_H - MM_BS_B}" style="display:none"/>
+        </svg>
     </div>`;
 };
 
@@ -200,13 +202,105 @@ const mmReservesRatio = (r, dates) => {
     </div>`;
 };
 
-const mmBalanceSheetView = (ind) => {
-    const bs = ind.balance_sheet;
-    if (!bs) return '<p class="fin-note">대차대조표 구성 자료가 없습니다.</p>';
+// Assets and liabilities as two separate blocks -- separate tabs, separate
+// scroll position, separate scale -- rather than one panel with both stacks
+// glued together. Each still scales to its own max rather than a shared one:
+// once they are no longer side by side for a visual "same total" check, a
+// shared scale only wastes vertical room in whichever block has the smaller
+// swing across the window.
+const mmBalanceSideBlock = (side, dates) => {
+    let hi = 0;
+    dates.forEach((_, i) => {
+        const tot = (side.layers || []).reduce(
+            (acc, l) => acc + (Number.isFinite(l.values[i]) ? l.values[i] : 0), 0);
+        if (tot > hi) hi = tot;
+    });
+    hi *= 1.04;
+
     return `
-    ${mmBalanceStack(bs)}
-    <p class="fin-note">${finEsc(bs.stack_note_ko || '')}</p>
+    <div class="mm-bs mm-bs-solo" data-mm-bs-root="1"
+         data-dates='${finEsc(JSON.stringify(dates))}'
+         data-side='${finEsc(JSON.stringify({
+             label_ko: side.label_ko,
+             layers: (side.layers || []).map((l) => ({ label_ko: l.label_ko, color: l.color, values: l.values })),
+         }))}'>
+        ${mmStackSide(side, dates, hi, 0)}
+        <div class="mm-bs-tip" style="display:none"></div>
+    </div>`;
+};
+
+const mmBalanceAssetsView = (ind) => {
+    const bs = ind.balance_sheet;
+    const side = ((bs || {}).sides || []).find((s) => s.id === 'assets');
+    if (!side) return '<p class="fin-note">자산 구성 자료가 없습니다.</p>';
+    return `
+    ${mmBalanceSideBlock(side, bs.dates || [])}
+    <p class="fin-note">${finEsc(bs.stack_note_ko || '')} ${finEsc(bs.sampling_note_ko || '')}</p>`;
+};
+
+const mmBalanceLiabilitiesView = (ind) => {
+    const bs = ind.balance_sheet;
+    const side = ((bs || {}).sides || []).find((s) => s.id === 'liabilities');
+    if (!side) return '<p class="fin-note">부채 구성 자료가 없습니다.</p>';
+    return `
+    ${mmBalanceSideBlock(side, bs.dates || [])}
+    <p class="fin-note">${finEsc(bs.stack_note_ko || '')} ${finEsc(bs.sampling_note_ko || '')}</p>
     ${bs.ratio ? mmReservesRatio(bs.ratio, bs.dates || []) : ''}`;
+};
+
+// Hovering a stack reads that block's own composition at the hovered week --
+// each block is a separate tab now, so there is never a second stack visible
+// to pair it with.
+const mmWireBalanceHover = (root) => {
+    const dates = JSON.parse(root.getAttribute('data-dates') || '[]');
+    const side = JSON.parse(root.getAttribute('data-side') || 'null');
+    const tip = root.querySelector('.mm-bs-tip');
+    const panel = root.querySelector('.mm-bs-side');
+    if (!tip || !panel || !side) return;
+
+    const rows = JSON.parse(panel.getAttribute('data-rows') || '[]');
+    const svg = panel.querySelector('svg');
+    if (!svg || !rows.length) return;
+
+    const cross = panel.querySelector('.mm-bs-cross');
+    const hide = () => {
+        tip.style.display = 'none';
+        if (cross) cross.style.display = 'none';
+    };
+
+    svg.addEventListener('mousemove', (ev) => {
+        const box = svg.getBoundingClientRect();
+        const frac = (ev.clientX - box.left) / box.width;
+        const span = (MM_W - MM_L - MM_R) / MM_W;
+        const k = Math.round(((frac - MM_L / MM_W) / span) * (rows.length - 1));
+        const kk = Math.max(0, Math.min(rows.length - 1, k));
+        const i = rows[kk];
+        const x = MM_L + (kk / Math.max(rows.length - 1, 1)) * (MM_W - MM_L - MM_R);
+
+        if (cross) { cross.setAttribute('x1', x); cross.setAttribute('x2', x); cross.style.display = ''; }
+
+        const rowsOut = side.layers.map((l) => [l, l.values[i]]).filter(([, v]) => Number.isFinite(v));
+        const tot = rowsOut.reduce((a, [, v]) => a + v, 0);
+        tip.innerHTML = `
+            <div class="mm-bs-tip-date">${finEsc(dates[i] || '')}</div>
+            <div class="mm-bs-tip-side">
+                <div class="mm-bs-tip-head">${finEsc(side.label_ko)}<b>${mmFmt(tot, 2)}조</b></div>
+                ${rowsOut.slice().reverse().map(([l, v]) => `
+                    <div class="mm-bs-tip-row">
+                        <i style="background:${finEsc(l.color)}"></i>
+                        <span>${finEsc(l.label_ko)}</span>
+                        <b>${mmFmt(v, 2)}조</b>
+                        <em>${tot ? (v / tot * 100).toFixed(1) : '—'}%</em>
+                    </div>`).join('')}
+            </div>`;
+
+        tip.style.display = '';
+        const rootBox = root.getBoundingClientRect();
+        const px = ev.clientX - rootBox.left;
+        tip.style.left = `${px > rootBox.width * 0.55 ? px - tip.offsetWidth - 14 : px + 14}px`;
+        tip.style.top = `${Math.max(4, ev.clientY - rootBox.top - 40)}px`;
+    });
+    svg.addEventListener('mouseleave', hide);
 };
 
 // US general elections are on a fixed public schedule (first Tue after first
@@ -236,6 +330,159 @@ const mmUsElectionBands = (dates) => {
     });
     if (cur) bands.push(cur);
     return bands;
+};
+
+// Monthly Fed purchases/runoff, Treasuries and MBS as two diverging bar
+// series sharing a zero line: above is net buying (QE-style), below is net
+// runoff (QT-style), for 280+ months back through QE1 -- the sign already
+// carries what "QE" or "QT" would have labelled, without this repo curating
+// a policy-era calendar it doesn't have and would otherwise be guessing at.
+const MM_QQ_H = 220, MM_QQ_T = 12, MM_QQ_B = 24;
+
+// A percentile of a plain array, index-based (no interpolation -- fine at
+// this sample size and this is a display cap, not a statistic reported
+// anywhere).
+const mmPct = (sortedArr, q) => sortedArr[Math.min(sortedArr.length - 1, Math.floor(sortedArr.length * q))];
+
+const mmQeQtBars = (qq, window) => {
+    const allRows = qq.rows || [];
+    if (!allRows.length) return '<p class="fin-note">매입·런오프 시계열이 없습니다.</p>';
+
+    const years = window === '20y' ? 20 : 5;
+    const cutoff = allRows[allRows.length - 1].month.slice(0, 4) - years;
+    const rows = allRows.filter((r) => Number(r.month.slice(0, 4)) > cutoff);
+    const n = rows.length;
+
+    // COVID's two emergency months are ~5-10x every other month on record;
+    // scaling the axis to fit them would flatten every ordinary QE/QT month
+    // into a hairline. Cap is computed from whatever window is on screen
+    // (not a fixed COVID date) so it adapts if the window changes or new
+    // months arrive -- a bar past the cap is drawn clipped, marked with a
+    // break, and labelled with its real value rather than hidden.
+    const magnitudes = rows.flatMap((r) => [Math.abs(r.treasuries_bn), Math.abs(r.mbs_bn)])
+        .filter(Number.isFinite).sort((a, b) => a - b);
+    const cap = magnitudes.length ? mmPct(magnitudes, 0.95) * 2.2 : 0;
+    const hasBreak = magnitudes.length && magnitudes[magnitudes.length - 1] > cap;
+
+    const clamp = (v) => Math.max(-cap, Math.min(cap, v));
+    const allVals = rows.flatMap((r) => [clamp(r.treasuries_bn), clamp(r.mbs_bn)]).filter(Number.isFinite);
+    let lo = Math.min(0, ...allVals), hi = Math.max(0, ...allVals);
+    const pad = (hi - lo || 1) * 0.1;
+    lo -= pad; hi += pad;
+
+    const sx = (i) => MM_L + (i / Math.max(n - 1, 1)) * (MM_W - MM_L - MM_R);
+    const sy = (v) => MM_QQ_T + (1 - (v - lo) / (hi - lo)) * (MM_QQ_H - MM_QQ_T - MM_QQ_B);
+    const zero = sy(0);
+    const colW = (MM_W - MM_L - MM_R) / n;
+    const bw = Math.max(colW * 0.42, 0.6);
+
+    // A short zigzag at the clipped edge -- the standard "broken axis" mark
+    // -- plus the real value written past it, so clipping a bar never hides
+    // its number, only its height.
+    const breakMark = (x, y, up) => {
+        const s = 3.2, dir = up ? -1 : 1;
+        const pts = [[x - bw / 2 - 1, y], [x - bw / 4, y + dir * s], [x, y - dir * s],
+                     [x + bw / 4, y + dir * s], [x + bw / 2 + 1, y]];
+        return `<polyline points="${pts.map(([px, py]) => `${px.toFixed(1)},${py.toFixed(1)}`).join(' ')}" class="mm-qq-break"/>`;
+    };
+
+    const bar = (i, v, dx, cls) => {
+        if (!Number.isFinite(v) || v === 0) return '';
+        const clipped = Math.abs(v) > cap;
+        const drawV = clamp(v);
+        const y = sy(drawV);
+        const x = sx(i) + dx;
+        const rect = `<rect class="${cls}${clipped ? ' mm-qq-clipped' : ''}" x="${(x - bw / 2).toFixed(2)}" y="${Math.min(y, zero).toFixed(1)}"
+            width="${bw.toFixed(2)}" height="${Math.max(Math.abs(zero - y), 0.5).toFixed(1)}"/>`;
+        if (!clipped) return rect;
+        return rect + breakMark(x, y, v > 0)
+            + `<text x="${x.toFixed(1)}" y="${(v > 0 ? y - 5 : y + 11).toFixed(1)}" class="mm-qq-clip-label"
+                text-anchor="middle">${v > 0 ? '+' : ''}${v.toFixed(0)}B</text>`;
+    };
+
+    const ticks = [0, 0.25, 0.5, 0.75, 1].map((t) => lo + (hi - lo) * t);
+    const yearTicks = [];
+    let lastYear = null;
+    const yearStep = years > 10 ? 2 : 1;
+    rows.forEach((r, i) => {
+        const y = r.month.slice(0, 4);
+        if (y !== lastYear && Number(y) % yearStep === 0) { yearTicks.push({ i, y }); lastYear = y; }
+        else if (y !== lastYear) lastYear = y;
+    });
+
+    return `
+    <div class="mm-chart-box mm-qq-box" data-mm-qeqt-root="1"
+         data-rows='${finEsc(JSON.stringify(rows))}'>
+        <svg class="mm-chart mm-qq-chart" viewBox="0 0 ${MM_W} ${MM_QQ_H}" preserveAspectRatio="none" role="img"
+             aria-label="연준 국채·MBS 월별 매입·런오프">
+            ${ticks.map((t) => `
+                <line x1="${MM_L}" y1="${sy(t).toFixed(1)}" x2="${MM_W - MM_R}" y2="${sy(t).toFixed(1)}" class="mm-grid"/>
+                <text x="${MM_L - 7}" y="${(sy(t) + 3.5).toFixed(1)}" class="mm-tick" text-anchor="end">${mmFmt(t, 0)}</text>`).join('')}
+            ${rows.map((r, i) => bar(i, r.treasuries_bn, -bw * 0.55, 'mm-qq-bar mm-qq-treas')
+                + bar(i, r.mbs_bn, bw * 0.55, 'mm-qq-bar mm-qq-mbs')).join('')}
+            <line x1="${MM_L}" y1="${zero.toFixed(1)}" x2="${MM_W - MM_R}" y2="${zero.toFixed(1)}" class="mm-zero"/>
+            ${yearTicks.map((t) => `<text x="${sx(t.i).toFixed(1)}" y="${MM_QQ_H - 8}" class="mm-tick" text-anchor="middle">${t.y}</text>`).join('')}
+            <line class="mm-cross mm-qq-cross" x1="0" y1="${MM_QQ_T}" x2="0" y2="${MM_QQ_H - MM_QQ_B}" style="display:none"/>
+        </svg>
+        <div class="mm-qq-legend">
+            <span><i class="mm-qq-swatch mm-qq-treas"></i>국채</span>
+            <span><i class="mm-qq-swatch mm-qq-mbs"></i>MBS</span>
+            <span class="mm-qq-legend-note">위 = 순매입 · 아래 = 런오프(만기상환 후 미재투자)${hasBreak ? ' · ⌇ 표시는 축을 벗어난 값(실제값 표기)' : ''}</span>
+        </div>
+    </div>`;
+};
+
+// Empty state before any hover, and the filled state after -- same shape so
+// hovering only ever swaps numbers in, never restructures the panel.
+const mmQeQtRailBody = (row) => {
+    if (!row) {
+        return `<p class="mm-news-empty">막대 위에 마우스를 올리면 그 달의 국채·MBS 매입·런오프 금액과 비중이 여기 표시됩니다.</p>`;
+    }
+    const t = row.treasuries_bn, m = row.mbs_bn;
+    const totalAbs = Math.abs(t) + Math.abs(m);
+    const share = (v) => totalAbs ? `${(Math.abs(v) / totalAbs * 100).toFixed(0)}%` : '—';
+    const row1 = (label, v) => `
+        <div class="mm-qq-rail-row">
+            <span>${finEsc(label)}</span>
+            <b class="${v > 0 ? 'mm-up' : (v < 0 ? 'mm-down' : '')}">${v >= 0 ? '+' : ''}${v.toFixed(1)}B</b>
+            <em>${share(v)}</em>
+        </div>`;
+    return `
+        <p class="mm-qq-rail-month">${finEsc(row.month)}</p>
+        ${row1('국채', t)}
+        ${row1('MBS', m)}`;
+};
+
+const mmQeQtRail = (row) => `
+    <aside class="mm-news mm-qq-rail" id="mm-qeqt-rail">
+        <p class="mm-news-head">매입·런오프 상세</p>
+        <div id="mm-qeqt-rail-body">${mmQeQtRailBody(row)}</div>
+        <p class="mm-news-foot">FRED TREAST·WSHOMCB 실측 · 월간</p>
+    </aside>`;
+
+const mmWireQeQtHover = (root) => {
+    const box = root.querySelector('[data-mm-qeqt-root]');
+    const railBody = root.querySelector('#mm-qeqt-rail-body');
+    if (!box || !railBody) return;
+    const rows = JSON.parse(box.getAttribute('data-rows') || '[]');
+    const svg = box.querySelector('svg');
+    const cross = box.querySelector('.mm-qq-cross');
+    if (!svg || !rows.length) return;
+
+    svg.addEventListener('mousemove', (ev) => {
+        const b = svg.getBoundingClientRect();
+        const frac = (ev.clientX - b.left) / b.width;
+        const span = (MM_W - MM_L - MM_R) / MM_W;
+        const i = Math.round(((frac - MM_L / MM_W) / span) * (rows.length - 1));
+        const ii = Math.max(0, Math.min(rows.length - 1, i));
+        const x = MM_L + (ii / Math.max(rows.length - 1, 1)) * (MM_W - MM_L - MM_R);
+        if (cross) { cross.setAttribute('x1', x); cross.setAttribute('x2', x); cross.style.display = ''; }
+        railBody.innerHTML = mmQeQtRailBody(rows[ii]);
+    });
+    svg.addEventListener('mouseleave', () => {
+        if (cross) cross.style.display = 'none';
+        railBody.innerHTML = mmQeQtRailBody(null);
+    });
 };
 
 // Monthly prints (CPI, PCE) are discrete releases, not a continuous level: a
@@ -293,7 +540,12 @@ const mmLineChart = (dates, values, opts = {}) => {
     if (idx.length < 2) return '<p class="fin-note">그릴 수 있는 시계열이 없습니다.</p>';
     const ma = Array.isArray(opts.ma5) ? opts.ma5 : null;
 
-    const ys = idx.map(([, y]) => y).concat(ma ? ma.filter(Number.isFinite) : []);
+    const th = opts.threshold && Number.isFinite(opts.threshold.level) ? opts.threshold : null;
+    // The threshold has to be in view even if the series never gets near it --
+    // "설비투자 18% 초과" means nothing if the axis tops out at 15% and the
+    // line is drawn off the top of the chart.
+    const ys = idx.map(([, y]) => y).concat(ma ? ma.filter(Number.isFinite) : [])
+        .concat(th ? [th.level] : []);
     let lo = Math.min(...ys), hi = Math.max(...ys);
     if (lo === hi) { lo -= 1; hi += 1; }
     const pad = (hi - lo) * 0.08;
@@ -355,6 +607,9 @@ const mmLineChart = (dates, values, opts = {}) => {
                 <line x1="${MM_L}" y1="${sy(t).toFixed(1)}" x2="${MM_W - MM_R}" y2="${sy(t).toFixed(1)}" class="mm-grid"/>
                 <text x="${MM_L - 7}" y="${(sy(t) + 3.5).toFixed(1)}" class="mm-tick" text-anchor="end">${mmFmt(t)}</text>`).join('')}
             ${(lo < 0 && hi > 0) ? `<line x1="${MM_L}" y1="${sy(0).toFixed(1)}" x2="${MM_W - MM_R}" y2="${sy(0).toFixed(1)}" class="mm-zero"/>` : ''}
+            ${th ? `
+                <line x1="${MM_L}" y1="${sy(th.level).toFixed(1)}" x2="${MM_W - MM_R}" y2="${sy(th.level).toFixed(1)}" class="mm-threshold"/>
+                <text x="${MM_W - MM_R}" y="${(sy(th.level) - 5).toFixed(1)}" class="mm-threshold-tag" text-anchor="end">${finEsc(th.label_ko || '')}</text>` : ''}
             <path d="${area}" fill="url(#mmg)"/>
             ${ma ? `<path d="${path(ma)}" class="mm-ma"/>` : ''}
             ${realFromEnd ? `
@@ -542,10 +797,27 @@ const mmViewsFor = (ind) => {
     if (has((ind.movers || {}).up) || has((ind.movers || {}).down)) {
         views.push({ id: 'movers', label: '항목별' });
     }
-    if (has((ind.balance_sheet || {}).layers)) {
-        views.push({ id: 'balance', label: '부채 구성' });
+    // Assets and liabilities are two separate blocks -- two tabs -- not one
+    // panel with both stacks in it. 부채 first: the reserves-against-the-axis
+    // question is what this card exists to answer.
+    const hasBalanceSheet = has((ind.balance_sheet || {}).sides);
+    if (hasBalanceSheet) {
+        views.push({ id: 'balance_liabilities', label: '부채' });
+        views.push({ id: 'balance_assets', label: '자산' });
     }
-    if (has(((ind.history || {})['5y'] || {}).values) || ind.modes) {
+    // fed_ust_ops carries a monthly, signed purchases/runoff series in place
+    // of the generic '추이' -- that generic tab was drawing a fixture history
+    // array frozen around -29B, untouched by the headline's earlier switch to
+    // real data, because the two lived in separate fields. Real data replaces
+    // both here, not just the number on top.
+    const hasQeQt = has((ind.qe_qt_history || {}).rows);
+    if (hasQeQt) {
+        views.push({ id: 'qeqt', label: '매입 추이' });
+    }
+    // A plain level line is redundant once the level is already visible as
+    // the top of a stack -- skipped here so fed_total_assets doesn't carry
+    // both '추이' and '자산'/'부채' saying the same 6.7T two different ways.
+    if (!hasBalanceSheet && !hasQeQt && (has(((ind.history || {})['5y'] || {}).values) || ind.modes)) {
         views.push({ id: 'history', label: '추이' });
     }
     // Secondary panels come last so the engine's primary view stays default.
@@ -644,10 +916,20 @@ const mmChartDrawer = () => {
 
     const dual = (ind.ui || {}).dual;
     const mode = MM_CHART.mode || (ind.ui || {}).default || (dual ? dual[0] : null);
+    // Headline/core swap the series without closing the drawer. Only offered
+    // when both peers are actually in this country's indicator list -- a switch
+    // to a series that is not there would just blank the panel.
+    const byId = new Map((MM_COUNTRY.country.indicators || []).map((i) => [i.id, i]));
+    const rawPeers = ind.peers;
+    const peers = rawPeers && (rawPeers.options || []).filter((o) => byId.has(o.id)).length > 1
+        ? { ...rawPeers, options: rawPeers.options.filter((o) => byId.has(o.id)) }
+        : null;
     const modeSeries = dual ? mmModeSeries(ind, mode) : null;
 
     let body = '';
-    if (view === 'balance') body = mmBalanceSheetView(ind);
+    if (view === 'balance_assets') body = mmBalanceAssetsView(ind);
+    else if (view === 'balance_liabilities') body = mmBalanceLiabilitiesView(ind);
+    else if (view === 'qeqt') body = mmQeQtBars(ind.qe_qt_history, MM_CHART.window || '5y');
     else if (view === 'movers') body = mmMoversView(ind);
     else if (view === 'status') body = mmStatusView(ind);
     else if (view === 'compare') body = mmCompareView(ind);
@@ -672,34 +954,57 @@ const mmChartDrawer = () => {
             label: src.label_ko || ind.label_ko,
             electionBands: ind.id === 'tga',
             realFromEnd: hist.real_points_from_end,
+            threshold: (ind.reference || {}).kind === 'threshold' ? ind.reference : null,
         });
     }
 
+    // With a mode selected the header has to follow it. The label carries the
+    // engine's default window ("근원 CPI YoY"), so on MoM the title claimed YoY
+    // while the bars below were monthly, and the value beside it stayed the YoY
+    // print. The mode buttons already name the window, so the title drops the
+    // suffix and the value comes from the active series.
+    const modeLabel = modeSeries ? (modeSeries.label_ko || String(mode).toUpperCase()) : null;
+    const title = modeLabel
+        ? `${finEsc(ind.label_ko.replace(/\s*(YoY|MoM|QoQ)\s*$/i, ''))} <span class="mm-drawer-mode">${finEsc(modeLabel)}</span>`
+        : finEsc(ind.label_ko);
+
     const meta = [
-        ind.display != null ? String(ind.display) : null,
+        (modeSeries ? modeSeries.display : ind.display) != null
+            ? String(modeSeries ? modeSeries.display : ind.display) : null,
         ind.asof ? `기준 ${ind.asof}` : null,
         ind.source ? (typeof ind.source === 'string' ? ind.source : ind.source.name) : null,
         ind.refresh_tier || null,
     ].filter(Boolean);
 
-    const showWindow = view === 'history';
+    // qeqt spans 2003-present (23+ years), so 5y/10y (built for shorter
+    // fixture-era series) would either show almost nothing or almost
+    // everything -- 5y/20y actually brackets "recent" against "across
+    // multiple QE/QT cycles" for this one.
+    const windowOpts = view === 'qeqt' ? ['5y', '20y'] : ['5y', '10y'];
+    const showWindow = view === 'history' || view === 'qeqt';
 
     return `
     <div class="mm-drawer" role="dialog" aria-label="${finEsc(ind.label_ko)}">
         <div class="mm-drawer-head">
             <div>
-                <h3>${finEsc(ind.label_ko)} ${mmStatusBadge(ind.data_status)}</h3>
+                <h3>${title} ${mmStatusBadge(ind.data_status)}</h3>
                 <p class="mm-drawer-sub">${meta.map((m) => finEsc(m)).join(' · ')}</p>
             </div>
             <div class="mm-drawer-actions">
-                ${dual ? `<div class="pf-mode">
-                    ${dual.map((m) => `<button type="button" class="pf-mode-btn ${m === mode ? 'on' : ''}"
-                        data-mm-mode="${finEsc(m)}">${finEsc(((ind.modes || {})[m] || {}).label_ko || m.toUpperCase())}</button>`).join('')}
-                </div>` : ''}
-                ${showWindow ? `<div class="pf-mode">
-                    ${['5y', '10y'].map((w) => `<button type="button" class="pf-mode-btn ${MM_CHART.window === w ? 'on' : ''}"
-                        data-mm-window="${w}">${w === '5y' ? '5년' : '10년'}</button>`).join('')}
-                </div>` : ''}
+                <div class="mm-toggle-grid">
+                    ${peers ? `<div class="pf-mode">
+                        ${peers.options.map((o) => `<button type="button" class="pf-mode-btn ${o.id === ind.id ? 'on' : ''}"
+                            data-mm-peer="${finEsc(o.id)}">${finEsc(o.label_ko)}</button>`).join('')}
+                    </div>` : ''}
+                    ${dual ? `<div class="pf-mode">
+                        ${dual.map((m) => `<button type="button" class="pf-mode-btn ${m === mode ? 'on' : ''}"
+                            data-mm-mode="${finEsc(m)}">${finEsc(((ind.modes || {})[m] || {}).label_ko || m.toUpperCase())}</button>`).join('')}
+                    </div>` : ''}
+                    ${showWindow ? `<div class="pf-mode">
+                        ${windowOpts.map((w) => `<button type="button" class="pf-mode-btn ${MM_CHART.window === w ? 'on' : ''}"
+                            data-mm-window="${w}">${w.replace('y', '년')}</button>`).join('')}
+                    </div>` : ''}
+                </div>
                 <button class="mm-close" data-mm-chart-close="1" aria-label="닫기">✕</button>
             </div>
         </div>
@@ -713,15 +1018,67 @@ const mmChartDrawer = () => {
             <div class="mm-drawer-main">
                 ${body}
                 ${mmNoteWithState(ind) ? `<p class="fin-note mm-note">${finEsc(mmNoteWithState(ind))}</p>` : ''}
-                ${ind.reference ? `<p class="fin-note">${finEsc(typeof ind.reference === 'string' ? ind.reference : JSON.stringify(ind.reference))}</p>` : ''}
+                ${(() => {
+                    // A threshold reference already renders as a line on the
+                    // chart above (with its own label); this note is only its
+                    // citation. Anything else under `reference` still falls
+                    // back to a readable string -- but never a raw JSON dump,
+                    // which is what an object here rendered as before.
+                    if (!ind.reference) return '';
+                    if (typeof ind.reference === 'string') return `<p class="fin-note">${finEsc(ind.reference)}</p>`;
+                    if (ind.reference.kind === 'threshold') {
+                        return ind.reference.source_ko
+                            ? `<p class="fin-note">기준선(${finEsc(ind.reference.label_ko || '')}): ${finEsc(ind.reference.source_ko)}</p>`
+                            : '';
+                    }
+                    return '';
+                })()}
             </div>
-            ${mmNewsRail(ind)}
+            ${view === 'qeqt' ? mmQeQtRail(null)
+                : view === 'balance_liabilities' && (ind.balance_sheet || {}).ratio
+                ? mmReservesRatioRail(ind.balance_sheet.ratio, ind.balance_sheet.dates || [])
+                : mmNewsRail(ind)}
         </div>
     </div>`;
 };
 
 // The news API is not wired yet. An empty rail that says so is honest; a
 // spinner that never resolves is not, and fabricated articles would be worse.
+// The 부채 tab's rail carries the reserves/GDP number instead of the news
+// stub: that ratio is the one figure the stack itself cannot show (a stack
+// draws levels, not a ratio against an outside series), and it belongs next
+// to the liabilities it is computed from rather than buried under the chart.
+const mmReservesRatioRail = (r, dates) => {
+    const vals = r.values || [];
+    const idx = vals.map((v, i) => [i, v]).filter(([, v]) => Number.isFinite(v));
+    if (!idx.length) return mmNewsRail({});
+    const [li, lv] = idx[idx.length - 1];
+    const th = Number.isFinite(r.threshold_pct) ? r.threshold_pct : null;
+    const under = th !== null && lv < th;
+
+    const RW = 160, RH = 60, RT = 4, RB = 4;
+    const sx = (i) => (i / Math.max(vals.length - 1, 1)) * RW;
+    const ys = idx.map(([, v]) => v).concat(th === null ? [] : [th]);
+    let lo = Math.min(...ys), hi = Math.max(...ys);
+    const pad = (hi - lo || 1) * 0.15;
+    lo = Math.max(0, lo - pad); hi += pad;
+    const sy = (v) => RT + (1 - (v - lo) / (hi - lo)) * (RH - RT - RB);
+    const path = idx.map(([i, v], k) => `${k ? 'L' : 'M'}${sx(i).toFixed(1)},${sy(v).toFixed(1)}`).join('');
+
+    return `
+    <aside class="mm-news mm-ratio-rail">
+        <p class="mm-news-head">${finEsc(r.label_ko || '')}</p>
+        <div class="mm-ratio-rail-now ${under ? 'is-under' : ''}">${mmFmt(lv, 2)}%</div>
+        <svg class="mm-ratio-rail-spark" viewBox="0 0 ${RW} ${RH}" preserveAspectRatio="none" role="img" aria-label="추이">
+            ${th === null ? '' : `<line x1="0" y1="${sy(th).toFixed(1)}" x2="${RW}" y2="${sy(th).toFixed(1)}" class="mm-threshold"/>`}
+            <path d="${path}" class="mm-ratio-line"/>
+            <circle cx="${sx(li).toFixed(1)}" cy="${sy(lv).toFixed(1)}" r="2.6" class="mm-ratio-dot"/>
+        </svg>
+        <p class="mm-news-empty">${finEsc(r.threshold_note_ko || '')}</p>
+        <p class="mm-news-foot">${finEsc(dates[li] || '')} 기준 · ${finEsc(r.threshold_label_ko || '')}</p>
+    </aside>`;
+};
+
 const mmNewsRail = (ind) => {
     const items = Array.isArray(ind.news) ? ind.news : null;
     return `
@@ -850,6 +1207,8 @@ const mmOverlay = () => {
 // Re-run after every paint: mmPaint replaces innerHTML, so listeners attached
 // to the previous SVG are gone with it.
 const mmWireCharts = (host) => {
+    host.querySelectorAll('[data-mm-bs-root]').forEach(mmWireBalanceHover);
+    if (host.querySelector('[data-mm-qeqt-root]')) mmWireQeQtHover(host);
     host.querySelectorAll('[data-mm-chart-box]').forEach((box) => {
         const svg = box.querySelector('svg');
         const cross = box.querySelector('.mm-cross');
@@ -1006,6 +1365,14 @@ const renderMacroMonitor = async () => {
             if (vw && MM_CHART) { MM_CHART.view = vw.getAttribute('data-mm-view'); mmPaint(); return; }
             const md = t.closest('[data-mm-mode]');
             if (md && MM_CHART) { MM_CHART.mode = md.getAttribute('data-mm-mode'); mmPaint(); return; }
+            // Swapping headline for core keeps the window, view and YoY/MoM
+            // choice -- those are what the reader set up to make the comparison.
+            const pr = t.closest('[data-mm-peer]');
+            if (pr && MM_CHART) {
+                MM_CHART = { ...MM_CHART, indicatorId: pr.getAttribute('data-mm-peer') };
+                mmPaint();
+                return;
+            }
         });
     }
 

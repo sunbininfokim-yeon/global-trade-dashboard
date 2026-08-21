@@ -155,20 +155,41 @@ def stock_metrics(row: dict[str, Any]) -> dict[str, float | None]:
     }
 
 
-def etf_metrics(row: dict[str, Any]) -> dict[str, float | None]:
-    # MKTCAP / INVSTASST_NETASST_TOTAMT / NAV fields vary by endpoint version
-    aum = _num(
-        row,
+def etf_metrics(row: dict[str, Any]) -> dict[str, Any]:
+    """Return ETF metrics without disguising market cap as observed AUM.
+
+    KRX endpoint versions expose different total-net-asset field names.  When
+    none is present, ``MKTCAP`` is still useful as a scale proxy, but it must
+    remain distinguishable from an observed net-asset total downstream.
+    """
+    observed_aum_fields = (
         "INVSTASST_NETASST_TOTAMT",
         "NETASST_TOTAMT",
-        "MKTCAP",
         "NAV_TOTAMT",
     )
+    aum = None
+    aum_source = None
+    aum_quality = "missing"
+    for field in observed_aum_fields:
+        value = _num(row, field)
+        if value is not None:
+            aum = value
+            aum_source = field
+            aum_quality = "observed"
+            break
+    if aum is None:
+        market_cap = _num(row, "MKTCAP")
+        if market_cap is not None:
+            aum = market_cap
+            aum_source = "MKTCAP"
+            aum_quality = "proxy"
     trdval = _num(row, "ACC_TRDVAL", "ACC_TRDVAL_AMT")
     nav = _num(row, "NAV", "TDD_NAV", "NAV_PRC")
     close = _num(row, "TDD_CLSPRC", "CLSPRC")
     return {
         "aum_krw": aum,
+        "aum_source": aum_source,
+        "aum_quality": aum_quality,
         "trading_value_krw": trdval,
         "nav": nav,
         "close": close,

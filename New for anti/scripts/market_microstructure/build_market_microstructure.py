@@ -105,6 +105,12 @@ def main() -> int:
         help="AI Casino–style brief markdown",
     )
     p.add_argument(
+        "--external-snapshot-out",
+        type=Path,
+        default=ROOT / "../../public/data/external_venues_v1.json",
+        help="dated external venue snapshot for the append-only history step",
+    )
+    p.add_argument(
         "--skip-extras",
         action="store_true",
         help="Skip Naver deposit/credit, KOSPI flows, LETF categories, shorts",
@@ -132,6 +138,16 @@ def main() -> int:
                 json.dumps(day["external_venues"], ensure_ascii=False, indent=2) + "\n",
                 encoding="utf-8",
             )
+            # Keep the source snapshot in the publish tree so the following
+            # append step can run independently of this process.  The history
+            # writer will preserve the Yahoo bar date and mark unstamped AUM
+            # as partial; it never derives a date from fetched_at.
+            args.external_snapshot_out.parent.mkdir(parents=True, exist_ok=True)
+            args.external_snapshot_out.write_text(
+                json.dumps(day["external_venues"], ensure_ascii=False, indent=2) + "\n",
+                encoding="utf-8",
+            )
+            print(f"External snapshot → {args.external_snapshot_out}")
             print(f"Fetched external venues → {ext_path}")
         try:
             day["trading_share"] = _fetch_trading_share()

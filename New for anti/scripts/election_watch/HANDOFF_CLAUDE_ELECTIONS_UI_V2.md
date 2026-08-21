@@ -1,9 +1,34 @@
 # HANDOFF → Claude — 선거 UI 데이터 계약 v2
 
-**as_of:** 2026-08-14
+**contract_updated:** 2026-08-20 (국가별 데이터 기준일은 각 JSON의 `as_of`/`source_as_of`를 따른다)
 **소유권:** 데이터·파이프라인 = election_watch / UI = Claude
 **정본:** `MIGRATION_HANDOFF_2026-08-13.md`
 **이 문서의 목적:** UI가 어떤 화면에서 어떤 공개 JSON 필드를 쓰는지 고정한다. 없는 데이터는 추측하거나 더미로 채우지 않는다.
+
+## 0. UI 모듈 경계 (2026-08-20)
+
+선거는 한 개의 거대 JS가 아니라 아래 두 기능으로 분리한다. 화면에 국가 등급·중요도는 표시하지 않는다.
+
+```
+js/elections/
+├── index.js                         # 앱 시작·전역 상태 조정만
+├── data/core-service.js             # manifest → board/calendar fetch
+├── data/geo-service.js              # admin1·미국 선거구 GeoJSON fetch
+├── data/selectors.js                # JSON 읽기 전용 selector
+├── timeline/                        # 기능 1: 홈의 날짜순 세계 선거 일정
+└── country-explorer/                # 기능 2: 세계지도 → 국가 상세
+    ├── world-map.js
+    ├── country-shell.js
+    └── special/{usa,china,iran}.js
+```
+
+- **홈:** 세계 지도와 `timeline/`의 월별 세로 일정만 함께 보인다. 달력 격자가 아니라 날짜별 카드가 위에서 아래로 나열된다.
+- **국가 진입:** `country-explorer/`만 보이고 전 세계 일정은 반드시 숨긴다.
+- **국가 지도:** 선택한 국가의 `/public/data/admin1/{ISO3}.json`을 지연 로드해 국가 전체 경계를 표시한다. USA는 주지사 당적으로 주를 색칠하며, 주 클릭은 우측의 주 행정부 → 연방의회 → 주의회 순서 대시보드로 연결한다.
+- **연방 하원 선거구:** `fetch_usa_congressional_districts.py --all`은 U.S. Census Bureau 2025 TIGERweb 119th Congressional Districts를 내려받아 board의 의원·당적과 사전 결합한 `/public/data/congressional_districts/USA/{STATE}.json`을 만든다. 자산이 없으면 UI는 가상 구역을 그리지 않고 주 경계 지도와 대기 문구만 표시한다.
+- `app.js`는 DeckGL·기존 pane을 넘기는 adapter만 가진다. 국가별 UI·데이터 fetch·정치 판정은 넣지 않는다.
+- JSON을 직접 fetch하는 모듈은 `data/core-service.js`와 `data/geo-service.js`뿐이다. 화면 모듈은 이 두 service와 selector를 통해서만 읽는다.
+- USA·CHN·IRN만 `special/`에 국가별 탭 이름을 둔다. 나머지는 공통 shell을 사용한다.
 
 ## 1. 브라우저가 읽을 파일
 
@@ -39,15 +64,23 @@
 
 | 화면 | 필드 경로 | 구현 가능 | 주의 |
 |---|---|---|---|
-| 국가 헤더 | `usa.head` | 대통령·정당·색 | 부통령·비서실·NSC·장관 명단은 없음 |
+| 국가 헤더 | `usa.head`, `usa.executive_live.core` | 대통령·부통령·백악관/부통령실·NSC 핵심 | NSC 법정 의장은 대통령, 국가안보보좌관은 실무 책임으로 별도 표기 |
+| 연방 행정부 | `usa.executive_live` | `core` 5인 + `cabinet` 21개 공개 직위 | `cabinet[].status="acting"`은 직무대행을 그대로 표시 |
 | 미국 지도 | `usa.subnational_live.governors[]` | 50주 주지사 정당 색 | 주지사만 색칠 |
-| 주 상세 | `usa.ui_ready.state_drilldown.states[]` | 지도 조인키, 주지사, 주 상·하원 의석, 연방 대표, 해당 주 경선까지 사전 결합 | 부지사·법무장관·주 상하원 개별 의원은 없음 |
+| 주 상세 | `usa.ui_ready.state_drilldown.states[]` | 지도 조인키, 주지사·부지사·법무장관, 주 상·하원 의석·의장·제2당 원내지도부, 연방 대표, 해당 주 경선까지 사전 결합 | 일반 주의원 개인 명단은 없음 |
 | 주의 연방 대표 | `usa.ui_ready.state_drilldown.states[].federal_delegation` | 주별 House 의원·정당·지역구 및 상원의원 이름 | 상원의원 임기 종료일은 없음 |
 | 연방 의회 | `usa.ui_ready.congress` | 상·하원 명단 사전 분리, 정당 의석, 의장·원내지도부 | 하원 반원은 `summary.house_by_party`(표결권 현원) + `house_vacancies`만 사용. 437명 roster에는 6명 대표단이 포함 |
 | 하원 계파 | `usa.factions.parties` | 민주·공화 하원 계파 카드와 `display_count` | 공개 명단이 없는 계파는 `불명`. 중복 허용이므로 계파 수를 합산하지 않음 |
 | 2026 경선 | `usa.race_progress` | 주별 공천 진척 및 승자 | 전국 득표·선거인단처럼 표현 금지 |
 
-**미국 UI 금지:** 없는 부통령/내각/NSC·주 법무장관·부지사·상원 임기·상임위 정보를 UI에서 추정해 만들지 않는다. 해당 영역은 `데이터 수집 예정` 카드로만 둔다.
+**미국 UI 금지:** 상원 임기·상임위·일반 주의원 개인 명단을 UI에서 추정해 만들지 않는다. 해당 영역은 `데이터 수집 예정` 카드로만 둔다. 연방 행정부는 `config/extracted/tier12_executives.json#countries.USA`의 White House 공개 명부 기반 값만 사용한다. 부지사·법무장관·주 의회 지도부는 `config/extracted/usa_state_officials.json`의 공개 명부 기반 값만 사용한다. 부지사 직위가 없는 AZ/ME/NH/OR/WY는 후계 서열자를 대입하지 않고 `해당 직위 없음`으로 표시한다.
+
+**미국 주 상세 표시 규칙:**
+
+- 주 행정부는 `governor`, `lieutenant_governor`, `attorney_general` 3장으로 제한한다.
+- 연방 상원의원은 2인 실명·당적을 바로 보이고, 하원의원은 `federal_delegation.house_members`를 **선거구 순 접기/펴기** 목록으로 보인다.
+- `state_legislature.state_senate/state_house`는 정당별 다수·상대 의석과 `leadership.presiding_officer`, `leadership.second_party_floor_leader`만 보인다. 주 상·하원의 일반 의원 이름은 표시하지 않는다.
+- Nebraska는 단원제이므로 주 상원은 `해당 없음`으로, 단원제 의회는 주 하원 카드의 공개 지도부로 표현한다.
 
 **미국 하원 집계 규칙:** `house_voting_seats=435`, `house_voting_members=431`, `house_by_party={GOP:218, DEM:212, IND:1}`, `house_vacancies=4`가 반원·정당 의석 표기 정본이다. `house_roster_rows_including_delegates=437`은 의원 검색·주/준주 드릴다운용이며 DC·5개 준주 대표단 6명을 포함한다.
 
@@ -55,10 +88,21 @@
 
 | 국가 | 표시 가능 | 아직 없음 |
 |---|---|---|
-| JPN | 총리·색, 중·참의원 정당별 의석, 47도도부현 지사, LDP 계파 | 장관별 소속 정당·각료 명단, 도도부현 의회 상세 |
-| KOR | 대통령·국무총리, 국회 정당별 의석·원내지도부, 광역단체장 정당 요약, 전당대회 진행 | 장관 명단, 광역단체별 개별 수장/지방의회, 정당 계파 정본 |
+| JPN | 내각총리대신·관방장관, 17개 각료의 직책·정당, 중·참의원 정당별 의석·의장단, 47도도부현 지사, LDP 계파 | 도도부현 의회 상세 |
+| KOR | 대통령·국무총리·대통령실장·국가안보실장·정책실장, 공개 명부가 합치하는 17개 국무위원, 국회 정당별 의석·원내지도부, 광역단체장 정당 요약, 전당대회 진행 | 광역단체별 개별 수장/지방의회, 정당 계파 정본 |
 
-JPN은 `jpn.legislature_live`, `jpn.subnational_live`, `jpn.factions`를 사용한다. KOR는 `kor.legislature_live`, `kor.subnational_live`, `kor.party_leadership_live`, `kor.race_progress`를 사용한다.
+JPN은 `jpn.executive_live`, `jpn.legislature_live.chamber_leadership`, `jpn.subnational_live`, `jpn.factions`를 사용한다. 각료의 `party_abbr`는 반드시 표시하므로 향후 연립·타당 출신 각료도 별도 조건문 없이 표현된다. KOR는 `kor.executive_live`, `kor.legislature_live`, `kor.subnational_live`, `kor.party_leadership_live`, `kor.race_progress`를 사용한다. KOR의 `executive_live.source_conflicts_excluded`가 있으면 그 직책을 억지로 채우지 말고 보류 사유를 각주로 표시한다.
+
+### 4-1. 1·2급 행정부 공통 계약
+
+`countries[ISO3].executive_live`는 1·2급 전체에 존재한다. UI는 `core`를 바로 표시하고, `cabinet`이 있는 국가만 접기 목록을 추가한다.
+
+- USA: `full_cabinet_plus_eop_core` — 백악관·부통령실·NSC 핵심 5인과 21개 장관/각료급 직위.
+- JPN/KOR: 국가별 정본의 전체 공개 각료 명단.
+- GBR/ISR/DEU/FRA/BRA/TUR/IND/TWN/IDN/ZAF/NGA/RUS: `executive_core` — 수반·정부수반/부수반과 외교·재무·국방·내무 등 권력축. 일반 장관 전수 명단을 UI가 추정해 보충하면 안 된다.
+- CHN/IRN/SAU: `party_state_executive_core` / `dual_power_executive_core` / `royal_executive_core`. 이들은 `leadership`·`power_structure` 탭과 함께 읽고, 서구식 내각 서열로 바꾸지 않는다.
+
+각 국가의 `sources` 및 `coverage`를 UI의 출처/신선도 각주로 노출할 수 있다. `source_conflicts_excluded`가 있으면 해당 직책은 보류로 표시한다.
 
 ## 5. 중국 — 별도 권력 구조
 

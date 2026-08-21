@@ -23,24 +23,25 @@ def classify_name(row: dict[str, Any]) -> dict[str, Any]:
     opt = row.get("options") or {}
     sh = row.get("finra_short") or {}
 
-    day_r = _f(spot.get("day_return"), 0.0) or 0.0
+    day_r = _f(spot.get("day_return"))
     gap = _f(spot.get("premarket_gap"))
     pc_vol = _f(opt.get("put_call_volume"))
     pc_oi = _f(opt.get("put_call_oi"))
-    call_v = _f(opt.get("call_volume"), 0.0) or 0.0
-    put_v = _f(opt.get("put_volume"), 0.0) or 0.0
-    total_v = call_v + put_v
-    short_chg = _f(sh.get("short_chg_pct"), 0.0) or 0.0
-    dtc = _f(sh.get("days_to_cover"), 0.0) or 0.0
+    call_v = _f(opt.get("call_volume"))
+    put_v = _f(opt.get("put_volume"))
+    total_v = None if call_v is None or put_v is None else call_v + put_v
+    iv_change = _f(opt.get("atm_call_iv_change"))
+    short_chg = _f(sh.get("short_chg_pct"))
+    dtc = _f(sh.get("days_to_cover"))
 
     # Heuristic thresholds (v1; recalibrate monthly)
     put_heavy = pc_vol is not None and pc_vol >= 1.1
     call_heavy = pc_vol is not None and pc_vol <= 0.7
-    both_active = total_v >= 50_000  # absolute; weak for small names
-    short_up = short_chg >= 8.0
-    short_down = short_chg <= -8.0
-    down_day = day_r <= -0.02
-    up_day = day_r >= 0.02
+    both_active = total_v is not None and total_v >= 50_000  # absolute; weak for small names
+    short_up = short_chg is not None and short_chg >= 8.0
+    short_down = short_chg is not None and short_chg <= -8.0
+    down_day = day_r is not None and day_r <= -0.02
+    up_day = day_r is not None and day_r >= 0.02
     gap_down = gap is not None and gap <= -0.015
 
     regimes: list[str] = []
@@ -57,16 +58,18 @@ def classify_name(row: dict[str, Any]) -> dict[str, Any]:
     if call_heavy and up_day:
         regimes.append("upside_call_bid")
         scores["upside"] += 1.0 + min(0.5, max(0.0, 0.7 - (pc_vol or 0.7)))
-    if both_active and put_v > 0 and call_v > 0 and abs(day_r) < 0.01:
-        # straddlish: both sides busy, spot quiet
-        if put_heavy or call_heavy:
-            pass
-        else:
+    # A single IV level plus call/put volume cannot distinguish long-vol from
+    # short-vol.  Only fire those regimes when a comparable-session IV change
+    # is explicitly supplied; today's public snapshot does not yet supply it.
+    neutral_pc = pc_vol is not None and 0.85 <= pc_vol <= 1.15
+    spot_quiet = day_r is not None and abs(day_r) < 0.01
+    if both_active and neutral_pc and spot_quiet and iv_change is not None:
+        if iv_change >= 0.05:
             regimes.append("vol_long_straddle")
             scores["vol_up"] += 0.8
-    if both_active and abs(day_r) < 0.005 and pc_vol is not None and 0.85 <= pc_vol <= 1.15:
-        regimes.append("vol_short_strangle")
-        scores["vol_down"] += 0.6
+        elif iv_change <= -0.05:
+            regimes.append("vol_short_strangle")
+            scores["vol_down"] += 0.6
     if short_up and call_heavy and up_day:
         regimes.append("short_cover_squeeze")
         scores["upside"] += 0.9
@@ -100,13 +103,43 @@ def classify_name(row: dict[str, Any]) -> dict[str, Any]:
         "inputs": {
             "day_return": day_r,
             "premarket_gap": gap,
+            "premarket_gap_quality": spot.get("premarket_gap_quality"),
             "put_call_volume": pc_vol,
             "put_call_oi": pc_oi,
+            "atm_call_iv": _f(opt.get("atm_call_iv")),
+            "atm_call_iv_change": iv_change,
             "short_chg_pct": short_chg,
             "days_to_cover": dtc,
             "options_total_volume": total_v,
         },
     }
+
+
+def _downside_rules_ko(regime: dict[str, Any]) -> list[str]:
+    """Explain only the downside conditions that actually fired."""
+    regimes = set(regime.get("regimes") or [])
+    inputs = regime.get("inputs") or {}
+    rules: list[str] = []
+    if "downside_put_bid" in regimes:
+        rules.append(
+            "풋/콜 거래량비 ≥1.1 그리고 (당일 수익률 ≤-2% 또는 풋/콜 OI ≥1.0)"
+        )
+    if "gap_down_stress" in regimes:
+        gap = inputs.get("premarket_gap")
+        if gap is not None and float(gap) <= -0.015:
+            rules.append("프리마켓 갭 ≤-1.5%")
+        else:
+            rules.append("당일 수익률 ≤-2% 그리고 풋/콜 거래량비 ≥1.1")
+    short_chg = inputs.get("short_chg_pct")
+    day_return = inputs.get("day_return")
+    if (
+        short_chg is not None
+        and day_return is not None
+        and float(short_chg) >= 8.0
+        and float(day_return) <= -0.02
+    ):
+        rules.append("공매도 잔고 증감 ≥8% 그리고 당일 수익률 ≤-2% (보조 점수)")
+    return rules
 
 
 def classify_universe(us_snap: dict[str, Any]) -> dict[str, Any]:
@@ -284,6 +317,20 @@ def build_transmission(
             "drivers": drivers,
         }
 
+    iv_change_observations = sum(
+        1
+        for name in regimes.get("names") or []
+        if (name.get("inputs") or {}).get("atm_call_iv_change") is not None
+    )
+    for channel in ("vol_up", "vol_down"):
+        channels_out[channel]["observable"] = iv_change_observations > 0
+        channels_out[channel]["iv_change_observations"] = iv_change_observations
+        if iv_change_observations == 0:
+            channels_out[channel]["unavailable_reason_ko"] = (
+                "비교 가능한 ATM IV 변화 시계열이 없어 거래량만으로 "
+                "변동성 매수·매도를 판정하지 않음"
+            )
+
     # overall: emphasize downside for headline
     headline = "quiet"
     for ch in ("downside", "vol_up", "upside", "vol_down"):
@@ -298,9 +345,8 @@ def build_transmission(
     # Human-readable "why" for UI (실측 inputs — not advice)
     evidence_us: list[dict[str, Any]] = []
     for n in regimes.get("names") or []:
-        if n.get("primary_channel") != "downside" and "downside_put_bid" not in (
-            n.get("regimes") or []
-        ):
+        rules_ko = _downside_rules_ko(n)
+        if not rules_ko:
             continue
         inp = n.get("inputs") or {}
         evidence_us.append(
@@ -313,13 +359,15 @@ def build_transmission(
                 "options_total_volume": inp.get("options_total_volume"),
                 "short_chg_pct": inp.get("short_chg_pct"),
                 "day_return": inp.get("day_return"),
-                "rule_ko": (
-                    "풋/콜 거래량비 ≥1.1 이고 (당일 약세 또는 풋/콜 OI≥1.0) → downside_put_bid"
-                ),
+                "premarket_gap": inp.get("premarket_gap"),
+                "premarket_gap_quality": inp.get("premarket_gap_quality"),
+                "downside_score": (n.get("channel_scores") or {}).get("downside"),
+                "rules_ko": rules_ko,
+                "rule_ko": " · ".join(rules_ko),
             }
         )
     evidence_us.sort(
-        key=lambda r: float(r.get("put_call_volume") or 0), reverse=True
+        key=lambda r: float(r.get("downside_score") or 0), reverse=True
     )
 
     down = channels_out.get("downside") or {}
@@ -328,7 +376,8 @@ def build_transmission(
     for e in evidence_us[:4]:
         why_bits.append(
             f"{e['symbol']} P/C거래량={e.get('put_call_volume')} "
-            f"P/C OI={e.get('put_call_oi')} 공매증감%={e.get('short_chg_pct')}"
+            f"P/C OI={e.get('put_call_oi')} 프리마켓갭={e.get('premarket_gap')} "
+            f"공매증감%={e.get('short_chg_pct')} [{e.get('rule_ko')}]"
         )
     link_bits = [
         f"{d['us']}→{d['kr']}(heat {d['heat']}, {d.get('edge_type')})" for d in top_drv
@@ -343,9 +392,8 @@ def build_transmission(
         "quiet": "조용",
     }
     why_ko = (
-        "하방 경보는 ‘미국 종목이 빠졌다’가 아니라, "
-        "공개 옵션에서 풋 거래·OI가 콜보다 두드러진 이름(SOXL/SMH/EWY 등)이 "
-        "한국 반도체·대형주 링크(Tier A/B)로 연결된 상태다. "
+        "하방 heat는 공개 옵션의 풋 우위 조건 또는 큰 음의 프리마켓 갭 등 "
+        "실제로 충족된 규칙을 한국 반도체·대형주 링크(Tier A/B)에 가중한 값이다. "
         + ("근거: " + " · ".join(why_bits) if why_bits else "")
         + ((" · 전이: " + ", ".join(link_bits)) if link_bits else "")
     )
@@ -354,7 +402,10 @@ def build_transmission(
         "channels": "채널별 heat 합. 카드 클릭 시 drivers·US 옵션/숏 실측값 표를 열 것.",
         "drivers": "어느 미국 심볼→어느 한국 종목으로 heat가 전달되는지.",
         "edge_type": "etf_beta=수익률 링크(옵션 포지션 아님). discovered_corr=통계 발견.",
-        "not_price_crash": "당일 미국 주가 급락이 없어도 P/C 상승만으로 하방 레짐이 뜰 수 있음.",
+        "not_price_crash": (
+            "당일 수익률이 작아도 P/C 조건이나 프리마켓 갭 조건으로 하방 레짐이 뜰 수 있음. "
+            "각 evidence_us.rule_ko가 실제 발화 조건임."
+        ),
     }
 
     return {
@@ -378,7 +429,8 @@ def build_transmission(
         "disclaimer_ko": us_snap.get("disclaimer_ko"),
         "note_ko": (
             "Tier A 고정 링크 (+ Tier B corr 발견, 하향 가중). "
-            "주체 특정 없음. 하방=풋 우세 레짐×KR 링크 heat. "
+            "주체 특정 없음. 하방=실제 발화한 풋 우위/갭 스트레스×KR 링크 heat. "
+            "IV 변화가 없으면 거래량만으로 vol-long/vol-short를 판정하지 않음. "
             "open30m_prior는 수익률 버킷 프록시(옵션 히스토리 아님)."
         ),
     }

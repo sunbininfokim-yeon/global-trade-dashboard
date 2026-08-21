@@ -23,7 +23,13 @@ from market_microstructure.derivatives_history import (  # noqa: E402
     validate_direction_record,
     validate_stock_record,
 )
+from market_microstructure.external_history import (  # noqa: E402
+    append_external_history,
+    external_records_from_snapshot,
+    validate_external_record,
+)
 from fetch_kr_derivatives import derivative_day_candidates  # noqa: E402
+from backfill_single_stock_letf_history import trading_day_candidates  # noqa: E402
 
 
 def _board() -> dict:
@@ -79,8 +85,18 @@ def _micro() -> dict:
                 "letf_aum_sum_krw": 500.0,
                 "letf_aum_long_krw": 400.0,
                 "letf_aum_inverse_krw": 100.0,
+                "day_return": -0.05,
                 "products": [
-                    {"ticker": "A", "name": "A LETF", "aum": 500.0, "trading_value": 100.0}
+                    {
+                        "ticker": "A",
+                        "name": "A LETF",
+                        "L": 2.0,
+                        "direction": "long",
+                        "aum": 500.0,
+                        "aum_source": "INVSTASST_NETASST_TOTAMT",
+                        "aum_quality": "observed",
+                        "trading_value": 100.0,
+                    }
                 ],
             },
             {
@@ -111,8 +127,14 @@ class TestDerivativesHistory(unittest.TestCase):
         self.assertEqual(activity["kospi200_options"]["put_call_volume"], 0.5)
         self.assertEqual(direction["by_direction"]["long"]["share_of_lev_tv_pct"], 25.0)
         self.assertEqual(stocks[0]["spot_trading_value_krw"], 1_000.0)
+        self.assertEqual(stocks[0]["underlying_day_return"], -0.05)
+        self.assertEqual(stocks[0]["implied_rebalance_krw"], -50.0)
+        self.assertEqual(stocks[0]["implied_ir_pct"], 5.0)
+        self.assertEqual(stocks[0]["implied_rebalance_quality"], "estimated")
         self.assertEqual(stocks[1]["quality"], "partial")
         self.assertIn("aum_krw", stocks[1]["products"][0])
+        self.assertIsNone(stocks[1]["implied_rebalance_krw"])
+        self.assertIsNone(stocks[1]["implied_ir_pct"])
 
     def test_missing_derivatives_source_creates_no_activity_placeholder(self):
         board = _board()
@@ -146,6 +168,73 @@ class TestDerivativesHistory(unittest.TestCase):
         days = derivative_day_candidates(now=datetime(2026, 8, 17, 17, 35), max_lookback=3)
         self.assertEqual(days, ["20260816", "20260815", "20260814"])
         self.assertEqual(derivative_day_candidates("2026-08-13"), ["20260813"])
+
+    def test_single_stock_backfill_only_generates_weekday_candidates(self):
+        from datetime import date
+
+        self.assertEqual(
+            trading_day_candidates(date(2026, 8, 14), date(2026, 8, 17)),
+            [date(2026, 8, 14), date(2026, 8, 17)],
+        )
+
+    def test_external_snapshot_keeps_aum_and_bar_provenance_separate(self):
+        snapshot = {
+            "fetched_at": "2026-08-20T08:00:00+00:00",
+            "fx": {"usdhkd": 7.8},
+            "hk": {
+                "products": [
+                    {
+                        "ticker": "7709.HK",
+                        "underlying": "000660",
+                        "L": 2.0,
+                        "direction": "long",
+                        "structure": "swap",
+                        "aum_usd": 700_000_000.0,
+                        "notional_exposure_usd": 1_400_000_000.0,
+                        "trading_value_usd": 12_000_000.0,
+                        "source": "Yahoo Finance (yfinance)",
+                        "quality": "observed",
+                        "yahoo": {
+                            "currency": "HKD",
+                            "last_bar": {
+                                "as_of": "2026-08-19",
+                                "close": 10.0,
+                                "volume": 100.0,
+                            },
+                        },
+                    }
+                ]
+            },
+            "us_proxy": {"products": []},
+        }
+        rows = external_records_from_snapshot(snapshot)
+        self.assertEqual(len(rows), 1)
+        self.assertEqual(rows[0]["date"], "2026-08-19")
+        self.assertEqual(rows[0]["quality"], "partial")
+        self.assertEqual(rows[0]["aum_quality"], "observed_snapshot_unstamped")
+        self.assertIsNone(rows[0]["aum_as_of"])
+        self.assertEqual(rows[0]["trading_value_quality"], "proxy")
+        validate_external_record(rows[0])
+
+    def test_external_history_dedupes_date_venue_ticker_only(self):
+        snapshot = {
+            "fetched_at": "2026-08-20T08:00:00+00:00",
+            "fx": {"usdhkd": 7.8},
+            "hk": {"products": [{
+                "ticker": "7709.HK", "aum_usd": 1.0,
+                "yahoo": {"last_bar": {"as_of": "2026-08-19", "close": 1.0, "volume": 1.0}},
+            }]},
+            "us_proxy": {"products": []},
+        }
+        row = external_records_from_snapshot(snapshot)[0]
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "external.jsonl"
+            append_external_history(path, [row])
+            newer = dict(row, aum_usd=2.0)
+            append_external_history(path, [newer])
+            records = [json.loads(line) for line in path.read_text(encoding="utf-8").splitlines()]
+        self.assertEqual(len(records), 1)
+        self.assertEqual(records[0]["aum_usd"], 2.0)
 
 
 if __name__ == "__main__":

@@ -113,7 +113,7 @@ def rank_leverage_products(
 def _stock_youtube_impact(
     snap: dict[str, Any], day: dict[str, Any], ticker: str, fx: float
 ) -> dict[str, Any] | None:
-    """YouTube / wag-the-dog style reverse: spot ADV vs LETF AUM & day TV & IR."""
+    """Paper-style reverse: spot daily TV vs LETF AUM, turnover and IR."""
     st_day = next((s for s in (day.get("stocks") or []) if s.get("ticker") == ticker), None)
     st = next((s for s in (snap.get("stocks") or []) if s.get("ticker") == ticker), None)
     if not st:
@@ -175,12 +175,12 @@ def _stock_youtube_impact(
         },
         "youtube_impact_ko": {
             "metric_1_wag_the_dog": {
-                "name": "LETF 일거래대금 / 현물 ADV",
+                "name": "LETF 일거래대금 / 현물 당일 거래대금",
                 "value_pct": None
                 if st.get("letf_turnover_ratio") is None
                 else round(float(st["letf_turnover_ratio"]) * 100.0, 2),
                 "band": tangle.get("wag_the_dog_band"),
-                "formula": "Σ LETF trading_value / underlying ADV",
+                "formula": "Σ LETF trading_value / underlying daily trading value",
                 "read_ko": "유튜브 '개가 꼬리를 흔든다' — 레버 ETF 거래가 현물 대비 얼마나 큰지. low<5% · watch~10% · high≥10%.",
             },
             "metric_2_size_vs_mcap": {
@@ -194,12 +194,12 @@ def _stock_youtube_impact(
                 "formula": "Σ AUM×|L| / free_float",
             },
             "metric_4_short_gamma_ir": {
-                "name": "실현 IR (리밸런싱 압력)",
+                "name": "실현 IR (순합 리밸런싱 추정)",
                 "value_pct": tangle.get("realized_ir_pct"),
-                "tr_krw": realized.get("tr_abs_sum"),
+                "tr_krw": realized.get("tr_total"),
                 "day_R": st.get("day_return"),
-                "formula": "TR=Σ AUM×(L²−L)×R · IR=|TR|/ADV×100",
-                "read_ko": "종가 리밸런싱이 현물 ADV의 몇 %인지. 하락일·인버스 공존 시 숏감마 압력.",
+                "formula": "TR=Σ[AUM×(L²−L)×R] (signed net) · IR=|TR|/현물 당일 거래대금×100",
+                "read_ko": "상품별 signed TR을 먼저 합산한 모델 추정치. 실제 체결·딜러 감마·가격 영향 관측값이 아니다.",
                 "scenario_minus_5pct_ir": ((st.get("scenarios") or {}).get("r_minus_5pct") or {}).get(
                     "ir_pct"
                 ),
@@ -778,4 +778,3 @@ def markdown_ai_casino_brief(brief: dict[str, Any]) -> str:
         )
     lines.append("")
     return "\n".join(lines)
-

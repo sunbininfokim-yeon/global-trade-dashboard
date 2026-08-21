@@ -13,6 +13,8 @@ from datetime import date
 from pathlib import Path
 from typing import Any, Iterable
 
+from .formulas import impact_ratio, total_rebalance
+
 
 COMMON_FIELDS = ("date", "as_of", "source", "quality")
 DIRECTIONS = ("long", "inverse", "inverse_2x", "gobus_inverse_2x")
@@ -105,7 +107,7 @@ def validate_stock_record(record: dict[str, Any]) -> None:
         "letf_aum_long_krw",
         "letf_aum_inverse_krw",
     ):
-        _number(record.get(key), field=key, allow_none=(key == "spot_trading_value_krw"))
+        _number(record.get(key), field=key, allow_none=True)
     products = record.get("products")
     if not isinstance(products, list):
         raise HistoryValidationError("products must be a list, including an empty list when unavailable")
@@ -121,6 +123,25 @@ def validate_stock_record(record: dict[str, Any]) -> None:
             field=f"products[{index}].trading_value_krw",
             allow_none=True,
         )
+
+    implied_keys = (
+        "underlying_day_return",
+        "implied_rebalance_krw",
+        "implied_ir_pct",
+        "implied_rebalance_quality",
+        "implied_rebalance_formula",
+    )
+    present = [key for key in implied_keys if key in record]
+    if present and len(present) != len(implied_keys):
+        raise HistoryValidationError("implied rebalance fields must be written together")
+    if present:
+        for key in implied_keys[:3]:
+            _number(record[key], field=key, allow_none=True)
+        if record["implied_rebalance_quality"] != "estimated":
+            raise HistoryValidationError("implied_rebalance_quality must be estimated")
+        formula = record["implied_rebalance_formula"]
+        if not isinstance(formula, str) or not formula.strip():
+            raise HistoryValidationError("implied_rebalance_formula must be non-empty")
 
 
 def _quality(*values: Any) -> str:
@@ -204,11 +225,61 @@ def direction_record_from_micro(snapshot: dict[str, Any]) -> dict[str, Any] | No
 
 
 def _product_record(product: dict[str, Any]) -> dict[str, Any]:
-    return {
+    record = {
         "ticker": product.get("ticker"),
         "name": product.get("name"),
         "aum_krw": product.get("aum"),
         "trading_value_krw": product.get("trading_value"),
+    }
+    for key in ("L", "direction", "aum_source", "aum_quality"):
+        if product.get(key) is not None:
+            record[key] = product.get(key)
+    return record
+
+
+IMPLIED_REBALANCE_FORMULA = (
+    "signed Σ[AUM × (L² − L) × underlying_day_return]; "
+    "implied_ir_pct=abs(net sum)/spot daily trading value ×100; "
+    "model estimate, not observed ETF trades or price impact"
+)
+
+
+def _implied_rebalance(
+    stock: dict[str, Any], products: list[dict[str, Any]]
+) -> dict[str, Any]:
+    """Build the signed daily-reset estimate from auditable raw inputs.
+
+    The UI may calculate moving averages from these daily records.  The data
+    layer stores no calendar-filled or smoothed value.
+    """
+    day_return = stock.get("day_return")
+    spot_tv = stock.get("spot_trading_value_krw", stock.get("adv_spot_krw"))
+    null_result = {
+        "underlying_day_return": day_return,
+        "implied_rebalance_krw": None,
+        "implied_ir_pct": None,
+        "implied_rebalance_quality": "estimated",
+        "implied_rebalance_formula": IMPLIED_REBALANCE_FORMULA,
+    }
+    if day_return is None or spot_tv is None or float(spot_tv) <= 0 or not products:
+        return null_result
+
+    model_products: list[dict[str, float]] = []
+    for product in products:
+        aum = product.get("aum_krw")
+        leverage = product.get("L")
+        if aum is None or leverage is None:
+            return null_result
+        model_products.append({"aum": float(aum), "L": float(leverage)})
+
+    totals = total_rebalance(model_products, r=float(day_return))
+    signed_net = totals["tr_total"]
+    return {
+        "underlying_day_return": float(day_return),
+        "implied_rebalance_krw": signed_net,
+        "implied_ir_pct": impact_ratio(signed_net, float(spot_tv)),
+        "implied_rebalance_quality": "estimated",
+        "implied_rebalance_formula": IMPLIED_REBALANCE_FORMULA,
     }
 
 
@@ -226,6 +297,7 @@ def stock_records_from_micro(snapshot: dict[str, Any]) -> list[dict[str, Any]]:
         products = [_product_record(product) for product in stock.get("products") or []]
         partial_products = not products or any(
             product["aum_krw"] is None or product["trading_value_krw"] is None
+            or product.get("aum_quality") in {"proxy", "missing"}
             for product in products
         )
         record = {
@@ -244,6 +316,7 @@ def stock_records_from_micro(snapshot: dict[str, Any]) -> list[dict[str, Any]]:
             "letf_aum_inverse_krw": stock.get("letf_aum_inverse_krw"),
             "products": products,
         }
+        record.update(_implied_rebalance(stock, products))
         validate_stock_record(record)
         records.append(record)
     return records

@@ -121,11 +121,19 @@ const MS_HIST_SERIES = {
 // stock_letf_history_v1.jsonl carries every single-stock LETF ticker in one
 // log (currently 000660 SK하이닉스, 005930 삼성전자), so the series has to
 // filter to one ticker's rows rather than assume the file is already scoped.
+// The last two are the modelled series -- signed 조원, not a share of
+// anything -- so they always carry the estimate disclaimer in their own
+// fin-note rather than relying on the reader to remember it from the title.
+const MS_IMPLIED_REBALANCE_NOTE = '일일 리셋 공식 추정치이며 실제 ETF 주문·체결·가격영향이 아님';
 const msStockLetfSeries = (ticker, ko) => [
     { file: 'stockLetf', filter: (r) => r.ticker === ticker, label: `${ko} LETF 거래대금`, unit: '조', pick: (r) => msToJo(r.letf_trading_value_krw) },
     { file: 'stockLetf', filter: (r) => r.ticker === ticker, label: `${ko} 현물 거래대금`, unit: '조', pick: (r) => msToJo(r.spot_trading_value_krw) },
     { file: 'stockLetf', filter: (r) => r.ticker === ticker, label: `${ko} LETF / 현물 거래대금 비율`, unit: '%', pick: (r) => Number.isFinite(r.letf_turnover_ratio) ? r.letf_turnover_ratio * 100 : null },
     { file: 'stockLetf', filter: (r) => r.ticker === ticker, label: `${ko} LETF 합계 순자산 (AUM)`, unit: '조', pick: (r) => msToJo(r.letf_aum_sum_krw) },
+    { file: 'stockLetf', filter: (r) => r.ticker === ticker, label: `${ko} 추정 리밸런싱 압력 (부호 포함)`, unit: '조',
+        pick: (r) => msToJo(r.implied_rebalance_krw), note: MS_IMPLIED_REBALANCE_NOTE },
+    { file: 'stockLetf', filter: (r) => r.ticker === ticker, label: `${ko} 추정 압력 / 현물 당일 거래대금`, unit: '%',
+        pick: (r) => msFinite(r.implied_ir_pct), note: MS_IMPLIED_REBALANCE_NOTE },
 ];
 
 const msDirSeries = (dir, ko) => [
@@ -144,20 +152,24 @@ const msHistPeriodBar = () => `
         ${MS_HIST_PERIODS.map(([id, ko]) => `<button class="mm-tab ${id === MS_HIST_PERIOD ? 'on' : ''}" data-ms-hist-period="${id}">${finEsc(ko)}</button>`).join('')}
     </div>`;
 
-// Two points make a segment, not a trend, so below that the honest output is
-// the count of days actually observed. Non-trading days are absent rows and
-// stay absent -- the x-axis is observations, never a filled calendar.
+// Four points still reads as a trend line to the eye, so the honest floor is
+// five: below that the output is the count of days actually observed. Non-
+// trading days are absent rows and stay absent -- the x-axis is observations,
+// never a filled calendar.
+const MS_HIST_MIN_OBS = 5;
+
 const msHistChart = (spec) => {
     const all = msSpecRows(spec);
     const win = MS_HIST_PERIOD === 'all' ? all : all.slice(-Number(MS_HIST_PERIOD));
     const values = win.map(spec.pick);
     const usable = values.filter(Number.isFinite).length;
-    if (usable < 2) {
+    if (usable < MS_HIST_MIN_OBS) {
         return `<div class="ms-hist-empty">
-            <strong>히스토리 축적 중</strong>
-            <p>${finEsc(spec.label)} — 현재 관측 ${usable}일. 일별 로그가 2거래일 이상 쌓이면 추이선이 자동으로 표시됩니다.
+            <strong>히스토리 축적 중 · ${usable}/${MS_HIST_MIN_OBS} 거래일</strong>
+            <p>${finEsc(spec.label)} — 현재 관측 ${usable}일. 일별 로그가 ${MS_HIST_MIN_OBS}거래일 이상 쌓이면 추이선이 자동으로 표시됩니다.
             없는 날짜를 채워 그리지 않습니다.</p>
-        </div>`;
+        </div>
+        ${spec.note ? `<p class="fin-note ms-warn">${finEsc(spec.note)}</p>` : ''}`;
     }
     const soft = win.filter((r) => r.quality && r.quality !== 'observed').length;
     const last = win[win.length - 1] || {};
@@ -165,7 +177,8 @@ const msHistChart = (spec) => {
         ${mmLineChart(win.map((r) => r.date), values, { unit: spec.unit, label: spec.label })}
         <p class="fin-note">${finEsc(spec.label)} · 관측 ${usable}거래일 (${finEsc(win[0].date || '')} ~ ${finEsc(last.date || '')}) ·
             출처 ${finEsc(last.source || '—')}${soft ? ` · <span class="ms-missing">추정·부분 관측 ${soft}일 포함</span>` : ' · 전 구간 실측'}.
-            휴장일은 채우지 않습니다.</p>`;
+            휴장일은 채우지 않습니다.</p>
+        ${spec.note ? `<p class="fin-note ms-warn">${finEsc(spec.note)}</p>` : ''}`;
 };
 
 // One window control per modal: the charts under it all read the same global,
@@ -175,7 +188,7 @@ const msHistBlock = (specs) => {
     const drawable = list.some((s) => {
         const all = msSpecRows(s);
         const win = MS_HIST_PERIOD === 'all' ? all : all.slice(-Number(MS_HIST_PERIOD));
-        return win.map(s.pick).filter(Number.isFinite).length >= 2;
+        return win.map(s.pick).filter(Number.isFinite).length >= MS_HIST_MIN_OBS;
     });
     return (drawable ? msHistPeriodBar() : '')
         + list.map((s, i) => (i ? `<h3 class="fin-sub">${finEsc(s.label)}</h3>` : '') + msHistChart(s)).join('');
@@ -184,6 +197,23 @@ const msHistBlock = (specs) => {
 const msMissing = (label) => `<span class="ms-missing">${finEsc(label || '데이터 없음')}</span>`;
 const msNum = (v, d = 0) => Number.isFinite(v) ? v.toLocaleString('ko-KR', { maximumFractionDigits: d }) : '—';
 const msJo = (v) => Number.isFinite(v) ? `${(v / 1e12).toFixed(2)}조` : '—';
+// `letf_aum_quality`/product `aum_quality` distinguish KRX-reported net assets
+// from a market-cap stand-in. Calling the MKTCAP fallback "실측" is exactly
+// the overstatement this label exists to prevent.
+const msAumProvenance = (q) => q === 'observed' ? '(순자산총액 관측)'
+    : (q === 'proxy' || q === 'partial') ? '(시가총액 기반 순자산 프록시)' : '';
+
+// Levered ETF turnover as a share of the two markets combined, rather than as
+// a multiple of cash alone. Safe to add the two: FDR's KOSPI listing (개별
+// 종목) and its ETF/KR listing are disjoint sets -- verified, zero overlapping
+// codes -- so no trade is counted twice. Still not "all trading": non-levered
+// ETFs and KOSDAQ are in neither term.
+const msLevShareOfCombined = (cs) => {
+    const cash = cs && cs.kospi_cash_tv_krw;
+    const lev = cs && cs.levered_inverse_tv_krw;
+    if (!Number.isFinite(cash) || !Number.isFinite(lev) || cash + lev <= 0) return null;
+    return lev / (cash + lev);
+};
 const msSignedJo = (v) => Number.isFinite(v) ? `${v >= 0 ? '+' : ''}${(v / 1e12).toFixed(2)}조` : '—';
 const msEok = (v) => Number.isFinite(v) ? `${v >= 0 ? '+' : ''}${Math.round(v).toLocaleString('ko-KR')}억` : '—';
 // msEok signs its output because it reports net flows. A balance is not a
@@ -201,6 +231,18 @@ const msCard = (title, value, sub, modalKey, cls) => `
         <span class="fin-card-value ${cls || ''}">${value}</span>
         ${sub ? `<p class="fin-card-plain">${sub}</p>` : ''}
         ${modalKey ? `<span class="ms-more">${/^(conc:|hist:|dir:|stock_letf:|letf_cat$|alert_letf$)/.test(String(modalKey)) ? '추이 보기' : '표 보기'} →</span>` : ''}
+    </button>`;
+
+// The three credit balances already have a same-date, per-series-scaled
+// history view (the price-level chart's credit overlay) -- this opens that
+// instead of a second chart, so 예탁금/신용융자/미수금 never end up compared
+// on one shared numeric y-axis anywhere in the UI.
+const msCreditCard = (title, value, sub) => `
+    <button class="fin-card ms-card ms-clickable" data-ms-credit-open="1">
+        <span class="fin-card-title">${finEsc(title)}</span>
+        <span class="fin-card-value">${value}</span>
+        ${sub ? `<p class="fin-card-plain">${sub}</p>` : ''}
+        <span class="ms-more">추이 보기 →</span>
     </button>`;
 
 const msTable = (head, rows) => `
@@ -315,6 +357,10 @@ const msPriceLevelChart = (pts, rows, opts = {}) => {
         { key: 'investor_deposit_eok', ko: '투자자 예탁금', cls: 'deposit' },
         { key: 'credit_loan_eok', ko: '신용융자', cls: 'credit' },
         { key: 'uncollected_eok', ko: '미수금', cls: 'uncollected' },
+        // 반대매매 is two orders of magnitude below 미수금 and spikier than
+        // any of the others -- it is only legible at all because each series
+        // gets its own vertical range.
+        { key: 'forced_sale_eok', ko: '반대매매', cls: 'forced' },
     ];
     const creditJo = (d, key) => {
         const row = creditByDate.get(d.date);
@@ -345,7 +391,13 @@ const msPriceLevelChart = (pts, rows, opts = {}) => {
         });
         return d;
     };
-    const joLabel = (v) => (v >= 10 ? v.toFixed(0) : v.toFixed(1)) + '조';
+    // Everything here is carried in 조, but 반대매매 lives around 0.005~0.17조
+    // and would print as "0.0조" for most of the window -- a real number
+    // rendered as nothing. Below 0.5조 the label drops back to 억, its native
+    // unit in the source.
+    const joLabel = (v) => v < 0.5
+        ? `${Math.round(v * 10000).toLocaleString('ko-KR')}억`
+        : (v >= 10 ? v.toFixed(0) : v.toFixed(1)) + '조';
     const pctChg = (st) => (st && st.first ? ((st.last - st.first) / st.first) * 100 : null);
 
     const grid = Array.from({ length: 7 }, (_, i) => yLo + (yHi - yLo) * (i / 6));
@@ -397,7 +449,7 @@ const msPriceLevelChart = (pts, rows, opts = {}) => {
                 finEsc(d.date)} · ${finEsc(opts.lineName || '종가')} ${msNum(d.close)} · 개인 ${fmt(d._retail)} · 외국인 ${
                 fmt(d._foreign)} · 기관 ${fmt(d._inst)}${hasCredit ? CREDIT_SERIES.map((s) => {
                     const v = creditJo(d, s.key);
-                    return v === null ? '' : ` · ${s.ko} ${v >= 10 ? v.toFixed(1) : v.toFixed(2)}조`;
+                    return v === null ? '' : ` · ${s.ko} ${joLabel(v)}`;
                 }).join('') : ''}</title></rect>`).join('')}
             <text x="${L - 8}" y="${T - 12}" class="mm-tick" text-anchor="end">${finEsc(opts.yLabel || '(pt)')}</text>
             <text x="${W - R + 8}" y="${(H - B).toFixed(1)}" class="mm-tick">${finEsc(opts.xLabel || '순매수')}</text>
@@ -438,6 +490,8 @@ const msTangle = (D) => {
     const dc = msCredit(D);
     const byDir = ratios.by_direction || {};
     const bands = m.ir_bands || {};
+    const cs = m.letf_category_share || {};
+    const ssCat = (cs.by_category || {}).single_stock || null;
 
     // Stress-sorted: the row worth looking at first is the one with the
     // biggest 10%-down impact, not the biggest name.
@@ -463,17 +517,29 @@ const msTangle = (D) => {
     <section class="fin-block fin-block-wide">
         <h2>B · 시장 전체</h2>
         <p class="fin-lead">
-            아래 비율의 분모는 <strong>코스피 현물 거래대금</strong>, 분자는 <strong>레버리지·인버스 ETF 거래대금</strong>입니다.
-            서로 다른 두 시장의 거래대금을 나눈 값이라 "시장의 몇 %를 레버리지 ETF가 차지한다"는 뜻이 아닙니다.
-            일반(비레버리지) ETF는 분자에 들어가지 않습니다.
+            같은 분자(<strong>레버리지·인버스 ETF 거래대금</strong>)를 두 가지 분모로 나눠 나란히 둡니다.
+            왼쪽은 코스피 현물만 분모로 둔 <em>배율</em>이라 100%를 넘을 수도 있고, 오른쪽은 둘을 합친
+            <em>몫</em>이라 100%를 넘지 않습니다. 일반(비레버리지) ETF는 어느 쪽 분자에도 들어가지 않습니다.
         </p>
         <div class="fin-cards">
-            ${msCard('레버리지·인버스 ETF 거래대금 ÷ 코스피 현물 거래대금', Number.isFinite(ratios.levered_inverse_etf_tv_over_kospi_cash_tv_pct) ? ratios.levered_inverse_etf_tv_over_kospi_cash_tv_pct.toFixed(1) + '%' : '—',
+            ${msCard('레버·인버스 ETF ÷ 코스피 현물', Number.isFinite(ratios.levered_inverse_etf_tv_over_kospi_cash_tv_pct) ? ratios.levered_inverse_etf_tv_over_kospi_cash_tv_pct.toFixed(1) + '%' : '—',
                 `정방향 ${msJo(ratios.long_tv_jo * 1e12)} · 인버스 ${msJo(ratios.inverse_tv_jo * 1e12)}`, 'letf_cat')}
+            ${msCard('레버·인버스 ETF ÷ (코스피 현물 + 레버·인버스 ETF)', msPct(msLevShareOfCombined(cs), 1),
+                Number.isFinite(cs.kospi_cash_tv_jo) && Number.isFinite(cs.levered_inverse_tv_jo)
+                    ? `분모 ${(cs.kospi_cash_tv_jo + cs.levered_inverse_tv_jo).toFixed(2)}조 (현물 ${cs.kospi_cash_tv_jo.toFixed(2)}조 + 레버 ${cs.levered_inverse_tv_jo.toFixed(2)}조)`
+                    : '', 'letf_cat')}
+            ${ssCat ? msCard('그중 단일종목 (삼전·하닉)', msJo(ssCat.trading_value_krw),
+                `레버·인버스 내 ${(ssCat.share_of_lev_tv_pct ?? 0).toFixed(1)}% · 코스피 현물 대비 ${(ssCat.share_of_kospi_tv_pct ?? 0).toFixed(2)}% · 상품 ${msNum(ssCat.n_products)}종`,
+                'letf_cat') : ''}
         </div>
         <p class="fin-note">
+            25%대로 보이는 값은 대부분 <strong>지수</strong> 레버리지(KODEX 레버리지·인버스 등)입니다.
+            PDF/논문이 말하는 “AI 챔피언의 LETF 회전율”은 위 <strong>단일종목</strong> 카드 쪽입니다 —
+            두 숫자를 같은 것으로 읽지 마세요.
+        </p>
+        <p class="fin-note">
             quality ${finEsc(ratios.quality || '—')} · 관측일 ${finEsc(m.as_of || '—')} · 출처 ${finEsc(ratios.source || '—')}.
-            ${msHistRows('direction').length < 2 ? '일별 이력이 쌓이는 중입니다 — 카드를 열면 관측일수가 표시되고, 2거래일 이상 쌓이면 추이선이 나타납니다.' : '카드를 열면 일별 추이가 표시됩니다.'}
+            ${msHistRows('direction').length < MS_HIST_MIN_OBS ? '일별 이력이 쌓이는 중입니다 — 카드를 열면 관측일수가 표시되고, ' + MS_HIST_MIN_OBS + '거래일 이상 쌓이면 추이선이 나타납니다.' : '카드를 열면 일별 추이가 표시됩니다.'}
         </p>
     </section>
 
@@ -489,7 +555,7 @@ const msTangle = (D) => {
         </div>` : `<p class="fin-note">${msMissing('라이브 재빌드 후 표시')}</p>`}
         <p class="fin-note">
             quality ${finEsc(ratios.quality || '—')} · 관측일 ${finEsc(m.as_of || '—')} · 출처 ${finEsc(ratios.source || '—')}.
-            ${msHistRows('direction').length < 2 ? '일별 이력이 쌓이는 중입니다 — 카드를 열면 관측일수가 표시되고, 2거래일 이상 쌓이면 추이선이 나타납니다.' : '카드를 열면 일별 추이가 표시됩니다.'}
+            ${msHistRows('direction').length < MS_HIST_MIN_OBS ? '일별 이력이 쌓이는 중입니다 — 카드를 열면 관측일수가 표시되고, ' + MS_HIST_MIN_OBS + '거래일 이상 쌓이면 추이선이 나타납니다.' : '카드를 열면 일별 추이가 표시됩니다.'}
         </p>
         ${stack.global_stack_usd ? `
         <p class="fin-note">
@@ -519,15 +585,18 @@ const msTangle = (D) => {
                     Number.isFinite(s10?.ir_pct) ? `<span class="ms-badge ${bandCls[s10.band] || ''}">${s10.ir_pct.toFixed(1)}%</span>` : '—',
                     `<span class="ms-badge ${bandCls[t.realized_band] || ''}">${finEsc(t.realized_band || '—')}</span>`,
                     `<button class="mm-view-btn" data-ms-stock="${finEsc(st.ticker)}" data-ms-modal="letf_products">상품별</button>`
-                    // Any stock with an LETF turnover ratio can offer a trend
-                    // (rows just may not exist yet); Hynix alone routes to the
-                    // richer alert-bucket view since that engine covers only it.
+                    // Every stock in this table routes to the same generic
+                    // trend view, Hynix included. Its separate bucket-alert
+                    // engine (win-rate by ratio band) still exists but only
+                    // via the alert card in the US→KR tab -- routing the D
+                    // row there too meant "추이" opened a different snapshot
+                    // date than the rest of this table without saying so.
                     + (Number.isFinite(st.letf_turnover_ratio)
-                        ? ` <button class="mm-view-btn" data-ms-modal="${st.ticker === '000660' ? 'alert_letf' : `stock_letf:${finEsc(st.ticker)}`}">추이</button>`
+                        ? ` <button class="mm-view-btn" data-ms-modal="stock_letf:${finEsc(st.ticker)}">추이</button>`
                         : ''),
                 ];
             })) : `<p class="fin-note">${msMissing('종목 스트레스 데이터 없음')}</p>`}
-        <p class="fin-note">IR 밴드: 가정된 조정 노출 ÷ 현물 당일 거래대금입니다 (watch ≥ ${bands.watch_lt_pct ?? 10}% · low &lt; ${bands.low_lt_pct ?? 3}%). NAV는 공개 스냅샷에 없어 표시하지 않습니다 — 상품별 순자산(AUM)과 거래대금만 실측입니다.</p>
+        <p class="fin-note">IR 밴드: 가정된 조정 노출 ÷ 현물 당일 거래대금입니다 (watch ≥ ${bands.watch_lt_pct ?? 10}% · low &lt; ${bands.low_lt_pct ?? 3}%). NAV는 공개 스냅샷에 없어 표시하지 않습니다 — 거래대금은 실측이며, 순자산(AUM)은 KRX 실측 또는 시가총액 기반 프록시입니다 (상품별 표에서 구분).</p>
     </section>
 
     <section class="fin-block fin-block-wide">
@@ -613,7 +682,7 @@ const msLevelsTab = (D) => {
             <button class="mm-view-btn ${MS_CREDIT_ON ? 'on' : ''}" data-ms-credit="1">예탁금 · 신용공여 ${MS_CREDIT_ON ? '▲' : '▼'}</button>
         </div>
         ${MS_CREDIT_ON ? `<p class="fin-note ms-credit-hint">
-            아래 그래프에 예탁금 · 신용융자 · 미수금이 <strong>같은 날짜축</strong>으로 겹쳐집니다.
+            아래 그래프에 예탁금 · 신용융자 · 미수금 · 반대매매가 <strong>같은 날짜축</strong>으로 겹쳐집니다.
             셋은 규모가 100배 넘게 차이나서 <strong>각자의 범위로</strong> 그렸습니다 —
             선끼리 높이를 비교하지 마시고 <em>기울기</em>만 보세요. 실제 금액은 아래 범례와 마우스 올린 값에 있습니다.
             시장 전체 집계이며 종목별이 아닙니다.</p>` : ''}
@@ -664,14 +733,14 @@ const msLevelsTab = (D) => {
         <div class="fin-cards">
             ${msCard('신용공여 잔고 / 투자자 예탁금', Number.isFinite(dc.credit_over_deposit_pct) ? dc.credit_over_deposit_pct.toFixed(1) + '%' : '—',
                 `기준일 ${finEsc(dc.as_of || '—')}`, null)}
-            ${msCard('투자자 예탁금', msEokLevel(dc.investor_deposit_eok),
-                Number.isFinite(dc.investor_deposit_chg_eok) ? `전주 대비 ${msEok(dc.investor_deposit_chg_eok)}` : '', null)}
-            ${msCard('신용융자 잔고', msEokLevel(dc.credit_balance_eok),
-                Number.isFinite(dc.credit_balance_chg_eok) ? `전주 대비 ${msEok(dc.credit_balance_chg_eok)}` : '', null)}
-            ${msCard('위탁매매 미수금', msEokLevel(dc.uncollected_eok),
-                Number.isFinite(dc.uncollected_over_deposit_pct) ? `예탁금 대비 ${dc.uncollected_over_deposit_pct.toFixed(2)}%` : '', null)}
-            ${msCard('반대매매', msEokLevel(dc.forced_sale_eok),
-                Number.isFinite(dc.forced_sale_over_uncollected_pct) ? `미수금 대비 ${dc.forced_sale_over_uncollected_pct.toFixed(1)}%` : '', null)}
+            ${msCreditCard('투자자 예탁금', msEokLevel(dc.investor_deposit_eok),
+                Number.isFinite(dc.investor_deposit_chg_eok) ? `전주 대비 ${msEok(dc.investor_deposit_chg_eok)}` : '')}
+            ${msCreditCard('신용융자 잔고', msEokLevel(dc.credit_balance_eok),
+                Number.isFinite(dc.credit_balance_chg_eok) ? `전주 대비 ${msEok(dc.credit_balance_chg_eok)}` : '')}
+            ${msCreditCard('위탁매매 미수금', msEokLevel(dc.uncollected_eok),
+                Number.isFinite(dc.uncollected_over_deposit_pct) ? `예탁금 대비 ${dc.uncollected_over_deposit_pct.toFixed(2)}%` : '')}
+            ${msCreditCard('반대매매', msEokLevel(dc.forced_sale_eok),
+                Number.isFinite(dc.forced_sale_over_uncollected_pct) ? `미수금 대비 ${dc.forced_sale_over_uncollected_pct.toFixed(1)}%` : '')}
         </div>
         <p class="fin-note">${finEsc(dc.note_ko || '')}
             추이 그래프는 위 <strong>가격대별 누적 수급</strong>의 “예탁금 · 신용공여” 버튼에 있습니다.</p>
@@ -745,13 +814,20 @@ const msUsKr = (D) => {
         <div class="ms-channels">
             ${[['downside', '하방'], ['upside', '상방'], ['vol_up', '변동성 확대'], ['vol_down', '변동성 축소']].map(([k, ko]) => {
                 const c = ch[k] || {};
+                // A single IV level plus call/put volume cannot tell long-vol
+                // from short-vol apart -- the engine only fires vol_up/down
+                // when a comparable IV-change observation exists, and flags
+                // `observable:false` otherwise. Showing "quiet" in that case
+                // would read as a judgement the data cannot support.
+                const unobservable = (k === 'vol_up' || k === 'vol_down') && c.observable === false;
                 return `
                 <button class="ms-channel${k === dir ? ' on' : ''}${(c.drivers || []).length ? ' ms-clickable' : ''}"
                         ${(c.drivers || []).length ? `data-ms-modal="ch:${k}"` : 'disabled'}>
                     <span class="ms-ch-name">${finEsc(ko)}</span>
                     <span class="ms-ch-heat">${Number.isFinite(c.heat) ? c.heat.toFixed(1) : '—'}</span>
-                    <span class="ms-ch-lv">${finEsc(c.level || '—')}</span>
-                    ${(c.kr_tickers || []).length ? `<span class="ms-ch-tick">${c.kr_tickers.map(finEsc).join(' · ')}</span>` : ''}
+                    <span class="ms-ch-lv">${unobservable ? '판정 불가' : finEsc(c.level || '—')}</span>
+                    ${unobservable && c.unavailable_reason_ko ? `<span class="ms-ch-tick">${finEsc(c.unavailable_reason_ko)}</span>`
+                        : (c.kr_tickers || []).length ? `<span class="ms-ch-tick">${c.kr_tickers.map(finEsc).join(' · ')}</span>` : ''}
                 </button>`;
             }).join('')}
         </div>
@@ -998,7 +1074,7 @@ const msModalFor = (key, D) => {
                 + `<p class="fin-note">표본 ${msNum((h.sample || {}).n_active_days)}일은 통계로 쓰기에 짧습니다. 구간별 하락 비율이 서로 비슷해 이 지표만으로 방향을 예측할 수 없습니다.</p>` : '')
             + `<p class="fin-note">${finEsc(s.note_ko || '')} ${finEsc(h.limitation_ko || '')}
                출처 ${finEsc(h.data_source || '—')} · 관측일 ${finEsc((D.alerts || {}).as_of || '—')}.
-               ${msHistRows('stockLetf').filter((r) => r.ticker === '000660').length < 2 ? '일별 이력이 아직 쌓이지 않아 오늘 값과 표본 통계만 있습니다.' : '위 추이는 저장된 일별 관측치이며, 아래 표본 통계와는 별개입니다.'}</p>` };
+               ${msHistRows('stockLetf').filter((r) => r.ticker === '000660').length < MS_HIST_MIN_OBS ? '일별 이력이 아직 쌓이지 않아 오늘 값과 표본 통계만 있습니다.' : '위 추이는 저장된 일별 관측치이며, 아래 표본 통계와는 별개입니다.'}</p>` };
     }
     // Samsung Electronics carries the same single-stock LETF fields as Hynix
     // but has no alert-bucket engine behind it -- just the trend plus today's
@@ -1016,20 +1092,31 @@ const msModalFor = (key, D) => {
                 ['LETF 거래대금', msJo(st.letf_trading_value_krw)],
                 ['현물 당일 거래대금', msJo(spotTv)],
                 ['LETF / 현물 비율', msPct(st.letf_turnover_ratio)],
-                ['LETF 합계 순자산 (AUM)', msJo(st.letf_aum_sum_krw)],
+                ['LETF 합계 순자산 (AUM)', `${msJo(st.letf_aum_sum_krw)} <span class="ms-q">${finEsc(msAumProvenance(st.letf_aum_quality))}</span>`],
             ])
             + `<p class="fin-note">관측일 ${finEsc(m.as_of || '—')}. 거래대금 기준 관측치이며 보유 포지션이나 다음 가격 방향이 아닙니다.
-               ${msHistRows('stockLetf').filter((r) => r.ticker === ticker).length < 2 ? '일별 이력이 아직 쌓이지 않아 오늘 값만 있습니다.' : ''}</p>` };
+               ${msHistRows('stockLetf').filter((r) => r.ticker === ticker).length < MS_HIST_MIN_OBS ? '일별 이력이 아직 쌓이지 않아 오늘 값만 있습니다.' : ''}</p>` };
     }
     if (key === 'letf_cat') {
-        const by = ((m.letf_category_share || {}).by_category) || {};
+        const cs = m.letf_category_share || {};
+        const by = cs.by_category || {};
+        const CAT_KO = { index: '지수', sector: '섹터', single_stock: '단일종목 (삼전·하닉)', overseas: '해외' };
+        // Sorted by size: the point of this table is that 지수 dwarfs the rest,
+        // which an insertion-ordered listing hides.
+        const catRows = Object.entries(by).sort((a, b) =>
+            (b[1].trading_value_krw || 0) - (a[1].trading_value_krw || 0));
         return { title: '레버리지·인버스 ETF 거래대금 비율 추이',
             html: msHistBlock([MS_HIST_SERIES['lev:ratio'], MS_HIST_SERIES['lev:kospi_tv']])
-            + (Object.keys(by).length ? `<h3 class="fin-sub">오늘 분류별 거래대금</h3>`
-                + msTable(['분류', '상품 수', '거래대금'],
-                    Object.entries(by).map(([k, v]) => [finEsc(k), msNum(v.n_products), msJo(v.trading_value_krw)])) : '')
-            + `<p class="fin-note">분자는 레버리지·인버스 ETF 거래대금, 분모는 코스피 현물 거래대금입니다.
-               서로 다른 두 시장을 나눈 값이라 시장 점유율이 아닙니다.</p>` };
+            + (catRows.length ? `<h3 class="fin-sub">오늘 분류별 거래대금</h3>`
+                + msTable(['분류', '상품 수', '거래대금', '레버·인버스 내 비중', '코스피 현물 대비'],
+                    catRows.map(([k, v]) => [
+                        finEsc(CAT_KO[k] || k), msNum(v.n_products), msJo(v.trading_value_krw),
+                        Number.isFinite(v.share_of_lev_tv_pct) ? `${v.share_of_lev_tv_pct.toFixed(1)}%` : '—',
+                        Number.isFinite(v.share_of_kospi_tv_pct) ? `${v.share_of_kospi_tv_pct.toFixed(2)}%` : '—',
+                    ])) : '')
+            + `<p class="fin-note">
+               <strong>레버·인버스 내 비중</strong> = 그 분류 ÷ 레버·인버스 ETF 전체(${msJo(cs.levered_inverse_tv_krw)}) — 네 분류를 더하면 100%입니다.<br>
+               <strong>코스피 현물 대비</strong> = 그 분류 ÷ 코스피 현물 거래대금(${msJo(cs.kospi_cash_tv_krw)}) — 분모가 다른 시장이라 점유율이 아니고, 다 더해도 100%가 되지 않습니다.</p>` };
     }
     // The chart already shows the shape of this distribution; the modal is for
     // reading exact per-band figures, so it adds the numeric columns the bars
@@ -1109,23 +1196,32 @@ const msModalFor = (key, D) => {
         return { title: `${sel.name} 단일종목 ETF 상품별`,
             html: msTable(['상품', '배수', '순자산(AUM)', '거래대금', '방향'],
                 (sel.products || []).map((p) => [finEsc(p.name), `${p.L > 0 ? '+' : ''}${p.L}배`,
-                    msJo(p.aum), msJo(p.trading_value), p.direction === 'long' ? '정방향' : '인버스']))
-                + '<p class="fin-note">NAV는 공개 스냅샷에 없습니다. 순자산과 거래대금만 실측입니다.</p>' };
+                    `${msJo(p.aum)} <span class="ms-q">${finEsc(msAumProvenance(p.aum_quality))}</span>`,
+                    msJo(p.trading_value), p.direction === 'long' ? '정방향' : '인버스']))
+                + '<p class="fin-note">NAV는 공개 스냅샷에 없습니다. 거래대금은 실측이며, 순자산(AUM)은 상품마다 관측 또는 시가총액 기반 프록시로 표시가 갈립니다 — 각 행의 괄호를 확인하세요.</p>' };
     }
     if (key.startsWith('ev:')) {
         const sym = key.slice(3);
         const e = (t.evidence_us || []).find((x) => x.symbol === sym);
         if (!e) return null;
+        // rules_ko lists every condition that actually fired for this name;
+        // the old single rule_ko string always named downside_put_bid even
+        // when the row qualified on a gap or short-change rule instead.
+        const rules = Array.isArray(e.rules_ko) && e.rules_ko.length ? e.rules_ko
+            : e.rule_ko ? [e.rule_ko] : [];
         return { title: `${sym} — 판정 근거`,
             html: msTable(['항목', '값'], [
                 ['P/C 거래량', Number.isFinite(e.put_call_volume) ? e.put_call_volume.toFixed(4) : '—'],
                 ['P/C 미결제약정', Number.isFinite(e.put_call_oi) ? e.put_call_oi.toFixed(4) : '—'],
                 ['옵션 총 거래량', msNum(e.options_total_volume)],
+                ['프리마켓 갭', Number.isFinite(e.premarket_gap) ? msPct(e.premarket_gap, 2) : '—'],
                 ['공매도 잔고 증감', Number.isFinite(e.short_chg_pct) ? `${e.short_chg_pct.toFixed(3)}%` : '—'],
                 ['당일 수익률', Number.isFinite(e.day_return) ? msPct(e.day_return, 3) : '—'],
                 ['레짐', (e.regimes || []).join(', ')],
                 ['스트레스', finEsc(e.stress_level || '')],
-            ]) + `<p class="fin-note">${finEsc(e.rule_ko || '')}</p>` };
+            ]) + (rules.length ? `<h4 class="ms-sub-h">발동 조건</h4><ul class="fin-list">${rules.map((r) => `<li>${finEsc(r)}</li>`).join('')}</ul>` : '')
+              + (e.premarket_gap_quality && e.premarket_gap_quality !== 'observed'
+                  ? `<p class="fin-note">프리마켓 갭 품질: ${finEsc(e.premarket_gap_quality)}</p>` : '') };
     }
     if (key.startsWith('ch:')) {
         const c = (t.channels || {})[key.slice(3)] || {};
@@ -1174,7 +1270,7 @@ const msModalFor = (key, D) => {
 };
 
 const renderMicrostructure = async (host) => {
-    host.innerHTML = `<div class="fin-wrap"><p class="fin-loading">호가 및 유동성 자료를 받는 중…</p></div>`;
+    host.innerHTML = `<div class="fin-wrap"><p class="fin-loading">시장 미시구조 자료를 받는 중…</p></div>`;
 
     if (!MS_DATA) {
         const keys = Object.keys(MS_FILES);
@@ -1192,7 +1288,7 @@ const renderMicrostructure = async (host) => {
     }
     const D = MS_DATA;
     if (!Object.values(D).some(Boolean)) {
-        host.innerHTML = finPlaceholder('호가 및 유동성', '수급 불균형 · 가격대별 체결 · 해외-국내 선행',
+        host.innerHTML = finPlaceholder('시장 미시구조', '수급 불균형 · 가격대별 체결 · 해외-국내 선행',
             '스냅샷 JSON을 찾지 못했습니다. 일일 워크플로가 <code>public/data/</code> 에 산출합니다.');
         return;
     }
@@ -1202,8 +1298,8 @@ const renderMicrostructure = async (host) => {
         host.innerHTML = `
         <div class="fin-wrap">
             <div class="fin-head">
-                <h1>호가 및 유동성</h1>
-                <p class="fin-head-en">Market Micro-metrics</p>
+                <h1>시장 미시구조</h1>
+                <p class="fin-head-en">Market Microstructure</p>
                 <p>공개·지연 데이터입니다. 값이 없는 항목은 채우지 않고 비워 둡니다. 투자 권유가 아닙니다.</p>
             </div>
             <div class="mm-tabs" role="tablist">
@@ -1245,6 +1341,16 @@ const renderMicrostructure = async (host) => {
         });
         on('[data-ms-ticker]', (b) => { MS_TICKER = b.dataset.msTicker || null; MS_TAB = 'levels'; paint(); });
         on('[data-ms-credit]', () => { MS_CREDIT_ON = !MS_CREDIT_ON; paint(); });
+        // The three balance cards jump to the same-date overlay rather than
+        // opening a card-specific modal, so 예탁금/신용융자/미수금 stay on
+        // the overlay's per-series scale instead of gaining a second,
+        // shared-axis chart of their own.
+        on('[data-ms-credit-open]', () => {
+            MS_TAB = 'levels';
+            MS_CREDIT_ON = true;
+            paint();
+            host.querySelector('.ms-plc')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        });
         // :not([data-ms-stock]) because that combination is handled above --
         // otherwise this listener would double-fire on the same click and
         // paint() twice.

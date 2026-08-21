@@ -100,6 +100,7 @@ def build_usa_state_drilldown(
     congress: Dict[str, Any],
     governors: Dict[str, Any],
     state_legislatures: Dict[str, Any],
+    state_officials: Dict[str, Any],
     race_progress: Optional[Dict[str, Any]],
 ) -> Dict[str, Any]:
     """Pre-join USA state cards so the browser only renders reviewed facts."""
@@ -112,6 +113,11 @@ def build_usa_state_drilldown(
         for row in (state_legislatures.get("states") or [])
         if row.get("state")
     }
+    officials_by_state = {
+        row.get("state"): row
+        for row in (state_officials.get("states") or [])
+        if row.get("state")
+    }
     races_by_abbr = {
         row.get("id"): row
         for row in ((race_progress or {}).get("units") or [])
@@ -120,15 +126,38 @@ def build_usa_state_drilldown(
     state_cards: List[Dict[str, Any]] = []
     for state, abbr in USA_STATE_ABBR.items():
         state_members = [row for row in members if row.get("state") == state]
+        officials = officials_by_state.get(state) or {}
+        legislature = legislatures_by_state.get(state) or {}
+        leadership = officials.get("leadership") or {}
+        state_senate = dict(legislature.get("state_senate") or {})
+        state_house = dict(legislature.get("state_house") or {})
+        if leadership.get("state_senate") is not None:
+            state_senate["leadership"] = leadership.get("state_senate")
+        if leadership.get("state_house") is not None:
+            state_house["leadership"] = leadership.get("state_house")
+        # Nebraska is officially a nonpartisan unicameral legislature.  The
+        # legacy seat extract places its composition in state_senate, so move
+        # that one public summary to the single-chamber UI card rather than
+        # pretending the state has two chambers.
+        if state == "Nebraska":
+            state_house = dict(state_senate or state_house)
+            state_house["leadership"] = leadership.get("state_house")
+            state_house["label_ko"] = "주 의회 (단원제)"
+            state_house["nonpartisan_official"] = True
+            state_senate = {}
         state_cards.append(
             {
                 "id": abbr,
                 "state": state,
                 "map_feature_code": f"US-{abbr}",
                 "governor": governors_by_state.get(state),
-                "lieutenant_governor": "불명",
-                "attorney_general": "불명",
-                "state_legislature": legislatures_by_state.get(state),
+                "lieutenant_governor": officials.get("lieutenant_governor", "불명"),
+                "attorney_general": officials.get("attorney_general", "불명"),
+                "state_legislature": {
+                    "governor_party": legislature.get("governor_party"),
+                    "state_senate": state_senate or None,
+                    "state_house": state_house or None,
+                },
                 "federal_delegation": {
                     "house_members": [
                         row for row in state_members if row.get("chamber") == "house"
@@ -140,9 +169,8 @@ def build_usa_state_drilldown(
                 },
                 "primary_2026": races_by_abbr.get(abbr),
                 "missing_fields": [
-                    "lieutenant_governor",
-                    "attorney_general",
-                    "state_legislature_member_rosters",
+                    *([] if officials.get("lieutenant_governor") else ["lieutenant_governor"]),
+                    *([] if officials.get("attorney_general") else ["attorney_general"]),
                     "federal_senate_term_end",
                 ],
             }
@@ -170,6 +198,7 @@ def build_usa_state_drilldown(
             "congress": congress.get("as_of"),
             "governors": governors.get("as_of"),
             "state_legislatures": state_legislatures.get("as_of"),
+            "state_officials": state_officials.get("as_of"),
             "race_progress": (race_progress or {}).get("as_of"),
         },
     }
@@ -191,8 +220,10 @@ def build_board(
     usa_congress = load_extracted("usa_congress.json") or {}
     usa_gov = load_extracted("usa_governors.json") or {}
     usa_state_legs = load_extracted("usa_state_legislatures.json") or {}
+    usa_state_officials = load_extracted("usa_state_officials.json") or {}
     jpn_shugiin = load_extracted("jpn_shugiin.json") or {}
     jpn_gov = load_extracted("jpn_governors.json") or {}
+    jpn_government = load_extracted("jpn_government.json") or {}
     gbr_commons = load_extracted("gbr_commons.json") or {}
     isr_knesset = load_extracted("isr_knesset.json") or {}
     deu_bundestag = load_extracted("deu_bundestag.json") or {}
@@ -202,6 +233,8 @@ def build_board(
     kor_assembly = load_extracted("kor_assembly.json") or {}
     kor_local = load_extracted("kor_local_2026.json") or {}
     kor_party_lead = load_extracted("kor_party_leadership.json") or {}
+    kor_executive = load_extracted("kor_executive.json") or {}
+    tier12_executives = load_extracted("tier12_executives.json") or {}
     extract_summary = load_extracted("summary.json") or {}
     learning_analysis = load_extracted("learning_analysis_v1.json") or {}
     factions_board = load_extracted("factions_board.json") or {}
@@ -307,6 +340,13 @@ def build_board(
                 "done": profile["document_ingest"].get("done"),
                 "todo": profile["document_ingest"].get("todo"),
             }
+        # One shared public contract for the national executive screen.  It is
+        # deliberately shallow for tier 2 and must retain source-age/conflict
+        # notes instead of synthesising portfolios.  Japan and Korea below use
+        # their country-specific, fuller contracts.
+        executive_entry = (tier12_executives.get("countries") or {}).get(iso3)
+        if executive_entry:
+            row["executive_live"] = executive_entry
         if iso3 == "USA":
             usa_rp = load_extracted("race_progress_usa_v1.json")
             row["legislature_live"] = {
@@ -323,9 +363,11 @@ def build_board(
                 "governors": usa_gov.get("governors"),
                 "state_legislatures_summary": usa_state_legs.get("summary"),
                 "state_legislatures": usa_state_legs.get("states"),
+                "state_officials": usa_state_officials.get("states"),
                 "source": {
                     "governors": usa_gov.get("source"),
                     "state_legislatures": usa_state_legs.get("source"),
+                    "state_officials": usa_state_officials.get("sources"),
                 },
             }
             row["factions"] = factions_board.get("USA") or {
@@ -337,7 +379,7 @@ def build_board(
                 row["race_progress"] = usa_rp
             row["ui_ready"] = {
                 "state_drilldown": build_usa_state_drilldown(
-                    usa_congress, usa_gov, usa_state_legs, usa_rp
+                    usa_congress, usa_gov, usa_state_legs, usa_state_officials, usa_rp
                 ),
                 "congress": {
                     "summary": usa_congress.get("summary"),
@@ -361,13 +403,16 @@ def build_board(
                 },
             }
         if iso3 == "JPN":
+            row["executive_live"] = jpn_government.get("executive")
             row["legislature_live"] = {
                 "shugiin_members": (jpn_shugiin.get("summary") or {}).get("members"),
                 "shugiin_by_party_abbr": (jpn_shugiin.get("summary") or {}).get("by_party_abbr"),
                 "house_composition_wikipedia": (jpn_shugiin.get("house_composition") or {}).get("by_abbr"),
                 "sangiin_by_abbr": (jpn_shugiin.get("sangiin_composition") or {}).get("by_abbr"),
                 "sangiin_rows": (jpn_shugiin.get("sangiin_composition") or {}).get("rows"),
+                "chamber_leadership": (jpn_government.get("legislature") or {}).get("chamber_leadership"),
                 "source": jpn_shugiin.get("source"),
+                "leadership_source": (jpn_government.get("sources") or {}).get("diet_officers"),
             }
             row["subnational_live"] = {
                 "summary": jpn_gov.get("summary"),
@@ -425,6 +470,7 @@ def build_board(
                 "confidence": rus_duma.get("confidence") or "approximate_pre_election",
             }
         if iso3 == "KOR":
+            row["executive_live"] = kor_executive.get("executive")
             row["legislature_live"] = {
                 "summary": kor_assembly.get("summary"),
                 "parties": kor_assembly.get("parties"),

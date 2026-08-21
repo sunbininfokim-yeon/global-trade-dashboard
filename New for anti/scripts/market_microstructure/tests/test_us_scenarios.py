@@ -48,6 +48,42 @@ class TestUsScenarios(unittest.TestCase):
         self.assertIn("upside_call_bid", out["regimes"])
         self.assertEqual(out["primary_channel"], "upside")
 
+    def test_missing_return_stays_missing_and_does_not_fake_flat_vol(self):
+        row = {
+            "symbol": "TEST",
+            "spot": {"day_return": None},
+            "options": {
+                "put_call_volume": 1.0,
+                "call_volume": 100000,
+                "put_volume": 100000,
+                "atm_call_iv": 0.5,
+            },
+            "finra_short": {},
+        }
+        out = classify_name(row)
+        self.assertIsNone(out["inputs"]["day_return"])
+        self.assertNotIn("vol_long_straddle", out["regimes"])
+        self.assertNotIn("vol_short_strangle", out["regimes"])
+
+    def test_vol_direction_requires_iv_change(self):
+        base = {
+            "symbol": "TEST",
+            "spot": {"day_return": 0.001},
+            "options": {
+                "put_call_volume": 1.0,
+                "call_volume": 100000,
+                "put_volume": 100000,
+            },
+            "finra_short": {},
+        }
+        self.assertEqual(classify_name(base)["regimes"], ["quiet"])
+        base["options"]["atm_call_iv_change"] = 0.08
+        self.assertIn("vol_long_straddle", classify_name(base)["regimes"])
+        base["options"]["atm_call_iv_change"] = -0.08
+        out = classify_name(base)
+        self.assertIn("vol_short_strangle", out["regimes"])
+        self.assertNotIn("vol_long_straddle", out["regimes"])
+
     def test_transmission_joins_graph(self):
         us = {
             "as_of": "2026-08-08",
@@ -83,9 +119,48 @@ class TestUsScenarios(unittest.TestCase):
         self.assertEqual(tx["schema_version"], "us-kr-transmission-v1")
         self.assertTrue(tx["channels"]["downside"]["heat"] > 0)
         self.assertIn("000660", tx["channels"]["downside"]["kr_tickers"])
+        self.assertFalse(tx["channels"]["vol_up"]["observable"])
+        self.assertIn("IV 변화", tx["channels"]["vol_up"]["unavailable_reason_ko"])
         # no banned nicknames in payload
         blob = json.dumps(tx, ensure_ascii=False).lower()
         self.assertNotIn("leopold", blob)
+
+    def test_gap_only_evidence_does_not_claim_put_call_rule(self):
+        us = {
+            "as_of": "2026-08-08",
+            "names": [
+                {
+                    "symbol": "EWY",
+                    "spot": {"day_return": 0.001, "premarket_gap": -0.02},
+                    "options": {
+                        "put_call_volume": 0.4,
+                        "put_call_oi": 0.5,
+                        "call_volume": 100000,
+                        "put_volume": 40000,
+                    },
+                    "finra_short": {},
+                }
+            ],
+        }
+        regimes = classify_universe(us)
+        tx = build_transmission(
+            us,
+            regimes,
+            {
+                "edges": [
+                    {
+                        "id": "ewy_kr",
+                        "us": "EWY",
+                        "kr": "KOSPI",
+                        "edge_type": "korea_country",
+                        "weight": 1.0,
+                    }
+                ]
+            },
+        )
+        evidence = tx["evidence_us"][0]
+        self.assertIn("프리마켓 갭", evidence["rule_ko"])
+        self.assertNotIn("풋/콜 거래량비 ≥1.1", evidence["rule_ko"])
 
     def test_tier_b_merge(self):
         us = {

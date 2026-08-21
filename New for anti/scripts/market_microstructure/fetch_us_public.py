@@ -150,6 +150,8 @@ def fetch_yahoo_spot_options(symbol: str) -> dict[str, Any]:
             "day_return": None if day_r is None else round(day_r, 6),
             "premarket_price": pre,
             "premarket_gap": None if gap_pre is None else round(gap_pre, 6),
+            "premarket_gap_quality": "observed" if gap_pre is not None else "missing",
+            "premarket_gap_formula": "(Yahoo premarket price / Yahoo previous close) - 1",
             "quality": "observed" if px is not None else "missing",
             "source": "Yahoo quote",
         },
@@ -203,12 +205,28 @@ def fetch_us_names(symbols: list[str]) -> dict[str, Any]:
             errors.append(f"yahoo:{sym}:{e}")
 
         if cboe_spot and cboe_spot.get("quality") == "observed":
+            premarket_price = (
+                (y or {}).get("spot", {}).get("premarket_price") if y else None
+            )
+            cboe_prev_close = cboe_spot.get("prev_close")
+            premarket_gap = None
+            if premarket_price is not None and cboe_prev_close not in (None, 0):
+                premarket_gap = round(
+                    (float(premarket_price) - float(cboe_prev_close))
+                    / float(cboe_prev_close),
+                    6,
+                )
             spot = {
                 "price": cboe_spot.get("price"),
-                "prev_close": cboe_spot.get("prev_close"),
+                "prev_close": cboe_prev_close,
                 "day_return": cboe_spot.get("day_return"),
-                "premarket_price": (y or {}).get("spot", {}).get("premarket_price") if y else None,
-                "premarket_gap": (y or {}).get("spot", {}).get("premarket_gap") if y else None,
+                "premarket_price": premarket_price,
+                # Recompute with the displayed Cboe previous close.  Reusing
+                # Yahoo's gap while showing Cboe's denominator made the JSON
+                # internally inconsistent and could fire a false gap alert.
+                "premarket_gap": premarket_gap,
+                "premarket_gap_quality": "partial" if premarket_gap is not None else "missing",
+                "premarket_gap_formula": "(Yahoo premarket price / Cboe previous close) - 1",
                 "quality": "observed",
                 "source": "Cboe delayed_quotes (+ Yahoo premarket if any)",
             }

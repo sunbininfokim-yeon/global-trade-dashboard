@@ -41,9 +41,15 @@ jobs:
           # A country is added through its own manifest, never by editing app.js
           # -- that path is what keeps model work and UI work from colliding.
           UI = [
+              # PR #112 split app.js into these nine files; every finance
+              # domain that came out of it is still Claude-exclusive, not just
+              # the file that kept the old name.
               "New for anti/app.js", "New for anti/style.css",
               "New for anti/index.html", "New for anti/data.js",
-              "New for anti/shipping.js",
+              "New for anti/shipping.js", "New for anti/trade.js",
+              "New for anti/macro.js", "New for anti/macro_monitor.js",
+              "New for anti/market-microstructure.js", "New for anti/portfolio.js",
+              "New for anti/calculator.js",
               "_worker.js", "wrangler.jsonc", ".github/workflows/*",
           ]
           RULES = {

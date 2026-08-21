@@ -22,6 +22,9 @@ Keep `KRX_API` in the environment for both KRX-dependent steps.
           KRX_API: ${{ secrets.KRX_API }}
         run: python build_market_microstructure.py --live --source auto --print-stats
 
+      - name: Append external ETF snapshot history
+        run: python append_external_history.py --print-stats
+
       - name: Derivatives board + US OI archive
         env:
           KRX_API: ${{ secrets.KRX_API }}
@@ -39,6 +42,8 @@ New for anti/public/data/ai_casino_brief_v1.json
 New for anti/public/data/derivatives_activity_history_v1.jsonl
 New for anti/public/data/leverage_direction_history_v1.jsonl
 New for anti/public/data/stock_letf_history_v1.jsonl
+New for anti/public/data/external_venues_v1.json
+New for anti/public/data/external_leverage_history_v1.jsonl
 New for anti/scripts/market_microstructure/TABLES.md
 New for anti/scripts/market_microstructure/AI_CASINO_BRIEF.md
 ```
@@ -46,6 +51,12 @@ New for anti/scripts/market_microstructure/AI_CASINO_BRIEF.md
 The Action must not seed or calendar-fill the files. KRX closes/holidays leave
 no line; `append_derivatives_history.py` deduplicates only the same
 `date` (or `date+ticker`) when a day is re-observed.
+
+`append_external_history.py` uses the external snapshot written by the live
+microstructure step. It archives HK/US ETF rows by `date+venue+ticker` only;
+Yahoo totalAssets is currently unstamped and volume×close is a proxy, so the
+rows are `quality=partial` until Bloomberg or another dated source replaces
+those fields. Do not merge this archive into the KR cash turnover denominator.
 
 ## Small UI correctness patch
 

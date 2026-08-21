@@ -130,6 +130,8 @@ def build_letf_products(etfs, *, underlyings: set[str]) -> dict[str, list[dict[s
                 "name": name,
                 "L": L,
                 "aum": aum,
+                "aum_source": "FinanceDataReader ETF/KR.MarCap",
+                "aum_quality": "proxy",
                 "trading_value": tv,
                 "beta": 1.0,
                 "structure": _infer_structure(name),
@@ -226,7 +228,7 @@ def build_day_from_live(
                 "short_ratio_pct": None,
                 "letf_products": products,
                 "source": "FinanceDataReader ETF/KR + KOSPI + Naver integration",
-                "quality": "observed",
+                "quality": "partial" if products else "observed",
             }
         )
         bd = nv.get("bizdate")
@@ -254,7 +256,9 @@ def build_day_from_live(
         "market_levered_etf": {
             "aum_krw": market_lev_aum,
             "source": "FinanceDataReader ETF/KR names matching 레버리지|인버스",
-            "quality": "observed",
+            "quality": "partial",
+            "aum_source": "FinanceDataReader ETF/KR.MarCap",
+            "aum_quality": "proxy",
         },
         "flows": {
             "scope": "covered_underlyings_spot",
@@ -273,8 +277,14 @@ def build_day_from_krx(
     underlyings: list[str] | None = None,
     fx_usdkrw: float = 1400.0,
     bas_dd: str | None = None,
+    include_naver_flows: bool = True,
 ) -> dict[str, Any]:
-    """KRX OpenAPI (env ``KRX_API``) + Naver flows."""
+    """KRX OpenAPI day input with optional current-only Naver flows.
+
+    Historical KRX backfills must pass ``include_naver_flows=False``.  Naver's
+    integration endpoint returns its current observation, not the requested
+    KRX ``bas_dd``; attaching it would silently time-travel investor flows.
+    """
     from market_microstructure.krx_client import (
         etf_metrics,
         fetch_etf_daily,
@@ -306,14 +316,22 @@ def build_day_from_krx(
     universe = load_universe()
     univ_products = universe.get("venues", {}).get("kr", {}).get("products", [])
     products_by: dict[str, list[dict[str, Any]]] = {u: [] for u in underlyings}
-    market_lev_aum = 0.0
+    market_lev_aum_values: list[float] = []
+    market_aum_qualities: list[str] = []
+    stock_source = (
+        "KRX OpenAPI stk_bydd_trd + etf_bydd_trd (KRX_API) + Naver flows"
+        if include_naver_flows
+        else "KRX OpenAPI stk_bydd_trd + etf_bydd_trd (KRX_API)"
+    )
 
     for row in etf_rows:
         name = str(row.get("ISU_NM") or row.get("ISU_ABBRV") or "")
         em = etf_metrics(row)
-        aum = em["aum_krw"] or 0.0
+        aum = em["aum_krw"]
         if "레버리지" in name or "인버스" in name:
-            market_lev_aum += aum
+            if aum is not None:
+                market_lev_aum_values.append(float(aum))
+            market_aum_qualities.append(str(em.get("aum_quality") or "missing"))
 
     for p in univ_products:
         und = p.get("underlying")
@@ -331,7 +349,9 @@ def build_day_from_krx(
                 "ticker": t,
                 "name": p.get("name") or str(row.get("ISU_NM") or t),
                 "L": float(p["L"]),
-                "aum": float(em["aum_krw"] or 0.0),
+                "aum": em["aum_krw"],
+                "aum_source": em.get("aum_source"),
+                "aum_quality": em.get("aum_quality", "missing"),
                 "trading_value": float(em["trading_value_krw"] or 0.0),
                 "beta": float(p.get("beta", 1.0)),
                 "structure": p.get("structure") or _infer_structure(str(p.get("name") or "")),
@@ -358,7 +378,9 @@ def build_day_from_krx(
                     "ticker": code,
                     "name": name,
                     "L": L,
-                    "aum": float(em["aum_krw"] or 0.0),
+                    "aum": em["aum_krw"],
+                    "aum_source": em.get("aum_source"),
+                    "aum_quality": em.get("aum_quality", "missing"),
                     "trading_value": float(em["trading_value_krw"] or 0.0),
                     "beta": 1.0,
                     "structure": _infer_structure(name),
@@ -379,9 +401,30 @@ def build_day_from_krx(
         adv = float(sm["adv_spot_krw"] or 0.0)
         close = float(sm["close"] or 0.0)
         ff_r = float(ff_ratios.get(code, ff_ratios.get("_default", 0.7)))
-        nv = _attach_naver_flows(code, close)
+        nv = (
+            _attach_naver_flows(code, close)
+            if include_naver_flows
+            else {
+                "foreign_hold_ratio_pct": None,
+                "flows_shares": {
+                    "as_of": None,
+                    "foreign_net": None,
+                    "institution_net": None,
+                    "retail_net": None,
+                },
+                "flows_krw": {
+                    "foreign_net_krw": None,
+                    "institution_net_krw": None,
+                    "retail_net_krw": None,
+                },
+                "deal_trend_history": [],
+            }
+        )
         products = products_by.get(code, [])
         letf_tv = sum(float(p["trading_value"]) for p in products)
+        products_complete = bool(products) and all(
+            p.get("aum_quality") == "observed" for p in products
+        )
         stocks.append(
             {
                 "ticker": code,
@@ -400,8 +443,8 @@ def build_day_from_krx(
                 "short_interest_shares": None,
                 "short_ratio_pct": None,
                 "letf_products": products,
-                "source": "KRX OpenAPI stk_bydd_trd + etf_bydd_trd (KRX_API) + Naver flows",
-                "quality": "observed",
+                "source": stock_source,
+                "quality": "observed" if products_complete else "partial",
             }
         )
 
@@ -415,7 +458,11 @@ def build_day_from_krx(
         "fx_usdkrw": fx_usdkrw,
         "fetched_at": datetime.now(timezone.utc).isoformat(),
         "source_mode": "krx",
-        "note": "KRX_API OpenAPI day input. Free-float assumed. Flows from Naver.",
+        "note": (
+            "KRX_API OpenAPI day input. Free-float assumed. Flows from Naver."
+            if include_naver_flows
+            else "KRX_API OpenAPI historical day input. Naver investor flows intentionally omitted."
+        ),
         "kospi": {
             "total_mcap_krw": total_mcap,
             "free_float_mcap_krw": total_mcap * float(ff_ratios.get("_kospi_default", 0.75)),
@@ -424,17 +471,30 @@ def build_day_from_krx(
             "quality": "observed",
         },
         "market_levered_etf": {
-            "aum_krw": market_lev_aum,
+            "aum_krw": sum(market_lev_aum_values) if market_lev_aum_values else None,
             "source": f"KRX OpenAPI etp/etf_bydd_trd names 레버리지|인버스 basDd={day}",
-            "quality": "observed",
+            "quality": (
+                "observed"
+                if market_aum_qualities and all(q == "observed" for q in market_aum_qualities)
+                else "partial"
+            ),
+            "aum_quality": (
+                "observed"
+                if market_aum_qualities and all(q == "observed" for q in market_aum_qualities)
+                else "proxy_or_missing"
+            ),
         },
         "flows": {
             "scope": "covered_underlyings_spot",
-            "foreign_net_krw": f_net,
-            "retail_net_krw": r_net,
-            "institution_net_krw": i_net,
-            "source": "Naver dealTrendInfos (share nets × close)",
-            "quality": "estimated",
+            "foreign_net_krw": f_net if include_naver_flows else None,
+            "retail_net_krw": r_net if include_naver_flows else None,
+            "institution_net_krw": i_net if include_naver_flows else None,
+            "source": (
+                "Naver dealTrendInfos (share nets × close)"
+                if include_naver_flows
+                else "not requested for historical LETF backfill"
+            ),
+            "quality": "estimated" if include_naver_flows else "missing",
         },
         "stocks": stocks,
     }
