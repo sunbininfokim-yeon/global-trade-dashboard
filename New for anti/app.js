@@ -100,16 +100,13 @@ const SIGNAL_FLIP_MS = 500;
 
 // value: key into window.MacroData. fmt: how to print it. symbol: Yahoo ticker,
 // which makes the slot clickable and opens the chart modal with a moving average.
+// A(에너지)·F(해운)는 2026-08-21 기준 순환에서 뺐다. 둘 다 절반 이상이
+// pending 슬롯이라(벙커유·연료탄·SCFI·BDI·CCFI·탱커 운임 -- Baltic
+// Exchange·SSE 재배포 라이선스 문제로 무료 소스가 없다는 걸 조사로 확인함,
+// 2026-08-21 세션 참고) 실데이터 없이 순환만 차지하고 있었다. 슬롯 정의는
+// 지우지 않고 SIGNAL_PAGES_DISABLED 에 그대로 남겨뒀다 -- 라이선스든
+// 대체 지표든 채워지면 SIGNAL_PAGES 배열에 다시 끼워 넣으면 된다.
 const SIGNAL_PAGES = [
-    {
-        key: 'A', name: '에너지',
-        slots: [
-            { label: 'Brent 원유', value: 'BRENT', fmt: 'usd2', unit: '/bbl', symbol: 'BZ=F' },
-            { label: 'Singapore VLSFO', pending: '주간 벙커 연동 예정' },
-            { label: 'Henry Hub 가스', value: 'NAT_GAS', fmt: 'usd3', unit: '/MMBtu', symbol: 'NG=F' },
-            { label: 'Newcastle 연료탄', pending: '주간 연동 예정' }
-        ]
-    },
     {
         // IMF monthly commodity prices: published with a lag, so every slot on
         // this page shows the month it is quoting.
@@ -157,6 +154,21 @@ const SIGNAL_PAGES = [
             // derivatives board.
             { label: '필라델피아 반도체', value: 'SOX', fmt: 'idx2', symbol: '^SOX', ma: true },
             { label: 'KOSPI', value: 'KOSPI', fmt: 'idx2', symbol: '^KS11', ma: true }
+        ]
+    }
+];
+
+// Disabled pages, kept out of SIGNAL_PAGES for now (see the note above the
+// array) but preserved verbatim so re-enabling is a cut-paste back in, not a
+// rewrite.
+const SIGNAL_PAGES_DISABLED = [
+    {
+        key: 'A', name: '에너지',
+        slots: [
+            { label: 'Brent 원유', value: 'BRENT', fmt: 'usd2', unit: '/bbl', symbol: 'BZ=F' },
+            { label: 'Singapore VLSFO', pending: '주간 벙커 연동 예정' },
+            { label: 'Henry Hub 가스', value: 'NAT_GAS', fmt: 'usd3', unit: '/MMBtu', symbol: 'NG=F' },
+            { label: 'Newcastle 연료탄', pending: '주간 연동 예정' }
         ]
     },
     {
