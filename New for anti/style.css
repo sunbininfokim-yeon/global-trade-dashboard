@@ -2630,6 +2630,10 @@ body.trade-map-mode .left-pane {
 .spark2-chart { position: relative; flex: 1 1 auto; min-width: 0; height: 54px; }
 .spark2-svg { width: 100%; height: 54px; display: block; overflow: visible; cursor: crosshair; }
 .spark2-grid { stroke: rgba(148,163,184,.14); stroke-width: 1; vector-effect: non-scaling-stroke; }
+/* Marks a methodology-break tail of the series (e.g. Saudi Arabia's
+   Active->Operating Rigs reclassification) -- amber, not the up/down
+   green/red already used for direction, so it doesn't read as a signal. */
+.spark2-shade { fill: rgba(251,191,36,.14); }
 .spark2-line {
     fill: none; stroke: #7dd3fc; stroke-width: 1.6;
     stroke-linejoin: round; stroke-linecap: round;
