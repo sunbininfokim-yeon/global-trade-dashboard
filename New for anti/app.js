@@ -5161,16 +5161,31 @@ const setView = (target) => {
 const chartModal = document.getElementById('chart-modal');
 const closeModal = document.getElementById('close-modal');
 const modalTitle = document.getElementById('modal-chart-title');
+const modalDesc = document.getElementById('modal-chart-desc');
 let macroChartInstance = null;
 
 // symbolOverride lets a caller name the Yahoo ticker outright. The 오늘 신호
 // slots carry their own symbol, so they no longer have to encode it in a title
 // string and hope the substring match below picks the right branch.
-// withMovingAverage is opt-in and only the equity slots set it -- see the
-// moving-average block below for why the other asset classes stay bare.
+//
+// withMovingAverage is opt-in and only the equity slots set it. It switches
+// the fetch itself, not just the overlay: 5/20/60/120/240-day averages are a
+// daily-chart convention (Korean HTS terminology: 5일선·20일선·60일선·120일선·
+// 240일선), meaningless on the 5-year monthly bars every other chart uses --
+// a 240-period average over monthly data would need 20 years of history to
+// draw a single point. So equities ask Yahoo for 2 years of daily bars
+// instead (enough for MA240 to have a visible run, not just a terminal dot);
+// everything else keeps the monthly 5-year view with no overlay.
 const openChartModal = async (indicatorTitle, symbolOverride, withMovingAverage = false) => {
-    modalTitle.textContent = `${indicatorTitle} (최근 5년 실데이터)`;
+    modalTitle.textContent = withMovingAverage
+        ? `${indicatorTitle} (일봉 2년 · 이동평균 5/20/60/120/240)`
+        : `${indicatorTitle} (최근 5년 실데이터)`;
     chartModal.classList.remove('hidden');
+    if (modalDesc) {
+        modalDesc.textContent = withMovingAverage
+            ? '일별 종가 (전고점·전저점 표시) · 이동평균 5·20·60·120·240일선'
+            : '최근 5년 데이터 (전고점 및 전저점 표시)';
+    }
 
     // Map indicator title to Yahoo Finance Symbol
     let symbol = "";
@@ -5187,18 +5202,21 @@ const openChartModal = async (indicatorTitle, symbolOverride, withMovingAverage 
     let data = [];
 
     try {
-        const res = await fetch(`/api/macro?source=yfinance&symbol=${symbol}`);
+        const query = withMovingAverage ? '&interval=1d&range=2y' : '';
+        const res = await fetch(`/api/macro?source=yfinance&symbol=${symbol}${query}`);
         const result = await res.json();
-        
+
         if (result.chart && result.chart.result && result.chart.result[0]) {
             const chartData = result.chart.result[0];
             const timestamps = chartData.timestamp || [];
             const closePrices = chartData.indicators.quote[0].close || [];
-            
+
             for (let i = 0; i < timestamps.length; i++) {
                 if (closePrices[i] !== null) {
                     const d = new Date(timestamps[i] * 1000);
-                    labels.push(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`);
+                    labels.push(withMovingAverage
+                        ? `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+                        : `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`);
                     data.push(closePrices[i]);
                 }
             }
@@ -5208,13 +5226,13 @@ const openChartModal = async (indicatorTitle, symbolOverride, withMovingAverage 
         modalTitle.textContent = `${indicatorTitle} (데이터 연동 실패)`;
         return; // Don't chart on error
     }
-    
+
     // Find High and Low
     const maxVal = Math.max(...data);
     const minVal = Math.min(...data);
     const maxIdx = data.indexOf(maxVal);
     const minIdx = data.indexOf(minVal);
-    
+
     // Create point radius array (only highlight max/min)
     const pointRadius = data.map((v, i) => (i === maxIdx || i === minIdx) ? 6 : 0);
     const pointColors = data.map((v, i) => {
@@ -5223,41 +5241,51 @@ const openChartModal = async (indicatorTitle, symbolOverride, withMovingAverage 
         return '#4ade80';
     });
 
-    // 12-month moving average -- equities only. A one-year average against a
-    // price index is a convention traders already read; drawn over a bond
-    // yield, an FX cross or a policy rate it suggests a signal those series
-    // are not conventionally judged by, so those charts stay bare.
-    const MA_WINDOW = 12;
-    let runningSum = 0;
-    const movingAvg = !withMovingAverage ? null : data.map((v, i) => {
-        runningSum += v;
-        if (i >= MA_WINDOW) runningSum -= data[i - MA_WINDOW];
-        return i >= MA_WINDOW - 1 ? runningSum / MA_WINDOW : null;
+    // 5/20/60/120/240-day moving averages, computed with a running sum so
+    // each window is O(1) per point rather than re-summing it from scratch.
+    const MA_SPECS = withMovingAverage
+        ? [
+            { window: 5, label: '5일선', color: '#f87171' },
+            { window: 20, label: '20일선', color: '#facc15' },
+            { window: 60, label: '60일선', color: '#4ade80' },
+            { window: 120, label: '120일선', color: '#60a5fa' },
+            { window: 240, label: '240일선', color: '#c084fc' }
+        ]
+        : [];
+    const maDatasets = MA_SPECS.map(({ window, label, color }) => {
+        let runningSum = 0;
+        const series = data.map((v, i) => {
+            runningSum += v;
+            if (i >= window) runningSum -= data[i - window];
+            return i >= window - 1 ? runningSum / window : null;
+        });
+        return {
+            label,
+            data: series,
+            borderColor: color,
+            borderWidth: 1.5,
+            tension: 0.15,
+            pointRadius: 0,
+            pointHoverRadius: 0,
+            spanGaps: false
+        };
     });
 
+    // Moving averages exist to be compared against price, so once there is
+    // more than one line, price recedes to a thin neutral trace rather than
+    // competing with them in the same green.
     const priceDataset = {
         label: indicatorTitle,
         data: data,
-        borderColor: '#4ade80',
-        borderWidth: 2,
+        borderColor: withMovingAverage ? '#e5e7eb' : '#4ade80',
+        borderWidth: withMovingAverage ? 1 : 2,
         tension: 0.1,
         pointRadius: pointRadius,
         pointBackgroundColor: pointColors,
         pointBorderColor: '#ffffff',
         pointHoverRadius: 8
     };
-    const maDataset = {
-        label: '12개월 이동평균',
-        data: movingAvg,
-        borderColor: '#f59e0b',
-        borderWidth: 1.5,
-        borderDash: [6, 4],
-        tension: 0.2,
-        pointRadius: 0,
-        pointHoverRadius: 0,
-        spanGaps: false
-    };
-    const datasets = movingAvg ? [priceDataset, maDataset] : [priceDataset];
+    const datasets = [priceDataset, ...maDatasets];
 
     const ctx = document.getElementById('macroChart').getContext('2d');
 
