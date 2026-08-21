@@ -540,7 +540,12 @@ const mmLineChart = (dates, values, opts = {}) => {
     if (idx.length < 2) return '<p class="fin-note">그릴 수 있는 시계열이 없습니다.</p>';
     const ma = Array.isArray(opts.ma5) ? opts.ma5 : null;
 
-    const ys = idx.map(([, y]) => y).concat(ma ? ma.filter(Number.isFinite) : []);
+    const th = opts.threshold && Number.isFinite(opts.threshold.level) ? opts.threshold : null;
+    // The threshold has to be in view even if the series never gets near it --
+    // "설비투자 18% 초과" means nothing if the axis tops out at 15% and the
+    // line is drawn off the top of the chart.
+    const ys = idx.map(([, y]) => y).concat(ma ? ma.filter(Number.isFinite) : [])
+        .concat(th ? [th.level] : []);
     let lo = Math.min(...ys), hi = Math.max(...ys);
     if (lo === hi) { lo -= 1; hi += 1; }
     const pad = (hi - lo) * 0.08;
@@ -602,6 +607,9 @@ const mmLineChart = (dates, values, opts = {}) => {
                 <line x1="${MM_L}" y1="${sy(t).toFixed(1)}" x2="${MM_W - MM_R}" y2="${sy(t).toFixed(1)}" class="mm-grid"/>
                 <text x="${MM_L - 7}" y="${(sy(t) + 3.5).toFixed(1)}" class="mm-tick" text-anchor="end">${mmFmt(t)}</text>`).join('')}
             ${(lo < 0 && hi > 0) ? `<line x1="${MM_L}" y1="${sy(0).toFixed(1)}" x2="${MM_W - MM_R}" y2="${sy(0).toFixed(1)}" class="mm-zero"/>` : ''}
+            ${th ? `
+                <line x1="${MM_L}" y1="${sy(th.level).toFixed(1)}" x2="${MM_W - MM_R}" y2="${sy(th.level).toFixed(1)}" class="mm-threshold"/>
+                <text x="${MM_W - MM_R}" y="${(sy(th.level) - 5).toFixed(1)}" class="mm-threshold-tag" text-anchor="end">${finEsc(th.label_ko || '')}</text>` : ''}
             <path d="${area}" fill="url(#mmg)"/>
             ${ma ? `<path d="${path(ma)}" class="mm-ma"/>` : ''}
             ${realFromEnd ? `
@@ -946,6 +954,7 @@ const mmChartDrawer = () => {
             label: src.label_ko || ind.label_ko,
             electionBands: ind.id === 'tga',
             realFromEnd: hist.real_points_from_end,
+            threshold: (ind.reference || {}).kind === 'threshold' ? ind.reference : null,
         });
     }
 
@@ -1009,7 +1018,21 @@ const mmChartDrawer = () => {
             <div class="mm-drawer-main">
                 ${body}
                 ${mmNoteWithState(ind) ? `<p class="fin-note mm-note">${finEsc(mmNoteWithState(ind))}</p>` : ''}
-                ${ind.reference ? `<p class="fin-note">${finEsc(typeof ind.reference === 'string' ? ind.reference : JSON.stringify(ind.reference))}</p>` : ''}
+                ${(() => {
+                    // A threshold reference already renders as a line on the
+                    // chart above (with its own label); this note is only its
+                    // citation. Anything else under `reference` still falls
+                    // back to a readable string -- but never a raw JSON dump,
+                    // which is what an object here rendered as before.
+                    if (!ind.reference) return '';
+                    if (typeof ind.reference === 'string') return `<p class="fin-note">${finEsc(ind.reference)}</p>`;
+                    if (ind.reference.kind === 'threshold') {
+                        return ind.reference.source_ko
+                            ? `<p class="fin-note">기준선(${finEsc(ind.reference.label_ko || '')}): ${finEsc(ind.reference.source_ko)}</p>`
+                            : '';
+                    }
+                    return '';
+                })()}
             </div>
             ${view === 'qeqt' ? mmQeQtRail(null)
                 : view === 'balance_liabilities' && (ind.balance_sheet || {}).ratio
