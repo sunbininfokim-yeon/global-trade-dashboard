@@ -160,48 +160,6 @@ const mmStackSide = (side, dates, hi, sideIdx) => {
     </div>`;
 };
 
-// Reserves as a share of nominal GDP, with the 10% reference line. The line is
-// drawn red because the ratio is currently under it, not to assert that
-// crossing it triggers anything -- the caption says so in as many words.
-const mmReservesRatio = (r, dates) => {
-    const vals = r.values || [];
-    const idx = vals.map((v, i) => [i, v]).filter(([, v]) => Number.isFinite(v));
-    if (!idx.length) return '';
-
-    const th = Number.isFinite(r.threshold_pct) ? r.threshold_pct : null;
-    const ys = idx.map(([, v]) => v).concat(th === null ? [] : [th]);
-    let lo = Math.min(...ys), hi = Math.max(...ys);
-    const pad = (hi - lo || 1) * 0.15;
-    lo = Math.max(0, lo - pad); hi += pad;
-
-    const H = 150, T = 10, B = 26;
-    const sx = (i) => MM_L + (i / Math.max(vals.length - 1, 1)) * (MM_W - MM_L - MM_R);
-    const sy = (v) => T + (1 - (v - lo) / (hi - lo)) * (H - T - B);
-    const path = idx.map(([i, v], k) => `${k ? 'L' : 'M'}${sx(i).toFixed(1)},${sy(v).toFixed(1)}`).join('');
-
-    const [li, lv] = idx[idx.length - 1];
-    const under = th !== null && lv < th;
-
-    return `
-    <div class="mm-ratio-panel">
-        <div class="mm-ratio-head">
-            <span class="mm-ratio-label">${finEsc(r.label_ko || '')}</span>
-            <span class="mm-ratio-now ${under ? 'is-under' : ''}">${mmFmt(lv, 2)}%</span>
-        </div>
-        <svg class="mm-chart mm-ratio-chart" viewBox="0 0 ${MM_W} ${H}" preserveAspectRatio="none" role="img"
-             aria-label="${finEsc(r.label_ko || '')} 추이">
-            ${th === null ? '' : `
-                <line x1="${MM_L}" y1="${sy(th).toFixed(1)}" x2="${MM_W - MM_R}" y2="${sy(th).toFixed(1)}" class="mm-threshold"/>
-                <text x="${MM_W - MM_R}" y="${(sy(th) - 5).toFixed(1)}" class="mm-threshold-tag" text-anchor="end">${finEsc(r.threshold_label_ko || '')}</text>`}
-            <path d="${path}" class="mm-ratio-line"/>
-            <circle cx="${sx(li).toFixed(1)}" cy="${sy(lv).toFixed(1)}" r="3.5" class="mm-ratio-dot"/>
-            <text x="${MM_L}" y="${H - 8}" class="mm-tick">${finEsc(dates[idx[0][0]] || '')}</text>
-            <text x="${MM_W - MM_R}" y="${H - 8}" class="mm-tick" text-anchor="end">${finEsc(dates[li] || '')}</text>
-        </svg>
-        <p class="fin-note">${finEsc(r.threshold_note_ko || '')} ${finEsc(r.gdp_note_ko || '')}</p>
-    </div>`;
-};
-
 // Assets and liabilities as two separate blocks -- separate tabs, separate
 // scroll position, separate scale -- rather than one panel with both stacks
 // glued together. Each still scales to its own max rather than a shared one:
@@ -238,14 +196,17 @@ const mmBalanceAssetsView = (ind) => {
     <p class="fin-note">${finEsc(bs.stack_note_ko || '')} ${finEsc(bs.sampling_note_ko || '')}</p>`;
 };
 
+// The reserves/GDP ratio used to repeat here as a full chart under the stack
+// AND as a mini spark in the rail (mmReservesRatioRail) -- the same number
+// twice on one screen. The rail already carries it, so the tab body stays to
+// just the stack.
 const mmBalanceLiabilitiesView = (ind) => {
     const bs = ind.balance_sheet;
     const side = ((bs || {}).sides || []).find((s) => s.id === 'liabilities');
     if (!side) return '<p class="fin-note">부채 구성 자료가 없습니다.</p>';
     return `
     ${mmBalanceSideBlock(side, bs.dates || [])}
-    <p class="fin-note">${finEsc(bs.stack_note_ko || '')} ${finEsc(bs.sampling_note_ko || '')}</p>
-    ${bs.ratio ? mmReservesRatio(bs.ratio, bs.dates || []) : ''}`;
+    <p class="fin-note">${finEsc(bs.stack_note_ko || '')} ${finEsc(bs.sampling_note_ko || '')}</p>`;
 };
 
 // Hovering a stack reads that block's own composition at the hovered week --
@@ -540,12 +501,12 @@ const mmLineChart = (dates, values, opts = {}) => {
     if (idx.length < 2) return '<p class="fin-note">그릴 수 있는 시계열이 없습니다.</p>';
     const ma = Array.isArray(opts.ma5) ? opts.ma5 : null;
 
-    const th = opts.threshold && Number.isFinite(opts.threshold.level) ? opts.threshold : null;
-    // The threshold has to be in view even if the series never gets near it --
-    // "설비투자 18% 초과" means nothing if the axis tops out at 15% and the
-    // line is drawn off the top of the chart.
+    const ths = (opts.thresholds || []).filter((t) => t && Number.isFinite(t.level));
+    // Every threshold has to be in view even if the series never gets near
+    // it -- "설비투자 18% 초과" means nothing if the axis tops out at 15% and
+    // the line is drawn off the top of the chart.
     const ys = idx.map(([, y]) => y).concat(ma ? ma.filter(Number.isFinite) : [])
-        .concat(th ? [th.level] : []);
+        .concat(ths.map((t) => t.level));
     let lo = Math.min(...ys), hi = Math.max(...ys);
     if (lo === hi) { lo -= 1; hi += 1; }
     const pad = (hi - lo) * 0.08;
@@ -607,9 +568,9 @@ const mmLineChart = (dates, values, opts = {}) => {
                 <line x1="${MM_L}" y1="${sy(t).toFixed(1)}" x2="${MM_W - MM_R}" y2="${sy(t).toFixed(1)}" class="mm-grid"/>
                 <text x="${MM_L - 7}" y="${(sy(t) + 3.5).toFixed(1)}" class="mm-tick" text-anchor="end">${mmFmt(t)}</text>`).join('')}
             ${(lo < 0 && hi > 0) ? `<line x1="${MM_L}" y1="${sy(0).toFixed(1)}" x2="${MM_W - MM_R}" y2="${sy(0).toFixed(1)}" class="mm-zero"/>` : ''}
-            ${th ? `
-                <line x1="${MM_L}" y1="${sy(th.level).toFixed(1)}" x2="${MM_W - MM_R}" y2="${sy(th.level).toFixed(1)}" class="mm-threshold"/>
-                <text x="${MM_W - MM_R}" y="${(sy(th.level) - 5).toFixed(1)}" class="mm-threshold-tag" text-anchor="end">${finEsc(th.label_ko || '')}</text>` : ''}
+            ${ths.map((t) => `
+                <line x1="${MM_L}" y1="${sy(t.level).toFixed(1)}" x2="${MM_W - MM_R}" y2="${sy(t.level).toFixed(1)}" class="mm-threshold"/>
+                <text x="${MM_W - MM_R}" y="${(sy(t.level) - 5).toFixed(1)}" class="mm-threshold-tag" text-anchor="end">${finEsc(t.label_ko || '')}</text>`).join('')}
             <path d="${area}" fill="url(#mmg)"/>
             ${ma ? `<path d="${path(ma)}" class="mm-ma"/>` : ''}
             ${realFromEnd ? `
@@ -822,7 +783,11 @@ const mmViewsFor = (ind) => {
     }
     // Secondary panels come last so the engine's primary view stays default.
     const sv = (ind.ui || {}).secondary_view;
-    if (sv === 'maturity_components' && has(ind.components)) {
+    // fed_total_assets shares this ui flag with qra_issuance, but its own
+    // maturity split is no longer a separate tab -- it's the colour bands in
+    // 자산's own stack (and the mini rail beside it). A second, static "만기별"
+    // tab next to that would just repeat the same four numbers.
+    if (sv === 'maturity_components' && has(ind.components) && !hasBalanceSheet) {
         views.push({ id: 'components', label: '만기별' });
     } else if (has(ind.components) && !views.some((v) => v.id === 'stack')
                && ind.chart_type === 'line+components') {
@@ -954,7 +919,9 @@ const mmChartDrawer = () => {
             label: src.label_ko || ind.label_ko,
             electionBands: ind.id === 'tga',
             realFromEnd: hist.real_points_from_end,
-            threshold: (ind.reference || {}).kind === 'threshold' ? ind.reference : null,
+            thresholds: Array.isArray(ind.thresholds) && ind.thresholds.length
+                ? ind.thresholds.filter((t) => t.kind === 'threshold')
+                : ((ind.reference || {}).kind === 'threshold' ? [ind.reference] : []),
         });
     }
 
@@ -1019,27 +986,64 @@ const mmChartDrawer = () => {
                 ${body}
                 ${mmNoteWithState(ind) ? `<p class="fin-note mm-note">${finEsc(mmNoteWithState(ind))}</p>` : ''}
                 ${(() => {
-                    // A threshold reference already renders as a line on the
-                    // chart above (with its own label); this note is only its
-                    // citation. Anything else under `reference` still falls
+                    // Threshold lines already render on the chart above (each
+                    // with its own label); these notes are only their
+                    // citations. Anything else under `reference` still falls
                     // back to a readable string -- but never a raw JSON dump,
                     // which is what an object here rendered as before.
-                    if (!ind.reference) return '';
-                    if (typeof ind.reference === 'string') return `<p class="fin-note">${finEsc(ind.reference)}</p>`;
-                    if (ind.reference.kind === 'threshold') {
-                        return ind.reference.source_ko
-                            ? `<p class="fin-note">기준선(${finEsc(ind.reference.label_ko || '')}): ${finEsc(ind.reference.source_ko)}</p>`
-                            : '';
+                    const list = Array.isArray(ind.thresholds) && ind.thresholds.length
+                        ? ind.thresholds
+                        : (ind.reference && ind.reference.kind === 'threshold' ? [ind.reference] : []);
+                    if (list.length) {
+                        return list.filter((t) => t.source_ko).map((t) =>
+                            `<p class="fin-note">기준선(${finEsc(t.label_ko || '')}): ${finEsc(t.source_ko)}</p>`).join('');
                     }
+                    if (typeof ind.reference === 'string') return `<p class="fin-note">${finEsc(ind.reference)}</p>`;
                     return '';
                 })()}
             </div>
             ${view === 'qeqt' ? mmQeQtRail(null)
                 : view === 'balance_liabilities' && (ind.balance_sheet || {}).ratio
                 ? mmReservesRatioRail(ind.balance_sheet.ratio, ind.balance_sheet.dates || [])
+                : view === 'balance_assets'
+                ? mmSomaMaturityRail(ind)
                 : mmNewsRail(ind)}
         </div>
     </div>`;
+};
+
+// 자산's rail carries the SOMA maturity split instead of news -- read from
+// balance_sheet's own layers (live, CUSIP-derived), not the fed_ust_le_1y-
+// style `components` field, which is still the old seeded-fixture numbers
+// nothing has repointed since the stack itself moved to real data.
+const mmSomaMaturityRail = (ind) => {
+    const bs = ind.balance_sheet;
+    const side = ((bs || {}).sides || []).find((s) => s.id === 'assets');
+    const buckets = (side ? side.layers : []).filter((l) => l.id.startsWith('treasuries_'));
+    if (!buckets.length) return mmNewsRail({});
+
+    const last = (l) => {
+        for (let i = l.values.length - 1; i >= 0; i--) {
+            if (Number.isFinite(l.values[i])) return l.values[i];
+        }
+        return null;
+    };
+    const rows = buckets.map((l) => [l, last(l)]).filter(([, v]) => v !== null);
+    const total = rows.reduce((a, [, v]) => a + v, 0);
+
+    return `
+    <aside class="mm-news mm-soma-rail">
+        <p class="mm-news-head">국채(SOMA) 만기 구성</p>
+        <div class="mm-ratio-rail-now">${mmFmt(total, 2)}조</div>
+        ${rows.map(([l, v]) => `
+            <div class="mm-bs-tip-row">
+                <i style="background:${finEsc(l.color)}"></i>
+                <span>${finEsc((l.label_ko || '').replace('국채 ', '').replace(' (SOMA)', ''))}</span>
+                <b>${mmFmt(v, 2)}조</b>
+                <em>${total ? (v / total * 100).toFixed(1) : '—'}%</em>
+            </div>`).join('')}
+        <p class="mm-news-foot">${finEsc(bs.asof || '')} 기준 · 비중 뉴욕연준 SOMA 실측</p>
+    </aside>`;
 };
 
 // The news API is not wired yet. An empty rail that says so is honest; a
