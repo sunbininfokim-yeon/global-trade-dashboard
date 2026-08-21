@@ -18,9 +18,15 @@
   // /api/* route 404s and Variables/Secrets can't even be added in the
   // dashboard ("Worker that only has static assets").
   "main": "_worker.js",
+  // single-page-application: any request path that doesn't match a real
+  // static file (e.g. /macro_monitor, /shipping_fleet -- the new per-view
+  // routes app.js pushes into the URL) falls back to index.html with a 200,
+  // instead of 404ing. Without this, a shared link or a refresh on one of
+  // those routes breaks.
   "assets": {
     "directory": "New for anti",
-    "binding": "ASSETS"
+    "binding": "ASSETS",
+    "not_found_handling": "single-page-application"
   },
   // Shared response cache for the /api/* proxies. Without this binding
   // env.API_CACHE is undefined and every visitor triggers their own upstream

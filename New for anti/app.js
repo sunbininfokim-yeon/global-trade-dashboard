@@ -5359,19 +5359,36 @@ document.querySelectorAll('.indicator-item').forEach(item => {
 // and setView exist, since its slots and fixed cards call into both.
 initSignalPanel();
 
+// URL routing: every data-target gets a real path (/macro_monitor,
+// /shipping_fleet, ...) instead of staying on '/' for every view, so
+// sections are shareable, back/forward works, and each is a distinct URL
+// for search engines. 'home' is the one target that maps to '/' itself.
+const pathForTarget = (target) => (target === 'home' ? '/' : `/${target}`);
+const targetFromPath = (pathname) => {
+    const slug = pathname.replace(/^\/+/, '').replace(/\/+$/, '');
+    if (!slug) return 'home';
+    return document.querySelector(`[data-target="${slug}"]`) ? slug : null;
+};
+const navigateTo = (target) => {
+    if (!target) return;
+    const path = pathForTarget(target);
+    if (window.location.pathname !== path || window.location.hash) {
+        window.history.pushState({ target }, '', path);
+    }
+    setView(target);
+};
+
+window.addEventListener('popstate', () => {
+    setView(targetFromPath(window.location.pathname) || 'home');
+});
+
 // Event Listeners for Nav
 navLinks.forEach(link => {
     link.addEventListener('click', (e) => {
         e.preventDefault();
         // currentTarget is the <a data-target>; e.target can be a text node.
         const target = link.getAttribute('data-target') || e.currentTarget?.getAttribute?.('data-target');
-        if (!target) return;
-        if (target.startsWith('shipping_')) {
-            window.history.replaceState(null, '', `#/${target}`);
-        } else if (window.location.hash.startsWith('#/shipping_')) {
-            window.history.replaceState(null, '', window.location.pathname + window.location.search);
-        }
-        setView(target);
+        navigateTo(target);
     });
 });
 
@@ -5384,12 +5401,7 @@ document.querySelectorAll('.menu-item[data-nav-default]').forEach((item) => {
         if (t.closest('.dropdown')) return;
         e.preventDefault();
         e.stopPropagation();
-        const target = item.getAttribute('data-nav-default');
-        if (!target) return;
-        if (target.startsWith('shipping_')) {
-            window.history.replaceState(null, '', `#/${target}`);
-        }
-        setView(target);
+        navigateTo(item.getAttribute('data-nav-default'));
     };
     item.addEventListener('click', go, true);
     const parent = item.querySelector(':scope > .menu-parent, :scope > span');
@@ -5405,10 +5417,7 @@ document.querySelectorAll('.menu-item[data-nav-default]').forEach((item) => {
 
 // Home Logo click event
 document.getElementById('home-logo').addEventListener('click', () => {
-    if (window.location.hash) {
-        window.history.replaceState(null, '', window.location.pathname + window.location.search);
-    }
-    setView('home');
+    navigateTo('home');
 });
 
 // Date Picker Event (Historical Data Simulation)
@@ -5497,13 +5506,19 @@ const loadTicker = async () => {
         + parts.join('<span class="ticker-divider">·</span>');
 };
 
-// Initialize a shareable shipping deep link when present; otherwise home.
-const initialShippingTarget = window.location.hash.startsWith('#/shipping_')
-    ? window.location.hash.slice(2)
-    : null;
-const initialView = initialShippingTarget && document.querySelector(`[data-target="${initialShippingTarget}"]`)
-    ? initialShippingTarget
-    : 'home';
+// Initialize from the URL path (e.g. a shared /macro_monitor link). Falls
+// back to the old #/shipping_x deep-link format for links shared before
+// routes moved off the hash, then to home for an unknown path.
+let initialView = targetFromPath(window.location.pathname);
+if ((!initialView || initialView === 'home') && window.location.hash.startsWith('#/')) {
+    const legacy = window.location.hash.slice(2);
+    if (document.querySelector(`[data-target="${legacy}"]`)) initialView = legacy;
+}
+if (!initialView) initialView = 'home';
+const normalizedPath = pathForTarget(initialView);
+if (window.location.pathname !== normalizedPath || window.location.hash) {
+    window.history.replaceState({ target: initialView }, '', normalizedPath);
+}
 setView(initialView);
 updateNewsPanel('Global Market');
 loadTicker();
