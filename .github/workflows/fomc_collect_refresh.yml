@@ -1,0 +1,54 @@
+name: Refresh FOMC/Beige Book collection
+
+# The FOMC/Beige Book panel (mmUsPolicyQuality in macro.js) was ported from
+# Codex as a frozen 2026-08-12 snapshot -- real documents, but nothing ever
+# re-fetched them. build_fomc_collect.py now hits federalreserve.gov
+# directly (statement pages + Beige Book National Summary, both public
+# HTML, no key) and build_us_macro_quality_from_collect.py reassembles the
+# document the panel reads. Idempotent: only meetings/editions not already
+# collected get fetched, so this is a small diff after each real FOMC
+# meeting, not a full re-scrape.
+
+on:
+  schedule:
+    # 8 meetings/year on published dates -- weekly is generous headroom for
+    # a statement that's usually live within hours of the decision.
+    - cron: '30 6 * * 3'
+  workflow_dispatch:
+
+jobs:
+  refresh-fomc:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install deps
+        working-directory: New for anti/scripts/macro_monitor
+        run: pip install pytest beautifulsoup4
+      - name: Tests
+        working-directory: New for anti/scripts/macro_monitor
+        run: python -m pytest tests/test_fomc_collect.py -v
+      - name: Collect statements + Beige Book
+        working-directory: New for anti/scripts/macro_monitor
+        # A meeting the parser flags (a compound/qualified dissent it can't
+        # categorize) makes this exit 1 -- caught here rather than failing
+        # the job, since a genuinely new edge case in one meeting shouldn't
+        # block every other meeting's data from refreshing on schedule.
+        # It still shows up in the job log for a human to look at.
+        run: python build_fomc_collect.py || true
+      - name: Assemble us_macro_quality_v1.json
+        working-directory: New for anti/scripts/macro_monitor
+        run: python build_us_macro_quality_from_collect.py
+      - name: Commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "New for anti/scripts/macro_monitor/config/fomc_meetings_v1.json" \
+                  "New for anti/scripts/macro_monitor/config/beige_book_v1.json" \
+                  "New for anti/public/data/us_macro_quality_v1.json"
+          git commit -m "chore: refresh FOMC/Beige Book collection" || exit 0
+          git push
