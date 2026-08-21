@@ -332,6 +332,120 @@ const mmUsElectionBands = (dates) => {
     return bands;
 };
 
+// Monthly Fed purchases/runoff, Treasuries and MBS as two diverging bar
+// series sharing a zero line: above is net buying (QE-style), below is net
+// runoff (QT-style), for 280+ months back through QE1 -- the sign already
+// carries what "QE" or "QT" would have labelled, without this repo curating
+// a policy-era calendar it doesn't have and would otherwise be guessing at.
+const MM_QQ_H = 220, MM_QQ_T = 12, MM_QQ_B = 24;
+
+const mmQeQtBars = (qq) => {
+    const rows = qq.rows || [];
+    if (!rows.length) return '<p class="fin-note">매입·런오프 시계열이 없습니다.</p>';
+
+    const n = rows.length;
+    const allVals = rows.flatMap((r) => [r.treasuries_bn, r.mbs_bn]).filter(Number.isFinite);
+    let lo = Math.min(0, ...allVals), hi = Math.max(0, ...allVals);
+    const pad = (hi - lo || 1) * 0.08;
+    lo -= pad; hi += pad;
+
+    const sx = (i) => MM_L + (i / Math.max(n - 1, 1)) * (MM_W - MM_L - MM_R);
+    const sy = (v) => MM_QQ_T + (1 - (v - lo) / (hi - lo)) * (MM_QQ_H - MM_QQ_T - MM_QQ_B);
+    const zero = sy(0);
+    const colW = (MM_W - MM_L - MM_R) / n;
+    const bw = Math.max(colW * 0.42, 0.6);
+
+    const bar = (i, v, dx, cls) => {
+        if (!Number.isFinite(v) || v === 0) return '';
+        const y = sy(v);
+        return `<rect class="${cls}" x="${(sx(i) + dx - bw / 2).toFixed(2)}" y="${Math.min(y, zero).toFixed(1)}"
+            width="${bw.toFixed(2)}" height="${Math.max(Math.abs(zero - y), 0.5).toFixed(1)}"/>`;
+    };
+
+    const ticks = [0, 0.25, 0.5, 0.75, 1].map((t) => lo + (hi - lo) * t);
+    const yearTicks = [];
+    let lastYear = null;
+    rows.forEach((r, i) => {
+        const y = r.month.slice(0, 4);
+        if (y !== lastYear && Number(y) % 2 === 0) { yearTicks.push({ i, y }); lastYear = y; }
+        else if (y !== lastYear) lastYear = y;
+    });
+
+    return `
+    <div class="mm-chart-box mm-qq-box" data-mm-qeqt-root="1"
+         data-rows='${finEsc(JSON.stringify(rows))}'>
+        <svg class="mm-chart mm-qq-chart" viewBox="0 0 ${MM_W} ${MM_QQ_H}" preserveAspectRatio="none" role="img"
+             aria-label="연준 국채·MBS 월별 매입·런오프">
+            ${ticks.map((t) => `
+                <line x1="${MM_L}" y1="${sy(t).toFixed(1)}" x2="${MM_W - MM_R}" y2="${sy(t).toFixed(1)}" class="mm-grid"/>
+                <text x="${MM_L - 7}" y="${(sy(t) + 3.5).toFixed(1)}" class="mm-tick" text-anchor="end">${mmFmt(t, 0)}</text>`).join('')}
+            ${rows.map((r, i) => bar(i, r.treasuries_bn, -bw * 0.55, 'mm-qq-bar mm-qq-treas')
+                + bar(i, r.mbs_bn, bw * 0.55, 'mm-qq-bar mm-qq-mbs')).join('')}
+            <line x1="${MM_L}" y1="${zero.toFixed(1)}" x2="${MM_W - MM_R}" y2="${zero.toFixed(1)}" class="mm-zero"/>
+            ${yearTicks.map((t) => `<text x="${sx(t.i).toFixed(1)}" y="${MM_QQ_H - 8}" class="mm-tick" text-anchor="middle">${t.y}</text>`).join('')}
+            <line class="mm-cross mm-qq-cross" x1="0" y1="${MM_QQ_T}" x2="0" y2="${MM_QQ_H - MM_QQ_B}" style="display:none"/>
+        </svg>
+        <div class="mm-qq-legend">
+            <span><i class="mm-qq-swatch mm-qq-treas"></i>국채</span>
+            <span><i class="mm-qq-swatch mm-qq-mbs"></i>MBS</span>
+            <span class="mm-qq-legend-note">위 = 순매입 · 아래 = 런오프(만기상환 후 미재투자)</span>
+        </div>
+    </div>`;
+};
+
+// Empty state before any hover, and the filled state after -- same shape so
+// hovering only ever swaps numbers in, never restructures the panel.
+const mmQeQtRailBody = (row) => {
+    if (!row) {
+        return `<p class="mm-news-empty">막대 위에 마우스를 올리면 그 달의 국채·MBS 매입·런오프 금액과 비중이 여기 표시됩니다.</p>`;
+    }
+    const t = row.treasuries_bn, m = row.mbs_bn;
+    const totalAbs = Math.abs(t) + Math.abs(m);
+    const share = (v) => totalAbs ? `${(Math.abs(v) / totalAbs * 100).toFixed(0)}%` : '—';
+    const row1 = (label, v) => `
+        <div class="mm-qq-rail-row">
+            <span>${finEsc(label)}</span>
+            <b class="${v > 0 ? 'mm-up' : (v < 0 ? 'mm-down' : '')}">${v >= 0 ? '+' : ''}${v.toFixed(1)}B</b>
+            <em>${share(v)}</em>
+        </div>`;
+    return `
+        <p class="mm-qq-rail-month">${finEsc(row.month)}</p>
+        ${row1('국채', t)}
+        ${row1('MBS', m)}`;
+};
+
+const mmQeQtRail = (row) => `
+    <aside class="mm-news mm-qq-rail" id="mm-qeqt-rail">
+        <p class="mm-news-head">매입·런오프 상세</p>
+        <div id="mm-qeqt-rail-body">${mmQeQtRailBody(row)}</div>
+        <p class="mm-news-foot">FRED TREAST·WSHOMCB 실측 · 월간</p>
+    </aside>`;
+
+const mmWireQeQtHover = (root) => {
+    const box = root.querySelector('[data-mm-qeqt-root]');
+    const railBody = root.querySelector('#mm-qeqt-rail-body');
+    if (!box || !railBody) return;
+    const rows = JSON.parse(box.getAttribute('data-rows') || '[]');
+    const svg = box.querySelector('svg');
+    const cross = box.querySelector('.mm-qq-cross');
+    if (!svg || !rows.length) return;
+
+    svg.addEventListener('mousemove', (ev) => {
+        const b = svg.getBoundingClientRect();
+        const frac = (ev.clientX - b.left) / b.width;
+        const span = (MM_W - MM_L - MM_R) / MM_W;
+        const i = Math.round(((frac - MM_L / MM_W) / span) * (rows.length - 1));
+        const ii = Math.max(0, Math.min(rows.length - 1, i));
+        const x = MM_L + (ii / Math.max(rows.length - 1, 1)) * (MM_W - MM_L - MM_R);
+        if (cross) { cross.setAttribute('x1', x); cross.setAttribute('x2', x); cross.style.display = ''; }
+        railBody.innerHTML = mmQeQtRailBody(rows[ii]);
+    });
+    svg.addEventListener('mouseleave', () => {
+        if (cross) cross.style.display = 'none';
+        railBody.innerHTML = mmQeQtRailBody(null);
+    });
+};
+
 // Monthly prints (CPI, PCE) are discrete releases, not a continuous level: a
 // line between two months implies values in between that were never measured,
 // and MoM in particular crosses zero every few months, where a filled line
@@ -644,10 +758,19 @@ const mmViewsFor = (ind) => {
         views.push({ id: 'balance_liabilities', label: '부채' });
         views.push({ id: 'balance_assets', label: '자산' });
     }
+    // fed_ust_ops carries a monthly, signed purchases/runoff series in place
+    // of the generic '추이' -- that generic tab was drawing a fixture history
+    // array frozen around -29B, untouched by the headline's earlier switch to
+    // real data, because the two lived in separate fields. Real data replaces
+    // both here, not just the number on top.
+    const hasQeQt = has((ind.qe_qt_history || {}).rows);
+    if (hasQeQt) {
+        views.push({ id: 'qeqt', label: '매입 추이' });
+    }
     // A plain level line is redundant once the level is already visible as
     // the top of a stack -- skipped here so fed_total_assets doesn't carry
     // both '추이' and '자산'/'부채' saying the same 6.7T two different ways.
-    if (!hasBalanceSheet && (has(((ind.history || {})['5y'] || {}).values) || ind.modes)) {
+    if (!hasBalanceSheet && !hasQeQt && (has(((ind.history || {})['5y'] || {}).values) || ind.modes)) {
         views.push({ id: 'history', label: '추이' });
     }
     // Secondary panels come last so the engine's primary view stays default.
@@ -759,6 +882,7 @@ const mmChartDrawer = () => {
     let body = '';
     if (view === 'balance_assets') body = mmBalanceAssetsView(ind);
     else if (view === 'balance_liabilities') body = mmBalanceLiabilitiesView(ind);
+    else if (view === 'qeqt') body = mmQeQtBars(ind.qe_qt_history);
     else if (view === 'movers') body = mmMoversView(ind);
     else if (view === 'status') body = mmStatusView(ind);
     else if (view === 'compare') body = mmCompareView(ind);
@@ -843,7 +967,8 @@ const mmChartDrawer = () => {
                 ${mmNoteWithState(ind) ? `<p class="fin-note mm-note">${finEsc(mmNoteWithState(ind))}</p>` : ''}
                 ${ind.reference ? `<p class="fin-note">${finEsc(typeof ind.reference === 'string' ? ind.reference : JSON.stringify(ind.reference))}</p>` : ''}
             </div>
-            ${view === 'balance_liabilities' && (ind.balance_sheet || {}).ratio
+            ${view === 'qeqt' ? mmQeQtRail(null)
+                : view === 'balance_liabilities' && (ind.balance_sheet || {}).ratio
                 ? mmReservesRatioRail(ind.balance_sheet.ratio, ind.balance_sheet.dates || [])
                 : mmNewsRail(ind)}
         </div>
@@ -1016,6 +1141,7 @@ const mmOverlay = () => {
 // to the previous SVG are gone with it.
 const mmWireCharts = (host) => {
     host.querySelectorAll('[data-mm-bs-root]').forEach(mmWireBalanceHover);
+    if (host.querySelector('[data-mm-qeqt-root]')) mmWireQeQtHover(host);
     host.querySelectorAll('[data-mm-chart-box]').forEach((box) => {
         const svg = box.querySelector('svg');
         const cross = box.querySelector('.mm-cross');
