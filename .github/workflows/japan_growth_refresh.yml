@@ -1,0 +1,53 @@
+name: Refresh Japan growth diagnostics
+
+# capex_gdp_ratio / net_funding_demand / gdp_gap were grafted into
+# macro_monitor_v1.json once, by hand, from a snapshot Codex built on
+# 2026-08-20. Nothing kept them current after that -- the underlying ESRI
+# (Cabinet Office) and BOJ releases move quarterly, and a value frozen at
+# "official_snapshot" with no refresh path is a snapshot forever, not the
+# live-official reading the badge implies.
+#
+# build_japan_growth_snapshot.py already hits the real ESRI/BOJ endpoints
+# (no key needed) and reproduces the same numbers on every run --
+# refresh_japan_growth_in_pack.py then re-derives just those three
+# indicators inside the existing pack via the engine's own attach function,
+# without rebuilding macro_monitor_v1.json from scratch (which would drop
+# the CPI/PCE/Fed-balance-sheet/QE-QT work layered on top of it since).
+
+on:
+  schedule:
+    # Source releases are quarterly; weekly is generous headroom, not a
+    # rate this needs.
+    - cron: '20 5 * * 1'
+  workflow_dispatch:
+
+jobs:
+  refresh-japan-growth:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install test deps
+        working-directory: New for anti/scripts/macro_monitor
+        run: pip install pytest
+      - name: Tests
+        working-directory: New for anti/scripts/macro_monitor
+        run: python -m pytest tests/test_japan_growth.py -v
+      - name: Refresh ESRI/BOJ snapshot
+        working-directory: New for anti/scripts/macro_monitor
+        run: python build_japan_growth_snapshot.py
+      - name: Graft into macro_monitor_v1.json
+        working-directory: New for anti/scripts/macro_monitor
+        run: python refresh_japan_growth_in_pack.py
+      - name: Commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "New for anti/scripts/macro_monitor/config/japan_growth_v1.json" \
+                  "New for anti/public/data/macro_monitor_v1.json"
+          git commit -m "chore: refresh Japan growth diagnostics (ESRI/BOJ)" || exit 0
+          git push
