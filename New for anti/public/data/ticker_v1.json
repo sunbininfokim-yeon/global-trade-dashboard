@@ -1,6 +1,6 @@
 {
   "schema_version": "ticker-v1",
-  "generated_at": "2026-08-22T11:54:39.793213+00:00",
+  "generated_at": "2026-08-22T14:57:06.725309+00:00",
   "model": {
     "name": "commodity_diplomacy_rss_v1",
     "description": "RSS multi-region ticker: regional priority (MENA/IN/TR/JP/CN/TW/RU + commodity specialists) over Western majors; politics admitted with diplomacy+trade bridge, elections, governance polls, cabinet reshuffles; horse-race national polls rejected; importance = country-tier × info-grade; main display language Korean.",
@@ -73,21 +73,21 @@
     "cabinet_reshuffle": true
   },
   "stats": {
-    "sources_ok": 36,
-    "sources_failed": 2,
-    "raw_items": 822,
-    "scored_items": 84,
+    "sources_ok": 35,
+    "sources_failed": 3,
+    "raw_items": 802,
+    "scored_items": 69,
     "selected_items": 24,
     "region_histogram": {
       "commodity_specialist": 7,
-      "china": 3,
+      "china": 2,
       "japan": 2,
-      "west": 1,
-      "russia": 2,
-      "turkey": 2,
       "india": 2,
-      "taiwan": 2,
-      "mena": 3
+      "russia": 3,
+      "west": 1,
+      "mena": 4,
+      "turkey": 2,
+      "taiwan": 1
     },
     "min_importance": 0.35
   },
@@ -96,7 +96,7 @@
       "source_id": "aljazeera_en",
       "ok": true,
       "count": 25,
-      "elapsed_ms": 100,
+      "elapsed_ms": 350,
       "error": null,
       "mode": "live"
     },
@@ -104,7 +104,7 @@
       "source_id": "iran_intl",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 461,
+      "elapsed_ms": 953,
       "error": null,
       "mode": "live"
     },
@@ -112,7 +112,7 @@
       "source_id": "arab_news",
       "ok": true,
       "count": 10,
-      "elapsed_ms": 60,
+      "elapsed_ms": 134,
       "error": null,
       "mode": "live"
     },
@@ -120,15 +120,15 @@
       "source_id": "tehran_times",
       "ok": true,
       "count": 30,
-      "elapsed_ms": 1357,
+      "elapsed_ms": 1909,
       "error": null,
       "mode": "live"
     },
     {
       "source_id": "middle_east_eye",
       "ok": true,
-      "count": 0,
-      "elapsed_ms": 41,
+      "count": 20,
+      "elapsed_ms": 1197,
       "error": null,
       "mode": "live"
     },
@@ -136,7 +136,7 @@
       "source_id": "aa_world",
       "ok": true,
       "count": 30,
-      "elapsed_ms": 2517,
+      "elapsed_ms": 3838,
       "error": null,
       "mode": "live"
     },
@@ -144,7 +144,7 @@
       "source_id": "daily_sabah",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 626,
+      "elapsed_ms": 1792,
       "error": null,
       "mode": "live"
     },
@@ -152,7 +152,7 @@
       "source_id": "hurriyet_daily",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 279,
+      "elapsed_ms": 2027,
       "error": null,
       "mode": "live"
     },
@@ -160,7 +160,7 @@
       "source_id": "the_hindu",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 60,
+      "elapsed_ms": 519,
       "error": null,
       "mode": "live"
     },
@@ -168,7 +168,7 @@
       "source_id": "indian_express_world",
       "ok": false,
       "count": 0,
-      "elapsed_ms": 62,
+      "elapsed_ms": 277,
       "error": "HTTPError: HTTP Error 403: Forbidden",
       "mode": "live"
     },
@@ -176,7 +176,7 @@
       "source_id": "et_commodities",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 477,
+      "elapsed_ms": 1660,
       "error": null,
       "mode": "live"
     },
@@ -184,7 +184,7 @@
       "source_id": "business_standard_markets",
       "ok": true,
       "count": 35,
-      "elapsed_ms": 44,
+      "elapsed_ms": 1777,
       "error": null,
       "mode": "live"
     },
@@ -192,7 +192,7 @@
       "source_id": "ndtv_world",
       "ok": true,
       "count": 20,
-      "elapsed_ms": 428,
+      "elapsed_ms": 1038,
       "error": null,
       "mode": "live"
     },
@@ -200,23 +200,23 @@
       "source_id": "xinhua_world",
       "ok": true,
       "count": 20,
-      "elapsed_ms": 1347,
+      "elapsed_ms": 4522,
       "error": null,
       "mode": "live"
     },
     {
       "source_id": "china_daily_world",
-      "ok": true,
-      "count": 40,
-      "elapsed_ms": 941,
-      "error": null,
+      "ok": false,
+      "count": 0,
+      "elapsed_ms": 19308,
+      "error": "TimeoutError: The read operation timed out",
       "mode": "live"
     },
     {
       "source_id": "cgtn_world",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 541,
+      "elapsed_ms": 1590,
       "error": null,
       "mode": "live"
     },
@@ -224,7 +224,7 @@
       "source_id": "scmp",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 455,
+      "elapsed_ms": 804,
       "error": null,
       "mode": "live"
     },
@@ -232,7 +232,7 @@
       "source_id": "nhk_business",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 359,
+      "elapsed_ms": 5037,
       "error": null,
       "mode": "live"
     },
@@ -240,7 +240,7 @@
       "source_id": "nhk_top",
       "ok": true,
       "count": 7,
-      "elapsed_ms": 41,
+      "elapsed_ms": 249,
       "error": null,
       "mode": "live"
     },
@@ -248,7 +248,7 @@
       "source_id": "japan_times",
       "ok": true,
       "count": 30,
-      "elapsed_ms": 266,
+      "elapsed_ms": 1098,
       "error": null,
       "mode": "live"
     },
@@ -256,7 +256,7 @@
       "source_id": "nikkei_asia",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 38,
+      "elapsed_ms": 939,
       "error": null,
       "mode": "live"
     },
@@ -264,7 +264,7 @@
       "source_id": "cna",
       "ok": true,
       "count": 20,
-      "elapsed_ms": 145,
+      "elapsed_ms": 1078,
       "error": null,
       "mode": "live"
     },
@@ -272,7 +272,7 @@
       "source_id": "taipei_times",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 332,
+      "elapsed_ms": 1614,
       "error": null,
       "mode": "live"
     },
@@ -280,7 +280,7 @@
       "source_id": "ltn",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 86,
+      "elapsed_ms": 1886,
       "error": null,
       "mode": "live"
     },
@@ -288,7 +288,7 @@
       "source_id": "udn",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 263,
+      "elapsed_ms": 513,
       "error": null,
       "mode": "live"
     },
@@ -296,7 +296,7 @@
       "source_id": "tass_en",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 1206,
+      "elapsed_ms": 1537,
       "error": null,
       "mode": "live"
     },
@@ -304,7 +304,7 @@
       "source_id": "tass_ru",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 1366,
+      "elapsed_ms": 2272,
       "error": null,
       "mode": "live"
     },
@@ -312,7 +312,7 @@
       "source_id": "interfax_ru",
       "ok": true,
       "count": 25,
-      "elapsed_ms": 1620,
+      "elapsed_ms": 3543,
       "error": null,
       "mode": "live"
     },
@@ -320,7 +320,7 @@
       "source_id": "rt_ru",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 1390,
+      "elapsed_ms": 4247,
       "error": null,
       "mode": "live"
     },
@@ -328,7 +328,7 @@
       "source_id": "ship_and_bunker",
       "ok": true,
       "count": 10,
-      "elapsed_ms": 323,
+      "elapsed_ms": 711,
       "error": null,
       "mode": "live"
     },
@@ -336,7 +336,7 @@
       "source_id": "oilprice",
       "ok": true,
       "count": 15,
-      "elapsed_ms": 504,
+      "elapsed_ms": 2519,
       "error": null,
       "mode": "live"
     },
@@ -344,7 +344,7 @@
       "source_id": "mining_com",
       "ok": false,
       "count": 0,
-      "elapsed_ms": 40,
+      "elapsed_ms": 765,
       "error": "HTTPError: HTTP Error 403: Forbidden",
       "mode": "live"
     },
@@ -352,7 +352,7 @@
       "source_id": "world_grain",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 202,
+      "elapsed_ms": 958,
       "error": null,
       "mode": "live"
     },
@@ -360,7 +360,7 @@
       "source_id": "hellenic_shipping",
       "ok": true,
       "count": 20,
-      "elapsed_ms": 138,
+      "elapsed_ms": 650,
       "error": null,
       "mode": "live"
     },
@@ -368,7 +368,7 @@
       "source_id": "seatrade",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 486,
+      "elapsed_ms": 995,
       "error": null,
       "mode": "live"
     },
@@ -376,7 +376,7 @@
       "source_id": "bbc_business",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 80,
+      "elapsed_ms": 610,
       "error": null,
       "mode": "live"
     },
@@ -384,7 +384,7 @@
       "source_id": "bloomberg_markets",
       "ok": true,
       "count": 20,
-      "elapsed_ms": 370,
+      "elapsed_ms": 1892,
       "error": null,
       "mode": "live"
     },
@@ -392,7 +392,7 @@
       "source_id": "ft_commodities",
       "ok": true,
       "count": 25,
-      "elapsed_ms": 322,
+      "elapsed_ms": 678,
       "error": null,
       "mode": "live"
     }
@@ -424,9 +424,9 @@
         "diplomacy": 1.0,
         "election": 0.0,
         "region_weight": 1.35,
-        "freshness": 0.68,
-        "importance": 2.956,
-        "final": 3.422
+        "freshness": 0.625,
+        "importance": 2.717,
+        "final": 3.145
       },
       "rank_reasons": [
         "region:commodity_specialist*1.35",
@@ -466,9 +466,9 @@
         "diplomacy": 2.0,
         "election": 0.0,
         "region_weight": 1.35,
-        "freshness": 0.617,
-        "importance": 2.34,
-        "final": 2.709
+        "freshness": 0.567,
+        "importance": 2.151,
+        "final": 2.49
       },
       "rank_reasons": [
         "region:commodity_specialist*1.35",
@@ -506,9 +506,9 @@
         "diplomacy": 0.0,
         "election": 1.2,
         "region_weight": 1.25,
-        "freshness": 0.846,
-        "importance": 2.362,
-        "final": 2.628
+        "freshness": 0.777,
+        "importance": 2.171,
+        "final": 2.415
       },
       "rank_reasons": [
         "region:china*1.25",
@@ -546,9 +546,9 @@
         "diplomacy": 0.0,
         "election": 1.2,
         "region_weight": 1.25,
-        "freshness": 0.713,
-        "importance": 1.992,
-        "final": 2.216
+        "freshness": 0.655,
+        "importance": 1.831,
+        "final": 2.037
       },
       "rank_reasons": [
         "region:japan*1.25",
@@ -590,9 +590,9 @@
         "diplomacy": 1.0,
         "election": 0.0,
         "region_weight": 1.35,
-        "freshness": 0.56,
-        "importance": 1.787,
-        "final": 2.069
+        "freshness": 0.515,
+        "importance": 1.642,
+        "final": 1.901
       },
       "rank_reasons": [
         "region:commodity_specialist*1.35",
@@ -634,9 +634,9 @@
         "diplomacy": 1.0,
         "election": 0.0,
         "region_weight": 1.35,
-        "freshness": 0.551,
-        "importance": 1.76,
-        "final": 2.037
+        "freshness": 0.507,
+        "importance": 1.617,
+        "final": 1.872
       },
       "rank_reasons": [
         "region:commodity_specialist*1.35",
@@ -652,45 +652,129 @@
       "country_hint": "USA"
     },
     {
-      "id": "01b6899109891cb0",
-      "published_at": "2026-08-21T18:29:22+00:00",
+      "id": "95366a8b753616bc",
+      "published_at": "2026-08-22T13:54:18+00:00",
       "source": {
-        "id": "scmp",
-        "name": "South China Morning Post",
-        "region": "china",
+        "id": "ndtv_world",
+        "name": "NDTV World",
+        "region": "india",
         "slant": null
       },
-      "url": "https://www.scmp.com/news/world/middle-east/article/3364893/iran-president-says-time-end-war-while-tehran-position-strength?utm_source=rss_feed",
+      "url": "https://www.ndtv.com/world-news/us-iran-war-how-dark-tankers-in-strait-of-hormuz-are-keeping-oil-prices-in-check-11945207#publisher=newsstand",
       "category": "commodity",
       "commodities": [
+        "oil",
         "shipping"
       ],
       "title": {
-        "original": "Iran president says time to end war while Tehran is in position of strength",
+        "original": "How 'Dark' Tankers In Strait Of Hormuz Are Keeping Oil Prices In Check",
         "original_lang": "en",
-        "ko": "이란 대통령은 테헤란이 힘의 위치에 있는 동안 전쟁을 끝낼 시간이라고 말합니다."
+        "ko": "호르무즈 해협의 '어두운' 유조선이 유가를 유지하는 방법"
       },
-      "summary": "Iranian President Masoud Pezeshkian said on Friday it was time to end the months-long Middle East war with the US because Tehran appeared to be in a stronger position than Washington. Talks between the long-time foes remain on hold, and the war started by the US and Israel in Feb",
+      "summary": "Middle Eastern producers have also found ways to move more oil away from the strait altogether.",
       "scores": {
-        "commodity": 1.0,
+        "commodity": 2.0,
         "diplomacy": 1.0,
         "election": 0.0,
-        "region_weight": 1.25,
-        "freshness": 0.616,
-        "importance": 1.264,
-        "final": 1.406
+        "region_weight": 1.3,
+        "freshness": 0.972,
+        "importance": 1.492,
+        "final": 1.694
       },
       "rank_reasons": [
-        "region:china*1.25",
+        "region:india*1.30",
         "category:commodity",
-        "tier:A*1.00/g1",
+        "tier:A*1.00/g3",
+        "commodity:oil:1",
         "commodity:shipping:1",
         "diplomacy:1"
       ],
       "translation_status": "ok",
       "country_tier": "A",
-      "info_grade": "1",
-      "country_hint": "USA"
+      "info_grade": "3",
+      "country_hint": "IND"
+    },
+    {
+      "id": "5269e06fe8234432",
+      "published_at": "2026-08-22T14:00:26+00:00",
+      "source": {
+        "id": "rt_ru",
+        "name": "RT Russian",
+        "region": "russia",
+        "slant": null
+      },
+      "url": "https://russian.rt.com/world/news/1672915-uspehi-rossii-sankcii?utm_source=rss&utm_medium=rss&utm_campaign=RSS",
+      "category": "election",
+      "commodities": [],
+      "title": {
+        "original": "Медведев: успехи России в условиях санкций нужно закрепить",
+        "original_lang": "ru",
+        "ko": "메드베데프: 제재 하에서 러시아의 성공은 통합되어야 합니다."
+      },
+      "summary": "Зампред Совбеза, председатель партии «Единая Россия» Дмитрий Медведев призвал закрепить все успехи России в условиях санкций. Читать далее",
+      "scores": {
+        "commodity": 0,
+        "diplomacy": 1.0,
+        "election": 1.0,
+        "region_weight": 1.25,
+        "freshness": 0.974,
+        "importance": 1.397,
+        "final": 1.554
+      },
+      "rank_reasons": [
+        "region:russia*1.25",
+        "category:election",
+        "tier:A*1.00/g2",
+        "diplomacy:1",
+        "election:general:1"
+      ],
+      "translation_status": "ok",
+      "country_tier": "A",
+      "info_grade": "2",
+      "country_hint": "RUS",
+      "election_type": "general"
+    },
+    {
+      "id": "68bb0ed9df14133b",
+      "published_at": "2026-08-22T14:51:11+00:00",
+      "source": {
+        "id": "tass_ru",
+        "name": "ТАСС",
+        "region": "russia",
+        "slant": null
+      },
+      "url": "https://tass.ru/mezhdunarodnaya-panorama/28035773",
+      "category": "commodity",
+      "commodities": [
+        "gas",
+        "rice"
+      ],
+      "title": {
+        "original": "ЦАХАЛ заявил о ликвидации командира роты ХАМАС в Газе",
+        "original_lang": "ru",
+        "ko": "IDF는 가자지구에 있는 하마스 회사의 사령관을 제거한다고 발표했다."
+      },
+      "summary": "В израильской армии сообщили, что Шариф аль-Хасанат \"управлял террористическими атаками\" и \"участвовал в руководстве усилиями по восстановлению подземных объектов ХАМАС\" в анклаве",
+      "scores": {
+        "commodity": 2.0,
+        "diplomacy": 0.0,
+        "election": 0.0,
+        "region_weight": 1.25,
+        "freshness": 0.998,
+        "importance": 1.101,
+        "final": 1.225
+      },
+      "rank_reasons": [
+        "region:russia*1.25",
+        "category:commodity",
+        "tier:A*1.00/g3",
+        "commodity:gas:1",
+        "commodity:rice:1"
+      ],
+      "translation_status": "ok",
+      "country_tier": "A",
+      "info_grade": "3",
+      "country_hint": "RUS"
     },
     {
       "id": "4b8a947053db3695",
@@ -717,9 +801,9 @@
         "diplomacy": 1.0,
         "election": 0.0,
         "region_weight": 0.55,
-        "freshness": 0.803,
-        "importance": 1.646,
-        "final": 1.313
+        "freshness": 0.738,
+        "importance": 1.513,
+        "final": 1.207
       },
       "rank_reasons": [
         "region:west*0.55",
@@ -759,9 +843,9 @@
         "diplomacy": 0.0,
         "election": 0.0,
         "region_weight": 1.35,
-        "freshness": 0.661,
-        "importance": 1.095,
-        "final": 1.268
+        "freshness": 0.608,
+        "importance": 1.007,
+        "final": 1.165
       },
       "rank_reasons": [
         "region:commodity_specialist*1.35",
@@ -774,45 +858,6 @@
       "country_tier": "A",
       "info_grade": "3",
       "country_hint": "USA"
-    },
-    {
-      "id": "812b68796ae4eca0",
-      "published_at": "2026-08-22T11:32:21+00:00",
-      "source": {
-        "id": "tass_ru",
-        "name": "ТАСС",
-        "region": "russia",
-        "slant": null
-      },
-      "url": "https://tass.ru/obschestvo/28035281",
-      "category": "election",
-      "commodities": [],
-      "title": {
-        "original": "Лавров: несколько тысяч разделяющих традиционные ценности семей переехали в РФ",
-        "original_lang": "ru",
-        "ko": "라브로프: 전통적 가치를 공유하는 수천 가족이 러시아 연방으로 이주했습니다."
-      },
-      "summary": "В сентябре 2024 года вступил в силу президентский указ \"Об оказании гуманитарной поддержки лицам, разделяющим традиционные российские духовно-нравственные ценности\"",
-      "scores": {
-        "commodity": 0,
-        "diplomacy": 0.0,
-        "election": 1.0,
-        "region_weight": 1.25,
-        "freshness": 0.99,
-        "importance": 1.091,
-        "final": 1.214
-      },
-      "rank_reasons": [
-        "region:russia*1.25",
-        "category:election",
-        "tier:A*1.00/g1",
-        "election:presidential:1"
-      ],
-      "translation_status": "ok",
-      "country_tier": "A",
-      "info_grade": "1",
-      "country_hint": "RUS",
-      "election_type": "presidential"
     },
     {
       "id": "625330d06bb8107a",
@@ -859,79 +904,34 @@
       "country_hint": "USA"
     },
     {
-      "id": "bb90ab4fc29dce2a",
-      "published_at": "2026-08-21T14:00:00+00:00",
+      "id": "6878fb4d0bd3d03a",
+      "published_at": "2026-08-22T12:26:00+00:00",
       "source": {
-        "id": "oilprice",
-        "name": "OilPrice.com",
-        "region": "commodity_specialist",
+        "id": "interfax_ru",
+        "name": "Interfax",
+        "region": "russia",
         "slant": null
       },
-      "url": "https://oilprice.com/Energy/Energy-General/The-Battery-Boom-Is-Becoming-Impossible-to-Ignore.html",
-      "category": "commodity",
-      "commodities": [
-        "oil",
-        "gas",
-        "coal"
-      ],
-      "title": {
-        "original": "The Battery Boom Is Becoming Impossible to Ignore",
-        "original_lang": "en",
-        "ko": "배터리 붐은 무시할 수 없게 되고 있습니다"
-      },
-      "summary": "For the past several weeks, I have been working my way through the major findings in the Energy Institute’s 2026 Statistical Review of World Energy. This article concludes that series. For readers who want to catch up, the previous installments are: Energy Demand Outpaced the Tra",
-      "scores": {
-        "commodity": 3.0,
-        "diplomacy": 0.0,
-        "election": 0.0,
-        "region_weight": 1.35,
-        "freshness": 0.544,
-        "importance": 0.993,
-        "final": 1.149
-      },
-      "rank_reasons": [
-        "region:commodity_specialist*1.35",
-        "category:commodity",
-        "tier:A*1.00/g3",
-        "commodity:oil:1",
-        "commodity:gas:1",
-        "commodity:coal:1",
-        "bridge:1"
-      ],
-      "translation_status": "ok",
-      "country_tier": "A",
-      "info_grade": "3",
-      "country_hint": "USA"
-    },
-    {
-      "id": "07e974d367df472a",
-      "published_at": "2026-08-22T08:51:46+00:00",
-      "source": {
-        "id": "scmp",
-        "name": "South China Morning Post",
-        "region": "china",
-        "slant": null
-      },
-      "url": "https://www.scmp.com/news/world/americas/article/3364917/brazils-lula-seeks-end-baseless-tariffs-call-trump?utm_source=rss_feed",
+      "url": "https://www.interfax.ru/world/1110677",
       "category": "election",
       "commodities": [],
       "title": {
-        "original": "Brazil’s Lula seeks end to ‘baseless tariffs’ in call with Trump",
-        "original_lang": "en",
-        "ko": "브라질의 룰라는 트럼프와의 통화에서 ‘근거 없는 관세’ 를 종식시키려 한다."
+        "original": "Правительство Бразилии опасается, что США оказывают поддержку оппозиции",
+        "original_lang": "ru",
+        "ko": "브라질 정부는 미국이 반대를 지지할 것을 우려하고 있다."
       },
-      "summary": "Brazilian President Luiz Inacio Lula da Silva urged US counterpart Donald Trump in a phone call on Friday to resolve their countries’ trade dispute, saying US tariffs were imposed on “baseless” grounds. Washington imposed two new sets of tariffs on the Latin American giant in Jul",
+      "summary": "Власти Бразилии полагают, что руководство Госдепартамента США настроено на поддержку оппозиционных сил в стране, сообщает в субботу Financial Times (FT) со ссылкой на источник.\"Для бразильского правительства нынешние споры показывают, что Госдепартамент действует откровенно идеол",
       "scores": {
         "commodity": 0,
         "diplomacy": 0.0,
         "election": 1.0,
         "region_weight": 1.25,
-        "freshness": 0.919,
-        "importance": 1.013,
-        "final": 1.127
+        "freshness": 0.933,
+        "importance": 1.028,
+        "final": 1.144
       },
       "rank_reasons": [
-        "region:china*1.25",
+        "region:russia*1.25",
         "category:election",
         "tier:A*1.00/g1",
         "election:presidential:1"
@@ -939,48 +939,93 @@
       "translation_status": "ok",
       "country_tier": "A",
       "info_grade": "1",
-      "country_hint": "USA",
+      "country_hint": "RUS",
       "election_type": "presidential"
     },
     {
-      "id": "67e507aa4f62ef53",
-      "published_at": "2026-08-22T11:48:00+00:00",
+      "id": "17f15e49f2bffceb",
+      "published_at": "2026-08-22T12:17:08+00:00",
       "source": {
-        "id": "interfax_ru",
-        "name": "Interfax",
-        "region": "russia",
+        "id": "scmp",
+        "name": "South China Morning Post",
+        "region": "china",
         "slant": null
       },
-      "url": "https://www.interfax.ru/russia/1110667",
-      "category": "election",
-      "commodities": [],
+      "url": "https://www.scmp.com/news/world/africa/article/3364934/20-sailors-kidnapped-somali-pirates-near-yemen-us-sanctioned-ship?utm_source=rss_feed",
+      "category": "commodity",
+      "commodities": [
+        "oil",
+        "shipping"
+      ],
       "title": {
-        "original": "Лавров отметил, что все страны могут участвовать в работе по формированию большого евразийского партнерства",
-        "original_lang": "ru",
-        "ko": "라브로프는 모든 국가가 대규모 유라시아 파트너십 형성 작업에 참여할 수 있다고 언급했다."
+        "original": "20 sailors kidnapped by Somali pirates near Yemen on US-sanctioned ship",
+        "original_lang": "en",
+        "ko": "미국이 인정한 선박을 타고 예멘 근처에서 소말리아 해적에게 납치된 선원 20명"
       },
-      "summary": "Россия не пытается отгородиться от недружественных стран на евразийском пространстве, все страны могут участвовать в работе по формированию большого евразийского партнерства, заявил глава МИД РФ Сергей Лавров.\"Там есть уже совместные проекты, есть много договоренностей, которые б",
+      "summary": "Somali pirates hijacked an oil products tanker off Yemen, a Somali maritime security official said, the latest in a resurgence of piracy that has seen six commercial vessels seized since April across the Gulf of Aden and western Indian Ocean. Six armed pirates hijacked the Eritre",
       "scores": {
-        "commodity": 0,
-        "diplomacy": 1.0,
-        "election": 1.0,
+        "commodity": 2.0,
+        "diplomacy": 0.0,
+        "election": 0.0,
         "region_weight": 1.25,
-        "freshness": 0.997,
-        "importance": 0.98,
-        "final": 1.09
+        "freshness": 0.929,
+        "importance": 1.025,
+        "final": 1.141
       },
       "rank_reasons": [
-        "region:russia*1.25",
-        "category:election",
+        "region:china*1.25",
+        "category:commodity",
         "tier:A*1.00/g3",
-        "diplomacy:1",
-        "election:local:1"
+        "commodity:oil:1",
+        "commodity:shipping:1"
       ],
       "translation_status": "ok",
       "country_tier": "A",
       "info_grade": "3",
-      "country_hint": "RUS",
-      "election_type": "local"
+      "country_hint": "CHN"
+    },
+    {
+      "id": "43a2642f883a4977",
+      "published_at": "2026-08-22T08:26:56+00:00",
+      "source": {
+        "id": "middle_east_eye",
+        "name": "Middle East Eye",
+        "region": "mena",
+        "slant": null
+      },
+      "url": "https://www.middleeasteye.net/live-blog/live-blog-update/tehran-says-iraqi-oil-tankers-allowed-passage-through-hormuz",
+      "category": "commodity",
+      "commodities": [
+        "oil",
+        "shipping"
+      ],
+      "title": {
+        "original": "Tehran says Iraqi oil tankers allowed passage through Hormuz",
+        "original_lang": "en",
+        "ko": "테헤란은 이라크 유조선이 호르무즈를 통과하는 것을 허용한다고 말합니다."
+      },
+      "summary": "Tehran says Iraqi oil tankers allowed passage through Hormuz Tehran says it has allowed a number of Iraqi oil tankers to pass through the Strait of Hormuz. Iran's state news agency IRNA reported that Iraqi parliament speaker Haibat al-Halbousi asked his Iranian counterpart, Moham",
+      "scores": {
+        "commodity": 2.0,
+        "diplomacy": 1.0,
+        "election": 0.0,
+        "region_weight": 1.4,
+        "freshness": 0.835,
+        "importance": 0.923,
+        "final": 1.09
+      },
+      "rank_reasons": [
+        "region:mena*1.40",
+        "category:commodity",
+        "tier:B*0.72/g3",
+        "commodity:oil:1",
+        "commodity:shipping:1",
+        "diplomacy:1"
+      ],
+      "translation_status": "ok",
+      "country_tier": "B",
+      "info_grade": "3",
+      "country_hint": "SAU"
     },
     {
       "id": "e735bd03e3f62001",
@@ -1023,6 +1068,92 @@
       "election_type": "cabinet_reshuffle"
     },
     {
+      "id": "bb90ab4fc29dce2a",
+      "published_at": "2026-08-21T14:00:00+00:00",
+      "source": {
+        "id": "oilprice",
+        "name": "OilPrice.com",
+        "region": "commodity_specialist",
+        "slant": null
+      },
+      "url": "https://oilprice.com/Energy/Energy-General/The-Battery-Boom-Is-Becoming-Impossible-to-Ignore.html",
+      "category": "commodity",
+      "commodities": [
+        "oil",
+        "gas",
+        "coal"
+      ],
+      "title": {
+        "original": "The Battery Boom Is Becoming Impossible to Ignore",
+        "original_lang": "en",
+        "ko": "배터리 붐은 무시할 수 없게 되고 있습니다"
+      },
+      "summary": "For the past several weeks, I have been working my way through the major findings in the Energy Institute’s 2026 Statistical Review of World Energy. This article concludes that series. For readers who want to catch up, the previous installments are: Energy Demand Outpaced the Tra",
+      "scores": {
+        "commodity": 3.0,
+        "diplomacy": 0.0,
+        "election": 0.0,
+        "region_weight": 1.35,
+        "freshness": 0.5,
+        "importance": 0.912,
+        "final": 1.056
+      },
+      "rank_reasons": [
+        "region:commodity_specialist*1.35",
+        "category:commodity",
+        "tier:A*1.00/g3",
+        "commodity:oil:1",
+        "commodity:gas:1",
+        "commodity:coal:1",
+        "bridge:1"
+      ],
+      "translation_status": "ok",
+      "country_tier": "A",
+      "info_grade": "3",
+      "country_hint": "USA"
+    },
+    {
+      "id": "2b6475109f202b28",
+      "published_at": "2026-08-22T06:53:20+00:00",
+      "source": {
+        "id": "middle_east_eye",
+        "name": "Middle East Eye",
+        "region": "mena",
+        "slant": null
+      },
+      "url": "https://www.middleeasteye.net/live-blog/live-blog-update/lebanon-economy-contract-64-percent-due-war-world-bank-says",
+      "category": "commodity",
+      "commodities": [
+        "oil"
+      ],
+      "title": {
+        "original": "Lebanon economy to contract by 6.4 percent due to war, World Bank says",
+        "original_lang": "en",
+        "ko": "세계은행은 레바논 경제가 전쟁으로 인해 6.4% 축소될 것이라고 말합니다."
+      },
+      "summary": "Lebanon economy to contract by 6.4 percent due to war, World Bank says The World Bank projects that Lebanon's economy would contract by 6.4 percent this year, as the ongoing war derailed the country's efforts at recovery. Due to the war, \"real GDP is projected to contract by 6.4 ",
+      "scores": {
+        "commodity": 1.0,
+        "diplomacy": 0.0,
+        "election": 0.0,
+        "region_weight": 1.4,
+        "freshness": 0.8,
+        "importance": 0.864,
+        "final": 1.019
+      },
+      "rank_reasons": [
+        "region:mena*1.40",
+        "category:commodity",
+        "tier:B*0.72/g1",
+        "commodity:oil:1",
+        "bridge:1"
+      ],
+      "translation_status": "ok",
+      "country_tier": "B",
+      "info_grade": "1",
+      "country_hint": "SAU"
+    },
+    {
       "id": "5965493a8d39c2df",
       "published_at": "2026-08-21T16:09:19+00:00",
       "source": {
@@ -1045,9 +1176,9 @@
         "diplomacy": 2.0,
         "election": 1.0,
         "region_weight": 1.3,
-        "freshness": 0.578,
-        "importance": 0.871,
-        "final": 0.989
+        "freshness": 0.531,
+        "importance": 0.801,
+        "final": 0.909
       },
       "rank_reasons": [
         "region:turkey*1.30",
@@ -1063,40 +1194,39 @@
       "election_type": "general"
     },
     {
-      "id": "064ca6b9db861268",
-      "published_at": "2026-08-22T00:35:06+00:00",
+      "id": "963500f5826f465c",
+      "published_at": "2026-08-22T14:37:24+00:00",
       "source": {
-        "id": "ndtv_world",
-        "name": "NDTV World",
+        "id": "the_hindu",
+        "name": "The Hindu",
         "region": "india",
         "slant": null
       },
-      "url": "https://www.ndtv.com/world-news/iran-seeks-agreement-but-not-ready-to-make-right-deal-donald-trump-11943111#publisher=newsstand",
+      "url": "https://www.thehindu.com/news/national/karnataka/karnataka-bans-sale-of-analogue-paneer-under-the-name-paneer-for-one-year/article71377649.ece",
       "category": "commodity",
       "commodities": [
-        "shipping"
+        "oil"
       ],
       "title": {
-        "original": "Iran Seeks Agreement But \"Not Ready To Make Right Deal\": Trump",
+        "original": "Karnataka bans sale of analogue paneer under the name ‘paneer’ for one year",
         "original_lang": "en",
-        "ko": "이란은 합의를 추구하지만 \"올바른 거래를 할 준비가 되지 않았다\": 트럼프"
+        "ko": "카르나타카, '패니어‘ 라는 이름으로 1년간 아날로그 패니어 판매 금지"
       },
-      "summary": "Trump claimed that US has \"total control\" over Strait of Hormuz\".",
+      "summary": "Under the food safety regulations, paneer is a standardised milk product, and milk fat is an essential constituent. The use of vegetable oil, vegetable fat or other non-dairy ingredients in place of milk fat or milk solids is not permitted in a product sold as paneer",
       "scores": {
         "commodity": 1.0,
-        "diplomacy": 1.0,
+        "diplomacy": 0.0,
         "election": 0.0,
         "region_weight": 1.3,
-        "freshness": 0.73,
-        "importance": 0.719,
-        "final": 0.816
+        "freshness": 0.991,
+        "importance": 0.547,
+        "final": 0.621
       },
       "rank_reasons": [
         "region:india*1.30",
         "category:commodity",
         "tier:A*1.00/g3",
-        "commodity:shipping:1",
-        "diplomacy:1"
+        "commodity:oil:1"
       ],
       "translation_status": "ok",
       "country_tier": "A",
@@ -1104,44 +1234,45 @@
       "country_hint": "IND"
     },
     {
-      "id": "3bbef264e9efca37",
-      "published_at": "2026-08-22T10:40:00+00:00",
+      "id": "89dc8d7224de23e0",
+      "published_at": "2026-08-22T14:43:28+00:00",
       "source": {
-        "id": "the_hindu",
-        "name": "The Hindu",
-        "region": "india",
+        "id": "middle_east_eye",
+        "name": "Middle East Eye",
+        "region": "mena",
         "slant": null
       },
-      "url": "https://www.thehindu.com/news/national/kerala/considering-extending-distribution-of-onam-special-rice-for-one-more-month-minister/article71376992.ece",
+      "url": "https://www.middleeasteye.net/live-blog/live-blog-update/iran-says-repair-south-pars-refinery-70-percent-complete",
       "category": "commodity",
       "commodities": [
-        "rice"
+        "oil"
       ],
       "title": {
-        "original": "Considering extending distribution of Onam special rice for one more month: Minister",
+        "original": "Iran says repair of South Pars refinery 70 percent complete",
         "original_lang": "en",
-        "ko": "오남특산쌀 유통 한 달 더 연장 고려: 장관"
+        "ko": "이란, 사우스 파스 정유 공장 수리 70% 완료"
       },
-      "summary": "This move aims to ensure that more households, particularly those beyond the poorest categories, can access essential provisions during the festive season.",
+      "summary": "Iran says repair of South Pars refinery 70 percent complete The repair of Iran's South Pars Phase 14 gas refinery, hit during an Israeli attack in June last year, is 70% complete, the Pars Oil and Gas Company's chief executive said, according to Iran's oil ministry news agency SH",
       "scores": {
         "commodity": 1.0,
         "diplomacy": 0.0,
         "election": 0.0,
-        "region_weight": 1.3,
-        "freshness": 0.966,
-        "importance": 0.533,
-        "final": 0.605
+        "region_weight": 1.4,
+        "freshness": 0.994,
+        "importance": 0.515,
+        "final": 0.608
       },
       "rank_reasons": [
-        "region:india*1.30",
+        "region:mena*1.40",
         "category:commodity",
-        "tier:A*1.00/g3",
-        "commodity:rice:1"
+        "tier:B*0.72/g3",
+        "commodity:oil:1",
+        "bridge:1"
       ],
       "translation_status": "ok",
-      "country_tier": "A",
+      "country_tier": "B",
       "info_grade": "3",
-      "country_hint": "IND"
+      "country_hint": "SAU"
     },
     {
       "id": "6fced7b88dba0e19",
@@ -1168,9 +1299,9 @@
         "diplomacy": 1.0,
         "election": 0.0,
         "region_weight": 1.3,
-        "freshness": 0.624,
-        "importance": 0.442,
-        "final": 0.502
+        "freshness": 0.573,
+        "importance": 0.406,
+        "final": 0.461
       },
       "rank_reasons": [
         "region:turkey*1.30",
@@ -1185,33 +1316,33 @@
       "country_hint": "TUR"
     },
     {
-      "id": "4a9eef33cae46f72",
-      "published_at": "2026-08-22T11:11:31+00:00",
+      "id": "75cd2e24c1ec934b",
+      "published_at": "2026-08-22T14:07:35+00:00",
       "source": {
         "id": "ltn",
         "name": "Liberty Times",
         "region": "taiwan",
         "slant": "pan_green"
       },
-      "url": "https://sports.ltn.com.tw/news/breakingnews/5548891",
+      "url": "https://news.ltn.com.tw/news/society/breakingnews/5549004",
       "category": "commodity",
       "commodities": [
         "silver"
       ],
       "title": {
-        "original": "射箭聯賽》李彩綺破風佑築不敗金身 彰銀衛冕軍港都風雨奏捷",
+        "original": "8/22今彩539頭獎開1注！ 800萬獎落台中",
         "original_lang": "zh-TW",
-        "ko": "양궁 리그] 리 카이치 (Li Caiqi) 는 바람을 꺾고 무패의 황금 몸, 은을 만들고 군대를 방어했습니다."
+        "ko": "8/22 539 잭팟 1 베팅! 스테이지에서 800만 상금"
       },
-      "summary": "2026第8年企業射箭聯賽第3個比賽週來到高雄港16號碼頭，雖然天公不作美南部連日大雨，上季勇奪隊史首冠的彰化銀行風雨生信心，李彩綺打破風佑築不敗金身帶領下，終以5：1大...…",
+      "summary": "8月22日開獎的第115000204期今彩539頭獎開出1注，由台中市霧峰區北柳里四德路449號1樓的「金銀島彩券行」開出。 第115000204期今彩539中獎號碼為「0...…",
       "scores": {
         "commodity": 1.0,
         "diplomacy": 0.0,
         "election": 0.0,
         "region_weight": 1.25,
-        "freshness": 0.98,
-        "importance": 0.39,
-        "final": 0.434
+        "freshness": 0.978,
+        "importance": 0.389,
+        "final": 0.432
       },
       "rank_reasons": [
         "region:taiwan*1.25",
@@ -1223,45 +1354,6 @@
       "country_tier": "B",
       "info_grade": "3",
       "country_hint": "TWN"
-    },
-    {
-      "id": "ae47d08bc56afebe",
-      "published_at": "2026-08-22T11:40:49+00:00",
-      "source": {
-        "id": "ltn",
-        "name": "Liberty Times",
-        "region": "taiwan",
-        "slant": "pan_green"
-      },
-      "url": "https://news.ltn.com.tw/news/politics/breakingnews/5548907",
-      "category": "election",
-      "commodities": [],
-      "title": {
-        "original": "柯文哲點名沈伯洋「太弱」 李明賢喊話沈「要認真一點」：北市456個里到底走完沒？",
-        "original_lang": "zh-TW",
-        "ko": "Ke Wenzhe는 Shen Boyang을 \"너무 약하다\" 고 불렀고 Li Mingxian은 \"진지하게\" 외쳤다: 북쪽 도시의 456 마일에서 끝내셨습니까?"
-      },
-      "summary": "九合一地方選舉倒數百日內，國民黨、民眾黨再度攜手以藍白合基調操盤，不過台北市長蔣萬安身為藍營最強母雞，表態不會為北市白營小雞個別站台，只出席聯合造勢，傳出白營小雞為此不滿感到像...…",
-      "scores": {
-        "commodity": 0,
-        "diplomacy": 0.0,
-        "election": 1.0,
-        "region_weight": 1.25,
-        "freshness": 0.994,
-        "importance": 0.379,
-        "final": 0.421
-      },
-      "rank_reasons": [
-        "region:taiwan*1.25",
-        "category:election",
-        "tier:B*0.72/g3",
-        "election:local:1"
-      ],
-      "translation_status": "ok",
-      "country_tier": "B",
-      "info_grade": "3",
-      "country_hint": "TWN",
-      "election_type": "local"
     },
     {
       "id": "805c594e2e40e148",
@@ -1288,95 +1380,15 @@
         "diplomacy": 0.0,
         "election": 0.0,
         "region_weight": 1.4,
-        "freshness": 0.897,
-        "importance": 0.357,
-        "final": 0.421
+        "freshness": 0.825,
+        "importance": 0.328,
+        "final": 0.387
       },
       "rank_reasons": [
         "region:mena*1.40",
         "category:commodity",
         "tier:B*0.72/g3",
         "commodity:shipping:1"
-      ],
-      "translation_status": "ok",
-      "country_tier": "B",
-      "info_grade": "3",
-      "country_hint": "SAU"
-    },
-    {
-      "id": "a874f7a7f2ff5cdb",
-      "published_at": "2026-08-21T16:10:49+00:00",
-      "source": {
-        "id": "tehran_times",
-        "name": "Tehran Times",
-        "region": "mena",
-        "slant": null
-      },
-      "url": "https://www.tehrantimes.com/news/529277/California-state-Senator-Aisha-Wahab-opposed-by-AIPAC-wins-California",
-      "category": "election",
-      "commodities": [],
-      "title": {
-        "original": "California state Senator Aisha Wahab opposed by AIPAC wins California special election",
-        "original_lang": "en",
-        "ko": "AIPAC가 반대하는 캘리포니아 주 상원의원 아이샤 와합이 캘리포니아 특별 선거에서 승리하다"
-      },
-      "summary": "California state Senator Aisha Wahab will serve out the remainder of former representative Eric Swalwell’s term after securing victory Thursday in a special election, The Times of Israel reported.",
-      "scores": {
-        "commodity": 0,
-        "diplomacy": 0.0,
-        "election": 1.0,
-        "region_weight": 1.4,
-        "freshness": 0.578,
-        "importance": 0.321,
-        "final": 0.379
-      },
-      "rank_reasons": [
-        "region:mena*1.40",
-        "category:election",
-        "tier:B*0.72/g2",
-        "election:by_election:1"
-      ],
-      "translation_status": "ok",
-      "country_tier": "B",
-      "info_grade": "2",
-      "country_hint": "SAU",
-      "election_type": "by_election"
-    },
-    {
-      "id": "ec1bb886ad0ef8a7",
-      "published_at": "2026-08-10T11:05:10+00:00",
-      "source": {
-        "id": "arab_news",
-        "name": "Arab News",
-        "region": "mena",
-        "slant": null
-      },
-      "url": "https://www.arabnews.com/node/2654151/middle-east",
-      "category": "commodity",
-      "commodities": [
-        "oil"
-      ],
-      "title": {
-        "original": "Fire breaks out at Libya’s Zawiya refinery",
-        "original_lang": "en",
-        "ko": "리비아 자위야 정유소에서 화재 발생"
-      },
-      "summary": "TRIPOLI: A fire broke out on Monday ​in a diesel tank at Libya’s Zawiya refinery days after the facility was hit by drone. The circumstances of Monday's fire remained unknown, Brega Petroleum Marketing Company said in a statement. Brega is owned by state oil firm National Oil Cor",
-      "scores": {
-        "commodity": 2.0,
-        "diplomacy": 0.0,
-        "election": 0.0,
-        "region_weight": 1.4,
-        "freshness": 0.35,
-        "importance": 0.321,
-        "final": 0.378
-      },
-      "rank_reasons": [
-        "region:mena*1.40",
-        "category:commodity",
-        "tier:B*0.72/g3",
-        "commodity:oil:2",
-        "bridge:1"
       ],
       "translation_status": "ok",
       "country_tier": "B",
