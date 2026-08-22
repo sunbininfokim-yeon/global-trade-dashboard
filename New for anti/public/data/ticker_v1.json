@@ -1,6 +1,6 @@
 {
   "schema_version": "ticker-v1",
-  "generated_at": "2026-08-22T04:57:25.873173+00:00",
+  "generated_at": "2026-08-22T06:01:36.440794+00:00",
   "model": {
     "name": "commodity_diplomacy_rss_v1",
     "description": "RSS multi-region ticker: regional priority (MENA/IN/TR/JP/CN/TW/RU + commodity specialists) over Western majors; politics admitted with diplomacy+trade bridge, elections, governance polls, cabinet reshuffles; horse-race national polls rejected; importance = country-tier × info-grade; main display language Korean.",
@@ -73,21 +73,20 @@
     "cabinet_reshuffle": true
   },
   "stats": {
-    "sources_ok": 36,
-    "sources_failed": 2,
-    "raw_items": 842,
-    "scored_items": 78,
+    "sources_ok": 35,
+    "sources_failed": 3,
+    "raw_items": 782,
+    "scored_items": 66,
     "selected_items": 24,
     "region_histogram": {
-      "commodity_specialist": 5,
-      "mena": 6,
+      "commodity_specialist": 7,
+      "china": 2,
       "japan": 2,
-      "russia": 3,
-      "china": 1,
+      "russia": 4,
       "west": 1,
+      "mena": 4,
       "turkey": 2,
-      "india": 2,
-      "taiwan": 2
+      "india": 2
     },
     "min_importance": 0.35
   },
@@ -96,7 +95,7 @@
       "source_id": "aljazeera_en",
       "ok": true,
       "count": 25,
-      "elapsed_ms": 162,
+      "elapsed_ms": 186,
       "error": null,
       "mode": "live"
     },
@@ -104,7 +103,7 @@
       "source_id": "iran_intl",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 509,
+      "elapsed_ms": 355,
       "error": null,
       "mode": "live"
     },
@@ -112,7 +111,7 @@
       "source_id": "arab_news",
       "ok": true,
       "count": 10,
-      "elapsed_ms": 86,
+      "elapsed_ms": 125,
       "error": null,
       "mode": "live"
     },
@@ -120,15 +119,15 @@
       "source_id": "tehran_times",
       "ok": true,
       "count": 30,
-      "elapsed_ms": 1009,
+      "elapsed_ms": 1393,
       "error": null,
       "mode": "live"
     },
     {
       "source_id": "middle_east_eye",
       "ok": true,
-      "count": 20,
-      "elapsed_ms": 223,
+      "count": 0,
+      "elapsed_ms": 117,
       "error": null,
       "mode": "live"
     },
@@ -136,7 +135,7 @@
       "source_id": "aa_world",
       "ok": true,
       "count": 30,
-      "elapsed_ms": 2196,
+      "elapsed_ms": 3448,
       "error": null,
       "mode": "live"
     },
@@ -144,7 +143,7 @@
       "source_id": "daily_sabah",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 764,
+      "elapsed_ms": 876,
       "error": null,
       "mode": "live"
     },
@@ -152,7 +151,7 @@
       "source_id": "hurriyet_daily",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 225,
+      "elapsed_ms": 355,
       "error": null,
       "mode": "live"
     },
@@ -160,7 +159,7 @@
       "source_id": "the_hindu",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 176,
+      "elapsed_ms": 154,
       "error": null,
       "mode": "live"
     },
@@ -168,7 +167,7 @@
       "source_id": "indian_express_world",
       "ok": false,
       "count": 0,
-      "elapsed_ms": 55,
+      "elapsed_ms": 115,
       "error": "HTTPError: HTTP Error 403: Forbidden",
       "mode": "live"
     },
@@ -176,7 +175,7 @@
       "source_id": "et_commodities",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 458,
+      "elapsed_ms": 714,
       "error": null,
       "mode": "live"
     },
@@ -184,7 +183,7 @@
       "source_id": "business_standard_markets",
       "ok": true,
       "count": 35,
-      "elapsed_ms": 149,
+      "elapsed_ms": 150,
       "error": null,
       "mode": "live"
     },
@@ -192,7 +191,7 @@
       "source_id": "ndtv_world",
       "ok": true,
       "count": 20,
-      "elapsed_ms": 248,
+      "elapsed_ms": 255,
       "error": null,
       "mode": "live"
     },
@@ -200,7 +199,7 @@
       "source_id": "xinhua_world",
       "ok": true,
       "count": 20,
-      "elapsed_ms": 1153,
+      "elapsed_ms": 1857,
       "error": null,
       "mode": "live"
     },
@@ -208,7 +207,7 @@
       "source_id": "china_daily_world",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 971,
+      "elapsed_ms": 1076,
       "error": null,
       "mode": "live"
     },
@@ -216,7 +215,7 @@
       "source_id": "cgtn_world",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 441,
+      "elapsed_ms": 559,
       "error": null,
       "mode": "live"
     },
@@ -224,7 +223,7 @@
       "source_id": "scmp",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 851,
+      "elapsed_ms": 586,
       "error": null,
       "mode": "live"
     },
@@ -232,7 +231,7 @@
       "source_id": "nhk_business",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 245,
+      "elapsed_ms": 468,
       "error": null,
       "mode": "live"
     },
@@ -240,7 +239,7 @@
       "source_id": "nhk_top",
       "ok": true,
       "count": 7,
-      "elapsed_ms": 58,
+      "elapsed_ms": 65,
       "error": null,
       "mode": "live"
     },
@@ -248,7 +247,7 @@
       "source_id": "japan_times",
       "ok": true,
       "count": 30,
-      "elapsed_ms": 225,
+      "elapsed_ms": 532,
       "error": null,
       "mode": "live"
     },
@@ -256,7 +255,7 @@
       "source_id": "nikkei_asia",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 111,
+      "elapsed_ms": 91,
       "error": null,
       "mode": "live"
     },
@@ -264,7 +263,7 @@
       "source_id": "cna",
       "ok": true,
       "count": 20,
-      "elapsed_ms": 270,
+      "elapsed_ms": 154,
       "error": null,
       "mode": "live"
     },
@@ -272,7 +271,7 @@
       "source_id": "taipei_times",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 83,
+      "elapsed_ms": 116,
       "error": null,
       "mode": "live"
     },
@@ -280,7 +279,7 @@
       "source_id": "ltn",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 351,
+      "elapsed_ms": 134,
       "error": null,
       "mode": "live"
     },
@@ -288,7 +287,7 @@
       "source_id": "udn",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 415,
+      "elapsed_ms": 155,
       "error": null,
       "mode": "live"
     },
@@ -296,23 +295,23 @@
       "source_id": "tass_en",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 872,
+      "elapsed_ms": 1301,
       "error": null,
       "mode": "live"
     },
     {
       "source_id": "tass_ru",
-      "ok": true,
-      "count": 40,
-      "elapsed_ms": 884,
-      "error": null,
+      "ok": false,
+      "count": 0,
+      "elapsed_ms": 951,
+      "error": "HTTPError: HTTP Error 403: Forbidden",
       "mode": "live"
     },
     {
       "source_id": "interfax_ru",
       "ok": true,
       "count": 25,
-      "elapsed_ms": 1109,
+      "elapsed_ms": 2569,
       "error": null,
       "mode": "live"
     },
@@ -320,7 +319,7 @@
       "source_id": "rt_ru",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 1203,
+      "elapsed_ms": 3166,
       "error": null,
       "mode": "live"
     },
@@ -328,7 +327,7 @@
       "source_id": "ship_and_bunker",
       "ok": true,
       "count": 10,
-      "elapsed_ms": 221,
+      "elapsed_ms": 400,
       "error": null,
       "mode": "live"
     },
@@ -336,7 +335,7 @@
       "source_id": "oilprice",
       "ok": true,
       "count": 15,
-      "elapsed_ms": 548,
+      "elapsed_ms": 1416,
       "error": null,
       "mode": "live"
     },
@@ -344,7 +343,7 @@
       "source_id": "mining_com",
       "ok": false,
       "count": 0,
-      "elapsed_ms": 91,
+      "elapsed_ms": 116,
       "error": "HTTPError: HTTP Error 403: Forbidden",
       "mode": "live"
     },
@@ -352,7 +351,7 @@
       "source_id": "world_grain",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 91,
+      "elapsed_ms": 375,
       "error": null,
       "mode": "live"
     },
@@ -360,7 +359,7 @@
       "source_id": "hellenic_shipping",
       "ok": true,
       "count": 20,
-      "elapsed_ms": 99,
+      "elapsed_ms": 184,
       "error": null,
       "mode": "live"
     },
@@ -368,7 +367,7 @@
       "source_id": "seatrade",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 339,
+      "elapsed_ms": 496,
       "error": null,
       "mode": "live"
     },
@@ -376,7 +375,7 @@
       "source_id": "bbc_business",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 497,
+      "elapsed_ms": 103,
       "error": null,
       "mode": "live"
     },
@@ -384,7 +383,7 @@
       "source_id": "bloomberg_markets",
       "ok": true,
       "count": 20,
-      "elapsed_ms": 352,
+      "elapsed_ms": 454,
       "error": null,
       "mode": "live"
     },
@@ -392,7 +391,7 @@
       "source_id": "ft_commodities",
       "ok": true,
       "count": 25,
-      "elapsed_ms": 354,
+      "elapsed_ms": 421,
       "error": null,
       "mode": "live"
     }
@@ -424,9 +423,9 @@
         "diplomacy": 1.0,
         "election": 0.0,
         "region_weight": 1.35,
-        "freshness": 0.824,
-        "importance": 3.586,
-        "final": 4.151
+        "freshness": 0.8,
+        "importance": 3.481,
+        "final": 4.03
       },
       "rank_reasons": [
         "region:commodity_specialist*1.35",
@@ -440,94 +439,6 @@
       "country_tier": "A",
       "info_grade": "1",
       "country_hint": "CHN"
-    },
-    {
-      "id": "1db2e6f0642835e2",
-      "published_at": "2026-06-18T10:03:46+00:00",
-      "source": {
-        "id": "arab_news",
-        "name": "Arab News",
-        "region": "mena",
-        "slant": null
-      },
-      "url": "https://www.arabnews.com/node/2647650/business-economy",
-      "category": "commodity_diplomacy",
-      "commodities": [
-        "oil",
-        "shipping"
-      ],
-      "title": {
-        "original": "Oil falls to 3-1/2-month low after US, Iran sign ceasefire deal",
-        "original_lang": "en",
-        "ko": "미국, 이란, 휴전 협정 체결 후 석유 가격 3-1/2개월 최저치로 하락"
-      },
-      "summary": "BEIJING/SINGAPORE: Oil prices ​fell by more than $2 per barrel on Thursday after the US and Iran signed an interim agreement that ‌would end the Iran war, reopen the Strait of Hormuz and waive US sanctions on Tehran’s oil, boosting the oil supply outlook. Brent crude futures were",
-      "scores": {
-        "commodity": 4.0,
-        "diplomacy": 3.0,
-        "election": 0.0,
-        "region_weight": 1.4,
-        "freshness": 0.35,
-        "importance": 3.22,
-        "final": 3.8
-      },
-      "rank_reasons": [
-        "region:mena*1.40",
-        "category:commodity_diplomacy",
-        "tier:A*1.00/g1",
-        "commodity:oil:3",
-        "commodity:shipping:1",
-        "diplomacy:3",
-        "bridge:2"
-      ],
-      "translation_status": "ok",
-      "country_tier": "A",
-      "info_grade": "1",
-      "country_hint": "CHN"
-    },
-    {
-      "id": "cf83405ac6d04c07",
-      "published_at": "2026-08-22T00:56:32+00:00",
-      "source": {
-        "id": "middle_east_eye",
-        "name": "Middle East Eye",
-        "region": "mena",
-        "slant": null
-      },
-      "url": "https://www.middleeasteye.net/live-blog/live-blog-update/tanker-traffic-saudi-arabias-yanbu-port-falls-third-report-says",
-      "category": "commodity_diplomacy",
-      "commodities": [
-        "oil",
-        "shipping"
-      ],
-      "title": {
-        "original": "Tanker traffic at Saudi Arabia's Yanbu port falls by a third, report says",
-        "original_lang": "en",
-        "ko": "보고서에 따르면 사우디아라비아 얀부 항구의 유조선 수송량이 1/3로 감소했다고 합니다."
-      },
-      "summary": "Tanker traffic at Saudi Arabia's Yanbu port falls by a third, report says Tanker traffic at Yanbu, Saudi Arabia's main Red Sea oil terminal, has fallen by more than a third since Yemen’s Houthis announced a blockade of Saudi vessels through the Bab al-Mandeb strait on July 20, Ll",
-      "scores": {
-        "commodity": 4.0,
-        "diplomacy": 1.0,
-        "election": 0.0,
-        "region_weight": 1.4,
-        "freshness": 0.895,
-        "importance": 3.033,
-        "final": 3.579
-      },
-      "rank_reasons": [
-        "region:mena*1.40",
-        "category:commodity_diplomacy",
-        "tier:B*0.72/g2",
-        "commodity:oil:2",
-        "commodity:shipping:2",
-        "diplomacy:1",
-        "bridge:1"
-      ],
-      "translation_status": "ok",
-      "country_tier": "B",
-      "info_grade": "2",
-      "country_hint": "SAU"
     },
     {
       "id": "bc7984c22c05990c",
@@ -554,9 +465,9 @@
         "diplomacy": 2.0,
         "election": 0.0,
         "region_weight": 1.35,
-        "freshness": 0.748,
-        "importance": 2.839,
-        "final": 3.286
+        "freshness": 0.726,
+        "importance": 2.756,
+        "final": 3.19
       },
       "rank_reasons": [
         "region:commodity_specialist*1.35",
@@ -570,6 +481,46 @@
       "country_tier": "A",
       "info_grade": "1",
       "country_hint": "USA"
+    },
+    {
+      "id": "203213d65cd5ebee",
+      "published_at": "2026-08-22T05:51:59+00:00",
+      "source": {
+        "id": "scmp",
+        "name": "South China Morning Post",
+        "region": "china",
+        "slant": null
+      },
+      "url": "https://www.scmp.com/news/world/united-states-canada/article/3364905/us-court-strikes-down-trump-visa-ban-affecting-south-asian-nations?utm_source=rss_feed",
+      "category": "cabinet_reshuffle",
+      "commodities": [],
+      "title": {
+        "original": "US court strikes down Trump visa ban affecting South Asian nations",
+        "original_lang": "en",
+        "ko": "미국 법원, 남아시아 국가에 영향을 미치는 트럼프 비자 금지 조치 철회"
+      },
+      "summary": "A US ⁠judge has struck down a Trump administration ⁠policy suspending the issuance of immigrant visas to applicants from 75 countries, saying that the policy exceeded Secretary of State Marco Rubio’s statutory authority. US District Judge Jeannette Vargas in Manhattan said on Fri",
+      "scores": {
+        "commodity": 0,
+        "diplomacy": 0.0,
+        "election": 1.2,
+        "region_weight": 1.25,
+        "freshness": 0.996,
+        "importance": 2.781,
+        "final": 3.094
+      },
+      "rank_reasons": [
+        "region:china*1.25",
+        "category:cabinet_reshuffle",
+        "tier:A*1.00/g1",
+        "election:cabinet_reshuffle:1.2",
+        "cabinet_reshuffle"
+      ],
+      "translation_status": "ok",
+      "country_tier": "A",
+      "info_grade": "1",
+      "country_hint": "CHN",
+      "election_type": "cabinet_reshuffle"
     },
     {
       "id": "b9a3c6ffa22a10a7",
@@ -594,9 +545,9 @@
         "diplomacy": 0.0,
         "election": 1.2,
         "region_weight": 1.25,
-        "freshness": 0.865,
-        "importance": 2.416,
-        "final": 2.688
+        "freshness": 0.84,
+        "importance": 2.346,
+        "final": 2.609
       },
       "rank_reasons": [
         "region:japan*1.25",
@@ -638,9 +589,9 @@
         "diplomacy": 1.0,
         "election": 0.0,
         "region_weight": 1.35,
-        "freshness": 0.679,
-        "importance": 2.168,
-        "final": 2.509
+        "freshness": 0.659,
+        "importance": 2.104,
+        "final": 2.436
       },
       "rank_reasons": [
         "region:commodity_specialist*1.35",
@@ -682,9 +633,9 @@
         "diplomacy": 1.0,
         "election": 0.0,
         "region_weight": 1.35,
-        "freshness": 0.669,
-        "importance": 2.135,
-        "final": 2.471
+        "freshness": 0.649,
+        "importance": 2.072,
+        "final": 2.399
       },
       "rank_reasons": [
         "region:commodity_specialist*1.35",
@@ -698,45 +649,6 @@
       "country_tier": "A",
       "info_grade": "3",
       "country_hint": "USA"
-    },
-    {
-      "id": "46187ffa87e52263",
-      "published_at": "2026-08-22T04:53:34+00:00",
-      "source": {
-        "id": "tass_ru",
-        "name": "ТАСС",
-        "region": "russia",
-        "slant": null
-      },
-      "url": "https://tass.ru/mezhdunarodnaya-panorama/28034183",
-      "category": "election",
-      "commodities": [],
-      "title": {
-        "original": "Politico заявила, что президентские выборы во Франции станут \"кошмаром НАТО\"",
-        "original_lang": "ru",
-        "ko": "폴리티코는 프랑스 대통령 선거가 \"나토의 악몽\" 이 될 것이라고 말했다."
-      },
-      "summary": "",
-      "scores": {
-        "commodity": 0,
-        "diplomacy": 0.0,
-        "election": 2.0,
-        "region_weight": 1.25,
-        "freshness": 0.998,
-        "importance": 2.201,
-        "final": 2.449
-      },
-      "rank_reasons": [
-        "region:russia*1.25",
-        "category:election",
-        "tier:A*1.00/g1",
-        "election:presidential:2"
-      ],
-      "translation_status": "ok",
-      "country_tier": "A",
-      "info_grade": "1",
-      "country_hint": "RUS",
-      "election_type": "presidential"
     },
     {
       "id": "0baf1c97de8a75dc",
@@ -763,9 +675,9 @@
         "diplomacy": 0.0,
         "election": 1.0,
         "region_weight": 1.25,
-        "freshness": 0.982,
-        "importance": 2.161,
-        "final": 2.404
+        "freshness": 0.953,
+        "importance": 2.098,
+        "final": 2.333
       },
       "rank_reasons": [
         "region:russia*1.25",
@@ -779,88 +691,6 @@
       "info_grade": "1",
       "country_hint": "RUS",
       "election_type": "presidential"
-    },
-    {
-      "id": "61d346aaba834457",
-      "published_at": "2026-08-21T21:37:52+00:00",
-      "source": {
-        "id": "middle_east_eye",
-        "name": "Middle East Eye",
-        "region": "mena",
-        "slant": null
-      },
-      "url": "https://www.middleeasteye.net/live-blog/live-blog-update/trump-says-iran-not-ready-make-right-deal",
-      "category": "commodity",
-      "commodities": [
-        "shipping"
-      ],
-      "title": {
-        "original": "Trump says Iran not ready to make the 'right deal'",
-        "original_lang": "en",
-        "ko": "트럼프 대통령은 이란이 '올바른 거래' 를 할 준비가 되지 않았다고 말한다."
-      },
-      "summary": "Trump says Iran not ready to make the 'right deal' US President Donald Trump said on Friday he did not think that Iran was ready make the \"right deal,\" and that Washington was observing \"what happens\" in the war. \"It just means that we're seeing what happens,\" Trump told reporter",
-      "scores": {
-        "commodity": 1.0,
-        "diplomacy": 1.0,
-        "election": 0.0,
-        "region_weight": 1.4,
-        "freshness": 0.816,
-        "importance": 1.673,
-        "final": 1.974
-      },
-      "rank_reasons": [
-        "region:mena*1.40",
-        "category:commodity",
-        "tier:A*1.00/g1",
-        "commodity:shipping:1",
-        "diplomacy:1"
-      ],
-      "translation_status": "ok",
-      "country_tier": "A",
-      "info_grade": "1",
-      "country_hint": "USA"
-    },
-    {
-      "id": "138e2a94ce047c69",
-      "published_at": "2026-08-21T18:10:21+00:00",
-      "source": {
-        "id": "middle_east_eye",
-        "name": "Middle East Eye",
-        "region": "mena",
-        "slant": null
-      },
-      "url": "https://www.middleeasteye.net/live-blog/live-blog-update/iran-president-says-time-end-war-while-position-strength",
-      "category": "commodity",
-      "commodities": [
-        "shipping"
-      ],
-      "title": {
-        "original": "Iran president says time to end war while in position of strength",
-        "original_lang": "en",
-        "ko": "이란 대통령, 힘의 위치에 있으면서 전쟁을 끝낼 시간"
-      },
-      "summary": "Iran president says time to end war while in position of strength Iranian President Masoud Pezeshkian said Friday it was time to end the months-long war with the United States because Tehran appeared to be in a stronger position than Washington. Talks between the longtime foes re",
-      "scores": {
-        "commodity": 1.0,
-        "diplomacy": 1.0,
-        "election": 0.0,
-        "region_weight": 1.4,
-        "freshness": 0.741,
-        "importance": 1.52,
-        "final": 1.793
-      },
-      "rank_reasons": [
-        "region:mena*1.40",
-        "category:commodity",
-        "tier:A*1.00/g1",
-        "commodity:shipping:1",
-        "diplomacy:1"
-      ],
-      "translation_status": "ok",
-      "country_tier": "A",
-      "info_grade": "1",
-      "country_hint": "USA"
     },
     {
       "id": "01b6899109891cb0",
@@ -887,9 +717,9 @@
         "diplomacy": 1.0,
         "election": 0.0,
         "region_weight": 1.25,
-        "freshness": 0.748,
-        "importance": 1.533,
-        "final": 1.706
+        "freshness": 0.726,
+        "importance": 1.488,
+        "final": 1.656
       },
       "rank_reasons": [
         "region:china*1.25",
@@ -926,9 +756,9 @@
         "diplomacy": 2.0,
         "election": 0.0,
         "region_weight": 1.25,
-        "freshness": 0.996,
-        "importance": 1.499,
-        "final": 1.668
+        "freshness": 0.967,
+        "importance": 1.456,
+        "final": 1.619
       },
       "rank_reasons": [
         "region:russia*1.25",
@@ -967,9 +797,9 @@
         "diplomacy": 1.0,
         "election": 0.0,
         "region_weight": 0.55,
-        "freshness": 0.974,
-        "importance": 1.997,
-        "final": 1.593
+        "freshness": 0.946,
+        "importance": 1.939,
+        "final": 1.546
       },
       "rank_reasons": [
         "region:west*0.55",
@@ -982,47 +812,6 @@
       "country_tier": "A",
       "info_grade": "1",
       "country_hint": "USA"
-    },
-    {
-      "id": "bbf6073c1ed86802",
-      "published_at": "2026-08-22T00:07:20+00:00",
-      "source": {
-        "id": "middle_east_eye",
-        "name": "Middle East Eye",
-        "region": "mena",
-        "slant": null
-      },
-      "url": "https://www.middleeasteye.net/live-blog/live-blog-update/trump-i-view-hormuz-american-territory-right-now",
-      "category": "commodity",
-      "commodities": [
-        "shipping"
-      ],
-      "title": {
-        "original": "Trump: 'I view Hormuz as American territory right now'",
-        "original_lang": "en",
-        "ko": "트럼프: '나는 지금 호르무즈를 미국 영토로 보고 있다'"
-      },
-      "summary": "Trump: 'I view Hormuz as American territory right now' US President Donald Trump once again described the Strait of Hormuz as “an American territory” and reiterated that the US “cannot let Iran have a nuclear weapon”, Al Jazeera reported. Addressing a rally in Myrtle Beach, South",
-      "scores": {
-        "commodity": 1.0,
-        "diplomacy": 1.0,
-        "election": 0.0,
-        "region_weight": 1.4,
-        "freshness": 0.875,
-        "importance": 1.291,
-        "final": 1.523
-      },
-      "rank_reasons": [
-        "region:mena*1.40",
-        "category:commodity",
-        "tier:B*0.72/g1",
-        "commodity:shipping:1",
-        "diplomacy:1"
-      ],
-      "translation_status": "ok",
-      "country_tier": "B",
-      "info_grade": "1",
-      "country_hint": "SAU"
     },
     {
       "id": "15c2a29689dac11c",
@@ -1049,9 +838,9 @@
         "diplomacy": 1.0,
         "election": 0.0,
         "region_weight": 1.4,
-        "freshness": 0.872,
-        "importance": 1.286,
-        "final": 1.518
+        "freshness": 0.846,
+        "importance": 1.249,
+        "final": 1.474
       },
       "rank_reasons": [
         "region:mena*1.40",
@@ -1092,9 +881,9 @@
         "diplomacy": 0.0,
         "election": 0.0,
         "region_weight": 1.35,
-        "freshness": 0.66,
-        "importance": 1.204,
-        "final": 1.394
+        "freshness": 0.641,
+        "importance": 1.169,
+        "final": 1.353
       },
       "rank_reasons": [
         "region:commodity_specialist*1.35",
@@ -1104,6 +893,132 @@
         "commodity:gas:1",
         "commodity:coal:1",
         "bridge:1"
+      ],
+      "translation_status": "ok",
+      "country_tier": "A",
+      "info_grade": "3",
+      "country_hint": "USA"
+    },
+    {
+      "id": "4c5c5e170fc70074",
+      "published_at": "2026-08-21T18:27:36+00:00",
+      "source": {
+        "id": "tass_en",
+        "name": "TASS",
+        "region": "russia",
+        "slant": null
+      },
+      "url": "https://tass.com/world/2176277",
+      "category": "commodity",
+      "commodities": [
+        "oil",
+        "shipping"
+      ],
+      "title": {
+        "original": "Iran to look at lifting restrictions on Iraqi tankers in Hormuz Strait",
+        "original_lang": "en",
+        "ko": "이란, 호르무즈 해협에서 이라크 유조선에 대한 제한 해제 검토"
+      },
+      "summary": "Iraqi parliament speaker Haibat al-Halbousi asked the Iranian authorities to grant Iraq a \"special status\" regarding oil exports via the Strait of Hormuz",
+      "scores": {
+        "commodity": 2.0,
+        "diplomacy": 1.0,
+        "election": 0.0,
+        "region_weight": 1.25,
+        "freshness": 0.725,
+        "importance": 1.114,
+        "final": 1.24
+      },
+      "rank_reasons": [
+        "region:russia*1.25",
+        "category:commodity",
+        "tier:A*1.00/g3",
+        "commodity:oil:1",
+        "commodity:shipping:1",
+        "diplomacy:1"
+      ],
+      "translation_status": "ok",
+      "country_tier": "A",
+      "info_grade": "3",
+      "country_hint": "RUS"
+    },
+    {
+      "id": "3a58782796b5a878",
+      "published_at": "2026-08-21T17:00:00+00:00",
+      "source": {
+        "id": "oilprice",
+        "name": "OilPrice.com",
+        "region": "commodity_specialist",
+        "slant": null
+      },
+      "url": "https://oilprice.com/Latest-Energy-News/World-News/India-Boosts-Battery-Investment-to-Cut-Solar-Power-Waste.html",
+      "category": "diplomacy",
+      "commodities": [
+        "oil"
+      ],
+      "title": {
+        "original": "India Boosts Battery Investment to Cut Solar Power Waste",
+        "original_lang": "en",
+        "ko": "인도, 태양광 발전 폐기물 감축을 위한 배터리 투자 확대"
+      },
+      "summary": "Solar power developers in India have started to add battery storage to photovoltaic projects to attract buyers and reduce the large share of curtailments for power supply that the grids are unable to absorb, Santosh Sarangi, Secretary of India’s Ministry of New and Renewable Ener",
+      "scores": {
+        "commodity": 0.8,
+        "diplomacy": 1.0,
+        "election": 0.0,
+        "region_weight": 1.35,
+        "freshness": 0.697,
+        "importance": 1.058,
+        "final": 1.225
+      },
+      "rank_reasons": [
+        "region:commodity_specialist*1.35",
+        "category:diplomacy",
+        "tier:A*1.00/g2",
+        "commodity:oil:0.8",
+        "diplomacy:1",
+        "bridge:1"
+      ],
+      "translation_status": "ok",
+      "country_tier": "A",
+      "info_grade": "2",
+      "country_hint": "IND"
+    },
+    {
+      "id": "99d71fd0819f24bb",
+      "published_at": "2026-08-21T18:00:00+00:00",
+      "source": {
+        "id": "oilprice",
+        "name": "OilPrice.com",
+        "region": "commodity_specialist",
+        "slant": null
+      },
+      "url": "https://oilprice.com/Latest-Energy-News/World-News/Tankers-Wait-a-Month-as-Venezuela-Hits-an-Oil-Export-Ceiling.html",
+      "category": "commodity",
+      "commodities": [
+        "oil"
+      ],
+      "title": {
+        "original": "Tankers Wait a Month as Venezuela Hits an Oil Export Ceiling",
+        "original_lang": "en",
+        "ko": "베네수엘라가 석유 수출 천장에 부딪힐 때 유조선은 한 달을 기다립니다"
+      },
+      "summary": "Venezuela has plenty of oil buyers again. What it does not have is enough functioning port infrastructure to get them their crude. Tankers are waiting as long as 30 days to load Venezuelan oil as aging terminals, power outages and crude-quality problems create a de facto ceiling ",
+      "scores": {
+        "commodity": 2.0,
+        "diplomacy": 0.0,
+        "election": 0.0,
+        "region_weight": 1.35,
+        "freshness": 0.716,
+        "importance": 1.031,
+        "final": 1.194
+      },
+      "rank_reasons": [
+        "region:commodity_specialist*1.35",
+        "category:commodity",
+        "tier:A*1.00/g3",
+        "commodity:oil:2",
+        "bridge:2"
       ],
       "translation_status": "ok",
       "country_tier": "A",
@@ -1133,9 +1048,9 @@
         "diplomacy": 2.0,
         "election": 1.0,
         "region_weight": 1.3,
-        "freshness": 0.701,
-        "importance": 1.057,
-        "final": 1.2
+        "freshness": 0.68,
+        "importance": 1.026,
+        "final": 1.165
       },
       "rank_reasons": [
         "region:turkey*1.30",
@@ -1149,6 +1064,47 @@
       "info_grade": "2",
       "country_hint": "TUR",
       "election_type": "general"
+    },
+    {
+      "id": "559b03fea97694d6",
+      "published_at": "2026-08-21T19:00:10+00:00",
+      "source": {
+        "id": "tass_en",
+        "name": "TASS",
+        "region": "russia",
+        "slant": null
+      },
+      "url": "https://tass.com/world/2176289",
+      "category": "commodity",
+      "commodities": [
+        "shipping"
+      ],
+      "title": {
+        "original": "IEA chief compares situation surrounding Strait of Hormuz to broken vase",
+        "original_lang": "en",
+        "ko": "IEA 책임자는 호르무즈 해협을 둘러싼 상황을 깨진 꽃병과 비교합니다."
+      },
+      "summary": "Fatih Birol said the volume of transit through the Strait of Hormuz, which stood at around 25 mln barrels per day prior to February 2026, had fallen to roughly 15 mln",
+      "scores": {
+        "commodity": 1.0,
+        "diplomacy": 2.0,
+        "election": 0.0,
+        "region_weight": 1.25,
+        "freshness": 0.736,
+        "importance": 1.043,
+        "final": 1.16
+      },
+      "rank_reasons": [
+        "region:russia*1.25",
+        "category:commodity",
+        "tier:A*1.00/g3",
+        "commodity:shipping:1",
+        "diplomacy:2"
+      ],
+      "translation_status": "ok",
+      "country_tier": "A",
+      "info_grade": "3",
+      "country_hint": "RUS"
     },
     {
       "id": "e735bd03e3f62001",
@@ -1191,47 +1147,6 @@
       "election_type": "cabinet_reshuffle"
     },
     {
-      "id": "a630a6efcd6918a4",
-      "published_at": "2026-08-21T22:20:03+00:00",
-      "source": {
-        "id": "the_hindu",
-        "name": "The Hindu",
-        "region": "india",
-        "slant": null
-      },
-      "url": "https://www.thehindu.com/news/national/tamil-nadu/thaimaman-thanga-mothiram-scheme-work-orders-issued-to-joyalukkas-kalyan-jewellers-for-gold-ring-supply/article71375124.ece",
-      "category": "commodity",
-      "commodities": [
-        "gold"
-      ],
-      "title": {
-        "original": "T.N. Government places orders with two jewellers for supply of gold rings scheme",
-        "original_lang": "en",
-        "ko": "T.N. 정부는 골드 링 제도를 공급하기 위해 보석상 2명과 주문합니다."
-      },
-      "summary": "Joyalukkas and Kalyan Jewellers are expected to supply a total of 1,28,499 one-gram gold rings for a four-month period beginning from June",
-      "scores": {
-        "commodity": 1.0,
-        "diplomacy": 0.0,
-        "election": 0.0,
-        "region_weight": 1.3,
-        "freshness": 0.832,
-        "importance": 0.599,
-        "final": 0.68
-      },
-      "rank_reasons": [
-        "region:india*1.30",
-        "category:commodity",
-        "tier:A*1.00/g3",
-        "commodity:gold:1",
-        "bridge:1"
-      ],
-      "translation_status": "ok",
-      "country_tier": "A",
-      "info_grade": "3",
-      "country_hint": "IND"
-    },
-    {
       "id": "6fced7b88dba0e19",
       "published_at": "2026-08-21T18:55:00+00:00",
       "source": {
@@ -1256,9 +1171,9 @@
         "diplomacy": 1.0,
         "election": 0.0,
         "region_weight": 1.3,
-        "freshness": 0.757,
-        "importance": 0.536,
-        "final": 0.609
+        "freshness": 0.735,
+        "importance": 0.52,
+        "final": 0.591
       },
       "rank_reasons": [
         "region:turkey*1.30",
@@ -1271,6 +1186,84 @@
       "country_tier": "B",
       "info_grade": "3",
       "country_hint": "TUR"
+    },
+    {
+      "id": "ea0bd5637601f73a",
+      "published_at": "2026-08-22T00:38:06+00:00",
+      "source": {
+        "id": "aljazeera_en",
+        "name": "Al Jazeera",
+        "region": "mena",
+        "slant": null
+      },
+      "url": "https://www.aljazeera.com/news/2026/8/22/california-lawmaker-overcomes-pro-israel-spending-to-win-special-election?traffic_source=rss",
+      "category": "election",
+      "commodities": [],
+      "title": {
+        "original": "California lawmaker overcomes pro-Israel spending to win special election",
+        "original_lang": "en",
+        "ko": "캘리포니아 의원은 특별 선거에서 승리하기 위해 친 이스라엘 지출을 극복합니다"
+      },
+      "summary": "Victory for state Senator Aisha Wahab marks the latest example of a progressive overcoming millions in outside spending.",
+      "scores": {
+        "commodity": 0,
+        "diplomacy": 0.0,
+        "election": 1.0,
+        "region_weight": 1.4,
+        "freshness": 0.861,
+        "importance": 0.478,
+        "final": 0.565
+      },
+      "rank_reasons": [
+        "region:mena*1.40",
+        "category:election",
+        "tier:B*0.72/g2",
+        "election:by_election:1"
+      ],
+      "translation_status": "ok",
+      "country_tier": "B",
+      "info_grade": "2",
+      "country_hint": "SAU",
+      "election_type": "by_election"
+    },
+    {
+      "id": "cacde58de919a2f5",
+      "published_at": "2026-08-21T22:52:40+00:00",
+      "source": {
+        "id": "aljazeera_en",
+        "name": "Al Jazeera",
+        "region": "mena",
+        "slant": null
+      },
+      "url": "https://www.aljazeera.com/news/2026/8/21/us-vice-president-jd-vance-holds-midterm-election-rally-in-ohio-hometown?traffic_source=rss",
+      "category": "election",
+      "commodities": [],
+      "title": {
+        "original": "US Vice President JD Vance holds midterm election rally in Ohio hometown",
+        "original_lang": "en",
+        "ko": "JD 밴스 미국 부통령, 오하이오주 고향에서 중간선거 집회 개최"
+      },
+      "summary": "The vice president's speech hinged heavily on economic themes, as voter confidence slips for Republican policies.",
+      "scores": {
+        "commodity": 0,
+        "diplomacy": 0.0,
+        "election": 1.0,
+        "region_weight": 1.4,
+        "freshness": 0.82,
+        "importance": 0.456,
+        "final": 0.538
+      },
+      "rank_reasons": [
+        "region:mena*1.40",
+        "category:election",
+        "tier:B*0.72/g2",
+        "election:general:1"
+      ],
+      "translation_status": "ok",
+      "country_tier": "B",
+      "info_grade": "2",
+      "country_hint": "SAU",
+      "election_type": "general"
     },
     {
       "id": "2015768c28af8172",
@@ -1297,9 +1290,9 @@
         "diplomacy": 0.0,
         "election": 0.0,
         "region_weight": 1.3,
-        "freshness": 0.842,
-        "importance": 0.465,
-        "final": 0.527
+        "freshness": 0.817,
+        "importance": 0.451,
+        "final": 0.512
       },
       "rank_reasons": [
         "region:india*1.30",
@@ -1313,83 +1306,83 @@
       "country_hint": "IND"
     },
     {
-      "id": "7fa52b4fe9d93b22",
-      "published_at": "2026-08-22T04:30:00+00:00",
+      "id": "a874f7a7f2ff5cdb",
+      "published_at": "2026-08-21T16:10:49+00:00",
       "source": {
-        "id": "ltn",
-        "name": "Liberty Times",
-        "region": "taiwan",
-        "slant": "pan_green"
+        "id": "tehran_times",
+        "name": "Tehran Times",
+        "region": "mena",
+        "slant": null
       },
-      "url": "https://talk.ltn.com.tw/article/breakingnews/5544269",
-      "category": "commodity",
-      "commodities": [
-        "silver"
-      ],
-      "title": {
-        "original": "自由開講》全球AI供應鏈命脈的台灣，卻困在遠古時期的勞保制度",
-        "original_lang": "zh-TW",
-        "ko": "글로벌 AI 공급망의 생명줄인 대만은 고대의 노동 보험 시스템에 갇혀 있습니다."
-      },
-      "summary": "在AI飛躍式成長的時代，台灣一旦停擺，全球AI產業都可能缺氧。 中央銀行引用產業資料指出，全球約九成AI伺服器由台廠組裝生產，AI晶片也大量仰賴台灣先進製程...…",
-      "scores": {
-        "commodity": 1.0,
-        "diplomacy": 0.0,
-        "election": 0.0,
-        "region_weight": 1.25,
-        "freshness": 0.988,
-        "importance": 0.393,
-        "final": 0.437
-      },
-      "rank_reasons": [
-        "region:taiwan*1.25",
-        "category:commodity",
-        "tier:B*0.72/g3",
-        "commodity:silver:1"
-      ],
-      "translation_status": "ok",
-      "country_tier": "B",
-      "info_grade": "3",
-      "country_hint": "TWN"
-    },
-    {
-      "id": "a4c4658f27cff8c4",
-      "published_at": "2026-08-22T04:33:04+00:00",
-      "source": {
-        "id": "ltn",
-        "name": "Liberty Times",
-        "region": "taiwan",
-        "slant": "pan_green"
-      },
-      "url": "https://news.ltn.com.tw/news/politics/breakingnews/5548482",
+      "url": "https://www.tehrantimes.com/news/529277/California-state-Senator-Aisha-Wahab-opposed-by-AIPAC-wins-California",
       "category": "election",
       "commodities": [],
       "title": {
-        "original": "蔣萬安明赴嘉義為白營輔選 強調「北市候選人也會親自加油」",
-        "original_lang": "zh-TW",
-        "ko": "장완안 밍 (Jiang Wanan Ming) 은 바이잉 (Baiying) 보조 선발을 위해 자이 (Chiayi) 로 가서 \"북부 도시 후보들도 직접 응원할 것\" 이라고 강조했다."
+        "original": "California state Senator Aisha Wahab opposed by AIPAC wins California special election",
+        "original_lang": "en",
+        "ko": "AIPAC가 반대하는 캘리포니아 주 상원의원 아이샤 와합이 캘리포니아 특별 선거에서 승리하다"
       },
-      "summary": "九合一大選在即，台北市長蔣萬安身為藍營最強母雞，不少各地候選人皆希望其影響力可以帶動地方選情。本屆國民黨、民眾黨續以藍白合基調佈局。台北市長蔣萬安明（23）日將動身南下，前往嘉...…",
+      "summary": "California state Senator Aisha Wahab will serve out the remainder of former representative Eric Swalwell’s term after securing victory Thursday in a special election, The Times of Israel reported.",
       "scores": {
         "commodity": 0,
         "diplomacy": 0.0,
         "election": 1.0,
-        "region_weight": 1.25,
-        "freshness": 0.989,
-        "importance": 0.377,
-        "final": 0.419
+        "region_weight": 1.4,
+        "freshness": 0.681,
+        "importance": 0.378,
+        "final": 0.446
       },
       "rank_reasons": [
-        "region:taiwan*1.25",
+        "region:mena*1.40",
         "category:election",
-        "tier:B*0.72/g3",
-        "election:local:1"
+        "tier:B*0.72/g2",
+        "election:by_election:1"
       ],
       "translation_status": "ok",
       "country_tier": "B",
+      "info_grade": "2",
+      "country_hint": "SAU",
+      "election_type": "by_election"
+    },
+    {
+      "id": "60448f78e7776293",
+      "published_at": "2026-08-21T11:34:28+00:00",
+      "source": {
+        "id": "business_standard_markets",
+        "name": "Business Standard Markets",
+        "region": "india",
+        "slant": null
+      },
+      "url": "https://www.business-standard.com/markets/capital-market-news/s-s-power-switchgear-hits-the-roof-after-subsidiary-bags-rs-50-cr-order-from-vedanta-aluminium-126082100937_1.html",
+      "category": "commodity",
+      "commodities": [
+        "aluminum"
+      ],
+      "title": {
+        "original": "S&S Power Switchgear hits the roof after subsidiary bags Rs 50-cr order from Vedanta Aluminium",
+        "original_lang": "en",
+        "ko": "S&S Power Switchgear는 Vedanta Aluminium의 Rs 50-cr 주문 후 지붕에 부딪힙니다."
+      },
+      "summary": "S&S Power Switchgear hit the upper circuit of 10% to Rs 296.75 after the company's wholly owned subsidiary, Hamilton Research & Technology (HART), has received a purchase order worth Rs 50 crore from Vedanta Aluminium Metal.",
+      "scores": {
+        "commodity": 1.0,
+        "diplomacy": 0.0,
+        "election": 0.0,
+        "region_weight": 1.3,
+        "freshness": 0.599,
+        "importance": 0.331,
+        "final": 0.375
+      },
+      "rank_reasons": [
+        "region:india*1.30",
+        "category:commodity",
+        "tier:A*1.00/g3",
+        "commodity:aluminum:1"
+      ],
+      "translation_status": "ok",
+      "country_tier": "A",
       "info_grade": "3",
-      "country_hint": "TWN",
-      "election_type": "local"
+      "country_hint": "IND"
     }
   ]
 }
