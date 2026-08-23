@@ -1,6 +1,6 @@
 {
   "schema_version": "ticker-v1",
-  "generated_at": "2026-08-22T23:53:47.460621+00:00",
+  "generated_at": "2026-08-23T05:49:19.953247+00:00",
   "model": {
     "name": "commodity_diplomacy_rss_v1",
     "description": "RSS multi-region ticker: regional priority (MENA/IN/TR/JP/CN/TW/RU + commodity specialists) over Western majors; politics admitted with diplomacy+trade bridge, elections, governance polls, cabinet reshuffles; horse-race national polls rejected; importance = country-tier × info-grade; main display language Korean.",
@@ -73,20 +73,21 @@
     "cabinet_reshuffle": true
   },
   "stats": {
-    "sources_ok": 35,
-    "sources_failed": 3,
-    "raw_items": 782,
-    "scored_items": 58,
+    "sources_ok": 36,
+    "sources_failed": 2,
+    "raw_items": 842,
+    "scored_items": 64,
     "selected_items": 24,
     "region_histogram": {
-      "commodity_specialist": 7,
-      "russia": 4,
-      "china": 3,
+      "commodity_specialist": 5,
+      "russia": 3,
+      "mena": 5,
+      "china": 2,
+      "india": 2,
       "japan": 2,
-      "india": 1,
-      "west": 2,
-      "mena": 3,
-      "turkey": 2
+      "west": 1,
+      "turkey": 2,
+      "taiwan": 2
     },
     "min_importance": 0.35
   },
@@ -95,7 +96,7 @@
       "source_id": "aljazeera_en",
       "ok": true,
       "count": 25,
-      "elapsed_ms": 170,
+      "elapsed_ms": 251,
       "error": null,
       "mode": "live"
     },
@@ -103,7 +104,7 @@
       "source_id": "iran_intl",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 713,
+      "elapsed_ms": 458,
       "error": null,
       "mode": "live"
     },
@@ -111,7 +112,7 @@
       "source_id": "arab_news",
       "ok": true,
       "count": 10,
-      "elapsed_ms": 130,
+      "elapsed_ms": 143,
       "error": null,
       "mode": "live"
     },
@@ -119,15 +120,15 @@
       "source_id": "tehran_times",
       "ok": true,
       "count": 30,
-      "elapsed_ms": 1246,
+      "elapsed_ms": 1164,
       "error": null,
       "mode": "live"
     },
     {
       "source_id": "middle_east_eye",
       "ok": true,
-      "count": 0,
-      "elapsed_ms": 361,
+      "count": 20,
+      "elapsed_ms": 277,
       "error": null,
       "mode": "live"
     },
@@ -135,23 +136,23 @@
       "source_id": "aa_world",
       "ok": true,
       "count": 30,
-      "elapsed_ms": 2693,
+      "elapsed_ms": 2334,
       "error": null,
       "mode": "live"
     },
     {
       "source_id": "daily_sabah",
-      "ok": false,
-      "count": 0,
-      "elapsed_ms": 358,
-      "error": "HTTPError: HTTP Error 403: Forbidden",
+      "ok": true,
+      "count": 40,
+      "elapsed_ms": 639,
+      "error": null,
       "mode": "live"
     },
     {
       "source_id": "hurriyet_daily",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 324,
+      "elapsed_ms": 164,
       "error": null,
       "mode": "live"
     },
@@ -159,7 +160,7 @@
       "source_id": "the_hindu",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 174,
+      "elapsed_ms": 153,
       "error": null,
       "mode": "live"
     },
@@ -167,7 +168,7 @@
       "source_id": "indian_express_world",
       "ok": false,
       "count": 0,
-      "elapsed_ms": 122,
+      "elapsed_ms": 186,
       "error": "HTTPError: HTTP Error 403: Forbidden",
       "mode": "live"
     },
@@ -175,7 +176,7 @@
       "source_id": "et_commodities",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 530,
+      "elapsed_ms": 396,
       "error": null,
       "mode": "live"
     },
@@ -183,7 +184,7 @@
       "source_id": "business_standard_markets",
       "ok": true,
       "count": 35,
-      "elapsed_ms": 1011,
+      "elapsed_ms": 77,
       "error": null,
       "mode": "live"
     },
@@ -191,7 +192,7 @@
       "source_id": "ndtv_world",
       "ok": true,
       "count": 20,
-      "elapsed_ms": 368,
+      "elapsed_ms": 246,
       "error": null,
       "mode": "live"
     },
@@ -199,7 +200,7 @@
       "source_id": "xinhua_world",
       "ok": true,
       "count": 20,
-      "elapsed_ms": 1589,
+      "elapsed_ms": 796,
       "error": null,
       "mode": "live"
     },
@@ -207,7 +208,7 @@
       "source_id": "china_daily_world",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 1024,
+      "elapsed_ms": 1018,
       "error": null,
       "mode": "live"
     },
@@ -215,7 +216,7 @@
       "source_id": "cgtn_world",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 358,
+      "elapsed_ms": 556,
       "error": null,
       "mode": "live"
     },
@@ -223,7 +224,7 @@
       "source_id": "scmp",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 708,
+      "elapsed_ms": 742,
       "error": null,
       "mode": "live"
     },
@@ -231,7 +232,7 @@
       "source_id": "nhk_business",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 810,
+      "elapsed_ms": 305,
       "error": null,
       "mode": "live"
     },
@@ -239,7 +240,7 @@
       "source_id": "nhk_top",
       "ok": true,
       "count": 7,
-      "elapsed_ms": 150,
+      "elapsed_ms": 65,
       "error": null,
       "mode": "live"
     },
@@ -247,7 +248,7 @@
       "source_id": "japan_times",
       "ok": true,
       "count": 30,
-      "elapsed_ms": 513,
+      "elapsed_ms": 839,
       "error": null,
       "mode": "live"
     },
@@ -255,7 +256,7 @@
       "source_id": "nikkei_asia",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 175,
+      "elapsed_ms": 59,
       "error": null,
       "mode": "live"
     },
@@ -263,7 +264,7 @@
       "source_id": "cna",
       "ok": true,
       "count": 20,
-      "elapsed_ms": 313,
+      "elapsed_ms": 173,
       "error": null,
       "mode": "live"
     },
@@ -271,7 +272,7 @@
       "source_id": "taipei_times",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 372,
+      "elapsed_ms": 492,
       "error": null,
       "mode": "live"
     },
@@ -279,7 +280,7 @@
       "source_id": "ltn",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 1002,
+      "elapsed_ms": 62,
       "error": null,
       "mode": "live"
     },
@@ -287,7 +288,7 @@
       "source_id": "udn",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 311,
+      "elapsed_ms": 254,
       "error": null,
       "mode": "live"
     },
@@ -295,7 +296,7 @@
       "source_id": "tass_en",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 1165,
+      "elapsed_ms": 768,
       "error": null,
       "mode": "live"
     },
@@ -303,7 +304,7 @@
       "source_id": "tass_ru",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 1260,
+      "elapsed_ms": 1052,
       "error": null,
       "mode": "live"
     },
@@ -311,7 +312,7 @@
       "source_id": "interfax_ru",
       "ok": true,
       "count": 25,
-      "elapsed_ms": 2495,
+      "elapsed_ms": 1077,
       "error": null,
       "mode": "live"
     },
@@ -319,7 +320,7 @@
       "source_id": "rt_ru",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 1498,
+      "elapsed_ms": 1451,
       "error": null,
       "mode": "live"
     },
@@ -327,7 +328,7 @@
       "source_id": "ship_and_bunker",
       "ok": true,
       "count": 10,
-      "elapsed_ms": 349,
+      "elapsed_ms": 223,
       "error": null,
       "mode": "live"
     },
@@ -335,7 +336,7 @@
       "source_id": "oilprice",
       "ok": true,
       "count": 15,
-      "elapsed_ms": 588,
+      "elapsed_ms": 557,
       "error": null,
       "mode": "live"
     },
@@ -343,7 +344,7 @@
       "source_id": "mining_com",
       "ok": false,
       "count": 0,
-      "elapsed_ms": 131,
+      "elapsed_ms": 94,
       "error": "HTTPError: HTTP Error 403: Forbidden",
       "mode": "live"
     },
@@ -351,7 +352,7 @@
       "source_id": "world_grain",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 325,
+      "elapsed_ms": 188,
       "error": null,
       "mode": "live"
     },
@@ -359,7 +360,7 @@
       "source_id": "hellenic_shipping",
       "ok": true,
       "count": 20,
-      "elapsed_ms": 314,
+      "elapsed_ms": 173,
       "error": null,
       "mode": "live"
     },
@@ -367,7 +368,7 @@
       "source_id": "seatrade",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 610,
+      "elapsed_ms": 458,
       "error": null,
       "mode": "live"
     },
@@ -375,7 +376,7 @@
       "source_id": "bbc_business",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 141,
+      "elapsed_ms": 36,
       "error": null,
       "mode": "live"
     },
@@ -383,7 +384,7 @@
       "source_id": "bloomberg_markets",
       "ok": true,
       "count": 20,
-      "elapsed_ms": 534,
+      "elapsed_ms": 425,
       "error": null,
       "mode": "live"
     },
@@ -391,7 +392,7 @@
       "source_id": "ft_commodities",
       "ok": true,
       "count": 25,
-      "elapsed_ms": 375,
+      "elapsed_ms": 318,
       "error": null,
       "mode": "live"
     }
@@ -423,9 +424,9 @@
         "diplomacy": 1.0,
         "election": 0.0,
         "region_weight": 1.35,
-        "freshness": 0.826,
-        "importance": 4.542,
-        "final": 5.258
+        "freshness": 0.7,
+        "importance": 3.853,
+        "final": 4.46
       },
       "rank_reasons": [
         "region:commodity_specialist*1.35",
@@ -466,9 +467,9 @@
         "diplomacy": 3.0,
         "election": 0.0,
         "region_weight": 1.25,
-        "freshness": 0.927,
-        "importance": 3.993,
-        "final": 4.442
+        "freshness": 0.786,
+        "importance": 3.387,
+        "final": 3.768
       },
       "rank_reasons": [
         "region:russia*1.25",
@@ -483,6 +484,206 @@
       "country_tier": "A",
       "info_grade": "2",
       "country_hint": "RUS"
+    },
+    {
+      "id": "408ae882f36c279f",
+      "published_at": "2026-08-23T04:03:55+00:00",
+      "source": {
+        "id": "middle_east_eye",
+        "name": "Middle East Eye",
+        "region": "mena",
+        "slant": null
+      },
+      "url": "https://www.middleeasteye.net/live-blog/live-blog-update/us-set-remove-syria-sponsor-terrorism-list",
+      "category": "cabinet_reshuffle",
+      "commodities": [],
+      "title": {
+        "original": "US set to remove Syria from 'sponsors of terrorism' list",
+        "original_lang": "en",
+        "ko": "미국, 시리아를 '테러리즘 후원국' 명단에서 삭제"
+      },
+      "summary": "US set to remove Syria from 'sponsors of terrorism' list Syria is set to be removed from the US State Sponsors of Terrorism list after nearly 47 years. A mandatory 45-day congressional review period expired on 22 August without reported action to block the move. The remaining ste",
+      "scores": {
+        "commodity": 0,
+        "diplomacy": 0.0,
+        "election": 1.2,
+        "region_weight": 1.4,
+        "freshness": 0.953,
+        "importance": 2.661,
+        "final": 3.139
+      },
+      "rank_reasons": [
+        "region:mena*1.40",
+        "category:cabinet_reshuffle",
+        "tier:A*1.00/g1",
+        "election:cabinet_reshuffle:1.2",
+        "cabinet_reshuffle"
+      ],
+      "translation_status": "ok",
+      "country_tier": "A",
+      "info_grade": "1",
+      "country_hint": "USA",
+      "election_type": "cabinet_reshuffle"
+    },
+    {
+      "id": "f54feb6a9ef44ece",
+      "published_at": "2026-08-22T20:53:31+00:00",
+      "source": {
+        "id": "middle_east_eye",
+        "name": "Middle East Eye",
+        "region": "mena",
+        "slant": null
+      },
+      "url": "https://www.middleeasteye.net/live-blog/live-blog-update/iran-threatens-block-hormuz-if-neighbours-join-us-sanctions",
+      "category": "commodity",
+      "commodities": [
+        "shipping"
+      ],
+      "title": {
+        "original": "Iran threatens to block Hormuz if neighbours join US sanctions",
+        "original_lang": "en",
+        "ko": "이웃이 미국의 제재에 가담하면 이란은 호르무즈를 차단하겠다고 위협합니다."
+      },
+      "summary": "Iran threatens to block Hormuz if neighbours join US sanctions Tehran would target the interests of countries that help the United States in its economic pressure campaign against Iran , the secretary of Iran's Supreme National Security Council, Mohsen Rezaei, stated on Saturday.",
+      "scores": {
+        "commodity": 1.0,
+        "diplomacy": 2.0,
+        "election": 0.0,
+        "region_weight": 1.4,
+        "freshness": 0.78,
+        "importance": 2.302,
+        "final": 2.717
+      },
+      "rank_reasons": [
+        "region:mena*1.40",
+        "category:commodity",
+        "tier:A*1.00/g1",
+        "commodity:shipping:1",
+        "diplomacy:2"
+      ],
+      "translation_status": "ok",
+      "country_tier": "A",
+      "info_grade": "1",
+      "country_hint": "USA"
+    },
+    {
+      "id": "f397c566b5650d49",
+      "published_at": "2026-08-23T04:36:41+00:00",
+      "source": {
+        "id": "middle_east_eye",
+        "name": "Middle East Eye",
+        "region": "mena",
+        "slant": null
+      },
+      "url": "https://www.middleeasteye.net/live-blog/live-blog-update/six-eu-countries-urge-windfall-tax-energy-firms-profits-soar-due-iran",
+      "category": "commodity",
+      "commodities": [
+        "oil"
+      ],
+      "title": {
+        "original": "Six EU countries urge windfall tax on energy firms as profits soar due to Iran war",
+        "original_lang": "en",
+        "ko": "EU 6개국은 이란 전쟁으로 인한 이익이 급증함에 따라 에너지 기업에 횡재세를 부과할 것을 촉구합니다."
+      },
+      "summary": "Six EU countries urge windfall tax on energy firms as profits soar due to Iran war Six European Countries are stepping up calls for a bloc-wide windfall tax on oil companies as profits soar due to the Middle East war, according to a letter seen by AFP. The finance ministers of Ge",
+      "scores": {
+        "commodity": 2.0,
+        "diplomacy": 0.0,
+        "election": 0.0,
+        "region_weight": 1.4,
+        "freshness": 0.967,
+        "importance": 2.224,
+        "final": 2.625
+      },
+      "rank_reasons": [
+        "region:mena*1.40",
+        "category:commodity",
+        "tier:A*1.00/g1",
+        "commodity:oil:2"
+      ],
+      "translation_status": "ok",
+      "country_tier": "A",
+      "info_grade": "1",
+      "country_hint": "DEU"
+    },
+    {
+      "id": "0586b4ed395203c9",
+      "published_at": "2026-08-23T00:51:57+00:00",
+      "source": {
+        "id": "rt_ru",
+        "name": "RT Russian",
+        "region": "russia",
+        "slant": null
+      },
+      "url": "https://russian.rt.com/russia/news/1673055-strany-vysokaya-yavka-vybory?utm_source=rss&utm_medium=rss&utm_campaign=RSS",
+      "category": "election",
+      "commodities": [],
+      "title": {
+        "original": "В МИД России перечислили страны с высокой явкой на выборы в Госдуму",
+        "original_lang": "ru",
+        "ko": "러시아 외무부는 국가 두마 선거에 대한 투표율이 높은 국가를 나열했습니다."
+      },
+      "summary": "Высокая явка на выборы в Госдуму ожидается в Абхазии, Белоруссии, Казахстане, Молдавии, Турции, Южной Осетии и на Кипре, сообщил посол по особым поручениям, заместитель председателя комиссии МИД России по выборам Максим Райдер. Читать далее",
+      "scores": {
+        "commodity": 0,
+        "diplomacy": 2.0,
+        "election": 1.0,
+        "region_weight": 1.25,
+        "freshness": 0.872,
+        "importance": 1.826,
+        "final": 2.031
+      },
+      "rank_reasons": [
+        "region:russia*1.25",
+        "category:election",
+        "tier:A*1.00/g2",
+        "diplomacy:2",
+        "election:general:1"
+      ],
+      "translation_status": "ok",
+      "country_tier": "A",
+      "info_grade": "2",
+      "country_hint": "RUS",
+      "election_type": "general"
+    },
+    {
+      "id": "aa8346f155b3719e",
+      "published_at": "2026-08-23T05:29:16+00:00",
+      "source": {
+        "id": "rt_ru",
+        "name": "RT Russian",
+        "region": "russia",
+        "slant": null
+      },
+      "url": "https://russian.rt.com/ussr/news/1673088-vybory-parlament-kazahstan-yavka?utm_source=rss&utm_medium=rss&utm_campaign=RSS",
+      "category": "election",
+      "commodities": [],
+      "title": {
+        "original": "Явка на парламентские выборы в Казахстане на 08:00 мск составила 17,96%",
+        "original_lang": "ru",
+        "ko": "모스크바 시간으로 08:00 에 카자흐스탄에서 의회 선거에 대한 투표율은 17.96% 였다"
+      },
+      "summary": "Явка на парламентские выборы в Казахстане на 08:00 мск (спустя три часа после начала голосования) составила 17,96%, сообщает Центризбирком республики. Читать далее",
+      "scores": {
+        "commodity": 0,
+        "diplomacy": 0.0,
+        "election": 2.0,
+        "region_weight": 1.25,
+        "freshness": 0.991,
+        "importance": 1.53,
+        "final": 1.702
+      },
+      "rank_reasons": [
+        "region:russia*1.25",
+        "category:election",
+        "tier:A*1.00/g2",
+        "election:general:2"
+      ],
+      "translation_status": "ok",
+      "country_tier": "A",
+      "info_grade": "2",
+      "country_hint": "RUS",
+      "election_type": "general"
     },
     {
       "id": "bc7984c22c05990c",
@@ -509,9 +710,9 @@
         "diplomacy": 2.0,
         "election": 0.0,
         "region_weight": 1.35,
-        "freshness": 0.442,
-        "importance": 1.678,
-        "final": 1.942
+        "freshness": 0.375,
+        "importance": 1.423,
+        "final": 1.647
       },
       "rank_reasons": [
         "region:commodity_specialist*1.35",
@@ -527,84 +728,45 @@
       "country_hint": "USA"
     },
     {
-      "id": "203213d65cd5ebee",
-      "published_at": "2026-08-22T05:51:59+00:00",
+      "id": "a4c3e352752e9771",
+      "published_at": "2026-08-23T00:32:44+00:00",
       "source": {
-        "id": "scmp",
-        "name": "South China Morning Post",
-        "region": "china",
+        "id": "middle_east_eye",
+        "name": "Middle East Eye",
+        "region": "mena",
         "slant": null
       },
-      "url": "https://www.scmp.com/news/world/united-states-canada/article/3364905/us-court-strikes-down-trump-visa-ban-affecting-south-asian-nations?utm_source=rss_feed",
-      "category": "cabinet_reshuffle",
-      "commodities": [],
+      "url": "https://www.middleeasteye.net/live-blog/live-blog-update/trump-posts-map-showing-hormuz-new-us-territory",
+      "category": "commodity",
+      "commodities": [
+        "shipping"
+      ],
       "title": {
-        "original": "US court strikes down Trump visa ban affecting South Asian nations",
+        "original": "Trump posts map showing Hormuz as 'new US territory'",
         "original_lang": "en",
-        "ko": "미국 법원, 남아시아 국가에 영향을 미치는 트럼프 비자 금지 조치 철회"
+        "ko": "트럼프는 호르무즈를 '새로운 미국 영토' 로 보여주는 지도를 게시합니다."
       },
-      "summary": "A US ⁠judge has struck down a Trump administration ⁠policy suspending the issuance of immigrant visas to applicants from 75 countries, saying that the policy exceeded Secretary of State Marco Rubio’s statutory authority. US District Judge Jeannette Vargas in Manhattan said on Fri",
+      "summary": "Trump posts map showing Hormuz as 'new US territory' US president Donald Trump has posted a map on his Truth Social account marking the Strait of Hormuz as \"NEW U.S. Territory\". It is the second time in a week that Trump has shared the image, but he included no caption or comment",
       "scores": {
-        "commodity": 0,
-        "diplomacy": 0.0,
-        "election": 1.2,
-        "region_weight": 1.25,
-        "freshness": 0.606,
-        "importance": 1.693,
-        "final": 1.883
+        "commodity": 1.0,
+        "diplomacy": 1.0,
+        "election": 0.0,
+        "region_weight": 1.4,
+        "freshness": 0.864,
+        "importance": 1.275,
+        "final": 1.505
       },
       "rank_reasons": [
-        "region:china*1.25",
-        "category:cabinet_reshuffle",
-        "tier:A*1.00/g1",
-        "election:cabinet_reshuffle:1.2",
-        "cabinet_reshuffle"
+        "region:mena*1.40",
+        "category:commodity",
+        "tier:B*0.72/g1",
+        "commodity:shipping:1",
+        "diplomacy:1"
       ],
       "translation_status": "ok",
-      "country_tier": "A",
+      "country_tier": "B",
       "info_grade": "1",
-      "country_hint": "CHN",
-      "election_type": "cabinet_reshuffle"
-    },
-    {
-      "id": "b9a3c6ffa22a10a7",
-      "published_at": "2026-08-21T23:44:00+00:00",
-      "source": {
-        "id": "japan_times",
-        "name": "Japan Times",
-        "region": "japan",
-        "slant": null
-      },
-      "url": "https://www.japantimes.co.jp/news/2026/08/22/japan/politics/takaichi-cabinet-reshuffle-september/",
-      "category": "cabinet_reshuffle",
-      "commodities": [],
-      "title": {
-        "original": "Takaichi eyes Cabinet reshuffle in mid-to-late September",
-        "original_lang": "en",
-        "ko": "타카이치 아이즈 캐비닛 9월 중순 ~ 하순 재편성"
-      },
-      "summary": "Such a move would be Prime Minister Sanae Takaichi's first since taking office in October as she seeks to create an atmosphere conductive to winning another term as LDP president.",
-      "scores": {
-        "commodity": 0,
-        "diplomacy": 0.0,
-        "election": 1.2,
-        "region_weight": 1.25,
-        "freshness": 0.511,
-        "importance": 1.428,
-        "final": 1.588
-      },
-      "rank_reasons": [
-        "region:japan*1.25",
-        "category:cabinet_reshuffle",
-        "tier:A*1.00/g1",
-        "election:cabinet_reshuffle:1.2",
-        "cabinet_reshuffle"
-      ],
-      "translation_status": "ok",
-      "country_tier": "A",
-      "info_grade": "1",
-      "country_hint": "JPN",
-      "election_type": "cabinet_reshuffle"
+      "country_hint": "SAU"
     },
     {
       "id": "23a48050eba62628",
@@ -633,9 +795,9 @@
         "diplomacy": 1.0,
         "election": 0.0,
         "region_weight": 1.35,
-        "freshness": 0.401,
-        "importance": 1.281,
-        "final": 1.483
+        "freshness": 0.35,
+        "importance": 1.117,
+        "final": 1.293
       },
       "rank_reasons": [
         "region:commodity_specialist*1.35",
@@ -676,9 +838,9 @@
         "diplomacy": 0.0,
         "election": 0.0,
         "region_weight": 1.35,
-        "freshness": 0.976,
-        "importance": 1.241,
-        "final": 1.436
+        "freshness": 0.828,
+        "importance": 1.053,
+        "final": 1.218
       },
       "rank_reasons": [
         "region:commodity_specialist*1.35",
@@ -693,47 +855,44 @@
       "country_hint": "DEU"
     },
     {
-      "id": "95366a8b753616bc",
-      "published_at": "2026-08-22T13:54:18+00:00",
+      "id": "02bdbade435e5dc3",
+      "published_at": "2026-08-23T03:52:00+00:00",
       "source": {
-        "id": "ndtv_world",
-        "name": "NDTV World",
-        "region": "india",
+        "id": "scmp",
+        "name": "South China Morning Post",
+        "region": "china",
         "slant": null
       },
-      "url": "https://www.ndtv.com/world-news/us-iran-war-how-dark-tankers-in-strait-of-hormuz-are-keeping-oil-prices-in-check-11945207#publisher=newsstand",
+      "url": "https://www.scmp.com/news/asia/southeast-asia/article/3364952/quake-prone-indonesias-first-nuclear-power-plant-plan-stokes-safety-fears?utm_source=rss_feed",
       "category": "commodity",
       "commodities": [
-        "oil",
-        "shipping"
+        "coal"
       ],
       "title": {
-        "original": "How 'Dark' Tankers In Strait Of Hormuz Are Keeping Oil Prices In Check",
+        "original": "Quake-prone Indonesia’s first nuclear power plant plan stokes safety fears",
         "original_lang": "en",
-        "ko": "호르무즈 해협의 '어두운' 유조선이 유가를 유지하는 방법"
+        "ko": "지진이 발생하기 쉬운 인도네시아 최초의 원자력 발전소 계획은 안전에 대한 두려움을 불러일으킵니다."
       },
-      "summary": "Middle Eastern producers have also found ways to move more oil away from the strait altogether.",
+      "summary": "Coal-dependent Indonesia is reviving decades-old plans to build nuclear power plants that were put on hold following the 2011 Fukushima nuclear disaster in Japan, as it seeks to meet its decarbonisation targets. Some members of the public and experts, however, have voiced concern",
       "scores": {
-        "commodity": 2.0,
-        "diplomacy": 1.0,
+        "commodity": 1.0,
+        "diplomacy": 0.0,
         "election": 0.0,
-        "region_weight": 1.3,
-        "freshness": 0.758,
-        "importance": 1.164,
-        "final": 1.321
+        "region_weight": 1.25,
+        "freshness": 0.947,
+        "importance": 1.089,
+        "final": 1.212
       },
       "rank_reasons": [
-        "region:india*1.30",
+        "region:china*1.25",
         "category:commodity",
-        "tier:A*1.00/g3",
-        "commodity:oil:1",
-        "commodity:shipping:1",
-        "diplomacy:1"
+        "tier:A*1.00/g1",
+        "commodity:coal:1"
       ],
       "translation_status": "ok",
       "country_tier": "A",
-      "info_grade": "3",
-      "country_hint": "IND"
+      "info_grade": "1",
+      "country_hint": "JPN"
     },
     {
       "id": "625330d06bb8107a",
@@ -780,6 +939,90 @@
       "country_hint": "USA"
     },
     {
+      "id": "95366a8b753616bc",
+      "published_at": "2026-08-22T13:54:18+00:00",
+      "source": {
+        "id": "ndtv_world",
+        "name": "NDTV World",
+        "region": "india",
+        "slant": null
+      },
+      "url": "https://www.ndtv.com/world-news/us-iran-war-how-dark-tankers-in-strait-of-hormuz-are-keeping-oil-prices-in-check-11945207#publisher=newsstand",
+      "category": "commodity",
+      "commodities": [
+        "oil",
+        "shipping"
+      ],
+      "title": {
+        "original": "How 'Dark' Tankers In Strait Of Hormuz Are Keeping Oil Prices In Check",
+        "original_lang": "en",
+        "ko": "호르무즈 해협의 '어두운' 유조선이 유가를 유지하는 방법"
+      },
+      "summary": "Middle Eastern producers have also found ways to move more oil away from the strait altogether.",
+      "scores": {
+        "commodity": 2.0,
+        "diplomacy": 1.0,
+        "election": 0.0,
+        "region_weight": 1.3,
+        "freshness": 0.643,
+        "importance": 0.987,
+        "final": 1.121
+      },
+      "rank_reasons": [
+        "region:india*1.30",
+        "category:commodity",
+        "tier:A*1.00/g3",
+        "commodity:oil:1",
+        "commodity:shipping:1",
+        "diplomacy:1"
+      ],
+      "translation_status": "ok",
+      "country_tier": "A",
+      "info_grade": "3",
+      "country_hint": "IND"
+    },
+    {
+      "id": "449923d0e47aa090",
+      "published_at": "2026-08-10T06:05:58+00:00",
+      "source": {
+        "id": "arab_news",
+        "name": "Arab News",
+        "region": "mena",
+        "slant": null
+      },
+      "url": "https://www.arabnews.com/node/2654125/world",
+      "category": "commodity",
+      "commodities": [
+        "oil"
+      ],
+      "title": {
+        "original": "Ukrainian drone attack on Russian oil hub kills 13",
+        "original_lang": "en",
+        "ko": "러시아 석유 허브에 대한 우크라이나 드론 공격으로 13명 사망"
+      },
+      "summary": "Ukraine attacked the petroleum hub of Nizhnekamsk in central Russia’s Tatarstan region on Monday, killing 13 people and injuring 75 others, local authorities said, in one of the deadliest attacks in the country in the 4-year-old war. The Ukrainian military said it hit an oil refi",
+      "scores": {
+        "commodity": 2.0,
+        "diplomacy": 0.0,
+        "election": 0.0,
+        "region_weight": 1.4,
+        "freshness": 0.35,
+        "importance": 0.927,
+        "final": 1.094
+      },
+      "rank_reasons": [
+        "region:mena*1.40",
+        "category:commodity",
+        "tier:A*1.00/g1",
+        "commodity:oil:2",
+        "bridge:1"
+      ],
+      "translation_status": "ok",
+      "country_tier": "A",
+      "info_grade": "1",
+      "country_hint": "RUS"
+    },
+    {
       "id": "e735bd03e3f62001",
       "published_at": "2026-08-07T12:57:08+00:00",
       "source": {
@@ -818,6 +1061,47 @@
       "info_grade": "1",
       "country_hint": "JPN",
       "election_type": "cabinet_reshuffle"
+    },
+    {
+      "id": "9bfe6d09c6c1adcd",
+      "published_at": "2026-08-23T02:23:48+00:00",
+      "source": {
+        "id": "ndtv_world",
+        "name": "NDTV World",
+        "region": "india",
+        "slant": null
+      },
+      "url": "https://www.ndtv.com/world-news/donald-trump-again-posts-map-of-strait-of-hormuz-as-new-us-territory-amid-us-iran-war-11946514#publisher=newsstand",
+      "category": "commodity",
+      "commodities": [
+        "shipping"
+      ],
+      "title": {
+        "original": "Trump Shares Map Of Strait Of Hormuz As \"New US Territory\", Again",
+        "original_lang": "en",
+        "ko": "트럼프, 호르무즈 해협 지도를 \"새로운 미국 영토\" 로 다시 공유"
+      },
+      "summary": "Trump had earlier posted the same image on August 18.",
+      "scores": {
+        "commodity": 1.0,
+        "diplomacy": 1.0,
+        "election": 0.0,
+        "region_weight": 1.3,
+        "freshness": 0.909,
+        "importance": 0.895,
+        "final": 1.016
+      },
+      "rank_reasons": [
+        "region:india*1.30",
+        "category:commodity",
+        "tier:A*1.00/g3",
+        "commodity:shipping:1",
+        "diplomacy:1"
+      ],
+      "translation_status": "ok",
+      "country_tier": "A",
+      "info_grade": "3",
+      "country_hint": "IND"
     },
     {
       "id": "514e72431d824f5a",
@@ -860,89 +1144,6 @@
       "country_hint": "USA"
     },
     {
-      "id": "4b8a947053db3695",
-      "published_at": "2026-08-22T04:00:29+00:00",
-      "source": {
-        "id": "ft_commodities",
-        "name": "FT Commodities",
-        "region": "west",
-        "slant": null
-      },
-      "url": "https://www.ft.com/content/efe10069-cbe3-4071-a091-26afa74fb4b3?syn-25a6b1a6=1",
-      "category": "commodity",
-      "commodities": [
-        "shipping"
-      ],
-      "title": {
-        "original": "Qatar cuts state spending at home and abroad as war shrinks economy",
-        "original_lang": "en",
-        "ko": "카타르는 전쟁으로 경제가 위축됨에 따라 국내외 주정부 지출을 삭감한다."
-      },
-      "summary": "Wealthy Gulf nation has been hard hit by US-Iran conflict over Strait of Hormuz",
-      "scores": {
-        "commodity": 1.0,
-        "diplomacy": 1.0,
-        "election": 0.0,
-        "region_weight": 0.55,
-        "freshness": 0.576,
-        "importance": 1.18,
-        "final": 0.941
-      },
-      "rank_reasons": [
-        "region:west*0.55",
-        "category:commodity",
-        "tier:A*1.00/g1",
-        "commodity:shipping:1",
-        "diplomacy:1"
-      ],
-      "translation_status": "ok",
-      "country_tier": "A",
-      "info_grade": "1",
-      "country_hint": "USA"
-    },
-    {
-      "id": "6d553f274a6ab525",
-      "published_at": "2026-08-21T21:00:58+00:00",
-      "source": {
-        "id": "hellenic_shipping",
-        "name": "Hellenic Shipping News",
-        "region": "commodity_specialist",
-        "slant": null
-      },
-      "url": "https://www.hellenicshippingnews.com/baltic-dry-index-rises-for-2nd-day-still-posts-weekly-loss/",
-      "category": "commodity",
-      "commodities": [
-        "shipping",
-        "coal"
-      ],
-      "title": {
-        "original": "Baltic Dry Index Rises for 2nd Day, Still Posts Weekly Loss",
-        "original_lang": "en",
-        "ko": "발트 건조 지수는 둘째 날 상승, 여전히 주간 손실을 기록"
-      },
-      "summary": "The Baltic Exchange’s dry bulk freight index, which monitors rates for ships carrying dry bulk commodities, advanced for a second session on Friday, rising by 1.8% to 2,841 points, driven by gains across all vessel segments. The capesize index, which typically transports 150,000-",
-      "scores": {
-        "commodity": 3.0,
-        "diplomacy": 0.0,
-        "election": 0.0,
-        "region_weight": 1.35,
-        "freshness": 0.474,
-        "importance": 0.785,
-        "final": 0.909
-      },
-      "rank_reasons": [
-        "region:commodity_specialist*1.35",
-        "category:commodity",
-        "tier:A*1.00/g3",
-        "commodity:coal:1",
-        "commodity:shipping:2"
-      ],
-      "translation_status": "ok",
-      "country_tier": "A",
-      "info_grade": "3",
-      "country_hint": "USA"
-    },
-    {
       "id": "17f15e49f2bffceb",
       "published_at": "2026-08-22T12:17:08+00:00",
       "source": {
@@ -968,9 +1169,9 @@
         "diplomacy": 0.0,
         "election": 0.0,
         "region_weight": 1.25,
-        "freshness": 0.724,
-        "importance": 0.8,
-        "final": 0.89
+        "freshness": 0.615,
+        "importance": 0.678,
+        "final": 0.755
       },
       "rank_reasons": [
         "region:china*1.25",
@@ -983,246 +1184,6 @@
       "country_tier": "A",
       "info_grade": "3",
       "country_hint": "CHN"
-    },
-    {
-      "id": "06aa7ccd3d329fcb",
-      "published_at": "2026-08-22T23:29:00+00:00",
-      "source": {
-        "id": "interfax_ru",
-        "name": "Interfax",
-        "region": "russia",
-        "slant": null
-      },
-      "url": "https://www.interfax.ru/world/1110732",
-      "category": "election",
-      "commodities": [],
-      "title": {
-        "original": "В Казахстане изберут новый однопалатный парламент",
-        "original_lang": "ru",
-        "ko": "카자흐스탄에서 새로운 단원제 의회가 선출됩니다"
-      },
-      "summary": "В Казахстане в воскресенье пройдут выборы в курултай (новый однопалатный парламент).",
-      "scores": {
-        "commodity": 0,
-        "diplomacy": 0.0,
-        "election": 1.0,
-        "region_weight": 1.25,
-        "freshness": 0.989,
-        "importance": 0.763,
-        "final": 0.849
-      },
-      "rank_reasons": [
-        "region:russia*1.25",
-        "category:election",
-        "tier:A*1.00/g2",
-        "election:general:1"
-      ],
-      "translation_status": "ok",
-      "country_tier": "A",
-      "info_grade": "2",
-      "country_hint": "RUS",
-      "election_type": "general"
-    },
-    {
-      "id": "953c0afe454e654b",
-      "published_at": "2026-08-22T20:05:52+00:00",
-      "source": {
-        "id": "aljazeera_en",
-        "name": "Al Jazeera",
-        "region": "mena",
-        "slant": null
-      },
-      "url": "https://www.aljazeera.com/news/2026/8/22/iran-grants-permission-for-some-iraqi-oil-tankers-to-pass-through-hormuz?traffic_source=rss",
-      "category": "commodity",
-      "commodities": [
-        "oil",
-        "shipping"
-      ],
-      "title": {
-        "original": "Iran grants permission for some Iraqi oil tankers to pass through Hormuz",
-        "original_lang": "en",
-        "ko": "이란은 일부 이라크 유조선이 호르무즈를 통과할 수 있도록 허가합니다"
-      },
-      "summary": "Iraqi President Nizar Amidi says his country's territory will not be used to launch attacks against any other state.",
-      "scores": {
-        "commodity": 2.0,
-        "diplomacy": 0.0,
-        "election": 0.0,
-        "region_weight": 1.4,
-        "freshness": 0.9,
-        "importance": 0.715,
-        "final": 0.844
-      },
-      "rank_reasons": [
-        "region:mena*1.40",
-        "category:commodity",
-        "tier:B*0.72/g3",
-        "commodity:oil:1",
-        "commodity:shipping:1"
-      ],
-      "translation_status": "ok",
-      "country_tier": "B",
-      "info_grade": "3",
-      "country_hint": "SAU"
-    },
-    {
-      "id": "07e974d367df472a",
-      "published_at": "2026-08-22T08:51:46+00:00",
-      "source": {
-        "id": "scmp",
-        "name": "South China Morning Post",
-        "region": "china",
-        "slant": null
-      },
-      "url": "https://www.scmp.com/news/world/americas/article/3364917/brazils-lula-seeks-end-baseless-tariffs-call-trump?utm_source=rss_feed",
-      "category": "election",
-      "commodities": [],
-      "title": {
-        "original": "Brazil’s Lula seeks end to ‘baseless tariffs’ in call with Trump",
-        "original_lang": "en",
-        "ko": "브라질의 룰라는 트럼프와의 통화에서 ‘근거 없는 관세’ 를 종식시키려 한다."
-      },
-      "summary": "Brazilian President Luiz Inacio Lula da Silva urged US counterpart Donald Trump in a phone call on Friday to resolve their countries’ trade dispute, saying US tariffs were imposed on “baseless” grounds. Washington imposed two new sets of tariffs on the Latin American giant in Jul",
-      "scores": {
-        "commodity": 0,
-        "diplomacy": 0.0,
-        "election": 1.0,
-        "region_weight": 1.25,
-        "freshness": 0.659,
-        "importance": 0.726,
-        "final": 0.808
-      },
-      "rank_reasons": [
-        "region:china*1.25",
-        "category:election",
-        "tier:A*1.00/g1",
-        "election:presidential:1"
-      ],
-      "translation_status": "ok",
-      "country_tier": "A",
-      "info_grade": "1",
-      "country_hint": "USA",
-      "election_type": "presidential"
-    },
-    {
-      "id": "b905868307a61551",
-      "published_at": "2026-08-22T21:01:11+00:00",
-      "source": {
-        "id": "tass_ru",
-        "name": "ТАСС",
-        "region": "russia",
-        "slant": null
-      },
-      "url": "https://tass.ru/mezhdunarodnaya-panorama/28036225",
-      "category": "election",
-      "commodities": [],
-      "title": {
-        "original": "В Казахстане пройдут выборы в новый однопалатный парламент",
-        "original_lang": "ru",
-        "ko": "새로운 단원제 의회 선거가 카자흐스탄에서 개최됩니다."
-      },
-      "summary": "В них примут участие 545 кандидатов от семи партий",
-      "scores": {
-        "commodity": 0,
-        "diplomacy": 0.0,
-        "election": 1.0,
-        "region_weight": 1.25,
-        "freshness": 0.923,
-        "importance": 0.713,
-        "final": 0.793
-      },
-      "rank_reasons": [
-        "region:russia*1.25",
-        "category:election",
-        "tier:A*1.00/g2",
-        "election:general:1"
-      ],
-      "translation_status": "ok",
-      "country_tier": "A",
-      "info_grade": "2",
-      "country_hint": "RUS",
-      "election_type": "general"
-    },
-    {
-      "id": "0ef0dcc0034162c9",
-      "published_at": "2026-08-22T20:29:14+00:00",
-      "source": {
-        "id": "rt_ru",
-        "name": "RT Russian",
-        "region": "russia",
-        "slant": null
-      },
-      "url": "https://russian.rt.com/ussr/news/1673027-vybory-ukraina-konflikt?utm_source=rss&utm_medium=rss&utm_campaign=RSS",
-      "category": "election",
-      "commodities": [],
-      "title": {
-        "original": "Фёдоров: выборы на Украине можно провести даже во время конфликта",
-        "original_lang": "ru",
-        "ko": "페도로프: 우크라이나 선거는 분쟁 중에도 실시될 수 있습니다."
-      },
-      "summary": "Выборы на Украине можно провести даже в период конфликта, заявил бывший министр обороны страны Михаил Фёдоров. Читать далее",
-      "scores": {
-        "commodity": 0,
-        "diplomacy": 0.0,
-        "election": 1.0,
-        "region_weight": 1.25,
-        "freshness": 0.91,
-        "importance": 0.702,
-        "final": 0.781
-      },
-      "rank_reasons": [
-        "region:russia*1.25",
-        "category:election",
-        "tier:A*1.00/g2",
-        "election:general:1"
-      ],
-      "translation_status": "ok",
-      "country_tier": "A",
-      "info_grade": "2",
-      "country_hint": "RUS",
-      "election_type": "general"
-    },
-    {
-      "id": "3a58782796b5a878",
-      "published_at": "2026-08-21T17:00:00+00:00",
-      "source": {
-        "id": "oilprice",
-        "name": "OilPrice.com",
-        "region": "commodity_specialist",
-        "slant": null
-      },
-      "url": "https://oilprice.com/Latest-Energy-News/World-News/India-Boosts-Battery-Investment-to-Cut-Solar-Power-Waste.html",
-      "category": "diplomacy",
-      "commodities": [
-        "oil"
-      ],
-      "title": {
-        "original": "India Boosts Battery Investment to Cut Solar Power Waste",
-        "original_lang": "en",
-        "ko": "인도, 태양광 발전 폐기물 감축을 위한 배터리 투자 확대"
-      },
-      "summary": "Solar power developers in India have started to add battery storage to photovoltaic projects to attract buyers and reduce the large share of curtailments for power supply that the grids are unable to absorb, Santosh Sarangi, Secretary of India’s Ministry of New and Renewable Ener",
-      "scores": {
-        "commodity": 0.8,
-        "diplomacy": 1.0,
-        "election": 0.0,
-        "region_weight": 1.35,
-        "freshness": 0.424,
-        "importance": 0.644,
-        "final": 0.745
-      },
-      "rank_reasons": [
-        "region:commodity_specialist*1.35",
-        "category:diplomacy",
-        "tier:A*1.00/g2",
-        "commodity:oil:0.8",
-        "diplomacy:1",
-        "bridge:1"
-      ],
-      "translation_status": "ok",
-      "country_tier": "A",
-      "info_grade": "2",
-      "country_hint": "IND"
     },
     {
       "id": "5965493a8d39c2df",
@@ -1247,9 +1208,9 @@
         "diplomacy": 2.0,
         "election": 1.0,
         "region_weight": 1.3,
-        "freshness": 0.414,
-        "importance": 0.625,
-        "final": 0.709
+        "freshness": 0.351,
+        "importance": 0.53,
+        "final": 0.601
       },
       "rank_reasons": [
         "region:turkey*1.30",
@@ -1265,113 +1226,73 @@
       "election_type": "general"
     },
     {
-      "id": "6088d609ff7af645",
-      "published_at": "2026-08-22T15:11:19+00:00",
+      "id": "f7f0cdeec7e2e221",
+      "published_at": "2026-08-23T02:26:00+00:00",
       "source": {
-        "id": "tehran_times",
-        "name": "Tehran Times",
-        "region": "mena",
+        "id": "japan_times",
+        "name": "Japan Times",
+        "region": "japan",
         "slant": null
       },
-      "url": "https://www.tehrantimes.com/news/529308/Iran-s-trade-diplomacy-surges-with-expansion-of-commercial-attach%C3%A9",
-      "category": "diplomacy",
-      "commodities": [],
-      "title": {
-        "original": "Iran's trade diplomacy surges with expansion of commercial attaché network",
-        "original_lang": "en",
-        "ko": "상업적 연결망의 확대와 함께 이란의 무역 외교가 급증하고 있다."
-      },
-      "summary": "TEHRAN- The Director General of the West Asia Office at Iran's Trade Promotion Organization (TPO), elaborating on the organization's major achievements in the years 1403 and 1404 (2024–2025) announced unprecedented records in attracting trade delegations and developing export inf",
-      "scores": {
-        "commodity": 0,
-        "diplomacy": 1.0,
-        "election": 0.0,
-        "region_weight": 1.4,
-        "freshness": 0.785,
-        "importance": 0.495,
-        "final": 0.584
-      },
-      "rank_reasons": [
-        "region:mena*1.40",
-        "category:diplomacy",
-        "tier:B*0.72/g2",
-        "diplomacy:1",
-        "bridge:1"
-      ],
-      "translation_status": "ok",
-      "country_tier": "B",
-      "info_grade": "2",
-      "country_hint": "SAU"
-    },
-    {
-      "id": "ec1bb886ad0ef8a7",
-      "published_at": "2026-08-10T11:05:10+00:00",
-      "source": {
-        "id": "arab_news",
-        "name": "Arab News",
-        "region": "mena",
-        "slant": null
-      },
-      "url": "https://www.arabnews.com/node/2654151/middle-east",
+      "url": "https://www.japantimes.co.jp/sports/2026/08/23/more-sports/miura-kihara-announce-engagement/",
       "category": "commodity",
       "commodities": [
-        "oil"
+        "gold"
       ],
       "title": {
-        "original": "Fire breaks out at Libya’s Zawiya refinery",
+        "original": "Olympic pairs figure skating gold medalists Riku Miura and Ryuichi Kihara announce engagement",
         "original_lang": "en",
-        "ko": "리비아 자위야 정유소에서 화재 발생"
+        "ko": "올림픽 페어 피겨 스케이팅 금메달리스트 리쿠 미우라와 키하라 류이치, 약혼 발표"
       },
-      "summary": "TRIPOLI: A fire broke out on Monday ​in a diesel tank at Libya’s Zawiya refinery days after the facility was hit by drone. The circumstances of Monday's fire remained unknown, Brega Petroleum Marketing Company said in a statement. Brega is owned by state oil firm National Oil Cor",
+      "summary": "The pair won gold in dramatic fashion at the Milano Cortina Winter Olympics, coming back from fifth place after the short program to win the event.",
       "scores": {
-        "commodity": 2.0,
+        "commodity": 1.0,
         "diplomacy": 0.0,
         "election": 0.0,
-        "region_weight": 1.4,
-        "freshness": 0.35,
-        "importance": 0.321,
-        "final": 0.378
+        "region_weight": 1.25,
+        "freshness": 0.91,
+        "importance": 0.503,
+        "final": 0.559
       },
       "rank_reasons": [
-        "region:mena*1.40",
+        "region:japan*1.25",
         "category:commodity",
-        "tier:B*0.72/g3",
-        "commodity:oil:2",
-        "bridge:1"
+        "tier:A*1.00/g3",
+        "commodity:gold:1"
       ],
       "translation_status": "ok",
-      "country_tier": "B",
+      "country_tier": "A",
       "info_grade": "3",
-      "country_hint": "SAU"
+      "country_hint": "JPN"
     },
     {
-      "id": "b25a52b73f0f42ce",
-      "published_at": "2026-08-21T18:39:14+00:00",
+      "id": "878e0fa7430c4ab2",
+      "published_at": "2026-08-22T11:58:56+00:00",
       "source": {
-        "id": "aa_world",
-        "name": "Anadolu Agency",
+        "id": "daily_sabah",
+        "name": "Daily Sabah",
         "region": "turkey",
         "slant": null
       },
-      "url": "https://www.aa.com.tr/en/world/oman-iran-discuss-means-of-restoring-navigation-through-hormuz-strait/4034230",
+      "url": "https://www.dailysabah.com/world/europe/nato-weighs-allied-support-for-strait-of-hormuz-navigation",
       "category": "commodity",
       "commodities": [
         "shipping"
       ],
       "title": {
-        "original": "Oman, Iran discuss means of restoring navigation through Hormuz Strait",
+        "original": "NATO weighs allied support for Strait of Hormuz navigation",
         "original_lang": "en",
-        "ko": "오만, 이란, 호르무즈 해협 항로 복원 수단 논의"
+        "ko": "북대서양 조약 기구 (NATO) 는 호르무즈 해협 항해에 대한 연합군의 지원을 저울질하고 있습니다."
       },
-      "summary": "Foreign ministers call for 'practical understandings' paving way for resumption of traffic through critical waterway",
+      "summary": "NATO's top military commander convened senior defense officials from allied countries this week to discuss possible contributions to keeping the Strait of Hormuz open, but the...",
       "scores": {
         "commodity": 1.0,
         "diplomacy": 1.0,
         "election": 0.0,
         "region_weight": 1.3,
-        "freshness": 0.444,
-        "importance": 0.315,
-        "final": 0.357
+        "freshness": 0.609,
+        "importance": 0.432,
+        "final": 0.49
       },
       "rank_reasons": [
         "region:turkey*1.30",
@@ -1384,6 +1305,85 @@
       "country_tier": "B",
       "info_grade": "3",
       "country_hint": "TUR"
+    },
+    {
+      "id": "ae35a5a55b0eef2f",
+      "published_at": "2026-08-23T04:42:52+00:00",
+      "source": {
+        "id": "ltn",
+        "name": "Liberty Times",
+        "region": "taiwan",
+        "slant": "pan_green"
+      },
+      "url": "https://news.ltn.com.tw/news/society/breakingnews/5549320",
+      "category": "commodity",
+      "commodities": [
+        "silver"
+      ],
+      "title": {
+        "original": "貸款30萬投資房地產有詭 查出他被離職保險員洗腦險遭詐",
+        "original_lang": "zh-TW",
+        "ko": "부동산에 투자하기 위해 30만 달러를 빌린 대출은 그가 떠나는 보험사에 의해 세뇌당했다는 사실을 알아내기 위해 속았다."
+      },
+      "summary": "台北市一名陳姓男子到大安區一間銀行，申請貸款打算匯出30萬元款項，行員察覺有異報案，大安警分局派員到場後，發現陳男被曾經服務過的保險員洗腦，對方稱近期推出投資房地產方案，可穩賺...…",
+      "scores": {
+        "commodity": 1.0,
+        "diplomacy": 0.0,
+        "election": 0.0,
+        "region_weight": 1.25,
+        "freshness": 0.97,
+        "importance": 0.385,
+        "final": 0.429
+      },
+      "rank_reasons": [
+        "region:taiwan*1.25",
+        "category:commodity",
+        "tier:B*0.72/g3",
+        "commodity:silver:1"
+      ],
+      "translation_status": "ok",
+      "country_tier": "B",
+      "info_grade": "3",
+      "country_hint": "TWN"
+    },
+    {
+      "id": "99630e22f369f4f0",
+      "published_at": "2026-08-23T05:09:12+00:00",
+      "source": {
+        "id": "ltn",
+        "name": "Liberty Times",
+        "region": "taiwan",
+        "slant": "pan_green"
+      },
+      "url": "https://news.ltn.com.tw/news/politics/breakingnews/5549339",
+      "category": "election",
+      "commodities": [],
+      "title": {
+        "original": "支持8藍委就是縱容翁曉玲！經民連轟：連總統視察部隊加菜金都砍",
+        "original_lang": "zh-TW",
+        "ko": "제8차 블루 위원회를 지원하는 것은 웡샤오링을 탐닉하는 것입니다! 국민의 지속적인 폭격으로 대통령 감찰부대와 채소 금마저 삭감"
+      },
+      "summary": "國民黨立委翁曉玲稱文化預算是「青鳥的飼料」，更提案大砍賴總統國務機要費，造成庇護工場的中秋禮盒訂單告吹。九合一地方選舉將屆，民進黨訴求支持「江啟臣」等8人就是縱容翁曉玲。經濟民...…",
+      "scores": {
+        "commodity": 0,
+        "diplomacy": 0.0,
+        "election": 1.0,
+        "region_weight": 1.25,
+        "freshness": 0.982,
+        "importance": 0.374,
+        "final": 0.416
+      },
+      "rank_reasons": [
+        "region:taiwan*1.25",
+        "category:election",
+        "tier:B*0.72/g3",
+        "election:local:1"
+      ],
+      "translation_status": "ok",
+      "country_tier": "B",
+      "info_grade": "3",
+      "country_hint": "TWN",
+      "election_type": "local"
     }
   ]
 }
