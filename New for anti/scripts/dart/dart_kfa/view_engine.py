@@ -13,7 +13,11 @@ from statistics import median
 from typing import Any
 
 from .entity_policy import is_financial
-from .currency import build_currency_contract, convert_currency_value
+from .currency import (
+    build_currency_contract,
+    convert_currency_value,
+    convert_monetary_input_to_calculation_currency,
+)
 from .model_availability import card_decision, model_decision
 from .valuation import build_seeded_scenarios, fcff_dcf, run_valuation_bundle
 
@@ -179,32 +183,62 @@ def _catalog_card(company: dict[str, Any], definition: dict[str, str]) -> dict[s
     }
 
 
-def _market_cap(company: dict[str, Any], user_inputs: dict[str, Any]) -> tuple[float | None, dict[str, Any]]:
+def _market_cap(
+    company: dict[str, Any],
+    user_inputs: dict[str, Any],
+    currency_contract: dict[str, Any],
+) -> tuple[float | None, dict[str, Any]]:
+    """Return market cap in filing/model currency, never an inferred unit.
+
+    Price × shares is a monetary input just as much as a manually supplied
+    market cap.  The quote adapter therefore has to retain quote currency;
+    callers without that metadata receive an actionable omission instead of a
+    potentially mixed-currency EV bridge.
+    """
     market = company.get("market") or {}
     multiples = market.get("multiples") or {}
     value = _number(multiples.get("market_cap"))
     if value is not None:
         quote = market.get("quote") or {}
-        return value, {
+        input_currency = multiples.get("currency") or market.get("currency") or quote.get("currency")
+        normalized, reason = convert_monetary_input_to_calculation_currency(
+            value, input_currency=input_currency, contract=currency_contract
+        )
+        meta = {
             "kind": "market_snapshot",
             "source": quote.get("source") or "market_adapter",
             "as_of": quote.get("asof"),
             "confidence": "high",
+            "input_currency": input_currency,
+            "calculation_currency": currency_contract.get("calculation_currency"),
         }
+        if reason:
+            meta["reason"] = reason
+        return normalized, meta
     supplied = user_inputs.get("market_cap")
     if isinstance(supplied, dict):
-        return _number(supplied.get("value")), {
+        normalized, reason = convert_monetary_input_to_calculation_currency(
+            supplied.get("value"), input_currency=supplied.get("currency"), contract=currency_contract
+        )
+        meta = {
             "kind": "user_input",
             "source": supplied.get("source") or "user_input",
             "as_of": supplied.get("as_of"),
             "confidence": supplied.get("confidence") or "medium",
+            "input_currency": supplied.get("currency"),
+            "calculation_currency": currency_contract.get("calculation_currency"),
         }
+        if reason:
+            meta["reason"] = reason
+        return normalized, meta
     if _number(supplied) is not None:
-        return _number(supplied), {
+        return None, {
             "kind": "user_input",
             "source": "user_input_unverified",
             "as_of": None,
             "confidence": "low",
+            "reason": "missing:monetary_input_currency",
+            "calculation_currency": currency_contract.get("calculation_currency"),
         }
     return None, {}
 
@@ -224,7 +258,9 @@ def _verified_items(user_inputs: dict[str, Any], key: str) -> list[dict[str, Any
     return verified
 
 
-def _computed_cards(company: dict[str, Any], user_inputs: dict[str, Any]) -> dict[str, dict[str, Any]]:
+def _computed_cards(
+    company: dict[str, Any], user_inputs: dict[str, Any], currency_contract: dict[str, Any]
+) -> dict[str, dict[str, Any]]:
     """Resolve every card once; views later keep references only."""
     cards: dict[str, dict[str, Any]] = {}
     for card_id, definition in CARD_DEFINITIONS.items():
@@ -266,7 +302,7 @@ def _computed_cards(company: dict[str, Any], user_inputs: dict[str, Any]) -> dic
         } if maintenance is not None else None,
     }
 
-    market_cap, market_meta = _market_cap(company, user_inputs)
+    market_cap, market_meta = _market_cap(company, user_inputs, currency_contract)
     net_debt = _number(((company.get("ma_metrics") or {}).get("net_debt") or {}).get("value"))
     bridge = None if market_cap is None or net_debt is None else market_cap + net_debt
     cards["ev_bridge"] = {
@@ -277,7 +313,9 @@ def _computed_cards(company: dict[str, Any], user_inputs: dict[str, Any]) -> dic
         },
         "unit": "currency",
         "trend_3y": [],
-        "reason": None if bridge is not None else "missing:market_cap_or_verified_net_debt",
+        "reason": None if bridge is not None else (
+            market_meta.get("reason") or "missing:market_cap_or_verified_net_debt"
+        ),
         "provenance": market_meta,
     }
 
@@ -700,19 +738,41 @@ def _trading_comps_model(cards: dict[str, dict[str, Any]]) -> dict[str, Any]:
     )
 
 
-def _sotp_model(cards: dict[str, dict[str, Any]], user_inputs: dict[str, Any]) -> dict[str, Any]:
+def _sotp_model(
+    cards: dict[str, dict[str, Any]],
+    user_inputs: dict[str, Any],
+    currency_contract: dict[str, Any],
+) -> dict[str, Any]:
     segments = (cards.get("segment") or {}).get("value") or []
     if not segments:
         return _model("sotp", "omitted", reason="missing:verified_segment_inputs")
     parts = []
     for segment in segments:
-        direct = _number(segment.get("enterprise_value"))
-        metric = _number(segment.get("metric_value"))
+        direct, direct_reason = convert_monetary_input_to_calculation_currency(
+            segment.get("enterprise_value"),
+            input_currency=segment.get("currency"),
+            contract=currency_contract,
+        )
+        metric, metric_reason = convert_monetary_input_to_calculation_currency(
+            segment.get("metric_value"),
+            input_currency=segment.get("currency"),
+            contract=currency_contract,
+        )
         multiple = _number(segment.get("multiple"))
         enterprise_value = direct if direct is not None else (metric * multiple if metric is not None and multiple is not None else None)
         if enterprise_value is None:
-            return _model("sotp", "omitted", reason="missing:verified_segment_value_or_metric_and_multiple")
-        parts.append({"id": segment.get("id"), "name": segment.get("name"), "enterprise_value": enterprise_value, "source": segment.get("source"), "as_of": segment.get("as_of")})
+            currency_reason = direct_reason or metric_reason
+            return _model(
+                "sotp",
+                "omitted",
+                reason=currency_reason or "missing:verified_segment_value_or_metric_and_multiple",
+            )
+        parts.append({
+            "id": segment.get("id"), "name": segment.get("name"),
+            "enterprise_value": enterprise_value, "source": segment.get("source"),
+            "as_of": segment.get("as_of"),
+            "input_currency": segment.get("currency"),
+        })
     gross_ev = sum(part["enterprise_value"] for part in parts)
     discount_raw = (user_inputs.get("sotp_assumptions") or {}).get("conglomerate_discount")
     discount = _number(discount_raw)
@@ -737,9 +797,12 @@ def _sotp_model(cards: dict[str, dict[str, Any]], user_inputs: dict[str, Any]) -
 
 
 def _computed_models(
-    company: dict[str, Any], cards: dict[str, dict[str, Any]], user_inputs: dict[str, Any]
+    company: dict[str, Any],
+    cards: dict[str, dict[str, Any]],
+    user_inputs: dict[str, Any],
+    currency_contract: dict[str, Any],
 ) -> dict[str, dict[str, Any]]:
-    market_cap, market_meta = _market_cap(company, user_inputs)
+    market_cap, market_meta = _market_cap(company, user_inputs, currency_contract)
     bridge = cards.get("ev_bridge", {}).get("value")
     period = company.get("period") or {}
     selected = period.get("selected")
@@ -763,7 +826,7 @@ def _computed_models(
         "reverse_dcf": reverse_dcf,
         "scenario_dcf_ev_bridge": scenario,
         "trading_comps": _trading_comps_model(cards),
-        "sotp": _sotp_model(cards, user_inputs),
+        "sotp": _sotp_model(cards, user_inputs, currency_contract),
     }
 
 
@@ -775,12 +838,11 @@ def build_unified_views(
     """Build the complete visible contract from a normalized company result."""
     user_inputs = user_inputs or {}
     financial = is_financial(company.get("entity_policy"))
-    calculated_cards = _computed_cards(company, user_inputs)
-    calculated_models = _computed_models(company, calculated_cards, user_inputs)
-
     source = company.get("source") or ((company.get("corp") or {}).get("source")) or (company.get("entity_policy") or {}).get("source")
-    source_currency = None
+    source_currency = company.get("currency")
     for account in (company.get("accounts") or {}).values():
+        if source_currency:
+            break
         if not isinstance(account, dict):
             continue
         unit = account.get("unit")
@@ -794,6 +856,11 @@ def build_unified_views(
         display_currency=user_inputs.get("display_currency"),
         fx_input=user_inputs.get("fx"),
     )
+    # Cards and models are calculated only after the filing currency is known.
+    # Models retain this calculation currency; only card values are a UI
+    # presentation surface that may be converted by an explicit FX contract.
+    calculated_cards = _computed_cards(company, user_inputs, currency_contract)
+    calculated_models = _computed_models(company, calculated_cards, user_inputs, currency_contract)
     for card in calculated_cards.values():
         if card.get("unit") != "currency":
             continue
@@ -803,6 +870,10 @@ def build_unified_views(
         for point in card.get("series") or []:
             if isinstance(point, dict):
                 point["value"] = convert_currency_value(point.get("value"), currency_contract)
+    for model in calculated_models.values():
+        model["calculation_currency"] = currency_contract.get("calculation_currency")
+        model["presentation_currency"] = currency_contract.get("calculation_currency")
+        model["currency_policy"] = "filing_currency_only"
 
     card_registry: dict[str, dict[str, Any]] = {}
     model_registry: dict[str, dict[str, Any]] = {}

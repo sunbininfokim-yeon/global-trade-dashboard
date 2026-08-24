@@ -51,6 +51,7 @@ def _attach_market(company: dict, ticker: str | None) -> None:
         equity=av("EQUITY"),
         ebitda=(ma.get("ebitda_proxy") or {}).get("value"),
         net_debt=(ma.get("net_debt") or {}).get("value"),
+        currency=q.get("currency"),
     )
     company["market"] = {"ok": True, "quote": q, "multiples": mm}
     if company.get("fundamental_pack"):

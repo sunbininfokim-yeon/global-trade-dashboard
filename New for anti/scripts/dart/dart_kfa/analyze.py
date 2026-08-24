@@ -218,9 +218,15 @@ def analyze_rows(
                 "match": v.get("match"),
                 "account_nm": v.get("account_nm"),
                 "reason": v.get("reason"),
+                # Keep filing currency through the adapter boundary.  The
+                # view layer must never infer it from an unlabelled market
+                # input when it builds an EV bridge or DCF model.
+                "currency": v.get("currency"),
+                "unit": v.get("unit"),
             }
             for k, v in resolved.items()
         },
+        "currency": meta.get("currency"),
         "metrics": metrics,
         "industry": industry,
         "ma_metrics": ma,

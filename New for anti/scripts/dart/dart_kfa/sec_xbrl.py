@@ -64,9 +64,11 @@ US_GAAP_TAGS: dict[str, list[str]] = {
         "PaymentsToAcquireProductiveAssets",
     ],
     "LEASE_LIABILITIES": [
+        # These concepts represent the total lease obligation.  Do not add a
+        # current-only concept as a fallback: current lease debt is not total
+        # lease debt and would corrupt net-debt-with-lease analytics.
         "OperatingLeaseLiability",
         "LeaseLiability",
-        "OperatingLeaseLiabilityCurrent",
     ],
     "DEPRECIATION": [
         "DepreciationDepletionAndAmortization",

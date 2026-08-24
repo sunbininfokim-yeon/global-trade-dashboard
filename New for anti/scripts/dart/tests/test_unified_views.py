@@ -96,7 +96,7 @@ class VisibilityContractTest(unittest.TestCase):
             load_fixture(FIXTURE),
             corp={"name": "KB금융", "corp_code": "00688996", "industry": "K64"},
         )
-        contract = build_unified_views(company, user_inputs={"market_cap": 1000.0})
+        contract = build_unified_views(company, user_inputs={"market_cap": {"value": 1000.0, "currency": "KRW"}})
         self.assertEqual(set(contract["card_registry"]), {
             "operating_income", "net_income", "total_assets", "equity", "roe", "roa",
         })
@@ -108,7 +108,7 @@ class VisibilityContractTest(unittest.TestCase):
         contract = build_unified_views(
             fully_supported_company(),
             user_inputs={
-                "market_cap": 1000.0,
+                "market_cap": {"value": 1000.0, "currency": "KRW"},
                 "verified_peer_multiples": {"items": [{"pe": 10.0}]},
                 "verified_segments": {"items": [{"enterprise_value": 500.0}]},
             },
@@ -120,11 +120,44 @@ class VisibilityContractTest(unittest.TestCase):
 
 
 class SupportedModelsTest(unittest.TestCase):
+    def test_display_fx_never_changes_model_calculation_currency(self):
+        company = fully_supported_company()
+        company["source"] = "sec_companyfacts"
+        company["currency"] = "USD"
+        for account in company["accounts"].values():
+            account["currency"] = "USD"
+        contract = build_unified_views(
+            company,
+            user_inputs={
+                "display_currency": "KRW",
+                "fx": {"rate": 1350, "source": "official_fx_snapshot", "as_of": "2026-08-20"},
+                "market_cap": {"value": 1000.0, "currency": "USD", "source": "test_quote", "as_of": "2026-08-20"},
+                "delever_assumptions": {"fcf_retention": 0.75, "horizon_years": 2},
+            },
+        )
+        self.assertEqual(contract["currency"]["calculation_currency"], "USD")
+        self.assertEqual(contract["card_registry"]["fcf"]["value"], 67500.0)
+        self.assertEqual(contract["card_registry"]["ev_bridge"]["value"]["enterprise_value"], 1620000.0)
+        model = contract["model_registry"]["delever_path"]
+        self.assertEqual(model["calculation_currency"], "USD")
+        self.assertEqual(model["components"]["path"][0]["net_debt"], 200.0)
+
+    def test_unlabelled_market_cap_is_omitted_not_mixed_with_filing_amounts(self):
+        contract = build_unified_views(
+            fully_supported_company(),
+            user_inputs={"market_cap": 1000.0},
+        )
+        model = contract["model_registry"]["fcf_yield_snapshot"]
+        self.assertEqual(model["status"], "needs_input")
+        self.assertEqual(model["reason"], "input:market_cap_required_for_fcf_yield")
+        omission = next(item for item in contract["audit"]["card_omissions"] if item["id"] == "ev_bridge")
+        self.assertEqual(omission["reason"], "missing:monetary_input_currency")
+
     def test_liquidity_delever_and_fcf_yield_are_computed(self):
         contract = build_unified_views(
             fully_supported_company(),
             user_inputs={
-                "market_cap": 1000.0,
+                "market_cap": {"value": 1000.0, "currency": "KRW"},
                 "delever_assumptions": {"fcf_retention": 0.75, "horizon_years": 5},
             },
         )
@@ -149,7 +182,7 @@ class SupportedModelsTest(unittest.TestCase):
 
     def test_reverse_dcf_and_scenario_dcf_ev_bridge_compute_with_explicit_inputs(self):
         inputs = {
-            "market_cap": {"value": 1000.0, "source": "test_quote", "as_of": "2026-08-20"},
+            "market_cap": {"value": 1000.0, "currency": "KRW", "source": "test_quote", "as_of": "2026-08-20"},
             "valuation_assumptions": {
                 "projection_years": 5,
                 "revenue_cagr": 0.04,
@@ -183,8 +216,8 @@ class SupportedModelsTest(unittest.TestCase):
             "verified_segments": {
                 "status": "verified",
                 "items": [
-                    {"id": "a", "name": "A", "source": "filing", "as_of": "2025-12-31", "enterprise_value": 600.0},
-                    {"id": "b", "name": "B", "source": "filing", "as_of": "2025-12-31", "metric_value": 50.0, "multiple": 8.0},
+                    {"id": "a", "name": "A", "source": "filing", "as_of": "2025-12-31", "enterprise_value": 600.0, "currency": "KRW"},
+                    {"id": "b", "name": "B", "source": "filing", "as_of": "2025-12-31", "metric_value": 50.0, "multiple": 8.0, "currency": "KRW"},
                 ],
             },
         }

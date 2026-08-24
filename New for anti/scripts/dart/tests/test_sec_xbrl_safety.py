@@ -9,6 +9,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
+from dart_kfa.canonical_facts import adapt_sec_companyfacts, default_sec_account_specs  # noqa: E402
 from dart_kfa.sec_xbrl import facts_to_fnltt_payload, shares_outstanding_fact  # noqa: E402
 
 
@@ -29,6 +30,48 @@ class SecAnnualSelectionTest(unittest.TestCase):
         payload = facts_to_fnltt_payload(facts, ticker="AAPL", asof_fy=2025)
         revenue = next(row for row in payload["list"] if row["account_nm"] == "Revenues")
         self.assertEqual(revenue["thstrm_amount"], "120")
+
+
+class SecLeaseSafetyTest(unittest.TestCase):
+    def test_current_only_lease_fact_is_never_emitted_as_total_lease_debt(self):
+        facts = {
+            "entityName": "Lease Co",
+            "facts": {"us-gaap": {
+                "Assets": {"units": {"USD": [
+                    {"end": "2025-12-31", "val": 500, "form": "10-K", "fp": "FY", "filed": "2026-02-01"},
+                ]}},
+                "OperatingLeaseLiabilityCurrent": {"units": {"USD": [
+                    {"end": "2025-12-31", "val": 30, "form": "10-K", "fp": "FY", "filed": "2026-02-01"},
+                ]}},
+            }},
+        }
+        legacy = facts_to_fnltt_payload(facts, ticker="LEASE", asof_fy=2025)
+        self.assertFalse(any(row["account_id"] == "us-gaap_OperatingLeaseLiabilityCurrent" for row in legacy["list"]))
+
+        canonical = adapt_sec_companyfacts(
+            facts,
+            fiscal_year_end="2025-12-31",
+            account_specs={"LEASE_LIABILITIES": default_sec_account_specs()["LEASE_LIABILITIES"]},
+        )
+        lease = canonical["series"]["LEASE_LIABILITIES"]["annual"]
+        self.assertIsNone(lease["value"])
+        self.assertTrue(lease["reason"].startswith("missing:sec_exact_period_fact"))
+
+    def test_custom_lease_spec_cannot_restore_current_only_fallback(self):
+        facts = {"facts": {"us-gaap": {
+            "OperatingLeaseLiabilityCurrent": {"units": {"USD": [
+                {"end": "2025-12-31", "val": 30, "form": "10-K", "fp": "FY", "filed": "2026-02-01"},
+            ]}},
+        }}}
+        canonical = adapt_sec_companyfacts(
+            facts,
+            fiscal_year_end="2025-12-31",
+            account_specs={"LEASE_LIABILITIES": {
+                "nature": "balance", "statement": "BS",
+                "sec_concepts": ["OperatingLeaseLiabilityCurrent"],
+            }},
+        )
+        self.assertIsNone(canonical["series"]["LEASE_LIABILITIES"]["annual"]["value"])
 
 
 class SecShareSafetyTest(unittest.TestCase):

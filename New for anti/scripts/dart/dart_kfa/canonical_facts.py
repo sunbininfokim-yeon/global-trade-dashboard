@@ -741,6 +741,7 @@ def default_dart_account_specs(
 def _select_sec_point(
     facts: Mapping[str, Any],
     *,
+    account_id: str,
     spec: Mapping[str, Any],
     bucket: str,
     expected_start: str,
@@ -753,6 +754,11 @@ def _select_sec_point(
     gaap = ((facts.get("facts") or {}).get("us-gaap") or {})
     descriptor = SEC_REPORTS[bucket]
     for concept_name in concepts:
+        # A standard SEC current lease-liability concept is a maturity bucket,
+        # not a total liability.  This defensive check protects callers that
+        # bring their own account specs as well as the default tag catalogue.
+        if account_id == "LEASE_LIABILITIES" and concept_name.lower().endswith("current"):
+            continue
         concept = gaap.get(concept_name)
         if not isinstance(concept, Mapping):
             continue
@@ -851,6 +857,7 @@ def adapt_sec_companyfacts(
             period = layout["reports"][bucket]
             source_points[bucket] = _select_sec_point(
                 facts,
+                account_id=account_id,
                 spec=spec,
                 bucket=bucket,
                 expected_start=period["source_start"],
