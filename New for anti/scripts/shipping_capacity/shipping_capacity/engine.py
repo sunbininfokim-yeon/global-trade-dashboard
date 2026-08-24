@@ -99,6 +99,7 @@ def route_operational_profile(route: dict[str, Any]) -> dict[str, Any]:
             extra_nm = 0.0
         extra_days_one_way = extra_nm / speed / 24.0
         extra_cycle_days = 2.0 * extra_days_one_way
+        distance_evidence = exposure.get("distance_evidence")
         alternatives.append(
             {
                 "chokepoint_id": exposure["id"],
@@ -135,7 +136,12 @@ def route_operational_profile(route: dict[str, Any]) -> dict[str, Any]:
                     exposure.get("exposure_share", 1.0),
                     "exposure_share",
                 ),
-                "input_status": "route_config_distance_assumption",
+                "input_status": (
+                    distance_evidence.get("status")
+                    if isinstance(distance_evidence, dict)
+                    else "route_config_distance_assumption"
+                ),
+                "distance_evidence": distance_evidence,
                 "warning": (
                     "Distance/speed model assumption; not an observed schedule, "
                     "port-call itinerary or carrier quotation."
