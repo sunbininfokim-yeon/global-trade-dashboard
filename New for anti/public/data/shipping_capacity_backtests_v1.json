@@ -1,8 +1,8 @@
 {
   "schema_version": "shipping-capacity-backtests-v1",
   "artifact_type": "historical_backtests",
-  "bundle_id": "a0f3adaa6f3b923dae96",
-  "generated_at": "2026-08-24T14:00:34.071577+00:00",
+  "bundle_id": "2103fee58deb1f19be97",
+  "generated_at": "2026-08-24T14:20:22.030560+00:00",
   "event_observations": [
     {
       "event_id": "hormuz_2026_conflict",
@@ -78,6 +78,42 @@
       "observed_trade_volume_shortfall_fraction": 0.112621,
       "preset_scenario_blockage_fraction": 1.0,
       "absolute_gap_percentage_points": 88.7379,
+      "scope": "magnitude comparison only; observed trade volume and scenario blockage are different concepts",
+      "comparison_status": "not_empirical_calibration",
+      "not_validated_fields": [
+        "physical_closure_fraction",
+        "route_flow_disruption_fraction",
+        "insurance_unavailable_share",
+        "onboard_waiting_share",
+        "trapped_days"
+      ]
+    },
+    {
+      "scenario_id": "bab_el_mandeb_50pct_28d",
+      "chokepoint_id": "bab_el_mandeb",
+      "metric_key": "all",
+      "observation_latest_date": "2026-08-16",
+      "observed_trade_volume_shortfall_fraction": 0.146532,
+      "preset_scenario_blockage_fraction": 0.5,
+      "absolute_gap_percentage_points": 35.3468,
+      "scope": "magnitude comparison only; observed trade volume and scenario blockage are different concepts",
+      "comparison_status": "not_empirical_calibration",
+      "not_validated_fields": [
+        "physical_closure_fraction",
+        "route_flow_disruption_fraction",
+        "insurance_unavailable_share",
+        "onboard_waiting_share",
+        "trapped_days"
+      ]
+    },
+    {
+      "scenario_id": "bab_el_mandeb_100pct_28d",
+      "chokepoint_id": "bab_el_mandeb",
+      "metric_key": "all",
+      "observation_latest_date": "2026-08-16",
+      "observed_trade_volume_shortfall_fraction": 0.146532,
+      "preset_scenario_blockage_fraction": 1.0,
+      "absolute_gap_percentage_points": 85.3468,
       "scope": "magnitude comparison only; observed trade volume and scenario blockage are different concepts",
       "comparison_status": "not_empirical_calibration",
       "not_validated_fields": [
@@ -1334,6 +1370,46 @@
         ],
         "scenario_closure_fraction": 0.5,
         "scenario_minus_historical_mean_percentage_points": 20.038409,
+        "scenario_within_historical_mean_ci": false,
+        "comparison_status": "more_severe_than_historical_mean_ci",
+        "warning": "Severity comparison only. Different duration/event type and unobserved behavior shares prevent direct replay equivalence."
+      },
+      {
+        "event_id": "red_sea_initial_rerouting_2023_24",
+        "historical_event_type": "commercial_war_risk",
+        "scenario_id": "bab_el_mandeb_50pct_28d",
+        "scenario_event_type": "commercial_security_restriction",
+        "event_type_matches": false,
+        "historical_window_days": 77,
+        "scenario_duration_days": 28,
+        "historical_mean_shortfall_fraction": 0.507535,
+        "historical_peak_7d_shortfall_fraction": 0.667991,
+        "historical_shortfall_ci_95": [
+          0.448304,
+          0.586038
+        ],
+        "scenario_closure_fraction": 0.5,
+        "scenario_minus_historical_mean_percentage_points": -0.753454,
+        "scenario_within_historical_mean_ci": true,
+        "comparison_status": "within_historical_mean_ci",
+        "warning": "Severity comparison only. Different duration/event type and unobserved behavior shares prevent direct replay equivalence."
+      },
+      {
+        "event_id": "red_sea_initial_rerouting_2023_24",
+        "historical_event_type": "commercial_war_risk",
+        "scenario_id": "bab_el_mandeb_100pct_28d",
+        "scenario_event_type": "military_physical_closure",
+        "event_type_matches": false,
+        "historical_window_days": 77,
+        "scenario_duration_days": 28,
+        "historical_mean_shortfall_fraction": 0.507535,
+        "historical_peak_7d_shortfall_fraction": 0.667991,
+        "historical_shortfall_ci_95": [
+          0.448304,
+          0.586038
+        ],
+        "scenario_closure_fraction": 1.0,
+        "scenario_minus_historical_mean_percentage_points": 49.246546,
         "scenario_within_historical_mean_ci": false,
         "comparison_status": "more_severe_than_historical_mean_ci",
         "warning": "Severity comparison only. Different duration/event type and unobserved behavior shares prevent direct replay equivalence."
