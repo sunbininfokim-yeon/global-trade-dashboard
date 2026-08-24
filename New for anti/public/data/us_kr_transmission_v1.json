@@ -1,10 +1,10 @@
 {
   "schema_version": "us-kr-transmission-v1",
-  "as_of": "2026-08-21",
+  "as_of": "2026-08-24",
   "model_version": "uskr-scenario-2026-08",
   "headline": "high:downside",
   "headline_ko": "높음 · 하방",
-  "why_ko": "하방 heat는 공개 옵션의 풋 우위 조건 또는 큰 음의 프리마켓 갭 등 실제로 충족된 규칙을 한국 반도체·대형주 링크(Tier A/B)에 가중한 값이다. 근거: TSM P/C거래량=1.8714 P/C OI=1.1151 프리마켓갭=0.011058 공매증감%=-0.474 [풋/콜 거래량비 ≥1.1 그리고 (당일 수익률 ≤-2% 또는 풋/콜 OI ≥1.0)] · SOXL P/C거래량=1.6139 P/C OI=2.2084 프리마켓갭=0.026348 공매증감%=68.566 [풋/콜 거래량비 ≥1.1 그리고 (당일 수익률 ≤-2% 또는 풋/콜 OI ≥1.0)] · SPY P/C거래량=1.3878 P/C OI=2.5382 프리마켓갭=0.003263 공매증감%=-2.54 [풋/콜 거래량비 ≥1.1 그리고 (당일 수익률 ≤-2% 또는 풋/콜 OI ≥1.0)] · QQQ P/C거래량=1.3173 P/C OI=1.2359 프리마켓갭=0.004993 공매증감%=9.186 [풋/콜 거래량비 ≥1.1 그리고 (당일 수익률 ≤-2% 또는 풋/콜 OI ≥1.0)] · 전이: SOXL→000660(heat 1.4062, etf_beta), SOXL→005930(heat 1.125, etf_beta), TSM→005930(heat 0.9375, peer_foundry_logic), TSM→000660(heat 0.87, discovered_corr), QQQ→005930(heat 0.8597, discovered_corr)",
+  "why_ko": "하방 heat는 공개 옵션의 풋 우위 조건 또는 큰 음의 프리마켓 갭 등 실제로 충족된 규칙을 한국 반도체·대형주 링크(Tier A/B)에 가중한 값이다. 근거: SOXL P/C거래량=1.8966 P/C OI=2.0965 프리마켓갭=-0.043367 공매증감%=68.566 [풋/콜 거래량비 ≥1.1 그리고 (당일 수익률 ≤-2% 또는 풋/콜 OI ≥1.0) · 프리마켓 갭 ≤-1.5%] · MU P/C거래량=1.217 P/C OI=1.1234 프리마켓갭=-0.030245 공매증감%=-17.45 [풋/콜 거래량비 ≥1.1 그리고 (당일 수익률 ≤-2% 또는 풋/콜 OI ≥1.0) · 프리마켓 갭 ≤-1.5%] · AMD P/C거래량=1.1953 P/C OI=1.1767 프리마켓갭=-0.015024 공매증감%=-5.069 [풋/콜 거래량비 ≥1.1 그리고 (당일 수익률 ≤-2% 또는 풋/콜 OI ≥1.0) · 프리마켓 갭 ≤-1.5%] · SMH P/C거래량=4.4846 P/C OI=1.7785 프리마켓갭=-0.010242 공매증감%=-31.45 [풋/콜 거래량비 ≥1.1 그리고 (당일 수익률 ≤-2% 또는 풋/콜 OI ≥1.0)] · 전이: MU→000660(heat 2.7189, peer_memory), SOXL→000660(heat 2.5312, etf_beta), SOXL→005930(heat 2.025, etf_beta), MU→005930(heat 1.6616, peer_memory), AMD→005930(heat 1.4281, discovered_corr)",
   "meaning_ko": {
     "headline": "오늘 US 레짐×KR 링크 heat의 최강 채널 요약. 투자 권유 아님.",
     "channels": "채널별 heat 합. 카드 클릭 시 drivers·US 옵션/숏 실측값 표를 열 것.",
@@ -14,36 +14,80 @@
   },
   "evidence_us": [
     {
-      "symbol": "TSM",
-      "regimes": [
-        "downside_put_bid"
-      ],
-      "stress_level": "watch",
-      "put_call_volume": 1.8714,
-      "put_call_oi": 1.1151,
-      "options_total_volume": 87089.0,
-      "short_chg_pct": -0.474,
-      "day_return": -0.001442,
-      "premarket_gap": 0.011058,
-      "premarket_gap_quality": "partial",
-      "downside_score": 1.875,
-      "rules_ko": [
-        "풋/콜 거래량비 ≥1.1 그리고 (당일 수익률 ≤-2% 또는 풋/콜 OI ≥1.0)"
-      ],
-      "rule_ko": "풋/콜 거래량비 ≥1.1 그리고 (당일 수익률 ≤-2% 또는 풋/콜 OI ≥1.0)"
-    },
-    {
       "symbol": "SOXL",
       "regimes": [
+        "downside_put_bid",
+        "gap_down_stress"
+      ],
+      "stress_level": "high",
+      "put_call_volume": 1.8966,
+      "put_call_oi": 2.0965,
+      "options_total_volume": 188873.0,
+      "short_chg_pct": 68.566,
+      "day_return": 0.0,
+      "premarket_gap": -0.043367,
+      "premarket_gap_quality": "partial",
+      "downside_score": 3.375,
+      "rules_ko": [
+        "풋/콜 거래량비 ≥1.1 그리고 (당일 수익률 ≤-2% 또는 풋/콜 OI ≥1.0)",
+        "프리마켓 갭 ≤-1.5%"
+      ],
+      "rule_ko": "풋/콜 거래량비 ≥1.1 그리고 (당일 수익률 ≤-2% 또는 풋/콜 OI ≥1.0) · 프리마켓 갭 ≤-1.5%"
+    },
+    {
+      "symbol": "MU",
+      "regimes": [
+        "downside_put_bid",
+        "gap_down_stress"
+      ],
+      "stress_level": "high",
+      "put_call_volume": 1.217,
+      "put_call_oi": 1.1234,
+      "options_total_volume": 384058.0,
+      "short_chg_pct": -17.45,
+      "day_return": -0.003703,
+      "premarket_gap": -0.030245,
+      "premarket_gap_quality": "partial",
+      "downside_score": 3.021,
+      "rules_ko": [
+        "풋/콜 거래량비 ≥1.1 그리고 (당일 수익률 ≤-2% 또는 풋/콜 OI ≥1.0)",
+        "프리마켓 갭 ≤-1.5%"
+      ],
+      "rule_ko": "풋/콜 거래량비 ≥1.1 그리고 (당일 수익률 ≤-2% 또는 풋/콜 OI ≥1.0) · 프리마켓 갭 ≤-1.5%"
+    },
+    {
+      "symbol": "AMD",
+      "regimes": [
+        "downside_put_bid",
+        "gap_down_stress"
+      ],
+      "stress_level": "high",
+      "put_call_volume": 1.1953,
+      "put_call_oi": 1.1767,
+      "options_total_volume": 235000.0,
+      "short_chg_pct": -5.069,
+      "day_return": -0.00169,
+      "premarket_gap": -0.015024,
+      "premarket_gap_quality": "partial",
+      "downside_score": 2.994,
+      "rules_ko": [
+        "풋/콜 거래량비 ≥1.1 그리고 (당일 수익률 ≤-2% 또는 풋/콜 OI ≥1.0)",
+        "프리마켓 갭 ≤-1.5%"
+      ],
+      "rule_ko": "풋/콜 거래량비 ≥1.1 그리고 (당일 수익률 ≤-2% 또는 풋/콜 OI ≥1.0) · 프리마켓 갭 ≤-1.5%"
+    },
+    {
+      "symbol": "SMH",
+      "regimes": [
         "downside_put_bid"
       ],
       "stress_level": "watch",
-      "put_call_volume": 1.6139,
-      "put_call_oi": 2.2084,
-      "options_total_volume": 216586.0,
-      "short_chg_pct": 68.566,
-      "day_return": 0.0,
-      "premarket_gap": 0.026348,
+      "put_call_volume": 4.4846,
+      "put_call_oi": 1.7785,
+      "options_total_volume": 251173.0,
+      "short_chg_pct": -31.45,
+      "day_return": -0.001463,
+      "premarket_gap": -0.010242,
       "premarket_gap_quality": "partial",
       "downside_score": 1.875,
       "rules_ko": [
@@ -57,14 +101,14 @@
         "downside_put_bid"
       ],
       "stress_level": "watch",
-      "put_call_volume": 1.3878,
-      "put_call_oi": 2.5382,
-      "options_total_volume": 10498313.0,
+      "put_call_volume": 1.3596,
+      "put_call_oi": 3.0469,
+      "options_total_volume": 2612432.0,
       "short_chg_pct": -2.54,
-      "day_return": 0.0,
-      "premarket_gap": 0.003263,
+      "day_return": -0.002168,
+      "premarket_gap": -0.001463,
       "premarket_gap_quality": "partial",
-      "downside_score": 1.735,
+      "downside_score": 1.7,
       "rules_ko": [
         "풋/콜 거래량비 ≥1.1 그리고 (당일 수익률 ≤-2% 또는 풋/콜 OI ≥1.0)"
       ],
@@ -76,14 +120,52 @@
         "downside_put_bid"
       ],
       "stress_level": "watch",
-      "put_call_volume": 1.3173,
-      "put_call_oi": 1.2359,
-      "options_total_volume": 7566868.0,
+      "put_call_volume": 1.2361,
+      "put_call_oi": 1.2155,
+      "options_total_volume": 1761271.0,
       "short_chg_pct": 9.186,
-      "day_return": -0.00038,
-      "premarket_gap": 0.004993,
+      "day_return": -0.006938,
+      "premarket_gap": -0.005424,
       "premarket_gap_quality": "partial",
-      "downside_score": 1.647,
+      "downside_score": 1.545,
+      "rules_ko": [
+        "풋/콜 거래량비 ≥1.1 그리고 (당일 수익률 ≤-2% 또는 풋/콜 OI ≥1.0)"
+      ],
+      "rule_ko": "풋/콜 거래량비 ≥1.1 그리고 (당일 수익률 ≤-2% 또는 풋/콜 OI ≥1.0)"
+    },
+    {
+      "symbol": "KORU",
+      "regimes": [
+        "gap_down_stress"
+      ],
+      "stress_level": "watch",
+      "put_call_volume": 0.9344,
+      "put_call_oi": 0.9893,
+      "options_total_volume": 24640.0,
+      "short_chg_pct": 102.781,
+      "day_return": 0.0,
+      "premarket_gap": -0.01525,
+      "premarket_gap_quality": "partial",
+      "downside_score": 1.5,
+      "rules_ko": [
+        "프리마켓 갭 ≤-1.5%"
+      ],
+      "rule_ko": "프리마켓 갭 ≤-1.5%"
+    },
+    {
+      "symbol": "TSM",
+      "regimes": [
+        "downside_put_bid"
+      ],
+      "stress_level": "watch",
+      "put_call_volume": 1.1073,
+      "put_call_oi": 1.1302,
+      "options_total_volume": 72166.0,
+      "short_chg_pct": -0.474,
+      "day_return": 0.001432,
+      "premarket_gap": -0.01012,
+      "premarket_gap_quality": "partial",
+      "downside_score": 1.384,
       "rules_ko": [
         "풋/콜 거래량비 ≥1.1 그리고 (당일 수익률 ≤-2% 또는 풋/콜 OI ≥1.0)"
       ],
@@ -93,16 +175,82 @@
   "channels": {
     "downside": {
       "level": "high",
-      "heat": 7.7464,
+      "heat": 19.6961,
       "kr_tickers": [
         "000660",
         "005930"
       ],
       "drivers": [
         {
+          "us": "MU",
+          "kr": "000660",
+          "heat": 2.7189,
+          "edge_type": "peer_memory",
+          "tier": "A",
+          "regimes": [
+            "downside_put_bid",
+            "gap_down_stress"
+          ]
+        },
+        {
           "us": "SOXL",
           "kr": "000660",
-          "heat": 1.4062,
+          "heat": 2.5312,
+          "edge_type": "etf_beta",
+          "tier": "A",
+          "regimes": [
+            "downside_put_bid",
+            "gap_down_stress"
+          ]
+        },
+        {
+          "us": "SOXL",
+          "kr": "005930",
+          "heat": 2.025,
+          "edge_type": "etf_beta",
+          "tier": "A",
+          "regimes": [
+            "downside_put_bid",
+            "gap_down_stress"
+          ]
+        },
+        {
+          "us": "MU",
+          "kr": "005930",
+          "heat": 1.6616,
+          "edge_type": "peer_memory",
+          "tier": "A",
+          "regimes": [
+            "downside_put_bid",
+            "gap_down_stress"
+          ]
+        },
+        {
+          "us": "AMD",
+          "kr": "005930",
+          "heat": 1.4281,
+          "edge_type": "discovered_corr",
+          "tier": "B",
+          "regimes": [
+            "downside_put_bid",
+            "gap_down_stress"
+          ]
+        },
+        {
+          "us": "AMD",
+          "kr": "000660",
+          "heat": 1.3473,
+          "edge_type": "demand_ai_gpu",
+          "tier": "A",
+          "regimes": [
+            "downside_put_bid",
+            "gap_down_stress"
+          ]
+        },
+        {
+          "us": "SMH",
+          "kr": "000660",
+          "heat": 1.0312,
           "edge_type": "etf_beta",
           "tier": "A",
           "regimes": [
@@ -110,49 +258,9 @@
           ]
         },
         {
-          "us": "SOXL",
+          "us": "SMH",
           "kr": "005930",
-          "heat": 1.125,
-          "edge_type": "etf_beta",
-          "tier": "A",
-          "regimes": [
-            "downside_put_bid"
-          ]
-        },
-        {
-          "us": "TSM",
-          "kr": "005930",
-          "heat": 0.9375,
-          "edge_type": "peer_foundry_logic",
-          "tier": "A",
-          "regimes": [
-            "downside_put_bid"
-          ]
-        },
-        {
-          "us": "TSM",
-          "kr": "000660",
-          "heat": 0.87,
-          "edge_type": "discovered_corr",
-          "tier": "B",
-          "regimes": [
-            "downside_put_bid"
-          ]
-        },
-        {
-          "us": "QQQ",
-          "kr": "005930",
-          "heat": 0.8597,
-          "edge_type": "discovered_corr",
-          "tier": "B",
-          "regimes": [
-            "downside_put_bid"
-          ]
-        },
-        {
-          "us": "QQQ",
-          "kr": "000660",
-          "heat": 0.8597,
+          "heat": 0.9788,
           "edge_type": "discovered_corr",
           "tier": "B",
           "regimes": [
@@ -162,7 +270,7 @@
         {
           "us": "SPY",
           "kr": "005930",
-          "heat": 0.8467,
+          "heat": 0.8296,
           "edge_type": "discovered_corr",
           "tier": "B",
           "regimes": [
@@ -172,7 +280,27 @@
         {
           "us": "SPY",
           "kr": "000660",
-          "heat": 0.8415,
+          "heat": 0.8262,
+          "edge_type": "discovered_corr",
+          "tier": "B",
+          "regimes": [
+            "downside_put_bid"
+          ]
+        },
+        {
+          "us": "QQQ",
+          "kr": "005930",
+          "heat": 0.8065,
+          "edge_type": "discovered_corr",
+          "tier": "B",
+          "regimes": [
+            "downside_put_bid"
+          ]
+        },
+        {
+          "us": "QQQ",
+          "kr": "000660",
+          "heat": 0.8065,
           "edge_type": "discovered_corr",
           "tier": "B",
           "regimes": [
@@ -208,6 +336,23 @@
   },
   "edges_active": [
     {
+      "edge_id": "mu_hynix_peer",
+      "us": "MU",
+      "kr": "000660",
+      "edge_type": "peer_memory",
+      "tier": "A",
+      "quality": "structural",
+      "channel": "downside",
+      "weight": 0.9,
+      "us_score": 3.021,
+      "heat": 2.7189,
+      "us_regimes": [
+        "downside_put_bid",
+        "gap_down_stress"
+      ],
+      "us_stress_level": "high"
+    },
+    {
       "edge_id": "soxl_semis_beta",
       "us": "SOXL",
       "kr": "000660",
@@ -216,12 +361,13 @@
       "quality": "structural",
       "channel": "downside",
       "weight": 0.75,
-      "us_score": 1.875,
-      "heat": 1.4062,
+      "us_score": 3.375,
+      "heat": 2.5312,
       "us_regimes": [
-        "downside_put_bid"
+        "downside_put_bid",
+        "gap_down_stress"
       ],
-      "us_stress_level": "watch"
+      "us_stress_level": "high"
     },
     {
       "edge_id": "soxl_samsung_beta",
@@ -232,72 +378,92 @@
       "quality": "structural",
       "channel": "downside",
       "weight": 0.6,
-      "us_score": 1.875,
-      "heat": 1.125,
+      "us_score": 3.375,
+      "heat": 2.025,
       "us_regimes": [
-        "downside_put_bid"
+        "downside_put_bid",
+        "gap_down_stress"
       ],
-      "us_stress_level": "watch"
+      "us_stress_level": "high"
     },
     {
-      "edge_id": "tsm_samsung_peer",
-      "us": "TSM",
+      "edge_id": "mu_samsung_peer",
+      "us": "MU",
       "kr": "005930",
-      "edge_type": "peer_foundry_logic",
+      "edge_type": "peer_memory",
       "tier": "A",
       "quality": "structural",
       "channel": "downside",
-      "weight": 0.5,
-      "us_score": 1.875,
-      "heat": 0.9375,
+      "weight": 0.55,
+      "us_score": 3.021,
+      "heat": 1.6616,
       "us_regimes": [
-        "downside_put_bid"
+        "downside_put_bid",
+        "gap_down_stress"
       ],
-      "us_stress_level": "watch"
+      "us_stress_level": "high"
     },
     {
-      "edge_id": "disc_tsm_000660",
-      "us": "TSM",
-      "kr": "000660",
+      "edge_id": "disc_amd_005930",
+      "us": "AMD",
+      "kr": "005930",
       "edge_type": "discovered_corr",
       "tier": "B",
       "quality": "estimated",
       "channel": "downside",
-      "weight": 0.464,
+      "weight": 0.477,
+      "us_score": 2.994,
+      "heat": 1.4281,
+      "us_regimes": [
+        "downside_put_bid",
+        "gap_down_stress"
+      ],
+      "us_stress_level": "high"
+    },
+    {
+      "edge_id": "amd_hynix_demand",
+      "us": "AMD",
+      "kr": "000660",
+      "edge_type": "demand_ai_gpu",
+      "tier": "A",
+      "quality": "structural",
+      "channel": "downside",
+      "weight": 0.45,
+      "us_score": 2.994,
+      "heat": 1.3473,
+      "us_regimes": [
+        "downside_put_bid",
+        "gap_down_stress"
+      ],
+      "us_stress_level": "high"
+    },
+    {
+      "edge_id": "smh_hynix_beta",
+      "us": "SMH",
+      "kr": "000660",
+      "edge_type": "etf_beta",
+      "tier": "A",
+      "quality": "structural",
+      "channel": "downside",
+      "weight": 0.55,
       "us_score": 1.875,
-      "heat": 0.87,
+      "heat": 1.0312,
       "us_regimes": [
         "downside_put_bid"
       ],
       "us_stress_level": "watch"
     },
     {
-      "edge_id": "disc_qqq_005930",
-      "us": "QQQ",
+      "edge_id": "disc_smh_005930",
+      "us": "SMH",
       "kr": "005930",
       "edge_type": "discovered_corr",
       "tier": "B",
       "quality": "estimated",
       "channel": "downside",
       "weight": 0.522,
-      "us_score": 1.647,
-      "heat": 0.8597,
-      "us_regimes": [
-        "downside_put_bid"
-      ],
-      "us_stress_level": "watch"
-    },
-    {
-      "edge_id": "disc_qqq_000660",
-      "us": "QQQ",
-      "kr": "000660",
-      "edge_type": "discovered_corr",
-      "tier": "B",
-      "quality": "estimated",
-      "channel": "downside",
-      "weight": 0.522,
-      "us_score": 1.647,
-      "heat": 0.8597,
+      "us_score": 1.875,
+      "heat": 0.9788,
       "us_regimes": [
         "downside_put_bid"
       ],
@@ -312,8 +478,8 @@
       "quality": "estimated",
       "channel": "downside",
       "weight": 0.488,
-      "us_score": 1.735,
-      "heat": 0.8467,
+      "us_score": 1.7,
+      "heat": 0.8296,
       "us_regimes": [
         "downside_put_bid"
       ],
@@ -327,16 +493,112 @@
       "tier": "B",
       "quality": "estimated",
       "channel": "downside",
-      "weight": 0.485,
-      "us_score": 1.735,
-      "heat": 0.8415,
+      "weight": 0.486,
+      "us_score": 1.7,
+      "heat": 0.8262,
       "us_regimes": [
         "downside_put_bid"
       ],
       "us_stress_level": "watch"
+    },
+    {
+      "edge_id": "disc_qqq_005930",
+      "us": "QQQ",
+      "kr": "005930",
+      "edge_type": "discovered_corr",
+      "tier": "B",
+      "quality": "estimated",
+      "channel": "downside",
+      "weight": 0.522,
+      "us_score": 1.545,
+      "heat": 0.8065,
+      "us_regimes": [
+        "downside_put_bid"
+      ],
+      "us_stress_level": "watch"
+    },
+    {
+      "edge_id": "disc_qqq_000660",
+      "us": "QQQ",
+      "kr": "000660",
+      "edge_type": "discovered_corr",
+      "tier": "B",
+      "quality": "estimated",
+      "channel": "downside",
+      "weight": 0.522,
+      "us_score": 1.545,
+      "heat": 0.8065,
+      "us_regimes": [
+        "downside_put_bid"
+      ],
+      "us_stress_level": "watch"
+    },
+    {
+      "edge_id": "disc_koru_005930",
+      "us": "KORU",
+      "kr": "005930",
+      "edge_type": "discovered_corr",
+      "tier": "B",
+      "quality": "estimated",
+      "channel": "downside",
+      "weight": 0.514,
+      "us_score": 1.5,
+      "heat": 0.771,
+      "us_regimes": [
+        "gap_down_stress"
+      ],
+      "us_stress_level": "watch"
+    },
+    {
+      "edge_id": "tsm_samsung_peer",
+      "us": "TSM",
+      "kr": "005930",
+      "edge_type": "peer_foundry_logic",
+      "tier": "A",
+      "quality": "structural",
+      "channel": "downside",
+      "weight": 0.5,
+      "us_score": 1.384,
+      "heat": 0.692,
+      "us_regimes": [
+        "downside_put_bid"
+      ],
+      "us_stress_level": "watch"
+    },
+    {
+      "edge_id": "disc_tsm_000660",
+      "us": "TSM",
+      "kr": "000660",
+      "edge_type": "discovered_corr",
+      "tier": "B",
+      "quality": "estimated",
+      "channel": "downside",
+      "weight": 0.464,
+      "us_score": 1.384,
+      "heat": 0.6422,
+      "us_regimes": [
+        "downside_put_bid"
+      ],
+      "us_stress_level": "watch"
+    },
+    {
+      "edge_id": "koru_korea_beta",
+      "us": "KORU",
+      "kr": "000660",
+      "edge_type": "korea_country",
+      "tier": "A",
+      "quality": "structural",
+      "channel": "downside",
+      "weight": 0.4,
+      "us_score": 1.5,
+      "heat": 0.6,
+      "us_regimes": [
+        "gap_down_stress"
+      ],
+      "us_stress_level": "watch"
     }
   ],
-  "tier_b_edges_fired": 5,
+  "tier_b_edges_fired": 8,
   "kospi_open30m_prior": {
     "kr": "000660",
     "proxy": "US close ±2% buckets (options history not used)",
@@ -359,18 +621,18 @@
           "median": 0.025475,
           "p10": -0.009818,
           "p90": 0.079817,
-          "frac_neg": 0.23,
-          "frac_pos": 0.77
+          "frac_neg": 0.24,
+          "frac_pos": 0.76
         },
         "overnight_baseline": {
           "label": "all",
           "n": 247,
-          "mean": 0.007854,
+          "mean": 0.007879,
           "median": 0.002717,
           "p10": -0.041235,
           "p90": 0.062728,
-          "frac_neg": 0.4656,
-          "frac_pos": 0.5344
+          "frac_neg": 0.4737,
+          "frac_pos": 0.5263
         },
         "open30m_us_down": {
           "label": "us_down",
@@ -384,13 +646,13 @@
         },
         "open30m_baseline": {
           "label": "all",
-          "n": 61,
-          "mean": 0.00887,
-          "median": 0.002441,
-          "p10": -0.078125,
-          "p90": 0.080122,
-          "frac_neg": 0.4754,
-          "frac_pos": 0.5246
+          "n": 62,
+          "mean": 0.009743,
+          "median": 0.005637,
+          "p10": -0.077357,
+          "p90": 0.079783,
+          "frac_neg": 0.4516,
+          "frac_pos": 0.5484
         }
       },
       "SOXL": {
@@ -406,43 +668,43 @@
         },
         "overnight_us_up": {
           "label": "us_up",
-          "n": 115,
-          "mean": 0.03002,
-          "median": 0.024096,
-          "p10": -0.015459,
-          "p90": 0.077117,
-          "frac_neg": 0.2261,
-          "frac_pos": 0.7739
+          "n": 114,
+          "mean": 0.030109,
+          "median": 0.024732,
+          "p10": -0.015646,
+          "p90": 0.077118,
+          "frac_neg": 0.2368,
+          "frac_pos": 0.7632
         },
         "overnight_baseline": {
           "label": "all",
           "n": 247,
-          "mean": 0.007854,
+          "mean": 0.007879,
           "median": 0.002717,
           "p10": -0.041235,
           "p90": 0.062728,
-          "frac_neg": 0.4656,
-          "frac_pos": 0.5344
+          "frac_neg": 0.4737,
+          "frac_pos": 0.5263
         },
         "open30m_us_down": {
           "label": "us_down",
           "n": 24,
-          "mean": -0.026139,
+          "mean": -0.024815,
           "median": -0.021173,
           "p10": -0.088213,
-          "p90": 0.013906,
-          "frac_neg": 0.625,
-          "frac_pos": 0.375
+          "p90": 0.025293,
+          "frac_neg": 0.5833,
+          "frac_pos": 0.4167
         },
         "open30m_baseline": {
           "label": "all",
-          "n": 61,
-          "mean": 0.00887,
-          "median": 0.002441,
-          "p10": -0.078125,
-          "p90": 0.080122,
-          "frac_neg": 0.4754,
-          "frac_pos": 0.5246
+          "n": 62,
+          "mean": 0.009743,
+          "median": 0.005637,
+          "p10": -0.077357,
+          "p90": 0.079783,
+          "frac_neg": 0.4516,
+          "frac_pos": 0.5484
         }
       },
       "SMH": {
@@ -458,23 +720,23 @@
         },
         "overnight_us_up": {
           "label": "us_up",
-          "n": 50,
-          "mean": 0.043276,
-          "median": 0.031555,
-          "p10": -0.017511,
-          "p90": 0.095756,
-          "frac_neg": 0.18,
-          "frac_pos": 0.82
+          "n": 49,
+          "mean": 0.043752,
+          "median": 0.032092,
+          "p10": -0.017597,
+          "p90": 0.096097,
+          "frac_neg": 0.1837,
+          "frac_pos": 0.8163
         },
         "overnight_baseline": {
           "label": "all",
           "n": 247,
-          "mean": 0.007854,
+          "mean": 0.007879,
           "median": 0.002717,
           "p10": -0.041235,
           "p90": 0.062728,
-          "frac_neg": 0.4656,
-          "frac_pos": 0.5344
+          "frac_neg": 0.4737,
+          "frac_pos": 0.5263
         },
         "open30m_us_down": {
           "label": "us_down",
@@ -488,13 +750,13 @@
         },
         "open30m_baseline": {
           "label": "all",
-          "n": 61,
-          "mean": 0.00887,
-          "median": 0.002441,
-          "p10": -0.078125,
-          "p90": 0.080122,
-          "frac_neg": 0.4754,
-          "frac_pos": 0.5246
+          "n": 62,
+          "mean": 0.009743,
+          "median": 0.005637,
+          "p10": -0.077357,
+          "p90": 0.079783,
+          "frac_neg": 0.4516,
+          "frac_pos": 0.5484
         }
       }
     },
@@ -520,8 +782,8 @@
         "SMH",
         "AMZN"
       ],
-      "mean_of_means": 0.032099,
-      "hit_rate_mean": 0.739,
+      "mean_of_means": 0.03225,
+      "hit_rate_mean": 0.7273,
       "note_ko": "하방=익일 KR open R<0 비율 평균; 상방=R>0 비율 평균"
     },
     "vol_up": {
@@ -529,13 +791,13 @@
       "open_overnight": {
         "baseline": {
           "label": "all",
-          "n": 248,
-          "mean": 0.007962,
-          "median": 0.003164,
-          "p10": -0.041118,
-          "p90": 0.062511,
-          "frac_neg": 0.4637,
-          "frac_pos": 0.5363
+          "n": 247,
+          "mean": 0.008018,
+          "median": 0.00361,
+          "p10": -0.041235,
+          "p90": 0.062728,
+          "frac_neg": 0.4696,
+          "frac_pos": 0.5304
         },
         "vix_up": {
           "label": "vix_up",
