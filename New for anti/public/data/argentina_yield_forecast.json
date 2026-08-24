@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-04T13:43:30.344837+00:00",
+  "generated_at": "2026-08-24T11:15:02.615230+00:00",
   "season": 2026,
   "country": "Argentina",
   "source_note": "Yields: MAGyP Estimaciones Agrícolas, department level, aggregated as sum(production)/sum(harvested area). Weather: NASA POWER daily, production-weighted across each region's growing points, ET0 by FAO-56 Penman-Monteith. ENSO: NOAA CPC ONI. IOD: NOAA PSL HadISST DMI.",
@@ -16,24 +16,24 @@
       ],
       "season": 2026,
       "unit": "kg/ha",
-      "point": 2845.7,
+      "point": 2848.1,
       "range_68": [
-        2592.2,
-        3099.2
+        2594.7,
+        3101.6
       ],
       "range_95": [
-        2348.9,
-        3342.5
+        2351.3,
+        3345.0
       ],
       "trend": 3113.5,
-      "weather_effect_pct": -8.6,
+      "weather_effect_pct": -8.52,
       "last_actual": {
         "year": 2025,
         "yield": 3115.940391927188
       },
       "enso": {
-        "state": "neutral",
-        "oni_growing_season": -0.48666666666666664,
+        "state": "La Nina",
+        "oni_growing_season": -0.5366666666666666,
         "iod_spring": -0.39,
         "la_nina_positive_iod": false
       },
@@ -50,7 +50,7 @@
         "guide": "Regions/아르헨티나/팜파스/대두/대두_상세분석_및_수식.md",
         "caveat": "Sowing is fixed at 15 November rather than observed; MAGyP publishes area and production but not planting progress by department. The spatial fixed-effects/embedding structure in §3B is replaced by production-weighting six stations, which captures between-province contrast but not within-province soil variation.",
         "non_weather_drivers": "",
-        "weather_through": "2026-07-30",
+        "weather_through": "2026-08-19",
         "critical_window_observed": 1.0,
         "season_complete": true,
         "notes": []
@@ -83,8 +83,8 @@
         "yield": 7627.242847533014
       },
       "enso": {
-        "state": "neutral",
-        "oni_growing_season": -0.4575,
+        "state": "La Nina",
+        "oni_growing_season": -0.5,
         "iod_spring": -0.39,
         "la_nina_positive_iod": false
       },
@@ -101,7 +101,7 @@
         "guide": "Regions/아르헨티나/팜파스/옥수수/옥수수_상세분석_및_수식.md",
         "caveat": "The guide's Climate_Shock_Index never fires: across 42 seasons no year has both ONI < -0.5 in the pre-sowing spring and DMI > 0.4, so the switch is constant at 1.0 and the training run drops it. That is a property of the climate rather than of the data -- a strongly positive dipole and a La Nina are themselves negatively associated, so the guide's worst case is close to mutually exclusive at these thresholds. ONI and DMI are carried separately instead. SAWHC is one constant per region here, so it rescales every season identically. DSSAT/APSIM is not runnable, so WDEF is the same ratio (ETa/ETc over silking) taken from a bucket balance instead of a process model.",
         "non_weather_drivers": "The early/late sowing split is the guide's own headline variable and it is not published: MAGyP reports one combined corn figure per department. The split moves year to year with December rainfall and with the corn/soy price ratio, so part of this target is a sowing decision the weather cannot see. Both calendars are modelled and offered, but their mix is unobserved.",
-        "weather_through": "2026-07-30",
+        "weather_through": "2026-08-19",
         "critical_window_observed": 1.0,
         "season_complete": true,
         "notes": []
@@ -135,8 +135,8 @@
         "yield": 2100.0683665695387
       },
       "enso": {
-        "state": "neutral",
-        "oni_growing_season": -0.4575,
+        "state": "La Nina",
+        "oni_growing_season": -0.5,
         "iod_spring": -0.39,
         "la_nina_positive_iod": false
       },
@@ -153,7 +153,7 @@
         "guide": "Regions/아르헨티나/북부지역_NOA_NEA/대두/대두_상세분석_및_수식.md",
         "caveat": "Sowing fixed at 15 December. The spatial error model in §3 is replaced by production-weighting five stations across four provinces -- between-province contrast survives, department-level soil and management fixed effects do not.",
         "non_weather_drivers": "This is a frontier crop: area has expanded roughly twentyfold since the 1980s onto newly cleared and progressively more marginal Chaco land. Average yield therefore moves with *where* the crop is grown, not only with the weather over it, and no climate feed sees that.",
-        "weather_through": "2026-07-30",
+        "weather_through": "2026-08-19",
         "critical_window_observed": 1.0,
         "season_complete": true,
         "notes": []
@@ -171,24 +171,24 @@
       ],
       "season": 2026,
       "unit": "kg/ha",
-      "point": 2878.6,
+      "point": 2879.9,
       "range_68": [
-        2410.9,
-        3346.2
+        2412.2,
+        3347.5
       ],
       "range_95": [
-        1961.9,
-        3795.2
+        1963.2,
+        3796.5
       ],
       "trend": 2445.5,
-      "weather_effect_pct": 17.71,
+      "weather_effect_pct": 17.76,
       "last_actual": {
         "year": 2025,
         "yield": 1737.9782033085153
       },
       "enso": {
         "state": "neutral",
-        "oni_growing_season": -0.3925,
+        "oni_growing_season": -0.445,
         "iod_spring": -0.39,
         "la_nina_positive_iod": false
       },
@@ -205,7 +205,7 @@
         "guide": "Regions/아르헨티나/북부지역_NOA_NEA/면화/면화_상세분석_및_수식.md",
         "caveat": "Soil_Moisture_Index is a modelled bucket store, not a satellite product. Sowing fixed at 1 November. Fibre quality has no open series, so the target is lint yield alone.",
         "non_weather_drivers": "Argentine cotton area collapsed from ~700k ha in the late 1990s to ~150k ha in the mid-2000s and has swung with the cotton/soy price ratio ever since, while the crop simultaneously shifted from smallholder rainfed to mechanised narrow-row production. Both moves change average yield without any weather doing anything.",
-        "weather_through": "2026-07-30",
+        "weather_through": "2026-08-19",
         "critical_window_observed": 1.0,
         "season_complete": true,
         "notes": []
@@ -227,7 +227,7 @@
       "unit": "kg/ha",
       "last_actual": {
         "year": 2024,
-        "yield": 3112.690744325339
+        "yield": 3112.6907443253394
       },
       "provenance": {
         "guide": "Regions/아르헨티나/팜파스/밀/밀_상세분석_및_수식.md",
