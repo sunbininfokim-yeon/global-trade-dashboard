@@ -1,0 +1,58 @@
+{
+  "methodology": "Open-source maritime-network shortest-path audit. It is a route-distance estimate, not a navigation plan, carrier schedule, or port-call itinerary.",
+  "source": {
+    "name": "searoute-py maritime network",
+    "source_url": "https://github.com/genthalili/searoute-py",
+    "network_lineage": "Eurostat SeaRoute / global shipping-lane network",
+    "license": "Apache-2.0"
+  },
+  "default_restrictions": ["northwest"],
+  "maximum_baseline_distance_deviation_fraction": 0.12,
+  "maximum_reroute_extra_distance_deviation_nm": 25,
+  "routes": [
+    {
+      "id": "asia_north_europe_container_malacca",
+      "route_id": "asia_north_europe_container",
+      "chokepoint_id": "malacca",
+      "origin": {"name": "Shanghai", "coordinates": [121.49, 31.23], "coordinate_basis": "representative endpoint coordinate; public port-record cross-check required before operational use"},
+      "destination": {"name": "Rotterdam", "coordinates": [4.48, 51.92], "coordinate_basis": "representative endpoint coordinate; public port-record cross-check required before operational use"},
+      "normal_restrictions": ["northwest"],
+      "reroute_restrictions": ["northwest", "malacca"],
+      "expected_normal_passage": "malacca",
+      "expected_reroute_passage": "sunda"
+    },
+    {
+      "id": "asia_mediterranean_container_malacca",
+      "route_id": "asia_mediterranean_container",
+      "chokepoint_id": "malacca",
+      "origin": {"name": "Shanghai", "coordinates": [121.49, 31.23], "coordinate_basis": "representative endpoint coordinate; public port-record cross-check required before operational use"},
+      "destination": {"name": "Piraeus", "coordinates": [23.64, 37.94], "coordinate_basis": "representative endpoint coordinate; public port-record cross-check required before operational use"},
+      "normal_restrictions": ["northwest"],
+      "reroute_restrictions": ["northwest", "malacca"],
+      "expected_normal_passage": "malacca",
+      "expected_reroute_passage": "sunda"
+    },
+    {
+      "id": "persian_gulf_east_asia_crude_malacca",
+      "route_id": "persian_gulf_east_asia_crude",
+      "chokepoint_id": "malacca",
+      "origin": {"name": "Ras Tanura", "coordinates": [50.15, 26.64], "coordinate_basis": "representative endpoint coordinate; public port-record cross-check required before operational use"},
+      "destination": {"name": "Shanghai", "coordinates": [121.49, 31.23], "coordinate_basis": "representative endpoint coordinate; public port-record cross-check required before operational use"},
+      "normal_restrictions": ["northwest"],
+      "reroute_restrictions": ["northwest", "malacca"],
+      "expected_normal_passage": "malacca",
+      "expected_reroute_passage": "sunda"
+    },
+    {
+      "id": "persian_gulf_east_asia_lng_malacca",
+      "route_id": "persian_gulf_east_asia_lng",
+      "chokepoint_id": "malacca",
+      "origin": {"name": "Ras Tanura", "coordinates": [50.15, 26.64], "coordinate_basis": "representative endpoint coordinate; public port-record cross-check required before operational use"},
+      "destination": {"name": "Shanghai", "coordinates": [121.49, 31.23], "coordinate_basis": "representative endpoint coordinate; public port-record cross-check required before operational use"},
+      "normal_restrictions": ["northwest"],
+      "reroute_restrictions": ["northwest", "malacca"],
+      "expected_normal_passage": "malacca",
+      "expected_reroute_passage": "sunda"
+    }
+  ]
+}
