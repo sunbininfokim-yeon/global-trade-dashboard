@@ -278,7 +278,12 @@ def build_open_only_hydromet_signal(
         capacity_retention_proxy=retention,
         forecast_status=forecast_status,
         forecast_use="descriptive_proxy_only",
-        source_ids=("nasa_power", "chirps", "chirps_gefs", "noaa_gfs"),
+        # The current runner fetches NASA POWER directly.  CHIRPS-GEFS and
+        # NOAA GFS are registered as compatible follow-up forecast adapters,
+        # but must not be claimed as active inputs until supplied explicitly.
+        source_ids=("nasa_power", "open_forecast_adapter_pending")
+        if forecast_weather is None
+        else ("nasa_power", "open_forecast_adapter"),
         caveat=(
             "ACP-free open hydrometeorology proxy; not an official Gatun lake "
             "level, draft, transit-slot, traffic-DWT, or ACP forecast."
