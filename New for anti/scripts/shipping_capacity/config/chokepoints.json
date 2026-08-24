@@ -11,6 +11,7 @@
       "mechanism_ko": "운하 통과 안전 우려와 우회 선택이 항차일수와 필요한 서비스 선복량을 늘릴 수 있다.",
       "scenario_interpretation_ko": "실효 통행제약률은 실제 통항이 평시 대비 줄어드는 가정이며, 물리적 전면 봉쇄를 뜻하지 않는다."
     },
+    "scenario_availability": "linked_model_scenarios",
     "source_status": "observed_free_api"
   },
   {
@@ -25,6 +26,7 @@
       "mechanism_ko": "수위와 갑문 운영 제약은 예약·흘수·일일 통항량을 제한해 대기와 우회 수요를 만들 수 있다.",
       "scenario_interpretation_ko": "실효 통행제약률은 수위·예약·운영 제약을 하나의 통항량 감축 가정으로 표현한 것이며, 전쟁 봉쇄와 동일하지 않다."
     },
+    "scenario_availability": "linked_model_scenarios",
     "source_status": "observed_free_api"
   },
   {
@@ -39,6 +41,7 @@
       "mechanism_ko": "협수로 교통관리, 기상, 안전 규정과 지역 긴장이 통항 대기·지연을 확대할 수 있다.",
       "scenario_interpretation_ko": "실효 통행제약률은 협수로 처리능력 저하를 나타내며, 평시 모든 선박이 차단된다는 뜻이 아니다."
     },
+    "scenario_availability": "linked_model_scenarios",
     "source_status": "observed_free_api"
   },
   {
@@ -53,6 +56,7 @@
       "mechanism_ko": "무력위협·보험·선사 회피가 통항 감소 또는 희망봉 우회로 이어져 항차일수와 선복 흡수를 키울 수 있다.",
       "scenario_interpretation_ko": "실효 통행제약률은 통항량 충격 가정이며, 보험 인수 가능성은 별도 상업 제약 변수로 계산한다."
     },
+    "scenario_availability": "route_link_no_preset_scenario",
     "source_status": "observed_free_api"
   },
   {
@@ -69,6 +73,67 @@
     },
     "primary_live_metric": "tanker",
     "primary_live_basis_ko": "최근 7일 탱커 추정 교역량 기준",
+    "scenario_availability": "linked_model_scenarios",
+    "source_status": "observed_free_api"
+  },
+  {
+    "id": "malacca",
+    "name_ko": "말라카 해협",
+    "name_en": "Malacca Strait",
+    "portwatch_id": "chokepoint5",
+    "coordinates": [102.6651061, 1.516954817],
+    "risk_context": {
+      "primary_constraint_type": "congestion_navigation_and_regional_security",
+      "primary_constraint_label_ko": "혼잡·항행안전·지역안보 제약",
+      "mechanism_ko": "동아시아·동남아시아와 인도양을 잇는 고밀도 통로라 사고, 보안 위협 또는 교통관리 제약이 컨테이너·탱커·벌크 통항에 동시에 영향을 줄 수 있다.",
+      "scenario_interpretation_ko": "현재는 일별 통항 관측 모니터만 제공하며, 실효 통행제약률을 산출할 연결 항로·우회 산식은 아직 공개 모델에 등록하지 않았다."
+    },
+    "scenario_availability": "observed_monitor_only_no_route_model",
+    "source_status": "observed_free_api"
+  },
+  {
+    "id": "cape_good_hope",
+    "name_ko": "희망봉 항로",
+    "name_en": "Cape of Good Hope",
+    "portwatch_id": "chokepoint7",
+    "coordinates": [20.88273666, -34.92728556],
+    "risk_context": {
+      "primary_constraint_type": "rerouting_weather_and_port_congestion",
+      "primary_constraint_label_ko": "우회집중·기상·항만혼잡 제약",
+      "mechanism_ko": "수에즈·바벨만데브 회피 시 선박이 집중되는 대표 우회 항로로, 통과량 증가는 우회 선복 흡수와 기상·보급·항만 병목을 함께 보여주는 관측 신호다.",
+      "scenario_interpretation_ko": "현재는 일별 통항 관측 모니터만 제공하며, 이 지점의 증가를 물리적 봉쇄 또는 추가 선복량으로 직접 환산하지 않는다."
+    },
+    "scenario_availability": "observed_monitor_only_no_route_model",
+    "source_status": "observed_free_api"
+  },
+  {
+    "id": "gibraltar",
+    "name_ko": "지브롤터 해협",
+    "name_en": "Gibraltar Strait",
+    "portwatch_id": "chokepoint8",
+    "coordinates": [-5.754895722, 35.94227416],
+    "risk_context": {
+      "primary_constraint_type": "navigation_safety_and_regional_access",
+      "primary_constraint_label_ko": "항행안전·대서양-지중해 접근 제약",
+      "mechanism_ko": "대서양과 지중해를 연결하는 고밀도 관문으로, 사고·기상·통항관리 변화가 유럽·북아프리카·중동 연계 서비스의 지연 위험을 높일 수 있다.",
+      "scenario_interpretation_ko": "현재는 일별 통항 관측 모니터만 제공하며, 실효 통행제약률을 산출할 연결 항로·우회 산식은 아직 공개 모델에 등록하지 않았다."
+    },
+    "scenario_availability": "observed_monitor_only_no_route_model",
+    "source_status": "observed_free_api"
+  },
+  {
+    "id": "oresund",
+    "name_ko": "외레순 해협",
+    "name_en": "Oresund Strait",
+    "portwatch_id": "chokepoint10",
+    "coordinates": [12.85079477, 55.50784043],
+    "risk_context": {
+      "primary_constraint_type": "navigation_safety_and_baltic_access",
+      "primary_constraint_label_ko": "항행안전·발트해 접근 제약",
+      "mechanism_ko": "발트해와 북해를 잇는 관문으로, 수로 안전·교통관리·지역 안보 변화가 북유럽 벌크·탱커·일반화물 서비스의 대체 경로 부담을 높일 수 있다.",
+      "scenario_interpretation_ko": "현재는 일별 통항 관측 모니터만 제공하며, 실효 통행제약률을 산출할 연결 항로·우회 산식은 아직 공개 모델에 등록하지 않았다."
+    },
+    "scenario_availability": "observed_monitor_only_no_route_model",
     "source_status": "observed_free_api"
   }
 ]

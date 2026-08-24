@@ -40,6 +40,22 @@ class PortWatchHistoryContractTests(unittest.TestCase):
             result["history_status"],
             "observed_daily_estimated_trade_volume",
         )
+        self.assertEqual(
+            result["daily_averages"]["latest_daily_observation"]["value"],
+            1039.0,
+        )
+        self.assertEqual(
+            result["daily_averages"]["trailing_7d_average"]["observation_count"],
+            7,
+        )
+        self.assertEqual(
+            result["daily_averages"]["prior_28d_average"]["observation_count"],
+            28,
+        )
+        self.assertAlmostEqual(
+            result["daily_averages"]["trailing_7d_average"]["value"],
+            1036.0,
+        )
 
     def test_hormuz_history_uses_tanker_metric(self) -> None:
         rows = [
@@ -76,6 +92,8 @@ class PortWatchHistoryContractTests(unittest.TestCase):
             migrated["history_status"],
             "unavailable_cached_summary_only",
         )
+        self.assertIsNone(migrated["daily_averages"]["latest_daily_observation"])
+        self.assertIsNone(migrated["daily_averages"]["trailing_7d_average"]["value"])
 
     def test_screen_history_is_bounded_without_changing_values(self) -> None:
         full_history = [

@@ -541,7 +541,10 @@ class PortWatchTests(unittest.TestCase):
             fallback_live_status=previous,
         )
         self.assertEqual(snapshot["chokepoints_live"]["suez"]["latest_date"], "2026-08-01")
-        self.assertEqual(len(snapshot["live_fetch_errors"]), 5)
+        self.assertEqual(
+            len(snapshot["live_fetch_errors"]),
+            len(snapshot["chokepoints"]),
+        )
         self.assertEqual(snapshot["model"]["version"], snapshot["model_review"]["model_version"])
         display = next(row for row in snapshot["live_display"] if row["chokepoint_id"] == "suez")
         self.assertAlmostEqual(display["trade_volume_shortfall_fraction"], 0.25)

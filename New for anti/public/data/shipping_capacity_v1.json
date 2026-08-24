@@ -1,8 +1,8 @@
 {
   "schema_version": "shipping-capacity-v1",
   "artifact_type": "screen_snapshot",
-  "bundle_id": "68bd83fba7d41e295812",
-  "generated_at": "2026-08-19T19:43:19.575982+00:00",
+  "bundle_id": "8da78cb3b7fa72dd0bd2",
+  "generated_at": "2026-08-24T13:25:44.608368+00:00",
   "artifact_manifest": {
     "screen": "shipping_capacity_v1.json",
     "diagnostics": "shipping_capacity_diagnostics_v1.json",
@@ -81,6 +81,7 @@
           "chokepoints[]",
           "live_display[]",
           "chokepoints_live.<id>.history[]",
+          "chokepoints_live.<id>.daily_averages",
           "scenarios[]",
           "ui_scenario_grid.rows[]"
         ],
@@ -101,7 +102,8 @@
           "closure_pct": "실효 통행제약률",
           "duration_days": "제약 지속일",
           "backlog_cargo_tonnes_horizon": "28일 분석기간 말 미운송 화물",
-          "commercially_unavailable_dwt": "상업적으로 사용 불가한 모델상 DWT"
+          "commercially_unavailable_dwt": "상업적으로 사용 불가한 모델상 DWT",
+          "daily_averages": "일별 추정 교역량 및 관측일 기준 이동평균"
         },
         "render_only_rule": "Match a precomputed row by all three input fields. Do not calculate closure, traffic, backlog, insurance exclusion or ship-type totals in JavaScript."
       },
@@ -208,6 +210,7 @@
         "mechanism_ko": "운하 통과 안전 우려와 우회 선택이 항차일수와 필요한 서비스 선복량을 늘릴 수 있다.",
         "scenario_interpretation_ko": "실효 통행제약률은 실제 통항이 평시 대비 줄어드는 가정이며, 물리적 전면 봉쇄를 뜻하지 않는다."
       },
+      "scenario_availability": "linked_model_scenarios",
       "source_status": "observed_free_api"
     },
     {
@@ -225,6 +228,7 @@
         "mechanism_ko": "수위와 갑문 운영 제약은 예약·흘수·일일 통항량을 제한해 대기와 우회 수요를 만들 수 있다.",
         "scenario_interpretation_ko": "실효 통행제약률은 수위·예약·운영 제약을 하나의 통항량 감축 가정으로 표현한 것이며, 전쟁 봉쇄와 동일하지 않다."
       },
+      "scenario_availability": "linked_model_scenarios",
       "source_status": "observed_free_api"
     },
     {
@@ -242,6 +246,7 @@
         "mechanism_ko": "협수로 교통관리, 기상, 안전 규정과 지역 긴장이 통항 대기·지연을 확대할 수 있다.",
         "scenario_interpretation_ko": "실효 통행제약률은 협수로 처리능력 저하를 나타내며, 평시 모든 선박이 차단된다는 뜻이 아니다."
       },
+      "scenario_availability": "linked_model_scenarios",
       "source_status": "observed_free_api"
     },
     {
@@ -259,6 +264,7 @@
         "mechanism_ko": "무력위협·보험·선사 회피가 통항 감소 또는 희망봉 우회로 이어져 항차일수와 선복 흡수를 키울 수 있다.",
         "scenario_interpretation_ko": "실효 통행제약률은 통항량 충격 가정이며, 보험 인수 가능성은 별도 상업 제약 변수로 계산한다."
       },
+      "scenario_availability": "route_link_no_preset_scenario",
       "source_status": "observed_free_api"
     },
     {
@@ -278,6 +284,79 @@
       },
       "primary_live_metric": "tanker",
       "primary_live_basis_ko": "최근 7일 탱커 추정 교역량 기준",
+      "scenario_availability": "linked_model_scenarios",
+      "source_status": "observed_free_api"
+    },
+    {
+      "id": "malacca",
+      "name_ko": "말라카 해협",
+      "name_en": "Malacca Strait",
+      "portwatch_id": "chokepoint5",
+      "coordinates": [
+        102.665106,
+        1.516955
+      ],
+      "risk_context": {
+        "primary_constraint_type": "congestion_navigation_and_regional_security",
+        "primary_constraint_label_ko": "혼잡·항행안전·지역안보 제약",
+        "mechanism_ko": "동아시아·동남아시아와 인도양을 잇는 고밀도 통로라 사고, 보안 위협 또는 교통관리 제약이 컨테이너·탱커·벌크 통항에 동시에 영향을 줄 수 있다.",
+        "scenario_interpretation_ko": "현재는 일별 통항 관측 모니터만 제공하며, 실효 통행제약률을 산출할 연결 항로·우회 산식은 아직 공개 모델에 등록하지 않았다."
+      },
+      "scenario_availability": "observed_monitor_only_no_route_model",
+      "source_status": "observed_free_api"
+    },
+    {
+      "id": "cape_good_hope",
+      "name_ko": "희망봉 항로",
+      "name_en": "Cape of Good Hope",
+      "portwatch_id": "chokepoint7",
+      "coordinates": [
+        20.882737,
+        -34.927286
+      ],
+      "risk_context": {
+        "primary_constraint_type": "rerouting_weather_and_port_congestion",
+        "primary_constraint_label_ko": "우회집중·기상·항만혼잡 제약",
+        "mechanism_ko": "수에즈·바벨만데브 회피 시 선박이 집중되는 대표 우회 항로로, 통과량 증가는 우회 선복 흡수와 기상·보급·항만 병목을 함께 보여주는 관측 신호다.",
+        "scenario_interpretation_ko": "현재는 일별 통항 관측 모니터만 제공하며, 이 지점의 증가를 물리적 봉쇄 또는 추가 선복량으로 직접 환산하지 않는다."
+      },
+      "scenario_availability": "observed_monitor_only_no_route_model",
+      "source_status": "observed_free_api"
+    },
+    {
+      "id": "gibraltar",
+      "name_ko": "지브롤터 해협",
+      "name_en": "Gibraltar Strait",
+      "portwatch_id": "chokepoint8",
+      "coordinates": [
+        -5.754896,
+        35.942274
+      ],
+      "risk_context": {
+        "primary_constraint_type": "navigation_safety_and_regional_access",
+        "primary_constraint_label_ko": "항행안전·대서양-지중해 접근 제약",
+        "mechanism_ko": "대서양과 지중해를 연결하는 고밀도 관문으로, 사고·기상·통항관리 변화가 유럽·북아프리카·중동 연계 서비스의 지연 위험을 높일 수 있다.",
+        "scenario_interpretation_ko": "현재는 일별 통항 관측 모니터만 제공하며, 실효 통행제약률을 산출할 연결 항로·우회 산식은 아직 공개 모델에 등록하지 않았다."
+      },
+      "scenario_availability": "observed_monitor_only_no_route_model",
+      "source_status": "observed_free_api"
+    },
+    {
+      "id": "oresund",
+      "name_ko": "외레순 해협",
+      "name_en": "Oresund Strait",
+      "portwatch_id": "chokepoint10",
+      "coordinates": [
+        12.850795,
+        55.50784
+      ],
+      "risk_context": {
+        "primary_constraint_type": "navigation_safety_and_baltic_access",
+        "primary_constraint_label_ko": "항행안전·발트해 접근 제약",
+        "mechanism_ko": "발트해와 북해를 잇는 관문으로, 수로 안전·교통관리·지역 안보 변화가 북유럽 벌크·탱커·일반화물 서비스의 대체 경로 부담을 높일 수 있다.",
+        "scenario_interpretation_ko": "현재는 일별 통항 관측 모니터만 제공하며, 실효 통행제약률을 산출할 연결 항로·우회 산식은 아직 공개 모델에 등록하지 않았다."
+      },
+      "scenario_availability": "observed_monitor_only_no_route_model",
       "source_status": "observed_free_api"
     }
   ],
@@ -295,10 +374,10 @@
       "remaining_trade_volume_ratio": 0.887379,
       "remaining_trade_volume_pct_rounded": 89,
       "latest_date": "2026-08-16",
-      "stale_days": 3,
-      "is_stale": false,
+      "stale_days": 8,
+      "is_stale": true,
       "fallback_used": false,
-      "source_status": "api_observation_fresh",
+      "source_status": "api_observation_stale",
       "metric_unit": "estimated_trade_tonnes_per_day",
       "signal_type": "observed_estimated_trade_volume_shortfall",
       "warning_ko": "DWT와 추정 적재율로 산출한 교역량 신호이며 실제 통항 DWT, 물리적 봉쇄율 또는 보험 미확보율 관측치가 아님"
@@ -316,10 +395,10 @@
       "remaining_trade_volume_ratio": 0.874192,
       "remaining_trade_volume_pct_rounded": 87,
       "latest_date": "2026-08-16",
-      "stale_days": 3,
-      "is_stale": false,
+      "stale_days": 8,
+      "is_stale": true,
       "fallback_used": false,
-      "source_status": "api_observation_fresh",
+      "source_status": "api_observation_stale",
       "metric_unit": "estimated_trade_tonnes_per_day",
       "signal_type": "observed_estimated_trade_volume_shortfall",
       "warning_ko": "DWT와 추정 적재율로 산출한 교역량 신호이며 실제 통항 DWT, 물리적 봉쇄율 또는 보험 미확보율 관측치가 아님"
@@ -337,10 +416,10 @@
       "remaining_trade_volume_ratio": 0.937136,
       "remaining_trade_volume_pct_rounded": 94,
       "latest_date": "2026-08-16",
-      "stale_days": 3,
-      "is_stale": false,
+      "stale_days": 8,
+      "is_stale": true,
       "fallback_used": false,
-      "source_status": "api_observation_fresh",
+      "source_status": "api_observation_stale",
       "metric_unit": "estimated_trade_tonnes_per_day",
       "signal_type": "observed_estimated_trade_volume_shortfall",
       "warning_ko": "DWT와 추정 적재율로 산출한 교역량 신호이며 실제 통항 DWT, 물리적 봉쇄율 또는 보험 미확보율 관측치가 아님"
@@ -358,10 +437,10 @@
       "remaining_trade_volume_ratio": 0.853468,
       "remaining_trade_volume_pct_rounded": 85,
       "latest_date": "2026-08-16",
-      "stale_days": 3,
-      "is_stale": false,
+      "stale_days": 8,
+      "is_stale": true,
       "fallback_used": false,
-      "source_status": "api_observation_fresh",
+      "source_status": "api_observation_stale",
       "metric_unit": "estimated_trade_tonnes_per_day",
       "signal_type": "observed_estimated_trade_volume_shortfall",
       "warning_ko": "DWT와 추정 적재율로 산출한 교역량 신호이며 실제 통항 DWT, 물리적 봉쇄율 또는 보험 미확보율 관측치가 아님"
@@ -379,10 +458,94 @@
       "remaining_trade_volume_ratio": 0.248121,
       "remaining_trade_volume_pct_rounded": 25,
       "latest_date": "2026-08-16",
-      "stale_days": 3,
-      "is_stale": false,
+      "stale_days": 8,
+      "is_stale": true,
       "fallback_used": false,
-      "source_status": "api_observation_fresh",
+      "source_status": "api_observation_stale",
+      "metric_unit": "estimated_trade_tonnes_per_day",
+      "signal_type": "observed_estimated_trade_volume_shortfall",
+      "warning_ko": "DWT와 추정 적재율로 산출한 교역량 신호이며 실제 통항 DWT, 물리적 봉쇄율 또는 보험 미확보율 관측치가 아님"
+    },
+    {
+      "chokepoint_id": "malacca",
+      "name_ko": "말라카 해협",
+      "metric_key": "all",
+      "headline_label_ko": "추정 교역량 감소율",
+      "trade_volume_shortfall_fraction": 0.096324,
+      "trade_volume_shortfall_pct_rounded": 10,
+      "basis_label_ko": "최근 7일 전체 추정 교역량 기준",
+      "comparison_label_ko": "직전 28일 평균 대비",
+      "residual_label_ko": "잔존 추정 교역량",
+      "remaining_trade_volume_ratio": 0.903676,
+      "remaining_trade_volume_pct_rounded": 90,
+      "latest_date": "2026-08-16",
+      "stale_days": 8,
+      "is_stale": true,
+      "fallback_used": false,
+      "source_status": "api_observation_stale",
+      "metric_unit": "estimated_trade_tonnes_per_day",
+      "signal_type": "observed_estimated_trade_volume_shortfall",
+      "warning_ko": "DWT와 추정 적재율로 산출한 교역량 신호이며 실제 통항 DWT, 물리적 봉쇄율 또는 보험 미확보율 관측치가 아님"
+    },
+    {
+      "chokepoint_id": "cape_good_hope",
+      "name_ko": "희망봉 항로",
+      "metric_key": "all",
+      "headline_label_ko": "추정 교역량 감소율",
+      "trade_volume_shortfall_fraction": 0.0,
+      "trade_volume_shortfall_pct_rounded": 0,
+      "basis_label_ko": "최근 7일 전체 추정 교역량 기준",
+      "comparison_label_ko": "직전 28일 평균 대비",
+      "residual_label_ko": "잔존 추정 교역량",
+      "remaining_trade_volume_ratio": 1.0,
+      "remaining_trade_volume_pct_rounded": 100,
+      "latest_date": "2026-08-16",
+      "stale_days": 8,
+      "is_stale": true,
+      "fallback_used": false,
+      "source_status": "api_observation_stale",
+      "metric_unit": "estimated_trade_tonnes_per_day",
+      "signal_type": "observed_estimated_trade_volume_shortfall",
+      "warning_ko": "DWT와 추정 적재율로 산출한 교역량 신호이며 실제 통항 DWT, 물리적 봉쇄율 또는 보험 미확보율 관측치가 아님"
+    },
+    {
+      "chokepoint_id": "gibraltar",
+      "name_ko": "지브롤터 해협",
+      "metric_key": "all",
+      "headline_label_ko": "추정 교역량 감소율",
+      "trade_volume_shortfall_fraction": 0.015349,
+      "trade_volume_shortfall_pct_rounded": 2,
+      "basis_label_ko": "최근 7일 전체 추정 교역량 기준",
+      "comparison_label_ko": "직전 28일 평균 대비",
+      "residual_label_ko": "잔존 추정 교역량",
+      "remaining_trade_volume_ratio": 0.984651,
+      "remaining_trade_volume_pct_rounded": 98,
+      "latest_date": "2026-08-16",
+      "stale_days": 8,
+      "is_stale": true,
+      "fallback_used": false,
+      "source_status": "api_observation_stale",
+      "metric_unit": "estimated_trade_tonnes_per_day",
+      "signal_type": "observed_estimated_trade_volume_shortfall",
+      "warning_ko": "DWT와 추정 적재율로 산출한 교역량 신호이며 실제 통항 DWT, 물리적 봉쇄율 또는 보험 미확보율 관측치가 아님"
+    },
+    {
+      "chokepoint_id": "oresund",
+      "name_ko": "외레순 해협",
+      "metric_key": "all",
+      "headline_label_ko": "추정 교역량 감소율",
+      "trade_volume_shortfall_fraction": 0.0454,
+      "trade_volume_shortfall_pct_rounded": 5,
+      "basis_label_ko": "최근 7일 전체 추정 교역량 기준",
+      "comparison_label_ko": "직전 28일 평균 대비",
+      "residual_label_ko": "잔존 추정 교역량",
+      "remaining_trade_volume_ratio": 0.9546,
+      "remaining_trade_volume_pct_rounded": 95,
+      "latest_date": "2026-08-16",
+      "stale_days": 8,
+      "is_stale": true,
+      "fallback_used": false,
+      "source_status": "api_observation_stale",
       "metric_unit": "estimated_trade_tonnes_per_day",
       "signal_type": "observed_estimated_trade_volume_shortfall",
       "warning_ko": "DWT와 추정 적재율로 산출한 교역량 신호이며 실제 통항 DWT, 물리적 봉쇄율 또는 보험 미확보율 관측치가 아님"
@@ -391,10 +554,10 @@
   "live_fetch_errors": [],
   "live_data_quality": {
     "freshness_threshold_days": 7,
-    "fresh_count": 5,
-    "stale_count": 0,
+    "fresh_count": 0,
+    "stale_count": 9,
     "fallback_count": 0,
-    "status": "fresh"
+    "status": "stale_or_fallback"
   },
   "route_catalog": [
     {
@@ -2381,7 +2544,7 @@
   },
   "market_signals": {
     "status": "source_registry_only_no_unlicensed_scraping",
-    "generated_at": "2026-08-19T19:43:19.577185+00:00",
+    "generated_at": "2026-08-24T13:25:44.610774+00:00",
     "signals": [
       {
         "id": "unctad_freight_rate_review",
@@ -3312,6 +3475,36 @@
       "history_unit": "estimated_trade_tonnes_per_day",
       "history_point_count": 180,
       "history_status": "observed_daily_estimated_trade_volume",
+      "daily_averages": {
+        "status": "observed_daily_estimated_trade_volume",
+        "unit": "estimated_trade_tonnes_per_day",
+        "definition": "PortWatch estimated daily trade volume in metric tonnes, derived from vessel DWT and estimated payload/utilization; not observed vessel DWT.",
+        "latest_daily_observation": {
+          "date": "2026-08-16",
+          "value": 1156924.0
+        },
+        "trailing_7d_average": {
+          "label_ko": "최근 7일 일평균",
+          "status": "observed_daily_average",
+          "value": 1342047.571429,
+          "observation_count": 7,
+          "required_observation_count": 7,
+          "start_date": "2026-08-10",
+          "end_date": "2026-08-16",
+          "calculation": "mean_of_observed_daily_values_no_imputation"
+        },
+        "prior_28d_average": {
+          "label_ko": "직전 28일 일평균",
+          "status": "observed_daily_average",
+          "value": 1512371.892857,
+          "observation_count": 28,
+          "required_observation_count": 28,
+          "start_date": "2026-07-13",
+          "end_date": "2026-08-09",
+          "calculation": "mean_of_observed_daily_values_no_imputation"
+        },
+        "warning_ko": "PortWatch의 일별 추정 교역량 관측치를 평균한 값입니다. 결측일은 보간하지 않으며, 실제 화물 명세·통항 DWT·물리적 봉쇄율을 뜻하지 않습니다."
+      },
       "history_warning": "Daily PortWatch transit-volume estimate in metric tonnes; subject to AIS coverage and upstream revisions, and not observed DWT.",
       "metrics": {
         "container": {
@@ -3696,11 +3889,11 @@
         }
       },
       "multi_model_primary_metric": "all",
-      "fetched_at": "2026-08-19T19:43:19.575982+00:00",
-      "stale_days": 3,
-      "is_stale": false,
+      "fetched_at": "2026-08-24T13:25:44.608368+00:00",
+      "stale_days": 8,
+      "is_stale": true,
       "fallback_used": false,
-      "source_status": "api_observation_fresh",
+      "source_status": "api_observation_stale",
       "history_source_point_count": 730,
       "history_screen_point_limit": 180
     },
@@ -4442,6 +4635,36 @@
       "history_unit": "estimated_trade_tonnes_per_day",
       "history_point_count": 180,
       "history_status": "observed_daily_estimated_trade_volume",
+      "daily_averages": {
+        "status": "observed_daily_estimated_trade_volume",
+        "unit": "estimated_trade_tonnes_per_day",
+        "definition": "PortWatch estimated daily trade volume in metric tonnes, derived from vessel DWT and estimated payload/utilization; not observed vessel DWT.",
+        "latest_daily_observation": {
+          "date": "2026-08-16",
+          "value": 930755.0
+        },
+        "trailing_7d_average": {
+          "label_ko": "최근 7일 일평균",
+          "status": "observed_daily_average",
+          "value": 803640.714286,
+          "observation_count": 7,
+          "required_observation_count": 7,
+          "start_date": "2026-08-10",
+          "end_date": "2026-08-16",
+          "calculation": "mean_of_observed_daily_values_no_imputation"
+        },
+        "prior_28d_average": {
+          "label_ko": "직전 28일 일평균",
+          "status": "observed_daily_average",
+          "value": 919295.107143,
+          "observation_count": 28,
+          "required_observation_count": 28,
+          "start_date": "2026-07-13",
+          "end_date": "2026-08-09",
+          "calculation": "mean_of_observed_daily_values_no_imputation"
+        },
+        "warning_ko": "PortWatch의 일별 추정 교역량 관측치를 평균한 값입니다. 결측일은 보간하지 않으며, 실제 화물 명세·통항 DWT·물리적 봉쇄율을 뜻하지 않습니다."
+      },
       "history_warning": "Daily PortWatch transit-volume estimate in metric tonnes; subject to AIS coverage and upstream revisions, and not observed DWT.",
       "metrics": {
         "container": {
@@ -4826,11 +5049,11 @@
         }
       },
       "multi_model_primary_metric": "all",
-      "fetched_at": "2026-08-19T19:43:19.575982+00:00",
-      "stale_days": 3,
-      "is_stale": false,
+      "fetched_at": "2026-08-24T13:25:44.608368+00:00",
+      "stale_days": 8,
+      "is_stale": true,
       "fallback_used": false,
-      "source_status": "api_observation_fresh",
+      "source_status": "api_observation_stale",
       "history_source_point_count": 730,
       "history_screen_point_limit": 180
     },
@@ -5572,6 +5795,36 @@
       "history_unit": "estimated_trade_tonnes_per_day",
       "history_point_count": 180,
       "history_status": "observed_daily_estimated_trade_volume",
+      "daily_averages": {
+        "status": "observed_daily_estimated_trade_volume",
+        "unit": "estimated_trade_tonnes_per_day",
+        "definition": "PortWatch estimated daily trade volume in metric tonnes, derived from vessel DWT and estimated payload/utilization; not observed vessel DWT.",
+        "latest_daily_observation": {
+          "date": "2026-08-16",
+          "value": 556834.0
+        },
+        "trailing_7d_average": {
+          "label_ko": "최근 7일 일평균",
+          "status": "observed_daily_average",
+          "value": 736256.714286,
+          "observation_count": 7,
+          "required_observation_count": 7,
+          "start_date": "2026-08-10",
+          "end_date": "2026-08-16",
+          "calculation": "mean_of_observed_daily_values_no_imputation"
+        },
+        "prior_28d_average": {
+          "label_ko": "직전 28일 일평균",
+          "status": "observed_daily_average",
+          "value": 785645.285714,
+          "observation_count": 28,
+          "required_observation_count": 28,
+          "start_date": "2026-07-13",
+          "end_date": "2026-08-09",
+          "calculation": "mean_of_observed_daily_values_no_imputation"
+        },
+        "warning_ko": "PortWatch의 일별 추정 교역량 관측치를 평균한 값입니다. 결측일은 보간하지 않으며, 실제 화물 명세·통항 DWT·물리적 봉쇄율을 뜻하지 않습니다."
+      },
       "history_warning": "Daily PortWatch transit-volume estimate in metric tonnes; subject to AIS coverage and upstream revisions, and not observed DWT.",
       "metrics": {
         "container": {
@@ -5956,11 +6209,11 @@
         }
       },
       "multi_model_primary_metric": "all",
-      "fetched_at": "2026-08-19T19:43:19.575982+00:00",
-      "stale_days": 3,
-      "is_stale": false,
+      "fetched_at": "2026-08-24T13:25:44.608368+00:00",
+      "stale_days": 8,
+      "is_stale": true,
       "fallback_used": false,
-      "source_status": "api_observation_fresh",
+      "source_status": "api_observation_stale",
       "history_source_point_count": 730,
       "history_screen_point_limit": 180
     },
@@ -6702,6 +6955,36 @@
       "history_unit": "estimated_trade_tonnes_per_day",
       "history_point_count": 180,
       "history_status": "observed_daily_estimated_trade_volume",
+      "daily_averages": {
+        "status": "observed_daily_estimated_trade_volume",
+        "unit": "estimated_trade_tonnes_per_day",
+        "definition": "PortWatch estimated daily trade volume in metric tonnes, derived from vessel DWT and estimated payload/utilization; not observed vessel DWT.",
+        "latest_daily_observation": {
+          "date": "2026-08-16",
+          "value": 1378089.0
+        },
+        "trailing_7d_average": {
+          "label_ko": "최근 7일 일평균",
+          "status": "observed_daily_average",
+          "value": 938436.857143,
+          "observation_count": 7,
+          "required_observation_count": 7,
+          "start_date": "2026-08-10",
+          "end_date": "2026-08-16",
+          "calculation": "mean_of_observed_daily_values_no_imputation"
+        },
+        "prior_28d_average": {
+          "label_ko": "직전 28일 일평균",
+          "status": "observed_daily_average",
+          "value": 1099557.678571,
+          "observation_count": 28,
+          "required_observation_count": 28,
+          "start_date": "2026-07-13",
+          "end_date": "2026-08-09",
+          "calculation": "mean_of_observed_daily_values_no_imputation"
+        },
+        "warning_ko": "PortWatch의 일별 추정 교역량 관측치를 평균한 값입니다. 결측일은 보간하지 않으며, 실제 화물 명세·통항 DWT·물리적 봉쇄율을 뜻하지 않습니다."
+      },
       "history_warning": "Daily PortWatch transit-volume estimate in metric tonnes; subject to AIS coverage and upstream revisions, and not observed DWT.",
       "metrics": {
         "container": {
@@ -7063,12 +7346,12 @@
               "importance": 0.0
             }
           ],
-          "candidate_next_7d_symmetric_gap": 0.004348,
-          "candidate_next_7d_shortfall_fraction": 0.004338,
+          "candidate_next_7d_symmetric_gap": 0.004277,
+          "candidate_next_7d_shortfall_fraction": 0.004268,
           "published_next_7d_shortfall_fraction": null,
           "candidate_prediction_interval": {
-            "p10_symmetric_gap": -0.097903,
-            "p90_symmetric_gap": 0.199455,
+            "p10_symmetric_gap": -0.09792,
+            "p90_symmetric_gap": 0.199398,
             "method": "holdout residual empirical interval on symmetric gap scale"
           },
           "current_regime": {
@@ -7086,11 +7369,11 @@
         }
       },
       "multi_model_primary_metric": "all",
-      "fetched_at": "2026-08-19T19:43:19.575982+00:00",
-      "stale_days": 3,
-      "is_stale": false,
+      "fetched_at": "2026-08-24T13:25:44.608368+00:00",
+      "stale_days": 8,
+      "is_stale": true,
       "fallback_used": false,
-      "source_status": "api_observation_fresh",
+      "source_status": "api_observation_stale",
       "history_source_point_count": 730,
       "history_screen_point_limit": 180
     },
@@ -7832,6 +8115,36 @@
       "history_unit": "estimated_trade_tonnes_per_day",
       "history_point_count": 180,
       "history_status": "observed_daily_estimated_trade_volume",
+      "daily_averages": {
+        "status": "observed_daily_estimated_trade_volume",
+        "unit": "estimated_trade_tonnes_per_day",
+        "definition": "PortWatch estimated daily trade volume in metric tonnes, derived from vessel DWT and estimated payload/utilization; not observed vessel DWT.",
+        "latest_daily_observation": {
+          "date": "2026-08-16",
+          "value": 0.0
+        },
+        "trailing_7d_average": {
+          "label_ko": "최근 7일 일평균",
+          "status": "observed_daily_average",
+          "value": 7103.428571,
+          "observation_count": 7,
+          "required_observation_count": 7,
+          "start_date": "2026-08-10",
+          "end_date": "2026-08-16",
+          "calculation": "mean_of_observed_daily_values_no_imputation"
+        },
+        "prior_28d_average": {
+          "label_ko": "직전 28일 일평균",
+          "status": "observed_daily_average",
+          "value": 28628.857143,
+          "observation_count": 28,
+          "required_observation_count": 28,
+          "start_date": "2026-07-13",
+          "end_date": "2026-08-09",
+          "calculation": "mean_of_observed_daily_values_no_imputation"
+        },
+        "warning_ko": "PortWatch의 일별 추정 교역량 관측치를 평균한 값입니다. 결측일은 보간하지 않으며, 실제 화물 명세·통항 DWT·물리적 봉쇄율을 뜻하지 않습니다."
+      },
       "history_warning": "Daily PortWatch transit-volume estimate in metric tonnes; subject to AIS coverage and upstream revisions, and not observed DWT.",
       "metrics": {
         "container": {
@@ -8030,17 +8343,17 @@
             {
               "model": "random_forest",
               "cv_mae_symmetric_gap": 0.249871,
-              "test_mae_symmetric_gap": 1.454368,
-              "test_rmse_symmetric_gap": 1.874705,
-              "test_r2": -1.117525,
+              "test_mae_symmetric_gap": 1.456668,
+              "test_rmse_symmetric_gap": 1.875966,
+              "test_r2": -1.120373,
               "stress_direction_accuracy": 0.550725
             },
             {
               "model": "gradient_boosting",
               "cv_mae_symmetric_gap": 0.249298,
-              "test_mae_symmetric_gap": 1.161659,
-              "test_rmse_symmetric_gap": 1.529034,
-              "test_r2": -0.40863,
+              "test_mae_symmetric_gap": 1.159768,
+              "test_rmse_symmetric_gap": 1.526777,
+              "test_r2": -0.404475,
               "stress_direction_accuracy": 0.550725
             }
           ],
@@ -8089,8 +8402,8 @@
                   "zero_shortfall": 0.852276,
                   "linear": 0.865065,
                   "ridge": 0.862906,
-                  "random_forest": 0.952856,
-                  "gradient_boosting": 0.895838
+                  "random_forest": 0.936268,
+                  "gradient_boosting": 0.89969
                 }
               },
               {
@@ -8103,7 +8416,7 @@
                   "zero_shortfall": 1.63122,
                   "linear": 0.813402,
                   "ridge": 0.817355,
-                  "random_forest": 0.8992,
+                  "random_forest": 0.899875,
                   "gradient_boosting": 1.116743
                 }
               }
@@ -8152,21 +8465,21 @@
               {
                 "model": "random_forest",
                 "cv_mae_symmetric_gap": null,
-                "test_mae_symmetric_gap": 0.846591,
-                "test_rmse_symmetric_gap": 1.121378,
-                "test_r2": 0.082136,
-                "stress_direction_accuracy": 0.6875,
-                "mean_fold_mae_symmetric_gap": 0.846591,
+                "test_mae_symmetric_gap": 0.842612,
+                "test_rmse_symmetric_gap": 1.118339,
+                "test_r2": 0.087104,
+                "stress_direction_accuracy": 0.696429,
+                "mean_fold_mae_symmetric_gap": 0.842612,
                 "fold_wins_vs_best_simple_baseline": 0
               },
               {
                 "model": "gradient_boosting",
                 "cv_mae_symmetric_gap": null,
-                "test_mae_symmetric_gap": 0.891983,
-                "test_rmse_symmetric_gap": 1.138938,
-                "test_r2": 0.053166,
-                "stress_direction_accuracy": 0.607143,
-                "mean_fold_mae_symmetric_gap": 0.891983,
+                "test_mae_symmetric_gap": 0.892946,
+                "test_rmse_symmetric_gap": 1.137933,
+                "test_r2": 0.054836,
+                "stress_direction_accuracy": 0.598214,
+                "mean_fold_mae_symmetric_gap": 0.892946,
                 "fold_wins_vs_best_simple_baseline": 0
               }
             ]
@@ -8216,11 +8529,4651 @@
         }
       },
       "multi_model_primary_metric": "tanker",
-      "fetched_at": "2026-08-19T19:43:19.575982+00:00",
-      "stale_days": 3,
-      "is_stale": false,
+      "fetched_at": "2026-08-24T13:25:44.608368+00:00",
+      "stale_days": 8,
+      "is_stale": true,
       "fallback_used": false,
-      "source_status": "api_observation_fresh",
+      "source_status": "api_observation_stale",
+      "history_source_point_count": 730,
+      "history_screen_point_limit": 180
+    },
+    "malacca": {
+      "portwatch_id": "chokepoint5",
+      "portname": "Malacca Strait",
+      "latest_date": "2026-08-16",
+      "quality": "observed_estimated_trade_volume_shortfall_7d_vs_prior_28d",
+      "current_window_days": 7,
+      "baseline_window_days": 28,
+      "metric_unit": "estimated_trade_tonnes_per_day",
+      "metric_definition": "PortWatch estimated daily trade volume in metric tonnes, derived from vessel DWT and estimated payload/utilization; not observed vessel DWT.",
+      "interpretation": "Short-term estimated trade-volume anomaly used as a disruption signal; not observed DWT and not proof of literal physical closure.",
+      "observation_count": 730,
+      "history": [
+        {
+          "date": "2026-02-18",
+          "value": 8113747.0
+        },
+        {
+          "date": "2026-02-19",
+          "value": 8340904.0
+        },
+        {
+          "date": "2026-02-20",
+          "value": 9068502.0
+        },
+        {
+          "date": "2026-02-21",
+          "value": 8331089.0
+        },
+        {
+          "date": "2026-02-22",
+          "value": 8365505.0
+        },
+        {
+          "date": "2026-02-23",
+          "value": 8789967.0
+        },
+        {
+          "date": "2026-02-24",
+          "value": 9909052.0
+        },
+        {
+          "date": "2026-02-25",
+          "value": 10316561.0
+        },
+        {
+          "date": "2026-02-26",
+          "value": 9016426.0
+        },
+        {
+          "date": "2026-02-27",
+          "value": 8523979.0
+        },
+        {
+          "date": "2026-02-28",
+          "value": 8349577.0
+        },
+        {
+          "date": "2026-03-01",
+          "value": 9717792.0
+        },
+        {
+          "date": "2026-03-02",
+          "value": 8962212.0
+        },
+        {
+          "date": "2026-03-03",
+          "value": 10140308.0
+        },
+        {
+          "date": "2026-03-04",
+          "value": 9037016.0
+        },
+        {
+          "date": "2026-03-05",
+          "value": 7835185.0
+        },
+        {
+          "date": "2026-03-06",
+          "value": 9975950.0
+        },
+        {
+          "date": "2026-03-07",
+          "value": 10422916.0
+        },
+        {
+          "date": "2026-03-08",
+          "value": 10877842.0
+        },
+        {
+          "date": "2026-03-09",
+          "value": 6429158.0
+        },
+        {
+          "date": "2026-03-10",
+          "value": 9846928.0
+        },
+        {
+          "date": "2026-03-11",
+          "value": 8227422.0
+        },
+        {
+          "date": "2026-03-12",
+          "value": 6273392.0
+        },
+        {
+          "date": "2026-03-13",
+          "value": 6598558.0
+        },
+        {
+          "date": "2026-03-14",
+          "value": 7150039.0
+        },
+        {
+          "date": "2026-03-15",
+          "value": 9286236.0
+        },
+        {
+          "date": "2026-03-16",
+          "value": 5989227.0
+        },
+        {
+          "date": "2026-03-17",
+          "value": 6957744.0
+        },
+        {
+          "date": "2026-03-18",
+          "value": 7323092.0
+        },
+        {
+          "date": "2026-03-19",
+          "value": 7406942.0
+        },
+        {
+          "date": "2026-03-20",
+          "value": 6946565.0
+        },
+        {
+          "date": "2026-03-21",
+          "value": 6150464.0
+        },
+        {
+          "date": "2026-03-22",
+          "value": 7185129.0
+        },
+        {
+          "date": "2026-03-23",
+          "value": 6958659.0
+        },
+        {
+          "date": "2026-03-24",
+          "value": 8426688.0
+        },
+        {
+          "date": "2026-03-25",
+          "value": 5892874.0
+        },
+        {
+          "date": "2026-03-26",
+          "value": 7477945.0
+        },
+        {
+          "date": "2026-03-27",
+          "value": 7257380.0
+        },
+        {
+          "date": "2026-03-28",
+          "value": 6123069.0
+        },
+        {
+          "date": "2026-03-29",
+          "value": 7907836.0
+        },
+        {
+          "date": "2026-03-30",
+          "value": 7574819.0
+        },
+        {
+          "date": "2026-03-31",
+          "value": 7198107.0
+        },
+        {
+          "date": "2026-04-01",
+          "value": 6206887.0
+        },
+        {
+          "date": "2026-04-02",
+          "value": 8141797.0
+        },
+        {
+          "date": "2026-04-03",
+          "value": 9786722.0
+        },
+        {
+          "date": "2026-04-04",
+          "value": 9069751.0
+        },
+        {
+          "date": "2026-04-05",
+          "value": 8356532.0
+        },
+        {
+          "date": "2026-04-06",
+          "value": 7853778.0
+        },
+        {
+          "date": "2026-04-07",
+          "value": 8845631.0
+        },
+        {
+          "date": "2026-04-08",
+          "value": 6367284.0
+        },
+        {
+          "date": "2026-04-09",
+          "value": 7373236.0
+        },
+        {
+          "date": "2026-04-10",
+          "value": 8449112.0
+        },
+        {
+          "date": "2026-04-11",
+          "value": 8579080.0
+        },
+        {
+          "date": "2026-04-12",
+          "value": 7269141.0
+        },
+        {
+          "date": "2026-04-13",
+          "value": 8531530.0
+        },
+        {
+          "date": "2026-04-14",
+          "value": 7420484.0
+        },
+        {
+          "date": "2026-04-15",
+          "value": 8196687.0
+        },
+        {
+          "date": "2026-04-16",
+          "value": 8843938.0
+        },
+        {
+          "date": "2026-04-17",
+          "value": 6692715.0
+        },
+        {
+          "date": "2026-04-18",
+          "value": 6901835.0
+        },
+        {
+          "date": "2026-04-19",
+          "value": 8113920.0
+        },
+        {
+          "date": "2026-04-20",
+          "value": 8187457.0
+        },
+        {
+          "date": "2026-04-21",
+          "value": 7242595.0
+        },
+        {
+          "date": "2026-04-22",
+          "value": 6837962.0
+        },
+        {
+          "date": "2026-04-23",
+          "value": 8370107.0
+        },
+        {
+          "date": "2026-04-24",
+          "value": 8028615.0
+        },
+        {
+          "date": "2026-04-25",
+          "value": 7381909.0
+        },
+        {
+          "date": "2026-04-26",
+          "value": 8284796.0
+        },
+        {
+          "date": "2026-04-27",
+          "value": 7073545.0
+        },
+        {
+          "date": "2026-04-28",
+          "value": 8070987.0
+        },
+        {
+          "date": "2026-04-29",
+          "value": 8346768.0
+        },
+        {
+          "date": "2026-04-30",
+          "value": 8416403.0
+        },
+        {
+          "date": "2026-05-01",
+          "value": 7346120.0
+        },
+        {
+          "date": "2026-05-02",
+          "value": 7847027.0
+        },
+        {
+          "date": "2026-05-03",
+          "value": 7693051.0
+        },
+        {
+          "date": "2026-05-04",
+          "value": 9520423.0
+        },
+        {
+          "date": "2026-05-05",
+          "value": 10178990.0
+        },
+        {
+          "date": "2026-05-06",
+          "value": 7640903.0
+        },
+        {
+          "date": "2026-05-07",
+          "value": 7245259.0
+        },
+        {
+          "date": "2026-05-08",
+          "value": 8315874.0
+        },
+        {
+          "date": "2026-05-09",
+          "value": 8632504.0
+        },
+        {
+          "date": "2026-05-10",
+          "value": 10108654.0
+        },
+        {
+          "date": "2026-05-11",
+          "value": 6988626.0
+        },
+        {
+          "date": "2026-05-12",
+          "value": 8122629.0
+        },
+        {
+          "date": "2026-05-13",
+          "value": 7703399.0
+        },
+        {
+          "date": "2026-05-14",
+          "value": 9153655.0
+        },
+        {
+          "date": "2026-05-15",
+          "value": 7766616.0
+        },
+        {
+          "date": "2026-05-16",
+          "value": 7385316.0
+        },
+        {
+          "date": "2026-05-17",
+          "value": 6863572.0
+        },
+        {
+          "date": "2026-05-18",
+          "value": 7171133.0
+        },
+        {
+          "date": "2026-05-19",
+          "value": 7682563.0
+        },
+        {
+          "date": "2026-05-20",
+          "value": 7242240.0
+        },
+        {
+          "date": "2026-05-21",
+          "value": 6817858.0
+        },
+        {
+          "date": "2026-05-22",
+          "value": 7095449.0
+        },
+        {
+          "date": "2026-05-23",
+          "value": 7368078.0
+        },
+        {
+          "date": "2026-05-24",
+          "value": 7812325.0
+        },
+        {
+          "date": "2026-05-25",
+          "value": 8844483.0
+        },
+        {
+          "date": "2026-05-26",
+          "value": 8409448.0
+        },
+        {
+          "date": "2026-05-27",
+          "value": 7936591.0
+        },
+        {
+          "date": "2026-05-28",
+          "value": 7770440.0
+        },
+        {
+          "date": "2026-05-29",
+          "value": 7952594.0
+        },
+        {
+          "date": "2026-05-30",
+          "value": 6437794.0
+        },
+        {
+          "date": "2026-05-31",
+          "value": 6672825.0
+        },
+        {
+          "date": "2026-06-01",
+          "value": 7528198.0
+        },
+        {
+          "date": "2026-06-02",
+          "value": 7793067.0
+        },
+        {
+          "date": "2026-06-03",
+          "value": 8468528.0
+        },
+        {
+          "date": "2026-06-04",
+          "value": 7819758.0
+        },
+        {
+          "date": "2026-06-05",
+          "value": 6540620.0
+        },
+        {
+          "date": "2026-06-06",
+          "value": 7502054.0
+        },
+        {
+          "date": "2026-06-07",
+          "value": 7292380.0
+        },
+        {
+          "date": "2026-06-08",
+          "value": 8500946.0
+        },
+        {
+          "date": "2026-06-09",
+          "value": 7843475.0
+        },
+        {
+          "date": "2026-06-10",
+          "value": 8619542.0
+        },
+        {
+          "date": "2026-06-11",
+          "value": 8316759.0
+        },
+        {
+          "date": "2026-06-12",
+          "value": 6749134.0
+        },
+        {
+          "date": "2026-06-13",
+          "value": 7817982.0
+        },
+        {
+          "date": "2026-06-14",
+          "value": 8540074.0
+        },
+        {
+          "date": "2026-06-15",
+          "value": 8805250.0
+        },
+        {
+          "date": "2026-06-16",
+          "value": 7257911.0
+        },
+        {
+          "date": "2026-06-17",
+          "value": 8663927.0
+        },
+        {
+          "date": "2026-06-18",
+          "value": 7165895.0
+        },
+        {
+          "date": "2026-06-19",
+          "value": 8192833.0
+        },
+        {
+          "date": "2026-06-20",
+          "value": 7209890.0
+        },
+        {
+          "date": "2026-06-21",
+          "value": 8152672.0
+        },
+        {
+          "date": "2026-06-22",
+          "value": 10375395.0
+        },
+        {
+          "date": "2026-06-23",
+          "value": 7420925.0
+        },
+        {
+          "date": "2026-06-24",
+          "value": 8454827.0
+        },
+        {
+          "date": "2026-06-25",
+          "value": 9475093.0
+        },
+        {
+          "date": "2026-06-26",
+          "value": 10970681.0
+        },
+        {
+          "date": "2026-06-27",
+          "value": 9049946.0
+        },
+        {
+          "date": "2026-06-28",
+          "value": 7051204.0
+        },
+        {
+          "date": "2026-06-29",
+          "value": 7671804.0
+        },
+        {
+          "date": "2026-06-30",
+          "value": 10050460.0
+        },
+        {
+          "date": "2026-07-01",
+          "value": 8764916.0
+        },
+        {
+          "date": "2026-07-02",
+          "value": 8596577.0
+        },
+        {
+          "date": "2026-07-03",
+          "value": 10010438.0
+        },
+        {
+          "date": "2026-07-04",
+          "value": 8045460.0
+        },
+        {
+          "date": "2026-07-05",
+          "value": 7712846.0
+        },
+        {
+          "date": "2026-07-06",
+          "value": 10067676.0
+        },
+        {
+          "date": "2026-07-07",
+          "value": 10489970.0
+        },
+        {
+          "date": "2026-07-08",
+          "value": 11961062.0
+        },
+        {
+          "date": "2026-07-09",
+          "value": 7823263.0
+        },
+        {
+          "date": "2026-07-10",
+          "value": 6899913.0
+        },
+        {
+          "date": "2026-07-11",
+          "value": 7102253.0
+        },
+        {
+          "date": "2026-07-12",
+          "value": 10418223.0
+        },
+        {
+          "date": "2026-07-13",
+          "value": 10466452.0
+        },
+        {
+          "date": "2026-07-14",
+          "value": 9447382.0
+        },
+        {
+          "date": "2026-07-15",
+          "value": 8174732.0
+        },
+        {
+          "date": "2026-07-16",
+          "value": 8432596.0
+        },
+        {
+          "date": "2026-07-17",
+          "value": 8072432.0
+        },
+        {
+          "date": "2026-07-18",
+          "value": 7801228.0
+        },
+        {
+          "date": "2026-07-19",
+          "value": 7672211.0
+        },
+        {
+          "date": "2026-07-20",
+          "value": 7586983.0
+        },
+        {
+          "date": "2026-07-21",
+          "value": 8183080.0
+        },
+        {
+          "date": "2026-07-22",
+          "value": 9289736.0
+        },
+        {
+          "date": "2026-07-23",
+          "value": 11207162.0
+        },
+        {
+          "date": "2026-07-24",
+          "value": 9224187.0
+        },
+        {
+          "date": "2026-07-25",
+          "value": 6920360.0
+        },
+        {
+          "date": "2026-07-26",
+          "value": 8144163.0
+        },
+        {
+          "date": "2026-07-27",
+          "value": 8590307.0
+        },
+        {
+          "date": "2026-07-28",
+          "value": 7760203.0
+        },
+        {
+          "date": "2026-07-29",
+          "value": 6408516.0
+        },
+        {
+          "date": "2026-07-30",
+          "value": 8902043.0
+        },
+        {
+          "date": "2026-07-31",
+          "value": 5057803.0
+        },
+        {
+          "date": "2026-08-01",
+          "value": 8531097.0
+        },
+        {
+          "date": "2026-08-02",
+          "value": 9569953.0
+        },
+        {
+          "date": "2026-08-03",
+          "value": 6093714.0
+        },
+        {
+          "date": "2026-08-04",
+          "value": 7322339.0
+        },
+        {
+          "date": "2026-08-05",
+          "value": 6432963.0
+        },
+        {
+          "date": "2026-08-06",
+          "value": 7244671.0
+        },
+        {
+          "date": "2026-08-07",
+          "value": 8741104.0
+        },
+        {
+          "date": "2026-08-08",
+          "value": 8888713.0
+        },
+        {
+          "date": "2026-08-09",
+          "value": 7629538.0
+        },
+        {
+          "date": "2026-08-10",
+          "value": 7955798.0
+        },
+        {
+          "date": "2026-08-11",
+          "value": 6582791.0
+        },
+        {
+          "date": "2026-08-12",
+          "value": 8724765.0
+        },
+        {
+          "date": "2026-08-13",
+          "value": 8698232.0
+        },
+        {
+          "date": "2026-08-14",
+          "value": 7227883.0
+        },
+        {
+          "date": "2026-08-15",
+          "value": 7606687.0
+        },
+        {
+          "date": "2026-08-16",
+          "value": 4667227.0
+        }
+      ],
+      "history_metric_key": "all",
+      "history_field": "capacity",
+      "history_unit": "estimated_trade_tonnes_per_day",
+      "history_point_count": 180,
+      "history_status": "observed_daily_estimated_trade_volume",
+      "daily_averages": {
+        "status": "observed_daily_estimated_trade_volume",
+        "unit": "estimated_trade_tonnes_per_day",
+        "definition": "PortWatch estimated daily trade volume in metric tonnes, derived from vessel DWT and estimated payload/utilization; not observed vessel DWT.",
+        "latest_daily_observation": {
+          "date": "2026-08-16",
+          "value": 4667227.0
+        },
+        "trailing_7d_average": {
+          "label_ko": "최근 7일 일평균",
+          "status": "observed_daily_average",
+          "value": 7351911.857143,
+          "observation_count": 7,
+          "required_observation_count": 7,
+          "start_date": "2026-08-10",
+          "end_date": "2026-08-16",
+          "calculation": "mean_of_observed_daily_values_no_imputation"
+        },
+        "prior_28d_average": {
+          "label_ko": "직전 28일 일평균",
+          "status": "observed_daily_average",
+          "value": 8135559.571429,
+          "observation_count": 28,
+          "required_observation_count": 28,
+          "start_date": "2026-07-13",
+          "end_date": "2026-08-09",
+          "calculation": "mean_of_observed_daily_values_no_imputation"
+        },
+        "warning_ko": "PortWatch의 일별 추정 교역량 관측치를 평균한 값입니다. 결측일은 보간하지 않으며, 실제 화물 명세·통항 DWT·물리적 봉쇄율을 뜻하지 않습니다."
+      },
+      "history_warning": "Daily PortWatch transit-volume estimate in metric tonnes; subject to AIS coverage and upstream revisions, and not observed DWT.",
+      "metrics": {
+        "container": {
+          "field": "capacity_container",
+          "unit": "estimated_trade_tonnes_per_day",
+          "definition": "PortWatch estimated daily trade volume in metric tonnes, derived from vessel DWT and estimated payload/utilization; not observed vessel DWT.",
+          "current_7d_mean_estimated_trade_tonnes": 1712593.714286,
+          "prior_28d_mean_estimated_trade_tonnes": 1759969.214286,
+          "estimated_trade_volume_ratio": 0.973082,
+          "observed_trade_volume_shortfall_fraction": 0.026918,
+          "remaining_trade_volume_ratio": 0.973082,
+          "change_pct": -2.691837
+        },
+        "dry_bulk": {
+          "field": "capacity_dry_bulk",
+          "unit": "estimated_trade_tonnes_per_day",
+          "definition": "PortWatch estimated daily trade volume in metric tonnes, derived from vessel DWT and estimated payload/utilization; not observed vessel DWT.",
+          "current_7d_mean_estimated_trade_tonnes": 3117854.714286,
+          "prior_28d_mean_estimated_trade_tonnes": 3415665.071429,
+          "estimated_trade_volume_ratio": 0.91281,
+          "observed_trade_volume_shortfall_fraction": 0.08719,
+          "remaining_trade_volume_ratio": 0.91281,
+          "change_pct": -8.718957
+        },
+        "general_cargo": {
+          "field": "capacity_general_cargo",
+          "unit": "estimated_trade_tonnes_per_day",
+          "definition": "PortWatch estimated daily trade volume in metric tonnes, derived from vessel DWT and estimated payload/utilization; not observed vessel DWT.",
+          "current_7d_mean_estimated_trade_tonnes": 123511.714286,
+          "prior_28d_mean_estimated_trade_tonnes": 99155.214286,
+          "estimated_trade_volume_ratio": 1.24564,
+          "observed_trade_volume_shortfall_fraction": 0.0,
+          "remaining_trade_volume_ratio": 1.0,
+          "change_pct": 24.564013
+        },
+        "tanker": {
+          "field": "capacity_tanker",
+          "unit": "estimated_trade_tonnes_per_day",
+          "definition": "PortWatch estimated daily trade volume in metric tonnes, derived from vessel DWT and estimated payload/utilization; not observed vessel DWT.",
+          "current_7d_mean_estimated_trade_tonnes": 2374661.285714,
+          "prior_28d_mean_estimated_trade_tonnes": 2838834.821429,
+          "estimated_trade_volume_ratio": 0.836492,
+          "observed_trade_volume_shortfall_fraction": 0.163508,
+          "remaining_trade_volume_ratio": 0.836492,
+          "change_pct": -16.350847
+        },
+        "all": {
+          "field": "capacity",
+          "unit": "estimated_trade_tonnes_per_day",
+          "definition": "PortWatch estimated daily trade volume in metric tonnes, derived from vessel DWT and estimated payload/utilization; not observed vessel DWT.",
+          "current_7d_mean_estimated_trade_tonnes": 7351911.857143,
+          "prior_28d_mean_estimated_trade_tonnes": 8135559.571429,
+          "estimated_trade_volume_ratio": 0.903676,
+          "observed_trade_volume_shortfall_fraction": 0.096324,
+          "remaining_trade_volume_ratio": 0.903676,
+          "change_pct": -9.632376
+        }
+      },
+      "signal_validation": {
+        "container": {
+          "status": "exploratory_positive_skill",
+          "forecast_use": "eligible_for_exploratory_forecast",
+          "sample_count": 689,
+          "train_count": 551,
+          "test_count": 138,
+          "feature": "signed current 7-observation estimated trade-volume gap vs preceding 28",
+          "target": "signed next 7-observation estimated trade-volume gap vs same preceding 28",
+          "ols_intercept": -0.002533,
+          "ols_slope": 0.234389,
+          "test_r2": 0.090807,
+          "test_mae_fraction": 0.045223,
+          "persistence_mae_fraction": 0.057627,
+          "beats_persistence": true,
+          "warning": "Exploratory chronological validation; not a causal model or closure probability."
+        },
+        "dry_bulk": {
+          "status": "exploratory_positive_skill",
+          "forecast_use": "eligible_for_exploratory_forecast",
+          "sample_count": 689,
+          "train_count": 551,
+          "test_count": 138,
+          "feature": "signed current 7-observation estimated trade-volume gap vs preceding 28",
+          "target": "signed next 7-observation estimated trade-volume gap vs same preceding 28",
+          "ols_intercept": -0.002822,
+          "ols_slope": 0.140204,
+          "test_r2": 0.057919,
+          "test_mae_fraction": 0.065399,
+          "persistence_mae_fraction": 0.077336,
+          "beats_persistence": true,
+          "warning": "Exploratory chronological validation; not a causal model or closure probability."
+        },
+        "general_cargo": {
+          "status": "exploratory_positive_skill",
+          "forecast_use": "eligible_for_exploratory_forecast",
+          "sample_count": 689,
+          "train_count": 551,
+          "test_count": 138,
+          "feature": "signed current 7-observation estimated trade-volume gap vs preceding 28",
+          "target": "signed next 7-observation estimated trade-volume gap vs same preceding 28",
+          "ols_intercept": -0.008691,
+          "ols_slope": 0.152984,
+          "test_r2": 0.072011,
+          "test_mae_fraction": 0.154381,
+          "persistence_mae_fraction": 0.186512,
+          "beats_persistence": true,
+          "warning": "Exploratory chronological validation; not a causal model or closure probability."
+        },
+        "tanker": {
+          "status": "exploratory_no_proven_skill",
+          "forecast_use": "descriptive_only",
+          "sample_count": 689,
+          "train_count": 551,
+          "test_count": 138,
+          "feature": "signed current 7-observation estimated trade-volume gap vs preceding 28",
+          "target": "signed next 7-observation estimated trade-volume gap vs same preceding 28",
+          "ols_intercept": 0.008489,
+          "ols_slope": 0.327077,
+          "test_r2": 0.315108,
+          "test_mae_fraction": 0.128485,
+          "persistence_mae_fraction": 0.116222,
+          "beats_persistence": false,
+          "warning": "Exploratory chronological validation; not a causal model or closure probability."
+        },
+        "all": {
+          "status": "exploratory_no_proven_skill",
+          "forecast_use": "descriptive_only",
+          "sample_count": 689,
+          "train_count": 551,
+          "test_count": 138,
+          "feature": "signed current 7-observation estimated trade-volume gap vs preceding 28",
+          "target": "signed next 7-observation estimated trade-volume gap vs same preceding 28",
+          "ols_intercept": 0.00249,
+          "ols_slope": 0.301898,
+          "test_r2": 0.281723,
+          "test_mae_fraction": 0.057455,
+          "persistence_mae_fraction": 0.05603,
+          "beats_persistence": false,
+          "warning": "Exploratory chronological validation; not a causal model or closure probability."
+        }
+      },
+      "multi_model_analysis": {
+        "all": {
+          "status": "ml_does_not_beat_baseline",
+          "forecast_use": "descriptive_only",
+          "sample_count": 689,
+          "train_count": 544,
+          "purged_count": 7,
+          "test_count": 138,
+          "target_scale": "symmetric capacity gap in [-2, 2]; positive means shortfall",
+          "feature_names": [
+            "symmetric_gap_7_vs_prior_28",
+            "symmetric_gap_3_vs_prior_14",
+            "symmetric_week_over_week_gap",
+            "volatility_cv_14",
+            "zero_capacity_share_14"
+          ],
+          "model_selection": "lowest three-split TimeSeriesSplit CV MAE on training window",
+          "selected_model": "gradient_boosting",
+          "beats_persistence_by_5pct": false,
+          "beats_best_simple_baseline_by_5pct": false,
+          "backtest_beats_best_simple_baseline_by_5pct": false,
+          "backtest_positive_r2": true,
+          "models": [
+            {
+              "model": "persistence",
+              "cv_mae_symmetric_gap": null,
+              "test_mae_symmetric_gap": 0.0563,
+              "test_rmse_symmetric_gap": 0.071169,
+              "test_r2": 0.324121,
+              "stress_direction_accuracy": 0.884058
+            },
+            {
+              "model": "zero_shortfall",
+              "cv_mae_symmetric_gap": null,
+              "test_mae_symmetric_gap": 0.069067,
+              "test_rmse_symmetric_gap": 0.086618,
+              "test_r2": -0.00116,
+              "stress_direction_accuracy": 0.884058
+            },
+            {
+              "model": "linear",
+              "cv_mae_symmetric_gap": 0.040902,
+              "test_mae_symmetric_gap": 0.060206,
+              "test_rmse_symmetric_gap": 0.076591,
+              "test_r2": 0.217202,
+              "stress_direction_accuracy": 0.884058
+            },
+            {
+              "model": "ridge",
+              "cv_mae_symmetric_gap": 0.040893,
+              "test_mae_symmetric_gap": 0.060239,
+              "test_rmse_symmetric_gap": 0.076634,
+              "test_r2": 0.216322,
+              "stress_direction_accuracy": 0.884058
+            },
+            {
+              "model": "random_forest",
+              "cv_mae_symmetric_gap": 0.043441,
+              "test_mae_symmetric_gap": 0.068895,
+              "test_rmse_symmetric_gap": 0.085657,
+              "test_r2": 0.020915,
+              "stress_direction_accuracy": 0.884058
+            },
+            {
+              "model": "gradient_boosting",
+              "cv_mae_symmetric_gap": 0.040539,
+              "test_mae_symmetric_gap": 0.068558,
+              "test_rmse_symmetric_gap": 0.085756,
+              "test_r2": 0.018661,
+              "stress_direction_accuracy": 0.876812
+            }
+          ],
+          "walk_forward_backtest": {
+            "status": "completed",
+            "method": "four-fold expanding-window backtest with non-overlapping 56-sample test blocks",
+            "fold_count": 4,
+            "purge_gap_samples": 7,
+            "total_test_predictions": 224,
+            "folds": [
+              {
+                "fold": 1,
+                "train_count": 458,
+                "purged_count": 7,
+                "test_count": 56,
+                "model_mae_symmetric_gap": {
+                  "persistence": 0.044174,
+                  "zero_shortfall": 0.036931,
+                  "linear": 0.036931,
+                  "ridge": 0.036945,
+                  "random_forest": 0.037105,
+                  "gradient_boosting": 0.038493
+                }
+              },
+              {
+                "fold": 2,
+                "train_count": 514,
+                "purged_count": 7,
+                "test_count": 56,
+                "model_mae_symmetric_gap": {
+                  "persistence": 0.066743,
+                  "zero_shortfall": 0.091999,
+                  "linear": 0.095467,
+                  "ridge": 0.095464,
+                  "random_forest": 0.093519,
+                  "gradient_boosting": 0.09038
+                }
+              },
+              {
+                "fold": 3,
+                "train_count": 570,
+                "purged_count": 7,
+                "test_count": 56,
+                "model_mae_symmetric_gap": {
+                  "persistence": 0.050575,
+                  "zero_shortfall": 0.045838,
+                  "linear": 0.040554,
+                  "ridge": 0.040558,
+                  "random_forest": 0.04861,
+                  "gradient_boosting": 0.047831
+                }
+              },
+              {
+                "fold": 4,
+                "train_count": 626,
+                "purged_count": 7,
+                "test_count": 56,
+                "model_mae_symmetric_gap": {
+                  "persistence": 0.062611,
+                  "zero_shortfall": 0.104053,
+                  "linear": 0.076848,
+                  "ridge": 0.076915,
+                  "random_forest": 0.101535,
+                  "gradient_boosting": 0.096175
+                }
+              }
+            ],
+            "models": [
+              {
+                "model": "persistence",
+                "cv_mae_symmetric_gap": null,
+                "test_mae_symmetric_gap": 0.056026,
+                "test_rmse_symmetric_gap": 0.073946,
+                "test_r2": 0.345872,
+                "stress_direction_accuracy": 0.875,
+                "mean_fold_mae_symmetric_gap": 0.056026,
+                "fold_wins_vs_best_simple_baseline": null
+              },
+              {
+                "model": "zero_shortfall",
+                "cv_mae_symmetric_gap": null,
+                "test_mae_symmetric_gap": 0.069705,
+                "test_rmse_symmetric_gap": 0.093749,
+                "test_r2": -0.051416,
+                "stress_direction_accuracy": 0.834821,
+                "mean_fold_mae_symmetric_gap": 0.069705,
+                "fold_wins_vs_best_simple_baseline": null
+              },
+              {
+                "model": "linear",
+                "cv_mae_symmetric_gap": null,
+                "test_mae_symmetric_gap": 0.06245,
+                "test_rmse_symmetric_gap": 0.088842,
+                "test_r2": 0.055778,
+                "stress_direction_accuracy": 0.834821,
+                "mean_fold_mae_symmetric_gap": 0.06245,
+                "fold_wins_vs_best_simple_baseline": 2
+              },
+              {
+                "model": "ridge",
+                "cv_mae_symmetric_gap": null,
+                "test_mae_symmetric_gap": 0.062471,
+                "test_rmse_symmetric_gap": 0.088867,
+                "test_r2": 0.055252,
+                "stress_direction_accuracy": 0.834821,
+                "mean_fold_mae_symmetric_gap": 0.062471,
+                "fold_wins_vs_best_simple_baseline": 1
+              },
+              {
+                "model": "random_forest",
+                "cv_mae_symmetric_gap": null,
+                "test_mae_symmetric_gap": 0.070192,
+                "test_rmse_symmetric_gap": 0.092891,
+                "test_r2": -0.032251,
+                "stress_direction_accuracy": 0.830357,
+                "mean_fold_mae_symmetric_gap": 0.070192,
+                "fold_wins_vs_best_simple_baseline": 0
+              },
+              {
+                "model": "gradient_boosting",
+                "cv_mae_symmetric_gap": null,
+                "test_mae_symmetric_gap": 0.06822,
+                "test_rmse_symmetric_gap": 0.090858,
+                "test_r2": 0.012444,
+                "stress_direction_accuracy": 0.84375,
+                "mean_fold_mae_symmetric_gap": 0.06822,
+                "fold_wins_vs_best_simple_baseline": 0
+              }
+            ]
+          },
+          "feature_importance": [
+            {
+              "feature": "volatility_cv_14",
+              "importance": 0.006904
+            },
+            {
+              "feature": "symmetric_gap_7_vs_prior_28",
+              "importance": 0.000824
+            },
+            {
+              "feature": "symmetric_gap_3_vs_prior_14",
+              "importance": 0.0
+            },
+            {
+              "feature": "symmetric_week_over_week_gap",
+              "importance": 0.0
+            },
+            {
+              "feature": "zero_capacity_share_14",
+              "importance": 0.0
+            }
+          ],
+          "candidate_next_7d_symmetric_gap": 0.003778,
+          "candidate_next_7d_shortfall_fraction": 0.003771,
+          "published_next_7d_shortfall_fraction": null,
+          "candidate_prediction_interval": {
+            "p10_symmetric_gap": -0.094452,
+            "p90_symmetric_gap": 0.083015,
+            "method": "holdout residual empirical interval on symmetric gap scale"
+          },
+          "current_regime": {
+            "label": "capacity_stress",
+            "cluster": 0,
+            "cluster_mean_symmetric_gap": 0.077872
+          },
+          "current_anomaly": {
+            "score": 0.010889,
+            "historical_percentile": 0.91582,
+            "is_anomaly_at_90pct": true,
+            "method": "IsolationForest contamination=0.10"
+          },
+          "warning": "Exploratory ML with purged chronological validation; no causal claim. Candidate is unpublished unless it beats both simple baselines by 5% and has positive R2 in both holdout and walk-forward backtests."
+        }
+      },
+      "multi_model_primary_metric": "all",
+      "fetched_at": "2026-08-24T13:25:44.608368+00:00",
+      "stale_days": 8,
+      "is_stale": true,
+      "fallback_used": false,
+      "source_status": "api_observation_stale",
+      "history_source_point_count": 730,
+      "history_screen_point_limit": 180
+    },
+    "cape_good_hope": {
+      "portwatch_id": "chokepoint7",
+      "portname": "Cape of Good Hope",
+      "latest_date": "2026-08-16",
+      "quality": "observed_estimated_trade_volume_shortfall_7d_vs_prior_28d",
+      "current_window_days": 7,
+      "baseline_window_days": 28,
+      "metric_unit": "estimated_trade_tonnes_per_day",
+      "metric_definition": "PortWatch estimated daily trade volume in metric tonnes, derived from vessel DWT and estimated payload/utilization; not observed vessel DWT.",
+      "interpretation": "Short-term estimated trade-volume anomaly used as a disruption signal; not observed DWT and not proof of literal physical closure.",
+      "observation_count": 730,
+      "history": [
+        {
+          "date": "2026-02-18",
+          "value": 4460812.0
+        },
+        {
+          "date": "2026-02-19",
+          "value": 5052864.0
+        },
+        {
+          "date": "2026-02-20",
+          "value": 4172877.0
+        },
+        {
+          "date": "2026-02-21",
+          "value": 5088829.0
+        },
+        {
+          "date": "2026-02-22",
+          "value": 4992338.0
+        },
+        {
+          "date": "2026-02-23",
+          "value": 6761761.0
+        },
+        {
+          "date": "2026-02-24",
+          "value": 6320545.0
+        },
+        {
+          "date": "2026-02-25",
+          "value": 5040261.0
+        },
+        {
+          "date": "2026-02-26",
+          "value": 5363920.0
+        },
+        {
+          "date": "2026-02-27",
+          "value": 5619314.0
+        },
+        {
+          "date": "2026-02-28",
+          "value": 2650093.0
+        },
+        {
+          "date": "2026-03-01",
+          "value": 4500788.0
+        },
+        {
+          "date": "2026-03-02",
+          "value": 3998153.0
+        },
+        {
+          "date": "2026-03-03",
+          "value": 5725036.0
+        },
+        {
+          "date": "2026-03-04",
+          "value": 5495679.0
+        },
+        {
+          "date": "2026-03-05",
+          "value": 7390252.0
+        },
+        {
+          "date": "2026-03-06",
+          "value": 4879598.0
+        },
+        {
+          "date": "2026-03-07",
+          "value": 4212305.0
+        },
+        {
+          "date": "2026-03-08",
+          "value": 4898754.0
+        },
+        {
+          "date": "2026-03-09",
+          "value": 5336243.0
+        },
+        {
+          "date": "2026-03-10",
+          "value": 4554265.0
+        },
+        {
+          "date": "2026-03-11",
+          "value": 5482962.0
+        },
+        {
+          "date": "2026-03-12",
+          "value": 5240024.0
+        },
+        {
+          "date": "2026-03-13",
+          "value": 5656834.0
+        },
+        {
+          "date": "2026-03-14",
+          "value": 4352857.0
+        },
+        {
+          "date": "2026-03-15",
+          "value": 5415916.0
+        },
+        {
+          "date": "2026-03-16",
+          "value": 5242098.0
+        },
+        {
+          "date": "2026-03-17",
+          "value": 6811742.0
+        },
+        {
+          "date": "2026-03-18",
+          "value": 4865640.0
+        },
+        {
+          "date": "2026-03-19",
+          "value": 5016533.0
+        },
+        {
+          "date": "2026-03-20",
+          "value": 5480617.0
+        },
+        {
+          "date": "2026-03-21",
+          "value": 5374957.0
+        },
+        {
+          "date": "2026-03-22",
+          "value": 4421837.0
+        },
+        {
+          "date": "2026-03-23",
+          "value": 3828899.0
+        },
+        {
+          "date": "2026-03-24",
+          "value": 3538794.0
+        },
+        {
+          "date": "2026-03-25",
+          "value": 5520321.0
+        },
+        {
+          "date": "2026-03-26",
+          "value": 6720811.0
+        },
+        {
+          "date": "2026-03-27",
+          "value": 5737599.0
+        },
+        {
+          "date": "2026-03-28",
+          "value": 4104797.0
+        },
+        {
+          "date": "2026-03-29",
+          "value": 6116745.0
+        },
+        {
+          "date": "2026-03-30",
+          "value": 4166850.0
+        },
+        {
+          "date": "2026-03-31",
+          "value": 6398214.0
+        },
+        {
+          "date": "2026-04-01",
+          "value": 4330626.0
+        },
+        {
+          "date": "2026-04-02",
+          "value": 3755061.0
+        },
+        {
+          "date": "2026-04-03",
+          "value": 5038572.0
+        },
+        {
+          "date": "2026-04-04",
+          "value": 5839631.0
+        },
+        {
+          "date": "2026-04-05",
+          "value": 4142757.0
+        },
+        {
+          "date": "2026-04-06",
+          "value": 4236964.0
+        },
+        {
+          "date": "2026-04-07",
+          "value": 5300995.0
+        },
+        {
+          "date": "2026-04-08",
+          "value": 6032002.0
+        },
+        {
+          "date": "2026-04-09",
+          "value": 5994757.0
+        },
+        {
+          "date": "2026-04-10",
+          "value": 5535681.0
+        },
+        {
+          "date": "2026-04-11",
+          "value": 6882349.0
+        },
+        {
+          "date": "2026-04-12",
+          "value": 6552880.0
+        },
+        {
+          "date": "2026-04-13",
+          "value": 6542323.0
+        },
+        {
+          "date": "2026-04-14",
+          "value": 5534232.0
+        },
+        {
+          "date": "2026-04-15",
+          "value": 6781468.0
+        },
+        {
+          "date": "2026-04-16",
+          "value": 5175645.0
+        },
+        {
+          "date": "2026-04-17",
+          "value": 7017474.0
+        },
+        {
+          "date": "2026-04-18",
+          "value": 4186449.0
+        },
+        {
+          "date": "2026-04-19",
+          "value": 5115548.0
+        },
+        {
+          "date": "2026-04-20",
+          "value": 3965198.0
+        },
+        {
+          "date": "2026-04-21",
+          "value": 4131201.0
+        },
+        {
+          "date": "2026-04-22",
+          "value": 5640112.0
+        },
+        {
+          "date": "2026-04-23",
+          "value": 7546514.0
+        },
+        {
+          "date": "2026-04-24",
+          "value": 8758572.0
+        },
+        {
+          "date": "2026-04-25",
+          "value": 10050778.0
+        },
+        {
+          "date": "2026-04-26",
+          "value": 5724410.0
+        },
+        {
+          "date": "2026-04-27",
+          "value": 4504249.0
+        },
+        {
+          "date": "2026-04-28",
+          "value": 4550282.0
+        },
+        {
+          "date": "2026-04-29",
+          "value": 3900415.0
+        },
+        {
+          "date": "2026-04-30",
+          "value": 6471856.0
+        },
+        {
+          "date": "2026-05-01",
+          "value": 4700501.0
+        },
+        {
+          "date": "2026-05-02",
+          "value": 7304563.0
+        },
+        {
+          "date": "2026-05-03",
+          "value": 5754268.0
+        },
+        {
+          "date": "2026-05-04",
+          "value": 5792816.0
+        },
+        {
+          "date": "2026-05-05",
+          "value": 4752320.0
+        },
+        {
+          "date": "2026-05-06",
+          "value": 4643368.0
+        },
+        {
+          "date": "2026-05-07",
+          "value": 7125811.0
+        },
+        {
+          "date": "2026-05-08",
+          "value": 7038709.0
+        },
+        {
+          "date": "2026-05-09",
+          "value": 7818928.0
+        },
+        {
+          "date": "2026-05-10",
+          "value": 4367401.0
+        },
+        {
+          "date": "2026-05-11",
+          "value": 2691166.0
+        },
+        {
+          "date": "2026-05-12",
+          "value": 2528195.0
+        },
+        {
+          "date": "2026-05-13",
+          "value": 8650380.0
+        },
+        {
+          "date": "2026-05-14",
+          "value": 7965342.0
+        },
+        {
+          "date": "2026-05-15",
+          "value": 9814719.0
+        },
+        {
+          "date": "2026-05-16",
+          "value": 7618848.0
+        },
+        {
+          "date": "2026-05-17",
+          "value": 5206248.0
+        },
+        {
+          "date": "2026-05-18",
+          "value": 6636383.0
+        },
+        {
+          "date": "2026-05-19",
+          "value": 6015778.0
+        },
+        {
+          "date": "2026-05-20",
+          "value": 5464156.0
+        },
+        {
+          "date": "2026-05-21",
+          "value": 6241844.0
+        },
+        {
+          "date": "2026-05-22",
+          "value": 7009632.0
+        },
+        {
+          "date": "2026-05-23",
+          "value": 5093290.0
+        },
+        {
+          "date": "2026-05-24",
+          "value": 6926654.0
+        },
+        {
+          "date": "2026-05-25",
+          "value": 6224551.0
+        },
+        {
+          "date": "2026-05-26",
+          "value": 5741698.0
+        },
+        {
+          "date": "2026-05-27",
+          "value": 4983339.0
+        },
+        {
+          "date": "2026-05-28",
+          "value": 6811230.0
+        },
+        {
+          "date": "2026-05-29",
+          "value": 5922830.0
+        },
+        {
+          "date": "2026-05-30",
+          "value": 8791834.0
+        },
+        {
+          "date": "2026-05-31",
+          "value": 6754076.0
+        },
+        {
+          "date": "2026-06-01",
+          "value": 6003745.0
+        },
+        {
+          "date": "2026-06-02",
+          "value": 4630632.0
+        },
+        {
+          "date": "2026-06-03",
+          "value": 4905316.0
+        },
+        {
+          "date": "2026-06-04",
+          "value": 4523157.0
+        },
+        {
+          "date": "2026-06-05",
+          "value": 7785783.0
+        },
+        {
+          "date": "2026-06-06",
+          "value": 7335882.0
+        },
+        {
+          "date": "2026-06-07",
+          "value": 6244188.0
+        },
+        {
+          "date": "2026-06-08",
+          "value": 7226243.0
+        },
+        {
+          "date": "2026-06-09",
+          "value": 5866213.0
+        },
+        {
+          "date": "2026-06-10",
+          "value": 6097980.0
+        },
+        {
+          "date": "2026-06-11",
+          "value": 5502935.0
+        },
+        {
+          "date": "2026-06-12",
+          "value": 5491036.0
+        },
+        {
+          "date": "2026-06-13",
+          "value": 5192459.0
+        },
+        {
+          "date": "2026-06-14",
+          "value": 7503652.0
+        },
+        {
+          "date": "2026-06-15",
+          "value": 5082763.0
+        },
+        {
+          "date": "2026-06-16",
+          "value": 5692792.0
+        },
+        {
+          "date": "2026-06-17",
+          "value": 5442189.0
+        },
+        {
+          "date": "2026-06-18",
+          "value": 5776839.0
+        },
+        {
+          "date": "2026-06-19",
+          "value": 4962696.0
+        },
+        {
+          "date": "2026-06-20",
+          "value": 6763800.0
+        },
+        {
+          "date": "2026-06-21",
+          "value": 6701078.0
+        },
+        {
+          "date": "2026-06-22",
+          "value": 6885309.0
+        },
+        {
+          "date": "2026-06-23",
+          "value": 5069481.0
+        },
+        {
+          "date": "2026-06-24",
+          "value": 4885751.0
+        },
+        {
+          "date": "2026-06-25",
+          "value": 5763703.0
+        },
+        {
+          "date": "2026-06-26",
+          "value": 6126859.0
+        },
+        {
+          "date": "2026-06-27",
+          "value": 6367869.0
+        },
+        {
+          "date": "2026-06-28",
+          "value": 5709925.0
+        },
+        {
+          "date": "2026-06-29",
+          "value": 5038762.0
+        },
+        {
+          "date": "2026-06-30",
+          "value": 7586401.0
+        },
+        {
+          "date": "2026-07-01",
+          "value": 5813379.0
+        },
+        {
+          "date": "2026-07-02",
+          "value": 5983927.0
+        },
+        {
+          "date": "2026-07-03",
+          "value": 7587621.0
+        },
+        {
+          "date": "2026-07-04",
+          "value": 4829270.0
+        },
+        {
+          "date": "2026-07-05",
+          "value": 6604091.0
+        },
+        {
+          "date": "2026-07-06",
+          "value": 5943041.0
+        },
+        {
+          "date": "2026-07-07",
+          "value": 4830439.0
+        },
+        {
+          "date": "2026-07-08",
+          "value": 5582733.0
+        },
+        {
+          "date": "2026-07-09",
+          "value": 5804873.0
+        },
+        {
+          "date": "2026-07-10",
+          "value": 5617366.0
+        },
+        {
+          "date": "2026-07-11",
+          "value": 5902263.0
+        },
+        {
+          "date": "2026-07-12",
+          "value": 6810030.0
+        },
+        {
+          "date": "2026-07-13",
+          "value": 7348204.0
+        },
+        {
+          "date": "2026-07-14",
+          "value": 6239430.0
+        },
+        {
+          "date": "2026-07-15",
+          "value": 5911132.0
+        },
+        {
+          "date": "2026-07-16",
+          "value": 4834740.0
+        },
+        {
+          "date": "2026-07-17",
+          "value": 6577689.0
+        },
+        {
+          "date": "2026-07-18",
+          "value": 6796305.0
+        },
+        {
+          "date": "2026-07-19",
+          "value": 5973257.0
+        },
+        {
+          "date": "2026-07-20",
+          "value": 5107910.0
+        },
+        {
+          "date": "2026-07-21",
+          "value": 6149501.0
+        },
+        {
+          "date": "2026-07-22",
+          "value": 6261654.0
+        },
+        {
+          "date": "2026-07-23",
+          "value": 5959398.0
+        },
+        {
+          "date": "2026-07-24",
+          "value": 4631275.0
+        },
+        {
+          "date": "2026-07-25",
+          "value": 5359157.0
+        },
+        {
+          "date": "2026-07-26",
+          "value": 5268348.0
+        },
+        {
+          "date": "2026-07-27",
+          "value": 5121229.0
+        },
+        {
+          "date": "2026-07-28",
+          "value": 3210589.0
+        },
+        {
+          "date": "2026-07-29",
+          "value": 3612340.0
+        },
+        {
+          "date": "2026-07-30",
+          "value": 7027450.0
+        },
+        {
+          "date": "2026-07-31",
+          "value": 5737947.0
+        },
+        {
+          "date": "2026-08-01",
+          "value": 5251929.0
+        },
+        {
+          "date": "2026-08-02",
+          "value": 5511497.0
+        },
+        {
+          "date": "2026-08-03",
+          "value": 5544899.0
+        },
+        {
+          "date": "2026-08-04",
+          "value": 4950558.0
+        },
+        {
+          "date": "2026-08-05",
+          "value": 5027187.0
+        },
+        {
+          "date": "2026-08-06",
+          "value": 4683694.0
+        },
+        {
+          "date": "2026-08-07",
+          "value": 5554056.0
+        },
+        {
+          "date": "2026-08-08",
+          "value": 5147141.0
+        },
+        {
+          "date": "2026-08-09",
+          "value": 4603047.0
+        },
+        {
+          "date": "2026-08-10",
+          "value": 4171222.0
+        },
+        {
+          "date": "2026-08-11",
+          "value": 5723400.0
+        },
+        {
+          "date": "2026-08-12",
+          "value": 4215222.0
+        },
+        {
+          "date": "2026-08-13",
+          "value": 5799043.0
+        },
+        {
+          "date": "2026-08-14",
+          "value": 4353831.0
+        },
+        {
+          "date": "2026-08-15",
+          "value": 8784867.0
+        },
+        {
+          "date": "2026-08-16",
+          "value": 6088608.0
+        }
+      ],
+      "history_metric_key": "all",
+      "history_field": "capacity",
+      "history_unit": "estimated_trade_tonnes_per_day",
+      "history_point_count": 180,
+      "history_status": "observed_daily_estimated_trade_volume",
+      "daily_averages": {
+        "status": "observed_daily_estimated_trade_volume",
+        "unit": "estimated_trade_tonnes_per_day",
+        "definition": "PortWatch estimated daily trade volume in metric tonnes, derived from vessel DWT and estimated payload/utilization; not observed vessel DWT.",
+        "latest_daily_observation": {
+          "date": "2026-08-16",
+          "value": 6088608.0
+        },
+        "trailing_7d_average": {
+          "label_ko": "최근 7일 일평균",
+          "status": "observed_daily_average",
+          "value": 5590884.714286,
+          "observation_count": 7,
+          "required_observation_count": 7,
+          "start_date": "2026-08-10",
+          "end_date": "2026-08-16",
+          "calculation": "mean_of_observed_daily_values_no_imputation"
+        },
+        "prior_28d_average": {
+          "label_ko": "직전 28일 일평균",
+          "status": "observed_daily_average",
+          "value": 5478627.25,
+          "observation_count": 28,
+          "required_observation_count": 28,
+          "start_date": "2026-07-13",
+          "end_date": "2026-08-09",
+          "calculation": "mean_of_observed_daily_values_no_imputation"
+        },
+        "warning_ko": "PortWatch의 일별 추정 교역량 관측치를 평균한 값입니다. 결측일은 보간하지 않으며, 실제 화물 명세·통항 DWT·물리적 봉쇄율을 뜻하지 않습니다."
+      },
+      "history_warning": "Daily PortWatch transit-volume estimate in metric tonnes; subject to AIS coverage and upstream revisions, and not observed DWT.",
+      "metrics": {
+        "container": {
+          "field": "capacity_container",
+          "unit": "estimated_trade_tonnes_per_day",
+          "definition": "PortWatch estimated daily trade volume in metric tonnes, derived from vessel DWT and estimated payload/utilization; not observed vessel DWT.",
+          "current_7d_mean_estimated_trade_tonnes": 966704.285714,
+          "prior_28d_mean_estimated_trade_tonnes": 1131071.0,
+          "estimated_trade_volume_ratio": 0.85468,
+          "observed_trade_volume_shortfall_fraction": 0.14532,
+          "remaining_trade_volume_ratio": 0.85468,
+          "change_pct": -14.531954
+        },
+        "dry_bulk": {
+          "field": "capacity_dry_bulk",
+          "unit": "estimated_trade_tonnes_per_day",
+          "definition": "PortWatch estimated daily trade volume in metric tonnes, derived from vessel DWT and estimated payload/utilization; not observed vessel DWT.",
+          "current_7d_mean_estimated_trade_tonnes": 3620420.857143,
+          "prior_28d_mean_estimated_trade_tonnes": 3191841.928571,
+          "estimated_trade_volume_ratio": 1.134273,
+          "observed_trade_volume_shortfall_fraction": 0.0,
+          "remaining_trade_volume_ratio": 1.0,
+          "change_pct": 13.427323
+        },
+        "general_cargo": {
+          "field": "capacity_general_cargo",
+          "unit": "estimated_trade_tonnes_per_day",
+          "definition": "PortWatch estimated daily trade volume in metric tonnes, derived from vessel DWT and estimated payload/utilization; not observed vessel DWT.",
+          "current_7d_mean_estimated_trade_tonnes": 20539.285714,
+          "prior_28d_mean_estimated_trade_tonnes": 44687.357143,
+          "estimated_trade_volume_ratio": 0.459622,
+          "observed_trade_volume_shortfall_fraction": 0.540378,
+          "remaining_trade_volume_ratio": 0.459622,
+          "change_pct": -54.037815
+        },
+        "tanker": {
+          "field": "capacity_tanker",
+          "unit": "estimated_trade_tonnes_per_day",
+          "definition": "PortWatch estimated daily trade volume in metric tonnes, derived from vessel DWT and estimated payload/utilization; not observed vessel DWT.",
+          "current_7d_mean_estimated_trade_tonnes": 965680.142857,
+          "prior_28d_mean_estimated_trade_tonnes": 1097403.5,
+          "estimated_trade_volume_ratio": 0.879968,
+          "observed_trade_volume_shortfall_fraction": 0.120032,
+          "remaining_trade_volume_ratio": 0.879968,
+          "change_pct": -12.003184
+        },
+        "all": {
+          "field": "capacity",
+          "unit": "estimated_trade_tonnes_per_day",
+          "definition": "PortWatch estimated daily trade volume in metric tonnes, derived from vessel DWT and estimated payload/utilization; not observed vessel DWT.",
+          "current_7d_mean_estimated_trade_tonnes": 5590884.714286,
+          "prior_28d_mean_estimated_trade_tonnes": 5478627.25,
+          "estimated_trade_volume_ratio": 1.02049,
+          "observed_trade_volume_shortfall_fraction": 0.0,
+          "remaining_trade_volume_ratio": 1.0,
+          "change_pct": 2.049007
+        }
+      },
+      "signal_validation": {
+        "container": {
+          "status": "exploratory_no_proven_skill",
+          "forecast_use": "descriptive_only",
+          "sample_count": 689,
+          "train_count": 551,
+          "test_count": 138,
+          "feature": "signed current 7-observation estimated trade-volume gap vs preceding 28",
+          "target": "signed next 7-observation estimated trade-volume gap vs same preceding 28",
+          "ols_intercept": -0.004715,
+          "ols_slope": -0.142406,
+          "test_r2": -0.171988,
+          "test_mae_fraction": 0.096692,
+          "persistence_mae_fraction": 0.118861,
+          "beats_persistence": true,
+          "warning": "Exploratory chronological validation; not a causal model or closure probability."
+        },
+        "dry_bulk": {
+          "status": "exploratory_positive_skill",
+          "forecast_use": "eligible_for_exploratory_forecast",
+          "sample_count": 689,
+          "train_count": 551,
+          "test_count": 138,
+          "feature": "signed current 7-observation estimated trade-volume gap vs preceding 28",
+          "target": "signed next 7-observation estimated trade-volume gap vs same preceding 28",
+          "ols_intercept": 0.003569,
+          "ols_slope": 0.151206,
+          "test_r2": 0.016905,
+          "test_mae_fraction": 0.083772,
+          "persistence_mae_fraction": 0.098618,
+          "beats_persistence": true,
+          "warning": "Exploratory chronological validation; not a causal model or closure probability."
+        },
+        "general_cargo": {
+          "status": "exploratory_positive_skill",
+          "forecast_use": "eligible_for_exploratory_forecast",
+          "sample_count": 689,
+          "train_count": 551,
+          "test_count": 138,
+          "feature": "signed current 7-observation estimated trade-volume gap vs preceding 28",
+          "target": "signed next 7-observation estimated trade-volume gap vs same preceding 28",
+          "ols_intercept": -0.005967,
+          "ols_slope": 0.109899,
+          "test_r2": 0.057305,
+          "test_mae_fraction": 0.241916,
+          "persistence_mae_fraction": 0.267682,
+          "beats_persistence": true,
+          "warning": "Exploratory chronological validation; not a causal model or closure probability."
+        },
+        "tanker": {
+          "status": "exploratory_positive_skill",
+          "forecast_use": "eligible_for_exploratory_forecast",
+          "sample_count": 689,
+          "train_count": 551,
+          "test_count": 138,
+          "feature": "signed current 7-observation estimated trade-volume gap vs preceding 28",
+          "target": "signed next 7-observation estimated trade-volume gap vs same preceding 28",
+          "ols_intercept": 0.001855,
+          "ols_slope": 0.220042,
+          "test_r2": 0.014036,
+          "test_mae_fraction": 0.129032,
+          "persistence_mae_fraction": 0.160973,
+          "beats_persistence": true,
+          "warning": "Exploratory chronological validation; not a causal model or closure probability."
+        },
+        "all": {
+          "status": "exploratory_positive_skill",
+          "forecast_use": "eligible_for_exploratory_forecast",
+          "sample_count": 689,
+          "train_count": 551,
+          "test_count": 138,
+          "feature": "signed current 7-observation estimated trade-volume gap vs preceding 28",
+          "target": "signed next 7-observation estimated trade-volume gap vs same preceding 28",
+          "ols_intercept": 0.00284,
+          "ols_slope": 0.099474,
+          "test_r2": 0.034416,
+          "test_mae_fraction": 0.074585,
+          "persistence_mae_fraction": 0.090955,
+          "beats_persistence": true,
+          "warning": "Exploratory chronological validation; not a causal model or closure probability."
+        }
+      },
+      "multi_model_analysis": {
+        "all": {
+          "status": "ml_candidate_validated",
+          "forecast_use": "eligible_exploratory",
+          "sample_count": 689,
+          "train_count": 544,
+          "purged_count": 7,
+          "test_count": 138,
+          "target_scale": "symmetric capacity gap in [-2, 2]; positive means shortfall",
+          "feature_names": [
+            "symmetric_gap_7_vs_prior_28",
+            "symmetric_gap_3_vs_prior_14",
+            "symmetric_week_over_week_gap",
+            "volatility_cv_14",
+            "zero_capacity_share_14"
+          ],
+          "model_selection": "lowest three-split TimeSeriesSplit CV MAE on training window",
+          "selected_model": "ridge",
+          "beats_persistence_by_5pct": true,
+          "beats_best_simple_baseline_by_5pct": true,
+          "backtest_beats_best_simple_baseline_by_5pct": true,
+          "backtest_positive_r2": true,
+          "models": [
+            {
+              "model": "persistence",
+              "cv_mae_symmetric_gap": null,
+              "test_mae_symmetric_gap": 0.088145,
+              "test_rmse_symmetric_gap": 0.112557,
+              "test_r2": -0.289825,
+              "stress_direction_accuracy": 0.876812
+            },
+            {
+              "model": "zero_shortfall",
+              "cv_mae_symmetric_gap": null,
+              "test_mae_symmetric_gap": 0.076522,
+              "test_rmse_symmetric_gap": 0.099171,
+              "test_r2": -0.001296,
+              "stress_direction_accuracy": 0.876812
+            },
+            {
+              "model": "linear",
+              "cv_mae_symmetric_gap": 0.059229,
+              "test_mae_symmetric_gap": 0.06915,
+              "test_rmse_symmetric_gap": 0.090091,
+              "test_r2": 0.173669,
+              "stress_direction_accuracy": 0.876812
+            },
+            {
+              "model": "ridge",
+              "cv_mae_symmetric_gap": 0.059222,
+              "test_mae_symmetric_gap": 0.069153,
+              "test_rmse_symmetric_gap": 0.090109,
+              "test_r2": 0.173343,
+              "stress_direction_accuracy": 0.876812
+            },
+            {
+              "model": "random_forest",
+              "cv_mae_symmetric_gap": 0.061187,
+              "test_mae_symmetric_gap": 0.068573,
+              "test_rmse_symmetric_gap": 0.089441,
+              "test_r2": 0.185558,
+              "stress_direction_accuracy": 0.876812
+            },
+            {
+              "model": "gradient_boosting",
+              "cv_mae_symmetric_gap": 0.060082,
+              "test_mae_symmetric_gap": 0.070542,
+              "test_rmse_symmetric_gap": 0.092241,
+              "test_r2": 0.133759,
+              "stress_direction_accuracy": 0.876812
+            }
+          ],
+          "walk_forward_backtest": {
+            "status": "completed",
+            "method": "four-fold expanding-window backtest with non-overlapping 56-sample test blocks",
+            "fold_count": 4,
+            "purge_gap_samples": 7,
+            "total_test_predictions": 224,
+            "folds": [
+              {
+                "fold": 1,
+                "train_count": 458,
+                "purged_count": 7,
+                "test_count": 56,
+                "model_mae_symmetric_gap": {
+                  "persistence": 0.068258,
+                  "zero_shortfall": 0.058938,
+                  "linear": 0.06296,
+                  "ridge": 0.062928,
+                  "random_forest": 0.070616,
+                  "gradient_boosting": 0.062294
+                }
+              },
+              {
+                "fold": 2,
+                "train_count": 514,
+                "purged_count": 7,
+                "test_count": 56,
+                "model_mae_symmetric_gap": {
+                  "persistence": 0.092982,
+                  "zero_shortfall": 0.066295,
+                  "linear": 0.059876,
+                  "ridge": 0.059886,
+                  "random_forest": 0.060226,
+                  "gradient_boosting": 0.06149
+                }
+              },
+              {
+                "fold": 3,
+                "train_count": 570,
+                "purged_count": 7,
+                "test_count": 56,
+                "model_mae_symmetric_gap": {
+                  "persistence": 0.094274,
+                  "zero_shortfall": 0.067188,
+                  "linear": 0.057965,
+                  "ridge": 0.057944,
+                  "random_forest": 0.057895,
+                  "gradient_boosting": 0.058118
+                }
+              },
+              {
+                "fold": 4,
+                "train_count": 626,
+                "purged_count": 7,
+                "test_count": 56,
+                "model_mae_symmetric_gap": {
+                  "persistence": 0.066469,
+                  "zero_shortfall": 0.07578,
+                  "linear": 0.067855,
+                  "ridge": 0.067878,
+                  "random_forest": 0.072532,
+                  "gradient_boosting": 0.072544
+                }
+              }
+            ],
+            "models": [
+              {
+                "model": "persistence",
+                "cv_mae_symmetric_gap": null,
+                "test_mae_symmetric_gap": 0.080496,
+                "test_rmse_symmetric_gap": 0.102071,
+                "test_r2": -0.326709,
+                "stress_direction_accuracy": 0.852679,
+                "mean_fold_mae_symmetric_gap": 0.080496,
+                "fold_wins_vs_best_simple_baseline": null
+              },
+              {
+                "model": "zero_shortfall",
+                "cv_mae_symmetric_gap": null,
+                "test_mae_symmetric_gap": 0.06705,
+                "test_rmse_symmetric_gap": 0.088689,
+                "test_r2": -0.001643,
+                "stress_direction_accuracy": 0.879464,
+                "mean_fold_mae_symmetric_gap": 0.06705,
+                "fold_wins_vs_best_simple_baseline": null
+              },
+              {
+                "model": "linear",
+                "cv_mae_symmetric_gap": null,
+                "test_mae_symmetric_gap": 0.062164,
+                "test_rmse_symmetric_gap": 0.082592,
+                "test_r2": 0.131346,
+                "stress_direction_accuracy": 0.879464,
+                "mean_fold_mae_symmetric_gap": 0.062164,
+                "fold_wins_vs_best_simple_baseline": 2
+              },
+              {
+                "model": "ridge",
+                "cv_mae_symmetric_gap": null,
+                "test_mae_symmetric_gap": 0.062159,
+                "test_rmse_symmetric_gap": 0.082597,
+                "test_r2": 0.131232,
+                "stress_direction_accuracy": 0.879464,
+                "mean_fold_mae_symmetric_gap": 0.062159,
+                "fold_wins_vs_best_simple_baseline": 2
+              },
+              {
+                "model": "random_forest",
+                "cv_mae_symmetric_gap": null,
+                "test_mae_symmetric_gap": 0.065317,
+                "test_rmse_symmetric_gap": 0.086163,
+                "test_r2": 0.054604,
+                "stress_direction_accuracy": 0.879464,
+                "mean_fold_mae_symmetric_gap": 0.065317,
+                "fold_wins_vs_best_simple_baseline": 2
+              },
+              {
+                "model": "gradient_boosting",
+                "cv_mae_symmetric_gap": null,
+                "test_mae_symmetric_gap": 0.063611,
+                "test_rmse_symmetric_gap": 0.084271,
+                "test_r2": 0.095672,
+                "stress_direction_accuracy": 0.879464,
+                "mean_fold_mae_symmetric_gap": 0.063611,
+                "fold_wins_vs_best_simple_baseline": 2
+              }
+            ]
+          },
+          "feature_importance": [
+            {
+              "feature": "volatility_cv_14",
+              "importance": 0.006916
+            },
+            {
+              "feature": "symmetric_gap_7_vs_prior_28",
+              "importance": 0.004984
+            },
+            {
+              "feature": "symmetric_gap_3_vs_prior_14",
+              "importance": 0.002346
+            },
+            {
+              "feature": "symmetric_week_over_week_gap",
+              "importance": 0.000193
+            },
+            {
+              "feature": "zero_capacity_share_14",
+              "importance": 0.0
+            }
+          ],
+          "candidate_next_7d_symmetric_gap": 0.024075,
+          "candidate_next_7d_shortfall_fraction": 0.023789,
+          "published_next_7d_shortfall_fraction": 0.023789,
+          "candidate_prediction_interval": {
+            "p10_symmetric_gap": -0.104799,
+            "p90_symmetric_gap": 0.13082,
+            "method": "holdout residual empirical interval on symmetric gap scale"
+          },
+          "current_regime": {
+            "label": "normal_variation",
+            "cluster": 1,
+            "cluster_mean_symmetric_gap": -0.032255
+          },
+          "current_anomaly": {
+            "score": -0.034846,
+            "historical_percentile": 0.833091,
+            "is_anomaly_at_90pct": false,
+            "method": "IsolationForest contamination=0.10"
+          },
+          "warning": "Exploratory ML with purged chronological validation; no causal claim. Candidate is unpublished unless it beats both simple baselines by 5% and has positive R2 in both holdout and walk-forward backtests."
+        }
+      },
+      "multi_model_primary_metric": "all",
+      "fetched_at": "2026-08-24T13:25:44.608368+00:00",
+      "stale_days": 8,
+      "is_stale": true,
+      "fallback_used": false,
+      "source_status": "api_observation_stale",
+      "history_source_point_count": 730,
+      "history_screen_point_limit": 180
+    },
+    "gibraltar": {
+      "portwatch_id": "chokepoint8",
+      "portname": "Gibraltar Strait",
+      "latest_date": "2026-08-16",
+      "quality": "observed_estimated_trade_volume_shortfall_7d_vs_prior_28d",
+      "current_window_days": 7,
+      "baseline_window_days": 28,
+      "metric_unit": "estimated_trade_tonnes_per_day",
+      "metric_definition": "PortWatch estimated daily trade volume in metric tonnes, derived from vessel DWT and estimated payload/utilization; not observed vessel DWT.",
+      "interpretation": "Short-term estimated trade-volume anomaly used as a disruption signal; not observed DWT and not proof of literal physical closure.",
+      "observation_count": 730,
+      "history": [
+        {
+          "date": "2026-02-18",
+          "value": 5053992.0
+        },
+        {
+          "date": "2026-02-19",
+          "value": 4088668.0
+        },
+        {
+          "date": "2026-02-20",
+          "value": 3193222.0
+        },
+        {
+          "date": "2026-02-21",
+          "value": 2850872.0
+        },
+        {
+          "date": "2026-02-22",
+          "value": 4153705.0
+        },
+        {
+          "date": "2026-02-23",
+          "value": 4974646.0
+        },
+        {
+          "date": "2026-02-24",
+          "value": 3387398.0
+        },
+        {
+          "date": "2026-02-25",
+          "value": 3837292.0
+        },
+        {
+          "date": "2026-02-26",
+          "value": 3370610.0
+        },
+        {
+          "date": "2026-02-27",
+          "value": 3504297.0
+        },
+        {
+          "date": "2026-02-28",
+          "value": 3264925.0
+        },
+        {
+          "date": "2026-03-01",
+          "value": 2897176.0
+        },
+        {
+          "date": "2026-03-02",
+          "value": 2854011.0
+        },
+        {
+          "date": "2026-03-03",
+          "value": 4207805.0
+        },
+        {
+          "date": "2026-03-04",
+          "value": 3221713.0
+        },
+        {
+          "date": "2026-03-05",
+          "value": 3930544.0
+        },
+        {
+          "date": "2026-03-06",
+          "value": 3743978.0
+        },
+        {
+          "date": "2026-03-07",
+          "value": 2749917.0
+        },
+        {
+          "date": "2026-03-08",
+          "value": 4615326.0
+        },
+        {
+          "date": "2026-03-09",
+          "value": 4043803.0
+        },
+        {
+          "date": "2026-03-10",
+          "value": 3975118.0
+        },
+        {
+          "date": "2026-03-11",
+          "value": 3965407.0
+        },
+        {
+          "date": "2026-03-12",
+          "value": 4201493.0
+        },
+        {
+          "date": "2026-03-13",
+          "value": 2919897.0
+        },
+        {
+          "date": "2026-03-14",
+          "value": 3498416.0
+        },
+        {
+          "date": "2026-03-15",
+          "value": 2708162.0
+        },
+        {
+          "date": "2026-03-16",
+          "value": 3423351.0
+        },
+        {
+          "date": "2026-03-17",
+          "value": 4126960.0
+        },
+        {
+          "date": "2026-03-18",
+          "value": 3607401.0
+        },
+        {
+          "date": "2026-03-19",
+          "value": 3509434.0
+        },
+        {
+          "date": "2026-03-20",
+          "value": 4034665.0
+        },
+        {
+          "date": "2026-03-21",
+          "value": 3091966.0
+        },
+        {
+          "date": "2026-03-22",
+          "value": 3854466.0
+        },
+        {
+          "date": "2026-03-23",
+          "value": 4298659.0
+        },
+        {
+          "date": "2026-03-24",
+          "value": 4143995.0
+        },
+        {
+          "date": "2026-03-25",
+          "value": 3850336.0
+        },
+        {
+          "date": "2026-03-26",
+          "value": 4103568.0
+        },
+        {
+          "date": "2026-03-27",
+          "value": 4452504.0
+        },
+        {
+          "date": "2026-03-28",
+          "value": 3438628.0
+        },
+        {
+          "date": "2026-03-29",
+          "value": 4523437.0
+        },
+        {
+          "date": "2026-03-30",
+          "value": 2745264.0
+        },
+        {
+          "date": "2026-03-31",
+          "value": 3331229.0
+        },
+        {
+          "date": "2026-04-01",
+          "value": 3666625.0
+        },
+        {
+          "date": "2026-04-02",
+          "value": 2750261.0
+        },
+        {
+          "date": "2026-04-03",
+          "value": 3634236.0
+        },
+        {
+          "date": "2026-04-04",
+          "value": 3039090.0
+        },
+        {
+          "date": "2026-04-05",
+          "value": 4296787.0
+        },
+        {
+          "date": "2026-04-06",
+          "value": 3297512.0
+        },
+        {
+          "date": "2026-04-07",
+          "value": 4030567.0
+        },
+        {
+          "date": "2026-04-08",
+          "value": 2785995.0
+        },
+        {
+          "date": "2026-04-09",
+          "value": 3069327.0
+        },
+        {
+          "date": "2026-04-10",
+          "value": 2626814.0
+        },
+        {
+          "date": "2026-04-11",
+          "value": 3402414.0
+        },
+        {
+          "date": "2026-04-12",
+          "value": 2452661.0
+        },
+        {
+          "date": "2026-04-13",
+          "value": 3184111.0
+        },
+        {
+          "date": "2026-04-14",
+          "value": 3664170.0
+        },
+        {
+          "date": "2026-04-15",
+          "value": 3452682.0
+        },
+        {
+          "date": "2026-04-16",
+          "value": 2659457.0
+        },
+        {
+          "date": "2026-04-17",
+          "value": 3347184.0
+        },
+        {
+          "date": "2026-04-18",
+          "value": 3252819.0
+        },
+        {
+          "date": "2026-04-19",
+          "value": 3071112.0
+        },
+        {
+          "date": "2026-04-20",
+          "value": 3972335.0
+        },
+        {
+          "date": "2026-04-21",
+          "value": 2724621.0
+        },
+        {
+          "date": "2026-04-22",
+          "value": 4064937.0
+        },
+        {
+          "date": "2026-04-23",
+          "value": 3245122.0
+        },
+        {
+          "date": "2026-04-24",
+          "value": 3960015.0
+        },
+        {
+          "date": "2026-04-25",
+          "value": 2383370.0
+        },
+        {
+          "date": "2026-04-26",
+          "value": 3375794.0
+        },
+        {
+          "date": "2026-04-27",
+          "value": 2947914.0
+        },
+        {
+          "date": "2026-04-28",
+          "value": 3332963.0
+        },
+        {
+          "date": "2026-04-29",
+          "value": 4281474.0
+        },
+        {
+          "date": "2026-04-30",
+          "value": 3550305.0
+        },
+        {
+          "date": "2026-05-01",
+          "value": 3611731.0
+        },
+        {
+          "date": "2026-05-02",
+          "value": 3607837.0
+        },
+        {
+          "date": "2026-05-03",
+          "value": 3775194.0
+        },
+        {
+          "date": "2026-05-04",
+          "value": 3271948.0
+        },
+        {
+          "date": "2026-05-05",
+          "value": 3020152.0
+        },
+        {
+          "date": "2026-05-06",
+          "value": 4543658.0
+        },
+        {
+          "date": "2026-05-07",
+          "value": 3410506.0
+        },
+        {
+          "date": "2026-05-08",
+          "value": 4437825.0
+        },
+        {
+          "date": "2026-05-09",
+          "value": 3455128.0
+        },
+        {
+          "date": "2026-05-10",
+          "value": 3520947.0
+        },
+        {
+          "date": "2026-05-11",
+          "value": 2933167.0
+        },
+        {
+          "date": "2026-05-12",
+          "value": 3533128.0
+        },
+        {
+          "date": "2026-05-13",
+          "value": 2821443.0
+        },
+        {
+          "date": "2026-05-14",
+          "value": 4024870.0
+        },
+        {
+          "date": "2026-05-15",
+          "value": 3940694.0
+        },
+        {
+          "date": "2026-05-16",
+          "value": 4068685.0
+        },
+        {
+          "date": "2026-05-17",
+          "value": 2987954.0
+        },
+        {
+          "date": "2026-05-18",
+          "value": 3339649.0
+        },
+        {
+          "date": "2026-05-19",
+          "value": 4669471.0
+        },
+        {
+          "date": "2026-05-20",
+          "value": 5056692.0
+        },
+        {
+          "date": "2026-05-21",
+          "value": 3718122.0
+        },
+        {
+          "date": "2026-05-22",
+          "value": 3786823.0
+        },
+        {
+          "date": "2026-05-23",
+          "value": 2524954.0
+        },
+        {
+          "date": "2026-05-24",
+          "value": 3688195.0
+        },
+        {
+          "date": "2026-05-25",
+          "value": 3870517.0
+        },
+        {
+          "date": "2026-05-26",
+          "value": 4103597.0
+        },
+        {
+          "date": "2026-05-27",
+          "value": 3725938.0
+        },
+        {
+          "date": "2026-05-28",
+          "value": 3639709.0
+        },
+        {
+          "date": "2026-05-29",
+          "value": 3283835.0
+        },
+        {
+          "date": "2026-05-30",
+          "value": 4028782.0
+        },
+        {
+          "date": "2026-05-31",
+          "value": 4093416.0
+        },
+        {
+          "date": "2026-06-01",
+          "value": 3161866.0
+        },
+        {
+          "date": "2026-06-02",
+          "value": 4069997.0
+        },
+        {
+          "date": "2026-06-03",
+          "value": 2959206.0
+        },
+        {
+          "date": "2026-06-04",
+          "value": 3315614.0
+        },
+        {
+          "date": "2026-06-05",
+          "value": 3119200.0
+        },
+        {
+          "date": "2026-06-06",
+          "value": 3596415.0
+        },
+        {
+          "date": "2026-06-07",
+          "value": 4134741.0
+        },
+        {
+          "date": "2026-06-08",
+          "value": 3341579.0
+        },
+        {
+          "date": "2026-06-09",
+          "value": 3305567.0
+        },
+        {
+          "date": "2026-06-10",
+          "value": 3487420.0
+        },
+        {
+          "date": "2026-06-11",
+          "value": 4509601.0
+        },
+        {
+          "date": "2026-06-12",
+          "value": 3399145.0
+        },
+        {
+          "date": "2026-06-13",
+          "value": 4071541.0
+        },
+        {
+          "date": "2026-06-14",
+          "value": 3084224.0
+        },
+        {
+          "date": "2026-06-15",
+          "value": 4005278.0
+        },
+        {
+          "date": "2026-06-16",
+          "value": 3718626.0
+        },
+        {
+          "date": "2026-06-17",
+          "value": 3135746.0
+        },
+        {
+          "date": "2026-06-18",
+          "value": 3655496.0
+        },
+        {
+          "date": "2026-06-19",
+          "value": 3718254.0
+        },
+        {
+          "date": "2026-06-20",
+          "value": 4632518.0
+        },
+        {
+          "date": "2026-06-21",
+          "value": 3706491.0
+        },
+        {
+          "date": "2026-06-22",
+          "value": 3951852.0
+        },
+        {
+          "date": "2026-06-23",
+          "value": 3427033.0
+        },
+        {
+          "date": "2026-06-24",
+          "value": 3958252.0
+        },
+        {
+          "date": "2026-06-25",
+          "value": 3010787.0
+        },
+        {
+          "date": "2026-06-26",
+          "value": 3727462.0
+        },
+        {
+          "date": "2026-06-27",
+          "value": 3827893.0
+        },
+        {
+          "date": "2026-06-28",
+          "value": 3545013.0
+        },
+        {
+          "date": "2026-06-29",
+          "value": 3605027.0
+        },
+        {
+          "date": "2026-06-30",
+          "value": 3176010.0
+        },
+        {
+          "date": "2026-07-01",
+          "value": 3586972.0
+        },
+        {
+          "date": "2026-07-02",
+          "value": 3060953.0
+        },
+        {
+          "date": "2026-07-03",
+          "value": 2864563.0
+        },
+        {
+          "date": "2026-07-04",
+          "value": 3657635.0
+        },
+        {
+          "date": "2026-07-05",
+          "value": 3667888.0
+        },
+        {
+          "date": "2026-07-06",
+          "value": 3353831.0
+        },
+        {
+          "date": "2026-07-07",
+          "value": 3961108.0
+        },
+        {
+          "date": "2026-07-08",
+          "value": 4085739.0
+        },
+        {
+          "date": "2026-07-09",
+          "value": 3410162.0
+        },
+        {
+          "date": "2026-07-10",
+          "value": 4180021.0
+        },
+        {
+          "date": "2026-07-11",
+          "value": 2743430.0
+        },
+        {
+          "date": "2026-07-12",
+          "value": 3666115.0
+        },
+        {
+          "date": "2026-07-13",
+          "value": 3301330.0
+        },
+        {
+          "date": "2026-07-14",
+          "value": 2839993.0
+        },
+        {
+          "date": "2026-07-15",
+          "value": 2990904.0
+        },
+        {
+          "date": "2026-07-16",
+          "value": 3629196.0
+        },
+        {
+          "date": "2026-07-17",
+          "value": 2565382.0
+        },
+        {
+          "date": "2026-07-18",
+          "value": 3179490.0
+        },
+        {
+          "date": "2026-07-19",
+          "value": 2899381.0
+        },
+        {
+          "date": "2026-07-20",
+          "value": 3836085.0
+        },
+        {
+          "date": "2026-07-21",
+          "value": 4043367.0
+        },
+        {
+          "date": "2026-07-22",
+          "value": 3069328.0
+        },
+        {
+          "date": "2026-07-23",
+          "value": 3561756.0
+        },
+        {
+          "date": "2026-07-24",
+          "value": 3039017.0
+        },
+        {
+          "date": "2026-07-25",
+          "value": 2942116.0
+        },
+        {
+          "date": "2026-07-26",
+          "value": 3059946.0
+        },
+        {
+          "date": "2026-07-27",
+          "value": 3541469.0
+        },
+        {
+          "date": "2026-07-28",
+          "value": 3704638.0
+        },
+        {
+          "date": "2026-07-29",
+          "value": 3062311.0
+        },
+        {
+          "date": "2026-07-30",
+          "value": 3465864.0
+        },
+        {
+          "date": "2026-07-31",
+          "value": 3389503.0
+        },
+        {
+          "date": "2026-08-01",
+          "value": 3399714.0
+        },
+        {
+          "date": "2026-08-02",
+          "value": 3176221.0
+        },
+        {
+          "date": "2026-08-03",
+          "value": 3343261.0
+        },
+        {
+          "date": "2026-08-04",
+          "value": 3597758.0
+        },
+        {
+          "date": "2026-08-05",
+          "value": 3997583.0
+        },
+        {
+          "date": "2026-08-06",
+          "value": 3562419.0
+        },
+        {
+          "date": "2026-08-07",
+          "value": 3977742.0
+        },
+        {
+          "date": "2026-08-08",
+          "value": 3603740.0
+        },
+        {
+          "date": "2026-08-09",
+          "value": 2663556.0
+        },
+        {
+          "date": "2026-08-10",
+          "value": 4146043.0
+        },
+        {
+          "date": "2026-08-11",
+          "value": 3092854.0
+        },
+        {
+          "date": "2026-08-12",
+          "value": 2465656.0
+        },
+        {
+          "date": "2026-08-13",
+          "value": 3572033.0
+        },
+        {
+          "date": "2026-08-14",
+          "value": 3707023.0
+        },
+        {
+          "date": "2026-08-15",
+          "value": 2385509.0
+        },
+        {
+          "date": "2026-08-16",
+          "value": 3633076.0
+        }
+      ],
+      "history_metric_key": "all",
+      "history_field": "capacity",
+      "history_unit": "estimated_trade_tonnes_per_day",
+      "history_point_count": 180,
+      "history_status": "observed_daily_estimated_trade_volume",
+      "daily_averages": {
+        "status": "observed_daily_estimated_trade_volume",
+        "unit": "estimated_trade_tonnes_per_day",
+        "definition": "PortWatch estimated daily trade volume in metric tonnes, derived from vessel DWT and estimated payload/utilization; not observed vessel DWT.",
+        "latest_daily_observation": {
+          "date": "2026-08-16",
+          "value": 3633076.0
+        },
+        "trailing_7d_average": {
+          "label_ko": "최근 7일 일평균",
+          "status": "observed_daily_average",
+          "value": 3286027.714286,
+          "observation_count": 7,
+          "required_observation_count": 7,
+          "start_date": "2026-08-10",
+          "end_date": "2026-08-16",
+          "calculation": "mean_of_observed_daily_values_no_imputation"
+        },
+        "prior_28d_average": {
+          "label_ko": "직전 28일 일평균",
+          "status": "observed_daily_average",
+          "value": 3337252.5,
+          "observation_count": 28,
+          "required_observation_count": 28,
+          "start_date": "2026-07-13",
+          "end_date": "2026-08-09",
+          "calculation": "mean_of_observed_daily_values_no_imputation"
+        },
+        "warning_ko": "PortWatch의 일별 추정 교역량 관측치를 평균한 값입니다. 결측일은 보간하지 않으며, 실제 화물 명세·통항 DWT·물리적 봉쇄율을 뜻하지 않습니다."
+      },
+      "history_warning": "Daily PortWatch transit-volume estimate in metric tonnes; subject to AIS coverage and upstream revisions, and not observed DWT.",
+      "metrics": {
+        "container": {
+          "field": "capacity_container",
+          "unit": "estimated_trade_tonnes_per_day",
+          "definition": "PortWatch estimated daily trade volume in metric tonnes, derived from vessel DWT and estimated payload/utilization; not observed vessel DWT.",
+          "current_7d_mean_estimated_trade_tonnes": 901886.428571,
+          "prior_28d_mean_estimated_trade_tonnes": 886981.178571,
+          "estimated_trade_volume_ratio": 1.016804,
+          "observed_trade_volume_shortfall_fraction": 0.0,
+          "remaining_trade_volume_ratio": 1.0,
+          "change_pct": 1.680447
+        },
+        "dry_bulk": {
+          "field": "capacity_dry_bulk",
+          "unit": "estimated_trade_tonnes_per_day",
+          "definition": "PortWatch estimated daily trade volume in metric tonnes, derived from vessel DWT and estimated payload/utilization; not observed vessel DWT.",
+          "current_7d_mean_estimated_trade_tonnes": 876147.428571,
+          "prior_28d_mean_estimated_trade_tonnes": 1029420.285714,
+          "estimated_trade_volume_ratio": 0.851108,
+          "observed_trade_volume_shortfall_fraction": 0.148892,
+          "remaining_trade_volume_ratio": 0.851108,
+          "change_pct": -14.88924
+        },
+        "general_cargo": {
+          "field": "capacity_general_cargo",
+          "unit": "estimated_trade_tonnes_per_day",
+          "definition": "PortWatch estimated daily trade volume in metric tonnes, derived from vessel DWT and estimated payload/utilization; not observed vessel DWT.",
+          "current_7d_mean_estimated_trade_tonnes": 89722.285714,
+          "prior_28d_mean_estimated_trade_tonnes": 94913.785714,
+          "estimated_trade_volume_ratio": 0.945303,
+          "observed_trade_volume_shortfall_fraction": 0.054697,
+          "remaining_trade_volume_ratio": 0.945303,
+          "change_pct": -5.469701
+        },
+        "tanker": {
+          "field": "capacity_tanker",
+          "unit": "estimated_trade_tonnes_per_day",
+          "definition": "PortWatch estimated daily trade volume in metric tonnes, derived from vessel DWT and estimated payload/utilization; not observed vessel DWT.",
+          "current_7d_mean_estimated_trade_tonnes": 1408715.0,
+          "prior_28d_mean_estimated_trade_tonnes": 1314218.285714,
+          "estimated_trade_volume_ratio": 1.071903,
+          "observed_trade_volume_shortfall_fraction": 0.0,
+          "remaining_trade_volume_ratio": 1.0,
+          "change_pct": 7.190336
+        },
+        "all": {
+          "field": "capacity",
+          "unit": "estimated_trade_tonnes_per_day",
+          "definition": "PortWatch estimated daily trade volume in metric tonnes, derived from vessel DWT and estimated payload/utilization; not observed vessel DWT.",
+          "current_7d_mean_estimated_trade_tonnes": 3286027.714286,
+          "prior_28d_mean_estimated_trade_tonnes": 3337252.5,
+          "estimated_trade_volume_ratio": 0.984651,
+          "observed_trade_volume_shortfall_fraction": 0.015349,
+          "remaining_trade_volume_ratio": 0.984651,
+          "change_pct": -1.534939
+        }
+      },
+      "signal_validation": {
+        "container": {
+          "status": "exploratory_no_proven_skill",
+          "forecast_use": "descriptive_only",
+          "sample_count": 689,
+          "train_count": 551,
+          "test_count": 138,
+          "feature": "signed current 7-observation estimated trade-volume gap vs preceding 28",
+          "target": "signed next 7-observation estimated trade-volume gap vs same preceding 28",
+          "ols_intercept": -0.004013,
+          "ols_slope": 0.129968,
+          "test_r2": -0.092528,
+          "test_mae_fraction": 0.06044,
+          "persistence_mae_fraction": 0.061531,
+          "beats_persistence": true,
+          "warning": "Exploratory chronological validation; not a causal model or closure probability."
+        },
+        "dry_bulk": {
+          "status": "exploratory_positive_skill",
+          "forecast_use": "eligible_for_exploratory_forecast",
+          "sample_count": 689,
+          "train_count": 551,
+          "test_count": 138,
+          "feature": "signed current 7-observation estimated trade-volume gap vs preceding 28",
+          "target": "signed next 7-observation estimated trade-volume gap vs same preceding 28",
+          "ols_intercept": -0.00182,
+          "ols_slope": 0.222967,
+          "test_r2": 0.038123,
+          "test_mae_fraction": 0.096091,
+          "persistence_mae_fraction": 0.122186,
+          "beats_persistence": true,
+          "warning": "Exploratory chronological validation; not a causal model or closure probability."
+        },
+        "general_cargo": {
+          "status": "exploratory_no_proven_skill",
+          "forecast_use": "descriptive_only",
+          "sample_count": 689,
+          "train_count": 551,
+          "test_count": 138,
+          "feature": "signed current 7-observation estimated trade-volume gap vs preceding 28",
+          "target": "signed next 7-observation estimated trade-volume gap vs same preceding 28",
+          "ols_intercept": -0.008248,
+          "ols_slope": 0.036926,
+          "test_r2": -0.017185,
+          "test_mae_fraction": 0.10779,
+          "persistence_mae_fraction": 0.140309,
+          "beats_persistence": true,
+          "warning": "Exploratory chronological validation; not a causal model or closure probability."
+        },
+        "tanker": {
+          "status": "exploratory_positive_skill",
+          "forecast_use": "eligible_for_exploratory_forecast",
+          "sample_count": 689,
+          "train_count": 551,
+          "test_count": 138,
+          "feature": "signed current 7-observation estimated trade-volume gap vs preceding 28",
+          "target": "signed next 7-observation estimated trade-volume gap vs same preceding 28",
+          "ols_intercept": -0.007536,
+          "ols_slope": 0.035364,
+          "test_r2": 0.023282,
+          "test_mae_fraction": 0.114129,
+          "persistence_mae_fraction": 0.116974,
+          "beats_persistence": true,
+          "warning": "Exploratory chronological validation; not a causal model or closure probability."
+        },
+        "all": {
+          "status": "exploratory_positive_skill",
+          "forecast_use": "eligible_for_exploratory_forecast",
+          "sample_count": 689,
+          "train_count": 551,
+          "test_count": 138,
+          "feature": "signed current 7-observation estimated trade-volume gap vs preceding 28",
+          "target": "signed next 7-observation estimated trade-volume gap vs same preceding 28",
+          "ols_intercept": -0.003689,
+          "ols_slope": 0.201123,
+          "test_r2": 0.10742,
+          "test_mae_fraction": 0.058376,
+          "persistence_mae_fraction": 0.060562,
+          "beats_persistence": true,
+          "warning": "Exploratory chronological validation; not a causal model or closure probability."
+        }
+      },
+      "multi_model_analysis": {
+        "all": {
+          "status": "ml_does_not_beat_baseline",
+          "forecast_use": "descriptive_only",
+          "sample_count": 689,
+          "train_count": 544,
+          "purged_count": 7,
+          "test_count": 138,
+          "target_scale": "symmetric capacity gap in [-2, 2]; positive means shortfall",
+          "feature_names": [
+            "symmetric_gap_7_vs_prior_28",
+            "symmetric_gap_3_vs_prior_14",
+            "symmetric_week_over_week_gap",
+            "volatility_cv_14",
+            "zero_capacity_share_14"
+          ],
+          "model_selection": "lowest three-split TimeSeriesSplit CV MAE on training window",
+          "selected_model": "ridge",
+          "beats_persistence_by_5pct": false,
+          "beats_best_simple_baseline_by_5pct": false,
+          "backtest_beats_best_simple_baseline_by_5pct": false,
+          "backtest_positive_r2": true,
+          "models": [
+            {
+              "model": "persistence",
+              "cv_mae_symmetric_gap": null,
+              "test_mae_symmetric_gap": 0.06131,
+              "test_rmse_symmetric_gap": 0.074715,
+              "test_r2": 0.072178,
+              "stress_direction_accuracy": 0.862319
+            },
+            {
+              "model": "zero_shortfall",
+              "cv_mae_symmetric_gap": null,
+              "test_mae_symmetric_gap": 0.063917,
+              "test_rmse_symmetric_gap": 0.079585,
+              "test_r2": -0.052718,
+              "stress_direction_accuracy": 0.898551
+            },
+            {
+              "model": "linear",
+              "cv_mae_symmetric_gap": 0.052371,
+              "test_mae_symmetric_gap": 0.059285,
+              "test_rmse_symmetric_gap": 0.074349,
+              "test_r2": 0.08124,
+              "stress_direction_accuracy": 0.898551
+            },
+            {
+              "model": "ridge",
+              "cv_mae_symmetric_gap": 0.052355,
+              "test_mae_symmetric_gap": 0.059296,
+              "test_rmse_symmetric_gap": 0.074362,
+              "test_r2": 0.080938,
+              "stress_direction_accuracy": 0.898551
+            },
+            {
+              "model": "random_forest",
+              "cv_mae_symmetric_gap": 0.0535,
+              "test_mae_symmetric_gap": 0.05983,
+              "test_rmse_symmetric_gap": 0.075818,
+              "test_r2": 0.044584,
+              "stress_direction_accuracy": 0.898551
+            },
+            {
+              "model": "gradient_boosting",
+              "cv_mae_symmetric_gap": 0.052489,
+              "test_mae_symmetric_gap": 0.062075,
+              "test_rmse_symmetric_gap": 0.077917,
+              "test_r2": -0.009047,
+              "stress_direction_accuracy": 0.898551
+            }
+          ],
+          "walk_forward_backtest": {
+            "status": "completed",
+            "method": "four-fold expanding-window backtest with non-overlapping 56-sample test blocks",
+            "fold_count": 4,
+            "purge_gap_samples": 7,
+            "total_test_predictions": 224,
+            "folds": [
+              {
+                "fold": 1,
+                "train_count": 458,
+                "purged_count": 7,
+                "test_count": 56,
+                "model_mae_symmetric_gap": {
+                  "persistence": 0.150582,
+                  "zero_shortfall": 0.139199,
+                  "linear": 0.136504,
+                  "ridge": 0.136481,
+                  "random_forest": 0.13034,
+                  "gradient_boosting": 0.133849
+                }
+              },
+              {
+                "fold": 2,
+                "train_count": 514,
+                "purged_count": 7,
+                "test_count": 56,
+                "model_mae_symmetric_gap": {
+                  "persistence": 0.089679,
+                  "zero_shortfall": 0.068695,
+                  "linear": 0.071089,
+                  "ridge": 0.07108,
+                  "random_forest": 0.064567,
+                  "gradient_boosting": 0.066937
+                }
+              },
+              {
+                "fold": 3,
+                "train_count": 570,
+                "purged_count": 7,
+                "test_count": 56,
+                "model_mae_symmetric_gap": {
+                  "persistence": 0.053017,
+                  "zero_shortfall": 0.05807,
+                  "linear": 0.055269,
+                  "ridge": 0.055281,
+                  "random_forest": 0.057158,
+                  "gradient_boosting": 0.05963
+                }
+              },
+              {
+                "fold": 4,
+                "train_count": 626,
+                "purged_count": 7,
+                "test_count": 56,
+                "model_mae_symmetric_gap": {
+                  "persistence": 0.05883,
+                  "zero_shortfall": 0.053606,
+                  "linear": 0.048615,
+                  "ridge": 0.048622,
+                  "random_forest": 0.048646,
+                  "gradient_boosting": 0.050773
+                }
+              }
+            ],
+            "models": [
+              {
+                "model": "persistence",
+                "cv_mae_symmetric_gap": null,
+                "test_mae_symmetric_gap": 0.088027,
+                "test_rmse_symmetric_gap": 0.118391,
+                "test_r2": -0.322333,
+                "stress_direction_accuracy": 0.785714,
+                "mean_fold_mae_symmetric_gap": 0.088027,
+                "fold_wins_vs_best_simple_baseline": null
+              },
+              {
+                "model": "zero_shortfall",
+                "cv_mae_symmetric_gap": null,
+                "test_mae_symmetric_gap": 0.079892,
+                "test_rmse_symmetric_gap": 0.103416,
+                "test_r2": -0.008966,
+                "stress_direction_accuracy": 0.866071,
+                "mean_fold_mae_symmetric_gap": 0.079892,
+                "fold_wins_vs_best_simple_baseline": null
+              },
+              {
+                "model": "linear",
+                "cv_mae_symmetric_gap": null,
+                "test_mae_symmetric_gap": 0.07787,
+                "test_rmse_symmetric_gap": 0.101159,
+                "test_r2": 0.034587,
+                "stress_direction_accuracy": 0.866071,
+                "mean_fold_mae_symmetric_gap": 0.07787,
+                "fold_wins_vs_best_simple_baseline": 2
+              },
+              {
+                "model": "ridge",
+                "cv_mae_symmetric_gap": null,
+                "test_mae_symmetric_gap": 0.077866,
+                "test_rmse_symmetric_gap": 0.101155,
+                "test_r2": 0.03468,
+                "stress_direction_accuracy": 0.866071,
+                "mean_fold_mae_symmetric_gap": 0.077866,
+                "fold_wins_vs_best_simple_baseline": 2
+              },
+              {
+                "model": "random_forest",
+                "cv_mae_symmetric_gap": null,
+                "test_mae_symmetric_gap": 0.075178,
+                "test_rmse_symmetric_gap": 0.099021,
+                "test_r2": 0.074968,
+                "stress_direction_accuracy": 0.866071,
+                "mean_fold_mae_symmetric_gap": 0.075178,
+                "fold_wins_vs_best_simple_baseline": 3
+              },
+              {
+                "model": "gradient_boosting",
+                "cv_mae_symmetric_gap": null,
+                "test_mae_symmetric_gap": 0.077797,
+                "test_rmse_symmetric_gap": 0.1011,
+                "test_r2": 0.03573,
+                "stress_direction_accuracy": 0.866071,
+                "mean_fold_mae_symmetric_gap": 0.077797,
+                "fold_wins_vs_best_simple_baseline": 3
+              }
+            ]
+          },
+          "feature_importance": [
+            {
+              "feature": "symmetric_gap_7_vs_prior_28",
+              "importance": 0.003581
+            },
+            {
+              "feature": "symmetric_gap_3_vs_prior_14",
+              "importance": 0.0
+            },
+            {
+              "feature": "symmetric_week_over_week_gap",
+              "importance": 0.0
+            },
+            {
+              "feature": "volatility_cv_14",
+              "importance": 0.0
+            },
+            {
+              "feature": "zero_capacity_share_14",
+              "importance": 0.0
+            }
+          ],
+          "candidate_next_7d_symmetric_gap": -0.001073,
+          "candidate_next_7d_shortfall_fraction": -0.001074,
+          "published_next_7d_shortfall_fraction": null,
+          "candidate_prediction_interval": {
+            "p10_symmetric_gap": -0.083311,
+            "p90_symmetric_gap": 0.088079,
+            "method": "holdout residual empirical interval on symmetric gap scale"
+          },
+          "current_regime": {
+            "label": "normal_variation",
+            "cluster": 1,
+            "cluster_mean_symmetric_gap": -0.023719
+          },
+          "current_anomaly": {
+            "score": -0.121652,
+            "historical_percentile": 0.216255,
+            "is_anomaly_at_90pct": false,
+            "method": "IsolationForest contamination=0.10"
+          },
+          "warning": "Exploratory ML with purged chronological validation; no causal claim. Candidate is unpublished unless it beats both simple baselines by 5% and has positive R2 in both holdout and walk-forward backtests."
+        }
+      },
+      "multi_model_primary_metric": "all",
+      "fetched_at": "2026-08-24T13:25:44.608368+00:00",
+      "stale_days": 8,
+      "is_stale": true,
+      "fallback_used": false,
+      "source_status": "api_observation_stale",
+      "history_source_point_count": 730,
+      "history_screen_point_limit": 180
+    },
+    "oresund": {
+      "portwatch_id": "chokepoint10",
+      "portname": "Oresund Strait",
+      "latest_date": "2026-08-16",
+      "quality": "observed_estimated_trade_volume_shortfall_7d_vs_prior_28d",
+      "current_window_days": 7,
+      "baseline_window_days": 28,
+      "metric_unit": "estimated_trade_tonnes_per_day",
+      "metric_definition": "PortWatch estimated daily trade volume in metric tonnes, derived from vessel DWT and estimated payload/utilization; not observed vessel DWT.",
+      "interpretation": "Short-term estimated trade-volume anomaly used as a disruption signal; not observed DWT and not proof of literal physical closure.",
+      "observation_count": 730,
+      "history": [
+        {
+          "date": "2026-02-18",
+          "value": 109140.0
+        },
+        {
+          "date": "2026-02-19",
+          "value": 95712.0
+        },
+        {
+          "date": "2026-02-20",
+          "value": 178963.0
+        },
+        {
+          "date": "2026-02-21",
+          "value": 79921.0
+        },
+        {
+          "date": "2026-02-22",
+          "value": 101136.0
+        },
+        {
+          "date": "2026-02-23",
+          "value": 61475.0
+        },
+        {
+          "date": "2026-02-24",
+          "value": 133284.0
+        },
+        {
+          "date": "2026-02-25",
+          "value": 64685.0
+        },
+        {
+          "date": "2026-02-26",
+          "value": 84969.0
+        },
+        {
+          "date": "2026-02-27",
+          "value": 115888.0
+        },
+        {
+          "date": "2026-02-28",
+          "value": 87531.0
+        },
+        {
+          "date": "2026-03-01",
+          "value": 80808.0
+        },
+        {
+          "date": "2026-03-02",
+          "value": 166265.0
+        },
+        {
+          "date": "2026-03-03",
+          "value": 86994.0
+        },
+        {
+          "date": "2026-03-04",
+          "value": 98949.0
+        },
+        {
+          "date": "2026-03-05",
+          "value": 86451.0
+        },
+        {
+          "date": "2026-03-06",
+          "value": 56877.0
+        },
+        {
+          "date": "2026-03-07",
+          "value": 116840.0
+        },
+        {
+          "date": "2026-03-08",
+          "value": 65347.0
+        },
+        {
+          "date": "2026-03-09",
+          "value": 24738.0
+        },
+        {
+          "date": "2026-03-10",
+          "value": 115904.0
+        },
+        {
+          "date": "2026-03-11",
+          "value": 68216.0
+        },
+        {
+          "date": "2026-03-12",
+          "value": 68418.0
+        },
+        {
+          "date": "2026-03-13",
+          "value": 109747.0
+        },
+        {
+          "date": "2026-03-14",
+          "value": 99490.0
+        },
+        {
+          "date": "2026-03-15",
+          "value": 138003.0
+        },
+        {
+          "date": "2026-03-16",
+          "value": 86916.0
+        },
+        {
+          "date": "2026-03-17",
+          "value": 146007.0
+        },
+        {
+          "date": "2026-03-18",
+          "value": 57261.0
+        },
+        {
+          "date": "2026-03-19",
+          "value": 51197.0
+        },
+        {
+          "date": "2026-03-20",
+          "value": 141361.0
+        },
+        {
+          "date": "2026-03-21",
+          "value": 83329.0
+        },
+        {
+          "date": "2026-03-22",
+          "value": 82352.0
+        },
+        {
+          "date": "2026-03-23",
+          "value": 81529.0
+        },
+        {
+          "date": "2026-03-24",
+          "value": 47794.0
+        },
+        {
+          "date": "2026-03-25",
+          "value": 106085.0
+        },
+        {
+          "date": "2026-03-26",
+          "value": 80099.0
+        },
+        {
+          "date": "2026-03-27",
+          "value": 63733.0
+        },
+        {
+          "date": "2026-03-28",
+          "value": 101244.0
+        },
+        {
+          "date": "2026-03-29",
+          "value": 82027.0
+        },
+        {
+          "date": "2026-03-30",
+          "value": 174602.0
+        },
+        {
+          "date": "2026-03-31",
+          "value": 83610.0
+        },
+        {
+          "date": "2026-04-01",
+          "value": 84336.0
+        },
+        {
+          "date": "2026-04-02",
+          "value": 286232.0
+        },
+        {
+          "date": "2026-04-03",
+          "value": 129861.0
+        },
+        {
+          "date": "2026-04-04",
+          "value": 66080.0
+        },
+        {
+          "date": "2026-04-05",
+          "value": 61614.0
+        },
+        {
+          "date": "2026-04-06",
+          "value": 35260.0
+        },
+        {
+          "date": "2026-04-07",
+          "value": 56505.0
+        },
+        {
+          "date": "2026-04-08",
+          "value": 122581.0
+        },
+        {
+          "date": "2026-04-09",
+          "value": 60983.0
+        },
+        {
+          "date": "2026-04-10",
+          "value": 54249.0
+        },
+        {
+          "date": "2026-04-11",
+          "value": 57464.0
+        },
+        {
+          "date": "2026-04-12",
+          "value": 95205.0
+        },
+        {
+          "date": "2026-04-13",
+          "value": 47236.0
+        },
+        {
+          "date": "2026-04-14",
+          "value": 153785.0
+        },
+        {
+          "date": "2026-04-15",
+          "value": 74218.0
+        },
+        {
+          "date": "2026-04-16",
+          "value": 94054.0
+        },
+        {
+          "date": "2026-04-17",
+          "value": 52495.0
+        },
+        {
+          "date": "2026-04-18",
+          "value": 135263.0
+        },
+        {
+          "date": "2026-04-19",
+          "value": 132766.0
+        },
+        {
+          "date": "2026-04-20",
+          "value": 65596.0
+        },
+        {
+          "date": "2026-04-21",
+          "value": 333664.0
+        },
+        {
+          "date": "2026-04-22",
+          "value": 40864.0
+        },
+        {
+          "date": "2026-04-23",
+          "value": 68941.0
+        },
+        {
+          "date": "2026-04-24",
+          "value": 121370.0
+        },
+        {
+          "date": "2026-04-25",
+          "value": 204593.0
+        },
+        {
+          "date": "2026-04-26",
+          "value": 97975.0
+        },
+        {
+          "date": "2026-04-27",
+          "value": 58873.0
+        },
+        {
+          "date": "2026-04-28",
+          "value": 74487.0
+        },
+        {
+          "date": "2026-04-29",
+          "value": 95043.0
+        },
+        {
+          "date": "2026-04-30",
+          "value": 113591.0
+        },
+        {
+          "date": "2026-05-01",
+          "value": 99477.0
+        },
+        {
+          "date": "2026-05-02",
+          "value": 45576.0
+        },
+        {
+          "date": "2026-05-03",
+          "value": 108247.0
+        },
+        {
+          "date": "2026-05-04",
+          "value": 68597.0
+        },
+        {
+          "date": "2026-05-05",
+          "value": 81930.0
+        },
+        {
+          "date": "2026-05-06",
+          "value": 113863.0
+        },
+        {
+          "date": "2026-05-07",
+          "value": 95734.0
+        },
+        {
+          "date": "2026-05-08",
+          "value": 104465.0
+        },
+        {
+          "date": "2026-05-09",
+          "value": 126721.0
+        },
+        {
+          "date": "2026-05-10",
+          "value": 152628.0
+        },
+        {
+          "date": "2026-05-11",
+          "value": 71577.0
+        },
+        {
+          "date": "2026-05-12",
+          "value": 159960.0
+        },
+        {
+          "date": "2026-05-13",
+          "value": 64082.0
+        },
+        {
+          "date": "2026-05-14",
+          "value": 46927.0
+        },
+        {
+          "date": "2026-05-15",
+          "value": 123577.0
+        },
+        {
+          "date": "2026-05-16",
+          "value": 105661.0
+        },
+        {
+          "date": "2026-05-17",
+          "value": 48743.0
+        },
+        {
+          "date": "2026-05-18",
+          "value": 191931.0
+        },
+        {
+          "date": "2026-05-19",
+          "value": 88778.0
+        },
+        {
+          "date": "2026-05-20",
+          "value": 101906.0
+        },
+        {
+          "date": "2026-05-21",
+          "value": 51868.0
+        },
+        {
+          "date": "2026-05-22",
+          "value": 101450.0
+        },
+        {
+          "date": "2026-05-23",
+          "value": 105966.0
+        },
+        {
+          "date": "2026-05-24",
+          "value": 112187.0
+        },
+        {
+          "date": "2026-05-25",
+          "value": 122083.0
+        },
+        {
+          "date": "2026-05-26",
+          "value": 96885.0
+        },
+        {
+          "date": "2026-05-27",
+          "value": 137077.0
+        },
+        {
+          "date": "2026-05-28",
+          "value": 37955.0
+        },
+        {
+          "date": "2026-05-29",
+          "value": 150480.0
+        },
+        {
+          "date": "2026-05-30",
+          "value": 100318.0
+        },
+        {
+          "date": "2026-05-31",
+          "value": 75916.0
+        },
+        {
+          "date": "2026-06-01",
+          "value": 145755.0
+        },
+        {
+          "date": "2026-06-02",
+          "value": 63848.0
+        },
+        {
+          "date": "2026-06-03",
+          "value": 52200.0
+        },
+        {
+          "date": "2026-06-04",
+          "value": 85656.0
+        },
+        {
+          "date": "2026-06-05",
+          "value": 97128.0
+        },
+        {
+          "date": "2026-06-06",
+          "value": 123553.0
+        },
+        {
+          "date": "2026-06-07",
+          "value": 74751.0
+        },
+        {
+          "date": "2026-06-08",
+          "value": 139809.0
+        },
+        {
+          "date": "2026-06-09",
+          "value": 201496.0
+        },
+        {
+          "date": "2026-06-10",
+          "value": 108876.0
+        },
+        {
+          "date": "2026-06-11",
+          "value": 65323.0
+        },
+        {
+          "date": "2026-06-12",
+          "value": 81509.0
+        },
+        {
+          "date": "2026-06-13",
+          "value": 105360.0
+        },
+        {
+          "date": "2026-06-14",
+          "value": 63092.0
+        },
+        {
+          "date": "2026-06-15",
+          "value": 68964.0
+        },
+        {
+          "date": "2026-06-16",
+          "value": 131548.0
+        },
+        {
+          "date": "2026-06-17",
+          "value": 62719.0
+        },
+        {
+          "date": "2026-06-18",
+          "value": 61463.0
+        },
+        {
+          "date": "2026-06-19",
+          "value": 56817.0
+        },
+        {
+          "date": "2026-06-20",
+          "value": 93757.0
+        },
+        {
+          "date": "2026-06-21",
+          "value": 234955.0
+        },
+        {
+          "date": "2026-06-22",
+          "value": 68944.0
+        },
+        {
+          "date": "2026-06-23",
+          "value": 78065.0
+        },
+        {
+          "date": "2026-06-24",
+          "value": 50156.0
+        },
+        {
+          "date": "2026-06-25",
+          "value": 59380.0
+        },
+        {
+          "date": "2026-06-26",
+          "value": 131224.0
+        },
+        {
+          "date": "2026-06-27",
+          "value": 140627.0
+        },
+        {
+          "date": "2026-06-28",
+          "value": 62579.0
+        },
+        {
+          "date": "2026-06-29",
+          "value": 67070.0
+        },
+        {
+          "date": "2026-06-30",
+          "value": 78882.0
+        },
+        {
+          "date": "2026-07-01",
+          "value": 103009.0
+        },
+        {
+          "date": "2026-07-02",
+          "value": 56633.0
+        },
+        {
+          "date": "2026-07-03",
+          "value": 109807.0
+        },
+        {
+          "date": "2026-07-04",
+          "value": 123941.0
+        },
+        {
+          "date": "2026-07-05",
+          "value": 99852.0
+        },
+        {
+          "date": "2026-07-06",
+          "value": 69662.0
+        },
+        {
+          "date": "2026-07-07",
+          "value": 72691.0
+        },
+        {
+          "date": "2026-07-08",
+          "value": 91721.0
+        },
+        {
+          "date": "2026-07-09",
+          "value": 250010.0
+        },
+        {
+          "date": "2026-07-10",
+          "value": 88002.0
+        },
+        {
+          "date": "2026-07-11",
+          "value": 126733.0
+        },
+        {
+          "date": "2026-07-12",
+          "value": 92922.0
+        },
+        {
+          "date": "2026-07-13",
+          "value": 108265.0
+        },
+        {
+          "date": "2026-07-14",
+          "value": 60564.0
+        },
+        {
+          "date": "2026-07-15",
+          "value": 112348.0
+        },
+        {
+          "date": "2026-07-16",
+          "value": 114581.0
+        },
+        {
+          "date": "2026-07-17",
+          "value": 154490.0
+        },
+        {
+          "date": "2026-07-18",
+          "value": 72485.0
+        },
+        {
+          "date": "2026-07-19",
+          "value": 81104.0
+        },
+        {
+          "date": "2026-07-20",
+          "value": 60628.0
+        },
+        {
+          "date": "2026-07-21",
+          "value": 178895.0
+        },
+        {
+          "date": "2026-07-22",
+          "value": 51093.0
+        },
+        {
+          "date": "2026-07-23",
+          "value": 204862.0
+        },
+        {
+          "date": "2026-07-24",
+          "value": 142879.0
+        },
+        {
+          "date": "2026-07-25",
+          "value": 79410.0
+        },
+        {
+          "date": "2026-07-26",
+          "value": 58668.0
+        },
+        {
+          "date": "2026-07-27",
+          "value": 168062.0
+        },
+        {
+          "date": "2026-07-28",
+          "value": 44630.0
+        },
+        {
+          "date": "2026-07-29",
+          "value": 40326.0
+        },
+        {
+          "date": "2026-07-30",
+          "value": 78552.0
+        },
+        {
+          "date": "2026-07-31",
+          "value": 73722.0
+        },
+        {
+          "date": "2026-08-01",
+          "value": 100928.0
+        },
+        {
+          "date": "2026-08-02",
+          "value": 81666.0
+        },
+        {
+          "date": "2026-08-03",
+          "value": 63612.0
+        },
+        {
+          "date": "2026-08-04",
+          "value": 56385.0
+        },
+        {
+          "date": "2026-08-05",
+          "value": 93858.0
+        },
+        {
+          "date": "2026-08-06",
+          "value": 106610.0
+        },
+        {
+          "date": "2026-08-07",
+          "value": 117817.0
+        },
+        {
+          "date": "2026-08-08",
+          "value": 89059.0
+        },
+        {
+          "date": "2026-08-09",
+          "value": 66503.0
+        },
+        {
+          "date": "2026-08-10",
+          "value": 63608.0
+        },
+        {
+          "date": "2026-08-11",
+          "value": 86481.0
+        },
+        {
+          "date": "2026-08-12",
+          "value": 62630.0
+        },
+        {
+          "date": "2026-08-13",
+          "value": 72351.0
+        },
+        {
+          "date": "2026-08-14",
+          "value": 119255.0
+        },
+        {
+          "date": "2026-08-15",
+          "value": 102185.0
+        },
+        {
+          "date": "2026-08-16",
+          "value": 128777.0
+        }
+      ],
+      "history_metric_key": "all",
+      "history_field": "capacity",
+      "history_unit": "estimated_trade_tonnes_per_day",
+      "history_point_count": 180,
+      "history_status": "observed_daily_estimated_trade_volume",
+      "daily_averages": {
+        "status": "observed_daily_estimated_trade_volume",
+        "unit": "estimated_trade_tonnes_per_day",
+        "definition": "PortWatch estimated daily trade volume in metric tonnes, derived from vessel DWT and estimated payload/utilization; not observed vessel DWT.",
+        "latest_daily_observation": {
+          "date": "2026-08-16",
+          "value": 128777.0
+        },
+        "trailing_7d_average": {
+          "label_ko": "최근 7일 일평균",
+          "status": "observed_daily_average",
+          "value": 90755.285714,
+          "observation_count": 7,
+          "required_observation_count": 7,
+          "start_date": "2026-08-10",
+          "end_date": "2026-08-16",
+          "calculation": "mean_of_observed_daily_values_no_imputation"
+        },
+        "prior_28d_average": {
+          "label_ko": "직전 28일 일평균",
+          "status": "observed_daily_average",
+          "value": 95071.5,
+          "observation_count": 28,
+          "required_observation_count": 28,
+          "start_date": "2026-07-13",
+          "end_date": "2026-08-09",
+          "calculation": "mean_of_observed_daily_values_no_imputation"
+        },
+        "warning_ko": "PortWatch의 일별 추정 교역량 관측치를 평균한 값입니다. 결측일은 보간하지 않으며, 실제 화물 명세·통항 DWT·물리적 봉쇄율을 뜻하지 않습니다."
+      },
+      "history_warning": "Daily PortWatch transit-volume estimate in metric tonnes; subject to AIS coverage and upstream revisions, and not observed DWT.",
+      "metrics": {
+        "container": {
+          "field": "capacity_container",
+          "unit": "estimated_trade_tonnes_per_day",
+          "definition": "PortWatch estimated daily trade volume in metric tonnes, derived from vessel DWT and estimated payload/utilization; not observed vessel DWT.",
+          "current_7d_mean_estimated_trade_tonnes": 10833.428571,
+          "prior_28d_mean_estimated_trade_tonnes": 11087.357143,
+          "estimated_trade_volume_ratio": 0.977097,
+          "observed_trade_volume_shortfall_fraction": 0.022903,
+          "remaining_trade_volume_ratio": 0.977097,
+          "change_pct": -2.290253
+        },
+        "dry_bulk": {
+          "field": "capacity_dry_bulk",
+          "unit": "estimated_trade_tonnes_per_day",
+          "definition": "PortWatch estimated daily trade volume in metric tonnes, derived from vessel DWT and estimated payload/utilization; not observed vessel DWT.",
+          "current_7d_mean_estimated_trade_tonnes": 12036.714286,
+          "prior_28d_mean_estimated_trade_tonnes": 28474.678571,
+          "estimated_trade_volume_ratio": 0.422716,
+          "observed_trade_volume_shortfall_fraction": 0.577284,
+          "remaining_trade_volume_ratio": 0.422716,
+          "change_pct": -57.728358
+        },
+        "general_cargo": {
+          "field": "capacity_general_cargo",
+          "unit": "estimated_trade_tonnes_per_day",
+          "definition": "PortWatch estimated daily trade volume in metric tonnes, derived from vessel DWT and estimated payload/utilization; not observed vessel DWT.",
+          "current_7d_mean_estimated_trade_tonnes": 29752.714286,
+          "prior_28d_mean_estimated_trade_tonnes": 29025.857143,
+          "estimated_trade_volume_ratio": 1.025042,
+          "observed_trade_volume_shortfall_fraction": 0.0,
+          "remaining_trade_volume_ratio": 1.0,
+          "change_pct": 2.504171
+        },
+        "tanker": {
+          "field": "capacity_tanker",
+          "unit": "estimated_trade_tonnes_per_day",
+          "definition": "PortWatch estimated daily trade volume in metric tonnes, derived from vessel DWT and estimated payload/utilization; not observed vessel DWT.",
+          "current_7d_mean_estimated_trade_tonnes": 35022.285714,
+          "prior_28d_mean_estimated_trade_tonnes": 24383.821429,
+          "estimated_trade_volume_ratio": 1.436292,
+          "observed_trade_volume_shortfall_fraction": 0.0,
+          "remaining_trade_volume_ratio": 1.0,
+          "change_pct": 43.629192
+        },
+        "all": {
+          "field": "capacity",
+          "unit": "estimated_trade_tonnes_per_day",
+          "definition": "PortWatch estimated daily trade volume in metric tonnes, derived from vessel DWT and estimated payload/utilization; not observed vessel DWT.",
+          "current_7d_mean_estimated_trade_tonnes": 90755.285714,
+          "prior_28d_mean_estimated_trade_tonnes": 95071.5,
+          "estimated_trade_volume_ratio": 0.9546,
+          "observed_trade_volume_shortfall_fraction": 0.0454,
+          "remaining_trade_volume_ratio": 0.9546,
+          "change_pct": -4.539967
+        }
+      },
+      "signal_validation": {
+        "container": {
+          "status": "exploratory_no_proven_skill",
+          "forecast_use": "descriptive_only",
+          "sample_count": 689,
+          "train_count": 551,
+          "test_count": 138,
+          "feature": "signed current 7-observation estimated trade-volume gap vs preceding 28",
+          "target": "signed next 7-observation estimated trade-volume gap vs same preceding 28",
+          "ols_intercept": -0.001857,
+          "ols_slope": 0.190247,
+          "test_r2": -0.185871,
+          "test_mae_fraction": 0.15064,
+          "persistence_mae_fraction": 0.236779,
+          "beats_persistence": true,
+          "warning": "Exploratory chronological validation; not a causal model or closure probability."
+        },
+        "dry_bulk": {
+          "status": "exploratory_no_proven_skill",
+          "forecast_use": "descriptive_only",
+          "sample_count": 689,
+          "train_count": 551,
+          "test_count": 138,
+          "feature": "signed current 7-observation estimated trade-volume gap vs preceding 28",
+          "target": "signed next 7-observation estimated trade-volume gap vs same preceding 28",
+          "ols_intercept": -0.051663,
+          "ols_slope": 0.228338,
+          "test_r2": -0.024136,
+          "test_mae_fraction": 0.606474,
+          "persistence_mae_fraction": 0.896468,
+          "beats_persistence": true,
+          "warning": "Exploratory chronological validation; not a causal model or closure probability."
+        },
+        "general_cargo": {
+          "status": "exploratory_positive_skill",
+          "forecast_use": "eligible_for_exploratory_forecast",
+          "sample_count": 689,
+          "train_count": 551,
+          "test_count": 138,
+          "feature": "signed current 7-observation estimated trade-volume gap vs preceding 28",
+          "target": "signed next 7-observation estimated trade-volume gap vs same preceding 28",
+          "ols_intercept": -0.000714,
+          "ols_slope": 0.330145,
+          "test_r2": 0.239748,
+          "test_mae_fraction": 0.108083,
+          "persistence_mae_fraction": 0.112918,
+          "beats_persistence": true,
+          "warning": "Exploratory chronological validation; not a causal model or closure probability."
+        },
+        "tanker": {
+          "status": "exploratory_positive_skill",
+          "forecast_use": "eligible_for_exploratory_forecast",
+          "sample_count": 689,
+          "train_count": 551,
+          "test_count": 138,
+          "feature": "signed current 7-observation estimated trade-volume gap vs preceding 28",
+          "target": "signed next 7-observation estimated trade-volume gap vs same preceding 28",
+          "ols_intercept": -0.03926,
+          "ols_slope": 0.38116,
+          "test_r2": 0.044369,
+          "test_mae_fraction": 0.234898,
+          "persistence_mae_fraction": 0.282904,
+          "beats_persistence": true,
+          "warning": "Exploratory chronological validation; not a causal model or closure probability."
+        },
+        "all": {
+          "status": "exploratory_no_proven_skill",
+          "forecast_use": "descriptive_only",
+          "sample_count": 689,
+          "train_count": 551,
+          "test_count": 138,
+          "feature": "signed current 7-observation estimated trade-volume gap vs preceding 28",
+          "target": "signed next 7-observation estimated trade-volume gap vs same preceding 28",
+          "ols_intercept": -0.009749,
+          "ols_slope": 0.314841,
+          "test_r2": -0.162531,
+          "test_mae_fraction": 0.149259,
+          "persistence_mae_fraction": 0.207809,
+          "beats_persistence": true,
+          "warning": "Exploratory chronological validation; not a causal model or closure probability."
+        }
+      },
+      "multi_model_analysis": {
+        "all": {
+          "status": "ml_does_not_beat_baseline",
+          "forecast_use": "descriptive_only",
+          "sample_count": 689,
+          "train_count": 544,
+          "purged_count": 7,
+          "test_count": 138,
+          "target_scale": "symmetric capacity gap in [-2, 2]; positive means shortfall",
+          "feature_names": [
+            "symmetric_gap_7_vs_prior_28",
+            "symmetric_gap_3_vs_prior_14",
+            "symmetric_week_over_week_gap",
+            "volatility_cv_14",
+            "zero_capacity_share_14"
+          ],
+          "model_selection": "lowest three-split TimeSeriesSplit CV MAE on training window",
+          "selected_model": "linear",
+          "beats_persistence_by_5pct": true,
+          "beats_best_simple_baseline_by_5pct": false,
+          "backtest_beats_best_simple_baseline_by_5pct": false,
+          "backtest_positive_r2": false,
+          "models": [
+            {
+              "model": "persistence",
+              "cv_mae_symmetric_gap": null,
+              "test_mae_symmetric_gap": 0.203184,
+              "test_rmse_symmetric_gap": 0.253577,
+              "test_r2": -1.241383,
+              "stress_direction_accuracy": 0.586957
+            },
+            {
+              "model": "zero_shortfall",
+              "cv_mae_symmetric_gap": null,
+              "test_mae_symmetric_gap": 0.140871,
+              "test_rmse_symmetric_gap": 0.169705,
+              "test_r2": -0.003885,
+              "stress_direction_accuracy": 0.688406
+            },
+            {
+              "model": "linear",
+              "cv_mae_symmetric_gap": 0.175178,
+              "test_mae_symmetric_gap": 0.138393,
+              "test_rmse_symmetric_gap": 0.174536,
+              "test_r2": -0.061863,
+              "stress_direction_accuracy": 0.666667
+            },
+            {
+              "model": "ridge",
+              "cv_mae_symmetric_gap": 0.175248,
+              "test_mae_symmetric_gap": 0.138381,
+              "test_rmse_symmetric_gap": 0.174497,
+              "test_r2": -0.061377,
+              "stress_direction_accuracy": 0.666667
+            },
+            {
+              "model": "random_forest",
+              "cv_mae_symmetric_gap": 0.207841,
+              "test_mae_symmetric_gap": 0.14927,
+              "test_rmse_symmetric_gap": 0.191897,
+              "test_r2": -0.283607,
+              "stress_direction_accuracy": 0.644928
+            },
+            {
+              "model": "gradient_boosting",
+              "cv_mae_symmetric_gap": 0.188479,
+              "test_mae_symmetric_gap": 0.146365,
+              "test_rmse_symmetric_gap": 0.181801,
+              "test_r2": -0.1521,
+              "stress_direction_accuracy": 0.608696
+            }
+          ],
+          "walk_forward_backtest": {
+            "status": "completed",
+            "method": "four-fold expanding-window backtest with non-overlapping 56-sample test blocks",
+            "fold_count": 4,
+            "purge_gap_samples": 7,
+            "total_test_predictions": 224,
+            "folds": [
+              {
+                "fold": 1,
+                "train_count": 458,
+                "purged_count": 7,
+                "test_count": 56,
+                "model_mae_symmetric_gap": {
+                  "persistence": 0.231553,
+                  "zero_shortfall": 0.19387,
+                  "linear": 0.193713,
+                  "ridge": 0.193111,
+                  "random_forest": 0.211436,
+                  "gradient_boosting": 0.188008
+                }
+              },
+              {
+                "fold": 2,
+                "train_count": 514,
+                "purged_count": 7,
+                "test_count": 56,
+                "model_mae_symmetric_gap": {
+                  "persistence": 0.258428,
+                  "zero_shortfall": 0.148314,
+                  "linear": 0.169152,
+                  "ridge": 0.169133,
+                  "random_forest": 0.19394,
+                  "gradient_boosting": 0.17716
+                }
+              },
+              {
+                "fold": 3,
+                "train_count": 570,
+                "purged_count": 7,
+                "test_count": 56,
+                "model_mae_symmetric_gap": {
+                  "persistence": 0.171563,
+                  "zero_shortfall": 0.093474,
+                  "linear": 0.104498,
+                  "ridge": 0.104448,
+                  "random_forest": 0.117814,
+                  "gradient_boosting": 0.108107
+                }
+              },
+              {
+                "fold": 4,
+                "train_count": 626,
+                "purged_count": 7,
+                "test_count": 56,
+                "model_mae_symmetric_gap": {
+                  "persistence": 0.161247,
+                  "zero_shortfall": 0.156012,
+                  "linear": 0.127786,
+                  "ridge": 0.127845,
+                  "random_forest": 0.132067,
+                  "gradient_boosting": 0.136178
+                }
+              }
+            ],
+            "models": [
+              {
+                "model": "persistence",
+                "cv_mae_symmetric_gap": null,
+                "test_mae_symmetric_gap": 0.205698,
+                "test_rmse_symmetric_gap": 0.259266,
+                "test_r2": -1.071814,
+                "stress_direction_accuracy": 0.580357,
+                "mean_fold_mae_symmetric_gap": 0.205698,
+                "fold_wins_vs_best_simple_baseline": null
+              },
+              {
+                "model": "zero_shortfall",
+                "cv_mae_symmetric_gap": null,
+                "test_mae_symmetric_gap": 0.147917,
+                "test_rmse_symmetric_gap": 0.1865,
+                "test_r2": -0.072057,
+                "stress_direction_accuracy": 0.625,
+                "mean_fold_mae_symmetric_gap": 0.147917,
+                "fold_wins_vs_best_simple_baseline": null
+              },
+              {
+                "model": "linear",
+                "cv_mae_symmetric_gap": null,
+                "test_mae_symmetric_gap": 0.148788,
+                "test_rmse_symmetric_gap": 0.188681,
+                "test_r2": -0.097276,
+                "stress_direction_accuracy": 0.625,
+                "mean_fold_mae_symmetric_gap": 0.148788,
+                "fold_wins_vs_best_simple_baseline": 2
+              },
+              {
+                "model": "ridge",
+                "cv_mae_symmetric_gap": null,
+                "test_mae_symmetric_gap": 0.148634,
+                "test_rmse_symmetric_gap": 0.18852,
+                "test_r2": -0.095404,
+                "stress_direction_accuracy": 0.629464,
+                "mean_fold_mae_symmetric_gap": 0.148634,
+                "fold_wins_vs_best_simple_baseline": 2
+              },
+              {
+                "model": "random_forest",
+                "cv_mae_symmetric_gap": null,
+                "test_mae_symmetric_gap": 0.163814,
+                "test_rmse_symmetric_gap": 0.209647,
+                "test_r2": -0.35467,
+                "stress_direction_accuracy": 0.535714,
+                "mean_fold_mae_symmetric_gap": 0.163814,
+                "fold_wins_vs_best_simple_baseline": 1
+              },
+              {
+                "model": "gradient_boosting",
+                "cv_mae_symmetric_gap": null,
+                "test_mae_symmetric_gap": 0.152363,
+                "test_rmse_symmetric_gap": 0.192768,
+                "test_r2": -0.145321,
+                "stress_direction_accuracy": 0.571429,
+                "mean_fold_mae_symmetric_gap": 0.152363,
+                "fold_wins_vs_best_simple_baseline": 2
+              }
+            ]
+          },
+          "feature_importance": [
+            {
+              "feature": "symmetric_week_over_week_gap",
+              "importance": 0.011158
+            },
+            {
+              "feature": "volatility_cv_14",
+              "importance": 0.010257
+            },
+            {
+              "feature": "symmetric_gap_7_vs_prior_28",
+              "importance": 0.007859
+            },
+            {
+              "feature": "symmetric_gap_3_vs_prior_14",
+              "importance": 0.0
+            },
+            {
+              "feature": "zero_capacity_share_14",
+              "importance": 0.0
+            }
+          ],
+          "candidate_next_7d_symmetric_gap": -0.026428,
+          "candidate_next_7d_shortfall_fraction": -0.026782,
+          "published_next_7d_shortfall_fraction": null,
+          "candidate_prediction_interval": {
+            "p10_symmetric_gap": -0.254173,
+            "p90_symmetric_gap": 0.165899,
+            "method": "holdout residual empirical interval on symmetric gap scale"
+          },
+          "current_regime": {
+            "label": "normal_variation",
+            "cluster": 1,
+            "cluster_mean_symmetric_gap": 0.021937
+          },
+          "current_anomaly": {
+            "score": -0.047339,
+            "historical_percentile": 0.769231,
+            "is_anomaly_at_90pct": false,
+            "method": "IsolationForest contamination=0.10"
+          },
+          "warning": "Exploratory ML with purged chronological validation; no causal claim. Candidate is unpublished unless it beats both simple baselines by 5% and has positive R2 in both holdout and walk-forward backtests."
+        }
+      },
+      "multi_model_primary_metric": "all",
+      "fetched_at": "2026-08-24T13:25:44.608368+00:00",
+      "stale_days": 8,
+      "is_stale": true,
+      "fallback_used": false,
+      "source_status": "api_observation_stale",
       "history_source_point_count": 730,
       "history_screen_point_limit": 180
     }
@@ -24027,7 +28980,7 @@
             "ship_type": "tanker",
             "representative_route_count": 7,
             "physical_allocated_dwt": 111255020.281915,
-            "effective_service_capacity_dwt": 109495748.391615,
+            "effective_service_capacity_dwt": 109495748.391616,
             "effective_dwt_loss": 1759271.8903,
             "effective_capacity_retention_rate": 0.984187,
             "effective_capacity_retention_rate_range": {
@@ -24074,7 +29027,7 @@
         "cii_reduction_vs_2019_pct": 13.625,
         "representative_route_count": 21,
         "physical_allocated_dwt": 271481079.266903,
-        "effective_service_capacity_dwt": 265994209.185382,
+        "effective_service_capacity_dwt": 265994209.185383,
         "effective_dwt_loss": 5486870.081521,
         "effective_capacity_retention_rate": 0.979789,
         "effective_capacity_retention_rate_range": {
@@ -24466,10 +29419,10 @@
               "high": 0.981819
             },
             "baseline_required_dwt": 138608214.236508,
-            "same_service_required_dwt": 144537941.476251,
+            "same_service_required_dwt": 144537941.476252,
             "same_service_required_dwt_range": {
               "low": 141175022.610465,
-              "central": 144537941.476251,
+              "central": 144537941.476252,
               "high": 149256508.936285
             },
             "additional_required_vs_baseline_dwt": 5929727.239744,
@@ -25328,7 +30281,7 @@
         "baseline_required_dwt": 260841606.409877,
         "same_service_required_dwt": 265763361.229488,
         "same_service_required_dwt_range": {
-          "low": 263037045.971712,
+          "low": 263037045.971713,
           "central": 265763361.229488,
           "high": 269522030.318303
         },
@@ -25439,10 +30392,10 @@
           "high": 0.989752
         },
         "baseline_required_dwt": 260841606.409877,
-        "same_service_required_dwt": 266997390.153331,
+        "same_service_required_dwt": 266997390.153332,
         "same_service_required_dwt_range": {
           "low": 263542828.514196,
-          "central": 266997390.153331,
+          "central": 266997390.153332,
           "high": 271788212.281081
         },
         "additional_required_vs_baseline_dwt": 6155783.743455,
