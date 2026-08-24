@@ -103,6 +103,7 @@ def route_operational_profile(route: dict[str, Any]) -> dict[str, Any]:
         alternatives.append(
             {
                 "chokepoint_id": exposure["id"],
+                "reroute_receiver_id": exposure.get("reroute_receiver_id"),
                 "reroute_available": reroute_available,
                 "baseline_distance_nm_one_way": distance,
                 "reroute_extra_nm_one_way": extra_nm if reroute_available else None,

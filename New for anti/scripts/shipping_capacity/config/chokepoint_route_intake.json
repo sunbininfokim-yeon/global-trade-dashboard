@@ -1,0 +1,34 @@
+{
+  "status": "free_data_collection_pending",
+  "methodology_ko": "아래 후보는 UN Comtrade 양자 순중량을 먼저 수집하고, 국가 단위 무역을 실제 항만·해협 통과 항로로 배분할 수 있는지 검토한 뒤에만 선복량 시나리오로 활성화합니다.",
+  "candidates": [
+    {
+      "id": "gibraltar_black_sea_north_europe_crude",
+      "chokepoint_id": "gibraltar",
+      "ship_type": "tanker",
+      "cargo_hs_codes": ["2709"],
+      "comtrade_route_id": "candidate_gibraltar_black_sea_north_europe_crude",
+      "activation_status": "inactive_pending_comtrade_refresh_and_port_allocation_review",
+      "activation_conditions_ko": [
+        "2024 UN Comtrade 순중량 수집 및 다년 일관성 확인",
+        "국가 수출입이 흑해 항만과 지브롤터 통과 항로에 실제로 배분되는지 별도 검토",
+        "정상·우회 경로의 공개 해상네트워크 토폴로지 및 거리 허용오차 검증"
+      ],
+      "warning_ko": "현재 선복량·봉쇄 시나리오에 포함하지 않습니다. 국가 단위 무역을 해협 통과 물량으로 오인하지 않기 위한 비활성 수집 후보입니다."
+    },
+    {
+      "id": "oresund_baltic_north_sea_refined_products",
+      "chokepoint_id": "oresund",
+      "ship_type": "tanker",
+      "cargo_hs_codes": ["2710"],
+      "comtrade_route_id": "candidate_oresund_baltic_north_sea_refined_products",
+      "activation_status": "inactive_pending_comtrade_refresh_and_danish_straits_route_split",
+      "activation_conditions_ko": [
+        "2024 UN Comtrade 순중량 수집 및 다년 일관성 확인",
+        "외레순과 그레이트벨트의 대체 가능성을 포함한 덴마크 해협 경로 분할",
+        "흘수·선종 제약을 무료 공개 자료로 확인하거나, 확인 불가 시 관측 전용으로 유지"
+      ],
+      "warning_ko": "외레순은 그레이트벨트와의 대체 관계 및 흘수 제한을 단순 우회거리로 환산할 수 없습니다. 따라서 현재 선복량·봉쇄 시나리오에 포함하지 않습니다."
+    }
+  ]
+}

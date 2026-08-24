@@ -91,6 +91,42 @@ class RouteDistancePipelineTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "failed quality gate"):
             attach_distance_evidence(routes, evidence)
 
+    def test_cape_receiver_is_modelled_only_for_configured_suez_detours(self) -> None:
+        snapshot = build_snapshot(ROOT / "config")
+        suez = next(
+            row for row in snapshot["scenario_summary"] if row["id"] == "suez_100pct_28d"
+        )
+        receiver = next(row for row in suez["reroute_receivers"] if row["id"] == "cape_good_hope")
+        self.assertEqual(receiver["source_chokepoint_id"], "suez")
+        self.assertGreater(receiver["rerouted_cargo_tonnes_horizon"], 0)
+        self.assertGreater(receiver["additional_service_capacity_dwt"], 0)
+        self.assertEqual(
+            receiver["status"], "modelled_reroute_receiver_not_observed_traffic"
+        )
+        bab = next(
+            row
+            for row in snapshot["scenario_summary"]
+            if row["id"] == "bab_el_mandeb_100pct_28d"
+        )
+        self.assertEqual(bab["reroute_receivers"][0]["source_chokepoint_id"], "bab_el_mandeb")
+        malacca = next(
+            row for row in snapshot["scenario_summary"] if row["id"] == "malacca_100pct_28d"
+        )
+        self.assertEqual(malacca["reroute_receivers"], [])
+
+    def test_gibraltar_and_oresund_intake_remains_inactive_until_route_gates_pass(self) -> None:
+        intake = load_json(ROOT / "config" / "chokepoint_route_intake.json")
+        comtrade = load_json(ROOT / "config" / "comtrade_routes.json")
+        configured_ids = {row["route_id"] for row in comtrade["routes"]}
+        self.assertEqual(intake["status"], "free_data_collection_pending")
+        self.assertEqual(
+            {row["chokepoint_id"] for row in intake["candidates"]},
+            {"gibraltar", "oresund"},
+        )
+        for candidate in intake["candidates"]:
+            self.assertTrue(candidate["activation_status"].startswith("inactive_"))
+            self.assertIn(candidate["comtrade_route_id"], configured_ids)
+
 
 if __name__ == "__main__":
     unittest.main()

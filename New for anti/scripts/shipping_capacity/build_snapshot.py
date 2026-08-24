@@ -45,7 +45,95 @@ def rounded(value: Any) -> Any:
     return value
 
 
-def aggregate_scenario(scenario: dict[str, Any], results: list[dict[str, Any]]) -> dict[str, Any]:
+def aggregate_reroute_receivers(
+    scenario: dict[str, Any],
+    results: list[dict[str, Any]],
+    routes: list[dict[str, Any]],
+    receiver_config: list[dict[str, Any]],
+) -> list[dict[str, Any]]:
+    """Aggregate modeled detours at an alternative corridor without inventing AIS flow."""
+
+    receivers = {row["id"]: row for row in receiver_config}
+    grouped: dict[str, list[dict[str, Any]]] = {}
+    for route, result in zip(routes, results):
+        if result["affected_flow_share"] <= 0 or result["rerouted_cargo_tonnes_horizon"] <= 0:
+            continue
+        exposure = next(
+            (
+                row
+                for row in route.get("chokepoints", [])
+                if row.get("id") == scenario["chokepoint_id"]
+            ),
+            None,
+        )
+        receiver_id = exposure and exposure.get("reroute_receiver_id")
+        if not receiver_id:
+            continue
+        receiver = receivers.get(receiver_id)
+        if receiver is None:
+            raise ValueError(f"unknown reroute receiver: {receiver_id}")
+        if scenario["chokepoint_id"] not in receiver.get("source_chokepoint_ids", []):
+            raise ValueError(
+                f"reroute receiver {receiver_id} does not allow source "
+                f"{scenario['chokepoint_id']}"
+            )
+        grouped.setdefault(receiver_id, []).append(result)
+
+    output = []
+    for receiver_id, rows in grouped.items():
+        receiver = receivers[receiver_id]
+        ship_type_breakdown = []
+        for ship_type in ("container", "dry_bulk", "tanker"):
+            typed = [row for row in rows if row["ship_type"] == ship_type]
+            if not typed:
+                continue
+            ship_type_breakdown.append(
+                {
+                    "ship_type": ship_type,
+                    "affected_route_count": len(typed),
+                    "rerouted_cargo_tonnes_horizon": sum(
+                        row["rerouted_cargo_tonnes_horizon"] for row in typed
+                    ),
+                    "rerouted_in_transit_cargo_tonnes_horizon": sum(
+                        row["rerouted_in_transit_cargo_tonnes_horizon"] for row in typed
+                    ),
+                    "additional_service_capacity_dwt": sum(
+                        row["net_required_capacity_change_dwt"] for row in typed
+                    ),
+                }
+            )
+        output.append(
+            {
+                "id": receiver_id,
+                "name_ko": receiver["name_ko"],
+                "name_en": receiver["name_en"],
+                "receiver_role": receiver["receiver_role"],
+                "source_chokepoint_id": scenario["chokepoint_id"],
+                "affected_route_count": len(rows),
+                "rerouted_cargo_tonnes_horizon": sum(
+                    row["rerouted_cargo_tonnes_horizon"] for row in rows
+                ),
+                "rerouted_in_transit_cargo_tonnes_horizon": sum(
+                    row["rerouted_in_transit_cargo_tonnes_horizon"] for row in rows
+                ),
+                "additional_service_capacity_dwt": sum(
+                    row["net_required_capacity_change_dwt"] for row in rows
+                ),
+                "ship_type_breakdown": ship_type_breakdown,
+                "methodology_ko": receiver["methodology_ko"],
+                "warning_ko": receiver["warning_ko"],
+                "status": "modelled_reroute_receiver_not_observed_traffic",
+            }
+        )
+    return output
+
+
+def aggregate_scenario(
+    scenario: dict[str, Any],
+    results: list[dict[str, Any]],
+    routes: list[dict[str, Any]],
+    receiver_config: list[dict[str, Any]],
+) -> dict[str, Any]:
     affected = [row for row in results if row["affected_flow_share"] > 0]
     baseline = sum(row["baseline_required_dwt"] for row in affected)
     allocated = sum(row["allocated_dwt_with_reserve"] for row in affected)
@@ -199,6 +287,9 @@ def aggregate_scenario(scenario: dict[str, Any], results: list[dict[str, Any]]) 
             row["cargo_accounting_residual_tonnes"] for row in affected
         ),
         "ship_type_breakdown": ship_type_breakdown,
+        "reroute_receivers": aggregate_reroute_receivers(
+            scenario, results, routes, receiver_config
+        ),
         "capacity_denominator_warning": (
             "Affected allocated DWT is the sum of representative route-model "
             "allocations, not an AIS-observed unique-vessel inventory. Relevant "
@@ -223,6 +314,7 @@ def build_behavior_sensitivity(
     scenario: dict[str, Any],
     fleet_by_type: dict[str, float],
     config: dict[str, Any],
+    receiver_config: list[dict[str, Any]],
 ) -> dict[str, Any] | None:
     """Run named joint response paths while holding event throughput fixed."""
 
@@ -235,7 +327,7 @@ def build_behavior_sensitivity(
             simulate_route(route, variant, fleet_by_type[route["ship_type"]])
             for route in routes
         ]
-        summary = aggregate_scenario(variant, route_results)
+        summary = aggregate_scenario(variant, route_results, routes, receiver_config)
         path_results.append(
             {
                 "path_id": variant["behavior_sensitivity_path_id"],
@@ -275,6 +367,7 @@ def build_ui_scenario_grid(
     routes: list[dict[str, Any]],
     scenarios: list[dict[str, Any]],
     fleet_by_type: dict[str, float],
+    receiver_config: list[dict[str, Any]],
 ) -> dict[str, Any]:
     """Precompute a bounded UI grid so the browser never reimplements the model."""
 
@@ -324,7 +417,9 @@ def build_ui_scenario_grid(
                         "duration_days": duration_days,
                         "horizon_days": 28,
                         "waiting_days": scenario.get("waiting_days", 0),
-                        "summary": aggregate_scenario(scenario, results),
+                        "summary": aggregate_scenario(
+                            scenario, results, routes, receiver_config
+                        ),
                         "routes": [
                             {field: result.get(field) for field in route_fields}
                             for result in affected
@@ -457,6 +552,7 @@ def build_ui_delivery_contract() -> dict[str, Any]:
                     "summary.commercially_unavailable_dwt",
                     "summary.backlog_cargo_tonnes_horizon",
                     "summary.ship_type_breakdown[]",
+                    "summary.reroute_receivers[]",
                 ],
                 "labels_ko": {
                     "closure_pct": "실효 통행제약률",
@@ -601,6 +697,10 @@ def build_snapshot(
     fleet = load_json(config_dir / "fleet_2025.json")
     chokepoints = load_json(config_dir / "chokepoints.json")
     routes = load_json(config_dir / "routes.json")
+    reroute_receivers_path = config_dir / "reroute_receivers.json"
+    reroute_receivers = (
+        load_json(reroute_receivers_path) if reroute_receivers_path.exists() else []
+    )
     distance_evidence_path = config_dir / "route_distance_observations.json"
     distance_evidence = (
         load_json(distance_evidence_path)
@@ -913,17 +1013,25 @@ def build_snapshot(
 
     scenario_summary = []
     for scenario in scenarios:
-        summary = aggregate_scenario(scenario, scenario_rows[scenario["id"]])
+        summary = aggregate_scenario(
+            scenario,
+            scenario_rows[scenario["id"]],
+            routes,
+            reroute_receivers,
+        )
         sensitivity = build_behavior_sensitivity(
             routes,
             scenario,
             fleet_by_type,
             behavior_uncertainty_config,
+            reroute_receivers,
         )
         if sensitivity is not None:
             summary["behavior_sensitivity"] = sensitivity
         scenario_summary.append(summary)
-    ui_scenario_grid = build_ui_scenario_grid(routes, scenarios, fleet_by_type)
+    ui_scenario_grid = build_ui_scenario_grid(
+        routes, scenarios, fleet_by_type, reroute_receivers
+    )
     environment_results: list[dict[str, Any]] = []
     environment_scenarios = expand_environment_scenarios(environment_config)
     for environment_scenario in environment_scenarios:
