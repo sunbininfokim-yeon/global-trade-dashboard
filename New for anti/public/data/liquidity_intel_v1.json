@@ -1,6 +1,6 @@
 {
   "schema_version": "liquidity-intel-v1",
-  "generated_at": "2026-08-25T08:23:26.450386+00:00",
+  "generated_at": "2026-08-25T19:54:42.125242+00:00",
   "model": {
     "name": "macro_liquidity_official_v1",
     "description": "QRA / Fed official liquidity + priority-reporter ARTICLES mined for liquidity indicators (FIMA, TGA, RRP, FX intervention…) — not reporter news fluff.",
@@ -69,6 +69,13 @@
     "fed": {
       "beige_book": null,
       "items": [
+        {
+          "title": "Minutes of the Board's discount rate meetings on July 20 and July 29, 2026",
+          "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260825a.htm",
+          "published": "Tue, 25 Aug 2026 18:00:00 GMT",
+          "event_type": "press",
+          "tone": null
+        },
         {
           "title": "Federal Reserve issues FOMC statement",
           "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260729a.htm",
@@ -345,7 +352,7 @@
   },
   "ticker_items": [
     {
-      "id": "qra-991198082307",
+      "id": "qra-145394827865",
       "published_at": null,
       "source": {
         "id": "us_treasury",
@@ -378,7 +385,7 @@
       "event_type": "qra"
     },
     {
-      "id": "fed-407559374923",
+      "id": "fed-650447255434",
       "published_at": "Wed, 29 Jul 2026 18:00:00 GMT",
       "source": {
         "id": "federal_reserve",
@@ -409,7 +416,38 @@
       "event_type": "fomc"
     },
     {
-      "id": "fed-389804352524",
+      "id": "fed-618934053169",
+      "published_at": "Tue, 25 Aug 2026 18:00:00 GMT",
+      "source": {
+        "id": "federal_reserve",
+        "name": "Federal Reserve",
+        "region": "west",
+        "slant": null
+      },
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260825a.htm",
+      "category": "liquidity_official",
+      "commodities": [],
+      "title": {
+        "original": "Minutes of the Board's discount rate meetings on July 20 and July 29, 2026",
+        "original_lang": "en",
+        "ko": "[연준] Minutes of the Board's discount rate meetings on July 20 and July 29, 2026"
+      },
+      "summary": "Minutes of the Board&#39;s discount rate meetings on July 20 and July 29, 2026",
+      "scores": {
+        "commodity": 0,
+        "diplomacy": 0,
+        "region_weight": 1.0,
+        "freshness": 1.0,
+        "final": 8.5
+      },
+      "rank_reasons": [
+        "event:press"
+      ],
+      "translation_status": "ok",
+      "event_type": "press"
+    },
+    {
+      "id": "fed-568909076447",
       "published_at": "Tue, 14 Jul 2026 18:00:00 GMT",
       "source": {
         "id": "federal_reserve",
@@ -440,7 +478,7 @@
       "event_type": "press"
     },
     {
-      "id": "liq-ind-75054606647",
+      "id": "liq-ind-399699644912",
       "published_at": null,
       "source": {
         "id": "reporter_liquidity",
@@ -545,7 +583,7 @@
     }
   ],
   "stats": {
-    "ticker_items": 4,
+    "ticker_items": 5,
     "qra_parsed": true,
     "reporter_analyses": 1,
     "reporter_indicator_hits": 7,
