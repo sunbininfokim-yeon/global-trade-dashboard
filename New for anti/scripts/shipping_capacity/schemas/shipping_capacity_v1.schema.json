@@ -386,6 +386,27 @@
           "weighted_served_flow_index"
         ],
         "properties": {
+          "reroute_receivers": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "id",
+                "source_chokepoint_id",
+                "affected_route_count",
+                "rerouted_cargo_tonnes_horizon",
+                "additional_service_capacity_dwt",
+                "status",
+                "warning_ko"
+              ],
+              "properties": {
+                "status": {"const": "modelled_reroute_receiver_not_observed_traffic"},
+                "affected_route_count": {"type": "integer", "minimum": 1},
+                "rerouted_cargo_tonnes_horizon": {"type": "number", "minimum": 0},
+                "additional_service_capacity_dwt": {"type": "number", "minimum": 0}
+              }
+            }
+          },
           "behavior_sensitivity": {
             "type": "object",
             "required": ["status", "event_throughput_held_fixed", "path_count", "paths", "ranges", "warning_ko"],
