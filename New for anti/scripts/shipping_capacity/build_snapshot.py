@@ -27,6 +27,7 @@ from shipping_capacity.portwatch import (
     PortWatchPortClient,
     normalize_status_contract,
 )
+from shipping_capacity.route_distances import attach_distance_evidence
 
 
 def load_json(path: Path) -> Any:
@@ -415,8 +416,9 @@ def build_ui_delivery_contract() -> dict[str, Any]:
                 "data_paths": [
                     "routes[]",
                     "routes[].baseline",
-                    "routes[].operational_profile.normal",
-                    "routes[].operational_profile.chokepoint_alternatives[]",
+                "routes[].operational_profile.normal",
+                "routes[].operational_profile.chokepoint_alternatives[]",
+                "routes[].operational_profile.chokepoint_alternatives[].distance_evidence",
                 ],
                 "primary_metrics": [
                     "baseline.baseline_required_dwt",
@@ -599,6 +601,13 @@ def build_snapshot(
     fleet = load_json(config_dir / "fleet_2025.json")
     chokepoints = load_json(config_dir / "chokepoints.json")
     routes = load_json(config_dir / "routes.json")
+    distance_evidence_path = config_dir / "route_distance_observations.json"
+    distance_evidence = (
+        load_json(distance_evidence_path)
+        if distance_evidence_path.exists()
+        else {"status": "not_generated", "routes": []}
+    )
+    attach_distance_evidence(routes, distance_evidence)
     comtrade_route_path = config_dir / "comtrade_route_flows.json"
     comtrade_route_data = (
         load_json(comtrade_route_path) if comtrade_route_path.exists() else None
@@ -985,6 +994,10 @@ def build_snapshot(
                 {
                     "name": "UN Comtrade quantity/net-weight methodology",
                     "url": "https://comtradeapi.un.org/files/v1/app/wiki/MethodologyGuideforComtradePlus.pdf",
+                },
+                {
+                    "name": "Open-source maritime-network route-distance evidence",
+                    "url": "https://github.com/genthalili/searoute-py",
                 },
                 {
                     "name": "IMO Middle East / Strait of Hormuz official updates",

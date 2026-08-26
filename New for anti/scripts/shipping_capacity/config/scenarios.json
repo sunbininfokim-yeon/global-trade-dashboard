@@ -106,5 +106,37 @@
     "insurance_unavailable_share": 1.0,
     "assumption_note_ko": "안전통로와 상업적 통항이 모두 없는 경계 시나리오",
     "status": "scenario"
+  },
+  {
+    "id": "malacca_50pct_28d",
+    "name_ko": "말라카 통항능력 50% 감소·28일",
+    "chokepoint_id": "malacca",
+    "event_type": "operational_restriction",
+    "closure_fraction": 0.5,
+    "residual_throughput_rate": 0.5,
+    "duration_days": 28,
+    "horizon_days": 28,
+    "waiting_days": 5,
+    "trapped_days": 5,
+    "onboard_waiting_share": 1.0,
+    "insurance_unavailable_share": 0.0,
+    "assumption_note_ko": "수단다 해협 우회·대기·취소의 항로별 반응을 반영한 스트레스 시나리오이며 실제 봉쇄 관측이 아님",
+    "status": "scenario"
+  },
+  {
+    "id": "malacca_100pct_28d",
+    "name_ko": "말라카 물리적 완전 봉쇄·28일",
+    "chokepoint_id": "malacca",
+    "event_type": "physical_chokepoint_closure",
+    "closure_fraction": 1.0,
+    "residual_throughput_rate": 0.0,
+    "duration_days": 28,
+    "horizon_days": 28,
+    "waiting_days": 7,
+    "trapped_days": 7,
+    "onboard_waiting_share": 1.0,
+    "insurance_unavailable_share": 0.0,
+    "assumption_note_ko": "수단다 해협 우회 가능성을 포함한 경계 시나리오이며 실제 전면 봉쇄 관측 주장이 아님",
+    "status": "scenario"
   }
 ]

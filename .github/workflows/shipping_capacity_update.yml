@@ -38,6 +38,10 @@ jobs:
         working-directory: New for anti/scripts/shipping_capacity
         run: python -m shipping_capacity.historical_calibration
 
+      - name: Refresh open-network route distance evidence
+        working-directory: New for anti/scripts/shipping_capacity
+        run: python -m shipping_capacity.route_distances
+
       - name: Run model tests
         working-directory: New for anti/scripts/shipping_capacity
         run: python -m unittest discover -s tests -v
@@ -65,6 +69,7 @@ jobs:
           git add "New for anti/public/data/shipping_capacity_backtests_v1.json"
           git add "New for anti/scripts/shipping_capacity/config/comtrade_route_flows.json"
           git add "New for anti/scripts/shipping_capacity/config/event_calibration.json"
+          git add "New for anti/scripts/shipping_capacity/config/route_distance_observations.json"
           git add "New for anti/scripts/shipping_capacity/generated/validation_report.json"
           git commit -m "chore: refresh shipping capacity snapshot" || exit 0
           git push
