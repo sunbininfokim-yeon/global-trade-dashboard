@@ -36,7 +36,15 @@ BALANCE_SPEC = {
 }
 
 
-def dart_row(code: str, account_id: str, statement: str, amount: int, *, cumulative: int | None = None):
+def dart_row(
+    code: str,
+    account_id: str,
+    statement: str,
+    amount: int,
+    *,
+    cumulative: int | None = None,
+    period_value_kind: str | None = None,
+):
     row = {
         "rcept_no": f"receipt-{code}",
         "reprt_code": code,
@@ -51,6 +59,8 @@ def dart_row(code: str, account_id: str, statement: str, amount: int, *, cumulat
     }
     if cumulative is not None:
         row["thstrm_add_amount"] = str(cumulative)
+    if period_value_kind is not None:
+        row["period_value_kind"] = period_value_kind
     return row
 
 
@@ -147,6 +157,41 @@ class TestDartCanonicalAdapter(unittest.TestCase):
         # H1's standalone-quarter amount is never treated as cumulative H1.
         source = got["series"]["REVENUE"]["quarters"]["Q2"]["provenance"]["source_facts"][-1]
         self.assertIsNone(source["source_field"])
+
+    def test_explicit_direct_interim_value_is_preferred_and_audited(self):
+        filings = {
+            "11013": [dart_row("11013", "ifrs-full_Revenue", "IS", 10, cumulative=10)],
+            # thstrm_amount is an explicitly identified Q2 value; add_amount
+            # remains the independently reported H1 YTD observation.
+            "11012": [dart_row(
+                "11012", "ifrs-full_Revenue", "IS", 21,
+                cumulative=31, period_value_kind="direct",
+            )],
+            "11014": [dart_row("11014", "ifrs-full_Revenue", "IS", 17, cumulative=48)],
+            "11011": [dart_row("11011", "ifrs-full_Revenue", "IS", 70)],
+        }
+        got = adapt_dart_filings(filings, account_specs=FLOW_SPEC, fiscal_year_end="2025-12-31")
+        q2 = got["series"]["REVENUE"]["quarters"]["Q2"]
+        self.assertEqual(q2["value"], 21)
+        self.assertEqual(q2["quality"], "reported")
+        self.assertEqual(q2["provenance"]["derivation"], "reported_direct_quarter")
+        self.assertEqual(
+            q2["provenance"]["direct_quarter_source"]["source_facts"][0]["source_field"],
+            "thstrm_amount",
+        )
+
+    def test_direct_interim_conflict_is_not_silently_preferred(self):
+        filings = {
+            "11013": [dart_row("11013", "ifrs-full_Revenue", "IS", 10, cumulative=10)],
+            "11012": [dart_row(
+                "11012", "ifrs-full_Revenue", "IS", 20,
+                cumulative=31, period_value_kind="direct",
+            )],
+        }
+        got = adapt_dart_filings(filings, account_specs=FLOW_SPEC, fiscal_year_end="2025-12-31")
+        q2 = got["series"]["REVENUE"]["quarters"]["Q2"]
+        self.assertIsNone(q2["value"])
+        self.assertEqual(q2["reason"], "conflict:direct_quarter_vs_ytd_derivation")
 
 
 def sec_fact(points):

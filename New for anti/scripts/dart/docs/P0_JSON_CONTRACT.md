@@ -17,7 +17,15 @@ Existing UI consumers keep reading:
 ```
 
 P0 adds (rather than replaces) `snapshot_contract`, `currency_contract`,
-`entity_policy`, `period_lineage`, `data_quality`, and `unified_views`.
+`entity_policy`, `period_lineage`, `data_quality`, `service_readiness`, and
+`unified_views`.
+
+`service_readiness` is the static-first guard for the future Worker/UI
+adapter. `live_fallback_required: true` means the asset must not mask an API
+response: it has fewer than the required reported annual observations, has no
+consistent calculation/display currency, or does not carry this contract.
+`legacy_unverified` is still renderable when complete, but its retained values
+were not re-fetched or re-tied to filing line identifiers in P0.
 
 ## Currency and scope
 
@@ -31,10 +39,11 @@ input.  `meta.fs_div` and each lineage record preserve `CFS`/`OFS` scope.
 Annual static samples only contain annual records.  The future live adapter
 may materialise a `kfa-quarter-lineage/1` block with the following invariant:
 
-- direct discrete quarter observation first;
+- direct discrete quarter observation first, but only when the source marks
+  it explicitly (`direct_quarter_amount` or an explicit period-value kind);
 - YTD subtraction only for P&L and cash-flow flows;
 - balance-sheet data are point-in-time and never subtracted;
-- conflicts, missing predecessor periods, scope mismatch, or unit mismatch
+- direct-vs-YTD conflicts, missing predecessor periods, scope mismatch, or unit mismatch
   result in `null + reason`, never interpolation.
 
 ## Entity and model policy

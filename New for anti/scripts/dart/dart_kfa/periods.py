@@ -148,20 +148,35 @@ def discrete_quarters_from_ytd(
     *,
     periods: Mapping[str, Any],
     metric_id: str | None = None,
+    direct_values: Mapping[str, Any] | None = None,
+    absolute_tolerance: float = 0.0,
+    relative_tolerance: float = 0.0,
 ) -> dict[str, dict[str, Any]]:
     """Convert one flow's DART YTD reports into standalone quarters.
 
     Missing predecessor reports suppress only the affected quarter.  For
     example, a present H1 with absent Q1 does *not* become Q2, while Q3 can
     still be calculated if both Q3 and H1 are present.
+
+    ``direct_values`` is optional and uses ``Q1`` through ``Q4`` keys.  A
+    caller may provide one only when the source explicitly identifies the
+    amount as a standalone quarter; a generic interim ``thstrm_amount`` is
+    not enough evidence.  A valid direct observation takes precedence over a
+    YTD subtraction, but when both are present they must reconcile within the
+    supplied tolerance.  A disagreement is a filing/adapter conflict, not a
+    licence to pick the more convenient figure.
     """
+    if absolute_tolerance < 0 or relative_tolerance < 0:
+        raise PeriodContractError("negative_reconciliation_tolerance")
     quarter_meta = _require_metadata(periods)
+    direct_values = direct_values or {}
     out: dict[str, dict[str, Any]] = {}
     for report in REPORT_ORDER:
         quarter = REPORT_TO_QUARTER[report]
         current = _number(ytd_values.get(report))
         predecessor_report = _FLOW_PREDECESSOR[report]
         predecessor = _number(ytd_values.get(predecessor_report)) if predecessor_report else None
+        direct = _number(direct_values.get(quarter))
         base = {
             "metric_id": metric_id,
             "period_kind": "flow_discrete_quarter",
@@ -171,22 +186,52 @@ def discrete_quarters_from_ytd(
             "source_report": report,
             "source_ytd_reports": [report] if predecessor_report is None else [predecessor_report, report],
         }
+        ytd_value: Decimal | None = None
+        ytd_reason: str | None = None
         if current is None:
-            out[quarter] = {**base, "value": None, "reason": f"missing:ytd_{report}"}
+            ytd_reason = f"missing:ytd_{report}"
         elif predecessor_report and predecessor is None:
-            out[quarter] = {
-                **base,
-                "value": None,
-                "reason": f"missing:predecessor_ytd_{predecessor_report}",
-            }
+            ytd_reason = f"missing:predecessor_ytd_{predecessor_report}"
         else:
-            value = current if predecessor is None else current - predecessor
+            ytd_value = current if predecessor is None else current - predecessor
+
+        if direct is not None:
+            if ytd_value is not None:
+                tolerance = max(
+                    Decimal(str(absolute_tolerance)),
+                    abs(ytd_value) * Decimal(str(relative_tolerance)),
+                )
+                if abs(direct - ytd_value) > tolerance:
+                    out[quarter] = {
+                        **base,
+                        "value": None,
+                        "reason": "conflict:direct_quarter_vs_ytd_derivation",
+                        "direct_value": _public_number(direct),
+                        "ytd_derived_value": _public_number(ytd_value),
+                        "tolerance": _public_number(tolerance),
+                        "direct_source_report": report,
+                    }
+                    continue
             out[quarter] = {
                 **base,
-                "value": _public_number(value),
+                "value": _public_number(direct),
                 "reason": None,
-                "derivation": "reported_q1_ytd" if predecessor_report is None else f"{report}_ytd_minus_{predecessor_report}_ytd",
+                "derivation": "reported_direct_quarter",
+                "direct_source_report": report,
+                "direct_value": _public_number(direct),
+                "ytd_derived_value": _public_number(ytd_value) if ytd_value is not None else None,
             }
+            continue
+
+        if ytd_value is None:
+            out[quarter] = {**base, "value": None, "reason": ytd_reason}
+            continue
+        out[quarter] = {
+            **base,
+            "value": _public_number(ytd_value),
+            "reason": None,
+            "derivation": "reported_q1_ytd" if predecessor_report is None else f"{report}_ytd_minus_{predecessor_report}_ytd",
+        }
     return out
 
 
