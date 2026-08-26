@@ -317,6 +317,37 @@ const MS_PLC_SERIES = [
     { key: 'inst', ko: '기관', cls: 'inst' },
 ];
 
+// Follows the cursor rather than snapping to a fixed offset from the chart,
+// since the caller asked for the box to sit to the right of the pointer, not
+// pinned above a data point the way the macro-tab tooltips are.
+const msWirePlcHover = (host) => {
+    host.querySelectorAll('.ms-plc-box').forEach((box) => {
+        const tip = box.querySelector('.ms-plc-tip');
+        if (!tip) return;
+        let tips;
+        try { tips = JSON.parse(box.dataset.msPlcTips || '[]'); } catch (_) { tips = []; }
+
+        const place = (e) => {
+            const margin = 12;
+            let left = e.clientX + 16, top = e.clientY - 14;
+            const tw = tip.offsetWidth, th = tip.offsetHeight;
+            if (left + tw + margin > window.innerWidth) left = e.clientX - tw - 16;
+            if (top + th + margin > window.innerHeight) top = window.innerHeight - th - margin;
+            if (top < margin) top = margin;
+            tip.style.left = `${left}px`;
+            tip.style.top = `${top}px`;
+        };
+
+        box.querySelectorAll('[data-ms-tip-idx]').forEach((hit) => {
+            const html = tips[Number(hit.dataset.msTipIdx)];
+            if (!html) return;
+            hit.addEventListener('mouseenter', (e) => { tip.innerHTML = html; tip.style.display = 'block'; place(e); });
+            hit.addEventListener('mousemove', place);
+            hit.addEventListener('mouseleave', () => { tip.style.display = 'none'; });
+        });
+    });
+};
+
 const msPriceLevelChart = (pts, rows, opts = {}) => {
     if (pts.length < 2 || !rows.length) return '';
     // Wide: the bars fan out horizontally from a centre axis, so width is what
@@ -403,8 +434,36 @@ const msPriceLevelChart = (pts, rows, opts = {}) => {
     const grid = Array.from({ length: 7 }, (_, i) => yLo + (yHi - yLo) * (i / 6));
     const fmt = opts.fmtX || msEok;
 
+    // One tooltip box, precomputed per date so hover just swaps innerHTML --
+    // no client-side re-formatting of krw/조/억 needed. 비중 is each group's
+    // share of that day's total absolute flow, not a share of trading value
+    // (which this chart doesn't carry), so it answers "who moved today" even
+    // when the day's net is small.
+    const flowRow = (label, v, pct) => `<span>${finEsc(label)}</span>
+        <span class="${!Number.isFinite(v) || v === 0 ? '' : v > 0 ? 'fin-up' : 'fin-down'}">
+            ${fmt(v)}${pct === null ? '' : ` <i>(${pct}%)</i>`}</span>`;
+    const tipHtml = pts.map((d) => {
+        const r = d._retail, f = d._foreign, ins = d._inst;
+        const absSum = [r, f, ins].filter(Number.isFinite).reduce((s, v) => s + Math.abs(v), 0);
+        const pct = (v) => (Number.isFinite(v) && absSum > 0) ? Math.round(Math.abs(v) / absSum * 100) : null;
+        const credit = hasCredit ? CREDIT_SERIES.map((s) => {
+            const v = creditJo(d, s.key);
+            return v === null ? '' : `<span>${finEsc(s.ko)}</span><span>${joLabel(v)}</span>`;
+        }).join('') : '';
+        return `<div class="ms-plc-tip-date">${finEsc(d.date)}</div>
+            <div class="ms-plc-tip-price">주가 ${msNum(d.close)}</div>
+            <div class="ms-plc-tip-row">
+                ${flowRow('개인', r, pct(r))}
+                ${flowRow('외국인', f, pct(f))}
+                ${flowRow('기관', ins, pct(ins))}
+            </div>
+            ${credit ? `<div class="ms-plc-tip-h">신용공여</div>
+            <div class="ms-plc-tip-row">${credit}</div>` : ''}`;
+    });
+
     return `
-    <div class="ms-plc-box">
+    <div class="ms-plc-box" data-ms-plc-tips='${finEsc(JSON.stringify(tipHtml))}'>
+        <div class="ms-plc-tip"></div>
         <svg class="ms-plc" viewBox="0 0 ${W} ${H}" role="img"
              aria-label="${finEsc(opts.label || '가격대별 순매수 분포')}">
             ${grid.map((g) => `
@@ -445,7 +504,7 @@ const msPriceLevelChart = (pts, rows, opts = {}) => {
                     class="mm-tick ms-plc-cr-lab ms-plc-cr-${s.cls}">${joLabel(st.last)}</text>`;
             }).join('') : ''}
             ${pts.map((d, i) => `<rect x="${(sx(i) - (W - L - R) / pts.length / 2).toFixed(1)}" y="${T}"
-                width="${((W - L - R) / pts.length).toFixed(1)}" height="${(H - T - B).toFixed(1)}" class="ms-plc-hit"><title>${
+                width="${((W - L - R) / pts.length).toFixed(1)}" height="${(H - T - B).toFixed(1)}" class="ms-plc-hit" data-ms-tip-idx="${i}"><title>${
                 finEsc(d.date)} · ${finEsc(opts.lineName || '종가')} ${msNum(d.close)} · 개인 ${fmt(d._retail)} · 외국인 ${
                 fmt(d._foreign)} · 기관 ${fmt(d._inst)}${hasCredit ? CREDIT_SERIES.map((s) => {
                     const v = creditJo(d, s.key);
@@ -1364,6 +1423,7 @@ const renderMicrostructure = async (host) => {
         });
         on('[data-ms-modal-close]', (b, e) => { if (e.target === b) { MS_MODAL = null; MS_MODAL_KEY = null; paint(); } });
         mmWireCharts(host);
+        msWirePlcHover(host);
     };
     paint();
 };
