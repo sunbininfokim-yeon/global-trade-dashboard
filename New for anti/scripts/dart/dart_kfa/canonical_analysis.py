@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from copy import deepcopy
 from datetime import datetime, timezone
-from typing import Any, Mapping
+from typing import Any, Iterable, Mapping
 
 from .entity_policy import classify_entity, is_financial
 from .fundamental_pack import build_fundamental_pack
@@ -12,6 +12,7 @@ from .industry import apply_industry_layer
 from .ma_metrics import compute_ma_metrics
 from .metrics import compute_metrics, load_metrics_spec
 from .narrative import narratives_ko
+from .p1_disclosures import build_p1_disclosures
 from .validate import validate_accounts
 from .valuation import build_seeded_scenarios, run_valuation_bundle, seed_from_statements
 from .view_engine import build_unified_views
@@ -65,6 +66,8 @@ def analyze_canonical_facts(
     shares_out: float | None = None,
     share_basis: str | None = None,
     share_metadata: dict[str, Any] | None = None,
+    p1_structured_disclosures: Iterable[Mapping[str, Any]] | None = None,
+    p1_annual_history: Iterable[Mapping[str, Any]] | None = None,
 ) -> dict[str, Any]:
     """Run the common metric/view engine without mixing annual and interim data."""
     if canonical.get("schema_version") != "canonical-financial-facts/1":
@@ -245,6 +248,15 @@ def analyze_canonical_facts(
             },
         },
     }
+    # P1 intentionally remains an additive contract.  It does not feed legacy
+    # cards or valuation and is therefore safe to expose before Worker/UI
+    # wiring.  Strict EBITDA still stays unavailable until a source adapter
+    # supplies separate PPE-depreciation and intangible-amortisation facts.
+    output["p1_disclosures"] = build_p1_disclosures(
+        canonical,
+        structured_disclosures=p1_structured_disclosures,
+        annual_history=p1_annual_history,
+    )
     view_inputs = {"valuation_assumptions": valuation_assumptions} if valuation_assumptions else {}
     output["unified_views"] = build_unified_views(output, user_inputs=view_inputs)
     return output

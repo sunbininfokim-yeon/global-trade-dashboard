@@ -346,9 +346,13 @@ def build_p1_disclosures(
     """
     if canonical.get("schema_version") != "canonical-financial-facts/1":
         raise P1DisclosureError("unsupported_canonical_schema")
+    # Callers may pass a generator.  P1 evaluates the same structured evidence
+    # for current and annual outputs, so materialise it once rather than making
+    # later periods silently lose provenance rows.
+    rows = list(structured_disclosures or [])
     selection = resolve_latest_endpoint(canonical, requested=requested_endpoint)
     current = (
-        _one_period_output(canonical, endpoint=selection["selected"], rows=structured_disclosures)
+        _one_period_output(canonical, endpoint=selection["selected"], rows=rows)
         if selection["selected"] else {
             "period": _period_descriptor((), "annual"),
             "ebitda": _unavailable(selection["reason"]),
@@ -361,7 +365,7 @@ def build_p1_disclosures(
     for history_item in annual_history or []:
         if not isinstance(history_item, Mapping) or history_item.get("schema_version") != "canonical-financial-facts/1":
             raise P1DisclosureError("annual_history_requires_canonical_financial_facts")
-        annual.append(_one_period_output(history_item, endpoint="annual", rows=structured_disclosures))
+        annual.append(_one_period_output(history_item, endpoint="annual", rows=rows))
     annual.sort(key=lambda item: (item["period"].get("fiscal_year") is None, item["period"].get("fiscal_year")))
     return {
         "schema_version": SCHEMA_VERSION,

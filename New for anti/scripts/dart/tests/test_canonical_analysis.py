@@ -33,6 +33,29 @@ def dart_row(code, account, sj, amount, cumulative=None):
 
 
 class CanonicalAnalysisTest(unittest.TestCase):
+    def test_p1_addon_is_present_and_combined_da_does_not_make_strict_ebitda(self):
+        specs = {
+            **SPECS,
+            # Deliberately combined D&A: P1 must not use this as either strict
+            # component without separate reported PPE/intangible facts.
+            "DEPRECIATION": {"nature": "flow", "statement": "IS", "source_ids": ["combined_da"]},
+        }
+        filings = {
+            "11011": [
+                dart_row("11011", "rev", "IS", 100),
+                dart_row("11011", "op", "IS", 20),
+                dart_row("11011", "combined_da", "IS", 7),
+            ]
+        }
+        canonical = adapt_dart_filings(filings, account_specs=specs, fiscal_year_end="2025-12-31")
+        company = analyze_canonical_facts(canonical, corp={"name": "산업기업", "industry": "C20"})
+        self.assertIn("p1_disclosures", company)
+        self.assertEqual(company["p1_disclosures"]["schema_version"], "kfa-p1-disclosures/1")
+        ebitda = company["p1_disclosures"]["current"]["ebitda"]
+        self.assertIsNone(ebitda["value"])
+        self.assertIn("PPE_DEPRECIATION:missing:account", ebitda["reason"])
+        self.assertIn("INTANGIBLE_AMORTIZATION:missing:account", ebitda["reason"])
+
     def test_q2_uses_half_year_minus_q1_and_blocks_interim_dcf(self):
         quarterly = {
             "rev": (10, 30, 45, 70), "op": (2, 5, 8, 12), "ni": (1, 3, 5, 8),
