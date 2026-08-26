@@ -47,7 +47,7 @@ class ShippingUiContractTests(unittest.TestCase):
         self.assertIn(">항로 운항 선복량</a>", source)
         self.assertNotIn('data-target="shipping_scenarios"', source)
         self.assertNotIn('data-target="shipping_environment"', source)
-        self.assertIn('shipping.js?v=18', source)
+        self.assertRegex(source, r'<script src="shipping\.js\?v=\d+"></script>')
 
     def test_fleet_and_route_cards_have_explicit_display_fields(self) -> None:
         fleet_rows = self.snapshot["fleet"]["fleet_by_type"]
@@ -99,7 +99,35 @@ class ShippingUiContractTests(unittest.TestCase):
             context = chokepoint["risk_context"]
             self.assertTrue(context["primary_constraint_label_ko"])
             self.assertTrue(context["mechanism_ko"])
-            self.assertIn("실효 통행제약률", context["scenario_interpretation_ko"])
+            if chokepoint["scenario_availability"] == "observed_monitor_only_no_route_model":
+                self.assertIn("일별 통항 관측 모니터", context["scenario_interpretation_ko"])
+            else:
+                self.assertIn("실효 통행제약률", context["scenario_interpretation_ko"])
+
+    def test_global_observation_only_chokepoints_publish_daily_average_contract(self) -> None:
+        expected_ids = {"malacca", "cape_good_hope", "gibraltar", "oresund"}
+        chokepoints = {row["id"]: row for row in self.snapshot["chokepoints"]}
+        self.assertTrue(expected_ids.issubset(chokepoints))
+        for chokepoint_id in expected_ids:
+            self.assertEqual(
+                chokepoints[chokepoint_id]["scenario_availability"],
+                "observed_monitor_only_no_route_model",
+            )
+            status = self.snapshot["chokepoints_live"][chokepoint_id]
+            averages = status["daily_averages"]
+            metric = status["metrics"]["all"]
+            self.assertEqual(
+                averages["latest_daily_observation"]["date"],
+                status["history"][-1]["date"],
+            )
+            self.assertAlmostEqual(
+                averages["trailing_7d_average"]["value"],
+                metric["current_7d_mean_estimated_trade_tonnes"],
+            )
+            self.assertAlmostEqual(
+                averages["prior_28d_average"]["value"],
+                metric["prior_28d_mean_estimated_trade_tonnes"],
+            )
 
     def test_scenario_grid_has_backlog_and_commercial_constraint_metrics(self) -> None:
         base_ids = {row["id"] for row in self.snapshot["scenario_summary"]}

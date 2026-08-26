@@ -439,6 +439,7 @@ def build_ui_delivery_contract() -> dict[str, Any]:
                     "chokepoints[]",
                     "live_display[]",
                     "chokepoints_live.<id>.history[]",
+                    "chokepoints_live.<id>.daily_averages",
                     "scenarios[]",
                     "ui_scenario_grid.rows[]",
                 ],
@@ -460,6 +461,7 @@ def build_ui_delivery_contract() -> dict[str, Any]:
                     "duration_days": "제약 지속일",
                     "backlog_cargo_tonnes_horizon": "28일 분석기간 말 미운송 화물",
                     "commercially_unavailable_dwt": "상업적으로 사용 불가한 모델상 DWT",
+                    "daily_averages": "일별 추정 교역량 및 관측일 기준 이동평균",
                 },
                 "render_only_rule": (
                     "Match a precomputed row by all three input fields. Do not calculate "

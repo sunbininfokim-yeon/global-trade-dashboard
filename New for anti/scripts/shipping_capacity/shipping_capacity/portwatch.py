@@ -68,6 +68,100 @@ def _mean(rows: list[dict[str, Any]], field: str) -> float | None:
     return statistics.fmean(values) if values else None
 
 
+def _daily_average_window(
+    history: list[dict[str, Any]],
+    *,
+    required_observations: int,
+    label_ko: str,
+) -> dict[str, Any]:
+    """Publish a transparent average of observed daily records only.
+
+    PortWatch normally provides one observation per day, but upstream revisions
+    or AIS coverage can leave gaps.  This helper never fills those gaps or
+    converts an observation count into a fabricated calendar-day value.
+    """
+
+    points = history[-required_observations:]
+    if len(points) < required_observations:
+        return {
+            "label_ko": label_ko,
+            "status": "insufficient_observed_days",
+            "value": None,
+            "observation_count": len(points),
+            "required_observation_count": required_observations,
+            "start_date": points[0]["date"] if points else None,
+            "end_date": points[-1]["date"] if points else None,
+            "calculation": "mean_of_observed_daily_values_no_imputation",
+        }
+    return {
+        "label_ko": label_ko,
+        "status": "observed_daily_average",
+        "value": statistics.fmean(float(point["value"]) for point in points),
+        "observation_count": len(points),
+        "required_observation_count": required_observations,
+        "start_date": points[0]["date"],
+        "end_date": points[-1]["date"],
+        "calculation": "mean_of_observed_daily_values_no_imputation",
+    }
+
+
+def _prior_daily_average_window(
+    history: list[dict[str, Any]],
+    *,
+    current_observations: int,
+    required_observations: int,
+    label_ko: str,
+) -> dict[str, Any]:
+    """Average the 28 observations immediately before the current seven."""
+
+    if len(history) < current_observations + required_observations:
+        return _daily_average_window(
+            [],
+            required_observations=required_observations,
+            label_ko=label_ko,
+        )
+    return _daily_average_window(
+        history[-(current_observations + required_observations) : -current_observations],
+        required_observations=required_observations,
+        label_ko=label_ko,
+    )
+
+
+def _daily_averages_contract(history: list[dict[str, Any]]) -> dict[str, Any]:
+    """Build the UI-ready daily observation and rolling-average contract."""
+
+    latest = history[-1] if history else None
+    return {
+        "status": (
+            "observed_daily_estimated_trade_volume"
+            if history
+            else "unavailable_cached_summary_only"
+        ),
+        "unit": PORTWATCH_METRIC_UNIT,
+        "definition": PORTWATCH_METRIC_DEFINITION,
+        "latest_daily_observation": (
+            {"date": latest["date"], "value": latest["value"]}
+            if latest
+            else None
+        ),
+        "trailing_7d_average": _daily_average_window(
+            history,
+            required_observations=7,
+            label_ko="최근 7일 일평균",
+        ),
+        "prior_28d_average": _prior_daily_average_window(
+            history,
+            current_observations=7,
+            required_observations=28,
+            label_ko="직전 28일 일평균",
+        ),
+        "warning_ko": (
+            "PortWatch의 일별 추정 교역량 관측치를 평균한 값입니다. 결측일은 보간하지 "
+            "않으며, 실제 화물 명세·통항 DWT·물리적 봉쇄율을 뜻하지 않습니다."
+        ),
+    }
+
+
 def _mae(actual: list[float], predicted: list[float]) -> float:
     return statistics.fmean(abs(a - p) for a, p in zip(actual, predicted))
 
@@ -419,6 +513,12 @@ def normalize_status_contract(status: dict[str, Any]) -> dict[str, Any]:
             else "unavailable_cached_summary_only"
         ),
     )
+    daily_averages = normalized.get("daily_averages")
+    if not isinstance(daily_averages, dict):
+        # An older cache may have only 7d/28d summaries.  Publish unavailable
+        # daily values rather than reconstructing a time series from them.
+        daily_averages = _daily_averages_contract(history)
+    normalized["daily_averages"] = daily_averages
 
     normalized["quality"] = "observed_estimated_trade_volume_shortfall_7d_vs_prior_28d"
     normalized["metric_unit"] = PORTWATCH_METRIC_UNIT
@@ -458,6 +558,7 @@ def summarize_series(rows: list[dict[str, Any]], portwatch_id: str) -> dict[str,
             "history_unit": PORTWATCH_METRIC_UNIT,
             "history_point_count": len(history),
             "history_status": "observed_daily_estimated_trade_volume",
+            "daily_averages": _daily_averages_contract(history),
         }
     current = valid[-7:]
     baseline = valid[-35:-7] if len(valid) >= 35 else valid[:-7]
@@ -512,6 +613,7 @@ def summarize_series(rows: list[dict[str, Any]], portwatch_id: str) -> dict[str,
         "history_unit": PORTWATCH_METRIC_UNIT,
         "history_point_count": len(history),
         "history_status": "observed_daily_estimated_trade_volume",
+        "daily_averages": _daily_averages_contract(history),
         "history_warning": (
             "Daily PortWatch transit-volume estimate in metric tonnes; subject to "
             "AIS coverage and upstream revisions, and not observed DWT."

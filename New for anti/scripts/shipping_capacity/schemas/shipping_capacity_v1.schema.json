@@ -89,12 +89,13 @@
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["id", "portwatch_id", "coordinates", "risk_context"],
+        "required": ["id", "portwatch_id", "coordinates", "risk_context", "scenario_availability"],
         "properties": {
           "risk_context": {
             "type": "object",
             "required": ["primary_constraint_type", "primary_constraint_label_ko", "mechanism_ko", "scenario_interpretation_ko"]
-          }
+          },
+          "scenario_availability": {"enum": ["linked_model_scenarios", "route_link_no_preset_scenario", "observed_monitor_only_no_route_model"]}
         }
       }
     },
@@ -102,7 +103,7 @@
       "type": "object",
       "additionalProperties": {
         "type": "object",
-        "required": ["metrics", "history", "history_metric_key", "history_field", "history_unit", "history_point_count", "history_status"],
+        "required": ["metrics", "history", "history_metric_key", "history_field", "history_unit", "history_point_count", "history_status", "daily_averages"],
         "properties": {
           "history": {
             "type": "array",
@@ -119,7 +120,19 @@
           "history_field": {"type": "string"},
           "history_unit": {"const": "estimated_trade_tonnes_per_day"},
           "history_point_count": {"type": "integer", "minimum": 0},
-          "history_status": {"enum": ["observed_daily_estimated_trade_volume", "unavailable_cached_summary_only"]}
+          "history_status": {"enum": ["observed_daily_estimated_trade_volume", "unavailable_cached_summary_only"]},
+          "daily_averages": {
+            "type": "object",
+            "required": ["status", "unit", "latest_daily_observation", "trailing_7d_average", "prior_28d_average", "warning_ko"],
+            "properties": {
+              "status": {"enum": ["observed_daily_estimated_trade_volume", "unavailable_cached_summary_only"]},
+              "unit": {"const": "estimated_trade_tonnes_per_day"},
+              "latest_daily_observation": {"type": ["object", "null"]},
+              "trailing_7d_average": {"type": "object"},
+              "prior_28d_average": {"type": "object"},
+              "warning_ko": {"type": "string"}
+            }
+          }
         }
       }
     },
