@@ -365,6 +365,8 @@ const KFA_CARD_META = {
     market_cap: { label: '시가총액', unit: 'money', plain: '현재가 × 발행주식수. 회사 전체를 지금 가격으로 산다면 드는 돈입니다.' },
     pe_ratio: { label: 'PER(주가수익비율)', unit: 'ratio', plain: '현재가를 EPS로 나눈 값입니다. 낮을수록 이익 대비 주가가 싼 편입니다.' },
     pb_ratio: { label: 'PBR(주가순자산비율)', unit: 'ratio', plain: '현재가를 주당순자산(BPS)으로 나눈 값입니다. 1보다 낮으면 장부가보다 싸게 거래 중입니다.' },
+    roe: { label: 'ROE(자기자본이익률)', unit: 'percent', plain: '자기자본으로 한 해 동안 얼마를 벌었는지입니다. 은행·보험 등 금융기관에서도 쓰는 지표입니다.' },
+    roa: { label: 'ROA(총자산이익률)', unit: 'percent', plain: '전체 자산으로 한 해 동안 얼마를 벌었는지입니다.' },
     owner_earnings: { label: '오너어닝스', unit: 'money', plain: '버핏식으로 어림한 실질 이익입니다.' },
     earnings_quality: { label: '이익의 질', unit: 'ratio', plain: '회계상 이익이 실제 현금흐름으로 얼마나 뒷받침되는지입니다.' },
     margins_trend: { label: '마진 추이', unit: 'text', plain: '최근 몇 년간 이익률이 개선·악화되는 방향입니다.' },
@@ -389,6 +391,7 @@ const kfaFmt = (key, v, currency) => {
     if (unit === 'money') return coNum(v, currency || 'KRW');
     if (unit === 'days') return `${Math.round(v)}일`;
     if (unit === 'ratio') return `${v.toFixed(2)}배`;
+    if (unit === 'percent') return `${(v * 100).toFixed(1)}%`;
     return String(v);
 };
 
@@ -620,25 +623,42 @@ const renderKfaResult = (out, data) => {
 const loadKfaCompany = async (out, inst, code) => {
     out.innerHTML = `<div class="fin-block fin-block-wide"><p class="fin-loading">DART 공시 자료를 받는 중…</p></div>`;
 
-    let data = null;
+    let staticSnap = null;
     for (const path of [`/public/data/kfa_${code}_v1.json`, `/data/kfa_${code}_v1.json`]) {
         try {
             const res = await fetch(path, { cache: 'no-store' });
-            if (res.ok) { data = await res.json(); break; }
+            if (res.ok) { staticSnap = await res.json(); break; }
         } catch (_) { /* try next */ }
     }
 
-    // No pre-generated snapshot for this ticker (only a handful exist under
-    // public/data/) -- fall back to a live OpenDART lookup, which covers
-    // every KRX-listed filer but only the 12 Basic-view cards (see
-    // handleDartFinancials in _worker.js for why Investor/PE/Deal stay
-    // "준비 중" here instead of getting a parallel calculation port).
+    // A static snapshot only stands in for a live response when it carries
+    // the P0 contract and doesn't flag itself stale. No `service_readiness`
+    // at all (every pre-P0 snapshot under public/data/ today) counts the same
+    // as an explicit live_fallback_required: true -- see
+    // scripts/dart/docs/P0_WORKER_HANDOFF_FINANCIALS.md section 0.
+    const staticIsCurrent = !!(staticSnap && staticSnap.service_readiness
+        && staticSnap.service_readiness.live_fallback_required !== true);
+
+    let data = staticIsCurrent ? staticSnap : null;
+
+    // No current-per-contract snapshot -- fall back to a live OpenDART
+    // lookup, which covers every KRX-listed filer but only the 12 Basic-view
+    // cards (see handleDartFinancials in _worker.js for why Investor/PE/Deal
+    // stay "준비 중" here instead of getting a parallel calculation port).
     let liveOnly = false;
     if (!data) {
         try {
             const res = await fetch(`/api/dart-financials?symbol=${encodeURIComponent(code)}`, { cache: 'no-store' });
             if (res.ok) { data = await res.json(); liveOnly = true; }
-        } catch (_) { /* fall through to empty state */ }
+        } catch (_) { /* fall through to the stale static snapshot, if any */ }
+    }
+
+    // Live also failed (or had nothing) -- a stale static snapshot still
+    // beats an empty screen; use it, but say so.
+    let usedLegacySnapshot = false;
+    if (!data && staticSnap) {
+        data = staticSnap;
+        usedLegacySnapshot = true;
     }
 
     if (!data) {
@@ -652,6 +672,8 @@ const loadKfaCompany = async (out, inst, code) => {
 
     if (liveOnly) {
         data.reasons = [...(data.reasons || []), '실시간 조회: 기본 12개 지표만 제공 (투자자/PE/딜 카드는 준비 중)'];
+    } else if (usedLegacySnapshot) {
+        data.reasons = [...(data.reasons || []), '이전 정적 스냅샷: 실시간 조회 실패로 과거 저장본을 표시합니다'];
     }
 
     KFA_VIEW = data.view_presets?.default_view || 'basic';
