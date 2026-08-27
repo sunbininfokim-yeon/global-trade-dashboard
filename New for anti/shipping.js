@@ -186,6 +186,17 @@
   // Coastline for the detail map. Same source app.js already uses, so the
   // browser cache is usually warm by the time a chokepoint is opened.
   const COUNTRIES_GEOJSON = 'https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json';
+  // Keep the location panel useful at a glance: the pin alone does not tell a
+  // reader whether a strait sits between Iran/Oman, Yemen/Djibouti, etc.
+  // These are labels on top of the shared country GeoJSON, not a substitute
+  // for a geographic boundary source.
+  const CHOKEPOINT_COUNTRY_LABELS = {
+    suez: [['이집트', 30.7, 29.8], ['이스라엘', 34.9, 31.3], ['사우디아라비아', 38.4, 27.2]],
+    bab_el_mandeb: [['예멘', 45.3, 14.4], ['지부티', 43.1, 11.9], ['에리트레아', 39.6, 15.1]],
+    hormuz: [['이란', 55.6, 27.6], ['UAE', 55.3, 25.2], ['오만', 58.1, 24.2]],
+    panama: [['파나마', -79.8, 9.2], ['코스타리카', -83.1, 9.9], ['콜롬비아', -77.0, 7.1]],
+    malacca: [['말레이시아', 101.9, 4.5], ['싱가포르', 103.8, 1.35], ['인도네시아', 103.0, -1.2]]
+  };
   let worldGeoPromise = null;
   const loadWorldGeo = () => {
     if (!worldGeoPromise) {
@@ -203,7 +214,7 @@
    * scrolling panel that deck does not own, and the view never pans or zooms,
    * so a full map engine would cost a canvas and a controller for a picture.
    */
-  const renderMiniMap = async (host, point, spanDeg = 13) => {
+  const renderMiniMap = async (host, point, spanDeg = 20) => {
     const [lon, lat] = point.coordinates || [];
     if (!finite(lon) || !finite(lat)) {
       host.innerHTML = '<p class="shipping-empty">좌표 없음</p>';
@@ -240,11 +251,19 @@
       paths = '';
     }
 
+    const labels = asArray(CHOKEPOINT_COUNTRY_LABELS[point.id]).map(([name, labelLon, labelLat]) => {
+      const labelX = x(labelLon);
+      const labelY = y(labelLat);
+      if (labelX < 8 || labelX > W - 8 || labelY < 10 || labelY > H - 8) return '';
+      return `<text x="${labelX.toFixed(1)}" y="${labelY.toFixed(1)}" class="shipping-minimap-country">${escapeHtml(name)}</text>`;
+    }).join('');
+
     host.innerHTML = `
       <svg viewBox="0 0 ${W} ${H}" class="shipping-minimap-svg" role="img"
            aria-label="${escapeHtml(point.name_ko)} 위치">
         <rect width="${W}" height="${H}" fill="#0b1220" />
         ${paths}
+        ${labels}
         <circle cx="${W / 2}" cy="${H / 2}" r="16" fill="none" stroke="#38bdf8" stroke-width="1" opacity="0.35" />
         <circle cx="${W / 2}" cy="${H / 2}" r="7" fill="#38bdf8" fill-opacity="0.25" stroke="#38bdf8" stroke-width="1.5" />
         <circle cx="${W / 2}" cy="${H / 2}" r="2.5" fill="#e0f2fe" />
@@ -292,6 +311,84 @@
       points.push({ date: date.toISOString().slice(0, 10), value: level * (1 + wiggle(i)) });
     }
     return { real: false, points, baseline, current };
+  };
+
+  const CHOKEPOINT_METRIC_TABS = [
+    ['all', '전체'],
+    ['container', '컨테이너'],
+    ['dry_bulk', '벌크'],
+    ['tanker', '탱커']
+  ];
+
+  // PortWatch publishes comparable 7-day / prior-28-day summaries for these
+  // types. Daily history is intentionally kept on the chart's representative
+  // metric only; we never invent a vessel-type daily line in the browser.
+  const renderObservedTypeComparison = point => {
+    const available = CHOKEPOINT_METRIC_TABS.filter(([key]) => point.live?.metrics?.[key]);
+    if (!available.length) return '';
+    const initial = available.some(([key]) => key === point.metricKey) ? point.metricKey : available[0][0];
+    return `
+      <section class="shipping-observed-type-comparison" aria-label="선종별 추정 교역량 비교">
+        <div class="shipping-observed-type-head">
+          <div>
+            <span>SHIP TYPE COMPARISON</span>
+            <h3>선종별 추정 교역량</h3>
+          </div>
+          <small>7일 평균 · 직전 28일 기준선</small>
+        </div>
+        <div class="shipping-observed-type-controls" role="tablist" aria-label="선종 선택">
+          ${available.map(([key, label]) => `<button type="button" data-chokepoint-metric="${key}" role="tab" aria-selected="${key === initial}">${label}</button>`).join('')}
+        </div>
+        <div class="shipping-observed-window-controls" role="group" aria-label="비교 기간 선택">
+          <button type="button" data-chokepoint-window="recent" aria-pressed="true">최근 7일</button>
+          <button type="button" data-chokepoint-window="prior" aria-pressed="false">직전 28일</button>
+        </div>
+        <div class="shipping-observed-type-result" data-chokepoint-type-result></div>
+      </section>`;
+  };
+
+  const bindObservedTypeComparison = (scope, point) => {
+    const result = scope.querySelector('[data-chokepoint-type-result]');
+    const metricButtons = [...scope.querySelectorAll('[data-chokepoint-metric]')];
+    const windowButtons = [...scope.querySelectorAll('[data-chokepoint-window]')];
+    if (!result || !metricButtons.length) return;
+    let metricKey = metricButtons.find(button => button.getAttribute('aria-selected') === 'true')?.dataset.chokepointMetric || 'all';
+    let windowKey = 'recent';
+
+    const update = () => {
+      const metric = point.live?.metrics?.[metricKey] || {};
+      const recent = Number(metric.current_7d_mean_estimated_trade_tonnes);
+      const prior = Number(metric.prior_28d_mean_estimated_trade_tonnes);
+      const isRecent = windowKey === 'recent';
+      const selectedValue = isRecent ? recent : prior;
+      const compareValue = isRecent ? prior : recent;
+      const change = Number(metric.change_pct);
+      const remaining = Number(metric.remaining_trade_volume_ratio);
+
+      metricButtons.forEach(button => button.setAttribute('aria-selected', String(button.dataset.chokepointMetric === metricKey)));
+      windowButtons.forEach(button => button.setAttribute('aria-pressed', String(button.dataset.chokepointWindow === windowKey)));
+      result.innerHTML = `
+        <div class="shipping-observed-value">
+          <span>${isRecent ? '최근 7일 일평균' : '직전 28일 기준선'}</span>
+          <strong>${formatTonnes(selectedValue)}/일</strong>
+          <small>${isRecent ? `기준선 대비 ${formatPct(change, 1)}` : `최근 7일은 ${formatPct(change, 1)}`}</small>
+        </div>
+        <div class="shipping-observed-compare">
+          <span>${isRecent ? '직전 28일 기준선' : '최근 7일 일평균'}</span>
+          <b>${formatTonnes(compareValue)}/일</b>
+          ${isRecent && finite(remaining) ? `<small>잔존 추정 교역량 ${formatPct(remaining * 100, 1)}</small>` : ''}
+        </div>`;
+    };
+
+    metricButtons.forEach(button => button.addEventListener('click', () => {
+      metricKey = button.dataset.chokepointMetric;
+      update();
+    }));
+    windowButtons.forEach(button => button.addEventListener('click', () => {
+      windowKey = button.dataset.chokepointWindow;
+      update();
+    }));
+    update();
   };
 
   const bindPopovers = root => {
@@ -697,8 +794,13 @@
     draw();
   };
 
-  const renderChokepoints = (data, root) => {
-    const points = data.ui.chokepoints;
+  const CORE_CHOKEPOINT_IDS = ['suez', 'bab_el_mandeb', 'hormuz', 'panama', 'malacca'];
+
+  const renderChokepoints = (data, root, showAll = false) => {
+    const allPoints = data.ui.chokepoints;
+    const points = showAll
+      ? allPoints
+      : allPoints.filter(point => CORE_CHOKEPOINT_IDS.includes(point.id));
     const worst = [...points].filter(p => p.shortfall !== null)
       .sort((a, b) => (b.shortfall || 0) - (a.shortfall || 0))[0];
 
@@ -730,7 +832,7 @@
       ${worst ? `<div class="shipping-kpi-grid">
         ${kpi('최대 위축 통로', escapeHtml(worst.name_ko), `${formatPct((worst.shortfall || 0) * 100, 0)} 감소`, { featured: true })}
         ${kpi('잔존 교역량', formatPct((worst.remaining || 0) * 100, 0), escapeHtml(worst.display?.residual_label_ko || '최근 7일 기준'))}
-        ${kpi('모니터 대상', `${formatNumber(points.length)}개 통로`, 'PortWatch 공개 신호')}
+        ${kpi('모니터 대상', `${formatNumber(points.length)}개 통로`, showAll ? '전체 PortWatch 공개 신호' : '차단 시 우회·대기 영향 중심')}
       </div>` : ''}
       ${panel('LIVE SIGNAL', '통로별 추정 교역량 변화', `
         <div class="shipping-chart-wrap"><canvas id="shipping-chokepoint-chart"></canvas></div>
@@ -747,6 +849,9 @@
               ['색 구간', '10% 미만 정상 · 10–25% 주의 · 25% 이상 위험']
             ])}
             <p class="shipping-note">색 구간은 이 화면이 정한 표시 기준이며, PortWatch가 제공하는 등급이 아닙니다. 감소율 자체는 계산이 아니라 스냅샷에 기록된 값을 그대로 씁니다.</p>`)}
+          <button type="button" class="shipping-secondary-control" id="shipping-chokepoint-scope-toggle" aria-pressed="${showAll}">
+            ${showAll ? '핵심 5개만 보기' : `전체 ${formatNumber(allPoints.length)}개 통로 보기`}
+          </button>
           ${badge('PortWatch 추정', 'estimated')}
         </div>`)}
       <div class="shipping-chokepoint-grid">${cards}</div>
@@ -754,6 +859,10 @@
       <p class="shipping-note">호르무즈는 탱커, 나머지 통로는 전체 추정 교역량을 대표 지표로 씁니다. 따라서 호르무즈 수치는 “최근 7일 탱커 추정 교역량 감소율”이며 시나리오 봉쇄율과 같은 숫자가 아닙니다.</p>`;
 
     root.innerHTML = pageShell('shipping_chokepoints', body, data);
+
+    root.querySelector('#shipping-chokepoint-scope-toggle')?.addEventListener('click', () => {
+      renderChokepoints(data, root, !showAll);
+    });
 
     const charted = points.filter(p => p.shortfall !== null);
     createChart(root, 'shipping-chokepoint-chart', {
@@ -806,13 +915,15 @@
               ['기준선 대비', shortfallPct === null ? '—' : `${formatPct(-shortfallPct, 1)} (잔존 ${formatPct((point.remaining || 0) * 100, 0)})`]
             ])}
             <p class="shipping-note"><strong>${escapeHtml(risk.primary_constraint_label_ko || '주요 제약')}:</strong> ${escapeHtml(risk.mechanism_ko || '제약 설명이 제공되지 않았습니다.')}</p>
-            <p class="shipping-note">${escapeHtml(risk.scenario_interpretation_ko || '')}</p>`,
+            <p class="shipping-note">${escapeHtml(risk.scenario_interpretation_ko || '')}</p>
+            ${renderObservedTypeComparison(point)}`,
             series.real ? badge('PortWatch 관측', 'observed') : badge('예시 시계열', 'neutral', '두 실측 평균을 잇는 형태이며 일별 관측이 아닙니다'))}
         </div>
         <div id="shipping-inline-simulator"></div>`;
 
       detail.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
       renderMiniMap(detail.querySelector('#shipping-minimap'), point);
+      bindObservedTypeComparison(detail, point);
 
       const baseline = Number(point.metric.prior_28d_mean_estimated_trade_tonnes);
       createChart(detail, 'shipping-detail-chart', {
@@ -883,31 +994,38 @@
     const isRerouteRelevantScenario = /^(suez|bab_el_mandeb)_/.test(scenarioId);
     if (!isRerouteRelevantScenario || !asArray(receivers).length) return '';
 
-    return `<div style="margin-top:24px;border-top:1px solid #e2e8f0;padding-top:18px;">
-      <h3 style="margin:0 0 12px;font-size:14px;font-weight:600;color:#1e293b">우회 항로 처리 역량</h3>
+    return `<details class="shipping-reroute-details">
+      <summary>
+        <span>
+          <small>ROUTE RECEIVER</small>
+          <strong>우회 항로 처리 역량</strong>
+        </span>
+        <span class="shipping-reroute-summary-value">${formatDWT(asArray(receivers).reduce((sum, item) => sum + Number(item.additional_service_capacity_dwt || 0), 0))}</span>
+      </summary>
+      <div class="shipping-reroute-details-body">
       ${asArray(receivers).map(recv => `
-        <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:16px;margin-bottom:12px">
-          <div style="font-weight:600;color:#1e293b;margin-bottom:12px">${escapeHtml(recv.name_ko || recv.id)}</div>
-          <div class="shipping-metric-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:12px">
+        <div class="shipping-reroute-receiver">
+          <div class="shipping-reroute-receiver-title">${escapeHtml(recv.name_ko || recv.id)}</div>
+          <div class="shipping-metric-grid shipping-reroute-metrics">
             ${recv.rerouted_cargo_tonnes_horizon ? `
               <div>
-                <div style="font-size:12px;color:#64748b;margin-bottom:4px">우회 처리 화물량 (28일 기준)</div>
-                <div style="font-weight:600;font-size:14px;color:#0f172a">${formatTonnes(recv.rerouted_cargo_tonnes_horizon)}</div>
+                <div>우회 처리 화물량 (28일 기준)</div>
+                <strong>${formatTonnes(recv.rerouted_cargo_tonnes_horizon)}</strong>
               </div>` : ''}
             ${recv.rerouted_in_transit_cargo_tonnes_horizon ? `
               <div>
-                <div style="font-size:12px;color:#64748b;margin-bottom:4px">기간 말 우회 항해 중 화물</div>
-                <div style="font-weight:600;font-size:14px;color:#0f172a">${formatTonnes(recv.rerouted_in_transit_cargo_tonnes_horizon)}</div>
+                <div>기간 말 우회 항해 중 화물</div>
+                <strong>${formatTonnes(recv.rerouted_in_transit_cargo_tonnes_horizon)}</strong>
               </div>` : ''}
             ${recv.additional_service_capacity_dwt ? `
               <div>
-                <div style="font-size:12px;color:#64748b;margin-bottom:4px">추가 흡수 필요 선복량</div>
-                <div style="font-weight:600;font-size:14px;color:#0f172a">${formatDWT(recv.additional_service_capacity_dwt)}</div>
+                <div>추가 흡수 필요 선복량</div>
+                <strong>${formatDWT(recv.additional_service_capacity_dwt)}</strong>
               </div>` : ''}
           </div>
           ${asArray(recv.ship_type_breakdown).length ? `
-            <div style="margin-bottom:12px">
-              <div style="font-size:12px;color:#64748b;margin-bottom:8px">선종별 내역</div>
+            <div class="shipping-reroute-breakdown">
+              <div>선종별 내역</div>
               ${table(
                 [{ label: '선종', align: 'left' }, { label: '우회 화물량', align: 'right' }, { label: '항해중 화물', align: 'right' }],
                 asArray(recv.ship_type_breakdown).map(st => `<tr>
@@ -918,13 +1036,14 @@
               )}
             </div>` : ''}
           ${recv.status === 'modelled_reroute_receiver_not_observed_traffic' && recv.warning_ko ? `
-            <div style="background:#fef3c7;border:1px solid #fcd34d;border-radius:6px;padding:10px;font-size:12px;color:#78350f;line-height:1.4">
+            <div class="shipping-reroute-warning">
               <strong>주의:</strong> ${escapeHtml(recv.warning_ko)}<br>
-              <small style="display:block;margin-top:6px">이 수치는 대표 항로의 시나리오 모델 결과이며, 희망봉의 실제 AIS 통항량·물리적 처리능력·실시간 선복량 관측값이 아닙니다.</small>
+              <small>이 수치는 대표 항로의 시나리오 모델 결과이며, 희망봉의 실제 AIS 통항량·물리적 처리능력·실시간 선복량 관측값이 아닙니다.</small>
             </div>` : ''}
         </div>
       `).join('')}
-    </div>`;
+      </div>
+    </details>`;
   };
 
   const scenarioKpis = summary => `<div class="shipping-kpi-grid scenario-kpis">
@@ -1019,6 +1138,8 @@
         activeCharts = activeCharts.filter(chart => chart !== scenarioChart);
       }
       const breakdown = asArray(row.summary?.ship_type_breakdown);
+      const lngSegments = asArray(row.summary?.cargo_segment_breakdown)
+        .filter(item => item?.cargo_segment === 'lng');
 
       resultEl.innerHTML = `
         ${scenarioKpis(row.summary || {})}
@@ -1035,6 +1156,19 @@
               <td style="text-align:right" class="negative-text">${formatPct(item.weighted_traffic_change_pct, 1)}</td>
             </tr>`).join('')
           )}` : '<p class="shipping-empty">이 조합에 영향받는 대표 선종이 없습니다.</p>'}
+        ${lngSegments.length ? `<section class="shipping-lng-segment" aria-label="LNG 화물 세그먼트 영향">
+          <div class="shipping-lng-segment-head">
+            <div><span>CARGO SEGMENT</span><h3>LNG 운반선 서비스 영향</h3></div>
+            <small>유조선 합계와 별도 표시</small>
+          </div>
+          ${lngSegments.map(item => `<div class="shipping-lng-segment-grid">
+            <div><span>영향 항로 배치 DWT</span><strong>${formatDWT(item.affected_allocated_dwt_with_reserve)}</strong></div>
+            <div><span>추가 흡수 선복량</span><strong>${formatDWT(item.operational_capacity_absorbed_dwt)}</strong></div>
+            <div><span>기간 말 백로그</span><strong>${formatTonnes(item.backlog_cargo_tonnes_horizon)}</strong></div>
+            <div><span>배송가능 흐름 변화</span><strong class="negative-text">${formatPct(item.weighted_traffic_change_pct, 1)}</strong></div>
+          </div>
+          <p class="shipping-note">LNG는 화물·서비스 세그먼트입니다. 무료 공개자료에는 LNG 전용 세계 선대 DWT가 없어, 탱커 세계 선대 비중이나 LNG 세계 선대 비율을 표시하지 않습니다.</p>
+        </section>`).join('')}` : ''}
         <p class="shipping-note">${escapeHtml(labels.backlog_cargo_tonnes_horizon || '분석기간 말 미운송 화물')}입니다. 모든 값은 Python 엔진이 사전 계산한 ${formatNumber(row.horizon_days, 0)}일 격자 결과입니다.</p>
         ${renderRerouteReceivers(row.summary?.reroute_receivers, row.base_scenario_id)}`;
 
