@@ -383,6 +383,7 @@
           "commercially_available_pct_of_affected_allocated",
           "capacity_denominator_warning",
           "ship_type_breakdown",
+          "cargo_segment_breakdown",
           "weighted_served_flow_index"
         ],
         "properties": {
@@ -423,9 +424,18 @@
     },
     "ui_scenario_grid": {
       "type": "object",
-      "required": ["status", "closure_pct_options", "duration_day_options", "fixed_horizon_days", "rows"],
+      "required": ["status", "closure_pct_options", "duration_day_options", "fixed_horizon_days", "input_policy", "rows"],
       "properties": {
         "status": {"const": "precomputed_python_engine"},
+        "input_policy": {
+          "type": "object",
+          "required": ["closure_pct_step", "duration_values_precomputed", "browser_recalculation", "warning_ko"],
+          "properties": {
+            "closure_pct_step": {"type": "integer", "minimum": 1},
+            "duration_values_precomputed": {"const": true},
+            "browser_recalculation": {"const": false}
+          }
+        },
         "rows": {
           "type": "array",
           "items": {
@@ -434,7 +444,7 @@
             "properties": {
               "summary": {
                 "type": "object",
-                "required": ["affected_route_count", "affected_baseline_dwt", "operational_capacity_absorbed_dwt", "affected_allocated_dwt_with_reserve", "relevant_global_type_fleet_dwt", "operational_capacity_absorbed_pct_of_affected_allocated", "operational_capacity_absorbed_pct_of_relevant_global_type_fleet", "commercially_unavailable_pct_of_affected_allocated", "commercially_available_pct_of_affected_allocated", "ship_type_breakdown", "reroute_receivers", "capacity_denominator_warning"],
+                "required": ["affected_route_count", "affected_baseline_dwt", "operational_capacity_absorbed_dwt", "affected_allocated_dwt_with_reserve", "relevant_global_type_fleet_dwt", "operational_capacity_absorbed_pct_of_affected_allocated", "operational_capacity_absorbed_pct_of_relevant_global_type_fleet", "commercially_unavailable_pct_of_affected_allocated", "commercially_available_pct_of_affected_allocated", "ship_type_breakdown", "cargo_segment_breakdown", "reroute_receivers", "capacity_denominator_warning"],
                 "properties": {
                   "reroute_receivers": {
                     "type": "array",
@@ -458,6 +468,17 @@
                       "required": ["ship_type", "affected_route_count", "affected_baseline_dwt", "affected_allocated_dwt_with_reserve", "relevant_global_type_fleet_dwt", "operational_capacity_absorbed_dwt", "operational_capacity_absorbed_pct_of_affected_allocated", "commercially_unavailable_dwt", "commercially_available_dwt", "backlog_cargo_tonnes_horizon", "weighted_traffic_change_pct", "scope"],
                       "properties": {
                         "ship_type": {"enum": ["container", "dry_bulk", "tanker"]}
+                      }
+                    }
+                  },
+                  "cargo_segment_breakdown": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "required": ["cargo_segment", "affected_route_count", "affected_baseline_dwt", "affected_allocated_dwt_with_reserve", "operational_capacity_absorbed_dwt", "commercial_capacity_gap_dwt", "commercially_unavailable_dwt", "backlog_cargo_tonnes_horizon", "rerouted_in_transit_cargo_tonnes_horizon", "weighted_traffic_change_pct", "global_fleet_denominator_status", "scope"],
+                      "properties": {
+                        "cargo_segment": {"type": "string"},
+                        "global_fleet_denominator_status": {"enum": ["lng_only_global_dwt_not_available_free", "not_applicable_to_cargo_segment"]}
                       }
                     }
                   }

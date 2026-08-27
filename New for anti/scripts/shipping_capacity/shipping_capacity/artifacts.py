@@ -104,6 +104,7 @@ def _screen_grid(grid: dict[str, Any]) -> dict[str, Any]:
         "lost_cargo_tonnes_horizon",
         "weighted_traffic_change_pct",
         "ship_type_breakdown",
+        "cargo_segment_breakdown",
         # This is already computed by the Python engine for every grid row.
         # Keep it in the screen artifact so the simulator never has to fall
         # back to a base scenario or reconstruct reroute arithmetic in JS.
@@ -113,6 +114,7 @@ def _screen_grid(grid: dict[str, Any]) -> dict[str, Any]:
     route_fields = (
         "route_id",
         "ship_type",
+        "cargo_segment",
         "baseline_required_dwt",
         "allocated_dwt_with_reserve",
         "continuity_required_dwt",
@@ -129,6 +131,7 @@ def _screen_grid(grid: dict[str, Any]) -> dict[str, Any]:
             "closure_pct_options",
             "duration_day_options",
             "fixed_horizon_days",
+            "input_policy",
         )
     } | {
         "rows": [
