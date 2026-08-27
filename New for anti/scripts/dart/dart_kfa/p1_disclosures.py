@@ -268,7 +268,9 @@ def _structured_metric(
                 "period_end": raw.get("period_end"), "fs_div": raw.get("fs_div"),
             },
             "provenance": {
-                "report_id": raw.get("report_id"), "report_type": raw.get("report_type"),
+                "provider": raw.get("provider"),
+                "report_id": raw.get("report_id"), "report_code": raw.get("report_code"), "report_type": raw.get("report_type"),
+                "source_concept": raw.get("source_concept"), "mapping_id": raw.get("mapping_id"),
                 "source_table": raw.get("source_table"), "source_row_id": raw.get("source_row_id"),
                 "reported_structure": True,
             },

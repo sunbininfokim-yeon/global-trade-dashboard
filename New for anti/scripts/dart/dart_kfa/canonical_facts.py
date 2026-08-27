@@ -677,6 +677,8 @@ def _dart_source_point(
             "business_year": first.get("bsns_year"),
             "source_account_id": first.get("account_id"),
             "source_account_name": first.get("account_nm"),
+            "source_table_id": first.get("source_table_id") or first.get("table_id"),
+            "source_row_id": first.get("source_row_id") or first.get("row_id"),
             "source_field": field,
             "source_value": first.get(field) if field else None,
             "source_currency": currency,
@@ -688,6 +690,8 @@ def _dart_source_point(
                     "filing_id": row.get("rcept_no"),
                     "account_id": row.get("account_id"),
                     "account_name": row.get("account_nm"),
+                    "source_table_id": row.get("source_table_id") or row.get("table_id"),
+                    "source_row_id": row.get("source_row_id") or row.get("row_id"),
                     "source_field": field,
                     "source_value": row.get(field) if field else None,
                 }
@@ -888,6 +892,8 @@ def _select_sec_point(
                 "source_start": chosen.get("start"),
                 "source_end": chosen.get("end"),
                 "frame": chosen.get("frame"),
+                "source_table_id": chosen.get("source_table_id") or chosen.get("table_id"),
+                "source_row_id": chosen.get("source_row_id") or chosen.get("row_id"),
             },
         }
     return {
