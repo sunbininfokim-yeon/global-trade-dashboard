@@ -3330,6 +3330,7 @@ const clampGlobeView = (vs = {}) => ({
     minZoom: MAP_MIN_ZOOM,
     maxZoom: MAP_MAX_ZOOM,
 });
+
 /** HUD frame over the map during a country drill-down (req 4). */
 const climateTargetHudEl = document.getElementById('climate-target-hud');
 const setClimateTargetHud = (cfg, zoom = null) => {
