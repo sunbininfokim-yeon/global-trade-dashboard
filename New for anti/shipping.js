@@ -879,6 +879,54 @@
     traffic: ['트래픽 변화', '영향 항로 전체에서 <strong>실제로 배송 가능한 화물 흐름의 변화율</strong>입니다. 필요 선복량 대비 실제 공급 가능량을 화물 기준으로 가중평균한 값입니다.']
   };
 
+  const renderRerouteReceivers = (receivers, scenarioId) => {
+    const isRerouteRelevantScenario = /^(suez|bab_el_mandeb)_/.test(scenarioId);
+    if (!isRerouteRelevantScenario || !asArray(receivers).length) return '';
+
+    return `<div style="margin-top:24px;border-top:1px solid #e2e8f0;padding-top:18px;">
+      <h3 style="margin:0 0 12px;font-size:14px;font-weight:600;color:#1e293b">우회 항로 처리 역량</h3>
+      ${asArray(receivers).map(recv => `
+        <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:16px;margin-bottom:12px">
+          <div style="font-weight:600;color:#1e293b;margin-bottom:12px">${escapeHtml(recv.name_ko || recv.id)}</div>
+          <div class="shipping-metric-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:12px">
+            ${recv.rerouted_cargo_tonnes_horizon ? `
+              <div>
+                <div style="font-size:12px;color:#64748b;margin-bottom:4px">우회 처리 화물량 (28일 기준)</div>
+                <div style="font-weight:600;font-size:14px;color:#0f172a">${formatTonnes(recv.rerouted_cargo_tonnes_horizon)}</div>
+              </div>` : ''}
+            ${recv.rerouted_in_transit_cargo_tonnes_horizon ? `
+              <div>
+                <div style="font-size:12px;color:#64748b;margin-bottom:4px">기간 말 우회 항해 중 화물</div>
+                <div style="font-weight:600;font-size:14px;color:#0f172a">${formatTonnes(recv.rerouted_in_transit_cargo_tonnes_horizon)}</div>
+              </div>` : ''}
+            ${recv.additional_service_capacity_dwt ? `
+              <div>
+                <div style="font-size:12px;color:#64748b;margin-bottom:4px">추가 흡수 필요 선복량</div>
+                <div style="font-weight:600;font-size:14px;color:#0f172a">${formatDWT(recv.additional_service_capacity_dwt)}</div>
+              </div>` : ''}
+          </div>
+          ${asArray(recv.ship_type_breakdown).length ? `
+            <div style="margin-bottom:12px">
+              <div style="font-size:12px;color:#64748b;margin-bottom:8px">선종별 내역</div>
+              ${table(
+                [{ label: '선종', align: 'left' }, { label: '우회 화물량', align: 'right' }, { label: '항해중 화물', align: 'right' }],
+                asArray(recv.ship_type_breakdown).map(st => `<tr>
+                  <td><span class="shipping-color-dot" style="background:${SHIP_TYPE_COLORS[st.ship_type] || SHIP_TYPE_COLORS.other}"></span>${escapeHtml(SHIP_TYPE_LABELS[st.ship_type] || st.ship_type)}</td>
+                  <td style="text-align:right;font-size:13px">${formatTonnes(st.rerouted_cargo_tonnes_horizon)}</td>
+                  <td style="text-align:right;font-size:13px">${formatTonnes(st.rerouted_in_transit_cargo_tonnes_horizon)}</td>
+                </tr>`).join('')
+              )}
+            </div>` : ''}
+          ${recv.status === 'modelled_reroute_receiver_not_observed_traffic' && recv.warning_ko ? `
+            <div style="background:#fef3c7;border:1px solid #fcd34d;border-radius:6px;padding:10px;font-size:12px;color:#78350f;line-height:1.4">
+              <strong>주의:</strong> ${escapeHtml(recv.warning_ko)}<br>
+              <small style="display:block;margin-top:6px">이 수치는 대표 항로의 시나리오 모델 결과이며, 희망봉의 실제 AIS 통항량·물리적 처리능력·실시간 선복량 관측값이 아닙니다.</small>
+            </div>` : ''}
+        </div>
+      `).join('')}
+    </div>`;
+  };
+
   const scenarioKpis = summary => `<div class="shipping-kpi-grid scenario-kpis">
     ${kpi('추가 흡수 선복량', formatDWT(summary.operational_capacity_absorbed_dwt), '우회 + 대기', { key: 'absorbed' })}
     ${kpi('상업적 선복 갭', formatDWT(summary.commercial_capacity_gap_dwt), '예비분 초과 부족', { key: 'gap' })}
@@ -987,7 +1035,8 @@
               <td style="text-align:right" class="negative-text">${formatPct(item.weighted_traffic_change_pct, 1)}</td>
             </tr>`).join('')
           )}` : '<p class="shipping-empty">이 조합에 영향받는 대표 선종이 없습니다.</p>'}
-        <p class="shipping-note">${escapeHtml(labels.backlog_cargo_tonnes_horizon || '분석기간 말 미운송 화물')}입니다. 모든 값은 Python 엔진이 사전 계산한 ${formatNumber(row.horizon_days, 0)}일 격자 결과입니다.</p>`;
+        <p class="shipping-note">${escapeHtml(labels.backlog_cargo_tonnes_horizon || '분석기간 말 미운송 화물')}입니다. 모든 값은 Python 엔진이 사전 계산한 ${formatNumber(row.horizon_days, 0)}일 격자 결과입니다.</p>
+        ${renderRerouteReceivers(row.summary?.reroute_receivers, row.base_scenario_id)}`;
 
       if (breakdown.length) {
         scenarioChart = createChart(resultEl, 'shipping-scenario-chart', {
