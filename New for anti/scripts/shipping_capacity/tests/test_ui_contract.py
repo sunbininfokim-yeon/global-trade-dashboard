@@ -86,7 +86,9 @@ class ShippingUiContractTests(unittest.TestCase):
             ["base_scenario_id", "closure_pct", "duration_days"],
         )
         self.assertIn("summary.ship_type_breakdown[]", simulator["result_fields"])
+        self.assertIn("summary.cargo_segment_breakdown[]", simulator["result_fields"])
         self.assertIn("summary.reroute_receivers[]", simulator["result_fields"])
+        self.assertIn("ui_scenario_grid.input_policy", simulator["data_paths"])
         self.assertIn("null", contract["unavailable_value_rule"])
         route_service = contract["views"]["route_service"]
         self.assertEqual(route_service["title_ko"], "항로 운항 선복량")
@@ -172,6 +174,35 @@ class ShippingUiContractTests(unittest.TestCase):
             self.assertEqual(
                 receiver["status"], "modelled_reroute_receiver_not_observed_traffic"
             )
+
+    def test_expanded_grid_is_engine_precomputed_and_bounded(self) -> None:
+        grid = self.snapshot["ui_scenario_grid"]
+        self.assertEqual(grid["closure_pct_options"], list(range(0, 101, 10)))
+        self.assertEqual(grid["duration_day_options"], [1, 3, 7, 14, 21, 28])
+        self.assertEqual(grid["fixed_horizon_days"], 28)
+        self.assertFalse(grid["input_policy"]["browser_recalculation"])
+        self.assertTrue(grid["input_policy"]["duration_values_precomputed"])
+        self.assertEqual(grid["input_policy"]["closure_pct_step"], 10)
+
+    def test_hormuz_grid_keeps_lng_separate_from_tanker_denominator(self) -> None:
+        row = next(
+            item
+            for item in self.snapshot["ui_scenario_grid"]["rows"]
+            if item["base_scenario_id"] == "hormuz_effective_80pct_28d"
+            and item["closure_pct"] == 80
+            and item["duration_days"] == 28
+        )
+        lng = next(
+            item
+            for item in row["summary"]["cargo_segment_breakdown"]
+            if item["cargo_segment"] == "lng"
+        )
+        self.assertGreater(lng["affected_route_count"], 0)
+        self.assertGreater(lng["affected_baseline_dwt"], 0)
+        self.assertEqual(
+            lng["global_fleet_denominator_status"],
+            "lng_only_global_dwt_not_available_free",
+        )
 
 
 if __name__ == "__main__":
