@@ -4903,7 +4903,65 @@ const renderFinanceView = async (target, host) => {
          <code>derivatives_intel</code> 파이프라인 결과가 <code>public/data/</code> 에 들어오면 연결됩니다.`);
 };
 
+// Per-route <title>/meta for search engines: the SPA serves the same
+// index.html for every path, so without this every route (44+ commodities,
+// shipping, macro...) looks like duplicate content to a crawler that doesn't
+// execute JS as reliably as Google's (Naver in particular). Labels come from
+// the nav link text already in index.html, so a new data-target picks up SEO
+// automatically -- nothing to hand-maintain per commodity.
+const DEFAULT_PAGE_TITLE = document.title;
+const DEFAULT_PAGE_DESC = document.querySelector('meta[name="description"]')?.content || '';
+const DEFAULT_OG_TITLE = document.querySelector('meta[property="og:title"]')?.content || DEFAULT_PAGE_TITLE;
+const DEFAULT_OG_DESC = document.querySelector('meta[property="og:description"]')?.content || DEFAULT_PAGE_DESC;
+
+const setMetaContent = (selector, content) => {
+    const el = document.querySelector(selector);
+    if (el) el.setAttribute('content', content);
+};
+
+const routeMetaDescription = (target, label) => {
+    if (target.startsWith('shipping_')) return `${label} — 글로벌 해운 항로·선대·초크포인트 실시간 현황을 ChokePoint Monitor에서 확인하세요.`;
+    if (target.startsWith('fin_')) return `${label} — 매크로·금융 지표를 ChokePoint Monitor에서 실시간으로 확인하세요.`;
+    if (target.startsWith('inst_')) return `${label} 데이터 출처와 공식 리포트를 ChokePoint Monitor에서 확인하세요.`;
+    if (target === 'climate') return '전세계 작황·기후 모니터 — 주요 원자재 생산지의 기상 상황을 ChokePoint Monitor 지구본 지도에서 실시간으로 확인하세요.';
+    if (target === 'elections') return '세계 선거 지도와 일정을 ChokePoint Monitor에서 한눈에 확인하세요.';
+    if (target === 'macro_monitor') return '국가별 매크로 지표(금리·물가·환율 등)를 ChokePoint Monitor에서 실시간으로 확인하세요.';
+    return `${label} 시세·공급망·무역 흐름을 하나의 지구본 지도에서 실시간으로 확인하세요. ChokePoint Monitor.`;
+};
+
+const updatePageMeta = (target) => {
+    if (!target || target === 'home') {
+        document.title = DEFAULT_PAGE_TITLE;
+        setMetaContent('meta[name="description"]', DEFAULT_PAGE_DESC);
+        setMetaContent('meta[property="og:title"]', DEFAULT_OG_TITLE);
+        setMetaContent('meta[property="og:description"]', DEFAULT_OG_DESC);
+        setMetaContent('meta[name="twitter:title"]', 'ChokePoint Monitor');
+        setMetaContent('meta[name="twitter:description"]', DEFAULT_OG_DESC);
+        setMetaContent('meta[property="og:url"]', 'https://chokemonitor.com/');
+        const canonicalHome = document.querySelector('link[rel="canonical"]');
+        if (canonicalHome) canonicalHome.href = 'https://chokemonitor.com/';
+        return;
+    }
+
+    const navLabel = document.querySelector(`[data-target="${target}"]`)?.textContent.trim();
+    const label = navLabel || target;
+    const title = `${label} — ChokePoint Monitor`;
+    const description = routeMetaDescription(target, label);
+    const url = `https://chokemonitor.com${pathForTarget(target)}`;
+
+    document.title = title;
+    setMetaContent('meta[name="description"]', description);
+    setMetaContent('meta[property="og:title"]', title);
+    setMetaContent('meta[property="og:description"]', description);
+    setMetaContent('meta[name="twitter:title"]', title);
+    setMetaContent('meta[name="twitter:description"]', description);
+    setMetaContent('meta[property="og:url"]', url);
+    const canonical = document.querySelector('link[rel="canonical"]');
+    if (canonical) canonical.href = url;
+};
+
 const setView = (target) => {
+    updatePageMeta(target);
     const isShippingView = target && target.startsWith('shipping_');
     const isFinanceView = target && target.startsWith('fin_');
     if (target !== 'macro_monitor') {
