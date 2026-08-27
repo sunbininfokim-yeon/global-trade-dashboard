@@ -30,43 +30,56 @@ jobs:
           import sys
           from datetime import datetime, timedelta, timezone
 
-          KST = timezone(timedelta(hours=9))
           now_utc = datetime.now(timezone.utc)
-          weekday_kst = now_utc.astimezone(KST).weekday()  # Monday=0 .. Sunday=6
           GRACE_H = 4
+          RUNTIME_BUFFER_H = 1  # allowance for the job itself to finish + commit
 
-          # (path, normal cadence in hours, weekday-only job?)
+          # (path, cron hour UTC, cron minute UTC, allowed cron weekdays
+          #  (Mon=0..Sun=6) -- must match the producing workflow's own
+          #  schedule exactly, since freshness is judged against "when was
+          #  this job last supposed to fire", not a fixed day-of-week guess.
           CHECKS = [
-              ("New for anti/public/data/market_microstructure_v1.json", 24, True),
-              ("New for anti/public/data/shipping_capacity_v1.json", 24, False),
+              # market_microstructure_daily.yml: '13 21 * * 1-5' (Mon-Fri UTC)
+              ("New for anti/public/data/market_microstructure_v1.json",
+               21, 13, (0, 1, 2, 3, 4)),
+              # shipping_capacity_update.yml: '37 18 * * *' (every day)
+              ("New for anti/public/data/shipping_capacity_v1.json",
+               18, 37, tuple(range(7))),
           ]
 
-          def commit_age_hours(path):
+          def last_expected_fire(hour, minute, weekdays):
+              day = now_utc.replace(hour=hour, minute=minute, second=0, microsecond=0)
+              if day > now_utc:
+                  day -= timedelta(days=1)
+              for _ in range(10):
+                  if day.weekday() in weekdays:
+                      return day
+                  day -= timedelta(days=1)
+              raise RuntimeError("could not find a last expected fire in 10 days")
+
+          def last_commit_time(path):
               out = subprocess.run(
                   ["git", "log", "-1", "--format=%ct", "--", path],
                   capture_output=True, text=True, check=True,
               ).stdout.strip()
               if not out:
                   return None
-              commit_ts = datetime.fromtimestamp(int(out), tz=timezone.utc)
-              return (now_utc - commit_ts).total_seconds() / 3600
+              return datetime.fromtimestamp(int(out), tz=timezone.utc)
 
           failures = []
-          for path, cadence_h, weekday_only in CHECKS:
-              if weekday_only and weekday_kst >= 5:
-                  continue  # Sat/Sun KST: this job doesn't run on weekends
-              if weekday_only and weekday_kst == 0:
-                  # Monday KST: last valid refresh is Friday's, ~3 days back
-                  threshold = cadence_h * 3 + GRACE_H
-              else:
-                  threshold = cadence_h + GRACE_H
-              age = commit_age_hours(path)
-              if age is None:
+          for path, hour, minute, weekdays in CHECKS:
+              last_fire = last_expected_fire(hour, minute, weekdays)
+              deadline = last_fire + timedelta(hours=RUNTIME_BUFFER_H + GRACE_H)
+              if now_utc < deadline:
+                  continue  # still inside the grace window for the latest expected run
+              commit_time = last_commit_time(path)
+              if commit_time is None:
                   failures.append(f"{path}: no commit history found")
-              elif age > threshold:
+              elif commit_time < last_fire:
+                  age_h = (now_utc - commit_time).total_seconds() / 3600
                   failures.append(
-                      f"{path}: last updated {age:.1f}h ago "
-                      f"(threshold {threshold}h, KST weekday={weekday_kst})"
+                      f"{path}: last commit {commit_time.isoformat()} predates "
+                      f"the expected run at {last_fire.isoformat()} ({age_h:.1f}h old)"
                   )
 
           if failures:
