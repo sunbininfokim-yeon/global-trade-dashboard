@@ -917,7 +917,7 @@
                 </tr>`).join('')
               )}
             </div>` : ''}
-          ${recv.warning_ko ? `
+          ${recv.status === 'modelled_reroute_receiver_not_observed_traffic' && recv.warning_ko ? `
             <div style="background:#fef3c7;border:1px solid #fcd34d;border-radius:6px;padding:10px;font-size:12px;color:#78350f;line-height:1.4">
               <strong>주의:</strong> ${escapeHtml(recv.warning_ko)}<br>
               <small style="display:block;margin-top:6px">이 수치는 대표 항로의 시나리오 모델 결과이며, 희망봉의 실제 AIS 통항량·물리적 처리능력·실시간 선복량 관측값이 아닙니다.</small>

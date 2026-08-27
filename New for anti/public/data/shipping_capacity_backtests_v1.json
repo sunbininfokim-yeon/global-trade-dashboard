@@ -1,8 +1,8 @@
 {
   "schema_version": "shipping-capacity-backtests-v1",
   "artifact_type": "historical_backtests",
-  "bundle_id": "867c50ed98a71747cee4",
-  "generated_at": "2026-08-26T23:37:14.231714+00:00",
+  "bundle_id": "e30070a2b8bcd045d7b0",
+  "generated_at": "2026-08-27T00:01:35.881456+00:00",
   "event_observations": [
     {
       "event_id": "hormuz_2026_conflict",
@@ -51,7 +51,206 @@
       "warning_ko": "IMO 수치는 전 선종 합계이며 VLCC·탱커·컨테이너선별 척수 또는 DWT가 아니다. 날짜가 다른 관측치를 서로 빼서 현재 억류 척수로 간주하지 않는다."
     }
   ],
-  "scenario_signal_comparison": [],
+  "scenario_signal_comparison": [
+    {
+      "scenario_id": "suez_50pct_28d",
+      "chokepoint_id": "suez",
+      "metric_key": "all",
+      "observation_latest_date": "2026-08-16",
+      "observed_trade_volume_shortfall_fraction": 0.112621,
+      "preset_scenario_blockage_fraction": 0.5,
+      "absolute_gap_percentage_points": 38.7379,
+      "scope": "magnitude comparison only; observed trade volume and scenario blockage are different concepts",
+      "comparison_status": "not_empirical_calibration",
+      "not_validated_fields": [
+        "physical_closure_fraction",
+        "route_flow_disruption_fraction",
+        "insurance_unavailable_share",
+        "onboard_waiting_share",
+        "trapped_days"
+      ]
+    },
+    {
+      "scenario_id": "suez_100pct_28d",
+      "chokepoint_id": "suez",
+      "metric_key": "all",
+      "observation_latest_date": "2026-08-16",
+      "observed_trade_volume_shortfall_fraction": 0.112621,
+      "preset_scenario_blockage_fraction": 1.0,
+      "absolute_gap_percentage_points": 88.7379,
+      "scope": "magnitude comparison only; observed trade volume and scenario blockage are different concepts",
+      "comparison_status": "not_empirical_calibration",
+      "not_validated_fields": [
+        "physical_closure_fraction",
+        "route_flow_disruption_fraction",
+        "insurance_unavailable_share",
+        "onboard_waiting_share",
+        "trapped_days"
+      ]
+    },
+    {
+      "scenario_id": "bab_el_mandeb_50pct_28d",
+      "chokepoint_id": "bab_el_mandeb",
+      "metric_key": "all",
+      "observation_latest_date": "2026-08-16",
+      "observed_trade_volume_shortfall_fraction": 0.146532,
+      "preset_scenario_blockage_fraction": 0.5,
+      "absolute_gap_percentage_points": 35.3468,
+      "scope": "magnitude comparison only; observed trade volume and scenario blockage are different concepts",
+      "comparison_status": "not_empirical_calibration",
+      "not_validated_fields": [
+        "physical_closure_fraction",
+        "route_flow_disruption_fraction",
+        "insurance_unavailable_share",
+        "onboard_waiting_share",
+        "trapped_days"
+      ]
+    },
+    {
+      "scenario_id": "bab_el_mandeb_100pct_28d",
+      "chokepoint_id": "bab_el_mandeb",
+      "metric_key": "all",
+      "observation_latest_date": "2026-08-16",
+      "observed_trade_volume_shortfall_fraction": 0.146532,
+      "preset_scenario_blockage_fraction": 1.0,
+      "absolute_gap_percentage_points": 85.3468,
+      "scope": "magnitude comparison only; observed trade volume and scenario blockage are different concepts",
+      "comparison_status": "not_empirical_calibration",
+      "not_validated_fields": [
+        "physical_closure_fraction",
+        "route_flow_disruption_fraction",
+        "insurance_unavailable_share",
+        "onboard_waiting_share",
+        "trapped_days"
+      ]
+    },
+    {
+      "scenario_id": "panama_50pct_28d",
+      "chokepoint_id": "panama",
+      "metric_key": "all",
+      "observation_latest_date": "2026-08-16",
+      "observed_trade_volume_shortfall_fraction": 0.125808,
+      "preset_scenario_blockage_fraction": 0.5,
+      "absolute_gap_percentage_points": 37.4192,
+      "scope": "magnitude comparison only; observed trade volume and scenario blockage are different concepts",
+      "comparison_status": "not_empirical_calibration",
+      "not_validated_fields": [
+        "physical_closure_fraction",
+        "route_flow_disruption_fraction",
+        "insurance_unavailable_share",
+        "onboard_waiting_share",
+        "trapped_days"
+      ]
+    },
+    {
+      "scenario_id": "bosporus_100pct_14d",
+      "chokepoint_id": "bosporus",
+      "metric_key": "all",
+      "observation_latest_date": "2026-08-16",
+      "observed_trade_volume_shortfall_fraction": 0.062864,
+      "preset_scenario_blockage_fraction": 1.0,
+      "absolute_gap_percentage_points": 93.7136,
+      "scope": "magnitude comparison only; observed trade volume and scenario blockage are different concepts",
+      "comparison_status": "not_empirical_calibration",
+      "not_validated_fields": [
+        "physical_closure_fraction",
+        "route_flow_disruption_fraction",
+        "insurance_unavailable_share",
+        "onboard_waiting_share",
+        "trapped_days"
+      ]
+    },
+    {
+      "scenario_id": "hormuz_50pct_28d",
+      "chokepoint_id": "hormuz",
+      "metric_key": "tanker",
+      "observation_latest_date": "2026-08-16",
+      "observed_trade_volume_shortfall_fraction": 0.751879,
+      "preset_scenario_blockage_fraction": 0.5,
+      "absolute_gap_percentage_points": 25.1879,
+      "scope": "magnitude comparison only; observed trade volume and scenario blockage are different concepts",
+      "comparison_status": "not_empirical_calibration",
+      "not_validated_fields": [
+        "physical_closure_fraction",
+        "route_flow_disruption_fraction",
+        "insurance_unavailable_share",
+        "onboard_waiting_share",
+        "trapped_days"
+      ]
+    },
+    {
+      "scenario_id": "hormuz_effective_80pct_28d",
+      "chokepoint_id": "hormuz",
+      "metric_key": "tanker",
+      "observation_latest_date": "2026-08-16",
+      "observed_trade_volume_shortfall_fraction": 0.751879,
+      "preset_scenario_blockage_fraction": 0.8,
+      "absolute_gap_percentage_points": 4.8121,
+      "scope": "magnitude comparison only; observed trade volume and scenario blockage are different concepts",
+      "comparison_status": "not_empirical_calibration",
+      "not_validated_fields": [
+        "physical_closure_fraction",
+        "route_flow_disruption_fraction",
+        "insurance_unavailable_share",
+        "onboard_waiting_share",
+        "trapped_days"
+      ]
+    },
+    {
+      "scenario_id": "hormuz_100pct_28d",
+      "chokepoint_id": "hormuz",
+      "metric_key": "tanker",
+      "observation_latest_date": "2026-08-16",
+      "observed_trade_volume_shortfall_fraction": 0.751879,
+      "preset_scenario_blockage_fraction": 1.0,
+      "absolute_gap_percentage_points": 24.8121,
+      "scope": "magnitude comparison only; observed trade volume and scenario blockage are different concepts",
+      "comparison_status": "not_empirical_calibration",
+      "not_validated_fields": [
+        "physical_closure_fraction",
+        "route_flow_disruption_fraction",
+        "insurance_unavailable_share",
+        "onboard_waiting_share",
+        "trapped_days"
+      ]
+    },
+    {
+      "scenario_id": "malacca_50pct_28d",
+      "chokepoint_id": "malacca",
+      "metric_key": "all",
+      "observation_latest_date": "2026-08-16",
+      "observed_trade_volume_shortfall_fraction": 0.096324,
+      "preset_scenario_blockage_fraction": 0.5,
+      "absolute_gap_percentage_points": 40.3676,
+      "scope": "magnitude comparison only; observed trade volume and scenario blockage are different concepts",
+      "comparison_status": "not_empirical_calibration",
+      "not_validated_fields": [
+        "physical_closure_fraction",
+        "route_flow_disruption_fraction",
+        "insurance_unavailable_share",
+        "onboard_waiting_share",
+        "trapped_days"
+      ]
+    },
+    {
+      "scenario_id": "malacca_100pct_28d",
+      "chokepoint_id": "malacca",
+      "metric_key": "all",
+      "observation_latest_date": "2026-08-16",
+      "observed_trade_volume_shortfall_fraction": 0.096324,
+      "preset_scenario_blockage_fraction": 1.0,
+      "absolute_gap_percentage_points": 90.3676,
+      "scope": "magnitude comparison only; observed trade volume and scenario blockage are different concepts",
+      "comparison_status": "not_empirical_calibration",
+      "not_validated_fields": [
+        "physical_closure_fraction",
+        "route_flow_disruption_fraction",
+        "insurance_unavailable_share",
+        "onboard_waiting_share",
+        "trapped_days"
+      ]
+    }
+  ],
   "historical_event_calibration": {
     "status": "throughput_calibrated_behavior_partition_partially_identified",
     "generated_at": "2026-08-19T19:43:04.040407+00:00",
