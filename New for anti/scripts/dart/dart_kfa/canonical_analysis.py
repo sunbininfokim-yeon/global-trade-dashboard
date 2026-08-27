@@ -106,6 +106,15 @@ def analyze_canonical_facts(
     metrics = deepcopy(metrics_by_period[selected_period])
     ma = deepcopy(ma_by_period[selected_period])
 
+    # P2 may surface segment/backlog figures only through this P1 contract.
+    # Build it before the industry layer so the latter cannot ever inspect raw
+    # note prose or invent a value from a kit label.
+    p1_output = build_p1_disclosures(
+        canonical,
+        structured_disclosures=p1_structured_disclosures,
+        annual_history=p1_annual_history,
+    )
+
     for metric_id, cell in metrics.items():
         cell["series"] = [
             {"period": period, "value": (metrics_by_period[period].get(metric_id) or {}).get("value")}
@@ -143,7 +152,14 @@ def analyze_canonical_facts(
             "series": _series({period: facts_by_period[period].get(account_id) or {} for period in PERIODS}),
         }
 
-    industry = apply_industry_layer(corp=corp_in, metrics=metrics, amounts=current, entity_policy=entity_policy)
+    industry = apply_industry_layer(
+        corp=corp_in,
+        metrics=metrics,
+        amounts=current,
+        entity_policy=entity_policy,
+        fact_cells=facts_by_period[selected_period],
+        p1_disclosures=p1_output,
+    )
     selected_fact = next((fact for fact in facts_by_period[selected_period].values() if fact), {})
     period = {
         "year": canonical.get("fiscal_year"),
@@ -250,18 +266,13 @@ def analyze_canonical_facts(
             },
         },
     }
-    # P1 intentionally remains an additive contract.  It does not feed legacy
-    # cards or valuation and is therefore safe to expose before Worker/UI
-    # wiring.  Strict EBITDA still stays unavailable until a source adapter
-    # supplies separate PPE-depreciation and intangible-amortisation facts.
-    output["p1_disclosures"] = build_p1_disclosures(
-        canonical,
-        structured_disclosures=p1_structured_disclosures,
-        annual_history=p1_annual_history,
-    )
+    # P1 remains additive: it does not alter legacy cards or valuation. P2
+    # can use only its structured segment/backlog status, while P1 models use
+    # the same strict disclosure boundary.
+    output["p1_disclosures"] = p1_output
     output["p1_models"] = build_p1_models(
         canonical,
-        p1_disclosures=output["p1_disclosures"],
+        p1_disclosures=p1_output,
         entity_policy=entity_policy,
         inputs=p1_model_inputs,
     )

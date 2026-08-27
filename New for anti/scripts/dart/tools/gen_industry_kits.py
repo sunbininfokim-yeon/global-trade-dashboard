@@ -480,6 +480,14 @@ kits = {
             }
         ]
         + CYCLE_FLAGS,
+        adjusted=[
+            {
+                "id": "leverage_ex_lease",
+                "label_ko": "리스 제외 레버리지(가능 시)",
+                "requires_accounts": ["LEASE_LIABILITIES"],
+                "note_ko": "리스부채 총액이 공시된 경우에만 보고 부채비율과 별도로 제시합니다.",
+            }
+        ],
         sources=["KIS IFRS16 airline/shipping reviews", "BOK H51"],
     ),
     "construction": kit(
