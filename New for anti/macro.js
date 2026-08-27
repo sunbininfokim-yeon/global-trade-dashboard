@@ -1357,6 +1357,13 @@ const mmChartDrawer = () => {
         : null;
     const modeSeries = dual ? mmModeSeries(ind, mode) : null;
 
+    // qeqt spans 2003-present (23+ years), so 5y/10y (built for shorter
+    // fixture-era series) would either show almost nothing or almost
+    // everything -- 5y/20y actually brackets "recent" against "across
+    // multiple QE/QT cycles" for this one.
+    const windowOpts = view === 'qeqt' ? ['5y', '20y'] : ['5y', '10y'];
+    const showWindow = view === 'history' || view === 'qeqt' || view === 'ma';
+
     let body = '';
     if (view === 'ma') body = mmEquityMaView(ind, windowOpts.includes(MM_CHART.window) ? MM_CHART.window : '5y');
     else if (view === 'balance_assets') body = mmBalanceAssetsView(ind);
@@ -1409,13 +1416,6 @@ const mmChartDrawer = () => {
         ind.source ? (typeof ind.source === 'string' ? ind.source : ind.source.name) : null,
         ind.refresh_tier || null,
     ].filter(Boolean);
-
-    // qeqt spans 2003-present (23+ years), so 5y/10y (built for shorter
-    // fixture-era series) would either show almost nothing or almost
-    // everything -- 5y/20y actually brackets "recent" against "across
-    // multiple QE/QT cycles" for this one.
-    const windowOpts = view === 'qeqt' ? ['5y', '20y'] : ['5y', '10y'];
-    const showWindow = view === 'history' || view === 'qeqt' || view === 'ma';
 
     return `
     <div class="mm-drawer" role="dialog" aria-label="${finEsc(ind.label_ko)}">

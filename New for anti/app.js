@@ -2202,7 +2202,12 @@ const cropIdentityFromText = (text) => {
     return 'other';
 };
 
-const cropIdentity = (c) => cropIdentityFromText(`${c.regionKey || ''} ${c.label || ''}`);
+const cropIdentity = (c) => {
+    if (c.cropKey && CROP_CANON[c.cropKey]) {
+        return CROP_CANON[c.cropKey];
+    }
+    return cropIdentityFromText(`${c.regionKey || ''} ${c.label || ''}`);
+};
 
 const mergeCropsByType = (crops) => {
     const map = new Map();
@@ -3066,7 +3071,7 @@ const loadClimateForecast = async (cfg) => {
 //   flat    regions[k]           -- the region entry *is* the crop
 const num = v => (typeof v === 'number' && isFinite(v) ? v : null);
 
-const normalizeCrop = (entry, group, label, parent = {}, regionKey = null) => {
+const normalizeCrop = (entry, group, label, parent = {}, regionKey = null, cropKey = null) => {
     // Indonesia puts the whole forecast under `yield_kg_ha`; everyone else
     // has `point` as a plain number at the top level.
     const f = (entry.point && typeof entry.point === 'object') ? entry.point
@@ -3090,6 +3095,7 @@ const normalizeCrop = (entry, group, label, parent = {}, regionKey = null) => {
     return {
         group,
         regionKey,
+        cropKey,
         label: label || entry.label_ko || entry.label || entry.target_label || entry.crop || '—',
         point: num(f.point),
         unit: entry.unit || f.unit || 'kg/ha',
@@ -3134,9 +3140,9 @@ const normalizeForecast = (fc, onlyKeys = null) => {
         if (keySet && !keySet.has(regionKey)) continue;
         const regionLabel = region.label_ko || region.label || null;
         if (region.crops && typeof region.crops === 'object') {
-            for (const crop of Object.values(region.crops)) {
+            for (const [cropKey, crop] of Object.entries(region.crops)) {
                 out.push(normalizeCrop(
-                    crop, regionLabel, crop.label_ko || crop.label, region, regionKey));
+                    crop, regionLabel, crop.label_ko || crop.label, region, regionKey, cropKey));
             }
         } else {
             out.push(normalizeCrop(region, null, regionLabel, {}, regionKey));
