@@ -54,19 +54,26 @@ mapping.  It never reads `note_text`, labels, keywords, or LLM output.
 
 1. Check for `DART_API_KEY` (or the deployment binding) without printing it.
    Never recover a key from chat, files, logs, or history.
-2. With a securely supplied key, call only OpenDART
-   `https://opendart.fss.or.kr/api/fnlttSinglAcntAll.json` for the minimum
-   evidence sample: Samsung Electronics (`005930`) and one non-Samsung
-   industrial issuer. Record non-secret response metadata, receipt number,
-   report code, exact account ID, statement, CFS/OFS, period, unit, and table/
-   row identifier if the source supplies one.
+2. With a securely supplied key, run
+   `python3 tools/validate_p1_live_dart.py --year 2025` (or call only
+   OpenDART `https://opendart.fss.or.kr/api/fnlttSinglAcntAll.json`) for the
+   minimum evidence sample: Samsung Electronics (`005930`) and one
+   non-Samsung industrial issuer selected from the local corp-code index.
+   The program queries FY first, then Q3/H1/Q1 for the selected year, and
+   falls back only when the FY endpoint has no data.  Record non-secret
+   response metadata, receipt number, report code, exact account ID,
+   statement, requested CFS/OFS scope, returned row scope, period, unit, and
+   table/row identifier if the source supplies one.  Some OpenDART rows omit
+   `fs_div`; retain that fact and the request scope rather than inferring a
+   row-level scope.
 3. For SEC, retrieve only official `data.sec.gov/api/xbrl/companyfacts/CIK…`
    data (with an identifying User-Agent), and record the accession, form,
    fiscal period, exact concept, unit, start/end, and any supplied row/table
    identifier.
 4. Confirm that each component is separately reported, is a flow, has the
    same selected period/scope/currency/unit as operating income, and is not a
-   combined D&A tag.  Confirm structured rows come from a reported table.
+   combined D&A tag.  A generic `감가상각비` is combined/ambiguous evidence,
+   not PPE depreciation.  Confirm structured rows come from a reported table.
 5. Add an immutable evidence ID to the acceptance record and only then change
    `status` to `verified`.  Otherwise leave it `candidate` and out of the
    compute path.
