@@ -6,8 +6,14 @@ name: Market microstructure daily
 
 on:
   schedule:
-    # 16:30 KST (07:30 UTC) weekdays — after KRX cash close; US OI = delayed prior/current.
-    - cron: '30 7 * * 1-5'
+    # 06:13 KST next day (21:13 UTC same weekday) — NOT same-evening.
+    # Confirmed empirically 2026-08-27: even 9.5h after KRX cash close
+    # (16:08 UTC / 01:08 KST next day), KRX's stk_bydd_trd still had no
+    # same-day basDd and fell back a day. Running before the next KST
+    # trading session opens (~14.5h after close) gives KRX's own EOD
+    # publish process much more margin. Mon-Fri (UTC) => Tue-Sat (KST)
+    # delivery mornings, each carrying the prior UTC weekday's close.
+    - cron: '13 21 * * 1-5'
   workflow_dispatch:
 
 jobs:

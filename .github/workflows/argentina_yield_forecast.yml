@@ -2,10 +2,10 @@ name: Weekly Argentina Yield Forecast
 
 on:
   schedule:
-    # Mondays 10:00 UTC, half an hour after the Brazil run so the three
-    # country jobs do not race for the same commit. NASA POWER lags real time
-    # by 2-3 days, so a weekly cadence always picks up new observations.
-    - cron: '0 10 * * 1'
+    # Sat 01:06 KST (Fri 16:06 UTC) — weekend batch, 22min after Brazil so
+    # the country jobs do not race for the same commit. NASA POWER lags real
+    # time by 2-3 days, so a weekly cadence always picks up new observations.
+    - cron: '6 16 * * 5'
   workflow_dispatch:
 
 jobs:

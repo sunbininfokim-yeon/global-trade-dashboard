@@ -3,7 +3,10 @@ name: Fetch ICRISAT Data
 on:
   workflow_dispatch: # 수동 실행 트리거
   schedule:
-    - cron: '0 0 * * 0' # 매주 일요일 자정에 실행 (필요 시 수정)
+    # Sat 00:00 KST (Fri 15:00 UTC) — first of the weekend weekly-refresh batch,
+    # spaced ~22min apart on off-the-hour minutes so GitHub's shared runner
+    # queue (busiest at :00/:15/:30/:45) doesn't delay every job at once.
+    - cron: '0 15 * * 5'
 
 jobs:
   download-data:
