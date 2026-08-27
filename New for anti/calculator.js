@@ -28,21 +28,16 @@ const KRX_NAME_ALIASES = {
 let KRX_FILERS = null;
 const krxLoadFilers = async () => {
     if (KRX_FILERS) return KRX_FILERS;
-    for (const base of ['/public/data/', '/data/']) {
-        try {
-            const r = await fetch(`${base}dart_corp_codes_v1.json`);
-            if (!r.ok) continue;
-            const doc = await r.json();
-            KRX_FILERS = Object.entries(doc.index || {})
-                .map(([code, row]) => ({
-                    id: `krx:${code}`, name_ko: (row || [])[1] || code,
-                    yahoo: code, asset_class: 'equity',
-                    aliases: KRX_NAME_ALIASES[code] || [],
-                }));
-            return KRX_FILERS;
-        } catch (_) { /* try the next base */ }
-    }
-    KRX_FILERS = [];
+    // The filer index is a large, rarely-changing build artefact, so this one
+    // keeps the browser's default cache instead of the no-store the snapshot
+    // views use.
+    const doc = await loadFirstJson(finDataPaths('dart_corp_codes_v1.json'), { cache: 'default' });
+    KRX_FILERS = Object.entries((doc && doc.index) || {})
+        .map(([code, row]) => ({
+            id: `krx:${code}`, name_ko: (row || [])[1] || code,
+            yahoo: code, asset_class: 'equity',
+            aliases: KRX_NAME_ALIASES[code] || [],
+        }));
     return KRX_FILERS;
 };
 
@@ -620,13 +615,7 @@ const renderKfaResult = (out, data) => {
 const loadKfaCompany = async (out, inst, code) => {
     out.innerHTML = `<div class="fin-block fin-block-wide"><p class="fin-loading">DART 공시 자료를 받는 중…</p></div>`;
 
-    let staticSnap = null;
-    for (const path of [`/public/data/kfa_${code}_v1.json`, `/data/kfa_${code}_v1.json`]) {
-        try {
-            const res = await fetch(path, { cache: 'no-store' });
-            if (res.ok) { staticSnap = await res.json(); break; }
-        } catch (_) { /* try next */ }
-    }
+    const staticSnap = await loadFirstJson(finDataPaths(`kfa_${code}_v1.json`));
 
     // A static snapshot only stands in for a live response when it carries
     // the P0 contract and doesn't flag itself stale. No `service_readiness`

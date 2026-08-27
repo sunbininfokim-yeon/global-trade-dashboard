@@ -4892,6 +4892,29 @@ const finPct = (x, digits = 1) =>
 const finEsc = (s) => String(s ?? '').replace(/[&<>"']/g,
     (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
+// Snapshot JSON is served from /public/data/ by the Worker but from /data/ by
+// some local static servers, so every finance view had its own copy of "try
+// both bases, take the first that answers". First path with an ok response and
+// a parsable body wins; a total miss is null, which each caller already turns
+// into its own empty state rather than an error.
+//
+// Deliberately not memoised. The callers cache at their own level (KRX_FILERS,
+// PF_REGISTRY, MS_DATA), and a promise parked in a module variable here would
+// need the reject-path reset that loadScenarioGrid in shipping.js only just
+// got right -- a retry bug is a worse trade than a second fetch.
+const FIN_DATA_BASES = ['/public/data/', '/data/'];
+const finDataPaths = (name) => FIN_DATA_BASES.map((base) => base + name);
+
+const loadFirstJson = async (paths, init = { cache: 'no-store' }) => {
+    for (const path of paths) {
+        try {
+            const res = await fetch(path, init);
+            if (res.ok) return await res.json();
+        } catch (_) { /* try the next path */ }
+    }
+    return null;
+};
+
 const finPlaceholder = (title, desc, detail) => `
     <div class="fin-wrap">
         <div class="fin-head"><h1>${finEsc(title)}</h1><p>${finEsc(desc)}</p></div>

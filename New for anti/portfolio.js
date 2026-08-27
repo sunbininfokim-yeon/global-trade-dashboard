@@ -88,15 +88,7 @@ let PF_PROFILES = null;
 
 const pfLoadRefs = async () => {
     if (PF_REGISTRY && PF_PROFILES) return;
-    const grab = async (name) => {
-        for (const base of ['/public/data/', '/data/']) {
-            try {
-                const r = await fetch(base + name, { cache: 'no-store' });
-                if (r.ok) return await r.json();
-            } catch (_) { /* next */ }
-        }
-        return null;
-    };
+    const grab = (name) => loadFirstJson(finDataPaths(name));
     const [reg, prof, ko] = await Promise.all([
         grab('instruments_v1.json'), grab('risk_profiles_v1.json'), grab('aliases_ko_v1.json'),
     ]);
@@ -1016,13 +1008,7 @@ const pfSetMode = (m) => { try { localStorage.setItem(PF_MODE_KEY, m); } catch (
 const renderPfResult = async (host) => {
     host.innerHTML = `<p class="fin-loading">진단 리포트 불러오는 중…</p>`;
 
-    let data = null;
-    for (const path of ['/public/data/portfolio_analysis_v1.json', '/data/portfolio_analysis_v1.json']) {
-        try {
-            const res = await fetch(path, { cache: 'no-store' });
-            if (res.ok) { data = await res.json(); break; }
-        } catch (_) { /* try next */ }
-    }
+    const data = await loadFirstJson(finDataPaths('portfolio_analysis_v1.json'));
 
     if (!data) {
         host.innerHTML = `

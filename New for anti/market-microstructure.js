@@ -50,15 +50,7 @@ let MS_MODAL_KEY = null;      // 열려 있는 모달의 키 (기간 전환 시 
 let MS_PERIOD = '3m';         // 가격대별 표시 구간 — 1m / 2m / 3m / 6m / all
 let MS_CREDIT_ON = false;     // 가격대별 탭에서 예탁·신용 추이를 펼쳤는지
 
-const msGet = async (name) => {
-    for (const base of ['/public/data/', '/data/']) {
-        try {
-            const r = await fetch(base + name, { cache: 'no-store' });
-            if (r.ok) return await r.json();
-        } catch (_) { /* next */ }
-    }
-    return null;
-};
+const msGet = (name) => loadFirstJson(finDataPaths(name));
 
 // --- 일별 히스토리 (JSONL) ----------------------------------------------------
 // Everything above is one trading day per file. A trend needs an append-only
@@ -77,10 +69,12 @@ let MS_HIST = null;
 let MS_HIST_PERIOD = '30';
 const MS_HIST_PERIODS = [['30', '30거래일'], ['90', '90거래일'], ['all', '전체']];
 
+// JSONL, so it cannot go through loadFirstJson -- but it looks in the same two
+// places, and finDataPaths keeps that list in one spot.
 const msGetJsonl = async (name) => {
-    for (const base of ['/public/data/', '/data/']) {
+    for (const path of finDataPaths(name)) {
         try {
-            const r = await fetch(base + name, { cache: 'no-store' });
+            const r = await fetch(path, { cache: 'no-store' });
             if (!r.ok) continue;
             const rows = [];
             (await r.text()).split('\n').forEach((ln) => {
