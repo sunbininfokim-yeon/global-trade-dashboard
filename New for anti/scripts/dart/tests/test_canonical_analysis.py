@@ -50,6 +50,8 @@ class CanonicalAnalysisTest(unittest.TestCase):
         canonical = adapt_dart_filings(filings, account_specs=specs, fiscal_year_end="2025-12-31")
         company = analyze_canonical_facts(canonical, corp={"name": "산업기업", "industry": "C20"})
         self.assertIn("p1_disclosures", company)
+        self.assertIn("p1_models", company)
+        self.assertEqual(company["p1_models"]["schema_version"], "kfa-p1-models/1")
         self.assertEqual(company["p1_disclosures"]["schema_version"], "kfa-p1-disclosures/1")
         ebitda = company["p1_disclosures"]["current"]["ebitda"]
         self.assertIsNone(ebitda["value"])
