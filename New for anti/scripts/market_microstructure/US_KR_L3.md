@@ -1,12 +1,12 @@
 # US→KR L3 pipeline — 2026-08-27
 
 Headline: `high:downside`
-Tier B edges fired: 1
+Tier B edges fired: 4
 Sources: cboe_vol_indices, finra_short, cboe_spot, yahoo_spot_options_fallback, cboe_options
 
 ## Channels
-- downside: high heat=3.5625 kr=['000660', '005930']
-- upside: watch heat=1.5984 kr=['000660', '005930']
+- downside: high heat=6.054 kr=['000660', '005930']
+- upside: high heat=2.8007 kr=['000660', '005930']
 - vol_up: quiet heat=0.0 kr=[]
 - vol_down: quiet heat=0.0 kr=[]
 
