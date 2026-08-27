@@ -1366,6 +1366,10 @@ const DART_XBRL_TAGS = {
     // checked live there) -- ifrs-full_Equity is the standard IFRS total-
     // equity element, added for PBR's denominator. Confirmed live below.
     equity: ['ifrs-full_Equity'],
+    // Denominator for ROA -- the one financial-entity-safe metric this
+    // endpoint didn't already carry an input for (net_income and equity, for
+    // ROE, were both already fetched above).
+    total_assets: ['ifrs-full_Assets'],
 };
 // Rows filed under Statement of Changes in Equity repeat the same account_id
 // once per equity column with genuinely different values -- keying a flat
@@ -1391,6 +1395,45 @@ const DART_REPRT = {
 const DART_FLOW_KEYS = new Set([
     'revenue', 'operating_income', 'net_income', 'interest_expense', 'eps', 'cfo', 'capex',
 ]);
+
+// Codex's dart_kfa.entity_policy.classify_entity() gates banks/insurers/
+// brokerages from industrial revenue, FCF, EBITDA, net-debt and DCF chains
+// (see scripts/dart/docs/P0_WORKER_HANDOFF_FINANCIALS.md section 1). That
+// classifier runs in Python and isn't reachable from a Worker, so this is a
+// narrow JS-side mirror of the same fail-closed decision -- a name/corp-code
+// check, not a recomputation of any financial model. Corp codes are the
+// explicit KOSPI banks/financial holding companies named in that handoff doc
+// plus other well-known listed financials; the name-hint list catches any
+// filer this override set misses. Unrecognised filers default to false
+// (industrial), matching the classifier's own "명확한 신호가 없으면 산업기업" stance --
+// this list is reviewed by name/ticker only, not by live OpenDART account IDs.
+const DART_FINANCIAL_ENTITY_OVERRIDES = new Set([
+    '105560', // KB금융
+    '055550', // 신한지주
+    '086790', // 하나금융지주
+    '316140', // 우리금융지주
+    '032830', // 삼성생명
+    '000810', // 삼성화재
+    '138930', // BNK금융지주
+    '139130', // DGB금융지주
+    '175330', // JB금융지주
+    '138040', // 메리츠금융지주
+    '024110', // 기업은행
+    '323410', // 카카오뱅크
+    '005830', // DB손해보험
+]);
+const DART_FINANCIAL_NAME_HINTS = [
+    '금융지주', '저축은행', '은행', '생명', '화재', '손해보험', '해상보험',
+    '캐피탈', '카드', '증권', '보험',
+];
+function classifyDartFinancialEntity(nameKo, stockCode) {
+    if (DART_FINANCIAL_ENTITY_OVERRIDES.has(stockCode)) {
+        return { is_financial_entity: true, basis: 'corp_code_override' };
+    }
+    const hint = DART_FINANCIAL_NAME_HINTS.find((h) => (nameKo || '').includes(h));
+    if (hint) return { is_financial_entity: true, basis: `name_hint:${hint}` };
+    return { is_financial_entity: false, basis: 'default_industrial' };
+}
 
 // public/data/dart_corp_codes_v1.json is a one-time offline export of
 // OpenDART's corpCode.xml (see scripts/dart/ for how it was built): the KRX
@@ -1662,7 +1705,7 @@ function dartQuarterlySeries(factsByPeriod, years) {
 // has no key in factsByYear; series are built by filtering, not by assuming
 // every year in `years` produced a point, so a gap (recent listing, a filing
 // OpenDART hasn't ingested yet) leaves a shorter series rather than a null.
-function dartBasicCardsFromFacts(factsByYear, years, { sharesOutstanding = null, price = null, quarterly = {} } = {}) {
+function dartBasicCardsFromFacts(factsByYear, years, { sharesOutstanding = null, price = null, quarterly = {}, isFinancialEntity = false } = {}) {
     const latestYear = years[0];
     const factsOf = (y) => factsByYear[y] || {};
     const latestFacts = factsOf(latestYear);
@@ -1685,6 +1728,15 @@ function dartBasicCardsFromFacts(factsByYear, years, { sharesOutstanding = null,
     };
 
     const revenue = point('revenue');
+    // A bank/insurer/brokerage's IFRS "Revenue" (or its absence) is not
+    // industrial sales -- gate it to null before anything downstream (yoy,
+    // margins, the quarterly attach loop below) reads its value or series.
+    // See scripts/dart/docs/P0_WORKER_HANDOFF_FINANCIALS.md section 1.
+    if (isFinancialEntity) {
+        revenue.value = null;
+        revenue.series = [];
+        revenue.reason = 'not_applicable:financial_entity_industrial_revenue';
+    }
     const operatingIncome = point('operating_income');
     const netIncome = point('net_income');
     const cfo = point('cfo');
@@ -1705,17 +1757,25 @@ function dartBasicCardsFromFacts(factsByYear, years, { sharesOutstanding = null,
     operatingIncome.margin = (opV !== null && revV) ? opV / revV : null;
     netIncome.margin = (niV !== null && revV) ? niV / revV : null;
 
-    const capexV = capex.value, cfoV = cfo.value;
-    const fcfValue = (cfoV !== null && capexV !== null) ? cfoV - Math.abs(capexV) : null;
-    const fcfSeries = years
-        .map((y) => {
-            const c = valueIn(y, 'cfo'), cx = valueIn(y, 'capex');
-            return (c !== null && cx !== null) ? { year: y, end: `${y}-12-31`, value: c - Math.abs(cx) } : null;
-        })
-        .filter(Boolean)
-        .sort((a, b) => a.year - b.year);
-    const fcf = { value: fcfValue, definition: 'cfo - abs(capex)', series: fcfSeries };
-    if (fcfValue === null) fcf.reason = 'missing:cfo_or_capex';
+    // FCF (and net debt, below) is an industrial leverage/cash-generation
+    // frame that doesn't apply to a bank/insurer's balance sheet -- gated for
+    // the same reason as revenue above, not computed and then hidden.
+    let fcf;
+    if (isFinancialEntity) {
+        fcf = { value: null, definition: 'cfo - abs(capex)', series: [], reason: 'not_applicable:financial_entity' };
+    } else {
+        const capexV = capex.value, cfoV = cfo.value;
+        const fcfValue = (cfoV !== null && capexV !== null) ? cfoV - Math.abs(capexV) : null;
+        const fcfSeries = years
+            .map((y) => {
+                const c = valueIn(y, 'cfo'), cx = valueIn(y, 'capex');
+                return (c !== null && cx !== null) ? { year: y, end: `${y}-12-31`, value: c - Math.abs(cx) } : null;
+            })
+            .filter(Boolean)
+            .sort((a, b) => a.year - b.year);
+        fcf = { value: fcfValue, definition: 'cfo - abs(capex)', series: fcfSeries };
+        if (fcfValue === null) fcf.reason = 'missing:cfo_or_capex';
+    }
 
     // Balance-sheet levels and the ratios built from them stay latest-year
     // point-in-time (a multi-year BS series is future work, not this pass).
@@ -1729,7 +1789,9 @@ function dartBasicCardsFromFacts(factsByYear, years, { sharesOutstanding = null,
     const longTerm = dartPick(latestFacts, DART_XBRL_TAGS.long_term_debt);
     const cashV = cash.value;
     let netDebt;
-    if ((shortTerm !== null || longTerm !== null) && cashV !== null) {
+    if (isFinancialEntity) {
+        netDebt = { value: null, series: [], reason: 'not_applicable:financial_entity' };
+    } else if ((shortTerm !== null || longTerm !== null) && cashV !== null) {
         const interestBearing = (shortTerm || 0) + (longTerm || 0);
         netDebt = {
             value: interestBearing - cashV,
@@ -1795,6 +1857,15 @@ function dartBasicCardsFromFacts(factsByYear, years, { sharesOutstanding = null,
             reason: price === null ? 'missing:price' : (equityV === null ? 'missing:equity' : 'missing:shares_outstanding'),
         };
 
+    // ROE/ROA are the metrics the entity policy asks to keep for financial
+    // entities in place of FCF/EBITDA/net-debt -- computed for every filer,
+    // not just gated ones, since they're informative for industrials too.
+    const totalAssetsV = dartPick(latestFacts, DART_XBRL_TAGS.total_assets);
+    const roe = (niV !== null && equityV) ? { value: niV / equityV, series: [], definition: 'net_income / equity' }
+        : { value: null, series: [], reason: niV === null ? 'missing:net_income' : 'missing:equity' };
+    const roa = (niV !== null && totalAssetsV) ? { value: niV / totalAssetsV, series: [], definition: 'net_income / total_assets' }
+        : { value: null, series: [], reason: niV === null ? 'missing:net_income' : 'missing:total_assets' };
+
     const cards = {
         revenue, operating_income: operatingIncome, net_income: netIncome, cfo, fcf, cash, eps,
         net_debt: netDebt,
@@ -1809,17 +1880,21 @@ function dartBasicCardsFromFacts(factsByYear, years, { sharesOutstanding = null,
         market_cap: marketCap,
         pe_ratio: peRatio,
         pb_ratio: pbRatio,
+        roe, roa,
     };
 
     // Attached rather than merged into `series`: annual and quarterly points
     // cover different spans, so one array holding both would be summable into
-    // nonsense. The UI toggles between them.
+    // nonsense. The UI toggles between them. revenue/fcf are skipped for a
+    // gated financial entity -- a populated quarterly array would contradict
+    // the card's own null+not_applicable annual value.
     for (const [key, points] of Object.entries(quarterly)) {
+        if (isFinancialEntity && (key === 'revenue' || key === 'fcf')) continue;
         if (cards[key]) cards[key].quarterly = points;
     }
     // FCF has no XBRL tag of its own -- it is cfo - |capex| at every period,
     // so its quarterly series is derived the same way its annual one is.
-    const qCfo = quarterly.cfo || [];
+    const qCfo = isFinancialEntity ? [] : (quarterly.cfo || []);
     const qCapex = new Map((quarterly.capex || []).map((p) => [p.period, p.value]));
     const fcfQuarterly = qCfo
         .map((p) => (qCapex.has(p.period)
@@ -1844,7 +1919,7 @@ const DART_VIEW_PRESETS = {
         basic: {
             cards: ['revenue', 'operating_income', 'net_income', 'eps', 'cfo', 'fcf', 'cash',
                 'net_debt', 'current_ratio', 'debt_due_within_1y', 'liquidity_coverage_1y',
-                'interest_coverage', 'ccc_days', 'market_cap', 'pe_ratio', 'pb_ratio'],
+                'interest_coverage', 'ccc_days', 'market_cap', 'pe_ratio', 'pb_ratio', 'roe', 'roa'],
             models: [],
         },
         investor: {
@@ -1880,6 +1955,7 @@ async function handleDartFinancials(request, env) {
             const hit = index[symbol];
             if (!hit) return { ok: false, status: 404, statusText: 'not a KRX-listed filer' };
             const [corpCode, nameKo] = hit;
+            const entityPolicy = classifyDartFinancialEntity(nameKo, symbol);
 
             // Annual reports for FY(Y) file the following spring; before that
             // OpenDART has nothing for FY(currentYear-1) yet, so start one
@@ -1952,10 +2028,15 @@ async function handleDartFinancials(request, env) {
                         price: priceResult.price,
                         price_reason: priceResult.price === null ? priceResult.reason : undefined,
                     },
+                    // Mirrors dart_kfa.entity_policy's classify_entity() output shape
+                    // (see scripts/dart/docs/P0_WORKER_HANDOFF_FINANCIALS.md) so the
+                    // static-snapshot and live-fetch paths carry the same field.
+                    entity_policy: entityPolicy,
                     basic_cards: dartBasicCardsFromFacts(factsByYear, years, {
                         sharesOutstanding: sharesResult.sharesOutstanding,
                         price: priceResult.price,
                         quarterly,
+                        isFinancialEntity: entityPolicy.is_financial_entity,
                     }),
                     data_quality: {
                         input_kind: years.length > 1 ? 'live_fetch_multi_fiscal_year' : 'live_fetch_single_fiscal_year',
