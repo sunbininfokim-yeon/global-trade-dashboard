@@ -86,6 +86,7 @@ class ShippingUiContractTests(unittest.TestCase):
             ["base_scenario_id", "closure_pct", "duration_days"],
         )
         self.assertIn("summary.ship_type_breakdown[]", simulator["result_fields"])
+        self.assertIn("summary.reroute_receivers[]", simulator["result_fields"])
         self.assertIn("null", contract["unavailable_value_rule"])
         route_service = contract["views"]["route_service"]
         self.assertEqual(route_service["title_ko"], "항로 운항 선복량")
@@ -141,10 +142,36 @@ class ShippingUiContractTests(unittest.TestCase):
                 "insurance_excluded_dwt",
                 "weighted_traffic_change_pct",
                 "ship_type_breakdown",
+                "reroute_receivers",
             ):
                 self.assertIn(field, row["summary"])
             for ship_type in row["summary"]["ship_type_breakdown"]:
                 self.assertIn(ship_type["ship_type"], {"container", "dry_bulk", "tanker"})
+
+    def test_full_closure_grid_publishes_cape_receiver_for_suez_and_bab(self) -> None:
+        for base_scenario_id, chokepoint_id in (
+            ("suez_100pct_28d", "suez"),
+            ("bab_el_mandeb_100pct_28d", "bab_el_mandeb"),
+        ):
+            row = next(
+                item
+                for item in self.snapshot["ui_scenario_grid"]["rows"]
+                if item["base_scenario_id"] == base_scenario_id
+                and item["closure_pct"] == 100
+                and item["duration_days"] == 28
+            )
+            receiver = next(
+                item
+                for item in row["summary"]["reroute_receivers"]
+                if item["id"] == "cape_good_hope"
+            )
+            self.assertEqual(receiver["source_chokepoint_id"], chokepoint_id)
+            self.assertGreater(receiver["rerouted_cargo_tonnes_horizon"], 0)
+            self.assertGreater(receiver["rerouted_in_transit_cargo_tonnes_horizon"], 0)
+            self.assertGreater(receiver["additional_service_capacity_dwt"], 0)
+            self.assertEqual(
+                receiver["status"], "modelled_reroute_receiver_not_observed_traffic"
+            )
 
 
 if __name__ == "__main__":

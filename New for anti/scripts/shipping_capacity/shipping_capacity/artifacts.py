@@ -104,6 +104,10 @@ def _screen_grid(grid: dict[str, Any]) -> dict[str, Any]:
         "lost_cargo_tonnes_horizon",
         "weighted_traffic_change_pct",
         "ship_type_breakdown",
+        # This is already computed by the Python engine for every grid row.
+        # Keep it in the screen artifact so the simulator never has to fall
+        # back to a base scenario or reconstruct reroute arithmetic in JS.
+        "reroute_receivers",
         "capacity_denominator_warning",
     )
     route_fields = (

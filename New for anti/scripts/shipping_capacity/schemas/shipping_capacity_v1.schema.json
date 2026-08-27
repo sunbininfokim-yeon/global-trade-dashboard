@@ -434,8 +434,23 @@
             "properties": {
               "summary": {
                 "type": "object",
-                "required": ["affected_route_count", "affected_baseline_dwt", "operational_capacity_absorbed_dwt", "affected_allocated_dwt_with_reserve", "relevant_global_type_fleet_dwt", "operational_capacity_absorbed_pct_of_affected_allocated", "operational_capacity_absorbed_pct_of_relevant_global_type_fleet", "commercially_unavailable_pct_of_affected_allocated", "commercially_available_pct_of_affected_allocated", "ship_type_breakdown", "capacity_denominator_warning"],
+                "required": ["affected_route_count", "affected_baseline_dwt", "operational_capacity_absorbed_dwt", "affected_allocated_dwt_with_reserve", "relevant_global_type_fleet_dwt", "operational_capacity_absorbed_pct_of_affected_allocated", "operational_capacity_absorbed_pct_of_relevant_global_type_fleet", "commercially_unavailable_pct_of_affected_allocated", "commercially_available_pct_of_affected_allocated", "ship_type_breakdown", "reroute_receivers", "capacity_denominator_warning"],
                 "properties": {
+                  "reroute_receivers": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "required": ["id", "name_ko", "source_chokepoint_id", "affected_route_count", "rerouted_cargo_tonnes_horizon", "rerouted_in_transit_cargo_tonnes_horizon", "additional_service_capacity_dwt", "ship_type_breakdown", "warning_ko", "status"],
+                      "properties": {
+                        "status": {"const": "modelled_reroute_receiver_not_observed_traffic"},
+                        "affected_route_count": {"type": "integer", "minimum": 1},
+                        "rerouted_cargo_tonnes_horizon": {"type": "number", "minimum": 0},
+                        "rerouted_in_transit_cargo_tonnes_horizon": {"type": "number", "minimum": 0},
+                        "additional_service_capacity_dwt": {"type": "number", "minimum": 0},
+                        "ship_type_breakdown": {"type": "array"}
+                      }
+                    }
+                  },
                   "ship_type_breakdown": {
                     "type": "array",
                     "items": {
