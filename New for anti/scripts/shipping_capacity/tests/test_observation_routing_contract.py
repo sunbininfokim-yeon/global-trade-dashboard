@@ -56,6 +56,16 @@ class PortWatchHistoryContractTests(unittest.TestCase):
             result["daily_averages"]["trailing_7d_average"]["value"],
             1036.0,
         )
+        for metric_key, expected in {
+            "all": 1039.0,
+            "container": 839.0,
+            "dry_bulk": 639.0,
+            "general_cargo": 239.0,
+            "tanker": 439.0,
+        }.items():
+            history = result["metric_histories"][metric_key]
+            self.assertEqual(history["history_point_count"], 40)
+            self.assertEqual(history["history"][-1]["value"], expected)
 
     def test_hormuz_history_uses_tanker_metric(self) -> None:
         rows = [
@@ -74,6 +84,10 @@ class PortWatchHistoryContractTests(unittest.TestCase):
         self.assertEqual(result["history_metric_key"], "tanker")
         self.assertEqual(result["history_field"], "capacity_tanker")
         self.assertEqual(result["history"][-1]["value"], 934.0)
+        self.assertEqual(
+            result["metric_histories"]["container"]["history"][-1]["value"],
+            234.0,
+        )
 
     def test_legacy_summary_does_not_invent_daily_history(self) -> None:
         migrated = normalize_status_contract(
@@ -106,6 +120,28 @@ class PortWatchHistoryContractTests(unittest.TestCase):
         self.assertEqual(screen["history_point_count"], 180)
         self.assertEqual(screen["history_source_point_count"], 200)
         self.assertEqual(screen["history"], full_history[-180:])
+
+    def test_screen_metric_histories_are_bounded_without_cross_type_copying(self) -> None:
+        full_history = [
+            {"date": f"2026-01-{(day % 28) + 1:02d}", "value": float(day)}
+            for day in range(200)
+        ]
+        screen = _screen_chokepoints_live(
+            {
+                "test": {
+                    "history": [],
+                    "metric_histories": {
+                        "container": {
+                            "metric_key": "container",
+                            "history": full_history,
+                        }
+                    },
+                }
+            }
+        )["test"]
+        container = screen["metric_histories"]["container"]
+        self.assertEqual(container["history_source_point_count"], 200)
+        self.assertEqual(container["history"], full_history[-180:])
 
 
 class RouteOperationalContractTests(unittest.TestCase):

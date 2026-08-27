@@ -122,6 +122,33 @@
           "history_unit": {"const": "estimated_trade_tonnes_per_day"},
           "history_point_count": {"type": "integer", "minimum": 0},
           "history_status": {"enum": ["observed_daily_estimated_trade_volume", "unavailable_cached_summary_only"]},
+          "metric_histories": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "object",
+              "required": ["metric_key", "field", "unit", "definition", "history", "history_point_count", "history_status", "daily_averages"],
+              "properties": {
+                "metric_key": {"enum": ["all", "container", "dry_bulk", "general_cargo", "tanker"]},
+                "field": {"type": "string"},
+                "unit": {"const": "estimated_trade_tonnes_per_day"},
+                "definition": {"type": "string"},
+                "history": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "required": ["date", "value"],
+                    "properties": {
+                      "date": {"type": "string", "format": "date"},
+                      "value": {"type": "number", "minimum": 0}
+                    }
+                  }
+                },
+                "history_point_count": {"type": "integer", "minimum": 0},
+                "history_status": {"enum": ["observed_daily_estimated_trade_volume", "unavailable_cached_summary_only"]},
+                "daily_averages": {"type": "object"}
+              }
+            }
+          },
           "daily_averages": {
             "type": "object",
             "required": ["status", "unit", "latest_daily_observation", "trailing_7d_average", "prior_28d_average", "warning_ko"],

@@ -89,18 +89,46 @@ def aggregate_reroute_receivers(
             typed = [row for row in rows if row["ship_type"] == ship_type]
             if not typed:
                 continue
+            baseline_service_capacity_dwt = sum(
+                row["baseline_required_dwt"] for row in typed
+            )
+            additional_service_capacity_dwt = sum(
+                row["net_required_capacity_change_dwt"] for row in typed
+            )
+            weighted_served_flow_index = (
+                sum(
+                    row["served_flow_index"] * row["baseline_required_dwt"]
+                    for row in typed
+                )
+                / baseline_service_capacity_dwt
+                if baseline_service_capacity_dwt > 0
+                else 1.0
+            )
             ship_type_breakdown.append(
                 {
                     "ship_type": ship_type,
                     "affected_route_count": len(typed),
+                    "baseline_service_capacity_dwt": baseline_service_capacity_dwt,
                     "rerouted_cargo_tonnes_horizon": sum(
                         row["rerouted_cargo_tonnes_horizon"] for row in typed
                     ),
                     "rerouted_in_transit_cargo_tonnes_horizon": sum(
                         row["rerouted_in_transit_cargo_tonnes_horizon"] for row in typed
                     ),
-                    "additional_service_capacity_dwt": sum(
-                        row["net_required_capacity_change_dwt"] for row in typed
+                    "additional_service_capacity_dwt": additional_service_capacity_dwt,
+                    "additional_service_capacity_pct_of_baseline": (
+                        additional_service_capacity_dwt
+                        / baseline_service_capacity_dwt
+                        * 100.0
+                        if baseline_service_capacity_dwt > 0
+                        else None
+                    ),
+                    "weighted_traffic_change_pct": (
+                        weighted_served_flow_index - 1.0
+                    ) * 100.0,
+                    "scope": (
+                        "Representative affected route-service capacity, not a "
+                        "live liner-network vessel inventory."
                     ),
                 }
             )
@@ -660,6 +688,8 @@ def build_ui_delivery_contract() -> dict[str, Any]:
                     "live_display[]",
                     "chokepoints_live.<id>.history[]",
                     "chokepoints_live.<id>.daily_averages",
+                    "chokepoints_live.<id>.metrics.<ship_type>",
+                    "chokepoints_live.<id>.metric_histories.<ship_type>.history[]",
                     "scenarios[]",
                     "ui_scenario_grid.rows[]",
                     "ui_scenario_grid.input_policy",
@@ -678,6 +708,7 @@ def build_ui_delivery_contract() -> dict[str, Any]:
                     "summary.ship_type_breakdown[]",
                     "summary.cargo_segment_breakdown[]",
                     "summary.reroute_receivers[]",
+                    "summary.reroute_receivers[].ship_type_breakdown[]",
                 ],
                 "labels_ko": {
                     "closure_pct": "실효 통행제약률",

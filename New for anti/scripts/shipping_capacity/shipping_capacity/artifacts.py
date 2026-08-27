@@ -71,6 +71,27 @@ def _screen_chokepoints_live(
             if isinstance(full_history, list)
             else []
         )
+        screen_metric_histories = {}
+        for metric_key, metric_status in status.get("metric_histories", {}).items():
+            if not isinstance(metric_status, dict):
+                continue
+            full_metric_history = metric_status.get("history", [])
+            metric_history = (
+                full_metric_history[-SCREEN_HISTORY_POINT_LIMIT:]
+                if isinstance(full_metric_history, list)
+                else []
+            )
+            screen_metric_histories[metric_key] = {
+                **metric_status,
+                "history": metric_history,
+                "history_point_count": len(metric_history),
+                "history_source_point_count": (
+                    len(full_metric_history)
+                    if isinstance(full_metric_history, list)
+                    else 0
+                ),
+                "history_screen_point_limit": SCREEN_HISTORY_POINT_LIMIT,
+            }
         screen_status[chokepoint_id] = {
             **status,
             "history": history,
@@ -79,6 +100,7 @@ def _screen_chokepoints_live(
                 len(full_history) if isinstance(full_history, list) else 0
             ),
             "history_screen_point_limit": SCREEN_HISTORY_POINT_LIMIT,
+            "metric_histories": screen_metric_histories,
         }
     return screen_status
 
