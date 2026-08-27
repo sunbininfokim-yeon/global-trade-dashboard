@@ -9,6 +9,10 @@
 // read; everything after it works on already-validated values.
 (() => {
   const DATA_URL = '/public/data/shipping_capacity_v1.json';
+  // The scenario grid is ~90% of the screen payload by size but only needed
+  // once a simulator is opened, so it ships as its own file and is fetched
+  // lazily instead of bloating every fleet/route/chokepoint list load.
+  const GRID_URL = '/public/data/shipping_capacity_scenario_grid_v1.json';
 
   const VIEW_META = {
     shipping_fleet: {
@@ -74,6 +78,7 @@
   };
 
   let shippingDataPromise = null;
+  let scenarioGridPromise = null;
   let activeCharts = [];
 
   // ---------------------------------------------------------------- helpers
@@ -605,6 +610,28 @@
     return shippingDataPromise;
   };
 
+  const loadScenarioGrid = async data => {
+    if (!scenarioGridPromise) {
+      scenarioGridPromise = fetch(GRID_URL, { cache: 'no-cache' })
+        .then(async response => {
+          if (!response.ok) throw new Error(`HTTP ${response.status}`);
+          const payload = await response.json();
+          if (payload.schema_version !== 'shipping-capacity-scenario-grid-v1') {
+            throw new Error('지원하지 않는 시나리오 격자 데이터 버전입니다.');
+          }
+          if (payload.bundle_id !== data.bundle_id) {
+            throw new Error('시나리오 격자 데이터가 화면 데이터와 버전이 일치하지 않습니다.');
+          }
+          return payload.ui_scenario_grid;
+        })
+        .catch(error => {
+          scenarioGridPromise = null;
+          throw error;
+        });
+    }
+    return scenarioGridPromise;
+  };
+
   // ------------------------------------------------------------------ views
 
   // Per-segment detail shown when a fleet KPI is selected. Container ships get
@@ -1085,9 +1112,20 @@
     });
   };
 
+  // Fetches the scenario grid on first use and caches it, then renders. The
+  // grid file is the large, simulator-only artifact split out of the main
+  // screen data (see GRID_URL above), so list screens never pay for it.
   const renderScenarioSimulatorInto = (data, mount, chokepointId = null) => {
     if (!mount) return;
-    const grid = data.ui_scenario_grid || {};
+    mount.innerHTML = '<p class="shipping-empty">시나리오 격자를 불러오는 중…</p>';
+    loadScenarioGrid(data)
+      .then(grid => renderScenarioSimulatorBody(data, grid, mount, chokepointId))
+      .catch(error => {
+        mount.innerHTML = `<p class="shipping-empty">시나리오 격자 데이터를 불러오지 못했습니다: ${escapeHtml(error.message)}</p>`;
+      });
+  };
+
+  const renderScenarioSimulatorBody = (data, grid, mount, chokepointId) => {
     const baseScenarios = data.ui.baseScenarios.filter(item =>
       !chokepointId || item.chokepoint_id === chokepointId);
     const closureOptions = asArray(grid.closure_pct_options);

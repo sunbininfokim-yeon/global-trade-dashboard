@@ -148,7 +148,9 @@ class RouteOperationalContractTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         cls.snapshot = build_snapshot(ROOT / "config")
-        cls.screen = build_artifact_bundle(cls.snapshot)["screen"]
+        bundle = build_artifact_bundle(cls.snapshot)
+        cls.screen = bundle["screen"]
+        cls.grid = bundle["scenario_grid"]["ui_scenario_grid"]
 
     def test_route_profile_uses_same_distance_speed_arithmetic_as_engine(self) -> None:
         profile = route_operational_profile(
@@ -201,7 +203,7 @@ class RouteOperationalContractTests(unittest.TestCase):
     def test_scenario_grid_publishes_both_capacity_denominators(self) -> None:
         row = next(
             item
-            for item in self.screen["ui_scenario_grid"]["rows"]
+            for item in self.grid["rows"]
             if item["base_scenario_id"] == "hormuz_effective_80pct_28d"
             and item["closure_pct"] == 80
             and item["duration_days"] == 28
@@ -232,7 +234,7 @@ class RouteOperationalContractTests(unittest.TestCase):
     def test_zero_impact_grid_does_not_publish_a_fabricated_percentage(self) -> None:
         row = next(
             item
-            for item in self.screen["ui_scenario_grid"]["rows"]
+            for item in self.grid["rows"]
             if item["base_scenario_id"] == "hormuz_effective_80pct_28d"
             and item["closure_pct"] == 0
             and item["duration_days"] == 28
@@ -247,7 +249,7 @@ class RouteOperationalContractTests(unittest.TestCase):
     def test_grid_ship_type_breakdown_is_precomputed_and_reconciles(self) -> None:
         hormuz = next(
             item
-            for item in self.screen["ui_scenario_grid"]["rows"]
+            for item in self.grid["rows"]
             if item["base_scenario_id"] == "hormuz_effective_80pct_28d"
             and item["closure_pct"] == 80
             and item["duration_days"] == 28
@@ -256,7 +258,7 @@ class RouteOperationalContractTests(unittest.TestCase):
             {item["ship_type"] for item in hormuz["summary"]["ship_type_breakdown"]},
             {"tanker"},
         )
-        for row in self.screen["ui_scenario_grid"]["rows"]:
+        for row in self.grid["rows"]:
             summary = row["summary"]
             breakdown = summary["ship_type_breakdown"]
             if summary["affected_baseline_dwt"] == 0:

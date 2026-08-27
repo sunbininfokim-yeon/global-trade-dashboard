@@ -683,6 +683,7 @@ def build_ui_delivery_contract() -> dict[str, Any]:
             },
             "chokepoint_detail": {
                 "title_ko": "초크포인트 상세 및 봉쇄 시뮬레이터",
+                "scenario_grid_source": "shipping_capacity_scenario_grid_v1.json",
                 "data_paths": [
                     "chokepoints[]",
                     "live_display[]",
@@ -1388,6 +1389,7 @@ def main() -> None:
     parser.add_argument("--fetch-portwatch", action="store_true")
     parser.add_argument("--fetch-portwatch-port-context", action="store_true")
     parser.add_argument("--fetch-container-context", action="store_true")
+    parser.add_argument("--scenario-grid-output", type=Path)
     parser.add_argument("--diagnostics-output", type=Path)
     parser.add_argument("--backtests-output", type=Path)
     args = parser.parse_args()
@@ -1420,6 +1422,9 @@ def main() -> None:
         fallback_container_context=fallback_container_context,
     )
     bundle = build_artifact_bundle(snapshot)
+    scenario_grid_output = args.scenario_grid_output or (
+        args.output.parent / "shipping_capacity_scenario_grid_v1.json"
+    )
     diagnostics_output = args.diagnostics_output or (
         args.output.parent / "shipping_capacity_diagnostics_v1.json"
     )
@@ -1428,6 +1433,7 @@ def main() -> None:
     )
     for path, payload in (
         (args.output, bundle["screen"]),
+        (scenario_grid_output, bundle["scenario_grid"]),
         (diagnostics_output, bundle["diagnostics"]),
         (backtests_output, bundle["backtests"]),
     ):
