@@ -612,8 +612,9 @@
 
   const loadScenarioGrid = async data => {
     if (!scenarioGridPromise) {
-      scenarioGridPromise = fetch(GRID_URL, { cache: 'no-cache' })
-        .then(async response => {
+      scenarioGridPromise = (async () => {
+        try {
+          const response = await fetch(GRID_URL, { cache: 'no-cache' });
           if (!response.ok) throw new Error(`HTTP ${response.status}`);
           const payload = await response.json();
           if (payload.schema_version !== 'shipping-capacity-scenario-grid-v1') {
@@ -623,11 +624,11 @@
             throw new Error('시나리오 격자 데이터가 화면 데이터와 버전이 일치하지 않습니다.');
           }
           return payload.ui_scenario_grid;
-        })
-        .catch(error => {
+        } catch (error) {
           scenarioGridPromise = null;
           throw error;
-        });
+        }
+      })();
     }
     return scenarioGridPromise;
   };

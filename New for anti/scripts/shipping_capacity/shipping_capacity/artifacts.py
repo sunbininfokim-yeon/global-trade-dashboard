@@ -337,7 +337,8 @@ def golden_contract_failures(
     """Compare every UI-visible route and simulator value with model diagnostics."""
 
     failures: list[str] = []
-    if len({screen.get("bundle_id"), diagnostics.get("bundle_id"), scenario_grid.get("bundle_id")}) != 1:
+    bundle_id_values = {screen.get("bundle_id"), diagnostics.get("bundle_id"), scenario_grid.get("bundle_id")}
+    if None in bundle_id_values or len(bundle_id_values) != 1:
         failures.append("bundle_id_mismatch")
     diagnostic_routes = {row["id"]: row for row in diagnostics.get("routes", [])}
     for route in screen.get("routes", []):

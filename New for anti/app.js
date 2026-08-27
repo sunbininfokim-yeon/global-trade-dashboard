@@ -4943,7 +4943,7 @@ const updatePageMeta = (target) => {
         return;
     }
 
-    const navLabel = document.querySelector(`[data-target="${target}"]`)?.textContent.trim();
+    const navLabel = document.querySelector(`[data-target="${CSS.escape(target)}"]`)?.textContent.trim();
     const label = navLabel || target;
     const title = `${label} — ChokePoint Monitor`;
     const description = routeMetaDescription(target, label);
