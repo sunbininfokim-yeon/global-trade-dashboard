@@ -1138,6 +1138,8 @@
         activeCharts = activeCharts.filter(chart => chart !== scenarioChart);
       }
       const breakdown = asArray(row.summary?.ship_type_breakdown);
+      const lngSegments = asArray(row.summary?.cargo_segment_breakdown)
+        .filter(item => item?.cargo_segment === 'lng');
 
       resultEl.innerHTML = `
         ${scenarioKpis(row.summary || {})}
@@ -1154,6 +1156,19 @@
               <td style="text-align:right" class="negative-text">${formatPct(item.weighted_traffic_change_pct, 1)}</td>
             </tr>`).join('')
           )}` : '<p class="shipping-empty">이 조합에 영향받는 대표 선종이 없습니다.</p>'}
+        ${lngSegments.length ? `<section class="shipping-lng-segment" aria-label="LNG 화물 세그먼트 영향">
+          <div class="shipping-lng-segment-head">
+            <div><span>CARGO SEGMENT</span><h3>LNG 운반선 서비스 영향</h3></div>
+            <small>유조선 합계와 별도 표시</small>
+          </div>
+          ${lngSegments.map(item => `<div class="shipping-lng-segment-grid">
+            <div><span>영향 항로 배치 DWT</span><strong>${formatDWT(item.affected_allocated_dwt_with_reserve)}</strong></div>
+            <div><span>추가 흡수 선복량</span><strong>${formatDWT(item.operational_capacity_absorbed_dwt)}</strong></div>
+            <div><span>기간 말 백로그</span><strong>${formatTonnes(item.backlog_cargo_tonnes_horizon)}</strong></div>
+            <div><span>배송가능 흐름 변화</span><strong class="negative-text">${formatPct(item.weighted_traffic_change_pct, 1)}</strong></div>
+          </div>
+          <p class="shipping-note">LNG는 화물·서비스 세그먼트입니다. 무료 공개자료에는 LNG 전용 세계 선대 DWT가 없어, 탱커 세계 선대 비중이나 LNG 세계 선대 비율을 표시하지 않습니다.</p>
+        </section>`).join('')}` : ''}
         <p class="shipping-note">${escapeHtml(labels.backlog_cargo_tonnes_horizon || '분석기간 말 미운송 화물')}입니다. 모든 값은 Python 엔진이 사전 계산한 ${formatNumber(row.horizon_days, 0)}일 격자 결과입니다.</p>
         ${renderRerouteReceivers(row.summary?.reroute_receivers, row.base_scenario_id)}`;
 
