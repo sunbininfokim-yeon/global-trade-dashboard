@@ -700,34 +700,6 @@ const redrawOnBasemapReady = () => {
 // module-evaluation time would hit the temporal dead zone.
 queueMicrotask(redrawOnBasemapReady);
 
-// Tooltip handler
-const handleHover = (info) => {
-    if (info.object) {
-        const { sourceName, targetName, volume, percentage } = info.object;
-        positionTooltipAt(info, 0);
-        tooltipEl.classList.remove('hidden');
-        
-        tooltipEl.innerHTML = `
-            <div class="tooltip-title">${sourceName} → ${targetName}</div>
-            <div class="tooltip-stat">
-                <span>무역량:</span>
-                <span style="color: #38bdf8; font-weight: bold;">${volume} ${currentCommodity === 'oil' ? 'M bpd' : (currentCommodity === 'gold' || currentCommodity === 'silver' ? 'Tonnes' : 'Mt')}</span>
-            </div>
-            ${info.object.typeName !== "General" ? `
-            <div class="tooltip-stat">
-                <span>분류:</span>
-                <span>${info.object.typeName}</span>
-            </div>` : ''}
-            <div class="tooltip-stat">
-                <span>비중/상대규모:</span>
-                <span>${percentage}%</span>
-            </div>
-        `;
-    } else {
-        tooltipEl.classList.add('hidden');
-    }
-};
-
 const handleNodeClick = (info) => {
     if (info.object) {
         selectedCountry = info.object.name;
@@ -750,11 +722,6 @@ const handleLineClick = (info) => {
             focusTradeCountry(selectedCountry);
         }
     }
-};
-
-// Kept for any legacy callers; trade UI no longer opens the right stats column.
-const updateCountryStatsPanel = async (countryName) => {
-    focusTradeCountry(countryName);
 };
 
 /**
@@ -1226,9 +1193,6 @@ const worldGeo = () => worldGeoData || loadWorldGeo();
 const OCEAN_RGBA = [9, 15, 27, 255];
 const LAND_RGBA = [43, 52, 66, 255];
 const LAND_LINE_RGBA = [128, 148, 176, 120];
-
-// Earth radius in metres, for the sphere mesh that backs the globe.
-const EARTH_RADIUS_M = 6370000;
 
 /**
  * Ocean sphere + country polygons. Home, trade and climate all build on this so
@@ -3348,12 +3312,6 @@ const regionStressFromPct = (pct) => {
     return { level: 'ok', rgba: [74, 222, 128, 210], ko: '기상 양호' };
 };
 
-const isoToCountryName = () => {
-    const m = {};
-    for (const [name, cfg] of Object.entries(CLIMATE_COUNTRIES)) m[cfg.iso] = name;
-    return m;
-};
-
 /**
  * View-state guard. Curvature comes from the graticule and the bowed arcs, not
  * from tilting or rounding the map, so pitch stays at zero and only zoom is
@@ -3372,8 +3330,6 @@ const clampGlobeView = (vs = {}) => ({
     minZoom: MAP_MIN_ZOOM,
     maxZoom: MAP_MAX_ZOOM,
 });
-// Old name kept for any caller still reaching for it.
-const clampMapNoAntarctica = clampGlobeView;
 
 /** HUD frame over the map during a country drill-down (req 4). */
 const climateTargetHudEl = document.getElementById('climate-target-hud');
@@ -3398,16 +3354,6 @@ const setClimateTargetHud = (cfg, zoom = null) => {
 // --- Producing-region labels as projected HTML (req 4) --------------------
 const climateRegionLabelsEl = document.getElementById('climate-region-labels');
 let climateLabelPoints = [];
-
-/** Great-circle distance in degrees, used to hide labels on the far hemisphere. */
-const angularDistanceDeg = (a, b) => {
-    const rad = Math.PI / 180;
-    const [lon1, lat1] = a.map((v) => v * rad);
-    const [lon2, lat2] = b.map((v) => v * rad);
-    const d = Math.sin(lat1) * Math.sin(lat2)
-        + Math.cos(lat1) * Math.cos(lat2) * Math.cos(lon1 - lon2);
-    return Math.acos(Math.max(-1, Math.min(1, d))) / rad;
-};
 
 const positionClimateRegionLabels = () => {
     if (!climateRegionLabelsEl) return;
@@ -4621,21 +4567,6 @@ const stopTradeAnim = () => {
     }
 };
 
-const slerpLonLat = (a, b, t) => {
-    const toRad = Math.PI / 180;
-    const lon1 = a[0] * toRad, lat1 = a[1] * toRad;
-    const lon2 = b[0] * toRad, lat2 = b[1] * toRad;
-    const x1 = Math.cos(lat1) * Math.cos(lon1), y1 = Math.cos(lat1) * Math.sin(lon1), z1 = Math.sin(lat1);
-    const x2 = Math.cos(lat2) * Math.cos(lon2), y2 = Math.cos(lat2) * Math.sin(lon2), z2 = Math.sin(lat2);
-    const dot = Math.max(-1, Math.min(1, x1 * x2 + y1 * y2 + z1 * z2));
-    const omega = Math.acos(dot);
-    if (omega < 1e-6) return a.slice();
-    const s1 = Math.sin((1 - t) * omega) / Math.sin(omega);
-    const s2 = Math.sin(t * omega) / Math.sin(omega);
-    const x = s1 * x1 + s2 * x2, y = s1 * y1 + s2 * y2, z = s1 * z1 + s2 * z2;
-    return [(Math.atan2(y, x) * 180) / Math.PI, (Math.atan2(z, Math.hypot(x, y)) * 180) / Math.PI];
-};
-
 /**
  * Great-circle route bowed sideways in the plane, with no altitude.
  *
@@ -4878,11 +4809,42 @@ const showElectionView = () => {
     }
 };
 
+// Shared finance-view helpers. calculator.js / market-microstructure.js /
+// portfolio.js all load before this file but only call these at render time,
+// so the global lexical bindings are live by then (same contract macro.js
+// already relies on for finEsc).
+//
+// The guard is Number.isFinite rather than a null/NaN check: a ratio whose
+// denominator collapsed to 0 used to render as the literal "Infinity%".
+// Anything that is not a finite number has no percent to show, so it reads '—'.
 const finPct = (x, digits = 1) =>
-    (x === null || x === undefined || Number.isNaN(x)) ? '—' : `${(x * 100).toFixed(digits)}%`;
+    Number.isFinite(x) ? `${(x * 100).toFixed(digits)}%` : '—';
 
 const finEsc = (s) => String(s ?? '').replace(/[&<>"']/g,
     (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+// Snapshot JSON is served from /public/data/ by the Worker but from /data/ by
+// some local static servers, so every finance view had its own copy of "try
+// both bases, take the first that answers". First path with an ok response and
+// a parsable body wins; a total miss is null, which each caller already turns
+// into its own empty state rather than an error.
+//
+// Deliberately not memoised. The callers cache at their own level (KRX_FILERS,
+// PF_REGISTRY, MS_DATA), and a promise parked in a module variable here would
+// need the reject-path reset that loadScenarioGrid in shipping.js only just
+// got right -- a retry bug is a worse trade than a second fetch.
+const FIN_DATA_BASES = ['/public/data/', '/data/'];
+const finDataPaths = (name) => FIN_DATA_BASES.map((base) => base + name);
+
+const loadFirstJson = async (paths, init = { cache: 'no-store' }) => {
+    for (const path of paths) {
+        try {
+            const res = await fetch(path, init);
+            if (res.ok) return await res.json();
+        } catch (_) { /* try the next path */ }
+    }
+    return null;
+};
 
 const finPlaceholder = (title, desc, detail) => `
     <div class="fin-wrap">
