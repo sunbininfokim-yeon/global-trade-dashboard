@@ -823,7 +823,7 @@ const buildTradeDashes = (arcs, phase, inboundKeys) => {
     for (let i = 0; i < n; i++) {
         const arc = arcs[i];
         if (!arc.sourcePosition || !arc.targetPosition) continue;
-        const full = bowedPath(arc.sourcePosition, arc.targetPosition, DASH_RES);
+        const full = arc._dashPath ||= bowedPath(arc.sourcePosition, arc.targetPosition, DASH_RES);
         // Stagger start and speed so routes do not pulse in lockstep.
         const head = ((phase * (1 + (i % 5) * 0.13)) + (i % 7) / 7) % 1;
         const path = [];

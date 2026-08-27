@@ -192,10 +192,6 @@ const signalEls = {
     dots: () => document.getElementById('signal-dots')
 };
 
-const signalEsc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => (
-    { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]
-));
-
 // FRED and EIA hand back ISO dates; BOK hands back a compact CYCLE string
 // (20260818 daily, 202608 monthly). Normalise all three to YYYY-MM-DD / YYYY-MM.
 const signalAsOf = (raw) => {
@@ -265,16 +261,16 @@ const signalSlotHtml = (slot) => {
     // A slot is pending either because it was declared that way, or because the
     // feed answered with something unparseable -- both read the same to a viewer.
     const body = shown
-        ? `<span class="signal-slot-value">${signalEsc(shown)}${
-              slot.unit ? `<span class="signal-slot-unit">${signalEsc(slot.unit)}</span>` : ''
+        ? `<span class="signal-slot-value">${finEsc(shown)}${
+              slot.unit ? `<span class="signal-slot-unit">${finEsc(slot.unit)}</span>` : ''
           }</span>`
-        : `<span class="signal-slot-value is-pending">${signalEsc(slot.pending || '연동 예정')}</span>`;
+        : `<span class="signal-slot-value is-pending">${finEsc(slot.pending || '연동 예정')}</span>`;
 
     // "차트만 제공" belongs only to a slot that was declared without a feed and
     // still has a chart behind it. A slot that has a feed and simply hasn't
     // answered yet gets no footnote -- claiming it is chart-only would be wrong.
     const foot = shown
-        ? (asOf ? `as of ${signalEsc(asOf)}` : (slot.note ? signalEsc(slot.note) : ''))
+        ? (asOf ? `as of ${finEsc(asOf)}` : (slot.note ? finEsc(slot.note) : ''))
         : (!slot.value && slot.symbol ? '차트만 제공' : '');
 
     // Only a slot showing a real number gets a line; a sparkline over a
@@ -283,11 +279,11 @@ const signalSlotHtml = (slot) => {
 
     return `<div class="signal-slot${clickable ? ' is-clickable' : ''}"${
         clickable
-            ? ` role="button" tabindex="0" data-symbol="${signalEsc(slot.symbol)}" data-label="${signalEsc(slot.label)}"${slot.ma ? ' data-ma="1"' : ''}`
+            ? ` role="button" tabindex="0" data-symbol="${finEsc(slot.symbol)}" data-label="${finEsc(slot.label)}"${slot.ma ? ' data-ma="1"' : ''}`
             : ''
     }>
         <div class="signal-slot-main">
-            <span class="signal-slot-label">${signalEsc(slot.label)}</span>
+            <span class="signal-slot-label">${finEsc(slot.label)}</span>
             ${body}
             <span class="signal-slot-foot">${foot}</span>
         </div>
@@ -302,7 +298,7 @@ let signalPaused = false;
 const signalBuildPage = (page) => {
     const el = document.createElement('div');
     el.className = 'signal-page';
-    el.innerHTML = `<span class="signal-page-name">${signalEsc(page.name)}</span>`
+    el.innerHTML = `<span class="signal-page-name">${finEsc(page.name)}</span>`
         + page.slots.map(signalSlotHtml).join('');
     return el;
 };
@@ -311,7 +307,7 @@ const signalRenderDots = () => {
     const host = signalEls.dots();
     if (!host) return;
     host.innerHTML = SIGNAL_PAGES.map((p, i) =>
-        `<button type="button" class="signal-dot${i === signalIndex ? ' is-on' : ''}" data-idx="${i}" aria-label="${signalEsc(p.name)} 페이지"></button>`
+        `<button type="button" class="signal-dot${i === signalIndex ? ' is-on' : ''}" data-idx="${i}" aria-label="${finEsc(p.name)} 페이지"></button>`
     ).join('');
 };
 
@@ -367,11 +363,11 @@ function refreshSignalMarkets() {
 // date wrap mid-token (2026-08-\n09) once the worst-point name grew.
 const signalFixedCard = ({ id, title, value, sub, foot, tone, target }) => `
     <div class="signal-fixed-card${target ? ' is-clickable' : ''}${tone ? ` tone-${tone}` : ''}"
-         id="${id}"${target ? ` role="button" tabindex="0" data-target="${signalEsc(target)}"` : ''}>
-        <span class="signal-fixed-title">${signalEsc(title)}</span>
-        <span class="signal-fixed-value">${signalEsc(value)}</span>
-        <span class="signal-fixed-sub">${signalEsc(sub)}</span>
-        ${foot ? `<span class="signal-fixed-foot">${signalEsc(foot)}</span>` : ''}
+         id="${id}"${target ? ` role="button" tabindex="0" data-target="${finEsc(target)}"` : ''}>
+        <span class="signal-fixed-title">${finEsc(title)}</span>
+        <span class="signal-fixed-value">${finEsc(value)}</span>
+        <span class="signal-fixed-sub">${finEsc(sub)}</span>
+        ${foot ? `<span class="signal-fixed-foot">${finEsc(foot)}</span>` : ''}
     </div>`;
 
 const signalRenderFixed = (state) => {
