@@ -88,6 +88,15 @@ class ShippingUiContractTests(unittest.TestCase):
         self.assertIn("summary.ship_type_breakdown[]", simulator["result_fields"])
         self.assertIn("summary.cargo_segment_breakdown[]", simulator["result_fields"])
         self.assertIn("summary.reroute_receivers[]", simulator["result_fields"])
+        self.assertIn(
+            "summary.reroute_receivers[].ship_type_breakdown[]",
+            simulator["result_fields"],
+        )
+        detail_paths = contract["views"]["chokepoint_detail"]["data_paths"]
+        self.assertIn(
+            "chokepoints_live.<id>.metric_histories.<ship_type>.history[]",
+            detail_paths,
+        )
         self.assertIn("ui_scenario_grid.input_policy", simulator["data_paths"])
         self.assertIn("null", contract["unavailable_value_rule"])
         route_service = contract["views"]["route_service"]
@@ -174,6 +183,17 @@ class ShippingUiContractTests(unittest.TestCase):
             self.assertEqual(
                 receiver["status"], "modelled_reroute_receiver_not_observed_traffic"
             )
+            container = next(
+                item
+                for item in receiver["ship_type_breakdown"]
+                if item["ship_type"] == "container"
+            )
+            self.assertGreater(container["baseline_service_capacity_dwt"], 0)
+            self.assertGreater(container["additional_service_capacity_dwt"], 0)
+            self.assertGreater(
+                container["additional_service_capacity_pct_of_baseline"], 0
+            )
+            self.assertLess(container["weighted_traffic_change_pct"], 0)
 
     def test_expanded_grid_is_engine_precomputed_and_bounded(self) -> None:
         grid = self.snapshot["ui_scenario_grid"]
