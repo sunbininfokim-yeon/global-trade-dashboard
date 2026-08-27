@@ -1,0 +1,79 @@
+name: Data freshness watchdog
+
+# Scheduled workflows are best-effort on GitHub's shared runners and can be
+# delayed or silently skipped entirely (observed: market_microstructure_daily
+# skipped outright on 2026-08-27). This job doesn't run the pipelines --
+# it only checks whether their published output is older than expected and
+# fails loudly (GitHub's default failed-run email) when it is, so a missed
+# run gets noticed the same day instead of only when someone looks at stale
+# data on the dashboard.
+
+on:
+  schedule:
+    # Every 4h at :09 (off :00/:15/:30/:45) so this check itself doesn't add
+    # to the queue congestion it exists to catch.
+    - cron: '9 */4 * * *'
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check monitored data files are fresh
+        run: |
+          python3 - <<'PY'
+          import subprocess
+          import sys
+          from datetime import datetime, timedelta, timezone
+
+          KST = timezone(timedelta(hours=9))
+          now_utc = datetime.now(timezone.utc)
+          weekday_kst = now_utc.astimezone(KST).weekday()  # Monday=0 .. Sunday=6
+          GRACE_H = 4
+
+          # (path, normal cadence in hours, weekday-only job?)
+          CHECKS = [
+              ("New for anti/public/data/market_microstructure_v1.json", 24, True),
+              ("New for anti/public/data/shipping_capacity_v1.json", 24, False),
+          ]
+
+          def commit_age_hours(path):
+              out = subprocess.run(
+                  ["git", "log", "-1", "--format=%ct", "--", path],
+                  capture_output=True, text=True, check=True,
+              ).stdout.strip()
+              if not out:
+                  return None
+              commit_ts = datetime.fromtimestamp(int(out), tz=timezone.utc)
+              return (now_utc - commit_ts).total_seconds() / 3600
+
+          failures = []
+          for path, cadence_h, weekday_only in CHECKS:
+              if weekday_only and weekday_kst >= 5:
+                  continue  # Sat/Sun KST: this job doesn't run on weekends
+              if weekday_only and weekday_kst == 0:
+                  # Monday KST: last valid refresh is Friday's, ~3 days back
+                  threshold = cadence_h * 3 + GRACE_H
+              else:
+                  threshold = cadence_h + GRACE_H
+              age = commit_age_hours(path)
+              if age is None:
+                  failures.append(f"{path}: no commit history found")
+              elif age > threshold:
+                  failures.append(
+                      f"{path}: last updated {age:.1f}h ago "
+                      f"(threshold {threshold}h, KST weekday={weekday_kst})"
+                  )
+
+          if failures:
+              print("::error::Data freshness watchdog found stale files:")
+              for f in failures:
+                  print(f"::error::{f}")
+              sys.exit(1)
+
+          print("All monitored data files are fresh.")
+          PY

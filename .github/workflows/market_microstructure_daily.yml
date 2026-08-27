@@ -6,8 +6,11 @@ name: Market microstructure daily
 
 on:
   schedule:
-    # 16:30 KST (07:30 UTC) weekdays — after KRX cash close; US OI = delayed prior/current.
-    - cron: '30 7 * * 1-5'
+    # 16:47 KST (07:47 UTC) weekdays — after KRX cash close; US OI = delayed
+    # prior/current. Moved off :30 (a globally popular cron minute) after
+    # this job was observed running ~2h late two days running; the delay
+    # is GitHub's shared runner queue, not the hour itself.
+    - cron: '47 7 * * 1-5'
   workflow_dispatch:
 
 jobs:

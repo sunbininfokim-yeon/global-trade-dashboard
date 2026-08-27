@@ -2,7 +2,9 @@ name: Update Shipping Capacity Snapshot
 
 on:
   schedule:
-    - cron: '30 18 * * *'
+    # 03:37 KST (18:37 UTC) daily -- off :30, a globally popular cron minute
+    # where GitHub's shared runner queue tends to back up.
+    - cron: '37 18 * * *'
   workflow_dispatch:
 
 jobs:
