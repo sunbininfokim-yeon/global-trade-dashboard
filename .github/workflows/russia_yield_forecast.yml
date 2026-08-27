@@ -2,8 +2,9 @@ name: Weekly Russia Winter-Wheat Yield Forecast
 
 on:
   schedule:
-    # Mondays 11:00 UTC — after China (10:30) to avoid POWER commit races.
-    - cron: '0 11 * * 1'
+    # Sat 02:12 KST (Fri 17:12 UTC) — weekend batch, 22min after China to
+    # avoid POWER commit races.
+    - cron: '12 17 * * 5'
   workflow_dispatch:
 
 jobs:

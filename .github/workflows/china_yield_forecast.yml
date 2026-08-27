@@ -2,10 +2,10 @@ name: Weekly China Yield Forecast
 
 on:
   schedule:
-    # Mondays 10:30 UTC, half an hour after the Argentina run so the country
-    # jobs do not race for the same commit. NASA POWER lags real time by 2-3
-    # days, so a weekly cadence always picks up new observations.
-    - cron: '30 10 * * 1'
+    # Sat 01:50 KST (Fri 16:50 UTC) — weekend batch, 22min after India so the
+    # country jobs do not race for the same commit. NASA POWER lags real time
+    # by 2-3 days, so a weekly cadence always picks up new observations.
+    - cron: '50 16 * * 5'
   workflow_dispatch:
 
 jobs:

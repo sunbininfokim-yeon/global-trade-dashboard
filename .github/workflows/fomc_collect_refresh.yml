@@ -11,9 +11,10 @@ name: Refresh FOMC/Beige Book collection
 
 on:
   schedule:
+    # Sat 04:02 KST (Fri 19:02 UTC) — weekend batch, 22min after city weather.
     # 8 meetings/year on published dates -- weekly is generous headroom for
     # a statement that's usually live within hours of the decision.
-    - cron: '30 6 * * 3'
+    - cron: '2 19 * * 5'
   workflow_dispatch:
 
 jobs:

@@ -2,10 +2,10 @@ name: Weekly US Yield Forecast
 
 on:
   schedule:
-    # Mondays 09:00 UTC. NASA POWER lags real time by 2-3 days, so a weekly
-    # cadence always picks up genuinely new observations rather than re-running
-    # on the same data.
-    - cron: '0 9 * * 1'
+    # Sat 00:22 KST (Fri 15:22 UTC) — weekend batch, 22min after ICRISAT.
+    # NASA POWER lags real time by 2-3 days, so a weekly cadence always picks
+    # up genuinely new observations rather than re-running on the same data.
+    - cron: '22 15 * * 5'
   workflow_dispatch:
 
 jobs:

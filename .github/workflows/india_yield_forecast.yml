@@ -2,9 +2,10 @@ name: Weekly India Yield Forecast
 
 on:
   schedule:
-    # Mondays 10:00 UTC, after the US (09:00) and Brazil (09:30) runs so the
-    # three do not race for the same commit.
-    - cron: '0 10 * * 1'
+    # Sat 01:28 KST (Fri 16:28 UTC) — weekend batch, 22min after Argentina.
+    # Previously this and the Argentina job were both '0 10 * * 1' (an actual
+    # collision that could race the same main commit); now on distinct slots.
+    - cron: '28 16 * * 5'
   workflow_dispatch:
     inputs:
       rebuild:
