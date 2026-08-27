@@ -7,7 +7,8 @@
 // merges overwrite whole regions.
 //
 // Loaded AFTER macro.js -- msHistChart and msModalFor draw with mmLineChart.
-// Relies on globals still in app.js: finEsc and the DOM helpers.
+// Relies on globals still in app.js: finEsc, finPct,
+// loadFirstJson/finDataPaths, and the DOM helpers.
 
 // === 시장 미시구조 / US→KR 관찰 ==============================================
 //
@@ -1266,9 +1267,9 @@ const msModalFor = (key, D) => {
                 ['P/C 거래량', Number.isFinite(e.put_call_volume) ? e.put_call_volume.toFixed(4) : '—'],
                 ['P/C 미결제약정', Number.isFinite(e.put_call_oi) ? e.put_call_oi.toFixed(4) : '—'],
                 ['옵션 총 거래량', msNum(e.options_total_volume)],
-                ['프리마켓 갭', Number.isFinite(e.premarket_gap) ? finPct(e.premarket_gap, 2) : '—'],
+                ['프리마켓 갭', finPct(e.premarket_gap, 2)],
                 ['공매도 잔고 증감', Number.isFinite(e.short_chg_pct) ? `${e.short_chg_pct.toFixed(3)}%` : '—'],
-                ['당일 수익률', Number.isFinite(e.day_return) ? finPct(e.day_return, 3) : '—'],
+                ['당일 수익률', finPct(e.day_return, 3)],
                 ['레짐', (e.regimes || []).join(', ')],
                 ['스트레스', finEsc(e.stress_level || '')],
             ]) + (rules.length ? `<h4 class="ms-sub-h">발동 조건</h4><ul class="fin-list">${rules.map((r) => `<li>${finEsc(r)}</li>`).join('')}</ul>` : '')

@@ -5,7 +5,8 @@
 // a squash merge replaces whole regions instead of diffing them. This domain
 // calls nothing outside itself.
 //
-// Relies on globals still in app.js: finEsc, finPct, and the DOM helpers.
+// Relies on globals still in app.js: finEsc, finPct, loadFirstJson/finDataPaths,
+// and the DOM helpers.
 
 // --- 금융 진단 ---------------------------------------------------------------
 // The engines live outside this file: portfolio risk in
@@ -71,9 +72,14 @@ const pfLoad = () => {
     } catch (_) { return null; }
 };
 
-const pfSave = (p) => {
-    try { localStorage.setItem(PF_STORE, JSON.stringify(p)); } catch (_) { /* quota */ }
+// Three preferences write to localStorage and none of them is worth an
+// exception: a full quota or a locked-down browser just means the next render
+// falls back to the default.
+const pfPersist = (key, value) => {
+    try { localStorage.setItem(key, value); } catch (_) { /* quota */ }
 };
+
+const pfSave = (p) => pfPersist(PF_STORE, JSON.stringify(p));
 
 const pfBlank = () => ({ risk_profile: 'balanced', base_currency: 'KRW', positions: [] });
 
@@ -1003,7 +1009,7 @@ const renderPfInput = (root, onDone) => {
 
 const PF_MODE_KEY = 'portfolioLab.mode';
 const pfGetMode = () => (localStorage.getItem(PF_MODE_KEY) === 'expert') ? 'expert' : 'basic';
-const pfSetMode = (m) => { try { localStorage.setItem(PF_MODE_KEY, m); } catch (_) { /* quota */ } };
+const pfSetMode = (m) => pfPersist(PF_MODE_KEY, m);
 
 const renderPfResult = async (host) => {
     host.innerHTML = `<p class="fin-loading">진단 리포트 불러오는 중…</p>`;
@@ -1193,7 +1199,7 @@ const renderPfResult = async (host) => {
 
 const PF_VIEW_KEY = 'portfolioLab.view';
 const pfGetView = () => (localStorage.getItem(PF_VIEW_KEY) === 'manual') ? 'manual' : 'report';
-const pfSetView = (v) => { try { localStorage.setItem(PF_VIEW_KEY, v); } catch (_) { /* quota */ } };
+const pfSetView = (v) => pfPersist(PF_VIEW_KEY, v);
 
 const renderPortfolioLab = async (host) => {
     host.innerHTML = `<div class="fin-wrap"><p class="fin-loading">불러오는 중…</p></div>`;
