@@ -220,7 +220,6 @@ const msEok = (v) => Number.isFinite(v) ? `${v >= 0 ? '+' : ''}${Math.round(v).t
 // flow -- "+999,765억" of 예탁금 reads as an inflow of the entire deposit pool.
 const msEokLevel = (v) => Number.isFinite(v) ? `${Math.round(v).toLocaleString('ko-KR')}억` : '—';
 const msShares = (v) => Number.isFinite(v) ? `${v >= 0 ? '+' : ''}${Math.round(v).toLocaleString('ko-KR')}` : '—';
-const msPct = (v, d = 1) => Number.isFinite(v) ? `${(v * 100).toFixed(d)}%` : '—';
 const MS_LEVEL_CLASS = { '경계': 'ms-lv-3', '주의': 'ms-lv-2', '관찰': 'ms-lv-1', high: 'ms-lv-3', mid: 'ms-lv-2', watch: 'ms-lv-2', low: 'ms-lv-1', quiet: 'ms-lv-1' };
 
 // Every summary box is a button that opens the table behind it. A card that
@@ -583,7 +582,7 @@ const msTangle = (D) => {
         <div class="fin-cards">
             ${msCard('레버·인버스 ETF ÷ 코스피 현물', Number.isFinite(ratios.levered_inverse_etf_tv_over_kospi_cash_tv_pct) ? ratios.levered_inverse_etf_tv_over_kospi_cash_tv_pct.toFixed(1) + '%' : '—',
                 `정방향 ${msJo(ratios.long_tv_jo * 1e12)} · 인버스 ${msJo(ratios.inverse_tv_jo * 1e12)}`, 'letf_cat')}
-            ${msCard('레버·인버스 ETF ÷ (코스피 현물 + 레버·인버스 ETF)', msPct(msLevShareOfCombined(cs), 1),
+            ${msCard('레버·인버스 ETF ÷ (코스피 현물 + 레버·인버스 ETF)', finPct(msLevShareOfCombined(cs), 1),
                 Number.isFinite(cs.kospi_cash_tv_jo) && Number.isFinite(cs.levered_inverse_tv_jo)
                     ? `분모 ${(cs.kospi_cash_tv_jo + cs.levered_inverse_tv_jo).toFixed(2)}조 (현물 ${cs.kospi_cash_tv_jo.toFixed(2)}조 + 레버 ${cs.levered_inverse_tv_jo.toFixed(2)}조)`
                     : '', 'letf_cat')}
@@ -637,9 +636,9 @@ const msTangle = (D) => {
                 const s10 = st.scenarios?.r_minus_10pct, s5 = st.scenarios?.r_minus_5pct;
                 return [
                     `${finEsc(st.name)} <span class="co-hint">${finEsc(st.ticker)}</span>`,
-                    msPct(st.letf_turnover_ratio),
+                    finPct(st.letf_turnover_ratio),
                     `<span class="ms-badge ${bandCls[t.wag_the_dog_band] || ''}">${finEsc(t.wag_the_dog_band || '—')}</span>`,
-                    msPct(t.inverse_tv_share),
+                    finPct(t.inverse_tv_share),
                     Number.isFinite(s5?.ir_pct) ? s5.ir_pct.toFixed(1) + '%' : '—',
                     Number.isFinite(s10?.ir_pct) ? `<span class="ms-badge ${bandCls[s10.band] || ''}">${s10.ir_pct.toFixed(1)}%</span>` : '—',
                     `<span class="ms-badge ${bandCls[t.realized_band] || ''}">${finEsc(t.realized_band || '—')}</span>`,
@@ -833,11 +832,11 @@ const msUsKr = (D) => {
         return [
             finEsc(symbol),
             msNum(down.n),
-            msPct(down.mean, 2),
-            msPct(down.frac_neg),
+            finPct(down.mean, 2),
+            finPct(down.frac_neg),
             msNum(baseline.n),
-            msPct(baseline.mean, 2),
-            msPct(baseline.frac_neg),
+            finPct(baseline.mean, 2),
+            finPct(baseline.frac_neg),
         ];
     });
 
@@ -897,7 +896,7 @@ const msUsKr = (D) => {
         <h2>알림 레벨</h2>
         <div class="fin-cards">
             ${msCard('하닉 레버리지 ETF 비율',
-                `<span class="ms-badge ${MS_LEVEL_CLASS[letf.today_level] || ''}">${finEsc(letf.today_level || '—')}</span> ${Number.isFinite(letf.today_ratio) ? msPct(letf.today_ratio) : ''}`,
+                `<span class="ms-badge ${MS_LEVEL_CLASS[letf.today_level] || ''}">${finEsc(letf.today_level || '—')}</span> ${Number.isFinite(letf.today_ratio) ? finPct(letf.today_ratio) : ''}`,
                 finEsc(letf.metric_ko || ''), 'alert_letf')}
             ${msCard('US VIX → KR',
                 `<span class="ms-badge ${MS_LEVEL_CLASS[vix.latest_level] || ''}">${finEsc(vix.latest_level || '—')}</span>${
@@ -1150,7 +1149,7 @@ const msModalFor = (key, D) => {
             + msTable(['항목', '값'], [
                 ['LETF 거래대금', msJo(st.letf_trading_value_krw)],
                 ['현물 당일 거래대금', msJo(spotTv)],
-                ['LETF / 현물 비율', msPct(st.letf_turnover_ratio)],
+                ['LETF / 현물 비율', finPct(st.letf_turnover_ratio)],
                 ['LETF 합계 순자산 (AUM)', `${msJo(st.letf_aum_sum_krw)} <span class="ms-q">${finEsc(msAumProvenance(st.letf_aum_quality))}</span>`],
             ])
             + `<p class="fin-note">관측일 ${finEsc(m.as_of || '—')}. 거래대금 기준 관측치이며 보유 포지션이나 다음 가격 방향이 아닙니다.
@@ -1273,9 +1272,9 @@ const msModalFor = (key, D) => {
                 ['P/C 거래량', Number.isFinite(e.put_call_volume) ? e.put_call_volume.toFixed(4) : '—'],
                 ['P/C 미결제약정', Number.isFinite(e.put_call_oi) ? e.put_call_oi.toFixed(4) : '—'],
                 ['옵션 총 거래량', msNum(e.options_total_volume)],
-                ['프리마켓 갭', Number.isFinite(e.premarket_gap) ? msPct(e.premarket_gap, 2) : '—'],
+                ['프리마켓 갭', Number.isFinite(e.premarket_gap) ? finPct(e.premarket_gap, 2) : '—'],
                 ['공매도 잔고 증감', Number.isFinite(e.short_chg_pct) ? `${e.short_chg_pct.toFixed(3)}%` : '—'],
-                ['당일 수익률', Number.isFinite(e.day_return) ? msPct(e.day_return, 3) : '—'],
+                ['당일 수익률', Number.isFinite(e.day_return) ? finPct(e.day_return, 3) : '—'],
                 ['레짐', (e.regimes || []).join(', ')],
                 ['스트레스', finEsc(e.stress_level || '')],
             ]) + (rules.length ? `<h4 class="ms-sub-h">발동 조건</h4><ul class="fin-list">${rules.map((r) => `<li>${finEsc(r)}</li>`).join('')}</ul>` : '')

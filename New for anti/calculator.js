@@ -101,9 +101,6 @@ const coNum = (v, currency = 'KRW') => {
 const coRatio = (v, digits = 1) =>
     (v === null || v === undefined || !Number.isFinite(v)) ? '—' : `${v.toFixed(digits)}`;
 
-const coPct = (v, digits = 1) =>
-    (v === null || v === undefined || !Number.isFinite(v)) ? '—' : `${(v * 100).toFixed(digits)}%`;
-
 const coDiv = (a, b) => (a === null || b === null || !b) ? null : a / b;
 
 // Ratios follow the same definitions the KFA engine uses, so the two can be
@@ -931,7 +928,7 @@ const coDcfPanel = (rows, CUR) => {
                 <span class="fin-card-value">${d.perShare === null ? '—' : coNum(d.perShare, CUR)}</span>
                 <p class="fin-card-plain">${d.shares ? `희석주식수 ${mmFmt(d.shares, 0)}주 기준` : '주식수를 못 읽어 계산하지 못했습니다.'}</p></div>
             <div class="fin-card"><span class="fin-card-title">잔존가치 비중</span>
-                <span class="fin-card-value">${coPct(d.tailShare)}</span>
+                <span class="fin-card-value">${finPct(d.tailShare)}</span>
                 <p class="fin-card-plain">전체 가치 중 6년차 이후가 차지하는 몫입니다. 이 값이 높을수록 결과가 영구성장률 가정에 좌우됩니다.</p></div>
         </div>
         <div class="co-table-wrap">
@@ -1009,13 +1006,13 @@ const coDeepPanel = (rowsDesc, CUR) => {
                 <span class="fin-card-value">${coNum(latest.debt_total, CUR)}</span>
                 <p class="fin-card-plain">매입채무 같은 영업부채를 뺀, 이자를 무는 빚만 모은 값입니다.</p></div>
             <div class="fin-card"><span class="fin-card-title">1년 내 만기 비중</span>
-                <span class="fin-card-value">${coPct(latest.short_share)}</span>
+                <span class="fin-card-value">${finPct(latest.short_share)}</span>
                 <p class="fin-card-plain">이자부 부채 중 1년 안에 갚거나 차환해야 하는 몫입니다. 높을수록 금리·자금시장 경색에 민감합니다.</p></div>
             <div class="fin-card"><span class="fin-card-title">이자보상배율</span>
                 <span class="fin-card-value">${coRatio(latest.interest_cover, 1)}배</span>
                 <p class="fin-card-plain">영업이익이 이자비용의 몇 배인가. 1배 아래면 본업으로 이자도 못 냅니다.</p></div>
             <div class="fin-card"><span class="fin-card-title">당좌비율</span>
-                <span class="fin-card-value">${coPct(latest.quick_ratio)}</span>
+                <span class="fin-card-value">${finPct(latest.quick_ratio)}</span>
                 <p class="fin-card-plain">재고를 뺀 유동자산으로 단기부채를 갚을 수 있는 정도입니다.</p></div>
         </div>
         ${coTable(rows, [
@@ -1045,7 +1042,7 @@ const coDeepPanel = (rowsDesc, CUR) => {
             { label: '총부채', fmt: (r) => coNum(r.raw.liabilities, CUR) },
             { label: '자기자본', fmt: (r) => coNum(r.raw.equity, CUR) },
             { label: '이익잉여금', fmt: (r) => coNum(r.raw.retained_earnings, CUR) },
-            { label: '자기자본비율', fmt: (r) => coPct(r.equity_ratio) },
+            { label: '자기자본비율', fmt: (r) => finPct(r.equity_ratio) },
         ])}
     </section>`;
 };
@@ -1059,15 +1056,15 @@ const coHealthPanel = (rowsDesc, CUR) => {
                 (r) => r.raw.revenue, (v) => coNum(v, CUR))}
             ${coSeriesCard('current_ratio', '유동비율',
                 '1년 안에 갚을 빚 대비 1년 안에 현금이 되는 자산. 100%를 밑돌면 단기 자금이 빠듯하다는 뜻입니다.',
-                (r) => r.current_ratio, (v) => coPct(v))}
+                (r) => r.current_ratio, (v) => finPct(v))}
             ${coSeriesCard('debt_ratio', '부채비율 (부채/자산)',
                 '자산 중 남의 돈이 차지하는 비율입니다. 업종마다 정상 범위가 크게 달라 같은 업종끼리 비교해야 합니다.',
-                (r) => r.debt_ratio, (v) => coPct(v))}
+                (r) => r.debt_ratio, (v) => finPct(v))}
             ${coSeriesCard('operating_margin', '영업이익률', '매출 100원으로 본업에서 남긴 이익입니다.',
-                (r) => r.operating_margin, (v) => coPct(v))}
+                (r) => r.operating_margin, (v) => finPct(v))}
             ${coSeriesCard('roe', 'ROE',
                 '주주 돈으로 낸 수익률입니다. 빚을 많이 쓰면 자연히 높아지므로 부채비율과 같이 봐야 합니다.',
-                (r) => r.roe, (v) => coPct(v))}
+                (r) => r.roe, (v) => finPct(v))}
         </div>
         <section class="fin-block fin-block-wide">
             <h2>연도별 추이</h2>
@@ -1075,9 +1072,9 @@ const coHealthPanel = (rowsDesc, CUR) => {
                 { label: '매출', fmt: (r) => coNum(r.raw.revenue, CUR) },
                 { label: '영업이익', fmt: (r) => coNum(r.raw.operating_income, CUR) },
                 { label: '순이익', fmt: (r) => coNum(r.raw.net_income, CUR) },
-                { label: '영업이익률', fmt: (r) => coPct(r.operating_margin) },
-                { label: '유동비율', fmt: (r) => coPct(r.current_ratio) },
-                { label: '부채비율', fmt: (r) => coPct(r.debt_ratio) },
+                { label: '영업이익률', fmt: (r) => finPct(r.operating_margin) },
+                { label: '유동비율', fmt: (r) => finPct(r.current_ratio) },
+                { label: '부채비율', fmt: (r) => finPct(r.debt_ratio) },
             ])}
         </section>`;
 };
@@ -1095,13 +1092,13 @@ const coValuationPanel = (rowsDesc, CUR) => {
                 (r) => r.raw.cfo, (v) => coNum(v, CUR))}
             ${coSeriesCard('fcf_margin', 'FCF 마진',
                 '매출이 현금으로 남는 비율입니다. 이익은 나는데 이 값이 낮으면 회계 이익과 현금이 어긋난다는 신호입니다.',
-                (r) => r.fcf_margin, (v) => coPct(v))}
+                (r) => r.fcf_margin, (v) => finPct(v))}
             ${coSeriesCard('net_debt', '순부채',
                 '이자부 부채에서 현금·단기투자를 뺀 값입니다. 음수면 빚보다 현금이 많다는 뜻입니다.',
                 (r) => r.net_debt, (v) => coNum(v, CUR))}
             ${coSeriesCard('roa', 'ROA',
                 '자산 전체로 낸 수익률입니다. ROE와 벌어지면 그 차이가 레버리지에서 옵니다.',
-                (r) => r.roa, (v) => coPct(v))}
+                (r) => r.roa, (v) => finPct(v))}
         </div>
         <section class="fin-block fin-block-wide">
             <h2>현금 흐름</h2>
@@ -1109,7 +1106,7 @@ const coValuationPanel = (rowsDesc, CUR) => {
                 { label: '영업현금흐름', fmt: (r) => coNum(r.raw.cfo, CUR) },
                 { label: '설비투자 (CapEx)', fmt: (r) => coNum(r.raw.capex, CUR) },
                 { label: '잉여현금흐름', fmt: (r) => coNum(r.fcf, CUR) },
-                { label: 'FCF 마진', fmt: (r) => coPct(r.fcf_margin) },
+                { label: 'FCF 마진', fmt: (r) => finPct(r.fcf_margin) },
                 { label: '순이익', hint: '현금과 비교', fmt: (r) => coNum(r.raw.net_income, CUR) },
             ])}
             <p class="fin-note">

@@ -4878,8 +4878,16 @@ const showElectionView = () => {
     }
 };
 
+// Shared finance-view helpers. calculator.js / market-microstructure.js /
+// portfolio.js all load before this file but only call these at render time,
+// so the global lexical bindings are live by then (same contract macro.js
+// already relies on for finEsc).
+//
+// The guard is Number.isFinite rather than a null/NaN check: a ratio whose
+// denominator collapsed to 0 used to render as the literal "Infinity%".
+// Anything that is not a finite number has no percent to show, so it reads '—'.
 const finPct = (x, digits = 1) =>
-    (x === null || x === undefined || Number.isNaN(x)) ? '—' : `${(x * 100).toFixed(digits)}%`;
+    Number.isFinite(x) ? `${(x * 100).toFixed(digits)}%` : '—';
 
 const finEsc = (s) => String(s ?? '').replace(/[&<>"']/g,
     (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
