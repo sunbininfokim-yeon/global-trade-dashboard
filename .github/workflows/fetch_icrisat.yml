@@ -3,10 +3,15 @@ name: Fetch ICRISAT Data
 on:
   workflow_dispatch: # 수동 실행 트리거
   schedule:
-    # Sat 00:00 KST (Fri 15:00 UTC) — first of the weekend weekly-refresh batch,
+    # Sat 00:08 KST (Fri 15:08 UTC) — first of the weekend weekly-refresh batch,
     # spaced ~22min apart on off-the-hour minutes so GitHub's shared runner
     # queue (busiest at :00/:15/:30/:45) doesn't delay every job at once.
-    - cron: '0 15 * * 5'
+    #
+    # This one sat at :00 while the rest of its own ladder (15:22, 15:44, 16:06,
+    # ...) obeyed that rule -- the anchor was the single job parked on the most
+    # congested minute of the hour. :08 is unused by the batch and keeps this
+    # first, on Saturday KST, with room before 15:22.
+    - cron: '8 15 * * 5'
 
 jobs:
   download-data:
