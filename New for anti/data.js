@@ -346,26 +346,6 @@
         macroData["NAT_GAS"] = { value: "N/A", date: "N/A" };
     }
 
-    // 1. Fetch real-time weather from Open-Meteo
-    const regions = [
-        { name: "Mato Grosso (Brazil)", lat: -12.68, lon: -56.92 },
-        { name: "Iowa (USA)", lat: 41.87, lon: -93.09 }
-    ];
-    
-    let weatherMap = {};
-    try {
-        const fetchPromises = regions.map(async (r) => {
-            const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${r.lat}&longitude=${r.lon}&current_weather=true`);
-            const data = await res.json();
-            return { name: r.name, weather: data.current_weather };
-        });
-        const results = await Promise.all(fetchPromises);
-        results.forEach(res => {
-            weatherMap[res.name] = res.weather;
-        });
-    } catch (e) {
-        console.error("Open-Meteo API Fetch Error:", e);
-    }
     
     window.MacroData = macroData;
     if (window.initApp) window.initApp();
@@ -1136,6 +1116,36 @@
     console.log('[data.js] TradeData and CountriesData set successfully.');
 
     // Now try to enhance data with live API calls (non-blocking)
+    // 1. Fetch real-time weather from Open-Meteo.
+    //
+    // This used to sit inside loadMacroData(), which declared weatherMap in
+    // its own scope and did not run until the very end of this IIFE. The
+    // injection below therefore read an identifier that did not exist and
+    // threw ReferenceError on every single load -- swallowed by its own
+    // catch, so the only trace was a console warning and forecast cards that
+    // never showed live weather. Fetching here restores the order the
+    // numbered comments describe: fetch first, then inject, then let the USDA
+    // block below append its marker to the string this produced.
+    const regions = [
+        { name: "Mato Grosso (Brazil)", lat: -12.68, lon: -56.92 },
+        { name: "Iowa (USA)", lat: 41.87, lon: -93.09 }
+    ];
+    
+    let weatherMap = {};
+    try {
+        const fetchPromises = regions.map(async (r) => {
+            const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${r.lat}&longitude=${r.lon}&current_weather=true`);
+            const data = await res.json();
+            return { name: r.name, weather: data.current_weather };
+        });
+        const results = await Promise.all(fetchPromises);
+        results.forEach(res => {
+            weatherMap[res.name] = res.weather;
+        });
+    } catch (e) {
+        console.error("Open-Meteo API Fetch Error:", e);
+    }
+
     try {
         // 4. Inject real-time weather into forecast
         if (weatherMap["Mato Grosso (Brazil)"]) {
