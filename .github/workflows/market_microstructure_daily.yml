@@ -106,4 +106,13 @@ jobs:
             "New for anti/scripts/market_microstructure/INVESTOR_PRICE_LEVELS.md" \
             "New for anti/scripts/market_microstructure/tests/fixtures/us_day.json"
           git commit -m "chore: refresh market microstructure daily snapshots" || exit 0
+          # A bare push loses the whole day's snapshot if any other scheduled
+          # job lands a commit on main in between (observed 2026-08-28: build
+          # succeeded, push rejected as non-fast-forward, no retry -- the run
+          # just failed and the data stayed stale until the next day's cron).
+          for i in 1 2 3; do
+            git push && exit 0
+            echo "push rejected, rebasing onto latest main and retrying ($i/3)"
+            git pull --rebase --autostash
+          done
           git push
