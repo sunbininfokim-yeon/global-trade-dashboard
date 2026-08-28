@@ -11,6 +11,12 @@ on:
 jobs:
   download-data:
     runs-on: ubuntu-latest
+    # 이게 없어서 이 워크플로는 네 번 실행되어 네 번 모두 실패했다. 다운로드와
+    # 커밋까지는 매번 통과하고 마지막 push 만 403 "Write access to repository
+    # not granted" 로 죽었다. 저장소의 기본 GITHUB_TOKEN 이 읽기 전용이라,
+    # push 하는 다른 21개 워크플로는 전부 이 선언을 갖고 있다.
+    permissions:
+      contents: write
 
     steps:
       - name: Checkout repository
