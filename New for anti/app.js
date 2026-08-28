@@ -3257,10 +3257,19 @@ const loadCityWx = () => {
     return cityWxPromise;
 };
 
+// Live Open-Meteo lookup is a fallback for a city the weekly city_wx_v1.json
+// snapshot hasn't covered yet (just added to climate_global_v1.json, or the
+// Saturday job hasn't run). When the cache already has a temp_c for a city
+// this is a live request per visitor for a number nothing recomputes more
+// than weekly, so it only runs for the gap, not the whole list every time.
 const refreshClimateCityTemps = async () => {
     const g = await loadClimateGlobal();
     if (!g?.cities?.length) return;
-    await Promise.all(g.cities.map(async (c) => {
+    await loadCityWx();
+    const cached = new Set((cityWxDoc?.cities || [])
+        .filter(c => c.temp_c != null).map(c => c.name));
+    const stale = g.cities.filter(c => !cached.has(c.name));
+    await Promise.all(stale.map(async (c) => {
         try {
             const url = `https://api.open-meteo.com/v1/forecast?latitude=${c.lat}&longitude=${c.lon}&current=temperature_2m`;
             const res = await fetch(url);
