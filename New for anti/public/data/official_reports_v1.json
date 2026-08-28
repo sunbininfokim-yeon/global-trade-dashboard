@@ -1,6 +1,6 @@
 {
   "schema_version": "official-reports-v1",
-  "generated_at": "2026-08-27T22:21:27.402274+00:00",
+  "generated_at": "2026-08-28T11:28:59.055325+00:00",
   "model": {
     "name": "official_reports_learnable_v1",
     "description": "Official sources only (US/JP/CN/EU/UK public RSS·HTML). Domains: economy/finance/diplomacy/security/agriculture. Series catalog + label_history for collaborative learning. No Dropbox.",
@@ -89,20 +89,6 @@
   ],
   "dashboard_fields": {},
   "indicators": [
-    {
-      "series_id": "JP_BOJ_POLICY",
-      "label_ko": "일본은행 정책·공표",
-      "country": "JPN",
-      "domains": [
-        "finance",
-        "economy"
-      ],
-      "title": "Minutes of the Monetary Policy Meeting on June 15 and 16, 2026",
-      "url": "http://www.boj.or.jp/en/mopo/mpmsche_minu/minu_2026/g260616.pdf",
-      "published_at": "2026-08-04T23:50:00+00:00",
-      "site_slot": "finance.policy",
-      "significance": 4.271
-    },
     {
       "series_id": "US_FED_FOMC",
       "label_ko": "FOMC 성명·의사록",
@@ -265,45 +251,23 @@
       "published_at": "2026-08-13T01:00:00+00:00",
       "site_slot": "finance.policy",
       "significance": 2.306
+    },
+    {
+      "series_id": "JP_BOJ_POLICY",
+      "label_ko": "일본은행 정책·공표",
+      "country": "JPN",
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "title": "Market Operations by the Bank of Japan (July)",
+      "url": "http://www.boj.or.jp/en/statistics/boj/fm/ope/m_release/2026/ope2607.xlsx",
+      "published_at": "2026-08-06T23:50:00+00:00",
+      "site_slot": "finance.policy",
+      "significance": 2.306
     }
   ],
   "ticker_items": [
-    {
-      "id": "afe5133851ec90cd",
-      "published_at": "2026-08-04T23:50:00+00:00",
-      "source": {
-        "id": "jp_boj_whatsnew",
-        "name": "Bank of Japan",
-        "region": "jpn",
-        "slant": null
-      },
-      "url": "http://www.boj.or.jp/en/mopo/mpmsche_minu/minu_2026/g260616.pdf",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "finance",
-        "economy"
-      ],
-      "series_id": "JP_BOJ_POLICY",
-      "title": {
-        "original": "Minutes of the Monetary Policy Meeting on June 15 and 16, 2026",
-        "original_lang": "en",
-        "ko": "[JPN·금융] Minutes of the Monetary Policy Meeting on June 15 and 16, 2026"
-      },
-      "summary": "",
-      "scores": {
-        "significance": 4.271,
-        "final": 4.271
-      },
-      "rank_reasons": [
-        "domains:economy,finance",
-        "series:JP_BOJ_POLICY",
-        "boost:1"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": "finance.policy"
-    },
     {
       "id": "e26f4bb4c3f411e3",
       "published_at": "2026-08-25T05:00:00+00:00",
@@ -1650,6 +1614,41 @@
         "original": "Bank of Japan Accounts (August 10)",
         "original_lang": "en",
         "ko": "[JPN·경제] Bank of Japan Accounts (August 10)"
+      },
+      "summary": "",
+      "scores": {
+        "significance": 2.306,
+        "final": 2.306
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "series:JP_BOJ_POLICY"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": "finance.policy"
+    },
+    {
+      "id": "bb33d29faeed4fea",
+      "published_at": "2026-08-06T23:50:00+00:00",
+      "source": {
+        "id": "jp_boj_whatsnew",
+        "name": "Bank of Japan",
+        "region": "jpn",
+        "slant": null
+      },
+      "url": "http://www.boj.or.jp/en/statistics/boj/fm/ope/m_release/2026/ope2607.xlsx",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": "JP_BOJ_POLICY",
+      "title": {
+        "original": "Market Operations by the Bank of Japan (July)",
+        "original_lang": "en",
+        "ko": "[JPN·경제] Market Operations by the Bank of Japan (July)"
       },
       "summary": "",
       "scores": {
@@ -1797,45 +1796,20 @@
       ],
       "significance": 1.978,
       "suggest": "label promote|keep|drop + series_id later"
+    },
+    {
+      "title": "Minutes of the Meeting of the Court of Directors held on 23 April 2026",
+      "url": "https://www.bankofengland.co.uk/minutes/2026/june/court-minutes-23-april-2026",
+      "country": "GBR",
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "significance": 1.978,
+      "suggest": "label promote|keep|drop + series_id later"
     }
   ],
   "items": [
-    {
-      "id": "afe5133851ec90cd",
-      "published_at": "2026-08-04T23:50:00+00:00",
-      "source": {
-        "id": "jp_boj_whatsnew",
-        "name": "Bank of Japan",
-        "region": "jpn",
-        "slant": null
-      },
-      "url": "http://www.boj.or.jp/en/mopo/mpmsche_minu/minu_2026/g260616.pdf",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "finance",
-        "economy"
-      ],
-      "series_id": "JP_BOJ_POLICY",
-      "title": {
-        "original": "Minutes of the Monetary Policy Meeting on June 15 and 16, 2026",
-        "original_lang": "en",
-        "ko": "[JPN·금융] Minutes of the Monetary Policy Meeting on June 15 and 16, 2026"
-      },
-      "summary": "",
-      "scores": {
-        "significance": 4.271,
-        "final": 4.271
-      },
-      "rank_reasons": [
-        "domains:economy,finance",
-        "series:JP_BOJ_POLICY",
-        "boost:1"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": "finance.policy"
-    },
     {
       "id": "e26f4bb4c3f411e3",
       "published_at": "2026-08-25T05:00:00+00:00",
@@ -3182,6 +3156,41 @@
         "original": "Bank of Japan Accounts (August 10)",
         "original_lang": "en",
         "ko": "[JPN·경제] Bank of Japan Accounts (August 10)"
+      },
+      "summary": "",
+      "scores": {
+        "significance": 2.306,
+        "final": 2.306
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "series:JP_BOJ_POLICY"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": "finance.policy"
+    },
+    {
+      "id": "bb33d29faeed4fea",
+      "published_at": "2026-08-06T23:50:00+00:00",
+      "source": {
+        "id": "jp_boj_whatsnew",
+        "name": "Bank of Japan",
+        "region": "jpn",
+        "slant": null
+      },
+      "url": "http://www.boj.or.jp/en/statistics/boj/fm/ope/m_release/2026/ope2607.xlsx",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": "JP_BOJ_POLICY",
+      "title": {
+        "original": "Market Operations by the Bank of Japan (July)",
+        "original_lang": "en",
+        "ko": "[JPN·경제] Market Operations by the Bank of Japan (July)"
       },
       "summary": "",
       "scores": {
