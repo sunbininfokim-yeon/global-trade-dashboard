@@ -101,11 +101,17 @@ function lastFour(active) {
     ? process.env.CONGRESS_NUMBERS.split(',').map(Number).filter(Number.isInteger)
     : [active - 3, active - 2, active - 1, active];
 }
+function congressDateTime(value) {
+  const date = new Date(value);
+  if (Number.isNaN(date.valueOf())) throw new Error(`Invalid Congress.gov datetime: ${value}`);
+  // Congress.gov accepts UTC timestamps only to whole-second precision.
+  return date.toISOString().replace(/\.\d{3}Z$/, 'Z');
+}
 function initialWindow(state) {
-  if (state?.cursor?.mode === 'incremental' && state.cursor.window_from) return state.cursor.window_from;
-  if (process.env.FROM_DATE_TIME) return process.env.FROM_DATE_TIME;
+  if (state?.cursor?.mode === 'incremental' && state.cursor.window_from) return congressDateTime(state.cursor.window_from);
+  if (process.env.FROM_DATE_TIME) return congressDateTime(process.env.FROM_DATE_TIME);
   const last = state?.last_successful_at ? new Date(state.last_successful_at).valueOf() : Date.now() - 7 * 86_400_000;
-  return new Date(last - 36 * 3_600_000).toISOString(); // overlap prevents boundary misses
+  return congressDateTime(last - 36 * 3_600_000); // overlap prevents boundary misses
 }
 
 async function candidates(congresses, state) {
