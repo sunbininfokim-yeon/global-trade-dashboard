@@ -299,13 +299,14 @@ const sparkChartData = new Map();
  * hover readout and axis labels are worded.
  *
  * shadeFromLabel: optional point label (e.g. a period string like
- * "2024-01") marking where a break in the series' own methodology begins --
- * not a bounded event window like a recession bar, but "everything from
- * here to the right edge was counted a different way." Shades that whole
- * tail of the chart so a level jump reads as a definitional change instead
- * of a real move, without needing a separate legend.
+ * "2024-01") marking where a break in the series' own methodology sits.
+ * Highlights a short band starting there, wide enough to catch the eye at
+ * that one point without implying the difference is still ongoing --
+ * everything after it is real values under the new methodology, not a
+ * continued anomaly. shadeSpanPoints controls how many points wide that
+ * band is (default: to the right edge, for a genuinely open-ended break).
  */
-const sparkChartHtml = ({ points, unit, formatValue, ariaLabel, footNote, shadeFromLabel }) => {
+const sparkChartHtml = ({ points, unit, formatValue, ariaLabel, footNote, shadeFromLabel, shadeSpanPoints }) => {
     if (!points || points.length < 2) return '';
     const W = 100, H = 54, PAD = 3;
     const vals = points.map((p) => p.value);
@@ -330,9 +331,15 @@ const sparkChartHtml = ({ points, unit, formatValue, ariaLabel, footNote, shadeF
     const shadeIdx = shadeFromLabel
         ? points.findIndex((p) => p.label >= shadeFromLabel)
         : -1;
+    // A single point's width is 0px, so a 1-point-wide band would be
+    // invisible -- floor it to one point-to-point gap either way.
+    const pointGap = (W - PAD * 2) / Math.max(1, points.length - 1);
+    const shadeWidth = shadeIdx > 0
+        ? Math.min(W - PAD - x(shadeIdx), Math.max(pointGap, pointGap * (shadeSpanPoints ?? (points.length - shadeIdx))))
+        : 0;
     const shadeRect = shadeIdx > 0
         ? `<rect class="spark2-shade" x="${x(shadeIdx).toFixed(2)}" y="${PAD}"
-               width="${(W - PAD - x(shadeIdx)).toFixed(2)}" height="${H - PAD * 2}"/>`
+               width="${shadeWidth.toFixed(2)}" height="${H - PAD * 2}"/>`
         : '';
 
     const id = `spk${++sparkChartSeq}`;
@@ -475,6 +482,7 @@ const renderRigCountWorld = async () => {
         formatValue: (v) => v.toFixed(0),
         ariaLabel: `${rig.global.length}개월 글로벌 Rig 수 추이`,
         shadeFromLabel: saudiNote ? '2024-01' : null,
+        shadeSpanPoints: saudiNote ? 2 : undefined,
     });
     host.insertAdjacentHTML('beforeend', `
         <div class="rig-card">
@@ -528,6 +536,7 @@ const renderRigCountCountry = async (countryName) => {
         formatValue: (v) => v.toFixed(0),
         ariaLabel: `${series.length}개월 ${target.label} Rig 수 추이`,
         shadeFromLabel: saudiNote ? '2024-01' : null,
+        shadeSpanPoints: saudiNote ? 2 : undefined,
     });
     card.insertAdjacentHTML('beforeend', `
         <div class="rig-card">
