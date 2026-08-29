@@ -1,0 +1,56 @@
+name: Sync US Government Policy Data
+
+on:
+  schedule:
+    - cron: '17 2 * * *'
+  workflow_dispatch:
+    inputs:
+      sync_days:
+        description: 'Compatibility input; regular runs use saved API cursors and overlap windows.'
+        required: false
+        default: '7'
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  sync-government-policy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    env:
+      CONGRESS_API_KEY: ${{ secrets.CONGRESS_API_KEY }}
+      DATA_GOV_API_KEY: ${{ secrets.DATA_GOV_API_KEY }}
+      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      # The scheduled job is incremental. A four-Congress full backfill is a
+      # deliberate, resumable manual run (SYNC_MODE=bootstrap), never cron.
+      SYNC_MODE: incremental
+      # Conservative Free-plan defaults. Raise only after checking database
+      # size in Supabase Dashboard → Settings → Usage.
+      MAX_BILLS: '25'
+      MAX_FR_DOCUMENTS: '50'
+      MAX_EMBEDDINGS: '25'
+      CONGRESS_REQUEST_INTERVAL_MS: '850'
+      NODE_OPTIONS: --max-old-space-size=2048
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Validate scripts
+        run: |
+          node --check scripts/lib/sync-utils.js
+          node --check scripts/sync-congress.js
+          node --check scripts/sync-federal-register.js
+
+      - name: Sync Congress.gov bills
+        run: node scripts/sync-congress.js
+
+      - name: Sync Federal Register executive orders and regulations
+        run: node scripts/sync-federal-register.js
