@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-24T11:04:50.588763+00:00",
+  "generated_at": "2026-08-29T00:06:21.302024+00:00",
   "season": 2026,
   "country": "Brazil",
   "source_note": "Yields: IBGE SIDRA (PAM tables 1612/1613), state level. Weather: NASA POWER daily, production-weighted across each region's growing points, ET0 by FAO-56 Penman-Monteith. ENSO: NOAA CPC ONI.",
@@ -69,7 +69,7 @@
         "guide": "Regions/브라질/마투그로수/대두/대두_상세분석_및_수식.md",
         "caveat": "NDVI_Peak_Value from §3B is omitted: MODIS starts in 2000 and would cut the record from 43 seasons to 25.",
         "non_weather_drivers": "",
-        "weather_through": "2026-08-19",
+        "weather_through": "2026-08-23",
         "critical_window_observed": 1.0,
         "season_complete": true,
         "notes": []
@@ -154,7 +154,7 @@
         "guide": "Regions/브라질/마투그로수/옥수수/옥수수_상세분석_및_수식.md",
         "caveat": "Planting date is derived from the modelled soy onset plus a fixed 125-day soy cycle, not observed. SIDRA reports one combined corn figure, but in Mato Grosso safrinha is the great majority of it.",
         "non_weather_drivers": "",
-        "weather_through": "2026-08-19",
+        "weather_through": "2026-08-23",
         "critical_window_observed": 1.0,
         "season_complete": true,
         "notes": []
@@ -235,7 +235,7 @@
         "guide": "Regions/브라질/남부지방_파라나/대두/대두_상세분석_및_수식.md",
         "caveat": "",
         "non_weather_drivers": "",
-        "weather_through": "2026-08-19",
+        "weather_through": "2026-08-23",
         "critical_window_observed": 1.0,
         "season_complete": true,
         "notes": []
@@ -321,7 +321,7 @@
         "guide": "Regions/브라질/남부지방_파라나/옥수수/옥수수_상세분석_및_수식.md",
         "caveat": "The SIDRA target mixes first-season and safrinha corn, which in Paraná are both large. The guide's methodology addresses the summer crop only, so the signal is diluted by construction.",
         "non_weather_drivers": "SIDRA publishes one combined corn figure per state. In Paraná the first-season and safrinha crops are both large and their area split shifts with soybean and corn prices, so part of the year-to-year movement in this target is an acreage-mix decision rather than anything the weather did. This is not 'weather does not move corn' -- the direction is the same as soy. Detrended log yields for Paraná corn and soy correlate at +0.70 across the shared record, and corn's own weather features move it the agronomically expected way (VPD_peak -0.52, SPI3_Jan +0.42 against corn's own yield). But those same weather features correlate even more strongly with soy's yield (-0.61, +0.59) than with corn's own recorded yield -- evidence that the corn target carries real weather signal plus extra non-weather noise on top, not that weather fails to reach this crop.",
-        "weather_through": "2026-08-19",
+        "weather_through": "2026-08-23",
         "critical_window_observed": 1.0,
         "season_complete": true,
         "notes": []
@@ -394,7 +394,7 @@
         "guide": "Regions/브라질/MATOPIBA/대두/대두_상세분석_및_수식.md",
         "caveat": "CWSI is replaced by a Tmax/VPD stress proxy -- satellite canopy temperature needs a thermal-infrared feed. Sand fraction is one regional constant rather than a joined soil map, so Effective_Water_Capacity rescales rainfall uniformly here.",
         "non_weather_drivers": "",
-        "weather_through": "2026-08-19",
+        "weather_through": "2026-08-23",
         "critical_window_observed": 1.0,
         "season_complete": true,
         "notes": []
@@ -462,8 +462,8 @@
         "guide": "Regions/브라질/MATOPIBA/면화/면화_상세분석_및_수식.md",
         "caveat": "Yield only. The guide's second target -- fibre quality/Micronaire -- has no open data series, so the two-output structure collapses to one. The NDVI classifier that would date flowering is replaced by the degree-day threshold from the same guide. Training starts in 2000: the pre-2000 smallholder crop is a different system. Untested hypothesis, not a finding: this model carries no soil-moisture or root-zone water-storage feature for cotton at all -- only rainfall, heat and VPD. MATOPIBA's Cerrado soils are sandy (the soybean guide's own Effective_Water_Capacity logic assumes this, but that treatment was only applied to soy here, never to cotton), which is exactly where plant-available water can diverge sharply from rainfall received. NASA POWER's root-zone wetness parameter (GWETROOT) -- used by the earlier brazil_soy_model but never fetched by this package -- would test this at zero added cost. Satellite soil moisture or GRACE total water storage would extend it further.",
         "non_weather_drivers": "The 1999-2000 jump is a change of production system -- relocation to the Cerrado, new cultivars, scale and management -- not a good weather year. Note it is not irrigation: about 92% of Brazil's cotton area is rainfed, and Brazil leads the world in rainfed lint yield. The largest single non-weather driver inside the modern era is the boll weevil, which can take up to 70% of a crop and whose pressure depends on planting-date coordination and control programmes rather than on climate. Published work also finds MODIS NDVI adds little to upland cotton yield models over a trend baseline (Johnson, ORNL), so satellite greenness is unlikely to recover what is missing here.",
-        "weather_through": "2026-08-19",
-        "critical_window_observed": 0.921,
+        "weather_through": "2026-08-23",
+        "critical_window_observed": 0.947,
         "season_complete": false,
         "notes": []
       }
@@ -569,7 +569,7 @@
         "guide": "Regions/브라질/상파울루/사탕수수/사탕수수_상세분석_및_수식.md",
         "caveat": "Stage 1 of the guide is DSSAT-CANEGRO, which is not runnable without the simulator and its calibrated genetic coefficients. Y_sim is therefore absent and the technology trend carries the baseline instead; WS_photo is a bucket-balance surrogate. The guide's NDVI_Max is also absent (MODIS starts in 2000). This is the largest departure from any guide in the set.",
         "non_weather_drivers": "Sugarcane is a ratoon crop, replanted only every five to seven years, so much of any season's yield is the age profile of the standing crop -- how much of São Paulo's area is first-cut versus fifth-cut. That is set by replanting investment, variety turnover and mill economics, none of which appears in any weather feed. Detrended yield moves only about 3% a year across the whole record (2.7% in 1985-99, 3.1% in 2013-24). This is the published finding, not a shortcoming of this model: Dias & Sentelhas (Field Crops Research, 2017) ran all three standard simulators -- FAO-AZM, DSSAT/CANEGRO and APSIM-Sugarcane, including the CANEGRO this guide asks for -- against commercial Brazilian fields and got MAE above 29 t/ha with R2 below 0.54, attributing the failure to 'the lack of coefficients accounting for crop management'. Adding a ratoon-decline management factor (kdec) moved them to MAE 13-15 t/ha and R2 0.58-0.72. Climate alone does not forecast this crop for anyone. lag1 is carried here to represent stand persistence, but it is a proxy for management, not a climate signal. This is a different kind of perennial problem from oil palm or coffee, not the same one. Palm oil's multi-year sensitivity is a fixed physiological lag -- drought forces sex differentiation in flowers up to 24 months before the fruit they become is harvested, so a properly lagged weather index (12-24mo cumulative deficit) can recover the signal, and this is standard practice. Cane's dominant variance driver, ratoon age, has no such weather-lag mechanism at all -- it is a replanting-investment decision. This model already tried the multi-year-weather approach the guide itself asks for (12-18mo cumulative deficit, SPI-12) and weather-only skill stayed negative (-3.1%): more lag months did not help, because the missing driver was never weather-shaped to begin with.",
-        "weather_through": "2026-08-19",
+        "weather_through": "2026-08-23",
         "critical_window_observed": 1.0,
         "season_complete": true,
         "notes": [
@@ -645,7 +645,7 @@
         "guide": "Regions/브라질/상파울루/커피/커피_상세분석_및_수식.md",
         "caveat": "The guide's stratified high-/low-yield split is replaced by the autoregressive form from the same guide (§3A). With ~43 seasons, training two stratified models on ~21 rows each would fit noise.",
         "non_weather_drivers": "Biennial bearing is physiological, not meteorological: a heavy crop exhausts the tree and the next year is light regardless of weather. lag1 and lag2 carry that cycle, and they are the model's strongest features -- so much of this model's skill is biological memory, not climate. Replanting rates and the arabica/robusta area mix are also outside any weather feed. Isolating the weather features alone (holding out lag1/lag2) leaves only +1.6% skill, against +8.6% with the lags included: a real climate mechanism exists here (frost, flowering-stage water deficit -- both in the guide and both physically well documented) but at annual, state-level resolution the biennial cycle dominates the variance that mechanism produces. Adding multi-year memory to a model does not by itself guarantee weather wins that competition -- coffee is the clearest example of that in this set.",
-        "weather_through": "2026-08-19",
+        "weather_through": "2026-08-23",
         "critical_window_observed": 1.0,
         "season_complete": true,
         "notes": [
@@ -734,7 +734,7 @@
         "guide": "Regions/브라질/상파울루/오렌지_설탕/오렌지_설탕_상세분석.md",
         "caveat": "Yield per hectare only. The guide's actual subject -- HLB incidence and its spatial spread -- needs orchard imagery that no open feed provides, so none of its modelling is implemented here. Trained from 2001 because of the IBGE unit change.",
         "non_weather_drivers": "The guide opens by saying this market is being destroyed 'not by climate' but by citrus greening (Huanglongbing), and prescribes drone CNN detection and a spatio-temporal contagion model -- neither of which is a weather model. The data agree, and in a way that matters for how this number is read: HLB kills trees, not yield per hectare. São Paulo's orange area has fallen 55% from its 1991 peak (789,329 to 354,562 ha) while yield on the surviving area ROSE 35% since 2005, because growers eradicate infected trees and what remains is younger and better managed. A kg/ha forecast for oranges therefore shows a healthy rising crop while the industry contracts. Read it alongside planted area, never alone.",
-        "weather_through": "2026-08-19",
+        "weather_through": "2026-08-23",
         "critical_window_observed": 1.0,
         "season_complete": true,
         "notes": [
