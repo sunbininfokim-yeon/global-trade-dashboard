@@ -346,26 +346,6 @@
         macroData["NAT_GAS"] = { value: "N/A", date: "N/A" };
     }
 
-    // 1. Fetch real-time weather from Open-Meteo
-    const regions = [
-        { name: "Mato Grosso (Brazil)", lat: -12.68, lon: -56.92 },
-        { name: "Iowa (USA)", lat: 41.87, lon: -93.09 }
-    ];
-    
-    let weatherMap = {};
-    try {
-        const fetchPromises = regions.map(async (r) => {
-            const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${r.lat}&longitude=${r.lon}&current_weather=true`);
-            const data = await res.json();
-            return { name: r.name, weather: data.current_weather };
-        });
-        const results = await Promise.all(fetchPromises);
-        results.forEach(res => {
-            weatherMap[res.name] = res.weather;
-        });
-    } catch (e) {
-        console.error("Open-Meteo API Fetch Error:", e);
-    }
     
     window.MacroData = macroData;
     if (window.initApp) window.initApp();
@@ -1136,20 +1116,32 @@
     console.log('[data.js] TradeData and CountriesData set successfully.');
 
     // Now try to enhance data with live API calls (non-blocking)
+    // 1. Weather for the two forecast panels comes from the weekly
+    //    producing-region snapshot (scripts/build_city_wx.py -> city_wx_v1.json),
+    //    not a live Open-Meteo call. It used to hit api.open-meteo.com directly
+    //    on every page load -- two requests per visitor, discarded on the next
+    //    load, for a number the model doesn't otherwise recompute more than
+    //    weekly. city_wx_v1.json already refreshes every Saturday and already
+    //    carries these two regions (climate_global_v1.json cities list), so
+    //    reading it here is a same-origin JSON fetch instead of a third-party
+    //    API call, and the anomaly-vs-normal framing is more informative than
+    //    a bare temperature anyway.
     try {
-        // 4. Inject real-time weather into forecast
-        if (weatherMap["Mato Grosso (Brazil)"]) {
-            const w = weatherMap["Mato Grosso (Brazil)"];
-            forecastData["Mato Grosso (Brazil)"].climate_status = `실시간 날씨: 🌡️ ${w.temperature}°C, 🌬️ ${w.windspeed}km/h (기후 API 연동 중)`;
-            forecastData["Mato Grosso (Brazil)"].last_updated = new Date().toISOString();
-        }
-        if (weatherMap["Iowa (USA)"]) {
-            const w = weatherMap["Iowa (USA)"];
-            forecastData["Iowa (USA)"].climate_status = `실시간 날씨: 🌡️ ${w.temperature}°C, 🌬️ ${w.windspeed}km/h (기후 API 연동 중)`;
-            forecastData["Iowa (USA)"].last_updated = new Date().toISOString();
-        }
-    } catch(e) {
-        console.warn('[data.js] Weather injection skipped:', e.message);
+        const wxRes = await fetch('/public/data/city_wx_v1.json', { cache: 'no-cache' });
+        const wxDoc = wxRes.ok ? await wxRes.json() : null;
+        const wxByName = {};
+        (wxDoc?.cities || []).forEach(c => { wxByName[c.name] = c; });
+
+        ["Mato Grosso (Brazil)", "Iowa (USA)"].forEach(name => {
+            const w = wxByName[name];
+            if (!w || !forecastData[name]) return;
+            const anom = w.temp_anom_c != null ? `${w.temp_anom_c >= 0 ? '+' : ''}${w.temp_anom_c}` : '—';
+            forecastData[name].climate_status =
+                `최근 30일 평균: 🌡️ ${w.temp_c}°C (평년 대비 ${anom}) · 강수 ${w.precip_mm}mm (${wxDoc.normal || '평년 대비'})`;
+            forecastData[name].last_updated = wxDoc.generated_at || new Date().toISOString();
+        });
+    } catch (e) {
+        console.warn('[data.js] city_wx_v1 weather injection skipped:', e.message);
     }
 
     // 3. UN Comtrade Data for Coal (HS 2701) is lazy-loaded on demand via
