@@ -14,9 +14,7 @@
       "endpoint": "https://api.bls.gov/publicAPI/v2/timeseries/data/",
       "series": {
         "cpi_airline_fares_sa": "CUSR0000SETG01",
-        "cpi_food_at_home_sa": "CUSR0000SAF11",
-        "ppi_food_manufacturing_nsa": "PCU311311",
-        "ppi_truck_transport_nsa": "PCU484484"
+        "cpi_food_at_home_sa": "CUSR0000SAF11"
       }
     },
     "eia": {
@@ -29,7 +27,9 @@
     "fred": {
       "endpoint": "https://api.stlouisfed.org/fred/series/observations",
       "series": {
-        "industrial_production_sa": "INDPRO"
+        "industrial_production_sa": "INDPRO",
+        "ppi_food_manufacturing_nsa": "PCU311311",
+        "ppi_truck_transport_nsa": "PCU484484"
       }
     }
   },
@@ -58,7 +58,7 @@
   "activation_policy": {
     "status": "not_activated_by_design",
     "requirements_before_any_promotion": [
-      "archival release-vintage input histories and release-calendar availability audit",
+        "archival release-vintage input histories and release-calendar availability audit",
       "pre-specified out-of-sample improvement versus autoregressive benchmark",
       "family-wise / false-discovery controlled conditional-predictive test",
       "coefficient direction stability outside COVID-era sensitivity windows",

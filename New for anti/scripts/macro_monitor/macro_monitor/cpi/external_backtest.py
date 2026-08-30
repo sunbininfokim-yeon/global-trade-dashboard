@@ -398,9 +398,7 @@ def run_relationship(
         },
         "stationarity": {"target": _stationarity(list(y)), **{name: _stationarity([values[month] for month in months if month in values]) for name, values in inputs.items()}},
         "conditional_predictive_test": conditional_test,
-        "hac_coefficients": coefficient_rows,
         "lowest_hac_pvalue_lag_exploratory": best_lag,
-        "single_lag_out_of_sample_exploratory": single_lag_oos,
         "best_lag_out_of_sample_exploratory": best_oos_lag,
         "out_of_sample": oos,
         "limitations": [
@@ -445,7 +443,11 @@ def build_snapshot(
         "sources": {
             "bls": {"publisher": "U.S. Bureau of Labor Statistics", "series": source_spec["bls"]["series"]},
             "eia": {"publisher": "U.S. Energy Information Administration", "series": source_spec["eia"]["series"]},
-            "fred": {"publisher": "Federal Reserve Bank of St. Louis", "series": source_spec["fred"]["series"]},
+            "fred": {
+                "publisher": "Federal Reserve Bank of St. Louis",
+                "series": source_spec["fred"]["series"],
+                "provenance_note": "PCU311311 and PCU484484 are BLS PPI industry series retrieved through FRED because the BLS Public Data API rejected those configured identifiers on the first live run.",
+            },
         },
         "relationships": rows,
         "activation_policy": config["activation_policy"],
