@@ -43,6 +43,16 @@
       "availability_rule": "Both CPI components release together. Lag 0 is excluded from forecasting tests because it is not known before the target release."
     },
     {
+      "id": "vehicle_parts_to_maintenance",
+      "relationship_map_id": "vehicle_parts_to_repair",
+      "source": "motor_vehicle_parts",
+      "target": "motor_vehicle_maintenance",
+      "controls": ["new_vehicles", "used_cars_and_trucks", "motor_fuel"],
+      "lag_grid_months": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+      "classification": "existing_cost_pass_through_candidate",
+      "availability_rule": "Both CPI components release together. Lag 0 is excluded from forecasting tests because it is not known before the target release."
+    },
+    {
       "id": "maintenance_to_auto_insurance",
       "relationship_map_id": "auto_cost_to_insurance",
       "source": "motor_vehicle_maintenance",
