@@ -26,12 +26,17 @@ TARGET_IDS = ("sovereign_debt", "sovereign_interest")
 
 
 def _axis_from_country(indicators: list[dict]) -> list[str] | None:
+    # Take the longest available window (typically 10y/120mo), not just the
+    # first one >=24 months -- grabbing e.g. a 5y/60mo window here would
+    # silently cap every fiscal history at 5 years, with the "10년" UI
+    # toggle showing the same truncated range as "5년".
+    best: list[str] | None = None
     for ind in indicators:
         for hist in (ind.get("history") or {}).values():
             dates = hist.get("dates") or []
-            if len(dates) >= 24:
-                return list(dates)
-    return None
+            if len(dates) >= 24 and (best is None or len(dates) > len(best)):
+                best = list(dates)
+    return best
 
 
 def main() -> int:
