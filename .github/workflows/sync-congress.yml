@@ -52,8 +52,8 @@ jobs:
       SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
       SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
       OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-      # Scheduled work only tracks current changes. Historical backfills are
-      # manual, resumable, and separated from daily production polling.
+      # Scheduled work tracks changes, and automatically continues an already
+      # started bootstrap cursor until it is complete.
       SYNC_MODE: ${{ inputs.congress_mode || 'incremental' }}
       PUBLIC_LAW_MODE: ${{ inputs.public_law_mode || 'incremental' }}
       MAX_BILLS: ${{ inputs.max_bills || '100' }}

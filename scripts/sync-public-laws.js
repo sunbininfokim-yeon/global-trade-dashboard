@@ -13,7 +13,6 @@ const API_KEY = process.env.DATA_GOV_API_KEY;
 const RESOURCE = 'govinfo:public-laws';
 const MAX_PUBLIC_LAWS = Number(process.env.MAX_PUBLIC_LAWS || 100);
 const PAGE_SIZE = Math.min(100, Number(process.env.PUBLIC_LAW_DISCOVERY_PAGE_SIZE || 100));
-const BOOTSTRAP = process.env.PUBLIC_LAW_MODE === 'bootstrap';
 // Public Law metadata is compact (no PDF/body storage), so the default covers
 // the complete Congress.gov/GovInfo historical series rather than only recent law.
 const START_CONGRESS = Number(process.env.PUBLIC_LAW_START_CONGRESS || 1);
@@ -36,20 +35,24 @@ async function get(path, options = {}) {
 async function loadState() {
   return (await supabaseGet('data_sync_state', { select: 'cursor,last_successful_at', sync_resource: `eq.${RESOURCE}`, limit: '1' }))?.[0] || null;
 }
-async function searchPage(state) {
+function shouldBootstrap(state) {
+  return process.env.PUBLIC_LAW_MODE === 'bootstrap'
+    || (state?.cursor?.mode === 'bootstrap' && !state.cursor.complete);
+}
+async function searchPage(state, bootstrap) {
   const cursor = state?.cursor || {};
   const body = {
-    query: 'collection:(PLAW)', pageSize: String(PAGE_SIZE), offsetMark: BOOTSTRAP ? (cursor.offset_mark || '*') : '*',
-    sorts: [{ field: BOOTSTRAP ? 'publishdate' : 'lastModified', sortOrder: 'DESC' }],
+    query: 'collection:(PLAW)', pageSize: String(PAGE_SIZE), offsetMark: bootstrap ? (cursor.offset_mark || '*') : '*',
+    sorts: [{ field: bootstrap ? 'publishdate' : 'lastModified', sortOrder: 'DESC' }],
   };
-  if (!BOOTSTRAP && state?.last_successful_at) body.modifiedSince = state.last_successful_at.replace(/\.\d{3}Z$/, 'Z');
+  if (!bootstrap && state?.last_successful_at) body.modifiedSince = state.last_successful_at.replace(/\.\d{3}Z$/, 'Z');
   const response = await get('/search', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) });
   const results = asArray(response?.results).filter((row) => {
     const id = publicLawIdentity(row.packageId);
     return id && id.congress >= START_CONGRESS;
   });
   const nextOffsetMark = response?.offsetMark || cursor.offset_mark || '*';
-  const nextCursor = BOOTSTRAP
+  const nextCursor = bootstrap
     ? { mode: 'bootstrap', offset_mark: nextOffsetMark, complete: !results.length || nextOffsetMark === cursor.offset_mark }
     : { mode: 'incremental', completed_at: new Date().toISOString() };
   return { results, cursor: nextCursor };
@@ -140,10 +143,11 @@ async function savePackage(entry) {
 }
 async function run() {
   const state = await loadState();
-  const runId = await startSyncRun(RESOURCE, { mode: BOOTSTRAP ? 'bootstrap' : 'incremental', max_public_laws: MAX_PUBLIC_LAWS, start_congress: START_CONGRESS });
+  const bootstrap = shouldBootstrap(state);
+  const runId = await startSyncRun(RESOURCE, { mode: bootstrap ? 'bootstrap' : 'incremental', max_public_laws: MAX_PUBLIC_LAWS, start_congress: START_CONGRESS });
   let read = 0; let written = 0;
   try {
-    const discovered = await searchPage(state);
+    const discovered = await searchPage(state, bootstrap);
     const staged = await stage(discovered.results);
     await checkpointSyncState(RESOURCE, discovered.cursor);
     const queued = await takePolicyQueue(RESOURCE, MAX_PUBLIC_LAWS); read = queued.length;

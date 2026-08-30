@@ -37,8 +37,10 @@ async function fetchJson(url, options = {}, config = {}) {
       if (response.status === 204) return null;
       return (response.headers.get('content-type') || '').includes('json') ? response.json() : response.text();
     }
-    if (!RETRYABLE_STATUS.has(response.status) || attempt === maxRetries) {
-      const body = await response.text().catch(() => '');
+    const body = await response.text().catch(() => '');
+    // A billing/quota response cannot recover through a retry. Fail it at once
+    // so the caller can skip optional embeddings without wasting an Actions run.
+    if (!RETRYABLE_STATUS.has(response.status) || attempt === maxRetries || config.nonRetryableErrorPattern?.test(body)) {
       throw new Error(`${label}: HTTP ${response.status}${body ? ` ${body.slice(0, 300)}` : ''}`);
     }
     await sleep(retryAfterMs(response, attempt));
@@ -157,7 +159,7 @@ async function openAiEmbeddings(inputs, apiKey, model = process.env.OPENAI_EMBED
     method: 'POST',
     headers: { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
     body: JSON.stringify({ model, input: inputs }),
-  }, { label: 'OpenAI embeddings' });
+  }, { label: 'OpenAI embeddings', nonRetryableErrorPattern: /credit_balance_exhausted|insufficient_quota/i });
   return body.data.sort((a, b) => a.index - b.index).map((item) => item.embedding);
 }
 

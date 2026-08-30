@@ -348,7 +348,7 @@ HNSW를 초기 전략으로 사용한다. 연간 신규 법안 약 1만 건과 E
 - 현재 회기의 모든 발의안은 `detail_level = index`의 가벼운 색인(제목·발의일·최신 상태·요약·공식 링크)으로 수집한다.
 - 상임위 보고/통과(`reported`)부터 `tracked`, 본회의 통과 이후는 `enriched`다. 이 두 단계에서만 actions, 표결, 관련 법안, 법안 전문 링크 메타데이터를 상세 수집하고 임베딩 후보가 된다.
 - 발견 결과는 먼저 `policy_ingestion_queue`에 쌓는다. 한 실행의 `MAX_BILLS`를 넘는 법안은 실패하거나 버려지지 않고 다음 실행에서 이어서 처리한다.
-- bootstrap cursor는 `data_sync_state.cursor`에 Congress 번호·페이지 offset을 저장한다. 실패해도 큐에서 성공 처리한 행은 다시 처리하지 않는다.
+- bootstrap cursor는 `data_sync_state.cursor`에 Congress 번호·페이지 offset을 저장한다. 한 번 `SYNC_MODE=bootstrap`으로 시작하면, 이후 일일 실행도 cursor가 완료될 때까지 자동으로 다음 페이지를 이어받는다. 실패해도 큐에서 성공 처리한 행은 다시 처리하지 않는다.
 - incremental은 `fromDateTime` 변경분을 발견해 큐에 추가한다. 큐가 실제 저장 완료를 보장하므로, 실행 중 실패해도 처음부터 다시 시작하지 않는다.
 - 현재 상태가 바뀌었을 때만 `bill_status_history`에 추가한다.
 - API 최대 페이지 크기는 250을 사용한다.
@@ -367,7 +367,7 @@ HNSW를 초기 전략으로 사용한다. 연간 신규 법안 약 1만 건과 E
 ### Public Law와 U.S. Code 참조
 
 - GovInfo Public Law 수집은 `DATA_GOV_API_KEY`를 사용한다. 이용 가능한 전체 Public Law 기록을 메타데이터·공식 링크·Statutes at Large 인용만으로 백필할 수 있다.
-- Public Law 백필도 `policy_ingestion_queue`를 사용하며, 기본 실행당 `MAX_PUBLIC_LAWS=50`개까지만 상세 처리한다. 나머지는 다음 실행으로 이어진다.
+- Public Law 백필도 `policy_ingestion_queue`를 사용하며, 기본 실행당 `MAX_PUBLIC_LAWS=50`개까지만 상세 처리한다. 한 번 bootstrap을 시작하면 이후 일일 실행이 다음 검색 페이지와 남은 큐를 이어서 처리한다.
 - U.S. Code 동기화는 본문 수집이 아니라 U.S. House Office of the Law Revision Counsel의 공식 다운로드 페이지에서 현재 release point만 갱신한다. 54개 Title의 정적 이름 시드는 DB에 이미 있다.
 - U.S. Code 조문 연결은 GovInfo Public Law summary의 공식 references가 있는 경우에만 만들어진다. `classification_status = pending`은 아직 공식 분류가 나타나지 않았거나 반영 시차가 있다는 뜻이다.
 
