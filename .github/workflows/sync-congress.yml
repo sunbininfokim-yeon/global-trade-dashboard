@@ -27,6 +27,11 @@ on:
         required: false
         default: '50'
         type: string
+      max_fr_documents:
+        description: 'Maximum queued Federal Register EO/regulation documents to process in this run.'
+        required: false
+        default: '50'
+        type: string
 
 permissions:
   contents: read
@@ -53,7 +58,7 @@ jobs:
       PUBLIC_LAW_MODE: ${{ inputs.public_law_mode || 'incremental' }}
       MAX_BILLS: ${{ inputs.max_bills || '100' }}
       MAX_PUBLIC_LAWS: ${{ inputs.max_public_laws || '50' }}
-      MAX_FR_DOCUMENTS: '150'
+      MAX_FR_DOCUMENTS: ${{ inputs.max_fr_documents || '50' }}
       MAX_EMBEDDINGS: '25'
       CONGRESS_REQUEST_INTERVAL_MS: '850'
       NODE_OPTIONS: --max-old-space-size=2048

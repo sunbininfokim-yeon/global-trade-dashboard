@@ -393,11 +393,12 @@ node scripts/sync-us-code.js
 
 ### Supabase Free Plan 안전 기본값
 
-Free Plan의 데이터베이스 한도는 프로젝트당 500MB이며, 이 한도를 넘으면 읽기 전용이 될 수 있다. 따라서 기본 GitHub Actions 설정은 `MAX_BILLS=100`, `MAX_PUBLIC_LAWS=50`, `MAX_FR_DOCUMENTS=150`, `MAX_EMBEDDINGS=25`이다. 이 값은 한 실행의 처리량일 뿐 일일 전체 보관 한도가 아니다. 큐가 남은 작업을 다음 실행으로 넘긴다.
+Free Plan의 데이터베이스 한도는 프로젝트당 500MB이며, 이 한도를 넘으면 읽기 전용이 될 수 있다. 따라서 기본 GitHub Actions 설정은 `MAX_BILLS=100`, `MAX_PUBLIC_LAWS=50`, `MAX_FR_DOCUMENTS=50`, `MAX_EMBEDDINGS=25`이다. 이 값은 한 실행의 처리량일 뿐 일일 전체 보관 한도가 아니다. 남은 Federal Register 문서와 법안·Public Law 큐는 다음 실행으로 넘긴다.
 
 - 법안·action의 `raw_source`에는 원본 응답 전문이 아니라 추적 가능한 API URL·갱신시각 등 최소 메타데이터만 저장한다.
 - bootstrap은 `MAX_BILLS=25`부터 시작하고, 각 배치 뒤 Supabase Dashboard의 **Settings → Usage**에서 DB 크기를 확인한다.
 - 119대의 `index` 법안은 임베딩하지 않는다. `tracked`/`enriched` 법안과 EO·규제 중 최근 변경된 최대 25개에만 1,536차원 벡터를 생성한다.
+- `OPENAI_API_KEY`의 API 잔액이 없거나 키가 없을 때도 공식 데이터 적재는 성공해야 한다. 이 경우 임베딩만 건너뛰며, 잔액을 충전한 뒤 별도 임베딩 재처리 실행을 할 수 있다.
 - 데이터베이스가 400MB에 근접하면 bootstrap을 멈추고, 오래된 warm/cold 데이터·전수 임베딩 확대 여부를 재검토한다. 전문 파일과 PDF는 저장하지 않는다.
 
 Supabase는 Free 프로젝트를 저활동 상태에서 일시 중지할 수 있다. 매일 동기화가 성공하면 데이터베이스 활동도 생기지만, 실패가 지속될 때는 대시보드 이메일을 확인한다. [Supabase Free 요금/한도](https://supabase.com/pricing), [DB 크기 동작](https://supabase.com/docs/guides/platform/database-size), [무료 프로젝트 일시 중지](https://supabase.com/docs/guides/platform/free-project-pausing)를 기준으로 운영한다.
