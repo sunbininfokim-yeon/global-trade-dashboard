@@ -17,7 +17,6 @@ const CONCURRENCY = Number(process.env.DETAIL_CONCURRENCY || 2);
 const REQUEST_INTERVAL_MS = Number(process.env.CONGRESS_REQUEST_INTERVAL_MS || 850);
 const SKIP_EMBEDDINGS = process.env.SKIP_EMBEDDINGS === 'true';
 const MAX_EMBEDDINGS = Number(process.env.MAX_EMBEDDINGS || 25);
-const BOOTSTRAP = process.env.SYNC_MODE === 'bootstrap';
 const DISCOVERY_PAGE_SIZE = Math.min(250, Number(process.env.DISCOVERY_PAGE_SIZE || 250));
 
 if (!API_KEY) throw new Error('Missing CONGRESS_API_KEY (DATA_GOV_API_KEY may be used as fallback).');
@@ -115,11 +114,18 @@ function initialWindow(state) {
   return congressDateTime(last - 36 * 3_600_000); // overlap prevents boundary misses
 }
 
-async function candidates(congresses, state) {
+function shouldBootstrap(state) {
+  // Daily runs automatically continue a deliberately-started bootstrap until
+  // the stored cursor is complete. This is what makes backfill truly resumable.
+  return process.env.SYNC_MODE === 'bootstrap'
+    || (state?.cursor?.mode === 'bootstrap' && !state.cursor.complete);
+}
+
+async function candidates(congresses, state, bootstrap) {
   const cursor = state?.cursor || {};
-  if (BOOTSTRAP) {
-    const congressIndex = Number(cursor.page_congress_index ?? 0);
-    const offset = Number(cursor.page_offset ?? 0);
+  if (bootstrap) {
+    const congressIndex = Number(cursor.next_congress_index ?? cursor.page_congress_index ?? 0);
+    const offset = Number(cursor.next_offset ?? cursor.page_offset ?? 0);
     const congress = congresses[congressIndex];
     if (!congress) return { refs: [], cursor: { mode: 'bootstrap', congresses, complete: true }, checkpointCursor: null };
     const body = await apiGet(`/bill/${congress}`, { limit: DISCOVERY_PAGE_SIZE, offset });
@@ -358,10 +364,11 @@ async function embed(items) {
 
 async function run() {
   const state = await loadState(); const active = await activeCongress(); const congresses = lastFour(active);
-  const runId = await startSyncRun(RESOURCE, { congresses, mode: BOOTSTRAP ? 'bootstrap' : 'incremental', max_bills: MAX_BILLS });
+  const bootstrap = shouldBootstrap(state);
+  const runId = await startSyncRun(RESOURCE, { congresses, mode: bootstrap ? 'bootstrap' : 'incremental', max_bills: MAX_BILLS });
   let read = 0; let written = 0;
   try {
-    const next = await candidates(congresses, state);
+    const next = await candidates(congresses, state, bootstrap);
     const staged = await stageCandidates(next.refs);
     await checkpointSyncState(RESOURCE, next.cursor);
     const queued = await takePolicyQueue(RESOURCE, MAX_BILLS);
