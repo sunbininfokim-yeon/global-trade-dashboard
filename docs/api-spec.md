@@ -1,6 +1,6 @@
 # Phase 2-1 미국 정책 데이터 계약
 
-이 문서는 미국 정책 화면을 구현하는 프론트엔드와 데이터 동기화 코드가 공유하는 계약이다. 현재 실제 수집 범위는 Congress.gov와 Federal Register이며 검색 입력창은 노출하지 않는다.
+이 문서는 미국 정책 화면을 구현하는 프론트엔드와 데이터 동기화 코드가 공유하는 계약이다. 실제 수집 범위는 Congress.gov, Federal Register, GovInfo의 Public Law 메타데이터와 U.S. Code 공식 릴리스 지점이다. 검색 입력창은 노출하지 않는다.
 
 ## 1. 확정된 화면 흐름
 
@@ -45,7 +45,7 @@ Congress.gov와 Federal Register 응답을 그대로 한 컬럼에만 저장하�
 Hot/Warm/Cold는 전문 파일의 저장 계층이 아니라 **동기화 우선순위와 데이터 수명주기**다. 전문은 어느 tier에서도 저장하지 않는다. tier는 최상위 문서인 `bills`, `executive_orders`, `regulations`에만 저장하며, summary·action·표결·공식 링크 같은 하위 데이터는 상위 문서의 tier를 따른다. 이렇게 해야 동일 법안의 하위 행들이 서로 다른 tier가 되는 불일치를 막을 수 있다.
 
 - `hot`: 진행 중 법안 또는 최근 30일 안에 변경된 EO·규제. 매일 상세 동기화한다.
-- `warm`: 최근 4개 Congress에 속하지만 hot이 아닌 법안, 또는 최근 8년 안의 EO·규제. 공식 변경분이 감지됐을 때만 상세 동기화한다.
+- `warm`: 현재 회기에 속하지만 hot이 아닌 법안, 또는 최근 8년 안의 EO·규제. 공식 변경분이 감지됐을 때만 상세 동기화한다.
 - `cold`: 그보다 오래된 종료·역사 데이터. 매일 상세 폴링하지 않고 월간 재조정 또는 공식 변경 감지 때만 다시 동기화한다.
 
 동기화 스크립트는 실행 후 `refresh_policy_lifecycle_tiers(active_congress_number)`를 호출해 tier를 갱신하고 `last_synced_at`을 기록한다. cold 데이터는 기본 목록 화면에서 제외할 수 있지만, 역사 필터나 직접 링크로는 계속 조회 가능하다. HNSW 임베딩 인덱스에서도 제외하지 않는다.
@@ -60,7 +60,14 @@ Hot/Warm/Cold는 전문 파일의 저장 계층이 아니라 **동기화 우선�
 
 UI에서도 **공식 관련 법안**과 **유사 법안**을 별도 구역에 표시해야 한다. AI가 만든 관계를 공식 관계처럼 표시하면 안 된다.
 
-EO의 법적 근거는 법안으로 한정되지 않는다. 헌법, U.S.C., Public Law, Statutes at Large, 과거 EO 등이 될 수 있다. 이번 단계에서는 공식 citation과 공식 URL만 `legal_authorities`에 저장하며, U.S. Code Title·Section 상세 연결은 향후 별도 승인 범위다. 근거를 찾지 못했을 때 추정하지 않는다.
+EO의 법적 근거는 법안으로 한정되지 않는다. 헌법, U.S.C., Public Law, Statutes at Large, 과거 EO 등이 될 수 있다. EO의 근거는 `legal_authorities`에 공식 citation과 URL만 저장하며, 근거를 찾지 못했을 때 추정하지 않는다.
+
+### Public Law와 U.S. Code
+
+- 대통령이 서명한 일반 법률은 `public_laws`에 Public Law 번호, 제정일, Statutes at Large 인용, GovInfo 공식 링크로 보존한다. PDF·본문은 저장하지 않는다.
+- U.S. Code는 현행 일반·영구 법률을 제목별로 편집한 법전이다. 모든 Public Law가 U.S. Code에 편입되는 것은 아니다.
+- `public_law_code_impacts`는 GovInfo가 제공한 공식 U.S. Code 참고문헌만 기록한다. 법률이 어느 조문을 바꿨는지 AI가 추론하지 않는다.
+- `us_code_titles`는 54개 Title의 가벼운 지도이며, `us_code_sections`도 제목·조문 번호·공식 링크만 담는다. U.S. Code 본문은 저장하지 않는다.
 
 ### 분류 개수
 
@@ -78,10 +85,14 @@ EO의 법적 근거는 법안으로 한정되지 않는다. 헌법, U.S.C., Publ
 | 공통 | `cfr_titles` | 고정 참조 CFR Title 1–50 |
 | 운영 | `data_sync_state` | 증분 동기화 cursor와 마지막 성공 시각 |
 | 운영 | `data_sync_runs` | 동기화 실행 이력·오류·처리량 |
+| 운영 | `policy_ingestion_queue` | 발견과 실제 상세 적재를 분리하는 재개 가능 큐 |
 | 의회 | `committees` | 하원·상원·합동·소위원회 |
 | 의회 | `committee_agency_jurisdictions` | 상임위와 담당/감독 기관의 검증된 다대다 매핑 |
 | 의회 | `bills` | 법안 기본정보와 현재 단계 |
 | 의회 | `public_laws` | 제정된 법률과 원 법안 연결 |
+| 법전 | `us_code_titles` | U.S. Code Title 1–54의 가벼운 공식 참조 지도 |
+| 법전 | `us_code_sections` | Public Law 공식 참조에서 확인된 조문 번호·공식 링크 |
+| 법전 | `public_law_code_impacts` | Public Law와 공식 U.S. Code 참고문헌의 연결 |
 | 의회 | `bill_summaries` | Congress.gov의 공식 summary 이력 |
 | 의회 | `bill_text_versions` | 전문 파일이 아닌 공식 링크 |
 | 의회 | `bill_actions` | 공식 action 타임라인 |
@@ -137,6 +148,10 @@ Congress.gov action code와 문구를 근거로 정규화하되, 원문은 항�
 - `GET /api/us/congress/bills?committee_id=...&stage=...&cursor=...`
 - `GET /api/us/congress/bills?policy_area_id=...&stage=...&cursor=...`
 - `GET /api/us/congress/bills/:bill_id`
+- `GET /api/us/law/public-laws?congress_number=119&cursor=...`
+- `GET /api/us/law/public-laws/:public_law_id`
+- `GET /api/us/law/us-code/titles`
+- `GET /api/us/law/us-code/sections?title_number=19&cursor=...`
 
 상임위 카드의 담당 부처명은 `committee_agency_jurisdictions → agencies` 조인 결과다. 공식 또는 검증된 수동 매핑만 표시한다.
 
@@ -223,6 +238,7 @@ Congress.gov action code와 문구를 근거로 정규화하되, 원문은 항�
   "introduced_date": "2026-03-04",
   "current_stage": "passed_origin_chamber",
   "current_status": "Passed House",
+  "detail_level": "enriched",
   "summary": {
     "text": "Official Congress.gov summary text.",
     "source": "Congress.gov",
@@ -328,11 +344,12 @@ HNSW를 초기 전략으로 사용한다. 연간 신규 법안 약 1만 건과 E
 
 ### Congress.gov
 
-- 수집 범위는 **활성 Congress를 포함한 최근 4개 Congress**로 고정한다. 더 오래된 Congress는 이번 파이프라인에서 수집하지 않는다.
-- 일반 실행은 네 Congress 각각에 `fromDateTime` 변경분을 요청한다. 최초 적재는 `SYNC_MODE=bootstrap`으로 네 Congress를 한 페이지씩 순회한다.
-- bootstrap 커서는 `data_sync_state.cursor`에 Congress 번호·페이지 offset·완료 bill ID를 저장한다. 실행이 실패하면 이미 완료한 법안은 건너뛰고 같은 페이지부터 재개한다.
-- incremental 실행도 처리한 bill ID와 겹침 시작 시각을 체크포인트로 저장한다. 실패한 실행은 같은 변경분 창에서 재개하고, 성공한 뒤에만 다음 창으로 넘어간다.
-- 변경된 법안에 대해서만 상세, actions, committees, subjects, summaries, text-link metadata, related bills를 갱신한다.
+- 수집 범위는 **현재 119대 Congress**다. 과거 4개 회기의 실패·계류 법안 전체를 적재하지 않는다. 필요하면 `CONGRESS_NUMBERS`를 명시한 일회성 실행으로만 확장한다.
+- 현재 회기의 모든 발의안은 `detail_level = index`의 가벼운 색인(제목·발의일·최신 상태·요약·공식 링크)으로 수집한다.
+- 상임위 보고/통과(`reported`)부터 `tracked`, 본회의 통과 이후는 `enriched`다. 이 두 단계에서만 actions, 표결, 관련 법안, 법안 전문 링크 메타데이터를 상세 수집하고 임베딩 후보가 된다.
+- 발견 결과는 먼저 `policy_ingestion_queue`에 쌓는다. 한 실행의 `MAX_BILLS`를 넘는 법안은 실패하거나 버려지지 않고 다음 실행에서 이어서 처리한다.
+- bootstrap cursor는 `data_sync_state.cursor`에 Congress 번호·페이지 offset을 저장한다. 실패해도 큐에서 성공 처리한 행은 다시 처리하지 않는다.
+- incremental은 `fromDateTime` 변경분을 발견해 큐에 추가한다. 큐가 실제 저장 완료를 보장하므로, 실행 중 실패해도 처음부터 다시 시작하지 않는다.
 - 현재 상태가 바뀌었을 때만 `bill_status_history`에 추가한다.
 - API 최대 페이지 크기는 250을 사용한다.
 - 429/5xx는 지수 백오프 + jitter로 재시도하고 `Retry-After`가 있으면 우선한다.
@@ -347,6 +364,13 @@ HNSW를 초기 전략으로 사용한다. 연간 신규 법안 약 1만 건과 E
 - 각 소스 동기화가 성공하면 `refresh_policy_lifecycle_tiers(active_congress_number)` RPC를 호출한다.
 - `cfr_titles`는 초기 SQL의 고정 참조 시드다. eCFR API를 호출하는 동기화 작업은 이번 범위에 없다.
 
+### Public Law와 U.S. Code 참조
+
+- GovInfo Public Law 수집은 `DATA_GOV_API_KEY`를 사용한다. 이용 가능한 전체 Public Law 기록을 메타데이터·공식 링크·Statutes at Large 인용만으로 백필할 수 있다.
+- Public Law 백필도 `policy_ingestion_queue`를 사용하며, 기본 실행당 `MAX_PUBLIC_LAWS=50`개까지만 상세 처리한다. 나머지는 다음 실행으로 이어진다.
+- U.S. Code 동기화는 본문 수집이 아니라 U.S. House Office of the Law Revision Counsel의 공식 다운로드 페이지에서 현재 release point만 갱신한다. 54개 Title의 정적 이름 시드는 DB에 이미 있다.
+- U.S. Code 조문 연결은 GovInfo Public Law summary의 공식 references가 있는 경우에만 만들어진다. `classification_status = pending`은 아직 공식 분류가 나타나지 않았거나 반영 시차가 있다는 뜻이다.
+
 ### 로컬 첫 적재 순서
 
 환경변수는 로컬 셸 또는 GitHub Actions Secrets로만 제공한다. 키를 소스 파일이나 `.env` 커밋에 넣지 않는다.
@@ -356,20 +380,24 @@ HNSW를 초기 전략으로 사용한다. 연간 신규 법안 약 1만 건과 E
 MAX_BILLS=10 MAX_FR_DOCUMENTS=10 node scripts/sync-congress.js
 MAX_BILLS=10 MAX_FR_DOCUMENTS=10 node scripts/sync-federal-register.js
 
-# 2) 최근 4개 Congress 전체 백필: 한 번 실행할 때 한 페이지(최대 MAX_BILLS)만 처리.
-#    "complete: true"가 data_sync_state.cursor에 나타날 때까지 재실행한다.
+# 2) 현재 119대 발의안 색인 백필. 발견과 적재가 큐로 분리되어
+#    한 번 실행에 처리하지 못한 나머지는 다음 실행에 이어진다.
 SYNC_MODE=bootstrap MAX_BILLS=25 node scripts/sync-congress.js
+
+# 3) Public Law 메타데이터 백필과 U.S. Code release point 갱신
+PUBLIC_LAW_MODE=bootstrap MAX_PUBLIC_LAWS=50 node scripts/sync-public-laws.js
+node scripts/sync-us-code.js
 ```
 
 기본 임베딩 모델은 `text-embedding-3-small`이며, 제목과 공식 summary/abstract만 임베딩한다. `SKIP_EMBEDDINGS=true`는 연결 테스트에만 사용한다.
 
 ### Supabase Free Plan 안전 기본값
 
-Free Plan의 데이터베이스 한도는 프로젝트당 500MB이며, 이 한도를 넘으면 읽기 전용이 될 수 있다. 따라서 기본 GitHub Actions 설정은 `MAX_BILLS=25`, `MAX_FR_DOCUMENTS=50`, `MAX_EMBEDDINGS=25`이다. 이 값은 매일 새·변경 항목을 안정적으로 반영하는 용도이며, 한 번에 과거 전체를 넣는 설정이 아니다.
+Free Plan의 데이터베이스 한도는 프로젝트당 500MB이며, 이 한도를 넘으면 읽기 전용이 될 수 있다. 따라서 기본 GitHub Actions 설정은 `MAX_BILLS=100`, `MAX_PUBLIC_LAWS=50`, `MAX_FR_DOCUMENTS=150`, `MAX_EMBEDDINGS=25`이다. 이 값은 한 실행의 처리량일 뿐 일일 전체 보관 한도가 아니다. 큐가 남은 작업을 다음 실행으로 넘긴다.
 
 - 법안·action의 `raw_source`에는 원본 응답 전문이 아니라 추적 가능한 API URL·갱신시각 등 최소 메타데이터만 저장한다.
 - bootstrap은 `MAX_BILLS=25`부터 시작하고, 각 배치 뒤 Supabase Dashboard의 **Settings → Usage**에서 DB 크기를 확인한다.
-- 4개 Congress 전체의 역사 법안에 1,536차원 벡터를 한꺼번에 모두 채우면 벡터와 HNSW 인덱스가 큰 비중을 차지한다. 기본 실행은 25개 임베딩까지만 생성하고 나머지는 다음 실행으로 이월한다.
+- 119대의 `index` 법안은 임베딩하지 않는다. `tracked`/`enriched` 법안과 EO·규제 중 최근 변경된 최대 25개에만 1,536차원 벡터를 생성한다.
 - 데이터베이스가 400MB에 근접하면 bootstrap을 멈추고, 오래된 warm/cold 데이터·전수 임베딩 확대 여부를 재검토한다. 전문 파일과 PDF는 저장하지 않는다.
 
 Supabase는 Free 프로젝트를 저활동 상태에서 일시 중지할 수 있다. 매일 동기화가 성공하면 데이터베이스 활동도 생기지만, 실패가 지속될 때는 대시보드 이메일을 확인한다. [Supabase Free 요금/한도](https://supabase.com/pricing), [DB 크기 동작](https://supabase.com/docs/guides/platform/database-size), [무료 프로젝트 일시 중지](https://supabase.com/docs/guides/platform/free-project-pausing)를 기준으로 운영한다.

@@ -207,9 +207,47 @@ async function checkpointSyncState(syncResource, cursor) {
   }], 'sync_resource');
 }
 
+function queueKeyFilter(value) { return `eq.${encodeURIComponent(value)}`; }
+
+async function enqueuePolicyItem(syncResource, sourceKey, payload, options = {}) {
+  const existing = (await supabaseGet('policy_ingestion_queue', {
+    select: 'queue_id,status,source_updated_at',
+    sync_resource: queueKeyFilter(syncResource), source_key: queueKeyFilter(sourceKey), limit: '1',
+  }))?.[0];
+  const incoming = options.sourceUpdatedAt ? new Date(options.sourceUpdatedAt).valueOf() : NaN;
+  const prior = existing?.source_updated_at ? new Date(existing.source_updated_at).valueOf() : NaN;
+  const shouldRefresh = existing && Number.isFinite(incoming) && (!Number.isFinite(prior) || incoming > prior);
+  if (!existing) {
+    await supabaseInsert('policy_ingestion_queue', {
+      sync_resource: syncResource, source_key: sourceKey, payload, priority: options.priority || 0,
+      source_updated_at: options.sourceUpdatedAt || null,
+    });
+    return 'inserted';
+  }
+  if (shouldRefresh && existing.status !== 'processing') {
+    await supabasePatch('policy_ingestion_queue', `queue_id=eq.${existing.queue_id}`, {
+      payload, priority: options.priority || 0, source_updated_at: options.sourceUpdatedAt,
+      status: 'pending', available_at: new Date().toISOString(), completed_at: null, last_error: null,
+    });
+    return 'refreshed';
+  }
+  return 'unchanged';
+}
+
+async function takePolicyQueue(syncResource, limit) {
+  return supabaseGet('policy_ingestion_queue', {
+    select: 'queue_id,source_key,payload,attempts', sync_resource: queueKeyFilter(syncResource), status: 'eq.pending',
+    available_at: `lte.${new Date().toISOString()}`, order: 'priority.desc,created_at.asc', limit: String(limit),
+  });
+}
+
+async function markPolicyQueue(queueId, fields) {
+  await supabasePatch('policy_ingestion_queue', `queue_id=eq.${queueId}`, fields);
+}
+
 module.exports = {
   asArray, checkpointSyncState, createRequestGate, fetchJson, finishSyncRun, firstNonEmpty, mapWithConcurrency,
   openAiEmbeddings, parseDateOnly, parseTimestamp, requireEnv, sleep, slug, startSyncRun,
   supabaseGet, supabaseInsert, supabaseInsertIgnore, supabasePatch, supabaseRpc,
-  supabaseUpsert, updateSyncState,
+  supabaseUpsert, updateSyncState, enqueuePolicyItem, takePolicyQueue, markPolicyQueue,
 };
