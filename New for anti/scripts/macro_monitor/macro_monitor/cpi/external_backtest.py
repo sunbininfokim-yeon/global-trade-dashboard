@@ -427,7 +427,12 @@ def build_snapshot(
     for name, series_id in source_spec["bls"]["series"].items():
         series[name] = mom_pct(bls_monthly_series(bls_response, series_id))
     for name, series_id in source_spec["eia"]["series"].items():
-        series[name] = mom_pct(fetch_eia_monthly_series(series_id, api_key=eia_api_key))
+        try:
+            series[name] = mom_pct(fetch_eia_monthly_series(series_id, api_key=eia_api_key))
+        except ExternalBacktestError as exc:
+            # Series IDs are public metadata. Credentials and request URLs are
+            # deliberately absent from this diagnostic.
+            raise ExternalBacktestError(f"EIA source unavailable for {series_id}: {exc}") from exc
     for name, series_id in source_spec["fred"]["series"].items():
         series[name] = mom_pct(fetch_fred_monthly_series(series_id, api_key=fred_api_key, start=config["sample"]["start"]))
     rows = [run_relationship(spec, series=series, minimum_train_months=config["sample"]["minimum_train_months"]) for spec in config["relationships"]]
