@@ -65,15 +65,25 @@ function officialEoAuthority(document) {
 async function loadState() {
   return (await supabaseGet('data_sync_state', { select: 'cursor,last_successful_at', sync_resource: `eq.${RESOURCE}`, limit: '1' }))?.[0] || null;
 }
+// A single 1,000-item page silently dropped any window with more matching
+// documents than that (rare, but possible on a busy Federal Register day or
+// after a missed run). Page through up to MAX_DISCOVERY_PAGES per type
+// instead of assuming page 1 is everything.
+const MAX_DISCOVERY_PAGES = Number(process.env.MAX_DISCOVERY_PAGES || 5);
+
 async function loadCandidates(windowFrom) {
   const types = ['PRESDOCU', 'RULE', 'PRORULE'];
   const all = [];
   for (const type of types) {
-    const body = await get('/documents.json', {
-      'conditions[type][]': type, 'conditions[publication_date][gte]': windowFrom,
-      per_page: 1_000, page: 1, order: 'newest',
-    });
-    all.push(...asArray(body?.results));
+    for (let page = 1; page <= MAX_DISCOVERY_PAGES; page += 1) {
+      const body = await get('/documents.json', {
+        'conditions[type][]': type, 'conditions[publication_date][gte]': windowFrom,
+        per_page: 1_000, page, order: 'newest',
+      });
+      const pageItems = asArray(body?.results);
+      all.push(...pageItems);
+      if (pageItems.length < 1_000 || page >= Number(body?.total_pages || 1)) break;
+    }
   }
   return [...new Map(all.map((item) => [item.document_number, item])).values()];
 }
