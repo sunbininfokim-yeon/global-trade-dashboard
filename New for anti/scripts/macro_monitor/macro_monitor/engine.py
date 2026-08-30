@@ -78,6 +78,15 @@ def _load_japan_growth_snapshot() -> dict[str, Any]:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
+@lru_cache(maxsize=1)
+def _load_sovereign_fiscal_snapshot() -> dict[str, Any]:
+    """Versioned IMF/Treasury actuals; never fetch during a dashboard build."""
+    path = _CONFIG_DIR / "sovereign_fiscal_v1.json"
+    if not path.is_file():
+        return {"countries": {}, "us_defense_ratio": {}}
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
 def officials_for(iso3: str) -> dict[str, Any] | None:
     """Central bank head + finance-side minister for a country pack."""
     doc = _load_officials()
@@ -133,7 +142,7 @@ def _yearly_twh_to_monthly(
 
 
 def _official_observations_to_monthly(
-    observations: list[dict[str, Any]], dates: list[str]
+    observations: list[dict[str, Any]], dates: list[str], *, hold_after_latest: bool = True
 ) -> list[float | None]:
     """Step-fill released annual/quarterly observations onto the shared UI axis."""
     points: list[tuple[str, float]] = []
@@ -147,11 +156,155 @@ def _official_observations_to_monthly(
     cursor = 0
     current: float | None = None
     for day in dates:
+        if not hold_after_latest and points and day > points[-1][0]:
+            out.append(None)
+            continue
         while cursor < len(points) and points[cursor][0] <= day:
             current = points[cursor][1]
             cursor += 1
         out.append(round(current, 6) if current is not None else None)
     return out
+
+
+def _attach_sovereign_fiscal_indicators(
+    *,
+    iso3: str,
+    specs_by_id: dict[str, Any],
+    cfg_map: dict[str, Any],
+    dates: list[str],
+    by_id: dict[str, Any],
+    indicators: list[dict[str, Any]],
+) -> None:
+    """Attach debt and interest cards from the common actual-only snapshot.
+
+    Debt and interest amounts are shown in current USD trillions.  The common
+    IMF source supplies ratios and nominal GDP, so the amount is explicitly a
+    derived stock/flow rather than a claim that every country publishes the
+    same domestic public-debt measure.  The US interest card uses the Treasury
+    MTS completed-FY history instead, because its requested defense comparison
+    is meaningful only on that consistent federal budget definition.
+    """
+    snapshot = _load_sovereign_fiscal_snapshot()
+    row = (snapshot.get("countries") or {}).get(iso3) or {}
+    observations = list(row.get("observations") or [])
+    if not observations:
+        return
+
+    source = snapshot.get("source") or {}
+    imf_source = source.get("imf") or {}
+
+    def histories(values: list[float | None], ind: dict[str, Any]) -> dict[str, dict[str, Any]]:
+        out: dict[str, dict[str, Any]] = {}
+        for window, hist in (ind.get("history") or {}).items():
+            n = len(hist.get("dates") or [])
+            out[window] = {
+                "dates": list(hist.get("dates") or []),
+                "values": values[-n:] if n else [],
+            }
+        return out
+
+    def attach(
+        series_id: str,
+        *,
+        primary_key: str,
+        secondary_key: str,
+        secondary_label_ko: str,
+        observations_for_series: list[dict[str, Any]],
+        source_name: str,
+        source_urls: list[str],
+        note_ko: str,
+    ) -> None:
+        if series_id in by_id or series_id not in specs_by_id or not observations_for_series:
+            return
+        spec = specs_by_id[series_id]
+        primary_obs = [
+            {"date": point.get("date"), "value": point.get(primary_key)}
+            for point in observations_for_series
+        ]
+        secondary_obs = [
+            {"date": point.get("date"), "value": point.get(secondary_key)}
+            for point in observations_for_series
+        ]
+        values = _official_observations_to_monthly(primary_obs, dates, hold_after_latest=False)
+        secondary_values = _official_observations_to_monthly(secondary_obs, dates, hold_after_latest=False)
+        if not any(value is not None for value in values):
+            return
+        ind = build_indicator(
+            series_id=series_id,
+            spec=spec,
+            country_cfg=dict(cfg_map.get(series_id) or {}),
+            dates=dates,
+            seed=_seed_for(iso3, series_id),
+            values_override=values,
+        )
+        latest = observations_for_series[-1]
+        ind["value"] = float(latest[primary_key])
+        ind["display"] = format_value(ind["value"], spec.get("format") or "tn2")
+        ind["display_chip"] = ind["display"]
+        ind["change_1m_pct"] = None
+        ind["change_1y_pct"] = None
+        ind["asof"] = str(latest.get("date"))
+        ind["observed_at"] = ind["asof"]
+        ind["snapshot_asof"] = ind["asof"]
+        ind["retrieved_at"] = snapshot.get("retrieved_at")
+        ind["source"] = source_name
+        ind["source_urls"] = [url for url in source_urls if url]
+        ind["quality"] = "engine"
+        ind["data_status"] = "official_snapshot"
+        ind["series_frequency"] = "annual"
+        ind["note_ko"] = note_ko
+        ind["official_history"] = {
+            "frequency": "annual",
+            "dates": [point.get("date") for point in observations_for_series],
+            "values": [point.get(primary_key) for point in observations_for_series],
+        }
+        ind["fiscal_compare"] = {
+            "primary_label_ko": spec.get("label_ko"),
+            "primary_unit": "조 달러",
+            "secondary_label_ko": secondary_label_ko,
+            "secondary_unit": "%",
+            "secondary_history": histories(secondary_values, ind),
+            "actuals_only": True,
+        }
+        indicators.append(ind)
+        by_id[series_id] = ind
+
+    attach(
+        "sovereign_debt",
+        primary_key="debt_tn_usd",
+        secondary_key="debt_gdp_pct",
+        secondary_label_ko="국가부채/GDP",
+        observations_for_series=observations,
+        source_name=str(imf_source.get("publisher") or "IMF Fiscal Policy Panel"),
+        source_urls=[str(imf_source.get("url") or "")],
+        note_ko="IMF 일반정부 총부채(% GDP) × 명목 GDP로 환산한 현재달러 규모입니다. IMF 전망치는 제외한 연간 실측치만 표시합니다.",
+    )
+
+    us_defense = snapshot.get("us_defense_ratio") or {}
+    us_observations = list(us_defense.get("observations") or []) if iso3 == "USA" else []
+    if us_observations:
+        treasury_source = source.get("us_treasury") or {}
+        attach(
+            "sovereign_interest",
+            primary_key="interest_tn_usd",
+            secondary_key="interest_to_defense_pct",
+            secondary_label_ko="국방비 대비 국채이자",
+            observations_for_series=us_observations,
+            source_name=str(treasury_source.get("publisher") or "U.S. Treasury MTS Table 5"),
+            source_urls=[str(treasury_source.get("url") or "")],
+            note_ko="미 재무부 MTS의 공공부채 이자를 국방부 군사프로그램 지출로 나눈 비율입니다. 완결 회계연도(9월)만 비교합니다.",
+        )
+    else:
+        attach(
+            "sovereign_interest",
+            primary_key="interest_tn_usd",
+            secondary_key="interest_gdp_pct",
+            secondary_label_ko="부채이자/GDP",
+            observations_for_series=observations,
+            source_name=str(imf_source.get("publisher") or "IMF Fiscal Policy Panel"),
+            source_urls=[str(imf_source.get("url") or "")],
+            note_ko="IMF 공공부채 이자지급(% GDP) × 명목 GDP로 환산한 현재달러 규모입니다. IMF 전망치는 제외한 연간 실측치만 표시합니다.",
+        )
 
 
 def _attach_japan_growth_indicators(
@@ -498,7 +651,10 @@ CHIP_ORDER: dict[str, list[str]] = {
         "spread_10y3m",
         "spread_10y2y",
         "spread_30y10y",
-        # 6) cross-country rate/yield spreads (only the ones that matter)
+        # 6) fiscal burden (common actual-only IMF layer; US interest adds MTS)
+        "sovereign_debt",
+        "sovereign_interest",
+        # 7) cross-country rate/yield spreads (only the ones that matter)
         "us_ca_2y_spread",
         "us_au_10y_spread",
         "us_chn_10y_spread",
@@ -506,14 +662,14 @@ CHIP_ORDER: dict[str, list[str]] = {
         "ch_bund_10y_spread",
         "hibor_sofr_spread",
         "sofr_sora_spread",
-        # 7) credit spreads (grouped)
+        # 8) credit spreads (grouped)
         "hy_oas",
         "corp_spread_aa",
         "cp_spread",
         "btp_bund_spread",
         "lgfv_spread",
         "cn_hy_prop_spread",
-        # 8) sovereign credit package last
+        # 9) sovereign credit package last
         "sovereign_cds_5y",
         "br_cds_5y",
         "za_cds_5y",
@@ -1233,6 +1389,15 @@ def build_country_pack(
             by_id["gdp"]["chart_type"] = "line+components"
 
     _attach_japan_growth_indicators(
+        iso3=iso3,
+        specs_by_id=specs_by_id,
+        cfg_map=cfg_map,
+        dates=dates,
+        by_id=by_id,
+        indicators=indicators,
+    )
+
+    _attach_sovereign_fiscal_indicators(
         iso3=iso3,
         specs_by_id=specs_by_id,
         cfg_map=cfg_map,

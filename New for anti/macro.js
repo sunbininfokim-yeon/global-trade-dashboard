@@ -814,6 +814,64 @@ const mmLineChart = (dates, values, opts = {}) => {
     </div>`;
 };
 
+// Sovereign debt and interest mix currency amounts with ratios.  Putting both
+// on the normal one-axis chart would hide the percentage series completely,
+// so these two fiscal cards always receive independently-scaled left/right
+// axes.  Both paths are solid: the snapshot contains observed annual points,
+// not a fitted relationship or a forecast.
+const mmFiscalDualLineChart = (dates, primary, secondary, opts = {}) => {
+    const finite = (xs) => xs.filter(Number.isFinite);
+    const left = finite(primary), right = finite(secondary);
+    if (left.length < 2 || right.length < 2) return '<p class="fin-note">그릴 수 있는 공식 연간 시계열이 충분하지 않습니다.</p>';
+    const bounds = (xs) => {
+        let lo = Math.min(...xs), hi = Math.max(...xs);
+        if (lo === hi) { lo -= 1; hi += 1; }
+        const pad = (hi - lo) * 0.08;
+        return [lo - pad, hi + pad];
+    };
+    const [lLo, lHi] = bounds(left), [rLo, rHi] = bounds(right);
+    const n = Math.max(dates.length, primary.length, secondary.length);
+    const sx = (i) => MM_L + (i / Math.max(n - 1, 1)) * (MM_W - MM_L - MM_R - 32);
+    const syL = (v) => MM_T + (1 - (v - lLo) / (lHi - lLo)) * (MM_H - MM_T - MM_B);
+    const syR = (v) => MM_T + (1 - (v - rLo) / (rHi - rLo)) * (MM_H - MM_T - MM_B);
+    const path = (arr, sy) => {
+        let d = '', pen = false;
+        for (let i = 0; i < n; i++) {
+            const value = arr[i];
+            if (!Number.isFinite(value)) { pen = false; continue; }
+            d += `${pen ? 'L' : 'M'}${sx(i).toFixed(1)},${sy(value).toFixed(1)}`;
+            pen = true;
+        }
+        return d;
+    };
+    const ticks = [0, .25, .5, .75, 1];
+    const xAt = [0, Math.floor((n - 1) / 2), n - 1];
+    const rightX = MM_W - MM_R - 32;
+    return `
+    <div class="mm-chart-box mm-fiscal-chart">
+        <svg class="mm-chart" viewBox="0 0 ${MM_W} ${MM_H}" preserveAspectRatio="none" role="img"
+             aria-label="${finEsc(opts.primaryLabel || '금액')}와 ${finEsc(opts.secondaryLabel || '비율')}의 이중축 시계열">
+            ${ticks.map((t) => {
+                const leftTick = lLo + (lHi - lLo) * t;
+                const rightTick = rLo + (rHi - rLo) * t;
+                const y = syL(leftTick);
+                return `<line x1="${MM_L}" y1="${y.toFixed(1)}" x2="${rightX}" y2="${y.toFixed(1)}" class="mm-grid"/>
+                    <text x="${MM_L - 7}" y="${(y + 3.5).toFixed(1)}" class="mm-tick" text-anchor="end">${mmFmt(leftTick)}</text>
+                    <text x="${rightX + 7}" y="${(y + 3.5).toFixed(1)}" class="mm-tick mm-fiscal-right-tick">${mmFmt(rightTick)}%</text>`;
+            }).join('')}
+            <path d="${path(primary, syL)}" class="mm-line mm-fiscal-primary"/>
+            <path d="${path(secondary, syR)}" class="mm-line mm-fiscal-secondary"/>
+            ${xAt.map((i) => `<text x="${sx(i).toFixed(1)}" y="${MM_H - 8}" class="mm-tick"
+                text-anchor="${i === 0 ? 'start' : (i === n - 1 ? 'end' : 'middle')}">${finEsc(dates[i] || '')}</text>`).join('')}
+        </svg>
+        <p class="mm-legend-note mm-fiscal-legend">
+            <i class="mm-swatch mm-fiscal-primary-swatch"></i>${finEsc(opts.primaryLabel || '금액')} (왼쪽 축 · ${finEsc(opts.primaryUnit || '')})
+            <i class="mm-swatch mm-fiscal-secondary-swatch"></i>${finEsc(opts.secondaryLabel || '비율')} (오른쪽 축 · ${finEsc(opts.secondaryUnit || '%')})
+        </p>
+        <p class="fin-note">두 축은 단위가 달라 각각의 범위로 그렸습니다. 선의 기울기 크기를 서로 직접 비교하지 마세요.</p>
+    </div>`;
+};
+
 // Grouped bars for a handful of labelled values -- QRA compare, energy mix,
 // FedWatch outcomes and maturity buckets all reduce to this shape.
 const mmBars = (rows, opts = {}) => {
@@ -1379,7 +1437,16 @@ const mmChartDrawer = () => {
     else {
         const src = modeSeries || ind;
         const hist = (src.history || {})[MM_CHART.window] || {};
-        if (ind.chart_type === 'bar') {
+        const fiscal = ind.fiscal_compare || null;
+        const secondaryHist = fiscal && (fiscal.secondary_history || {})[MM_CHART.window];
+        if (ind.chart_type === 'fiscal_dual_line' && secondaryHist) {
+            body = mmFiscalDualLineChart(hist.dates || [], hist.values || [], secondaryHist.values || [], {
+                primaryLabel: fiscal.primary_label_ko || src.label_ko || ind.label_ko,
+                primaryUnit: fiscal.primary_unit || src.unit || '',
+                secondaryLabel: fiscal.secondary_label_ko || '비율',
+                secondaryUnit: fiscal.secondary_unit || '%',
+            });
+        } else if (ind.chart_type === 'bar') {
             body = mmBarSeries(hist.dates || [], hist.values || [], {
                 unit: src.unit === 'pct' ? '%' : (src.unit || ''),
                 label: src.label_ko || ind.label_ko,
