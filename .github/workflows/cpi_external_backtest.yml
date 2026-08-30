@@ -1,0 +1,37 @@
+name: Validate external CPI pathways
+
+on:
+  workflow_dispatch:
+  schedule:
+    # 04:20 KST on the 23rd: after the usual monthly CPI/PPI release window.
+    - cron: '20 19 22 * *'
+
+jobs:
+  validate-external-cpi-paths:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install statistical dependencies
+        run: pip install numpy scipy statsmodels
+      - name: Test contracts
+        working-directory: New for anti/scripts/macro_monitor
+        run: python -m unittest tests/test_cpi_external_backtest.py -v
+      - name: Build external CPI validation snapshot
+        working-directory: New for anti/scripts/macro_monitor
+        env:
+          BLS_API_KEY: ${{ secrets.BLS_API_KEY }}
+          EIA_API_KEY: ${{ secrets.EIA_API_KEY }}
+          FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
+        run: python build_us_cpi_external_backtest.py
+      - name: Commit public research snapshot only
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "New for anti/public/data/us_cpi_external_backtest_v1.json"
+          git commit -m "chore: refresh external CPI pathway backtest" || exit 0
+          git push

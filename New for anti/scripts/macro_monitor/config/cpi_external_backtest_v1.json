@@ -1,0 +1,68 @@
+{
+  "schema_version": "us-cpi-external-backtest-v1",
+  "country": "USA",
+  "sample": {
+    "start": "2011-01",
+    "minimum_train_months": 72,
+    "forecast_scheme": "expanding_window_one_step_ahead",
+    "target_transform": "published_seasonally_adjusted_index_mom_pct",
+    "input_transform": "EIA daily/weekly values are averaged to months then transformed to MoM. BLS industry PPI inputs are used as published (NSA) MoM with calendar-month fixed effects; they are not relabelled as seasonally adjusted.",
+    "vintage_policy": "Current source vintages are collected. The model is time-ordered and has no target look-ahead in its training windows, but an archival release-vintage panel is not yet retained. Results therefore cannot activate a pathway."
+  },
+  "sources": {
+    "bls": {
+      "endpoint": "https://api.bls.gov/publicAPI/v2/timeseries/data/",
+      "series": {
+        "cpi_airline_fares_sa": "CUSR0000SETG01",
+        "cpi_food_at_home_sa": "CUSR0000SAF11",
+        "ppi_food_manufacturing_nsa": "PCU311311",
+        "ppi_truck_transport_nsa": "PCU484484"
+      }
+    },
+    "eia": {
+      "endpoint": "https://api.eia.gov/v2/seriesid/",
+      "series": {
+        "jet_fuel_us_gulf_coast_spot": "EER_EPJK_PF4_RGC_DPG",
+        "brent_spot": "RBRTE"
+      }
+    },
+    "fred": {
+      "endpoint": "https://api.stlouisfed.org/fred/series/observations",
+      "series": {
+        "industrial_production_sa": "INDPRO"
+      }
+    }
+  },
+  "relationships": [
+    {
+      "id": "energy_to_airfares",
+      "relationship_map_id": "energy_to_airfares",
+      "target": "cpi_airline_fares_sa",
+      "external_inputs": ["jet_fuel_us_gulf_coast_spot"],
+      "controls": ["industrial_production_sa"],
+      "lag_grid_months": [0, 1, 2, 3, 4, 5, 6],
+      "direction": "positive_cost_pass_through_candidate",
+      "availability_rule": "The contemporaneous EIA daily input is aggregated over the reference month and is available before the following-month CPI release; industrial production is lagged one month because its release can follow the CPI release."
+    },
+    {
+      "id": "energy_cost_to_food_prices",
+      "relationship_map_id": "energy_cost_to_food_prices",
+      "target": "cpi_food_at_home_sa",
+      "external_inputs": ["brent_spot", "ppi_food_manufacturing_nsa", "ppi_truck_transport_nsa"],
+      "controls": ["industrial_production_sa"],
+      "lag_grid_months": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+      "direction": "positive_cost_pass_through_candidate",
+      "availability_rule": "EIA reference-month energy and BLS PPI reference-month data are treated as available before the following-month CPI release. Industrial production is lagged one month."
+    }
+  ],
+  "activation_policy": {
+    "status": "not_activated_by_design",
+    "requirements_before_any_promotion": [
+      "archival release-vintage input histories and release-calendar availability audit",
+      "pre-specified out-of-sample improvement versus autoregressive benchmark",
+      "family-wise / false-discovery controlled conditional-predictive test",
+      "coefficient direction stability outside COVID-era sensitivity windows",
+      "independent review of demand, capacity, hedging, agricultural commodity and retail-margin confounders"
+    ]
+  }
+}
