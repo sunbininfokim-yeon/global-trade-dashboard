@@ -1,0 +1,246 @@
+{
+  "meta": {
+    "is_mock": true,
+    "purpose": "UI development fixture only. Do not present names, counts, dates, or links in this file as live U.S. government data.",
+    "api_contract": "docs/api-spec.md",
+    "screen_mapping": "docs/ui-screens.md",
+    "search": { "visible": false, "enabled": false }
+  },
+  "policy_hub": {
+    "country": "US",
+    "active_section": "congress",
+    "summary_cards": [
+      {
+        "bill_id": "mock-119-hr-1001",
+        "title": "Sample Trade Resilience Act",
+        "current_stage": "reported",
+        "current_status": "Reported by committee (sample)",
+        "latest_action_date": "2026-08-28",
+        "summary": "Sample summary used only to test title wrapping, stage badges, and card navigation.",
+        "policy_area": { "policy_area_id": "foreign-trade-and-international-finance", "name": "Foreign Trade and International Finance" },
+        "detail_level": "tracked",
+        "congress_url": "https://www.congress.gov/"
+      },
+      {
+        "bill_id": "mock-119-s-204",
+        "title": "Sample Supply Chain Transparency Act",
+        "current_stage": "passed_origin_chamber",
+        "current_status": "Passed Senate (sample)",
+        "latest_action_date": "2026-08-26",
+        "summary": "Sample summary for a floor-passed bill card.",
+        "policy_area": { "policy_area_id": "commerce", "name": "Commerce" },
+        "detail_level": "enriched",
+        "congress_url": "https://www.congress.gov/"
+      },
+      {
+        "bill_id": "mock-119-hr-88",
+        "title": "Sample Critical Materials Review Act",
+        "current_stage": "referred",
+        "current_status": "Referred to committee (sample)",
+        "latest_action_date": "2026-08-23",
+        "summary": "Sample summary for an index-level bill card.",
+        "policy_area": { "policy_area_id": "science-technology-communications", "name": "Science, Technology, Communications" },
+        "detail_level": "index",
+        "congress_url": "https://www.congress.gov/"
+      }
+    ]
+  },
+  "congress_overview": {
+    "active_chamber": "house",
+    "chambers": [
+      { "id": "house", "label": "House" },
+      { "id": "senate", "label": "Senate" },
+      { "id": "joint", "label": "Joint" }
+    ],
+    "committees": [
+      {
+        "committee_id": "mock-hsif00",
+        "name": "House Committee on Ways and Means",
+        "chamber": "house",
+        "committee_type": "standing",
+        "display_order": 1,
+        "official_url": "https://waysandmeans.house.gov/",
+        "jurisdiction_summary": "Sample jurisdiction summary.",
+        "agencies": ["Department of the Treasury", "Office of the U.S. Trade Representative"],
+        "chair": null
+      },
+      {
+        "committee_id": "mock-hsii00",
+        "name": "House Committee on Energy and Commerce",
+        "chamber": "house",
+        "committee_type": "standing",
+        "display_order": 2,
+        "official_url": "https://energycommerce.house.gov/",
+        "jurisdiction_summary": "Sample jurisdiction summary.",
+        "agencies": [],
+        "chair": null
+      },
+      {
+        "committee_id": "mock-ssfi00",
+        "name": "Senate Committee on Finance",
+        "chamber": "senate",
+        "committee_type": "standing",
+        "display_order": 1,
+        "official_url": "https://www.finance.senate.gov/",
+        "jurisdiction_summary": "Sample jurisdiction summary.",
+        "agencies": ["Department of the Treasury"],
+        "chair": null
+      }
+    ],
+    "agency_bill_counts": [
+      { "agency_id": "mock-treasury", "name": "Department of the Treasury", "bill_count": 12 },
+      { "agency_id": "mock-ustr", "name": "Office of the U.S. Trade Representative", "bill_count": 7 },
+      { "agency_id": "mock-placeholder", "name": "Verified mappings pending", "bill_count": null }
+    ],
+    "static_explainer": {
+      "title": "How Congress moves legislation",
+      "body": "Static editorial copy placeholder. It is not a data-pipeline result."
+    }
+  },
+  "committee_detail": {
+    "committee": {
+      "committee_id": "mock-hsif00",
+      "name": "House Committee on Ways and Means",
+      "chamber": "house",
+      "official_url": "https://waysandmeans.house.gov/",
+      "jurisdiction_summary": "Sample jurisdiction summary.",
+      "chair": null,
+      "chair_placeholder": "위원장 정보 준비 중"
+    },
+    "stage_tabs": [
+      { "label": "전체 보기", "stage": null, "count": 18 },
+      { "label": "발의·회부", "stage": "introduced,referred,subcommittee,committee_consideration", "count": 9 },
+      { "label": "상임위 통과/보고", "stage": "reported", "count": 3 },
+      { "label": "발의원 본회의 통과", "stage": "passed_origin_chamber", "count": 2 },
+      { "label": "상대원 심사", "stage": "second_chamber", "count": 1 },
+      { "label": "양원 조정", "stage": "resolving_differences", "count": 0 },
+      { "label": "양원 통과", "stage": "passed_both_chambers,presented_to_president", "count": 1 },
+      { "label": "대통령 서명·법률 제정", "stage": "enacted", "count": 1 },
+      { "label": "종료·거부/부결", "stage": "vetoed,failed", "count": 1 }
+    ],
+    "items": [
+      {
+        "bill_id": "mock-119-hr-1001",
+        "title": "Sample Trade Resilience Act",
+        "sponsor": "Sample Sponsor",
+        "introduced_date": "2026-05-12",
+        "current_stage": "reported",
+        "current_status": "Reported by committee (sample)",
+        "latest_action_date": "2026-08-28",
+        "policy_area_id": "foreign-trade-and-international-finance",
+        "summary": "Sample official-summary area. The UI should clamp this preview and link to the detail view.",
+        "congress_url": "https://www.congress.gov/"
+      }
+    ],
+    "pagination": { "next_cursor": "mock-next-cursor", "has_more": true }
+  },
+  "policy_area_detail": {
+    "policy_area": {
+      "policy_area_id": "foreign-trade-and-international-finance",
+      "name": "Foreign Trade and International Finance",
+      "bill_count": 18
+    },
+    "uses_same_stage_tabs_as": "committee_detail.stage_tabs",
+    "items": ["mock-119-hr-1001", "mock-119-s-204"]
+  },
+  "bill_detail": {
+    "bill_id": "mock-119-hr-1001",
+    "title": "Sample Trade Resilience Act",
+    "sponsor": "Sample Sponsor",
+    "introduced_date": "2026-05-12",
+    "current_stage": "reported",
+    "current_status": "Reported by committee (sample)",
+    "latest_action_date": "2026-08-28",
+    "summary": "Sample digest/abstract only. Do not add bill full text to this UI.",
+    "congress_url": "https://www.congress.gov/",
+    "committees": [
+      { "committee_id": "mock-hsif00", "name": "House Committee on Ways and Means", "chamber": "house", "official_url": "https://waysandmeans.house.gov/" }
+    ],
+    "votes": [
+      {
+        "vote_id": "mock-vote-1",
+        "chamber": "house",
+        "vote_date": "2026-08-20",
+        "question": "On passage (sample)",
+        "result": "Passed",
+        "yea_count": 230,
+        "nay_count": 195,
+        "present_count": 0,
+        "not_voting_count": 5,
+        "source_url": "https://clerk.house.gov/",
+        "member_votes_visible": false
+      }
+    ],
+    "official_related_bills": [
+      { "bill_id": "mock-119-s-204", "title": "Sample Supply Chain Transparency Act", "relation_type": "related", "relation_origin": "official" }
+    ],
+    "similar_bills": [
+      { "bill_id": "mock-119-hr-88", "title": "Sample Critical Materials Review Act", "relation_origin": "semantic", "similarity_score": 0.82 }
+    ],
+    "ui_rules": {
+      "show_full_text": false,
+      "show_official_related_before_similar": true,
+      "show_member_vote_lists": false
+    }
+  },
+  "executive_overview": {
+    "agencies": [
+      { "agency_id": "mock-eop", "name": "Executive Office of the President", "short_name": "EOP", "executive_order_count": 2 },
+      { "agency_id": "mock-treasury", "name": "Department of the Treasury", "short_name": "Treasury", "executive_order_count": 1 }
+    ],
+    "executive_orders": [
+      {
+        "eo_number": 99999,
+        "title": "Sample Executive Order on Supply-Chain Resilience",
+        "signed_date": "2026-08-15",
+        "publication_date": "2026-08-18",
+        "summary": "Sample EO digest/abstract for the list card.",
+        "federal_register_url": "https://www.federalregister.gov/",
+        "storage_tier": "hot"
+      }
+    ]
+  },
+  "executive_order_detail": {
+    "eo_number": 99999,
+    "title": "Sample Executive Order on Supply-Chain Resilience",
+    "signed_date": "2026-08-15",
+    "publication_date": "2026-08-18",
+    "summary": "Sample EO digest/abstract. Related regulations belong in the separate section below the summary.",
+    "official_links": {
+      "federal_register_url": "https://www.federalregister.gov/",
+      "executive_order_url": "https://www.whitehouse.gov/"
+    },
+    "agencies": [
+      { "agency_id": "mock-eop", "name": "Executive Office of the President" },
+      { "agency_id": "mock-treasury", "name": "Department of the Treasury" }
+    ],
+    "legal_authorities": [
+      { "citation": "Sample statutory citation", "official_url": "https://uscode.house.gov/", "verification_status": "official_metadata" }
+    ],
+    "related_regulations": [
+      {
+        "regulation_id": "mock-fr-2026-00001",
+        "title": "Sample Implementing Regulation",
+        "document_type": "Rule",
+        "abstract": "Sample regulation abstract.",
+        "publication_date": "2026-08-20",
+        "effective_on": "2026-09-19",
+        "federal_register_url": "https://www.federalregister.gov/",
+        "relation_origin": "official"
+      }
+    ]
+  },
+  "cfr_titles": [
+    { "title_number": 19, "name": "Customs Duties", "reserved": false, "regulation_count": 4 },
+    { "title_number": 15, "name": "Commerce and Foreign Trade", "reserved": false, "regulation_count": 3 },
+    { "title_number": 50, "name": "Wildlife and Fisheries", "reserved": true, "regulation_count": 0 }
+  ],
+  "ui_states": {
+    "loading": { "title": "정책 데이터를 불러오는 중" },
+    "empty_committee_agencies": { "title": "검증된 담당기관 매핑 준비 중" },
+    "empty_chair": { "title": "위원장 정보 준비 중" },
+    "empty_industry_profile": { "title": "산업 프로필 자료 준비 중" },
+    "empty_vote": { "title": "기록 표결 없음" },
+    "no_search": { "visible": false, "title": "검색 기능은 준비 중" }
+  }
+}
