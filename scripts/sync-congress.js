@@ -334,16 +334,26 @@ async function queue(billId, row, categories) {
 
 async function embed(items) {
   if (SKIP_EMBEDDINGS || !items.length) return 0;
-  const selected = items.slice(0, MAX_EMBEDDINGS);
-  const key = requireEnv('OPENAI_API_KEY');
-  for (let start = 0; start < selected.length; start += 50) {
-    const group = selected.slice(start, start + 50); const vectors = await openAiEmbeddings(group.map((item) => `${item.row.title}\n\n${item.row.summary || ''}`), key);
-    for (let index = 0; index < group.length; index += 1) await supabasePatch('bills', `bill_id=eq.${encodeURIComponent(group[index].billId)}`, {
-      embedding: vectors[index], embedding_model: process.env.OPENAI_EMBEDDING_MODEL || 'text-embedding-3-small', embedded_at: new Date().toISOString(),
-    });
+  try {
+    const selected = items.slice(0, MAX_EMBEDDINGS);
+    const key = requireEnv('OPENAI_API_KEY');
+    for (let start = 0; start < selected.length; start += 50) {
+      const group = selected.slice(start, start + 50); const vectors = await openAiEmbeddings(group.map((item) => `${item.row.title}\n\n${item.row.summary || ''}`), key);
+      for (let index = 0; index < group.length; index += 1) await supabasePatch('bills', `bill_id=eq.${encodeURIComponent(group[index].billId)}`, {
+        embedding: vectors[index], embedding_model: process.env.OPENAI_EMBEDDING_MODEL || 'text-embedding-3-small', embedded_at: new Date().toISOString(),
+      });
+    }
+    if (items.length > selected.length) console.warn(`Embedding cap reached: ${items.length - selected.length} bill embeddings deferred.`);
+    return selected.length;
+  } catch (error) {
+    // Source records are more important than optional semantic search. A
+    // missing or unfunded embedding account must never fail an API sync run.
+    if (/credit_balance_exhausted|insufficient_quota|Missing required environment variable: OPENAI_API_KEY/i.test(error.message)) {
+      console.warn(`Bill embeddings skipped: ${error.message}`);
+      return 0;
+    }
+    throw error;
   }
-  if (items.length > selected.length) console.warn(`Embedding cap reached: ${items.length - selected.length} bill embeddings deferred.`);
-  return selected.length;
 }
 
 async function run() {

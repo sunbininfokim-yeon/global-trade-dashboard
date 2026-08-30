@@ -9,7 +9,7 @@ const {
 
 const API_BASE = 'https://www.federalregister.gov/api/v1';
 const RESOURCE = 'federalregister.gov:documents';
-const MAX_DOCUMENTS = Number(process.env.MAX_FR_DOCUMENTS || 250);
+const MAX_DOCUMENTS = Number(process.env.MAX_FR_DOCUMENTS || 50);
 const CONCURRENCY = Number(process.env.FR_DETAIL_CONCURRENCY || 4);
 const SKIP_EMBEDDINGS = process.env.SKIP_EMBEDDINGS === 'true';
 const MAX_EMBEDDINGS = Number(process.env.MAX_EMBEDDINGS || 25);
@@ -75,9 +75,7 @@ async function loadCandidates(windowFrom) {
     });
     all.push(...asArray(body?.results));
   }
-  const unique = [...new Map(all.map((item) => [item.document_number, item])).values()];
-  if (unique.length > MAX_DOCUMENTS) throw new Error(`Federal Register window contains ${unique.length} documents, over MAX_FR_DOCUMENTS=${MAX_DOCUMENTS}. Increase the limit before rerunning.`);
-  return unique;
+  return [...new Map(all.map((item) => [item.document_number, item])).values()];
 }
 async function documentBundle(item) {
   const detail = await get(`/documents/${encodeURIComponent(item.document_number)}.json`, {}, true) || {};
@@ -182,16 +180,24 @@ async function queue(column, value, text, categories) {
 
 async function embed(table, keyColumn, rows, content) {
   if (SKIP_EMBEDDINGS || !rows.length) return 0;
-  const selected = rows.slice(0, MAX_EMBEDDINGS);
-  const key = requireEnv('OPENAI_API_KEY');
-  for (let start = 0; start < selected.length; start += 50) {
-    const group = selected.slice(start, start + 50); const vectors = await openAiEmbeddings(group.map(content), key);
-    for (let index = 0; index < group.length; index += 1) await supabasePatch(table, `${keyColumn}=eq.${encodeURIComponent(group[index][keyColumn])}`, {
-      embedding: vectors[index], embedding_model: process.env.OPENAI_EMBEDDING_MODEL || 'text-embedding-3-small', embedded_at: new Date().toISOString(),
-    });
+  try {
+    const selected = rows.slice(0, MAX_EMBEDDINGS);
+    const key = requireEnv('OPENAI_API_KEY');
+    for (let start = 0; start < selected.length; start += 50) {
+      const group = selected.slice(start, start + 50); const vectors = await openAiEmbeddings(group.map(content), key);
+      for (let index = 0; index < group.length; index += 1) await supabasePatch(table, `${keyColumn}=eq.${encodeURIComponent(group[index][keyColumn])}`, {
+        embedding: vectors[index], embedding_model: process.env.OPENAI_EMBEDDING_MODEL || 'text-embedding-3-small', embedded_at: new Date().toISOString(),
+      });
+    }
+    if (rows.length > selected.length) console.warn(`Embedding cap reached: ${rows.length - selected.length} ${table} embeddings deferred.`);
+    return selected.length;
+  } catch (error) {
+    if (/credit_balance_exhausted|insufficient_quota|Missing required environment variable: OPENAI_API_KEY/i.test(error.message)) {
+      console.warn(`${table} embeddings skipped: ${error.message}`);
+      return 0;
+    }
+    throw error;
   }
-  if (rows.length > selected.length) console.warn(`Embedding cap reached: ${rows.length - selected.length} ${table} embeddings deferred.`);
-  return selected.length;
 }
 
 async function run() {
@@ -200,9 +206,10 @@ async function run() {
   let read = 0; let written = 0;
   try {
     const candidates = await loadCandidates(windowFrom); const completed = new Set(state?.cursor?.window_from === windowFrom ? state.cursor.processed_document_numbers || [] : []);
-    const pending = candidates.filter((item) => !completed.has(item.document_number)); read = pending.length;
-    console.log(`Federal Register: ${read} changed documents since ${windowFrom}.`);
-    const bundles = await mapWithConcurrency(pending, CONCURRENCY, documentBundle); const eos = []; const regulations = [];
+    const pending = candidates.filter((item) => !completed.has(item.document_number));
+    const batch = pending.slice(0, MAX_DOCUMENTS); read = batch.length;
+    console.log(`Federal Register: ${pending.length} pending documents since ${windowFrom}; processing ${read}.`);
+    const bundles = await mapWithConcurrency(batch, CONCURRENCY, documentBundle); const eos = []; const regulations = [];
     for (const { item, document } of bundles) {
       const eo = await saveExecutiveOrder(item, document); const regulation = await saveRegulation(item, document);
       if (eo) eos.push(eo); if (regulation) regulations.push(regulation); written += Number(Boolean(eo || regulation));
@@ -214,9 +221,14 @@ async function run() {
     const newestBill = await supabaseGet('bills', { select: 'congress_number', order: 'congress_number.desc', limit: '1' });
     const active = Number(process.env.CONGRESS_NUMBER || newestBill?.[0]?.congress_number || 119);
     await supabaseRpc('refresh_policy_lifecycle_tiers', { active_congress_number: active });
-    await updateSyncState(RESOURCE, { mode: 'incremental', completed_at: new Date().toISOString() });
-    await finishSyncRun(runId, { status: 'succeeded', records_read: read, records_written: written, metadata: { window_from: windowFrom, embedded } });
-    console.log(`Federal Register complete: ${written} records, ${embedded} embeddings.`);
+    const remaining = pending.length - batch.length;
+    if (remaining > 0) {
+      await checkpointSyncState(RESOURCE, { mode: 'incremental', window_from: windowFrom, processed_document_numbers: [...completed] });
+    } else {
+      await updateSyncState(RESOURCE, { mode: 'incremental', completed_at: new Date().toISOString() });
+    }
+    await finishSyncRun(runId, { status: remaining > 0 ? 'partial' : 'succeeded', records_read: read, records_written: written, metadata: { window_from: windowFrom, embedded, remaining } });
+    console.log(`Federal Register complete: ${written} records, ${embedded} embeddings, ${remaining} deferred.`);
   } catch (error) {
     await finishSyncRun(runId, { status: 'failed', records_read: read, records_written: written, error_summary: error.message });
     throw error;
