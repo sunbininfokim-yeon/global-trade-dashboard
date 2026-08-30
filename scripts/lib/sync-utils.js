@@ -207,7 +207,10 @@ async function checkpointSyncState(syncResource, cursor) {
   }], 'sync_resource');
 }
 
-function queueKeyFilter(value) { return `eq.${encodeURIComponent(value)}`; }
+// URLSearchParams in supabaseGet performs URL encoding. Encoding here as well
+// turns ':' into '%253A', so an existing queue row cannot be found and a
+// duplicate insert follows. Keep the PostgREST operator/value unescaped here.
+function queueKeyFilter(value) { return `eq.${value}`; }
 
 async function enqueuePolicyItem(syncResource, sourceKey, payload, options = {}) {
   const existing = (await supabaseGet('policy_ingestion_queue', {
