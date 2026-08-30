@@ -105,7 +105,10 @@ async function saveExecutiveOrder(item, document) {
   await supabaseUpsert('executive_orders', [row], 'eo_number');
   for (const agencyId of agencyIds) await supabaseInsertIgnore('executive_order_agencies', { eo_number: number, agency_id: agencyId }, 'eo_number,agency_id');
   await saveAuthorities(number, document);
-  await queue('eo_number', number, `${row.title}\n${row.summary || ''}`, { agency: agencyIds[0] || null });
+  await queue('eo_number', number, `${row.title}\n${row.summary || ''}`, {
+    agency: agencyIds[0] || null,
+    executive_order: String(number),
+  });
   return { number, row, embed: !previous || !previous.embedding || previous.title !== row.title || previous.summary !== row.summary };
 }
 
