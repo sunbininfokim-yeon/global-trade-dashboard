@@ -22,6 +22,12 @@ class TestVehicleChainBacktest(unittest.TestCase):
         for row in CONFIG["relationships"]:
             self.assertGreaterEqual(min(row["lag_grid_months"]), 1)
 
+    def test_existing_parts_to_repair_candidate_is_kept_separate(self):
+        relation = next(row for row in CONFIG["relationships"] if row["id"] == "vehicle_parts_to_maintenance")
+        self.assertEqual(relation["relationship_map_id"], "vehicle_parts_to_repair")
+        self.assertEqual(relation["source"], "motor_vehicle_parts")
+        self.assertEqual(relation["target"], "motor_vehicle_maintenance")
+
     def test_design_uses_only_prior_source_values(self):
         target = {"2024-01": 1.0, "2024-02": 2.0, "2024-03": 3.0}
         source = {"2024-01": 10.0, "2024-02": 20.0, "2024-03": 30.0}
