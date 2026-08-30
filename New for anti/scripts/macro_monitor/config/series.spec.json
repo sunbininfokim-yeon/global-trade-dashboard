@@ -14,7 +14,7 @@
       "label_ko": "금리",
       "label_en": "Rates",
       "order": 2,
-      "description_ko": "EFFR · 국채 · TIPS · 스프레드 · SOFR · HY OAS"
+      "description_ko": "정책금리 · 국채수익률 · 국가부채 · 부채이자 · 스프레드 · SOFR · HY OAS"
     },
     {
       "id": "fx",
@@ -3022,6 +3022,36 @@
         10
       ],
       "note_ko": "신용등급 핵심 변수"
+    },
+    {
+      "id": "sovereign_debt",
+      "category": "rates",
+      "label_ko": "국가부채",
+      "unit": "tn_usd",
+      "format": "tn2",
+      "higher_is": "weaker_fiscal",
+      "history_years": [
+        5,
+        10
+      ],
+      "refresh_tier": "annual",
+      "chart_type": "fiscal_dual_line",
+      "note_ko": "IMF 일반정부 총부채의 현재달러 환산 규모. 클릭하면 국가부채/GDP를 함께 표시."
+    },
+    {
+      "id": "sovereign_interest",
+      "category": "rates",
+      "label_ko": "정부부채 이자",
+      "unit": "tn_usd",
+      "format": "tn2",
+      "higher_is": "weaker_fiscal",
+      "history_years": [
+        5,
+        10
+      ],
+      "refresh_tier": "annual",
+      "chart_type": "fiscal_dual_line",
+      "note_ko": "IMF 공공부채 이자지급의 현재달러 환산 규모. 미국은 재무부 MTS 기준 국방비 대비 이자도 함께 표시."
     },
     {
       "id": "sarb_total_assets",

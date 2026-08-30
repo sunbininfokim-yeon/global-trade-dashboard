@@ -543,6 +543,8 @@ class TestUsMacroKit(unittest.TestCase):
                 "tips_10y",
                 "spread_10y3m",
                 "spread_10y2y",
+                "sovereign_debt",
+                "sovereign_interest",
                 "hy_oas",
                 "sovereign_ratings",
             ],
