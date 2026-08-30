@@ -250,9 +250,37 @@ async function markPolicyQueue(queueId, fields) {
   await supabasePatch('policy_ingestion_queue', `queue_id=eq.${queueId}`, fields);
 }
 
+// A crashed run or an Actions timeout kills the process while a queue row is
+// still 'processing'. takePolicyQueue only ever selects 'pending' rows, so
+// without this the row is claimed forever and neither reprocessed nor
+// counted as failed. Call this once at the start of each script, before
+// takePolicyQueue, so a prior run's abandoned claims recover automatically.
+async function reapStalePolicyQueue(syncResource, staleAfterMs = 20 * 60_000) {
+  const cutoff = new Date(Date.now() - staleAfterMs).toISOString();
+  await supabasePatch('policy_ingestion_queue',
+    `sync_resource=${queueKeyFilter(syncResource)}&status=eq.processing&claimed_at=lt.${encodeURIComponent(cutoff)}`,
+    { status: 'pending', available_at: new Date().toISOString(), last_error: 'reaped: stale processing state (prior run timed out or crashed)' });
+}
+
+// Centralizes the retry-vs-give-up decision so every sync script backs off
+// and eventually dead-letters the same way. Without a ceiling, an item that
+// can never succeed (bad payload, permanently-gone upstream record) retries
+// once an hour forever and keeps winning the oldest-first queue slot ahead
+// of legitimate new work.
+async function queueRetryOrFail(queueId, attempts, errorMessage, maxAttempts = 10) {
+  if (attempts >= maxAttempts) {
+    await markPolicyQueue(queueId, { status: 'failed', completed_at: new Date().toISOString(), last_error: errorMessage });
+    return 'failed';
+  }
+  const delayMs = Math.min(60 * 60_000, 60_000 * (2 ** Math.min(attempts, 5)));
+  await markPolicyQueue(queueId, { status: 'pending', available_at: new Date(Date.now() + delayMs).toISOString(), last_error: errorMessage });
+  return 'pending';
+}
+
 module.exports = {
   asArray, checkpointSyncState, createRequestGate, fetchJson, finishSyncRun, firstNonEmpty, mapWithConcurrency,
   openAiEmbeddings, parseDateOnly, parseTimestamp, requireEnv, sleep, slug, startSyncRun,
   supabaseGet, supabaseInsert, supabaseInsertIgnore, supabasePatch, supabaseRpc,
   supabaseUpsert, updateSyncState, enqueuePolicyItem, takePolicyQueue, markPolicyQueue,
+  reapStalePolicyQueue, queueRetryOrFail,
 };

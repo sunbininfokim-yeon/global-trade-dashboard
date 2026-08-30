@@ -6,7 +6,7 @@ const {
   asArray, checkpointSyncState, createRequestGate, fetchJson, finishSyncRun, firstNonEmpty,
   mapWithConcurrency, openAiEmbeddings, parseDateOnly, parseTimestamp, requireEnv, slug,
   startSyncRun, supabaseGet, supabaseInsert, supabaseInsertIgnore, supabasePatch, supabaseRpc, supabaseUpsert,
-  updateSyncState, enqueuePolicyItem, takePolicyQueue, markPolicyQueue,
+  updateSyncState, enqueuePolicyItem, takePolicyQueue, markPolicyQueue, reapStalePolicyQueue, queueRetryOrFail,
 } = require('./lib/sync-utils');
 
 const API_BASE = 'https://api.congress.gov/v3';
@@ -18,6 +18,12 @@ const REQUEST_INTERVAL_MS = Number(process.env.CONGRESS_REQUEST_INTERVAL_MS || 8
 const SKIP_EMBEDDINGS = process.env.SKIP_EMBEDDINGS === 'true';
 const MAX_EMBEDDINGS = Number(process.env.MAX_EMBEDDINGS || 25);
 const DISCOVERY_PAGE_SIZE = Math.min(250, Number(process.env.DISCOVERY_PAGE_SIZE || 250));
+// A single page (250) silently dropped any day with more changed bills than
+// that. This bounds a discovery run instead of hard-capping it at one page:
+// up to 10 * 250 = 2,500 changed bills per Congress per run before anything
+// is missed, which the 36h window overlap in initialWindow() then re-covers
+// on the next run.
+const MAX_DISCOVERY_PAGES = Number(process.env.MAX_DISCOVERY_PAGES || 10);
 
 if (!API_KEY) throw new Error('Missing CONGRESS_API_KEY (DATA_GOV_API_KEY may be used as fallback).');
 requireEnv('SUPABASE_URL');
@@ -142,8 +148,14 @@ async function candidates(congresses, state, bootstrap) {
   const windowFrom = initialWindow(state);
   const items = [];
   for (const congress of congresses) {
-    const body = await apiGet(`/bill/${congress}`, { limit: DISCOVERY_PAGE_SIZE, offset: 0, fromDateTime: windowFrom });
-    items.push(...asArray(body?.bills).map((item) => refFrom(item, congress)).filter(Boolean));
+    let offset = 0;
+    for (let page = 0; page < MAX_DISCOVERY_PAGES; page += 1) {
+      const body = await apiGet(`/bill/${congress}`, { limit: DISCOVERY_PAGE_SIZE, offset, fromDateTime: windowFrom });
+      const pageItems = asArray(body?.bills);
+      items.push(...pageItems.map((item) => refFrom(item, congress)).filter(Boolean));
+      if (pageItems.length < DISCOVERY_PAGE_SIZE || !body?.pagination?.next) break;
+      offset += pageItems.length;
+    }
   }
   return {
     refs: unique(items),
@@ -368,6 +380,9 @@ async function run() {
   const runId = await startSyncRun(RESOURCE, { congresses, mode: bootstrap ? 'bootstrap' : 'incremental', max_bills: MAX_BILLS });
   let read = 0; let written = 0;
   try {
+    // Recover any row a prior run left stuck in 'processing' (Actions
+    // timeout or crash) before it becomes invisible to takePolicyQueue.
+    await reapStalePolicyQueue(RESOURCE);
     const next = await candidates(congresses, state, bootstrap);
     const staged = await stageCandidates(next.refs);
     await checkpointSyncState(RESOURCE, next.cursor);
@@ -381,11 +396,8 @@ async function run() {
         const item = await bundle({ congress: Number(payload.congress), type: payload.type, number: Number(payload.number), listItem: payload.list_item || null });
         return { entry, item };
       } catch (error) {
-        const delayMs = Math.min(60 * 60 * 1000, 60_000 * (2 ** Math.min(entry.attempts, 5)));
-        await markPolicyQueue(entry.queue_id, {
-          status: 'pending', available_at: new Date(Date.now() + delayMs).toISOString(), last_error: error.message,
-        });
-        console.error(`Congress.gov queue item ${entry.source_key} deferred: ${error.message}`);
+        const outcome = await queueRetryOrFail(entry.queue_id, entry.attempts + 1, error.message);
+        console.error(`Congress.gov queue item ${entry.source_key} ${outcome === 'failed' ? 'dead-lettered' : 'deferred'}: ${error.message}`);
         return { entry, error };
       }
     });
@@ -397,8 +409,8 @@ async function run() {
         written += 1;
         await markPolicyQueue(result.entry.queue_id, { status: 'succeeded', completed_at: new Date().toISOString(), last_error: null });
       } catch (error) {
-        await markPolicyQueue(result.entry.queue_id, { status: 'pending', available_at: new Date(Date.now() + 300_000).toISOString(), last_error: error.message });
-        console.error(`Congress.gov write for ${result.entry.source_key} deferred: ${error.message}`);
+        const outcome = await queueRetryOrFail(result.entry.queue_id, result.entry.attempts + 1, error.message);
+        console.error(`Congress.gov write for ${result.entry.source_key} ${outcome === 'failed' ? 'dead-lettered' : 'deferred'}: ${error.message}`);
       }
     }
     const embedded = await embed(embeds);

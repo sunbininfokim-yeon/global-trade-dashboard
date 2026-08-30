@@ -3,9 +3,10 @@
 // GovInfo Public Law indexer. It stores official metadata and citations only;
 // statutory text, PDF, and USLM bodies remain at their official source URLs.
 const {
-  asArray, checkpointSyncState, enqueuePolicyItem, fetchJson, finishSyncRun, firstNonEmpty,
-  mapWithConcurrency, markPolicyQueue, parseDateOnly, parseTimestamp, requireEnv, startSyncRun,
-  supabaseGet, supabaseInsert, supabasePatch, supabaseUpsert, takePolicyQueue, updateSyncState,
+  asArray, checkpointSyncState, createRequestGate, enqueuePolicyItem, fetchJson, finishSyncRun, firstNonEmpty,
+  mapWithConcurrency, markPolicyQueue, parseDateOnly, parseTimestamp, reapStalePolicyQueue, requireEnv,
+  startSyncRun, supabaseGet, supabaseInsert, supabasePatch, supabaseUpsert, takePolicyQueue, updateSyncState,
+  queueRetryOrFail,
 } = require('./lib/sync-utils');
 
 const API_BASE = 'https://api.govinfo.gov';
@@ -16,10 +17,18 @@ const PAGE_SIZE = Math.min(100, Number(process.env.PUBLIC_LAW_DISCOVERY_PAGE_SIZ
 // Public Law metadata is compact (no PDF/body storage), so the default covers
 // the complete Congress.gov/GovInfo historical series rather than only recent law.
 const START_CONGRESS = Number(process.env.PUBLIC_LAW_START_CONGRESS || 1);
+// Unlike sync-congress.js, this script had no request pacing at all, and
+// DATA_GOV_API_KEY is shared with the Congress.gov fallback path -- with no
+// gate, sustained calls trip api.data.gov's rate limit and every 429 pays a
+// multi-second exponential backoff, which is the likely cause of ~25 items
+// taking ~12 minutes.
+const REQUEST_INTERVAL_MS = Number(process.env.GOVINFO_REQUEST_INTERVAL_MS || 600);
 
 requireEnv('DATA_GOV_API_KEY');
 requireEnv('SUPABASE_URL');
 requireEnv('SUPABASE_SERVICE_ROLE_KEY');
+
+const gate = createRequestGate(REQUEST_INTERVAL_MS);
 
 function apiUrl(path) { return `${API_BASE}${path}${path.includes('?') ? '&' : '?'}api_key=${encodeURIComponent(API_KEY)}`; }
 function publicLawIdentity(packageId) {
@@ -30,7 +39,7 @@ function publicLawId(identity) { return `${identity.congress}-public-${identity.
 function govInfoDetailsUrl(packageId) { return `https://www.govinfo.gov/app/details/${packageId}`; }
 
 async function get(path, options = {}) {
-  return fetchJson(apiUrl(path), options, { label: `GovInfo ${path}`, maxRetries: 6 });
+  return gate(() => fetchJson(apiUrl(path), options, { label: `GovInfo ${path}`, maxRetries: 6 }));
 }
 async function loadState() {
   return (await supabaseGet('data_sync_state', { select: 'cursor,last_successful_at', sync_resource: `eq.${RESOURCE}`, limit: '1' }))?.[0] || null;
@@ -147,6 +156,9 @@ async function run() {
   const runId = await startSyncRun(RESOURCE, { mode: bootstrap ? 'bootstrap' : 'incremental', max_public_laws: MAX_PUBLIC_LAWS, start_congress: START_CONGRESS });
   let read = 0; let written = 0;
   try {
+    // Recover any row a prior run left stuck in 'processing' (Actions
+    // timeout or crash) before it becomes invisible to takePolicyQueue.
+    await reapStalePolicyQueue(RESOURCE);
     const discovered = await searchPage(state, bootstrap);
     const staged = await stage(discovered.results);
     await checkpointSyncState(RESOURCE, discovered.cursor);
@@ -158,8 +170,8 @@ async function run() {
         await markPolicyQueue(entry.queue_id, { status: result.skipped ? 'skipped' : 'succeeded', completed_at: new Date().toISOString(), last_error: null });
         if (!result.skipped) written += 1;
       } catch (error) {
-        await markPolicyQueue(entry.queue_id, { status: 'pending', available_at: new Date(Date.now() + 300_000).toISOString(), last_error: error.message });
-        console.error(`Public Law ${entry.source_key} deferred: ${error.message}`);
+        const outcome = await queueRetryOrFail(entry.queue_id, entry.attempts + 1, error.message);
+        console.error(`Public Law ${entry.source_key} ${outcome === 'failed' ? 'dead-lettered' : 'deferred'}: ${error.message}`);
       }
     }
     await updateSyncState(RESOURCE, { ...discovered.cursor, completed_at: new Date().toISOString() });
