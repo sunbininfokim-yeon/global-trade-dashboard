@@ -1,0 +1,65 @@
+{
+  "schema_version": "us-cpi-vehicle-chain-backtest-v1",
+  "country": "USA",
+  "sample": {
+    "start_year": 2011,
+    "minimum_train_months": 72,
+    "target_transform": "published_seasonally_adjusted_index_mom_pct",
+    "forecast_scheme": "expanding_window_one_step_ahead",
+    "vintage_policy": "Current BLS revised histories only. Training windows are strictly time-ordered, but this is not a release-vintage reconstruction and cannot activate a relationship."
+  },
+  "source": {
+    "publisher": "U.S. Bureau of Labor Statistics",
+    "endpoint": "https://api.bls.gov/publicAPI/v2/timeseries/data/",
+    "series": {
+      "new_vehicles": "CUSR0000SETA01",
+      "used_cars_and_trucks": "CUSR0000SETA02",
+      "motor_vehicle_parts": "CUSR0000SETC",
+      "motor_vehicle_maintenance": "CUSR0000SETD",
+      "motor_vehicle_insurance": "CUSR0000SETE",
+      "core_goods": "CUSR0000SACL1E",
+      "motor_fuel": "CUSR0000SETB"
+    }
+  },
+  "relationships": [
+    {
+      "id": "new_vehicles_to_used_cars",
+      "relationship_map_id": "new_used_vehicle_common_market",
+      "source": "new_vehicles",
+      "target": "used_cars_and_trucks",
+      "controls": ["core_goods", "motor_fuel"],
+      "lag_grid_months": [1, 2, 3, 4, 5, 6],
+      "classification": "common_market_predictive_candidate",
+      "availability_rule": "Both CPI components release together. Lag 0 is excluded from forecasting tests because it is not known before the target release."
+    },
+    {
+      "id": "used_cars_to_maintenance",
+      "relationship_map_id": null,
+      "source": "used_cars_and_trucks",
+      "target": "motor_vehicle_maintenance",
+      "controls": ["new_vehicles", "motor_vehicle_parts", "motor_fuel"],
+      "lag_grid_months": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+      "classification": "user_requested_cost_path_candidate",
+      "availability_rule": "Both CPI components release together. Lag 0 is excluded from forecasting tests because it is not known before the target release."
+    },
+    {
+      "id": "maintenance_to_auto_insurance",
+      "relationship_map_id": "auto_cost_to_insurance",
+      "source": "motor_vehicle_maintenance",
+      "target": "motor_vehicle_insurance",
+      "controls": ["new_vehicles", "used_cars_and_trucks", "motor_vehicle_parts"],
+      "lag_grid_months": [6, 9, 12, 15, 18, 21, 24],
+      "classification": "separate_component_of_auto_cost_to_insurance_candidate",
+      "availability_rule": "The insurance CPI release is contemporaneous with repair CPI, so only the pre-specified 6–24 month renewal/pass-through lags are tested."
+    }
+  ],
+  "activation_policy": {
+    "status": "not_activated_by_design",
+    "requirements": [
+      "release-vintage and release-calendar availability audit",
+      "stable out-of-sample improvement versus AR(1) plus controls benchmark",
+      "HAC joint conditional-predictive test with FDR correction",
+      "separate review of supply, inventory, finance, accident-frequency, medical-cost, regulation and reinsurance confounders"
+    ]
+  }
+}
