@@ -99,10 +99,15 @@ committee_agency_jurisdictions
 
 **조인**: `bill_committees → bills`, 필요 시 `policy_areas`.
 
+**기본 탭: 전체 보기**
+
+첫 진입은 `stage`를 보내지 않는 **전체 보기**다. 이 탭은 종료된 법안과 아직 자동 분류되지 않은 법안을 포함한 모든 결과를 최신 활동일 순으로 보여 준다. 따라서 어떤 법안도 상임위·정책분야 화면에서 조용히 사라지지 않는다.
+
 **화면 탭 → 필터 값**
 
 | 화면 라벨 | `stage` 값 |
 |---|---|
+| 전체 보기 (기본) | 생략 — 모든 단계 포함 |
 | 발의·회부 | `introduced,referred,subcommittee,committee_consideration` |
 | 상임위 통과/보고 | `reported` |
 | 발의원 본회의 통과 | `passed_origin_chamber` |
@@ -110,6 +115,9 @@ committee_agency_jurisdictions
 | 양원 조정 | `resolving_differences` |
 | 양원 통과 | `passed_both_chambers,presented_to_president` |
 | 대통령 서명·법률 제정 | `enacted` |
+| 종료·거부/부결 | `vetoed,failed` |
+
+`other`는 원본 Congress.gov action은 보존됐지만 자동 단계 분류가 확정되지 않은 예외 상태다. 별도 “종료”로 오인하지 않고 전체 보기에서 `분류 확인 필요` 배지로 표시한다. 필요해질 경우에만 `other` 전용 운영 필터를 추가한다.
 
 **목록 필드**: `bill_id`, `title`, `sponsor`, `introduced_date`, `current_stage`, `current_status`, `latest_action_date`, `policy_area_id`, `summary`, `congress_url`.
 
@@ -128,7 +136,7 @@ Congress.gov/Federal Register에는 산업 프로필·시장 설명·산업 영�
 - API: `GET /api/us/congress/bills?policy_area_id={policy_area_id}&stage={stage}&cursor={cursor}`
 - 목록 출처: `bills.policy_area_id → policy_areas`.
 - 정책분야 칩/블록 개수는 하드코딩하지 않고 `GET /api/us/congress/policy-areas`의 실제 행 수를 사용한다.
-- 클릭 후에는 해당 분야의 발의·상임위 보고·본회의 통과·양원 통과·제정 법률을 같은 `stage` 체계로 필터한다.
+- 클릭 후에는 기본 전체 보기와 발의·상임위 보고·본회의 통과·양원 통과·제정·종료/거부/부결을 같은 `stage` 체계로 필터한다.
 
 ## 5. 행정부 개요와 EO 상세
 
