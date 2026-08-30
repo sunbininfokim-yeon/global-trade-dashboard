@@ -79,13 +79,15 @@ bill_relations (source_bill_id 또는 target_bill_id가 해당 bill_id인 모든
 
 `notifications_queued`는 아직 발송 기능이 없고 향후 구독 이력을 위해 즉시 삭제하지 않는다. 다만 최종 법안 행 삭제 때 FK cascade로 삭제된다. `policy_ingestion_queue`의 해당 법안은 `skipped`로 표시해 다음 일일 실행에서 상세 데이터가 재적재되지 않게 한다. 이후 공식 상태가 달라져 `enacted` 등으로 변경되면 수집기가 queue를 다시 `pending`으로 전환하고 상세를 재수집할 수 있어야 한다.
 
+**순서 규칙**: 종료 상태를 감지한 동기화는 반드시 `알림 매칭·notifications_queued 삽입 → terminal queue를 skipped 표시 → pruning RPC 호출` 순서로 실행한다. pruning이 먼저 실행되면 `title`·`summary`가 비워져 실패/거부 알림의 키워드 매칭이 조용히 누락될 수 있다.
+
 ### 제안 함수와 호출 지점
 
 ```text
 prune_terminal_bill_details(p_bill_id text) returns void
 ```
 
-이 함수는 `bills`를 잠근 뒤 현재 단계가 `failed` 또는 `vetoed`일 때만 실행한다. 하위 행 삭제와 부모 행 최소화는 **하나의 트랜잭션**으로 끝나야 한다. 동기화 스크립트는 법안 upsert와 상태 이력 기록 후, 직전 단계가 비종료이고 새 단계가 종료일 때 이 RPC를 한 번 호출한다.
+이 함수는 `bills`를 잠근 뒤 현재 단계가 `failed` 또는 `vetoed`일 때만 실행한다. 하위 행 삭제와 부모 행 최소화는 **하나의 트랜잭션**으로 끝나야 한다. 동기화 스크립트는 법안 upsert와 알림 매칭·큐 삽입을 마친 후, 직전 단계가 비종료이고 새 단계가 종료일 때 이 RPC를 한 번 호출한다.
 
 DB trigger 대신 명시적 RPC를 우선 제안한다. 이렇게 하면 수동 상태 정정, 초기 데이터 적재, 테스트에서 의도치 않은 대량 삭제를 피할 수 있다. 함수는 idempotent해야 하며, 삭제 행 수·시각은 `data_sync_runs.metadata`에 기록한다.
 
@@ -98,9 +100,16 @@ DB trigger 대신 명시적 RPC를 우선 제안한다. 이렇게 하면 수동 
 ```text
 bills.congress_number = 이전 Congress
 and bills.current_stage <> 'enacted'
+and not exists (
+  select 1
+  from public.public_laws pl
+  where pl.bill_id = bills.bill_id
+)
 ```
 
-`public_laws`는 `bill_id on delete set null`이므로 제정 법률 메타데이터는 보호된다. 삭제 대상 법안의 notification·하위 행은 FK cascade 또는 위 최소화 규칙에 따라 제거된다.
+`public_laws`는 `bill_id on delete set null`이므로 제정 법률 메타데이터는 보호된다. 또한 `public_laws` 연결이 있는 법안은 `current_stage` 값이 비정상이어도 rollover purge에서 제외한다. 삭제 대상 법안의 notification·하위 행은 FK cascade 또는 위 최소화 규칙에 따라 제거된다.
+
+`policy_ingestion_queue`는 FK가 없으므로 rollover purge의 같은 트랜잭션에서 대상 법안의 `sync_resource = 'congress.gov:bills' and source_key = bill_id` 행을 **명시적으로 삭제**한다. 그래야 삭제된 법안이 고아 큐로 남거나 이후 재처리되지 않는다.
 
 ### 새 회기 감지
 

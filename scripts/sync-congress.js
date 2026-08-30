@@ -321,7 +321,7 @@ async function saveBundle(data) {
   if (Number.isInteger(number) && ['public', 'private'].includes(type)) await supabaseUpsert('public_laws', [{ public_law_id: `${data.ref.congress}-${type}-${number}`,
     congress_number: data.ref.congress, law_number: number, law_title: data.row.title, enacted_date: data.row.latest_action_date,
     bill_id: data.billId, congress_url: officialUrl(data.ref) }], 'public_law_id');
-  await queue(data.billId, data.row, { policy_area: data.row.policy_area_id });
+  await queue(data.billId, data.row, { policy_area: data.row.policy_area_id, bill: data.billId });
   return data.detailLevel !== 'index' && (!previous || !previous.embedding || previous.title !== data.row.title || previous.summary !== data.row.summary);
 }
 
