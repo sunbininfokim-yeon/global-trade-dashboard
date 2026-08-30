@@ -336,9 +336,10 @@ Congress.gov action code와 문구를 근거로 정규화하되, 원문은 항�
 검색 UI는 현재 invisible 상태다. 스키마의 임베딩 컬럼과 HNSW 인덱스는 이후 기능을 위해 유지한다.
 
 - 키워드 검색: PostgreSQL Full Text Search로 구현 가능하며 LLM이 필요 없다.
-- 의미 검색/유사 법안: `text-embedding-3-small`로 만든 1536차원 벡터와 cosine distance를 사용한다.
+- 의미 검색/유사 법안: Gemini `gemini-embedding-001`이 만든 1536차원 벡터와 cosine distance를 사용한다.
 - 자연어 질의·RAG 답변: 별도 LLM이 필요하며 이번 범위가 아니다.
 - 임베딩 입력: 제목 + 공식 summary/abstract만 사용한다.
+- 향후 한글 키워드 검색은 번역 계층에서 영어 검색어를 만든 뒤 PostgreSQL Full Text Search에 전달한다. 원문 제목·요약·공식 링크는 번역 결과로 덮어쓰지 않으며, 번역/LLM 검색 UI는 이번 범위 밖이다.
 
 HNSW를 초기 전략으로 사용한다. 연간 신규 법안 약 1만 건과 EO·규제를 합친 규모에서는 별도 학습이 필요한 IVFFLAT보다 운영이 단순하다. 수백만 벡터 규모에서 메모리와 인덱스 생성 시간이 문제가 될 때 IVFFLAT 또는 별도 벡터 저장소 전환을 벤치마크한다.
 
@@ -391,7 +392,7 @@ PUBLIC_LAW_MODE=bootstrap MAX_PUBLIC_LAWS=50 node scripts/sync-public-laws.js
 node scripts/sync-us-code.js
 ```
 
-기본 임베딩 모델은 `text-embedding-3-small`이며, 제목과 공식 summary/abstract만 임베딩한다. `SKIP_EMBEDDINGS=true`는 연결 테스트에만 사용한다.
+기본 임베딩 모델은 Gemini [`gemini-embedding-001`](https://ai.google.dev/gemini-api/docs/models/gemini-embedding-001)이다. 제목과 공식 summary/abstract만 임베딩하고, Gemini 요청에는 [`outputDimensionality = 1536`](https://ai.google.dev/api/embeddings)을 설정한다. 축소 차원의 반환 벡터는 L2 정규화한 뒤 저장한다. `SKIP_EMBEDDINGS=true`는 연결 테스트에만 사용한다.
 
 ### Supabase Free Plan 안전 기본값
 
@@ -400,7 +401,7 @@ Free Plan의 데이터베이스 한도는 프로젝트당 500MB이며, 이 한�
 - 법안·action의 `raw_source`에는 원본 응답 전문이 아니라 추적 가능한 API URL·갱신시각 등 최소 메타데이터만 저장한다.
 - bootstrap은 `MAX_BILLS=25`부터 시작하고, 각 배치 뒤 Supabase Dashboard의 **Settings → Usage**에서 DB 크기를 확인한다.
 - 119대의 `index` 법안은 임베딩하지 않는다. `tracked`/`enriched` 법안과 EO·규제 중 최근 변경된 최대 25개에만 1,536차원 벡터를 생성한다.
-- `OPENAI_API_KEY`의 API 잔액이 없거나 키가 없을 때도 공식 데이터 적재는 성공해야 한다. 이 경우 임베딩만 건너뛰며, 잔액을 충전한 뒤 별도 임베딩 재처리 실행을 할 수 있다.
+- `GEMINI_API_KEY`가 없거나 Gemini API 키·할당량이 부족할 때도 공식 데이터 적재는 성공해야 한다. 이 경우 임베딩만 건너뛰며, 키·할당량을 준비한 뒤 별도 임베딩 재처리 실행을 할 수 있다.
 - 데이터베이스가 400MB에 근접하면 bootstrap을 멈추고, 오래된 warm/cold 데이터·전수 임베딩 확대 여부를 재검토한다. 전문 파일과 PDF는 저장하지 않는다.
 
 Supabase는 Free 프로젝트를 저활동 상태에서 일시 중지할 수 있다. 매일 동기화가 성공하면 데이터베이스 활동도 생기지만, 실패가 지속될 때는 대시보드 이메일을 확인한다. [Supabase Free 요금/한도](https://supabase.com/pricing), [DB 크기 동작](https://supabase.com/docs/guides/platform/database-size), [무료 프로젝트 일시 중지](https://supabase.com/docs/guides/platform/free-project-pausing)를 기준으로 운영한다.
@@ -413,9 +414,9 @@ Supabase는 Free 프로젝트를 저활동 상태에서 일시 중지할 수 있
 - `DATA_GOV_API_KEY` — Congress 키 장애 시 예비키
 - `SUPABASE_URL`
 - `SUPABASE_SERVICE_ROLE_KEY`
-- `OPENAI_API_KEY`
+- `GEMINI_API_KEY`
 
-`SUPABASE_SERVICE_ROLE_KEY`와 `OPENAI_API_KEY`는 Cloudflare 프론트 번들, 브라우저 코드, 로그, API 응답에 절대 포함하지 않는다. 모든 테이블은 RLS가 활성화되어 있으며 현재 스키마에는 공개 브라우저 정책을 만들지 않는다.
+`SUPABASE_SERVICE_ROLE_KEY`와 `GEMINI_API_KEY`는 Cloudflare 프론트 번들, 브라우저 코드, 로그, API 응답에 절대 포함하지 않는다. 모든 테이블은 RLS가 활성화되어 있으며 현재 스키마에는 공개 브라우저 정책을 만들지 않는다.
 
 ## 10. 이번 구조에서 제외
 
