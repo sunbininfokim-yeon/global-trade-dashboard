@@ -4018,3 +4018,282 @@ body.macro-mode .map-pane { flex: 1 1 100%; }
 .mm-cpi-panel-error span { color: #64748b; }
 .mm-cpi-spinner { width: 11px; height: 11px; border-radius: 50%; border: 2px solid rgba(148,163,184,.2); border-top-color: #38bdf8; animation: mm-cpi-spin .8s linear infinite; }
 @keyframes mm-cpi-spin { to { transform: rotate(360deg); } }
+
+/* === US POLICY DASHBOARD STYLES === */
+
+/* Policy Cards Container */
+.policy-cards-container {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-height: 600px;
+    overflow-y: auto;
+}
+
+.policy-card {
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid rgba(56, 189, 248, 0.2);
+    background: rgba(2, 6, 23, 0.6);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.policy-card:hover {
+    border-color: rgba(56, 189, 248, 0.5);
+    background: rgba(2, 6, 23, 0.9);
+}
+
+.policy-card-title {
+    font-size: 12.5px;
+    font-weight: 600;
+    color: #e0f2fe;
+    margin-bottom: 4px;
+    line-height: 1.3;
+}
+
+.policy-card-meta {
+    display: flex;
+    gap: 8px;
+    font-size: 10px;
+    color: #94a3b8;
+    margin-bottom: 6px;
+}
+
+.policy-stage-badge {
+    display: inline-block;
+    padding: 2px 6px;
+    border-radius: 4px;
+    background: rgba(56, 189, 248, 0.15);
+    color: #7dd3fc;
+    font-size: 9px;
+    font-weight: 500;
+}
+
+.policy-card-summary {
+    font-size: 10px;
+    color: #cbd5e1;
+    line-height: 1.4;
+    margin-top: 6px;
+}
+
+/* Congress Tabs */
+.congress-tabs,
+.executive-tabs,
+.bill-stage-tabs {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 12px;
+    border-bottom: 1px solid rgba(56, 189, 248, 0.1);
+    overflow-x: auto;
+}
+
+.tab-btn {
+    padding: 6px 10px;
+    border: none;
+    background: none;
+    color: #94a3b8;
+    font-size: 11px;
+    font-weight: 500;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.tab-btn:hover {
+    color: #7dd3fc;
+}
+
+.tab-btn.active {
+    color: #38bdf8;
+    border-bottom-color: #38bdf8;
+}
+
+/* Committee List */
+.committee-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: 500px;
+    overflow-y: auto;
+}
+
+.committee-item {
+    padding: 8px;
+    border-radius: 6px;
+    border: 1px solid rgba(56, 189, 248, 0.15);
+    background: rgba(2, 6, 23, 0.5);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.committee-item:hover {
+    border-color: rgba(56, 189, 248, 0.4);
+    background: rgba(2, 6, 23, 0.8);
+}
+
+.committee-name {
+    font-size: 11px;
+    font-weight: 600;
+    color: #e0f2fe;
+    margin-bottom: 2px;
+}
+
+.committee-meta {
+    font-size: 9px;
+    color: #94a3b8;
+}
+
+/* Bills List */
+.bills-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: 500px;
+    overflow-y: auto;
+}
+
+.bill-item {
+    padding: 8px;
+    border-radius: 6px;
+    border: 1px solid rgba(56, 189, 248, 0.1);
+    background: rgba(2, 6, 23, 0.5);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.bill-item:hover {
+    border-color: rgba(56, 189, 248, 0.3);
+    background: rgba(2, 6, 23, 0.8);
+}
+
+.bill-number {
+    font-size: 10px;
+    font-weight: 600;
+    color: #7dd3fc;
+    margin-bottom: 2px;
+}
+
+.bill-title {
+    font-size: 10px;
+    color: #cbd5e1;
+    line-height: 1.3;
+    margin-bottom: 4px;
+}
+
+.bill-meta {
+    display: flex;
+    gap: 8px;
+    font-size: 9px;
+    color: #94a3b8;
+}
+
+/* Executive Content */
+.executive-content {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.eo-item,
+.regulation-item {
+    padding: 8px;
+    border-radius: 6px;
+    border: 1px solid rgba(56, 189, 248, 0.1);
+    background: rgba(2, 6, 23, 0.5);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.eo-item:hover,
+.regulation-item:hover {
+    border-color: rgba(56, 189, 248, 0.3);
+    background: rgba(2, 6, 23, 0.8);
+}
+
+.eo-number,
+.regulation-title {
+    font-size: 10px;
+    font-weight: 600;
+    color: #7dd3fc;
+    margin-bottom: 2px;
+}
+
+.eo-title,
+.regulation-desc {
+    font-size: 10px;
+    color: #cbd5e1;
+    line-height: 1.3;
+}
+
+/* Bill Detail Content */
+.bill-detail-content {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-height: 600px;
+    overflow-y: auto;
+}
+
+.bill-detail-section {
+    padding: 10px;
+    border-radius: 6px;
+    border: 1px solid rgba(56, 189, 248, 0.1);
+    background: rgba(2, 6, 23, 0.5);
+}
+
+.bill-detail-section-title {
+    font-size: 10px;
+    font-weight: 600;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 6px;
+}
+
+.bill-detail-section-content {
+    font-size: 10px;
+    color: #cbd5e1;
+    line-height: 1.4;
+}
+
+.bill-sponsor {
+    padding: 6px;
+    border-radius: 4px;
+    background: rgba(56, 189, 248, 0.1);
+    border: 1px solid rgba(56, 189, 248, 0.2);
+    font-size: 9px;
+    color: #7dd3fc;
+}
+
+.bill-related-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.bill-related-item {
+    padding: 6px;
+    border-radius: 4px;
+    background: rgba(2, 6, 23, 0.8);
+    border: 1px solid rgba(56, 189, 248, 0.1);
+    font-size: 9px;
+    color: #cbd5e1;
+    cursor: pointer;
+}
+
+.bill-related-item:hover {
+    border-color: rgba(56, 189, 248, 0.3);
+    background: rgba(2, 6, 23, 1);
+}
+
+/* Loading states */
+.empty-state {
+    text-align: center;
+    color: #94a3b8;
+    font-size: 11px;
+    padding: 20px 10px;
+    line-height: 1.5;
+}
+

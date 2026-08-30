@@ -145,6 +145,14 @@
                         <a href="#" data-target="shipping_chokepoints">초크포인트 모니터</a>
                     </div>
                 </div>
+                <div class="menu-item" data-nav-default="us-policy-hub">
+                    <span class="menu-parent" role="button" tabindex="0" aria-label="미국 정책 화면 열기">미국 정책</span>
+                    <div class="dropdown">
+                        <a href="#" data-target="us-policy-hub">정책 허브 (10대 법안)</a>
+                        <a href="#" data-target="us-congress-overview">의회 개요</a>
+                        <a href="#" data-target="us-executive">행정부 (EO·규제)</a>
+                    </div>
+                </div>
                 <div class="menu-item" data-nav-default="elections">
                     <span class="menu-parent" role="button" tabindex="0" aria-label="정치 화면 열기">정치</span>
                     <div class="dropdown">
@@ -225,6 +233,48 @@
 
                 <!-- Election home only: a date-ordered world schedule. -->
                 <section class="panel-section hidden" id="elections-timeline-panel" aria-live="polite"></section>
+
+                <!-- US Policy Hub: Top 10 bills -->
+                <div class="panel-section hidden" id="us-policy-hub-panel">
+                    <div class="panel-header">
+                        <h2>미국 정책 허브</h2>
+                        <p>119대 의회 주요 법안</p>
+                    </div>
+                    <div id="policy-summary-cards" class="policy-cards-container">
+                        <p class="empty-state">데이터 로딩 중…</p>
+                    </div>
+                </div>
+
+                <!-- US Congress: Committee list -->
+                <div class="panel-section hidden" id="us-congress-overview-panel">
+                    <div class="panel-header">
+                        <h2>의회 개요</h2>
+                        <p>상·하원·합동 상임위</p>
+                    </div>
+                    <div id="congress-tabs" class="congress-tabs">
+                        <button class="tab-btn active" data-chamber="senate">상원</button>
+                        <button class="tab-btn" data-chamber="house">하원</button>
+                        <button class="tab-btn" data-chamber="joint">합동</button>
+                    </div>
+                    <div id="congress-committees-list" class="committee-list">
+                        <p class="empty-state">위원회 목록 로딩 중…</p>
+                    </div>
+                </div>
+
+                <!-- US Executive: EO & Regulations -->
+                <div class="panel-section hidden" id="us-executive-panel">
+                    <div class="panel-header">
+                        <h2>행정부</h2>
+                        <p>행정 명령 및 규제</p>
+                    </div>
+                    <div id="executive-tabs" class="executive-tabs">
+                        <button class="tab-btn active" data-type="eo">행정명령 (EO)</button>
+                        <button class="tab-btn" data-type="regulation">규제 (CFR)</button>
+                    </div>
+                    <div id="executive-content" class="executive-content">
+                        <p class="empty-state">데이터 로딩 중…</p>
+                    </div>
+                </div>
             </aside>
 
             <!-- Center Pane: Map -->
@@ -295,6 +345,55 @@
                 <!-- Election country explorer. Global timeline is hidden while this is open. -->
                 <section class="panel-section hidden" id="elections-country-panel" aria-live="polite"></section>
 
+                <!-- US Policy: Committee detail & bills by stage -->
+                <div class="panel-section hidden" id="us-committee-detail-panel">
+                    <div class="panel-header" style="margin-bottom: 12px;">
+                        <h2 id="committee-name-title">상임위 상세</h2>
+                        <p id="committee-jurisdiction">관할: 로딩 중…</p>
+                    </div>
+                    <div id="committee-bill-tabs" class="bill-stage-tabs">
+                        <button class="tab-btn active" data-stage="">전체 보기</button>
+                        <button class="tab-btn" data-stage="introduced,referred,subcommittee,committee_consideration">발의·회부</button>
+                        <button class="tab-btn" data-stage="reported">상임위 통과</button>
+                        <button class="tab-btn" data-stage="passed_origin_chamber">본회의 통과</button>
+                        <button class="tab-btn" data-stage="enacted">제정</button>
+                        <button class="tab-btn" data-stage="vetoed,failed">종료·거부</button>
+                    </div>
+                    <div id="committee-bills-list" class="bills-list">
+                        <p class="empty-state">법안 목록 로딩 중…</p>
+                    </div>
+                </div>
+
+                <!-- US Policy: CRS Policy Area detail -->
+                <div class="panel-section hidden" id="us-crs-policy-area-panel">
+                    <div class="panel-header" style="margin-bottom: 12px;">
+                        <h2 id="policy-area-name-title">정책분야</h2>
+                        <p id="policy-area-desc">로딩 중…</p>
+                    </div>
+                    <div id="crs-bill-tabs" class="bill-stage-tabs">
+                        <button class="tab-btn active" data-stage="">전체 보기</button>
+                        <button class="tab-btn" data-stage="introduced,referred,subcommittee,committee_consideration">발의·회부</button>
+                        <button class="tab-btn" data-stage="reported">상임위 통과</button>
+                        <button class="tab-btn" data-stage="passed_origin_chamber">본회의 통과</button>
+                        <button class="tab-btn" data-stage="enacted">제정</button>
+                        <button class="tab-btn" data-stage="vetoed,failed">종료·거부</button>
+                    </div>
+                    <div id="crs-bills-list" class="bills-list">
+                        <p class="empty-state">법안 목록 로딩 중…</p>
+                    </div>
+                </div>
+
+                <!-- US Policy: Bill detail -->
+                <div class="panel-section hidden" id="us-bill-detail-panel">
+                    <div class="panel-header">
+                        <h2 id="bill-number-title">법안 상세</h2>
+                        <p id="bill-title-subtitle">로딩 중…</p>
+                    </div>
+                    <div id="bill-detail-content" class="bill-detail-content">
+                        <p class="empty-state">법안 정보 로딩 중…</p>
+                    </div>
+                </div>
+
                 <!-- 「오늘 신호」 panel (home only).
                      Two zones: three fixed cards that never rotate, and a stage
                      that swaps a whole page of four slots at a time. Every slot
@@ -352,7 +451,7 @@
     </div>
 
     <!-- Data and App Logic -->
-    <script src="data.js?v=9"></script>
+    <script src="data.js?v=11"></script>
     <script src="shipping.js?v=19"></script>
     <!-- Finance domains, split out of app.js. Plain scripts sharing one global
          scope, listed so each file follows the ones it reads: macro.js first
@@ -360,12 +459,22 @@
          mmFmt), portfolio.js before calculator.js (the calculator's search box
          reuses pfSearchLocal/pfSpot), then app.js, whose renderFinanceView
          dispatches to all four. Every cross-file reference is inside a function
-         body, so this order documents the dependency rather than enforcing it. -->
-    <script src="macro.js?v=1"></script>
-    <script src="market-microstructure.js?v=1"></script>
-    <script src="portfolio.js?v=1"></script>
-    <script src="calculator.js?v=1"></script>
-    <script src="app.js?v=112"></script>
+         body, so this order documents the dependency rather than enforcing it.
+
+         Bump the ?v= of EVERY file in this group together whenever a global
+         moves between them. All five read helpers defined in app.js -- macro.js
+         takes finEsc, the other three also take finPct, loadFirstJson and
+         finDataPaths -- so a browser holding a fresh calculator.js against a
+         cached app.js throws "loadFirstJson is not defined" and the whole
+         valuation view dies. index.html is served no-store (see serveAsset in
+         _worker.js), so these query strings are what actually pins the group
+         to one build. -->
+    <script src="macro.js?v=2"></script>
+    <script src="market-microstructure.js?v=2"></script>
+    <script src="portfolio.js?v=2"></script>
+    <script src="calculator.js?v=2"></script>
+    <script src="policy.js?v=1"></script>
+    <script src="app.js?v=114"></script>
     <script src="trade.js?v=3"></script>
     <script type="module" src="js/elections/index.js?v=2"></script>
 </body>

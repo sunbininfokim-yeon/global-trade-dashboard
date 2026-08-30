@@ -5035,6 +5035,35 @@ const setView = (target) => {
 
     } else if (target === 'elections') {
         showElectionView();
+    } else if (target === 'us-policy-hub') {
+        currentCommodity = target;
+        stopTradeAnim();
+        stopRotation();
+        document.body.classList.remove('trade-map-mode', 'shipping-mode');
+        togglePanels({ left: true, right: true, chart: false, map: true });
+        deckgl.setProps({ layers: worldBaseLayers({ id: 'policy' }) });
+        currentViewState = clampGlobeView({ ...currentViewState, zoom: GLOBE_ZOOM });
+        if (window.USPolicy) window.USPolicy.showHub();
+
+    } else if (target === 'us-congress-overview') {
+        currentCommodity = target;
+        stopTradeAnim();
+        stopRotation();
+        document.body.classList.remove('trade-map-mode', 'shipping-mode');
+        togglePanels({ left: true, right: true, chart: false, map: true });
+        deckgl.setProps({ layers: worldBaseLayers({ id: 'policy' }) });
+        currentViewState = clampGlobeView({ ...currentViewState, zoom: GLOBE_ZOOM });
+        if (window.USPolicy) window.USPolicy.showCongressOverview();
+
+    } else if (target === 'us-executive') {
+        currentCommodity = target;
+        stopTradeAnim();
+        stopRotation();
+        document.body.classList.remove('trade-map-mode', 'shipping-mode');
+        togglePanels({ left: true, right: true, chart: false, map: true });
+        deckgl.setProps({ layers: worldBaseLayers({ id: 'policy' }) });
+        currentViewState = clampGlobeView({ ...currentViewState, zoom: GLOBE_ZOOM });
+        if (window.USPolicy) window.USPolicy.showExecutive();
 
     } else if (isShippingView) {
         currentCommodity = target;
