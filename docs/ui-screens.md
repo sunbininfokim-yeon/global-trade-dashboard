@@ -121,7 +121,29 @@ committee_agency_jurisdictions
 
 **목록 필드**: `bill_id`, `title`, `sponsor`, `introduced_date`, `current_stage`, `current_status`, `latest_action_date`, `policy_area_id`, `summary`, `congress_url`.
 
-**법안 상세의 찬성·반대**: `bill_votes.yea`, `nay`, `present`, `not_voting`, `result`, `source_url`을 사용한다. 음성표결 또는 만장일치 동의는 수치가 `null`일 수 있으며 “기록 표결 없음”으로 표시한다.
+### 법안 상세: 회부 상임위·표결·관련 법안
+
+**현재 회부 상임위 칩**: `bill_committees → committees`를 조인해 `name`, `chamber`, `official_url`을 칩으로 보인다. 상임위 칩을 누르면 해당 상임위의 단계별 목록으로 이동한다.
+
+**표결 노출 계약**
+
+| 표결 구분 | UI에 노출할 것 | 데이터 조건 |
+|---|---|---|
+| 상임위 markup 표결 | 찬성·반대 집계와 의원별 `bill_vote_members` 명단 | `vote_stage = 'committee'` 이고 구성원 데이터가 공식 출처에서 완전하게 확보된 경우 |
+| 본회의·그 이후 표결 | `yea_count`, `nay_count`, `present_count`, `not_voting_count`, `result`, 공식 링크만 | `vote_stage = 'floor'` 또는 `unknown` |
+| 기록 표결 없음 | “기록 표결 없음” | 집계가 없거나 음성표결/만장일치 동의인 경우 |
+
+**현재 구현 한계**: 현재 `bill_votes`는 `chamber`와 집계만 보관하며 `vote_stage`, `source_action_id`, `committee_id`가 없다. `bill_actions.committee_id` 컬럼은 존재하지만 현재 수집기는 그 값을 채우지 않는다. 또한 현재 수집기는 `bill_vote_members`를 채우지 않는다. 그러므로 현 단계 UI는 모든 표결을 **집계만** 표시해야 하며, 상임위 의원별 명단을 추정해 표시하면 안 된다.
+
+다음 승인 범위의 스키마·수집 설계는 [법안 종료 데이터 보존 및 표결 확장 설계](bill-retention-design.md)를 따른다. 그 변경이 실제 적용된 뒤에만 상임위 markup 표결의 의원 명단을 노출한다.
+
+**관련 법안 구역**
+
+- `official_related_bills`: `bill_relations.relation_origin in ('official', 'verified_manual')`만 표시한다.
+- `similar_bills`: `relation_origin = 'semantic'`만 표시하고 “AI 유사성” 라벨·점수를 함께 보인다.
+- 두 구역은 시각적으로 분리한다. 유사 법안을 공식 관계처럼 표시하지 않는다.
+
+**향후 교차정당 지지**: 법안 발의 당시의 정당을 나타내는 `bills.sponsor_party`가 아직 없다. 이 필드는 현재 단계에서 추가하지 않으며, 향후 표결 구성원 파이프라인과 함께 추가한다. 발의 시점 정당과 확인 출처·시각을 보존해야 하므로 현재 의원의 당적만 역참조해서 계산하지 않는다.
 
 ### 산업 프로필 자료
 

@@ -3,7 +3,7 @@
 // Federal Register only. No eCFR sync: cfr_titles is a static schema seed.
 const {
   asArray, checkpointSyncState, fetchJson, finishSyncRun, firstNonEmpty, mapWithConcurrency,
-  openAiEmbeddings, parseDateOnly, parseTimestamp, requireEnv, slug, startSyncRun,
+  geminiEmbeddings, geminiModelName, isOptionalEmbeddingError, parseDateOnly, parseTimestamp, requireEnv, slug, startSyncRun,
   supabaseGet, supabaseInsert, supabaseInsertIgnore, supabasePatch, supabaseRpc, supabaseUpsert, updateSyncState,
 } = require('./lib/sync-utils');
 
@@ -115,7 +115,10 @@ async function saveExecutiveOrder(item, document) {
   await supabaseUpsert('executive_orders', [row], 'eo_number');
   for (const agencyId of agencyIds) await supabaseInsertIgnore('executive_order_agencies', { eo_number: number, agency_id: agencyId }, 'eo_number,agency_id');
   await saveAuthorities(number, document);
-  await queue('eo_number', number, `${row.title}\n${row.summary || ''}`, { agency: agencyIds[0] || null });
+  await queue('eo_number', number, `${row.title}\n${row.summary || ''}`, {
+    agency: agencyIds[0] || null,
+    executive_order: String(number),
+  });
   return { number, row, embed: !previous || !previous.embedding || previous.title !== row.title || previous.summary !== row.summary };
 }
 
@@ -192,17 +195,17 @@ async function embed(table, keyColumn, rows, content) {
   if (SKIP_EMBEDDINGS || !rows.length) return 0;
   try {
     const selected = rows.slice(0, MAX_EMBEDDINGS);
-    const key = requireEnv('OPENAI_API_KEY');
+    const key = requireEnv('GEMINI_API_KEY');
     for (let start = 0; start < selected.length; start += 50) {
-      const group = selected.slice(start, start + 50); const vectors = await openAiEmbeddings(group.map(content), key);
+      const group = selected.slice(start, start + 50); const vectors = await geminiEmbeddings(group.map(content), key);
       for (let index = 0; index < group.length; index += 1) await supabasePatch(table, `${keyColumn}=eq.${encodeURIComponent(group[index][keyColumn])}`, {
-        embedding: vectors[index], embedding_model: process.env.OPENAI_EMBEDDING_MODEL || 'text-embedding-3-small', embedded_at: new Date().toISOString(),
+        embedding: vectors[index], embedding_model: geminiModelName(), embedded_at: new Date().toISOString(),
       });
     }
     if (rows.length > selected.length) console.warn(`Embedding cap reached: ${rows.length - selected.length} ${table} embeddings deferred.`);
     return selected.length;
   } catch (error) {
-    if (/credit_balance_exhausted|insufficient_quota|Missing required environment variable: OPENAI_API_KEY/i.test(error.message)) {
+    if (isOptionalEmbeddingError(error)) {
       console.warn(`${table} embeddings skipped: ${error.message}`);
       return 0;
     }

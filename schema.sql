@@ -766,7 +766,9 @@ create table if not exists public.subscriptions (
       'legislative_subject',
       'committee',
       'agency',
-      'cfr_title'
+      'cfr_title',
+      'bill',
+      'executive_order'
     )),
   category_id text,
   filter_config jsonb not null default '{}'::jsonb,

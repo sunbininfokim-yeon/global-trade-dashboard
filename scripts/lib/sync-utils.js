@@ -153,14 +153,65 @@ async function supabaseRpc(name, args = {}) {
   });
 }
 
-async function openAiEmbeddings(inputs, apiKey, model = process.env.OPENAI_EMBEDDING_MODEL || 'text-embedding-3-small') {
+const GEMINI_EMBEDDING_DIMENSIONS = 1536;
+const GEMINI_EMBEDDING_INPUT_MAX_CHARS = 6000;
+
+function geminiModelName(model = process.env.GEMINI_EMBEDDING_MODEL || 'gemini-embedding-001') {
+  return String(model).replace(/^models\//, '');
+}
+
+function embeddingInput(text) {
+  // gemini-embedding-001 accepts 2,048 input tokens. The input here is only
+  // title + official summary/abstract; this cap prevents an unusually long
+  // summary from failing an otherwise healthy source sync.
+  return String(text || '').trim().slice(0, GEMINI_EMBEDDING_INPUT_MAX_CHARS);
+}
+
+function normalizeVector(values) {
+  const vector = Array.isArray(values) ? values.map(Number) : [];
+  if (vector.length !== GEMINI_EMBEDDING_DIMENSIONS || vector.some((value) => !Number.isFinite(value))) {
+    throw new Error(`Gemini embeddings: expected ${GEMINI_EMBEDDING_DIMENSIONS} finite dimensions, received ${vector.length}`);
+  }
+  // Gemini Embedding 001 recommends normalization for reduced dimensions.
+  const magnitude = Math.sqrt(vector.reduce((sum, value) => sum + value * value, 0));
+  if (!Number.isFinite(magnitude) || magnitude === 0) throw new Error('Gemini embeddings: zero-length vector');
+  return vector.map((value) => value / magnitude);
+}
+
+function isOptionalEmbeddingError(error) {
+  return /Missing required environment variable: GEMINI_API_KEY|API_KEY_INVALID|API key not valid|PERMISSION_DENIED|SERVICE_DISABLED|RESOURCE_EXHAUSTED|quota|billing/i.test(error?.message || '');
+}
+
+async function geminiEmbeddings(inputs, apiKey, model = geminiModelName()) {
   if (!inputs.length) return [];
-  const body = await fetchJson('https://api.openai.com/v1/embeddings', {
-    method: 'POST',
-    headers: { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ model, input: inputs }),
-  }, { label: 'OpenAI embeddings', nonRetryableErrorPattern: /credit_balance_exhausted|insufficient_quota/i });
-  return body.data.sort((a, b) => a.index - b.index).map((item) => item.embedding);
+  const modelName = geminiModelName(model);
+  const modelResource = `models/${modelName}`;
+  const body = await fetchJson(
+    `https://generativelanguage.googleapis.com/v1beta/${modelResource}:batchEmbedContents`,
+    {
+      method: 'POST',
+      headers: { 'x-goog-api-key': apiKey, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        requests: inputs.map((input) => ({
+          model: modelResource,
+          content: { parts: [{ text: embeddingInput(input) }] },
+          // batchEmbedContents REST fields are top-level per request. The
+          // embedContentConfig wrapper belongs to client SDK convenience APIs.
+          taskType: 'RETRIEVAL_DOCUMENT',
+          outputDimensionality: GEMINI_EMBEDDING_DIMENSIONS,
+        })),
+      }),
+    },
+    {
+      label: 'Gemini embeddings',
+      nonRetryableErrorPattern: /API_KEY_INVALID|API key not valid|PERMISSION_DENIED|SERVICE_DISABLED|RESOURCE_EXHAUSTED|quota|billing/i,
+    },
+  );
+  const embeddings = Array.isArray(body?.embeddings) ? body.embeddings : [];
+  if (embeddings.length !== inputs.length) {
+    throw new Error(`Gemini embeddings: expected ${inputs.length} vectors, received ${embeddings.length}`);
+  }
+  return embeddings.map((item) => normalizeVector(item?.values));
 }
 
 async function mapWithConcurrency(items, concurrency, worker) {
@@ -279,7 +330,7 @@ async function queueRetryOrFail(queueId, attempts, errorMessage, maxAttempts = 1
 
 module.exports = {
   asArray, checkpointSyncState, createRequestGate, fetchJson, finishSyncRun, firstNonEmpty, mapWithConcurrency,
-  openAiEmbeddings, parseDateOnly, parseTimestamp, requireEnv, sleep, slug, startSyncRun,
+  geminiEmbeddings, geminiModelName, isOptionalEmbeddingError, parseDateOnly, parseTimestamp, requireEnv, sleep, slug, startSyncRun,
   supabaseGet, supabaseInsert, supabaseInsertIgnore, supabasePatch, supabaseRpc,
   supabaseUpsert, updateSyncState, enqueuePolicyItem, takePolicyQueue, markPolicyQueue,
   reapStalePolicyQueue, queueRetryOrFail,
