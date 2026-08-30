@@ -5,14 +5,37 @@ on:
     - cron: '17 2 * * *'
   workflow_dispatch:
     inputs:
-      sync_days:
-        description: 'Compatibility input; regular runs use saved API cursors and overlap windows.'
+      congress_mode:
+        description: 'Congress.gov mode. bootstrap discovers the current 119th Congress page by page.'
         required: false
-        default: '7'
+        default: 'incremental'
+        type: choice
+        options: [incremental, bootstrap]
+      public_law_mode:
+        description: 'GovInfo Public Law mode. Use bootstrap only for deliberate historical backfill.'
+        required: false
+        default: 'incremental'
+        type: choice
+        options: [incremental, bootstrap]
+      max_bills:
+        description: 'Maximum queued Congress bills to process in this run.'
+        required: false
+        default: '100'
+        type: string
+      max_public_laws:
+        description: 'Maximum queued Public Laws to process in this run.'
+        required: false
+        default: '50'
         type: string
 
 permissions:
   contents: read
+
+# One worker at a time: this makes the persistent queue safe even when a
+# manual backfill is dispatched near the scheduled run.
+concurrency:
+  group: us-policy-sync
+  cancel-in-progress: false
 
 jobs:
   sync-government-policy:
@@ -24,13 +47,13 @@ jobs:
       SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
       SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
       OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-      # The scheduled job is incremental. A four-Congress full backfill is a
-      # deliberate, resumable manual run (SYNC_MODE=bootstrap), never cron.
-      SYNC_MODE: incremental
-      # Conservative Free-plan defaults. Raise only after checking database
-      # size in Supabase Dashboard → Settings → Usage.
-      MAX_BILLS: '25'
-      MAX_FR_DOCUMENTS: '50'
+      # Scheduled work only tracks current changes. Historical backfills are
+      # manual, resumable, and separated from daily production polling.
+      SYNC_MODE: ${{ inputs.congress_mode || 'incremental' }}
+      PUBLIC_LAW_MODE: ${{ inputs.public_law_mode || 'incremental' }}
+      MAX_BILLS: ${{ inputs.max_bills || '100' }}
+      MAX_PUBLIC_LAWS: ${{ inputs.max_public_laws || '50' }}
+      MAX_FR_DOCUMENTS: '150'
       MAX_EMBEDDINGS: '25'
       CONGRESS_REQUEST_INTERVAL_MS: '850'
       NODE_OPTIONS: --max-old-space-size=2048
@@ -48,9 +71,20 @@ jobs:
           node --check scripts/lib/sync-utils.js
           node --check scripts/sync-congress.js
           node --check scripts/sync-federal-register.js
+          node --check scripts/sync-public-laws.js
+          node --check scripts/sync-us-code.js
 
       - name: Sync Congress.gov bills
         run: node scripts/sync-congress.js
 
       - name: Sync Federal Register executive orders and regulations
+        if: ${{ !cancelled() }}
         run: node scripts/sync-federal-register.js
+
+      - name: Refresh U.S. Code reference release point
+        if: ${{ !cancelled() }}
+        run: node scripts/sync-us-code.js
+
+      - name: Sync Public Law index
+        if: ${{ !cancelled() }}
+        run: node scripts/sync-public-laws.js

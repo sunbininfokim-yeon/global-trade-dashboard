@@ -6,7 +6,7 @@ const {
   asArray, checkpointSyncState, createRequestGate, fetchJson, finishSyncRun, firstNonEmpty,
   mapWithConcurrency, openAiEmbeddings, parseDateOnly, parseTimestamp, requireEnv, slug,
   startSyncRun, supabaseGet, supabaseInsert, supabaseInsertIgnore, supabasePatch, supabaseRpc, supabaseUpsert,
-  updateSyncState,
+  updateSyncState, enqueuePolicyItem, takePolicyQueue, markPolicyQueue,
 } = require('./lib/sync-utils');
 
 const API_BASE = 'https://api.congress.gov/v3';
@@ -18,6 +18,7 @@ const REQUEST_INTERVAL_MS = Number(process.env.CONGRESS_REQUEST_INTERVAL_MS || 8
 const SKIP_EMBEDDINGS = process.env.SKIP_EMBEDDINGS === 'true';
 const MAX_EMBEDDINGS = Number(process.env.MAX_EMBEDDINGS || 25);
 const BOOTSTRAP = process.env.SYNC_MODE === 'bootstrap';
+const DISCOVERY_PAGE_SIZE = Math.min(250, Number(process.env.DISCOVERY_PAGE_SIZE || 250));
 
 if (!API_KEY) throw new Error('Missing CONGRESS_API_KEY (DATA_GOV_API_KEY may be used as fallback).');
 requireEnv('SUPABASE_URL');
@@ -99,7 +100,7 @@ async function loadState() {
 function lastFour(active) {
   return process.env.CONGRESS_NUMBERS
     ? process.env.CONGRESS_NUMBERS.split(',').map(Number).filter(Number.isInteger)
-    : [active - 3, active - 2, active - 1, active];
+    : [active];
 }
 function congressDateTime(value) {
   const date = new Date(value);
@@ -117,38 +118,53 @@ function initialWindow(state) {
 async function candidates(congresses, state) {
   const cursor = state?.cursor || {};
   if (BOOTSTRAP) {
-    const congressIndex = Number(cursor.page_congress_index ?? cursor.next_congress_index ?? 0);
-    const offset = Number(cursor.page_offset ?? cursor.next_offset ?? 0);
+    const congressIndex = Number(cursor.page_congress_index ?? 0);
+    const offset = Number(cursor.page_offset ?? 0);
     const congress = congresses[congressIndex];
     if (!congress) return { refs: [], cursor: { mode: 'bootstrap', congresses, complete: true }, checkpointCursor: null };
-    const body = await apiGet(`/bill/${congress}`, { limit: Math.min(250, MAX_BILLS), offset });
+    const body = await apiGet(`/bill/${congress}`, { limit: DISCOVERY_PAGE_SIZE, offset });
     const items = asArray(body?.bills);
-    const next = items.length < Math.min(250, MAX_BILLS) || !body?.pagination?.next
+    const next = items.length < DISCOVERY_PAGE_SIZE || !body?.pagination?.next
       ? { mode: 'bootstrap', congresses, next_congress_index: congressIndex + 1, next_offset: 0, complete: congressIndex + 1 >= congresses.length }
       : { mode: 'bootstrap', congresses, next_congress_index: congressIndex, next_offset: offset + items.length, complete: false };
-    const done = new Set(cursor.page_congress_index === congressIndex && cursor.page_offset === offset ? cursor.processed_bill_ids || [] : []);
     return {
-      refs: unique(items.map((item) => refFrom(item, congress)).filter(Boolean)).filter((item) => !done.has(idOf(item.congress, item.type, item.number))),
+      refs: unique(items.map((item) => refFrom(item, congress)).filter(Boolean)),
       cursor: next,
-      checkpointCursor: { mode: 'bootstrap', congresses, page_congress_index: congressIndex, page_offset: offset, processed_bill_ids: [...done] },
+      checkpointCursor: null,
     };
   }
   const windowFrom = initialWindow(state);
-  const done = new Set(cursor.mode === 'incremental' && cursor.window_from === windowFrom ? cursor.processed_bill_ids || [] : []);
   const items = [];
   for (const congress of congresses) {
-    const body = await apiGet(`/bill/${congress}`, { limit: Math.min(250, MAX_BILLS), offset: 0, fromDateTime: windowFrom });
+    const body = await apiGet(`/bill/${congress}`, { limit: DISCOVERY_PAGE_SIZE, offset: 0, fromDateTime: windowFrom });
     items.push(...asArray(body?.bills).map((item) => refFrom(item, congress)).filter(Boolean));
   }
-  const uniqueItems = unique(items);
-  if (uniqueItems.length > MAX_BILLS) {
-    throw new Error(`Incremental window contains ${uniqueItems.length} changed bills, over MAX_BILLS=${MAX_BILLS}. Increase MAX_BILLS before rerunning so no changes are skipped.`);
-  }
   return {
-    refs: uniqueItems.filter((item) => !done.has(idOf(item.congress, item.type, item.number))),
-    cursor: { mode: 'incremental', congresses, window_from: windowFrom, processed_bill_ids: [...done] },
+    refs: unique(items),
+    cursor: { mode: 'incremental', congresses, window_from: windowFrom },
     checkpointCursor: null,
   };
+}
+
+function detailLevel(currentStage) {
+  if (['passed_origin_chamber', 'second_chamber', 'resolving_differences', 'passed_both_chambers', 'presented_to_president', 'enacted'].includes(currentStage)) return 'enriched';
+  // "상임위 보고"부터 상세 추적한다. 회부·청문·소위원회 심사 단계는
+  // 현재 119대의 폭넓은 법안 지도를 만들기 위한 index 행으로만 유지한다.
+  if (currentStage === 'reported') return 'tracked';
+  return 'index';
+}
+
+async function stageCandidates(refs) {
+  let inserted = 0;
+  for (const ref of refs) {
+    const sourceUpdatedAt = firstNonEmpty(ref.listItem?.updateDate, ref.listItem?.updateDateIncludingText);
+    const priority = detailLevel(stage(firstNonEmpty(ref.listItem?.latestAction?.text, ''), ref.type)) === 'enriched' ? 20 : 0;
+    const result = await enqueuePolicyItem(RESOURCE, idOf(ref.congress, ref.type, ref.number), {
+      congress: ref.congress, type: ref.type, number: ref.number, list_item: ref.listItem || null,
+    }, { sourceUpdatedAt, priority });
+    if (result !== 'unchanged') inserted += 1;
+  }
+  return inserted;
 }
 
 async function memberName(bioguideId) {
@@ -164,15 +180,23 @@ async function bundle(ref) {
   const path = `/bill/${ref.congress}/${ref.type}/${ref.number}`;
   const detailBody = await apiGet(path);
   const detail = detailBody?.bill || detailBody || {};
-  const [summaryBody, actionBody, subjectBody, committeeBody, textBody, relationBody] = await Promise.all([
-    apiGet(`${path}/summaries`, { limit: 250 }, true), apiGet(`${path}/actions`, { limit: 250 }, true),
-    apiGet(`${path}/subjects`, { limit: 250 }, true), apiGet(`${path}/committees`, { limit: 250 }, true),
-    apiGet(`${path}/text`, { limit: 250 }, true), apiGet(`${path}/relatedbills`, { limit: 250 }, true),
+  const [summaryBody, subjectBody, committeeBody] = await Promise.all([
+    apiGet(`${path}/summaries`, { limit: 250 }, true), apiGet(`${path}/subjects`, { limit: 250 }, true),
+    apiGet(`${path}/committees`, { limit: 250 }, true),
   ]);
   const summaries = asArray(summaryBody?.summaries);
-  const actions = asArray(actionBody?.actions);
   const latestSummary = [...summaries].sort((a, b) => String(a.updateDate || '').localeCompare(String(b.updateDate || ''))).at(-1);
-  const latestAction = actions.at(-1) || detail.latestAction || ref.listItem.latestAction || {};
+  const basicLatestAction = detail.latestAction || ref.listItem?.latestAction || {};
+  const provisionalStage = stage(firstNonEmpty(basicLatestAction.text, 'Introduced'), ref.type);
+  const level = detailLevel(provisionalStage);
+  const [actionBody, textBody, relationBody] = level === 'index'
+    ? [null, null, null]
+    : await Promise.all([
+      apiGet(`${path}/actions`, { limit: 250 }, true), apiGet(`${path}/text`, { limit: 250 }, true),
+      apiGet(`${path}/relatedbills`, { limit: 250 }, true),
+    ]);
+  const actions = asArray(actionBody?.actions);
+  const latestAction = actions.at(-1) || basicLatestAction;
   const sponsorItem = asArray(detail.sponsors?.item || detail.sponsors || detail.sponsor).at(0) || {};
   const sponsorId = firstNonEmpty(sponsorItem.bioguideId, sponsorItem.bioguide_id);
   const policyName = typeof detail.policyArea === 'string' ? detail.policyArea : detail.policyArea?.name;
@@ -181,7 +205,7 @@ async function bundle(ref) {
   const lawType = String(law.type || '').toLowerCase().replace(' law', '');
   const billId = idOf(ref.congress, ref.type, ref.number);
   return {
-    billId, ref, detail, summaries, actions,
+    billId, ref, detail, summaries, actions, detailLevel: level,
     subjects: asArray(subjectBody?.subjects), committees: asArray(committeeBody?.committees),
     textVersions: asArray(textBody?.textVersions), relatedBills: asArray(relationBody?.relatedBills), law,
     policyArea: policyAreaId ? { policy_area_id: policyAreaId, name: policyName, source_url: withoutKey(detail.policyArea?.url) } : null,
@@ -201,6 +225,7 @@ async function bundle(ref) {
         source: 'congress.gov', api_url: withoutKey(detail.url || ref.listItem.url),
         update_date: detail.updateDate || ref.listItem.updateDate || null,
       },
+      detail_level: level,
     },
   };
 }
@@ -279,7 +304,7 @@ async function saveBundle(data) {
     congress_number: data.ref.congress, law_number: number, law_title: data.row.title, enacted_date: data.row.latest_action_date,
     bill_id: data.billId, congress_url: officialUrl(data.ref) }], 'public_law_id');
   await queue(data.billId, data.row, { policy_area: data.row.policy_area_id });
-  return !previous || !previous.embedding || previous.title !== data.row.title || previous.summary !== data.row.summary;
+  return data.detailLevel !== 'index' && (!previous || !previous.embedding || previous.title !== data.row.title || previous.summary !== data.row.summary);
 }
 
 async function saveVote(data, action, vote) {
@@ -326,19 +351,45 @@ async function run() {
   const runId = await startSyncRun(RESOURCE, { congresses, mode: BOOTSTRAP ? 'bootstrap' : 'incremental', max_bills: MAX_BILLS });
   let read = 0; let written = 0;
   try {
-    const next = await candidates(congresses, state); read = next.refs.length;
-    console.log(`Congress.gov: ${read} candidates in Congress ${congresses.join(', ')}.`);
-    const bundles = await mapWithConcurrency(next.refs, CONCURRENCY, bundle); const embeds = [];
-    for (const item of bundles) {
-      if (await saveBundle(item)) embeds.push(item); written += 1;
-      const progress = BOOTSTRAP ? next.checkpointCursor : next.cursor;
-      if (progress) { progress.processed_bill_ids.push(item.billId); await checkpointSyncState(RESOURCE, progress); }
+    const next = await candidates(congresses, state);
+    const staged = await stageCandidates(next.refs);
+    await checkpointSyncState(RESOURCE, next.cursor);
+    const queued = await takePolicyQueue(RESOURCE, MAX_BILLS);
+    read = queued.length;
+    console.log(`Congress.gov: discovered ${next.refs.length}, staged ${staged}, processing ${read} queued bills for Congress ${congresses.join(', ')}.`);
+    const claimed = await mapWithConcurrency(queued, CONCURRENCY, async (entry) => {
+      await markPolicyQueue(entry.queue_id, { status: 'processing', claimed_at: new Date().toISOString(), attempts: entry.attempts + 1 });
+      const payload = entry.payload || {};
+      try {
+        const item = await bundle({ congress: Number(payload.congress), type: payload.type, number: Number(payload.number), listItem: payload.list_item || null });
+        return { entry, item };
+      } catch (error) {
+        const delayMs = Math.min(60 * 60 * 1000, 60_000 * (2 ** Math.min(entry.attempts, 5)));
+        await markPolicyQueue(entry.queue_id, {
+          status: 'pending', available_at: new Date(Date.now() + delayMs).toISOString(), last_error: error.message,
+        });
+        console.error(`Congress.gov queue item ${entry.source_key} deferred: ${error.message}`);
+        return { entry, error };
+      }
+    });
+    const embeds = [];
+    for (const result of claimed) {
+      if (result.error) continue;
+      try {
+        if (await saveBundle(result.item)) embeds.push(result.item);
+        written += 1;
+        await markPolicyQueue(result.entry.queue_id, { status: 'succeeded', completed_at: new Date().toISOString(), last_error: null });
+      } catch (error) {
+        await markPolicyQueue(result.entry.queue_id, { status: 'pending', available_at: new Date(Date.now() + 300_000).toISOString(), last_error: error.message });
+        console.error(`Congress.gov write for ${result.entry.source_key} deferred: ${error.message}`);
+      }
     }
     const embedded = await embed(embeds);
     await supabaseRpc('refresh_policy_lifecycle_tiers', { active_congress_number: active });
-    await updateSyncState(RESOURCE, BOOTSTRAP ? next.cursor : { mode: 'incremental', congresses, completed_at: new Date().toISOString() });
-    await finishSyncRun(runId, { status: 'succeeded', records_read: read, records_written: written, metadata: { cursor: next.cursor, embedded } });
-    console.log(`Congress.gov complete: ${written} records, ${embedded} embeddings.`);
+    await updateSyncState(RESOURCE, { ...next.cursor, completed_at: new Date().toISOString() });
+    const status = written === read ? 'succeeded' : 'partial';
+    await finishSyncRun(runId, { status, records_read: read, records_written: written, metadata: { cursor: next.cursor, staged, embedded } });
+    console.log(`Congress.gov complete: ${written}/${read} queued records, ${embedded} embeddings.`);
   } catch (error) {
     await finishSyncRun(runId, { status: 'failed', records_read: read, records_written: written, error_summary: error.message });
     throw error;
