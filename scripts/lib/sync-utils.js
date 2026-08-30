@@ -195,10 +195,10 @@ async function geminiEmbeddings(inputs, apiKey, model = geminiModelName()) {
         requests: inputs.map((input) => ({
           model: modelResource,
           content: { parts: [{ text: embeddingInput(input) }] },
-          embedContentConfig: {
-            taskType: 'RETRIEVAL_DOCUMENT',
-            outputDimensionality: GEMINI_EMBEDDING_DIMENSIONS,
-          },
+          // batchEmbedContents REST fields are top-level per request. The
+          // embedContentConfig wrapper belongs to client SDK convenience APIs.
+          taskType: 'RETRIEVAL_DOCUMENT',
+          outputDimensionality: GEMINI_EMBEDDING_DIMENSIONS,
         })),
       }),
     },
