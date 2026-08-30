@@ -1,0 +1,30 @@
+{
+  "schema_version": "sovereign-fiscal-v1",
+  "retrieved_at": null,
+  "source": {
+    "imf": {
+      "publisher": "IMF DataMapper / Fiscal Policy Panel",
+      "debt_indicator": "d (Gross public debt, percent of GDP)",
+      "interest_indicator": "ie (Interest paid on public debt, percent of GDP)",
+      "gdp_indicator": "NGDPD (GDP, current prices; billions USD)",
+      "url": "https://www.imf.org/external/datamapper/api/v1/d,ie,NGDPD"
+    },
+    "us_treasury": {
+      "publisher": "U.S. Treasury FiscalData, Monthly Treasury Statement Table 5",
+      "url": "https://fiscaldata.treasury.gov/datasets/monthly-treasury-statement/"
+    }
+  },
+  "refresh": {
+    "check_cadence": "monthly",
+    "imf_source_frequency": "annual",
+    "us_treasury_source_frequency": "monthly",
+    "actuals_policy_ko": "IMF 전망치는 제외하고 실제 관측 연도만 사용"
+  },
+  "countries": {},
+  "us_defense_ratio": {
+    "status": "unavailable",
+    "asof": null,
+    "observations": []
+  },
+  "note_ko": "초기 빈 스냅샷입니다. build_sovereign_fiscal_snapshot.py가 IMF·미 재무부 공식 원자료에 접근 가능한 환경에서 실제 관측치로 교체합니다."
+}

@@ -1,0 +1,36 @@
+name: Refresh sovereign debt and interest actuals
+
+on:
+  schedule:
+    # Monthly check is enough: IMF common data are annual; Treasury MTS is
+    # monthly.  The 3rd avoids the first-day release/maintenance window.
+    - cron: '18 18 3 * *'
+  workflow_dispatch:
+
+jobs:
+  refresh-sovereign-fiscal:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Test fiscal transform
+        working-directory: New for anti/scripts/macro_monitor
+        run: python -m unittest tests/test_sovereign_fiscal.py -v
+      - name: Download actual-only IMF and Treasury snapshot
+        working-directory: New for anti/scripts/macro_monitor
+        run: python build_sovereign_fiscal_snapshot.py
+      - name: Graft cards into deployed macro pack
+        working-directory: New for anti/scripts/macro_monitor
+        run: python refresh_sovereign_fiscal_in_pack.py
+      - name: Commit refreshed source data
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "New for anti/scripts/macro_monitor/config/sovereign_fiscal_v1.json" \
+                  "New for anti/public/data/macro_monitor_v1.json"
+          git commit -m "chore: refresh IMF/Treasury sovereign fiscal actuals" || exit 0
+          git push
