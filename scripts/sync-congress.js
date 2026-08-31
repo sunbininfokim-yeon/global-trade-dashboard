@@ -18,6 +18,13 @@ const REQUEST_INTERVAL_MS = Number(process.env.CONGRESS_REQUEST_INTERVAL_MS || 8
 const SKIP_EMBEDDINGS = process.env.SKIP_EMBEDDINGS === 'true';
 const MAX_EMBEDDINGS = Number(process.env.MAX_EMBEDDINGS || 25);
 const DISCOVERY_PAGE_SIZE = Math.min(250, Number(process.env.DISCOVERY_PAGE_SIZE || 250));
+// Opt-in scope reduction for deliberate backfills. Default (unset) keeps the
+// documented contract in docs/api-spec.md #8: every current-session bill gets
+// an index-level row. When set, bills that never reach committee-reported
+// status are skipped entirely (not just left unenriched), which is what
+// actually shrinks a 119th-Congress backfill from ~15k rows to the ~1-2k that
+// reach 'tracked'/'enriched'. Scheduled/incremental runs should leave this off.
+const SKIP_INDEX_BILLS = process.env.SKIP_INDEX_BILLS === 'true';
 // A single page (250) silently dropped any day with more changed bills than
 // that. This bounds a discovery run instead of hard-capping it at one page:
 // up to 10 * 250 = 2,500 changed bills per Congress per run before anything
@@ -175,8 +182,10 @@ function detailLevel(currentStage) {
 async function stageCandidates(refs) {
   let inserted = 0;
   for (const ref of refs) {
+    const level = detailLevel(stage(firstNonEmpty(ref.listItem?.latestAction?.text, ''), ref.type));
+    if (SKIP_INDEX_BILLS && level === 'index') continue;
     const sourceUpdatedAt = firstNonEmpty(ref.listItem?.updateDate, ref.listItem?.updateDateIncludingText);
-    const priority = detailLevel(stage(firstNonEmpty(ref.listItem?.latestAction?.text, ''), ref.type)) === 'enriched' ? 20 : 0;
+    const priority = level === 'enriched' ? 20 : 0;
     const result = await enqueuePolicyItem(RESOURCE, idOf(ref.congress, ref.type, ref.number), {
       congress: ref.congress, type: ref.type, number: ref.number, list_item: ref.listItem || null,
     }, { sourceUpdatedAt, priority });
