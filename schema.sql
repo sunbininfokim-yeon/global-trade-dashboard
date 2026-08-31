@@ -25,6 +25,7 @@ create table if not exists public.agencies (
   short_name text,
   federal_register_id integer,
   parent_agency_id text references public.agencies(agency_id) on delete set null,
+  agency_type text check (agency_type in ('eop', 'department', 'independent', 'sub')),
   agency_url text,
   raw_source jsonb not null default '{}'::jsonb,
   created_at timestamptz not null default now(),
@@ -34,6 +35,9 @@ create table if not exists public.agencies (
 create unique index if not exists agencies_federal_register_id_uidx
   on public.agencies (federal_register_id)
   where federal_register_id is not null;
+
+create index if not exists agencies_type_parent_name_idx
+  on public.agencies (agency_type, parent_agency_id, name);
 
 create table if not exists public.policy_areas (
   policy_area_id text primary key,

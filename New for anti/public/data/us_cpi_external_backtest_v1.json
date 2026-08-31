@@ -1,0 +1,299 @@
+{
+  "schema_version": "us-cpi-external-backtest-v1",
+  "model": "us_cpi_external_pathway_backtest",
+  "retrieved_at": "2026-08-31T06:47:37Z",
+  "data_status": "official_observed_current_vintage",
+  "scope": "External-input backtest; separate from BLS Table 6/7 contribution accounting and not read by UI.",
+  "sample": {
+    "start": "2011-01",
+    "minimum_train_months": 72,
+    "forecast_scheme": "expanding_window_one_step_ahead",
+    "target_transform": "published_seasonally_adjusted_index_mom_pct",
+    "input_transform": "EIA daily/weekly values are averaged to months then transformed to MoM. BLS industry PPI inputs are used as published (NSA) MoM with calendar-month fixed effects; they are not relabelled as seasonally adjusted.",
+    "vintage_policy": "Current source vintages are collected. The model is time-ordered and has no target look-ahead in its training windows, but an archival release-vintage panel is not yet retained. Results therefore cannot activate a pathway."
+  },
+  "sources": {
+    "bls": {
+      "publisher": "U.S. Bureau of Labor Statistics",
+      "series": {
+        "cpi_airline_fares_sa": "CUSR0000SETG01",
+        "cpi_food_at_home_sa": "CUSR0000SAF11"
+      }
+    },
+    "eia": {
+      "publisher": "U.S. Energy Information Administration",
+      "series": {
+        "jet_fuel_us_gulf_coast_spot": "PET.EER_EPJK_PF4_RGC_DPG.D",
+        "brent_spot": "PET.RBRTE.D"
+      }
+    },
+    "fred": {
+      "publisher": "Federal Reserve Bank of St. Louis",
+      "series": {
+        "industrial_production_sa": "INDPRO",
+        "ppi_food_manufacturing_nsa": "PCU311311",
+        "ppi_truck_transport_nsa": "PCU484484"
+      },
+      "provenance_note": "PCU311311 and PCU484484 are BLS PPI industry series retrieved through FRED because the BLS Public Data API rejected those configured identifiers on the first live run."
+    },
+    "local_public_fallback": {
+      "used": true,
+      "note": "When API credentials are absent, the same public series are retrieved through FRED CSV; GitHub automation continues to use Secrets when present."
+    }
+  },
+  "relationships": [
+    {
+      "id": "energy_to_airfares",
+      "relationship_map_id": "energy_to_airfares",
+      "activation": {
+        "status": "not_activated",
+        "reasons": [
+          "This first pass uses current-revised histories, not an archival release-vintage panel.",
+          "Conditional predictive tests and OOS comparisons do not establish causality.",
+          "Specified demand/capacity/hedging and supply-chain confounders are not fully observed in this first pass."
+        ]
+      },
+      "coverage": {
+        "first_month": "2011-08",
+        "last_month": "2026-07",
+        "aligned_months": 178,
+        "oos_months": 106
+      },
+      "specification": {
+        "target": "cpi_airline_fares_sa",
+        "external_inputs": [
+          "jet_fuel_us_gulf_coast_spot"
+        ],
+        "controls": [
+          "industrial_production_sa_lag_1"
+        ],
+        "lag_grid_months": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "baseline": "target AR(1), lagged common-factor controls and calendar-month fixed effects",
+        "extended": "baseline plus all pre-specified external distributed lags",
+        "availability_rule": "The contemporaneous EIA daily input is aggregated over the reference month and is available before the following-month CPI release; industrial production is lagged one month because its release can follow the CPI release."
+      },
+      "stationarity": {
+        "target": {
+          "adf_pvalue": 0.0005645026063645988,
+          "kpss_pvalue": 0.1,
+          "interpretation": "diagnostic_only; differenced MoM inputs are used regardless of these finite-sample tests"
+        },
+        "jet_fuel_us_gulf_coast_spot": {
+          "adf_pvalue": 1.777168046345975e-15,
+          "kpss_pvalue": 0.1,
+          "interpretation": "diagnostic_only; differenced MoM inputs are used regardless of these finite-sample tests"
+        }
+      },
+      "conditional_predictive_test": {
+        "statistic": 91.99450935637337,
+        "pvalue": 4.815287525291223e-17,
+        "degrees_of_freedom": 7,
+        "method": "joint HAC Wald test of external distributed-lag block conditional on AR(1), common-factor control and calendar-month fixed effects",
+        "interpretation": "conditional predictive content only; not causality or a forecast signal",
+        "fdr_qvalue": 4.815287525291223e-17
+      },
+      "lowest_hac_pvalue_lag_exploratory": {
+        "term": "jet_fuel_us_gulf_coast_spot_lag_0",
+        "coefficient": 0.08320778602782583,
+        "hac_pvalue": 0.006829020231703554
+      },
+      "best_lag_out_of_sample_exploratory": {
+        "lag_months": 0,
+        "baseline": {
+          "observations": 106,
+          "rmse": 3.8528865530629233,
+          "mae": 2.4591848369927662,
+          "direction_hit_rate": 0.6886792452830188
+        },
+        "extended": {
+          "observations": 106,
+          "rmse": 3.4975764065229464,
+          "mae": 2.3257772019371035,
+          "direction_hit_rate": 0.6698113207547169
+        },
+        "rmse_improvement_pct": 9.221920802664602,
+        "mae_improvement_pct": 5.424872219804403,
+        "diebold_mariano": {
+          "statistic": 0.9987255702867311,
+          "pvalue": 0.3179276502268008
+        }
+      },
+      "out_of_sample": {
+        "baseline": {
+          "observations": 106,
+          "rmse": 3.8528865530629233,
+          "mae": 2.4591848369927662,
+          "direction_hit_rate": 0.6886792452830188
+        },
+        "extended": {
+          "observations": 106,
+          "rmse": 3.566665750869833,
+          "mae": 2.456847826319813,
+          "direction_hit_rate": 0.660377358490566
+        },
+        "rmse_improvement_pct": 7.428736825006016,
+        "mae_improvement_pct": 0.09503192431079217,
+        "diebold_mariano": {
+          "statistic": 0.8177454993925973,
+          "pvalue": 0.41350252409605437
+        }
+      },
+      "limitations": [
+        "Model selection across lag candidates can overstate a single best lag; the reported best individual coefficient is exploratory.",
+        "CPI is SA, but the two configured industry PPI indexes are NSA; the first pass keeps those inputs as published and absorbs recurring calendar seasonality with month fixed effects. It is not a substitute for an official PPI seasonal adjustment.",
+        "COVID-era structural changes, airline hedging, seat capacity, agricultural commodity inputs, retail margins, and revision vintages can change the apparent relationship."
+      ]
+    },
+    {
+      "id": "energy_cost_to_food_prices",
+      "relationship_map_id": "energy_cost_to_food_prices",
+      "activation": {
+        "status": "not_activated",
+        "reasons": [
+          "This first pass uses current-revised histories, not an archival release-vintage panel.",
+          "Conditional predictive tests and OOS comparisons do not establish causality.",
+          "Specified demand/capacity/hedging and supply-chain confounders are not fully observed in this first pass."
+        ]
+      },
+      "coverage": {
+        "first_month": "2012-02",
+        "last_month": "2026-07",
+        "aligned_months": 172,
+        "oos_months": 100
+      },
+      "specification": {
+        "target": "cpi_food_at_home_sa",
+        "external_inputs": [
+          "brent_spot",
+          "ppi_food_manufacturing_nsa",
+          "ppi_truck_transport_nsa"
+        ],
+        "controls": [
+          "industrial_production_sa_lag_1"
+        ],
+        "lag_grid_months": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12
+        ],
+        "baseline": "target AR(1), lagged common-factor controls and calendar-month fixed effects",
+        "extended": "baseline plus all pre-specified external distributed lags",
+        "availability_rule": "EIA reference-month energy and BLS PPI reference-month data are treated as available before the following-month CPI release. Industrial production is lagged one month."
+      },
+      "stationarity": {
+        "target": {
+          "adf_pvalue": 0.0051431741084303016,
+          "kpss_pvalue": 0.048980410271338023,
+          "interpretation": "diagnostic_only; differenced MoM inputs are used regardless of these finite-sample tests"
+        },
+        "brent_spot": {
+          "adf_pvalue": 7.142575161325182e-15,
+          "kpss_pvalue": 0.1,
+          "interpretation": "diagnostic_only; differenced MoM inputs are used regardless of these finite-sample tests"
+        },
+        "ppi_food_manufacturing_nsa": {
+          "adf_pvalue": 1.8277565195754855e-11,
+          "kpss_pvalue": 0.1,
+          "interpretation": "diagnostic_only; differenced MoM inputs are used regardless of these finite-sample tests"
+        },
+        "ppi_truck_transport_nsa": {
+          "adf_pvalue": 0.031939589435330935,
+          "kpss_pvalue": 0.1,
+          "interpretation": "diagnostic_only; differenced MoM inputs are used regardless of these finite-sample tests"
+        }
+      },
+      "conditional_predictive_test": {
+        "statistic": 3102.9439429003487,
+        "pvalue": 0.0,
+        "degrees_of_freedom": 39,
+        "method": "joint HAC Wald test of external distributed-lag block conditional on AR(1), common-factor control and calendar-month fixed effects",
+        "interpretation": "conditional predictive content only; not causality or a forecast signal",
+        "fdr_qvalue": 0.0
+      },
+      "lowest_hac_pvalue_lag_exploratory": {
+        "term": "brent_spot_lag_6",
+        "coefficient": -0.007370819792985565,
+        "hac_pvalue": 0.00290735887067079
+      },
+      "best_lag_out_of_sample_exploratory": {
+        "lag_months": 1,
+        "baseline": {
+          "observations": 100,
+          "rmse": 0.5780152852292717,
+          "mae": 0.3376487743530212,
+          "direction_hit_rate": 0.76
+        },
+        "extended": {
+          "observations": 100,
+          "rmse": 0.5228016610211778,
+          "mae": 0.3185374237121555,
+          "direction_hit_rate": 0.7
+        },
+        "rmse_improvement_pct": 9.552277529510881,
+        "mae_improvement_pct": 5.660127354966872,
+        "diebold_mariano": {
+          "statistic": 1.2935791547737243,
+          "pvalue": 0.19581082654903825
+        }
+      },
+      "out_of_sample": {
+        "baseline": {
+          "observations": 100,
+          "rmse": 0.5780152852292717,
+          "mae": 0.3376487743530212,
+          "direction_hit_rate": 0.76
+        },
+        "extended": {
+          "observations": 100,
+          "rmse": 0.6695780262939843,
+          "mae": 0.4263463351806375,
+          "direction_hit_rate": 0.68
+        },
+        "rmse_improvement_pct": -15.840885769723887,
+        "mae_improvement_pct": -26.26917897083214,
+        "diebold_mariano": {
+          "statistic": -1.1994219907503616,
+          "pvalue": 0.2303639009726116
+        }
+      },
+      "limitations": [
+        "Model selection across lag candidates can overstate a single best lag; the reported best individual coefficient is exploratory.",
+        "CPI is SA, but the two configured industry PPI indexes are NSA; the first pass keeps those inputs as published and absorbs recurring calendar seasonality with month fixed effects. It is not a substitute for an official PPI seasonal adjustment.",
+        "COVID-era structural changes, airline hedging, seat capacity, agricultural commodity inputs, retail margins, and revision vintages can change the apparent relationship."
+      ]
+    }
+  ],
+  "activation_policy": {
+    "status": "not_activated_by_design",
+    "requirements_before_any_promotion": [
+      "archival release-vintage input histories and release-calendar availability audit",
+      "pre-specified out-of-sample improvement versus autoregressive benchmark",
+      "family-wise / false-discovery controlled conditional-predictive test",
+      "coefficient direction stability outside COVID-era sensitivity windows",
+      "independent review of demand, capacity, hedging, agricultural commodity and retail-margin confounders"
+    ]
+  },
+  "limitations": [
+    "No source credential, raw request URL, or credential-bearing payload is persisted in this snapshot.",
+    "Current-vintage source histories do not recreate the exact information set available on each historical release date.",
+    "Results are research diagnostics only and must not change the CPI relationship catalog's candidate status."
+  ]
+}

@@ -71,7 +71,9 @@ committee_agency_jurisdictions
 
 **집계**: `count(*) from agencies`가 아니라, Federal Register 동기화로 확인된 기관의 `count(distinct agency_id)`를 반환한다. `54`는 고정 문구가 아니며 현재 DB 값으로 표시한다.
 
-**사용 필드**: `agency_id`, `name`, `short_name`, `parent_agency_id`, `agency_url`.
+**사용 필드**: `agency_id`, `name`, `short_name`, `agency_type`, `parent_agency_id`, `agency_url`.
+
+**기관 블록 규칙**: `agency_type=eop`은 대통령실, `department`는 15개 내각 부처, `independent`는 독립기관(외청) 블록에 표시한다. `sub`는 최상위 블록에는 중복 노출하지 않고, `parent_agency_id`의 상위 기관 상세 화면에 표시한다. 이 분류는 Federal Register가 제공하는 `parent_id`와 검증된 고정 목록으로만 생성한다.
 
 ### 정당·의회 역할 소개
 
