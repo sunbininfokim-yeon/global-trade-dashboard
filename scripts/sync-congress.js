@@ -261,8 +261,20 @@ async function saveBundle(data) {
   await supabaseUpsert('bills', [data.row], 'bill_id');
   for (const summary of data.summaries) {
     if (!summary.text) continue;
-    const existing = await supabaseGet('bill_summaries', { select: 'bill_summary_id', bill_id: `eq.${data.billId}`, summary_text: `eq.${encodeURIComponent(summary.text)}`, limit: '1' });
-    if (!existing?.length) await supabaseInsert('bill_summaries', {
+    // Do not put summary_text in a GET query: official summaries can exceed
+    // URL limits and make PostgREST return HTTP 414. The stable source identity
+    // is bill + action date + version; compare the text after the small result
+    // set is returned.
+    const actionDate = parseDateOnly(summary.actionDate);
+    const versionCode = summary.versionCode || null;
+    const existing = await supabaseGet('bill_summaries', {
+      select: 'bill_summary_id,summary_text',
+      bill_id: `eq.${data.billId}`,
+      action_date: actionDate ? `eq.${actionDate}` : 'is.null',
+      version_code: versionCode ? `eq.${encodeURIComponent(versionCode)}` : 'is.null',
+    });
+    const alreadyStored = existing?.some((row) => row.summary_text === summary.text);
+    if (!alreadyStored) await supabaseInsert('bill_summaries', {
       bill_id: data.billId, action_date: parseDateOnly(summary.actionDate), action_description: summary.actionDesc || null,
       version_code: summary.versionCode || null, summary_text: summary.text, source_updated_at: parseTimestamp(summary.updateDate),
     });
