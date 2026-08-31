@@ -102,7 +102,7 @@
   //   미국 › 행정부 › 부처 › 행정명령
   // The trail doubles as the breadcrumb, so every ancestor stays reachable and
   // a screen never has to guess where it was opened from.
-  const state = { trail: [], stage: '' };
+  const state = { trail: [], stage: '', open: {} };
 
   const current = () => state.trail[state.trail.length - 1] || { view: 'congress' };
   const trailHas = (view) => state.trail.some((t) => t.view === view);
@@ -114,6 +114,17 @@
        <h3 class="policy-block-title">${esc(title)}</h3>
        ${bodyHtml}
      </section>`;
+
+  const collapsibleCard = (key, title, bodyHtml, count) => {
+    const open = !!state.open[key];
+    return `<section class="policy-block is-collapsible${open ? ' is-open' : ''}">
+      <button type="button" class="policy-collapse-toggle" data-collapse="${esc(key)}" aria-expanded="${open}">
+        <span class="policy-block-title">${esc(title)}${typeof count === 'number' ? ` (${count})` : ''}</span>
+        <span class="policy-collapse-chevron" aria-hidden="true">${open ? '▾' : '▸'}</span>
+      </button>
+      ${open ? bodyHtml : ''}
+    </section>`;
+  };
 
   // Every entry but the last is a step back up the trail, addressed by depth so
   // a click truncates rather than re-navigating.
@@ -218,9 +229,34 @@
       })),
   );
 
+  // The Federal Register API does not classify agencies -- it exposes parent_id,
+  // but Cabinet departments and independent agencies are both top-level, so
+  // that cannot separate them. The backend is meant to send agency_type
+  // (docs/api-spec.md); until it does, derive it, or the 부처/외청 blocks come
+  // back empty against live data. The Cabinet is a closed, stable set of 15,
+  // and EOP components are named, so only the residue is a guess.
+  const EOP_AGENCIES = new Set([
+    'executive office of the president',
+    'office of management and budget',
+    'office of the united states trade representative',
+    'office of the u.s. trade representative',
+    'office of science and technology policy',
+    'council of economic advisers',
+    'national security council',
+    'office of national drug control policy',
+  ]);
+
+  const agencyType = (a) => {
+    if (a.agency_type) return a.agency_type;
+    const name = String(a.name || '').trim().toLowerCase();
+    if (EOP_AGENCIES.has(name)) return 'eop';
+    if (/^(u\.s\.\s+)?department of\b/.test(name)) return 'department';
+    return 'independent';
+  };
+
   const agencyTiles = (kind) => tileGrid(
     (DATA?.executive_overview?.agencies || [])
-      .filter((a) => (kind ? a.agency_type === kind : true))
+      .filter((a) => (kind ? agencyType(a) === kind : true))
       .map((a) => ({ view: 'agency', id: a.agency_id, full: a.name, label: fit(a.name, a.short_name) })),
   );
 
@@ -271,7 +307,7 @@
       ${card(`상임위 (${CHAMBER_LABELS.house})`, committeeTiles('house'))}
       ${card(`상임위 (${CHAMBER_LABELS.senate})`, committeeTiles('senate'))}
       ${hasJoint ? card(`상임위 (${CHAMBER_LABELS.joint})`, committeeTiles('joint')) : ''}
-      ${card(`CRS 정책분야 (${esc((DATA?.policy_areas || []).length)})`, policyAreaTiles())}
+      ${collapsibleCard('crs', 'CRS 정책분야', policyAreaTiles(), (DATA?.policy_areas || []).length)}
     `);
   }
 
@@ -478,13 +514,13 @@
     const eo = DATA?.executive_overview;
     if (!eo) return shell(empty('행정부 데이터를 불러올 수 없습니다'));
 
-    const hasKind = (kind) => (eo.agencies || []).some((a) => a.agency_type === kind);
+    const hasKind = (kind) => (eo.agencies || []).some((a) => agencyType(a) === kind);
 
     return shell(`
       ${hasKind('eop') ? card('대통령실', agencyTiles('eop')) : ''}
       ${hasKind('department') ? card('부처 (내청)', agencyTiles('department')) : ''}
       ${hasKind('independent') ? card('독립기관 (외청)', agencyTiles('independent')) : ''}
-      ${card(`연방관보 분류 · CFR Title (${esc((DATA?.cfr_titles || []).length)})`, cfrTiles())}
+      ${collapsibleCard('cfr', '연방관보 분류 · CFR Title', cfrTiles(), (DATA?.cfr_titles || []).length)}
     `);
   }
 
@@ -663,6 +699,13 @@
   }
 
   function onClick(event) {
+    const collapse = event.target.closest('[data-collapse]');
+    if (collapse && host.contains(collapse)) {
+      const key = collapse.dataset.collapse;
+      state.open[key] = !state.open[key];
+      paint();
+      return;
+    }
     const stageTab = event.target.closest('.policy-stage-tab');
     if (stageTab && host.contains(stageTab)) {
       state.stage = stageTab.dataset.stage || '';

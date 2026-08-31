@@ -4182,6 +4182,34 @@ body.macro-mode .map-pane { flex: 1 1 100%; }
     font-weight: 700;
 }
 
+/* CRS (32) and CFR (50) bury the rest of the screen when open, so they fold. */
+.policy-block.is-collapsible { padding-bottom: 16px; }
+.policy-block.is-collapsible:not(.is-open) { padding-bottom: 8px; }
+
+.policy-collapse-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    width: 100%;
+    padding: 0 0 8px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    text-align: left;
+}
+
+.policy-block.is-collapsible:not(.is-open) .policy-collapse-toggle { padding-bottom: 0; }
+.policy-collapse-toggle .policy-block-title { margin: 0; }
+.policy-collapse-toggle:hover .policy-block-title { color: #7dd3fc; }
+
+.policy-collapse-chevron {
+    color: #64748b;
+    font-size: 11px;
+}
+
+.policy-collapse-toggle:hover .policy-collapse-chevron { color: #7dd3fc; }
+
 .policy-subblock { margin-top: 16px; }
 
 .policy-subblock h4 {
