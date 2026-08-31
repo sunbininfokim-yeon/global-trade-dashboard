@@ -1718,6 +1718,10 @@ const mmUsPolicyQuality = (quality, statementDiff) => {
     const policy = quality.policy_committee || {};
     const cmp = policy.comparison || {};
     const roster = policy.current_roster || {};
+    const schedule = policy.schedule || {};
+    const currentVotes = Array.isArray(policy.current_votes) ? policy.current_votes : [];
+    const votesFor = currentVotes.filter((v) => v.vote === 'for');
+    const votesAgainst = currentVotes.filter((v) => v.vote === 'against');
     const documents = ((quality.official_documents || {}).items || []);
     const latestStatement = documents.find((row) => row.document_type === 'fomc_statement');
     const beige = documents.find((row) => row.document_type === 'beige_book' && row.extracted_evidence);
@@ -1750,6 +1754,12 @@ const mmUsPolicyQuality = (quality, statementDiff) => {
                 ${transitions.length ? `<div class="mm-quality-names">${transitions.map((row) =>
                     `<span>${finEsc(row.name)} · ${finEsc(({ tighter: '인상 선호', easier: '인하 선호' })[row.to_direction] || '공개 반대')}</span>`
                 ).join('')}</div>` : '<span class="mm-quality-muted">직전 회의 대비 공개 표결 변화 없음</span>'}
+                ${currentVotes.length ? `<details class="mm-quality-details">
+                    <summary>찬성·반대 위원 명단 전체 보기</summary>
+                    <p><b>찬성 ${votesFor.length}명</b> ${votesFor.map((v) => finEsc(v.name)).join(' · ')}${votesFor.length && votesFor[0].inferred ? ' <i>(성명서에 명단이 없어 현재 위원 명단에서 반대자를 제외해 역산 — 실제 표결 당시 명단과 다를 수 있음)</i>' : ''}</p>
+                    <p><b>반대 ${votesAgainst.length}명</b> ${votesAgainst.map((v) => `${finEsc(v.name)}(${finEsc(({ tighter: '인상', easier: '인하' })[v.dissent_direction] || '기타')})`).join(' · ')}</p>
+                </details>` : ''}
+                ${schedule.next_meeting_date ? `<p class="mm-quality-muted">다음 FOMC ${finEsc(schedule.next_meeting_date)}</p>` : ''}
                 ${latestStatement ? `<a class="mm-quality-link" href="${finEsc(latestStatement.source_url)}" target="_blank" rel="noopener noreferrer">최근 결정문 보기 ↗</a>` : ''}
             </div>
             <div class="mm-quality-card">
@@ -1770,6 +1780,7 @@ const mmUsPolicyQuality = (quality, statementDiff) => {
                     <summary>전국 요약 보기</summary>
                     ${sections.map((section) => `<p><b>${finEsc(section.section)}</b> ${finEsc(mmExcerpt(section.text))}</p>`).join('')}
                 </details>` : '<p class="mm-quality-muted">발행본 수집 대기</p>'}
+                ${schedule.next_beige_book_estimate ? `<p class="mm-quality-muted" title="${finEsc(schedule.beige_book_note_ko || '')}">다음 예상 ${finEsc(schedule.next_beige_book_estimate)} (추정)</p>` : ''}
                 ${beige ? `<a class="mm-quality-link" href="${finEsc(beige.source_url)}" target="_blank" rel="noopener noreferrer">원문 보기 ↗</a>` : ''}
             </div>
             ${mmStatementDiffHtml(statementDiff)}
