@@ -6,6 +6,7 @@ const {
   geminiEmbeddings, geminiModelName, isOptionalEmbeddingError, parseDateOnly, parseTimestamp, requireEnv, slug, startSyncRun,
   supabaseGet, supabaseInsert, supabaseInsertIgnore, supabasePatch, supabaseRpc, supabaseUpsert, updateSyncState,
 } = require('./lib/sync-utils');
+const { classifyFederalAgency, federalRegisterParentId } = require('./lib/federal-agency-classifier');
 
 const API_BASE = 'https://www.federalregister.gov/api/v1';
 const RESOURCE = 'federalregister.gov:documents';
@@ -30,11 +31,24 @@ function currentWindow(state) {
   date.setUTCDate(date.getUTCDate() - 1); // date-level API filter gets a one-day overlap
   return date.toISOString().slice(0, 10);
 }
-function agencyRow(agency) {
+function agencyRow(agency, parentAgencyId = null) {
   const name = firstNonEmpty(agency?.name, agency?.raw_name, agency?.short_name);
   const sourceId = firstNonEmpty(agency?.slug, agency?.id, slug(name));
-  return name && sourceId ? { agency_id: `fr-${sourceId}`, name, short_name: agency.short_name || null,
-    federal_register_id: Number(agency.id) || null, agency_url: agency.url || null, raw_source: agency } : null;
+  if (!name || !sourceId) return null;
+  const parentId = federalRegisterParentId(agency);
+  const row = {
+    agency_id: `fr-${sourceId}`,
+    name,
+    short_name: agency.short_name || null,
+    federal_register_id: Number(agency.id) || null,
+    agency_type: classifyFederalAgency(agency),
+    agency_url: agency.url || null,
+    raw_source: agency,
+  };
+  // Do not overwrite a known parent with null when a child arrives before its
+  // parent. The database refresh function resolves it once the parent exists.
+  if (!parentId || parentAgencyId) row.parent_agency_id = parentAgencyId || null;
+  return row;
 }
 function textFor(document) { return firstNonEmpty(document.abstract, document.summary, document.action); }
 function eoNumber(document) {
@@ -93,7 +107,24 @@ async function documentBundle(item) {
 }
 
 async function saveAgencies(agencies) {
-  const rows = agencies.map(agencyRow).filter(Boolean);
+  const raw = asArray(agencies);
+  const localAgencyIds = new Map(raw.map((agency) => {
+    const name = firstNonEmpty(agency?.name, agency?.raw_name, agency?.short_name);
+    const sourceId = firstNonEmpty(agency?.slug, agency?.id, slug(name));
+    return [Number(agency?.id), name && sourceId ? `fr-${sourceId}` : null];
+  }).filter(([id, agencyId]) => Number.isInteger(id) && id > 0 && agencyId));
+  const parentIds = [...new Set(raw.map(federalRegisterParentId).filter(Boolean))];
+  const knownParents = parentIds.length
+    ? await supabaseGet('agencies', {
+      select: 'agency_id,federal_register_id',
+      federal_register_id: `in.(${parentIds.join(',')})`,
+    })
+    : [];
+  const parentAgencyIds = new Map(knownParents.map((row) => [Number(row.federal_register_id), row.agency_id]));
+  const rows = raw.map((agency) => agencyRow(
+    agency,
+    localAgencyIds.get(federalRegisterParentId(agency)) || parentAgencyIds.get(federalRegisterParentId(agency)) || null,
+  )).filter(Boolean);
   if (rows.length) await supabaseUpsert('agencies', rows, 'agency_id');
   return rows.map((row) => row.agency_id);
 }
@@ -229,6 +260,7 @@ async function run() {
       completed.add(item.document_number);
       await checkpointSyncState(RESOURCE, { mode: 'incremental', window_from: windowFrom, processed_document_numbers: [...completed] });
     }
+    const classifiedAgencies = await supabaseRpc('refresh_federal_register_agency_classification');
     const embedded = (await embed('executive_orders', 'eo_number', eos.filter((item) => item.embed).map((item) => ({ ...item.row, eo_number: item.number })), (row) => `${row.title}\n\n${row.summary || ''}`))
       + (await embed('regulations', 'regulation_id', regulations.filter((item) => item.embed).map((item) => ({ ...item.row, regulation_id: item.regulationId })), (row) => `${row.title}\n\n${row.abstract || ''}`));
     const newestBill = await supabaseGet('bills', { select: 'congress_number', order: 'congress_number.desc', limit: '1' });
@@ -240,7 +272,7 @@ async function run() {
     } else {
       await updateSyncState(RESOURCE, { mode: 'incremental', completed_at: new Date().toISOString() });
     }
-    await finishSyncRun(runId, { status: remaining > 0 ? 'partial' : 'succeeded', records_read: read, records_written: written, metadata: { window_from: windowFrom, embedded, remaining } });
+    await finishSyncRun(runId, { status: remaining > 0 ? 'partial' : 'succeeded', records_read: read, records_written: written, metadata: { window_from: windowFrom, embedded, remaining, classified_agencies: Number(classifiedAgencies) || 0 } });
     console.log(`Federal Register complete: ${written} records, ${embedded} embeddings, ${remaining} deferred.`);
   } catch (error) {
     await finishSyncRun(runId, { status: 'failed', records_read: read, records_written: written, error_summary: error.message });
