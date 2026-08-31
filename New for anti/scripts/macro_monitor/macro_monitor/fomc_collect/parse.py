@@ -147,6 +147,47 @@ def _parse_against_clause(against_text: str) -> list[dict[str, str]]:
     return dissenters
 
 
+_RELEASE_TIME_RE = re.compile(r"For release at.*?Share\s+", re.IGNORECASE)
+# Format B's masthead is followed by "...approved the following statement
+# for release by a 9 - 3 vote:" before the real prose starts -- the N - N is
+# just that meeting's tally (already shown by the vote-count card), not
+# policy wording, so it's skipped too rather than diffed as if it were text.
+_VOTE_PREAMBLE_RE = re.compile(
+    r"^The Federal Open Market Committee approved the following statement "
+    r"for release by an?\s+\d+\s*[-–—]\s*\d+\s+vote:\s*",
+    re.IGNORECASE,
+)
+_OPERATIVE_END_RES = [
+    re.compile(r"Voting for the monetary policy action", re.IGNORECASE),
+    re.compile(r"Voting against the monetary policy action", re.IGNORECASE),
+    re.compile(r"For media inquiries", re.IGNORECASE),
+]
+
+
+def extract_operative_text(html: str) -> str | None:
+    """The statement's own economic-assessment prose, for wording diffs.
+
+    Bounded by the page's own "For release at ... Share" masthead and its
+    "Voting for/against"/"For media inquiries" boilerplate -- everything
+    outside those markers is Fed.gov page furniture (nav, footer links) or
+    the vote roster, neither of which is meaningful to diff meeting-to-meeting.
+    Returns None if the masthead marker isn't found (page structure changed
+    beyond what this can safely bound) rather than guessing at a slice.
+    """
+    text = _clean_text(BeautifulSoup(html, "html.parser"))
+    start_match = _RELEASE_TIME_RE.search(text)
+    if not start_match:
+        return None
+    start = start_match.end()
+    preamble_match = _VOTE_PREAMBLE_RE.match(text[start:])
+    if preamble_match:
+        start += preamble_match.end()
+    end_positions = [m.start() for pattern in _OPERATIVE_END_RES if (m := pattern.search(text, start))]
+    end = min(end_positions) if end_positions else len(text)
+    operative = text[start:end].strip()
+    return operative or None
+
+
 def parse_statement(html: str, *, meeting_date: str, source_url: str) -> dict[str, Any]:
     soup = BeautifulSoup(html, "html.parser")
     text = _clean_text(soup)
