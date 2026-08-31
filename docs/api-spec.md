@@ -187,7 +187,8 @@ Congress.gov API는 분당 요청 제한이 있으므로 KV/DB 캐시를 거쳐 
   "agencies": [
     {
       "agency_id": "string", "name": "string", "short_name": "string",
-      "agency_type": "eop|department|independent",
+      "agency_type": "eop|department|independent|sub",
+      "parent_agency_id": "string | null",
       "executive_order_count": 2,
       "secretary_placeholder": "string" | null,
       "eo_ids": [99999]
@@ -204,6 +205,14 @@ Congress.gov API는 분당 요청 제한이 있으므로 KV/DB 캐시를 거쳐 
 }
 ```
 `agency_type`은 화면에서 대통령실 / 부처(내청) / 독립기관(외청) 블록을 나누는 기준이다.
+`sub`(하위 기관, 예: IRS·FDA)는 상위 디렉터리 블록에 넣지 않는다 — `parent_agency_id`로
+상위 기관 화면에서 보여줄 값이다.
+
+Federal Register API는 이 분류를 주지 않는다(`parent_id`로 상하위만 알 수 있고,
+부처와 독립기관은 둘 다 최상위라 구분되지 않는다). 백엔드가 기준 목록으로 채워야 하는
+필드이며, 오지 않으면 프론트가 이름 규칙으로 추론한다 —
+`New for anti/policy.js`의 `agencyType()`. 추론은 `sub`를 판별하지 못하므로
+(`parent_id`를 프론트가 못 봄) 정확한 값은 백엔드에서 와야 한다.
 `short_name`은 이름이 30자를 넘을 때 블록 라벨로 쓰인다 (Department of Defense → DOD).
 
 `agencies[].eo_ids`는 `executive_orders[].agency_id`로 그룹핑한 결과와 반드시 일치해야 한다 (프론트가 이 배열로 부처별 EO 허브를 그린다 — `New for anti/policy.js`의 `renderExecutiveHubByAgency()` 참고). `secretary_placeholder`가 `null`이 아니면 실제 장관 정보 대신 이 문구를 보여준다; 실제 장관 데이터가 준비되면 이 필드 자체를 없애고 `secretary: { name, title }` 필드를 추가하는 방식으로 확장할 것 (필드 추가는 breaking change 아님).
