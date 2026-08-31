@@ -234,48 +234,8 @@
                 <!-- Election home only: a date-ordered world schedule. -->
                 <section class="panel-section hidden" id="elections-timeline-panel" aria-live="polite"></section>
 
-                <!-- US Policy Hub: Top 10 bills -->
-                <div class="panel-section hidden" id="us-policy-hub-panel">
-                    <div class="panel-header">
-                        <h2>미국 정책 허브</h2>
-                        <p>119대 의회 주요 법안</p>
-                    </div>
-                    <div id="policy-summary-cards" class="policy-cards-container">
-                        <p class="empty-state">데이터 로딩 중…</p>
-                    </div>
-                </div>
 
-                <!-- US Congress: Committee list -->
-                <div class="panel-section hidden" id="us-congress-overview-panel">
-                    <div class="panel-header">
-                        <h2>의회 개요</h2>
-                        <p>상·하원·합동 상임위</p>
-                    </div>
-                    <div id="congress-tabs" class="congress-tabs">
-                        <button class="tab-btn active" data-chamber="senate">상원</button>
-                        <button class="tab-btn" data-chamber="house">하원</button>
-                        <button class="tab-btn" data-chamber="joint">합동</button>
-                    </div>
-                    <div id="congress-committees-list" class="committee-list">
-                        <p class="empty-state">위원회 목록 로딩 중…</p>
-                    </div>
-                </div>
 
-                <!-- US Executive: EO & Regulations -->
-                <div class="panel-section hidden" id="us-executive-panel">
-                    <div class="panel-header">
-                        <h2>행정부</h2>
-                        <p>행정 명령 및 규제</p>
-                    </div>
-                    <div id="executive-tabs" class="executive-tabs">
-                        <button class="tab-btn active" data-type="eo">행정명령 (EO)</button>
-                        <button class="tab-btn" data-type="agency">기관별</button>
-                        <button class="tab-btn" data-type="regulation">규제 (CFR)</button>
-                    </div>
-                    <div id="executive-content" class="executive-content">
-                        <p class="empty-state">데이터 로딩 중…</p>
-                    </div>
-                </div>
             </aside>
 
             <!-- Center Pane: Map -->
@@ -346,72 +306,11 @@
                 <!-- Election country explorer. Global timeline is hidden while this is open. -->
                 <section class="panel-section hidden" id="elections-country-panel" aria-live="polite"></section>
 
-                <!-- US Policy: Committee detail & bills by stage -->
-                <div class="panel-section hidden" id="us-committee-detail-panel">
-                    <div class="panel-header" style="margin-bottom: 12px;">
-                        <h2 id="committee-name-title">상임위 상세</h2>
-                        <p id="committee-jurisdiction">관할: 로딩 중…</p>
-                    </div>
-                    <!-- Chair / Ranking Member rows. Real member data is not wired
-                         yet, so both render ui_states-style placeholders. -->
-                    <div id="committee-leadership" class="committee-leadership"></div>
-                    <!-- Subcommittees: name + meeting-schedule placeholder only. -->
-                    <div id="committee-subcommittees" class="committee-subcommittee-list"></div>
-                    <div id="committee-bill-tabs" class="bill-stage-tabs">
-                        <button class="tab-btn active" data-stage="">전체 보기</button>
-                        <button class="tab-btn" data-stage="introduced,referred,subcommittee,committee_consideration">발의·회부</button>
-                        <button class="tab-btn" data-stage="reported">상임위 통과</button>
-                        <button class="tab-btn" data-stage="passed_origin_chamber">본회의 통과</button>
-                        <button class="tab-btn" data-stage="enacted">제정</button>
-                        <button class="tab-btn" data-stage="vetoed,failed">종료·거부</button>
-                    </div>
-                    <div id="committee-bills-list" class="bills-list">
-                        <p class="empty-state">법안 목록 로딩 중…</p>
-                    </div>
-                </div>
 
-                <!-- US Policy: CRS Policy Area detail -->
-                <div class="panel-section hidden" id="us-crs-policy-area-panel">
-                    <div class="panel-header" style="margin-bottom: 12px;">
-                        <h2 id="policy-area-name-title">정책분야</h2>
-                        <p id="policy-area-desc">로딩 중…</p>
-                    </div>
-                    <div id="crs-bill-tabs" class="bill-stage-tabs">
-                        <button class="tab-btn active" data-stage="">전체 보기</button>
-                        <button class="tab-btn" data-stage="introduced,referred,subcommittee,committee_consideration">발의·회부</button>
-                        <button class="tab-btn" data-stage="reported">상임위 통과</button>
-                        <button class="tab-btn" data-stage="passed_origin_chamber">본회의 통과</button>
-                        <button class="tab-btn" data-stage="enacted">제정</button>
-                        <button class="tab-btn" data-stage="vetoed,failed">종료·거부</button>
-                    </div>
-                    <div id="crs-bills-list" class="bills-list">
-                        <p class="empty-state">법안 목록 로딩 중…</p>
-                    </div>
-                </div>
 
-                <!-- US Policy: Bill detail -->
-                <div class="panel-section hidden" id="us-bill-detail-panel">
-                    <div class="panel-header">
-                        <h2 id="bill-number-title">법안 상세</h2>
-                        <p id="bill-title-subtitle">로딩 중…</p>
-                    </div>
-                    <div id="bill-detail-content" class="bill-detail-content">
-                        <p class="empty-state">법안 정보 로딩 중…</p>
-                    </div>
-                </div>
 
                 <!-- US Policy: Executive Order detail.
                      Regulations listed here are external-link-only by design --
-                     they never get an internal detail route. -->
-                <div class="panel-section hidden" id="us-eo-detail-panel">
-                    <div class="panel-header">
-                        <h2 id="eo-number-title">행정명령 상세</h2>
-                        <p id="eo-title-subtitle">로딩 중…</p>
-                    </div>
-                    <div id="eo-detail-content" class="bill-detail-content">
-                        <p class="empty-state">행정명령 정보 로딩 중…</p>
-                    </div>
-                </div>
 
                 <!-- 「오늘 신호」 panel (home only).
                      Two zones: three fixed cards that never rotate, and a stage

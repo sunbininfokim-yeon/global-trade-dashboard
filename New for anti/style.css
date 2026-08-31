@@ -4019,520 +4019,583 @@ body.macro-mode .map-pane { flex: 1 1 100%; }
 .mm-cpi-spinner { width: 11px; height: 11px; border-radius: 50%; border: 2px solid rgba(148,163,184,.2); border-top-color: #38bdf8; animation: mm-cpi-spin .8s linear infinite; }
 @keyframes mm-cpi-spin { to { transform: rotate(360deg); } }
 
-/* === US POLICY DASHBOARD STYLES === */
+/* === US POLICY DASHBOARD =================================================
+   Policy is a document-style screen with no map, so it takes the whole centre
+   surface (#chart-view) rather than the narrow right pane the commodity views
+   use. Layout mirrors the wireframes: wide blocks in a two-column grid. */
 
-/* Policy Cards Container */
-.policy-cards-container {
+/* Scoped to #chart-view so it outranks that id's own flex centring -- the same
+   thing .shipping-surface has to do. A document screen starts at the top;
+   otherwise a short view floats in the middle of the page. */
+#chart-view.policy-surface {
+    display: block !important;
+    align-items: initial !important;
+    justify-content: initial !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    pointer-events: auto !important;
+    overscroll-behavior: contain;
+    position: absolute;
+    inset: 0;
+    background: #0b1220;
+    padding: 22px 26px 40px;
+    box-sizing: border-box;
+}
+
+#chart-view.policy-surface::-webkit-scrollbar { width: 8px; }
+#chart-view.policy-surface::-webkit-scrollbar-track { background: rgba(15, 23, 42, 0.8); }
+#chart-view.policy-surface::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, 0.28); border-radius: 999px; }
+
+.policy-surface-inner {
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.policy-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: #94a3b8;
+    font-size: 12px;
+}
+
+/* --- header ------------------------------------------------------------ */
+
+.policy-head {
     display: flex;
     flex-direction: column;
     gap: 12px;
-    max-height: 600px;
-    overflow-y: auto;
+    padding-bottom: 14px;
+    margin-bottom: 18px;
+    border-bottom: 1px solid rgba(56, 189, 248, 0.14);
+}
+
+.policy-modes {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.policy-mode-btn {
+    padding: 7px 18px;
+    border: 1px solid rgba(56, 189, 248, 0.18);
+    border-radius: 999px;
+    background: rgba(15, 23, 42, 0.6);
+    color: #94a3b8;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.18s ease;
+}
+
+.policy-mode-btn:hover { color: #7dd3fc; border-color: rgba(56, 189, 248, 0.4); }
+
+.policy-mode-btn.active {
+    background: rgba(56, 189, 248, 0.14);
+    border-color: #38bdf8;
+    color: #38bdf8;
+}
+
+/* Search stays visible but inert while meta.search.visible is false, so the
+   header keeps the shape it will have once search ships. */
+.policy-search { margin-left: auto; }
+
+.policy-search input {
+    width: 240px;
+    padding: 7px 12px;
+    border: 1px solid rgba(148, 163, 184, 0.18);
+    border-radius: 999px;
+    background: rgba(15, 23, 42, 0.5);
+    color: #64748b;
+    font-size: 11px;
+}
+
+.policy-search.is-disabled input { cursor: not-allowed; opacity: 0.55; }
+
+.policy-crumb {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 12px;
+    flex-wrap: wrap;
+}
+
+.policy-crumb-link {
+    border: none;
+    background: none;
+    padding: 0;
+    color: #38bdf8;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.policy-crumb-link:hover { text-decoration: underline; }
+.policy-crumb-current { color: #e2e8f0; font-weight: 600; }
+.policy-crumb-sep { color: #475569; }
+
+.policy-mock-notice {
+    margin: 0 0 16px;
+    padding: 7px 12px;
+    border-left: 2px solid rgba(251, 191, 36, 0.55);
+    background: rgba(251, 191, 36, 0.07);
+    color: #fbbf24;
+    font-size: 11px;
+}
+
+/* --- layout ------------------------------------------------------------ */
+
+.policy-grid-2 {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 18px;
+    align-items: start;
+}
+
+@media (max-width: 1080px) {
+    .policy-grid-2 { grid-template-columns: minmax(0, 1fr); }
+}
+
+.policy-col { display: flex; flex-direction: column; gap: 18px; min-width: 0; }
+
+.policy-block {
+    padding: 16px 18px;
+    border: 1px solid rgba(56, 189, 248, 0.12);
+    border-radius: 10px;
+    background: rgba(15, 23, 42, 0.55);
+}
+
+.policy-block-title {
+    margin: 0 0 14px;
+    color: #e2e8f0;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.policy-subblock { margin-top: 16px; }
+
+.policy-subblock h4 {
+    margin: 0 0 8px;
+    color: #7dd3fc;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.policy-prose {
+    margin: 0 0 10px;
+    color: #cbd5e1;
+    font-size: 12px;
+    line-height: 1.65;
+}
+
+.policy-empty {
+    padding: 16px 10px;
+    color: #64748b;
+    font-size: 11.5px;
+    text-align: center;
+}
+
+.is-placeholder { color: #64748b; font-style: italic; }
+
+/* --- hub cards --------------------------------------------------------- */
+
+.policy-card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 14px;
 }
 
 .policy-card {
-    padding: 12px;
-    border-radius: 8px;
-    border: 1px solid rgba(56, 189, 248, 0.2);
-    background: rgba(2, 6, 23, 0.6);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 15px 16px;
+    border: 1px solid rgba(56, 189, 248, 0.14);
+    border-radius: 9px;
+    background: rgba(30, 41, 59, 0.45);
+    text-align: left;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all 0.18s ease;
 }
 
 .policy-card:hover {
-    border-color: rgba(56, 189, 248, 0.5);
-    background: rgba(2, 6, 23, 0.9);
+    border-color: rgba(56, 189, 248, 0.42);
+    background: rgba(30, 41, 59, 0.75);
+    transform: translateY(-1px);
 }
+
+.policy-card-head { display: flex; align-items: center; gap: 8px; }
+.policy-card-date { color: #64748b; font-size: 10.5px; }
 
 .policy-card-title {
-    font-size: 12.5px;
+    color: #e2e8f0;
+    font-size: 13px;
     font-weight: 600;
-    color: #e0f2fe;
-    margin-bottom: 4px;
-    line-height: 1.3;
+    line-height: 1.45;
 }
 
-.policy-card-meta {
-    display: flex;
-    gap: 8px;
-    font-size: 10px;
+.policy-card-area { color: #7dd3fc; font-size: 10.5px; }
+
+.policy-card-summary {
     color: #94a3b8;
-    margin-bottom: 6px;
+    font-size: 11px;
+    line-height: 1.55;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
 }
+
+/* --- chips ------------------------------------------------------------- */
+
+.policy-chip-row { display: flex; flex-wrap: wrap; gap: 8px; }
+
+.policy-chip {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    padding: 9px 13px;
+    border: 1px solid rgba(56, 189, 248, 0.16);
+    border-radius: 8px;
+    background: rgba(30, 41, 59, 0.5);
+    text-align: left;
+    cursor: pointer;
+    transition: all 0.18s ease;
+}
+
+.policy-chip:hover { border-color: rgba(56, 189, 248, 0.45); background: rgba(30, 41, 59, 0.8); }
+.policy-chip.is-compact { padding: 7px 12px; }
+.policy-chip.is-static { cursor: default; }
+.policy-chip.is-static:hover { border-color: rgba(56, 189, 248, 0.16); background: rgba(30, 41, 59, 0.5); }
+.policy-chip.is-reserved { opacity: 0.55; }
+
+.policy-chip-name { color: #e2e8f0; font-size: 12px; font-weight: 500; }
+.policy-chip-sub { color: #64748b; font-size: 10px; }
+
+/* --- lists ------------------------------------------------------------- */
+
+.policy-count-list { list-style: none; margin: 0; padding: 0; }
+
+.policy-count-list li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding: 9px 0;
+    border-bottom: 1px solid rgba(148, 163, 184, 0.09);
+    color: #cbd5e1;
+    font-size: 12px;
+}
+
+.policy-count-list li:last-child { border-bottom: none; }
+.policy-count { color: #38bdf8; font-weight: 700; }
+
+.policy-leaders { display: flex; flex-direction: column; gap: 7px; margin: 12px 0; }
+
+.policy-leader {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 12px;
+    border-radius: 7px;
+    background: rgba(30, 41, 59, 0.5);
+}
+
+.policy-leader-label {
+    min-width: 46px;
+    color: #7dd3fc;
+    font-size: 10.5px;
+    font-weight: 600;
+}
+
+.policy-leader-value { color: #e2e8f0; font-size: 12px; }
+
+.policy-sub-list { list-style: none; margin: 0; padding: 0; }
+
+.policy-sub-list li {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    padding: 10px 12px;
+    margin-bottom: 6px;
+    border-radius: 7px;
+    background: rgba(30, 41, 59, 0.45);
+}
+
+.policy-sub-name { color: #e2e8f0; font-size: 12px; }
+.policy-sub-meta { font-size: 10.5px; }
+
+/* --- stage tabs -------------------------------------------------------- */
+
+.policy-stage-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding-bottom: 12px;
+    margin-bottom: 12px;
+    border-bottom: 1px solid rgba(56, 189, 248, 0.1);
+}
+
+.policy-stage-tab {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 11px;
+    border: 1px solid transparent;
+    border-radius: 999px;
+    background: rgba(30, 41, 59, 0.6);
+    color: #94a3b8;
+    font-size: 11px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.18s ease;
+}
+
+.policy-stage-tab:hover { color: #7dd3fc; }
+
+.policy-stage-tab.active {
+    border-color: #38bdf8;
+    background: rgba(56, 189, 248, 0.14);
+    color: #38bdf8;
+}
+
+.policy-stage-count { color: #64748b; font-size: 10px; }
+.policy-stage-tab.active .policy-stage-count { color: #7dd3fc; }
+
+/* --- bills ------------------------------------------------------------- */
 
 .policy-stage-badge {
     display: inline-block;
-    padding: 2px 6px;
-    border-radius: 4px;
-    background: rgba(56, 189, 248, 0.15);
-    color: #7dd3fc;
-    font-size: 9px;
-    font-weight: 500;
-}
-
-.policy-card-summary {
+    padding: 2px 8px;
+    border-radius: 999px;
+    background: rgba(56, 189, 248, 0.14);
+    color: #38bdf8;
     font-size: 10px;
-    color: #cbd5e1;
-    line-height: 1.4;
-    margin-top: 6px;
-}
-
-/* Congress Tabs */
-.congress-tabs,
-.executive-tabs,
-.bill-stage-tabs {
-    display: flex;
-    gap: 6px;
-    margin-bottom: 12px;
-    border-bottom: 1px solid rgba(56, 189, 248, 0.1);
-    overflow-x: auto;
-}
-
-/* Nine stage tabs overflow the panel width, so keep the scrollbar visible --
-   otherwise there is nothing to indicate the later stages exist. */
-.bill-stage-tabs::-webkit-scrollbar { height: 4px; }
-.bill-stage-tabs::-webkit-scrollbar-track { background: transparent; }
-.bill-stage-tabs::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, 0.28); border-radius: 999px; }
-
-.tab-btn {
-    padding: 6px 10px;
-    border: none;
-    background: none;
-    color: #94a3b8;
-    font-size: 11px;
-    font-weight: 500;
-    cursor: pointer;
-    border-bottom: 2px solid transparent;
-    transition: all 0.2s ease;
+    font-weight: 600;
     white-space: nowrap;
 }
 
-.tab-btn:hover {
-    color: #7dd3fc;
-}
+.policy-bill-list { display: flex; flex-direction: column; gap: 7px; }
 
-.tab-btn.active {
-    color: #38bdf8;
-    border-bottom-color: #38bdf8;
-}
-
-/* Committee List */
-.committee-list {
+.policy-bill-row {
     display: flex;
     flex-direction: column;
-    gap: 8px;
-    max-height: 500px;
-    overflow-y: auto;
-}
-
-.committee-item {
-    padding: 8px;
-    border-radius: 6px;
-    border: 1px solid rgba(56, 189, 248, 0.15);
-    background: rgba(2, 6, 23, 0.5);
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
-
-.committee-item:hover {
-    border-color: rgba(56, 189, 248, 0.4);
-    background: rgba(2, 6, 23, 0.8);
-}
-
-.committee-name {
-    font-size: 11px;
-    font-weight: 600;
-    color: #e0f2fe;
-    margin-bottom: 2px;
-}
-
-.committee-meta {
-    font-size: 9px;
-    color: #94a3b8;
-}
-
-/* Bills List */
-.bills-list {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    max-height: 500px;
-    overflow-y: auto;
-}
-
-.bill-item {
-    padding: 8px;
-    border-radius: 6px;
+    gap: 5px;
+    padding: 11px 13px;
     border: 1px solid rgba(56, 189, 248, 0.1);
-    background: rgba(2, 6, 23, 0.5);
+    border-radius: 8px;
+    background: rgba(30, 41, 59, 0.45);
+    text-align: left;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all 0.18s ease;
 }
 
-.bill-item:hover {
-    border-color: rgba(56, 189, 248, 0.3);
-    background: rgba(2, 6, 23, 0.8);
+.policy-bill-row:hover { border-color: rgba(56, 189, 248, 0.4); background: rgba(30, 41, 59, 0.75); }
+.policy-bill-row-id { color: #38bdf8; font-size: 10.5px; font-weight: 600; }
+.policy-bill-row-title { color: #e2e8f0; font-size: 12px; line-height: 1.45; }
+.policy-bill-row-meta { display: flex; align-items: center; gap: 8px; }
+.policy-bill-row-date { color: #64748b; font-size: 10px; }
+
+.policy-bill-panel.is-compact { background: rgba(30, 41, 59, 0.35); }
+
+.policy-bill-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+    color: #94a3b8;
+    font-size: 11px;
 }
 
-.bill-number {
+/* --- votes ------------------------------------------------------------- */
+
+.policy-vote {
+    padding: 11px 13px;
+    margin-bottom: 8px;
+    border-radius: 8px;
+    background: rgba(30, 41, 59, 0.5);
+}
+
+.policy-vote-head {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 8px;
+    color: #e2e8f0;
+    font-size: 11.5px;
+}
+
+.policy-vote-result { color: #38bdf8; font-weight: 600; }
+
+.policy-vote-counts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 7px;
+    color: #94a3b8;
+    font-size: 11px;
+}
+
+.policy-vote-counts .yea { color: #4ade80; font-weight: 600; }
+.policy-vote-counts .nay { color: #fb7185; font-weight: 600; }
+
+.policy-vote-foot {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: #64748b;
     font-size: 10px;
-    font-weight: 600;
-    color: #7dd3fc;
-    margin-bottom: 2px;
 }
 
-.bill-title {
-    font-size: 10px;
+/* --- related bills ----------------------------------------------------- */
+
+.policy-related { list-style: none; margin: 0; padding: 0; }
+
+.policy-related li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 0;
+    border-bottom: 1px solid rgba(148, 163, 184, 0.09);
     color: #cbd5e1;
-    line-height: 1.3;
+    font-size: 11.5px;
+}
+
+.policy-related li:last-child { border-bottom: none; }
+
+.policy-tag {
+    padding: 2px 7px;
+    border-radius: 4px;
+    background: rgba(148, 163, 184, 0.14);
+    color: #94a3b8;
+    font-size: 9.5px;
+    white-space: nowrap;
+}
+
+.policy-tag.is-ai { background: rgba(168, 85, 247, 0.16); color: #c084fc; }
+.policy-tag-row { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+
+/* --- links ------------------------------------------------------------- */
+
+.policy-link {
+    border: none;
+    background: none;
+    padding: 0;
+    color: #38bdf8;
+    font-size: inherit;
+    text-align: left;
+    cursor: pointer;
+}
+
+.policy-link:hover { text-decoration: underline; }
+
+.policy-external {
+    display: inline-block;
+    color: #7dd3fc;
+    font-size: 11px;
+    text-decoration: none;
+}
+
+.policy-external:hover { text-decoration: underline; }
+.policy-link-row { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 12px; }
+
+/* --- executive --------------------------------------------------------- */
+
+.policy-agency {
+    padding: 13px 15px;
+    margin-bottom: 12px;
+    border: 1px solid rgba(56, 189, 248, 0.12);
+    border-radius: 9px;
+    background: rgba(30, 41, 59, 0.4);
+}
+
+.policy-agency:last-child { margin-bottom: 0; }
+
+.policy-agency-head {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
     margin-bottom: 4px;
 }
 
-.bill-meta {
-    display: flex;
-    gap: 8px;
-    font-size: 9px;
-    color: #94a3b8;
-}
+.policy-agency-name { color: #e2e8f0; font-size: 13px; font-weight: 600; }
+.policy-agency-short { color: #64748b; font-size: 10.5px; }
+.policy-agency-lead { margin-bottom: 10px; font-size: 10.5px; }
 
-/* Executive Content */
-.executive-content {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
+.policy-eo-list { display: flex; flex-direction: column; gap: 6px; }
 
-.eo-item,
-.regulation-item {
-    padding: 8px;
-    border-radius: 6px;
-    border: 1px solid rgba(56, 189, 248, 0.1);
-    background: rgba(2, 6, 23, 0.5);
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
-
-.eo-item:hover,
-.regulation-item:hover {
-    border-color: rgba(56, 189, 248, 0.3);
-    background: rgba(2, 6, 23, 0.8);
-}
-
-.eo-number,
-.regulation-title {
-    font-size: 10px;
-    font-weight: 600;
-    color: #7dd3fc;
-    margin-bottom: 2px;
-}
-
-.eo-title,
-.regulation-desc {
-    font-size: 10px;
-    color: #cbd5e1;
-    line-height: 1.3;
-}
-
-/* Bill Detail Content */
-.bill-detail-content {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    max-height: 600px;
-    overflow-y: auto;
-}
-
-.bill-detail-section {
-    padding: 10px;
-    border-radius: 6px;
-    border: 1px solid rgba(56, 189, 248, 0.1);
-    background: rgba(2, 6, 23, 0.5);
-}
-
-.bill-detail-section-title {
-    font-size: 10px;
-    font-weight: 600;
-    color: #94a3b8;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    margin-bottom: 6px;
-}
-
-.bill-detail-section-content {
-    font-size: 10px;
-    color: #cbd5e1;
-    line-height: 1.4;
-}
-
-.bill-sponsor {
-    padding: 6px;
-    border-radius: 4px;
-    background: rgba(56, 189, 248, 0.1);
-    border: 1px solid rgba(56, 189, 248, 0.2);
-    font-size: 9px;
-    color: #7dd3fc;
-}
-
-.bill-related-list {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-}
-
-.bill-related-item {
-    padding: 6px;
-    border-radius: 4px;
-    background: rgba(2, 6, 23, 0.8);
-    border: 1px solid rgba(56, 189, 248, 0.1);
-    font-size: 9px;
-    color: #cbd5e1;
-    cursor: pointer;
-}
-
-.bill-related-item:hover {
-    border-color: rgba(56, 189, 248, 0.3);
-    background: rgba(2, 6, 23, 1);
-}
-
-/* Committee leadership: Chair / Ranking Member.
-   Both rows are placeholder-only until member data is wired. */
-.committee-leadership {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    margin-bottom: 10px;
-}
-
-.committee-leader-row {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 5px 7px;
-    border-radius: 4px;
-    border: 1px solid rgba(56, 189, 248, 0.12);
-    background: rgba(2, 6, 23, 0.5);
-}
-
-.committee-leader-label {
-    flex: 0 0 auto;
-    font-size: 9px;
-    font-weight: 600;
-    color: #7dd3fc;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-}
-
-.committee-leader-value {
-    font-size: 10px;
-    color: #cbd5e1;
-}
-
-.committee-leader-value.is-placeholder,
-.committee-subcommittee-meta.is-placeholder,
-.policy-agency-placeholder.is-placeholder {
-    color: #64748b;
-    font-style: italic;
-}
-
-/* Subcommittees */
-.committee-subcommittee-list {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    margin-bottom: 12px;
-}
-
-.committee-subcommittee-list:empty {
-    display: none;
-}
-
-.committee-subcommittee-title {
-    font-size: 9px;
-    font-weight: 600;
-    color: #94a3b8;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    margin-bottom: 2px;
-}
-
-.committee-subcommittee-item {
-    padding: 5px 7px;
-    border-radius: 4px;
-    border: 1px solid rgba(56, 189, 248, 0.1);
-    background: rgba(2, 6, 23, 0.4);
-}
-
-.committee-subcommittee-name {
-    font-size: 10px;
-    color: #cbd5e1;
-    line-height: 1.3;
-}
-
-.committee-subcommittee-meta {
-    font-size: 9px;
-    color: #94a3b8;
-    margin-top: 2px;
-}
-
-/* Executive hub grouped by issuing agency */
-.policy-agency-group {
-    padding: 8px;
-    border-radius: 6px;
-    border: 1px solid rgba(56, 189, 248, 0.15);
-    background: rgba(2, 6, 23, 0.5);
-    margin-bottom: 8px;
-}
-
-.policy-agency-header {
-    display: flex;
-    align-items: baseline;
-    gap: 6px;
-    margin-bottom: 3px;
-}
-
-.policy-agency-name {
-    font-size: 11px;
-    font-weight: 600;
-    color: #e0f2fe;
-}
-
-.policy-agency-short {
-    font-size: 9px;
-    color: #7dd3fc;
-}
-
-.policy-agency-placeholder {
-    font-size: 9px;
-    color: #64748b;
-    margin-bottom: 6px;
-}
-
+/* The wireframe draws each EO as a ribbon row under its agency. */
 .policy-eo-ribbon {
-    display: flex;
-    align-items: baseline;
-    gap: 6px;
-    padding: 5px 7px;
-    margin-top: 4px;
-    border-radius: 4px;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 12px;
     border: 1px solid rgba(56, 189, 248, 0.1);
-    background: rgba(2, 6, 23, 0.7);
+    border-radius: 7px;
+    background: rgba(15, 23, 42, 0.6);
+    text-align: left;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all 0.18s ease;
 }
 
-.policy-eo-ribbon:hover {
-    border-color: rgba(56, 189, 248, 0.4);
-    background: rgba(2, 6, 23, 1);
-}
+.policy-eo-ribbon:hover { border-color: rgba(56, 189, 248, 0.4); background: rgba(15, 23, 42, 0.9); }
+.policy-eo-num { color: #38bdf8; font-size: 11px; font-weight: 700; }
+.policy-eo-title { color: #e2e8f0; font-size: 11.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.policy-eo-date { color: #64748b; font-size: 10px; }
 
-.policy-eo-ribbon-number {
-    flex: 0 0 auto;
-    font-size: 9px;
+.policy-eo-headline {
+    margin: 0 0 12px;
+    color: #e2e8f0;
+    font-size: 15px;
     font-weight: 600;
-    color: #7dd3fc;
+    line-height: 1.45;
 }
 
-.policy-eo-ribbon-title {
-    font-size: 10px;
-    color: #cbd5e1;
-    line-height: 1.3;
+/* --- legal authorities & regulations ----------------------------------- */
+
+.policy-authority-list,
+.policy-reg-list { list-style: none; margin: 0; padding: 0; }
+
+.policy-authority-list li {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 12px;
+    margin-bottom: 7px;
+    border: 1px solid transparent;
+    border-radius: 7px;
+    background: rgba(30, 41, 59, 0.45);
 }
 
-/* EO detail: legal authorities + external links */
-.policy-external-link {
-    display: block;
-    font-size: 9px;
-    color: #38bdf8;
-    text-decoration: none;
-    word-break: break-all;
-}
+/* A citation that resolves to a bill we can actually open is marked, since it
+   navigates inward instead of out to the statute source. */
+.policy-authority-list li.is-internal { border-color: rgba(56, 189, 248, 0.35); }
+.policy-authority-hint { color: #64748b; font-size: 10px; }
 
-.policy-external-link:hover {
-    text-decoration: underline;
-}
+.policy-reg-list li { margin-bottom: 7px; }
 
-.policy-legal-list,
-.policy-regulation-list {
+.policy-reg-row {
     display: flex;
     flex-direction: column;
     gap: 6px;
-}
-
-.policy-legal-authority {
-    padding: 6px;
-    border-radius: 4px;
-    background: rgba(2, 6, 23, 0.8);
+    padding: 10px 12px;
     border: 1px solid rgba(56, 189, 248, 0.1);
-}
-
-.policy-legal-authority.is-internal {
-    cursor: pointer;
-    border-color: rgba(56, 189, 248, 0.3);
-}
-
-.policy-legal-authority.is-internal:hover {
-    border-color: rgba(56, 189, 248, 0.6);
-    background: rgba(2, 6, 23, 1);
-}
-
-.policy-legal-citation {
-    display: block;
-    font-size: 10px;
-    color: #7dd3fc;
-    line-height: 1.3;
-}
-
-.policy-legal-hint {
-    display: block;
-    font-size: 9px;
-    color: #94a3b8;
-    margin-top: 2px;
-}
-
-.policy-verify-badge {
-    display: inline-block;
-    margin-top: 4px;
-    padding: 1px 5px;
-    border-radius: 3px;
-    background: rgba(148, 163, 184, 0.15);
-    color: #94a3b8;
-    font-size: 8.5px;
-}
-
-/* Regulations under an EO: external-link rows only, never an internal page,
-   and no abstract in the list. */
-.policy-regulation-row {
-    display: block;
-    padding: 6px;
-    border-radius: 4px;
-    background: rgba(2, 6, 23, 0.8);
-    border: 1px solid rgba(56, 189, 248, 0.1);
+    border-radius: 7px;
+    background: rgba(30, 41, 59, 0.45);
     text-decoration: none;
-    transition: all 0.2s ease;
+    transition: all 0.18s ease;
 }
 
-.policy-regulation-row:hover {
-    border-color: rgba(56, 189, 248, 0.35);
-    background: rgba(2, 6, 23, 1);
-}
+.policy-reg-row:hover { border-color: rgba(56, 189, 248, 0.4); background: rgba(30, 41, 59, 0.75); }
+.policy-reg-title { color: #7dd3fc; font-size: 11.5px; line-height: 1.45; }
+.policy-reg-meta { display: flex; align-items: center; gap: 10px; color: #64748b; font-size: 10px; }
 
-.policy-regulation-row-title {
-    display: block;
-    font-size: 10px;
-    color: #38bdf8;
-    line-height: 1.3;
-}
-
-.policy-regulation-row-meta {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-top: 4px;
-    font-size: 9px;
-    color: #94a3b8;
-}
-
-/* Loading states */
 .empty-state {
     text-align: center;
     color: #94a3b8;

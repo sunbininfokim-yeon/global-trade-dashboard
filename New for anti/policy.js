@@ -1,780 +1,604 @@
-// US Policy Dashboard Logic with Mock Data Integration
-// Loads UI mock data from New for anti/public/data/ui-policy-mock-data.json
+// US Policy Dashboard
+//
+// Unlike the commodity/climate views, policy has no map to show -- it is a
+// document-style screen, so it takes the full centre surface (#chart-view) the
+// same way shipping and finance do, instead of the narrow right pane.
+//
+// Data currently comes from the UI fixture at
+// New for anti/public/data/ui-policy-mock-data.json. Everything in it is
+// marked is_mock: true and must never be presented as live U.S. government
+// data. TODO(real-api): swap loadData() for the /api/us/* endpoints described
+// in docs/api-spec.md -- the response schema is identical, so the render code
+// below does not change.
 
-let POLICY_MOCK_DATA = null;
+(() => {
+  const DATA_URL = '/public/data/ui-policy-mock-data.json';
 
-const USPolicy = {
-  state: {
-    currentView: null,
-    selectedCommittee: null,
-    selectedPolicyArea: null,
-    selectedBill: null,
-    selectedChamber: 'senate',
-    selectedExecutiveType: 'eo',
-    selectedEO: null,
-  },
+  let DATA = null;
+  let loadPromise = null;
 
-  // Panel references
-  hubPanel: document.getElementById('us-policy-hub-panel'),
-  congressPanel: document.getElementById('us-congress-overview-panel'),
-  executivePanel: document.getElementById('us-executive-panel'),
-  committeeDetailPanel: document.getElementById('us-committee-detail-panel'),
-  crsPanel: document.getElementById('us-crs-policy-area-panel'),
-  billDetailPanel: document.getElementById('us-bill-detail-panel'),
-  eoDetailPanel: document.getElementById('us-eo-detail-panel'),
+  const STAGE_LABELS = {
+    introduced: '발의',
+    referred: '회부',
+    subcommittee: '소위',
+    committee_consideration: '위원회 심사',
+    reported: '상임위 통과',
+    passed_origin_chamber: '본회의 통과',
+    second_chamber: '상대원 심사',
+    resolving_differences: '양원 조정',
+    passed_both_chambers: '양원 통과',
+    presented_to_president: '정부 이송',
+    enacted: '법률 제정',
+    vetoed: '거부',
+    failed: '부결',
+  };
 
-  /**
-   * Initialize: load mock data and setup
-   */
-  async init() {
+  const CHAMBER_LABELS = { house: '하원', senate: '상원', joint: '합동' };
+
+  const esc = (value) => {
+    if (value === null || value === undefined) return '';
+    return String(value)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  };
+
+  const stageLabel = (stage) => STAGE_LABELS[stage] || stage || '-';
+
+  // A stage tab's value is either empty (= every stage) or a comma-separated
+  // OR list, e.g. "vetoed,failed".
+  const filterByStage = (bills, stage) => {
+    if (!bills) return [];
+    if (!stage) return bills;
+    const wanted = String(stage).split(',').map((s) => s.trim()).filter(Boolean);
+    return wanted.length ? bills.filter((b) => wanted.includes(b.current_stage)) : bills;
+  };
+
+  // Only bills the dashboard can actually open a detail view for are linkable.
+  const resolveBill = (billId) => {
+    if (!billId) return null;
+    if (DATA?.bill_detail && String(DATA.bill_detail.bill_id) === String(billId)) return DATA.bill_detail;
+    return null;
+  };
+
+  const findBillSummary = (billId) =>
+    DATA?.policy_hub?.summary_cards?.find((b) => b.bill_id === billId)
+    || DATA?.committee_detail?.items?.find((b) => b.bill_id === billId)
+    || null;
+
+  const uiState = (key, fallback) => DATA?.ui_states?.[key]?.title || fallback;
+
+  async function loadData() {
+    if (DATA) return DATA;
+    if (loadPromise) return loadPromise;
     // The Worker serves `New for anti` with not_found_handling=single-page-application,
-    // so a missing asset comes back as index.html with HTTP 200 rather than a 404.
-    // fetch() therefore neither rejects nor reports !ok, and only the parse fails --
-    // so the response has to be validated as JSON before it is trusted.
-    // TODO(real-api): swap this fixture for GET /api/us/policy/summary et al.
-    // (contract: docs/api-spec.md).
-    const url = '/public/data/ui-policy-mock-data.json';
-    try {
-      const res = await fetch(url);
-      const body = res.ok ? await res.text() : null;
-      if (body) {
+    // so a missing asset comes back as index.html with HTTP 200, not a 404 --
+    // fetch neither rejects nor reports !ok and only the parse fails. Validate
+    // the body as JSON so a missing asset reports what actually went wrong.
+    loadPromise = (async () => {
+      try {
+        const res = await fetch(DATA_URL);
+        const body = res.ok ? await res.text() : null;
+        if (!body) return null;
         try {
-          POLICY_MOCK_DATA = JSON.parse(body);
+          DATA = JSON.parse(body);
         } catch {
           console.error(
-            `Policy data at ${url} is not JSON (HTTP ${res.status}, ${res.headers.get('content-type')}) --`,
+            `Policy data at ${DATA_URL} is not JSON (HTTP ${res.status}, ${res.headers.get('content-type')}) --`,
             'the asset is most likely missing and the SPA fallback returned index.html.',
           );
         }
+      } catch (err) {
+        console.error('Failed to load policy data:', err);
       }
-    } catch (err) {
-      console.error('Failed to load policy mock data:', err);
-    }
+      return DATA;
+    })();
+    return loadPromise;
+  }
 
-    this.setupEventListeners();
-    console.log('USPolicy initialized', { hasMockData: !!POLICY_MOCK_DATA });
-  },
+  /* ---------------------------------------------------------------- shell */
 
-  /**
-   * Setup event listeners for tabs and interactions
-   */
-  setupEventListeners() {
-    // Congress chamber tabs
-    document.querySelectorAll('#congress-tabs .tab-btn').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        e.preventDefault();
-        this.state.selectedChamber = e.target.dataset.chamber;
-        this.updateTabState('#congress-tabs', e.target);
-        this.loadCommittees(e.target.dataset.chamber);
-      });
-    });
+  const state = { view: null, committeeId: null, policyAreaId: null, billId: null, eoNumber: null, stage: '' };
 
-    // Executive tabs
-    document.querySelectorAll('#executive-tabs .tab-btn').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        e.preventDefault();
-        this.state.selectedExecutiveType = e.target.dataset.type;
-        this.updateTabState('#executive-tabs', e.target);
-        this.loadExecutiveContent(e.target.dataset.type);
-      });
-    });
+  const empty = (message) => `<div class="policy-empty">${esc(message)}</div>`;
 
-    // Committee bill stage tabs
-    document.querySelectorAll('#committee-bill-tabs .tab-btn').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        e.preventDefault();
-        this.updateTabState('#committee-bill-tabs', e.target);
-        const stage = e.target.dataset.stage;
-        this.loadBillsByCommittee(this.state.selectedCommittee, stage);
-      });
-    });
+  const card = (title, bodyHtml, extraClass = '') =>
+    `<section class="policy-block ${extraClass}">
+       <h3 class="policy-block-title">${esc(title)}</h3>
+       ${bodyHtml}
+     </section>`;
 
-    // CRS bill stage tabs
-    document.querySelectorAll('#crs-bill-tabs .tab-btn').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        e.preventDefault();
-        this.updateTabState('#crs-bill-tabs', e.target);
-        const stage = e.target.dataset.stage;
-        this.loadBillsByPolicyArea(this.state.selectedPolicyArea, stage);
-      });
-    });
-  },
+  const crumb = (parts) =>
+    `<nav class="policy-crumb">${parts.map((p, i) => (
+      p.view
+        ? `<button type="button" class="policy-crumb-link" data-view="${esc(p.view)}"${p.id !== undefined ? ` data-id="${esc(p.id)}"` : ''}>${esc(p.label)}</button>`
+        : `<span class="policy-crumb-current">${esc(p.label)}</span>`
+    ) + (i < parts.length - 1 ? '<span class="policy-crumb-sep">›</span>' : '')).join('')}</nav>`;
 
-  updateTabState(tabContainer, activeBtn) {
-    document.querySelectorAll(`${tabContainer} .tab-btn`).forEach(btn => {
-      btn.classList.remove('active');
-    });
-    activeBtn.classList.add('active');
-  },
+  // The mock fixture keeps search switched off (meta.search.visible=false);
+  // the control is rendered disabled so the layout matches the final screen.
+  const searchBox = () => {
+    if (DATA?.meta?.search?.visible) return '';
+    return `<div class="policy-search is-disabled" title="${esc(uiState('no_search', '검색 기능은 준비 중'))}">
+              <input type="search" placeholder="${esc(uiState('no_search', '검색 기능은 준비 중'))}" disabled>
+            </div>`;
+  };
 
-  /**
-   * Show policy hub (top 10 bills from mock data)
-   */
-  async showHub() {
-    this.state.currentView = 'hub';
-    this.hideAllPanels();
-    this.panelShow(this.hubPanel);
-    this.loadPolicySummary();
-  },
-
-  /**
-   * Show Congress overview (committees by chamber)
-   */
-  async showCongressOverview() {
-    this.state.currentView = 'congress-overview';
-    this.hideAllPanels();
-    this.panelShow(this.congressPanel);
-    this.loadCommittees('senate');  // Default to Senate
-  },
-
-  /**
-   * Show Executive orders and regulations
-   */
-  async showExecutive() {
-    this.state.currentView = 'executive';
-    this.hideAllPanels();
-    this.panelShow(this.executivePanel);
-    this.loadExecutiveContent('eo');  // Default to EOs
-  },
-
-  /**
-   * Load policy hub summary cards
-   */
-  loadPolicySummary() {
-    const container = document.getElementById('policy-summary-cards');
-    if (!POLICY_MOCK_DATA?.policy_hub?.summary_cards) {
-      container.innerHTML = this.renderEmpty('데이터를 불러올 수 없습니다');
-      return;
-    }
-
-    const bills = POLICY_MOCK_DATA.policy_hub.summary_cards;
-    if (!bills.length) {
-      container.innerHTML = this.renderEmpty('표시할 법안이 없습니다');
-      return;
-    }
-
-    container.innerHTML = bills.map(bill => `
-      <div class="policy-card" data-bill-id="${bill.bill_id}">
-        <div class="policy-card-title">${bill.title}</div>
-        <div class="policy-card-meta">
-          <span class="policy-stage-badge">${this.stageLabel(bill.current_stage)}</span>
-          <span>${bill.latest_action_date}</span>
-        </div>
-        <div class="policy-card-summary">${bill.summary || '요약 없음'}</div>
-      </div>
-    `).join('');
-
-    container.querySelectorAll('.policy-card').forEach(card => {
-      card.addEventListener('click', () => {
-        this.loadBillDetail(card.dataset.billId);
-      });
-    });
-  },
-
-  /**
-   * Load committees by chamber
-   */
-  loadCommittees(chamber) {
-    const container = document.getElementById('congress-committees-list');
-    if (!POLICY_MOCK_DATA?.congress_overview?.committees) {
-      container.innerHTML = this.renderEmpty('위원회 데이터를 불러올 수 없습니다');
-      return;
-    }
-
-    const committees = POLICY_MOCK_DATA.congress_overview.committees.filter(c => c.chamber === chamber);
-    if (!committees.length) {
-      container.innerHTML = this.renderEmpty('위원회가 없습니다');
-      return;
-    }
-
-    container.innerHTML = committees.map(comm => `
-      <div class="committee-item" data-committee-id="${comm.committee_id}">
-        <div class="committee-name">${comm.name}</div>
-        <div class="committee-meta">${comm.jurisdiction_summary}</div>
-        ${comm.agencies?.length ? `<div class="committee-meta" style="margin-top:4px; font-size:9px; color:#64748b;">관할: ${comm.agencies.join(', ')}</div>` : ''}
-      </div>
-    `).join('');
-
-    container.querySelectorAll('.committee-item').forEach(item => {
-      item.addEventListener('click', () => {
-        this.state.selectedCommittee = item.dataset.committeeId;
-        this.showCommitteeDetail(item.dataset.committeeId);
-      });
-    });
-  },
-
-  /**
-   * Show committee detail view
-   */
-  showCommitteeDetail(committeeId) {
-    this.hideAllPanels();
-    this.panelShow(this.committeeDetailPanel);
-    
-    const comm = POLICY_MOCK_DATA?.congress_overview?.committees?.find(c => c.committee_id === committeeId);
-    if (!comm) return;
-
-    document.getElementById('committee-name-title').textContent = comm.name;
-    document.getElementById('committee-jurisdiction').textContent = `관할: ${comm.jurisdiction_summary}`;
-
-    this.renderCommitteeLeadership(committeeId);
-    this.renderSubcommittees(committeeId);
-
-    // Reset the stage tabs to "전체 보기" so a previously selected stage does
-    // not silently filter a newly opened committee.
-    const tabs = document.querySelectorAll('#committee-bill-tabs .tab-btn');
-    if (tabs.length) this.updateTabState('#committee-bill-tabs', tabs[0]);
-
-    // Load default all-bills view
-    this.loadBillsByCommittee(committeeId, '');
-  },
-
-  /**
-   * Render Chair + Ranking Member rows for the committee detail header.
-   * Both are placeholder-only until member data lands.
-   * TODO(real-api): replace the placeholder strings with the Supabase-backed
-   * committee membership rows (chair / ranking member) once available.
-   */
-  renderCommitteeLeadership(committeeId) {
-    const container = document.getElementById('committee-leadership');
-    if (!container) return;
-
-    const detail = POLICY_MOCK_DATA?.committee_detail?.committee;
-    const states = POLICY_MOCK_DATA?.ui_states || {};
-
-    const chairText = detail?.chair?.name
-      || detail?.chair_placeholder
-      || states.empty_chair?.title
-      || '위원장 정보 준비 중';
-    const rankingText = detail?.ranking_member?.name
-      || detail?.ranking_member_placeholder
-      || states.empty_ranking_member?.title
-      || '간사 정보 준비 중';
-
-    const row = (label, value, isPlaceholder) => `
-      <div class="committee-leader-row">
-        <span class="committee-leader-label">${this.esc(label)}</span>
-        <span class="committee-leader-value${isPlaceholder ? ' is-placeholder' : ''}">${this.esc(value)}</span>
-      </div>
-    `;
-
-    container.innerHTML =
-      row('위원장', chairText, !detail?.chair) +
-      row('간사', rankingText, !detail?.ranking_member);
-  },
-
-  /**
-   * Render the subcommittee list (name + meeting-schedule placeholder).
-   * TODO(real-api): meeting schedules come from a live committee-meetings feed
-   * later; until then every row shows meetings_placeholder.
-   */
-  renderSubcommittees(committeeId) {
-    const container = document.getElementById('committee-subcommittees');
-    if (!container) return;
-
-    const subs = POLICY_MOCK_DATA?.committee_detail?.committee?.subcommittees;
-    if (!subs || !subs.length) {
-      container.innerHTML = '';
-      return;
-    }
-
-    const fallback = POLICY_MOCK_DATA?.ui_states?.empty_subcommittee_meetings?.title || '회의 일정 준비 중';
-
-    container.innerHTML = `
-      <div class="committee-subcommittee-title">소위원회</div>
-      ${subs.map(sub => `
-        <div class="committee-subcommittee-item" data-subcommittee-id="${this.esc(sub.subcommittee_id)}">
-          <div class="committee-subcommittee-name">${this.esc(sub.name)}</div>
-          <div class="committee-subcommittee-meta is-placeholder">${this.esc(sub.meetings_placeholder || fallback)}</div>
-        </div>
+  const modeTabs = (active) => `
+    <div class="policy-modes">
+      ${[['congress', '의회'], ['executive', '행정부']].map(([id, label]) => `
+        <button type="button" class="policy-mode-btn${active === id ? ' active' : ''}" data-view="${id}">${label}</button>
       `).join('')}
-    `;
-  },
+      ${searchBox()}
+    </div>`;
 
-  /**
-   * Filter a bill list by a stage tab value.
-   * The tab's data-stage is either empty/null (= all stages) or a
-   * comma-separated OR list, e.g. "vetoed,failed".
-   */
-  filterByStage(bills, stage) {
-    if (!bills) return [];
-    if (!stage) return bills;
-    const wanted = String(stage).split(',').map(s => s.trim()).filter(Boolean);
-    if (!wanted.length) return bills;
-    return bills.filter(b => wanted.includes(b.current_stage));
-  },
+  const mockNotice = () => (DATA?.meta?.is_mock
+    ? `<p class="policy-mock-notice">표시된 내용은 UI 확인용 예시 데이터입니다. 실제 미국 정부 자료가 아닙니다.</p>`
+    : '');
 
-  /**
-   * Load bills by committee and stage
-   */
-  loadBillsByCommittee(committeeId, stage) {
-    const container = document.getElementById('committee-bills-list');
-    if (!POLICY_MOCK_DATA?.committee_detail?.items) {
-      container.innerHTML = this.renderEmpty('법안을 불러올 수 없습니다');
-      return;
-    }
+  const shell = (mode, crumbHtml, bodyHtml) => `
+    <div class="policy-surface-inner">
+      <header class="policy-head">
+        ${modeTabs(mode)}
+        ${crumbHtml}
+      </header>
+      ${mockNotice()}
+      ${bodyHtml}
+    </div>`;
 
-    const bills = this.filterByStage(POLICY_MOCK_DATA.committee_detail.items, stage);
-    this.renderBillsList(bills, container);
-  },
+  /* --------------------------------------------------------------- pieces */
 
-  /**
-   * Load bills by policy area and stage
-   */
-  loadBillsByPolicyArea(policyAreaId, stage) {
-    const container = document.getElementById('crs-bills-list');
-    if (!POLICY_MOCK_DATA?.policy_area_detail?.items) {
-      container.innerHTML = this.renderEmpty('법안을 불러올 수 없습니다');
-      return;
-    }
+  const stageBadge = (stage) => `<span class="policy-stage-badge">${esc(stageLabel(stage))}</span>`;
 
-    // In mock data, policy_area_detail.items are bill_ids, need to look up actual bills
-    const bills = POLICY_MOCK_DATA.policy_hub.summary_cards.filter(b =>
-      POLICY_MOCK_DATA.policy_area_detail.items.includes(b.bill_id)
-    );
-    this.renderBillsList(this.filterByStage(bills, stage), container);
-  },
+  const billRow = (bill) => `
+    <button type="button" class="policy-bill-row" data-view="bill" data-id="${esc(bill.bill_id)}">
+      <span class="policy-bill-row-id">${esc(bill.bill_id)}</span>
+      <span class="policy-bill-row-title">${esc(bill.title)}</span>
+      <span class="policy-bill-row-meta">
+        ${stageBadge(bill.current_stage)}
+        <span class="policy-bill-row-date">${esc(bill.latest_action_date || '')}</span>
+      </span>
+    </button>`;
 
-  /**
-   * Render bill list
-   */
-  renderBillsList(bills, container) {
-    if (!bills || !bills.length) {
-      container.innerHTML = this.renderEmpty('표시할 법안이 없습니다');
-      return;
-    }
-
-    container.innerHTML = bills.map(bill => `
-      <div class="bill-item" data-bill-id="${bill.bill_id}">
-        <div class="bill-number">${bill.bill_id}</div>
-        <div class="bill-title">${bill.title}</div>
-        <div class="bill-meta">
-          <span class="policy-stage-badge">${this.stageLabel(bill.current_stage)}</span>
-        </div>
-      </div>
-    `).join('');
-
-    container.querySelectorAll('.bill-item').forEach(item => {
-      item.addEventListener('click', () => {
-        this.loadBillDetail(item.dataset.billId);
-      });
-    });
-  },
-
-  /**
-   * Load and display bill detail
-   */
-  loadBillDetail(billId) {
-    this.state.selectedBill = billId;
-    this.hideAllPanels();
-    this.panelShow(this.billDetailPanel);
-
-    const bill = POLICY_MOCK_DATA?.bill_detail;
-    if (!bill) {
-      document.getElementById('bill-detail-content').innerHTML = this.renderEmpty('법안 정보를 불러올 수 없습니다');
-      return;
-    }
-
-    document.getElementById('bill-number-title').textContent = bill.bill_id;
-    document.getElementById('bill-title-subtitle').textContent = bill.title;
-
-    const sections = [];
-
-    // Sponsor
-    sections.push({
-      title: '발의자',
-      content: `<div class="bill-sponsor">${bill.sponsor}</div>`,
-    });
-
-    // Summary
-    sections.push({
-      title: '요약',
-      content: `<div class="bill-detail-section-content">${bill.summary}</div>`,
-    });
-
-    // Committees
-    sections.push({
-      title: '회부 위원회',
-      content: bill.committees?.length ? bill.committees.map(c =>
-        `<div class="bill-sponsor">${c.name}</div>`
-      ).join('') : this.renderEmpty('정보 없음'),
-    });
-
-    // Votes
-    if (bill.votes?.length) {
-      const vote = bill.votes[0];
-      sections.push({
-        title: '표결',
-        content: `
-          <div class="bill-detail-section-content">
-            <div style="font-size:10px; line-height:1.5;">
-              <strong>${vote.result}</strong> (${vote.vote_date})<br>
-              찬성: ${vote.yea_count} | 반대: ${vote.nay_count} | 기권: ${vote.present_count}
-            </div>
-          </div>
-        `,
-      });
-    } else {
-      sections.push({
-        title: '표결',
-        content: this.renderEmpty(POLICY_MOCK_DATA.ui_states?.empty_vote?.title || '기록 표결 없음'),
-      });
-    }
-
-    // Related bills
-    if (bill.official_related_bills?.length || bill.similar_bills?.length) {
-      const relatedHtml = (bill.official_related_bills || []).map(rb =>
-        `<div class="bill-related-item">
-          <strong>${rb.bill_id}</strong>: ${rb.title}
-          <div style="font-size:9px; color:#64748b;">공식 관계</div>
-        </div>`
-      ).join('');
-
-      const similarHtml = (bill.similar_bills || []).map(sb =>
-        `<div class="bill-related-item">
-          <strong>${sb.bill_id}</strong>: ${sb.title}
-          <div style="font-size:9px; color:#f59e0b;">AI 유사도: ${(sb.similarity_score * 100).toFixed(0)}%</div>
-        </div>`
-      ).join('');
-
-      sections.push({
-        title: '관련 법안',
-        content: `<div class="bill-related-list">${relatedHtml}${similarHtml}</div>`,
-      });
-    }
-
-    document.getElementById('bill-detail-content').innerHTML = sections.map(sec => `
-      <div class="bill-detail-section">
-        <div class="bill-detail-section-title">${sec.title}</div>
-        <div class="bill-detail-section-content">${sec.content}</div>
-      </div>
-    `).join('');
-  },
-
-  /**
-   * Load executive content (EO or regulations)
-   */
-  loadExecutiveContent(type) {
-    const container = document.getElementById('executive-content');
-    
-    if (type === 'eo') {
-      const eos = POLICY_MOCK_DATA?.executive_overview?.executive_orders;
-      if (!eos || !eos.length) {
-        container.innerHTML = this.renderEmpty('행정명령이 없습니다');
-        return;
-      }
-
-      container.innerHTML = eos.map(eo => `
-        <div class="eo-item" data-eo-number="${eo.eo_number}">
-          <div class="eo-number">EO ${eo.eo_number}</div>
-          <div class="eo-title">${eo.title}</div>
-          <div class="bill-meta">${eo.signed_date}</div>
-        </div>
-      `).join('');
-
-      container.querySelectorAll('.eo-item').forEach(item => {
-        item.addEventListener('click', () => {
-          this.showEODetail(item.dataset.eoNumber);
-        });
-      });
-    } else if (type === 'agency') {
-      this.renderExecutiveHubByAgency(container);
-    } else {
-      // CFR Titles
-      const titles = POLICY_MOCK_DATA?.cfr_titles;
-      if (!titles || !titles.length) {
-        container.innerHTML = this.renderEmpty('규제 제목이 없습니다');
-        return;
-      }
-
-      container.innerHTML = titles.map(title => `
-        <div class="regulation-item" data-title="${title.title_number}">
-          <div class="regulation-title">CFR Title ${title.title_number}</div>
-          <div class="regulation-desc">${title.name}</div>
-          ${title.reserved ? `<div class="bill-meta" style="color:#f59e0b;">예약됨</div>` : `<div class="bill-meta">${title.regulation_count} 규제</div>`}
-        </div>
-      `).join('');
-    }
-  },
-
-  /**
-   * Executive hub grouped by issuing agency.
-   * Each agency box = agency name + a Secretary/Deputy placeholder + the
-   * titles of the EOs it issued, as clickable ribbons into the EO detail.
-   * Grouping is driven purely by data: an EO's own `agency_id`, falling back
-   * to the agency's `eo_ids` list. No agency name is hardcoded here.
-   * TODO(real-api): agency leadership (장관/차관) and the agency↔EO join come
-   * from Supabase later; the placeholder row stands in until then.
-   */
-  renderExecutiveHubByAgency(container) {
-    const agencies = POLICY_MOCK_DATA?.executive_overview?.agencies;
-    const eos = POLICY_MOCK_DATA?.executive_overview?.executive_orders || [];
-
-    if (!agencies || !agencies.length) {
-      container.innerHTML = this.renderEmpty('기관 데이터를 불러올 수 없습니다');
-      return;
-    }
-
-    const secretaryFallback = POLICY_MOCK_DATA?.ui_states?.empty_agency_secretary?.title || '장관 정보 준비 중';
-
-    const groups = agencies.map(agency => {
-      const byAgencyId = eos.filter(eo => eo.agency_id === agency.agency_id);
-      const byEoIds = (agency.eo_ids || [])
-        .map(id => eos.find(eo => String(eo.eo_number) === String(id)))
-        .filter(Boolean);
-      // Union of both links, de-duplicated by eo_number.
-      const seen = new Set();
-      const items = [...byAgencyId, ...byEoIds].filter(eo => {
-        const key = String(eo.eo_number);
-        if (seen.has(key)) return false;
-        seen.add(key);
-        return true;
-      });
-      return { agency, items };
-    });
-
-    container.innerHTML = groups.map(({ agency, items }) => `
-      <div class="policy-agency-group" data-agency-id="${this.esc(agency.agency_id)}">
-        <div class="policy-agency-header">
-          <div class="policy-agency-name">${this.esc(agency.name)}</div>
-          ${agency.short_name ? `<span class="policy-agency-short">${this.esc(agency.short_name)}</span>` : ''}
-        </div>
-        <div class="policy-agency-placeholder is-placeholder">${this.esc(agency.secretary_placeholder || secretaryFallback)}</div>
-        ${items.length ? items.map(eo => `
-          <div class="policy-eo-ribbon" data-eo-number="${this.esc(eo.eo_number)}">
-            <span class="policy-eo-ribbon-number">EO ${this.esc(eo.eo_number)}</span>
-            <span class="policy-eo-ribbon-title">${this.esc(eo.title)}</span>
-          </div>
-        `).join('') : this.renderEmpty('해당 기관의 행정명령이 없습니다')}
-      </div>
-    `).join('');
-
-    container.querySelectorAll('.policy-eo-ribbon').forEach(row => {
-      row.addEventListener('click', () => {
-        this.showEODetail(row.dataset.eoNumber);
-      });
-    });
-  },
-
-  /**
-   * Show EO detail: summary, official links, cited legal authorities and the
-   * related-regulation list.
-   */
-  showEODetail(eoNumber) {
-    this.state.selectedEO = eoNumber;
-    this.hideAllPanels();
-    this.panelShow(this.eoDetailPanel);
-
-    const content = document.getElementById('eo-detail-content');
-    if (!content) return;
-
-    const listed = (POLICY_MOCK_DATA?.executive_overview?.executive_orders || [])
-      .find(eo => String(eo.eo_number) === String(eoNumber));
-    const detail = POLICY_MOCK_DATA?.executive_order_detail;
-    // The mock fixture carries a single fully detailed EO; other list rows fall
-    // back to their overview record plus a "detail pending" placeholder.
-    const hasDetail = !!detail && String(detail.eo_number) === String(eoNumber);
-    const eo = hasDetail ? detail : listed;
-
-    const numberTitle = document.getElementById('eo-number-title');
-    const subtitle = document.getElementById('eo-title-subtitle');
-    if (numberTitle) numberTitle.textContent = eo ? `EO ${eo.eo_number}` : '행정명령 상세';
-    if (subtitle) subtitle.textContent = eo?.title || '';
-
-    if (!eo) {
-      content.innerHTML = this.renderEmpty('행정명령 정보를 불러올 수 없습니다');
-      return;
-    }
-
-    const sections = [];
-
-    sections.push({
-      title: '요약',
-      content: `<div class="bill-detail-section-content">${this.esc(eo.summary || '요약 없음')}</div>`,
-    });
-
-    sections.push({
-      title: '서명·공포일',
-      content: `<div class="bill-detail-section-content">서명: ${this.esc(eo.signed_date || '-')} · 공포: ${this.esc(eo.publication_date || '-')}</div>`,
-    });
-
-    if (!hasDetail) {
-      const pending = POLICY_MOCK_DATA?.ui_states?.empty_eo_detail?.title || '행정명령 상세 정보 준비 중';
-      sections.push({ title: '상세', content: this.renderEmpty(pending) });
-    }
-
-    // Official links (always external)
-    const links = hasDetail
-      ? Object.values(detail.official_links || {})
-      : [eo.federal_register_url].filter(Boolean);
-    if (links.length) {
-      sections.push({
-        title: '공식 링크',
-        content: links.map(url =>
-          `<a class="policy-external-link" href="${this.esc(url)}" target="_blank" rel="noopener noreferrer">${this.esc(url)}</a>`
-        ).join(''),
-      });
-    }
-
-    if (hasDetail) {
-      sections.push({ title: '근거 법령', content: this.renderLegalAuthorities(detail.legal_authorities) });
-      sections.push({ title: '관련 규제', content: this.renderRelatedRegulations(detail.related_regulations) });
-    }
-
-    content.innerHTML = sections.map(sec => `
-      <div class="bill-detail-section">
-        <div class="bill-detail-section-title">${this.esc(sec.title)}</div>
-        <div class="bill-detail-section-content">${sec.content}</div>
-      </div>
-    `).join('');
-
-    // Citations resolved to an internal bill open the bill detail view.
-    content.querySelectorAll('.policy-legal-authority[data-bill-id]').forEach(item => {
-      item.addEventListener('click', () => {
-        this.loadBillDetail(item.dataset.billId);
-      });
-    });
-  },
-
-  /**
-   * Cited legal authorities on an EO.
-   * A citation carrying a `bill_id` that resolves to a bill we track renders as
-   * an internal link into that bill's detail view; everything else keeps the
-   * external official_url + verification badge it has today.
-   * TODO(real-api): `bill_id` is a mock stand-in for a live Supabase-backed
-   * citation↔bill relationship — resolve it server-side once that table exists.
-   */
-  renderLegalAuthorities(authorities) {
-    if (!authorities || !authorities.length) return this.renderEmpty('근거 법령 정보 없음');
-
-    return `<div class="policy-legal-list">${authorities.map(auth => {
-      const badge = auth.verification_status
-        ? `<span class="policy-verify-badge">${this.esc(auth.verification_status)}</span>`
-        : '';
-
-      if (auth.bill_id && this.resolveBillId(auth.bill_id)) {
-        return `
-          <div class="policy-legal-authority is-internal" data-bill-id="${this.esc(auth.bill_id)}">
-            <span class="policy-legal-citation">${this.esc(auth.citation)}</span>
-            <span class="policy-legal-hint">연계 법안: ${this.esc(auth.bill_id)}</span>
-            ${badge}
-          </div>
-        `;
-      }
-
-      return `
-        <div class="policy-legal-authority">
-          <a class="policy-external-link" href="${this.esc(auth.official_url)}" target="_blank" rel="noopener noreferrer">${this.esc(auth.citation)}</a>
-          ${badge}
-        </div>
-      `;
+  const stageTabs = (tabs, activeStage) => {
+    if (!tabs?.length) return '';
+    return `<div class="policy-stage-tabs">${tabs.map((t) => {
+      const value = t.stage || '';
+      const on = value === (activeStage || '');
+      return `<button type="button" class="policy-stage-tab${on ? ' active' : ''}" data-stage="${esc(value)}">
+                ${esc(t.label)}${typeof t.count === 'number' ? `<span class="policy-stage-count">${t.count}</span>` : ''}
+              </button>`;
     }).join('')}</div>`;
-  },
+  };
 
-  /**
-   * Is this bill_id one the dashboard can open a detail view for?
-   * The mock fixture only carries one fully detailed bill.
-   */
-  resolveBillId(billId) {
-    if (!billId) return null;
-    const detail = POLICY_MOCK_DATA?.bill_detail;
-    return detail && String(detail.bill_id) === String(billId) ? detail.bill_id : null;
-  },
+  const leaderRow = (label, person, placeholder) => `
+    <div class="policy-leader">
+      <span class="policy-leader-label">${esc(label)}</span>
+      <span class="policy-leader-value${person ? '' : ' is-placeholder'}">${esc(person?.name || placeholder)}</span>
+    </div>`;
 
-  /**
-   * Regulations under an EO.
-   * By design these are external-link-only: a regulation never gets an internal
-   * detail page, and no abstract/summary is rendered in this list — the row is
-   * title + document type + effective date, opening federal_register_url in a
-   * new tab. (`abstract` stays in the data for other consumers.)
-   */
-  renderRelatedRegulations(regulations) {
-    if (!regulations || !regulations.length) return this.renderEmpty('관련 규제 없음');
+  /* ---------------------------------------------------------------- views */
 
-    return `<div class="policy-regulation-list">${regulations.map(reg => `
-      <a class="policy-regulation-row" href="${this.esc(reg.federal_register_url)}" target="_blank" rel="noopener noreferrer">
-        <span class="policy-regulation-row-title">${this.esc(reg.title)}</span>
-        <span class="policy-regulation-row-meta">
-          <span class="policy-stage-badge">${this.esc(reg.document_type || '규제')}</span>
-          <span>시행일: ${this.esc(reg.effective_on || '-')}</span>
-        </span>
-      </a>
-    `).join('')}</div>`;
-  },
+  function viewHub() {
+    const bills = DATA?.policy_hub?.summary_cards || [];
+    const body = bills.length
+      ? `<div class="policy-card-grid">${bills.map((bill) => `
+          <button type="button" class="policy-card" data-view="bill" data-id="${esc(bill.bill_id)}">
+            <span class="policy-card-head">
+              ${stageBadge(bill.current_stage)}
+              <span class="policy-card-date">${esc(bill.latest_action_date || '')}</span>
+            </span>
+            <span class="policy-card-title">${esc(bill.title)}</span>
+            <span class="policy-card-area">${esc(bill.policy_area?.name || '')}</span>
+            <span class="policy-card-summary">${esc(bill.summary || '')}</span>
+          </button>`).join('')}</div>`
+      : empty('표시할 법안이 없습니다');
 
-  /**
-   * Map stage code to Korean label
-   */
-  stageLabel(stage) {
-    const stages = {
-      'introduced': '발의',
-      'referred': '회부',
-      'subcommittee': '소위',
-      'committee_consideration': '위원회',
-      'reported': '상임위 통과',
-      'passed_origin_chamber': '본회의 통과',
-      'second_chamber': '상대원',
-      'resolving_differences': '양원 조정',
-      'passed_both_chambers': '양원 통과',
-      'presented_to_president': '대통령 송부',
-      'enacted': '제정',
-      'vetoed': '거부',
-      'failed': '부결',
+    return shell('congress', crumb([{ label: '정책 허브' }]),
+      card('119대 의회 주요 법안', body));
+  }
+
+  function viewCongress() {
+    const co = DATA?.congress_overview;
+    if (!co) return shell('congress', crumb([{ label: '의회' }]), empty('의회 데이터를 불러올 수 없습니다'));
+
+    const byChamber = (chamber) => {
+      const list = (co.committees || []).filter((c) => c.chamber === chamber);
+      if (!list.length) return empty('등록된 상임위가 없습니다');
+      return `<div class="policy-chip-row">${list.map((c) => `
+        <button type="button" class="policy-chip" data-view="committee" data-id="${esc(c.committee_id)}">
+          <span class="policy-chip-name">${esc(c.name)}</span>
+          ${c.agencies?.length ? `<span class="policy-chip-sub">${esc(c.agencies.join(' · '))}</span>` : ''}
+        </button>`).join('')}</div>`;
     };
-    return stages[stage] || '기타';
-  },
 
-  /**
-   * Render empty state
-   */
-  renderEmpty(message) {
-    return `<p class="empty-state">${message}</p>`;
-  },
+    const areas = new Map();
+    (DATA.policy_hub?.summary_cards || []).forEach((b) => {
+      if (b.policy_area?.policy_area_id) areas.set(b.policy_area.policy_area_id, b.policy_area.name);
+    });
+    const areaChips = areas.size
+      ? `<div class="policy-chip-row">${[...areas].map(([id, name]) => `
+          <button type="button" class="policy-chip is-compact" data-view="area" data-id="${esc(id)}">
+            <span class="policy-chip-name">${esc(name)}</span>
+          </button>`).join('')}</div>`
+      : empty('정책분야 정보 준비 중');
 
-  /**
-   * Escape a value for interpolation into markup / attributes.
-   */
-  esc(value) {
-    if (value === null || value === undefined) return '';
-    return String(value)
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
-      .replace(/'/g, '&#39;');
-  },
+    const agencies = (co.agency_bill_counts || []).length
+      ? `<ul class="policy-count-list">${co.agency_bill_counts.map((a) => `
+          <li><span>${esc(a.name)}</span>
+            <span class="${a.bill_count === null ? 'is-placeholder' : 'policy-count'}">${
+              a.bill_count === null ? esc(uiState('empty_committee_agencies', '검증된 매핑 준비 중')) : esc(a.bill_count)
+            }</span></li>`).join('')}</ul>`
+      : empty('기관별 집계 준비 중');
 
-  /**
-   * Utility: Show panel
-   */
-  panelShow(el) {
-    if (el) el.classList.remove('hidden');
-  },
+    return shell('congress', crumb([{ label: '의회' }]), `
+      <div class="policy-grid-2">
+        <div class="policy-col">
+          ${card(`상임위 (${CHAMBER_LABELS.house})`, byChamber('house'))}
+          ${card(`상임위 (${CHAMBER_LABELS.senate})`, byChamber('senate'))}
+          ${(co.committees || []).some((c) => c.chamber === 'joint') ? card(`상임위 (${CHAMBER_LABELS.joint})`, byChamber('joint')) : ''}
+          ${card('CRS 정책분야', areaChips)}
+        </div>
+        <div class="policy-col">
+          ${card('기관별 법안 수', agencies)}
+          ${co.static_explainer ? card(co.static_explainer.title, `<p class="policy-prose">${esc(co.static_explainer.body)}</p>`) : ''}
+        </div>
+      </div>`);
+  }
 
-  /**
-   * Utility: Hide panel
-   */
-  panelHide(el) {
-    if (el) el.classList.add('hidden');
-  },
+  function viewCommittee(committeeId) {
+    const detail = DATA?.committee_detail;
+    const listed = DATA?.congress_overview?.committees?.find((c) => c.committee_id === committeeId);
+    // The fixture carries one fully detailed committee; others fall back to
+    // their overview record so the screen still opens.
+    const comm = (detail?.committee?.committee_id === committeeId ? detail.committee : null) || listed;
+    if (!comm) return shell('congress', crumb([{ view: 'congress', label: '의회' }, { label: '상임위' }]), empty('위원회를 찾을 수 없습니다'));
 
-  /**
-   * Hide all policy panels
-   */
-  hideAllPanels() {
-    [this.hubPanel, this.congressPanel, this.executivePanel,
-     this.committeeDetailPanel, this.crsPanel, this.billDetailPanel,
-     this.eoDetailPanel]
-      .forEach(panel => this.panelHide(panel));
-  },
-};
+    const hasDetail = detail?.committee?.committee_id === committeeId;
+    const items = hasDetail ? filterByStage(detail.items, state.stage) : [];
+    const subs = comm.subcommittees || [];
 
-// app.js routes the 미국 정책 nav targets through `window.USPolicy`; a
-// top-level `const` in a classic script does not attach to window on its own.
-window.USPolicy = USPolicy;
+    const leadership = `
+      ${leaderRow('위원장', comm.chair, comm.chair_placeholder || uiState('empty_chair', '위원장 정보 준비 중'))}
+      ${leaderRow('간사', comm.ranking_member, comm.ranking_member_placeholder || uiState('empty_ranking_member', '간사 정보 준비 중'))}`;
 
-// Initialize on DOM ready
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', () => USPolicy.init());
-} else {
-  USPolicy.init();
-}
+    // The overview record carries the verified agency mapping; the detail
+    // record does not, so fall back to it when the two differ.
+    const agencies = comm.agencies || listed?.agencies || [];
+    const agencyList = agencies.length
+      ? `<div class="policy-tag-row">${agencies.map((a) => `<span class="policy-tag">${esc(a)}</span>`).join('')}</div>`
+      : empty(uiState('empty_committee_agencies', '검증된 담당기관 매핑 준비 중'));
+
+    const subList = subs.length
+      ? `<ul class="policy-sub-list">${subs.map((s) => `
+          <li><span class="policy-sub-name">${esc(s.name)}</span>
+            <span class="policy-sub-meta is-placeholder">${esc(s.meetings_placeholder || uiState('empty_subcommittee_meetings', '회의 일정 준비 중'))}</span>
+          </li>`).join('')}</ul>`
+      : empty('소위원회 정보 준비 중');
+
+    const billsBody = hasDetail
+      ? `${stageTabs(detail.stage_tabs, state.stage)}
+         ${items.length ? `<div class="policy-bill-list">${items.map(billRow).join('')}</div>` : empty('해당 단계의 법안이 없습니다')}`
+      : empty('이 위원회의 법안 목록 준비 중');
+
+    // The sketch puts the selected bill beside the list rather than replacing
+    // it, so the committee context stays on screen while reading a bill.
+    const selected = state.billId ? (resolveBill(state.billId) || findBillSummary(state.billId)) : null;
+
+    return shell('congress',
+      crumb([{ view: 'congress', label: '의회' }, { label: comm.name }]), `
+      <div class="policy-grid-2">
+        <div class="policy-col">
+          ${card(comm.name, `
+            ${comm.jurisdiction_summary ? `<p class="policy-prose">${esc(comm.jurisdiction_summary)}</p>` : ''}
+            <div class="policy-leaders">${leadership}</div>
+            ${comm.official_url ? `<a class="policy-external" href="${esc(comm.official_url)}" target="_blank" rel="noopener noreferrer">공식 사이트</a>` : ''}
+          `)}
+          ${card('담당 기관', agencyList)}
+          ${card('소위원회', subList)}
+        </div>
+        <div class="policy-col">
+          ${card('소관 법안', billsBody)}
+          ${selected ? billPanel(selected, { compact: true }) : ''}
+        </div>
+      </div>`);
+  }
+
+  function viewPolicyArea(areaId) {
+    const area = DATA?.policy_area_detail;
+    const name = area?.policy_area?.policy_area_id === areaId
+      ? area.policy_area.name
+      : (DATA?.policy_hub?.summary_cards?.find((b) => b.policy_area?.policy_area_id === areaId)?.policy_area?.name || areaId);
+
+    const ids = area?.policy_area?.policy_area_id === areaId ? (area.items || []) : [];
+    const bills = filterByStage(
+      (DATA?.policy_hub?.summary_cards || []).filter((b) => ids.includes(b.bill_id)),
+      state.stage,
+    );
+
+    const body = ids.length
+      ? `${stageTabs(DATA?.committee_detail?.stage_tabs, state.stage)}
+         ${bills.length ? `<div class="policy-bill-list">${bills.map(billRow).join('')}</div>` : empty('해당 단계의 법안이 없습니다')}`
+      : empty('이 정책분야의 법안 목록 준비 중');
+
+    return shell('congress',
+      crumb([{ view: 'congress', label: '의회' }, { label: name }]),
+      card(`${name}${area?.policy_area?.bill_count ? ` · ${area.policy_area.bill_count}건` : ''}`, body));
+  }
+
+  function billPanel(bill, { compact = false } = {}) {
+    const full = resolveBill(bill.bill_id);
+    const votes = full?.votes || [];
+
+    const voteBody = votes.length
+      ? votes.map((v) => `
+          <div class="policy-vote">
+            <div class="policy-vote-head">
+              <span>${esc(CHAMBER_LABELS[v.chamber] || v.chamber)} · ${esc(v.question)}</span>
+              <span class="policy-vote-result">${esc(v.result)}</span>
+            </div>
+            <div class="policy-vote-counts">
+              <span class="yea">찬성 ${esc(v.yea_count)}</span>
+              <span class="nay">반대 ${esc(v.nay_count)}</span>
+              <span>기권 ${esc(v.present_count)}</span>
+              <span>불참 ${esc(v.not_voting_count)}</span>
+            </div>
+            <div class="policy-vote-foot">
+              <span>${esc(v.vote_date)}</span>
+              ${v.source_url ? `<a class="policy-external" href="${esc(v.source_url)}" target="_blank" rel="noopener noreferrer">원문</a>` : ''}
+            </div>
+          </div>`).join('')
+      : empty(uiState('empty_vote', '기록 표결 없음'));
+
+    // Official relations come before AI-detected ones, per bill_detail.ui_rules.
+    const related = (full?.official_related_bills || []).map((r) => `
+      <li>${resolveBill(r.bill_id)
+        ? `<button type="button" class="policy-link" data-view="bill" data-id="${esc(r.bill_id)}">${esc(r.title)}</button>`
+        : `<span>${esc(r.title)}</span>`}
+        <span class="policy-tag">공식 · ${esc(r.relation_type)}</span></li>`).join('');
+
+    const similar = (full?.similar_bills || []).map((r) => `
+      <li>${resolveBill(r.bill_id)
+        ? `<button type="button" class="policy-link" data-view="bill" data-id="${esc(r.bill_id)}">${esc(r.title)}</button>`
+        : `<span>${esc(r.title)}</span>`}
+        <span class="policy-tag is-ai">AI 유사 ${typeof r.similarity_score === 'number' ? r.similarity_score.toFixed(2) : ''}</span></li>`).join('');
+
+    const relatedBody = (related || similar)
+      ? `<ul class="policy-related">${related}${similar}</ul>`
+      : empty('관련 법안 없음');
+
+    const meta = full || bill;
+
+    return `<section class="policy-block policy-bill-panel${compact ? ' is-compact' : ''}">
+      <h3 class="policy-block-title">${esc(meta.title)}</h3>
+      <div class="policy-bill-meta">
+        ${stageBadge(meta.current_stage)}
+        ${meta.sponsor ? `<span>발의자 ${esc(meta.sponsor)}</span>` : ''}
+        ${meta.introduced_date ? `<span>발의일 ${esc(meta.introduced_date)}</span>` : ''}
+      </div>
+      ${meta.current_status ? `<p class="policy-prose">${esc(meta.current_status)}</p>` : ''}
+      ${meta.summary ? `<p class="policy-prose">${esc(meta.summary)}</p>` : ''}
+      ${full ? `<div class="policy-subblock"><h4>표결</h4>${voteBody}</div>` : ''}
+      ${full ? `<div class="policy-subblock"><h4>관련 법안</h4>${relatedBody}</div>` : ''}
+      ${meta.congress_url ? `<a class="policy-external" href="${esc(meta.congress_url)}" target="_blank" rel="noopener noreferrer">congress.gov</a>` : ''}
+      ${full ? '' : `<p class="policy-empty">상세 정보 준비 중</p>`}
+    </section>`;
+  }
+
+  function viewBill(billId) {
+    const bill = resolveBill(billId) || findBillSummary(billId);
+    if (!bill) return shell('congress', crumb([{ view: 'congress', label: '의회' }, { label: '법안' }]), empty('법안을 찾을 수 없습니다'));
+
+    const committees = (resolveBill(billId)?.committees || []).map((c) => `
+      <button type="button" class="policy-chip is-compact" data-view="committee" data-id="${esc(c.committee_id)}">
+        <span class="policy-chip-name">${esc(c.name)}</span>
+      </button>`).join('');
+
+    return shell('congress',
+      crumb([{ view: 'congress', label: '의회' }, { label: bill.title }]), `
+      <div class="policy-grid-2">
+        <div class="policy-col">${billPanel(bill)}</div>
+        <div class="policy-col">
+          ${card('회부 위원회', committees ? `<div class="policy-chip-row">${committees}</div>` : empty('위원회 정보 없음'))}
+        </div>
+      </div>`);
+  }
+
+  function viewExecutive() {
+    const eo = DATA?.executive_overview;
+    if (!eo) return shell('executive', crumb([{ label: '행정부' }]), empty('행정부 데이터를 불러올 수 없습니다'));
+
+    const orders = eo.executive_orders || [];
+    // Each EO carries its own agency_id; group by it rather than hardcoding
+    // any agency list.
+    const groups = (eo.agencies || []).map((agency) => {
+      const mine = orders.filter((o) => o.agency_id === agency.agency_id);
+      return `<section class="policy-agency">
+        <header class="policy-agency-head">
+          <span class="policy-agency-name">${esc(agency.name)}</span>
+          ${agency.short_name ? `<span class="policy-agency-short">${esc(agency.short_name)}</span>` : ''}
+        </header>
+        <div class="policy-agency-lead is-placeholder">${esc(agency.secretary_placeholder || uiState('empty_agency_secretary', '장관 정보 준비 중'))}</div>
+        ${mine.length ? `<div class="policy-eo-list">${mine.map((o) => `
+          <button type="button" class="policy-eo-ribbon" data-view="eo" data-id="${esc(o.eo_number)}">
+            <span class="policy-eo-num">EO ${esc(o.eo_number)}</span>
+            <span class="policy-eo-title">${esc(o.title)}</span>
+            <span class="policy-eo-date">${esc(o.signed_date || '')}</span>
+          </button>`).join('')}</div>` : empty('등록된 행정명령 없음')}
+      </section>`;
+    }).join('');
+
+    const cfr = (DATA?.cfr_titles || []).length
+      ? `<div class="policy-chip-row">${DATA.cfr_titles.map((t) => `
+          <span class="policy-chip is-static${t.reserved ? ' is-reserved' : ''}">
+            <span class="policy-chip-name">Title ${esc(t.title_number)} · ${esc(t.name)}</span>
+            <span class="policy-chip-sub">${t.reserved ? '유보' : `규제 ${esc(t.regulation_count)}건`}</span>
+          </span>`).join('')}</div>`
+      : empty('CFR 정보 준비 중');
+
+    return shell('executive', crumb([{ label: '행정부' }]), `
+      <div class="policy-grid-2">
+        <div class="policy-col">${card('부처별 행정명령', groups || empty('기관 정보 준비 중'))}</div>
+        <div class="policy-col">${card('CFR Title', cfr)}</div>
+      </div>`);
+  }
+
+  function viewEO(eoNumber) {
+    const detail = DATA?.executive_order_detail;
+    const listed = DATA?.executive_overview?.executive_orders?.find((o) => String(o.eo_number) === String(eoNumber));
+    const hasDetail = detail && String(detail.eo_number) === String(eoNumber);
+    const eo = hasDetail ? detail : listed;
+    if (!eo) return shell('executive', crumb([{ view: 'executive', label: '행정부' }, { label: 'EO' }]), empty('행정명령을 찾을 수 없습니다'));
+
+    // An EO cites statutes, not bill numbers. Only link inward when the
+    // citation actually resolves to a bill the dashboard can open;
+    // otherwise fall back to the official external source.
+    // TODO(real-api): bill_id becomes a live citation↔bill relationship.
+    const authorities = (eo.legal_authorities || []).length
+      ? `<ul class="policy-authority-list">${eo.legal_authorities.map((a) => {
+          const linked = a.bill_id && resolveBill(a.bill_id);
+          const badge = a.verification_status ? `<span class="policy-tag">${esc(a.verification_status)}</span>` : '';
+          return linked
+            ? `<li class="is-internal">
+                 <button type="button" class="policy-link" data-view="bill" data-id="${esc(a.bill_id)}">${esc(a.citation)}</button>
+                 <span class="policy-authority-hint">연계 법안 ${esc(a.bill_id)}</span>${badge}
+               </li>`
+            : `<li><a class="policy-external" href="${esc(a.official_url)}" target="_blank" rel="noopener noreferrer">${esc(a.citation)}</a>${badge}</li>`;
+        }).join('')}</ul>`
+      : empty('근거 법령 정보 없음');
+
+    // Regulations are external-link-only by design: no internal detail page and
+    // no abstract in the list -- title, type and effective date only.
+    const regulations = (eo.related_regulations || []).length
+      ? `<ul class="policy-reg-list">${eo.related_regulations.map((r) => `
+          <li>
+            <a class="policy-reg-row" href="${esc(r.federal_register_url)}" target="_blank" rel="noopener noreferrer">
+              <span class="policy-reg-title">${esc(r.title)}</span>
+              <span class="policy-reg-meta">
+                <span class="policy-tag">${esc(r.document_type || '규제')}</span>
+                <span>시행 ${esc(r.effective_on || '-')}</span>
+              </span>
+            </a>
+          </li>`).join('')}</ul>`
+      : empty('관련 규제 없음');
+
+    const agencies = (eo.agencies || []).map((a) => `<span class="policy-tag">${esc(a.name)}</span>`).join('');
+    const links = eo.official_links || (eo.federal_register_url ? { federal_register_url: eo.federal_register_url } : {});
+
+    return shell('executive',
+      crumb([{ view: 'executive', label: '행정부' }, { label: `EO ${eo.eo_number}` }]), `
+      <div class="policy-grid-2">
+        <div class="policy-col">
+          ${card(`EO ${eo.eo_number}`, `
+            <p class="policy-eo-headline">${esc(eo.title)}</p>
+            <div class="policy-bill-meta">
+              <span>서명 ${esc(eo.signed_date || '-')}</span>
+              <span>공포 ${esc(eo.publication_date || '-')}</span>
+            </div>
+            ${agencies ? `<div class="policy-tag-row">${agencies}</div>` : ''}
+            ${eo.summary ? `<p class="policy-prose">${esc(eo.summary)}</p>` : `<p class="policy-empty">${esc(uiState('empty_eo_detail', '상세 정보 준비 중'))}</p>`}
+            <div class="policy-link-row">
+              ${links.federal_register_url ? `<a class="policy-external" href="${esc(links.federal_register_url)}" target="_blank" rel="noopener noreferrer">Federal Register</a>` : ''}
+              ${links.executive_order_url ? `<a class="policy-external" href="${esc(links.executive_order_url)}" target="_blank" rel="noopener noreferrer">White House</a>` : ''}
+            </div>
+          `)}
+        </div>
+        <div class="policy-col">
+          ${card('근거 법령', authorities)}
+          ${card('하위 규제', regulations)}
+        </div>
+      </div>`);
+  }
+
+  /* -------------------------------------------------------------- routing */
+
+  const VIEWS = {
+    hub: viewHub,
+    congress: viewCongress,
+    executive: viewExecutive,
+    committee: () => viewCommittee(state.committeeId),
+    area: () => viewPolicyArea(state.policyAreaId),
+    bill: () => viewBill(state.billId),
+    eo: () => viewEO(state.eoNumber),
+  };
+
+  let host = null;
+
+  function paint() {
+    if (!host) return;
+    const view = VIEWS[state.view] || viewHub;
+    host.innerHTML = view();
+    host.scrollTop = 0;
+  }
+
+  function go(view, id) {
+    // Each destination owns the piece of state it reads, and the stage filter
+    // resets so a tab picked on one list never silently applies to the next.
+    state.view = view;
+    state.stage = '';
+    if (view === 'committee') { state.committeeId = id; state.billId = null; }
+    else if (view === 'area') { state.policyAreaId = id; }
+    else if (view === 'bill') { state.billId = id; }
+    else if (view === 'eo') { state.eoNumber = id; }
+    paint();
+  }
+
+  function onClick(event) {
+    const stageTab = event.target.closest('.policy-stage-tab');
+    if (stageTab && host.contains(stageTab)) {
+      state.stage = stageTab.dataset.stage || '';
+      paint();
+      return;
+    }
+    const nav = event.target.closest('[data-view]');
+    if (!nav || !host.contains(nav)) return;
+    // A bill opened from inside a committee stays in that committee's screen.
+    if (nav.dataset.view === 'bill' && state.view === 'committee') {
+      state.billId = nav.dataset.id;
+      paint();
+      return;
+    }
+    go(nav.dataset.view, nav.dataset.id);
+  }
+
+  const TARGET_VIEWS = {
+    'us-policy-hub': 'hub',
+    'us-congress-overview': 'congress',
+    'us-executive': 'executive',
+  };
+
+  async function render(target, surface) {
+    host = surface;
+    host.classList.add('policy-surface');
+    host.dataset.policyTarget = target;
+    host.innerHTML = `<div class="policy-loading">${esc(uiState('loading', '정책 데이터를 불러오는 중'))}</div>`;
+
+    await loadData();
+    if (host.dataset.policyTarget !== target) return;  // a later view won the race
+
+    if (!DATA) {
+      host.innerHTML = `<div class="policy-surface-inner">${empty('정책 데이터를 불러오지 못했습니다')}</div>`;
+      return;
+    }
+
+    state.view = TARGET_VIEWS[target] || 'hub';
+    state.stage = '';
+    state.billId = null;
+    paint();
+
+    host.removeEventListener('click', onClick);
+    host.addEventListener('click', onClick);
+  }
+
+  function unmount(surface) {
+    if (!surface) return;
+    surface.removeEventListener('click', onClick);
+    surface.classList.remove('policy-surface');
+    delete surface.dataset.policyTarget;
+    surface.innerHTML = '';
+    host = null;
+  }
+
+  // app.js routes the 미국 정책 nav targets through `window.USPolicy`; a bare
+  // `const` in a classic script never reaches window on its own.
+  window.USPolicy = { render, unmount, loadData };
+})();
