@@ -7,6 +7,7 @@ const {
   supabaseGet, supabaseInsert, supabaseInsertIgnore, supabasePatch, supabaseRpc, supabaseUpsert, updateSyncState,
 } = require('./lib/sync-utils');
 const { classifyFederalAgency, federalRegisterParentId } = require('./lib/federal-agency-classifier');
+const { publicLawBillLink, reconcilePublicLawAuthorityLinks } = require('./lib/public-law-links');
 
 const API_BASE = 'https://www.federalregister.gov/api/v1';
 const RESOURCE = 'federalregister.gov:documents';
@@ -154,17 +155,24 @@ async function saveExecutiveOrder(item, document) {
 }
 
 async function saveAuthorities(eoNumberValue, document) {
+  const publicLawCache = new Map();
   for (const authority of officialEoAuthority(document)) {
     // This branch is intentionally conservative; most FR EO records provide no structured authority field.
     const type = String(authority.authority_type).toLowerCase();
     if (!['constitution', 'usc', 'public_law', 'statutes_at_large', 'executive_order', 'regulation', 'other'].includes(type)) continue;
-    const existing = await supabaseGet('legal_authorities', { select: 'legal_authority_id', authority_type: `eq.${type}`, citation: `eq.${authority.citation}`, limit: '1' });
+    // Only an explicit Public Law citation can be connected to a single bill.
+    // U.S.C. and other authority types deliberately remain external links.
+    const link = type === 'public_law' ? await publicLawBillLink(authority.citation, publicLawCache) : null;
+    const existing = await supabaseGet('legal_authorities', { select: 'legal_authority_id,linked_bill_id', authority_type: `eq.${type}`, citation: `eq.${authority.citation}`, limit: '1' });
     let id = existing?.[0]?.legal_authority_id;
     if (!id) {
       const inserted = await supabaseInsert('legal_authorities', [{ authority_type: type, citation: authority.citation,
-        title: authority.title || null, official_url: authority.official_url || null, extraction_method: 'official_metadata', verified_at: new Date().toISOString() }],
+        title: authority.title || null, official_url: authority.official_url || null,
+        linked_bill_id: link?.billId || null, extraction_method: 'official_metadata', verified_at: new Date().toISOString() }],
       'return=representation');
       id = inserted?.[0]?.legal_authority_id;
+    } else if (link?.billId && existing[0].linked_bill_id !== link.billId) {
+      await supabasePatch('legal_authorities', `legal_authority_id=eq.${id}`, { linked_bill_id: link.billId });
     }
     if (id) await supabaseInsertIgnore('executive_order_authorities', { eo_number: eoNumberValue, legal_authority_id: id, source_url: document.html_url }, 'eo_number,legal_authority_id');
   }
@@ -261,6 +269,7 @@ async function run() {
       await checkpointSyncState(RESOURCE, { mode: 'incremental', window_from: windowFrom, processed_document_numbers: [...completed] });
     }
     const classifiedAgencies = await supabaseRpc('refresh_federal_register_agency_classification');
+    const authorityLinks = await reconcilePublicLawAuthorityLinks();
     const embedded = (await embed('executive_orders', 'eo_number', eos.filter((item) => item.embed).map((item) => ({ ...item.row, eo_number: item.number })), (row) => `${row.title}\n\n${row.summary || ''}`))
       + (await embed('regulations', 'regulation_id', regulations.filter((item) => item.embed).map((item) => ({ ...item.row, regulation_id: item.regulationId })), (row) => `${row.title}\n\n${row.abstract || ''}`));
     const newestBill = await supabaseGet('bills', { select: 'congress_number', order: 'congress_number.desc', limit: '1' });
@@ -272,8 +281,8 @@ async function run() {
     } else {
       await updateSyncState(RESOURCE, { mode: 'incremental', completed_at: new Date().toISOString() });
     }
-    await finishSyncRun(runId, { status: remaining > 0 ? 'partial' : 'succeeded', records_read: read, records_written: written, metadata: { window_from: windowFrom, embedded, remaining, classified_agencies: Number(classifiedAgencies) || 0 } });
-    console.log(`Federal Register complete: ${written} records, ${embedded} embeddings, ${remaining} deferred.`);
+    await finishSyncRun(runId, { status: remaining > 0 ? 'partial' : 'succeeded', records_read: read, records_written: written, metadata: { window_from: windowFrom, embedded, remaining, classified_agencies: Number(classifiedAgencies) || 0, public_law_authority_links: authorityLinks } });
+    console.log(`Federal Register complete: ${written} records, ${embedded} embeddings, ${remaining} deferred. Public Law authority links: ${authorityLinks.linked}/${authorityLinks.total} linked; ${authorityLinks.updated} updated.`);
   } catch (error) {
     await finishSyncRun(runId, { status: 'failed', records_read: read, records_written: written, error_summary: error.message });
     throw error;
