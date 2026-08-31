@@ -71,6 +71,27 @@ def _screen_chokepoints_live(
             if isinstance(full_history, list)
             else []
         )
+        screen_metric_histories = {}
+        for metric_key, metric_status in status.get("metric_histories", {}).items():
+            if not isinstance(metric_status, dict):
+                continue
+            full_metric_history = metric_status.get("history", [])
+            metric_history = (
+                full_metric_history[-SCREEN_HISTORY_POINT_LIMIT:]
+                if isinstance(full_metric_history, list)
+                else []
+            )
+            screen_metric_histories[metric_key] = {
+                **metric_status,
+                "history": metric_history,
+                "history_point_count": len(metric_history),
+                "history_source_point_count": (
+                    len(full_metric_history)
+                    if isinstance(full_metric_history, list)
+                    else 0
+                ),
+                "history_screen_point_limit": SCREEN_HISTORY_POINT_LIMIT,
+            }
         screen_status[chokepoint_id] = {
             **status,
             "history": history,
@@ -79,6 +100,7 @@ def _screen_chokepoints_live(
                 len(full_history) if isinstance(full_history, list) else 0
             ),
             "history_screen_point_limit": SCREEN_HISTORY_POINT_LIMIT,
+            "metric_histories": screen_metric_histories,
         }
     return screen_status
 
@@ -197,7 +219,12 @@ def _screen_environment(environment: dict[str, Any]) -> dict[str, Any]:
 
 
 def build_artifact_bundle(snapshot: dict[str, Any]) -> dict[str, dict[str, Any]]:
-    """Return three artifacts sharing a deterministic contract bundle id."""
+    """Return four artifacts sharing a deterministic contract bundle id.
+
+    The scenario grid is split out of the screen artifact: it is ~90% of the
+    screen payload by size but only needed once a user opens a simulator, so
+    the fleet/routes/chokepoint list screens should not have to download it.
+    """
 
     bundle_id = _bundle_id(snapshot)
     routes = snapshot.get("routes", [])
@@ -212,6 +239,7 @@ def build_artifact_bundle(snapshot: dict[str, Any]) -> dict[str, dict[str, Any]]
         "generated_at": snapshot["generated_at"],
         "artifact_manifest": {
             "screen": "shipping_capacity_v1.json",
+            "scenario_grid": "shipping_capacity_scenario_grid_v1.json",
             "diagnostics": "shipping_capacity_diagnostics_v1.json",
             "backtests": "shipping_capacity_backtests_v1.json",
         },
@@ -254,8 +282,14 @@ def build_artifact_bundle(snapshot: dict[str, Any]) -> dict[str, dict[str, Any]]
             snapshot.get("chokepoints_live", {})
         ),
         "routes": [_screen_route(route) for route in routes],
-        "ui_scenario_grid": _screen_grid(snapshot["ui_scenario_grid"]),
         "environment": _screen_environment(snapshot.get("environment", {})),
+    }
+    scenario_grid = {
+        "schema_version": "shipping-capacity-scenario-grid-v1",
+        "artifact_type": "scenario_grid",
+        "bundle_id": bundle_id,
+        "generated_at": snapshot["generated_at"],
+        "ui_scenario_grid": _screen_grid(snapshot["ui_scenario_grid"]),
     }
     diagnostics = {
         "schema_version": "shipping-capacity-diagnostics-v1",
@@ -287,16 +321,24 @@ def build_artifact_bundle(snapshot: dict[str, Any]) -> dict[str, dict[str, Any]]
             "historical_event_calibration", {}
         ),
     }
-    return {"screen": screen, "diagnostics": diagnostics, "backtests": backtests}
+    return {
+        "screen": screen,
+        "scenario_grid": scenario_grid,
+        "diagnostics": diagnostics,
+        "backtests": backtests,
+    }
 
 
 def golden_contract_failures(
-    screen: dict[str, Any], diagnostics: dict[str, Any]
+    screen: dict[str, Any],
+    diagnostics: dict[str, Any],
+    scenario_grid: dict[str, Any],
 ) -> list[str]:
     """Compare every UI-visible route and simulator value with model diagnostics."""
 
     failures: list[str] = []
-    if screen.get("bundle_id") != diagnostics.get("bundle_id"):
+    bundle_id_values = {screen.get("bundle_id"), diagnostics.get("bundle_id"), scenario_grid.get("bundle_id")}
+    if None in bundle_id_values or len(bundle_id_values) != 1:
         failures.append("bundle_id_mismatch")
     diagnostic_routes = {row["id"]: row for row in diagnostics.get("routes", [])}
     for route in screen.get("routes", []):
@@ -324,7 +366,7 @@ def golden_contract_failures(
     diagnostic_grid = {
         row["key"]: row for row in diagnostics.get("ui_scenario_grid", {}).get("rows", [])
     }
-    for row in screen.get("ui_scenario_grid", {}).get("rows", []):
+    for row in scenario_grid.get("ui_scenario_grid", {}).get("rows", []):
         source = diagnostic_grid.get(row["key"])
         if source is None:
             failures.append(f"missing_diagnostic_grid:{row['key']}")

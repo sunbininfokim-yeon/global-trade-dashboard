@@ -688,7 +688,7 @@ class ScenarioGridTests(unittest.TestCase):
             bundle["screen"]["bundle_id"], bundle["diagnostics"]["bundle_id"]
         )
         self.assertFalse(
-            golden_contract_failures(bundle["screen"], bundle["diagnostics"])
+            golden_contract_failures(bundle["screen"], bundle["diagnostics"], bundle["scenario_grid"])
         )
         hormuz = next(
             row
@@ -765,7 +765,7 @@ class ScenarioGridTests(unittest.TestCase):
                     delta=0.01,
                 )
         self.assertFalse(
-            golden_contract_failures(bundle["screen"], bundle["diagnostics"])
+            golden_contract_failures(bundle["screen"], bundle["diagnostics"], bundle["scenario_grid"])
         )
 
     def test_temporary_grid_preserves_accounting_and_monotonicity(self) -> None:

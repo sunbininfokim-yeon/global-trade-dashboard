@@ -2,8 +2,10 @@ name: Update Global Trade Live Data
 
 on:
   schedule:
-    # Run every Sunday at midnight UTC
-    - cron: '0 0 * * 0'
+    # Sat 04:24 KST (Fri 19:24 UTC) — last of the weekend batch, 22min after
+    # FOMC/Beige Book. Was Sunday 00:00 UTC; moved into the same off-the-hour
+    # weekend slot so it's not left racing separately at a popular minute.
+    - cron: '24 19 * * 5'
   workflow_dispatch: # Allow manual trigger
 
 jobs:

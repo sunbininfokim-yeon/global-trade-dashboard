@@ -3,11 +3,25 @@ name: Fetch ICRISAT Data
 on:
   workflow_dispatch: # 수동 실행 트리거
   schedule:
-    - cron: '0 0 * * 0' # 매주 일요일 자정에 실행 (필요 시 수정)
+    # Sat 00:08 KST (Fri 15:08 UTC) — first of the weekend weekly-refresh batch,
+    # spaced ~22min apart on off-the-hour minutes so GitHub's shared runner
+    # queue (busiest at :00/:15/:30/:45) doesn't delay every job at once.
+    #
+    # This one sat at :00 while the rest of its own ladder (15:22, 15:44, 16:06,
+    # ...) obeyed that rule -- the anchor was the single job parked on the most
+    # congested minute of the hour. :08 is unused by the batch and keeps this
+    # first, on Saturday KST, with room before 15:22.
+    - cron: '8 15 * * 5'
 
 jobs:
   download-data:
     runs-on: ubuntu-latest
+    # 이게 없어서 이 워크플로는 네 번 실행되어 네 번 모두 실패했다. 다운로드와
+    # 커밋까지는 매번 통과하고 마지막 push 만 403 "Write access to repository
+    # not granted" 로 죽었다. 저장소의 기본 GITHUB_TOKEN 이 읽기 전용이라,
+    # push 하는 다른 21개 워크플로는 전부 이 선언을 갖고 있다.
+    permissions:
+      contents: write
 
     steps:
       - name: Checkout repository

@@ -42,10 +42,23 @@ LAG_DAYS = 6
 
 
 def fetch(params):
+    # Every scheduled run of this job (Aug 12, 19, 26) has failed on an SSL
+    # handshake timeout partway through the ~60-110 request sequence this
+    # makes per run, always around the same elapsed time -- consistent with
+    # the archive API throttling a sustained burst from one runner IP, not a
+    # one-off flake. Retry with backoff so one throttled request doesn't
+    # blank an otherwise-successful run.
     url = f"{ARCHIVE}?{urllib.parse.urlencode(params)}"
     req = urllib.request.Request(url, headers={"User-Agent": "global-trade-dashboard"})
-    with urllib.request.urlopen(req, timeout=120) as r:
-        return json.loads(r.read().decode("utf-8"))
+    last_err = None
+    for attempt in range(3):
+        try:
+            with urllib.request.urlopen(req, timeout=120) as r:
+                return json.loads(r.read().decode("utf-8"))
+        except (TimeoutError, urllib.error.URLError, ConnectionError) as e:
+            last_err = e
+            time.sleep(3 * (attempt + 1))
+    raise last_err
 
 
 def window_stats(lat, lon, start, end):
@@ -78,12 +91,14 @@ def main():
     start = end - timedelta(days=WINDOW_DAYS - 1)
     out = []
 
-    for c in cities:
+    for i, c in enumerate(cities):
         lat, lon = c.get("lat"), c.get("lon")
         name = c.get("label_ko") or c.get("name")
         if lat is None or lon is None:
             continue
 
+        if i > 0:
+            time.sleep(0.5)   # pace the per-city burst, not just the historical loop within one
         cur = window_stats(lat, lon, start, end)
         if not cur:
             print(f"  {name}: 관측 없음", file=sys.stderr)

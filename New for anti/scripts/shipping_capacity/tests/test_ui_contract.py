@@ -9,6 +9,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 SNAPSHOT = ROOT.parent.parent / "public" / "data" / "shipping_capacity_v1.json"
+SCENARIO_GRID = ROOT.parent.parent / "public" / "data" / "shipping_capacity_scenario_grid_v1.json"
 SHIPPING_UI = ROOT.parent.parent / "shipping.js"
 INDEX_HTML = ROOT.parent.parent / "index.html"
 
@@ -17,6 +18,7 @@ class ShippingUiContractTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         cls.snapshot = json.loads(SNAPSHOT.read_text(encoding="utf-8"))
+        cls.grid = json.loads(SCENARIO_GRID.read_text(encoding="utf-8"))["ui_scenario_grid"]
         cls.shipping_ui_source = SHIPPING_UI.read_text(encoding="utf-8")
         cls.index_html_source = INDEX_HTML.read_text(encoding="utf-8")
 
@@ -88,6 +90,15 @@ class ShippingUiContractTests(unittest.TestCase):
         self.assertIn("summary.ship_type_breakdown[]", simulator["result_fields"])
         self.assertIn("summary.cargo_segment_breakdown[]", simulator["result_fields"])
         self.assertIn("summary.reroute_receivers[]", simulator["result_fields"])
+        self.assertIn(
+            "summary.reroute_receivers[].ship_type_breakdown[]",
+            simulator["result_fields"],
+        )
+        detail_paths = contract["views"]["chokepoint_detail"]["data_paths"]
+        self.assertIn(
+            "chokepoints_live.<id>.metric_histories.<ship_type>.history[]",
+            detail_paths,
+        )
         self.assertIn("ui_scenario_grid.input_policy", simulator["data_paths"])
         self.assertIn("null", contract["unavailable_value_rule"])
         route_service = contract["views"]["route_service"]
@@ -134,7 +145,7 @@ class ShippingUiContractTests(unittest.TestCase):
 
     def test_scenario_grid_has_backlog_and_commercial_constraint_metrics(self) -> None:
         base_ids = {row["id"] for row in self.snapshot["scenario_summary"]}
-        for row in self.snapshot["ui_scenario_grid"]["rows"]:
+        for row in self.grid["rows"]:
             self.assertIn(row["base_scenario_id"], base_ids)
             for field in (
                 "operational_capacity_absorbed_dwt",
@@ -157,7 +168,7 @@ class ShippingUiContractTests(unittest.TestCase):
         ):
             row = next(
                 item
-                for item in self.snapshot["ui_scenario_grid"]["rows"]
+                for item in self.grid["rows"]
                 if item["base_scenario_id"] == base_scenario_id
                 and item["closure_pct"] == 100
                 and item["duration_days"] == 28
@@ -174,9 +185,20 @@ class ShippingUiContractTests(unittest.TestCase):
             self.assertEqual(
                 receiver["status"], "modelled_reroute_receiver_not_observed_traffic"
             )
+            container = next(
+                item
+                for item in receiver["ship_type_breakdown"]
+                if item["ship_type"] == "container"
+            )
+            self.assertGreater(container["baseline_service_capacity_dwt"], 0)
+            self.assertGreater(container["additional_service_capacity_dwt"], 0)
+            self.assertGreater(
+                container["additional_service_capacity_pct_of_baseline"], 0
+            )
+            self.assertLess(container["weighted_traffic_change_pct"], 0)
 
     def test_expanded_grid_is_engine_precomputed_and_bounded(self) -> None:
-        grid = self.snapshot["ui_scenario_grid"]
+        grid = self.grid
         self.assertEqual(grid["closure_pct_options"], list(range(0, 101, 10)))
         self.assertEqual(grid["duration_day_options"], [1, 3, 7, 14, 21, 28])
         self.assertEqual(grid["fixed_horizon_days"], 28)
@@ -187,7 +209,7 @@ class ShippingUiContractTests(unittest.TestCase):
     def test_hormuz_grid_keeps_lng_separate_from_tanker_denominator(self) -> None:
         row = next(
             item
-            for item in self.snapshot["ui_scenario_grid"]["rows"]
+            for item in self.grid["rows"]
             if item["base_scenario_id"] == "hormuz_effective_80pct_28d"
             and item["closure_pct"] == 80
             and item["duration_days"] == 28

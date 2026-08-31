@@ -89,18 +89,46 @@ def aggregate_reroute_receivers(
             typed = [row for row in rows if row["ship_type"] == ship_type]
             if not typed:
                 continue
+            baseline_service_capacity_dwt = sum(
+                row["baseline_required_dwt"] for row in typed
+            )
+            additional_service_capacity_dwt = sum(
+                row["net_required_capacity_change_dwt"] for row in typed
+            )
+            weighted_served_flow_index = (
+                sum(
+                    row["served_flow_index"] * row["baseline_required_dwt"]
+                    for row in typed
+                )
+                / baseline_service_capacity_dwt
+                if baseline_service_capacity_dwt > 0
+                else 1.0
+            )
             ship_type_breakdown.append(
                 {
                     "ship_type": ship_type,
                     "affected_route_count": len(typed),
+                    "baseline_service_capacity_dwt": baseline_service_capacity_dwt,
                     "rerouted_cargo_tonnes_horizon": sum(
                         row["rerouted_cargo_tonnes_horizon"] for row in typed
                     ),
                     "rerouted_in_transit_cargo_tonnes_horizon": sum(
                         row["rerouted_in_transit_cargo_tonnes_horizon"] for row in typed
                     ),
-                    "additional_service_capacity_dwt": sum(
-                        row["net_required_capacity_change_dwt"] for row in typed
+                    "additional_service_capacity_dwt": additional_service_capacity_dwt,
+                    "additional_service_capacity_pct_of_baseline": (
+                        additional_service_capacity_dwt
+                        / baseline_service_capacity_dwt
+                        * 100.0
+                        if baseline_service_capacity_dwt > 0
+                        else None
+                    ),
+                    "weighted_traffic_change_pct": (
+                        weighted_served_flow_index - 1.0
+                    ) * 100.0,
+                    "scope": (
+                        "Representative affected route-service capacity, not a "
+                        "live liner-network vessel inventory."
                     ),
                 }
             )
@@ -655,11 +683,14 @@ def build_ui_delivery_contract() -> dict[str, Any]:
             },
             "chokepoint_detail": {
                 "title_ko": "초크포인트 상세 및 봉쇄 시뮬레이터",
+                "scenario_grid_source": "shipping_capacity_scenario_grid_v1.json",
                 "data_paths": [
                     "chokepoints[]",
                     "live_display[]",
                     "chokepoints_live.<id>.history[]",
                     "chokepoints_live.<id>.daily_averages",
+                    "chokepoints_live.<id>.metrics.<ship_type>",
+                    "chokepoints_live.<id>.metric_histories.<ship_type>.history[]",
                     "scenarios[]",
                     "ui_scenario_grid.rows[]",
                     "ui_scenario_grid.input_policy",
@@ -678,6 +709,7 @@ def build_ui_delivery_contract() -> dict[str, Any]:
                     "summary.ship_type_breakdown[]",
                     "summary.cargo_segment_breakdown[]",
                     "summary.reroute_receivers[]",
+                    "summary.reroute_receivers[].ship_type_breakdown[]",
                 ],
                 "labels_ko": {
                     "closure_pct": "실효 통행제약률",
@@ -1357,6 +1389,7 @@ def main() -> None:
     parser.add_argument("--fetch-portwatch", action="store_true")
     parser.add_argument("--fetch-portwatch-port-context", action="store_true")
     parser.add_argument("--fetch-container-context", action="store_true")
+    parser.add_argument("--scenario-grid-output", type=Path)
     parser.add_argument("--diagnostics-output", type=Path)
     parser.add_argument("--backtests-output", type=Path)
     args = parser.parse_args()
@@ -1389,6 +1422,9 @@ def main() -> None:
         fallback_container_context=fallback_container_context,
     )
     bundle = build_artifact_bundle(snapshot)
+    scenario_grid_output = args.scenario_grid_output or (
+        args.output.parent / "shipping_capacity_scenario_grid_v1.json"
+    )
     diagnostics_output = args.diagnostics_output or (
         args.output.parent / "shipping_capacity_diagnostics_v1.json"
     )
@@ -1397,6 +1433,7 @@ def main() -> None:
     )
     for path, payload in (
         (args.output, bundle["screen"]),
+        (scenario_grid_output, bundle["scenario_grid"]),
         (diagnostics_output, bundle["diagnostics"]),
         (backtests_output, bundle["backtests"]),
     ):

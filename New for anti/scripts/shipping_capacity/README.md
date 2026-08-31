@@ -126,7 +126,7 @@ python3 build_snapshot.py --fetch-portwatch \
 - `routes[].live_observed[]`: 최근 7일 추정 교역량 감소율을 7일 항로 충격으로 적용한 결과. 관측창과 분석창이 모두 7일이며 물리적 봉쇄율이나 관측 DWT가 아닙니다.
 - `routes[].live_persistence_28d[]`: 같은 최근 7일 감소율이 28일 내내 지속된다고 가정한 별도 스트레스 시나리오. 관측 결과가 아닙니다.
 - `live_display[]`: UI가 그대로 읽는 관측 신호 계약. 호르무즈는 `추정 교역량 감소율 / 최근 7일 탱커 추정 교역량 기준 / 잔존 추정 교역량` 순서로 표시합니다.
-- `chokepoints_live[id].history[]`: PortWatch API의 일자·추정 교역량 관측값. 화면 JSON은 최근 180개 관측만 두고 `history_source_point_count`로 원본 730개 수집 여부를 표시하며, 진단 JSON에는 전체 이력을 보존합니다. 보간·예시값을 넣지 않습니다.
+- `chokepoints_live[id].history[]`: 대표 지표의 PortWatch 일자·추정 교역량 관측값입니다. `metric_histories.<all|container|dry_bulk|tanker>.history[]`에는 선종별 관측 이력이 별도로 있습니다. 화면 JSON은 각각 최근 180개 관측만 두고 `history_source_point_count`로 원본 730개 수집 여부를 표시하며, 진단 JSON에는 전체 이력을 보존합니다. 보간·예시값을 넣지 않습니다.
 - `live_data_quality`: 최신 관측의 7일 freshness 기준, stale·fallback 개수. stale 관측은 화면에 기준일과 경고를 함께 표시합니다.
 - `comtrade_routes`: 항로 입력 갱신 상태·기준연도·경로 수. 상세 출처와 불확실성은 각 `routes[].data_provenance`에 있습니다.
 - `comtrade_routes.history`: 2019–2024 수집 상태와 연도 범위. 상세 관측·품질오류·각 항로 first-to-last 변화율은 진단 JSON `comtrade_route_history`에만 둡니다.

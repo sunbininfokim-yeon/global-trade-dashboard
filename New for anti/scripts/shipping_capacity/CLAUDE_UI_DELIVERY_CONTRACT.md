@@ -5,9 +5,10 @@ This contract is the handoff boundary between the Python shipping model and Clau
 ## Source of truth
 
 - Screen data: `public/data/shipping_capacity_v1.json`
+- Scenario grid (simulator only, fetched lazily on first open — it is the large, ~90%-of-payload artifact): `public/data/shipping_capacity_scenario_grid_v1.json`
 - Diagnostics: `public/data/shipping_capacity_diagnostics_v1.json`
 - Backtests: `public/data/shipping_capacity_backtests_v1.json`
-- All three files must share the same `bundle_id`.
+- All four files must share the same `bundle_id`.
 - The browser must not read model configuration files directly.
 - The machine-readable screen map is `ui_delivery_contract` in the screen data. It supersedes hard-coded view field lists.
 
@@ -40,13 +41,14 @@ The panel scope is representative modeled routes, not the full world fleet. Keep
 - Route service cards use `routes[].baseline` and `routes[].operational_profile`.
 - The route page title is `항로 운항 선복량`; it means the modeled DWT continuously needed to serve the stated flow, not live ship positions. Render the four published tabs: all/container/dry-bulk/tanker.
 - Compare global ship types using `fleet.fleet_by_type[].dwt`. Container service class belongs in its own TEU range from `routes[].reference_size`; no global container-TEU total is currently published, so do not create one in the UI.
-- Chokepoint observed cards use `chokepoints_live` and `live_display`; the UI does not interpolate history.
-- Chokepoint simulator values come only from `ui_scenario_grid.rows[]`. Match a row by `base_scenario_id`, `closure_pct`, and `duration_days`. Populate the controls from `ui_scenario_grid.closure_pct_options` and `duration_day_options`; do not hardcode or interpolate values in the browser. `input_policy.warning_ko` explains the published boundary.
+- Chokepoint observed cards use `chokepoints_live` and `live_display`; the UI does not interpolate history. For a whole-chokepoint view, compare `metrics.<type>.current_7d_mean_estimated_trade_tonnes` with `prior_28d_mean_estimated_trade_tonnes`. For a selected vessel type, draw only `metric_histories.<type>.history[]`; when it is empty or absent, show an unavailable state instead of connecting 7-day/28-day means into a false daily line.
+- Chokepoint simulator values come only from `ui_scenario_grid.rows[]`, published in the separate scenario-grid file above rather than the screen file. Match a row by `base_scenario_id`, `closure_pct`, and `duration_days`. Populate the controls from `ui_scenario_grid.closure_pct_options` and `duration_day_options`; do not hardcode or interpolate values in the browser. `input_policy.warning_ko` explains the published boundary.
 - Render `summary.ship_type_breakdown[]` for container/dry-bulk/tanker comparisons. Do not sum the route rows in the browser.
 - Render `summary.cargo_segment_breakdown[]` separately when a segment such as `lng` is present. LNG is a cargo/service segment, not a published global ship-type DWT denominator: if `global_fleet_denominator_status` is `lng_only_global_dwt_not_available_free`, do not show a world-LNG-fleet percentage or substitute the tanker fleet total.
 - Use `ui_delivery_contract.views.chokepoint_detail.labels_ko` for the control and backlog labels. The duration is the duration of the assumed constraint; the published backlog is the unserved cargo remaining at the fixed 28-day analysis horizon.
 - Use `chokepoints[].risk_context` for the commercial/operational explanation. It distinguishes security-driven constraints from Panama's water-availability/traffic-management case.
 - Scenario cards use `scenario_summary`; do not recompute them from route rows.
+- In `summary.reroute_receivers[].ship_type_breakdown[]`, `rerouted_cargo_tonnes_horizon` is cargo that departed on the detour during the horizon, while `rerouted_in_transit_cargo_tonnes_horizon` is the ending in-transit stock and must not be added to it. `additional_service_capacity_dwt` is the incremental DWT-equivalent service need caused by the detour. For container service, show the supplied `additional_service_capacity_pct_of_baseline` and `weighted_traffic_change_pct`; do not convert DWT-equivalent capacity into TEU without a separately published service conversion.
 
 ## Release gates
 

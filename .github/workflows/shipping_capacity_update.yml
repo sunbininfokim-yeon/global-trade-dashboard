@@ -2,7 +2,9 @@ name: Update Shipping Capacity Snapshot
 
 on:
   schedule:
-    - cron: '30 18 * * *'
+    # 03:37 KST (18:37 UTC) daily -- off :30, a globally popular cron minute
+    # where GitHub's shared runner queue tends to back up.
+    - cron: '37 18 * * *'
   workflow_dispatch:
 
 jobs:
@@ -72,4 +74,12 @@ jobs:
           git add "New for anti/scripts/shipping_capacity/config/route_distance_observations.json"
           git add "New for anti/scripts/shipping_capacity/generated/validation_report.json"
           git commit -m "chore: refresh shipping capacity snapshot" || exit 0
+          # Same non-fast-forward race as market_microstructure_daily.yml: a
+          # bare push here drops the whole day's snapshot if another scheduled
+          # job lands a commit on main first, with no retry to recover it.
+          for i in 1 2 3; do
+            git push && exit 0
+            echo "push rejected, rebasing onto latest main and retrying ($i/3)"
+            git pull --rebase --autostash
+          done
           git push

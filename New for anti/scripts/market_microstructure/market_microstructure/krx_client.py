@@ -89,8 +89,8 @@ def fetch_etf_daily(bas_dd: str | None = None) -> list[dict[str, Any]]:
 
 
 def recent_bas_dd(max_lookback: int = 10) -> str:
-    """Find the latest date that returns non-empty stock rows."""
-    for i in range(1, max_lookback + 1):
+    """Find the latest date that returns non-empty stock rows, trying today first."""
+    for i in range(0, max_lookback):
         d = (datetime.now() - timedelta(days=i)).strftime("%Y%m%d")
         try:
             rows = fetch_stock_daily(d)

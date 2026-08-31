@@ -16,9 +16,12 @@ name: Refresh Japan growth diagnostics
 
 on:
   schedule:
+    # Sat 02:56 KST (Fri 17:56 UTC) — weekend batch, 22min after climate.
+    # Macro/growth diagnostics (GDP-side), not a commodity feed -- grouped
+    # here only because it shares the weekly cadence and weekend slot.
     # Source releases are quarterly; weekly is generous headroom, not a
     # rate this needs.
-    - cron: '20 5 * * 1'
+    - cron: '56 17 * * 5'
   workflow_dispatch:
 
 jobs:

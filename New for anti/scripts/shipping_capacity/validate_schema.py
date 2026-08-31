@@ -36,23 +36,12 @@ def main() -> None:
             path = ".".join(str(value) for value in error.absolute_path) or "<root>"
             print(f"{path}: {error.message}")
         raise SystemExit(f"schema validation failed with {len(errors)} error(s)")
-    grid = snapshot["ui_scenario_grid"]
-    actual_keys = {row["key"] for row in grid["rows"]}
-    expected_keys = {
-        f"{scenario['id']}|{closure_pct}|{duration_days}"
-        for scenario in snapshot["scenarios"]
-        for closure_pct in grid["closure_pct_options"]
-        for duration_days in grid["duration_day_options"]
-    }
-    if actual_keys != expected_keys:
-        missing = sorted(expected_keys - actual_keys)
-        extra = sorted(actual_keys - expected_keys)
-        raise SystemExit(
-            "ui scenario grid contract failed: "
-            f"missing={missing[:10]} extra={extra[:10]}"
-        )
     print(f"schema validation passed: {args.snapshot}")
     artifact_pairs = (
+        (
+            args.snapshot.parent / "shipping_capacity_scenario_grid_v1.json",
+            ROOT / "schemas" / "shipping_capacity_scenario_grid_v1.schema.json",
+        ),
         (
             args.snapshot.parent / "shipping_capacity_diagnostics_v1.json",
             ROOT / "schemas" / "shipping_capacity_diagnostics_v1.schema.json",
@@ -79,7 +68,26 @@ def main() -> None:
             )
         loaded[artifact["artifact_type"]] = artifact
         print(f"schema validation passed: {artifact_path}")
-    failures = golden_contract_failures(snapshot, loaded["model_diagnostics"])
+
+    grid = loaded["scenario_grid"]["ui_scenario_grid"]
+    actual_keys = {row["key"] for row in grid["rows"]}
+    expected_keys = {
+        f"{scenario['id']}|{closure_pct}|{duration_days}"
+        for scenario in snapshot["scenarios"]
+        for closure_pct in grid["closure_pct_options"]
+        for duration_days in grid["duration_day_options"]
+    }
+    if actual_keys != expected_keys:
+        missing = sorted(expected_keys - actual_keys)
+        extra = sorted(actual_keys - expected_keys)
+        raise SystemExit(
+            "ui scenario grid contract failed: "
+            f"missing={missing[:10]} extra={extra[:10]}"
+        )
+
+    failures = golden_contract_failures(
+        snapshot, loaded["model_diagnostics"], loaded["scenario_grid"]
+    )
     if failures:
         raise SystemExit(f"golden contract failed: {failures[:20]}")
     if len({snapshot["bundle_id"], *(row["bundle_id"] for row in loaded.values())}) != 1:

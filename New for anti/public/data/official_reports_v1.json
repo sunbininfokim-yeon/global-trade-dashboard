@@ -1,6 +1,6 @@
 {
   "schema_version": "official-reports-v1",
-  "generated_at": "2026-08-27T09:55:08.045230+00:00",
+  "generated_at": "2026-08-30T22:48:40.755015+00:00",
   "model": {
     "name": "official_reports_learnable_v1",
     "description": "Official sources only (US/JP/CN/EU/UK public RSS·HTML). Domains: economy/finance/diplomacy/security/agriculture. Series catalog + label_history for collaborative learning. No Dropbox.",
@@ -17,10 +17,10 @@
   "stats": {
     "sources_ok": 9,
     "sources_failed": 0,
-    "raw_items": 162,
-    "scored": 162,
+    "raw_items": 163,
+    "scored": 163,
     "selected": 40,
-    "indicators": 10
+    "indicators": 13
   },
   "feed_status": [
     {
@@ -47,7 +47,7 @@
     {
       "source_id": "us_eia",
       "ok": true,
-      "count": 20,
+      "count": 21,
       "error": null,
       "mode": "live"
     },
@@ -89,20 +89,6 @@
   ],
   "dashboard_fields": {},
   "indicators": [
-    {
-      "series_id": "JP_BOJ_POLICY",
-      "label_ko": "일본은행 정책·공표",
-      "country": "JPN",
-      "domains": [
-        "finance",
-        "economy"
-      ],
-      "title": "Minutes of the Monetary Policy Meeting on June 15 and 16, 2026",
-      "url": "http://www.boj.or.jp/en/mopo/mpmsche_minu/minu_2026/g260616.pdf",
-      "published_at": "2026-08-04T23:50:00+00:00",
-      "site_slot": "finance.policy",
-      "significance": 4.271
-    },
     {
       "series_id": "US_FED_FOMC",
       "label_ko": "FOMC 성명·의사록",
@@ -223,45 +209,65 @@
       "published_at": "2026-08-24T08:00:00+00:00",
       "site_slot": "finance.policy",
       "significance": 2.306
+    },
+    {
+      "series_id": "JP_BOJ_POLICY",
+      "label_ko": "일본은행 정책·공표",
+      "country": "JPN",
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "title": "Bank of Japan Accounts (August 20)",
+      "url": "http://www.boj.or.jp/en/statistics/boj/other/acmai/release/2026/ac260820.htm",
+      "published_at": "2026-08-24T01:00:00+00:00",
+      "site_slot": "finance.policy",
+      "significance": 2.306
+    },
+    {
+      "series_id": "JP_BOJ_POLICY",
+      "label_ko": "일본은행 정책·공표",
+      "country": "JPN",
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "title": "Japanese Government Bonds Held by the Bank of Japan",
+      "url": "http://www.boj.or.jp/en/statistics/boj/other/mei/release/2026/mei260810.xlsx",
+      "published_at": "2026-08-13T08:00:00+00:00",
+      "site_slot": "finance.policy",
+      "significance": 2.306
+    },
+    {
+      "series_id": "JP_BOJ_POLICY",
+      "label_ko": "일본은행 정책·공표",
+      "country": "JPN",
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "title": "Bank of Japan Accounts (August 10)",
+      "url": "http://www.boj.or.jp/en/statistics/boj/other/acmai/release/2026/ac260810.htm",
+      "published_at": "2026-08-13T01:00:00+00:00",
+      "site_slot": "finance.policy",
+      "significance": 2.306
+    },
+    {
+      "series_id": "JP_BOJ_POLICY",
+      "label_ko": "일본은행 정책·공표",
+      "country": "JPN",
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "title": "Market Operations by the Bank of Japan (July)",
+      "url": "http://www.boj.or.jp/en/statistics/boj/fm/ope/m_release/2026/ope2607.xlsx",
+      "published_at": "2026-08-06T23:50:00+00:00",
+      "site_slot": "finance.policy",
+      "significance": 2.306
     }
   ],
   "ticker_items": [
-    {
-      "id": "afe5133851ec90cd",
-      "published_at": "2026-08-04T23:50:00+00:00",
-      "source": {
-        "id": "jp_boj_whatsnew",
-        "name": "Bank of Japan",
-        "region": "jpn",
-        "slant": null
-      },
-      "url": "http://www.boj.or.jp/en/mopo/mpmsche_minu/minu_2026/g260616.pdf",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "finance",
-        "economy"
-      ],
-      "series_id": "JP_BOJ_POLICY",
-      "title": {
-        "original": "Minutes of the Monetary Policy Meeting on June 15 and 16, 2026",
-        "original_lang": "en",
-        "ko": "[JPN·금융] Minutes of the Monetary Policy Meeting on June 15 and 16, 2026"
-      },
-      "summary": "",
-      "scores": {
-        "significance": 4.271,
-        "final": 4.271
-      },
-      "rank_reasons": [
-        "domains:economy,finance",
-        "series:JP_BOJ_POLICY",
-        "boost:1"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": "finance.policy"
-    },
     {
       "id": "e26f4bb4c3f411e3",
       "published_at": "2026-08-25T05:00:00+00:00",
@@ -291,41 +297,6 @@
       },
       "rank_reasons": [
         "domains:economy,finance"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
-    },
-    {
-      "id": "91321b88e0f5d244",
-      "published_at": "2026-08-13T21:22:01+00:00",
-      "source": {
-        "id": "us_whitehouse",
-        "name": "White House",
-        "region": "usa",
-        "slant": null
-      },
-      "url": "https://www.whitehouse.gov/fact-sheets/2026/08/fact-sheet-president-donald-j-trump-bolsters-national-security-and-strengthens-u-s-supply-chains-by-imposing-tariffs-on-drones-and-their-parts-and-components/",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "security",
-        "economy",
-        "diplomacy"
-      ],
-      "series_id": null,
-      "title": {
-        "original": "Fact Sheet: President Donald J. Trump Bolsters National Security and Strengthens U.S. Supply Chains by Imposing Tariffs on Drones and Their Parts and Components",
-        "original_lang": "en",
-        "ko": "[USA·안보] Fact Sheet: President Donald J. Trump Bolsters National Security and Strengthens U.S. Supply Chains by Imposing Tariffs on Drones and Their Parts and Components"
-      },
-      "summary": "SECURING AMERICAN DRONE DOMINANCE: Today, President Donald J. Trump signed a Proclamation to address the national security threat posed by imports of drones and their components, including by strengthening America’s drone industry and supply chain. STRENGTHENING NATIONAL SECURITY",
-      "scores": {
-        "significance": 3.473,
-        "final": 3.473
-      },
-      "rank_reasons": [
-        "domains:economy,diplomacy,security"
       ],
       "translation_status": "skipped",
       "event_type": "official_report",
@@ -436,6 +407,41 @@
       "translation_status": "skipped",
       "event_type": "official_report",
       "site_slot": "finance.policy"
+    },
+    {
+      "id": "9a5c044955be5f5d",
+      "published_at": "2026-08-28T17:20:24+00:00",
+      "source": {
+        "id": "us_whitehouse",
+        "name": "White House",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.whitehouse.gov/presidential-actions/2026/08/establishing-the-united-states-space-academy/",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "security",
+        "diplomacy"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "Establishing the United States Space Academy",
+        "original_lang": "en",
+        "ko": "[USA·경제] Establishing the United States Space Academy"
+      },
+      "summary": "By the authority vested in me as President by the Constitution and the laws of the United States of America, it is hereby ordered: Section 1. Purpose and Policy. Space is a critical domain for American national security, economic growth, scientific discovery, and technological in",
+      "scores": {
+        "significance": 3.059,
+        "final": 3.059
+      },
+      "rank_reasons": [
+        "domains:economy,diplomacy,security"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
     },
     {
       "id": "f85efaa133bbcbbc",
@@ -854,6 +860,41 @@
       "site_slot": null
     },
     {
+      "id": "2f978be4a0d03f71",
+      "published_at": "2026-08-27T18:13:38+00:00",
+      "source": {
+        "id": "us_whitehouse",
+        "name": "White House",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.whitehouse.gov/releases/2026/08/never-surrender-karoline-leavitts-historic-tenure-as-white-house-press-secretary/",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "security",
+        "economy",
+        "diplomacy"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "NEVER SURRENDER: Karoline Leavitt’s Historic Tenure as White House Press Secretary",
+        "original_lang": "en",
+        "ko": "[USA·안보] NEVER SURRENDER: Karoline Leavitt’s Historic Tenure as White House Press Secretary"
+      },
+      "summary": "Today, Karoline Leavitt completes her final day as the 36th White House Press Secretary — the youngest person to ever hold the position and among the best ever to do it. She leaves the James S. Brady Briefing Room after a tenure defined by command, clarity, and an unrelenting def",
+      "scores": {
+        "significance": 2.438,
+        "final": 2.438
+      },
+      "rank_reasons": [
+        "domains:economy,diplomacy,security"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
       "id": "fb96f3b1a68ccf91",
       "published_at": "2026-08-25T02:00:00+00:00",
       "source": {
@@ -1052,111 +1093,6 @@
         "ko": "[USA·안보] Presidential Message on National Employer Support of the Guard and Reserve Week"
       },
       "summary": "The citizen warriors of the National Guard and Reserve carry forward a tradition as old as our Republic itself, building careers in the communities they serve while answering our Nation’s call in its hour of need. Their service strengthens our communities, powers our economy, and",
-      "scores": {
-        "significance": 2.438,
-        "final": 2.438
-      },
-      "rank_reasons": [
-        "domains:economy,diplomacy,security"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
-    },
-    {
-      "id": "fb86087127efc1ea",
-      "published_at": "2026-08-13T21:23:07+00:00",
-      "source": {
-        "id": "us_whitehouse",
-        "name": "White House",
-        "region": "usa",
-        "slant": null
-      },
-      "url": "https://www.whitehouse.gov/fact-sheets/2026/08/fact-sheet-president-donald-j-trump-rebuilds-the-u-s-navy-and-americas-shipbuilding-industrial-base/",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "security",
-        "economy",
-        "diplomacy"
-      ],
-      "series_id": null,
-      "title": {
-        "original": "Fact Sheet: President Donald J. Trump Rebuilds the U.S. Navy and America’s Shipbuilding Industrial Base",
-        "original_lang": "en",
-        "ko": "[USA·안보] Fact Sheet: President Donald J. Trump Rebuilds the U.S. Navy and America’s Shipbuilding Industrial Base"
-      },
-      "summary": "TRANSFORMING U.S. SHIPBUILDING: Today, President Donald J. Trump signed a National Security Presidential Memorandum to fix critical long-term issues in Navy shipbuilding and ship repair programs and restore capacity and competition to the maritime industrial base. ADDRESSING PERS",
-      "scores": {
-        "significance": 2.438,
-        "final": 2.438
-      },
-      "rank_reasons": [
-        "domains:economy,diplomacy,security"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
-    },
-    {
-      "id": "098ad27ba9124e47",
-      "published_at": "2026-08-13T21:21:57+00:00",
-      "source": {
-        "id": "us_whitehouse",
-        "name": "White House",
-        "region": "usa",
-        "slant": null
-      },
-      "url": "https://www.whitehouse.gov/presidential-actions/2026/08/adjusting-imports-of-unmanned-aircraft-systems-and-unmanned-aircraft-systems-components-into-the-united-states/",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "security",
-        "economy",
-        "diplomacy"
-      ],
-      "series_id": null,
-      "title": {
-        "original": "Adjusting Imports of Unmanned Aircraft Systems and Unmanned Aircraft Systems Components into the United States",
-        "original_lang": "en",
-        "ko": "[USA·안보] Adjusting Imports of Unmanned Aircraft Systems and Unmanned Aircraft Systems Components into the United States"
-      },
-      "summary": "BY THE PRESIDENT OF THE UNITED STATES OF AMERICA A PROCLAMATION 1. Within the past 90 days, the Secretary of Commerce (Secretary) transmitted to me a report on his investigation into the effects of imports of unmanned aircraft systems (UAS), as well as their parts and components ",
-      "scores": {
-        "significance": 2.438,
-        "final": 2.438
-      },
-      "rank_reasons": [
-        "domains:economy,diplomacy,security"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
-    },
-    {
-      "id": "b1ab6e6769f4822b",
-      "published_at": "2026-08-13T21:21:46+00:00",
-      "source": {
-        "id": "us_whitehouse",
-        "name": "White House",
-        "region": "usa",
-        "slant": null
-      },
-      "url": "https://www.whitehouse.gov/presidential-actions/2026/08/rebuilding-the-united-states-navy-and-americas-shipbuilding-industrial-base/",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "security",
-        "economy",
-        "diplomacy"
-      ],
-      "series_id": null,
-      "title": {
-        "original": "Rebuilding the United States Navy and America’s Shipbuilding Industrial Base",
-        "original_lang": "en",
-        "ko": "[USA·안보] Rebuilding the United States Navy and America’s Shipbuilding Industrial Base"
-      },
-      "summary": "MEMORANDUM FOR THE SECRETARY OF WAR THE DIRECTOR OF THE OFFICE OF MANAGEMENT AND BUDGET THE ASSISTANT TO THE PRESIDENT FOR NATIONAL SECURITY AFFAIRS SUBJECT: Rebuilding the United States Navy and America’s Shipbuilding Industrial Base By the authority vested in me as President by",
       "scores": {
         "significance": 2.438,
         "final": 2.438
@@ -1553,41 +1489,6 @@
       "site_slot": null
     },
     {
-      "id": "ecc42c8d5b21cabf",
-      "published_at": "2026-07-08T18:00:00+00:00",
-      "source": {
-        "id": "us_fed_all",
-        "name": "Federal Reserve",
-        "region": "usa",
-        "slant": null
-      },
-      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260708a.htm",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "series_id": null,
-      "title": {
-        "original": "Minutes of the Federal Open Market Committee, June 16-17, 2026",
-        "original_lang": "en",
-        "ko": "[USA·경제] Minutes of the Federal Open Market Committee, June 16-17, 2026"
-      },
-      "summary": "Minutes of the Federal Open Market Committee, June 16-17, 2026",
-      "scores": {
-        "significance": 2.322,
-        "final": 2.322
-      },
-      "rank_reasons": [
-        "domains:economy,finance",
-        "boost:1"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
-    },
-    {
       "id": "2476786a5db2c1ff",
       "published_at": "2026-08-24T08:00:00+00:00",
       "source": {
@@ -1608,6 +1509,146 @@
         "original": "Japanese Government Bonds Held by the Bank of Japan",
         "original_lang": "en",
         "ko": "[JPN·경제] Japanese Government Bonds Held by the Bank of Japan"
+      },
+      "summary": "",
+      "scores": {
+        "significance": 2.306,
+        "final": 2.306
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "series:JP_BOJ_POLICY"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": "finance.policy"
+    },
+    {
+      "id": "b57a4c3a793ac6a7",
+      "published_at": "2026-08-24T01:00:00+00:00",
+      "source": {
+        "id": "jp_boj_whatsnew",
+        "name": "Bank of Japan",
+        "region": "jpn",
+        "slant": null
+      },
+      "url": "http://www.boj.or.jp/en/statistics/boj/other/acmai/release/2026/ac260820.htm",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": "JP_BOJ_POLICY",
+      "title": {
+        "original": "Bank of Japan Accounts (August 20)",
+        "original_lang": "en",
+        "ko": "[JPN·경제] Bank of Japan Accounts (August 20)"
+      },
+      "summary": "",
+      "scores": {
+        "significance": 2.306,
+        "final": 2.306
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "series:JP_BOJ_POLICY"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": "finance.policy"
+    },
+    {
+      "id": "2bb1542a7f0edf49",
+      "published_at": "2026-08-13T08:00:00+00:00",
+      "source": {
+        "id": "jp_boj_whatsnew",
+        "name": "Bank of Japan",
+        "region": "jpn",
+        "slant": null
+      },
+      "url": "http://www.boj.or.jp/en/statistics/boj/other/mei/release/2026/mei260810.xlsx",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": "JP_BOJ_POLICY",
+      "title": {
+        "original": "Japanese Government Bonds Held by the Bank of Japan",
+        "original_lang": "en",
+        "ko": "[JPN·경제] Japanese Government Bonds Held by the Bank of Japan"
+      },
+      "summary": "",
+      "scores": {
+        "significance": 2.306,
+        "final": 2.306
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "series:JP_BOJ_POLICY"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": "finance.policy"
+    },
+    {
+      "id": "b281888b875720fe",
+      "published_at": "2026-08-13T01:00:00+00:00",
+      "source": {
+        "id": "jp_boj_whatsnew",
+        "name": "Bank of Japan",
+        "region": "jpn",
+        "slant": null
+      },
+      "url": "http://www.boj.or.jp/en/statistics/boj/other/acmai/release/2026/ac260810.htm",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": "JP_BOJ_POLICY",
+      "title": {
+        "original": "Bank of Japan Accounts (August 10)",
+        "original_lang": "en",
+        "ko": "[JPN·경제] Bank of Japan Accounts (August 10)"
+      },
+      "summary": "",
+      "scores": {
+        "significance": 2.306,
+        "final": 2.306
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "series:JP_BOJ_POLICY"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": "finance.policy"
+    },
+    {
+      "id": "bb33d29faeed4fea",
+      "published_at": "2026-08-06T23:50:00+00:00",
+      "source": {
+        "id": "jp_boj_whatsnew",
+        "name": "Bank of Japan",
+        "region": "jpn",
+        "slant": null
+      },
+      "url": "http://www.boj.or.jp/en/statistics/boj/fm/ope/m_release/2026/ope2607.xlsx",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": "JP_BOJ_POLICY",
+      "title": {
+        "original": "Market Operations by the Bank of Japan (July)",
+        "original_lang": "en",
+        "ko": "[JPN·경제] Market Operations by the Bank of Japan (July)"
       },
       "summary": "",
       "scores": {
@@ -1680,17 +1721,6 @@
       "suggest": "label promote|keep|drop + series_id later"
     },
     {
-      "title": "Index-linked Treasury Stock",
-      "url": "https://www.bankofengland.co.uk/news/2026/june/index-linked-treasury-stock-jun-2026",
-      "country": "GBR",
-      "domains": [
-        "finance",
-        "economy"
-      ],
-      "significance": 2.024,
-      "suggest": "label promote|keep|drop + series_id later"
-    },
-    {
       "title": "Artificial Intelligence Consortium minutes – June 2026",
       "url": "https://www.bankofengland.co.uk/minutes/2026/june/ai-consortium-minutes-3-june-2026",
       "country": "GBR",
@@ -1722,45 +1752,64 @@
       ],
       "significance": 1.978,
       "suggest": "label promote|keep|drop + series_id later"
+    },
+    {
+      "title": "Minutes of the UK Money Markets Code Sub-Committee – June 2026",
+      "url": "https://www.bankofengland.co.uk/minutes/2026/june/uk-money-markets-committee-minutes-june-2026",
+      "country": "GBR",
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "significance": 1.978,
+      "suggest": "label promote|keep|drop + series_id later"
+    },
+    {
+      "title": "Minutes of the London FXJSC Main Committee Meeting – 26 March 2026",
+      "url": "https://www.bankofengland.co.uk/minutes/2026/march/fxjsc-main-committee-meeting-26-march-2026",
+      "country": "GBR",
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "significance": 1.978,
+      "suggest": "label promote|keep|drop + series_id later"
+    },
+    {
+      "title": "Minutes of the London FXJSC Legal Sub Committee Meeting – 17 March 2026",
+      "url": "https://www.bankofengland.co.uk/minutes/2026/march/fxjsc-legal-sub-committee-meeting-17-march-2026",
+      "country": "GBR",
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "significance": 1.978,
+      "suggest": "label promote|keep|drop + series_id later"
+    },
+    {
+      "title": "Minutes of the London FXJSC Operations Sub-Committee Meeting – 18 March 2026",
+      "url": "https://www.bankofengland.co.uk/minutes/2026/march/fxjsc-operations-sub-committee-meeting-18-march-2026",
+      "country": "GBR",
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "significance": 1.978,
+      "suggest": "label promote|keep|drop + series_id later"
+    },
+    {
+      "title": "Minutes of the Meeting of the Court of Directors held on 23 April 2026",
+      "url": "https://www.bankofengland.co.uk/minutes/2026/june/court-minutes-23-april-2026",
+      "country": "GBR",
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "significance": 1.978,
+      "suggest": "label promote|keep|drop + series_id later"
     }
   ],
   "items": [
-    {
-      "id": "afe5133851ec90cd",
-      "published_at": "2026-08-04T23:50:00+00:00",
-      "source": {
-        "id": "jp_boj_whatsnew",
-        "name": "Bank of Japan",
-        "region": "jpn",
-        "slant": null
-      },
-      "url": "http://www.boj.or.jp/en/mopo/mpmsche_minu/minu_2026/g260616.pdf",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "finance",
-        "economy"
-      ],
-      "series_id": "JP_BOJ_POLICY",
-      "title": {
-        "original": "Minutes of the Monetary Policy Meeting on June 15 and 16, 2026",
-        "original_lang": "en",
-        "ko": "[JPN·금융] Minutes of the Monetary Policy Meeting on June 15 and 16, 2026"
-      },
-      "summary": "",
-      "scores": {
-        "significance": 4.271,
-        "final": 4.271
-      },
-      "rank_reasons": [
-        "domains:economy,finance",
-        "series:JP_BOJ_POLICY",
-        "boost:1"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": "finance.policy"
-    },
     {
       "id": "e26f4bb4c3f411e3",
       "published_at": "2026-08-25T05:00:00+00:00",
@@ -1790,41 +1839,6 @@
       },
       "rank_reasons": [
         "domains:economy,finance"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
-    },
-    {
-      "id": "91321b88e0f5d244",
-      "published_at": "2026-08-13T21:22:01+00:00",
-      "source": {
-        "id": "us_whitehouse",
-        "name": "White House",
-        "region": "usa",
-        "slant": null
-      },
-      "url": "https://www.whitehouse.gov/fact-sheets/2026/08/fact-sheet-president-donald-j-trump-bolsters-national-security-and-strengthens-u-s-supply-chains-by-imposing-tariffs-on-drones-and-their-parts-and-components/",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "security",
-        "economy",
-        "diplomacy"
-      ],
-      "series_id": null,
-      "title": {
-        "original": "Fact Sheet: President Donald J. Trump Bolsters National Security and Strengthens U.S. Supply Chains by Imposing Tariffs on Drones and Their Parts and Components",
-        "original_lang": "en",
-        "ko": "[USA·안보] Fact Sheet: President Donald J. Trump Bolsters National Security and Strengthens U.S. Supply Chains by Imposing Tariffs on Drones and Their Parts and Components"
-      },
-      "summary": "SECURING AMERICAN DRONE DOMINANCE: Today, President Donald J. Trump signed a Proclamation to address the national security threat posed by imports of drones and their components, including by strengthening America’s drone industry and supply chain. STRENGTHENING NATIONAL SECURITY",
-      "scores": {
-        "significance": 3.473,
-        "final": 3.473
-      },
-      "rank_reasons": [
-        "domains:economy,diplomacy,security"
       ],
       "translation_status": "skipped",
       "event_type": "official_report",
@@ -1935,6 +1949,41 @@
       "translation_status": "skipped",
       "event_type": "official_report",
       "site_slot": "finance.policy"
+    },
+    {
+      "id": "9a5c044955be5f5d",
+      "published_at": "2026-08-28T17:20:24+00:00",
+      "source": {
+        "id": "us_whitehouse",
+        "name": "White House",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.whitehouse.gov/presidential-actions/2026/08/establishing-the-united-states-space-academy/",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "security",
+        "diplomacy"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "Establishing the United States Space Academy",
+        "original_lang": "en",
+        "ko": "[USA·경제] Establishing the United States Space Academy"
+      },
+      "summary": "By the authority vested in me as President by the Constitution and the laws of the United States of America, it is hereby ordered: Section 1. Purpose and Policy. Space is a critical domain for American national security, economic growth, scientific discovery, and technological in",
+      "scores": {
+        "significance": 3.059,
+        "final": 3.059
+      },
+      "rank_reasons": [
+        "domains:economy,diplomacy,security"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
     },
     {
       "id": "f85efaa133bbcbbc",
@@ -2353,6 +2402,41 @@
       "site_slot": null
     },
     {
+      "id": "2f978be4a0d03f71",
+      "published_at": "2026-08-27T18:13:38+00:00",
+      "source": {
+        "id": "us_whitehouse",
+        "name": "White House",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.whitehouse.gov/releases/2026/08/never-surrender-karoline-leavitts-historic-tenure-as-white-house-press-secretary/",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "security",
+        "economy",
+        "diplomacy"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "NEVER SURRENDER: Karoline Leavitt’s Historic Tenure as White House Press Secretary",
+        "original_lang": "en",
+        "ko": "[USA·안보] NEVER SURRENDER: Karoline Leavitt’s Historic Tenure as White House Press Secretary"
+      },
+      "summary": "Today, Karoline Leavitt completes her final day as the 36th White House Press Secretary — the youngest person to ever hold the position and among the best ever to do it. She leaves the James S. Brady Briefing Room after a tenure defined by command, clarity, and an unrelenting def",
+      "scores": {
+        "significance": 2.438,
+        "final": 2.438
+      },
+      "rank_reasons": [
+        "domains:economy,diplomacy,security"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
       "id": "fb96f3b1a68ccf91",
       "published_at": "2026-08-25T02:00:00+00:00",
       "source": {
@@ -2551,111 +2635,6 @@
         "ko": "[USA·안보] Presidential Message on National Employer Support of the Guard and Reserve Week"
       },
       "summary": "The citizen warriors of the National Guard and Reserve carry forward a tradition as old as our Republic itself, building careers in the communities they serve while answering our Nation’s call in its hour of need. Their service strengthens our communities, powers our economy, and",
-      "scores": {
-        "significance": 2.438,
-        "final": 2.438
-      },
-      "rank_reasons": [
-        "domains:economy,diplomacy,security"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
-    },
-    {
-      "id": "fb86087127efc1ea",
-      "published_at": "2026-08-13T21:23:07+00:00",
-      "source": {
-        "id": "us_whitehouse",
-        "name": "White House",
-        "region": "usa",
-        "slant": null
-      },
-      "url": "https://www.whitehouse.gov/fact-sheets/2026/08/fact-sheet-president-donald-j-trump-rebuilds-the-u-s-navy-and-americas-shipbuilding-industrial-base/",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "security",
-        "economy",
-        "diplomacy"
-      ],
-      "series_id": null,
-      "title": {
-        "original": "Fact Sheet: President Donald J. Trump Rebuilds the U.S. Navy and America’s Shipbuilding Industrial Base",
-        "original_lang": "en",
-        "ko": "[USA·안보] Fact Sheet: President Donald J. Trump Rebuilds the U.S. Navy and America’s Shipbuilding Industrial Base"
-      },
-      "summary": "TRANSFORMING U.S. SHIPBUILDING: Today, President Donald J. Trump signed a National Security Presidential Memorandum to fix critical long-term issues in Navy shipbuilding and ship repair programs and restore capacity and competition to the maritime industrial base. ADDRESSING PERS",
-      "scores": {
-        "significance": 2.438,
-        "final": 2.438
-      },
-      "rank_reasons": [
-        "domains:economy,diplomacy,security"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
-    },
-    {
-      "id": "098ad27ba9124e47",
-      "published_at": "2026-08-13T21:21:57+00:00",
-      "source": {
-        "id": "us_whitehouse",
-        "name": "White House",
-        "region": "usa",
-        "slant": null
-      },
-      "url": "https://www.whitehouse.gov/presidential-actions/2026/08/adjusting-imports-of-unmanned-aircraft-systems-and-unmanned-aircraft-systems-components-into-the-united-states/",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "security",
-        "economy",
-        "diplomacy"
-      ],
-      "series_id": null,
-      "title": {
-        "original": "Adjusting Imports of Unmanned Aircraft Systems and Unmanned Aircraft Systems Components into the United States",
-        "original_lang": "en",
-        "ko": "[USA·안보] Adjusting Imports of Unmanned Aircraft Systems and Unmanned Aircraft Systems Components into the United States"
-      },
-      "summary": "BY THE PRESIDENT OF THE UNITED STATES OF AMERICA A PROCLAMATION 1. Within the past 90 days, the Secretary of Commerce (Secretary) transmitted to me a report on his investigation into the effects of imports of unmanned aircraft systems (UAS), as well as their parts and components ",
-      "scores": {
-        "significance": 2.438,
-        "final": 2.438
-      },
-      "rank_reasons": [
-        "domains:economy,diplomacy,security"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
-    },
-    {
-      "id": "b1ab6e6769f4822b",
-      "published_at": "2026-08-13T21:21:46+00:00",
-      "source": {
-        "id": "us_whitehouse",
-        "name": "White House",
-        "region": "usa",
-        "slant": null
-      },
-      "url": "https://www.whitehouse.gov/presidential-actions/2026/08/rebuilding-the-united-states-navy-and-americas-shipbuilding-industrial-base/",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "security",
-        "economy",
-        "diplomacy"
-      ],
-      "series_id": null,
-      "title": {
-        "original": "Rebuilding the United States Navy and America’s Shipbuilding Industrial Base",
-        "original_lang": "en",
-        "ko": "[USA·안보] Rebuilding the United States Navy and America’s Shipbuilding Industrial Base"
-      },
-      "summary": "MEMORANDUM FOR THE SECRETARY OF WAR THE DIRECTOR OF THE OFFICE OF MANAGEMENT AND BUDGET THE ASSISTANT TO THE PRESIDENT FOR NATIONAL SECURITY AFFAIRS SUBJECT: Rebuilding the United States Navy and America’s Shipbuilding Industrial Base By the authority vested in me as President by",
       "scores": {
         "significance": 2.438,
         "final": 2.438
@@ -3052,41 +3031,6 @@
       "site_slot": null
     },
     {
-      "id": "ecc42c8d5b21cabf",
-      "published_at": "2026-07-08T18:00:00+00:00",
-      "source": {
-        "id": "us_fed_all",
-        "name": "Federal Reserve",
-        "region": "usa",
-        "slant": null
-      },
-      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260708a.htm",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "series_id": null,
-      "title": {
-        "original": "Minutes of the Federal Open Market Committee, June 16-17, 2026",
-        "original_lang": "en",
-        "ko": "[USA·경제] Minutes of the Federal Open Market Committee, June 16-17, 2026"
-      },
-      "summary": "Minutes of the Federal Open Market Committee, June 16-17, 2026",
-      "scores": {
-        "significance": 2.322,
-        "final": 2.322
-      },
-      "rank_reasons": [
-        "domains:economy,finance",
-        "boost:1"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
-    },
-    {
       "id": "2476786a5db2c1ff",
       "published_at": "2026-08-24T08:00:00+00:00",
       "source": {
@@ -3107,6 +3051,146 @@
         "original": "Japanese Government Bonds Held by the Bank of Japan",
         "original_lang": "en",
         "ko": "[JPN·경제] Japanese Government Bonds Held by the Bank of Japan"
+      },
+      "summary": "",
+      "scores": {
+        "significance": 2.306,
+        "final": 2.306
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "series:JP_BOJ_POLICY"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": "finance.policy"
+    },
+    {
+      "id": "b57a4c3a793ac6a7",
+      "published_at": "2026-08-24T01:00:00+00:00",
+      "source": {
+        "id": "jp_boj_whatsnew",
+        "name": "Bank of Japan",
+        "region": "jpn",
+        "slant": null
+      },
+      "url": "http://www.boj.or.jp/en/statistics/boj/other/acmai/release/2026/ac260820.htm",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": "JP_BOJ_POLICY",
+      "title": {
+        "original": "Bank of Japan Accounts (August 20)",
+        "original_lang": "en",
+        "ko": "[JPN·경제] Bank of Japan Accounts (August 20)"
+      },
+      "summary": "",
+      "scores": {
+        "significance": 2.306,
+        "final": 2.306
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "series:JP_BOJ_POLICY"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": "finance.policy"
+    },
+    {
+      "id": "2bb1542a7f0edf49",
+      "published_at": "2026-08-13T08:00:00+00:00",
+      "source": {
+        "id": "jp_boj_whatsnew",
+        "name": "Bank of Japan",
+        "region": "jpn",
+        "slant": null
+      },
+      "url": "http://www.boj.or.jp/en/statistics/boj/other/mei/release/2026/mei260810.xlsx",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": "JP_BOJ_POLICY",
+      "title": {
+        "original": "Japanese Government Bonds Held by the Bank of Japan",
+        "original_lang": "en",
+        "ko": "[JPN·경제] Japanese Government Bonds Held by the Bank of Japan"
+      },
+      "summary": "",
+      "scores": {
+        "significance": 2.306,
+        "final": 2.306
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "series:JP_BOJ_POLICY"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": "finance.policy"
+    },
+    {
+      "id": "b281888b875720fe",
+      "published_at": "2026-08-13T01:00:00+00:00",
+      "source": {
+        "id": "jp_boj_whatsnew",
+        "name": "Bank of Japan",
+        "region": "jpn",
+        "slant": null
+      },
+      "url": "http://www.boj.or.jp/en/statistics/boj/other/acmai/release/2026/ac260810.htm",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": "JP_BOJ_POLICY",
+      "title": {
+        "original": "Bank of Japan Accounts (August 10)",
+        "original_lang": "en",
+        "ko": "[JPN·경제] Bank of Japan Accounts (August 10)"
+      },
+      "summary": "",
+      "scores": {
+        "significance": 2.306,
+        "final": 2.306
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "series:JP_BOJ_POLICY"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": "finance.policy"
+    },
+    {
+      "id": "bb33d29faeed4fea",
+      "published_at": "2026-08-06T23:50:00+00:00",
+      "source": {
+        "id": "jp_boj_whatsnew",
+        "name": "Bank of Japan",
+        "region": "jpn",
+        "slant": null
+      },
+      "url": "http://www.boj.or.jp/en/statistics/boj/fm/ope/m_release/2026/ope2607.xlsx",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": "JP_BOJ_POLICY",
+      "title": {
+        "original": "Market Operations by the Bank of Japan (July)",
+        "original_lang": "en",
+        "ko": "[JPN·경제] Market Operations by the Bank of Japan (July)"
       },
       "summary": "",
       "scores": {
