@@ -33,6 +33,12 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent
 sys.path.insert(0, str(ROOT))
 
+from macro_monitor.us_quality.fed import (  # noqa: E402
+    FedOfficialSourceError,
+    FOMC_MEMBERS_URL,
+    fetch_text,
+    parse_fomc_members,
+)
 from macro_monitor.us_quality.fomc import compare_fomc_meetings  # noqa: E402
 
 MEETINGS_IN = ROOT / "config" / "fomc_meetings_v1.json"
@@ -86,15 +92,27 @@ def main() -> int:
     previous_row, current_row = clean[-2], clean[-1]
     comparison = compare_fomc_meetings(_to_fomc_meeting(previous_row), _to_fomc_meeting(current_row))
 
-    # Roster: everyone who voted (for or against) at the most recent clean
-    # meeting that actually named its "for" voters -- Format B meetings
-    # (an explicit "9 - 3 vote" count) only ever name the dissenters, so
-    # using current_row directly whenever it happens to be Format B would
-    # report a 3-person board. Falls back through clean meetings newest
-    # first until one has a real roster to read.
-    roster_row = next((m for m in reversed(clean) if m.get("voters_for")), current_row)
-    roster_voters = (roster_row.get("voters_for") or []) + [d["name"] for d in roster_row["dissenters"]]
-    roster_members = [{"name": n, "role": ""} for n in dict.fromkeys(roster_voters)]  # de-dup, keep order
+    # Roster: fetched live from the Fed's own Committee Members page, not
+    # inferred from a statement's "Voting for..." clause. That clause is no
+    # longer reliable for this: since the 2026-05-22 chair transition, FOMC
+    # statements only name dissenters for split votes and name no one at all
+    # for unanimous ones (previously they always spelled out the full "for"
+    # roster), so deriving "who's currently on the committee" from vote text
+    # silently went stale at the exact meeting where the chair changed. Only
+    # fall back to the old vote-derived roster if the live page is down.
+    roster_source = "official_current_voting_members_only"
+    roster_asof = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    try:
+        live_roster = parse_fomc_members(fetch_text(FOMC_MEMBERS_URL))
+        roster_members = [
+            {"name": m["name"], "role": m["role"]} for m in live_roster["members"]
+        ]
+    except (FedOfficialSourceError, OSError) as exc:
+        roster_row = next((m for m in reversed(clean) if m.get("voters_for")), current_row)
+        roster_voters = (roster_row.get("voters_for") or []) + [d["name"] for d in roster_row["dissenters"]]
+        roster_members = [{"name": n, "role": ""} for n in dict.fromkeys(roster_voters)]  # de-dup, keep order
+        roster_source = f"fallback_vote_roster_live_fetch_failed:{exc}"
+        roster_asof = roster_row["meeting_date"]
 
     documents = []
     for row in clean:
@@ -131,9 +149,10 @@ def main() -> int:
             "comparison": comparison,
             "meeting_count": len(clean),
             "current_roster": {
-                "roster_year": int(roster_row["meeting_date"][:4]),
+                "roster_year": int(roster_asof[:4]),
                 "members": roster_members,
-                "as_of_meeting": roster_row["meeting_date"],
+                "as_of": roster_asof,
+                "source": roster_source,
             },
             "collector": "build_fomc_collect.py",
         },

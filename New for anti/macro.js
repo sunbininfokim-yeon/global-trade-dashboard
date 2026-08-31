@@ -1711,7 +1711,9 @@ const mmUsPolicyQuality = (quality) => {
             <div class="mm-quality-card">
                 <span class="mm-quality-label">투표권 구성</span>
                 <strong>${finEsc(String(roster.roster_year || ''))}년 ${Array.isArray(roster.members) ? roster.members.length : 0}명</strong>
-                <p>위원 변화는 공개 투표권 기준으로만 비교합니다.</p>
+                <p>${roster.source && String(roster.source).startsWith('fallback_')
+                    ? `연준 공식 위원 명단 조회 실패 — ${finEsc(roster.as_of || '')} 성명서 표결 명단으로 대체 (구성이 실제보다 오래됐을 수 있음)`
+                    : `연준 공식 위원 명단 페이지 기준 (${finEsc(roster.as_of || '')})`}</p>
                 ${Array.isArray(roster.members) && roster.members.length ? `<details class="mm-quality-details">
                     <summary>현재 투표권자 보기</summary>
                     <p>${roster.members.map((member) => `${member.name} (${member.role})`).join(' · ')}</p>
