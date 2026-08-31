@@ -185,6 +185,32 @@
     }).join('')}</div>`;
   };
 
+  // Committee names carry a chamber prefix that is redundant once the blocks
+  // are already grouped by chamber, and too long for a tile either way.
+  const shortCommittee = (name) => String(name || '')
+    .replace(/^(House|Senate)\s+(Select\s+)?Committee\s+on\s+(the\s+)?/i, '')
+    .replace(/^(House|Senate)\s+/i, '');
+
+  // A flat grid of name-only rectangles -- the layout the sketch uses for
+  // "pick one of these" screens, six or so to a row.
+  const tileGrid = (items) => (items.length
+    ? `<div class="policy-tile-grid">${items.map((t) => `
+        <button type="button" class="policy-tile" data-view="${esc(t.view)}" data-id="${esc(t.id)}" title="${esc(t.full || t.label)}">
+          <span class="policy-tile-label">${esc(t.label)}</span>
+        </button>`).join('')}</div>`
+    : empty('목록 준비 중'));
+
+  const committeeTiles = (chamber) => tileGrid(
+    (DATA?.congress_overview?.committees || [])
+      .filter((c) => c.chamber === chamber)
+      .map((c) => ({ view: 'committee', id: c.committee_id, label: shortCommittee(c.name), full: c.name })),
+  );
+
+  const agencyTiles = () => tileGrid(
+    (DATA?.executive_overview?.agencies || [])
+      .map((a) => ({ view: 'agency', id: a.agency_id, label: a.short_name || a.name, full: a.name })),
+  );
+
   const leaderRow = (label, person, placeholder) => `
     <div class="policy-leader">
       <span class="policy-leader-label">${esc(label)}</span>
@@ -206,27 +232,16 @@
         </button>`).join('')}</div>`
     : empty('표시할 법안이 없습니다'));
 
-  // Level 1 -- the two branches, and the bills worth surfacing above the fold.
+  // Level 1 -- every committee and agency laid out at once, so the whole
+  // surface is a directory rather than two links into one.
   function viewUS() {
-    const committeeCount = DATA?.congress_overview?.committees?.length || 0;
-    const agencyCount = DATA?.executive_overview?.agencies?.length || 0;
-
-    const branches = `
-      <div class="policy-branch-row">
-        <button type="button" class="policy-branch" data-view="congress">
-          <span class="policy-branch-name">의회</span>
-          <span class="policy-branch-desc">상임위 · 법안 · 표결</span>
-          <span class="policy-branch-count">상임위 ${esc(committeeCount)}</span>
-        </button>
-        <button type="button" class="policy-branch" data-view="executive">
-          <span class="policy-branch-name">행정부</span>
-          <span class="policy-branch-desc">부처 · 행정명령 · 규제</span>
-          <span class="policy-branch-count">기관 ${esc(agencyCount)}</span>
-        </button>
-      </div>`;
+    const hasJoint = (DATA?.congress_overview?.committees || []).some((c) => c.chamber === 'joint');
 
     return shell(`
-      ${card('미국 정책', branches)}
+      ${card('하원 상임위', committeeTiles('house'))}
+      ${card('상원 상임위', committeeTiles('senate'))}
+      ${hasJoint ? card('합동 위원회', committeeTiles('joint')) : ''}
+      ${card('행정부 기관', agencyTiles())}
       ${card('119대 의회 주요 법안', billCards(DATA?.policy_hub?.summary_cards || []))}
     `);
   }
@@ -234,16 +249,6 @@
   function viewCongress() {
     const co = DATA?.congress_overview;
     if (!co) return shell(empty('의회 데이터를 불러올 수 없습니다'));
-
-    const byChamber = (chamber) => {
-      const list = (co.committees || []).filter((c) => c.chamber === chamber);
-      if (!list.length) return empty('등록된 상임위가 없습니다');
-      return `<div class="policy-chip-row">${list.map((c) => `
-        <button type="button" class="policy-chip" data-view="committee" data-id="${esc(c.committee_id)}">
-          <span class="policy-chip-name">${esc(c.name)}</span>
-          ${c.agencies?.length ? `<span class="policy-chip-sub">${esc(c.agencies.join(' · '))}</span>` : ''}
-        </button>`).join('')}</div>`;
-    };
 
     const areas = new Map();
     (DATA.policy_hub?.summary_cards || []).forEach((b) => {
@@ -267,9 +272,9 @@
     return shell(`
       <div class="policy-grid-2">
         <div class="policy-col">
-          ${card(`상임위 (${CHAMBER_LABELS.house})`, byChamber('house'))}
-          ${card(`상임위 (${CHAMBER_LABELS.senate})`, byChamber('senate'))}
-          ${(co.committees || []).some((c) => c.chamber === 'joint') ? card(`상임위 (${CHAMBER_LABELS.joint})`, byChamber('joint')) : ''}
+          ${card(`상임위 (${CHAMBER_LABELS.house})`, committeeTiles('house'))}
+          ${card(`상임위 (${CHAMBER_LABELS.senate})`, committeeTiles('senate'))}
+          ${(co.committees || []).some((c) => c.chamber === 'joint') ? card(`상임위 (${CHAMBER_LABELS.joint})`, committeeTiles('joint')) : ''}
           ${card('CRS 정책분야', areaChips)}
         </div>
         <div class="policy-col">
@@ -314,8 +319,13 @@
          ${items.length ? `<div class="policy-bill-list">${items.map(billRow).join('')}</div>` : empty('해당 단계의 법안이 없습니다')}`
       : empty('이 위원회의 법안 목록 준비 중');
 
+    // Bills lead: they are what the screen is for. Membership and
+    // subcommittees are reference material, so they sit alongside on the right.
     return shell(`
       <div class="policy-grid-2">
+        <div class="policy-col">
+          ${card('소관 법안', billsBody)}
+        </div>
         <div class="policy-col">
           ${card(comm.name, `
             ${comm.jurisdiction_summary ? `<p class="policy-prose">${esc(comm.jurisdiction_summary)}</p>` : ''}
@@ -324,9 +334,6 @@
           `)}
           ${card('담당 기관', agencyList)}
           ${card('소위원회', subList)}
-        </div>
-        <div class="policy-col">
-          ${card('소관 법안', billsBody)}
         </div>
       </div>`);
   }
@@ -443,13 +450,6 @@
     const eo = DATA?.executive_overview;
     if (!eo) return shell(empty('행정부 데이터를 불러올 수 없습니다'));
 
-    const agencies = (eo.agencies || []).length
-      ? `<div class="policy-chip-row">${eo.agencies.map((a) => `
-          <button type="button" class="policy-chip" data-view="agency" data-id="${esc(a.agency_id)}">
-            <span class="policy-chip-name">${esc(a.name)}</span>
-            <span class="policy-chip-sub">행정명령 ${esc(ordersOf(a.agency_id).length)}건</span>
-          </button>`).join('')}</div>`
-      : empty('기관 정보 준비 중');
 
     const cfr = (DATA?.cfr_titles || []).length
       ? `<div class="policy-chip-row">${DATA.cfr_titles.map((t) => `
@@ -461,7 +461,7 @@
 
     return shell(`
       <div class="policy-grid-2">
-        <div class="policy-col">${card('기관', agencies)}</div>
+        <div class="policy-col">${card('기관', agencyTiles())}</div>
         <div class="policy-col">${card('CFR Title', cfr)}</div>
       </div>`);
   }

@@ -4,7 +4,10 @@
     "purpose": "UI development fixture only. Do not present names, counts, dates, or links in this file as live U.S. government data.",
     "api_contract": "docs/api-spec.md",
     "screen_mapping": "docs/ui-screens.md",
-    "search": { "visible": false, "enabled": false }
+    "search": {
+      "visible": false,
+      "enabled": false
+    }
   },
   "policy_hub": {
     "country": "US",
@@ -17,7 +20,10 @@
         "current_status": "Reported by committee (sample)",
         "latest_action_date": "2026-08-28",
         "summary": "Sample summary used only to test title wrapping, stage badges, and card navigation.",
-        "policy_area": { "policy_area_id": "foreign-trade-and-international-finance", "name": "Foreign Trade and International Finance" },
+        "policy_area": {
+          "policy_area_id": "foreign-trade-and-international-finance",
+          "name": "Foreign Trade and International Finance"
+        },
         "detail_level": "tracked",
         "congress_url": "https://www.congress.gov/"
       },
@@ -28,7 +34,10 @@
         "current_status": "Passed Senate (sample)",
         "latest_action_date": "2026-08-26",
         "summary": "Sample summary for a floor-passed bill card.",
-        "policy_area": { "policy_area_id": "commerce", "name": "Commerce" },
+        "policy_area": {
+          "policy_area_id": "commerce",
+          "name": "Commerce"
+        },
         "detail_level": "enriched",
         "congress_url": "https://www.congress.gov/"
       },
@@ -39,7 +48,10 @@
         "current_status": "Referred to committee (sample)",
         "latest_action_date": "2026-08-23",
         "summary": "Sample summary for an index-level bill card.",
-        "policy_area": { "policy_area_id": "science-technology-communications", "name": "Science, Technology, Communications" },
+        "policy_area": {
+          "policy_area_id": "science-technology-communications",
+          "name": "Science, Technology, Communications"
+        },
         "detail_level": "index",
         "congress_url": "https://www.congress.gov/"
       }
@@ -48,9 +60,18 @@
   "congress_overview": {
     "active_chamber": "house",
     "chambers": [
-      { "id": "house", "label": "House" },
-      { "id": "senate", "label": "Senate" },
-      { "id": "joint", "label": "Joint" }
+      {
+        "id": "house",
+        "label": "House"
+      },
+      {
+        "id": "senate",
+        "label": "Senate"
+      },
+      {
+        "id": "joint",
+        "label": "Joint"
+      }
     ],
     "committees": [
       {
@@ -61,7 +82,10 @@
         "display_order": 1,
         "official_url": "https://waysandmeans.house.gov/",
         "jurisdiction_summary": "Sample jurisdiction summary.",
-        "agencies": ["Department of the Treasury", "Office of the U.S. Trade Representative"],
+        "agencies": [
+          "Department of the Treasury",
+          "Office of the U.S. Trade Representative"
+        ],
         "chair": null
       },
       {
@@ -83,14 +107,184 @@
         "display_order": 1,
         "official_url": "https://www.finance.senate.gov/",
         "jurisdiction_summary": "Sample jurisdiction summary.",
-        "agencies": ["Department of the Treasury"],
+        "agencies": [
+          "Department of the Treasury"
+        ],
         "chair": null
+      },
+      {
+        "committee_id": "mock-hsap00",
+        "name": "House Committee on Appropriations",
+        "chamber": "house",
+        "committee_type": "standing",
+        "display_order": 4,
+        "official_url": "https://appropriations.house.gov/",
+        "jurisdiction_summary": "Sample jurisdiction summary.",
+        "agencies": [],
+        "chair": null,
+        "ranking_member": null,
+        "subcommittees": []
+      },
+      {
+        "committee_id": "mock-hsfa00",
+        "name": "House Committee on Foreign Affairs",
+        "chamber": "house",
+        "committee_type": "standing",
+        "display_order": 5,
+        "official_url": "https://foreignaffairs.house.gov/",
+        "jurisdiction_summary": "Sample jurisdiction summary.",
+        "agencies": [],
+        "chair": null,
+        "ranking_member": null,
+        "subcommittees": []
+      },
+      {
+        "committee_id": "mock-hsju00",
+        "name": "House Committee on the Judiciary",
+        "chamber": "house",
+        "committee_type": "standing",
+        "display_order": 6,
+        "official_url": "https://judiciary.house.gov/",
+        "jurisdiction_summary": "Sample jurisdiction summary.",
+        "agencies": [],
+        "chair": null,
+        "ranking_member": null,
+        "subcommittees": []
+      },
+      {
+        "committee_id": "mock-hsag00",
+        "name": "House Committee on Agriculture",
+        "chamber": "house",
+        "committee_type": "standing",
+        "display_order": 7,
+        "official_url": "https://agriculture.house.gov/",
+        "jurisdiction_summary": "Sample jurisdiction summary.",
+        "agencies": [],
+        "chair": null,
+        "ranking_member": null,
+        "subcommittees": []
+      },
+      {
+        "committee_id": "mock-hspw00",
+        "name": "House Committee on Transportation and Infrastructure",
+        "chamber": "house",
+        "committee_type": "standing",
+        "display_order": 8,
+        "official_url": "https://transportation.house.gov/",
+        "jurisdiction_summary": "Sample jurisdiction summary.",
+        "agencies": [],
+        "chair": null,
+        "ranking_member": null,
+        "subcommittees": []
+      },
+      {
+        "committee_id": "mock-hsed00",
+        "name": "House Committee on Education and Workforce",
+        "chamber": "house",
+        "committee_type": "standing",
+        "display_order": 9,
+        "official_url": "https://edworkforce.house.gov/",
+        "jurisdiction_summary": "Sample jurisdiction summary.",
+        "agencies": [],
+        "chair": null,
+        "ranking_member": null,
+        "subcommittees": []
+      },
+      {
+        "committee_id": "mock-ssap00",
+        "name": "Senate Committee on Appropriations",
+        "chamber": "senate",
+        "committee_type": "standing",
+        "display_order": 3,
+        "official_url": "https://www.appropriations.senate.gov/",
+        "jurisdiction_summary": "Sample jurisdiction summary.",
+        "agencies": [],
+        "chair": null,
+        "ranking_member": null,
+        "subcommittees": []
+      },
+      {
+        "committee_id": "mock-ssfr00",
+        "name": "Senate Committee on Foreign Relations",
+        "chamber": "senate",
+        "committee_type": "standing",
+        "display_order": 4,
+        "official_url": "https://www.foreign.senate.gov/",
+        "jurisdiction_summary": "Sample jurisdiction summary.",
+        "agencies": [],
+        "chair": null,
+        "ranking_member": null,
+        "subcommittees": []
+      },
+      {
+        "committee_id": "mock-ssbk00",
+        "name": "Senate Committee on Banking, Housing, and Urban Affairs",
+        "chamber": "senate",
+        "committee_type": "standing",
+        "display_order": 5,
+        "official_url": "https://www.banking.senate.gov/",
+        "jurisdiction_summary": "Sample jurisdiction summary.",
+        "agencies": [],
+        "chair": null,
+        "ranking_member": null,
+        "subcommittees": []
+      },
+      {
+        "committee_id": "mock-sscm00",
+        "name": "Senate Committee on Commerce, Science, and Transportation",
+        "chamber": "senate",
+        "committee_type": "standing",
+        "display_order": 6,
+        "official_url": "https://www.commerce.senate.gov/",
+        "jurisdiction_summary": "Sample jurisdiction summary.",
+        "agencies": [],
+        "chair": null,
+        "ranking_member": null,
+        "subcommittees": []
+      },
+      {
+        "committee_id": "mock-ssev00",
+        "name": "Senate Committee on Environment and Public Works",
+        "chamber": "senate",
+        "committee_type": "standing",
+        "display_order": 7,
+        "official_url": "https://www.epw.senate.gov/",
+        "jurisdiction_summary": "Sample jurisdiction summary.",
+        "agencies": [],
+        "chair": null,
+        "ranking_member": null,
+        "subcommittees": []
+      },
+      {
+        "committee_id": "mock-jsec00",
+        "name": "Joint Economic Committee",
+        "chamber": "joint",
+        "committee_type": "joint",
+        "display_order": 2,
+        "official_url": "https://www.jec.senate.gov/",
+        "jurisdiction_summary": "Sample jurisdiction summary.",
+        "agencies": [],
+        "chair": null,
+        "ranking_member": null,
+        "subcommittees": []
       }
     ],
     "agency_bill_counts": [
-      { "agency_id": "mock-treasury", "name": "Department of the Treasury", "bill_count": 12 },
-      { "agency_id": "mock-ustr", "name": "Office of the U.S. Trade Representative", "bill_count": 7 },
-      { "agency_id": "mock-placeholder", "name": "Verified mappings pending", "bill_count": null }
+      {
+        "agency_id": "mock-treasury",
+        "name": "Department of the Treasury",
+        "bill_count": 12
+      },
+      {
+        "agency_id": "mock-ustr",
+        "name": "Office of the U.S. Trade Representative",
+        "bill_count": 7
+      },
+      {
+        "agency_id": "mock-placeholder",
+        "name": "Verified mappings pending",
+        "bill_count": null
+      }
     ],
     "static_explainer": {
       "title": "How Congress moves legislation",
@@ -109,20 +303,64 @@
       "ranking_member": null,
       "ranking_member_placeholder": "간사 정보 준비 중",
       "subcommittees": [
-        { "subcommittee_id": "mock-sub-trade", "name": "Subcommittee on Trade", "meetings_placeholder": "회의 일정 준비 중" },
-        { "subcommittee_id": "mock-sub-oversight", "name": "Subcommittee on Oversight", "meetings_placeholder": "회의 일정 준비 중" }
+        {
+          "subcommittee_id": "mock-sub-trade",
+          "name": "Subcommittee on Trade",
+          "meetings_placeholder": "회의 일정 준비 중"
+        },
+        {
+          "subcommittee_id": "mock-sub-oversight",
+          "name": "Subcommittee on Oversight",
+          "meetings_placeholder": "회의 일정 준비 중"
+        }
       ]
     },
     "stage_tabs": [
-      { "label": "전체 보기", "stage": null, "count": 18 },
-      { "label": "발의·회부", "stage": "introduced,referred,subcommittee,committee_consideration", "count": 9 },
-      { "label": "상임위 통과/보고", "stage": "reported", "count": 3 },
-      { "label": "발의원 본회의 통과", "stage": "passed_origin_chamber", "count": 2 },
-      { "label": "상대원 심사", "stage": "second_chamber", "count": 1 },
-      { "label": "양원 조정", "stage": "resolving_differences", "count": 0 },
-      { "label": "양원 통과", "stage": "passed_both_chambers,presented_to_president", "count": 1 },
-      { "label": "대통령 서명·법률 제정", "stage": "enacted", "count": 1 },
-      { "label": "종료·거부/부결", "stage": "vetoed,failed", "count": 1 }
+      {
+        "label": "전체 보기",
+        "stage": null,
+        "count": 18
+      },
+      {
+        "label": "발의·회부",
+        "stage": "introduced,referred,subcommittee,committee_consideration",
+        "count": 9
+      },
+      {
+        "label": "상임위 통과/보고",
+        "stage": "reported",
+        "count": 3
+      },
+      {
+        "label": "발의원 본회의 통과",
+        "stage": "passed_origin_chamber",
+        "count": 2
+      },
+      {
+        "label": "상대원 심사",
+        "stage": "second_chamber",
+        "count": 1
+      },
+      {
+        "label": "양원 조정",
+        "stage": "resolving_differences",
+        "count": 0
+      },
+      {
+        "label": "양원 통과",
+        "stage": "passed_both_chambers,presented_to_president",
+        "count": 1
+      },
+      {
+        "label": "대통령 서명·법률 제정",
+        "stage": "enacted",
+        "count": 1
+      },
+      {
+        "label": "종료·거부/부결",
+        "stage": "vetoed,failed",
+        "count": 1
+      }
     ],
     "items": [
       {
@@ -162,7 +400,10 @@
         "congress_url": "https://www.congress.gov/"
       }
     ],
-    "pagination": { "next_cursor": "mock-next-cursor", "has_more": true }
+    "pagination": {
+      "next_cursor": "mock-next-cursor",
+      "has_more": true
+    }
   },
   "policy_area_detail": {
     "policy_area": {
@@ -171,7 +412,10 @@
       "bill_count": 18
     },
     "uses_same_stage_tabs_as": "committee_detail.stage_tabs",
-    "items": ["mock-119-hr-1001", "mock-119-s-204"]
+    "items": [
+      "mock-119-hr-1001",
+      "mock-119-s-204"
+    ]
   },
   "bill_detail": {
     "bill_id": "mock-119-hr-1001",
@@ -184,7 +428,12 @@
     "summary": "Sample digest/abstract only. Do not add bill full text to this UI.",
     "congress_url": "https://www.congress.gov/",
     "committees": [
-      { "committee_id": "mock-hsif00", "name": "House Committee on Ways and Means", "chamber": "house", "official_url": "https://waysandmeans.house.gov/" }
+      {
+        "committee_id": "mock-hsif00",
+        "name": "House Committee on Ways and Means",
+        "chamber": "house",
+        "official_url": "https://waysandmeans.house.gov/"
+      }
     ],
     "votes": [
       {
@@ -202,10 +451,20 @@
       }
     ],
     "official_related_bills": [
-      { "bill_id": "mock-119-s-204", "title": "Sample Supply Chain Transparency Act", "relation_type": "related", "relation_origin": "official" }
+      {
+        "bill_id": "mock-119-s-204",
+        "title": "Sample Supply Chain Transparency Act",
+        "relation_type": "related",
+        "relation_origin": "official"
+      }
     ],
     "similar_bills": [
-      { "bill_id": "mock-119-hr-88", "title": "Sample Critical Materials Review Act", "relation_origin": "semantic", "similarity_score": 0.82 }
+      {
+        "bill_id": "mock-119-hr-88",
+        "title": "Sample Critical Materials Review Act",
+        "relation_origin": "semantic",
+        "similarity_score": 0.82
+      }
     ],
     "ui_rules": {
       "show_full_text": false,
@@ -221,7 +480,10 @@
         "short_name": "EOP",
         "executive_order_count": 2,
         "secretary_placeholder": "장관 정보 준비 중",
-        "eo_ids": [99999, 99998]
+        "eo_ids": [
+          99999,
+          99998
+        ]
       },
       {
         "agency_id": "mock-treasury",
@@ -229,7 +491,65 @@
         "short_name": "Treasury",
         "executive_order_count": 1,
         "secretary_placeholder": "장관 정보 준비 중",
-        "eo_ids": [99997]
+        "eo_ids": [
+          99997
+        ]
+      },
+      {
+        "agency_id": "mock-state",
+        "name": "Department of State",
+        "short_name": "State",
+        "executive_order_count": 0,
+        "secretary_placeholder": "장관 정보 준비 중",
+        "eo_ids": []
+      },
+      {
+        "agency_id": "mock-commerce",
+        "name": "Department of Commerce",
+        "short_name": "Commerce",
+        "executive_order_count": 0,
+        "secretary_placeholder": "장관 정보 준비 중",
+        "eo_ids": []
+      },
+      {
+        "agency_id": "mock-dhs",
+        "name": "Department of Homeland Security",
+        "short_name": "DHS",
+        "executive_order_count": 0,
+        "secretary_placeholder": "장관 정보 준비 중",
+        "eo_ids": []
+      },
+      {
+        "agency_id": "mock-doe",
+        "name": "Department of Energy",
+        "short_name": "Energy",
+        "executive_order_count": 0,
+        "secretary_placeholder": "장관 정보 준비 중",
+        "eo_ids": []
+      },
+      {
+        "agency_id": "mock-dot",
+        "name": "Department of Transportation",
+        "short_name": "DOT",
+        "executive_order_count": 0,
+        "secretary_placeholder": "장관 정보 준비 중",
+        "eo_ids": []
+      },
+      {
+        "agency_id": "mock-usda",
+        "name": "Department of Agriculture",
+        "short_name": "USDA",
+        "executive_order_count": 0,
+        "secretary_placeholder": "장관 정보 준비 중",
+        "eo_ids": []
+      },
+      {
+        "agency_id": "mock-ustr2",
+        "name": "Office of the U.S. Trade Representative",
+        "short_name": "USTR",
+        "executive_order_count": 0,
+        "secretary_placeholder": "장관 정보 준비 중",
+        "eo_ids": []
       }
     ],
     "executive_orders": [
@@ -276,12 +596,28 @@
       "executive_order_url": "https://www.whitehouse.gov/"
     },
     "agencies": [
-      { "agency_id": "mock-eop", "name": "Executive Office of the President" },
-      { "agency_id": "mock-treasury", "name": "Department of the Treasury" }
+      {
+        "agency_id": "mock-eop",
+        "name": "Executive Office of the President"
+      },
+      {
+        "agency_id": "mock-treasury",
+        "name": "Department of the Treasury"
+      }
     ],
     "legal_authorities": [
-      { "citation": "Sample statutory citation", "official_url": "https://uscode.house.gov/", "verification_status": "official_metadata", "bill_id": null },
-      { "citation": "Sample statutory citation traced to a tracked bill", "official_url": "https://uscode.house.gov/", "verification_status": "official_metadata", "bill_id": "mock-119-hr-1001" }
+      {
+        "citation": "Sample statutory citation",
+        "official_url": "https://uscode.house.gov/",
+        "verification_status": "official_metadata",
+        "bill_id": null
+      },
+      {
+        "citation": "Sample statutory citation traced to a tracked bill",
+        "official_url": "https://uscode.house.gov/",
+        "verification_status": "official_metadata",
+        "bill_id": "mock-119-hr-1001"
+      }
     ],
     "related_regulations": [
       {
@@ -297,20 +633,56 @@
     ]
   },
   "cfr_titles": [
-    { "title_number": 19, "name": "Customs Duties", "reserved": false, "regulation_count": 4 },
-    { "title_number": 15, "name": "Commerce and Foreign Trade", "reserved": false, "regulation_count": 3 },
-    { "title_number": 50, "name": "Wildlife and Fisheries", "reserved": true, "regulation_count": 0 }
+    {
+      "title_number": 19,
+      "name": "Customs Duties",
+      "reserved": false,
+      "regulation_count": 4
+    },
+    {
+      "title_number": 15,
+      "name": "Commerce and Foreign Trade",
+      "reserved": false,
+      "regulation_count": 3
+    },
+    {
+      "title_number": 50,
+      "name": "Wildlife and Fisheries",
+      "reserved": true,
+      "regulation_count": 0
+    }
   ],
   "ui_states": {
-    "loading": { "title": "정책 데이터를 불러오는 중" },
-    "empty_committee_agencies": { "title": "검증된 담당기관 매핑 준비 중" },
-    "empty_chair": { "title": "위원장 정보 준비 중" },
-    "empty_ranking_member": { "title": "간사 정보 준비 중" },
-    "empty_subcommittee_meetings": { "title": "회의 일정 준비 중" },
-    "empty_agency_secretary": { "title": "장관 정보 준비 중" },
-    "empty_eo_detail": { "title": "행정명령 상세 정보 준비 중" },
-    "empty_industry_profile": { "title": "산업 프로필 자료 준비 중" },
-    "empty_vote": { "title": "기록 표결 없음" },
-    "no_search": { "visible": false, "title": "검색 기능은 준비 중" }
+    "loading": {
+      "title": "정책 데이터를 불러오는 중"
+    },
+    "empty_committee_agencies": {
+      "title": "검증된 담당기관 매핑 준비 중"
+    },
+    "empty_chair": {
+      "title": "위원장 정보 준비 중"
+    },
+    "empty_ranking_member": {
+      "title": "간사 정보 준비 중"
+    },
+    "empty_subcommittee_meetings": {
+      "title": "회의 일정 준비 중"
+    },
+    "empty_agency_secretary": {
+      "title": "장관 정보 준비 중"
+    },
+    "empty_eo_detail": {
+      "title": "행정명령 상세 정보 준비 중"
+    },
+    "empty_industry_profile": {
+      "title": "산업 프로필 자료 준비 중"
+    },
+    "empty_vote": {
+      "title": "기록 표결 없음"
+    },
+    "no_search": {
+      "visible": false,
+      "title": "검색 기능은 준비 중"
+    }
   }
 }

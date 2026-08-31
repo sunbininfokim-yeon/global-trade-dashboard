@@ -4199,36 +4199,49 @@ body.macro-mode .map-pane { flex: 1 1 100%; }
 
 .is-placeholder { color: #64748b; font-style: italic; }
 
-/* --- level 1: the two branches ----------------------------------------- */
+/* --- name-only blocks (committees, agencies) ---------------------------- */
 
-.policy-branch-row {
+/* Sized so a full-width block lands six to a row, dropping to five/four/three
+   as the surface narrows. */
+.policy-tile-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-    gap: 14px;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 10px;
 }
 
-.policy-branch {
+.policy-tile {
     display: flex;
-    flex-direction: column;
-    gap: 6px;
-    padding: 20px 22px;
-    border: 1px solid rgba(56, 189, 248, 0.2);
-    border-radius: 10px;
+    align-items: center;
+    min-height: 58px;
+    padding: 12px 14px;
+    border: 1px solid rgba(56, 189, 248, 0.18);
+    border-radius: 8px;
     background: rgba(30, 41, 59, 0.5);
+    color: #e2e8f0;
+    font-size: 12.5px;
+    font-weight: 500;
+    line-height: 1.4;
     text-align: left;
     cursor: pointer;
     transition: all 0.18s ease;
 }
 
-.policy-branch:hover {
+.policy-tile:hover {
     border-color: rgba(56, 189, 248, 0.55);
     background: rgba(30, 41, 59, 0.85);
-    transform: translateY(-1px);
+    color: #7dd3fc;
 }
 
-.policy-branch-name { color: #e2e8f0; font-size: 17px; font-weight: 700; }
-.policy-branch-desc { color: #94a3b8; font-size: 11.5px; }
-.policy-branch-count { color: #38bdf8; font-size: 11px; font-weight: 600; }
+.policy-tile-label {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* One column inside the two-column grid is half as wide, so relax the minimum
+   or the tiles collapse to a single file. */
+.policy-col .policy-tile-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
 
 /* --- hub cards --------------------------------------------------------- */
 
