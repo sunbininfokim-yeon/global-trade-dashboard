@@ -157,6 +157,7 @@ const focusTradeCountry = (countryName) => {
                 ${statsHtml}
                 ${depHtml}
                 <div class="trade-rank-list">${rows || '<p class="empty-state">이 국가 루트 없음</p>'}</div>
+                <div id="reports-slot"></div>
             </div>`;
         document.getElementById('trade-focus-clear')?.addEventListener('click', (e) => {
             e.preventDefault();
@@ -164,6 +165,7 @@ const focusTradeCountry = (countryName) => {
         });
     }
     renderRigCountCountry(countryName);
+    renderCommodityReports(currentCommodity, countryName);
 
     // Stage 2 stats become the country's, not the world's. "글로벌 무역량
     // 98.5 Million bpd" said the same thing on every country's screen, which
@@ -587,6 +589,195 @@ const worldRankRows = ({ ranked, total, max }, n = 10) => ranked.slice(0, n).map
     </div>`;
 }).join('');
 
+/**
+ * Official reports published about the commodity on screen -- and, in the
+ * country view, about that country's side of it.
+ *
+ * Phase 2-2. The agencies that actually move these markets (USDA, CONAB,
+ * FAO, EIA…) publish dozens of releases a day, and until now none of them
+ * reached the screen where they would mean something. The pipeline in
+ * scripts/commodity_reports tags each release with the commodity and the
+ * country its *text* is about, not the one that published it: a USDA release
+ * on Brazilian wheat is a Brazil·밀 report, and lands here when Brazil is the
+ * focused country on the wheat map.
+ *
+ * Headline-and-link, deliberately. These are copyrighted publications; the
+ * card quotes what the feed itself syndicates and sends the reader to the
+ * agency's own page for the rest, the same posture the news ticker takes.
+ */
+
+// Feed text is written by whoever published it -- it reaches this file
+// unescaped from an RSS body and goes straight into innerHTML.
+const escapeFeedText = (value) => String(value ?? '')
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#039;');
+
+// Same reason: a javascript: or data: href out of a hijacked feed would run
+// on click. Only http(s) links become anchors; anything else renders as text.
+const safeReportHref = (raw) => {
+    try {
+        const u = new URL(String(raw), window.location.origin);
+        return (u.protocol === 'https:' || u.protocol === 'http:') ? u.href : null;
+    } catch (_) {
+        return null;
+    }
+};
+
+// Reports keyed by `${commodity}|${iso3 or ''}`. The panel re-renders on every
+// map interaction and the answer only changes when the pipeline reruns.
+const commodityReportCache = new Map();
+// The whole snapshot, fetched at most once, for the local static server and
+// any deploy where /api is not in front of the assets (the Worker owns /api;
+// a plain file server answers 404 there, which is normal, not an error).
+let commodityReportSnapshot;
+
+const loadCommodityReportSnapshot = async () => {
+    if (commodityReportSnapshot !== undefined) return commodityReportSnapshot;
+    try {
+        const res = await fetch('/public/data/commodity_reports_v1.json', { cache: 'no-cache' });
+        commodityReportSnapshot = res.ok ? await res.json() : null;
+    } catch (err) {
+        console.warn('[commodity-reports] snapshot unavailable', err);
+        commodityReportSnapshot = null;
+    }
+    return commodityReportSnapshot;
+};
+
+/**
+ * Resolve one window out of the raw snapshot.
+ *
+ * Mirrors what the Worker's /api/commodity-reports does, so the static
+ * fallback shows the same rows in the same order rather than a second,
+ * subtly different ranking: the country's own reports first, then the world
+ * balance sheets every country on that commodity inherits.
+ */
+const reportsFromSnapshot = (doc, commodity, iso3, limit) => {
+    const buckets = doc?.index?.[commodity];
+    if (!buckets) return [];
+    const byId = new Map((doc.items || []).map((it) => [it.id, it]));
+    const ids = [];
+    const push = (list) => (list || []).forEach((id) => { if (!ids.includes(id)) ids.push(id); });
+    if (iso3) push(buckets[iso3]);
+    push(buckets._global);
+    if (!iso3) Object.entries(buckets).forEach(([b, rows]) => { if (b !== '_global') push(rows); });
+    return ids.slice(0, limit).map((id) => byId.get(id)).filter(Boolean);
+};
+
+const loadCommodityReports = async (commodity, iso3, limit = 6) => {
+    const key = `${commodity}|${iso3 || ''}`;
+    if (commodityReportCache.has(key)) return commodityReportCache.get(key);
+
+    let window_ = null;
+    try {
+        const q = new URLSearchParams({ commodity, limit: String(limit) });
+        if (iso3) q.set('country', iso3);
+        const res = await fetch(`/api/commodity-reports?${q}`);
+        if (res.ok) {
+            const doc = await res.json();
+            window_ = { items: doc.items || [], label: doc.commodity_label || commodity };
+        }
+    } catch (err) {
+        console.warn('[commodity-reports] api unavailable, falling back to snapshot', err);
+    }
+    if (window_ === null) {
+        const doc = await loadCommodityReportSnapshot();
+        window_ = {
+            items: reportsFromSnapshot(doc, commodity, iso3, limit),
+            label: doc?.commodity_labels?.[commodity] || commodity,
+        };
+    }
+    commodityReportCache.set(key, window_);
+    return window_;
+};
+
+// "2026-08-12T16:00:00+00:00" -> "08.12". The year is noise on a board whose
+// rows are all from the last few weeks; a dateless list-page row shows nothing
+// rather than a fabricated today.
+const reportDate = (iso) => {
+    if (!iso) return '';
+    const d = new Date(iso);
+    if (Number.isNaN(d.getTime())) return '';
+    return `${String(d.getMonth() + 1).padStart(2, '0')}.${String(d.getDate()).padStart(2, '0')}`;
+};
+
+// Long enough that the two-line clamp actually hides something worth opening.
+const SUMMARY_EXPAND_CHARS = 110;
+
+const reportRowHtml = (item) => {
+    const href = safeReportHref(item.url);
+    const title = escapeFeedText(item.title?.ko || item.title?.original || '');
+    const agency = escapeFeedText(item.agency_ko || item.agency || '');
+    const summary = String(item.summary || '').trim();
+    const date = reportDate(item.published_at);
+    // A world balance sheet sitting on a country's board should say so --
+    // otherwise "world wheat production at a record" reads as a claim about
+    // the country whose window it is on.
+    const scopeTag = item.scope === 'global'
+        ? '<span class="rpt-scope">세계</span>'
+        : '';
+    const series = item.series_label_ko
+        ? `<span class="rpt-series">${escapeFeedText(item.series_label_ko)}</span>`
+        : '';
+    const head = href
+        ? `<a class="rpt-title" href="${escapeFeedText(href)}" target="_blank" rel="noopener noreferrer">${title}</a>`
+        : `<span class="rpt-title">${title}</span>`;
+    const body = summary
+        ? `<p class="rpt-summary${summary.length > SUMMARY_EXPAND_CHARS ? ' is-clamped' : ''}">${escapeFeedText(summary)}</p>`
+          + (summary.length > SUMMARY_EXPAND_CHARS
+              ? '<button type="button" class="rpt-more" aria-expanded="false">요약 더보기</button>'
+              : '')
+        : '';
+    return `<li class="rpt-item">
+        <div class="rpt-meta">
+            <span class="rpt-agency">${agency}</span>${series}${scopeTag}
+            ${date ? `<span class="rpt-date">${date}</span>` : ''}
+        </div>
+        ${head}
+        ${body}
+    </li>`;
+};
+
+/**
+ * Fill the panel's reports slot. `countryName` null means the world view.
+ *
+ * Renders into a slot the panel HTML already reserved rather than appending,
+ * so a slow fetch can never land between the futures card and the stocks card
+ * -- the ordering bug the rig-count cards had to be chained to avoid.
+ */
+const renderCommodityReports = async (commodity, countryName = null) => {
+    const slot = document.getElementById('reports-slot');
+    if (!slot || !commodity) return;
+    const iso3 = countryName ? countryCode(countryName) : null;
+    const { items, label } = await loadCommodityReports(commodity, iso3);
+
+    // The panel may have been rebuilt, the commodity switched, or the focus
+    // moved to another country while this was in flight.
+    const live = document.getElementById('reports-slot');
+    if (!live || currentCommodity !== commodity) return;
+    if (countryName ? tradeFocusCountry !== countryName : tradeFocusCountry !== null) return;
+    if (!items.length) { live.innerHTML = ''; return; }
+
+    const who = countryName ? `${resolveCountry(countryName)?.label || countryName} · ` : '';
+    live.innerHTML = `
+        <div class="rpt-card">
+            <p class="section-title" style="margin:0 0 6px;">${escapeFeedText(who)}${escapeFeedText(label)} 주요 보고서</p>
+            <ul class="rpt-list">${items.map(reportRowHtml).join('')}</ul>
+            <p class="rpt-note">공식 기관 발표 · 제목을 누르면 발간처 원문으로 이동</p>
+        </div>`;
+
+    live.querySelectorAll('.rpt-more').forEach((btn) => {
+        btn.addEventListener('click', () => {
+            const body = btn.previousElementSibling;
+            const opened = body?.classList.toggle('is-clamped') === false;
+            btn.setAttribute('aria-expanded', String(opened));
+            btn.textContent = opened ? '요약 접기' : '요약 더보기';
+        });
+    });
+};
+
 // NOTICE FOR ANY BRANCH MERGING HERE FROM A STALE BASE: this function and
 // its neighbors (renderFuturesCard, renderFuturesHistory, sparkChartHtml,
 // wireSparkCharts, renderEmergencyStocks below) have been silently deleted
@@ -623,8 +814,10 @@ const renderTradeWorldPanel = (arcs) => {
             <div class="trade-rank-list">${exportRows || '<p class="empty-state">무역 루트 없음</p>'}</div>
             <p class="trade-rank-group-head">주요 수입국</p>
             <div class="trade-rank-list">${importRows || '<p class="empty-state">무역 루트 없음</p>'}</div>
+            <div id="reports-slot"></div>
         </div>`;
     renderFuturesCard(currentCommodity);
+    renderCommodityReports(currentCommodity);
     // Chained, not fired in parallel: renderRigCountWorld must not insert
     // before renderEmergencyStocks's own card exists (see its own comment).
     renderEmergencyStocks().then(renderRigCountWorld);

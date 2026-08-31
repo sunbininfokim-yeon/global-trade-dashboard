@@ -1,0 +1,166 @@
+{
+  "version": 1,
+  "user_agent": "GlobalTradeDashboard-CommodityReports/1.0 (+research; official sources only)",
+  "fetch_timeout_sec": 22,
+  "max_items_per_source": 40,
+  "notes": [
+    "Official publishers only -- statistical agencies, ministries, and the intergovernmental bodies that publish commodity balance sheets. No aggregators, no paywalled trade press.",
+    "default_country is a fallback for releases that name no country (CONAB's safra bulletins never write 'Brazil'). Any country the text does name wins over it -- a USDA release on Brazilian wheat is a Brazil report.",
+    "scope_hint 'global' marks publishers whose untagged releases are world balance sheets, not home-country news (FAO, IGC, IEA, OPEC).",
+    "commodity_hint only fires when the text mentions no commodity at all; it is a prior, not an override.",
+    "A source that 403s or moves is switched to enabled:false with the date and reason, the same convention official_reports/config/sources.json uses. feed_status in the built JSON is where you see which ones died."
+  ],
+  "sources": [
+    {
+      "id": "us_usda_newsroom",
+      "agency": "USDA", "agency_ko": "미 농무부",
+      "default_country": "USA",
+      "kind": "rss",
+      "url": "https://www.usda.gov/rss/latest-releases.xml",
+      "lang": "en", "enabled": true, "weight": 1.4,
+      "notes": "Department-wide releases; WASDE, Crop Production and Prospective Plantings all announce here."
+    },
+    {
+      "id": "us_usda_ers_newsroom",
+      "agency": "USDA ERS", "agency_ko": "미 농무부 경제조사국",
+      "default_country": "USA",
+      "kind": "rss",
+      "url": "https://www.ers.usda.gov/rss/newsroom.xml",
+      "lang": "en", "enabled": true, "weight": 1.2,
+      "notes": "Outlook series (Wheat Outlook, Feed Outlook, Oil Crops Outlook) -- monthly, per-commodity."
+    },
+    {
+      "id": "us_usda_ers_charts",
+      "agency": "USDA ERS", "agency_ko": "미 농무부 경제조사국",
+      "default_country": "USA",
+      "kind": "rss",
+      "url": "https://www.ers.usda.gov/rss/charts-of-note.xml",
+      "lang": "en", "enabled": true, "weight": 0.9,
+      "notes": "One chart + one paragraph per weekday. Low weight: useful colour, rarely the headline number."
+    },
+    {
+      "id": "us_fas_newsroom",
+      "agency": "USDA FAS", "agency_ko": "미 농무부 해외농업국",
+      "kind": "rss",
+      "url": "https://www.fas.usda.gov/newsroom/rss.xml",
+      "lang": "en", "enabled": true, "weight": 1.35,
+      "scope_hint": "global",
+      "notes": "FAS reports on OTHER countries' crops (GAIN attaché reports, Commodity Intelligence). No default_country on purpose -- the text names the country the report is about."
+    },
+    {
+      "id": "us_eia_today_in_energy",
+      "agency": "EIA", "agency_ko": "미 에너지정보청",
+      "kind": "rss",
+      "url": "https://www.eia.gov/rss/todayinenergy.xml",
+      "lang": "en", "enabled": true, "weight": 1.15,
+      "scope_hint": "global",
+      "commodity_hint": ["oil"],
+      "notes": "Known-good feed (already carried by the official_reports pipeline)."
+    },
+    {
+      "id": "us_eia_press",
+      "agency": "EIA", "agency_ko": "미 에너지정보청",
+      "kind": "rss",
+      "url": "https://www.eia.gov/rss/press_rss.xml",
+      "lang": "en", "enabled": true, "weight": 1.3,
+      "scope_hint": "global",
+      "commodity_hint": ["oil"],
+      "notes": "Short-Term Energy Outlook and Annual Energy Outlook announcements."
+    },
+    {
+      "id": "br_conab",
+      "agency": "CONAB", "agency_ko": "브라질 국가식량공급공사",
+      "default_country": "BRA",
+      "kind": "rss",
+      "url": "https://www.conab.gov.br/ultimas-noticias?format=feed&type=rss",
+      "lang": "pt", "enabled": true, "weight": 1.4,
+      "commodity_hint": ["soybeans", "corn"],
+      "notes": "Acompanhamento da Safra -- the Brazilian counterpart to WASDE. Portuguese; aliases in commodities.json cover soja/milho/açúcar/café/algodão."
+    },
+    {
+      "id": "ca_statcan_daily",
+      "agency": "Statistics Canada", "agency_ko": "캐나다 통계청",
+      "default_country": "CAN",
+      "kind": "rss",
+      "url": "https://www150.statcan.gc.ca/n1/rss/dai-quo/dai-quo-eng.xml",
+      "lang": "en", "enabled": true, "weight": 1.1,
+      "notes": "The Daily carries Field Crop Reporting Series (production of principal field crops)."
+    },
+    {
+      "id": "int_fao_newsroom",
+      "agency": "FAO", "agency_ko": "유엔 식량농업기구",
+      "kind": "rss",
+      "url": "https://www.fao.org/newsroom/rss/en/",
+      "lang": "en", "enabled": true, "weight": 1.25,
+      "scope_hint": "global",
+      "notes": "Food Price Index, Crop Prospects and Food Situation, AMIS Market Monitor announcements."
+    },
+    {
+      "id": "eu_agri",
+      "agency": "European Commission DG AGRI", "agency_ko": "EU 집행위 농업총국",
+      "kind": "rss",
+      "url": "https://agriculture.ec.europa.eu/rss_en",
+      "lang": "en", "enabled": true, "weight": 1.1,
+      "scope_hint": "global",
+      "notes": "EU short-term outlook and cereal balance sheets. Member-state reports get tagged to the member state named in the text."
+    },
+    {
+      "id": "in_pib_agriculture",
+      "agency": "PIB India (Agriculture)", "agency_ko": "인도 정부 언론정보국 (농업)",
+      "default_country": "IND",
+      "kind": "rss",
+      "url": "https://pib.gov.in/RssMain.aspx?ModId=6&Lang=1&Regid=3",
+      "lang": "en", "enabled": true, "weight": 1.05,
+      "notes": "Advance Estimates of foodgrain production come out through PIB."
+    },
+    {
+      "id": "au_abares",
+      "agency": "ABARES", "agency_ko": "호주 농업자원경제국",
+      "default_country": "AUS",
+      "kind": "rss",
+      "url": "https://www.agriculture.gov.au/abares/news/rss.xml",
+      "lang": "en", "enabled": false, "weight": 1.35,
+      "notes": "DISABLED 2026-08-31: feed URL unverified from this environment. Australian Crop Report is quarterly and worth having -- enable once the URL is confirmed live."
+    },
+    {
+      "id": "int_igc",
+      "agency": "IGC", "agency_ko": "국제곡물이사회",
+      "kind": "rss",
+      "url": "https://www.igc.int/en/rss/rss.aspx",
+      "lang": "en", "enabled": false, "weight": 1.3,
+      "scope_hint": "global",
+      "commodity_hint": ["wheat", "corn"],
+      "notes": "DISABLED 2026-08-31: URL unverified. Grain Market Report is the reference world grain balance outside USDA."
+    },
+    {
+      "id": "int_opec_press",
+      "agency": "OPEC", "agency_ko": "석유수출국기구",
+      "kind": "html_list",
+      "url": "https://www.opec.org/opec_web/en/press_room/28.htm",
+      "lang": "en", "enabled": false, "weight": 1.3,
+      "scope_hint": "global",
+      "commodity_hint": ["oil"],
+      "html": {"base": "https://www.opec.org", "item_href_re": "[^\"']*press_room[^\"']*", "max_items": 20},
+      "notes": "DISABLED 2026-08-31: list-page selector unverified. Monthly Oil Market Report announcements live here."
+    },
+    {
+      "id": "us_usgs_news",
+      "agency": "USGS", "agency_ko": "미 지질조사국",
+      "kind": "rss",
+      "url": "https://www.usgs.gov/news/rss",
+      "lang": "en", "enabled": false, "weight": 1.2,
+      "scope_hint": "global",
+      "notes": "DISABLED 2026-08-31: URL unverified. Mineral Commodity Summaries is the reference for the metals windows."
+    },
+    {
+      "id": "ua_minagro",
+      "agency": "Ukraine Ministry of Agrarian Policy", "agency_ko": "우크라이나 농업정책부",
+      "default_country": "UKR",
+      "kind": "rss",
+      "url": "https://minagro.gov.ua/rss",
+      "lang": "uk", "enabled": false, "weight": 1.2,
+      "commodity_hint": ["wheat", "corn"],
+      "notes": "DISABLED 2026-08-31: URL unverified."
+    }
+  ]
+}

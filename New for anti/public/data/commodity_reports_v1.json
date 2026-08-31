@@ -1,0 +1,385 @@
+{
+  "schema_version": "commodity-reports-v1",
+  "generated_at": "2026-08-31T14:06:49.616536+00:00",
+  "model": {
+    "name": "commodity_reports_v1",
+    "description": "Official crop/energy/metal reports tagged (commodity × country) so the dashboard's stage-2 country window can show what was published about that country's commodity. The report's text picks the country, not the publisher: a USDA release on Brazilian wheat belongs on BRA·wheat.",
+    "buckets": "index[commodity][ISO3 | _global] -> item ids, most important first",
+    "learning": {
+      "label_file": "scripts/commodity_reports/cache/label_history.jsonl",
+      "labels": [
+        "promote",
+        "keep",
+        "drop"
+      ],
+      "how": "build_reports.py label --series-id ... --label promote; next build re-weights that series."
+    },
+    "per_bucket_limit": 8
+  },
+  "stats": {
+    "sources_ok": 0,
+    "sources_failed": 1,
+    "raw_items": 0,
+    "scored": 0,
+    "published": 0,
+    "commodities": 0,
+    "buckets": 0
+  },
+  "feed_status": [
+    {
+      "source_id": "_",
+      "ok": false,
+      "count": 0,
+      "error": "no_fetch",
+      "mode": "none"
+    }
+  ],
+  "commodity_labels": {
+    "oil": "원유",
+    "gas": "천연가스",
+    "thermal_coal": "연료탄",
+    "met_coal": "원료탄",
+    "gold": "금",
+    "silver": "은",
+    "platinum": "백금족",
+    "copper": "구리",
+    "aluminum": "알루미늄",
+    "zinc": "아연",
+    "tin": "주석",
+    "lead": "납",
+    "nickel": "니켈",
+    "cobalt": "코발트",
+    "lithium": "리튬",
+    "graphite": "흑연",
+    "rare_earths": "희토류",
+    "iron_ore": "철광석",
+    "manganese": "망간",
+    "chromium": "크롬",
+    "wheat": "밀",
+    "corn": "옥수수",
+    "soybeans": "대두",
+    "rice": "쌀",
+    "sugar": "설탕",
+    "coffee": "커피",
+    "cocoa": "코코아",
+    "cotton": "면화",
+    "palm_oil": "팜유"
+  },
+  "country_names": {
+    "USA": {
+      "name": "United States",
+      "name_ko": "미국"
+    },
+    "BRA": {
+      "name": "Brazil",
+      "name_ko": "브라질"
+    },
+    "ARG": {
+      "name": "Argentina",
+      "name_ko": "아르헨티나"
+    },
+    "CHN": {
+      "name": "China",
+      "name_ko": "중국"
+    },
+    "IND": {
+      "name": "India",
+      "name_ko": "인도"
+    },
+    "RUS": {
+      "name": "Russia",
+      "name_ko": "러시아"
+    },
+    "UKR": {
+      "name": "Ukraine",
+      "name_ko": "우크라이나"
+    },
+    "CAN": {
+      "name": "Canada",
+      "name_ko": "캐나다"
+    },
+    "AUS": {
+      "name": "Australia",
+      "name_ko": "호주"
+    },
+    "IDN": {
+      "name": "Indonesia",
+      "name_ko": "인도네시아"
+    },
+    "MYS": {
+      "name": "Malaysia",
+      "name_ko": "말레이시아"
+    },
+    "THA": {
+      "name": "Thailand",
+      "name_ko": "태국"
+    },
+    "VNM": {
+      "name": "Vietnam",
+      "name_ko": "베트남"
+    },
+    "PHL": {
+      "name": "Philippines",
+      "name_ko": "필리핀"
+    },
+    "JPN": {
+      "name": "Japan",
+      "name_ko": "일본"
+    },
+    "KOR": {
+      "name": "South Korea",
+      "name_ko": "한국"
+    },
+    "PRK": {
+      "name": "North Korea",
+      "name_ko": "북한"
+    },
+    "TWN": {
+      "name": "Taiwan",
+      "name_ko": "대만"
+    },
+    "SAU": {
+      "name": "Saudi Arabia",
+      "name_ko": "사우디아라비아"
+    },
+    "ARE": {
+      "name": "United Arab Emirates",
+      "name_ko": "아랍에미리트"
+    },
+    "IRQ": {
+      "name": "Iraq",
+      "name_ko": "이라크"
+    },
+    "IRN": {
+      "name": "Iran",
+      "name_ko": "이란"
+    },
+    "KWT": {
+      "name": "Kuwait",
+      "name_ko": "쿠웨이트"
+    },
+    "QAT": {
+      "name": "Qatar",
+      "name_ko": "카타르"
+    },
+    "OMN": {
+      "name": "Oman",
+      "name_ko": "오만"
+    },
+    "TUR": {
+      "name": "Türkiye",
+      "name_ko": "튀르키예"
+    },
+    "EGY": {
+      "name": "Egypt",
+      "name_ko": "이집트"
+    },
+    "DZA": {
+      "name": "Algeria",
+      "name_ko": "알제리"
+    },
+    "MAR": {
+      "name": "Morocco",
+      "name_ko": "모로코"
+    },
+    "TUN": {
+      "name": "Tunisia",
+      "name_ko": "튀니지"
+    },
+    "LBY": {
+      "name": "Libya",
+      "name_ko": "리비아"
+    },
+    "NGA": {
+      "name": "Nigeria",
+      "name_ko": "나이지리아"
+    },
+    "GHA": {
+      "name": "Ghana",
+      "name_ko": "가나"
+    },
+    "CIV": {
+      "name": "Côte d'Ivoire",
+      "name_ko": "코트디부아르"
+    },
+    "ETH": {
+      "name": "Ethiopia",
+      "name_ko": "에티오피아"
+    },
+    "KEN": {
+      "name": "Kenya",
+      "name_ko": "케냐"
+    },
+    "ZAF": {
+      "name": "South Africa",
+      "name_ko": "남아프리카공화국"
+    },
+    "ZMB": {
+      "name": "Zambia",
+      "name_ko": "잠비아"
+    },
+    "COD": {
+      "name": "DR Congo",
+      "name_ko": "콩고민주공화국"
+    },
+    "COG": {
+      "name": "Republic of the Congo",
+      "name_ko": "콩고공화국"
+    },
+    "GIN": {
+      "name": "Guinea",
+      "name_ko": "기니"
+    },
+    "GNQ": {
+      "name": "Equatorial Guinea",
+      "name_ko": "적도기니"
+    },
+    "PNG": {
+      "name": "Papua New Guinea",
+      "name_ko": "파푸아뉴기니"
+    },
+    "MOZ": {
+      "name": "Mozambique",
+      "name_ko": "모잠비크"
+    },
+    "TZA": {
+      "name": "Tanzania",
+      "name_ko": "탄자니아"
+    },
+    "ZWE": {
+      "name": "Zimbabwe",
+      "name_ko": "짐바브웨"
+    },
+    "AGO": {
+      "name": "Angola",
+      "name_ko": "앙골라"
+    },
+    "CHL": {
+      "name": "Chile",
+      "name_ko": "칠레"
+    },
+    "PER": {
+      "name": "Peru",
+      "name_ko": "페루"
+    },
+    "MEX": {
+      "name": "Mexico",
+      "name_ko": "멕시코"
+    },
+    "COL": {
+      "name": "Colombia",
+      "name_ko": "콜롬비아"
+    },
+    "BOL": {
+      "name": "Bolivia",
+      "name_ko": "볼리비아"
+    },
+    "VEN": {
+      "name": "Venezuela",
+      "name_ko": "베네수엘라"
+    },
+    "ECU": {
+      "name": "Ecuador",
+      "name_ko": "에콰도르"
+    },
+    "PRY": {
+      "name": "Paraguay",
+      "name_ko": "파라과이"
+    },
+    "URY": {
+      "name": "Uruguay",
+      "name_ko": "우루과이"
+    },
+    "KAZ": {
+      "name": "Kazakhstan",
+      "name_ko": "카자흐스탄"
+    },
+    "UZB": {
+      "name": "Uzbekistan",
+      "name_ko": "우즈베키스탄"
+    },
+    "MNG": {
+      "name": "Mongolia",
+      "name_ko": "몽골"
+    },
+    "PAK": {
+      "name": "Pakistan",
+      "name_ko": "파키스탄"
+    },
+    "BGD": {
+      "name": "Bangladesh",
+      "name_ko": "방글라데시"
+    },
+    "MMR": {
+      "name": "Myanmar",
+      "name_ko": "미얀마"
+    },
+    "DEU": {
+      "name": "Germany",
+      "name_ko": "독일"
+    },
+    "FRA": {
+      "name": "France",
+      "name_ko": "프랑스"
+    },
+    "POL": {
+      "name": "Poland",
+      "name_ko": "폴란드"
+    },
+    "ROU": {
+      "name": "Romania",
+      "name_ko": "루마니아"
+    },
+    "ESP": {
+      "name": "Spain",
+      "name_ko": "스페인"
+    },
+    "ITA": {
+      "name": "Italy",
+      "name_ko": "이탈리아"
+    },
+    "NLD": {
+      "name": "Netherlands",
+      "name_ko": "네덜란드"
+    },
+    "GBR": {
+      "name": "United Kingdom",
+      "name_ko": "영국"
+    },
+    "NOR": {
+      "name": "Norway",
+      "name_ko": "노르웨이"
+    },
+    "SWE": {
+      "name": "Sweden",
+      "name_ko": "스웨덴"
+    },
+    "FIN": {
+      "name": "Finland",
+      "name_ko": "핀란드"
+    },
+    "CHE": {
+      "name": "Switzerland",
+      "name_ko": "스위스"
+    },
+    "SRB": {
+      "name": "Serbia",
+      "name_ko": "세르비아"
+    },
+    "HUN": {
+      "name": "Hungary",
+      "name_ko": "헝가리"
+    },
+    "BGR": {
+      "name": "Bulgaria",
+      "name_ko": "불가리아"
+    },
+    "NZL": {
+      "name": "New Zealand",
+      "name_ko": "뉴질랜드"
+    }
+  },
+  "index": {},
+  "items": [],
+  "pending_review": []
+}

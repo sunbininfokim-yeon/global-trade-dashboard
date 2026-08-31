@@ -1,0 +1,915 @@
+{
+  "version": 1,
+  "notes": [
+    "Keyed by ISO3 because that is what the trade panel already computes (countryCode() in app.js) before it asks the API for a country's reports.",
+    "aliases are matched case-insensitively with word boundaries; cased_aliases are matched case-sensitively, for abbreviations that collide with ordinary words ('US' vs 'us', 'EU', 'UK', 'DRC').",
+    "regions are subnational producing areas that imply the country on their own -- a WASDE line about Mato Grosso is a Brazil report even when it never writes 'Brazil'.",
+    "Longest alias wins the span, so 'North Korea' beats 'Korea' and 'Papua New Guinea' beats 'Guinea'. Add new aliases without worrying about ordering."
+  ],
+  "countries": {
+    "USA": {
+      "name": "United States",
+      "name_ko": "미국",
+      "aliases": [
+        "united states",
+        "united states of america",
+        "u.s.",
+        "u.s.a.",
+        "america",
+        "american"
+      ],
+      "cased_aliases": [
+        "US",
+        "USA"
+      ],
+      "regions": [
+        "corn belt",
+        "midwest",
+        "great plains",
+        "northern plains",
+        "cotton belt",
+        "iowa",
+        "illinois",
+        "nebraska",
+        "kansas",
+        "minnesota",
+        "indiana",
+        "ohio",
+        "north dakota",
+        "south dakota",
+        "texas panhandle",
+        "mississippi river",
+        "gulf coast",
+        "permian basin",
+        "bakken",
+        "appalachia",
+        "powder river basin"
+      ]
+    },
+    "BRA": {
+      "name": "Brazil",
+      "name_ko": "브라질",
+      "aliases": [
+        "brazil",
+        "brazilian",
+        "brasil",
+        "brasileiro",
+        "brasileira"
+      ],
+      "regions": [
+        "mato grosso",
+        "goiás",
+        "goias",
+        "paraná",
+        "parana",
+        "rio grande do sul",
+        "bahia",
+        "minas gerais",
+        "são paulo",
+        "sao paulo",
+        "matopiba",
+        "cerrado",
+        "santos port",
+        "paranaguá",
+        "paranagua"
+      ]
+    },
+    "ARG": {
+      "name": "Argentina",
+      "name_ko": "아르헨티나",
+      "aliases": [
+        "argentina",
+        "argentine",
+        "argentinian",
+        "argentino"
+      ],
+      "regions": [
+        "pampas",
+        "buenos aires province",
+        "córdoba province",
+        "cordoba province",
+        "santa fe",
+        "rosario",
+        "chaco"
+      ]
+    },
+    "CHN": {
+      "name": "China",
+      "name_ko": "중국",
+      "aliases": [
+        "china",
+        "chinese",
+        "prc",
+        "people's republic of china",
+        "중국",
+        "中国"
+      ],
+      "regions": [
+        "heilongjiang",
+        "henan",
+        "shandong",
+        "jilin",
+        "inner mongolia",
+        "xinjiang",
+        "north china plain",
+        "yangtze"
+      ]
+    },
+    "IND": {
+      "name": "India",
+      "name_ko": "인도",
+      "aliases": [
+        "india",
+        "indian"
+      ],
+      "regions": [
+        "punjab",
+        "haryana",
+        "uttar pradesh",
+        "madhya pradesh",
+        "maharashtra",
+        "gujarat",
+        "karnataka",
+        "rabi season",
+        "kharif season"
+      ]
+    },
+    "RUS": {
+      "name": "Russia",
+      "name_ko": "러시아",
+      "aliases": [
+        "russia",
+        "russian",
+        "russian federation",
+        "россия",
+        "российск"
+      ],
+      "regions": [
+        "krasnodar",
+        "rostov",
+        "stavropol",
+        "volga",
+        "siberia",
+        "novorossiysk"
+      ]
+    },
+    "UKR": {
+      "name": "Ukraine",
+      "name_ko": "우크라이나",
+      "aliases": [
+        "ukraine",
+        "ukrainian",
+        "україна",
+        "украина"
+      ],
+      "regions": [
+        "odesa",
+        "odessa",
+        "black sea corridor",
+        "grain corridor"
+      ]
+    },
+    "CAN": {
+      "name": "Canada",
+      "name_ko": "캐나다",
+      "aliases": [
+        "canada",
+        "canadian"
+      ],
+      "regions": [
+        "saskatchewan",
+        "alberta",
+        "manitoba",
+        "prairies",
+        "prairie provinces"
+      ]
+    },
+    "AUS": {
+      "name": "Australia",
+      "name_ko": "호주",
+      "aliases": [
+        "australia",
+        "australian"
+      ],
+      "regions": [
+        "new south wales",
+        "western australia",
+        "queensland",
+        "victoria state",
+        "pilbara",
+        "hunter valley",
+        "port hedland"
+      ]
+    },
+    "IDN": {
+      "name": "Indonesia",
+      "name_ko": "인도네시아",
+      "aliases": [
+        "indonesia",
+        "indonesian"
+      ],
+      "regions": [
+        "sumatra",
+        "kalimantan",
+        "java",
+        "sulawesi",
+        "riau"
+      ]
+    },
+    "MYS": {
+      "name": "Malaysia",
+      "name_ko": "말레이시아",
+      "aliases": [
+        "malaysia",
+        "malaysian"
+      ],
+      "regions": [
+        "sarawak",
+        "sabah",
+        "johor"
+      ]
+    },
+    "THA": {
+      "name": "Thailand",
+      "name_ko": "태국",
+      "aliases": [
+        "thailand",
+        "thai"
+      ]
+    },
+    "VNM": {
+      "name": "Vietnam",
+      "name_ko": "베트남",
+      "aliases": [
+        "vietnam",
+        "viet nam",
+        "vietnamese"
+      ],
+      "regions": [
+        "mekong delta",
+        "central highlands"
+      ]
+    },
+    "PHL": {
+      "name": "Philippines",
+      "name_ko": "필리핀",
+      "aliases": [
+        "philippines",
+        "philippine",
+        "filipino"
+      ]
+    },
+    "JPN": {
+      "name": "Japan",
+      "name_ko": "일본",
+      "aliases": [
+        "japan",
+        "japanese",
+        "일본",
+        "日本"
+      ]
+    },
+    "KOR": {
+      "name": "South Korea",
+      "name_ko": "한국",
+      "aliases": [
+        "south korea",
+        "republic of korea",
+        "korea, rep.",
+        "south korean",
+        "대한민국",
+        "한국"
+      ]
+    },
+    "PRK": {
+      "name": "North Korea",
+      "name_ko": "북한",
+      "aliases": [
+        "north korea",
+        "dprk",
+        "north korean",
+        "북한"
+      ]
+    },
+    "TWN": {
+      "name": "Taiwan",
+      "name_ko": "대만",
+      "aliases": [
+        "taiwan",
+        "taiwanese",
+        "대만"
+      ]
+    },
+    "SAU": {
+      "name": "Saudi Arabia",
+      "name_ko": "사우디아라비아",
+      "aliases": [
+        "saudi arabia",
+        "saudi",
+        "saudi arabian"
+      ],
+      "regions": [
+        "ghawar",
+        "ras tanura"
+      ]
+    },
+    "ARE": {
+      "name": "United Arab Emirates",
+      "name_ko": "아랍에미리트",
+      "aliases": [
+        "united arab emirates",
+        "emirati",
+        "abu dhabi",
+        "dubai"
+      ],
+      "cased_aliases": [
+        "UAE"
+      ]
+    },
+    "IRQ": {
+      "name": "Iraq",
+      "name_ko": "이라크",
+      "aliases": [
+        "iraq",
+        "iraqi"
+      ],
+      "regions": [
+        "basra",
+        "kirkuk"
+      ]
+    },
+    "IRN": {
+      "name": "Iran",
+      "name_ko": "이란",
+      "aliases": [
+        "iran",
+        "iranian"
+      ],
+      "regions": [
+        "kharg island",
+        "south pars"
+      ]
+    },
+    "KWT": {
+      "name": "Kuwait",
+      "name_ko": "쿠웨이트",
+      "aliases": [
+        "kuwait",
+        "kuwaiti"
+      ]
+    },
+    "QAT": {
+      "name": "Qatar",
+      "name_ko": "카타르",
+      "aliases": [
+        "qatar",
+        "qatari"
+      ],
+      "regions": [
+        "north field"
+      ]
+    },
+    "OMN": {
+      "name": "Oman",
+      "name_ko": "오만",
+      "aliases": [
+        "oman",
+        "omani"
+      ]
+    },
+    "TUR": {
+      "name": "Türkiye",
+      "name_ko": "튀르키예",
+      "aliases": [
+        "turkey",
+        "türkiye",
+        "turkiye",
+        "turkish"
+      ],
+      "regions": [
+        "bosphorus",
+        "dardanelles",
+        "ceyhan"
+      ]
+    },
+    "EGY": {
+      "name": "Egypt",
+      "name_ko": "이집트",
+      "aliases": [
+        "egypt",
+        "egyptian"
+      ],
+      "regions": [
+        "nile delta",
+        "suez canal"
+      ]
+    },
+    "DZA": {
+      "name": "Algeria",
+      "name_ko": "알제리",
+      "aliases": [
+        "algeria",
+        "algerian"
+      ]
+    },
+    "MAR": {
+      "name": "Morocco",
+      "name_ko": "모로코",
+      "aliases": [
+        "morocco",
+        "moroccan"
+      ],
+      "regions": [
+        "khouribga"
+      ]
+    },
+    "TUN": {
+      "name": "Tunisia",
+      "name_ko": "튀니지",
+      "aliases": [
+        "tunisia",
+        "tunisian"
+      ]
+    },
+    "LBY": {
+      "name": "Libya",
+      "name_ko": "리비아",
+      "aliases": [
+        "libya",
+        "libyan"
+      ]
+    },
+    "NGA": {
+      "name": "Nigeria",
+      "name_ko": "나이지리아",
+      "aliases": [
+        "nigeria",
+        "nigerian"
+      ],
+      "regions": [
+        "niger delta",
+        "bonny"
+      ]
+    },
+    "GHA": {
+      "name": "Ghana",
+      "name_ko": "가나",
+      "aliases": [
+        "ghana",
+        "ghanaian"
+      ],
+      "regions": [
+        "ashanti"
+      ]
+    },
+    "CIV": {
+      "name": "Côte d'Ivoire",
+      "name_ko": "코트디부아르",
+      "aliases": [
+        "cote d'ivoire",
+        "côte d'ivoire",
+        "ivory coast",
+        "ivorian",
+        "abidjan"
+      ]
+    },
+    "ETH": {
+      "name": "Ethiopia",
+      "name_ko": "에티오피아",
+      "aliases": [
+        "ethiopia",
+        "ethiopian"
+      ],
+      "regions": [
+        "oromia",
+        "sidamo",
+        "yirgacheffe"
+      ]
+    },
+    "KEN": {
+      "name": "Kenya",
+      "name_ko": "케냐",
+      "aliases": [
+        "kenya",
+        "kenyan"
+      ]
+    },
+    "ZAF": {
+      "name": "South Africa",
+      "name_ko": "남아프리카공화국",
+      "aliases": [
+        "south africa",
+        "south african"
+      ],
+      "regions": [
+        "bushveld",
+        "witwatersrand",
+        "richards bay",
+        "free state province"
+      ]
+    },
+    "ZMB": {
+      "name": "Zambia",
+      "name_ko": "잠비아",
+      "aliases": [
+        "zambia",
+        "zambian"
+      ],
+      "regions": [
+        "copperbelt"
+      ]
+    },
+    "COD": {
+      "name": "DR Congo",
+      "name_ko": "콩고민주공화국",
+      "aliases": [
+        "democratic republic of the congo",
+        "democratic republic of congo",
+        "dr congo",
+        "congo-kinshasa",
+        "congolese"
+      ],
+      "cased_aliases": [
+        "DRC"
+      ],
+      "regions": [
+        "katanga",
+        "lualaba",
+        "kolwezi"
+      ]
+    },
+    "COG": {
+      "name": "Republic of the Congo",
+      "name_ko": "콩고공화국",
+      "aliases": [
+        "republic of the congo",
+        "congo-brazzaville"
+      ]
+    },
+    "GIN": {
+      "name": "Guinea",
+      "name_ko": "기니",
+      "aliases": [
+        "guinea",
+        "guinean"
+      ],
+      "regions": [
+        "simandou",
+        "boke",
+        "boké"
+      ]
+    },
+    "GNQ": {
+      "name": "Equatorial Guinea",
+      "name_ko": "적도기니",
+      "aliases": [
+        "equatorial guinea"
+      ]
+    },
+    "PNG": {
+      "name": "Papua New Guinea",
+      "name_ko": "파푸아뉴기니",
+      "aliases": [
+        "papua new guinea"
+      ]
+    },
+    "MOZ": {
+      "name": "Mozambique",
+      "name_ko": "모잠비크",
+      "aliases": [
+        "mozambique",
+        "mozambican"
+      ],
+      "regions": [
+        "cabo delgado",
+        "tete province"
+      ]
+    },
+    "TZA": {
+      "name": "Tanzania",
+      "name_ko": "탄자니아",
+      "aliases": [
+        "tanzania",
+        "tanzanian"
+      ]
+    },
+    "ZWE": {
+      "name": "Zimbabwe",
+      "name_ko": "짐바브웨",
+      "aliases": [
+        "zimbabwe",
+        "zimbabwean"
+      ]
+    },
+    "AGO": {
+      "name": "Angola",
+      "name_ko": "앙골라",
+      "aliases": [
+        "angola",
+        "angolan"
+      ]
+    },
+    "CHL": {
+      "name": "Chile",
+      "name_ko": "칠레",
+      "aliases": [
+        "chile",
+        "chilean"
+      ],
+      "regions": [
+        "escondida",
+        "atacama",
+        "antofagasta",
+        "codelco"
+      ]
+    },
+    "PER": {
+      "name": "Peru",
+      "name_ko": "페루",
+      "aliases": [
+        "peru",
+        "peruvian"
+      ],
+      "regions": [
+        "las bambas",
+        "cerro verde"
+      ]
+    },
+    "MEX": {
+      "name": "Mexico",
+      "name_ko": "멕시코",
+      "aliases": [
+        "mexico",
+        "mexican",
+        "méxico"
+      ],
+      "regions": [
+        "sinaloa",
+        "jalisco"
+      ]
+    },
+    "COL": {
+      "name": "Colombia",
+      "name_ko": "콜롬비아",
+      "aliases": [
+        "colombia",
+        "colombian"
+      ],
+      "regions": [
+        "huila",
+        "antioquia"
+      ]
+    },
+    "BOL": {
+      "name": "Bolivia",
+      "name_ko": "볼리비아",
+      "aliases": [
+        "bolivia",
+        "bolivian"
+      ],
+      "regions": [
+        "salar de uyuni"
+      ]
+    },
+    "VEN": {
+      "name": "Venezuela",
+      "name_ko": "베네수엘라",
+      "aliases": [
+        "venezuela",
+        "venezuelan"
+      ],
+      "regions": [
+        "orinoco belt"
+      ]
+    },
+    "ECU": {
+      "name": "Ecuador",
+      "name_ko": "에콰도르",
+      "aliases": [
+        "ecuador",
+        "ecuadorian"
+      ]
+    },
+    "PRY": {
+      "name": "Paraguay",
+      "name_ko": "파라과이",
+      "aliases": [
+        "paraguay",
+        "paraguayan"
+      ]
+    },
+    "URY": {
+      "name": "Uruguay",
+      "name_ko": "우루과이",
+      "aliases": [
+        "uruguay",
+        "uruguayan"
+      ]
+    },
+    "KAZ": {
+      "name": "Kazakhstan",
+      "name_ko": "카자흐스탄",
+      "aliases": [
+        "kazakhstan",
+        "kazakh"
+      ],
+      "regions": [
+        "tengiz",
+        "kashagan"
+      ]
+    },
+    "UZB": {
+      "name": "Uzbekistan",
+      "name_ko": "우즈베키스탄",
+      "aliases": [
+        "uzbekistan",
+        "uzbek"
+      ]
+    },
+    "MNG": {
+      "name": "Mongolia",
+      "name_ko": "몽골",
+      "aliases": [
+        "mongolia",
+        "mongolian"
+      ],
+      "regions": [
+        "oyu tolgoi",
+        "tavan tolgoi"
+      ]
+    },
+    "PAK": {
+      "name": "Pakistan",
+      "name_ko": "파키스탄",
+      "aliases": [
+        "pakistan",
+        "pakistani"
+      ],
+      "regions": [
+        "sindh",
+        "punjab province"
+      ]
+    },
+    "BGD": {
+      "name": "Bangladesh",
+      "name_ko": "방글라데시",
+      "aliases": [
+        "bangladesh",
+        "bangladeshi"
+      ]
+    },
+    "MMR": {
+      "name": "Myanmar",
+      "name_ko": "미얀마",
+      "aliases": [
+        "myanmar",
+        "burma",
+        "burmese"
+      ]
+    },
+    "DEU": {
+      "name": "Germany",
+      "name_ko": "독일",
+      "aliases": [
+        "germany",
+        "german"
+      ]
+    },
+    "FRA": {
+      "name": "France",
+      "name_ko": "프랑스",
+      "aliases": [
+        "france",
+        "french"
+      ],
+      "regions": [
+        "beauce",
+        "rouen port"
+      ]
+    },
+    "POL": {
+      "name": "Poland",
+      "name_ko": "폴란드",
+      "aliases": [
+        "poland",
+        "polish"
+      ]
+    },
+    "ROU": {
+      "name": "Romania",
+      "name_ko": "루마니아",
+      "aliases": [
+        "romania",
+        "romanian"
+      ],
+      "regions": [
+        "constanta",
+        "constanța"
+      ]
+    },
+    "ESP": {
+      "name": "Spain",
+      "name_ko": "스페인",
+      "aliases": [
+        "spain",
+        "spanish"
+      ]
+    },
+    "ITA": {
+      "name": "Italy",
+      "name_ko": "이탈리아",
+      "aliases": [
+        "italy",
+        "italian"
+      ]
+    },
+    "NLD": {
+      "name": "Netherlands",
+      "name_ko": "네덜란드",
+      "aliases": [
+        "netherlands",
+        "dutch",
+        "rotterdam"
+      ]
+    },
+    "GBR": {
+      "name": "United Kingdom",
+      "name_ko": "영국",
+      "aliases": [
+        "united kingdom",
+        "britain",
+        "british",
+        "england"
+      ],
+      "cased_aliases": [
+        "UK"
+      ]
+    },
+    "NOR": {
+      "name": "Norway",
+      "name_ko": "노르웨이",
+      "aliases": [
+        "norway",
+        "norwegian"
+      ]
+    },
+    "SWE": {
+      "name": "Sweden",
+      "name_ko": "스웨덴",
+      "aliases": [
+        "sweden",
+        "swedish"
+      ],
+      "regions": [
+        "kiruna"
+      ]
+    },
+    "FIN": {
+      "name": "Finland",
+      "name_ko": "핀란드",
+      "aliases": [
+        "finland",
+        "finnish"
+      ]
+    },
+    "CHE": {
+      "name": "Switzerland",
+      "name_ko": "스위스",
+      "aliases": [
+        "switzerland",
+        "swiss"
+      ]
+    },
+    "SRB": {
+      "name": "Serbia",
+      "name_ko": "세르비아",
+      "aliases": [
+        "serbia",
+        "serbian"
+      ]
+    },
+    "HUN": {
+      "name": "Hungary",
+      "name_ko": "헝가리",
+      "aliases": [
+        "hungary",
+        "hungarian"
+      ]
+    },
+    "BGR": {
+      "name": "Bulgaria",
+      "name_ko": "불가리아",
+      "aliases": [
+        "bulgaria",
+        "bulgarian"
+      ]
+    },
+    "NZL": {
+      "name": "New Zealand",
+      "name_ko": "뉴질랜드",
+      "aliases": [
+        "new zealand"
+      ]
+    }
+  }
+}
