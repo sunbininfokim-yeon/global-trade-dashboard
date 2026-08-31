@@ -105,7 +105,13 @@
       "official_url": "https://waysandmeans.house.gov/",
       "jurisdiction_summary": "Sample jurisdiction summary.",
       "chair": null,
-      "chair_placeholder": "위원장 정보 준비 중"
+      "chair_placeholder": "위원장 정보 준비 중",
+      "ranking_member": null,
+      "ranking_member_placeholder": "간사 정보 준비 중",
+      "subcommittees": [
+        { "subcommittee_id": "mock-sub-trade", "name": "Subcommittee on Trade", "meetings_placeholder": "회의 일정 준비 중" },
+        { "subcommittee_id": "mock-sub-oversight", "name": "Subcommittee on Oversight", "meetings_placeholder": "회의 일정 준비 중" }
+      ]
     },
     "stage_tabs": [
       { "label": "전체 보기", "stage": null, "count": 18 },
@@ -129,6 +135,30 @@
         "latest_action_date": "2026-08-28",
         "policy_area_id": "foreign-trade-and-international-finance",
         "summary": "Sample official-summary area. The UI should clamp this preview and link to the detail view.",
+        "congress_url": "https://www.congress.gov/"
+      },
+      {
+        "bill_id": "mock-119-s-204",
+        "title": "Sample Supply Chain Transparency Act",
+        "sponsor": "Sample Sponsor",
+        "introduced_date": "2026-04-02",
+        "current_stage": "passed_origin_chamber",
+        "current_status": "Passed Senate (sample)",
+        "latest_action_date": "2026-08-26",
+        "policy_area_id": "commerce",
+        "summary": "Sample item used to exercise the '발의원 본회의 통과' stage tab filter.",
+        "congress_url": "https://www.congress.gov/"
+      },
+      {
+        "bill_id": "mock-119-hr-88",
+        "title": "Sample Critical Materials Review Act",
+        "sponsor": "Sample Sponsor",
+        "introduced_date": "2026-03-11",
+        "current_stage": "referred",
+        "current_status": "Referred to committee (sample)",
+        "latest_action_date": "2026-08-23",
+        "policy_area_id": "science-technology-communications",
+        "summary": "Sample item used to exercise the '발의·회부' multi-stage tab filter.",
         "congress_url": "https://www.congress.gov/"
       }
     ],
@@ -185,8 +215,22 @@
   },
   "executive_overview": {
     "agencies": [
-      { "agency_id": "mock-eop", "name": "Executive Office of the President", "short_name": "EOP", "executive_order_count": 2 },
-      { "agency_id": "mock-treasury", "name": "Department of the Treasury", "short_name": "Treasury", "executive_order_count": 1 }
+      {
+        "agency_id": "mock-eop",
+        "name": "Executive Office of the President",
+        "short_name": "EOP",
+        "executive_order_count": 2,
+        "secretary_placeholder": "장관 정보 준비 중",
+        "eo_ids": [99999, 99998]
+      },
+      {
+        "agency_id": "mock-treasury",
+        "name": "Department of the Treasury",
+        "short_name": "Treasury",
+        "executive_order_count": 1,
+        "secretary_placeholder": "장관 정보 준비 중",
+        "eo_ids": [99997]
+      }
     ],
     "executive_orders": [
       {
@@ -196,7 +240,28 @@
         "publication_date": "2026-08-18",
         "summary": "Sample EO digest/abstract for the list card.",
         "federal_register_url": "https://www.federalregister.gov/",
-        "storage_tier": "hot"
+        "storage_tier": "hot",
+        "agency_id": "mock-eop"
+      },
+      {
+        "eo_number": 99998,
+        "title": "Sample Executive Order on Export Control Review",
+        "signed_date": "2026-07-30",
+        "publication_date": "2026-08-02",
+        "summary": "Sample EO digest/abstract for the list card.",
+        "federal_register_url": "https://www.federalregister.gov/",
+        "storage_tier": "hot",
+        "agency_id": "mock-eop"
+      },
+      {
+        "eo_number": 99997,
+        "title": "Sample Executive Order on Sanctions Administration",
+        "signed_date": "2026-07-11",
+        "publication_date": "2026-07-14",
+        "summary": "Sample EO digest/abstract for the list card.",
+        "federal_register_url": "https://www.federalregister.gov/",
+        "storage_tier": "warm",
+        "agency_id": "mock-treasury"
       }
     ]
   },
@@ -215,7 +280,8 @@
       { "agency_id": "mock-treasury", "name": "Department of the Treasury" }
     ],
     "legal_authorities": [
-      { "citation": "Sample statutory citation", "official_url": "https://uscode.house.gov/", "verification_status": "official_metadata" }
+      { "citation": "Sample statutory citation", "official_url": "https://uscode.house.gov/", "verification_status": "official_metadata", "bill_id": null },
+      { "citation": "Sample statutory citation traced to a tracked bill", "official_url": "https://uscode.house.gov/", "verification_status": "official_metadata", "bill_id": "mock-119-hr-1001" }
     ],
     "related_regulations": [
       {
@@ -239,6 +305,10 @@
     "loading": { "title": "정책 데이터를 불러오는 중" },
     "empty_committee_agencies": { "title": "검증된 담당기관 매핑 준비 중" },
     "empty_chair": { "title": "위원장 정보 준비 중" },
+    "empty_ranking_member": { "title": "간사 정보 준비 중" },
+    "empty_subcommittee_meetings": { "title": "회의 일정 준비 중" },
+    "empty_agency_secretary": { "title": "장관 정보 준비 중" },
+    "empty_eo_detail": { "title": "행정명령 상세 정보 준비 중" },
     "empty_industry_profile": { "title": "산업 프로필 자료 준비 중" },
     "empty_vote": { "title": "기록 표결 없음" },
     "no_search": { "visible": false, "title": "검색 기능은 준비 중" }

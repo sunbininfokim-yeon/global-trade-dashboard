@@ -4288,6 +4288,244 @@ body.macro-mode .map-pane { flex: 1 1 100%; }
     background: rgba(2, 6, 23, 1);
 }
 
+/* Committee leadership: Chair / Ranking Member.
+   Both rows are placeholder-only until member data is wired. */
+.committee-leadership {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-bottom: 10px;
+}
+
+.committee-leader-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 5px 7px;
+    border-radius: 4px;
+    border: 1px solid rgba(56, 189, 248, 0.12);
+    background: rgba(2, 6, 23, 0.5);
+}
+
+.committee-leader-label {
+    flex: 0 0 auto;
+    font-size: 9px;
+    font-weight: 600;
+    color: #7dd3fc;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.committee-leader-value {
+    font-size: 10px;
+    color: #cbd5e1;
+}
+
+.committee-leader-value.is-placeholder,
+.committee-subcommittee-meta.is-placeholder,
+.policy-agency-placeholder.is-placeholder {
+    color: #64748b;
+    font-style: italic;
+}
+
+/* Subcommittees */
+.committee-subcommittee-list {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-bottom: 12px;
+}
+
+.committee-subcommittee-list:empty {
+    display: none;
+}
+
+.committee-subcommittee-title {
+    font-size: 9px;
+    font-weight: 600;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 2px;
+}
+
+.committee-subcommittee-item {
+    padding: 5px 7px;
+    border-radius: 4px;
+    border: 1px solid rgba(56, 189, 248, 0.1);
+    background: rgba(2, 6, 23, 0.4);
+}
+
+.committee-subcommittee-name {
+    font-size: 10px;
+    color: #cbd5e1;
+    line-height: 1.3;
+}
+
+.committee-subcommittee-meta {
+    font-size: 9px;
+    color: #94a3b8;
+    margin-top: 2px;
+}
+
+/* Executive hub grouped by issuing agency */
+.policy-agency-group {
+    padding: 8px;
+    border-radius: 6px;
+    border: 1px solid rgba(56, 189, 248, 0.15);
+    background: rgba(2, 6, 23, 0.5);
+    margin-bottom: 8px;
+}
+
+.policy-agency-header {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    margin-bottom: 3px;
+}
+
+.policy-agency-name {
+    font-size: 11px;
+    font-weight: 600;
+    color: #e0f2fe;
+}
+
+.policy-agency-short {
+    font-size: 9px;
+    color: #7dd3fc;
+}
+
+.policy-agency-placeholder {
+    font-size: 9px;
+    color: #64748b;
+    margin-bottom: 6px;
+}
+
+.policy-eo-ribbon {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    padding: 5px 7px;
+    margin-top: 4px;
+    border-radius: 4px;
+    border: 1px solid rgba(56, 189, 248, 0.1);
+    background: rgba(2, 6, 23, 0.7);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.policy-eo-ribbon:hover {
+    border-color: rgba(56, 189, 248, 0.4);
+    background: rgba(2, 6, 23, 1);
+}
+
+.policy-eo-ribbon-number {
+    flex: 0 0 auto;
+    font-size: 9px;
+    font-weight: 600;
+    color: #7dd3fc;
+}
+
+.policy-eo-ribbon-title {
+    font-size: 10px;
+    color: #cbd5e1;
+    line-height: 1.3;
+}
+
+/* EO detail: legal authorities + external links */
+.policy-external-link {
+    display: block;
+    font-size: 9px;
+    color: #38bdf8;
+    text-decoration: none;
+    word-break: break-all;
+}
+
+.policy-external-link:hover {
+    text-decoration: underline;
+}
+
+.policy-legal-list,
+.policy-regulation-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.policy-legal-authority {
+    padding: 6px;
+    border-radius: 4px;
+    background: rgba(2, 6, 23, 0.8);
+    border: 1px solid rgba(56, 189, 248, 0.1);
+}
+
+.policy-legal-authority.is-internal {
+    cursor: pointer;
+    border-color: rgba(56, 189, 248, 0.3);
+}
+
+.policy-legal-authority.is-internal:hover {
+    border-color: rgba(56, 189, 248, 0.6);
+    background: rgba(2, 6, 23, 1);
+}
+
+.policy-legal-citation {
+    display: block;
+    font-size: 10px;
+    color: #7dd3fc;
+    line-height: 1.3;
+}
+
+.policy-legal-hint {
+    display: block;
+    font-size: 9px;
+    color: #94a3b8;
+    margin-top: 2px;
+}
+
+.policy-verify-badge {
+    display: inline-block;
+    margin-top: 4px;
+    padding: 1px 5px;
+    border-radius: 3px;
+    background: rgba(148, 163, 184, 0.15);
+    color: #94a3b8;
+    font-size: 8.5px;
+}
+
+/* Regulations under an EO: external-link rows only, never an internal page,
+   and no abstract in the list. */
+.policy-regulation-row {
+    display: block;
+    padding: 6px;
+    border-radius: 4px;
+    background: rgba(2, 6, 23, 0.8);
+    border: 1px solid rgba(56, 189, 248, 0.1);
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.policy-regulation-row:hover {
+    border-color: rgba(56, 189, 248, 0.35);
+    background: rgba(2, 6, 23, 1);
+}
+
+.policy-regulation-row-title {
+    display: block;
+    font-size: 10px;
+    color: #38bdf8;
+    line-height: 1.3;
+}
+
+.policy-regulation-row-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 4px;
+    font-size: 9px;
+    color: #94a3b8;
+}
+
 /* Loading states */
 .empty-state {
     text-align: center;

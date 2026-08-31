@@ -269,6 +269,7 @@
                     </div>
                     <div id="executive-tabs" class="executive-tabs">
                         <button class="tab-btn active" data-type="eo">행정명령 (EO)</button>
+                        <button class="tab-btn" data-type="agency">기관별</button>
                         <button class="tab-btn" data-type="regulation">규제 (CFR)</button>
                     </div>
                     <div id="executive-content" class="executive-content">
@@ -351,6 +352,11 @@
                         <h2 id="committee-name-title">상임위 상세</h2>
                         <p id="committee-jurisdiction">관할: 로딩 중…</p>
                     </div>
+                    <!-- Chair / Ranking Member rows. Real member data is not wired
+                         yet, so both render ui_states-style placeholders. -->
+                    <div id="committee-leadership" class="committee-leadership"></div>
+                    <!-- Subcommittees: name + meeting-schedule placeholder only. -->
+                    <div id="committee-subcommittees" class="committee-subcommittee-list"></div>
                     <div id="committee-bill-tabs" class="bill-stage-tabs">
                         <button class="tab-btn active" data-stage="">전체 보기</button>
                         <button class="tab-btn" data-stage="introduced,referred,subcommittee,committee_consideration">발의·회부</button>
@@ -391,6 +397,19 @@
                     </div>
                     <div id="bill-detail-content" class="bill-detail-content">
                         <p class="empty-state">법안 정보 로딩 중…</p>
+                    </div>
+                </div>
+
+                <!-- US Policy: Executive Order detail.
+                     Regulations listed here are external-link-only by design --
+                     they never get an internal detail route. -->
+                <div class="panel-section hidden" id="us-eo-detail-panel">
+                    <div class="panel-header">
+                        <h2 id="eo-number-title">행정명령 상세</h2>
+                        <p id="eo-title-subtitle">로딩 중…</p>
+                    </div>
+                    <div id="eo-detail-content" class="bill-detail-content">
+                        <p class="empty-state">행정명령 정보 로딩 중…</p>
                     </div>
                 </div>
 
