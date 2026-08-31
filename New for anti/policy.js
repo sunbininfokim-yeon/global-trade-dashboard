@@ -246,12 +246,25 @@
     'office of national drug control policy',
   ]);
 
+  // Federal Register names a department "Treasury Department", not
+  // "Department of the Treasury", so match both forms -- the same pair
+  // scripts/lib/federal-agency-classifier.js keys on. That module is the
+  // authority; this only covers a payload that predates agency_type, and it
+  // cannot see parent_id, so it never returns 'sub'.
+  const DEPARTMENT_WORDS = [
+    'state', 'the treasury', 'treasury', 'defense', 'justice', 'the interior',
+    'interior', 'agriculture', 'commerce', 'labor', 'health and human services',
+    'housing and urban development', 'transportation', 'energy', 'education',
+    'veterans affairs', 'homeland security',
+  ];
+
   const agencyType = (a) => {
     if (a.agency_type) return a.agency_type;
-    const name = String(a.name || '').trim().toLowerCase();
+    const name = String(a.name || '').trim().toLowerCase().replace(/\s+/g, ' ');
     if (EOP_AGENCIES.has(name)) return 'eop';
-    if (/^(u\.s\.\s+)?department of\b/.test(name)) return 'department';
-    return 'independent';
+    const isDepartment = DEPARTMENT_WORDS.some((w) =>
+      name === `department of ${w}` || name === `u.s. department of ${w}` || name === `${w} department`);
+    return isDepartment ? 'department' : 'independent';
   };
 
   const agencyTiles = (kind) => tileGrid(
