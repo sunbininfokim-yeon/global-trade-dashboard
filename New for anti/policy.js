@@ -390,8 +390,11 @@
     return shell(card(`${name} · 관련 법안`, body));
   }
 
-  // A CFR title: the regulations filed under it, and the orders that reach
-  // them. Regulations stay external-link-only here too.
+  // A CFR title lists the regulations filed under it. Executive orders are
+  // deliberately NOT classified against a title directly -- the contract
+  // (docs/api-spec.md, "분류 개수") says an EO surfaces here only through a
+  // regulation of its own that carries the CFR reference, so the orders shown
+  // are the ones reached that way.
   function viewCfrTitle(titleNumber) {
     const title = (DATA?.cfr_titles || []).find((t) => String(t.title_number) === String(titleNumber));
     if (!title) return shell(empty('분류를 찾을 수 없습니다'));
@@ -399,23 +402,22 @@
     const heading = `Title ${title.title_number} · ${title.name}`;
     if (title.reserved) return shell(card(heading, empty('유보된 분류입니다')));
 
-    // The fixture has no title↔regulation mapping yet, so anything the EO
-    // detail carries is all there is to show.
-    // TODO(real-api): GET /api/us/regulations?cfr_title= supplies this.
-    const regs = DATA?.executive_order_detail?.related_regulations || [];
-    const orders = DATA?.executive_overview?.executive_orders || [];
+    // TODO(real-api): GET /api/us/regulations/cfr-titles/{n} supplies both
+    // lists, the orders already resolved through their regulations.
+    const regs = title.regulations || [];
+    const viaRegulations = title.executive_orders || [];
 
     return shell(`
       <div class="policy-grid-2">
         <div class="policy-col">
-          ${card(`${heading} · 관련 규제`, title.regulation_count && regs.length
+          ${card('관련 규제', regs.length
             ? renderRegulations(regs)
             : empty(uiState('empty_cfr_title', '이 분류의 규제·행정명령 준비 중')))}
         </div>
         <div class="policy-col">
-          ${card('관련 행정명령', title.regulation_count && orders.length
-            ? `<div class="policy-eo-list">${orders.map(eoRibbon).join('')}</div>`
-            : empty(uiState('empty_cfr_title', '이 분류의 규제·행정명령 준비 중')))}
+          ${card('관련 행정명령', viaRegulations.length
+            ? `<div class="policy-eo-list">${viaRegulations.map(eoRibbon).join('')}</div>`
+            : empty('이 분류의 규제를 통해 연결된 행정명령 없음'))}
         </div>
       </div>`);
   }
@@ -531,23 +533,30 @@
     if (!agency) return shell(empty('기관을 찾을 수 없습니다'));
 
     const orders = ordersOf(agencyId);
+    const lead = (label, value) => `
+      <div class="policy-leader">
+        <span class="policy-leader-label">${esc(label)}</span>
+        <span class="policy-leader-value is-placeholder">${esc(value)}</span>
+      </div>`;
+    const placeholder = agency.secretary_placeholder || uiState('empty_agency_secretary', '장관 정보 준비 중');
+
+    // Orders lead, the same way bills do on a committee: they are what the
+    // screen is for, and the leadership block is reference beside them.
     return shell(`
       <div class="policy-grid-2">
-        <div class="policy-col">
-          ${card(agency.name, `
-            ${agency.short_name ? `<p class="policy-prose">${esc(agency.short_name)}</p>` : ''}
-            <div class="policy-leaders">
-              <div class="policy-leader">
-                <span class="policy-leader-label">장관</span>
-                <span class="policy-leader-value is-placeholder">${esc(agency.secretary_placeholder || uiState('empty_agency_secretary', '장관 정보 준비 중'))}</span>
-              </div>
-            </div>
-          `)}
-        </div>
         <div class="policy-col">
           ${card('행정명령', orders.length
             ? `<div class="policy-eo-list">${orders.map(eoRibbon).join('')}</div>`
             : empty('등록된 행정명령 없음'))}
+        </div>
+        <div class="policy-col">
+          ${card(agency.name, `
+            ${agency.short_name ? `<p class="policy-prose">${esc(agency.short_name)}</p>` : ''}
+            <div class="policy-leaders">
+              ${lead('장관', placeholder)}
+              ${lead('부장관', placeholder)}
+            </div>
+          `)}
         </div>
       </div>`);
   }
