@@ -4199,6 +4199,37 @@ body.macro-mode .map-pane { flex: 1 1 100%; }
 
 .is-placeholder { color: #64748b; font-style: italic; }
 
+/* --- level 1: the two branches ----------------------------------------- */
+
+.policy-branch-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 14px;
+}
+
+.policy-branch {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 20px 22px;
+    border: 1px solid rgba(56, 189, 248, 0.2);
+    border-radius: 10px;
+    background: rgba(30, 41, 59, 0.5);
+    text-align: left;
+    cursor: pointer;
+    transition: all 0.18s ease;
+}
+
+.policy-branch:hover {
+    border-color: rgba(56, 189, 248, 0.55);
+    background: rgba(30, 41, 59, 0.85);
+    transform: translateY(-1px);
+}
+
+.policy-branch-name { color: #e2e8f0; font-size: 17px; font-weight: 700; }
+.policy-branch-desc { color: #94a3b8; font-size: 11.5px; }
+.policy-branch-count { color: #38bdf8; font-size: 11px; font-weight: 600; }
+
 /* --- hub cards --------------------------------------------------------- */
 
 .policy-card-grid {

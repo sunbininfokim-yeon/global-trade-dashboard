@@ -97,7 +97,15 @@
 
   /* ---------------------------------------------------------------- shell */
 
-  const state = { view: null, committeeId: null, policyAreaId: null, billId: null, eoNumber: null, stage: '' };
+  // Navigation is a drill-down trail, four levels deep:
+  //   미국 › 의회 › 상임위 › 법률
+  //   미국 › 행정부 › 부처 › 행정명령
+  // The trail doubles as the breadcrumb, so every ancestor stays reachable and
+  // a screen never has to guess where it was opened from.
+  const state = { trail: [], stage: '' };
+
+  const current = () => state.trail[state.trail.length - 1] || { view: 'us' };
+  const trailHas = (view) => state.trail.some((t) => t.view === view);
 
   const empty = (message) => `<div class="policy-empty">${esc(message)}</div>`;
 
@@ -107,12 +115,16 @@
        ${bodyHtml}
      </section>`;
 
-  const crumb = (parts) =>
-    `<nav class="policy-crumb">${parts.map((p, i) => (
-      p.view
-        ? `<button type="button" class="policy-crumb-link" data-view="${esc(p.view)}"${p.id !== undefined ? ` data-id="${esc(p.id)}"` : ''}>${esc(p.label)}</button>`
-        : `<span class="policy-crumb-current">${esc(p.label)}</span>`
-    ) + (i < parts.length - 1 ? '<span class="policy-crumb-sep">›</span>' : '')).join('')}</nav>`;
+  // Every entry but the last is a step back up the trail, addressed by depth so
+  // a click truncates rather than re-navigating.
+  const crumb = () =>
+    `<nav class="policy-crumb">${state.trail.map((p, i) => {
+      const last = i === state.trail.length - 1;
+      const step = last
+        ? `<span class="policy-crumb-current">${esc(p.label)}</span>`
+        : `<button type="button" class="policy-crumb-link" data-depth="${i}">${esc(p.label)}</button>`;
+      return step + (last ? '' : '<span class="policy-crumb-sep">›</span>');
+    }).join('')}</nav>`;
 
   // The mock fixture keeps search switched off (meta.search.visible=false);
   // the control is rendered disabled so the layout matches the final screen.
@@ -123,10 +135,13 @@
             </div>`;
   };
 
-  const modeTabs = (active) => `
+  // The branch switch reflects which side of the trail we are on, so it stays
+  // meaningful three levels down.
+  const modeTabs = () => `
     <div class="policy-modes">
+      <button type="button" class="policy-mode-btn${state.trail.length === 1 ? ' active' : ''}" data-view="us">미국</button>
       ${[['congress', '의회'], ['executive', '행정부']].map(([id, label]) => `
-        <button type="button" class="policy-mode-btn${active === id ? ' active' : ''}" data-view="${id}">${label}</button>
+        <button type="button" class="policy-mode-btn${trailHas(id) ? ' active' : ''}" data-view="${id}">${label}</button>
       `).join('')}
       ${searchBox()}
     </div>`;
@@ -135,11 +150,11 @@
     ? `<p class="policy-mock-notice">표시된 내용은 UI 확인용 예시 데이터입니다. 실제 미국 정부 자료가 아닙니다.</p>`
     : '');
 
-  const shell = (mode, crumbHtml, bodyHtml) => `
+  const shell = (bodyHtml) => `
     <div class="policy-surface-inner">
       <header class="policy-head">
-        ${modeTabs(mode)}
-        ${crumbHtml}
+        ${modeTabs()}
+        ${crumb()}
       </header>
       ${mockNotice()}
       ${bodyHtml}
@@ -178,28 +193,47 @@
 
   /* ---------------------------------------------------------------- views */
 
-  function viewHub() {
-    const bills = DATA?.policy_hub?.summary_cards || [];
-    const body = bills.length
-      ? `<div class="policy-card-grid">${bills.map((bill) => `
-          <button type="button" class="policy-card" data-view="bill" data-id="${esc(bill.bill_id)}">
-            <span class="policy-card-head">
-              ${stageBadge(bill.current_stage)}
-              <span class="policy-card-date">${esc(bill.latest_action_date || '')}</span>
-            </span>
-            <span class="policy-card-title">${esc(bill.title)}</span>
-            <span class="policy-card-area">${esc(bill.policy_area?.name || '')}</span>
-            <span class="policy-card-summary">${esc(bill.summary || '')}</span>
-          </button>`).join('')}</div>`
-      : empty('표시할 법안이 없습니다');
+  const billCards = (bills) => (bills.length
+    ? `<div class="policy-card-grid">${bills.map((bill) => `
+        <button type="button" class="policy-card" data-view="bill" data-id="${esc(bill.bill_id)}">
+          <span class="policy-card-head">
+            ${stageBadge(bill.current_stage)}
+            <span class="policy-card-date">${esc(bill.latest_action_date || '')}</span>
+          </span>
+          <span class="policy-card-title">${esc(bill.title)}</span>
+          <span class="policy-card-area">${esc(bill.policy_area?.name || '')}</span>
+          <span class="policy-card-summary">${esc(bill.summary || '')}</span>
+        </button>`).join('')}</div>`
+    : empty('표시할 법안이 없습니다'));
 
-    return shell('congress', crumb([{ label: '정책 허브' }]),
-      card('119대 의회 주요 법안', body));
+  // Level 1 -- the two branches, and the bills worth surfacing above the fold.
+  function viewUS() {
+    const committeeCount = DATA?.congress_overview?.committees?.length || 0;
+    const agencyCount = DATA?.executive_overview?.agencies?.length || 0;
+
+    const branches = `
+      <div class="policy-branch-row">
+        <button type="button" class="policy-branch" data-view="congress">
+          <span class="policy-branch-name">의회</span>
+          <span class="policy-branch-desc">상임위 · 법안 · 표결</span>
+          <span class="policy-branch-count">상임위 ${esc(committeeCount)}</span>
+        </button>
+        <button type="button" class="policy-branch" data-view="executive">
+          <span class="policy-branch-name">행정부</span>
+          <span class="policy-branch-desc">부처 · 행정명령 · 규제</span>
+          <span class="policy-branch-count">기관 ${esc(agencyCount)}</span>
+        </button>
+      </div>`;
+
+    return shell(`
+      ${card('미국 정책', branches)}
+      ${card('119대 의회 주요 법안', billCards(DATA?.policy_hub?.summary_cards || []))}
+    `);
   }
 
   function viewCongress() {
     const co = DATA?.congress_overview;
-    if (!co) return shell('congress', crumb([{ label: '의회' }]), empty('의회 데이터를 불러올 수 없습니다'));
+    if (!co) return shell(empty('의회 데이터를 불러올 수 없습니다'));
 
     const byChamber = (chamber) => {
       const list = (co.committees || []).filter((c) => c.chamber === chamber);
@@ -230,7 +264,7 @@
             }</span></li>`).join('')}</ul>`
       : empty('기관별 집계 준비 중');
 
-    return shell('congress', crumb([{ label: '의회' }]), `
+    return shell(`
       <div class="policy-grid-2">
         <div class="policy-col">
           ${card(`상임위 (${CHAMBER_LABELS.house})`, byChamber('house'))}
@@ -251,7 +285,7 @@
     // The fixture carries one fully detailed committee; others fall back to
     // their overview record so the screen still opens.
     const comm = (detail?.committee?.committee_id === committeeId ? detail.committee : null) || listed;
-    if (!comm) return shell('congress', crumb([{ view: 'congress', label: '의회' }, { label: '상임위' }]), empty('위원회를 찾을 수 없습니다'));
+    if (!comm) return shell(empty('위원회를 찾을 수 없습니다'));
 
     const hasDetail = detail?.committee?.committee_id === committeeId;
     const items = hasDetail ? filterByStage(detail.items, state.stage) : [];
@@ -280,12 +314,7 @@
          ${items.length ? `<div class="policy-bill-list">${items.map(billRow).join('')}</div>` : empty('해당 단계의 법안이 없습니다')}`
       : empty('이 위원회의 법안 목록 준비 중');
 
-    // The sketch puts the selected bill beside the list rather than replacing
-    // it, so the committee context stays on screen while reading a bill.
-    const selected = state.billId ? (resolveBill(state.billId) || findBillSummary(state.billId)) : null;
-
-    return shell('congress',
-      crumb([{ view: 'congress', label: '의회' }, { label: comm.name }]), `
+    return shell(`
       <div class="policy-grid-2">
         <div class="policy-col">
           ${card(comm.name, `
@@ -298,7 +327,6 @@
         </div>
         <div class="policy-col">
           ${card('소관 법안', billsBody)}
-          ${selected ? billPanel(selected, { compact: true }) : ''}
         </div>
       </div>`);
   }
@@ -320,9 +348,7 @@
          ${bills.length ? `<div class="policy-bill-list">${bills.map(billRow).join('')}</div>` : empty('해당 단계의 법안이 없습니다')}`
       : empty('이 정책분야의 법안 목록 준비 중');
 
-    return shell('congress',
-      crumb([{ view: 'congress', label: '의회' }, { label: name }]),
-      card(`${name}${area?.policy_area?.bill_count ? ` · ${area.policy_area.bill_count}건` : ''}`, body));
+    return shell(card(`${name}${area?.policy_area?.bill_count ? ` · ${area.policy_area.bill_count}건` : ''}`, body));
   }
 
   function billPanel(bill, { compact = false } = {}) {
@@ -386,15 +412,14 @@
 
   function viewBill(billId) {
     const bill = resolveBill(billId) || findBillSummary(billId);
-    if (!bill) return shell('congress', crumb([{ view: 'congress', label: '의회' }, { label: '법안' }]), empty('법안을 찾을 수 없습니다'));
+    if (!bill) return shell(empty('법안을 찾을 수 없습니다'));
 
     const committees = (resolveBill(billId)?.committees || []).map((c) => `
       <button type="button" class="policy-chip is-compact" data-view="committee" data-id="${esc(c.committee_id)}">
         <span class="policy-chip-name">${esc(c.name)}</span>
       </button>`).join('');
 
-    return shell('congress',
-      crumb([{ view: 'congress', label: '의회' }, { label: bill.title }]), `
+    return shell(`
       <div class="policy-grid-2">
         <div class="policy-col">${billPanel(bill)}</div>
         <div class="policy-col">
@@ -403,29 +428,28 @@
       </div>`);
   }
 
+  const ordersOf = (agencyId) =>
+    (DATA?.executive_overview?.executive_orders || []).filter((o) => o.agency_id === agencyId);
+
+  const eoRibbon = (o) => `
+    <button type="button" class="policy-eo-ribbon" data-view="eo" data-id="${esc(o.eo_number)}">
+      <span class="policy-eo-num">EO ${esc(o.eo_number)}</span>
+      <span class="policy-eo-title">${esc(o.title)}</span>
+      <span class="policy-eo-date">${esc(o.signed_date || '')}</span>
+    </button>`;
+
+  // Level 2 -- the agencies, each a way into its own orders.
   function viewExecutive() {
     const eo = DATA?.executive_overview;
-    if (!eo) return shell('executive', crumb([{ label: '행정부' }]), empty('행정부 데이터를 불러올 수 없습니다'));
+    if (!eo) return shell(empty('행정부 데이터를 불러올 수 없습니다'));
 
-    const orders = eo.executive_orders || [];
-    // Each EO carries its own agency_id; group by it rather than hardcoding
-    // any agency list.
-    const groups = (eo.agencies || []).map((agency) => {
-      const mine = orders.filter((o) => o.agency_id === agency.agency_id);
-      return `<section class="policy-agency">
-        <header class="policy-agency-head">
-          <span class="policy-agency-name">${esc(agency.name)}</span>
-          ${agency.short_name ? `<span class="policy-agency-short">${esc(agency.short_name)}</span>` : ''}
-        </header>
-        <div class="policy-agency-lead is-placeholder">${esc(agency.secretary_placeholder || uiState('empty_agency_secretary', '장관 정보 준비 중'))}</div>
-        ${mine.length ? `<div class="policy-eo-list">${mine.map((o) => `
-          <button type="button" class="policy-eo-ribbon" data-view="eo" data-id="${esc(o.eo_number)}">
-            <span class="policy-eo-num">EO ${esc(o.eo_number)}</span>
-            <span class="policy-eo-title">${esc(o.title)}</span>
-            <span class="policy-eo-date">${esc(o.signed_date || '')}</span>
-          </button>`).join('')}</div>` : empty('등록된 행정명령 없음')}
-      </section>`;
-    }).join('');
+    const agencies = (eo.agencies || []).length
+      ? `<div class="policy-chip-row">${eo.agencies.map((a) => `
+          <button type="button" class="policy-chip" data-view="agency" data-id="${esc(a.agency_id)}">
+            <span class="policy-chip-name">${esc(a.name)}</span>
+            <span class="policy-chip-sub">행정명령 ${esc(ordersOf(a.agency_id).length)}건</span>
+          </button>`).join('')}</div>`
+      : empty('기관 정보 준비 중');
 
     const cfr = (DATA?.cfr_titles || []).length
       ? `<div class="policy-chip-row">${DATA.cfr_titles.map((t) => `
@@ -435,10 +459,38 @@
           </span>`).join('')}</div>`
       : empty('CFR 정보 준비 중');
 
-    return shell('executive', crumb([{ label: '행정부' }]), `
+    return shell(`
       <div class="policy-grid-2">
-        <div class="policy-col">${card('부처별 행정명령', groups || empty('기관 정보 준비 중'))}</div>
+        <div class="policy-col">${card('기관', agencies)}</div>
         <div class="policy-col">${card('CFR Title', cfr)}</div>
+      </div>`);
+  }
+
+  // Level 3 -- one agency: its leadership slot and its orders, the box the
+  // wireframe draws with 재무부 over EO1/EO2.
+  function viewAgency(agencyId) {
+    const agency = DATA?.executive_overview?.agencies?.find((a) => a.agency_id === agencyId);
+    if (!agency) return shell(empty('기관을 찾을 수 없습니다'));
+
+    const orders = ordersOf(agencyId);
+    return shell(`
+      <div class="policy-grid-2">
+        <div class="policy-col">
+          ${card(agency.name, `
+            ${agency.short_name ? `<p class="policy-prose">${esc(agency.short_name)}</p>` : ''}
+            <div class="policy-leaders">
+              <div class="policy-leader">
+                <span class="policy-leader-label">장관</span>
+                <span class="policy-leader-value is-placeholder">${esc(agency.secretary_placeholder || uiState('empty_agency_secretary', '장관 정보 준비 중'))}</span>
+              </div>
+            </div>
+          `)}
+        </div>
+        <div class="policy-col">
+          ${card('행정명령', orders.length
+            ? `<div class="policy-eo-list">${orders.map(eoRibbon).join('')}</div>`
+            : empty('등록된 행정명령 없음'))}
+        </div>
       </div>`);
   }
 
@@ -447,7 +499,7 @@
     const listed = DATA?.executive_overview?.executive_orders?.find((o) => String(o.eo_number) === String(eoNumber));
     const hasDetail = detail && String(detail.eo_number) === String(eoNumber);
     const eo = hasDetail ? detail : listed;
-    if (!eo) return shell('executive', crumb([{ view: 'executive', label: '행정부' }, { label: 'EO' }]), empty('행정명령을 찾을 수 없습니다'));
+    if (!eo) return shell(empty('행정명령을 찾을 수 없습니다'));
 
     // An EO cites statutes, not bill numbers. Only link inward when the
     // citation actually resolves to a bill the dashboard can open;
@@ -484,8 +536,7 @@
     const agencies = (eo.agencies || []).map((a) => `<span class="policy-tag">${esc(a.name)}</span>`).join('');
     const links = eo.official_links || (eo.federal_register_url ? { federal_register_url: eo.federal_register_url } : {});
 
-    return shell('executive',
-      crumb([{ view: 'executive', label: '행정부' }, { label: `EO ${eo.eo_number}` }]), `
+    return shell(`
       <div class="policy-grid-2">
         <div class="policy-col">
           ${card(`EO ${eo.eo_number}`, `
@@ -512,33 +563,90 @@
   /* -------------------------------------------------------------- routing */
 
   const VIEWS = {
-    hub: viewHub,
+    us: viewUS,
     congress: viewCongress,
     executive: viewExecutive,
-    committee: () => viewCommittee(state.committeeId),
-    area: () => viewPolicyArea(state.policyAreaId),
-    bill: () => viewBill(state.billId),
-    eo: () => viewEO(state.eoNumber),
+    committee: (id) => viewCommittee(id),
+    agency: (id) => viewAgency(id),
+    area: (id) => viewPolicyArea(id),
+    bill: (id) => viewBill(id),
+    eo: (id) => viewEO(id),
   };
+
+  // Where each level sits, so a destination reached from anywhere still lands
+  // under the right ancestors: picking a bill off the level-1 hub rebuilds the
+  // 미국 › 의회 path rather than leaving a one-entry breadcrumb.
+  //
+  // A leaf's parent depends on the route taken -- a bill opened from a
+  // committee belongs under that committee (미국 › 의회 › 상임위 › 법률),
+  // while one opened straight off the hub has no committee to sit under. So
+  // those two resolve against the trail as it stands at click time.
+  const PARENT = {
+    us: null,
+    congress: 'us',
+    executive: 'us',
+    committee: 'congress',
+    area: 'congress',
+    agency: 'executive',
+    bill: () => (trailHas('committee') ? 'committee' : trailHas('area') ? 'area' : 'congress'),
+    eo: () => (trailHas('agency') ? 'agency' : 'executive'),
+  };
+
+  const parentOf = (view) => {
+    const p = PARENT[view];
+    return typeof p === 'function' ? p() : p;
+  };
+
+  function labelFor(view, id) {
+    switch (view) {
+      case 'us': return '미국';
+      case 'congress': return '의회';
+      case 'executive': return '행정부';
+      case 'committee':
+        return DATA?.congress_overview?.committees?.find((c) => c.committee_id === id)?.name
+          || (DATA?.committee_detail?.committee?.committee_id === id ? DATA.committee_detail.committee.name : null)
+          || '상임위';
+      case 'agency':
+        return DATA?.executive_overview?.agencies?.find((a) => a.agency_id === id)?.name || '기관';
+      case 'area':
+        return DATA?.policy_area_detail?.policy_area?.policy_area_id === id
+          ? DATA.policy_area_detail.policy_area.name
+          : (DATA?.policy_hub?.summary_cards?.find((b) => b.policy_area?.policy_area_id === id)?.policy_area?.name || '정책분야');
+      case 'bill':
+        return (resolveBill(id) || findBillSummary(id))?.title || '법률';
+      case 'eo':
+        return `EO ${id}`;
+      default: return view;
+    }
+  }
 
   let host = null;
 
   function paint() {
     if (!host) return;
-    const view = VIEWS[state.view] || viewHub;
-    host.innerHTML = view();
+    const { view, id } = current();
+    host.innerHTML = (VIEWS[view] || viewUS)(id);
     host.scrollTop = 0;
   }
 
+  // Build the ancestor chain for a destination, keeping whatever the current
+  // trail already holds for those levels (so a bill opened from a committee
+  // keeps that committee, not just a bare 의회).
+  function trailTo(view, id) {
+    const chain = [];
+    for (let v = view; v; v = parentOf(v)) chain.unshift(v);
+    return chain.map((v) => {
+      if (v === view) return { view: v, id, label: labelFor(v, id) };
+      const existing = state.trail.find((t) => t.view === v);
+      return existing || { view: v, id: undefined, label: labelFor(v) };
+    });
+  }
+
   function go(view, id) {
-    // Each destination owns the piece of state it reads, and the stage filter
-    // resets so a tab picked on one list never silently applies to the next.
-    state.view = view;
+    // The stage filter belongs to the list that set it, so it resets on every
+    // move rather than silently carrying into the next screen.
+    state.trail = trailTo(view, id);
     state.stage = '';
-    if (view === 'committee') { state.committeeId = id; state.billId = null; }
-    else if (view === 'area') { state.policyAreaId = id; }
-    else if (view === 'bill') { state.billId = id; }
-    else if (view === 'eo') { state.eoNumber = id; }
     paint();
   }
 
@@ -549,19 +657,20 @@
       paint();
       return;
     }
-    const nav = event.target.closest('[data-view]');
-    if (!nav || !host.contains(nav)) return;
-    // A bill opened from inside a committee stays in that committee's screen.
-    if (nav.dataset.view === 'bill' && state.view === 'committee') {
-      state.billId = nav.dataset.id;
+    const up = event.target.closest('.policy-crumb-link');
+    if (up && host.contains(up)) {
+      state.trail = state.trail.slice(0, Number(up.dataset.depth) + 1);
+      state.stage = '';
       paint();
       return;
     }
+    const nav = event.target.closest('[data-view]');
+    if (!nav || !host.contains(nav)) return;
     go(nav.dataset.view, nav.dataset.id);
   }
 
   const TARGET_VIEWS = {
-    'us-policy-hub': 'hub',
+    'us-policy-hub': 'us',
     'us-congress-overview': 'congress',
     'us-executive': 'executive',
   };
@@ -580,10 +689,9 @@
       return;
     }
 
-    state.view = TARGET_VIEWS[target] || 'hub';
-    state.stage = '';
-    state.billId = null;
-    paint();
+    // Entering from the top menu starts a fresh trail at that level.
+    state.trail = [];
+    go(TARGET_VIEWS[target] || 'us');
 
     host.removeEventListener('click', onClick);
     host.addEventListener('click', onClick);
