@@ -24,6 +24,7 @@
 | T10 | MENA yield pipeline | cursor | `yield_model/mena/**`, `public/data/mena_yield_forecast.json` | `cursor/ml-mena-yield` | **in_progress** | Nile irrigated + Maghreb rainfed wheat T1; FAOSTAT labels; forecast JSON |
 | T14 | Canada SAD yield + UI | cursor | `yield_model/canada/**`, `canada_*forecast.json`, registry | `cursor/pr-canada-yield` | **review** | SAD+UI+monthly Actions+gov_outlooks; model.yaml → climate_registry |
 | T15 | Russia export pulse (PSD+PortWatch) | **cursor** | `scripts/russia_export_pulse/**`, `russia_export_pulse_v1.json` | `cursor/russia-export-pulse` | **review** | 밀 수출·세계비중·기여분 + 보스포루스 보조. 다크십/피격 제외. UI는 Claude 핸드오프. |
+| T16 | EO 근거 법령 ↔ 법안 연동 (`legal_authorities.linked_bill_id`) | codex | `scripts/sync-federal-register.js` | — | ready | 컬럼은 있는데 아무 스크립트도 안 채움 → EO "근거 법령"이 항상 외부링크로만 표시됨. `authority_type='public_law'`만 `public_laws.bill_id`로 매칭 (usc/constitution은 1:1 매핑 불가하니 제외). 상세 프롬프트: 세션 스크래치패드 `codex-eo-bill-link.md` (Claude가 전달 예정) |
 
 ## 백로그
 
