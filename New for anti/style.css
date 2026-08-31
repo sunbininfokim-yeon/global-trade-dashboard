@@ -4088,6 +4088,12 @@ body.macro-mode .map-pane { flex: 1 1 100%; }
     overflow-x: auto;
 }
 
+/* Nine stage tabs overflow the panel width, so keep the scrollbar visible --
+   otherwise there is nothing to indicate the later stages exist. */
+.bill-stage-tabs::-webkit-scrollbar { height: 4px; }
+.bill-stage-tabs::-webkit-scrollbar-track { background: transparent; }
+.bill-stage-tabs::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, 0.28); border-radius: 999px; }
+
 .tab-btn {
     padding: 6px 10px;
     border: none;

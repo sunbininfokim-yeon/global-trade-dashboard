@@ -1,5 +1,5 @@
 // US Policy Dashboard Logic with Mock Data Integration
-// Loads UI mock data from docs/ui-policy-mock-data.json
+// Loads UI mock data from New for anti/public/data/ui-policy-mock-data.json
 
 let POLICY_MOCK_DATA = null;
 
@@ -27,17 +27,30 @@ const USPolicy = {
    * Initialize: load mock data and setup
    */
   async init() {
+    // The Worker serves `New for anti` with not_found_handling=single-page-application,
+    // so a missing asset comes back as index.html with HTTP 200 rather than a 404.
+    // fetch() therefore neither rejects nor reports !ok, and only the parse fails --
+    // so the response has to be validated as JSON before it is trusted.
+    // TODO(real-api): swap this fixture for GET /api/us/policy/summary et al.
+    // (contract: docs/api-spec.md).
+    const url = '/public/data/ui-policy-mock-data.json';
     try {
-      const res = await fetch('/public/data/ui-policy-mock-data.json').catch(() =>
-        fetch('/docs/ui-policy-mock-data.json')
-      );
-      if (res?.ok) {
-        POLICY_MOCK_DATA = await res.json();
+      const res = await fetch(url);
+      const body = res.ok ? await res.text() : null;
+      if (body) {
+        try {
+          POLICY_MOCK_DATA = JSON.parse(body);
+        } catch {
+          console.error(
+            `Policy data at ${url} is not JSON (HTTP ${res.status}, ${res.headers.get('content-type')}) --`,
+            'the asset is most likely missing and the SPA fallback returned index.html.',
+          );
+        }
       }
     } catch (err) {
       console.error('Failed to load policy mock data:', err);
     }
-    
+
     this.setupEventListeners();
     console.log('USPolicy initialized', { hasMockData: !!POLICY_MOCK_DATA });
   },

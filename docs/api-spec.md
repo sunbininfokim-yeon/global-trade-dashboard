@@ -1,7 +1,7 @@
 # US Policy Dashboard — API Contract
 
 프론트엔드(`New for anti/policy.js`)가 소비하는 실제 API 스펙이다.
-현재는 `docs/ui-policy-mock-data.json`을 그대로 로드해서 렌더링하고 있고,
+현재는 `New for anti/public/data/ui-policy-mock-data.json`을 그대로 로드해서 렌더링하고 있고,
 아래 스펙대로 응답하는 실 엔드포인트가 배포되면 policy.js의 TODO 표시된
 fetch 호출부만 URL 교체하면 된다. **응답 스키마는 mock 데이터와 1:1로
 맞춰야 UI 쪽 변경 없이 바로 교체 가능하다.**
@@ -22,7 +22,7 @@ Congress.gov API는 분당 요청 제한이 있으므로 KV/DB 캐시를 거쳐 
 ## 공통 규칙
 
 - 모든 날짜는 `YYYY-MM-DD` (ISO 8601 date).
-- 실제 데이터가 없는 필드는 `null`로 보내고, 프론트가 `docs/ui-policy-mock-data.json`의 `ui_states`에 정의된 placeholder 문구로 대체 렌더링한다. **빈 문자열이나 가짜 값으로 채우지 말 것.**
+- 실제 데이터가 없는 필드는 `null`로 보내고, 프론트가 `New for anti/public/data/ui-policy-mock-data.json`의 `ui_states`에 정의된 placeholder 문구로 대체 렌더링한다. **빈 문자열이나 가짜 값으로 채우지 말 것.**
 - `bill_id`, `eo_number`, `committee_id` 등 식별자는 mock의 `mock-` 프리픽스를 제거한 실제 값 형식이면 된다 (예: `119-hr-1001`).
 - 검색은 아직 비활성 (`meta.search.enabled: false` 유지) — 검색 엔드포인트는 이번 계약에서 제외.
 
@@ -256,4 +256,4 @@ EO는 보통 법안번호가 아니라 **법전 조항**(U.S. Code citation)을 
 
 ## 변경 이력
 
-- 2026-08-31: 최초 작성. `docs/ui-policy-mock-data.json`과 1:1 대응 (committee `ranking_member`/`subcommittees`, executive `eo_ids`/`secretary_placeholder`, legal_authorities `bill_id` 포함 — 2026-08-31 UI 반영분 기준).
+- 2026-08-31: 최초 작성. `New for anti/public/data/ui-policy-mock-data.json`과 1:1 대응 (committee `ranking_member`/`subcommittees`, executive `eo_ids`/`secretary_placeholder`, legal_authorities `bill_id` 포함 — 2026-08-31 UI 반영분 기준).
