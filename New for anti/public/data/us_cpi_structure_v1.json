@@ -283,7 +283,21 @@
       "mechanism_ko": "가정식은 농산물·가공·유통 비중이, 외식은 임금·임대료·서비스 비중이 더 커 서로 동행하거나 갈릴 수 있음",
       "evidence_status": "비용 구조 확인; 단방향 전이는 미확정",
       "validation_required": "식품 PPI·식품서비스 임금·상업용 임대료를 결합해 공통요인과 전이를 분리",
-      "evidence_source": "USDA ERS Food Dollar cost structure"
+      "evidence_source": "USDA ERS Food Dollar cost structure",
+      "evidence": {
+        "relationship_id": "food_home_vs_away_cost_structure",
+        "evidence_tier": "relationship_candidate",
+        "evidence_label_ko": "관계 후보",
+        "phase": {
+          "phase": "not_applicable",
+          "label_ko": "단계 판정 안 함",
+          "interpretation": "method_or_context_only_not_an_inflation_phase"
+        },
+        "tests": [],
+        "display_policy": "show_watch_language_without_forecast"
+      },
+      "evidence_tier": "relationship_candidate",
+      "evidence_label_ko": "관계 후보"
     },
     {
       "id": "energy_cost_to_food_prices",
@@ -302,9 +316,43 @@
         12
       ],
       "mechanism_ko": "에너지 충격은 식품 생산·가공·운송 원가에 영향을 줄 수 있으나 소비자 휘발유 CPI는 실제 투입원가가 아님",
-      "evidence_status": "CPI 내부 proxy만으로 검증 불가",
+      "evidence_status": "예측력 미확인 (최적 후보 1개월 · 표본외 RMSE +9.55% · DM p=0.196)",
       "validation_required": "농산물·식품제조·운송 PPI와 실제 에너지 투입가격을 결합",
-      "evidence_source": "USDA ERS Food Dollar cost structure"
+      "evidence_source": "USDA ERS Food Dollar cost structure",
+      "evidence": {
+        "relationship_id": "energy_cost_to_food_prices",
+        "evidence_tier": "relationship_candidate",
+        "evidence_label_ko": "관계 후보",
+        "phase": {
+          "phase": "not_applicable",
+          "label_ko": "단계 판정 안 함",
+          "interpretation": "method_or_context_only_not_an_inflation_phase"
+        },
+        "tests": [
+          {
+            "test_id": "energy_cost_to_food_prices",
+            "relationship_map_id": "energy_cost_to_food_prices",
+            "status": "tested_no_predictive_power",
+            "label_ko": "예측력 미확인",
+            "best_lag_months": 1,
+            "best_lag_rmse_improvement_pct": 9.552277529510881,
+            "best_lag_dm_pvalue": 0.19581082654903825,
+            "full_grid_rmse_improvement_pct": -15.840885769723887,
+            "full_grid_dm_pvalue": 0.2303639009726116,
+            "fdr_qvalue": 0.0,
+            "coverage": {
+              "first_month": "2012-02",
+              "last_month": "2026-07",
+              "aligned_months": 172,
+              "oos_months": 100
+            },
+            "interpretation": "out_of_sample_screen_not_causality"
+          }
+        ],
+        "display_policy": "show_watch_language_without_forecast"
+      },
+      "evidence_tier": "relationship_candidate",
+      "evidence_label_ko": "관계 후보"
     },
     {
       "id": "alcohol_home_vs_away_cost_structure",
@@ -321,7 +369,21 @@
       "mechanism_ko": "같은 주류 상품군이라도 외식 주류에는 접객 노동·임대료·마진이 추가되어 가정용 가격과 분리될 수 있음",
       "evidence_status": "비용 구조 후보",
       "validation_required": "외식 임금·수요·주류 PPI를 분리한 뒤 검증",
-      "evidence_source": "CPI item definitions and food-service cost structure"
+      "evidence_source": "CPI item definitions and food-service cost structure",
+      "evidence": {
+        "relationship_id": "alcohol_home_vs_away_cost_structure",
+        "evidence_tier": "relationship_candidate",
+        "evidence_label_ko": "관계 후보",
+        "phase": {
+          "phase": "not_applicable",
+          "label_ko": "단계 판정 안 함",
+          "interpretation": "method_or_context_only_not_an_inflation_phase"
+        },
+        "tests": [],
+        "display_policy": "show_watch_language_without_forecast"
+      },
+      "evidence_tier": "relationship_candidate",
+      "evidence_label_ko": "관계 후보"
     },
     {
       "id": "new_used_vehicle_common_market",
@@ -336,9 +398,43 @@
       "directionality": "none_common_driver",
       "lag_months": null,
       "mechanism_ko": "신차와 중고차는 재고·금리·공급망·수요라는 공통 시장요인의 영향을 받지만 고정된 선후관계로 두지 않음",
-      "evidence_status": "시장 연결 확인; 방향·시차 미검증",
+      "evidence_status": "예측력 미확인 (최적 후보 3개월 · 표본외 RMSE +1.81% · DM p=0.197)",
       "validation_required": "재고·할인·대출금리·도매 중고차 가격 통제 후 시차 검증",
-      "evidence_source": "BLS vehicle CPI methodology"
+      "evidence_source": "BLS vehicle CPI methodology",
+      "evidence": {
+        "relationship_id": "new_used_vehicle_common_market",
+        "evidence_tier": "relationship_candidate",
+        "evidence_label_ko": "관계 후보",
+        "phase": {
+          "phase": "not_applicable",
+          "label_ko": "단계 판정 안 함",
+          "interpretation": "method_or_context_only_not_an_inflation_phase"
+        },
+        "tests": [
+          {
+            "test_id": "new_vehicles_to_used_cars",
+            "relationship_map_id": "new_used_vehicle_common_market",
+            "status": "tested_no_predictive_power",
+            "label_ko": "예측력 미확인",
+            "best_lag_months": 3,
+            "best_lag_rmse_improvement_pct": 1.8116429176062654,
+            "best_lag_dm_pvalue": 0.19743758325987992,
+            "full_grid_rmse_improvement_pct": -3.788569616443601,
+            "full_grid_dm_pvalue": 0.304235170883833,
+            "fdr_qvalue": 0.0023499304188390833,
+            "coverage": {
+              "first_month": "2011-08",
+              "last_month": "2026-07",
+              "aligned_months": 178,
+              "oos_months": 106
+            },
+            "interpretation": "out_of_sample_screen_not_causality"
+          }
+        ],
+        "display_policy": "show_watch_language_without_forecast"
+      },
+      "evidence_tier": "relationship_candidate",
+      "evidence_label_ko": "관계 후보"
     },
     {
       "id": "new_used_vehicle_quality_adjustment",
@@ -353,9 +449,23 @@
       "directionality": "methodology_only",
       "lag_months": null,
       "mechanism_ko": "BLS는 동일 차종의 모델연도 품질조정액을 중고차 지수에도 적용하므로 일부 동행은 측정상 발생할 수 있음",
-      "evidence_status": "BLS 방법론 확인",
+      "evidence_status": "BLS 공식 산식·표본 설계에 따른 측정상 연결",
       "validation_required": "가격 전이 또는 예측 신호로 사용하지 않음",
-      "evidence_source": "BLS vehicle quality adjustment"
+      "evidence_source": "BLS vehicle quality adjustment",
+      "evidence": {
+        "relationship_id": "new_used_vehicle_quality_adjustment",
+        "evidence_tier": "official_methodology",
+        "evidence_label_ko": "공식 산식·이연",
+        "phase": {
+          "phase": "not_applicable",
+          "label_ko": "단계 판정 안 함",
+          "interpretation": "method_or_context_only_not_an_inflation_phase"
+        },
+        "tests": [],
+        "display_policy": "show_method_only"
+      },
+      "evidence_tier": "official_methodology",
+      "evidence_label_ko": "공식 산식·이연"
     },
     {
       "id": "vehicle_parts_to_repair",
@@ -380,10 +490,77 @@
         9,
         12
       ],
-      "mechanism_ko": "부품 가격 상승은 정비·수리 원가를 높일 수 있으나 정비 노동비와 수리시간이 별도 핵심 요인임",
-      "evidence_status": "경제적 비용 경로; 검증 전",
+      "mechanism_ko": "부품 가격 상승은 정비·수리 원가를 높일 수 있으나 정비 노동비와 수리시간이 별도 핵심 요인임 현재 관찰 — 촉발 요인 둔화: 출발 항목의 상승 강도가 낮아졌고 연결 항목도 최근 60개월의 평소 범위를 뚜렷하게 벗어나지 않았습니다.",
+      "evidence_status": "약한 관찰 후보 (최적 후보 10개월 · 표본외 RMSE +4.20% · DM p=0.087)",
       "validation_required": "부품 PPI·정비업 임금·수리시간을 통제한 표본외 검증",
-      "evidence_source": "BLS motor-vehicle item scope"
+      "evidence_source": "BLS motor-vehicle item scope",
+      "evidence": {
+        "relationship_id": "vehicle_parts_to_repair",
+        "evidence_tier": "relationship_candidate",
+        "evidence_label_ko": "관계 후보",
+        "phase": {
+          "phase": "fading",
+          "label_ko": "촉발 요인 둔화",
+          "reference_month": "2026-07",
+          "watch_window_months": [
+            0,
+            12
+          ],
+          "source_active_ids": [],
+          "target_active_ids": [],
+          "recent_source_impulses": {
+            "motor_vehicle_parts": "2025-12"
+          },
+          "component_states": {
+            "sources": {
+              "motor_vehicle_parts": {
+                "reference_month": "2026-07",
+                "mom_pct": 0.6133,
+                "robust_score": 0.367,
+                "positive_impulse": false,
+                "rule": "latest SA MoM > 0 and robust score versus preceding 60 months >= 0.75"
+              }
+            },
+            "targets": {
+              "motor_vehicle_maintenance": {
+                "reference_month": "2026-07",
+                "mom_pct": 0.628,
+                "robust_score": 0.146,
+                "positive_impulse": false,
+                "rule": "latest SA MoM > 0 and robust score versus preceding 60 months >= 0.75"
+              }
+            }
+          },
+          "summary_ko": "출발 항목의 상승 강도가 낮아졌고 연결 항목도 최근 60개월의 평소 범위를 뚜렷하게 벗어나지 않았습니다.",
+          "basis_ko": "2026-07 SA MoM 기준 · 출발 없음 · 연결 없음",
+          "interpretation": "relationship_watch_only_not_causal_finding_or_forecast"
+        },
+        "tests": [
+          {
+            "test_id": "vehicle_parts_to_maintenance",
+            "relationship_map_id": "vehicle_parts_to_repair",
+            "status": "weak_watch_candidate",
+            "label_ko": "약한 관찰 후보",
+            "best_lag_months": 10,
+            "best_lag_rmse_improvement_pct": 4.201273400056258,
+            "best_lag_dm_pvalue": 0.0869424202604024,
+            "full_grid_rmse_improvement_pct": 1.677101530218197,
+            "full_grid_dm_pvalue": 0.4399785193988952,
+            "fdr_qvalue": 5.210314901559001e-12,
+            "coverage": {
+              "first_month": "2012-02",
+              "last_month": "2025-09",
+              "aligned_months": 164,
+              "oos_months": 92
+            },
+            "interpretation": "out_of_sample_screen_not_causality"
+          }
+        ],
+        "display_policy": "show_watch_language_without_forecast"
+      },
+      "evidence_tier": "relationship_candidate",
+      "evidence_label_ko": "관계 후보",
+      "current_watch_ko": "출발 항목의 상승 강도가 낮아졌고 연결 항목도 최근 60개월의 평소 범위를 뚜렷하게 벗어나지 않았습니다."
     },
     {
       "id": "auto_cost_to_insurance",
@@ -409,10 +586,100 @@
         21,
         24
       ],
-      "mechanism_ko": "차량가치·부품·수리비 변화가 손해액과 갱신 보험료에 반영될 수 있으나 사고빈도·의료비·규제·재보험도 중요함",
-      "evidence_status": "경제적 비용 경로; 검증 전",
+      "mechanism_ko": "차량가치·부품·수리비 변화가 손해액과 갱신 보험료에 반영될 수 있으나 사고빈도·의료비·규제·재보험도 중요함 현재 관찰 — 촉발 요인 둔화: 출발 항목의 상승 강도가 낮아졌고 연결 항목도 최근 60개월의 평소 범위를 뚜렷하게 벗어나지 않았습니다.",
+      "evidence_status": "예측력 미확인 (최적 후보 15개월 · 표본외 RMSE +0.07% · DM p=0.946)",
       "validation_required": "손해율·사고빈도·의료비·주별 보험 규제·계약 갱신 주기 통제 후 검증",
-      "evidence_source": "BLS motor vehicle insurance methodology"
+      "evidence_source": "BLS motor vehicle insurance methodology",
+      "evidence": {
+        "relationship_id": "auto_cost_to_insurance",
+        "evidence_tier": "relationship_candidate",
+        "evidence_label_ko": "관계 후보",
+        "phase": {
+          "phase": "fading",
+          "label_ko": "촉발 요인 둔화",
+          "reference_month": "2026-07",
+          "watch_window_months": [
+            6,
+            24
+          ],
+          "source_active_ids": [],
+          "target_active_ids": [],
+          "recent_source_impulses": {
+            "used_cars_and_trucks": "2025-01",
+            "motor_vehicle_parts": "2025-12",
+            "motor_vehicle_maintenance": "2026-06"
+          },
+          "component_states": {
+            "sources": {
+              "new_vehicles": {
+                "reference_month": "2026-07",
+                "mom_pct": 0.0784,
+                "robust_score": -0.062,
+                "positive_impulse": false,
+                "rule": "latest SA MoM > 0 and robust score versus preceding 60 months >= 0.75"
+              },
+              "used_cars_and_trucks": {
+                "reference_month": "2026-07",
+                "mom_pct": 0.3981,
+                "robust_score": 0.517,
+                "positive_impulse": false,
+                "rule": "latest SA MoM > 0 and robust score versus preceding 60 months >= 0.75"
+              },
+              "motor_vehicle_parts": {
+                "reference_month": "2026-07",
+                "mom_pct": 0.6133,
+                "robust_score": 0.367,
+                "positive_impulse": false,
+                "rule": "latest SA MoM > 0 and robust score versus preceding 60 months >= 0.75"
+              },
+              "motor_vehicle_maintenance": {
+                "reference_month": "2026-07",
+                "mom_pct": 0.628,
+                "robust_score": 0.146,
+                "positive_impulse": false,
+                "rule": "latest SA MoM > 0 and robust score versus preceding 60 months >= 0.75"
+              }
+            },
+            "targets": {
+              "motor_vehicle_insurance": {
+                "reference_month": "2026-07",
+                "mom_pct": -0.2887,
+                "robust_score": -1.048,
+                "positive_impulse": false,
+                "rule": "latest SA MoM > 0 and robust score versus preceding 60 months >= 0.75"
+              }
+            }
+          },
+          "summary_ko": "출발 항목의 상승 강도가 낮아졌고 연결 항목도 최근 60개월의 평소 범위를 뚜렷하게 벗어나지 않았습니다.",
+          "basis_ko": "2026-07 SA MoM 기준 · 출발 없음 · 연결 없음",
+          "interpretation": "relationship_watch_only_not_causal_finding_or_forecast"
+        },
+        "tests": [
+          {
+            "test_id": "maintenance_to_auto_insurance",
+            "relationship_map_id": "auto_cost_to_insurance",
+            "status": "tested_no_predictive_power",
+            "label_ko": "예측력 미확인",
+            "best_lag_months": 15,
+            "best_lag_rmse_improvement_pct": 0.07348965669570096,
+            "best_lag_dm_pvalue": 0.9462618563125783,
+            "full_grid_rmse_improvement_pct": -3.9266409160035542,
+            "full_grid_dm_pvalue": 0.23887913390442828,
+            "fdr_qvalue": 3.961373141131084e-21,
+            "coverage": {
+              "first_month": "2013-02",
+              "last_month": "2026-06",
+              "aligned_months": 155,
+              "oos_months": 83
+            },
+            "interpretation": "out_of_sample_screen_not_causality"
+          }
+        ],
+        "display_policy": "show_watch_language_without_forecast"
+      },
+      "evidence_tier": "relationship_candidate",
+      "evidence_label_ko": "관계 후보",
+      "current_watch_ko": "출발 항목의 상승 강도가 낮아졌고 연결 항목도 최근 60개월의 평소 범위를 뚜렷하게 벗어나지 않았습니다."
     },
     {
       "id": "energy_to_airfares",
@@ -430,9 +697,43 @@
         6
       ],
       "mechanism_ko": "원유·제트연료 비용이 항공 운임에 전가될 수 있지만 CPI 에너지상품은 제트연료 자체가 아니며 항공 수요·좌석공급·헤지도 중요함",
-      "evidence_status": "외부 제트연료 시계열 필요",
+      "evidence_status": "예측력 미확인 (최적 후보 0개월 · 표본외 RMSE +9.22% · DM p=0.318)",
       "validation_required": "제트연료·항공수요·좌석공급·헤지·계절성을 결합한 표본외 검증",
-      "evidence_source": "BLS CPI and aviation cost literature"
+      "evidence_source": "BLS CPI and aviation cost literature",
+      "evidence": {
+        "relationship_id": "energy_to_airfares",
+        "evidence_tier": "relationship_candidate",
+        "evidence_label_ko": "관계 후보",
+        "phase": {
+          "phase": "not_applicable",
+          "label_ko": "단계 판정 안 함",
+          "interpretation": "method_or_context_only_not_an_inflation_phase"
+        },
+        "tests": [
+          {
+            "test_id": "energy_to_airfares",
+            "relationship_map_id": "energy_to_airfares",
+            "status": "tested_no_predictive_power",
+            "label_ko": "예측력 미확인",
+            "best_lag_months": 0,
+            "best_lag_rmse_improvement_pct": 9.221920802664602,
+            "best_lag_dm_pvalue": 0.3179276502268008,
+            "full_grid_rmse_improvement_pct": 7.428736825006016,
+            "full_grid_dm_pvalue": 0.41350252409605437,
+            "fdr_qvalue": 4.815287525291223e-17,
+            "coverage": {
+              "first_month": "2011-08",
+              "last_month": "2026-07",
+              "aligned_months": 178,
+              "oos_months": 106
+            },
+            "interpretation": "out_of_sample_screen_not_causality"
+          }
+        ],
+        "display_policy": "show_watch_language_without_forecast"
+      },
+      "evidence_tier": "relationship_candidate",
+      "evidence_label_ko": "관계 후보"
     },
     {
       "id": "travel_services_common_demand",
@@ -453,7 +754,21 @@
       "mechanism_ko": "여행 수요·좌석·객실 공급·행사 일정·계절성이 교통·숙박·외식·입장료를 함께 움직일 수 있으나 항공료가 숙박료를 일으킨다는 뜻은 아님",
       "evidence_status": "수요·계절성 공통요인 후보",
       "validation_required": "여객량·객실점유율·행사일정·계절성을 결합해 공통요인 여부 검증",
-      "evidence_source": "CPI travel-service item structure"
+      "evidence_source": "CPI travel-service item structure",
+      "evidence": {
+        "relationship_id": "travel_services_common_demand",
+        "evidence_tier": "relationship_candidate",
+        "evidence_label_ko": "관계 후보",
+        "phase": {
+          "phase": "not_applicable",
+          "label_ko": "단계 판정 안 함",
+          "interpretation": "method_or_context_only_not_an_inflation_phase"
+        },
+        "tests": [],
+        "display_policy": "show_watch_language_without_forecast"
+      },
+      "evidence_tier": "relationship_candidate",
+      "evidence_label_ko": "관계 후보"
     },
     {
       "id": "rent_oer_measurement_link",
@@ -468,9 +783,23 @@
       "directionality": "methodology_only",
       "lag_months": null,
       "mechanism_ko": "Rent와 OER은 같은 기초 임대주택 표본에서 추정되지만 대상·가중치·구조유형 조정이 달라 차이가 날 수 있음",
-      "evidence_status": "BLS 방법론 확인",
+      "evidence_status": "BLS 공식 산식·표본 설계에 따른 측정상 연결",
       "validation_required": "Rent가 OER를 예측한다는 화살표로 사용하지 않음",
-      "evidence_source": "BLS rent and OER methodology"
+      "evidence_source": "BLS rent and OER methodology",
+      "evidence": {
+        "relationship_id": "rent_oer_measurement_link",
+        "evidence_tier": "official_methodology",
+        "evidence_label_ko": "공식 산식·이연",
+        "phase": {
+          "phase": "not_applicable",
+          "label_ko": "단계 판정 안 함",
+          "interpretation": "method_or_context_only_not_an_inflation_phase"
+        },
+        "tests": [],
+        "display_policy": "show_method_only"
+      },
+      "evidence_tier": "official_methodology",
+      "evidence_label_ko": "공식 산식·이연"
     },
     {
       "id": "utility_adjustment_in_rent_oer",
@@ -490,9 +819,23 @@
         12
       ],
       "mechanism_ko": "계약 임차료에는 포함 유틸리티가 들어갈 수 있지만 OER의 pure rent에서는 유틸리티를 제거하며, BLS는 직전 12개월 평균 유틸리티 가격으로 조정함",
-      "evidence_status": "BLS 방법론 확인",
+      "evidence_status": "BLS 공식 산식·표본 설계에 따른 측정상 연결",
       "validation_required": "에너지 서비스의 경제적 전이로 해석하지 않음",
-      "evidence_source": "BLS rent and OER utility adjustment"
+      "evidence_source": "BLS rent and OER utility adjustment",
+      "evidence": {
+        "relationship_id": "utility_adjustment_in_rent_oer",
+        "evidence_tier": "official_methodology",
+        "evidence_label_ko": "공식 산식·이연",
+        "phase": {
+          "phase": "not_applicable",
+          "label_ko": "단계 판정 안 함",
+          "interpretation": "method_or_context_only_not_an_inflation_phase"
+        },
+        "tests": [],
+        "display_policy": "show_method_only"
+      },
+      "evidence_tier": "official_methodology",
+      "evidence_label_ko": "공식 산식·이연"
     },
     {
       "id": "medical_prices_health_insurance_method",
@@ -511,9 +854,43 @@
         10
       ],
       "mechanism_ko": "CPI 건강보험은 의료비 지급분을 다른 의료지수로 재배분하고 보험사 retained earnings를 사용하며 그 재무자료는 약 10개월 시차가 있음",
-      "evidence_status": "BLS 방법론 확인",
+      "evidence_status": "BLS 공식 산식·표본 설계에 따른 측정상 연결",
       "validation_required": "의료 CPI가 건강보험 CPI를 예측한다는 직접 경로로 사용하지 않음",
-      "evidence_source": "BLS health insurance methodology"
+      "evidence_source": "BLS health insurance methodology",
+      "evidence": {
+        "relationship_id": "medical_prices_health_insurance_method",
+        "evidence_tier": "official_methodology",
+        "evidence_label_ko": "공식 산식·이연",
+        "phase": {
+          "phase": "not_applicable",
+          "label_ko": "단계 판정 안 함",
+          "interpretation": "method_or_context_only_not_an_inflation_phase"
+        },
+        "tests": [],
+        "display_policy": "show_method_only"
+      },
+      "evidence_tier": "official_methodology",
+      "evidence_label_ko": "공식 산식·이연"
     }
-  ]
+  ],
+  "evidence_summary": {
+    "schema_version": "us-cpi-relationship-evidence-v1",
+    "generated_at": "2026-08-31T06:49:25Z",
+    "reference_period": "2026-07",
+    "policy": {
+      "practical_screen": {
+        "statistically_validated": {
+          "minimum_full_grid_rmse_improvement_pct": 5.0,
+          "maximum_full_grid_dm_pvalue": 0.1,
+          "maximum_fdr_qvalue": 0.1
+        },
+        "watch_candidate": {
+          "minimum_best_lag_rmse_improvement_pct": 3.0,
+          "maximum_best_lag_dm_pvalue": 0.15
+        }
+      },
+      "phase_rule": "robust latest SA MoM watch state; never a causal finding, directional signal, or numeric forecast",
+      "rejected_test_rule": "a rejected sub-path is retained in details but cannot be promoted to a signal"
+    }
+  }
 }

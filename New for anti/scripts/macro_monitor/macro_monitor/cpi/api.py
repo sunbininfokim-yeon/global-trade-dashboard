@@ -25,6 +25,15 @@ def _chunks(values: list[str], size: int = 50) -> Iterable[list[str]]:
         yield values[start : start + size]
 
 
+def _year_windows(start_year: int, end_year: int, *, maximum_years: int) -> Iterable[tuple[int, int]]:
+    """Yield inclusive BLS year windows without duplicating boundary years."""
+    current = start_year
+    while current <= end_year:
+        window_end = min(end_year, current + maximum_years - 1)
+        yield current, window_end
+        current = window_end + 1
+
+
 def fetch_series(
     series_ids: list[str],
     *,
@@ -33,36 +42,60 @@ def fetch_series(
     end_year: int,
     opener=urlopen,
 ) -> dict[str, Any]:
-    """Fetch up to 20 years per request from BLS v2 without persisting the key."""
-    if not registration_key:
-        raise ValueError("BLS_API_KEY is required")
-    if end_year < start_year or end_year - start_year >= 20:
-        raise ValueError("BLS v2 requests may span at most 20 calendar years")
+    """Fetch BLS histories without persisting or exposing a registration key.
+
+    Registered calls use the BLS v2 limits (50 series, 20 calendar years).
+    Local/review runs may omit the key; they are then split into the official
+    unregistered limits (25 series, 10 calendar years).  The normalized output
+    is identical, apart from catalog metadata that BLS only guarantees for
+    registered requests.
+    """
+    if end_year < start_year:
+        raise ValueError("end_year must be greater than or equal to start_year")
+    registered = bool(registration_key)
+    batch_size = 50 if registered else 25
+    maximum_years = 20 if registered else 10
     out: dict[str, Any] = {}
-    for batch in _chunks(series_ids):
-        payload = {
-            "seriesid": batch,
-            "startyear": str(start_year),
-            "endyear": str(end_year),
-            "catalog": True,
-            "registrationkey": registration_key,
-        }
-        request = Request(
-            ENDPOINT,
-            data=json.dumps(payload).encode("utf-8"),
-            headers={"Content-Type": "application/json", "Accept": "application/json"},
-            method="POST",
+    for window_start, window_end in _year_windows(start_year, end_year, maximum_years=maximum_years):
+        for batch in _chunks(series_ids, size=batch_size):
+            payload = {
+                "seriesid": batch,
+                "startyear": str(window_start),
+                "endyear": str(window_end),
+            }
+            if registered:
+                payload.update({"catalog": True, "registrationkey": registration_key})
+            request = Request(
+                ENDPOINT,
+                data=json.dumps(payload).encode("utf-8"),
+                headers={"Content-Type": "application/json", "Accept": "application/json"},
+                method="POST",
+            )
+            with opener(request, timeout=45) as response:
+                doc = json.loads(response.read().decode("utf-8"))
+            if doc.get("status") != "REQUEST_SUCCEEDED":
+                raise BLSApiError(f"BLS API request failed: {doc.get('message')}")
+            messages = doc.get("message") or []
+            invalid = [message for message in messages if "Series does not exist" in message]
+            if invalid:
+                raise BLSApiError(f"BLS API contains invalid configured series: {invalid}")
+            for series in doc.get("Results", {}).get("series", []):
+                series_id = series["seriesID"]
+                merged = out.setdefault(series_id, {"seriesID": series_id, "data": []})
+                if series.get("catalog"):
+                    merged["catalog"] = series["catalog"]
+                merged["data"].extend(series.get("data", []))
+    for series in out.values():
+        # BLS returns each request newest-first.  Sorting the merged windows the
+        # same way keeps downstream behavior stable and removes any duplicate.
+        unique: dict[tuple[str, str], dict[str, Any]] = {}
+        for row in series.get("data", []):
+            unique[(str(row.get("year", "")), str(row.get("period", "")))] = row
+        series["data"] = sorted(
+            unique.values(),
+            key=lambda row: (str(row.get("year", "")), str(row.get("period", ""))),
+            reverse=True,
         )
-        with opener(request, timeout=45) as response:
-            doc = json.loads(response.read().decode("utf-8"))
-        if doc.get("status") != "REQUEST_SUCCEEDED":
-            raise BLSApiError(f"BLS API request failed: {doc.get('message')}")
-        messages = doc.get("message") or []
-        invalid = [message for message in messages if "Series does not exist" in message]
-        if invalid:
-            raise BLSApiError(f"BLS API contains invalid configured series: {invalid}")
-        for series in doc.get("Results", {}).get("series", []):
-            out[series["seriesID"]] = series
     missing = [series_id for series_id in series_ids if series_id not in out]
     if missing:
         raise BLSApiError(f"BLS API did not return configured series: {missing}")

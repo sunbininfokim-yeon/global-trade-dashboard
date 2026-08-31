@@ -1,0 +1,399 @@
+{
+  "schema_version": "us-cpi-vehicle-chain-backtest-v1",
+  "model": "us_cpi_vehicle_chain_backtest",
+  "retrieved_at": "2026-08-31T06:49:25Z",
+  "data_status": "official_observed_current_vintage",
+  "scope": "Minimal metrics only; raw BLS histories are not stored.",
+  "sample": {
+    "start_year": 2011,
+    "minimum_train_months": 72,
+    "target_transform": "published_seasonally_adjusted_index_mom_pct",
+    "forecast_scheme": "expanding_window_one_step_ahead",
+    "vintage_policy": "Current BLS revised histories only. Training windows are strictly time-ordered, but this is not a release-vintage reconstruction and cannot activate a relationship."
+  },
+  "source": {
+    "publisher": "U.S. Bureau of Labor Statistics",
+    "endpoint": "https://api.bls.gov/publicAPI/v2/timeseries/data/",
+    "series": {
+      "new_vehicles": "CUSR0000SETA01",
+      "used_cars_and_trucks": "CUSR0000SETA02",
+      "motor_vehicle_parts": "CUSR0000SETC",
+      "motor_vehicle_maintenance": "CUSR0000SETD",
+      "motor_vehicle_insurance": "CUSR0000SETE",
+      "core_goods": "CUSR0000SACL1E",
+      "motor_fuel": "CUSR0000SETB"
+    }
+  },
+  "input_history": "us_cpi_api_history_v1.json",
+  "relationships": [
+    {
+      "id": "new_vehicles_to_used_cars",
+      "relationship_map_id": "new_used_vehicle_common_market",
+      "classification": "common_market_predictive_candidate",
+      "coverage": {
+        "first_month": "2011-08",
+        "last_month": "2026-07",
+        "aligned_months": 178,
+        "oos_months": 106
+      },
+      "specification": {
+        "source": "new_vehicles",
+        "target": "used_cars_and_trucks",
+        "controls": [
+          "core_goods_lag_1",
+          "motor_fuel_lag_1"
+        ],
+        "lag_grid_months": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "availability_rule": "Both CPI components release together. Lag 0 is excluded from forecasting tests because it is not known before the target release.",
+        "baseline": "target AR(1) plus lagged controls",
+        "extended": "baseline plus all pre-specified source lags"
+      },
+      "best_lag_out_of_sample_exploratory": {
+        "lag_months": 3,
+        "baseline": {
+          "observations": 106,
+          "rmse": 1.7979669473150166,
+          "mae": 1.1636849212996683,
+          "direction_hit_rate": 0.6415094339622641
+        },
+        "extended": {
+          "observations": 106,
+          "rmse": 1.7653942064530825,
+          "mae": 1.150947669927948,
+          "direction_hit_rate": 0.6509433962264151
+        },
+        "rmse_improvement_pct": 1.8116429176062654,
+        "mae_improvement_pct": 1.0945618645203938,
+        "diebold_mariano": {
+          "statistic": 1.2888863986622503,
+          "pvalue": 0.19743758325987992
+        }
+      },
+      "out_of_sample": {
+        "baseline": {
+          "observations": 106,
+          "rmse": 1.7979669473150166,
+          "mae": 1.1636849212996683,
+          "direction_hit_rate": 0.6415094339622641
+        },
+        "extended": {
+          "observations": 106,
+          "rmse": 1.8660841767946919,
+          "mae": 1.2161665639394321,
+          "direction_hit_rate": 0.6226415094339622
+        },
+        "rmse_improvement_pct": -3.788569616443601,
+        "mae_improvement_pct": -4.509952967436359,
+        "diebold_mariano": {
+          "statistic": -1.0273935851374254,
+          "pvalue": 0.304235170883833
+        }
+      },
+      "conditional_predictive_test": {
+        "statistic": 20.39997634306981,
+        "pvalue": 0.0023499304188390833,
+        "degrees_of_freedom": 6,
+        "interpretation": "joint HAC conditional predictive test, not causality",
+        "fdr_qvalue": 0.0023499304188390833
+      },
+      "activation": {
+        "status": "not_activated",
+        "reasons": [
+          "Current BLS revised histories are not a release-vintage reconstruction.",
+          "The test measures conditional predictive content, not a causal chain.",
+          "Vehicle supply, financing, fleet age, claims, regulation, medical costs and reinsurance are not fully controlled."
+        ]
+      }
+    },
+    {
+      "id": "used_cars_to_maintenance",
+      "relationship_map_id": null,
+      "classification": "user_requested_cost_path_candidate",
+      "coverage": {
+        "first_month": "2012-02",
+        "last_month": "2026-07",
+        "aligned_months": 171,
+        "oos_months": 99
+      },
+      "specification": {
+        "source": "used_cars_and_trucks",
+        "target": "motor_vehicle_maintenance",
+        "controls": [
+          "new_vehicles_lag_1",
+          "motor_vehicle_parts_lag_1",
+          "motor_fuel_lag_1"
+        ],
+        "lag_grid_months": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12
+        ],
+        "availability_rule": "Both CPI components release together. Lag 0 is excluded from forecasting tests because it is not known before the target release.",
+        "baseline": "target AR(1) plus lagged controls",
+        "extended": "baseline plus all pre-specified source lags"
+      },
+      "best_lag_out_of_sample_exploratory": {
+        "lag_months": 5,
+        "baseline": {
+          "observations": 99,
+          "rmse": 0.5831776387628334,
+          "mae": 0.4264267895207114,
+          "direction_hit_rate": 0.8282828282828283
+        },
+        "extended": {
+          "observations": 99,
+          "rmse": 0.5802189403420864,
+          "mae": 0.42996510148069644,
+          "direction_hit_rate": 0.8181818181818182
+        },
+        "rmse_improvement_pct": 0.5073408553564521,
+        "mae_improvement_pct": -0.8297583657823163,
+        "diebold_mariano": {
+          "statistic": 0.5274868223736268,
+          "pvalue": 0.5978555650657831
+        }
+      },
+      "out_of_sample": {
+        "baseline": {
+          "observations": 99,
+          "rmse": 0.5831776387628334,
+          "mae": 0.4264267895207114,
+          "direction_hit_rate": 0.8282828282828283
+        },
+        "extended": {
+          "observations": 99,
+          "rmse": 0.6188151931364567,
+          "mae": 0.4881102713007033,
+          "direction_hit_rate": 0.7272727272727273
+        },
+        "rmse_improvement_pct": -6.110926072067117,
+        "mae_improvement_pct": -14.465198551273465,
+        "diebold_mariano": {
+          "statistic": -1.3320707453386655,
+          "pvalue": 0.1828369424440105
+        }
+      },
+      "conditional_predictive_test": {
+        "statistic": 159.01281005965012,
+        "pvalue": 8.345735033746298e-28,
+        "degrees_of_freedom": 12,
+        "interpretation": "joint HAC conditional predictive test, not causality",
+        "fdr_qvalue": 3.338294013498519e-27
+      },
+      "activation": {
+        "status": "not_activated",
+        "reasons": [
+          "Current BLS revised histories are not a release-vintage reconstruction.",
+          "The test measures conditional predictive content, not a causal chain.",
+          "Vehicle supply, financing, fleet age, claims, regulation, medical costs and reinsurance are not fully controlled."
+        ]
+      }
+    },
+    {
+      "id": "vehicle_parts_to_maintenance",
+      "relationship_map_id": "vehicle_parts_to_repair",
+      "classification": "existing_cost_pass_through_candidate",
+      "coverage": {
+        "first_month": "2012-02",
+        "last_month": "2025-09",
+        "aligned_months": 164,
+        "oos_months": 92
+      },
+      "specification": {
+        "source": "motor_vehicle_parts",
+        "target": "motor_vehicle_maintenance",
+        "controls": [
+          "new_vehicles_lag_1",
+          "used_cars_and_trucks_lag_1",
+          "motor_fuel_lag_1"
+        ],
+        "lag_grid_months": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12
+        ],
+        "availability_rule": "Both CPI components release together. Lag 0 is excluded from forecasting tests because it is not known before the target release.",
+        "baseline": "target AR(1) plus lagged controls",
+        "extended": "baseline plus all pre-specified source lags"
+      },
+      "best_lag_out_of_sample_exploratory": {
+        "lag_months": 10,
+        "baseline": {
+          "observations": 92,
+          "rmse": 0.581379274761121,
+          "mae": 0.4211745436032884,
+          "direction_hit_rate": 0.8260869565217391
+        },
+        "extended": {
+          "observations": 92,
+          "rmse": 0.556953941937142,
+          "mae": 0.4031801230609413,
+          "direction_hit_rate": 0.8478260869565217
+        },
+        "rmse_improvement_pct": 4.201273400056258,
+        "mae_improvement_pct": 4.27243783263794,
+        "diebold_mariano": {
+          "statistic": 1.7117517882981446,
+          "pvalue": 0.0869424202604024
+        }
+      },
+      "out_of_sample": {
+        "baseline": {
+          "observations": 92,
+          "rmse": 0.581379274761121,
+          "mae": 0.4211745436032884,
+          "direction_hit_rate": 0.8260869565217391
+        },
+        "extended": {
+          "observations": 92,
+          "rmse": 0.5716289540477307,
+          "mae": 0.41251698644450085,
+          "direction_hit_rate": 0.7934782608695652
+        },
+        "rmse_improvement_pct": 1.677101530218197,
+        "mae_improvement_pct": 2.055574651952903,
+        "diebold_mariano": {
+          "statistic": 0.7722294880276468,
+          "pvalue": 0.4399785193988952
+        }
+      },
+      "conditional_predictive_test": {
+        "statistic": 80.12446293594795,
+        "pvalue": 3.907736176169251e-12,
+        "degrees_of_freedom": 12,
+        "interpretation": "joint HAC conditional predictive test, not causality",
+        "fdr_qvalue": 5.210314901559001e-12
+      },
+      "activation": {
+        "status": "not_activated",
+        "reasons": [
+          "Current BLS revised histories are not a release-vintage reconstruction.",
+          "The test measures conditional predictive content, not a causal chain.",
+          "Vehicle supply, financing, fleet age, claims, regulation, medical costs and reinsurance are not fully controlled."
+        ]
+      }
+    },
+    {
+      "id": "maintenance_to_auto_insurance",
+      "relationship_map_id": "auto_cost_to_insurance",
+      "classification": "separate_component_of_auto_cost_to_insurance_candidate",
+      "coverage": {
+        "first_month": "2013-02",
+        "last_month": "2026-06",
+        "aligned_months": 155,
+        "oos_months": 83
+      },
+      "specification": {
+        "source": "motor_vehicle_maintenance",
+        "target": "motor_vehicle_insurance",
+        "controls": [
+          "new_vehicles_lag_1",
+          "used_cars_and_trucks_lag_1",
+          "motor_vehicle_parts_lag_1"
+        ],
+        "lag_grid_months": [
+          6,
+          9,
+          12,
+          15,
+          18,
+          21,
+          24
+        ],
+        "availability_rule": "The insurance CPI release is contemporaneous with repair CPI, so only the pre-specified 6–24 month renewal/pass-through lags are tested.",
+        "baseline": "target AR(1) plus lagged controls",
+        "extended": "baseline plus all pre-specified source lags"
+      },
+      "best_lag_out_of_sample_exploratory": {
+        "lag_months": 15,
+        "baseline": {
+          "observations": 83,
+          "rmse": 2.4030763222594524,
+          "mae": 1.1488686647925337,
+          "direction_hit_rate": 0.7469879518072289
+        },
+        "extended": {
+          "observations": 83,
+          "rmse": 2.4013103097200883,
+          "mae": 1.1192414799422281,
+          "direction_hit_rate": 0.7710843373493976
+        },
+        "rmse_improvement_pct": 0.07348965669570096,
+        "mae_improvement_pct": 2.578813902601804,
+        "diebold_mariano": {
+          "statistic": 0.06740177480667284,
+          "pvalue": 0.9462618563125783
+        }
+      },
+      "out_of_sample": {
+        "baseline": {
+          "observations": 83,
+          "rmse": 2.4030763222594524,
+          "mae": 1.1488686647925337,
+          "direction_hit_rate": 0.7469879518072289
+        },
+        "extended": {
+          "observations": 83,
+          "rmse": 2.4974365003720855,
+          "mae": 1.2347723359122613,
+          "direction_hit_rate": 0.6867469879518072
+        },
+        "rmse_improvement_pct": -3.9266409160035542,
+        "mae_improvement_pct": -7.477240328009153,
+        "diebold_mariano": {
+          "statistic": -1.1777930152467977,
+          "pvalue": 0.23887913390442828
+        }
+      },
+      "conditional_predictive_test": {
+        "statistic": 113.20887386101828,
+        "pvalue": 1.980686570565542e-21,
+        "degrees_of_freedom": 7,
+        "interpretation": "joint HAC conditional predictive test, not causality",
+        "fdr_qvalue": 3.961373141131084e-21
+      },
+      "activation": {
+        "status": "not_activated",
+        "reasons": [
+          "Current BLS revised histories are not a release-vintage reconstruction.",
+          "The test measures conditional predictive content, not a causal chain.",
+          "Vehicle supply, financing, fleet age, claims, regulation, medical costs and reinsurance are not fully controlled."
+        ]
+      }
+    }
+  ],
+  "activation_policy": {
+    "status": "not_activated_by_design",
+    "requirements": [
+      "release-vintage and release-calendar availability audit",
+      "stable out-of-sample improvement versus AR(1) plus controls benchmark",
+      "HAC joint conditional-predictive test with FDR correction",
+      "separate review of supply, inventory, finance, accident-frequency, medical-cost, regulation and reinsurance confounders"
+    ]
+  }
+}
