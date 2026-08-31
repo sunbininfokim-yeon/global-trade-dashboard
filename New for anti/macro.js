@@ -24,6 +24,7 @@ let MM_CPI_STRUCTURE = null;    // U.S. CPI relationship map/snapshot, loaded on
 let MM_CPI_STRUCTURE_PROMISE = null;
 let MM_CPI_STRUCTURE_ERROR = '';
 let MM_QUALITY_PROMISE = null;  // U.S. official-document layer; loaded only for USA
+let MM_STATEMENT_DIFF_PROMISE = null;  // FOMC statement wording diffs; loaded only for USA
 
 const mmFetch = async (iso3) => {
     const q = iso3 ? `?country=${encodeURIComponent(iso3)}` : '';
@@ -45,6 +46,21 @@ const mmQualityFetch = async () => {
             });
     }
     return MM_QUALITY_PROMISE;
+};
+
+// fomc_statement_diff_v1.json is a word-level redline between each meeting's
+// operative text and the previous one (build_fomc_statement_diff.py) -- its
+// own file so a wording-diff refresh never touches the vote/roster document
+// above, same split as that doc has from macro_monitor_v1.json.
+const mmStatementDiffFetch = async () => {
+    if (!MM_STATEMENT_DIFF_PROMISE) {
+        MM_STATEMENT_DIFF_PROMISE = fetch('/public/data/fomc_statement_diff_v1.json', { cache: 'no-cache' })
+            .then((res) => {
+                if (!res.ok) throw new Error(`성명서 문구 비교 데이터를 못 받았습니다 (${res.status})`);
+                return res.json();
+            });
+    }
+    return MM_STATEMENT_DIFF_PROMISE;
 };
 
 const mmDelta = (v) => {
@@ -1669,7 +1685,35 @@ const mmExcerpt = (value, max = 210) => {
 // This is an evidence panel, not an FOMC forecast panel. It lives inside the
 // existing U.S. overlay so the published vote and the Beige Book context are
 // read next to the ordinary macro indicators rather than as a second dashboard.
-const mmUsPolicyQuality = (quality) => {
+// Renders a word-level redline: struck-through text for what a statement
+// dropped, highlighted text for what it added in the same spot. Segments
+// come pre-split from build_fomc_statement_diff.py's difflib pass, so this
+// only has to map each op to markup -- no diffing logic lives in the UI.
+const mmStatementDiffHtml = (diffDoc) => {
+    const diffs = (diffDoc && Array.isArray(diffDoc.diffs)) ? diffDoc.diffs : [];
+    if (!diffs.length) return '';
+    const latest = diffs[diffs.length - 1];
+    const segments = latest.segments || [];
+    const body = segments.map((seg) => {
+        if (seg.op === 'equal') return finEsc(seg.text);
+        if (seg.op === 'replace') return `<del>${finEsc(seg.before)}</del><ins>${finEsc(seg.after)}</ins>`;
+        if (seg.op === 'delete') return `<del>${finEsc(seg.before)}</del>`;
+        if (seg.op === 'insert') return `<ins>${finEsc(seg.after)}</ins>`;
+        return '';
+    }).join('');
+    return `
+    <div class="mm-quality-card mm-quality-wide">
+        <span class="mm-quality-label">성명서 문구 변화</span>
+        <strong>${finEsc(latest.previous_meeting)} → ${finEsc(latest.current_meeting)} · ${Number(latest.changed_word_count || 0)}단어 변경</strong>
+        <details class="mm-quality-details">
+            <summary>문구 비교 보기</summary>
+            <p class="mm-quality-redline">${body}</p>
+        </details>
+        <p class="mm-quality-muted">경제 진단 문단만 비교합니다. 투표 명단·절차 문구는 제외했습니다.</p>
+    </div>`;
+};
+
+const mmUsPolicyQuality = (quality, statementDiff) => {
     if (!quality || quality.schema_version !== 'us-macro-quality-v1') return '';
     const policy = quality.policy_committee || {};
     const cmp = policy.comparison || {};
@@ -1728,6 +1772,7 @@ const mmUsPolicyQuality = (quality) => {
                 </details>` : '<p class="mm-quality-muted">발행본 수집 대기</p>'}
                 ${beige ? `<a class="mm-quality-link" href="${finEsc(beige.source_url)}" target="_blank" rel="noopener noreferrer">원문 보기 ↗</a>` : ''}
             </div>
+            ${mmStatementDiffHtml(statementDiff)}
         </div>
         <p class="mm-quality-foot">공개 표결은 회의 당시의 행동 기록이고, Beige Book은 접촉자 의견입니다. 둘 다 다음 회의나 시장의 방향을 자동 예측하지 않습니다.</p>
     </section>`;
@@ -1768,7 +1813,7 @@ const mmOverlay = () => {
                 </button>`).join('')}
         </div>` : ''}
 
-        ${c.iso3 === 'USA' ? mmUsPolicyQuality(MM_COUNTRY.quality) : ''}
+        ${c.iso3 === 'USA' ? mmUsPolicyQuality(MM_COUNTRY.quality, MM_COUNTRY.statementDiff) : ''}
 
         <div class="mm-tabs" role="tablist">
             ${tabs.map((t) => {
@@ -1896,12 +1941,14 @@ const mmOpenCountry = async (iso3) => {
         // the country pack -- fetched alongside it, not blocking it, since a
         // slow or missing document snapshot should never delay the ordinary
         // indicator overlay every other country also needs.
-        const [countryPayload, quality] = await Promise.all([
+        const [countryPayload, quality, statementDiff] = await Promise.all([
             mmFetch(iso3),
             iso3 === 'USA' ? mmQualityFetch().catch(() => null) : Promise.resolve(null),
+            iso3 === 'USA' ? mmStatementDiffFetch().catch(() => null) : Promise.resolve(null),
         ]);
         MM_COUNTRY = countryPayload;
         if (quality) MM_COUNTRY.quality = quality;
+        if (statementDiff) MM_COUNTRY.statementDiff = statementDiff;
         MM_TAB = (MM_COUNTRY.country.active_categories || ['liquidity'])[0];
         MM_CHART = null;
     } catch (err) {
