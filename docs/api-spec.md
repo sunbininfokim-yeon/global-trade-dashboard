@@ -81,7 +81,7 @@ EO의 법적 근거는 법안으로 한정되지 않는다. 헌법, U.S.C., Publ
 
 | 영역 | 테이블 | 용도 |
 |---|---|---|
-| 공통 | `agencies` | Federal Register 기관 기준정보 |
+| 공통 | `agencies` | Federal Register 기관 기준정보. `agency_type`은 `eop`(대통령실), `department`(15개 내각 부처), `independent`(독립기관/외청), `sub`(하위 기관) |
 | 공통 | `policy_areas` | Congress.gov CRS 정책분야 |
 | 공통 | `legislative_subjects` | 세부 입법주제 |
 | 공통 | `cfr_titles` | 고정 참조 CFR Title 1–50 |
@@ -159,7 +159,7 @@ Congress.gov action code와 문구를 근거로 정규화하되, 원문은 항�
 
 ### 행정부 탐색
 
-- `GET /api/us/executive/agencies`
+- `GET /api/us/executive/agencies?agency_type=eop|department|independent`
 - `GET /api/us/executive/orders?agency_id=...&cursor=...`
 - `GET /api/us/executive/orders/:eo_number`
 - `GET /api/us/executive/cfr-titles`
@@ -301,8 +301,10 @@ Congress.gov action code와 문구를 근거로 정규화하되, 원문은 항�
   "summary": "Official Federal Register abstract when available.",
   "agencies": [
     {
-        "agency_id": "fr-executive-office-of-the-president",
-      "name": "Executive Office of the President"
+      "agency_id": "fr-executive-office-of-the-president",
+      "name": "Executive Office of the President",
+      "agency_type": "eop",
+      "parent_agency_id": null
     }
   ],
   "legal_authorities": [
