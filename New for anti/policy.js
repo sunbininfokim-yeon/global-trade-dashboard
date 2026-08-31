@@ -104,7 +104,7 @@
   // a screen never has to guess where it was opened from.
   const state = { trail: [], stage: '' };
 
-  const current = () => state.trail[state.trail.length - 1] || { view: 'us' };
+  const current = () => state.trail[state.trail.length - 1] || { view: 'congress' };
   const trailHas = (view) => state.trail.some((t) => t.view === view);
 
   const empty = (message) => `<div class="policy-empty">${esc(message)}</div>`;
@@ -118,13 +118,16 @@
   // Every entry but the last is a step back up the trail, addressed by depth so
   // a click truncates rather than re-navigating.
   const crumb = () =>
-    `<nav class="policy-crumb">${state.trail.map((p, i) => {
-      const last = i === state.trail.length - 1;
-      const step = last
-        ? `<span class="policy-crumb-current">${esc(p.label)}</span>`
-        : `<button type="button" class="policy-crumb-link" data-depth="${i}">${esc(p.label)}</button>`;
-      return step + (last ? '' : '<span class="policy-crumb-sep">›</span>');
-    }).join('')}</nav>`;
+    `<nav class="policy-crumb">
+      <span class="policy-crumb-root">미국</span>
+      ${state.trail.map((p, i) => {
+        const last = i === state.trail.length - 1;
+        const step = last
+          ? `<span class="policy-crumb-current">${esc(p.label)}</span>`
+          : `<button type="button" class="policy-crumb-link" data-depth="${i}">${esc(p.label)}</button>`;
+        return '<span class="policy-crumb-sep">›</span>' + step;
+      }).join('')}
+    </nav>`;
 
   // The mock fixture keeps search switched off (meta.search.visible=false);
   // the control is rendered disabled so the layout matches the final screen.
@@ -135,11 +138,13 @@
             </div>`;
   };
 
-  // The branch switch reflects which side of the trail we are on, so it stays
-  // meaningful three levels down.
+  // 미국 is the country the screen is scoped to -- one of several eventually,
+  // picked in the nav rather than here, so it labels the surface instead of
+  // being a tab. The toggle is only the branch split, and it stays meaningful
+  // three levels down because it reads the trail.
   const modeTabs = () => `
     <div class="policy-modes">
-      <button type="button" class="policy-mode-btn${state.trail.length === 1 ? ' active' : ''}" data-view="us">미국</button>
+      <span class="policy-country">미국</span>
       ${[['congress', '의회'], ['executive', '행정부']].map(([id, label]) => `
         <button type="button" class="policy-mode-btn${trailHas(id) ? ' active' : ''}" data-view="${id}">${label}</button>
       `).join('')}
@@ -185,11 +190,15 @@
     }).join('')}</div>`;
   };
 
-  // Committee names carry a chamber prefix that is redundant once the blocks
-  // are already grouped by chamber, and too long for a tile either way.
-  const shortCommittee = (name) => String(name || '')
-    .replace(/^(House|Senate)\s+(Select\s+)?Committee\s+on\s+(the\s+)?/i, '')
-    .replace(/^(House|Senate)\s+/i, '');
+  // Blocks carry the full name. The chamber prefix goes, since the blocks are
+  // already grouped by chamber, and anything still too long for a tile falls
+  // back to its abbreviation (Department of Defense -> DOD).
+  const TILE_MAX = 30;
+
+  const committeeLabel = (name) => String(name || '')
+    .replace(/^(House|Senate)\s+(Select\s+)?/i, '');
+
+  const fit = (full, short) => (full.length > TILE_MAX && short ? short : full);
 
   // A flat grid of name-only rectangles -- the layout the sketch uses for
   // "pick one of these" screens, six or so to a row.
@@ -203,13 +212,45 @@
   const committeeTiles = (chamber) => tileGrid(
     (DATA?.congress_overview?.committees || [])
       .filter((c) => c.chamber === chamber)
-      .map((c) => ({ view: 'committee', id: c.committee_id, label: shortCommittee(c.name), full: c.name })),
+      .map((c) => ({
+        view: 'committee', id: c.committee_id, full: c.name,
+        label: fit(committeeLabel(c.name), c.short_name),
+      })),
   );
 
-  const agencyTiles = () => tileGrid(
+  const agencyTiles = (kind) => tileGrid(
     (DATA?.executive_overview?.agencies || [])
-      .map((a) => ({ view: 'agency', id: a.agency_id, label: a.short_name || a.name, full: a.name })),
+      .filter((a) => (kind ? a.agency_type === kind : true))
+      .map((a) => ({ view: 'agency', id: a.agency_id, full: a.name, label: fit(a.name, a.short_name) })),
   );
+
+  const policyAreaTiles = () => tileGrid(
+    (DATA?.policy_areas || [])
+      .map((a) => ({ view: 'area', id: a.policy_area_id, full: a.name, label: a.name })),
+  );
+
+  const cfrTiles = () => tileGrid(
+    (DATA?.cfr_titles || [])
+      .map((t) => ({
+        view: 'cfr', id: t.title_number,
+        full: `Title ${t.title_number} — ${t.name}`,
+        label: `${t.title_number}. ${t.name}`,
+      })),
+  );
+
+  // Regulations are external-link-only by design: no internal detail page and
+  // no abstract in the list -- title, type and effective date only.
+  const renderRegulations = (regs) => `
+    <ul class="policy-reg-list">${regs.map((r) => `
+      <li>
+        <a class="policy-reg-row" href="${esc(r.federal_register_url)}" target="_blank" rel="noopener noreferrer">
+          <span class="policy-reg-title">${esc(r.title)}</span>
+          <span class="policy-reg-meta">
+            <span class="policy-tag">${esc(r.document_type || '규제')}</span>
+            <span>시행 ${esc(r.effective_on || '-')}</span>
+          </span>
+        </a>
+      </li>`).join('')}</ul>`;
 
   const leaderRow = (label, person, placeholder) => `
     <div class="policy-leader">
@@ -219,69 +260,19 @@
 
   /* ---------------------------------------------------------------- views */
 
-  const billCards = (bills) => (bills.length
-    ? `<div class="policy-card-grid">${bills.map((bill) => `
-        <button type="button" class="policy-card" data-view="bill" data-id="${esc(bill.bill_id)}">
-          <span class="policy-card-head">
-            ${stageBadge(bill.current_stage)}
-            <span class="policy-card-date">${esc(bill.latest_action_date || '')}</span>
-          </span>
-          <span class="policy-card-title">${esc(bill.title)}</span>
-          <span class="policy-card-area">${esc(bill.policy_area?.name || '')}</span>
-          <span class="policy-card-summary">${esc(bill.summary || '')}</span>
-        </button>`).join('')}</div>`
-    : empty('표시할 법안이 없습니다'));
-
-  // Level 1 -- every committee and agency laid out at once, so the whole
-  // surface is a directory rather than two links into one.
-  function viewUS() {
-    const hasJoint = (DATA?.congress_overview?.committees || []).some((c) => c.chamber === 'joint');
-
-    return shell(`
-      ${card('하원 상임위', committeeTiles('house'))}
-      ${card('상원 상임위', committeeTiles('senate'))}
-      ${hasJoint ? card('합동 위원회', committeeTiles('joint')) : ''}
-      ${card('행정부 기관', agencyTiles())}
-      ${card('119대 의회 주요 법안', billCards(DATA?.policy_hub?.summary_cards || []))}
-    `);
-  }
-
+  // Branch level -- the committees and the CRS policy areas, each a way in.
   function viewCongress() {
     const co = DATA?.congress_overview;
     if (!co) return shell(empty('의회 데이터를 불러올 수 없습니다'));
 
-    const areas = new Map();
-    (DATA.policy_hub?.summary_cards || []).forEach((b) => {
-      if (b.policy_area?.policy_area_id) areas.set(b.policy_area.policy_area_id, b.policy_area.name);
-    });
-    const areaChips = areas.size
-      ? `<div class="policy-chip-row">${[...areas].map(([id, name]) => `
-          <button type="button" class="policy-chip is-compact" data-view="area" data-id="${esc(id)}">
-            <span class="policy-chip-name">${esc(name)}</span>
-          </button>`).join('')}</div>`
-      : empty('정책분야 정보 준비 중');
-
-    const agencies = (co.agency_bill_counts || []).length
-      ? `<ul class="policy-count-list">${co.agency_bill_counts.map((a) => `
-          <li><span>${esc(a.name)}</span>
-            <span class="${a.bill_count === null ? 'is-placeholder' : 'policy-count'}">${
-              a.bill_count === null ? esc(uiState('empty_committee_agencies', '검증된 매핑 준비 중')) : esc(a.bill_count)
-            }</span></li>`).join('')}</ul>`
-      : empty('기관별 집계 준비 중');
+    const hasJoint = (co.committees || []).some((c) => c.chamber === 'joint');
 
     return shell(`
-      <div class="policy-grid-2">
-        <div class="policy-col">
-          ${card(`상임위 (${CHAMBER_LABELS.house})`, committeeTiles('house'))}
-          ${card(`상임위 (${CHAMBER_LABELS.senate})`, committeeTiles('senate'))}
-          ${(co.committees || []).some((c) => c.chamber === 'joint') ? card(`상임위 (${CHAMBER_LABELS.joint})`, committeeTiles('joint')) : ''}
-          ${card('CRS 정책분야', areaChips)}
-        </div>
-        <div class="policy-col">
-          ${card('기관별 법안 수', agencies)}
-          ${co.static_explainer ? card(co.static_explainer.title, `<p class="policy-prose">${esc(co.static_explainer.body)}</p>`) : ''}
-        </div>
-      </div>`);
+      ${card(`상임위 (${CHAMBER_LABELS.house})`, committeeTiles('house'))}
+      ${card(`상임위 (${CHAMBER_LABELS.senate})`, committeeTiles('senate'))}
+      ${hasJoint ? card(`상임위 (${CHAMBER_LABELS.joint})`, committeeTiles('joint')) : ''}
+      ${card(`CRS 정책분야 (${esc((DATA?.policy_areas || []).length)})`, policyAreaTiles())}
+    `);
   }
 
   function viewCommittee(committeeId) {
@@ -338,24 +329,59 @@
       </div>`);
   }
 
+  // A CRS policy area: every bill filed under it. The fixture only carries a
+  // handful, so most areas legitimately come back empty.
   function viewPolicyArea(areaId) {
-    const area = DATA?.policy_area_detail;
-    const name = area?.policy_area?.policy_area_id === areaId
-      ? area.policy_area.name
-      : (DATA?.policy_hub?.summary_cards?.find((b) => b.policy_area?.policy_area_id === areaId)?.policy_area?.name || areaId);
+    const listed = (DATA?.policy_areas || []).find((a) => a.policy_area_id === areaId);
+    const detail = DATA?.policy_area_detail;
+    const name = listed?.name
+      || (detail?.policy_area?.policy_area_id === areaId ? detail.policy_area.name : null)
+      || areaId;
 
-    const ids = area?.policy_area?.policy_area_id === areaId ? (area.items || []) : [];
-    const bills = filterByStage(
-      (DATA?.policy_hub?.summary_cards || []).filter((b) => ids.includes(b.bill_id)),
-      state.stage,
-    );
+    // Bills reach an area either through the curated detail list or through
+    // their own policy_area field.
+    const curated = detail?.policy_area?.policy_area_id === areaId ? (detail.items || []) : [];
+    const pool = DATA?.policy_hub?.summary_cards || [];
+    const matched = pool.filter((b) =>
+      curated.includes(b.bill_id) || b.policy_area?.policy_area_id === areaId);
+    const bills = filterByStage(matched, state.stage);
 
-    const body = ids.length
+    const body = matched.length
       ? `${stageTabs(DATA?.committee_detail?.stage_tabs, state.stage)}
          ${bills.length ? `<div class="policy-bill-list">${bills.map(billRow).join('')}</div>` : empty('해당 단계의 법안이 없습니다')}`
-      : empty('이 정책분야의 법안 목록 준비 중');
+      : empty(uiState('empty_policy_area', '이 분류의 법안 준비 중'));
 
-    return shell(card(`${name}${area?.policy_area?.bill_count ? ` · ${area.policy_area.bill_count}건` : ''}`, body));
+    return shell(card(`${name} · 관련 법안`, body));
+  }
+
+  // A CFR title: the regulations filed under it, and the orders that reach
+  // them. Regulations stay external-link-only here too.
+  function viewCfrTitle(titleNumber) {
+    const title = (DATA?.cfr_titles || []).find((t) => String(t.title_number) === String(titleNumber));
+    if (!title) return shell(empty('분류를 찾을 수 없습니다'));
+
+    const heading = `Title ${title.title_number} · ${title.name}`;
+    if (title.reserved) return shell(card(heading, empty('유보된 분류입니다')));
+
+    // The fixture has no title↔regulation mapping yet, so anything the EO
+    // detail carries is all there is to show.
+    // TODO(real-api): GET /api/us/regulations?cfr_title= supplies this.
+    const regs = DATA?.executive_order_detail?.related_regulations || [];
+    const orders = DATA?.executive_overview?.executive_orders || [];
+
+    return shell(`
+      <div class="policy-grid-2">
+        <div class="policy-col">
+          ${card(`${heading} · 관련 규제`, title.regulation_count && regs.length
+            ? renderRegulations(regs)
+            : empty(uiState('empty_cfr_title', '이 분류의 규제·행정명령 준비 중')))}
+        </div>
+        <div class="policy-col">
+          ${card('관련 행정명령', title.regulation_count && orders.length
+            ? `<div class="policy-eo-list">${orders.map(eoRibbon).join('')}</div>`
+            : empty(uiState('empty_cfr_title', '이 분류의 규제·행정명령 준비 중')))}
+        </div>
+      </div>`);
   }
 
   function billPanel(bill, { compact = false } = {}) {
@@ -446,24 +472,20 @@
     </button>`;
 
   // Level 2 -- the agencies, each a way into its own orders.
+  // Branch level -- departments and independent agencies kept apart, plus the
+  // Federal Register's CFR titles as the other way in.
   function viewExecutive() {
     const eo = DATA?.executive_overview;
     if (!eo) return shell(empty('행정부 데이터를 불러올 수 없습니다'));
 
-
-    const cfr = (DATA?.cfr_titles || []).length
-      ? `<div class="policy-chip-row">${DATA.cfr_titles.map((t) => `
-          <span class="policy-chip is-static${t.reserved ? ' is-reserved' : ''}">
-            <span class="policy-chip-name">Title ${esc(t.title_number)} · ${esc(t.name)}</span>
-            <span class="policy-chip-sub">${t.reserved ? '유보' : `규제 ${esc(t.regulation_count)}건`}</span>
-          </span>`).join('')}</div>`
-      : empty('CFR 정보 준비 중');
+    const hasKind = (kind) => (eo.agencies || []).some((a) => a.agency_type === kind);
 
     return shell(`
-      <div class="policy-grid-2">
-        <div class="policy-col">${card('기관', agencyTiles())}</div>
-        <div class="policy-col">${card('CFR Title', cfr)}</div>
-      </div>`);
+      ${hasKind('eop') ? card('대통령실', agencyTiles('eop')) : ''}
+      ${hasKind('department') ? card('부처 (내청)', agencyTiles('department')) : ''}
+      ${hasKind('independent') ? card('독립기관 (외청)', agencyTiles('independent')) : ''}
+      ${card(`연방관보 분류 · CFR Title (${esc((DATA?.cfr_titles || []).length)})`, cfrTiles())}
+    `);
   }
 
   // Level 3 -- one agency: its leadership slot and its orders, the box the
@@ -518,19 +540,8 @@
         }).join('')}</ul>`
       : empty('근거 법령 정보 없음');
 
-    // Regulations are external-link-only by design: no internal detail page and
-    // no abstract in the list -- title, type and effective date only.
     const regulations = (eo.related_regulations || []).length
-      ? `<ul class="policy-reg-list">${eo.related_regulations.map((r) => `
-          <li>
-            <a class="policy-reg-row" href="${esc(r.federal_register_url)}" target="_blank" rel="noopener noreferrer">
-              <span class="policy-reg-title">${esc(r.title)}</span>
-              <span class="policy-reg-meta">
-                <span class="policy-tag">${esc(r.document_type || '규제')}</span>
-                <span>시행 ${esc(r.effective_on || '-')}</span>
-              </span>
-            </a>
-          </li>`).join('')}</ul>`
+      ? renderRegulations(eo.related_regulations)
       : empty('관련 규제 없음');
 
     const agencies = (eo.agencies || []).map((a) => `<span class="policy-tag">${esc(a.name)}</span>`).join('');
@@ -563,12 +574,12 @@
   /* -------------------------------------------------------------- routing */
 
   const VIEWS = {
-    us: viewUS,
     congress: viewCongress,
     executive: viewExecutive,
     committee: (id) => viewCommittee(id),
     agency: (id) => viewAgency(id),
     area: (id) => viewPolicyArea(id),
+    cfr: (id) => viewCfrTitle(id),
     bill: (id) => viewBill(id),
     eo: (id) => viewEO(id),
   };
@@ -582,14 +593,14 @@
   // while one opened straight off the hub has no committee to sit under. So
   // those two resolve against the trail as it stands at click time.
   const PARENT = {
-    us: null,
-    congress: 'us',
-    executive: 'us',
+    congress: null,
+    executive: null,
     committee: 'congress',
     area: 'congress',
     agency: 'executive',
+    cfr: 'executive',
     bill: () => (trailHas('committee') ? 'committee' : trailHas('area') ? 'area' : 'congress'),
-    eo: () => (trailHas('agency') ? 'agency' : 'executive'),
+    eo: () => (trailHas('agency') ? 'agency' : trailHas('cfr') ? 'cfr' : 'executive'),
   };
 
   const parentOf = (view) => {
@@ -599,7 +610,6 @@
 
   function labelFor(view, id) {
     switch (view) {
-      case 'us': return '미국';
       case 'congress': return '의회';
       case 'executive': return '행정부';
       case 'committee':
@@ -609,9 +619,11 @@
       case 'agency':
         return DATA?.executive_overview?.agencies?.find((a) => a.agency_id === id)?.name || '기관';
       case 'area':
-        return DATA?.policy_area_detail?.policy_area?.policy_area_id === id
-          ? DATA.policy_area_detail.policy_area.name
-          : (DATA?.policy_hub?.summary_cards?.find((b) => b.policy_area?.policy_area_id === id)?.policy_area?.name || '정책분야');
+        return (DATA?.policy_areas || []).find((a) => a.policy_area_id === id)?.name || '정책분야';
+      case 'cfr': {
+        const t = (DATA?.cfr_titles || []).find((x) => String(x.title_number) === String(id));
+        return t ? `Title ${t.title_number} · ${t.name}` : `Title ${id}`;
+      }
       case 'bill':
         return (resolveBill(id) || findBillSummary(id))?.title || '법률';
       case 'eo':
@@ -625,7 +637,7 @@
   function paint() {
     if (!host) return;
     const { view, id } = current();
-    host.innerHTML = (VIEWS[view] || viewUS)(id);
+    host.innerHTML = (VIEWS[view] || viewCongress)(id);
     host.scrollTop = 0;
   }
 
@@ -669,8 +681,9 @@
     go(nav.dataset.view, nav.dataset.id);
   }
 
+  // 정책 › 미국 lands on the legislative side; the branch toggle switches it.
   const TARGET_VIEWS = {
-    'us-policy-hub': 'us',
+    'us-policy-hub': 'congress',
     'us-congress-overview': 'congress',
     'us-executive': 'executive',
   };
@@ -691,7 +704,7 @@
 
     // Entering from the top menu starts a fresh trail at that level.
     state.trail = [];
-    go(TARGET_VIEWS[target] || 'us');
+    go(TARGET_VIEWS[target] || 'congress');
 
     host.removeEventListener('click', onClick);
     host.addEventListener('click', onClick);

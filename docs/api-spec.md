@@ -187,6 +187,7 @@ Congress.gov API는 분당 요청 제한이 있으므로 KV/DB 캐시를 거쳐 
   "agencies": [
     {
       "agency_id": "string", "name": "string", "short_name": "string",
+      "agency_type": "eop|department|independent",
       "executive_order_count": 2,
       "secretary_placeholder": "string" | null,
       "eo_ids": [99999]
@@ -202,6 +203,9 @@ Congress.gov API는 분당 요청 제한이 있으므로 KV/DB 캐시를 거쳐 
   ]
 }
 ```
+`agency_type`은 화면에서 대통령실 / 부처(내청) / 독립기관(외청) 블록을 나누는 기준이다.
+`short_name`은 이름이 30자를 넘을 때 블록 라벨로 쓰인다 (Department of Defense → DOD).
+
 `agencies[].eo_ids`는 `executive_orders[].agency_id`로 그룹핑한 결과와 반드시 일치해야 한다 (프론트가 이 배열로 부처별 EO 허브를 그린다 — `New for anti/policy.js`의 `renderExecutiveHubByAgency()` 참고). `secretary_placeholder`가 `null`이 아니면 실제 장관 정보 대신 이 문구를 보여준다; 실제 장관 데이터가 준비되면 이 필드 자체를 없애고 `secretary: { name, title }` 필드를 추가하는 방식으로 확장할 것 (필드 추가는 breaking change 아님).
 
 ---
@@ -242,6 +246,42 @@ EO는 보통 법안번호가 아니라 **법전 조항**(U.S. Code citation)을 
 
 ---
 
+## `GET /api/us/congress/policy-areas`
+→ `policy_areas` 대체 (의회 화면의 CRS 정책분야 블록)
+
+```json
+[
+  { "policy_area_id": "string (slug)", "name": "string", "bill_count": 18 | null }
+]
+```
+Congress.gov의 Policy Area 어휘 전체를 보낼 것. `bill_count`가 아직 집계 안 됐으면 `null` (프론트는 개수를 표시하지 않는다).
+
+---
+
+## `GET /api/us/regulations/cfr-titles/{title_number}`
+→ CFR 분류 상세. 해당 Title에 속한 규제와, 그 규제를 낳은 행정명령을 함께 반환한다.
+
+```json
+{
+  "title_number": 19,
+  "name": "Customs Duties",
+  "reserved": false,
+  "regulations": [
+    {
+      "regulation_id": "string", "title": "string", "document_type": "Rule|Proposed Rule|Notice",
+      "abstract": "string", "publication_date": "YYYY-MM-DD", "effective_on": "YYYY-MM-DD" | null,
+      "federal_register_url": "string"
+    }
+  ],
+  "executive_orders": [
+    { "eo_number": 99999, "title": "string", "signed_date": "YYYY-MM-DD", "agency_id": "string" }
+  ]
+}
+```
+규제는 여기서도 외부 링크 전용이며 목록에 abstract를 렌더링하지 않는다.
+
+---
+
 ## `GET /api/us/regulations/cfr-titles`
 → `cfr_titles` 대체
 
@@ -256,4 +296,6 @@ EO는 보통 법안번호가 아니라 **법전 조항**(U.S. Code citation)을 
 
 ## 변경 이력
 
+- 2026-08-31: 정책분야/CFR 분류 엔드포인트와 `agency_type` 추가. 화면 구조는
+  `정책 › 미국 › (의회|행정부) › 상임위·부처·분류 › 법률·행정명령`.
 - 2026-08-31: 최초 작성. `New for anti/public/data/ui-policy-mock-data.json`과 1:1 대응 (committee `ranking_member`/`subcommittees`, executive `eo_ids`/`secretary_placeholder`, legal_authorities `bill_id` 포함 — 2026-08-31 UI 반영분 기준).

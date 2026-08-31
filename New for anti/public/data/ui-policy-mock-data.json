@@ -478,6 +478,7 @@
         "agency_id": "mock-eop",
         "name": "Executive Office of the President",
         "short_name": "EOP",
+        "agency_type": "eop",
         "executive_order_count": 2,
         "secretary_placeholder": "장관 정보 준비 중",
         "eo_ids": [
@@ -486,9 +487,37 @@
         ]
       },
       {
+        "agency_id": "mock-ustr",
+        "name": "Office of the U.S. Trade Representative",
+        "short_name": "USTR",
+        "agency_type": "eop",
+        "executive_order_count": 0,
+        "secretary_placeholder": "장관 정보 준비 중",
+        "eo_ids": []
+      },
+      {
+        "agency_id": "mock-omb",
+        "name": "Office of Management and Budget",
+        "short_name": "OMB",
+        "agency_type": "eop",
+        "executive_order_count": 0,
+        "secretary_placeholder": "장관 정보 준비 중",
+        "eo_ids": []
+      },
+      {
+        "agency_id": "mock-state",
+        "name": "Department of State",
+        "short_name": "State",
+        "agency_type": "department",
+        "executive_order_count": 0,
+        "secretary_placeholder": "장관 정보 준비 중",
+        "eo_ids": []
+      },
+      {
         "agency_id": "mock-treasury",
         "name": "Department of the Treasury",
         "short_name": "Treasury",
+        "agency_type": "department",
         "executive_order_count": 1,
         "secretary_placeholder": "장관 정보 준비 중",
         "eo_ids": [
@@ -496,41 +525,28 @@
         ]
       },
       {
-        "agency_id": "mock-state",
-        "name": "Department of State",
-        "short_name": "State",
+        "agency_id": "mock-defense",
+        "name": "Department of Defense",
+        "short_name": "DOD",
+        "agency_type": "department",
         "executive_order_count": 0,
         "secretary_placeholder": "장관 정보 준비 중",
         "eo_ids": []
       },
       {
-        "agency_id": "mock-commerce",
-        "name": "Department of Commerce",
-        "short_name": "Commerce",
+        "agency_id": "mock-justice",
+        "name": "Department of Justice",
+        "short_name": "DOJ",
+        "agency_type": "department",
         "executive_order_count": 0,
         "secretary_placeholder": "장관 정보 준비 중",
         "eo_ids": []
       },
       {
-        "agency_id": "mock-dhs",
-        "name": "Department of Homeland Security",
-        "short_name": "DHS",
-        "executive_order_count": 0,
-        "secretary_placeholder": "장관 정보 준비 중",
-        "eo_ids": []
-      },
-      {
-        "agency_id": "mock-doe",
-        "name": "Department of Energy",
-        "short_name": "Energy",
-        "executive_order_count": 0,
-        "secretary_placeholder": "장관 정보 준비 중",
-        "eo_ids": []
-      },
-      {
-        "agency_id": "mock-dot",
-        "name": "Department of Transportation",
-        "short_name": "DOT",
+        "agency_id": "mock-interior",
+        "name": "Department of the Interior",
+        "short_name": "Interior",
+        "agency_type": "department",
         "executive_order_count": 0,
         "secretary_placeholder": "장관 정보 준비 중",
         "eo_ids": []
@@ -539,14 +555,196 @@
         "agency_id": "mock-usda",
         "name": "Department of Agriculture",
         "short_name": "USDA",
+        "agency_type": "department",
         "executive_order_count": 0,
         "secretary_placeholder": "장관 정보 준비 중",
         "eo_ids": []
       },
       {
-        "agency_id": "mock-ustr2",
-        "name": "Office of the U.S. Trade Representative",
-        "short_name": "USTR",
+        "agency_id": "mock-commerce",
+        "name": "Department of Commerce",
+        "short_name": "Commerce",
+        "agency_type": "department",
+        "executive_order_count": 0,
+        "secretary_placeholder": "장관 정보 준비 중",
+        "eo_ids": []
+      },
+      {
+        "agency_id": "mock-labor",
+        "name": "Department of Labor",
+        "short_name": "Labor",
+        "agency_type": "department",
+        "executive_order_count": 0,
+        "secretary_placeholder": "장관 정보 준비 중",
+        "eo_ids": []
+      },
+      {
+        "agency_id": "mock-hhs",
+        "name": "Department of Health and Human Services",
+        "short_name": "HHS",
+        "agency_type": "department",
+        "executive_order_count": 0,
+        "secretary_placeholder": "장관 정보 준비 중",
+        "eo_ids": []
+      },
+      {
+        "agency_id": "mock-hud",
+        "name": "Department of Housing and Urban Development",
+        "short_name": "HUD",
+        "agency_type": "department",
+        "executive_order_count": 0,
+        "secretary_placeholder": "장관 정보 준비 중",
+        "eo_ids": []
+      },
+      {
+        "agency_id": "mock-dot",
+        "name": "Department of Transportation",
+        "short_name": "DOT",
+        "agency_type": "department",
+        "executive_order_count": 0,
+        "secretary_placeholder": "장관 정보 준비 중",
+        "eo_ids": []
+      },
+      {
+        "agency_id": "mock-doe",
+        "name": "Department of Energy",
+        "short_name": "Energy",
+        "agency_type": "department",
+        "executive_order_count": 0,
+        "secretary_placeholder": "장관 정보 준비 중",
+        "eo_ids": []
+      },
+      {
+        "agency_id": "mock-education",
+        "name": "Department of Education",
+        "short_name": "Education",
+        "agency_type": "department",
+        "executive_order_count": 0,
+        "secretary_placeholder": "장관 정보 준비 중",
+        "eo_ids": []
+      },
+      {
+        "agency_id": "mock-va",
+        "name": "Department of Veterans Affairs",
+        "short_name": "VA",
+        "agency_type": "department",
+        "executive_order_count": 0,
+        "secretary_placeholder": "장관 정보 준비 중",
+        "eo_ids": []
+      },
+      {
+        "agency_id": "mock-dhs",
+        "name": "Department of Homeland Security",
+        "short_name": "DHS",
+        "agency_type": "department",
+        "executive_order_count": 0,
+        "secretary_placeholder": "장관 정보 준비 중",
+        "eo_ids": []
+      },
+      {
+        "agency_id": "mock-epa",
+        "name": "Environmental Protection Agency",
+        "short_name": "EPA",
+        "agency_type": "independent",
+        "executive_order_count": 0,
+        "secretary_placeholder": "장관 정보 준비 중",
+        "eo_ids": []
+      },
+      {
+        "agency_id": "mock-sec",
+        "name": "Securities and Exchange Commission",
+        "short_name": "SEC",
+        "agency_type": "independent",
+        "executive_order_count": 0,
+        "secretary_placeholder": "장관 정보 준비 중",
+        "eo_ids": []
+      },
+      {
+        "agency_id": "mock-fcc",
+        "name": "Federal Communications Commission",
+        "short_name": "FCC",
+        "agency_type": "independent",
+        "executive_order_count": 0,
+        "secretary_placeholder": "장관 정보 준비 중",
+        "eo_ids": []
+      },
+      {
+        "agency_id": "mock-ftc",
+        "name": "Federal Trade Commission",
+        "short_name": "FTC",
+        "agency_type": "independent",
+        "executive_order_count": 0,
+        "secretary_placeholder": "장관 정보 준비 중",
+        "eo_ids": []
+      },
+      {
+        "agency_id": "mock-cftc",
+        "name": "Commodity Futures Trading Commission",
+        "short_name": "CFTC",
+        "agency_type": "independent",
+        "executive_order_count": 0,
+        "secretary_placeholder": "장관 정보 준비 중",
+        "eo_ids": []
+      },
+      {
+        "agency_id": "mock-fdic",
+        "name": "Federal Deposit Insurance Corporation",
+        "short_name": "FDIC",
+        "agency_type": "independent",
+        "executive_order_count": 0,
+        "secretary_placeholder": "장관 정보 준비 중",
+        "eo_ids": []
+      },
+      {
+        "agency_id": "mock-frb",
+        "name": "Federal Reserve System",
+        "short_name": "Federal Reserve",
+        "agency_type": "independent",
+        "executive_order_count": 0,
+        "secretary_placeholder": "장관 정보 준비 중",
+        "eo_ids": []
+      },
+      {
+        "agency_id": "mock-nrc",
+        "name": "Nuclear Regulatory Commission",
+        "short_name": "NRC",
+        "agency_type": "independent",
+        "executive_order_count": 0,
+        "secretary_placeholder": "장관 정보 준비 중",
+        "eo_ids": []
+      },
+      {
+        "agency_id": "mock-nasa",
+        "name": "National Aeronautics and Space Administration",
+        "short_name": "NASA",
+        "agency_type": "independent",
+        "executive_order_count": 0,
+        "secretary_placeholder": "장관 정보 준비 중",
+        "eo_ids": []
+      },
+      {
+        "agency_id": "mock-sba",
+        "name": "Small Business Administration",
+        "short_name": "SBA",
+        "agency_type": "independent",
+        "executive_order_count": 0,
+        "secretary_placeholder": "장관 정보 준비 중",
+        "eo_ids": []
+      },
+      {
+        "agency_id": "mock-nlrb",
+        "name": "National Labor Relations Board",
+        "short_name": "NLRB",
+        "agency_type": "independent",
+        "executive_order_count": 0,
+        "secretary_placeholder": "장관 정보 준비 중",
+        "eo_ids": []
+      },
+      {
+        "agency_id": "mock-ssa",
+        "name": "Social Security Administration",
+        "short_name": "SSA",
+        "agency_type": "independent",
         "executive_order_count": 0,
         "secretary_placeholder": "장관 정보 준비 중",
         "eo_ids": []
@@ -634,10 +832,88 @@
   },
   "cfr_titles": [
     {
-      "title_number": 19,
-      "name": "Customs Duties",
+      "title_number": 1,
+      "name": "General Provisions",
       "reserved": false,
-      "regulation_count": 4
+      "regulation_count": 0
+    },
+    {
+      "title_number": 2,
+      "name": "Grants and Agreements",
+      "reserved": false,
+      "regulation_count": 0
+    },
+    {
+      "title_number": 3,
+      "name": "The President",
+      "reserved": false,
+      "regulation_count": 0
+    },
+    {
+      "title_number": 4,
+      "name": "Accounts",
+      "reserved": false,
+      "regulation_count": 0
+    },
+    {
+      "title_number": 5,
+      "name": "Administrative Personnel",
+      "reserved": false,
+      "regulation_count": 0
+    },
+    {
+      "title_number": 6,
+      "name": "Domestic Security",
+      "reserved": false,
+      "regulation_count": 0
+    },
+    {
+      "title_number": 7,
+      "name": "Agriculture",
+      "reserved": false,
+      "regulation_count": 0
+    },
+    {
+      "title_number": 8,
+      "name": "Aliens and Nationality",
+      "reserved": false,
+      "regulation_count": 0
+    },
+    {
+      "title_number": 9,
+      "name": "Animals and Animal Products",
+      "reserved": false,
+      "regulation_count": 0
+    },
+    {
+      "title_number": 10,
+      "name": "Energy",
+      "reserved": false,
+      "regulation_count": 0
+    },
+    {
+      "title_number": 11,
+      "name": "Federal Elections",
+      "reserved": false,
+      "regulation_count": 0
+    },
+    {
+      "title_number": 12,
+      "name": "Banks and Banking",
+      "reserved": false,
+      "regulation_count": 0
+    },
+    {
+      "title_number": 13,
+      "name": "Business Credit and Assistance",
+      "reserved": false,
+      "regulation_count": 0
+    },
+    {
+      "title_number": 14,
+      "name": "Aeronautics and Space",
+      "reserved": false,
+      "regulation_count": 0
     },
     {
       "title_number": 15,
@@ -646,9 +922,213 @@
       "regulation_count": 3
     },
     {
+      "title_number": 16,
+      "name": "Commercial Practices",
+      "reserved": false,
+      "regulation_count": 0
+    },
+    {
+      "title_number": 17,
+      "name": "Commodity and Securities Exchanges",
+      "reserved": false,
+      "regulation_count": 0
+    },
+    {
+      "title_number": 18,
+      "name": "Conservation of Power and Water Resources",
+      "reserved": false,
+      "regulation_count": 0
+    },
+    {
+      "title_number": 19,
+      "name": "Customs Duties",
+      "reserved": false,
+      "regulation_count": 4
+    },
+    {
+      "title_number": 20,
+      "name": "Employees' Benefits",
+      "reserved": false,
+      "regulation_count": 0
+    },
+    {
+      "title_number": 21,
+      "name": "Food and Drugs",
+      "reserved": false,
+      "regulation_count": 0
+    },
+    {
+      "title_number": 22,
+      "name": "Foreign Relations",
+      "reserved": false,
+      "regulation_count": 0
+    },
+    {
+      "title_number": 23,
+      "name": "Highways",
+      "reserved": false,
+      "regulation_count": 0
+    },
+    {
+      "title_number": 24,
+      "name": "Housing and Urban Development",
+      "reserved": false,
+      "regulation_count": 0
+    },
+    {
+      "title_number": 25,
+      "name": "Indians",
+      "reserved": false,
+      "regulation_count": 0
+    },
+    {
+      "title_number": 26,
+      "name": "Internal Revenue",
+      "reserved": false,
+      "regulation_count": 0
+    },
+    {
+      "title_number": 27,
+      "name": "Alcohol, Tobacco Products and Firearms",
+      "reserved": false,
+      "regulation_count": 0
+    },
+    {
+      "title_number": 28,
+      "name": "Judicial Administration",
+      "reserved": false,
+      "regulation_count": 0
+    },
+    {
+      "title_number": 29,
+      "name": "Labor",
+      "reserved": false,
+      "regulation_count": 0
+    },
+    {
+      "title_number": 30,
+      "name": "Mineral Resources",
+      "reserved": false,
+      "regulation_count": 0
+    },
+    {
+      "title_number": 31,
+      "name": "Money and Finance: Treasury",
+      "reserved": false,
+      "regulation_count": 0
+    },
+    {
+      "title_number": 32,
+      "name": "National Defense",
+      "reserved": false,
+      "regulation_count": 0
+    },
+    {
+      "title_number": 33,
+      "name": "Navigation and Navigable Waters",
+      "reserved": false,
+      "regulation_count": 0
+    },
+    {
+      "title_number": 34,
+      "name": "Education",
+      "reserved": false,
+      "regulation_count": 0
+    },
+    {
+      "title_number": 35,
+      "name": "Reserved",
+      "reserved": true,
+      "regulation_count": 0
+    },
+    {
+      "title_number": 36,
+      "name": "Parks, Forests, and Public Property",
+      "reserved": false,
+      "regulation_count": 0
+    },
+    {
+      "title_number": 37,
+      "name": "Patents, Trademarks, and Copyrights",
+      "reserved": false,
+      "regulation_count": 0
+    },
+    {
+      "title_number": 38,
+      "name": "Pensions, Bonuses, and Veterans' Relief",
+      "reserved": false,
+      "regulation_count": 0
+    },
+    {
+      "title_number": 39,
+      "name": "Postal Service",
+      "reserved": false,
+      "regulation_count": 0
+    },
+    {
+      "title_number": 40,
+      "name": "Protection of Environment",
+      "reserved": false,
+      "regulation_count": 0
+    },
+    {
+      "title_number": 41,
+      "name": "Public Contracts and Property Management",
+      "reserved": false,
+      "regulation_count": 0
+    },
+    {
+      "title_number": 42,
+      "name": "Public Health",
+      "reserved": false,
+      "regulation_count": 0
+    },
+    {
+      "title_number": 43,
+      "name": "Public Lands: Interior",
+      "reserved": false,
+      "regulation_count": 0
+    },
+    {
+      "title_number": 44,
+      "name": "Emergency Management and Assistance",
+      "reserved": false,
+      "regulation_count": 0
+    },
+    {
+      "title_number": 45,
+      "name": "Public Welfare",
+      "reserved": false,
+      "regulation_count": 0
+    },
+    {
+      "title_number": 46,
+      "name": "Shipping",
+      "reserved": false,
+      "regulation_count": 0
+    },
+    {
+      "title_number": 47,
+      "name": "Telecommunication",
+      "reserved": false,
+      "regulation_count": 0
+    },
+    {
+      "title_number": 48,
+      "name": "Federal Acquisition Regulations System",
+      "reserved": false,
+      "regulation_count": 0
+    },
+    {
+      "title_number": 49,
+      "name": "Transportation",
+      "reserved": false,
+      "regulation_count": 0
+    },
+    {
       "title_number": 50,
       "name": "Wildlife and Fisheries",
-      "reserved": true,
+      "reserved": false,
       "regulation_count": 0
     }
   ],
@@ -683,6 +1163,174 @@
     "no_search": {
       "visible": false,
       "title": "검색 기능은 준비 중"
+    },
+    "empty_policy_area": {
+      "title": "이 분류의 법안 준비 중"
+    },
+    "empty_cfr_title": {
+      "title": "이 분류의 규제·행정명령 준비 중"
     }
-  }
+  },
+  "policy_areas": [
+    {
+      "policy_area_id": "agriculture-and-food",
+      "name": "Agriculture and Food",
+      "bill_count": null
+    },
+    {
+      "policy_area_id": "animals",
+      "name": "Animals",
+      "bill_count": null
+    },
+    {
+      "policy_area_id": "armed-forces-and-national-security",
+      "name": "Armed Forces and National Security",
+      "bill_count": null
+    },
+    {
+      "policy_area_id": "arts-culture-religion",
+      "name": "Arts, Culture, Religion",
+      "bill_count": null
+    },
+    {
+      "policy_area_id": "civil-rights-and-liberties-minority-issues",
+      "name": "Civil Rights and Liberties, Minority Issues",
+      "bill_count": null
+    },
+    {
+      "policy_area_id": "commerce",
+      "name": "Commerce",
+      "bill_count": 1
+    },
+    {
+      "policy_area_id": "congress",
+      "name": "Congress",
+      "bill_count": null
+    },
+    {
+      "policy_area_id": "crime-and-law-enforcement",
+      "name": "Crime and Law Enforcement",
+      "bill_count": null
+    },
+    {
+      "policy_area_id": "economics-and-public-finance",
+      "name": "Economics and Public Finance",
+      "bill_count": null
+    },
+    {
+      "policy_area_id": "education",
+      "name": "Education",
+      "bill_count": null
+    },
+    {
+      "policy_area_id": "emergency-management",
+      "name": "Emergency Management",
+      "bill_count": null
+    },
+    {
+      "policy_area_id": "energy",
+      "name": "Energy",
+      "bill_count": null
+    },
+    {
+      "policy_area_id": "environmental-protection",
+      "name": "Environmental Protection",
+      "bill_count": null
+    },
+    {
+      "policy_area_id": "families",
+      "name": "Families",
+      "bill_count": null
+    },
+    {
+      "policy_area_id": "finance-and-financial-sector",
+      "name": "Finance and Financial Sector",
+      "bill_count": null
+    },
+    {
+      "policy_area_id": "foreign-trade-and-international-finance",
+      "name": "Foreign Trade and International Finance",
+      "bill_count": 1
+    },
+    {
+      "policy_area_id": "government-operations-and-politics",
+      "name": "Government Operations and Politics",
+      "bill_count": null
+    },
+    {
+      "policy_area_id": "health",
+      "name": "Health",
+      "bill_count": null
+    },
+    {
+      "policy_area_id": "housing-and-community-development",
+      "name": "Housing and Community Development",
+      "bill_count": null
+    },
+    {
+      "policy_area_id": "immigration",
+      "name": "Immigration",
+      "bill_count": null
+    },
+    {
+      "policy_area_id": "international-affairs",
+      "name": "International Affairs",
+      "bill_count": null
+    },
+    {
+      "policy_area_id": "labor-and-employment",
+      "name": "Labor and Employment",
+      "bill_count": null
+    },
+    {
+      "policy_area_id": "law",
+      "name": "Law",
+      "bill_count": null
+    },
+    {
+      "policy_area_id": "native-americans",
+      "name": "Native Americans",
+      "bill_count": null
+    },
+    {
+      "policy_area_id": "public-lands-and-natural-resources",
+      "name": "Public Lands and Natural Resources",
+      "bill_count": null
+    },
+    {
+      "policy_area_id": "science-technology-communications",
+      "name": "Science, Technology, Communications",
+      "bill_count": 1
+    },
+    {
+      "policy_area_id": "social-sciences-and-history",
+      "name": "Social Sciences and History",
+      "bill_count": null
+    },
+    {
+      "policy_area_id": "social-welfare",
+      "name": "Social Welfare",
+      "bill_count": null
+    },
+    {
+      "policy_area_id": "sports-and-recreation",
+      "name": "Sports and Recreation",
+      "bill_count": null
+    },
+    {
+      "policy_area_id": "taxation",
+      "name": "Taxation",
+      "bill_count": null
+    },
+    {
+      "policy_area_id": "transportation-and-public-works",
+      "name": "Transportation and Public Works",
+      "bill_count": null
+    },
+    {
+      "policy_area_id": "water-resources-development",
+      "name": "Water Resources Development",
+      "bill_count": null
+    }
+  ]
 }
