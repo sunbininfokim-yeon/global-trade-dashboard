@@ -195,12 +195,11 @@ async function geminiEmbeddings(inputs, apiKey, model = geminiModelName()) {
         requests: inputs.map((input) => ({
           model: modelResource,
           content: { parts: [{ text: embeddingInput(input) }] },
-          // Current Gemini REST request configuration. The equivalent
-          // top-level taskType/outputDimensionality fields are deprecated.
-          embedContentConfig: {
-            taskType: 'RETRIEVAL_DOCUMENT',
-            outputDimensionality: GEMINI_EMBEDDING_DIMENSIONS,
-          },
+          // batchEmbedContents currently applies these request fields only at
+          // the request's top level. Keeping them flat ensures Gemini returns
+          // the schema-compatible 1536 dimensions rather than its 3072 default.
+          taskType: 'RETRIEVAL_DOCUMENT',
+          outputDimensionality: GEMINI_EMBEDDING_DIMENSIONS,
         })),
       }),
     },
@@ -213,7 +212,11 @@ async function geminiEmbeddings(inputs, apiKey, model = geminiModelName()) {
   if (embeddings.length !== inputs.length) {
     throw new Error(`Gemini embeddings: expected ${inputs.length} vectors, received ${embeddings.length}`);
   }
-  return embeddings.map((item) => normalizeVector(item?.values));
+  const vectors = embeddings.map((item) => normalizeVector(item?.values));
+  // Safe operational proof for Actions logs: no input text, vector values, or
+  // credentials are emitted.
+  console.log(`Gemini embeddings: model=${modelName}, vectors=${vectors.length}, dimensions=${GEMINI_EMBEDDING_DIMENSIONS}`);
+  return vectors;
 }
 
 async function mapWithConcurrency(items, concurrency, worker) {
