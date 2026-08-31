@@ -2461,6 +2461,12 @@ async function handleUsPolicy(request, env) {
                 () => usAgencyDetail(env, id));
         }
 
+        m = path.match(/^executive\/cfr-titles\/(\d{1,2})$/);
+        if (m) {
+            return await kvCachedJson(env, `us:cfr:v1:${m[1]}`, US_TTL.detail,
+                () => usCfrTitleDetail(env, Number(m[1])));
+        }
+
         return usError(`Unknown endpoint: ${url.pathname}`, 404);
     } catch (err) {
         // usFetch already stripped the upstream body of anything sensitive; the
@@ -2539,6 +2545,7 @@ async function usOverview(env) {
     const [
         committees, agencies, policyAreas, cfrTitles,
         billsPerCommittee, billsPerArea, eosPerAgency, regsPerTitle,
+        committeeAgencyRows,
     ] = await Promise.all([
         // Top-level bodies only. Subcommittees belong to the committee screen,
         // and mixing them into the grid would bury the standing committees.
@@ -2556,7 +2563,21 @@ async function usOverview(env) {
         usCountBy(env, 'bills', 'policy_area_id'),
         usCountBy(env, 'executive_order_agencies', 'agency_id'),
         usCountBy(env, 'regulation_cfr_references', 'title_number'),
+        // committee_agency_jurisdictions only carries the FK id; the name a
+        // committee card wants to show comes from the joined agencies row.
+        // Degrades to "no agency tags" the same way usCountBy does, rather
+        // than failing the whole directory screen.
+        usFetch(env, 'committee_agency_jurisdictions', 'select=committee_id,agencies(name)&limit=5000')
+            .catch((err) => { console.log(`[us] committee agency mapping unavailable: ${err.message}`); return []; }),
     ]);
+
+    const agencyNamesByCommittee = new Map();
+    for (const row of committeeAgencyRows) {
+        const name = row.agencies?.name;
+        if (!name) continue;
+        const list = agencyNamesByCommittee.get(row.committee_id);
+        if (list) list.push(name); else agencyNamesByCommittee.set(row.committee_id, [name]);
+    }
 
     return {
         ok: true,
@@ -2571,6 +2592,7 @@ async function usOverview(env) {
                     official_url: c.official_url,
                     jurisdiction_summary: c.jurisdiction_summary,
                     bill_count: countOf(billsPerCommittee, c.committee_id),
+                    agencies: agencyNamesByCommittee.get(c.committee_id) || [],
                 })),
             },
             executive_overview: {
@@ -2688,16 +2710,46 @@ async function usBillList(env, f) {
     };
 }
 
+// bill_relations has no title column of its own -- a target that is not in
+// our DB yet (target_bill_id null) carries only congress/type/number, and one
+// that is carries a bill row to join for its title. Both branches assemble
+// the same bill_id format the rest of the UI uses ("119-hr-1234").
+function shapeRelations(rows, wantSemantic) {
+    return rows
+        .filter((r) => (r.relation_origin === 'semantic') === wantSemantic)
+        .map((r) => ({
+            bill_id: r.target_bill_id || `${r.target_congress_number}-${r.target_bill_type}-${r.target_bill_number}`,
+            title: r.bills?.title || null,
+            relation_type: r.relation_type,
+            relation_origin: r.relation_origin,
+            ...(wantSemantic ? { similarity_score: r.similarity_score } : {}),
+        }));
+}
+
 async function usBillDetail(env, billId) {
-    const rows = await usFetch(env, 'bills',
-        `select=*,policy_areas(policy_area_id,name),`
-        + `bill_summaries(action_date,action_description,version_code,summary_text),`
-        + `bill_actions(action_date,action_text,action_code,chamber,normalized_stage),`
-        + `bill_votes(chamber,vote_date,question,result,yea,nay,present,not_voting,source_url),`
-        + `bill_text_versions(version_code,version_name,format_type,url,published_at),`
-        + `bill_committees(committee_id,activity_names,committees(name,chamber)),`
-        + `bill_subjects(legislative_subjects(subject_id,name))`
-        + `&bill_id=eq.${encodeURIComponent(billId)}&limit=1`);
+    const id = encodeURIComponent(billId);
+    const [rows, relations] = await Promise.all([
+        usFetch(env, 'bills',
+            `select=*,policy_areas(policy_area_id,name),`
+            + `bill_summaries(action_date,action_description,version_code,summary_text),`
+            + `bill_actions(action_date,action_text,action_code,chamber,normalized_stage),`
+            + `bill_votes(chamber,vote_date,question,result,yea_count,nay_count,present_count,not_voting_count,source_url),`
+            + `bill_text_versions(version_code,version_name,issued_on,html_url,pdf_url,formatted_text_url,source_url),`
+            + `bill_committees(committee_id,activity_names,committees(name,chamber,official_url)),`
+            + `bill_subjects(legislative_subjects(subject_id,name))`
+            + `&bill_id=eq.${id}&limit=1`),
+        // !bill_relations_target_bill_id_fkey disambiguates from the other FK
+        // this table has to `bills` (source_bill_id) -- Postgres's default name
+        // for an inline `references` clause with no explicit constraint name.
+        // A rejection (e.g. the name differs) degrades to no related bills
+        // rather than failing the whole detail view.
+        usFetch(env, 'bill_relations',
+            `select=target_bill_id,target_congress_number,target_bill_type,target_bill_number,`
+            + `relation_type,relation_origin,similarity_score,`
+            + `bills!bill_relations_target_bill_id_fkey(title)`
+            + `&source_bill_id=eq.${id}&limit=200`)
+            .catch((err) => { console.log(`[us] bill_relations unavailable: ${err.message}`); return []; }),
+    ]);
 
     if (!rows.length) throw usNotFound(`bill ${billId}`);
 
@@ -2707,6 +2759,17 @@ async function usBillDetail(env, billId) {
     delete bill.embedding;
     delete bill.raw_source;
     for (const v of bill.bill_text_versions || []) delete v.raw_source;
+
+    bill.committees = (bill.bill_committees || []).map((bc) => ({
+        committee_id: bc.committee_id,
+        name: bc.committees?.name,
+        chamber: bc.committees?.chamber,
+        official_url: bc.committees?.official_url,
+    }));
+    delete bill.bill_committees;
+
+    bill.official_related_bills = shapeRelations(relations, false);
+    bill.similar_bills = shapeRelations(relations, true);
 
     (bill.bill_actions || []).sort((a, b) => String(b.action_date).localeCompare(String(a.action_date)));
     return { ok: true, body: bill };
@@ -2744,12 +2807,34 @@ async function usEoDetail(env, eoNumber) {
     const rows = await usFetch(env, 'executive_orders',
         `select=${EO_LIST_COLUMNS},`
         + `executive_order_agencies(agencies(agency_id,name,short_name,agency_type)),`
-        + `executive_order_authorities(source_url,legal_authorities(authority_type,citation,title,official_url)),`
-        + `executive_order_regulations(regulations(regulation_id,document_type,title,publication_date,federal_register_url))`
+        + `executive_order_authorities(legal_authorities(citation,title,official_url,verification_status,linked_bill_id)),`
+        + `executive_order_regulations(regulations(regulation_id,document_type,title,publication_date,effective_on,federal_register_url))`
         + `&eo_number=eq.${eoNumber}&limit=1`);
 
     if (!rows.length) throw usNotFound(`EO ${eoNumber}`);
-    return { ok: true, body: rows[0] };
+    const eo = rows[0];
+
+    eo.agencies = (eo.executive_order_agencies || []).map((x) => x.agencies).filter(Boolean);
+    delete eo.executive_order_agencies;
+
+    // linked_bill_id -> bill_id: the UI's citation renderer only knows the
+    // generic "bill_id" name, the same as everywhere else a bill is linked.
+    eo.legal_authorities = (eo.executive_order_authorities || [])
+        .map((x) => x.legal_authorities)
+        .filter(Boolean)
+        .map((a) => ({
+            citation: a.citation,
+            title: a.title,
+            official_url: a.official_url,
+            verification_status: a.verification_status,
+            bill_id: a.linked_bill_id,
+        }));
+    delete eo.executive_order_authorities;
+
+    eo.related_regulations = (eo.executive_order_regulations || []).map((x) => x.regulations).filter(Boolean);
+    delete eo.executive_order_regulations;
+
+    return { ok: true, body: eo };
 }
 
 function usRegulationFilter(q) {
@@ -2795,23 +2880,60 @@ async function usRegulationList(env, f) {
     };
 }
 
-// Right-hand column of the committee screen: subcommittees and the agencies the
-// committee oversees. Members are not in the schema yet, so the screen keeps
-// showing its "위원장 정보 준비 중" placeholder for those.
+// Right-hand column of the committee screen: subcommittees. Everything else
+// shown there (name, jurisdiction, the verified agency-name tags) is already
+// on the committee's own /overview entry, which is where the UI reads it
+// from -- this endpoint only adds what that list doesn't carry. Members are
+// not in the schema yet, so the screen keeps its "위원장 정보 준비 중"
+// placeholder for those regardless.
 async function usCommitteeDetail(env, committeeId) {
-    const id = encodeURIComponent(committeeId);
-    const [rows, subcommittees] = await Promise.all([
-        usFetch(env, 'committees',
-            'select=committee_id,name,chamber,committee_type,official_url,jurisdiction_summary,'
-            + 'committee_agency_jurisdictions(relationship_type,mapping_source,source_url,'
-            + 'agencies(agency_id,name,short_name,agency_type))'
-            + `&committee_id=eq.${id}&limit=1`),
-        usFetch(env, 'committees',
-            `select=committee_id,name,chamber,official_url&parent_committee_id=eq.${id}&order=name.asc&limit=100`),
+    const subcommittees = await usFetch(env, 'committees',
+        `select=committee_id,name,chamber,official_url`
+        + `&parent_committee_id=eq.${encodeURIComponent(committeeId)}&order=name.asc&limit=100`);
+    return { ok: true, body: { committee_id: committeeId, subcommittees } };
+}
+
+// The CFR title screen: regulations filed under the title, plus the executive
+// orders reached through those regulations' own EO links. Per docs/api-spec.md
+// ("분류 개수"), an EO is deliberately never classified against a CFR title
+// directly -- only through a regulation that carries the title reference --
+// so this is the one place that resolves that two-hop path.
+async function usCfrTitleDetail(env, titleNumber) {
+    const [titleRows, regs] = await Promise.all([
+        usFetch(env, 'cfr_titles',
+            `select=title_number,title_name,reserved&title_number=eq.${titleNumber}&limit=1`),
+        usFetch(env, 'regulations',
+            `select=${REGULATION_LIST_COLUMNS},regulation_cfr_references!inner(title_number),`
+            + `executive_order_regulations(executive_orders(eo_number,title,signed_date))`
+            + `&regulation_cfr_references.title_number=eq.${titleNumber}`
+            + `&order=publication_date.desc.nullslast&limit=200`),
     ]);
 
-    if (!rows.length) throw usNotFound(`committee ${committeeId}`);
-    return { ok: true, body: { ...rows[0], subcommittees } };
+    if (!titleRows.length) throw usNotFound(`CFR title ${titleNumber}`);
+    const title = titleRows[0];
+
+    // Regulations map 1:1 into the list the UI already knows how to render
+    // (renderRegulations); EOs are collected into a title-wide set since the
+    // same order can implement more than one regulation under this title.
+    const eoByNumber = new Map();
+    for (const r of regs) {
+        for (const link of r.executive_order_regulations || []) {
+            if (link.executive_orders) eoByNumber.set(link.executive_orders.eo_number, link.executive_orders);
+        }
+        delete r.executive_order_regulations;
+        delete r.regulation_cfr_references;
+    }
+
+    return {
+        ok: true,
+        body: {
+            title_number: title.title_number,
+            name: title.title_name,
+            reserved: title.reserved,
+            regulations: regs,
+            executive_orders: [...eoByNumber.values()],
+        },
+    };
 }
 
 // Agency screen: the agency itself plus its 하위 기관 (agency_type='sub'). The
