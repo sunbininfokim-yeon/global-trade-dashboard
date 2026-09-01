@@ -25,6 +25,7 @@
 | T14 | Canada SAD yield + UI | cursor | `yield_model/canada/**`, `canada_*forecast.json`, registry | `cursor/pr-canada-yield` | **review** | SAD+UI+monthly Actions+gov_outlooks; model.yaml → climate_registry |
 | T15 | Russia export pulse (PSD+PortWatch) | **cursor** | `scripts/russia_export_pulse/**`, `russia_export_pulse_v1.json` | `cursor/russia-export-pulse` | **review** | 밀 수출·세계비중·기여분 + 보스포루스 보조. 다크십/피격 제외. UI는 Claude 핸드오프. |
 | T16 | EO 근거 법령 ↔ 법안 연동 (`legal_authorities.linked_bill_id`) | codex | `scripts/lib/public-law-links.js`, `scripts/sync-federal-register.js`, `scripts/sync-public-laws.js` | `codex/eo-public-law-bill-links` | **done** | PR #210 머지됨. `public_law` 타입만 `Pub. L.`/`Public Law` 표기 매칭, usc/constitution은 그대로 외부링크. **주의**: `P.L. 119-45`/`PL 119-45` 축약형은 정규식이 못 잡음 — 실제 동기화 안 돌려본 상태라 실전 영향 미확인. 다음 정상 동기화 후 `data_sync_runs.metadata.public_law_authority_links.citation_unparseable` 값 확인할 것 |
+| T17 | dedup 이중 URL 인코딩 버그 3곳 + EO 전용 백필 모드 | codex | `scripts/sync-congress.js` (274/319/327줄), `scripts/sync-federal-register.js` | — | ready | (1) `encodeURIComponent`를 `supabaseGet` 쿼리 값에 또 씌워서 공백 있는 값(예: `"Enrolled Bill"`)이 dedup 매칭 실패 → INSERT 재시도 → unique 제약 위반 → 10회 후 영구 `failed`. 실제로 `119-hr-3377`/`119-hr-7194` 재현됨. (2) `sync-federal-register.js`가 `PRESDOCU`/`RULE`/`PRORULE`을 항상 같이 받아서, EO만 역대로 넓게 백필하려면 규제까지 폭증. `FR_TYPES` 환경변수로 필터링 가능하게 요청. 상세 프롬프트: 세션 스크래치패드 `codex-fr-fixes.md` |
 
 ## 백로그
 
