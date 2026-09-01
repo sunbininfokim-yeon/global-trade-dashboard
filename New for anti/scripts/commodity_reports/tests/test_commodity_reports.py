@@ -191,6 +191,24 @@ class BuildTests(unittest.TestCase):
         # Feeds with no fixture must be reported, not silently counted as empty.
         self.assertTrue(any(s.get("error") == "fixture_missing" for s in self.doc["feed_status"]))
 
+    def test_nass_ag_prices_routes_to_every_commodity_it_names(self):
+        # Real-world case: NASS's "Agricultural Prices" is one report covering many
+        # crops at once. It has to land on each commodity's USA window, not just one,
+        # and be recognized as the named series rather than an unranked mention.
+        index = self.doc["index"]
+        by_id = {i["id"]: i for i in self.doc["items"]}
+        for commodity in ("corn", "wheat", "soybeans"):
+            ids = index[commodity]["USA"]
+            matches = [rid for rid in ids if by_id[rid]["series_id"] == "USDA_AG_PRICES"]
+            self.assertTrue(matches, f"Agricultural Prices missing from {commodity}·USA")
+
+    def test_report_with_no_tracked_commodity_is_reported_not_silently_dropped(self):
+        # "Egg Products" names no commodity this dashboard tracks (no egg window
+        # exists). It must show up in pending_review so a missing alias is visible,
+        # rather than vanishing with no trace.
+        titles = [p["title"] for p in self.doc["pending_review"]]
+        self.assertIn("Egg Products", titles)
+
     def test_windows_are_addressable_by_commodity_and_iso3(self):
         index = self.doc["index"]
         self.assertIn("USA", index["soybeans"])

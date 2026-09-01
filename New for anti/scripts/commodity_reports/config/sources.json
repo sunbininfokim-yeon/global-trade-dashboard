@@ -21,6 +21,33 @@
       "notes": "Department-wide releases; WASDE, Crop Production and Prospective Plantings all announce here."
     },
     {
+      "id": "us_nass_todays_reports",
+      "agency": "USDA NASS", "agency_ko": "미 농무부 국립농업통계청(NASS)",
+      "default_country": "USA",
+      "kind": "rss",
+      "url": "http://www.nass.usda.gov/rss/reports.xml",
+      "lang": "en", "enabled": true, "weight": 1.5,
+      "notes": "URL confirmed 2026-09-01 by the operator directly from NASS's own syndication/subscribe page (Newsroom/Syndication/Todays_Reports) -- not this session's guess. Each item is one day's released report (Crop Production, Grain Stocks, Agricultural Prices, Egg Products...); this is the machine-readable form of the 'Today's Reports' list on nass.usda.gov/Publications. Still worth checking feed_status on first live run: this session cannot reach nass.usda.gov to confirm the feed itself parses."
+    },
+    {
+      "id": "us_nass_asb",
+      "agency": "USDA Agricultural Statistics Board", "agency_ko": "미 농무부 농업통계위원회(ASB)",
+      "default_country": "USA",
+      "kind": "rss",
+      "url": "http://www.nass.usda.gov/rss/asb.xml",
+      "lang": "en", "enabled": true, "weight": 1.6,
+      "notes": "URL confirmed 2026-09-01 by the operator (see us_nass_todays_reports). ASB is the board that clears NASS's major statistical releases for embargoed publication -- higher weight than the plain reports feed for that reason."
+    },
+    {
+      "id": "us_nass_news",
+      "agency": "USDA NASS", "agency_ko": "미 농무부 국립농업통계청(NASS)",
+      "default_country": "USA",
+      "kind": "rss",
+      "url": "http://www.nass.usda.gov/rss/news.xml",
+      "lang": "en", "enabled": true, "weight": 1.0,
+      "notes": "URL confirmed 2026-09-01 by the operator (see us_nass_todays_reports). General NASS news/events, not release announcements -- lower weight, may overlap with us_usda_newsroom."
+    },
+    {
       "id": "us_usda_ers_newsroom",
       "agency": "USDA ERS", "agency_ko": "미 농무부 경제조사국",
       "default_country": "USA",
