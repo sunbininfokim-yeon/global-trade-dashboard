@@ -407,7 +407,7 @@ async function refreshSemanticRelations(items) {
         p_embedding_model: item.embeddingModel,
         p_similarity_threshold: SEMANTIC_SIMILARITY_THRESHOLD,
         p_result_limit: MAX_SEMANTIC_SIMILAR_BILLS,
-      });
+      }, 'return=representation');
       stats.refreshed += 1;
       const scalarCount = Array.isArray(relationCount)
         ? relationCount[0]?.refresh_bill_semantic_relations
