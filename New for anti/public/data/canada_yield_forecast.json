@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-07T00:31:42.585006+00:00",
+  "generated_at": "2026-09-01T11:08:47.402664+00:00",
   "country": "Canada",
   "season": 2026,
   "method": "SAD/CAR first (StatsCan 32-10-0002) with region-specific feature packs; province (32-10-0359) weather fallback; else log-linear trend. NASA POWER climate; forward-chaining skill gate ≥10%. Trend-only rows keep climate_risk (stance/gap/risks) for UI. Monthly refresh also scrapes AAFC/StatsCan outlooks + prairie weekly crop-report cadence.",
@@ -86,113 +86,114 @@
       "label_scale": "sad",
       "season": 2026,
       "unit": "kg/ha",
-      "point": 1839.5134259563388,
+      "point": 1584.0174603046967,
       "range_68": [
-        1243.5018525928363,
-        2446.013856387583
+        995.0833914752741,
+        2173.8369307499443
       ],
       "range_95": [
-        967.6631379281266,
-        2726.3065121185205
+        725.3119062915282,
+        2450.559352387768
       ],
-      "trend": 1639.4840139008008,
-      "weather_model_point": 1839.5134259563388,
-      "weather_effect_pct": 12.200754039657324,
+      "trend": 1639.4840139007952,
+      "weather_model_point": 1584.0174603046967,
+      "weather_effect_pct": -3.3831713591478074,
       "operational_choice": "ridge_weather",
       "low_confidence": false,
       "beats_trend": true,
       "climate_risk": {
-        "stance": "favorable",
-        "stance_ko": "유리",
-        "diagnostic_gap_pct": 12.2,
+        "stance": "unfavorable",
+        "stance_ko": "불리",
+        "diagnostic_gap_pct": -3.38,
         "drivers": [
           {
-            "feature": "vpd_flowering_z20",
-            "label_ko": "개화기 VPD",
-            "anomaly": -1.249,
-            "log_contribution": 0.0608,
-            "direction": "favor"
+            "feature": "hsu_flower_z20",
+            "label_ko": "개화기 고온누적(HSU)",
+            "anomaly": 0.834,
+            "log_contribution": -0.0195,
+            "direction": "adverse"
           },
           {
             "feature": "heat_dry_stress_z20",
             "label_ko": "고온×건조",
-            "anomaly": -0.62,
-            "log_contribution": 0.0222,
-            "direction": "favor"
-          },
-          {
-            "feature": "hsu_flower_z20",
-            "label_ko": "개화기 고온누적(HSU)",
-            "anomaly": -0.56,
-            "log_contribution": 0.021,
-            "direction": "favor"
+            "anomaly": 0.807,
+            "log_contribution": -0.0184,
+            "direction": "adverse"
           },
           {
             "feature": "rain_growing_z20",
             "label_ko": "생육기 강수",
-            "anomaly": 0.428,
-            "log_contribution": 0.0111,
+            "anomaly": 0.069,
+            "log_contribution": 0.004,
             "direction": "favor"
+          },
+          {
+            "feature": "vpd_flowering_z20",
+            "label_ko": "개화기 VPD",
+            "anomaly": 0.087,
+            "log_contribution": -0.0005,
+            "direction": "adverse"
           }
         ],
-        "risks": [],
-        "favors": [
-          "개화기 VPD이(가) 단수를 받치는 쪽",
-          "고온×건조이(가) 단수를 받치는 쪽",
-          "개화기 고온누적(HSU)이(가) 단수를 받치는 쪽"
+        "risks": [
+          "개화기 고온누적(HSU)이(가) 단수를 누르는 쪽",
+          "고온×건조이(가) 단수를 누르는 쪽"
         ],
-        "reason_ko": "기상 모델 운영. 기후 전망은 추세 대비 +12.2% (유리).",
+        "favors": [
+          "생육기 강수이(가) 단수를 받치는 쪽"
+        ],
+        "reason_ko": "기상 모델 운영. 기후 전망은 추세 대비 -3.4% (불리). 리스크: 개화기 고온누적(HSU)이(가) 단수를 누르는 쪽; 고온×건조이(가) 단수를 누르는 쪽.",
         "note": "diagnostic_gap_pct = climate-model vs trend. Operational point may be trend-only when skill gate fails."
       },
-      "reason_ko": "기상 모델 운영. 기후 전망은 추세 대비 +12.2% (유리).",
+      "reason_ko": "기상 모델 운영. 기후 전망은 추세 대비 -3.4% (불리). 리스크: 개화기 고온누적(HSU)이(가) 단수를 누르는 쪽; 고온×건조이(가) 단수를 누르는 쪽.",
       "last_actual": {
         "year": 2025,
         "yield": 1793.0,
         "status": "estimate"
       },
       "season_progress": {
-        "observed_through": "2026-07-31",
-        "critical_window_observed": 0.6013071895424836,
+        "observed_through": "2026-08-27",
+        "critical_window_observed": 0.7777777777777778,
         "future_weather_fill": "20-member historical-year weather ensemble",
         "weather_scenario_count": 20,
         "weather_scenario_p16_p84": [
-          1831.4413349292224,
-          1858.0743740511969
+          1583.0228738116698,
+          1585.8974484135485
         ],
         "nwp_integrated": false
       },
       "features": [
         {
           "feature": "hsu_flower_z20",
-          "anomaly": -0.56,
-          "log_contribution": 0.021
+          "anomaly": 0.834,
+          "log_contribution": -0.0195
         },
         {
           "feature": "heat_dry_stress_z20",
-          "anomaly": -0.62,
-          "log_contribution": 0.0222
+          "anomaly": 0.807,
+          "log_contribution": -0.0184
         },
         {
           "feature": "rain_growing_z20",
-          "anomaly": 0.428,
-          "log_contribution": 0.0111
+          "anomaly": 0.069,
+          "log_contribution": 0.004
         },
         {
           "feature": "vpd_flowering_z20",
-          "anomaly": -1.249,
-          "log_contribution": 0.0608
+          "anomaly": 0.087,
+          "log_contribution": -0.0005
         }
       ],
       "skill": {
-        "rmse": 432.47507867598665,
-        "mae": 355.33264466350954,
-        "baseline_rmse": 547.0345107835865,
-        "skill_vs_trend": 0.20941902174234295,
-        "recent_rmse": 459.778326440427,
-        "recent_baseline_rmse": 603.7321569229691,
-        "recent_skill_vs_trend": 0.23843989231289087,
-        "detrended_r2": 0.3176901321628087,
-        "recent_trend_bias": 342.3251641199653,
+        "rmse": 432.4750786759998,
+        "mae": 355.33264466352114,
+        "baseline_rmse": 547.0345107835783,
+        "skill_vs_trend": 0.2094190217423071,
+        "recent_rmse": 459.77832644043525,
+        "recent_baseline_rmse": 603.7321569229545,
+        "recent_skill_vs_trend": 0.23843989231285878,
+        "detrended_r2": 0.3176901321627503,
+        "recent_trend_bias": 342.3251641199631,
         "features": [
           "hsu_flower_z20",
           "heat_dry_stress_z20",
@@ -250,32 +251,39 @@
       "label_scale": "sad",
       "season": 2026,
       "unit": "kg/ha",
-      "point": 2691.1130080411767,
+      "point": 2374.623778101087,
       "range_68": [
-        2372.779443936127,
-        3020.403144132614
+        2084.155780553148,
+        2707.5020793442895
       ],
       "range_95": [
-        1908.9183227959352,
-        3539.759193756739
+        1625.7202466178408,
+        3181.0859821649537
       ],
       "trend": 2549.2873081531516,
-      "weather_model_point": 2691.1130080411767,
-      "weather_effect_pct": 5.563347035637656,
+      "weather_model_point": 2374.623778101087,
+      "weather_effect_pct": -6.851465093536313,
       "operational_choice": "ridge_weather",
       "low_confidence": false,
       "beats_trend": true,
       "climate_risk": {
-        "stance": "favorable",
-        "stance_ko": "유리",
-        "diagnostic_gap_pct": 5.56,
+        "stance": "unfavorable",
+        "stance_ko": "불리",
+        "diagnostic_gap_pct": -6.85,
         "drivers": [
           {
             "feature": "hsu_flower_z20",
             "label_ko": "개화기 고온누적(HSU)",
-            "anomaly": -0.827,
-            "log_contribution": 0.0531,
-            "direction": "favor"
+            "anomaly": 1.201,
+            "log_contribution": -0.0538,
+            "direction": "adverse"
+          },
+          {
+            "feature": "rain_growing_z20",
+            "label_ko": "생육기 강수",
+            "anomaly": -0.572,
+            "log_contribution": -0.0162,
+            "direction": "adverse"
           },
           {
             "feature": "sm_preseason_z20",
@@ -290,52 +298,46 @@
             "anomaly": 0.336,
             "log_contribution": -0.0042,
             "direction": "adverse"
-          },
-          {
-            "feature": "sm_flowering_z20",
-            "label_ko": "개화기 토양수분",
-            "anomaly": 1.463,
-            "log_contribution": 0.0021,
-            "direction": "favor"
           }
         ],
         "risks": [
+          "개화기 고온누적(HSU)이(가) 단수를 누르는 쪽",
+          "생육기 강수이(가) 단수를 누르는 쪽",
           "동절 강수이(가) 단수를 누르는 쪽"
         ],
         "favors": [
-          "개화기 고온누적(HSU)이(가) 단수를 받치는 쪽",
           "파종 전 토양수분이(가) 단수를 받치는 쪽"
         ],
-        "reason_ko": "기상 모델 운영. 기후 전망은 추세 대비 +5.6% (유리). 리스크: 동절 강수이(가) 단수를 누르는 쪽.",
+        "reason_ko": "기상 모델 운영. 기후 전망은 추세 대비 -6.9% (불리). 리스크: 개화기 고온누적(HSU)이(가) 단수를 누르는 쪽; 생육기 강수이(가) 단수를 누르는 쪽; 동절 강수이(가) 단수를 누르는 쪽.",
         "note": "diagnostic_gap_pct = climate-model vs trend. Operational point may be trend-only when skill gate fails."
       },
-      "reason_ko": "기상 모델 운영. 기후 전망은 추세 대비 +5.6% (유리). 리스크: 동절 강수이(가) 단수를 누르는 쪽.",
+      "reason_ko": "기상 모델 운영. 기후 전망은 추세 대비 -6.9% (불리). 리스크: 개화기 고온누적(HSU)이(가) 단수를 누르는 쪽; 생육기 강수이(가) 단수를 누르는 쪽; 동절 강수이(가) 단수를 누르는 쪽.",
       "last_actual": {
         "year": 2025,
         "yield": 2499.0,
         "status": "estimate"
       },
       "season_progress": {
-        "observed_through": "2026-07-31",
-        "critical_window_observed": 0.6013071895424836,
+        "observed_through": "2026-08-27",
+        "critical_window_observed": 0.7777777777777778,
         "future_weather_fill": "20-member historical-year weather ensemble",
         "weather_scenario_count": 20,
         "weather_scenario_p16_p84": [
-          2655.94650711092,
-          2737.2360809578217
+          2367.32284372795,
+          2424.3350161694875
         ],
         "nwp_integrated": false
       },
       "features": [
         {
           "feature": "rain_growing_z20",
-          "anomaly": -0.185,
-          "log_contribution": -0.0019
+          "anomaly": -0.572,
+          "log_contribution": -0.0162
         },
         {
           "feature": "hsu_flower_z20",
-          "anomaly": -0.827,
-          "log_contribution": 0.0531
+          "anomaly": 1.201,
+          "log_contribution": -0.0538
         },
         {
           "feature": "frost_sep_z20",
@@ -344,8 +346,8 @@
         },
         {
           "feature": "rain_flowering_z20",
-          "anomaly": -0.034,
-          "log_contribution": 0.0011
+          "anomaly": -0.263,
+          "log_contribution": -0.0006
         },
         {
           "feature": "sm_preseason_z20",
@@ -354,8 +356,8 @@
         },
         {
           "feature": "sm_flowering_z20",
-          "anomaly": 1.463,
-          "log_contribution": 0.0021
+          "anomaly": -0.134,
+          "log_contribution": -0.0002
         },
         {
           "feature": "rain_winter_z20",
@@ -364,15 +366,15 @@
         }
       ],
       "skill": {
-        "rmse": 313.58204204189354,
-        "mae": 248.56474706065657,
-        "baseline_rmse": 360.19651150677225,
-        "skill_vs_trend": 0.1294139947937899,
-        "recent_rmse": 257.64269728515757,
-        "recent_baseline_rmse": 343.21405575118496,
-        "recent_skill_vs_trend": 0.24932358402029675,
-        "detrended_r2": 0.10051346488058299,
-        "recent_trend_bias": -80.51718413885953,
+        "rmse": 313.5820420418968,
+        "mae": 248.5647470606575,
+        "baseline_rmse": 360.1965115067668,
+        "skill_vs_trend": 0.1294139947937677,
+        "recent_rmse": 257.64269728514523,
+        "recent_baseline_rmse": 343.21405575117024,
+        "recent_skill_vs_trend": 0.24932358402030053,
+        "detrended_r2": 0.10051346488052038,
+        "recent_trend_bias": -80.51718413886013,
         "features": [
           "rain_growing_z20",
           "hsu_flower_z20",
@@ -435,36 +437,29 @@
       "unit": "kg/ha",
       "point": 2710.55198902171,
       "range_68": [
-        2298.3000775514265,
-        3122.8039004919938
+        2298.3000775513956,
+        3122.8039004920247
       ],
       "range_95": [
-        1858.7762205724619,
-        3562.327757470958
+        1858.7762205724296,
+        3562.327757470991
       ],
       "trend": 2710.55198902171,
-      "weather_model_point": 2846.185618577947,
-      "weather_effect_pct": 5.003911753236268,
+      "weather_model_point": 2770.2263268268043,
+      "weather_effect_pct": 2.201556658820314,
       "operational_choice": "trend_only",
       "low_confidence": true,
       "beats_trend": false,
       "climate_risk": {
         "stance": "favorable",
         "stance_ko": "유리",
-        "diagnostic_gap_pct": 5.0,
+        "diagnostic_gap_pct": 2.2,
         "drivers": [
           {
             "feature": "sm_flowering_z20",
             "label_ko": "개화기 토양수분",
-            "anomaly": 3.062,
-            "log_contribution": 0.0389,
-            "direction": "favor"
-          },
-          {
-            "feature": "hsu_flower_z20",
-            "label_ko": "개화기 고온누적(HSU)",
-            "anomaly": -0.781,
-            "log_contribution": 0.0354,
+            "anomaly": 2.62,
+            "log_contribution": 0.0332,
             "direction": "favor"
           },
           {
@@ -473,6 +468,13 @@
             "anomaly": 1.383,
             "log_contribution": -0.0196,
             "direction": "adverse"
+          },
+          {
+            "feature": "hsu_flower_z20",
+            "label_ko": "개화기 고온누적(HSU)",
+            "anomaly": -0.314,
+            "log_contribution": 0.0159,
+            "direction": "favor"
           },
           {
             "feature": "sm_preseason_z20",
@@ -491,18 +493,18 @@
           "개화기 고온누적(HSU)이(가) 단수를 받치는 쪽",
           "생육기 강수이(가) 단수를 받치는 쪽"
         ],
-        "reason_ko": "검증 스킬 미달로 운영 전망은 추세. 기후 진단 모델은 추세 대비 +5.0% (유리) — 전망 갭(진단−추세)이 시즌 유리/불리 신호. 주요 리스크: 동절 강수이(가) 단수를 누르는 쪽; 파종 전 토양수분이(가) 단수를 누르는 쪽.",
+        "reason_ko": "검증 스킬 미달로 운영 전망은 추세. 기후 진단 모델은 추세 대비 +2.2% (유리) — 전망 갭(진단−추세)이 시즌 유리/불리 신호. 주요 리스크: 동절 강수이(가) 단수를 누르는 쪽; 파종 전 토양수분이(가) 단수를 누르는 쪽.",
         "note": "diagnostic_gap_pct = climate-model vs trend. Operational point may be trend-only when skill gate fails."
       },
-      "reason_ko": "검증 스킬 미달로 운영 전망은 추세. 기후 진단 모델은 추세 대비 +5.0% (유리) — 전망 갭(진단−추세)이 시즌 유리/불리 신호. 주요 리스크: 동절 강수이(가) 단수를 누르는 쪽; 파종 전 토양수분이(가) 단수를 누르는 쪽.",
+      "reason_ko": "검증 스킬 미달로 운영 전망은 추세. 기후 진단 모델은 추세 대비 +2.2% (유리) — 전망 갭(진단−추세)이 시즌 유리/불리 신호. 주요 리스크: 동절 강수이(가) 단수를 누르는 쪽; 파종 전 토양수분이(가) 단수를 누르는 쪽.",
       "last_actual": {
         "year": 2025,
         "yield": 2627.0,
         "status": "estimate"
       },
       "season_progress": {
-        "observed_through": "2026-07-31",
-        "critical_window_observed": 0.6013071895424836,
+        "observed_through": "2026-08-27",
+        "critical_window_observed": 0.7777777777777778,
         "future_weather_fill": "20-member historical-year weather ensemble",
         "weather_scenario_count": 20,
         "weather_scenario_p16_p84": [
@@ -514,13 +516,13 @@
       "features": [
         {
           "feature": "rain_growing_z20",
-          "anomaly": 0.856,
+          "anomaly": 0.849,
           "log_contribution": 0.0064
         },
         {
           "feature": "hsu_flower_z20",
-          "anomaly": -0.781,
-          "log_contribution": 0.0354
+          "anomaly": -0.314,
+          "log_contribution": 0.0159
         },
         {
           "feature": "frost_sep_z20",
@@ -529,8 +531,8 @@
         },
         {
           "feature": "rain_flowering_z20",
-          "anomaly": 0.198,
-          "log_contribution": 0.002
+          "anomaly": -0.098,
+          "log_contribution": -0.0009
         },
         {
           "feature": "sm_preseason_z20",
@@ -539,8 +541,8 @@
         },
         {
           "feature": "sm_flowering_z20",
-          "anomaly": 3.062,
-          "log_contribution": 0.0389
+          "anomaly": 2.62,
+          "log_contribution": 0.0332
         },
         {
           "feature": "rain_winter_z20",
@@ -549,15 +551,15 @@
         }
       ],
       "skill": {
-        "rmse": 417.7069173793828,
-        "mae": 353.7091096978999,
-        "baseline_rmse": 384.9115982559004,
-        "skill_vs_trend": -0.08520221077276835,
-        "recent_rmse": 361.11231241074603,
-        "recent_baseline_rmse": 352.2716290649586,
-        "recent_skill_vs_trend": -0.025096211605951435,
-        "detrended_r2": -0.30756327735146494,
-        "recent_trend_bias": -25.828618811171737,
+        "rmse": 417.7069173793818,
+        "mae": 353.7091096979028,
+        "baseline_rmse": 384.91159825589847,
+        "skill_vs_trend": -0.08520221077277146,
+        "recent_rmse": 361.1123124107355,
+        "recent_baseline_rmse": 352.2716290649515,
+        "recent_skill_vs_trend": -0.02509621160594211,
+        "detrended_r2": -0.3075632773515087,
+        "recent_trend_bias": -25.828618811186697,
         "features": [
           "rain_growing_z20",
           "hsu_flower_z20",
@@ -618,45 +620,45 @@
       "label_scale": "sad",
       "season": 2026,
       "unit": "kg/ha",
-      "point": 2448.119509267315,
+      "point": 1878.6503455660686,
       "range_68": [
-        1849.4532463346995,
-        3013.871442519678
+        1324.5984839373532,
+        2417.338046676653
       ],
       "range_95": [
-        1413.9465194211564,
-        3436.7308214560617
+        906.8029872278898,
+        2824.0654351305484
       ],
       "trend": 2098.2192741303725,
-      "weather_model_point": 2448.119509267315,
-      "weather_effect_pct": 16.676056666287288,
+      "weather_model_point": 1878.6503455660686,
+      "weather_effect_pct": -10.464536822792569,
       "operational_choice": "ridge_weather",
       "low_confidence": false,
       "beats_trend": true,
       "climate_risk": {
-        "stance": "favorable",
-        "stance_ko": "유리",
-        "diagnostic_gap_pct": 16.68,
+        "stance": "unfavorable",
+        "stance_ko": "불리",
+        "diagnostic_gap_pct": -10.46,
         "drivers": [
           {
             "feature": "vpd_heading_z20",
             "label_ko": "출수기 VPD",
-            "anomaly": -0.798,
-            "log_contribution": 0.2216,
-            "direction": "favor"
+            "anomaly": 0.76,
+            "log_contribution": -0.1431,
+            "direction": "adverse"
           },
           {
             "feature": "heat_excess_jul_z20",
             "label_ko": "7월 고온초과",
-            "anomaly": -0.521,
-            "log_contribution": -0.0408,
-            "direction": "adverse"
+            "anomaly": 1.036,
+            "log_contribution": 0.0406,
+            "direction": "favor"
           },
           {
             "feature": "rain_growing_z20",
             "label_ko": "생육기 강수",
-            "anomaly": 0.428,
-            "log_contribution": -0.0252,
+            "anomaly": 0.069,
+            "log_contribution": -0.0087,
             "direction": "adverse"
           },
           {
@@ -668,47 +670,47 @@
           }
         ],
         "risks": [
-          "7월 고온초과이(가) 단수를 누르는 쪽",
+          "출수기 VPD이(가) 단수를 누르는 쪽",
           "생육기 강수이(가) 단수를 누르는 쪽"
         ],
         "favors": [
-          "출수기 VPD이(가) 단수를 받치는 쪽"
+          "7월 고온초과이(가) 단수를 받치는 쪽"
         ],
-        "reason_ko": "기상 모델 운영. 기후 전망은 추세 대비 +16.7% (유리). 리스크: 7월 고온초과이(가) 단수를 누르는 쪽; 생육기 강수이(가) 단수를 누르는 쪽.",
+        "reason_ko": "기상 모델 운영. 기후 전망은 추세 대비 -10.5% (불리). 리스크: 출수기 VPD이(가) 단수를 누르는 쪽; 생육기 강수이(가) 단수를 누르는 쪽.",
         "note": "diagnostic_gap_pct = climate-model vs trend. Operational point may be trend-only when skill gate fails."
       },
-      "reason_ko": "기상 모델 운영. 기후 전망은 추세 대비 +16.7% (유리). 리스크: 7월 고온초과이(가) 단수를 누르는 쪽; 생육기 강수이(가) 단수를 누르는 쪽.",
+      "reason_ko": "기상 모델 운영. 기후 전망은 추세 대비 -10.5% (불리). 리스크: 출수기 VPD이(가) 단수를 누르는 쪽; 생육기 강수이(가) 단수를 누르는 쪽.",
       "last_actual": {
         "year": 2025,
         "yield": 2116.0,
         "status": "estimate"
       },
       "season_progress": {
-        "observed_through": "2026-07-31",
-        "critical_window_observed": 0.6013071895424836,
+        "observed_through": "2026-08-27",
+        "critical_window_observed": 0.7777777777777778,
         "future_weather_fill": "20-member historical-year weather ensemble",
         "weather_scenario_count": 20,
         "weather_scenario_p16_p84": [
-          2384.5369041439258,
-          2478.787784710452
+          1859.6821417465926,
+          1882.2543888674136
         ],
         "nwp_integrated": false
       },
       "features": [
         {
           "feature": "heat_excess_jul_z20",
-          "anomaly": -0.521,
-          "log_contribution": -0.0408
+          "anomaly": 1.036,
+          "log_contribution": 0.0406
         },
         {
           "feature": "rain_growing_z20",
-          "anomaly": 0.428,
-          "log_contribution": -0.0252
+          "anomaly": 0.069,
+          "log_contribution": -0.0087
         },
         {
           "feature": "vpd_heading_z20",
-          "anomaly": -0.798,
-          "log_contribution": 0.2216
+          "anomaly": 0.76,
+          "log_contribution": -0.1431
         },
         {
           "feature": "frost_sep_z20",
@@ -717,15 +719,15 @@
         }
       ],
       "skill": {
-        "rmse": 422.6655101883213,
-        "mae": 346.1616089212302,
-        "baseline_rmse": 519.787143363889,
-        "skill_vs_trend": 0.18684885614336055,
-        "recent_rmse": 357.9473244843862,
-        "recent_baseline_rmse": 485.9531903343188,
-        "recent_skill_vs_trend": 0.2634119260784543,
-        "detrended_r2": 0.33711853248375323,
-        "recent_trend_bias": 111.16788379824386,
+        "rmse": 422.6655101883299,
+        "mae": 346.1616089212345,
+        "baseline_rmse": 519.7871433638867,
+        "skill_vs_trend": 0.18684885614334057,
+        "recent_rmse": 357.9473244843901,
+        "recent_baseline_rmse": 485.9531903343106,
+        "recent_skill_vs_trend": 0.2634119260784338,
+        "detrended_r2": 0.33711853248372026,
+        "recent_trend_bias": 111.16788379824179,
         "features": [
           "heat_excess_jul_z20",
           "rain_growing_z20",
@@ -783,36 +785,29 @@
       "unit": "kg/ha",
       "point": 3661.3457122607297,
       "range_68": [
-        2705.4472788925596,
-        4617.2441456289
+        2705.447278892504,
+        4617.244145628955
       ],
       "range_95": [
-        2227.1438413720266,
-        5095.547583149433
+        2227.1438413720225,
+        5095.547583149437
       ],
       "trend": 3661.3457122607297,
-      "weather_model_point": 3869.001690278466,
-      "weather_effect_pct": 5.671575271418905,
+      "weather_model_point": 3824.291362847356,
+      "weather_effect_pct": 4.45043061738124,
       "operational_choice": "trend_only",
       "low_confidence": true,
       "beats_trend": false,
       "climate_risk": {
         "stance": "favorable",
         "stance_ko": "유리",
-        "diagnostic_gap_pct": 5.67,
+        "diagnostic_gap_pct": 4.45,
         "drivers": [
           {
             "feature": "sm_heading_z20",
             "label_ko": "출수기 토양수분",
-            "anomaly": 3.408,
-            "log_contribution": 0.0256,
-            "direction": "favor"
-          },
-          {
-            "feature": "heat_excess_jul_z20",
-            "label_ko": "7월 고온초과",
-            "anomaly": -0.766,
-            "log_contribution": 0.0104,
+            "anomaly": 2.661,
+            "log_contribution": 0.0202,
             "direction": "favor"
           },
           {
@@ -820,6 +815,13 @@
             "label_ko": "동절 강수",
             "anomaly": 1.383,
             "log_contribution": 0.0073,
+            "direction": "favor"
+          },
+          {
+            "feature": "heat_excess_jul_z20",
+            "label_ko": "7월 고온초과",
+            "anomaly": -0.333,
+            "log_contribution": 0.0055,
             "direction": "favor"
           },
           {
@@ -833,21 +835,21 @@
         "risks": [],
         "favors": [
           "출수기 토양수분이(가) 단수를 받치는 쪽",
-          "7월 고온초과이(가) 단수를 받치는 쪽",
-          "동절 강수이(가) 단수를 받치는 쪽"
+          "동절 강수이(가) 단수를 받치는 쪽",
+          "7월 고온초과이(가) 단수를 받치는 쪽"
         ],
-        "reason_ko": "검증 스킬 미달로 운영 전망은 추세. 기후 진단 모델은 추세 대비 +5.7% (유리) — 전망 갭(진단−추세)이 시즌 유리/불리 신호. 지지 요인: 출수기 토양수분이(가) 단수를 받치는 쪽; 7월 고온초과이(가) 단수를 받치는 쪽.",
+        "reason_ko": "검증 스킬 미달로 운영 전망은 추세. 기후 진단 모델은 추세 대비 +4.5% (유리) — 전망 갭(진단−추세)이 시즌 유리/불리 신호. 지지 요인: 출수기 토양수분이(가) 단수를 받치는 쪽; 동절 강수이(가) 단수를 받치는 쪽.",
         "note": "diagnostic_gap_pct = climate-model vs trend. Operational point may be trend-only when skill gate fails."
       },
-      "reason_ko": "검증 스킬 미달로 운영 전망은 추세. 기후 진단 모델은 추세 대비 +5.7% (유리) — 전망 갭(진단−추세)이 시즌 유리/불리 신호. 지지 요인: 출수기 토양수분이(가) 단수를 받치는 쪽; 7월 고온초과이(가) 단수를 받치는 쪽.",
+      "reason_ko": "검증 스킬 미달로 운영 전망은 추세. 기후 진단 모델은 추세 대비 +4.5% (유리) — 전망 갭(진단−추세)이 시즌 유리/불리 신호. 지지 요인: 출수기 토양수분이(가) 단수를 받치는 쪽; 동절 강수이(가) 단수를 받치는 쪽.",
       "last_actual": {
         "year": 2025,
         "yield": 4438.0,
         "status": "estimate"
       },
       "season_progress": {
-        "observed_through": "2026-07-31",
-        "critical_window_observed": 0.6013071895424836,
+        "observed_through": "2026-08-27",
+        "critical_window_observed": 0.7777777777777778,
         "future_weather_fill": "20-member historical-year weather ensemble",
         "weather_scenario_count": 20,
         "weather_scenario_p16_p84": [
@@ -859,18 +861,18 @@
       "features": [
         {
           "feature": "rain_growing_z20",
-          "anomaly": 0.856,
+          "anomaly": 0.849,
           "log_contribution": 0.0035
         },
         {
           "feature": "gdd0_growing_z20",
-          "anomaly": -0.335,
-          "log_contribution": 0.0025
+          "anomaly": -0.648,
+          "log_contribution": 0.0042
         },
         {
           "feature": "heat_excess_jul_z20",
-          "anomaly": -0.766,
-          "log_contribution": 0.0104
+          "anomaly": -0.333,
+          "log_contribution": 0.0055
         },
         {
           "feature": "frost_sep_z20",
@@ -884,8 +886,8 @@
         },
         {
           "feature": "sm_heading_z20",
-          "anomaly": 3.408,
-          "log_contribution": 0.0256
+          "anomaly": 2.661,
+          "log_contribution": 0.0202
         },
         {
           "feature": "rain_winter_z20",
@@ -894,15 +896,15 @@
         }
       ],
       "skill": {
-        "rmse": 798.2867713252082,
-        "mae": 633.0399079844904,
-        "baseline_rmse": 733.8506156200315,
-        "skill_vs_trend": -0.08780554834138066,
-        "recent_rmse": 819.8936049596882,
-        "recent_baseline_rmse": 754.979212718866,
-        "recent_skill_vs_trend": -0.08598169479004514,
-        "detrended_r2": -1.5645199734537112,
-        "recent_trend_bias": -575.6342086696164,
+        "rmse": 798.2867713252142,
+        "mae": 633.0399079844984,
+        "baseline_rmse": 733.850615620025,
+        "skill_vs_trend": -0.08780554834139864,
+        "recent_rmse": 819.8936049596956,
+        "recent_baseline_rmse": 754.979212718858,
+        "recent_skill_vs_trend": -0.08598169479006668,
+        "detrended_r2": -1.5645199734537494,
+        "recent_trend_bias": -575.6342086696046,
         "features": [
           "rain_growing_z20",
           "gdd0_growing_z20",
@@ -962,38 +964,31 @@
       "label_scale": "sad",
       "season": 2026,
       "unit": "kg/ha",
-      "point": 2700.4387559717698,
+      "point": 2302.7163506020106,
       "range_68": [
-        2230.3047606111113,
-        3169.9009440413643
+        1851.8342440379208,
+        2754.625359580383
       ],
       "range_95": [
-        1616.5846321412828,
-        3788.507400668408
+        1246.2836891707043,
+        3375.9567234441547
       ],
-      "trend": 2370.863838005364,
-      "weather_model_point": 2700.4387559717698,
-      "weather_effect_pct": 13.901047908499088,
+      "trend": 2370.863838005381,
+      "weather_model_point": 2302.7163506020106,
+      "weather_effect_pct": -2.874373732938751,
       "operational_choice": "ridge_weather",
       "low_confidence": false,
       "beats_trend": true,
       "climate_risk": {
-        "stance": "favorable",
-        "stance_ko": "유리",
-        "diagnostic_gap_pct": 13.9,
+        "stance": "unfavorable",
+        "stance_ko": "불리",
+        "diagnostic_gap_pct": -2.87,
         "drivers": [
           {
-            "feature": "sm_flowering_z20",
-            "label_ko": "개화기 토양수분",
-            "anomaly": 1.849,
-            "log_contribution": 0.0697,
-            "direction": "favor"
-          },
-          {
-            "feature": "vpd_flowering_z20",
-            "label_ko": "개화기 VPD",
-            "anomaly": -0.447,
-            "log_contribution": 0.0223,
+            "feature": "rain_growing_z20",
+            "label_ko": "생육기 강수",
+            "anomaly": 0.708,
+            "log_contribution": 0.0261,
             "direction": "favor"
           },
           {
@@ -1004,61 +999,70 @@
             "direction": "adverse"
           },
           {
+            "feature": "vpd_flowering_z20",
+            "label_ko": "개화기 VPD",
+            "anomaly": 0.599,
+            "log_contribution": -0.014,
+            "direction": "adverse"
+          },
+          {
             "feature": "heat_dry_stress_z20",
             "label_ko": "고온×건조",
-            "anomaly": -0.54,
-            "log_contribution": 0.02,
-            "direction": "favor"
+            "anomaly": 0.874,
+            "log_contribution": -0.0137,
+            "direction": "adverse"
           }
         ],
         "risks": [
-          "파종 전 토양수분이(가) 단수를 누르는 쪽"
+          "파종 전 토양수분이(가) 단수를 누르는 쪽",
+          "개화기 VPD이(가) 단수를 누르는 쪽",
+          "고온×건조이(가) 단수를 누르는 쪽",
+          "개화기 고온누적(HSU)이(가) 단수를 누르는 쪽"
         ],
         "favors": [
-          "개화기 토양수분이(가) 단수를 받치는 쪽",
-          "개화기 VPD이(가) 단수를 받치는 쪽",
-          "고온×건조이(가) 단수를 받치는 쪽"
+          "생육기 강수이(가) 단수를 받치는 쪽",
+          "개화기 토양수분이(가) 단수를 받치는 쪽"
         ],
-        "reason_ko": "기상 모델 운영. 기후 전망은 추세 대비 +13.9% (유리). 리스크: 파종 전 토양수분이(가) 단수를 누르는 쪽.",
+        "reason_ko": "기상 모델 운영. 기후 전망은 추세 대비 -2.9% (불리). 리스크: 파종 전 토양수분이(가) 단수를 누르는 쪽; 개화기 VPD이(가) 단수를 누르는 쪽; 고온×건조이(가) 단수를 누르는 쪽.",
         "note": "diagnostic_gap_pct = climate-model vs trend. Operational point may be trend-only when skill gate fails."
       },
-      "reason_ko": "기상 모델 운영. 기후 전망은 추세 대비 +13.9% (유리). 리스크: 파종 전 토양수분이(가) 단수를 누르는 쪽.",
+      "reason_ko": "기상 모델 운영. 기후 전망은 추세 대비 -2.9% (불리). 리스크: 파종 전 토양수분이(가) 단수를 누르는 쪽; 개화기 VPD이(가) 단수를 누르는 쪽; 고온×건조이(가) 단수를 누르는 쪽.",
       "last_actual": {
         "year": 2025,
         "yield": 2953.0,
         "status": "estimate"
       },
       "season_progress": {
-        "observed_through": "2026-07-31",
-        "critical_window_observed": 0.6013071895424836,
+        "observed_through": "2026-08-27",
+        "critical_window_observed": 0.7777777777777778,
         "future_weather_fill": "20-member historical-year weather ensemble",
         "weather_scenario_count": 20,
         "weather_scenario_p16_p84": [
-          2677.9324067570396,
-          2722.273297895436
+          2299.461890183844,
+          2306.99771343446
         ],
         "nwp_integrated": false
       },
       "features": [
         {
           "feature": "hsu_flower_z20",
-          "anomaly": -0.491,
-          "log_contribution": 0.0187
+          "anomaly": 0.876,
+          "log_contribution": -0.0136
         },
         {
           "feature": "heat_dry_stress_z20",
-          "anomaly": -0.54,
-          "log_contribution": 0.02
+          "anomaly": 0.874,
+          "log_contribution": -0.0137
         },
         {
           "feature": "rain_growing_z20",
-          "anomaly": 0.462,
-          "log_contribution": 0.0194
+          "anomaly": 0.708,
+          "log_contribution": 0.0261
         },
         {
           "feature": "vpd_flowering_z20",
-          "anomaly": -0.447,
-          "log_contribution": 0.0223
+          "anomaly": 0.599,
+          "log_contribution": -0.014
         },
         {
           "feature": "sm_preseason_z20",
@@ -1067,8 +1071,8 @@
         },
         {
           "feature": "sm_flowering_z20",
-          "anomaly": 1.849,
-          "log_contribution": 0.0697
+          "anomaly": -0.082,
+          "log_contribution": 0.006
         },
         {
           "feature": "rain_winter_z20",
@@ -1077,15 +1081,15 @@
         }
       ],
       "skill": {
-        "rmse": 472.03711191032227,
-        "mae": 376.683022054267,
-        "baseline_rmse": 597.1809414550045,
-        "skill_vs_trend": 0.2095576413402861,
-        "recent_rmse": 525.3095841656326,
-        "recent_baseline_rmse": 686.8850774223409,
-        "recent_skill_vs_trend": 0.23522929608989218,
-        "detrended_r2": 0.18994489965453965,
-        "recent_trend_bias": 360.3734153273224,
+        "rmse": 472.03711191032556,
+        "mae": 376.6830220542689,
+        "baseline_rmse": 597.1809414549897,
+        "skill_vs_trend": 0.209557641340261,
+        "recent_rmse": 525.3095841656357,
+        "recent_baseline_rmse": 686.8850774223238,
+        "recent_skill_vs_trend": 0.23522929608986853,
+        "detrended_r2": 0.18994489965449535,
+        "recent_trend_bias": 360.3734153273066,
         "features": [
           "hsu_flower_z20",
           "heat_dry_stress_z20",
@@ -1146,25 +1150,25 @@
       "label_scale": "sad",
       "season": 2026,
       "unit": "kg/ha",
-      "point": 2815.167657086519,
+      "point": 2815.167657086549,
       "range_68": [
-        2423.1384723219835,
-        3207.196841851054
+        2423.1384723219853,
+        3207.1968418511124
       ],
       "range_95": [
-        2152.582291749508,
-        3477.7530224235297
+        2152.582291749528,
+        3477.7530224235697
       ],
-      "trend": 2815.167657086519,
-      "weather_model_point": 2877.8916314339785,
-      "weather_effect_pct": 2.228072427216432,
+      "trend": 2815.167657086549,
+      "weather_model_point": 2887.327141576383,
+      "weather_effect_pct": 2.5632393263750775,
       "operational_choice": "trend_only",
       "low_confidence": true,
       "beats_trend": false,
       "climate_risk": {
         "stance": "favorable",
         "stance_ko": "유리",
-        "diagnostic_gap_pct": 2.23,
+        "diagnostic_gap_pct": 2.56,
         "drivers": [
           {
             "feature": "hsu_flower_z20",
@@ -1176,15 +1180,15 @@
           {
             "feature": "rain_flowering_z20",
             "label_ko": "개화기 강수",
-            "anomaly": 0.943,
-            "log_contribution": -0.0114,
+            "anomaly": 0.683,
+            "log_contribution": -0.0081,
             "direction": "adverse"
           },
           {
             "feature": "rain_growing_z20",
             "label_ko": "생육기 강수",
-            "anomaly": 1.664,
-            "log_contribution": -0.0037,
+            "anomaly": 1.776,
+            "log_contribution": -0.004,
             "direction": "adverse"
           },
           {
@@ -1196,36 +1200,37 @@
           }
         ],
         "risks": [
-          "개화기 강수이(가) 단수를 누르는 쪽"
+          "개화기 강수이(가) 단수를 누르는 쪽",
+          "생육기 강수이(가) 단수를 누르는 쪽"
         ],
         "favors": [
           "개화기 고온누적(HSU)이(가) 단수를 받치는 쪽"
         ],
-        "reason_ko": "검증 스킬 미달로 운영 전망은 추세. 기후 진단 모델은 추세 대비 +2.2% (유리) — 전망 갭(진단−추세)이 시즌 유리/불리 신호. 주요 리스크: 개화기 강수이(가) 단수를 누르는 쪽.",
+        "reason_ko": "검증 스킬 미달로 운영 전망은 추세. 기후 진단 모델은 추세 대비 +2.6% (유리) — 전망 갭(진단−추세)이 시즌 유리/불리 신호. 주요 리스크: 개화기 강수이(가) 단수를 누르는 쪽; 생육기 강수이(가) 단수를 누르는 쪽.",
         "note": "diagnostic_gap_pct = climate-model vs trend. Operational point may be trend-only when skill gate fails."
       },
-      "reason_ko": "검증 스킬 미달로 운영 전망은 추세. 기후 진단 모델은 추세 대비 +2.2% (유리) — 전망 갭(진단−추세)이 시즌 유리/불리 신호. 주요 리스크: 개화기 강수이(가) 단수를 누르는 쪽.",
+      "reason_ko": "검증 스킬 미달로 운영 전망은 추세. 기후 진단 모델은 추세 대비 +2.6% (유리) — 전망 갭(진단−추세)이 시즌 유리/불리 신호. 주요 리스크: 개화기 강수이(가) 단수를 누르는 쪽; 생육기 강수이(가) 단수를 누르는 쪽.",
       "last_actual": {
         "year": 2025,
         "yield": 2917.0,
         "status": "estimate"
       },
       "season_progress": {
-        "observed_through": "2026-07-31",
-        "critical_window_observed": 0.6013071895424836,
+        "observed_through": "2026-08-27",
+        "critical_window_observed": 0.7777777777777778,
         "future_weather_fill": "20-member historical-year weather ensemble",
         "weather_scenario_count": 20,
         "weather_scenario_p16_p84": [
-          2815.167657086519,
-          2815.167657086519
+          2815.167657086549,
+          2815.167657086549
         ],
         "nwp_integrated": false
       },
       "features": [
         {
           "feature": "rain_growing_z20",
-          "anomaly": 1.664,
-          "log_contribution": -0.0037
+          "anomaly": 1.776,
+          "log_contribution": -0.004
         },
         {
           "feature": "hsu_flower_z20",
@@ -1239,20 +1244,20 @@
         },
         {
           "feature": "rain_flowering_z20",
-          "anomaly": 0.943,
-          "log_contribution": -0.0114
+          "anomaly": 0.683,
+          "log_contribution": -0.0081
         }
       ],
       "skill": {
-        "rmse": 329.283288218651,
-        "mae": 262.94372309483094,
-        "baseline_rmse": 324.4209195819113,
-        "skill_vs_trend": -0.014987839387811341,
-        "recent_rmse": 345.0920509922577,
-        "recent_baseline_rmse": 351.0727508366972,
-        "recent_skill_vs_trend": 0.017035499993052428,
-        "detrended_r2": -0.23961546601441075,
-        "recent_trend_bias": 177.84464123982042,
+        "rmse": 329.28328821865335,
+        "mae": 262.9437230948307,
+        "baseline_rmse": 324.42091958190963,
+        "skill_vs_trend": -0.014987839387823776,
+        "recent_rmse": 345.09205099226034,
+        "recent_baseline_rmse": 351.0727508366955,
+        "recent_skill_vs_trend": 0.017035499993040215,
+        "detrended_r2": -0.2396154660144152,
+        "recent_trend_bias": 177.84464123981087,
         "features": [
           "rain_growing_z20",
           "hsu_flower_z20",
@@ -1310,18 +1315,18 @@
       "label_scale": "sad",
       "season": 2026,
       "unit": "kg/ha",
-      "point": 2311.8206855920025,
+      "point": 2311.820685592019,
       "range_68": [
-        2052.2473384088435,
-        2571.3940327751616
+        2052.2473384088544,
+        2571.3940327751834
       ],
       "range_95": [
-        1724.6211994720466,
-        2899.0201717119585
+        1724.6211994720525,
+        2899.0201717119853
       ],
-      "trend": 2311.8206855920025,
-      "weather_model_point": 2311.865258369915,
-      "weather_effect_pct": 0.0019280378530384112,
+      "trend": 2311.820685592019,
+      "weather_model_point": 2311.872035136699,
+      "weather_effect_pct": 0.002221173337546567,
       "operational_choice": "trend_only",
       "low_confidence": true,
       "beats_trend": false,
@@ -1340,7 +1345,7 @@
           {
             "feature": "gdd0_growing_z20",
             "label_ko": "생육기 GDD0",
-            "anomaly": 0.224,
+            "anomaly": 0.088,
             "log_contribution": 0.0,
             "direction": "adverse"
           },
@@ -1354,7 +1359,7 @@
           {
             "feature": "rain_growing_z20",
             "label_ko": "생육기 강수",
-            "anomaly": 0.358,
+            "anomaly": 0.351,
             "log_contribution": 0.0,
             "direction": "adverse"
           }
@@ -1371,13 +1376,13 @@
         "status": "estimate"
       },
       "season_progress": {
-        "observed_through": "2026-07-31",
-        "critical_window_observed": 0.6013071895424836,
+        "observed_through": "2026-08-27",
+        "critical_window_observed": 0.7777777777777778,
         "future_weather_fill": "20-member historical-year weather ensemble",
         "weather_scenario_count": 20,
         "weather_scenario_p16_p84": [
-          2311.8206855920025,
-          2311.8206855920025
+          2311.820685592019,
+          2311.820685592019
         ],
         "nwp_integrated": false
       },
@@ -1389,7 +1394,7 @@
         },
         {
           "feature": "gdd0_growing_z20",
-          "anomaly": 0.224,
+          "anomaly": 0.088,
           "log_contribution": 0.0
         },
         {
@@ -1399,20 +1404,20 @@
         },
         {
           "feature": "rain_growing_z20",
-          "anomaly": 0.358,
+          "anomaly": 0.351,
           "log_contribution": 0.0
         }
       ],
       "skill": {
-        "rmse": 305.33509773229247,
-        "mae": 242.2543807942679,
-        "baseline_rmse": 305.32242163239556,
-        "skill_vs_trend": -4.151709471300613e-05,
-        "recent_rmse": 327.7024358360723,
-        "recent_baseline_rmse": 327.6746465801206,
-        "recent_skill_vs_trend": -8.480746448258358e-05,
-        "detrended_r2": -0.12529588254733115,
-        "recent_trend_bias": 129.7471833884711,
+        "rmse": 305.33509773229656,
+        "mae": 242.25438079426746,
+        "baseline_rmse": 305.32242163239476,
+        "skill_vs_trend": -4.151709472899334e-05,
+        "recent_rmse": 327.70243583607356,
+        "recent_baseline_rmse": 327.67464658012085,
+        "recent_skill_vs_trend": -8.480746448569221e-05,
+        "detrended_r2": -0.12529588254735113,
+        "recent_trend_bias": 129.74718338845724,
         "features": [
           "frost_sep_z20",
           "gdd0_growing_z20",
@@ -1470,25 +1475,25 @@
       "label_scale": "sad",
       "season": 2026,
       "unit": "kg/ha",
-      "point": 2803.2079928203807,
+      "point": 2803.2079928204107,
       "range_68": [
-        2356.031385261319,
-        3250.3846003794424
+        2356.034819331651,
+        3250.3811663091706
       ],
       "range_95": [
-        2219.672808037336,
-        3386.7431776034255
+        2219.659877494794,
+        3386.7561081460276
       ],
-      "trend": 2803.2079928203807,
-      "weather_model_point": 2802.9783436777893,
-      "weather_effect_pct": -0.008192368999360156,
+      "trend": 2803.2079928204107,
+      "weather_model_point": 2802.729425779282,
+      "weather_effect_pct": -0.01707212031195615,
       "operational_choice": "trend_only",
       "low_confidence": true,
       "beats_trend": false,
       "climate_risk": {
         "stance": "near_neutral",
         "stance_ko": "중립",
-        "diagnostic_gap_pct": -0.01,
+        "diagnostic_gap_pct": -0.02,
         "drivers": [
           {
             "feature": "rain_may_z20",
@@ -1531,13 +1536,13 @@
         "status": "estimate"
       },
       "season_progress": {
-        "observed_through": "2026-07-31",
-        "critical_window_observed": 0.6013071895424836,
+        "observed_through": "2026-08-27",
+        "critical_window_observed": 0.7777777777777778,
         "future_weather_fill": "20-member historical-year weather ensemble",
         "weather_scenario_count": 20,
         "weather_scenario_p16_p84": [
-          2803.2079928203807,
-          2803.2079928203807
+          2803.2079928204107,
+          2803.2079928204107
         ],
         "nwp_integrated": false
       },
@@ -1564,35 +1569,35 @@
         },
         {
           "feature": "rain_growing_z20",
-          "anomaly": 0.091,
+          "anomaly": 0.123,
           "log_contribution": 0.0
         },
         {
           "feature": "sm_flowering_z20",
-          "anomaly": 2.203,
+          "anomaly": 0.215,
           "log_contribution": 0.0
         },
         {
           "feature": "heat_excess_jul_z20",
-          "anomaly": 0.143,
-          "log_contribution": 0.0
+          "anomaly": 1.045,
+          "log_contribution": -0.0
         },
         {
           "feature": "oni_summer_z20",
-          "anomaly": -0.102,
-          "log_contribution": 0.0
+          "anomaly": 0.396,
+          "log_contribution": -0.0
         }
       ],
       "skill": {
-        "rmse": 361.7966491959894,
-        "mae": 304.8283608976303,
-        "baseline_rmse": 361.7390670525321,
-        "skill_vs_trend": -0.00015918143408311103,
-        "recent_rmse": 361.7966491959894,
-        "recent_baseline_rmse": 361.7390670525321,
-        "recent_skill_vs_trend": -0.00015918143408311103,
-        "detrended_r2": -0.0338265671039506,
-        "recent_trend_bias": -65.12488699131632,
+        "rmse": 361.799354981149,
+        "mae": 304.8299743255034,
+        "baseline_rmse": 361.73906705252296,
+        "skill_vs_trend": -0.0001666613703554809,
+        "recent_rmse": 361.799354981149,
+        "recent_baseline_rmse": 361.73906705252296,
+        "recent_skill_vs_trend": -0.0001666613703554809,
+        "detrended_r2": -0.03384203061394442,
+        "recent_trend_bias": -65.12488699130313,
         "features": [
           "rain_may_z20",
           "sm_may_z20",
@@ -1648,45 +1653,45 @@
       "label_scale": "sad",
       "season": 2026,
       "unit": "kg/ha",
-      "point": 2678.172066781397,
+      "point": 2678.172066781416,
       "range_68": [
-        2418.529787260605,
-        2937.814346302189
+        2418.529787260639,
+        2937.8143463021934
       ],
       "range_95": [
-        2137.6208575355495,
-        3218.7232760272445
+        2137.620857535553,
+        3218.723276027279
       ],
-      "trend": 2678.172066781397,
-      "weather_model_point": 2696.3986028834793,
-      "weather_effect_pct": 0.6805588157741793,
+      "trend": 2678.172066781416,
+      "weather_model_point": 2555.45824112778,
+      "weather_effect_pct": -4.581999311235874,
       "operational_choice": "trend_only",
       "low_confidence": true,
       "beats_trend": false,
       "climate_risk": {
-        "stance": "near_neutral",
-        "stance_ko": "중립",
-        "diagnostic_gap_pct": 0.68,
+        "stance": "unfavorable",
+        "stance_ko": "불리",
+        "diagnostic_gap_pct": -4.58,
         "drivers": [
           {
             "feature": "hsu_flower_z20",
             "label_ko": "개화기 고온누적(HSU)",
-            "anomaly": -0.344,
-            "log_contribution": 0.0211,
-            "direction": "favor"
+            "anomaly": 0.581,
+            "log_contribution": -0.0369,
+            "direction": "adverse"
           },
           {
             "feature": "rain_growing_z20",
             "label_ko": "생육기 강수",
-            "anomaly": 0.715,
-            "log_contribution": -0.016,
+            "anomaly": 0.55,
+            "log_contribution": -0.0114,
             "direction": "adverse"
           },
           {
             "feature": "rain_flowering_z20",
             "label_ko": "개화기 강수",
-            "anomaly": 1.481,
-            "log_contribution": 0.0037,
+            "anomaly": 1.526,
+            "log_contribution": 0.0038,
             "direction": "favor"
           },
           {
@@ -1698,41 +1703,40 @@
           }
         ],
         "risks": [
+          "개화기 고온누적(HSU)이(가) 단수를 누르는 쪽",
           "생육기 강수이(가) 단수를 누르는 쪽"
         ],
-        "favors": [
-          "개화기 고온누적(HSU)이(가) 단수를 받치는 쪽"
-        ],
-        "reason_ko": "검증 스킬 미달로 운영 전망은 추세. 기후 진단 모델은 추세 대비 +0.7% (중립) — 전망 갭(진단−추세)이 시즌 유리/불리 신호. 주요 리스크: 생육기 강수이(가) 단수를 누르는 쪽.",
+        "favors": [],
+        "reason_ko": "검증 스킬 미달로 운영 전망은 추세. 기후 진단 모델은 추세 대비 -4.6% (불리) — 전망 갭(진단−추세)이 시즌 유리/불리 신호. 주요 리스크: 개화기 고온누적(HSU)이(가) 단수를 누르는 쪽; 생육기 강수이(가) 단수를 누르는 쪽.",
         "note": "diagnostic_gap_pct = climate-model vs trend. Operational point may be trend-only when skill gate fails."
       },
-      "reason_ko": "검증 스킬 미달로 운영 전망은 추세. 기후 진단 모델은 추세 대비 +0.7% (중립) — 전망 갭(진단−추세)이 시즌 유리/불리 신호. 주요 리스크: 생육기 강수이(가) 단수를 누르는 쪽.",
+      "reason_ko": "검증 스킬 미달로 운영 전망은 추세. 기후 진단 모델은 추세 대비 -4.6% (불리) — 전망 갭(진단−추세)이 시즌 유리/불리 신호. 주요 리스크: 개화기 고온누적(HSU)이(가) 단수를 누르는 쪽; 생육기 강수이(가) 단수를 누르는 쪽.",
       "last_actual": {
         "year": 2025,
         "yield": 2693.0,
         "status": "estimate"
       },
       "season_progress": {
-        "observed_through": "2026-07-31",
-        "critical_window_observed": 0.6013071895424836,
+        "observed_through": "2026-08-27",
+        "critical_window_observed": 0.7777777777777778,
         "future_weather_fill": "20-member historical-year weather ensemble",
         "weather_scenario_count": 20,
         "weather_scenario_p16_p84": [
-          2678.172066781397,
-          2678.172066781397
+          2678.172066781416,
+          2678.172066781416
         ],
         "nwp_integrated": false
       },
       "features": [
         {
           "feature": "rain_growing_z20",
-          "anomaly": 0.715,
-          "log_contribution": -0.016
+          "anomaly": 0.55,
+          "log_contribution": -0.0114
         },
         {
           "feature": "hsu_flower_z20",
-          "anomaly": -0.344,
-          "log_contribution": 0.0211
+          "anomaly": 0.581,
+          "log_contribution": -0.0369
         },
         {
           "feature": "frost_sep_z20",
@@ -1741,20 +1745,20 @@
         },
         {
           "feature": "rain_flowering_z20",
-          "anomaly": 1.481,
-          "log_contribution": 0.0037
+          "anomaly": 1.526,
+          "log_contribution": 0.0038
         }
       ],
       "skill": {
-        "rmse": 260.01946804963114,
-        "mae": 218.78678357679203,
-        "baseline_rmse": 277.47815271933825,
-        "skill_vs_trend": 0.06291913254650394,
-        "recent_rmse": 199.81701434586554,
-        "recent_baseline_rmse": 230.26497257747414,
-        "recent_skill_vs_trend": 0.13223009079839176,
-        "detrended_r2": 0.05304553791175248,
-        "recent_trend_bias": -24.84877914507674,
+        "rmse": 260.01946804963706,
+        "mae": 218.78678357679806,
+        "baseline_rmse": 277.47815271933865,
+        "skill_vs_trend": 0.06291913254648396,
+        "recent_rmse": 199.81701434587,
+        "recent_baseline_rmse": 230.26497257746857,
+        "recent_skill_vs_trend": 0.13223009079835135,
+        "detrended_r2": 0.05304553791170863,
+        "recent_trend_bias": -24.848779145077923,
         "features": [
           "rain_growing_z20",
           "hsu_flower_z20",
@@ -1812,131 +1816,129 @@
       "label_scale": "sad",
       "season": 2026,
       "unit": "kg/ha",
-      "point": 12561.00887345124,
+      "point": 12561.008873451285,
       "range_68": [
-        12027.393836631883,
-        13094.623910270595
+        12027.43002985596,
+        13094.58771704661
       ],
       "range_95": [
-        11329.920751178237,
-        13792.096995724241
+        11329.951222422429,
+        13792.06652448014
       ],
-      "trend": 12561.00887345124,
-      "weather_model_point": 12641.775627729783,
-      "weather_effect_pct": 0.6429957584796586,
+      "trend": 12561.008873451285,
+      "weather_model_point": 12493.898156006206,
+      "weather_effect_pct": -0.5342780832431671,
       "operational_choice": "trend_only",
       "low_confidence": true,
       "beats_trend": false,
       "climate_risk": {
         "stance": "near_neutral",
         "stance_ko": "중립",
-        "diagnostic_gap_pct": 0.64,
+        "diagnostic_gap_pct": -0.53,
         "drivers": [
           {
             "feature": "rain_jul_z20",
             "label_ko": "7월 강수",
-            "anomaly": 2.78,
-            "log_contribution": 0.007,
-            "direction": "favor"
-          },
-          {
-            "feature": "sm_jul_z20",
-            "label_ko": "7월 토양수분",
-            "anomaly": -2.26,
-            "log_contribution": -0.0016,
+            "anomaly": -1.359,
+            "log_contribution": -0.0032,
             "direction": "adverse"
           },
           {
             "feature": "vpd_jul_z20",
             "label_ko": "7월 VPD",
-            "anomaly": -0.938,
-            "log_contribution": 0.0012,
-            "direction": "favor"
+            "anomaly": 1.466,
+            "log_contribution": -0.0014,
+            "direction": "adverse"
           },
           {
-            "feature": "gdd10_growing_z20",
-            "label_ko": "생육기 GDD10",
-            "anomaly": 0.145,
-            "log_contribution": -0.0004,
+            "feature": "edd_jul_z20",
+            "label_ko": "7월 EDD",
+            "anomaly": 1.888,
+            "log_contribution": -0.0006,
+            "direction": "adverse"
+          },
+          {
+            "feature": "sm_jul_z20",
+            "label_ko": "7월 토양수분",
+            "anomaly": -1.018,
+            "log_contribution": -0.0006,
             "direction": "adverse"
           }
         ],
         "risks": [],
-        "favors": [
-          "7월 강수이(가) 단수를 받치는 쪽"
-        ],
-        "reason_ko": "검증 스킬 미달로 운영 전망은 추세. 기후 진단 모델은 추세 대비 +0.6% (중립) — 전망 갭(진단−추세)이 시즌 유리/불리 신호. 지지 요인: 7월 강수이(가) 단수를 받치는 쪽.",
+        "favors": [],
+        "reason_ko": "검증 스킬 미달로 운영 전망은 추세. 기후 진단 모델은 추세 대비 -0.5% (중립) — 전망 갭(진단−추세)이 시즌 유리/불리 신호. 뚜렷한 기후 드라이버 없음.",
         "note": "diagnostic_gap_pct = climate-model vs trend. Operational point may be trend-only when skill gate fails."
       },
-      "reason_ko": "검증 스킬 미달로 운영 전망은 추세. 기후 진단 모델은 추세 대비 +0.6% (중립) — 전망 갭(진단−추세)이 시즌 유리/불리 신호. 지지 요인: 7월 강수이(가) 단수를 받치는 쪽.",
+      "reason_ko": "검증 스킬 미달로 운영 전망은 추세. 기후 진단 모델은 추세 대비 -0.5% (중립) — 전망 갭(진단−추세)이 시즌 유리/불리 신호. 뚜렷한 기후 드라이버 없음.",
       "last_actual": {
         "year": 2025,
         "yield": 12190.0,
         "status": "estimate"
       },
       "season_progress": {
-        "observed_through": "2026-07-31",
-        "critical_window_observed": 0.6013071895424836,
+        "observed_through": "2026-08-27",
+        "critical_window_observed": 0.7777777777777778,
         "future_weather_fill": "20-member historical-year weather ensemble",
         "weather_scenario_count": 20,
         "weather_scenario_p16_p84": [
-          12561.00887345124,
-          12561.00887345124
+          12561.008873451285,
+          12561.008873451285
         ],
         "nwp_integrated": false
       },
       "features": [
         {
           "feature": "gdd10_growing_z20",
-          "anomaly": 0.145,
-          "log_contribution": -0.0004
+          "anomaly": 0.285,
+          "log_contribution": -0.0003
         },
         {
           "feature": "edd_jul_z20",
-          "anomaly": -0.196,
-          "log_contribution": 0.0002
+          "anomaly": 1.888,
+          "log_contribution": -0.0006
         },
         {
           "feature": "rain_jul_z20",
-          "anomaly": 2.78,
-          "log_contribution": 0.007
+          "anomaly": -1.359,
+          "log_contribution": -0.0032
         },
         {
           "feature": "heat_days_32_z20",
-          "anomaly": -0.281,
-          "log_contribution": -0.0001
+          "anomaly": 1.9,
+          "log_contribution": 0.0005
         },
         {
           "feature": "sm_jul_z20",
-          "anomaly": -2.26,
-          "log_contribution": -0.0016
+          "anomaly": -1.018,
+          "log_contribution": -0.0006
         },
         {
           "feature": "rain_growing_z20",
-          "anomaly": 0.318,
+          "anomaly": 0.431,
           "log_contribution": 0.0003
         },
         {
           "feature": "vpd_jul_z20",
-          "anomaly": -0.938,
-          "log_contribution": 0.0012
+          "anomaly": 1.466,
+          "log_contribution": -0.0014
         },
         {
           "feature": "oni_summer_z20",
-          "anomaly": -0.102,
-          "log_contribution": 0.0
+          "anomaly": 0.396,
+          "log_contribution": -0.0001
         }
       ],
       "skill": {
-        "rmse": 566.4104894149032,
-        "mae": 423.2160479038258,
-        "baseline_rmse": 567.3617288825274,
-        "skill_vs_trend": 0.0016766013976616811,
-        "recent_rmse": 663.7510499028799,
-        "recent_baseline_rmse": 664.9457672159687,
-        "recent_skill_vs_trend": 0.0017967139156187528,
-        "detrended_r2": -0.6068761738428332,
-        "recent_trend_bias": 543.1325813800584,
+        "rmse": 566.6446196625712,
+        "mae": 422.5758670866543,
+        "baseline_rmse": 567.3617288825618,
+        "skill_vs_trend": 0.0012639365390452184,
+        "recent_rmse": 664.034252251811,
+        "recent_baseline_rmse": 664.945767216002,
+        "recent_skill_vs_trend": 0.00137081098810099,
+        "detrended_r2": -0.6082048783067551,
+        "recent_trend_bias": 543.1325813800653,
         "features": [
           "gdd10_growing_z20",
           "edd_jul_z20",
@@ -1998,115 +2000,114 @@
       "label_scale": "sad",
       "season": 2026,
       "unit": "kg/ha",
-      "point": 11759.678427386836,
+      "point": 11759.678427386794,
       "range_68": [
-        11109.618579042546,
-        12409.738275731126
+        11109.618579042504,
+        12409.738275731084
       ],
       "range_95": [
-        10802.295413774955,
-        12717.061440998717
+        10802.29541377495,
+        12717.06144099864
       ],
-      "trend": 11759.678427386836,
-      "weather_model_point": 11957.351122711942,
-      "weather_effect_pct": 1.6809362309155418,
+      "trend": 11759.678427386794,
+      "weather_model_point": 11661.39549036297,
+      "weather_effect_pct": -0.8357621139957083,
       "operational_choice": "trend_only",
       "low_confidence": true,
       "beats_trend": false,
       "climate_risk": {
         "stance": "near_neutral",
         "stance_ko": "중립",
-        "diagnostic_gap_pct": 1.68,
+        "diagnostic_gap_pct": -0.84,
         "drivers": [
           {
             "feature": "rain_jul_z20",
             "label_ko": "7월 강수",
-            "anomaly": 1.247,
-            "log_contribution": 0.035,
-            "direction": "favor"
+            "anomaly": -0.421,
+            "log_contribution": -0.0112,
+            "direction": "adverse"
           },
           {
             "feature": "gdd10_growing_z20",
             "label_ko": "생육기 GDD10",
-            "anomaly": 0.046,
-            "log_contribution": -0.0088,
+            "anomaly": 0.189,
+            "log_contribution": -0.0051,
             "direction": "adverse"
           },
           {
             "feature": "edd_jul_z20",
             "label_ko": "7월 EDD",
-            "anomaly": -0.426,
-            "log_contribution": -0.0054,
-            "direction": "adverse"
+            "anomaly": 0.694,
+            "log_contribution": 0.0049,
+            "direction": "favor"
           },
           {
             "feature": "heat_days_32_z20",
             "label_ko": "32°C 초과일",
-            "anomaly": -0.251,
-            "log_contribution": -0.0042,
-            "direction": "adverse"
+            "anomaly": 0.467,
+            "log_contribution": 0.003,
+            "direction": "favor"
           }
         ],
         "risks": [
-          "생육기 GDD10이(가) 단수를 누르는 쪽",
-          "7월 EDD이(가) 단수를 누르는 쪽",
-          "32°C 초과일이(가) 단수를 누르는 쪽"
+          "7월 강수이(가) 단수를 누르는 쪽",
+          "생육기 GDD10이(가) 단수를 누르는 쪽"
         ],
         "favors": [
-          "7월 강수이(가) 단수를 받치는 쪽"
+          "7월 EDD이(가) 단수를 받치는 쪽"
         ],
-        "reason_ko": "검증 스킬 미달로 운영 전망은 추세. 기후 진단 모델은 추세 대비 +1.7% (중립) — 전망 갭(진단−추세)이 시즌 유리/불리 신호. 주요 리스크: 생육기 GDD10이(가) 단수를 누르는 쪽; 7월 EDD이(가) 단수를 누르는 쪽; 32°C 초과일이(가) 단수를 누르는 쪽.",
+        "reason_ko": "검증 스킬 미달로 운영 전망은 추세. 기후 진단 모델은 추세 대비 -0.8% (중립) — 전망 갭(진단−추세)이 시즌 유리/불리 신호. 주요 리스크: 7월 강수이(가) 단수를 누르는 쪽; 생육기 GDD10이(가) 단수를 누르는 쪽.",
         "note": "diagnostic_gap_pct = climate-model vs trend. Operational point may be trend-only when skill gate fails."
       },
-      "reason_ko": "검증 스킬 미달로 운영 전망은 추세. 기후 진단 모델은 추세 대비 +1.7% (중립) — 전망 갭(진단−추세)이 시즌 유리/불리 신호. 주요 리스크: 생육기 GDD10이(가) 단수를 누르는 쪽; 7월 EDD이(가) 단수를 누르는 쪽; 32°C 초과일이(가) 단수를 누르는 쪽.",
+      "reason_ko": "검증 스킬 미달로 운영 전망은 추세. 기후 진단 모델은 추세 대비 -0.8% (중립) — 전망 갭(진단−추세)이 시즌 유리/불리 신호. 주요 리스크: 7월 강수이(가) 단수를 누르는 쪽; 생육기 GDD10이(가) 단수를 누르는 쪽.",
       "last_actual": {
         "year": 2025,
         "yield": 11068.0,
         "status": "estimate"
       },
       "season_progress": {
-        "observed_through": "2026-07-31",
-        "critical_window_observed": 0.6013071895424836,
+        "observed_through": "2026-08-27",
+        "critical_window_observed": 0.7777777777777778,
         "future_weather_fill": "20-member historical-year weather ensemble",
         "weather_scenario_count": 20,
         "weather_scenario_p16_p84": [
-          11759.678427386836,
-          11759.678427386836
+          11759.678427386794,
+          11759.678427386794
         ],
         "nwp_integrated": false
       },
       "features": [
         {
           "feature": "gdd10_growing_z20",
-          "anomaly": 0.046,
-          "log_contribution": -0.0088
+          "anomaly": 0.189,
+          "log_contribution": -0.0051
         },
         {
           "feature": "edd_jul_z20",
-          "anomaly": -0.426,
-          "log_contribution": -0.0054
+          "anomaly": 0.694,
+          "log_contribution": 0.0049
         },
         {
           "feature": "rain_jul_z20",
-          "anomaly": 1.247,
-          "log_contribution": 0.035
+          "anomaly": -0.421,
+          "log_contribution": -0.0112
         },
         {
           "feature": "heat_days_32_z20",
-          "anomaly": -0.251,
-          "log_contribution": -0.0042
+          "anomaly": 0.467,
+          "log_contribution": 0.003
         }
       ],
       "skill": {
-        "rmse": 581.2908076143366,
-        "mae": 515.3549460348192,
-        "baseline_rmse": 467.5767702152851,
-        "skill_vs_trend": -0.24319864596073604,
-        "recent_rmse": 637.4382722142681,
-        "recent_baseline_rmse": 543.3362493516448,
-        "recent_skill_vs_trend": -0.17319297759888808,
-        "detrended_r2": -1.4090146863305875,
-        "recent_trend_bias": 381.46951071351214,
+        "rmse": 581.2908076143532,
+        "mae": 515.3549460348524,
+        "baseline_rmse": 467.5767702152954,
+        "skill_vs_trend": -0.24319864596074403,
+        "recent_rmse": 637.4382722142832,
+        "recent_baseline_rmse": 543.336249351652,
+        "recent_skill_vs_trend": -0.1731929775989003,
+        "detrended_r2": -1.4090146863300652,
+        "recent_trend_bias": 381.4695107134579,
         "features": [
           "gdd10_growing_z20",
           "edd_jul_z20",
@@ -2164,45 +2165,45 @@
       "label_scale": "province",
       "season": 2026,
       "unit": "kg/ha",
-      "point": 2487.595788040125,
+      "point": 2487.595788040108,
       "range_68": [
-        2146.3489912396644,
-        2828.842584840586
+        2146.348991239643,
+        2828.8425848405727
       ],
       "range_95": [
-        1813.4420358513926,
-        3161.7495402288578
+        1813.442035851368,
+        3161.7495402288478
       ],
-      "trend": 2487.595788040125,
-      "weather_model_point": 2610.597250842243,
-      "weather_effect_pct": 4.944592019068561,
+      "trend": 2487.595788040108,
+      "weather_model_point": 2395.3069154464692,
+      "weather_effect_pct": -3.709962568571079,
       "operational_choice": "trend_only",
       "low_confidence": true,
       "beats_trend": false,
       "climate_risk": {
-        "stance": "favorable",
-        "stance_ko": "유리",
-        "diagnostic_gap_pct": 4.94,
+        "stance": "unfavorable",
+        "stance_ko": "불리",
+        "diagnostic_gap_pct": -3.71,
         "drivers": [
           {
             "feature": "hsu_flower_z20",
             "label_ko": "개화기 고온누적(HSU)",
-            "anomaly": -0.694,
-            "log_contribution": 0.0281,
-            "direction": "favor"
+            "anomaly": 0.628,
+            "log_contribution": -0.0176,
+            "direction": "adverse"
           },
           {
             "feature": "heat_dry_stress_z20",
             "label_ko": "고온×건조",
-            "anomaly": -0.737,
-            "log_contribution": 0.0279,
-            "direction": "favor"
+            "anomaly": 0.577,
+            "log_contribution": -0.015,
+            "direction": "adverse"
           },
           {
             "feature": "rain_growing_z20",
             "label_ko": "생육기 강수",
-            "anomaly": 0.721,
-            "log_contribution": -0.0068,
+            "anomaly": 0.576,
+            "log_contribution": -0.0055,
             "direction": "adverse"
           },
           {
@@ -2214,47 +2215,46 @@
           }
         ],
         "risks": [
+          "개화기 고온누적(HSU)이(가) 단수를 누르는 쪽",
+          "고온×건조이(가) 단수를 누르는 쪽",
           "생육기 강수이(가) 단수를 누르는 쪽"
         ],
-        "favors": [
-          "개화기 고온누적(HSU)이(가) 단수를 받치는 쪽",
-          "고온×건조이(가) 단수를 받치는 쪽"
-        ],
-        "reason_ko": "검증 스킬 미달로 운영 전망은 추세. 기후 진단 모델은 추세 대비 +4.9% (유리) — 전망 갭(진단−추세)이 시즌 유리/불리 신호. 주요 리스크: 생육기 강수이(가) 단수를 누르는 쪽.",
+        "favors": [],
+        "reason_ko": "검증 스킬 미달로 운영 전망은 추세. 기후 진단 모델은 추세 대비 -3.7% (불리) — 전망 갭(진단−추세)이 시즌 유리/불리 신호. 주요 리스크: 개화기 고온누적(HSU)이(가) 단수를 누르는 쪽; 고온×건조이(가) 단수를 누르는 쪽; 생육기 강수이(가) 단수를 누르는 쪽.",
         "note": "diagnostic_gap_pct = climate-model vs trend. Operational point may be trend-only when skill gate fails."
       },
-      "reason_ko": "검증 스킬 미달로 운영 전망은 추세. 기후 진단 모델은 추세 대비 +4.9% (유리) — 전망 갭(진단−추세)이 시즌 유리/불리 신호. 주요 리스크: 생육기 강수이(가) 단수를 누르는 쪽.",
+      "reason_ko": "검증 스킬 미달로 운영 전망은 추세. 기후 진단 모델은 추세 대비 -3.7% (불리) — 전망 갭(진단−추세)이 시즌 유리/불리 신호. 주요 리스크: 개화기 고온누적(HSU)이(가) 단수를 누르는 쪽; 고온×건조이(가) 단수를 누르는 쪽; 생육기 강수이(가) 단수를 누르는 쪽.",
       "last_actual": {
         "year": 2025,
         "yield": 2488.0,
         "status": "estimate"
       },
       "season_progress": {
-        "observed_through": "2026-07-31",
-        "critical_window_observed": 0.6013071895424836,
+        "observed_through": "2026-08-27",
+        "critical_window_observed": 0.7777777777777778,
         "future_weather_fill": "20-member historical-year weather ensemble",
         "weather_scenario_count": 20,
         "weather_scenario_p16_p84": [
-          2487.595788040125,
-          2487.595788040125
+          2487.595788040108,
+          2487.595788040108
         ],
         "nwp_integrated": false
       },
       "features": [
         {
           "feature": "rain_growing_z20",
-          "anomaly": 0.721,
-          "log_contribution": -0.0068
+          "anomaly": 0.576,
+          "log_contribution": -0.0055
         },
         {
           "feature": "hsu_flower_z20",
-          "anomaly": -0.694,
-          "log_contribution": 0.0281
+          "anomaly": 0.628,
+          "log_contribution": -0.0176
         },
         {
           "feature": "heat_dry_stress_z20",
-          "anomaly": -0.737,
-          "log_contribution": 0.0279
+          "anomaly": 0.577,
+          "log_contribution": -0.015
         },
         {
           "feature": "frost_sep_z20",
@@ -2263,15 +2263,15 @@
         }
       ],
       "skill": {
-        "rmse": 330.0529977150139,
-        "mae": 266.4165689740486,
-        "baseline_rmse": 346.20048627357534,
-        "skill_vs_trend": 0.046642015822592864,
-        "recent_rmse": 320.2436602345215,
-        "recent_baseline_rmse": 367.9904339069559,
-        "recent_skill_vs_trend": 0.12975004041683025,
-        "detrended_r2": 0.0653349796471242,
-        "recent_trend_bias": 85.96847922406857,
+        "rmse": 330.0529977150127,
+        "mae": 266.41656897404835,
+        "baseline_rmse": 346.20048627356226,
+        "skill_vs_trend": 0.046642015822560334,
+        "recent_rmse": 320.24366023451216,
+        "recent_baseline_rmse": 367.9904339069389,
+        "recent_skill_vs_trend": 0.12975004041681537,
+        "detrended_r2": 0.06533497964706614,
+        "recent_trend_bias": 85.96847922405843,
         "features": [
           "rain_growing_z20",
           "hsu_flower_z20",
@@ -2329,53 +2329,53 @@
       "label_scale": "province",
       "season": 2026,
       "unit": "kg/ha",
-      "point": 2568.811168522923,
+      "point": 2568.811168522904,
       "range_68": [
-        2170.619451595467,
-        2967.0028854503785
+        2173.934028891479,
+        2963.688308154329
       ],
       "range_95": [
-        1729.9148514550666,
-        3407.707485590779
+        1728.6002238075694,
+        3409.022113238239
       ],
-      "trend": 2568.811168522923,
-      "weather_model_point": 2689.1858099522196,
-      "weather_effect_pct": 4.686005842092045,
+      "trend": 2568.811168522904,
+      "weather_model_point": 2606.7660523974628,
+      "weather_effect_pct": 1.4775272055665756,
       "operational_choice": "trend_only",
       "low_confidence": true,
       "beats_trend": false,
       "climate_risk": {
-        "stance": "favorable",
-        "stance_ko": "유리",
-        "diagnostic_gap_pct": 4.69,
+        "stance": "near_neutral",
+        "stance_ko": "중립",
+        "diagnostic_gap_pct": 1.48,
         "drivers": [
-          {
-            "feature": "hsu_flower_z20",
-            "label_ko": "개화기 고온누적(HSU)",
-            "anomaly": -0.676,
-            "log_contribution": 0.0216,
-            "direction": "favor"
-          },
-          {
-            "feature": "heat_dry_stress_z20",
-            "label_ko": "고온×건조",
-            "anomaly": -0.681,
-            "log_contribution": 0.0214,
-            "direction": "favor"
-          },
           {
             "feature": "rain_growing_z20",
             "label_ko": "생육기 강수",
-            "anomaly": 1.313,
-            "log_contribution": 0.011,
+            "anomaly": 1.808,
+            "log_contribution": 0.0147,
+            "direction": "favor"
+          },
+          {
+            "feature": "hsu_flower_z20",
+            "label_ko": "개화기 고온누적(HSU)",
+            "anomaly": 0.091,
+            "log_contribution": 0.0063,
             "direction": "favor"
           },
           {
             "feature": "rain_winter_z20",
             "label_ko": "동절 강수",
             "anomaly": 1.714,
-            "log_contribution": -0.0049,
+            "log_contribution": -0.005,
             "direction": "adverse"
+          },
+          {
+            "feature": "heat_dry_stress_z20",
+            "label_ko": "고온×건조",
+            "anomaly": 0.178,
+            "log_contribution": 0.0041,
+            "direction": "favor"
           }
         ],
         "risks": [
@@ -2383,45 +2383,45 @@
           "개화기 토양수분이(가) 단수를 누르는 쪽"
         ],
         "favors": [
+          "생육기 강수이(가) 단수를 받치는 쪽",
           "개화기 고온누적(HSU)이(가) 단수를 받치는 쪽",
-          "고온×건조이(가) 단수를 받치는 쪽",
-          "생육기 강수이(가) 단수를 받치는 쪽"
+          "고온×건조이(가) 단수를 받치는 쪽"
         ],
-        "reason_ko": "검증 스킬 미달로 운영 전망은 추세. 기후 진단 모델은 추세 대비 +4.7% (유리) — 전망 갭(진단−추세)이 시즌 유리/불리 신호. 주요 리스크: 동절 강수이(가) 단수를 누르는 쪽; 개화기 토양수분이(가) 단수를 누르는 쪽.",
+        "reason_ko": "검증 스킬 미달로 운영 전망은 추세. 기후 진단 모델은 추세 대비 +1.5% (중립) — 전망 갭(진단−추세)이 시즌 유리/불리 신호. 주요 리스크: 동절 강수이(가) 단수를 누르는 쪽; 개화기 토양수분이(가) 단수를 누르는 쪽.",
         "note": "diagnostic_gap_pct = climate-model vs trend. Operational point may be trend-only when skill gate fails."
       },
-      "reason_ko": "검증 스킬 미달로 운영 전망은 추세. 기후 진단 모델은 추세 대비 +4.7% (유리) — 전망 갭(진단−추세)이 시즌 유리/불리 신호. 주요 리스크: 동절 강수이(가) 단수를 누르는 쪽; 개화기 토양수분이(가) 단수를 누르는 쪽.",
+      "reason_ko": "검증 스킬 미달로 운영 전망은 추세. 기후 진단 모델은 추세 대비 +1.5% (중립) — 전망 갭(진단−추세)이 시즌 유리/불리 신호. 주요 리스크: 동절 강수이(가) 단수를 누르는 쪽; 개화기 토양수분이(가) 단수를 누르는 쪽.",
       "last_actual": {
         "year": 2025,
         "yield": 2544.0,
         "status": "estimate"
       },
       "season_progress": {
-        "observed_through": "2026-07-31",
-        "critical_window_observed": 0.6013071895424836,
+        "observed_through": "2026-08-27",
+        "critical_window_observed": 0.7777777777777778,
         "future_weather_fill": "20-member historical-year weather ensemble",
         "weather_scenario_count": 20,
         "weather_scenario_p16_p84": [
-          2568.811168522923,
-          2568.811168522923
+          2568.811168522904,
+          2568.811168522904
         ],
         "nwp_integrated": false
       },
       "features": [
         {
           "feature": "rain_growing_z20",
-          "anomaly": 1.313,
-          "log_contribution": 0.011
+          "anomaly": 1.808,
+          "log_contribution": 0.0147
         },
         {
           "feature": "hsu_flower_z20",
-          "anomaly": -0.676,
-          "log_contribution": 0.0216
+          "anomaly": 0.091,
+          "log_contribution": 0.0063
         },
         {
           "feature": "heat_dry_stress_z20",
-          "anomaly": -0.681,
-          "log_contribution": 0.0214
+          "anomaly": 0.178,
+          "log_contribution": 0.0041
         },
         {
           "feature": "frost_sep_z20",
@@ -2435,30 +2435,30 @@
         },
         {
           "feature": "sm_flowering_z20",
-          "anomaly": 1.592,
-          "log_contribution": -0.0042
+          "anomaly": 1.552,
+          "log_contribution": -0.0041
         },
         {
           "feature": "rain_winter_z20",
           "anomaly": 1.714,
-          "log_contribution": -0.0049
+          "log_contribution": -0.005
         },
         {
           "feature": "oni_summer_z20",
-          "anomaly": -0.102,
-          "log_contribution": 0.0001
+          "anomaly": 0.396,
+          "log_contribution": -0.0016
         }
       ],
       "skill": {
-        "rmse": 352.6863466102596,
-        "mae": 279.3108240961318,
-        "baseline_rmse": 355.53846125696623,
-        "skill_vs_trend": 0.008021958121276929,
-        "recent_rmse": 391.53799184389953,
-        "recent_baseline_rmse": 398.8461190918819,
-        "recent_skill_vs_trend": 0.018323175024548277,
-        "detrended_r2": -0.6957623659664565,
-        "recent_trend_bias": 285.36217634867137,
+        "rmse": 352.42077110176575,
+        "mae": 278.89429225261387,
+        "baseline_rmse": 355.5384612569483,
+        "skill_vs_trend": 0.008768925151333762,
+        "recent_rmse": 391.048694870176,
+        "recent_baseline_rmse": 398.8461190918619,
+        "recent_skill_vs_trend": 0.019549956357704956,
+        "detrended_r2": -0.6932094835125711,
+        "recent_trend_bias": 285.3621763486546,
         "features": [
           "rain_growing_z20",
           "hsu_flower_z20",
@@ -2522,72 +2522,72 @@
       "unit": "kg/ha",
       "point": 3478.2597668366884,
       "range_68": [
-        3130.28015740963,
-        3826.2393762637466
+        3157.040999802384,
+        3799.478533870993
       ],
       "range_95": [
-        2660.76747530975,
-        4295.752058363627
+        2654.417623862287,
+        4302.10190981109
       ],
       "trend": 3478.2597668366884,
-      "weather_model_point": 3667.4301162507863,
-      "weather_effect_pct": 5.438649269894502,
+      "weather_model_point": 3379.009304565394,
+      "weather_effect_pct": -2.8534516949422106,
       "operational_choice": "trend_only",
       "low_confidence": true,
       "beats_trend": false,
       "climate_risk": {
-        "stance": "favorable",
-        "stance_ko": "유리",
-        "diagnostic_gap_pct": 5.44,
+        "stance": "unfavorable",
+        "stance_ko": "불리",
+        "diagnostic_gap_pct": -2.85,
         "drivers": [
           {
             "feature": "heat_excess_jul_z20",
             "label_ko": "7월 고온초과",
-            "anomaly": -0.803,
-            "log_contribution": 0.039,
-            "direction": "favor"
+            "anomaly": 0.939,
+            "log_contribution": -0.0274,
+            "direction": "adverse"
           },
           {
             "feature": "sm_heading_z20",
             "label_ko": "출수기 토양수분",
-            "anomaly": 2.184,
-            "log_contribution": 0.0209,
+            "anomaly": 0.635,
+            "log_contribution": 0.0062,
             "direction": "favor"
           },
           {
             "feature": "rain_winter_z20",
             "label_ko": "동절 강수",
             "anomaly": 1.39,
-            "log_contribution": -0.0051,
+            "log_contribution": -0.0053,
             "direction": "adverse"
           },
           {
-            "feature": "rain_growing_z20",
-            "label_ko": "생육기 강수",
-            "anomaly": 0.227,
-            "log_contribution": -0.002,
+            "feature": "oni_summer_z20",
+            "label_ko": "여름 ONI",
+            "anomaly": 0.396,
+            "log_contribution": -0.0032,
             "direction": "adverse"
           }
         ],
         "risks": [
+          "7월 고온초과이(가) 단수를 누르는 쪽",
           "동절 강수이(가) 단수를 누르는 쪽"
         ],
         "favors": [
-          "7월 고온초과이(가) 단수를 받치는 쪽",
           "출수기 토양수분이(가) 단수를 받치는 쪽"
         ],
-        "reason_ko": "검증 스킬 미달로 운영 전망은 추세. 기후 진단 모델은 추세 대비 +5.4% (유리) — 전망 갭(진단−추세)이 시즌 유리/불리 신호. 주요 리스크: 동절 강수이(가) 단수를 누르는 쪽.",
+        "reason_ko": "검증 스킬 미달로 운영 전망은 추세. 기후 진단 모델은 추세 대비 -2.9% (불리) — 전망 갭(진단−추세)이 시즌 유리/불리 신호. 주요 리스크: 7월 고온초과이(가) 단수를 누르는 쪽; 동절 강수이(가) 단수를 누르는 쪽.",
         "note": "diagnostic_gap_pct = climate-model vs trend. Operational point may be trend-only when skill gate fails."
       },
-      "reason_ko": "검증 스킬 미달로 운영 전망은 추세. 기후 진단 모델은 추세 대비 +5.4% (유리) — 전망 갭(진단−추세)이 시즌 유리/불리 신호. 주요 리스크: 동절 강수이(가) 단수를 누르는 쪽.",
+      "reason_ko": "검증 스킬 미달로 운영 전망은 추세. 기후 진단 모델은 추세 대비 -2.9% (불리) — 전망 갭(진단−추세)이 시즌 유리/불리 신호. 주요 리스크: 7월 고온초과이(가) 단수를 누르는 쪽; 동절 강수이(가) 단수를 누르는 쪽.",
       "last_actual": {
         "year": 2025,
         "yield": 3751.0,
         "status": "estimate"
       },
       "season_progress": {
-        "observed_through": "2026-07-31",
-        "critical_window_observed": 0.6013071895424836,
+        "observed_through": "2026-08-27",
+        "critical_window_observed": 0.7777777777777778,
         "future_weather_fill": "20-member historical-year weather ensemble",
         "weather_scenario_count": 20,
         "weather_scenario_p16_p84": [
@@ -2599,18 +2599,18 @@
       "features": [
         {
           "feature": "rain_growing_z20",
-          "anomaly": 0.227,
-          "log_contribution": -0.002
+          "anomaly": -0.109,
+          "log_contribution": 0.0007
         },
         {
           "feature": "gdd0_growing_z20",
-          "anomaly": 0.122,
-          "log_contribution": 0.0
+          "anomaly": 0.145,
+          "log_contribution": -0.0001
         },
         {
           "feature": "heat_excess_jul_z20",
-          "anomaly": -0.803,
-          "log_contribution": 0.039
+          "anomaly": 0.939,
+          "log_contribution": -0.0274
         },
         {
           "feature": "frost_sep_z20",
@@ -2624,30 +2624,30 @@
         },
         {
           "feature": "sm_heading_z20",
-          "anomaly": 2.184,
-          "log_contribution": 0.0209
+          "anomaly": 0.635,
+          "log_contribution": 0.0062
         },
         {
           "feature": "rain_winter_z20",
           "anomaly": 1.39,
-          "log_contribution": -0.0051
+          "log_contribution": -0.0053
         },
         {
           "feature": "oni_summer_z20",
-          "anomaly": -0.102,
-          "log_contribution": 0.0003
+          "anomaly": 0.396,
+          "log_contribution": -0.0032
         }
       ],
       "skill": {
-        "rmse": 444.6592137621107,
-        "mae": 351.15134174015236,
-        "baseline_rmse": 406.4020616711782,
-        "skill_vs_trend": -0.09413621558319396,
-        "recent_rmse": 433.3267692237481,
-        "recent_baseline_rmse": 391.74661305738135,
-        "recent_skill_vs_trend": -0.10614043562969178,
-        "detrended_r2": -0.31960750966499085,
-        "recent_trend_bias": -73.40911211763137,
+        "rmse": 443.0829117635492,
+        "mae": 350.39252851307384,
+        "baseline_rmse": 406.40206167117077,
+        "skill_vs_trend": -0.09025753939717407,
+        "recent_rmse": 432.42662669416177,
+        "recent_baseline_rmse": 391.7466130573687,
+        "recent_skill_vs_trend": -0.10384266840064749,
+        "detrended_r2": -0.3102681641696625,
+        "recent_trend_bias": -73.409112117635,
         "features": [
           "rain_growing_z20",
           "gdd0_growing_z20",
@@ -2709,25 +2709,25 @@
       "label_scale": "province",
       "season": 2026,
       "unit": "kg/ha",
-      "point": 2803.2079928203807,
+      "point": 2803.2079928204107,
       "range_68": [
-        2356.031385261319,
-        3250.3846003794424
+        2356.034819331651,
+        3250.3811663091706
       ],
       "range_95": [
-        2219.672808037336,
-        3386.7431776034255
+        2219.659877494794,
+        3386.7561081460276
       ],
-      "trend": 2803.2079928203807,
-      "weather_model_point": 2802.9783436777893,
-      "weather_effect_pct": -0.008192368999360156,
+      "trend": 2803.2079928204107,
+      "weather_model_point": 2802.729425779282,
+      "weather_effect_pct": -0.01707212031195615,
       "operational_choice": "trend_only",
       "low_confidence": true,
       "beats_trend": false,
       "climate_risk": {
         "stance": "near_neutral",
         "stance_ko": "중립",
-        "diagnostic_gap_pct": -0.01,
+        "diagnostic_gap_pct": -0.02,
         "drivers": [
           {
             "feature": "rain_may_z20",
@@ -2770,13 +2770,13 @@
         "status": "estimate"
       },
       "season_progress": {
-        "observed_through": "2026-07-31",
-        "critical_window_observed": 0.6013071895424836,
+        "observed_through": "2026-08-27",
+        "critical_window_observed": 0.7777777777777778,
         "future_weather_fill": "20-member historical-year weather ensemble",
         "weather_scenario_count": 20,
         "weather_scenario_p16_p84": [
-          2803.2079928203807,
-          2803.2079928203807
+          2803.2079928204107,
+          2803.2079928204107
         ],
         "nwp_integrated": false
       },
@@ -2803,35 +2803,35 @@
         },
         {
           "feature": "rain_growing_z20",
-          "anomaly": 0.091,
+          "anomaly": 0.123,
           "log_contribution": 0.0
         },
         {
           "feature": "sm_flowering_z20",
-          "anomaly": 2.203,
+          "anomaly": 0.215,
           "log_contribution": 0.0
         },
         {
           "feature": "heat_excess_jul_z20",
-          "anomaly": 0.143,
-          "log_contribution": 0.0
+          "anomaly": 1.045,
+          "log_contribution": -0.0
         },
         {
           "feature": "oni_summer_z20",
-          "anomaly": -0.102,
-          "log_contribution": 0.0
+          "anomaly": 0.396,
+          "log_contribution": -0.0
         }
       ],
       "skill": {
-        "rmse": 361.7966491959894,
-        "mae": 304.8283608976303,
-        "baseline_rmse": 361.7390670525321,
-        "skill_vs_trend": -0.00015918143408311103,
-        "recent_rmse": 361.7966491959894,
-        "recent_baseline_rmse": 361.7390670525321,
-        "recent_skill_vs_trend": -0.00015918143408311103,
-        "detrended_r2": -0.0338265671039506,
-        "recent_trend_bias": -65.12488699131632,
+        "rmse": 361.799354981149,
+        "mae": 304.8299743255034,
+        "baseline_rmse": 361.73906705252296,
+        "skill_vs_trend": -0.0001666613703554809,
+        "recent_rmse": 361.799354981149,
+        "recent_baseline_rmse": 361.73906705252296,
+        "recent_skill_vs_trend": -0.0001666613703554809,
+        "detrended_r2": -0.03384203061394442,
+        "recent_trend_bias": -65.12488699130313,
         "features": [
           "rain_may_z20",
           "sm_may_z20",
@@ -2885,44 +2885,44 @@
       "label_scale": "province",
       "season": 2026,
       "unit": "kg/ha",
-      "point": 2509.222093460701,
+      "point": 2509.2220934607194,
       "range_68": [
-        2262.054765245801,
-        2756.3894216756016
+        2262.054765245817,
+        2756.3894216756216
       ],
       "range_95": [
-        1890.3822466278114,
-        3128.061940293591
+        1890.3822466278586,
+        3128.06194029358
       ],
-      "trend": 2509.222093460701,
-      "weather_model_point": 2514.56525914552,
-      "weather_effect_pct": 0.2129411222204558,
+      "trend": 2509.2220934607194,
+      "weather_model_point": 2450.0791939621963,
+      "weather_effect_pct": -2.357021311611085,
       "operational_choice": "trend_only",
       "low_confidence": true,
       "beats_trend": false,
       "climate_risk": {
-        "stance": "near_neutral",
-        "stance_ko": "중립",
-        "diagnostic_gap_pct": 0.21,
+        "stance": "unfavorable",
+        "stance_ko": "불리",
+        "diagnostic_gap_pct": -2.36,
         "drivers": [
-          {
-            "feature": "rain_growing_z20",
-            "label_ko": "생육기 강수",
-            "anomaly": 0.771,
-            "log_contribution": -0.0145,
-            "direction": "adverse"
-          },
           {
             "feature": "hsu_flower_z20",
             "label_ko": "개화기 고온누적(HSU)",
-            "anomaly": -0.366,
-            "log_contribution": 0.012,
-            "direction": "favor"
+            "anomaly": 0.555,
+            "log_contribution": -0.0187,
+            "direction": "adverse"
+          },
+          {
+            "feature": "rain_growing_z20",
+            "label_ko": "생육기 강수",
+            "anomaly": 0.583,
+            "log_contribution": -0.0102,
+            "direction": "adverse"
           },
           {
             "feature": "rain_flowering_z20",
             "label_ko": "개화기 강수",
-            "anomaly": 1.513,
+            "anomaly": 1.509,
             "log_contribution": 0.0049,
             "direction": "favor"
           },
@@ -2935,42 +2935,42 @@
           }
         ],
         "risks": [
+          "개화기 고온누적(HSU)이(가) 단수를 누르는 쪽",
           "생육기 강수이(가) 단수를 누르는 쪽"
         ],
         "favors": [
-          "개화기 고온누적(HSU)이(가) 단수를 받치는 쪽",
           "개화기 강수이(가) 단수를 받치는 쪽"
         ],
-        "reason_ko": "검증 스킬 미달로 운영 전망은 추세. 기후 진단 모델은 추세 대비 +0.2% (중립) — 전망 갭(진단−추세)이 시즌 유리/불리 신호. 주요 리스크: 생육기 강수이(가) 단수를 누르는 쪽.",
+        "reason_ko": "검증 스킬 미달로 운영 전망은 추세. 기후 진단 모델은 추세 대비 -2.4% (불리) — 전망 갭(진단−추세)이 시즌 유리/불리 신호. 주요 리스크: 개화기 고온누적(HSU)이(가) 단수를 누르는 쪽; 생육기 강수이(가) 단수를 누르는 쪽.",
         "note": "diagnostic_gap_pct = climate-model vs trend. Operational point may be trend-only when skill gate fails."
       },
-      "reason_ko": "검증 스킬 미달로 운영 전망은 추세. 기후 진단 모델은 추세 대비 +0.2% (중립) — 전망 갭(진단−추세)이 시즌 유리/불리 신호. 주요 리스크: 생육기 강수이(가) 단수를 누르는 쪽.",
+      "reason_ko": "검증 스킬 미달로 운영 전망은 추세. 기후 진단 모델은 추세 대비 -2.4% (불리) — 전망 갭(진단−추세)이 시즌 유리/불리 신호. 주요 리스크: 개화기 고온누적(HSU)이(가) 단수를 누르는 쪽; 생육기 강수이(가) 단수를 누르는 쪽.",
       "last_actual": {
         "year": 2025,
         "yield": 2510.0,
         "status": "estimate"
       },
       "season_progress": {
-        "observed_through": "2026-07-31",
-        "critical_window_observed": 0.6013071895424836,
+        "observed_through": "2026-08-27",
+        "critical_window_observed": 0.7777777777777778,
         "future_weather_fill": "20-member historical-year weather ensemble",
         "weather_scenario_count": 20,
         "weather_scenario_p16_p84": [
-          2509.222093460701,
-          2509.222093460701
+          2509.2220934607194,
+          2509.2220934607194
         ],
         "nwp_integrated": false
       },
       "features": [
         {
           "feature": "rain_growing_z20",
-          "anomaly": 0.771,
-          "log_contribution": -0.0145
+          "anomaly": 0.583,
+          "log_contribution": -0.0102
         },
         {
           "feature": "hsu_flower_z20",
-          "anomaly": -0.366,
-          "log_contribution": 0.012
+          "anomaly": 0.555,
+          "log_contribution": -0.0187
         },
         {
           "feature": "frost_sep_z20",
@@ -2979,20 +2979,20 @@
         },
         {
           "feature": "rain_flowering_z20",
-          "anomaly": 1.513,
+          "anomaly": 1.509,
           "log_contribution": 0.0049
         }
       ],
       "skill": {
-        "rmse": 290.439845268103,
-        "mae": 208.50178604444366,
-        "baseline_rmse": 269.14895514870636,
-        "skill_vs_trend": -0.07910448735583353,
-        "recent_rmse": 249.09076351108962,
-        "recent_baseline_rmse": 211.01982293029835,
-        "recent_skill_vs_trend": -0.1804140485577339,
-        "detrended_r2": -0.2787647723154927,
-        "recent_trend_bias": -73.80263055985233,
+        "rmse": 290.43984526809885,
+        "mae": 208.50178604444153,
+        "baseline_rmse": 269.1489551487044,
+        "skill_vs_trend": -0.07910448735582598,
+        "recent_rmse": 249.09076351108283,
+        "recent_baseline_rmse": 211.01982293029525,
+        "recent_skill_vs_trend": -0.18041404855771903,
+        "detrended_r2": -0.2787647723154929,
+        "recent_trend_bias": -73.80263055985897,
         "features": [
           "rain_growing_z20",
           "hsu_flower_z20",
@@ -3050,52 +3050,52 @@
       "label_scale": "province",
       "season": 2026,
       "unit": "kg/ha",
-      "point": 11789.601893876657,
+      "point": 11789.601893876616,
       "range_68": [
-        10948.116338397018,
-        12631.087449356297
+        10948.191235691522,
+        12631.01255206171
       ],
       "range_95": [
-        10431.555800610184,
-        13147.647987143131
+        10410.946980342404,
+        13168.256807410828
       ],
-      "trend": 11789.601893876657,
-      "weather_model_point": 11790.912041531981,
-      "weather_effect_pct": 0.011112738726182236,
+      "trend": 11789.601893876616,
+      "weather_model_point": 11790.146719937315,
+      "weather_effect_pct": 0.004621242223468158,
       "operational_choice": "trend_only",
       "low_confidence": true,
       "beats_trend": false,
       "climate_risk": {
         "stance": "near_neutral",
         "stance_ko": "중립",
-        "diagnostic_gap_pct": 0.01,
+        "diagnostic_gap_pct": 0.0,
         "drivers": [
-          {
-            "feature": "rain_jul_z20",
-            "label_ko": "7월 강수",
-            "anomaly": 1.684,
-            "log_contribution": 0.0001,
-            "direction": "favor"
-          },
           {
             "feature": "gdd10_growing_z20",
             "label_ko": "생육기 GDD10",
-            "anomaly": 0.055,
+            "anomaly": 0.282,
             "log_contribution": -0.0,
             "direction": "adverse"
           },
           {
             "feature": "edd_jul_z20",
             "label_ko": "7월 EDD",
-            "anomaly": -0.223,
-            "log_contribution": -0.0,
+            "anomaly": 1.146,
+            "log_contribution": 0.0,
+            "direction": "adverse"
+          },
+          {
+            "feature": "rain_jul_z20",
+            "label_ko": "7월 강수",
+            "anomaly": 0.159,
+            "log_contribution": 0.0,
             "direction": "adverse"
           },
           {
             "feature": "heat_days_32_z20",
             "label_ko": "32°C 초과일",
-            "anomaly": -0.115,
-            "log_contribution": -0.0,
+            "anomaly": 1.082,
+            "log_contribution": 0.0,
             "direction": "adverse"
           }
         ],
@@ -3111,68 +3111,68 @@
         "status": "estimate"
       },
       "season_progress": {
-        "observed_through": "2026-07-31",
-        "critical_window_observed": 0.6013071895424836,
+        "observed_through": "2026-08-27",
+        "critical_window_observed": 0.7777777777777778,
         "future_weather_fill": "20-member historical-year weather ensemble",
         "weather_scenario_count": 20,
         "weather_scenario_p16_p84": [
-          11789.601893876657,
-          11789.601893876657
+          11789.601893876616,
+          11789.601893876616
         ],
         "nwp_integrated": false
       },
       "features": [
         {
           "feature": "gdd10_growing_z20",
-          "anomaly": 0.055,
+          "anomaly": 0.282,
           "log_contribution": -0.0
         },
         {
           "feature": "edd_jul_z20",
-          "anomaly": -0.223,
-          "log_contribution": -0.0
+          "anomaly": 1.146,
+          "log_contribution": 0.0
         },
         {
           "feature": "rain_jul_z20",
-          "anomaly": 1.684,
-          "log_contribution": 0.0001
+          "anomaly": 0.159,
+          "log_contribution": 0.0
         },
         {
           "feature": "heat_days_32_z20",
-          "anomaly": -0.115,
-          "log_contribution": -0.0
+          "anomaly": 1.082,
+          "log_contribution": 0.0
         },
         {
           "feature": "sm_jul_z20",
-          "anomaly": -2.115,
+          "anomaly": -0.569,
           "log_contribution": 0.0
         },
         {
           "feature": "rain_growing_z20",
-          "anomaly": 0.229,
+          "anomaly": 0.908,
           "log_contribution": 0.0
         },
         {
           "feature": "vpd_jul_z20",
-          "anomaly": -0.779,
-          "log_contribution": -0.0
+          "anomaly": 0.939,
+          "log_contribution": 0.0
         },
         {
           "feature": "oni_summer_z20",
-          "anomaly": -0.102,
-          "log_contribution": 0.0
+          "anomaly": 0.396,
+          "log_contribution": -0.0
         }
       ],
       "skill": {
-        "rmse": 671.4261670766504,
-        "mae": 546.4222752586976,
-        "baseline_rmse": 539.3141610348447,
-        "skill_vs_trend": -0.24496298370565128,
-        "recent_rmse": 654.0460609407892,
-        "recent_baseline_rmse": 628.7187644732975,
-        "recent_skill_vs_trend": -0.04028398371203279,
-        "detrended_r2": -2.1336809454150663,
-        "recent_trend_bias": 542.2305513170444,
+        "rmse": 675.655968648379,
+        "mae": 550.7865005260028,
+        "baseline_rmse": 539.3141610348526,
+        "skill_vs_trend": -0.252805910662367,
+        "recent_rmse": 653.81645120026,
+        "recent_baseline_rmse": 628.718764473305,
+        "recent_skill_vs_trend": -0.03991878109122449,
+        "detrended_r2": -2.1732879795282463,
+        "recent_trend_bias": 542.230551317024,
         "features": [
           "gdd10_growing_z20",
           "edd_jul_z20",
@@ -3234,12 +3234,12 @@
       "id": "aafc_outlook_latest",
       "agency": "AAFC",
       "agency_ko": "캐나다농식품부",
-      "title": "Canada: Outlook for Principal Field Crops, 2026-07-20",
-      "title_ko": "주요 밭작물 수급 전망 (2026-07-20)",
-      "published": "2026-07-20",
-      "url": "https://agriculture.canada.ca/en/sector/crops/reports-statistics/canada-outlook-principal-field-crops-2026-07-20",
+      "title": "Canada: Outlook for Principal Field Crops, 2026-08-20",
+      "title_ko": "주요 밭작물 수급 전망 (2026-08-20)",
+      "published": "2026-08-20",
+      "url": "https://agriculture.canada.ca/en/sector/crops/reports-statistics/canada-outlook-principal-field-crops-2026-08-20",
       "incorporates_ccyf": true,
-      "summary": "The first Canadian Crop Yield Forecast (CCYF) report of the 2026 growing season has informed the analysis of this month’s Outlook. The CCYF forecast was produced using the agroclimatic data from May 1 to June 30, 2026, and the satellite-derived Normalized Difference Vegetation In",
+      "summary": "Canadian Crop Yield Forecast (CCYF) report of the 2026 growing season. The CCYF forecast is based on agroclimatic conditions observed from May 1 to July 31, 2026, and satellite-derived Normalized Difference Vegetation Index (NDVI) data collected from May 1 to July 26, 2026. AAFC ",
       "summary_ko": "연방 월간 수급 전망. 시즌 중이면 CCYF 단수 전망을 반영. 주간 작황 리포트가 아니라 생산·수출·재고 표가 핵심."
     },
     {
@@ -3259,59 +3259,58 @@
       "id": "sk_crop_report_latest",
       "agency": "Saskatchewan Ministry of Agriculture",
       "agency_ko": "서스캐처원 주",
-      "title": "SK Crop Report — July 28 to August 3, 2026",
-      "title_ko": "SK 주간 작황 — July 28 to August 3, 2026",
-      "period": "July 28 to August 3, 2026",
-      "published_hint": "July 28 to August 3, 2026",
+      "title": "SK Crop Report — latest",
+      "title_ko": "SK 주간 작황 — 최신",
+      "period": null,
+      "published_hint": null,
       "url": "https://www.saskatchewan.ca/business/agriculture-natural-resources-and-industry/agribusiness-farmers-and-ranchers/market-and-trade-statistics/crops-statistics/crop-report",
       "cadence": "weekly",
-      "summary": "cropland moisture surplus/adequate/short/v.short=2/56/33/9%; harvest 2% complete",
+      "summary": "cropland moisture surplus/adequate/short/v.short=4/49/37/10%",
       "summary_ko": "주간 작황·수분·수확 진도. 주 단위 Mt 단수 전망은 없고 상태 지표(수분·생육·피해) 중심."
     },
     {
       "id": "ab_crop_report_latest",
       "agency": "Alberta Agriculture and Irrigation",
       "agency_ko": "앨버타 주",
-      "title": "AB Crop Report — as of July 28, 2026",
-      "title_ko": "AB 주간 작황 — July 28, 2026",
-      "as_of": "July 28, 2026",
-      "page_updated": "July 31, 2026",
+      "title": "AB Crop Report — as of August 25, 2026",
+      "title_ko": "AB 주간 작황 — August 25, 2026",
+      "as_of": "August 25, 2026",
+      "page_updated": "August 28, 2026",
       "recent_releases": [
+        "August 25, 2026",
+        "August 18, 2026",
+        "August 11, 2026",
+        "August 4, 2026",
         "July 28, 2026",
-        "July 21, 2026",
-        "July 14, 2026",
-        "July 7, 2026",
-        "June 30, 2026",
-        "June 23, 2026"
+        "July 21, 2026"
       ],
       "url": "https://open.alberta.ca/publications/2830245",
       "cadence": "weekly",
-      "fetch_status": "fallback_curated",
-      "summary": "Latest condition report as of July 28, 2026; Open Alberta page updated July 31, 2026. Program alternates full and abbreviated weekly reports.",
-      "summary_ko": "주간(격주 요약) 작황. StatsCan 주 추정치 교차검증용. 연방 Mt 전망과는 별층. (자동 수집 403 시 수동 확인본)",
-      "error": "HTTPError: HTTP Error 403: Forbidden"
+      "fetch_status": "live",
+      "summary": "Latest condition report as of August 25, 2026; page updated August 28, 2026. Recent: August 25, 2026, August 18, 2026, August 11, 2026, August 4, 2026",
+      "summary_ko": "주간(격주 요약) 작황. StatsCan 주 추정치 교차검증용. 연방 Mt 전망과는 별층."
     },
     {
       "id": "mb_crop_report_latest",
       "agency": "Manitoba Agriculture",
       "agency_ko": "매니토바 주",
-      "title": "MB Crop Report — August 5, 2026",
-      "title_ko": "MB 주간 작황 — August 5, 2026",
-      "published": "2026-08-05",
-      "url": "https://www.gov.mb.ca/agriculture/crops/seasonal-reports/crop-report/pubs/crop-report-2026-08-05.pdf",
+      "title": "MB Crop Report — August 25, 2026",
+      "title_ko": "MB 주간 작황 — August 25, 2026",
+      "published": "2026-08-25",
+      "url": "https://www.gov.mb.ca/agriculture/crops/seasonal-reports/crop-report/pubs/crop-report-2026-08-25.pdf",
       "index_url": "https://www.gov.mb.ca/agriculture/crops/seasonal-reports/crop-report/index.html",
       "cadence": "weekly",
       "recent_releases": [
+        "2026-08-25",
+        "2026-08-18",
+        "2026-08-11",
         "2026-08-05",
         "2026-07-28",
         "2026-07-21",
         "2026-07-14",
-        "2026-07-07",
-        "2026-06-30",
-        "2026-06-23",
-        "2026-06-16"
+        "2026-07-07"
       ],
-      "summary": "Latest PDF 2026-08-05; recent weekly releases: 2026-08-05, 2026-07-28, 2026-07-21, 2026-07-14, 2026-07-07",
+      "summary": "Latest PDF 2026-08-25; recent weekly releases: 2026-08-25, 2026-08-18, 2026-08-11, 2026-08-05, 2026-07-28",
       "summary_ko": "주간 PDF. 강수·GDD·병해충·지역 진도. 단수 kg/ha 공식 전망은 StatsCan/AAFC 쪽."
     }
   ],
