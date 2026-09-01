@@ -150,7 +150,18 @@
       "url": "https://www.usgs.gov/news/rss",
       "lang": "en", "enabled": false, "weight": 1.2,
       "scope_hint": "global",
-      "notes": "DISABLED 2026-08-31: URL unverified. Mineral Commodity Summaries is the reference for the metals windows."
+      "notes": "DISABLED 2026-08-31: URL unverified. Mineral Commodity Summaries is the reference for the metals windows. 2026-09-01: confirmed this is the '미국 광물부' the operator meant -- the US has no ministry of minerals, USGS/NMIC is the closest equivalent. Mapping confirmed; URL still needs a live check before enabling."
+    },
+    {
+      "id": "int_lme_notices",
+      "agency": "London Metal Exchange", "agency_ko": "런던금속거래소",
+      "kind": "html_list",
+      "url": "https://www.lme.com/en/News",
+      "lang": "en", "enabled": false, "weight": 1.1,
+      "scope_hint": "global",
+      "commodity_hint": ["copper", "aluminum", "zinc", "tin", "lead", "nickel"],
+      "html": {"base": "https://www.lme.com", "item_href_re": "/en/News/[^\"']+", "max_items": 20},
+      "notes": "DISABLED 2026-09-01: operator asked for LME market notices specifically (not price/stock data, which is mostly subscription-gated). URL and the html.item_href_re selector are both unverified -- lme.com was unreachable from this build environment, so this entry is a placeholder shape, not a confirmed scrape target. Verify the actual notices page structure before enabling."
     },
     {
       "id": "ua_minagro",

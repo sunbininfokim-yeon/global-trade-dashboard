@@ -137,22 +137,36 @@ python3 build_reports.py label --series-id USDA_CROP_PROGRESS --label drop
 **새 종류의 중요 보고서**가 보이면 `config/series_catalog.json` 에 `series_id`를 추가하는 것이
 "학습 정의"의 정본이다.
 
-## 소스 상태 (2026-08-31)
+## 소스 상태 (2026-09-01)
 
-레포 작업 환경의 네트워크 정책이 usda.gov·eia.gov 등 대상 도메인 CONNECT를 403으로 막아
-**여기서는 라이브 검증을 못 했다.** GitHub Actions 러너에는 그 제약이 없다.
+레포 작업 환경은 일반 웹 egress 자체가 대부분 막혀 있다 (github.com·npm·PyPI 류 개발
+인프라만 허용 — google.com도 안 열린다). usda.gov·lme.com 등을 콕 집어 막는 게 아니라
+**이 세션 전체가 그 정책 아래라서 여기서는 어떤 방법으로도 라이브 검증이 안 된다.**
+GitHub Actions 러너에는 이 제약이 없다.
 
 - **enabled**: USDA(뉴스룸·ERS·FAS), EIA(Today in Energy·press), CONAB, Statistics Canada,
   FAO, EU DG AGRI, PIB India
-- **disabled (URL 미검증)**: ABARES, IGC, OPEC, USGS, 우크라이나 농업정책부
+- **disabled (URL/구조 미검증)**: ABARES, IGC, OPEC, USGS(= "미국 광물부", 매핑 확인됨),
+  LME 마켓 공지(`int_lme_notices` — 가격·재고 데이터 아님, 공지문만), 우크라이나 농업정책부
 
 첫 Actions 실행 로그의 `failed feeds:` 목록이 정답지다.
 살아 있는 것은 `enabled: true`로, 죽은 것은 사유·날짜와 함께 `false`로 바꾼다.
 
+## 후보 (아직 설정에 없음)
+
+- **CASDE** (China Agricultural Supply and Demand Estimates, 중국 농업농촌부) —
+  중국판 WASDE. 매월 발표하지만 중국어 PDF/표 형식이라 영문 RSS 유무부터 불확실하다.
+  접근 난도가 다른 소스보다 훨씬 높아서 지금은 후보로만 남겨둔다 — `config/sources.json`에
+  아직 넣지 않았다.
+
 ## 아직 안 한 것
 
-- **USDA GAIN 원문 API**: `apps.fas.usda.gov` Open Data는 FAS API 키가 필요하다.
-  CI에 `USDA_API_KEY`가 이미 있으므로 국가별 주재관 보고서를 통째로 끌어올 수 있다 —
-  엔드포인트 형태를 라이브로 확인한 뒤 소스로 추가하는 것이 다음 단계.
-- PDF 본문 요약 (WASDE 표 파싱). 지금은 피드가 준 발췌까지만.
+- **USDA GAIN 원문 API**: 서술형 주재관 보고서(attaché report) 자체는 `gain.fas.usda.gov`
+  검색 포털에서 PDF로 배포된다. 이미 이 레포가 쓰고 있는 `USDA_FAS_API_KEY`는 PSD Online
+  (숫자 수급표, `/api/usda-fas`)과 ESR(주간 수출판매, `/api/usda-esr`)에 연결돼 있을 뿐,
+  GAIN 자체의 JSON 엔드포인트는 아니다 — 검색 포털 뒤에 API가 있는지조차 라이브로
+  확인해야 한다.
+- PDF 본문 파싱 (WASDE 표 숫자 추출). 지금은 피드가 준 발췌까지만 — 이건 "뉴스처럼 붙이기"가
+  아니라 "표의 수치를 카드에 찍기"라 범위가 다른 작업이다 (`official_reports`의 QRA
+  추출 방식과 같은 종류). 필요해지면 별도로 붙인다.
 - 한국어 번역 상시화 — 무료 쿼터로는 하루 수백 건을 감당하지 못한다.
