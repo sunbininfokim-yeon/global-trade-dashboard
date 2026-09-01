@@ -1,6 +1,6 @@
 {
   "schema_version": "official-reports-v1",
-  "generated_at": "2026-09-01T13:31:46.874450+00:00",
+  "generated_at": "2026-09-01T19:25:22.892469+00:00",
   "model": {
     "name": "official_reports_learnable_v1",
     "description": "Official sources only (US/JP/CN/EU/UK public RSS·HTML). Domains: economy/finance/diplomacy/security/agriculture. Series catalog + label_history for collaborative learning. No Dropbox.",
@@ -20,7 +20,7 @@
     "raw_items": 153,
     "scored": 153,
     "selected": 40,
-    "indicators": 12
+    "indicators": 11
   },
   "feed_status": [
     {
@@ -235,20 +235,6 @@
       "title": "Japanese Government Bonds Held by the Bank of Japan",
       "url": "http://www.boj.or.jp/en/statistics/boj/other/mei/release/2026/mei260810.xlsx",
       "published_at": "2026-08-13T08:00:00+00:00",
-      "site_slot": "finance.policy",
-      "significance": 2.306
-    },
-    {
-      "series_id": "JP_BOJ_POLICY",
-      "label_ko": "일본은행 정책·공표",
-      "country": "JPN",
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "title": "Bank of Japan Accounts (August 10)",
-      "url": "http://www.boj.or.jp/en/statistics/boj/other/acmai/release/2026/ac260810.htm",
-      "published_at": "2026-08-13T01:00:00+00:00",
       "site_slot": "finance.policy",
       "significance": 2.306
     }
@@ -1056,6 +1042,41 @@
       "site_slot": null
     },
     {
+      "id": "07203c3fe56c21df",
+      "published_at": "2026-08-17T21:15:00+00:00",
+      "source": {
+        "id": "us_whitehouse",
+        "name": "White House",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.whitehouse.gov/briefings-statements/2026/08/presidential-message-on-national-employer-support-of-the-guard-and-reserve-week-1d9a/",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "security",
+        "economy",
+        "diplomacy"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "Presidential Message on National Employer Support of the Guard and Reserve Week",
+        "original_lang": "en",
+        "ko": "[USA·안보] Presidential Message on National Employer Support of the Guard and Reserve Week"
+      },
+      "summary": "The citizen warriors of the National Guard and Reserve carry forward a tradition as old as our Republic itself, building careers in the communities they serve while answering our Nation’s call in its hour of need. Their service strengthens our communities, powers our economy, and",
+      "scores": {
+        "significance": 2.438,
+        "final": 2.438
+      },
+      "rank_reasons": [
+        "domains:economy,diplomacy,security"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
       "id": "06fdfda7dc2bc85e",
       "published_at": "2026-07-23T16:00:00+00:00",
       "source": {
@@ -1615,44 +1636,20 @@
       "translation_status": "skipped",
       "event_type": "official_report",
       "site_slot": "finance.policy"
-    },
-    {
-      "id": "b281888b875720fe",
-      "published_at": "2026-08-13T01:00:00+00:00",
-      "source": {
-        "id": "jp_boj_whatsnew",
-        "name": "Bank of Japan",
-        "region": "jpn",
-        "slant": null
-      },
-      "url": "http://www.boj.or.jp/en/statistics/boj/other/acmai/release/2026/ac260810.htm",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "series_id": "JP_BOJ_POLICY",
-      "title": {
-        "original": "Bank of Japan Accounts (August 10)",
-        "original_lang": "en",
-        "ko": "[JPN·경제] Bank of Japan Accounts (August 10)"
-      },
-      "summary": "",
-      "scores": {
-        "significance": 2.306,
-        "final": 2.306
-      },
-      "rank_reasons": [
-        "domains:economy,finance",
-        "series:JP_BOJ_POLICY"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": "finance.policy"
     }
   ],
   "pending_review": [
+    {
+      "title": "Boris Vujčić: Listening to households: expectations, behaviour and monetary policy",
+      "url": "https://www.ecb.europa.eu//press/key/date/2026/html/ecb.sp260901~bb28f33f54.en.html",
+      "country": "EUR",
+      "domains": [
+        "finance",
+        "economy"
+      ],
+      "significance": 2.112,
+      "suggest": "label promote|keep|drop + series_id later"
+    },
     {
       "title": "Philip R. Lane: Outlook for the euro area economy",
       "url": "https://www.ecb.europa.eu//press/key/date/2026/html/ecb.sp260724~d484b483b9.en.pdf",
@@ -1794,26 +1791,6 @@
         "finance"
       ],
       "significance": 1.978,
-      "suggest": "label promote|keep|drop + series_id later"
-    },
-    {
-      "title": "Minutes of the Federal Open Market Committee, June 16-17, 2026",
-      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260708a.htm",
-      "country": "USA",
-      "domains": [
-        "finance"
-      ],
-      "significance": 1.904,
-      "suggest": "label promote|keep|drop + series_id later"
-    },
-    {
-      "title": "Minutes of the Board's discount rate meeting on April 20 and 29, 2026",
-      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260526a.htm",
-      "country": "USA",
-      "domains": [
-        "finance"
-      ],
-      "significance": 1.904,
       "suggest": "label promote|keep|drop + series_id later"
     }
   ],
@@ -2620,6 +2597,41 @@
       "site_slot": null
     },
     {
+      "id": "07203c3fe56c21df",
+      "published_at": "2026-08-17T21:15:00+00:00",
+      "source": {
+        "id": "us_whitehouse",
+        "name": "White House",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.whitehouse.gov/briefings-statements/2026/08/presidential-message-on-national-employer-support-of-the-guard-and-reserve-week-1d9a/",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "security",
+        "economy",
+        "diplomacy"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "Presidential Message on National Employer Support of the Guard and Reserve Week",
+        "original_lang": "en",
+        "ko": "[USA·안보] Presidential Message on National Employer Support of the Guard and Reserve Week"
+      },
+      "summary": "The citizen warriors of the National Guard and Reserve carry forward a tradition as old as our Republic itself, building careers in the communities they serve while answering our Nation’s call in its hour of need. Their service strengthens our communities, powers our economy, and",
+      "scores": {
+        "significance": 2.438,
+        "final": 2.438
+      },
+      "rank_reasons": [
+        "domains:economy,diplomacy,security"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
       "id": "06fdfda7dc2bc85e",
       "published_at": "2026-07-23T16:00:00+00:00",
       "source": {
@@ -3166,41 +3178,6 @@
         "original": "Japanese Government Bonds Held by the Bank of Japan",
         "original_lang": "en",
         "ko": "[JPN·경제] Japanese Government Bonds Held by the Bank of Japan"
-      },
-      "summary": "",
-      "scores": {
-        "significance": 2.306,
-        "final": 2.306
-      },
-      "rank_reasons": [
-        "domains:economy,finance",
-        "series:JP_BOJ_POLICY"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": "finance.policy"
-    },
-    {
-      "id": "b281888b875720fe",
-      "published_at": "2026-08-13T01:00:00+00:00",
-      "source": {
-        "id": "jp_boj_whatsnew",
-        "name": "Bank of Japan",
-        "region": "jpn",
-        "slant": null
-      },
-      "url": "http://www.boj.or.jp/en/statistics/boj/other/acmai/release/2026/ac260810.htm",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "series_id": "JP_BOJ_POLICY",
-      "title": {
-        "original": "Bank of Japan Accounts (August 10)",
-        "original_lang": "en",
-        "ko": "[JPN·경제] Bank of Japan Accounts (August 10)"
       },
       "summary": "",
       "scores": {
