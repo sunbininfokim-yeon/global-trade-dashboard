@@ -1,8 +1,8 @@
 {
   "schema_version": "shipping-capacity-backtests-v1",
   "artifact_type": "historical_backtests",
-  "bundle_id": "19ed943f2da485050cd3",
-  "generated_at": "2026-08-31T23:01:05.782870+00:00",
+  "bundle_id": "f0676211f4bddbf384fb",
+  "generated_at": "2026-09-01T21:17:37.854458+00:00",
   "event_observations": [
     {
       "event_id": "hormuz_2026_conflict",
@@ -253,7 +253,7 @@
   ],
   "historical_event_calibration": {
     "status": "throughput_calibrated_behavior_partition_partially_identified",
-    "generated_at": "2026-08-31T23:00:31.364887+00:00",
+    "generated_at": "2026-09-01T21:17:02.701705+00:00",
     "source": "IMF PortWatch daily chokepoint estimated trade volume and official event windows",
     "method": {
       "baseline": "28 observations immediately before each event window",
@@ -263,7 +263,20 @@
       "recovery": "first post-resolution 7d mean >=90% of baseline for 3 consecutive days"
     },
     "identification_boundary": "Observed throughput severity, duration and recovery are calibrated. Reroute/wait/cancel/insurance shares are not uniquely identifiable from a single passage series.",
-    "fetch_errors": [],
+    "fetch_errors": [
+      {
+        "portwatch_id": "chokepoint1",
+        "error": "PortWatch API error: {'code': 429, 'message': 'Unable to perform query. Too many requests.', 'details': ['API calls quota exceeded (6017 request units)! maximum allowed request units (6000) per Minute. Retry after 60 sec.']}"
+      },
+      {
+        "portwatch_id": "chokepoint2",
+        "error": "PortWatch API error: {'code': 429, 'message': 'Unable to perform query. Too many requests.', 'details': ['API calls quota exceeded (6020 request units)! maximum allowed request units (6000) per Minute. Retry after 60 sec.']}"
+      },
+      {
+        "portwatch_id": "chokepoint4",
+        "error": "PortWatch API error: {'code': 429, 'message': 'Unable to perform query. Too many requests.', 'details': ['API calls quota exceeded (6020 request units)! maximum allowed request units (6000) per Minute. Retry after 60 sec.']}"
+      }
+    ],
     "events": [
       {
         "event_id": "suez_ever_given_2021",
@@ -513,7 +526,9 @@
         },
         "throughput_calibration_status": "calibrated_observed_throughput",
         "behavior_partition_status": "not_identified_by_single_chokepoint_throughput",
-        "behavior_partition_warning": "PortWatch observes passage trade volume and vessel count, but cannot uniquely separate rerouting, waiting, cancellation, or insurance exclusion."
+        "behavior_partition_warning": "PortWatch observes passage trade volume and vessel count, but cannot uniquely separate rerouting, waiting, cancellation, or insurance exclusion.",
+        "refresh_status": "previous_calibration_preserved_after_fetch_error",
+        "refresh_attempted_at": "2026-09-01T21:17:02.701705+00:00"
       },
       {
         "event_id": "panama_drought_restrictions_2023_24",
@@ -759,7 +774,9 @@
         },
         "throughput_calibration_status": "calibrated_observed_throughput",
         "behavior_partition_status": "not_identified_by_single_chokepoint_throughput",
-        "behavior_partition_warning": "PortWatch observes passage trade volume and vessel count, but cannot uniquely separate rerouting, waiting, cancellation, or insurance exclusion."
+        "behavior_partition_warning": "PortWatch observes passage trade volume and vessel count, but cannot uniquely separate rerouting, waiting, cancellation, or insurance exclusion.",
+        "refresh_status": "previous_calibration_preserved_after_fetch_error",
+        "refresh_attempted_at": "2026-09-01T21:17:02.701705+00:00"
       },
       {
         "event_id": "red_sea_initial_rerouting_2023_24",
@@ -1005,7 +1022,9 @@
         },
         "throughput_calibration_status": "calibrated_observed_throughput",
         "behavior_partition_status": "not_identified_by_single_chokepoint_throughput",
-        "behavior_partition_warning": "PortWatch observes passage trade volume and vessel count, but cannot uniquely separate rerouting, waiting, cancellation, or insurance exclusion."
+        "behavior_partition_warning": "PortWatch observes passage trade volume and vessel count, but cannot uniquely separate rerouting, waiting, cancellation, or insurance exclusion.",
+        "refresh_status": "previous_calibration_preserved_after_fetch_error",
+        "refresh_attempted_at": "2026-09-01T21:17:02.701705+00:00"
       },
       {
         "event_id": "hormuz_conflict_2026",
@@ -1313,6 +1332,11 @@
         "behavior_multiplier_status": "prior_not_numerically_identified"
       }
     },
+    "preserved_previous_event_ids": [
+      "suez_ever_given_2021",
+      "panama_drought_restrictions_2023_24",
+      "red_sea_initial_rerouting_2023_24"
+    ],
     "scenario_comparisons": [
       {
         "event_id": "suez_ever_given_2021",
