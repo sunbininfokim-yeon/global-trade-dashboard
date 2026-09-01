@@ -147,9 +147,9 @@ async function supabasePatch(table, filter, row) {
   });
 }
 
-async function supabaseRpc(name, args = {}) {
+async function supabaseRpc(name, args = {}, prefer = 'return=minimal') {
   return supabaseRequest(`rpc/${name}`, {
-    method: 'POST', headers: { Prefer: 'return=minimal' }, body: JSON.stringify(args),
+    method: 'POST', headers: { Prefer: prefer }, body: JSON.stringify(args),
   });
 }
 
