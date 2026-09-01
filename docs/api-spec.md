@@ -60,6 +60,8 @@ Hot/Warm/Cold는 전문 파일의 저장 계층이 아니라 **동기화 우선�
 - pgvector 유사 법안: `relation_origin = "semantic"`
 - 검증된 수동 관계: `relation_origin = "verified_manual"`
 
+Semantic 관계는 새로 임베딩된 법안을 source로 하여 같은 `embedding_model`을 가진 법안만 코사인 유사도로 비교한다. 초기 기준은 유사도 `0.80` 이상, 최대 5건이며 단방향이다. source 법안의 기존 `semantic` 관계만 트랜잭션으로 교체한다. EO는 이 관계에 포함하지 않는다.
+
 UI에서도 **공식 관련 법안**과 **유사 법안**을 별도 구역에 표시해야 한다. AI가 만든 관계를 공식 관계처럼 표시하면 안 된다.
 
 EO의 법적 근거는 법안으로 한정되지 않는다. 헌법, U.S.C., Public Law, Statutes at Large, 과거 EO 등이 될 수 있다. EO의 근거는 `legal_authorities`에 공식 citation과 URL만 저장하며, 근거를 찾지 못했을 때 추정하지 않는다.

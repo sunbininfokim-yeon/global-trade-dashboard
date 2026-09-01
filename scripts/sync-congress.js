@@ -17,6 +17,12 @@ const CONCURRENCY = Number(process.env.DETAIL_CONCURRENCY || 2);
 const REQUEST_INTERVAL_MS = Number(process.env.CONGRESS_REQUEST_INTERVAL_MS || 850);
 const SKIP_EMBEDDINGS = process.env.SKIP_EMBEDDINGS === 'true';
 const MAX_EMBEDDINGS = Number(process.env.MAX_EMBEDDINGS || 25);
+function boundedNumber(value, fallback, minimum, maximum) {
+  const parsed = Number(value);
+  return Number.isFinite(parsed) && parsed >= minimum && parsed <= maximum ? parsed : fallback;
+}
+const SEMANTIC_SIMILARITY_THRESHOLD = boundedNumber(process.env.SEMANTIC_SIMILARITY_THRESHOLD, 0.80, 0, 1);
+const MAX_SEMANTIC_SIMILAR_BILLS = boundedNumber(process.env.MAX_SEMANTIC_SIMILAR_BILLS, 5, 1, 5);
 const DISCOVERY_PAGE_SIZE = Math.min(250, Number(process.env.DISCOVERY_PAGE_SIZE || 250));
 // A single page (250) silently dropped any day with more changed bills than
 // that. This bounds a discovery run instead of hard-capping it at one page:
@@ -363,27 +369,58 @@ async function queue(billId, row, categories) {
 }
 
 async function embed(items) {
-  if (SKIP_EMBEDDINGS || !items.length) return 0;
+  if (SKIP_EMBEDDINGS || !items.length) return [];
   try {
     const selected = items.slice(0, MAX_EMBEDDINGS);
     const key = requireEnv('GEMINI_API_KEY');
+    const embedded = [];
     for (let start = 0; start < selected.length; start += 50) {
       const group = selected.slice(start, start + 50); const vectors = await geminiEmbeddings(group.map((item) => `${item.row.title}\n\n${item.row.summary || ''}`), key);
-      for (let index = 0; index < group.length; index += 1) await supabasePatch('bills', `bill_id=eq.${encodeURIComponent(group[index].billId)}`, {
-        embedding: vectors[index], embedding_model: geminiModelName(), embedded_at: new Date().toISOString(),
-      });
+      for (let index = 0; index < group.length; index += 1) {
+        const embeddingModel = geminiModelName();
+        await supabasePatch('bills', `bill_id=eq.${encodeURIComponent(group[index].billId)}`, {
+          embedding: vectors[index], embedding_model: embeddingModel, embedded_at: new Date().toISOString(),
+        });
+        embedded.push({ billId: group[index].billId, embedding: vectors[index], embeddingModel });
+      }
     }
     if (items.length > selected.length) console.warn(`Embedding cap reached: ${items.length - selected.length} bill embeddings deferred.`);
-    return selected.length;
+    return embedded;
   } catch (error) {
     // Source records are more important than optional semantic search. A
     // missing or unfunded embedding account must never fail an API sync run.
     if (isOptionalEmbeddingError(error)) {
       console.warn(`Bill embeddings skipped: ${error.message}`);
-      return 0;
+      return [];
     }
     throw error;
   }
+}
+
+async function refreshSemanticRelations(items) {
+  const stats = { attempted: items.length, refreshed: 0, relations: 0, failed: 0 };
+  for (const item of items) {
+    try {
+      const relationCount = await supabaseRpc('refresh_bill_semantic_relations', {
+        p_source_bill_id: item.billId,
+        p_source_embedding: item.embedding,
+        p_embedding_model: item.embeddingModel,
+        p_similarity_threshold: SEMANTIC_SIMILARITY_THRESHOLD,
+        p_result_limit: MAX_SEMANTIC_SIMILAR_BILLS,
+      });
+      stats.refreshed += 1;
+      const scalarCount = Array.isArray(relationCount)
+        ? relationCount[0]?.refresh_bill_semantic_relations
+        : relationCount;
+      stats.relations += Number(scalarCount) || 0;
+    } catch (error) {
+      // Semantic discovery is optional. It must never make a source-of-record
+      // Congress.gov write fail or expose the vector itself in logs.
+      stats.failed += 1;
+      console.warn(`Semantic relations skipped for ${item.billId}: ${error.message}`);
+    }
+  }
+  return stats;
 }
 
 async function run() {
@@ -425,12 +462,13 @@ async function run() {
         console.error(`Congress.gov write for ${result.entry.source_key} ${outcome === 'failed' ? 'dead-lettered' : 'deferred'}: ${error.message}`);
       }
     }
-    const embedded = await embed(embeds);
+    const embeddedBills = await embed(embeds);
+    const semanticRelations = await refreshSemanticRelations(embeddedBills);
     await supabaseRpc('refresh_policy_lifecycle_tiers', { active_congress_number: active });
     await updateSyncState(RESOURCE, { ...next.cursor, completed_at: new Date().toISOString() });
     const status = written === read ? 'succeeded' : 'partial';
-    await finishSyncRun(runId, { status, records_read: read, records_written: written, metadata: { cursor: next.cursor, staged, embedded } });
-    console.log(`Congress.gov complete: ${written}/${read} queued records, ${embedded} embeddings.`);
+    await finishSyncRun(runId, { status, records_read: read, records_written: written, metadata: { cursor: next.cursor, staged, embedded: embeddedBills.length, semantic_relations: semanticRelations } });
+    console.log(`Congress.gov complete: ${written}/${read} queued records, ${embeddedBills.length} embeddings, ${semanticRelations.relations} semantic relations.`);
   } catch (error) {
     await finishSyncRun(runId, { status: 'failed', records_read: read, records_written: written, error_summary: error.message });
     throw error;
