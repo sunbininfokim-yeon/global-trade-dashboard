@@ -235,12 +235,12 @@ async function saveRegulation(item, document) {
     last_synced_at: new Date().toISOString(),
     raw_source: { source: 'federalregister.gov', document_number: regulationId, api_url: `${API_BASE}/documents/${regulationId}.json` },
   };
-  const previous = (await supabaseGet('regulations', { select: 'title,abstract,embedding', regulation_id: `eq.${encodeURIComponent(regulationId)}`, limit: '1' }))?.[0];
+  const previous = (await supabaseGet('regulations', { select: 'title,abstract,embedding', regulation_id: `eq.${regulationId}`, limit: '1' }))?.[0];
   await supabaseUpsert('regulations', [row], 'regulation_id');
   for (const agencyId of agencyIds) await supabaseInsertIgnore('regulation_agencies', { regulation_id: regulationId, agency_id: agencyId }, 'regulation_id,agency_id');
   for (const cfr of cfrReferences(document)) {
     const existing = await supabaseGet('regulation_cfr_references', { select: 'regulation_cfr_reference_id', regulation_id: `eq.${regulationId}`,
-      title_number: `eq.${cfr.title_number}`, part_number: cfr.part_number ? `eq.${encodeURIComponent(cfr.part_number)}` : 'is.null', limit: '1' });
+      title_number: `eq.${cfr.title_number}`, part_number: cfr.part_number ? `eq.${cfr.part_number}` : 'is.null', limit: '1' });
     if (!existing?.length) await supabaseInsert('regulation_cfr_references', { regulation_id: regulationId, ...cfr });
   }
   await saveOfficialEoLinks(document, regulationId);
@@ -266,7 +266,7 @@ async function queue(column, value, text, categories) {
   for (const subscription of subscriptions) {
     if ((subscription.keyword && source.includes(subscription.keyword.toLowerCase())) ||
       (subscription.category_type && categories[subscription.category_type] === subscription.category_id)) {
-      const existing = await supabaseGet('notifications_queued', { select: 'notification_id', subscription_id: `eq.${subscription.subscription_id}`, [column]: `eq.${encodeURIComponent(value)}`, limit: '1' });
+      const existing = await supabaseGet('notifications_queued', { select: 'notification_id', subscription_id: `eq.${subscription.subscription_id}`, [column]: `eq.${value}`, limit: '1' });
       if (!existing?.length) await supabaseInsert('notifications_queued', { subscription_id: subscription.subscription_id, [column]: value });
     }
   }
