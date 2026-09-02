@@ -127,9 +127,9 @@
       "agency": "FAO GIEWS", "agency_ko": "유엔 식량농업기구 세계식량정보조기경보시스템(GIEWS)",
       "kind": "rss",
       "url": "https://www.fao.org/giews/news/rss/en",
-      "lang": "en", "enabled": true, "weight": 1.3,
+      "lang": "en", "enabled": false, "weight": 1.3,
       "scope_hint": "global",
-      "notes": "GIEWS (Crop Prospects and Food Situation, country crop-failure alerts) is the actual world-balance-sheet content int_fao_newsroom was chasing -- more valuable than general FAO press for this pipeline. URL is a reasoned guess, not a confirmed one: int_fao_newsroom's own '/newsroom/rss/en/' 404d on the first live run, but web search independently turned up two OTHER FAO sites (fao.org/nigeria/news/rss/en, fao.org/uruguay/noticias/rss/ar) whose exact RSS URLs are indexed with real XML content -- same CMS, same '<section>/<news-word>/rss/<lang>' shape. This session cannot fetch fao.org itself to confirm the GIEWS instance follows it too; next Actions run's feed_status is the test. If it 404s, try the section's own news page path first (fao.org/giews/reports/en or similar) with /rss/en appended, since GIEWS' own page structure may not be 'news'."
+      "notes": "DISABLED 2026-09-02: HTTP 404 on the first live Actions run after enabling (run #3, commit 624db3a). Confirms the '<section>/news/rss/<lang>' pattern that worked for fao.org/nigeria and fao.org/uruguay does NOT extend to /giews -- GIEWS' own page structure is 'reports', not 'news' (fao.org/giews/reports/en), so the next guess should try /giews/reports/rss/en instead. GIEWS (Crop Prospects and Food Situation, country crop-failure alerts) is still the actual world-balance-sheet content int_fao_newsroom was chasing -- worth re-finding."
     },
     {
       "id": "eu_agri",
@@ -184,9 +184,9 @@
       "agency": "USGS National Minerals Information Center", "agency_ko": "미 지질조사국 국립광물정보센터(NMIC)",
       "kind": "rss",
       "url": "https://www.usgs.gov/programs/mineral-resources-program/news/feed",
-      "lang": "en", "enabled": true, "weight": 1.2,
+      "lang": "en", "enabled": false, "weight": 1.2,
       "scope_hint": "global",
-      "notes": "Mineral Commodity Summaries is the reference for the metals windows, which otherwise have zero sources -- highest-priority gap in this config. 2026-09-01: confirmed this is the '미국 광물부' the operator meant (the US has no ministry of minerals; USGS/NMIC is the closest equivalent). 2026-09-02: replaced the original '/news/rss' guess (never tested) with '.../mineral-resources-program/news/feed' -- USGS's site is the same kind of Drupal Views listing as the FAS GAIN search (see us_fas_gain_reports), and Views' RSS display conventionally lives at '<path>/feed'; a literal usgs.gov URL ending in exactly that suffix (gallery.usgs.gov/news/national-news-release/feed) turned up in search, which is the actual evidence for the convention, not just a guess at it. Still unconfirmed for this specific path since fas.usda.gov-style egress blocks usgs.gov from this session too -- feed_status on the next Actions run decides."
+      "notes": "DISABLED 2026-09-02: not a 404 -- the first live Actions run after enabling (run #3, commit 624db3a) failed with 'URLError: <urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate>'. That is a TLS chain-of-trust failure, not a bad path: the same run's fetch_text()/ssl.create_default_context() worked fine against fas.usda.gov (us_fas_gain_reports succeeded) and other .gov/.usda.gov hosts in this same file, so this looks specific to usgs.gov's certificate chain -- plausibly a Federal PKI intermediate the Actions runner's default CA bundle doesn't carry, a known class of issue for some US government sites. Do not work around this by disabling certificate verification; either find usgs.gov's actual intermediate CA and pin it, or leave this disabled. Mineral Commodity Summaries is still the reference for the metals windows, which otherwise have zero sources -- highest-priority gap in this config, but this specific fix needs more than a URL change."
     },
     {
       "id": "int_lme_notices",
@@ -217,7 +217,7 @@
       "lang": "en", "enabled": true, "weight": 1.5,
       "scope_hint": "global",
       "html": {"base": "https://www.fas.usda.gov"},
-      "notes": "GAIN attaché reports (FAS posts abroad writing up their host country's crop/market situation -- exactly the 'USDA report about Brazilian wheat' case this pipeline exists for) moved off gain.fas.usda.gov in 2026 to this Drupal 10 search view. Confirmed 2026-09-02 from operator-supplied page source to be fully server-rendered: each result is a `.c-card` block with the date/title/link/summary already in the raw HTML, no separate JS/XHR call -- so parse_fas_gain_cards scrapes it rather than calling an API. Unverified risk: the page carries an Akamai Bot Manager script (akam/13/...) that could challenge or block a non-browser fetch (this repo's own Actions cron) even though the operator's real browser saw the full page -- this sandbox cannot reach fas.usda.gov to test that itself. feed_status on the first live Actions run is the real test; disable with that evidence (not another guess) if it comes back ok:false or suspiciously empty."
+      "notes": "GAIN attaché reports (FAS posts abroad writing up their host country's crop/market situation -- exactly the 'USDA report about Brazilian wheat' case this pipeline exists for) moved off gain.fas.usda.gov in 2026 to this Drupal 10 search view. Confirmed 2026-09-02 from operator-supplied page source to be fully server-rendered: each result is a `.c-card` block with the date/title/link/summary already in the raw HTML, no separate JS/XHR call -- so parse_fas_gain_cards scrapes it rather than calling an API. CONFIRMED LIVE 2026-09-02 (first Actions run after enabling, run #3, commit 624db3a): not in that run's failed-feeds list, so the Akamai Bot Manager script on the page did not block this Actions runner's fetch -- the risk noted below did not materialize, at least on this one run."
     }
   ]
 }
