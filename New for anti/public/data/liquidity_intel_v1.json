@@ -1,6 +1,6 @@
 {
   "schema_version": "liquidity-intel-v1",
-  "generated_at": "2026-09-02T04:30:29.089754+00:00",
+  "generated_at": "2026-09-02T11:15:13.184159+00:00",
   "model": {
     "name": "macro_liquidity_official_v1",
     "description": "QRA / Fed official liquidity + priority-reporter ARTICLES mined for liquidity indicators (FIMA, TGA, RRP, FX intervention…) — not reporter news fluff.",
@@ -96,7 +96,7 @@
       {
         "author": "양영빈",
         "articles_scanned": 8,
-        "articles_with_hits": 5,
+        "articles_with_hits": 4,
         "top_indicators": [
           {
             "id": "qra",
@@ -121,14 +121,6 @@
             "label_ko": "달러/엔",
             "evidence": [
               "미일 공조에 달러/엔 환율 하락(엔화 강세) [이코노미21 양영빈] 지난 주말 금융 시장 최고의 관심사는 달러/엔 환율이었다."
-            ]
-          },
-          {
-            "id": "fomc_liquidity",
-            "score": 3.4,
-            "label_ko": "FOMC·금리 유동성",
-            "evidence": [
-              "7월 FOMC 내비게이션 서비스 종료에 대한 시장의 반격 [연준와처] 7월 FOMC: 금리 동결, 3명의 반대, 그리고"
             ]
           },
           {
@@ -160,16 +152,15 @@
           "QRA·순발행 (점수 8.4)",
           "TGA 재무부 일반계정 (점수 6.5)",
           "달러/엔 (점수 6.3)",
-          "FOMC·금리 유동성 (점수 3.4)",
           "ESF 외환안정기금 (점수 2.3)",
-          "외환 개입 (점수 2.2)"
+          "외환 개입 (점수 2.2)",
+          "FIMA 레포 (점수 1.2)"
         ],
         "hint_weights": {
           "tightening": 8.4,
           "tga": 6.5,
           "fx_pair": 6.3,
           "fx_intervention": 4.5,
-          "policy": 3.4,
           "mixed": 1.2
         },
         "reporter_signals": [
@@ -178,7 +169,7 @@
           "reporter_fx_intervention",
           "reporter_fima_focus"
         ],
-        "headline_ko": "[유동성 분석·양영빈] 최근 기사 핵심 지표: QRA·순발행 · 외 6개 테마",
+        "headline_ko": "[유동성 분석·양영빈] 최근 기사 핵심 지표: QRA·순발행 · 외 5개 테마",
         "per_article": [
           {
             "title": "[연준와처] TGA 잔고 어떻게 해석해야 할까?",
@@ -282,25 +273,6 @@
                 ]
               }
             ]
-          },
-          {
-            "title": "7월 FOMC 내비게이션 서비스 종료에 대한 시장의 반격 [연준와처]",
-            "url": "http://www.economy21.co.kr/news/articleView.html?idxno=1016968",
-            "published": "2026-07-30 15:23",
-            "author": "양영빈",
-            "indicators": [
-              {
-                "id": "fomc_liquidity",
-                "label_ko": "FOMC·금리 유동성",
-                "mentions": 4,
-                "hint": "policy",
-                "evidence": [
-                  "7월 FOMC 내비게이션 서비스 종료에 대한 시장의 반격 [연준와처] 7월 FOMC: 금리 동결, 3명의 반대, 그리고",
-                  "FOMC 내비게이션 서비스 종료에 대한 시장의 반격 [연준와처] 7월 FOMC: 금리 동결, 3명의 반대, 그리고 Warsh 체제의 ‘가족 싸움’[이코노미21 양영빈] 연방공개시장위원회",
-                  "Warsh 체제의 ‘가족 싸움’[이코노미21 양영빈] 연방공개시장위원회(FOMC)는 29일(현지시간) 기준금리를 3.50~3.75%로 동결했다. 표결 결과는 9대 3이었다. 반대 표는 클"
-                ]
-              }
-            ]
           }
         ],
         "finance_panel_fields": {
@@ -310,9 +282,9 @@
             "QRA·순발행 (점수 8.4)",
             "TGA 재무부 일반계정 (점수 6.5)",
             "달러/엔 (점수 6.3)",
-            "FOMC·금리 유동성 (점수 3.4)",
             "ESF 외환안정기금 (점수 2.3)",
-            "외환 개입 (점수 2.2)"
+            "외환 개입 (점수 2.2)",
+            "FIMA 레포 (점수 1.2)"
           ],
           "reporter_liquidity_signals": [
             "reporter_tightening_theme",
@@ -320,7 +292,7 @@
             "reporter_fx_intervention",
             "reporter_fima_focus"
           ],
-          "reporter_liquidity_headline_ko": "[유동성 분석·양영빈] 최근 기사 핵심 지표: QRA·순발행 · 외 6개 테마"
+          "reporter_liquidity_headline_ko": "[유동성 분석·양영빈] 최근 기사 핵심 지표: QRA·순발행 · 외 5개 테마"
         }
       }
     ],
@@ -337,9 +309,9 @@
         "QRA·순발행 (점수 8.4)",
         "TGA 재무부 일반계정 (점수 6.5)",
         "달러/엔 (점수 6.3)",
-        "FOMC·금리 유동성 (점수 3.4)",
         "ESF 외환안정기금 (점수 2.3)",
-        "외환 개입 (점수 2.2)"
+        "외환 개입 (점수 2.2)",
+        "FIMA 레포 (점수 1.2)"
       ],
       "reporter_liquidity_signals": [
         "reporter_tightening_theme",
@@ -347,12 +319,12 @@
         "reporter_fx_intervention",
         "reporter_fima_focus"
       ],
-      "reporter_liquidity_headline_ko": "[유동성 분석·양영빈] 최근 기사 핵심 지표: QRA·순발행 · 외 6개 테마"
+      "reporter_liquidity_headline_ko": "[유동성 분석·양영빈] 최근 기사 핵심 지표: QRA·순발행 · 외 5개 테마"
     }
   },
   "ticker_items": [
     {
-      "id": "qra-543966012916",
+      "id": "qra-558983391201",
       "published_at": null,
       "source": {
         "id": "us_treasury",
@@ -385,7 +357,7 @@
       "event_type": "qra"
     },
     {
-      "id": "fed-372420740393",
+      "id": "fed-275435186218",
       "published_at": "Wed, 29 Jul 2026 18:00:00 GMT",
       "source": {
         "id": "federal_reserve",
@@ -416,7 +388,7 @@
       "event_type": "fomc"
     },
     {
-      "id": "fed-317471358426",
+      "id": "fed-176401750872",
       "published_at": "Tue, 25 Aug 2026 18:00:00 GMT",
       "source": {
         "id": "federal_reserve",
@@ -447,7 +419,7 @@
       "event_type": "press"
     },
     {
-      "id": "fed-631899879949",
+      "id": "fed-131219775443",
       "published_at": "Tue, 14 Jul 2026 18:00:00 GMT",
       "source": {
         "id": "federal_reserve",
@@ -478,7 +450,7 @@
       "event_type": "press"
     },
     {
-      "id": "liq-ind-362419877701",
+      "id": "liq-ind-875514246977",
       "published_at": null,
       "source": {
         "id": "reporter_liquidity",
@@ -494,7 +466,7 @@
         "original_lang": "ko",
         "ko": "[유동성지표·양영빈] QRA·순발행 · TGA 재무부 일반계정 · 달러/엔"
       },
-      "summary": "[유동성 분석·양영빈] 최근 기사 핵심 지표: QRA·순발행 · 외 6개 테마",
+      "summary": "[유동성 분석·양영빈] 최근 기사 핵심 지표: QRA·순발행 · 외 5개 테마",
       "scores": {
         "commodity": 0,
         "diplomacy": 0,
@@ -538,19 +510,19 @@
           ]
         },
         {
-          "id": "fomc_liquidity",
-          "score": 3.4,
-          "label_ko": "FOMC·금리 유동성",
-          "evidence": [
-            "7월 FOMC 내비게이션 서비스 종료에 대한 시장의 반격 [연준와처] 7월 FOMC: 금리 동결, 3명의 반대, 그리고"
-          ]
-        },
-        {
           "id": "esf",
           "score": 2.3,
           "label_ko": "ESF 외환안정기금",
           "evidence": [
             "보유한 외환안정기금(Exchang Stabilization Fund, ESF)의 유로화와 엔화를 통한 것이다. 일본은 전세계에서 최대 미국채권 보유국으로 엔화 절상이 필요할 때는 보통"
+          ]
+        },
+        {
+          "id": "fx_intervention",
+          "score": 2.2,
+          "label_ko": "외환 개입",
+          "evidence": [
+            "를 매입하는 방식으로, 일본은 달러를 매각하고 엔화를 매입하는 방식으로 외환 시장에 개입했다. 미국이 외환 시장에 개입하는 방법은 재무부가 보유한 외환안정기금(Exchang Stabilizatio"
           ]
         }
       ]
@@ -586,7 +558,7 @@
     "ticker_items": 5,
     "qra_parsed": true,
     "reporter_analyses": 1,
-    "reporter_indicator_hits": 7,
+    "reporter_indicator_hits": 6,
     "sources_ok": 4,
     "sources_failed": 0
   }
