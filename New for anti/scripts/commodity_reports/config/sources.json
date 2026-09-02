@@ -123,6 +123,15 @@
       "notes": "DISABLED 2026-09-02: HTTP 404 on first live Actions run. FAO is the only confirmed source of genuine world balance-sheet reports (Food Price Index, Crop Prospects) -- highest-value one to re-find among the six that died this run."
     },
     {
+      "id": "int_fao_giews",
+      "agency": "FAO GIEWS", "agency_ko": "유엔 식량농업기구 세계식량정보조기경보시스템(GIEWS)",
+      "kind": "rss",
+      "url": "https://www.fao.org/giews/news/rss/en",
+      "lang": "en", "enabled": true, "weight": 1.3,
+      "scope_hint": "global",
+      "notes": "GIEWS (Crop Prospects and Food Situation, country crop-failure alerts) is the actual world-balance-sheet content int_fao_newsroom was chasing -- more valuable than general FAO press for this pipeline. URL is a reasoned guess, not a confirmed one: int_fao_newsroom's own '/newsroom/rss/en/' 404d on the first live run, but web search independently turned up two OTHER FAO sites (fao.org/nigeria/news/rss/en, fao.org/uruguay/noticias/rss/ar) whose exact RSS URLs are indexed with real XML content -- same CMS, same '<section>/<news-word>/rss/<lang>' shape. This session cannot fetch fao.org itself to confirm the GIEWS instance follows it too; next Actions run's feed_status is the test. If it 404s, try the section's own news page path first (fao.org/giews/reports/en or similar) with /rss/en appended, since GIEWS' own page structure may not be 'news'."
+    },
+    {
       "id": "eu_agri",
       "agency": "European Commission DG AGRI", "agency_ko": "EU 집행위 농업총국",
       "kind": "rss",
@@ -157,7 +166,7 @@
       "lang": "en", "enabled": false, "weight": 1.3,
       "scope_hint": "global",
       "commodity_hint": ["wheat", "corn"],
-      "notes": "DISABLED 2026-08-31: URL unverified. Grain Market Report is the reference world grain balance outside USDA."
+      "notes": "DISABLED 2026-08-31: URL unverified. Grain Market Report is the reference world grain balance outside USDA. 2026-09-02: dug further -- no evidence this rss.aspx URL (or any RSS at all) is still live. The IGC's actual public content is thin: the Grain Market Report (GMR) itself is subscriber-only (subs@igc.int), and the one open page found (gmr_summary.aspx) is a short summary, not a feed. Left disabled rather than guessing a URL with no supporting evidence at all -- unlike the other disabled entries here, this one may not have an RSS to find."
     },
     {
       "id": "int_opec_press",
@@ -172,12 +181,12 @@
     },
     {
       "id": "us_usgs_news",
-      "agency": "USGS", "agency_ko": "미 지질조사국",
+      "agency": "USGS National Minerals Information Center", "agency_ko": "미 지질조사국 국립광물정보센터(NMIC)",
       "kind": "rss",
-      "url": "https://www.usgs.gov/news/rss",
-      "lang": "en", "enabled": false, "weight": 1.2,
+      "url": "https://www.usgs.gov/programs/mineral-resources-program/news/feed",
+      "lang": "en", "enabled": true, "weight": 1.2,
       "scope_hint": "global",
-      "notes": "DISABLED 2026-08-31: URL unverified. Mineral Commodity Summaries is the reference for the metals windows. 2026-09-01: confirmed this is the '미국 광물부' the operator meant -- the US has no ministry of minerals, USGS/NMIC is the closest equivalent. Mapping confirmed; URL still needs a live check before enabling."
+      "notes": "Mineral Commodity Summaries is the reference for the metals windows, which otherwise have zero sources -- highest-priority gap in this config. 2026-09-01: confirmed this is the '미국 광물부' the operator meant (the US has no ministry of minerals; USGS/NMIC is the closest equivalent). 2026-09-02: replaced the original '/news/rss' guess (never tested) with '.../mineral-resources-program/news/feed' -- USGS's site is the same kind of Drupal Views listing as the FAS GAIN search (see us_fas_gain_reports), and Views' RSS display conventionally lives at '<path>/feed'; a literal usgs.gov URL ending in exactly that suffix (gallery.usgs.gov/news/national-news-release/feed) turned up in search, which is the actual evidence for the convention, not just a guess at it. Still unconfirmed for this specific path since fas.usda.gov-style egress blocks usgs.gov from this session too -- feed_status on the next Actions run decides."
     },
     {
       "id": "int_lme_notices",

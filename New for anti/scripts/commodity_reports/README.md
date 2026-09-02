@@ -167,8 +167,13 @@ Down" → `corn`+`soybeans`·`USA`, `USDA_CROP_PRODUCTION` 시리즈로 정확�
   `us_fas_newsroom`, `ca_statcan_daily`, `int_fao_newsroom`, `eu_agri`
 - **`not_a_feed_payload`** (주소는 살아있지만 RSS가 아닌 응답 — URL/쿼리 파라미터만
   고치면 될 가능성): `br_conab`
-- **URL/구조 미검증** (아직 시도 안 함): ABARES, IGC, OPEC, USGS(= "미국 광물부",
-  매핑 확인됨), LME 마켓 공지(`int_lme_notices`), 우크라이나 농업정책부
+- **URL/구조 미검증** (아직 시도 안 함): ABARES, OPEC, LME 마켓 공지(`int_lme_notices`),
+  우크라이나 농업정책부
+- **IGC는 별도 판정 — RSS가 아예 없을 가능성**: 2026-09-02에 다시 파봤지만 Grain Market
+  Report(GMR) 본체는 구독자 전용(subs@igc.int)이고, 공개된 페이지(`gmr_summary.aspx`)는
+  짧은 요약 하나뿐이라 RSS를 뒷받침할 근거 자체가 없었다. 근거 없이 URL만 바꿔 넣지
+  않고 그대로 disabled 유지 — 다른 미검증 소스들과 달리 "아직 못 찾은" 게 아니라
+  "애초에 없을 수도 있는" 케이스로 다르게 기록해둔다.
 
 **enabled, 아직 라이브 미확인:**
 
@@ -182,10 +187,26 @@ Down" → `corn`+`soybeans`·`USA`, `USDA_CROP_PRODUCTION` 시리즈로 정확�
   스크립트(`akam/13/...`)가 붙어 있어 실제 브라우저 세션은 통과해도 GitHub Actions 같은
   비-브라우저 정기 스크레이퍼는 차단될 수 있다 — 이 세션은 fas.usda.gov 자체를 못 열어서
   라이브로 확인 불가. 다음 Actions 실행의 `feed_status`가 진짜 판정.
+- `int_fao_giews` — 죽은 `int_fao_newsroom`(일반 보도자료) 대신, 이 파이프라인이 정말
+  원하는 세계 수급표 콘텐츠(Crop Prospects and Food Situation, 국가별 흉작 경보)를 내는
+  GIEWS 쪽으로 다시 시도. URL(`fao.org/giews/news/rss/en`)은 근거 있는 추정이다 — FAO
+  뉴스룸 자체의 `/newsroom/rss/en/`은 첫 라이브 실행에서 404 확인됐지만, 검색으로
+  fao.org의 다른 두 사이트(`fao.org/nigeria/news/rss/en`, `fao.org/uruguay/noticias/rss/ar`)가
+  실제 XML을 서빙하는 게 구글에 그대로 인덱싱된 걸 찾았다 — 같은 CMS, 같은
+  `<섹션>/<news 계열 단어>/rss/<언어>` 패턴. GIEWS 인스턴스 자체가 그 패턴을 따르는지는
+  이 세션에서 fao.org를 못 열어서 확인 불가 — 다음 Actions 실행이 판정.
+- `us_usgs_news` — 기존 `/news/rss` 추정(한 번도 테스트 안 됨)을
+  `/programs/mineral-resources-program/news/feed`로 교체하고 활성화. USGS 사이트도
+  FAS GAIN 검색 페이지와 같은 Drupal Views 목록이라, Views의 RSS 표시는 관례적으로
+  `<경로>/feed`에 있다 — 검색 중 실제로 그 접미사로 끝나는 usgs.gov URL
+  (`gallery.usgs.gov/news/national-news-release/feed`)이 나온 게 이 관례의 근거다(추측이
+  아니라). 이 경로 자체는 여전히 미확인 — usgs.gov도 이 세션에서 fas.usda.gov처럼
+  못 연다. 다음 Actions 실행이 판정. 금속 15종(금·은·구리·알루미늄 등)이 지금
+  소스가 하나도 없는 가장 큰 공백이라 우선순위가 높다.
 
-FAO가 6개 중 가장 아쉽다 — 세계 수급표(`_global`)를 내는 유일한 확인 소스였다.
-다시 찾을 우선순위: FAO > FAS(타국 작황 보고, US 소스들과 안 겹침) > CONAB(파라미터만
-고치면 될 수도) > 나머지.
+FAO가 6개 중 가장 아쉬웠다 — 세계 수급표(`_global`)를 내는 유일한 확인 소스였다.
+그래서 `int_fao_giews`로 바로 재시도했다. 나머지 재탐색 우선순위: FAS(타국 작황 보고,
+US 소스들과 안 겹침) > CONAB(파라미터만 고치면 될 수도) > 나머지.
 
 다음 Actions 실행(`workflow_dispatch` 수동 또는 4시간 주기)의 `failed feeds:`가 계속
 정답지다. 새 URL을 찾으면 `enabled: true` + 발견 경위를 notes에 남긴다.
