@@ -1,6 +1,6 @@
 {
   "status": "throughput_calibrated_behavior_partition_partially_identified",
-  "generated_at": "2026-09-01T21:17:02.701705+00:00",
+  "generated_at": "2026-09-02T21:14:08.785694+00:00",
   "source": "IMF PortWatch daily chokepoint estimated trade volume and official event windows",
   "method": {
     "baseline": "28 observations immediately before each event window",
@@ -10,20 +10,7 @@
     "recovery": "first post-resolution 7d mean >=90% of baseline for 3 consecutive days"
   },
   "identification_boundary": "Observed throughput severity, duration and recovery are calibrated. Reroute/wait/cancel/insurance shares are not uniquely identifiable from a single passage series.",
-  "fetch_errors": [
-    {
-      "portwatch_id": "chokepoint1",
-      "error": "PortWatch API error: {'code': 429, 'message': 'Unable to perform query. Too many requests.', 'details': ['API calls quota exceeded (6017 request units)! maximum allowed request units (6000) per Minute. Retry after 60 sec.']}"
-    },
-    {
-      "portwatch_id": "chokepoint2",
-      "error": "PortWatch API error: {'code': 429, 'message': 'Unable to perform query. Too many requests.', 'details': ['API calls quota exceeded (6020 request units)! maximum allowed request units (6000) per Minute. Retry after 60 sec.']}"
-    },
-    {
-      "portwatch_id": "chokepoint4",
-      "error": "PortWatch API error: {'code': 429, 'message': 'Unable to perform query. Too many requests.', 'details': ['API calls quota exceeded (6020 request units)! maximum allowed request units (6000) per Minute. Retry after 60 sec.']}"
-    }
-  ],
+  "fetch_errors": [],
   "events": [
     {
       "event_id": "suez_ever_given_2021",
@@ -273,9 +260,7 @@
       },
       "throughput_calibration_status": "calibrated_observed_throughput",
       "behavior_partition_status": "not_identified_by_single_chokepoint_throughput",
-      "behavior_partition_warning": "PortWatch observes passage trade volume and vessel count, but cannot uniquely separate rerouting, waiting, cancellation, or insurance exclusion.",
-      "refresh_status": "previous_calibration_preserved_after_fetch_error",
-      "refresh_attempted_at": "2026-09-01T21:17:02.701705+00:00"
+      "behavior_partition_warning": "PortWatch observes passage trade volume and vessel count, but cannot uniquely separate rerouting, waiting, cancellation, or insurance exclusion."
     },
     {
       "event_id": "panama_drought_restrictions_2023_24",
@@ -521,9 +506,7 @@
       },
       "throughput_calibration_status": "calibrated_observed_throughput",
       "behavior_partition_status": "not_identified_by_single_chokepoint_throughput",
-      "behavior_partition_warning": "PortWatch observes passage trade volume and vessel count, but cannot uniquely separate rerouting, waiting, cancellation, or insurance exclusion.",
-      "refresh_status": "previous_calibration_preserved_after_fetch_error",
-      "refresh_attempted_at": "2026-09-01T21:17:02.701705+00:00"
+      "behavior_partition_warning": "PortWatch observes passage trade volume and vessel count, but cannot uniquely separate rerouting, waiting, cancellation, or insurance exclusion."
     },
     {
       "event_id": "red_sea_initial_rerouting_2023_24",
@@ -552,8 +535,8 @@
           "observed_event_to_baseline_ratio": 0.49262645895374063,
           "observed_mean_shortfall_fraction": 0.5073735410462594,
           "observed_peak_7d_shortfall_fraction": 0.6676864098770714,
-          "observed_vessel_count_ratio": 0.5384647774643142,
-          "trade_volume_vs_vessel_ratio_gap": -0.04583831851057357,
+          "observed_vessel_count_ratio": 0.5382963493199713,
+          "trade_volume_vs_vessel_ratio_gap": -0.04566989036623065,
           "bootstrap": {
             "status": "available",
             "method": "deterministic moving-block bootstrap",
@@ -595,8 +578,8 @@
           "observed_event_to_baseline_ratio": 0.08199302640536663,
           "observed_mean_shortfall_fraction": 0.9180069735946333,
           "observed_peak_7d_shortfall_fraction": 0.9631214375634154,
-          "observed_vessel_count_ratio": 0.5384647774643142,
-          "trade_volume_vs_vessel_ratio_gap": -0.45647175105894755,
+          "observed_vessel_count_ratio": 0.5382963493199713,
+          "trade_volume_vs_vessel_ratio_gap": -0.4563033229146046,
           "bootstrap": {
             "status": "available",
             "method": "deterministic moving-block bootstrap",
@@ -638,8 +621,8 @@
           "observed_event_to_baseline_ratio": 0.7046454157677654,
           "observed_mean_shortfall_fraction": 0.2953545842322346,
           "observed_peak_7d_shortfall_fraction": 0.5595671035945566,
-          "observed_vessel_count_ratio": 0.5384647774643142,
-          "trade_volume_vs_vessel_ratio_gap": 0.1661806383034512,
+          "observed_vessel_count_ratio": 0.5382963493199713,
+          "trade_volume_vs_vessel_ratio_gap": 0.16634906644779412,
           "bootstrap": {
             "status": "available",
             "method": "deterministic moving-block bootstrap",
@@ -681,8 +664,8 @@
           "observed_event_to_baseline_ratio": 0.6101662314986689,
           "observed_mean_shortfall_fraction": 0.3898337685013311,
           "observed_peak_7d_shortfall_fraction": 0.6364455341590762,
-          "observed_vessel_count_ratio": 0.5384647774643142,
-          "trade_volume_vs_vessel_ratio_gap": 0.07170145403435468,
+          "observed_vessel_count_ratio": 0.5382963493199713,
+          "trade_volume_vs_vessel_ratio_gap": 0.07186988217869761,
           "bootstrap": {
             "status": "available",
             "method": "deterministic moving-block bootstrap",
@@ -740,8 +723,8 @@
         "observed_event_to_baseline_ratio": 0.49262645895374063,
         "observed_mean_shortfall_fraction": 0.5073735410462594,
         "observed_peak_7d_shortfall_fraction": 0.6676864098770714,
-        "observed_vessel_count_ratio": 0.5384647774643142,
-        "trade_volume_vs_vessel_ratio_gap": -0.04583831851057357,
+        "observed_vessel_count_ratio": 0.5382963493199713,
+        "trade_volume_vs_vessel_ratio_gap": -0.04566989036623065,
         "bootstrap": {
           "status": "available",
           "method": "deterministic moving-block bootstrap",
@@ -769,9 +752,7 @@
       },
       "throughput_calibration_status": "calibrated_observed_throughput",
       "behavior_partition_status": "not_identified_by_single_chokepoint_throughput",
-      "behavior_partition_warning": "PortWatch observes passage trade volume and vessel count, but cannot uniquely separate rerouting, waiting, cancellation, or insurance exclusion.",
-      "refresh_status": "previous_calibration_preserved_after_fetch_error",
-      "refresh_attempted_at": "2026-09-01T21:17:02.701705+00:00"
+      "behavior_partition_warning": "PortWatch observes passage trade volume and vessel count, but cannot uniquely separate rerouting, waiting, cancellation, or insurance exclusion."
     },
     {
       "event_id": "hormuz_conflict_2026",
@@ -819,7 +800,7 @@
             "sample_count": 228,
             "event_shortfall_percentile": 1.0,
             "one_sided_empirical_p_value": 0.004366812227074236,
-            "placebo_shortfall_median": 0.09450801782028334,
+            "placebo_shortfall_median": 0.09450884577359808,
             "placebo_shortfall_p95": 0.2644538594203647,
             "warning": "Overlapping rolling windows are dependent; this is an empirical rarity diagnostic, not a formal independent-sample causal p-value."
           },
@@ -1078,10 +1059,5 @@
       "throughput_severity_status": "empirically_calibrated",
       "behavior_multiplier_status": "prior_not_numerically_identified"
     }
-  },
-  "preserved_previous_event_ids": [
-    "suez_ever_given_2021",
-    "panama_drought_restrictions_2023_24",
-    "red_sea_initial_rerouting_2023_24"
-  ]
+  }
 }
