@@ -4246,21 +4246,90 @@ body.macro-mode .map-pane { flex: 1 1 100%; }
     color: #38bdf8;
 }
 
-/* Search stays visible but inert while meta.search.visible is false, so the
-   header keeps the shape it will have once search ships. */
-.policy-search { margin-left: auto; }
-
-.policy-search input {
-    width: 240px;
-    padding: 7px 12px;
-    border: 1px solid rgba(148, 163, 184, 0.18);
-    border-radius: 999px;
-    background: rgba(15, 23, 42, 0.5);
-    color: #64748b;
-    font-size: 11px;
+.policy-search {
+    position: relative;
+    margin-left: auto;
 }
 
-.policy-search.is-disabled input { cursor: not-allowed; opacity: 0.55; }
+.policy-search-input {
+    width: 240px;
+    padding: 7px 12px;
+    border: 1px solid rgba(148, 163, 184, 0.24);
+    border-radius: 999px;
+    background: rgba(15, 23, 42, 0.6);
+    color: #e2e8f0;
+    font-size: 11px;
+    transition: border-color 0.18s ease, width 0.18s ease;
+}
+
+.policy-search-input::placeholder { color: #64748b; }
+
+.policy-search-input:focus {
+    outline: none;
+    border-color: #38bdf8;
+    width: 300px;
+}
+
+.policy-search-results {
+    position: absolute;
+    z-index: 20;
+    top: calc(100% + 6px);
+    right: 0;
+    width: 320px;
+    max-height: 360px;
+    overflow-y: auto;
+    padding: 6px;
+    border: 1px solid rgba(56, 189, 248, 0.22);
+    border-radius: 10px;
+    background: #0f172a;
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.4);
+}
+
+.policy-search-result {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    padding: 7px 9px;
+    border: none;
+    border-radius: 7px;
+    background: transparent;
+    color: #e2e8f0;
+    font-size: 12px;
+    text-align: left;
+    cursor: pointer;
+}
+
+.policy-search-result:hover { background: rgba(56, 189, 248, 0.14); }
+
+.policy-search-result.is-inert {
+    color: #94a3b8;
+    cursor: default;
+}
+
+.policy-search-result.is-inert:hover { background: transparent; }
+
+.policy-search-result-type {
+    flex: none;
+    padding: 2px 7px;
+    border-radius: 999px;
+    background: rgba(56, 189, 248, 0.16);
+    color: #7dd3fc;
+    font-size: 10px;
+    font-weight: 700;
+}
+
+.policy-search-result-title {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.policy-search-empty {
+    padding: 10px 9px;
+    color: #94a3b8;
+    font-size: 12px;
+}
 
 .policy-crumb {
     display: flex;

@@ -2504,7 +2504,7 @@ const BILL_STAGES = new Set([
 // only when a sync run adds a body, so they can sit for an hour; lists and
 // details move with each run and are kept short enough that a backfill batch
 // shows up while it is still running.
-const US_TTL = { overview: 3600, list: 600, detail: 1800 };
+const US_TTL = { overview: 3600, list: 600, detail: 1800, search: 300 };
 
 async function handleUsPolicy(request, env) {
     if (!env.SUPABASE_URL || !env.SUPABASE_SERVICE_ROLE_KEY) {
@@ -2572,6 +2572,14 @@ async function handleUsPolicy(request, env) {
                 () => usCfrTitleDetail(env, Number(m[1])));
         }
 
+        if (path === 'search') {
+            const filter = usSearchFilter(q);
+            if (!filter.query) return new Response(JSON.stringify({ query: '', items: [] }), { headers: JSON_HEADERS });
+            if (!env.GEMINI_API_KEY) return missingKey('GEMINI_API_KEY');
+            return await kvCachedJson(env, `us:search:v1:${filter.cacheKey}`, US_TTL.search,
+                () => usSearch(env, filter));
+        }
+
         return usError(`Unknown endpoint: ${url.pathname}`, 404);
     } catch (err) {
         // usFetch already stripped the upstream body of anything sensitive; the
@@ -2621,6 +2629,101 @@ async function usFetch(env, table, query, { count } = {}) {
     // Content-Range is "0-24/1234" (or "*/1234" for an empty page).
     const total = Number((res.headers.get('content-range') || '').split('/')[1]);
     return { rows, total: Number.isFinite(total) ? total : null };
+}
+
+// A single PostgREST RPC call (POST /rest/v1/rpc/<name>). A 404 here means the
+// function itself is not deployed yet -- distinguished from other failures so
+// the caller can degrade to "search not ready" instead of a hard 502.
+async function usRpc(env, name, args) {
+    const base = env.SUPABASE_URL.replace(/\/+$/, '');
+    const res = await fetch(`${base}/rest/v1/rpc/${name}`, {
+        method: 'POST',
+        headers: {
+            apikey: env.SUPABASE_SERVICE_ROLE_KEY,
+            Authorization: `Bearer ${env.SUPABASE_SERVICE_ROLE_KEY}`,
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+        },
+        body: JSON.stringify(args),
+    });
+    if (!res.ok) {
+        const detail = await res.text().catch(() => '');
+        const err = new Error(`Supabase rpc ${name}: HTTP ${res.status} ${detail.slice(0, 300)}`);
+        err.status = res.status === 404 ? 503 : 502;
+        throw err;
+    }
+    return res.json();
+}
+
+const GEMINI_EMBEDDING_MODEL = 'gemini-embedding-001';
+const GEMINI_EMBEDDING_DIMENSIONS = 1536;
+
+// Same model/dimensionality scripts/lib/sync-utils.js uses to embed bills, EOs
+// and regulations at sync time -- a query embedded any other way would land in
+// a different vector space and every cosine comparison downstream would be
+// meaningless. RETRIEVAL_QUERY (vs. the documents' RETRIEVAL_DOCUMENT) is
+// Gemini's intended asymmetric pairing for this exact search-a-corpus case.
+async function geminiEmbedQuery(env, text) {
+    const res = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_EMBEDDING_MODEL}:embedContent`,
+        {
+            method: 'POST',
+            headers: { 'x-goog-api-key': env.GEMINI_API_KEY, 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                model: `models/${GEMINI_EMBEDDING_MODEL}`,
+                content: { parts: [{ text: String(text).trim().slice(0, 2000) }] },
+                taskType: 'RETRIEVAL_QUERY',
+                outputDimensionality: GEMINI_EMBEDDING_DIMENSIONS,
+            }),
+        },
+    );
+    if (!res.ok) {
+        const detail = await res.text().catch(() => '');
+        throw new Error(`Gemini embedContent: HTTP ${res.status} ${detail.slice(0, 300)}`);
+    }
+    const body = await res.json();
+    const values = body?.embedding?.values;
+    if (!Array.isArray(values) || values.length !== GEMINI_EMBEDDING_DIMENSIONS) {
+        throw new Error(`Gemini embedContent: expected ${GEMINI_EMBEDDING_DIMENSIONS} dimensions, received ${values?.length || 0}`);
+    }
+    const magnitude = Math.sqrt(values.reduce((sum, v) => sum + v * v, 0));
+    if (!magnitude) throw new Error('Gemini embedContent: zero-length vector');
+    return values.map((v) => v / magnitude);
+}
+
+function usSearchFilter(q) {
+    const query = (q.get('q') || '').trim().slice(0, 200);
+    const limit = Math.min(Math.max(Number(q.get('limit')) || 20, 1), 50);
+    return { query, limit, cacheKey: `${query}|${limit}` };
+}
+
+// search_policy_corpus is a Supabase RPC that has not shipped yet -- it fans a
+// query embedding out across bills/executive_orders/regulations, all three of
+// which already carry Gemini embeddings from sync-congress.js and
+// sync-federal-register.js. Until the RPC migration lands, PostgREST answers
+// 404 for the unknown function, which usRpc turns into status 503 here; that
+// degrades to an empty, clearly-unavailable result instead of surfacing a raw
+// 502 to the search box.
+async function usSearch(env, f) {
+    const vector = await geminiEmbedQuery(env, f.query);
+    let rows;
+    try {
+        rows = await usRpc(env, 'search_policy_corpus', {
+            p_query_embedding: vector,
+            p_embedding_model: GEMINI_EMBEDDING_MODEL,
+            p_result_limit: f.limit,
+        });
+    } catch (err) {
+        if (err.status === 503) return { ok: true, body: { query: f.query, items: [], unavailable: true } };
+        throw err;
+    }
+    const items = (rows || []).map((r) => ({
+        type: r.source_type,
+        id: r.source_id,
+        title: r.title,
+        similarity_score: r.similarity_score,
+    }));
+    return { ok: true, body: { query: f.query, items } };
 }
 
 // PostgREST group-by aggregate: `select=<col>,count()` returns one row per

@@ -127,7 +127,7 @@
   //   미국 › 행정부 › 부처 › 행정명령
   // The trail doubles as the breadcrumb, so every ancestor stays reachable and
   // a screen never has to guess where it was opened from.
-  const state = { trail: [], stage: '', open: {} };
+  const state = { trail: [], stage: '', open: {}, search: { query: '' } };
 
   const current = () => state.trail[state.trail.length - 1] || { view: 'congress' };
   const trailHas = (view) => state.trail.some((t) => t.view === view);
@@ -165,12 +165,91 @@
       }).join('')}
     </nav>`;
 
-  // Search is not wired to a backend endpoint yet; the control is rendered
-  // disabled so the layout already matches the eventual screen.
+  // Backed by /api/us/search: a Gemini query embedding fanned out across
+  // bills/executive_orders/regulations (search_policy_corpus RPC). A result
+  // row carries the same data-view/data-id pair every other nav element uses,
+  // so the existing delegated click handler navigates it without new code.
   const searchBox = () =>
-    `<div class="policy-search is-disabled" title="${esc('검색 기능은 준비 중')}">
-       <input type="search" placeholder="${esc('검색 기능은 준비 중')}" disabled>
+    `<div class="policy-search" data-search>
+       <input type="search" class="policy-search-input" data-search-input autocomplete="off"
+              placeholder="${esc('법안·행정명령 검색 (예: 니켈, 수출통제)')}" value="${esc(state.search.query)}">
+       <div class="policy-search-results" data-search-results hidden></div>
      </div>`;
+
+  const SEARCH_TYPE_LABELS = { bill: '법안', executive_order: 'EO', regulation: '규정' };
+  const SEARCH_TYPE_VIEWS = { bill: 'bill', executive_order: 'eo' };
+
+  const searchResultRow = (item) => {
+    const view = SEARCH_TYPE_VIEWS[item.type];
+    const typeLabel = SEARCH_TYPE_LABELS[item.type] || item.type;
+    const tag = view ? 'button' : 'div';
+    const navAttrs = view ? ` type="button" data-view="${esc(view)}" data-id="${esc(item.id)}"` : '';
+    return `<${tag} class="policy-search-result${view ? '' : ' is-inert'}"${navAttrs}>
+        <span class="policy-search-result-type">${esc(typeLabel)}</span>
+        <span class="policy-search-result-title">${esc(item.title || item.id)}</span>
+      </${tag}>`;
+  };
+
+  function renderSearchMessage(message) {
+    const box = host?.querySelector('[data-search-results]');
+    if (!box) return;
+    box.innerHTML = `<div class="policy-search-empty">${esc(message)}</div>`;
+    box.hidden = false;
+  }
+
+  function renderSearchResults(body) {
+    const box = host?.querySelector('[data-search-results]');
+    if (!box) return;
+    if (body.unavailable) return renderSearchMessage('검색 기능 준비 중입니다');
+    if (!body.items?.length) return renderSearchMessage('검색 결과가 없습니다');
+    box.innerHTML = body.items.map(searchResultRow).join('');
+    box.hidden = false;
+  }
+
+  let searchToken = 0;
+  let searchTimer = null;
+
+  async function runSearch(value) {
+    const token = ++searchToken;
+    try {
+      const res = await fetch(`${API_BASE}/search?q=${encodeURIComponent(value)}`);
+      const body = await res.json().catch(() => null);
+      if (token !== searchToken || !host) return;
+      if (!res.ok || !body) return renderSearchMessage('검색 중 오류가 발생했습니다');
+      renderSearchResults(body);
+    } catch {
+      if (token !== searchToken || !host) return;
+      renderSearchMessage('검색 중 오류가 발생했습니다');
+    }
+  }
+
+  // Delegated on `host` (not the input itself) because paint() replaces the
+  // whole header -- including the input -- on every navigation.
+  function onSearchInput(event) {
+    const input = event.target.closest('[data-search-input]');
+    if (!input || !host.contains(input)) return;
+    state.search.query = input.value;
+    clearTimeout(searchTimer);
+    const box = host.querySelector('[data-search-results]');
+    if (!input.value.trim()) {
+      searchToken += 1; // drop any in-flight response for the old query
+      if (box) box.hidden = true;
+      return;
+    }
+    searchTimer = setTimeout(() => runSearch(input.value.trim()), 300);
+  }
+
+  function onSearchKeydown(event) {
+    const input = event.target.closest('[data-search-input]');
+    if (!input || !host.contains(input)) return;
+    if (event.key !== 'Escape') return;
+    input.value = '';
+    state.search.query = '';
+    clearTimeout(searchTimer);
+    searchToken += 1;
+    const box = host.querySelector('[data-search-results]');
+    if (box) box.hidden = true;
+  }
 
   // 미국 is the country the screen is scoped to -- one of several eventually,
   // picked in the nav rather than here, so it labels the surface instead of
@@ -717,6 +796,21 @@
   }
 
   function onClick(event) {
+    const searchWrap = host.querySelector('[data-search]');
+    if (searchWrap && !searchWrap.contains(event.target)) {
+      const box = searchWrap.querySelector('[data-search-results]');
+      if (box) box.hidden = true;
+    }
+    const searchResult = event.target.closest('.policy-search-result');
+    if (searchResult && host.contains(searchResult)) {
+      const box = host.querySelector('[data-search-results]');
+      const input = host.querySelector('[data-search-input]');
+      if (box) box.hidden = true;
+      if (input) input.value = '';
+      state.search.query = '';
+      // no early return: a clickable result still has [data-view]/[data-id]
+      // and falls through to the generic nav handling below.
+    }
     const collapse = event.target.closest('[data-collapse]');
     if (collapse && host.contains(collapse)) {
       const key = collapse.dataset.collapse;
@@ -772,12 +866,20 @@
 
     host.removeEventListener('click', onClick);
     host.addEventListener('click', onClick);
+    host.removeEventListener('input', onSearchInput);
+    host.addEventListener('input', onSearchInput);
+    host.removeEventListener('keydown', onSearchKeydown);
+    host.addEventListener('keydown', onSearchKeydown);
   }
 
   function unmount(surface) {
     if (!surface) return;
     renderToken += 1; // invalidate any in-flight fetch from this render
+    searchToken += 1;
+    clearTimeout(searchTimer);
     surface.removeEventListener('click', onClick);
+    surface.removeEventListener('input', onSearchInput);
+    surface.removeEventListener('keydown', onSearchKeydown);
     surface.classList.remove('policy-surface');
     delete surface.dataset.policyTarget;
     surface.innerHTML = '';
