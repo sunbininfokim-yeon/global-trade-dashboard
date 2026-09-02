@@ -146,7 +146,7 @@ python3 build_reports.py label --series-id USDA_CROP_PROGRESS --label drop
 GitHub Actions 러너에는 이 제약이 없어서, 머지 후 `workflow_dispatch`로 한 번 실제로
 돌려 진짜 결과를 얻었다 ([run #1](https://github.com/sunbininfokim-yeon/global-trade-dashboard/actions/runs/33589460784)).
 
-**enabled (7/14, 라이브 확인됨):**
+**enabled (8/23, 라이브 확인됨):**
 
 | 소스 | 결과 |
 |---|---|
@@ -157,6 +157,23 @@ GitHub Actions 러너에는 이 제약이 없어서, 머지 후 `workflow_dispat
 | `us_eia_today_in_energy` | 11 items |
 | `us_eia_press` | 10 items |
 | `in_pib_agriculture` | 20 items |
+| `us_fas_gain_reports` | 확인됨(개별 건수 미기록) — 2026-09-02 [run #3](https://github.com/sunbininfokim-yeon/global-trade-dashboard/actions/runs/33631914603)의 실패 목록에 없음. Akamai Bot Manager 우려와 달리 GitHub Actions 러너의 스크레이프가 그대로 통과했다 |
+
+**enabled, 아직 라이브 미확인 (2026-09-02, 운영자가 직접 확인해준 URL):**
+
+- `us_usgs_news` — 이전 URL(`/programs/mineral-resources-program/news/feed`)이 run #3에서
+  SSL 인증서 오류로 실패했는데, 운영자가 그 URL을 직접 열어 실제 응답을 붙여줬다: 유효한
+  RSS 채널이었고, 그 채널 자신의 `<atom:link rel="self">`가 진짜 정본 URL이
+  `https://www.usgs.gov/news/minerals/feed`라고 밝히고 있었다 — 우리가 요청한 경로와
+  다르다. Drupal 별칭 경로가 리다이렉트를 거치면서 인증서 체인이 다른 호스트로 갔던 게
+  SSL 실패의 실제 원인이었을 가능성이 높다. 정본 URL로 바로 교체하고 재활성화했다.
+  단, 운영자가 받아온 응답 자체에는 `<item>`이 하나도 없었다(에러는 아니고 그냥 빈 채널) —
+  실제로 항목이 들어오는지는 다음 Actions 실행이 확인.
+- `us_eia_whats_new` (`eia.gov/about/new/WNtest3.php`) — 운영자가 기존 EIA 소스 2개와
+  같이 직접 준 URL. 웹서치에서도 이미 실제 XML을 서빙하는 걸로 독립 확인됐던 주소라
+  근거가 겹친다. `us_eia_today_in_energy`/`us_eia_press`는 둘 다 `commodity_hint: oil`이라
+  본문에 상품이 안 걸리면 오일로 취급되는데, 이 피드는 EIA가 내는 전체(석탄·천연가스
+  포함) "새 소식"이라 일부러 commodity_hint를 안 걸었다 — 본문에서 안 잡히면 그냥 버려진다.
 
 실제 태깅 결과도 확인됨 — 예: "USDA Forecasts U.S. Corn Production Up and Soybean Production
 Down" → `corn`+`soybeans`·`USA`, `USDA_CROP_PRODUCTION` 시리즈로 정확히 매칭.
@@ -175,34 +192,15 @@ Down" → `corn`+`soybeans`·`USA`, `USDA_CROP_PRODUCTION` 시리즈로 정확�
   않고 그대로 disabled 유지 — 다른 미검증 소스들과 달리 "아직 못 찾은" 게 아니라
   "애초에 없을 수도 있는" 케이스로 다르게 기록해둔다.
 
-**enabled, 아직 라이브 미확인:**
+**추가로 disabled — 2026-09-02 [run #3](https://github.com/sunbininfokim-yeon/global-trade-dashboard/actions/runs/33631914603)에서 확정:**
 
-- `us_fas_gain_reports` (`kind: fas_gain_cards`) — USDA GAIN 주재관 보고서. 2026년에
-  `gain.fas.usda.gov`에서 `fas.usda.gov/data/search?reports[0]=report_type:10251`로
-  이전됐고, 운영자가 직접 붙여준 실제 페이지 소스로 구조를 확인했다: Drupal 10
-  Views/Facets 목록이라 `.c-card__date`/`__url`/`__title`/`__content`에 날짜·링크·제목·
-  요약이 이미 서버 렌더링돼 있다 — 별도 JS/XHR API가 필요 없는, 진짜 스크레이프 가능한
-  페이지. `parse_fas_gain_cards`(`commodity_reports/feeds.py`)가 `<time datetime="` 경계로
-  카드를 잘라 각각에서 네 필드를 뽑는다. 미해결 위험: 페이지에 Akamai Bot Manager
-  스크립트(`akam/13/...`)가 붙어 있어 실제 브라우저 세션은 통과해도 GitHub Actions 같은
-  비-브라우저 정기 스크레이퍼는 차단될 수 있다 — 이 세션은 fas.usda.gov 자체를 못 열어서
-  라이브로 확인 불가. 다음 Actions 실행의 `feed_status`가 진짜 판정.
-- `int_fao_giews` — 죽은 `int_fao_newsroom`(일반 보도자료) 대신, 이 파이프라인이 정말
-  원하는 세계 수급표 콘텐츠(Crop Prospects and Food Situation, 국가별 흉작 경보)를 내는
-  GIEWS 쪽으로 다시 시도. URL(`fao.org/giews/news/rss/en`)은 근거 있는 추정이다 — FAO
-  뉴스룸 자체의 `/newsroom/rss/en/`은 첫 라이브 실행에서 404 확인됐지만, 검색으로
-  fao.org의 다른 두 사이트(`fao.org/nigeria/news/rss/en`, `fao.org/uruguay/noticias/rss/ar`)가
-  실제 XML을 서빙하는 게 구글에 그대로 인덱싱된 걸 찾았다 — 같은 CMS, 같은
-  `<섹션>/<news 계열 단어>/rss/<언어>` 패턴. GIEWS 인스턴스 자체가 그 패턴을 따르는지는
-  이 세션에서 fao.org를 못 열어서 확인 불가 — 다음 Actions 실행이 판정.
-- `us_usgs_news` — 기존 `/news/rss` 추정(한 번도 테스트 안 됨)을
-  `/programs/mineral-resources-program/news/feed`로 교체하고 활성화. USGS 사이트도
-  FAS GAIN 검색 페이지와 같은 Drupal Views 목록이라, Views의 RSS 표시는 관례적으로
-  `<경로>/feed`에 있다 — 검색 중 실제로 그 접미사로 끝나는 usgs.gov URL
-  (`gallery.usgs.gov/news/national-news-release/feed`)이 나온 게 이 관례의 근거다(추측이
-  아니라). 이 경로 자체는 여전히 미확인 — usgs.gov도 이 세션에서 fas.usda.gov처럼
-  못 연다. 다음 Actions 실행이 판정. 금속 15종(금·은·구리·알루미늄 등)이 지금
-  소스가 하나도 없는 가장 큰 공백이라 우선순위가 높다.
+- **`int_fao_giews`** — HTTP 404. `/<섹션>/news/rss/<언어>` 패턴(fao.org/nigeria, fao.org/uruguay에서는
+  실제로 작동)이 GIEWS에는 안 맞았다 — GIEWS 자체 페이지 구조는 `news`가 아니라
+  `reports`(`fao.org/giews/reports/en`)라, 다음 시도는 `/giews/reports/rss/en`. 여전히
+  세계 수급표(`_global`)를 내는 값어치 있는 소스라 재탐색 우선순위 유지.
+
+(`us_usgs_news`도 이 실행에서 SSL 인증서 오류로 같이 죽었었는데, 운영자가 직접 정본 URL을
+찾아줘서 위 "enabled, 아직 라이브 미확인" 표로 옮겼다 — 자세한 경위는 거기 참조.)
 
 FAO가 6개 중 가장 아쉬웠다 — 세계 수급표(`_global`)를 내는 유일한 확인 소스였다.
 그래서 `int_fao_giews`로 바로 재시도했다. 나머지 재탐색 우선순위: FAS(타국 작황 보고,
