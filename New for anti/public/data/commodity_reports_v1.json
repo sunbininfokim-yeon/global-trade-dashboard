@@ -1,6 +1,6 @@
 {
   "schema_version": "commodity-reports-v1",
-  "generated_at": "2026-09-02T12:47:59.515724+00:00",
+  "generated_at": "2026-09-02T16:50:24.850554+00:00",
   "model": {
     "name": "commodity_reports_v1",
     "description": "Official crop/energy/metal reports tagged (commodity × country) so the dashboard's stage-2 country window can show what was published about that country's commodity. The report's text picks the country, not the publisher: a USDA release on Brazilian wheat belongs on BRA·wheat.",
@@ -17,12 +17,12 @@
     "per_bucket_limit": 8
   },
   "stats": {
-    "sources_ok": 8,
-    "sources_failed": 2,
-    "raw_items": 147,
-    "scored": 53,
-    "published": 37,
-    "commodities": 9,
+    "sources_ok": 9,
+    "sources_failed": 3,
+    "raw_items": 157,
+    "scored": 59,
+    "published": 43,
+    "commodities": 10,
     "buckets": 16
   },
   "feed_status": [
@@ -69,10 +69,10 @@
       "mode": "live"
     },
     {
-      "source_id": "int_fao_giews",
-      "ok": false,
-      "count": 0,
-      "error": "HTTPError: HTTP Error 404: Not Found",
+      "source_id": "us_eia_whats_new",
+      "ok": true,
+      "count": 10,
+      "error": null,
       "mode": "live"
     },
     {
@@ -80,6 +80,20 @@
       "ok": true,
       "count": 20,
       "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "jp_meti_en",
+      "ok": false,
+      "count": 0,
+      "error": "HTTPError: HTTP Error 403: Forbidden",
+      "mode": "live"
+    },
+    {
+      "source_id": "int_spglobal_energy",
+      "ok": false,
+      "count": 0,
+      "error": "HTTPError: HTTP Error 403: Forbidden",
       "mode": "live"
     },
     {
@@ -446,6 +460,8 @@
     "gas": {
       "USA": [
         "8140ada36a326578",
+        "de49cf7992871dbf",
+        "5a1967d788350658",
         "181e4ee82214496a"
       ],
       "_global": [
@@ -453,6 +469,9 @@
       ]
     },
     "corn": {
+      "THA": [
+        "7040f0c2e02ece99"
+      ],
       "KEN": [
         "3ff8c2dd8b700c92"
       ],
@@ -470,20 +489,9 @@
         "1790c73f99340293"
       ]
     },
-    "cotton": {
-      "IND": [
-        "ab55c94deb85b07a"
-      ],
-      "MEX": [
-        "704821871273f761"
-      ],
-      "USA": [
-        "094f2c679d643322",
-        "0e01dfcf07cf7f2b"
-      ]
-    },
     "oil": {
       "USA": [
+        "636939b535053039",
         "c67666c03e916f6f",
         "57e4eb5bfc9ebc1e",
         "0a708bd4ffd29cfc",
@@ -493,6 +501,9 @@
         "546b4b2fd8b32f7e"
       ],
       "_global": [
+        "0260f9aa0131b0b8",
+        "735b13587e14b5a5",
+        "12ad31a4f223ae78",
         "af0be633a6c11395",
         "39ac9e91f73a0776"
       ]
@@ -523,6 +534,11 @@
         "eb08bb539c63def3"
       ]
     },
+    "thermal_coal": {
+      "USA": [
+        "f8aa4f64781b6480"
+      ]
+    },
     "wheat": {
       "USA": [
         "54cc3c274cf90c25",
@@ -532,6 +548,12 @@
         "d9459a6be37e5e91",
         "389d4a4328f23545",
         "f9e7ed8b73ce1fa5"
+      ]
+    },
+    "cotton": {
+      "USA": [
+        "094f2c679d643322",
+        "0e01dfcf07cf7f2b"
       ]
     },
     "sugar": {
@@ -564,9 +586,39 @@
       "country_source": "text",
       "series_id": "EIA_STEO",
       "series_label_ko": "EIA 단기 에너지 전망",
-      "importance": 5.353,
+      "importance": 5.334,
       "reasons": [
         "series:EIA_STEO",
+        "has_figure",
+        "revision_language",
+        "country_in_text"
+      ]
+    },
+    {
+      "id": "7040f0c2e02ece99",
+      "title": {
+        "original": "Thailand: Poultry and Products Annual",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "For 2026, Post forecasts a modest rebound in Thailand's chicken production and exports in 2027. This recovery could be reinforced by a potential opening of the Thai corn market to non-ASEAN suppliers, which could lower feed costs by up to 8 percent...",
+      "url": "https://www.fas.usda.gov/data/gain/2026/09/thailand-poultry-and-products-annual",
+      "published_at": "2026-09-01T15:30:00+00:00",
+      "agency": "USDA FAS GAIN",
+      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
+      "source_id": "us_fas_gain_reports",
+      "commodities": [
+        "corn"
+      ],
+      "countries": [
+        "THA"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 3.667,
+      "reasons": [
         "has_figure",
         "revision_language",
         "country_in_text"
@@ -595,69 +647,10 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 3.364,
+      "importance": 3.353,
       "reasons": [
         "has_figure",
         "revision_language",
-        "country_in_text"
-      ]
-    },
-    {
-      "id": "ab55c94deb85b07a",
-      "title": {
-        "original": "India: Cotton and Products Update",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "FAS Mumbai forecasts MY 2026/27 India cotton production at 24.5 million 480 lb. bales from 11.5 million hectares. Yields are forecast two percent lower at 464 kg per hectare due to forecasts for below-normal rainfall through August–September, with...",
-      "url": "https://www.fas.usda.gov/data/gain/2026/08/india-cotton-and-products-update",
-      "published_at": "2026-08-27T15:00:00+00:00",
-      "agency": "USDA FAS GAIN",
-      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
-      "source_id": "us_fas_gain_reports",
-      "commodities": [
-        "cotton"
-      ],
-      "countries": [
-        "IND"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 3.318,
-      "reasons": [
-        "has_figure",
-        "revision_language",
-        "country_in_text"
-      ]
-    },
-    {
-      "id": "704821871273f761",
-      "title": {
-        "original": "Mexico: Cotton and Products Update",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "Post forecasts marketing year (MY) 2026/27 cotton production at 0.87 million 480-lb bales, a 32 percent increase. While production remains at historic lows, planted area is forecasted to increase 37 percent due to producers in Chihuahua returning to...",
-      "url": "https://www.fas.usda.gov/data/gain/2026/08/mexico-cotton-and-products-update",
-      "published_at": "2026-08-27T15:01:00+00:00",
-      "agency": "USDA FAS GAIN",
-      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
-      "source_id": "us_fas_gain_reports",
-      "commodities": [
-        "cotton"
-      ],
-      "countries": [
-        "MEX"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 2.787,
-      "reasons": [
-        "has_figure",
         "country_in_text"
       ]
     },
@@ -684,7 +677,7 @@
       "country_source": "text",
       "series_id": "EIA_STEO",
       "series_label_ko": "EIA 단기 에너지 전망",
-      "importance": 2.405,
+      "importance": 2.404,
       "reasons": [
         "series:EIA_STEO",
         "has_figure",
@@ -803,7 +796,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 2.153,
+      "importance": 2.146,
       "reasons": [
         "country_in_text"
       ]
@@ -832,8 +825,37 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 2.031,
+      "importance": 2.024,
       "reasons": [
+        "country_in_text"
+      ]
+    },
+    {
+      "id": "f8aa4f64781b6480",
+      "title": {
+        "original": "Electric Power Monthly",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "(Tue, 25 Aug 2026) Data in the August 2026 <em>Electric Power Monthly</em> are for June 2026, when net generation in the United States increased 1.6% from June 2025. Coal consumption for power generation was down 12.3% compared with the previous year. The average residential retail price of electricity was up 5.0% from June 2025.",
+      "url": "http://www.eia.gov/electricity/monthly/",
+      "published_at": "2026-08-25T05:00:00+00:00",
+      "agency": "EIA",
+      "agency_ko": "미 에너지정보청",
+      "source_id": "us_eia_whats_new",
+      "commodities": [
+        "thermal_coal"
+      ],
+      "countries": [
+        "USA"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.838,
+      "reasons": [
+        "revision_language",
         "country_in_text"
       ]
     },
@@ -860,7 +882,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.819,
+      "importance": 1.814,
       "reasons": [
         "has_figure",
         "country_in_text"
@@ -1084,6 +1106,34 @@
       ]
     },
     {
+      "id": "636939b535053039",
+      "title": {
+        "original": "Petroleum Marketing Monthly",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "(Tue, 01 Sep 2026) The September 2026 <em>Petroleum Marketing Monthly</em>, with data through June 2026, presents monthly and annual price and volume statistics for crude oil sales in the United States.",
+      "url": "http://www.eia.gov/petroleum/marketing/monthly/",
+      "published_at": "2026-09-01T05:00:00+00:00",
+      "agency": "EIA",
+      "agency_ko": "미 에너지정보청",
+      "source_id": "us_eia_whats_new",
+      "commodities": [
+        "oil"
+      ],
+      "countries": [
+        "USA"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.671,
+      "reasons": [
+        "country_in_text"
+      ]
+    },
+    {
       "id": "c67666c03e916f6f",
       "title": {
         "original": "EIA increases global oil production forecast after the opening of the Strait of Hormuz",
@@ -1106,9 +1156,37 @@
       "country_source": "text",
       "series_id": "EIA_STEO",
       "series_label_ko": "EIA 단기 에너지 전망",
-      "importance": 1.666,
+      "importance": 1.664,
       "reasons": [
         "series:EIA_STEO",
+        "country_in_text"
+      ]
+    },
+    {
+      "id": "de49cf7992871dbf",
+      "title": {
+        "original": "Natural Gas Monthly",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "(Mon, 31 Aug 2026) The <em>Natural Gas Monthly</em> presents volume and price data each month for natural gas production, distribution, consumption, and interstate pipeline activities. NGM also reports producer-related activities and underground storage data. NGM data on 50 U.S. states and the District of Columbia are collected on EIA surveys.",
+      "url": "http://www.eia.gov/naturalgas/monthly/",
+      "published_at": "2026-08-31T05:00:00+00:00",
+      "agency": "EIA",
+      "agency_ko": "미 에너지정보청",
+      "source_id": "us_eia_whats_new",
+      "commodities": [
+        "gas"
+      ],
+      "countries": [
+        "USA"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.636,
+      "reasons": [
         "country_in_text"
       ]
     },
@@ -1378,6 +1456,82 @@
       ]
     },
     {
+      "id": "0260f9aa0131b0b8",
+      "title": {
+        "original": "Petroleum Supply Monthly",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "(Tue, 01 Sep 2026) The report includes supply and disposition of crude oil and petroleum products on the national and regional levels. The data series describe production, imports and exports, movements, and inventories.",
+      "url": "http://www.eia.gov/petroleum/supply/monthly/",
+      "published_at": "2026-09-01T05:00:00+00:00",
+      "agency": "EIA",
+      "agency_ko": "미 에너지정보청",
+      "source_id": "us_eia_whats_new",
+      "commodities": [
+        "oil"
+      ],
+      "countries": [],
+      "scope": "global",
+      "country_source": "none",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.337,
+      "reasons": []
+    },
+    {
+      "id": "735b13587e14b5a5",
+      "title": {
+        "original": "Petroleum Supply Annual",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "(Tue, 01 Sep 2026) The report includes includes final annual data for the supply and disposition of crude oil and petroleum products.",
+      "url": "http://www.eia.gov/petroleum/supply/annual/volume1/",
+      "published_at": "2026-09-01T05:00:00+00:00",
+      "agency": "EIA",
+      "agency_ko": "미 에너지정보청",
+      "source_id": "us_eia_whats_new",
+      "commodities": [
+        "oil"
+      ],
+      "countries": [],
+      "scope": "global",
+      "country_source": "none",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.337,
+      "reasons": []
+    },
+    {
+      "id": "5a1967d788350658",
+      "title": {
+        "original": "Wholesale Electricity Market Data",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "(Thu, 20 Aug 2026) This report includes spreadsheets with wholesale electricity and natural gas data from seven major trading hubs that cover most regions of the United States. The data are through August 18, 2026, and republished, with permission, from the Intercontinental Exchange (ICE).",
+      "url": "http://www.eia.gov/electricity/wholesale/",
+      "published_at": "2026-08-20T05:00:00+00:00",
+      "agency": "EIA",
+      "agency_ko": "미 에너지정보청",
+      "source_id": "us_eia_whats_new",
+      "commodities": [
+        "gas"
+      ],
+      "countries": [
+        "USA"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.322,
+      "reasons": [
+        "country_in_text"
+      ]
+    },
+    {
       "id": "cecfc55a16f54d74",
       "title": {
         "original": "EIA forecasts strongest four-year growth in U.S. electricity demand since 2000, fueled by data centers",
@@ -1431,6 +1585,30 @@
       "reasons": [
         "series:EIA_STEO"
       ]
+    },
+    {
+      "id": "12ad31a4f223ae78",
+      "title": {
+        "original": "Liquids pipeline projects",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "(Tue, 18 Aug 2026) This spreadsheet contains detailed information on liquids pipeline projects (crude oil, petroleum products, and hydrocarbon gas liquids). We do not collect the data on an EIA survey, but rather we compile the data from various sources including trade press, pipeline company websites, and government agencies. These data are not a forecast. They represent last-known public information on projects, as of June 30, 2026. The status of each project is categorized as completed (since 2010), announced, under construction, on hold, or canceled.",
+      "url": "http://www.eia.gov/petroleum/data.php#movements",
+      "published_at": "2026-08-18T05:00:00+00:00",
+      "agency": "EIA",
+      "agency_ko": "미 에너지정보청",
+      "source_id": "us_eia_whats_new",
+      "commodities": [
+        "oil"
+      ],
+      "countries": [],
+      "scope": "global",
+      "country_source": "none",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.021,
+      "reasons": []
     },
     {
       "id": "21e8e31c7b207b51",
@@ -1509,7 +1687,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.693,
+      "importance": 0.692,
       "reasons": [
         "country_in_text"
       ]
