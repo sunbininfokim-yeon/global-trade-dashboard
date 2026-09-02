@@ -821,7 +821,11 @@ const renderTradeWorldPanel = (arcs) => {
             <div class="trade-rank-list">${importRows || '<p class="empty-state">무역 루트 없음</p>'}</div>
         </div>`;
     renderFuturesCard(currentCommodity);
-    renderCommodityReports(currentCommodity);
+    // No reports on the world view (stage 1) -- only once a country is
+    // focused (stage 2, focusTradeCountry) does the right panel populate.
+    // A world-level report has nowhere specific to point at yet; the
+    // country view is where "which country does this apply to" is answered.
+    panelHide(commodityReportsPanelEl);
     // Chained, not fired in parallel: renderRigCountWorld must not insert
     // before renderEmergencyStocks's own card exists (see its own comment).
     renderEmergencyStocks().then(renderRigCountWorld);

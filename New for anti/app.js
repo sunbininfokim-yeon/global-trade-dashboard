@@ -5128,10 +5128,13 @@ const setView = (target) => {
         setClimateCommodityHeader(null);
         const data = window.TradeData[target];
         
-        // Right pane now hosts the Phase 2-2 reports panel (official reports
-        // for the commodity/country on screen) instead of being hidden for a
-        // wider map -- ranking stays on the left, reports moved off of it.
-        togglePanels({ news: true, left: true, right: true, commodityReports: true });
+        // Right pane hosts the Phase 2-2 reports panel, but only once a
+        // country is focused (stage 2) -- a world-level report has no single
+        // country to point at yet. Still open the pane itself (right: true)
+        // so it doesn't visibly pop in in the middle of a click; trade.js
+        // shows/hides #commodity-reports-panel itself as focus changes
+        // (renderTradeWorldPanel hides it, focusTradeCountry shows it).
+        togglePanels({ news: true, left: true, right: true });
         
         // Update Panel Info
         currentViewTitle.textContent = data.title;
