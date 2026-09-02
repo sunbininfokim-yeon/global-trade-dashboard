@@ -1,6 +1,6 @@
 {
   "schema_version": "ticker-v1",
-  "generated_at": "2026-09-02T04:24:36.158182+00:00",
+  "generated_at": "2026-09-02T09:34:13.193864+00:00",
   "model": {
     "name": "commodity_diplomacy_rss_v1",
     "description": "RSS multi-region ticker: regional priority (MENA/IN/TR/JP/CN/TW/RU + commodity specialists) over Western majors; politics admitted with diplomacy+trade bridge, elections, governance polls, cabinet reshuffles; horse-race national polls rejected; importance = country-tier × info-grade; main display language Korean.",
@@ -75,17 +75,19 @@
   "stats": {
     "sources_ok": 35,
     "sources_failed": 3,
-    "raw_items": 807,
-    "scored_items": 77,
+    "raw_items": 825,
+    "scored_items": 87,
     "selected_items": 24,
     "region_histogram": {
-      "commodity_specialist": 12,
+      "commodity_specialist": 9,
+      "mena": 4,
+      "turkey": 1,
+      "west": 1,
       "india": 2,
-      "west": 2,
-      "russia": 2,
       "japan": 2,
+      "russia": 2,
       "china": 2,
-      "mena": 2
+      "taiwan": 1
     },
     "min_importance": 0.35
   },
@@ -94,7 +96,7 @@
       "source_id": "aljazeera_en",
       "ok": true,
       "count": 25,
-      "elapsed_ms": 277,
+      "elapsed_ms": 122,
       "error": null,
       "mode": "live"
     },
@@ -102,7 +104,7 @@
       "source_id": "iran_intl",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 500,
+      "elapsed_ms": 564,
       "error": null,
       "mode": "live"
     },
@@ -110,7 +112,7 @@
       "source_id": "arab_news",
       "ok": true,
       "count": 10,
-      "elapsed_ms": 297,
+      "elapsed_ms": 444,
       "error": null,
       "mode": "live"
     },
@@ -118,23 +120,23 @@
       "source_id": "tehran_times",
       "ok": true,
       "count": 30,
-      "elapsed_ms": 1373,
+      "elapsed_ms": 1418,
       "error": null,
       "mode": "live"
     },
     {
       "source_id": "middle_east_eye",
       "ok": true,
-      "count": 0,
-      "elapsed_ms": 337,
+      "count": 20,
+      "elapsed_ms": 108,
       "error": null,
       "mode": "live"
     },
     {
       "source_id": "aa_world",
       "ok": true,
-      "count": 18,
-      "elapsed_ms": 3751,
+      "count": 16,
+      "elapsed_ms": 2963,
       "error": null,
       "mode": "live"
     },
@@ -142,7 +144,7 @@
       "source_id": "daily_sabah",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 845,
+      "elapsed_ms": 592,
       "error": null,
       "mode": "live"
     },
@@ -150,7 +152,7 @@
       "source_id": "hurriyet_daily",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 408,
+      "elapsed_ms": 320,
       "error": null,
       "mode": "live"
     },
@@ -158,7 +160,7 @@
       "source_id": "the_hindu",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 89,
+      "elapsed_ms": 66,
       "error": null,
       "mode": "live"
     },
@@ -166,7 +168,7 @@
       "source_id": "indian_express_world",
       "ok": false,
       "count": 0,
-      "elapsed_ms": 151,
+      "elapsed_ms": 53,
       "error": "HTTPError: HTTP Error 403: Forbidden",
       "mode": "live"
     },
@@ -174,7 +176,7 @@
       "source_id": "et_commodities",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 539,
+      "elapsed_ms": 541,
       "error": null,
       "mode": "live"
     },
@@ -182,7 +184,7 @@
       "source_id": "business_standard_markets",
       "ok": true,
       "count": 35,
-      "elapsed_ms": 114,
+      "elapsed_ms": 221,
       "error": null,
       "mode": "live"
     },
@@ -190,7 +192,7 @@
       "source_id": "ndtv_world",
       "ok": true,
       "count": 20,
-      "elapsed_ms": 518,
+      "elapsed_ms": 491,
       "error": null,
       "mode": "live"
     },
@@ -198,7 +200,7 @@
       "source_id": "xinhua_world",
       "ok": true,
       "count": 20,
-      "elapsed_ms": 1012,
+      "elapsed_ms": 802,
       "error": null,
       "mode": "live"
     },
@@ -206,7 +208,7 @@
       "source_id": "china_daily_world",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 1312,
+      "elapsed_ms": 1331,
       "error": null,
       "mode": "live"
     },
@@ -214,7 +216,7 @@
       "source_id": "cgtn_world",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 329,
+      "elapsed_ms": 417,
       "error": null,
       "mode": "live"
     },
@@ -222,7 +224,7 @@
       "source_id": "scmp",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 559,
+      "elapsed_ms": 482,
       "error": null,
       "mode": "live"
     },
@@ -230,7 +232,7 @@
       "source_id": "nhk_business",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 218,
+      "elapsed_ms": 248,
       "error": null,
       "mode": "live"
     },
@@ -238,7 +240,7 @@
       "source_id": "nhk_top",
       "ok": true,
       "count": 7,
-      "elapsed_ms": 63,
+      "elapsed_ms": 38,
       "error": null,
       "mode": "live"
     },
@@ -246,7 +248,7 @@
       "source_id": "japan_times",
       "ok": true,
       "count": 30,
-      "elapsed_ms": 321,
+      "elapsed_ms": 267,
       "error": null,
       "mode": "live"
     },
@@ -254,7 +256,7 @@
       "source_id": "nikkei_asia",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 78,
+      "elapsed_ms": 27,
       "error": null,
       "mode": "live"
     },
@@ -262,7 +264,7 @@
       "source_id": "cna",
       "ok": true,
       "count": 20,
-      "elapsed_ms": 173,
+      "elapsed_ms": 143,
       "error": null,
       "mode": "live"
     },
@@ -270,7 +272,7 @@
       "source_id": "taipei_times",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 156,
+      "elapsed_ms": 117,
       "error": null,
       "mode": "live"
     },
@@ -278,7 +280,7 @@
       "source_id": "ltn",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 300,
+      "elapsed_ms": 92,
       "error": null,
       "mode": "live"
     },
@@ -286,7 +288,7 @@
       "source_id": "udn",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 251,
+      "elapsed_ms": 274,
       "error": null,
       "mode": "live"
     },
@@ -294,7 +296,7 @@
       "source_id": "tass_en",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 1231,
+      "elapsed_ms": 1349,
       "error": null,
       "mode": "live"
     },
@@ -302,7 +304,7 @@
       "source_id": "tass_ru",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 1382,
+      "elapsed_ms": 1080,
       "error": null,
       "mode": "live"
     },
@@ -310,7 +312,7 @@
       "source_id": "interfax_ru",
       "ok": true,
       "count": 25,
-      "elapsed_ms": 1967,
+      "elapsed_ms": 1980,
       "error": null,
       "mode": "live"
     },
@@ -318,7 +320,7 @@
       "source_id": "rt_ru",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 3414,
+      "elapsed_ms": 2280,
       "error": null,
       "mode": "live"
     },
@@ -326,7 +328,7 @@
       "source_id": "ship_and_bunker",
       "ok": true,
       "count": 10,
-      "elapsed_ms": 471,
+      "elapsed_ms": 399,
       "error": null,
       "mode": "live"
     },
@@ -334,7 +336,7 @@
       "source_id": "oilprice",
       "ok": true,
       "count": 15,
-      "elapsed_ms": 777,
+      "elapsed_ms": 715,
       "error": null,
       "mode": "live"
     },
@@ -342,7 +344,7 @@
       "source_id": "mining_com",
       "ok": false,
       "count": 0,
-      "elapsed_ms": 150,
+      "elapsed_ms": 99,
       "error": "HTTPError: HTTP Error 403: Forbidden",
       "mode": "live"
     },
@@ -350,7 +352,7 @@
       "source_id": "world_grain",
       "ok": false,
       "count": 0,
-      "elapsed_ms": 85,
+      "elapsed_ms": 68,
       "error": "HTTPError: HTTP Error 403: Forbidden",
       "mode": "live"
     },
@@ -358,7 +360,7 @@
       "source_id": "hellenic_shipping",
       "ok": true,
       "count": 20,
-      "elapsed_ms": 185,
+      "elapsed_ms": 188,
       "error": null,
       "mode": "live"
     },
@@ -366,7 +368,7 @@
       "source_id": "seatrade",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 1129,
+      "elapsed_ms": 515,
       "error": null,
       "mode": "live"
     },
@@ -374,7 +376,7 @@
       "source_id": "bbc_business",
       "ok": true,
       "count": 37,
-      "elapsed_ms": 250,
+      "elapsed_ms": 81,
       "error": null,
       "mode": "live"
     },
@@ -382,7 +384,7 @@
       "source_id": "bloomberg_markets",
       "ok": true,
       "count": 20,
-      "elapsed_ms": 618,
+      "elapsed_ms": 414,
       "error": null,
       "mode": "live"
     },
@@ -390,7 +392,7 @@
       "source_id": "ft_commodities",
       "ok": true,
       "count": 25,
-      "elapsed_ms": 451,
+      "elapsed_ms": 357,
       "error": null,
       "mode": "live"
     }
@@ -422,9 +424,9 @@
         "diplomacy": 1.0,
         "election": 0.0,
         "region_weight": 1.35,
-        "freshness": 0.814,
-        "importance": 3.836,
-        "final": 4.44
+        "freshness": 0.706,
+        "importance": 3.324,
+        "final": 3.847
       },
       "rank_reasons": [
         "region:commodity_specialist*1.35",
@@ -466,9 +468,9 @@
         "diplomacy": 1.0,
         "election": 0.0,
         "region_weight": 1.35,
-        "freshness": 0.781,
-        "importance": 3.188,
-        "final": 3.69
+        "freshness": 0.677,
+        "importance": 2.763,
+        "final": 3.198
       },
       "rank_reasons": [
         "region:commodity_specialist*1.35",
@@ -482,6 +484,92 @@
       "translation_status": "ok",
       "country_tier": "A",
       "info_grade": "1",
+      "country_hint": "USA"
+    },
+    {
+      "id": "a7557cfaa8f510ea",
+      "published_at": "2026-09-02T02:29:04+00:00",
+      "source": {
+        "id": "middle_east_eye",
+        "name": "Middle East Eye",
+        "region": "mena",
+        "slant": null
+      },
+      "url": "https://www.middleeasteye.net/live-blog/live-blog-update/us-energy-secretary-says-17-million-barrels-oil-transited-hormuz-strait",
+      "category": "commodity",
+      "commodities": [
+        "oil",
+        "shipping"
+      ],
+      "title": {
+        "original": "US energy secretary says 17 million barrels of oil transited Hormuz Strait on Monday",
+        "original_lang": "en",
+        "ko": "미국 에너지부 장관은 월요일에 1,700만 배럴의 석유가 호르무즈 해협을 통과했다고 말했습니다."
+      },
+      "summary": "US energy secretary says 17 million barrels of oil transited Hormuz Strait on Monday US Secretary of Energy Chris Wright said that 17 million barrels of oil transited the Strait of Hormuz on Monday. Wright added that this marked the highest level of crude oil to pass through the ",
+      "scores": {
+        "commodity": 3.0,
+        "diplomacy": 1.0,
+        "election": 0.0,
+        "region_weight": 1.4,
+        "freshness": 0.822,
+        "importance": 2.573,
+        "final": 3.036
+      },
+      "rank_reasons": [
+        "region:mena*1.40",
+        "category:commodity",
+        "tier:B*0.72/g1",
+        "commodity:oil:2",
+        "commodity:shipping:1",
+        "diplomacy:1"
+      ],
+      "translation_status": "ok",
+      "country_tier": "B",
+      "info_grade": "1",
+      "country_hint": "SAU"
+    },
+    {
+      "id": "8078caa504c229e7",
+      "published_at": "2026-09-02T07:15:00+00:00",
+      "source": {
+        "id": "oilprice",
+        "name": "OilPrice.com",
+        "region": "commodity_specialist",
+        "slant": null
+      },
+      "url": "https://oilprice.com/Latest-Energy-News/World-News/Hormuz-Shipping-Slumps-as-US-Iran-Strikes-Rattle-Oil-Markets.html",
+      "category": "commodity",
+      "commodities": [
+        "oil",
+        "shipping"
+      ],
+      "title": {
+        "original": "Hormuz Shipping Slumps as U.S.-Iran Strikes Rattle Oil Markets",
+        "original_lang": "en",
+        "ko": "호르무즈 배송, 미국-이란 파업으로 슬럼프 딸랑이 석유 시장"
+      },
+      "summary": "The number of tankers traversing the Strait of Hormuz remains below the ten-day average, according to ship-trackers, with Kpler reporting only four tanker crossings for Tuesday. That is below a ten-day average of 13 tankers, Reuters reported earlier today. Windward, meanwhile, re",
+      "scores": {
+        "commodity": 4.0,
+        "diplomacy": 1.0,
+        "election": 0.0,
+        "region_weight": 1.35,
+        "freshness": 0.938,
+        "importance": 2.476,
+        "final": 2.866
+      },
+      "rank_reasons": [
+        "region:commodity_specialist*1.35",
+        "category:commodity",
+        "tier:A*1.00/g3",
+        "commodity:oil:2",
+        "commodity:shipping:2",
+        "diplomacy:1"
+      ],
+      "translation_status": "ok",
+      "country_tier": "A",
+      "info_grade": "3",
       "country_hint": "USA"
     },
     {
@@ -510,9 +598,9 @@
         "diplomacy": 1.0,
         "election": 0.0,
         "region_weight": 1.35,
-        "freshness": 0.814,
-        "importance": 2.6,
-        "final": 3.009
+        "freshness": 0.706,
+        "importance": 2.253,
+        "final": 2.608
       },
       "rank_reasons": [
         "region:commodity_specialist*1.35",
@@ -553,9 +641,9 @@
         "diplomacy": 0.0,
         "election": 0.0,
         "region_weight": 1.35,
-        "freshness": 0.885,
-        "importance": 2.345,
-        "final": 2.714
+        "freshness": 0.767,
+        "importance": 2.032,
+        "final": 2.352
       },
       "rank_reasons": [
         "region:commodity_specialist*1.35",
@@ -571,90 +659,88 @@
       "country_hint": "USA"
     },
     {
-      "id": "1ff93ea8d7896c00",
-      "published_at": "2026-09-02T02:17:09+00:00",
-      "source": {
-        "id": "business_standard_markets",
-        "name": "Business Standard Markets",
-        "region": "india",
-        "slant": null
-      },
-      "url": "https://www.business-standard.com/markets/news/stocks-to-watch-coal-india-ril-hero-motocorp-itc-wipro-omcs-more-126090200093_1.html",
-      "category": "commodity",
-      "commodities": [
-        "oil",
-        "coal"
-      ],
-      "title": {
-        "original": "Stocks to watch: Coal India, RIL, Hero MotoCorp, ITC, Wipro, OMCs & more",
-        "original_lang": "en",
-        "ko": "볼거리: 석탄 인도, RIL, 히어로 모토코프, ITC, 와이프로, OMC 등"
-      },
-      "summary": "OMC stocks representing the state-run Oil Marketing Companies, including BPCL, HPCL, and IOCL, will also remain in focus on Wednesday after Brent crude prices spiked to $96/barrel",
-      "scores": {
-        "commodity": 4.0,
-        "diplomacy": 0.0,
-        "election": 0.0,
-        "region_weight": 1.3,
-        "freshness": 0.943,
-        "importance": 2.082,
-        "final": 2.363
-      },
-      "rank_reasons": [
-        "region:india*1.30",
-        "category:commodity",
-        "tier:A*1.00/g3",
-        "commodity:oil:3",
-        "commodity:coal:1"
-      ],
-      "translation_status": "ok",
-      "country_tier": "A",
-      "info_grade": "3",
-      "country_hint": "IND"
-    },
-    {
-      "id": "d0dae80d6e166301",
-      "published_at": "2026-09-01T15:30:00+00:00",
+      "id": "763c95b74f767be3",
+      "published_at": "2026-09-02T08:30:00+00:00",
       "source": {
         "id": "oilprice",
         "name": "OilPrice.com",
         "region": "commodity_specialist",
         "slant": null
       },
-      "url": "https://oilprice.com/Latest-Energy-News/World-News/Asia-Spot-LNG-Prices-Hit-5-Month-High-as-Hormuz-Blockage-Drags-On.html",
-      "category": "commodity_diplomacy",
+      "url": "https://oilprice.com/Latest-Energy-News/World-News/Pakistan-Rejects-Costly-LNG-Cargo-as-Blackout-Risk-Deepens.html",
+      "category": "commodity",
       "commodities": [
-        "gas",
-        "shipping"
+        "gas"
       ],
       "title": {
-        "original": "Asia Spot LNG Prices Hit 5-Month High as Hormuz Blockage Drags On",
+        "original": "Pakistan Rejects Costly LNG Cargo as Blackout Risk Deepens",
         "original_lang": "en",
-        "ko": "아시아 스팟 LNG 가격, 호르무즈 막힘으로 5개월 만에 최고치 기록"
+        "ko": "파키스탄, 정전 위험 심화로 값비싼 LNG 화물 거부"
       },
-      "summary": "Spot LNG prices in Asia jumped on Tuesday to the highest level since the 2026 winter, as buyers compete for spot cargoes amid the still-stalled LNG traffic through the Strait of Hormuz. Asia’s spot LNG price jumped to as high as $24.614 per million British thermal units (MMBtu) o",
+      "summary": "Pakistan may have to extend rolling blackouts after it refused to pay three times the pre-war price for an LNG cargo, which was the only offer its latest emergency tender drew. The single cargo, offered by BP, was priced at $27 per million British thermal units, Bloomberg reporte",
       "scores": {
-        "commodity": 2.0,
-        "diplomacy": 1.0,
+        "commodity": 1.0,
+        "diplomacy": 0.0,
         "election": 0.0,
         "region_weight": 1.35,
-        "freshness": 0.699,
-        "importance": 1.997,
-        "final": 2.312
+        "freshness": 0.971,
+        "importance": 1.796,
+        "final": 2.079
       },
       "rank_reasons": [
         "region:commodity_specialist*1.35",
-        "category:commodity_diplomacy",
-        "tier:A*1.00/g2",
+        "category:commodity",
+        "tier:A*1.00/g1",
         "commodity:gas:1",
-        "commodity:shipping:1",
-        "diplomacy:1",
-        "bridge:1"
+        "bridge:2"
       ],
       "translation_status": "ok",
       "country_tier": "A",
-      "info_grade": "2",
+      "info_grade": "1",
       "country_hint": "USA"
+    },
+    {
+      "id": "34c53619fc8a18c9",
+      "published_at": "2026-09-02T09:04:20+00:00",
+      "source": {
+        "id": "middle_east_eye",
+        "name": "Middle East Eye",
+        "region": "mena",
+        "slant": null
+      },
+      "url": "https://www.middleeasteye.net/live-blog/live-blog-update/two-dead-after-monday-attack-saudi-oil-tanker-hormuz-says-shipping-firm",
+      "category": "commodity",
+      "commodities": [
+        "shipping",
+        "oil"
+      ],
+      "title": {
+        "original": "Two dead after Monday attack on Saudi oil tanker in Hormuz, says shipping firm",
+        "original_lang": "en",
+        "ko": "해운 회사는 월요일 호르무즈에서 사우디 유조선에 대한 공격 후 2 명이 사망했다고 말합니다."
+      },
+      "summary": "Two dead after Monday attack on Saudi oil tanker in Hormuz, says shipping firm Two Filipino sailors were killed in an attack on an oil tanker in the Strait of Hormuz on Monday, Saudi Arabia's national shipping company Bahri said on Wednesday. \"Bahri confirms that its vessel SIDR ",
+      "scores": {
+        "commodity": 3.0,
+        "diplomacy": 1.0,
+        "election": 0.0,
+        "region_weight": 1.4,
+        "freshness": 0.987,
+        "importance": 1.483,
+        "final": 1.75
+      },
+      "rank_reasons": [
+        "region:mena*1.40",
+        "category:commodity",
+        "tier:B*0.72/g3",
+        "commodity:oil:1",
+        "commodity:shipping:2",
+        "diplomacy:1"
+      ],
+      "translation_status": "ok",
+      "country_tier": "B",
+      "info_grade": "3",
+      "country_hint": "SAU"
     },
     {
       "id": "f4922654c65a8e66",
@@ -682,9 +768,9 @@
         "diplomacy": 1.0,
         "election": 0.0,
         "region_weight": 1.35,
-        "freshness": 0.814,
-        "importance": 1.7,
-        "final": 1.968
+        "freshness": 0.706,
+        "importance": 1.473,
+        "final": 1.705
       },
       "rank_reasons": [
         "region:commodity_specialist*1.35",
@@ -698,47 +784,6 @@
       "country_tier": "A",
       "info_grade": "3",
       "country_hint": "USA"
-    },
-    {
-      "id": "b929dc21e791005f",
-      "published_at": "2026-09-02T02:07:06+00:00",
-      "source": {
-        "id": "business_standard_markets",
-        "name": "Business Standard Markets",
-        "region": "india",
-        "slant": null
-      },
-      "url": "https://www.business-standard.com/markets/news/asian-markets-tumble-as-us-iran-fighting-lifts-oil-and-bond-yields-126090200074_1.html",
-      "category": "commodity",
-      "commodities": [
-        "oil"
-      ],
-      "title": {
-        "original": "Asian markets tumble as US-Iran fighting lifts oil and bond yields",
-        "original_lang": "en",
-        "ko": "미국과 이란의 싸움이 석유 및 채권 수익률을 끌어올리면서 아시아 시장이 급락하고 있습니다."
-      },
-      "summary": "Brent crude futures extended gains into a second day as trading resumed in Asia, rising 0.7 per cent to $95.34 a barrel after the US launched a barrage of airstrikes on Iran",
-      "scores": {
-        "commodity": 3.0,
-        "diplomacy": 0.0,
-        "election": 0.0,
-        "region_weight": 1.3,
-        "freshness": 0.939,
-        "importance": 1.712,
-        "final": 1.943
-      },
-      "rank_reasons": [
-        "region:india*1.30",
-        "category:commodity",
-        "tier:A*1.00/g3",
-        "commodity:oil:3",
-        "bridge:1"
-      ],
-      "translation_status": "ok",
-      "country_tier": "A",
-      "info_grade": "3",
-      "country_hint": "IND"
     },
     {
       "id": "2f09941b56edb2ac",
@@ -765,9 +810,9 @@
         "diplomacy": 0.0,
         "election": 0.0,
         "region_weight": 1.35,
-        "freshness": 0.986,
-        "importance": 1.633,
-        "final": 1.89
+        "freshness": 0.854,
+        "importance": 1.415,
+        "final": 1.638
       },
       "rank_reasons": [
         "region:commodity_specialist*1.35",
@@ -779,6 +824,90 @@
       "country_tier": "A",
       "info_grade": "3",
       "country_hint": "USA"
+    },
+    {
+      "id": "624d1e005618412d",
+      "published_at": "2026-09-02T05:56:47+00:00",
+      "source": {
+        "id": "middle_east_eye",
+        "name": "Middle East Eye",
+        "region": "mena",
+        "slant": null
+      },
+      "url": "https://www.middleeasteye.net/live-blog/live-blog-update/four-commodity-vessels-transit-hormuz-strait-tuesday-data-shows",
+      "category": "commodity",
+      "commodities": [
+        "shipping",
+        "oil"
+      ],
+      "title": {
+        "original": "Four commodity vessels transited Hormuz Strait on Tuesday, data shows",
+        "original_lang": "en",
+        "ko": "화요일에 호르무즈 해협을 통과한 4척의 원자재 선박, 데이터에 따르면"
+      },
+      "summary": "Four commodity vessels transited Hormuz Strait on Tuesday, data shows Four commodity vessels transited the Strait of Hormuz on Tuesday, preliminary shipping data from Kpler showed on Wednesday. The traffic has decreased from 10 a day earlier, and remains below the 10-day average ",
+      "scores": {
+        "commodity": 3.0,
+        "diplomacy": 1.0,
+        "election": 0.0,
+        "region_weight": 1.4,
+        "freshness": 0.905,
+        "importance": 1.36,
+        "final": 1.605
+      },
+      "rank_reasons": [
+        "region:mena*1.40",
+        "category:commodity",
+        "tier:B*0.72/g3",
+        "commodity:oil:1",
+        "commodity:shipping:2",
+        "diplomacy:1"
+      ],
+      "translation_status": "ok",
+      "country_tier": "B",
+      "info_grade": "3",
+      "country_hint": "SAU"
+    },
+    {
+      "id": "d70128f8a0278b20",
+      "published_at": "2026-09-02T08:24:00+00:00",
+      "source": {
+        "id": "daily_sabah",
+        "name": "Daily Sabah",
+        "region": "turkey",
+        "slant": null
+      },
+      "url": "https://www.dailysabah.com/business/economy/russia-says-sees-no-grounds-for-black-sea-grain-deal-to-resume",
+      "category": "commodity",
+      "commodities": [
+        "wheat"
+      ],
+      "title": {
+        "original": "Russia says sees no grounds for Black Sea grain deal to resume",
+        "original_lang": "en",
+        "ko": "러시아는 흑해 곡물 거래가 재개될 근거가 없다고 말한다."
+      },
+      "summary": "Russia sees no grounds for the Black Sea grain deal ​to resume, Deputy Foreign Minister Alexander Grushko said Wednesday, as Russia and Ukraine ⁠continue to attack each other'...",
+      "scores": {
+        "commodity": 1.0,
+        "diplomacy": 2.0,
+        "election": 0.0,
+        "region_weight": 1.3,
+        "freshness": 0.968,
+        "importance": 1.371,
+        "final": 1.556
+      },
+      "rank_reasons": [
+        "region:turkey*1.30",
+        "category:commodity",
+        "tier:A*1.00/g3",
+        "commodity:wheat:1",
+        "diplomacy:2"
+      ],
+      "translation_status": "ok",
+      "country_tier": "A",
+      "info_grade": "3",
+      "country_hint": "RUS"
     },
     {
       "id": "d595a56a99e9ed01",
@@ -805,9 +934,9 @@
         "diplomacy": 1.0,
         "election": 0.0,
         "region_weight": 1.35,
-        "freshness": 0.792,
-        "importance": 1.53,
-        "final": 1.771
+        "freshness": 0.686,
+        "importance": 1.326,
+        "final": 1.534
       },
       "rank_reasons": [
         "region:commodity_specialist*1.35",
@@ -820,255 +949,6 @@
       "translation_status": "ok",
       "country_tier": "A",
       "info_grade": "2",
-      "country_hint": "USA"
-    },
-    {
-      "id": "7886d64f6cd9a974",
-      "published_at": "2026-09-02T03:34:42+00:00",
-      "source": {
-        "id": "seatrade",
-        "name": "Seatrade Maritime",
-        "region": "commodity_specialist",
-        "slant": null
-      },
-      "url": "https://www.seatrade-maritime.com/security/sinokor-vlcc-abandoned-and-listing-in-strait-of-hormuz",
-      "category": "commodity",
-      "commodities": [
-        "shipping"
-      ],
-      "title": {
-        "original": "Sinokor VLCC abandoned and listing in Strait of Hormuz",
-        "original_lang": "en",
-        "ko": "Sinokor VLCC는 버려지고 호르무즈 해협에 상장되었습니다"
-      },
-      "summary": "The crew of the Sinokor Maritime operated tanker were evacuated following multiple rocket strikes on the vessel",
-      "scores": {
-        "commodity": 2.0,
-        "diplomacy": 1.0,
-        "election": 0.0,
-        "region_weight": 1.35,
-        "freshness": 0.977,
-        "importance": 1.501,
-        "final": 1.738
-      },
-      "rank_reasons": [
-        "region:commodity_specialist*1.35",
-        "category:commodity",
-        "tier:A*1.00/g3",
-        "commodity:shipping:2",
-        "diplomacy:1"
-      ],
-      "translation_status": "ok",
-      "country_tier": "A",
-      "info_grade": "3",
-      "country_hint": "USA"
-    },
-    {
-      "id": "dd55e46c80fa7b7c",
-      "published_at": "2026-09-01T12:06:25+00:00",
-      "source": {
-        "id": "ft_commodities",
-        "name": "FT Commodities",
-        "region": "west",
-        "slant": null
-      },
-      "url": "https://www.ft.com/content/bbbce2e1-6542-4806-9c26-d35e8c3b702e?syn-25a6b1a6=1",
-      "category": "commodity",
-      "commodities": [
-        "oil",
-        "shipping"
-      ],
-      "title": {
-        "original": "Saudi and South Korean oil tankers hit in Strait of Hormuz",
-        "original_lang": "en",
-        "ko": "사우디아라비아와 한국의 유조선이 호르무즈 해협에서 충돌했습니다."
-      },
-      "summary": "The increase in shipping attacks comes after a period of relative calm in the war",
-      "scores": {
-        "commodity": 2.0,
-        "diplomacy": 1.0,
-        "election": 0.0,
-        "region_weight": 0.55,
-        "freshness": 0.636,
-        "importance": 2.035,
-        "final": 1.623
-      },
-      "rank_reasons": [
-        "region:west*0.55",
-        "category:commodity",
-        "tier:A*1.00/g1",
-        "commodity:oil:1",
-        "commodity:shipping:1",
-        "diplomacy:1"
-      ],
-      "translation_status": "ok",
-      "country_tier": "A",
-      "info_grade": "1",
-      "country_hint": "USA"
-    },
-    {
-      "id": "52f2fff9262356aa",
-      "published_at": "2026-09-02T04:00:00+00:00",
-      "source": {
-        "id": "tass_ru",
-        "name": "ТАСС",
-        "region": "russia",
-        "slant": null
-      },
-      "url": "https://tass.ru/interviews/28043315",
-      "category": "commodity",
-      "commodities": [
-        "gas",
-        "gold"
-      ],
-      "title": {
-        "original": "Глава Минприроды: мы можем продлить жизнь уникальных месторождений газа в РФ",
-        "original_lang": "ru",
-        "ko": "천연 자원부 책임자: 우리는 러시아 연방에서 독특한 가스전의 수명을 연장할 수 있습니다."
-      },
-      "summary": "Министр природных ресурсов и экологии РФ Александр Козлов в рамках Восточного экономического форума рассказал в интервью ТАСС об открытиях новых месторождений на Дальнем Востоке, главных изменениях в золотодобыче в этом году, позиции министерства по трудноизвлекаемым запасам газа",
-      "scores": {
-        "commodity": 2.0,
-        "diplomacy": 0.0,
-        "election": 0.0,
-        "region_weight": 1.25,
-        "freshness": 0.989,
-        "importance": 1.424,
-        "final": 1.584
-      },
-      "rank_reasons": [
-        "region:russia*1.25",
-        "category:commodity",
-        "tier:A*1.00/g3",
-        "commodity:gas:1",
-        "commodity:gold:1",
-        "bridge:2"
-      ],
-      "translation_status": "ok",
-      "country_tier": "A",
-      "info_grade": "3",
-      "country_hint": "RUS"
-    },
-    {
-      "id": "8f493a6ab6e9365c",
-      "published_at": "2026-09-01T21:00:57+00:00",
-      "source": {
-        "id": "hellenic_shipping",
-        "name": "Hellenic Shipping News",
-        "region": "commodity_specialist",
-        "slant": null
-      },
-      "url": "https://www.hellenicshippingnews.com/baltic-dry-index-snaps-7-day-winning-streak/",
-      "category": "commodity",
-      "commodities": [
-        "shipping",
-        "coal"
-      ],
-      "title": {
-        "original": "Baltic Dry Index Snaps 7-Day Winning Streak",
-        "original_lang": "en",
-        "ko": "발틱 드라이 인덱스 스냅 7일 연속 우승"
-      },
-      "summary": "The Baltic Exchange’s dry bulk freight index, which tracks rates for ships carrying dry bulk commodities, fell about 0.9% to 3,157 points on Tuesday, halting a streak of seven straight sessions of advances. The capesize index, which typically transports 150,000-ton cargoes includ",
-      "scores": {
-        "commodity": 3.0,
-        "diplomacy": 0.0,
-        "election": 0.0,
-        "region_weight": 1.35,
-        "freshness": 0.815,
-        "importance": 1.349,
-        "final": 1.561
-      },
-      "rank_reasons": [
-        "region:commodity_specialist*1.35",
-        "category:commodity",
-        "tier:A*1.00/g3",
-        "commodity:coal:1",
-        "commodity:shipping:2"
-      ],
-      "translation_status": "ok",
-      "country_tier": "A",
-      "info_grade": "3",
-      "country_hint": "USA"
-    },
-    {
-      "id": "53e880700300ff70",
-      "published_at": "2026-09-01T20:56:27+00:00",
-      "source": {
-        "id": "oilprice",
-        "name": "OilPrice.com",
-        "region": "commodity_specialist",
-        "slant": null
-      },
-      "url": "https://oilprice.com/Latest-Energy-News/World-News/US-Crude-Inventories-Drop-amid-Continued-SPR-Draws.html",
-      "category": "commodity",
-      "commodities": [
-        "oil"
-      ],
-      "title": {
-        "original": "U.S. Crude Inventories Drop amid Continued SPR Draws",
-        "original_lang": "en",
-        "ko": "SPR 추첨이 계속되는 가운데 미국 원유 재고 드롭"
-      },
-      "summary": "The American Petroleum Institute (API) estimated that crude oil inventories in the United States fell 2.6 million barrels in the week ending August 28. In the week prior, US crude oil inventories rose by 4.2 million barrels. Commercial crude oil inventories excluding the SPR have",
-      "scores": {
-        "commodity": 3.0,
-        "diplomacy": 0.0,
-        "election": 0.0,
-        "region_weight": 1.35,
-        "freshness": 0.813,
-        "importance": 1.346,
-        "final": 1.558
-      },
-      "rank_reasons": [
-        "region:commodity_specialist*1.35",
-        "category:commodity",
-        "tier:A*1.00/g3",
-        "commodity:oil:3"
-      ],
-      "translation_status": "ok",
-      "country_tier": "A",
-      "info_grade": "3",
-      "country_hint": "USA"
-    },
-    {
-      "id": "ca25b6b5eb62b0aa",
-      "published_at": "2026-09-01T20:30:00+00:00",
-      "source": {
-        "id": "oilprice",
-        "name": "OilPrice.com",
-        "region": "commodity_specialist",
-        "slant": null
-      },
-      "url": "https://oilprice.com/Latest-Energy-News/World-News/US-Shale-Producers-Lose-Bid-to-Kill-Oil-Price-Fixing-Case.html",
-      "category": "commodity",
-      "commodities": [
-        "oil"
-      ],
-      "title": {
-        "original": "U.S. Shale Producers Lose Bid to Kill Oil Price-Fixing Case",
-        "original_lang": "en",
-        "ko": "미국 셰일 생산자들이 유가 담합 사건을 없애기 위한 입찰에서 패배하다"
-      },
-      "summary": "A federal judge has allowed antitrust lawsuits accusing some of the biggest U.S. shale producers of coordinating production cuts to keep oil and fuel prices higher to proceed. U.S. District Judge Matthew Garcia in New Mexico rejected efforts by Diamondback Energy, Occidental Petr",
-      "scores": {
-        "commodity": 3.0,
-        "diplomacy": 0.0,
-        "election": 0.0,
-        "region_weight": 1.35,
-        "freshness": 0.803,
-        "importance": 1.33,
-        "final": 1.539
-      },
-      "rank_reasons": [
-        "region:commodity_specialist*1.35",
-        "category:commodity",
-        "tier:A*1.00/g3",
-        "commodity:oil:3"
-      ],
-      "translation_status": "ok",
-      "country_tier": "A",
-      "info_grade": "3",
       "country_hint": "USA"
     },
     {
@@ -1115,43 +995,84 @@
       "country_hint": "USA"
     },
     {
-      "id": "de64a10cf54e5fe1",
-      "published_at": "2026-09-02T02:51:00+00:00",
+      "id": "614627c04416f20c",
+      "published_at": "2026-09-02T06:46:11+00:00",
       "source": {
-        "id": "japan_times",
-        "name": "Japan Times",
-        "region": "japan",
+        "id": "business_standard_markets",
+        "name": "Business Standard Markets",
+        "region": "india",
         "slant": null
       },
-      "url": "https://www.japantimes.co.jp/business/2026/09/02/tech/data-centers-us-brazil-election/",
-      "category": "election",
-      "commodities": [],
+      "url": "https://www.business-standard.com/markets/capital-market-news/auto-stocks-hit-the-brakes-as-us-iran-tensions-drive-crude-higher-126090200445_1.html",
+      "category": "commodity",
+      "commodities": [
+        "oil"
+      ],
       "title": {
-        "original": "Reviled in the U.S., data centers win support in Brazil’s presidential election",
+        "original": "Auto stocks hit the brakes as US-Iran tensions drive crude higher",
         "original_lang": "en",
-        "ko": "미국에서 부활한 데이터 센터는 브라질 대통령 선거에서 지지를 얻습니다."
+        "ko": "미국과 이란의 긴장이 고조되면서 자동차 재고가 제동을 걸었다."
       },
-      "summary": "Both Brazilian President Luiz Inacio Lula da Silva and rival Flavio Bolsonaro are making data centers central to their pitches to bolster Latin America's largest economy.",
+      "summary": "The Nifty Auto index dropped 3.24% to 27,567.55 on Wednesday as a renewed surge in crude oil prices following an escalation in US-Iran tensions weighed on sentiment.",
       "scores": {
-        "commodity": 0,
+        "commodity": 2.0,
         "diplomacy": 0.0,
-        "election": 1.0,
-        "region_weight": 1.25,
-        "freshness": 0.958,
-        "importance": 1.056,
-        "final": 1.175
+        "election": 0.0,
+        "region_weight": 1.3,
+        "freshness": 0.925,
+        "importance": 1.022,
+        "final": 1.16
       },
       "rank_reasons": [
-        "region:japan*1.25",
-        "category:election",
-        "tier:A*1.00/g1",
-        "election:presidential:1"
+        "region:india*1.30",
+        "category:commodity",
+        "tier:A*1.00/g3",
+        "commodity:oil:2"
       ],
       "translation_status": "ok",
       "country_tier": "A",
-      "info_grade": "1",
-      "country_hint": "USA",
-      "election_type": "presidential"
+      "info_grade": "3",
+      "country_hint": "IND"
+    },
+    {
+      "id": "513c1f638b026b53",
+      "published_at": "2026-09-02T06:35:26+00:00",
+      "source": {
+        "id": "business_standard_markets",
+        "name": "Business Standard Markets",
+        "region": "india",
+        "slant": null
+      },
+      "url": "https://www.business-standard.com/markets/news/oil-spike-weighs-on-aviation-stocks-indigo-spicejet-dive-up-to-4-126090200428_1.html",
+      "category": "commodity",
+      "commodities": [
+        "oil"
+      ],
+      "title": {
+        "original": "Oil spike weighs on aviation stocks; IndiGo, SpiceJet dive up to 4%",
+        "original_lang": "en",
+        "ko": "오일 스파이크는 항공 주식에 무게; IndiGo, SpiceJet 다이빙 최대 4%"
+      },
+      "summary": "Analysts noted that Aviation Turbine Fuel (ATF) represents a significant share of airlines' operating cost and any rise in crude oil price is a negative for the sector.",
+      "scores": {
+        "commodity": 2.0,
+        "diplomacy": 0.0,
+        "election": 0.0,
+        "region_weight": 1.3,
+        "freshness": 0.921,
+        "importance": 1.017,
+        "final": 1.154
+      },
+      "rank_reasons": [
+        "region:india*1.30",
+        "category:commodity",
+        "tier:A*1.00/g3",
+        "commodity:oil:2"
+      ],
+      "translation_status": "ok",
+      "country_tier": "A",
+      "info_grade": "3",
+      "country_hint": "IND"
     },
     {
       "id": "e735bd03e3f62001",
@@ -1194,85 +1115,126 @@
       "election_type": "cabinet_reshuffle"
     },
     {
-      "id": "9a6fa6a72e2821cb",
-      "published_at": "2026-09-01T23:37:53+00:00",
+      "id": "7f7b8212944e295e",
+      "published_at": "2026-09-02T09:00:56+00:00",
       "source": {
-        "id": "scmp",
-        "name": "South China Morning Post",
-        "region": "china",
-        "slant": null
-      },
-      "url": "https://www.scmp.com/news/world/united-states-canada/article/3366037/trump-puts-pressure-squeezed-us-oil-refiners-ease-pump-prices?utm_source=rss_feed",
-      "category": "commodity",
-      "commodities": [
-        "oil"
-      ],
-      "title": {
-        "original": "Trump puts pressure on squeezed US oil refiners to ease pump prices",
-        "original_lang": "en",
-        "ko": "트럼프는 펌프 가격을 완화하기 위해 압박을 가한 미국 정유사에 압력을 가한다."
-      },
-      "summary": "President Donald Trump pressed US oil refiners to boost domestic production of petrol and diesel during a closed-door meeting on Tuesday, as he contends with high prices and mounting cost-of-living concerns before November’s midterm elections. Trump made clear he wanted lower pri",
-      "scores": {
-        "commodity": 2.0,
-        "diplomacy": 0.0,
-        "election": 0.0,
-        "region_weight": 1.25,
-        "freshness": 0.876,
-        "importance": 0.967,
-        "final": 1.076
-      },
-      "rank_reasons": [
-        "region:china*1.25",
-        "category:commodity",
-        "tier:A*1.00/g3",
-        "commodity:oil:2"
-      ],
-      "translation_status": "ok",
-      "country_tier": "A",
-      "info_grade": "3",
-      "country_hint": "CHN"
-    },
-    {
-      "id": "2c82ea609f6c76b9",
-      "published_at": "2026-09-02T02:21:22+00:00",
-      "source": {
-        "id": "rt_ru",
-        "name": "RT Russian",
+        "id": "tass_en",
+        "name": "TASS",
         "region": "russia",
         "slant": null
       },
-      "url": "https://russian.rt.com/ussr/news/1677091-zaharova-kievskii-gosmehanizm?utm_source=rss&utm_medium=rss&utm_campaign=RSS",
+      "url": "https://tass.com/world/2181109",
       "category": "commodity",
       "commodities": [
-        "rice"
+        "shipping"
       ],
       "title": {
-        "original": "Захарова: киевский режим является сплавом госмеханизма и терроризма",
-        "original_lang": "ru",
-        "ko": "자하로바: 키예프 정권은 국가 메커니즘과 테러리즘의 융합입니다."
+        "original": "Two tankers in Strait of Hormuz struck mines, engulfed in flames — IRGC",
+        "original_lang": "en",
+        "ko": "호르무즈 해협의 유조선 2척이 화염에 휩싸인 광산을 강타했습니다 — IRGC"
       },
-      "summary": "Официальный представитель МИД России Мария Захарова, комментируя заявления Владимира Зеленского с «предупреждением» авиакомпаниям, назвала киевский режим сплавом государственного механизма с террористическими методиками. Читать далее",
+      "summary": "The IRGC stressed that recent US strikes on southern Iran would in no way weaken the Islamic Republic’s control over the Strait of Hormuz",
       "scores": {
         "commodity": 1.0,
         "diplomacy": 1.0,
         "election": 0.0,
         "region_weight": 1.25,
-        "freshness": 0.945,
-        "importance": 0.93,
-        "final": 1.034
+        "freshness": 0.985,
+        "importance": 0.969,
+        "final": 1.078
       },
       "rank_reasons": [
         "region:russia*1.25",
         "category:commodity",
         "tier:A*1.00/g3",
-        "commodity:rice:1",
+        "commodity:shipping:1",
         "diplomacy:1"
       ],
       "translation_status": "ok",
       "country_tier": "A",
       "info_grade": "3",
       "country_hint": "RUS"
+    },
+    {
+      "id": "2a48e67e721c523f",
+      "published_at": "2026-09-02T04:20:01+00:00",
+      "source": {
+        "id": "tass_en",
+        "name": "TASS",
+        "region": "russia",
+        "slant": null
+      },
+      "url": "https://tass.com/economy/2180983",
+      "category": "commodity",
+      "commodities": [
+        "oil",
+        "coal"
+      ],
+      "title": {
+        "original": "Coal production in Russia’s Yakutia rises 2.6-fold over five years",
+        "original_lang": "en",
+        "ko": "러시아 야쿠티아 석탄 생산량은 5년간 2.6배 증가"
+      },
+      "summary": "Head of Yakutia Aysen Nikolayev pointed out that gas and oil production have also increased significantly",
+      "scores": {
+        "commodity": 2.0,
+        "diplomacy": 0.0,
+        "election": 0.0,
+        "region_weight": 1.25,
+        "freshness": 0.865,
+        "importance": 0.955,
+        "final": 1.062
+      },
+      "rank_reasons": [
+        "region:russia*1.25",
+        "category:commodity",
+        "tier:A*1.00/g3",
+        "commodity:oil:1",
+        "commodity:coal:1"
+      ],
+      "translation_status": "ok",
+      "country_tier": "A",
+      "info_grade": "3",
+      "country_hint": "RUS"
+    },
+    {
+      "id": "de64a10cf54e5fe1",
+      "published_at": "2026-09-02T02:51:00+00:00",
+      "source": {
+        "id": "japan_times",
+        "name": "Japan Times",
+        "region": "japan",
+        "slant": null
+      },
+      "url": "https://www.japantimes.co.jp/business/2026/09/02/tech/data-centers-us-brazil-election/",
+      "category": "election",
+      "commodities": [],
+      "title": {
+        "original": "Reviled in the U.S., data centers win support in Brazil’s presidential election",
+        "original_lang": "en",
+        "ko": "미국에서 부활한 데이터 센터는 브라질 대통령 선거에서 지지를 얻습니다."
+      },
+      "summary": "Both Brazilian President Luiz Inacio Lula da Silva and rival Flavio Bolsonaro are making data centers central to their pitches to bolster the economy.",
+      "scores": {
+        "commodity": 0,
+        "diplomacy": 0.0,
+        "election": 1.0,
+        "region_weight": 1.25,
+        "freshness": 0.83,
+        "importance": 0.915,
+        "final": 1.018
+      },
+      "rank_reasons": [
+        "region:japan*1.25",
+        "category:election",
+        "tier:A*1.00/g1",
+        "election:presidential:1"
+      ],
+      "translation_status": "ok",
+      "country_tier": "A",
+      "info_grade": "1",
+      "country_hint": "BRA",
+      "election_type": "presidential"
     },
     {
       "id": "d01a8cd835af739f",
@@ -1299,9 +1261,9 @@
         "diplomacy": 1.0,
         "election": 0.0,
         "region_weight": 1.25,
-        "freshness": 0.937,
-        "importance": 0.922,
-        "final": 1.026
+        "freshness": 0.812,
+        "importance": 0.799,
+        "final": 0.889
       },
       "rank_reasons": [
         "region:china*1.25",
@@ -1316,84 +1278,126 @@
       "country_hint": "USA"
     },
     {
-      "id": "58d62b6f0fd50495",
-      "published_at": "2026-09-01T14:06:30+00:00",
-      "source": {
-        "id": "tehran_times",
-        "name": "Tehran Times",
-        "region": "mena",
-        "slant": null
-      },
-      "url": "https://www.tehrantimes.com/news/529598/Iran-s-para-athlete-Javanmardi-banned-three-years-for-doping",
-      "category": "commodity",
-      "commodities": [
-        "gold"
-      ],
-      "title": {
-        "original": "Iran’s para-athlete Javanmardi banned three years for doping",
-        "original_lang": "en",
-        "ko": "이란의 파라 선수 자반마르디 (Javanmardi) 는 도핑을 이유로 3년을 금지했다."
-      },
-      "summary": "TEHRAN - Para athletics athlete returned adverse analytical findings for oxandrolone, a Prohibited Substance, and forfeited gold medal obtained at the New Delhi 2025 World Para Athletics Championships",
-      "scores": {
-        "commodity": 1.0,
-        "diplomacy": 0.0,
-        "election": 0.0,
-        "region_weight": 1.4,
-        "freshness": 0.672,
-        "importance": 0.371,
-        "final": 0.438
-      },
-      "rank_reasons": [
-        "region:mena*1.40",
-        "category:commodity",
-        "tier:A*1.00/g3",
-        "commodity:gold:1"
-      ],
-      "translation_status": "ok",
-      "country_tier": "A",
-      "info_grade": "3",
-      "country_hint": "IND"
-    },
-    {
-      "id": "1e0949bb1edfc2fc",
-      "published_at": "2026-09-01T21:54:14+00:00",
+      "id": "b398ccfda634b5d5",
+      "published_at": "2026-09-02T08:55:20+00:00",
       "source": {
         "id": "aljazeera_en",
         "name": "Al Jazeera",
         "region": "mena",
         "slant": null
       },
-      "url": "https://www.aljazeera.com/news/2026/9/1/us-energy-secretary-will-travel-to-venezuela-to-unveil-oil-arrangement?traffic_source=rss",
+      "url": "https://www.aljazeera.com/news/2026/9/2/iran-us-exchange-new-attacks-who-was-hit-in-latest-strikes?traffic_source=rss",
       "category": "commodity",
       "commodities": [
-        "oil"
+        "shipping"
       ],
       "title": {
-        "original": "US energy secretary will travel to Venezuela to unveil oil arrangement",
+        "original": "Iran, US exchange new attacks: Who was hit in latest strikes?",
         "original_lang": "en",
-        "ko": "미국 에너지 장관이 베네수엘라를 방문하여 석유 협정을 공개할 예정입니다."
+        "ko": "이란, 미국 교환 새로운 공격: 최근 공격에서 누가 타격을 입었습니까?"
       },
-      "summary": "Venezuela's National Assembly voted to back the 65-billion-barrel oil deal, despite no details being publicly released.",
+      "summary": "Iran says the US bombed a wedding near the Strait of Hormuz; hits Kuwait, Bahrain, and Jordan in retaliation.",
       "scores": {
         "commodity": 1.0,
-        "diplomacy": 0.0,
+        "diplomacy": 1.0,
         "election": 0.0,
         "region_weight": 1.4,
-        "freshness": 0.835,
-        "importance": 0.332,
-        "final": 0.392
+        "freshness": 0.982,
+        "importance": 0.696,
+        "final": 0.821
       },
       "rank_reasons": [
         "region:mena*1.40",
         "category:commodity",
         "tier:B*0.72/g3",
-        "commodity:oil:1"
+        "commodity:shipping:1",
+        "diplomacy:1"
       ],
       "translation_status": "ok",
       "country_tier": "B",
       "info_grade": "3",
       "country_hint": "SAU"
+    },
+    {
+      "id": "1627140bf84168b2",
+      "published_at": "2026-09-02T01:00:09+00:00",
+      "source": {
+        "id": "scmp",
+        "name": "South China Morning Post",
+        "region": "china",
+        "slant": null
+      },
+      "url": "https://www.scmp.com/news/china/military/article/3365357/tanker-transporter-controller-chinas-y-20-family-expands-its-pacific-reach?utm_source=rss_feed",
+      "category": "commodity",
+      "commodities": [
+        "shipping"
+      ],
+      "title": {
+        "original": "Tanker, transporter, controller: China’s Y-20 family expands its Pacific reach",
+        "original_lang": "en",
+        "ko": "유조선, 수송선, 관제사: 중국의 Y-20 제품군, 태평양 지역 진출 확대"
+      },
+      "summary": "When six Chinese heavy transport planes entered European airspace in April 2022, it was not just their cargo that drew international attention. Bound for Serbia, the Y-20 aircraft had flown thousands of kilometres from China carrying components of the Chinese-made FK-3 surface-to",
+      "scores": {
+        "commodity": 1.0,
+        "diplomacy": 0.0,
+        "election": 0.0,
+        "region_weight": 1.25,
+        "freshness": 0.788,
+        "importance": 0.568,
+        "final": 0.632
+      },
+      "rank_reasons": [
+        "region:china*1.25",
+        "category:commodity",
+        "tier:A*1.00/g3",
+        "commodity:shipping:1",
+        "bridge:1"
+      ],
+      "translation_status": "ok",
+      "country_tier": "A",
+      "info_grade": "3",
+      "country_hint": "CHN"
+    },
+    {
+      "id": "2ca5f096db46a95c",
+      "published_at": "2026-09-02T09:28:29+00:00",
+      "source": {
+        "id": "ltn",
+        "name": "Liberty Times",
+        "region": "taiwan",
+        "slant": "pan_green"
+      },
+      "url": "https://ec.ltn.com.tw/article/breakingnews/5560956",
+      "category": "commodity",
+      "commodities": [
+        "silver"
+      ],
+      "title": {
+        "original": "台企銀上半年獲利雙位數成長 股利政策仍以股票股利為主",
+        "original_lang": "zh-TW",
+        "ko": "올해 상반기 대만은행의 두 자릿수 이익 성장 배당 정책은 여전히 주식 배당에 의해 좌지우지되고 있다."
+      },
+      "summary": "台灣企銀（2834）今日召開法人說明會，由副總經理曾國樑主持。台企銀上半年獲利穩定成長，合併稅後盈餘74.1億元，年增15.37％，每股稅後盈餘0.71元。台企銀過去股利...…",
+      "scores": {
+        "commodity": 1.0,
+        "diplomacy": 0.0,
+        "election": 0.0,
+        "region_weight": 1.25,
+        "freshness": 0.998,
+        "importance": 0.397,
+        "final": 0.441
+      },
+      "rank_reasons": [
+        "region:taiwan*1.25",
+        "category:commodity",
+        "tier:B*0.72/g3",
+        "commodity:silver:1"
+      ],
+      "translation_status": "ok",
+      "country_tier": "B",
+      "info_grade": "3",
+      "country_hint": "TWN"
     }
   ]
 }
