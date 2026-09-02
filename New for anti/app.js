@@ -2374,34 +2374,37 @@ const renderCropCalendarHtml = (countryName, cropIds) => {
 // PSD's country codes are a legacy USDA scheme, not ISO 3166: several of the
 // climate registry's 16 countries take a code that does NOT match their ISO2
 // (Russia=RS not RU, South Africa=SF not ZA, Vietnam=VM not VN, Ivory
-// Coast=IV not CI, Australia=AS not AU, China=CH not CN). Verified against
-// api.fas.usda.gov from a session with actual network access to it before
-// trusting a number this table produces -- this one never could reach
-// usda.gov to check, same restriction as the RSS source hunt above.
+// Coast=IV not CI, Australia=AS not AU, China=CH not CN). All 16 confirmed
+// 2026-09-02 against fas.usda.gov/data/production/<code> and
+// apps.fas.usda.gov/newgainapi report filenames, which this session could
+// reach through web search even though it can't fetch usda.gov directly.
 const PSD_COUNTRY_CODES = {
     ARG: 'AR', AUS: 'AS', BRA: 'BR', CAN: 'CA', CHN: 'CH', ETH: 'ET',
     IND: 'IN', IDN: 'ID', RUS: 'RS', ZAF: 'SF', THA: 'TH', UGA: 'UG',
     USA: 'US', VNM: 'VM', CIV: 'IV', GHA: 'GH',
 };
 
-// `verified: true` entries are the ones public PSD documentation cites often
-// enough that the 7-digit code is very likely right; `verified: false` ones
-// are a best-effort guess this session cannot check live. An unverified
-// entry never renders a number -- see buildLivePsdEntry -- specifically so a
-// wrong guess here cannot surface as a plausible-looking wrong figure.
+// `verified: true` means the exact 7-digit code was confirmed 2026-09-02
+// against a live fas.usda.gov/data/production/commodity/<code> page (via web
+// search, since this session cannot fetch usda.gov directly). Two of these
+// were originally guessed wrong and corrected in that pass: canola was
+// 2230000 (an unrelated code), the real one is Rapeseed 2226000; sunflowerseed
+// was 2221000, the real one is 2224000. cocoa is the one code that stayed
+// unconfirmed -- no live page for it turned up -- so it still renders no
+// number, same as any unverified entry (see buildLivePsdEntry).
 const PSD_COMMODITY_CODES = {
     wheat: { code: '0410000', label_ko: '밀', verified: true },
     corn: { code: '0440000', label_ko: '옥수수', verified: true },
     soybeans: { code: '2222000', label_ko: '대두', verified: true },
     rice: { code: '0422110', label_ko: '쌀(정미)', verified: true },
     cotton: { code: '2631000', label_ko: '면화', verified: true },
-    sugar: { code: '0612000', label_ko: '설탕(원심분리)', verified: false },
-    canola: { code: '2230000', label_ko: '카놀라(유채)', verified: false },
-    sunflowerseed: { code: '2221000', label_ko: '해바라기씨', verified: false },
-    coffee: { code: '0711100', label_ko: '커피(생두)', verified: false },
+    sugar: { code: '0612000', label_ko: '설탕(원심분리)', verified: true },
+    canola: { code: '2226000', label_ko: '카놀라(유채)', verified: true },
+    sunflowerseed: { code: '2224000', label_ko: '해바라기씨', verified: true },
+    coffee: { code: '0711100', label_ko: '커피(생두)', verified: true },
+    palm_oil: { code: '4243000', label_ko: '팜유', verified: true },
+    barley: { code: '0430000', label_ko: '보리', verified: true },
     cocoa: { code: '0721100', label_ko: '코코아', verified: false },
-    palm_oil: { code: '4243000', label_ko: '팜유', verified: false },
-    barley: { code: '0430000', label_ko: '보리', verified: false },
 };
 
 // Which of the crops above actually apply to each country, derived from
