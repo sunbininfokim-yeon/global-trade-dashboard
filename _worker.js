@@ -73,6 +73,11 @@ export default {
             return await handleOfficialReports(request, env);
         }
 
+        // US policy (bills / executive orders / regulations) out of Supabase
+        if (url.pathname.startsWith('/api/us/')) {
+            return await handleUsPolicy(request, env);
+        }
+
         // Official crop/energy/metal reports for one commodity × country window
         if (url.pathname.startsWith('/api/commodity-reports')) {
             return await handleCommodityReports(request, env);
@@ -2467,4 +2472,586 @@ async function handleQuote(request, env) {
     } catch (err) {
         return new Response(JSON.stringify({ error: err.message }), { status: 500, headers: JSON_HEADERS });
     }
+}
+
+// --- US policy: Supabase-backed read API ------------------------------------
+//
+// schema.sql enables row level security on every policy table and defines *no*
+// policies, so the anon/publishable key can read nothing at all -- PostgREST
+// answers it with an empty array, not an error. Reads therefore have to run
+// server-side under the service role, which is exactly what this Worker is for.
+// SUPABASE_SERVICE_ROLE_KEY must be a Worker secret (`wrangler secret put`) and
+// must never be echoed into a response body, a log line, or the asset bundle.
+//
+// Contract: docs/api-spec.md section 5. Only the paths the policy screens
+// actually drill into are implemented here; public-laws and U.S. Code are in
+// the spec but nothing navigates to them yet.
+
+const SUPABASE_LIST_LIMIT = 50;
+const SUPABASE_LIST_LIMIT_MAX = 200;
+
+// Mirrors bills.current_stage / bill_actions.normalized_stage in schema.sql.
+// Anything a visitor sends that is not on this list is dropped rather than
+// forwarded, so no caller-supplied text ever reaches a PostgREST filter.
+const BILL_STAGES = new Set([
+    'introduced', 'referred', 'subcommittee', 'committee_consideration',
+    'reported', 'passed_origin_chamber', 'second_chamber',
+    'resolving_differences', 'passed_both_chambers', 'presented_to_president',
+    'enacted', 'vetoed', 'failed', 'other',
+]);
+
+// Cache lifetimes. The directory screens (committee/agency/CRS/CFR tiles) change
+// only when a sync run adds a body, so they can sit for an hour; lists and
+// details move with each run and are kept short enough that a backfill batch
+// shows up while it is still running.
+const US_TTL = { overview: 3600, list: 600, detail: 1800 };
+
+async function handleUsPolicy(request, env) {
+    if (!env.SUPABASE_URL || !env.SUPABASE_SERVICE_ROLE_KEY) {
+        return missingKey('SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY');
+    }
+
+    const url = new URL(request.url);
+    const path = url.pathname.replace(/^\/api\/us\/?/, '').replace(/\/+$/, '');
+    const q = url.searchParams;
+
+    try {
+        if (path === 'overview') {
+            return await kvCachedJson(env, 'us:overview:v1', US_TTL.overview,
+                () => usOverview(env));
+        }
+
+        if (path === 'congress/bills') {
+            const filter = usBillFilter(q);
+            return await kvCachedJson(env, `us:bills:v1:${filter.cacheKey}`, US_TTL.list,
+                () => usBillList(env, filter));
+        }
+
+        let m = path.match(/^congress\/bills\/(.+)$/);
+        if (m) {
+            const billId = decodeURIComponent(m[1]);
+            return await kvCachedJson(env, `us:bill:v1:${billId}`, US_TTL.detail,
+                () => usBillDetail(env, billId));
+        }
+
+        if (path === 'executive/orders') {
+            const filter = usEoFilter(q);
+            return await kvCachedJson(env, `us:eos:v1:${filter.cacheKey}`, US_TTL.list,
+                () => usEoList(env, filter));
+        }
+
+        m = path.match(/^executive\/orders\/(\d+)$/);
+        if (m) {
+            return await kvCachedJson(env, `us:eo:v1:${m[1]}`, US_TTL.detail,
+                () => usEoDetail(env, Number(m[1])));
+        }
+
+        if (path === 'executive/regulations') {
+            const filter = usRegulationFilter(q);
+            return await kvCachedJson(env, `us:regs:v1:${filter.cacheKey}`, US_TTL.list,
+                () => usRegulationList(env, filter));
+        }
+
+        if (path === 'congress/committees') {
+            const id = q.get('committee_id');
+            if (!id) return usError('committee_id is required', 400);
+            return await kvCachedJson(env, `us:committee:v1:${id}`, US_TTL.detail,
+                () => usCommitteeDetail(env, id));
+        }
+
+        if (path === 'executive/agencies') {
+            const id = q.get('agency_id');
+            if (!id) return usError('agency_id is required', 400);
+            return await kvCachedJson(env, `us:agency:v1:${id}`, US_TTL.detail,
+                () => usAgencyDetail(env, id));
+        }
+
+        m = path.match(/^executive\/cfr-titles\/(\d{1,2})$/);
+        if (m) {
+            return await kvCachedJson(env, `us:cfr:v1:${m[1]}`, US_TTL.detail,
+                () => usCfrTitleDetail(env, Number(m[1])));
+        }
+
+        return usError(`Unknown endpoint: ${url.pathname}`, 404);
+    } catch (err) {
+        // usFetch already stripped the upstream body of anything sensitive; the
+        // message here is our own text plus a PostgREST status.
+        console.log(`[us] ${url.pathname} failed: ${err.message}`);
+        return usError(err.message, err.status || 502);
+    }
+}
+
+function usError(message, status) {
+    return new Response(JSON.stringify({ error: message }), { status, headers: JSON_HEADERS });
+}
+
+// kvCachedJson turns every `ok: false` into a 502 "upstream error", which is the
+// wrong answer for a row that simply is not in the table yet -- and during the
+// backfill most rows are not. Throwing instead lets handleUsPolicy answer 404,
+// and nothing gets cached.
+function usNotFound(what) {
+    const err = new Error(`${what} not found`);
+    err.status = 404;
+    return err;
+}
+
+// A single PostgREST GET. `query` is built entirely from code in this file plus
+// values that have been whitelisted or encoded -- never a raw query string
+// forwarded from the visitor.
+async function usFetch(env, table, query, { count } = {}) {
+    const base = env.SUPABASE_URL.replace(/\/+$/, '');
+    const headers = {
+        apikey: env.SUPABASE_SERVICE_ROLE_KEY,
+        Authorization: `Bearer ${env.SUPABASE_SERVICE_ROLE_KEY}`,
+        Accept: 'application/json',
+    };
+    if (count) headers.Prefer = `count=${count}`;
+
+    const res = await fetch(`${base}/rest/v1/${table}?${query}`, { headers });
+    if (!res.ok) {
+        const detail = await res.text().catch(() => '');
+        // PostgREST error bodies name the table and the constraint, which is
+        // useful and safe; they never carry the key. Trim so a stack of them
+        // cannot blow past a log line.
+        throw new Error(`Supabase ${table}: HTTP ${res.status} ${detail.slice(0, 300)}`);
+    }
+    const rows = await res.json();
+    if (!count) return rows;
+
+    // Content-Range is "0-24/1234" (or "*/1234" for an empty page).
+    const total = Number((res.headers.get('content-range') || '').split('/')[1]);
+    return { rows, total: Number.isFinite(total) ? total : null };
+}
+
+// PostgREST group-by aggregate: `select=<col>,count()` returns one row per
+// distinct value. Supabase ships this enabled, but a project can turn it off
+// (db-aggregates-enabled), and it is not worth failing a whole directory screen
+// over a badge number -- so a rejection degrades to "no counts" and the tiles
+// still render.
+async function usCountBy(env, table, column, extra = '') {
+    try {
+        const rows = await usFetch(env, table, `select=${column},count()${extra}`);
+        const out = {};
+        for (const row of rows) out[row[column]] = Number(row.count) || 0;
+        return out;
+    } catch (err) {
+        console.log(`[us] count by ${table}.${column} unavailable: ${err.message}`);
+        return null;
+    }
+}
+
+const countOf = (map, key) => (map ? (map[key] || 0) : null);
+
+// Directory payload behind the 미국 → 의회 / 행정부 screens: every tile the two
+// grids draw, plus the CRS and CFR classification lists. One response because
+// the screens are one screen -- eight round trips to Supabase collapse into a
+// single hourly KV entry shared by every visitor.
+async function usOverview(env) {
+    const [
+        committees, agencies, policyAreas, cfrTitles,
+        billsPerCommittee, billsPerArea, eosPerAgency, regsPerTitle,
+        committeeAgencyRows,
+    ] = await Promise.all([
+        // Top-level bodies only. Subcommittees belong to the committee screen,
+        // and mixing them into the grid would bury the standing committees.
+        usFetch(env, 'committees',
+            'select=committee_id,name,chamber,committee_type,official_url,jurisdiction_summary,display_order'
+            + '&parent_committee_id=is.null&order=chamber.asc,name.asc&limit=500'),
+        usFetch(env, 'agencies',
+            'select=agency_id,name,short_name,agency_type,parent_agency_id,agency_url'
+            + '&agency_type=in.(eop,department,independent)&order=name.asc&limit=1000'),
+        usFetch(env, 'policy_areas',
+            'select=policy_area_id,name&active=is.true&order=name.asc&limit=200'),
+        usFetch(env, 'cfr_titles',
+            'select=title_number,title_name,reserved&order=title_number.asc&limit=50'),
+        usCountBy(env, 'bill_committees', 'committee_id'),
+        usCountBy(env, 'bills', 'policy_area_id'),
+        usCountBy(env, 'executive_order_agencies', 'agency_id'),
+        usCountBy(env, 'regulation_cfr_references', 'title_number'),
+        // committee_agency_jurisdictions only carries the FK id; the name a
+        // committee card wants to show comes from the joined agencies row.
+        // Degrades to "no agency tags" the same way usCountBy does, rather
+        // than failing the whole directory screen.
+        usFetch(env, 'committee_agency_jurisdictions', 'select=committee_id,agencies(name)&limit=5000')
+            .catch((err) => { console.log(`[us] committee agency mapping unavailable: ${err.message}`); return []; }),
+    ]);
+
+    const agencyNamesByCommittee = new Map();
+    for (const row of committeeAgencyRows) {
+        const name = row.agencies?.name;
+        if (!name) continue;
+        const list = agencyNamesByCommittee.get(row.committee_id);
+        if (list) list.push(name); else agencyNamesByCommittee.set(row.committee_id, [name]);
+    }
+
+    return {
+        ok: true,
+        body: {
+            generated_at: new Date().toISOString(),
+            congress_overview: {
+                committees: committees.map((c) => ({
+                    committee_id: c.committee_id,
+                    name: c.name,
+                    chamber: c.chamber,
+                    committee_type: c.committee_type,
+                    official_url: c.official_url,
+                    jurisdiction_summary: c.jurisdiction_summary,
+                    bill_count: countOf(billsPerCommittee, c.committee_id),
+                    agencies: agencyNamesByCommittee.get(c.committee_id) || [],
+                })),
+            },
+            executive_overview: {
+                agencies: agencies.map((a) => ({
+                    agency_id: a.agency_id,
+                    name: a.name,
+                    short_name: a.short_name,
+                    agency_type: a.agency_type,
+                    parent_agency_id: a.parent_agency_id,
+                    agency_url: a.agency_url,
+                    executive_order_count: countOf(eosPerAgency, a.agency_id),
+                })),
+            },
+            policy_areas: policyAreas.map((p) => ({
+                policy_area_id: p.policy_area_id,
+                name: p.name,
+                bill_count: countOf(billsPerArea, p.policy_area_id),
+            })),
+            cfr_titles: cfrTitles.map((t) => ({
+                title_number: t.title_number,
+                name: t.title_name,
+                reserved: t.reserved,
+                regulation_count: countOf(regsPerTitle, String(t.title_number)),
+            })),
+        },
+    };
+}
+
+// Offset paging rather than the keyset cursor api-spec.md recommends. Both
+// order keys (latest_action_date, introduced_date) are nullable, and a keyset
+// predicate over a nullable column needs a three-branch `or=(...)` that
+// PostgREST cannot index-scan anyway. The envelope is the contract's, so the
+// cursor stays opaque to the caller and can become a keyset token later without
+// touching the frontend.
+function pageParams(q) {
+    const limit = Math.min(Math.max(Number(q.get('limit')) || SUPABASE_LIST_LIMIT, 1), SUPABASE_LIST_LIMIT_MAX);
+    const cursor = q.get('cursor') || '';
+    const offset = /^o:\d+$/.test(cursor) ? Number(cursor.slice(2)) : 0;
+    return { limit, offset };
+}
+
+function pageEnvelope(items, { limit, offset }, total) {
+    const hasMore = total === null ? items.length === limit : offset + items.length < total;
+    return {
+        items,
+        total,
+        next_cursor: hasMore ? `o:${offset + items.length}` : null,
+        has_more: hasMore,
+    };
+}
+
+function usBillFilter(q) {
+    const committeeId = q.get('committee_id') || '';
+    const policyAreaId = q.get('policy_area_id') || '';
+    const stages = (q.get('stage') || '').split(',').map((s) => s.trim()).filter((s) => BILL_STAGES.has(s));
+    const congress = /^\d{1,3}$/.test(q.get('congress_number') || '') ? q.get('congress_number') : '';
+    const page = pageParams(q);
+    return {
+        committeeId, policyAreaId, stages, congress, ...page,
+        cacheKey: [committeeId, policyAreaId, stages.join('+'), congress, page.limit, page.offset].join('|'),
+    };
+}
+
+const BILL_LIST_COLUMNS = 'bill_id,congress_number,bill_type,bill_number,title,sponsor,'
+    + 'introduced_date,current_stage,current_status,latest_action_date,latest_action_text,'
+    + 'congress_url,policy_area_id,detail_level';
+
+function usBillWhere(f) {
+    const parts = [];
+    // !inner turns the embed into a join filter, so this narrows bills rather
+    // than merely attaching an empty bill_committees array to every row.
+    if (f.committeeId) parts.push(`bill_committees.committee_id=eq.${encodeURIComponent(f.committeeId)}`);
+    if (f.policyAreaId) parts.push(`policy_area_id=eq.${encodeURIComponent(f.policyAreaId)}`);
+    if (f.stages.length) parts.push(`current_stage=in.(${f.stages.join(',')})`);
+    if (f.congress) parts.push(`congress_number=eq.${f.congress}`);
+    return parts.join('&');
+}
+
+async function usBillList(env, f) {
+    const embed = f.committeeId ? ',bill_committees!inner(committee_id)' : '';
+    const where = usBillWhere(f);
+    const query = [
+        `select=${BILL_LIST_COLUMNS}${embed}`,
+        where,
+        'order=latest_action_date.desc.nullslast,introduced_date.desc.nullslast,bill_id.desc',
+        `limit=${f.limit}`,
+        `offset=${f.offset}`,
+    ].filter(Boolean).join('&');
+
+    // Stage counts drive the tab badges and must ignore the stage filter itself,
+    // otherwise every tab would report only its own total.
+    const stageQuery = [
+        `select=current_stage,count()${f.committeeId ? ',bill_committees!inner(committee_id)' : ''}`,
+        usBillWhere({ ...f, stages: [] }),
+    ].filter(Boolean).join('&');
+
+    const [page, stageRows] = await Promise.all([
+        usFetch(env, 'bills', query, { count: 'exact' }),
+        usFetch(env, 'bills', stageQuery).catch(() => null),
+    ]);
+
+    const stageCounts = {};
+    for (const row of stageRows || []) stageCounts[row.current_stage] = Number(row.count) || 0;
+
+    return {
+        ok: true,
+        body: {
+            filter: {
+                type: f.committeeId ? 'committee' : f.policyAreaId ? 'policy_area' : 'all',
+                id: f.committeeId || f.policyAreaId || null,
+            },
+            stage_counts: stageRows ? stageCounts : null,
+            ...pageEnvelope(page.rows, f, page.total),
+        },
+    };
+}
+
+// bill_relations has no title column of its own -- a target that is not in
+// our DB yet (target_bill_id null) carries only congress/type/number, and one
+// that is carries a bill row to join for its title. Both branches assemble
+// the same bill_id format the rest of the UI uses ("119-hr-1234").
+function shapeRelations(rows, wantSemantic) {
+    return rows
+        .filter((r) => (r.relation_origin === 'semantic') === wantSemantic)
+        .map((r) => ({
+            bill_id: r.target_bill_id || `${r.target_congress_number}-${r.target_bill_type}-${r.target_bill_number}`,
+            title: r.bills?.title || null,
+            relation_type: r.relation_type,
+            relation_origin: r.relation_origin,
+            ...(wantSemantic ? { similarity_score: r.similarity_score } : {}),
+        }));
+}
+
+async function usBillDetail(env, billId) {
+    const id = encodeURIComponent(billId);
+    const [rows, relations] = await Promise.all([
+        usFetch(env, 'bills',
+            `select=*,policy_areas(policy_area_id,name),`
+            + `bill_summaries(action_date,action_description,version_code,summary_text),`
+            + `bill_actions(action_date,action_text,action_code,chamber,normalized_stage),`
+            + `bill_votes(chamber,vote_date,question,result,yea_count,nay_count,present_count,not_voting_count,source_url),`
+            + `bill_text_versions(version_code,version_name,issued_on,html_url,pdf_url,formatted_text_url,source_url),`
+            + `bill_committees(committee_id,activity_names,committees(name,chamber,official_url)),`
+            + `bill_subjects(legislative_subjects(subject_id,name))`
+            + `&bill_id=eq.${id}&limit=1`),
+        // !bill_relations_target_bill_id_fkey disambiguates from the other FK
+        // this table has to `bills` (source_bill_id) -- Postgres's default name
+        // for an inline `references` clause with no explicit constraint name.
+        // A rejection (e.g. the name differs) degrades to no related bills
+        // rather than failing the whole detail view.
+        usFetch(env, 'bill_relations',
+            `select=target_bill_id,target_congress_number,target_bill_type,target_bill_number,`
+            + `relation_type,relation_origin,similarity_score,`
+            + `bills!bill_relations_target_bill_id_fkey(title)`
+            + `&source_bill_id=eq.${id}&limit=200`)
+            .catch((err) => { console.log(`[us] bill_relations unavailable: ${err.message}`); return []; }),
+    ]);
+
+    if (!rows.length) throw usNotFound(`bill ${billId}`);
+
+    const bill = rows[0];
+    // embedding is a 1536-float vector -- ~30KB of JSON per bill, useless to the
+    // browser and expensive in KV. raw_source is the whole Congress.gov payload.
+    delete bill.embedding;
+    delete bill.raw_source;
+    for (const v of bill.bill_text_versions || []) delete v.raw_source;
+
+    bill.committees = (bill.bill_committees || []).map((bc) => ({
+        committee_id: bc.committee_id,
+        name: bc.committees?.name,
+        chamber: bc.committees?.chamber,
+        official_url: bc.committees?.official_url,
+    }));
+    delete bill.bill_committees;
+
+    bill.official_related_bills = shapeRelations(relations, false);
+    bill.similar_bills = shapeRelations(relations, true);
+
+    (bill.bill_actions || []).sort((a, b) => String(b.action_date).localeCompare(String(a.action_date)));
+    return { ok: true, body: bill };
+}
+
+function usEoFilter(q) {
+    const agencyId = q.get('agency_id') || '';
+    const page = pageParams(q);
+    return { agencyId, ...page, cacheKey: [agencyId, page.limit, page.offset].join('|') };
+}
+
+const EO_LIST_COLUMNS = 'eo_number,document_number,title,president_name,signed_date,'
+    + 'publication_date,citation,federal_register_url,pdf_url,executive_order_url,summary';
+
+async function usEoList(env, f) {
+    const query = [
+        `select=${EO_LIST_COLUMNS}${f.agencyId ? ',executive_order_agencies!inner(agency_id)' : ''}`,
+        f.agencyId ? `executive_order_agencies.agency_id=eq.${encodeURIComponent(f.agencyId)}` : '',
+        'order=signed_date.desc.nullslast,eo_number.desc',
+        `limit=${f.limit}`,
+        `offset=${f.offset}`,
+    ].filter(Boolean).join('&');
+
+    const page = await usFetch(env, 'executive_orders', query, { count: 'exact' });
+    return {
+        ok: true,
+        body: {
+            filter: { type: f.agencyId ? 'agency' : 'all', id: f.agencyId || null },
+            ...pageEnvelope(page.rows, f, page.total),
+        },
+    };
+}
+
+async function usEoDetail(env, eoNumber) {
+    const rows = await usFetch(env, 'executive_orders',
+        `select=${EO_LIST_COLUMNS},`
+        + `executive_order_agencies(agencies(agency_id,name,short_name,agency_type)),`
+        + `executive_order_authorities(legal_authorities(citation,title,official_url,verification_status,linked_bill_id)),`
+        + `executive_order_regulations(regulations(regulation_id,document_type,title,publication_date,effective_on,federal_register_url))`
+        + `&eo_number=eq.${eoNumber}&limit=1`);
+
+    if (!rows.length) throw usNotFound(`EO ${eoNumber}`);
+    const eo = rows[0];
+
+    eo.agencies = (eo.executive_order_agencies || []).map((x) => x.agencies).filter(Boolean);
+    delete eo.executive_order_agencies;
+
+    // linked_bill_id -> bill_id: the UI's citation renderer only knows the
+    // generic "bill_id" name, the same as everywhere else a bill is linked.
+    eo.legal_authorities = (eo.executive_order_authorities || [])
+        .map((x) => x.legal_authorities)
+        .filter(Boolean)
+        .map((a) => ({
+            citation: a.citation,
+            title: a.title,
+            official_url: a.official_url,
+            verification_status: a.verification_status,
+            bill_id: a.linked_bill_id,
+        }));
+    delete eo.executive_order_authorities;
+
+    eo.related_regulations = (eo.executive_order_regulations || []).map((x) => x.regulations).filter(Boolean);
+    delete eo.executive_order_regulations;
+
+    return { ok: true, body: eo };
+}
+
+function usRegulationFilter(q) {
+    const raw = q.get('title_number');
+    const titleNumber = /^\d{1,2}$/.test(raw || '') && Number(raw) >= 1 && Number(raw) <= 50 ? raw : '';
+    const agencyId = q.get('agency_id') || '';
+    const page = pageParams(q);
+    return { titleNumber, agencyId, ...page, cacheKey: [titleNumber, agencyId, page.limit, page.offset].join('|') };
+}
+
+// Abstracts are deliberately not selected: docs/api-spec.md forbids storing or
+// re-serving document full text, and the screen links out to Federal Register.
+const REGULATION_LIST_COLUMNS = 'regulation_id,document_number,document_type,title,'
+    + 'publication_date,effective_on,comments_close_on,federal_register_url,citation,rin';
+
+async function usRegulationList(env, f) {
+    const embeds = [];
+    const filters = [];
+    if (f.titleNumber) {
+        embeds.push('regulation_cfr_references!inner(title_number,part_number)');
+        filters.push(`regulation_cfr_references.title_number=eq.${f.titleNumber}`);
+    }
+    if (f.agencyId) {
+        embeds.push('regulation_agencies!inner(agency_id)');
+        filters.push(`regulation_agencies.agency_id=eq.${encodeURIComponent(f.agencyId)}`);
+    }
+
+    const query = [
+        `select=${REGULATION_LIST_COLUMNS}${embeds.length ? ',' + embeds.join(',') : ''}`,
+        ...filters,
+        'order=publication_date.desc.nullslast,regulation_id.desc',
+        `limit=${f.limit}`,
+        `offset=${f.offset}`,
+    ].filter(Boolean).join('&');
+
+    const page = await usFetch(env, 'regulations', query, { count: 'exact' });
+    return {
+        ok: true,
+        body: {
+            filter: { title_number: f.titleNumber ? Number(f.titleNumber) : null, agency_id: f.agencyId || null },
+            ...pageEnvelope(page.rows, f, page.total),
+        },
+    };
+}
+
+// Right-hand column of the committee screen: subcommittees. Everything else
+// shown there (name, jurisdiction, the verified agency-name tags) is already
+// on the committee's own /overview entry, which is where the UI reads it
+// from -- this endpoint only adds what that list doesn't carry. Members are
+// not in the schema yet, so the screen keeps its "위원장 정보 준비 중"
+// placeholder for those regardless.
+async function usCommitteeDetail(env, committeeId) {
+    const subcommittees = await usFetch(env, 'committees',
+        `select=committee_id,name,chamber,official_url`
+        + `&parent_committee_id=eq.${encodeURIComponent(committeeId)}&order=name.asc&limit=100`);
+    return { ok: true, body: { committee_id: committeeId, subcommittees } };
+}
+
+// The CFR title screen: regulations filed under the title, plus the executive
+// orders reached through those regulations' own EO links. Per docs/api-spec.md
+// ("분류 개수"), an EO is deliberately never classified against a CFR title
+// directly -- only through a regulation that carries the title reference --
+// so this is the one place that resolves that two-hop path.
+async function usCfrTitleDetail(env, titleNumber) {
+    const [titleRows, regs] = await Promise.all([
+        usFetch(env, 'cfr_titles',
+            `select=title_number,title_name,reserved&title_number=eq.${titleNumber}&limit=1`),
+        usFetch(env, 'regulations',
+            `select=${REGULATION_LIST_COLUMNS},regulation_cfr_references!inner(title_number),`
+            + `executive_order_regulations(executive_orders(eo_number,title,signed_date))`
+            + `&regulation_cfr_references.title_number=eq.${titleNumber}`
+            + `&order=publication_date.desc.nullslast&limit=200`),
+    ]);
+
+    if (!titleRows.length) throw usNotFound(`CFR title ${titleNumber}`);
+    const title = titleRows[0];
+
+    // Regulations map 1:1 into the list the UI already knows how to render
+    // (renderRegulations); EOs are collected into a title-wide set since the
+    // same order can implement more than one regulation under this title.
+    const eoByNumber = new Map();
+    for (const r of regs) {
+        for (const link of r.executive_order_regulations || []) {
+            if (link.executive_orders) eoByNumber.set(link.executive_orders.eo_number, link.executive_orders);
+        }
+        delete r.executive_order_regulations;
+        delete r.regulation_cfr_references;
+    }
+
+    return {
+        ok: true,
+        body: {
+            title_number: title.title_number,
+            name: title.title_name,
+            reserved: title.reserved,
+            regulations: regs,
+            executive_orders: [...eoByNumber.values()],
+        },
+    };
+}
+
+// Agency screen: the agency itself plus its 하위 기관 (agency_type='sub'). The
+// EO list on the left comes from /api/us/executive/orders?agency_id=...
+async function usAgencyDetail(env, agencyId) {
+    const id = encodeURIComponent(agencyId);
+    const [rows, children] = await Promise.all([
+        usFetch(env, 'agencies',
+            `select=agency_id,name,short_name,agency_type,parent_agency_id,agency_url&agency_id=eq.${id}&limit=1`),
+        usFetch(env, 'agencies',
+            `select=agency_id,name,short_name,agency_type,agency_url&parent_agency_id=eq.${id}&order=name.asc&limit=200`),
+    ]);
+
+    if (!rows.length) throw usNotFound(`agency ${agencyId}`);
+    return { ok: true, body: { ...rows[0], sub_agencies: children } };
 }

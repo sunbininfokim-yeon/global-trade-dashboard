@@ -5112,12 +5112,17 @@ const setView = (target) => {
     updatePageMeta(target);
     const isShippingView = target && target.startsWith('shipping_');
     const isFinanceView = target && target.startsWith('fin_');
+    const isPolicyView = target === 'us-policy-hub' || target === 'us-congress-overview' || target === 'us-executive';
     if (target !== 'macro_monitor') {
         document.body.classList.remove('macro-mode');
         document.getElementById('macro-layer')?.remove();
     }
     if (!isShippingView && window.ShippingDashboard) {
         window.ShippingDashboard.unmount(chartView);
+    }
+    if (!isPolicyView) {
+        window.USPolicy?.unmount(chartView);
+        document.body.classList.remove('policy-mode');
     }
     if (!isShippingView) document.body.classList.remove('shipping-mode');
     if (!isFinanceView) {
@@ -5183,6 +5188,26 @@ const setView = (target) => {
 
     } else if (target === 'elections') {
         showElectionView();
+    } else if (isPolicyView) {
+        // Document-style screen, same full-bleed treatment as shipping and
+        // finance: policy has no map, so the globe would only steal room.
+        currentCommodity = target;
+        stopTradeAnim();
+        stopRotation();
+        document.body.classList.remove('trade-map-mode', 'shipping-mode');
+        document.body.classList.add('policy-mode');
+        deckgl.setProps({ layers: [] });
+        togglePanels({ left: false, right: false, chart: true, map: false });
+        if (mapContainer) {
+            mapContainer.style.display = 'none';
+            mapContainer.style.pointerEvents = 'none';
+        }
+        if (chartView) {
+            chartView.classList.remove('hidden');
+            chartView.style.pointerEvents = 'auto';
+            chartView.style.zIndex = '40';
+        }
+        window.USPolicy?.render(target, chartView);
 
     } else if (isShippingView) {
         currentCommodity = target;

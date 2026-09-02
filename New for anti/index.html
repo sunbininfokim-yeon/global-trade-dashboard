@@ -151,6 +151,12 @@
                         <a href="#" data-target="elections">세계 선거 지도·일정</a>
                     </div>
                 </div>
+                <div class="menu-item" data-nav-default="us-policy-hub">
+                    <span class="menu-parent" role="button" tabindex="0" aria-label="정책 화면 열기">정책</span>
+                    <div class="dropdown">
+                        <a href="#" data-target="us-policy-hub">미국</a>
+                    </div>
+                </div>
                 <div class="menu-item" style="margin-left: 20px;">
                     <span style="color: #cbd5e1;">주요 기관</span>
                     <div class="dropdown">
@@ -226,6 +232,9 @@
 
                 <!-- Election home only: a date-ordered world schedule. -->
                 <section class="panel-section hidden" id="elections-timeline-panel" aria-live="polite"></section>
+
+
+
             </aside>
 
             <!-- Center Pane: Map -->
@@ -306,6 +315,12 @@
 
                 <!-- Election country explorer. Global timeline is hidden while this is open. -->
                 <section class="panel-section hidden" id="elections-country-panel" aria-live="polite"></section>
+
+
+
+
+                <!-- US Policy: Executive Order detail.
+                     Regulations listed here are external-link-only by design --
 
                 <!-- 「오늘 신호」 panel (home only).
                      Two zones: three fixed cards that never rotate, and a stage
@@ -392,6 +407,7 @@
     <script src="market-microstructure.js?v=2"></script>
     <script src="portfolio.js?v=2"></script>
     <script src="calculator.js?v=2"></script>
+    <script src="policy.js?v=1"></script>
     <script src="app.js?v=115"></script>
     <script src="trade.js?v=4"></script>
     <script type="module" src="js/elections/index.js?v=2"></script>
