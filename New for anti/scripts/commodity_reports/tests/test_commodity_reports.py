@@ -83,6 +83,23 @@ class RoutingTests(unittest.TestCase):
             **kw,
         )
 
+    def test_british_thermal_units_is_not_the_uk(self):
+        # Real miscount, live EIA data: a purely domestic US gas report
+        # quoting a price in "million British thermal units (MMBtu)" landed
+        # on GBR's window because "British" alone reads as the country.
+        t = self.route(
+            "EIA raises natural gas price forecast following increased heating demand",
+            "Natural gas prices rose sharply, averaging $7.72 per million British "
+            "thermal units (MMBtu), as cold weather increased heating demand.",
+            default_country="USA",
+        )
+        self.assertNotIn("GBR", t.countries)
+        self.assertEqual(t.countries, ["USA"])
+
+    def test_british_still_means_the_uk_outside_that_one_phrase(self):
+        t = self.route("British wheat exports climb on strong harvest")
+        self.assertIn("GBR", t.countries)
+
     def test_usda_report_about_brazil_goes_to_brazil(self):
         t = self.route(
             "Brazil wheat production lowered on dry Parana weather",
@@ -166,6 +183,21 @@ class FeedParseTests(unittest.TestCase):
         self.assertEqual(len(items), 1)
         self.assertTrue(items[0].url.startswith("https://www.fao.org/"))
         self.assertTrue(items[0].published_at.startswith("2026-08-07"))
+
+    def test_rss_link_is_absolutized_against_the_feed_url(self):
+        # Real bug, found in live EIA output: <link> came back as
+        # "/pressroom/releases/press589.php" -- a relative path that resolved
+        # against our own domain instead of eia.gov, 404ing the card's link.
+        source = {"id": "us_eia_press", "agency": "EIA", "url": "https://www.eia.gov/rss/press_rss.xml"}
+        body = """<?xml version="1.0"?><rss version="2.0"><channel>
+            <item>
+                <title>EIA press release</title>
+                <link>/pressroom/releases/press589.php</link>
+                <description>Body text.</description>
+            </item>
+        </channel></rss>"""
+        items = parse_feed(body, source)
+        self.assertEqual(items[0].url, "https://www.eia.gov/pressroom/releases/press589.php")
 
     def test_html_list_dedupes_and_absolutizes(self):
         source = {

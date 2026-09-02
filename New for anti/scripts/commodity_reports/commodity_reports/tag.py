@@ -140,6 +140,22 @@ class Tagged:
     country_source: str  # "text" | "source_default" | "none"
 
 
+# Unit names and set phrases that embed a country adjective but never mean
+# the country. Found via a real miscount: an EIA gas report quoting a price
+# in "million British thermal units (MMBtu)" landed on the UK's window over
+# a purely domestic US release. Extend this list as more turn up rather than
+# trying to enumerate every possible collocation up front.
+_FALSE_COUNTRY_COLLOCATIONS = [
+    re.compile(r"british\s+thermal\s+units?", re.I),
+]
+
+
+def _strip_false_country_collocations(text: str) -> str:
+    for pat in _FALSE_COUNTRY_COLLOCATIONS:
+        text = pat.sub("", text)
+    return text
+
+
 def tag_report(
     *,
     title: str,
@@ -167,8 +183,8 @@ def tag_report(
     if not commodities:
         commodities = [c for c in commodity_hint if c in commodity_tagger.patterns]
 
-    in_title = country_tagger.tag(title)
-    in_body = [c for c in country_tagger.tag(summary) if c not in in_title]
+    in_title = country_tagger.tag(_strip_false_country_collocations(title))
+    in_body = [c for c in country_tagger.tag(_strip_false_country_collocations(summary)) if c not in in_title]
     countries = (in_title + in_body)[:max_countries]
 
     if countries:

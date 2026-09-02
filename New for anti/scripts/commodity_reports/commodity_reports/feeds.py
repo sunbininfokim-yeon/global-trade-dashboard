@@ -177,11 +177,20 @@ def parse_feed(body: str, source: Dict[str, Any], max_items: int = 40) -> List[R
         # Feeds that repeat the headline as the body add nothing to the card.
         if summary.lower().startswith(title.lower()):
             summary = summary[len(title):].strip(" -–—:·")
+        # RSS 2.0 technically requires <link> to be an absolute URL, but not
+        # every publisher's feed generator honors that -- EIA's press feed
+        # emits "/pressroom/releases/press589.php" with no scheme or host.
+        # Left as-is, that string is a relative path on *this* site, not
+        # theirs, and the card's "원문으로 이동" link 404s on our own domain.
+        # The feed's own URL is the base every publisher's relative link is
+        # actually relative to, since it lives on the same site as the pages
+        # it points at.
+        absolute_url = urljoin(source.get("url", ""), link.strip())
         items.append(
             _raw_from(
                 source,
                 title=title,
-                url=link.strip(),
+                url=absolute_url,
                 summary=clip(summary),
                 published_at=parse_date(pub),
             )
