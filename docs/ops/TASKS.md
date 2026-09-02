@@ -24,6 +24,7 @@
 | T10 | MENA yield pipeline | cursor | `yield_model/mena/**`, `public/data/mena_yield_forecast.json` | `cursor/ml-mena-yield` | **in_progress** | Nile irrigated + Maghreb rainfed wheat T1; FAOSTAT labels; forecast JSON |
 | T14 | Canada SAD yield + UI | cursor | `yield_model/canada/**`, `canada_*forecast.json`, registry | `cursor/pr-canada-yield` | **review** | SAD+UI+monthly Actions+gov_outlooks; model.yaml → climate_registry |
 | T15 | Russia export pulse (PSD+PortWatch) | **cursor** | `scripts/russia_export_pulse/**`, `russia_export_pulse_v1.json` | `cursor/russia-export-pulse` | **review** | 밀 수출·세계비중·기여분 + 보스포루스 보조. 다크십/피격 제외. UI는 Claude 핸드오프. |
+| T16 | Phase 2-2 상품×국가 공식 보고서 | **claude** | `scripts/commodity_reports/**`, `_worker.js`, `trade.js`, `style.css` | `claude/phase-2-2-commodity-reports-r5vzqf` | **review** | 본문이 창을 정한다 (USDA의 브라질 밀 보고서 → BRA·밀). 소스 URL 라이브 검증은 세션 네트워크 정책(403 CONNECT)으로 못 함 — 첫 Actions 실행의 `failed feeds:` 보고 enable/disable 정리 필요 |
 
 ## 백로그
 
