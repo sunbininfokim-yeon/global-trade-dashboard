@@ -277,7 +277,9 @@ async function saveBundle(data) {
       select: 'bill_summary_id,summary_text',
       bill_id: `eq.${data.billId}`,
       action_date: actionDate ? `eq.${actionDate}` : 'is.null',
-      version_code: versionCode ? `eq.${encodeURIComponent(versionCode)}` : 'is.null',
+      // supabaseGet serializes through URLSearchParams, so filter values must
+      // stay raw here. Pre-encoding turns spaces into "%2520".
+      version_code: versionCode ? `eq.${versionCode}` : 'is.null',
     });
     const alreadyStored = existing?.some((row) => row.summary_text === summary.text);
     if (!alreadyStored) await supabaseInsert('bill_summaries', {
@@ -322,7 +324,7 @@ async function saveBundle(data) {
       raw_source: { source: 'congress.gov', api_url: withoutKey(version.url) } };
     if (row.html_url || row.pdf_url || row.xml_url || row.formatted_text_url || row.source_url) {
       const existing = await supabaseGet('bill_text_versions', { select: 'bill_text_version_id', bill_id: `eq.${data.billId}`,
-        version_code: row.version_code ? `eq.${encodeURIComponent(row.version_code)}` : 'is.null', issued_on: row.issued_on ? `eq.${row.issued_on}` : 'is.null', limit: '1' });
+        version_code: row.version_code ? `eq.${row.version_code}` : 'is.null', issued_on: row.issued_on ? `eq.${row.issued_on}` : 'is.null', limit: '1' });
       if (!existing?.length) await supabaseInsert('bill_text_versions', row);
     }
   }
@@ -330,7 +332,7 @@ async function saveBundle(data) {
     const target = refFrom(related, data.ref.congress); if (!target) continue;
     const existing = await supabaseGet('bill_relations', { select: 'bill_relation_id', source_bill_id: `eq.${data.billId}`,
       target_congress_number: `eq.${target.congress}`, target_bill_type: `eq.${target.type}`, target_bill_number: `eq.${target.number}`,
-      relation_type: `eq.${encodeURIComponent(firstNonEmpty(related.relationshipType, related.relationship, 'related'))}`, relation_origin: 'eq.official', limit: '1' });
+      relation_type: `eq.${firstNonEmpty(related.relationshipType, related.relationship, 'related')}`, relation_origin: 'eq.official', limit: '1' });
     if (!existing?.length) await supabaseInsert('bill_relations', { source_bill_id: data.billId, target_congress_number: target.congress,
       target_bill_type: target.type, target_bill_number: target.number, relation_type: firstNonEmpty(related.relationshipType, related.relationship, 'related'),
       relation_origin: 'official', identified_by: 'Congress.gov related bills', source_url: withoutKey(related.url) });
