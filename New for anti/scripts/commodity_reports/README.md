@@ -170,6 +170,19 @@ Down" → `corn`+`soybeans`·`USA`, `USDA_CROP_PRODUCTION` 시리즈로 정확�
 - **URL/구조 미검증** (아직 시도 안 함): ABARES, IGC, OPEC, USGS(= "미국 광물부",
   매핑 확인됨), LME 마켓 공지(`int_lme_notices`), 우크라이나 농업정책부
 
+**enabled, 아직 라이브 미확인:**
+
+- `us_fas_gain_reports` (`kind: fas_gain_cards`) — USDA GAIN 주재관 보고서. 2026년에
+  `gain.fas.usda.gov`에서 `fas.usda.gov/data/search?reports[0]=report_type:10251`로
+  이전됐고, 운영자가 직접 붙여준 실제 페이지 소스로 구조를 확인했다: Drupal 10
+  Views/Facets 목록이라 `.c-card__date`/`__url`/`__title`/`__content`에 날짜·링크·제목·
+  요약이 이미 서버 렌더링돼 있다 — 별도 JS/XHR API가 필요 없는, 진짜 스크레이프 가능한
+  페이지. `parse_fas_gain_cards`(`commodity_reports/feeds.py`)가 `<time datetime="` 경계로
+  카드를 잘라 각각에서 네 필드를 뽑는다. 미해결 위험: 페이지에 Akamai Bot Manager
+  스크립트(`akam/13/...`)가 붙어 있어 실제 브라우저 세션은 통과해도 GitHub Actions 같은
+  비-브라우저 정기 스크레이퍼는 차단될 수 있다 — 이 세션은 fas.usda.gov 자체를 못 열어서
+  라이브로 확인 불가. 다음 Actions 실행의 `feed_status`가 진짜 판정.
+
 FAO가 6개 중 가장 아쉽다 — 세계 수급표(`_global`)를 내는 유일한 확인 소스였다.
 다시 찾을 우선순위: FAO > FAS(타국 작황 보고, US 소스들과 안 겹침) > CONAB(파라미터만
 고치면 될 수도) > 나머지.
@@ -186,11 +199,11 @@ FAO가 6개 중 가장 아쉽다 — 세계 수급표(`_global`)를 내는 유�
 
 ## 아직 안 한 것
 
-- **USDA GAIN 원문 API**: 서술형 주재관 보고서(attaché report) 자체는 `gain.fas.usda.gov`
-  검색 포털에서 PDF로 배포된다. 이미 이 레포가 쓰고 있는 `USDA_FAS_API_KEY`는 PSD Online
-  (숫자 수급표, `/api/usda-fas`)과 ESR(주간 수출판매, `/api/usda-esr`)에 연결돼 있을 뿐,
-  GAIN 자체의 JSON 엔드포인트는 아니다 — 검색 포털 뒤에 API가 있는지조차 라이브로
-  확인해야 한다.
+- **USDA GAIN 검색 결과 페이지네이션/국가·상품 필터**: 지금 `us_fas_gain_reports`는
+  `report_type:10251`(GAIN 전체) 목록의 1페이지만 긁는다. Drupal Facets URL 패턴
+  (`reports[1]=report_regions:<id>`, `report_commodities:<id>`)으로 국가/상품별 필터나
+  `&page=N` 페이지네이션(전체 48000여 건)을 걸 수 있지만, 지금 태깅 엔진이 필터 없는
+  일반 목록도 본문에서 직접 국가/상품을 뽑아내므로 아직 필요하지 않다.
 - PDF 본문 파싱 (WASDE 표 숫자 추출). 지금은 피드가 준 발췌까지만 — 이건 "뉴스처럼 붙이기"가
   아니라 "표의 수치를 카드에 찍기"라 범위가 다른 작업이다 (`official_reports`의 QRA
   추출 방식과 같은 종류). 필요해지면 별도로 붙인다.

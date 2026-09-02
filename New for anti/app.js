@@ -2389,9 +2389,18 @@ const PSD_COUNTRY_CODES = {
 // search, since this session cannot fetch usda.gov directly). Two of these
 // were originally guessed wrong and corrected in that pass: canola was
 // 2230000 (an unrelated code), the real one is Rapeseed 2226000; sunflowerseed
-// was 2221000, the real one is 2224000. cocoa is the one code that stayed
-// unconfirmed -- no live page for it turned up -- so it still renders no
-// number, same as any unverified entry (see buildLivePsdEntry).
+// was 2221000, the real one is 2224000. cocoa had a third guess (0721100) that
+// was never resolved as right or wrong -- it was resolved as moot: the full
+// 64-row PSD commodities table (apps.fas.usda.gov/OpenData/api/psd/commodities,
+// cross-checked via a public GitHub notebook that had captured a live call
+// since this session can't call it directly) has no cocoa entry at all.
+// PSD Online simply does not track cocoa as a commodity -- ICCO does -- so
+// there is no code to verify, and CIV/GHA (both PSD-crop-list = cocoa only)
+// are left out of CLIMATE_PSD_CROPS below rather than carrying a dead guess.
+// That same table cross-confirmed all eleven codes kept here (wheat 410000,
+// corn 440000, soybeans/oilseed 2222000, rice/milled 422110, cotton 2631000,
+// sugar/centrifugal 612000, canola/rapeseed 2226000, sunflowerseed 2224000,
+// coffee/green 711100, palm_oil 4243000, barley 430000).
 const PSD_COMMODITY_CODES = {
     wheat: { code: '0410000', label_ko: '밀', verified: true },
     corn: { code: '0440000', label_ko: '옥수수', verified: true },
@@ -2404,13 +2413,13 @@ const PSD_COMMODITY_CODES = {
     coffee: { code: '0711100', label_ko: '커피(생두)', verified: true },
     palm_oil: { code: '4243000', label_ko: '팜유', verified: true },
     barley: { code: '0430000', label_ko: '보리', verified: true },
-    cocoa: { code: '0721100', label_ko: '코코아', verified: false },
 };
 
 // Which of the crops above actually apply to each country, derived from
-// climate_registry_v1.json's own region list (rubber and cassava have no PSD
-// series -- USDA does not track them here -- so those countries fall back to
-// the static seed/search-link card for that crop).
+// climate_registry_v1.json's own region list (rubber, cassava and cocoa have
+// no PSD series -- USDA does not track them here -- so those countries fall
+// back to the static seed/search-link card for that crop). CIV and GHA are
+// cocoa-only in that registry, so neither appears here at all.
 const CLIMATE_PSD_CROPS = {
     ARG: ['soybeans', 'corn', 'cotton', 'wheat', 'sugar'],
     AUS: ['wheat', 'barley', 'canola'],
@@ -2426,8 +2435,6 @@ const CLIMATE_PSD_CROPS = {
     UGA: ['coffee'],
     USA: ['corn', 'soybeans', 'wheat', 'cotton'],
     VNM: ['rice'],
-    CIV: ['cocoa'],
-    GHA: ['cocoa'],
 };
 
 // USDA's PSD marketing year for the crops here has effectively started by

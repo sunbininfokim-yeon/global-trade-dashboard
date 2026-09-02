@@ -199,6 +199,16 @@
       "lang": "uk", "enabled": false, "weight": 1.2,
       "commodity_hint": ["wheat", "corn"],
       "notes": "DISABLED 2026-08-31: URL unverified."
+    },
+    {
+      "id": "us_fas_gain_reports",
+      "agency": "USDA FAS GAIN", "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
+      "kind": "fas_gain_cards",
+      "url": "https://www.fas.usda.gov/data/search?reports%5B0%5D=report_type%3A10251",
+      "lang": "en", "enabled": true, "weight": 1.5,
+      "scope_hint": "global",
+      "html": {"base": "https://www.fas.usda.gov"},
+      "notes": "GAIN attaché reports (FAS posts abroad writing up their host country's crop/market situation -- exactly the 'USDA report about Brazilian wheat' case this pipeline exists for) moved off gain.fas.usda.gov in 2026 to this Drupal 10 search view. Confirmed 2026-09-02 from operator-supplied page source to be fully server-rendered: each result is a `.c-card` block with the date/title/link/summary already in the raw HTML, no separate JS/XHR call -- so parse_fas_gain_cards scrapes it rather than calling an API. Unverified risk: the page carries an Akamai Bot Manager script (akam/13/...) that could challenge or block a non-browser fetch (this repo's own Actions cron) even though the operator's real browser saw the full page -- this sandbox cannot reach fas.usda.gov to test that itself. feed_status on the first live Actions run is the real test; disable with that evidence (not another guess) if it comes back ok:false or suspiciously empty."
     }
   ]
 }

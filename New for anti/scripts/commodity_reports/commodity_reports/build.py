@@ -8,7 +8,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional
 
-from .feeds import RawReport, fetch_source, parse_feed, parse_html_list
+from .feeds import RawReport, fetch_source, parse_fas_gain_cards, parse_feed, parse_html_list
 from .score import ReportScorer, ScoredReport
 from .tag import CommodityTagger, CountryTagger, tag_report
 
@@ -34,7 +34,11 @@ def _collect_fixtures(sources: List[Dict[str, Any]], fixture_dir: Path, max_per:
         if xml.exists():
             items = parse_feed(xml.read_text(encoding="utf-8", errors="replace"), s, max_per)
         elif html.exists():
-            items = parse_html_list(html.read_text(encoding="utf-8", errors="replace"), s)
+            body = html.read_text(encoding="utf-8", errors="replace")
+            if s.get("kind") == "fas_gain_cards":
+                items = parse_fas_gain_cards(body, s, max_per)
+            else:
+                items = parse_html_list(body, s)
         else:
             status.append({"source_id": s["id"], "ok": False, "count": 0,
                            "error": "fixture_missing", "mode": "fixture"})

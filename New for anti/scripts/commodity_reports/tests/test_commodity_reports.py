@@ -11,7 +11,7 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from commodity_reports.build import GLOBAL_BUCKET, build_commodity_reports  # noqa: E402
-from commodity_reports.feeds import RawReport, parse_feed, parse_html_list  # noqa: E402
+from commodity_reports.feeds import RawReport, parse_fas_gain_cards, parse_feed, parse_html_list  # noqa: E402
 from commodity_reports.score import ReportScorer, append_label, load_learned_multipliers  # noqa: E402
 from commodity_reports.tag import CommodityTagger, CountryTagger, tag_report  # noqa: E402
 
@@ -209,6 +209,33 @@ class FeedParseTests(unittest.TestCase):
         self.assertEqual(len(urls), len(set(urls)))
         self.assertTrue(all(u.startswith("https://www.opec.org/") for u in urls))
         self.assertNotIn("about_us", " ".join(urls))
+
+    def test_fas_gain_cards_extracts_date_title_link_and_summary(self):
+        # fas.usda.gov/data/search (report_type:10251) replaced gain.fas.usda.gov
+        # in 2026: a Drupal Views listing that server-renders each result as a
+        # .c-card block, confirmed from a real page source pasted by the operator.
+        source = {
+            "id": "us_fas_gain_reports", "agency": "USDA FAS GAIN",
+            "html": {"base": "https://www.fas.usda.gov"},
+        }
+        body = (FIXTURES / "us_fas_gain_reports.html").read_text(encoding="utf-8")
+        items = parse_fas_gain_cards(body, source)
+        # Four cards in the fixture, one a duplicate (tracking query string) of
+        # another -- three distinct reports.
+        self.assertEqual(len(items), 3)
+
+        brazil = next(i for i in items if i.title.startswith("Brazil"))
+        self.assertEqual(brazil.url, "https://www.fas.usda.gov/data/gain/2026/08/brazil-oilseeds-and-products-update")
+        self.assertEqual(brazil.published_at, "2026-08-31T15:00:00+00:00")
+        self.assertIn("soybean production", brazil.summary)
+
+    def test_fas_gain_cards_dedupes_the_tracking_query_string(self):
+        source = {"id": "us_fas_gain_reports", "html": {"base": "https://www.fas.usda.gov"}}
+        body = (FIXTURES / "us_fas_gain_reports.html").read_text(encoding="utf-8")
+        items = parse_fas_gain_cards(body, source)
+        urls = [i.url for i in items]
+        self.assertEqual(len(urls), len(set(u.split("?", 1)[0] for u in urls)))
+        self.assertEqual(sum(1 for u in urls if "saudi-arabia" in u), 1)
 
 
 class BuildTests(unittest.TestCase):
