@@ -2575,7 +2575,7 @@ async function handleUsPolicy(request, env) {
         if (path === 'search') {
             const filter = usSearchFilter(q);
             if (!filter.query) return new Response(JSON.stringify({ query: '', items: [] }), { headers: JSON_HEADERS });
-            if (!env.GEMINI_API_KEY) return missingKey('GEMINI_API_KEY');
+            if (!env.AI_STUDIO_API_KEY) return missingKey('AI_STUDIO_API_KEY');
             return await kvCachedJson(env, `us:search:v1:${filter.cacheKey}`, US_TTL.search,
                 () => usSearch(env, filter));
         }
@@ -2668,7 +2668,7 @@ async function geminiEmbedQuery(env, text) {
         `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_EMBEDDING_MODEL}:embedContent`,
         {
             method: 'POST',
-            headers: { 'x-goog-api-key': env.GEMINI_API_KEY, 'Content-Type': 'application/json' },
+            headers: { 'x-goog-api-key': env.AI_STUDIO_API_KEY, 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 model: `models/${GEMINI_EMBEDDING_MODEL}`,
                 content: { parts: [{ text: String(text).trim().slice(0, 2000) }] },
