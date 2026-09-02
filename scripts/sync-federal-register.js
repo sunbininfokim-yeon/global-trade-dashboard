@@ -7,13 +7,21 @@ const {
   supabaseGet, supabaseInsert, supabaseInsertIgnore, supabasePatch, supabaseRpc, supabaseUpsert, updateSyncState,
 } = require('./lib/sync-utils');
 const { classifyFederalAgency, federalRegisterParentId } = require('./lib/federal-agency-classifier');
+const { publicLawBillLink, reconcilePublicLawAuthorityLinks } = require('./lib/public-law-links');
 
 const API_BASE = 'https://www.federalregister.gov/api/v1';
-const RESOURCE = 'federalregister.gov:documents';
-const MAX_DOCUMENTS = Number(process.env.MAX_FR_DOCUMENTS || 50);
+const EO_BACKFILL = process.env.EO_BACKFILL === 'true';
+const RESOURCE = EO_BACKFILL ? 'federalregister.gov:executive-orders:bootstrap' : 'federalregister.gov:documents';
+const MAX_DOCUMENTS = Number(process.env.MAX_FR_DOCUMENTS || (EO_BACKFILL ? 100 : 50));
 const CONCURRENCY = Number(process.env.FR_DETAIL_CONCURRENCY || 4);
-const SKIP_EMBEDDINGS = process.env.SKIP_EMBEDDINGS === 'true';
+// Historical EO metadata is useful without embeddings. Make Gemini opt-in for
+// the historical pass so a 1994+ backfill does not unexpectedly consume quota.
+const SKIP_EMBEDDINGS = process.env.SKIP_EMBEDDINGS === 'true'
+  || (EO_BACKFILL && process.env.EO_BACKFILL_EMBEDDINGS !== 'true');
 const MAX_EMBEDDINGS = Number(process.env.MAX_EMBEDDINGS || 25);
+const EO_BACKFILL_FROM_DATE = process.env.EO_BACKFILL_FROM_DATE || '1994-01-01';
+const EO_BACKFILL_TO_DATE = process.env.EO_BACKFILL_TO_DATE || new Date().toISOString().slice(0, 10);
+const EO_BACKFILL_PAGE_SIZE = Math.min(1_000, positiveInteger(process.env.EO_BACKFILL_PAGE_SIZE, 500));
 
 requireEnv('SUPABASE_URL');
 requireEnv('SUPABASE_SERVICE_ROLE_KEY');
@@ -30,6 +38,18 @@ function currentWindow(state) {
   const date = state?.last_successful_at ? new Date(state.last_successful_at) : new Date(Date.now() - 7 * 86_400_000);
   date.setUTCDate(date.getUTCDate() - 1); // date-level API filter gets a one-day overlap
   return date.toISOString().slice(0, 10);
+}
+function isIsoDate(value) { return /^\d{4}-\d{2}-\d{2}$/.test(String(value || '')); }
+function positiveInteger(value, fallback = 1) {
+  const parsed = Number(value);
+  return Number.isInteger(parsed) && parsed > 0 ? parsed : fallback;
+}
+function eoBackfillCursor(state) {
+  const cursor = state?.cursor || {};
+  const sameRange = cursor.mode === 'eo_backfill'
+    && cursor.from_date === EO_BACKFILL_FROM_DATE
+    && cursor.to_date === EO_BACKFILL_TO_DATE;
+  return sameRange ? cursor : { mode: 'eo_backfill', from_date: EO_BACKFILL_FROM_DATE, to_date: EO_BACKFILL_TO_DATE, page: 1 };
 }
 function agencyRow(agency, parentAgencyId = null) {
   const name = firstNonEmpty(agency?.name, agency?.raw_name, agency?.short_name);
@@ -101,6 +121,29 @@ async function loadCandidates(windowFrom) {
   }
   return [...new Map(all.map((item) => [item.document_number, item])).values()];
 }
+async function loadEoBackfillCandidates(state) {
+  if (!isIsoDate(EO_BACKFILL_FROM_DATE) || !isIsoDate(EO_BACKFILL_TO_DATE)) {
+    throw new Error('EO_BACKFILL_FROM_DATE and EO_BACKFILL_TO_DATE must be YYYY-MM-DD');
+  }
+  const cursor = eoBackfillCursor(state);
+  const page = positiveInteger(cursor.page);
+  const body = await get('/documents.json', {
+    'conditions[type][]': 'PRESDOCU',
+    'conditions[presidential_document_type][]': 'executive_order',
+    'conditions[publication_date][gte]': EO_BACKFILL_FROM_DATE,
+    'conditions[publication_date][lte]': EO_BACKFILL_TO_DATE,
+    per_page: EO_BACKFILL_PAGE_SIZE,
+    page,
+    order: 'oldest',
+  });
+  return {
+    candidates: asArray(body?.results),
+    cursor: {
+      mode: 'eo_backfill', from_date: EO_BACKFILL_FROM_DATE, to_date: EO_BACKFILL_TO_DATE,
+      page, total_pages: positiveInteger(body?.total_pages), processed_document_numbers: cursor.processed_document_numbers || [],
+    },
+  };
+}
 async function documentBundle(item) {
   const detail = await get(`/documents/${encodeURIComponent(item.document_number)}.json`, {}, true) || {};
   return { item, document: { ...item, ...detail } };
@@ -154,17 +197,24 @@ async function saveExecutiveOrder(item, document) {
 }
 
 async function saveAuthorities(eoNumberValue, document) {
+  const publicLawCache = new Map();
   for (const authority of officialEoAuthority(document)) {
     // This branch is intentionally conservative; most FR EO records provide no structured authority field.
     const type = String(authority.authority_type).toLowerCase();
     if (!['constitution', 'usc', 'public_law', 'statutes_at_large', 'executive_order', 'regulation', 'other'].includes(type)) continue;
-    const existing = await supabaseGet('legal_authorities', { select: 'legal_authority_id', authority_type: `eq.${type}`, citation: `eq.${authority.citation}`, limit: '1' });
+    // Only an explicit Public Law citation can be connected to a single bill.
+    // U.S.C. and other authority types deliberately remain external links.
+    const link = type === 'public_law' ? await publicLawBillLink(authority.citation, publicLawCache) : null;
+    const existing = await supabaseGet('legal_authorities', { select: 'legal_authority_id,linked_bill_id', authority_type: `eq.${type}`, citation: `eq.${authority.citation}`, limit: '1' });
     let id = existing?.[0]?.legal_authority_id;
     if (!id) {
       const inserted = await supabaseInsert('legal_authorities', [{ authority_type: type, citation: authority.citation,
-        title: authority.title || null, official_url: authority.official_url || null, extraction_method: 'official_metadata', verified_at: new Date().toISOString() }],
+        title: authority.title || null, official_url: authority.official_url || null,
+        linked_bill_id: link?.billId || null, extraction_method: 'official_metadata', verified_at: new Date().toISOString() }],
       'return=representation');
       id = inserted?.[0]?.legal_authority_id;
+    } else if (link?.billId && existing[0].linked_bill_id !== link.billId) {
+      await supabasePatch('legal_authorities', `legal_authority_id=eq.${id}`, { linked_bill_id: link.billId });
     }
     if (id) await supabaseInsertIgnore('executive_order_authorities', { eo_number: eoNumberValue, legal_authority_id: id, source_url: document.html_url }, 'eo_number,legal_authority_id');
   }
@@ -185,12 +235,12 @@ async function saveRegulation(item, document) {
     last_synced_at: new Date().toISOString(),
     raw_source: { source: 'federalregister.gov', document_number: regulationId, api_url: `${API_BASE}/documents/${regulationId}.json` },
   };
-  const previous = (await supabaseGet('regulations', { select: 'title,abstract,embedding', regulation_id: `eq.${encodeURIComponent(regulationId)}`, limit: '1' }))?.[0];
+  const previous = (await supabaseGet('regulations', { select: 'title,abstract,embedding', regulation_id: `eq.${regulationId}`, limit: '1' }))?.[0];
   await supabaseUpsert('regulations', [row], 'regulation_id');
   for (const agencyId of agencyIds) await supabaseInsertIgnore('regulation_agencies', { regulation_id: regulationId, agency_id: agencyId }, 'regulation_id,agency_id');
   for (const cfr of cfrReferences(document)) {
     const existing = await supabaseGet('regulation_cfr_references', { select: 'regulation_cfr_reference_id', regulation_id: `eq.${regulationId}`,
-      title_number: `eq.${cfr.title_number}`, part_number: cfr.part_number ? `eq.${encodeURIComponent(cfr.part_number)}` : 'is.null', limit: '1' });
+      title_number: `eq.${cfr.title_number}`, part_number: cfr.part_number ? `eq.${cfr.part_number}` : 'is.null', limit: '1' });
     if (!existing?.length) await supabaseInsert('regulation_cfr_references', { regulation_id: regulationId, ...cfr });
   }
   await saveOfficialEoLinks(document, regulationId);
@@ -216,7 +266,7 @@ async function queue(column, value, text, categories) {
   for (const subscription of subscriptions) {
     if ((subscription.keyword && source.includes(subscription.keyword.toLowerCase())) ||
       (subscription.category_type && categories[subscription.category_type] === subscription.category_id)) {
-      const existing = await supabaseGet('notifications_queued', { select: 'notification_id', subscription_id: `eq.${subscription.subscription_id}`, [column]: `eq.${encodeURIComponent(value)}`, limit: '1' });
+      const existing = await supabaseGet('notifications_queued', { select: 'notification_id', subscription_id: `eq.${subscription.subscription_id}`, [column]: `eq.${value}`, limit: '1' });
       if (!existing?.length) await supabaseInsert('notifications_queued', { subscription_id: subscription.subscription_id, [column]: value });
     }
   }
@@ -245,35 +295,69 @@ async function embed(table, keyColumn, rows, content) {
 }
 
 async function run() {
-  const state = await loadState(); const windowFrom = currentWindow(state);
-  const runId = await startSyncRun(RESOURCE, { window_from: windowFrom, max_documents: MAX_DOCUMENTS });
+  const state = await loadState();
+  if (EO_BACKFILL && eoBackfillCursor(state).complete) {
+    console.log(`EO backfill is already complete for ${EO_BACKFILL_FROM_DATE} through ${EO_BACKFILL_TO_DATE}.`);
+    return;
+  }
+  const windowFrom = EO_BACKFILL ? null : currentWindow(state);
+  const discovery = EO_BACKFILL ? await loadEoBackfillCandidates(state) : { candidates: await loadCandidates(windowFrom), cursor: null };
+  const runId = await startSyncRun(RESOURCE, EO_BACKFILL
+    ? { mode: 'eo_backfill', from_date: EO_BACKFILL_FROM_DATE, to_date: EO_BACKFILL_TO_DATE, page: discovery.cursor.page, max_documents: MAX_DOCUMENTS }
+    : { window_from: windowFrom, max_documents: MAX_DOCUMENTS });
   let read = 0; let written = 0;
   try {
-    const candidates = await loadCandidates(windowFrom); const completed = new Set(state?.cursor?.window_from === windowFrom ? state.cursor.processed_document_numbers || [] : []);
+    const candidates = discovery.candidates;
+    const priorProcessed = EO_BACKFILL
+      ? discovery.cursor.processed_document_numbers
+      : (state?.cursor?.window_from === windowFrom ? state.cursor.processed_document_numbers || [] : []);
+    const completed = new Set(priorProcessed);
     const pending = candidates.filter((item) => !completed.has(item.document_number));
     const batch = pending.slice(0, MAX_DOCUMENTS); read = batch.length;
-    console.log(`Federal Register: ${pending.length} pending documents since ${windowFrom}; processing ${read}.`);
+    console.log(EO_BACKFILL
+      ? `EO backfill: page ${discovery.cursor.page}/${discovery.cursor.total_pages}, ${pending.length} pending; processing ${read}.`
+      : `Federal Register: ${pending.length} pending documents since ${windowFrom}; processing ${read}.`);
     const bundles = await mapWithConcurrency(batch, CONCURRENCY, documentBundle); const eos = []; const regulations = [];
     for (const { item, document } of bundles) {
       const eo = await saveExecutiveOrder(item, document); const regulation = await saveRegulation(item, document);
       if (eo) eos.push(eo); if (regulation) regulations.push(regulation); written += Number(Boolean(eo || regulation));
       completed.add(item.document_number);
-      await checkpointSyncState(RESOURCE, { mode: 'incremental', window_from: windowFrom, processed_document_numbers: [...completed] });
+      await checkpointSyncState(RESOURCE, EO_BACKFILL
+        ? { ...discovery.cursor, processed_document_numbers: [...completed] }
+        : { mode: 'incremental', window_from: windowFrom, processed_document_numbers: [...completed] });
     }
     const classifiedAgencies = await supabaseRpc('refresh_federal_register_agency_classification');
+    const authorityLinks = await reconcilePublicLawAuthorityLinks();
     const embedded = (await embed('executive_orders', 'eo_number', eos.filter((item) => item.embed).map((item) => ({ ...item.row, eo_number: item.number })), (row) => `${row.title}\n\n${row.summary || ''}`))
       + (await embed('regulations', 'regulation_id', regulations.filter((item) => item.embed).map((item) => ({ ...item.row, regulation_id: item.regulationId })), (row) => `${row.title}\n\n${row.abstract || ''}`));
     const newestBill = await supabaseGet('bills', { select: 'congress_number', order: 'congress_number.desc', limit: '1' });
     const active = Number(process.env.CONGRESS_NUMBER || newestBill?.[0]?.congress_number || 119);
     await supabaseRpc('refresh_policy_lifecycle_tiers', { active_congress_number: active });
     const remaining = pending.length - batch.length;
-    if (remaining > 0) {
+    const pageComplete = EO_BACKFILL && remaining === 0;
+    const hasNextPage = pageComplete && discovery.cursor.page < discovery.cursor.total_pages;
+    const backfillComplete = pageComplete && !hasNextPage;
+    if (EO_BACKFILL && (remaining > 0 || hasNextPage)) {
+      await checkpointSyncState(RESOURCE, hasNextPage
+        ? { ...discovery.cursor, page: discovery.cursor.page + 1, processed_document_numbers: [] }
+        : { ...discovery.cursor, processed_document_numbers: [...completed] });
+    } else if (!EO_BACKFILL && remaining > 0) {
       await checkpointSyncState(RESOURCE, { mode: 'incremental', window_from: windowFrom, processed_document_numbers: [...completed] });
+    } else if (EO_BACKFILL && backfillComplete) {
+      await updateSyncState(RESOURCE, { ...discovery.cursor, complete: true, completed_at: new Date().toISOString() });
     } else {
       await updateSyncState(RESOURCE, { mode: 'incremental', completed_at: new Date().toISOString() });
     }
-    await finishSyncRun(runId, { status: remaining > 0 ? 'partial' : 'succeeded', records_read: read, records_written: written, metadata: { window_from: windowFrom, embedded, remaining, classified_agencies: Number(classifiedAgencies) || 0 } });
-    console.log(`Federal Register complete: ${written} records, ${embedded} embeddings, ${remaining} deferred.`);
+    const status = EO_BACKFILL ? (backfillComplete ? 'succeeded' : 'partial') : (remaining > 0 ? 'partial' : 'succeeded');
+    await finishSyncRun(runId, { status, records_read: read, records_written: written, metadata: {
+      mode: EO_BACKFILL ? 'eo_backfill' : 'incremental', window_from: windowFrom,
+      eo_backfill_page: EO_BACKFILL ? discovery.cursor.page : null,
+      eo_backfill_total_pages: EO_BACKFILL ? discovery.cursor.total_pages : null,
+      embedded, remaining, classified_agencies: Number(classifiedAgencies) || 0, public_law_authority_links: authorityLinks,
+    } });
+    console.log(EO_BACKFILL
+      ? `EO backfill complete: ${written} records on page ${discovery.cursor.page}/${discovery.cursor.total_pages}; ${backfillComplete ? 'history complete' : 'resume by running the same command again'}.`
+      : `Federal Register complete: ${written} records, ${embedded} embeddings, ${remaining} deferred. Public Law authority links: ${authorityLinks.linked}/${authorityLinks.total} linked; ${authorityLinks.updated} updated.`);
   } catch (error) {
     await finishSyncRun(runId, { status: 'failed', records_read: read, records_written: written, error_summary: error.message });
     throw error;

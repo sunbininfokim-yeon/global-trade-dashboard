@@ -53,6 +53,7 @@
 - `*_yield_forecast.yml` — 국가별 예측 갱신  
 - `update_data.yml`, `shipping_capacity_update.yml`, ICRISAT 관련 등  
 - `commodity_news_ticker.yml` — 속보 30분 · `macro_liquidity_intel.yml` — 6h · `official_reports.yml` — 4h  
+- `commodity_reports.yml` — 4h · 상품 × 국가 공식 보고서 (`/api/commodity-reports`, 2단계 국가 창)  
 
 **주기·저장·학습 전략 정본:** [`DATA_CADENCE.md`](./DATA_CADENCE.md)  
 (위성·기상·주식·정부 릴리스 캘린더·티커 권장 interval 포함)

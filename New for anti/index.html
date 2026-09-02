@@ -165,6 +165,7 @@
                     </div>
                 </div>
             </nav>
+            <div class="auth-container" id="auth-container"></div>
             <div class="date-picker-container">
                 <input type="date" id="historical-date" class="historical-date-picker" min="2021-01-01">
             </div>
@@ -369,6 +370,12 @@
     <!-- Data and App Logic -->
     <script src="data.js?v=11"></script>
     <script src="shipping.js?v=19"></script>
+    <!-- Signup/login. Loaded before every feature module so Auth.currentUser()
+         and window.auth-container are ready by the time app.js's other
+         renderers run. -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+    <script src="auth-config.js?v=1"></script>
+    <script src="auth.js?v=1"></script>
     <!-- Finance domains, split out of app.js. Plain scripts sharing one global
          scope, listed so each file follows the ones it reads: macro.js first
          (market-microstructure.js and calculator.js draw with mmLineChart and

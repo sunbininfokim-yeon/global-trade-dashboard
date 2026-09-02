@@ -24,6 +24,7 @@ let MM_CPI_STRUCTURE = null;    // U.S. CPI relationship map/snapshot, loaded on
 let MM_CPI_STRUCTURE_PROMISE = null;
 let MM_CPI_STRUCTURE_ERROR = '';
 let MM_QUALITY_PROMISE = null;  // U.S. official-document layer; loaded only for USA
+let MM_STATEMENT_DIFF_PROMISE = null;  // FOMC statement wording diffs; loaded only for USA
 
 const mmFetch = async (iso3) => {
     const q = iso3 ? `?country=${encodeURIComponent(iso3)}` : '';
@@ -45,6 +46,21 @@ const mmQualityFetch = async () => {
             });
     }
     return MM_QUALITY_PROMISE;
+};
+
+// fomc_statement_diff_v1.json is a word-level redline between each meeting's
+// operative text and the previous one (build_fomc_statement_diff.py) -- its
+// own file so a wording-diff refresh never touches the vote/roster document
+// above, same split as that doc has from macro_monitor_v1.json.
+const mmStatementDiffFetch = async () => {
+    if (!MM_STATEMENT_DIFF_PROMISE) {
+        MM_STATEMENT_DIFF_PROMISE = fetch('/public/data/fomc_statement_diff_v1.json', { cache: 'no-cache' })
+            .then((res) => {
+                if (!res.ok) throw new Error(`성명서 문구 비교 데이터를 못 받았습니다 (${res.status})`);
+                return res.json();
+            });
+    }
+    return MM_STATEMENT_DIFF_PROMISE;
 };
 
 const mmDelta = (v) => {
@@ -1669,11 +1685,43 @@ const mmExcerpt = (value, max = 210) => {
 // This is an evidence panel, not an FOMC forecast panel. It lives inside the
 // existing U.S. overlay so the published vote and the Beige Book context are
 // read next to the ordinary macro indicators rather than as a second dashboard.
-const mmUsPolicyQuality = (quality) => {
+// Renders a word-level redline: struck-through text for what a statement
+// dropped, highlighted text for what it added in the same spot. Segments
+// come pre-split from build_fomc_statement_diff.py's difflib pass, so this
+// only has to map each op to markup -- no diffing logic lives in the UI.
+const mmStatementDiffHtml = (diffDoc) => {
+    const diffs = (diffDoc && Array.isArray(diffDoc.diffs)) ? diffDoc.diffs : [];
+    if (!diffs.length) return '';
+    const latest = diffs[diffs.length - 1];
+    const segments = latest.segments || [];
+    const body = segments.map((seg) => {
+        if (seg.op === 'equal') return finEsc(seg.text);
+        if (seg.op === 'replace') return `<del>${finEsc(seg.before)}</del><ins>${finEsc(seg.after)}</ins>`;
+        if (seg.op === 'delete') return `<del>${finEsc(seg.before)}</del>`;
+        if (seg.op === 'insert') return `<ins>${finEsc(seg.after)}</ins>`;
+        return '';
+    }).join('');
+    return `
+    <div class="mm-quality-card mm-quality-wide">
+        <span class="mm-quality-label">성명서 문구 변화</span>
+        <strong>${finEsc(latest.previous_meeting)} → ${finEsc(latest.current_meeting)} · ${Number(latest.changed_word_count || 0)}단어 변경</strong>
+        <details class="mm-quality-details">
+            <summary>문구 비교 보기</summary>
+            <p class="mm-quality-redline">${body}</p>
+        </details>
+        <p class="mm-quality-muted">경제 진단 문단만 비교합니다. 투표 명단·절차 문구는 제외했습니다.</p>
+    </div>`;
+};
+
+const mmUsPolicyQuality = (quality, statementDiff) => {
     if (!quality || quality.schema_version !== 'us-macro-quality-v1') return '';
     const policy = quality.policy_committee || {};
     const cmp = policy.comparison || {};
     const roster = policy.current_roster || {};
+    const schedule = policy.schedule || {};
+    const currentVotes = Array.isArray(policy.current_votes) ? policy.current_votes : [];
+    const votesFor = currentVotes.filter((v) => v.vote === 'for');
+    const votesAgainst = currentVotes.filter((v) => v.vote === 'against');
     const documents = ((quality.official_documents || {}).items || []);
     const latestStatement = documents.find((row) => row.document_type === 'fomc_statement');
     const beige = documents.find((row) => row.document_type === 'beige_book' && row.extracted_evidence);
@@ -1706,12 +1754,20 @@ const mmUsPolicyQuality = (quality) => {
                 ${transitions.length ? `<div class="mm-quality-names">${transitions.map((row) =>
                     `<span>${finEsc(row.name)} · ${finEsc(({ tighter: '인상 선호', easier: '인하 선호' })[row.to_direction] || '공개 반대')}</span>`
                 ).join('')}</div>` : '<span class="mm-quality-muted">직전 회의 대비 공개 표결 변화 없음</span>'}
+                ${currentVotes.length ? `<details class="mm-quality-details">
+                    <summary>찬성·반대 위원 명단 전체 보기</summary>
+                    <p><b>찬성 ${votesFor.length}명</b> ${votesFor.map((v) => finEsc(v.name)).join(' · ')}${votesFor.length && votesFor[0].inferred ? ' <i>(성명서에 명단이 없어 현재 위원 명단에서 반대자를 제외해 역산 — 실제 표결 당시 명단과 다를 수 있음)</i>' : ''}</p>
+                    <p><b>반대 ${votesAgainst.length}명</b> ${votesAgainst.map((v) => `${finEsc(v.name)}(${finEsc(({ tighter: '인상', easier: '인하' })[v.dissent_direction] || '기타')})`).join(' · ')}</p>
+                </details>` : ''}
+                ${schedule.next_meeting_date ? `<p class="mm-quality-muted">다음 FOMC ${finEsc(schedule.next_meeting_date)}</p>` : ''}
                 ${latestStatement ? `<a class="mm-quality-link" href="${finEsc(latestStatement.source_url)}" target="_blank" rel="noopener noreferrer">최근 결정문 보기 ↗</a>` : ''}
             </div>
             <div class="mm-quality-card">
                 <span class="mm-quality-label">투표권 구성</span>
                 <strong>${finEsc(String(roster.roster_year || ''))}년 ${Array.isArray(roster.members) ? roster.members.length : 0}명</strong>
-                <p>위원 변화는 공개 투표권 기준으로만 비교합니다.</p>
+                <p>${roster.source && String(roster.source).startsWith('fallback_')
+                    ? `연준 공식 위원 명단 조회 실패 — ${finEsc(roster.as_of || '')} 성명서 표결 명단으로 대체 (구성이 실제보다 오래됐을 수 있음)`
+                    : `연준 공식 위원 명단 페이지 기준 (${finEsc(roster.as_of || '')})`}</p>
                 ${Array.isArray(roster.members) && roster.members.length ? `<details class="mm-quality-details">
                     <summary>현재 투표권자 보기</summary>
                     <p>${roster.members.map((member) => `${member.name} (${member.role})`).join(' · ')}</p>
@@ -1724,8 +1780,10 @@ const mmUsPolicyQuality = (quality) => {
                     <summary>전국 요약 보기</summary>
                     ${sections.map((section) => `<p><b>${finEsc(section.section)}</b> ${finEsc(mmExcerpt(section.text))}</p>`).join('')}
                 </details>` : '<p class="mm-quality-muted">발행본 수집 대기</p>'}
+                ${schedule.next_beige_book_estimate ? `<p class="mm-quality-muted" title="${finEsc(schedule.beige_book_note_ko || '')}">다음 예상 ${finEsc(schedule.next_beige_book_estimate)} (추정)</p>` : ''}
                 ${beige ? `<a class="mm-quality-link" href="${finEsc(beige.source_url)}" target="_blank" rel="noopener noreferrer">원문 보기 ↗</a>` : ''}
             </div>
+            ${mmStatementDiffHtml(statementDiff)}
         </div>
         <p class="mm-quality-foot">공개 표결은 회의 당시의 행동 기록이고, Beige Book은 접촉자 의견입니다. 둘 다 다음 회의나 시장의 방향을 자동 예측하지 않습니다.</p>
     </section>`;
@@ -1766,7 +1824,7 @@ const mmOverlay = () => {
                 </button>`).join('')}
         </div>` : ''}
 
-        ${c.iso3 === 'USA' ? mmUsPolicyQuality(MM_COUNTRY.quality) : ''}
+        ${c.iso3 === 'USA' ? mmUsPolicyQuality(MM_COUNTRY.quality, MM_COUNTRY.statementDiff) : ''}
 
         <div class="mm-tabs" role="tablist">
             ${tabs.map((t) => {
@@ -1894,12 +1952,14 @@ const mmOpenCountry = async (iso3) => {
         // the country pack -- fetched alongside it, not blocking it, since a
         // slow or missing document snapshot should never delay the ordinary
         // indicator overlay every other country also needs.
-        const [countryPayload, quality] = await Promise.all([
+        const [countryPayload, quality, statementDiff] = await Promise.all([
             mmFetch(iso3),
             iso3 === 'USA' ? mmQualityFetch().catch(() => null) : Promise.resolve(null),
+            iso3 === 'USA' ? mmStatementDiffFetch().catch(() => null) : Promise.resolve(null),
         ]);
         MM_COUNTRY = countryPayload;
         if (quality) MM_COUNTRY.quality = quality;
+        if (statementDiff) MM_COUNTRY.statementDiff = statementDiff;
         MM_TAB = (MM_COUNTRY.country.active_categories || ['liquidity'])[0];
         MM_CHART = null;
     } catch (err) {

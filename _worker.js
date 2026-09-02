@@ -78,6 +78,11 @@ export default {
             return await handleUsPolicy(request, env);
         }
 
+        // Official crop/energy/metal reports for one commodity × country window
+        if (url.pathname.startsWith('/api/commodity-reports')) {
+            return await handleCommodityReports(request, env);
+        }
+
         // Default: Serve Static Assets
         return serveAsset(request, env);
     },
@@ -316,6 +321,106 @@ async function handleOfficialReports(request, env) {
         status: 200,
         headers: { ...JSON_HEADERS, 'Cache-Control': 'public, max-age=180' },
     });
+}
+
+/**
+ * Reports published about one commodity in one country.
+ *
+ * The snapshot stores each report once and indexes ids per window, so the
+ * whole file is small enough to serve as-is; this endpoint resolves the ids
+ * for the one window the panel is showing, which is what keeps the country
+ * card's payload a handful of rows instead of the entire board.
+ *
+ * ?commodity=soybeans          -> world-level reports for that commodity
+ * ?commodity=soybeans&country=USA -> that country's reports, then world ones
+ */
+async function handleCommodityReports(request, env) {
+    const url = new URL(request.url);
+    const commodity = (url.searchParams.get('commodity') || '').trim();
+    const country = (url.searchParams.get('country') || '').trim().toUpperCase();
+    const limit = Math.min(parseInt(url.searchParams.get('limit') || '8', 10) || 8, 30);
+
+    const doc = await loadStaticJson(env, url.origin, 'commodity_reports_v1.json');
+    if (!doc) {
+        return new Response(
+            JSON.stringify({
+                error: 'commodity_reports_v1.json missing — run scripts/commodity_reports/build_reports.py build',
+                items: [],
+            }),
+            { status: 404, headers: JSON_HEADERS }
+        );
+    }
+
+    // No commodity named: hand back the board itself, so a caller can see
+    // which windows have anything at all without guessing keys.
+    if (!commodity) {
+        const windows = {};
+        for (const [key, buckets] of Object.entries(doc.index || {})) {
+            windows[key] = Object.fromEntries(
+                Object.entries(buckets).map(([bucket, ids]) => [bucket, ids.length])
+            );
+        }
+        return jsonWithCache({
+            generated_at: doc.generated_at,
+            commodity_labels: doc.commodity_labels || {},
+            windows,
+        });
+    }
+
+    const byId = new Map((doc.items || []).map((it) => [it.id, it]));
+    const buckets = (doc.index || {})[commodity] || {};
+    // Country rows first, then world balance sheets. A WASDE line on world
+    // supply belongs on every country's board, but under what was published
+    // about that country -- the specific report is the one being looked for.
+    const ids = [];
+    if (country) for (const id of buckets[country] || []) ids.push(id);
+    for (const id of buckets._global || []) if (!ids.includes(id)) ids.push(id);
+    if (!country) {
+        // World view: after the global reports, fill with whatever else this
+        // commodity produced, so a quiet week still shows the board's activity.
+        for (const [bucket, rows] of Object.entries(buckets)) {
+            if (bucket === '_global') continue;
+            for (const id of rows) if (!ids.includes(id)) ids.push(id);
+        }
+    }
+
+    const items = ids.slice(0, limit).map((id) => byId.get(id)).filter(Boolean);
+    return jsonWithCache({
+        generated_at: doc.generated_at,
+        commodity,
+        commodity_label: (doc.commodity_labels || {})[commodity] || commodity,
+        country: country || null,
+        country_name: country ? (doc.country_names || {})[country] || null : null,
+        count: items.length,
+        items,
+    });
+}
+
+/** JSON response with the same edge cache window the other snapshot routes use. */
+function jsonWithCache(body, maxAge = 180) {
+    return new Response(JSON.stringify(body), {
+        status: 200,
+        headers: { ...JSON_HEADERS, 'Cache-Control': `public, max-age=${maxAge}` },
+    });
+}
+
+/**
+ * Read a built snapshot out of the deployed assets.
+ *
+ * Three candidate paths because the asset prefix has differed between the
+ * Worker's own routing and the static-server layout, and a snapshot route
+ * that 404s on a path change looks exactly like a pipeline that stopped
+ * running.
+ */
+async function loadStaticJson(env, origin, filename) {
+    for (const path of [`/public/data/${filename}`, `/data/${filename}`, `public/data/${filename}`]) {
+        try {
+            const assetUrl = new URL(path.startsWith('/') ? path : `/${path}`, origin);
+            const res = await env.ASSETS.fetch(new Request(assetUrl.toString()));
+            if (res.ok) return await res.json();
+        } catch (_) { /* next candidate */ }
+    }
+    return null;
 }
 
 // Shared response cache backed by the API_CACHE KV namespace.

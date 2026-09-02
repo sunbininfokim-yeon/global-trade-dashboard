@@ -27,17 +27,41 @@ import argparse
 import json
 import re
 import sys
-from datetime import datetime, timezone
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
 sys.path.insert(0, str(ROOT))
 
+from macro_monitor.us_quality.fed import (  # noqa: E402
+    FedOfficialSourceError,
+    FOMC_MEMBERS_URL,
+    fetch_text,
+    parse_fomc_members,
+)
 from macro_monitor.us_quality.fomc import compare_fomc_meetings  # noqa: E402
 
 MEETINGS_IN = ROOT / "config" / "fomc_meetings_v1.json"
 BEIGE_IN = ROOT / "config" / "beige_book_v1.json"
+CALENDAR_IN = ROOT / "config" / "fomc_calendar_v1.json"
 OUT = ROOT.parent.parent / "public" / "data" / "us_macro_quality_v1.json"
+
+# Every 2026 Beige Book edition landed exactly 14 days before its paired
+# FOMC decision date (always a Wednesday) -- confirmed against all 7 pairs
+# collected so far. The Fed publishes no forward-looking Beige Book
+# calendar the way it does for FOMC meetings, so this is a pattern-based
+# projection, not an official date, and is labeled that way downstream.
+BEIGE_BOOK_LEAD_DAYS = 14
+
+
+def _next_meeting_schedule(calendar_doc: dict, *, today: date) -> dict | None:
+    upcoming = [m for m in calendar_doc.get("meetings", []) if date.fromisoformat(m["decision_date"]) > today]
+    if not upcoming:
+        return None
+    upcoming.sort(key=lambda m: m["decision_date"])
+    next_meeting = upcoming[0]["decision_date"]
+    projected_beige_book = (date.fromisoformat(next_meeting) - timedelta(days=BEIGE_BOOK_LEAD_DAYS)).isoformat()
+    return {"next_meeting_date": next_meeting, "next_beige_book_estimate": projected_beige_book}
 
 
 def _person_id(name: str) -> str:
@@ -68,6 +92,34 @@ def _to_fomc_meeting(row: dict) -> dict:
     }
 
 
+def _current_vote_roster(row: dict, roster_members: list[dict]) -> list[dict]:
+    """Full for/against list for the most recent meeting, for display.
+
+    Distinct from _to_fomc_meeting()'s output (used for the previous-vs-
+    current transition diff, left untouched here): that one only tracks
+    named voters, which is fine for a diff but shows an against-only list
+    on a Format B meeting since the statement never names the "for" side.
+    Here, when the statement didn't name them, the "for" side is filled in
+    as the live committee roster minus the named dissenters -- only when
+    that count matches the statement's own "N - N" tally exactly, so a
+    roster that's drifted from who actually sat on this specific past vote
+    is never silently papered over.
+    """
+    dissenters = row["dissenters"]
+    dissenter_names = {d["name"] for d in dissenters}
+    voters_for = row.get("voters_for") or []
+    if not voters_for and roster_members:
+        derived_for = [m["name"] for m in roster_members if m["name"] not in dissenter_names]
+        if row.get("vote_for") is not None and len(derived_for) == row["vote_for"]:
+            voters_for = derived_for
+    entries = []
+    for name in voters_for:
+        entries.append({"name": name, "vote": "for", "dissent_direction": None, "inferred": name not in (row.get("voters_for") or [])})
+    for d in dissenters:
+        entries.append({"name": d["name"], "vote": "against", "dissent_direction": d["dissent_direction"], "inferred": False})
+    return entries
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--out", type=Path, default=OUT)
@@ -75,6 +127,8 @@ def main() -> int:
 
     meetings_doc = json.loads(MEETINGS_IN.read_text(encoding="utf-8"))
     beige_doc = json.loads(BEIGE_IN.read_text(encoding="utf-8"))
+    calendar_doc = json.loads(CALENDAR_IN.read_text(encoding="utf-8"))
+    schedule = _next_meeting_schedule(calendar_doc, today=date.today())
 
     clean = [m for m in meetings_doc["meetings"] if m.get("parsed_ok")]
     clean.sort(key=lambda m: m["meeting_date"])
@@ -86,15 +140,27 @@ def main() -> int:
     previous_row, current_row = clean[-2], clean[-1]
     comparison = compare_fomc_meetings(_to_fomc_meeting(previous_row), _to_fomc_meeting(current_row))
 
-    # Roster: everyone who voted (for or against) at the most recent clean
-    # meeting that actually named its "for" voters -- Format B meetings
-    # (an explicit "9 - 3 vote" count) only ever name the dissenters, so
-    # using current_row directly whenever it happens to be Format B would
-    # report a 3-person board. Falls back through clean meetings newest
-    # first until one has a real roster to read.
-    roster_row = next((m for m in reversed(clean) if m.get("voters_for")), current_row)
-    roster_voters = (roster_row.get("voters_for") or []) + [d["name"] for d in roster_row["dissenters"]]
-    roster_members = [{"name": n, "role": ""} for n in dict.fromkeys(roster_voters)]  # de-dup, keep order
+    # Roster: fetched live from the Fed's own Committee Members page, not
+    # inferred from a statement's "Voting for..." clause. That clause is no
+    # longer reliable for this: since the 2026-05-22 chair transition, FOMC
+    # statements only name dissenters for split votes and name no one at all
+    # for unanimous ones (previously they always spelled out the full "for"
+    # roster), so deriving "who's currently on the committee" from vote text
+    # silently went stale at the exact meeting where the chair changed. Only
+    # fall back to the old vote-derived roster if the live page is down.
+    roster_source = "official_current_voting_members_only"
+    roster_asof = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    try:
+        live_roster = parse_fomc_members(fetch_text(FOMC_MEMBERS_URL))
+        roster_members = [
+            {"name": m["name"], "role": m["role"]} for m in live_roster["members"]
+        ]
+    except (FedOfficialSourceError, OSError) as exc:
+        roster_row = next((m for m in reversed(clean) if m.get("voters_for")), current_row)
+        roster_voters = (roster_row.get("voters_for") or []) + [d["name"] for d in roster_row["dissenters"]]
+        roster_members = [{"name": n, "role": ""} for n in dict.fromkeys(roster_voters)]  # de-dup, keep order
+        roster_source = f"fallback_vote_roster_live_fetch_failed:{exc}"
+        roster_asof = roster_row["meeting_date"]
 
     documents = []
     for row in clean:
@@ -129,11 +195,20 @@ def main() -> int:
         ),
         "policy_committee": {
             "comparison": comparison,
+            "current_votes": _current_vote_roster(current_row, roster_members),
             "meeting_count": len(clean),
             "current_roster": {
-                "roster_year": int(roster_row["meeting_date"][:4]),
+                "roster_year": int(roster_asof[:4]),
                 "members": roster_members,
-                "as_of_meeting": roster_row["meeting_date"],
+                "as_of": roster_asof,
+                "source": roster_source,
+            },
+            "schedule": {
+                **(schedule or {}),
+                "beige_book_note_ko": (
+                    "베이지북은 공식 발표 캘린더가 없어 다음 FOMC 결정일 14일 전(수요일) "
+                    "패턴으로 추정한 날짜입니다. 실제 발표일이 아닙니다."
+                ),
             },
             "collector": "build_fomc_collect.py",
         },

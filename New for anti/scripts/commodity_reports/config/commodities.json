@@ -1,0 +1,190 @@
+{
+  "version": 1,
+  "notes": [
+    "Keys must equal the dashboard's data-target values in index.html -- the UI asks for reports by the commodity key it is already showing.",
+    "require_context: the alias is also an ordinary English word, so a market/production term must appear too (see CONTEXT_TERMS in tag.py).",
+    "Bare 'coal' maps to thermal_coal only. Coking/metallurgical coal has its own explicit aliases; tagging both from one ambiguous word would double-post every coal release."
+  ],
+  "commodities": {
+    "oil": {
+      "label_ko": "원유",
+      "aliases": [
+        "crude oil", "crude", "petroleum", "brent", "wti", "opec basket",
+        "west texas intermediate", "urals", "dubai crude", "condensate",
+        "원유", "석유", "브렌트", "نفط خام", "原油", "нефть", "petróleo", "petroleo"
+      ],
+      "notes": "Bare 'oil' is excluded on purpose: palm/soybean/sunflower oil are different markets with their own windows."
+    },
+    "gas": {
+      "label_ko": "천연가스",
+      "aliases": [
+        "natural gas", "lng", "liquefied natural gas", "pipeline gas",
+        "gas exports", "gas production", "henry hub", "ttf",
+        "천연가스", "액화천연가스", "غاز طبيعي", "天然ガス", "天然气", "природный газ"
+      ]
+    },
+    "thermal_coal": {
+      "label_ko": "연료탄",
+      "aliases": [
+        "thermal coal", "steam coal", "power coal", "coal", "anthracite",
+        "newcastle coal", "api2",
+        "연료탄", "발전용 석탄", "石炭", "动力煤", "уголь"
+      ],
+      "require_context": true
+    },
+    "met_coal": {
+      "label_ko": "원료탄",
+      "aliases": [
+        "coking coal", "metallurgical coal", "met coal", "hard coking coal",
+        "원료탄", "제철용 석탄", "焦煤", "炼焦煤"
+      ]
+    },
+    "gold": {
+      "label_ko": "금",
+      "aliases": ["gold", "bullion", "금", "금괴", "ذهب", "黄金", "золото", "oro"],
+      "require_context": true,
+      "notes": "'gold standard', 'golden' and medal tables are why this needs a market term."
+    },
+    "silver": {
+      "label_ko": "은",
+      "aliases": ["silver", "은", "فضة", "白银", "серебро", "plata"],
+      "require_context": true
+    },
+    "platinum": {
+      "label_ko": "백금족",
+      "aliases": [
+        "platinum", "palladium", "rhodium", "pgm", "platinum group",
+        "백금", "팔라듐", "铂", "钯", "платина"
+      ]
+    },
+    "copper": {
+      "label_ko": "구리",
+      "aliases": [
+        "copper", "copper cathode", "copper concentrate",
+        "구리", "동광", "نحاس", "铜", "медь", "cobre"
+      ]
+    },
+    "aluminum": {
+      "label_ko": "알루미늄",
+      "aliases": [
+        "aluminium", "aluminum", "alumina", "bauxite",
+        "알루미늄", "보크사이트", "알루미나", "ألمنيوم", "铝", "алюмини"
+      ]
+    },
+    "zinc": {
+      "label_ko": "아연",
+      "aliases": ["zinc", "아연", "锌", "цинк"]
+    },
+    "tin": {
+      "label_ko": "주석",
+      "aliases": ["tin", "주석", "锡", "олово"],
+      "require_context": true
+    },
+    "lead": {
+      "label_ko": "납",
+      "aliases": [
+        "refined lead", "lead concentrate", "lead metal", "lead ore",
+        "lead smelter", "lead price", "lead prices", "lead market",
+        "납", "铅", "свинец"
+      ],
+      "notes": "Phrase-only. A bare 'lead' is a verb far more often than a metal, and no amount of market context fixes 'talks led by'."
+    },
+    "nickel": {
+      "label_ko": "니켈",
+      "aliases": ["nickel", "ferronickel", "nickel pig iron", "니켈", "镍", "никель"]
+    },
+    "cobalt": {
+      "label_ko": "코발트",
+      "aliases": ["cobalt", "코발트", "钴", "кобальт"]
+    },
+    "lithium": {
+      "label_ko": "리튬",
+      "aliases": [
+        "lithium", "spodumene", "lithium carbonate", "lithium hydroxide",
+        "리튬", "탄산리튬", "锂", "碳酸锂", "литий"
+      ]
+    },
+    "graphite": {
+      "label_ko": "흑연",
+      "aliases": ["graphite", "흑연", "石墨", "графит"]
+    },
+    "rare_earths": {
+      "label_ko": "희토류",
+      "aliases": [
+        "rare earth", "rare earths", "neodymium", "praseodymium", "dysprosium",
+        "terbium", "samarium", "nd-pr",
+        "희토류", "稀土", "редкоземельн"
+      ]
+    },
+    "iron_ore": {
+      "label_ko": "철광석",
+      "aliases": [
+        "iron ore", "iron-ore", "pellet feed", "fines 62%",
+        "철광석", "铁矿石", "железн", "minério de ferro", "minerio de ferro"
+      ]
+    },
+    "manganese": {
+      "label_ko": "망간",
+      "aliases": ["manganese", "ferromanganese", "망간", "锰", "марганец"]
+    },
+    "chromium": {
+      "label_ko": "크롬",
+      "aliases": ["chromium", "chrome ore", "ferrochrome", "chromite", "크롬", "铬", "хром"]
+    },
+    "wheat": {
+      "label_ko": "밀",
+      "aliases": [
+        "wheat", "winter wheat", "spring wheat", "durum", "milling wheat",
+        "밀", "소맥", "قمح", "小麦", "пшениц", "trigo", "blé", "ble"
+      ]
+    },
+    "corn": {
+      "label_ko": "옥수수",
+      "aliases": [
+        "corn", "maize", "safrinha",
+        "옥수수", "ذرة", "玉米", "トウモロコシ", "кукуруз", "milho", "maíz", "maiz"
+      ]
+    },
+    "soybeans": {
+      "label_ko": "대두",
+      "aliases": [
+        "soybean", "soybeans", "soyabean", "soya", "soymeal", "soybean meal",
+        "soybean oil", "soyoil", "crush margin",
+        "대두", "콩", "대두박", "فول الصويا", "大豆", "соя", "соев", "soja"
+      ]
+    },
+    "rice": {
+      "label_ko": "쌀",
+      "aliases": ["rice", "paddy", "milled rice", "쌀", "벼", "أرز", "大米", "コメ", "рис", "arroz"]
+    },
+    "sugar": {
+      "label_ko": "설탕",
+      "aliases": [
+        "sugar", "raw sugar", "white sugar", "sugarcane", "sugar cane", "sugar beet",
+        "설탕", "원당", "사탕수수", "سكر", "砂糖", "食糖", "сахар",
+        "açúcar", "acucar", "cana-de-açúcar", "azúcar", "azucar"
+      ],
+      "require_context": true
+    },
+    "coffee": {
+      "label_ko": "커피",
+      "aliases": [
+        "coffee", "arabica", "robusta", "커피", "아라비카", "로부스타",
+        "قهوة", "咖啡", "кофе", "café", "cafe"
+      ],
+      "require_context": true
+    },
+    "cocoa": {
+      "label_ko": "코코아",
+      "aliases": ["cocoa", "cacao", "코코아", "카카오", "可可", "какао"]
+    },
+    "cotton": {
+      "label_ko": "면화",
+      "aliases": ["cotton", "면화", "목화", "قطن", "棉花", "хлопок", "algodão", "algodao", "algodón"]
+    },
+    "palm_oil": {
+      "label_ko": "팜유",
+      "aliases": ["palm oil", "cpo", "crude palm oil", "palm kernel", "팜유", "棕榈油", "пальмово"]
+    }
+  }
+}

@@ -8,6 +8,7 @@ const {
   startSyncRun, supabaseGet, supabaseInsert, supabasePatch, supabaseUpsert, takePolicyQueue, updateSyncState,
   queueRetryOrFail,
 } = require('./lib/sync-utils');
+const { reconcilePublicLawAuthorityLinks } = require('./lib/public-law-links');
 
 const API_BASE = 'https://api.govinfo.gov';
 const API_KEY = process.env.DATA_GOV_API_KEY;
@@ -174,9 +175,12 @@ async function run() {
         console.error(`Public Law ${entry.source_key} ${outcome === 'failed' ? 'dead-lettered' : 'deferred'}: ${error.message}`);
       }
     }
+    // Federal Register runs before this script. Reconcile here as well so a
+    // Public Law that was indexed in this run immediately unlocks an EO link.
+    const authorityLinks = await reconcilePublicLawAuthorityLinks();
     await updateSyncState(RESOURCE, { ...discovered.cursor, completed_at: new Date().toISOString() });
-    await finishSyncRun(runId, { status: written === read ? 'succeeded' : 'partial', records_read: read, records_written: written, metadata: { discovered: discovered.results.length, staged } });
-    console.log(`GovInfo Public Laws complete: ${written}/${read} records.`);
+    await finishSyncRun(runId, { status: written === read ? 'succeeded' : 'partial', records_read: read, records_written: written, metadata: { discovered: discovered.results.length, staged, public_law_authority_links: authorityLinks } });
+    console.log(`GovInfo Public Laws complete: ${written}/${read} records. EO Public Law authority links: ${authorityLinks.linked}/${authorityLinks.total} linked; ${authorityLinks.updated} updated.`);
   } catch (error) {
     await finishSyncRun(runId, { status: 'failed', records_read: read, records_written: written, error_summary: error.message });
     throw error;
