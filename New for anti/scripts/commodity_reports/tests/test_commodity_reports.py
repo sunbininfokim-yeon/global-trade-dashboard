@@ -219,6 +219,20 @@ class BuildTests(unittest.TestCase):
         self.assertIn("BRA", index["wheat"])
         self.assertIn(GLOBAL_BUCKET, index["oil"])
 
+    def test_bucket_order_is_newest_first_even_over_a_less_important_report(self):
+        # soybeans/USA holds two real fixture reports: the Aug-12 WASDE release
+        # (importance 5.24, the higher of the two) and the Aug-31 Agricultural
+        # Prices release (5.11). Display order must be by date -- the operator
+        # was reading a live board where the day's actual top release sat below
+        # an older, slightly higher-scored administrative one, and asked for
+        # newest-first instead. Importance still decides which reports make the
+        # per_bucket cut; only the order they're shown in changed.
+        by_id = {i["id"]: i for i in self.doc["items"]}
+        ids = self.doc["index"]["soybeans"]["USA"]
+        dates = [by_id[rid]["published_at"] for rid in ids]
+        self.assertEqual(dates, sorted(dates, reverse=True))
+        self.assertTrue(dates[0].startswith("2026-08-31"))
+
     def test_every_indexed_id_resolves_to_an_item(self):
         ids = {i["id"] for i in self.doc["items"]}
         for buckets in self.doc["index"].values():

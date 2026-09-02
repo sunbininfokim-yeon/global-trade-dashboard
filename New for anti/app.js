@@ -29,6 +29,7 @@ const forecastContentEl = document.getElementById('forecast-content');
 const forecastCountryTitle = document.getElementById('forecast-country-title');
 
 // Right panel elements
+const commodityReportsPanelEl = document.getElementById('commodity-reports-panel');
 const macroPanelEl = document.getElementById('macro-panel');
 const countryStatsPanelEl = document.getElementById('country-stats-panel');
 const countryStatsTitleEl = document.getElementById('country-stats-title');
@@ -4722,13 +4723,14 @@ const CONTROL_LINE = {
     watch: [253, 224, 71, 160],
 };
 
-const togglePanels = ({ macro = false, countryStats = false, news = false, forecast = false, climateRight = false, left = true, right = true, chart = false, map = true }) => {
+const togglePanels = ({ macro = false, countryStats = false, news = false, forecast = false, climateRight = false, commodityReports = false, left = true, right = true, chart = false, map = true }) => {
     const leftPaneContainer = document.getElementById('left-pane'); // Target the whole container
     const rightPaneContainer = document.getElementById('right-pane');
     const commodityInfoPanel = document.getElementById('commodity-info-panel');
-    
+
     macro ? panelShow(macroPanelEl) : panelHide(macroPanelEl);
     countryStats ? panelShow(countryStatsPanelEl) : panelHide(countryStatsPanelEl);
+    commodityReports ? panelShow(commodityReportsPanelEl) : panelHide(commodityReportsPanelEl);
     news ? panelShow(newsPanelEl) : panelHide(newsPanelEl);
     forecast ? panelShow(forecastPanelEl) : panelHide(forecastPanelEl);
     if (climateRightPanelEl) {
@@ -5126,9 +5128,10 @@ const setView = (target) => {
         setClimateCommodityHeader(null);
         const data = window.TradeData[target];
         
-        // Req 1: hide right pane so the pitched world map can be larger.
-        // Country-click detail on the right is deferred — ranking lives on the left.
-        togglePanels({ news: true, left: true, right: false });
+        // Right pane now hosts the Phase 2-2 reports panel (official reports
+        // for the commodity/country on screen) instead of being hidden for a
+        // wider map -- ranking stays on the left, reports moved off of it.
+        togglePanels({ news: true, left: true, right: true, commodityReports: true });
         
         // Update Panel Info
         currentViewTitle.textContent = data.title;

@@ -71,16 +71,34 @@ def _dedupe(scored: Iterable[ScoredReport]) -> List[ScoredReport]:
     return list(best.values())
 
 
+def _recency_sort_key(report: ScoredReport) -> tuple:
+    """Newest first within a bucket; dateless reports sink to the bottom.
+
+    ISO 8601 UTC strings (what published_at always is once parsed) compare
+    correctly as plain strings, so no datetime parsing is needed here.
+    """
+    has_date = report.published_at is not None
+    return (has_date, report.published_at or "")
+
+
 def build_index(
     reports: List[ScoredReport], *, per_bucket: int
 ) -> Dict[str, Dict[str, List[str]]]:
-    """commodity -> country (or _global) -> report ids, most important first.
+    """commodity -> country (or _global) -> report ids, newest first.
 
     A report tagged with two commodities lands on both windows; one tagged
     with two countries lands on both country cards. That duplication is the
     point -- "Argentina's drought lifts US soybean exports" is a real entry on
     both boards -- and the index holds ids, not copies, so it stays cheap.
+
+    Which reports make a bucket's cap is still decided by importance (a named
+    series and a real figure should win a slot over routine administrative
+    notices) -- only the order they're then shown in is by date. Sorting by
+    importance throughout looked like a bug in practice: the day's top NASS
+    release could sit below a multi-year-old procedural notice just because
+    the notice's series carries slightly more weight.
     """
+    by_id = {r.id: r for r in reports}
     index: Dict[str, Dict[str, List[str]]] = {}
     for r in sorted(reports, key=lambda x: -x.importance):
         buckets = r.countries if r.scope == "country" else [GLOBAL_BUCKET]
@@ -90,6 +108,9 @@ def build_index(
                 rows = per_commodity.setdefault(bucket, [])
                 if len(rows) < per_bucket and r.id not in rows:
                     rows.append(r.id)
+    for buckets in index.values():
+        for ids in buckets.values():
+            ids.sort(key=lambda rid: _recency_sort_key(by_id[rid]), reverse=True)
     return index
 
 
