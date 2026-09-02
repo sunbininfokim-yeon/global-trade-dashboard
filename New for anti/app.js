@@ -29,6 +29,7 @@ const forecastContentEl = document.getElementById('forecast-content');
 const forecastCountryTitle = document.getElementById('forecast-country-title');
 
 // Right panel elements
+const commodityReportsPanelEl = document.getElementById('commodity-reports-panel');
 const macroPanelEl = document.getElementById('macro-panel');
 const countryStatsPanelEl = document.getElementById('country-stats-panel');
 const countryStatsTitleEl = document.getElementById('country-stats-title');
@@ -2364,6 +2365,175 @@ const renderCropCalendarHtml = (countryName, cropIds) => {
         </div>`;
 };
 
+// Live USDA PSD production numbers for the country panel's "USDA/GAIN 전망"
+// card, replacing the static usda_gain_outlook_v1.json seed one country at a
+// time. /api/usda-fas already proxies api.fas.usda.gov/api/psd (Worker,
+// USDA_FAS_API_KEY) -- this only adds the commodity/country code lookup and
+// the fetch-two-years-compute-YoY logic the seed file used to hardcode.
+//
+// PSD's country codes are a legacy USDA scheme, not ISO 3166: several of the
+// climate registry's 16 countries take a code that does NOT match their ISO2
+// (Russia=RS not RU, South Africa=SF not ZA, Vietnam=VM not VN, Ivory
+// Coast=IV not CI, Australia=AS not AU, China=CH not CN). All 16 confirmed
+// 2026-09-02 against fas.usda.gov/data/production/<code> and
+// apps.fas.usda.gov/newgainapi report filenames, which this session could
+// reach through web search even though it can't fetch usda.gov directly.
+const PSD_COUNTRY_CODES = {
+    ARG: 'AR', AUS: 'AS', BRA: 'BR', CAN: 'CA', CHN: 'CH', ETH: 'ET',
+    IND: 'IN', IDN: 'ID', RUS: 'RS', ZAF: 'SF', THA: 'TH', UGA: 'UG',
+    USA: 'US', VNM: 'VM', CIV: 'IV', GHA: 'GH',
+};
+
+// `verified: true` means the exact 7-digit code was confirmed 2026-09-02
+// against a live fas.usda.gov/data/production/commodity/<code> page (via web
+// search, since this session cannot fetch usda.gov directly). Two of these
+// were originally guessed wrong and corrected in that pass: canola was
+// 2230000 (an unrelated code), the real one is Rapeseed 2226000; sunflowerseed
+// was 2221000, the real one is 2224000. cocoa had a third guess (0721100) that
+// was never resolved as right or wrong -- it was resolved as moot: the full
+// 64-row PSD commodities table (apps.fas.usda.gov/OpenData/api/psd/commodities,
+// cross-checked via a public GitHub notebook that had captured a live call
+// since this session can't call it directly) has no cocoa entry at all.
+// PSD Online simply does not track cocoa as a commodity -- ICCO does -- so
+// there is no code to verify, and CIV/GHA (both PSD-crop-list = cocoa only)
+// are left out of CLIMATE_PSD_CROPS below rather than carrying a dead guess.
+// That same table cross-confirmed all eleven codes kept here (wheat 410000,
+// corn 440000, soybeans/oilseed 2222000, rice/milled 422110, cotton 2631000,
+// sugar/centrifugal 612000, canola/rapeseed 2226000, sunflowerseed 2224000,
+// coffee/green 711100, palm_oil 4243000, barley 430000).
+const PSD_COMMODITY_CODES = {
+    wheat: { code: '0410000', label_ko: '밀', verified: true },
+    corn: { code: '0440000', label_ko: '옥수수', verified: true },
+    soybeans: { code: '2222000', label_ko: '대두', verified: true },
+    rice: { code: '0422110', label_ko: '쌀(정미)', verified: true },
+    cotton: { code: '2631000', label_ko: '면화', verified: true },
+    sugar: { code: '0612000', label_ko: '설탕(원심분리)', verified: true },
+    canola: { code: '2226000', label_ko: '카놀라(유채)', verified: true },
+    sunflowerseed: { code: '2224000', label_ko: '해바라기씨', verified: true },
+    coffee: { code: '0711100', label_ko: '커피(생두)', verified: true },
+    palm_oil: { code: '4243000', label_ko: '팜유', verified: true },
+    barley: { code: '0430000', label_ko: '보리', verified: true },
+};
+
+// Which of the crops above actually apply to each country, derived from
+// climate_registry_v1.json's own region list (rubber, cassava and cocoa have
+// no PSD series -- USDA does not track them here -- so those countries fall
+// back to the static seed/search-link card for that crop). CIV and GHA are
+// cocoa-only in that registry, so neither appears here at all.
+const CLIMATE_PSD_CROPS = {
+    ARG: ['soybeans', 'corn', 'cotton', 'wheat', 'sugar'],
+    AUS: ['wheat', 'barley', 'canola'],
+    BRA: ['soybeans', 'corn', 'cotton', 'sugar', 'coffee'],
+    CAN: ['canola', 'corn', 'soybeans', 'wheat'],
+    CHN: ['wheat', 'rice'],
+    ETH: ['coffee'],
+    IND: ['wheat', 'soybeans', 'cotton'],
+    IDN: ['rice', 'palm_oil', 'coffee'],
+    RUS: ['wheat', 'sunflowerseed'],
+    ZAF: ['corn'],
+    THA: ['sugar', 'rice'],
+    UGA: ['coffee'],
+    USA: ['corn', 'soybeans', 'wheat', 'cotton'],
+    VNM: ['rice'],
+};
+
+// USDA's PSD marketing year for the crops here has effectively started by
+// September for the northern hemisphere and is mid-cycle for the southern
+// one; "this year vs last year" on whatever the current calendar year is
+// reads close enough for a YoY figure without a per-crop marketing-year
+// calendar this card does not otherwise need.
+const psdYears = () => {
+    const y = new Date().getFullYear();
+    return { current: y, prior: y - 1 };
+};
+
+const psdSeriesCache = new Map();
+const loadPsdSeries = async (commodityCode, countryCode, year) => {
+    const key = `${commodityCode}:${countryCode}:${year}`;
+    if (psdSeriesCache.has(key)) return psdSeriesCache.get(key);
+    const p = (async () => {
+        try {
+            const q = new URLSearchParams({ commodityCode, countryCode, year: String(year) });
+            const res = await fetch(`/api/usda-fas?${q}`);
+            if (!res.ok) return null;
+            const doc = await res.json();
+            return doc?.ok === false ? null : (doc?.body ?? doc);
+        } catch (err) {
+            console.warn('[PSD]', commodityCode, countryCode, year, 'unavailable', err);
+            return null;
+        }
+    })();
+    psdSeriesCache.set(key, p);
+    return p;
+};
+
+// PSD rows carry one figure per (attribute, year); attributeId 20 is
+// Production in every public PSD example this was built from, but since that
+// could not be checked against the live API from here, a record is also
+// accepted if any of its own string fields spells out "production" --
+// whichever signal is actually present in the real response still finds it.
+const psdProductionValue = (rows) => {
+    if (!Array.isArray(rows)) return null;
+    const hit = rows.find((r) => r?.attributeId === 20
+        || Object.values(r || {}).some((v) => typeof v === 'string' && /production/i.test(v)));
+    const v = Number(hit?.value);
+    return Number.isFinite(v) ? v : null;
+};
+
+/**
+ * Live replacement for one country's usda_gain_outlook_v1.json entry.
+ * Returns null (not an empty entry) when nothing here has a PSD mapping for
+ * this country, so renderUsdaGainCard's existing seed/"준비 중" fallback
+ * still applies exactly as before -- this only pre-empts it where a live
+ * number is actually available.
+ */
+const buildLivePsdEntry = async (isoCode) => {
+    const countryCode = PSD_COUNTRY_CODES[isoCode];
+    const cropKeys = CLIMATE_PSD_CROPS[isoCode];
+    if (!countryCode || !cropKeys?.length) return null;
+    const { current, prior } = psdYears();
+
+    const items = await Promise.all(cropKeys.map(async (cropKey) => {
+        const commodity = PSD_COMMODITY_CODES[cropKey];
+        if (!commodity) return null;
+        if (!commodity.verified) {
+            return {
+                crop_ko: commodity.label_ko,
+                family: cropKey,
+                production_mmt: null,
+                prior_mmt: null,
+                yoy_pct: null,
+                note_ko: 'PSD 코드 미검증 -- 수치 표시 보류, FAS 검색으로 직접 확인하세요.',
+            };
+        }
+        const [curRows, priorRows] = await Promise.all([
+            loadPsdSeries(commodity.code, countryCode, current),
+            loadPsdSeries(commodity.code, countryCode, prior),
+        ]);
+        const curVal = psdProductionValue(curRows);
+        const priorVal = psdProductionValue(priorRows);
+        if (curVal == null) return null; // no live figure -- let the seed/fallback speak instead
+        return {
+            crop_ko: commodity.label_ko,
+            family: cropKey,
+            // PSD reports most grains/oilseeds in 1000 MT; /1000 turns that into MMT.
+            production_mmt: curVal / 1000,
+            prior_mmt: priorVal != null ? priorVal / 1000 : null,
+            yoy_pct: priorVal ? ((curVal - priorVal) / priorVal) * 100 : null,
+            note_ko: `USDA PSD 실시간 · MY${current}`,
+        };
+    }));
+
+    const kept = items.filter(Boolean);
+    if (!kept.length) return null;
+    return {
+        season: `${current}/${String(current + 1).slice(2)}`,
+        search_country: undefined, // renderUsdaGainCard falls back to the display name it already has
+        source_label: 'USDA PSD Online (live)',
+        items: kept,
+    };
+};
+
 let usdaGainCache = null;
 const loadUsdaGain = async () => {
     if (usdaGainCache) return usdaGainCache;
@@ -2451,9 +2621,13 @@ const renderSourceStack = (cards) => {
     </div>`;
 };
 
-const renderUsdaGainCard = async (countryName) => {
+const renderUsdaGainCard = async (countryName, iso) => {
     const doc = await loadUsdaGain();
-    const entry = doc?.countries?.[countryName];
+    // Live PSD numbers win when this country/crop combination has one;
+    // buildLivePsdEntry returns null rather than a placeholder for anything
+    // it can't answer, so the static seed still covers the rest exactly as
+    // it did before this existed.
+    const entry = (iso && await buildLivePsdEntry(iso)) || doc?.countries?.[countryName];
     const portal = doc?.portal || {
         label: 'USDA FAS Data Search',
         url: 'https://www.fas.usda.gov/data/search',
@@ -4023,7 +4197,7 @@ const renderCountryPanel = async (cfg, points = null, meta = {}) => {
     // Left: trade + GAIN + crop-type merge + calendar (not commodity trade stats)
     forecastCountryTitle.textContent = cfg.modelName || cfg.label;
     const gainHtml = renderSourceStack([
-        await renderUsdaGainCard(climateCountry || cfg.label),
+        await renderUsdaGainCard(climateCountry || cfg.label, cfg.iso),
         renderNationalSourceCard(cfg),
     ]);
 
@@ -4722,13 +4896,14 @@ const CONTROL_LINE = {
     watch: [253, 224, 71, 160],
 };
 
-const togglePanels = ({ macro = false, countryStats = false, news = false, forecast = false, climateRight = false, left = true, right = true, chart = false, map = true }) => {
+const togglePanels = ({ macro = false, countryStats = false, news = false, forecast = false, climateRight = false, commodityReports = false, left = true, right = true, chart = false, map = true }) => {
     const leftPaneContainer = document.getElementById('left-pane'); // Target the whole container
     const rightPaneContainer = document.getElementById('right-pane');
     const commodityInfoPanel = document.getElementById('commodity-info-panel');
-    
+
     macro ? panelShow(macroPanelEl) : panelHide(macroPanelEl);
     countryStats ? panelShow(countryStatsPanelEl) : panelHide(countryStatsPanelEl);
+    commodityReports ? panelShow(commodityReportsPanelEl) : panelHide(commodityReportsPanelEl);
     news ? panelShow(newsPanelEl) : panelHide(newsPanelEl);
     forecast ? panelShow(forecastPanelEl) : panelHide(forecastPanelEl);
     if (climateRightPanelEl) {
@@ -5126,9 +5301,13 @@ const setView = (target) => {
         setClimateCommodityHeader(null);
         const data = window.TradeData[target];
         
-        // Req 1: hide right pane so the pitched world map can be larger.
-        // Country-click detail on the right is deferred — ranking lives on the left.
-        togglePanels({ news: true, left: true, right: false });
+        // Right pane hosts the Phase 2-2 reports panel, but only once a
+        // country is focused (stage 2) -- a world-level report has no single
+        // country to point at yet. Still open the pane itself (right: true)
+        // so it doesn't visibly pop in in the middle of a click; trade.js
+        // shows/hides #commodity-reports-panel itself as focus changes
+        // (renderTradeWorldPanel hides it, focusTradeCountry shows it).
+        togglePanels({ news: true, left: true, right: true });
         
         // Update Panel Info
         currentViewTitle.textContent = data.title;

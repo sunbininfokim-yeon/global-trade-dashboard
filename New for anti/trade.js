@@ -20,8 +20,9 @@
 // bowedPath, arcWidth, arcAlpha, MAX_RENDERED_ARCS, generateNodeData,
 // TRADE_MAP_VIEW, controlsFor, renderExportControlLegend, CONTROL_FILL,
 // CONTROL_LINE, exportControlsDoc, macroPanelEl, currentViewDesc,
-// concentrationHtml, normCountryName. (ISO3_FALLBACK stays in app.js, used
-// only by its countryCode helper, which this file calls but does not own.)
+// concentrationHtml, normCountryName, commodityReportsPanelEl. (ISO3_FALLBACK
+// stays in app.js, used only by its countryCode helper, which this file calls
+// but does not own.)
 //
 // This is a pure move: no logic was rewritten, only relocated, in the same
 // relative order the functions appeared in app.js.
@@ -157,7 +158,6 @@ const focusTradeCountry = (countryName) => {
                 ${statsHtml}
                 ${depHtml}
                 <div class="trade-rank-list">${rows || '<p class="empty-state">이 국가 루트 없음</p>'}</div>
-                <div id="reports-slot"></div>
             </div>`;
         document.getElementById('trade-focus-clear')?.addEventListener('click', (e) => {
             e.preventDefault();
@@ -693,14 +693,15 @@ const loadCommodityReports = async (commodity, iso3, limit = 6) => {
     return window_;
 };
 
-// "2026-08-12T16:00:00+00:00" -> "08.12". The year is noise on a board whose
-// rows are all from the last few weeks; a dateless list-page row shows nothing
-// rather than a fabricated today.
+// "2026-08-12T16:00:00+00:00" -> "2026.08.12". Some of these feeds (NASS's
+// ASB/news syndication) return a rolling archive years deep, not just this
+// week -- dropping the year made a 2020 notice and a 2026 one look identical.
+// A dateless list-page row shows nothing rather than a fabricated today.
 const reportDate = (iso) => {
     if (!iso) return '';
     const d = new Date(iso);
     if (Number.isNaN(d.getTime())) return '';
-    return `${String(d.getMonth() + 1).padStart(2, '0')}.${String(d.getDate()).padStart(2, '0')}`;
+    return `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, '0')}.${String(d.getDate()).padStart(2, '0')}`;
 };
 
 // Long enough that the two-line clamp actually hides something worth opening.
@@ -741,11 +742,14 @@ const reportRowHtml = (item) => {
 };
 
 /**
- * Fill the panel's reports slot. `countryName` null means the world view.
+ * Fill the standalone reports panel (right pane, #commodity-reports-panel).
+ * `countryName` null means the world view.
  *
  * Renders into a slot the panel HTML already reserved rather than appending,
- * so a slow fetch can never land between the futures card and the stocks card
- * -- the ordering bug the rig-count cards had to be chained to avoid.
+ * so a slow fetch can never land between other cards -- the ordering bug the
+ * rig-count cards had to be chained to avoid. The panel is its own right-pane
+ * section (not stacked under the trade ranking) so a busy day's reports don't
+ * push the ranking below the fold.
  */
 const renderCommodityReports = async (commodity, countryName = null) => {
     const slot = document.getElementById('reports-slot');
@@ -758,8 +762,9 @@ const renderCommodityReports = async (commodity, countryName = null) => {
     const live = document.getElementById('reports-slot');
     if (!live || currentCommodity !== commodity) return;
     if (countryName ? tradeFocusCountry !== countryName : tradeFocusCountry !== null) return;
-    if (!items.length) { live.innerHTML = ''; return; }
+    if (!items.length) { live.innerHTML = ''; panelHide(commodityReportsPanelEl); return; }
 
+    panelShow(commodityReportsPanelEl);
     const who = countryName ? `${resolveCountry(countryName)?.label || countryName} · ` : '';
     live.innerHTML = `
         <div class="rpt-card">
@@ -814,10 +819,13 @@ const renderTradeWorldPanel = (arcs) => {
             <div class="trade-rank-list">${exportRows || '<p class="empty-state">무역 루트 없음</p>'}</div>
             <p class="trade-rank-group-head">주요 수입국</p>
             <div class="trade-rank-list">${importRows || '<p class="empty-state">무역 루트 없음</p>'}</div>
-            <div id="reports-slot"></div>
         </div>`;
     renderFuturesCard(currentCommodity);
-    renderCommodityReports(currentCommodity);
+    // No reports on the world view (stage 1) -- only once a country is
+    // focused (stage 2, focusTradeCountry) does the right panel populate.
+    // A world-level report has nowhere specific to point at yet; the
+    // country view is where "which country does this apply to" is answered.
+    panelHide(commodityReportsPanelEl);
     // Chained, not fired in parallel: renderRigCountWorld must not insert
     // before renderEmergencyStocks's own card exists (see its own comment).
     renderEmergencyStocks().then(renderRigCountWorld);

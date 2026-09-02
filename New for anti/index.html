@@ -54,7 +54,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
     <!-- Custom Styles -->
-    <link rel="stylesheet" href="style.css?v=67">
+    <link rel="stylesheet" href="style.css?v=68">
 </head>
 <body>
     <div id="app">
@@ -283,7 +283,18 @@
 
             <!-- Right Pane: Stats & Macro -->
             <aside class="right-pane" id="right-pane">
-                
+
+                <!-- Commodity reports (Phase 2-2): official reports for the
+                     commodity/country on screen. Its own section rather than
+                     sharing news-panel in the left pane -- that panel is the
+                     trade ranking, and a day with several NASS releases made
+                     the combined list require real scrolling to reach either
+                     one. The heading lives inside #reports-slot's own markup
+                     (trade.js), so this wrapper carries no title of its own. -->
+                <div class="panel-section hidden" id="commodity-reports-panel">
+                    <div id="reports-slot"></div>
+                </div>
+
                 <!-- Climate right sidebar (world context / country metrics) -->
                 <div class="panel-section hidden" id="climate-right-panel">
                     <div class="panel-header" style="margin-bottom: 12px;">
@@ -381,8 +392,8 @@
     <script src="market-microstructure.js?v=2"></script>
     <script src="portfolio.js?v=2"></script>
     <script src="calculator.js?v=2"></script>
-    <script src="app.js?v=114"></script>
-    <script src="trade.js?v=3"></script>
+    <script src="app.js?v=115"></script>
+    <script src="trade.js?v=4"></script>
     <script type="module" src="js/elections/index.js?v=2"></script>
 </body>
 </html>

@@ -11,7 +11,7 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from commodity_reports.build import GLOBAL_BUCKET, build_commodity_reports  # noqa: E402
-from commodity_reports.feeds import RawReport, parse_feed, parse_html_list  # noqa: E402
+from commodity_reports.feeds import RawReport, parse_fas_gain_cards, parse_feed, parse_html_list  # noqa: E402
 from commodity_reports.score import ReportScorer, append_label, load_learned_multipliers  # noqa: E402
 from commodity_reports.tag import CommodityTagger, CountryTagger, tag_report  # noqa: E402
 
@@ -82,6 +82,23 @@ class RoutingTests(unittest.TestCase):
             country_tagger=self.country,
             **kw,
         )
+
+    def test_british_thermal_units_is_not_the_uk(self):
+        # Real miscount, live EIA data: a purely domestic US gas report
+        # quoting a price in "million British thermal units (MMBtu)" landed
+        # on GBR's window because "British" alone reads as the country.
+        t = self.route(
+            "EIA raises natural gas price forecast following increased heating demand",
+            "Natural gas prices rose sharply, averaging $7.72 per million British "
+            "thermal units (MMBtu), as cold weather increased heating demand.",
+            default_country="USA",
+        )
+        self.assertNotIn("GBR", t.countries)
+        self.assertEqual(t.countries, ["USA"])
+
+    def test_british_still_means_the_uk_outside_that_one_phrase(self):
+        t = self.route("British wheat exports climb on strong harvest")
+        self.assertIn("GBR", t.countries)
 
     def test_usda_report_about_brazil_goes_to_brazil(self):
         t = self.route(
@@ -167,6 +184,21 @@ class FeedParseTests(unittest.TestCase):
         self.assertTrue(items[0].url.startswith("https://www.fao.org/"))
         self.assertTrue(items[0].published_at.startswith("2026-08-07"))
 
+    def test_rss_link_is_absolutized_against_the_feed_url(self):
+        # Real bug, found in live EIA output: <link> came back as
+        # "/pressroom/releases/press589.php" -- a relative path that resolved
+        # against our own domain instead of eia.gov, 404ing the card's link.
+        source = {"id": "us_eia_press", "agency": "EIA", "url": "https://www.eia.gov/rss/press_rss.xml"}
+        body = """<?xml version="1.0"?><rss version="2.0"><channel>
+            <item>
+                <title>EIA press release</title>
+                <link>/pressroom/releases/press589.php</link>
+                <description>Body text.</description>
+            </item>
+        </channel></rss>"""
+        items = parse_feed(body, source)
+        self.assertEqual(items[0].url, "https://www.eia.gov/pressroom/releases/press589.php")
+
     def test_html_list_dedupes_and_absolutizes(self):
         source = {
             "id": "int_opec_press", "agency": "OPEC",
@@ -177,6 +209,33 @@ class FeedParseTests(unittest.TestCase):
         self.assertEqual(len(urls), len(set(urls)))
         self.assertTrue(all(u.startswith("https://www.opec.org/") for u in urls))
         self.assertNotIn("about_us", " ".join(urls))
+
+    def test_fas_gain_cards_extracts_date_title_link_and_summary(self):
+        # fas.usda.gov/data/search (report_type:10251) replaced gain.fas.usda.gov
+        # in 2026: a Drupal Views listing that server-renders each result as a
+        # .c-card block, confirmed from a real page source pasted by the operator.
+        source = {
+            "id": "us_fas_gain_reports", "agency": "USDA FAS GAIN",
+            "html": {"base": "https://www.fas.usda.gov"},
+        }
+        body = (FIXTURES / "us_fas_gain_reports.html").read_text(encoding="utf-8")
+        items = parse_fas_gain_cards(body, source)
+        # Four cards in the fixture, one a duplicate (tracking query string) of
+        # another -- three distinct reports.
+        self.assertEqual(len(items), 3)
+
+        brazil = next(i for i in items if i.title.startswith("Brazil"))
+        self.assertEqual(brazil.url, "https://www.fas.usda.gov/data/gain/2026/08/brazil-oilseeds-and-products-update")
+        self.assertEqual(brazil.published_at, "2026-08-31T15:00:00+00:00")
+        self.assertIn("soybean production", brazil.summary)
+
+    def test_fas_gain_cards_dedupes_the_tracking_query_string(self):
+        source = {"id": "us_fas_gain_reports", "html": {"base": "https://www.fas.usda.gov"}}
+        body = (FIXTURES / "us_fas_gain_reports.html").read_text(encoding="utf-8")
+        items = parse_fas_gain_cards(body, source)
+        urls = [i.url for i in items]
+        self.assertEqual(len(urls), len(set(u.split("?", 1)[0] for u in urls)))
+        self.assertEqual(sum(1 for u in urls if "saudi-arabia" in u), 1)
 
 
 class BuildTests(unittest.TestCase):
@@ -202,20 +261,36 @@ class BuildTests(unittest.TestCase):
             matches = [rid for rid in ids if by_id[rid]["series_id"] == "USDA_AG_PRICES"]
             self.assertTrue(matches, f"Agricultural Prices missing from {commodity}·USA")
 
-    def test_report_with_no_tracked_commodity_is_reported_not_silently_dropped(self):
+    def test_report_with_no_tracked_commodity_is_dropped(self):
         # "Egg Products" names no commodity this dashboard tracks (no egg window
-        # exists). It must show up in pending_review so a missing alias is visible,
-        # rather than vanishing with no trace.
-        titles = [p["title"] for p in self.doc["pending_review"]]
-        self.assertIn("Egg Products", titles)
+        # exists). Dropped -- no review queue to land in, by design for now.
+        titles = [it["title"]["original"] for it in self.doc["items"]]
+        self.assertNotIn("Egg Products", titles)
+        self.assertNotIn("pending_review", self.doc)
 
     def test_windows_are_addressable_by_commodity_and_iso3(self):
+        # br_conab and int_fao_newsroom are disabled (config/sources.json,
+        # 2026-09-02: confirmed dead on the first live Actions run) so their
+        # fixtures are intentionally excluded here -- this asserts cross-cutting
+        # indexing via sources that are actually enabled.
         index = self.doc["index"]
         self.assertIn("USA", index["soybeans"])
-        self.assertIn("BRA", index["soybeans"])
         self.assertIn("BRA", index["wheat"])
-        self.assertIn(GLOBAL_BUCKET, index["wheat"])
         self.assertIn(GLOBAL_BUCKET, index["oil"])
+
+    def test_bucket_order_is_newest_first_even_over_a_less_important_report(self):
+        # soybeans/USA holds two real fixture reports: the Aug-12 WASDE release
+        # (importance 5.24, the higher of the two) and the Aug-31 Agricultural
+        # Prices release (5.11). Display order must be by date -- the operator
+        # was reading a live board where the day's actual top release sat below
+        # an older, slightly higher-scored administrative one, and asked for
+        # newest-first instead. Importance still decides which reports make the
+        # per_bucket cut; only the order they're shown in changed.
+        by_id = {i["id"]: i for i in self.doc["items"]}
+        ids = self.doc["index"]["soybeans"]["USA"]
+        dates = [by_id[rid]["published_at"] for rid in ids]
+        self.assertEqual(dates, sorted(dates, reverse=True))
+        self.assertTrue(dates[0].startswith("2026-08-31"))
 
     def test_every_indexed_id_resolves_to_an_item(self):
         ids = {i["id"] for i in self.doc["items"]}

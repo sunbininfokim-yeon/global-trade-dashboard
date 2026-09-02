@@ -8,7 +8,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional
 
-from .feeds import RawReport, fetch_source, parse_feed, parse_html_list
+from .feeds import RawReport, fetch_source, parse_fas_gain_cards, parse_feed, parse_html_list
 from .score import ReportScorer, ScoredReport
 from .tag import CommodityTagger, CountryTagger, tag_report
 
@@ -34,7 +34,11 @@ def _collect_fixtures(sources: List[Dict[str, Any]], fixture_dir: Path, max_per:
         if xml.exists():
             items = parse_feed(xml.read_text(encoding="utf-8", errors="replace"), s, max_per)
         elif html.exists():
-            items = parse_html_list(html.read_text(encoding="utf-8", errors="replace"), s)
+            body = html.read_text(encoding="utf-8", errors="replace")
+            if s.get("kind") == "fas_gain_cards":
+                items = parse_fas_gain_cards(body, s, max_per)
+            else:
+                items = parse_html_list(body, s)
         else:
             status.append({"source_id": s["id"], "ok": False, "count": 0,
                            "error": "fixture_missing", "mode": "fixture"})
@@ -71,16 +75,34 @@ def _dedupe(scored: Iterable[ScoredReport]) -> List[ScoredReport]:
     return list(best.values())
 
 
+def _recency_sort_key(report: ScoredReport) -> tuple:
+    """Newest first within a bucket; dateless reports sink to the bottom.
+
+    ISO 8601 UTC strings (what published_at always is once parsed) compare
+    correctly as plain strings, so no datetime parsing is needed here.
+    """
+    has_date = report.published_at is not None
+    return (has_date, report.published_at or "")
+
+
 def build_index(
     reports: List[ScoredReport], *, per_bucket: int
 ) -> Dict[str, Dict[str, List[str]]]:
-    """commodity -> country (or _global) -> report ids, most important first.
+    """commodity -> country (or _global) -> report ids, newest first.
 
     A report tagged with two commodities lands on both windows; one tagged
     with two countries lands on both country cards. That duplication is the
     point -- "Argentina's drought lifts US soybean exports" is a real entry on
     both boards -- and the index holds ids, not copies, so it stays cheap.
+
+    Which reports make a bucket's cap is still decided by importance (a named
+    series and a real figure should win a slot over routine administrative
+    notices) -- only the order they're then shown in is by date. Sorting by
+    importance throughout looked like a bug in practice: the day's top NASS
+    release could sit below a multi-year-old procedural notice just because
+    the notice's series carries slightly more weight.
     """
+    by_id = {r.id: r for r in reports}
     index: Dict[str, Dict[str, List[str]]] = {}
     for r in sorted(reports, key=lambda x: -x.importance):
         buckets = r.countries if r.scope == "country" else [GLOBAL_BUCKET]
@@ -90,6 +112,9 @@ def build_index(
                 rows = per_commodity.setdefault(bucket, [])
                 if len(rows) < per_bucket and r.id not in rows:
                     rows.append(r.id)
+    for buckets in index.values():
+        for ids in buckets.values():
+            ids.sort(key=lambda rid: _recency_sort_key(by_id[rid]), reverse=True)
     return index
 
 
@@ -127,7 +152,6 @@ def build_commodity_reports(
                                  "error": "no_fetch", "mode": "none"}]
 
     scored: List[ScoredReport] = []
-    untagged: List[Dict[str, Any]] = []
     for r in raw:
         tagged = tag_report(
             title=r.title,
@@ -142,13 +166,11 @@ def build_commodity_reports(
         if r.scope_hint == "global" and tagged.country_source == "source_default":
             tagged.countries, tagged.scope, tagged.country_source = [], "global", "none"
         item = scorer.score(r, tagged, now=now)
+        # No commodity this dashboard tracks, or rejected outright (photo
+        # galleries etc.) -- dropped, not queued anywhere. A review loop over
+        # what got dropped is a real feature; it isn't built yet, so there is
+        # nothing here pretending to be one.
         if item is None:
-            # Kept for the label loop: a release the tagger dropped is either
-            # genuinely off-topic or a commodity alias this config is missing,
-            # and only reading them tells you which.
-            if len(untagged) < 25:
-                untagged.append({"title": r.title, "url": r.url, "agency": r.agency,
-                                 "reason": "no_commodity_match" if not tagged.commodities else "rejected"})
             continue
         scored.append(item)
 
@@ -209,7 +231,6 @@ def build_commodity_reports(
         "country_names": country_names,
         "index": index,
         "items": items,
-        "pending_review": untagged,
     }
 
 

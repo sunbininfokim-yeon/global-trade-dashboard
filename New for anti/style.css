@@ -1033,11 +1033,14 @@ body.shipping-mode #chart-view,
     min-width: 2.5em;
 }
 
-/* Trade focus ranking (left, while right pane is hidden) */
+/* Trade ranking on the left, official reports on the right (Phase 2-2) --
+   both narrower than the general 380px pane so the map keeps most of the
+   screen. Before Phase 2-2 the right pane was force-hidden here entirely
+   (`display: none !important`) to give the map that width on its own; the
+   reports panel needed it back, so both sides now share the same narrow
+   width instead. */
+body.trade-map-mode .left-pane,
 body.trade-map-mode .right-pane {
-    display: none !important;
-}
-body.trade-map-mode .left-pane {
     width: min(340px, 32vw);
     max-width: 340px;
 }
@@ -2941,14 +2944,19 @@ body.finance-mode #chart-view::-webkit-scrollbar-thumb { background: rgba(148, 1
 .dep-note { margin: 4px 0 0; font-size: 9.5px; line-height: 1.45; color: rgba(148, 163, 184, .62); }
 
 /* ── 상품 × 국가 주요 보고서 (Phase 2-2) ─────────────────────────────────────
-   USDA·CONAB·FAO 등 공식 기관 발표를 해당 상품·국가 창에 붙인다. 무역 랭킹
-   아래에 오는 이유는 news 패널과 같다 — 지도를 설명하는 구조가 먼저고,
-   무슨 일이 있었는지는 그 다음이다. 패널 HTML이 미리 잡아 둔 #reports-slot
-   안에만 그려서, 늦게 도착한 fetch가 선물/재고 카드 사이에 끼어들 수 없다. */
+   USDA·CONAB·FAO 등 공식 기관 발표를 해당 상품·국가 창에 붙인다. 오른쪽 패널
+   전용 칸(#commodity-reports-panel, index.html)에 그려서, 왼쪽 무역 랭킹과
+   한 스크롤 안에서 경쟁하지 않는다 — 하루에 NASS 발표가 여러 건 겹치면
+   랭킹까지 스크롤해야 했던 문제였다. 패널이 미리 잡아 둔 #reports-slot
+   안에만 그려서, 늦게 도착한 fetch가 다른 카드 사이에 끼어들 수 없다. */
 .rpt-card {
     margin-top: 14px; padding-top: 12px;
     border-top: 1px solid rgba(255,255,255,.08);
 }
+/* Standalone panel now (see index.html) -- nothing sits above it needing a
+   separator, so the leading border/margin the shared class carries elsewhere
+   would just be dead space at the top of the pane. */
+#commodity-reports-panel .rpt-card { margin-top: 0; padding-top: 0; border-top: none; }
 .rpt-list { list-style: none; margin: 0; padding: 0; }
 .rpt-item {
     padding: 8px 0;
