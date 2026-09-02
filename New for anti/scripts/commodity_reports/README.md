@@ -137,20 +137,43 @@ python3 build_reports.py label --series-id USDA_CROP_PROGRESS --label drop
 **새 종류의 중요 보고서**가 보이면 `config/series_catalog.json` 에 `series_id`를 추가하는 것이
 "학습 정의"의 정본이다.
 
-## 소스 상태 (2026-09-01)
+## 소스 상태 (2026-09-02, 첫 라이브 Actions 실행 결과 반영)
 
-레포 작업 환경은 일반 웹 egress 자체가 대부분 막혀 있다 (github.com·npm·PyPI 류 개발
-인프라만 허용 — google.com도 안 열린다). usda.gov·lme.com 등을 콕 집어 막는 게 아니라
-**이 세션 전체가 그 정책 아래라서 여기서는 어떤 방법으로도 라이브 검증이 안 된다.**
-GitHub Actions 러너에는 이 제약이 없다.
+레포 작업 환경(이 세션)은 일반 웹 egress 자체가 대부분 막혀 있어 (github.com·npm·PyPI 류
+개발 인프라만 허용 — google.com도 안 열린다) URL을 여기서 직접 검증할 수 없었다.
+GitHub Actions 러너에는 이 제약이 없어서, 머지 후 `workflow_dispatch`로 한 번 실제로
+돌려 진짜 결과를 얻었다 ([run #1](https://github.com/sunbininfokim-yeon/global-trade-dashboard/actions/runs/33589460784)).
 
-- **enabled**: USDA(뉴스룸·ERS·FAS), EIA(Today in Energy·press), CONAB, Statistics Canada,
-  FAO, EU DG AGRI, PIB India
-- **disabled (URL/구조 미검증)**: ABARES, IGC, OPEC, USGS(= "미국 광물부", 매핑 확인됨),
-  LME 마켓 공지(`int_lme_notices` — 가격·재고 데이터 아님, 공지문만), 우크라이나 농업정책부
+**enabled (7/14, 라이브 확인됨):**
 
-첫 Actions 실행 로그의 `failed feeds:` 목록이 정답지다.
-살아 있는 것은 `enabled: true`로, 죽은 것은 사유·날짜와 함께 `false`로 바꾼다.
+| 소스 | 결과 |
+|---|---|
+| `us_usda_newsroom` | 10 items |
+| `us_nass_todays_reports` | 4 items — 이름대로 "오늘 발표된 것"만이라 적음 |
+| `us_nass_asb` | 40 items — 실제로는 2023~2024년까지 거슬러 올라가는 롤링 공지 아카이브. 최신성 감쇠(recency decay)가 여기서 진짜로 작동해야 함 |
+| `us_nass_news` | 40 items — 같은 아카이브 형태 |
+| `us_eia_today_in_energy` | 11 items |
+| `us_eia_press` | 10 items |
+| `in_pib_agriculture` | 20 items |
+
+실제 태깅 결과도 확인됨 — 예: "USDA Forecasts U.S. Corn Production Up and Soybean Production
+Down" → `corn`+`soybeans`·`USA`, `USDA_CROP_PRODUCTION` 시리즈로 정확히 매칭.
+
+**disabled (URL 사망 확인, 사유별):**
+
+- **HTTP 404** (URL 자체가 죽음): `us_usda_ers_newsroom`, `us_usda_ers_charts`,
+  `us_fas_newsroom`, `ca_statcan_daily`, `int_fao_newsroom`, `eu_agri`
+- **`not_a_feed_payload`** (주소는 살아있지만 RSS가 아닌 응답 — URL/쿼리 파라미터만
+  고치면 될 가능성): `br_conab`
+- **URL/구조 미검증** (아직 시도 안 함): ABARES, IGC, OPEC, USGS(= "미국 광물부",
+  매핑 확인됨), LME 마켓 공지(`int_lme_notices`), 우크라이나 농업정책부
+
+FAO가 6개 중 가장 아쉽다 — 세계 수급표(`_global`)를 내는 유일한 확인 소스였다.
+다시 찾을 우선순위: FAO > FAS(타국 작황 보고, US 소스들과 안 겹침) > CONAB(파라미터만
+고치면 될 수도) > 나머지.
+
+다음 Actions 실행(`workflow_dispatch` 수동 또는 4시간 주기)의 `failed feeds:`가 계속
+정답지다. 새 URL을 찾으면 `enabled: true` + 발견 경위를 notes에 남긴다.
 
 ## 후보 (아직 설정에 없음)
 

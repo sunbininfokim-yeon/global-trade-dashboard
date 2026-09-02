@@ -210,11 +210,13 @@ class BuildTests(unittest.TestCase):
         self.assertIn("Egg Products", titles)
 
     def test_windows_are_addressable_by_commodity_and_iso3(self):
+        # br_conab and int_fao_newsroom are disabled (config/sources.json,
+        # 2026-09-02: confirmed dead on the first live Actions run) so their
+        # fixtures are intentionally excluded here -- this asserts cross-cutting
+        # indexing via sources that are actually enabled.
         index = self.doc["index"]
         self.assertIn("USA", index["soybeans"])
-        self.assertIn("BRA", index["soybeans"])
         self.assertIn("BRA", index["wheat"])
-        self.assertIn(GLOBAL_BUCKET, index["wheat"])
         self.assertIn(GLOBAL_BUCKET, index["oil"])
 
     def test_every_indexed_id_resolves_to_an_item(self):

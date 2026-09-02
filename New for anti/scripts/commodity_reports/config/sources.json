@@ -18,7 +18,7 @@
       "kind": "rss",
       "url": "https://www.usda.gov/rss/latest-releases.xml",
       "lang": "en", "enabled": true, "weight": 1.4,
-      "notes": "Department-wide releases; WASDE, Crop Production and Prospective Plantings all announce here."
+      "notes": "Department-wide releases; WASDE, Crop Production and Prospective Plantings all announce here. Confirmed live 2026-09-02 (first Actions run, 10 items)."
     },
     {
       "id": "us_nass_todays_reports",
@@ -27,7 +27,7 @@
       "kind": "rss",
       "url": "http://www.nass.usda.gov/rss/reports.xml",
       "lang": "en", "enabled": true, "weight": 1.5,
-      "notes": "URL confirmed 2026-09-01 by the operator directly from NASS's own syndication/subscribe page (Newsroom/Syndication/Todays_Reports) -- not this session's guess. Each item is one day's released report (Crop Production, Grain Stocks, Agricultural Prices, Egg Products...); this is the machine-readable form of the 'Today's Reports' list on nass.usda.gov/Publications. Still worth checking feed_status on first live run: this session cannot reach nass.usda.gov to confirm the feed itself parses."
+      "notes": "URL confirmed 2026-09-01 by the operator directly from NASS's own syndication/subscribe page (Newsroom/Syndication/Todays_Reports) -- not this session's guess. Each item is one day's released report (Crop Production, Grain Stocks, Agricultural Prices, Egg Products...); this is the machine-readable form of the 'Today's Reports' list on nass.usda.gov/Publications. Confirmed live 2026-09-02 (first Actions run, 4 items -- narrow, matching its name)."
     },
     {
       "id": "us_nass_asb",
@@ -36,7 +36,7 @@
       "kind": "rss",
       "url": "http://www.nass.usda.gov/rss/asb.xml",
       "lang": "en", "enabled": true, "weight": 1.6,
-      "notes": "URL confirmed 2026-09-01 by the operator (see us_nass_todays_reports). ASB is the board that clears NASS's major statistical releases for embargoed publication -- higher weight than the plain reports feed for that reason."
+      "notes": "URL confirmed 2026-09-01 by the operator (see us_nass_todays_reports). ASB is the board that clears NASS's major statistical releases for embargoed publication -- higher weight than the plain reports feed for that reason. Confirmed live 2026-09-02 (first Actions run, 40 items -- this is a rolling notice archive going back to 2023/2024, not just today's, so recency scoring is doing real work here)."
     },
     {
       "id": "us_nass_news",
@@ -45,7 +45,7 @@
       "kind": "rss",
       "url": "http://www.nass.usda.gov/rss/news.xml",
       "lang": "en", "enabled": true, "weight": 1.0,
-      "notes": "URL confirmed 2026-09-01 by the operator (see us_nass_todays_reports). General NASS news/events, not release announcements -- lower weight, may overlap with us_usda_newsroom."
+      "notes": "URL confirmed 2026-09-01 by the operator (see us_nass_todays_reports). General NASS news/events, not release announcements -- lower weight, may overlap with us_usda_newsroom. Confirmed live 2026-09-02 (first Actions run, 40 items, same rolling-archive shape as us_nass_asb)."
     },
     {
       "id": "us_usda_ers_newsroom",
@@ -53,8 +53,8 @@
       "default_country": "USA",
       "kind": "rss",
       "url": "https://www.ers.usda.gov/rss/newsroom.xml",
-      "lang": "en", "enabled": true, "weight": 1.2,
-      "notes": "Outlook series (Wheat Outlook, Feed Outlook, Oil Crops Outlook) -- monthly, per-commodity."
+      "lang": "en", "enabled": false, "weight": 1.2,
+      "notes": "DISABLED 2026-09-02: HTTP 404 on first live Actions run (see New for anti/scripts/commodity_reports/README.md). Outlook series (Wheat Outlook, Feed Outlook, Oil Crops Outlook) are still worth having -- URL needs finding, this path is gone."
     },
     {
       "id": "us_usda_ers_charts",
@@ -62,17 +62,17 @@
       "default_country": "USA",
       "kind": "rss",
       "url": "https://www.ers.usda.gov/rss/charts-of-note.xml",
-      "lang": "en", "enabled": true, "weight": 0.9,
-      "notes": "One chart + one paragraph per weekday. Low weight: useful colour, rarely the headline number."
+      "lang": "en", "enabled": false, "weight": 0.9,
+      "notes": "DISABLED 2026-09-02: HTTP 404 on first live Actions run. Same ERS RSS retirement as us_usda_ers_newsroom -- check whether ERS moved to a different feed path or dropped RSS."
     },
     {
       "id": "us_fas_newsroom",
       "agency": "USDA FAS", "agency_ko": "미 농무부 해외농업국",
       "kind": "rss",
       "url": "https://www.fas.usda.gov/newsroom/rss.xml",
-      "lang": "en", "enabled": true, "weight": 1.35,
+      "lang": "en", "enabled": false, "weight": 1.35,
       "scope_hint": "global",
-      "notes": "FAS reports on OTHER countries' crops (GAIN attaché reports, Commodity Intelligence). No default_country on purpose -- the text names the country the report is about."
+      "notes": "DISABLED 2026-09-02: HTTP 404 on first live Actions run. This is the one source that reports on OTHER countries' crops (GAIN attaché reports) -- worth re-finding over the others, since us_usda_newsroom/nass only cover the US."
     },
     {
       "id": "us_eia_today_in_energy",
@@ -82,7 +82,7 @@
       "lang": "en", "enabled": true, "weight": 1.15,
       "scope_hint": "global",
       "commodity_hint": ["oil"],
-      "notes": "Known-good feed (already carried by the official_reports pipeline)."
+      "notes": "Known-good feed (already carried by the official_reports pipeline). Confirmed live 2026-09-02 (first Actions run, 11 items)."
     },
     {
       "id": "us_eia_press",
@@ -92,7 +92,7 @@
       "lang": "en", "enabled": true, "weight": 1.3,
       "scope_hint": "global",
       "commodity_hint": ["oil"],
-      "notes": "Short-Term Energy Outlook and Annual Energy Outlook announcements."
+      "notes": "Short-Term Energy Outlook and Annual Energy Outlook announcements. Confirmed live 2026-09-02 (first Actions run, 10 items)."
     },
     {
       "id": "br_conab",
@@ -100,9 +100,9 @@
       "default_country": "BRA",
       "kind": "rss",
       "url": "https://www.conab.gov.br/ultimas-noticias?format=feed&type=rss",
-      "lang": "pt", "enabled": true, "weight": 1.4,
+      "lang": "pt", "enabled": false, "weight": 1.4,
       "commodity_hint": ["soybeans", "corn"],
-      "notes": "Acompanhamento da Safra -- the Brazilian counterpart to WASDE. Portuguese; aliases in commodities.json cover soja/milho/açúcar/café/algodão."
+      "notes": "DISABLED 2026-09-02: reachable but feed_status says not_a_feed_payload on first live run -- the URL answers with something that isn't RSS/Atom/RDF (most likely an HTML page; the ?format=feed&type=rss query string may no longer be honored). Different failure than the 404s below: this is a URL/parameter fix, not a dead host. Acompanhamento da Safra is the Brazilian counterpart to WASDE and worth re-finding."
     },
     {
       "id": "ca_statcan_daily",
@@ -110,26 +110,26 @@
       "default_country": "CAN",
       "kind": "rss",
       "url": "https://www150.statcan.gc.ca/n1/rss/dai-quo/dai-quo-eng.xml",
-      "lang": "en", "enabled": true, "weight": 1.1,
-      "notes": "The Daily carries Field Crop Reporting Series (production of principal field crops)."
+      "lang": "en", "enabled": false, "weight": 1.1,
+      "notes": "DISABLED 2026-09-02: HTTP 404 on first live Actions run. The Daily carries Field Crop Reporting Series -- worth re-finding, StatCan restructures its RSS paths periodically."
     },
     {
       "id": "int_fao_newsroom",
       "agency": "FAO", "agency_ko": "유엔 식량농업기구",
       "kind": "rss",
       "url": "https://www.fao.org/newsroom/rss/en/",
-      "lang": "en", "enabled": true, "weight": 1.25,
+      "lang": "en", "enabled": false, "weight": 1.25,
       "scope_hint": "global",
-      "notes": "Food Price Index, Crop Prospects and Food Situation, AMIS Market Monitor announcements."
+      "notes": "DISABLED 2026-09-02: HTTP 404 on first live Actions run. FAO is the only confirmed source of genuine world balance-sheet reports (Food Price Index, Crop Prospects) -- highest-value one to re-find among the six that died this run."
     },
     {
       "id": "eu_agri",
       "agency": "European Commission DG AGRI", "agency_ko": "EU 집행위 농업총국",
       "kind": "rss",
       "url": "https://agriculture.ec.europa.eu/rss_en",
-      "lang": "en", "enabled": true, "weight": 1.1,
+      "lang": "en", "enabled": false, "weight": 1.1,
       "scope_hint": "global",
-      "notes": "EU short-term outlook and cereal balance sheets. Member-state reports get tagged to the member state named in the text."
+      "notes": "DISABLED 2026-09-02: HTTP 404 on first live Actions run. EU short-term outlook and cereal balance sheets -- URL needs re-finding."
     },
     {
       "id": "in_pib_agriculture",
@@ -138,7 +138,7 @@
       "kind": "rss",
       "url": "https://pib.gov.in/RssMain.aspx?ModId=6&Lang=1&Regid=3",
       "lang": "en", "enabled": true, "weight": 1.05,
-      "notes": "Advance Estimates of foodgrain production come out through PIB."
+      "notes": "Advance Estimates of foodgrain production come out through PIB. Confirmed live 2026-09-02 (first Actions run, 20 items)."
     },
     {
       "id": "au_abares",
