@@ -95,6 +95,15 @@
       "notes": "Short-Term Energy Outlook and Annual Energy Outlook announcements. Confirmed live 2026-09-02 (first Actions run, 10 items)."
     },
     {
+      "id": "us_eia_whats_new",
+      "agency": "EIA", "agency_ko": "미 에너지정보청",
+      "kind": "rss",
+      "url": "https://www.eia.gov/about/new/WNtest3.php",
+      "lang": "en", "enabled": true, "weight": 1.15,
+      "scope_hint": "global",
+      "notes": "EIA's site-wide 'What's New' feed -- the operator supplied this URL directly (2026-09-02) alongside the two EIA feeds already in this file, and an earlier web search independently turned up the same URL already indexed serving raw RSS XML. Broader than us_eia_today_in_energy/us_eia_press: those two only ever carry oil (commodity_hint), but 'What's New' covers whatever EIA publishes across all fuels -- coal and natural gas included, which otherwise have zero sources in this config. No commodity_hint set on purpose: an untagged item here should be dropped, not defaulted to oil like the other two EIA sources. Not yet confirmed live -- next Actions run's feed_status decides."
+    },
+    {
       "id": "br_conab",
       "agency": "CONAB", "agency_ko": "브라질 국가식량공급공사",
       "default_country": "BRA",
@@ -183,10 +192,10 @@
       "id": "us_usgs_news",
       "agency": "USGS National Minerals Information Center", "agency_ko": "미 지질조사국 국립광물정보센터(NMIC)",
       "kind": "rss",
-      "url": "https://www.usgs.gov/programs/mineral-resources-program/news/feed",
-      "lang": "en", "enabled": false, "weight": 1.2,
+      "url": "https://www.usgs.gov/news/minerals/feed",
+      "lang": "en", "enabled": true, "weight": 1.2,
       "scope_hint": "global",
-      "notes": "DISABLED 2026-09-02: not a 404 -- the first live Actions run after enabling (run #3, commit 624db3a) failed with 'URLError: <urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate>'. That is a TLS chain-of-trust failure, not a bad path: the same run's fetch_text()/ssl.create_default_context() worked fine against fas.usda.gov (us_fas_gain_reports succeeded) and other .gov/.usda.gov hosts in this same file, so this looks specific to usgs.gov's certificate chain -- plausibly a Federal PKI intermediate the Actions runner's default CA bundle doesn't carry, a known class of issue for some US government sites. Do not work around this by disabling certificate verification; either find usgs.gov's actual intermediate CA and pin it, or leave this disabled. Mineral Commodity Summaries is still the reference for the metals windows, which otherwise have zero sources -- highest-priority gap in this config, but this specific fix needs more than a URL change."
+      "notes": "URL replaced 2026-09-02: the operator fetched '/programs/mineral-resources-program/news/feed' (the previous guess) directly and pasted back the real response -- a valid RSS 2.0 channel whose own <atom:link rel=\"self\"> names the canonical URL as 'https://www.usgs.gov/news/minerals/feed', not the path we were requesting. That mismatch -- a Drupal view answering at an alias but declaring a different canonical self-link -- is the likely reason the previous guess hit 'SSL: CERTIFICATE_VERIFY_FAILED' on the first live run (run #3): a redirect through a differently-configured host, not a broken cert on usgs.gov itself. Switched to the canonical URL directly and re-enabled. The channel the operator fetched had zero <item> entries at the time (empty but well-formed, not an error) -- next Actions run's feed_status confirms whether this path fetches cleanly and whether items are actually flowing. Mineral Commodity Summaries is still the reference for the metals windows, which otherwise have zero sources."
     },
     {
       "id": "int_lme_notices",

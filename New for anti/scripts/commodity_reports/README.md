@@ -146,7 +146,7 @@ python3 build_reports.py label --series-id USDA_CROP_PROGRESS --label drop
 GitHub Actions 러너에는 이 제약이 없어서, 머지 후 `workflow_dispatch`로 한 번 실제로
 돌려 진짜 결과를 얻었다 ([run #1](https://github.com/sunbininfokim-yeon/global-trade-dashboard/actions/runs/33589460784)).
 
-**enabled (8/22, 라이브 확인됨):**
+**enabled (8/23, 라이브 확인됨):**
 
 | 소스 | 결과 |
 |---|---|
@@ -158,6 +158,22 @@ GitHub Actions 러너에는 이 제약이 없어서, 머지 후 `workflow_dispat
 | `us_eia_press` | 10 items |
 | `in_pib_agriculture` | 20 items |
 | `us_fas_gain_reports` | 확인됨(개별 건수 미기록) — 2026-09-02 [run #3](https://github.com/sunbininfokim-yeon/global-trade-dashboard/actions/runs/33631914603)의 실패 목록에 없음. Akamai Bot Manager 우려와 달리 GitHub Actions 러너의 스크레이프가 그대로 통과했다 |
+
+**enabled, 아직 라이브 미확인 (2026-09-02, 운영자가 직접 확인해준 URL):**
+
+- `us_usgs_news` — 이전 URL(`/programs/mineral-resources-program/news/feed`)이 run #3에서
+  SSL 인증서 오류로 실패했는데, 운영자가 그 URL을 직접 열어 실제 응답을 붙여줬다: 유효한
+  RSS 채널이었고, 그 채널 자신의 `<atom:link rel="self">`가 진짜 정본 URL이
+  `https://www.usgs.gov/news/minerals/feed`라고 밝히고 있었다 — 우리가 요청한 경로와
+  다르다. Drupal 별칭 경로가 리다이렉트를 거치면서 인증서 체인이 다른 호스트로 갔던 게
+  SSL 실패의 실제 원인이었을 가능성이 높다. 정본 URL로 바로 교체하고 재활성화했다.
+  단, 운영자가 받아온 응답 자체에는 `<item>`이 하나도 없었다(에러는 아니고 그냥 빈 채널) —
+  실제로 항목이 들어오는지는 다음 Actions 실행이 확인.
+- `us_eia_whats_new` (`eia.gov/about/new/WNtest3.php`) — 운영자가 기존 EIA 소스 2개와
+  같이 직접 준 URL. 웹서치에서도 이미 실제 XML을 서빙하는 걸로 독립 확인됐던 주소라
+  근거가 겹친다. `us_eia_today_in_energy`/`us_eia_press`는 둘 다 `commodity_hint: oil`이라
+  본문에 상품이 안 걸리면 오일로 취급되는데, 이 피드는 EIA가 내는 전체(석탄·천연가스
+  포함) "새 소식"이라 일부러 commodity_hint를 안 걸었다 — 본문에서 안 잡히면 그냥 버려진다.
 
 실제 태깅 결과도 확인됨 — 예: "USDA Forecasts U.S. Corn Production Up and Soybean Production
 Down" → `corn`+`soybeans`·`USA`, `USDA_CROP_PRODUCTION` 시리즈로 정확히 매칭.
@@ -182,14 +198,9 @@ Down" → `corn`+`soybeans`·`USA`, `USDA_CROP_PRODUCTION` 시리즈로 정확�
   실제로 작동)이 GIEWS에는 안 맞았다 — GIEWS 자체 페이지 구조는 `news`가 아니라
   `reports`(`fao.org/giews/reports/en`)라, 다음 시도는 `/giews/reports/rss/en`. 여전히
   세계 수급표(`_global`)를 내는 값어치 있는 소스라 재탐색 우선순위 유지.
-- **`us_usgs_news`** — 404가 아니라 **SSL 인증서 검증 실패**
-  (`CERTIFICATE_VERIFY_FAILED: unable to get local issuer certificate`). 같은 실행에서
-  `us_fas_gain_reports`를 포함해 다른 모든 소스는 정상 통과했으니 이 파이썬 코드의
-  `ssl.create_default_context()` 자체 문제가 아니라 **usgs.gov 인증서 체인에 특정된
-  문제**로 보인다 — 일부 미국 정부 사이트가 기본 CA 번들에 없는 Federal PKI 중간 인증서를
-  쓰는 알려진 케이스다. 인증서 검증을 끄는 식으로 우회하지 말 것 — usgs.gov의 실제
-  중간 인증서를 찾아 핀 하거나, 그때까지 disabled로 둔다. 금속 15종(금·은·구리·
-  알루미늄 등)이 지금 소스가 하나도 없는 가장 큰 공백이라 우선순위는 여전히 높다.
+
+(`us_usgs_news`도 이 실행에서 SSL 인증서 오류로 같이 죽었었는데, 운영자가 직접 정본 URL을
+찾아줘서 위 "enabled, 아직 라이브 미확인" 표로 옮겼다 — 자세한 경위는 거기 참조.)
 
 FAO가 6개 중 가장 아쉬웠다 — 세계 수급표(`_global`)를 내는 유일한 확인 소스였다.
 그래서 `int_fao_giews`로 바로 재시도했다. 나머지 재탐색 우선순위: FAS(타국 작황 보고,
