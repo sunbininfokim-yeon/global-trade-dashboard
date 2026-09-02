@@ -89,6 +89,68 @@ function stage(text, billType) {
   if (/introduced/.test(value)) return 'introduced';
   return 'other';
 }
+
+const STAGE_RANK = {
+  introduced: 1,
+  referred: 2,
+  subcommittee: 3,
+  committee_consideration: 4,
+  reported: 5,
+  passed_origin_chamber: 6,
+  second_chamber: 7,
+  resolving_differences: 8,
+  passed_both_chambers: 9,
+  presented_to_president: 10,
+  enacted: 11,
+};
+
+function actionTimestamp(action, fallbackIndex) {
+  const date = parseDateOnly(action?.actionDate);
+  const value = date ? Date.parse(`${date}T${action?.actionTime || '00:00:00'}Z`) : NaN;
+  // Congress.gov action lists can omit a time. Keep their source order stable
+  // in that case rather than inventing an ordering.
+  return Number.isFinite(value) ? value : fallbackIndex;
+}
+
+function chronologicalActions(actions) {
+  return asArray(actions)
+    .map((action, index) => ({ action, index }))
+    .sort((left, right) => actionTimestamp(left.action, left.index) - actionTimestamp(right.action, right.index));
+}
+
+function actionChamber(action) {
+  const text = String(action?.text || '');
+  return asChamber(action?.chamber)
+    || (/\bsenate\b/i.test(text) ? 'senate' : null)
+    || (/\bhouse\b/i.test(text) ? 'house' : null);
+}
+
+function stageFromActions(actions, billType, fallbackAction) {
+  let current = stage(firstNonEmpty(fallbackAction?.text, 'Introduced'), billType);
+  let passedOrigin = false;
+
+  for (const { action } of chronologicalActions(actions)) {
+    const candidate = stage(action?.text, billType);
+    // A terminal action is definitive for the bill's current lifecycle.
+    if (candidate === 'enacted' || candidate === 'vetoed' || candidate === 'failed') current = candidate;
+    else if (current !== 'enacted' && current !== 'vetoed' && current !== 'failed'
+      && (STAGE_RANK[candidate] || 0) > (STAGE_RANK[current] || 0)) current = candidate;
+
+    if (candidate === 'passed_origin_chamber') passedOrigin = true;
+    // Congress.gov often records a bill's next step as merely "Referred to
+    // the Committee ...". Once its originating chamber has passed it, a
+    // referral in the other chamber means the second-chamber stage, not a
+    // regression back to the initial referral stage.
+    if (passedOrigin && candidate === 'referred' && actionChamber(action) && actionChamber(action) !== origin(billType)
+      && !['enacted', 'vetoed', 'failed'].includes(current)) current = 'second_chamber';
+  }
+  return current;
+}
+
+function latestActionOf(actions, fallbackAction) {
+  const ordered = chronologicalActions(actions);
+  return ordered.length ? ordered.at(-1).action : fallbackAction;
+}
 function actionId(billId, action, index) {
   return `ca_${crypto.createHash('sha256').update([billId, action.actionDate, action.actionTime, action.actionCode, action.text, index].join('|')).digest('hex').slice(0, 32)}`;
 }
@@ -204,23 +266,27 @@ async function bundle(ref) {
   const path = `/bill/${ref.congress}/${ref.type}/${ref.number}`;
   const detailBody = await apiGet(path);
   const detail = detailBody?.bill || detailBody || {};
-  const [summaryBody, subjectBody, committeeBody] = await Promise.all([
+  // Every current-Congress bill reads its official action timeline once so the
+  // lifecycle stage is based on evidence, not only the wording of the latest
+  // one-line status. Index-only bills discard the timeline after classification
+  // and never persist action, text, or vote detail.
+  const [summaryBody, subjectBody, committeeBody, actionBody] = await Promise.all([
     apiGet(`${path}/summaries`, { limit: 250 }, true), apiGet(`${path}/subjects`, { limit: 250 }, true),
-    apiGet(`${path}/committees`, { limit: 250 }, true),
+    apiGet(`${path}/committees`, { limit: 250 }, true), apiGet(`${path}/actions`, { limit: 250 }, true),
   ]);
   const summaries = asArray(summaryBody?.summaries);
   const latestSummary = [...summaries].sort((a, b) => String(a.updateDate || '').localeCompare(String(b.updateDate || ''))).at(-1);
   const basicLatestAction = detail.latestAction || ref.listItem?.latestAction || {};
-  const provisionalStage = stage(firstNonEmpty(basicLatestAction.text, 'Introduced'), ref.type);
-  const level = detailLevel(provisionalStage);
-  const [actionBody, textBody, relationBody] = level === 'index'
-    ? [null, null, null]
+  const actions = asArray(actionBody?.actions);
+  const currentStage = stageFromActions(actions, ref.type, basicLatestAction);
+  const level = detailLevel(currentStage);
+  const [textBody, relationBody] = level === 'index'
+    ? [null, null]
     : await Promise.all([
-      apiGet(`${path}/actions`, { limit: 250 }, true), apiGet(`${path}/text`, { limit: 250 }, true),
+      apiGet(`${path}/text`, { limit: 250 }, true),
       apiGet(`${path}/relatedbills`, { limit: 250 }, true),
     ]);
-  const actions = asArray(actionBody?.actions);
-  const latestAction = actions.at(-1) || basicLatestAction;
+  const latestAction = latestActionOf(actions, basicLatestAction);
   const sponsorItem = asArray(detail.sponsors?.item || detail.sponsors || detail.sponsor).at(0) || {};
   const sponsorId = firstNonEmpty(sponsorItem.bioguideId, sponsorItem.bioguide_id);
   const policyName = typeof detail.policyArea === 'string' ? detail.policyArea : detail.policyArea?.name;
@@ -239,7 +305,7 @@ async function bundle(ref) {
       title: firstNonEmpty(detail.title, ref.listItem.title, `${ref.type.toUpperCase()} ${ref.number}`),
       sponsor: firstNonEmpty(sponsorItem.fullName, sponsorItem.name, await memberName(sponsorId)), sponsor_bioguide_id: sponsorId,
       introduced_date: parseDateOnly(detail.introducedDate), current_status: firstNonEmpty(latestAction.text, 'Introduced'),
-      current_stage: stage(firstNonEmpty(latestAction.text, 'Introduced'), ref.type), status_updated_at: parseTimestamp(latestAction.actionDate),
+      current_stage: currentStage, status_updated_at: parseTimestamp(latestAction.actionDate),
       latest_action_date: parseDateOnly(latestAction.actionDate), latest_action_text: latestAction.text || null,
       policy_area_id: policyAreaId, summary: latestSummary?.text || null, summary_source: latestSummary ? 'Congress.gov CRS' : null,
       summary_updated_at: parseTimestamp(firstNonEmpty(latestSummary?.lastSummaryUpdateDate, latestSummary?.updateDate)),
@@ -302,7 +368,7 @@ async function saveBundle(data) {
       activity_names: asArray(committee.activities).map((item) => item.name || item).filter(Boolean), raw_source: committee }], 'bill_id,committee_id');
   }
   let latestActionId = null;
-  for (let index = 0; index < data.actions.length; index += 1) {
+  if (data.detailLevel !== 'index') for (let index = 0; index < data.actions.length; index += 1) {
     const action = data.actions[index]; const actionText = firstNonEmpty(action.text, 'Action recorded'); const id = actionId(data.billId, action, index);
     const actionDate = parseTimestamp(`${parseDateOnly(action.actionDate) || '1900-01-01'}T${action.actionTime || '00:00:00'}Z`);
     await supabaseUpsert('bill_actions', [{ bill_action_id: id, bill_id: data.billId, action_date: actionDate,

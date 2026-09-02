@@ -57,12 +57,15 @@
   ];
 
   function buildStageTabs(stageCounts) {
+    const hasCounts = !!stageCounts && typeof stageCounts === 'object';
     const sc = stageCounts || {};
     const total = Object.values(sc).reduce((a, b) => a + b, 0);
     return STAGE_TAB_DEFS.map((def) => ({
       label: def.label,
       stage: def.stages.join(','),
-      count: def.stages.length ? def.stages.reduce((s, k) => s + (sc[k] || 0), 0) : total,
+      // Do not render 0 when the aggregate RPC is unavailable. A missing
+      // number must remain visibly unknown rather than claim no bills exist.
+      count: hasCounts ? (def.stages.length ? def.stages.reduce((s, k) => s + (sc[k] || 0), 0) : total) : null,
     }));
   }
 

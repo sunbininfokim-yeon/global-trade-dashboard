@@ -121,6 +121,8 @@ committee_agency_jurisdictions
 
 `other`는 원본 Congress.gov action은 보존됐지만 자동 단계 분류가 확정되지 않은 예외 상태다. 별도 “종료”로 오인하지 않고 전체 보기에서 `분류 확인 필요` 배지로 표시한다. 필요해질 경우에만 `other` 전용 운영 필터를 추가한다.
 
+탭 수는 `policy_bill_stage_counts` 읽기 전용 RPC가 반환한 실제 행 수를 사용한다. 집계 RPC를 호출할 수 없는 경우에는 `0`을 표시하지 않고 수치를 숨긴다. `0`은 해당 필터에 법안이 없다는 검증된 값일 때만 표시한다.
+
 **목록 필드**: `bill_id`, `title`, `sponsor`, `introduced_date`, `current_stage`, `current_status`, `latest_action_date`, `policy_area_id`, `summary`, `congress_url`.
 
 ### 법안 상세: 회부 상임위·표결·관련 법안

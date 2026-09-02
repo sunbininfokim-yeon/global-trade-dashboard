@@ -155,6 +155,8 @@ Congress.gov action code와 문구를 근거로 정규화하되, 원문은 항�
 - `GET /api/us/law/public-laws?congress_number=119&cursor=...`
 - `GET /api/us/law/public-laws/:public_law_id`
 - `GET /api/us/law/us-code/titles`
+
+법안 목록 응답의 `stage_counts`는 `policy_bill_stage_counts` 읽기 전용 RPC로 계산한다. 이는 PostgREST의 선택적 aggregate 설정과 무관하게 실제 `bills.current_stage` 행 수를 반환하며, 선택된 `stage` 필터는 집계에는 적용하지 않는다.
 - `GET /api/us/law/us-code/sections?title_number=19&cursor=...`
 
 상임위 카드의 담당 부처명은 `committee_agency_jurisdictions → agencies` 조인 결과다. 공식 또는 검증된 수동 매핑만 표시한다.
