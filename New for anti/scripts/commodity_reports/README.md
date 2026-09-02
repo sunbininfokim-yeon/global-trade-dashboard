@@ -161,6 +161,20 @@ GitHub Actions 러너에는 이 제약이 없어서, 머지 후 `workflow_dispat
 
 **enabled, 아직 라이브 미확인 (2026-09-02, 운영자가 직접 확인해준 URL):**
 
+- `jp_meti_en` (`meti.go.jp/ml_index_en_atom.xml`) — 일본 경제산업성. 운영자가 직접
+  준 URL, 검색으로 같은 명명 규칙의 자매 피드(`ml_index_release_atom.xml`, 일본어판으로
+  추정)가 나와서 근거가 겹친다. Atom 포맷 -- `parse_feed()`가 RSS/Atom 둘 다 처리하니
+  코드 변경 불필요. 상품 전용 기관이 아니라 SME 정책·제조업·지재권 같은 무관한
+  공지가 대부분일 텐데, 그중 에너지 안보·희토류 등 전략광물 비축 정책 발표가 이
+  파이프라인이 원하는 부분이다 -- 나머지는 그냥 드롭된다.
+- `int_spglobal_energy` (`spglobal.com/energy/en/news-research/rss-feed`) — **"공식
+  발행처만" 원칙의 유일한 의도적 예외**(2026-09-02, 운영자 판단). 원문 기사는
+  유료지만 RSS 자체(헤드라인+짧은 요약)는 무료로 공개하는, 유료 트레이드 프레스의
+  흔한 형태라는 근거로 추가. 가중치는 이 파일에서 가장 낮은 축(1.0)으로 잡아서,
+  같은 발표를 USDA/EIA/NASS 등 공식 소스가 이미 다뤘을 때 상업 소스가 순위를
+  앞지르지 않게 했다. 이건 애그리게이터 전면 허용이 아니라 이 한 건에 대한
+  예외다 — 같이 검토했던 marketroro.com(정체 확인 불가)은 그대로 제외했다.
+
 - `us_usgs_news` — 이전 URL(`/programs/mineral-resources-program/news/feed`)이 run #3에서
   SSL 인증서 오류로 실패했는데, 운영자가 그 URL을 직접 열어 실제 응답을 붙여줬다: 유효한
   RSS 채널이었고, 그 채널 자신의 `<atom:link rel="self">`가 진짜 정본 URL이
