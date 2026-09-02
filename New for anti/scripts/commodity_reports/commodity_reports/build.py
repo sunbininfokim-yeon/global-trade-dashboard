@@ -127,7 +127,6 @@ def build_commodity_reports(
                                  "error": "no_fetch", "mode": "none"}]
 
     scored: List[ScoredReport] = []
-    untagged: List[Dict[str, Any]] = []
     for r in raw:
         tagged = tag_report(
             title=r.title,
@@ -142,13 +141,11 @@ def build_commodity_reports(
         if r.scope_hint == "global" and tagged.country_source == "source_default":
             tagged.countries, tagged.scope, tagged.country_source = [], "global", "none"
         item = scorer.score(r, tagged, now=now)
+        # No commodity this dashboard tracks, or rejected outright (photo
+        # galleries etc.) -- dropped, not queued anywhere. A review loop over
+        # what got dropped is a real feature; it isn't built yet, so there is
+        # nothing here pretending to be one.
         if item is None:
-            # Kept for the label loop: a release the tagger dropped is either
-            # genuinely off-topic or a commodity alias this config is missing,
-            # and only reading them tells you which.
-            if len(untagged) < 25:
-                untagged.append({"title": r.title, "url": r.url, "agency": r.agency,
-                                 "reason": "no_commodity_match" if not tagged.commodities else "rejected"})
             continue
         scored.append(item)
 
@@ -209,7 +206,6 @@ def build_commodity_reports(
         "country_names": country_names,
         "index": index,
         "items": items,
-        "pending_review": untagged,
     }
 
 

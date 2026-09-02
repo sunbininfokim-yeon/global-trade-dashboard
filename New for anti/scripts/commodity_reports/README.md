@@ -81,10 +81,12 @@ python3 build_reports.py build --translate --translate-limit 60
       "series_id": "USDA_WASDE", "importance": 5.38,
       "reasons": ["series:USDA_WASDE", "has_figure", "revision_language"]
     }
-  ],
-  "pending_review": [ /* 태깅에 실패한 발표 — 별칭 누락을 눈에 보이게 */ ]
+  ]
 }
 ```
+
+태깅에 실패한 발표(추적 안 하는 상품이거나, off-topic으로 걸러진 것)는 **그냥 버린다** —
+지금은 리뷰 큐도, 별도 저장도 없다. 별칭 누락을 찾아내는 루프는 아직 안 만들었다.
 
 ## API
 

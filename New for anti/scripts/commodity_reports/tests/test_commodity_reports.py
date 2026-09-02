@@ -202,12 +202,12 @@ class BuildTests(unittest.TestCase):
             matches = [rid for rid in ids if by_id[rid]["series_id"] == "USDA_AG_PRICES"]
             self.assertTrue(matches, f"Agricultural Prices missing from {commodity}·USA")
 
-    def test_report_with_no_tracked_commodity_is_reported_not_silently_dropped(self):
+    def test_report_with_no_tracked_commodity_is_dropped(self):
         # "Egg Products" names no commodity this dashboard tracks (no egg window
-        # exists). It must show up in pending_review so a missing alias is visible,
-        # rather than vanishing with no trace.
-        titles = [p["title"] for p in self.doc["pending_review"]]
-        self.assertIn("Egg Products", titles)
+        # exists). Dropped -- no review queue to land in, by design for now.
+        titles = [it["title"]["original"] for it in self.doc["items"]]
+        self.assertNotIn("Egg Products", titles)
+        self.assertNotIn("pending_review", self.doc)
 
     def test_windows_are_addressable_by_commodity_and_iso3(self):
         # br_conab and int_fao_newsroom are disabled (config/sources.json,
