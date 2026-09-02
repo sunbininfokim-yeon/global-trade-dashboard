@@ -4,7 +4,7 @@
   "fetch_timeout_sec": 22,
   "max_items_per_source": 40,
   "notes": [
-    "Official publishers only -- statistical agencies, ministries, and the intergovernmental bodies that publish commodity balance sheets. No aggregators, no paywalled trade press.",
+    "Official publishers only -- statistical agencies, ministries, and the intergovernmental bodies that publish commodity balance sheets. No aggregators, no paywalled trade press. EXCEPTION (2026-09-02, operator decision): S&P Global's own RSS feeds are allowed even though the full articles sit behind a paywall -- the feed itself (headline + short excerpt) is free, the standard shape for RSS on paywalled trade press. This is a deliberate one-off, not an opening for aggregators generally; an unverifiable site with zero independent footprint (checked and rejected the same day) stayed out specifically because this exception is not a general license.",
     "default_country is a fallback for releases that name no country (CONAB's safra bulletins never write 'Brazil'). Any country the text does name wins over it -- a USDA release on Brazilian wheat is a Brazil report.",
     "scope_hint 'global' marks publishers whose untagged releases are world balance sheets, not home-country news (FAO, IGC, IEA, OPEC).",
     "commodity_hint only fires when the text mentions no commodity at all; it is a prior, not an override.",
@@ -166,6 +166,15 @@
       "url": "https://www.meti.go.jp/ml_index_en_atom.xml",
       "lang": "en", "enabled": true, "weight": 1.1,
       "notes": "URL supplied directly by the operator 2026-09-02, corroborated by search turning up a sibling feed at the same naming convention (meti.go.jp/ml_index_release_atom.xml). Atom, not RSS 2.0 -- parse_feed() handles both. METI is Japan's economy/trade/industry ministry: mostly SME policy, manufacturing, IP and safety regulation that this pipeline will correctly drop as untagged, but it is also where Japan's energy security and critical-minerals policy comes out (LNG/oil import policy, JOGMEC-adjacent rare earth/cobalt/lithium stockpiling announcements) -- the actual reason it's worth having. default_country JPN is a fallback only; a release about, say, Australian lithium still routes to Australia same as any other source here. Not yet confirmed live -- next Actions run's feed_status decides."
+    },
+    {
+      "id": "int_spglobal_energy",
+      "agency": "S&P Global Commodity Insights", "agency_ko": "S&P 글로벌 원자재 인사이트",
+      "kind": "rss",
+      "url": "https://www.spglobal.com/energy/en/news-research/rss-feed",
+      "lang": "en", "enabled": true, "weight": 1.0,
+      "scope_hint": "global",
+      "notes": "The one deliberate exception to 'official publishers only' in this file (see the top-level notes array) -- operator's call 2026-09-02, on the reasoning that the RSS feed itself (headline + short excerpt) is free even though the full S&P Global Commodity Insights articles sit behind a paywall, which is the standard shape for trade-press RSS. Weighted at 1.0, the low end of this file, on purpose: as a commercial outlet covering the same ground official sources already do here, it should not outrank USDA/EIA/NASS when both cover the same release. URL supplied directly by the operator; search corroborates spglobal.com/energy hosts multiple real RSS endpoints, though the exact one given may turn out to be a landing page rather than raw XML -- if so this reports not_a_feed_payload like br_conab did, not garbage data. Not yet confirmed live."
     },
     {
       "id": "au_abares",
