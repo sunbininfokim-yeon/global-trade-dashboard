@@ -177,11 +177,20 @@ def parse_feed(body: str, source: Dict[str, Any], max_items: int = 40) -> List[R
         # Feeds that repeat the headline as the body add nothing to the card.
         if summary.lower().startswith(title.lower()):
             summary = summary[len(title):].strip(" -–—:·")
+        # RSS 2.0 technically requires <link> to be an absolute URL, but not
+        # every publisher's feed generator honors that -- EIA's press feed
+        # emits "/pressroom/releases/press589.php" with no scheme or host.
+        # Left as-is, that string is a relative path on *this* site, not
+        # theirs, and the card's "원문으로 이동" link 404s on our own domain.
+        # The feed's own URL is the base every publisher's relative link is
+        # actually relative to, since it lives on the same site as the pages
+        # it points at.
+        absolute_url = urljoin(source.get("url", ""), link.strip())
         items.append(
             _raw_from(
                 source,
                 title=title,
-                url=link.strip(),
+                url=absolute_url,
                 summary=clip(summary),
                 published_at=parse_date(pub),
             )
@@ -226,6 +235,60 @@ def parse_html_list(body: str, source: Dict[str, Any]) -> List[RawReport]:
     return items
 
 
+_GAIN_CARD_SPLIT_RE = re.compile(r"(?=<time\s+datetime=[\"'])", re.I)
+_GAIN_DATETIME_RE = re.compile(r"<time\s+datetime=[\"']([^\"']+)[\"']", re.I)
+_GAIN_LINK_RE = re.compile(r'<a\s+href=["\']([^"\']+)["\'][^>]*class=["\'][^"\']*c-card__url[^"\']*["\']', re.I)
+_GAIN_TITLE_RE = re.compile(r'c-card__title[^>]*>(.*?)</h3>', re.I | re.S)
+_GAIN_SUMMARY_RE = re.compile(r'c-card__content[^>]*>(.*?)</div>', re.I | re.S)
+
+
+def parse_fas_gain_cards(body: str, source: Dict[str, Any], max_items: int = 40) -> List[RawReport]:
+    """USDA FAS GAIN attaché reports (fas.usda.gov/data/search, report_type:10251).
+
+    Moved off gain.fas.usda.gov in 2026; the replacement is a Drupal 10
+    Views+Facets listing that server-renders each result as a `.c-card`
+    block -- date, title, link and a real summary paragraph are all present
+    in the raw HTML, so this is a scrape rather than an API client. Cards
+    nest divs too deeply for one balanced-tag regex to bound reliably, so
+    the body is cut on every `<time datetime="` boundary (one per card,
+    confirmed from a real page source) and each chunk mined independently.
+    """
+    cfg = source.get("html") or {}
+    base = cfg.get("base") or source.get("url") or ""
+    chunks = _GAIN_CARD_SPLIT_RE.split(body)[1:]  # [0] is the page header, before any card
+
+    items: List[RawReport] = []
+    seen = set()
+    for chunk in chunks:
+        dt_m = _GAIN_DATETIME_RE.search(chunk)
+        link_m = _GAIN_LINK_RE.search(chunk)
+        title_m = _GAIN_TITLE_RE.search(chunk)
+        if not link_m or not title_m:
+            continue
+        full = urljoin(base, link_m.group(1))
+        key = full.split("?", 1)[0].rstrip("/").lower()
+        if key in seen:
+            continue
+        title = strip_html(title_m.group(1))
+        if not title:
+            continue
+        summary_m = _GAIN_SUMMARY_RE.search(chunk)
+        summary = clip(strip_html(summary_m.group(1))) if summary_m else ""
+        seen.add(key)
+        items.append(
+            _raw_from(
+                source,
+                title=title,
+                url=full,
+                summary=summary,
+                published_at=parse_date(dt_m.group(1)) if dt_m else None,
+            )
+        )
+        if len(items) >= max_items:
+            break
+    return items
+
+
 def fetch_source(
     source: Dict[str, Any], *, user_agent: str, timeout: float, max_items: int
 ) -> Dict[str, Any]:
@@ -247,6 +310,8 @@ def fetch_source(
         items = parse_feed(body, source, max_items=max_items)
     elif kind == "html_list":
         items = parse_html_list(body, source)
+    elif kind == "fas_gain_cards":
+        items = parse_fas_gain_cards(body, source, max_items=max_items)
     else:
         return {"source_id": sid, "ok": False, "items": [], "count": 0,
                 "error": f"unknown_kind:{kind}"}
