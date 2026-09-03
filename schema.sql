@@ -1063,12 +1063,13 @@ create or replace function public.preview_congress_rollover_purge(
   p_previous_congress integer,
   p_result_limit integer default 100
 )
-returns table (bill_id text, title text, current_stage text, latest_action_date date)
+returns table (bill_id text, title text, current_stage text, latest_action_date date, total_candidate_count integer)
 language sql
 stable
 set search_path = public
 as $$
-  select bill.bill_id, bill.title, bill.current_stage, bill.latest_action_date
+  select bill.bill_id, bill.title, bill.current_stage, bill.latest_action_date,
+    count(*) over ()::integer as total_candidate_count
   from public.bills bill
   where bill.congress_number = p_previous_congress
     and bill.current_stage <> 'enacted'

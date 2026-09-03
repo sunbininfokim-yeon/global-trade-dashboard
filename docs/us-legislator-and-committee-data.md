@@ -4,6 +4,8 @@
 
 `scripts/sync-us-legislators.js`는 이미 같은 저장소에서 정치-미국 화면이 사용하는 `New for anti/public/data/elections_board_v1.json`의 현재 House/Senate 명단을 `us_legislators`로 적재한다. 보존 필드는 바이오가이드 ID, 이름, 정당, 주, 선거구, 원(하원·상원)이다. 따라서 `bills.sponsor_bioguide_id` 및 `bill_vote_members.bioguide_id`와 정확히 연결할 수 있다. 매 실행은 `data_sync_runs`와 `data_sync_state`에 원본 생성 시각·행 수를 남기며, 새 완전 로스터가 모두 upsert된 뒤에만 명단에서 빠진 의원을 `current_member=false`로 전환한다.
 
+원본에서 유효 의원이 400명 미만이면 동기화는 실패하고 기존 의원 행을 바꾸지 않는다. 비어 있거나 부분 생성된 파일이 기존 537명을 한꺼번에 비활성화하는 사고를 막기 위한 가드다.
+
 ```bash
 node scripts/sync-us-legislators.js
 ```

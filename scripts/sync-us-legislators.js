@@ -12,6 +12,7 @@ const {
 const RESOURCE = 'politics.us:legislator-roster';
 const DEFAULT_ROSTER_PATH = path.resolve(__dirname, '..', 'New for anti', 'public', 'data', 'elections_board_v1.json');
 const ROSTER_PATH = process.env.US_POLITICS_ROSTER_PATH || DEFAULT_ROSTER_PATH;
+const MIN_CURRENT_MEMBERS = 400;
 
 requireEnv('SUPABASE_URL');
 requireEnv('SUPABASE_SERVICE_ROLE_KEY');
@@ -47,16 +48,23 @@ function rowsFromRoster(document, rosterSeenAt) {
       raw_source: member,
     });
   }
-  return [...byId.values()];
+  const rows = [...byId.values()];
+  // A malformed or partial source must never retire every previously current
+  // legislator simply because no fresh rows were produced.
+  if (rows.length < MIN_CURRENT_MEMBERS) {
+    throw new Error(`Refusing roster sync: expected at least ${MIN_CURRENT_MEMBERS} current legislators, received ${rows.length}.`);
+  }
+  return rows;
 }
 
 async function run() {
-  if (!fs.existsSync(ROSTER_PATH)) throw new Error(`Politics-US roster not found: ${ROSTER_PATH}`);
-  const document = JSON.parse(fs.readFileSync(ROSTER_PATH, 'utf8'));
-  const rosterSeenAt = new Date().toISOString();
-  const rows = rowsFromRoster(document, rosterSeenAt);
   const runId = await startSyncRun(RESOURCE, { roster_path: path.basename(ROSTER_PATH) });
+  let rows = [];
   try {
+    if (!fs.existsSync(ROSTER_PATH)) throw new Error(`Politics-US roster not found: ${ROSTER_PATH}`);
+    const document = JSON.parse(fs.readFileSync(ROSTER_PATH, 'utf8'));
+    const rosterSeenAt = new Date().toISOString();
+    rows = rowsFromRoster(document, rosterSeenAt);
     for (let index = 0; index < rows.length; index += 100) {
       await supabaseUpsert('us_legislators', rows.slice(index, index + 100), 'bioguide_id');
     }

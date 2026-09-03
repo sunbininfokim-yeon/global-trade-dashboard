@@ -120,7 +120,8 @@ returns table (
   bill_id text,
   title text,
   current_stage text,
-  latest_action_date date
+  latest_action_date date,
+  total_candidate_count integer
 )
 language sql
 stable
@@ -130,7 +131,8 @@ as $$
     bill.bill_id,
     bill.title,
     bill.current_stage,
-    bill.latest_action_date
+    bill.latest_action_date,
+    count(*) over ()::integer as total_candidate_count
   from public.bills bill
   where bill.congress_number = p_previous_congress
     and bill.current_stage <> 'enacted'

@@ -49,12 +49,18 @@ async function run() {
       p_previous_congress: previous,
       p_result_limit: bounded(PREVIEW_LIMIT, 25, 1, 1000),
     }, 'return=representation');
-    const previewCount = Array.isArray(preview) ? preview.length : 0;
+    const previewRows = Array.isArray(preview) ? preview : [];
+    // The preview is deliberately capped for human inspection, but its window
+    // count represents every eligible bill. Never mistake the sample size for
+    // the candidate count that a person must approve before a purge.
+    const previewCount = Number(previewRows[0]?.total_candidate_count) || 0;
+    const previewSampleCount = previewRows.length;
 
     if (!APPROVED) {
       await finishSyncRun(runId, { status: 'succeeded', records_read: previewCount, records_written: 0,
-        metadata: { active_congress: active, previous_congress: previous, dry_run: true, preview_count: previewCount } });
-      console.log(`Congress rollover dry run: ${previewCount} preview candidates for Congress ${previous}. No records were deleted.`);
+        metadata: { active_congress: active, previous_congress: previous, dry_run: true,
+          candidate_count: previewCount, preview_sample_count: previewSampleCount } });
+      console.log(`Congress rollover dry run: ${previewCount} total candidates for Congress ${previous}; showing a ${previewSampleCount}-row sample. No records were deleted.`);
       return;
     }
 
@@ -64,7 +70,9 @@ async function run() {
     const deletedBills = scalar(deleted, 'deleted_bill_count');
     const deletedQueue = scalar(deleted, 'deleted_queue_count');
     await finishSyncRun(runId, { status: 'succeeded', records_read: previewCount, records_written: deletedBills,
-      metadata: { active_congress: active, previous_congress: previous, dry_run: false, deleted_bills: deletedBills, deleted_queue_rows: deletedQueue } });
+      metadata: { active_congress: active, previous_congress: previous, dry_run: false,
+        candidate_count: previewCount, preview_sample_count: previewSampleCount,
+        deleted_bills: deletedBills, deleted_queue_rows: deletedQueue } });
     console.log(`Congress rollover complete: deleted ${deletedBills} non-enacted bills and ${deletedQueue} matching queue rows for Congress ${previous}.`);
   } catch (error) {
     await finishSyncRun(runId, { status: 'failed', error_summary: error.message });
