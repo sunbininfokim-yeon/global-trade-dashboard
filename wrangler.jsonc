@@ -26,7 +26,14 @@
   "assets": {
     "directory": "New for anti",
     "binding": "ASSETS",
-    "not_found_handling": "single-page-application"
+    "not_found_handling": "single-page-application",
+    // single-page-application 폴백은 네비게이션 요청(Accept: text/html)을 워커보다
+    // 먼저 가로채 index.html 을 돌려준다. XHR(Accept: */*)로 부르는 /api/* 는
+    // 그동안 멀쩡히 워커로 갔기 때문에 이게 드러나지 않았는데, 2026-09-03 에
+    // /api/night-tile/... 을 주소창에 직접 쳐 보고서야 알았다 -- 타일도 사진도
+    // 아니고 사이트 HTML 이 돌아왔다. API 경로는 어떤 Accept 헤더로 오든 워커가
+    // 받아야 한다.
+    "run_worker_first": ["/api/*"]
   },
   // Shared response cache for the /api/* proxies. Without this binding
   // env.API_CACHE is undefined and every visitor triggers their own upstream

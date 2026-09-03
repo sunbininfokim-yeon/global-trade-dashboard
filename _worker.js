@@ -111,10 +111,19 @@ export default {
 // 남는다. 같은 출처로 받아 오면 그 실패면이 사라지고, 엣지 캐시가 한 번 받은
 // 타일을 재사용한다.
 const GIBS_TILE_BASE = 'https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/VIIRS_Black_Marble/default';
-// Black Marble 은 2012·2016 두 장의 연간 합성만 발행된다. 앞의 것이 없으면
-// 뒤로 물러난다 -- 시간 차원 표기가 바뀌어도 지도가 검어지지는 않게.
-const GIBS_TILE_DATES = ['2016-01-01', '2012-01-01'];
 const GIBS_MATRIX = 'GoogleMapsCompatible_Level8';
+// 처음엔 jpeg + 2016-01-01 하나만 시도했고, 그게 502 로 떨어졌다 (2026-09-03).
+// 어느 조합이 맞는지는 문서보다 상류의 대답이 정확하므로, 그럴듯한 것들을 순서
+// 대로 시도하고 각각이 무엇을 돌려줬는지 실패 응답에 적는다. Black Marble 은
+// 야간광이라 png 로 발행될 가능성이 높고(경계가 뚜렷한 라스터), 연간 합성이라
+// 시간축을 아예 안 받을 수도 있다.
+const GIBS_TILE_VARIANTS = [
+    { label: '2016 png', path: `2016-01-01/${GIBS_MATRIX}`, ext: 'png' },
+    { label: '2016 jpeg', path: `2016-01-01/${GIBS_MATRIX}`, ext: 'jpeg' },
+    { label: '2012 png', path: `2012-01-01/${GIBS_MATRIX}`, ext: 'png' },
+    { label: 'no-time png', path: GIBS_MATRIX, ext: 'png' },
+    { label: 'default png', path: `default/${GIBS_MATRIX}`, ext: 'png' },
+];
 const NIGHT_TILE_MAX_Z = 8;
 
 async function handleNightTile(request, url) {
@@ -131,16 +140,31 @@ async function handleNightTile(request, url) {
     const hit = await cache.match(cacheKey).catch(() => null);
     if (hit) return hit;
 
+    // 실패했을 때 무엇이 막혔는지 말해야 한다. 그냥 502 만 뱉으면 상류가 404 인지
+    // (레이어 이름이 틀렸다) 연결이 끊긴 건지(NASA 가 안 받는다) 구분할 수 없고,
+    // 그 구분 없이는 고칠 수가 없다. 브라우저로 이 URL 을 열면 그대로 읽힌다.
+    const tried = [];
     let upstream = null;
-    for (const date of GIBS_TILE_DATES) {
-        upstream = await fetch(`${GIBS_TILE_BASE}/${date}/${GIBS_MATRIX}/${z}/${y}/${x}.jpeg`, {
-            cf: { cacheEverything: true, cacheTtl: 2592000 },
-        }).catch(() => null);
-        if (upstream && upstream.ok) break;
+    for (const variant of GIBS_TILE_VARIANTS) {
+        const src = `${GIBS_TILE_BASE}/${variant.path}/${z}/${y}/${x}.${variant.ext}`;
+        let res = null;
+        let err = '';
+        try {
+            res = await fetch(src, { cf: { cacheEverything: true, cacheTtl: 2592000 } });
+        } catch (e) {
+            err = `${e && e.name}: ${e && e.message}`;
+        }
+        const type = res ? (res.headers.get('content-type') || '') : '';
+        tried.push(`${variant.label} → ${res ? `${res.status} ${type}` : err || 'no response'}`);
+        // 200 인데 이미지가 아닌 경우가 있다 (GIBS 는 오류를 XML 로 준다).
+        if (res && res.ok && type.startsWith('image/')) { upstream = res; break; }
     }
-    if (!upstream || !upstream.ok) {
+    if (!upstream) {
         // 클라이언트의 onTileError 가 이걸 세고, 쌓이면 벡터 실루엣으로 내려앉는다.
-        return new Response('tile upstream failed', { status: 502 });
+        return new Response(
+            `tile upstream failed\n${tried.join('\n')}\n`,
+            { status: 502, headers: { 'Content-Type': 'text/plain; charset=utf-8' } },
+        );
     }
 
     const out = new Response(upstream.body, {
