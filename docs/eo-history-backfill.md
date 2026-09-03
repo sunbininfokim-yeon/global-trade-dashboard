@@ -26,8 +26,10 @@ node scripts/sync-federal-register.js
 Repeat the same command until the log says `history complete`. A stopped or
 failed local run resumes from the saved page and document numbers; it does not
 restart from 1994. `SKIP_EMBEDDINGS=true` is recommended for this metadata
-backfill and is also the default when `EO_BACKFILL=true`. Set
-`EO_BACKFILL_EMBEDDINGS=true` only in a later, explicitly funded embedding pass.
+backfill and is also the default when `EO_BACKFILL=true`. Use the separate
+[policy embedding backfill](policy-embedding-backfill.md) for a later,
+explicitly funded embedding pass; it works from the already stored EO rows and
+does not download the history again.
 
 ## Routine sync after history is complete
 
