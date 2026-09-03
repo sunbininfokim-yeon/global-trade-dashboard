@@ -71,6 +71,21 @@ async function loadUnembedded(source, limit) {
   });
 }
 
+async function countUnembedded(source) {
+  const config = SOURCES[source];
+  // PostgREST performs this aggregate in the database, so dry-run can report
+  // the true remaining total without downloading every candidate row.
+  const rows = await supabaseGet(config.table, {
+    select: 'count()',
+    embedding: 'is.null',
+  });
+  const count = Number(rows?.[0]?.count);
+  if (!Number.isInteger(count) || count < 0) {
+    throw new Error(`Could not read the unembedded-row count for ${source}.`);
+  }
+  return count;
+}
+
 async function refreshBillRelations(row, vector, model) {
   if (process.env.REFRESH_BILL_SEMANTIC_RELATIONS === 'false') return 0;
   try {
@@ -120,6 +135,17 @@ async function run() {
   let remainingBudget = limit;
 
   try {
+    if (dryRun) {
+      for (const source of targets) {
+        const total = await countUnembedded(source);
+        result.candidates[source] = total;
+        const requests = Math.ceil(total / MAX_BATCH_SIZE);
+        console.log(`Dry run: ${source} has ${total} unembedded rows; estimated Gemini requests at ${MAX_BATCH_SIZE} rows/request: ${requests}.`);
+      }
+      console.log(`Policy embedding backfill dry_run: 0 rows embedded with ${model}.`);
+      return;
+    }
+
     for (const source of targets) {
       result.embedded[source] = 0;
       result.candidates[source] = 0;
@@ -128,11 +154,6 @@ async function run() {
         const rows = await loadUnembedded(source, requestLimit);
         result.candidates[source] += rows.length;
         if (!rows.length) break;
-
-        if (dryRun) {
-          console.log(`Dry run: ${source} has at least ${rows.length} unembedded rows in the next batch.`);
-          break;
-        }
 
         let batch;
         try {

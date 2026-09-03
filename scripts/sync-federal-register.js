@@ -29,6 +29,11 @@ const EO_BACKFILL_FROM_DATE = process.env.EO_BACKFILL_FROM_DATE || '1994-01-01';
 const EO_BACKFILL_TO_DATE = process.env.EO_BACKFILL_TO_DATE || new Date().toISOString().slice(0, 10);
 const EO_BACKFILL_PAGE_SIZE = Math.min(1_000, positiveInteger(process.env.EO_BACKFILL_PAGE_SIZE, 500));
 const EO_RELATION_PAGE_SIZE = Math.min(100, positiveInteger(process.env.MAX_EO_RELATION_DOCUMENTS, 25));
+// A local backfill should make meaningful progress without requiring hundreds
+// of manual restarts. Each finished page is checkpointed independently, so a
+// bounded multi-page run remains safe to resume after an interruption.
+const EO_RELATION_MAX_PAGES_PER_RUN = positiveInteger(process.env.MAX_EO_RELATION_PAGES, 25);
+const EO_RELATION_MAX_RUNTIME_MS = positiveInteger(process.env.MAX_EO_RELATION_RUNTIME_MS, 10 * 60_000);
 
 requireEnv('SUPABASE_URL');
 requireEnv('SUPABASE_SERVICE_ROLE_KEY');
@@ -60,9 +65,15 @@ function eoBackfillCursor(state) {
 }
 function eoRelationCursor(state) {
   const cursor = state?.cursor || {};
-  return cursor.mode === 'eo_relation_backfill'
+  const sameRange = cursor.mode === 'eo_relation_backfill'
+    && cursor.from_date === EO_BACKFILL_FROM_DATE
+    && cursor.to_date === EO_BACKFILL_TO_DATE;
+  return sameRange
     ? cursor
-    : { mode: 'eo_relation_backfill', after_eo_number: 0, page: 1 };
+    : {
+      mode: 'eo_relation_backfill', from_date: EO_BACKFILL_FROM_DATE, to_date: EO_BACKFILL_TO_DATE,
+      after_eo_number: 0, page: 1,
+    };
 }
 function agencyRow(agency, parentAgencyId = null) {
   const name = firstNonEmpty(agency?.name, agency?.raw_name, agency?.short_name);
@@ -157,6 +168,7 @@ async function loadEoBackfillCandidates(state) {
 async function nextEoRelationTarget(cursor) {
   return (await supabaseGet('executive_orders', {
     select: 'eo_number,document_number', eo_number: `gt.${Number(cursor.after_eo_number) || 0}`,
+    and: `(publication_date.gte.${EO_BACKFILL_FROM_DATE},publication_date.lte.${EO_BACKFILL_TO_DATE})`,
     order: 'eo_number.asc', limit: '1',
   }))?.[0] || null;
 }
@@ -174,6 +186,17 @@ async function loadEoRelationCandidates(target, page) {
 async function documentBundle(item) {
   const detail = await get(`/documents/${encodeURIComponent(item.document_number)}.json`, {}, true) || {};
   return { item, document: { ...item, ...detail } };
+}
+
+async function relationDocumentBundle(item) {
+  try {
+    return await documentBundle(item);
+  } catch (error) {
+    // A transient failure for one candidate must not discard the page's other
+    // verified links or prevent its checkpoint from advancing.
+    console.warn(`EO relationship backfill: skipped Federal Register document ${item.document_number}: ${error.message}`);
+    return null;
+  }
 }
 
 async function saveAgencies(agencies) {
@@ -317,54 +340,89 @@ function explicitEoNumbers(document) {
 
 async function runEoRelationBackfill() {
   const state = await loadState();
-  const cursor = eoRelationCursor(state);
-  const target = await nextEoRelationTarget(cursor);
-  if (!target) {
+  let cursor = eoRelationCursor(state);
+  const initialTarget = await nextEoRelationTarget(cursor);
+  if (!initialTarget) {
+    await updateSyncState(RESOURCE, { ...cursor, complete: true, completed_at: new Date().toISOString() });
     console.log('EO relationship backfill is already complete.');
     return;
   }
-  const page = positiveInteger(cursor.page);
+
   const runId = await startSyncRun(RESOURCE, {
-    mode: 'eo_relation_backfill', eo_number: target.eo_number, page, max_documents: EO_RELATION_PAGE_SIZE,
+    mode: 'eo_relation_backfill', eo_number: initialTarget.eo_number, page: positiveInteger(cursor.page),
+    page_size: EO_RELATION_PAGE_SIZE, max_pages: EO_RELATION_MAX_PAGES_PER_RUN, max_runtime_ms: EO_RELATION_MAX_RUNTIME_MS,
   });
-  let read = 0;
-  let written = 0;
-  let authorityLinks = 0;
-  let regulationLinks = 0;
+  const startedAt = Date.now();
+  const totals = { pages: 0, eos: 0, read: 0, written: 0, authorityLinks: 0, regulationLinks: 0, skippedDocuments: 0 };
+
   try {
-    if (target.document_number) {
-      const detail = await get(`/documents/${encodeURIComponent(target.document_number)}.json`, {}, true) || {};
-      authorityLinks = await saveEoAuthorities(target.eo_number, detail);
-    }
-    const discovery = await loadEoRelationCandidates(target, page);
-    read = discovery.candidates.length;
-    const bundles = await mapWithConcurrency(discovery.candidates, CONCURRENCY, documentBundle);
-    for (const { item, document } of bundles) {
-      // The search term only finds candidates. Creating a link requires an
-      // exact EO number in the source's own machine-readable metadata.
-      if (!explicitEoNumbers(document).includes(target.eo_number)) continue;
-      const regulation = await saveRegulation(item, document);
-      if (regulation) {
-        written += 1;
-        regulationLinks += regulation.eoLinks;
+    while (totals.pages < EO_RELATION_MAX_PAGES_PER_RUN && Date.now() - startedAt < EO_RELATION_MAX_RUNTIME_MS) {
+      const target = await nextEoRelationTarget(cursor);
+      if (!target) {
+        await updateSyncState(RESOURCE, { ...cursor, complete: true, completed_at: new Date().toISOString() });
+        await finishSyncRun(runId, { status: 'succeeded', records_read: totals.read, records_written: totals.written, metadata: { ...totals, cursor } });
+        console.log(`EO relationship backfill history complete: ${totals.pages} pages, ${totals.eos} EOs, ${totals.authorityLinks} authority links, ${totals.regulationLinks} regulation links; ${totals.skippedDocuments} documents skipped.`);
+        return;
       }
+
+      const page = positiveInteger(cursor.page);
+      let authorityLinks = 0;
+      if (target.document_number) {
+        try {
+          const detail = await get(`/documents/${encodeURIComponent(target.document_number)}.json`, {}, true) || null;
+          if (detail) authorityLinks = await saveEoAuthorities(target.eo_number, detail);
+        } catch (error) {
+          console.warn(`EO relationship backfill: skipped authority detail for EO ${target.eo_number}: ${error.message}`);
+        }
+      }
+
+      const discovery = await loadEoRelationCandidates(target, page);
+      const bundles = await mapWithConcurrency(discovery.candidates, CONCURRENCY, relationDocumentBundle);
+      let regulationLinks = 0;
+      let written = 0;
+      const skippedDocuments = bundles.filter((bundle) => !bundle).length;
+      for (const bundle of bundles) {
+        if (!bundle) continue;
+        const { item, document } = bundle;
+        // The search term only finds candidates. Creating a link requires an
+        // exact EO number in the source's own machine-readable metadata.
+        if (!explicitEoNumbers(document).includes(target.eo_number)) continue;
+        const regulation = await saveRegulation(item, document);
+        if (regulation) {
+          written += 1;
+          regulationLinks += regulation.eoLinks;
+        }
+      }
+
+      const pageComplete = page >= discovery.totalPages;
+      const nextCursor = pageComplete
+        ? {
+          mode: 'eo_relation_backfill', from_date: EO_BACKFILL_FROM_DATE, to_date: EO_BACKFILL_TO_DATE,
+          after_eo_number: target.eo_number, page: 1,
+        }
+        : {
+          mode: 'eo_relation_backfill', from_date: EO_BACKFILL_FROM_DATE, to_date: EO_BACKFILL_TO_DATE,
+          after_eo_number: Number(cursor.after_eo_number) || 0, page: page + 1,
+        };
+      // Checkpoint every successful page before continuing. Failed candidate
+      // fetches are recorded above and deliberately do not block the cursor.
+      await checkpointSyncState(RESOURCE, nextCursor);
+      totals.pages += 1;
+      totals.eos += Number(pageComplete);
+      totals.read += discovery.candidates.length;
+      totals.written += written;
+      totals.authorityLinks += authorityLinks;
+      totals.regulationLinks += regulationLinks;
+      totals.skippedDocuments += skippedDocuments;
+      console.log(`EO relationship backfill: EO ${target.eo_number}, page ${page}/${discovery.totalPages}; ${authorityLinks} authority links, ${regulationLinks} regulation links, ${skippedDocuments} documents skipped.`);
+      cursor = nextCursor;
     }
-    const pageComplete = page >= discovery.totalPages;
-    const nextCursor = pageComplete
-      ? { mode: 'eo_relation_backfill', after_eo_number: target.eo_number, page: 1 }
-      : { mode: 'eo_relation_backfill', after_eo_number: Number(cursor.after_eo_number) || 0, page: page + 1 };
-    const nextTarget = pageComplete ? await nextEoRelationTarget(nextCursor) : target;
-    const complete = pageComplete && !nextTarget;
-    if (complete) await updateSyncState(RESOURCE, { ...nextCursor, complete: true, completed_at: new Date().toISOString() });
-    else await checkpointSyncState(RESOURCE, nextCursor);
-    const status = complete ? 'succeeded' : 'partial';
-    await finishSyncRun(runId, { status, records_read: read, records_written: written, metadata: {
-      mode: 'eo_relation_backfill', eo_number: target.eo_number, page, total_pages: discovery.totalPages,
-      authority_links: authorityLinks, regulation_links: regulationLinks, next_cursor: nextCursor,
-    } });
-    console.log(`EO relationship backfill: EO ${target.eo_number}, page ${page}/${discovery.totalPages}; ${authorityLinks} authority links, ${regulationLinks} regulation links. ${complete ? 'history complete' : 'resume by running the same command again'}.`);
+
+    const stopReason = totals.pages >= EO_RELATION_MAX_PAGES_PER_RUN ? 'page budget reached' : 'runtime budget reached';
+    await finishSyncRun(runId, { status: 'partial', records_read: totals.read, records_written: totals.written, metadata: { ...totals, cursor, stop_reason: stopReason } });
+    console.log(`EO relationship backfill paused: ${stopReason} after ${totals.pages} pages and ${totals.eos} EOs. Resume by running the same command again.`);
   } catch (error) {
-    await finishSyncRun(runId, { status: 'failed', records_read: read, records_written: written, error_summary: error.message });
+    await finishSyncRun(runId, { status: 'failed', records_read: totals.read, records_written: totals.written, metadata: { ...totals, cursor }, error_summary: error.message });
     throw error;
   }
 }
