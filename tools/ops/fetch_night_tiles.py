@@ -11,6 +11,7 @@ NASA 가용성과 무관해지고, 그보다 확대할 때만 워커 프록시(/
     python3 tools/ops/fetch_night_tiles.py            # z0-5 를 받는다
     python3 tools/ops/fetch_night_tiles.py --max-zoom 4
     python3 tools/ops/fetch_night_tiles.py --force    # 이미 있는 타일도 다시
+    python3 tools/ops/fetch_night_tiles.py --check    # 조합별로 한 장씩 시험
 
 이미 받은 타일은 건너뛰므로 중간에 끊겨도 다시 돌리면 이어진다.
 """
@@ -24,8 +25,16 @@ import urllib.error
 import urllib.request
 
 BASE = ('https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/'
-        'VIIRS_Black_Marble/default/{date}/GoogleMapsCompatible_Level8/{z}/{y}/{x}.jpeg')
-DATES = ['2016-01-01', '2012-01-01']   # 앞의 합성이 없으면 뒤로 물러난다
+        'VIIRS_Black_Marble/default/{path}/{z}/{y}/{x}.{ext}')
+MATRIX = 'GoogleMapsCompatible_Level8'
+# 어느 조합이 맞는지는 상류가 답한다 (_worker.js 의 GIBS_TILE_VARIANTS 와 같은 순서).
+VARIANTS = [
+    ('2016 png', f'2016-01-01/{MATRIX}', 'png'),
+    ('2016 jpeg', f'2016-01-01/{MATRIX}', 'jpeg'),
+    ('2012 png', f'2012-01-01/{MATRIX}', 'png'),
+    ('no-time png', MATRIX, 'png'),
+    ('default png', f'default/{MATRIX}', 'png'),
+]
 OUT_ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                         '..', '..', 'New for anti', 'public', 'night')
 
@@ -41,6 +50,11 @@ def lat_to_row(lat, z):
     n = 2 ** z
     y = (1 - math.log(math.tan(rad) + 1 / math.cos(rad)) / math.pi) / 2 * n
     return max(0, min(n - 1, int(y)))
+
+
+def is_image(blob):
+    """JPEG(SOI) 또는 PNG 서명. GIBS 는 오류를 XML 로 주므로 확장자를 못 믿는다."""
+    return blob.startswith(b'\xff\xd8') or blob.startswith(b'\x89PNG\r\n\x1a\n')
 
 
 # 실패 이유를 삼키면 안 된다. 차단인지(연결 실패), URL 이 틀린 건지(404),
@@ -74,13 +88,15 @@ def fetch(url, tries=3):
 
 def check():
     """타일 한 장으로 연결을 진단한다. 무엇이 막혔는지 사람 말로 찍는다."""
-    url = BASE.format(date=DATES[0], z=0, y=0, x=0)
-    print(f'요청: {url}\n')
-    blob = fetch(url, tries=1)
-    if blob and blob.startswith(b'\xff\xd8'):
-        print(f'OK · JPEG {len(blob)} bytes — 그대로 받으면 된다.')
-        return 0
-    print(f'실패 · {LAST_ERROR or "이유 불명"}\n')
+    for label, sub, ext in VARIANTS:
+        url = BASE.format(path=sub, ext=ext, z=0, y=0, x=0)
+        blob = fetch(url, tries=1)
+        print(f'{label:12s} {url}\n             → '
+              f'{f"OK {len(blob)} bytes" if blob and is_image(blob) else (LAST_ERROR or "이미지 아님")}')
+        if blob and is_image(blob):
+            print('\n이 조합으로 받으면 된다.')
+            return 0
+    print()
     err = str(LAST_ERROR or '')
     if 'CERTIFICATE_VERIFY_FAILED' in err:
         print('파이썬이 인증서를 못 읽는 경우다. 네트워크는 멀쩡할 수 있다. 확인:')
@@ -124,11 +140,12 @@ def main():
                     total_bytes += os.path.getsize(path)
                     continue
                 blob = None
-                for date in DATES:
-                    blob = fetch(BASE.format(date=date, z=z, y=y, x=x))
-                    if blob:
+                for _, sub, ext in VARIANTS:
+                    blob = fetch(BASE.format(path=sub, ext=ext, z=z, y=y, x=x))
+                    if blob and is_image(blob):
                         break
-                if not blob or not blob.startswith(b'\xff\xd8'):   # JPEG SOI
+                    blob = None
+                if not blob:
                     failed += 1
                     print(f'  실패 z{z}/{y}/{x} · {LAST_ERROR or "이유 불명"}', file=sys.stderr)
                     if failed == 1:
@@ -157,7 +174,7 @@ def main():
             json.dump({
                 'schema_version': 'night-tiles-v1',
                 'source': 'NASA GIBS · VIIRS Black Marble',
-                'date': DATES[0],
+                'variants_tried': [v[0] for v in VARIANTS],
                 'max_zoom': complete_z,
                 'lat_range': [LAT_MIN, LAT_MAX],
                 'generated_at': time.strftime('%Y-%m-%d'),
