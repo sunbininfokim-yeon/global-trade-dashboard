@@ -1972,14 +1972,19 @@ const mmOpenCountry = async (iso3) => {
 
 // === 야간 위성 베이스맵 ====================================================
 //
-// 매크로 지도는 벡터 베이스맵(worldBaseLayers) 대신 NASA GIBS 의 VIIRS Black
-// Marble 야간광 타일을 깐다 -- 우주에서 밤의 지구를 본 그림. 평면 MapView 이므로
+// 매크로 지도는 벡터 베이스맵(worldBaseLayers) 대신 NASA 의 VIIRS Black Marble
+// 야간광 타일을 깐다 -- 우주에서 밤의 지구를 본 그림. 평면 MapView 이므로
 // EPSG:3857 타일이 그대로 맞는다 (_GlobeView 였다면 래스터가 구부러지지 않아
 // 불가능했다).
 //
+// 타일은 gibs.earthdata.nasa.gov 에 직접 붙지 않고 우리 워커(/api/night-tile)를
+// 거친다. 브라우저가 NASA 에 닿는지에 그림이 걸리면 안 된다 -- 사내망 차단,
+// 광고 차단기, 임베드 CSP 어느 하나만 걸려도 지도가 통째로 검게 남는다.
+// 로컬 정적 서버에서는 /api/* 가 404 이므로 아래 폴백(벡터 실루엣)이 뜬다.
+//
 // 남극은 소스에서 빼는 게 아니라 타일 extent 로 잘라 낸다: Black Marble 은 극지
 // 타일도 내려주지만 야간광이 없어 검은 띠만 남는다.
-const MM_NIGHT_TILE_URL = 'https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/VIIRS_Black_Marble/default/2016-01-01/GoogleMapsCompatible_Level8/{z}/{y}/{x}.jpeg';
+const MM_NIGHT_TILE_URL = '/api/night-tile/{z}/{y}/{x}.jpg';
 const MM_NIGHT_EXTENT = [-180, -58, 180, 84];
 const MM_NIGHT_SEA = [3, 6, 14, 255];
 
