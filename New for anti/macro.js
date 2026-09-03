@@ -2064,20 +2064,26 @@ const mmNightTileData = async ({ index, signal }) => {
     return mmLoadTileImage(MM_NIGHT_PROXY_URL(z, y, x), signal);
 };
 const MM_NIGHT_EXTENT = [-180, -58, 180, 84];
-const MM_NIGHT_SEA = [3, 6, 14, 255];
+// 남극을 잘라 낸 자리(-58°)에서 위성 사진이 끊긴다. 그 아래를 거의 검정으로 두면
+// 가로줄이 하나 그어진 것처럼 보인다 (2026-09-04). 바다색을 사진 속 바다에
+// 맞추고, 경계에는 아래로 사라지는 페이드를 한 겹 깔아 이음매를 지운다.
+const MM_NIGHT_SEA = [16, 20, 48, 255];
+const MM_NIGHT_FADE_TO = -76;        // 페이드가 완전히 사라지는 위도
 
 // 타일이 끝내 오지 않을 때(오프라인·GIBS 장애·CSP)를 위한 스위치. 실패가 쌓이면
 // 벡터 실루엣으로 내려앉고, 지도는 여전히 클릭 가능한 상태로 남는다.
 let MM_NIGHT_TILES = true;
 let MM_NIGHT_TILE_ERRORS = 0;
 
-// "위성 사진을 더 세게" 를 가산 합성 한 겹으로 풀었었다. 틀린 답이었다:
-// Black Marble 의 육지는 순수한 검정이 아니라 어두운 청회색이라, 더하기는 도시
-// 불빛만이 아니라 대륙 전체를 들어올린다. 2026-09-04 화면에서 확인 -- 지구가
-// 보라색으로 뜨고 불빛은 오히려 묻혔다. 세기는 더하기가 아니라 대비로 낸다
-// (style.css 의 body.macro-night 캔버스 필터).
-const mmNightTileLayer = () => new deck.TileLayer({
-    id: 'macro-night-tiles',
+// 같은 타일을 두 번 그린다: 한 번은 그대로, 한 번은 가산 합성으로 위에 얹는다.
+// 이게 육지의 어두운 청회색까지 같이 들어올려 지구가 보라빛으로 뜨는 것은 맞다.
+// 한 번 순수 대비(캔버스 필터)로 바꿔 봤는데 -- 육지는 검게 눌리고 불빛만 남아
+// 원본에 가까웠지만, 화면이 너무 비어 보였다. 사용자가 보라빛 쪽을 택했다
+// (2026-09-04). 세기는 MM_NIGHT_BOOST 하나로 조절한다: 0 이면 원본 그대로.
+const MM_NIGHT_BOOST = 0.85;
+
+const mmNightTileLayer = (boost = false) => new deck.TileLayer({
+    id: boost ? 'macro-night-tiles-boost' : 'macro-night-tiles',
     getTileData: mmNightTileData,
     tileSize: 256,
     // 이 야간광 합성은 z1-8 만 발행된다. z0 을 부르면 상류가 404 다.
@@ -2086,7 +2092,20 @@ const mmNightTileLayer = () => new deck.TileLayer({
     extent: MM_NIGHT_EXTENT,
     refinementStrategy: 'best-available',
     pickable: false,
+    opacity: boost ? MM_NIGHT_BOOST : 1,
+    // 가산 합성 파라미터는 luma v9 표기. 이름이 안 먹는 번들에서도 최악이 그냥
+    // 한 겹 더 덮이는 것이라 그림은 여전히 밝아진다.
+    parameters: boost ? {
+        blend: true,
+        blendColorSrcFactor: 'src-alpha',
+        blendColorDstFactor: 'one',
+        blendColorOperation: 'add',
+        blendAlphaSrcFactor: 'one',
+        blendAlphaDstFactor: 'one',
+        blendAlphaOperation: 'add',
+    } : undefined,
     onTileError: () => {
+        if (boost) return;   // 실패는 한 번만 센다
         MM_NIGHT_TILE_ERRORS += 1;
         // 한두 장은 늘 흔들린다. 여섯 장이 연달아 실패하면 소스 자체가 없는 것.
         if (MM_NIGHT_TILE_ERRORS >= 6 && MM_NIGHT_TILES) {
@@ -2105,6 +2124,26 @@ const mmNightTileLayer = () => new deck.TileLayer({
     },
 });
 
+// 경계용 세로 그라디언트 한 장. 캔버스로 즉석에서 만든다 -- 이미지 파일을
+// 하나 더 두고 관리할 만한 물건이 아니다.
+let MM_NIGHT_FADE_IMG = null;
+const mmNightFadeImage = () => {
+    if (MM_NIGHT_FADE_IMG) return MM_NIGHT_FADE_IMG;
+    const cv = document.createElement('canvas');
+    cv.width = 1;
+    cv.height = 128;
+    const ctx = cv.getContext('2d');
+    const [r, g, b] = MM_NIGHT_SEA;
+    const grad = ctx.createLinearGradient(0, 0, 0, 128);
+    // 위(사진이 끊기는 자리)는 바다색으로 덮고, 아래로 갈수록 사라진다.
+    grad.addColorStop(0, `rgba(${r}, ${g}, ${b}, 1)`);
+    grad.addColorStop(1, `rgba(${r}, ${g}, ${b}, 0)`);
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, 1, 128);
+    MM_NIGHT_FADE_IMG = cv;
+    return cv;
+};
+
 /**
  * 바다(검은 하늘) → 대륙 실루엣 → 야간광 타일 → 국경선.
  *
@@ -2115,8 +2154,9 @@ const mmNightBaseLayers = () => {
     const layers = [
         new SolidPolygonLayer({
             id: 'macro-night-sea',
-            data: [[[-180, MM_NIGHT_EXTENT[1]], [180, MM_NIGHT_EXTENT[1]],
-                    [180, MM_NIGHT_EXTENT[3]], [-180, MM_NIGHT_EXTENT[3]]]],
+            // 사진이 덮는 구간만이 아니라 세계 전체를 덮는다. 그러지 않으면
+            // 사진 밖이 캔버스 배경(거의 검정)으로 남아 경계가 드러난다.
+            data: [[[-180, -85], [180, -85], [180, 85], [-180, 85]]],
             getPolygon: (d) => d,
             filled: true,
             stroked: false,
@@ -2135,7 +2175,16 @@ const mmNightBaseLayers = () => {
     // TileLayer/BitmapLayer 는 deck 스크립팅 번들에 들어 있지만, 번들이 바뀌어
     // 빠지면 조용히 빈 지도가 된다. 없으면 벡터 실루엣으로 간다.
     if (MM_NIGHT_TILES && deck.TileLayer && deck.BitmapLayer) {
-        layers.push(mmNightTileLayer());
+        layers.push(mmNightTileLayer(), mmNightTileLayer(true));
+        // 사진이 끊기는 자리를 덮는 페이드. 타일 위, 국경선 아래.
+        if (deck.BitmapLayer) {
+            layers.push(new deck.BitmapLayer({
+                id: 'macro-night-south-fade',
+                image: mmNightFadeImage(),
+                bounds: [-180, MM_NIGHT_FADE_TO, 180, MM_NIGHT_EXTENT[1]],
+                pickable: false,
+            }));
+        }
     } else {
         MM_NIGHT_TILES = false;
     }
