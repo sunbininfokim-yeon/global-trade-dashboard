@@ -2623,28 +2623,6 @@ async function usFetch(env, table, query, { count } = {}) {
     return { rows, total: Number.isFinite(total) ? total : null };
 }
 
-// A deliberately narrow RPC helper. Policy list filters are parsed and
-// whitelisted before this point; no visitor-provided SQL or table name is sent
-// to Supabase.
-async function usRpc(env, functionName, args) {
-    const base = env.SUPABASE_URL.replace(/\/+$/, '');
-    const res = await fetch(`${base}/rest/v1/rpc/${functionName}`, {
-        method: 'POST',
-        headers: {
-            apikey: env.SUPABASE_SERVICE_ROLE_KEY,
-            Authorization: `Bearer ${env.SUPABASE_SERVICE_ROLE_KEY}`,
-            'Content-Type': 'application/json',
-            Accept: 'application/json',
-        },
-        body: JSON.stringify(args),
-    });
-    if (!res.ok) {
-        const detail = await res.text().catch(() => '');
-        throw new Error(`Supabase RPC ${functionName}: HTTP ${res.status} ${detail.slice(0, 300)}`);
-    }
-    return res.json();
-}
-
 // PostgREST group-by aggregate: `select=<col>,count()` returns one row per
 // distinct value. Supabase ships this enabled, but a project can turn it off
 // (db-aggregates-enabled), and it is not worth failing a whole directory screen
@@ -2809,20 +2787,20 @@ async function usBillList(env, f) {
         `offset=${f.offset}`,
     ].filter(Boolean).join('&');
 
-    // Stage counts drive the tab badges and intentionally ignore the selected
-    // stage. The RPC avoids PostgREST's optional aggregate feature, whose
-    // absence used to make this UI render false zeroes.
+    // Stage counts drive the tab badges and must ignore the stage filter itself,
+    // otherwise every tab would report only its own total.
+    const stageQuery = [
+        `select=current_stage,count()${f.committeeId ? ',bill_committees!inner(committee_id)' : ''}`,
+        usBillWhere({ ...f, stages: [] }),
+    ].filter(Boolean).join('&');
+
     const [page, stageRows] = await Promise.all([
         usFetch(env, 'bills', query, { count: 'exact' }),
-        usRpc(env, 'policy_bill_stage_counts', {
-            p_committee_id: f.committeeId || null,
-            p_policy_area_id: f.policyAreaId || null,
-            p_congress_number: f.congress ? Number(f.congress) : null,
-        }).catch(() => null),
+        usFetch(env, 'bills', stageQuery).catch(() => null),
     ]);
 
     const stageCounts = {};
-    for (const row of stageRows || []) stageCounts[row.current_stage] = Number(row.bill_count) || 0;
+    for (const row of stageRows || []) stageCounts[row.current_stage] = Number(row.count) || 0;
 
     return {
         ok: true,
