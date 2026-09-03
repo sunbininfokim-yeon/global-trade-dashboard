@@ -1977,14 +1977,49 @@ const mmOpenCountry = async (iso3) => {
 // EPSG:3857 타일이 그대로 맞는다 (_GlobeView 였다면 래스터가 구부러지지 않아
 // 불가능했다).
 //
-// 타일은 gibs.earthdata.nasa.gov 에 직접 붙지 않고 우리 워커(/api/night-tile)를
-// 거친다. 브라우저가 NASA 에 닿는지에 그림이 걸리면 안 된다 -- 사내망 차단,
-// 광고 차단기, 임베드 CSP 어느 하나만 걸려도 지도가 통째로 검게 남는다.
-// 로컬 정적 서버에서는 /api/* 가 404 이므로 아래 폴백(벡터 실루엣)이 뜬다.
+// 타일은 NASA 에 직접 붙지 않는다. 브라우저가 gibs.earthdata.nasa.gov 에 닿는지에
+// 그림이 통째로 걸리면 안 된다 -- 사내망 차단, 광고 차단기, 임베드 CSP 어느
+// 하나만 걸려도 지도가 검게 남는다. 두 단계로 읽는다:
+//
+//   z0-5  → public/night/ 에 커밋해 둔 정적 타일 (tools/ops/fetch_night_tiles.py).
+//           세계 지도 화면 전체가 여기서 나오므로 외부 의존이 아예 없다.
+//   그 위 → /api/night-tile 워커 프록시 (엣지 캐시). 확대했을 때만 탄다.
+//
+// Black Marble 은 연간 합성이라 내용이 바뀌지 않는다. 그래서 받아 두는 게 맞다.
 //
 // 남극은 소스에서 빼는 게 아니라 타일 extent 로 잘라 낸다: Black Marble 은 극지
 // 타일도 내려주지만 야간광이 없어 검은 띠만 남는다.
-const MM_NIGHT_TILE_URL = '/api/night-tile/{z}/{y}/{x}.jpg';
+const MM_NIGHT_LOCAL_MAX_Z = 5;   // fetch_night_tiles.py --max-zoom 과 같아야 한다
+const MM_NIGHT_LOCAL_URL = (z, y, x) => `/public/night/${z}/${y}/${x}.jpg`;
+const MM_NIGHT_PROXY_URL = (z, y, x) => `/api/night-tile/${z}/${y}/${x}.jpg`;
+
+// 두 경로를 순서대로 시도해야 해서 URL 템플릿(data)이 아니라 getTileData 를 쓴다.
+// BitmapLayer 는 HTMLImageElement 를 그대로 받는다.
+const mmLoadTileImage = (url, signal) => new Promise((resolve, reject) => {
+    const img = new Image();
+    img.decoding = 'async';
+    img.onload = () => resolve(img);
+    img.onerror = () => reject(new Error(url));
+    if (signal) {
+        signal.addEventListener('abort', () => {
+            img.src = '';           // 진행 중인 요청을 끊는다
+            reject(new Error('aborted'));
+        }, { once: true });
+    }
+    img.src = url;
+});
+
+const mmNightTileData = async ({ index, signal }) => {
+    const { x, y, z } = index;
+    if (z <= MM_NIGHT_LOCAL_MAX_Z) {
+        try {
+            return await mmLoadTileImage(MM_NIGHT_LOCAL_URL(z, y, x), signal);
+        } catch (_) {
+            // 아직 받아 두지 않았거나 그 줌만 빠진 경우. 프록시로 넘어간다.
+        }
+    }
+    return mmLoadTileImage(MM_NIGHT_PROXY_URL(z, y, x), signal);
+};
 const MM_NIGHT_EXTENT = [-180, -58, 180, 84];
 const MM_NIGHT_SEA = [3, 6, 14, 255];
 
@@ -2000,7 +2035,7 @@ const MM_NIGHT_BOOST = 0.85;
 
 const mmNightTileLayer = (boost = false) => new deck.TileLayer({
     id: boost ? 'macro-night-tiles-boost' : 'macro-night-tiles',
-    data: MM_NIGHT_TILE_URL,
+    getTileData: mmNightTileData,
     tileSize: 256,
     minZoom: 0,
     maxZoom: 8,          // Black Marble 은 Level8 까지만 발행된다
