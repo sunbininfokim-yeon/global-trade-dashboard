@@ -2078,8 +2078,9 @@ const mmNightTileLayer = (boost = false) => new deck.TileLayer({
     id: boost ? 'macro-night-tiles-boost' : 'macro-night-tiles',
     getTileData: mmNightTileData,
     tileSize: 256,
-    minZoom: 0,
-    maxZoom: 8,          // Black Marble 은 Level8 까지만 발행된다
+    // 이 야간광 합성은 z1-8 만 발행된다. z0 을 부르면 상류가 404 다.
+    minZoom: 1,
+    maxZoom: 8,
     extent: MM_NIGHT_EXTENT,
     refinementStrategy: 'best-available',
     pickable: false,

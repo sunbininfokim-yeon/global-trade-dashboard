@@ -3,12 +3,12 @@
 
 매크로 지도(`/macro_monitor`)의 베이스맵이다. Black Marble 은 2016(과 2012)
 연간 합성이라 내용이 바뀌지 않고, NASA 이미지는 자유롭게 재배포할 수 있다 --
-그래서 매번 받아 오는 대신 한 번 받아 커밋한다. 세계 지도 화면(z0-5)이
+그래서 매번 받아 오는 대신 한 번 받아 커밋한다. 세계 지도 화면(z1-5)이
 NASA 가용성과 무관해지고, 그보다 확대할 때만 워커 프록시(/api/night-tile)를
 탄다.
 
 사용:
-    python3 tools/ops/fetch_night_tiles.py            # z0-5 를 받는다
+    python3 tools/ops/fetch_night_tiles.py            # z1-5 를 받는다
     python3 tools/ops/fetch_night_tiles.py --max-zoom 4
     python3 tools/ops/fetch_night_tiles.py --force    # 이미 있는 타일도 다시
     python3 tools/ops/fetch_night_tiles.py --check    # 조합별로 한 장씩 시험
@@ -24,17 +24,20 @@ import time
 import urllib.error
 import urllib.request
 
+# 시간 자리가 비어 슬래시가 둘 연달아 붙는 게 맞다 (default//...) -- 연간 합성
+# 이라 시간 차원이 없는 레이어의 GIBS 표기다. _worker.js 의 GIBS_TILE_VARIANTS
+# 와 같은 순서를 유지할 것.
 BASE = ('https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/'
-        'VIIRS_Black_Marble/default/{path}/{z}/{y}/{x}.{ext}')
+        '{layer}/default/{time}/{matrix}/{z}/{y}/{x}.{ext}')
 MATRIX = 'GoogleMapsCompatible_Level8'
-# 어느 조합이 맞는지는 상류가 답한다 (_worker.js 의 GIBS_TILE_VARIANTS 와 같은 순서).
 VARIANTS = [
-    ('2016 png', f'2016-01-01/{MATRIX}', 'png'),
-    ('2016 jpeg', f'2016-01-01/{MATRIX}', 'jpeg'),
-    ('2012 png', f'2012-01-01/{MATRIX}', 'png'),
-    ('no-time png', MATRIX, 'png'),
-    ('default png', f'default/{MATRIX}', 'png'),
+    ('citylights jpg', 'VIIRS_CityLights_2012', '', 'jpg'),
+    ('blackmarble jpg', 'VIIRS_Black_Marble', '', 'jpg'),
+    ('blackmarble png', 'VIIRS_Black_Marble', '', 'png'),
+    ('blackmarble 2016', 'VIIRS_Black_Marble', '2016-01-01', 'png'),
+    ('citylights png', 'VIIRS_CityLights_2012', '', 'png'),
 ]
+MIN_Z = 1        # 이 합성은 z1 부터 발행된다
 OUT_ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                         '..', '..', 'New for anti', 'public', 'night')
 
@@ -88,8 +91,8 @@ def fetch(url, tries=3):
 
 def check():
     """타일 한 장으로 연결을 진단한다. 무엇이 막혔는지 사람 말로 찍는다."""
-    for label, sub, ext in VARIANTS:
-        url = BASE.format(path=sub, ext=ext, z=0, y=0, x=0)
+    for label, layer, when, ext in VARIANTS:
+        url = BASE.format(layer=layer, time=when, matrix=MATRIX, ext=ext, z=1, y=0, x=0)
         blob = fetch(url, tries=1)
         print(f'{label:12s} {url}\n             → '
               f'{f"OK {len(blob)} bytes" if blob and is_image(blob) else (LAST_ERROR or "이미지 아님")}')
@@ -128,8 +131,9 @@ def main():
         return check()
 
     got = skipped = failed = total_bytes = 0
-    complete_z = -1          # 한 장도 안 빠진 마지막 줌. 매니페스트에 이게 실린다.
-    for z in range(args.max_zoom + 1):
+    # z0 은 어느 조합으로도 없다. 클라이언트도 minZoom 1 로 부른다.
+    complete_z = MIN_Z - 1   # 한 장도 안 빠진 마지막 줌. 매니페스트에 이게 실린다.
+    for z in range(MIN_Z, args.max_zoom + 1):
         failed_before = failed
         y0, y1 = lat_to_row(LAT_MAX, z), lat_to_row(LAT_MIN, z)
         for y in range(y0, y1 + 1):
@@ -140,8 +144,9 @@ def main():
                     total_bytes += os.path.getsize(path)
                     continue
                 blob = None
-                for _, sub, ext in VARIANTS:
-                    blob = fetch(BASE.format(path=sub, ext=ext, z=z, y=y, x=x))
+                for _, layer, when, ext in VARIANTS:
+                    blob = fetch(BASE.format(layer=layer, time=when, matrix=MATRIX,
+                                             ext=ext, z=z, y=y, x=x))
                     if blob and is_image(blob):
                         break
                     blob = None
@@ -167,7 +172,7 @@ def main():
     # macro.js 는 이 매니페스트로 "받아 둔 타일이 어디까지 있나"를 판단한다.
     # 없으면 로컬 경로를 아예 건너뛰고 워커 프록시로 간다 -- 빠진 줌을 타일마다
     # 찔러 보는 낭비가 없다. 그래서 구멍 난 줌은 싣지 않는다.
-    if complete_z >= 0:
+    if complete_z >= MIN_Z:
         manifest = os.path.join(OUT_ROOT, 'manifest.json')
         os.makedirs(OUT_ROOT, exist_ok=True)
         with open(manifest, 'w') as fh:
@@ -175,6 +180,7 @@ def main():
                 'schema_version': 'night-tiles-v1',
                 'source': 'NASA GIBS · VIIRS Black Marble',
                 'variants_tried': [v[0] for v in VARIANTS],
+                'min_zoom': MIN_Z,
                 'max_zoom': complete_z,
                 'lat_range': [LAT_MIN, LAT_MAX],
                 'generated_at': time.strftime('%Y-%m-%d'),

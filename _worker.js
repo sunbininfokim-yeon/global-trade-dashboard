@@ -110,20 +110,23 @@ export default {
 // 차단, 광고 차단기, 임베드 환경의 CSP 어느 하나만 걸려도 지도가 통째로 검게
 // 남는다. 같은 출처로 받아 오면 그 실패면이 사라지고, 엣지 캐시가 한 번 받은
 // 타일을 재사용한다.
-const GIBS_TILE_BASE = 'https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/VIIRS_Black_Marble/default';
+const GIBS_ROOT = 'https://gibs.earthdata.nasa.gov/wmts/epsg3857/best';
 const GIBS_MATRIX = 'GoogleMapsCompatible_Level8';
-// 처음엔 jpeg + 2016-01-01 하나만 시도했고, 그게 502 로 떨어졌다 (2026-09-03).
-// 어느 조합이 맞는지는 문서보다 상류의 대답이 정확하므로, 그럴듯한 것들을 순서
-// 대로 시도하고 각각이 무엇을 돌려줬는지 실패 응답에 적는다. Black Marble 은
-// 야간광이라 png 로 발행될 가능성이 높고(경계가 뚜렷한 라스터), 연간 합성이라
-// 시간축을 아예 안 받을 수도 있다.
+// 첫 배포는 VIIRS_Black_Marble + 2016-01-01 + .jpeg 로 502 를 맞았다 (2026-09-03).
+// 세 군데가 틀렸다: GIBS 의 야간광 합성 레이어 이름은 VIIRS_CityLights_2012,
+// 확장자는 .jpg, 시간 자리는 (연간 합성이라) 비어 있다. 아래 첫 줄이 실제로
+// 도는 URL 이고 -- Lets-Plot 의 NASA_CITYLIGHTS_2012 타일셋이 쓰는 것과 같다 --
+// 나머지는 이름/표기가 바뀌었을 때를 위한 후퇴 경로다. 실패하면 각각이 무엇을
+// 돌려줬는지 502 본문에 적힌다.
 const GIBS_TILE_VARIANTS = [
-    { label: '2016 png', path: `2016-01-01/${GIBS_MATRIX}`, ext: 'png' },
-    { label: '2016 jpeg', path: `2016-01-01/${GIBS_MATRIX}`, ext: 'jpeg' },
-    { label: '2012 png', path: `2012-01-01/${GIBS_MATRIX}`, ext: 'png' },
-    { label: 'no-time png', path: GIBS_MATRIX, ext: 'png' },
-    { label: 'default png', path: `default/${GIBS_MATRIX}`, ext: 'png' },
+    { label: 'citylights2012 jpg', layer: 'VIIRS_CityLights_2012', time: '', ext: 'jpg' },
+    { label: 'blackmarble jpg', layer: 'VIIRS_Black_Marble', time: '', ext: 'jpg' },
+    { label: 'blackmarble png', layer: 'VIIRS_Black_Marble', time: '', ext: 'png' },
+    { label: 'blackmarble 2016 png', layer: 'VIIRS_Black_Marble', time: '2016-01-01', ext: 'png' },
+    { label: 'citylights2012 png', layer: 'VIIRS_CityLights_2012', time: '', ext: 'png' },
 ];
+// 이 합성은 z1 부터 발행된다. z0 은 어느 조합으로도 없다.
+const NIGHT_TILE_MIN_Z = 1;
 const NIGHT_TILE_MAX_Z = 8;
 
 async function handleNightTile(request, url) {
@@ -131,7 +134,7 @@ async function handleNightTile(request, url) {
     if (!m) return new Response('bad tile path', { status: 400 });
     const [z, y, x] = m.slice(1, 4).map(Number);
     const span = 2 ** z;
-    if (z > NIGHT_TILE_MAX_Z || y >= span || x >= span) {
+    if (z > NIGHT_TILE_MAX_Z || z < NIGHT_TILE_MIN_Z || y >= span || x >= span) {
         return new Response('tile out of range', { status: 404 });
     }
 
@@ -146,7 +149,10 @@ async function handleNightTile(request, url) {
     const tried = [];
     let upstream = null;
     for (const variant of GIBS_TILE_VARIANTS) {
-        const src = `${GIBS_TILE_BASE}/${variant.path}/${z}/${y}/${x}.${variant.ext}`;
+        // 시간 자리가 비면 슬래시가 둘 연달아 붙는다 (default//...). GIBS 의
+        // 시간 없는 레이어 표기가 그렇다 -- 지우면 404 다.
+        const src = `${GIBS_ROOT}/${variant.layer}/default/${variant.time}`
+            + `/${GIBS_MATRIX}/${z}/${y}/${x}.${variant.ext}`;
         let res = null;
         let err = '';
         try {
