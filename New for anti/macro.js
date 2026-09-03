@@ -2071,13 +2071,13 @@ const MM_NIGHT_SEA = [3, 6, 14, 255];
 let MM_NIGHT_TILES = true;
 let MM_NIGHT_TILE_ERRORS = 0;
 
-// 야간광은 원본이 어둡다. 같은 타일을 두 번 그린다: 한 번은 그대로, 한 번은
-// 가산 합성(additive)으로 위에 얹어 불빛만 부풀린다 -- 검은 바다는 더할 것이
-// 없어 그대로고, 도시만 밝아진다. 밝기를 올리고 싶으면 MM_NIGHT_BOOST 만 만진다.
-const MM_NIGHT_BOOST = 0.85;
-
-const mmNightTileLayer = (boost = false) => new deck.TileLayer({
-    id: boost ? 'macro-night-tiles-boost' : 'macro-night-tiles',
+// "위성 사진을 더 세게" 를 가산 합성 한 겹으로 풀었었다. 틀린 답이었다:
+// Black Marble 의 육지는 순수한 검정이 아니라 어두운 청회색이라, 더하기는 도시
+// 불빛만이 아니라 대륙 전체를 들어올린다. 2026-09-04 화면에서 확인 -- 지구가
+// 보라색으로 뜨고 불빛은 오히려 묻혔다. 세기는 더하기가 아니라 대비로 낸다
+// (style.css 의 body.macro-night 캔버스 필터).
+const mmNightTileLayer = () => new deck.TileLayer({
+    id: 'macro-night-tiles',
     getTileData: mmNightTileData,
     tileSize: 256,
     // 이 야간광 합성은 z1-8 만 발행된다. z0 을 부르면 상류가 404 다.
@@ -2086,20 +2086,7 @@ const mmNightTileLayer = (boost = false) => new deck.TileLayer({
     extent: MM_NIGHT_EXTENT,
     refinementStrategy: 'best-available',
     pickable: false,
-    opacity: boost ? MM_NIGHT_BOOST : 1,
-    // 가산 합성 파라미터는 luma v9 표기. 이름이 안 먹는 번들에서도 최악이 그냥
-    // 한 겹 더 덮이는 것이라 그림은 여전히 밝아진다.
-    parameters: boost ? {
-        blend: true,
-        blendColorSrcFactor: 'src-alpha',
-        blendColorDstFactor: 'one',
-        blendColorOperation: 'add',
-        blendAlphaSrcFactor: 'one',
-        blendAlphaDstFactor: 'one',
-        blendAlphaOperation: 'add',
-    } : undefined,
     onTileError: () => {
-        if (boost) return;   // 실패는 한 번만 센다
         MM_NIGHT_TILE_ERRORS += 1;
         // 한두 장은 늘 흔들린다. 여섯 장이 연달아 실패하면 소스 자체가 없는 것.
         if (MM_NIGHT_TILE_ERRORS >= 6 && MM_NIGHT_TILES) {
@@ -2148,7 +2135,7 @@ const mmNightBaseLayers = () => {
     // TileLayer/BitmapLayer 는 deck 스크립팅 번들에 들어 있지만, 번들이 바뀌어
     // 빠지면 조용히 빈 지도가 된다. 없으면 벡터 실루엣으로 간다.
     if (MM_NIGHT_TILES && deck.TileLayer && deck.BitmapLayer) {
-        layers.push(mmNightTileLayer(), mmNightTileLayer(true));
+        layers.push(mmNightTileLayer());
     } else {
         MM_NIGHT_TILES = false;
     }
@@ -2170,7 +2157,9 @@ const mmDrawMap = () => {
     const rows = (MM_INDEX?.countries_index || []).filter((c) => c.coords);
     const night = mmNightEnabled();
     deckgl.setProps({
-        views: [new MapView({ id: 'map', controller: true, repeat: true })],
+        // 대륙은 한 번씩만 나온다. repeat 을 켜면 지도가 좌우로 무한히 이어져
+        // 같은 대륙이 여러 번 나오는데, 야간광 위에서는 그게 특히 어지럽다.
+        views: [new MapView({ id: 'map', controller: true, repeat: false })],
         viewState: currentViewState,
         controller: { dragRotate: false, touchRotate: false },
         onHover: null,
