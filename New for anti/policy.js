@@ -972,7 +972,57 @@
     });
   }
 
-  async function go(view, id) {
+  /* ------------------------------------------------------------- deep links */
+
+  // Every screen gets its own URL: /us-policy-hub/committee/hsag00/bill/119-hr-3633.
+  // app.js's router owns the first path segment (the target); everything after
+  // it is opaque to app.js and reconstructed here from state.trail, so a
+  // refresh, a shared link, or the browser's back/forward button lands on the
+  // exact drill-down level the URL names instead of always resetting to the hub.
+  const ROOT_VIEWS = new Set(['congress', 'executive']);
+  const VALID_VIEWS = new Set(Object.keys(PARENT));
+
+  const trailToPath = (trail) => trail
+    .map((t) => (t.id !== undefined && t.id !== null && t.id !== ''
+      ? `${t.view}/${encodeURIComponent(t.id)}` : t.view))
+    .join('/');
+
+  // Root views (congress/executive) are a single segment with no id; every
+  // other view is a (view, id) pair. An unrecognized or malformed segment
+  // stops parsing there rather than throwing, so a stale or hand-edited URL
+  // degrades to whatever prefix of it still makes sense.
+  function parsePolicyPath(subPath) {
+    const parts = String(subPath || '').split('/').filter(Boolean);
+    const trail = [];
+    let i = 0;
+    while (i < parts.length) {
+      const view = parts[i];
+      if (!VALID_VIEWS.has(view)) break;
+      if (ROOT_VIEWS.has(view)) { trail.push({ view }); i += 1; continue; }
+      if (i + 1 >= parts.length) break; // a non-root view with no id trailing it
+      trail.push({ view, id: decodeURIComponent(parts[i + 1]) });
+      i += 2;
+    }
+    return trail;
+  }
+
+  // Writes through the same history entry shape app.js's own navigateTo()
+  // uses, so its one popstate listener (in app.js) handles a step back into a
+  // policy screen exactly like a step back into any other view.
+  function pushPolicyUrl(trail, { replace = false } = {}) {
+    const target = host?.dataset.policyTarget;
+    if (!target || !window.history) return;
+    const subPath = trailToPath(trail);
+    const path = subPath ? `/${target}/${subPath}` : `/${target}`;
+    if (!replace && window.location.pathname === path) return;
+    window.history[replace ? 'replaceState' : 'pushState']({ target, subPath }, '', path);
+  }
+
+  // silent skips the URL write -- used only for the very first go() a fresh
+  // render() makes. app.js already put the plain target URL (no subPath) in
+  // place before calling render(); pushing again here for the root view would
+  // stack a second, visually-identical history entry on top of it.
+  async function go(view, id, { silent = false } = {}) {
     const token = renderToken;
     state.stage = '';
     let extra = {};
@@ -984,10 +1034,39 @@
       state.trail = trailTo(view, id, extra);
       viewData = {};
       host.innerHTML = shell(empty('데이터를 불러오지 못했습니다'));
+      if (!silent) pushPolicyUrl(state.trail);
       return;
     }
     if (token !== renderToken || !host) return; // a later navigation won the race
     state.trail = trailTo(view, id, extra);
+    viewData = extra;
+    paint();
+    if (!silent) pushPolicyUrl(state.trail);
+  }
+
+  // Renders a trail read straight from a URL (deep link, refresh, or
+  // browser back/forward) rather than one built by trailTo() from a click.
+  // Only the leaf needs a fetch -- every ancestor's label comes from the
+  // already-loaded overview, same as trailTo() does for a click.
+  async function goToTrail(trail) {
+    const token = renderToken;
+    state.stage = '';
+    const leaf = trail[trail.length - 1] || { view: 'congress' };
+    let extra = {};
+    try {
+      extra = await fetchViewData(leaf.view, leaf.id);
+    } catch (err) {
+      console.error(`Failed to load policy view "${leaf.view}":`, err);
+      if (token !== renderToken || !host) return;
+      state.trail = trail.map((t) => ({ ...t, label: labelFor(t.view, t.id, overview) }));
+      viewData = {};
+      host.innerHTML = shell(empty('데이터를 불러오지 못했습니다'));
+      return;
+    }
+    if (token !== renderToken || !host) return;
+    state.trail = trail.map((t, i) => ({
+      ...t, label: labelFor(t.view, t.id, overview, i === trail.length - 1 ? extra : undefined),
+    }));
     viewData = extra;
     paint();
   }
@@ -1073,7 +1152,19 @@
     'us-executive': 'executive',
   };
 
-  async function render(target, surface) {
+  async function render(target, surface, subPath = '') {
+    const requestedTrail = parsePolicyPath(subPath);
+
+    // app.js's popstate handler calls render() on every URL change, including
+    // a back/forward step that never left this policy surface. Reloading the
+    // overview and favorites for that case would flash the loading state for
+    // no reason -- just move within the already-mounted screen instead.
+    if (host === surface && host.dataset.policyTarget === target && overview) {
+      renderToken += 1; // a rapid back/forward should let only the latest of these win
+      await goToTrail(requestedTrail.length ? requestedTrail : [{ view: TARGET_VIEWS[target] || 'congress' }]);
+      return;
+    }
+
     host = surface;
     const token = ++renderToken;
     host.classList.add('policy-surface');
@@ -1094,9 +1185,12 @@
     }
     if (host.dataset.policyTarget !== target || token !== renderToken) return; // a later view won the race
 
-    // Entering from the top menu starts a fresh trail at that level.
+    // A URL with a drill-down path (a shared link, a refresh, or landing here
+    // via browser history) restores that exact screen; otherwise entering
+    // from the top menu starts a fresh trail at the branch's root.
     state.trail = [];
-    await go(TARGET_VIEWS[target] || 'congress');
+    if (requestedTrail.length) await goToTrail(requestedTrail);
+    else await go(TARGET_VIEWS[target] || 'congress', undefined, { silent: true });
 
     host.removeEventListener('click', onClick);
     host.addEventListener('click', onClick);

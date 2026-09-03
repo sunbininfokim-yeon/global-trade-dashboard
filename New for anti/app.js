@@ -5108,7 +5108,7 @@ const updatePageMeta = (target) => {
     if (canonical) canonical.href = url;
 };
 
-const setView = (target) => {
+const setView = (target, subPath = '') => {
     updatePageMeta(target);
     const isShippingView = target && target.startsWith('shipping_');
     const isFinanceView = target && target.startsWith('fin_');
@@ -5207,7 +5207,7 @@ const setView = (target) => {
             chartView.style.pointerEvents = 'auto';
             chartView.style.zIndex = '40';
         }
-        window.USPolicy?.render(target, chartView);
+        window.USPolicy?.render(target, chartView, subPath);
 
     } else if (isShippingView) {
         currentCommodity = target;
@@ -5612,23 +5612,35 @@ initSignalPanel();
 // /shipping_fleet, ...) instead of staying on '/' for every view, so
 // sections are shareable, back/forward works, and each is a distinct URL
 // for search engines. 'home' is the one target that maps to '/' itself.
-const pathForTarget = (target) => (target === 'home' ? '/' : `/${target}`);
-const targetFromPath = (pathname) => {
-    const slug = pathname.replace(/^\/+/, '').replace(/\/+$/, '');
-    if (!slug) return 'home';
-    return document.querySelector(`[data-target="${slug}"]`) ? slug : null;
+//
+// A policy screen (isPolicyView) is a drill-down of its own -- 의회 › 상임위 ›
+// 법률, 행정부 › 기관 › 행정명령 -- so its target carries an optional subPath
+// after it (/us-policy-hub/committee/hsag00/bill/119-hr-3633). subPath is
+// opaque here: policy.js owns everything past the first path segment.
+const pathForTarget = (target, subPath = '') => {
+    const base = target === 'home' ? '/' : `/${target}`;
+    return subPath ? `${base.replace(/\/$/, '')}/${subPath}` : base;
 };
-const navigateTo = (target) => {
+const targetFromPath = (pathname) => {
+    const clean = pathname.replace(/^\/+/, '').replace(/\/+$/, '');
+    if (!clean) return { target: 'home', subPath: '' };
+    const [first, ...rest] = clean.split('/');
+    return document.querySelector(`[data-target="${first}"]`)
+        ? { target: first, subPath: rest.join('/') }
+        : { target: null, subPath: '' };
+};
+const navigateTo = (target, subPath = '') => {
     if (!target) return;
-    const path = pathForTarget(target);
+    const path = pathForTarget(target, subPath);
     if (window.location.pathname !== path || window.location.hash) {
-        window.history.pushState({ target }, '', path);
+        window.history.pushState({ target, subPath }, '', path);
     }
-    setView(target);
+    setView(target, subPath);
 };
 
 window.addEventListener('popstate', () => {
-    setView(targetFromPath(window.location.pathname) || 'home');
+    const { target, subPath } = targetFromPath(window.location.pathname);
+    setView(target || 'home', subPath);
 });
 
 // Event Listeners for Nav
@@ -5758,17 +5770,17 @@ const loadTicker = async () => {
 // Initialize from the URL path (e.g. a shared /macro_monitor link). Falls
 // back to the old #/shipping_x deep-link format for links shared before
 // routes moved off the hash, then to home for an unknown path.
-let initialView = targetFromPath(window.location.pathname);
+let { target: initialView, subPath: initialSubPath } = targetFromPath(window.location.pathname);
 if ((!initialView || initialView === 'home') && window.location.hash.startsWith('#/')) {
     const legacy = window.location.hash.slice(2);
     if (document.querySelector(`[data-target="${legacy}"]`)) initialView = legacy;
 }
 if (!initialView) initialView = 'home';
-const normalizedPath = pathForTarget(initialView);
+const normalizedPath = pathForTarget(initialView, initialSubPath);
 if (window.location.pathname !== normalizedPath || window.location.hash) {
-    window.history.replaceState({ target: initialView }, '', normalizedPath);
+    window.history.replaceState({ target: initialView, subPath: initialSubPath }, '', normalizedPath);
 }
-setView(initialView);
+setView(initialView, initialSubPath);
 updateNewsPanel('Global Market');
 loadTicker();
 
