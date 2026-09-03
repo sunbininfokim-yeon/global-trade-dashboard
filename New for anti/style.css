@@ -3181,6 +3181,13 @@ a.rpt-title:focus-visible { outline: 1px solid rgba(56,189,248,.5); outline-offs
 body.macro-mode .left-pane,
 body.macro-mode #right-pane-container { display: none !important; }
 body.macro-mode .map-pane { flex: 1 1 100%; }
+/* 지도가 우주에서 본 밤이 되려면 캔버스 뒤도 검어야 한다 -- 타일이 채워지기
+   전 한 프레임 동안 밝은 판이 비치는 것을 막는다. */
+body.macro-mode .map-pane,
+body.macro-mode #map,
+body.macro-mode #map canvas { background: #03060e; }
+/* 위성 사진 위 오버레이는 배경보다 어두워야 글이 읽힌다. */
+body.macro-mode .mm-hint { background: rgba(6, 11, 22, .88); }
 
 #macro-layer {
     position: absolute; inset: 0; z-index: 30;

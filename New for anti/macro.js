@@ -1970,6 +1970,118 @@ const mmOpenCountry = async (iso3) => {
     mmPaint();
 };
 
+// === 야간 위성 베이스맵 ====================================================
+//
+// 매크로 지도는 벡터 베이스맵(worldBaseLayers) 대신 NASA GIBS 의 VIIRS Black
+// Marble 야간광 타일을 깐다 -- 우주에서 밤의 지구를 본 그림. 평면 MapView 이므로
+// EPSG:3857 타일이 그대로 맞는다 (_GlobeView 였다면 래스터가 구부러지지 않아
+// 불가능했다).
+//
+// 남극은 소스에서 빼는 게 아니라 타일 extent 로 잘라 낸다: Black Marble 은 극지
+// 타일도 내려주지만 야간광이 없어 검은 띠만 남는다.
+const MM_NIGHT_TILE_URL = 'https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/VIIRS_Black_Marble/default/2016-01-01/GoogleMapsCompatible_Level8/{z}/{y}/{x}.jpeg';
+const MM_NIGHT_EXTENT = [-180, -58, 180, 84];
+const MM_NIGHT_SEA = [3, 6, 14, 255];
+
+// 타일이 끝내 오지 않을 때(오프라인·GIBS 장애·CSP)를 위한 스위치. 실패가 쌓이면
+// 벡터 실루엣으로 내려앉고, 지도는 여전히 클릭 가능한 상태로 남는다.
+let MM_NIGHT_TILES = true;
+let MM_NIGHT_TILE_ERRORS = 0;
+
+// 야간광은 원본이 어둡다. 같은 타일을 두 번 그린다: 한 번은 그대로, 한 번은
+// 가산 합성(additive)으로 위에 얹어 불빛만 부풀린다 -- 검은 바다는 더할 것이
+// 없어 그대로고, 도시만 밝아진다. 밝기를 올리고 싶으면 MM_NIGHT_BOOST 만 만진다.
+const MM_NIGHT_BOOST = 0.85;
+
+const mmNightTileLayer = (boost = false) => new deck.TileLayer({
+    id: boost ? 'macro-night-tiles-boost' : 'macro-night-tiles',
+    data: MM_NIGHT_TILE_URL,
+    tileSize: 256,
+    minZoom: 0,
+    maxZoom: 8,          // Black Marble 은 Level8 까지만 발행된다
+    extent: MM_NIGHT_EXTENT,
+    refinementStrategy: 'best-available',
+    pickable: false,
+    opacity: boost ? MM_NIGHT_BOOST : 1,
+    // 가산 합성 파라미터는 luma v9 표기. 이름이 안 먹는 번들에서도 최악이 그냥
+    // 한 겹 더 덮이는 것이라 그림은 여전히 밝아진다.
+    parameters: boost ? {
+        blend: true,
+        blendColorSrcFactor: 'src-alpha',
+        blendColorDstFactor: 'one',
+        blendColorOperation: 'add',
+        blendAlphaSrcFactor: 'one',
+        blendAlphaDstFactor: 'one',
+        blendAlphaOperation: 'add',
+    } : undefined,
+    onTileError: () => {
+        if (boost) return;   // 실패는 한 번만 센다
+        MM_NIGHT_TILE_ERRORS += 1;
+        // 한두 장은 늘 흔들린다. 여섯 장이 연달아 실패하면 소스 자체가 없는 것.
+        if (MM_NIGHT_TILE_ERRORS >= 6 && MM_NIGHT_TILES) {
+            MM_NIGHT_TILES = false;
+            mmDrawMap();
+        }
+    },
+    renderSubLayers: (props) => {
+        const bbox = props.tile.boundingBox;
+        if (!props.data || !bbox) return null;
+        return new deck.BitmapLayer(props, {
+            data: null,
+            image: props.data,
+            bounds: [bbox[0][0], bbox[0][1], bbox[1][0], bbox[1][1]],
+        });
+    },
+});
+
+/**
+ * 바다(검은 하늘) → 대륙 실루엣 → 야간광 타일 → 국경선.
+ *
+ * 실루엣을 타일 밑에 먼저 까는 이유: 타일은 비동기로 채워지고, 그동안 화면이
+ * 완전한 검정이면 지도가 죽은 것처럼 보인다. 타일이 덮으면 보이지 않는다.
+ */
+const mmNightBaseLayers = () => {
+    const layers = [
+        new SolidPolygonLayer({
+            id: 'macro-night-sea',
+            data: [[[-180, MM_NIGHT_EXTENT[1]], [180, MM_NIGHT_EXTENT[1]],
+                    [180, MM_NIGHT_EXTENT[3]], [-180, MM_NIGHT_EXTENT[3]]]],
+            getPolygon: (d) => d,
+            filled: true,
+            stroked: false,
+            pickable: false,
+            getFillColor: MM_NIGHT_SEA,
+        }),
+        new GeoJsonLayer({
+            id: 'macro-night-land',
+            data: worldGeo(),
+            stroked: false,
+            filled: true,
+            pickable: false,
+            getFillColor: MM_NIGHT_TILES ? [11, 16, 26, 255] : [16, 22, 34, 255],
+        }),
+    ];
+    // TileLayer/BitmapLayer 는 deck 스크립팅 번들에 들어 있지만, 번들이 바뀌어
+    // 빠지면 조용히 빈 지도가 된다. 없으면 벡터 실루엣으로 간다.
+    if (MM_NIGHT_TILES && deck.TileLayer && deck.BitmapLayer) {
+        layers.push(mmNightTileLayer(), mmNightTileLayer(true));
+    } else {
+        MM_NIGHT_TILES = false;
+    }
+    layers.push(new GeoJsonLayer({
+        id: 'macro-night-borders',
+        data: worldGeo(),
+        stroked: true,
+        filled: false,
+        pickable: false,
+        lineWidthMinPixels: 0.6,
+        // 위성 사진 위에서 국경선은 안내선이지 그림이 아니다. 타일이 없을 때만
+        // 대륙 형태를 대신 읽어야 하므로 진해진다.
+        getLineColor: MM_NIGHT_TILES ? [122, 156, 200, 38] : [122, 156, 200, 130],
+    }));
+    return layers;
+};
+
 const mmDrawMap = () => {
     const rows = (MM_INDEX?.countries_index || []).filter((c) => c.coords);
     deckgl.setProps({
@@ -1982,25 +2094,41 @@ const mmDrawMap = () => {
             : null,
         onClick: ({ object }) => { if (object && object.iso3) mmOpenCountry(object.iso3); },
         layers: [
-            ...worldBaseLayers({ id: 'macro' }),
+            ...mmNightBaseLayers(),
+            // 도시 불빛 위에서 회색 점은 그냥 사라진다. 헤일로를 한 겹 먼저 깔아
+            // 마커가 스스로 빛나는 것처럼 보이게 한다 -- 픽킹은 위의 점만 받는다.
+            new ScatterplotLayer({
+                id: 'macro-pin-glow',
+                data: rows,
+                pickable: false,
+                stroked: false,
+                filled: true,
+                radiusMinPixels: 20,
+                radiusMaxPixels: 58,
+                getPosition: (d) => [d.coords.lon, d.coords.lat],
+                getRadius: (d) => d.benchmark ? 520000 : 380000,
+                getFillColor: (d) => d.benchmark ? [56, 189, 248, 52] : [255, 197, 120, 42],
+            }),
             new ScatterplotLayer({
                 id: 'macro-pins',
                 data: rows,
                 pickable: true,
                 stroked: true,
                 filled: true,
-                opacity: 0.9,
-                radiusMinPixels: 9,
-                radiusMaxPixels: 26,
-                lineWidthMinPixels: 2,
+                opacity: 0.95,
+                radiusMinPixels: 7,
+                radiusMaxPixels: 22,
+                lineWidthMinPixels: 1.5,
                 getPosition: (d) => [d.coords.lon, d.coords.lat],
                 // The benchmark is the one everything else is read against, so
                 // it is the only marker that differs.
-                getRadius: (d) => d.benchmark ? 220000 : 150000,
-                getFillColor: (d) => d.benchmark ? [56, 189, 248, 230] : [148, 163, 184, 200],
-                getLineColor: (d) => d.benchmark ? [255, 255, 255, 230] : [255, 255, 255, 120],
+                getRadius: (d) => d.benchmark ? 200000 : 130000,
+                // 위성 야간광이 호박색이라 마커도 같은 온도로 맞춘다. 벤치마크만
+                // 찬 하늘색으로 떨어뜨려 한눈에 갈린다.
+                getFillColor: (d) => d.benchmark ? [125, 211, 252, 245] : [255, 224, 170, 225],
+                getLineColor: (d) => d.benchmark ? [255, 255, 255, 235] : [255, 236, 200, 110],
                 autoHighlight: true,
-                highlightColor: [125, 211, 252, 220],
+                highlightColor: [186, 230, 253, 235],
             }),
         ],
     });
