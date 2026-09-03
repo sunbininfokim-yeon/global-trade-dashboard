@@ -89,6 +89,20 @@ class BuildTests(unittest.TestCase):
         self.assertIn("reporter_liquidity_themes", fields)
         self.assertTrue(fields.get("reporter_liquidity_primary_ko") or fields.get("reporter_liquidity_themes"))
 
+    def test_monetary_feed_merges_without_duplicating_the_general_feed(self):
+        # fed_press.xml and fed_press_monetary.xml both carry the same FOMC
+        # Statement URL (the Fed's general press feed already includes monetary
+        # policy releases) -- real-world overlap the merge has to dedupe by URL,
+        # while still picking up the Implementation Note that only the narrower
+        # monetary feed carries.
+        doc = build_liquidity_intel(fetch_live=False, fixture_dir=FIX)
+        urls = [it["url"] for it in doc["liquidity"]["fed"]["items"]]
+        self.assertEqual(len(urls), len(set(urls)))
+        self.assertIn(
+            "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260730a1.htm",
+            urls,
+        )
+
 
 if __name__ == "__main__":
     unittest.main()
