@@ -1,6 +1,6 @@
 {
   "schema_version": "commodity-reports-v1",
-  "generated_at": "2026-09-03T12:59:07.559094+00:00",
+  "generated_at": "2026-09-03T19:25:02.149177+00:00",
   "model": {
     "name": "commodity_reports_v1",
     "description": "Official crop/energy/metal reports tagged (commodity × country) so the dashboard's stage-2 country window can show what was published about that country's commodity. The report's text picks the country, not the publisher: a USDA release on Brazilian wheat belongs on BRA·wheat.",
@@ -17,11 +17,11 @@
     "per_bucket_limit": 8
   },
   "stats": {
-    "sources_ok": 8,
-    "sources_failed": 4,
-    "raw_items": 142,
-    "scored": 51,
-    "published": 36,
+    "sources_ok": 9,
+    "sources_failed": 3,
+    "raw_items": 143,
+    "scored": 52,
+    "published": 35,
     "commodities": 9,
     "buckets": 11
   },
@@ -57,7 +57,7 @@
     {
       "source_id": "us_eia_today_in_energy",
       "ok": true,
-      "count": 11,
+      "count": 12,
       "error": null,
       "mode": "live"
     },
@@ -98,9 +98,9 @@
     },
     {
       "source_id": "us_usgs_news",
-      "ok": false,
+      "ok": true,
       "count": 0,
-      "error": "URLError: <urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1010)>",
+      "error": null,
       "mode": "live"
     },
     {
@@ -459,9 +459,9 @@
   "index": {
     "gas": {
       "USA": [
-        "8140ada36a326578",
-        "de49cf7992871dbf",
         "5a1967d788350658",
+        "da3f6761ea6f1421",
+        "de49cf7992871dbf",
         "181e4ee82214496a"
       ],
       "_global": [
@@ -481,7 +481,6 @@
       "_global": [
         "0260f9aa0131b0b8",
         "735b13587e14b5a5",
-        "12ad31a4f223ae78",
         "af0be633a6c11395",
         "39ac9e91f73a0776"
       ]
@@ -545,14 +544,14 @@
   },
   "items": [
     {
-      "id": "8140ada36a326578",
+      "id": "da3f6761ea6f1421",
       "title": {
         "original": "U.S. LNG exports rose 23% in the first half of 2026 because of higher capacity",
         "original_lang": "en",
         "ko": null
       },
       "summary": "U.S. liquefied natural gas (LNG) exports averaged 17.4 billion cubic feet per day (Bcf/d) in the first six months of the year, 23% more than the same period in 2025, according to our Natural Gas Monthly. In our latest Short-Term Energy Outlook, we estimate U.S. LNG exports will average 17.3 Bcf/d in the second half of 2026 (2H26) before rising to 18.7 Bcf/d in 1H27.",
-      "url": "https://www.eia.gov/todayinenergy/detail.php?id=",
+      "url": "https://www.eia.gov/todayinenergy/detail.php?id=68064",
       "published_at": "2026-09-01T14:00:00+00:00",
       "agency": "EIA",
       "agency_ko": "미 에너지정보청",
@@ -567,7 +566,7 @@
       "country_source": "text",
       "series_id": "EIA_STEO",
       "series_label_ko": "EIA 단기 에너지 전망",
-      "importance": 5.24,
+      "importance": 5.211,
       "reasons": [
         "series:EIA_STEO",
         "has_figure",
@@ -598,7 +597,7 @@
       "country_source": "text",
       "series_id": "EIA_STEO",
       "series_label_ko": "EIA 단기 에너지 전망",
-      "importance": 2.397,
+      "importance": 2.395,
       "reasons": [
         "series:EIA_STEO",
         "has_figure",
@@ -629,7 +628,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.808,
+      "importance": 1.799,
       "reasons": [
         "revision_language",
         "country_in_text"
@@ -658,7 +657,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.791,
+      "importance": 1.783,
       "reasons": [
         "has_figure",
         "country_in_text"
@@ -757,6 +756,34 @@
         "series:USDA_CROP_PRODUCTION",
         "has_figure",
         "revision_language",
+        "country_in_text"
+      ]
+    },
+    {
+      "id": "5a1967d788350658",
+      "title": {
+        "original": "Wholesale Electricity Market Data",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "(Thu, 03 Sep 2026) This report includes spreadsheets with wholesale electricity and natural gas data from seven major trading hubs that cover most regions of the United States. The data are through September 1, 2026, and republished, with permission, from the Intercontinental Exchange (ICE).",
+      "url": "http://www.eia.gov/electricity/wholesale/",
+      "published_at": "2026-09-03T05:00:00+00:00",
+      "agency": "EIA",
+      "agency_ko": "미 에너지정보청",
+      "source_id": "us_eia_whats_new",
+      "commodities": [
+        "gas"
+      ],
+      "countries": [
+        "USA"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.703,
+      "reasons": [
         "country_in_text"
       ]
     },
@@ -904,7 +931,7 @@
       "country_source": "text",
       "series_id": "EIA_STEO",
       "series_label_ko": "EIA 단기 에너지 전망",
-      "importance": 1.654,
+      "importance": 1.651,
       "reasons": [
         "series:EIA_STEO",
         "country_in_text"
@@ -933,7 +960,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.642,
+      "importance": 1.633,
       "reasons": [
         "country_in_text"
       ]
@@ -961,7 +988,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.608,
+      "importance": 1.599,
       "reasons": [
         "country_in_text"
       ]
@@ -1112,7 +1139,7 @@
       "country_source": "text",
       "series_id": "EIA_STEO",
       "series_label_ko": "EIA 단기 에너지 전망",
-      "importance": 1.353,
+      "importance": 1.352,
       "reasons": [
         "series:EIA_STEO",
         "country_in_text"
@@ -1255,7 +1282,7 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.314,
+      "importance": 1.306,
       "reasons": []
     },
     {
@@ -1279,36 +1306,8 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.314,
+      "importance": 1.306,
       "reasons": []
-    },
-    {
-      "id": "5a1967d788350658",
-      "title": {
-        "original": "Wholesale Electricity Market Data",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "(Thu, 20 Aug 2026) This report includes spreadsheets with wholesale electricity and natural gas data from seven major trading hubs that cover most regions of the United States. The data are through August 18, 2026, and republished, with permission, from the Intercontinental Exchange (ICE).",
-      "url": "http://www.eia.gov/electricity/wholesale/",
-      "published_at": "2026-08-20T05:00:00+00:00",
-      "agency": "EIA",
-      "agency_ko": "미 에너지정보청",
-      "source_id": "us_eia_whats_new",
-      "commodities": [
-        "gas"
-      ],
-      "countries": [
-        "USA"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 1.302,
-      "reasons": [
-        "country_in_text"
-      ]
     },
     {
       "id": "cecfc55a16f54d74",
@@ -1364,30 +1363,6 @@
       "reasons": [
         "series:EIA_STEO"
       ]
-    },
-    {
-      "id": "12ad31a4f223ae78",
-      "title": {
-        "original": "Liquids pipeline projects",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "(Tue, 18 Aug 2026) This spreadsheet contains detailed information on liquids pipeline projects (crude oil, petroleum products, and hydrocarbon gas liquids). We do not collect the data on an EIA survey, but rather we compile the data from various sources including trade press, pipeline company websites, and government agencies. These data are not a forecast. They represent last-known public information on projects, as of June 30, 2026. The status of each project is categorized as completed (since 2010), announced, under construction, on hold, or canceled.",
-      "url": "http://www.eia.gov/petroleum/data.php#movements",
-      "published_at": "2026-08-18T05:00:00+00:00",
-      "agency": "EIA",
-      "agency_ko": "미 에너지정보청",
-      "source_id": "us_eia_whats_new",
-      "commodities": [
-        "oil"
-      ],
-      "countries": [],
-      "scope": "global",
-      "country_source": "none",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 1.006,
-      "reasons": []
     },
     {
       "id": "21e8e31c7b207b51",
