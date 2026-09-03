@@ -2202,6 +2202,45 @@ const mmNightBaseLayers = () => {
     return layers;
 };
 
+// 화면을 꽉 채우는 시점. 지도 판보다 세계가 작으면 위·아래로 검은 여백이 남는데
+// (2026-09-04 화면), 야간광을 배경으로 쓰는 화면에서 그 여백은 그냥 빈 자리다.
+// 가로·세로 중 더 큰 줌을 골라 '커버'로 맞춘다 -- 비율은 그대로 두고 넘치는 쪽만
+// 잘린다. 위도 20°를 중심에 두는 건 남북 대륙이 함께 들어오는 자리이기 때문.
+const MM_FILL_LAT = 20;
+const MM_FILL_LON = 10;
+
+const mmFillViewState = () => {
+    const el = (typeof mapContainer !== 'undefined' && mapContainer) || document.getElementById('map');
+    const w = (el && el.clientWidth) || window.innerWidth;
+    const h = (el && el.clientHeight) || window.innerHeight;
+    // 웹 메르카토르의 세계는 한 변 512px 의 정사각형이고, 줌 한 단계마다 두 배가
+    // 된다. 그래서 채우기 줌은 두 변에 대한 로그 중 큰 쪽.
+    const zoom = Math.max(Math.log2(w / 512), Math.log2(h / 512));
+    return clampGlobeView({
+        ...currentViewState,
+        longitude: MM_FILL_LON,
+        latitude: MM_FILL_LAT,
+        zoom,
+    });
+};
+
+// 창 크기가 바뀌면 여백이 다시 생긴다. 매크로 화면에 있을 때만 다시 맞춘다.
+let MM_RESIZE_WIRED = false;
+let MM_RESIZE_TIMER = null;
+const mmWireResize = () => {
+    if (MM_RESIZE_WIRED) return;
+    MM_RESIZE_WIRED = true;
+    window.addEventListener('resize', () => {
+        if (!document.body.classList.contains('macro-mode')) return;
+        clearTimeout(MM_RESIZE_TIMER);
+        MM_RESIZE_TIMER = setTimeout(() => {
+            if (!document.body.classList.contains('macro-mode')) return;
+            currentViewState = mmFillViewState();
+            mmDrawMap();
+        }, 150);
+    });
+};
+
 const mmDrawMap = () => {
     const rows = (MM_INDEX?.countries_index || []).filter((c) => c.coords);
     const night = mmNightEnabled();
@@ -2325,7 +2364,8 @@ const renderMacroMonitor = async () => {
         });
     }
 
-    currentViewState = clampGlobeView({ ...currentViewState, zoom: GLOBE_ZOOM });
+    currentViewState = mmFillViewState();
+    mmWireResize();
 
     if (!MM_INDEX) {
         host.innerHTML = `<div class="mm-hint">매크로 지표를 받는 중…</div>`;
