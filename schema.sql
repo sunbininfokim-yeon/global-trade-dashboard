@@ -663,8 +663,13 @@ create table if not exists public.executive_orders (
 create table if not exists public.executive_order_agencies (
   eo_number integer not null references public.executive_orders(eo_number) on delete cascade,
   agency_id text not null references public.agencies(agency_id) on delete cascade,
+  relationship_type text not null
+    check (relationship_type in ('issuing_document', 'implementing_regulation')),
+  relation_origin text not null
+    check (relation_origin in ('official_document_metadata', 'official_citation')),
+  source_url text,
   created_at timestamptz not null default now(),
-  primary key (eo_number, agency_id)
+  primary key (eo_number, agency_id, relationship_type, relation_origin)
 );
 
 create table if not exists public.legal_authorities (
@@ -686,7 +691,7 @@ create table if not exists public.legal_authorities (
   verification_status text not null default 'verified'
     check (verification_status in ('verified', 'unverified')),
   extraction_method text not null
-    check (extraction_method in ('official_metadata', 'verified_manual')),
+    check (extraction_method in ('official_metadata', 'official_text_citation', 'verified_manual')),
   verified_at timestamptz,
   created_at timestamptz not null default now()
 );

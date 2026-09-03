@@ -7,21 +7,28 @@ const {
   supabaseGet, supabaseInsert, supabaseInsertIgnore, supabasePatch, supabaseRpc, supabaseUpsert, updateSyncState,
 } = require('./lib/sync-utils');
 const { classifyFederalAgency, federalRegisterParentId } = require('./lib/federal-agency-classifier');
-const { publicLawBillLink, reconcilePublicLawAuthorityLinks } = require('./lib/public-law-links');
+const { reconcilePublicLawAuthorityLinks } = require('./lib/public-law-links');
+const { saveEoAuthorities } = require('./lib/eo-authorities');
 
 const API_BASE = 'https://www.federalregister.gov/api/v1';
 const EO_BACKFILL = process.env.EO_BACKFILL === 'true';
-const RESOURCE = EO_BACKFILL ? 'federalregister.gov:executive-orders:bootstrap' : 'federalregister.gov:documents';
-const MAX_DOCUMENTS = Number(process.env.MAX_FR_DOCUMENTS || (EO_BACKFILL ? 100 : 50));
+const EO_RELATION_BACKFILL = process.env.EO_RELATION_BACKFILL === 'true';
+if (EO_BACKFILL && EO_RELATION_BACKFILL) throw new Error('EO_BACKFILL and EO_RELATION_BACKFILL cannot run together.');
+const RESOURCE = EO_RELATION_BACKFILL
+  ? 'federalregister.gov:eo-relationships:bootstrap'
+  : EO_BACKFILL ? 'federalregister.gov:executive-orders:bootstrap' : 'federalregister.gov:documents';
+const MAX_DOCUMENTS = Number(process.env.MAX_FR_DOCUMENTS || (EO_BACKFILL ? 100 : EO_RELATION_BACKFILL ? 25 : 50));
 const CONCURRENCY = Number(process.env.FR_DETAIL_CONCURRENCY || 4);
 // Historical EO metadata is useful without embeddings. Make Gemini opt-in for
 // the historical pass so a 1994+ backfill does not unexpectedly consume quota.
 const SKIP_EMBEDDINGS = process.env.SKIP_EMBEDDINGS === 'true'
+  || EO_RELATION_BACKFILL
   || (EO_BACKFILL && process.env.EO_BACKFILL_EMBEDDINGS !== 'true');
 const MAX_EMBEDDINGS = Number(process.env.MAX_EMBEDDINGS || 25);
 const EO_BACKFILL_FROM_DATE = process.env.EO_BACKFILL_FROM_DATE || '1994-01-01';
 const EO_BACKFILL_TO_DATE = process.env.EO_BACKFILL_TO_DATE || new Date().toISOString().slice(0, 10);
 const EO_BACKFILL_PAGE_SIZE = Math.min(1_000, positiveInteger(process.env.EO_BACKFILL_PAGE_SIZE, 500));
+const EO_RELATION_PAGE_SIZE = Math.min(100, positiveInteger(process.env.MAX_EO_RELATION_DOCUMENTS, 25));
 
 requireEnv('SUPABASE_URL');
 requireEnv('SUPABASE_SERVICE_ROLE_KEY');
@@ -50,6 +57,12 @@ function eoBackfillCursor(state) {
     && cursor.from_date === EO_BACKFILL_FROM_DATE
     && cursor.to_date === EO_BACKFILL_TO_DATE;
   return sameRange ? cursor : { mode: 'eo_backfill', from_date: EO_BACKFILL_FROM_DATE, to_date: EO_BACKFILL_TO_DATE, page: 1 };
+}
+function eoRelationCursor(state) {
+  const cursor = state?.cursor || {};
+  return cursor.mode === 'eo_relation_backfill'
+    ? cursor
+    : { mode: 'eo_relation_backfill', after_eo_number: 0, page: 1 };
 }
 function agencyRow(agency, parentAgencyId = null) {
   const name = firstNonEmpty(agency?.name, agency?.raw_name, agency?.short_name);
@@ -90,10 +103,6 @@ function cfrReferences(document) {
     if (Number.isInteger(title) && title >= 1 && title <= 50) rows.push({ title_number: title, part_number: part ? String(part) : null });
   }
   return [...new Map(rows.map((row) => [`${row.title_number}:${row.part_number || ''}`, row])).values()];
-}
-function officialEoAuthority(document) {
-  // Only structured source metadata is used. Abstract/body text is never mined for legal authority.
-  return asArray(firstNonEmpty(document.legal_authorities, document.legal_authority)).filter((item) => item?.citation && item?.authority_type);
 }
 
 async function loadState() {
@@ -144,6 +153,24 @@ async function loadEoBackfillCandidates(state) {
     },
   };
 }
+
+async function nextEoRelationTarget(cursor) {
+  return (await supabaseGet('executive_orders', {
+    select: 'eo_number,document_number', eo_number: `gt.${Number(cursor.after_eo_number) || 0}`,
+    order: 'eo_number.asc', limit: '1',
+  }))?.[0] || null;
+}
+
+async function loadEoRelationCandidates(target, page) {
+  const body = await get('/documents.json', {
+    // The detail response below enforces RULE/PRORULE and an exact machine
+    // readable EO number. Do not rely on a comma-joined type query here:
+    // URLSearchParams would serialize it as one unsupported filter value.
+    'conditions[term]': `Executive Order ${target.eo_number}`,
+    per_page: EO_RELATION_PAGE_SIZE, page, order: 'oldest',
+  });
+  return { candidates: asArray(body?.results), totalPages: positiveInteger(body?.total_pages) };
+}
 async function documentBundle(item) {
   const detail = await get(`/documents/${encodeURIComponent(item.document_number)}.json`, {}, true) || {};
   return { item, document: { ...item, ...detail } };
@@ -172,6 +199,13 @@ async function saveAgencies(agencies) {
   return rows.map((row) => row.agency_id);
 }
 
+async function saveEoAgencyLinks(eoNumberValue, agencyIds, relationshipType, relationOrigin, sourceUrl) {
+  for (const agencyId of agencyIds) await supabaseInsertIgnore('executive_order_agencies', {
+    eo_number: eoNumberValue, agency_id: agencyId,
+    relationship_type: relationshipType, relation_origin: relationOrigin, source_url: sourceUrl || null,
+  }, 'eo_number,agency_id,relationship_type,relation_origin');
+}
+
 async function saveExecutiveOrder(item, document) {
   if (!isExecutiveOrder(document)) return null;
   const number = eoNumber(document); const agencyIds = await saveAgencies(asArray(document.agencies));
@@ -187,37 +221,13 @@ async function saveExecutiveOrder(item, document) {
   };
   const previous = (await supabaseGet('executive_orders', { select: 'title,summary,embedding', eo_number: `eq.${number}`, limit: '1' }))?.[0];
   await supabaseUpsert('executive_orders', [row], 'eo_number');
-  for (const agencyId of agencyIds) await supabaseInsertIgnore('executive_order_agencies', { eo_number: number, agency_id: agencyId }, 'eo_number,agency_id');
-  await saveAuthorities(number, document);
+  await saveEoAgencyLinks(number, agencyIds, 'issuing_document', 'official_document_metadata', document.html_url);
+  await saveEoAuthorities(number, document);
   await queue('eo_number', number, `${row.title}\n${row.summary || ''}`, {
     agency: agencyIds[0] || null,
     executive_order: String(number),
   });
   return { number, row, embed: !previous || !previous.embedding || previous.title !== row.title || previous.summary !== row.summary };
-}
-
-async function saveAuthorities(eoNumberValue, document) {
-  const publicLawCache = new Map();
-  for (const authority of officialEoAuthority(document)) {
-    // This branch is intentionally conservative; most FR EO records provide no structured authority field.
-    const type = String(authority.authority_type).toLowerCase();
-    if (!['constitution', 'usc', 'public_law', 'statutes_at_large', 'executive_order', 'regulation', 'other'].includes(type)) continue;
-    // Only an explicit Public Law citation can be connected to a single bill.
-    // U.S.C. and other authority types deliberately remain external links.
-    const link = type === 'public_law' ? await publicLawBillLink(authority.citation, publicLawCache) : null;
-    const existing = await supabaseGet('legal_authorities', { select: 'legal_authority_id,linked_bill_id', authority_type: `eq.${type}`, citation: `eq.${authority.citation}`, limit: '1' });
-    let id = existing?.[0]?.legal_authority_id;
-    if (!id) {
-      const inserted = await supabaseInsert('legal_authorities', [{ authority_type: type, citation: authority.citation,
-        title: authority.title || null, official_url: authority.official_url || null,
-        linked_bill_id: link?.billId || null, extraction_method: 'official_metadata', verified_at: new Date().toISOString() }],
-      'return=representation');
-      id = inserted?.[0]?.legal_authority_id;
-    } else if (link?.billId && existing[0].linked_bill_id !== link.billId) {
-      await supabasePatch('legal_authorities', `legal_authority_id=eq.${id}`, { linked_bill_id: link.billId });
-    }
-    if (id) await supabaseInsertIgnore('executive_order_authorities', { eo_number: eoNumberValue, legal_authority_id: id, source_url: document.html_url }, 'eo_number,legal_authority_id');
-  }
 }
 
 async function saveRegulation(item, document) {
@@ -243,21 +253,27 @@ async function saveRegulation(item, document) {
       title_number: `eq.${cfr.title_number}`, part_number: cfr.part_number ? `eq.${cfr.part_number}` : 'is.null', limit: '1' });
     if (!existing?.length) await supabaseInsert('regulation_cfr_references', { regulation_id: regulationId, ...cfr });
   }
-  await saveOfficialEoLinks(document, regulationId);
+  const eoLinks = await saveOfficialEoLinks(document, regulationId, agencyIds);
   await queue('regulation_id', regulationId, `${row.title}\n${row.abstract || ''}`, { agency: agencyIds[0] || null, cfr_title: String(cfrReferences(document)[0]?.title_number || '') });
-  return { regulationId, row, embed: !previous || !previous.embedding || previous.title !== row.title || previous.abstract !== row.abstract };
+  return { regulationId, row, eoLinks, embed: !previous || !previous.embedding || previous.title !== row.title || previous.abstract !== row.abstract };
 }
 
-async function saveOfficialEoLinks(document, regulationId) {
+async function saveOfficialEoLinks(document, regulationId, agencyIds) {
   // Relations are created only from an explicit machine-readable EO number, not a keyword/LLM guess.
   const values = asArray(firstNonEmpty(document.executive_order_numbers, document.executive_order_number));
+  let linked = 0;
   for (const value of values) {
     const eo = Number(value); if (!Number.isInteger(eo)) continue;
     const exists = await supabaseGet('executive_orders', { select: 'eo_number', eo_number: `eq.${eo}`, limit: '1' });
     if (exists?.length) await supabaseInsertIgnore('executive_order_regulations', {
       eo_number: eo, regulation_id: regulationId, relation_type: 'source_metadata', relation_origin: 'official_citation', source_url: document.html_url,
     }, 'eo_number,regulation_id,relation_type,relation_origin');
+    if (exists?.length) {
+      await saveEoAgencyLinks(eo, agencyIds, 'implementing_regulation', 'official_citation', document.html_url);
+      linked += 1;
+    }
   }
+  return linked;
 }
 
 async function queue(column, value, text, categories) {
@@ -294,7 +310,67 @@ async function embed(table, keyColumn, rows, content) {
   }
 }
 
+function explicitEoNumbers(document) {
+  return asArray(firstNonEmpty(document?.executive_order_numbers, document?.executive_order_number))
+    .map(Number).filter((value) => Number.isInteger(value));
+}
+
+async function runEoRelationBackfill() {
+  const state = await loadState();
+  const cursor = eoRelationCursor(state);
+  const target = await nextEoRelationTarget(cursor);
+  if (!target) {
+    console.log('EO relationship backfill is already complete.');
+    return;
+  }
+  const page = positiveInteger(cursor.page);
+  const runId = await startSyncRun(RESOURCE, {
+    mode: 'eo_relation_backfill', eo_number: target.eo_number, page, max_documents: EO_RELATION_PAGE_SIZE,
+  });
+  let read = 0;
+  let written = 0;
+  let authorityLinks = 0;
+  let regulationLinks = 0;
+  try {
+    if (target.document_number) {
+      const detail = await get(`/documents/${encodeURIComponent(target.document_number)}.json`, {}, true) || {};
+      authorityLinks = await saveEoAuthorities(target.eo_number, detail);
+    }
+    const discovery = await loadEoRelationCandidates(target, page);
+    read = discovery.candidates.length;
+    const bundles = await mapWithConcurrency(discovery.candidates, CONCURRENCY, documentBundle);
+    for (const { item, document } of bundles) {
+      // The search term only finds candidates. Creating a link requires an
+      // exact EO number in the source's own machine-readable metadata.
+      if (!explicitEoNumbers(document).includes(target.eo_number)) continue;
+      const regulation = await saveRegulation(item, document);
+      if (regulation) {
+        written += 1;
+        regulationLinks += regulation.eoLinks;
+      }
+    }
+    const pageComplete = page >= discovery.totalPages;
+    const nextCursor = pageComplete
+      ? { mode: 'eo_relation_backfill', after_eo_number: target.eo_number, page: 1 }
+      : { mode: 'eo_relation_backfill', after_eo_number: Number(cursor.after_eo_number) || 0, page: page + 1 };
+    const nextTarget = pageComplete ? await nextEoRelationTarget(nextCursor) : target;
+    const complete = pageComplete && !nextTarget;
+    if (complete) await updateSyncState(RESOURCE, { ...nextCursor, complete: true, completed_at: new Date().toISOString() });
+    else await checkpointSyncState(RESOURCE, nextCursor);
+    const status = complete ? 'succeeded' : 'partial';
+    await finishSyncRun(runId, { status, records_read: read, records_written: written, metadata: {
+      mode: 'eo_relation_backfill', eo_number: target.eo_number, page, total_pages: discovery.totalPages,
+      authority_links: authorityLinks, regulation_links: regulationLinks, next_cursor: nextCursor,
+    } });
+    console.log(`EO relationship backfill: EO ${target.eo_number}, page ${page}/${discovery.totalPages}; ${authorityLinks} authority links, ${regulationLinks} regulation links. ${complete ? 'history complete' : 'resume by running the same command again'}.`);
+  } catch (error) {
+    await finishSyncRun(runId, { status: 'failed', records_read: read, records_written: written, error_summary: error.message });
+    throw error;
+  }
+}
+
 async function run() {
+  if (EO_RELATION_BACKFILL) return runEoRelationBackfill();
   const state = await loadState();
   if (EO_BACKFILL && eoBackfillCursor(state).complete) {
     console.log(`EO backfill is already complete for ${EO_BACKFILL_FROM_DATE} through ${EO_BACKFILL_TO_DATE}.`);
