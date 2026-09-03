@@ -31,6 +31,24 @@
 
   const CHAMBER_LABELS = { house: '하원', senate: '상원', joint: '합동' };
 
+  // The pipeline a US bill walks, in order. Several schema stages collapse
+  // into one step (a bill sitting in subcommittee has not cleared committee
+  // yet, so both read as 발의·회부), which keeps the rail to seven steps
+  // instead of thirteen.
+  const STAGE_FLOW = [
+    { label: '발의·회부', stages: ['introduced', 'referred', 'subcommittee', 'committee_consideration'] },
+    { label: '상임위 통과', stages: ['reported'] },
+    { label: '본회의 통과', stages: ['passed_origin_chamber'] },
+    { label: '상대원 심사', stages: ['second_chamber'] },
+    { label: '양원 조정', stages: ['resolving_differences'] },
+    { label: '양원 통과', stages: ['passed_both_chambers', 'presented_to_president'] },
+    { label: '법률 제정', stages: ['enacted'] },
+  ];
+
+  // Ends that are not a point on the rail: the bill stopped instead of
+  // advancing, so they hang off the end of whatever it did reach.
+  const TERMINAL_LABELS = { vetoed: '거부', failed: '부결' };
+
   const esc = (value) => {
     if (value === null || value === undefined) return '';
     return String(value)
@@ -127,7 +145,7 @@
   //   미국 › 행정부 › 부처 › 행정명령
   // The trail doubles as the breadcrumb, so every ancestor stays reachable and
   // a screen never has to guess where it was opened from.
-  const state = { trail: [], stage: '', open: {} };
+  const state = { trail: [], stage: '', open: {}, search: { query: '' } };
 
   const current = () => state.trail[state.trail.length - 1] || { view: 'congress' };
   const trailHas = (view) => state.trail.some((t) => t.view === view);
@@ -165,12 +183,91 @@
       }).join('')}
     </nav>`;
 
-  // Search is not wired to a backend endpoint yet; the control is rendered
-  // disabled so the layout already matches the eventual screen.
+  // Backed by /api/us/search: a Gemini query embedding fanned out across
+  // bills/executive_orders/regulations (search_policy_corpus RPC). A result
+  // row carries the same data-view/data-id pair every other nav element uses,
+  // so the existing delegated click handler navigates it without new code.
   const searchBox = () =>
-    `<div class="policy-search is-disabled" title="${esc('검색 기능은 준비 중')}">
-       <input type="search" placeholder="${esc('검색 기능은 준비 중')}" disabled>
+    `<div class="policy-search" data-search>
+       <input type="search" class="policy-search-input" data-search-input autocomplete="off"
+              placeholder="${esc('법안·행정명령 검색 (예: 니켈, 수출통제)')}" value="${esc(state.search.query)}">
+       <div class="policy-search-results" data-search-results hidden></div>
      </div>`;
+
+  const SEARCH_TYPE_LABELS = { bill: '법안', executive_order: 'EO', regulation: '규정' };
+  const SEARCH_TYPE_VIEWS = { bill: 'bill', executive_order: 'eo' };
+
+  const searchResultRow = (item) => {
+    const view = SEARCH_TYPE_VIEWS[item.type];
+    const typeLabel = SEARCH_TYPE_LABELS[item.type] || item.type;
+    const tag = view ? 'button' : 'div';
+    const navAttrs = view ? ` type="button" data-view="${esc(view)}" data-id="${esc(item.id)}"` : '';
+    return `<${tag} class="policy-search-result${view ? '' : ' is-inert'}"${navAttrs}>
+        <span class="policy-search-result-type">${esc(typeLabel)}</span>
+        <span class="policy-search-result-title">${esc(item.title || item.id)}</span>
+      </${tag}>`;
+  };
+
+  function renderSearchMessage(message) {
+    const box = host?.querySelector('[data-search-results]');
+    if (!box) return;
+    box.innerHTML = `<div class="policy-search-empty">${esc(message)}</div>`;
+    box.hidden = false;
+  }
+
+  function renderSearchResults(body) {
+    const box = host?.querySelector('[data-search-results]');
+    if (!box) return;
+    if (body.unavailable) return renderSearchMessage('검색 기능 준비 중입니다');
+    if (!body.items?.length) return renderSearchMessage('검색 결과가 없습니다');
+    box.innerHTML = body.items.map(searchResultRow).join('');
+    box.hidden = false;
+  }
+
+  let searchToken = 0;
+  let searchTimer = null;
+
+  async function runSearch(value) {
+    const token = ++searchToken;
+    try {
+      const res = await fetch(`${API_BASE}/search?q=${encodeURIComponent(value)}`);
+      const body = await res.json().catch(() => null);
+      if (token !== searchToken || !host) return;
+      if (!res.ok || !body) return renderSearchMessage('검색 중 오류가 발생했습니다');
+      renderSearchResults(body);
+    } catch {
+      if (token !== searchToken || !host) return;
+      renderSearchMessage('검색 중 오류가 발생했습니다');
+    }
+  }
+
+  // Delegated on `host` (not the input itself) because paint() replaces the
+  // whole header -- including the input -- on every navigation.
+  function onSearchInput(event) {
+    const input = event.target.closest('[data-search-input]');
+    if (!input || !host.contains(input)) return;
+    state.search.query = input.value;
+    clearTimeout(searchTimer);
+    const box = host.querySelector('[data-search-results]');
+    if (!input.value.trim()) {
+      searchToken += 1; // drop any in-flight response for the old query
+      if (box) box.hidden = true;
+      return;
+    }
+    searchTimer = setTimeout(() => runSearch(input.value.trim()), 300);
+  }
+
+  function onSearchKeydown(event) {
+    const input = event.target.closest('[data-search-input]');
+    if (!input || !host.contains(input)) return;
+    if (event.key !== 'Escape') return;
+    input.value = '';
+    state.search.query = '';
+    clearTimeout(searchTimer);
+    searchToken += 1;
+    const box = host.querySelector('[data-search-results]');
+    if (box) box.hidden = true;
+  }
 
   // 미국 is the country the screen is scoped to -- one of several eventually,
   // picked in the nav rather than here, so it labels the surface instead of
@@ -197,6 +294,112 @@
   /* --------------------------------------------------------------- pieces */
 
   const stageBadge = (stage) => `<span class="policy-stage-badge">${esc(stageLabel(stage))}</span>`;
+
+  // "어디까지 갔나"를 한눈에. How far a bill got is not the same question as
+  // what stage it is in now -- a vetoed bill's current_stage is off the rail
+  // entirely -- so reached steps come from the action history's
+  // normalized_stage, with the current stage folded in for bills whose
+  // history has not been backfilled.
+  const stageRail = (bill) => {
+    const reached = new Set((bill.bill_actions || []).map((a) => a.normalized_stage).filter(Boolean));
+    if (bill.current_stage) reached.add(bill.current_stage);
+
+    const currentIndex = STAGE_FLOW.findIndex((step) => step.stages.includes(bill.current_stage));
+    let furthest = currentIndex;
+    STAGE_FLOW.forEach((step, i) => {
+      if (step.stages.some((s) => reached.has(s))) furthest = Math.max(furthest, i);
+    });
+
+    const steps = STAGE_FLOW.map((step, i) => {
+      const current = i === currentIndex;
+      const done = !current && i <= furthest;
+      return `<li class="policy-stage-step${current ? ' is-current' : ''}${done ? ' is-done' : ''}">
+                <span class="policy-stage-step-dot" aria-hidden="true"></span>
+                <span class="policy-stage-step-label">${esc(step.label)}</span>
+              </li>`;
+    }).join('');
+
+    const terminal = TERMINAL_LABELS[bill.current_stage]
+      ? `<li class="policy-stage-step is-terminal is-current">
+           <span class="policy-stage-step-dot" aria-hidden="true"></span>
+           <span class="policy-stage-step-label">${esc(TERMINAL_LABELS[bill.current_stage])}</span>
+         </li>`
+      : '';
+
+    return `<ol class="policy-stage-rail" aria-label="${esc('입법 단계')}">${steps}${terminal}</ol>`;
+  };
+
+  /* ------------------------------------------------------------ favorites */
+
+  // The star is the one control on these screens that needs an account.
+  // Logged out, it opens the signup tab rather than silently failing; logged
+  // in, it writes straight through (auth.js owns the Supabase client, so the
+  // row still lands under the caller's own auth.uid()).
+  const favState = { keys: new Set() };
+  const favKey = (kind, id) => `${kind}:${id}`;
+  const signedIn = () => !!window.Auth?.currentUser?.();
+
+  async function loadFavorites() {
+    if (!signedIn()) {
+      favState.keys = new Set();
+      return;
+    }
+    try {
+      const rows = await window.Auth.listFavorites();
+      favState.keys = new Set(rows.map((r) => favKey(r.item_kind, r.item_id)));
+    } catch (err) {
+      // A missing table or a rejected policy must not take the screen down --
+      // the star just renders unset.
+      console.error('Failed to load favorites:', err);
+    }
+  }
+
+  const favButton = (kind, id, title) => {
+    const on = favState.keys.has(favKey(kind, id));
+    return `<button type="button" class="policy-fav${on ? ' is-on' : ''}"
+              data-fav-kind="${esc(kind)}" data-fav-id="${esc(id)}" data-fav-title="${esc(title || '')}"
+              aria-pressed="${on}" title="${esc(on ? '즐겨찾기 해제' : '즐겨찾기')}">
+              <span class="policy-fav-icon" aria-hidden="true">${on ? '★' : '☆'}</span>
+            </button>`;
+  };
+
+  function paintFavButton(button, on) {
+    button.classList.toggle('is-on', on);
+    button.setAttribute('aria-pressed', String(on));
+    button.title = on ? '즐겨찾기 해제' : '즐겨찾기';
+    const icon = button.querySelector('.policy-fav-icon');
+    if (icon) icon.textContent = on ? '★' : '☆';
+  }
+
+  async function toggleFavorite(button) {
+    // Not signed in -> straight to 회원가입, and nothing is written.
+    if (!signedIn()) {
+      window.Auth?.openModal?.('signup');
+      return;
+    }
+    const kind = button.dataset.favKind;
+    const id = button.dataset.favId;
+    const key = favKey(kind, id);
+    const on = favState.keys.has(key);
+
+    button.disabled = true;
+    try {
+      if (on) {
+        await window.Auth.removeFavorite(kind, id);
+        favState.keys.delete(key);
+      } else {
+        await window.Auth.addFavorite(kind, id, button.dataset.favTitle);
+        favState.keys.add(key);
+      }
+      // Repaint this one control rather than the screen: a full paint() would
+      // wipe whatever the visitor has typed into the search box.
+      paintFavButton(button, !on);
+    } catch (err) {
+      console.error('Failed to toggle favorite:', err);
+    } finally {
+      button.disabled = false;
+    }
+  }
 
   const billRow = (bill) => `
     <button type="button" class="policy-bill-row" data-view="bill" data-id="${esc(bill.bill_id)}">
@@ -385,8 +588,48 @@
       </div>`);
   }
 
+  const BILL_TYPE_LABELS = {
+    hr: 'H.R.', s: 'S.',
+    hres: 'H.Res.', sres: 'S.Res.',
+    hjres: 'H.J.Res.', sjres: 'S.J.Res.',
+    hconres: 'H.Con.Res.', sconres: 'S.Con.Res.',
+  };
+
+  // "119대 · H.R. 3633" -- the citation a reader recognises, rather than the
+  // raw bill_id ("119-hr-3633") the API keys on. An unknown type falls back to
+  // its own code rather than dropping the number.
+  const billNumberLabel = (bill) => {
+    const type = BILL_TYPE_LABELS[String(bill.bill_type || '').toLowerCase()]
+      || String(bill.bill_type || '').toUpperCase();
+    const cite = type && bill.bill_number ? `${type} ${bill.bill_number}` : bill.bill_id;
+    return bill.congress_number ? `${bill.congress_number}대 · ${cite}` : cite;
+  };
+
+  const actionRow = (a) => `
+    <li class="policy-action">
+      <span class="policy-action-date">${esc(a.action_date || '')}</span>
+      <span class="policy-action-body">
+        ${a.chamber ? `<span class="policy-action-chamber">${esc(CHAMBER_LABELS[a.chamber] || a.chamber)}</span>` : ''}
+        <span>${esc(a.action_text || '')}</span>
+      </span>
+      ${a.normalized_stage ? `<span class="policy-tag">${esc(stageLabel(a.normalized_stage))}</span>` : ''}
+    </li>`;
+
+  // Version rows link out only. docs/api-spec.md forbids storing or
+  // re-serving the document text itself, so the official copy is the copy.
+  const textVersionRow = (v) => {
+    const links = [
+      v.html_url ? `<a class="policy-external" href="${esc(v.html_url)}" target="_blank" rel="noopener noreferrer">HTML</a>` : '',
+      v.pdf_url ? `<a class="policy-external" href="${esc(v.pdf_url)}" target="_blank" rel="noopener noreferrer">PDF</a>` : '',
+    ].filter(Boolean).join('');
+    return `<li class="policy-textver">
+        <span class="policy-textver-name">${esc(v.version_name || v.version_code || '원문')}</span>
+        <span class="policy-textver-meta">${esc(v.issued_on || '')}${links}</span>
+      </li>`;
+  };
+
   function billPanel(bill) {
-    const votes = bill.votes || [];
+    const votes = bill.bill_votes || [];
 
     const voteBody = votes.length
       ? votes.map((v) => `
@@ -425,13 +668,24 @@
       ? `<ul class="policy-related">${related}${similar}</ul>`
       : empty('관련 법안 없음');
 
+    const lawLabel = bill.law_number
+      ? `${bill.law_type === 'private' ? '사법' : '공법'} ${esc(bill.law_number)}`
+      : '';
+
     return `<section class="policy-block policy-bill-panel">
-      <h3 class="policy-block-title">${esc(bill.title)}</h3>
+      <div class="policy-bill-head">
+        <h3 class="policy-block-title">${esc(bill.title)}</h3>
+        ${favButton('bill', bill.bill_id, bill.title)}
+      </div>
       <div class="policy-bill-meta">
         ${stageBadge(bill.current_stage)}
+        <span class="policy-bill-cite">${esc(billNumberLabel(bill))}</span>
         ${bill.sponsor ? `<span>발의자 ${esc(bill.sponsor)}</span>` : ''}
         ${bill.introduced_date ? `<span>발의일 ${esc(bill.introduced_date)}</span>` : ''}
+        ${bill.latest_action_date ? `<span>최근 조치 ${esc(bill.latest_action_date)}</span>` : ''}
+        ${lawLabel ? `<span class="policy-tag is-law">${lawLabel}</span>` : ''}
       </div>
+      ${stageRail(bill)}
       ${bill.current_status ? `<p class="policy-prose">${esc(bill.current_status)}</p>` : ''}
       ${bill.summary ? `<p class="policy-prose">${esc(bill.summary)}</p>` : ''}
       <div class="policy-subblock"><h4>표결</h4>${voteBody}</div>
@@ -449,11 +703,45 @@
         <span class="policy-chip-name">${esc(c.name)}</span>
       </button>`).join('');
 
+    // CRS policy area is the one classification with its own screen; the
+    // legislative subjects beside it are labels, not destinations.
+    const areaChip = bill.policy_areas?.policy_area_id
+      ? `<button type="button" class="policy-chip is-compact" data-view="area" data-id="${esc(bill.policy_areas.policy_area_id)}">
+           <span class="policy-chip-name">${esc(bill.policy_areas.name)}</span>
+         </button>`
+      : '';
+    const subjects = (bill.bill_subjects || [])
+      .map((s) => s.legislative_subjects?.name)
+      .filter(Boolean)
+      .map((name) => `<span class="policy-tag">${esc(name)}</span>`)
+      .join('');
+    const classification = areaChip || subjects
+      ? `${areaChip ? `<div class="policy-chip-row">${areaChip}</div>` : ''}
+         ${subjects ? `<div class="policy-tag-row">${subjects}</div>` : ''}`
+      : empty('분류 정보 없음');
+
+    const versions = (bill.bill_text_versions || []).length
+      ? `<ul class="policy-textver-list">${bill.bill_text_versions.map(textVersionRow).join('')}</ul>`
+      : empty('공개된 법안 원문 없음');
+
+    // The action list is the longest thing on the screen and the least often
+    // read, so it stays folded until asked for -- same treatment the long
+    // taxonomies get on the directory screens.
+    const actions = bill.bill_actions || [];
+    const actionsBody = actions.length
+      ? `<ul class="policy-action-list">${actions.map(actionRow).join('')}</ul>`
+      : empty('기록된 조치 없음');
+
     return shell(`
       <div class="policy-grid-2">
-        <div class="policy-col">${billPanel(bill)}</div>
+        <div class="policy-col">
+          ${billPanel(bill)}
+          ${collapsibleCard('bill-actions', '진행 이력', actionsBody, actions.length)}
+        </div>
         <div class="policy-col">
           ${card('회부 위원회', committees ? `<div class="policy-chip-row">${committees}</div>` : empty('위원회 정보 없음'))}
+          ${card('분류', classification)}
+          ${card('법안 원문', versions)}
         </div>
       </div>`);
   }
@@ -545,7 +833,10 @@
       <div class="policy-grid-2">
         <div class="policy-col">
           ${card(`EO ${eo.eo_number}`, `
-            <p class="policy-eo-headline">${esc(eo.title)}</p>
+            <div class="policy-bill-head">
+              <p class="policy-eo-headline">${esc(eo.title)}</p>
+              ${favButton('executive_order', String(eo.eo_number), eo.title)}
+            </div>
             <div class="policy-bill-meta">
               <span>서명 ${esc(eo.signed_date || '-')}</span>
               <span>공포 ${esc(eo.publication_date || '-')}</span>
@@ -717,6 +1008,26 @@
   }
 
   function onClick(event) {
+    const searchWrap = host.querySelector('[data-search]');
+    if (searchWrap && !searchWrap.contains(event.target)) {
+      const box = searchWrap.querySelector('[data-search-results]');
+      if (box) box.hidden = true;
+    }
+    const fav = event.target.closest('.policy-fav');
+    if (fav && host.contains(fav)) {
+      toggleFavorite(fav);
+      return;
+    }
+    const searchResult = event.target.closest('.policy-search-result');
+    if (searchResult && host.contains(searchResult)) {
+      const box = host.querySelector('[data-search-results]');
+      const input = host.querySelector('[data-search-input]');
+      if (box) box.hidden = true;
+      if (input) input.value = '';
+      state.search.query = '';
+      // no early return: a clickable result still has [data-view]/[data-id]
+      // and falls through to the generic nav handling below.
+    }
     const collapse = event.target.closest('[data-collapse]');
     if (collapse && host.contains(collapse)) {
       const key = collapse.dataset.collapse;
@@ -742,6 +1053,19 @@
     go(nav.dataset.view, nav.dataset.id);
   }
 
+  // Auth.onChange has no unsubscribe, so this registers once for the life of
+  // the page rather than per render. Signing in or out reloads the set and
+  // repaints, so the stars match the account that is actually signed in.
+  let authSubscribed = false;
+
+  function subscribeToAuth() {
+    if (authSubscribed || !window.Auth?.onChange) return;
+    authSubscribed = true;
+    window.Auth.onChange(() => {
+      loadFavorites().then(() => { if (host) paint(); });
+    });
+  }
+
   // 정책 › 미국 lands on the legislative side; the branch toggle switches it.
   const TARGET_VIEWS = {
     'us-policy-hub': 'congress',
@@ -756,8 +1080,12 @@
     host.dataset.policyTarget = target;
     host.innerHTML = `<div class="policy-loading">${esc('정책 데이터를 불러오는 중')}</div>`;
 
+    subscribeToAuth();
+
     try {
-      overview = await loadOverview();
+      // Favorites ride along rather than gating the screen: signed out it is a
+      // no-op, and a failure only leaves the stars unset.
+      [overview] = await Promise.all([loadOverview(), loadFavorites()]);
     } catch (err) {
       console.error('Failed to load policy overview:', err);
       if (host.dataset.policyTarget !== target || token !== renderToken) return;
@@ -772,12 +1100,20 @@
 
     host.removeEventListener('click', onClick);
     host.addEventListener('click', onClick);
+    host.removeEventListener('input', onSearchInput);
+    host.addEventListener('input', onSearchInput);
+    host.removeEventListener('keydown', onSearchKeydown);
+    host.addEventListener('keydown', onSearchKeydown);
   }
 
   function unmount(surface) {
     if (!surface) return;
     renderToken += 1; // invalidate any in-flight fetch from this render
+    searchToken += 1;
+    clearTimeout(searchTimer);
     surface.removeEventListener('click', onClick);
+    surface.removeEventListener('input', onSearchInput);
+    surface.removeEventListener('keydown', onSearchKeydown);
     surface.classList.remove('policy-surface');
     delete surface.dataset.policyTarget;
     surface.innerHTML = '';
