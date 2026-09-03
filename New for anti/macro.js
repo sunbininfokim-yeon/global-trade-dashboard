@@ -1989,6 +1989,26 @@ const mmOpenCountry = async (iso3) => {
 //
 // 남극은 소스에서 빼는 게 아니라 타일 extent 로 잘라 낸다: Black Marble 은 극지
 // 타일도 내려주지만 야간광이 없어 검은 띠만 남는다.
+// 되돌리기 스위치. 야간광이 마음에 안 들거나 타일 경로가 통째로 죽었을 때,
+// 배포를 되돌리지 않고 예전 벡터 베이스맵으로 돌아갈 수 있어야 한다.
+//
+//   ?night=off  → 이 브라우저에서 끈다 (선택이 localStorage 에 남는다)
+//   ?night=on   → 다시 켠다
+//
+// 기본값은 켜짐. 끄면 매크로 지도는 다른 화면과 같은 worldBaseLayers 로 돌아가고
+// 핀 색도 예전 회색·하늘색으로 돌아간다.
+const MM_NIGHT_KEY = 'mm.night';
+const mmNightEnabled = () => {
+    try {
+        const q = new URLSearchParams(location.search).get('night');
+        if (q === 'off' || q === '0') { localStorage.setItem(MM_NIGHT_KEY, 'off'); return false; }
+        if (q === 'on' || q === '1') { localStorage.removeItem(MM_NIGHT_KEY); return true; }
+        return localStorage.getItem(MM_NIGHT_KEY) !== 'off';
+    } catch (_) {
+        return true;   // 사생활 보호 모드 등 localStorage 가 막힌 브라우저
+    }
+};
+
 const MM_NIGHT_LOCAL_MAX_Z = 5;   // fetch_night_tiles.py --max-zoom 과 같아야 한다
 const MM_NIGHT_LOCAL_URL = (z, y, x) => `/public/night/${z}/${y}/${x}.jpg`;
 const MM_NIGHT_PROXY_URL = (z, y, x) => `/api/night-tile/${z}/${y}/${x}.jpg`;
@@ -2124,6 +2144,7 @@ const mmNightBaseLayers = () => {
 
 const mmDrawMap = () => {
     const rows = (MM_INDEX?.countries_index || []).filter((c) => c.coords);
+    const night = mmNightEnabled();
     deckgl.setProps({
         views: [new MapView({ id: 'map', controller: true, repeat: true })],
         viewState: currentViewState,
@@ -2134,12 +2155,13 @@ const mmDrawMap = () => {
             : null,
         onClick: ({ object }) => { if (object && object.iso3) mmOpenCountry(object.iso3); },
         layers: [
-            ...mmNightBaseLayers(),
+            ...(night ? mmNightBaseLayers() : worldBaseLayers({ id: 'macro' })),
             // 도시 불빛 위에서 회색 점은 그냥 사라진다. 헤일로를 한 겹 먼저 깔아
             // 마커가 스스로 빛나는 것처럼 보이게 한다 -- 픽킹은 위의 점만 받는다.
+            // 벡터 베이스맵으로 돌아갔을 때는 필요 없다 (data 를 비운다).
             new ScatterplotLayer({
                 id: 'macro-pin-glow',
-                data: rows,
+                data: night ? rows : [],
                 pickable: false,
                 stroked: false,
                 filled: true,
@@ -2156,17 +2178,22 @@ const mmDrawMap = () => {
                 stroked: true,
                 filled: true,
                 opacity: 0.95,
-                radiusMinPixels: 7,
-                radiusMaxPixels: 22,
-                lineWidthMinPixels: 1.5,
+                radiusMinPixels: night ? 7 : 9,
+                radiusMaxPixels: night ? 22 : 26,
+                lineWidthMinPixels: night ? 1.5 : 2,
                 getPosition: (d) => [d.coords.lon, d.coords.lat],
                 // The benchmark is the one everything else is read against, so
                 // it is the only marker that differs.
-                getRadius: (d) => d.benchmark ? 200000 : 130000,
+                getRadius: (d) => (d.benchmark ? 200000 : 130000) * (night ? 1 : 1.15),
                 // 위성 야간광이 호박색이라 마커도 같은 온도로 맞춘다. 벤치마크만
-                // 찬 하늘색으로 떨어뜨려 한눈에 갈린다.
-                getFillColor: (d) => d.benchmark ? [125, 211, 252, 245] : [255, 224, 170, 225],
-                getLineColor: (d) => d.benchmark ? [255, 255, 255, 235] : [255, 236, 200, 110],
+                // 찬 하늘색으로 떨어뜨려 한눈에 갈린다. 벡터로 돌아가면 예전 팔레트.
+                getFillColor: (d) => (night
+                    ? (d.benchmark ? [125, 211, 252, 245] : [255, 224, 170, 225])
+                    : (d.benchmark ? [56, 189, 248, 230] : [148, 163, 184, 200])),
+                getLineColor: (d) => (night
+                    ? (d.benchmark ? [255, 255, 255, 235] : [255, 236, 200, 110])
+                    : (d.benchmark ? [255, 255, 255, 230] : [255, 255, 255, 120])),
+                updateTriggers: { getFillColor: night, getLineColor: night, getRadius: night },
                 autoHighlight: true,
                 highlightColor: [186, 230, 253, 235],
             }),
@@ -2180,6 +2207,8 @@ const renderMacroMonitor = async () => {
     stopRotation();
     document.body.classList.remove('trade-map-mode', 'shipping-mode', 'finance-mode');
     document.body.classList.add('macro-mode');
+    // 캔버스 뒤 배경색은 야간광일 때만 검게 간다 (킬 스위치로 꺼지면 예전 그대로).
+    document.body.classList.toggle('macro-night', mmNightEnabled());
     togglePanels({ left: false, right: false, chart: false, map: true });
     if (mapContainer) {
         mapContainer.style.display = 'block';
