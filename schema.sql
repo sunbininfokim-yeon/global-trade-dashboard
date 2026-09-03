@@ -228,6 +228,43 @@ create table if not exists public.committee_agency_jurisdictions (
   primary key (committee_id, agency_id, relationship_type)
 );
 
+create table if not exists public.us_legislators (
+  bioguide_id text primary key,
+  full_name text not null,
+  party text,
+  party_abbr text,
+  state text,
+  district integer,
+  chamber text not null check (chamber in ('house', 'senate')),
+  current_member boolean not null default true,
+  source_name text not null,
+  source_updated_at timestamptz,
+  roster_seen_at timestamptz not null default now(),
+  raw_source jsonb not null default '{}'::jsonb,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+create index if not exists us_legislators_chamber_party_idx
+  on public.us_legislators (chamber, party_abbr, state);
+
+create table if not exists public.committee_members (
+  committee_id text not null references public.committees(committee_id) on delete cascade,
+  bioguide_id text not null references public.us_legislators(bioguide_id) on delete cascade,
+  role text not null default 'member'
+    check (role in ('member', 'chair', 'vice_chair', 'ranking_member', 'ex_officio')),
+  congress_number integer not null,
+  source_url text not null,
+  source_updated_at timestamptz,
+  raw_source jsonb not null default '{}'::jsonb,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+  primary key (committee_id, bioguide_id, role, congress_number)
+);
+
+create index if not exists committee_members_leadership_idx
+  on public.committee_members (committee_id, congress_number, role);
+
 create table if not exists public.bills (
   bill_id text primary key,
   congress_number integer not null,
@@ -955,6 +992,151 @@ begin
 end;
 $$;
 
+-- Terminal bill retention is explicit rather than trigger-driven. The sync
+-- worker calls this only after it has matched subscriptions for a terminal
+-- status, so a title/summary is still available to notification matching.
+create or replace function public.prune_terminal_bill_details(
+  p_bill_id text
+)
+returns table (outcome text, detail_rows_removed integer)
+language plpgsql
+set search_path = public
+as $$
+declare
+  target_stage text;
+  removed integer := 0;
+  changed integer := 0;
+begin
+  select current_stage into target_stage
+  from public.bills
+  where bill_id = p_bill_id
+  for update;
+
+  if not found then return query select 'not_found'::text, 0; return; end if;
+  if target_stage not in ('failed', 'vetoed') then return query select 'not_terminal'::text, 0; return; end if;
+  -- Preserve a bill if a Public Law already links to it, even when its stage
+  -- was accidentally classified as terminal.
+  if exists (select 1 from public.public_laws where bill_id = p_bill_id) then
+    return query select 'protected_public_law'::text, 0;
+    return;
+  end if;
+
+  delete from public.bill_vote_members where vote_id in (select vote_id from public.bill_votes where bill_id = p_bill_id);
+  get diagnostics changed = row_count; removed := removed + changed;
+  delete from public.bill_votes where bill_id = p_bill_id;
+  get diagnostics changed = row_count; removed := removed + changed;
+  delete from public.bill_summaries where bill_id = p_bill_id;
+  get diagnostics changed = row_count; removed := removed + changed;
+  delete from public.bill_text_versions where bill_id = p_bill_id;
+  get diagnostics changed = row_count; removed := removed + changed;
+  delete from public.bill_actions where bill_id = p_bill_id;
+  get diagnostics changed = row_count; removed := removed + changed;
+  delete from public.bill_status_history where bill_id = p_bill_id;
+  get diagnostics changed = row_count; removed := removed + changed;
+  delete from public.bill_committees where bill_id = p_bill_id;
+  get diagnostics changed = row_count; removed := removed + changed;
+  delete from public.bill_subjects where bill_id = p_bill_id;
+  get diagnostics changed = row_count; removed := removed + changed;
+  delete from public.bill_relations where source_bill_id = p_bill_id or target_bill_id = p_bill_id;
+  get diagnostics changed = row_count; removed := removed + changed;
+
+  update public.bills
+  set
+    detail_level = 'index', storage_tier = 'cold', tier_changed_at = now(),
+    summary = null, summary_source = null, summary_updated_at = null,
+    embedding = null, embedding_model = null, embedded_at = null,
+    policy_area_id = null, sponsor_bioguide_id = null, introduced_date = null,
+    latest_action_text = null, law_type = null, law_number = null,
+    raw_source = jsonb_build_object(
+      'source', coalesce(raw_source ->> 'source', 'congress.gov'),
+      'retention', 'terminal_minimal', 'pruned_at', now()
+    )
+  where bill_id = p_bill_id;
+
+  return query select 'pruned'::text, removed;
+end;
+$$;
+
+-- A read-only inspection function. It is the required first step before any
+-- rollover deletion and also excludes bills that have a Public Law link.
+create or replace function public.preview_congress_rollover_purge(
+  p_previous_congress integer,
+  p_result_limit integer default 100
+)
+returns table (bill_id text, title text, current_stage text, latest_action_date date)
+language sql
+stable
+set search_path = public
+as $$
+  select bill.bill_id, bill.title, bill.current_stage, bill.latest_action_date
+  from public.bills bill
+  where bill.congress_number = p_previous_congress
+    and bill.current_stage <> 'enacted'
+    and not exists (select 1 from public.public_laws public_law where public_law.bill_id = bill.bill_id)
+  order by bill.latest_action_date desc nulls last, bill.bill_id
+  limit least(greatest(coalesce(p_result_limit, 100), 1), 1000);
+$$;
+
+-- Actual rollover removal has an explicit confirmation argument. The local
+-- runner requires ALLOW_CONGRESS_ROLLOVER_PURGE=true before it can pass this.
+create or replace function public.purge_congress_rollover(
+  p_previous_congress integer,
+  p_max_bills integer default 1000,
+  p_confirm boolean default false
+)
+returns table (deleted_bill_count integer, deleted_queue_count integer)
+language plpgsql
+set search_path = public
+as $$
+declare
+  target_bill_ids text[];
+  target_count integer;
+  queue_count integer := 0;
+  bill_count integer := 0;
+begin
+  if not p_confirm then raise exception 'rollover purge requires p_confirm = true; run preview_congress_rollover_purge first'; end if;
+  if p_previous_congress is null or p_previous_congress < 1 then raise exception 'a valid previous Congress number is required'; end if;
+  if p_max_bills is null or p_max_bills < 1 or p_max_bills > 10000 then raise exception 'p_max_bills must be between 1 and 10000'; end if;
+
+  select coalesce(array_agg(candidate.bill_id order by candidate.bill_id), '{}'::text[])
+  into target_bill_ids
+  from (
+    select bill.bill_id
+    from public.bills bill
+    where bill.congress_number = p_previous_congress
+      and bill.current_stage <> 'enacted'
+      and not exists (select 1 from public.public_laws public_law where public_law.bill_id = bill.bill_id)
+    order by bill.bill_id
+    limit p_max_bills + 1
+  ) candidate;
+  target_count := cardinality(target_bill_ids);
+  if target_count > p_max_bills then raise exception 'rollover candidate count % exceeds the approved maximum %', target_count, p_max_bills; end if;
+  if target_count = 0 then return query select 0, 0; return; end if;
+
+  delete from public.policy_ingestion_queue
+  where sync_resource = 'congress.gov:bills'
+    and source_key = any(target_bill_ids)
+    and exists (
+      select 1 from public.bills bill
+      where bill.bill_id = policy_ingestion_queue.source_key
+        and bill.congress_number = p_previous_congress
+        and bill.current_stage <> 'enacted'
+        and not exists (select 1 from public.public_laws public_law where public_law.bill_id = bill.bill_id)
+    );
+  get diagnostics queue_count = row_count;
+
+  -- Re-check against a concurrently-created Public Law relation immediately
+  -- before deleting the bill itself.
+  delete from public.bills bill
+  where bill.bill_id = any(target_bill_ids)
+    and bill.congress_number = p_previous_congress
+    and bill.current_stage <> 'enacted'
+    and not exists (select 1 from public.public_laws public_law where public_law.bill_id = bill.bill_id);
+  get diagnostics bill_count = row_count;
+  return query select bill_count, queue_count;
+end;
+$$;
+
 -- Lifecycle tier is a sync/retention policy, not a claim that source full text
 -- is stored locally. The sync job calls this after each successful run.
 create or replace function public.refresh_policy_lifecycle_tiers(
@@ -1053,6 +1235,8 @@ begin
     'policy_areas',
     'legislative_subjects',
     'committees',
+    'us_legislators',
+    'committee_members',
     'bills',
     'public_laws',
     'us_code_titles',
@@ -1093,6 +1277,8 @@ begin
     'data_sync_runs',
     'policy_ingestion_queue',
     'committees',
+    'us_legislators',
+    'committee_members',
     'committee_agency_jurisdictions',
     'bills',
     'public_laws',

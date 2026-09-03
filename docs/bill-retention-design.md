@@ -1,6 +1,6 @@
 # 법안 종료 데이터 보존·표결 확장 설계안
 
-상태: **검토용 설계안. 아직 스키마·동기화 스크립트·Supabase에는 적용하지 않는다.**
+상태: **구현 준비 완료.** PR 병합 뒤 `supabase/migrations/20260903_policy_bill_retention.sql`을 Supabase SQL Editor에서 한 번 실행해야 활성화된다. 실제 회기 전환 삭제는 기본적으로 dry-run이며, 별도 승인 환경변수가 없으면 실행되지 않는다.
 
 이 문서는 두 정책을 안전하게 구현하기 위한 다음 단계의 설계다.
 
@@ -81,13 +81,15 @@ bill_relations (source_bill_id 또는 target_bill_id가 해당 bill_id인 모든
 
 **순서 규칙**: 종료 상태를 감지한 동기화는 반드시 `알림 매칭·notifications_queued 삽입 → terminal queue를 skipped 표시 → pruning RPC 호출` 순서로 실행한다. pruning이 먼저 실행되면 `title`·`summary`가 비워져 실패/거부 알림의 키워드 매칭이 조용히 누락될 수 있다.
 
-### 제안 함수와 호출 지점
+### 구현 함수와 호출 지점
 
 ```text
-prune_terminal_bill_details(p_bill_id text) returns void
+prune_terminal_bill_details(p_bill_id text) returns (outcome, detail_rows_removed)
 ```
 
-이 함수는 `bills`를 잠근 뒤 현재 단계가 `failed` 또는 `vetoed`일 때만 실행한다. 하위 행 삭제와 부모 행 최소화는 **하나의 트랜잭션**으로 끝나야 한다. 동기화 스크립트는 법안 upsert와 알림 매칭·큐 삽입을 마친 후, 직전 단계가 비종료이고 새 단계가 종료일 때 이 RPC를 한 번 호출한다.
+이 함수는 `bills`를 잠근 뒤 현재 단계가 `failed` 또는 `vetoed`일 때만 실행한다. 하위 행 삭제와 부모 행 최소화는 **하나의 트랜잭션**으로 끝난다. 동기화 스크립트는 법안 upsert와 알림 매칭·큐 삽입을 마친 뒤, 종료 법안을 `skipped`로 표시하고 이 RPC를 호출한다. 공식 소스의 이후 업데이트로 다시 처리된 종료 법안도 안전하게 다시 최소화할 수 있도록 함수는 idempotent다.
+
+`public_laws.bill_id`가 존재하는 법안은 `protected_public_law` 결과로 종료하고 어떤 상세도 삭제하지 않는다. 이는 잘못 분류된 `current_stage` 하나로 제정 법률 연결을 끊는 일을 막는 이중 안전장치다.
 
 DB trigger 대신 명시적 RPC를 우선 제안한다. 이렇게 하면 수동 상태 정정, 초기 데이터 적재, 테스트에서 의도치 않은 대량 삭제를 피할 수 있다. 함수는 idempotent해야 하며, 삭제 행 수·시각은 `data_sync_runs.metadata`에 기록한다.
 
@@ -118,6 +120,23 @@ and not exists (
 3. 번호 변경이 확인되면 `rollover_candidate` 실행 이력에 이전/신규 Congress, 삭제 예정 건수, 샘플 bill ID를 기록한다.
 4. 첫 도입 시에는 `dry_run = true`만 실행하고 사람이 건수·Public Law 연결을 확인한다.
 5. 별도 환경변수 `ALLOW_CONGRESS_ROLLOVER_PURGE=true`와 승인된 실행에서만 실제 삭제한다. 삭제 후에도 원본 전문은 저장하지 않으므로 복구는 공식 Congress.gov 재동기화에 의존한다.
+
+### 구현된 수동 실행 절차
+
+`scripts/rollover-congress.js`가 먼저 Congress.gov의 현재 Congress 번호를 조회하고, **직전 회기만** 대상으로 삼는다. 날짜만으로는 절대 삭제하지 않는다.
+
+```bash
+# 기본값: 삭제하지 않고 후보 최대 25건을 실행 기록에 남긴다.
+node scripts/rollover-congress.js
+
+# dry-run 결과를 검토한 뒤에만 실제 삭제를 허용한다.
+export ALLOW_CONGRESS_ROLLOVER_PURGE=true
+export ROLLOVER_PURGE_MAX_BILLS=1000
+node scripts/rollover-congress.js
+unset ALLOW_CONGRESS_ROLLOVER_PURGE
+```
+
+실제 삭제 RPC도 `p_confirm = true`가 없으면 거부한다. 따라서 (1) 기본 dry-run, (2) 로컬 환경변수 승인, (3) RPC 확인 인자라는 세 겹의 방어가 적용된다. 삭제 건수와 함께 명시적으로 정리된 `policy_ingestion_queue` 행 수를 `data_sync_runs`에 남긴다.
 
 ### 운영 안전장치
 
