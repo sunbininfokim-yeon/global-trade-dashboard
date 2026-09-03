@@ -9,6 +9,9 @@ const Auth = (() => {
 
     let session = null;
     const listeners = [];
+    // Assigned when the modal is first built, so openModal('signup') can land
+    // on the signup tab instead of the default signin one.
+    let setModalMode = null;
 
     function notify() {
         listeners.forEach((fn) => fn(session));
@@ -48,6 +51,42 @@ const Auth = (() => {
 
     async function signOut() {
         await client.auth.signOut();
+    }
+
+    // --- favorites (즐겨찾기) --------------------------------------------
+
+    // These go through the same anon-key client the session belongs to, so
+    // Postgres sees the caller's JWT and RLS scopes every row to auth.uid().
+    // The Worker is deliberately not in this path: it holds the service_role
+    // key, which would bypass that filter entirely.
+
+    async function listFavorites() {
+        if (!currentUser()) return [];
+        const { data, error } = await client
+            .from('user_favorites')
+            .select('item_kind,item_id,title,created_at')
+            .order('created_at', { ascending: false });
+        if (error) throw error;
+        return data || [];
+    }
+
+    async function addFavorite(itemKind, itemId, title) {
+        const user = currentUser();
+        if (!user) throw new Error('로그인이 필요합니다.');
+        const { error } = await client
+            .from('user_favorites')
+            .upsert({ user_id: user.id, item_kind: itemKind, item_id: itemId, title: title || null });
+        if (error) throw error;
+    }
+
+    async function removeFavorite(itemKind, itemId) {
+        const user = currentUser();
+        if (!user) throw new Error('로그인이 필요합니다.');
+        const { error } = await client
+            .from('user_favorites')
+            .delete()
+            .match({ user_id: user.id, item_kind: itemKind, item_id: itemId });
+        if (error) throw error;
     }
 
     // --- UI: nav button + modal -----------------------------------------
@@ -109,6 +148,7 @@ const Auth = (() => {
         }
 
         tabs.forEach((t) => t.addEventListener('click', () => setMode(t.dataset.tab)));
+        setModalMode = setMode;
 
         modal.querySelector('.auth-modal-close').addEventListener('click', closeModal);
         modal.querySelector('.auth-modal-backdrop').addEventListener('click', closeModal);
@@ -138,8 +178,12 @@ const Auth = (() => {
         });
     }
 
-    function openModal() {
+    // mode: 'signin' (the nav button) or 'signup' -- a gated feature sends a
+    // logged-out user straight to the signup tab rather than making them find
+    // it themselves.
+    function openModal(mode = 'signin') {
         ensureModal();
+        if (setModalMode) setModalMode(mode);
         document.getElementById('auth-modal').classList.remove('hidden');
     }
 
@@ -150,5 +194,13 @@ const Auth = (() => {
 
     init();
 
-    return { currentUser, onChange, signUp, signIn, signOut };
+    return {
+        currentUser, onChange, signUp, signIn, signOut, openModal,
+        listFavorites, addFavorite, removeFavorite,
+    };
 })();
+
+// A bare `const` in a classic script stays in script scope and never reaches
+// window, so feature modules asking for window.Auth (the contract this file's
+// header promises) would have found undefined.
+window.Auth = Auth;
