@@ -2673,8 +2673,8 @@ async function handleUsPolicy(request, env) {
         if (path === 'search') {
             const filter = usSearchFilter(q);
             if (!filter.query) return new Response(JSON.stringify({ query: '', items: [] }), { headers: JSON_HEADERS });
-            if (!env.AI_STUDIO_API_KEY) return missingKey('AI_STUDIO_API_KEY');
-            return await kvCachedJson(env, `us:search:v1:${filter.cacheKey}`, US_TTL.search,
+            if (!hasPolicyEmbeddingProvider(env)) return missingKey('POLICY_EMBEDDING_PROXY_URL/POLICY_EMBEDDING_PROXY_TOKEN');
+            return await kvCachedJson(env, `us:search:v2:${filter.cacheKey}`, US_TTL.search,
                 () => usSearch(env, filter));
         }
 
@@ -2683,6 +2683,9 @@ async function handleUsPolicy(request, env) {
         // usFetch already stripped the upstream body of anything sensitive; the
         // message here is our own text plus a PostgREST status.
         console.log(`[us] ${url.pathname} failed: ${err.message}`);
+        // 검색어와 상류 서비스의 오류 전문은 방문자에게 노출하지 않는다. 특히
+        // Gemini의 지역 제한 같은 운영 정보는 Worker 로그에서만 확인한다.
+        if (path === 'search') return usError('검색 서비스를 일시적으로 사용할 수 없습니다. 잠시 후 다시 시도해 주세요.', 503);
         return usError(err.message, err.status || 502);
     }
 }
@@ -2756,12 +2759,48 @@ async function usRpc(env, name, args) {
 const GEMINI_EMBEDDING_MODEL = 'gemini-embedding-001';
 const GEMINI_EMBEDDING_DIMENSIONS = 1536;
 
+function hasPolicyEmbeddingProvider(env) {
+    // 운영에서는 미국 리전 Cloud Run 프록시를 사용한다. 직접 Gemini 호출은
+    // 로컬 개발 호환성을 위해서만 남겨 둔다.
+    return Boolean(
+        (env.POLICY_EMBEDDING_PROXY_URL && env.POLICY_EMBEDDING_PROXY_TOKEN)
+        || env.AI_STUDIO_API_KEY,
+    );
+}
+
+function normalizeEmbedding(values, provider) {
+    if (!Array.isArray(values) || values.length !== GEMINI_EMBEDDING_DIMENSIONS) {
+        throw new Error(`${provider}: expected ${GEMINI_EMBEDDING_DIMENSIONS} dimensions, received ${values?.length || 0}`);
+    }
+    if (!values.every((v) => Number.isFinite(v))) throw new Error(`${provider}: vector contains non-finite values`);
+    const magnitude = Math.sqrt(values.reduce((sum, v) => sum + v * v, 0));
+    if (!magnitude) throw new Error(`${provider}: zero-length vector`);
+    return values.map((v) => v / magnitude);
+}
+
+async function proxyEmbedQuery(env, text) {
+    const res = await fetch(`${String(env.POLICY_EMBEDDING_PROXY_URL).replace(/\/+$/, '')}/embed`, {
+        method: 'POST',
+        headers: {
+            Authorization: `Bearer ${env.POLICY_EMBEDDING_PROXY_TOKEN}`,
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ query: String(text).trim().slice(0, 2000) }),
+    });
+    if (!res.ok) throw new Error(`Policy embedding proxy: HTTP ${res.status}`);
+    const body = await res.json();
+    return normalizeEmbedding(body?.values, 'Policy embedding proxy');
+}
+
 // Same model/dimensionality scripts/lib/sync-utils.js uses to embed bills, EOs
 // and regulations at sync time -- a query embedded any other way would land in
 // a different vector space and every cosine comparison downstream would be
 // meaningless. RETRIEVAL_QUERY (vs. the documents' RETRIEVAL_DOCUMENT) is
 // Gemini's intended asymmetric pairing for this exact search-a-corpus case.
 async function geminiEmbedQuery(env, text) {
+    if (env.POLICY_EMBEDDING_PROXY_URL && env.POLICY_EMBEDDING_PROXY_TOKEN) {
+        return proxyEmbedQuery(env, text);
+    }
     const res = await fetch(
         `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_EMBEDDING_MODEL}:embedContent`,
         {
@@ -2776,17 +2815,10 @@ async function geminiEmbedQuery(env, text) {
         },
     );
     if (!res.ok) {
-        const detail = await res.text().catch(() => '');
-        throw new Error(`Gemini embedContent: HTTP ${res.status} ${detail.slice(0, 300)}`);
+        throw new Error(`Gemini embedContent: HTTP ${res.status}`);
     }
     const body = await res.json();
-    const values = body?.embedding?.values;
-    if (!Array.isArray(values) || values.length !== GEMINI_EMBEDDING_DIMENSIONS) {
-        throw new Error(`Gemini embedContent: expected ${GEMINI_EMBEDDING_DIMENSIONS} dimensions, received ${values?.length || 0}`);
-    }
-    const magnitude = Math.sqrt(values.reduce((sum, v) => sum + v * v, 0));
-    if (!magnitude) throw new Error('Gemini embedContent: zero-length vector');
-    return values.map((v) => v / magnitude);
+    return normalizeEmbedding(body?.embedding?.values, 'Gemini embedContent');
 }
 
 function usSearchFilter(q) {
@@ -2795,13 +2827,8 @@ function usSearchFilter(q) {
     return { query, limit, cacheKey: `${query}|${limit}` };
 }
 
-// search_policy_corpus is a Supabase RPC that has not shipped yet -- it fans a
-// query embedding out across bills/executive_orders/regulations, all three of
-// which already carry Gemini embeddings from sync-congress.js and
-// sync-federal-register.js. Until the RPC migration lands, PostgREST answers
-// 404 for the unknown function, which usRpc turns into status 503 here; that
-// degrades to an empty, clearly-unavailable result instead of surfacing a raw
-// 502 to the search box.
+// search_policy_corpus는 세 정책 테이블을 한 번에 검색하는 Supabase RPC다.
+// 아직 마이그레이션되지 않은 환경에서는 빈 결과와 unavailable 표시로 완화한다.
 async function usSearch(env, f) {
     const vector = await geminiEmbedQuery(env, f.query);
     let rows;
