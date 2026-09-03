@@ -3183,14 +3183,12 @@ body.macro-mode #right-pane-container { display: none !important; }
 body.macro-mode .map-pane { flex: 1 1 100%; }
 /* 지도가 우주에서 본 밤이 되려면 캔버스 뒤도 검어야 한다 -- 타일이 채워지기
    전 한 프레임 동안 밝은 판이 비치는 것을 막는다. */
+/* 캔버스 뒤 배경도 바다색으로 둔다. 위성 사진이 덮지 않는 구간(남극을 잘라 낸
+   아래쪽, 지도 밖)이 검정으로 남으면 거기서 경계가 드러난다 -- macro.js 의
+   MM_NIGHT_SEA 와 같은 색이어야 한다. */
 body.macro-night .map-pane,
 body.macro-night #map,
-body.macro-night #map canvas { background: #03060e; }
-/* 세기는 더하기가 아니라 대비로 낸다. 가산 합성 한 겹은 어두운 육지까지 들어올려
-   지구를 보라색으로 만들었다 (2026-09-04). 대비를 올리면 청회색 육지는 검정 쪽으로
-   눌리고 도시 불빛만 남는다 -- 원본 Black Marble 이 보이는 그림이 그것이다.
-   채도를 조금 내리는 것은 육지의 푸른 기를 빼기 위한 것. */
-body.macro-night #map canvas { filter: contrast(1.5) brightness(0.92) saturate(0.8); }
+body.macro-night #map canvas { background: #101430; }
 /* 위성 사진 위 오버레이는 배경보다 어두워야 글이 읽힌다. */
 body.macro-night .mm-hint { background: rgba(6, 11, 22, .88); }
 
