@@ -112,18 +112,21 @@ export default {
 // 타일을 재사용한다.
 const GIBS_TILE_BASE = 'https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/VIIRS_Black_Marble/default';
 const GIBS_MATRIX = 'GoogleMapsCompatible_Level8';
-// 처음엔 jpeg + 2016-01-01 하나만 시도했고, 그게 502 로 떨어졌다 (2026-09-03).
-// 어느 조합이 맞는지는 문서보다 상류의 대답이 정확하므로, 그럴듯한 것들을 순서
-// 대로 시도하고 각각이 무엇을 돌려줬는지 실패 응답에 적는다. Black Marble 은
-// 야간광이라 png 로 발행될 가능성이 높고(경계가 뚜렷한 라스터), 연간 합성이라
-// 시간축을 아예 안 받을 수도 있다.
+// 처음엔 jpeg + 2016-01-01 하나만 시도했고 502 로 떨어졌다. 조합을 여러 개 태워
+// 상류에 직접 물어본 결과, 틀린 건 확장자 하나였다 -- Black Marble 은 png 로만
+// 발행된다. 2026-09-03 프로덕션 확인: 첫 줄이 200 image/png 86,005 bytes (256×256).
+// 나머지는 이름·표기가 바뀌었을 때를 위한 후퇴 경로이고, 전부 실패하면 각각이
+// 무엇을 돌려줬는지 502 본문에 적힌다.
 const GIBS_TILE_VARIANTS = [
     { label: '2016 png', path: `2016-01-01/${GIBS_MATRIX}`, ext: 'png' },
-    { label: '2016 jpeg', path: `2016-01-01/${GIBS_MATRIX}`, ext: 'jpeg' },
     { label: '2012 png', path: `2012-01-01/${GIBS_MATRIX}`, ext: 'png' },
     { label: 'no-time png', path: GIBS_MATRIX, ext: 'png' },
     { label: 'default png', path: `default/${GIBS_MATRIX}`, ext: 'png' },
+    { label: '2016 jpeg', path: `2016-01-01/${GIBS_MATRIX}`, ext: 'jpeg' },
 ];
+// 한 번 통한 조합은 이 아이솔레이트가 사는 동안 계속 쓴다. 그러지 않으면 캐시가
+// 빈 타일마다 앞선 조합들의 404 를 다시 받아 낸다.
+let GIBS_WINNER = null;
 const NIGHT_TILE_MAX_Z = 8;
 
 async function handleNightTile(request, url) {
@@ -145,7 +148,12 @@ async function handleNightTile(request, url) {
     // 그 구분 없이는 고칠 수가 없다. 브라우저로 이 URL 을 열면 그대로 읽힌다.
     const tried = [];
     let upstream = null;
-    for (const variant of GIBS_TILE_VARIANTS) {
+    let served = null;
+    // 한 번 통한 조합을 맨 앞에 세운다. 첫 요청만 탐색하고, 그 뒤로는 곧장 간다.
+    const order = GIBS_WINNER
+        ? [GIBS_WINNER, ...GIBS_TILE_VARIANTS.filter((v) => v !== GIBS_WINNER)]
+        : GIBS_TILE_VARIANTS;
+    for (const variant of order) {
         const src = `${GIBS_TILE_BASE}/${variant.path}/${z}/${y}/${x}.${variant.ext}`;
         let res = null;
         let err = '';
@@ -157,7 +165,12 @@ async function handleNightTile(request, url) {
         const type = res ? (res.headers.get('content-type') || '') : '';
         tried.push(`${variant.label} → ${res ? `${res.status} ${type}` : err || 'no response'}`);
         // 200 인데 이미지가 아닌 경우가 있다 (GIBS 는 오류를 XML 로 준다).
-        if (res && res.ok && type.startsWith('image/')) { upstream = res; break; }
+        if (res && res.ok && type.startsWith('image/')) {
+            upstream = res;
+            served = variant;
+            GIBS_WINNER = variant;
+            break;
+        }
     }
     if (!upstream) {
         // 클라이언트의 onTileError 가 이걸 세고, 쌓이면 벡터 실루엣으로 내려앉는다.
@@ -170,10 +183,12 @@ async function handleNightTile(request, url) {
     const out = new Response(upstream.body, {
         status: 200,
         headers: {
-            'Content-Type': upstream.headers.get('content-type') || 'image/jpeg',
+            'Content-Type': upstream.headers.get('content-type') || 'image/png',
             // 연간 합성이라 사실상 불변이다. 길게 잡아 둔다.
             'Cache-Control': 'public, max-age=2592000, immutable',
             'Access-Control-Allow-Origin': '*',
+            // 어느 조합이 실제로 응답했는지. 상류 표기가 바뀌어도 curl -I 한 줄로 안다.
+            'X-Night-Tile-Variant': served ? served.label : 'unknown',
         },
     });
     await cache.put(cacheKey, out.clone()).catch(() => {});

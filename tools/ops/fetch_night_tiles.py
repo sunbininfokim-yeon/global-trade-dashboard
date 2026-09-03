@@ -27,13 +27,16 @@ import urllib.request
 BASE = ('https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/'
         'VIIRS_Black_Marble/default/{path}/{z}/{y}/{x}.{ext}')
 MATRIX = 'GoogleMapsCompatible_Level8'
-# 어느 조합이 맞는지는 상류가 답한다 (_worker.js 의 GIBS_TILE_VARIANTS 와 같은 순서).
+# 첫 줄이 실제로 도는 조합이다 (2026-09-03 프로덕션 확인: 200 image/png,
+# 256x256). Black Marble 은 png 로만 발행된다 -- 처음의 502 는 확장자를 jpeg 로
+# 부른 탓이었다. 나머지는 후퇴 경로. _worker.js 의 GIBS_TILE_VARIANTS 와 같은
+# 순서를 유지할 것.
 VARIANTS = [
     ('2016 png', f'2016-01-01/{MATRIX}', 'png'),
-    ('2016 jpeg', f'2016-01-01/{MATRIX}', 'jpeg'),
     ('2012 png', f'2012-01-01/{MATRIX}', 'png'),
     ('no-time png', MATRIX, 'png'),
     ('default png', f'default/{MATRIX}', 'png'),
+    ('2016 jpeg', f'2016-01-01/{MATRIX}', 'jpeg'),
 ]
 OUT_ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                         '..', '..', 'New for anti', 'public', 'night')
@@ -134,7 +137,7 @@ def main():
         y0, y1 = lat_to_row(LAT_MAX, z), lat_to_row(LAT_MIN, z)
         for y in range(y0, y1 + 1):
             for x in range(2 ** z):
-                path = os.path.join(OUT_ROOT, str(z), str(y), f'{x}.jpg')
+                path = os.path.join(OUT_ROOT, str(z), str(y), f'{x}.png')
                 if os.path.exists(path) and not args.force:
                     skipped += 1
                     total_bytes += os.path.getsize(path)

@@ -3186,6 +3186,11 @@ body.macro-mode .map-pane { flex: 1 1 100%; }
 body.macro-night .map-pane,
 body.macro-night #map,
 body.macro-night #map canvas { background: #03060e; }
+/* 세기는 더하기가 아니라 대비로 낸다. 가산 합성 한 겹은 어두운 육지까지 들어올려
+   지구를 보라색으로 만들었다 (2026-09-04). 대비를 올리면 청회색 육지는 검정 쪽으로
+   눌리고 도시 불빛만 남는다 -- 원본 Black Marble 이 보이는 그림이 그것이다.
+   채도를 조금 내리는 것은 육지의 푸른 기를 빼기 위한 것. */
+body.macro-night #map canvas { filter: contrast(1.5) brightness(0.92) saturate(0.8); }
 /* 위성 사진 위 오버레이는 배경보다 어두워야 글이 읽힌다. */
 body.macro-night .mm-hint { background: rgba(6, 11, 22, .88); }
 
