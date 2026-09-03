@@ -15,6 +15,7 @@ NASA 가용성과 무관해지고, 그보다 확대할 때만 워커 프록시(/
 이미 받은 타일은 건너뛰므로 중간에 끊겨도 다시 돌리면 이어진다.
 """
 import argparse
+import json
 import math
 import os
 import sys
@@ -42,19 +43,60 @@ def lat_to_row(lat, z):
     return max(0, min(n - 1, int(y)))
 
 
+# 실패 이유를 삼키면 안 된다. 차단인지(연결 실패), URL 이 틀린 건지(404),
+# 파이썬이 인증서를 못 읽는 건지(SSL) 구분이 안 되면 고칠 수가 없다.
+LAST_ERROR = None
+
+
 def fetch(url, tries=3):
+    """타일 바이트를 준다. 실패하면 None 이고, 이유는 LAST_ERROR 에 남는다."""
+    global LAST_ERROR
     for attempt in range(tries):
         try:
             with urllib.request.urlopen(url, timeout=30) as res:
                 if res.status == 200:
                     return res.read()
+                LAST_ERROR = f'HTTP {res.status}'
         except urllib.error.HTTPError as err:
+            LAST_ERROR = f'HTTP {err.code} {err.reason}'
             if err.code == 404:
                 return None          # 그 날짜에 없는 타일. 물러날 차례.
-        except Exception:
-            pass
+        except urllib.error.URLError as err:
+            LAST_ERROR = f'{type(err.reason).__name__}: {err.reason}'
+            if 'CERTIFICATE_VERIFY_FAILED' in str(err.reason):
+                # macOS + conda 에서 흔하다. 재시도해도 같은 자리에서 막힌다.
+                return None
+        except Exception as err:
+            LAST_ERROR = f'{type(err).__name__}: {err}'
         time.sleep(2 ** attempt)
     return None
+
+
+def check():
+    """타일 한 장으로 연결을 진단한다. 무엇이 막혔는지 사람 말로 찍는다."""
+    url = BASE.format(date=DATES[0], z=0, y=0, x=0)
+    print(f'요청: {url}\n')
+    blob = fetch(url, tries=1)
+    if blob and blob.startswith(b'\xff\xd8'):
+        print(f'OK · JPEG {len(blob)} bytes — 그대로 받으면 된다.')
+        return 0
+    print(f'실패 · {LAST_ERROR or "이유 불명"}\n')
+    err = str(LAST_ERROR or '')
+    if 'CERTIFICATE_VERIFY_FAILED' in err:
+        print('파이썬이 인증서를 못 읽는 경우다. 네트워크는 멀쩡할 수 있다. 확인:')
+        print(f'  curl -sS -o /dev/null -w "%{{http_code}}\\n" "{url}"')
+        print('curl 이 200 이면 파이썬 쪽 문제다. macOS 기본 파이썬이면')
+        print('  /Applications/Python\\ 3.*/Install\\ Certificates.command')
+        print('conda 환경이면  pip install --upgrade certifi  후 다시.')
+    elif err.startswith('HTTP 404'):
+        print('URL 이 틀렸다 (레이어·날짜·타일매트릭스 이름). 무엇이 맞는지 확인:')
+        print('  curl -s "https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/1.0.0/'
+              'WMTSCapabilities.xml" | grep -i -A2 black_marble | head -40')
+    else:
+        print('연결 자체가 안 된다 — 이 네트워크에서 NASA 가 막혔을 수 있다.')
+        print('브라우저에서 위 URL 을 그대로 열어 보면 갈린다 (사진이 뜨면 파이썬 쪽 문제).')
+        print('막힌 게 맞으면 이 스크립트는 건너뛰고 워커 프록시(/api/night-tile)로 간다.')
+    return 1
 
 
 def main():
@@ -62,10 +104,17 @@ def main():
     ap.add_argument('--max-zoom', type=int, default=5,
                     help='받을 최대 줌 (기본 5). 한 단계 올릴 때마다 타일 수가 4배.')
     ap.add_argument('--force', action='store_true', help='이미 있는 타일도 다시 받는다')
+    ap.add_argument('--check', action='store_true',
+                    help='타일 한 장만 받아 보고 무엇이 막혔는지 진단한다')
     args = ap.parse_args()
 
+    if args.check:
+        return check()
+
     got = skipped = failed = total_bytes = 0
+    complete_z = -1          # 한 장도 안 빠진 마지막 줌. 매니페스트에 이게 실린다.
     for z in range(args.max_zoom + 1):
+        failed_before = failed
         y0, y1 = lat_to_row(LAT_MAX, z), lat_to_row(LAT_MIN, z)
         for y in range(y0, y1 + 1):
             for x in range(2 ** z):
@@ -81,15 +130,39 @@ def main():
                         break
                 if not blob or not blob.startswith(b'\xff\xd8'):   # JPEG SOI
                     failed += 1
-                    print(f'  실패 z{z}/{y}/{x}', file=sys.stderr)
+                    print(f'  실패 z{z}/{y}/{x} · {LAST_ERROR or "이유 불명"}', file=sys.stderr)
+                    if failed == 1:
+                        # 첫 실패에 바로 진단을 붙인다. 수백 줄 뒤에서 이유를
+                        # 찾게 만들 이유가 없다.
+                        print('  ↑ 진단: python3 tools/ops/fetch_night_tiles.py --check',
+                              file=sys.stderr)
                     continue
                 os.makedirs(os.path.dirname(path), exist_ok=True)
                 with open(path, 'wb') as fh:
                     fh.write(blob)
                 got += 1
                 total_bytes += len(blob)
+        if failed == failed_before and complete_z == z - 1:
+            complete_z = z
         print(f'z{z} 완료 · 받음 {got} · 건너뜀 {skipped} · 실패 {failed} '
               f'· 누적 {total_bytes / 1e6:.1f}MB')
+
+    # macro.js 는 이 매니페스트로 "받아 둔 타일이 어디까지 있나"를 판단한다.
+    # 없으면 로컬 경로를 아예 건너뛰고 워커 프록시로 간다 -- 빠진 줌을 타일마다
+    # 찔러 보는 낭비가 없다. 그래서 구멍 난 줌은 싣지 않는다.
+    if complete_z >= 0:
+        manifest = os.path.join(OUT_ROOT, 'manifest.json')
+        os.makedirs(OUT_ROOT, exist_ok=True)
+        with open(manifest, 'w') as fh:
+            json.dump({
+                'schema_version': 'night-tiles-v1',
+                'source': 'NASA GIBS · VIIRS Black Marble',
+                'date': DATES[0],
+                'max_zoom': complete_z,
+                'lat_range': [LAT_MIN, LAT_MAX],
+                'generated_at': time.strftime('%Y-%m-%d'),
+            }, fh, indent=2)
+        print(f'매니페스트: {os.path.normpath(manifest)} (max_zoom {complete_z})')
 
     print(f'\n끝. 받음 {got} · 건너뜀 {skipped} · 실패 {failed} '
           f'· 총 {total_bytes / 1e6:.1f}MB')

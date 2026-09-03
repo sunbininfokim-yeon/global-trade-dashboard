@@ -2009,9 +2009,29 @@ const mmNightEnabled = () => {
     }
 };
 
-const MM_NIGHT_LOCAL_MAX_Z = 5;   // fetch_night_tiles.py --max-zoom 과 같아야 한다
 const MM_NIGHT_LOCAL_URL = (z, y, x) => `/public/night/${z}/${y}/${x}.jpg`;
 const MM_NIGHT_PROXY_URL = (z, y, x) => `/api/night-tile/${z}/${y}/${x}.jpg`;
+
+// 받아 둔 타일이 있는지는 매니페스트 한 장으로 판단한다. 그냥 타일부터 찔러
+// 보면 안 되는 이유: wrangler 의 not_found_handling 이 single-page-application
+// 이라 없는 경로가 404 가 아니라 index.html 200 으로 돌아온다. 그러면 타일마다
+// HTML 을 한 장씩 받아 이미지 디코드 실패로 버리는 낭비가 된다.
+// (fetch_night_tiles.py 가 다 받은 뒤 manifest.json 을 쓴다.)
+let MM_NIGHT_LOCAL_MAX_Z = -1;          // -1 = 받아 둔 타일 없음
+let MM_NIGHT_LOCAL_PROMISE = null;
+
+const mmNightLocalReady = () => {
+    if (!MM_NIGHT_LOCAL_PROMISE) {
+        MM_NIGHT_LOCAL_PROMISE = fetch('/public/night/manifest.json', { cache: 'no-cache' })
+            .then((res) => (res.ok ? res.json() : null))
+            .then((doc) => {
+                const z = Number(doc && doc.max_zoom);
+                MM_NIGHT_LOCAL_MAX_Z = Number.isFinite(z) ? z : -1;
+            })
+            .catch(() => { MM_NIGHT_LOCAL_MAX_Z = -1; });
+    }
+    return MM_NIGHT_LOCAL_PROMISE;
+};
 
 // 두 경로를 순서대로 시도해야 해서 URL 템플릿(data)이 아니라 getTileData 를 쓴다.
 // BitmapLayer 는 HTMLImageElement 를 그대로 받는다.
@@ -2031,6 +2051,7 @@ const mmLoadTileImage = (url, signal) => new Promise((resolve, reject) => {
 
 const mmNightTileData = async ({ index, signal }) => {
     const { x, y, z } = index;
+    await mmNightLocalReady();
     if (z <= MM_NIGHT_LOCAL_MAX_Z) {
         try {
             return await mmLoadTileImage(MM_NIGHT_LOCAL_URL(z, y, x), signal);

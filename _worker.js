@@ -131,16 +131,31 @@ async function handleNightTile(request, url) {
     const hit = await cache.match(cacheKey).catch(() => null);
     if (hit) return hit;
 
+    // 실패했을 때 무엇이 막혔는지 말해야 한다. 그냥 502 만 뱉으면 상류가 404 인지
+    // (레이어 이름이 틀렸다) 연결이 끊긴 건지(NASA 가 안 받는다) 구분할 수 없고,
+    // 그 구분 없이는 고칠 수가 없다. 브라우저로 이 URL 을 열면 그대로 읽힌다.
+    const tried = [];
     let upstream = null;
     for (const date of GIBS_TILE_DATES) {
-        upstream = await fetch(`${GIBS_TILE_BASE}/${date}/${GIBS_MATRIX}/${z}/${y}/${x}.jpeg`, {
-            cf: { cacheEverything: true, cacheTtl: 2592000 },
-        }).catch(() => null);
-        if (upstream && upstream.ok) break;
+        const src = `${GIBS_TILE_BASE}/${date}/${GIBS_MATRIX}/${z}/${y}/${x}.jpeg`;
+        let res = null;
+        let err = '';
+        try {
+            res = await fetch(src, { cf: { cacheEverything: true, cacheTtl: 2592000 } });
+        } catch (e) {
+            err = `${e && e.name}: ${e && e.message}`;
+        }
+        const type = res ? (res.headers.get('content-type') || '') : '';
+        tried.push(`${date} → ${res ? `${res.status} ${type}` : err || 'no response'}`);
+        // 200 인데 이미지가 아닌 경우가 있다 (GIBS 는 오류를 XML 로 준다).
+        if (res && res.ok && type.startsWith('image/')) { upstream = res; break; }
     }
-    if (!upstream || !upstream.ok) {
+    if (!upstream) {
         // 클라이언트의 onTileError 가 이걸 세고, 쌓이면 벡터 실루엣으로 내려앉는다.
-        return new Response('tile upstream failed', { status: 502 });
+        return new Response(
+            `tile upstream failed\n${tried.join('\n')}\n`,
+            { status: 502, headers: { 'Content-Type': 'text/plain; charset=utf-8' } },
+        );
     }
 
     const out = new Response(upstream.body, {
