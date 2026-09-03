@@ -73,8 +73,8 @@ async function loadUnembedded(source, limit) {
 
 async function countUnembedded(source) {
   const config = SOURCES[source];
-  // PostgREST performs this aggregate in the database, so dry-run can report
-  // the true remaining total without downloading every candidate row.
+  // PostgREST가 DB에서 집계하므로 후보 행 전체를 내려받지 않아도
+  // dry-run에서 실제 남은 전체 건수를 보여줄 수 있다.
   const rows = await supabaseGet(config.table, {
     select: 'count()',
     embedding: 'is.null',

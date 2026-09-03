@@ -29,9 +29,9 @@ const EO_BACKFILL_FROM_DATE = process.env.EO_BACKFILL_FROM_DATE || '1994-01-01';
 const EO_BACKFILL_TO_DATE = process.env.EO_BACKFILL_TO_DATE || new Date().toISOString().slice(0, 10);
 const EO_BACKFILL_PAGE_SIZE = Math.min(1_000, positiveInteger(process.env.EO_BACKFILL_PAGE_SIZE, 500));
 const EO_RELATION_PAGE_SIZE = Math.min(100, positiveInteger(process.env.MAX_EO_RELATION_DOCUMENTS, 25));
-// A local backfill should make meaningful progress without requiring hundreds
-// of manual restarts. Each finished page is checkpointed independently, so a
-// bounded multi-page run remains safe to resume after an interruption.
+// 로컬 백필이 수백 번의 수동 재실행 없이 충분히 진행되도록 한다.
+// 완료한 페이지마다 독립적으로 체크포인트를 남기므로, 제한된 여러 페이지
+// 실행도 중단 후 안전하게 이어서 처리할 수 있다.
 const EO_RELATION_MAX_PAGES_PER_RUN = positiveInteger(process.env.MAX_EO_RELATION_PAGES, 25);
 const EO_RELATION_MAX_RUNTIME_MS = positiveInteger(process.env.MAX_EO_RELATION_RUNTIME_MS, 10 * 60_000);
 
@@ -192,8 +192,8 @@ async function relationDocumentBundle(item) {
   try {
     return await documentBundle(item);
   } catch (error) {
-    // A transient failure for one candidate must not discard the page's other
-    // verified links or prevent its checkpoint from advancing.
+    // 후보 문서 하나의 일시적 실패가 페이지의 다른 검증된 연결을 버리거나
+    // 체크포인트 진행을 막으면 안 된다.
     console.warn(`EO relationship backfill: skipped Federal Register document ${item.document_number}: ${error.message}`);
     return null;
   }
@@ -404,8 +404,8 @@ async function runEoRelationBackfill() {
           mode: 'eo_relation_backfill', from_date: EO_BACKFILL_FROM_DATE, to_date: EO_BACKFILL_TO_DATE,
           after_eo_number: Number(cursor.after_eo_number) || 0, page: page + 1,
         };
-      // Checkpoint every successful page before continuing. Failed candidate
-      // fetches are recorded above and deliberately do not block the cursor.
+      // 다음 페이지로 넘어가기 전에 완료한 페이지마다 체크포인트를 남긴다.
+      // 위에서 기록한 후보 문서 조회 실패는 의도적으로 커서 진행을 막지 않는다.
       await checkpointSyncState(RESOURCE, nextCursor);
       totals.pages += 1;
       totals.eos += Number(pageComplete);
