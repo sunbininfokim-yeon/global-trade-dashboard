@@ -407,8 +407,13 @@ async function saveBundle(data) {
   if (Number.isInteger(number) && ['public', 'private'].includes(type)) await supabaseUpsert('public_laws', [{ public_law_id: `${data.ref.congress}-${type}-${number}`,
     congress_number: data.ref.congress, law_number: number, law_title: data.row.title, enacted_date: data.row.latest_action_date,
     bill_id: data.billId, congress_url: officialUrl(data.ref) }], 'public_law_id');
+  // Notification matching must occur before terminal pruning: it uses the
+  // current title/summary to decide whether a subscriber should be queued.
   await queue(data.billId, data.row, { policy_area: data.row.policy_area_id, bill: data.billId });
-  return data.detailLevel !== 'index' && (!previous || !previous.embedding || previous.title !== data.row.title || previous.summary !== data.row.summary);
+  return {
+    shouldEmbed: data.detailLevel !== 'index' && (!previous || !previous.embedding || previous.title !== data.row.title || previous.summary !== data.row.summary),
+    terminal: ['failed', 'vetoed'].includes(data.row.current_stage),
+  };
 }
 
 async function saveVote(data, action, vote) {
@@ -491,11 +496,20 @@ async function refreshSemanticRelations(items) {
   return stats;
 }
 
+async function pruneTerminalBill(billId) {
+  const response = await supabaseRpc('prune_terminal_bill_details', { p_bill_id: billId }, 'return=representation');
+  const result = Array.isArray(response) ? response[0] : response;
+  return {
+    outcome: result?.outcome || 'unknown',
+    detailRowsRemoved: Number(result?.detail_rows_removed) || 0,
+  };
+}
+
 async function run() {
   const state = await loadState(); const active = await activeCongress(); const congresses = lastFour(active);
   const bootstrap = shouldBootstrap(state);
   const runId = await startSyncRun(RESOURCE, { congresses, mode: bootstrap ? 'bootstrap' : 'incremental', max_bills: MAX_BILLS });
-  let read = 0; let written = 0;
+  let read = 0; let written = 0; let terminalPruned = 0; let terminalDetailRowsRemoved = 0; let terminalProtected = 0;
   try {
     // Recover any row a prior run left stuck in 'processing' (Actions
     // timeout or crash) before it becomes invisible to takePolicyQueue.
@@ -522,9 +536,32 @@ async function run() {
     for (const result of claimed) {
       if (result.error) continue;
       try {
-        if (await saveBundle(result.item)) embeds.push(result.item);
+        const saved = await saveBundle(result.item);
+        if (saved.shouldEmbed) embeds.push(result.item);
         written += 1;
-        await markPolicyQueue(result.entry.queue_id, { status: 'succeeded', completed_at: new Date().toISOString(), last_error: null });
+        if (saved.terminal) {
+          // This terminal item should not be picked up again unless the
+          // official source publishes a newer update. Set skipped only after
+          // notification matching, then let an RPC atomically remove detail.
+          await markPolicyQueue(result.entry.queue_id, { status: 'skipped', completed_at: new Date().toISOString(), last_error: null });
+          const pruned = await pruneTerminalBill(result.item.billId);
+          if (pruned.outcome === 'pruned') {
+            terminalPruned += 1;
+            terminalDetailRowsRemoved += pruned.detailRowsRemoved;
+          } else if (pruned.outcome === 'protected_public_law') {
+            // A conflicting Public Law link is an integrity guard, not a
+            // reason to discard a source record. Keep the queue succeeded so
+            // a stale terminal stage does not re-run every day.
+            terminalProtected += 1;
+            await markPolicyQueue(result.entry.queue_id, { status: 'succeeded', completed_at: new Date().toISOString(), last_error: 'retention skipped: linked public law' });
+            console.warn(`Terminal retention skipped for ${result.item.billId}: a Public Law link is present.`);
+          } else if (pruned.outcome !== 'not_found') {
+            await markPolicyQueue(result.entry.queue_id, { status: 'succeeded', completed_at: new Date().toISOString(), last_error: `retention skipped: ${pruned.outcome}` });
+            console.warn(`Terminal retention skipped for ${result.item.billId}: ${pruned.outcome}.`);
+          }
+        } else {
+          await markPolicyQueue(result.entry.queue_id, { status: 'succeeded', completed_at: new Date().toISOString(), last_error: null });
+        }
       } catch (error) {
         const outcome = await queueRetryOrFail(result.entry.queue_id, result.entry.attempts + 1, error.message);
         console.error(`Congress.gov write for ${result.entry.source_key} ${outcome === 'failed' ? 'dead-lettered' : 'deferred'}: ${error.message}`);
@@ -535,7 +572,10 @@ async function run() {
     await supabaseRpc('refresh_policy_lifecycle_tiers', { active_congress_number: active });
     await updateSyncState(RESOURCE, { ...next.cursor, completed_at: new Date().toISOString() });
     const status = written === read ? 'succeeded' : 'partial';
-    await finishSyncRun(runId, { status, records_read: read, records_written: written, metadata: { cursor: next.cursor, staged, embedded: embeddedBills.length, semantic_relations: semanticRelations } });
+    await finishSyncRun(runId, { status, records_read: read, records_written: written, metadata: {
+      cursor: next.cursor, staged, embedded: embeddedBills.length, semantic_relations: semanticRelations,
+      terminal_pruned: terminalPruned, terminal_detail_rows_removed: terminalDetailRowsRemoved, terminal_public_law_protected: terminalProtected,
+    } });
     console.log(`Congress.gov complete: ${written}/${read} queued records, ${embeddedBills.length} embeddings, ${semanticRelations.relations} semantic relations.`);
   } catch (error) {
     await finishSyncRun(runId, { status: 'failed', records_read: read, records_written: written, error_summary: error.message });
