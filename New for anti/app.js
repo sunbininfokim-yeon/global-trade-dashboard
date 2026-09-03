@@ -4982,7 +4982,7 @@ const showElectionView = () => {
     currentCommodity = 'elections';
     stopTradeAnim();
     stopRotation();
-    document.body.classList.remove('trade-map-mode', 'shipping-mode', 'finance-mode', 'macro-mode');
+    document.body.classList.remove('trade-map-mode', 'shipping-mode', 'finance-mode', 'macro-mode', 'macro-night');
     const render = () => window.ElectionApp?.openWorld?.(electionHost());
     if (window.ElectionApp) {
         render();
@@ -5114,7 +5114,7 @@ const setView = (target) => {
     const isFinanceView = target && target.startsWith('fin_');
     const isPolicyView = target === 'us-policy-hub' || target === 'us-congress-overview' || target === 'us-executive';
     if (target !== 'macro_monitor') {
-        document.body.classList.remove('macro-mode');
+        document.body.classList.remove('macro-mode', 'macro-night');
         document.getElementById('macro-layer')?.remove();
     }
     if (!isShippingView && window.ShippingDashboard) {

@@ -83,6 +83,11 @@ export default {
             return await handleCommodityReports(request, env);
         }
 
+        // NASA GIBS 야간광 타일 프록시 (매크로 지도 베이스맵)
+        if (url.pathname.startsWith('/api/night-tile/')) {
+            return await handleNightTile(request, url);
+        }
+
         // Default: Serve Static Assets
         return serveAsset(request, env);
     },
@@ -96,6 +101,60 @@ export default {
         ctx.waitUntil(warmComtradeCache(env));
     }
 };
+
+
+// === NASA 야간광 타일 프록시 =============================================
+//
+// 매크로 지도 베이스맵(VIIRS Black Marble)을 브라우저가 gibs.earthdata.nasa.gov
+// 에 직접 붙어 받으면, 그 브라우저가 NASA 에 닿는지에 그림이 걸린다 -- 사내망
+// 차단, 광고 차단기, 임베드 환경의 CSP 어느 하나만 걸려도 지도가 통째로 검게
+// 남는다. 같은 출처로 받아 오면 그 실패면이 사라지고, 엣지 캐시가 한 번 받은
+// 타일을 재사용한다.
+const GIBS_TILE_BASE = 'https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/VIIRS_Black_Marble/default';
+// Black Marble 은 2012·2016 두 장의 연간 합성만 발행된다. 앞의 것이 없으면
+// 뒤로 물러난다 -- 시간 차원 표기가 바뀌어도 지도가 검어지지는 않게.
+const GIBS_TILE_DATES = ['2016-01-01', '2012-01-01'];
+const GIBS_MATRIX = 'GoogleMapsCompatible_Level8';
+const NIGHT_TILE_MAX_Z = 8;
+
+async function handleNightTile(request, url) {
+    const m = url.pathname.match(/^\/api\/night-tile\/(\d+)\/(\d+)\/(\d+)(?:\.jpe?g)?$/);
+    if (!m) return new Response('bad tile path', { status: 400 });
+    const [z, y, x] = m.slice(1, 4).map(Number);
+    const span = 2 ** z;
+    if (z > NIGHT_TILE_MAX_Z || y >= span || x >= span) {
+        return new Response('tile out of range', { status: 404 });
+    }
+
+    const cache = caches.default;
+    const cacheKey = new Request(`${url.origin}/api/night-tile/${z}/${y}/${x}.jpg`, { method: 'GET' });
+    const hit = await cache.match(cacheKey).catch(() => null);
+    if (hit) return hit;
+
+    let upstream = null;
+    for (const date of GIBS_TILE_DATES) {
+        upstream = await fetch(`${GIBS_TILE_BASE}/${date}/${GIBS_MATRIX}/${z}/${y}/${x}.jpeg`, {
+            cf: { cacheEverything: true, cacheTtl: 2592000 },
+        }).catch(() => null);
+        if (upstream && upstream.ok) break;
+    }
+    if (!upstream || !upstream.ok) {
+        // 클라이언트의 onTileError 가 이걸 세고, 쌓이면 벡터 실루엣으로 내려앉는다.
+        return new Response('tile upstream failed', { status: 502 });
+    }
+
+    const out = new Response(upstream.body, {
+        status: 200,
+        headers: {
+            'Content-Type': upstream.headers.get('content-type') || 'image/jpeg',
+            // 연간 합성이라 사실상 불변이다. 길게 잡아 둔다.
+            'Cache-Control': 'public, max-age=2592000, immutable',
+            'Access-Control-Allow-Origin': '*',
+        },
+    });
+    await cache.put(cacheKey, out.clone()).catch(() => {});
+    return out;
+}
 
 // One commodity costs ceil(76 reporters / REPORTER_CHUNK_SIZE) upstream calls,
 // and a Worker invocation may only make so many subrequests. Refilling every

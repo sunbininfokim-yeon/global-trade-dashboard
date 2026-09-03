@@ -49,6 +49,13 @@ Cursor가 UI 파일을 열어 둔 채로 저장하면 오래된 버퍼가 진행
   게이트가 아니라 **좌표 오버라이드**다. 새로 들어오는 국가는 월드 GeoJSON에서
   중심점을 계산해 자동으로 클릭 가능해진다 — 국가명을 하드코딩하지 말 것.
 - 남극은 마스크로 가리지 않고 소스 features 에서 제거한다 (`loadWorldGeo`).
+- 매크로 모니터(`/macro_monitor`)만 베이스맵이 다르다: NASA VIIRS Black Marble
+  야간광 타일(`mmNightBaseLayers`). 타일은 z0-5 를 `New for anti/public/night/`
+  에 커밋해 두고(`tools/ops/fetch_night_tiles.py`), 그보다 확대하면
+  `/api/night-tile` 워커 프록시를 탄다. 타일이 없으면 벡터 실루엣으로 내려앉는다.
+  남극은 타일 `extent` 하단(-58°)으로 잘라 낸다.
+  되돌리기: `?night=off` 로 예전 벡터 베이스맵으로 돌아간다 (선택은 localStorage
+  에 남고 `?night=on` 으로 복구). 배포를 되돌리지 않고 끌 수 있어야 해서 둔 것.
 
 ## 데이터 계약
 
