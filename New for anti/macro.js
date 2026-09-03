@@ -2009,7 +2009,9 @@ const mmNightEnabled = () => {
     }
 };
 
-const MM_NIGHT_LOCAL_URL = (z, y, x) => `/public/night/${z}/${y}/${x}.jpg`;
+// 받아 두는 타일은 상류 그대로 png 다 (fetch_night_tiles.py). 프록시 경로의
+// .jpg 는 경로 표기일 뿐이고, 실제 Content-Type 은 워커가 상류에서 물려준다.
+const MM_NIGHT_LOCAL_URL = (z, y, x) => `/public/night/${z}/${y}/${x}.png`;
 const MM_NIGHT_PROXY_URL = (z, y, x) => `/api/night-tile/${z}/${y}/${x}.jpg`;
 
 // 받아 둔 타일이 있는지는 매니페스트 한 장으로 판단한다. 그냥 타일부터 찔러
