@@ -1,6 +1,6 @@
 {
   "schema_version": "official-reports-v1",
-  "generated_at": "2026-09-03T22:37:38.272518+00:00",
+  "generated_at": "2026-09-04T04:39:18.002617+00:00",
   "model": {
     "name": "official_reports_learnable_v1",
     "description": "Official sources only (US/JP/CN/EU/UK public RSS·HTML). Domains: economy/finance/diplomacy/security/agriculture. Series catalog + label_history for collaborative learning. No Dropbox.",
@@ -20,7 +20,7 @@
     "raw_items": 154,
     "scored": 154,
     "selected": 40,
-    "indicators": 13
+    "indicators": 14
   },
   "feed_status": [
     {
@@ -263,6 +263,20 @@
       "title": "Japanese Government Bonds Held by the Bank of Japan",
       "url": "http://www.boj.or.jp/en/statistics/boj/other/mei/release/2026/mei260810.xlsx",
       "published_at": "2026-08-13T08:00:00+00:00",
+      "site_slot": "finance.policy",
+      "significance": 2.306
+    },
+    {
+      "series_id": "JP_BOJ_POLICY",
+      "label_ko": "일본은행 정책·공표",
+      "country": "JPN",
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "title": "Bank of Japan Accounts (August 10)",
+      "url": "http://www.boj.or.jp/en/statistics/boj/other/acmai/release/2026/ac260810.htm",
+      "published_at": "2026-08-13T01:00:00+00:00",
       "site_slot": "finance.policy",
       "significance": 2.306
     }
@@ -1072,74 +1086,6 @@
       "site_slot": null
     },
     {
-      "id": "a051021f41a5f525",
-      "published_at": "2026-09-02T01:30:00+00:00",
-      "source": {
-        "id": "jp_boj_whatsnew",
-        "name": "Bank of Japan",
-        "region": "jpn",
-        "slant": null
-      },
-      "url": "http://www.boj.or.jp/en/about/press/koen_2026/ko260902a.htm",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "finance",
-        "economy"
-      ],
-      "series_id": null,
-      "title": {
-        "original": "Speech by Board Member TAKATA in Sapporo (Economic Activity, Prices, and Monetary Policy in Japan)",
-        "original_lang": "en",
-        "ko": "[JPN·금융] Speech by Board Member TAKATA in Sapporo (Economic Activity, Prices, and Monetary Policy in Japan)"
-      },
-      "summary": "",
-      "scores": {
-        "significance": 2.376,
-        "final": 2.376
-      },
-      "rank_reasons": [
-        "domains:economy,finance"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
-    },
-    {
-      "id": "232099971f2dc546",
-      "published_at": "2026-08-27T01:35:00+00:00",
-      "source": {
-        "id": "jp_boj_whatsnew",
-        "name": "Bank of Japan",
-        "region": "jpn",
-        "slant": null
-      },
-      "url": "http://www.boj.or.jp/en/about/press/koen_2026/ko260827a.htm",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "finance",
-        "economy"
-      ],
-      "series_id": null,
-      "title": {
-        "original": "Speech by Deputy Governor HIMINO in Saitama (Japan's Economy and Monetary Policy)",
-        "original_lang": "en",
-        "ko": "[JPN·금융] Speech by Deputy Governor HIMINO in Saitama (Japan's Economy and Monetary Policy)"
-      },
-      "summary": "",
-      "scores": {
-        "significance": 2.376,
-        "final": 2.376
-      },
-      "rank_reasons": [
-        "domains:economy,finance"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
-    },
-    {
       "id": "f4c861363297d5e2",
       "published_at": "2026-08-07T14:00:00+00:00",
       "source": {
@@ -1663,20 +1609,78 @@
       "translation_status": "skipped",
       "event_type": "official_report",
       "site_slot": "finance.policy"
-    }
-  ],
-  "pending_review": [
+    },
     {
-      "title": "Boris Vujčić: Listening to households: expectations, behaviour and monetary policy",
+      "id": "b281888b875720fe",
+      "published_at": "2026-08-13T01:00:00+00:00",
+      "source": {
+        "id": "jp_boj_whatsnew",
+        "name": "Bank of Japan",
+        "region": "jpn",
+        "slant": null
+      },
+      "url": "http://www.boj.or.jp/en/statistics/boj/other/acmai/release/2026/ac260810.htm",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": "JP_BOJ_POLICY",
+      "title": {
+        "original": "Bank of Japan Accounts (August 10)",
+        "original_lang": "en",
+        "ko": "[JPN·경제] Bank of Japan Accounts (August 10)"
+      },
+      "summary": "",
+      "scores": {
+        "significance": 2.306,
+        "final": 2.306
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "series:JP_BOJ_POLICY"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": "finance.policy"
+    },
+    {
+      "id": "450a54499fa92683",
+      "published_at": "2026-09-01T16:00:00+00:00",
+      "source": {
+        "id": "eu_ecb_press",
+        "name": "ECB",
+        "region": "eur",
+        "slant": null
+      },
       "url": "https://www.ecb.europa.eu//press/key/date/2026/html/ecb.sp260901~bb28f33f54.en.html",
-      "country": "EUR",
+      "category": "official_report",
+      "commodities": [],
       "domains": [
         "finance",
         "economy"
       ],
-      "significance": 2.112,
-      "suggest": "label promote|keep|drop + series_id later"
-    },
+      "series_id": null,
+      "title": {
+        "original": "Boris Vujčić: Listening to households: expectations, behaviour and monetary policy",
+        "original_lang": "en",
+        "ko": "[EUR·금융] Boris Vujčić: Listening to households: expectations, behaviour and monetary policy"
+      },
+      "summary": "",
+      "scores": {
+        "significance": 2.112,
+        "final": 2.112
+      },
+      "rank_reasons": [
+        "domains:economy,finance"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    }
+  ],
+  "pending_review": [
     {
       "title": "Philip R. Lane: Outlook for the euro area economy",
       "url": "https://www.ecb.europa.eu//press/key/date/2026/html/ecb.sp260724~d484b483b9.en.pdf",
@@ -1818,6 +1822,26 @@
         "finance"
       ],
       "significance": 1.978,
+      "suggest": "label promote|keep|drop + series_id later"
+    },
+    {
+      "title": "Minutes of the Federal Open Market Committee, June 16-17, 2026",
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260708a.htm",
+      "country": "USA",
+      "domains": [
+        "finance"
+      ],
+      "significance": 1.904,
+      "suggest": "label promote|keep|drop + series_id later"
+    },
+    {
+      "title": "Minutes of the Board's discount rate meeting on April 20 and 29, 2026",
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260526a.htm",
+      "country": "USA",
+      "domains": [
+        "finance"
+      ],
+      "significance": 1.904,
       "suggest": "label promote|keep|drop + series_id later"
     }
   ],
@@ -2626,74 +2650,6 @@
       "site_slot": null
     },
     {
-      "id": "a051021f41a5f525",
-      "published_at": "2026-09-02T01:30:00+00:00",
-      "source": {
-        "id": "jp_boj_whatsnew",
-        "name": "Bank of Japan",
-        "region": "jpn",
-        "slant": null
-      },
-      "url": "http://www.boj.or.jp/en/about/press/koen_2026/ko260902a.htm",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "finance",
-        "economy"
-      ],
-      "series_id": null,
-      "title": {
-        "original": "Speech by Board Member TAKATA in Sapporo (Economic Activity, Prices, and Monetary Policy in Japan)",
-        "original_lang": "en",
-        "ko": "[JPN·금융] Speech by Board Member TAKATA in Sapporo (Economic Activity, Prices, and Monetary Policy in Japan)"
-      },
-      "summary": "",
-      "scores": {
-        "significance": 2.376,
-        "final": 2.376
-      },
-      "rank_reasons": [
-        "domains:economy,finance"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
-    },
-    {
-      "id": "232099971f2dc546",
-      "published_at": "2026-08-27T01:35:00+00:00",
-      "source": {
-        "id": "jp_boj_whatsnew",
-        "name": "Bank of Japan",
-        "region": "jpn",
-        "slant": null
-      },
-      "url": "http://www.boj.or.jp/en/about/press/koen_2026/ko260827a.htm",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "finance",
-        "economy"
-      ],
-      "series_id": null,
-      "title": {
-        "original": "Speech by Deputy Governor HIMINO in Saitama (Japan's Economy and Monetary Policy)",
-        "original_lang": "en",
-        "ko": "[JPN·금융] Speech by Deputy Governor HIMINO in Saitama (Japan's Economy and Monetary Policy)"
-      },
-      "summary": "",
-      "scores": {
-        "significance": 2.376,
-        "final": 2.376
-      },
-      "rank_reasons": [
-        "domains:economy,finance"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
-    },
-    {
       "id": "f4c861363297d5e2",
       "published_at": "2026-08-07T14:00:00+00:00",
       "source": {
@@ -3217,6 +3173,75 @@
       "translation_status": "skipped",
       "event_type": "official_report",
       "site_slot": "finance.policy"
+    },
+    {
+      "id": "b281888b875720fe",
+      "published_at": "2026-08-13T01:00:00+00:00",
+      "source": {
+        "id": "jp_boj_whatsnew",
+        "name": "Bank of Japan",
+        "region": "jpn",
+        "slant": null
+      },
+      "url": "http://www.boj.or.jp/en/statistics/boj/other/acmai/release/2026/ac260810.htm",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": "JP_BOJ_POLICY",
+      "title": {
+        "original": "Bank of Japan Accounts (August 10)",
+        "original_lang": "en",
+        "ko": "[JPN·경제] Bank of Japan Accounts (August 10)"
+      },
+      "summary": "",
+      "scores": {
+        "significance": 2.306,
+        "final": 2.306
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "series:JP_BOJ_POLICY"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": "finance.policy"
+    },
+    {
+      "id": "450a54499fa92683",
+      "published_at": "2026-09-01T16:00:00+00:00",
+      "source": {
+        "id": "eu_ecb_press",
+        "name": "ECB",
+        "region": "eur",
+        "slant": null
+      },
+      "url": "https://www.ecb.europa.eu//press/key/date/2026/html/ecb.sp260901~bb28f33f54.en.html",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "finance",
+        "economy"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "Boris Vujčić: Listening to households: expectations, behaviour and monetary policy",
+        "original_lang": "en",
+        "ko": "[EUR·금융] Boris Vujčić: Listening to households: expectations, behaviour and monetary policy"
+      },
+      "summary": "",
+      "scores": {
+        "significance": 2.112,
+        "final": 2.112
+      },
+      "rank_reasons": [
+        "domains:economy,finance"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
     }
   ]
 }

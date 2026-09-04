@@ -391,6 +391,20 @@ def build_snapshot(day: dict[str, Any], *, anchors: dict[str, Any] | None = None
         if not kospi_tv or not lev_tv
         else round(100.0 * float(lev_tv) / float(kospi_tv), 3)
     )
+    # Keep the UI contract structurally stable when the auxiliary ETF listing
+    # has not published valid turnover yet.  Values are intentionally null,
+    # never zero: zero would be interpreted as an observed absence of trading.
+    empty_direction_buckets = {
+        direction: {
+            "n_products": None,
+            "trading_value_krw": None,
+            "trading_value_jo": None,
+            "aum_proxy_krw": None,
+            "share_of_lev_tv_pct": None,
+            "share_of_kospi_tv_pct": None,
+        }
+        for direction in ("long", "inverse", "inverse_2x", "gobus_inverse_2x")
+    }
     market_ratios = {
         "label_ko": "코스피·전시장 레버/곱버스·파생 비중",
         "levered_inverse_etf_tv_over_kospi_cash_tv_pct": kospi_letf_tv_share_pct,
@@ -398,7 +412,7 @@ def build_snapshot(day: dict[str, Any], *, anchors: dict[str, Any] | None = None
         "inverse_tv_jo": cat.get("inverse_tv_jo"),
         "gobus_tv_jo": cat.get("gobus_tv_jo"),
         "inverse_share_of_lev_tv_pct": cat.get("inverse_share_of_lev_tv_pct"),
-        "by_direction": cat.get("by_direction"),
+        "by_direction": cat.get("by_direction") or empty_direction_buckets,
         "by_letf_category_tv_share_of_kospi_pct": {
             k: ((cat.get("by_category") or {}).get(k) or {}).get("share_of_kospi_tv_pct")
             for k in ("index", "single_stock", "sector", "overseas")

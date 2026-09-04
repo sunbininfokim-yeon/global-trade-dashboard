@@ -90,6 +90,17 @@ def fetch_letf_category_share() -> dict[str, Any]:
     levered["direction"] = levered["Name"].map(classify_letf_direction)
 
     total_tv = _amount_krw(levered, "Amount", multiplier=etf_unit)
+    # A zero aggregate is not a quiet "no activity" observation here.  This
+    # source is a live FDR listing (rather than an as-of KRX EOD endpoint),
+    # and it has on occasion returned an all-zero Amount column before the
+    # trading-day listing was published.  Recording that as observed creates
+    # a false deleveraging signal and poisons the history series.
+    if cash_tv <= 0 or total_tv <= 0:
+        raise RuntimeError(
+            "FDR listing returned non-positive turnover "
+            f"(KOSPI={cash_tv}, levered/inverse ETF={total_tv}); "
+            "treating LETF category data as unavailable"
+        )
 
     def group_rows(column: str) -> dict[str, dict[str, Any]]:
         out: dict[str, dict[str, Any]] = {}
