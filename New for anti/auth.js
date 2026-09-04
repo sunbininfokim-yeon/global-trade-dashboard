@@ -4,6 +4,25 @@
 // so other feature modules (favorites, alerts, portfolio) can check
 // Auth.currentUser() without each re-deriving the session.
 
+// Draft only -- not legal review. Covers what this project actually does
+// today (email/password auth, favorites, digest email) so it doesn't
+// promise anything the code doesn't do; update it if that scope changes.
+const PRIVACY_POLICY_HTML = `
+    <h4>수집하는 개인정보</h4>
+    <p>이메일 주소, 비밀번호(암호화 저장), 닉네임(선택), 즐겨찾기·알림 설정 내역.
+    실명은 수집하지 않습니다.</p>
+    <h4>이용 목적</h4>
+    <p>로그인 및 계정 식별, 즐겨찾기한 정책·원자재 리포트 변경사항의 이메일 알림 발송.</p>
+    <h4>보유 기간</h4>
+    <p>회원 탈퇴 시까지 보관하며, 탈퇴 시 지체 없이 삭제합니다.</p>
+    <h4>제3자 제공</h4>
+    <p>계정 인증·데이터 저장은 Supabase, 이메일 발송은 Resend를 이용하며, 이 목적 외
+    제3자에게 제공하지 않습니다.</p>
+    <h4>이용자 권리</h4>
+    <p>마이페이지에서 언제든 본인 정보를 열람·수정할 수 있고, 회원 탈퇴로 즉시
+    삭제를 요청할 수 있습니다.</p>
+`;
+
 const Auth = (() => {
     const client = window.supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY);
 
@@ -37,10 +56,45 @@ const Auth = (() => {
         listeners.push(fn);
     }
 
-    async function signUp(email, password) {
-        const { data, error } = await client.auth.signUp({ email, password });
+    // termsAgreedAt travels in options.data (-> auth.users.raw_user_meta_data)
+    // rather than a follow-up write to profiles, because a signup that
+    // requires email confirmation has no authenticated session yet for a
+    // second call to run under. handle_new_user() reads it from there.
+    async function signUp(email, password, termsAgreedAt) {
+        const { data, error } = await client.auth.signUp({
+            email,
+            password,
+            options: { data: { terms_agreed_at: termsAgreedAt } },
+        });
         if (error) throw error;
         return data;
+    }
+
+    async function changePassword(newPassword) {
+        const { error } = await client.auth.updateUser({ password: newPassword });
+        if (error) throw error;
+    }
+
+    async function myProfile() {
+        const user = currentUser();
+        if (!user) return null;
+        const { data, error } = await client
+            .from('profiles')
+            .select('email,member_no,nickname,terms_agreed_at')
+            .eq('id', user.id)
+            .single();
+        if (error) throw error;
+        return data;
+    }
+
+    async function updateNickname(nickname) {
+        const user = currentUser();
+        if (!user) throw new Error('로그인이 필요합니다.');
+        const { error } = await client
+            .from('profiles')
+            .update({ nickname })
+            .eq('id', user.id);
+        if (error) throw error;
     }
 
     async function signIn(email, password) {
@@ -191,6 +245,14 @@ const Auth = (() => {
                 <form id="auth-form" class="auth-form">
                     <label>이메일<input type="email" id="auth-email" required autocomplete="email"></label>
                     <label>비밀번호<input type="password" id="auth-password" required autocomplete="current-password" minlength="6"></label>
+                    <label class="signup-only hidden">비밀번호 확인<input type="password" id="auth-password-confirm" autocomplete="new-password" minlength="6"></label>
+                    <p class="auth-hint signup-only hidden">다른 사이트에서 쓰시는 비밀번호는 재사용하지 않는 걸 권장드립니다.</p>
+                    <div class="auth-consent-row signup-only hidden">
+                        <input type="checkbox" id="auth-consent">
+                        <label for="auth-consent">(필수) 이용약관 및 개인정보처리방침에 동의합니다</label>
+                        <button type="button" class="auth-policy-link" id="auth-policy-toggle">보기</button>
+                    </div>
+                    <div class="auth-policy-text hidden" id="auth-policy-text">${PRIVACY_POLICY_HTML}</div>
                     <p class="auth-error hidden" id="auth-error"></p>
                     <p class="auth-notice hidden" id="auth-notice"></p>
                     <button type="submit" class="auth-submit-btn" id="auth-submit-btn">로그인</button>
@@ -205,10 +267,17 @@ const Auth = (() => {
         const errorEl = modal.querySelector('#auth-error');
         const noticeEl = modal.querySelector('#auth-notice');
 
+        const signupOnlyEls = modal.querySelectorAll('.signup-only');
+        const consentCheckbox = modal.querySelector('#auth-consent');
+        const passwordConfirm = modal.querySelector('#auth-password-confirm');
+        const policyText = modal.querySelector('#auth-policy-text');
+
         function setMode(next) {
             mode = next;
             tabs.forEach((t) => t.classList.toggle('active', t.dataset.tab === mode));
             submitBtn.textContent = mode === 'signin' ? '로그인' : '회원가입';
+            signupOnlyEls.forEach((el) => el.classList.toggle('hidden', mode !== 'signup'));
+            policyText.classList.add('hidden');
             errorEl.classList.add('hidden');
             noticeEl.classList.add('hidden');
         }
@@ -218,6 +287,9 @@ const Auth = (() => {
 
         modal.querySelector('.auth-modal-close').addEventListener('click', closeModal);
         modal.querySelector('.auth-modal-backdrop').addEventListener('click', closeModal);
+        modal.querySelector('#auth-policy-toggle').addEventListener('click', () => {
+            policyText.classList.toggle('hidden');
+        });
 
         modal.querySelector('#auth-form').addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -225,13 +297,27 @@ const Auth = (() => {
             noticeEl.classList.add('hidden');
             const email = modal.querySelector('#auth-email').value.trim();
             const password = modal.querySelector('#auth-password').value;
+
+            if (mode === 'signup') {
+                if (password !== passwordConfirm.value) {
+                    errorEl.textContent = '비밀번호가 서로 다릅니다.';
+                    errorEl.classList.remove('hidden');
+                    return;
+                }
+                if (!consentCheckbox.checked) {
+                    errorEl.textContent = '이용약관 및 개인정보처리방침에 동의해주세요.';
+                    errorEl.classList.remove('hidden');
+                    return;
+                }
+            }
+
             submitBtn.disabled = true;
             try {
                 if (mode === 'signin') {
                     await signIn(email, password);
                     closeModal();
                 } else {
-                    await signUp(email, password);
+                    await signUp(email, password, new Date().toISOString());
                     noticeEl.textContent = '가입 확인 메일을 보냈습니다. 메일함을 확인해주세요.';
                     noticeEl.classList.remove('hidden');
                 }
@@ -265,6 +351,7 @@ const Auth = (() => {
         listFavorites, addFavorite, removeFavorite,
         listDisabledCommoditySources, setCommoditySourceEnabled,
         commoditySourceFilterHtml, bindCommoditySourceFilter,
+        changePassword, myProfile, updateNickname,
     };
 })();
 
