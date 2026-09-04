@@ -2822,6 +2822,86 @@ body.finance-mode #chart-view::-webkit-scrollbar { width: 8px; }
 body.finance-mode #chart-view::-webkit-scrollbar-track { background: rgba(15, 23, 42, .8); }
 body.finance-mode #chart-view::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, .28); border-radius: 999px; }
 
+/* ── 마이페이지 ─────────────────────────────────────────────────────────
+   Same full-bleed document treatment as finance/shipping/policy -- an
+   account settings screen has no map either. */
+body.mypage-mode #chart-view {
+    display: block !important;
+    align-items: initial !important;
+    justify-content: initial !important;
+    overflow-y: scroll !important;
+    overflow-x: hidden !important;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+    pointer-events: auto !important;
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    max-height: none;
+    z-index: 40 !important;
+    background:
+        radial-gradient(circle at 10% 0%, rgba(56, 189, 248, .08), transparent 32%),
+        radial-gradient(circle at 90% 6%, rgba(167, 139, 250, .07), transparent 30%),
+        #090e18;
+}
+body.mypage-mode #chart-view::-webkit-scrollbar { width: 8px; }
+body.mypage-mode #chart-view::-webkit-scrollbar-track { background: rgba(15, 23, 42, .8); }
+body.mypage-mode #chart-view::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, .28); border-radius: 999px; }
+
+.mypage-shell { max-width: 720px; margin: 0 auto; padding: 32px 20px 60px; }
+.mypage-header { margin-bottom: 20px; }
+.mypage-header h1 { margin: 0 0 4px; font-size: 20px; color: #f1f5f9; }
+.mypage-header p { margin: 0; color: var(--text-secondary); font-size: 12.5px; }
+
+.mypage-tabs { display: flex; gap: 6px; margin-bottom: 20px; border-bottom: 1px solid var(--border); }
+.mypage-tab {
+    padding: 10px 4px;
+    margin-right: 18px;
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    color: var(--text-secondary);
+    font-size: 13px;
+    cursor: pointer;
+}
+.mypage-tab.active { color: #38bdf8; border-bottom-color: #38bdf8; }
+
+.mypage-panel { display: flex; flex-direction: column; gap: 10px; }
+.mypage-panel.hidden { display: none; }
+.mypage-empty { color: var(--text-secondary); font-size: 12.5px; padding: 16px 0; }
+.mypage-section-title { color: #cbd5e1; font-size: 13px; font-weight: 600; margin: 18px 0 4px; }
+.mypage-section-title:first-child { margin-top: 0; }
+
+.mypage-field { display: flex; flex-direction: column; gap: 6px; max-width: 360px; }
+.mypage-field label { color: var(--text-secondary); font-size: 12px; }
+.mypage-field input {
+    background: rgba(148, 163, 184, .08);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 9px 10px;
+    color: #f1f5f9;
+    font-size: 13px;
+}
+.mypage-field input:disabled { color: var(--text-secondary); cursor: not-allowed; }
+.mypage-btn {
+    align-self: flex-start;
+    background: #38bdf8;
+    color: #0b1220;
+    border: none;
+    border-radius: 6px;
+    padding: 9px 16px;
+    font-size: 12.5px;
+    font-weight: 600;
+    cursor: pointer;
+}
+.mypage-btn:disabled { opacity: .6; cursor: not-allowed; }
+.mypage-btn.is-danger { background: transparent; color: #fb7185; border: 1px solid rgba(251, 113, 133, .4); }
+.mypage-status { font-size: 12px; margin: 0; }
+.mypage-status.is-error { color: #fb7185; }
+.mypage-status.is-ok { color: #4ade80; }
+.mypage-status.hidden { display: none; }
+
 .fin-wrap { max-width: 1180px; margin: 0 auto; padding: 30px 28px 64px; color: var(--text-primary); }
 .fin-loading { color: var(--text-secondary); font-size: 13px; padding: 40px 0; }
 

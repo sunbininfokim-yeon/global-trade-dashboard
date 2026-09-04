@@ -54,7 +54,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
     <!-- Custom Styles -->
-    <link rel="stylesheet" href="style.css?v=75">
+    <link rel="stylesheet" href="style.css?v=76">
 </head>
 <body>
     <div id="app">
@@ -163,6 +163,13 @@
                         <a href="#" data-target="inst_intl">국제 기구 (UN, USDA 등)</a>
                         <a href="#" data-target="inst_country">국가별 출처 (CONAB 등)</a>
                     </div>
+                </div>
+                <!-- Hidden until signed in -- auth.js toggles this on every
+                     auth state change, same as it does the login/logout
+                     button in #auth-container. No dropdown: a bare
+                     data-nav-default item navigates straight to mypage. -->
+                <div class="menu-item hidden" data-nav-default="mypage" data-target="mypage" id="mypage-nav-item">
+                    <span class="menu-parent" role="button" tabindex="0" aria-label="마이페이지 열기">마이페이지</span>
                 </div>
             </nav>
             <div class="auth-container" id="auth-container"></div>
@@ -386,7 +393,7 @@
          renderers run. -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
     <script src="auth-config.js?v=1"></script>
-    <script src="auth.js?v=5"></script>
+    <script src="auth.js?v=6"></script>
     <!-- Finance domains, split out of app.js. Plain scripts sharing one global
          scope, listed so each file follows the ones it reads: macro.js first
          (market-microstructure.js and calculator.js draw with mmLineChart and
@@ -408,7 +415,10 @@
     <script src="portfolio.js?v=2"></script>
     <script src="calculator.js?v=2"></script>
     <script src="policy.js?v=14"></script>
-    <script src="app.js?v=116"></script>
+    <!-- My Page: reads window.Auth (favorites, account fields) and
+         window.USPolicy (favorited-bill cards), so it loads after both. -->
+    <script src="mypage.js?v=1"></script>
+    <script src="app.js?v=117"></script>
     <script src="trade.js?v=4"></script>
     <script type="module" src="js/elections/index.js?v=2"></script>
 </body>

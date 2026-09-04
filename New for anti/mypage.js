@@ -1,0 +1,330 @@
+// My Page: 즐겨찾기 / 메일링 서비스 / 포트폴리오 / 개인정보수정.
+// Basic scaffold -- structure, routing, and the backend calls are wired up;
+// depth (richer favorite cards, the portfolio calculator once it exists,
+// notification-preference toggles beyond the commodity source filter) is
+// left for follow-up work. Reads window.Auth (auth.js) and window.USPolicy
+// (policy.js), both loaded earlier in index.html.
+(() => {
+    const TABS = [
+        { id: 'favorites', label: '즐겨찾기' },
+        { id: 'mailing', label: '메일링 서비스' },
+        { id: 'portfolio', label: '포트폴리오' },
+        { id: 'account', label: '개인정보수정' },
+    ];
+
+    let host = null;
+    let activeTab = 'favorites';
+    let renderToken = 0;
+
+    const esc = (value) => {
+        if (value === null || value === undefined) return '';
+        return String(value)
+            .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+    };
+
+    function shellHtml() {
+        return `
+            <div class="mypage-shell">
+                <div class="mypage-header">
+                    <h1>마이페이지</h1>
+                    <p id="mypage-identity"></p>
+                </div>
+                <div class="mypage-tabs">
+                    ${TABS.map((t) => `<button type="button" class="mypage-tab" data-tab="${t.id}">${t.label}</button>`).join('')}
+                </div>
+                <div class="mypage-panels">
+                    ${TABS.map((t) => `<div class="mypage-panel hidden" data-panel="${t.id}"></div>`).join('')}
+                </div>
+            </div>`;
+    }
+
+    function setActiveTab(id) {
+        activeTab = id;
+        host.querySelectorAll('.mypage-tab').forEach((btn) => btn.classList.toggle('active', btn.dataset.tab === id));
+        host.querySelectorAll('.mypage-panel').forEach((panel) => panel.classList.toggle('hidden', panel.dataset.panel !== id));
+        loadTab(id);
+    }
+
+    const loaded = new Set(); // tabs already fetched once this render -- avoid refetching on every tab switch
+
+    function loadTab(id) {
+        if (loaded.has(id)) return;
+        loaded.add(id);
+        if (id === 'favorites') renderFavorites();
+        else if (id === 'mailing') renderMailing();
+        else if (id === 'portfolio') renderPortfolio();
+        else if (id === 'account') renderAccount();
+    }
+
+    function panel(id) {
+        return host.querySelector(`.mypage-panel[data-panel="${id}"]`);
+    }
+
+    /* ------------------------------------------------------------ 즐겨찾기 */
+
+    async function renderFavorites() {
+        const el = panel('favorites');
+        el.innerHTML = '<p class="mypage-empty">불러오는 중…</p>';
+        const token = renderToken;
+        let favorites = [];
+        try {
+            favorites = await window.Auth.listFavorites();
+        } catch (err) {
+            if (token !== renderToken) return;
+            el.innerHTML = `<p class="mypage-empty">즐겨찾기를 불러오지 못했습니다: ${esc(err.message)}</p>`;
+            return;
+        }
+        if (token !== renderToken) return;
+        if (!favorites.length) {
+            el.innerHTML = '<p class="mypage-empty">아직 즐겨찾기한 항목이 없습니다.</p>';
+            return;
+        }
+
+        const bills = favorites.filter((f) => f.item_kind === 'bill');
+        const others = favorites.filter((f) => f.item_kind !== 'bill');
+
+        el.innerHTML = `
+            ${bills.length ? '<p class="mypage-section-title">법안</p><div class="policy-bill-list" id="mypage-fav-bills"></div>' : ''}
+            ${others.length ? '<p class="mypage-section-title">그 외</p><div class="policy-bill-list" id="mypage-fav-others"></div>' : ''}
+        `;
+
+        if (others.length) {
+            const container = el.querySelector('#mypage-fav-others');
+            container.innerHTML = others.map((f) => `
+                <div class="policy-fav-bill-card">
+                    <div class="policy-fav-bill-title">${esc(f.title || f.item_id)}</div>
+                    <div class="policy-fav-bill-meta">
+                        <span class="policy-fav-bill-code">${esc(f.item_kind)}</span>
+                        <button type="button" class="auth-btn" data-remove-kind="${esc(f.item_kind)}" data-remove-id="${esc(f.item_id)}">해제</button>
+                    </div>
+                </div>`).join('');
+            container.addEventListener('click', async (e) => {
+                const btn = e.target.closest('[data-remove-kind]');
+                if (!btn) return;
+                btn.disabled = true;
+                try {
+                    await window.Auth.removeFavorite(btn.dataset.removeKind, btn.dataset.removeId);
+                    loaded.delete('favorites');
+                    renderFavorites();
+                } catch (err) {
+                    btn.disabled = false;
+                    console.error('Failed to remove favorite:', err);
+                }
+            });
+        }
+
+        if (bills.length) {
+            const container = el.querySelector('#mypage-fav-bills');
+            container.innerHTML = bills.map((f) => `<div class="policy-fav-bill-card" data-bill-id="${esc(f.item_id)}"><p class="mypage-empty">불러오는 중…</p></div>`).join('');
+            // One request per favorited bill -- fine at favorites-list scale;
+            // revisit with a batch endpoint if this list grows large.
+            bills.forEach(async (f) => {
+                const card = container.querySelector(`[data-bill-id="${CSS.escape(f.item_id)}"]`);
+                try {
+                    const bill = await window.USPolicy.loadBillById(f.item_id);
+                    if (token !== renderToken || !card) return;
+                    card.outerHTML = window.USPolicy.favoriteBillCardHtml(bill);
+                } catch (err) {
+                    if (card) card.innerHTML = `<p class="mypage-empty">불러오지 못함: ${esc(f.title || f.item_id)}</p>`;
+                }
+            });
+        }
+    }
+
+    /* -------------------------------------------------------- 메일링 서비스 */
+
+    async function renderMailing() {
+        const el = panel('mailing');
+        el.innerHTML = `
+            <p class="mypage-section-title">법안</p>
+            <p class="mypage-empty">즐겨찾기한 법안의 상태가 바뀌면 자동으로 메일이 발송됩니다. 별도 설정이 필요 없습니다.</p>
+            <p class="mypage-section-title">원자재</p>
+            <div id="mypage-source-filter"><p class="mypage-empty">불러오는 중…</p></div>
+            <p class="mypage-section-title">시장 미시구조</p>
+            <p class="mypage-empty">준비 중입니다.</p>
+        `;
+        const token = renderToken;
+        const container = el.querySelector('#mypage-source-filter');
+        try {
+            const [reportsRes, disabled] = await Promise.all([
+                fetch('/public/data/commodity_reports_v1.json', { cache: 'no-cache' }).then((r) => r.json()),
+                window.Auth.listDisabledCommoditySources(),
+            ]);
+            if (token !== renderToken) return;
+            const bySource = new Map();
+            (reportsRes.items || []).forEach((item) => {
+                if (!bySource.has(item.source_id)) bySource.set(item.source_id, item.agency_ko || item.agency || item.source_id);
+            });
+            const sources = [...bySource.entries()].map(([source_id, agency_ko]) => ({ source_id, agency_ko }));
+            if (!sources.length) {
+                container.innerHTML = '<p class="mypage-empty">현재 연동된 원자재 소스가 없습니다.</p>';
+                return;
+            }
+            container.innerHTML = window.Auth.commoditySourceFilterHtml(sources, disabled);
+            window.Auth.bindCommoditySourceFilter(container);
+        } catch (err) {
+            if (token !== renderToken) return;
+            container.innerHTML = `<p class="mypage-empty">소스 목록을 불러오지 못했습니다: ${esc(err.message)}</p>`;
+        }
+    }
+
+    /* ------------------------------------------------------------ 포트폴리오 */
+
+    function renderPortfolio() {
+        panel('portfolio').innerHTML = `
+            <p class="mypage-empty">
+                포트폴리오 계산기는 아직 준비 중입니다. 엑셀/CSV 파일을 업로드하면 바로
+                평가해주는 기능이 이 탭에 들어올 예정입니다.
+            </p>`;
+    }
+
+    /* ------------------------------------------------------------ 개인정보 */
+
+    async function renderAccount() {
+        const el = panel('account');
+        el.innerHTML = '<p class="mypage-empty">불러오는 중…</p>';
+        const token = renderToken;
+        let profile = null;
+        try {
+            profile = await window.Auth.myProfile();
+        } catch (err) {
+            if (token !== renderToken) return;
+            el.innerHTML = `<p class="mypage-empty">불러오지 못했습니다: ${esc(err.message)}</p>`;
+            return;
+        }
+        if (token !== renderToken || !profile) return;
+
+        el.innerHTML = `
+            <p class="mypage-section-title">계정 정보</p>
+            <div class="mypage-field">
+                <label>이메일 (변경 불가)</label>
+                <input type="text" value="${esc(profile.email)}" disabled>
+            </div>
+            <div class="mypage-field">
+                <label>회원번호</label>
+                <input type="text" value="#${esc(profile.member_no)}" disabled>
+            </div>
+            <div class="mypage-field">
+                <label>닉네임</label>
+                <input type="text" id="mypage-nickname" value="${esc(profile.nickname || '')}" placeholder="닉네임 미설정" maxlength="30">
+            </div>
+            <button type="button" class="mypage-btn" id="mypage-save-nickname">닉네임 저장</button>
+            <p class="mypage-status hidden" id="mypage-nickname-status"></p>
+
+            <p class="mypage-section-title">비밀번호 변경</p>
+            <div class="mypage-field">
+                <label>새 비밀번호</label>
+                <input type="password" id="mypage-new-password" minlength="6" autocomplete="new-password">
+            </div>
+            <div class="mypage-field">
+                <label>새 비밀번호 확인</label>
+                <input type="password" id="mypage-new-password-confirm" minlength="6" autocomplete="new-password">
+            </div>
+            <button type="button" class="mypage-btn" id="mypage-save-password">비밀번호 변경</button>
+            <p class="mypage-status hidden" id="mypage-password-status"></p>
+
+            <p class="mypage-section-title">회원 탈퇴</p>
+            <p class="mypage-empty">회원 탈퇴 기능은 준비 중입니다. 필요하시면 문의해주세요.</p>
+        `;
+
+        const nicknameStatus = el.querySelector('#mypage-nickname-status');
+        el.querySelector('#mypage-save-nickname').addEventListener('click', async (e) => {
+            const btn = e.currentTarget;
+            const value = el.querySelector('#mypage-nickname').value.trim();
+            btn.disabled = true;
+            nicknameStatus.className = 'mypage-status hidden';
+            try {
+                await window.Auth.updateNickname(value || null);
+                nicknameStatus.textContent = '저장했습니다.';
+                nicknameStatus.className = 'mypage-status is-ok';
+            } catch (err) {
+                nicknameStatus.textContent = err.message || '저장하지 못했습니다.';
+                nicknameStatus.className = 'mypage-status is-error';
+            } finally {
+                btn.disabled = false;
+            }
+        });
+
+        const passwordStatus = el.querySelector('#mypage-password-status');
+        el.querySelector('#mypage-save-password').addEventListener('click', async (e) => {
+            const btn = e.currentTarget;
+            const pw = el.querySelector('#mypage-new-password').value;
+            const pwConfirm = el.querySelector('#mypage-new-password-confirm').value;
+            passwordStatus.className = 'mypage-status hidden';
+            if (pw.length < 6) {
+                passwordStatus.textContent = '6자 이상 입력해주세요.';
+                passwordStatus.className = 'mypage-status is-error';
+                return;
+            }
+            if (pw !== pwConfirm) {
+                passwordStatus.textContent = '비밀번호가 서로 다릅니다.';
+                passwordStatus.className = 'mypage-status is-error';
+                return;
+            }
+            btn.disabled = true;
+            try {
+                await window.Auth.changePassword(pw);
+                el.querySelector('#mypage-new-password').value = '';
+                el.querySelector('#mypage-new-password-confirm').value = '';
+                passwordStatus.textContent = '변경했습니다.';
+                passwordStatus.className = 'mypage-status is-ok';
+            } catch (err) {
+                passwordStatus.textContent = err.message || '변경하지 못했습니다.';
+                passwordStatus.className = 'mypage-status is-error';
+            } finally {
+                btn.disabled = false;
+            }
+        });
+    }
+
+    /* --------------------------------------------------------------- 진입 */
+
+    function render(_target, surface) {
+        if (!surface) return;
+        renderToken += 1;
+        loaded.clear();
+        host = surface;
+        surface.classList.remove('hidden');
+        surface.innerHTML = shellHtml();
+
+        const user = window.Auth?.currentUser?.();
+        surface.querySelector('#mypage-identity').textContent = user
+            ? user.email
+            : '로그인이 필요합니다.';
+
+        if (!user) {
+            panel('favorites').classList.remove('hidden');
+            panel('favorites').innerHTML = `
+                <p class="mypage-empty">마이페이지를 이용하려면 로그인해주세요.</p>
+                <button type="button" class="mypage-btn" id="mypage-login-btn">로그인 / 회원가입</button>`;
+            surface.querySelector('#mypage-login-btn').addEventListener('click', () => window.Auth.openModal('signin'));
+            return;
+        }
+
+        surface.querySelectorAll('.mypage-tab').forEach((btn) => {
+            btn.addEventListener('click', () => setActiveTab(btn.dataset.tab));
+        });
+        setActiveTab('favorites');
+
+        // A login/logout elsewhere while this screen is open should not
+        // leave a stale signed-out (or wrong account's) view up.
+        if (!authSubscribed) {
+            authSubscribed = true;
+            window.Auth?.onChange?.(() => {
+                if (host === surface) render(_target, surface);
+            });
+        }
+    }
+
+    let authSubscribed = false;
+
+    function unmount(surface) {
+        if (!surface) return;
+        renderToken += 1;
+        surface.innerHTML = '';
+        host = null;
+    }
+
+    window.MyPage = { render, unmount };
+})();

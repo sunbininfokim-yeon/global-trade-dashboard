@@ -215,6 +215,7 @@ const Auth = (() => {
         const container = document.getElementById('auth-container');
         if (!container) return;
         const user = currentUser();
+        document.getElementById('mypage-nav-item')?.classList.toggle('hidden', !user);
         if (user) {
             container.innerHTML = `
                 <span class="auth-email" title="${user.email}">${user.email}</span>
