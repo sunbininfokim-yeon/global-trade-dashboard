@@ -52,6 +52,7 @@ jobs:
       SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
       SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
       GEMINI_API_KEY: ${{ secrets.AI_STUDIO_API_KEY }}
+      RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
       # Scheduled work tracks changes, and automatically continues an already
       # started bootstrap cursor until it is complete.
       SYNC_MODE: ${{ inputs.congress_mode || 'incremental' }}
@@ -78,6 +79,7 @@ jobs:
           node --check scripts/sync-federal-register.js
           node --check scripts/sync-public-laws.js
           node --check scripts/sync-us-code.js
+          node --check scripts/notify-favorites.js
 
       - name: Sync Congress.gov bills
         run: node scripts/sync-congress.js
@@ -93,3 +95,7 @@ jobs:
       - name: Sync Public Law index
         if: ${{ !cancelled() }}
         run: node scripts/sync-public-laws.js
+
+      - name: Notify favorited bill/EO changes
+        if: ${{ !cancelled() }}
+        run: node scripts/notify-favorites.js
