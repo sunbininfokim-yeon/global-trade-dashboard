@@ -118,6 +118,11 @@ def _micro() -> dict:
 
 
 class TestDerivativesHistory(unittest.TestCase):
+    def test_direction_record_skips_one_bad_ratio_without_raising(self):
+        micro = _micro()
+        micro["market_letf_derivatives_ratios"]["levered_inverse_etf_tv_over_kospi_cash_tv_pct"] = None
+        self.assertIsNone(direction_record_from_micro(micro))
+
     def test_snapshot_records_keep_actual_dates_and_fields(self):
         activity = activity_record_from_board(_board())
         direction = direction_record_from_micro(_micro())

@@ -220,7 +220,13 @@ def direction_record_from_micro(snapshot: dict[str, Any]) -> dict[str, Any] | No
             for direction in DIRECTIONS
         },
     }
-    validate_direction_record(record)
+    # A category source can be unavailable while the rest of the daily board
+    # is sound.  Skip only this history series rather than aborting the daily
+    # append job (and thereby losing derivatives activity and stock LETF rows).
+    try:
+        validate_direction_record(record)
+    except HistoryValidationError:
+        return None
     return record
 
 

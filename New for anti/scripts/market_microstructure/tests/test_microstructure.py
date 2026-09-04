@@ -267,6 +267,29 @@ class TestSnapshot(unittest.TestCase):
         self.assertEqual(out["by_direction"]["inverse_2x"]["n_products"], 0)
         self.assertEqual(out["by_direction"]["gobus_inverse_2x"]["share_of_kospi_tv_pct"], 0.0)
 
+    def test_zeroed_fdr_turnover_is_unavailable_not_observed(self):
+        import pandas as pd
+
+        from fetch_kr_public_extras import fetch_letf_category_share
+
+        etfs = pd.DataFrame([
+            {"Symbol": "A", "Name": "KODEX 레버리지", "Amount": 0, "MarCap": 10},
+            {"Symbol": "B", "Name": "KODEX 인버스", "Amount": 0, "MarCap": 5},
+        ])
+        kospi = pd.DataFrame([{"Amount": 0}])
+        fake_fdr = SimpleNamespace(StockListing=lambda market: etfs if market == "ETF/KR" else kospi)
+        with patch.dict(sys.modules, {"FinanceDataReader": fake_fdr}):
+            with self.assertRaisesRegex(RuntimeError, "non-positive turnover"):
+                fetch_letf_category_share()
+
+    def test_missing_letf_category_keeps_nullable_direction_contract(self):
+        day = json.loads((ROOT / "tests/fixtures/demo_day.json").read_text(encoding="utf-8"))
+        day["public_extras"] = {"letf_category_share": None}
+        snapshot = build_snapshot(day)
+        directions = snapshot["market_letf_derivatives_ratios"]["by_direction"]
+        self.assertEqual(set(directions), {"long", "inverse", "inverse_2x", "gobus_inverse_2x"})
+        self.assertIsNone(directions["long"]["trading_value_krw"])
+
     def test_public_extras_in_snapshot_from_fixture(self):
         day = json.loads((ROOT / "tests/fixtures/demo_day.json").read_text(encoding="utf-8"))
         extras_path = ROOT / "tests/fixtures/public_extras.json"
