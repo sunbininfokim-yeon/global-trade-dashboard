@@ -2209,19 +2209,43 @@ const mmNightBaseLayers = () => {
 const MM_FILL_LAT = 20;
 const MM_FILL_LON = 10;
 
-const mmFillViewState = () => {
+// 판을 꽉 채우는 최소 줌. 웹 메르카토르의 세계는 한 변 512px 의 정사각형이고
+// 줌 한 단계마다 두 배가 되므로, 두 변에 대한 로그 중 큰 쪽이 답이다.
+const mmFillZoom = () => {
     const el = (typeof mapContainer !== 'undefined' && mapContainer) || document.getElementById('map');
     const w = (el && el.clientWidth) || window.innerWidth;
     const h = (el && el.clientHeight) || window.innerHeight;
-    // 웹 메르카토르의 세계는 한 변 512px 의 정사각형이고, 줌 한 단계마다 두 배가
-    // 된다. 그래서 채우기 줌은 두 변에 대한 로그 중 큰 쪽.
-    const zoom = Math.max(Math.log2(w / 512), Math.log2(h / 512));
-    return clampGlobeView({
-        ...currentViewState,
-        longitude: MM_FILL_LON,
-        latitude: MM_FILL_LAT,
-        zoom,
-    });
+    return Math.max(Math.log2(w / 512), Math.log2(h / 512));
+};
+
+const mmFillViewState = () => ({
+    ...currentViewState,
+    longitude: MM_FILL_LON,
+    latitude: MM_FILL_LAT,
+    zoom: mmFillZoom(),
+    pitch: 0,
+    bearing: 0,
+    minZoom: mmFillZoom(),
+    maxZoom: MAP_MAX_ZOOM,
+});
+
+// 휠·드래그로 들어온 새 시점. 이걸 받아 두지 않으면 deck 은 통제된 viewState 를
+// 그대로 다시 그려서, 확대·이동이 통째로 먹지 않는다 (2026-09-04 확인 -- 매크로
+// 지도만 onViewStateChange 가 없었다).
+//
+// 축소는 판을 채우는 줌에서 멈춘다. 그 아래로 나가면 다시 검은 여백이 생긴다.
+const mmViewStateChange = ({ viewState }) => {
+    const fill = mmFillZoom();
+    currentViewState = {
+        ...viewState,
+        zoom: Math.min(MAP_MAX_ZOOM, Math.max(fill, viewState.zoom)),
+        latitude: Math.min(80, Math.max(-70, viewState.latitude)),
+        pitch: 0,
+        bearing: 0,
+        minZoom: fill,
+        maxZoom: MAP_MAX_ZOOM,
+    };
+    deckgl.setProps({ viewState: currentViewState });
 };
 
 // 창 크기가 바뀌면 여백이 다시 생긴다. 매크로 화면에 있을 때만 다시 맞춘다.
@@ -2250,6 +2274,7 @@ const mmDrawMap = () => {
         views: [new MapView({ id: 'map', controller: true, repeat: false })],
         viewState: currentViewState,
         controller: { dragRotate: false, touchRotate: false },
+        onViewStateChange: mmViewStateChange,
         onHover: null,
         getTooltip: ({ object }) => object && object.name_ko
             ? { html: `<div class="mm-tip">${finEsc(object.name_ko)}${object.benchmark ? ' · 벤치마크' : ''}</div>` }
