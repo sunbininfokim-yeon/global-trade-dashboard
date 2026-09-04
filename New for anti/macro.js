@@ -2202,15 +2202,26 @@ const mmNightBaseLayers = () => {
     return layers;
 };
 
+// 휠·드래그로 들어온 새 시점. 이걸 받아 두지 않으면 deck 은 통제된 viewState 를
+// 그대로 다시 그려서, 확대·이동이 통째로 먹지 않는다 (2026-09-04 확인 -- 매크로
+// 지도만 onViewStateChange 가 없었다). 지도가 좌우로 이어져 있으므로 줌 범위는
+// 다른 화면과 같은 값을 쓴다.
+const mmViewStateChange = ({ viewState }) => {
+    currentViewState = clampGlobeView(viewState);
+    deckgl.setProps({ viewState: currentViewState });
+};
+
 const mmDrawMap = () => {
     const rows = (MM_INDEX?.countries_index || []).filter((c) => c.coords);
     const night = mmNightEnabled();
     deckgl.setProps({
-        // 대륙은 한 번씩만 나온다. repeat 을 켜면 지도가 좌우로 무한히 이어져
-        // 같은 대륙이 여러 번 나오는데, 야간광 위에서는 그게 특히 어지럽다.
-        views: [new MapView({ id: 'map', controller: true, repeat: false })],
+        // 지도를 좌우로 이어 붙인다. 한 번 꺼 봤더니(대륙을 한 번씩만) 세계가
+        // 판 가운데 작게 뜨고 좌우가 검게 남았다 -- 사용자가 이어 붙인 쪽을
+        // 택했다 (2026-09-04). 이어 붙이면 어느 줌에서도 가로가 꽉 찬다.
+        views: [new MapView({ id: 'map', controller: true, repeat: true })],
         viewState: currentViewState,
         controller: { dragRotate: false, touchRotate: false },
+        onViewStateChange: mmViewStateChange,
         onHover: null,
         getTooltip: ({ object }) => object && object.name_ko
             ? { html: `<div class="mm-tip">${finEsc(object.name_ko)}${object.benchmark ? ' · 벤치마크' : ''}</div>` }
