@@ -2064,11 +2064,18 @@ const mmNightTileData = async ({ index, signal }) => {
     return mmLoadTileImage(MM_NIGHT_PROXY_URL(z, y, x), signal);
 };
 const MM_NIGHT_EXTENT = [-180, -58, 180, 84];
-// 남극을 잘라 낸 자리(-58°)에서 위성 사진이 끊긴다. 그 아래를 거의 검정으로 두면
-// 가로줄이 하나 그어진 것처럼 보인다 (2026-09-04). 바다색을 사진 속 바다에
-// 맞추고, 경계에는 아래로 사라지는 페이드를 한 겹 깔아 이음매를 지운다.
-const MM_NIGHT_SEA = [16, 20, 48, 255];
-const MM_NIGHT_FADE_TO = -76;        // 페이드가 완전히 사라지는 위도
+
+// 남극을 잘라 낸 자리(-58°)에서 위성 사진이 끊긴다. 그 아래 바다색이 사진 속
+// 바다와 조금이라도 다르면 가로줄이 하나 그어진 것처럼 보인다. 두 번은 눈대중으로
+// 색을 골라 봤고 두 번 다 어긋났다 (2026-09-04). 추측을 그만두고 실제 타일에서
+// 읽는다: 남빙양 한복판 타일의 픽셀을 재서 그 색을 그대로 바다로 쓴다.
+//
+// 기본값은 읽기 전에 쓰는 값이다. 측정이 끝나면 덮인다.
+let MM_NIGHT_SEA = [16, 20, 48, 255];
+// 페이드는 사진 쪽을 지운다. 마지막 3°에 걸쳐 사진을 바다색으로 덮어 두면,
+// 색이 조금 어긋나도 경계가 선으로 보이지 않는다. 3° 위(-55°)면 티에라델푸에고
+// 남단만 살짝 걸린다 -- 더 넓히면 남미 끝의 불빛이 지워진다.
+const MM_NIGHT_FADE_FROM = -55;
 
 // 타일이 끝내 오지 않을 때(오프라인·GIBS 장애·CSP)를 위한 스위치. 실패가 쌓이면
 // 벡터 실루엣으로 내려앉고, 지도는 여전히 클릭 가능한 상태로 남는다.
@@ -2135,13 +2142,50 @@ const mmNightFadeImage = () => {
     const ctx = cv.getContext('2d');
     const [r, g, b] = MM_NIGHT_SEA;
     const grad = ctx.createLinearGradient(0, 0, 0, 128);
-    // 위(사진이 끊기는 자리)는 바다색으로 덮고, 아래로 갈수록 사라진다.
-    grad.addColorStop(0, `rgba(${r}, ${g}, ${b}, 1)`);
-    grad.addColorStop(1, `rgba(${r}, ${g}, ${b}, 0)`);
+    // 위는 투명(사진 그대로), 아래로 갈수록 바다색으로 덮인다. 경계에 닿을 때는
+    // 이미 바다색이므로, 그 아래 바다와 이어져 선이 생기지 않는다.
+    grad.addColorStop(0, `rgba(${r}, ${g}, ${b}, 0)`);
+    grad.addColorStop(1, `rgba(${r}, ${g}, ${b}, 1)`);
     ctx.fillStyle = grad;
     ctx.fillRect(0, 0, 1, 128);
     MM_NIGHT_FADE_IMG = cv;
     return cv;
+};
+
+// 남빙양 한복판(z2 · 남태평양) 타일에서 바다 픽셀을 읽어 바다색을 맞춘다.
+// 화면에는 가산 합성이 한 겹 더 얹히므로 그만큼 곱해 준다 -- 그래야 사진 속
+// 바다와 사진 밖 바다가 같은 색이 된다.
+let MM_SEA_CALIBRATED = false;
+const mmCalibrateSea = async () => {
+    if (MM_SEA_CALIBRATED) return;
+    MM_SEA_CALIBRATED = true;
+    try {
+        const img = await mmLoadTileImage(MM_NIGHT_PROXY_URL(2, 2, 0));
+        const cv = document.createElement('canvas');
+        cv.width = 256;
+        cv.height = 256;
+        const ctx = cv.getContext('2d', { willReadFrequently: true });
+        ctx.drawImage(img, 0, 0, 256, 256);
+        // 타일 왼쪽 아래 = 남위 50°대의 남태평양. 육지가 없는 자리다.
+        const d = ctx.getImageData(4, 232, 24, 20).data;
+        let r = 0, g = 0, b = 0, n = 0;
+        for (let i = 0; i < d.length; i += 4) { r += d[i]; g += d[i + 1]; b += d[i + 2]; n += 1; }
+        const k = 1 + MM_NIGHT_BOOST;
+        const px = (v) => Math.round(Math.min(255, (v / n) * k));
+        MM_NIGHT_SEA = [px(r), px(g), px(b), 255];
+        MM_NIGHT_FADE_IMG = null;       // 새 색으로 다시 만든다
+        // 캔버스 뒤 배경(사진도 바다 사각형도 없는 자리)까지 같은 색으로.
+        const hex = `#${MM_NIGHT_SEA.slice(0, 3).map((v) => v.toString(16).padStart(2, '0')).join('')}`;
+        const host = (typeof mapContainer !== 'undefined' && mapContainer) || document.getElementById('map');
+        if (host) {
+            host.style.background = hex;
+            const cnv = host.querySelector('canvas');
+            if (cnv) cnv.style.background = hex;
+        }
+        if (document.body.classList.contains('macro-mode')) mmDrawMap();
+    } catch (_) {
+        // 타일을 못 읽으면 기본값 그대로 간다. 경계가 약간 보일 뿐이다.
+    }
 };
 
 /**
@@ -2181,7 +2225,7 @@ const mmNightBaseLayers = () => {
             layers.push(new deck.BitmapLayer({
                 id: 'macro-night-south-fade',
                 image: mmNightFadeImage(),
-                bounds: [-180, MM_NIGHT_FADE_TO, 180, MM_NIGHT_EXTENT[1]],
+                bounds: [-180, MM_NIGHT_EXTENT[1], 180, MM_NIGHT_FADE_FROM],
                 pickable: false,
             }));
         }
@@ -2337,6 +2381,8 @@ const renderMacroMonitor = async () => {
     }
 
     currentViewState = clampGlobeView({ ...currentViewState, zoom: GLOBE_ZOOM });
+    // 바다색은 실제 타일에서 잰다 (한 번). 실패해도 기본값으로 그려진다.
+    if (mmNightEnabled()) mmCalibrateSea();
 
     if (!MM_INDEX) {
         host.innerHTML = `<div class="mm-hint">매크로 지표를 받는 중…</div>`;
