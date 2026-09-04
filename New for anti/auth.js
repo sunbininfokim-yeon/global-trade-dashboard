@@ -106,6 +106,38 @@ const Auth = (() => {
         return (data || []).map((r) => r.source_id);
     }
 
+    function escSourceLabel(value) {
+        return String(value ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    }
+
+    // sources: [{source_id, agency_ko}], deduped from commodity_reports_v1.json's
+    // own items -- never a fixed list, so a source added or dropped from the
+    // pipeline shows up (or disappears) here without a UI change.
+    function commoditySourceFilterHtml(sources, disabledIds) {
+        const disabled = new Set(disabledIds);
+        return sources.map(({ source_id, agency_ko }) => `
+            <label class="source-filter-row">
+                <input type="checkbox" class="source-filter-checkbox" data-source-id="${escSourceLabel(source_id)}" ${disabled.has(source_id) ? '' : 'checked'}>
+                <span class="source-filter-label">${escSourceLabel(agency_ko || source_id)}</span>
+            </label>`).join('');
+    }
+
+    // Attach once to the list's container; delegates so re-rendering the
+    // rows (e.g. after commoditySourceFilterHtml runs again) never leaves a
+    // stale listener on a removed checkbox.
+    function bindCommoditySourceFilter(container) {
+        container.addEventListener('change', async (e) => {
+            const checkbox = e.target.closest('.source-filter-checkbox');
+            if (!checkbox) return;
+            try {
+                await setCommoditySourceEnabled(checkbox.dataset.sourceId, checkbox.checked);
+            } catch (err) {
+                checkbox.checked = !checkbox.checked; // roll back the click on a failed write
+                console.error('Failed to update commodity source preference:', err);
+            }
+        });
+    }
+
     async function setCommoditySourceEnabled(sourceId, enabled) {
         const user = currentUser();
         if (!user) throw new Error('로그인이 필요합니다.');
@@ -232,6 +264,7 @@ const Auth = (() => {
         currentUser, onChange, signUp, signIn, signOut, openModal,
         listFavorites, addFavorite, removeFavorite,
         listDisabledCommoditySources, setCommoditySourceEnabled,
+        commoditySourceFilterHtml, bindCommoditySourceFilter,
     };
 })();
 
