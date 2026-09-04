@@ -2202,76 +2202,23 @@ const mmNightBaseLayers = () => {
     return layers;
 };
 
-// 화면을 꽉 채우는 시점. 지도 판보다 세계가 작으면 위·아래로 검은 여백이 남는데
-// (2026-09-04 화면), 야간광을 배경으로 쓰는 화면에서 그 여백은 그냥 빈 자리다.
-// 가로·세로 중 더 큰 줌을 골라 '커버'로 맞춘다 -- 비율은 그대로 두고 넘치는 쪽만
-// 잘린다. 위도 20°를 중심에 두는 건 남북 대륙이 함께 들어오는 자리이기 때문.
-const MM_FILL_LAT = 20;
-const MM_FILL_LON = 10;
-
-// 판을 꽉 채우는 최소 줌. 웹 메르카토르의 세계는 한 변 512px 의 정사각형이고
-// 줌 한 단계마다 두 배가 되므로, 두 변에 대한 로그 중 큰 쪽이 답이다.
-const mmFillZoom = () => {
-    const el = (typeof mapContainer !== 'undefined' && mapContainer) || document.getElementById('map');
-    const w = (el && el.clientWidth) || window.innerWidth;
-    const h = (el && el.clientHeight) || window.innerHeight;
-    return Math.max(Math.log2(w / 512), Math.log2(h / 512));
-};
-
-const mmFillViewState = () => ({
-    ...currentViewState,
-    longitude: MM_FILL_LON,
-    latitude: MM_FILL_LAT,
-    zoom: mmFillZoom(),
-    pitch: 0,
-    bearing: 0,
-    minZoom: mmFillZoom(),
-    maxZoom: MAP_MAX_ZOOM,
-});
-
 // 휠·드래그로 들어온 새 시점. 이걸 받아 두지 않으면 deck 은 통제된 viewState 를
 // 그대로 다시 그려서, 확대·이동이 통째로 먹지 않는다 (2026-09-04 확인 -- 매크로
-// 지도만 onViewStateChange 가 없었다).
-//
-// 축소는 판을 채우는 줌에서 멈춘다. 그 아래로 나가면 다시 검은 여백이 생긴다.
+// 지도만 onViewStateChange 가 없었다). 지도가 좌우로 이어져 있으므로 줌 범위는
+// 다른 화면과 같은 값을 쓴다.
 const mmViewStateChange = ({ viewState }) => {
-    const fill = mmFillZoom();
-    currentViewState = {
-        ...viewState,
-        zoom: Math.min(MAP_MAX_ZOOM, Math.max(fill, viewState.zoom)),
-        latitude: Math.min(80, Math.max(-70, viewState.latitude)),
-        pitch: 0,
-        bearing: 0,
-        minZoom: fill,
-        maxZoom: MAP_MAX_ZOOM,
-    };
+    currentViewState = clampGlobeView(viewState);
     deckgl.setProps({ viewState: currentViewState });
-};
-
-// 창 크기가 바뀌면 여백이 다시 생긴다. 매크로 화면에 있을 때만 다시 맞춘다.
-let MM_RESIZE_WIRED = false;
-let MM_RESIZE_TIMER = null;
-const mmWireResize = () => {
-    if (MM_RESIZE_WIRED) return;
-    MM_RESIZE_WIRED = true;
-    window.addEventListener('resize', () => {
-        if (!document.body.classList.contains('macro-mode')) return;
-        clearTimeout(MM_RESIZE_TIMER);
-        MM_RESIZE_TIMER = setTimeout(() => {
-            if (!document.body.classList.contains('macro-mode')) return;
-            currentViewState = mmFillViewState();
-            mmDrawMap();
-        }, 150);
-    });
 };
 
 const mmDrawMap = () => {
     const rows = (MM_INDEX?.countries_index || []).filter((c) => c.coords);
     const night = mmNightEnabled();
     deckgl.setProps({
-        // 대륙은 한 번씩만 나온다. repeat 을 켜면 지도가 좌우로 무한히 이어져
-        // 같은 대륙이 여러 번 나오는데, 야간광 위에서는 그게 특히 어지럽다.
-        views: [new MapView({ id: 'map', controller: true, repeat: false })],
+        // 지도를 좌우로 이어 붙인다. 한 번 꺼 봤더니(대륙을 한 번씩만) 세계가
+        // 판 가운데 작게 뜨고 좌우가 검게 남았다 -- 사용자가 이어 붙인 쪽을
+        // 택했다 (2026-09-04). 이어 붙이면 어느 줌에서도 가로가 꽉 찬다.
+        views: [new MapView({ id: 'map', controller: true, repeat: true })],
         viewState: currentViewState,
         controller: { dragRotate: false, touchRotate: false },
         onViewStateChange: mmViewStateChange,
@@ -2389,8 +2336,7 @@ const renderMacroMonitor = async () => {
         });
     }
 
-    currentViewState = mmFillViewState();
-    mmWireResize();
+    currentViewState = clampGlobeView({ ...currentViewState, zoom: GLOBE_ZOOM });
 
     if (!MM_INDEX) {
         host.innerHTML = `<div class="mm-hint">매크로 지표를 받는 중…</div>`;
