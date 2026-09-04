@@ -23,6 +23,12 @@ __pycache__/
 # wrangler dev's local secrets file (DART_API_KEY etc.) -- never committed.
 .dev.vars
 
+# Local-only scripts/*.js secrets (SUPABASE_SERVICE_ROLE_KEY, CONGRESS_API_KEY).
+# scripts/lib/load-env.js reads this so an operator never exports by hand.
+# Copy .env.example to make one -- never commit the copy.
+.env.local
+.env
+
 # 로컬 학습 캐시 사본. DATA_LAYOUT.md ① 단계 — 재실행하면 복원된다.
 # 508개 파일 508MB 가 PR #4 에 그대로 실려 있었다 (전체 diff 의 3.3M 줄).
 모델링 결과/

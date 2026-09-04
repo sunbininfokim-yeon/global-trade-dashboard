@@ -1,5 +1,10 @@
 'use strict';
 
+// Fills in any of SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY / CONGRESS_API_KEY
+// (etc.) missing from process.env, from a gitignored .env.local file, before
+// any of this module's requireEnv() checks run. See docs/local-dev-setup.md.
+require('./load-env').loadLocalEnv();
+
 const RETRYABLE_STATUS = new Set([408, 425, 429, 500, 502, 503, 504]);
 
 function sleep(ms) {
