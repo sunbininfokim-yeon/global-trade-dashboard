@@ -605,6 +605,34 @@
     return bill.congress_number ? `${bill.congress_number}대 · ${cite}` : cite;
   };
 
+  // Compact card for a favorited bill (My Page favorites list), reusing the
+  // same stage rail and vote data as the full bill detail panel below so the
+  // two views can never disagree about what "next stage" means. There is no
+  // curated short/abbreviated title anywhere in the schema -- bill.title is
+  // the official long title -- so this shows that title as-is rather than
+  // fabricate an abbreviation.
+  function favoriteBillCardHtml(bill) {
+    const currentIndex = STAGE_FLOW.findIndex((step) => step.stages.includes(bill.current_stage));
+    const terminalLabel = TERMINAL_LABELS[bill.current_stage];
+    const currentLabel = terminalLabel || (currentIndex >= 0 ? STAGE_FLOW[currentIndex].label : stageLabel(bill.current_stage));
+    const nextLabel = !terminalLabel && currentIndex >= 0 && currentIndex < STAGE_FLOW.length - 1
+      ? STAGE_FLOW[currentIndex + 1].label
+      : null;
+
+    const votes = bill.bill_votes || [];
+    const lastVote = votes[votes.length - 1];
+    const voteText = lastVote ? `투표 찬 ${esc(lastVote.yea_count)}명 반 ${esc(lastVote.nay_count)}명` : null;
+
+    return `<div class="policy-fav-bill-card">
+      <div class="policy-fav-bill-title">${esc(bill.title)}</div>
+      <div class="policy-fav-bill-meta">
+        <span class="policy-fav-bill-code">${esc(billNumberLabel(bill))}</span>
+        <span class="policy-fav-bill-stage">${esc(currentLabel)}${nextLabel ? ` → ${esc(nextLabel)}` : ''}</span>
+        ${voteText ? `<span class="policy-fav-bill-votes">${voteText}</span>` : ''}
+      </div>
+    </div>`;
+  }
+
   const actionRow = (a) => `
     <li class="policy-action">
       <span class="policy-action-date">${esc(a.action_date || '')}</span>
@@ -1122,5 +1150,17 @@
 
   // app.js routes the 미국 정책 nav targets through `window.USPolicy`; a bare
   // `const` in a classic script never reaches window on its own.
-  window.USPolicy = { render, unmount };
+  //
+  // loadBillById/favoriteBillCardHtml are for My Page's favorites list: a
+  // favorited bill's detail lives behind /api/us (bills carry no browser RLS
+  // policy -- see supabase/migrations, service_role only), so My Page cannot
+  // query Supabase directly for it the way it does for the user_favorites
+  // row itself. This reuses the exact same API path and stage/vote
+  // formatting as the bill detail panel above instead of a second copy.
+  window.USPolicy = {
+    render,
+    unmount,
+    loadBillById: (billId) => api(`/congress/bills/${encodeURIComponent(billId)}`),
+    favoriteBillCardHtml,
+  };
 })();
