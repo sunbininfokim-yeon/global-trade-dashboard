@@ -18,7 +18,9 @@ const RESOURCE = EO_RELATION_BACKFILL
   ? 'federalregister.gov:eo-relationships:bootstrap'
   : EO_BACKFILL ? 'federalregister.gov:executive-orders:bootstrap' : 'federalregister.gov:documents';
 const MAX_DOCUMENTS = Number(process.env.MAX_FR_DOCUMENTS || (EO_BACKFILL ? 100 : EO_RELATION_BACKFILL ? 25 : 50));
-const CONCURRENCY = Number(process.env.FR_DETAIL_CONCURRENCY || 4);
+// EO 관계의 역사 백필은 Federal Register 상세 문서를 많이 읽는다. 기본값을
+// 단일 요청으로 낮춰 공공 API의 자동 차단을 피한다. 일반 일일 동기화는 기존 4개를 유지한다.
+const CONCURRENCY = Number(process.env.FR_DETAIL_CONCURRENCY || (EO_RELATION_BACKFILL ? 1 : 4));
 // Historical EO metadata is useful without embeddings. Make Gemini opt-in for
 // the historical pass so a 1994+ backfill does not unexpectedly consume quota.
 const SKIP_EMBEDDINGS = process.env.SKIP_EMBEDDINGS === 'true'
@@ -28,7 +30,9 @@ const MAX_EMBEDDINGS = Number(process.env.MAX_EMBEDDINGS || 25);
 const EO_BACKFILL_FROM_DATE = process.env.EO_BACKFILL_FROM_DATE || '1994-01-01';
 const EO_BACKFILL_TO_DATE = process.env.EO_BACKFILL_TO_DATE || new Date().toISOString().slice(0, 10);
 const EO_BACKFILL_PAGE_SIZE = Math.min(1_000, positiveInteger(process.env.EO_BACKFILL_PAGE_SIZE, 500));
-const EO_RELATION_PAGE_SIZE = Math.min(100, positiveInteger(process.env.MAX_EO_RELATION_DOCUMENTS, 25));
+// 관계 백필은 한 EO의 후보 문서가 많을 수 있으므로, 기본 페이지도 작게 유지한다.
+const EO_RELATION_PAGE_SIZE = Math.min(100, positiveInteger(process.env.MAX_EO_RELATION_DOCUMENTS, 5));
+const EO_RELATION_DETAIL_DELAY_MS = Math.min(60_000, positiveInteger(process.env.EO_RELATION_DETAIL_DELAY_MS, 1_000));
 // A local backfill should make meaningful progress without requiring hundreds
 // of manual restarts. Each finished page is checkpointed independently, so a
 // bounded multi-page run remains safe to resume after an interruption.
@@ -188,10 +192,25 @@ async function documentBundle(item) {
   return { item, document: { ...item, ...detail } };
 }
 
+function isFederalRegisterIpBlock(error) {
+  return /HTTP 403[\s\S]*IP address has been blocked/i.test(String(error?.message || ''));
+}
+
+function pause(milliseconds) {
+  return new Promise((resolve) => setTimeout(resolve, milliseconds));
+}
+
 async function relationDocumentBundle(item) {
   try {
+    // 관계 백필은 직렬 요청과 짧은 간격을 기본으로 해 Federal Register에 부담을 주지 않는다.
+    await pause(EO_RELATION_DETAIL_DELAY_MS);
     return await documentBundle(item);
   } catch (error) {
+    // IP 차단은 개별 문서 오류가 아니다. 이 예외를 페이지까지 전파해 체크포인트를
+    // 그대로 보존하고, 차단이 풀린 뒤 같은 페이지부터 다시 시도하게 한다.
+    if (isFederalRegisterIpBlock(error)) {
+      throw new Error('Federal Register IP blocked (HTTP 403). Backfill stopped without advancing its checkpoint; wait before retrying.');
+    }
     // A transient failure for one candidate must not discard the page's other
     // verified links or prevent its checkpoint from advancing.
     console.warn(`EO relationship backfill: skipped Federal Register document ${item.document_number}: ${error.message}`);
@@ -372,6 +391,9 @@ async function runEoRelationBackfill() {
           const detail = await get(`/documents/${encodeURIComponent(target.document_number)}.json`, {}, true) || null;
           if (detail) authorityLinks = await saveEoAuthorities(target.eo_number, detail);
         } catch (error) {
+          if (isFederalRegisterIpBlock(error)) {
+            throw new Error('Federal Register IP blocked (HTTP 403). Backfill stopped without advancing its checkpoint; wait before retrying.');
+          }
           console.warn(`EO relationship backfill: skipped authority detail for EO ${target.eo_number}: ${error.message}`);
         }
       }
