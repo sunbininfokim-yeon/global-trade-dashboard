@@ -4693,6 +4693,23 @@ body.macro-night .mm-hint { background: rgba(6, 11, 22, .88); }
 
 .policy-bill-panel.is-compact { background: rgba(30, 41, 59, 0.35); }
 
+/* My Page favorites list -- one bill per card, no stage rail or full vote
+   history (that detail lives one click away on the bill's own screen). */
+.policy-fav-bill-card {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 11px 13px;
+    border: 1px solid rgba(56, 189, 248, 0.1);
+    border-radius: 8px;
+    background: rgba(30, 41, 59, 0.45);
+}
+.policy-fav-bill-title { color: #e2e8f0; font-size: 12.5px; line-height: 1.45; }
+.policy-fav-bill-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; color: #94a3b8; font-size: 11px; }
+.policy-fav-bill-code { color: #cbd5e1; font-weight: 600; }
+.policy-fav-bill-stage { color: #38bdf8; }
+.policy-fav-bill-votes { color: #64748b; }
+
 .policy-bill-meta {
     display: flex;
     flex-wrap: wrap;

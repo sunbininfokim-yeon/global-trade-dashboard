@@ -89,6 +89,40 @@ const Auth = (() => {
         if (error) throw error;
     }
 
+    // --- commodity digest source filter -----------------------------------
+
+    // A row here means that source is turned OFF, not on -- so a user who
+    // never opens this settings screen gets every source by default, and a
+    // source id can't disappear from someone's mail just because the My
+    // Page checkbox list forgot to render it. Build the checkbox list from
+    // commodity_reports_v1.json's own source ids and check every box that
+    // ISN'T in listDisabledCommoditySources().
+    async function listDisabledCommoditySources() {
+        if (!currentUser()) return [];
+        const { data, error } = await client
+            .from('commodity_digest_source_prefs')
+            .select('source_id');
+        if (error) throw error;
+        return (data || []).map((r) => r.source_id);
+    }
+
+    async function setCommoditySourceEnabled(sourceId, enabled) {
+        const user = currentUser();
+        if (!user) throw new Error('로그인이 필요합니다.');
+        if (enabled) {
+            const { error } = await client
+                .from('commodity_digest_source_prefs')
+                .delete()
+                .match({ user_id: user.id, source_id: sourceId });
+            if (error) throw error;
+        } else {
+            const { error } = await client
+                .from('commodity_digest_source_prefs')
+                .upsert({ user_id: user.id, source_id: sourceId });
+            if (error) throw error;
+        }
+    }
+
     // --- UI: nav button + modal -----------------------------------------
 
     function renderAuthButton() {
@@ -197,6 +231,7 @@ const Auth = (() => {
     return {
         currentUser, onChange, signUp, signIn, signOut, openModal,
         listFavorites, addFavorite, removeFavorite,
+        listDisabledCommoditySources, setCommoditySourceEnabled,
     };
 })();
 

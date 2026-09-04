@@ -45,6 +45,19 @@ async function fetchSentReportIds() {
   return new Set(rows.map((row) => `${row.user_id}:${row.report_id}`));
 }
 
+async function fetchDisabledSourcesByUser() {
+  // A row is a source the user turned OFF; absence means every source
+  // stays on (see 20260904_commodity_digest_source_prefs.sql) -- so a user
+  // with no rows here must not be treated as "nothing enabled".
+  const rows = await supabaseGet('commodity_digest_source_prefs', { select: 'user_id,source_id' });
+  const map = new Map();
+  for (const row of rows) {
+    if (!map.has(row.user_id)) map.set(row.user_id, new Set());
+    map.get(row.user_id).add(row.source_id);
+  }
+  return map;
+}
+
 async function fetchProfiles(userIds) {
   if (!userIds.length) return new Map();
   const rows = await supabaseGet('profiles', { select: 'id,email', id: `in.(${userIds.join(',')})` });
@@ -99,13 +112,18 @@ async function run() {
     favoritesByUser.get(fav.user_id).add(fav.item_id);
   }
 
-  const sentIds = await fetchSentReportIds();
+  const [sentIds, disabledSourcesByUser] = await Promise.all([
+    fetchSentReportIds(),
+    fetchDisabledSourcesByUser(),
+  ]);
   const digestByUser = new Map(); // user_id -> Map(commodityKey -> [item])
   const sentInserts = [];
 
   for (const [userId, commodityKeys] of favoritesByUser) {
+    const disabledSources = disabledSourcesByUser.get(userId);
     const seenItemIds = new Set(); // an item tagged with 2 favorited commodities lists once
     for (const item of items) {
+      if (disabledSources && disabledSources.has(item.source_id)) continue;
       const matchedKey = item.commodities.find((c) => commodityKeys.has(c));
       if (!matchedKey || seenItemIds.has(item.id)) continue;
       if (sentIds.has(`${userId}:${item.id}`)) continue;
