@@ -8,7 +8,7 @@ const {
 } = require('./lib/sync-utils');
 const { classifyFederalAgency, federalRegisterParentId } = require('./lib/federal-agency-classifier');
 const { reconcilePublicLawAuthorityLinks } = require('./lib/public-law-links');
-const { saveEoAuthorities } = require('./lib/eo-authorities');
+const { saveOfficialEoTextRelations } = require('./lib/eo-official-relations');
 
 const API_BASE = 'https://www.federalregister.gov/api/v1';
 const EO_BACKFILL = process.env.EO_BACKFILL === 'true';
@@ -264,7 +264,7 @@ async function saveExecutiveOrder(item, document) {
   const previous = (await supabaseGet('executive_orders', { select: 'title,summary,embedding', eo_number: `eq.${number}`, limit: '1' }))?.[0];
   await supabaseUpsert('executive_orders', [row], 'eo_number');
   await saveEoAgencyLinks(number, agencyIds, 'issuing_document', 'official_document_metadata', document.html_url);
-  await saveEoAuthorities(number, document);
+  await saveOfficialEoTextRelations(number, document);
   await queue('eo_number', number, `${row.title}\n${row.summary || ''}`, {
     agency: agencyIds[0] || null,
     executive_order: String(number),
@@ -372,7 +372,10 @@ async function runEoRelationBackfill() {
     page_size: EO_RELATION_PAGE_SIZE, max_pages: EO_RELATION_MAX_PAGES_PER_RUN, max_runtime_ms: EO_RELATION_MAX_RUNTIME_MS,
   });
   const startedAt = Date.now();
-  const totals = { pages: 0, eos: 0, read: 0, written: 0, authorityLinks: 0, regulationLinks: 0, skippedDocuments: 0 };
+  const totals = {
+    pages: 0, eos: 0, read: 0, written: 0,
+    authorityLinks: 0, agencyLinks: 0, regulationLinks: 0, skippedDocuments: 0,
+  };
 
   try {
     while (totals.pages < EO_RELATION_MAX_PAGES_PER_RUN && Date.now() - startedAt < EO_RELATION_MAX_RUNTIME_MS) {
@@ -380,16 +383,21 @@ async function runEoRelationBackfill() {
       if (!target) {
         await updateSyncState(RESOURCE, { ...cursor, complete: true, completed_at: new Date().toISOString() });
         await finishSyncRun(runId, { status: 'succeeded', records_read: totals.read, records_written: totals.written, metadata: { ...totals, cursor } });
-        console.log(`EO relationship backfill history complete: ${totals.pages} pages, ${totals.eos} EOs, ${totals.authorityLinks} authority links, ${totals.regulationLinks} regulation links; ${totals.skippedDocuments} documents skipped.`);
+        console.log(`EO relationship backfill history complete: ${totals.pages} pages, ${totals.eos} EOs, ${totals.authorityLinks} authority links, ${totals.agencyLinks} agency directive links, ${totals.regulationLinks} regulation links; ${totals.skippedDocuments} documents skipped.`);
         return;
       }
 
       const page = positiveInteger(cursor.page);
       let authorityLinks = 0;
+      let agencyLinks = 0;
       if (target.document_number) {
         try {
           const detail = await get(`/documents/${encodeURIComponent(target.document_number)}.json`, {}, true) || null;
-          if (detail) authorityLinks = await saveEoAuthorities(target.eo_number, detail);
+          if (detail) {
+            const relations = await saveOfficialEoTextRelations(target.eo_number, detail);
+            authorityLinks = relations.authorityLinks;
+            agencyLinks = relations.agencyLinks;
+          }
         } catch (error) {
           if (isFederalRegisterIpBlock(error)) {
             throw new Error('Federal Register IP blocked (HTTP 403). Backfill stopped without advancing its checkpoint; wait before retrying.');
@@ -434,9 +442,10 @@ async function runEoRelationBackfill() {
       totals.read += discovery.candidates.length;
       totals.written += written;
       totals.authorityLinks += authorityLinks;
+      totals.agencyLinks += agencyLinks;
       totals.regulationLinks += regulationLinks;
       totals.skippedDocuments += skippedDocuments;
-      console.log(`EO relationship backfill: EO ${target.eo_number}, page ${page}/${discovery.totalPages}; ${authorityLinks} authority links, ${regulationLinks} regulation links, ${skippedDocuments} documents skipped.`);
+      console.log(`EO relationship backfill: EO ${target.eo_number}, page ${page}/${discovery.totalPages}; ${authorityLinks} authority links, ${agencyLinks} agency directive links, ${regulationLinks} regulation links, ${skippedDocuments} documents skipped.`);
       cursor = nextCursor;
     }
 
