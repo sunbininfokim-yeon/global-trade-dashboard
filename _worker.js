@@ -2619,6 +2619,14 @@ async function handleUsPolicy(request, env) {
                 () => usOverview(env));
         }
 
+        // Ops-facing: "how much of each source has been pulled in so far",
+        // not a screen the UI links to. Short TTL so a backfill in progress
+        // shows up quickly on a re-check instead of the full overview hour.
+        if (path === 'coverage') {
+            return await kvCachedJson(env, 'us:coverage:v1', US_TTL.list,
+                () => usCoverage(env));
+        }
+
         if (path === 'congress/bills') {
             const filter = usBillFilter(q);
             return await kvCachedJson(env, `us:bills:v1:${filter.cacheKey}`, US_TTL.list,
@@ -2883,6 +2891,61 @@ async function usCountBy(env, table, column, extra = '') {
 }
 
 const countOf = (map, key) => (map ? (map[key] || 0) : null);
+
+// Total row count for a table (optionally filtered), degrading to null the
+// same way usCountBy does rather than failing the whole coverage screen.
+async function usCountScalar(env, table, filter = '') {
+    try {
+        const query = ['select=*', filter, 'limit=1'].filter(Boolean).join('&');
+        const { total } = await usFetch(env, table, query, { count: 'exact' });
+        return total;
+    } catch (err) {
+        console.log(`[us] count of ${table} unavailable: ${err.message}`);
+        return null;
+    }
+}
+
+// How much of each source has actually been pulled in -- separate from
+// usOverview's per-tile badges, this is the one place that answers "how far
+// along is the backfill" without anyone needing direct SQL access. Every
+// number here is a plain row count, nothing inferred.
+async function usCoverage(env) {
+    const [
+        billsTotal, billsByStage, billsEmbedded,
+        eoTotal, eoEmbedded, eoAgencyRelationsByType,
+        publicLawsTotal,
+        regulationsTotal, regulationsEmbedded,
+        committeeMembersCurrentByRole, committeeMembersCurrentTotal,
+        legislatorsTotal, committeesTotal,
+    ] = await Promise.all([
+        usCountScalar(env, 'bills'),
+        usCountBy(env, 'bills', 'current_stage'),
+        usCountScalar(env, 'bills', 'embedding=not.is.null'),
+        usCountScalar(env, 'executive_orders'),
+        usCountScalar(env, 'executive_orders', 'embedding=not.is.null'),
+        usCountBy(env, 'executive_order_agencies', 'relationship_type'),
+        usCountScalar(env, 'public_laws'),
+        usCountScalar(env, 'regulations'),
+        usCountScalar(env, 'regulations', 'embedding=not.is.null'),
+        usCountBy(env, 'committee_members', 'role', '&current=is.true'),
+        usCountScalar(env, 'committee_members', 'current=is.true'),
+        usCountScalar(env, 'us_legislators'),
+        usCountScalar(env, 'committees'),
+    ]);
+    return {
+        ok: true,
+        body: {
+            generated_at: new Date().toISOString(),
+            bills: { total: billsTotal, by_stage: billsByStage, embedded: billsEmbedded },
+            executive_orders: { total: eoTotal, embedded: eoEmbedded, agency_relations_by_type: eoAgencyRelationsByType },
+            public_laws: { total: publicLawsTotal },
+            regulations: { total: regulationsTotal, embedded: regulationsEmbedded },
+            committees: { total: committeesTotal },
+            committee_members: { current_total: committeeMembersCurrentTotal, current_by_role: committeeMembersCurrentByRole },
+            legislators: { total: legislatorsTotal },
+        },
+    };
+}
 
 // Directory payload behind the 미국 → 의회 / 행정부 screens: every tile the two
 // grids draw, plus the CRS and CFR classification lists. One response because
