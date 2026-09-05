@@ -1032,7 +1032,26 @@
     });
   }
 
-  async function go(view, id) {
+  // Mirrors the current leaf into the URL's query string so a bill, EO, or
+  // search result is a real link -- reload, share, browser back/forward --
+  // instead of living only in `state.trail`. The pathname stays whatever
+  // app.js's top-level router already set (/us-policy-hub etc.); only
+  // ?view=&id= here changes underneath it.
+  function syncUrl(view, id, opts = {}) {
+    const target = host?.dataset.policyTarget;
+    const isDefaultLeaf = view === (TARGET_VIEWS[target] || 'congress') && id === undefined;
+    const params = new URLSearchParams();
+    if (!isDefaultLeaf) {
+      params.set('view', view);
+      if (id !== undefined && id !== null) params.set('id', String(id));
+    }
+    const qs = params.toString();
+    const url = window.location.pathname + (qs ? `?${qs}` : '');
+    if (url === window.location.pathname + window.location.search) return; // no-op, skip a duplicate history entry
+    window.history[opts.replace ? 'replaceState' : 'pushState']({ policyView: view, policyId: id }, '', url);
+  }
+
+  async function go(view, id, opts = {}) {
     const token = renderToken;
     state.stage = '';
     let extra = {};
@@ -1050,6 +1069,7 @@
     state.trail = trailTo(view, id, extra);
     viewData = extra;
     paint();
+    syncUrl(view, id, opts);
   }
 
   // Re-fetches the current leaf (used when the stage filter changes) without
@@ -1154,9 +1174,16 @@
     }
     if (host.dataset.policyTarget !== target || token !== renderToken) return; // a later view won the race
 
-    // Entering from the top menu starts a fresh trail at that level.
+    // Entering from the top menu starts a fresh trail at that level -- unless
+    // the URL already names a deeper view (a shared link, a reload, or the
+    // browser back/forward button landing back on this same path).
     state.trail = [];
-    await go(TARGET_VIEWS[target] || 'congress');
+    const urlParams = new URLSearchParams(window.location.search);
+    const urlView = urlParams.get('view');
+    const urlId = urlParams.get('id');
+    const needsId = urlView && urlView !== 'congress' && urlView !== 'executive';
+    const restored = urlView && VIEWS[urlView] && (!needsId || urlId);
+    await go(restored ? urlView : (TARGET_VIEWS[target] || 'congress'), restored ? urlId : undefined, { replace: true });
 
     host.removeEventListener('click', onClick);
     host.addEventListener('click', onClick);
