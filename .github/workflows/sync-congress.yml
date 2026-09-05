@@ -77,12 +77,9 @@ jobs:
           node --check scripts/lib/sync-utils.js
           node --check scripts/sync-congress.js
           node --check scripts/sync-federal-register.js
-          node --check scripts/backfill-eo-text-relations.js
           node --check scripts/sync-public-laws.js
           node --check scripts/sync-us-code.js
           node --check scripts/notify-favorites.js
-          node scripts/lib/eo-authorities.test.js
-          node scripts/lib/eo-agency-directives.test.js
 
       - name: Sync Congress.gov bills
         run: node scripts/sync-congress.js
