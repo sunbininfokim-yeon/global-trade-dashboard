@@ -867,7 +867,7 @@
       ? renderRegulations(eo.related_regulations)
       : empty('관련 규제 없음');
 
-    const agencies = (eo.agencies || []).map((a) => `<span class="policy-tag">${esc(a.name)}</span>`).join('');
+    const agencyGroups = eoAgencyGroups(eo.agency_relations);
 
     return shell(`
       <div class="policy-grid-2">
@@ -881,12 +881,15 @@
               <span>서명 ${esc(eo.signed_date || '-')}</span>
               <span>공포 ${esc(eo.publication_date || '-')}</span>
             </div>
-            ${agencies ? `<div class="policy-tag-row">${agencies}</div>` : ''}
+            ${agencyGroups.issuing.length ? `<div class="policy-tag-row">${agencyGroups.issuing.map(agencyTag).join('')}</div>` : ''}
             ${eo.summary ? `<p class="policy-prose">${esc(eo.summary)}</p>` : `<p class="policy-empty">${esc('상세 정보 준비 중')}</p>`}
             <div class="policy-link-row">
               ${eo.federal_register_url ? `<a class="policy-external" href="${esc(eo.federal_register_url)}" target="_blank" rel="noopener noreferrer">Federal Register</a>` : ''}
               ${eo.executive_order_url ? `<a class="policy-external" href="${esc(eo.executive_order_url)}" target="_blank" rel="noopener noreferrer">White House</a>` : ''}
             </div>
+            ${agencyRelationBlock('지시 대상 기관', agencyGroups.directed)}
+            ${agencyRelationBlock('협의 기관', agencyGroups.consulted)}
+            ${agencyRelationBlock('협업 기관', agencyGroups.coordinating)}
           `)}
         </div>
         <div class="policy-col">
@@ -895,6 +898,36 @@
         </div>
       </div>`);
   }
+
+  // issuing_document/implementing_regulation come from official document
+  // metadata and carry no quotable text -- shown as plain tags, same as
+  // before. The three official_text_citation roles (a specific "shall",
+  // "in consultation with", "in coordination with" sentence in the EO's own
+  // text) are shown with that sentence attached, so the reader sees why the
+  // agency is here instead of taking the tag on faith.
+  function eoAgencyGroups(relations) {
+    const groups = { issuing: [], directed: [], consulted: [], coordinating: [] };
+    for (const r of relations || []) {
+      if (!r.agency) continue;
+      if (r.relationship_type === 'directed_agency') groups.directed.push(r);
+      else if (r.relationship_type === 'consulted_agency') groups.consulted.push(r);
+      else if (r.relationship_type === 'coordinating_agency') groups.coordinating.push(r);
+      else groups.issuing.push(r);
+    }
+    return groups;
+  }
+
+  const agencyTag = (r) => `<span class="policy-tag">${esc(r.agency.name)}</span>`;
+
+  const agencyRelationBlock = (label, relations) => (relations.length
+    ? `<div class="policy-subblock"><h4>${esc(label)}</h4>
+         <ul class="policy-authority-list">${relations.map((r) => `
+           <li>
+             <span class="policy-tag">${esc(r.agency.name)}</span>
+             ${r.evidence_excerpt ? `<p class="policy-authority-hint">"${esc(r.evidence_excerpt)}"</p>` : ''}
+           </li>`).join('')}</ul>
+       </div>`
+    : '');
 
   // Reached by pressing Enter in the header search box (onSearchKeydown) --
   // the dropdown is for a quick glance while typing; this is its own screen
