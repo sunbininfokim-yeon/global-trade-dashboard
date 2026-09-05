@@ -424,6 +424,20 @@ const pfFromQuote = (qt) => ({
 
 const PF_CLASS_KO = { cash: '현금', equity: '주식', etf: 'ETF', bond: '채권', commodity: '원자재', fx: '환율' };
 
+// A holding carries its own instrument record once added (pfInstOf reads it
+// back), because a searched or uploaded ticker is not in the registry and
+// would otherwise be unresolvable on the next page load. Shared by the
+// manual add button and the spreadsheet importer so the two can't drift apart.
+const pfInstFromPicked = (picked, spot) => ({
+    name_ko: picked.name_ko,
+    yahoo: picked.yahoo || null,
+    currency: picked.currency || (spot && spot.currency) || 'KRW',
+    asset_class: picked.asset_class || 'equity',
+    leveraged: !!picked.leveraged,
+    leverage_factor: picked.synthetic_leverage ? (picked.leverage_factor || 2) : 1,
+    proxy: !!(picked.proxy || picked.synthetic_leverage),
+});
+
 // A holding carries its own instrument record once added, because a ticker
 // found through search is not in the registry and would otherwise be
 // unresolvable on the next page load.
@@ -433,6 +447,131 @@ const pfInstOf = (p) => p.inst || PF_REGISTRY.find((x) => x.id === p.id) || { na
 // outside it. Kept local once, it silently reverted to 금액 after every add and
 // the next "5" meant five won instead of five shares.
 let pfMode = 'value';
+
+// --- 엑셀/CSV 가져오기 -------------------------------------------------------
+// The file is parsed entirely in the browser (SheetJS, loaded on first use);
+// only the resolved ticker text for each row is ever sent anywhere (through
+// the existing search/quote proxy), same as typing it into the search box by
+// hand -- quantities and amounts never leave this page. Loaded lazily so a
+// visitor who never uploads a file never pays for the ~1MB library.
+let pfSheetJsPromise = null;
+const PF_SHEETJS_SRC = 'https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js';
+const pfLoadSheetJs = () => {
+    if (window.XLSX) return Promise.resolve(window.XLSX);
+    if (!pfSheetJsPromise) {
+        pfSheetJsPromise = new Promise((resolve, reject) => {
+            const s = document.createElement('script');
+            s.src = PF_SHEETJS_SRC;
+            s.onload = () => (window.XLSX ? resolve(window.XLSX) : reject(new Error('파일 처리 라이브러리를 불러오지 못했습니다.')));
+            s.onerror = () => reject(new Error('파일 처리 라이브러리를 불러오지 못했습니다. 네트워크를 확인해 주세요.'));
+            document.head.appendChild(s);
+        });
+    }
+    return pfSheetJsPromise;
+};
+
+// Header aliases: a user's own spreadsheet rarely matches one exact schema,
+// so this looks for the first column whose header even loosely names the
+// thing, in Korean or English, rather than requiring an exact template.
+const PF_UPLOAD_HEADERS = {
+    name: [/종목/i, /티커/i, /symbol/i, /ticker/i, /^name/i],
+    qty: [/수량/i, /주수/i, /^shares?$/i, /^qty$/i, /quantity/i],
+    value: [/평가.?금액/i, /금액/i, /^value$/i, /^amount$/i],
+    side: [/매수.?매도/i, /공매도/i, /^side$/i, /position/i],
+};
+const pfDetectUploadColumn = (headers, kind) =>
+    headers.find((h) => PF_UPLOAD_HEADERS[kind].some((p) => p.test(String(h).trim())));
+
+const pfParseUploadNumber = (v) => {
+    const n = Number(String(v ?? '').replace(/[^0-9.-]/g, ''));
+    return Number.isFinite(n) ? n : 0;
+};
+
+// Local registry match first (it alone carries leverage/proxy flags); a
+// remote symbol search only for names the registry doesn't know, exactly
+// like typing into the search box.
+const pfResolveUploadName = async (raw) => {
+    const q = String(raw ?? '').trim();
+    if (!q) return null;
+    const local = pfSearchLocal(q);
+    const exact = local.find((it) => [it.name_ko, it.id, ...(it.aliases || [])]
+        .some((a) => String(a).toLowerCase() === q.toLowerCase()));
+    if (exact) return exact;
+    if (local.length === 1) return local[0];
+    const { quotes } = await pfSearchRemote(q);
+    if (quotes.length) return pfFromQuote(quotes[0]);
+    return local[0] || null;
+};
+
+// Reads the file, resolves each row to a registry/remote instrument, and
+// merges the results into the same portfolioLab.v1 list the manual form
+// edits -- so the existing holdings list (with its delete buttons) is also
+// the review/undo step for anything the importer got wrong.
+const pfImportSpreadsheet = async (file, onProgress) => {
+    const XLSX = await pfLoadSheetJs();
+    const buf = await file.arrayBuffer();
+    const wb = XLSX.read(buf, { type: 'array' });
+    const rows = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { defval: '' });
+    if (!rows.length) throw new Error('파일에서 읽을 행이 없습니다.');
+
+    const headers = Object.keys(rows[0]);
+    const nameCol = pfDetectUploadColumn(headers, 'name') || headers[0];
+    const qtyCol = pfDetectUploadColumn(headers, 'qty');
+    const valueCol = pfDetectUploadColumn(headers, 'value');
+    const sideCol = pfDetectUploadColumn(headers, 'side');
+    if (!qtyCol && !valueCol) throw new Error('수량 또는 금액 열을 찾지 못했습니다. 헤더(예: 종목명/수량/금액)를 확인해 주세요.');
+
+    const pf = pfLoad() || pfBlank();
+    const unresolved = [];
+    let added = 0;
+
+    for (let i = 0; i < rows.length; i++) {
+        const raw = String(rows[i][nameCol] ?? '').trim();
+        if (!raw) continue;
+        if (pf.positions.length >= PF_MAX) { unresolved.push(`(정원 ${PF_MAX}종 초과로 중단) ${raw} 및 이후`); break; }
+
+        onProgress && onProgress(`종목 확인 중… ${i + 1}/${rows.length}`);
+        const picked = await pfResolveUploadName(raw).catch(() => null);
+        if (!picked) { unresolved.push(raw); continue; }
+
+        const side = /공매도|숏|short|매도/i.test(String(sideCol ? rows[i][sideCol] : '')) ? 'short' : 'long';
+        const valueNum = valueCol ? pfParseUploadNumber(rows[i][valueCol]) : 0;
+        const qtyNum = qtyCol ? pfParseUploadNumber(rows[i][qtyCol]) : 0;
+
+        let row;
+        if (valueNum > 0) {
+            row = { id: picked.id, side, mode: 'value', value: valueNum, inst: pfInstFromPicked(picked) };
+        } else if (qtyNum > 0) {
+            const spot = await pfSpot(picked.yahoo || null, picked.currency).catch(() => null);
+            if (!spot || !(spot.price > 0)) { unresolved.push(`${raw} (가격 조회 실패)`); continue; }
+            row = { id: picked.id, side, mode: 'shares', shares: qtyNum, inst: pfInstFromPicked(picked, spot),
+                     price: spot.price, fx: spot.fx, pricedAt: new Date().toISOString().slice(0, 10) };
+        } else {
+            unresolved.push(`${raw} (수량/금액 인식 실패)`);
+            continue;
+        }
+
+        const same = (p) => p.id === row.id && p.side === row.side && (p.mode || 'value') === row.mode;
+        const existing = pf.positions.findIndex(same);
+        if (existing >= 0) {
+            if (row.mode === 'shares') pf.positions[existing].shares += row.shares;
+            else pf.positions[existing].value += row.value;
+        } else if (pf.positions.length < PF_MAX) {
+            pf.positions.push(row);
+            added++;
+        } else {
+            unresolved.push(`(정원 ${PF_MAX}종 초과) ${raw}`);
+        }
+    }
+
+    pfSave(pf);
+    return { added, unresolved, total: rows.length };
+};
+
+// Re-rendering the form (every add/delete does, including right after an
+// upload finishes) would otherwise wipe these before anyone reads them.
+let pfLastUnresolved = [];
+let pfLastUploadStatus = '';
 
 // Weight says where the money sits; risk contribution says where the account's
 // movement comes from. Same pairing as the reference panel -- it is the one
@@ -639,6 +778,23 @@ const renderPfInput = (root, onDone) => {
             </p>
             ${pf.positions.length >= PF_MAX
                 ? `<p class="pf-limit">${PF_MAX}종을 채웠습니다. 더 넣으려면 기존 종목을 지워 주세요.</p>` : ''}
+
+            <div class="pf-upload">
+                <label for="pf-file" class="pf-btn pf-btn-ghost">엑셀·CSV로 가져오기</label>
+                <input type="file" id="pf-file" accept=".csv,.xlsx,.xls" class="hidden">
+                <span id="pf-upload-status" class="fin-note">${finEsc(pfLastUploadStatus)}</span>
+            </div>
+            <p class="fin-note">
+                종목명·티커 열과 수량 또는 금액 열이 있는 파일이면 헤더 이름은 대략 맞아도 됩니다(예: 종목명/수량/금액, name/qty/value).
+                이 브라우저 안에서만 읽습니다 — 파일도, 그 안의 수량·금액도 서버로 올라가지 않습니다. 종목명만 검색에 쓰입니다.
+            </p>
+            ${pfLastUnresolved.length ? `
+            <div class="fin-alert">
+                <span class="fin-alert-mark">인식하지 못한 행 ${pfLastUnresolved.length}건</span>
+                <ul>${pfLastUnresolved.map((x) => `<li>${finEsc(x)}</li>`).join('')}</ul>
+                <p class="fin-note">위 항목은 위 검색창으로 직접 추가해 주세요.</p>
+                <button type="button" id="pf-upload-dismiss" class="pf-btn pf-btn-ghost">닫기</button>
+            </div>` : ''}
         </section>
 
         <section class="fin-block fin-block-wide pf-input">
@@ -835,17 +991,7 @@ const renderPfInput = (root, onDone) => {
 
         const same = (p) => p.id === picked.id && p.side === side && (p.mode || 'value') === mode;
         const existing = next.positions.findIndex(same);
-        // Carry the instrument with the holding: a searched ticker is not in the
-        // registry, so nothing could resolve it on the next page load.
-        const inst = {
-            name_ko: picked.name_ko,
-            yahoo: picked.yahoo || null,
-            currency: picked.currency || (spot && spot.currency) || 'KRW',
-            asset_class: picked.asset_class || 'equity',
-            leveraged: !!picked.leveraged,
-            leverage_factor: picked.synthetic_leverage ? (picked.leverage_factor || 2) : 1,
-            proxy: !!(picked.proxy || picked.synthetic_leverage),
-        };
+        const inst = pfInstFromPicked(picked, spot);
         const row = mode === 'shares'
             ? { id: picked.id, side, mode: 'shares', shares: n, inst,
                 price: spot.price, fx: spot.fx, pricedAt: new Date().toISOString().slice(0, 10) }
@@ -886,7 +1032,36 @@ const renderPfInput = (root, onDone) => {
     root.querySelector('#pf-clear')?.addEventListener('click', () => {
         if (!confirm('보유 목록을 전부 지웁니다. 되돌릴 수 없습니다.')) return;
         pfSave(pfBlank());
+        pfLastUnresolved = [];
+        pfLastUploadStatus = '';
         renderPfInput(root, onDone);
+    });
+
+    root.querySelector('#pf-upload-dismiss')?.addEventListener('click', () => {
+        pfLastUnresolved = [];
+        renderPfInput(root, onDone);
+    });
+
+    const fileEl = root.querySelector('#pf-file');
+    const uploadStatusEl = root.querySelector('#pf-upload-status');
+    fileEl?.addEventListener('change', async () => {
+        const file = fileEl.files[0];
+        if (!file) return;
+        fileEl.disabled = true;
+        uploadStatusEl.textContent = '읽는 중…';
+        try {
+            const { added, unresolved } = await pfImportSpreadsheet(file, (msg) => { uploadStatusEl.textContent = msg; });
+            pfLastUnresolved = unresolved;
+            pfLastUploadStatus = unresolved.length
+                ? `${added}건 추가, ${unresolved.length}건 인식 실패`
+                : `${added}건 추가했습니다.`;
+        } catch (err) {
+            pfLastUnresolved = [];
+            pfLastUploadStatus = err.message || '파일을 읽지 못했습니다.';
+        } finally {
+            fileEl.value = '';
+            renderPfInput(root, onDone);
+        }
     });
 
     const navEl = root.querySelector('#pf-nav');
