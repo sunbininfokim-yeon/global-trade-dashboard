@@ -478,6 +478,7 @@ const PF_UPLOAD_HEADERS = {
     qty: [/수량/i, /주수/i, /^shares?$/i, /^qty$/i, /quantity/i],
     value: [/평가.?금액/i, /금액/i, /^value$/i, /^amount$/i],
     side: [/매수.?매도/i, /공매도/i, /^side$/i, /position/i],
+    price: [/단가/i, /체결가/i, /^price$/i],
 };
 const pfDetectUploadColumn = (headers, kind) =>
     headers.find((h) => PF_UPLOAD_HEADERS[kind].some((p) => p.test(String(h).trim())));
@@ -503,10 +504,11 @@ const pfResolveUploadName = async (raw) => {
     return local[0] || null;
 };
 
-// Reads the file, resolves each row to a registry/remote instrument, and
-// merges the results into the same portfolioLab.v1 list the manual form
-// edits -- so the existing holdings list (with its delete buttons) is also
-// the review/undo step for anything the importer got wrong.
+// A trade-log file (단가/체결가 column present) needs average-cost accounting
+// before it can become a holding; a snapshot file (금액 or plain 수량, no
+// per-trade price) already states what's held today. Detected by column
+// shape rather than asked, since a user pasting a broker export doesn't
+// know or care which of these two things this tool calls it.
 const pfImportSpreadsheet = async (file, onProgress) => {
     const XLSX = await pfLoadSheetJs();
     const buf = await file.arrayBuffer();
@@ -519,7 +521,9 @@ const pfImportSpreadsheet = async (file, onProgress) => {
     const qtyCol = pfDetectUploadColumn(headers, 'qty');
     const valueCol = pfDetectUploadColumn(headers, 'value');
     const sideCol = pfDetectUploadColumn(headers, 'side');
-    if (!qtyCol && !valueCol) throw new Error('수량 또는 금액 열을 찾지 못했습니다. 헤더(예: 종목명/수량/금액)를 확인해 주세요.');
+    const priceCol = pfDetectUploadColumn(headers, 'price');
+    if (priceCol && qtyCol) return pfImportTransactionLog(rows, { nameCol, qtyCol, priceCol, sideCol }, onProgress);
+    if (!qtyCol && !valueCol) throw new Error('수량 또는 금액 열을 찾지 못했습니다. 헤더(예: 종목명/수량/금액, 또는 거래내역이면 종목명/매수매도/수량/단가)를 확인해 주세요.');
 
     const pf = pfLoad() || pfBlank();
     const unresolved = [];
@@ -566,6 +570,81 @@ const pfImportSpreadsheet = async (file, onProgress) => {
 
     pfSave(pf);
     return { added, unresolved, total: rows.length };
+};
+
+// One row per trade, often several rows per name (매수 10주 @10만, 매도 3주
+// @9만, 매수 4주 @12만, ...) -- reconstructed with the moving-average method
+// Korean brokerage apps use: each buy blends into a running average cost,
+// each sell realizes P&L against that average without moving it. A sell
+// beyond what the log shows as bought is clamped (there is no opening trade
+// to price it against) rather than guessed. Currently-held (net qty > 0)
+// names become holdings, valued like any manual share entry at today's
+// price; fully closed-out names still count toward the realized total but
+// are not added, since there is nothing left to hold or to risk-analyze.
+// Prices are read as already being in the base currency (KRW) -- a foreign
+// trade log would need its own historical FX per trade, which this doesn't do.
+const pfImportTransactionLog = async (rows, cols, onProgress) => {
+    const { nameCol, qtyCol, priceCol, sideCol } = cols;
+    const byName = new Map();
+    for (const r of rows) {
+        const raw = String(r[nameCol] ?? '').trim();
+        const qty = pfParseUploadNumber(r[qtyCol]);
+        const price = pfParseUploadNumber(r[priceCol]);
+        if (!raw || !(qty > 0) || !(price > 0)) continue;
+        const action = /매도|판매|sell/i.test(String(sideCol ? r[sideCol] : '')) ? 'sell' : 'buy';
+        if (!byName.has(raw)) byName.set(raw, []);
+        byName.get(raw).push({ action, qty, price });
+    }
+    if (!byName.size) throw new Error('종목명·수량·단가를 모두 갖춘 거래 행이 없습니다.');
+
+    const pf = pfLoad() || pfBlank();
+    const unresolved = [];
+    let added = 0, realizedTotal = 0, i = 0;
+
+    for (const [raw, txns] of byName) {
+        i++;
+        if (pf.positions.length >= PF_MAX) { unresolved.push(`(정원 ${PF_MAX}종 초과로 중단) ${raw} 및 이후`); break; }
+        onProgress && onProgress(`거래 내역 정리 중… ${i}/${byName.size}`);
+
+        let qty = 0, avgCost = 0, realized = 0;
+        for (const t of txns) {
+            if (t.action === 'buy') {
+                avgCost = (qty + t.qty > 0) ? (qty * avgCost + t.qty * t.price) / (qty + t.qty) : t.price;
+                qty += t.qty;
+            } else {
+                const sellQty = Math.min(t.qty, qty);
+                realized += (t.price - avgCost) * sellQty;
+                qty -= sellQty;
+            }
+        }
+        realizedTotal += realized;
+        if (qty <= 0) continue; // fully closed out: no holding, but its realized P&L still counted above
+
+        const picked = await pfResolveUploadName(raw).catch(() => null);
+        if (!picked) { unresolved.push(raw); continue; }
+        const spot = await pfSpot(picked.yahoo || null, picked.currency).catch(() => null);
+        if (!spot || !(spot.price > 0)) { unresolved.push(`${raw} (가격 조회 실패)`); continue; }
+
+        const row = { id: picked.id, side: 'long', mode: 'shares', shares: qty,
+            inst: pfInstFromPicked(picked, spot), price: spot.price, fx: spot.fx,
+            pricedAt: new Date().toISOString().slice(0, 10), avgCost, realizedPnl: realized };
+
+        const same = (p) => p.id === row.id && p.side === row.side && (p.mode || 'value') === row.mode;
+        const existing = pf.positions.findIndex(same);
+        if (existing >= 0) {
+            pf.positions[existing].shares += row.shares;
+            pf.positions[existing].avgCost = avgCost;
+            pf.positions[existing].realizedPnl = (pf.positions[existing].realizedPnl || 0) + realized;
+        } else if (pf.positions.length < PF_MAX) {
+            pf.positions.push(row);
+            added++;
+        } else {
+            unresolved.push(`(정원 ${PF_MAX}종 초과) ${raw}`);
+        }
+    }
+
+    pfSave(pf);
+    return { added, unresolved, total: byName.size, realizedTotal };
 };
 
 // Re-rendering the form (every add/delete does, including right after an
@@ -785,8 +864,10 @@ const renderPfInput = (root, onDone) => {
                 <span id="pf-upload-status" class="fin-note">${finEsc(pfLastUploadStatus)}</span>
             </div>
             <p class="fin-note">
-                종목명·티커 열과 수량 또는 금액 열이 있는 파일이면 헤더 이름은 대략 맞아도 됩니다(예: 종목명/수량/금액, name/qty/value).
-                이 브라우저 안에서만 읽습니다 — 파일도, 그 안의 수량·금액도 서버로 올라가지 않습니다. 종목명만 검색에 쓰입니다.
+                두 형식 다 헤더 이름은 대략 맞아도 됩니다. <strong>현재 보유 스냅샷</strong>(종목명/수량 또는 종목명/금액)이면
+                그대로 보유 목록에 추가되고, <strong>거래내역</strong>(종목명/매수매도/수량/단가, 같은 종목이 여러 행)이면
+                매수·매도를 순서대로 반영해 평단·평가손익까지 계산합니다.
+                이 브라우저 안에서만 읽습니다 — 파일도, 그 안의 수량·금액·단가도 서버로 올라가지 않습니다. 종목명만 검색에 쓰입니다.
             </p>
             ${pfLastUnresolved.length ? `
             <div class="fin-alert">
@@ -817,6 +898,14 @@ const renderPfInput = (root, onDone) => {
                                 ? `<span class="pf-row-sub">${p.shares.toLocaleString('ko-KR')}주 ·
                                    ${pfKrw(p.price * (p.fx || 1))} 기준 (${finEsc(p.pricedAt || '')})</span>`
                                 : ''}
+                            ${p.avgCost ? (() => {
+                                const cur = p.price * (p.fx || 1);
+                                const pnl = (cur - p.avgCost) * p.shares;
+                                const pct = p.avgCost > 0 ? (cur - p.avgCost) / p.avgCost * 100 : 0;
+                                return `<span class="pf-row-sub">평단 ${pfKrw(p.avgCost)} ·
+                                    평가손익 ${pnl >= 0 ? '+' : ''}${pfKrw(pnl)} (${pct >= 0 ? '+' : ''}${pct.toFixed(1)}%)
+                                    ${p.realizedPnl ? ` · 실현손익 ${p.realizedPnl >= 0 ? '+' : ''}${pfKrw(p.realizedPnl)}` : ''}</span>`;
+                            })() : ''}
                         </span>
                         <span class="pf-row-val">${pfKrw(val)}</span>
                         <span class="pf-row-w">${(w * 100).toFixed(1)}%</span>
@@ -1050,11 +1139,12 @@ const renderPfInput = (root, onDone) => {
         fileEl.disabled = true;
         uploadStatusEl.textContent = '읽는 중…';
         try {
-            const { added, unresolved } = await pfImportSpreadsheet(file, (msg) => { uploadStatusEl.textContent = msg; });
+            const { added, unresolved, realizedTotal } = await pfImportSpreadsheet(file, (msg) => { uploadStatusEl.textContent = msg; });
             pfLastUnresolved = unresolved;
-            pfLastUploadStatus = unresolved.length
+            pfLastUploadStatus = (unresolved.length
                 ? `${added}건 추가, ${unresolved.length}건 인식 실패`
-                : `${added}건 추가했습니다.`;
+                : `${added}건 추가했습니다.`)
+                + (realizedTotal ? ` · 실현손익 합계 ${realizedTotal >= 0 ? '+' : ''}${pfKrw(realizedTotal)}` : '');
         } catch (err) {
             pfLastUnresolved = [];
             pfLastUploadStatus = err.message || '파일을 읽지 못했습니다.';
