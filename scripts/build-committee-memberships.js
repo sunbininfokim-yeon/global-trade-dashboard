@@ -1,21 +1,29 @@
 'use strict';
 
-// Builds data/policy/committee-memberships.json from official House/Senate
-// rosters. Committee IDs use Congress.gov system codes so they match
-// scripts/sync-committees.js. This script never guesses a bioguide from a name.
+// 공식 House/Senate roster 캐시로 data/policy/committee-memberships.json 을 만든다.
+// committee_id 는 scripts/sync-committees.js 가 쓰는 Congress.gov system code 다.
+// 이름은 쓰지 않고, 원천 XML/JSON에 있는 bioguide_id 만 넣는다.
 const fs = require('node:fs');
 const path = require('node:path');
 const { officialSourceUrl, parseCommitteeMembershipSource } = require('./lib/committee-membership-source');
+const {
+  ROOT,
+  HOUSE_SOURCE_URL,
+  SENATE_SOURCE_URL,
+  HOUSE_XML_PATH,
+  SENATE_XML_PATH,
+  SENATE_JSON_PATH,
+  isSenateCvcXml,
+  parseSenateCvcXml,
+} = require('./lib/committee-membership-roster');
 
-const ROOT = path.resolve(__dirname, '..');
-const HOUSE_XML = path.resolve(ROOT, process.env.HOUSE_MEMBER_DATA_XML || '.cache/official-rosters/MemberData.xml');
-const SENATE_JSON = path.resolve(ROOT, process.env.SENATE_CVC_JSON || '.cache/official-rosters/senate-cvc-memberships.json');
+const HOUSE_XML = path.resolve(ROOT, process.env.HOUSE_MEMBER_DATA_XML || HOUSE_XML_PATH);
+const SENATE_JSON = path.resolve(ROOT, process.env.SENATE_CVC_JSON || SENATE_JSON_PATH);
+const SENATE_XML = path.resolve(ROOT, process.env.SENATE_CVC_XML || SENATE_XML_PATH);
 const OUT = path.resolve(ROOT, process.env.COMMITTEE_MEMBERSHIP_SOURCE_FILE || 'data/policy/committee-memberships.json');
 const CONGRESS = 119;
-const HOUSE_SOURCE_URL = 'https://clerk.house.gov/xml/lists/MemberData.xml';
-const SENATE_SOURCE_URL = 'https://www.senate.gov/legislative/LIS_MEMBER/cvc_member_data.xml';
 
-// Verified against https://www.congress.gov/committees on 2026-09-06.
+// 2026-09-06 https://www.congress.gov/committees 에서 확인한 clerk comcode → (원, system code).
 const HOUSE_CLERK_TO_CONGRESS = {
   AG00: ['house', 'hsag00'],
   AP00: ['house', 'hsap00'],
@@ -102,7 +110,7 @@ function senateChamber(code) {
 
 function record(partial) {
   const sourceUrl = officialSourceUrl(partial.source_url);
-  if (!sourceUrl) throw new Error(`non-official source_url: ${partial.source_url}`);
+  if (!sourceUrl) throw new Error(`공식 호스트가 아닌 source_url: ${partial.source_url}`);
   return {
     committee_id: partial.committee_id,
     bioguide_id: String(partial.bioguide_id).trim().toUpperCase(),
@@ -184,13 +192,41 @@ function senateRecords(source, sourceUpdatedAt) {
   return rows;
 }
 
+function requireHouseXml() {
+  if (!fs.existsSync(HOUSE_XML)) {
+    throw new Error(
+      [
+        `House Clerk XML이 없습니다: ${HOUSE_XML}`,
+        '먼저 `node scripts/fetch-committee-membership-rosters.js` 를 실행하세요.',
+        `원천: ${HOUSE_SOURCE_URL}`,
+      ].join(' '),
+    );
+  }
+  return fs.readFileSync(HOUSE_XML, 'utf8');
+}
+
+function loadSenateSource() {
+  if (fs.existsSync(SENATE_JSON)) return JSON.parse(fs.readFileSync(SENATE_JSON, 'utf8'));
+  if (fs.existsSync(SENATE_XML) && isSenateCvcXml(fs.readFileSync(SENATE_XML, 'utf8'))) {
+    return parseSenateCvcXml(fs.readFileSync(SENATE_XML, 'utf8'));
+  }
+  throw new Error(
+    [
+      `Senate CVC JSON/XML이 없습니다: ${SENATE_JSON}`,
+      '먼저 `node scripts/fetch-committee-membership-rosters.js` 를 실행하세요.',
+      `원천: ${SENATE_SOURCE_URL}`,
+      `curl가 403이면 브라우저에서 원천을 열어 ${SENATE_XML} 로 저장한 뒤 fetch 스크립트를 다시 실행하세요.`,
+    ].join(' '),
+  );
+}
+
 function main() {
   if (!officialSourceUrl(HOUSE_SOURCE_URL) || !officialSourceUrl(SENATE_SOURCE_URL)) {
-    throw new Error('official source URLs failed host validation');
+    throw new Error('공식 원천 URL 호스트 검증에 실패했습니다.');
   }
-  const houseXml = fs.readFileSync(HOUSE_XML, 'utf8');
+  const houseXml = requireHouseXml();
   const houseUpdatedAt = isoDay(houseXml.match(/publish-date="([^"]+)"/)?.[1]) || '2026-09-02T00:00:00Z';
-  const senate = JSON.parse(fs.readFileSync(SENATE_JSON, 'utf8'));
+  const senate = loadSenateSource();
   const senateUpdatedAt = isoDay(senate.lastUpdate) || '2026-08-12T00:00:00Z';
 
   const merged = new Map();
