@@ -40,7 +40,37 @@ node scripts/sync-policy-reference-data.js
 
 정치-미국 파일에는 상임위 구성원·위원장·부위원장·ranking member 데이터가 없다. 따라서 이 데이터는 Cursor가 공식 House/Senate roster를 확인해 버전 관리 파일에 추가하고, 동기화 스크립트가 **검증 후에만** Supabase로 적재한다. Cursor가 이름을 알아낸 것만으로 DB를 직접 수정하지 않는다.
 
-미국 상임위 사보임은 한국 국회처럼 자주 일어나지 않는다. 기본 갱신 주기는 **분기 1회**다. 다만 **1분기**(새 의회 조직 기간, 보통 1–3월)에는 배정이 확정되는 동안 **월 1회** 확인한다. `.github/workflows/**`는 Claude 소유이므로 이 주기를 워크플로에 넣는 변경은 이 문서의 실행 계약만 따른다.
+미국 상임위 사보임은 한국 국회처럼 자주 일어나지 않는다. 공식 roster **갱신** 주기는 아래와 같다.
+
+- **1분기(1·2·3월):** 매월 1일
+- **2·3·4분기:** 분기 첫 달만 (4월, 7월, 10월)
+
+시각은 기존 정책 기준정보 동기화와 같게 **매월 1일 12:31 KST** (`cron: '31 3 1 1,2,3,4,7,10 *'`). 스케줄 판정은 `scripts/lib/committee-membership-roster.js`의 `shouldRefreshCommitteeRoster()`다. 강제 실행은 `FORCE_COMMITTEE_ROSTER_REFRESH=true` 또는 `--force`.
+
+```bash
+node scripts/refresh-committee-memberships.js
+```
+
+이 명령은 공식 XML을 받고 JSON을 다시 만든 뒤, 커밋된 `data/policy/committee-memberships.json`과 비교한다. 변경이 있으면 exit 2로 끝나므로 워크플로가 검토 PR을 열 수 있다. Senate가 403이면 커밋된 JSON의 Senate 행을 캐시로 되돌린 뒤 House만 갱신한다.
+
+`.github/workflows/**`는 Claude 소유이므로 이 PR은 워크플로 파일을 만들지 않는다. Claude가 연결할 계약은 아래와 같다.
+
+```text
+이름: Refresh official committee membership roster
+cron: '31 3 1 1,2,3,4,7,10 *'   # 1·2·3·4·7·10월 1일 12:31 KST
+workflow_dispatch: FORCE_COMMITTEE_ROSTER_REFRESH=true 가능
+명령:
+  node scripts/lib/committee-membership-roster.test.js
+  node scripts/refresh-committee-memberships.js
+동작:
+  - exit 0: 스킵(비대상 월) 또는 JSON 불변
+  - exit 2: JSON 변경 → 브랜치를 만들어 PR (contents: write). 자동 merge 금지.
+  - exit 1: 실패
+API 키 불필요. 커밋 대상은 data/policy/committee-memberships.json 뿐.
+cache(.cache/official-rosters)는 커밋하지 않음.
+```
+
+커밋된 JSON을 Supabase에 넣는 `sync-policy-reference-data.js` 월간 실행은 그대로 둬도 된다. 명단 파일이 안 바뀌면 upsert만 하고 기존 행을 비활성화하지 않는다 (`coverage.complete: false`).
 
 1. 공식 원천을 로컬 캐시에 받는다. 캐시 디렉터리 `.cache/official-rosters/` 는 커밋하지 않는다.
 

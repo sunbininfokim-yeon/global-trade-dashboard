@@ -16,6 +16,7 @@ const {
   isHouseMemberDataXml,
   isSenateCvcXml,
   parseSenateCvcXml,
+  seedSenateCacheFromCommitted,
 } = require('./lib/committee-membership-roster');
 
 const USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36';
@@ -124,11 +125,23 @@ async function main() {
       console.error(`기존 Senate JSON을 유지합니다: ${SENATE_JSON_PATH}`);
       return;
     }
-    throw error;
+    const seeded = seedSenateCacheFromCommitted();
+    console.error(error.message);
+    console.error(`Senate 원천을 받지 못해 커밋된 JSON에서 ${seeded.rows.length}행을 캐시로 복원했습니다.`);
   }
 }
 
-main().catch((error) => {
-  console.error(error.message || error);
-  process.exitCode = 1;
-});
+module.exports = {
+  download,
+  fetchHouse,
+  fetchSenateXml,
+  convertSenateXml,
+  senateManualDownloadError,
+};
+
+if (require.main === module) {
+  main().catch((error) => {
+    console.error(error.message || error);
+    process.exitCode = 1;
+  });
+}
