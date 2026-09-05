@@ -81,7 +81,7 @@ const pfPersist = (key, value) => {
 
 const pfSave = (p) => pfPersist(PF_STORE, JSON.stringify(p));
 
-const pfBlank = () => ({ risk_profile: 'balanced', base_currency: 'KRW', positions: [] });
+const pfBlank = () => ({ risk_profile: 'balanced', base_currency: 'KRW', positions: [], net_asset_value: null });
 
 // Covariance from ~250 daily observations needs comfortably more rows than
 // assets or the estimate turns to noise -- and noisy covariance is exactly what
@@ -175,7 +175,6 @@ const pfSpot = async (symbol, currency) => {
 // formulas stay recognisably the same on both sides.
 const PF_TRADING_DAYS = 252;
 const PF_RF_ANNUAL = 0.03;
-const PF_Z95 = 1.6448536269514722;
 
 const pfQuoteCache = new Map();
 
@@ -217,45 +216,6 @@ const pfAlign = (series) => {
     return { dates, cols };
 };
 
-const pfSimpleReturns = (arr) => {
-    const out = [];
-    for (let i = 1; i < arr.length; i++) out.push(arr[i] / arr[i - 1] - 1);
-    return out;
-};
-
-const pfMean = (a) => a.reduce((x, y) => x + y, 0) / (a.length || 1);
-
-const pfStd = (a) => {
-    if (a.length < 2) return 0;
-    const m = pfMean(a);
-    return Math.sqrt(a.reduce((s, x) => s + (x - m) ** 2, 0) / (a.length - 1));
-};
-
-const pfCov = (cols) => {
-    const n = cols.length;
-    const means = cols.map(pfMean);
-    const T = cols[0].length;
-    const S = Array.from({ length: n }, () => new Array(n).fill(0));
-    for (let i = 0; i < n; i++) {
-        for (let j = i; j < n; j++) {
-            let s = 0;
-            for (let t = 0; t < T; t++) s += (cols[i][t] - means[i]) * (cols[j][t] - means[j]);
-            const v = s / Math.max(T - 1, 1);
-            S[i][j] = v; S[j][i] = v;
-        }
-    }
-    return S;
-};
-
-const pfMatVec = (S, w) => S.map((row) => row.reduce((s, v, j) => s + v * w[j], 0));
-const pfDot = (a, b) => a.reduce((s, v, i) => s + v * b[i], 0);
-const pfQuantile = (sorted, p) => {
-    if (!sorted.length) return 0;
-    const i = (sorted.length - 1) * p;
-    const lo = Math.floor(i), hi = Math.ceil(i);
-    return lo === hi ? sorted[lo] : sorted[lo] + (sorted[hi] - sorted[lo]) * (i - lo);
-};
-
 // Assets that move together are one bet wearing several names. Single-link
 // union-find over a correlation threshold, same as the Python side.
 const pfClusters = (names, corr, thr = 0.6) => {
@@ -274,81 +234,16 @@ const pfClusters = (names, corr, thr = 0.6) => {
     return [...groups.values()].filter((g) => g.length > 1);
 };
 
-// --- HRP (Hierarchical Risk Parity) ------------------------------------------
-// López de Prado's method, and the reason it fits here: it never asks what an
-// asset will return. Mean-variance optimisation needs expected returns, those
-// guesses are usually wrong, and being wrong there moves the answer a lot. HRP
-// uses only the covariance -- so the suggestion is "spread the risk more
-// evenly", never "this will go up".
-
-// Distance that turns correlation into a metric: identical series are 0 apart,
-// perfectly opposed ones are 1.
-const pfCorrDist = (corr) => corr.map((row) => row.map((c) =>
-    Math.sqrt(Math.max(0, 0.5 * (1 - Math.min(Math.max(c, -1), 1))))));
-
-// Single-linkage agglomerative clustering, returning the merge order.
-const pfLinkage = (dist) => {
-    const n = dist.length;
-    const active = new Map();
-    for (let i = 0; i < n; i++) active.set(i, [i]);
-    const d = dist.map((r) => r.slice());
-    const merges = [];
-    let nextId = n;
-
-    while (active.size > 1) {
-        let best = Infinity, bi = -1, bj = -1;
-        const ids = [...active.keys()];
-        for (let a = 0; a < ids.length; a++) {
-            for (let b = a + 1; b < ids.length; b++) {
-                const i = ids[a], j = ids[b];
-                let m = Infinity;
-                for (const x of active.get(i)) for (const y of active.get(j)) m = Math.min(m, d[x][y]);
-                if (m < best) { best = m; bi = i; bj = j; }
-            }
-        }
-        const merged = [...active.get(bi), ...active.get(bj)];
-        merges.push([bi, bj, nextId]);
-        active.delete(bi); active.delete(bj);
-        active.set(nextId++, merged);
-    }
-    return { merges, order: [...active.values()][0] || [] };
-};
-
-const pfIvp = (cov, idx) => {
-    // Inverse-variance weights inside a cluster.
-    const inv = idx.map((i) => (cov[i][i] > 0 ? 1 / cov[i][i] : 0));
-    const s = inv.reduce((a, b) => a + b, 0);
-    return s > 0 ? inv.map((v) => v / s) : idx.map(() => 1 / idx.length);
-};
-
-const pfClusterVar = (cov, idx) => {
-    const w = pfIvp(cov, idx);
-    let v = 0;
-    for (let a = 0; a < idx.length; a++) {
-        for (let b = 0; b < idx.length; b++) v += w[a] * cov[idx[a]][idx[b]] * w[b];
-    }
-    return v;
-};
-
-// Recursive bisection: split the ordered list, then give the safer half more.
-const pfHrp = (cov, order) => {
-    const w = new Array(cov.length).fill(0);
-    order.forEach((i) => { w[i] = 1; });
-    const stack = [order];
-    while (stack.length) {
-        const grp = stack.pop();
-        if (grp.length <= 1) continue;
-        const half = Math.floor(grp.length / 2);
-        const left = grp.slice(0, half), right = grp.slice(half);
-        const vl = pfClusterVar(cov, left), vr = pfClusterVar(cov, right);
-        const alpha = (vl + vr) > 0 ? 1 - vl / (vl + vr) : 0.5;
-        left.forEach((i) => { w[i] *= alpha; });
-        right.forEach((i) => { w[i] *= (1 - alpha); });
-        stack.push(left, right);
-    }
-    const s = w.reduce((a, b) => a + b, 0);
-    return s > 0 ? w.map((x) => x / s) : w;
-};
+// The numerical core (covariance shrinkage, HRP, risk contribution, VaR,
+// Sharpe) lives in portfolio-engine/, ported from and verified bit-for-bit
+// against the offline Python engine (see its README/tests). This function
+// keeps its old job: turn holdings + fetched prices into that engine's
+// resolved/valued input, then reshape its output back into the exact result
+// shape pfRenderResult already knows how to draw, so nothing downstream
+// changes. Holdings and results still never leave the browser -- only
+// tickers cross the network, through the existing quote proxy.
+let pfEnginePromise = null;
+const pfEngine = () => pfEnginePromise || (pfEnginePromise = import('/portfolio-engine/index.mjs'));
 
 const pfCompute = async (pf, onProgress) => {
     const rows = pf.positions.filter((p) => pfValueOf(p) !== null && pfValueOf(p) !== 0);
@@ -363,6 +258,7 @@ const pfCompute = async (pf, onProgress) => {
         p._cur = it.currency || 'KRW';
         p._lev = Number(it.leverage_factor) || 1;
         p._name = it.name_ko || p.id;
+        p._class = it.asset_class || 'equity';
         if (p._sym) needed.add(p._sym);
         const fx = pfFxSymbol(p._cur);
         if (fx && p._sym !== fx) needed.add(fx);
@@ -377,14 +273,12 @@ const pfCompute = async (pf, onProgress) => {
 
     const series = {};
     for (const [sym, j] of Object.entries(fetched)) series[sym] = j.points;
-    const { dates, cols } = pfAlign(series);
-    if (dates.length < 60) throw new Error('공통 거래일이 60일 미만이라 계산이 불안정합니다.');
+    const { dates: dayNums, cols } = pfAlign(series);
+    if (dayNums.length < 60) throw new Error('공통 거래일이 60일 미만이라 계산이 불안정합니다.');
 
-    // Each holding becomes one KRW-denominated return series.
-    const names = [], weights = [], meta = [];
-    const retCols = [];
-    const total = rows.reduce((a, p) => a + Math.abs(pfValueOf(p)), 0);
-
+    // Each holding becomes one KRW-denominated price path (pre-return, pre-leverage);
+    // pricesToLogReturns turns those into the aligned log-return matrix the engine wants.
+    const priceCols = [], values = [], leverage = [], meta = [], seenId = new Set();
     for (const p of rows) {
         const signed = (p.side === 'short' ? -1 : 1) * Math.abs(pfValueOf(p));
         const fxSym = pfFxSymbol(p._cur);
@@ -392,7 +286,7 @@ const pfCompute = async (pf, onProgress) => {
         let krwPath;
         if (!p._sym) {
             // Base-currency cash: flat in KRW terms.
-            krwPath = dates.map(() => 1);
+            krwPath = dayNums.map(() => 1);
         } else if (p._sym === fxSym) {
             krwPath = cols[p._sym];                        // holding the currency itself
         } else if (fxSym) {
@@ -401,103 +295,86 @@ const pfCompute = async (pf, onProgress) => {
             krwPath = cols[p._sym];
         }
 
-        let r = pfSimpleReturns(krwPath);
-        // A daily-rebalanced 2x fund doubles the SIMPLE return each day. Doubling
-        // log returns instead squares the price path and quietly drops volatility
-        // decay -- the exact bug found in the Python engine (returns.py:158).
-        if (p._lev !== 1) r = r.map((x) => p._lev * x);
-
-        names.push(p._name);
-        weights.push(signed / total);
-        retCols.push(r);
-        meta.push({ name: p._name, currency: p._cur, side: p.side, lev: p._lev,
-                    signed, weight: signed / total });
+        priceCols.push(krwPath);
+        values.push(signed);
+        leverage.push(p._lev);
+        // The engine requires unique resolved ids; a long and a short of the
+        // same underlying otherwise collide.
+        let id = p.id;
+        if (p.side === 'short' || seenId.has(id)) id = `${id}__${p.side || 'long'}`;
+        seenId.add(id);
+        meta.push({ name: p._name, currency: p._cur, side: p.side, lev: p._lev, signed, id, asset_class: p._class });
     }
 
-    const T = Math.min(...retCols.map((c) => c.length));
-    const cut = retCols.map((c) => c.slice(c.length - T));
+    const isoDates = dayNums.map((d) => new Date(d * 86400000).toISOString().slice(0, 10));
+    const priceMatrix = isoDates.map((_, t) => priceCols.map((col) => col[t]));
 
-    const logCols = cut.map((c) => c.map((x) => Math.log1p(Math.max(x, -0.999999))));
-    const S = pfCov(logCols);
-    const portVar = pfDot(weights, pfMatVec(S, weights));
-    const dailyVol = Math.sqrt(Math.max(portVar, 0));
-    const annVol = dailyVol * Math.sqrt(PF_TRADING_DAYS);
+    const engine = await pfEngine();
+    const { dates, logReturns } = engine.pricesToLogReturns({ dates: isoDates, prices: priceMatrix, syntheticLeverage: leverage });
 
-    const mrc = pfMatVec(S, weights);
-    const rc = portVar > 0 ? weights.map((w, i) => w * mrc[i] / portVar) : weights.map(() => 0);
+    const positions = meta.map((m, i) => ({ id: m.id, currency: m.currency, asset_class: m.asset_class, value: values[i] }));
+    const hasShort = values.some((v) => v < 0);
+    const navRaw = Number(pf.net_asset_value);
+    const navGiven = Number.isFinite(navRaw) && navRaw > 0;
+    if (hasShort && !navGiven) throw new Error('공매도 보유가 있으면 순자산(NAV)을 직접 입력해야 계산할 수 있습니다.');
 
-    // Portfolio return is a weighted sum of simple returns; compounding that
-    // daily series is what an actual account does.
-    const portR = [];
-    for (let t = 0; t < T; t++) portR.push(weights.reduce((s, w, i) => s + w * cut[i][t], 0));
-
-    const sorted = [...portR].sort((a, b) => a - b);
-    const var1d = -pfQuantile(sorted, 0.05);
-    const cvar1d = -pfMean(sorted.slice(0, Math.max(1, Math.floor(sorted.length * 0.05))));
-    const var10d = PF_Z95 * dailyVol * Math.sqrt(10);
-
-    const window = Math.min(PF_TRADING_DAYS, portR.length);
-    const ret1y = portR.slice(-window).reduce((a, x) => a * (1 + x), 1) - 1;
-    const annRet = window >= PF_TRADING_DAYS ? ret1y
-        : Math.pow(1 + ret1y, PF_TRADING_DAYS / window) - 1;
-    const sharpe = annVol > 0 ? (annRet - PF_RF_ANNUAL) / annVol : null;
-
-    const sd = logCols.map(pfStd);
-    const corr = S.map((row, i) => row.map((v, j) =>
-        (sd[i] > 0 && sd[j] > 0) ? v / (sd[i] * sd[j]) : 0));
-
-    const krwWeight = meta.filter((m) => m.currency === 'KRW')
-        .reduce((a, m) => a + Math.abs(m.weight), 0);
-
-    // HRP is defined over long-only weights, so shorts are compared on the size
-    // of the bet rather than its direction, and the suggestion is read back as
-    // "carry more/less of this" rather than "flip it".
-    let target = null, deltas = null;
+    let result;
     try {
-        // Cash has no variance, so inverse-variance weighting is undefined for
-        // it -- and worse than undefined: a zero-variance cluster drives the
-        // bisection's alpha to 0 and zeroes out whatever sits opposite it. How
-        // much cash to hold is a policy question anyway, not something a
-        // covariance matrix can answer, so it keeps its weight and HRP runs on
-        // the risky sleeve alone.
-        const risky = [], riskless = [];
-        for (let i = 0; i < names.length; i++) {
-            (S[i][i] > 1e-12 ? risky : riskless).push(i);
+        result = engine.analyzePortfolio({
+            positions, dates, logReturns, baseCurrency: 'KRW',
+            netAssetValue: navGiven ? navRaw : null,
+            riskFreeRateAnn: PF_RF_ANNUAL,
+        });
+    } catch (err) {
+        if (/exceed NAV|equal NAV/.test(err.message || '')) {
+            throw new Error('입력한 순자산(NAV)이 보유 합계와 맞지 않습니다. NAV를 다시 확인해 주세요.');
         }
-        const gross = weights.reduce((a, w) => a + Math.abs(w), 0) || 1;
-        const heldRiskless = riskless.reduce((a, i) => a + Math.abs(weights[i]), 0);
-        const sleeve = gross - heldRiskless;
+        throw err;
+    }
 
-        if (risky.length >= 2 && sleeve > 0) {
-            const subCorr = risky.map((i) => risky.map((j) => corr[i][j]));
-            const subCov = risky.map((i) => risky.map((j) => S[i][j]));
-            const { order } = pfLinkage(pfCorrDist(subCorr));
-            const hrp = pfHrp(subCov, order);
+    const hasResidual = result.asset_ids.length > meta.length;
+    const names = meta.map((m) => m.name);
+    if (hasResidual) {
+        names.push('현금(잔여)');
+        meta.push({ name: '현금(잔여)', currency: 'KRW', side: 'long', lev: 1, signed: null,
+                    id: '__residual_base_cash__', asset_class: 'cash' });
+    }
 
-            target = new Array(names.length).fill(0);
-            riskless.forEach((i) => { target[i] = Math.abs(weights[i]); });
-            risky.forEach((idx, k) => { target[idx] = hrp[k] * sleeve; });
+    const weights = result.advice.current_weights;
+    // Same guard as the old HRP path: a suggestion needs at least two
+    // non-fixed (non-cash, non-short) positions to say anything meaningful.
+    const riskyCount = result.advice.fixed_mask.filter((f) => !f).length;
+    const target = (result.advice.allocation_status === 'ok' && riskyCount >= 2)
+        ? result.advice.target_weights : null;
+    const deltas = target ? names.map((n, i) => ({
+        name: n,
+        delta: target[i] - weights[i],
+        from: Math.abs(weights[i]),
+        to: Math.abs(target[i]),
+        riskless: result.advice.fixed_mask[i],
+    })).sort((a, b) => b.delta - a.delta) : null;
 
-            deltas = names.map((n, i) => ({
-                name: n,
-                delta: target[i] - Math.abs(weights[i]),
-                from: Math.abs(weights[i]),
-                to: target[i],
-                riskless: riskless.includes(i),
-            })).sort((a, b) => b.delta - a.delta);
-        }
-    } catch (_) { /* suggestion is optional; the diagnosis is not */ }
+    const currencyById = new Map(positions.map((p) => [p.id, p.currency]));
+    const krwWeight = result.asset_ids.reduce((a, id, i) =>
+        a + ((currencyById.get(id) || 'KRW') === 'KRW' ? Math.abs(weights[i]) : 0), 0);
+    const foreignWeight = result.asset_ids.reduce((a, id, i) =>
+        a + ((currencyById.get(id) || 'KRW') !== 'KRW' ? Math.abs(weights[i]) : 0), 0);
 
     return {
-        names, weights, rc, meta, corr, total, target, deltas,
-        obs: T,
-        start: new Date(dates[dates.length - T] * 86400000).toISOString().slice(0, 10),
-        end: new Date(dates[dates.length - 1] * 86400000).toISOString().slice(0, 10),
-        annVol, annRet, sharpe,
-        var1d, cvar1d, var10d,
-        var10dKrw: var10d * total,
-        krwWeight, foreignWeight: 1 - krwWeight,
-        clusters: pfClusters(names, corr).map((g) => ({
+        names, weights, rc: result.risk_contribution, meta, corr: result.correlation_short,
+        total: result.accounting.net_asset_value, target, deltas,
+        obs: result.data_quality.n_obs,
+        start: result.data_quality.start,
+        end: result.data_quality.end,
+        annVol: result.performance.ann_volatility_short,
+        annRet: result.performance.ann_return_short,
+        sharpe: result.performance.sharpe_short,
+        var1d: result.risk.short.var_1d_95,
+        cvar1d: result.risk.short.cvar_1d_95,
+        var10d: result.risk.short.var_10d_95,
+        var10dKrw: result.risk.short.var_10d_95_amount,
+        krwWeight, foreignWeight,
+        clusters: pfClusters(names, result.correlation_short).map((g) => ({
             members: g.map((i) => names[i]),
             weight: g.reduce((a, i) => a + Math.abs(weights[i]), 0),
         })),
@@ -792,6 +669,14 @@ const renderPfInput = (root, onDone) => {
                 }).join('')}
             </div>
             <div class="pf-total"><span>합계</span><strong>${pfKrw(total)}</strong></div>
+            <div class="pf-nav-field">
+                <label for="pf-nav">순자산(NAV, 원)</label>
+                <input type="text" id="pf-nav" class="pf-field" inputmode="numeric"
+                       value="${pf.net_asset_value ? Number(pf.net_asset_value).toLocaleString('ko-KR') : ''}"
+                       placeholder="비워두면 보유 합계로 계산">
+                ${pf.positions.some((p) => p.side === 'short')
+                    ? '<p class="pf-limit">공매도 보유가 있어 순자산을 직접 입력해야 계산할 수 있습니다.</p>' : ''}
+            </div>
             <div class="pf-actions">
                 <button id="pf-run" class="pf-btn pf-btn-primary">계산하기</button>
                 <button id="pf-clear" class="pf-btn pf-btn-ghost">전부 지우기</button>
@@ -1002,6 +887,18 @@ const renderPfInput = (root, onDone) => {
         if (!confirm('보유 목록을 전부 지웁니다. 되돌릴 수 없습니다.')) return;
         pfSave(pfBlank());
         renderPfInput(root, onDone);
+    });
+
+    const navEl = root.querySelector('#pf-nav');
+    navEl?.addEventListener('input', () => {
+        const raw = String(navEl.value).replace(/[^0-9]/g, '');
+        navEl.value = raw ? Number(raw).toLocaleString('ko-KR') : '';
+    });
+    navEl?.addEventListener('change', () => {
+        const raw = String(navEl.value).replace(/[^0-9]/g, '');
+        const next = pfLoad() || pfBlank();
+        next.net_asset_value = raw ? Number(raw) : null;
+        pfSave(next);
     });
 
     root.querySelector('#pf-run')?.addEventListener('click', () => onDone && onDone());
