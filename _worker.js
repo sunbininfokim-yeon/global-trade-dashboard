@@ -2873,16 +2873,32 @@ async function usSearch(env, f) {
     return { ok: true, body: { query: f.query, items } };
 }
 
-// PostgREST group-by aggregate: `select=<col>,count()` returns one row per
-// distinct value. Supabase ships this enabled, but a project can turn it off
-// (db-aggregates-enabled), and it is not worth failing a whole directory screen
-// over a badge number -- so a rejection degrades to "no counts" and the tiles
-// still render.
+// The obvious way to write this is a PostgREST group-by aggregate
+// (`select=<col>,count()`), but that needs db-aggregates-enabled, which this
+// project has off -- confirmed by /api/us/coverage coming back with every
+// grouped field null while the plain totals worked fine. So this pages
+// through the one column instead and tallies client-side; even the largest
+// table here (bills, ~18k rows) is a handful of requests of a single short
+// column each. Not worth failing a whole directory screen over a badge
+// number, so a rejection still degrades to "no counts" rather than an error.
 async function usCountBy(env, table, column, extra = '') {
     try {
-        const rows = await usFetch(env, table, `select=${column},count()${extra}`);
         const out = {};
-        for (const row of rows) out[row[column]] = Number(row.count) || 0;
+        const pageSize = 1000;
+        let offset = 0;
+        let total = Infinity;
+        while (offset < total) {
+            const query = `select=${column}${extra}&limit=${pageSize}&offset=${offset}`;
+            const { rows, total: reportedTotal } = await usFetch(env, table, query, { count: 'exact' });
+            total = Number.isFinite(reportedTotal) ? reportedTotal : offset + rows.length;
+            for (const row of rows) {
+                const key = row[column];
+                if (key == null) continue;
+                out[key] = (out[key] || 0) + 1;
+            }
+            if (rows.length < pageSize) break;
+            offset += pageSize;
+        }
         return out;
     } catch (err) {
         console.log(`[us] count by ${table}.${column} unavailable: ${err.message}`);
