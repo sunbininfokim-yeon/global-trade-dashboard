@@ -2842,11 +2842,25 @@ async function usSearch(env, f) {
         if (err.status === 503) return { ok: true, body: { query: f.query, items: [], unavailable: true } };
         throw err;
     }
+    // Regulations have no drill-down screen of their own (they only ever show
+    // up nested under an EO or a CFR title), so a regulation search hit needs
+    // its official URL fetched separately -- bills and EOs already have an
+    // internal detail view the result row can just navigate to.
+    const regulationIds = [...new Set((rows || [])
+        .filter((r) => r.source_type === 'regulation')
+        .map((r) => r.source_id))];
+    const regulationUrls = new Map();
+    if (regulationIds.length) {
+        const regRows = await usFetch(env, 'regulations',
+            `select=regulation_id,federal_register_url&regulation_id=in.(${regulationIds.map((id) => encodeURIComponent(id)).join(',')})`);
+        for (const reg of regRows) regulationUrls.set(reg.regulation_id, reg.federal_register_url);
+    }
     const items = (rows || []).map((r) => ({
         type: r.source_type,
         id: r.source_id,
         title: r.title,
         similarity_score: r.similarity_score,
+        source_url: r.source_type === 'regulation' ? (regulationUrls.get(r.source_id) || null) : undefined,
     }));
     return { ok: true, body: { query: f.query, items } };
 }
