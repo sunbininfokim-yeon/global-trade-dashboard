@@ -339,10 +339,13 @@ Congress.gov action code와 문구를 근거로 정규화하되, 원문은 항�
 
 ## 7. 검색과 임베딩
 
-검색 UI는 현재 invisible 상태다. 스키마의 임베딩 컬럼과 HNSW 인덱스는 이후 기능을 위해 유지한다.
+검색 UI는 자연어 검색 전용으로 노출한다. 브라우저는 Gemini 또는 Supabase service-role 키를 직접 갖지 않는다. Worker가 질의 임베딩과 RPC 호출을 수행한다.
 
 - 키워드 검색: PostgreSQL Full Text Search로 구현 가능하며 LLM이 필요 없다.
 - 의미 검색/유사 법안: Gemini `gemini-embedding-001`이 만든 1536차원 벡터와 cosine distance를 사용한다.
+- 통합 의미 검색 RPC: `search_policy_corpus(p_query_embedding vector(1536), p_embedding_model text, p_result_limit integer default 20)`은 `bills`, `executive_orders`, `regulations`를 합쳐 유사도 순으로 반환한다. 각 행은 질의의 `embedding_model`과 **정확히 같은 모델명**이고 벡터가 있을 때만 검색 후보가 된다.
+- Worker의 질의 임베딩은 문서 적재용 `RETRIEVAL_DOCUMENT`가 아니라 Gemini의 `RETRIEVAL_QUERY` task type과 같은 1536 차원을 사용한다. 모델명도 저장된 문서와 일치해야 한다.
+- 종료(`failed`/`vetoed`) 법안은 보존 최소화 시 embedding을 제거하므로 검색 후보가 아니다. 새 회기 전까지는 현재 회기의 진행 법안과 제정 법률이 함께 검색될 수 있으며, rollover 뒤에는 제정되지 못한 이전 회기 법안 자체가 삭제된다.
 - 자연어 질의·RAG 답변: 별도 LLM이 필요하며 이번 범위가 아니다.
 - 임베딩 입력: 제목 + 공식 summary/abstract만 사용한다.
 - 향후 한글 키워드 검색은 번역 계층에서 영어 검색어를 만든 뒤 PostgreSQL Full Text Search에 전달한다. 원문 제목·요약·공식 링크는 번역 결과로 덮어쓰지 않으며, 번역/LLM 검색 UI는 이번 범위 밖이다.

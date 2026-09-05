@@ -1,6 +1,6 @@
 # 미국 정책 UI 화면 ↔ 데이터 파이프라인 매핑
 
-이 문서는 확정된 손그림 화면과 Phase 2-1 데이터 계약을 1:1로 연결한다. 검색 입력창은 **비활성화** 상태이며, 이 문서의 어떤 화면도 검색 API나 LLM을 요구하지 않는다.
+이 문서는 확정된 손그림 화면과 Phase 2-1 데이터 계약을 1:1로 연결한다. 검색 입력창은 자연어 의미 검색으로 연결한다. 브라우저는 AI·Supabase service-role 키를 직접 호출하지 않고 Worker API만 호출한다.
 
 > API 경로는 프론트엔드가 사용할 논리 계약이다. 현재 리포지터리에는 HTTP 라우트를 구현하지 않았으며, 서버 계층은 service-role 키로 DB를 읽어 이 응답 모양으로 변환한다. 브라우저는 service-role 키나 원본 테이블을 직접 호출하지 않는다.
 
@@ -209,7 +209,7 @@ EO 번호(`EO 01`, `EO 02` 같은 UI 라벨)는 `eo_number`를 표시용으로 �
 | EO·기관·법적 근거·규제 | Federal Register | 동기화 진행 중 | EO 상세/관련 규제 표시 |
 | Public Law·U.S. Code 참조 | GovInfo | cursor 재개 백필 | 제정 법률/공식 링크 표시 |
 | 산업 프로필 | Phase 2-2 이후 | 미수집 | placeholder |
-| 키워드·의미 검색 | FTS/embedding 후속 | 검색 UI 비활성화 | 노출하지 않음 |
+| 키워드·의미 검색 | Gemini query embedding → `search_policy_corpus` | Worker API 구현 후 노출 | 제정법·EO·규제와 현재 회기 진행 법안 |
 
 ## 구현 순서
 
