@@ -4446,6 +4446,24 @@ body.macro-night .mm-hint { background: rgba(6, 11, 22, .88); }
     font-size: 12px;
 }
 
+/* The Enter-key destination: its own screen/URL, not the header dropdown, so
+   rows get real width instead of the dropdown's fixed 320px -- long titles
+   wrap instead of ellipsizing. */
+.policy-search-page-results {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.policy-search-page-results .policy-search-result {
+    font-size: 13px;
+    padding: 9px 10px;
+}
+
+.policy-search-page-results .policy-search-result-title {
+    white-space: normal;
+}
+
 .policy-crumb {
     display: flex;
     align-items: center;
