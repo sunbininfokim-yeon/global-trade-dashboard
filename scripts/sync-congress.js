@@ -269,23 +269,29 @@ async function bundle(ref) {
   // Every current-Congress bill reads its official action timeline once so the
   // lifecycle stage is based on evidence, not only the wording of the latest
   // one-line status. Index-only bills discard the timeline after classification
-  // and never persist action, text, or vote detail.
-  const [summaryBody, subjectBody, committeeBody, actionBody] = await Promise.all([
-    apiGet(`${path}/summaries`, { limit: 250 }, true), apiGet(`${path}/subjects`, { limit: 250 }, true),
+  // and never persist action, text, summary, or vote detail -- referred/
+  // subcommittee/committee_consideration bills are the vast majority of any
+  // Congress (12.5k of 18.5k here) and most never advance, so summarizing
+  // them all up front does not scale. A summary is only worth storing once a
+  // bill has cleared committee (reported or later) and is actually headed to
+  // a floor vote.
+  const [subjectBody, committeeBody, actionBody] = await Promise.all([
+    apiGet(`${path}/subjects`, { limit: 250 }, true),
     apiGet(`${path}/committees`, { limit: 250 }, true), apiGet(`${path}/actions`, { limit: 250 }, true),
   ]);
-  const summaries = asArray(summaryBody?.summaries);
-  const latestSummary = [...summaries].sort((a, b) => String(a.updateDate || '').localeCompare(String(b.updateDate || ''))).at(-1);
   const basicLatestAction = detail.latestAction || ref.listItem?.latestAction || {};
   const actions = asArray(actionBody?.actions);
   const currentStage = stageFromActions(actions, ref.type, basicLatestAction);
   const level = detailLevel(currentStage);
-  const [textBody, relationBody] = level === 'index'
-    ? [null, null]
+  const [summaryBody, textBody, relationBody] = level === 'index'
+    ? [null, null, null]
     : await Promise.all([
+      apiGet(`${path}/summaries`, { limit: 250 }, true),
       apiGet(`${path}/text`, { limit: 250 }, true),
       apiGet(`${path}/relatedbills`, { limit: 250 }, true),
     ]);
+  const summaries = asArray(summaryBody?.summaries);
+  const latestSummary = [...summaries].sort((a, b) => String(a.updateDate || '').localeCompare(String(b.updateDate || ''))).at(-1);
   const latestAction = latestActionOf(actions, basicLatestAction);
   const sponsorItem = asArray(detail.sponsors?.item || detail.sponsors || detail.sponsor).at(0) || {};
   const sponsorId = firstNonEmpty(sponsorItem.bioguideId, sponsorItem.bioguide_id);
