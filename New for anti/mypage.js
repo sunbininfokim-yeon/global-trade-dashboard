@@ -1,9 +1,10 @@
 // My Page: 즐겨찾기 / 메일링 서비스 / 포트폴리오 / 개인정보수정.
 // Basic scaffold -- structure, routing, and the backend calls are wired up;
-// depth (richer favorite cards, the portfolio calculator once it exists,
+// depth (richer favorite cards, spreadsheet upload for the portfolio tab,
 // notification-preference toggles beyond the commodity source filter) is
-// left for follow-up work. Reads window.Auth (auth.js) and window.USPolicy
-// (policy.js), both loaded earlier in index.html.
+// left for follow-up work. Reads window.Auth (auth.js), window.USPolicy
+// (policy.js), and renderPortfolioLab (portfolio.js) -- all loaded earlier
+// in index.html and sharing this page's script scope.
 (() => {
     const TABS = [
         { id: 'favorites', label: '즐겨찾기' },
@@ -171,12 +172,24 @@
 
     /* ------------------------------------------------------------ 포트폴리오 */
 
-    function renderPortfolio() {
-        panel('portfolio').innerHTML = `
-            <p class="mypage-empty">
-                포트폴리오 계산기는 아직 준비 중입니다. 엑셀/CSV 파일을 업로드하면 바로
-                평가해주는 기능이 이 탭에 들어올 예정입니다.
-            </p>`;
+    // Same calculator as Finance›Portfolio Lab (portfolio.js, loaded earlier in
+    // index.html so renderPortfolioLab shares this page's script scope) --
+    // one engine, one UI, two entry points, per the T25 design. Holdings are
+    // saved to the same portfolioLab.v1 localStorage key, so a list started
+    // on one screen picks up on the other.
+    async function renderPortfolio() {
+        const el = panel('portfolio');
+        if (typeof renderPortfolioLab !== 'function') {
+            el.innerHTML = '<p class="mypage-empty">포트폴리오 계산기를 불러오지 못했습니다.</p>';
+            return;
+        }
+        const token = renderToken;
+        try {
+            await renderPortfolioLab(el);
+        } catch (err) {
+            if (token !== renderToken) return;
+            el.innerHTML = `<p class="mypage-empty">포트폴리오 계산기를 불러오지 못했습니다: ${esc(err.message)}</p>`;
+        }
     }
 
     /* ------------------------------------------------------------ 개인정보 */
