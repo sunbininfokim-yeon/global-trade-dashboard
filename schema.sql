@@ -255,7 +255,10 @@ create table if not exists public.committee_members (
     check (role in ('member', 'chair', 'vice_chair', 'ranking_member', 'ex_officio')),
   congress_number integer not null,
   source_url text not null,
+  source_name text not null default 'legacy',
   source_updated_at timestamptz,
+  current boolean not null default true,
+  membership_seen_at timestamptz not null default now(),
   raw_source jsonb not null default '{}'::jsonb,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
@@ -264,6 +267,8 @@ create table if not exists public.committee_members (
 
 create index if not exists committee_members_leadership_idx
   on public.committee_members (committee_id, congress_number, role);
+create index if not exists committee_members_current_role_idx
+  on public.committee_members (congress_number, current, role, committee_id);
 
 create table if not exists public.bills (
   bill_id text primary key,
@@ -664,10 +669,18 @@ create table if not exists public.executive_order_agencies (
   eo_number integer not null references public.executive_orders(eo_number) on delete cascade,
   agency_id text not null references public.agencies(agency_id) on delete cascade,
   relationship_type text not null
-    check (relationship_type in ('issuing_document', 'implementing_regulation')),
+    check (relationship_type in (
+      'issuing_document',
+      'implementing_regulation',
+      'directed_agency',
+      'coordinating_agency',
+      'consulted_agency'
+    )),
   relation_origin text not null
-    check (relation_origin in ('official_document_metadata', 'official_citation')),
+    check (relation_origin in ('official_document_metadata', 'official_citation', 'official_text_citation')),
   source_url text,
+  evidence_excerpt text,
+  evidence_section text,
   created_at timestamptz not null default now(),
   primary key (eo_number, agency_id, relationship_type, relation_origin)
 );
@@ -905,6 +918,8 @@ create index if not exists executive_orders_tier_sync_idx
   on public.executive_orders (storage_tier, last_synced_at);
 create index if not exists executive_order_agencies_agency_idx
   on public.executive_order_agencies (agency_id, eo_number);
+create index if not exists executive_order_agencies_role_idx
+  on public.executive_order_agencies (eo_number, relationship_type, agency_id);
 create index if not exists regulations_date_idx
   on public.regulations (publication_date desc);
 create index if not exists regulations_storage_tier_idx
@@ -1214,6 +1229,41 @@ begin
   from desired d
   where r.regulation_id = d.regulation_id
     and r.storage_tier is distinct from d.next_tier;
+end;
+$$;
+
+-- 완전한 공식 위원회 스냅샷은 자신이 포함한 역할 범위의 행만 비활성화할 수
+-- 있다. 적재기는 원본을 검증하고 모든 입력 행을 쓴 뒤에 이 함수를 호출한다.
+create or replace function public.reconcile_committee_membership_snapshot(
+  p_congress_number integer,
+  p_roles text[],
+  p_seen_at timestamptz
+)
+returns integer
+language plpgsql
+set search_path = public
+as $$
+declare
+  retired_count integer;
+begin
+  if p_congress_number is null or p_congress_number < 1 then
+    raise exception 'p_congress_number must be a positive integer';
+  end if;
+  if coalesce(cardinality(p_roles), 0) = 0 then
+    raise exception 'p_roles must not be empty';
+  end if;
+  if p_seen_at is null then
+    raise exception 'p_seen_at must not be null';
+  end if;
+
+  update public.committee_members
+  set current = false
+  where congress_number = p_congress_number
+    and current = true
+    and role = any(p_roles)
+    and membership_seen_at < p_seen_at;
+  get diagnostics retired_count = row_count;
+  return retired_count;
 end;
 $$;
 

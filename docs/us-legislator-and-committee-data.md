@@ -36,11 +36,15 @@ node scripts/sync-policy-reference-data.js
 선행: 정치-미국 파이프라인이 elections_board_v1.json을 최신 상태로 생성
 ```
 
-## 아직 비워 두는 데이터
+## 위원장·구성원: 월간 검증 파이프라인
 
-정치-미국 파일에는 상임위 구성원·위원장·부위원장·ranking member 데이터가 없다. 따라서 `committee_members` 테이블을 만들더라도 이 단계에서는 행을 추정해 넣지 않는다. 다음 소스가 공식 URL과 바이오가이드 ID를 함께 줄 때만 적재한다.
+정치-미국 파일에는 상임위 구성원·위원장·부위원장·ranking member 데이터가 없다. 따라서 이 데이터는 Cursor가 매월 공식 House/Senate roster를 확인해 버전 관리 파일에 추가하고, 동기화 스크립트가 **검증 후에만** Supabase로 적재한다. Cursor가 이름을 알아낸 것만으로 DB를 직접 수정하지 않는다.
 
-- House Clerk 또는 House committee의 공식 roster
-- Senate committee의 공식 roster
+1. `data/policy/committee-memberships.example.json`을 복사해 `data/policy/committee-memberships.json`을 만든다.
+2. 각 행에는 `committee_id`, `bioguide_id`, 역할, HTTPS 공식 House/Senate/Congress.gov URL을 넣는다.
+3. Cursor는 공식 페이지의 표기와 바이오가이드 ID를 대조하고, 변경 내용을 PR로 남긴다.
+4. 월간 GitHub Actions가 `node scripts/sync-policy-reference-data.js`를 실행한다. 이 명령은 의원 명단·상임위 디렉터리를 먼저 갱신한 뒤, 위 파일의 외래키와 공식 URL을 확인하고 적재한다.
 
-그 전까지 UI는 위원장 정보를 “준비 중”으로 표시해야 하며, `committee_agency_jurisdictions`도 공식 또는 검증된 수동 매핑이 없는 경우 빈 값이 맞다. 법안 수로 기관 소관을 추정해 채우지 않는다.
+`coverage.complete: true`는 해당 역할군의 **완전한 스냅샷**일 때만 쓴다. `member`가 포함된 완전 스냅샷은 최소 250행, 리더십 완전 스냅샷은 최소 20행이 아니면 실패한다. 검증과 upsert가 모두 끝난 뒤에만 이번 달에 보이지 않은 기존 행을 `current=false`로 바꾼다. 부분 파일·빈 Cursor 결과가 현직 위원장을 지우지 못하게 하기 위한 안전장치다.
+
+공식 또는 검증된 수동 매핑이 없는 `committee_agency_jurisdictions`는 계속 빈 값으로 남긴다. 법안 수나 키워드로 기관 소관을 추정해 넣지 않는다.

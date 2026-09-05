@@ -7,6 +7,8 @@ const {
   asArray, fetchJson, firstNonEmpty, supabaseGet, supabaseInsert, supabaseInsertIgnore, supabasePatch,
 } = require('./sync-utils');
 const { publicLawBillLink } = require('./public-law-links');
+const fs = require('node:fs');
+const path = require('node:path');
 
 const ALLOWED_TYPES = new Set([
   'constitution', 'usc', 'public_law', 'statutes_at_large', 'executive_order', 'regulation', 'other',
@@ -71,24 +73,71 @@ function structuredAuthorities(document) {
     }));
 }
 
-async function citationAuthorities(document) {
-  const officialUrl = firstNonEmpty(document?.html_url, document?.raw_text_url, document?.body_html_url);
-  const rawTextUrl = firstNonEmpty(document?.raw_text_url, document?.body_html_url);
-  if (!rawTextUrl) return [];
+function approvedOfficialTextUrl(value) {
   try {
-    const body = await fetchJson(rawTextUrl, {}, { label: 'Federal Register EO authority text', maxRetries: 3 });
-    return officialTextAuthorities(typeof body === 'string' ? body : '', officialUrl);
-  } catch (error) {
-    // Authority extraction enriches the record but must not make the source
-    // of record fail. The error contains no source text or credentials.
-    console.warn(`EO authority text skipped: ${error.message}`);
-    return [];
+    const parsed = new URL(String(value || ''));
+    return parsed.protocol === 'https:'
+      && /(^|\.)(federalregister\.gov|govinfo\.gov|archives\.gov)$/i.test(parsed.hostname)
+      ? parsed.toString()
+      : null;
+  } catch {
+    return null;
   }
 }
 
-async function saveEoAuthorities(eoNumber, document) {
+function cachedOfficialEoText(document) {
+  const cacheRoot = process.env.EO_OFFICIAL_TEXT_CACHE_DIR;
+  const documentNumber = String(document?.document_number || '').trim();
+  if (!cacheRoot || !documentNumber) return null;
+  const filePath = path.join(path.resolve(cacheRoot), `${path.basename(documentNumber)}.json`);
+  if (!fs.existsSync(filePath)) return null;
+  try {
+    const record = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+    const text = String(record?.text || '').trim();
+    const officialUrl = approvedOfficialTextUrl(record?.official_url);
+    if (text && officialUrl) return { text, official_url: officialUrl };
+    console.warn(`EO authority cache skipped for ${documentNumber}: official_url or text is missing.`);
+  } catch (error) {
+    console.warn(`EO authority cache skipped for ${documentNumber}: ${error.message}`);
+  }
+  return null;
+}
+
+function hasCachedOfficialEoText(document) {
+  const cacheRoot = process.env.EO_OFFICIAL_TEXT_CACHE_DIR;
+  const documentNumber = String(document?.document_number || '').trim();
+  if (!cacheRoot || !documentNumber) return false;
+  return fs.existsSync(path.join(path.resolve(cacheRoot), `${path.basename(documentNumber)}.json`));
+}
+
+async function loadOfficialEoText(document, options = {}) {
+  const cached = cachedOfficialEoText(document);
+  if (cached) return cached;
+  if (options.cacheOnly) return null;
+  const officialUrl = firstNonEmpty(document?.html_url, document?.raw_text_url, document?.body_html_url);
+  const rawTextUrl = firstNonEmpty(document?.raw_text_url, document?.body_html_url);
+  if (!rawTextUrl) return null;
+  try {
+    const body = await fetchJson(rawTextUrl, {}, { label: 'Federal Register EO authority text', maxRetries: 3 });
+    const text = typeof body === 'string' ? body : '';
+    return text ? { text, official_url: officialUrl || rawTextUrl } : null;
+  } catch (error) {
+    // 원문 분석은 보강 작업이다. 일시적인 원본 오류가 EO 기본 적재를 실패하게
+    // 해서는 안 되며, 로그에는 원문이나 인증정보를 남기지 않는다.
+    console.warn(`EO authority text skipped: ${error.message}`);
+    return null;
+  }
+}
+
+async function citationAuthorities(document, officialText = null) {
+  const source = officialText || await loadOfficialEoText(document);
+  if (!source?.text) return [];
+  return officialTextAuthorities(source.text, source.official_url);
+}
+
+async function saveEoAuthorities(eoNumber, document, officialText = null) {
   const publicLawCache = new Map();
-  const candidates = [...structuredAuthorities(document), ...await citationAuthorities(document)];
+  const candidates = [...structuredAuthorities(document), ...await citationAuthorities(document, officialText)];
   const deduped = new Map();
   for (const authority of candidates) {
     if (!authority.citation || !ALLOWED_TYPES.has(authority.authority_type)) continue;
@@ -127,4 +176,12 @@ async function saveEoAuthorities(eoNumber, document) {
   return linked;
 }
 
-module.exports = { authorityClause, officialTextAuthorities, saveEoAuthorities };
+module.exports = {
+  approvedOfficialTextUrl,
+  authorityClause,
+  citationAuthorities,
+  hasCachedOfficialEoText,
+  loadOfficialEoText,
+  officialTextAuthorities,
+  saveEoAuthorities,
+};
