@@ -202,12 +202,19 @@
   const searchResultRow = (item) => {
     const view = SEARCH_TYPE_VIEWS[item.type];
     const typeLabel = SEARCH_TYPE_LABELS[item.type] || item.type;
+    const body = `<span class="policy-search-result-type">${esc(typeLabel)}</span>
+        <span class="policy-search-result-title">${esc(item.title || item.id)}</span>`;
+    // Regulations have no internal drill-down screen of their own -- they
+    // only ever appear nested under an EO or a CFR title -- so a search hit
+    // links straight to its official Federal Register page instead.
+    if (item.type === 'regulation') {
+      return item.source_url
+        ? `<a class="policy-search-result" href="${esc(item.source_url)}" target="_blank" rel="noopener noreferrer">${body}</a>`
+        : `<div class="policy-search-result is-inert">${body}</div>`;
+    }
     const tag = view ? 'button' : 'div';
     const navAttrs = view ? ` type="button" data-view="${esc(view)}" data-id="${esc(item.id)}"` : '';
-    return `<${tag} class="policy-search-result${view ? '' : ' is-inert'}"${navAttrs}>
-        <span class="policy-search-result-type">${esc(typeLabel)}</span>
-        <span class="policy-search-result-title">${esc(item.title || item.id)}</span>
-      </${tag}>`;
+    return `<${tag} class="policy-search-result${view ? '' : ' is-inert'}"${navAttrs}>${body}</${tag}>`;
   };
 
   function renderSearchMessage(message) {
