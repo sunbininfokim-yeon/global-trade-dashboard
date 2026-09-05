@@ -118,6 +118,7 @@
   const eoListCache = new Map();     // agency_id -> list response
   const eoCache = new Map();         // eo_number -> detail
   const cfrCache = new Map();        // title_number -> detail
+  const searchCache = new Map();     // query -> search response
 
   const cached = (map, key, load) => {
     if (map.has(key)) return map.get(key);
@@ -137,6 +138,7 @@
   const loadEoList = (agencyId) => cached(eoListCache, agencyId || '', () => api(`/executive/orders${qs({ agency_id: agencyId, limit: 100 })}`));
   const loadEo = (eoNumber) => cached(eoCache, String(eoNumber), () => api(`/executive/orders/${eoNumber}`));
   const loadCfrTitle = (n) => cached(cfrCache, String(n), () => api(`/executive/cfr-titles/${n}`));
+  const loadSearch = (query) => cached(searchCache, query, () => api(`/search${qs({ q: query })}`));
 
   /* ---------------------------------------------------------------- shell */
 
@@ -260,6 +262,16 @@
   function onSearchKeydown(event) {
     const input = event.target.closest('[data-search-input]');
     if (!input || !host.contains(input)) return;
+    if (event.key === 'Enter') {
+      const query = input.value.trim();
+      if (!query) return;
+      clearTimeout(searchTimer);
+      searchToken += 1; // drop any in-flight dropdown fetch, the full page is taking over
+      const box = host.querySelector('[data-search-results]');
+      if (box) box.hidden = true;
+      go('search', query);
+      return;
+    }
     if (event.key !== 'Escape') return;
     input.value = '';
     state.search.query = '';
@@ -884,6 +896,20 @@
       </div>`);
   }
 
+  // Reached by pressing Enter in the header search box (onSearchKeydown) --
+  // the dropdown is for a quick glance while typing; this is its own screen
+  // with its own URL, so a search is shareable and survives a refresh the
+  // same way every other drill-down level does.
+  function viewSearch(query, overview, extra) {
+    const body = extra?.results;
+    const heading = `"${query}" 검색`;
+    if (!body) return shell(card(heading, empty('검색 결과를 불러오지 못했습니다')));
+    if (body.unavailable) return shell(card(heading, empty('검색 기능 준비 중입니다')));
+    if (!body.items?.length) return shell(card(heading, empty('검색 결과가 없습니다')));
+    return shell(card(`${heading} (${body.items.length}건)`,
+      `<div class="policy-search-page-results">${body.items.map(searchResultRow).join('')}</div>`));
+  }
+
   /* -------------------------------------------------------------- routing */
 
   // Where each level sits, so a destination reached from anywhere still lands
@@ -897,6 +923,7 @@
   const PARENT = {
     congress: null,
     executive: null,
+    search: null,
     committee: 'congress',
     area: 'congress',
     agency: 'executive',
@@ -928,6 +955,8 @@
         return extra?.bill?.title || '법률';
       case 'eo':
         return `EO ${id}`;
+      case 'search':
+        return `검색: "${id}"`;
       default: return view;
     }
   }
@@ -957,6 +986,8 @@
         return { eoPage: await loadEoList(id) };
       case 'eo':
         return { eo: await loadEo(id) };
+      case 'search':
+        return { results: await loadSearch(id) };
       default:
         return {};
     }
@@ -971,6 +1002,7 @@
     cfr: viewCfrTitle,
     bill: viewBill,
     eo: viewEO,
+    search: viewSearch,
   };
 
   let host = null;
