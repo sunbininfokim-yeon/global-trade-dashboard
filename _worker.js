@@ -3139,7 +3139,8 @@ async function usEoList(env, f) {
 async function usEoDetail(env, eoNumber) {
     const rows = await usFetch(env, 'executive_orders',
         `select=${EO_LIST_COLUMNS},`
-        + `executive_order_agencies(agencies(agency_id,name,short_name,agency_type)),`
+        + `executive_order_agencies(relationship_type,relation_origin,source_url,evidence_excerpt,evidence_section,`
+        + `agencies(agency_id,name,short_name,agency_type)),`
         + `executive_order_authorities(legal_authorities(citation,title,official_url,verification_status,linked_bill_id)),`
         + `executive_order_regulations(regulations(regulation_id,document_type,title,publication_date,effective_on,federal_register_url))`
         + `&eo_number=eq.${eoNumber}&limit=1`);
@@ -3147,7 +3148,20 @@ async function usEoDetail(env, eoNumber) {
     if (!rows.length) throw usNotFound(`EO ${eoNumber}`);
     const eo = rows[0];
 
-    eo.agencies = (eo.executive_order_agencies || []).map((x) => x.agencies).filter(Boolean);
+    // Kept per relationship_type rather than flattened to a bare agency list --
+    // issuing_document/implementing_regulation carry no evidence text, while
+    // the official_text_citation roles (directed/coordinating/consulted) do,
+    // and the UI shows *why* an agency is attached only when it has one.
+    eo.agency_relations = (eo.executive_order_agencies || [])
+        .filter((x) => x.agencies)
+        .map((x) => ({
+            agency: x.agencies,
+            relationship_type: x.relationship_type,
+            relation_origin: x.relation_origin,
+            source_url: x.source_url,
+            evidence_excerpt: x.evidence_excerpt,
+            evidence_section: x.evidence_section,
+        }));
     delete eo.executive_order_agencies;
 
     // linked_bill_id -> bill_id: the UI's citation renderer only knows the
