@@ -12,15 +12,24 @@
       "authentication": "none_required_per_official_docs",
       "independent_expenditure_mapping": "not_implemented",
       "independent_expenditure_endpoint": "https://api.ocpf.us/miscreports/iepacs/reports/{year}",
-      "api_documentation": "https://api.ocpf.us/swagger/index.html"
+      "api_documentation": "https://api.ocpf.us/swagger/index.html",
+      "last_probe": {
+        "date": "2026-09-06",
+        "result": "HTTP_500_on_documented_IEPAC_endpoint",
+        "status": "not_connected"
+      }
     },
     "WA": {
       "agency": "Washington PDC",
       "access": "soda_odata_api",
       "url": "https://www.pdc.wa.gov/faq/do-you-have-data-api-programmers",
       "catalog_url": "https://www.pdc.wa.gov/political-disclosure-reporting-data/open-data",
-      "authentication": "dataset_endpoint_to_verify",
-      "independent_expenditure_mapping": "not_implemented"
+      "authentication": "public_read_no_key_verified",
+      "independent_expenditure_mapping": "implemented_C6_governor_allocations_partial",
+      "dataset_id": "67cp-h962",
+      "api_endpoint": "https://data.wa.gov/resource/67cp-h962.json",
+      "metadata_url": "https://data.wa.gov/api/views/67cp-h962.json",
+      "limitations_ko": "C6.3의 주지사 배분액만. Electioneering Communications와 C4 제외. 슈퍼팩 분류·경선 단계 미확보."
     },
     "CA": {
       "agency": "California Secretary of State",

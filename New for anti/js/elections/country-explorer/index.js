@@ -3,7 +3,6 @@ import { renderWorldElectionMap } from './world-map.js';
 import { renderCountryMap } from './country-map.js';
 import { renderUsaStateDashboard } from './usa-state-dashboard.js';
 import { renderUsaDistrictMap } from './usa-district-map.js';
-import { mountUsaSuperpac } from './usa-superpac.js';
 import { createModal } from '../modal.js';
 
 export const createCountryExplorer = ({ host, bundle, onCountryOpen, onBack }) => {
@@ -18,7 +17,6 @@ export const createCountryExplorer = ({ host, bundle, onCountryOpen, onBack }) =
             const country = bundle.countries.get(iso3);
             if (!country) return;
             renderCountryShell(host.roots.country, { country, manifest: bundle.manifest, onBack, modal });
-            if (iso3 === 'USA') mountUsaSuperpac(host.roots.country);
             await renderCountryMap({ host, country, onStateOpen: (stateId) => this.showUsaState(stateId) });
         },
         async showUsaState(stateId) {
@@ -34,7 +32,6 @@ export const createCountryExplorer = ({ host, bundle, onCountryOpen, onBack }) =
                 districtMapReady,
                 onBackToUsa: () => this.showCountry('USA'),
             });
-            mountUsaSuperpac(host.roots.country, { stateId });
             if (!districtMapReady) {
                 await renderCountryMap({ host, country: usa, selectedStateId: stateId, onStateOpen: (nextStateId) => this.showUsaState(nextStateId) });
             }

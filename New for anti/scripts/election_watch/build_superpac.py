@@ -10,6 +10,7 @@ import sys
 import tempfile
 
 from election_watch.superpac import FecClient, SourceError, build_snapshot, fetch_candidates, import_governor, now
+from election_watch.superpac_schedule import reporting_cycle
 
 ROOT = Path(__file__).resolve().parent
 PUBLIC = ROOT.parents[1] / 'public' / 'data'
@@ -38,9 +39,12 @@ def publish(snapshot, public):
                  'generated_at': snapshot['generated_at'], 'status': snapshot['status'],
                  'candidates': [c for c in snapshot['candidates'] if ('US' if c['office'] == 'P' else c['state']) == state],
                  'spending': [r for r in snapshot['spending'] if r['state'] == state]}
-        digest = hashlib.sha256(json.dumps(shard, sort_keys=True).encode()).hexdigest()[:16]
+        # A successful daily check need not duplicate every unchanged state asset.
+        content = {k: v for k, v in shard.items() if k != 'generated_at'}
+        digest = hashlib.sha256(json.dumps(content, sort_keys=True).encode()).hexdigest()[:16]
         relative = f'usa_superpac/{cycle}/{state}-{digest}.json'
-        atomic_json(public / relative, shard)
+        if not (public / relative).exists():
+            atomic_json(public / relative, shard)
         files[state] = relative
     meta = {k: v for k, v in snapshot.items() if k not in ('candidates', 'spending')}
     meta['state_files'] = files
@@ -52,7 +56,7 @@ def publish(snapshot, public):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--cycle', type=int, default=2026)
+    parser.add_argument('--cycle', type=int, default=reporting_cycle())
     parser.add_argument('--public', type=Path, default=PUBLIC)
     parser.add_argument('--governor-import', action='append', type=Path, default=[])
     parser.add_argument('--initialize', action='store_true', help='Create an explicit unavailable index, without overwriting collected data')

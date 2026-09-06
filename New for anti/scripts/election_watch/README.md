@@ -139,4 +139,12 @@ python3 build_board.py --no-betting             # row.race_progress 부착 (KOR�
 ## 미국 슈퍼팩 공시 분석
 
 `python3 build_superpac.py --cycle 2026` · `FEC_API_KEY` 또는 `DATA_GOV_API_KEY` 사용.
-연방 후보 명부와 정정된 정기 독립지출을 별도 주별 JSON으로 발행한다. 미국·주 화면에 경선/본선·후보·정당·단체·선거구 필터를 연결했다. 주지사 전국 자동 수집은 미지원이다. 범위·원본 근거·주지사 검토 입력·실행 방법: [SUPERPAC_PIPELINE.md](SUPERPAC_PIPELINE.md).
+연방 후보 명부와 정정된 정기 독립지출을 별도 주별 JSON으로 발행한다. 지도용 후보·정당·경선·단체·선거구 조회 계약과 워싱턴 주지사 부분 수집을 제공한다. UI 연결과 배포는 Claude 인수 단계다. 주지사 전국 자동 수집은 미지원이다. 범위·원본 근거·주지사 검토 입력·실행 방법: [SUPERPAC_PIPELINE.md](SUPERPAC_PIPELINE.md).
+
+### 미국 지도 선거자금 백엔드 인수
+
+- [Claude UI/배포 인수인계](HANDOFF_CLAUDE_SUPERPAC_BACKEND.md)
+- 실행: `python3 refresh_superpac.py --plan` / `python3 refresh_superpac.py --cadence daily`
+- 지도 계약 생성·대조: `python3 build_superpac_map.py` / `python3 validate_superpac_map.py`
+- 워싱턴 주지사 단독 수집: `python3 build_governor_finance.py --cycle 2024`
+- 비활성 Actions 설치 템플릿: `ops/us_superpac_refresh.yml` (Claude가 설치·배포)
