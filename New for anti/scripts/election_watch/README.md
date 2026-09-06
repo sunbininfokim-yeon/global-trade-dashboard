@@ -135,3 +135,8 @@ python3 build_board.py --no-betting             # row.race_progress 부착 (KOR�
   통치지지율 헤드라인
   개각 / 관련 속보
 ```
+
+## 미국 슈퍼팩 공시 분석
+
+`python3 build_superpac.py --cycle 2026` · `FEC_API_KEY` 또는 `DATA_GOV_API_KEY` 사용.
+연방 후보 명부와 정정된 정기 독립지출을 별도 주별 JSON으로 발행한다. 미국·주 화면에 경선/본선·후보·정당·단체·선거구 필터를 연결했다. 주지사 전국 자동 수집은 미지원이다. 범위·원본 근거·주지사 검토 입력·실행 방법: [SUPERPAC_PIPELINE.md](SUPERPAC_PIPELINE.md).

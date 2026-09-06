@@ -1,0 +1,68 @@
+{
+  "schema": "usa_state_campaign_finance_sources_v1",
+  "verified_on": "2026-09-06",
+  "directory_url": "https://www.fec.gov/introduction-campaign-finance/how-to-research-public-records/combined-federalstate-disclosure-and-election-directory/",
+  "note_ko": "공식 문서로 제공 방식을 확인한 출처 목록. API의 존재는 주지사 후보·지지/반대·정정·위원회 유형 매핑의 완성을 의미하지 않는다. 계정 없이 조회 가능한 자료에는 신고자 계정을 만들지 않는다.",
+  "states": {
+    "MA": {
+      "agency": "Massachusetts OCPF",
+      "access": "public_json_api",
+      "url": "https://api.ocpf.us/developers",
+      "api_base": "https://api.ocpf.us",
+      "authentication": "none_required_per_official_docs",
+      "independent_expenditure_mapping": "not_implemented",
+      "independent_expenditure_endpoint": "https://api.ocpf.us/miscreports/iepacs/reports/{year}",
+      "api_documentation": "https://api.ocpf.us/swagger/index.html"
+    },
+    "WA": {
+      "agency": "Washington PDC",
+      "access": "soda_odata_api",
+      "url": "https://www.pdc.wa.gov/faq/do-you-have-data-api-programmers",
+      "catalog_url": "https://www.pdc.wa.gov/political-disclosure-reporting-data/open-data",
+      "authentication": "dataset_endpoint_to_verify",
+      "independent_expenditure_mapping": "not_implemented"
+    },
+    "CA": {
+      "agency": "California Secretary of State",
+      "access": "daily_bulk_zip_tsv",
+      "url": "https://www.sos.ca.gov/campaign-lobbying/helpful-resources/raw-data-campaign-finance-and-lobbying-activity",
+      "authentication": "public_download",
+      "independent_expenditure_mapping": "not_implemented"
+    },
+    "TX": {
+      "agency": "Texas Ethics Commission",
+      "access": "bulk_csv_and_search",
+      "url": "https://webservices.ethics.state.tx.us/search/cf/",
+      "authentication": "public_download",
+      "independent_expenditure_mapping": "not_implemented"
+    },
+    "FL": {
+      "agency": "Florida Division of Elections",
+      "access": "search_tsv_export",
+      "url": "https://dos.fl.gov/elections/candidates-committees/campaign-finance/campaign-finance-database/",
+      "authentication": "public_search",
+      "independent_expenditure_mapping": "not_implemented"
+    },
+    "NY": {
+      "agency": "New York State Board of Elections",
+      "access": "public_reporting_search",
+      "url": "https://elections.ny.gov/campaign-finance",
+      "authentication": "public_search",
+      "independent_expenditure_mapping": "not_implemented"
+    },
+    "CO": {
+      "agency": "Colorado Secretary of State TRACER",
+      "access": "public_reporting_search",
+      "url": "https://tracer.sos.colorado.gov/PublicSite/SearchPages/PublicNonScheduledFilingsSearch.aspx",
+      "authentication": "public_search",
+      "independent_expenditure_mapping": "not_implemented"
+    },
+    "OR": {
+      "agency": "Oregon Secretary of State ORESTAR",
+      "access": "public_reporting_search",
+      "url": "https://sos.oregon.gov/elections/campaign-finance/Pages/search-campaign-finance.aspx",
+      "authentication": "public_search",
+      "independent_expenditure_mapping": "not_implemented"
+    }
+  }
+}
