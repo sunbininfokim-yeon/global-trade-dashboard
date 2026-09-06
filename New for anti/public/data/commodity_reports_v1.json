@@ -1,6 +1,6 @@
 {
   "schema_version": "commodity-reports-v1",
-  "generated_at": "2026-09-05T22:14:15.406529+00:00",
+  "generated_at": "2026-09-06T05:02:18.187258+00:00",
   "model": {
     "name": "commodity_reports_v1",
     "description": "Official crop/energy/metal reports tagged (commodity × country) so the dashboard's stage-2 country window can show what was published about that country's commodity. The report's text picks the country, not the publisher: a USDA release on Brazilian wheat belongs on BRA·wheat.",
@@ -17,13 +17,13 @@
     "per_bucket_limit": 8
   },
   "stats": {
-    "sources_ok": 9,
-    "sources_failed": 3,
-    "raw_items": 144,
-    "scored": 53,
-    "published": 35,
+    "sources_ok": 10,
+    "sources_failed": 2,
+    "raw_items": 156,
+    "scored": 59,
+    "published": 41,
     "commodities": 9,
-    "buckets": 11
+    "buckets": 19
   },
   "feed_status": [
     {
@@ -105,9 +105,9 @@
     },
     {
       "source_id": "us_fas_gain_reports",
-      "ok": false,
-      "count": 0,
-      "error": "HTTPError: HTTP Error 403: Forbidden",
+      "ok": true,
+      "count": 12,
+      "error": null,
       "mode": "live"
     }
   ],
@@ -468,6 +468,44 @@
         "d09ef02fa55cc52b"
       ]
     },
+    "cotton": {
+      "CHN": [
+        "b7b8e9c3c1038c73"
+      ],
+      "PAK": [
+        "ff085c358e1c8514"
+      ],
+      "TUR": [
+        "c54d5583ad67060c"
+      ],
+      "BRA": [
+        "7ee71830e15eb617"
+      ],
+      "IND": [
+        "6269fa1eda293c5a"
+      ],
+      "USA": [
+        "094f2c679d643322"
+      ]
+    },
+    "corn": {
+      "BRA": [
+        "937f667ad21463f2"
+      ],
+      "IND": [
+        "6269fa1eda293c5a"
+      ],
+      "USA": [
+        "9a2e4f0c6cc38378",
+        "bdf029665651e8aa",
+        "9d9ab72fff81736d",
+        "727409c1a45dfec3",
+        "f9e7ed8b73ce1fa5",
+        "205bcf62b2894e8b",
+        "e54c2f7c294df06b",
+        "9dd7845c2d4fc51e"
+      ]
+    },
     "oil": {
       "USA": [
         "636939b535053039",
@@ -485,19 +523,10 @@
         "39ac9e91f73a0776"
       ]
     },
-    "corn": {
-      "USA": [
-        "9a2e4f0c6cc38378",
-        "bdf029665651e8aa",
-        "9d9ab72fff81736d",
-        "727409c1a45dfec3",
-        "f9e7ed8b73ce1fa5",
-        "205bcf62b2894e8b",
-        "e54c2f7c294df06b",
-        "9dd7845c2d4fc51e"
-      ]
-    },
     "soybeans": {
+      "IND": [
+        "6269fa1eda293c5a"
+      ],
       "USA": [
         "9a2e4f0c6cc38378",
         "bdf029665651e8aa",
@@ -535,11 +564,6 @@
       "USA": [
         "21e8e31c7b207b51"
       ]
-    },
-    "cotton": {
-      "USA": [
-        "094f2c679d643322"
-      ]
     }
   },
   "items": [
@@ -566,10 +590,157 @@
       "country_source": "text",
       "series_id": "EIA_STEO",
       "series_label_ko": "EIA 단기 에너지 전망",
-      "importance": 4.988,
+      "importance": 4.96,
       "reasons": [
         "series:EIA_STEO",
         "has_figure",
+        "revision_language",
+        "country_in_text"
+      ]
+    },
+    {
+      "id": "b7b8e9c3c1038c73",
+      "title": {
+        "original": "China: Cotton and Products Update",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Post slightly lowered its forecast for MY 2026/27 cotton production to 7.12 million metric tons (MMT) or 32.7 million bales, a decrease of 5.6 percent from its estimate for MY 2025/26 production. The fall in production is due to recent policy shifts...",
+      "url": "https://www.fas.usda.gov/data/gain/2026/09/china-cotton-and-products-update",
+      "published_at": "2026-09-03T15:00:00+00:00",
+      "agency": "USDA FAS GAIN",
+      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
+      "source_id": "us_fas_gain_reports",
+      "commodities": [
+        "cotton"
+      ],
+      "countries": [
+        "CHN"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 3.551,
+      "reasons": [
+        "has_figure",
+        "revision_language",
+        "country_in_text"
+      ]
+    },
+    {
+      "id": "ff085c358e1c8514",
+      "title": {
+        "original": "Pakistan: Cotton and Products Update",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Pakistan’s 2026/27 cotton harvested area estimate is lowered to 1.85 million hectares, primarily due to a decline in Punjab province driven in part by lower cotton profitability relative to alternative crops. As a result of this decline, the...",
+      "url": "https://www.fas.usda.gov/data/gain/2026/09/pakistan-cotton-and-products-update",
+      "published_at": "2026-09-02T15:01:00+00:00",
+      "agency": "USDA FAS GAIN",
+      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
+      "source_id": "us_fas_gain_reports",
+      "commodities": [
+        "cotton"
+      ],
+      "countries": [
+        "PAK"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 3.478,
+      "reasons": [
+        "has_figure",
+        "revision_language",
+        "country_in_text"
+      ]
+    },
+    {
+      "id": "c54d5583ad67060c",
+      "title": {
+        "original": "Türkiye: Cotton and Products Update",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Turkish cotton production in Marketing Year (MY) 2026/27 is projected to decrease to 495,000 metric tons (MT) or 2.27 million bales due to smaller planting area; the planting area is forecast at 275,000 hectares (ha). Consumption is forecast to...",
+      "url": "https://www.fas.usda.gov/data/gain/2026/09/turkiye-cotton-and-products-update",
+      "published_at": "2026-09-02T15:00:00+00:00",
+      "agency": "USDA FAS GAIN",
+      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
+      "source_id": "us_fas_gain_reports",
+      "commodities": [
+        "cotton"
+      ],
+      "countries": [
+        "TUR"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 2.922,
+      "reasons": [
+        "has_figure",
+        "country_in_text"
+      ]
+    },
+    {
+      "id": "7ee71830e15eb617",
+      "title": {
+        "original": "Brazil: Cotton and Products Update",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Brazil’s cotton outlook for MY 2026/27 indicates a slight reduction of harvested area due to high production costs, price volatility, and weather related production delays. Record productivity is expected to partially offset this area contraction...",
+      "url": "https://www.fas.usda.gov/data/gain/2026/09/brazil-cotton-and-products-update",
+      "published_at": "2026-09-02T15:00:00+00:00",
+      "agency": "USDA FAS GAIN",
+      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
+      "source_id": "us_fas_gain_reports",
+      "commodities": [
+        "cotton"
+      ],
+      "countries": [
+        "BRA"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 2.643,
+      "reasons": [
+        "revision_language",
+        "country_in_text"
+      ]
+    },
+    {
+      "id": "937f667ad21463f2",
+      "title": {
+        "original": "Brazil: Biofuels Annual",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Brazil has raised its mandatory anhydrous ethanol blend in gasoline to 32%, a temporary measure designed to reduce gasoline imports and absorb the country's growing ethanol surplus amid rapidly expanding corn ethanol production. The biodiesel blend...",
+      "url": "https://www.fas.usda.gov/data/gain/2026/09/brazil-biofuels-annual",
+      "published_at": "2026-09-02T10:49:00+00:00",
+      "agency": "USDA FAS GAIN",
+      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
+      "source_id": "us_fas_gain_reports",
+      "commodities": [
+        "corn"
+      ],
+      "countries": [
+        "BRA"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 2.634,
+      "reasons": [
         "revision_language",
         "country_in_text"
       ]
@@ -597,11 +768,41 @@
       "country_source": "text",
       "series_id": "EIA_STEO",
       "series_label_ko": "EIA 단기 에너지 전망",
-      "importance": 2.38,
+      "importance": 2.377,
       "reasons": [
         "series:EIA_STEO",
         "has_figure",
         "revision_language",
+        "country_in_text"
+      ]
+    },
+    {
+      "id": "6269fa1eda293c5a",
+      "title": {
+        "original": "India: Oilseeds and Products Update",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Post revises India's marketing year 2026/27 soybean acreage and production estimates down due to erratic monsoon rains and farmer diversification toward cotton and corn. Post revises soybean imports up supported by favorable harvests among African...",
+      "url": "https://www.fas.usda.gov/data/gain/2026/09/india-oilseeds-and-products-update",
+      "published_at": "2026-09-03T15:01:00+00:00",
+      "agency": "USDA FAS GAIN",
+      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
+      "source_id": "us_fas_gain_reports",
+      "commodities": [
+        "corn",
+        "soybeans",
+        "cotton"
+      ],
+      "countries": [
+        "IND"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 2.13,
+      "reasons": [
         "country_in_text"
       ]
     },
@@ -724,7 +925,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.729,
+      "importance": 1.72,
       "reasons": [
         "revision_language",
         "country_in_text"
@@ -753,7 +954,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.727,
+      "importance": 1.72,
       "reasons": [
         "has_figure",
         "country_in_text"
@@ -881,34 +1082,6 @@
       ]
     },
     {
-      "id": "5a1967d788350658",
-      "title": {
-        "original": "Wholesale Electricity Market Data",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "(Thu, 03 Sep 2026) This report includes spreadsheets with wholesale electricity and natural gas data from seven major trading hubs that cover most regions of the United States. The data are through September 1, 2026, and republished, with permission, from the Intercontinental Exchange (ICE).",
-      "url": "http://www.eia.gov/electricity/wholesale/",
-      "published_at": "2026-09-03T05:00:00+00:00",
-      "agency": "EIA",
-      "agency_ko": "미 에너지정보청",
-      "source_id": "us_eia_whats_new",
-      "commodities": [
-        "gas"
-      ],
-      "countries": [
-        "USA"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 1.629,
-      "reasons": [
-        "country_in_text"
-      ]
-    },
-    {
       "id": "c67666c03e916f6f",
       "title": {
         "original": "EIA increases global oil production forecast after the opening of the Strait of Hormuz",
@@ -931,9 +1104,37 @@
       "country_source": "text",
       "series_id": "EIA_STEO",
       "series_label_ko": "EIA 단기 에너지 전망",
-      "importance": 1.627,
+      "importance": 1.624,
       "reasons": [
         "series:EIA_STEO",
+        "country_in_text"
+      ]
+    },
+    {
+      "id": "5a1967d788350658",
+      "title": {
+        "original": "Wholesale Electricity Market Data",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "(Thu, 03 Sep 2026) This report includes spreadsheets with wholesale electricity and natural gas data from seven major trading hubs that cover most regions of the United States. The data are through September 1, 2026, and republished, with permission, from the Intercontinental Exchange (ICE).",
+      "url": "http://www.eia.gov/electricity/wholesale/",
+      "published_at": "2026-09-03T05:00:00+00:00",
+      "agency": "EIA",
+      "agency_ko": "미 에너지정보청",
+      "source_id": "us_eia_whats_new",
+      "commodities": [
+        "gas"
+      ],
+      "countries": [
+        "USA"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.619,
+      "reasons": [
         "country_in_text"
       ]
     },
@@ -960,7 +1161,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.563,
+      "importance": 1.554,
       "reasons": [
         "country_in_text"
       ]
@@ -988,7 +1189,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.532,
+      "importance": 1.524,
       "reasons": [
         "country_in_text"
       ]
@@ -1139,7 +1340,7 @@
       "country_source": "text",
       "series_id": "EIA_STEO",
       "series_label_ko": "EIA 단기 에너지 전망",
-      "importance": 1.349,
+      "importance": 1.348,
       "reasons": [
         "series:EIA_STEO",
         "country_in_text"
@@ -1311,7 +1512,7 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.251,
+      "importance": 1.243,
       "reasons": []
     },
     {
@@ -1335,7 +1536,7 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.251,
+      "importance": 1.243,
       "reasons": []
     },
     {
