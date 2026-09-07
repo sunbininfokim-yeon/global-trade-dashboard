@@ -12,12 +12,30 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
+  # Bot data commits do not trigger push workflows. Only trusted main runs
+  # may trigger deployment; never execute a PR checkout with deploy secrets.
+  workflow_run:
+    workflows: ['Overseas LETF daily']
+    types: [completed]
+    branches: [main]
+
+concurrency:
+  group: production-worker-deploy
+  cancel-in-progress: false
 
 jobs:
   deploy:
+    if: >-
+      github.event_name != 'workflow_run' ||
+      (github.event.workflow_run.head_repository.full_name == github.repository &&
+       github.event.workflow_run.event != 'pull_request' &&
+       github.event.workflow_run.head_branch == 'main')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          # The collection run's head SHA predates its new data commit.
+          ref: main
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
@@ -25,6 +43,11 @@ jobs:
         run: npx wrangler deploy
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      - name: Verify overseas LETF public assets
+        run: |
+          if [ -f 'New for anti/public/data/overseas_letf_board_v1.json' ]; then
+            python3 'New for anti/scripts/market_microstructure/verify_overseas_letf_deploy.py'
+          fi
       # macro_monitor_v1.json is a static asset baked into this deploy, but
       # handleMacroMonitor() (in _worker.js) caches its response in KV for 6h
       # regardless of when the underlying file changed -- so a fresh deploy

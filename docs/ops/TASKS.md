@@ -52,3 +52,5 @@
 1. 작업 시작: `status=in_progress`, branch 칸 채움  
 2. 막히면: `blocked` + note에 이유  
 3. 끝: `review` 또는 `done` + `./tools/ops/handoff.sh`  
+
+| T30 | 해외 LETF 수집·이력·시장미시구조 UI·배포 연결 | **codex** | `scripts/market_microstructure/**overseas*`, `public/data/overseas_letf_*`, `market-microstructure.js`, 해외 workflow·deploy hook | `claude/overseas-letf-pipeline-integration` | **review** | 사용자 2026-09-08 파이프라인 연동 재요청. main 기반 격리 worktree, Codex 작성·통합 경로 접두는 ownership guard 안내에 따름. 데이터 16개 계약 테스트·브라우저 검증 통과. |
