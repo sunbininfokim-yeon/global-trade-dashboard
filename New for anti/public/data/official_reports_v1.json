@@ -1,6 +1,6 @@
 {
   "schema_version": "official-reports-v1",
-  "generated_at": "2026-09-07T14:17:00.897913+00:00",
+  "generated_at": "2026-09-07T19:59:50.952856+00:00",
   "model": {
     "name": "official_reports_learnable_v1",
     "description": "Official sources only (US/JP/CN/EU/UK public RSS·HTML). Domains: economy/finance/diplomacy/security/agriculture. Series catalog + label_history for collaborative learning. No Dropbox.",
@@ -20,7 +20,7 @@
     "raw_items": 155,
     "scored": 155,
     "selected": 40,
-    "indicators": 13
+    "indicators": 14
   },
   "feed_status": [
     {
@@ -263,6 +263,20 @@
       "title": "Bank of Japan Accounts (August 31)",
       "url": "http://www.boj.or.jp/en/statistics/boj/other/acmai/release/2026/ac260831.htm",
       "published_at": "2026-09-02T01:00:00+00:00",
+      "site_slot": "finance.policy",
+      "significance": 2.306
+    },
+    {
+      "series_id": "JP_BOJ_POLICY",
+      "label_ko": "일본은행 정책·공표",
+      "country": "JPN",
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "title": "Japanese Government Bonds Held by the Bank of Japan",
+      "url": "http://www.boj.or.jp/en/statistics/boj/other/mei/release/2026/mei260820.xlsx",
+      "published_at": "2026-08-24T08:00:00+00:00",
       "site_slot": "finance.policy",
       "significance": 2.306
     }
@@ -967,41 +981,6 @@
       "site_slot": null
     },
     {
-      "id": "fb96f3b1a68ccf91",
-      "published_at": "2026-08-25T02:00:00+00:00",
-      "source": {
-        "id": "us_whitehouse",
-        "name": "White House",
-        "region": "usa",
-        "slant": null
-      },
-      "url": "https://www.whitehouse.gov/briefings-statements/2026/08/presidential-message-on-overdose-and-drug-poisoning-awareness-week/",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "security",
-        "economy",
-        "diplomacy"
-      ],
-      "series_id": null,
-      "title": {
-        "original": "Presidential Message on Overdose and Drug Poisoning Awareness Week",
-        "original_lang": "en",
-        "ko": "[USA·안보] Presidential Message on Overdose and Drug Poisoning Awareness Week"
-      },
-      "summary": "During Overdose and Drug Poisoning Awareness Week, our Nation renews its resolve to defeat the scourge of illicit drugs and synthetic poisons that have devastated hundreds of thousands of American lives. My Administration is relentlessly confronting this threat at every source, a",
-      "scores": {
-        "significance": 2.438,
-        "final": 2.438
-      },
-      "rank_reasons": [
-        "domains:economy,diplomacy,security"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
-    },
-    {
       "id": "06fdfda7dc2bc85e",
       "published_at": "2026-07-23T16:00:00+00:00",
       "source": {
@@ -1667,6 +1646,41 @@
       "translation_status": "skipped",
       "event_type": "official_report",
       "site_slot": "finance.policy"
+    },
+    {
+      "id": "2476786a5db2c1ff",
+      "published_at": "2026-08-24T08:00:00+00:00",
+      "source": {
+        "id": "jp_boj_whatsnew",
+        "name": "Bank of Japan",
+        "region": "jpn",
+        "slant": null
+      },
+      "url": "http://www.boj.or.jp/en/statistics/boj/other/mei/release/2026/mei260820.xlsx",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": "JP_BOJ_POLICY",
+      "title": {
+        "original": "Japanese Government Bonds Held by the Bank of Japan",
+        "original_lang": "en",
+        "ko": "[JPN·경제] Japanese Government Bonds Held by the Bank of Japan"
+      },
+      "summary": "",
+      "scores": {
+        "significance": 2.306,
+        "final": 2.306
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "series:JP_BOJ_POLICY"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": "finance.policy"
     }
   ],
   "pending_review": [
@@ -1805,6 +1819,17 @@
     {
       "title": "Minutes of the London FXJSC Operations Sub-Committee Meeting – 18 March 2026",
       "url": "https://www.bankofengland.co.uk/minutes/2026/march/fxjsc-operations-sub-committee-meeting-18-march-2026",
+      "country": "GBR",
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "significance": 1.978,
+      "suggest": "label promote|keep|drop + series_id later"
+    },
+    {
+      "title": "Minutes of the Meeting of the Court of Directors held on 23 April 2026",
+      "url": "https://www.bankofengland.co.uk/minutes/2026/june/court-minutes-23-april-2026",
       "country": "GBR",
       "domains": [
         "economy",
@@ -2514,41 +2539,6 @@
       "site_slot": null
     },
     {
-      "id": "fb96f3b1a68ccf91",
-      "published_at": "2026-08-25T02:00:00+00:00",
-      "source": {
-        "id": "us_whitehouse",
-        "name": "White House",
-        "region": "usa",
-        "slant": null
-      },
-      "url": "https://www.whitehouse.gov/briefings-statements/2026/08/presidential-message-on-overdose-and-drug-poisoning-awareness-week/",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "security",
-        "economy",
-        "diplomacy"
-      ],
-      "series_id": null,
-      "title": {
-        "original": "Presidential Message on Overdose and Drug Poisoning Awareness Week",
-        "original_lang": "en",
-        "ko": "[USA·안보] Presidential Message on Overdose and Drug Poisoning Awareness Week"
-      },
-      "summary": "During Overdose and Drug Poisoning Awareness Week, our Nation renews its resolve to defeat the scourge of illicit drugs and synthetic poisons that have devastated hundreds of thousands of American lives. My Administration is relentlessly confronting this threat at every source, a",
-      "scores": {
-        "significance": 2.438,
-        "final": 2.438
-      },
-      "rank_reasons": [
-        "domains:economy,diplomacy,security"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
-    },
-    {
       "id": "06fdfda7dc2bc85e",
       "published_at": "2026-07-23T16:00:00+00:00",
       "source": {
@@ -3201,6 +3191,41 @@
         "original": "Bank of Japan Accounts (August 31)",
         "original_lang": "en",
         "ko": "[JPN·경제] Bank of Japan Accounts (August 31)"
+      },
+      "summary": "",
+      "scores": {
+        "significance": 2.306,
+        "final": 2.306
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "series:JP_BOJ_POLICY"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": "finance.policy"
+    },
+    {
+      "id": "2476786a5db2c1ff",
+      "published_at": "2026-08-24T08:00:00+00:00",
+      "source": {
+        "id": "jp_boj_whatsnew",
+        "name": "Bank of Japan",
+        "region": "jpn",
+        "slant": null
+      },
+      "url": "http://www.boj.or.jp/en/statistics/boj/other/mei/release/2026/mei260820.xlsx",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": "JP_BOJ_POLICY",
+      "title": {
+        "original": "Japanese Government Bonds Held by the Bank of Japan",
+        "original_lang": "en",
+        "ko": "[JPN·경제] Japanese Government Bonds Held by the Bank of Japan"
       },
       "summary": "",
       "scores": {
