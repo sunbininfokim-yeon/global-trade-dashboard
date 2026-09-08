@@ -39,6 +39,8 @@ const root = path.resolve(__dirname, '../../New for anti');
         assert.match(await page.locator('[data-ms-overseas]').innerText(), /축적 중/);
         await page.selectOption('[data-ms-overseas-group]', 'global');
         await page.selectOption('[data-ms-overseas-product]', 'TQQQ');
+        assert.match(await page.locator('[data-ms-overseas]').innerText(), /파생·담보/);
+        assert.doesNotMatch(await page.locator('[data-ms-overseas]').innerText(), /derivatives_and_collateral/);
         assert(await page.locator('.mm-chart path.mm-line').count() >= 3);
         for (const width of [736, 360]) {
             await page.setViewportSize({ width, height: 1000 });
