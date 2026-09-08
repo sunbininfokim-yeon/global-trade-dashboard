@@ -193,7 +193,7 @@ GITHUB_TOKEN의 push가 다른 push workflow를 재호출하지 않는 문제를
 브라우저 테스트는 15개 상품의 동일 날짜 중복 처리, gzip/HTTP 자동 해제, 상품 전환,
 신규 상품 축적 상태, 실제 차트 출력, 모바일 폭을 검증한다.
 
-운영 활성화 결과와 PR·실행 링크는 아래 실행 기록에 추가한다.
+운영 활성화 결과와 PR·실행 링크는 아래 실행 기록을 참조한다.
 
 CSOP의 기준일 있는 AUM·실제 가변 목표, Direxion 일별 holdings, 9347 거래통화 상태,
 신상품 메타데이터 변경은 추가 수집이 필요하다. 해당 값은 가짜 수치 없이 null로 남는다.
@@ -206,5 +206,20 @@ CSOP의 기준일 있는 AUM·실제 가변 목표, Direxion 일별 holdings, 93
 - manifest의 모든 파일 행수·SHA256 검산 통과. 배포 검증 함수는 동일 날짜의 오래된 내용도 거절하는 것을 확인.
 - 실제 저장소 확인: `sunbininfokim-yeon/global-trade-dashboard`, private, 현재 계정 ADMIN.
 - 사용자 2026-09-08 승인: “깃허브는 private이라 괜찮을걸? 응 배포 우선 해봐”.
-  해당 비공개 저장소 업로드·병합·예약 활성화·운영 배포 승인 확인. 작업 브랜치 업로드 완료, 운영 실행 검증 진행 중.
+  해당 비공개 저장소 업로드·병합·예약 활성화·운영 배포 승인 확인. PR #262·#263 병합 및 운영 실행 검증 완료.
 - 통합 변경 정본 worktree: `/Users/yeoninair/Documents/해운 데이터/overseas-letf-review`.
+
+### 운영 연결 확인
+
+- [구현 PR #262](https://github.com/sunbininfokim-yeon/global-trade-dashboard/pull/262): 2026-09-08 main 병합.
+- [첫 수집 실행](https://github.com/sunbininfokim-yeon/global-trade-dashboard/actions/runs/34197931911): 검증·live 수집·정규화 저장·공개 데이터 커밋 모두 성공.
+- 수집 시각 2026-09-08 16:10 KST, 수집 종료 기준일 9/7, 공급자 최신 시세 관측일은 15종 모두 9/4. 종료 기준일을 시세 날짜로 표시하지 않는다.
+- SKHQ holdings 9/8 자료는 9/7 종료 기준보다 뒤여서 제외, status=partial.
+- GITHUB_TOKEN 데이터 커밋 후 workflow_run 배포가 실제 실행됨을 확인했다.
+- 최초 배포 검증은 Python 기본 요청 식별자가 Cloudflare 1010에 차단되어 실패했다.
+  [수정 PR #263](https://github.com/sunbininfokim-yeon/global-trade-dashboard/pull/263)에서
+  운영 검증 요청을 `GlobalTradeDashboard-DataVerification/1.0`으로 명시했다. 보안 설정은 변경하지 않았다.
+- [수정 후 운영 배포](https://github.com/sunbininfokim-yeon/global-trade-dashboard/actions/runs/34198460435): 배포·공개 파일 내용 일치 검증·기존 캐시 갱신 모두 성공.
+- 실제 공개 파일 4개를 읽어 압축 해제 후 SHA256 일치 확인. 실제 운영 브라우저에서 국내 시장미시구조→해외 LETF 이동, 삼성전자 선물형 상품, TQQQ 일별 차트 4개, 모바일 표시 확인. JS 오류 없음.
+- [운영 화면](https://global-trade-dashboard.sunbin-info-kim.workers.dev/fin_derivatives) → 해외 LETF.
+- 예약 수집은 한국시간 화~토 08:35. 로컬 PC가 꺼져 있어도 GitHub Actions에서 실행한다.
