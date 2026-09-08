@@ -1,6 +1,6 @@
 {
   "schema_version": "liquidity-intel-v1",
-  "generated_at": "2026-09-08T04:32:26.807456+00:00",
+  "generated_at": "2026-09-08T11:15:43.569568+00:00",
   "model": {
     "name": "macro_liquidity_official_v1",
     "description": "QRA / Fed official liquidity + priority-reporter ARTICLES mined for liquidity indicators (FIMA, TGA, RRP, FX intervention…) — not reporter news fluff.",
@@ -18,14 +18,13 @@
   },
   "liquidity": {
     "bias": "tightening",
-    "score": 2.25,
+    "score": 2.15,
     "headline_ko": "유동성: 재무부 순발행·현금 잔고 신호가 타이트 쪽으로 기울음 · 지정기자 분석 테마 반영",
     "drivers": [
       "qra_net_borrowing_up",
       "tga_cash_high",
       "reporter_tightening_theme",
       "reporter_tga_focus",
-      "reporter_fx_intervention",
       "reporter_fima_focus"
     ],
     "qra": {
@@ -165,51 +164,48 @@
             ]
           },
           {
-            "id": "esf",
-            "score": 2.3,
-            "label_ko": "ESF 외환안정기금",
-            "evidence": [
-              "보유한 외환안정기금(Exchang Stabilization Fund, ESF)의 유로화와 엔화를 통한 것이다. 일본은 전세계에서 최대 미국채권 보유국으로 엔화 절상이 필요할 때는 보통"
-            ]
-          },
-          {
-            "id": "fx_intervention",
-            "score": 2.2,
-            "label_ko": "외환 개입",
-            "evidence": [
-              "를 매입하는 방식으로, 일본은 달러를 매각하고 엔화를 매입하는 방식으로 외환 시장에 개입했다. 미국이 외환 시장에 개입하는 방법은 재무부가 보유한 외환안정기금(Exchang Stabilizatio"
-            ]
-          },
-          {
             "id": "fima",
             "score": 1.2,
             "label_ko": "FIMA 레포",
             "evidence": [
-              "[연준와처] 베센트에 의해 소환된 FIMA [이코노미21 양영빈] 7월 31일 미국은 보유한 유로화를 매각하고 엔화를 매입하는 방식으로, 일본은 달러"
+              "어의 내막 일본의 외환 개입, '총알 고갈'이 부른 미·일 금융 공조와 FIMA 레포의 비밀[이코노미21 양영빈] 2026년 7월말 뜨거운 여름, 글로벌 외환 시장은 전례 없는 긴장감에"
             ]
           }
         ],
         "themes_ko": [
           "QRA·순발행 (점수 8.4)",
           "TGA 재무부 일반계정 (점수 6.5)",
-          "ESF 외환안정기금 (점수 2.3)",
-          "외환 개입 (점수 2.2)",
           "FIMA 레포 (점수 1.2)"
         ],
         "hint_weights": {
           "tightening": 8.4,
           "tga": 6.5,
-          "fx_intervention": 4.5,
           "mixed": 1.2
         },
         "reporter_signals": [
           "reporter_tightening_theme",
           "reporter_tga_focus",
-          "reporter_fx_intervention",
           "reporter_fima_focus"
         ],
-        "headline_ko": "[유동성 분석·양영빈] 최근 기사 핵심 지표: QRA·순발행 · 외 4개 테마",
+        "headline_ko": "[유동성 분석·양영빈] 최근 기사 핵심 지표: QRA·순발행 · 외 2개 테마",
         "per_article": [
+          {
+            "title": "164엔의 벼랑 끝, 미 국채와 맞바꾼 엔화 방어의 내막",
+            "url": "http://www.economy21.co.kr/news/articleView.html?idxno=1017135",
+            "published": "2026-09-08 16:45",
+            "author": "양영빈",
+            "indicators": [
+              {
+                "id": "fima",
+                "label_ko": "FIMA 레포",
+                "mentions": 1,
+                "hint": "mixed",
+                "evidence": [
+                  "어의 내막 일본의 외환 개입, '총알 고갈'이 부른 미·일 금융 공조와 FIMA 레포의 비밀[이코노미21 양영빈] 2026년 7월말 뜨거운 여름, 글로벌 외환 시장은 전례 없는 긴장감에"
+                ]
+              }
+            ]
+          },
           {
             "title": "[연준와처] TGA 잔고 어떻게 해석해야 할까?",
             "url": "http://www.economy21.co.kr/news/articleView.html?idxno=1017015",
@@ -256,43 +252,6 @@
                 ]
               }
             ]
-          },
-          {
-            "title": "[연준와처] 베센트에 의해 소환된 FIMA",
-            "url": "http://www.economy21.co.kr/news/articleView.html?idxno=1016983",
-            "published": "2026-08-04 14:28",
-            "author": "양영빈",
-            "indicators": [
-              {
-                "id": "esf",
-                "label_ko": "ESF 외환안정기금",
-                "mentions": 2,
-                "hint": "fx_intervention",
-                "evidence": [
-                  "보유한 외환안정기금(Exchang Stabilization Fund, ESF)의 유로화와 엔화를 통한 것이다. 일본은 전세계에서 최대 미국채권 보유국으로 엔화 절상이 필요할 때는 보통",
-                  "시장에 개입했다. 미국이 외환 시장에 개입하는 방법은 재무부가 보유한 외환안정기금(Exchang Stabilization Fund, ESF)의 유로화와 엔화를 통한 것이다. 일본은 전세계에"
-                ]
-              },
-              {
-                "id": "fx_intervention",
-                "label_ko": "외환 개입",
-                "mentions": 2,
-                "hint": "fx_intervention",
-                "evidence": [
-                  "를 매입하는 방식으로, 일본은 달러를 매각하고 엔화를 매입하는 방식으로 외환 시장에 개입했다. 미국이 외환 시장에 개입하는 방법은 재무부가 보유한 외환안정기금(Exchang Stabilizatio",
-                  "달러를 매각하고 엔화를 매입하는 방식으로 외환 시장에 개입했다. 미국이 외환 시장에 개입하는 방법은 재무부가 보유한 외환안정기금(Exchang Stabilization Fund, ESF)의 유로화"
-                ]
-              },
-              {
-                "id": "fima",
-                "label_ko": "FIMA 레포",
-                "mentions": 1,
-                "hint": "mixed",
-                "evidence": [
-                  "[연준와처] 베센트에 의해 소환된 FIMA [이코노미21 양영빈] 7월 31일 미국은 보유한 유로화를 매각하고 엔화를 매입하는 방식으로, 일본은 달러"
-                ]
-              }
-            ]
           }
         ],
         "finance_panel_fields": {
@@ -301,17 +260,14 @@
           "reporter_liquidity_themes": [
             "QRA·순발행 (점수 8.4)",
             "TGA 재무부 일반계정 (점수 6.5)",
-            "ESF 외환안정기금 (점수 2.3)",
-            "외환 개입 (점수 2.2)",
             "FIMA 레포 (점수 1.2)"
           ],
           "reporter_liquidity_signals": [
             "reporter_tightening_theme",
             "reporter_tga_focus",
-            "reporter_fx_intervention",
             "reporter_fima_focus"
           ],
-          "reporter_liquidity_headline_ko": "[유동성 분석·양영빈] 최근 기사 핵심 지표: QRA·순발행 · 외 4개 테마"
+          "reporter_liquidity_headline_ko": "[유동성 분석·양영빈] 최근 기사 핵심 지표: QRA·순발행 · 외 2개 테마"
         }
       }
     ],
@@ -327,22 +283,19 @@
       "reporter_liquidity_themes": [
         "QRA·순발행 (점수 8.4)",
         "TGA 재무부 일반계정 (점수 6.5)",
-        "ESF 외환안정기금 (점수 2.3)",
-        "외환 개입 (점수 2.2)",
         "FIMA 레포 (점수 1.2)"
       ],
       "reporter_liquidity_signals": [
         "reporter_tightening_theme",
         "reporter_tga_focus",
-        "reporter_fx_intervention",
         "reporter_fima_focus"
       ],
-      "reporter_liquidity_headline_ko": "[유동성 분석·양영빈] 최근 기사 핵심 지표: QRA·순발행 · 외 4개 테마"
+      "reporter_liquidity_headline_ko": "[유동성 분석·양영빈] 최근 기사 핵심 지표: QRA·순발행 · 외 2개 테마"
     }
   },
   "ticker_items": [
     {
-      "id": "qra-447321559667",
+      "id": "qra-771168397178",
       "published_at": null,
       "source": {
         "id": "us_treasury",
@@ -375,7 +328,7 @@
       "event_type": "qra"
     },
     {
-      "id": "fed-758542884106",
+      "id": "fed-929919182049",
       "published_at": "Wed, 29 Jul 2026 18:00:00 GMT",
       "source": {
         "id": "federal_reserve",
@@ -406,7 +359,7 @@
       "event_type": "fomc"
     },
     {
-      "id": "fed-792019870343",
+      "id": "fed-933961340704",
       "published_at": "Wed, 17 Jun 2026 18:00:00 GMT",
       "source": {
         "id": "federal_reserve",
@@ -437,7 +390,7 @@
       "event_type": "fomc"
     },
     {
-      "id": "fed-294332598560",
+      "id": "fed-19131985608",
       "published_at": "Wed, 17 Jun 2026 18:00:00 GMT",
       "source": {
         "id": "federal_reserve",
@@ -468,7 +421,7 @@
       "event_type": "fomc"
     },
     {
-      "id": "fed-349450949437",
+      "id": "fed-709629399238",
       "published_at": "Wed, 29 Apr 2026 18:00:00 GMT",
       "source": {
         "id": "federal_reserve",
@@ -499,7 +452,7 @@
       "event_type": "fomc"
     },
     {
-      "id": "fed-939882060613",
+      "id": "fed-6352052399",
       "published_at": "Wed, 18 Mar 2026 18:00:00 GMT",
       "source": {
         "id": "federal_reserve",
@@ -530,7 +483,7 @@
       "event_type": "fomc"
     },
     {
-      "id": "fed-379277643178",
+      "id": "fed-326927134311",
       "published_at": "Wed, 18 Mar 2026 18:00:00 GMT",
       "source": {
         "id": "federal_reserve",
@@ -561,7 +514,7 @@
       "event_type": "fomc"
     },
     {
-      "id": "fed-163499971595",
+      "id": "fed-130628071657",
       "published_at": "Tue, 25 Aug 2026 18:00:00 GMT",
       "source": {
         "id": "federal_reserve",
@@ -592,7 +545,7 @@
       "event_type": "press"
     },
     {
-      "id": "fed-812500627596",
+      "id": "fed-919444538805",
       "published_at": "Tue, 14 Jul 2026 18:00:00 GMT",
       "source": {
         "id": "federal_reserve",
@@ -623,7 +576,7 @@
       "event_type": "press"
     },
     {
-      "id": "fed-806396063200",
+      "id": "fed-362075860174",
       "published_at": "Tue, 26 May 2026 18:00:00 GMT",
       "source": {
         "id": "federal_reserve",
@@ -654,7 +607,7 @@
       "event_type": "press"
     },
     {
-      "id": "fed-875930464185",
+      "id": "fed-545992907340",
       "published_at": "Tue, 14 Apr 2026 18:00:00 GMT",
       "source": {
         "id": "federal_reserve",
@@ -685,7 +638,7 @@
       "event_type": "press"
     },
     {
-      "id": "liq-ind-546263498823",
+      "id": "liq-ind-818603566965",
       "published_at": null,
       "source": {
         "id": "reporter_liquidity",
@@ -693,15 +646,15 @@
         "region": "korea",
         "slant": null
       },
-      "url": "http://www.economy21.co.kr/news/articleView.html?idxno=1017015",
+      "url": "http://www.economy21.co.kr/news/articleView.html?idxno=1017135",
       "category": "liquidity_indicator",
       "commodities": [],
       "title": {
-        "original": "QRA·순발행 · TGA 재무부 일반계정 · ESF 외환안정기금",
+        "original": "QRA·순발행 · TGA 재무부 일반계정 · FIMA 레포",
         "original_lang": "ko",
-        "ko": "[유동성지표·양영빈] QRA·순발행 · TGA 재무부 일반계정 · ESF 외환안정기금"
+        "ko": "[유동성지표·양영빈] QRA·순발행 · TGA 재무부 일반계정 · FIMA 레포"
       },
-      "summary": "[유동성 분석·양영빈] 최근 기사 핵심 지표: QRA·순발행 · 외 4개 테마",
+      "summary": "[유동성 분석·양영빈] 최근 기사 핵심 지표: QRA·순발행 · 외 2개 테마",
       "scores": {
         "commodity": 0,
         "diplomacy": 0,
@@ -713,7 +666,6 @@
         "indicator:qra",
         "reporter_tightening_theme",
         "reporter_tga_focus",
-        "reporter_fx_intervention",
         "reporter_fima_focus"
       ],
       "translation_status": "ok",
@@ -737,27 +689,11 @@
           ]
         },
         {
-          "id": "esf",
-          "score": 2.3,
-          "label_ko": "ESF 외환안정기금",
-          "evidence": [
-            "보유한 외환안정기금(Exchang Stabilization Fund, ESF)의 유로화와 엔화를 통한 것이다. 일본은 전세계에서 최대 미국채권 보유국으로 엔화 절상이 필요할 때는 보통"
-          ]
-        },
-        {
-          "id": "fx_intervention",
-          "score": 2.2,
-          "label_ko": "외환 개입",
-          "evidence": [
-            "를 매입하는 방식으로, 일본은 달러를 매각하고 엔화를 매입하는 방식으로 외환 시장에 개입했다. 미국이 외환 시장에 개입하는 방법은 재무부가 보유한 외환안정기금(Exchang Stabilizatio"
-          ]
-        },
-        {
           "id": "fima",
           "score": 1.2,
           "label_ko": "FIMA 레포",
           "evidence": [
-            "[연준와처] 베센트에 의해 소환된 FIMA [이코노미21 양영빈] 7월 31일 미국은 보유한 유로화를 매각하고 엔화를 매입하는 방식으로, 일본은 달러"
+            "어의 내막 일본의 외환 개입, '총알 고갈'이 부른 미·일 금융 공조와 FIMA 레포의 비밀[이코노미21 양영빈] 2026년 7월말 뜨거운 여름, 글로벌 외환 시장은 전례 없는 긴장감에"
           ]
         }
       ]
@@ -799,7 +735,7 @@
     "ticker_items": 12,
     "qra_parsed": true,
     "reporter_analyses": 1,
-    "reporter_indicator_hits": 5,
+    "reporter_indicator_hits": 3,
     "sources_ok": 5,
     "sources_failed": 0
   }
