@@ -11,6 +11,8 @@ fi
 cd "$ROOT"
 
 echo "[daily] $(date -Iseconds) conc append + US→KR L3 + microstructure + derivatives + history + investor×price"
+# Overseas is independent of the KRX batch.
+"$PY" build_overseas_letf.py --live --print-stats
 "$PY" build_conc_history.py --append-only --print-stats || \
   "$PY" build_conc_history.py --live --months 6 --print-stats
 

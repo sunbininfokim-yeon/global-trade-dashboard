@@ -25,6 +25,7 @@ const MS_FILES = {
     brief: 'ai_casino_brief_v1.json',
     levels: 'investor_price_levels_v1.json',
     micro: 'market_microstructure_v1.json',
+    overseas: 'overseas_letf_board_v1.json',
     // The micro snapshot carries a thin, older copy of deposit_credit: no
     // 미수금/반대매매 and no daily series. This is the full FreeSIS table.
     credit: 'deposit_credit_v1.json',
@@ -36,6 +37,7 @@ const msCredit = (D) => ((D.credit || {}).deposit_credit) || (D.micro || {}).dep
 
 const MS_TABS = [
     { id: 'tangle', label: '수급 불균형', blurb: '집중도와 단일종목 레버리지 ETF (Distortion & Squeeze)' },
+    { id: 'overseas', label: '해외 LETF', blurb: '삼성전자·SK하이닉스 해외 상품과 미국 주요 비교 상품 · 거래·구성·추정 리밸런싱' },
     { id: 'levels', label: '가격대별 체결', blurb: '어느 가격에서 누가 샀는가 (Volume Profile)' },
     { id: 'uskr',   label: '해외-국내 선행', blurb: '미국 옵션 레짐이 한국으로 (Global Spillover)' },
     { id: 'derivatives', label: '파생 수급', blurb: '외국인 K200 선물·옵션 수급과 시장 전체 거래 활동' },
@@ -50,6 +52,8 @@ let MS_MODAL = null;          // { title, html }
 let MS_MODAL_KEY = null;      // 열려 있는 모달의 키 (기간 전환 시 재렌더용)
 let MS_PERIOD = '3m';         // 가격대별 표시 구간 — 1m / 2m / 3m / 6m / all
 let MS_CREDIT_ON = false;     // 가격대별 탭에서 예탁·신용 추이를 펼쳤는지
+let MS_OVERSEAS_GROUP = 'hynix';
+let MS_OVERSEAS_PRODUCT = null;
 
 const msGet = (name) => loadFirstJson(finDataPaths(name));
 
@@ -64,6 +68,7 @@ const MS_HIST_FILES = {
     // One file, many tickers (000660 SK하이닉스, 005930 삼성전자, ...) -- both
     // are single-stock LETF names, so a per-ticker file per name does not scale.
     stockLetf: 'stock_letf_history_v1.jsonl',
+    overseas: 'overseas_letf_history_v1.jsonl.gz',
 };
 
 let MS_HIST = null;
@@ -78,7 +83,14 @@ const msGetJsonl = async (name) => {
             const r = await fetch(path, { cache: 'no-store' });
             if (!r.ok) continue;
             const rows = [];
-            (await r.text()).split('\n').forEach((ln) => {
+            // Fetch may already have decoded HTTP Content-Encoding. Detect
+            // the file's gzip magic, not its extension, to avoid double unzip.
+            let bytes = new Uint8Array(await r.arrayBuffer());
+            if (bytes[0] === 0x1f && bytes[1] === 0x8b) {
+                bytes = new Uint8Array(await new Response(new Blob([bytes]).stream()
+                    .pipeThrough(new DecompressionStream('gzip'))).arrayBuffer());
+            }
+            new TextDecoder().decode(bytes).split('\n').forEach((ln) => {
                 const s = ln.trim();
                 if (!s) return;
                 try { rows.push(JSON.parse(s)); } catch (_) { /* one bad line must not void the log */ }
@@ -87,7 +99,7 @@ const msGetJsonl = async (name) => {
             // line wins. Files with no ticker field (activity, direction) key
             // on date alone, which is the same thing when ticker is always ''.
             const byKey = new Map();
-            rows.forEach((row) => { if (row && row.date) byKey.set(`${row.date}|${row.ticker || ''}`, row); });
+            rows.forEach((row) => { if (row && row.date) byKey.set(`${row.date}|${row.product_id || row.ticker || ''}`, row); });
             return [...byKey.values()].sort((a, b) => String(a.date).localeCompare(String(b.date)));
         } catch (_) { /* next base */ }
     }
@@ -325,7 +337,7 @@ const msDivergingBars = (rows, opts = {}) => {
             </div>`).join('')}
         <div class="ms-dist-legend">
             ${(opts.legend || []).map((l) => `<span><i class="ms-sw ms-${l.key}"></i>${finEsc(l.name)}</span>`).join('')}
-            <span class="ms-dist-zero">가운데가 0 · 왼쪽 순매도 / 오른쪽 순매수</span>
+            <span class="ms-dist-zero">${finEsc(opts.zeroLabel || '가운데가 0 · 왼쪽 순매도 / 오른쪽 순매수')}</span>
         </div>
     </div>`;
 };
@@ -673,6 +685,7 @@ const msTangle = (D) => {
 
     <section class="fin-block fin-block-wide">
         <h2>D · 종목 스트레스</h2>
+        <button class="mm-view-btn" data-ms-tab="overseas">삼성전자·하이닉스 해외 LETF 보기</button>
         <p class="fin-lead">
             2배 ETF 1좌는 기초자산 2좌만큼의 노출을 만듭니다. IR(Implied Rebalancing)은 그 노출을 되사고 되팔 때
             <strong>현물 당일 거래대금</strong> 대비 얼마나 큰 조정 노출이 되는지를 가정으로 표시합니다. 실제 리밸런싱 체결이나 가격 영향은 이 데이터만으로 확인할 수 없습니다.
@@ -716,6 +729,81 @@ const msTangle = (D) => {
     </section>`;
 };
 
+
+// Overseas metrics are calculated by the collector, never by this renderer.
+const MS_OVERSEAS_GROUPS = [
+    ['hynix', 'SK하이닉스 · 한국 보통주', (p) => p.scope === 'kr_single_stock' && p.underlying_ticker === '000660'],
+    ['samsung', '삼성전자 · 한국 보통주', (p) => p.scope === 'kr_single_stock' && p.underlying_ticker === '005930'],
+    ['adr', 'SK하이닉스 · 미국 ADR', (p) => p.scope === 'kr_adr_single_stock'],
+    ['global', '한국 바스켓·미국 지수·업종 비교', (p) => ['kr_basket', 'global_index', 'global_sector'].includes(p.scope)],
+];
+const MS_OVERSEAS_STRUCTURES = { swap: '스왑', futures: '선물', physical_margin: '현물·차입', derivatives_collateral: '파생·담보', mixed: '혼합' };
+const msOverseas = (D) => {
+    const board = D.overseas;
+    if (!board?.products?.length) return '<section class="fin-block"><h2>해외 LETF</h2><p>해외 수집 자료를 아직 받지 못했습니다.</p></section>';
+    const group = MS_OVERSEAS_GROUPS.find((g) => g[0] === MS_OVERSEAS_GROUP) || MS_OVERSEAS_GROUPS[0];
+    const products = board.products.filter(group[2]);
+    const p = products.find((x) => x.product_id === MS_OVERSEAS_PRODUCT) || products[0];
+    if (!p) return '<p>선택한 대상의 상품이 없습니다.</p>';
+    const latest = p.latest || {}, aum = p.latest_aum, cap = p.capital_structure;
+    const usd = (v) => Number.isFinite(v) ? `$${msNum(v / 1e6, 2)}M` : '—';
+    const leverage = (x) => Number.isFinite(x.latest?.leverage) ? `${x.latest.leverage > 0 ? '+' : ''}${x.latest.leverage}배`
+        : Number.isFinite(x.leverage_ceiling) ? `최대 ${x.leverage_ceiling}배 · 실제 목표 미공개` : '목표 미확인';
+    const label = (x) => x.listings.map((l) => l.ticker).join(' / ');
+    const rows = msHistRows('overseas').filter((r) => r.product_id === p.product_id);
+    const specs = [
+        ['거래대금 프록시 · 확보분', 'USD M', (r) => Number.isFinite(r.covered_trading_value_usd) ? r.covered_trading_value_usd / 1e6 : null,
+            '동일 거래일 종가 × 거래량. 확보한 거래통화의 합계이며 거래소 실측 거래대금과 다릅니다.'],
+        [`거래량 · ${latest.primary_listing_id || p.listings[0]?.ticker || ''}`, '좌', (r) => msFinite(r.primary_volume)],
+        ['순자산 (AUM)', 'USD M', (r) => Number.isFinite(r.aum_usd) ? r.aum_usd / 1e6 : null, '기준일이 있는 운용사 AUM만 사용합니다.'],
+        ['LETF / 한국 현물 거래대금', '%', (r) => Number.isFinite(r.etf_to_kr_cash_tv_ratio) ? r.etf_to_kr_cash_tv_ratio * 100 : null,
+            '같은 날짜의 해당 한국 보통주 현물 거래대금이 분모입니다. ADR·바스켓에는 적용하지 않습니다.'],
+        ['추정 리밸런싱', 'USD M', (r) => Number.isFinite(r.implied_rebalance_usd) ? r.implied_rebalance_usd / 1e6 : null,
+            '양수=매수 방향, 음수=매도 방향. 전일 AUM·실제 목표·동일 자산/통화 수익률이 있어야 계산하는 일일 리셋 추정치입니다. 실제 주문·체결이 아닙니다.'],
+    ].map(([label, unit, pick, note]) => ({ rows, label, unit, pick, note }));
+    const typeNames = { equity: '주식', futures: '선물', swap: '스왑', options: '옵션', cash_collateral: '현금·담보', fund: '펀드' };
+    const composition = (p.composition || []).filter((c) => Number.isFinite(c.signed_weight_pct));
+    const bars = (items, unit, zeroLabel) => msDivergingBars(items.map(([label, value]) => ({ label,
+        series: [{ name: label, key: 'foreign', value }], valueText: `${msNum(value, 2)}${unit}` })), { zeroLabel });
+    return `<section class="fin-block fin-block-wide" data-ms-overseas="1">
+        <style>
+            [data-ms-overseas] .mm-tabs { flex-wrap:wrap; }
+            [data-ms-overseas] label { display:grid; gap:6px; max-width:100%; }
+            [data-ms-overseas] select { max-width:100%; min-width:0; background:var(--bg-secondary); color:var(--text-primary); padding:8px; }
+            [data-ms-overseas] .ms-dist-row { grid-template-columns:minmax(70px,1fr) minmax(50px,2fr) minmax(85px,auto); gap:8px; }
+            [data-ms-overseas] .ms-dist-val { display:block; font-size:12px; }
+        </style>
+        <h2>해외 LETF · 거래와 상품 구성</h2>
+        <div class="mm-tabs">
+            <label>비교 대상 <select data-ms-overseas-group>${MS_OVERSEAS_GROUPS.map(([id, text]) => `<option value="${id}" ${id === group[0] ? 'selected' : ''}>${finEsc(text)}</option>`).join('')}</select></label>
+            <label>상품 상세 <select data-ms-overseas-product>${products.map((x) => `<option value="${finEsc(x.product_id)}" ${x === p ? 'selected' : ''}>${finEsc(label(x))}</option>`).join('')}</select></label>
+        </div>
+        <p class="fin-note">선별 ${board.products.length}종 · 수집 ${finEsc(board.pipeline?.last_attempt_at || board.generated_at || '—')} ·
+            ${finEsc(({ok:'정상', partial:'일부 자료 미확보', failed:'수집 실패 · 이전 정상 자료 표시'})[board.pipeline?.status] || '상태 미확인')} · 상품별 관측일을 확인하세요.</p>
+        ${msTable(['상품 / 거래통화', '관측일', '목표', '구조', '거래대금 프록시 (USD)', '동일 대상 확보분 비중', '거래통화 확보'], products.map((x) => {
+            const l = x.latest || {};
+            return [finEsc(label(x)), finEsc(l.date || '—') + (x.stale ? ' · 지연' : ''), finEsc(leverage(x)),
+                finEsc(MS_OVERSEAS_STRUCTURES[x.structure] || x.structure), usd(l.covered_trading_value_usd),
+                Number.isFinite(l.covered_turnover_share_pct) ? `${msNum(l.covered_turnover_share_pct, 2)}%` : '—',
+                `${l.valued_listing_count ?? l.observed_listing_count ?? 0}/${l.expected_listing_count ?? x.listings.length}`];
+        }))}
+        <p class="fin-note">비중의 분모는 같은 날짜·같은 기준자산의 선별 상품 확보분입니다. 세계 시장점유율이나 투자자 포지션이 아닙니다. 서로 다른 지수·ADR·보통주는 분모를 합치지 않습니다.</p>
+        ${bars(products.filter((x) => Number.isFinite(x.latest?.covered_trading_value_usd)).map((x) => [x.listings[0].ticker, x.latest.covered_trading_value_usd / 1e6]), 'M USD', '거래대금 프록시 · 상품별 위 표의 관측일')}
+        <h3>${finEsc(p.name)}</h3>
+        <p class="fin-note">${finEsc(leverage(p))} · 구조 ${finEsc(MS_OVERSEAS_STRUCTURES[p.structure] || p.structure)} (${finEsc(p.structure_as_of || p.verified_on || '—')}) ·
+            AUM ${aum ? `${msNum(aum.aum_native, 2)} ${finEsc(aum.currency)} (${finEsc(aum.date)})` : '미공개/미확보'}</p>
+        ${msTable(['거래소', '거래통화', '통화별 거래량 (좌)', '상장 상태'], p.listings.map((l) => [finEsc(l.venue), finEsc(`${l.ticker} · ${l.currency}`),
+            msNum(latest.volume_by_listing?.find((v) => v.listing_id === l.listing_id)?.volume),
+            finEsc(l.last_trade_date ? `최종 거래 ${l.last_trade_date}` : l.status || '등록 상장')]))}
+        <h3>상품 내부 구성 · NAV 대비 부호 있는 노출</h3>
+        <p class="fin-note">${finEsc(p.holdings_as_of || '비중 기준일 미확보')} · 100% 초과·음수를 그대로 표시합니다. 투자 가능 수단과 실제 보유 비중은 다릅니다.</p>
+        ${composition.length ? bars(composition.map((c) => [typeNames[c.holding_type] || c.holding_type, c.signed_weight_pct]), '%', '왼쪽 음수 / 오른쪽 양수 · 합계를 100%로 바꾸지 않음') : '<p>공식 상세 비중 미확보 · 확인된 상품 구조만 표시합니다.</p>'}
+        ${(p.composition || []).filter((c) => !Number.isFinite(c.signed_weight_pct)).map((c) => `<p class="fin-note">${finEsc(typeNames[c.holding_type] || c.holding_type)}: 비중 미공개</p>`).join('')}
+        ${cap ? `<h3>운용사 자산·차입 구성 (${finEsc(cap.date)})</h3>${bars([['기초자산', cap.underlying_assets_usd / 1e6], ['부채', -cap.liabilities_usd / 1e6], ['순자산', cap.aum_usd / 1e6]], 'M USD', '자산−부채=순자산 · 계약별 비중은 별도 미확보')}` : ''}
+        <h3>상품별 일별 추이</h3>${msHistBlock(specs)}
+        <p class="fin-note">상품·구성 근거: ${(p.source_urls || []).filter((u) => /^https:\/\//.test(u)).map((u, i) => `<a href="${finEsc(u)}" target="_blank" rel="noopener noreferrer">운용사 ${i + 1}</a>`).join(' · ')} · 시세 Yahoo Finance.</p>
+    </section>`;
+};
 
 // --- ② 가격대별 수급 ---------------------------------------------------------
 // Shared by the chart (msLevelsTab) and its detail modal so the two never
@@ -1449,6 +1537,7 @@ const renderMicrostructure = async (host) => {
             </div>
             <p class="mm-tab-desc">${finEsc(tab.blurb)}</p>
             ${MS_TAB === 'tangle' ? msTangle(D)
+                : MS_TAB === 'overseas' ? msOverseas(D)
                 : MS_TAB === 'levels' ? msLevelsTab(D)
                 : MS_TAB === 'derivatives' ? msDerivatives(D)
                 : msUsKr(D)}
@@ -1466,6 +1555,12 @@ const renderMicrostructure = async (host) => {
 
         const on = (sel, fn) => host.querySelectorAll(sel).forEach((b) => b.addEventListener('click', (e) => fn(b, e)));
         on('[data-ms-tab]', (b) => { MS_TAB = b.dataset.msTab; MS_MODAL = null; paint(); });
+        host.querySelector('[data-ms-overseas-group]')?.addEventListener('change', (e) => {
+            MS_OVERSEAS_GROUP = e.target.value; MS_OVERSEAS_PRODUCT = null; paint();
+        });
+        host.querySelector('[data-ms-overseas-product]')?.addEventListener('change', (e) => {
+            MS_OVERSEAS_PRODUCT = e.target.value; paint();
+        });
         on('[data-ms-stock]', (b) => {
             MS_STOCK = b.dataset.msStock;
             // The row's own button doubles as ticker-select + drilldown open,
