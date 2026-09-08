@@ -737,7 +737,7 @@ const MS_OVERSEAS_GROUPS = [
     ['adr', 'SK하이닉스 · 미국 ADR', (p) => p.scope === 'kr_adr_single_stock'],
     ['global', '한국 바스켓·미국 지수·업종 비교', (p) => ['kr_basket', 'global_index', 'global_sector'].includes(p.scope)],
 ];
-const MS_OVERSEAS_STRUCTURES = { swap: '스왑', futures: '선물', physical_margin: '현물·차입', derivatives_collateral: '파생·담보', mixed: '혼합' };
+const MS_OVERSEAS_STRUCTURES = { swap: '스왑', futures: '선물', physical_margin: '현물·차입', derivatives_and_collateral: '파생·담보', mixed: '혼합' };
 const msOverseas = (D) => {
     const board = D.overseas;
     if (!board?.products?.length) return '<section class="fin-block"><h2>해외 LETF</h2><p>해외 수집 자료를 아직 받지 못했습니다.</p></section>';
