@@ -21,7 +21,9 @@ def verify(base, public=PUBLIC):
     for filename in FILES:
         expected = uncompressed((public / filename).read_bytes())
         request = urllib.request.Request(f'{base.rstrip("/")}/public/data/{filename}?verify={time.time_ns()}',
-                                         headers={'Cache-Control': 'no-cache', 'Accept-Encoding': 'identity'})
+                                         headers={'Cache-Control': 'no-cache', 'Accept-Encoding': 'identity',
+                                                  'Accept': 'application/json, application/gzip',
+                                                  'User-Agent': 'GlobalTradeDashboard-DataVerification/1.0'})
         with urllib.request.urlopen(request, timeout=30) as response:
             actual = uncompressed(response.read())
         if hashlib.sha256(expected).digest() != hashlib.sha256(actual).digest():
