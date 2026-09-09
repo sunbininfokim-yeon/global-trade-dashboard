@@ -27,6 +27,15 @@
 // This is a pure move: no logic was rewritten, only relocated, in the same
 // relative order the functions appeared in app.js.
 
+// The right dashboard (rankings, rig count, gas storage, RSS reports) only
+// makes sense once a country is focused (stage 2), and even then only for
+// commodities that actually have RSS reports for that country -- see
+// renderCommodityReports, the only place this is ever flipped back on.
+const setRightDashboardVisible = (visible) => {
+    const el = document.getElementById('right-pane');
+    if (el) el.style.display = visible ? 'flex' : 'none';
+};
+
 /** Clear trade country focus and redraw world flows. */
 const clearTradeFocus = () => {
     tradeFocusCountry = null;
@@ -47,6 +56,9 @@ const clearTradeFocus = () => {
         panelHide(countryStatsPanelEl);
         panelShow(newsPanelEl);
     }
+    // Back to the world view (stage 1) -- no right dashboard here regardless
+    // of commodity.
+    setRightDashboardVisible(false);
 };
 
 /**
@@ -62,6 +74,10 @@ const focusTradeCountry = (countryName) => {
 
     tradeFocusCountry = countryName;
     selectedCountry = countryName;
+    // Hidden until renderCommodityReports (below) confirms this commodity has
+    // RSS reports for this country -- otherwise a country switch would flash
+    // the previous country's dashboard while the new one is still loading.
+    setRightDashboardVisible(false);
     updateNewsPanel(countryName);
 
     // Identity, not string equality: the same country reaches this function as
@@ -763,8 +779,19 @@ const renderCommodityReports = async (commodity, countryName = null) => {
     const live = document.getElementById('reports-slot');
     if (!live || currentCommodity !== commodity) return;
     if (countryName ? tradeFocusCountry !== countryName : tradeFocusCountry !== null) return;
-    if (!items.length) { live.innerHTML = ''; panelHide(commodityReportsPanelEl); return; }
+    if (!items.length) {
+        live.innerHTML = '';
+        panelHide(commodityReportsPanelEl);
+        // Stage 2, no RSS for this commodity+country -- no right dashboard at
+        // all, not just an empty reports card (world view already has none).
+        if (countryName) setRightDashboardVisible(false);
+        return;
+    }
 
+    // This commodity+country has RSS reports -- open the right dashboard now
+    // (rankings/rig count/gas storage were already rendered synchronously in
+    // focusTradeCountry, just hidden until this resolved).
+    if (countryName) setRightDashboardVisible(true);
     panelShow(commodityReportsPanelEl);
     const who = countryName ? `${resolveCountry(countryName)?.label || countryName} · ` : '';
     live.innerHTML = `

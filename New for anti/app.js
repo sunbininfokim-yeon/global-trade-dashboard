@@ -5351,13 +5351,12 @@ const setView = (target) => {
         setClimateCommodityHeader(null);
         const data = window.TradeData[target];
         
-        // Right pane hosts the Phase 2-2 reports panel, but only once a
-        // country is focused (stage 2) -- a world-level report has no single
-        // country to point at yet. Still open the pane itself (right: true)
-        // so it doesn't visibly pop in in the middle of a click; trade.js
-        // shows/hides #commodity-reports-panel itself as focus changes
-        // (renderTradeWorldPanel hides it, focusTradeCountry shows it).
-        togglePanels({ news: true, left: true, right: true });
+        // Right pane (rankings, rig count, gas storage, RSS reports) has
+        // nothing to point at on the world view (stage 1) -- closed here.
+        // trade.js opens it once a country is focused (stage 2), and only
+        // for commodities that actually have RSS reports for that country
+        // (see focusTradeCountry / renderCommodityReports / clearTradeFocus).
+        togglePanels({ news: false, left: true, right: false });
         
         // Update Panel Info
         currentViewTitle.textContent = data.title;
