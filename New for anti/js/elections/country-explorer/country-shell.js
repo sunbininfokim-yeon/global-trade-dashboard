@@ -1,6 +1,7 @@
 import { countryEvents, readableSpectrum, screenStatus } from '../data/selectors.js';
 import { escapeHtml, formatDate, stateLabel } from '../ui.js';
 import { usaSections, usaLegislature } from './special/usa.js';
+import { usaExecutive } from './special/usa-executive.js';
 import { chinaSections, chinaContent } from './special/china.js';
 import { iranSections } from './special/iran.js';
 import { raceProgressContent } from './special/race-progress.js';
@@ -106,6 +107,7 @@ const specialContent = (country, section) => {
     if (section === 'race_progress') return raceProgressContent(country);
     if (country.iso3 === 'CHN') return chinaContent(country, section);
     if (country.iso3 === 'USA' && section === 'legislature') return usaLegislature(country);
+    if (country.iso3 === 'USA' && section === 'executive') return usaExecutive(country);
     return null;
 };
 
