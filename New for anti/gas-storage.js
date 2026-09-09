@@ -16,7 +16,11 @@
         const stamp = p.length === 7 ? new Date(Date.UTC(+p.slice(0,4), +p.slice(5,7), 0)) : new Date(p+'T00:00:00Z');
         return (Date.now() - stamp.getTime()) / 86400000 > (s.stale_after_days || {daily:4,weekly:15,monthly:120}[s.frequency] || 4) ? 'stale' : s.status;
     }
-    function inventoryCard(s) {
+    // Countries whose facility name alone doesn't say where it is (e.g.
+    // AEMO's "Iona UGS" reads as a proper name, not a place) get a country
+    // suffix appended to the displayed name.
+    const countrySuffix = {AU:'호주'};
+    function inventoryCard(s, alwaysOpen) {
         const p = s.latest;
         const status = effectiveStatus(s);
         const suffix = {day_on_day:'전일',week_on_week:'전주',month_on_month:'전월'}[s.change_period] || '이전';
@@ -33,7 +37,8 @@
         const chart = consecutive && history.length > 1 && history.every(p => typeof p.value === 'number' && Number.isFinite(p.value))
             ? sparkChartHtml({points:history.map(p => ({label:p.period,value:p.value})),unit:units[s.unit] || s.unit,formatValue:fmt,ariaLabel:`${esc(s.label_ko)} 최근 ${history.length}개 관측`}) : '';
         const special = s.id === 'agsi:REHDEN' ? '독일 합계에 포함되는 개별 시설' : s.provider === 'aemo' ? '호주 개별 시설 · 전국 합계 아님' : s.provider === 'jodi' ? '월말 국가 재고 · 기체 환산' : s.provider === 'alsi' ? 'LNG 터미널 재고' : '지하 가스 저장';
-        return `<details class="stock-item"><summary style="cursor:pointer;padding:6px 0"><span class="stock-row" style="display:inline-grid;width:calc(100% - 14px);grid-template-columns:minmax(0,1fr) auto"><span class="nm">${esc(s.label_ko)}</span><span class="vl">${fmt(p?.value)}<em>${esc(units[s.unit] || s.unit)}</em></span></span>
+        const name = countrySuffix[s.country] ? `${s.label_ko} (${countrySuffix[s.country]})` : s.label_ko;
+        return `<details class="stock-item"${alwaysOpen ? ' open' : ''}><summary style="cursor:pointer;padding:6px 0"><span class="stock-row" style="display:inline-grid;width:calc(100% - 14px);grid-template-columns:minmax(0,1fr) auto"><span class="nm">${esc(name)}</span><span class="vl">${fmt(p?.value)}<em>${esc(units[s.unit] || s.unit)}</em></span></span>
             <span class="stock-note" style="display:block">${esc(p?.period || '관측일 없음')} · ${esc(statusNames[status] || status)}${p?.fill_pct != null ? ` · 충전율 ${fmt(p.fill_pct)}%` : ''}</span></summary>
             <div class="stock-note">${esc(special)} · ${suffix} 대비 ${status === 'error' ? '—' : fmt(s.change)} · <a style="color:#7dd3fc" href="${sourceUrls[s.provider]}" target="_blank" rel="noopener noreferrer">${esc(s.provider.toUpperCase())}</a></div>
             ${chart}
@@ -67,8 +72,8 @@
             const rest = countryName ? [] : selected.filter(s=>!primary.includes(s.id));
             const benchmarks = (data.benchmarks || []).map(b => `<div class="stock-item"><div class="stock-row" style="grid-template-columns:minmax(0,1fr) auto"><span class="nm">${esc(b.label_ko)}</span><span class="vl">${fmt(b.latest?.value)}<em>${esc(b.unit || '')}</em></span></div><div class="stock-note">${esc(b.latest?.period || '')} · ${esc(statusNames[effectiveStatus(b)] || effectiveStatus(b))} · ${esc(b.source || b.note_ko || '')}</div></div>`).join('');
             slot.innerHTML = `<p class="section-title">천연가스 저장 · 공식 통계</p><div class="stock-note">국가별 기준일·단위가 다릅니다. 재고와 용량, 지하 저장과 LNG 탱크 재고는 합산하지 않습니다.</div>
-                ${top.map(inventoryCard).join('') || '<p class="stock-note">이 국가의 공개 재고는 아직 연결되지 않았습니다.</p>'}
-                ${rest.length ? `<details><summary>다른 국가·시설 ${rest.length}개</summary>${rest.map(inventoryCard).join('')}</details>` : ''}
+                ${top.map(s => inventoryCard(s, true)).join('') || '<p class="stock-note">이 국가의 공개 재고는 아직 연결되지 않았습니다.</p>'}
+                ${rest.length ? `<details><summary>다른 국가·시설 ${rest.length}개</summary>${rest.map(s => inventoryCard(s, false)).join('')}</details>` : ''}
                 <p class="section-title" style="margin-top:12px">가격 기준 · 저장시설과 별도</p>${benchmarks}
                 <div class="stock-note">수집 시각 ${esc(data.fetched_at?.slice(0,16).replace('T',' '))} UTC${data.sources?.some(s=>s.status==='error') ? ' · 일부 출처 수집 실패' : ''}</div>`;
             wireSparkCharts(slot);

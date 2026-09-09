@@ -25,6 +25,11 @@ from urllib.request import Request, urlopen
 import zipfile
 
 EIA_URL = 'https://ir.eia.gov/ngs/wngsr.json'
+# The free snapshot above only ever carries current_week/week_ago (see
+# parse_eia) -- it's a "this week's release" report, not a history endpoint.
+# This is EIA's own bulk data API (v2), used only to backfill older weeks
+# for the Lower 48 series; see fetch_eia_lower48_history.
+EIA_V2_STORAGE_URL = 'https://api.eia.gov/v2/natural-gas/stor/wkly/data/'
 AEMO_URL = 'https://nemweb.com.au/Reports/Current/GBB/GasBBActualFlowStorageLast31.CSV'
 JODI_LIST = 'https://api.publisher.jodidata.org/web/files/gas'
 JODI_PAGE = 'https://www.jodidata.org/gas/database/data-downloads.aspx'
@@ -126,6 +131,44 @@ def parse_eia(body):
                              'underground_working_gas', 'Bcf', 'weekly',
                              'Lower 48; regional rows overlap with total and must not be summed together', observations))
     return result
+
+
+def fetch_eia_lower48_history(fetch, api_key, weeks=280):
+    """Best-effort backfill for the Lower 48 series beyond the two points
+    parse_eia gets from the free snapshot report. Purely additive: the
+    caller merges this in underneath the primary snapshot's own points,
+    which always win on an overlapping period (see collect()). Same EIA v2
+    bulk API and facet[series][] convention collect_benchmarks already uses
+    for Henry Hub (RNGWHHD) -- NW2_EPG0_SWO_R48_BCF is the same series_id
+    the free wngsr.json snapshot reports (as 'png.nw2_epg0_swo_r48_bcf.w'),
+    just without the provider prefix and frequency suffix the v2 facet
+    doesn't take. A fetch failure here can never make the primary EIA
+    source worse, only leave this one series short on history for longer.
+    """
+    params = {
+        'api_key': api_key,
+        'frequency': 'weekly',
+        'data[0]': 'value',
+        'facets[series][]': 'NW2_EPG0_SWO_R48_BCF',
+        'sort[0][column]': 'period',
+        'sort[0][direction]': 'desc',
+        'length': min(weeks, 5000),
+    }
+    body = fetch(EIA_V2_STORAGE_URL + '?' + urlencode(params))
+    rows = decode_json(body).get('response', {}).get('data')
+    if not isinstance(rows, list) or not rows:
+        raise SourceError('eia_v2_empty')
+    out = []
+    for row in rows:
+        if row.get('series') != 'NW2_EPG0_SWO_R48_BCF' or str(row.get('units', '')).upper() != 'BCF':
+            raise SourceError('eia_v2_series_or_unit_changed')
+        period, value = row.get('period'), row.get('value')
+        if not period or value is None:
+            continue
+        out.append(dict(period=period, value=stock(value), source_quality='official_estimate'))
+    if not out:
+        raise SourceError('eia_v2_no_rows')
+    return out
 
 
 def parse_aemo(body):
@@ -393,6 +436,28 @@ def collect(previous=None, today=None, fetch=get_bytes):
             for r in old.values():
                 if r['provider'] == provider:
                     items.append(finalize({**r, 'observations': [], 'status': 'error', 'error_code': code}, old, today))
+
+    # Best-effort backfill for the Lower 48 series: the primary EIA snapshot
+    # above only ever carries two points, so on its own this series would
+    # take ~5 years of daily cron runs to reach the same depth the other
+    # sources already have. Recorded as its own source entry -- a failure
+    # here never touches the primary 'eia' source's own status above, only
+    # leaves this one series short on history for longer.
+    eia_key = os.environ.get('EIA_API_KEY')
+    lower48 = next((it for it in items if it['id'] == 'png.nw2_epg0_swo_r48_bcf.w'), None)
+    if eia_key and lower48 is not None:
+        try:
+            history = fetch_eia_lower48_history(fetch, eia_key)
+            # Backfill first, primary snapshot points second, so finalize's
+            # period-keyed merge lets the primary (authoritative) points win
+            # on any overlapping week.
+            lower48['observations'] = history + lower48['observations']
+            finalize(lower48, old, today)
+            sources.append(dict(provider='eia_v2_backfill', status='ok', added=len(history)))
+        except (SourceError, ValueError, KeyError, TypeError, IndexError) as exc:
+            code = str(exc) if isinstance(exc, SourceError) else 'schema_changed'
+            sources.append(dict(provider='eia_v2_backfill', status='error', error_code=code))
+
     for platform, countries in [('agsi', AGSI_COUNTRIES), ('alsi', ALSI_COUNTRIES)]:
         for country in countries:
             try:
