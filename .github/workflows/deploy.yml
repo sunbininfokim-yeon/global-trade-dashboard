@@ -15,7 +15,7 @@ on:
   # Bot data commits do not trigger push workflows. Only trusted main runs
   # may trigger deployment; never execute a PR checkout with deploy secrets.
   workflow_run:
-    workflows: ['Overseas LETF daily']
+    workflows: ['Overseas LETF daily', 'Natural gas storage daily']
     types: [completed]
     branches: [main]
 
@@ -47,6 +47,11 @@ jobs:
         run: |
           if [ -f 'New for anti/public/data/overseas_letf_board_v1.json' ]; then
             python3 'New for anti/scripts/market_microstructure/verify_overseas_letf_deploy.py'
+          fi
+      - name: Verify natural gas public data
+        run: |
+          if [ -f 'New for anti/public/data/gas_storage_v1.json' ]; then
+            python3 'New for anti/scripts/gas_storage/verify_deploy.py'
           fi
       # macro_monitor_v1.json is a static asset baked into this deploy, but
       # handleMacroMonitor() (in _worker.js) caches its response in KV for 6h
