@@ -25,7 +25,10 @@ const viewForGeometry = (geo) => {
 const isHighlighted = (feature, highlightDistrict) => highlightDistrict != null
     && String(feature.properties?.district ?? '') === String(highlightDistrict);
 
-export const renderUsaDistrictMap = async ({ host, stateId, highlightDistrict = null }) => {
+// fitView is false when only the highlight changed: setElectionMap treats a
+// viewState as "move the camera there", so re-fitting on every district click
+// would yank the map back to the whole-state framing the user had zoomed out of.
+export const renderUsaDistrictMap = async ({ host, stateId, highlightDistrict = null, fitView = true }) => {
     const geo = await loadCongressionalDistricts(stateId);
     if (!geo) return false;
     host.setElectionMap([
@@ -42,6 +45,6 @@ export const renderUsaDistrictMap = async ({ host, stateId, highlightDistrict = 
                 ? [255, 255, 255, 235]
                 : partyColor(feature.properties?.party_abbr)),
         }),
-    ], null, viewForGeometry(geo));
+    ], null, fitView ? viewForGeometry(geo) : null);
     return true;
 };

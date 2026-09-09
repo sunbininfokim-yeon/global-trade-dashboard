@@ -44,8 +44,9 @@ export const createCountryExplorer = ({ host, bundle, onCountryOpen, onBack }) =
                 financeRaces,
                 onBackToUsa: () => this.showCountry('USA'),
                 onToggleFinance: () => this.showUsaState(stateId, { financeMode: !financeMode }),
-                // Only the map is redrawn; the panel opened the row itself.
-                onHighlightDistrict: (district) => renderUsaDistrictMap({ host, stateId, highlightDistrict: district }),
+                // Only the map is redrawn, and only its colours: fitView stays
+                // off so clicking a district never moves the camera.
+                onHighlightDistrict: (district) => renderUsaDistrictMap({ host, stateId, highlightDistrict: district, fitView: false }),
             });
             if (!districtMapReady) {
                 await renderCountryMap({ host, country: usa, selectedStateId: stateId, onStateOpen: (nextStateId) => this.showUsaState(nextStateId) });
