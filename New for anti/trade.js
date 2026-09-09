@@ -165,6 +165,7 @@ const focusTradeCountry = (countryName) => {
         });
     }
     renderRigCountCountry(countryName);
+    window.GasStorage?.render(countryName);
     renderCommodityReports(currentCommodity, countryName);
 
     // Stage 2 stats become the country's, not the world's. "글로벌 무역량
@@ -829,6 +830,7 @@ const renderTradeWorldPanel = (arcs) => {
     // Chained, not fired in parallel: renderRigCountWorld must not insert
     // before renderEmergencyStocks's own card exists (see its own comment).
     renderEmergencyStocks().then(renderRigCountWorld);
+    window.GasStorage?.render();
 };
 
 const futuresCache = new Map();

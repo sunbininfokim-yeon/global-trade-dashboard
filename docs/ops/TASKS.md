@@ -56,3 +56,5 @@
 3. 끝: `review` 또는 `done` + `./tools/ops/handoff.sh`  
 
 | T30 | 해외 LETF 수집·이력·시장미시구조 UI·배포 연결 | **codex** | `scripts/market_microstructure/**overseas*`, `public/data/overseas_letf_*`, `market-microstructure.js`, 해외 workflow·deploy hook | `claude/overseas-letf-pipeline-integration` | **done** | 사용자 2026-09-08 승인. PR #262·#263 병합, 첫 원격 수집·저장 및 운영 배포 성공, 공개 파일 4개 내용 일치와 운영 UI 확인. 데이터 16개 계약 테스트·브라우저 검증 통과. |
+
+| T31 | 천연가스 공식 재고·Henry Hub 자동 수집 및 표시 | codex | `scripts/gas_storage/**`, `public/data/gas_storage_v1.json`, `gas-storage.js`, trade/index hooks, gas workflow/deploy hook | `codex/natural-gas-storage-pipeline` | review | 2026-09-09 사용자 파이프라인 및 GitHub/Cloudflare 배포 지시. 별도 checkout. 7개 테스트 및 로컬 UI 확인. TTF 제공업체 확인 대기. |
