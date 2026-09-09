@@ -9,7 +9,8 @@
 // promise anything the code doesn't do; update it if that scope changes.
 const PRIVACY_POLICY_HTML = `
     <h4>수집하는 개인정보</h4>
-    <p>이메일 주소, 비밀번호(암호화 저장), 닉네임(선택), 즐겨찾기·알림 설정 내역.
+    <p>이메일 주소, 비밀번호(Supabase Auth가 해시로 변환해 저장하며, 운영자를 포함해
+    누구도 원문을 볼 수 없습니다), 닉네임(선택), 즐겨찾기·알림 설정 내역.
     실명은 수집하지 않습니다.</p>
     <h4>이용 목적</h4>
     <p>로그인 및 계정 식별, 즐겨찾기한 정책·원자재 리포트 변경사항의 이메일 알림 발송.</p>
