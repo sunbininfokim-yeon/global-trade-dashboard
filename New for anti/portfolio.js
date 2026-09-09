@@ -1149,7 +1149,8 @@ const pfScnBlank = () => ({
     assets: [], factors: [], benchmark: null,
     startDate: '', endDate: '', holdoutStart: '',
     rebalance: 'buy_and_hold', initialCapital: null,
-    conditionOn: false, conditionRows: [], holdingBars: 10,
+    conditionOn: false, conditionTree: { type: 'group', op: 'all', children: [] }, holdingBars: 10,
+    compareOn: false, variants: [],
 });
 const pfScnLoad = () => {
     try {
@@ -1171,6 +1172,32 @@ const pfScnResolve = async (raw, role, existingIds) => {
     return { id, name_ko: picked.name_ko, yahoo: picked.yahoo || null, currency: picked.currency || 'KRW' };
 };
 const pfScnUsedIds = (s) => new Set([...s.assets, ...s.factors, ...(s.benchmark ? [s.benchmark] : [])].map((r) => r.id));
+
+// Condition tree: {type:'group', op:'all'|'any', children:[...]} nesting
+// leaves {type:'leaf', factorId, lookbackBars, operator, threshold} -- mirrors
+// the engine's own {all:[...]}/{any:[...]} recursive shape (scenario.mjs
+// compileCondition, up to depth 8 / 20 members per group), just wrapped with
+// a UI-facing `type` tag so leaf vs. group is unambiguous while editing.
+const pfScnBlankLeaf = (factorId) => ({ type: 'leaf', factorId, lookbackBars: 5, operator: 'gte', threshold: 0 });
+const pfScnBlankGroup = (op = 'all') => ({ type: 'group', op, children: [] });
+const pfScnParsePath = (s) => (s ? s.split('.').map(Number) : []);
+const pfScnNodeAt = (tree, path) => path.reduce((n, i) => n.children[i], tree);
+const pfScnGetParentAndIndex = (tree, path) => ({ parent: pfScnNodeAt(tree, path.slice(0, -1)), idx: path[path.length - 1] });
+// Drops leaves referencing a deleted factor; groups (root included) always survive, even empty.
+const pfScnPruneFactor = (node, factorId) => {
+    if (node.type === 'leaf') return node.factorId === factorId ? null : node;
+    return { ...node, children: node.children.map((c) => pfScnPruneFactor(c, factorId)).filter(Boolean) };
+};
+// Drops empty groups recursively; only used on a cloned tree right before
+// handing it to the engine, so it never mutates the user's live editing state.
+const pfScnPruneEmptyGroups = (node) => {
+    if (node.type === 'leaf') return node;
+    const children = node.children.map(pfScnPruneEmptyGroups).filter(Boolean);
+    return children.length ? { ...node, children } : null;
+};
+const pfScnTreeToCondition = (node) => node.type === 'leaf'
+    ? { factorId: node.factorId, lookbackBars: node.lookbackBars, threshold: node.threshold, operator: node.operator }
+    : { [node.op]: node.children.map(pfScnTreeToCondition) };
 
 // Describes ONE runScenario() result two ways; toggling never recomputes.
 // null is always rendered as "산출 불가", never coerced to 0 or hidden.
@@ -1308,9 +1335,92 @@ const renderScenarioResult = (out, result, mode) => {
     }));
 };
 
+// One base run plus each variant, side by side. Never picks a "winner" --
+// compareScenarioVariants() itself always returns automatic_selection: false,
+// and this only ever renders exactly what it returned.
+const renderScenarioComparison = (out, base, comparison, mode) => {
+    const cols = [{ id: '기준(현재 설정)', result: base }, ...comparison.results];
+    const row = (label, get, fmt = scnPct) => `
+        <tr><th>${finEsc(label)}</th>${cols.map((c) => `<td>${fmt(get(c.result))}</td>`).join('')}</tr>`;
+    const stratRow = (label, get, fmt) => cols.every((c) => c.result.strategy) ? row(label, (r) => get(r.strategy), fmt) : '';
+
+    out.innerHTML = `
+        <section class="fin-block fin-block-wide">
+            <div class="pf-mode" role="group" aria-label="보기 수준">
+                <button type="button" class="pf-mode-btn ${mode === 'basic' ? 'on' : ''}" data-mode="basic">기본</button>
+                <button type="button" class="pf-mode-btn ${mode === 'expert' ? 'on' : ''}" data-mode="expert">전문가</button>
+            </div>
+            <h2>여러 시나리오 비교</h2>
+            <p class="fin-note">비중·자산·조건은 전부 같고, 아래 표에 나온 항목만 다릅니다. 여러 결과 중 좋은 것만 골라 쓰면 과적합될 수 있습니다 — 다중검정 보정은 하지 않습니다.</p>
+            <div class="fin-table-wrap"><table class="fin-table"><thead><tr><th></th>
+                ${cols.map((c) => `<th>${finEsc(c.id)}</th>`).join('')}</tr></thead><tbody>
+                <tr><th>기간</th>${cols.map((c) => `<td>${finEsc(c.result.period.actual_start)} ~ ${finEsc(c.result.period.actual_end)}</td>`).join('')}</tr>
+                ${stratRow('기간 수익률', (s) => s.metrics.total_return)}
+                ${stratRow('변동성(연환산)', (s) => s.metrics.annualized_volatility)}
+                ${stratRow('최대 낙폭', (s) => s.metrics.max_drawdown)}
+                ${stratRow('산술 샤프', (s) => s.metrics.sharpe_arithmetic, scnNum)}
+                ${stratRow('VaR(1관측)', (s) => s.metrics.var_1bar)}
+                ${mode === 'expert' ? stratRow('완료 거래', (s) => s.n_completed_episodes, (v) => v === null || v === undefined ? '산출 불가' : String(v)) : ''}
+            </tbody></table></div>
+            ${mode === 'expert' ? `<details><summary>변형별 run_config</summary>
+                <pre class="fin-code">${finEsc(JSON.stringify(comparison.results.map((r) => ({ id: r.id, run_config: r.result.run_config })), null, 2))}</pre>
+            </details>` : ''}
+        </section>`;
+
+    out.querySelectorAll('.pf-mode-btn').forEach((b) => b.addEventListener('click', () => {
+        if (b.dataset.mode === mode) return;
+        pfSetMode(b.dataset.mode);
+        renderScenarioComparison(out, base, comparison, b.dataset.mode);
+    }));
+};
+
+// UI depth cap for nested condition groups (sanity vs. the engine's depth-8
+// limit) -- past this a user is building something a spreadsheet formula
+// would serve better, not something this form should encourage.
+const SCN_COND_MAX_UI_DEPTH = 3;
+const renderCondLeafRow = (node, path, factors) => {
+    const p = path.join('.');
+    return `
+    <div class="pf-row">
+        <select class="pf-field scn-cond-factor" data-path="${p}">
+            ${factors.map((f) => `<option value="${finEsc(f.id)}" ${f.id === node.factorId ? 'selected' : ''}>${finEsc(f.name_ko)}</option>`).join('')}
+        </select>
+        <input type="number" class="pf-field scn-cond-lookback" data-path="${p}" value="${node.lookbackBars}" min="1" placeholder="관측 수(bar)">
+        <select class="pf-field scn-cond-op" data-path="${p}">
+            <option value="gte" ${node.operator === 'gte' ? 'selected' : ''}>이상(≥)</option>
+            <option value="lte" ${node.operator === 'lte' ? 'selected' : ''}>이하(≤)</option>
+        </select>
+        <input type="number" step="any" class="pf-field scn-cond-threshold" data-path="${p}" value="${node.threshold}" placeholder="기준값">
+        <button class="pf-del" data-kind="condleaf" data-path="${p}" aria-label="삭제">✕</button>
+    </div>`;
+};
+const renderConditionTree = (node, path, factors, depth) => {
+    const p = path.join('.');
+    const full = node.children.length >= 20;
+    return `
+    <div class="scn-cond-group ${depth > 0 ? 'scn-cond-nested' : ''}" data-path="${p}">
+        <div class="scn-cond-group-head">
+            <select class="pf-field scn-cond-groupop" data-path="${p}">
+                <option value="all" ${node.op === 'all' ? 'selected' : ''}>모두 만족(AND)</option>
+                <option value="any" ${node.op === 'any' ? 'selected' : ''}>하나 이상 만족(OR)</option>
+            </select>
+            ${depth > 0 ? `<button class="pf-del" data-kind="condgroup" data-path="${p}" aria-label="그룹 삭제">✕ 그룹 삭제</button>` : ''}
+        </div>
+        ${node.children.length ? `<div class="pf-rows">${node.children.map((child, i) => child.type === 'leaf'
+            ? renderCondLeafRow(child, [...path, i], factors)
+            : renderConditionTree(child, [...path, i], factors, depth + 1)).join('')}</div>`
+            : '<p class="fin-note">아직 없습니다.</p>'}
+        <div class="pf-add scn-cond-add-row">
+            <button class="scn-cond-add-leaf pf-btn pf-btn-ghost" data-path="${p}" ${full ? 'disabled' : ''}>조건 추가</button>
+            ${depth < SCN_COND_MAX_UI_DEPTH ? `<button class="scn-cond-add-group pf-btn pf-btn-ghost" data-path="${p}" ${full ? 'disabled' : ''}>그룹 추가(AND/OR)</button>` : ''}
+        </div>
+    </div>`;
+};
+
 const renderScenarioLab = async (host) => {
     const state = pfScnLoad();
     let result = null, resultError = null;
+    let compareResult = null, compareError = null;
 
     const paint = () => {
         host.innerHTML = `
@@ -1383,23 +1493,8 @@ const renderScenarioLab = async (host) => {
             ${state.conditionOn ? `
             <div id="scn-cond-block">
                 ${!state.factors.length ? '<p class="fin-note">조건에 쓰려면 위에서 관찰 변수를 먼저 추가하세요.</p>' : `
-                <div class="pf-rows">
-                    ${state.conditionRows.map((r, i) => `
-                    <div class="pf-row">
-                        <select class="pf-field scn-cond-factor" data-i="${i}">
-                            ${state.factors.map((f) => `<option value="${finEsc(f.id)}" ${f.id === r.factorId ? 'selected' : ''}>${finEsc(f.name_ko)}</option>`).join('')}
-                        </select>
-                        <input type="number" class="pf-field scn-cond-lookback" data-i="${i}" value="${r.lookbackBars}" min="1" placeholder="관측 수(bar)">
-                        <select class="pf-field scn-cond-op" data-i="${i}">
-                            <option value="gte" ${r.operator === 'gte' ? 'selected' : ''}>이상(≥)</option>
-                            <option value="lte" ${r.operator === 'lte' ? 'selected' : ''}>이하(≤)</option>
-                        </select>
-                        <input type="number" step="any" class="pf-field scn-cond-threshold" data-i="${i}" value="${r.threshold}" placeholder="기준값">
-                        <button class="pf-del" data-kind="cond" data-i="${i}" aria-label="삭제">✕</button>
-                    </div>`).join('')}
-                </div>
+                ${renderConditionTree(state.conditionTree, [], state.factors, 0)}
                 <div class="pf-add">
-                    <button id="scn-cond-add" class="pf-btn pf-btn-ghost">조건 추가</button>
                     <label class="pf-row-sub">보유 기간(bar)<br><input type="number" id="scn-holding" class="pf-field" min="1" value="${state.holdingBars}"></label>
                 </div>`}
             </div>` : ''}
@@ -1415,9 +1510,40 @@ const renderScenarioLab = async (host) => {
         </p>
         <div id="scn-out">${resultError ? `
             <div class="fin-block fin-block-wide"><h2>계산하지 못했습니다</h2>
-                <p class="fin-p">${finEsc(resultError)}</p></div>` : ''}</div>`;
+                <p class="fin-p">${finEsc(resultError)}</p></div>` : ''}</div>
+
+        <section class="fin-block fin-block-wide pf-input">
+            <h2>여러 시나리오 비교 <span class="fin-note">(선택 — 위 자산·조건은 그대로 두고, 항목별로 재조정 방식·기간만 바꿔 나란히 비교)</span></h2>
+            <label><input type="checkbox" id="scn-cmp-on" ${state.compareOn ? 'checked' : ''}> 비교를 사용합니다</label>
+            ${state.compareOn ? `
+            <div id="scn-cmp-block">
+                ${state.variants.length ? `<div class="pf-rows">${state.variants.map((v, i) => `
+                    <div class="pf-row">
+                        <input type="text" class="pf-field scn-cmp-label" data-i="${i}" placeholder="이름(예: 매일 재조정)" value="${finEsc(v.label || '')}">
+                        <select class="pf-field scn-cmp-rebalance" data-i="${i}">
+                            <option value="" ${!v.rebalance ? 'selected' : ''}>재조정: 기본과 동일</option>
+                            <option value="buy_and_hold" ${v.rebalance === 'buy_and_hold' ? 'selected' : ''}>매수 후 유지</option>
+                            <option value="daily" ${v.rebalance === 'daily' ? 'selected' : ''}>매일 재조정</option>
+                            <option value="monthly" ${v.rebalance === 'monthly' ? 'selected' : ''}>매월 재조정</option>
+                        </select>
+                        <input type="date" class="pf-field scn-cmp-start" data-i="${i}" value="${finEsc(v.startDate || '')}" title="시작(선택, 비우면 기본과 동일)">
+                        <input type="date" class="pf-field scn-cmp-end" data-i="${i}" value="${finEsc(v.endDate || '')}" title="종료(선택, 비우면 기본과 동일)">
+                        <button class="pf-del" data-kind="variant" data-i="${i}" aria-label="삭제">✕</button>
+                    </div>`).join('')}</div>` : '<p class="fin-note">아직 없습니다.</p>'}
+                <div class="pf-add">
+                    <button id="scn-cmp-add" class="pf-btn pf-btn-ghost" ${state.variants.length >= 10 ? 'disabled' : ''}>비교 항목 추가</button>
+                    ${state.variants.length ? '<button id="scn-cmp-run" class="pf-btn pf-btn-primary">비교 실행</button>' : ''}
+                </div>
+                <p class="fin-note">각 항목에서 비운 값은 기본 설정과 같은 값을 씁니다. 최대 10개, 비중은 위 자산 설정을 그대로 씁니다 —
+                    비교하려면 위에서 자산에 비중을 입력해 두어야 합니다. 좋은 결과만 골라 쓰면 과적합될 수 있습니다(다중검정 보정 없음).</p>
+            </div>` : ''}
+        </section>
+        <div id="scn-cmp-out">${compareError ? `
+            <div class="fin-block fin-block-wide"><h2>비교하지 못했습니다</h2>
+                <p class="fin-p">${finEsc(compareError)}</p></div>` : ''}</div>`;
 
         if (result) renderScenarioResult(host.querySelector('#scn-out'), result, pfGetMode());
+        if (compareResult) renderScenarioComparison(host.querySelector('#scn-cmp-out'), compareResult.base, compareResult.comparison, pfGetMode());
         wire();
     };
 
@@ -1457,30 +1583,62 @@ const renderScenarioLab = async (host) => {
         });
         host.querySelector('#scn-b-del')?.addEventListener('click', () => { state.benchmark = null; save(); paint(); });
         host.querySelectorAll('.pf-del').forEach((b) => b.addEventListener('click', () => {
-            const i = Number(b.dataset.i);
-            if (b.dataset.kind === 'asset') state.assets.splice(i, 1);
-            else if (b.dataset.kind === 'factor') { const removedId = state.factors[i].id; state.factors.splice(i, 1);
-                state.conditionRows = state.conditionRows.filter((r) => r.factorId !== removedId); }
-            else if (b.dataset.kind === 'cond') state.conditionRows.splice(i, 1);
+            const kind = b.dataset.kind;
+            if (kind === 'asset') state.assets.splice(Number(b.dataset.i), 1);
+            else if (kind === 'factor') { const i = Number(b.dataset.i), removedId = state.factors[i].id; state.factors.splice(i, 1);
+                state.conditionTree = pfScnPruneFactor(state.conditionTree, removedId); }
+            else if (kind === 'condleaf' || kind === 'condgroup') {
+                const { parent, idx } = pfScnGetParentAndIndex(state.conditionTree, pfScnParsePath(b.dataset.path));
+                parent.children.splice(idx, 1);
+            }
+            else if (kind === 'variant') state.variants.splice(Number(b.dataset.i), 1);
             save(); paint();
         }));
         host.querySelector('#scn-cond-on')?.addEventListener('change', (e) => { state.conditionOn = e.target.checked; save(); paint(); });
-        host.querySelector('#scn-cond-add')?.addEventListener('click', () => {
-            state.conditionRows.push({ factorId: state.factors[0].id, lookbackBars: 5, operator: 'gte', threshold: 0 });
+        host.querySelectorAll('.scn-cond-add-leaf').forEach((b) => b.addEventListener('click', () => {
+            const group = pfScnNodeAt(state.conditionTree, pfScnParsePath(b.dataset.path));
+            if (group.children.length >= 20) return;
+            group.children.push(pfScnBlankLeaf(state.factors[0].id));
             save(); paint();
-        });
+        }));
+        host.querySelectorAll('.scn-cond-add-group').forEach((b) => b.addEventListener('click', () => {
+            const group = pfScnNodeAt(state.conditionTree, pfScnParsePath(b.dataset.path));
+            if (group.children.length >= 20) return;
+            group.children.push(pfScnBlankGroup());
+            save(); paint();
+        }));
+        host.querySelectorAll('.scn-cond-groupop').forEach((el) => el.addEventListener('change', () => {
+            pfScnNodeAt(state.conditionTree, pfScnParsePath(el.dataset.path)).op = el.value;
+            save();
+        }));
         host.querySelectorAll('.scn-cond-factor, .scn-cond-lookback, .scn-cond-op, .scn-cond-threshold').forEach((el) =>
             el.addEventListener('change', () => {
-                const i = Number(el.dataset.i), row = state.conditionRows[i];
-                if (el.classList.contains('scn-cond-factor')) row.factorId = el.value;
-                else if (el.classList.contains('scn-cond-lookback')) row.lookbackBars = Math.max(1, Math.round(Number(el.value) || 1));
-                else if (el.classList.contains('scn-cond-op')) row.operator = el.value;
-                else row.threshold = Number(el.value) || 0;
+                const node = pfScnNodeAt(state.conditionTree, pfScnParsePath(el.dataset.path));
+                if (el.classList.contains('scn-cond-factor')) node.factorId = el.value;
+                else if (el.classList.contains('scn-cond-lookback')) node.lookbackBars = Math.max(1, Math.round(Number(el.value) || 1));
+                else if (el.classList.contains('scn-cond-op')) node.operator = el.value;
+                else node.threshold = Number(el.value) || 0;
                 save();
             }));
         host.querySelector('#scn-holding')?.addEventListener('change', (e) => {
             state.holdingBars = Math.max(1, Math.round(Number(e.target.value) || 1)); save();
         });
+        host.querySelector('#scn-cmp-on')?.addEventListener('change', (e) => { state.compareOn = e.target.checked; save(); paint(); });
+        host.querySelector('#scn-cmp-add')?.addEventListener('click', () => {
+            if (state.variants.length >= 10) return;
+            state.variants.push({ label: '', rebalance: '', startDate: '', endDate: '' });
+            save(); paint();
+        });
+        host.querySelectorAll('.scn-cmp-label, .scn-cmp-rebalance, .scn-cmp-start, .scn-cmp-end').forEach((el) =>
+            el.addEventListener('change', () => {
+                const i = Number(el.dataset.i), v = state.variants[i];
+                if (el.classList.contains('scn-cmp-label')) v.label = el.value;
+                else if (el.classList.contains('scn-cmp-rebalance')) v.rebalance = el.value;
+                else if (el.classList.contains('scn-cmp-start')) v.startDate = el.value;
+                else v.endDate = el.value;
+                save();
+            }));
+        host.querySelector('#scn-cmp-run')?.addEventListener('click', compareRun);
         ['scn-start', 'scn-end', 'scn-holdout'].forEach((id) => host.querySelector(`#${id}`)?.addEventListener('change', (e) => {
             state[{ 'scn-start': 'startDate', 'scn-end': 'endDate', 'scn-holdout': 'holdoutStart' }[id]] = e.target.value; save();
         }));
@@ -1495,7 +1653,9 @@ const renderScenarioLab = async (host) => {
         });
         host.querySelector('#scn-clear')?.addEventListener('click', () => {
             if (!confirm('시나리오 입력을 전부 지웁니다. 되돌릴 수 없습니다.')) return;
-            Object.assign(state, pfScnBlank()); result = null; resultError = null; save(); paint();
+            Object.assign(state, pfScnBlank());
+            result = null; resultError = null; compareResult = null; compareError = null;
+            save(); paint();
         });
         host.querySelector('#scn-run')?.addEventListener('click', run);
     };
@@ -1512,6 +1672,37 @@ const renderScenarioLab = async (host) => {
         } catch (err) {
             result = null;
             resultError = err.message || String(err);
+        }
+        paint();
+    };
+
+    // Runs the base scenario plus each variant override once, side by side --
+    // never auto-picks a "winner" (the engine doesn't either: automatic_selection
+    // is always false). A variant only overrides rebalance/period; it reuses the
+    // exact same assets/factors/weights/condition as the base run above.
+    const compareRun = async () => {
+        const out = host.querySelector('#scn-cmp-out');
+        out.innerHTML = `<div class="fin-block fin-block-wide"><p class="fin-loading" id="scn-cmp-prog">계산 준비 중…</p></div>`;
+        out.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        const prog = () => out.querySelector('#scn-cmp-prog');
+        try {
+            const input = await scenarioBuildInput(state, (msg) => { const p = prog(); if (p) p.textContent = msg; });
+            if (!input.strategy) throw new Error('비교하려면 위 자산에 비중을 입력해 전략을 정해야 합니다.');
+            if (!state.variants.length) throw new Error('비교할 항목을 하나 이상 추가하세요.');
+            const variants = state.variants.map((v, i) => {
+                const overrides = {};
+                if (v.rebalance) overrides.strategy = { ...input.strategy, rebalance: v.rebalance };
+                if (v.startDate) overrides.startDate = v.startDate;
+                if (v.endDate) overrides.endDate = v.endDate;
+                return { id: (v.label || '').trim() || `변형 ${i + 1}`, overrides };
+            });
+            const base = runScenarioEngine.runScenario(input);
+            const comparison = runScenarioEngine.compareScenarioVariants(input, variants);
+            compareResult = { base, comparison };
+            compareError = null;
+        } catch (err) {
+            compareResult = null;
+            compareError = err.message || String(err);
         }
         paint();
     };
@@ -1572,9 +1763,9 @@ const scenarioBuildInput = async (state, onProgress) => {
         initialCapital: state.initialCapital || null,
     } : null;
     let condition = null;
-    if (state.conditionOn && state.conditionRows.length) {
-        condition = { all: state.conditionRows.map((r) => ({ factorId: r.factorId, lookbackBars: r.lookbackBars,
-            threshold: r.threshold, operator: r.operator })), holdingBars: state.holdingBars };
+    if (state.conditionOn) {
+        const pruned = pfScnPruneEmptyGroups(JSON.parse(JSON.stringify(state.conditionTree)));
+        if (pruned) condition = { ...pfScnTreeToCondition(pruned), holdingBars: state.holdingBars };
     }
     return { dates: isoDates, baseCurrency: 'KRW', assets, factors, benchmark,
         startDate: state.startDate || undefined, endDate: state.endDate || undefined,
