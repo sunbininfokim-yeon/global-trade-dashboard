@@ -63,7 +63,41 @@ const officeLabel = (contest) => {
     return contest.office || '불명';
 };
 
-const usaUnit = (unit) => {
+// usa_election_finance_index_v1.json's rules_ko is explicit: only the
+// `super_pac` category may be labeled "슈퍼팩" -- the other 6 categories
+// (hybrid_pac, unclassified, ...) are real but different spender types.
+// null means "not yet observed", never "$0" (same file, same rule); the two
+// render differently below rather than collapsing null to 0.
+const officeKo = { governor: '주지사', senate: '연방 상원', house: '연방 하원(주 전체 합산)' };
+const formatUsd = (cents) => {
+    const dollars = cents / 100;
+    if (Math.abs(dollars) >= 1_000_000) return `$${(dollars / 1_000_000).toFixed(1)}M`;
+    if (Math.abs(dollars) >= 1_000) return `$${(dollars / 1_000).toFixed(0)}K`;
+    return `$${dollars.toLocaleString('en-US')}`;
+};
+const superPacRow = (officeKind, totals) => {
+    const superPac = totals?.super_pac;
+    if (!superPac) return '';
+    const label = officeKo[officeKind] || officeKind;
+    if (superPac.support_cents == null && superPac.oppose_cents == null) {
+        return `<div><span>${escapeHtml(label)}</span><strong>관측 없음</strong></div>`;
+    }
+    const support = superPac.support_cents != null ? formatUsd(superPac.support_cents) : '관측 없음';
+    const oppose = superPac.oppose_cents != null ? formatUsd(superPac.oppose_cents) : '관측 없음';
+    return `<div><span>${escapeHtml(label)}</span><strong>${escapeHtml(`지지 ${support} · 반대 ${oppose}`)}</strong></div>`;
+};
+const superPacBlock = (unit, financeByState) => {
+    const totalsByOffice = financeByState?.[unit.id]?.totals_by_office;
+    if (!totalsByOffice) return '';
+    const officeKinds = [...new Set((unit.contests || []).map((contest) => contest.office_kind))];
+    const rows = officeKinds.map((kind) => superPacRow(kind, totalsByOffice[kind])).filter(Boolean);
+    if (!rows.length) return '';
+    return `
+        <p class="elections-panel-note">슈퍼팩(super_pac) 독립지출 · 후보 대상 외부 지출이며 캠프 후원금이 아닙니다. 하원은 그 주 선거구 전체 합산입니다.</p>
+        <div class="elections-disclosure-rows">${rows.join('')}</div>`;
+};
+
+const usaUnit = (unit, financeByState) => {
     const rows = (unit.contests || []).map((contest) => {
         return `<tr><td>${escapeHtml(officeLabel(contest))}</td><td class="${partyClass(contest.party)}">${escapeHtml(partyKo(contest.party))}</td><td>${escapeHtml(contest.winner)}</td></tr>`;
     }).join('');
@@ -79,10 +113,11 @@ const usaUnit = (unit) => {
                 <thead><tr><th>직위</th><th>당</th><th>승자</th></tr></thead>
                 <tbody>${rows || `<tr><td colspan="3">${escapeHtml(empty)}</td></tr>`}</tbody>
             </table>
+            ${superPacBlock(unit, financeByState)}
         </details>`;
 };
 
-const renderUsaRace = (race) => {
+const renderUsaRace = (race, financeByState) => {
     const c = race.cumulative || {};
     return `
         ${race.race?.note_ko ? `<p class="elections-panel-note">${escapeHtml(race.race.note_ko)}</p>` : ''}
@@ -93,8 +128,8 @@ const renderUsaRace = (race) => {
             ${statCard('주 전체 승자 파싱', `${c.states_with_statewide_winners_parsed ?? 0}주`)}
         </div>
         ${aggregationBox(race)}
-        <p class="section-title">주별 진행 · 눌러서 공천 승자를 펼칩니다</p>
-        <div class="elections-race-unit-list">${(race.units || []).map(usaUnit).join('')}</div>
+        <p class="section-title">주별 진행 · 눌러서 공천 승자와 슈퍼팩 지출을 펼칩니다</p>
+        <div class="elections-race-unit-list">${(race.units || []).map((unit) => usaUnit(unit, financeByState)).join('')}</div>
     `;
 };
 
@@ -138,7 +173,7 @@ const renderKorRace = (race) => {
 export const raceProgressContent = (country) => {
     const race = country.race_progress;
     if (!race) return null;
-    if (race.mode === 'rolling_state_primary_midterms') return renderUsaRace(race);
+    if (race.mode === 'rolling_state_primary_midterms') return renderUsaRace(race, country.election_finance?.states);
     if (race.mode === 'party_leadership_tour_interim') return renderKorRace(race);
     return '<p class="elections-muted">이 국가의 선거 진행 형식은 아직 대시보드에 연결되지 않았습니다.</p>';
 };
