@@ -1151,6 +1151,7 @@ const pfScnBlank = () => ({
     rebalance: 'buy_and_hold', initialCapital: null,
     conditionOn: false, conditionTree: { type: 'group', op: 'all', children: [] }, holdingBars: 10,
     compareOn: false, variants: [],
+    hypotheses: [],
 });
 const pfScnLoad = () => {
     try {
@@ -1172,6 +1173,16 @@ const pfScnResolve = async (raw, role, existingIds) => {
     return { id, name_ko: picked.name_ko, yahoo: picked.yahoo || null, currency: picked.currency || 'KRW' };
 };
 const pfScnUsedIds = (s) => new Set([...s.assets, ...s.factors, ...(s.benchmark ? [s.benchmark] : [])].map((r) => r.id));
+
+// Finds an asset-factor pair not already covered by an existing hypothesis,
+// in asset-then-factor order, so "가설 추가" always proposes something new
+// instead of a silent duplicate; null once every combination is used.
+const pfScnNextHypothesisPair = (state) => {
+    const used = new Set(state.hypotheses.map((h) => `${h.assetId}::${h.factorId}`));
+    for (const a of state.assets) for (const f of state.factors)
+        if (!used.has(`${a.id}::${f.id}`)) return { assetId: a.id, factorId: f.id };
+    return null;
+};
 
 // Condition tree: {type:'group', op:'all'|'any', children:[...]} nesting
 // leaves {type:'leaf', factorId, lookbackBars, operator, threshold} -- mirrors
@@ -1270,6 +1281,16 @@ const renderScenarioResult = (out, result, mode) => {
                     ${e.factor_unit ? ` · 단위: ${finEsc(e.factor_unit)}` : ''}</li>`).join('')}
             </ul>
             <p class="fin-note">베타는 인과관계가 아닌 동시점 회귀 기울기입니다. 단위는 입력한 요인 단위를 따릅니다.</p>` : ''}
+            ${rel.hypotheses.length ? `
+            <h3 class="fin-sub">가설 검토</h3>
+            <ul class="fin-list">
+                ${rel.hypotheses.map((h) => `<li>${finEsc(h.asset_id)} vs ${finEsc(h.factor_id)}:
+                    예상 ${h.expected_sign > 0 ? '같은 방향(+)' : '반대 방향(−)'}
+                    → 관측 ${h.observed_direction === 'consistent' ? '일치' : h.observed_direction === 'opposite' ? '불일치' : '판단 불가'}
+                    (베타 ${h.beta === null ? '산출 불가' : h.beta.toFixed(3)})</li>`).join('')}
+            </ul>
+            <p class="fin-note">계산 전에 정한 방향과 비교한 것입니다 — 결과를 본 뒤 가설을 바꿔 끼우면 검증력이 없습니다.
+                통계적 유의성 검정은 하지 않았습니다(statistical_significance=not_tested), 인과관계도 아닙니다.</p>` : ''}
         </section>`;
 
     const conditionHtml = result.condition ? `
@@ -1459,6 +1480,29 @@ const renderScenarioLab = async (host) => {
         </section>
 
         <section class="fin-block fin-block-wide pf-input">
+            <h2>요인 방향 가설 <span class="fin-note">(선택 — 결과를 보기 전에 정하는 자산-요인 기대 방향. 결과를 본 뒤 정하면 사후 끼워맞추기라 의미가 없습니다)</span></h2>
+            ${(!state.assets.length || !state.factors.length) ? '<p class="fin-note">가설을 쓰려면 위에서 자산과 관찰 변수를 먼저 추가하세요.</p>' : `
+            ${state.hypotheses.length ? `<div class="pf-rows">${state.hypotheses.map((h, i) => `
+                <div class="pf-row">
+                    <select class="pf-field scn-hyp-asset" data-i="${i}">
+                        ${state.assets.map((a) => `<option value="${finEsc(a.id)}" ${a.id === h.assetId ? 'selected' : ''}>${finEsc(a.name_ko)}</option>`).join('')}
+                    </select>
+                    <select class="pf-field scn-hyp-factor" data-i="${i}">
+                        ${state.factors.map((f) => `<option value="${finEsc(f.id)}" ${f.id === h.factorId ? 'selected' : ''}>${finEsc(f.name_ko)}</option>`).join('')}
+                    </select>
+                    <select class="pf-field scn-hyp-sign" data-i="${i}">
+                        <option value="1" ${h.expectedSign === 1 ? 'selected' : ''}>같은 방향(+)일 것이다</option>
+                        <option value="-1" ${h.expectedSign === -1 ? 'selected' : ''}>반대 방향(−)일 것이다</option>
+                    </select>
+                    <button class="pf-del" data-kind="hyp" data-i="${i}" aria-label="삭제">✕</button>
+                </div>`).join('')}</div>`
+                : '<p class="fin-note">아직 없습니다.</p>'}
+            <div class="pf-add">
+                <button id="scn-hyp-add" class="pf-btn pf-btn-ghost" ${pfScnNextHypothesisPair(state) ? '' : 'disabled'}>가설 추가</button>
+            </div>`}
+        </section>
+
+        <section class="fin-block fin-block-wide pf-input">
             <h2>비교지수 <span class="fin-note">(선택, 전략 성과와 같은 기간 비교)</span></h2>
             <div class="pf-add">
                 <input type="text" id="scn-b-q" class="pf-field" placeholder="예: KODEX 200, S&P 500 ETF">
@@ -1584,16 +1628,33 @@ const renderScenarioLab = async (host) => {
         host.querySelector('#scn-b-del')?.addEventListener('click', () => { state.benchmark = null; save(); paint(); });
         host.querySelectorAll('.pf-del').forEach((b) => b.addEventListener('click', () => {
             const kind = b.dataset.kind;
-            if (kind === 'asset') state.assets.splice(Number(b.dataset.i), 1);
+            if (kind === 'asset') { const i = Number(b.dataset.i), removedId = state.assets[i].id; state.assets.splice(i, 1);
+                state.hypotheses = state.hypotheses.filter((h) => h.assetId !== removedId); }
             else if (kind === 'factor') { const i = Number(b.dataset.i), removedId = state.factors[i].id; state.factors.splice(i, 1);
-                state.conditionTree = pfScnPruneFactor(state.conditionTree, removedId); }
+                state.conditionTree = pfScnPruneFactor(state.conditionTree, removedId);
+                state.hypotheses = state.hypotheses.filter((h) => h.factorId !== removedId); }
             else if (kind === 'condleaf' || kind === 'condgroup') {
                 const { parent, idx } = pfScnGetParentAndIndex(state.conditionTree, pfScnParsePath(b.dataset.path));
                 parent.children.splice(idx, 1);
             }
+            else if (kind === 'hyp') state.hypotheses.splice(Number(b.dataset.i), 1);
             else if (kind === 'variant') state.variants.splice(Number(b.dataset.i), 1);
             save(); paint();
         }));
+        host.querySelector('#scn-hyp-add')?.addEventListener('click', () => {
+            const pair = pfScnNextHypothesisPair(state);
+            if (!pair) return;
+            state.hypotheses.push({ ...pair, expectedSign: 1 });
+            save(); paint();
+        });
+        host.querySelectorAll('.scn-hyp-asset, .scn-hyp-factor, .scn-hyp-sign').forEach((el) =>
+            el.addEventListener('change', () => {
+                const h = state.hypotheses[Number(el.dataset.i)];
+                if (el.classList.contains('scn-hyp-asset')) h.assetId = el.value;
+                else if (el.classList.contains('scn-hyp-factor')) h.factorId = el.value;
+                else h.expectedSign = Number(el.value);
+                save();
+            }));
         host.querySelector('#scn-cond-on')?.addEventListener('change', (e) => { state.conditionOn = e.target.checked; save(); paint(); });
         host.querySelectorAll('.scn-cond-add-leaf').forEach((b) => b.addEventListener('click', () => {
             const group = pfScnNodeAt(state.conditionTree, pfScnParsePath(b.dataset.path));
@@ -1767,9 +1828,10 @@ const scenarioBuildInput = async (state, onProgress) => {
         const pruned = pfScnPruneEmptyGroups(JSON.parse(JSON.stringify(state.conditionTree)));
         if (pruned) condition = { ...pfScnTreeToCondition(pruned), holdingBars: state.holdingBars };
     }
+    const hypotheses = state.hypotheses.map((h) => ({ assetId: h.assetId, factorId: h.factorId, expectedSign: h.expectedSign }));
     return { dates: isoDates, baseCurrency: 'KRW', assets, factors, benchmark,
         startDate: state.startDate || undefined, endDate: state.endDate || undefined,
-        holdoutStart: state.holdoutStart || undefined, strategy, condition };
+        holdoutStart: state.holdoutStart || undefined, strategy, condition, hypotheses };
 };
 
 const PF_VIEW_KEY = 'portfolioLab.view';
