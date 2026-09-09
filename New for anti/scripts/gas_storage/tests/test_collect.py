@@ -69,5 +69,36 @@ class ContractTests(unittest.TestCase):
             self.assertEqual(failed['status'], 'error')
             self.assertEqual(failed['latest'], good[0]['latest'])
 
+    def test_eia_lower48_backfill_and_merge_priority(self):
+        rows = [
+            {'series': 'NW2_EPG0_SWO_R48_BCF', 'period': '2026-08-14', 'value': '3100', 'units': 'BCF'},
+            # Same week the primary snapshot already has -- must lose to it.
+            {'series': 'NW2_EPG0_SWO_R48_BCF', 'period': '2026-08-21', 'value': '9999', 'units': 'BCF'},
+        ]
+        def fetch(url):
+            self.assertIn('/natural-gas/stor/wkly/data/', url)
+            self.assertIn('NW2_EPG0_SWO_R48_BCF', url)
+            return json.dumps({'response': {'data': rows}}).encode()
+        history = m.fetch_eia_lower48_history(fetch, 'TEST_SECRET')
+        self.assertEqual(len(history), 2)
+        self.assertNotIn('TEST_SECRET', json.dumps(history))
+
+        primary = [{'period': '2026-08-21', 'value': 3184.0}, {'period': '2026-08-28', 'value': 3214.0}]
+        lower48 = m.series('png.nw2_epg0_swo_r48_bcf.w', 'eia', 'US', '미국 본토 48개 주',
+                           'underground_working_gas', 'Bcf', 'weekly', 'test', primary)
+        lower48['observations'] = history + lower48['observations']
+        result = m.finalize(lower48, {}, date(2026, 9, 9))
+        by_period = {p['period']: p['value'] for p in result['observations']}
+        self.assertEqual(len(result['observations']), 3)
+        self.assertEqual(by_period['2026-08-21'], 3184.0)
+        self.assertEqual(by_period['2026-08-14'], 3100.0)
+
+    def test_eia_lower48_backfill_bad_unit_is_safe_failure(self):
+        rows = [{'series': 'NW2_EPG0_SWO_R48_BCF', 'period': '2026-08-14', 'value': '3100', 'units': 'MMCF'}]
+        def fetch(url):
+            return json.dumps({'response': {'data': rows}}).encode()
+        with self.assertRaises(m.SourceError):
+            m.fetch_eia_lower48_history(fetch, 'TEST_SECRET')
+
 if __name__ == '__main__':
     unittest.main()
