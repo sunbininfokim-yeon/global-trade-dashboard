@@ -1,0 +1,70 @@
+# Deployment handoff: Claude installs this file under .github/workflows/ after review.
+name: US election finance backend
+on:
+  schedule:
+    - cron: '25 8 * * *'
+  workflow_dispatch:
+    inputs:
+      cycle:
+        description: Optional even reporting cycle; blank follows current year
+        required: false
+        type: string
+      cadence:
+        description: Collection cadence
+        default: daily
+        type: choice
+        options: [daily, weekly]
+permissions:
+  contents: write
+  actions: write
+concurrency:
+  group: us-superpac-refresh
+  cancel-in-progress: false
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Validate backend contracts
+        working-directory: New for anti/scripts/election_watch
+        run: python -m unittest discover -s tests -p 'test_superpac*.py' -v
+      - name: Refresh sources and map contracts
+        id: collect
+        continue-on-error: true
+        env:
+          FEC_API_KEY: ${{ secrets.FEC_API_KEY || secrets.DATA_GOV_API_KEY }}
+          FINANCE_CYCLE: ${{ inputs.cycle }}
+          FINANCE_CADENCE: ${{ inputs.cadence || vars.US_FINANCE_CADENCE || 'daily' }}
+          FINANCE_EVENT: ${{ github.event_name }}
+        shell: bash
+        run: |
+          args=(--cadence "$FINANCE_CADENCE")
+          if [ -n "$FINANCE_CYCLE" ]; then args+=(--cycle "$FINANCE_CYCLE"); fi
+          if [ "$FINANCE_EVENT" = workflow_dispatch ]; then args+=(--force); fi
+          python 'New for anti/scripts/election_watch/refresh_superpac.py' "${args[@]}"
+      - name: Publish validated assets and collection health
+        id: publish
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add --all -- 'New for anti/public/data/usa_superpac' 'New for anti/public/data/usa_superpac_index_v1.json' 'New for anti/public/data/usa_governor_finance' 'New for anti/public/data/usa_election_finance' 'New for anti/public/data/usa_election_finance_index_v1.json' 'New for anti/public/data/usa_election_finance_refresh_status_v1.json'
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m 'chore: refresh US election finance backend'
+          git pull --rebase origin main
+          git push origin HEAD:main
+          echo 'changed=true' >> "$GITHUB_OUTPUT"
+      - name: Deploy assets through existing workflow
+        if: steps.publish.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run deploy.yml --ref main
+      - name: Surface collection failures after publishing health
+        if: steps.collect.outcome == 'failure'
+        run: exit 1
