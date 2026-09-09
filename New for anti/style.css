@@ -571,6 +571,30 @@ body {
 .elections-disclosure-rows strong { color: #e2e8f0; font-weight: 600; text-align: right; }
 .elections-house-delegation { margin-top: 8px; }
 
+/* --- State legislature seat composition (dot cluster) --------------------- */
+.elections-seat-dots {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-top: 8px;
+}
+.elections-seat-dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    flex: 0 0 auto;
+}
+.elections-seat-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 8px;
+    font-size: 11px;
+    color: #cbd5e1;
+}
+.elections-seat-legend-item { display: inline-flex; align-items: center; gap: 5px; }
+.elections-seat-legend-item i { width: 8px; height: 8px; border-radius: 50%; display: inline-block; flex: 0 0 auto; }
+
 /* display_rules.fallen_style = strikethrough: 실각·조사자는 이름에 삭선만 긋고
    원문 상태 표시는 그대로 옆에 남긴다 (재서술 금지). */
 .elections-fallen { text-decoration: line-through; opacity: 0.72; }

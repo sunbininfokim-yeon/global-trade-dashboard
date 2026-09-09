@@ -14,11 +14,36 @@ const seatLine = (body) => {
     return body.nonpartisan_official ? `공식 비당파 · 분석 분류 ${classification}` : classification;
 };
 const leaderLine = (leader) => leader ? `${leader.title || '지도부'}: ${person(leader)}` : '공개 명부 미기재';
+
+// The pipeline only tells us the majority side's abbr (control) and the
+// minority floor leader's abbr, not a full member-by-member roster, so a
+// coalition-controlled chamber (AK) has no way to split its "majority" count
+// into DEM/GOP dots -- coloring those grey rather than guessing keeps this
+// honest for the ~2 non-DEM/GOP chambers same as the ~48 clean ones.
+const partyDotColor = (abbr) => ({ DEM: '#2563eb', GOP: '#dc2626' }[abbr] || '#64748b');
+const partyLabel = (abbr) => {
+    if (!abbr) return '정당 불명';
+    const mapped = party(abbr);
+    return mapped !== abbr ? `${mapped}(${abbr})` : abbr;
+};
+const seatDots = (chamber) => {
+    const groups = [
+        { abbr: chamber.abbr, count: chamber.majority },
+        { abbr: chamber.leadership?.second_party_floor_leader?.abbr, count: chamber.minority },
+    ].filter((group) => Number.isFinite(group.count) && group.count > 0);
+    if (!groups.length) return '';
+    const dots = groups.flatMap((group) => Array.from({ length: group.count },
+        () => `<span class="elections-seat-dot" style="background:${partyDotColor(group.abbr)}" title="${escapeHtml(partyLabel(group.abbr))}"></span>`)).join('');
+    const legend = groups.map((group) => `<span class="elections-seat-legend-item"><i style="background:${partyDotColor(group.abbr)}"></i>${escapeHtml(`${partyLabel(group.abbr)} ${group.count}석`)}</span>`).join('');
+    return `<div class="elections-seat-dots">${dots}</div><div class="elections-seat-legend">${legend}</div>`;
+};
+
 const chamberCard = (label, chamber) => {
     if (!chamber) {
         return `<article class="elections-card"><div class="elections-card-label">${escapeHtml(label)}</div><div class="elections-card-value">해당 없음</div></article>`;
     }
     const leadership = chamber.leadership || {};
+    const seats = seatDots(chamber);
     return `
         <article class="elections-card elections-chamber-card">
             <div class="elections-card-label">${escapeHtml(label)}</div>
@@ -30,6 +55,7 @@ const chamberCard = (label, chamber) => {
                     <div>${escapeHtml(leaderLine(leadership.second_party_floor_leader))}</div>
                 </div>
             </details>
+            ${seats ? `<details class="elections-disclosure"><summary>정당별 의석 보기</summary>${seats}</details>` : ''}
         </article>`;
 };
 
