@@ -20,7 +20,10 @@
         const p = s.latest;
         const status = effectiveStatus(s);
         const suffix = {day_on_day:'전일',week_on_week:'전주',month_on_month:'전월'}[s.change_period] || '이전';
-        const history = (s.observations || []).slice(-26);
+        // Daily/weekly series show up to a year; monthly series (which tend to
+        // carry much longer official history, e.g. JODI) show up to 5 years.
+        const windowSize = {daily: 365, weekly: 52, monthly: 60}[s.frequency] || 52;
+        const history = (s.observations || []).slice(-windowSize);
         const consecutive = history.every((p, i) => {
             if (!i) return true;
             const prev = history[i-1].period;
@@ -34,7 +37,6 @@
             <span class="stock-note" style="display:block">${esc(p?.period || '관측일 없음')} · ${esc(statusNames[status] || status)}${p?.fill_pct != null ? ` · 충전율 ${fmt(p.fill_pct)}%` : ''}</span></summary>
             <div class="stock-note">${esc(special)} · ${suffix} 대비 ${status === 'error' ? '—' : fmt(s.change)} · <a style="color:#7dd3fc" href="${sourceUrls[s.provider]}" target="_blank" rel="noopener noreferrer">${esc(s.provider.toUpperCase())}</a></div>
             ${chart}
-            ${history.length ? `<table style="width:100%;font-size:11px"><caption>최근 관측 · ${esc(units[s.unit] || s.unit)}</caption><tbody>${history.slice(-12).reverse().map(h=>`<tr><td>${esc(h.period)}</td><td style="text-align:right">${fmt(h.value)}</td></tr>`).join('')}</tbody></table>` : ''}
         </details>`;
     }
     async function render(countryName = null) {
