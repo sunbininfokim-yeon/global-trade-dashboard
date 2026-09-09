@@ -45,7 +45,15 @@ concurrency:
 jobs:
   sync-government-policy:
     runs-on: ubuntu-latest
-    timeout-minutes: 55
+    # Was 55: two bootstrap dispatches in a row (2026-09-05, 2026-09-08) got
+    # cancelled mid-run by this ceiling, not by the Congress.gov/GovInfo rate
+    # limit itself (850ms/600ms gates -- the real bottleneck is those, not an
+    # arbitrary wall-clock cutoff). Raised well clear of GitHub's 360-minute
+    # job maximum so a real historical backfill (max_bills/max_public_laws in
+    # the thousands) can actually finish in one dispatch instead of getting
+    # silently truncated -- the daily schedule still only asks for small
+    # incremental batches, so this only matters for a deliberate bootstrap run.
+    timeout-minutes: 340
     env:
       CONGRESS_API_KEY: ${{ secrets.CONGRESS_API_KEY }}
       DATA_GOV_API_KEY: ${{ secrets.DATA_GOV_API_KEY }}
