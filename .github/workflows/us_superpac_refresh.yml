@@ -1,0 +1,82 @@
+name: US election finance backend
+
+# FEC 연방 슈퍼팩 독립지출 + 워싱턴 주지사 C6 어댑터 (PR #260 인수).
+# 설치본은 New for anti/scripts/election_watch/ops/us_superpac_refresh.yml 템플릿을
+# 이 레포 실제 배포 방식에 맞게 고쳤다: 이 레포는 별도 deploy.yml이 없고
+# Cloudflare Workers Builds가 main push를 감지해 자동 배포하므로(docs/ops/PIPELINE.md),
+# 템플릿의 `gh workflow run deploy.yml` 스텝은 존재하지 않는 워크플로를 호출해
+# 데이터 발행이 끝난 뒤에도 그 스텝에서 그대로 실패한다 — 제거했다. 그래서
+# actions: write 권한도 필요 없다. Push 재시도는 market_microstructure_daily.yml이
+# 2026-08-28 실제로 겪은 non-fast-forward 실패(다른 봇이 그 사이 main에 커밋)를
+# 그대로 따른다.
+
+on:
+  schedule:
+    - cron: '25 8 * * *'
+  workflow_dispatch:
+    inputs:
+      cycle:
+        description: Optional even reporting cycle; blank follows current year
+        required: false
+        type: string
+      cadence:
+        description: Collection cadence
+        default: daily
+        type: choice
+        options: [daily, weekly]
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+    permissions:
+      contents: write
+    defaults:
+      run:
+        working-directory: New for anti/scripts/election_watch
+    concurrency:
+      group: us-superpac-refresh
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Validate backend contracts
+        run: python3 -m unittest discover -s tests -p 'test_superpac*.py' -v
+
+      - name: Refresh sources and map contracts
+        id: collect
+        continue-on-error: true
+        env:
+          FEC_API_KEY: ${{ secrets.FEC_API_KEY || secrets.DATA_GOV_API_KEY }}
+          FINANCE_CYCLE: ${{ inputs.cycle }}
+          FINANCE_CADENCE: ${{ inputs.cadence || vars.US_FINANCE_CADENCE || 'daily' }}
+          FINANCE_EVENT: ${{ github.event_name }}
+        shell: bash
+        run: |
+          args=(--cadence "$FINANCE_CADENCE")
+          if [ -n "$FINANCE_CYCLE" ]; then args+=(--cycle "$FINANCE_CYCLE"); fi
+          if [ "$FINANCE_EVENT" = workflow_dispatch ]; then args+=(--force); fi
+          python3 refresh_superpac.py "${args[@]}"
+
+      - name: Publish validated assets and collection health
+        working-directory: ${{ github.workspace }}
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add --all -- 'New for anti/public/data/usa_superpac' 'New for anti/public/data/usa_superpac_index_v1.json' 'New for anti/public/data/usa_governor_finance' 'New for anti/public/data/usa_election_finance' 'New for anti/public/data/usa_election_finance_index_v1.json' 'New for anti/public/data/usa_election_finance_refresh_status_v1.json'
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m 'chore: refresh US election finance backend'
+          for i in 1 2 3; do
+            git push && exit 0
+            echo "push rejected, rebasing onto latest main and retrying ($i/3)"
+            git pull --rebase --autostash origin main
+          done
+          git push
+
+      - name: Surface collection failures after publishing health
+        if: steps.collect.outcome == 'failure'
+        run: exit 1
