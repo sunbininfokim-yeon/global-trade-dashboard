@@ -1,6 +1,6 @@
 {
   "schema_version": "commodity-reports-v1",
-  "generated_at": "2026-09-09T13:07:41.721610+00:00",
+  "generated_at": "2026-09-09T19:27:46.783376+00:00",
   "model": {
     "name": "commodity_reports_v1",
     "description": "Official crop/energy/metal reports tagged (commodity × country) so the dashboard's stage-2 country window can show what was published about that country's commodity. The report's text picks the country, not the publisher: a USDA release on Brazilian wheat belongs on BRA·wheat.",
@@ -17,20 +17,20 @@
     "per_bucket_limit": 8
   },
   "stats": {
-    "sources_ok": 8,
-    "sources_failed": 4,
-    "raw_items": 135,
-    "scored": 54,
-    "published": 35,
+    "sources_ok": 9,
+    "sources_failed": 3,
+    "raw_items": 146,
+    "scored": 55,
+    "published": 37,
     "commodities": 9,
     "buckets": 11
   },
   "feed_status": [
     {
       "source_id": "us_usda_newsroom",
-      "ok": false,
-      "count": 0,
-      "error": "HTTPError: HTTP Error 403: Forbidden",
+      "ok": true,
+      "count": 10,
+      "error": null,
       "mode": "live"
     },
     {
@@ -64,7 +64,7 @@
     {
       "source_id": "us_eia_press",
       "ok": true,
-      "count": 10,
+      "count": 11,
       "error": null,
       "mode": "live"
     },
@@ -470,6 +470,7 @@
     },
     "oil": {
       "USA": [
+        "5d3e84a676f4ec8b",
         "636939b535053039",
         "c67666c03e916f6f",
         "57e4eb5bfc9ebc1e",
@@ -479,6 +480,7 @@
         "cecfc55a16f54d74"
       ],
       "_global": [
+        "7376f1ff6d49470e",
         "0260f9aa0131b0b8",
         "735b13587e14b5a5",
         "af0be633a6c11395",
@@ -566,12 +568,68 @@
       "country_source": "text",
       "series_id": "EIA_STEO",
       "series_label_ko": "EIA 단기 에너지 전망",
-      "importance": 4.642,
+      "importance": 4.618,
       "reasons": [
         "series:EIA_STEO",
         "has_figure",
         "revision_language",
         "country_in_text"
+      ]
+    },
+    {
+      "id": "5d3e84a676f4ec8b",
+      "title": {
+        "original": "EIA expects record electricity generation in 2026 and 2027",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "The U.S. Energy Information Administration (EIA) expects U.S. electricity generation will grow 2.2% to a record 4,368 billion kilowatthours (BkWh) this year. EIA expects an additional 1.7% growth in electricity generation next year.",
+      "url": "https://www.eia.gov/pressroom/releases/press592.php",
+      "published_at": "2026-09-09T17:00:00+00:00",
+      "agency": "EIA",
+      "agency_ko": "미 에너지정보청",
+      "source_id": "us_eia_press",
+      "commodities": [
+        "oil"
+      ],
+      "countries": [
+        "USA"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 3.243,
+      "reasons": [
+        "has_figure",
+        "revision_language",
+        "country_in_text"
+      ]
+    },
+    {
+      "id": "7376f1ff6d49470e",
+      "title": {
+        "original": "Short-Term Energy Outlook",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "(Wed, 09 Sep 2026) <strong>Global oil market assumptions.</strong> We forecast oil production in the Middle East will rise in the coming months because of gradually increasing flows through the Strait of Hormuz and the use of alternative routes out of the region, according to our September 2026 Short-Term Energy Outlook (STEO). However, we assume some constraints to exporting oil from the Middle East will persist through the end of the year, which keeps crude oil production in the region below pre-conflict averages until the second quarter of 2027 (2Q27).",
+      "url": "http://www.eia.gov/outlooks/steo/",
+      "published_at": "2026-09-09T05:00:00+00:00",
+      "agency": "EIA",
+      "agency_ko": "미 에너지정보청",
+      "source_id": "us_eia_whats_new",
+      "commodities": [
+        "oil"
+      ],
+      "countries": [],
+      "scope": "global",
+      "country_source": "none",
+      "series_id": "EIA_STEO",
+      "series_label_ko": "EIA 단기 에너지 전망",
+      "importance": 2.588,
+      "reasons": [
+        "series:EIA_STEO"
       ]
     },
     {
@@ -597,7 +655,7 @@
       "country_source": "text",
       "series_id": "EIA_STEO",
       "series_label_ko": "EIA 단기 에너지 전망",
-      "importance": 2.355,
+      "importance": 2.353,
       "reasons": [
         "series:EIA_STEO",
         "has_figure",
@@ -845,7 +903,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.64,
+      "importance": 1.635,
       "reasons": [
         "has_figure",
         "country_in_text"
@@ -874,7 +932,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.621,
+      "importance": 1.613,
       "reasons": [
         "revision_language",
         "country_in_text"
@@ -903,7 +961,7 @@
       "country_source": "text",
       "series_id": "EIA_STEO",
       "series_label_ko": "EIA 단기 에너지 전망",
-      "importance": 1.59,
+      "importance": 1.587,
       "reasons": [
         "series:EIA_STEO",
         "country_in_text"
@@ -932,7 +990,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.513,
+      "importance": 1.505,
       "reasons": [
         "country_in_text"
       ]
@@ -1051,7 +1109,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.455,
+      "importance": 1.448,
       "reasons": [
         "country_in_text"
       ]
@@ -1079,7 +1137,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.428,
+      "importance": 1.42,
       "reasons": [
         "country_in_text"
       ]
@@ -1255,7 +1313,7 @@
       "country_source": "text",
       "series_id": "EIA_STEO",
       "series_label_ko": "EIA 단기 에너지 전망",
-      "importance": 1.343,
+      "importance": 1.342,
       "reasons": [
         "series:EIA_STEO",
         "country_in_text"
@@ -1311,7 +1369,7 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.164,
+      "importance": 1.158,
       "reasons": []
     },
     {
@@ -1335,7 +1393,7 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.164,
+      "importance": 1.158,
       "reasons": []
     },
     {
