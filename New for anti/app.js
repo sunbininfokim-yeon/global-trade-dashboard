@@ -5351,12 +5351,15 @@ const setView = (target) => {
         setClimateCommodityHeader(null);
         const data = window.TradeData[target];
         
-        // Right pane (rankings, rig count, gas storage, RSS reports) has
-        // nothing to point at on the world view (stage 1) -- closed here.
-        // trade.js opens it once a country is focused (stage 2), and only
-        // for commodities that actually have RSS reports for that country
-        // (see focusTradeCountry / renderCommodityReports / clearTradeFocus).
-        togglePanels({ news: false, left: true, right: false });
+        // news:true keeps #news-panel (left pane) open -- that's where
+        // renderTradeWorldPanel puts the exporter/importer rankings, futures
+        // card, rig count and gas storage cards, all still wanted on the
+        // world view. Only #right-pane (RSS reports panel) closes here: it
+        // has nothing to point at yet. trade.js opens it once a country is
+        // focused (stage 2), and only for commodities that actually have RSS
+        // reports for that country (see focusTradeCountry /
+        // renderCommodityReports / clearTradeFocus).
+        togglePanels({ news: true, left: true, right: false });
         
         // Update Panel Info
         currentViewTitle.textContent = data.title;
