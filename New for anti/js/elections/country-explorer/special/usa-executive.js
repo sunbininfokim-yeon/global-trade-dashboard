@@ -74,13 +74,20 @@ const card = (label, value, note = '') => `
         ${note ? `<div class="elections-event-meta">${escapeHtml(note)}</div>` : ''}
     </article>`;
 
-const orgRow = ({ abbr, ko, en, title, person, note }) => `
-    <div class="elections-org-row">
-        ${abbr ? `<span class="elections-org-abbr">${escapeHtml(abbr)}</span>` : ''}
-        <span class="elections-org-name">${escapeHtml(ko)}${en ? `<em>${escapeHtml(en)}</em>` : ''}</span>
-        <span class="elections-org-person${person ? '' : ' is-empty'}">${escapeHtml(person ? [title, person].filter(Boolean).join(' ') : '명단 수집 예정')}</span>
-    </div>
-    ${note ? `<div class="elections-org-note">${escapeHtml(note)}</div>` : ''}`;
+// One box per body, laid out side by side like the EOP chart's rows rather
+// than as full-width rows. The person line is pushed to the bottom of the
+// box so it lands on the same baseline across a row of uneven name lengths.
+const orgBox = ({ abbr, ko, en, title, person, note }) => `
+    <article class="elections-org-box">
+        <div class="elections-org-box-ko">${escapeHtml(ko)}</div>
+        ${abbr ? `<div class="elections-org-box-abbr">${escapeHtml(abbr)}</div>` : ''}
+        ${en ? `<div class="elections-org-box-en">${escapeHtml(en)}</div>` : ''}
+        <div class="elections-org-box-person${person ? '' : ' is-empty'}">
+            ${person && title ? `<span class="elections-org-box-title">${escapeHtml(title)}</span>` : ''}
+            ${escapeHtml(person || '명단 수집 예정')}
+        </div>
+        ${note ? `<div class="elections-org-box-note">${escapeHtml(note)}</div>` : ''}
+    </article>`;
 
 // Exact-string prefill against rows the pipeline already publishes. A wording
 // change in the source breaks the match into "명단 수집 예정" rather than into
@@ -102,10 +109,10 @@ const scaffoldRows = (scaffold, supplied, live, consumed) => {
             const seat = findBy(live.cabinet, 'portfolio_ko', box.prefillCabinet);
             if (seat) { person = personText(seat); title = title || box.prefillTitle; consumed.add(box.prefillCabinet); }
         }
-        return orgRow({ abbr: box.abbr, ko: box.ko, en: box.en, title, person, note: data?.note_ko });
+        return orgBox({ abbr: box.abbr, ko: box.ko, en: box.en, title, person, note: data?.note_ko });
     });
     // Anything the data carries that the scaffold doesn't know about yet.
-    const extra = [...byAbbr.values()].map((row) => orgRow({
+    const extra = [...byAbbr.values()].map((row) => orgBox({
         abbr: row.abbr,
         ko: row.org_ko || row.abbr,
         en: row.org_en || '',
@@ -121,9 +128,9 @@ const advisorRows = (supplied) => {
     const rows = ADVISOR_DOMAINS.map((box) => {
         const data = byDomain.get(box.domain);
         byDomain.delete(box.domain);
-        return orgRow({ ko: box.ko, en: '', title: data?.title_ko, person: personText(data), note: data?.note_ko });
+        return orgBox({ ko: box.ko, en: '', title: data?.title_ko, person: personText(data), note: data?.note_ko });
     });
-    const extra = [...byDomain.values()].map((row) => orgRow({
+    const extra = [...byDomain.values()].map((row) => orgBox({
         ko: row.domain_ko || row.domain || '기타',
         title: row.title_ko,
         person: personText(row),
@@ -155,14 +162,14 @@ export const usaExecutive = (country) => {
         </div>
 
         <p class="section-title">2 · 대통령 직속 위원회</p>
-        <div class="elections-org-list">${councils}</div>
+        <div class="elections-org-grid">${councils}</div>
 
         <p class="section-title">3 · 대통령 특별보좌관</p>
-        <div class="elections-org-list">${advisors}</div>
+        <div class="elections-org-grid">${advisors}</div>
         <p class="elections-panel-note">주요 정책 영역만 둡니다. 전체 보좌관 명부는 범위 밖입니다.</p>
 
         <p class="section-title">4 · 실·국 (수석급)</p>
-        <div class="elections-org-list">${offices}</div>
+        <div class="elections-org-grid">${offices}</div>
 
         ${cabinet.length ? `<details class="elections-disclosure elections-cabinet-list"><summary>내각 ${cabinet.length}명 보기</summary><div class="elections-disclosure-rows">${cabinet.map((row) => `<div><span>${escapeHtml(row.portfolio_ko || '직책')}</span><strong>${escapeHtml(personText(row) || '불명')}</strong></div>`).join('')}</div></details>` : ''}
         <p class="elections-panel-note">2~4단은 대통령실(EOP) 조직도 기준 골격입니다. 사람이 비어 있는 칸은 명단 미수집이며, 공석이라는 뜻이 아닙니다.</p>
