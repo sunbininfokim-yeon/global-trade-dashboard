@@ -1461,6 +1461,43 @@ const renderConditionTree = (node, path, factors, depth) => {
     </div>`;
 };
 
+// Runs the scenario engine's actual computation (runScenario /
+// compareScenarioVariants -- the part that can be slow, e.g. block-bootstrap
+// resampling) in a Web Worker so a heavy calculation doesn't freeze the tab.
+// Only the plain-JSON input/variants scenarioBuildInput() already builds
+// cross the worker boundary, same as scenario.mjs's own zero-I/O contract --
+// holdings/strategy/results never leave this browser either way. A worker
+// created once and reused across runs; a load-time failure (some sandboxed
+// embeds disallow Workers) rejects whatever was waiting and lets the next
+// call retry fresh rather than hanging forever.
+let pfScnWorker = null;
+let pfScnWorkerReqId = 0;
+const pfScnWorkerPending = new Map();
+const pfScnGetWorker = () => {
+    if (pfScnWorker) return pfScnWorker;
+    pfScnWorker = new Worker('/portfolio-engine/scenario-worker.js', { type: 'module' });
+    pfScnWorker.onmessage = (e) => {
+        const { id, ok, result, error } = e.data;
+        const pending = pfScnWorkerPending.get(id);
+        if (!pending) return;
+        pfScnWorkerPending.delete(id);
+        ok ? pending.resolve(result) : pending.reject(new Error(error));
+    };
+    pfScnWorker.onerror = (e) => {
+        for (const pending of pfScnWorkerPending.values()) pending.reject(new Error(e.message || 'Web Worker 오류'));
+        pfScnWorkerPending.clear();
+        pfScnWorker = null;
+    };
+    return pfScnWorker;
+};
+const pfScnWorkerCall = (kind, payload) => new Promise((resolve, reject) => {
+    let worker;
+    try { worker = pfScnGetWorker(); } catch (err) { reject(err); return; }
+    const id = ++pfScnWorkerReqId;
+    pfScnWorkerPending.set(id, { resolve, reject });
+    worker.postMessage({ id, kind, ...payload });
+});
+
 const renderScenarioLab = async (host) => {
     const state = pfScnLoad();
     let result = null, resultError = null, resultAlignment = null;
@@ -1752,7 +1789,8 @@ const renderScenarioLab = async (host) => {
         const prog = () => out.querySelector('#scn-prog');
         try {
             const { input, alignment } = await scenarioBuildInput(state, (msg) => { const p = prog(); if (p) p.textContent = msg; });
-            result = runScenarioEngine.runScenario(input);
+            const p = prog(); if (p) p.textContent = '계산 중… (백그라운드)';
+            result = await pfScnWorkerCall('run', { input });
             resultError = null;
             resultAlignment = alignment;
         } catch (err) {
@@ -1783,8 +1821,8 @@ const renderScenarioLab = async (host) => {
                 if (v.endDate) overrides.endDate = v.endDate;
                 return { id: (v.label || '').trim() || `변형 ${i + 1}`, overrides };
             });
-            const base = runScenarioEngine.runScenario(input);
-            const comparison = runScenarioEngine.compareScenarioVariants(input, variants);
+            const p = prog(); if (p) p.textContent = '계산 중… (백그라운드)';
+            const { base, comparison } = await pfScnWorkerCall('compare', { input, variants });
             compareResult = { base, comparison };
             compareError = null;
             compareAlignment = alignment;
@@ -1796,9 +1834,6 @@ const renderScenarioLab = async (host) => {
         paint();
     };
 
-    let runScenarioEngine = null;
-    host.innerHTML = `<p class="fin-loading">엔진 불러오는 중…</p>`;
-    runScenarioEngine = await import('/portfolio-engine/scenario.mjs');
     paint();
 };
 
