@@ -9,52 +9,15 @@
 // and the DOM helpers.
 
 // --- 금융 진단 ---------------------------------------------------------------
-// The engines live outside this file: portfolio risk in
-// scripts/금융_재무분석 (portfolio_analysis_v1.json), corporate financials in
-// scripts/dart. This side only renders. Per DATA_CONTRACT.md the wording comes
-// from the payload's own ui_copy_* block rather than being written here, so the
-// engine stays the single source of both the numbers and how they read.
-const FIN_LOCALE = 'ko';
-
+// Both tabs' math lives outside this file, in New for anti/portfolio-engine/
+// (index.mjs for direct-input holdings risk, scenario.mjs for the scenario
+// backtester) -- pure ESM, no I/O. This file only resolves names to tickers,
+// fetches/aligns public price history in the browser, and renders each
+// engine's one result object. No offline Python pipeline is read anymore.
 const finSignedPct = (x, digits = 1) => {
     if (x === null || x === undefined || Number.isNaN(x)) return '—';
     const v = x * 100;
     return `${v >= 0 ? '+' : ''}${v.toFixed(digits)}%p`;
-};
-
-// Weight says where the money sits; risk contribution says where the account's
-// movement actually comes from. Showing them on one row is the whole point of
-// the panel -- a 5% position driving half the volatility is invisible otherwise.
-const finRiskRows = (data) => {
-    const contrib = (data.structure && data.structure.risk_contribution) || {};
-    const byName = new Map((data.positions || []).map((p) => [p.name_ko, p]));
-    const rows = Object.entries(contrib)
-        .map(([name, rc]) => ({ name, rc, w: (byName.get(name) || {}).weight ?? null,
-                                lev: (byName.get(name) || {}).leveraged,
-                                proxy: (byName.get(name) || {}).proxy }))
-        .sort((a, b) => b.rc - a.rc);
-    const max = Math.max(...rows.map((r) => Math.abs(r.rc)), 0.0001);
-
-    return rows.map((r) => `
-        <div class="fin-risk-row">
-            <div class="fin-risk-name">
-                ${finEsc(r.name)}
-                ${r.lev ? '<span class="fin-tag fin-tag-warn">레버리지</span>' : ''}
-                ${r.proxy ? '<span class="fin-tag">프록시</span>' : ''}
-            </div>
-            <div class="fin-risk-bars">
-                <div class="fin-bar-track" title="위험 기여 ${finPct(r.rc)}">
-                    <div class="fin-bar fin-bar-risk" style="width:${Math.abs(r.rc) / max * 100}%"></div>
-                </div>
-                <div class="fin-bar-track" title="비중 ${finPct(r.w)}">
-                    <div class="fin-bar fin-bar-weight" style="width:${(Math.abs(r.w ?? 0)) / max * 100}%"></div>
-                </div>
-            </div>
-            <div class="fin-risk-nums">
-                <span class="fin-risk-rc">${finPct(r.rc)}</span>
-                <span class="fin-risk-w">${finPct(r.w)}</span>
-            </div>
-        </div>`).join('');
 };
 
 // Holdings never leave the browser. The engine that produced the reference
@@ -1173,190 +1136,449 @@ const PF_MODE_KEY = 'portfolioLab.mode';
 const pfGetMode = () => (localStorage.getItem(PF_MODE_KEY) === 'expert') ? 'expert' : 'basic';
 const pfSetMode = (m) => pfPersist(PF_MODE_KEY, m);
 
-const renderPfResult = async (host) => {
-    host.innerHTML = `<p class="fin-loading">진단 리포트 불러오는 중…</p>`;
+// --- 시나리오 백테스트 (T25b) -------------------------------------------------
+// The engine (portfolio-engine/scenario.mjs) takes already-resolved, already-
+// aligned, already-base-currency-converted series; this section's only job is
+// resolving names to tickers, fetching public history, aligning/FX-converting
+// it in the browser (same pfAlign/pfFxSymbol machinery pfCompute uses), and
+// describing the one runScenario() result as Basic/Expert -- never recomputing
+// it. No holdings/strategy/result ever leaves the browser; only ticker symbols
+// cross the network through the existing quote proxy.
+const PF_SCN_KEY = 'portfolioLab.scenario.v1';
+const pfScnBlank = () => ({
+    assets: [], factors: [], benchmark: null,
+    startDate: '', endDate: '', holdoutStart: '',
+    rebalance: 'buy_and_hold', initialCapital: null,
+    conditionOn: false, conditionRows: [], holdingBars: 10,
+});
+const pfScnLoad = () => {
+    try {
+        const raw = localStorage.getItem(PF_SCN_KEY);
+        const p = raw && JSON.parse(raw);
+        return (p && Array.isArray(p.assets)) ? { ...pfScnBlank(), ...p } : pfScnBlank();
+    } catch (_) { return pfScnBlank(); }
+};
+const pfScnSave = (s) => pfPersist(PF_SCN_KEY, JSON.stringify(s));
 
-    const data = await loadFirstJson(finDataPaths('portfolio_analysis_v1.json'));
+// Same registry-first-then-remote-search resolution the spreadsheet importer
+// uses (pfResolveUploadName), reused so "type a name, get a ticker" behaves
+// identically everywhere in this file.
+const pfScnResolve = async (raw, role, existingIds) => {
+    const picked = await pfResolveUploadName(raw).catch(() => null);
+    if (!picked) throw new Error(`'${raw}'을(를) 찾지 못했습니다.`);
+    let id = picked.id;
+    if (existingIds.has(id)) id = `${id}__${role}`;
+    return { id, name_ko: picked.name_ko, yahoo: picked.yahoo || null, currency: picked.currency || 'KRW' };
+};
+const pfScnUsedIds = (s) => new Set([...s.assets, ...s.factors, ...(s.benchmark ? [s.benchmark] : [])].map((r) => r.id));
 
-    if (!data) {
-        host.innerHTML = `
-            <div class="fin-empty">
-                <p class="fin-empty-title">진단 리포트가 없습니다</p>
-                <p>로컬에서 <code>scripts/금융_재무분석/run_pipeline.py</code> 를 돌리면
-                   <code>public/data/portfolio_analysis_v1.json</code> 이 만들어지고 여기에 표시됩니다.</p>
-                <p class="fin-note pf-privacy">이 파일은 <code>.gitignore</code> 처리돼 커밋·배포되지 않습니다 —
-                   실제 보유 내역은 본인 컴퓨터에만 남고, 대시보드 운영자를 포함해 누구에게도 전송되지 않습니다.</p>
-            </div>`;
-        return;
-    }
+// Describes ONE runScenario() result two ways; toggling never recomputes.
+// null is always rendered as "산출 불가", never coerced to 0 or hidden.
+const scnPct = (v, d = 1) => v === null || v === undefined ? '산출 불가' : finPct(v, d);
+const scnNum = (v, d = 2) => v === null || v === undefined ? '산출 불가' : Number(v).toFixed(d);
 
-    const mode = pfGetMode();
-    const u = (mode === 'expert' ? data[`ui_copy_${FIN_LOCALE}`] : data[`ui_copy_basic_${FIN_LOCALE}`])
-        || data[`ui_copy_${FIN_LOCALE}`] || {};
-    const S = (k) => u[`${k}_${FIN_LOCALE}`];
-    const cards = u.metric_cards || [];
-    const breaches = (data.profile_check && data.profile_check[`breaches_${FIN_LOCALE}`]) || S('profile_breaches') || [];
-    const movesUp = S('moves_up') || [];
-    const movesDown = S('moves_down') || [];
-    const proxies = (data.data_quality && data.data_quality.proxies) || [];
-    const dq = data.data_quality || {};
+const renderScenarioResult = (out, result, mode) => {
+    const strat = result.strategy, rel = result.relationship;
+    const m = strat ? strat.metrics : null;
 
-    const baseCcy = data.base_currency || 'KRW';
-    const acct = data.accounting || null;
-    const cash = data.cash_breakdown || null;
-    const nav = acct ? (acct.net_asset_value ?? null) : null;
-    const gross = acct ? (acct.gross_exposure ?? null) : null;
-    const grossOfNav = acct ? (acct.gross_exposure_of_nav ?? null) : null;
-    const creditUsed = acct ? (acct.credit_used ?? null) : null;
-    const varShort = data.risk && data.risk.short;
-    const varOfNav = varShort ? (varShort.var_10d_95 ?? null) : null;
-    const sizeGuide = data.size_guide || null;
+    const warningsHtml = result.warnings.length ? `
+        <div class="fin-alert">
+            <span class="fin-alert-mark">확인 필요</span>
+            <ul>${result.warnings.map((w) => `<li>${finEsc(w.message_ko)}</li>`).join('')}</ul>
+        </div>` : '';
 
-    host.innerHTML = `
+    const assessmentHtml = strat ? `
+        <section class="fin-block fin-block-wide">
+            <h2>이 결과가 뜻하는 것</h2>
+            <p class="fin-lead">${finEsc(strat.assessment.headline_ko)}</p>
+            <p class="fin-note">${finEsc(strat.assessment.policy)} · 투자 추천/인과관계/유의성 검정이 아닙니다.
+               완료 거래 표본 독립성·실거래 검증은 아직 확인되지 않았습니다(episode_independence_verified=false, execution_validated=false).</p>
+        </section>` : '';
+
+    const basicCards = strat ? `
+        <div class="fin-cards">
+            <div class="fin-card">
+                <span class="fin-card-title">기간 수익률</span>
+                <span class="fin-card-value">${scnPct(m.total_return)}</span>
+                <p class="fin-card-plain">${finEsc(result.period.actual_start)} ~ ${finEsc(result.period.actual_end)}, 관측 ${result.period.n_return_observations}개 기준입니다.</p>
+            </div>
+            <div class="fin-card">
+                <span class="fin-card-title">변동성(연환산)</span>
+                <span class="fin-card-value">${scnPct(m.annualized_volatility)}</span>
+            </div>
+            <div class="fin-card">
+                <span class="fin-card-title">최대 낙폭</span>
+                <span class="fin-card-value">${scnPct(m.max_drawdown)}</span>
+                <p class="fin-card-plain">${m.recovered === null ? '' : m.recovered ? `${m.recovery_bars}개 관측 만에 고점 회복` : '기간 내 미회복'}</p>
+            </div>
+            ${result.benchmark ? `
+            <div class="fin-card">
+                <span class="fin-card-title">비교지수(${finEsc(result.benchmark.id)}) 대비</span>
+                <span class="fin-card-value">${scnPct(result.benchmark.excess_total_return)}</span>
+                <p class="fin-card-plain">같은 기간 비교지수 수익률 ${scnPct(result.benchmark.metrics.total_return)} 대비 초과분입니다.</p>
+            </div>` : ''}
+            ${strat.monetary_results ? `
+            <div class="fin-card">
+                <span class="fin-card-title">투자금 기준 손익</span>
+                <span class="fin-card-value">${pfKrw(strat.monetary_results.pnl)}</span>
+                <p class="fin-card-plain">초기 투자금 ${pfKrw(strat.initial_capital)} 기준, 비용·세금 제외 가상 손익입니다.</p>
+            </div>` : ''}
+        </div>` : '';
+
+    const relationHtml = `
+        <section class="fin-block fin-block-wide">
+            <h2>${strat ? '함께 움직임' : '관계'}</h2>
+            ${rel.ids.length > 1 ? `
+            <div class="fin-table-wrap"><table class="fin-table"><thead><tr><th></th>
+                ${rel.ids.map((id) => `<th>${finEsc(id)}</th>`).join('')}</tr></thead><tbody>
+                ${rel.ids.map((row, i) => `<tr><th>${finEsc(row)}</th>
+                    ${rel.correlation[i].map((c) => `<td>${c === null ? '—' : c.toFixed(2)}</td>`).join('')}</tr>`).join('')}
+                </tbody></table></div>
+            <p class="fin-note">자산 단순수익률 vs 요인 변화량의 상관입니다. 가격 수준의 상관이 아니며, 표본이 짧으면 null입니다.</p>` : ''}
+            ${rel.factor_exposures.length ? `
+            <ul class="fin-list">
+                ${rel.factor_exposures.map((e) => `<li>${finEsc(e.asset_id)} vs ${finEsc(e.factor_id)}:
+                    베타 ${e.contemporaneous.beta === null ? '산출 불가' : e.contemporaneous.beta.toFixed(3)}
+                    (동시점, r²=${e.contemporaneous.r_squared === null ? '—' : e.contemporaneous.r_squared.toFixed(2)})
+                    ${e.factor_unit ? ` · 단위: ${finEsc(e.factor_unit)}` : ''}</li>`).join('')}
+            </ul>
+            <p class="fin-note">베타는 인과관계가 아닌 동시점 회귀 기울기입니다. 단위는 입력한 요인 단위를 따릅니다.</p>` : ''}
+        </section>`;
+
+    const conditionHtml = result.condition ? `
+        <section class="fin-block fin-block-wide">
+            <h2>진입 조건</h2>
+            <p class="fin-p">조건이 전부(AND) 참이 된 다음 공통 종가에 진입, ${result.condition.holding_bars}개 관측 보유합니다.</p>
+            <p class="fin-note">완료 거래 ${strat?.n_completed_episodes ?? 0}건
+                ${strat?.episode_win_fraction != null ? ` · 승률 ${scnPct(strat.episode_win_fraction)}` : ''}
+                (표본이 적으면 독립적인 통계 근거로 보기 어렵습니다).</p>
+        </section>` : '';
+
+    const expertHtml = mode === 'expert' && strat ? `
+        <section class="fin-block fin-block-wide">
+            <h2>전문가 지표</h2>
+            <div class="fin-cards">
+                <div class="fin-card"><span class="fin-card-title">산술 샤프(sharpe_arithmetic)</span>
+                    <span class="fin-card-value">${scnNum(m.sharpe_arithmetic)}</span>
+                    <p class="fin-card-plain">CAGR 기반 샤프(직접 입력 탭)와 정의가 다릅니다 — 그대로 비교하지 마세요.</p></div>
+                <div class="fin-card"><span class="fin-card-title">CAGR</span><span class="fin-card-value">${scnPct(m.cagr)}</span></div>
+                <div class="fin-card"><span class="fin-card-title">VaR / CVaR (1 관측)</span>
+                    <span class="fin-card-value">${scnPct(m.var_1bar)} / ${scnPct(m.cvar_1bar)}</span>
+                    <p class="fin-card-plain">신뢰수준 ${scnPct(m.confidence, 0)}, 꼬리 표본 ${m.historical_tail_count}개.
+                       보장된 최대손실이 아니며, 여러 달력일이 한 관측일 수 있습니다.</p></div>
+                <div class="fin-card"><span class="fin-card-title">승률(일 단위)</span><span class="fin-card-value">${scnPct(m.win_day_fraction)}</span></div>
+            </div>
+            ${strat.rolling_var.n_evaluated ? `<p class="fin-note">롤링 VaR(직전 ${strat.rolling_var.window}개 실현수익률 기준) 초과 비율
+                ${scnPct(strat.rolling_var.breach_fraction)} (목표 ${scnPct(strat.rolling_var.target_exceedance_fraction)}), 평가 ${strat.rolling_var.n_evaluated}개.
+                현재 보유 재평가 방식의 규제용 VaR 백테스트가 아닙니다.</p>` : ''}
+            <p class="fin-note">손익귀속: ${strat.pnl_attribution.map((p) => `${finEsc(p.asset_id)} ${scnPct(p.return_on_initial_nav)}`).join(', ')}
+                (잔여오차 ${scnPct(strat.attribution_residual)})</p>
+            ${result.split ? `
+            <h3 class="fin-sub">전후 분할 (${finEsc(result.split.split_date)} 기준)</h3>
+            <p class="fin-p">전반 수익률 ${scnPct(result.split.earlier.total_return)}(관측 ${result.split.earlier.n_obs})
+                · 후반 수익률 ${scnPct(result.split.later.total_return)}(관측 ${result.split.later.n_obs})</p>
+            <p class="fin-note">후반 평균수익 95% block-bootstrap 구간: ${result.split.later_mean_ci.status === 'exploratory'
+                ? `[${scnNum(result.split.later_mean_ci.lower, 4)}, ${scnNum(result.split.later_mean_ci.upper, 4)}]`
+                : '표본 부족으로 산출 불가'}. 규칙을 재최적화하지 않은 고정 규칙의 전후 비교이며, 반복 walk-forward 검증이 아닙니다.</p>` : ''}
+            <details><summary>재현용 run_config / source_manifest</summary>
+                <pre class="fin-code">${finEsc(JSON.stringify({ run_config: result.run_config, source_manifest: result.source_manifest }, null, 2))}</pre>
+            </details>
+        </section>` : '';
+
+    out.innerHTML = `
         <div class="pf-mode" role="group" aria-label="보기 수준">
             <button type="button" class="pf-mode-btn ${mode === 'basic' ? 'on' : ''}" data-mode="basic">기본</button>
             <button type="button" class="pf-mode-btn ${mode === 'expert' ? 'on' : ''}" data-mode="expert">전문가</button>
         </div>
-
-        <div class="fin-head fin-head-sub">
-            <p class="fin-headline">${finEsc(S('headline'))}</p>
-            <div class="fin-meta">
-                <span class="fin-chip">${finEsc(u.profile?.[`label_${FIN_LOCALE}`] || data.risk_profile_id)}</span>
-                <span>${finEsc(u.profile?.[`blurb_${FIN_LOCALE}`] || '')}</span>
-                <span class="fin-meta-sep">·</span>
-                <span>기준통화 ${finEsc(baseCcy)}</span>
-                <span class="fin-meta-sep">·</span>
-                <span>기준 ${finEsc((data.generated_at || '').slice(0, 10))}</span>
-                <span class="fin-meta-sep">·</span>
-                <span>관측 ${dq.n_obs ?? '—'}일 (${finEsc(dq.start || '')} ~ ${finEsc(dq.end || '')})</span>
-            </div>
-        </div>
-
-        ${breaches.length ? `
-        <div class="fin-alert">
-            <span class="fin-alert-mark">성향 한도 초과</span>
-            <ul>${breaches.map((b) => `<li>${finEsc(b)}</li>`).join('')}</ul>
-        </div>` : ''}
-
-        ${(nav !== null || gross !== null || varOfNav !== null) ? `
-        <div class="fin-cards">
-            ${nav !== null ? `
-            <div class="fin-card">
-                <span class="fin-card-title">순자산(NAV)</span>
-                <span class="fin-card-value">${finEsc(baseCcy)} ${Number(nav).toLocaleString()}</span>
-                ${creditUsed ? `<p class="fin-card-plain">신용·미수 ${finEsc(baseCcy)} ${Number(creditUsed).toLocaleString()}은 이미 뺀 값입니다.</p>` : ''}
-            </div>` : ''}
-            ${gross !== null ? `
-            <div class="fin-card">
-                <span class="fin-card-title">총 노출(gross)</span>
-                <span class="fin-card-value">${finEsc(baseCcy)} ${Number(gross).toLocaleString()}${(grossOfNav !== null) ? ` · NAV 대비 ${finPct(grossOfNav)}` : ''}</span>
-                <p class="fin-card-plain">공매도·신용을 포함한 총 노출입니다. NAV와 다를 수 있습니다.</p>
-            </div>` : ''}
-            ${varOfNav !== null ? `
-            <div class="fin-card">
-                <span class="fin-card-title">10일 VaR (95%, NAV 대비)</span>
-                <span class="fin-card-value">${finPct(varOfNav)}</span>
-            </div>` : ''}
-        </div>` : ''}
-
-        ${cash ? `
-        <section class="fin-block fin-block-wide">
-            <h2>현금 구성</h2>
-            <p class="fin-p">
-                성향 현금(${finEsc(baseCcy)}) ${finPct(cash.base_cash_weight_of_nav)}
-                · 외화 현금(환위험) ${finPct(cash.foreign_cash_weight_of_nav)}
-            </p>
-            <p class="fin-note">${finEsc(cash.policy_ko || '성향 현금 밴드는 기준통화 현금만 검사합니다. 외화 현금은 환율 노출로 별도 표시됩니다.')}</p>
-        </section>` : ''}
-
-        <div class="fin-cards">
-            ${cards.map((c) => `
-                <div class="fin-card">
-                    <span class="fin-card-title">${finEsc(c[`title_${FIN_LOCALE}`])}</span>
-                    <span class="fin-card-value">${finEsc(c[`value_${FIN_LOCALE}`])}</span>
-                    <p class="fin-card-plain">${finEsc(c[`plain_${FIN_LOCALE}`])}</p>
-                    <p class="fin-card-analogy">${finEsc(c[`analogy_${FIN_LOCALE}`])}</p>
-                </div>`).join('')}
-        </div>
-
-        <div class="fin-grid">
-            <section class="fin-block fin-block-wide">
-                <h2>위험이 어디서 나오는가</h2>
-                <p class="fin-lead">${finEsc(S('risk_contribution_plain'))}</p>
-                <div class="fin-legend">
-                    <span><i class="fin-swatch fin-bar-risk"></i>위험 기여</span>
-                    <span><i class="fin-swatch fin-bar-weight"></i>비중</span>
-                </div>
-                <div class="fin-risk-list">${finRiskRows(data)}</div>
-            </section>
-
-            <section class="fin-block">
-                <h2>이 숫자 보는 법</h2>
-                <ul class="fin-list">
-                    ${(S('how_to_read') || []).map((x) => `<li>${finEsc(x)}</li>`).join('')}
-                </ul>
-            </section>
-
-            <section class="fin-block">
-                <h2>함께 움직이는 묶음</h2>
-                ${(S('clusters_plain') || []).map((x) => `<p class="fin-p">${finEsc(x)}</p>`).join('')}
-                <h3 class="fin-sub">통화 노출</h3>
-                <p class="fin-p">${finEsc(S('currency_plain'))}</p>
-            </section>
-
-            <section class="fin-block">
-                <h2>과거 급락 구간 대입</h2>
-                ${(S('stress_plain') || []).map((x) => `<p class="fin-p">${finEsc(x)}</p>`).join('')}
-            </section>
-
-            <section class="fin-block fin-block-wide">
-                <h2>조절 제안</h2>
-                <p class="fin-note">${finEsc(S('rebalance_note'))}</p>
-                <div class="fin-moves">
-                    <div class="fin-moves-col">
-                        <h3 class="fin-sub fin-sub-up">비중을 키우는 방향</h3>
-                        ${movesUp.map((m) => `
-                            <div class="fin-move">
-                                <div class="fin-move-head">
-                                    <span>${finEsc(m[`name_${FIN_LOCALE}`])}</span>
-                                    <span class="fin-move-delta fin-up">${finSignedPct(m.delta)}</span>
-                                </div>
-                                <p>${finEsc(m[`plain_${FIN_LOCALE}`])}</p>
-                            </div>`).join('')}
-                    </div>
-                    <div class="fin-moves-col">
-                        <h3 class="fin-sub fin-sub-down">비중을 줄이는 방향</h3>
-                        ${movesDown.map((m) => `
-                            <div class="fin-move">
-                                <div class="fin-move-head">
-                                    <span>${finEsc(m[`name_${FIN_LOCALE}`])}</span>
-                                    <span class="fin-move-delta fin-down">${finSignedPct(m.delta)}</span>
-                                </div>
-                                <p>${finEsc(m[`plain_${FIN_LOCALE}`])}</p>
-                            </div>`).join('')}
-                    </div>
-                </div>
-            </section>
-        </div>
-
+        ${warningsHtml}
+        ${basicCards}
+        ${assessmentHtml}
+        ${conditionHtml}
+        ${relationHtml}
+        ${expertHtml}
         <div class="fin-foot">
-            <p>${finEsc(S('footer'))}</p>
-            <p class="fin-disclaimer">${finEsc(data[`disclaimer_${FIN_LOCALE}`])}</p>
-            ${sizeGuide ? `<p class="fin-note">${finEsc(sizeGuide[`footnote_${FIN_LOCALE}`] || '')}
-               (보유 ${sizeGuide.vs_actual?.n_names ?? '—'}종 · 권장 ${sizeGuide.names_min ?? '—'}–${sizeGuide.names_max ?? '—'}종)</p>` : ''}
-            ${proxies.length ? `<p class="fin-proxy">프록시 사용: ${proxies.map((p) =>
-                finEsc(typeof p === 'string' ? p : (p.name_ko || p.id || JSON.stringify(p)))).join(' · ')}</p>` : ''}
-            <p class="fin-engine">엔진: <code>scripts/금융_재무분석</code> ·
-               방식: ${finEsc((data.advice && data.advice.method) || '')} ·
-               스키마 ${finEsc(data.schema_version || '')}</p>
-            <p class="pf-privacy">이 리포트는 로컬 파일만 읽습니다 — 서버에 저장되지 않고, 대시보드 운영자는 이 데이터를 볼 수 없습니다.</p>
+            <p class="fin-engine">엔진: portfolio-engine/scenario.mjs · 스키마 ${finEsc(result.schema_version)} · 기준통화 ${finEsc(result.base_currency)}</p>
+            <p class="pf-privacy">계산은 이 브라우저에서 수행됩니다 — 입력·결과는 서버에 저장되지 않습니다.</p>
         </div>`;
 
-    host.querySelectorAll('.pf-mode-btn').forEach((b) => b.addEventListener('click', () => {
+    out.querySelectorAll('.pf-mode-btn').forEach((b) => b.addEventListener('click', () => {
         if (b.dataset.mode === mode) return;
         pfSetMode(b.dataset.mode);
-        renderPfResult(host);
+        renderScenarioResult(out, result, b.dataset.mode);
     }));
+};
+
+const renderScenarioLab = async (host) => {
+    const state = pfScnLoad();
+    let result = null, resultError = null;
+
+    const paint = () => {
+        host.innerHTML = `
+        <section class="fin-block fin-block-wide pf-input">
+            <h2>자산 <span class="fin-note">(매매 대상, 비중 없이 두면 매매 없이 관계만 봅니다)</span></h2>
+            <div class="pf-add">
+                <input type="text" id="scn-a-q" class="pf-field" placeholder="종목명·티커 (예: 삼성전자, AAPL)">
+                <input type="text" id="scn-a-w" class="pf-field pf-amt" inputmode="numeric" placeholder="비중 %(+롱/-숏)">
+                <button id="scn-a-add" class="pf-btn">추가</button>
+            </div>
+            <p id="scn-a-err" class="pf-picked pf-picked-warn"></p>
+            ${state.assets.length ? `<div class="pf-rows">${state.assets.map((a, i) => `
+                <div class="pf-row"><span class="pf-row-name">${finEsc(a.name_ko)}
+                    <span class="fin-tag">${finEsc(a.currency)}</span></span>
+                    <span class="pf-row-val">${a.weightPct >= 0 ? '+' : ''}${a.weightPct}%</span>
+                    <button class="pf-del" data-kind="asset" data-i="${i}" aria-label="삭제">✕</button></div>`).join('')}</div>`
+                : '<p class="fin-note">아직 없습니다.</p>'}
+        </section>
+
+        <section class="fin-block fin-block-wide pf-input">
+            <h2>관찰 변수 <span class="fin-note">(매매하지 않음, 조건·상관 분석용)</span></h2>
+            <div class="pf-add">
+                <input type="text" id="scn-f-q" class="pf-field" placeholder="예: 천연가스 선물, 달러/원">
+                <select id="scn-f-change" class="pf-field">
+                    <option value="relative">변화율(%)</option>
+                    <option value="difference">변화폭(수준차, 예: 금리)</option>
+                </select>
+                <button id="scn-f-add" class="pf-btn">추가</button>
+            </div>
+            <p id="scn-f-err" class="pf-picked pf-picked-warn"></p>
+            ${state.factors.length ? `<div class="pf-rows">${state.factors.map((f, i) => `
+                <div class="pf-row"><span class="pf-row-name">${finEsc(f.name_ko)}
+                    <span class="fin-tag">${f.change === 'difference' ? '변화폭' : '변화율'}</span></span>
+                    <button class="pf-del" data-kind="factor" data-i="${i}" aria-label="삭제">✕</button></div>`).join('')}</div>`
+                : '<p class="fin-note">아직 없습니다.</p>'}
+        </section>
+
+        <section class="fin-block fin-block-wide pf-input">
+            <h2>비교지수 <span class="fin-note">(선택, 전략 성과와 같은 기간 비교)</span></h2>
+            <div class="pf-add">
+                <input type="text" id="scn-b-q" class="pf-field" placeholder="예: KODEX 200, S&P 500 ETF">
+                <button id="scn-b-add" class="pf-btn">추가</button>
+                ${state.benchmark ? `<button id="scn-b-del" class="pf-btn pf-btn-ghost">${finEsc(state.benchmark.name_ko)} 지우기</button>` : ''}
+            </div>
+            <p id="scn-b-err" class="pf-picked pf-picked-warn"></p>
+        </section>
+
+        <section class="fin-block fin-block-wide pf-input">
+            <h2>기간·재조정</h2>
+            <div class="pf-add">
+                <label class="pf-row-sub">시작<br><input type="date" id="scn-start" class="pf-field" value="${finEsc(state.startDate)}"></label>
+                <label class="pf-row-sub">종료<br><input type="date" id="scn-end" class="pf-field" value="${finEsc(state.endDate)}"></label>
+                <label class="pf-row-sub">후반검증 시작(선택)<br><input type="date" id="scn-holdout" class="pf-field" value="${finEsc(state.holdoutStart)}"></label>
+            </div>
+            <div class="pf-add">
+                <select id="scn-rebalance" class="pf-field">
+                    <option value="buy_and_hold" ${state.rebalance === 'buy_and_hold' ? 'selected' : ''}>매수 후 유지</option>
+                    <option value="daily" ${state.rebalance === 'daily' ? 'selected' : ''}>매일 재조정</option>
+                    <option value="monthly" ${state.rebalance === 'monthly' ? 'selected' : ''}>매월 재조정</option>
+                </select>
+                <input type="text" id="scn-capital" class="pf-field pf-amt" inputmode="numeric"
+                    placeholder="투자금(원, 선택)" value="${state.initialCapital ? Number(state.initialCapital).toLocaleString('ko-KR') : ''}">
+            </div>
+            <p class="fin-note">투자금은 선택입니다. 넣지 않아도 수익률·위험 비율은 동일하고, 넣으면 그 비율에 금액만 곱해 보여줍니다.</p>
+        </section>
+
+        <section class="fin-block fin-block-wide pf-input">
+            <h2>조건부 진입 <span class="fin-note">(선택 — 관찰 변수 기준, 전부 만족(AND) 다음 공통 종가에 진입)</span></h2>
+            <label><input type="checkbox" id="scn-cond-on" ${state.conditionOn ? 'checked' : ''}> 조건부 진입을 사용합니다</label>
+            ${state.conditionOn ? `
+            <div id="scn-cond-block">
+                ${!state.factors.length ? '<p class="fin-note">조건에 쓰려면 위에서 관찰 변수를 먼저 추가하세요.</p>' : `
+                <div class="pf-rows">
+                    ${state.conditionRows.map((r, i) => `
+                    <div class="pf-row">
+                        <select class="pf-field scn-cond-factor" data-i="${i}">
+                            ${state.factors.map((f) => `<option value="${finEsc(f.id)}" ${f.id === r.factorId ? 'selected' : ''}>${finEsc(f.name_ko)}</option>`).join('')}
+                        </select>
+                        <input type="number" class="pf-field scn-cond-lookback" data-i="${i}" value="${r.lookbackBars}" min="1" placeholder="관측 수(bar)">
+                        <select class="pf-field scn-cond-op" data-i="${i}">
+                            <option value="gte" ${r.operator === 'gte' ? 'selected' : ''}>이상(≥)</option>
+                            <option value="lte" ${r.operator === 'lte' ? 'selected' : ''}>이하(≤)</option>
+                        </select>
+                        <input type="number" step="any" class="pf-field scn-cond-threshold" data-i="${i}" value="${r.threshold}" placeholder="기준값">
+                        <button class="pf-del" data-kind="cond" data-i="${i}" aria-label="삭제">✕</button>
+                    </div>`).join('')}
+                </div>
+                <div class="pf-add">
+                    <button id="scn-cond-add" class="pf-btn pf-btn-ghost">조건 추가</button>
+                    <label class="pf-row-sub">보유 기간(bar)<br><input type="number" id="scn-holding" class="pf-field" min="1" value="${state.holdingBars}"></label>
+                </div>`}
+            </div>` : ''}
+        </section>
+
+        <div class="pf-actions">
+            <button id="scn-run" class="pf-btn pf-btn-primary">실행</button>
+            <button id="scn-clear" class="pf-btn pf-btn-ghost">전부 지우기</button>
+        </div>
+        <p class="fin-note pf-privacy">
+            보유·전략·조건·결과는 서버로 나가지 않습니다. 가격 조회에는 종목 심볼만 나갑니다.
+            현재가만으로 과거 성과를 만들지 않습니다 — 공개 역사 가격을 조회해 계산합니다.
+        </p>
+        <div id="scn-out">${resultError ? `
+            <div class="fin-block fin-block-wide"><h2>계산하지 못했습니다</h2>
+                <p class="fin-p">${finEsc(resultError)}</p></div>` : ''}</div>`;
+
+        if (result) renderScenarioResult(host.querySelector('#scn-out'), result, pfGetMode());
+        wire();
+    };
+
+    const save = () => pfScnSave(state);
+
+    const wire = () => {
+        host.querySelector('#scn-a-add')?.addEventListener('click', async () => {
+            const q = host.querySelector('#scn-a-q'), w = host.querySelector('#scn-a-w'), err = host.querySelector('#scn-a-err');
+            const weightPct = Number(String(w.value).trim());
+            err.textContent = '';
+            if (!q.value.trim()) return;
+            if (!Number.isFinite(weightPct)) { err.textContent = '비중을 숫자로(%) 입력하세요. 비워두면 0%(매매 없음)로 취급됩니다.'; }
+            try {
+                const row = await pfScnResolve(q.value, 'asset', pfScnUsedIds(state));
+                state.assets.push({ ...row, weightPct: Number.isFinite(weightPct) ? weightPct : 0 });
+                save(); paint();
+            } catch (e) { err.textContent = e.message; }
+        });
+        host.querySelector('#scn-f-add')?.addEventListener('click', async () => {
+            const q = host.querySelector('#scn-f-q'), change = host.querySelector('#scn-f-change'), err = host.querySelector('#scn-f-err');
+            err.textContent = '';
+            if (!q.value.trim()) return;
+            try {
+                const row = await pfScnResolve(q.value, 'factor', pfScnUsedIds(state));
+                state.factors.push({ ...row, change: change.value, unit: null });
+                save(); paint();
+            } catch (e) { err.textContent = e.message; }
+        });
+        host.querySelector('#scn-b-add')?.addEventListener('click', async () => {
+            const q = host.querySelector('#scn-b-q'), err = host.querySelector('#scn-b-err');
+            err.textContent = '';
+            if (!q.value.trim()) return;
+            try {
+                state.benchmark = await pfScnResolve(q.value, 'benchmark', pfScnUsedIds(state));
+                save(); paint();
+            } catch (e) { err.textContent = e.message; }
+        });
+        host.querySelector('#scn-b-del')?.addEventListener('click', () => { state.benchmark = null; save(); paint(); });
+        host.querySelectorAll('.pf-del').forEach((b) => b.addEventListener('click', () => {
+            const i = Number(b.dataset.i);
+            if (b.dataset.kind === 'asset') state.assets.splice(i, 1);
+            else if (b.dataset.kind === 'factor') { const removedId = state.factors[i].id; state.factors.splice(i, 1);
+                state.conditionRows = state.conditionRows.filter((r) => r.factorId !== removedId); }
+            else if (b.dataset.kind === 'cond') state.conditionRows.splice(i, 1);
+            save(); paint();
+        }));
+        host.querySelector('#scn-cond-on')?.addEventListener('change', (e) => { state.conditionOn = e.target.checked; save(); paint(); });
+        host.querySelector('#scn-cond-add')?.addEventListener('click', () => {
+            state.conditionRows.push({ factorId: state.factors[0].id, lookbackBars: 5, operator: 'gte', threshold: 0 });
+            save(); paint();
+        });
+        host.querySelectorAll('.scn-cond-factor, .scn-cond-lookback, .scn-cond-op, .scn-cond-threshold').forEach((el) =>
+            el.addEventListener('change', () => {
+                const i = Number(el.dataset.i), row = state.conditionRows[i];
+                if (el.classList.contains('scn-cond-factor')) row.factorId = el.value;
+                else if (el.classList.contains('scn-cond-lookback')) row.lookbackBars = Math.max(1, Math.round(Number(el.value) || 1));
+                else if (el.classList.contains('scn-cond-op')) row.operator = el.value;
+                else row.threshold = Number(el.value) || 0;
+                save();
+            }));
+        host.querySelector('#scn-holding')?.addEventListener('change', (e) => {
+            state.holdingBars = Math.max(1, Math.round(Number(e.target.value) || 1)); save();
+        });
+        ['scn-start', 'scn-end', 'scn-holdout'].forEach((id) => host.querySelector(`#${id}`)?.addEventListener('change', (e) => {
+            state[{ 'scn-start': 'startDate', 'scn-end': 'endDate', 'scn-holdout': 'holdoutStart' }[id]] = e.target.value; save();
+        }));
+        host.querySelector('#scn-rebalance')?.addEventListener('change', (e) => { state.rebalance = e.target.value; save(); });
+        host.querySelector('#scn-capital')?.addEventListener('input', (e) => {
+            const raw = String(e.target.value).replace(/[^0-9]/g, '');
+            e.target.value = raw ? Number(raw).toLocaleString('ko-KR') : '';
+        });
+        host.querySelector('#scn-capital')?.addEventListener('change', (e) => {
+            const raw = String(e.target.value).replace(/[^0-9]/g, '');
+            state.initialCapital = raw ? Number(raw) : null; save();
+        });
+        host.querySelector('#scn-clear')?.addEventListener('click', () => {
+            if (!confirm('시나리오 입력을 전부 지웁니다. 되돌릴 수 없습니다.')) return;
+            Object.assign(state, pfScnBlank()); result = null; resultError = null; save(); paint();
+        });
+        host.querySelector('#scn-run')?.addEventListener('click', run);
+    };
+
+    const run = async () => {
+        const out = host.querySelector('#scn-out');
+        out.innerHTML = `<div class="fin-block fin-block-wide"><p class="fin-loading" id="scn-prog">계산 준비 중…</p></div>`;
+        out.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        const prog = () => out.querySelector('#scn-prog');
+        try {
+            const input = await scenarioBuildInput(state, (msg) => { const p = prog(); if (p) p.textContent = msg; });
+            result = runScenarioEngine.runScenario(input);
+            resultError = null;
+        } catch (err) {
+            result = null;
+            resultError = err.message || String(err);
+        }
+        paint();
+    };
+
+    let runScenarioEngine = null;
+    host.innerHTML = `<p class="fin-loading">엔진 불러오는 중…</p>`;
+    runScenarioEngine = await import('/portfolio-engine/scenario.mjs');
+    paint();
+};
+
+// Fetches and aligns public price/FX history for every asset/factor/benchmark
+// row (same pfFetchHistory + pfAlign machinery pfCompute uses), converts
+// asset/benchmark prices to KRW with dated FX, and leaves factor levels in
+// their own units -- then hands the engine already-resolved, already-aligned
+// input. No leverage multiplier is applied: a real leveraged ETF's own price
+// already carries it (scenario-README: don't multiply it again).
+const scenarioBuildInput = async (state, onProgress) => {
+    const rows = [...state.assets, ...state.factors, ...(state.benchmark ? [state.benchmark] : [])];
+    if (!rows.length) throw new Error('자산 또는 관찰 변수를 하나 이상 추가하세요.');
+    if (!state.assets.length) throw new Error('관계만 보더라도 최소 1개 자산이 필요합니다.');
+
+    const needed = new Set();
+    for (const r of rows) {
+        if (!r.yahoo) throw new Error(`'${r.name_ko}'의 가격 심볼을 확인할 수 없습니다.`);
+        needed.add(r.yahoo);
+        const fx = pfFxSymbol(r.currency);
+        if (fx && r.yahoo !== fx) needed.add(fx);
+    }
+    let done = 0;
+    const fetched = {};
+    for (const sym of needed) {
+        onProgress && onProgress(`가격 조회 중… ${++done}/${needed.size}`);
+        fetched[sym] = await pfFetchHistory(sym, '5y');
+    }
+    const series = {};
+    for (const [sym, j] of Object.entries(fetched)) series[sym] = j.points;
+    const { dates: dayNums, cols } = pfAlign(series);
+    if (dayNums.length < 3) throw new Error('공통 거래일이 3개 미만이라 계산할 수 없습니다.');
+    const isoDates = dayNums.map((d) => new Date(d * 86400000).toISOString().slice(0, 10));
+
+    const toKrw = (row) => {
+        const fxSym = pfFxSymbol(row.currency);
+        if (row.yahoo === fxSym) return cols[row.yahoo];
+        if (fxSym) return cols[row.yahoo].map((v, i) => v * cols[fxSym][i]);
+        return cols[row.yahoo];
+    };
+
+    const assets = state.assets.map((a) => ({ id: a.id, prices: toKrw(a), baseCurrency: 'KRW',
+        priceBasis: 'adjusted_total_return', source: 'yahoo_finance_proxy' }));
+    const factors = state.factors.map((f) => ({ id: f.id, values: cols[f.yahoo], change: f.change,
+        unit: f.unit || null, source: 'yahoo_finance_proxy', availability: 'known_by_common_close' }));
+    const benchmark = state.benchmark ? { id: state.benchmark.id, prices: toKrw(state.benchmark),
+        baseCurrency: 'KRW', priceBasis: 'adjusted_total_return', source: 'yahoo_finance_proxy' } : undefined;
+
+    const hasWeights = state.assets.some((a) => a.weightPct);
+    const strategy = hasWeights ? {
+        weights: state.assets.map((a) => (a.weightPct || 0) / 100), rebalance: state.rebalance,
+        initialCapital: state.initialCapital || null,
+    } : null;
+    let condition = null;
+    if (state.conditionOn && state.conditionRows.length) {
+        condition = { all: state.conditionRows.map((r) => ({ factorId: r.factorId, lookbackBars: r.lookbackBars,
+            threshold: r.threshold, operator: r.operator })), holdingBars: state.holdingBars };
+    }
+    return { dates: isoDates, baseCurrency: 'KRW', assets, factors, benchmark,
+        startDate: state.startDate || undefined, endDate: state.endDate || undefined,
+        holdoutStart: state.holdoutStart || undefined, strategy, condition };
 };
 
 const PF_VIEW_KEY = 'portfolioLab.view';
@@ -1372,11 +1594,11 @@ const renderPortfolioLab = async (host) => {
     host.innerHTML = `
     <div class="fin-wrap">
         <div class="fin-head">
-            <h1>포트폴리오 진단</h1>
-            <p>보유 자산의 위험이 어디에 몰려 있는지 봅니다. 수익 예측이 아닙니다.</p>
+            <h1>포트폴리오 랩</h1>
+            <p>시나리오 백테스트로 과거 전략을 연구하거나, 직접 입력으로 지금 보유한 자산의 위험이 어디에 몰려 있는지 봅니다. 어느 쪽도 수익 예측이 아닙니다.</p>
         </div>
         <div class="pf-mode pf-view-tabs" role="tablist" aria-label="보기 방식">
-            <button type="button" class="pf-mode-btn ${view === 'report' ? 'on' : ''}" data-view="report">진단 리포트</button>
+            <button type="button" class="pf-mode-btn ${view === 'report' ? 'on' : ''}" data-view="report">시나리오 백테스트</button>
             <button type="button" class="pf-mode-btn ${view === 'manual' ? 'on' : ''}" data-view="manual">직접 입력</button>
         </div>
         <div id="pf-panel"></div>
@@ -1414,7 +1636,7 @@ const renderPortfolioLab = async (host) => {
         if (saved && saved.positions.length >= 2) run();
     };
 
-    const renderReport = () => renderPfResult(panel);
+    const renderReport = () => renderScenarioLab(panel);
 
     host.querySelectorAll('.pf-view-tabs .pf-mode-btn').forEach((b) => b.addEventListener('click', () => {
         const v = b.dataset.view;

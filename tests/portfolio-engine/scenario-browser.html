@@ -1,0 +1,25 @@
+<!doctype html><meta charset="utf-8"><title>Scenario engine browser test</title>
+<h1>Scenario engine browser test</h1><pre id="result">RUNNING</pre>
+<script type="module">
+import {runScenario, compareScenarioVariants} from '../../New for anti/portfolio-engine/scenario.mjs';
+const result = document.getElementById('result');
+try {
+  const fail = () => { throw new Error('Unexpected network/storage use'); };
+  window.fetch = fail; window.XMLHttpRequest = fail; window.WebSocket = fail;
+  navigator.sendBeacon = fail; Storage.prototype.setItem = fail; indexedDB.open = fail;
+  const input = {
+    dates: ['2024-01-01','2024-01-02','2024-01-03'],
+    assets: [{id:'A',prices:[100,110,121],baseCurrency:'KRW'}, {id:'B',prices:[100,90,81],baseCurrency:'KRW'}],
+    strategy: {weights:[0.5,-0.5]},
+  };
+  const saved = JSON.stringify(input), output = runScenario(input);
+  if (Math.abs(output.strategy.metrics.total_return - 0.2) > 1e-10) throw new Error('long/short PNL mismatch');
+  if (JSON.stringify(input) !== saved) throw new Error('mutated input');
+  if (output.strategy.monetary_results !== null) throw new Error('capital should be optional');
+  const relation = runScenario({...input, strategy:null});
+  if (relation.strategy !== null) throw new Error('relation-only mode failed');
+  const scenarios = compareScenarioVariants(input,[{id:'daily',overrides:{strategy:{weights:[0.5,-0.5],rebalance:'daily'}}}]);
+  if (Math.abs(scenarios.results[0].result.strategy.metrics.total_return - 0.21)>1e-10) throw new Error('rebalance failed');
+  result.textContent = 'PASS: native browser ESM; long/short 20%; daily rebalance 21%; optional capital; relation-only; immutable input; network/storage APIs blocked. SYNTHETIC TEST DATA ONLY.';
+} catch(error) { result.textContent = 'FAIL: ' + error.message; throw error; }
+</script>
