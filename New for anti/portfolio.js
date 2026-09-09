@@ -164,10 +164,12 @@ const pfAlign = (series) => {
     // Intersect on trading days: markets keep different holidays, and pairing a
     // stale carried-forward close against a live one invents correlation.
     const keys = Object.keys(series);
-    if (!keys.length) return { dates: [], cols: {} };
+    if (!keys.length) return { dates: [], cols: {}, perSymbol: {} };
+    const daySets = {};
     let common = null;
     for (const k of keys) {
         const s = new Set(series[k].map(([t]) => Math.floor(t / 86400)));
+        daySets[k] = s;
         common = common === null ? s : new Set([...common].filter((d) => s.has(d)));
     }
     const dates = [...common].sort((a, b) => a - b);
@@ -176,7 +178,13 @@ const pfAlign = (series) => {
         const m = new Map(series[k].map(([t, v]) => [Math.floor(t / 86400), v]));
         cols[k] = dates.map((d) => m.get(d));
     }
-    return { dates, cols };
+    // Per symbol: how many of ITS OWN trading days got excluded because some
+    // other symbol in this alignment didn't trade that day -- the "how many
+    // rows did the date intersection drop" transparency the scenario tab
+    // surfaces per asset/factor/benchmark.
+    const perSymbol = {};
+    for (const k of keys) perSymbol[k] = { total: daySets[k].size, dropped: daySets[k].size - dates.length };
+    return { dates, cols, perSymbol };
 };
 
 // Assets that move together are one bet wearing several names. Single-link
@@ -1215,7 +1223,20 @@ const pfScnTreeToCondition = (node) => node.type === 'leaf'
 const scnPct = (v, d = 1) => v === null || v === undefined ? '산출 불가' : finPct(v, d);
 const scnNum = (v, d = 2) => v === null || v === undefined ? '산출 불가' : Number(v).toFixed(d);
 
-const renderScenarioResult = (out, result, mode) => {
+// pfAlign only intersects trading days -- this turns that into a plain-language
+// line so a user can see how many of each asset/factor/benchmark's own rows
+// got excluded because some other symbol in the same run didn't trade that
+// day, instead of the alignment silently shrinking the usable history.
+const scnAlignmentNote = (alignment) => {
+    if (!alignment || !alignment.rows.length) return '';
+    const dropped = alignment.rows.filter((r) => r.dropped > 0);
+    const detail = dropped.length
+        ? dropped.map((r) => `${r.label} ${r.dropped}개`).join(', ') + ' 제외 — 다른 자산·변수와 거래일이 맞지 않았습니다'
+        : '제외된 관측일 없음';
+    return `<p class="fin-note">날짜 정렬: 공통 거래일 ${alignment.commonCount}개 사용 (${finEsc(detail)}).</p>`;
+};
+
+const renderScenarioResult = (out, result, mode, alignment) => {
     const strat = result.strategy, rel = result.relationship;
     const m = strat ? strat.metrics : null;
 
@@ -1345,6 +1366,7 @@ const renderScenarioResult = (out, result, mode) => {
         ${relationHtml}
         ${expertHtml}
         <div class="fin-foot">
+            ${scnAlignmentNote(alignment)}
             <p class="fin-engine">엔진: portfolio-engine/scenario.mjs · 스키마 ${finEsc(result.schema_version)} · 기준통화 ${finEsc(result.base_currency)}</p>
             <p class="pf-privacy">계산은 이 브라우저에서 수행됩니다 — 입력·결과는 서버에 저장되지 않습니다.</p>
         </div>`;
@@ -1352,14 +1374,14 @@ const renderScenarioResult = (out, result, mode) => {
     out.querySelectorAll('.pf-mode-btn').forEach((b) => b.addEventListener('click', () => {
         if (b.dataset.mode === mode) return;
         pfSetMode(b.dataset.mode);
-        renderScenarioResult(out, result, b.dataset.mode);
+        renderScenarioResult(out, result, b.dataset.mode, alignment);
     }));
 };
 
 // One base run plus each variant, side by side. Never picks a "winner" --
 // compareScenarioVariants() itself always returns automatic_selection: false,
 // and this only ever renders exactly what it returned.
-const renderScenarioComparison = (out, base, comparison, mode) => {
+const renderScenarioComparison = (out, base, comparison, mode, alignment) => {
     const cols = [{ id: '기준(현재 설정)', result: base }, ...comparison.results];
     const row = (label, get, fmt = scnPct) => `
         <tr><th>${finEsc(label)}</th>${cols.map((c) => `<td>${fmt(get(c.result))}</td>`).join('')}</tr>`;
@@ -1386,12 +1408,13 @@ const renderScenarioComparison = (out, base, comparison, mode) => {
             ${mode === 'expert' ? `<details><summary>변형별 run_config</summary>
                 <pre class="fin-code">${finEsc(JSON.stringify(comparison.results.map((r) => ({ id: r.id, run_config: r.result.run_config })), null, 2))}</pre>
             </details>` : ''}
+            ${scnAlignmentNote(alignment)}
         </section>`;
 
     out.querySelectorAll('.pf-mode-btn').forEach((b) => b.addEventListener('click', () => {
         if (b.dataset.mode === mode) return;
         pfSetMode(b.dataset.mode);
-        renderScenarioComparison(out, base, comparison, b.dataset.mode);
+        renderScenarioComparison(out, base, comparison, b.dataset.mode, alignment);
     }));
 };
 
@@ -1440,8 +1463,8 @@ const renderConditionTree = (node, path, factors, depth) => {
 
 const renderScenarioLab = async (host) => {
     const state = pfScnLoad();
-    let result = null, resultError = null;
-    let compareResult = null, compareError = null;
+    let result = null, resultError = null, resultAlignment = null;
+    let compareResult = null, compareError = null, compareAlignment = null;
 
     const paint = () => {
         host.innerHTML = `
@@ -1586,8 +1609,8 @@ const renderScenarioLab = async (host) => {
             <div class="fin-block fin-block-wide"><h2>비교하지 못했습니다</h2>
                 <p class="fin-p">${finEsc(compareError)}</p></div>` : ''}</div>`;
 
-        if (result) renderScenarioResult(host.querySelector('#scn-out'), result, pfGetMode());
-        if (compareResult) renderScenarioComparison(host.querySelector('#scn-cmp-out'), compareResult.base, compareResult.comparison, pfGetMode());
+        if (result) renderScenarioResult(host.querySelector('#scn-out'), result, pfGetMode(), resultAlignment);
+        if (compareResult) renderScenarioComparison(host.querySelector('#scn-cmp-out'), compareResult.base, compareResult.comparison, pfGetMode(), compareAlignment);
         wire();
     };
 
@@ -1715,7 +1738,8 @@ const renderScenarioLab = async (host) => {
         host.querySelector('#scn-clear')?.addEventListener('click', () => {
             if (!confirm('시나리오 입력을 전부 지웁니다. 되돌릴 수 없습니다.')) return;
             Object.assign(state, pfScnBlank());
-            result = null; resultError = null; compareResult = null; compareError = null;
+            result = null; resultError = null; resultAlignment = null;
+            compareResult = null; compareError = null; compareAlignment = null;
             save(); paint();
         });
         host.querySelector('#scn-run')?.addEventListener('click', run);
@@ -1727,12 +1751,14 @@ const renderScenarioLab = async (host) => {
         out.scrollIntoView({ behavior: 'smooth', block: 'start' });
         const prog = () => out.querySelector('#scn-prog');
         try {
-            const input = await scenarioBuildInput(state, (msg) => { const p = prog(); if (p) p.textContent = msg; });
+            const { input, alignment } = await scenarioBuildInput(state, (msg) => { const p = prog(); if (p) p.textContent = msg; });
             result = runScenarioEngine.runScenario(input);
             resultError = null;
+            resultAlignment = alignment;
         } catch (err) {
             result = null;
             resultError = err.message || String(err);
+            resultAlignment = null;
         }
         paint();
     };
@@ -1747,7 +1773,7 @@ const renderScenarioLab = async (host) => {
         out.scrollIntoView({ behavior: 'smooth', block: 'start' });
         const prog = () => out.querySelector('#scn-cmp-prog');
         try {
-            const input = await scenarioBuildInput(state, (msg) => { const p = prog(); if (p) p.textContent = msg; });
+            const { input, alignment } = await scenarioBuildInput(state, (msg) => { const p = prog(); if (p) p.textContent = msg; });
             if (!input.strategy) throw new Error('비교하려면 위 자산에 비중을 입력해 전략을 정해야 합니다.');
             if (!state.variants.length) throw new Error('비교할 항목을 하나 이상 추가하세요.');
             const variants = state.variants.map((v, i) => {
@@ -1761,9 +1787,11 @@ const renderScenarioLab = async (host) => {
             const comparison = runScenarioEngine.compareScenarioVariants(input, variants);
             compareResult = { base, comparison };
             compareError = null;
+            compareAlignment = alignment;
         } catch (err) {
             compareResult = null;
             compareError = err.message || String(err);
+            compareAlignment = null;
         }
         paint();
     };
@@ -1800,9 +1828,22 @@ const scenarioBuildInput = async (state, onProgress) => {
     }
     const series = {};
     for (const [sym, j] of Object.entries(fetched)) series[sym] = j.points;
-    const { dates: dayNums, cols } = pfAlign(series);
+    const { dates: dayNums, cols, perSymbol } = pfAlign(series);
     if (dayNums.length < 3) throw new Error('공통 거래일이 3개 미만이라 계산할 수 없습니다.');
     const isoDates = dayNums.map((d) => new Date(d * 86400000).toISOString().slice(0, 10));
+
+    // Symbols fetched only to convert a currency (not an asset/factor/benchmark
+    // in their own right) get their own label so the alignment note can still
+    // say why a row's history looked shorter than requested.
+    const rowYahoos = new Set(rows.map((r) => r.yahoo));
+    const fxOnlySymbols = [...needed].filter((sym) => !rowYahoos.has(sym));
+    const alignment = {
+        commonCount: dayNums.length,
+        rows: [
+            ...rows.map((r) => ({ label: r.name_ko, dropped: perSymbol[r.yahoo]?.dropped ?? 0 })),
+            ...fxOnlySymbols.map((sym) => ({ label: `환율(${sym})`, dropped: perSymbol[sym]?.dropped ?? 0 })),
+        ],
+    };
 
     const toKrw = (row) => {
         const fxSym = pfFxSymbol(row.currency);
@@ -1829,9 +1870,10 @@ const scenarioBuildInput = async (state, onProgress) => {
         if (pruned) condition = { ...pfScnTreeToCondition(pruned), holdingBars: state.holdingBars };
     }
     const hypotheses = state.hypotheses.map((h) => ({ assetId: h.assetId, factorId: h.factorId, expectedSign: h.expectedSign }));
-    return { dates: isoDates, baseCurrency: 'KRW', assets, factors, benchmark,
+    const input = { dates: isoDates, baseCurrency: 'KRW', assets, factors, benchmark,
         startDate: state.startDate || undefined, endDate: state.endDate || undefined,
         holdoutStart: state.holdoutStart || undefined, strategy, condition, hypotheses };
+    return { input, alignment };
 };
 
 const PF_VIEW_KEY = 'portfolioLab.view';
