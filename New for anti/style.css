@@ -582,6 +582,59 @@ body {
     white-space: nowrap;
 }
 
+/* --- Race progress (rolling primaries / leadership tours) ---------------- */
+.elections-race-leader-bar {
+    display: flex;
+    height: 10px;
+    border-radius: 5px;
+    overflow: hidden;
+    background: rgba(15, 23, 42, 0.8);
+    margin: 10px 0 6px;
+}
+.elections-race-leader-bar span { display: block; height: 100%; }
+.elections-race-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 4px;
+    font-size: 11px;
+    color: #cbd5e1;
+}
+.elections-race-legend-item { display: inline-flex; align-items: center; gap: 5px; }
+.elections-race-legend-item i { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+.elections-race-unit-list { display: grid; gap: 6px; margin: 10px 0; }
+.elections-race-unit {
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    border-left: 3px solid rgba(148, 163, 184, 0.35);
+    border-radius: 7px;
+    background: rgba(15, 23, 42, 0.55);
+    padding: 0 9px;
+}
+.elections-race-unit.is-completed { border-left-color: #34d399; }
+.elections-race-unit.is-scheduled { border-left-color: #d4a017; opacity: 0.92; }
+.elections-race-unit summary {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    padding: 8px 0;
+    cursor: pointer;
+    color: #e2e8f0;
+    font-size: 12px;
+    list-style: none;
+}
+.elections-race-unit summary::-webkit-details-marker { display: none; }
+.elections-race-unit-date { color: #94a3b8; font-variant-numeric: tabular-nums; flex: 0 0 auto; }
+.elections-race-unit-label { font-weight: 600; flex: 1 1 auto; min-width: 0; }
+.elections-race-unit-label em { color: #94a3b8; font-style: normal; font-weight: 400; margin-left: 4px; }
+.elections-race-unit-headline { color: #94a3b8; font-size: 11px; text-align: right; max-width: 40%; }
+.elections-race-table { width: 100%; border-collapse: collapse; font-size: 12px; margin: 0 0 9px; }
+.elections-race-table th,
+.elections-race-table td { text-align: left; padding: 5px 6px; border-bottom: 1px solid rgba(148, 163, 184, 0.14); color: #cbd5e1; }
+.elections-race-table th { color: #94a3b8; font-weight: 600; }
+.elections-race-subunit { color: #94a3b8; font-size: 11px; }
+.elections-party-d { color: #7dabf5; }
+.elections-party-r { color: #f28b8b; }
+
 /* --- Country blocks and the window they open over the map ---------------- */
 
 .elections-block-grid {
