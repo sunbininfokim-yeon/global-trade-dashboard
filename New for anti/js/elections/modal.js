@@ -17,6 +17,7 @@ export const createModal = (hostEl) => {
 
     let lastFocus = null;
     let onCloseHook = null;
+    let onActionHook = null;
 
     const isOpen = () => !hostEl.classList.contains('hidden');
 
@@ -28,6 +29,7 @@ export const createModal = (hostEl) => {
         // users where they were instead of dropping them at the top of the page.
         if (lastFocus && document.contains(lastFocus)) lastFocus.focus();
         lastFocus = null;
+        onActionHook = null;
         const hook = onCloseHook;
         onCloseHook = null;
         hook?.();
@@ -56,12 +58,21 @@ export const createModal = (hostEl) => {
 
     hostEl.addEventListener('keydown', onKeyDown);
     hostEl.addEventListener('click', (event) => {
+        // Body content is inserted as an HTML string, so anything inside it
+        // that needs to act announces itself with data-election-action and is
+        // handled here rather than by wiring listeners per render.
+        const action = event.target.closest?.('[data-election-action]');
+        if (action && hostEl.contains(action)) {
+            onActionHook?.(action.dataset.electionAction, action.dataset);
+            return;
+        }
         if (event.target === hostEl || event.target.hasAttribute?.('data-election-modal-close')) close();
     });
 
-    const open = ({ title, subtitle = '', status = '', body = '', footnote = '', onClose = null }) => {
+    const open = ({ title, subtitle = '', status = '', body = '', footnote = '', onClose = null, onAction = null }) => {
         lastFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
         onCloseHook = onClose;
+        onActionHook = onAction;
         hostEl.innerHTML = `
             <div class="elections-modal" role="dialog" aria-modal="true" aria-labelledby="elections-modal-title">
                 <header class="elections-modal-head">

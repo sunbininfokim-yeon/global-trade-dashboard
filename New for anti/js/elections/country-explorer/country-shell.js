@@ -1,6 +1,7 @@
 import { countryEvents, readableSpectrum, screenStatus } from '../data/selectors.js';
 import { escapeHtml, formatDate, stateLabel } from '../ui.js';
-import { usaSections, usaLegislature } from './special/usa.js';
+import { usaSections } from './special/usa.js';
+import { usaLegislature } from './special/usa-legislature.js';
 import { usaExecutive } from './special/usa-executive.js';
 import { chinaSections, chinaContent } from './special/china.js';
 import { iranSections } from './special/iran.js';
@@ -133,7 +134,7 @@ const sectionContent = (country, section, status) => {
 // and its short subnational summary sits in the right pane permanently.
 const MAP_SECTION = 'subnational_map';
 
-export const renderCountryShell = (root, { country, manifest, onBack, modal }) => {
+export const renderCountryShell = (root, { country, manifest, onBack, modal, host }) => {
     const tabs = sectionsFor(country.iso3);
     const hasMapBlock = tabs.some(([, key]) => key === MAP_SECTION);
     let active = null;
@@ -153,6 +154,13 @@ export const renderCountryShell = (root, { country, manifest, onBack, modal }) =
             body: sectionContent(country, key, status),
             footnote: missing.length ? `미확보: ${missing.join(', ')}` : '',
             onClose: () => { active = null; markActive(); },
+            // The 상임위 chips leave the election module entirely, so the jump
+            // goes back out through the host adapter rather than this module
+            // reaching into the legacy router itself.
+            onAction: (action, dataset) => {
+                if (action === 'policy-committee') host?.openPolicyCommittee?.(dataset.committeeId);
+                if (action === 'policy-committees') host?.openPolicyCommittee?.();
+            },
         });
     };
 

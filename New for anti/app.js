@@ -4975,6 +4975,19 @@ const electionHost = () => ({
         currentViewTitle.textContent = title;
         currentViewDesc.textContent = description;
     },
+    // 정치 › 미국 › 상임위 hands off to 정책 › 미국. policy.js restores a deep
+    // view from ?view=&id= on render, so writing those params before the view
+    // switch is the whole handoff -- no second entry point to keep in sync.
+    openPolicyCommittee(committeeId) {
+        const params = new URLSearchParams();
+        if (committeeId) {
+            params.set('view', 'committee');
+            params.set('id', committeeId);
+        }
+        const qs = params.toString();
+        window.history.pushState({}, '', `/us-policy-hub${qs ? `?${qs}` : ''}`);
+        setView('us-policy-hub');
+    },
     roots: { timeline: electionTimelinePanelEl, country: electionCountryPanelEl, modal: electionModalHostEl },
 });
 

@@ -571,6 +571,139 @@ body {
 .elections-disclosure-rows strong { color: #e2e8f0; font-weight: 600; text-align: right; }
 .elections-house-delegation { margin-top: 8px; }
 
+/* --- Congress dashboard (하원·상원, one fixed layout per chamber) ---------- */
+.elections-chamber-radio {
+    /* Clipped rather than display:none so the chamber tabs stay keyboard
+       reachable -- arrow keys move between radios the way a tab list should. */
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+    pointer-events: none;
+}
+.elections-chamber-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+.elections-chamber-tabs label {
+    border: 1px solid rgba(148, 163, 184, 0.35);
+    background: rgba(15, 23, 42, 0.7);
+    color: #cbd5e1;
+    border-radius: 6px;
+    padding: 6px 11px;
+    font-size: 12px;
+    cursor: pointer;
+}
+.elections-chamber-panel { display: none; }
+#elections-chamber-house:checked ~ .elections-chamber-tabs label[for="elections-chamber-house"],
+#elections-chamber-senate:checked ~ .elections-chamber-tabs label[for="elections-chamber-senate"] {
+    border-color: rgba(56, 189, 248, 0.75);
+    background: rgba(14, 116, 144, 0.28);
+    color: #e0f2fe;
+}
+#elections-chamber-house:checked ~ .elections-chamber-panel[data-chamber="house"],
+#elections-chamber-senate:checked ~ .elections-chamber-panel[data-chamber="senate"] { display: block; }
+.elections-chamber-radio:focus-visible ~ .elections-chamber-tabs label { outline: 2px solid #38bdf8; outline-offset: 2px; }
+
+.elections-chamber-quadrants {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 10px;
+}
+.elections-quadrant {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    padding: 11px;
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    border-radius: 8px;
+    background: rgba(15, 23, 42, 0.45);
+    min-width: 0;
+}
+.elections-quadrant .section-title { margin: 0; }
+
+/* A quadrant is ~300px wide, too narrow for "Democratic Caucus Chairman" and
+   a name on one line, so the leadership rows stack instead of facing off. */
+.elections-leader-rows div {
+    display: block;
+    padding: 5px 0;
+    border-bottom: 1px solid rgba(148, 163, 184, 0.12);
+}
+.elections-leader-rows div:last-child { border-bottom: none; }
+.elections-leader-rows span {
+    display: block;
+    color: #94a3b8;
+    font-size: 11px;
+}
+.elections-leader-rows strong {
+    display: flex;
+    align-items: center;
+    text-align: left;
+    margin-top: 2px;
+}
+.elections-hemicycle { width: 100%; height: auto; display: block; }
+.elections-hemicycle-total { fill: #e2e8f0; font-size: 17px; font-weight: 700; }
+.elections-party-dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-right: 6px;
+    flex: 0 0 auto;
+}
+
+.elections-committee-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+}
+.elections-committee-chip {
+    appearance: none;
+    border: 1px solid rgba(148, 163, 184, 0.3);
+    background: rgba(30, 41, 59, 0.8);
+    color: #cbd5e1;
+    border-radius: 6px;
+    padding: 5px 8px;
+    font: inherit;
+    font-size: 11px;
+    cursor: pointer;
+    text-align: left;
+}
+.elections-committee-chip:hover { border-color: #0e7490; background: rgba(51, 65, 85, 0.95); color: #e0f2fe; }
+.elections-committee-chip:focus-visible { outline: 2px solid #38bdf8; outline-offset: 2px; }
+
+.elections-party-card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 10px;
+    margin-top: 10px;
+}
+.elections-party-card {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 11px;
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    border-radius: 8px;
+    background: rgba(15, 23, 42, 0.45);
+    min-width: 0;
+}
+.elections-party-card-head {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    color: #f1f5f9;
+    font-size: 13px;
+}
+.elections-party-card-head span { margin-left: auto; color: #94a3b8; font-size: 12px; }
+.elections-party-card-label {
+    margin: 6px 0 0;
+    color: #94a3b8;
+    font-size: 11px;
+    font-weight: 700;
+}
+
 /* --- EOP org boxes (councils / advisers / offices) ------------------------
    Laid out like the EOP chart's rows: one box per body, side by side, wrapping
    only when the pane runs out of width. */
@@ -808,6 +941,9 @@ body {
    rather than growing past the map. */
 .elections-modal-body .elections-member-list { max-height: 320px; overflow-y: auto; }
 .elections-modal-body .elections-disclosure-rows { max-height: 320px; overflow-y: auto; }
+/* The cap above is for hundred-row rosters; a dozen leadership rows are short
+   enough to show whole, and scrolling them inside a quadrant hides them. */
+.elections-modal-body .elections-leader-rows { max-height: none; overflow-y: visible; }
 
 @media (max-width: 720px) {
     .elections-modal-host { padding: 12px; }
