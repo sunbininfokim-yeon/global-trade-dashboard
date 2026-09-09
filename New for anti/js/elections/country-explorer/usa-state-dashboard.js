@@ -1,4 +1,5 @@
 import { escapeHtml, formatDate, stateLabel } from '../ui.js';
+import { usaStateSuperPac } from './special/usa-state-superpac.js';
 
 const party = (value) => ({ DEM: '민주당', GOP: '공화당', IND: '무소속', NP: '무당파' }[value] || value || '');
 const person = (row) => {
@@ -59,14 +60,42 @@ const chamberCard = (label, chamber) => {
         </article>`;
 };
 
-export const renderUsaStateDashboard = (root, { state, districtMapReady, onBackToUsa }) => {
+export const renderUsaStateDashboard = (root, {
+    state, districtMapReady, onBackToUsa,
+    financeMode = false, financeRaces = null, onToggleFinance, onHighlightDistrict,
+}) => {
     const legislature = state.state_legislature || {};
     const delegation = state.federal_delegation || {};
     const members = [...(delegation.house_members || [])].sort((a, b) => String(a.district || '').localeCompare(String(b.district || ''), undefined, { numeric: true }));
     root.className = 'panel-section elections-country elections-state-dashboard';
+    const header = `
+        <div class="elections-country-actions">
+            <button class="elections-button" type="button" data-election-back-usa>← 미국 주 지도</button>
+            <button class="elections-button${financeMode ? ' is-active' : ''}" type="button" data-election-finance-toggle aria-pressed="${financeMode}">선거</button>
+        </div>
+        <div class="panel-header"><h2>${escapeHtml(state.state)}</h2><p>${financeMode
+            ? '슈퍼팩 독립지출 · 지지 금액이 큰 쪽을 승리정당으로 표시'
+            : (districtMapReady ? '연방 하원 선거구 지도 · 공개 결합 데이터' : '주 경계 지도 · 연방 하원 선거구 공식 도형 수집 대기')}</p></div>`;
+
+    if (financeMode) {
+        root.innerHTML = header + usaStateSuperPac(state, financeRaces);
+        root.querySelector('[data-election-back-usa]')?.addEventListener('click', onBackToUsa);
+        root.querySelector('[data-election-finance-toggle]')?.addEventListener('click', () => onToggleFinance?.());
+        // Opening a district is a local DOM change, not a re-render: the list
+        // runs to 50+ rows and rebuilding it would throw away the scroll
+        // position on every click. Only the map is told to change.
+        root.querySelectorAll('[data-spac-district]').forEach((button) => button.addEventListener('click', () => {
+            const wrap = button.closest('.elections-spac-district');
+            const wasOpen = wrap.classList.contains('is-open');
+            root.querySelectorAll('.elections-spac-district.is-open').forEach((row) => row.classList.remove('is-open'));
+            if (!wasOpen) wrap.classList.add('is-open');
+            onHighlightDistrict?.(wasOpen ? null : button.dataset.spacDistrict);
+        }));
+        return;
+    }
+
     root.innerHTML = `
-        <div class="elections-country-actions"><button class="elections-button" type="button" data-election-back-usa>← 미국 주 지도</button></div>
-        <div class="panel-header"><h2>${escapeHtml(state.state)}</h2><p>${districtMapReady ? '연방 하원 선거구 지도 · 공개 결합 데이터' : '주 경계 지도 · 연방 하원 선거구 공식 도형 수집 대기'}</p></div>
+        ${header}
         <section class="elections-detail-section">
             <p class="section-title">1 · 주 행정부</p>
             <div class="elections-card-grid">
@@ -95,4 +124,5 @@ export const renderUsaStateDashboard = (root, { state, districtMapReady, onBackT
         ${state.primary_2026 ? `<section class="elections-detail-section"><p class="section-title">2026 선거 과정</p><div class="elections-card"><div class="elections-card-value">${escapeHtml(state.primary_2026.headline || '공개된 경선 요약 없음')}</div><div class="elections-event-meta">${escapeHtml(formatDate(state.primary_2026.date))} · ${escapeHtml(stateLabel(state.primary_2026.status))}</div></div></section>` : ''}
     `;
     root.querySelector('[data-election-back-usa]')?.addEventListener('click', onBackToUsa);
+    root.querySelector('[data-election-finance-toggle]')?.addEventListener('click', () => onToggleFinance?.());
 };

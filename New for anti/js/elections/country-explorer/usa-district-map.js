@@ -19,15 +19,28 @@ const viewForGeometry = (geo) => {
     return { longitude: (west + east) / 2, latitude: (south + north) / 2, zoom: Math.max(3, Math.min(7.5, Math.log2(360 / span) - 0.1)), bearing: 0, pitch: 0 };
 };
 
-export const renderUsaDistrictMap = async ({ host, stateId }) => {
+// Districts are keyed as zero-padded strings ("01") in both the geometry and
+// the finance data, so the selected district is compared as a string rather
+// than parsed -- "00" (at-large) would otherwise collide with a falsy 0.
+const isHighlighted = (feature, highlightDistrict) => highlightDistrict != null
+    && String(feature.properties?.district ?? '') === String(highlightDistrict);
+
+export const renderUsaDistrictMap = async ({ host, stateId, highlightDistrict = null }) => {
     const geo = await loadCongressionalDistricts(stateId);
     if (!geo) return false;
     host.setElectionMap([
         ...host.worldBaseLayers({ id: `elections-usa-${stateId}-district-base`, landColor: [22, 32, 48, 255], lineColor: [71, 85, 105, 110] }),
         new host.layers.GeoJsonLayer({
             id: `elections-usa-${stateId}-districts`, data: geo, stroked: true, filled: true, pickable: true, lineWidthMinPixels: 1.2,
-            getLineColor: [226, 232, 240, 205],
-            getFillColor: (feature) => partyColor(feature.properties?.party_abbr),
+            // deck.gl caches accessor results, so the highlight has to be part
+            // of the layer's update trigger or the repaint keeps the old fill.
+            updateTriggers: { getFillColor: highlightDistrict, getLineColor: highlightDistrict, getLineWidth: highlightDistrict },
+            getLineColor: (feature) => (isHighlighted(feature, highlightDistrict) ? [255, 255, 255, 255] : [226, 232, 240, 205]),
+            getLineWidth: (feature) => (isHighlighted(feature, highlightDistrict) ? 3 : 1),
+            lineWidthUnits: 'pixels',
+            getFillColor: (feature) => (isHighlighted(feature, highlightDistrict)
+                ? [255, 255, 255, 235]
+                : partyColor(feature.properties?.party_abbr)),
         }),
     ], null, viewForGeometry(geo));
     return true;

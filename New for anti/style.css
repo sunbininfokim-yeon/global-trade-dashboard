@@ -571,6 +571,105 @@ body {
 .elections-disclosure-rows strong { color: #e2e8f0; font-weight: 600; text-align: right; }
 .elections-house-delegation { margin-top: 8px; }
 
+/* --- 선거 panel: super PAC support by party (민주 left, 공화 right) -------- */
+.elections-button.is-active {
+    border-color: rgba(56, 189, 248, 0.75);
+    background: rgba(14, 116, 144, 0.3);
+    color: #e0f2fe;
+}
+.elections-spac-block {
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    border-radius: 8px;
+    background: rgba(15, 23, 42, 0.45);
+    padding: 10px;
+    margin-bottom: 8px;
+}
+.elections-spac-block-head,
+.elections-spac-district-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    color: #e2e8f0;
+    font-size: 12px;
+    font-weight: 600;
+}
+.elections-spac-badge {
+    border-radius: 4px;
+    padding: 2px 7px;
+    font-size: 11px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+.elections-spac-badge.is-dem { background: rgba(37, 99, 235, 0.22); color: #93c5fd; }
+.elections-spac-badge.is-gop { background: rgba(220, 38, 38, 0.22); color: #fca5a5; }
+.elections-spac-badge.is-none { background: rgba(100, 116, 139, 0.22); color: #94a3b8; }
+
+.elections-spac-sides {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 8px;
+    margin-top: 9px;
+}
+.elections-spac-side {
+    border: 1px solid rgba(148, 163, 184, 0.16);
+    border-top-width: 2px;
+    border-radius: 6px;
+    padding: 8px;
+    min-width: 0;
+}
+.elections-spac-side.is-dem { border-top-color: #2563eb; }
+.elections-spac-side.is-gop { border-top-color: #dc2626; }
+.elections-spac-side-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 6px;
+    color: #94a3b8;
+    font-size: 11px;
+}
+.elections-spac-side-head strong { color: #e2e8f0; font-size: 12px; }
+.elections-spac-cand {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 4px 0;
+    border-top: 1px solid rgba(148, 163, 184, 0.12);
+    color: #cbd5e1;
+    font-size: 11px;
+    line-height: 1.4;
+}
+.elections-spac-cand span { min-width: 0; overflow-wrap: anywhere; }
+.elections-spac-cand strong { color: #e2e8f0; white-space: nowrap; }
+
+.elections-spac-district-list { display: grid; gap: 5px; }
+.elections-spac-district {
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    border-radius: 7px;
+    background: rgba(15, 23, 42, 0.45);
+    overflow: hidden;
+}
+.elections-spac-district-head {
+    width: 100%;
+    appearance: none;
+    border: none;
+    background: transparent;
+    padding: 8px 10px;
+    font: inherit;
+    font-size: 12px;
+    font-weight: 600;
+    color: #e2e8f0;
+    cursor: pointer;
+    text-align: left;
+}
+.elections-spac-district-head:hover { background: rgba(51, 65, 85, 0.6); }
+.elections-spac-district-head:focus-visible { outline: 2px solid #38bdf8; outline-offset: -2px; }
+.elections-spac-district.is-open { border-color: rgba(56, 189, 248, 0.6); }
+.elections-spac-district-body { display: none; padding: 0 10px 10px; }
+.elections-spac-district.is-open .elections-spac-district-body { display: block; }
+
 /* --- Congress dashboard (하원·상원, one fixed layout per chamber) ---------- */
 .elections-chamber-radio {
     /* Clipped rather than display:none so the chamber tabs stay keyboard
