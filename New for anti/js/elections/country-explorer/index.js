@@ -6,6 +6,7 @@ import { renderUsaDistrictMap } from './usa-district-map.js';
 import { createModal } from '../modal.js';
 import { loadUsCommittees } from '../data/us-congress-service.js';
 import { loadStateFinance } from '../data/finance-service.js';
+import { loadCongressionalDistricts } from '../data/geo-service.js';
 
 export const createCountryExplorer = ({ host, bundle, onCountryOpen, onBack }) => {
     const modal = createModal(host.roots.modal);
@@ -34,14 +35,20 @@ export const createCountryExplorer = ({ host, bundle, onCountryOpen, onBack }) =
             const usa = bundle.countries.get('USA');
             const state = usa?.ui_ready?.state_drilldown?.states?.find((row) => row.id === stateId);
             if (!usa || !state) return;
-            // Every race file for the state, only once the 선거 toggle is on.
+            // Every race file for the state, plus the district ids the map can
+            // actually draw, only once the 선거 toggle is on.
             const financeRaces = financeMode ? await loadStateFinance(stateId) : null;
+            const districtGeo = financeMode ? await loadCongressionalDistricts(stateId).catch(() => null) : null;
+            const mappedDistricts = districtGeo
+                ? new Set((districtGeo.features || []).map((feature) => String(feature.properties?.district ?? '')))
+                : null;
             const districtMapReady = await renderUsaDistrictMap({ host, stateId });
             renderUsaStateDashboard(host.roots.country, {
                 state,
                 districtMapReady,
                 financeMode,
                 financeRaces,
+                mappedDistricts,
                 onBackToUsa: () => this.showCountry('USA'),
                 onToggleFinance: () => this.showUsaState(stateId, { financeMode: !financeMode }),
                 // Only the map is redrawn, and only its colours: fitView stays

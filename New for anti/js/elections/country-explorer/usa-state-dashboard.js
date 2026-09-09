@@ -62,7 +62,7 @@ const chamberCard = (label, chamber) => {
 
 export const renderUsaStateDashboard = (root, {
     state, districtMapReady, onBackToUsa,
-    financeMode = false, financeRaces = null, onToggleFinance, onHighlightDistrict,
+    financeMode = false, financeRaces = null, mappedDistricts = null, onToggleFinance, onHighlightDistrict,
 }) => {
     const legislature = state.state_legislature || {};
     const delegation = state.federal_delegation || {};
@@ -78,18 +78,21 @@ export const renderUsaStateDashboard = (root, {
             : (districtMapReady ? '연방 하원 선거구 지도 · 공개 결합 데이터' : '주 경계 지도 · 연방 하원 선거구 공식 도형 수집 대기')}</p></div>`;
 
     if (financeMode) {
-        root.innerHTML = header + usaStateSuperPac(state, financeRaces);
+        root.innerHTML = header + usaStateSuperPac(state, financeRaces, mappedDistricts);
         root.querySelector('[data-election-back-usa]')?.addEventListener('click', onBackToUsa);
         root.querySelector('[data-election-finance-toggle]')?.addEventListener('click', () => onToggleFinance?.());
         // Opening a district is a local DOM change, not a re-render: the list
         // runs to 50+ rows and rebuilding it would throw away the scroll
         // position on every click. Only the map is told to change.
-        root.querySelectorAll('[data-spac-district]').forEach((button) => button.addEventListener('click', () => {
+        root.querySelectorAll('[data-spac-toggle]').forEach((button) => button.addEventListener('click', () => {
             const wrap = button.closest('.elections-spac-district');
             const wasOpen = wrap.classList.contains('is-open');
             root.querySelectorAll('.elections-spac-district.is-open').forEach((row) => row.classList.remove('is-open'));
             if (!wasOpen) wrap.classList.add('is-open');
-            onHighlightDistrict?.(wasOpen ? null : button.dataset.spacDistrict);
+            // A row without geometry still opens; it just clears the map's
+            // highlight rather than asking for one that cannot be drawn.
+            const district = button.dataset.spacDistrict;
+            onHighlightDistrict?.(wasOpen || district === undefined ? null : district);
         }));
         return;
     }

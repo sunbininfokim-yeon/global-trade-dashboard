@@ -100,18 +100,30 @@ const statewideBlock = (label, race) => {
         </section>`;
 };
 
-const districtLabel = (race) => {
-    const district = String(race.district ?? '').replace(/^0+/, '');
-    return district ? `하원 ${district}구` : '하원 전역구';
+const districtLabel = (race, mapped) => {
+    const raw = String(race.district ?? '');
+    const trimmed = raw.replace(/^0+/, '');
+    // "00" is the state's at-large seat where one exists (its geometry is filed
+    // under the same id) and otherwise the pipeline's statewide bucket for
+    // House spending it could not put in a district.
+    if (!trimmed) return mapped ? '하원 전역구' : '하원 · 주 전체 집계';
+    return `하원 ${trimmed}구`;
 };
 
-// The row is the button: clicking it opens its own candidate block and tells
-// the map which district to light up. Both live on one element so the panel
-// and the map can never disagree about which district is selected.
-const districtRow = (race) => `
-    <div class="elections-spac-district" data-district="${escapeHtml(race.district ?? '')}">
-        <button class="elections-spac-district-head" type="button" data-spac-district="${escapeHtml(race.district ?? '')}">
-            <span>${escapeHtml(districtLabel(race))}</span>
+// The row is the button: clicking it opens its own candidate block and, when
+// the district has geometry, tells the map which one to light up. Both live on
+// one element so the panel and the map cannot disagree about the selection.
+//
+// 34 of the 473 House races nationwide report a district the state's map does
+// not have -- Florida "59" against 28 real seats, South Carolina "86"/"89"
+// against 7. The money is really reported, so the row stays, but it says it
+// has no place on the map instead of posing as a district that exists.
+const districtRow = (race, mapped) => `
+    <div class="elections-spac-district${mapped ? '' : ' is-unmapped'}">
+        <button class="elections-spac-district-head" type="button" data-spac-toggle
+            ${mapped ? `data-spac-district="${escapeHtml(race.district ?? '')}"` : ''}>
+            <span>${escapeHtml(districtLabel(race, mapped))}</span>
+            ${mapped ? '' : '<span class="elections-spac-unmapped-tag">지도 미대응</span>'}
             ${winnerBadge(race)}
         </button>
         <div class="elections-spac-district-body">${raceBody(race)}</div>
@@ -119,13 +131,18 @@ const districtRow = (race) => `
 
 const byDistrict = (a, b) => String(a.district ?? '').localeCompare(String(b.district ?? ''), undefined, { numeric: true });
 
-export const usaStateSuperPac = (state, races) => {
+export const usaStateSuperPac = (state, races, mappedDistricts = null) => {
     if (!Array.isArray(races)) {
         return '<p class="elections-muted">이 주의 선거자금 자료를 불러오지 못했습니다. 로컬 정적 서버에서는 /public/data 경로가 필요합니다.</p>';
     }
     const governor = races.find((race) => race.office === 'governor');
     const senate = races.find((race) => race.office === 'senate');
     const house = races.filter((race) => race.office === 'house').sort(byDistrict);
+    // No geometry loaded at all (a state whose district file is missing) means
+    // nothing can be highlighted, rather than everything being unmapped.
+    const isMapped = (race) => (mappedDistricts ? mappedDistricts.has(String(race.district ?? '')) : false);
+    const mapped = house.filter(isMapped);
+    const unmapped = house.filter((race) => !isMapped(race));
 
     return `
         <section class="elections-detail-section">
@@ -134,7 +151,12 @@ export const usaStateSuperPac = (state, races) => {
         </section>
         <section class="elections-detail-section">
             <p class="section-title">연방 하원 · 선거구를 누르면 후보별 금액과 지도 위치가 함께 표시됩니다</p>
-            <div class="elections-spac-district-list">${house.map(districtRow).join('') || '<p class="elections-muted">하원 선거구 자료가 없습니다.</p>'}</div>
+            <div class="elections-spac-district-list">
+                ${mapped.map((race) => districtRow(race, true)).join('')}
+                ${unmapped.map((race) => districtRow(race, false)).join('')}
+            </div>
+            ${house.length ? '' : '<p class="elections-muted">하원 선거구 자료가 없습니다.</p>'}
+            ${unmapped.length ? `<p class="elections-panel-note">아래 ${unmapped.length}건은 공시에 적힌 선거구 번호가 이 주의 현행 선거구 도형에 없어 지도에 표시되지 않습니다. 금액은 공시 그대로입니다.</p>` : ''}
         </section>
         <p class="elections-panel-note">슈퍼팩(super_pac) 독립지출 중 지지 금액 기준이며, 후보 캠프가 받은 후원금이 아닙니다. 금액이 큰 쪽을 승리정당으로 표시합니다 — 실제 개표 결과가 아닙니다.</p>`;
 };
