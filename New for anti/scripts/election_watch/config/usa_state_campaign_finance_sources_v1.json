@@ -1,6 +1,6 @@
 {
   "schema": "usa_state_campaign_finance_sources_v1",
-  "verified_on": "2026-09-06",
+  "verified_on": "2026-09-10",
   "directory_url": "https://www.fec.gov/introduction-campaign-finance/how-to-research-public-records/combined-federalstate-disclosure-and-election-directory/",
   "note_ko": "공식 문서로 제공 방식을 확인한 출처 목록. API의 존재는 주지사 후보·지지/반대·정정·위원회 유형 매핑의 완성을 의미하지 않는다. 계정 없이 조회 가능한 자료에는 신고자 계정을 만들지 않는다.",
   "states": {
@@ -14,8 +14,8 @@
       "independent_expenditure_endpoint": "https://api.ocpf.us/miscreports/iepacs/reports/{year}",
       "api_documentation": "https://api.ocpf.us/swagger/index.html",
       "last_probe": {
-        "date": "2026-09-06",
-        "result": "HTTP_500_on_documented_IEPAC_endpoint",
+        "date": "2026-09-10",
+        "result": "IEPAC_summary_available_report_rows_HTTP_500",
         "status": "not_connected"
       }
     },
@@ -35,8 +35,16 @@
       "agency": "California Secretary of State",
       "access": "daily_bulk_zip_tsv",
       "url": "https://www.sos.ca.gov/campaign-lobbying/helpful-resources/raw-data-campaign-finance-and-lobbying-activity",
-      "authentication": "public_download",
-      "independent_expenditure_mapping": "not_implemented"
+      "authentication": "public_download_no_key",
+      "independent_expenditure_mapping": "implemented_F496_governor_current_amendment_partial",
+      "api_endpoint": "https://campaignfinance.cdn.sos.ca.gov/dbwebexport.zip",
+      "metadata_url": "https://campaignfinance.cdn.sos.ca.gov/calaccess-documentation.zip",
+      "limitations_ko": "최신 F496/S496만. 지출자 슈퍼팩 분류 미확보. 다른 양식 제외. 후보는 공식 경선 명부 전체 이름 정확 일치만 연결.",
+      "last_probe": {
+        "date": "2026-09-10",
+        "result": "official_daily_zip_range_fetch_and_normalization_verified",
+        "status": "connected_partial"
+      }
     },
     "TX": {
       "agency": "Texas Ethics Commission",
@@ -57,7 +65,12 @@
       "access": "public_reporting_search",
       "url": "https://elections.ny.gov/campaign-finance",
       "authentication": "public_search",
-      "independent_expenditure_mapping": "not_implemented"
+      "independent_expenditure_mapping": "not_implemented",
+      "last_probe": {
+        "date": "2026-09-10",
+        "result": "public_portal_exists_but_collection_HTTP_403",
+        "status": "not_connected"
+      }
     },
     "CO": {
       "agency": "Colorado Secretary of State TRACER",
