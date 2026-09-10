@@ -62,12 +62,27 @@ jobs:
           if [ "$FINANCE_EVENT" = workflow_dispatch ]; then args+=(--force); fi
           python3 refresh_superpac.py "${args[@]}"
 
+      # Official House vacancies + the sourced swing-seat context the 의회 screen
+      # reads. build_congress_context.py ships with the US election data PR, so
+      # until that merges the script is simply absent -- skipping on that rather
+      # than failing keeps this workflow correct in either merge order.
+      - name: Refresh official House vacancies and sourced swing-seat context
+        id: congress_context
+        continue-on-error: true
+        shell: bash
+        run: |
+          if [ ! -f build_congress_context.py ]; then
+            echo 'build_congress_context.py is not in the tree yet; skipping until the election data PR lands.'
+            exit 0
+          fi
+          python3 build_congress_context.py
+
       - name: Publish validated assets and collection health
         working-directory: ${{ github.workspace }}
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add --all -- 'New for anti/public/data/usa_superpac' 'New for anti/public/data/usa_superpac_index_v1.json' 'New for anti/public/data/usa_governor_finance' 'New for anti/public/data/usa_election_finance' 'New for anti/public/data/usa_election_finance_index_v1.json' 'New for anti/public/data/usa_election_finance_refresh_status_v1.json'
+          git add --all -- 'New for anti/public/data/usa_superpac' 'New for anti/public/data/usa_superpac_index_v1.json' 'New for anti/public/data/usa_governor_finance' 'New for anti/public/data/usa_election_finance' 'New for anti/public/data/usa_election_finance_index_v1.json' 'New for anti/public/data/usa_election_finance_refresh_status_v1.json' 'New for anti/scripts/election_watch/config/extracted/usa_congress.json' 'New for anti/public/data/elections_board_v1.json'
           if git diff --cached --quiet; then exit 0; fi
           git commit -m 'chore: refresh US election finance backend'
           for i in 1 2 3; do
@@ -78,5 +93,5 @@ jobs:
           git push
 
       - name: Surface collection failures after publishing health
-        if: steps.collect.outcome == 'failure'
+        if: steps.collect.outcome == 'failure' || steps.congress_context.outcome == 'failure'
         run: exit 1
