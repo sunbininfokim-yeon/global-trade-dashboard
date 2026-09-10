@@ -4,9 +4,10 @@ import { renderCountryMap } from './country-map.js';
 import { renderUsaStateDashboard } from './usa-state-dashboard.js';
 import { renderUsaDistrictMap } from './usa-district-map.js';
 import { createModal } from '../modal.js';
-import { loadUsCommittees } from '../data/us-congress-service.js';
+import { loadUsCommittees, loadEopChart } from '../data/us-congress-service.js';
 import { loadStateFinance, loadFinanceDisplayContract } from '../data/finance-service.js';
 import { loadCongressionalDistricts } from '../data/geo-service.js';
+import { applyEopChart } from './special/usa-executive.js';
 
 export const createCountryExplorer = ({ host, bundle, onCountryOpen, onBack }) => {
     const modal = createModal(host.roots.modal);
@@ -24,6 +25,7 @@ export const createCountryExplorer = ({ host, bundle, onCountryOpen, onBack }) =
             // reads it, so it is fetched once, lazily, here.
             if (iso3 === 'USA' && !country.us_committees) {
                 country.us_committees = await loadUsCommittees();
+                applyEopChart(await loadEopChart());
             }
             renderCountryShell(host.roots.country, { country, manifest: bundle.manifest, onBack, modal, host });
             await renderCountryMap({ host, country, onStateOpen: (stateId) => this.showUsaState(stateId) });
