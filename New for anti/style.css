@@ -641,8 +641,52 @@ body {
     font-size: 11px;
     line-height: 1.4;
 }
-.elections-spac-cand span { min-width: 0; overflow-wrap: anywhere; }
-.elections-spac-cand strong { color: #e2e8f0; white-space: nowrap; }
+.elections-spac-cand > span:first-child { min-width: 0; overflow-wrap: anywhere; }
+
+/* 지지/반대 travels with the number. A bare amount next to a candidate reads
+   as money they raised, which is exactly what this measure is not. */
+.elections-spac-amts {
+    display: flex;
+    gap: 8px;
+    flex: 0 0 auto;
+    white-space: nowrap;
+}
+.elections-spac-amt {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 3px;
+    font-size: 11px;
+}
+.elections-spac-amt i {
+    font-style: normal;
+    font-size: 10px;
+    padding: 0 3px;
+    border-radius: 3px;
+}
+.elections-spac-amt.is-support { color: #e2e8f0; }
+.elections-spac-amt.is-support i { color: #7dd3fc; background: rgba(56, 189, 248, 0.16); }
+.elections-spac-amt.is-oppose { color: #cbd5e1; }
+.elections-spac-amt.is-oppose i { color: #fca5a5; background: rgba(220, 38, 38, 0.18); }
+.elections-spac-side .elections-spac-amts { margin-bottom: 6px; }
+.elections-spac-caption {
+    margin-left: auto;
+    color: #94a3b8;
+    font-size: 10px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+.elections-spac-lede {
+    margin: 0 0 10px;
+    padding: 9px 10px;
+    border: 1px solid rgba(148, 163, 184, 0.22);
+    border-left: 3px solid #7dd3fc;
+    border-radius: 7px;
+    background: rgba(15, 23, 42, 0.5);
+    color: #cbd5e1;
+    font-size: 11px;
+    line-height: 1.55;
+}
+.elections-spac-lede strong { color: #e2e8f0; }
 
 .elections-spac-district-list { display: grid; gap: 5px; }
 .elections-spac-district {

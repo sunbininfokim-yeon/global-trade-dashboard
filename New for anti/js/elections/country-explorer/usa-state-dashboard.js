@@ -74,7 +74,7 @@ export const renderUsaStateDashboard = (root, {
             <button class="elections-button${financeMode ? ' is-active' : ''}" type="button" data-election-finance-toggle aria-pressed="${financeMode}">선거</button>
         </div>
         <div class="panel-header"><h2>${escapeHtml(state.state)}</h2><p>${financeMode
-            ? '외부 독립지출 · 지지 금액이 큰 쪽을 승리정당으로 표시'
+            ? '외부 독립지출 · 후보별 지지·반대 금액'
             : (districtMapReady ? '연방 하원 선거구 지도 · 공개 결합 데이터' : '주 경계 지도 · 연방 하원 선거구 공식 도형 수집 대기')}</p></div>`;
 
     if (financeMode) {

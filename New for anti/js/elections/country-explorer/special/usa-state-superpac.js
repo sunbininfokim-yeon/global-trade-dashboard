@@ -1,10 +1,18 @@
 import { escapeHtml } from '../../ui.js';
 
-// The 선거 panel reads one rule: 더 많은 돈을 모은 쪽이 승리정당. "모은" is support
-// money -- spending *for* a candidate. Oppose money is spent against one, and
-// usa_election_finance_index_v1.json's limitations_ko forbids turning it into
-// the other side's support ("반대 지출을 다른 후보 또는 정당의 지원액으로 전환하지
-// 않습니다"), so it is shown but never counted toward a winner.
+// Every figure here is independent expenditure: money outside groups spent of
+// their own accord to promote or attack a named candidate. The index says so
+// itself -- measure_label_ko is "후보 대상 외부 독립지출 (캠프가 받은 후원금 아님)"
+// -- and letting a bare amount sit next to a candidate's name would read as
+// what they raised, which is a different and politically loaded claim. So the
+// direction (지지/반대) is rendered as part of every number, the panel opens
+// with what the measure is, and the badge is captioned 지지지출 우세 rather than
+// left to look like an election result.
+//
+// The badge ranks by support only. Oppose money cannot be flipped into the
+// other side's support -- the same index's limitations_ko forbids exactly that
+// ("반대 지출을 다른 후보 또는 정당의 지원액으로 전환하지 않습니다") -- so it is
+// shown in full beside the support figure and left out of the ranking.
 //
 // Which spending categories count is NOT the same for every office, and the
 // index says so in display_contract: federal races are 슈퍼팩 (`super_pac`),
@@ -62,19 +70,22 @@ const formatUsd = (cents) => {
     return `$${Math.round(dollars).toLocaleString('en-US')}`;
 };
 
-const sideTotal = (race, keys, categories) => {
-    let total = null;
+const sideTotals = (race, keys, categories) => {
+    let support = null;
+    let oppose = null;
     Object.entries(race.totals_by_reported_party || {}).forEach(([party, node]) => {
         if (!keys.has(party)) return;
-        const value = supportOf(node, categories);
-        if (value != null) total = (total || 0) + value;
+        const forCents = supportOf(node, categories);
+        const againstCents = opposeOf(node, categories);
+        if (forCents != null) support = (support || 0) + forCents;
+        if (againstCents != null) oppose = (oppose || 0) + againstCents;
     });
-    return total;
+    return { support, oppose };
 };
 
 const winnerOf = (race, categories) => {
-    const dem = sideTotal(race, DEM_KEYS, categories);
-    const gop = sideTotal(race, GOP_KEYS, categories);
+    const dem = sideTotals(race, DEM_KEYS, categories).support;
+    const gop = sideTotals(race, GOP_KEYS, categories).support;
     if (dem == null && gop == null) return null;
     if ((dem || 0) === (gop || 0)) return 'TIE';
     return (dem || 0) > (gop || 0) ? 'DEM' : 'GOP';
@@ -88,41 +99,56 @@ const winnerBadge = (race, categories) => {
     return `<span class="elections-spac-badge ${side.cls}">${escapeHtml(side.ko)}</span>`;
 };
 
+// A candidate only ever targeted by attack money belongs on this list as much
+// as one being promoted -- filtering on support alone silently dropped them
+// (Texas 2026: Colin Allred, $0 support and $15,000 spent against him). Order
+// by how much outside money moved around each name, either direction.
 const candidatesForSide = (race, keys, categories) => (race.candidates || [])
     .map((row) => ({
         name: row.name,
         party: (row.reported_parties || [])[0],
-        cents: supportOf(row.totals_by_category, categories),
+        support: supportOf(row.totals_by_category, categories),
+        oppose: opposeOf(row.totals_by_category, categories),
     }))
-    .filter((row) => keys.has(row.party) && row.cents != null && row.cents > 0)
-    .sort((a, b) => b.cents - a.cents);
+    .filter((row) => keys.has(row.party) && ((row.support || 0) > 0 || (row.oppose || 0) > 0))
+    .sort((a, b) => ((b.support || 0) + (b.oppose || 0)) - ((a.support || 0) + (a.oppose || 0)));
+
+// Every amount carries its direction. A bare number beside a candidate's name
+// reads as "this is what they raised", which is the one thing this measure is
+// not -- so 지지/반대 is part of the number, not a caption somewhere else.
+const amount = (label, cents, cls) => `<span class="elections-spac-amt ${cls}"><i>${label}</i>${escapeHtml(formatUsd(cents) ?? '—')}</span>`;
 
 const sideColumn = (race, side, categories) => {
     const rows = candidatesForSide(race, side.keys, categories);
-    const total = sideTotal(race, side.keys, categories);
+    const { support, oppose } = sideTotals(race, side.keys, categories);
     const shown = rows.slice(0, CANDIDATE_LIMIT);
     return `
         <div class="elections-spac-side ${side.cls}">
-            <div class="elections-spac-side-head">
-                <span>${escapeHtml(side.ko)}</span>
-                <strong>${escapeHtml(formatUsd(total) || '관측 없음')}</strong>
+            <div class="elections-spac-side-head"><span>${escapeHtml(side.ko)} 후보 대상</span></div>
+            <div class="elections-spac-amts">
+                ${amount('지지', support, 'is-support')}
+                ${amount('반대', oppose, 'is-oppose')}
             </div>
             ${shown.length ? shown.map((row) => `
                 <div class="elections-spac-cand">
                     <span>${escapeHtml(row.name)}</span>
-                    <strong>${escapeHtml(formatUsd(row.cents))}</strong>
-                </div>`).join('') : '<p class="elections-muted">지원 지출이 관측된 후보 없음</p>'}
+                    <span class="elections-spac-amts">
+                        ${amount('지지', row.support, 'is-support')}
+                        ${amount('반대', row.oppose, 'is-oppose')}
+                    </span>
+                </div>`).join('') : '<p class="elections-muted">관측된 외부 지출 없음</p>'}
             ${rows.length > shown.length ? `<p class="elections-panel-note">외 ${rows.length - shown.length}명</p>` : ''}
         </div>`;
 };
 
-const raceBody = (race, view) => {
-    const oppose = opposeOf(race.totals_by_category, view.categories);
-    return `
-        <div class="elections-spac-sides">${SIDES.map((side) => sideColumn(race, side, view.categories)).join('')}</div>
-        <p class="elections-panel-note">${escapeHtml(view.label)}${race.coverage_note_ko ? ` · ${race.coverage_note_ko}` : ''}</p>
-        ${oppose ? `<p class="elections-panel-note">반대 지출 ${escapeHtml(formatUsd(oppose))} — 승리정당 판정에는 넣지 않습니다.</p>` : ''}`;
-};
+const raceBody = (race, view) => `
+    <div class="elections-spac-sides">${SIDES.map((side) => sideColumn(race, side, view.categories)).join('')}</div>
+    <p class="elections-panel-note">${escapeHtml(view.label)}${race.coverage_note_ko ? ` · ${race.coverage_note_ko}` : ''}</p>
+    <p class="elections-panel-note">반대 지출은 그 후보를 떨어뜨리려 쓴 돈입니다. 상대 정당의 지지액으로 옮기지 않으며, 우세 판정에도 넣지 않습니다.</p>`;
+
+// "지지지출 우세" sits next to the party name wherever a badge appears, so the
+// badge cannot be read as an election result.
+const badgeCaption = '<span class="elections-spac-caption">지지지출 우세</span>';
 
 const statewideBlock = (label, race, contract) => {
     if (!race) return `
@@ -132,7 +158,7 @@ const statewideBlock = (label, race, contract) => {
     const view = viewFor(race.office, contract);
     return `
         <section class="elections-spac-block">
-            <div class="elections-spac-block-head"><span>${escapeHtml(label)}</span>${winnerBadge(race, view.categories)}</div>
+            <div class="elections-spac-block-head"><span>${escapeHtml(label)}</span>${badgeCaption}${winnerBadge(race, view.categories)}</div>
             ${raceBody(race, view)}
         </section>`;
 };
@@ -186,12 +212,14 @@ export const usaStateSuperPac = (state, races, mappedDistricts = null, contract 
     const unmapped = house.filter((race) => !isMapped(race));
 
     return `
+        <p class="elections-spac-lede">외부 단체(슈퍼팩 등)가 특정 후보를 <strong>지지하거나 반대하려고 독자적으로 쓴 돈</strong>입니다.
+            후보 캠프가 모금한 후원금이 아니며, 캠프를 거치지도 않습니다.</p>
         <section class="elections-detail-section">
             ${statewideBlock('주지사', governor, contract)}
             ${statewideBlock('연방 상원의원', senate, contract)}
         </section>
         <section class="elections-detail-section">
-            <p class="section-title">연방 하원 · 선거구를 누르면 후보별 금액과 지도 위치가 함께 표시됩니다</p>
+            <p class="section-title">연방 하원 · 배지는 지지지출이 더 많은 정당입니다. 선거구를 누르면 후보별 지지·반대 금액과 지도 위치가 함께 표시됩니다</p>
             <div class="elections-spac-district-list">
                 ${mapped.map((race) => districtRow(race, true, contract)).join('')}
                 ${unmapped.map((race) => districtRow(race, false, contract)).join('')}
@@ -199,5 +227,5 @@ export const usaStateSuperPac = (state, races, mappedDistricts = null, contract 
             ${house.length ? '' : '<p class="elections-muted">하원 선거구 자료가 없습니다.</p>'}
             ${unmapped.length ? `<p class="elections-panel-note">아래 ${unmapped.length}건은 공시에 적힌 선거구 번호가 이 주의 현행 선거구 도형에 없어 지도에 표시되지 않습니다. 금액은 공시 그대로입니다.</p>` : ''}
         </section>
-        <p class="elections-panel-note">지지 금액이 큰 쪽을 승리정당으로 표시합니다 — 후보 캠프가 받은 후원금이 아니고, 실제 개표 결과도 아닙니다.</p>`;
+        <p class="elections-panel-note">배지는 지지 지출이 더 많은 정당일 뿐, 개표 결과나 당선 전망이 아닙니다.</p>`;
 };
