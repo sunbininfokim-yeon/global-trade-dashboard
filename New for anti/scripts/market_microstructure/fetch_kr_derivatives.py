@@ -296,12 +296,225 @@ def load_investor_csv(path: Path) -> list[dict[str, Any]]:
     return rows
 
 
+_DETAIL_15007_PRODUCTS = ("options_call", "options_put", "futures")
+_DETAIL_15007_SOURCE = "KRX 15007 authenticated export"
+_DETAIL_15007_UNIT = 1_000_000  # KRX 15007 export: 백만원
+
+
+def _empty_15007_product() -> dict[str, Any]:
+    """Return an explicitly missing product; never substitute zero flow."""
+    return {
+        "as_of": None,
+        "source": _DETAIL_15007_SOURCE,
+        "quality": "missing",
+        "foreign": {"buy_krw": None, "sell_krw": None, "net_krw": None},
+        "market_total": {"buy_krw": None, "sell_krw": None, "net_krw": None},
+        "series": [],
+    }
+
+
+def _detail_15007_date(value: Any) -> str | None:
+    text = str(value or "").strip().replace("/", "-")
+    if re.fullmatch(r"\d{8}", text):
+        text = f"{text[:4]}-{text[4:6]}-{text[6:]}"
+    return text if re.fullmatch(r"\d{4}-\d{2}-\d{2}", text) else None
+
+
+def _detail_15007_number(value: Any) -> int | None:
+    if value is None or str(value).strip() in {"", "-", "nan", "None"}:
+        return None
+    try:
+        return int(float(str(value).replace(",", "").strip()))
+    except ValueError:
+        return None
+
+
+def _read_15007_side_export(path: Path) -> dict[str, dict[str, int]]:
+    """Read one 15007 BUY or SELL export keyed by date.
+
+    KRX's downloaded XLSX has a descriptive first row and the actual header
+    (일자, 기관 합계, 기타법인, 개인, 외국인 합계, 전체) on the second row.
+    CSV exports vary, so locate the row containing ``일자`` rather than assuming
+    a fixed number of skipped lines.  The raw values are 백만원.
+    """
+    if path.suffix.lower() in {".xlsx", ".xls"}:
+        try:
+            import pandas as pd
+        except ImportError as exc:  # pragma: no cover - CI declares pandas
+            raise RuntimeError("pandas is required to read KRX 15007 XLSX") from exc
+        raw = pd.read_excel(path, header=None, dtype=str)
+        rows = raw.fillna("").values.tolist()
+    else:
+        rows = list(csv.reader(path.read_text(encoding="utf-8-sig").splitlines()))
+
+    header_index = next(
+        (i for i, row in enumerate(rows) if any(str(cell).strip() == "일자" for cell in row)),
+        None,
+    )
+    if header_index is None:
+        raise ValueError(f"KRX 15007 header '일자' not found: {path}")
+    header = [str(cell).strip() for cell in rows[header_index]]
+    try:
+        date_index = header.index("일자")
+        foreign_index = next(i for i, name in enumerate(header) if name.replace(" ", "") in {"외국인합계", "외국인"})
+        total_index = header.index("전체")
+    except (StopIteration, ValueError) as exc:
+        raise ValueError(f"KRX 15007 required columns missing: {path}") from exc
+
+    observations: dict[str, dict[str, int]] = {}
+    for row in rows[header_index + 1:]:
+        if len(row) <= max(date_index, foreign_index, total_index):
+            continue
+        day = _detail_15007_date(row[date_index])
+        foreign = _detail_15007_number(row[foreign_index])
+        total = _detail_15007_number(row[total_index])
+        # A date with a blank amount is an unavailable observation, not zero.
+        if day and foreign is not None and total is not None:
+            observations[day] = {"foreign_mn_krw": foreign, "total_mn_krw": total}
+    return observations
+
+
+def _detail_15007_leg(buy_mn: int | None, sell_mn: int | None) -> dict[str, int | None]:
+    if buy_mn is None or sell_mn is None:
+        return {"buy_krw": None, "sell_krw": None, "net_krw": None}
+    buy = buy_mn * _DETAIL_15007_UNIT
+    sell = sell_mn * _DETAIL_15007_UNIT
+    net = buy - sell
+    # Keep the invariant close to the data transformation.  This guards a
+    # future change that might accidentally mix units or sources.
+    if buy - sell != net:
+        return {"buy_krw": None, "sell_krw": None, "net_krw": None}
+    return {"buy_krw": buy, "sell_krw": sell, "net_krw": net}
+
+
+def _detail_15007_observation(
+    day: str,
+    buy: dict[str, int],
+    sell: dict[str, int],
+) -> dict[str, Any]:
+    foreign = _detail_15007_leg(buy.get("foreign_mn_krw"), sell.get("foreign_mn_krw"))
+    market_total = _detail_15007_leg(buy.get("total_mn_krw"), sell.get("total_mn_krw"))
+    observed = all(value is not None for leg in (foreign, market_total) for value in leg.values())
+    return {
+        "date": day,
+        "foreign": foreign if observed else {"buy_krw": None, "sell_krw": None, "net_krw": None},
+        "market_total": market_total if observed else {"buy_krw": None, "sell_krw": None, "net_krw": None},
+        "source": _DETAIL_15007_SOURCE,
+        "quality": "observed" if observed else "missing",
+        "source_unit": "million_krw",
+        "conversion_to_krw": _DETAIL_15007_UNIT,
+    }
+
+
+def _product_15007_from_exports(
+    *, buy_path: Path | None, sell_path: Path | None, previous: dict[str, Any] | None
+) -> dict[str, Any]:
+    """Merge a KRX 15007 product into an existing date-keyed series.
+
+    Existing observations remain intact.  A re-exported date replaces that one
+    date only, matching the append-only/deduped history policy.
+    """
+    product = _empty_15007_product()
+    if isinstance(previous, dict):
+        for key in ("as_of", "source", "quality", "foreign", "market_total"):
+            if key in previous:
+                product[key] = previous[key]
+        prior_series = previous.get("series")
+        if isinstance(prior_series, list):
+            product["series"] = [row for row in prior_series if isinstance(row, dict) and _detail_15007_date(row.get("date"))]
+
+    if (buy_path is None) != (sell_path is None):
+        product["quality"] = "partial_observed"
+        return product
+    if buy_path is None or sell_path is None:
+        return product
+    if not buy_path.is_file() or not sell_path.is_file():
+        product["quality"] = "partial_observed"
+        return product
+
+    buys = _read_15007_side_export(buy_path)
+    sells = _read_15007_side_export(sell_path)
+    by_date = {str(row["date"]): row for row in product["series"]}
+    for day in sorted(set(buys) | set(sells)):
+        if day in buys and day in sells:
+            by_date[day] = _detail_15007_observation(day, buys[day], sells[day])
+        else:
+            # A partial re-download must overwrite an earlier same-date value
+            # only when it has both sides.  Otherwise keep the prior observed
+            # observation and make the product's current status explicit.
+            product["quality"] = "partial_observed"
+
+    product["series"] = [by_date[day] for day in sorted(by_date)]
+    observed = [row for row in product["series"] if row.get("quality") == "observed"]
+    if observed:
+        latest = observed[-1]
+        product.update({
+            "as_of": latest["date"],
+            "source": latest["source"],
+            "quality": "observed" if product.get("quality") != "partial_observed" else "partial_observed",
+            "foreign": latest["foreign"],
+            "market_total": latest["market_total"],
+        })
+    return product
+
+
+def build_detailed_15007(
+    *,
+    option_call_buy: Path | None = None,
+    option_call_sell: Path | None = None,
+    option_put_buy: Path | None = None,
+    option_put_sell: Path | None = None,
+    futures_buy: Path | None = None,
+    futures_sell: Path | None = None,
+    previous: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    """Create the dedicated call/put contract without touching legacy CSV flow."""
+    prior_products = (previous or {}).get("products") if isinstance(previous, dict) else {}
+    if not isinstance(prior_products, dict):
+        prior_products = {}
+    products = {
+        "options_call": _product_15007_from_exports(
+            buy_path=option_call_buy, sell_path=option_call_sell,
+            previous=prior_products.get("options_call"),
+        ),
+        "options_put": _product_15007_from_exports(
+            buy_path=option_put_buy, sell_path=option_put_sell,
+            previous=prior_products.get("options_put"),
+        ),
+    }
+    futures = _product_15007_from_exports(
+        buy_path=futures_buy, sell_path=futures_sell,
+        previous=prior_products.get("futures"),
+    )
+    if futures["series"]:
+        products["futures"] = futures
+    return {
+        "schema_version": "krx-15007-call-put-v2",
+        "query": {
+            "market": "KOSPI200",
+            "metric": "trading_value",
+            "side": "buy_sell_and_net",
+            "unit": "KRW",
+            "source_unit": "million_krw",
+            "conversion_to_krw": _DETAIL_15007_UNIT,
+        },
+        "products": products,
+    }
+
+
 def fetch_kr_derivatives_bundle(
     *,
     bas_dd: str | None = None,
     investor_opt_call_csv: Path | None = None,
     investor_opt_put_csv: Path | None = None,
     investor_fut_csv: Path | None = None,
+    detailed_15007_option_call_buy: Path | None = None,
+    detailed_15007_option_call_sell: Path | None = None,
+    detailed_15007_option_put_buy: Path | None = None,
+    detailed_15007_option_put_sell: Path | None = None,
+    detailed_15007_futures_buy: Path | None = None,
+    detailed_15007_futures_sell: Path | None = None,
+    previous_detailed_15007: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     day = _bas_dd(bas_dd)
     errors: list[str] = []
@@ -375,6 +588,20 @@ def fetch_kr_derivatives_bundle(
         investor["options_put"] = load_investor_csv(investor_opt_put_csv)
         investor["quality"] = "observed"
         sources.append("csv_opt_put_investor")
+    investor["detailed_15007"] = build_detailed_15007(
+        option_call_buy=detailed_15007_option_call_buy,
+        option_call_sell=detailed_15007_option_call_sell,
+        option_put_buy=detailed_15007_option_put_buy,
+        option_put_sell=detailed_15007_option_put_sell,
+        futures_buy=detailed_15007_futures_buy,
+        futures_sell=detailed_15007_futures_sell,
+        previous=previous_detailed_15007,
+    )
+    if any(
+        product.get("quality") in {"observed", "partial_observed"}
+        for product in investor["detailed_15007"]["products"].values()
+    ):
+        sources.append("krx_15007_authenticated_export")
 
     return {
         "schema_version": "kr-derivatives-v1",

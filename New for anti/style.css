@@ -571,6 +571,377 @@ body {
 .elections-disclosure-rows strong { color: #e2e8f0; font-weight: 600; text-align: right; }
 .elections-house-delegation { margin-top: 8px; }
 
+/* --- 선거 panel: super PAC support by party (민주 left, 공화 right) -------- */
+.elections-button.is-active {
+    border-color: rgba(56, 189, 248, 0.75);
+    background: rgba(14, 116, 144, 0.3);
+    color: #e0f2fe;
+}
+.elections-spac-block {
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    border-radius: 8px;
+    background: rgba(15, 23, 42, 0.45);
+    padding: 10px;
+    margin-bottom: 8px;
+}
+.elections-spac-block-head,
+.elections-spac-district-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    color: #e2e8f0;
+    font-size: 12px;
+    font-weight: 600;
+}
+.elections-spac-badge {
+    border-radius: 4px;
+    padding: 2px 7px;
+    font-size: 11px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+.elections-spac-badge.is-dem { background: rgba(37, 99, 235, 0.22); color: #93c5fd; }
+.elections-spac-badge.is-gop { background: rgba(220, 38, 38, 0.22); color: #fca5a5; }
+.elections-spac-badge.is-none { background: rgba(100, 116, 139, 0.22); color: #94a3b8; }
+
+.elections-spac-sides {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 8px;
+    margin-top: 9px;
+}
+.elections-spac-side {
+    border: 1px solid rgba(148, 163, 184, 0.16);
+    border-top-width: 2px;
+    border-radius: 6px;
+    padding: 8px;
+    min-width: 0;
+}
+.elections-spac-side.is-dem { border-top-color: #2563eb; }
+.elections-spac-side.is-gop { border-top-color: #dc2626; }
+.elections-spac-side-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 6px;
+    color: #94a3b8;
+    font-size: 11px;
+}
+.elections-spac-side-head strong { color: #e2e8f0; font-size: 12px; }
+.elections-spac-cand {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 4px 0;
+    border-top: 1px solid rgba(148, 163, 184, 0.12);
+    color: #cbd5e1;
+    font-size: 11px;
+    line-height: 1.4;
+}
+.elections-spac-cand > span:first-child { min-width: 0; overflow-wrap: anywhere; }
+
+/* 지지/반대 travels with the number. A bare amount next to a candidate reads
+   as money they raised, which is exactly what this measure is not. */
+.elections-spac-amts {
+    display: flex;
+    gap: 8px;
+    flex: 0 0 auto;
+    white-space: nowrap;
+}
+.elections-spac-amt {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 3px;
+    font-size: 11px;
+}
+.elections-spac-amt i {
+    font-style: normal;
+    font-size: 10px;
+    padding: 0 3px;
+    border-radius: 3px;
+}
+.elections-spac-amt.is-support { color: #e2e8f0; }
+.elections-spac-amt.is-support i { color: #7dd3fc; background: rgba(56, 189, 248, 0.16); }
+.elections-spac-amt.is-oppose { color: #cbd5e1; }
+.elections-spac-amt.is-oppose i { color: #fca5a5; background: rgba(220, 38, 38, 0.18); }
+.elections-spac-side .elections-spac-amts { margin-bottom: 6px; }
+.elections-spac-caption {
+    margin-left: auto;
+    color: #94a3b8;
+    font-size: 10px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+.elections-spac-lede {
+    margin: 0 0 10px;
+    padding: 9px 10px;
+    border: 1px solid rgba(148, 163, 184, 0.22);
+    border-left: 3px solid #7dd3fc;
+    border-radius: 7px;
+    background: rgba(15, 23, 42, 0.5);
+    color: #cbd5e1;
+    font-size: 11px;
+    line-height: 1.55;
+}
+.elections-spac-lede strong { color: #e2e8f0; }
+
+.elections-spac-district-list { display: grid; gap: 5px; }
+.elections-spac-district {
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    border-radius: 7px;
+    background: rgba(15, 23, 42, 0.45);
+    overflow: hidden;
+}
+.elections-spac-district-head {
+    width: 100%;
+    appearance: none;
+    border: none;
+    background: transparent;
+    padding: 8px 10px;
+    font: inherit;
+    font-size: 12px;
+    font-weight: 600;
+    color: #e2e8f0;
+    cursor: pointer;
+    text-align: left;
+}
+.elections-spac-district-head:hover { background: rgba(51, 65, 85, 0.6); }
+.elections-spac-district-head:focus-visible { outline: 2px solid #38bdf8; outline-offset: -2px; }
+.elections-spac-district.is-open { border-color: rgba(56, 189, 248, 0.6); }
+.elections-spac-district.is-unmapped { border-style: dashed; opacity: 0.82; }
+.elections-spac-unmapped-tag {
+    margin-left: auto;
+    color: #94a3b8;
+    font-size: 10px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+.elections-spac-district.is-unmapped .elections-spac-district-head > span:first-child { color: #94a3b8; }
+.elections-spac-district-body { display: none; padding: 0 10px 10px; }
+.elections-spac-district.is-open .elections-spac-district-body { display: block; }
+
+/* --- Congress dashboard (하원·상원, one fixed layout per chamber) ---------- */
+.elections-chamber-radio {
+    /* Clipped rather than display:none so the chamber tabs stay keyboard
+       reachable -- arrow keys move between radios the way a tab list should. */
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+    pointer-events: none;
+}
+.elections-chamber-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+.elections-chamber-tabs label {
+    border: 1px solid rgba(148, 163, 184, 0.35);
+    background: rgba(15, 23, 42, 0.7);
+    color: #cbd5e1;
+    border-radius: 6px;
+    padding: 6px 11px;
+    font-size: 12px;
+    cursor: pointer;
+}
+.elections-chamber-panel { display: none; }
+#elections-chamber-house:checked ~ .elections-chamber-tabs label[for="elections-chamber-house"],
+#elections-chamber-senate:checked ~ .elections-chamber-tabs label[for="elections-chamber-senate"] {
+    border-color: rgba(56, 189, 248, 0.75);
+    background: rgba(14, 116, 144, 0.28);
+    color: #e0f2fe;
+}
+#elections-chamber-house:checked ~ .elections-chamber-panel[data-chamber="house"],
+#elections-chamber-senate:checked ~ .elections-chamber-panel[data-chamber="senate"] { display: block; }
+.elections-chamber-radio:focus-visible ~ .elections-chamber-tabs label { outline: 2px solid #38bdf8; outline-offset: 2px; }
+
+.elections-chamber-quadrants {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 10px;
+}
+.elections-quadrant {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    padding: 11px;
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    border-radius: 8px;
+    background: rgba(15, 23, 42, 0.45);
+    min-width: 0;
+}
+.elections-quadrant .section-title { margin: 0; }
+
+/* A quadrant is ~300px wide, too narrow for "Democratic Caucus Chairman" and
+   a name on one line, so the leadership rows stack instead of facing off. */
+.elections-leader-rows div {
+    display: block;
+    padding: 5px 0;
+    border-bottom: 1px solid rgba(148, 163, 184, 0.12);
+}
+.elections-leader-rows div:last-child { border-bottom: none; }
+.elections-leader-rows span {
+    display: block;
+    color: #94a3b8;
+    font-size: 11px;
+}
+.elections-leader-rows strong {
+    display: flex;
+    align-items: center;
+    text-align: left;
+    margin-top: 2px;
+}
+.elections-hemicycle { width: 100%; height: auto; display: block; }
+.elections-hemicycle-total { fill: #e2e8f0; font-size: 17px; font-weight: 700; }
+.elections-party-dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-right: 6px;
+    flex: 0 0 auto;
+}
+
+.elections-committee-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+}
+.elections-committee-chip {
+    appearance: none;
+    border: 1px solid rgba(148, 163, 184, 0.3);
+    background: rgba(30, 41, 59, 0.8);
+    color: #cbd5e1;
+    border-radius: 6px;
+    padding: 5px 8px;
+    font: inherit;
+    font-size: 11px;
+    cursor: pointer;
+    text-align: left;
+}
+.elections-committee-chip:hover { border-color: #0e7490; background: rgba(51, 65, 85, 0.95); color: #e0f2fe; }
+.elections-committee-chip:focus-visible { outline: 2px solid #38bdf8; outline-offset: 2px; }
+
+.elections-party-card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 10px;
+    margin-top: 10px;
+}
+.elections-party-card {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 11px;
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    border-radius: 8px;
+    background: rgba(15, 23, 42, 0.45);
+    min-width: 0;
+}
+.elections-party-card-head {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    color: #f1f5f9;
+    font-size: 13px;
+}
+.elections-party-card-head span { margin-left: auto; color: #94a3b8; font-size: 12px; }
+.elections-party-card-label {
+    margin: 6px 0 0;
+    color: #94a3b8;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+/* --- EOP org boxes (councils / advisers / offices) ------------------------
+   Laid out like the EOP chart's rows: one box per body, side by side, wrapping
+   only when the pane runs out of width. */
+.elections-org-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(92px, 1fr));
+    gap: 6px;
+    margin: 8px 0 4px;
+    align-items: stretch;
+}
+.elections-org-box {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 8px;
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    border-radius: 7px;
+    background: rgba(15, 23, 42, 0.55);
+    min-width: 0;
+}
+.elections-org-box-ko {
+    color: #e2e8f0;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1.3;
+    overflow-wrap: anywhere;
+}
+.elections-org-box-abbr {
+    color: #7dd3fc;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+}
+.elections-org-box-en {
+    color: #94a3b8;
+    font-size: 10px;
+    line-height: 1.35;
+    overflow-wrap: anywhere;
+}
+/* margin-top:auto drops every person line to the foot of its box, so a row of
+   boxes with different name lengths still aligns on one line. */
+.elections-org-box-person {
+    margin-top: auto;
+    padding-top: 7px;
+    color: #cbd5e1;
+    font-size: 11px;
+    line-height: 1.4;
+    overflow-wrap: anywhere;
+}
+.elections-org-box-person.is-empty { color: #64748b; }
+.elections-org-box-title {
+    display: block;
+    color: #94a3b8;
+    font-size: 10px;
+}
+.elections-org-box-note {
+    color: #94a3b8;
+    font-size: 10px;
+    line-height: 1.45;
+    margin-top: 4px;
+}
+
+/* --- State legislature seat composition (dot cluster) --------------------- */
+.elections-seat-dots {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-top: 8px;
+}
+.elections-seat-dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    flex: 0 0 auto;
+}
+.elections-seat-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 8px;
+    font-size: 11px;
+    color: #cbd5e1;
+}
+.elections-seat-legend-item { display: inline-flex; align-items: center; gap: 5px; }
+.elections-seat-legend-item i { width: 8px; height: 8px; border-radius: 50%; display: inline-block; flex: 0 0 auto; }
+
 /* display_rules.fallen_style = strikethrough: 실각·조사자는 이름에 삭선만 긋고
    원문 상태 표시는 그대로 옆에 남긴다 (재서술 금지). */
 .elections-fallen { text-decoration: line-through; opacity: 0.72; }
@@ -581,6 +952,59 @@ body {
     color: #94a3b8;
     white-space: nowrap;
 }
+
+/* --- Race progress (rolling primaries / leadership tours) ---------------- */
+.elections-race-leader-bar {
+    display: flex;
+    height: 10px;
+    border-radius: 5px;
+    overflow: hidden;
+    background: rgba(15, 23, 42, 0.8);
+    margin: 10px 0 6px;
+}
+.elections-race-leader-bar span { display: block; height: 100%; }
+.elections-race-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 4px;
+    font-size: 11px;
+    color: #cbd5e1;
+}
+.elections-race-legend-item { display: inline-flex; align-items: center; gap: 5px; }
+.elections-race-legend-item i { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+.elections-race-unit-list { display: grid; gap: 6px; margin: 10px 0; }
+.elections-race-unit {
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    border-left: 3px solid rgba(148, 163, 184, 0.35);
+    border-radius: 7px;
+    background: rgba(15, 23, 42, 0.55);
+    padding: 0 9px;
+}
+.elections-race-unit.is-completed { border-left-color: #34d399; }
+.elections-race-unit.is-scheduled { border-left-color: #d4a017; opacity: 0.92; }
+.elections-race-unit summary {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    padding: 8px 0;
+    cursor: pointer;
+    color: #e2e8f0;
+    font-size: 12px;
+    list-style: none;
+}
+.elections-race-unit summary::-webkit-details-marker { display: none; }
+.elections-race-unit-date { color: #94a3b8; font-variant-numeric: tabular-nums; flex: 0 0 auto; }
+.elections-race-unit-label { font-weight: 600; flex: 1 1 auto; min-width: 0; }
+.elections-race-unit-label em { color: #94a3b8; font-style: normal; font-weight: 400; margin-left: 4px; }
+.elections-race-unit-headline { color: #94a3b8; font-size: 11px; text-align: right; max-width: 40%; }
+.elections-race-table { width: 100%; border-collapse: collapse; font-size: 12px; margin: 0 0 9px; }
+.elections-race-table th,
+.elections-race-table td { text-align: left; padding: 5px 6px; border-bottom: 1px solid rgba(148, 163, 184, 0.14); color: #cbd5e1; }
+.elections-race-table th { color: #94a3b8; font-weight: 600; }
+.elections-race-subunit { color: #94a3b8; font-size: 11px; }
+.elections-party-d { color: #7dabf5; }
+.elections-party-r { color: #f28b8b; }
 
 /* --- Country blocks and the window they open over the map ---------------- */
 
@@ -669,6 +1093,9 @@ body {
    rather than growing past the map. */
 .elections-modal-body .elections-member-list { max-height: 320px; overflow-y: auto; }
 .elections-modal-body .elections-disclosure-rows { max-height: 320px; overflow-y: auto; }
+/* The cap above is for hundred-row rosters; a dozen leadership rows are short
+   enough to show whole, and scrolling them inside a quadrant hides them. */
+.elections-modal-body .elections-leader-rows { max-height: none; overflow-y: visible; }
 
 @media (max-width: 720px) {
     .elections-modal-host { padding: 12px; }

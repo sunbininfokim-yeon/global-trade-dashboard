@@ -4931,6 +4931,9 @@ const electionTimelinePanelEl = document.getElementById('elections-timeline-pane
 const electionCountryPanelEl = document.getElementById('elections-country-panel');
 const electionModalHostEl = document.getElementById('elections-modal-host');
 
+// Order matters only for how the query string reads; the module names them.
+const ELECTION_ROUTE_KEYS = ['country', 'state', 'screen', 'view', 'district'];
+
 const electionHost = () => ({
     deckgl,
     layers: { GeoJsonLayer },
@@ -4974,6 +4977,43 @@ const electionHost = () => ({
     setHeader(title, description) {
         currentViewTitle.textContent = title;
         currentViewDesc.textContent = description;
+    },
+    // 정치 › 미국 › 상임위 hands off to 정책 › 미국. policy.js restores a deep
+    // view from ?view=&id= on render, so writing those params before the view
+    // switch is the whole handoff -- no second entry point to keep in sync.
+    openPolicyCommittee(committeeId) {
+        const params = new URLSearchParams();
+        if (committeeId) {
+            params.set('view', 'committee');
+            params.set('id', committeeId);
+        }
+        const qs = params.toString();
+        window.history.pushState({}, '', `/us-policy-hub${qs ? `?${qs}` : ''}`);
+        setView('us-policy-hub');
+    },
+    // 정치 › 미국 › 행정부 is three steps deep with no URL of its own, so it
+    // could not be linked, reloaded, or reached with the back button. The
+    // election module keeps its place in the query string the same way
+    // policy.js does, on top of the /elections pathname this view already
+    // owns -- the module never touches history itself, it goes through here.
+    readRoute() {
+        const params = new URLSearchParams(window.location.search);
+        const route = {};
+        ELECTION_ROUTE_KEYS.forEach((key) => {
+            const value = params.get(key);
+            if (value) route[key] = value;
+        });
+        return route;
+    },
+    writeRoute(route, { replace = false } = {}) {
+        const params = new URLSearchParams();
+        ELECTION_ROUTE_KEYS.forEach((key) => {
+            if (route?.[key]) params.set(key, String(route[key]));
+        });
+        const qs = params.toString();
+        const url = `/elections${qs ? `?${qs}` : ''}`;
+        if (url === window.location.pathname + window.location.search) return;
+        window.history[replace ? 'replaceState' : 'pushState']({ target: 'elections' }, '', url);
     },
     roots: { timeline: electionTimelinePanelEl, country: electionCountryPanelEl, modal: electionModalHostEl },
 });

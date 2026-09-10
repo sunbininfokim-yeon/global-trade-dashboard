@@ -6,6 +6,11 @@ import { renderTimeline } from './timeline/index.js';
 
 const state = createElectionState();
 let host = null;
+// Restoring a deep link walks through showCountry/showUsaState, each of
+// which reports its own route; letting those writes through would truncate
+// the URL to whatever step it had reached. The final route is written once,
+// replacing rather than stacking a history entry for a link already open.
+let restoring = false;
 let bundle = null;
 let explorer = null;
 let opening = null;
@@ -42,8 +47,30 @@ const openWorld = async (nextHost) => {
             bundle,
             onCountryOpen: (iso3) => state.set({ mode: 'country', iso3 }),
             onBack: () => state.set({ mode: 'world', iso3: null }),
+            onRoute: (route) => { if (!restoring) host.writeRoute?.(route); },
         });
-        state.set({ mode: 'world', iso3: null, month: state.get().month || initialMonth(bundle.calendar) });
+        const month = state.get().month || initialMonth(bundle.calendar);
+        const route = host.readRoute?.() || {};
+        if (route.country && bundle.countries.get(route.country)) {
+            restoring = true;
+            try {
+                state.set({ mode: 'country', iso3: route.country, month });
+                await render();
+                if (route.state) {
+                    await explorer.showUsaState(route.state, {
+                        financeMode: route.view === 'finance',
+                        district: route.district || null,
+                    });
+                } else if (route.screen) {
+                    explorer.openScreen(route.screen);
+                }
+            } finally {
+                restoring = false;
+            }
+            host.writeRoute?.(route, { replace: true });
+            return;
+        }
+        state.set({ mode: 'world', iso3: null, month });
         await opening;
         await render();
     } catch (error) {

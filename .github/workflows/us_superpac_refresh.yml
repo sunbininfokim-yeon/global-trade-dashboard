@@ -12,7 +12,11 @@ name: US election finance backend
 
 on:
   schedule:
-    - cron: '25 8 * * *'
+    # 평시 주 1회(월), 10월만 월·금 2회. GitHub cron은 UTC이고 08:25 UTC =
+    # 17:25 KST — 기존 실행 시각 그대로다. month 필드로 10월을 갈라 두 줄로
+    # 쓴다: cron 한 줄로는 "10월만 다르게"를 표현할 수 없다.
+    - cron: '25 8 * 1-9,11-12 1'
+    - cron: '25 8 * 10 1,5'
   workflow_dispatch:
     inputs:
       cycle:
@@ -53,21 +57,43 @@ jobs:
         env:
           FEC_API_KEY: ${{ secrets.FEC_API_KEY || secrets.DATA_GOV_API_KEY }}
           FINANCE_CYCLE: ${{ inputs.cycle }}
-          FINANCE_CADENCE: ${{ inputs.cadence || vars.US_FINANCE_CADENCE || 'daily' }}
+          FINANCE_CADENCE: ${{ inputs.cadence || vars.US_FINANCE_CADENCE || 'weekly' }}
           FINANCE_EVENT: ${{ github.event_name }}
         shell: bash
         run: |
           args=(--cadence "$FINANCE_CADENCE")
           if [ -n "$FINANCE_CYCLE" ]; then args+=(--cycle "$FINANCE_CYCLE"); fi
-          if [ "$FINANCE_EVENT" = workflow_dispatch ]; then args+=(--force); fi
+          # The cron above decides which days this runs. collection_plan() has
+          # its own weekly gate that additionally demands a Sunday
+          # (`cadence == 'weekly' and day.weekday() != 6 -> []`), which would
+          # blank every Monday and Friday run, so the schedule bypasses it the
+          # same way a manual dispatch already does. The monthly sweep of the
+          # preceding cycle still applies -- weekly cadence takes any run in the
+          # first seven days of a month.
+          args+=(--force)
           python3 refresh_superpac.py "${args[@]}"
+
+      # Official House vacancies + the sourced swing-seat context the 의회 screen
+      # reads. build_congress_context.py ships with the US election data PR, so
+      # until that merges the script is simply absent -- skipping on that rather
+      # than failing keeps this workflow correct in either merge order.
+      - name: Refresh official House vacancies and sourced swing-seat context
+        id: congress_context
+        continue-on-error: true
+        shell: bash
+        run: |
+          if [ ! -f build_congress_context.py ]; then
+            echo 'build_congress_context.py is not in the tree yet; skipping until the election data PR lands.'
+            exit 0
+          fi
+          python3 build_congress_context.py
 
       - name: Publish validated assets and collection health
         working-directory: ${{ github.workspace }}
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add --all -- 'New for anti/public/data/usa_superpac' 'New for anti/public/data/usa_superpac_index_v1.json' 'New for anti/public/data/usa_governor_finance' 'New for anti/public/data/usa_election_finance' 'New for anti/public/data/usa_election_finance_index_v1.json' 'New for anti/public/data/usa_election_finance_refresh_status_v1.json'
+          git add --all -- 'New for anti/public/data/usa_superpac' 'New for anti/public/data/usa_superpac_index_v1.json' 'New for anti/public/data/usa_governor_finance' 'New for anti/public/data/usa_election_finance' 'New for anti/public/data/usa_election_finance_index_v1.json' 'New for anti/public/data/usa_election_finance_refresh_status_v1.json' 'New for anti/scripts/election_watch/config/extracted/usa_congress.json' 'New for anti/public/data/elections_board_v1.json'
           if git diff --cached --quiet; then exit 0; fi
           git commit -m 'chore: refresh US election finance backend'
           for i in 1 2 3; do
@@ -78,5 +104,5 @@ jobs:
           git push
 
       - name: Surface collection failures after publishing health
-        if: steps.collect.outcome == 'failure'
+        if: steps.collect.outcome == 'failure' || steps.congress_context.outcome == 'failure'
         run: exit 1
