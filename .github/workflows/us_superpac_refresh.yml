@@ -12,7 +12,11 @@ name: US election finance backend
 
 on:
   schedule:
-    - cron: '25 8 * * *'
+    # 평시 주 1회(월), 10월만 월·금 2회. GitHub cron은 UTC이고 08:25 UTC =
+    # 17:25 KST — 기존 실행 시각 그대로다. month 필드로 10월을 갈라 두 줄로
+    # 쓴다: cron 한 줄로는 "10월만 다르게"를 표현할 수 없다.
+    - cron: '25 8 * 1-9,11-12 1'
+    - cron: '25 8 * 10 1,5'
   workflow_dispatch:
     inputs:
       cycle:
@@ -53,13 +57,20 @@ jobs:
         env:
           FEC_API_KEY: ${{ secrets.FEC_API_KEY || secrets.DATA_GOV_API_KEY }}
           FINANCE_CYCLE: ${{ inputs.cycle }}
-          FINANCE_CADENCE: ${{ inputs.cadence || vars.US_FINANCE_CADENCE || 'daily' }}
+          FINANCE_CADENCE: ${{ inputs.cadence || vars.US_FINANCE_CADENCE || 'weekly' }}
           FINANCE_EVENT: ${{ github.event_name }}
         shell: bash
         run: |
           args=(--cadence "$FINANCE_CADENCE")
           if [ -n "$FINANCE_CYCLE" ]; then args+=(--cycle "$FINANCE_CYCLE"); fi
-          if [ "$FINANCE_EVENT" = workflow_dispatch ]; then args+=(--force); fi
+          # The cron above decides which days this runs. collection_plan() has
+          # its own weekly gate that additionally demands a Sunday
+          # (`cadence == 'weekly' and day.weekday() != 6 -> []`), which would
+          # blank every Monday and Friday run, so the schedule bypasses it the
+          # same way a manual dispatch already does. The monthly sweep of the
+          # preceding cycle still applies -- weekly cadence takes any run in the
+          # first seven days of a month.
+          args+=(--force)
           python3 refresh_superpac.py "${args[@]}"
 
       # Official House vacancies + the sourced swing-seat context the 의회 screen
