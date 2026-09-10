@@ -39,6 +39,17 @@ python3 run_refresh_cycle.py --build-derived
 
 산출: `public/data/elections_board_v1.json`, `elections_calendar_master_v1.json`, `elections_ui_manifest_v1.json`. UI는 매니페스트를 먼저 읽고 `ready / partial / disabled` 계약을 따른다.
 
+미국 백악관 수석급은 공식 페이지만 자동 승격한다.
+
+```bash
+python3 -m election_watch.extract_usa_eop --fetch --merge-tier12 --write-report
+# 또는
+python3 run_refresh_cycle.py --refresh-usa-eop --build-derived
+```
+
+정본 `config/extracted/usa_eop.json` → `tier12_executives.json#countries.USA` → 보드 `executive_live.white_house`.  
+월간 GitHub Actions YAML은 `ci/elections_eop_monthly.yml` (Claude가 `.github/workflows/`로 복사). 핸드오프: `HANDOFF_CLAUDE_ELECTIONS_EOP_ACTIONS.md`.
+
 ## 속보 연동 (commodity_news)
 
 통과:

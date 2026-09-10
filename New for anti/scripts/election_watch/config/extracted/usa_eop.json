@@ -1,0 +1,339 @@
+{
+  "schema": "usa_eop_senior_roster_v1",
+  "as_of": "2026-09-11",
+  "payroll_as_of": "2026-07-01",
+  "policy_ko": "백악관 사무실(WHO) 연례 직원보고서는 특별보좌관·수석급 정본. 각료급 OMB는 cabinet과 중복 표기. 부통령실은 WHO 명부에 없어 후임이 공식 확인되기 전에는 공석으로 둔다. NSC/NEC 법정 의장은 대통령이며 실무 책임자를 따로 적는다.",
+  "kr_analog_note_ko": "한국 대통령실 수석과 1:1이 아니다. kr_analog는 읽는 힌트일 뿐 직제 동일 선언이 아니다.",
+  "sources": [
+    {
+      "id": "wh_staff_report_2026-07-01",
+      "org": "White House Office",
+      "url": "https://www.whitehouse.gov/wp-content/uploads/2026/07/2026-Annual-Report-to-Congress-on-White-House-Staff.pdf",
+      "local_raw": "raw/usa/wh_staff_report_2026-07-01.pdf",
+      "grade": "official",
+      "as_of": "2026-07-01"
+    },
+    {
+      "id": "wh_administration",
+      "org": "The White House",
+      "url": "https://www.whitehouse.gov/administration/",
+      "grade": "official",
+      "as_of": "2026-09-11"
+    },
+    {
+      "id": "wh_cabinet",
+      "org": "The White House Cabinet",
+      "url": "https://www.whitehouse.gov/administration/cabinet/",
+      "grade": "official",
+      "as_of": "2026-09-11"
+    },
+    {
+      "id": "wh_ostp_kratsios_2025-03",
+      "org": "The White House",
+      "url": "https://www.whitehouse.gov/releases/2025/03/ostp-press-release/",
+      "grade": "official",
+      "as_of": "2025-03-25",
+      "note": "Senate confirmation of OSTP director. Axios 2026-09-02 still treats Kratsios as incumbent."
+    },
+    {
+      "id": "umn_phelan_cea_2026-08",
+      "org": "University of Minnesota / Senate confirmation reporting",
+      "url": "https://cla.umn.edu/economics/news-events/news/christopher-phelan-confirmed-cea-chair",
+      "grade": "public_secondary",
+      "as_of": "2026-08-07"
+    }
+  ],
+  "correction": {
+    "field": "national_security_advisor",
+    "was": "Caleb Ruger",
+    "now": "Marco A. Rubio",
+    "reason_ko": "2026-07-01 WHO 명부에서 Rubio는 Assistant to the President and National Security Advisor(급여 $0, 국무장관 겸임). Ruger는 Research Analyst."
+  },
+  "core": [
+    {
+      "id": "president",
+      "office_ko": "대통령",
+      "office_en": "President",
+      "name_en": "Donald J. Trump",
+      "party_abbr": "GOP",
+      "also": [
+        "NSC statutory chair",
+        "NEC statutory chair",
+        "HSC statutory chair"
+      ],
+      "kr_analog": "대통령",
+      "source": "wh_administration"
+    },
+    {
+      "id": "vice_president",
+      "office_ko": "부통령",
+      "office_en": "Vice President",
+      "name_en": "JD Vance",
+      "party_abbr": "GOP",
+      "kr_analog": "부통령",
+      "source": "wh_administration"
+    },
+    {
+      "id": "wh_chief_of_staff",
+      "office_ko": "백악관 비서실장",
+      "office_en": "Assistant to the President and Chief of Staff",
+      "name_en": "Susan S. Wiles",
+      "name_public": "Susie Wiles",
+      "party_abbr": "GOP",
+      "source": "wh_staff_report",
+      "kr_analog": "대통령비서실장"
+    },
+    {
+      "id": "vp_chief_of_staff",
+      "office_ko": "부통령 비서실장",
+      "office_en": "Chief of Staff to the Vice President",
+      "name_en": null,
+      "status": "불명",
+      "note_ko": "Jacob B. Reses는 2026 여름 말 퇴임 발표(NBC 2026-06-11). Punchbowl 2026-06-16은 Nick Luna 후임 보도. 부통령실 공식 명부를 아직 못 잡아 현직을 넣지 않음.",
+      "predecessor": {
+        "name_en": "Jacob B. Reses",
+        "until_announced": "end of summer 2026"
+      },
+      "reported_successor_unconfirmed": {
+        "name_en": "Nick Luna",
+        "source": "https://punchbowl.news/article/white-house/nick-luna-vance/"
+      },
+      "kr_analog": "부통령 비서실장"
+    }
+  ],
+  "assistants_to_the_president": [
+    {
+      "id": "nsa",
+      "office_ko": "국가안보보좌관 (NSC 실무 책임)",
+      "office_en": "Assistant to the President and National Security Advisor",
+      "name_en": "Marco A. Rubio",
+      "status": "incumbent",
+      "also_cabinet": "Secretary of State",
+      "wh_salary_usd": 0,
+      "source": "wh_staff_report",
+      "note_ko": "국무장관 겸임. WHO 급여 0. 위키는 acting since 2025-05-01이라고 하나 2026-07-01 공식 직함은 National Security Advisor.",
+      "kr_analog": "국가안보실장"
+    },
+    {
+      "id": "nec_director",
+      "office_ko": "국가경제위원회 실장·경제정책 보좌관",
+      "office_en": "Assistant to the President for Economic Policy and Director of the National Economic Council",
+      "name_en": "Kevin A. Hassett",
+      "source": "wh_staff_report",
+      "kr_analog": "경제수석"
+    },
+    {
+      "id": "dpc_director",
+      "office_ko": "국내정책위원회 실장",
+      "office_en": "Assistant to the President and Director of the Domestic Policy Council",
+      "name_en": "Vincent M. Haley",
+      "name_public": "Vince Haley",
+      "source": "wh_staff_report",
+      "kr_analog": "사회·정책수석"
+    },
+    {
+      "id": "homeland_security_advisor",
+      "office_ko": "국토안보보좌관·정책부비서실장",
+      "office_en": "Assistant to the President and Deputy Chief of Staff for Policy and Homeland Security Advisor",
+      "name_en": "Stephen Miller",
+      "source": "wh_staff_report",
+      "kr_analog": "국토안보보좌관"
+    },
+    {
+      "id": "wh_counsel",
+      "office_ko": "백악관 법률고문",
+      "office_en": "Assistant to the President and Counsel to the President",
+      "name_en": "David A. Warrington",
+      "source": "wh_staff_report",
+      "kr_analog": "민정수석 (유사, 직제 동일 아님)"
+    },
+    {
+      "id": "press_secretary",
+      "office_ko": "백악관 대변인",
+      "office_en": "Assistant to the President and Press Secretary",
+      "name_en": "Karoline C. Leavitt",
+      "source": "wh_staff_report",
+      "kr_analog": "대변인"
+    },
+    {
+      "id": "communications_director",
+      "office_ko": "홍보실장",
+      "office_en": "Assistant to the President and Director of Communications",
+      "name_en": "Steven Cheung",
+      "source": "wh_staff_report",
+      "kr_analog": "홍보수석"
+    }
+  ],
+  "councils": [
+    {
+      "id": "nsc",
+      "name_ko": "국가안전보장회의",
+      "name_en": "National Security Council",
+      "statutory_chair": {
+        "office_ko": "대통령",
+        "name_en": "Donald J. Trump"
+      },
+      "staff_director": {
+        "office_ko": "국가안보보좌관",
+        "name_en": "Marco A. Rubio"
+      },
+      "note_ko": "법정 의장은 대통령. 보좌관이 실무·Principals Committee를 주재하는 경우가 많다."
+    },
+    {
+      "id": "nec",
+      "name_ko": "국가경제위원회",
+      "name_en": "National Economic Council",
+      "statutory_chair": {
+        "office_ko": "대통령",
+        "name_en": "Donald J. Trump"
+      },
+      "director": {
+        "office_ko": "NEC 실장",
+        "name_en": "Kevin A. Hassett"
+      },
+      "kr_analog": "경제수석 회의체"
+    },
+    {
+      "id": "dpc",
+      "name_ko": "국내정책위원회",
+      "name_en": "Domestic Policy Council",
+      "director": {
+        "office_ko": "DPC 실장",
+        "name_en": "Vincent M. Haley"
+      }
+    },
+    {
+      "id": "hsc",
+      "name_ko": "국토안보회의",
+      "name_en": "Homeland Security Council",
+      "statutory_chair": {
+        "office_ko": "대통령",
+        "name_en": "Donald J. Trump"
+      },
+      "advisor": {
+        "office_ko": "국토안보보좌관",
+        "name_en": "Stephen Miller"
+      }
+    },
+    {
+      "id": "nedc",
+      "name_ko": "국가에너지지배위원회",
+      "name_en": "National Energy Dominance Council",
+      "executive_director": {
+        "office_ko": "NEDC 집행실장",
+        "name_en": "Jarrod P. Agen"
+      },
+      "source": "wh_staff_report_2026-07-01"
+    }
+  ],
+  "eop_office_heads": [
+    {
+      "id": "omb",
+      "office_ko": "관리예산처장",
+      "office_en": "Director, Office of Management and Budget",
+      "name_en": "Russ Vought",
+      "also_in_cabinet": true,
+      "source": "wh_cabinet",
+      "kr_analog": "예산실장"
+    },
+    {
+      "id": "cea",
+      "office_ko": "경제자문위원회 의장",
+      "office_en": "Chair, Council of Economic Advisers",
+      "name_en": "Christopher Phelan",
+      "since": "2026-08-07",
+      "source": "umn_phelan_cea_2026-08",
+      "source_grade": "public_secondary",
+      "kr_analog": "경제수석 자문"
+    },
+    {
+      "id": "ostp",
+      "office_ko": "과학기술정책실장",
+      "office_en": "Director, Office of Science and Technology Policy",
+      "name_en": "Michael Kratsios",
+      "source": "wh_ostp_kratsios_2025-03",
+      "note_ko": "2025-03-25 상원 인준. 2026-09-02 Axios도 현직으로 취급.",
+      "kr_analog": "과학기술보좌관"
+    },
+    {
+      "id": "ceq",
+      "office_ko": "환경품질위원회 의장",
+      "office_en": "Chair, Council on Environmental Quality",
+      "name_en": "Rachael McNitt",
+      "status": "acting",
+      "since": "2026-07-07",
+      "source_grade": "media_cross_check",
+      "source": "https://www.eenews.net/articles/ceq-chair-leaving-the-administration/",
+      "note_ko": "Katherine Scarlett 사임 후 CEQ 수석이 직무대행. 공식 CEQ 현직 페이지는 미캡처.",
+      "kr_analog": "환경보좌관"
+    },
+    {
+      "id": "oa",
+      "office_ko": "행정실장 (Office of Administration)",
+      "office_en": "Assistant to the President and Director of Management and Administration and Director of the Office of Administration",
+      "name_en": "Joshua H. Fisher",
+      "source": "wh_staff_report"
+    }
+  ],
+  "deputy_chiefs_of_staff": [
+    {
+      "office_ko": "정책부비서실장·국토안보보좌관",
+      "name_en": "Stephen Miller",
+      "source": "wh_staff_report_2026-07-01"
+    },
+    {
+      "office_ko": "운영부비서실장",
+      "name_en": "William B. Harrison",
+      "source": "wh_staff_report_2026-07-01"
+    },
+    {
+      "office_ko": "부비서실장·대통령인사실장",
+      "name_en": "Daniel J. Scavino, Jr.",
+      "source": "wh_staff_report_2026-07-01"
+    }
+  ],
+  "other_assistants_to_the_president": [
+    {
+      "office_en": "Cabinet Secretary",
+      "name_en": "Meghan P. Bauer"
+    },
+    {
+      "office_en": "Director of Legislative Affairs",
+      "name_en": "James C. Braid"
+    },
+    {
+      "office_en": "Staff Secretary",
+      "name_en": "William O. Scharf"
+    },
+    {
+      "office_en": "Border Czar",
+      "name_en": "Thomas D. Homan"
+    },
+    {
+      "office_en": "Senior Counselor for Trade and Manufacturing",
+      "name_en": "Peter K. Navarro"
+    },
+    {
+      "office_en": "Assistant to the President for Policy",
+      "name_en": "Walker B. Barrett"
+    },
+    {
+      "office_en": "Director of Speechwriting",
+      "name_en": "Ross P. Worthington"
+    },
+    {
+      "office_en": "Chief of Staff to the First Lady",
+      "name_en": "Hayley D. Harrison"
+    },
+    {
+      "office_en": "Special Envoy for Peace Missions",
+      "name_en": "Steven C. Witkoff",
+      "wh_salary_usd": 0
+    }
+  ],
+  "missing": [
+    "official_vice_president_office_roster",
+    "official_ceq_incumbent_page",
+    "official_cea_whitehouse_page"
+  ]
+}
