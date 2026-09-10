@@ -383,6 +383,9 @@ def build_board(
                 ),
                 "congress": {
                     "summary": usa_congress.get("summary"),
+                    "vacancies": usa_congress.get("vacancies", []),
+                    "swing_seats": usa_congress.get("swing_seats", []),
+                    "context_coverage": usa_congress.get("context_coverage"),
                     "floor_leadership": usa_congress.get("floor_leadership"),
                     "house_members": [
                         member

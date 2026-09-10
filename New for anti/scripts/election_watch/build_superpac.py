@@ -17,9 +17,9 @@ PUBLIC = ROOT.parents[1] / 'public' / 'data'
 INDEX = 'usa_superpac_index_v1.json'
 
 
-def atomic_json(path, payload):
+def atomic_json(path, payload, *, indent=None):
     path.parent.mkdir(parents=True, exist_ok=True)
-    data = json.dumps(payload, ensure_ascii=False, separators=(',', ':'), allow_nan=False) + '\n'
+    data = json.dumps(payload, ensure_ascii=False, separators=(',', ':') if indent is None else None, indent=indent, allow_nan=False) + '\n'
     with tempfile.NamedTemporaryFile(mode='w', encoding='utf-8', dir=path.parent, delete=False) as file:
         file.write(data)
         name = file.name
@@ -49,7 +49,10 @@ def publish(snapshot, public):
     meta = {k: v for k, v in snapshot.items() if k not in ('candidates', 'spending')}
     meta['state_files'] = files
     index['cycles'][str(cycle)] = meta
-    index.update(generated_at=now(), status='available')
+    index.pop('reason_ko', None)
+    index.update(generated_at=now(), status='available', pipeline_role='upstream_source_snapshot',
+                 consumer_index='usa_election_finance_index_v1.json',
+                 consumer_note_ko='수집 원본 단계입니다. 지도 UI는 consumer_index만 사용하세요.')
     # Index becomes visible only after every shard is durable. Failure leaves last good index intact.
     atomic_json(index_path, index)
 

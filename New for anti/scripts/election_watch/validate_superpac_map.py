@@ -28,8 +28,7 @@ def validate(public, index=None):
                         expected_records += row['records']
                         for side in ('support', 'oppose'):
                             expected[row['category'], side] += row[side + '_cents']
-        governor = public / 'usa_governor_finance' / cycle / 'WA.json'
-        if governor.exists():
+        for governor in sorted((public / 'usa_governor_finance' / cycle).glob('*.json')):
             for row in load(str(governor.relative_to(public)))['spending']:
                 expected_records += row['records']
                 for side in ('support', 'oppose'):

@@ -58,3 +58,5 @@
 | T30 | 해외 LETF 수집·이력·시장미시구조 UI·배포 연결 | **codex** | `scripts/market_microstructure/**overseas*`, `public/data/overseas_letf_*`, `market-microstructure.js`, 해외 workflow·deploy hook | `claude/overseas-letf-pipeline-integration` | **done** | 사용자 2026-09-08 승인. PR #262·#263 병합, 첫 원격 수집·저장 및 운영 배포 성공, 공개 파일 4개 내용 일치와 운영 UI 확인. 데이터 16개 계약 테스트·브라우저 검증 통과. |
 
 | T31 | 천연가스 공식 재고·Henry Hub 자동 수집 및 표시 | codex | `scripts/gas_storage/**`, `public/data/gas_storage_v1.json`, `gas-storage.js`, trade/index hooks, gas workflow/deploy hook | `codex/natural-gas-storage-pipeline` | review | 2026-09-09 사용자 파이프라인 및 GitHub/Cloudflare 배포 지시. 별도 checkout. 7개 테스트 및 로컬 UI 확인. TTF 제공업체 확인 대기. |
+
+| T32 | 미국 선거 UI #271 데이터 공백 보완 | codex | `scripts/election_watch/**` 데이터 코드·계약, `public/data/usa_*`, `elections_board*` | `codex/us-election-data-gaps` | **review** | 사용자 요청 P1 주 공시, P2 지역 코드, P3 소스 역할, P4 공석·경합 근거. UI·workflow·지도 경계 제외 |

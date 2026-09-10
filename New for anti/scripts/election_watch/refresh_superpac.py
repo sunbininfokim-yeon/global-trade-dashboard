@@ -31,9 +31,11 @@ def main():
     started = now()
     results = []
     for cycle in cycles:
-        for name, script in [('federal', 'build_superpac.py'), ('WA_governor', 'build_governor_finance.py')]:
+        for name, script in [('federal', 'build_superpac.py'), ('WA_governor', 'build_governor_finance.py'), ('CA_governor', 'build_governor_finance.py')]:
             # The key is inherited from the runner environment, never written to arguments or outputs.
             command = [sys.executable, str(ROOT / script), '--cycle', str(cycle), '--public', str(args.public)]
+            if name.endswith('_governor'):
+                command.extend(['--state', name[:2]])
             try:
                 process = subprocess.run(command, timeout=4 * 3600, check=False)
                 code = process.returncode

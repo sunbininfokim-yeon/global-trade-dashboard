@@ -121,3 +121,7 @@ python3 build_superpac.py --cycle 2026 --governor-import /path/to/reviewed-state
 MA는 공식 API 문서에서 인증/키 불필요를 명시한다. WA는 SODA/OData 지원을 명시한다. 나머지 다운로드·검색형 자료에 API 키가 있다고 가정하지 않는다. FEC_API_KEY는 주 공시 공통 키가 아니다.
 
 MA의 공식 OpenAPI에서 `/miscreports/iepacs/reports/{year}`(독립지출 PAC 보고서, 연도/후보/입장 필터)를 확인했다. API 접근 가능 여부와 별개로 지출 대상 주지사 후보 ID, 정정 처리, 주 단체 유형 매핑을 구현·검증해야 한다.
+
+## 2026-09-10 data follow-up
+
+CA Form 496 collection and the exact-name certified primary roster now accompany WA C6. See [Claude data gaps handoff](HANDOFF_CLAUDE_ELECTION_DATA_GAPS.md) for coverage, the required governor display category selection, geography normalization, upstream/source roles, and the separate House-context scheduling step. National governor coverage remains partial (CA/WA only). The source index is retained as an upstream dependency, not a second UI dataset.

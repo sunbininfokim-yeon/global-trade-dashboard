@@ -5,13 +5,14 @@ import argparse
 import hashlib
 import json
 from pathlib import Path
-from build_superpac import PUBLIC, INDEX, atomic_json
+from build_superpac import PUBLIC, ROOT, INDEX, atomic_json
 from election_watch.superpac import STATES, now
 from election_watch.superpac_schedule import reporting_cycle
+from election_watch.districts import normalize_house, district_code, district_audit
 
 CATALOG = 'usa_election_finance_index_v1.json'
 CATEGORIES = ['super_pac', 'hybrid_pac', 'single_candidate_ie', 'other_independent_spender', 'unclassified', 'state_independent_expenditure_committee', 'state_independent_spender_unclassified']
-OFFICES = {'H': 'house', 'S': 'senate', 'P': 'president'}
+OFFICES = {'H': 'house', 'S': 'senate', 'P': 'president', 'G': 'governor'}
 
 
 def read(path):
@@ -61,7 +62,7 @@ def candidate_cards(rows, roster):
             phases[phase] = {'totals_by_category': amounts(selected), 'allocations': selected}
         output.append({'candidate_id': candidate_id, 'name': entries[0].get('name', names[0]) if entries else names[0],
             'reported_names': names, 'reported_parties': sorted({r.get('party') or 'UNKNOWN' for r in spending + entries}),
-            'registration_records': entries, 'registration_status': 'fec_registered_ballot_unverified' if entries else 'spending_only_roster_unverified',
+            'registration_records': entries, 'registration_status': entries[0].get('registration_status', 'fec_registered_ballot_unverified') if entries else 'spending_only_roster_unverified',
             'totals_by_category': amounts(spending), 'election_types': phases})
     return output
 
@@ -81,17 +82,22 @@ def geometry_catalog(public):
 
 def build(public=PUBLIC, cadence='daily'):
     federal = read(public / INDEX) if (public / INDEX).exists() else {'cycles': {}}
-    governor_sources = {}
-    for path in sorted((public / 'usa_governor_finance').glob('*/WA.json')):
+    governor_sources = defaultdict(dict)
+    for path in sorted((public / 'usa_governor_finance').glob('*/*.json')):
         source = read(path)
-        if source.get('schema') != 'usa_governor_source_v1' or source.get('state') != 'WA':
+        if source.get('schema') != 'usa_governor_source_v1' or source.get('state') not in STATES or path.stem != source.get('state') or path.parent.name != str(source.get('cycle')):
             raise ValueError('Invalid governor source contract')
-        governor_sources[str(source['cycle'])] = source
+        governor_sources[str(source['cycle'])][source['state']] = source
     geometry = geometry_catalog(public)
+    source_directory = read(ROOT / 'config/usa_state_campaign_finance_sources_v1.json')
     catalog = {'schema': 'usa_election_finance_index_v1', 'generated_at': now(), 'currency': 'USD', 'amount_unit': 'cents',
+        'pipeline_role': 'ui_read_model', 'upstream_index': INDEX,
         'measure': 'independent_expenditure_for_or_against_candidate',
         'measure_label_ko': '후보 대상 외부 독립지출 (캠프가 받은 후원금 아님)',
-        'cycles': {}, 'categories': CATEGORIES,
+        'cycles': {}, 'categories': CATEGORIES, 'governor_source_directory': source_directory,
+        'display_contract': {'federal_superpac_categories': ['super_pac'],
+            'governor_independent_expenditure_categories': ['state_independent_expenditure_committee', 'state_independent_spender_unclassified'],
+            'governor_label_ko': '주 공시 독립지출 (슈퍼팩 유형 미확인)'},
         'join_contract': {'state': 'feature.properties.state_id', 'district': 'String(feature.properties.district).padStart(2, "0")',
             'race_id': 'USA:{state_id}:house:{district}', 'boundary_election_match_verified': False},
         'rules_ko': ['null은 미확보/관측 없음이며 0으로 바꾸지 마세요. 금액은 정수 센트입니다.',
@@ -101,7 +107,7 @@ def build(public=PUBLIC, cadence='daily'):
             '지도는 기존 경계와 신고 선거구 코드만 연결합니다. 해당 선거의 경계 일치 여부는 미검증입니다.']}
     for cycle in sorted(set(federal.get('cycles', {})) | set(governor_sources)):
         meta = federal.get('cycles', {}).get(cycle)
-        wa = governor_sources.get(cycle)
+        state_sources = governor_sources.get(cycle, {})
         rows, roster = [], []
         if meta:
             for path in meta['state_files'].values():
@@ -109,10 +115,17 @@ def build(public=PUBLIC, cadence='daily'):
                 if shard['cycle'] != int(cycle):
                     raise ValueError('FEC shard cycle mismatch')
                 rows.extend(shard['spending']); roster.extend(shard['candidates'])
-        if wa:
-            if any(r['state'] == 'WA' and r['office'] == 'governor' for r in rows):
-                raise ValueError('WA automated and manual governor sources overlap')
-            rows.extend(wa['spending'])
+        for state, source in state_sources.items():
+            if any(r['state'] == state and r['office'] == 'governor' for r in rows):
+                raise ValueError('Automated and manual governor sources overlap')
+            if any(r['state'] != state or r['office'] != 'governor' or r['cycle'] != int(cycle) for r in source['spending']):
+                raise ValueError('Governor row scope mismatch')
+            if any(c['state'] != state or c['office'] != 'G' or c['election_year'] != int(cycle) for c in source.get('candidates', [])):
+                raise ValueError('Governor roster scope mismatch')
+            rows.extend(source['spending'])
+            roster.extend(source.get('candidates', []))
+        rows, roster = normalize_house(rows, roster, geometry, cycle)
+        audit = district_audit(rows, roster)
         records_by_race, roster_by_race = defaultdict(list), defaultdict(list)
         for r in rows:
             key = (r['state'], r['office'], r.get('district'))
@@ -122,7 +135,7 @@ def build(public=PUBLIC, cadence='daily'):
         for c in roster:
             office = OFFICES[c['office']]
             state = 'US' if office == 'president' else c['state']
-            district = str(c.get('district', '')).zfill(2) if office == 'house' else None
+            district = district_code(c.get('district')) if office == 'house' else None
             roster_by_race[(state, office, district)].append(c)
         keys = set(records_by_race) | set(roster_by_race) | {(s, 'house', d) for s, d in geometry}
         keys |= {(s, office, None) for s in STATES for office in ('senate', 'governor')}
@@ -130,9 +143,10 @@ def build(public=PUBLIC, cadence='daily'):
         state_races = defaultdict(list)
         source_status = {'federal': {'status': meta['status'] if meta else 'not_collected', 'last_success_at': meta['generated_at'] if meta else None,
             'last_filing_date': meta.get('coverage', {}).get('last_filing_date') if meta else None,
-            'quality': meta.get('quality') if meta else None, 'notices_included': False},
-            'WA_governor': {'status': wa['status'] if wa else 'not_collected', 'last_success_at': wa['generated_at'] if wa else None,
-                'last_filing_date': wa['last_filing_date'] if wa else None, 'quality': wa['quality'] if wa else None}}
+            'quality': meta.get('quality') if meta else None, 'notices_included': False}}
+        for state, source in state_sources.items():
+            source_status[state + '_governor'] = {'status': source['status'], 'last_success_at': source['generated_at'],
+                'last_filing_date': source['last_filing_date'], 'quality': source['quality']}
         for source in source_status.values():
             current = int(cycle) == reporting_cycle()
             previous = int(cycle) == reporting_cycle() - 2
@@ -144,8 +158,9 @@ def build(public=PUBLIC, cadence='daily'):
             registered = roster_by_race.get((state, office, district), [])
             if office == 'governor':
                 coverage = (meta or {}).get('coverage', {}).get('governor', {}).get(state, {'status': 'unsupported'})
-                status = wa['status'] if state == 'WA' and wa else coverage['status']
-                source_key = 'WA_governor' if state == 'WA' and wa else 'manual_governor' if selected else None
+                source = state_sources.get(state)
+                status = source['status'] if source else coverage['status']
+                source_key = state + '_governor' if source else 'manual_governor' if selected else None
             else:
                 status, source_key = (meta['status'], 'federal') if meta else ('not_collected', 'federal')
             geo = geometry.get((state, district)) if office == 'house' else None
@@ -155,7 +170,9 @@ def build(public=PUBLIC, cadence='daily'):
             race_id = race_key(state, office, district)
             payload = {'schema': 'usa_election_finance_race_v1', 'cycle': int(cycle), 'race_id': race_id,
                 'state_id': state, 'office': office, 'district': district, 'map_join': join,
-                'status': status, 'source_status_key': source_key, 'currency': 'USD', 'amount_unit': 'cents',
+                'district_source': sorted({r['district_source']['status'] for r in selected + registered if r.get('district_source')}),
+                'status': status, 'source_status_key': source_key, 'currency': 'USD',
+                'coverage_note_ko': ('연결된 주 공시 양식의 부분 집계입니다.' if source_key else '주 공시 수집기 미연결. 관측 없음 또는 실제 지출 0을 뜻하지 않습니다.') if office == 'governor' else None, 'amount_unit': 'cents',
                 'seat_class': None, 'ballot_election_id': None,
                 'totals_by_category': amounts(selected),
                 'totals_by_election_type': {p: amounts(v) for p, v in group_rows(selected, 'election_type').items()},
@@ -173,12 +190,13 @@ def build(public=PUBLIC, cadence='daily'):
                 'totals_by_office': {office: amounts([r for r in rows if r['state'] == state and r['office'] == office])
                     for office in sorted({r['office'] for r in races})}}
         catalog['cycles'][cycle] = {'states': states, 'source_status': source_status,
-            'sources': (meta.get('sources', []) if meta else []) + ([{'url': wa['source_url'], 'metadata_url': wa['metadata_url']}] if wa else []),
-            'limitations_ko': (meta.get('limitations_ko', []) if meta else ['연방 자료 미수집']) + (wa['limitations_ko'] if wa else []),
+            'sources': (meta.get('sources', []) if meta else []) + [{'url': v['source_url'], 'metadata_url': v['metadata_url']} for v in state_sources.values()],
+            'limitations_ko': (meta.get('limitations_ko', []) if meta else ['연방 자료 미수집']) + [note for v in state_sources.values() for note in v['limitations_ko']],
             'unmatched_district_race_ids': [race_key(s, o, d) for s, o, d in keys if o == 'house' and (s, d) not in geometry]}
         catalog['cycles'][cycle]['unmatched_district_race_ids'].sort()
         national = {'schema': 'usa_election_finance_national_v1', 'cycle': int(cycle),
             'states': catalog['cycles'][cycle].pop('states'),
+            'district_audit': audit,
             'unmatched_district_race_ids': catalog['cycles'][cycle].pop('unmatched_district_race_ids')}
         catalog['cycles'][cycle]['national_file'] = immutable(public, f'{cycle}/national', national)
     # The map catalog is the sole commit point for all immutable map files.
