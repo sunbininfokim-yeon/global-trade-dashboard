@@ -2,7 +2,7 @@
 
 ## 지금 채우는 데이터
 
-`scripts/sync-us-legislators.js`는 이미 같은 저장소에서 정치-미국 화면이 사용하는 `New for anti/public/data/elections_board_v1.json`의 현재 House/Senate 명단을 `us_legislators`로 적재한다. 보존 필드는 바이오가이드 ID, 이름, 정당, 주, 선거구, 원(하원·상원)이다. 따라서 `bills.sponsor_bioguide_id` 및 `bill_vote_members.bioguide_id`와 정확히 연결할 수 있다. 매 실행은 `data_sync_runs`와 `data_sync_state`에 원본 생성 시각·행 수를 남기며, 새 완전 로스터가 모두 upsert된 뒤에만 명단에서 빠진 의원을 `current_member=false`로 전환한다.
+`scripts/sync-us-legislators.js`는 이미 같은 저장소에서 **홈페이지 정책&정치**와 **선거 모듈**이 공동으로 쓰는 `New for anti/public/data/elections_board_v1.json`의 현재 House/Senate 명단을 `us_legislators`로 적재한다. 보존 필드는 바이오가이드 ID, 이름, 정당, 주, 선거구, 원(하원·상원)이다. 따라서 `bills.sponsor_bioguide_id` 및 `bill_vote_members.bioguide_id`와 정확히 연결할 수 있다. 매 실행은 `data_sync_runs`와 `data_sync_state`에 원본 생성 시각·행 수를 남기며, 새 완전 로스터가 모두 upsert된 뒤에만 명단에서 빠진 의원을 `current_member=false`로 전환한다.
 
 원본에서 유효 의원이 400명 미만이면 동기화는 실패하고 기존 의원 행을 바꾸지 않는다. 비어 있거나 부분 생성된 파일이 기존 537명을 한꺼번에 비활성화하는 사고를 막기 위한 가드다.
 
@@ -57,7 +57,9 @@ node scripts/lib/committee-membership-source.test.js
 
 `coverage.complete: true`는 해당 역할군의 **완전한 스냅샷**일 때만 쓴다. `member`가 포함된 완전 스냅샷은 최소 250행, 리더십 완전 스냅샷은 최소 20행이 아니면 실패한다. 검증과 upsert가 모두 끝난 뒤에만 이번 달에 보이지 않은 기존 행을 `current=false`로 바꾼다. 부분 파일·빈 Cursor 결과가 현직 위원장을 지우지 못하게 하기 위한 안전장치다.
 
-현재 커밋된 `data/policy/committee-memberships.json`은 **parent committee만** 넣고 subcommittee는 빼 두었으므로 `coverage.complete` 는 **false**다. 월간 동기화는 신규·변경 행을 upsert하지만, 명단에서 사라진 기존 의원을 자동 비활성화하지 않는다. parent committee 범위만 안전하게 reconcile하려면 별도 스키마/파이프라인 개선이 필요하다.
+현재 커밋된 `data/policy/committee-memberships.json`은 **하원 상임위+소위원회**와 **상원 parent committee**를 넣는다. 상원 소위원회는 CVC XML에 bioguide가 없어 빠지므로 `coverage.complete` 는 **false**다. `member` 포함 완전 스냅샷은 최소 250행, 리더십만이면 최소 20행이 아니면 `complete: true`로 올리지 않는다. 월간 동기화는 신규·변경 행을 upsert하지만, `complete: false`인 동안에는 명단에서 사라진 기존 의원을 자동 비활성화하지 않는다.
+
+이 JSON과 `elections_board_v1.json`의 의회 명단은 **홈페이지 정책&정치**와 **선거 모듈**이 공동으로 쓴다. 의원 신원(이름/정당/주/원)은 Congress.gov API가 이미 채운다. Cursor가 손으로 채우는 것은 API에 없는 공식 규칙·로스터다.
 
 ### 캐시 재현 (API 키 없음)
 
@@ -71,4 +73,13 @@ committee_id의 House clerk 코드 ↔ Congress.gov system code 대응은 https:
 
 환경 변수로 캐시 경로를 바꿀 수 있다. `HOUSE_MEMBER_DATA_XML`, `SENATE_CVC_JSON`, `SENATE_CVC_XML`, `COMMITTEE_ROSTER_CACHE_DIR`.
 
-공식 또는 검증된 수동 매핑이 없는 `committee_agency_jurisdictions`는 계속 빈 값으로 남긴다. 법안 수나 키워드로 기관 소관을 추정해 넣지 않는다.
+## 상임위 ↔ 연방기관 관할
+
+`data/policy/committee-agency-jurisdictions.json`은 House Rule X / Senate Rule XXV에서 **내각급 부처 이름을 조항이 직접 적은** 매핑만 담는다. 법안 수나 키워드로 소관을 추정하지 않는다. `coverage.complete`는 false다.
+
+```bash
+node scripts/lib/committee-agency-jurisdiction-source.test.js
+node scripts/sync-committee-agency-jurisdictions.js
+```
+
+`agency_id`는 Federal Register 슬러그(`fr-agriculture-department` 등)다. `agencies` 테이블에 해당 행이 없으면 동기화는 실패하고 매핑을 넣지 않는다. 없는 기관 id를 만들지 않는다.

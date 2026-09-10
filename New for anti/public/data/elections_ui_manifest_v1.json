@@ -1,7 +1,7 @@
 {
   "schema_version": "elections-ui-manifest-v1",
-  "generated_at": "2026-08-20T06:28:33.142782+00:00",
-  "board_generated_at": "2026-08-20T06:28:33.058356+00:00",
+  "generated_at": "2026-09-10T16:49:17.670375+00:00",
+  "board_generated_at": "2026-09-10T16:49:17.572215+00:00",
   "calendar_generated_at": "2026-08-14T07:12:04.854656+00:00",
   "claude_handoff_gate": {
     "can_start_ui": true,
@@ -63,8 +63,8 @@
     "missing_spectrum": [],
     "missing_admin1_geometry": [],
     "screen_counts": {
-      "ready": 75,
-      "partial": 28,
+      "ready": 76,
+      "partial": 27,
       "disabled": 76
     }
   },
@@ -215,7 +215,6 @@
             "countries[USA].ui_ready.state_drilldown.states"
           ],
           "missing": [
-            "senate_term_end",
             "all_congressional_district_geometry"
           ],
           "map_join": "state.map_feature_code ↔ feature.properties.code",
@@ -247,15 +246,11 @@
           "note": "House list includes voting members and territorial/DC delegates; use the declared voting-seat paths for the hemicycle."
         },
         "legislature_detail": {
-          "status": "partial",
+          "status": "ready",
           "paths": [
-            "countries[USA].ui_ready.congress"
+            "countries[USA].ui_ready.congress.committees"
           ],
-          "missing": [
-            "standing_committees",
-            "committee_chairs",
-            "committee_member_rosters"
-          ]
+          "missing": []
         },
         "factions": {
           "status": "partial",

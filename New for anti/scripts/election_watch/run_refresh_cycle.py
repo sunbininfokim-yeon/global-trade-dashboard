@@ -90,7 +90,9 @@ def main() -> int:
             print(f"DRY-RUN fetch/review: {target['id']} ({target['iso3']})")
         if args.build_derived:
             print(
-                "DRY-RUN derived rebuild: election_watch.build_factions + "
+                "DRY-RUN derived rebuild: election_watch.extract_usa_committees + "
+                "election_watch.extract_usa_senate_terms + "
+                "election_watch.build_factions + "
                 "build_board.py + build_calendar_master.py + build_ui_manifest.py"
             )
         return 0
@@ -119,7 +121,11 @@ def main() -> int:
 
     build_exit = 0
     if args.build_derived:
-        build_exit = run([sys.executable, "-m", "election_watch.build_factions"])
+        build_exit = run([sys.executable, "-m", "election_watch.extract_usa_committees"])
+        if build_exit == 0:
+            build_exit = run([sys.executable, "-m", "election_watch.extract_usa_senate_terms"])
+        if build_exit == 0:
+            build_exit = run([sys.executable, "-m", "election_watch.build_factions"])
         if build_exit == 0:
             build_exit = run([sys.executable, "build_board.py", "--no-betting", "--print-stats"])
         if build_exit == 0:
