@@ -78,20 +78,28 @@ def main() -> int:
         action="store_true",
         help="Rebuild factions, board, calendar master, and UI readiness manifest after reporting",
     )
+    parser.add_argument(
+        "--refresh-usa-eop",
+        action="store_true",
+        help="Fetch official White House pages and promote verified EOP names into usa_eop.json / tier12",
+    )
     parser.add_argument("--dry-run", action="store_true", help="Print selected work without fetching, writing, or rebuilding")
     args = parser.parse_args()
     countries = {country.upper() for country in args.country}
     targets = selected_targets(countries)
-    if not targets:
+    if not targets and not args.refresh_usa_eop and not args.build_derived:
         parser.error("No source targets matched the requested country filter")
 
     if args.dry_run:
         for target in targets:
             print(f"DRY-RUN fetch/review: {target['id']} ({target['iso3']})")
+        if args.refresh_usa_eop:
+            print("DRY-RUN usa eop: election_watch.extract_usa_eop --fetch --merge-tier12")
         if args.build_derived:
             print(
                 "DRY-RUN derived rebuild: election_watch.extract_usa_committees + "
                 "election_watch.extract_usa_senate_terms + "
+                "election_watch.extract_usa_eop --merge-tier12 + "
                 "election_watch.build_factions + "
                 "build_board.py + build_calendar_master.py + build_ui_manifest.py"
             )
@@ -120,10 +128,18 @@ def main() -> int:
     print("wrote", REPORT_PATH)
 
     build_exit = 0
+    if args.refresh_usa_eop:
+        build_exit = run(
+            [sys.executable, "-m", "election_watch.extract_usa_eop", "--fetch", "--merge-tier12", "--write-report"]
+        )
     if args.build_derived:
         build_exit = run([sys.executable, "-m", "election_watch.extract_usa_committees"])
         if build_exit == 0:
             build_exit = run([sys.executable, "-m", "election_watch.extract_usa_senate_terms"])
+        if build_exit == 0:
+            build_exit = run(
+                [sys.executable, "-m", "election_watch.extract_usa_eop", "--merge-tier12", "--write-report"]
+            )
         if build_exit == 0:
             build_exit = run([sys.executable, "-m", "election_watch.build_factions"])
         if build_exit == 0:

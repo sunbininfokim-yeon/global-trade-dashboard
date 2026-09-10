@@ -4,6 +4,41 @@
   "policy_ko": "지정된 공개 페이지를 원문 캐시로만 수집한다. 수치·인명·일정은 원문을 검토한 뒤에만 profile/calendar/extracted에 반영하며 LLM이 빈 값을 추정하지 않는다.",
   "targets": [
     {
+      "id": "usa_wh_administration",
+      "iso3": "USA",
+      "url": "https://www.whitehouse.gov/administration/",
+      "raw_path": "raw/usa/wh_administration.html",
+      "role": "president_vice_president_locator",
+      "review_fields": [
+        "president",
+        "vice_president"
+      ]
+    },
+    {
+      "id": "usa_wh_cabinet",
+      "iso3": "USA",
+      "url": "https://www.whitehouse.gov/administration/cabinet/",
+      "raw_path": "raw/usa/wh_cabinet.html",
+      "role": "cabinet_and_omb",
+      "review_fields": [
+        "cabinet",
+        "omb_director"
+      ]
+    },
+    {
+      "id": "usa_wh_staff_report",
+      "iso3": "USA",
+      "url": "https://www.whitehouse.gov/wp-content/uploads/2026/07/2026-Annual-Report-to-Congress-on-White-House-Staff.pdf",
+      "raw_path": "raw/usa/wh_staff_report_2026-07-01.pdf",
+      "role": "who_annual_payroll_assistants",
+      "review_fields": [
+        "chief_of_staff",
+        "national_security_advisor",
+        "nec_director",
+        "dpc_director"
+      ]
+    },
+    {
       "id": "idn_kpu_portal",
       "iso3": "IDN",
       "url": "https://www.kpu.go.id/",

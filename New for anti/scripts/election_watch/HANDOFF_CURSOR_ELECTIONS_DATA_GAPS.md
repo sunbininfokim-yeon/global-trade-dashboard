@@ -1,88 +1,92 @@
-# 핸드오프: 선거 UI · 정책&정치 공동 데이터 (Claude 요청 #284에 대한 Cursor 응답)
+# 핸드오프: 선거 UI 행정부·의회 데이터 보강 요청 (Claude → Cursor)
 
-작성: Cursor · 2026-09-11
-원 요청: PR https://github.com/sunbininfokim-yeon/global-trade-dashboard/pull/284
-대상: `public/data/elections_board_v1.json`, `public/data/elections_ui_manifest_v1.json`,
-`data/policy/committee-memberships.json`, `data/policy/committee-agency-jurisdictions.json`
+작성: Claude Code · 2026-09-10
+대상 파일: `public/data/elections_board_v1.json`, `public/data/elections_ui_manifest_v1.json`
+(둘 다 파이프라인 산출물 — Claude는 이 파일을 직접 손으로 고치지 않음. 아래 항목은
+`run_refresh_cycle.py --build-derived` 체인을 통해서만 반영해줄 것)
 
-**공동 사용.** 아래 JSON은 홈페이지 **정책&정치**와 **선거 모듈**이 같이 읽는다.
-의원 신원(이름/정당/주/원)은 Congress.gov API가 이미 채우므로 Cursor가 다시 긁지 않는다.
-사람이 공식 규칙·로스터를 대조해야 하는 필드만 이 PR에 넣는다.
+> **C항(상임위) 응답:** `docs/ops/handoff/2026-09-11-cursor.md` (PR #290).
+> 이 파일은 요청 원문 그대로 유지 — 응답으로 덮어쓰지 말고 별도 파일에 쓸 것
+> (`docs/ops/handoff/README.md` 규칙: 한 파일에 두 에이전트가 쓰지 않는다).
 
-`scripts/sync-us-legislators.js`는 `elections_board_v1.json`의 House/Senate 명단을
-`us_legislators`로 적재한다. 정책 상임위 카드는 `committee_members`와
-`committee_agency_jurisdictions`를 읽는다.
+## 배경
 
-## 이 PR에서 채운 것
+선거 UI(정치 대분류)를 열어 국가별 화면을 확인하면, 다음 화면들이 "데이터 수집 예정"
+또는 비활성 카드로 뜬다. UI 쪽 렌더링 문제가 아니라 `elections_board_v1.json`에
+해당 필드가 아예 `null`이거나 존재하지 않아서다 (직접 확인함). 클라이언트에서
+합산·추정으로 채우는 건 계약 위반이라 하지 않았고, 원본 데이터를 보강해달라는
+요청이다.
 
-### C. USA 연방의회 상임위 — 완료 (선거 보드)
+## A. 최우선 — 의회 실시간 구성이 통째로 없는 8개국
 
-Clerk of the House `MemberData.xml` + Senate CVC JSON으로
-`config/extracted/usa_committees.json`을 만들고 board의
-`ui_ready.congress.committees`에 위원장·위원 명부를 붙였다.
-`missing_fields`는 데이터가 있을 때만 비운다.
+`elections_ui_manifest_v1.json`에서 아래 8개국은 `screens.legislature.status = "disabled"`,
+`missing = ["live_composition"]`이고, `elections_board_v1.json`에서 해당 국가의
+`legislature`/`legislature_live` 키 자체가 `null`이다 (확인 완료):
 
-### C2. 상원 임기 클래스 I/II/III — 완료
+- IND (인도), TWN (대만), ZAF (남아공), NGA (나이지리아), IDN (인도네시아),
+  TUR (튀르키예), SAU (사우디), ARE (UAE)
 
-Congress.gov member list에는 class가 없다. `usa_senate_terms.json`을
-`usa_congress.json` 상원의원 행에 overlay한다.
+필요한 최소 필드는 이미 `ready` 상태인 JPN/DEU/GBR/FRA/BRA/ISR 국가들의
+`legislature_live` 구조를 그대로 따르면 된다 — 양원/단원 여부에 맞춰
+정당별 의석수 + 의장단(가능한 범위까지). 개별 의원 명부까지는 필요 없음
+(핸드오프 §6 "국가 등급별 최대 깊이" — tier-2/3는 정당 구성 요약이 상한).
 
-- `senate_class` / `senate_class_roman` / `term_end` / `next_election_year` / `up_in_2026`
-- 100명 전원 class 부여. Class II 33명이 2026-11-03 개선, 임기 만료 2027-01-03.
-- 출처: unitedstates/congress-legislators `legislators-current.yaml` (`grade: public_secondary`).
-  좌석 class 자체는 헌법 사항이다.
+우선순위 체감: IND(세계 최대 의회 민주주의) · IDN · TUR이 사용자 노출 빈도상 먼저면 좋겠음.
 
-### C3. "Graham, Darline" — 파싱 오류 아님. 고치지 않음
+## B. IRN(이란) 의회 — 부분 채움
 
-`bioguideId` G000608, South Carolina 상원의원 이름은 **Darline Graham**이
-Congress.gov 현직 레코드다. Lindsey Graham으로 되돌리지 않는다.
-Class II, `term_end` 2027-01-03, `up_in_2026: true`.
-100명 overlay 이름과 congress-legislators YAML은 불일치 0건.
+매니페스트가 `partial`로 선언하고 `missing`에 `majlis_party_bloc_seats`,
+`member_roster`, `committees`를 나열해뒀는데, 실제 board에는 `legislature: null`이라
+아무것도 없다. 최소한 `majlis_party_bloc_seats`(계파 블록별 의석)만이라도 채워지면
+`disabled → partial`로 승격 가능.
 
-### F. committee_agency_jurisdictions — 부분 시드
+## C. USA 연방의회 상임위 — `congress.missing_fields`
 
-파이프라인이 없어서 테이블만 있던 매핑을
-`data/policy/committee-agency-jurisdictions.json` +
-`scripts/sync-committee-agency-jurisdictions.js`로 넣었다.
-House Rule X / Senate Rule XXV에서 **내각급 부처 이름을 조항이 직접 적은** 행만.
-법안 건수로 추정하지 않음. `coverage.complete: false`.
-`agencies`에 FR 슬러그가 없으면 동기화는 실패하고 행을 넣지 않는다.
+`ui_ready.congress.missing_fields = ["standing_committees", "committee_chairs",
+"committee_member_rosters"]`. 상원·하원 의석수/원내지도부는 이미 정상 표시되고,
+상임위만 "데이터 수집 예정" 카드로 남아 있음. 하원·상원 상임위원장 명단 + 소속
+위원 명부가 필요.
 
-### G. committee-memberships.json — 하원 소위 추가, complete는 false 유지
+## D. KOR(한국) 행정부 내각 — 소스 충돌 2건 미해결
 
-하원 Clerk 소위원회 comcode → congress.gov systemCode가 목록에 있을 때만 행을 추가한다.
-상원 소위원회 bioguide는 CVC에 없어서 빠진다.
-`coverage.complete`는 **false**로 둔다 (자동 비활성화 안전장치).
-코드 기준: member 포함 완전 스냅샷 ≥250행, 리더십만 ≥20행 — 못 채우면 false.
+`executive_live.source_conflicts_excluded = ["해양수산부 장관", "중소벤처기업부 장관"]`.
+공개 소스 간 불일치로 표시를 보류 중인 상태(핸드오프 §3 규칙대로 강제로 채우지
+않고 각주만 노출 중). 정본 확정되면 `executive_live.cabinet`에 채워 넣고
+`source_conflicts_excluded`에서 제거.
 
-## 아직 이 PR 밖 (원 #284 A/B/D/E)
+## E. (우선순위 낮음, UI에는 안 뜨지만 데이터 오염) 50개 주 `state_legislature.raw` 필드
 
-- A. IND/TWN/ZAF/NGA/IDN/TUR/SAU/ARE 의회 live_composition
-- B. IRN majlis
-- D. KOR 해수부·중기부 장관 소스 충돌
-- E. 50개 주 `state_legislature.raw` 위키 잔재
+`ui_ready.state_drilldown.states[].state_legislature.{state_senate,state_house}.raw`
+필드 98/100(주×양원)에 위키텍스트/HTML 잔재가 그대로 남아 있음. 예 (Alabama):
 
-## 확인
+```
+"raw": "style=\"color:black; background-color:</span><span typeof=\"mw:Nowiki\" about=\"..."
+```
+
+UI는 이 필드를 읽지 않아(코드 전수 확인함) 화면엔 영향 없지만, 스크레이퍼가
+위키 테이블 마크업을 못 걷어낸 흔적이라 다른 필드도 같은 파서를 거쳤다면
+잠재 위험. 시간 날 때 파서 점검 + `raw` 필드 자체를 최종 산출물에서 빼는 것 권장
+(디버그용이면 별도 내부 캐시로만 남기고 배포 JSON에는 미포함).
+
+## 확인 기준
+
+각 항목 반영 후:
 
 ```bash
 cd "New for anti/scripts/election_watch"
-python3 -m election_watch.extract_usa_committees
-python3 -m election_watch.extract_usa_senate_terms
 python3 run_refresh_cycle.py --build-derived
-python3 -m unittest tests.test_extract_usa_senate_terms
-
-cd ../../..
-node scripts/lib/committee-membership-roster.test.js
-node scripts/lib/committee-agency-jurisdiction-source.test.js
-node scripts/build-committee-memberships.js
 ```
 
-매니페스트: USA `screens.legislature_detail.missing`가 비고,
-`ui_ready.congress.missing_fields`가 비면 C 완료.
-상원 행에 `senate_class`가 있으면 C2 완료.
+`elections_ui_manifest_v1.json`의 `claude_handoff_gate.can_start_ui = true`,
+`errors = []` 유지 확인. A/B 항목은 해당 국가 `screens.legislature.status`가
+`disabled → partial` 또는 `ready`로, C는 `congress.missing_fields`에서 항목이
+빠지는 것으로, D는 `source_conflicts_excluded`가 비는 것으로 완료를 확인할 수 있음.
 
 ## 지켜줄 것
 
-- UI 파일(`New for anti/{app.js,index.html,style.css}`, `js/elections/**`)은 건드리지 않음.
-- 클라이언트 조인 금지. 정당명/의석/class는 board JSON에 미리 붙인다.
-- 확보 못 한 필드는 null + missing. 추정치로 채우지 않음.
+- UI 쪽 파일(`New for anti/{app.js,index.html,style.css}`, `js/elections/**`)은
+  건드리지 말 것 — Claude 단독 소유 (`docs/ops/OWNERS.md`).
+- 클라이언트 조인이 필요 없도록, 정당명/의석수는 board JSON에 미리 계산해서 넣을 것
+  (UI는 절대 합산·추정하지 않는다는 게 계약의 핵심 규칙).
+- 확보 못 한 필드는 `null` 그대로 두고 매니페스트에 `missing`으로 정직하게 선언할 것
+  — 임의 추정치로 채우지 말 것.
