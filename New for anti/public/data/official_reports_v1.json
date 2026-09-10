@@ -1,6 +1,6 @@
 {
   "schema_version": "official-reports-v1",
-  "generated_at": "2026-09-10T12:57:02.966025+00:00",
+  "generated_at": "2026-09-10T19:08:43.197662+00:00",
   "model": {
     "name": "official_reports_learnable_v1",
     "description": "Official sources only (US/JP/CN/EU/UK public RSS·HTML). Domains: economy/finance/diplomacy/security/agriculture. Series catalog + label_history for collaborative learning. No Dropbox.",
@@ -17,8 +17,8 @@
   "stats": {
     "sources_ok": 9,
     "sources_failed": 0,
-    "raw_items": 156,
-    "scored": 156,
+    "raw_items": 157,
+    "scored": 157,
     "selected": 40,
     "indicators": 16
   },
@@ -47,7 +47,7 @@
     {
       "source_id": "us_eia",
       "ok": true,
-      "count": 14,
+      "count": 15,
       "error": null,
       "mode": "live"
     },
@@ -183,6 +183,21 @@
       "significance": 2.64
     },
     {
+      "series_id": "US_EIA_ENERGY",
+      "label_ko": "EIA 에너지",
+      "country": "USA",
+      "domains": [
+        "economy",
+        "security",
+        "agriculture"
+      ],
+      "title": "United States on track for record crude oil production in 2026",
+      "url": "https://www.eia.gov/todayinenergy/detail.php?id=68125",
+      "published_at": "2026-09-10T14:00:00+00:00",
+      "site_slot": "ticker",
+      "significance": 2.402
+    },
+    {
       "series_id": "JP_BOJ_POLICY",
       "label_ko": "일본은행 정책·공표",
       "country": "JPN",
@@ -291,20 +306,6 @@
       "title": "Japanese Government Bonds Held by the Bank of Japan",
       "url": "http://www.boj.or.jp/en/statistics/boj/other/mei/release/2026/mei260820.xlsx",
       "published_at": "2026-08-24T08:00:00+00:00",
-      "site_slot": "finance.policy",
-      "significance": 2.306
-    },
-    {
-      "series_id": "JP_BOJ_POLICY",
-      "label_ko": "일본은행 정책·공표",
-      "country": "JPN",
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "title": "Bank of Japan Accounts (August 20)",
-      "url": "http://www.boj.or.jp/en/statistics/boj/other/acmai/release/2026/ac260820.htm",
-      "published_at": "2026-08-24T01:00:00+00:00",
       "site_slot": "finance.policy",
       "significance": 2.306
     }
@@ -937,6 +938,79 @@
       "site_slot": null
     },
     {
+      "id": "cc44b028b9d9b6f1",
+      "published_at": "2026-09-10T14:00:00+00:00",
+      "source": {
+        "id": "us_eia",
+        "name": "EIA",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.eia.gov/todayinenergy/detail.php?id=68125",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "security",
+        "agriculture"
+      ],
+      "series_id": "US_EIA_ENERGY",
+      "title": {
+        "original": "United States on track for record crude oil production in 2026",
+        "original_lang": "en",
+        "ko": "[USA·경제] United States on track for record crude oil production in 2026"
+      },
+      "summary": "We forecast U.S. crude oil production will average 13.8 million barrels per day (b/d) in 2026, surpassing the previous record of 13.7 million b/d set in 2025, in our latest Short-Term Energy Outlook (STEO).",
+      "scores": {
+        "significance": 2.402,
+        "final": 2.402
+      },
+      "rank_reasons": [
+        "domains:economy,security,agriculture",
+        "series:US_EIA_ENERGY",
+        "boost:1"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": "ticker"
+    },
+    {
+      "id": "8b277bde0ea06a05",
+      "published_at": "2026-09-10T14:06:53+00:00",
+      "source": {
+        "id": "us_whitehouse",
+        "name": "White House",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.whitehouse.gov/fact-sheets/2026/09/fact-sheet-president-donald-j-trump-announces-the-working-families-obamacare-refunds/",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "diplomacy",
+        "security"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "Fact Sheet: President Donald J. Trump Announces the Working Families Obamacare Refunds",
+        "original_lang": "en",
+        "ko": "[USA·경제] Fact Sheet: President Donald J. Trump Announces the Working Families Obamacare Refunds"
+      },
+      "summary": "RETURNING BIDEN OVERCHARGES TO WORKING FAMILIES: Today, President Donald J. Trump announced that the federal government will return to the American people hundreds of millions in Obamacare overcharges, collected by the Biden Administration, by issuing refunds of $500 per person t",
+      "scores": {
+        "significance": 2.392,
+        "final": 2.392
+      },
+      "rank_reasons": [
+        "domains:economy,diplomacy,security",
+        "boost:1"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
       "id": "470df38451dbebdd",
       "published_at": "2026-08-31T23:55:33+00:00",
       "source": {
@@ -1037,41 +1111,6 @@
       },
       "rank_reasons": [
         "domains:economy,finance"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
-    },
-    {
-      "id": "f4c861363297d5e2",
-      "published_at": "2026-08-07T14:00:00+00:00",
-      "source": {
-        "id": "us_eia",
-        "name": "EIA",
-        "region": "usa",
-        "slant": null
-      },
-      "url": "https://www.eia.gov/todayinenergy/detail.php?id=67925",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "economy",
-        "security",
-        "agriculture"
-      ],
-      "series_id": null,
-      "title": {
-        "original": "Battery storage capacity averaged 70% growth over the last three years",
-        "original_lang": "en",
-        "ko": "[USA·경제] Battery storage capacity averaged 70% growth over the last three years"
-      },
-      "summary": "Utility-scale battery storage capacity in the United States increased significantly during the last three years, with an annual average growth rate of 70%. By the end of 2025, the U.S. power system had operational battery storage capacity of 43.6 gigawatts (GW). During the first ",
-      "scores": {
-        "significance": 2.332,
-        "final": 2.332
-      },
-      "rank_reasons": [
-        "domains:economy,security,agriculture"
       ],
       "translation_status": "skipped",
       "event_type": "official_report",
@@ -1671,44 +1710,20 @@
       "translation_status": "skipped",
       "event_type": "official_report",
       "site_slot": "finance.policy"
-    },
-    {
-      "id": "b57a4c3a793ac6a7",
-      "published_at": "2026-08-24T01:00:00+00:00",
-      "source": {
-        "id": "jp_boj_whatsnew",
-        "name": "Bank of Japan",
-        "region": "jpn",
-        "slant": null
-      },
-      "url": "http://www.boj.or.jp/en/statistics/boj/other/acmai/release/2026/ac260820.htm",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "series_id": "JP_BOJ_POLICY",
-      "title": {
-        "original": "Bank of Japan Accounts (August 20)",
-        "original_lang": "en",
-        "ko": "[JPN·경제] Bank of Japan Accounts (August 20)"
-      },
-      "summary": "",
-      "scores": {
-        "significance": 2.306,
-        "final": 2.306
-      },
-      "rank_reasons": [
-        "domains:economy,finance",
-        "series:JP_BOJ_POLICY"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": "finance.policy"
     }
   ],
   "pending_review": [
+    {
+      "title": "Christine Lagarde, Boris Vujčić: Monetary policy statement",
+      "url": "https://www.ecb.europa.eu//press/press_conference/monetary-policy-statement/2026/html/ecb.is260910~6a45359cfc.en.html",
+      "country": "EUR",
+      "domains": [
+        "finance",
+        "economy"
+      ],
+      "significance": 2.112,
+      "suggest": "label promote|keep|drop + series_id later"
+    },
     {
       "title": "Boris Vujčić: Listening to households: expectations, behaviour and monetary policy",
       "url": "https://www.ecb.europa.eu//press/key/date/2026/html/ecb.sp260901~bb28f33f54.en.html",
@@ -1850,26 +1865,6 @@
         "finance"
       ],
       "significance": 1.978,
-      "suggest": "label promote|keep|drop + series_id later"
-    },
-    {
-      "title": "Minutes of the Federal Open Market Committee, June 16-17, 2026",
-      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260708a.htm",
-      "country": "USA",
-      "domains": [
-        "finance"
-      ],
-      "significance": 1.904,
-      "suggest": "label promote|keep|drop + series_id later"
-    },
-    {
-      "title": "Minutes of the Board's discount rate meeting on April 20 and 29, 2026",
-      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260526a.htm",
-      "country": "USA",
-      "domains": [
-        "finance"
-      ],
-      "significance": 1.904,
       "suggest": "label promote|keep|drop + series_id later"
     }
   ],
@@ -2501,6 +2496,79 @@
       "site_slot": null
     },
     {
+      "id": "cc44b028b9d9b6f1",
+      "published_at": "2026-09-10T14:00:00+00:00",
+      "source": {
+        "id": "us_eia",
+        "name": "EIA",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.eia.gov/todayinenergy/detail.php?id=68125",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "security",
+        "agriculture"
+      ],
+      "series_id": "US_EIA_ENERGY",
+      "title": {
+        "original": "United States on track for record crude oil production in 2026",
+        "original_lang": "en",
+        "ko": "[USA·경제] United States on track for record crude oil production in 2026"
+      },
+      "summary": "We forecast U.S. crude oil production will average 13.8 million barrels per day (b/d) in 2026, surpassing the previous record of 13.7 million b/d set in 2025, in our latest Short-Term Energy Outlook (STEO).",
+      "scores": {
+        "significance": 2.402,
+        "final": 2.402
+      },
+      "rank_reasons": [
+        "domains:economy,security,agriculture",
+        "series:US_EIA_ENERGY",
+        "boost:1"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": "ticker"
+    },
+    {
+      "id": "8b277bde0ea06a05",
+      "published_at": "2026-09-10T14:06:53+00:00",
+      "source": {
+        "id": "us_whitehouse",
+        "name": "White House",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.whitehouse.gov/fact-sheets/2026/09/fact-sheet-president-donald-j-trump-announces-the-working-families-obamacare-refunds/",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "diplomacy",
+        "security"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "Fact Sheet: President Donald J. Trump Announces the Working Families Obamacare Refunds",
+        "original_lang": "en",
+        "ko": "[USA·경제] Fact Sheet: President Donald J. Trump Announces the Working Families Obamacare Refunds"
+      },
+      "summary": "RETURNING BIDEN OVERCHARGES TO WORKING FAMILIES: Today, President Donald J. Trump announced that the federal government will return to the American people hundreds of millions in Obamacare overcharges, collected by the Biden Administration, by issuing refunds of $500 per person t",
+      "scores": {
+        "significance": 2.392,
+        "final": 2.392
+      },
+      "rank_reasons": [
+        "domains:economy,diplomacy,security",
+        "boost:1"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
       "id": "470df38451dbebdd",
       "published_at": "2026-08-31T23:55:33+00:00",
       "source": {
@@ -2601,41 +2669,6 @@
       },
       "rank_reasons": [
         "domains:economy,finance"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
-    },
-    {
-      "id": "f4c861363297d5e2",
-      "published_at": "2026-08-07T14:00:00+00:00",
-      "source": {
-        "id": "us_eia",
-        "name": "EIA",
-        "region": "usa",
-        "slant": null
-      },
-      "url": "https://www.eia.gov/todayinenergy/detail.php?id=67925",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "economy",
-        "security",
-        "agriculture"
-      ],
-      "series_id": null,
-      "title": {
-        "original": "Battery storage capacity averaged 70% growth over the last three years",
-        "original_lang": "en",
-        "ko": "[USA·경제] Battery storage capacity averaged 70% growth over the last three years"
-      },
-      "summary": "Utility-scale battery storage capacity in the United States increased significantly during the last three years, with an annual average growth rate of 70%. By the end of 2025, the U.S. power system had operational battery storage capacity of 43.6 gigawatts (GW). During the first ",
-      "scores": {
-        "significance": 2.332,
-        "final": 2.332
-      },
-      "rank_reasons": [
-        "domains:economy,security,agriculture"
       ],
       "translation_status": "skipped",
       "event_type": "official_report",
@@ -3222,41 +3255,6 @@
         "original": "Japanese Government Bonds Held by the Bank of Japan",
         "original_lang": "en",
         "ko": "[JPN·경제] Japanese Government Bonds Held by the Bank of Japan"
-      },
-      "summary": "",
-      "scores": {
-        "significance": 2.306,
-        "final": 2.306
-      },
-      "rank_reasons": [
-        "domains:economy,finance",
-        "series:JP_BOJ_POLICY"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": "finance.policy"
-    },
-    {
-      "id": "b57a4c3a793ac6a7",
-      "published_at": "2026-08-24T01:00:00+00:00",
-      "source": {
-        "id": "jp_boj_whatsnew",
-        "name": "Bank of Japan",
-        "region": "jpn",
-        "slant": null
-      },
-      "url": "http://www.boj.or.jp/en/statistics/boj/other/acmai/release/2026/ac260820.htm",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "series_id": "JP_BOJ_POLICY",
-      "title": {
-        "original": "Bank of Japan Accounts (August 20)",
-        "original_lang": "en",
-        "ko": "[JPN·경제] Bank of Japan Accounts (August 20)"
       },
       "summary": "",
       "scores": {
