@@ -62,7 +62,7 @@ const chamberCard = (label, chamber) => {
 
 export const renderUsaStateDashboard = (root, {
     state, districtMapReady, onBackToUsa,
-    financeMode = false, financeRaces = null, mappedDistricts = null, onToggleFinance, onHighlightDistrict,
+    financeMode = false, financeRaces = null, financeContract = null, mappedDistricts = null, onToggleFinance, onHighlightDistrict,
 }) => {
     const legislature = state.state_legislature || {};
     const delegation = state.federal_delegation || {};
@@ -74,11 +74,11 @@ export const renderUsaStateDashboard = (root, {
             <button class="elections-button${financeMode ? ' is-active' : ''}" type="button" data-election-finance-toggle aria-pressed="${financeMode}">선거</button>
         </div>
         <div class="panel-header"><h2>${escapeHtml(state.state)}</h2><p>${financeMode
-            ? '슈퍼팩 독립지출 · 지지 금액이 큰 쪽을 승리정당으로 표시'
+            ? '외부 독립지출 · 지지 금액이 큰 쪽을 승리정당으로 표시'
             : (districtMapReady ? '연방 하원 선거구 지도 · 공개 결합 데이터' : '주 경계 지도 · 연방 하원 선거구 공식 도형 수집 대기')}</p></div>`;
 
     if (financeMode) {
-        root.innerHTML = header + usaStateSuperPac(state, financeRaces, mappedDistricts);
+        root.innerHTML = header + usaStateSuperPac(state, financeRaces, mappedDistricts, financeContract);
         root.querySelector('[data-election-back-usa]')?.addEventListener('click', onBackToUsa);
         root.querySelector('[data-election-finance-toggle]')?.addEventListener('click', () => onToggleFinance?.());
         // Opening a district is a local DOM change, not a re-render: the list

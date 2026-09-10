@@ -5,7 +5,7 @@ import { renderUsaStateDashboard } from './usa-state-dashboard.js';
 import { renderUsaDistrictMap } from './usa-district-map.js';
 import { createModal } from '../modal.js';
 import { loadUsCommittees } from '../data/us-congress-service.js';
-import { loadStateFinance } from '../data/finance-service.js';
+import { loadStateFinance, loadFinanceDisplayContract } from '../data/finance-service.js';
 import { loadCongressionalDistricts } from '../data/geo-service.js';
 
 export const createCountryExplorer = ({ host, bundle, onCountryOpen, onBack }) => {
@@ -38,6 +38,7 @@ export const createCountryExplorer = ({ host, bundle, onCountryOpen, onBack }) =
             // Every race file for the state, plus the district ids the map can
             // actually draw, only once the 선거 toggle is on.
             const financeRaces = financeMode ? await loadStateFinance(stateId) : null;
+            const financeContract = financeMode ? await loadFinanceDisplayContract() : null;
             const districtGeo = financeMode ? await loadCongressionalDistricts(stateId).catch(() => null) : null;
             const mappedDistricts = districtGeo
                 ? new Set((districtGeo.features || []).map((feature) => String(feature.properties?.district ?? '')))
@@ -48,6 +49,7 @@ export const createCountryExplorer = ({ host, bundle, onCountryOpen, onBack }) =
                 districtMapReady,
                 financeMode,
                 financeRaces,
+                financeContract,
                 mappedDistricts,
                 onBackToUsa: () => this.showCountry('USA'),
                 onToggleFinance: () => this.showUsaState(stateId, { financeMode: !financeMode }),

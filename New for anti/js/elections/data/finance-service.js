@@ -1,4 +1,5 @@
 const DATA_ROOT = '/public/data';
+let indexPromise = null;
 let nationalPromise = null;
 const statePromises = new Map();
 
@@ -8,12 +9,23 @@ const loadJson = async (path) => {
     return response.json();
 };
 
-// usa_election_finance_index_v1.json's own rules_ko is explicit: of the seven
-// spender categories the pipeline classifies, only `super_pac` may be labelled
-// 슈퍼팩, and a null amount is "not yet observed" -- never $0.
+const loadIndex = () => {
+    if (!indexPromise) indexPromise = loadJson('usa_election_finance_index_v1.json').catch(() => null);
+    return indexPromise;
+};
+
+// Which spending categories a screen may add up, and what it may call them, is
+// the index's call rather than this app's: federal races are 슈퍼팩
+// (`super_pac`), a governor's money arrives through state disclosure with the
+// spender type unverified. Null means the contract has not shipped yet, and
+// callers fall back to the federal category alone.
+export const loadFinanceDisplayContract = () => loadIndex().then((index) => index?.display_contract || null);
+
+// A null amount is "not yet observed" and must never be rendered as $0 -- the
+// same index's rules_ko.
 export const loadUsaElectionFinance = () => {
     if (!nationalPromise) {
-        nationalPromise = loadJson('usa_election_finance_index_v1.json')
+        nationalPromise = loadIndex()
             .then((index) => {
                 const nationalFile = index?.cycles?.['2026']?.national_file;
                 return nationalFile ? loadJson(nationalFile) : null;

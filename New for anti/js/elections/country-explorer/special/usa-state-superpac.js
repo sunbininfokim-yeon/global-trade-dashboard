@@ -1,10 +1,17 @@
 import { escapeHtml } from '../../ui.js';
 
-// The 선거 panel reads one rule: 더 많은 슈퍼팩을 모은 쪽이 승리정당. "모은" is
-// support money -- spending *for* a candidate. Oppose money is spent against
-// one, and usa_election_finance_index_v1.json's limitations_ko forbids turning
-// it into the other side's support ("반대 지출을 다른 후보 또는 정당의 지원액으로
-// 전환하지 않습니다"), so it is shown but never counted toward a winner.
+// The 선거 panel reads one rule: 더 많은 돈을 모은 쪽이 승리정당. "모은" is support
+// money -- spending *for* a candidate. Oppose money is spent against one, and
+// usa_election_finance_index_v1.json's limitations_ko forbids turning it into
+// the other side's support ("반대 지출을 다른 후보 또는 정당의 지원액으로 전환하지
+// 않습니다"), so it is shown but never counted toward a winner.
+//
+// Which spending categories count is NOT the same for every office, and the
+// index says so in display_contract: federal races are 슈퍼팩 (`super_pac`),
+// but a governor's money arrives through state disclosure and is filed under
+// `state_independent_*` with the spender type unverified -- calling that
+// 슈퍼팩 would be a claim the source explicitly refuses. So the categories and
+// the label both come from the contract, per office.
 //
 // Layout follows the sketch: 민주 left, 공화 right, 주지사·상원 always on, and
 // the House as one row per district that opens its candidates on click.
@@ -18,9 +25,34 @@ const SIDES = [
 ];
 
 const CANDIDATE_LIMIT = 4;
+const FEDERAL_FALLBACK = ['super_pac'];
 
-const supportOf = (totals) => totals?.super_pac?.support_cents ?? null;
-const opposeOf = (totals) => totals?.super_pac?.oppose_cents ?? null;
+// Before the contract ships, every office falls back to super_pac -- which is
+// exactly the previous behaviour, so this file is safe to run against either
+// version of the data.
+const viewFor = (office, contract) => (office === 'governor'
+    ? {
+        categories: contract?.governor_independent_expenditure_categories || FEDERAL_FALLBACK,
+        label: contract?.governor_label_ko || '슈퍼팩 독립지출',
+    }
+    : {
+        categories: contract?.federal_superpac_categories || FEDERAL_FALLBACK,
+        label: '슈퍼팩 독립지출',
+    });
+
+// null is "not observed" and must never become 0 (the index's rules_ko). A sum
+// stays null until at least one listed category is actually observed; once one
+// is, the total is a partial sum of the observed ones only.
+const sumCents = (totals, categories, field) => {
+    let sum = null;
+    categories.forEach((category) => {
+        const value = totals?.[category]?.[field];
+        if (value != null) sum = (sum || 0) + value;
+    });
+    return sum;
+};
+const supportOf = (totals, categories) => sumCents(totals, categories, 'support_cents');
+const opposeOf = (totals, categories) => sumCents(totals, categories, 'oppose_cents');
 
 const formatUsd = (cents) => {
     if (cents == null) return null;
@@ -30,44 +62,44 @@ const formatUsd = (cents) => {
     return `$${Math.round(dollars).toLocaleString('en-US')}`;
 };
 
-const sideTotal = (race, keys) => {
+const sideTotal = (race, keys, categories) => {
     let total = null;
     Object.entries(race.totals_by_reported_party || {}).forEach(([party, node]) => {
         if (!keys.has(party)) return;
-        const value = supportOf(node);
+        const value = supportOf(node, categories);
         if (value != null) total = (total || 0) + value;
     });
     return total;
 };
 
-const winnerOf = (race) => {
-    const dem = sideTotal(race, DEM_KEYS);
-    const gop = sideTotal(race, GOP_KEYS);
+const winnerOf = (race, categories) => {
+    const dem = sideTotal(race, DEM_KEYS, categories);
+    const gop = sideTotal(race, GOP_KEYS, categories);
     if (dem == null && gop == null) return null;
     if ((dem || 0) === (gop || 0)) return 'TIE';
     return (dem || 0) > (gop || 0) ? 'DEM' : 'GOP';
 };
 
-const winnerBadge = (race) => {
-    const winner = winnerOf(race);
+const winnerBadge = (race, categories) => {
+    const winner = winnerOf(race, categories);
     if (!winner) return '<span class="elections-spac-badge is-none">관측 없음</span>';
     if (winner === 'TIE') return '<span class="elections-spac-badge is-none">동률</span>';
     const side = SIDES.find((row) => row.key === (winner === 'DEM' ? 'dem' : 'gop'));
     return `<span class="elections-spac-badge ${side.cls}">${escapeHtml(side.ko)}</span>`;
 };
 
-const candidatesForSide = (race, keys) => (race.candidates || [])
+const candidatesForSide = (race, keys, categories) => (race.candidates || [])
     .map((row) => ({
         name: row.name,
         party: (row.reported_parties || [])[0],
-        cents: supportOf(row.totals_by_category),
+        cents: supportOf(row.totals_by_category, categories),
     }))
     .filter((row) => keys.has(row.party) && row.cents != null && row.cents > 0)
     .sort((a, b) => b.cents - a.cents);
 
-const sideColumn = (race, side) => {
-    const rows = candidatesForSide(race, side.keys);
-    const total = sideTotal(race, side.keys);
+const sideColumn = (race, side, categories) => {
+    const rows = candidatesForSide(race, side.keys, categories);
+    const total = sideTotal(race, side.keys, categories);
     const shown = rows.slice(0, CANDIDATE_LIMIT);
     return `
         <div class="elections-spac-side ${side.cls}">
@@ -84,24 +116,35 @@ const sideColumn = (race, side) => {
         </div>`;
 };
 
-const raceBody = (race) => `
-    <div class="elections-spac-sides">${SIDES.map((side) => sideColumn(race, side)).join('')}</div>
-    ${opposeOf(race.totals_by_category) ? `<p class="elections-panel-note">반대 지출 ${escapeHtml(formatUsd(opposeOf(race.totals_by_category)))} — 승리정당 판정에는 넣지 않습니다.</p>` : ''}`;
+const raceBody = (race, view) => {
+    const oppose = opposeOf(race.totals_by_category, view.categories);
+    return `
+        <div class="elections-spac-sides">${SIDES.map((side) => sideColumn(race, side, view.categories)).join('')}</div>
+        <p class="elections-panel-note">${escapeHtml(view.label)}${race.coverage_note_ko ? ` · ${race.coverage_note_ko}` : ''}</p>
+        ${oppose ? `<p class="elections-panel-note">반대 지출 ${escapeHtml(formatUsd(oppose))} — 승리정당 판정에는 넣지 않습니다.</p>` : ''}`;
+};
 
-const statewideBlock = (label, race) => {
+const statewideBlock = (label, race, contract) => {
     if (!race) return `
         <section class="elections-spac-block">
             <div class="elections-spac-block-head"><span>${escapeHtml(label)}</span><span class="elections-spac-badge is-none">해당 선거 없음</span></div>
         </section>`;
+    const view = viewFor(race.office, contract);
     return `
         <section class="elections-spac-block">
-            <div class="elections-spac-block-head"><span>${escapeHtml(label)}</span>${winnerBadge(race)}</div>
-            ${raceBody(race)}
+            <div class="elections-spac-block-head"><span>${escapeHtml(label)}</span>${winnerBadge(race, view.categories)}</div>
+            ${raceBody(race, view)}
         </section>`;
 };
 
+// district is a zero-padded number for a real seat, and the pipeline's own
+// "could not place this" markers otherwise -- UNKNOWN when the filing left it
+// blank, ZZ for a code with no seat behind it. Those must not be dressed up as
+// "하원 UNKNOWN구".
+const NON_DISTRICT = new Set(['UNKNOWN', 'ZZ', '']);
 const districtLabel = (race, mapped) => {
-    const raw = String(race.district ?? '');
+    const raw = String(race.district ?? '').toUpperCase();
+    if (NON_DISTRICT.has(raw)) return '하원 · 선거구 미지정';
     const trimmed = raw.replace(/^0+/, '');
     // "00" is the state's at-large seat where one exists (its geometry is filed
     // under the same id) and otherwise the pipeline's statewide bucket for
@@ -114,24 +157,22 @@ const districtLabel = (race, mapped) => {
 // the district has geometry, tells the map which one to light up. Both live on
 // one element so the panel and the map cannot disagree about the selection.
 //
-// 34 of the 473 House races nationwide report a district the state's map does
-// not have -- Florida "59" against 28 real seats, South Carolina "86"/"89"
-// against 7. The money is really reported, so the row stays, but it says it
-// has no place on the map instead of posing as a district that exists.
-const districtRow = (race, mapped) => `
+// Rows whose district the state's map does not have still appear -- the money
+// is really reported -- but say so instead of posing as a seat that exists.
+const districtRow = (race, mapped, contract) => `
     <div class="elections-spac-district${mapped ? '' : ' is-unmapped'}">
         <button class="elections-spac-district-head" type="button" data-spac-toggle
             ${mapped ? `data-spac-district="${escapeHtml(race.district ?? '')}"` : ''}>
             <span>${escapeHtml(districtLabel(race, mapped))}</span>
             ${mapped ? '' : '<span class="elections-spac-unmapped-tag">지도 미대응</span>'}
-            ${winnerBadge(race)}
+            ${winnerBadge(race, viewFor(race.office, contract).categories)}
         </button>
-        <div class="elections-spac-district-body">${raceBody(race)}</div>
+        <div class="elections-spac-district-body">${raceBody(race, viewFor(race.office, contract))}</div>
     </div>`;
 
 const byDistrict = (a, b) => String(a.district ?? '').localeCompare(String(b.district ?? ''), undefined, { numeric: true });
 
-export const usaStateSuperPac = (state, races, mappedDistricts = null) => {
+export const usaStateSuperPac = (state, races, mappedDistricts = null, contract = null) => {
     if (!Array.isArray(races)) {
         return '<p class="elections-muted">이 주의 선거자금 자료를 불러오지 못했습니다. 로컬 정적 서버에서는 /public/data 경로가 필요합니다.</p>';
     }
@@ -146,17 +187,17 @@ export const usaStateSuperPac = (state, races, mappedDistricts = null) => {
 
     return `
         <section class="elections-detail-section">
-            ${statewideBlock('주지사', governor)}
-            ${statewideBlock('연방 상원의원', senate)}
+            ${statewideBlock('주지사', governor, contract)}
+            ${statewideBlock('연방 상원의원', senate, contract)}
         </section>
         <section class="elections-detail-section">
             <p class="section-title">연방 하원 · 선거구를 누르면 후보별 금액과 지도 위치가 함께 표시됩니다</p>
             <div class="elections-spac-district-list">
-                ${mapped.map((race) => districtRow(race, true)).join('')}
-                ${unmapped.map((race) => districtRow(race, false)).join('')}
+                ${mapped.map((race) => districtRow(race, true, contract)).join('')}
+                ${unmapped.map((race) => districtRow(race, false, contract)).join('')}
             </div>
             ${house.length ? '' : '<p class="elections-muted">하원 선거구 자료가 없습니다.</p>'}
             ${unmapped.length ? `<p class="elections-panel-note">아래 ${unmapped.length}건은 공시에 적힌 선거구 번호가 이 주의 현행 선거구 도형에 없어 지도에 표시되지 않습니다. 금액은 공시 그대로입니다.</p>` : ''}
         </section>
-        <p class="elections-panel-note">슈퍼팩(super_pac) 독립지출 중 지지 금액 기준이며, 후보 캠프가 받은 후원금이 아닙니다. 금액이 큰 쪽을 승리정당으로 표시합니다 — 실제 개표 결과가 아닙니다.</p>`;
+        <p class="elections-panel-note">지지 금액이 큰 쪽을 승리정당으로 표시합니다 — 후보 캠프가 받은 후원금이 아니고, 실제 개표 결과도 아닙니다.</p>`;
 };

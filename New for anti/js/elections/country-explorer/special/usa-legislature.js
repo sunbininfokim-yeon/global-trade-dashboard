@@ -143,12 +143,21 @@ const committeePanel = (chamber, committees) => {
 const vacancyPanel = (chamber, congress, generalElection) => {
     const rows = (congress.vacancies || []).filter((row) => row.chamber === chamber);
     const count = chamber === 'house' ? (congress.summary?.house_vacancies || 0) : null;
+    // A null special_election_date can mean "not collected" or "officially not
+    // announced yet"; special_election_date_status tells them apart, so the two
+    // never read the same.
+    const electionText = (row) => {
+        if (row.special_election_date) return `보궐 ${row.special_election_date}`;
+        if (row.special_election_date_status === 'unannounced') return '보궐일 미발표';
+        return '보궐 일정 미수집';
+    };
     const detail = rows.length ? `<div class="elections-disclosure-rows">${rows.map((row) => `<div>
             <span>${escapeHtml([row.state, row.district ? `${row.district}구` : ''].filter(Boolean).join(' '))}</span>
             <strong>${escapeHtml([
                 row.prior_party_abbr ? `직전 ${partyKo(row.prior_party_abbr)}` : '',
-                row.special_election_date ? `보궐 ${row.special_election_date}` : '',
-            ].filter(Boolean).join(' · ') || '세부 미수집')}</strong>
+                row.prior_member,
+                electionText(row),
+            ].filter(Boolean).join(' · '))}</strong>
         </div>`).join('')}</div>`
         : '<p class="elections-muted">공석별 지역구·보궐 일정·직전 의원 정당은 수집 예정입니다.</p>';
     return `
@@ -183,12 +192,13 @@ const factionRows = (factions, partyKey) => {
     }).join('')}</div>`;
 };
 
-const partyCard = (chamber, abbr, { members, leadership, byParty, factions, swingSeats }) => {
+const partyCard = (chamber, abbr, { members, leadership, byParty, factions, swingSeats, coverage }) => {
     const total = byParty?.[abbr];
     const states = stateTally(members, abbr);
     const leaders = (leadership || []).filter((row) => row.chamber === chamber
         && (leadershipSide(row.office) === 'majority' ? majorityAbbr(byParty) : minorityAbbr(byParty)) === abbr);
     const swing = (swingSeats || []).filter((row) => row.chamber === chamber && row.party_abbr === abbr);
+    const partial = coverage?.swing_seats === 'partial_verified_examples';
     const partyKey = abbr === 'DEM' ? 'dem' : abbr === 'GOP' ? 'gop' : null;
     const factionsHtml = chamber === 'house' && partyKey ? factionRows(factions, partyKey) : '';
 
@@ -202,8 +212,13 @@ const partyCard = (chamber, abbr, { members, leadership, byParty, factions, swin
 
             <p class="elections-party-card-label">1 · 의원 수</p>
             ${states.length ? `<details class="elections-disclosure"><summary>주별 분포 ${states.length}개 주</summary><div class="elections-disclosure-rows">${states.map(([state, count]) => `<div><span>${escapeHtml(state)}</span><strong>${count}명</strong></div>`).join('')}</div></details>` : '<p class="elections-muted">명부가 없습니다.</p>'}
-            ${swing.length ? `<details class="elections-disclosure"><summary>스윙 지역구 ${swing.length}곳</summary><div class="elections-disclosure-rows">${swing.map((row) => `<div><span>${escapeHtml([row.state, row.district ? `${row.district}구` : ''].filter(Boolean).join(' '))}</span><strong>${escapeHtml(row.basis_ko || '근거 미기재')}</strong></div>`).join('')}</div></details>`
-                : '<p class="elections-panel-note">스윙 지역구(교차투표·최근 3회 중 2회 이상 정당 교체)는 판정 기준이 담긴 데이터가 들어오면 표시합니다.</p>'}
+            ${swing.length ? `<details class="elections-disclosure"><summary>검증된 경합 이력 ${swing.length}곳</summary><div class="elections-disclosure-rows">${swing.map((row) => `<div><span>${escapeHtml([row.state, row.district ? `${row.district}구` : ''].filter(Boolean).join(' '))}</span><strong>${escapeHtml(row.basis_ko || '근거 미기재')}</strong></div>`).join('')}</div>${
+                // The source calls this a partial list of verified examples, so
+                // the screen must not let an absent seat read as "safe" -- nor
+                // turn a past result into a 2026 forecast.
+                partial ? '<p class="elections-panel-note">공식 결과로 검증된 일부 목록입니다. 여기 없다고 경합이 아니라는 뜻은 아니며, 과거 당선 정당 이력일 뿐 2026 접전 예측이 아닙니다.</p>' : ''
+            }</details>`
+                : '<p class="elections-panel-note">경합 이력(교차투표·최근 3회 중 2회 이상 정당 교체)은 판정 기준이 담긴 데이터가 들어오면 표시합니다.</p>'}
 
             <p class="elections-party-card-label">2 · 주요 당직자</p>
             ${leaders.length ? `<div class="elections-disclosure-rows">${leaders.map((row) => `<div><span>${escapeHtml(row.title || row.office)}</span><strong>${escapeHtml(row.name || '불명')}</strong></div>`).join('')}</div>` : '<p class="elections-muted">공개된 당직자 명부가 없습니다.</p>'}
@@ -246,6 +261,7 @@ const chamberPanel = (chamber, ctx) => {
         <div class="elections-party-card-grid">
             ${[minority, majority].filter(Boolean).map((abbr) => partyCard(chamber, abbr, {
                 members, leadership: congress.floor_leadership, byParty, factions, swingSeats: congress.swing_seats,
+                coverage: congress.context_coverage,
             })).join('')}
         </div>`;
 };
