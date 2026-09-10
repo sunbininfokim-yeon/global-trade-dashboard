@@ -73,6 +73,80 @@ export const applyEopChart = (chart) => {
 
 const partyKo = (abbr) => ({ GOP: '공화당', DEM: '민주당', IND: '무소속' }[abbr] || abbr || '');
 
+// executive_live.white_house (usa_eop.json -> tier12_executives.json) is keyed
+// and shaped for its own consumers -- councils carry the head under whichever
+// of staff_director/director/advisor/executive_director the body actually
+// uses, and office/assistant rows are keyed by `id`, not the `abbr` this
+// scaffold joins on. This turns that shape into the {abbr, head_title_ko,
+// name_en, note_ko} rows scaffoldRows()/orgBox() already know how to draw,
+// rather than teaching the scaffold two data shapes.
+const councilHead = (council) => council.staff_director || council.director
+    || council.advisor || council.executive_director || null;
+
+const whCouncilRows = (whiteHouse) => (whiteHouse?.councils || []).map((council) => {
+    const head = councilHead(council);
+    return {
+        abbr: String(council.id || '').toUpperCase(),
+        // org_ko only matters for a council the scaffold doesn't already have a
+        // box for (HSC/NEDC today) -- scaffoldRows() ignores it for a matched
+        // abbr and uses the scaffold's own ko/en instead.
+        org_ko: council.name_ko || null,
+        org_en: council.name_en || null,
+        head_title_ko: head?.office_ko || '',
+        name_en: head?.name_en || null,
+        note_ko: council.note_ko || null,
+    };
+});
+
+const whOfficeRows = (whiteHouse) => (whiteHouse?.eop_office_heads || []).map((office) => ({
+    abbr: String(office.id || '').toUpperCase(),
+    head_title_ko: office.office_ko || '',
+    name_en: office.name_en || null,
+    status: office.status || null,
+    note_ko: office.note_ko || null,
+}));
+
+// Partitions the combined council+office rows by which scaffold actually
+// declares that abbr, instead of feeding the same list to both scaffoldRows()
+// calls -- each call treats everything it doesn't recognise as an "extra" box
+// for its own section, so an unpartitioned list would draw every row twice.
+const partitionByScaffold = (rows, scaffold) => {
+    const abbrs = new Set(scaffold.map((box) => box.abbr));
+    const matched = [];
+    const rest = [];
+    rows.forEach((row) => (abbrs.has(row.abbr) ? matched : rest).push(row));
+    return [matched, rest];
+};
+
+// wh_counsel/press_secretary/communications_director are real West Wing
+// offices with no council or EOP-office box in the scaffold at all (nsa/
+// nec_director/dpc_director/homeland_security_advisor duplicate the council
+// heads above and are dropped here to avoid showing the same person twice).
+// Synthetic abbrs that can't collide with a real scaffold box route them
+// through scaffoldRows()'s own "extra" path.
+const WH_STAFF_ORG_KO = {
+    wh_counsel: '법률고문실',
+    press_secretary: '대변인실',
+    communications_director: '홍보실',
+};
+const whStaffExtraRows = (whiteHouse) => {
+    const assistants = (whiteHouse?.assistants_to_the_president || [])
+        .filter((row) => WH_STAFF_ORG_KO[row.id])
+        .map((row, index) => ({
+            abbr: `WH_STAFF_${index}`,
+            org_ko: WH_STAFF_ORG_KO[row.id],
+            head_title_ko: row.office_ko || '',
+            name_en: row.name_en || null,
+            note_ko: row.note_ko || null,
+        }));
+    const deputies = (whiteHouse?.deputy_chiefs_of_staff || []).map((row, index) => ({
+        abbr: `WH_DCOS_${index}`,
+        org_ko: row.office_ko || '부비서실장',
+        name_en: row.name_en || null,
+    }));
+    return [...assistants, ...deputies];
+};
+
 const personText = (row) => {
     if (!row) return '';
     const name = row.name_ko || row.name_en;
@@ -160,8 +234,21 @@ export const usaExecutive = (country) => {
     // Councils and offices are rendered first so their prefill claims the
     // core/cabinet rows before tier 1 and the cabinet list draw the rest --
     // otherwise the NSC adviser and the OMB director appear twice.
-    const councils = scaffoldRows(COUNCILS, live.eop_councils, live, consumed);
-    const offices = scaffoldRows(OFFICES, live.eop_offices, live, consumed);
+    const whiteHouse = live.white_house;
+    const [whCouncilMatches, whCouncilLeftover] = partitionByScaffold(whCouncilRows(whiteHouse), COUNCILS);
+    const [whOfficeMatches] = partitionByScaffold(whOfficeRows(whiteHouse), OFFICES);
+    const councils = scaffoldRows(
+        COUNCILS,
+        [...(live.eop_councils || []), ...whCouncilMatches, ...whCouncilLeftover],
+        live,
+        consumed,
+    );
+    const offices = scaffoldRows(
+        OFFICES,
+        [...(live.eop_offices || []), ...whOfficeMatches, ...whStaffExtraRows(whiteHouse)],
+        live,
+        consumed,
+    );
     const advisors = advisorRows(live.special_assistants);
 
     const coreRows = (live.core || []).filter((row) => !consumed.has(row.office_ko));
@@ -187,5 +274,6 @@ export const usaExecutive = (country) => {
         ${cabinet.length ? `<details class="elections-disclosure elections-cabinet-list"><summary>내각 ${cabinet.length}명 보기</summary><div class="elections-disclosure-rows">${cabinet.map((row) => `<div><span>${escapeHtml(row.portfolio_ko || '직책')}</span><strong>${escapeHtml(personText(row) || '불명')}</strong></div>`).join('')}</div></details>` : ''}
         <p class="elections-panel-note">2~4단은 대통령실(EOP) 조직도 기준 골격입니다. 사람이 비어 있는 칸은 명단 미수집이며, 공석이라는 뜻이 아닙니다.</p>
         ${sourceLabels.length ? `<p class="elections-panel-note">공개 명부: ${escapeHtml(sourceLabels.join(' / '))}</p>` : ''}
+        ${(whiteHouse?.missing || []).length ? `<p class="elections-panel-note">미확보: ${escapeHtml(whiteHouse.missing.join(', '))}</p>` : ''}
     `;
 };

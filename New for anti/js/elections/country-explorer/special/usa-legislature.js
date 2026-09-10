@@ -125,6 +125,31 @@ const leadershipPanel = (chamber, leadership, byParty) => {
     }).join('')}</div>`;
 };
 
+// ui_ready.congress.committees (usa_committees.json) is an object keyed by
+// chamber with each chamber's own standing_committees[] -- not the flat,
+// per-row `chamber`-tagged array this panel draws from. Flattening it once
+// here keeps committeePanel() reading a single simple shape either way.
+const flattenCommittees = (committeesData) => {
+    if (!committeesData) return null;
+    const rows = [];
+    for (const chamber of ['house', 'senate']) {
+        const list = committeesData[chamber]?.standing_committees;
+        if (!Array.isArray(list)) continue;
+        for (const row of list) {
+            rows.push({
+                chamber,
+                committee_id: row.code,
+                name: row.name,
+                // No short_name in the source; trimming the common "Committee
+                // on " prefix keeps chips readable without inventing an
+                // abbreviation the source doesn't publish.
+                short_name: (row.name || '').replace(/^Committee on\s+/i, ''),
+            });
+        }
+    }
+    return rows.length ? rows : null;
+};
+
 const committeePanel = (chamber, committees) => {
     if (!Array.isArray(committees)) {
         return `<p class="elections-muted">상임위 목록은 정책 데이터에서 불러옵니다.</p>
@@ -140,9 +165,13 @@ const committeePanel = (chamber, committees) => {
         <p class="elections-panel-note">누르면 정책 › 미국 › 상임위 화면으로 이동합니다.</p>`;
 };
 
-const vacancyPanel = (chamber, congress, generalElection) => {
+const vacancyPanel = (chamber, congress, generalElection, members) => {
     const rows = (congress.vacancies || []).filter((row) => row.chamber === chamber);
     const count = chamber === 'house' ? (congress.summary?.house_vacancies || 0) : null;
+    // Class II is up in the 2026-11-03 midterm; usa_senate_terms.json overlays
+    // up_in_2026 onto each senator, so this is a straight count, not a
+    // client-side election calculation.
+    const upIn2026 = chamber === 'senate' ? (members || []).filter((row) => row.up_in_2026).length : null;
     // A null special_election_date can mean "not collected" or "officially not
     // announced yet"; special_election_date_status tells them apart, so the two
     // never read the same.
@@ -166,6 +195,7 @@ const vacancyPanel = (chamber, congress, generalElection) => {
                 ? '<article class="elections-card"><div class="elections-card-label">공석</div><div class="elections-card-value">공개 집계 없음</div></article>'
                 : `<article class="elections-card"><div class="elections-card-label">공석</div><div class="elections-card-value">${count}석</div></article>`}
             <article class="elections-card"><div class="elections-card-label">다음 총선</div><div class="elections-card-value">${escapeHtml(generalElection || '불명')}</div></article>
+            ${upIn2026 !== null ? `<article class="elections-card"><div class="elections-card-label">2026 개선 (Class II)</div><div class="elections-card-value">${upIn2026}석</div></article>` : ''}
         </div>
         ${detail}`;
 };
@@ -255,7 +285,7 @@ const chamberPanel = (chamber, ctx) => {
             </section>
             <section class="elections-quadrant">
                 <p class="section-title">공석 · 일정</p>
-                ${vacancyPanel(chamber, congress, generalElection)}
+                ${vacancyPanel(chamber, congress, generalElection, members)}
             </section>
         </div>
         <div class="elections-party-card-grid">
@@ -272,7 +302,7 @@ export const usaLegislature = (country) => {
     const ctx = {
         congress,
         factions: country.factions,
-        committees: country.us_committees,
+        committees: flattenCommittees(congress.committees),
         generalElection: country.race_progress?.cumulative?.general_election,
     };
     const summary = congress.summary;
