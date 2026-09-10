@@ -97,7 +97,9 @@ def main() -> int:
             print("DRY-RUN usa eop: election_watch.extract_usa_eop --fetch --merge-tier12")
         if args.build_derived:
             print(
-                "DRY-RUN derived rebuild: election_watch.extract_usa_eop --merge-tier12 + "
+                "DRY-RUN derived rebuild: election_watch.extract_usa_committees + "
+                "election_watch.extract_usa_senate_terms + "
+                "election_watch.extract_usa_eop --merge-tier12 + "
                 "election_watch.build_factions + "
                 "build_board.py + build_calendar_master.py + build_ui_manifest.py"
             )
@@ -131,6 +133,9 @@ def main() -> int:
             [sys.executable, "-m", "election_watch.extract_usa_eop", "--fetch", "--merge-tier12", "--write-report"]
         )
     if args.build_derived:
+        build_exit = run([sys.executable, "-m", "election_watch.extract_usa_committees"])
+        if build_exit == 0:
+            build_exit = run([sys.executable, "-m", "election_watch.extract_usa_senate_terms"])
         if build_exit == 0:
             build_exit = run(
                 [sys.executable, "-m", "election_watch.extract_usa_eop", "--merge-tier12", "--write-report"]

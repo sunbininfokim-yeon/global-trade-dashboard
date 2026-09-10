@@ -21,4 +21,13 @@ assert.equal(parsed.rows[0].position, 'Chairman');
 assert.equal(parsed.rows[1].position, 'Member');
 assert.throws(() => parseSenateCvcXml('<HTML><HEAD><TITLE>Access Denied</TITLE></HEAD></HTML>'), /Senate CVC XML/);
 
+const { mapHouseClerkCode } = require('./committee-membership-roster');
+const parentMap = { AG00: ['house', 'hsag00'], IG00: ['house', 'hlig00'] };
+const allowed = new Set(['hsag00', 'hsag03', 'hlig00', 'hlig01']);
+assert.deepEqual(mapHouseClerkCode('AG00', parentMap, allowed), ['house', 'hsag00']);
+assert.deepEqual(mapHouseClerkCode('AG03', parentMap, allowed), ['house', 'hsag03']);
+assert.deepEqual(mapHouseClerkCode('IG01', parentMap, allowed), ['house', 'hlig01']);
+assert.equal(mapHouseClerkCode('QJ00', parentMap, allowed), null);
+assert.equal(mapHouseClerkCode('AG99', parentMap, allowed), null);
+
 console.log('Committee membership roster cache parser tests passed');
