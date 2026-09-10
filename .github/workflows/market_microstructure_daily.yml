@@ -36,7 +36,23 @@ jobs:
       - name: Install deps
         run: pip install -r requirements-ci.txt
 
+      # These four steps all call FinanceDataReader, which reads through KRX
+      # Data Marketplace (data.krx.co.kr). That site rate-limits by IP and, on
+      # 2026-09-10, returned an explicit 7-day block ("자동화 수단을 통한
+      # 비정상 대량 조회가 감지") after this same source was hit repeatedly
+      # across sessions. When blocked, the underlying script still exits
+      # non-zero -- without continue-on-error, that stopped the whole job
+      # here, at the FIRST step, so nothing downstream (concentration,
+      # microstructure, investor levels, alerts, AND the 15007 call/put board
+      # that doesn't touch FDR at all) ever ran or committed that day.
+      # continue-on-error lets a source-level outage degrade to "this one
+      # domain doesn't get a new row today" instead of "nothing does" --
+      # every builder here already treats missing/stale input as
+      # null/carry-forward, never as zero or a fabricated value, so a skipped
+      # step here is honestly reflected downstream, not silently papered
+      # over.
       - name: Conc history append
+        continue-on-error: true
         run: |
           python build_conc_history.py --append-only --print-stats || \
             python build_conc_history.py --live --months 6 --print-stats
@@ -45,6 +61,7 @@ jobs:
         run: python build_us_kr_l3.py --live --print-stats
 
       - name: Market microstructure snapshot
+        continue-on-error: true
         env:
           KRX_API: ${{ secrets.KRX_API }}
         run: python build_market_microstructure.py --live --source auto --print-stats
@@ -119,12 +136,14 @@ jobs:
         run: python append_derivatives_history.py --print-stats
 
       - name: Investor × price levels (real data; marcap + high-vol in top100)
+        continue-on-error: true
         run: python build_investor_price_levels.py --live --universe both --top 10 --pool 100 --print-stats
 
       - name: Deposit · credit overlay
         run: python publish_deposit_credit.py
 
       - name: Alert levels
+        continue-on-error: true
         run: python build_alert_levels.py --live
 
       - name: Validate UI data contract
