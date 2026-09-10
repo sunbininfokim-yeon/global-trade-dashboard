@@ -2,8 +2,11 @@
 """Build KR derivatives + US daily OI archive + rule-based KR watches.
 
   export KRX_API=...   # for KR futures/options EOD activity via OpenAPI
-  # optional CSVs from data.krx 투자자별 거래실적 (콜/풋/선물 각각):
+  # optional legacy CSVs from data.krx 투자자별 거래실적 (콜/풋/선물 각각):
   #   --csv-opt-call path --csv-opt-put path --csv-fut path
+  # KRX 15007 authenticated BUY/SELL exports (백만원 → KRW, 콜/풋 분리):
+  #   --15007-call-buy path --15007-call-sell path \
+  #   --15007-put-buy path --15007-put-sell path
   #   --bas-dd 20260813  # explicit KRX EOD day (manual rerun/backfill)
 
   ../../.venv/bin/python build_derivatives_board.py --live --print-stats
@@ -54,7 +57,27 @@ def _md(kr: dict, us: dict, rules: dict) -> str:
                 f"매도 **{krw(foreign.get('sell_krw'))}** / 순매수 **{krw(foreign.get('net_krw'), signed=True)}** "
                 f"(거래일 {item.get('as_of')}, KRX 표출 {item.get('observed_at_krx')})"
             )
-    lines.append("- 옵션 콜/풋 외국인 분리: 인증된 data.krx 상세 CSV가 필요하며, 현재 수치를 추정하지 않음.")
+    detailed = inv.get("detailed_15007") or {}
+    detailed_products = detailed.get("products") if isinstance(detailed, dict) else {}
+    if not isinstance(detailed_products, dict):
+        detailed_products = {}
+    call = detailed_products.get("options_call") or {}
+    put = detailed_products.get("options_put") or {}
+    if call.get("quality") == "observed" and put.get("quality") == "observed":
+        for label, item in (("K200 콜", call), ("K200 풋", put)):
+            foreign = item.get("foreign") or {}
+            total = item.get("market_total") or {}
+            lines.append(
+                f"- {label} 외국인: 매수 **{krw(foreign.get('buy_krw'))}** / "
+                f"매도 **{krw(foreign.get('sell_krw'))}** / 순매수 **{krw(foreign.get('net_krw'), signed=True)}** "
+                f"(거래일 {item.get('as_of')}, 인증된 KRX 15007)"
+            )
+            lines.append(
+                f"  - 시장 전체 활동: 매수 {krw(total.get('buy_krw'))} / "
+                f"매도 {krw(total.get('sell_krw'))}; 방향 해석 없음"
+            )
+    else:
+        lines.append("- 옵션 콜/풋 외국인 분리: 인증된 KRX 15007 매수·매도 export가 모두 필요하며, 현재 수치를 추정하지 않음.")
     opt = kr.get("kospi200_options") or {}
     lines += [
         "",
@@ -87,6 +110,12 @@ def main() -> int:
     p.add_argument("--csv-opt-call", type=Path, default=None)
     p.add_argument("--csv-opt-put", type=Path, default=None)
     p.add_argument("--csv-fut", type=Path, default=None)
+    p.add_argument("--15007-call-buy", dest="detail_15007_call_buy", type=Path, default=None)
+    p.add_argument("--15007-call-sell", dest="detail_15007_call_sell", type=Path, default=None)
+    p.add_argument("--15007-put-buy", dest="detail_15007_put_buy", type=Path, default=None)
+    p.add_argument("--15007-put-sell", dest="detail_15007_put_sell", type=Path, default=None)
+    p.add_argument("--15007-futures-buy", dest="detail_15007_futures_buy", type=Path, default=None)
+    p.add_argument("--15007-futures-sell", dest="detail_15007_futures_sell", type=Path, default=None)
     p.add_argument("--bas-dd", default=None, help="KRX EOD day YYYYMMDD (optional)")
     p.add_argument("--print-stats", action="store_true")
     args = p.parse_args()
@@ -94,12 +123,55 @@ def main() -> int:
     pub = ROOT / "../../public/data"
     graph = json.loads((ROOT / "config/us_kr_link_graph.json").read_text(encoding="utf-8"))
 
+    path = pub / "derivatives_board_v1.json"
+    existing: dict = {}
+    previous_detailed_15007 = None
+    if path.is_file():
+        try:
+            existing = json.loads(path.read_text(encoding="utf-8"))
+            previous_detailed_15007 = (
+                ((existing.get("kr") or {}).get("investor_nets") or {}).get("detailed_15007")
+            )
+        except (json.JSONDecodeError, OSError, AttributeError):
+            # A malformed prior board must never be treated as observations.
+            previous_detailed_15007 = None
+
     kr = fetch_kr_derivatives_bundle(
         bas_dd=args.bas_dd,
         investor_opt_call_csv=args.csv_opt_call,
         investor_opt_put_csv=args.csv_opt_put,
         investor_fut_csv=args.csv_fut,
+        detailed_15007_option_call_buy=args.detail_15007_call_buy,
+        detailed_15007_option_call_sell=args.detail_15007_call_sell,
+        detailed_15007_option_put_buy=args.detail_15007_put_buy,
+        detailed_15007_option_put_sell=args.detail_15007_put_sell,
+        detailed_15007_futures_buy=args.detail_15007_futures_buy,
+        detailed_15007_futures_sell=args.detail_15007_futures_sell,
+        previous_detailed_15007=previous_detailed_15007,
     )
+    # A manual 15007 import must not erase a previously fetched OpenAPI/public
+    # dashboard snapshot merely because this machine lacks KRX_API or network
+    # access.  The detailed product has its own as_of date, so retaining the
+    # last independently observed activity is more honest than overwriting it
+    # with a synthetic "missing" same-day record.
+    previous_kr = existing.get("kr") if isinstance(existing, dict) else None
+    if isinstance(previous_kr, dict):
+        for key in ("kospi200_futures", "kospi200_options"):
+            current = kr.get(key) or {}
+            prior = previous_kr.get(key) or {}
+            if current.get("quality") != "observed" and prior.get("quality") == "observed":
+                kr[key] = prior
+        current_investor = kr.get("investor_nets") or {}
+        prior_investor = previous_kr.get("investor_nets") or {}
+        if not current_investor.get("public_dashboard") and prior_investor.get("public_dashboard"):
+            current_investor["public_dashboard"] = prior_investor["public_dashboard"]
+            if current_investor.get("quality") == "missing":
+                current_investor["quality"] = prior_investor.get("quality", "partial_observed")
+        if (kr.get("kospi200_futures") or {}).get("quality") == "observed" and (
+            kr.get("kospi200_options") or {}
+        ).get("quality") == "observed" and kr.get("as_of") != previous_kr.get("as_of"):
+            # The current activity is retained from its own source date.
+            kr["as_of"] = previous_kr.get("as_of") or kr.get("as_of")
     if args.live:
         us = snapshot_symbols()
         append_archive(us)
@@ -119,7 +191,6 @@ def main() -> int:
         "us_oi_snap": us,
         "us_kr_rules": rules,
     }
-    path = pub / "derivatives_board_v1.json"
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(out, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     md = _md(kr, us, rules)

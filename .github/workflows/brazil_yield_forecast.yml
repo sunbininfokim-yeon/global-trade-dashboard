@@ -2,10 +2,11 @@ name: Weekly Brazil Yield Forecast
 
 on:
   schedule:
-    # Mondays 09:30 UTC, half an hour after the US run so the two do not
-    # race for the same commit. NASA POWER lags real time by 2-3 days, so a
-    # weekly cadence always picks up genuinely new observations.
-    - cron: '30 9 * * 1'
+    # Sat 00:44 KST (Fri 15:44 UTC) — weekend batch, 22min after the US run
+    # so the two do not race for the same commit. NASA POWER lags real time
+    # by 2-3 days, so a weekly cadence always picks up genuinely new
+    # observations.
+    - cron: '44 15 * * 5'
   workflow_dispatch:
 
 jobs:

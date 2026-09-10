@@ -1,6 +1,13 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "global-trade-dashboard",
+  // Pinned so wrangler never has to auto-detect the account via the
+  // Cloudflare /memberships endpoint. That auto-detect call is a second
+  // place a token can fail (its own permission, its own auth check) on top
+  // of the deploy call itself -- CI hit exactly that as "Authentication
+  // failed (status: 400) [code: 9106]" on 2026-08-21, before wrangler ever
+  // got to deploying anything.
+  "account_id": "ba17c5fee6a6c02df0bd8fb696b6b762",
   "compatibility_date": "2026-07-26",
   "compatibility_flags": ["nodejs_compat"],
   "observability": {
@@ -11,9 +18,22 @@
   // /api/* route 404s and Variables/Secrets can't even be added in the
   // dashboard ("Worker that only has static assets").
   "main": "_worker.js",
+  // single-page-application: any request path that doesn't match a real
+  // static file (e.g. /macro_monitor, /shipping_fleet -- the new per-view
+  // routes app.js pushes into the URL) falls back to index.html with a 200,
+  // instead of 404ing. Without this, a shared link or a refresh on one of
+  // those routes breaks.
   "assets": {
     "directory": "New for anti",
-    "binding": "ASSETS"
+    "binding": "ASSETS",
+    "not_found_handling": "single-page-application",
+    // single-page-application 폴백은 네비게이션 요청(Accept: text/html)을 워커보다
+    // 먼저 가로채 index.html 을 돌려준다. XHR(Accept: */*)로 부르는 /api/* 는
+    // 그동안 멀쩡히 워커로 갔기 때문에 이게 드러나지 않았는데, 2026-09-03 에
+    // /api/night-tile/... 을 주소창에 직접 쳐 보고서야 알았다 -- 타일도 사진도
+    // 아니고 사이트 HTML 이 돌아왔다. API 경로는 어떤 Accept 헤더로 오든 워커가
+    // 받아야 한다.
+    "run_worker_first": ["/api/*"]
   },
   // Shared response cache for the /api/* proxies. Without this binding
   // env.API_CACHE is undefined and every visitor triggers their own upstream

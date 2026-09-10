@@ -541,7 +541,10 @@ class PortWatchTests(unittest.TestCase):
             fallback_live_status=previous,
         )
         self.assertEqual(snapshot["chokepoints_live"]["suez"]["latest_date"], "2026-08-01")
-        self.assertEqual(len(snapshot["live_fetch_errors"]), 5)
+        self.assertEqual(
+            len(snapshot["live_fetch_errors"]),
+            len(snapshot["chokepoints"]),
+        )
         self.assertEqual(snapshot["model"]["version"], snapshot["model_review"]["model_version"])
         display = next(row for row in snapshot["live_display"] if row["chokepoint_id"] == "suez")
         self.assertAlmostEqual(display["trade_volume_shortfall_fraction"], 0.25)
@@ -685,7 +688,7 @@ class ScenarioGridTests(unittest.TestCase):
             bundle["screen"]["bundle_id"], bundle["diagnostics"]["bundle_id"]
         )
         self.assertFalse(
-            golden_contract_failures(bundle["screen"], bundle["diagnostics"])
+            golden_contract_failures(bundle["screen"], bundle["diagnostics"], bundle["scenario_grid"])
         )
         hormuz = next(
             row
@@ -762,7 +765,7 @@ class ScenarioGridTests(unittest.TestCase):
                     delta=0.01,
                 )
         self.assertFalse(
-            golden_contract_failures(bundle["screen"], bundle["diagnostics"])
+            golden_contract_failures(bundle["screen"], bundle["diagnostics"], bundle["scenario_grid"])
         )
 
     def test_temporary_grid_preserves_accounting_and_monotonicity(self) -> None:

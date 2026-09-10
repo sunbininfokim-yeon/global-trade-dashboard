@@ -2,30 +2,30 @@
   "schema_version": "derivatives-board-v1",
   "kr": {
     "schema_version": "kr-derivatives-v1",
-    "as_of": "2026-08-19",
-    "fetched_at": "2026-08-20T09:51:06.041511+00:00",
+    "as_of": "2026-09-03",
+    "fetched_at": "2026-09-10T08:21:27.389259+00:00",
     "kospi200_futures": {
       "product": "KOSPI200_futures",
-      "volume": 186063.0,
-      "trading_value_krw": 47814665065000.0,
+      "volume": 210200.0,
+      "trading_value_krw": 77400356857500.0,
       "n_contracts": 26,
       "quality": "observed",
       "coverage_ko": "코스피200 선물 전 결제월 합계. 미니코스피200 제외.",
       "source": "KRX OpenAPI drv/fut_bydd_trd"
     },
     "kospi200_options": {
-      "call_volume": 156277.0,
-      "put_volume": 115463.0,
-      "call_trading_value_krw": 119188365000.0,
-      "put_trading_value_krw": 162606425000.0,
-      "put_call_volume": 0.7388,
-      "put_call_trading_value": 1.3643,
-      "n_call_contracts": 5346,
-      "n_put_contracts": 5346,
+      "call_volume": 284276.0,
+      "put_volume": 258205.0,
+      "call_trading_value_krw": 275869475000.0,
+      "put_trading_value_krw": 194691100000.0,
+      "put_call_volume": 0.9083,
+      "put_call_trading_value": 0.7057,
+      "n_call_contracts": 5152,
+      "n_put_contracts": 5152,
       "quality": "observed",
       "coverage_ko": "코스피200 표준·위클리 옵션 합계. 미니코스피200·코스닥150 제외.",
       "source": "KRX OpenAPI drv/opt_bydd_trd",
-      "bas_dd": "20260819"
+      "bas_dd": "20260909"
     },
     "investor_nets": {
       "note_ko": "KRX 공개 대시보드는 코스피200 선물 및 옵션 전체의 투자자별 매수·매도·순매수를 제공한다. 옵션 콜/풋 분리는 인증이 필요한 data.krx 「투자자별 거래실적」 CSV를 콜·풋 각각 export해야 한다.",
@@ -34,45 +34,45 @@
         "coverage_ko": "KOSPI200 선물 및 KOSPI200 옵션 전체의 투자자별 매수·매도·순매수. 옵션 콜/풋 분리 아님.",
         "unit": "KRW",
         "futures": {
-          "as_of": "2026-08-20",
-          "observed_at_krx": "2026.08.20 PM 06:51:04",
+          "as_of": "2026-09-10",
+          "observed_at_krx": "2026.09.10 PM 05:21:26",
           "investors": {
             "institution": {
-              "buy_krw": 8309000000000,
-              "sell_krw": 6104000000000,
-              "net_krw": 2205000000000
+              "buy_krw": 18624000000000,
+              "sell_krw": 16783000000000,
+              "net_krw": 1841000000000
             },
             "foreign": {
-              "buy_krw": 42186000000000,
-              "sell_krw": 44056000000000,
-              "net_krw": -1870000000000
+              "buy_krw": 32494000000000,
+              "sell_krw": 34442000000000,
+              "net_krw": -1947000000000
             },
             "retail": {
-              "buy_krw": 7099000000000,
-              "sell_krw": 7430000000000,
-              "net_krw": -331000000000
+              "buy_krw": 10112000000000,
+              "sell_krw": 10015000000000,
+              "net_krw": 97000000000
             }
           },
           "quality": "observed"
         },
         "options_total": {
-          "as_of": "2026-08-20",
-          "observed_at_krx": "2026.08.20 PM 06:51:05",
+          "as_of": "2026-09-10",
+          "observed_at_krx": "2026.09.10 PM 05:21:27",
           "investors": {
             "institution": {
-              "buy_krw": 9000000000,
+              "buy_krw": 8000000000,
               "sell_krw": 15000000000,
-              "net_krw": -5000000000
+              "net_krw": -7000000000
             },
             "foreign": {
-              "buy_krw": 164000000000,
-              "sell_krw": 160000000000,
-              "net_krw": 3000000000
+              "buy_krw": 319000000000,
+              "sell_krw": 315000000000,
+              "net_krw": 4000000000
             },
             "retail": {
-              "buy_krw": 33000000000,
-              "sell_krw": 31000000000,
-              "net_krw": 2000000000
+              "buy_krw": 101000000000,
+              "sell_krw": 97000000000,
+              "net_krw": 3000000000
             }
           },
           "quality": "observed"
@@ -83,157 +83,273 @@
       "futures": null,
       "options_call": null,
       "options_put": null,
-      "quality": "partial_observed"
+      "quality": "partial_observed",
+      "detailed_15007": {
+        "schema_version": "krx-15007-call-put-v2",
+        "query": {
+          "market": "KOSPI200",
+          "metric": "trading_value",
+          "side": "buy_sell_and_net",
+          "unit": "KRW",
+          "source_unit": "million_krw",
+          "conversion_to_krw": 1000000
+        },
+        "products": {
+          "options_call": {
+            "as_of": "2026-09-03",
+            "source": "KRX 15007 authenticated export",
+            "quality": "observed",
+            "foreign": {
+              "buy_krw": 58084000000,
+              "sell_krw": 58640000000,
+              "net_krw": -556000000
+            },
+            "market_total": {
+              "buy_krw": 74057000000,
+              "sell_krw": 74057000000,
+              "net_krw": 0
+            },
+            "series": [
+              {
+                "date": "2026-09-03",
+                "foreign": {
+                  "buy_krw": 58084000000,
+                  "sell_krw": 58640000000,
+                  "net_krw": -556000000
+                },
+                "market_total": {
+                  "buy_krw": 74057000000,
+                  "sell_krw": 74057000000,
+                  "net_krw": 0
+                },
+                "source": "KRX 15007 authenticated export",
+                "quality": "observed",
+                "source_unit": "million_krw",
+                "conversion_to_krw": 1000000
+              }
+            ]
+          },
+          "options_put": {
+            "as_of": "2026-09-03",
+            "source": "KRX 15007 authenticated export",
+            "quality": "observed",
+            "foreign": {
+              "buy_krw": 63198000000,
+              "sell_krw": 58809000000,
+              "net_krw": 4389000000
+            },
+            "market_total": {
+              "buy_krw": 78826000000,
+              "sell_krw": 78826000000,
+              "net_krw": 0
+            },
+            "series": [
+              {
+                "date": "2026-09-03",
+                "foreign": {
+                  "buy_krw": 63198000000,
+                  "sell_krw": 58809000000,
+                  "net_krw": 4389000000
+                },
+                "market_total": {
+                  "buy_krw": 78826000000,
+                  "sell_krw": 78826000000,
+                  "net_krw": 0
+                },
+                "source": "KRX 15007 authenticated export",
+                "quality": "observed",
+                "source_unit": "million_krw",
+                "conversion_to_krw": 1000000
+              }
+            ]
+          },
+          "futures": {
+            "as_of": "2026-09-03",
+            "source": "KRX 15007 authenticated export",
+            "quality": "observed",
+            "foreign": {
+              "buy_krw": 29402522000000,
+              "sell_krw": 28594909000000,
+              "net_krw": 807613000000
+            },
+            "market_total": {
+              "buy_krw": 40801134000000,
+              "sell_krw": 40801134000000,
+              "net_krw": 0
+            },
+            "series": [
+              {
+                "date": "2026-09-03",
+                "foreign": {
+                  "buy_krw": 29402522000000,
+                  "sell_krw": 28594909000000,
+                  "net_krw": 807613000000
+                },
+                "market_total": {
+                  "buy_krw": 40801134000000,
+                  "sell_krw": 40801134000000,
+                  "net_krw": 0
+                },
+                "source": "KRX 15007 authenticated export",
+                "quality": "observed",
+                "source_unit": "million_krw",
+                "conversion_to_krw": 1000000
+              }
+            ]
+          }
+        }
+      }
     },
     "source_priority_used": [
       "krx_fut_bydd_trd",
       "krx_opt_bydd_trd",
-      "krx_public_investor_dashboard"
+      "krx_public_investor_dashboard",
+      "krx_15007_authenticated_export"
     ],
     "errors": [],
     "disclaimer_ko": "공개·신청 API / CSV. 투자 권유 아님."
   },
   "us_oi_snap": {
     "schema_version": "us-oi-daily-v1",
-    "as_of": "2026-08-20",
-    "fetched_at": "2026-08-20T09:51:10.949518+00:00",
+    "as_of": "2026-09-10",
+    "fetched_at": "2026-09-10T08:21:31.224050+00:00",
     "names": [
       {
         "symbol": "MU",
-        "put_call_oi": 1.1032,
-        "put_call_volume": 0.7013,
-        "put_oi": 1896644.0,
-        "call_oi": 1719237.0,
-        "put_volume": 365582.0,
-        "call_volume": 521310.0,
-        "atm_call_iv": 0.4422,
-        "total_volume": 886892.0,
+        "put_call_oi": 1.0817,
+        "put_call_volume": 0.6793,
+        "put_oi": 1753938.0,
+        "call_oi": 1621483.0,
+        "put_volume": 473802.0,
+        "call_volume": 697530.0,
+        "atm_call_iv": 0.517,
+        "total_volume": 1171332.0,
         "source": "Cboe delayed_quotes/options (CDN)",
         "quality": "observed"
       },
       {
         "symbol": "NVDA",
-        "put_call_oi": 0.8091,
-        "put_call_volume": 0.5948,
-        "put_oi": 6715027.0,
-        "call_oi": 8299784.0,
-        "put_volume": 998694.0,
-        "call_volume": 1679067.0,
-        "atm_call_iv": 0.388,
-        "total_volume": 2677761.0,
+        "put_call_oi": 0.8856,
+        "put_call_volume": 0.5468,
+        "put_oi": 7507961.0,
+        "call_oi": 8477829.0,
+        "put_volume": 882639.0,
+        "call_volume": 1614178.0,
+        "atm_call_iv": 0.3842,
+        "total_volume": 2496817.0,
         "source": "Cboe delayed_quotes/options (CDN)",
         "quality": "observed"
       },
       {
         "symbol": "AMD",
-        "put_call_oi": 1.137,
-        "put_call_volume": 0.8269,
-        "put_oi": 1795981.0,
-        "call_oi": 1579563.0,
-        "put_volume": 231663.0,
-        "call_volume": 280157.0,
-        "atm_call_iv": 0.4485,
-        "total_volume": 511820.0,
+        "put_call_oi": 1.1463,
+        "put_call_volume": 0.5408,
+        "put_oi": 1727845.0,
+        "call_oi": 1507342.0,
+        "put_volume": 273202.0,
+        "call_volume": 505161.0,
+        "atm_call_iv": 0.6055,
+        "total_volume": 778363.0,
         "source": "Cboe delayed_quotes/options (CDN)",
         "quality": "observed"
       },
       {
         "symbol": "AMZN",
-        "put_call_oi": 0.6597,
-        "put_call_volume": 0.3187,
-        "put_oi": 2023420.0,
-        "call_oi": 3067108.0,
-        "put_volume": 241748.0,
-        "call_volume": 758501.0,
-        "atm_call_iv": 0.3824,
-        "total_volume": 1000249.0,
+        "put_call_oi": 0.6948,
+        "put_call_volume": 0.5438,
+        "put_oi": 1913294.0,
+        "call_oi": 2753722.0,
+        "put_volume": 219680.0,
+        "call_volume": 404009.0,
+        "atm_call_iv": 0.2002,
+        "total_volume": 623689.0,
         "source": "Cboe delayed_quotes/options (CDN)",
         "quality": "observed"
       },
       {
         "symbol": "SOXL",
-        "put_call_oi": 2.2026,
-        "put_call_volume": 1.0919,
-        "put_oi": 1132653.0,
-        "call_oi": 514232.0,
-        "put_volume": 146934.0,
-        "call_volume": 134569.0,
-        "atm_call_iv": 1.3186,
-        "total_volume": 281503.0,
+        "put_call_oi": 1.6286,
+        "put_call_volume": 1.1643,
+        "put_oi": 974886.0,
+        "call_oi": 598607.0,
+        "put_volume": 147361.0,
+        "call_volume": 126568.0,
+        "atm_call_iv": 0.8819,
+        "total_volume": 273929.0,
         "source": "Cboe delayed_quotes/options (CDN)",
         "quality": "observed"
       },
       {
         "symbol": "SMH",
-        "put_call_oi": 1.8623,
-        "put_call_volume": 1.5798,
-        "put_oi": 1533886.0,
-        "call_oi": 823666.0,
-        "put_volume": 129536.0,
-        "call_volume": 81994.0,
-        "atm_call_iv": 0.8819,
-        "total_volume": 211530.0,
+        "put_call_oi": 1.5833,
+        "put_call_volume": 1.1207,
+        "put_oi": 1173508.0,
+        "call_oi": 741174.0,
+        "put_volume": 85926.0,
+        "call_volume": 76669.0,
+        "atm_call_iv": 0.867,
+        "total_volume": 162595.0,
         "source": "Cboe delayed_quotes/options (CDN)",
         "quality": "observed"
       },
       {
         "symbol": "AVGO",
-        "put_call_oi": 1.071,
-        "put_call_volume": 0.8353,
-        "put_oi": 1137231.0,
-        "call_oi": 1061876.0,
-        "put_volume": 197750.0,
-        "call_volume": 236749.0,
-        "atm_call_iv": 0.4114,
-        "total_volume": 434499.0,
+        "put_call_oi": 0.9858,
+        "put_call_volume": 0.5324,
+        "put_oi": 1181090.0,
+        "call_oi": 1198092.0,
+        "put_volume": 101141.0,
+        "call_volume": 189976.0,
+        "atm_call_iv": 0.3543,
+        "total_volume": 291117.0,
         "source": "Cboe delayed_quotes/options (CDN)",
         "quality": "observed"
       },
       {
         "symbol": "TSM",
-        "put_call_oi": 1.1072,
-        "put_call_volume": 1.1188,
-        "put_oi": 1132573.0,
-        "call_oi": 1022904.0,
-        "put_volume": 58864.0,
-        "call_volume": 52615.0,
-        "atm_call_iv": 0.3544,
-        "total_volume": 111479.0,
+        "put_call_oi": 1.1092,
+        "put_call_volume": 1.6333,
+        "put_oi": 1000623.0,
+        "call_oi": 902130.0,
+        "put_volume": 53289.0,
+        "call_volume": 32626.0,
+        "atm_call_iv": 0.3859,
+        "total_volume": 85915.0,
         "source": "Cboe delayed_quotes/options (CDN)",
         "quality": "observed"
       }
     ],
     "vol_indices": {
-      "fetched_at": "2026-08-20T09:51:10.949467+00:00",
+      "fetched_at": "2026-09-10T08:21:31.223997+00:00",
       "indices": {
         "VIX": {
-          "as_of": "08/19/2026",
-          "close": 14.89,
-          "prev_close": 15.84,
-          "day_return": -0.059975,
+          "as_of": "09/09/2026",
+          "close": 16.46,
+          "prev_close": 15.72,
+          "day_return": 0.047074,
           "source": "Cboe VIX_History.csv",
           "quality": "observed"
         },
         "VVIX": {
-          "as_of": "08/19/2026",
-          "close": 86.53,
-          "prev_close": 92.87,
-          "day_return": -0.068267,
+          "as_of": "09/09/2026",
+          "close": 94.5,
+          "prev_close": 88.69,
+          "day_return": 0.065509,
           "source": "Cboe VVIX_History.csv",
           "quality": "observed"
         },
         "SKEW": {
-          "as_of": "08/19/2026",
-          "close": 142.93,
-          "prev_close": 143.6,
-          "day_return": -0.004666,
+          "as_of": "09/09/2026",
+          "close": 149.25,
+          "prev_close": 148.86,
+          "day_return": 0.00262,
           "source": "Cboe SKEW_History.csv",
           "quality": "observed"
         },
         "VIX_quote": {
-          "price": 15.21,
-          "change_pct": 2.1491,
-          "timestamp": "2026-08-20 09:50:16",
+          "price": 16.36,
+          "change_pct": -0.6075,
+          "timestamp": "2026-09-10 08:21:12",
           "source": "Cboe delayed_quotes/_VIX",
           "quality": "observed"
         }
@@ -246,23 +362,51 @@
   },
   "us_kr_rules": {
     "schema_version": "us-oi-kr-rules-v1",
-    "as_of": "2026-08-20",
+    "as_of": "2026-09-10",
     "headline_level": "경계",
     "alerts": [
       {
         "channel": "downside",
         "level": "경계",
-        "us": "SMH",
-        "kr": "000660",
-        "edge_type": "etf_beta",
+        "us": "TSM",
+        "kr": "005930",
+        "edge_type": "peer_foundry_logic",
         "reasons": [
-          "P/C vol=1.58 (≥1.5) vol=211530"
+          "P/C vol=1.63 (≥1.5) vol=85915"
         ],
         "metrics": {
-          "put_call_oi": 1.8623,
-          "put_call_volume": 1.5798,
-          "put_oi": 1533886.0,
-          "call_oi": 823666.0
+          "put_call_oi": 1.1092,
+          "put_call_volume": 1.6333,
+          "put_oi": 1000623.0,
+          "call_oi": 902130.0
+        }
+      },
+      {
+        "channel": "upside",
+        "level": "주의",
+        "us": "NVDA",
+        "kr": "000660",
+        "edge_type": "demand_ai_gpu",
+        "reasons": [
+          "call-heavy P/C vol=0.55"
+        ],
+        "metrics": {
+          "put_call_volume": 0.5468,
+          "call_volume": 1614178.0
+        }
+      },
+      {
+        "channel": "upside",
+        "level": "주의",
+        "us": "AMD",
+        "kr": "000660",
+        "edge_type": "demand_ai_gpu",
+        "reasons": [
+          "call-heavy P/C vol=0.54"
+        ],
+        "metrics": {
+          "put_call_volume": 0.5408,
+          "call_volume": 505161.0
         }
       },
       {
@@ -272,11 +416,11 @@
         "kr": "000660",
         "edge_type": "demand_hyperscaler",
         "reasons": [
-          "call-heavy P/C vol=0.32"
+          "call-heavy P/C vol=0.54"
         ],
         "metrics": {
-          "put_call_volume": 0.3187,
-          "call_volume": 758501.0
+          "put_call_volume": 0.5438,
+          "call_volume": 404009.0
         }
       },
       {
@@ -286,29 +430,29 @@
         "kr": "000660",
         "edge_type": "etf_beta",
         "reasons": [
-          "P/C OI=2.20 (≥1.3)"
+          "P/C vol=1.16 (≥1.1)"
         ],
         "metrics": {
-          "put_call_oi": 2.2026,
-          "put_call_volume": 1.0919,
-          "put_oi": 1132653.0,
-          "call_oi": 514232.0
+          "put_call_oi": 1.6286,
+          "put_call_volume": 1.1643,
+          "put_oi": 974886.0,
+          "call_oi": 598607.0
         }
       },
       {
         "channel": "downside",
         "level": "주의",
-        "us": "TSM",
-        "kr": "005930",
-        "edge_type": "peer_foundry_logic",
+        "us": "SMH",
+        "kr": "000660",
+        "edge_type": "etf_beta",
         "reasons": [
           "P/C vol=1.12 (≥1.1)"
         ],
         "metrics": {
-          "put_call_oi": 1.1072,
-          "put_call_volume": 1.1188,
-          "put_oi": 1132573.0,
-          "call_oi": 1022904.0
+          "put_call_oi": 1.5833,
+          "put_call_volume": 1.1207,
+          "put_oi": 1173508.0,
+          "call_oi": 741174.0
         }
       },
       {
@@ -318,13 +462,13 @@
         "kr": "005930",
         "edge_type": "etf_beta",
         "reasons": [
-          "P/C OI=2.20 (≥1.3)"
+          "P/C vol=1.16 (≥1.1)"
         ],
         "metrics": {
-          "put_call_oi": 2.2026,
-          "put_call_volume": 1.0919,
-          "put_oi": 1132653.0,
-          "call_oi": 514232.0
+          "put_call_oi": 1.6286,
+          "put_call_volume": 1.1643,
+          "put_oi": 974886.0,
+          "call_oi": 598607.0
         }
       }
     ],
@@ -333,15 +477,43 @@
         {
           "channel": "upside",
           "level": "주의",
+          "us": "NVDA",
+          "kr": "000660",
+          "edge_type": "demand_ai_gpu",
+          "reasons": [
+            "call-heavy P/C vol=0.55"
+          ],
+          "metrics": {
+            "put_call_volume": 0.5468,
+            "call_volume": 1614178.0
+          }
+        },
+        {
+          "channel": "upside",
+          "level": "주의",
+          "us": "AMD",
+          "kr": "000660",
+          "edge_type": "demand_ai_gpu",
+          "reasons": [
+            "call-heavy P/C vol=0.54"
+          ],
+          "metrics": {
+            "put_call_volume": 0.5408,
+            "call_volume": 505161.0
+          }
+        },
+        {
+          "channel": "upside",
+          "level": "주의",
           "us": "AMZN",
           "kr": "000660",
           "edge_type": "demand_hyperscaler",
           "reasons": [
-            "call-heavy P/C vol=0.32"
+            "call-heavy P/C vol=0.54"
           ],
           "metrics": {
-            "put_call_volume": 0.3187,
-            "call_volume": 758501.0
+            "put_call_volume": 0.5438,
+            "call_volume": 404009.0
           }
         },
         {
@@ -351,47 +523,47 @@
           "kr": "000660",
           "edge_type": "etf_beta",
           "reasons": [
-            "P/C OI=2.20 (≥1.3)"
+            "P/C vol=1.16 (≥1.1)"
           ],
           "metrics": {
-            "put_call_oi": 2.2026,
-            "put_call_volume": 1.0919,
-            "put_oi": 1132653.0,
-            "call_oi": 514232.0
+            "put_call_oi": 1.6286,
+            "put_call_volume": 1.1643,
+            "put_oi": 974886.0,
+            "call_oi": 598607.0
           }
         },
         {
           "channel": "downside",
-          "level": "경계",
+          "level": "주의",
           "us": "SMH",
           "kr": "000660",
           "edge_type": "etf_beta",
           "reasons": [
-            "P/C vol=1.58 (≥1.5) vol=211530"
+            "P/C vol=1.12 (≥1.1)"
           ],
           "metrics": {
-            "put_call_oi": 1.8623,
-            "put_call_volume": 1.5798,
-            "put_oi": 1533886.0,
-            "call_oi": 823666.0
+            "put_call_oi": 1.5833,
+            "put_call_volume": 1.1207,
+            "put_oi": 1173508.0,
+            "call_oi": 741174.0
           }
         }
       ],
       "005930": [
         {
           "channel": "downside",
-          "level": "주의",
+          "level": "경계",
           "us": "TSM",
           "kr": "005930",
           "edge_type": "peer_foundry_logic",
           "reasons": [
-            "P/C vol=1.12 (≥1.1)"
+            "P/C vol=1.63 (≥1.5) vol=85915"
           ],
           "metrics": {
-            "put_call_oi": 1.1072,
-            "put_call_volume": 1.1188,
-            "put_oi": 1132573.0,
-            "call_oi": 1022904.0
+            "put_call_oi": 1.1092,
+            "put_call_volume": 1.6333,
+            "put_oi": 1000623.0,
+            "call_oi": 902130.0
           }
         },
         {
@@ -401,13 +573,13 @@
           "kr": "005930",
           "edge_type": "etf_beta",
           "reasons": [
-            "P/C OI=2.20 (≥1.3)"
+            "P/C vol=1.16 (≥1.1)"
           ],
           "metrics": {
-            "put_call_oi": 2.2026,
-            "put_call_volume": 1.0919,
-            "put_oi": 1132653.0,
-            "call_oi": 514232.0
+            "put_call_oi": 1.6286,
+            "put_call_volume": 1.1643,
+            "put_oi": 974886.0,
+            "call_oi": 598607.0
           }
         }
       ]

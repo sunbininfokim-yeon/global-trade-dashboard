@@ -24,6 +24,32 @@ def load_json(path: Path) -> dict[str, Any]:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
+def load_extracted(name: str) -> dict[str, Any]:
+    path = ROOT / "config" / "extracted" / name
+    if not path.exists():
+        return {}
+    return load_json(path)
+
+
+def usa_committees_missing(doc: dict[str, Any]) -> list[str]:
+    if not doc:
+        return [
+            "standing_committees",
+            "committee_chairs",
+            "committee_member_rosters",
+        ]
+    if "missing_fields" in doc:
+        return list(doc.get("missing_fields") or [])
+    return ["house_committee_member_rosters"]
+
+
+def usa_has_senate_terms(doc: dict[str, Any]) -> bool:
+    senate = [row for row in (doc.get("members") or []) if row.get("chamber") == "senate"]
+    if not senate:
+        return False
+    return all(row.get("senate_class") in {1, 2, 3} and row.get("term_end") for row in senate)
+
+
 def screen(status: str, paths: list[str], missing: Optional[list[str]] = None, **extra: Any) -> dict[str, Any]:
     return {
         "status": status,
@@ -223,10 +249,12 @@ def apply_country_contracts(manifest: dict[str, dict[str, Any]]) -> None:
                         "/public/data/admin1/USA.json",
                         "countries[USA].ui_ready.state_drilldown.states",
                     ],
-                    [
-                        "senate_term_end",
-                        "all_congressional_district_geometry",
-                    ],
+                    (
+                        []
+                        if usa_has_senate_terms(load_extracted("usa_congress.json"))
+                        else ["senate_term_end"]
+                    )
+                    + ["all_congressional_district_geometry"],
                     map_join="state.map_feature_code ↔ feature.properties.code",
                     prejoined=True,
                     map_asset_exists=(PUBLIC / "admin1" / "USA.json").exists(),
@@ -252,9 +280,11 @@ def apply_country_contracts(manifest: dict[str, dict[str, Any]]) -> None:
                     note="House list includes voting members and territorial/DC delegates; use the declared voting-seat paths for the hemicycle.",
                 ),
                 "legislature_detail": screen(
-                    "partial",
-                    ["countries[USA].ui_ready.congress"],
-                    ["standing_committees", "committee_chairs", "committee_member_rosters"],
+                    "ready"
+                    if not usa_committees_missing(load_extracted("usa_committees.json") or {})
+                    else "partial",
+                    ["countries[USA].ui_ready.congress.committees"],
+                    usa_committees_missing(load_extracted("usa_committees.json") or {}),
                 ),
                 "factions": screen(
                     "partial",

@@ -9,6 +9,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 SNAPSHOT = ROOT.parent.parent / "public" / "data" / "shipping_capacity_v1.json"
+SCENARIO_GRID = ROOT.parent.parent / "public" / "data" / "shipping_capacity_scenario_grid_v1.json"
 SHIPPING_UI = ROOT.parent.parent / "shipping.js"
 INDEX_HTML = ROOT.parent.parent / "index.html"
 
@@ -17,6 +18,7 @@ class ShippingUiContractTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         cls.snapshot = json.loads(SNAPSHOT.read_text(encoding="utf-8"))
+        cls.grid = json.loads(SCENARIO_GRID.read_text(encoding="utf-8"))["ui_scenario_grid"]
         cls.shipping_ui_source = SHIPPING_UI.read_text(encoding="utf-8")
         cls.index_html_source = INDEX_HTML.read_text(encoding="utf-8")
 
@@ -47,7 +49,7 @@ class ShippingUiContractTests(unittest.TestCase):
         self.assertIn(">항로 운항 선복량</a>", source)
         self.assertNotIn('data-target="shipping_scenarios"', source)
         self.assertNotIn('data-target="shipping_environment"', source)
-        self.assertIn('shipping.js?v=18', source)
+        self.assertRegex(source, r'<script src="shipping\.js\?v=\d+"></script>')
 
     def test_fleet_and_route_cards_have_explicit_display_fields(self) -> None:
         fleet_rows = self.snapshot["fleet"]["fleet_by_type"]
@@ -86,6 +88,18 @@ class ShippingUiContractTests(unittest.TestCase):
             ["base_scenario_id", "closure_pct", "duration_days"],
         )
         self.assertIn("summary.ship_type_breakdown[]", simulator["result_fields"])
+        self.assertIn("summary.cargo_segment_breakdown[]", simulator["result_fields"])
+        self.assertIn("summary.reroute_receivers[]", simulator["result_fields"])
+        self.assertIn(
+            "summary.reroute_receivers[].ship_type_breakdown[]",
+            simulator["result_fields"],
+        )
+        detail_paths = contract["views"]["chokepoint_detail"]["data_paths"]
+        self.assertIn(
+            "chokepoints_live.<id>.metric_histories.<ship_type>.history[]",
+            detail_paths,
+        )
+        self.assertIn("ui_scenario_grid.input_policy", simulator["data_paths"])
         self.assertIn("null", contract["unavailable_value_rule"])
         route_service = contract["views"]["route_service"]
         self.assertEqual(route_service["title_ko"], "항로 운항 선복량")
@@ -99,11 +113,39 @@ class ShippingUiContractTests(unittest.TestCase):
             context = chokepoint["risk_context"]
             self.assertTrue(context["primary_constraint_label_ko"])
             self.assertTrue(context["mechanism_ko"])
-            self.assertIn("실효 통행제약률", context["scenario_interpretation_ko"])
+            if chokepoint["scenario_availability"] == "observed_monitor_only_no_route_model":
+                self.assertIn("일별 통항 관측 모니터", context["scenario_interpretation_ko"])
+            else:
+                self.assertIn("실효 통행제약률", context["scenario_interpretation_ko"])
+
+    def test_global_observation_only_chokepoints_publish_daily_average_contract(self) -> None:
+        expected_ids = {"malacca", "cape_good_hope", "gibraltar", "oresund"}
+        chokepoints = {row["id"]: row for row in self.snapshot["chokepoints"]}
+        self.assertTrue(expected_ids.issubset(chokepoints))
+        for chokepoint_id in expected_ids:
+            self.assertEqual(
+                chokepoints[chokepoint_id]["scenario_availability"],
+                "observed_monitor_only_no_route_model",
+            )
+            status = self.snapshot["chokepoints_live"][chokepoint_id]
+            averages = status["daily_averages"]
+            metric = status["metrics"]["all"]
+            self.assertEqual(
+                averages["latest_daily_observation"]["date"],
+                status["history"][-1]["date"],
+            )
+            self.assertAlmostEqual(
+                averages["trailing_7d_average"]["value"],
+                metric["current_7d_mean_estimated_trade_tonnes"],
+            )
+            self.assertAlmostEqual(
+                averages["prior_28d_average"]["value"],
+                metric["prior_28d_mean_estimated_trade_tonnes"],
+            )
 
     def test_scenario_grid_has_backlog_and_commercial_constraint_metrics(self) -> None:
         base_ids = {row["id"] for row in self.snapshot["scenario_summary"]}
-        for row in self.snapshot["ui_scenario_grid"]["rows"]:
+        for row in self.grid["rows"]:
             self.assertIn(row["base_scenario_id"], base_ids)
             for field in (
                 "operational_capacity_absorbed_dwt",
@@ -113,10 +155,76 @@ class ShippingUiContractTests(unittest.TestCase):
                 "insurance_excluded_dwt",
                 "weighted_traffic_change_pct",
                 "ship_type_breakdown",
+                "reroute_receivers",
             ):
                 self.assertIn(field, row["summary"])
             for ship_type in row["summary"]["ship_type_breakdown"]:
                 self.assertIn(ship_type["ship_type"], {"container", "dry_bulk", "tanker"})
+
+    def test_full_closure_grid_publishes_cape_receiver_for_suez_and_bab(self) -> None:
+        for base_scenario_id, chokepoint_id in (
+            ("suez_100pct_28d", "suez"),
+            ("bab_el_mandeb_100pct_28d", "bab_el_mandeb"),
+        ):
+            row = next(
+                item
+                for item in self.grid["rows"]
+                if item["base_scenario_id"] == base_scenario_id
+                and item["closure_pct"] == 100
+                and item["duration_days"] == 28
+            )
+            receiver = next(
+                item
+                for item in row["summary"]["reroute_receivers"]
+                if item["id"] == "cape_good_hope"
+            )
+            self.assertEqual(receiver["source_chokepoint_id"], chokepoint_id)
+            self.assertGreater(receiver["rerouted_cargo_tonnes_horizon"], 0)
+            self.assertGreater(receiver["rerouted_in_transit_cargo_tonnes_horizon"], 0)
+            self.assertGreater(receiver["additional_service_capacity_dwt"], 0)
+            self.assertEqual(
+                receiver["status"], "modelled_reroute_receiver_not_observed_traffic"
+            )
+            container = next(
+                item
+                for item in receiver["ship_type_breakdown"]
+                if item["ship_type"] == "container"
+            )
+            self.assertGreater(container["baseline_service_capacity_dwt"], 0)
+            self.assertGreater(container["additional_service_capacity_dwt"], 0)
+            self.assertGreater(
+                container["additional_service_capacity_pct_of_baseline"], 0
+            )
+            self.assertLess(container["weighted_traffic_change_pct"], 0)
+
+    def test_expanded_grid_is_engine_precomputed_and_bounded(self) -> None:
+        grid = self.grid
+        self.assertEqual(grid["closure_pct_options"], list(range(0, 101, 10)))
+        self.assertEqual(grid["duration_day_options"], [1, 3, 7, 14, 21, 28])
+        self.assertEqual(grid["fixed_horizon_days"], 28)
+        self.assertFalse(grid["input_policy"]["browser_recalculation"])
+        self.assertTrue(grid["input_policy"]["duration_values_precomputed"])
+        self.assertEqual(grid["input_policy"]["closure_pct_step"], 10)
+
+    def test_hormuz_grid_keeps_lng_separate_from_tanker_denominator(self) -> None:
+        row = next(
+            item
+            for item in self.grid["rows"]
+            if item["base_scenario_id"] == "hormuz_effective_80pct_28d"
+            and item["closure_pct"] == 80
+            and item["duration_days"] == 28
+        )
+        lng = next(
+            item
+            for item in row["summary"]["cargo_segment_breakdown"]
+            if item["cargo_segment"] == "lng"
+        )
+        self.assertGreater(lng["affected_route_count"], 0)
+        self.assertGreater(lng["affected_baseline_dwt"], 0)
+        self.assertEqual(
+            lng["global_fleet_denominator_status"],
+            "lng_only_global_dwt_not_available_free",
+        )
 
 
 if __name__ == "__main__":

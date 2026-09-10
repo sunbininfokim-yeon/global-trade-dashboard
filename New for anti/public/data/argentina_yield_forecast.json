@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-08-04T13:43:30.344837+00:00",
-  "season": 2026,
+  "generated_at": "2026-09-04T18:55:55.029082+00:00",
+  "season": 2027,
   "country": "Argentina",
   "source_note": "Yields: MAGyP Estimaciones Agrícolas, department level, aggregated as sum(production)/sum(harvested area). Weather: NASA POWER daily, production-weighted across each region's growing points, ET0 by FAO-56 Penman-Monteith. ENSO: NOAA CPC ONI. IOD: NOAA PSL HadISST DMI.",
   "methodology_note": "One model per region-crop, each implementing the derived variables of its own guide in Regions/아르헨티나. Yield is a log technology trend plus a weather deviation; only the deviation is modelled. Skill is measured by forward chaining with the trend refit inside every fold, scored over the most recent folds. Yield is measured over harvested area, so seasons with heavy abandonment understate the damage -- see `abandonment`.",
@@ -14,46 +14,18 @@
         "Córdoba",
         "Santa Fe"
       ],
-      "season": 2026,
+      "forecast_available": false,
+      "reason_ko": "이번 갱신에서 필요한 입력을 만들지 못해 예측을 보류했습니다.",
+      "reason": "no trained model",
       "unit": "kg/ha",
-      "point": 2845.7,
-      "range_68": [
-        2592.2,
-        3099.2
-      ],
-      "range_95": [
-        2348.9,
-        3342.5
-      ],
-      "trend": 3113.5,
-      "weather_effect_pct": -8.6,
       "last_actual": {
         "year": 2025,
         "yield": 3115.940391927188
       },
-      "enso": {
-        "state": "neutral",
-        "oni_growing_season": -0.48666666666666664,
-        "iod_spring": -0.39,
-        "la_nina_positive_iod": false
-      },
-      "skill": {
-        "method": "forward chaining, trend refit inside each fold, scored on the most recent folds",
-        "skill_vs_trend_only": 0.52,
-        "weather_skill": 0.52,
-        "weather_driven": true,
-        "non_weather_features": [],
-        "beats_trend": true,
-        "sigma_kg_ha": 253.5
-      },
       "provenance": {
         "guide": "Regions/아르헨티나/팜파스/대두/대두_상세분석_및_수식.md",
         "caveat": "Sowing is fixed at 15 November rather than observed; MAGyP publishes area and production but not planting progress by department. The spatial fixed-effects/embedding structure in §3B is replaced by production-weighting six stations, which captures between-province contrast but not within-province soil variation.",
-        "non_weather_drivers": "",
-        "weather_through": "2026-07-30",
-        "critical_window_observed": 1.0,
-        "season_complete": true,
-        "notes": []
+        "non_weather_drivers": ""
       }
     },
     "pampas_maiz": {
@@ -65,150 +37,18 @@
         "Córdoba",
         "Santa Fe"
       ],
-      "season": 2026,
+      "forecast_available": false,
+      "reason_ko": "이번 갱신에서 필요한 입력을 만들지 못해 예측을 보류했습니다.",
+      "reason": "no trained model",
       "unit": "kg/ha",
-      "point": 6267.0,
-      "range_68": [
-        5762.5,
-        6771.4
-      ],
-      "range_95": [
-        5278.2,
-        7255.7
-      ],
-      "trend": 6872.1,
-      "weather_effect_pct": -8.81,
       "last_actual": {
         "year": 2025,
         "yield": 7627.242847533014
       },
-      "enso": {
-        "state": "neutral",
-        "oni_growing_season": -0.4575,
-        "iod_spring": -0.39,
-        "la_nina_positive_iod": false
-      },
-      "skill": {
-        "method": "forward chaining, trend refit inside each fold, scored on the most recent folds",
-        "skill_vs_trend_only": 0.49,
-        "weather_skill": 0.49,
-        "weather_driven": true,
-        "non_weather_features": [],
-        "beats_trend": true,
-        "sigma_kg_ha": 504.5
-      },
       "provenance": {
         "guide": "Regions/아르헨티나/팜파스/옥수수/옥수수_상세분석_및_수식.md",
         "caveat": "The guide's Climate_Shock_Index never fires: across 42 seasons no year has both ONI < -0.5 in the pre-sowing spring and DMI > 0.4, so the switch is constant at 1.0 and the training run drops it. That is a property of the climate rather than of the data -- a strongly positive dipole and a La Nina are themselves negatively associated, so the guide's worst case is close to mutually exclusive at these thresholds. ONI and DMI are carried separately instead. SAWHC is one constant per region here, so it rescales every season identically. DSSAT/APSIM is not runnable, so WDEF is the same ratio (ETa/ETc over silking) taken from a bucket balance instead of a process model.",
-        "non_weather_drivers": "The early/late sowing split is the guide's own headline variable and it is not published: MAGyP reports one combined corn figure per department. The split moves year to year with December rainfall and with the corn/soy price ratio, so part of this target is a sowing decision the weather cannot see. Both calendars are modelled and offered, but their mix is unobserved.",
-        "weather_through": "2026-07-30",
-        "critical_window_observed": 1.0,
-        "season_complete": true,
-        "notes": []
-      }
-    },
-    "norte_soja": {
-      "label": "NOA/NEA soybeans (Santiago del Estero, Chaco, Salta, Tucumán)",
-      "label_ko": "북부 NOA/NEA 대두",
-      "crop": "soja",
-      "provinces": [
-        "Santiago del Estero",
-        "Chaco",
-        "Salta",
-        "Tucumán"
-      ],
-      "season": 2026,
-      "unit": "kg/ha",
-      "point": 2789.0,
-      "range_68": [
-        2332.4,
-        3245.5
-      ],
-      "range_95": [
-        1894.2,
-        3683.8
-      ],
-      "trend": 2565.6,
-      "weather_effect_pct": 8.71,
-      "last_actual": {
-        "year": 2025,
-        "yield": 2100.0683665695387
-      },
-      "enso": {
-        "state": "neutral",
-        "oni_growing_season": -0.4575,
-        "iod_spring": -0.39,
-        "la_nina_positive_iod": false
-      },
-      "skill": {
-        "method": "forward chaining, trend refit inside each fold, scored on the most recent folds",
-        "skill_vs_trend_only": 0.064,
-        "weather_skill": 0.064,
-        "weather_driven": true,
-        "non_weather_features": [],
-        "beats_trend": true,
-        "sigma_kg_ha": 456.5
-      },
-      "provenance": {
-        "guide": "Regions/아르헨티나/북부지역_NOA_NEA/대두/대두_상세분석_및_수식.md",
-        "caveat": "Sowing fixed at 15 December. The spatial error model in §3 is replaced by production-weighting five stations across four provinces -- between-province contrast survives, department-level soil and management fixed effects do not.",
-        "non_weather_drivers": "This is a frontier crop: area has expanded roughly twentyfold since the 1980s onto newly cleared and progressively more marginal Chaco land. Average yield therefore moves with *where* the crop is grown, not only with the weather over it, and no climate feed sees that.",
-        "weather_through": "2026-07-30",
-        "critical_window_observed": 1.0,
-        "season_complete": true,
-        "notes": []
-      }
-    },
-    "chaco_algodon": {
-      "label": "Chaco cotton (Chaco, Santiago del Estero, Formosa, Santa Fe)",
-      "label_ko": "차코 면화",
-      "crop": "algodon",
-      "provinces": [
-        "Chaco",
-        "Santiago del Estero",
-        "Formosa",
-        "Santa Fe"
-      ],
-      "season": 2026,
-      "unit": "kg/ha",
-      "point": 2878.6,
-      "range_68": [
-        2410.9,
-        3346.2
-      ],
-      "range_95": [
-        1961.9,
-        3795.2
-      ],
-      "trend": 2445.5,
-      "weather_effect_pct": 17.71,
-      "last_actual": {
-        "year": 2025,
-        "yield": 1737.9782033085153
-      },
-      "enso": {
-        "state": "neutral",
-        "oni_growing_season": -0.3925,
-        "iod_spring": -0.39,
-        "la_nina_positive_iod": false
-      },
-      "skill": {
-        "method": "forward chaining, trend refit inside each fold, scored on the most recent folds",
-        "skill_vs_trend_only": 0.182,
-        "weather_skill": 0.182,
-        "weather_driven": true,
-        "non_weather_features": [],
-        "beats_trend": true,
-        "sigma_kg_ha": 467.7
-      },
-      "provenance": {
-        "guide": "Regions/아르헨티나/북부지역_NOA_NEA/면화/면화_상세분석_및_수식.md",
-        "caveat": "Soil_Moisture_Index is a modelled bucket store, not a satellite product. Sowing fixed at 1 November. Fibre quality has no open series, so the target is lint yield alone.",
-        "non_weather_drivers": "Argentine cotton area collapsed from ~700k ha in the late 1990s to ~150k ha in the mid-2000s and has swung with the cotton/soy price ratio ever since, while the crop simultaneously shifted from smallholder rainfed to mechanised narrow-row production. Both moves change average yield without any weather doing anything.",
-        "weather_through": "2026-07-30",
-        "critical_window_observed": 1.0,
-        "season_complete": true,
-        "notes": []
+        "non_weather_drivers": "The early/late sowing split is the guide's own headline variable and it is not published: MAGyP reports one combined corn figure per department. The split moves year to year with December rainfall and with the corn/soy price ratio, so part of this target is a sowing decision the weather cannot see. Both calendars are modelled and offered, but their mix is unobserved."
       }
     },
     "pampas_trigo": {
@@ -223,16 +63,64 @@
       ],
       "forecast_available": false,
       "reason_ko": "밀은 10월 중순 개화기가 지나야 예측합니다. 수확량을 결정하는 서리·등숙 구간이 아직 오지 않아 이번 갱신에서는 기후 평년값으로 채워 넣지 않고 예측을 보류합니다. 11월부터 값이 나옵니다.",
-      "reason": "features unavailable: fii, fii_proxy, frost_days_spring, cold_days_spring, water_deficit_fill, water_deficit_season, smi_anthesis, precip_anthesis, heat_days_fill, harvest_rain_penalty, spring_heat_days, oni_lag, iod_spring",
+      "reason": "features unavailable: fii, fii_proxy, frost_days_spring, cold_days_spring, water_deficit_fill, water_deficit_season, smi_anthesis, precip_anthesis, heat_days_fill, harvest_rain_penalty, spring_heat_days, iod_spring",
       "unit": "kg/ha",
       "last_actual": {
         "year": 2024,
-        "yield": 3112.690744325339
+        "yield": 3112.6907443253394
       },
       "provenance": {
         "guide": "Regions/아르헨티나/팜파스/밀/밀_상세분석_및_수식.md",
         "caveat": "The guide's FII cannot be computed as written from this weather feed: over the fixed 10-25 October anthesis window, POWER's gridded 2 m minimum falls below 0 C on 4 days in 42 years across five stations, because damaging spring frost in the Pampas is a radiative canopy-level event below the resolution of a reanalysis 2 m field. `fii` is kept at the guide's 0 C and is near-constant; `fii_proxy` raises the threshold to 3 C over a wider window as a frost-risk proxy. This variable needs station minima (INTA SIGA, SMN) to be modelled properly. Anthesis is also fixed at 15 October rather than tracked, and DSSAT CERES-Wheat is not runnable, so the guide's two-stage delta model collapses to one regression.",
         "non_weather_drivers": ""
+      }
+    },
+    "norte_soja": {
+      "label": "NOA/NEA soybeans (Santiago del Estero, Chaco, Salta, Tucumán)",
+      "label_ko": "북부 NOA/NEA 대두",
+      "crop": "soja",
+      "provinces": [
+        "Santiago del Estero",
+        "Chaco",
+        "Salta",
+        "Tucumán"
+      ],
+      "forecast_available": false,
+      "reason_ko": "이번 갱신에서 필요한 입력을 만들지 못해 예측을 보류했습니다.",
+      "reason": "no trained model",
+      "unit": "kg/ha",
+      "last_actual": {
+        "year": 2025,
+        "yield": 2100.0683665695387
+      },
+      "provenance": {
+        "guide": "Regions/아르헨티나/북부지역_NOA_NEA/대두/대두_상세분석_및_수식.md",
+        "caveat": "Sowing fixed at 15 December. The spatial error model in §3 is replaced by production-weighting five stations across four provinces -- between-province contrast survives, department-level soil and management fixed effects do not.",
+        "non_weather_drivers": "This is a frontier crop: area has expanded roughly twentyfold since the 1980s onto newly cleared and progressively more marginal Chaco land. Average yield therefore moves with *where* the crop is grown, not only with the weather over it, and no climate feed sees that."
+      }
+    },
+    "chaco_algodon": {
+      "label": "Chaco cotton (Chaco, Santiago del Estero, Formosa, Santa Fe)",
+      "label_ko": "차코 면화",
+      "crop": "algodon",
+      "provinces": [
+        "Chaco",
+        "Santiago del Estero",
+        "Formosa",
+        "Santa Fe"
+      ],
+      "forecast_available": false,
+      "reason_ko": "이번 갱신에서 필요한 입력을 만들지 못해 예측을 보류했습니다.",
+      "reason": "no trained model",
+      "unit": "kg/ha",
+      "last_actual": {
+        "year": 2025,
+        "yield": 1737.9782033085153
+      },
+      "provenance": {
+        "guide": "Regions/아르헨티나/북부지역_NOA_NEA/면화/면화_상세분석_및_수식.md",
+        "caveat": "Soil_Moisture_Index is a modelled bucket store, not a satellite product. Sowing fixed at 1 November. Fibre quality has no open series, so the target is lint yield alone.",
+        "non_weather_drivers": "Argentine cotton area collapsed from ~700k ha in the late 1990s to ~150k ha in the mid-2000s and has swung with the cotton/soy price ratio ever since, while the crop simultaneously shifted from smallholder rainfed to mechanised narrow-row production. Both moves change average yield without any weather doing anything."
       }
     },
     "tucuman_cana": {
@@ -258,7 +146,11 @@
     }
   },
   "skipped": {
-    "pampas_trigo": "features unavailable: fii, fii_proxy, frost_days_spring, cold_days_spring, water_deficit_fill, water_deficit_season, smi_anthesis, precip_anthesis, heat_days_fill, harvest_rain_penalty, spring_heat_days, oni_lag, iod_spring",
+    "pampas_soja": "no trained model",
+    "pampas_maiz": "no trained model",
+    "pampas_trigo": "features unavailable: fii, fii_proxy, frost_days_spring, cold_days_spring, water_deficit_fill, water_deficit_season, smi_anthesis, precip_anthesis, heat_days_fill, harvest_rain_penalty, spring_heat_days, iod_spring",
+    "norte_soja": "no trained model",
+    "chaco_algodon": "no trained model",
     "tucuman_cana": "no trained model"
   }
 }

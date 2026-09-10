@@ -39,6 +39,17 @@ python3 run_refresh_cycle.py --build-derived
 
 산출: `public/data/elections_board_v1.json`, `elections_calendar_master_v1.json`, `elections_ui_manifest_v1.json`. UI는 매니페스트를 먼저 읽고 `ready / partial / disabled` 계약을 따른다.
 
+미국 백악관 수석급은 공식 페이지만 자동 승격한다.
+
+```bash
+python3 -m election_watch.extract_usa_eop --fetch --merge-tier12 --write-report
+# 또는
+python3 run_refresh_cycle.py --refresh-usa-eop --build-derived
+```
+
+정본 `config/extracted/usa_eop.json` → `tier12_executives.json#countries.USA` → 보드 `executive_live.white_house`.  
+월간 GitHub Actions YAML은 `ci/elections_eop_monthly.yml` (Claude가 `.github/workflows/`로 복사). 핸드오프: `HANDOFF_CLAUDE_ELECTIONS_EOP_ACTIONS.md`.
+
 ## 속보 연동 (commodity_news)
 
 통과:
@@ -135,3 +146,16 @@ python3 build_board.py --no-betting             # row.race_progress 부착 (KOR�
   통치지지율 헤드라인
   개각 / 관련 속보
 ```
+
+## 미국 슈퍼팩 공시 분석
+
+`python3 build_superpac.py --cycle 2026` · `FEC_API_KEY` 또는 `DATA_GOV_API_KEY` 사용.
+연방 후보 명부와 정정된 정기 독립지출을 별도 주별 JSON으로 발행한다. 지도용 후보·정당·경선·단체·선거구 조회 계약과 워싱턴 주지사 부분 수집을 제공한다. UI 연결과 배포는 Claude 인수 단계다. 주지사 전국 자동 수집은 미지원이다. 범위·원본 근거·주지사 검토 입력·실행 방법: [SUPERPAC_PIPELINE.md](SUPERPAC_PIPELINE.md).
+
+### 미국 지도 선거자금 백엔드 인수
+
+- [Claude UI/배포 인수인계](HANDOFF_CLAUDE_SUPERPAC_BACKEND.md)
+- 실행: `python3 refresh_superpac.py --plan` / `python3 refresh_superpac.py --cadence daily`
+- 지도 계약 생성·대조: `python3 build_superpac_map.py` / `python3 validate_superpac_map.py`
+- 워싱턴 주지사 단독 수집: `python3 build_governor_finance.py --cycle 2024`
+- 비활성 Actions 설치 템플릿: `ops/us_superpac_refresh.yml` (Claude가 설치·배포)

@@ -30,6 +30,38 @@
     "status": "scenario"
   },
   {
+    "id": "bab_el_mandeb_50pct_28d",
+    "name_ko": "바벨만데브 상업·보안 제약 50%·28일",
+    "chokepoint_id": "bab_el_mandeb",
+    "event_type": "commercial_security_restriction",
+    "closure_fraction": 0.5,
+    "residual_throughput_rate": 0.5,
+    "duration_days": 28,
+    "horizon_days": 28,
+    "waiting_days": 5,
+    "trapped_days": 5,
+    "onboard_waiting_share": 0.6,
+    "insurance_unavailable_share": 0.25,
+    "assumption_note_ko": "통항은 일부 남지만 보안·보험·선사 회피가 희망봉 우회 또는 대기를 유발하는 스트레스 시나리오이며 실제 봉쇄 관측이 아님",
+    "status": "scenario"
+  },
+  {
+    "id": "bab_el_mandeb_100pct_28d",
+    "name_ko": "바벨만데브 물리적 완전 봉쇄·28일",
+    "chokepoint_id": "bab_el_mandeb",
+    "event_type": "military_physical_closure",
+    "closure_fraction": 1.0,
+    "residual_throughput_rate": 0.0,
+    "duration_days": 28,
+    "horizon_days": 28,
+    "waiting_days": 7,
+    "trapped_days": 7,
+    "onboard_waiting_share": 0.8,
+    "insurance_unavailable_share": 1.0,
+    "assumption_note_ko": "안전한 상업 통항이 없다는 경계 스트레스 시나리오이며 실제 전면 봉쇄 관측 주장이 아님",
+    "status": "scenario"
+  },
+  {
     "id": "panama_50pct_28d",
     "name_ko": "파나마 통항능력 50% 감소·28일",
     "chokepoint_id": "panama",
@@ -105,6 +137,38 @@
     "onboard_waiting_share": 0.75,
     "insurance_unavailable_share": 1.0,
     "assumption_note_ko": "안전통로와 상업적 통항이 모두 없는 경계 시나리오",
+    "status": "scenario"
+  },
+  {
+    "id": "malacca_50pct_28d",
+    "name_ko": "말라카 통항능력 50% 감소·28일",
+    "chokepoint_id": "malacca",
+    "event_type": "operational_restriction",
+    "closure_fraction": 0.5,
+    "residual_throughput_rate": 0.5,
+    "duration_days": 28,
+    "horizon_days": 28,
+    "waiting_days": 5,
+    "trapped_days": 5,
+    "onboard_waiting_share": 1.0,
+    "insurance_unavailable_share": 0.0,
+    "assumption_note_ko": "수단다 해협 우회·대기·취소의 항로별 반응을 반영한 스트레스 시나리오이며 실제 봉쇄 관측이 아님",
+    "status": "scenario"
+  },
+  {
+    "id": "malacca_100pct_28d",
+    "name_ko": "말라카 물리적 완전 봉쇄·28일",
+    "chokepoint_id": "malacca",
+    "event_type": "physical_chokepoint_closure",
+    "closure_fraction": 1.0,
+    "residual_throughput_rate": 0.0,
+    "duration_days": 28,
+    "horizon_days": 28,
+    "waiting_days": 7,
+    "trapped_days": 7,
+    "onboard_waiting_share": 1.0,
+    "insurance_unavailable_share": 0.0,
+    "assumption_note_ko": "수단다 해협 우회 가능성을 포함한 경계 시나리오이며 실제 전면 봉쇄 관측 주장이 아님",
     "status": "scenario"
   }
 ]

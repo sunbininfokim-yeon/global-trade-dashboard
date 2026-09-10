@@ -6,8 +6,14 @@ name: Market microstructure daily
 
 on:
   schedule:
-    # 16:30 KST (07:30 UTC) weekdays — after KRX cash close; US OI = delayed prior/current.
-    - cron: '30 7 * * 1-5'
+    # 06:13 KST next day (21:13 UTC same weekday) — NOT same-evening.
+    # Confirmed empirically 2026-08-27: even 9.5h after KRX cash close
+    # (16:08 UTC / 01:08 KST next day), KRX's stk_bydd_trd still had no
+    # same-day basDd and fell back a day. Running before the next KST
+    # trading session opens (~14.5h after close) gives KRX's own EOD
+    # publish process much more margin. Mon-Fri (UTC) => Tue-Sat (KST)
+    # delivery mornings, each carrying the prior UTC weekday's close.
+    - cron: '13 21 * * 1-5'
   workflow_dispatch:
 
 jobs:
@@ -30,7 +36,23 @@ jobs:
       - name: Install deps
         run: pip install -r requirements-ci.txt
 
+      # These four steps all call FinanceDataReader, which reads through KRX
+      # Data Marketplace (data.krx.co.kr). That site rate-limits by IP and, on
+      # 2026-09-10, returned an explicit 7-day block ("자동화 수단을 통한
+      # 비정상 대량 조회가 감지") after this same source was hit repeatedly
+      # across sessions. When blocked, the underlying script still exits
+      # non-zero -- without continue-on-error, that stopped the whole job
+      # here, at the FIRST step, so nothing downstream (concentration,
+      # microstructure, investor levels, alerts, AND the 15007 call/put board
+      # that doesn't touch FDR at all) ever ran or committed that day.
+      # continue-on-error lets a source-level outage degrade to "this one
+      # domain doesn't get a new row today" instead of "nothing does" --
+      # every builder here already treats missing/stale input as
+      # null/carry-forward, never as zero or a fabricated value, so a skipped
+      # step here is honestly reflected downstream, not silently papered
+      # over.
       - name: Conc history append
+        continue-on-error: true
         run: |
           python build_conc_history.py --append-only --print-stats || \
             python build_conc_history.py --live --months 6 --print-stats
@@ -39,6 +61,7 @@ jobs:
         run: python build_us_kr_l3.py --live --print-stats
 
       - name: Market microstructure snapshot
+        continue-on-error: true
         env:
           KRX_API: ${{ secrets.KRX_API }}
         run: python build_market_microstructure.py --live --source auto --print-stats
@@ -46,21 +69,81 @@ jobs:
       - name: Append external ETF snapshot history
         run: python append_external_history.py --print-stats
 
+      # Cursor crawls KRX 15007 CALL/PUT buy/sell exports into its own repo
+      # (private) at data/raw/krx_15007/<date>/{options_call,options_put,
+      # futures}_{buy,sell}.csv -- the exact raw shape build_derivatives_board
+      # already parses (Codex's --15007-* flags). Cursor's crawl can lag a
+      # trading day or two behind, so this never assumes today's folder
+      # exists; it walks backward for the newest one that has all four
+      # required call/put files. continue-on-error means a private-repo auth
+      # failure here degrades detailed_15007 to its prior value instead of
+      # failing the whole day's board (see build_detailed_15007's
+      # previous_detailed_15007 carry-forward).
+      - name: Checkout krx-month-paste (Cursor KRX 15007 raw exports)
+        id: krx15007_checkout
+        continue-on-error: true
+        uses: actions/checkout@v4
+        with:
+          repository: sunbininfokim-yeon/krx-month-paste
+          token: ${{ secrets.KRX_MONTH_PASTE_TOKEN }}
+          path: krx-month-paste
+          sparse-checkout: |
+            data/raw/krx_15007
+          sparse-checkout-cone-mode: false
+
+      - name: Resolve latest complete KRX 15007 raw date
+        id: krx15007
+        if: steps.krx15007_checkout.outcome == 'success'
+        run: |
+          BASE="${{ github.workspace }}/krx-month-paste/data/raw/krx_15007"
+          LATEST=""
+          if [ -d "$BASE" ]; then
+            for d in $(ls -1 "$BASE" 2>/dev/null | sort -r); do
+              dir="$BASE/$d"
+              if [ -f "$dir/options_call_buy.csv" ] && [ -f "$dir/options_call_sell.csv" ] \
+                 && [ -f "$dir/options_put_buy.csv" ] && [ -f "$dir/options_put_sell.csv" ]; then
+                LATEST="$dir"
+                break
+              fi
+            done
+          fi
+          echo "dir=$LATEST" >> "$GITHUB_OUTPUT"
+          if [ -n "$LATEST" ]; then
+            echo "Using KRX 15007 raw exports from $LATEST"
+          else
+            echo "No complete KRX 15007 raw export found -- detailed_15007 keeps its prior value"
+          fi
+
       - name: Derivatives board + US OI archive
         env:
           KRX_API: ${{ secrets.KRX_API }}
-        run: python build_derivatives_board.py --live --print-stats
+          KRX15007_DIR: ${{ steps.krx15007.outputs.dir }}
+        run: |
+          ARGS=()
+          if [ -n "$KRX15007_DIR" ]; then
+            ARGS+=(--15007-call-buy "$KRX15007_DIR/options_call_buy.csv")
+            ARGS+=(--15007-call-sell "$KRX15007_DIR/options_call_sell.csv")
+            ARGS+=(--15007-put-buy "$KRX15007_DIR/options_put_buy.csv")
+            ARGS+=(--15007-put-sell "$KRX15007_DIR/options_put_sell.csv")
+            if [ -f "$KRX15007_DIR/futures_buy.csv" ] && [ -f "$KRX15007_DIR/futures_sell.csv" ]; then
+              ARGS+=(--15007-futures-buy "$KRX15007_DIR/futures_buy.csv")
+              ARGS+=(--15007-futures-sell "$KRX15007_DIR/futures_sell.csv")
+            fi
+          fi
+          python build_derivatives_board.py --live --print-stats "${ARGS[@]}"
 
       - name: Append derivatives and LETF history
         run: python append_derivatives_history.py --print-stats
 
       - name: Investor × price levels (real data; marcap + high-vol in top100)
+        continue-on-error: true
         run: python build_investor_price_levels.py --live --universe both --top 10 --pool 100 --print-stats
 
       - name: Deposit · credit overlay
         run: python publish_deposit_credit.py
 
       - name: Alert levels
+        continue-on-error: true
         run: python build_alert_levels.py --live
 
       - name: Validate UI data contract
@@ -100,4 +183,13 @@ jobs:
             "New for anti/scripts/market_microstructure/INVESTOR_PRICE_LEVELS.md" \
             "New for anti/scripts/market_microstructure/tests/fixtures/us_day.json"
           git commit -m "chore: refresh market microstructure daily snapshots" || exit 0
+          # A bare push loses the whole day's snapshot if any other scheduled
+          # job lands a commit on main in between (observed 2026-08-28: build
+          # succeeded, push rejected as non-fast-forward, no retry -- the run
+          # just failed and the data stayed stale until the next day's cron).
+          for i in 1 2 3; do
+            git push && exit 0
+            echo "push rejected, rebasing onto latest main and retrying ($i/3)"
+            git pull --rebase --autostash
+          done
           git push

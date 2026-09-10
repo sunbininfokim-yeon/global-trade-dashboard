@@ -106,6 +106,59 @@ def validate_optional_external_history() -> None:
             raise ContractError(f"invalid external history: {path}:{line_no}: {exc}") from exc
 
 
+def validate_15007_leg(value: Any, *, where: str) -> None:
+    if not isinstance(value, dict):
+        raise ContractError(f"{where} must be object")
+    values = [value.get(key) for key in ("buy_krw", "sell_krw", "net_krw")]
+    if any(item is None for item in values):
+        if any(item is not None for item in values):
+            raise ContractError(f"{where} must be all-null or all-numeric")
+        return
+    if any(isinstance(item, bool) or not isinstance(item, (int, float)) for item in values):
+        raise ContractError(f"{where} values must be numeric or all null")
+    if values[0] - values[1] != values[2]:
+        raise ContractError(f"{where}.buy_krw - sell_krw must equal net_krw")
+
+
+def validate_detailed_15007(value: Any) -> None:
+    if not isinstance(value, dict):
+        raise ContractError("derivatives_board.kr.investor_nets.detailed_15007 must be object")
+    if value.get("schema_version") != "krx-15007-call-put-v2":
+        raise ContractError("detailed_15007 schema_version mismatch")
+    query = require_object(value, "query", where="detailed_15007")
+    for key, expected in (("market", "KOSPI200"), ("metric", "trading_value"),
+                          ("side", "buy_sell_and_net"), ("unit", "KRW")):
+        if query.get(key) != expected:
+            raise ContractError(f"detailed_15007.query.{key} must be {expected}")
+    products = require_object(value, "products", where="detailed_15007")
+    for name in ("options_call", "options_put"):
+        product = require_object(products, name, where="detailed_15007.products")
+        if product.get("quality") not in {"observed", "partial_observed", "missing"}:
+            raise ContractError(f"detailed_15007.products.{name}.quality invalid")
+        validate_15007_leg(product.get("foreign"), where=f"detailed_15007.products.{name}.foreign")
+        validate_15007_leg(product.get("market_total"), where=f"detailed_15007.products.{name}.market_total")
+        series = product.get("series")
+        if not isinstance(series, list):
+            raise ContractError(f"detailed_15007.products.{name}.series must be list")
+        seen_dates: set[str] = set()
+        for index, row in enumerate(series):
+            if not isinstance(row, dict):
+                raise ContractError(f"detailed_15007.products.{name}.series[{index}] must be object")
+            day = require(row, "date", where=f"detailed_15007.products.{name}.series[{index}]")
+            if day in seen_dates:
+                raise ContractError(f"detailed_15007.products.{name}.series has duplicate {day}")
+            seen_dates.add(day)
+            quality = row.get("quality")
+            if quality not in {"observed", "partial_observed", "missing"}:
+                raise ContractError(f"detailed_15007.products.{name}.series[{index}].quality invalid")
+            validate_15007_leg(row.get("foreign"), where=f"detailed_15007.products.{name}.series[{index}].foreign")
+            validate_15007_leg(row.get("market_total"), where=f"detailed_15007.products.{name}.series[{index}].market_total")
+            if quality == "observed" and (
+                row["foreign"].get("net_krw") is None or row["market_total"].get("net_krw") is None
+            ):
+                raise ContractError(f"detailed_15007.products.{name}.series[{index}] observed needs both legs")
+
+
 def validate() -> None:
     transmission = load_json("us_kr_transmission_v1.json")
     require(transmission, "as_of", where="transmission")
@@ -128,6 +181,8 @@ def validate() -> None:
     require(kr, "as_of", where="derivatives_board.kr")
     require_object(kr, "kospi200_futures", where="derivatives_board.kr")
     require_object(kr, "kospi200_options", where="derivatives_board.kr")
+    investor_nets = require_object(kr, "investor_nets", where="derivatives_board.kr")
+    validate_detailed_15007(require(investor_nets, "detailed_15007", where="derivatives_board.kr.investor_nets"))
 
     micro = load_json("market_microstructure_v1.json")
     require(micro, "as_of", where="market_microstructure")

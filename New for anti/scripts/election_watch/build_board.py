@@ -13,6 +13,10 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from election_watch.betting import fetch_us_election_markets  # noqa: E402
+from election_watch.extract_usa_committees import (  # noqa: E402
+    public_usa_committees,
+    usa_committees_missing,
+)
 
 
 USA_STATE_ABBR = {
@@ -218,6 +222,7 @@ def build_board(
     year = year or int(seed.get("year") or datetime.now(timezone.utc).year)
     polls_doc = load_extracted("governance_polls.json") or {}
     usa_congress = load_extracted("usa_congress.json") or {}
+    usa_committees = load_extracted("usa_committees.json") or {}
     usa_gov = load_extracted("usa_governors.json") or {}
     usa_state_legs = load_extracted("usa_state_legislatures.json") or {}
     usa_state_officials = load_extracted("usa_state_officials.json") or {}
@@ -383,6 +388,9 @@ def build_board(
                 ),
                 "congress": {
                     "summary": usa_congress.get("summary"),
+                    "vacancies": usa_congress.get("vacancies", []),
+                    "swing_seats": usa_congress.get("swing_seats", []),
+                    "context_coverage": usa_congress.get("context_coverage"),
                     "floor_leadership": usa_congress.get("floor_leadership"),
                     "house_members": [
                         member
@@ -394,12 +402,8 @@ def build_board(
                         for member in (usa_congress.get("members") or [])
                         if member.get("chamber") == "senate"
                     ],
-                    "committees": "불명",
-                    "missing_fields": [
-                        "standing_committees",
-                        "committee_chairs",
-                        "committee_member_rosters",
-                    ],
+                    "committees": public_usa_committees(usa_committees),
+                    "missing_fields": usa_committees_missing(usa_committees),
                 },
             }
         if iso3 == "JPN":

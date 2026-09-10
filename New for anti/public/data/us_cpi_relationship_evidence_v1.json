@@ -1,0 +1,355 @@
+{
+  "schema_version": "us-cpi-relationship-evidence-v1",
+  "country": "USA",
+  "generated_at": "2026-08-31T06:49:25Z",
+  "reference_period": "2026-07",
+  "data_status": "official_observed_current_vintage",
+  "policy": {
+    "practical_screen": {
+      "statistically_validated": {
+        "minimum_full_grid_rmse_improvement_pct": 5.0,
+        "maximum_full_grid_dm_pvalue": 0.1,
+        "maximum_fdr_qvalue": 0.1
+      },
+      "watch_candidate": {
+        "minimum_best_lag_rmse_improvement_pct": 3.0,
+        "maximum_best_lag_dm_pvalue": 0.15
+      }
+    },
+    "phase_rule": "robust latest SA MoM watch state; never a causal finding, directional signal, or numeric forecast",
+    "rejected_test_rule": "a rejected sub-path is retained in details but cannot be promoted to a signal"
+  },
+  "relationships": [
+    {
+      "relationship_id": "food_home_vs_away_cost_structure",
+      "evidence_tier": "relationship_candidate",
+      "evidence_label_ko": "관계 후보",
+      "phase": {
+        "phase": "not_applicable",
+        "label_ko": "단계 판정 안 함",
+        "interpretation": "method_or_context_only_not_an_inflation_phase"
+      },
+      "tests": [],
+      "display_policy": "show_watch_language_without_forecast"
+    },
+    {
+      "relationship_id": "energy_cost_to_food_prices",
+      "evidence_tier": "relationship_candidate",
+      "evidence_label_ko": "관계 후보",
+      "phase": {
+        "phase": "not_applicable",
+        "label_ko": "단계 판정 안 함",
+        "interpretation": "method_or_context_only_not_an_inflation_phase"
+      },
+      "tests": [
+        {
+          "test_id": "energy_cost_to_food_prices",
+          "relationship_map_id": "energy_cost_to_food_prices",
+          "status": "tested_no_predictive_power",
+          "label_ko": "예측력 미확인",
+          "best_lag_months": 1,
+          "best_lag_rmse_improvement_pct": 9.552277529510881,
+          "best_lag_dm_pvalue": 0.19581082654903825,
+          "full_grid_rmse_improvement_pct": -15.840885769723887,
+          "full_grid_dm_pvalue": 0.2303639009726116,
+          "fdr_qvalue": 0.0,
+          "coverage": {
+            "first_month": "2012-02",
+            "last_month": "2026-07",
+            "aligned_months": 172,
+            "oos_months": 100
+          },
+          "interpretation": "out_of_sample_screen_not_causality"
+        }
+      ],
+      "display_policy": "show_watch_language_without_forecast"
+    },
+    {
+      "relationship_id": "alcohol_home_vs_away_cost_structure",
+      "evidence_tier": "relationship_candidate",
+      "evidence_label_ko": "관계 후보",
+      "phase": {
+        "phase": "not_applicable",
+        "label_ko": "단계 판정 안 함",
+        "interpretation": "method_or_context_only_not_an_inflation_phase"
+      },
+      "tests": [],
+      "display_policy": "show_watch_language_without_forecast"
+    },
+    {
+      "relationship_id": "new_used_vehicle_common_market",
+      "evidence_tier": "relationship_candidate",
+      "evidence_label_ko": "관계 후보",
+      "phase": {
+        "phase": "not_applicable",
+        "label_ko": "단계 판정 안 함",
+        "interpretation": "method_or_context_only_not_an_inflation_phase"
+      },
+      "tests": [
+        {
+          "test_id": "new_vehicles_to_used_cars",
+          "relationship_map_id": "new_used_vehicle_common_market",
+          "status": "tested_no_predictive_power",
+          "label_ko": "예측력 미확인",
+          "best_lag_months": 3,
+          "best_lag_rmse_improvement_pct": 1.8116429176062654,
+          "best_lag_dm_pvalue": 0.19743758325987992,
+          "full_grid_rmse_improvement_pct": -3.788569616443601,
+          "full_grid_dm_pvalue": 0.304235170883833,
+          "fdr_qvalue": 0.0023499304188390833,
+          "coverage": {
+            "first_month": "2011-08",
+            "last_month": "2026-07",
+            "aligned_months": 178,
+            "oos_months": 106
+          },
+          "interpretation": "out_of_sample_screen_not_causality"
+        }
+      ],
+      "display_policy": "show_watch_language_without_forecast"
+    },
+    {
+      "relationship_id": "new_used_vehicle_quality_adjustment",
+      "evidence_tier": "official_methodology",
+      "evidence_label_ko": "공식 산식·이연",
+      "phase": {
+        "phase": "not_applicable",
+        "label_ko": "단계 판정 안 함",
+        "interpretation": "method_or_context_only_not_an_inflation_phase"
+      },
+      "tests": [],
+      "display_policy": "show_method_only"
+    },
+    {
+      "relationship_id": "vehicle_parts_to_repair",
+      "evidence_tier": "relationship_candidate",
+      "evidence_label_ko": "관계 후보",
+      "phase": {
+        "phase": "fading",
+        "label_ko": "촉발 요인 둔화",
+        "reference_month": "2026-07",
+        "watch_window_months": [
+          0,
+          12
+        ],
+        "source_active_ids": [],
+        "target_active_ids": [],
+        "recent_source_impulses": {
+          "motor_vehicle_parts": "2025-12"
+        },
+        "component_states": {
+          "sources": {
+            "motor_vehicle_parts": {
+              "reference_month": "2026-07",
+              "mom_pct": 0.6133,
+              "robust_score": 0.367,
+              "positive_impulse": false,
+              "rule": "latest SA MoM > 0 and robust score versus preceding 60 months >= 0.75"
+            }
+          },
+          "targets": {
+            "motor_vehicle_maintenance": {
+              "reference_month": "2026-07",
+              "mom_pct": 0.628,
+              "robust_score": 0.146,
+              "positive_impulse": false,
+              "rule": "latest SA MoM > 0 and robust score versus preceding 60 months >= 0.75"
+            }
+          }
+        },
+        "summary_ko": "출발 항목의 상승 강도가 낮아졌고 연결 항목도 최근 60개월의 평소 범위를 뚜렷하게 벗어나지 않았습니다.",
+        "basis_ko": "2026-07 SA MoM 기준 · 출발 없음 · 연결 없음",
+        "interpretation": "relationship_watch_only_not_causal_finding_or_forecast"
+      },
+      "tests": [
+        {
+          "test_id": "vehicle_parts_to_maintenance",
+          "relationship_map_id": "vehicle_parts_to_repair",
+          "status": "weak_watch_candidate",
+          "label_ko": "약한 관찰 후보",
+          "best_lag_months": 10,
+          "best_lag_rmse_improvement_pct": 4.201273400056258,
+          "best_lag_dm_pvalue": 0.0869424202604024,
+          "full_grid_rmse_improvement_pct": 1.677101530218197,
+          "full_grid_dm_pvalue": 0.4399785193988952,
+          "fdr_qvalue": 5.210314901559001e-12,
+          "coverage": {
+            "first_month": "2012-02",
+            "last_month": "2025-09",
+            "aligned_months": 164,
+            "oos_months": 92
+          },
+          "interpretation": "out_of_sample_screen_not_causality"
+        }
+      ],
+      "display_policy": "show_watch_language_without_forecast"
+    },
+    {
+      "relationship_id": "auto_cost_to_insurance",
+      "evidence_tier": "relationship_candidate",
+      "evidence_label_ko": "관계 후보",
+      "phase": {
+        "phase": "fading",
+        "label_ko": "촉발 요인 둔화",
+        "reference_month": "2026-07",
+        "watch_window_months": [
+          6,
+          24
+        ],
+        "source_active_ids": [],
+        "target_active_ids": [],
+        "recent_source_impulses": {
+          "used_cars_and_trucks": "2025-01",
+          "motor_vehicle_parts": "2025-12",
+          "motor_vehicle_maintenance": "2026-06"
+        },
+        "component_states": {
+          "sources": {
+            "new_vehicles": {
+              "reference_month": "2026-07",
+              "mom_pct": 0.0784,
+              "robust_score": -0.062,
+              "positive_impulse": false,
+              "rule": "latest SA MoM > 0 and robust score versus preceding 60 months >= 0.75"
+            },
+            "used_cars_and_trucks": {
+              "reference_month": "2026-07",
+              "mom_pct": 0.3981,
+              "robust_score": 0.517,
+              "positive_impulse": false,
+              "rule": "latest SA MoM > 0 and robust score versus preceding 60 months >= 0.75"
+            },
+            "motor_vehicle_parts": {
+              "reference_month": "2026-07",
+              "mom_pct": 0.6133,
+              "robust_score": 0.367,
+              "positive_impulse": false,
+              "rule": "latest SA MoM > 0 and robust score versus preceding 60 months >= 0.75"
+            },
+            "motor_vehicle_maintenance": {
+              "reference_month": "2026-07",
+              "mom_pct": 0.628,
+              "robust_score": 0.146,
+              "positive_impulse": false,
+              "rule": "latest SA MoM > 0 and robust score versus preceding 60 months >= 0.75"
+            }
+          },
+          "targets": {
+            "motor_vehicle_insurance": {
+              "reference_month": "2026-07",
+              "mom_pct": -0.2887,
+              "robust_score": -1.048,
+              "positive_impulse": false,
+              "rule": "latest SA MoM > 0 and robust score versus preceding 60 months >= 0.75"
+            }
+          }
+        },
+        "summary_ko": "출발 항목의 상승 강도가 낮아졌고 연결 항목도 최근 60개월의 평소 범위를 뚜렷하게 벗어나지 않았습니다.",
+        "basis_ko": "2026-07 SA MoM 기준 · 출발 없음 · 연결 없음",
+        "interpretation": "relationship_watch_only_not_causal_finding_or_forecast"
+      },
+      "tests": [
+        {
+          "test_id": "maintenance_to_auto_insurance",
+          "relationship_map_id": "auto_cost_to_insurance",
+          "status": "tested_no_predictive_power",
+          "label_ko": "예측력 미확인",
+          "best_lag_months": 15,
+          "best_lag_rmse_improvement_pct": 0.07348965669570096,
+          "best_lag_dm_pvalue": 0.9462618563125783,
+          "full_grid_rmse_improvement_pct": -3.9266409160035542,
+          "full_grid_dm_pvalue": 0.23887913390442828,
+          "fdr_qvalue": 3.961373141131084e-21,
+          "coverage": {
+            "first_month": "2013-02",
+            "last_month": "2026-06",
+            "aligned_months": 155,
+            "oos_months": 83
+          },
+          "interpretation": "out_of_sample_screen_not_causality"
+        }
+      ],
+      "display_policy": "show_watch_language_without_forecast"
+    },
+    {
+      "relationship_id": "energy_to_airfares",
+      "evidence_tier": "relationship_candidate",
+      "evidence_label_ko": "관계 후보",
+      "phase": {
+        "phase": "not_applicable",
+        "label_ko": "단계 판정 안 함",
+        "interpretation": "method_or_context_only_not_an_inflation_phase"
+      },
+      "tests": [
+        {
+          "test_id": "energy_to_airfares",
+          "relationship_map_id": "energy_to_airfares",
+          "status": "tested_no_predictive_power",
+          "label_ko": "예측력 미확인",
+          "best_lag_months": 0,
+          "best_lag_rmse_improvement_pct": 9.221920802664602,
+          "best_lag_dm_pvalue": 0.3179276502268008,
+          "full_grid_rmse_improvement_pct": 7.428736825006016,
+          "full_grid_dm_pvalue": 0.41350252409605437,
+          "fdr_qvalue": 4.815287525291223e-17,
+          "coverage": {
+            "first_month": "2011-08",
+            "last_month": "2026-07",
+            "aligned_months": 178,
+            "oos_months": 106
+          },
+          "interpretation": "out_of_sample_screen_not_causality"
+        }
+      ],
+      "display_policy": "show_watch_language_without_forecast"
+    },
+    {
+      "relationship_id": "travel_services_common_demand",
+      "evidence_tier": "relationship_candidate",
+      "evidence_label_ko": "관계 후보",
+      "phase": {
+        "phase": "not_applicable",
+        "label_ko": "단계 판정 안 함",
+        "interpretation": "method_or_context_only_not_an_inflation_phase"
+      },
+      "tests": [],
+      "display_policy": "show_watch_language_without_forecast"
+    },
+    {
+      "relationship_id": "rent_oer_measurement_link",
+      "evidence_tier": "official_methodology",
+      "evidence_label_ko": "공식 산식·이연",
+      "phase": {
+        "phase": "not_applicable",
+        "label_ko": "단계 판정 안 함",
+        "interpretation": "method_or_context_only_not_an_inflation_phase"
+      },
+      "tests": [],
+      "display_policy": "show_method_only"
+    },
+    {
+      "relationship_id": "utility_adjustment_in_rent_oer",
+      "evidence_tier": "official_methodology",
+      "evidence_label_ko": "공식 산식·이연",
+      "phase": {
+        "phase": "not_applicable",
+        "label_ko": "단계 판정 안 함",
+        "interpretation": "method_or_context_only_not_an_inflation_phase"
+      },
+      "tests": [],
+      "display_policy": "show_method_only"
+    },
+    {
+      "relationship_id": "medical_prices_health_insurance_method",
+      "evidence_tier": "official_methodology",
+      "evidence_label_ko": "공식 산식·이연",
+      "phase": {
+        "phase": "not_applicable",
+        "label_ko": "단계 판정 안 함",
+        "interpretation": "method_or_context_only_not_an_inflation_phase"
+      },
+      "tests": [],
+      "display_policy": "show_method_only"
+    }
+  ]
+}

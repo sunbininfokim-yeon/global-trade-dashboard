@@ -69,6 +69,7 @@
 |----------|------------|--------|------|------|
 | `commodity_news_ticker.yml` | `12 * * * *` | **매시** :12 | `ticker_v1.json` | 속보 RSS (구: 30분마다 → 쿼터 절감) |
 | `official_reports.yml` | `20 */4 * * *` | 4시간마다 (:20) | `official_reports_v1.json` | 기관 피드 |
+| `commodity_reports.yml` | `40 */4 * * *` | 4시간마다 (:40) | `commodity_reports_v1.json` | 상품×국가 보고서 (Phase 2-2) |
 | `macro_liquidity_intel.yml` | `15 */6 * * *` | 6시간마다 | `liquidity_intel_v1.json` | QRA·Fed·기자 유동성 |
 | `shipping_capacity_update.yml` | `30 18 * * *` | 매일 03:30 | `shipping_capacity_v1.json` | PortWatch 등 |
 | `daily_update.yml` | `0 18 * * *` | 매일 03:00 | **CF KV** (Brazil agri bot) | 브라질 농업 |
@@ -348,6 +349,7 @@ release_calendar_v1.json   ← 일 1회 스크랩 또는 고정 seed + 수동 �
 | 방문자 속보 | `public/data/ticker_v1.json` → `/api/ticker` |
 | 유동성 이벤트 | `public/data/liquidity_intel_v1.json` → `/api/liquidity` |
 | 공식 보고서 목록 | `public/data/official_reports_v1.json` |
+| 상품×국가 보고서 | `public/data/commodity_reports_v1.json` → `/api/commodity-reports` |
 | 해운 | `public/data/shipping_capacity_v1.json` |
 | 선거+배팅 | `public/data/elections_board_v1.json` |
 | 무역 프록시 신선도 | Worker `API_CACHE` + COMTRADE_TTL |

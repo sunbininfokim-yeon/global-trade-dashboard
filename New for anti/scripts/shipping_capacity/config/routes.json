@@ -52,6 +52,7 @@
         "id": "suez",
         "exposure_share": 0.95,
         "reroute_available": true,
+        "reroute_receiver_id": "cape_good_hope",
         "reroute_extra_nm_one_way": 3500,
         "default_waiting_days": 5,
         "response": {"reroute": 0.90, "wait": 0.08, "cancel": 0.02}
@@ -60,7 +61,17 @@
         "id": "bab_el_mandeb",
         "exposure_share": 0.95,
         "reroute_available": true,
+        "reroute_receiver_id": "cape_good_hope",
         "reroute_extra_nm_one_way": 3500,
+        "default_waiting_days": 5,
+        "response": {"reroute": 0.90, "wait": 0.08, "cancel": 0.02}
+      },
+      {
+        "id": "malacca",
+        "exposure_share": 0.95,
+        "reroute_available": true,
+        "reroute_extra_nm_one_way": 570,
+        "distance_evidence_id": "asia_north_europe_container_malacca",
         "default_waiting_days": 5,
         "response": {"reroute": 0.90, "wait": 0.08, "cancel": 0.02}
       }
@@ -241,6 +252,7 @@
         "id": "suez",
         "exposure_share": 0.92,
         "reroute_available": true,
+        "reroute_receiver_id": "cape_good_hope",
         "reroute_extra_nm_one_way": 3300,
         "default_waiting_days": 6,
         "response": {"reroute": 0.80, "wait": 0.15, "cancel": 0.05}
@@ -287,6 +299,7 @@
         "id": "suez",
         "exposure_share": 0.72,
         "reroute_available": true,
+        "reroute_receiver_id": "cape_good_hope",
         "reroute_extra_nm_one_way": 4400,
         "default_waiting_days": 6,
         "response": {"reroute": 0.80, "wait": 0.15, "cancel": 0.05}
@@ -295,6 +308,7 @@
         "id": "bab_el_mandeb",
         "exposure_share": 0.72,
         "reroute_available": true,
+        "reroute_receiver_id": "cape_good_hope",
         "reroute_extra_nm_one_way": 4400,
         "default_waiting_days": 6,
         "response": {"reroute": 0.80, "wait": 0.15, "cancel": 0.05}
@@ -337,6 +351,15 @@
         "reroute_extra_nm_one_way": 0,
         "default_waiting_days": 10,
         "response": {"reroute": 0.0, "wait": 0.65, "cancel": 0.35}
+      },
+      {
+        "id": "malacca",
+        "exposure_share": 0.95,
+        "reroute_available": true,
+        "reroute_extra_nm_one_way": 625,
+        "distance_evidence_id": "persian_gulf_east_asia_crude_malacca",
+        "default_waiting_days": 5,
+        "response": {"reroute": 0.85, "wait": 0.10, "cancel": 0.05}
       }
     ]
   },
@@ -396,8 +419,9 @@
     ],
     "uncertainty": {"annual_cargo_tonnes_low": 39000000, "annual_cargo_tonnes_high": 81000000, "utilization_low": 0.68, "utilization_high": 0.85, "speed_knots_low": 15.5, "speed_knots_high": 18.5},
     "chokepoints": [
-      {"id": "suez", "exposure_share": 0.95, "reroute_available": true, "reroute_extra_nm_one_way": 3500, "default_waiting_days": 5, "response": {"reroute": 0.90, "wait": 0.08, "cancel": 0.02}},
-      {"id": "bab_el_mandeb", "exposure_share": 0.95, "reroute_available": true, "reroute_extra_nm_one_way": 3500, "default_waiting_days": 5, "response": {"reroute": 0.90, "wait": 0.08, "cancel": 0.02}}
+      {"id": "suez", "exposure_share": 0.95, "reroute_available": true, "reroute_receiver_id": "cape_good_hope", "reroute_extra_nm_one_way": 3500, "default_waiting_days": 5, "response": {"reroute": 0.90, "wait": 0.08, "cancel": 0.02}},
+      {"id": "bab_el_mandeb", "exposure_share": 0.95, "reroute_available": true, "reroute_receiver_id": "cape_good_hope", "reroute_extra_nm_one_way": 3500, "default_waiting_days": 5, "response": {"reroute": 0.90, "wait": 0.08, "cancel": 0.02}},
+      {"id": "malacca", "exposure_share": 0.95, "reroute_available": true, "reroute_extra_nm_one_way": 570, "distance_evidence_id": "asia_mediterranean_container_malacca", "default_waiting_days": 5, "response": {"reroute": 0.90, "wait": 0.08, "cancel": 0.02}}
     ]
   },
   {
@@ -687,7 +711,8 @@
     "input_sources": ["UN Comtrade liquefied natural gas netWeight", "Route distance assumption"],
     "uncertainty": {"annual_cargo_tonnes_low": 60000000, "annual_cargo_tonnes_high": 100000000, "utilization_low": 0.78, "utilization_high": 0.91, "speed_knots_low": 15.0, "speed_knots_high": 17.5},
     "chokepoints": [
-      {"id": "hormuz", "exposure_share": 1.0, "reroute_available": false, "reroute_extra_nm_one_way": 0, "default_waiting_days": 10, "response": {"reroute": 0.0, "wait": 0.70, "cancel": 0.30}}
+      {"id": "hormuz", "exposure_share": 1.0, "reroute_available": false, "reroute_extra_nm_one_way": 0, "default_waiting_days": 10, "response": {"reroute": 0.0, "wait": 0.70, "cancel": 0.30}},
+      {"id": "malacca", "exposure_share": 0.95, "reroute_available": true, "reroute_extra_nm_one_way": 625, "distance_evidence_id": "persian_gulf_east_asia_lng_malacca", "default_waiting_days": 5, "response": {"reroute": 0.85, "wait": 0.10, "cancel": 0.05}}
     ]
   }
 ]

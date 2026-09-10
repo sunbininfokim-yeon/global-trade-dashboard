@@ -68,6 +68,170 @@ def _mean(rows: list[dict[str, Any]], field: str) -> float | None:
     return statistics.fmean(values) if values else None
 
 
+def _daily_average_window(
+    history: list[dict[str, Any]],
+    *,
+    required_observations: int,
+    label_ko: str,
+) -> dict[str, Any]:
+    """Publish a transparent average of observed daily records only.
+
+    PortWatch normally provides one observation per day, but upstream revisions
+    or AIS coverage can leave gaps.  This helper never fills those gaps or
+    converts an observation count into a fabricated calendar-day value.
+    """
+
+    points = history[-required_observations:]
+    if len(points) < required_observations:
+        return {
+            "label_ko": label_ko,
+            "status": "insufficient_observed_days",
+            "value": None,
+            "observation_count": len(points),
+            "required_observation_count": required_observations,
+            "start_date": points[0]["date"] if points else None,
+            "end_date": points[-1]["date"] if points else None,
+            "calculation": "mean_of_observed_daily_values_no_imputation",
+        }
+    return {
+        "label_ko": label_ko,
+        "status": "observed_daily_average",
+        "value": statistics.fmean(float(point["value"]) for point in points),
+        "observation_count": len(points),
+        "required_observation_count": required_observations,
+        "start_date": points[0]["date"],
+        "end_date": points[-1]["date"],
+        "calculation": "mean_of_observed_daily_values_no_imputation",
+    }
+
+
+def _prior_daily_average_window(
+    history: list[dict[str, Any]],
+    *,
+    current_observations: int,
+    required_observations: int,
+    label_ko: str,
+) -> dict[str, Any]:
+    """Average the 28 observations immediately before the current seven."""
+
+    if len(history) < current_observations + required_observations:
+        return _daily_average_window(
+            [],
+            required_observations=required_observations,
+            label_ko=label_ko,
+        )
+    return _daily_average_window(
+        history[-(current_observations + required_observations) : -current_observations],
+        required_observations=required_observations,
+        label_ko=label_ko,
+    )
+
+
+def _daily_averages_contract(history: list[dict[str, Any]]) -> dict[str, Any]:
+    """Build the UI-ready daily observation and rolling-average contract."""
+
+    latest = history[-1] if history else None
+    return {
+        "status": (
+            "observed_daily_estimated_trade_volume"
+            if history
+            else "unavailable_cached_summary_only"
+        ),
+        "unit": PORTWATCH_METRIC_UNIT,
+        "definition": PORTWATCH_METRIC_DEFINITION,
+        "latest_daily_observation": (
+            {"date": latest["date"], "value": latest["value"]}
+            if latest
+            else None
+        ),
+        "trailing_7d_average": _daily_average_window(
+            history,
+            required_observations=7,
+            label_ko="최근 7일 일평균",
+        ),
+        "prior_28d_average": _prior_daily_average_window(
+            history,
+            current_observations=7,
+            required_observations=28,
+            label_ko="직전 28일 일평균",
+        ),
+        "warning_ko": (
+            "PortWatch의 일별 추정 교역량 관측치를 평균한 값입니다. 결측일은 보간하지 "
+            "않으며, 실제 화물 명세·통항 DWT·물리적 봉쇄율을 뜻하지 않습니다."
+        ),
+    }
+
+
+def _metric_history_contract(
+    valid_rows: list[dict[str, Any]],
+    *,
+    metric_key: str,
+    field: str,
+) -> dict[str, Any]:
+    """Publish one observed daily PortWatch series for a displayed ship type.
+
+    ``metrics`` holds the 7-day / prior-28-day summaries.  It is not enough to
+    draw a daily container or tanker chart, so this companion contract keeps
+    the original daily values separate and never asks the browser to infer
+    them from averages.
+    """
+
+    history = [
+        {"date": _iso_date(row.get("date")), "value": float(row[field])}
+        for row in valid_rows
+        if _iso_date(row.get("date")) is not None
+        and isinstance(row.get(field), (int, float))
+    ]
+    return {
+        "metric_key": metric_key,
+        "field": field,
+        "unit": PORTWATCH_METRIC_UNIT,
+        "definition": PORTWATCH_METRIC_DEFINITION,
+        "history": history,
+        "history_point_count": len(history),
+        "history_status": (
+            "observed_daily_estimated_trade_volume"
+            if history
+            else "unavailable_cached_summary_only"
+        ),
+        "daily_averages": _daily_averages_contract(history),
+    }
+
+
+def _normalize_metric_history_contract(
+    raw: Any,
+    *,
+    metric_key: str,
+) -> dict[str, Any] | None:
+    """Make cached metric histories safe without inventing missing days."""
+
+    if not isinstance(raw, dict):
+        return None
+    history = raw.get("history")
+    if not isinstance(history, list):
+        history = []
+    field = raw.get("field", CAPACITY_FIELDS.get(metric_key, CAPACITY_FIELDS["all"]))
+    daily_averages = raw.get("daily_averages")
+    if not isinstance(daily_averages, dict):
+        daily_averages = _daily_averages_contract(history)
+    return {
+        **raw,
+        "metric_key": metric_key,
+        "field": field,
+        "unit": PORTWATCH_METRIC_UNIT,
+        "definition": PORTWATCH_METRIC_DEFINITION,
+        "history": history,
+        "history_point_count": len(history),
+        "history_status": raw.get(
+            "history_status",
+            "observed_daily_estimated_trade_volume"
+            if history
+            else "unavailable_cached_summary_only",
+        ),
+        "daily_averages": daily_averages,
+    }
+
+
 def _mae(actual: list[float], predicted: list[float]) -> float:
     return statistics.fmean(abs(a - p) for a, p in zip(actual, predicted))
 
@@ -419,6 +583,28 @@ def normalize_status_contract(status: dict[str, Any]) -> dict[str, Any]:
             else "unavailable_cached_summary_only"
         ),
     )
+    daily_averages = normalized.get("daily_averages")
+    if not isinstance(daily_averages, dict):
+        # An older cache may have only 7d/28d summaries.  Publish unavailable
+        # daily values rather than reconstructing a time series from them.
+        daily_averages = _daily_averages_contract(history)
+    normalized["daily_averages"] = daily_averages
+
+    # A legacy cache has only one representative history.  Do not copy that
+    # into every ship type: it would turn an all-vessel series into false
+    # container/bulk/tanker observations.
+    raw_metric_histories = normalized.get("metric_histories", {})
+    metric_histories: dict[str, Any] = {}
+    if isinstance(raw_metric_histories, dict):
+        for metric_key, raw_history in raw_metric_histories.items():
+            if metric_key not in CAPACITY_FIELDS:
+                continue
+            history_contract = _normalize_metric_history_contract(
+                raw_history, metric_key=metric_key
+            )
+            if history_contract is not None:
+                metric_histories[metric_key] = history_contract
+    normalized["metric_histories"] = metric_histories
 
     normalized["quality"] = "observed_estimated_trade_volume_shortfall_7d_vs_prior_28d"
     normalized["metric_unit"] = PORTWATCH_METRIC_UNIT
@@ -437,15 +623,13 @@ def summarize_series(rows: list[dict[str, Any]], portwatch_id: str) -> dict[str,
     valid.sort(key=lambda row: _date_key(row.get("date")))
     history_metric_key = ML_PRIMARY_METRIC.get(portwatch_id, "all")
     history_field = CAPACITY_FIELDS[history_metric_key]
-    history = [
-        {
-            "date": _iso_date(row.get("date")),
-            "value": float(row[history_field]),
-        }
-        for row in valid
-        if _iso_date(row.get("date")) is not None
-        and isinstance(row.get(history_field), (int, float))
-    ]
+    metric_histories = {
+        metric_key: _metric_history_contract(
+            valid, metric_key=metric_key, field=field
+        )
+        for metric_key, field in CAPACITY_FIELDS.items()
+    }
+    history = metric_histories[history_metric_key]["history"]
     if len(valid) < 14:
         return {
             "portwatch_id": portwatch_id,
@@ -458,6 +642,8 @@ def summarize_series(rows: list[dict[str, Any]], portwatch_id: str) -> dict[str,
             "history_unit": PORTWATCH_METRIC_UNIT,
             "history_point_count": len(history),
             "history_status": "observed_daily_estimated_trade_volume",
+            "daily_averages": _daily_averages_contract(history),
+            "metric_histories": metric_histories,
         }
     current = valid[-7:]
     baseline = valid[-35:-7] if len(valid) >= 35 else valid[:-7]
@@ -512,6 +698,8 @@ def summarize_series(rows: list[dict[str, Any]], portwatch_id: str) -> dict[str,
         "history_unit": PORTWATCH_METRIC_UNIT,
         "history_point_count": len(history),
         "history_status": "observed_daily_estimated_trade_volume",
+        "daily_averages": _daily_averages_contract(history),
+        "metric_histories": metric_histories,
         "history_warning": (
             "Daily PortWatch transit-volume estimate in metric tonnes; subject to "
             "AIS coverage and upstream revisions, and not observed DWT."

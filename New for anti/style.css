@@ -571,6 +571,377 @@ body {
 .elections-disclosure-rows strong { color: #e2e8f0; font-weight: 600; text-align: right; }
 .elections-house-delegation { margin-top: 8px; }
 
+/* --- 선거 panel: super PAC support by party (민주 left, 공화 right) -------- */
+.elections-button.is-active {
+    border-color: rgba(56, 189, 248, 0.75);
+    background: rgba(14, 116, 144, 0.3);
+    color: #e0f2fe;
+}
+.elections-spac-block {
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    border-radius: 8px;
+    background: rgba(15, 23, 42, 0.45);
+    padding: 10px;
+    margin-bottom: 8px;
+}
+.elections-spac-block-head,
+.elections-spac-district-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    color: #e2e8f0;
+    font-size: 12px;
+    font-weight: 600;
+}
+.elections-spac-badge {
+    border-radius: 4px;
+    padding: 2px 7px;
+    font-size: 11px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+.elections-spac-badge.is-dem { background: rgba(37, 99, 235, 0.22); color: #93c5fd; }
+.elections-spac-badge.is-gop { background: rgba(220, 38, 38, 0.22); color: #fca5a5; }
+.elections-spac-badge.is-none { background: rgba(100, 116, 139, 0.22); color: #94a3b8; }
+
+.elections-spac-sides {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 8px;
+    margin-top: 9px;
+}
+.elections-spac-side {
+    border: 1px solid rgba(148, 163, 184, 0.16);
+    border-top-width: 2px;
+    border-radius: 6px;
+    padding: 8px;
+    min-width: 0;
+}
+.elections-spac-side.is-dem { border-top-color: #2563eb; }
+.elections-spac-side.is-gop { border-top-color: #dc2626; }
+.elections-spac-side-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 6px;
+    color: #94a3b8;
+    font-size: 11px;
+}
+.elections-spac-side-head strong { color: #e2e8f0; font-size: 12px; }
+.elections-spac-cand {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 4px 0;
+    border-top: 1px solid rgba(148, 163, 184, 0.12);
+    color: #cbd5e1;
+    font-size: 11px;
+    line-height: 1.4;
+}
+.elections-spac-cand > span:first-child { min-width: 0; overflow-wrap: anywhere; }
+
+/* 지지/반대 travels with the number. A bare amount next to a candidate reads
+   as money they raised, which is exactly what this measure is not. */
+.elections-spac-amts {
+    display: flex;
+    gap: 8px;
+    flex: 0 0 auto;
+    white-space: nowrap;
+}
+.elections-spac-amt {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 3px;
+    font-size: 11px;
+}
+.elections-spac-amt i {
+    font-style: normal;
+    font-size: 10px;
+    padding: 0 3px;
+    border-radius: 3px;
+}
+.elections-spac-amt.is-support { color: #e2e8f0; }
+.elections-spac-amt.is-support i { color: #7dd3fc; background: rgba(56, 189, 248, 0.16); }
+.elections-spac-amt.is-oppose { color: #cbd5e1; }
+.elections-spac-amt.is-oppose i { color: #fca5a5; background: rgba(220, 38, 38, 0.18); }
+.elections-spac-side .elections-spac-amts { margin-bottom: 6px; }
+.elections-spac-caption {
+    margin-left: auto;
+    color: #94a3b8;
+    font-size: 10px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+.elections-spac-lede {
+    margin: 0 0 10px;
+    padding: 9px 10px;
+    border: 1px solid rgba(148, 163, 184, 0.22);
+    border-left: 3px solid #7dd3fc;
+    border-radius: 7px;
+    background: rgba(15, 23, 42, 0.5);
+    color: #cbd5e1;
+    font-size: 11px;
+    line-height: 1.55;
+}
+.elections-spac-lede strong { color: #e2e8f0; }
+
+.elections-spac-district-list { display: grid; gap: 5px; }
+.elections-spac-district {
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    border-radius: 7px;
+    background: rgba(15, 23, 42, 0.45);
+    overflow: hidden;
+}
+.elections-spac-district-head {
+    width: 100%;
+    appearance: none;
+    border: none;
+    background: transparent;
+    padding: 8px 10px;
+    font: inherit;
+    font-size: 12px;
+    font-weight: 600;
+    color: #e2e8f0;
+    cursor: pointer;
+    text-align: left;
+}
+.elections-spac-district-head:hover { background: rgba(51, 65, 85, 0.6); }
+.elections-spac-district-head:focus-visible { outline: 2px solid #38bdf8; outline-offset: -2px; }
+.elections-spac-district.is-open { border-color: rgba(56, 189, 248, 0.6); }
+.elections-spac-district.is-unmapped { border-style: dashed; opacity: 0.82; }
+.elections-spac-unmapped-tag {
+    margin-left: auto;
+    color: #94a3b8;
+    font-size: 10px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+.elections-spac-district.is-unmapped .elections-spac-district-head > span:first-child { color: #94a3b8; }
+.elections-spac-district-body { display: none; padding: 0 10px 10px; }
+.elections-spac-district.is-open .elections-spac-district-body { display: block; }
+
+/* --- Congress dashboard (하원·상원, one fixed layout per chamber) ---------- */
+.elections-chamber-radio {
+    /* Clipped rather than display:none so the chamber tabs stay keyboard
+       reachable -- arrow keys move between radios the way a tab list should. */
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+    pointer-events: none;
+}
+.elections-chamber-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+.elections-chamber-tabs label {
+    border: 1px solid rgba(148, 163, 184, 0.35);
+    background: rgba(15, 23, 42, 0.7);
+    color: #cbd5e1;
+    border-radius: 6px;
+    padding: 6px 11px;
+    font-size: 12px;
+    cursor: pointer;
+}
+.elections-chamber-panel { display: none; }
+#elections-chamber-house:checked ~ .elections-chamber-tabs label[for="elections-chamber-house"],
+#elections-chamber-senate:checked ~ .elections-chamber-tabs label[for="elections-chamber-senate"] {
+    border-color: rgba(56, 189, 248, 0.75);
+    background: rgba(14, 116, 144, 0.28);
+    color: #e0f2fe;
+}
+#elections-chamber-house:checked ~ .elections-chamber-panel[data-chamber="house"],
+#elections-chamber-senate:checked ~ .elections-chamber-panel[data-chamber="senate"] { display: block; }
+.elections-chamber-radio:focus-visible ~ .elections-chamber-tabs label { outline: 2px solid #38bdf8; outline-offset: 2px; }
+
+.elections-chamber-quadrants {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 10px;
+}
+.elections-quadrant {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    padding: 11px;
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    border-radius: 8px;
+    background: rgba(15, 23, 42, 0.45);
+    min-width: 0;
+}
+.elections-quadrant .section-title { margin: 0; }
+
+/* A quadrant is ~300px wide, too narrow for "Democratic Caucus Chairman" and
+   a name on one line, so the leadership rows stack instead of facing off. */
+.elections-leader-rows div {
+    display: block;
+    padding: 5px 0;
+    border-bottom: 1px solid rgba(148, 163, 184, 0.12);
+}
+.elections-leader-rows div:last-child { border-bottom: none; }
+.elections-leader-rows span {
+    display: block;
+    color: #94a3b8;
+    font-size: 11px;
+}
+.elections-leader-rows strong {
+    display: flex;
+    align-items: center;
+    text-align: left;
+    margin-top: 2px;
+}
+.elections-hemicycle { width: 100%; height: auto; display: block; }
+.elections-hemicycle-total { fill: #e2e8f0; font-size: 17px; font-weight: 700; }
+.elections-party-dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-right: 6px;
+    flex: 0 0 auto;
+}
+
+.elections-committee-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+}
+.elections-committee-chip {
+    appearance: none;
+    border: 1px solid rgba(148, 163, 184, 0.3);
+    background: rgba(30, 41, 59, 0.8);
+    color: #cbd5e1;
+    border-radius: 6px;
+    padding: 5px 8px;
+    font: inherit;
+    font-size: 11px;
+    cursor: pointer;
+    text-align: left;
+}
+.elections-committee-chip:hover { border-color: #0e7490; background: rgba(51, 65, 85, 0.95); color: #e0f2fe; }
+.elections-committee-chip:focus-visible { outline: 2px solid #38bdf8; outline-offset: 2px; }
+
+.elections-party-card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 10px;
+    margin-top: 10px;
+}
+.elections-party-card {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 11px;
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    border-radius: 8px;
+    background: rgba(15, 23, 42, 0.45);
+    min-width: 0;
+}
+.elections-party-card-head {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    color: #f1f5f9;
+    font-size: 13px;
+}
+.elections-party-card-head span { margin-left: auto; color: #94a3b8; font-size: 12px; }
+.elections-party-card-label {
+    margin: 6px 0 0;
+    color: #94a3b8;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+/* --- EOP org boxes (councils / advisers / offices) ------------------------
+   Laid out like the EOP chart's rows: one box per body, side by side, wrapping
+   only when the pane runs out of width. */
+.elections-org-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(92px, 1fr));
+    gap: 6px;
+    margin: 8px 0 4px;
+    align-items: stretch;
+}
+.elections-org-box {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 8px;
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    border-radius: 7px;
+    background: rgba(15, 23, 42, 0.55);
+    min-width: 0;
+}
+.elections-org-box-ko {
+    color: #e2e8f0;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1.3;
+    overflow-wrap: anywhere;
+}
+.elections-org-box-abbr {
+    color: #7dd3fc;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+}
+.elections-org-box-en {
+    color: #94a3b8;
+    font-size: 10px;
+    line-height: 1.35;
+    overflow-wrap: anywhere;
+}
+/* margin-top:auto drops every person line to the foot of its box, so a row of
+   boxes with different name lengths still aligns on one line. */
+.elections-org-box-person {
+    margin-top: auto;
+    padding-top: 7px;
+    color: #cbd5e1;
+    font-size: 11px;
+    line-height: 1.4;
+    overflow-wrap: anywhere;
+}
+.elections-org-box-person.is-empty { color: #64748b; }
+.elections-org-box-title {
+    display: block;
+    color: #94a3b8;
+    font-size: 10px;
+}
+.elections-org-box-note {
+    color: #94a3b8;
+    font-size: 10px;
+    line-height: 1.45;
+    margin-top: 4px;
+}
+
+/* --- State legislature seat composition (dot cluster) --------------------- */
+.elections-seat-dots {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-top: 8px;
+}
+.elections-seat-dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    flex: 0 0 auto;
+}
+.elections-seat-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 8px;
+    font-size: 11px;
+    color: #cbd5e1;
+}
+.elections-seat-legend-item { display: inline-flex; align-items: center; gap: 5px; }
+.elections-seat-legend-item i { width: 8px; height: 8px; border-radius: 50%; display: inline-block; flex: 0 0 auto; }
+
 /* display_rules.fallen_style = strikethrough: 실각·조사자는 이름에 삭선만 긋고
    원문 상태 표시는 그대로 옆에 남긴다 (재서술 금지). */
 .elections-fallen { text-decoration: line-through; opacity: 0.72; }
@@ -581,6 +952,59 @@ body {
     color: #94a3b8;
     white-space: nowrap;
 }
+
+/* --- Race progress (rolling primaries / leadership tours) ---------------- */
+.elections-race-leader-bar {
+    display: flex;
+    height: 10px;
+    border-radius: 5px;
+    overflow: hidden;
+    background: rgba(15, 23, 42, 0.8);
+    margin: 10px 0 6px;
+}
+.elections-race-leader-bar span { display: block; height: 100%; }
+.elections-race-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 4px;
+    font-size: 11px;
+    color: #cbd5e1;
+}
+.elections-race-legend-item { display: inline-flex; align-items: center; gap: 5px; }
+.elections-race-legend-item i { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+.elections-race-unit-list { display: grid; gap: 6px; margin: 10px 0; }
+.elections-race-unit {
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    border-left: 3px solid rgba(148, 163, 184, 0.35);
+    border-radius: 7px;
+    background: rgba(15, 23, 42, 0.55);
+    padding: 0 9px;
+}
+.elections-race-unit.is-completed { border-left-color: #34d399; }
+.elections-race-unit.is-scheduled { border-left-color: #d4a017; opacity: 0.92; }
+.elections-race-unit summary {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    padding: 8px 0;
+    cursor: pointer;
+    color: #e2e8f0;
+    font-size: 12px;
+    list-style: none;
+}
+.elections-race-unit summary::-webkit-details-marker { display: none; }
+.elections-race-unit-date { color: #94a3b8; font-variant-numeric: tabular-nums; flex: 0 0 auto; }
+.elections-race-unit-label { font-weight: 600; flex: 1 1 auto; min-width: 0; }
+.elections-race-unit-label em { color: #94a3b8; font-style: normal; font-weight: 400; margin-left: 4px; }
+.elections-race-unit-headline { color: #94a3b8; font-size: 11px; text-align: right; max-width: 40%; }
+.elections-race-table { width: 100%; border-collapse: collapse; font-size: 12px; margin: 0 0 9px; }
+.elections-race-table th,
+.elections-race-table td { text-align: left; padding: 5px 6px; border-bottom: 1px solid rgba(148, 163, 184, 0.14); color: #cbd5e1; }
+.elections-race-table th { color: #94a3b8; font-weight: 600; }
+.elections-race-subunit { color: #94a3b8; font-size: 11px; }
+.elections-party-d { color: #7dabf5; }
+.elections-party-r { color: #f28b8b; }
 
 /* --- Country blocks and the window they open over the map ---------------- */
 
@@ -669,6 +1093,9 @@ body {
    rather than growing past the map. */
 .elections-modal-body .elections-member-list { max-height: 320px; overflow-y: auto; }
 .elections-modal-body .elections-disclosure-rows { max-height: 320px; overflow-y: auto; }
+/* The cap above is for hundred-row rosters; a dozen leadership rows are short
+   enough to show whole, and scrolling them inside a quadrant hides them. */
+.elections-modal-body .elections-leader-rows { max-height: none; overflow-y: visible; }
 
 @media (max-width: 720px) {
     .elections-modal-host { padding: 12px; }
@@ -1033,11 +1460,14 @@ body.shipping-mode #chart-view,
     min-width: 2.5em;
 }
 
-/* Trade focus ranking (left, while right pane is hidden) */
+/* Trade ranking on the left, official reports on the right (Phase 2-2) --
+   both narrower than the general 380px pane so the map keeps most of the
+   screen. Before Phase 2-2 the right pane was force-hidden here entirely
+   (`display: none !important`) to give the map that width on its own; the
+   reports panel needed it back, so both sides now share the same narrow
+   width instead. */
+body.trade-map-mode .left-pane,
 body.trade-map-mode .right-pane {
-    display: none !important;
-}
-body.trade-map-mode .left-pane {
     width: min(340px, 32vw);
     max-width: 340px;
 }
@@ -1546,6 +1976,11 @@ body.trade-map-mode .left-pane {
     margin-top: 16px;
 }
 @media (max-width: 900px) { .shipping-detail-grid { grid-template-columns: minmax(0, 1fr); } }
+@media (max-width: 540px) {
+    .shipping-observed-type-result { grid-template-columns: 1fr; }
+    .shipping-observed-type-head { align-items: flex-start; flex-direction: column; }
+    .shipping-observed-type-head small { text-align: left; }
+}
 
 .shipping-minimap-svg {
     width: 100%;
@@ -1553,6 +1988,15 @@ body.trade-map-mode .left-pane {
     border-radius: 10px;
     border: 1px solid rgba(148, 163, 184, 0.14);
     display: block;
+}
+.shipping-minimap-country {
+    fill: #cbd5e1;
+    font-size: 8.5px;
+    font-weight: 600;
+    paint-order: stroke;
+    stroke: #0b1220;
+    stroke-width: 2.5px;
+    stroke-linejoin: round;
 }
 .shipping-chokepoint-card.is-active {
     border-color: rgba(56, 189, 248, 0.55);
@@ -1568,6 +2012,117 @@ body.trade-map-mode .left-pane {
 .shipping-mini-metrics { display: grid; gap: 7px; margin-top: 16px; }
 .shipping-mini-metrics span { display: flex; justify-content: space-between; color: #64748b; font-size: 10px; }
 .shipping-mini-metrics b { color: #cbd5e1; font-weight: 650; }
+
+.shipping-secondary-control {
+    border: 1px solid rgba(56, 189, 248, 0.28);
+    border-radius: 999px;
+    padding: 5px 10px;
+    color: #bae6fd;
+    background: rgba(8, 47, 73, 0.34);
+    font: inherit;
+    font-size: 11px;
+    cursor: pointer;
+}
+.shipping-secondary-control:hover { border-color: rgba(56, 189, 248, 0.55); color: #e0f2fe; }
+.shipping-secondary-control:focus-visible { outline: 2px solid rgba(56, 189, 248, 0.60); outline-offset: 2px; }
+
+/* The chart stays tied to the published representative daily series. The
+   controls below expose the separately published type-level 7d/28d values
+   without inventing daily vessel-type observations in the browser. */
+.shipping-observed-type-comparison {
+    margin-top: 18px;
+    padding-top: 16px;
+    border-top: 1px solid rgba(148, 163, 184, 0.14);
+}
+.shipping-observed-type-head { display: flex; justify-content: space-between; gap: 12px; align-items: flex-start; }
+.shipping-observed-type-head span { color: #64748b; font-size: 9px; letter-spacing: 0.07em; }
+.shipping-observed-type-head h3 { margin: 4px 0 0; color: #e2e8f0; font-size: 14px; }
+.shipping-observed-type-head small { color: #64748b; font-size: 10px; text-align: right; line-height: 1.45; }
+.shipping-observed-type-controls,
+.shipping-observed-window-controls { display: flex; flex-wrap: wrap; gap: 5px; }
+.shipping-observed-type-controls { margin-top: 12px; padding-bottom: 9px; border-bottom: 1px solid rgba(148, 163, 184, 0.13); }
+.shipping-observed-type-controls button,
+.shipping-observed-window-controls button {
+    border: 0;
+    padding: 5px 7px;
+    color: #94a3b8;
+    background: transparent;
+    font: inherit;
+    font-size: 11px;
+    cursor: pointer;
+}
+.shipping-observed-type-controls button[aria-selected="true"],
+.shipping-observed-window-controls button[aria-pressed="true"] {
+    color: #f8fafc;
+    border-bottom: 2px solid #38bdf8;
+}
+.shipping-observed-type-controls button:focus-visible,
+.shipping-observed-window-controls button:focus-visible { outline: 2px solid rgba(56, 189, 248, 0.55); outline-offset: 2px; }
+.shipping-observed-window-controls { margin-top: 7px; }
+.shipping-observed-type-result { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 10px; margin-top: 10px; }
+.shipping-observed-value,
+.shipping-observed-compare { padding: 11px 12px; border-left: 2px solid #38bdf8; background: rgba(15, 23, 42, 0.52); }
+.shipping-observed-compare { border-left-color: #64748b; }
+.shipping-observed-value span,
+.shipping-observed-compare span { display: block; color: #94a3b8; font-size: 10px; }
+.shipping-observed-value strong { display: block; margin-top: 4px; color: #f8fafc; font-size: 18px; letter-spacing: -0.02em; }
+.shipping-observed-compare b { display: block; margin-top: 5px; color: #cbd5e1; font-size: 13px; }
+.shipping-observed-value small,
+.shipping-observed-compare small { display: block; margin-top: 4px; color: #7dd3fc; font-size: 10px; }
+
+/* Receiver figures are an expandable part of the selected simulator result,
+   rather than a second simulator competing with the main controls. */
+.shipping-reroute-details {
+    margin-top: 20px;
+    border-top: 1px solid rgba(148, 163, 184, 0.14);
+    border-bottom: 1px solid rgba(148, 163, 184, 0.14);
+}
+.shipping-reroute-details > summary {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 2px;
+    color: #e2e8f0;
+    cursor: pointer;
+    list-style: none;
+}
+.shipping-reroute-details > summary::-webkit-details-marker { display: none; }
+.shipping-reroute-details > summary::after { content: '▾'; color: #7dd3fc; font-size: 13px; }
+.shipping-reroute-details:not([open]) > summary::after { transform: rotate(-90deg); }
+.shipping-reroute-details summary small { display: block; color: #64748b; font-size: 9px; letter-spacing: 0.07em; }
+.shipping-reroute-details summary strong { display: block; margin-top: 3px; font-size: 14px; }
+.shipping-reroute-summary-value { margin-left: auto; color: #fcd34d; font-size: 13px; font-weight: 700; }
+.shipping-reroute-details-body { padding: 2px 0 15px; }
+.shipping-reroute-receiver { padding: 14px; border: 1px solid rgba(148, 163, 184, 0.15); border-radius: 10px; background: rgba(15, 23, 42, 0.52); }
+.shipping-reroute-receiver-title { margin-bottom: 12px; color: #e2e8f0; font-size: 13px; font-weight: 700; }
+.shipping-reroute-metrics { grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-bottom: 12px; }
+.shipping-reroute-metrics div div { color: #94a3b8; font-size: 11px; line-height: 1.35; }
+.shipping-reroute-metrics strong { display: block; margin-top: 4px; color: #f8fafc; font-size: 14px; }
+.shipping-reroute-breakdown > div { margin-bottom: 8px; color: #94a3b8; font-size: 11px; }
+.shipping-reroute-warning { margin-top: 12px; padding: 10px; border: 1px solid rgba(251, 191, 36, 0.42); border-radius: 7px; background: rgba(120, 53, 15, 0.22); color: #fde68a; font-size: 11px; line-height: 1.5; }
+.shipping-reroute-warning small { display: block; margin-top: 6px; color: #fef3c7; }
+
+/* LNG is a cargo/service segment inside the tanker universe. Keep its
+   scenario impact visible without inventing an LNG-only global fleet share. */
+.shipping-lng-segment {
+    margin-top: 18px;
+    padding: 15px;
+    border: 1px solid rgba(167, 139, 250, 0.32);
+    border-radius: 11px;
+    background: rgba(76, 29, 149, 0.13);
+}
+.shipping-lng-segment-head { display: flex; justify-content: space-between; gap: 12px; align-items: flex-start; }
+.shipping-lng-segment-head span { color: #c4b5fd; font-size: 9px; letter-spacing: 0.08em; }
+.shipping-lng-segment-head h3 { margin: 4px 0 0; color: #f5f3ff; font-size: 14px; }
+.shipping-lng-segment-head small { color: #c4b5fd; font-size: 10px; text-align: right; line-height: 1.4; }
+.shipping-lng-segment-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; margin-top: 13px; }
+.shipping-lng-segment-grid > div { padding: 9px 10px; border-left: 2px solid #a78bfa; background: rgba(15, 23, 42, 0.45); }
+.shipping-lng-segment-grid span { display: block; color: #c4b5fd; font-size: 10px; line-height: 1.35; }
+.shipping-lng-segment-grid strong { display: block; margin-top: 5px; color: #f5f3ff; font-size: 13px; }
+.shipping-lng-segment .shipping-note { margin: 11px 0 0; color: #ddd6fe; }
+@media (max-width: 820px) { .shipping-lng-segment-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 420px) { .shipping-lng-segment-grid { grid-template-columns: 1fr; } }
 
 .shipping-simulator-controls {
     display: grid;
@@ -2576,6 +3131,14 @@ body.trade-map-mode .left-pane {
     margin-top: 14px; padding-top: 12px;
     border-top: 1px solid rgba(255,255,255,.08);
 }
+
+/* 글로벌/국가별 Rig 수 (Baker Hughes 월간) -- .stock-card와 동일한 시각적
+   무게를 갖되, 별도 클래스로 두어 두 카드의 idempotency 제거 로직이 서로의
+   카드를 지우지 않도록 격리한다. */
+.rig-card {
+    margin-top: 14px; padding-top: 12px;
+    border-top: 1px solid rgba(255,255,255,.08);
+}
 .stock-row {
     display: grid; grid-template-columns: minmax(0,1fr) auto 46px;
     gap: 8px; align-items: baseline; padding: 5px 0;
@@ -2622,6 +3185,10 @@ body.trade-map-mode .left-pane {
 .spark2-chart { position: relative; flex: 1 1 auto; min-width: 0; height: 54px; }
 .spark2-svg { width: 100%; height: 54px; display: block; overflow: visible; cursor: crosshair; }
 .spark2-grid { stroke: rgba(148,163,184,.14); stroke-width: 1; vector-effect: non-scaling-stroke; }
+/* Marks a methodology-break tail of the series (e.g. Saudi Arabia's
+   Active->Operating Rigs reclassification) -- amber, not the up/down
+   green/red already used for direction, so it doesn't read as a signal. */
+.spark2-shade { fill: rgba(251,191,36,.14); }
 .spark2-line {
     fill: none; stroke: #7dd3fc; stroke-width: 1.6;
     stroke-linejoin: round; stroke-linecap: round;
@@ -2682,6 +3249,86 @@ body.finance-mode #chart-view::-webkit-scrollbar { width: 8px; }
 body.finance-mode #chart-view::-webkit-scrollbar-track { background: rgba(15, 23, 42, .8); }
 body.finance-mode #chart-view::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, .28); border-radius: 999px; }
 
+/* ── 마이페이지 ─────────────────────────────────────────────────────────
+   Same full-bleed document treatment as finance/shipping/policy -- an
+   account settings screen has no map either. */
+body.mypage-mode #chart-view {
+    display: block !important;
+    align-items: initial !important;
+    justify-content: initial !important;
+    overflow-y: scroll !important;
+    overflow-x: hidden !important;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+    pointer-events: auto !important;
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    max-height: none;
+    z-index: 40 !important;
+    background:
+        radial-gradient(circle at 10% 0%, rgba(56, 189, 248, .08), transparent 32%),
+        radial-gradient(circle at 90% 6%, rgba(167, 139, 250, .07), transparent 30%),
+        #090e18;
+}
+body.mypage-mode #chart-view::-webkit-scrollbar { width: 8px; }
+body.mypage-mode #chart-view::-webkit-scrollbar-track { background: rgba(15, 23, 42, .8); }
+body.mypage-mode #chart-view::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, .28); border-radius: 999px; }
+
+.mypage-shell { max-width: 720px; margin: 0 auto; padding: 32px 20px 60px; }
+.mypage-header { margin-bottom: 20px; }
+.mypage-header h1 { margin: 0 0 4px; font-size: 20px; color: #f1f5f9; }
+.mypage-header p { margin: 0; color: var(--text-secondary); font-size: 12.5px; }
+
+.mypage-tabs { display: flex; gap: 6px; margin-bottom: 20px; border-bottom: 1px solid var(--border); }
+.mypage-tab {
+    padding: 10px 4px;
+    margin-right: 18px;
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    color: var(--text-secondary);
+    font-size: 13px;
+    cursor: pointer;
+}
+.mypage-tab.active { color: #38bdf8; border-bottom-color: #38bdf8; }
+
+.mypage-panel { display: flex; flex-direction: column; gap: 10px; }
+.mypage-panel.hidden { display: none; }
+.mypage-empty { color: var(--text-secondary); font-size: 12.5px; padding: 16px 0; }
+.mypage-section-title { color: #cbd5e1; font-size: 13px; font-weight: 600; margin: 18px 0 4px; }
+.mypage-section-title:first-child { margin-top: 0; }
+
+.mypage-field { display: flex; flex-direction: column; gap: 6px; max-width: 360px; }
+.mypage-field label { color: var(--text-secondary); font-size: 12px; }
+.mypage-field input {
+    background: rgba(148, 163, 184, .08);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 9px 10px;
+    color: #f1f5f9;
+    font-size: 13px;
+}
+.mypage-field input:disabled { color: var(--text-secondary); cursor: not-allowed; }
+.mypage-btn {
+    align-self: flex-start;
+    background: #38bdf8;
+    color: #0b1220;
+    border: none;
+    border-radius: 6px;
+    padding: 9px 16px;
+    font-size: 12.5px;
+    font-weight: 600;
+    cursor: pointer;
+}
+.mypage-btn:disabled { opacity: .6; cursor: not-allowed; }
+.mypage-btn.is-danger { background: transparent; color: #fb7185; border: 1px solid rgba(251, 113, 133, .4); }
+.mypage-status { font-size: 12px; margin: 0; }
+.mypage-status.is-error { color: #fb7185; }
+.mypage-status.is-ok { color: #4ade80; }
+.mypage-status.hidden { display: none; }
+
 .fin-wrap { max-width: 1180px; margin: 0 auto; padding: 30px 28px 64px; color: var(--text-primary); }
 .fin-loading { color: var(--text-secondary); font-size: 13px; padding: 40px 0; }
 
@@ -2728,6 +3375,13 @@ body.finance-mode #chart-view::-webkit-scrollbar-thumb { background: rgba(148, 1
 .fin-note { font-size: 12px; line-height: 1.65; color: #64748b; margin: 0 0 14px; }
 .fin-list { margin: 0; padding-left: 17px; }
 .fin-list li { font-size: 12.5px; line-height: 1.75; color: #94a3b8; margin-bottom: 4px; }
+.fin-table-wrap { overflow-x: auto; margin-bottom: 12px; }
+.fin-table { border-collapse: collapse; font-size: 11.5px; color: #94a3b8; white-space: nowrap; }
+.fin-table th, .fin-table td { padding: 5px 9px; text-align: right; border-bottom: 1px solid var(--border); }
+.fin-table th:first-child, .fin-table td:first-child { text-align: left; color: #cbd5e1; }
+.fin-table thead th { color: #64748b; font-weight: 600; }
+.fin-code { font-size: 11px; line-height: 1.5; color: #94a3b8; background: rgba(15, 23, 42, .6);
+    border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; overflow-x: auto; white-space: pre; }
 
 .fin-legend { display: flex; gap: 15px; font-size: 11px; color: #64748b; margin-bottom: 10px; }
 .fin-swatch { display: inline-block; width: 9px; height: 9px; border-radius: 2px; margin-right: 5px; vertical-align: middle; }
@@ -2802,6 +3456,68 @@ body.finance-mode #chart-view::-webkit-scrollbar-thumb { background: rgba(148, 1
     font-variant-numeric: tabular-nums; letter-spacing: .02em;
 }
 .dep-note { margin: 4px 0 0; font-size: 9.5px; line-height: 1.45; color: rgba(148, 163, 184, .62); }
+
+/* ── 상품 × 국가 주요 보고서 (Phase 2-2) ─────────────────────────────────────
+   USDA·CONAB·FAO 등 공식 기관 발표를 해당 상품·국가 창에 붙인다. 오른쪽 패널
+   전용 칸(#commodity-reports-panel, index.html)에 그려서, 왼쪽 무역 랭킹과
+   한 스크롤 안에서 경쟁하지 않는다 — 하루에 NASS 발표가 여러 건 겹치면
+   랭킹까지 스크롤해야 했던 문제였다. 패널이 미리 잡아 둔 #reports-slot
+   안에만 그려서, 늦게 도착한 fetch가 다른 카드 사이에 끼어들 수 없다. */
+.rpt-card {
+    margin-top: 14px; padding-top: 12px;
+    border-top: 1px solid rgba(255,255,255,.08);
+}
+/* Standalone panel now (see index.html) -- nothing sits above it needing a
+   separator, so the leading border/margin the shared class carries elsewhere
+   would just be dead space at the top of the pane. */
+#commodity-reports-panel .rpt-card { margin-top: 0; padding-top: 0; border-top: none; }
+.rpt-list { list-style: none; margin: 0; padding: 0; }
+.rpt-item {
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(255,255,255,.05);
+}
+.rpt-item:last-child { border-bottom: none; padding-bottom: 2px; }
+.rpt-meta {
+    display: flex; align-items: center; flex-wrap: wrap; gap: 5px;
+    margin-bottom: 3px; font-size: 9.5px; line-height: 1.6;
+}
+.rpt-agency {
+    color: #7dd3fc; font-weight: 600;
+    letter-spacing: .01em;
+}
+.rpt-series {
+    color: #cbd5e1; padding: 0 5px; border-radius: 999px;
+    background: rgba(148,163,184,.12); border: 1px solid rgba(148,163,184,.18);
+}
+/* 세계 수급표(WASDE 세계 라인 등)가 국가 창에 올라올 때, 그 나라에 대한
+   주장으로 읽히지 않도록 범위를 명시한다. */
+.rpt-scope {
+    color: #fcd34d; padding: 0 5px; border-radius: 999px;
+    background: rgba(251,191,36,.1); border: 1px solid rgba(251,191,36,.24);
+}
+.rpt-date { margin-left: auto; color: #64748b; font-variant-numeric: tabular-nums; }
+.rpt-title {
+    display: block; font-size: 11.5px; line-height: 1.5; color: #e2e8f0;
+    text-decoration: none;
+}
+a.rpt-title:hover { color: #38bdf8; text-decoration: underline; }
+a.rpt-title:focus-visible { outline: 1px solid rgba(56,189,248,.5); outline-offset: 2px; }
+.rpt-summary {
+    margin: 4px 0 0; font-size: 10.5px; line-height: 1.55; color: #94a3b8;
+}
+/* 기본은 두 줄. 헤드라인이 목록의 단위이고 요약은 보조라서, 긴 요약이
+   카드 하나를 다 잡아먹지 않도록 접어 둔다. */
+.rpt-summary.is-clamped {
+    display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2;
+    -webkit-box-orient: vertical; overflow: hidden;
+}
+.rpt-more {
+    margin-top: 3px; padding: 0; border: none; background: none;
+    font-size: 9.5px; color: #64748b; cursor: pointer;
+}
+.rpt-more:hover { color: #94a3b8; }
+.rpt-more:focus-visible { outline: 1px solid rgba(56,189,248,.5); outline-offset: 2px; }
+.rpt-note { font-size: 9.5px; color: #64748b; margin-top: 8px; }
 
 /* ── 포트폴리오 입력 ─────────────────────────────────────────────────────── */
 .pf-tabs { display: flex; gap: 4px; margin-bottom: 18px; border-bottom: 1px solid var(--border); }
@@ -2892,6 +3608,11 @@ body.finance-mode #chart-view::-webkit-scrollbar-thumb { background: rgba(148, 1
 .pf-total strong { font-size: 16px; color: #f1f5f9; font-variant-numeric: tabular-nums; }
 .pf-actions { display: flex; gap: 8px; margin-top: 15px; }
 .pf-privacy { margin-top: 11px !important; color: #475569 !important; }
+.pf-nav-field { display: flex; align-items: center; gap: 10px; margin-top: 12px; flex-wrap: wrap; }
+.pf-nav-field label { font-size: 13px; color: #94a3b8; }
+.pf-nav-field .pf-field { width: auto; flex: 0 1 220px; }
+.pf-upload { display: flex; align-items: center; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
+.pf-upload .fin-note { margin: 0; }
 
 @media (max-width: 900px) {
     .pf-add { flex-direction: column; }
@@ -2910,6 +3631,12 @@ body.finance-mode #chart-view::-webkit-scrollbar-thumb { background: rgba(148, 1
 .pf-mode-btn.on { background: rgba(56, 189, 248, .16); color: #7dd3fc; }
 .pf-picked-warn { color: #fcd34d !important; }
 .pf-row-sub { display: block; font-size: 10.5px; color: #64748b; margin-top: 3px; }
+.scn-cond-group { display: flex; flex-direction: column; gap: 6px; }
+.scn-cond-group .scn-cond-group { margin-top: 4px; }
+.scn-cond-nested { margin-left: 14px; padding: 8px 0 8px 12px; border-left: 2px solid rgba(148, 163, 184, .25); }
+.scn-cond-group-head { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.scn-cond-group-head .pf-field { width: auto; flex: 0 1 170px; }
+.scn-cond-add-row { margin-top: 2px; }
 @media (max-width: 900px) { .pf-mode { width: 100%; } .pf-mode-btn { flex: 1; } }
 
 /* ── 기업 가치 계산기 ─────────────────────────────────────────────────────── */
@@ -2979,6 +3706,16 @@ body.finance-mode #chart-view::-webkit-scrollbar-thumb { background: rgba(148, 1
 body.macro-mode .left-pane,
 body.macro-mode #right-pane-container { display: none !important; }
 body.macro-mode .map-pane { flex: 1 1 100%; }
+/* 지도가 우주에서 본 밤이 되려면 캔버스 뒤도 검어야 한다 -- 타일이 채워지기
+   전 한 프레임 동안 밝은 판이 비치는 것을 막는다. */
+/* 캔버스 뒤 배경도 바다색으로 둔다. 위성 사진이 덮지 않는 구간(남극을 잘라 낸
+   아래쪽, 지도 밖)이 검정으로 남으면 거기서 경계가 드러난다 -- macro.js 의
+   MM_NIGHT_SEA 와 같은 색이어야 한다. */
+body.macro-night .map-pane,
+body.macro-night #map,
+body.macro-night #map canvas { background: #101430; }
+/* 위성 사진 위 오버레이는 배경보다 어두워야 글이 읽힌다. */
+body.macro-night .mm-hint { background: rgba(6, 11, 22, .88); }
 
 #macro-layer {
     position: absolute; inset: 0; z-index: 30;
@@ -3077,7 +3814,11 @@ body.macro-mode .map-pane { flex: 1 1 100%; }
     display: grid; grid-template-columns: 1fr auto; gap: 2px 8px;
     padding: 8px 10px; border-radius: 8px;
     border: 1px solid rgba(148,163,184,.16); background: rgba(148,163,184,.05);
+    width: 100%; text-align: left; font-family: inherit; color: inherit;
 }
+.mm-mover[data-mm-cpi-item] { cursor: pointer; transition: border-color .15s, background .15s, transform .15s; }
+.mm-mover[data-mm-cpi-item]:hover { border-color: rgba(56,189,248,.42); background: rgba(56,189,248,.07); transform: translateY(-1px); }
+.mm-mover.is-selected { border-color: rgba(56,189,248,.58); background: rgba(56,189,248,.1); box-shadow: inset 3px 0 0 #38bdf8; }
 .mm-mover-name { font-size: 12px; color: #e2e8f0; }
 .mm-mover-mom { font-size: 13px; font-weight: 650; font-variant-numeric: tabular-nums; text-align: right; }
 .mm-mover-up   .mm-mover-mom { color: #fb7185; }
@@ -3114,19 +3855,68 @@ body.macro-mode .map-pane { flex: 1 1 100%; }
 .mm-bs-tip-row b { color: #f1f5f9; font-weight: 600; font-variant-numeric: tabular-nums; }
 .mm-bs-tip-row em { font-style: normal; color: #64748b; font-variant-numeric: tabular-nums; min-width: 38px; text-align: right; }
 
-/* Reserves / GDP, with the 10% reference line. */
-.mm-ratio-panel { margin-top: 16px; padding-top: 14px; border-top: 1px solid rgba(148,163,184,.14); }
-.mm-ratio-head { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; margin-bottom: 4px; }
-.mm-ratio-label { font-size: 12px; color: #94a3b8; }
-.mm-ratio-now { font-size: 17px; font-weight: 650; color: #f1f5f9; font-variant-numeric: tabular-nums; }
-/* Red only while the ratio sits below the reference line -- the colour tracks
-   the reading, it does not label the line itself as a danger level. */
-.mm-ratio-now.is-under { color: #fb7185; }
-.mm-ratio-chart { height: 150px; }
+/* Reserves / GDP spark line (mini rail block) and its threshold line. */
 .mm-ratio-line { fill: none; stroke: #38bdf8; stroke-width: 1.6; }
 .mm-ratio-dot { fill: #38bdf8; }
 .mm-threshold { stroke: #ef4444; stroke-width: 1.4; stroke-dasharray: 5 3; }
 .mm-threshold-tag { fill: #ef4444; font-size: 10px; }
+
+/* Reserves/GDP mini-block in the 부채 tab's rail, replacing the news stub. */
+.mm-ratio-rail { display: flex; flex-direction: column; gap: 6px; }
+.mm-ratio-rail-now { font-size: 22px; font-weight: 650; color: #f1f5f9; font-variant-numeric: tabular-nums; }
+.mm-ratio-rail-now.is-under { color: #fb7185; }
+.mm-ratio-rail-spark { width: 100%; height: 56px; display: block; }
+
+/* Equity moving-average overlay: price recedes to a thin neutral trace once
+   five colored MA lines are the thing actually being read. */
+.mm-ma-price { fill: none; stroke: #64748b; stroke-width: 1; }
+.mm-ma-legend { display: flex; flex-wrap: wrap; gap: 10px 14px; margin: 8px 0 4px; }
+.mm-ma-key { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; color: #cbd5e1; }
+.mm-ma-key i { width: 10px; height: 3px; border-radius: 2px; flex: none; }
+
+/* SOMA maturity mini-block in the 자산 tab's rail, replacing the news stub. */
+.mm-soma-rail { display: flex; flex-direction: column; gap: 4px; }
+.mm-soma-rail .mm-bs-tip-row { padding: 3px 0; }
+
+/* Monthly Fed Treasury/MBS purchases (+) vs runoff (-), diverging from zero. */
+.mm-qq-chart { height: 220px; cursor: crosshair; }
+.mm-qq-treas { fill: #38bdf8; }
+.mm-qq-mbs { fill: #a78bfa; }
+.mm-qq-cross { stroke: rgba(226,232,240,.4); stroke-width: 1; pointer-events: none; }
+.mm-qq-legend { display: flex; align-items: center; gap: 14px; margin-top: 6px; font-size: 11px; color: #94a3b8; }
+.mm-qq-legend span { display: inline-flex; align-items: center; gap: 5px; }
+.mm-qq-swatch { width: 9px; height: 9px; border-radius: 2px; display: inline-block; }
+.mm-qq-legend-note { color: #64748b; margin-left: auto; }
+
+/* Bars past the display cap: clipped fill, a zigzag break at the cut edge,
+   and the real value written past it -- clipping changes the height shown,
+   never the number. */
+.mm-qq-clipped { opacity: 0.55; }
+.mm-qq-break { fill: none; stroke: #0f172a; stroke-width: 1.6; }
+.mm-qq-clip-label { fill: #cbd5e1; font-size: 8.5px; font-variant-numeric: tabular-nums; }
+
+/* Hover-driven detail in the rail, in place of the news stub. */
+.mm-qq-rail-month { font-size: 13px; font-weight: 640; color: #f1f5f9; margin-bottom: 6px; }
+.mm-qq-rail-row {
+    display: grid; grid-template-columns: 1fr auto auto; gap: 8px; align-items: baseline;
+    font-size: 12px; color: #cbd5e1; padding: 4px 0;
+}
+.mm-qq-rail-row b { font-variant-numeric: tabular-nums; font-weight: 620; }
+.mm-qq-rail-row em { font-style: normal; color: #64748b; font-variant-numeric: tabular-nums; min-width: 32px; text-align: right; }
+.mm-qq-rail-note { font-size: 10px; color: #64748b; line-height: 1.5; margin: 8px 0 0; }
+
+/* Hovered month's maturity x product breakdown, wedge size = share of gross
+   activity (buys + sells, unsigned) since a pie can't show direction. */
+.mm-qq-pie-wrap { display: flex; gap: 12px; align-items: flex-start; margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(148,163,184,.14); }
+.mm-qq-pie { width: 72px; height: 72px; flex: none; }
+.mm-qq-pie-legend { display: flex; flex-direction: column; gap: 3px; min-width: 0; flex: 1; }
+.mm-qq-pie-row {
+    display: grid; grid-template-columns: 9px 1fr auto auto; gap: 6px; align-items: center;
+    font-size: 10.5px; color: #cbd5e1;
+}
+.mm-qq-pie-row i { width: 8px; height: 8px; border-radius: 2px; }
+.mm-qq-pie-row b { font-variant-numeric: tabular-nums; font-weight: 600; }
+.mm-qq-pie-row em { font-style: normal; color: #64748b; font-variant-numeric: tabular-nums; min-width: 28px; text-align: right; }
 
 /* TGA vs US elections: shaded window running into each vote. */
 .mm-election-band { pointer-events: all; }
@@ -3196,10 +3986,15 @@ body.macro-mode .map-pane { flex: 1 1 100%; }
     margin-top: 14px; background: rgba(15,23,42,.66);
     border: 1px solid rgba(56,189,248,.24); border-radius: 11px; padding: 15px 17px;
 }
-.mm-drawer-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 10px; }
+/* flex-wrap so a long title (e.g. "국채 매입·런오프 (월)") drops the toggle
+   row underneath it instead of squeezing the buttons into an unreadable
+   sliver -- caught by a "20년" button rendering as "2" when a two-line grid
+   of toggles had nowhere to go but a 35px-wide track. */
+.mm-drawer-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-start; gap: 8px 12px; margin-bottom: 10px; }
+.mm-drawer-head > div:first-child { flex: 1 1 240px; min-width: 0; }
 .mm-drawer-head h3 { font-size: 14px; font-weight: 620; margin: 0 0 3px; color: #e2e8f0; }
 .mm-drawer-sub { font-size: 11px; color: #64748b; margin: 0; }
-.mm-drawer-actions { display: flex; align-items: flex-start; gap: 8px; }
+.mm-drawer-actions { display: flex; flex: 0 1 auto; align-items: flex-start; gap: 8px; }
 /* The active window (YoY/MoM) beside the title, weighted down so the series
    name stays the heading. */
 .mm-drawer-mode { font-size: 12px; font-weight: 500; color: #94a3b8; margin-left: 2px; }
@@ -3217,6 +4012,12 @@ body.macro-mode .map-pane { flex: 1 1 100%; }
 }
 .mm-chart { width: 100%; height: 210px; display: block; }
 .mm-line { fill: none; stroke: #38bdf8; stroke-width: 2; stroke-linejoin: round; vector-effect: non-scaling-stroke; }
+.mm-fiscal-primary { stroke: #38bdf8; stroke-width: 2.35; }
+.mm-fiscal-secondary { stroke: #f59e0b; stroke-width: 2.2; }
+.mm-fiscal-right-tick { fill: #b45309; }
+.mm-fiscal-legend { flex-wrap: wrap; }
+.mm-fiscal-primary-swatch { background: #38bdf8; }
+.mm-fiscal-secondary-swatch { background: #f59e0b; }
 /* Fixture history glued to one real point (_pin_latest): muted/dashed run,
    a divider where the fixture stops, and a marker on the one real value. */
 .mm-line-synthetic { stroke: #64748b; stroke-dasharray: 5 4; stroke-width: 1.6; opacity: .75; }
@@ -3234,9 +4035,38 @@ body.macro-mode .map-pane { flex: 1 1 100%; }
 .mm-limit p { font-size: 11.5px; line-height: 1.65; color: #64748b; margin: 0; }
 .mm-disclaimer { font-size: 10.5px; color: #475569; margin: 14px 0 0; line-height: 1.6; }
 
+/* FOMC public vote + Beige Book evidence panel (USA only). */
+.mm-quality { margin: 0 0 17px; padding: 14px; border: 1px solid rgba(167,139,250,.24); border-radius: 11px; background: linear-gradient(105deg, rgba(76,29,149,.13), rgba(15,23,42,.20) 48%, rgba(8,47,73,.16)); }
+.mm-quality-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 11px; }
+.mm-quality-kicker { margin: 0 0 2px; font-size: 9.5px; font-weight: 650; letter-spacing: .07em; color: #a78bfa; }
+.mm-quality-head h3 { margin: 0; font-size: 13px; font-weight: 620; color: #e2e8f0; }
+.mm-quality-status { flex: 0 0 auto; padding: 3px 7px; border: 1px solid rgba(196,181,253,.25); border-radius: 999px; color: #c4b5fd; background: rgba(167,139,250,.09); font-size: 9.5px; }
+.mm-quality-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.mm-quality-card { display: flex; min-width: 0; min-height: 125px; flex-direction: column; align-items: flex-start; padding: 11px 12px; border: 1px solid rgba(148,163,184,.14); border-radius: 8px; background: rgba(2,6,23,.26); }
+.mm-quality-label { display: block; margin-bottom: 5px; color: #94a3b8; font-size: 10px; }
+.mm-quality-card strong { color: #e2e8f0; font-size: 12px; font-weight: 600; line-height: 1.35; }
+.mm-quality-card p { margin: 6px 0 0; color: #94a3b8; font-size: 10.5px; line-height: 1.55; }
+.mm-quality-muted { margin-top: 7px; color: #64748b; font-size: 10.5px; }
+.mm-quality-names { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 7px; }
+.mm-quality-names span { padding: 2px 5px; border-radius: 4px; background: rgba(251,146,60,.10); color: #fdba74; font-size: 9.5px; line-height: 1.35; }
+.mm-quality-link { margin-top: auto; padding-top: 9px; color: #7dd3fc; font-size: 10.5px; text-decoration: none; }
+.mm-quality-link:hover { color: #bae6fd; text-decoration: underline; }
+.mm-quality-details { width: 100%; margin-top: 7px; }
+.mm-quality-details summary { cursor: pointer; color: #c4b5fd; font-size: 10.5px; }
+.mm-quality-details p { margin: 6px 0 0; }
+.mm-quality-details b { color: #cbd5e1; font-weight: 560; }
+.mm-quality-foot { margin: 10px 0 0; color: #64748b; font-size: 10px; line-height: 1.5; }
+.mm-quality-wide { grid-column: 1 / -1; }
+.mm-quality-redline { line-height: 1.7; }
+.mm-quality-redline del { color: #64748b; text-decoration: line-through; text-decoration-color: rgba(248,113,113,.6); }
+.mm-quality-redline ins { color: #fdba74; background: rgba(251,146,60,.14); text-decoration: none; border-radius: 3px; padding: 0 1px; }
+
 @media (max-width: 900px) {
     .mm-overlay { padding: 15px 14px; max-height: calc(100vh - 150px); }
     .mm-chips { grid-template-columns: repeat(auto-fill, minmax(148px, 1fr)); }
+    .mm-quality-grid { grid-template-columns: 1fr; }
+    .mm-cpi-flow { grid-template-columns: 1fr; justify-items: stretch; }
+    .mm-cpi-arrow { transform: rotate(90deg); justify-self: center; }
 }
 
 /* ── 매크로: 오버레이 확대 · 차트 · 관료 · 뉴스 레일 ─────────────────────── */
@@ -3305,6 +4135,18 @@ body.macro-mode .map-pane { flex: 1 1 100%; }
 /* Per-day columns over the close line, carrying that day's flow tooltip. */
 .ms-plc-hit { fill: transparent; }
 .ms-plc-hit:hover { fill: rgba(148,163,184,.12); }
+/* Cursor-following box: 주가 + 개인/외국인/기관 비중 + 신용공여 breakdown. */
+.ms-plc-tip {
+    position: fixed; z-index: 50; display: none; pointer-events: none;
+    background: rgba(2,6,16,.97); border: 1px solid rgba(148,163,184,.3);
+    border-radius: 8px; padding: 8px 11px; min-width: 172px;
+    font-size: 11px; color: #cbd5e1; line-height: 1.5;
+}
+.ms-plc-tip-date { font-size: 10px; color: #64748b; }
+.ms-plc-tip-price { font-size: 13px; font-weight: 620; color: #f1f5f9; margin: 1px 0 6px; font-variant-numeric: tabular-nums; }
+.ms-plc-tip-row { display: grid; grid-template-columns: 1fr auto; gap: 2px 10px; font-variant-numeric: tabular-nums; }
+.ms-plc-tip-row i { font-style: normal; color: #64748b; font-size: 10px; }
+.ms-plc-tip-h { font-size: 10px; color: #94a3b8; margin: 7px 0 3px; padding-top: 6px; border-top: 1px solid rgba(148,163,184,.18); }
 /* Full-width row behind the bars -- click opens that band's breakdown modal. */
 .ms-plc-band-hit { fill: transparent; cursor: pointer; }
 .ms-plc-band-hit:hover { fill: rgba(56,189,248,.08); }
@@ -3315,10 +4157,12 @@ body.macro-mode .map-pane { flex: 1 1 100%; }
 .ms-plc-cr-deposit { stroke: #38bdf8; }
 .ms-plc-cr-credit { stroke: #fbbf24; }
 .ms-plc-cr-uncollected { stroke: #f87171; }
+.ms-plc-cr-forced { stroke: #c084fc; }
 .ms-plc-sw-cr { display: inline-block; width: 14px; height: 0; border-top: 2px dashed; margin-left: 8px; }
 .ms-plc-sw-cr.ms-plc-cr-deposit { border-color: #38bdf8; }
 .ms-plc-sw-cr.ms-plc-cr-credit { border-color: #fbbf24; }
 .ms-plc-sw-cr.ms-plc-cr-uncollected { border-color: #f87171; }
+.ms-plc-sw-cr.ms-plc-cr-forced { border-color: #c084fc; }
 .mm-legend-axis { margin-left: 6px; opacity: .65; }
 /* Line-end value labels: each series ends at its own level, so the number
    rides the line rather than a shared axis. */
@@ -3326,6 +4170,7 @@ body.macro-mode .map-pane { flex: 1 1 100%; }
 .ms-plc-cr-lab.ms-plc-cr-deposit { fill: #38bdf8; }
 .ms-plc-cr-lab.ms-plc-cr-credit { fill: #fbbf24; }
 .ms-plc-cr-lab.ms-plc-cr-uncollected { fill: #f87171; }
+.ms-plc-cr-lab.ms-plc-cr-forced { fill: #c084fc; }
 .ms-plc-cr-legend { display: flex; flex-wrap: wrap; gap: 4px 18px; margin-top: 2px; }
 .ms-plc-cr-item { white-space: nowrap; }
 .ms-plc-cr-item b { margin-left: 4px; }
@@ -3730,3 +4575,1117 @@ body.macro-mode .map-pane { flex: 1 1 100%; }
     color: rgba(148, 163, 184, 0.7);
     margin-top: 1px;
 }
+
+.mm-mover-path-count { grid-column: 1 / -1; justify-self: end; font-size: 9.5px; color: #7dd3fc; }
+
+/* CPI relationship paths. These are structural/measurement annotations, not
+   causal arrows or forecasts; candidate and measured states stay distinct. */
+.mm-cpi-panel {
+    margin: 14px 0 10px; padding: 14px; border-radius: 10px;
+    border: 1px solid rgba(56,189,248,.2); background: rgba(2,6,23,.38);
+}
+.mm-cpi-panel-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 8px; }
+.mm-cpi-panel-head h4 { margin: 1px 0 0; color: #f1f5f9; font-size: 14px; }
+.mm-cpi-kicker { color: #64748b; font-size: 9.5px; text-transform: uppercase; letter-spacing: .08em; }
+.mm-cpi-count { color: #7dd3fc; font-size: 10.5px; font-variant-numeric: tabular-nums; }
+.mm-cpi-legend { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 10px; }
+.mm-cpi-evidence {
+    display: inline-flex; align-items: center; width: max-content; border-radius: 999px;
+    padding: 3px 7px; font-size: 9.5px; line-height: 1; border: 1px solid transparent;
+}
+.mm-cpi-evidence-measured { color: #7dd3fc; background: rgba(56,189,248,.1); border-color: rgba(56,189,248,.25); }
+.mm-cpi-evidence-candidate { color: #fbbf24; background: rgba(251,191,36,.08); border-color: rgba(251,191,36,.24); }
+.mm-cpi-path { padding: 12px; border-radius: 9px; border: 1px solid rgba(148,163,184,.16); background: rgba(15,23,42,.58); }
+.mm-cpi-path + .mm-cpi-path { margin-top: 9px; }
+.mm-cpi-path-measurement { border-left: 3px solid #38bdf8; }
+.mm-cpi-path-common { border-left: 3px solid #2dd4bf; }
+.mm-cpi-path-external { border-left: 3px solid #f59e0b; }
+.mm-cpi-path-hypothesis { border-left: 3px solid #c084fc; }
+.mm-cpi-path-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 10px; }
+.mm-cpi-type { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 620; color: #cbd5e1; }
+.mm-cpi-type i { display: grid; place-items: center; width: 20px; height: 20px; border-radius: 6px; background: rgba(148,163,184,.1); color: #7dd3fc; font-style: normal; }
+.mm-cpi-flow { display: grid; grid-template-columns: minmax(100px,1fr) auto minmax(84px,.7fr) auto minmax(100px,1fr); align-items: center; gap: 7px; }
+.mm-cpi-node-group { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.mm-cpi-node-group > small { color: #475569; font-size: 9px; }
+.mm-cpi-node { display: block; padding: 5px 7px; border-radius: 6px; background: rgba(148,163,184,.08); color: #94a3b8; font-size: 10px; line-height: 1.3; }
+.mm-cpi-node.is-selected { background: rgba(56,189,248,.15); color: #e0f2fe; outline: 1px solid rgba(56,189,248,.34); }
+.mm-cpi-arrow { color: #475569; font-size: 14px; }
+.mm-cpi-relation-hub { display: flex; flex-direction: column; align-items: center; gap: 2px; text-align: center; }
+.mm-cpi-relation-hub strong { color: #7dd3fc; font-size: 16px; }
+.mm-cpi-relation-hub span { color: #cbd5e1; font-size: 9.5px; }
+.mm-cpi-relation-hub small { color: #64748b; font-size: 8.5px; }
+.mm-cpi-mechanism { color: #94a3b8; font-size: 10.5px; line-height: 1.55; margin: 10px 0 0; }
+.mm-cpi-validation { margin-top: 8px; padding-top: 7px; border-top: 1px solid rgba(148,163,184,.12); }
+.mm-cpi-validation summary { color: #64748b; font-size: 9.5px; cursor: pointer; }
+.mm-cpi-validation p { color: #64748b; font-size: 9.5px; line-height: 1.5; margin: 5px 0 0; }
+.mm-cpi-validation b { color: #94a3b8; margin-right: 4px; }
+.mm-cpi-map-state { color: #fbbf24; margin-left: 4px; }
+.mm-cpi-policy { color: #64748b; font-size: 9.5px; line-height: 1.5; margin: 10px 0 0; }
+.mm-cpi-empty { color: #94a3b8; font-size: 10.5px; line-height: 1.55; margin: 8px 0; }
+.mm-cpi-panel-loading, .mm-cpi-panel-error { display: flex; align-items: center; gap: 8px; color: #94a3b8; font-size: 10.5px; }
+.mm-cpi-panel-error { display: block; border-color: rgba(251,113,133,.28); }
+.mm-cpi-panel-error p { color: #fb7185; margin: 0 0 4px; }
+.mm-cpi-panel-error span { color: #64748b; }
+.mm-cpi-spinner { width: 11px; height: 11px; border-radius: 50%; border: 2px solid rgba(148,163,184,.2); border-top-color: #38bdf8; animation: mm-cpi-spin .8s linear infinite; }
+
+/* --- Auth (signup/login) ------------------------------------------------ */
+.auth-container { display: flex; align-items: center; gap: 10px; margin-left: 16px; }
+.auth-email { font-size: 12px; color: var(--text-secondary); max-width: 160px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.auth-btn {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: #e2e8f0;
+    font-size: 12px;
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: border-color .15s ease, color .15s ease;
+}
+.auth-btn:hover { border-color: #38bdf8; color: #38bdf8; }
+
+.auth-modal { position: fixed; inset: 0; z-index: 1200; display: flex; align-items: center; justify-content: center; }
+.auth-modal.hidden { display: none; }
+.auth-modal-backdrop { position: absolute; inset: 0; background: rgba(0,0,0,.7); backdrop-filter: blur(4px); }
+.auth-modal-box {
+    position: relative;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    width: 90%;
+    max-width: 360px;
+    padding: 28px 24px 24px;
+    box-shadow: 0 25px 50px -12px rgba(0,0,0,.5);
+}
+.auth-modal-close { position: absolute; top: 12px; right: 16px; color: var(--text-secondary); font-size: 22px; line-height: 1; cursor: pointer; background: none; border: none; }
+.auth-modal-close:hover { color: #f1f5f9; }
+.auth-tabs { display: flex; gap: 6px; margin-bottom: 18px; }
+.auth-tab { flex: 1; padding: 8px; border: 1px solid var(--border); background: transparent; color: var(--text-secondary); font-size: 13px; border-radius: 6px; cursor: pointer; }
+.auth-tab.active { border-color: #38bdf8; color: #38bdf8; }
+.auth-form { display: flex; flex-direction: column; gap: 14px; }
+.auth-form label { display: flex; flex-direction: column; gap: 6px; font-size: 12px; color: var(--text-secondary); }
+.auth-form input {
+    background: rgba(148,163,184,.08);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 9px 10px;
+    color: #f1f5f9;
+    font-size: 13px;
+}
+.auth-form input:focus { outline: none; border-color: #38bdf8; }
+.auth-submit-btn {
+    background: #38bdf8;
+    color: #0b1220;
+    border: none;
+    border-radius: 6px;
+    padding: 10px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+}
+.auth-submit-btn:disabled { opacity: .6; cursor: not-allowed; }
+.auth-error { color: #fb7185; font-size: 12px; margin: 0; }
+.auth-notice { color: #4ade80; font-size: 12px; margin: 0; }
+.auth-error.hidden, .auth-notice.hidden { display: none; }
+.auth-hint { color: var(--text-secondary); font-size: 11px; margin: -6px 0 0; }
+.auth-consent-row { display: flex; align-items: flex-start; gap: 8px; font-size: 12px; color: var(--text-secondary); }
+.auth-consent-row input { margin-top: 2px; flex: 0 0 auto; }
+.auth-consent-row label { cursor: pointer; }
+.auth-policy-link { background: none; border: none; padding: 0; color: #38bdf8; text-decoration: underline; font-size: 12px; cursor: pointer; }
+.auth-policy-text {
+    max-height: 160px;
+    overflow-y: auto;
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: rgba(148, 163, 184, .06);
+    font-size: 11.5px;
+    line-height: 1.6;
+    color: var(--text-secondary);
+}
+.auth-policy-text h4 { margin: 10px 0 2px; color: #e2e8f0; font-size: 12px; }
+.auth-policy-text h4:first-child { margin-top: 0; }
+.auth-policy-text p { margin: 0 0 6px; }
+.signup-only.hidden { display: none; }
+
+@media (max-width: 900px) {
+    .auth-container { margin-left: 8px; }
+    .auth-email { display: none; }
+}
+@keyframes mm-cpi-spin { to { transform: rotate(360deg); } }
+
+/* === US POLICY DASHBOARD =================================================
+   Policy is a document-style screen with no map, so it takes the whole centre
+   surface (#chart-view) rather than the narrow right pane the commodity views
+   use. Layout mirrors the wireframes: wide blocks in a two-column grid. */
+
+/* Scoped to #chart-view so it outranks that id's own flex centring -- the same
+   thing .shipping-surface has to do. A document screen starts at the top;
+   otherwise a short view floats in the middle of the page. */
+#chart-view.policy-surface {
+    display: block !important;
+    align-items: initial !important;
+    justify-content: initial !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    pointer-events: auto !important;
+    overscroll-behavior: contain;
+    position: absolute;
+    inset: 0;
+    background: #0b1220;
+    padding: 22px 26px 40px;
+    box-sizing: border-box;
+}
+
+#chart-view.policy-surface::-webkit-scrollbar { width: 8px; }
+#chart-view.policy-surface::-webkit-scrollbar-track { background: rgba(15, 23, 42, 0.8); }
+#chart-view.policy-surface::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, 0.28); border-radius: 999px; }
+
+.policy-surface-inner {
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.policy-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: #94a3b8;
+    font-size: 12px;
+}
+
+/* --- header ------------------------------------------------------------ */
+
+.policy-head {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding-bottom: 14px;
+    margin-bottom: 18px;
+    border-bottom: 1px solid rgba(56, 189, 248, 0.14);
+}
+
+.policy-modes {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* The country the surface is scoped to -- context, not a control. */
+.policy-country {
+    padding-right: 4px;
+    color: #e2e8f0;
+    font-size: 15px;
+    font-weight: 700;
+}
+
+.policy-crumb-root { color: #94a3b8; }
+
+.policy-mode-btn {
+    padding: 7px 18px;
+    border: 1px solid rgba(56, 189, 248, 0.18);
+    border-radius: 999px;
+    background: rgba(15, 23, 42, 0.6);
+    color: #94a3b8;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.18s ease;
+}
+
+.policy-mode-btn:hover { color: #7dd3fc; border-color: rgba(56, 189, 248, 0.4); }
+
+.policy-mode-btn.active {
+    background: rgba(56, 189, 248, 0.14);
+    border-color: #38bdf8;
+    color: #38bdf8;
+}
+
+.policy-search {
+    position: relative;
+    margin-left: auto;
+}
+
+.policy-search-input {
+    width: 240px;
+    padding: 7px 12px;
+    border: 1px solid rgba(148, 163, 184, 0.24);
+    border-radius: 999px;
+    background: rgba(15, 23, 42, 0.6);
+    color: #e2e8f0;
+    font-size: 11px;
+    transition: border-color 0.18s ease, width 0.18s ease;
+}
+
+.policy-search-input::placeholder { color: #64748b; }
+
+.policy-search-input:focus {
+    outline: none;
+    border-color: #38bdf8;
+    width: 300px;
+}
+
+.policy-search-results {
+    position: absolute;
+    z-index: 20;
+    top: calc(100% + 6px);
+    right: 0;
+    width: 320px;
+    max-height: 360px;
+    overflow-y: auto;
+    padding: 6px;
+    border: 1px solid rgba(56, 189, 248, 0.22);
+    border-radius: 10px;
+    background: #0f172a;
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.4);
+}
+
+.policy-search-result {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    padding: 7px 9px;
+    border: none;
+    border-radius: 7px;
+    background: transparent;
+    color: #e2e8f0;
+    font-size: 12px;
+    text-align: left;
+    cursor: pointer;
+}
+
+.policy-search-result:hover { background: rgba(56, 189, 248, 0.14); }
+
+.policy-search-result.is-inert {
+    color: #94a3b8;
+    cursor: default;
+}
+
+.policy-search-result.is-inert:hover { background: transparent; }
+
+.policy-search-result-type {
+    flex: none;
+    padding: 2px 7px;
+    border-radius: 999px;
+    background: rgba(56, 189, 248, 0.16);
+    color: #7dd3fc;
+    font-size: 10px;
+    font-weight: 700;
+}
+
+.policy-search-result-title {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.policy-search-empty {
+    padding: 10px 9px;
+    color: #94a3b8;
+    font-size: 12px;
+}
+
+/* The Enter-key destination: its own screen/URL, not the header dropdown, so
+   rows get real width instead of the dropdown's fixed 320px -- long titles
+   wrap instead of ellipsizing. */
+.policy-search-page-results {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.policy-search-page-results .policy-search-result {
+    font-size: 13px;
+    padding: 9px 10px;
+}
+
+.policy-search-page-results .policy-search-result-title {
+    white-space: normal;
+}
+
+.policy-crumb {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 12px;
+    flex-wrap: wrap;
+}
+
+.policy-crumb-link {
+    border: none;
+    background: none;
+    padding: 0;
+    color: #38bdf8;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.policy-crumb-link:hover { text-decoration: underline; }
+.policy-crumb-current { color: #e2e8f0; font-weight: 600; }
+.policy-crumb-sep { color: #475569; }
+
+/* --- layout ------------------------------------------------------------ */
+
+.policy-grid-2 {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 18px;
+    align-items: start;
+}
+
+@media (max-width: 1080px) {
+    .policy-grid-2 { grid-template-columns: minmax(0, 1fr); }
+}
+
+.policy-col { display: flex; flex-direction: column; gap: 18px; min-width: 0; }
+
+.policy-block {
+    padding: 16px 18px;
+    border: 1px solid rgba(56, 189, 248, 0.12);
+    border-radius: 10px;
+    background: rgba(15, 23, 42, 0.55);
+}
+
+.policy-block-title {
+    margin: 0 0 14px;
+    color: #e2e8f0;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+/* CRS (32) and CFR (50) bury the rest of the screen when open, so they fold. */
+.policy-block.is-collapsible { padding-bottom: 16px; }
+.policy-block.is-collapsible:not(.is-open) { padding-bottom: 8px; }
+
+.policy-collapse-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    width: 100%;
+    padding: 0 0 8px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    text-align: left;
+}
+
+.policy-block.is-collapsible:not(.is-open) .policy-collapse-toggle { padding-bottom: 0; }
+.policy-collapse-toggle .policy-block-title { margin: 0; }
+.policy-collapse-toggle:hover .policy-block-title { color: #7dd3fc; }
+
+.policy-collapse-chevron {
+    color: #64748b;
+    font-size: 11px;
+}
+
+.policy-collapse-toggle:hover .policy-collapse-chevron { color: #7dd3fc; }
+
+.policy-subblock { margin-top: 16px; }
+
+.policy-subblock h4 {
+    margin: 0 0 8px;
+    color: #7dd3fc;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.policy-prose {
+    margin: 0 0 10px;
+    color: #cbd5e1;
+    font-size: 12px;
+    line-height: 1.65;
+}
+
+.policy-empty {
+    padding: 16px 10px;
+    color: #64748b;
+    font-size: 11.5px;
+    text-align: center;
+}
+
+.is-placeholder { color: #64748b; font-style: italic; }
+
+/* --- name-only blocks (committees, agencies) ---------------------------- */
+
+/* Sized so a full-width block lands six to a row, dropping to five/four/three
+   as the surface narrows. */
+.policy-tile-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 10px;
+}
+
+.policy-tile {
+    display: flex;
+    align-items: center;
+    min-height: 58px;
+    padding: 12px 14px;
+    border: 1px solid rgba(56, 189, 248, 0.18);
+    border-radius: 8px;
+    background: rgba(30, 41, 59, 0.5);
+    color: #e2e8f0;
+    font-size: 12.5px;
+    font-weight: 500;
+    line-height: 1.4;
+    text-align: left;
+    cursor: pointer;
+    transition: all 0.18s ease;
+}
+
+.policy-tile:hover {
+    border-color: rgba(56, 189, 248, 0.55);
+    background: rgba(30, 41, 59, 0.85);
+    color: #7dd3fc;
+}
+
+.policy-tile-label {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* One column inside the two-column grid is half as wide, so relax the minimum
+   or the tiles collapse to a single file. */
+.policy-col .policy-tile-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+
+/* --- hub cards --------------------------------------------------------- */
+
+.policy-card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 14px;
+}
+
+.policy-card {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 15px 16px;
+    border: 1px solid rgba(56, 189, 248, 0.14);
+    border-radius: 9px;
+    background: rgba(30, 41, 59, 0.45);
+    text-align: left;
+    cursor: pointer;
+    transition: all 0.18s ease;
+}
+
+.policy-card:hover {
+    border-color: rgba(56, 189, 248, 0.42);
+    background: rgba(30, 41, 59, 0.75);
+    transform: translateY(-1px);
+}
+
+.policy-card-head { display: flex; align-items: center; gap: 8px; }
+.policy-card-date { color: #64748b; font-size: 10.5px; }
+
+.policy-card-title {
+    color: #e2e8f0;
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.45;
+}
+
+.policy-card-area { color: #7dd3fc; font-size: 10.5px; }
+
+.policy-card-summary {
+    color: #94a3b8;
+    font-size: 11px;
+    line-height: 1.55;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* --- chips ------------------------------------------------------------- */
+
+.policy-chip-row { display: flex; flex-wrap: wrap; gap: 8px; }
+
+.policy-chip {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    padding: 9px 13px;
+    border: 1px solid rgba(56, 189, 248, 0.16);
+    border-radius: 8px;
+    background: rgba(30, 41, 59, 0.5);
+    text-align: left;
+    cursor: pointer;
+    transition: all 0.18s ease;
+}
+
+.policy-chip:hover { border-color: rgba(56, 189, 248, 0.45); background: rgba(30, 41, 59, 0.8); }
+.policy-chip.is-compact { padding: 7px 12px; }
+.policy-chip.is-static { cursor: default; }
+.policy-chip.is-static:hover { border-color: rgba(56, 189, 248, 0.16); background: rgba(30, 41, 59, 0.5); }
+.policy-chip.is-reserved { opacity: 0.55; }
+
+.policy-chip-name { color: #e2e8f0; font-size: 12px; font-weight: 500; }
+.policy-chip-sub { color: #64748b; font-size: 10px; }
+
+/* --- lists ------------------------------------------------------------- */
+
+.policy-count-list { list-style: none; margin: 0; padding: 0; }
+
+.policy-count-list li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding: 9px 0;
+    border-bottom: 1px solid rgba(148, 163, 184, 0.09);
+    color: #cbd5e1;
+    font-size: 12px;
+}
+
+.policy-count-list li:last-child { border-bottom: none; }
+.policy-count { color: #38bdf8; font-weight: 700; }
+
+.policy-leaders { display: flex; flex-direction: column; gap: 7px; margin: 12px 0; }
+
+.policy-leader {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 12px;
+    border-radius: 7px;
+    background: rgba(30, 41, 59, 0.5);
+}
+
+.policy-leader-label {
+    min-width: 46px;
+    color: #7dd3fc;
+    font-size: 10.5px;
+    font-weight: 600;
+}
+
+.policy-leader-value { color: #e2e8f0; font-size: 12px; }
+
+.policy-sub-list { list-style: none; margin: 0; padding: 0; }
+
+.policy-sub-list li {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    padding: 10px 12px;
+    margin-bottom: 6px;
+    border-radius: 7px;
+    background: rgba(30, 41, 59, 0.45);
+}
+
+.policy-sub-name { color: #e2e8f0; font-size: 12px; }
+.policy-sub-meta { font-size: 10.5px; }
+
+/* --- stage tabs -------------------------------------------------------- */
+
+.policy-stage-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding-bottom: 12px;
+    margin-bottom: 12px;
+    border-bottom: 1px solid rgba(56, 189, 248, 0.1);
+}
+
+.policy-stage-tab {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 11px;
+    border: 1px solid transparent;
+    border-radius: 999px;
+    background: rgba(30, 41, 59, 0.6);
+    color: #94a3b8;
+    font-size: 11px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.18s ease;
+}
+
+.policy-stage-tab:hover { color: #7dd3fc; }
+
+.policy-stage-tab.active {
+    border-color: #38bdf8;
+    background: rgba(56, 189, 248, 0.28);
+    color: #e0f2fe;
+    font-weight: 600;
+    box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.35), 0 0 10px rgba(56, 189, 248, 0.25);
+}
+
+.policy-stage-count { color: #64748b; font-size: 10px; }
+.policy-stage-tab.active .policy-stage-count { color: #7dd3fc; }
+
+/* --- bills ------------------------------------------------------------- */
+
+.policy-stage-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 999px;
+    background: rgba(56, 189, 248, 0.14);
+    color: #38bdf8;
+    font-size: 10px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.policy-bill-list { display: flex; flex-direction: column; gap: 7px; }
+
+.policy-bill-row {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    padding: 11px 13px;
+    border: 1px solid rgba(56, 189, 248, 0.1);
+    border-radius: 8px;
+    background: rgba(30, 41, 59, 0.45);
+    text-align: left;
+    cursor: pointer;
+    transition: all 0.18s ease;
+}
+
+.policy-bill-row:hover { border-color: rgba(56, 189, 248, 0.4); background: rgba(30, 41, 59, 0.75); }
+.policy-bill-row-id { color: #38bdf8; font-size: 10.5px; font-weight: 600; }
+.policy-bill-row-title { color: #e2e8f0; font-size: 12px; line-height: 1.45; }
+.policy-bill-row-meta { display: flex; align-items: center; gap: 8px; }
+.policy-bill-row-date { color: #64748b; font-size: 10px; }
+
+.policy-bill-panel.is-compact { background: rgba(30, 41, 59, 0.35); }
+
+/* My Page favorites list -- one bill per card, no stage rail or full vote
+   history (that detail lives one click away on the bill's own screen).
+   Wide horizontal rectangle: title truncates with an ellipsis before the
+   meta row wraps, so a long official title never pushes this into a tall
+   stacked block. */
+.policy-fav-bill-card {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    width: 100%;
+    padding: 10px 16px;
+    border: 1px solid rgba(56, 189, 248, 0.1);
+    border-radius: 8px;
+    background: rgba(30, 41, 59, 0.45);
+    box-sizing: border-box;
+}
+.policy-fav-bill-title {
+    flex: 1 1 auto;
+    min-width: 0;
+    color: #e2e8f0;
+    font-size: 12.5px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.policy-fav-bill-meta {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #94a3b8;
+    font-size: 11px;
+    white-space: nowrap;
+}
+.policy-fav-bill-code { color: #cbd5e1; font-weight: 600; }
+.policy-fav-bill-stage { color: #38bdf8; }
+.policy-fav-bill-votes { color: #64748b; }
+
+@media (max-width: 640px) {
+    /* Narrow enough that "wide rectangle" would otherwise clip the title
+       to almost nothing -- meta wraps to its own line instead. */
+    .policy-fav-bill-card { flex-wrap: wrap; }
+    .policy-fav-bill-title { flex-basis: 100%; white-space: normal; }
+}
+
+/* My Page commodity-digest source filter -- one wide row per source
+   (checkbox + agency label), same rectangle shape as the bill card above
+   for visual consistency between the two favorites-tab lists. */
+.source-filter-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 10px 16px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: rgba(148, 163, 184, .06);
+    cursor: pointer;
+    box-sizing: border-box;
+    transition: border-color .15s ease;
+}
+.source-filter-row:hover { border-color: #38bdf8; }
+.source-filter-checkbox { flex: 0 0 auto; }
+.source-filter-label { flex: 1 1 auto; color: #e2e8f0; font-size: 12.5px; }
+
+.policy-bill-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+    color: #94a3b8;
+    font-size: 11px;
+}
+
+.policy-bill-cite { color: #cbd5e1; font-weight: 600; }
+
+.policy-tag.is-law { background: rgba(74, 222, 128, 0.16); color: #4ade80; }
+
+/* Title and its star share a row; the star never squeezes the title. */
+.policy-bill-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.policy-bill-head .policy-block-title,
+.policy-bill-head .policy-eo-headline { flex: 1; min-width: 0; }
+
+/* --- favorites --------------------------------------------------------- */
+
+.policy-fav {
+    flex: none;
+    padding: 2px 6px;
+    border: none;
+    border-radius: 7px;
+    background: transparent;
+    color: #64748b;
+    font-size: 18px;
+    line-height: 1;
+    cursor: pointer;
+    transition: color 0.18s ease, background 0.18s ease;
+}
+
+.policy-fav:hover { color: #facc15; background: rgba(250, 204, 21, 0.12); }
+.policy-fav.is-on { color: #facc15; }
+.policy-fav:disabled { cursor: progress; opacity: 0.6; }
+
+/* --- stage rail -------------------------------------------------------- */
+
+/* Reached steps light up and the connector fills in behind them, so how far
+   the bill travelled reads before any of the labels do. */
+.policy-stage-rail {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0;
+    margin: 0 0 14px;
+    padding: 0;
+    list-style: none;
+}
+
+.policy-stage-step {
+    position: relative;
+    flex: 1 1 0;
+    min-width: 64px;
+    padding-top: 16px;
+    text-align: center;
+    color: #64748b;
+    font-size: 10px;
+    line-height: 1.3;
+}
+
+/* The connector is drawn by each step except the first, reaching back to the
+   previous dot, so no separate track element is needed. */
+.policy-stage-step::before {
+    content: '';
+    position: absolute;
+    top: 4px;
+    right: 50%;
+    left: -50%;
+    height: 2px;
+    background: rgba(148, 163, 184, 0.22);
+}
+
+.policy-stage-step:first-child::before { display: none; }
+
+.policy-stage-step-dot {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 10px;
+    height: 10px;
+    margin-left: -5px;
+    border: 2px solid rgba(148, 163, 184, 0.4);
+    border-radius: 50%;
+    background: #0f172a;
+}
+
+.policy-stage-step.is-done { color: #94a3b8; }
+.policy-stage-step.is-done::before { background: rgba(56, 189, 248, 0.5); }
+.policy-stage-step.is-done .policy-stage-step-dot {
+    border-color: #38bdf8;
+    background: #38bdf8;
+}
+
+.policy-stage-step.is-current { color: #38bdf8; font-weight: 700; }
+.policy-stage-step.is-current::before { background: rgba(56, 189, 248, 0.5); }
+.policy-stage-step.is-current .policy-stage-step-dot {
+    border-color: #38bdf8;
+    background: #38bdf8;
+    box-shadow: 0 0 0 4px rgba(56, 189, 248, 0.22);
+}
+
+/* A bill that was vetoed or voted down stopped rather than advanced. */
+.policy-stage-step.is-terminal.is-current { color: #fb7185; }
+.policy-stage-step.is-terminal::before { background: rgba(251, 113, 133, 0.5); }
+.policy-stage-step.is-terminal.is-current .policy-stage-step-dot {
+    border-color: #fb7185;
+    background: #fb7185;
+    box-shadow: 0 0 0 4px rgba(251, 113, 133, 0.22);
+}
+
+/* --- action history ---------------------------------------------------- */
+
+.policy-action-list { list-style: none; margin: 0; padding: 0; }
+
+.policy-action {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+    color: #cbd5e1;
+    font-size: 11.5px;
+}
+
+.policy-action:last-child { border-bottom: none; }
+
+.policy-action-date {
+    flex: none;
+    width: 78px;
+    color: #64748b;
+    font-size: 11px;
+}
+
+.policy-action-body { flex: 1; min-width: 0; }
+
+.policy-action-chamber {
+    margin-right: 6px;
+    color: #7dd3fc;
+    font-weight: 600;
+}
+
+/* --- text versions ----------------------------------------------------- */
+
+.policy-textver-list { list-style: none; margin: 0; padding: 0; }
+
+.policy-textver {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 7px 0;
+    border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+    color: #cbd5e1;
+    font-size: 11.5px;
+}
+
+.policy-textver:last-child { border-bottom: none; }
+
+.policy-textver-meta {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    color: #64748b;
+    font-size: 11px;
+}
+
+/* --- votes ------------------------------------------------------------- */
+
+.policy-vote {
+    padding: 11px 13px;
+    margin-bottom: 8px;
+    border-radius: 8px;
+    background: rgba(30, 41, 59, 0.5);
+}
+
+.policy-vote-head {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 8px;
+    color: #e2e8f0;
+    font-size: 11.5px;
+}
+
+.policy-vote-result { color: #38bdf8; font-weight: 600; }
+
+.policy-vote-counts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 7px;
+    color: #94a3b8;
+    font-size: 11px;
+}
+
+.policy-vote-counts .yea { color: #4ade80; font-weight: 600; }
+.policy-vote-counts .nay { color: #fb7185; font-weight: 600; }
+
+.policy-vote-foot {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: #64748b;
+    font-size: 10px;
+}
+
+/* --- related bills ----------------------------------------------------- */
+
+.policy-related { list-style: none; margin: 0; padding: 0; }
+
+.policy-related li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 0;
+    border-bottom: 1px solid rgba(148, 163, 184, 0.09);
+    color: #cbd5e1;
+    font-size: 11.5px;
+}
+
+.policy-related li:last-child { border-bottom: none; }
+
+.policy-tag {
+    padding: 2px 7px;
+    border-radius: 4px;
+    background: rgba(148, 163, 184, 0.14);
+    color: #94a3b8;
+    font-size: 9.5px;
+    white-space: nowrap;
+}
+
+.policy-tag.is-ai { background: rgba(168, 85, 247, 0.16); color: #c084fc; }
+.policy-tag-row { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+
+/* --- links ------------------------------------------------------------- */
+
+.policy-link {
+    border: none;
+    background: none;
+    padding: 0;
+    color: #38bdf8;
+    font-size: inherit;
+    text-align: left;
+    cursor: pointer;
+}
+
+.policy-link:hover { text-decoration: underline; }
+
+.policy-external {
+    display: inline-block;
+    color: #7dd3fc;
+    font-size: 11px;
+    text-decoration: none;
+}
+
+.policy-external:hover { text-decoration: underline; }
+.policy-link-row { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 12px; }
+
+/* --- executive --------------------------------------------------------- */
+
+.policy-agency {
+    padding: 13px 15px;
+    margin-bottom: 12px;
+    border: 1px solid rgba(56, 189, 248, 0.12);
+    border-radius: 9px;
+    background: rgba(30, 41, 59, 0.4);
+}
+
+.policy-agency:last-child { margin-bottom: 0; }
+
+.policy-agency-head {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    margin-bottom: 4px;
+}
+
+.policy-agency-name { color: #e2e8f0; font-size: 13px; font-weight: 600; }
+.policy-agency-short { color: #64748b; font-size: 10.5px; }
+.policy-agency-lead { margin-bottom: 10px; font-size: 10.5px; }
+
+.policy-eo-list { display: flex; flex-direction: column; gap: 6px; }
+
+/* The wireframe draws each EO as a ribbon row under its agency. */
+.policy-eo-ribbon {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 12px;
+    border: 1px solid rgba(56, 189, 248, 0.1);
+    border-radius: 7px;
+    background: rgba(15, 23, 42, 0.6);
+    text-align: left;
+    cursor: pointer;
+    transition: all 0.18s ease;
+}
+
+.policy-eo-ribbon:hover { border-color: rgba(56, 189, 248, 0.4); background: rgba(15, 23, 42, 0.9); }
+.policy-eo-num { color: #38bdf8; font-size: 11px; font-weight: 700; }
+.policy-eo-title { color: #e2e8f0; font-size: 11.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.policy-eo-date { color: #64748b; font-size: 10px; }
+
+.policy-eo-headline {
+    margin: 0 0 12px;
+    color: #e2e8f0;
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 1.45;
+}
+
+/* --- legal authorities & regulations ----------------------------------- */
+
+.policy-authority-list,
+.policy-reg-list { list-style: none; margin: 0; padding: 0; }
+
+.policy-authority-list li {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 12px;
+    margin-bottom: 7px;
+    border: 1px solid transparent;
+    border-radius: 7px;
+    background: rgba(30, 41, 59, 0.45);
+}
+
+/* A citation that resolves to a bill we can actually open is marked, since it
+   navigates inward instead of out to the statute source. */
+.policy-authority-list li.is-internal { border-color: rgba(56, 189, 248, 0.35); }
+.policy-authority-hint { color: #64748b; font-size: 10px; }
+
+.policy-reg-list li { margin-bottom: 7px; }
+
+.policy-reg-row {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 10px 12px;
+    border: 1px solid rgba(56, 189, 248, 0.1);
+    border-radius: 7px;
+    background: rgba(30, 41, 59, 0.45);
+    text-decoration: none;
+    transition: all 0.18s ease;
+}
+
+.policy-reg-row:hover { border-color: rgba(56, 189, 248, 0.4); background: rgba(30, 41, 59, 0.75); }
+.policy-reg-title { color: #7dd3fc; font-size: 11.5px; line-height: 1.45; }
+.policy-reg-meta { display: flex; align-items: center; gap: 10px; color: #64748b; font-size: 10px; }
+
+.empty-state {
+    text-align: center;
+    color: #94a3b8;
+    font-size: 11px;
+    padding: 20px 10px;
+    line-height: 1.5;
+}
+

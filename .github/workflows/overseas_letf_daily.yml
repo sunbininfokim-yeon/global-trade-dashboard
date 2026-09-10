@@ -1,0 +1,98 @@
+name: Overseas LETF daily
+
+# Independent of the KR batch: a KRX outage must not stop overseas collection.
+# 08:35 KST Tue-Sat, after HK/Europe/US prior-session closes, including US DST.
+on:
+  schedule:
+    - cron: '35 23 * * 1-5'
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'New for anti/scripts/market_microstructure/**overseas**'
+      - 'New for anti/scripts/market_microstructure/market_microstructure/overseas_letf.py'
+      - 'New for anti/scripts/market_microstructure/config/overseas_letf_universe.json'
+      - 'New for anti/scripts/market_microstructure/tests/test_overseas_letf.py'
+      - '.github/workflows/overseas_letf_daily.yml'
+      - '.github/workflows/deploy.yml'
+      - 'New for anti/market-microstructure.js'
+      - 'tests/overseas-letf/**'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: overseas-letf-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Validate data semantics without network
+        working-directory: New for anti/scripts/market_microstructure
+        run: python -m unittest discover -s tests -p test_overseas_letf.py -v
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Validate browser data integration
+        run: |
+          node --check 'New for anti/market-microstructure.js'
+          npm install --prefix "$RUNNER_TEMP/letf-browser" playwright@1.58.2
+          "$RUNNER_TEMP/letf-browser/node_modules/.bin/playwright" install --with-deps chromium
+          NODE_PATH="$RUNNER_TEMP/letf-browser/node_modules" node tests/overseas-letf/browser.test.cjs
+
+  update:
+    needs: validate
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install collection dependencies
+        run: pip install -r 'New for anti/scripts/market_microstructure/requirements-overseas.txt'
+      - name: Collect, validate and publish
+        id: collect
+        continue-on-error: true
+        working-directory: New for anti/scripts/market_microstructure
+        run: python build_overseas_letf.py --live --print-stats
+      - name: Save diagnostic artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: overseas-letf-status
+          path: |
+            New for anti/public/data/overseas_letf_pipeline_status_v1.json
+            New for anti/scripts/market_microstructure/data/overseas_letf/manifest.json
+          retention-days: 14
+      - name: Persist normalized history and public data
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f 'New for anti/public/data/overseas_letf_pipeline_status_v1.json'
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add 'New for anti/scripts/market_microstructure/data/overseas_letf' \
+            'New for anti/public/data/overseas_letf_board_v1.json' \
+            'New for anti/public/data/overseas_letf_history_v1.jsonl.gz' \
+            'New for anti/public/data/overseas_letf_listings_v1.jsonl.gz' \
+            'New for anti/public/data/overseas_letf_pipeline_status_v1.json'
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m 'chore: refresh overseas LETF data'
+          for attempt in 1 2 3; do
+            if git push origin HEAD:main; then exit 0; fi
+            git pull --rebase origin main
+          done
+          exit 1
+      - name: Report collector outage
+        if: steps.collect.outcome == 'failure'
+        run: exit 1

@@ -11,7 +11,7 @@ DXY 내 비중 2위(~13.6%). 초저금리·YCC·ETF/J-REIT 매입 등 **비전�
 | `rates` | 무담보콜 · JGB 2Y/10Y/30Y · 스프레드 (매입 실적은 유동성 바로 이동) |
 | `fx` | USD/JPY · **IMM 엔 순투기** · 외환보유액 · **외환개입** (EUR/JPY·REER 제외) |
 | `equity` | Nikkei · TOPIX · 외국인 순매수 · Nikkei VI |
-| `growth` | **GDP(YoY\|QoQ)** → 노동·춘투 → **PMI는 맨 뒤** |
+| `growth` | **GDP(YoY\|QoQ)** → **설비투자/GDP · 순자금수요 · GDP 갭** → 노동·춘투 → **PMI는 맨 뒤** |
 | `inflation` | 근원 CPI · 근원-근원 · 도쿄 CPI · **CGPI(도매/생산자, 선행 보조)** |
 
 ## 2026-08 피드백 반영
@@ -36,4 +36,22 @@ DXY 내 비중 2위(~13.6%). 초저금리·YCC·ETF/J-REIT 매입 등 **비전�
 
 ## 데이터
 
-현재 `fixture_synth`. 다음: BOJ 통계 · MOF 개입 · CFTC IMM · TSE 수급 · 춘투 연간 시리즈.
+성장 탭의 아래 세 지표는 `config/japan_growth_v1.json`에 고정한 **공식 스냅샷**이며,
+일반 fixture와 구분해 UI에 `official_snapshot`으로 표기한다.
+
+| 지표 | 산식·정본 | 최신 스냅샷 |
+|---|---|---|
+| `capex_gdp_ratio` | 내각부 ESRI 명목 민간기업 설비투자 ÷ 명목 GDP | 2025년 |
+| `net_funding_demand` | BOJ 민간 비금융법인 금융잉여/부족 + 일반정부 금융잉여/부족, 각 4분기 합계 ÷ 동기간 ESRI 명목 GDP | 2026년 1분기 |
+| `gdp_gap` | BOJ Output Gap (% of potential GDP) | 2026년 1분기 |
+
+갱신은 공개 원본을 다시 내려받아 스냅샷을 만들고, 통상 매크로 빌드를 실행한다.
+
+```bash
+cd "New for anti/scripts/macro_monitor"
+python3 build_japan_growth_snapshot.py
+python3 build_macro_monitor.py --asof YYYY-MM-DD
+```
+
+BOJ 자산·JGB·FX·주가·춘투 등 나머지 일본 지표는 계속 `fixture_synth`다. 다음 후보는
+BOJ 통계 · MOF 개입 · CFTC IMM · TSE 수급 · 춘투 연간 시계열이다.

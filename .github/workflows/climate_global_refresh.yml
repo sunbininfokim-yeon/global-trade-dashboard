@@ -9,8 +9,9 @@ name: Refresh global climate indices
 
 on:
   schedule:
+    # Sat 02:34 KST (Fri 17:34 UTC) — weekend batch, 22min after Russia.
     # CPC 는 매월 초 ONI 를 갱신한다. 주 1회면 충분하고 상한도 여유롭다.
-    - cron: '40 7 * * 1'
+    - cron: '34 17 * * 5'
   workflow_dispatch:
 
 jobs:

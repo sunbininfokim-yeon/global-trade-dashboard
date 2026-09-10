@@ -29,6 +29,7 @@ const forecastContentEl = document.getElementById('forecast-content');
 const forecastCountryTitle = document.getElementById('forecast-country-title');
 
 // Right panel elements
+const commodityReportsPanelEl = document.getElementById('commodity-reports-panel');
 const macroPanelEl = document.getElementById('macro-panel');
 const countryStatsPanelEl = document.getElementById('country-stats-panel');
 const countryStatsTitleEl = document.getElementById('country-stats-title');
@@ -100,29 +101,15 @@ const SIGNAL_FLIP_MS = 500;
 
 // value: key into window.MacroData. fmt: how to print it. symbol: Yahoo ticker,
 // which makes the slot clickable and opens the chart modal with a moving average.
+// A(에너지)·F(해운)는 2026-08-21 기준 순환에서 뺐다. 둘 다 절반 이상이
+// pending 슬롯이라(벙커유·연료탄·SCFI·BDI·CCFI·탱커 운임 -- Baltic
+// Exchange·SSE 재배포 라이선스 문제로 무료 소스가 없다는 걸 조사로 확인함,
+// 2026-08-21 세션 참고) 실데이터 없이 순환만 차지하고 있었다. 슬롯 정의는
+// 지우지 않고 SIGNAL_PAGES_DISABLED 에 그대로 남겨뒀다 -- 라이선스든
+// 대체 지표든 채워지면 SIGNAL_PAGES 배열에 다시 끼워 넣으면 된다.
 const SIGNAL_PAGES = [
     {
-        key: 'A', name: '에너지',
-        slots: [
-            { label: 'Brent 원유', value: 'BRENT', fmt: 'usd2', unit: '/bbl', symbol: 'BZ=F' },
-            { label: 'Singapore VLSFO', pending: '주간 벙커 연동 예정' },
-            { label: 'Henry Hub 가스', value: 'NAT_GAS', fmt: 'usd3', unit: '/MMBtu', symbol: 'NG=F' },
-            { label: 'Newcastle 연료탄', pending: '주간 연동 예정' }
-        ]
-    },
-    {
-        // IMF monthly commodity prices: published with a lag, so every slot on
-        // this page shows the month it is quoting.
-        key: 'B', name: '농산물',
-        slots: [
-            { label: '밀', value: 'WHEAT', fmt: 'usd0', unit: '/t', symbol: 'ZW=F' },
-            { label: '옥수수', value: 'CORN', fmt: 'usd0', unit: '/t', symbol: 'ZC=F' },
-            { label: '대두', value: 'SOYBEANS', fmt: 'usd0', unit: '/t', symbol: 'ZS=F' },
-            { label: '설탕 No.11', value: 'SUGAR', fmt: 'cents2', unit: '/lb', symbol: 'SB=F' }
-        ]
-    },
-    {
-        key: 'C', name: '환율',
+        key: 'B', name: '환율',
         slots: [
             // ICE licenses DXY itself; the Fed's broad dollar index is the
             // standard public stand-in, hence the explicit label.
@@ -136,7 +123,7 @@ const SIGNAL_PAGES = [
         // Japan/UK are OECD monthly series (see data.js) -- everything else on
         // this page is a daily constant-maturity yield, so those two carry an
         // `as of` month where the US pair carries an `as of` day.
-        key: 'D', name: '금리',
+        key: 'C', name: '금리',
         slots: [
             { label: '미 국채 2년', value: 'US2Y', fmt: 'pct2' },
             { label: '미 국채 10년', value: 'US10Y', fmt: 'pct2' },
@@ -147,14 +134,42 @@ const SIGNAL_PAGES = [
     {
         // ma:true is exclusive to this page -- see the moving-average note in
         // openChartModal for why equities get one and the other pages don't.
-        key: 'E', name: '주식',
+        key: 'D', name: '주식',
         slots: [
             { label: 'S&P 500', value: 'SP500', fmt: 'idx2', symbol: '^GSPC', ma: true },
             { label: '나스닥 종합', value: 'NASDAQ', fmt: 'idx2', symbol: '^IXIC', ma: true },
-            // No cheap spot quote for these two, but the chart route serves any
-            // Yahoo symbol -- so the tile says 연동 예정 and the click still works.
-            { label: '필라델피아 반도체', pending: '지수 연동 예정', symbol: '^SOX', ma: true },
-            { label: 'KOSPI', pending: 'KRX 키 재발급 대기', symbol: '^KS11', ma: true }
+            // Yahoo daily quote (data.js) now backs both -- see the 0.52 block
+            // there. KOSPI here is the index level itself, distinct from the
+            // K200 옵션 풋콜 비율 fixed card, which reads the separate KRX
+            // derivatives board.
+            { label: '필라델피아 반도체', value: 'SOX', fmt: 'idx2', symbol: '^SOX', ma: true },
+            { label: 'KOSPI', value: 'KOSPI', fmt: 'idx2', symbol: '^KS11', ma: true }
+        ]
+    },
+    {
+        // IMF monthly commodity prices: published with a lag, so every slot on
+        // this page shows the month it is quoting.
+        key: 'E', name: '농산물',
+        slots: [
+            { label: '밀', value: 'WHEAT', fmt: 'usd0', unit: '/t', symbol: 'ZW=F' },
+            { label: '옥수수', value: 'CORN', fmt: 'usd0', unit: '/t', symbol: 'ZC=F' },
+            { label: '대두', value: 'SOYBEANS', fmt: 'usd0', unit: '/t', symbol: 'ZS=F' },
+            { label: '설탕 No.11', value: 'SUGAR', fmt: 'cents2', unit: '/lb', symbol: 'SB=F' }
+        ]
+    }
+];
+
+// Disabled pages, kept out of SIGNAL_PAGES for now (see the note above the
+// array) but preserved verbatim so re-enabling is a cut-paste back in, not a
+// rewrite.
+const SIGNAL_PAGES_DISABLED = [
+    {
+        key: 'A', name: '에너지',
+        slots: [
+            { label: 'Brent 원유', value: 'BRENT', fmt: 'usd2', unit: '/bbl', symbol: 'BZ=F' },
+            { label: 'Singapore VLSFO', pending: '주간 벙커 연동 예정' },
+            { label: 'Henry Hub 가스', value: 'NAT_GAS', fmt: 'usd3', unit: '/MMBtu', symbol: 'NG=F' },
+            { label: 'Newcastle 연료탄', pending: '주간 연동 예정' }
         ]
     },
     {
@@ -177,10 +192,6 @@ const signalEls = {
     rotator: () => document.getElementById('signal-rotator'),
     dots: () => document.getElementById('signal-dots')
 };
-
-const signalEsc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => (
-    { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]
-));
 
 // FRED and EIA hand back ISO dates; BOK hands back a compact CYCLE string
 // (20260818 daily, 202608 monthly). Normalise all three to YYYY-MM-DD / YYYY-MM.
@@ -251,16 +262,16 @@ const signalSlotHtml = (slot) => {
     // A slot is pending either because it was declared that way, or because the
     // feed answered with something unparseable -- both read the same to a viewer.
     const body = shown
-        ? `<span class="signal-slot-value">${signalEsc(shown)}${
-              slot.unit ? `<span class="signal-slot-unit">${signalEsc(slot.unit)}</span>` : ''
+        ? `<span class="signal-slot-value">${finEsc(shown)}${
+              slot.unit ? `<span class="signal-slot-unit">${finEsc(slot.unit)}</span>` : ''
           }</span>`
-        : `<span class="signal-slot-value is-pending">${signalEsc(slot.pending || '연동 예정')}</span>`;
+        : `<span class="signal-slot-value is-pending">${finEsc(slot.pending || '연동 예정')}</span>`;
 
     // "차트만 제공" belongs only to a slot that was declared without a feed and
     // still has a chart behind it. A slot that has a feed and simply hasn't
     // answered yet gets no footnote -- claiming it is chart-only would be wrong.
     const foot = shown
-        ? (asOf ? `as of ${signalEsc(asOf)}` : (slot.note ? signalEsc(slot.note) : ''))
+        ? (asOf ? `as of ${finEsc(asOf)}` : (slot.note ? finEsc(slot.note) : ''))
         : (!slot.value && slot.symbol ? '차트만 제공' : '');
 
     // Only a slot showing a real number gets a line; a sparkline over a
@@ -269,11 +280,11 @@ const signalSlotHtml = (slot) => {
 
     return `<div class="signal-slot${clickable ? ' is-clickable' : ''}"${
         clickable
-            ? ` role="button" tabindex="0" data-symbol="${signalEsc(slot.symbol)}" data-label="${signalEsc(slot.label)}"${slot.ma ? ' data-ma="1"' : ''}`
+            ? ` role="button" tabindex="0" data-symbol="${finEsc(slot.symbol)}" data-label="${finEsc(slot.label)}"${slot.ma ? ' data-ma="1"' : ''}`
             : ''
     }>
         <div class="signal-slot-main">
-            <span class="signal-slot-label">${signalEsc(slot.label)}</span>
+            <span class="signal-slot-label">${finEsc(slot.label)}</span>
             ${body}
             <span class="signal-slot-foot">${foot}</span>
         </div>
@@ -288,7 +299,7 @@ let signalPaused = false;
 const signalBuildPage = (page) => {
     const el = document.createElement('div');
     el.className = 'signal-page';
-    el.innerHTML = `<span class="signal-page-name">${signalEsc(page.name)}</span>`
+    el.innerHTML = `<span class="signal-page-name">${finEsc(page.name)}</span>`
         + page.slots.map(signalSlotHtml).join('');
     return el;
 };
@@ -297,7 +308,7 @@ const signalRenderDots = () => {
     const host = signalEls.dots();
     if (!host) return;
     host.innerHTML = SIGNAL_PAGES.map((p, i) =>
-        `<button type="button" class="signal-dot${i === signalIndex ? ' is-on' : ''}" data-idx="${i}" aria-label="${signalEsc(p.name)} 페이지"></button>`
+        `<button type="button" class="signal-dot${i === signalIndex ? ' is-on' : ''}" data-idx="${i}" aria-label="${finEsc(p.name)} 페이지"></button>`
     ).join('');
 };
 
@@ -353,11 +364,11 @@ function refreshSignalMarkets() {
 // date wrap mid-token (2026-08-\n09) once the worst-point name grew.
 const signalFixedCard = ({ id, title, value, sub, foot, tone, target }) => `
     <div class="signal-fixed-card${target ? ' is-clickable' : ''}${tone ? ` tone-${tone}` : ''}"
-         id="${id}"${target ? ` role="button" tabindex="0" data-target="${signalEsc(target)}"` : ''}>
-        <span class="signal-fixed-title">${signalEsc(title)}</span>
-        <span class="signal-fixed-value">${signalEsc(value)}</span>
-        <span class="signal-fixed-sub">${signalEsc(sub)}</span>
-        ${foot ? `<span class="signal-fixed-foot">${signalEsc(foot)}</span>` : ''}
+         id="${id}"${target ? ` role="button" tabindex="0" data-target="${finEsc(target)}"` : ''}>
+        <span class="signal-fixed-title">${finEsc(title)}</span>
+        <span class="signal-fixed-value">${finEsc(value)}</span>
+        <span class="signal-fixed-sub">${finEsc(sub)}</span>
+        ${foot ? `<span class="signal-fixed-foot">${finEsc(foot)}</span>` : ''}
     </div>`;
 
 const signalRenderFixed = (state) => {
@@ -690,34 +701,6 @@ const redrawOnBasemapReady = () => {
 // module-evaluation time would hit the temporal dead zone.
 queueMicrotask(redrawOnBasemapReady);
 
-// Tooltip handler
-const handleHover = (info) => {
-    if (info.object) {
-        const { sourceName, targetName, volume, percentage } = info.object;
-        positionTooltipAt(info, 0);
-        tooltipEl.classList.remove('hidden');
-        
-        tooltipEl.innerHTML = `
-            <div class="tooltip-title">${sourceName} → ${targetName}</div>
-            <div class="tooltip-stat">
-                <span>무역량:</span>
-                <span style="color: #38bdf8; font-weight: bold;">${volume} ${currentCommodity === 'oil' ? 'M bpd' : (currentCommodity === 'gold' || currentCommodity === 'silver' ? 'Tonnes' : 'Mt')}</span>
-            </div>
-            ${info.object.typeName !== "General" ? `
-            <div class="tooltip-stat">
-                <span>분류:</span>
-                <span>${info.object.typeName}</span>
-            </div>` : ''}
-            <div class="tooltip-stat">
-                <span>비중/상대규모:</span>
-                <span>${percentage}%</span>
-            </div>
-        `;
-    } else {
-        tooltipEl.classList.add('hidden');
-    }
-};
-
 const handleNodeClick = (info) => {
     if (info.object) {
         selectedCountry = info.object.name;
@@ -740,11 +723,6 @@ const handleLineClick = (info) => {
             focusTradeCountry(selectedCountry);
         }
     }
-};
-
-// Kept for any legacy callers; trade UI no longer opens the right stats column.
-const updateCountryStatsPanel = async (countryName) => {
-    focusTradeCountry(countryName);
 };
 
 /**
@@ -1216,9 +1194,6 @@ const worldGeo = () => worldGeoData || loadWorldGeo();
 const OCEAN_RGBA = [9, 15, 27, 255];
 const LAND_RGBA = [43, 52, 66, 255];
 const LAND_LINE_RGBA = [128, 148, 176, 120];
-
-// Earth radius in metres, for the sphere mesh that backs the globe.
-const EARTH_RADIUS_M = 6370000;
 
 /**
  * Ocean sphere + country polygons. Home, trade and climate all build on this so
@@ -2188,7 +2163,12 @@ const cropIdentityFromText = (text) => {
     return 'other';
 };
 
-const cropIdentity = (c) => cropIdentityFromText(`${c.regionKey || ''} ${c.label || ''}`);
+const cropIdentity = (c) => {
+    if (c.cropKey && CROP_CANON[c.cropKey]) {
+        return CROP_CANON[c.cropKey];
+    }
+    return cropIdentityFromText(`${c.regionKey || ''} ${c.label || ''}`);
+};
 
 const mergeCropsByType = (crops) => {
     const map = new Map();
@@ -2385,6 +2365,175 @@ const renderCropCalendarHtml = (countryName, cropIds) => {
         </div>`;
 };
 
+// Live USDA PSD production numbers for the country panel's "USDA/GAIN 전망"
+// card, replacing the static usda_gain_outlook_v1.json seed one country at a
+// time. /api/usda-fas already proxies api.fas.usda.gov/api/psd (Worker,
+// USDA_FAS_API_KEY) -- this only adds the commodity/country code lookup and
+// the fetch-two-years-compute-YoY logic the seed file used to hardcode.
+//
+// PSD's country codes are a legacy USDA scheme, not ISO 3166: several of the
+// climate registry's 16 countries take a code that does NOT match their ISO2
+// (Russia=RS not RU, South Africa=SF not ZA, Vietnam=VM not VN, Ivory
+// Coast=IV not CI, Australia=AS not AU, China=CH not CN). All 16 confirmed
+// 2026-09-02 against fas.usda.gov/data/production/<code> and
+// apps.fas.usda.gov/newgainapi report filenames, which this session could
+// reach through web search even though it can't fetch usda.gov directly.
+const PSD_COUNTRY_CODES = {
+    ARG: 'AR', AUS: 'AS', BRA: 'BR', CAN: 'CA', CHN: 'CH', ETH: 'ET',
+    IND: 'IN', IDN: 'ID', RUS: 'RS', ZAF: 'SF', THA: 'TH', UGA: 'UG',
+    USA: 'US', VNM: 'VM', CIV: 'IV', GHA: 'GH',
+};
+
+// `verified: true` means the exact 7-digit code was confirmed 2026-09-02
+// against a live fas.usda.gov/data/production/commodity/<code> page (via web
+// search, since this session cannot fetch usda.gov directly). Two of these
+// were originally guessed wrong and corrected in that pass: canola was
+// 2230000 (an unrelated code), the real one is Rapeseed 2226000; sunflowerseed
+// was 2221000, the real one is 2224000. cocoa had a third guess (0721100) that
+// was never resolved as right or wrong -- it was resolved as moot: the full
+// 64-row PSD commodities table (apps.fas.usda.gov/OpenData/api/psd/commodities,
+// cross-checked via a public GitHub notebook that had captured a live call
+// since this session can't call it directly) has no cocoa entry at all.
+// PSD Online simply does not track cocoa as a commodity -- ICCO does -- so
+// there is no code to verify, and CIV/GHA (both PSD-crop-list = cocoa only)
+// are left out of CLIMATE_PSD_CROPS below rather than carrying a dead guess.
+// That same table cross-confirmed all eleven codes kept here (wheat 410000,
+// corn 440000, soybeans/oilseed 2222000, rice/milled 422110, cotton 2631000,
+// sugar/centrifugal 612000, canola/rapeseed 2226000, sunflowerseed 2224000,
+// coffee/green 711100, palm_oil 4243000, barley 430000).
+const PSD_COMMODITY_CODES = {
+    wheat: { code: '0410000', label_ko: '밀', verified: true },
+    corn: { code: '0440000', label_ko: '옥수수', verified: true },
+    soybeans: { code: '2222000', label_ko: '대두', verified: true },
+    rice: { code: '0422110', label_ko: '쌀(정미)', verified: true },
+    cotton: { code: '2631000', label_ko: '면화', verified: true },
+    sugar: { code: '0612000', label_ko: '설탕(원심분리)', verified: true },
+    canola: { code: '2226000', label_ko: '카놀라(유채)', verified: true },
+    sunflowerseed: { code: '2224000', label_ko: '해바라기씨', verified: true },
+    coffee: { code: '0711100', label_ko: '커피(생두)', verified: true },
+    palm_oil: { code: '4243000', label_ko: '팜유', verified: true },
+    barley: { code: '0430000', label_ko: '보리', verified: true },
+};
+
+// Which of the crops above actually apply to each country, derived from
+// climate_registry_v1.json's own region list (rubber, cassava and cocoa have
+// no PSD series -- USDA does not track them here -- so those countries fall
+// back to the static seed/search-link card for that crop). CIV and GHA are
+// cocoa-only in that registry, so neither appears here at all.
+const CLIMATE_PSD_CROPS = {
+    ARG: ['soybeans', 'corn', 'cotton', 'wheat', 'sugar'],
+    AUS: ['wheat', 'barley', 'canola'],
+    BRA: ['soybeans', 'corn', 'cotton', 'sugar', 'coffee'],
+    CAN: ['canola', 'corn', 'soybeans', 'wheat'],
+    CHN: ['wheat', 'rice'],
+    ETH: ['coffee'],
+    IND: ['wheat', 'soybeans', 'cotton'],
+    IDN: ['rice', 'palm_oil', 'coffee'],
+    RUS: ['wheat', 'sunflowerseed'],
+    ZAF: ['corn'],
+    THA: ['sugar', 'rice'],
+    UGA: ['coffee'],
+    USA: ['corn', 'soybeans', 'wheat', 'cotton'],
+    VNM: ['rice'],
+};
+
+// USDA's PSD marketing year for the crops here has effectively started by
+// September for the northern hemisphere and is mid-cycle for the southern
+// one; "this year vs last year" on whatever the current calendar year is
+// reads close enough for a YoY figure without a per-crop marketing-year
+// calendar this card does not otherwise need.
+const psdYears = () => {
+    const y = new Date().getFullYear();
+    return { current: y, prior: y - 1 };
+};
+
+const psdSeriesCache = new Map();
+const loadPsdSeries = async (commodityCode, countryCode, year) => {
+    const key = `${commodityCode}:${countryCode}:${year}`;
+    if (psdSeriesCache.has(key)) return psdSeriesCache.get(key);
+    const p = (async () => {
+        try {
+            const q = new URLSearchParams({ commodityCode, countryCode, year: String(year) });
+            const res = await fetch(`/api/usda-fas?${q}`);
+            if (!res.ok) return null;
+            const doc = await res.json();
+            return doc?.ok === false ? null : (doc?.body ?? doc);
+        } catch (err) {
+            console.warn('[PSD]', commodityCode, countryCode, year, 'unavailable', err);
+            return null;
+        }
+    })();
+    psdSeriesCache.set(key, p);
+    return p;
+};
+
+// PSD rows carry one figure per (attribute, year); attributeId 20 is
+// Production in every public PSD example this was built from, but since that
+// could not be checked against the live API from here, a record is also
+// accepted if any of its own string fields spells out "production" --
+// whichever signal is actually present in the real response still finds it.
+const psdProductionValue = (rows) => {
+    if (!Array.isArray(rows)) return null;
+    const hit = rows.find((r) => r?.attributeId === 20
+        || Object.values(r || {}).some((v) => typeof v === 'string' && /production/i.test(v)));
+    const v = Number(hit?.value);
+    return Number.isFinite(v) ? v : null;
+};
+
+/**
+ * Live replacement for one country's usda_gain_outlook_v1.json entry.
+ * Returns null (not an empty entry) when nothing here has a PSD mapping for
+ * this country, so renderUsdaGainCard's existing seed/"준비 중" fallback
+ * still applies exactly as before -- this only pre-empts it where a live
+ * number is actually available.
+ */
+const buildLivePsdEntry = async (isoCode) => {
+    const countryCode = PSD_COUNTRY_CODES[isoCode];
+    const cropKeys = CLIMATE_PSD_CROPS[isoCode];
+    if (!countryCode || !cropKeys?.length) return null;
+    const { current, prior } = psdYears();
+
+    const items = await Promise.all(cropKeys.map(async (cropKey) => {
+        const commodity = PSD_COMMODITY_CODES[cropKey];
+        if (!commodity) return null;
+        if (!commodity.verified) {
+            return {
+                crop_ko: commodity.label_ko,
+                family: cropKey,
+                production_mmt: null,
+                prior_mmt: null,
+                yoy_pct: null,
+                note_ko: 'PSD 코드 미검증 -- 수치 표시 보류, FAS 검색으로 직접 확인하세요.',
+            };
+        }
+        const [curRows, priorRows] = await Promise.all([
+            loadPsdSeries(commodity.code, countryCode, current),
+            loadPsdSeries(commodity.code, countryCode, prior),
+        ]);
+        const curVal = psdProductionValue(curRows);
+        const priorVal = psdProductionValue(priorRows);
+        if (curVal == null) return null; // no live figure -- let the seed/fallback speak instead
+        return {
+            crop_ko: commodity.label_ko,
+            family: cropKey,
+            // PSD reports most grains/oilseeds in 1000 MT; /1000 turns that into MMT.
+            production_mmt: curVal / 1000,
+            prior_mmt: priorVal != null ? priorVal / 1000 : null,
+            yoy_pct: priorVal ? ((curVal - priorVal) / priorVal) * 100 : null,
+            note_ko: `USDA PSD 실시간 · MY${current}`,
+        };
+    }));
+
+    const kept = items.filter(Boolean);
+    if (!kept.length) return null;
+    return {
+        season: `${current}/${String(current + 1).slice(2)}`,
+        search_country: undefined, // renderUsdaGainCard falls back to the display name it already has
+        source_label: 'USDA PSD Online (live)',
+        items: kept,
+    };
+};
+
 let usdaGainCache = null;
 const loadUsdaGain = async () => {
     if (usdaGainCache) return usdaGainCache;
@@ -2472,9 +2621,13 @@ const renderSourceStack = (cards) => {
     </div>`;
 };
 
-const renderUsdaGainCard = async (countryName) => {
+const renderUsdaGainCard = async (countryName, iso) => {
     const doc = await loadUsdaGain();
-    const entry = doc?.countries?.[countryName];
+    // Live PSD numbers win when this country/crop combination has one;
+    // buildLivePsdEntry returns null rather than a placeholder for anything
+    // it can't answer, so the static seed still covers the rest exactly as
+    // it did before this existed.
+    const entry = (iso && await buildLivePsdEntry(iso)) || doc?.countries?.[countryName];
     const portal = doc?.portal || {
         label: 'USDA FAS Data Search',
         url: 'https://www.fas.usda.gov/data/search',
@@ -3052,7 +3205,7 @@ const loadClimateForecast = async (cfg) => {
 //   flat    regions[k]           -- the region entry *is* the crop
 const num = v => (typeof v === 'number' && isFinite(v) ? v : null);
 
-const normalizeCrop = (entry, group, label, parent = {}, regionKey = null) => {
+const normalizeCrop = (entry, group, label, parent = {}, regionKey = null, cropKey = null) => {
     // Indonesia puts the whole forecast under `yield_kg_ha`; everyone else
     // has `point` as a plain number at the top level.
     const f = (entry.point && typeof entry.point === 'object') ? entry.point
@@ -3076,6 +3229,7 @@ const normalizeCrop = (entry, group, label, parent = {}, regionKey = null) => {
     return {
         group,
         regionKey,
+        cropKey,
         label: label || entry.label_ko || entry.label || entry.target_label || entry.crop || '—',
         point: num(f.point),
         unit: entry.unit || f.unit || 'kg/ha',
@@ -3120,9 +3274,9 @@ const normalizeForecast = (fc, onlyKeys = null) => {
         if (keySet && !keySet.has(regionKey)) continue;
         const regionLabel = region.label_ko || region.label || null;
         if (region.crops && typeof region.crops === 'object') {
-            for (const crop of Object.values(region.crops)) {
+            for (const [cropKey, crop] of Object.entries(region.crops)) {
                 out.push(normalizeCrop(
-                    crop, regionLabel, crop.label_ko || crop.label, region, regionKey));
+                    crop, regionLabel, crop.label_ko || crop.label, region, regionKey, cropKey));
             }
         } else {
             out.push(normalizeCrop(region, null, regionLabel, {}, regionKey));
@@ -3277,10 +3431,19 @@ const loadCityWx = () => {
     return cityWxPromise;
 };
 
+// Live Open-Meteo lookup is a fallback for a city the weekly city_wx_v1.json
+// snapshot hasn't covered yet (just added to climate_global_v1.json, or the
+// Saturday job hasn't run). When the cache already has a temp_c for a city
+// this is a live request per visitor for a number nothing recomputes more
+// than weekly, so it only runs for the gap, not the whole list every time.
 const refreshClimateCityTemps = async () => {
     const g = await loadClimateGlobal();
     if (!g?.cities?.length) return;
-    await Promise.all(g.cities.map(async (c) => {
+    await loadCityWx();
+    const cached = new Set((cityWxDoc?.cities || [])
+        .filter(c => c.temp_c != null).map(c => c.name));
+    const stale = g.cities.filter(c => !cached.has(c.name));
+    await Promise.all(stale.map(async (c) => {
         try {
             const url = `https://api.open-meteo.com/v1/forecast?latitude=${c.lat}&longitude=${c.lon}&current=temperature_2m`;
             const res = await fetch(url);
@@ -3332,12 +3495,6 @@ const regionStressFromPct = (pct) => {
     return { level: 'ok', rgba: [74, 222, 128, 210], ko: '기상 양호' };
 };
 
-const isoToCountryName = () => {
-    const m = {};
-    for (const [name, cfg] of Object.entries(CLIMATE_COUNTRIES)) m[cfg.iso] = name;
-    return m;
-};
-
 /**
  * View-state guard. Curvature comes from the graticule and the bowed arcs, not
  * from tilting or rounding the map, so pitch stays at zero and only zoom is
@@ -3356,8 +3513,6 @@ const clampGlobeView = (vs = {}) => ({
     minZoom: MAP_MIN_ZOOM,
     maxZoom: MAP_MAX_ZOOM,
 });
-// Old name kept for any caller still reaching for it.
-const clampMapNoAntarctica = clampGlobeView;
 
 /** HUD frame over the map during a country drill-down (req 4). */
 const climateTargetHudEl = document.getElementById('climate-target-hud');
@@ -3382,16 +3537,6 @@ const setClimateTargetHud = (cfg, zoom = null) => {
 // --- Producing-region labels as projected HTML (req 4) --------------------
 const climateRegionLabelsEl = document.getElementById('climate-region-labels');
 let climateLabelPoints = [];
-
-/** Great-circle distance in degrees, used to hide labels on the far hemisphere. */
-const angularDistanceDeg = (a, b) => {
-    const rad = Math.PI / 180;
-    const [lon1, lat1] = a.map((v) => v * rad);
-    const [lon2, lat2] = b.map((v) => v * rad);
-    const d = Math.sin(lat1) * Math.sin(lat2)
-        + Math.cos(lat1) * Math.cos(lat2) * Math.cos(lon1 - lon2);
-    return Math.acos(Math.max(-1, Math.min(1, d))) / rad;
-};
 
 const positionClimateRegionLabels = () => {
     if (!climateRegionLabelsEl) return;
@@ -4052,7 +4197,7 @@ const renderCountryPanel = async (cfg, points = null, meta = {}) => {
     // Left: trade + GAIN + crop-type merge + calendar (not commodity trade stats)
     forecastCountryTitle.textContent = cfg.modelName || cfg.label;
     const gainHtml = renderSourceStack([
-        await renderUsdaGainCard(climateCountry || cfg.label),
+        await renderUsdaGainCard(climateCountry || cfg.label, cfg.iso),
         renderNationalSourceCard(cfg),
     ]);
 
@@ -4605,21 +4750,6 @@ const stopTradeAnim = () => {
     }
 };
 
-const slerpLonLat = (a, b, t) => {
-    const toRad = Math.PI / 180;
-    const lon1 = a[0] * toRad, lat1 = a[1] * toRad;
-    const lon2 = b[0] * toRad, lat2 = b[1] * toRad;
-    const x1 = Math.cos(lat1) * Math.cos(lon1), y1 = Math.cos(lat1) * Math.sin(lon1), z1 = Math.sin(lat1);
-    const x2 = Math.cos(lat2) * Math.cos(lon2), y2 = Math.cos(lat2) * Math.sin(lon2), z2 = Math.sin(lat2);
-    const dot = Math.max(-1, Math.min(1, x1 * x2 + y1 * y2 + z1 * z2));
-    const omega = Math.acos(dot);
-    if (omega < 1e-6) return a.slice();
-    const s1 = Math.sin((1 - t) * omega) / Math.sin(omega);
-    const s2 = Math.sin(t * omega) / Math.sin(omega);
-    const x = s1 * x1 + s2 * x2, y = s1 * y1 + s2 * y2, z = s1 * z1 + s2 * z2;
-    return [(Math.atan2(y, x) * 180) / Math.PI, (Math.atan2(z, Math.hypot(x, y)) * 180) / Math.PI];
-};
-
 /**
  * Great-circle route bowed sideways in the plane, with no altitude.
  *
@@ -4766,13 +4896,14 @@ const CONTROL_LINE = {
     watch: [253, 224, 71, 160],
 };
 
-const togglePanels = ({ macro = false, countryStats = false, news = false, forecast = false, climateRight = false, left = true, right = true, chart = false, map = true }) => {
+const togglePanels = ({ macro = false, countryStats = false, news = false, forecast = false, climateRight = false, commodityReports = false, left = true, right = true, chart = false, map = true }) => {
     const leftPaneContainer = document.getElementById('left-pane'); // Target the whole container
     const rightPaneContainer = document.getElementById('right-pane');
     const commodityInfoPanel = document.getElementById('commodity-info-panel');
-    
+
     macro ? panelShow(macroPanelEl) : panelHide(macroPanelEl);
     countryStats ? panelShow(countryStatsPanelEl) : panelHide(countryStatsPanelEl);
+    commodityReports ? panelShow(commodityReportsPanelEl) : panelHide(commodityReportsPanelEl);
     news ? panelShow(newsPanelEl) : panelHide(newsPanelEl);
     forecast ? panelShow(forecastPanelEl) : panelHide(forecastPanelEl);
     if (climateRightPanelEl) {
@@ -4799,6 +4930,9 @@ const togglePanels = ({ macro = false, countryStats = false, news = false, forec
 const electionTimelinePanelEl = document.getElementById('elections-timeline-panel');
 const electionCountryPanelEl = document.getElementById('elections-country-panel');
 const electionModalHostEl = document.getElementById('elections-modal-host');
+
+// Order matters only for how the query string reads; the module names them.
+const ELECTION_ROUTE_KEYS = ['country', 'state', 'screen', 'view', 'district'];
 
 const electionHost = () => ({
     deckgl,
@@ -4844,6 +4978,43 @@ const electionHost = () => ({
         currentViewTitle.textContent = title;
         currentViewDesc.textContent = description;
     },
+    // 정치 › 미국 › 상임위 hands off to 정책 › 미국. policy.js restores a deep
+    // view from ?view=&id= on render, so writing those params before the view
+    // switch is the whole handoff -- no second entry point to keep in sync.
+    openPolicyCommittee(committeeId) {
+        const params = new URLSearchParams();
+        if (committeeId) {
+            params.set('view', 'committee');
+            params.set('id', committeeId);
+        }
+        const qs = params.toString();
+        window.history.pushState({}, '', `/us-policy-hub${qs ? `?${qs}` : ''}`);
+        setView('us-policy-hub');
+    },
+    // 정치 › 미국 › 행정부 is three steps deep with no URL of its own, so it
+    // could not be linked, reloaded, or reached with the back button. The
+    // election module keeps its place in the query string the same way
+    // policy.js does, on top of the /elections pathname this view already
+    // owns -- the module never touches history itself, it goes through here.
+    readRoute() {
+        const params = new URLSearchParams(window.location.search);
+        const route = {};
+        ELECTION_ROUTE_KEYS.forEach((key) => {
+            const value = params.get(key);
+            if (value) route[key] = value;
+        });
+        return route;
+    },
+    writeRoute(route, { replace = false } = {}) {
+        const params = new URLSearchParams();
+        ELECTION_ROUTE_KEYS.forEach((key) => {
+            if (route?.[key]) params.set(key, String(route[key]));
+        });
+        const qs = params.toString();
+        const url = `/elections${qs ? `?${qs}` : ''}`;
+        if (url === window.location.pathname + window.location.search) return;
+        window.history[replace ? 'replaceState' : 'pushState']({ target: 'elections' }, '', url);
+    },
     roots: { timeline: electionTimelinePanelEl, country: electionCountryPanelEl, modal: electionModalHostEl },
 });
 
@@ -4851,7 +5022,7 @@ const showElectionView = () => {
     currentCommodity = 'elections';
     stopTradeAnim();
     stopRotation();
-    document.body.classList.remove('trade-map-mode', 'shipping-mode', 'finance-mode', 'macro-mode');
+    document.body.classList.remove('trade-map-mode', 'shipping-mode', 'finance-mode', 'macro-mode', 'macro-night');
     const render = () => window.ElectionApp?.openWorld?.(electionHost());
     if (window.ElectionApp) {
         render();
@@ -4862,11 +5033,42 @@ const showElectionView = () => {
     }
 };
 
+// Shared finance-view helpers. calculator.js / market-microstructure.js /
+// portfolio.js all load before this file but only call these at render time,
+// so the global lexical bindings are live by then (same contract macro.js
+// already relies on for finEsc).
+//
+// The guard is Number.isFinite rather than a null/NaN check: a ratio whose
+// denominator collapsed to 0 used to render as the literal "Infinity%".
+// Anything that is not a finite number has no percent to show, so it reads '—'.
 const finPct = (x, digits = 1) =>
-    (x === null || x === undefined || Number.isNaN(x)) ? '—' : `${(x * 100).toFixed(digits)}%`;
+    Number.isFinite(x) ? `${(x * 100).toFixed(digits)}%` : '—';
 
 const finEsc = (s) => String(s ?? '').replace(/[&<>"']/g,
     (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+// Snapshot JSON is served from /public/data/ by the Worker but from /data/ by
+// some local static servers, so every finance view had its own copy of "try
+// both bases, take the first that answers". First path with an ok response and
+// a parsable body wins; a total miss is null, which each caller already turns
+// into its own empty state rather than an error.
+//
+// Deliberately not memoised. The callers cache at their own level (KRX_FILERS,
+// PF_REGISTRY, MS_DATA), and a promise parked in a module variable here would
+// need the reject-path reset that loadScenarioGrid in shipping.js only just
+// got right -- a retry bug is a worse trade than a second fetch.
+const FIN_DATA_BASES = ['/public/data/', '/data/'];
+const finDataPaths = (name) => FIN_DATA_BASES.map((base) => base + name);
+
+const loadFirstJson = async (paths, init = { cache: 'no-store' }) => {
+    for (const path of paths) {
+        try {
+            const res = await fetch(path, init);
+            if (res.ok) return await res.json();
+        } catch (_) { /* try the next path */ }
+    }
+    return null;
+};
 
 const finPlaceholder = (title, desc, detail) => `
     <div class="fin-wrap">
@@ -4889,15 +5091,83 @@ const renderFinanceView = async (target, host) => {
          <code>derivatives_intel</code> 파이프라인 결과가 <code>public/data/</code> 에 들어오면 연결됩니다.`);
 };
 
+// Per-route <title>/meta for search engines: the SPA serves the same
+// index.html for every path, so without this every route (44+ commodities,
+// shipping, macro...) looks like duplicate content to a crawler that doesn't
+// execute JS as reliably as Google's (Naver in particular). Labels come from
+// the nav link text already in index.html, so a new data-target picks up SEO
+// automatically -- nothing to hand-maintain per commodity.
+const DEFAULT_PAGE_TITLE = document.title;
+const DEFAULT_PAGE_DESC = document.querySelector('meta[name="description"]')?.content || '';
+const DEFAULT_OG_TITLE = document.querySelector('meta[property="og:title"]')?.content || DEFAULT_PAGE_TITLE;
+const DEFAULT_OG_DESC = document.querySelector('meta[property="og:description"]')?.content || DEFAULT_PAGE_DESC;
+
+const setMetaContent = (selector, content) => {
+    const el = document.querySelector(selector);
+    if (el) el.setAttribute('content', content);
+};
+
+const routeMetaDescription = (target, label) => {
+    if (target.startsWith('shipping_')) return `${label} — 글로벌 해운 항로·선대·초크포인트 실시간 현황을 ChokePoint Monitor에서 확인하세요.`;
+    if (target.startsWith('fin_')) return `${label} — 매크로·금융 지표를 ChokePoint Monitor에서 실시간으로 확인하세요.`;
+    if (target.startsWith('inst_')) return `${label} 데이터 출처와 공식 리포트를 ChokePoint Monitor에서 확인하세요.`;
+    if (target === 'climate') return '전세계 작황·기후 모니터 — 주요 원자재 생산지의 기상 상황을 ChokePoint Monitor 지구본 지도에서 실시간으로 확인하세요.';
+    if (target === 'elections') return '세계 선거 지도와 일정을 ChokePoint Monitor에서 한눈에 확인하세요.';
+    if (target === 'macro_monitor') return '국가별 매크로 지표(금리·물가·환율 등)를 ChokePoint Monitor에서 실시간으로 확인하세요.';
+    return `${label} 시세·공급망·무역 흐름을 하나의 지구본 지도에서 실시간으로 확인하세요. ChokePoint Monitor.`;
+};
+
+const updatePageMeta = (target) => {
+    if (!target || target === 'home') {
+        document.title = DEFAULT_PAGE_TITLE;
+        setMetaContent('meta[name="description"]', DEFAULT_PAGE_DESC);
+        setMetaContent('meta[property="og:title"]', DEFAULT_OG_TITLE);
+        setMetaContent('meta[property="og:description"]', DEFAULT_OG_DESC);
+        setMetaContent('meta[name="twitter:title"]', 'ChokePoint Monitor');
+        setMetaContent('meta[name="twitter:description"]', DEFAULT_OG_DESC);
+        setMetaContent('meta[property="og:url"]', 'https://chokemonitor.com/');
+        const canonicalHome = document.querySelector('link[rel="canonical"]');
+        if (canonicalHome) canonicalHome.href = 'https://chokemonitor.com/';
+        return;
+    }
+
+    const navLabel = document.querySelector(`[data-target="${CSS.escape(target)}"]`)?.textContent.trim();
+    const label = navLabel || target;
+    const title = `${label} — ChokePoint Monitor`;
+    const description = routeMetaDescription(target, label);
+    const url = `https://chokemonitor.com${pathForTarget(target)}`;
+
+    document.title = title;
+    setMetaContent('meta[name="description"]', description);
+    setMetaContent('meta[property="og:title"]', title);
+    setMetaContent('meta[property="og:description"]', description);
+    setMetaContent('meta[name="twitter:title"]', title);
+    setMetaContent('meta[name="twitter:description"]', description);
+    setMetaContent('meta[property="og:url"]', url);
+    const canonical = document.querySelector('link[rel="canonical"]');
+    if (canonical) canonical.href = url;
+};
+
 const setView = (target) => {
+    updatePageMeta(target);
     const isShippingView = target && target.startsWith('shipping_');
     const isFinanceView = target && target.startsWith('fin_');
+    const isPolicyView = target === 'us-policy-hub' || target === 'us-congress-overview' || target === 'us-executive';
+    const isMyPageView = target === 'mypage';
     if (target !== 'macro_monitor') {
-        document.body.classList.remove('macro-mode');
+        document.body.classList.remove('macro-mode', 'macro-night');
         document.getElementById('macro-layer')?.remove();
     }
     if (!isShippingView && window.ShippingDashboard) {
         window.ShippingDashboard.unmount(chartView);
+    }
+    if (!isPolicyView) {
+        window.USPolicy?.unmount(chartView);
+        document.body.classList.remove('policy-mode');
+    }
+    if (!isMyPageView) {
+        window.MyPage?.unmount(chartView);
+        document.body.classList.remove('mypage-mode');
     }
     if (!isShippingView) document.body.classList.remove('shipping-mode');
     if (!isFinanceView) {
@@ -4963,6 +5233,46 @@ const setView = (target) => {
 
     } else if (target === 'elections') {
         showElectionView();
+    } else if (isPolicyView) {
+        // Document-style screen, same full-bleed treatment as shipping and
+        // finance: policy has no map, so the globe would only steal room.
+        currentCommodity = target;
+        stopTradeAnim();
+        stopRotation();
+        document.body.classList.remove('trade-map-mode', 'shipping-mode');
+        document.body.classList.add('policy-mode');
+        deckgl.setProps({ layers: [] });
+        togglePanels({ left: false, right: false, chart: true, map: false });
+        if (mapContainer) {
+            mapContainer.style.display = 'none';
+            mapContainer.style.pointerEvents = 'none';
+        }
+        if (chartView) {
+            chartView.classList.remove('hidden');
+            chartView.style.pointerEvents = 'auto';
+            chartView.style.zIndex = '40';
+        }
+        window.USPolicy?.render(target, chartView);
+
+    } else if (isMyPageView) {
+        // Same full-bleed document treatment as policy/finance/shipping.
+        currentCommodity = target;
+        stopTradeAnim();
+        stopRotation();
+        document.body.classList.remove('trade-map-mode', 'shipping-mode');
+        document.body.classList.add('mypage-mode');
+        deckgl.setProps({ layers: [] });
+        togglePanels({ left: false, right: false, chart: true, map: false });
+        if (mapContainer) {
+            mapContainer.style.display = 'none';
+            mapContainer.style.pointerEvents = 'none';
+        }
+        if (chartView) {
+            chartView.classList.remove('hidden');
+            chartView.style.pointerEvents = 'auto';
+            chartView.style.zIndex = '40';
+        }
+        window.MyPage?.render(target, chartView);
 
     } else if (isShippingView) {
         currentCommodity = target;
@@ -5081,8 +5391,14 @@ const setView = (target) => {
         setClimateCommodityHeader(null);
         const data = window.TradeData[target];
         
-        // Req 1: hide right pane so the pitched world map can be larger.
-        // Country-click detail on the right is deferred — ranking lives on the left.
+        // news:true keeps #news-panel (left pane) open -- that's where
+        // renderTradeWorldPanel puts the exporter/importer rankings, futures
+        // card, rig count and gas storage cards, all still wanted on the
+        // world view. Only #right-pane (RSS reports panel) closes here: it
+        // has nothing to point at yet. trade.js opens it once a country is
+        // focused (stage 2), and only for commodities that actually have RSS
+        // reports for that country (see focusTradeCountry /
+        // renderCommodityReports / clearTradeFocus).
         togglePanels({ news: true, left: true, right: false });
         
         // Update Panel Info
@@ -5161,16 +5477,31 @@ const setView = (target) => {
 const chartModal = document.getElementById('chart-modal');
 const closeModal = document.getElementById('close-modal');
 const modalTitle = document.getElementById('modal-chart-title');
+const modalDesc = document.getElementById('modal-chart-desc');
 let macroChartInstance = null;
 
 // symbolOverride lets a caller name the Yahoo ticker outright. The 오늘 신호
 // slots carry their own symbol, so they no longer have to encode it in a title
 // string and hope the substring match below picks the right branch.
-// withMovingAverage is opt-in and only the equity slots set it -- see the
-// moving-average block below for why the other asset classes stay bare.
+//
+// withMovingAverage is opt-in and only the equity slots set it. It switches
+// the fetch itself, not just the overlay: 5/20/60/120/240-day averages are a
+// daily-chart convention (Korean HTS terminology: 5일선·20일선·60일선·120일선·
+// 240일선), meaningless on the 5-year monthly bars every other chart uses --
+// a 240-period average over monthly data would need 20 years of history to
+// draw a single point. So equities ask Yahoo for 2 years of daily bars
+// instead (enough for MA240 to have a visible run, not just a terminal dot);
+// everything else keeps the monthly 5-year view with no overlay.
 const openChartModal = async (indicatorTitle, symbolOverride, withMovingAverage = false) => {
-    modalTitle.textContent = `${indicatorTitle} (최근 5년 실데이터)`;
+    modalTitle.textContent = withMovingAverage
+        ? `${indicatorTitle} (일봉 2년 · 이동평균 5/20/60/120/240)`
+        : `${indicatorTitle} (최근 5년 실데이터)`;
     chartModal.classList.remove('hidden');
+    if (modalDesc) {
+        modalDesc.textContent = withMovingAverage
+            ? '일별 종가 (전고점·전저점 표시) · 이동평균 5·20·60·120·240일선'
+            : '최근 5년 데이터 (전고점 및 전저점 표시)';
+    }
 
     // Map indicator title to Yahoo Finance Symbol
     let symbol = "";
@@ -5187,18 +5518,21 @@ const openChartModal = async (indicatorTitle, symbolOverride, withMovingAverage 
     let data = [];
 
     try {
-        const res = await fetch(`/api/macro?source=yfinance&symbol=${symbol}`);
+        const query = withMovingAverage ? '&interval=1d&range=2y' : '';
+        const res = await fetch(`/api/macro?source=yfinance&symbol=${symbol}${query}`);
         const result = await res.json();
-        
+
         if (result.chart && result.chart.result && result.chart.result[0]) {
             const chartData = result.chart.result[0];
             const timestamps = chartData.timestamp || [];
             const closePrices = chartData.indicators.quote[0].close || [];
-            
+
             for (let i = 0; i < timestamps.length; i++) {
                 if (closePrices[i] !== null) {
                     const d = new Date(timestamps[i] * 1000);
-                    labels.push(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`);
+                    labels.push(withMovingAverage
+                        ? `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+                        : `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`);
                     data.push(closePrices[i]);
                 }
             }
@@ -5208,13 +5542,13 @@ const openChartModal = async (indicatorTitle, symbolOverride, withMovingAverage 
         modalTitle.textContent = `${indicatorTitle} (데이터 연동 실패)`;
         return; // Don't chart on error
     }
-    
+
     // Find High and Low
     const maxVal = Math.max(...data);
     const minVal = Math.min(...data);
     const maxIdx = data.indexOf(maxVal);
     const minIdx = data.indexOf(minVal);
-    
+
     // Create point radius array (only highlight max/min)
     const pointRadius = data.map((v, i) => (i === maxIdx || i === minIdx) ? 6 : 0);
     const pointColors = data.map((v, i) => {
@@ -5223,41 +5557,51 @@ const openChartModal = async (indicatorTitle, symbolOverride, withMovingAverage 
         return '#4ade80';
     });
 
-    // 12-month moving average -- equities only. A one-year average against a
-    // price index is a convention traders already read; drawn over a bond
-    // yield, an FX cross or a policy rate it suggests a signal those series
-    // are not conventionally judged by, so those charts stay bare.
-    const MA_WINDOW = 12;
-    let runningSum = 0;
-    const movingAvg = !withMovingAverage ? null : data.map((v, i) => {
-        runningSum += v;
-        if (i >= MA_WINDOW) runningSum -= data[i - MA_WINDOW];
-        return i >= MA_WINDOW - 1 ? runningSum / MA_WINDOW : null;
+    // 5/20/60/120/240-day moving averages, computed with a running sum so
+    // each window is O(1) per point rather than re-summing it from scratch.
+    const MA_SPECS = withMovingAverage
+        ? [
+            { window: 5, label: '5일선', color: '#f87171' },
+            { window: 20, label: '20일선', color: '#facc15' },
+            { window: 60, label: '60일선', color: '#4ade80' },
+            { window: 120, label: '120일선', color: '#60a5fa' },
+            { window: 240, label: '240일선', color: '#c084fc' }
+        ]
+        : [];
+    const maDatasets = MA_SPECS.map(({ window, label, color }) => {
+        let runningSum = 0;
+        const series = data.map((v, i) => {
+            runningSum += v;
+            if (i >= window) runningSum -= data[i - window];
+            return i >= window - 1 ? runningSum / window : null;
+        });
+        return {
+            label,
+            data: series,
+            borderColor: color,
+            borderWidth: 1.5,
+            tension: 0.15,
+            pointRadius: 0,
+            pointHoverRadius: 0,
+            spanGaps: false
+        };
     });
 
+    // Moving averages exist to be compared against price, so once there is
+    // more than one line, price recedes to a thin neutral trace rather than
+    // competing with them in the same green.
     const priceDataset = {
         label: indicatorTitle,
         data: data,
-        borderColor: '#4ade80',
-        borderWidth: 2,
+        borderColor: withMovingAverage ? '#e5e7eb' : '#4ade80',
+        borderWidth: withMovingAverage ? 1 : 2,
         tension: 0.1,
         pointRadius: pointRadius,
         pointBackgroundColor: pointColors,
         pointBorderColor: '#ffffff',
         pointHoverRadius: 8
     };
-    const maDataset = {
-        label: '12개월 이동평균',
-        data: movingAvg,
-        borderColor: '#f59e0b',
-        borderWidth: 1.5,
-        borderDash: [6, 4],
-        tension: 0.2,
-        pointRadius: 0,
-        pointHoverRadius: 0,
-        spanGaps: false
-    };
-    const datasets = movingAvg ? [priceDataset, maDataset] : [priceDataset];
+    const datasets = [priceDataset, ...maDatasets];
 
     const ctx = document.getElementById('macroChart').getContext('2d');
 
@@ -5331,19 +5675,36 @@ document.querySelectorAll('.indicator-item').forEach(item => {
 // and setView exist, since its slots and fixed cards call into both.
 initSignalPanel();
 
+// URL routing: every data-target gets a real path (/macro_monitor,
+// /shipping_fleet, ...) instead of staying on '/' for every view, so
+// sections are shareable, back/forward works, and each is a distinct URL
+// for search engines. 'home' is the one target that maps to '/' itself.
+const pathForTarget = (target) => (target === 'home' ? '/' : `/${target}`);
+const targetFromPath = (pathname) => {
+    const slug = pathname.replace(/^\/+/, '').replace(/\/+$/, '');
+    if (!slug) return 'home';
+    return document.querySelector(`[data-target="${slug}"]`) ? slug : null;
+};
+const navigateTo = (target) => {
+    if (!target) return;
+    const path = pathForTarget(target);
+    if (window.location.pathname !== path || window.location.hash) {
+        window.history.pushState({ target }, '', path);
+    }
+    setView(target);
+};
+
+window.addEventListener('popstate', () => {
+    setView(targetFromPath(window.location.pathname) || 'home');
+});
+
 // Event Listeners for Nav
 navLinks.forEach(link => {
     link.addEventListener('click', (e) => {
         e.preventDefault();
         // currentTarget is the <a data-target>; e.target can be a text node.
         const target = link.getAttribute('data-target') || e.currentTarget?.getAttribute?.('data-target');
-        if (!target) return;
-        if (target.startsWith('shipping_')) {
-            window.history.replaceState(null, '', `#/${target}`);
-        } else if (window.location.hash.startsWith('#/shipping_')) {
-            window.history.replaceState(null, '', window.location.pathname + window.location.search);
-        }
-        setView(target);
+        navigateTo(target);
     });
 });
 
@@ -5356,12 +5717,7 @@ document.querySelectorAll('.menu-item[data-nav-default]').forEach((item) => {
         if (t.closest('.dropdown')) return;
         e.preventDefault();
         e.stopPropagation();
-        const target = item.getAttribute('data-nav-default');
-        if (!target) return;
-        if (target.startsWith('shipping_')) {
-            window.history.replaceState(null, '', `#/${target}`);
-        }
-        setView(target);
+        navigateTo(item.getAttribute('data-nav-default'));
     };
     item.addEventListener('click', go, true);
     const parent = item.querySelector(':scope > .menu-parent, :scope > span');
@@ -5377,10 +5733,7 @@ document.querySelectorAll('.menu-item[data-nav-default]').forEach((item) => {
 
 // Home Logo click event
 document.getElementById('home-logo').addEventListener('click', () => {
-    if (window.location.hash) {
-        window.history.replaceState(null, '', window.location.pathname + window.location.search);
-    }
-    setView('home');
+    navigateTo('home');
 });
 
 // Date Picker Event (Historical Data Simulation)
@@ -5469,13 +5822,19 @@ const loadTicker = async () => {
         + parts.join('<span class="ticker-divider">·</span>');
 };
 
-// Initialize a shareable shipping deep link when present; otherwise home.
-const initialShippingTarget = window.location.hash.startsWith('#/shipping_')
-    ? window.location.hash.slice(2)
-    : null;
-const initialView = initialShippingTarget && document.querySelector(`[data-target="${initialShippingTarget}"]`)
-    ? initialShippingTarget
-    : 'home';
+// Initialize from the URL path (e.g. a shared /macro_monitor link). Falls
+// back to the old #/shipping_x deep-link format for links shared before
+// routes moved off the hash, then to home for an unknown path.
+let initialView = targetFromPath(window.location.pathname);
+if ((!initialView || initialView === 'home') && window.location.hash.startsWith('#/')) {
+    const legacy = window.location.hash.slice(2);
+    if (document.querySelector(`[data-target="${legacy}"]`)) initialView = legacy;
+}
+if (!initialView) initialView = 'home';
+const normalizedPath = pathForTarget(initialView);
+if (window.location.pathname !== normalizedPath || window.location.hash) {
+    window.history.replaceState({ target: initialView }, '', normalizedPath);
+}
 setView(initialView);
 updateNewsPanel('Global Market');
 loadTicker();

@@ -20,11 +20,21 @@
 // bowedPath, arcWidth, arcAlpha, MAX_RENDERED_ARCS, generateNodeData,
 // TRADE_MAP_VIEW, controlsFor, renderExportControlLegend, CONTROL_FILL,
 // CONTROL_LINE, exportControlsDoc, macroPanelEl, currentViewDesc,
-// concentrationHtml, normCountryName. (ISO3_FALLBACK stays in app.js, used
-// only by its countryCode helper, which this file calls but does not own.)
+// concentrationHtml, normCountryName, commodityReportsPanelEl. (ISO3_FALLBACK
+// stays in app.js, used only by its countryCode helper, which this file calls
+// but does not own.)
 //
 // This is a pure move: no logic was rewritten, only relocated, in the same
 // relative order the functions appeared in app.js.
+
+// The right dashboard (rankings, rig count, gas storage, RSS reports) only
+// makes sense once a country is focused (stage 2), and even then only for
+// commodities that actually have RSS reports for that country -- see
+// renderCommodityReports, the only place this is ever flipped back on.
+const setRightDashboardVisible = (visible) => {
+    const el = document.getElementById('right-pane');
+    if (el) el.style.display = visible ? 'flex' : 'none';
+};
 
 /** Clear trade country focus and redraw world flows. */
 const clearTradeFocus = () => {
@@ -46,6 +56,9 @@ const clearTradeFocus = () => {
         panelHide(countryStatsPanelEl);
         panelShow(newsPanelEl);
     }
+    // Back to the world view (stage 1) -- no right dashboard here regardless
+    // of commodity.
+    setRightDashboardVisible(false);
 };
 
 /**
@@ -61,6 +74,10 @@ const focusTradeCountry = (countryName) => {
 
     tradeFocusCountry = countryName;
     selectedCountry = countryName;
+    // Hidden until renderCommodityReports (below) confirms this commodity has
+    // RSS reports for this country -- otherwise a country switch would flash
+    // the previous country's dashboard while the new one is still loading.
+    setRightDashboardVisible(false);
     updateNewsPanel(countryName);
 
     // Identity, not string equality: the same country reaches this function as
@@ -163,6 +180,9 @@ const focusTradeCountry = (countryName) => {
             clearTradeFocus();
         });
     }
+    renderRigCountCountry(countryName);
+    window.GasStorage?.render(countryName);
+    renderCommodityReports(currentCommodity, countryName);
 
     // Stage 2 stats become the country's, not the world's. "글로벌 무역량
     // 98.5 Million bpd" said the same thing on every country's screen, which
@@ -257,6 +277,25 @@ const loadEiaStocks = async () => {
     return out;
 };
 
+/**
+ * Baker Hughes drilling rig count -- global monthly total and per-country
+ * series, built offline from manually-exported Excel reports (no live API;
+ * see scripts/rig_count/build_rig_count_v1.py). A static JSON snapshot next
+ * to the app rather than a fetch proxy like the EIA cards above.
+ */
+let rigCountCache = null;
+const loadRigCount = async () => {
+    if (rigCountCache) return rigCountCache;
+    try {
+        const r = await fetch('/public/data/rig_count_v1.json', { cache: 'no-cache' });
+        rigCountCache = r.ok ? await r.json() : null;
+    } catch (err) {
+        console.warn('[Rig count] unavailable', err);
+        rigCountCache = null;
+    }
+    return rigCountCache;
+};
+
 // Bumped per chart instance so two sparklines open at once don't fight over
 // the same data-* payload -- wireSparkCharts looks its data up by this id.
 let sparkChartSeq = 0;
@@ -277,8 +316,16 @@ const sparkChartData = new Map();
  *
  * points: [{label, value}] oldest-first. unit/formatValue control how the
  * hover readout and axis labels are worded.
+ *
+ * shadeFromLabel: optional point label (e.g. a period string like
+ * "2024-01") marking where a break in the series' own methodology sits.
+ * Highlights a short band starting there, wide enough to catch the eye at
+ * that one point without implying the difference is still ongoing --
+ * everything after it is real values under the new methodology, not a
+ * continued anomaly. shadeSpanPoints controls how many points wide that
+ * band is (default: to the right edge, for a genuinely open-ended break).
  */
-const sparkChartHtml = ({ points, unit, formatValue, ariaLabel, footNote }) => {
+const sparkChartHtml = ({ points, unit, formatValue, ariaLabel, footNote, shadeFromLabel, shadeSpanPoints }) => {
     if (!points || points.length < 2) return '';
     const W = 100, H = 54, PAD = 3;
     const vals = points.map((p) => p.value);
@@ -296,6 +343,24 @@ const sparkChartHtml = ({ points, unit, formatValue, ariaLabel, footNote }) => {
     const last = points[points.length - 1];
     const rising = last.value >= points[0].value;
 
+    // First point at or after the break, not the closest one either side --
+    // an exact label match always exists here (both callers pass the same
+    // "2024-01" the series itself is built from), but rounding to "at or
+    // after" keeps this from silently drawing nothing if that ever drifts.
+    const shadeIdx = shadeFromLabel
+        ? points.findIndex((p) => p.label >= shadeFromLabel)
+        : -1;
+    // A single point's width is 0px, so a 1-point-wide band would be
+    // invisible -- floor it to one point-to-point gap either way.
+    const pointGap = (W - PAD * 2) / Math.max(1, points.length - 1);
+    const shadeWidth = shadeIdx > 0
+        ? Math.min(W - PAD - x(shadeIdx), Math.max(pointGap, pointGap * (shadeSpanPoints ?? (points.length - shadeIdx))))
+        : 0;
+    const shadeRect = shadeIdx > 0
+        ? `<rect class="spark2-shade" x="${x(shadeIdx).toFixed(2)}" y="${PAD}"
+               width="${shadeWidth.toFixed(2)}" height="${H - PAD * 2}"/>`
+        : '';
+
     const id = `spk${++sparkChartSeq}`;
     sparkChartData.set(id, { points, x, y, unit: unit || '', fmt });
 
@@ -310,6 +375,7 @@ const sparkChartHtml = ({ points, unit, formatValue, ariaLabel, footNote }) => {
                      preserveAspectRatio="none" role="img" aria-label="${ariaLabel || ''}">
                     <line class="spark2-grid" x1="${PAD}" y1="${PAD}" x2="${W - PAD}" y2="${PAD}"/>
                     <line class="spark2-grid" x1="${PAD}" y1="${H - PAD}" x2="${W - PAD}" y2="${H - PAD}"/>
+                    ${shadeRect}
                     <path class="spark2-area" d="${area}"/>
                     <path class="spark2-line" d="${line}" vector-effect="non-scaling-stroke"/>
                     <path class="spark2-dot-end" d="M${x(points.length - 1).toFixed(2)},${y(last.value).toFixed(2)}h0"/>
@@ -406,6 +472,108 @@ const renderEmergencyStocks = async () => {
     wireSparkCharts(host);
 };
 
+/**
+ * Global monthly rig count, world view -- directly below the SPR/Cushing
+ * card. Called only after renderEmergencyStocks() has resolved (see the
+ * `.then()` chain in renderTradeWorldPanel below): both cards insert with
+ * `insertAdjacentHTML('beforeend', ...)`, so without that ordering this
+ * card's local-JSON fetch (fast) could easily land before the SPR card's
+ * live EIA proxy fetch (slower) and print above it instead of below.
+ */
+const renderRigCountWorld = async () => {
+    const host = document.getElementById('news-content');
+    if (!host || currentCommodity !== 'oil') return;
+    const rig = await loadRigCount();
+    if (!rig?.global?.length || currentCommodity !== 'oil') return;
+    // Same idempotency guard the SPR/Cushing card needed after a real
+    // production bug (a second world-panel render landing mid-fetch would
+    // otherwise stack a duplicate card here too).
+    host.querySelector('.rig-card')?.remove();
+    const last = rig.global[rig.global.length - 1];
+    // Baker Hughes changed how it counts Saudi Arabia partway through this
+    // series (see build_rig_count_v1.py); the global total inherits that
+    // jump. Shaded on the chart itself, not just noted below it, so the
+    // level jump doesn't read as a sudden real drilling boom at a glance.
+    const saudiNote = (rig.data_quality_notes || []).some((n) => n.includes('Saudi Arabia'));
+    const chart = sparkChartHtml({
+        points: rig.global.map((p) => ({ label: p.period, value: p.value })),
+        unit: '기',
+        formatValue: (v) => v.toFixed(0),
+        ariaLabel: `${rig.global.length}개월 글로벌 Rig 수 추이`,
+        shadeFromLabel: saudiNote ? '2024-01' : null,
+        shadeSpanPoints: saudiNote ? 2 : undefined,
+    });
+    host.insertAdjacentHTML('beforeend', `
+        <div class="rig-card">
+            <p class="section-title" style="margin:0 0 6px;">글로벌 Rig 수 · Baker Hughes 월간</p>
+            <div class="stock-item">
+                <div class="stock-row">
+                    <span class="nm">가동 리그 수</span>
+                    <span class="vl">${last.value.toLocaleString()}<em>기</em></span>
+                </div>
+                ${chart}
+            </div>
+            <div class="stock-note">${last.period} 기준 · 출처 Baker Hughes${saudiNote
+                ? ' · 사우디아라비아 2024년경 집계 방식 변경(Active Rigs → Operating Rigs)으로 전체 합계에 단절 있음 — 실제 시추 급증 아님'
+                : ''}</div>
+        </div>`);
+    wireSparkCharts(host);
+};
+
+/**
+ * Rig-count sparkline for the country focus panel (country view). Baker
+ * Hughes covers roughly 90 countries; most focused countries have no series
+ * here and that is a normal, silent no-op, not an error.
+ */
+const renderRigCountCountry = async (countryName) => {
+    const host = document.getElementById('news-content');
+    if (!host || currentCommodity !== 'oil') return;
+    const target = resolveCountry(countryName);
+    const rig = await loadRigCount();
+    // The focus panel may have moved on to a different country (or the user
+    // left the trade view, or switched commodity) while this fetch was in
+    // flight -- a stale country's card landing inside whatever the panel now
+    // shows is the exact bug the SPR/Cushing card shipped once already.
+    if (currentCommodity !== 'oil' || tradeFocusCountry !== countryName) return;
+    const card = host.querySelector('.trade-focus-card');
+    card?.querySelector('.rig-card')?.remove();
+    if (!card || !target || !rig?.by_country) return;
+    // Identity match, not a raw key lookup: by_country's keys are built to
+    // already equal resolveCountry(...).label, but comparing by .key (the
+    // same pattern focusTradeCountry itself uses) survives that assumption
+    // ever drifting instead of silently going blank.
+    const entry = Object.entries(rig.by_country)
+        .find(([name]) => resolveCountry(name)?.key === target.key);
+    const series = entry?.[1];
+    if (!series || series.length < 2) return;
+    const last = series[series.length - 1];
+    const saudiNote = target.key === 'Saudi Arabia'
+        && (rig.data_quality_notes || []).some((n) => n.includes('Saudi Arabia'));
+    const chart = sparkChartHtml({
+        points: series.map((p) => ({ label: p.period, value: p.value })),
+        unit: '기',
+        formatValue: (v) => v.toFixed(0),
+        ariaLabel: `${series.length}개월 ${target.label} Rig 수 추이`,
+        shadeFromLabel: saudiNote ? '2024-01' : null,
+        shadeSpanPoints: saudiNote ? 2 : undefined,
+    });
+    card.insertAdjacentHTML('beforeend', `
+        <div class="rig-card">
+            <p class="section-title" style="margin:0 0 6px;">${target.label} Rig 수 · Baker Hughes 월간</p>
+            <div class="stock-item">
+                <div class="stock-row">
+                    <span class="nm">가동 리그 수</span>
+                    <span class="vl">${last.value.toLocaleString()}<em>기</em></span>
+                </div>
+                ${chart}
+            </div>
+            <div class="stock-note">${last.period} 기준 · 출처 Baker Hughes${saudiNote
+                ? ' · 2024년경 집계 방식 변경(Active Rigs → Operating Rigs)으로 이 시점에 단절 있음 — 실제 시추 급증 아님'
+                : ''}</div>
+        </div>`);
+    wireSparkCharts(card);
+};
+
 // A country's export total and import total are different questions --
 // Australia sells the most iron ore, China buys the most. Ranking only
 // exporters used to hide the second answer entirely: China's ~$2B of
@@ -437,6 +605,211 @@ const worldRankRows = ({ ranked, total, max }, n = 10) => ranked.slice(0, n).map
         <span class="tr-pct">${share.toFixed(1)}%</span>
     </div>`;
 }).join('');
+
+/**
+ * Official reports published about the commodity on screen -- and, in the
+ * country view, about that country's side of it.
+ *
+ * Phase 2-2. The agencies that actually move these markets (USDA, CONAB,
+ * FAO, EIA…) publish dozens of releases a day, and until now none of them
+ * reached the screen where they would mean something. The pipeline in
+ * scripts/commodity_reports tags each release with the commodity and the
+ * country its *text* is about, not the one that published it: a USDA release
+ * on Brazilian wheat is a Brazil·밀 report, and lands here when Brazil is the
+ * focused country on the wheat map.
+ *
+ * Headline-and-link, deliberately. These are copyrighted publications; the
+ * card quotes what the feed itself syndicates and sends the reader to the
+ * agency's own page for the rest, the same posture the news ticker takes.
+ */
+
+// Feed text is written by whoever published it -- it reaches this file
+// unescaped from an RSS body and goes straight into innerHTML.
+const escapeFeedText = (value) => String(value ?? '')
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#039;');
+
+// Same reason: a javascript: or data: href out of a hijacked feed would run
+// on click. Only http(s) links become anchors; anything else renders as text.
+const safeReportHref = (raw) => {
+    try {
+        const u = new URL(String(raw), window.location.origin);
+        return (u.protocol === 'https:' || u.protocol === 'http:') ? u.href : null;
+    } catch (_) {
+        return null;
+    }
+};
+
+// Reports keyed by `${commodity}|${iso3 or ''}`. The panel re-renders on every
+// map interaction and the answer only changes when the pipeline reruns.
+const commodityReportCache = new Map();
+// The whole snapshot, fetched at most once, for the local static server and
+// any deploy where /api is not in front of the assets (the Worker owns /api;
+// a plain file server answers 404 there, which is normal, not an error).
+let commodityReportSnapshot;
+
+const loadCommodityReportSnapshot = async () => {
+    if (commodityReportSnapshot !== undefined) return commodityReportSnapshot;
+    try {
+        const res = await fetch('/public/data/commodity_reports_v1.json', { cache: 'no-cache' });
+        commodityReportSnapshot = res.ok ? await res.json() : null;
+    } catch (err) {
+        console.warn('[commodity-reports] snapshot unavailable', err);
+        commodityReportSnapshot = null;
+    }
+    return commodityReportSnapshot;
+};
+
+/**
+ * Resolve one window out of the raw snapshot.
+ *
+ * Mirrors what the Worker's /api/commodity-reports does, so the static
+ * fallback shows the same rows in the same order rather than a second,
+ * subtly different ranking: the country's own reports first, then the world
+ * balance sheets every country on that commodity inherits.
+ */
+const reportsFromSnapshot = (doc, commodity, iso3, limit) => {
+    const buckets = doc?.index?.[commodity];
+    if (!buckets) return [];
+    const byId = new Map((doc.items || []).map((it) => [it.id, it]));
+    const ids = [];
+    const push = (list) => (list || []).forEach((id) => { if (!ids.includes(id)) ids.push(id); });
+    if (iso3) push(buckets[iso3]);
+    push(buckets._global);
+    if (!iso3) Object.entries(buckets).forEach(([b, rows]) => { if (b !== '_global') push(rows); });
+    return ids.slice(0, limit).map((id) => byId.get(id)).filter(Boolean);
+};
+
+const loadCommodityReports = async (commodity, iso3, limit = 6) => {
+    const key = `${commodity}|${iso3 || ''}`;
+    if (commodityReportCache.has(key)) return commodityReportCache.get(key);
+
+    let window_ = null;
+    try {
+        const q = new URLSearchParams({ commodity, limit: String(limit) });
+        if (iso3) q.set('country', iso3);
+        const res = await fetch(`/api/commodity-reports?${q}`);
+        if (res.ok) {
+            const doc = await res.json();
+            window_ = { items: doc.items || [], label: doc.commodity_label || commodity };
+        }
+    } catch (err) {
+        console.warn('[commodity-reports] api unavailable, falling back to snapshot', err);
+    }
+    if (window_ === null) {
+        const doc = await loadCommodityReportSnapshot();
+        window_ = {
+            items: reportsFromSnapshot(doc, commodity, iso3, limit),
+            label: doc?.commodity_labels?.[commodity] || commodity,
+        };
+    }
+    commodityReportCache.set(key, window_);
+    return window_;
+};
+
+// "2026-08-12T16:00:00+00:00" -> "2026.08.12". Some of these feeds (NASS's
+// ASB/news syndication) return a rolling archive years deep, not just this
+// week -- dropping the year made a 2020 notice and a 2026 one look identical.
+// A dateless list-page row shows nothing rather than a fabricated today.
+const reportDate = (iso) => {
+    if (!iso) return '';
+    const d = new Date(iso);
+    if (Number.isNaN(d.getTime())) return '';
+    return `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, '0')}.${String(d.getDate()).padStart(2, '0')}`;
+};
+
+// Long enough that the two-line clamp actually hides something worth opening.
+const SUMMARY_EXPAND_CHARS = 110;
+
+const reportRowHtml = (item) => {
+    const href = safeReportHref(item.url);
+    const title = escapeFeedText(item.title?.ko || item.title?.original || '');
+    const agency = escapeFeedText(item.agency_ko || item.agency || '');
+    const summary = String(item.summary || '').trim();
+    const date = reportDate(item.published_at);
+    // A world balance sheet sitting on a country's board should say so --
+    // otherwise "world wheat production at a record" reads as a claim about
+    // the country whose window it is on.
+    const scopeTag = item.scope === 'global'
+        ? '<span class="rpt-scope">세계</span>'
+        : '';
+    const series = item.series_label_ko
+        ? `<span class="rpt-series">${escapeFeedText(item.series_label_ko)}</span>`
+        : '';
+    const head = href
+        ? `<a class="rpt-title" href="${escapeFeedText(href)}" target="_blank" rel="noopener noreferrer">${title}</a>`
+        : `<span class="rpt-title">${title}</span>`;
+    const body = summary
+        ? `<p class="rpt-summary${summary.length > SUMMARY_EXPAND_CHARS ? ' is-clamped' : ''}">${escapeFeedText(summary)}</p>`
+          + (summary.length > SUMMARY_EXPAND_CHARS
+              ? '<button type="button" class="rpt-more" aria-expanded="false">요약 더보기</button>'
+              : '')
+        : '';
+    return `<li class="rpt-item">
+        <div class="rpt-meta">
+            <span class="rpt-agency">${agency}</span>${series}${scopeTag}
+            ${date ? `<span class="rpt-date">${date}</span>` : ''}
+        </div>
+        ${head}
+        ${body}
+    </li>`;
+};
+
+/**
+ * Fill the standalone reports panel (right pane, #commodity-reports-panel).
+ * `countryName` null means the world view.
+ *
+ * Renders into a slot the panel HTML already reserved rather than appending,
+ * so a slow fetch can never land between other cards -- the ordering bug the
+ * rig-count cards had to be chained to avoid. The panel is its own right-pane
+ * section (not stacked under the trade ranking) so a busy day's reports don't
+ * push the ranking below the fold.
+ */
+const renderCommodityReports = async (commodity, countryName = null) => {
+    const slot = document.getElementById('reports-slot');
+    if (!slot || !commodity) return;
+    const iso3 = countryName ? countryCode(countryName) : null;
+    const { items, label } = await loadCommodityReports(commodity, iso3);
+
+    // The panel may have been rebuilt, the commodity switched, or the focus
+    // moved to another country while this was in flight.
+    const live = document.getElementById('reports-slot');
+    if (!live || currentCommodity !== commodity) return;
+    if (countryName ? tradeFocusCountry !== countryName : tradeFocusCountry !== null) return;
+    if (!items.length) {
+        live.innerHTML = '';
+        panelHide(commodityReportsPanelEl);
+        // Stage 2, no RSS for this commodity+country -- no right dashboard at
+        // all, not just an empty reports card (world view already has none).
+        if (countryName) setRightDashboardVisible(false);
+        return;
+    }
+
+    // This commodity+country has RSS reports -- open the right dashboard now
+    // (rankings/rig count/gas storage were already rendered synchronously in
+    // focusTradeCountry, just hidden until this resolved).
+    if (countryName) setRightDashboardVisible(true);
+    panelShow(commodityReportsPanelEl);
+    const who = countryName ? `${resolveCountry(countryName)?.label || countryName} · ` : '';
+    live.innerHTML = `
+        <div class="rpt-card">
+            <p class="section-title" style="margin:0 0 6px;">${escapeFeedText(who)}${escapeFeedText(label)} 주요 보고서</p>
+            <ul class="rpt-list">${items.map(reportRowHtml).join('')}</ul>
+            <p class="rpt-note">공식 기관 발표 · 제목을 누르면 발간처 원문으로 이동</p>
+        </div>`;
+
+    live.querySelectorAll('.rpt-more').forEach((btn) => {
+        btn.addEventListener('click', () => {
+            const body = btn.previousElementSibling;
+            const opened = body?.classList.toggle('is-clamped') === false;
+            btn.setAttribute('aria-expanded', String(opened));
+            btn.textContent = opened ? '요약 접기' : '요약 더보기';
+        });
+    });
+};
 
 // NOTICE FOR ANY BRANCH MERGING HERE FROM A STALE BASE: this function and
 // its neighbors (renderFuturesCard, renderFuturesHistory, sparkChartHtml,
@@ -476,7 +849,15 @@ const renderTradeWorldPanel = (arcs) => {
             <div class="trade-rank-list">${importRows || '<p class="empty-state">무역 루트 없음</p>'}</div>
         </div>`;
     renderFuturesCard(currentCommodity);
-    renderEmergencyStocks();
+    // No reports on the world view (stage 1) -- only once a country is
+    // focused (stage 2, focusTradeCountry) does the right panel populate.
+    // A world-level report has nowhere specific to point at yet; the
+    // country view is where "which country does this apply to" is answered.
+    panelHide(commodityReportsPanelEl);
+    // Chained, not fired in parallel: renderRigCountWorld must not insert
+    // before renderEmergencyStocks's own card exists (see its own comment).
+    renderEmergencyStocks().then(renderRigCountWorld);
+    window.GasStorage?.render();
 };
 
 const futuresCache = new Map();
@@ -681,7 +1062,7 @@ const buildTradeDashes = (arcs, phase, inboundKeys) => {
     for (let i = 0; i < n; i++) {
         const arc = arcs[i];
         if (!arc.sourcePosition || !arc.targetPosition) continue;
-        const full = bowedPath(arc.sourcePosition, arc.targetPosition, DASH_RES);
+        const full = arc._dashPath ||= bowedPath(arc.sourcePosition, arc.targetPosition, DASH_RES);
         // Stagger start and speed so routes do not pulse in lockstep.
         const head = ((phase * (1 + (i % 5) * 0.13)) + (i % 7) / 7) % 1;
         const path = [];

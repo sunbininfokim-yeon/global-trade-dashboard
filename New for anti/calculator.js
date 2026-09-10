@@ -6,8 +6,9 @@
 // a squash merge replaces whole regions instead of diffing them.
 //
 // Loaded AFTER macro.js -- coDcfPanel and coReversePanel format with mmFmt.
-// Relies on globals still in app.js: finEsc and the DOM helpers. Shows no
-// price target by design.
+// Relies on globals still in app.js: finEsc, finPct,
+// loadFirstJson/finDataPaths, and the DOM helpers. Shows no price target by
+// design.
 
 // Yahoo returns nothing for a Korean company name and the alias table above
 // carries no KRX rows, so before this a Korean listing could only be reached
@@ -28,21 +29,16 @@ const KRX_NAME_ALIASES = {
 let KRX_FILERS = null;
 const krxLoadFilers = async () => {
     if (KRX_FILERS) return KRX_FILERS;
-    for (const base of ['/public/data/', '/data/']) {
-        try {
-            const r = await fetch(`${base}dart_corp_codes_v1.json`);
-            if (!r.ok) continue;
-            const doc = await r.json();
-            KRX_FILERS = Object.entries(doc.index || {})
-                .map(([code, row]) => ({
-                    id: `krx:${code}`, name_ko: (row || [])[1] || code,
-                    yahoo: code, asset_class: 'equity',
-                    aliases: KRX_NAME_ALIASES[code] || [],
-                }));
-            return KRX_FILERS;
-        } catch (_) { /* try the next base */ }
-    }
-    KRX_FILERS = [];
+    // The filer index is a large, rarely-changing build artefact, so this one
+    // keeps the browser's default cache instead of the no-store the snapshot
+    // views use.
+    const doc = await loadFirstJson(finDataPaths('dart_corp_codes_v1.json'), { cache: 'default' });
+    KRX_FILERS = Object.entries((doc && doc.index) || {})
+        .map(([code, row]) => ({
+            id: `krx:${code}`, name_ko: (row || [])[1] || code,
+            yahoo: code, asset_class: 'equity',
+            aliases: KRX_NAME_ALIASES[code] || [],
+        }));
     return KRX_FILERS;
 };
 
@@ -100,9 +96,6 @@ const coNum = (v, currency = 'KRW') => {
 
 const coRatio = (v, digits = 1) =>
     (v === null || v === undefined || !Number.isFinite(v)) ? '—' : `${v.toFixed(digits)}`;
-
-const coPct = (v, digits = 1) =>
-    (v === null || v === undefined || !Number.isFinite(v)) ? '—' : `${(v * 100).toFixed(digits)}%`;
 
 const coDiv = (a, b) => (a === null || b === null || !b) ? null : a / b;
 
@@ -365,6 +358,8 @@ const KFA_CARD_META = {
     market_cap: { label: '시가총액', unit: 'money', plain: '현재가 × 발행주식수. 회사 전체를 지금 가격으로 산다면 드는 돈입니다.' },
     pe_ratio: { label: 'PER(주가수익비율)', unit: 'ratio', plain: '현재가를 EPS로 나눈 값입니다. 낮을수록 이익 대비 주가가 싼 편입니다.' },
     pb_ratio: { label: 'PBR(주가순자산비율)', unit: 'ratio', plain: '현재가를 주당순자산(BPS)으로 나눈 값입니다. 1보다 낮으면 장부가보다 싸게 거래 중입니다.' },
+    roe: { label: 'ROE(자기자본이익률)', unit: 'percent', plain: '자기자본으로 한 해 동안 얼마를 벌었는지입니다. 은행·보험 등 금융기관에서도 쓰는 지표입니다.' },
+    roa: { label: 'ROA(총자산이익률)', unit: 'percent', plain: '전체 자산으로 한 해 동안 얼마를 벌었는지입니다.' },
     owner_earnings: { label: '오너어닝스', unit: 'money', plain: '버핏식으로 어림한 실질 이익입니다.' },
     earnings_quality: { label: '이익의 질', unit: 'ratio', plain: '회계상 이익이 실제 현금흐름으로 얼마나 뒷받침되는지입니다.' },
     margins_trend: { label: '마진 추이', unit: 'text', plain: '최근 몇 년간 이익률이 개선·악화되는 방향입니다.' },
@@ -389,6 +384,7 @@ const kfaFmt = (key, v, currency) => {
     if (unit === 'money') return coNum(v, currency || 'KRW');
     if (unit === 'days') return `${Math.round(v)}일`;
     if (unit === 'ratio') return `${v.toFixed(2)}배`;
+    if (unit === 'percent') return `${(v * 100).toFixed(1)}%`;
     return String(v);
 };
 
@@ -620,25 +616,36 @@ const renderKfaResult = (out, data) => {
 const loadKfaCompany = async (out, inst, code) => {
     out.innerHTML = `<div class="fin-block fin-block-wide"><p class="fin-loading">DART 공시 자료를 받는 중…</p></div>`;
 
-    let data = null;
-    for (const path of [`/public/data/kfa_${code}_v1.json`, `/data/kfa_${code}_v1.json`]) {
-        try {
-            const res = await fetch(path, { cache: 'no-store' });
-            if (res.ok) { data = await res.json(); break; }
-        } catch (_) { /* try next */ }
-    }
+    const staticSnap = await loadFirstJson(finDataPaths(`kfa_${code}_v1.json`));
 
-    // No pre-generated snapshot for this ticker (only a handful exist under
-    // public/data/) -- fall back to a live OpenDART lookup, which covers
-    // every KRX-listed filer but only the 12 Basic-view cards (see
-    // handleDartFinancials in _worker.js for why Investor/PE/Deal stay
-    // "준비 중" here instead of getting a parallel calculation port).
+    // A static snapshot only stands in for a live response when it carries
+    // the P0 contract and doesn't flag itself stale. No `service_readiness`
+    // at all (every pre-P0 snapshot under public/data/ today) counts the same
+    // as an explicit live_fallback_required: true -- see
+    // scripts/dart/docs/P0_WORKER_HANDOFF_FINANCIALS.md section 0.
+    const staticIsCurrent = !!(staticSnap && staticSnap.service_readiness
+        && staticSnap.service_readiness.live_fallback_required !== true);
+
+    let data = staticIsCurrent ? staticSnap : null;
+
+    // No current-per-contract snapshot -- fall back to a live OpenDART
+    // lookup, which covers every KRX-listed filer but only the 12 Basic-view
+    // cards (see handleDartFinancials in _worker.js for why Investor/PE/Deal
+    // stay "준비 중" here instead of getting a parallel calculation port).
     let liveOnly = false;
     if (!data) {
         try {
             const res = await fetch(`/api/dart-financials?symbol=${encodeURIComponent(code)}`, { cache: 'no-store' });
             if (res.ok) { data = await res.json(); liveOnly = true; }
-        } catch (_) { /* fall through to empty state */ }
+        } catch (_) { /* fall through to the stale static snapshot, if any */ }
+    }
+
+    // Live also failed (or had nothing) -- a stale static snapshot still
+    // beats an empty screen; use it, but say so.
+    let usedLegacySnapshot = false;
+    if (!data && staticSnap) {
+        data = staticSnap;
+        usedLegacySnapshot = true;
     }
 
     if (!data) {
@@ -652,6 +659,8 @@ const loadKfaCompany = async (out, inst, code) => {
 
     if (liveOnly) {
         data.reasons = [...(data.reasons || []), '실시간 조회: 기본 12개 지표만 제공 (투자자/PE/딜 카드는 준비 중)'];
+    } else if (usedLegacySnapshot) {
+        data.reasons = [...(data.reasons || []), '이전 정적 스냅샷: 실시간 조회 실패로 과거 저장본을 표시합니다'];
     }
 
     KFA_VIEW = data.view_presets?.default_view || 'basic';
@@ -909,7 +918,7 @@ const coDcfPanel = (rows, CUR) => {
                 <span class="fin-card-value">${d.perShare === null ? '—' : coNum(d.perShare, CUR)}</span>
                 <p class="fin-card-plain">${d.shares ? `희석주식수 ${mmFmt(d.shares, 0)}주 기준` : '주식수를 못 읽어 계산하지 못했습니다.'}</p></div>
             <div class="fin-card"><span class="fin-card-title">잔존가치 비중</span>
-                <span class="fin-card-value">${coPct(d.tailShare)}</span>
+                <span class="fin-card-value">${finPct(d.tailShare)}</span>
                 <p class="fin-card-plain">전체 가치 중 6년차 이후가 차지하는 몫입니다. 이 값이 높을수록 결과가 영구성장률 가정에 좌우됩니다.</p></div>
         </div>
         <div class="co-table-wrap">
@@ -987,13 +996,13 @@ const coDeepPanel = (rowsDesc, CUR) => {
                 <span class="fin-card-value">${coNum(latest.debt_total, CUR)}</span>
                 <p class="fin-card-plain">매입채무 같은 영업부채를 뺀, 이자를 무는 빚만 모은 값입니다.</p></div>
             <div class="fin-card"><span class="fin-card-title">1년 내 만기 비중</span>
-                <span class="fin-card-value">${coPct(latest.short_share)}</span>
+                <span class="fin-card-value">${finPct(latest.short_share)}</span>
                 <p class="fin-card-plain">이자부 부채 중 1년 안에 갚거나 차환해야 하는 몫입니다. 높을수록 금리·자금시장 경색에 민감합니다.</p></div>
             <div class="fin-card"><span class="fin-card-title">이자보상배율</span>
                 <span class="fin-card-value">${coRatio(latest.interest_cover, 1)}배</span>
                 <p class="fin-card-plain">영업이익이 이자비용의 몇 배인가. 1배 아래면 본업으로 이자도 못 냅니다.</p></div>
             <div class="fin-card"><span class="fin-card-title">당좌비율</span>
-                <span class="fin-card-value">${coPct(latest.quick_ratio)}</span>
+                <span class="fin-card-value">${finPct(latest.quick_ratio)}</span>
                 <p class="fin-card-plain">재고를 뺀 유동자산으로 단기부채를 갚을 수 있는 정도입니다.</p></div>
         </div>
         ${coTable(rows, [
@@ -1023,7 +1032,7 @@ const coDeepPanel = (rowsDesc, CUR) => {
             { label: '총부채', fmt: (r) => coNum(r.raw.liabilities, CUR) },
             { label: '자기자본', fmt: (r) => coNum(r.raw.equity, CUR) },
             { label: '이익잉여금', fmt: (r) => coNum(r.raw.retained_earnings, CUR) },
-            { label: '자기자본비율', fmt: (r) => coPct(r.equity_ratio) },
+            { label: '자기자본비율', fmt: (r) => finPct(r.equity_ratio) },
         ])}
     </section>`;
 };
@@ -1037,15 +1046,15 @@ const coHealthPanel = (rowsDesc, CUR) => {
                 (r) => r.raw.revenue, (v) => coNum(v, CUR))}
             ${coSeriesCard('current_ratio', '유동비율',
                 '1년 안에 갚을 빚 대비 1년 안에 현금이 되는 자산. 100%를 밑돌면 단기 자금이 빠듯하다는 뜻입니다.',
-                (r) => r.current_ratio, (v) => coPct(v))}
+                (r) => r.current_ratio, (v) => finPct(v))}
             ${coSeriesCard('debt_ratio', '부채비율 (부채/자산)',
                 '자산 중 남의 돈이 차지하는 비율입니다. 업종마다 정상 범위가 크게 달라 같은 업종끼리 비교해야 합니다.',
-                (r) => r.debt_ratio, (v) => coPct(v))}
+                (r) => r.debt_ratio, (v) => finPct(v))}
             ${coSeriesCard('operating_margin', '영업이익률', '매출 100원으로 본업에서 남긴 이익입니다.',
-                (r) => r.operating_margin, (v) => coPct(v))}
+                (r) => r.operating_margin, (v) => finPct(v))}
             ${coSeriesCard('roe', 'ROE',
                 '주주 돈으로 낸 수익률입니다. 빚을 많이 쓰면 자연히 높아지므로 부채비율과 같이 봐야 합니다.',
-                (r) => r.roe, (v) => coPct(v))}
+                (r) => r.roe, (v) => finPct(v))}
         </div>
         <section class="fin-block fin-block-wide">
             <h2>연도별 추이</h2>
@@ -1053,9 +1062,9 @@ const coHealthPanel = (rowsDesc, CUR) => {
                 { label: '매출', fmt: (r) => coNum(r.raw.revenue, CUR) },
                 { label: '영업이익', fmt: (r) => coNum(r.raw.operating_income, CUR) },
                 { label: '순이익', fmt: (r) => coNum(r.raw.net_income, CUR) },
-                { label: '영업이익률', fmt: (r) => coPct(r.operating_margin) },
-                { label: '유동비율', fmt: (r) => coPct(r.current_ratio) },
-                { label: '부채비율', fmt: (r) => coPct(r.debt_ratio) },
+                { label: '영업이익률', fmt: (r) => finPct(r.operating_margin) },
+                { label: '유동비율', fmt: (r) => finPct(r.current_ratio) },
+                { label: '부채비율', fmt: (r) => finPct(r.debt_ratio) },
             ])}
         </section>`;
 };
@@ -1073,13 +1082,13 @@ const coValuationPanel = (rowsDesc, CUR) => {
                 (r) => r.raw.cfo, (v) => coNum(v, CUR))}
             ${coSeriesCard('fcf_margin', 'FCF 마진',
                 '매출이 현금으로 남는 비율입니다. 이익은 나는데 이 값이 낮으면 회계 이익과 현금이 어긋난다는 신호입니다.',
-                (r) => r.fcf_margin, (v) => coPct(v))}
+                (r) => r.fcf_margin, (v) => finPct(v))}
             ${coSeriesCard('net_debt', '순부채',
                 '이자부 부채에서 현금·단기투자를 뺀 값입니다. 음수면 빚보다 현금이 많다는 뜻입니다.',
                 (r) => r.net_debt, (v) => coNum(v, CUR))}
             ${coSeriesCard('roa', 'ROA',
                 '자산 전체로 낸 수익률입니다. ROE와 벌어지면 그 차이가 레버리지에서 옵니다.',
-                (r) => r.roa, (v) => coPct(v))}
+                (r) => r.roa, (v) => finPct(v))}
         </div>
         <section class="fin-block fin-block-wide">
             <h2>현금 흐름</h2>
@@ -1087,7 +1096,7 @@ const coValuationPanel = (rowsDesc, CUR) => {
                 { label: '영업현금흐름', fmt: (r) => coNum(r.raw.cfo, CUR) },
                 { label: '설비투자 (CapEx)', fmt: (r) => coNum(r.raw.capex, CUR) },
                 { label: '잉여현금흐름', fmt: (r) => coNum(r.fcf, CUR) },
-                { label: 'FCF 마진', fmt: (r) => coPct(r.fcf_margin) },
+                { label: 'FCF 마진', fmt: (r) => finPct(r.fcf_margin) },
                 { label: '순이익', hint: '현금과 비교', fmt: (r) => coNum(r.raw.net_income, CUR) },
             ])}
             <p class="fin-note">

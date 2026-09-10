@@ -167,74 +167,6 @@
         console.error("FRED API Error:", e);
     }
 
-    // 0.52 Japan / UK 10Y government bond yields: FRED only carries these
-    // monthly (OECD), which is what "JP10Y"/"UK10Y" above just loaded as a
-    // fallback baseline. Two daily sources are tried on top of it, in order:
-    //
-    //   1. CNBC's quote API -- the same JP10Y/UK10Y tickers behind
-    //      cnbc.com/quotes/JP10Y and /UK10Y.
-    //   2. Yahoo Finance, if CNBC doesn't resolve.
-    //
-    // Either succeeding overwrites the FRED monthly value; both failing
-    // leaves it in place, so the tile degrades to last month's OECD print
-    // rather than going blank.
-    try {
-        const bondSymbols = [
-            { symbol: "JP10Y", name: "JP10Y" },
-            { symbol: "UK10Y", name: "UK10Y" }
-        ];
-
-        const fetchCnbcQuote = async (symbol) => {
-            const res = await fetch(`/api/macro?source=cnbc&symbol=${encodeURIComponent(symbol)}`);
-            if (!res.ok) return null;
-            const body = await res.json();
-            const quote = body?.FormattedQuoteResult?.FormattedQuote?.[0];
-            const raw = quote?.last ?? quote?.last_price ?? quote?.previous_day_closing;
-            const value = parseFloat(raw);
-            if (!isFinite(value)) return null;
-            const dateStr = quote?.last_time_msec
-                ? new Date(Number(quote.last_time_msec)).toISOString().slice(0, 10)
-                : new Date().toISOString().slice(0, 10);
-            return { value, date: dateStr };
-        };
-
-        const fetchYahooDaily = async (symbol) => {
-            const res = await fetch(`/api/macro?source=yfinance&symbol=${encodeURIComponent(symbol)}&interval=1d&range=3mo`);
-            if (!res.ok) return null;
-            const body = await res.json();
-            const result = body?.chart?.result?.[0];
-            const timestamps = result?.timestamp || [];
-            const closes = result?.indicators?.quote?.[0]?.close || [];
-            const history = [];
-            for (let i = 0; i < closes.length; i++) {
-                if (closes[i] !== null && closes[i] !== undefined) {
-                    history.push({ label: new Date(timestamps[i] * 1000).toISOString().slice(0, 10), value: closes[i] });
-                }
-            }
-            if (!history.length) return null;
-            const last = history[history.length - 1];
-            return { value: last.value, date: last.label, history };
-        };
-
-        await Promise.all(bondSymbols.map(async (b) => {
-            // Yahoo first here (CNBC second, unlike the value-only ordering
-            // before): CNBC returns a single quote, Yahoo a series, and the
-            // slot now draws a sparkline beside the number.
-            const picked = await fetchYahooDaily(b.symbol).catch(() => null)
-                || await fetchCnbcQuote(b.symbol).catch(() => null);
-            if (picked) {
-                macroData[b.name] = {
-                    value: picked.value,
-                    date: picked.date + " (UTC 00:00 Normalized)",
-                    asOf: picked.date,
-                    history: picked.history || macroData[b.name]?.history || []
-                };
-            }
-        }));
-    } catch(e) {
-        console.error("JP/UK 10Y daily fetch error:", e);
-    }
-
     // 0.5 KRX (KOSPI) removed: the KRX Data Marketplace key returned
     // 401 "Unauthorized API Call" on every request, so the tile never had data.
 
@@ -274,6 +206,86 @@
         console.error("BOK API Error:", e);
         macroData["KRW_USD"] = { value: "N/A", date: "N/A" };
         macroData["BOK_RATE"] = { value: "N/A", date: "N/A" };
+    }
+
+    // 0.56 Daily quotes with no clean FRED/EIA/BOK series behind them. Two
+    // sources are tried, in order:
+    //
+    //   1. Yahoo Finance -- gives back a real history, so the slot's
+    //      sparkline has something to draw.
+    //   2. CNBC's quote API, if Yahoo doesn't resolve (single point, no
+    //      sparkline that round).
+    //
+    // Japan/UK 10Y and KRW_USD additionally have a baseline loaded above
+    // (FRED monthly for the bonds, BOK's single latest reading for KRW,
+    // just set above) -- either source overwrites that baseline on success,
+    // and both failing leaves it in place, so those degrade to last month's
+    // OECD print or the BOK snapshot rather than going blank. This block
+    // has to run after the BOK fetch for that fallback order to hold: BOK's
+    // KeyStatisticList endpoint returns only one snapshot with no history,
+    // so if this ran first, BOK would clobber Yahoo's richer entry (value
+    // and sparkline both) right back down to a bare snapshot. SOX and KOSPI
+    // have no baseline at all: Yahoo is a well-established public ticker for
+    // both (^SOX, ^KS11), so they were never worth wiring a fallback
+    // provider for.
+    try {
+        const dailyQuoteSymbols = [
+            { symbol: "JP10Y", name: "JP10Y" },
+            { symbol: "UK10Y", name: "UK10Y" },
+            { symbol: "^SOX", name: "SOX" },
+            { symbol: "^KS11", name: "KOSPI" },
+            { symbol: "KRW=X", name: "KRW_USD" }
+        ];
+
+        const fetchCnbcQuote = async (symbol) => {
+            const res = await fetch(`/api/macro?source=cnbc&symbol=${encodeURIComponent(symbol)}`);
+            if (!res.ok) return null;
+            const body = await res.json();
+            const quote = body?.FormattedQuoteResult?.FormattedQuote?.[0];
+            const raw = quote?.last ?? quote?.last_price ?? quote?.previous_day_closing;
+            const value = parseFloat(raw);
+            if (!isFinite(value)) return null;
+            const dateStr = quote?.last_time_msec
+                ? new Date(Number(quote.last_time_msec)).toISOString().slice(0, 10)
+                : new Date().toISOString().slice(0, 10);
+            return { value, date: dateStr };
+        };
+
+        const fetchYahooDaily = async (symbol) => {
+            const res = await fetch(`/api/macro?source=yfinance&symbol=${encodeURIComponent(symbol)}&interval=1d&range=3mo`);
+            if (!res.ok) return null;
+            const body = await res.json();
+            const result = body?.chart?.result?.[0];
+            const timestamps = result?.timestamp || [];
+            const closes = result?.indicators?.quote?.[0]?.close || [];
+            const history = [];
+            for (let i = 0; i < closes.length; i++) {
+                if (closes[i] !== null && closes[i] !== undefined) {
+                    history.push({ label: new Date(timestamps[i] * 1000).toISOString().slice(0, 10), value: closes[i] });
+                }
+            }
+            if (!history.length) return null;
+            const last = history[history.length - 1];
+            return { value: last.value, date: last.label, history };
+        };
+
+        await Promise.all(dailyQuoteSymbols.map(async (b) => {
+            // Yahoo first here (CNBC second, unlike the value-only ordering
+            // before): CNBC returns a single quote, Yahoo a series, and the
+            // slot now draws a sparkline beside the number.
+            const picked = await fetchYahooDaily(b.symbol).catch(() => null)
+                || await fetchCnbcQuote(b.symbol).catch(() => null);
+            if (picked) {
+                macroData[b.name] = {
+                    value: picked.value,
+                    date: picked.date + " (UTC 00:00 Normalized)",
+                    asOf: picked.date,
+                    history: picked.history || macroData[b.name]?.history || []
+                };
+            }
+        }));
+    } catch(e) {
+        console.error("Daily quote fetch error (JP10Y/UK10Y/SOX/KOSPI/KRW_USD):", e);
     }
 
     // EIA returns rows newest-first; sparklines want oldest-first.
@@ -334,26 +346,6 @@
         macroData["NAT_GAS"] = { value: "N/A", date: "N/A" };
     }
 
-    // 1. Fetch real-time weather from Open-Meteo
-    const regions = [
-        { name: "Mato Grosso (Brazil)", lat: -12.68, lon: -56.92 },
-        { name: "Iowa (USA)", lat: 41.87, lon: -93.09 }
-    ];
-    
-    let weatherMap = {};
-    try {
-        const fetchPromises = regions.map(async (r) => {
-            const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${r.lat}&longitude=${r.lon}&current_weather=true`);
-            const data = await res.json();
-            return { name: r.name, weather: data.current_weather };
-        });
-        const results = await Promise.all(fetchPromises);
-        results.forEach(res => {
-            weatherMap[res.name] = res.weather;
-        });
-    } catch (e) {
-        console.error("Open-Meteo API Fetch Error:", e);
-    }
     
     window.MacroData = macroData;
     if (window.initApp) window.initApp();
@@ -1124,20 +1116,32 @@
     console.log('[data.js] TradeData and CountriesData set successfully.');
 
     // Now try to enhance data with live API calls (non-blocking)
+    // 1. Weather for the two forecast panels comes from the weekly
+    //    producing-region snapshot (scripts/build_city_wx.py -> city_wx_v1.json),
+    //    not a live Open-Meteo call. It used to hit api.open-meteo.com directly
+    //    on every page load -- two requests per visitor, discarded on the next
+    //    load, for a number the model doesn't otherwise recompute more than
+    //    weekly. city_wx_v1.json already refreshes every Saturday and already
+    //    carries these two regions (climate_global_v1.json cities list), so
+    //    reading it here is a same-origin JSON fetch instead of a third-party
+    //    API call, and the anomaly-vs-normal framing is more informative than
+    //    a bare temperature anyway.
     try {
-        // 4. Inject real-time weather into forecast
-        if (weatherMap["Mato Grosso (Brazil)"]) {
-            const w = weatherMap["Mato Grosso (Brazil)"];
-            forecastData["Mato Grosso (Brazil)"].climate_status = `실시간 날씨: 🌡️ ${w.temperature}°C, 🌬️ ${w.windspeed}km/h (기후 API 연동 중)`;
-            forecastData["Mato Grosso (Brazil)"].last_updated = new Date().toISOString();
-        }
-        if (weatherMap["Iowa (USA)"]) {
-            const w = weatherMap["Iowa (USA)"];
-            forecastData["Iowa (USA)"].climate_status = `실시간 날씨: 🌡️ ${w.temperature}°C, 🌬️ ${w.windspeed}km/h (기후 API 연동 중)`;
-            forecastData["Iowa (USA)"].last_updated = new Date().toISOString();
-        }
-    } catch(e) {
-        console.warn('[data.js] Weather injection skipped:', e.message);
+        const wxRes = await fetch('/public/data/city_wx_v1.json', { cache: 'no-cache' });
+        const wxDoc = wxRes.ok ? await wxRes.json() : null;
+        const wxByName = {};
+        (wxDoc?.cities || []).forEach(c => { wxByName[c.name] = c; });
+
+        ["Mato Grosso (Brazil)", "Iowa (USA)"].forEach(name => {
+            const w = wxByName[name];
+            if (!w || !forecastData[name]) return;
+            const anom = w.temp_anom_c != null ? `${w.temp_anom_c >= 0 ? '+' : ''}${w.temp_anom_c}` : '—';
+            forecastData[name].climate_status =
+                `최근 30일 평균: 🌡️ ${w.temp_c}°C (평년 대비 ${anom}) · 강수 ${w.precip_mm}mm (${wxDoc.normal || '평년 대비'})`;
+            forecastData[name].last_updated = wxDoc.generated_at || new Date().toISOString();
+        });
+    } catch (e) {
+        console.warn('[data.js] city_wx_v1 weather injection skipped:', e.message);
     }
 
     // 3. UN Comtrade Data for Coal (HS 2701) is lazy-loaded on demand via

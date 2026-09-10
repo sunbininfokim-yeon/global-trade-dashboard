@@ -3,8 +3,48 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Global Trade</title>
-    
+    <title>ChokePoint Monitor — 글로벌 무역·해운·원자재·금융 실시간 대시보드</title>
+    <meta name="description" content="ChokePoint Monitor는 해운 초크포인트, 원자재 작황, 매크로·금융 지표, 글로벌 무역 흐름을 하나의 지구본 지도에서 실시간으로 보여주는 대시보드입니다.">
+    <meta name="keywords" content="chokepoint monitor, 초크포인트, 글로벌 무역, 해운 모니터, 원자재 작황, 매크로 모니터, 트레이드 대시보드">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://chokemonitor.com/">
+
+    <!-- Naver Search Advisor: 사이트 소유 확인 메타 태그.
+         네이버 서치어드바이저(searchadvisor.naver.com) 사이트 등록 화면에서
+         발급받은 코드로 아래 content 값을 교체할 것. -->
+    <meta name="naver-site-verification" content="REPLACE_WITH_NAVER_VERIFICATION_CODE">
+
+    <link rel="icon" href="/favicon.ico" sizes="any">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="ChokePoint Monitor">
+    <meta property="og:title" content="ChokePoint Monitor — 글로벌 무역·해운·원자재·금융 실시간 대시보드">
+    <meta property="og:description" content="해운 초크포인트, 원자재 작황, 매크로·금융 지표, 글로벌 무역 흐름을 하나의 지구본 지도에서 실시간으로 확인하세요.">
+    <meta property="og:url" content="https://chokemonitor.com/">
+    <meta property="og:locale" content="ko_KR">
+    <meta property="og:image" content="https://chokemonitor.com/public/og/og-image.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="ChokePoint Monitor — 글로벌 무역·해운·원자재·금융 실시간 대시보드">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="ChokePoint Monitor">
+    <meta name="twitter:description" content="글로벌 무역·해운 초크포인트·원자재·매크로 실시간 대시보드">
+    <meta name="twitter:image" content="https://chokemonitor.com/public/og/og-image.png">
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "ChokePoint Monitor",
+      "alternateName": "초크포인트 모니터",
+      "url": "https://chokemonitor.com/",
+      "description": "ChokePoint Monitor는 해운 초크포인트, 원자재 작황, 매크로·금융 지표, 글로벌 무역 흐름을 하나의 지구본 지도에서 실시간으로 보여주는 대시보드입니다.",
+      "inLanguage": "ko-KR"
+    }
+    </script>
+
     <!-- MapLibre & Deck.gl -->
     <script src="https://unpkg.com/deck.gl@latest/dist.min.js"></script>
     <script src="https://unpkg.com/maplibre-gl@3.0.0/dist/maplibre-gl.js"></script>
@@ -14,13 +54,13 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
     <!-- Custom Styles -->
-    <link rel="stylesheet" href="style.css?v=65">
+    <link rel="stylesheet" href="style.css?v=76">
 </head>
 <body>
     <div id="app">
         <!-- Top Navigation -->
         <header class="top-nav">
-            <div class="logo" id="home-logo" style="cursor: pointer;">Global Trade</div>
+            <div class="logo" id="home-logo" style="cursor: pointer;">ChokePoint Monitor</div>
             <nav class="main-menu">
                 <!-- 에너지·금속·농산물을 「원자재」 하나로 묶고, 드롭다운 안에서
                      3열로 나눴다. 상단 메뉴가 5개에서 3개로 줄어 해운·금융이
@@ -111,6 +151,12 @@
                         <a href="#" data-target="elections">세계 선거 지도·일정</a>
                     </div>
                 </div>
+                <div class="menu-item" data-nav-default="us-policy-hub">
+                    <span class="menu-parent" role="button" tabindex="0" aria-label="정책 화면 열기">정책</span>
+                    <div class="dropdown">
+                        <a href="#" data-target="us-policy-hub">미국</a>
+                    </div>
+                </div>
                 <div class="menu-item" style="margin-left: 20px;">
                     <span style="color: #cbd5e1;">주요 기관</span>
                     <div class="dropdown">
@@ -118,7 +164,15 @@
                         <a href="#" data-target="inst_country">국가별 출처 (CONAB 등)</a>
                     </div>
                 </div>
+                <!-- Hidden until signed in -- auth.js toggles this on every
+                     auth state change, same as it does the login/logout
+                     button in #auth-container. No dropdown: a bare
+                     data-nav-default item navigates straight to mypage. -->
+                <div class="menu-item hidden" data-nav-default="mypage" data-target="mypage" id="mypage-nav-item">
+                    <span class="menu-parent" role="button" tabindex="0" aria-label="마이페이지 열기">마이페이지</span>
+                </div>
             </nav>
+            <div class="auth-container" id="auth-container"></div>
             <div class="date-picker-container">
                 <input type="date" id="historical-date" class="historical-date-picker" min="2021-01-01">
             </div>
@@ -131,8 +185,9 @@
             </script>
         </header>
 
-        <!-- Ticker -->
-        <div class="ticker-wrapper">
+        <!-- Ticker -- hidden 2026-08-21, 9월에 재조정 예정. loadTicker()는
+             그대로 두어 재활성화 시 바로 동작하도록 함. -->
+        <div class="ticker-wrapper hidden">
             <div class="ticker-label">속보</div>
             <div class="ticker-overflow">
                 <div class="ticker-content" id="ticker-content">
@@ -184,6 +239,9 @@
 
                 <!-- Election home only: a date-ordered world schedule. -->
                 <section class="panel-section hidden" id="elections-timeline-panel" aria-live="polite"></section>
+
+
+
             </aside>
 
             <!-- Center Pane: Map -->
@@ -241,7 +299,18 @@
 
             <!-- Right Pane: Stats & Macro -->
             <aside class="right-pane" id="right-pane">
-                
+
+                <!-- Commodity reports (Phase 2-2): official reports for the
+                     commodity/country on screen. Its own section rather than
+                     sharing news-panel in the left pane -- that panel is the
+                     trade ranking, and a day with several NASS releases made
+                     the combined list require real scrolling to reach either
+                     one. The heading lives inside #reports-slot's own markup
+                     (trade.js), so this wrapper carries no title of its own. -->
+                <div class="panel-section hidden" id="commodity-reports-panel">
+                    <div id="reports-slot"></div>
+                </div>
+
                 <!-- Climate right sidebar (world context / country metrics) -->
                 <div class="panel-section hidden" id="climate-right-panel">
                     <div class="panel-header" style="margin-bottom: 12px;">
@@ -253,6 +322,12 @@
 
                 <!-- Election country explorer. Global timeline is hidden while this is open. -->
                 <section class="panel-section hidden" id="elections-country-panel" aria-live="polite"></section>
+
+
+
+
+                <!-- US Policy: Executive Order detail.
+                     Regulations listed here are external-link-only by design --
 
                 <!-- 「오늘 신호」 panel (home only).
                      Two zones: three fixed cards that never rotate, and a stage
@@ -311,21 +386,41 @@
     </div>
 
     <!-- Data and App Logic -->
-    <script src="data.js?v=7"></script>
+    <script src="data.js?v=11"></script>
     <script src="shipping.js?v=19"></script>
+    <!-- Signup/login. Loaded before every feature module so Auth.currentUser()
+         and window.auth-container are ready by the time app.js's other
+         renderers run. -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+    <script src="auth-config.js?v=1"></script>
+    <script src="auth.js?v=6"></script>
     <!-- Finance domains, split out of app.js. Plain scripts sharing one global
          scope, listed so each file follows the ones it reads: macro.js first
          (market-microstructure.js and calculator.js draw with mmLineChart and
          mmFmt), portfolio.js before calculator.js (the calculator's search box
          reuses pfSearchLocal/pfSpot), then app.js, whose renderFinanceView
          dispatches to all four. Every cross-file reference is inside a function
-         body, so this order documents the dependency rather than enforcing it. -->
-    <script src="macro.js?v=1"></script>
-    <script src="market-microstructure.js?v=1"></script>
-    <script src="portfolio.js?v=1"></script>
-    <script src="calculator.js?v=1"></script>
-    <script src="app.js?v=107"></script>
-    <script src="trade.js?v=1"></script>
+         body, so this order documents the dependency rather than enforcing it.
+
+         Bump the ?v= of EVERY file in this group together whenever a global
+         moves between them. All five read helpers defined in app.js -- macro.js
+         takes finEsc, the other three also take finPct, loadFirstJson and
+         finDataPaths -- so a browser holding a fresh calculator.js against a
+         cached app.js throws "loadFirstJson is not defined" and the whole
+         valuation view dies. index.html is served no-store (see serveAsset in
+         _worker.js), so these query strings are what actually pins the group
+         to one build. -->
+    <script src="macro.js?v=14"></script>
+    <script src="market-microstructure.js?v=overseas-letf-2"></script>
+    <script src="portfolio.js?v=2"></script>
+    <script src="calculator.js?v=2"></script>
+    <script src="policy.js?v=18"></script>
+    <!-- My Page: reads window.Auth (favorites, account fields) and
+         window.USPolicy (favorited-bill cards), so it loads after both. -->
+    <script src="mypage.js?v=1"></script>
+    <script src="app.js?v=119"></script>
+    <script src="gas-storage.js?v=2"></script>
+    <script src="trade.js?v=gas-storage-2"></script>
     <script type="module" src="js/elections/index.js?v=2"></script>
 </body>
 </html>

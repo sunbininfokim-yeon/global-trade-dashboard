@@ -1,4 +1,5 @@
 import { escapeHtml, formatDate, stateLabel } from '../ui.js';
+import { usaStateSuperPac } from './special/usa-state-superpac.js';
 
 const party = (value) => ({ DEM: '민주당', GOP: '공화당', IND: '무소속', NP: '무당파' }[value] || value || '');
 const person = (row) => {
@@ -14,11 +15,36 @@ const seatLine = (body) => {
     return body.nonpartisan_official ? `공식 비당파 · 분석 분류 ${classification}` : classification;
 };
 const leaderLine = (leader) => leader ? `${leader.title || '지도부'}: ${person(leader)}` : '공개 명부 미기재';
+
+// The pipeline only tells us the majority side's abbr (control) and the
+// minority floor leader's abbr, not a full member-by-member roster, so a
+// coalition-controlled chamber (AK) has no way to split its "majority" count
+// into DEM/GOP dots -- coloring those grey rather than guessing keeps this
+// honest for the ~2 non-DEM/GOP chambers same as the ~48 clean ones.
+const partyDotColor = (abbr) => ({ DEM: '#2563eb', GOP: '#dc2626' }[abbr] || '#64748b');
+const partyLabel = (abbr) => {
+    if (!abbr) return '정당 불명';
+    const mapped = party(abbr);
+    return mapped !== abbr ? `${mapped}(${abbr})` : abbr;
+};
+const seatDots = (chamber) => {
+    const groups = [
+        { abbr: chamber.abbr, count: chamber.majority },
+        { abbr: chamber.leadership?.second_party_floor_leader?.abbr, count: chamber.minority },
+    ].filter((group) => Number.isFinite(group.count) && group.count > 0);
+    if (!groups.length) return '';
+    const dots = groups.flatMap((group) => Array.from({ length: group.count },
+        () => `<span class="elections-seat-dot" style="background:${partyDotColor(group.abbr)}" title="${escapeHtml(partyLabel(group.abbr))}"></span>`)).join('');
+    const legend = groups.map((group) => `<span class="elections-seat-legend-item"><i style="background:${partyDotColor(group.abbr)}"></i>${escapeHtml(`${partyLabel(group.abbr)} ${group.count}석`)}</span>`).join('');
+    return `<div class="elections-seat-dots">${dots}</div><div class="elections-seat-legend">${legend}</div>`;
+};
+
 const chamberCard = (label, chamber) => {
     if (!chamber) {
         return `<article class="elections-card"><div class="elections-card-label">${escapeHtml(label)}</div><div class="elections-card-value">해당 없음</div></article>`;
     }
     const leadership = chamber.leadership || {};
+    const seats = seatDots(chamber);
     return `
         <article class="elections-card elections-chamber-card">
             <div class="elections-card-label">${escapeHtml(label)}</div>
@@ -30,17 +56,56 @@ const chamberCard = (label, chamber) => {
                     <div>${escapeHtml(leaderLine(leadership.second_party_floor_leader))}</div>
                 </div>
             </details>
+            ${seats ? `<details class="elections-disclosure"><summary>정당별 의석 보기</summary>${seats}</details>` : ''}
         </article>`;
 };
 
-export const renderUsaStateDashboard = (root, { state, districtMapReady, onBackToUsa }) => {
+export const renderUsaStateDashboard = (root, {
+    state, districtMapReady, onBackToUsa,
+    financeMode = false, financeRaces = null, financeContract = null, mappedDistricts = null, openDistrict = null,
+    onToggleFinance, onHighlightDistrict,
+}) => {
     const legislature = state.state_legislature || {};
     const delegation = state.federal_delegation || {};
     const members = [...(delegation.house_members || [])].sort((a, b) => String(a.district || '').localeCompare(String(b.district || ''), undefined, { numeric: true }));
     root.className = 'panel-section elections-country elections-state-dashboard';
+    const header = `
+        <div class="elections-country-actions">
+            <button class="elections-button" type="button" data-election-back-usa>← 미국 주 지도</button>
+            <button class="elections-button${financeMode ? ' is-active' : ''}" type="button" data-election-finance-toggle aria-pressed="${financeMode}">선거</button>
+        </div>
+        <div class="panel-header"><h2>${escapeHtml(state.state)}</h2><p>${financeMode
+            ? '외부 독립지출 · 후보별 지지·반대 금액'
+            : (districtMapReady ? '연방 하원 선거구 지도 · 공개 결합 데이터' : '주 경계 지도 · 연방 하원 선거구 공식 도형 수집 대기')}</p></div>`;
+
+    if (financeMode) {
+        root.innerHTML = header + usaStateSuperPac(state, financeRaces, mappedDistricts, financeContract);
+        root.querySelector('[data-election-back-usa]')?.addEventListener('click', onBackToUsa);
+        root.querySelector('[data-election-finance-toggle]')?.addEventListener('click', () => onToggleFinance?.());
+        // Opening a district is a local DOM change, not a re-render: the list
+        // runs to 50+ rows and rebuilding it would throw away the scroll
+        // position on every click. Only the map is told to change.
+        root.querySelectorAll('[data-spac-toggle]').forEach((button) => button.addEventListener('click', () => {
+            const wrap = button.closest('.elections-spac-district');
+            const wasOpen = wrap.classList.contains('is-open');
+            root.querySelectorAll('.elections-spac-district.is-open').forEach((row) => row.classList.remove('is-open'));
+            if (!wasOpen) wrap.classList.add('is-open');
+            // A row without geometry still opens; it just clears the map's
+            // highlight rather than asking for one that cannot be drawn.
+            const district = button.dataset.spacDistrict;
+            onHighlightDistrict?.(wasOpen || district === undefined ? null : district);
+        }));
+        // A district named in the URL opens without a click; the map was
+        // already drawn with that highlight, so this does not re-report it.
+        if (openDistrict != null) {
+            root.querySelector(`[data-spac-district="${CSS.escape(String(openDistrict))}"]`)
+                ?.closest('.elections-spac-district')?.classList.add('is-open');
+        }
+        return;
+    }
+
     root.innerHTML = `
-        <div class="elections-country-actions"><button class="elections-button" type="button" data-election-back-usa>← 미국 주 지도</button></div>
-        <div class="panel-header"><h2>${escapeHtml(state.state)}</h2><p>${districtMapReady ? '연방 하원 선거구 지도 · 공개 결합 데이터' : '주 경계 지도 · 연방 하원 선거구 공식 도형 수집 대기'}</p></div>
+        ${header}
         <section class="elections-detail-section">
             <p class="section-title">1 · 주 행정부</p>
             <div class="elections-card-grid">
@@ -69,4 +134,5 @@ export const renderUsaStateDashboard = (root, { state, districtMapReady, onBackT
         ${state.primary_2026 ? `<section class="elections-detail-section"><p class="section-title">2026 선거 과정</p><div class="elections-card"><div class="elections-card-value">${escapeHtml(state.primary_2026.headline || '공개된 경선 요약 없음')}</div><div class="elections-event-meta">${escapeHtml(formatDate(state.primary_2026.date))} · ${escapeHtml(stateLabel(state.primary_2026.status))}</div></div></section>` : ''}
     `;
     root.querySelector('[data-election-back-usa]')?.addEventListener('click', onBackToUsa);
+    root.querySelector('[data-election-finance-toggle]')?.addEventListener('click', () => onToggleFinance?.());
 };

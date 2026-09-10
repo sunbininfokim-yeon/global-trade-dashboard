@@ -1,0 +1,55 @@
+name: Congress Rollover Cleanup
+
+# scripts/rollover-congress.js is deliberately manual-trigger-only -- no
+# schedule here. A new Congress starting is a real-world event nobody wants
+# fired by a date guess, and the purge itself deletes non-enacted bills from
+# the prior Congress, so this stays workflow_dispatch-only with the script's
+# own dry-run default preserved unless a human explicitly opts into deleting.
+
+on:
+  workflow_dispatch:
+    inputs:
+      allow_purge:
+        description: 'true actually deletes rows. false (default) only previews the candidate count -- nothing is deleted.'
+        required: false
+        default: 'false'
+        type: choice
+        options: ['false', 'true']
+      max_bills:
+        description: 'Maximum bills to delete in this run, if allow_purge is true.'
+        required: false
+        default: '1000'
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: congress-rollover
+  cancel-in-progress: false
+
+jobs:
+  rollover:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      CONGRESS_API_KEY: ${{ secrets.CONGRESS_API_KEY }}
+      DATA_GOV_API_KEY: ${{ secrets.DATA_GOV_API_KEY }}
+      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+      ALLOW_CONGRESS_ROLLOVER_PURGE: ${{ inputs.allow_purge || 'false' }}
+      ROLLOVER_PURGE_MAX_BILLS: ${{ inputs.max_bills || '1000' }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Validate script
+        run: node --check scripts/rollover-congress.js
+
+      - name: Run Congress rollover (dry run unless allow_purge=true)
+        run: node scripts/rollover-congress.js

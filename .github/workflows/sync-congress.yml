@@ -1,0 +1,112 @@
+name: Sync US Government Policy Data
+
+on:
+  schedule:
+    - cron: '17 2 * * *'
+  workflow_dispatch:
+    inputs:
+      congress_mode:
+        description: 'Congress.gov mode. bootstrap discovers the current 119th Congress page by page.'
+        required: false
+        default: 'incremental'
+        type: choice
+        options: [incremental, bootstrap]
+      public_law_mode:
+        description: 'GovInfo Public Law mode. Use bootstrap only for deliberate historical backfill.'
+        required: false
+        default: 'incremental'
+        type: choice
+        options: [incremental, bootstrap]
+      max_bills:
+        description: 'Maximum queued Congress bills to process in this run.'
+        required: false
+        default: '100'
+        type: string
+      max_public_laws:
+        description: 'Maximum queued Public Laws to process in this run.'
+        required: false
+        default: '50'
+        type: string
+      max_fr_documents:
+        description: 'Maximum queued Federal Register EO/regulation documents to process in this run.'
+        required: false
+        default: '50'
+        type: string
+
+permissions:
+  contents: read
+
+# One worker at a time: this makes the persistent queue safe even when a
+# manual backfill is dispatched near the scheduled run.
+concurrency:
+  group: us-policy-sync
+  cancel-in-progress: false
+
+jobs:
+  sync-government-policy:
+    runs-on: ubuntu-latest
+    # Was 55: two bootstrap dispatches in a row (2026-09-05, 2026-09-08) got
+    # cancelled mid-run by this ceiling, not by the Congress.gov/GovInfo rate
+    # limit itself (850ms/600ms gates -- the real bottleneck is those, not an
+    # arbitrary wall-clock cutoff). Raised well clear of GitHub's 360-minute
+    # job maximum so a real historical backfill (max_bills/max_public_laws in
+    # the thousands) can actually finish in one dispatch instead of getting
+    # silently truncated -- the daily schedule still only asks for small
+    # incremental batches, so this only matters for a deliberate bootstrap run.
+    timeout-minutes: 340
+    env:
+      CONGRESS_API_KEY: ${{ secrets.CONGRESS_API_KEY }}
+      DATA_GOV_API_KEY: ${{ secrets.DATA_GOV_API_KEY }}
+      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+      GEMINI_API_KEY: ${{ secrets.AI_STUDIO_API_KEY }}
+      RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+      # Scheduled work tracks changes, and automatically continues an already
+      # started bootstrap cursor until it is complete.
+      SYNC_MODE: ${{ inputs.congress_mode || 'incremental' }}
+      PUBLIC_LAW_MODE: ${{ inputs.public_law_mode || 'incremental' }}
+      MAX_BILLS: ${{ inputs.max_bills || '100' }}
+      MAX_PUBLIC_LAWS: ${{ inputs.max_public_laws || '50' }}
+      MAX_FR_DOCUMENTS: ${{ inputs.max_fr_documents || '50' }}
+      MAX_EMBEDDINGS: '25'
+      CONGRESS_REQUEST_INTERVAL_MS: '850'
+      NODE_OPTIONS: --max-old-space-size=2048
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Validate scripts
+        run: |
+          node --check scripts/lib/sync-utils.js
+          node --check scripts/sync-congress.js
+          node --check scripts/sync-federal-register.js
+          node --check scripts/backfill-eo-text-relations.js
+          node --check scripts/sync-public-laws.js
+          node --check scripts/sync-us-code.js
+          node --check scripts/notify-favorites.js
+          node scripts/lib/eo-authorities.test.js
+          node scripts/lib/eo-agency-directives.test.js
+
+      - name: Sync Congress.gov bills
+        run: node scripts/sync-congress.js
+
+      - name: Sync Federal Register executive orders and regulations
+        if: ${{ !cancelled() }}
+        run: node scripts/sync-federal-register.js
+
+      - name: Refresh U.S. Code reference release point
+        if: ${{ !cancelled() }}
+        run: node scripts/sync-us-code.js
+
+      - name: Sync Public Law index
+        if: ${{ !cancelled() }}
+        run: node scripts/sync-public-laws.js
+
+      - name: Notify favorited bill/EO changes
+        if: ${{ !cancelled() }}
+        run: node scripts/notify-favorites.js

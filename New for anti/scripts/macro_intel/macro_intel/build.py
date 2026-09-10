@@ -133,9 +133,17 @@ def build_liquidity_intel(
         break
 
     # --- Fed ---
-    rss = _read("fed_press.xml", src["fed_press_rss"])
-    if rss:
-        for it in parse_fed_press_rss(rss, patterns):
+    seen_fed_urls: set[str] = set()
+
+    def _ingest_fed_rss(name: str, url: str) -> None:
+        nonlocal beige_tone
+        text = _read(name, url)
+        if not text:
+            return
+        for it in parse_fed_press_rss(text, patterns):
+            if it.url in seen_fed_urls:
+                continue
+            seen_fed_urls.add(it.url)
             if it.event_type == "beige_book" and it.summary:
                 it.tone = score_beige_tone(it.summary + " " + it.title, soft, firm)
                 beige_tone = it.tone
@@ -149,6 +157,14 @@ def build_liquidity_intel(
                 }
             )
             ticker_items.append(fed_to_ticker(it))
+
+    _ingest_fed_rss("fed_press.xml", src["fed_press_rss"])
+    # Same feed shape (parse_fed_press_rss already classifies fomc/beige_book/press),
+    # narrowed to the Monetary Policy category -- FOMC statements and their
+    # Implementation Notes. Filtered by URL against the general press feed above
+    # since the Fed's own "all press releases" feed already carries these too.
+    if src.get("fed_press_monetary_rss"):
+        _ingest_fed_rss("fed_press_monetary.xml", src["fed_press_monetary_rss"])
 
     hub = _read("beige_hub.html", src["fed_beige_book_hub"])
     if hub:

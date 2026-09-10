@@ -1,0 +1,250 @@
+{
+  "version": 1,
+  "user_agent": "GlobalTradeDashboard-CommodityReports/1.0 (+research; official sources only)",
+  "fetch_timeout_sec": 22,
+  "max_items_per_source": 40,
+  "notes": [
+    "Official publishers only -- statistical agencies, ministries, and the intergovernmental bodies that publish commodity balance sheets. No aggregators, no paywalled trade press. EXCEPTION (2026-09-02, operator decision): S&P Global's own RSS feeds are allowed even though the full articles sit behind a paywall -- the feed itself (headline + short excerpt) is free, the standard shape for RSS on paywalled trade press. This is a deliberate one-off, not an opening for aggregators generally; an unverifiable site with zero independent footprint (checked and rejected the same day) stayed out specifically because this exception is not a general license.",
+    "default_country is a fallback for releases that name no country (CONAB's safra bulletins never write 'Brazil'). Any country the text does name wins over it -- a USDA release on Brazilian wheat is a Brazil report.",
+    "scope_hint 'global' marks publishers whose untagged releases are world balance sheets, not home-country news (FAO, IGC, IEA, OPEC).",
+    "commodity_hint only fires when the text mentions no commodity at all; it is a prior, not an override.",
+    "A source that 403s or moves is switched to enabled:false with the date and reason, the same convention official_reports/config/sources.json uses. feed_status in the built JSON is where you see which ones died."
+  ],
+  "sources": [
+    {
+      "id": "us_usda_newsroom",
+      "agency": "USDA", "agency_ko": "미 농무부",
+      "default_country": "USA",
+      "kind": "rss",
+      "url": "https://www.usda.gov/rss/latest-releases.xml",
+      "lang": "en", "enabled": true, "weight": 1.4,
+      "notes": "Department-wide releases; WASDE, Crop Production and Prospective Plantings all announce here. Confirmed live 2026-09-02 (first Actions run, 10 items)."
+    },
+    {
+      "id": "us_nass_todays_reports",
+      "agency": "USDA NASS", "agency_ko": "미 농무부 국립농업통계청(NASS)",
+      "default_country": "USA",
+      "kind": "rss",
+      "url": "http://www.nass.usda.gov/rss/reports.xml",
+      "lang": "en", "enabled": true, "weight": 1.5,
+      "notes": "URL confirmed 2026-09-01 by the operator directly from NASS's own syndication/subscribe page (Newsroom/Syndication/Todays_Reports) -- not this session's guess. Each item is one day's released report (Crop Production, Grain Stocks, Agricultural Prices, Egg Products...); this is the machine-readable form of the 'Today's Reports' list on nass.usda.gov/Publications. Confirmed live 2026-09-02 (first Actions run, 4 items -- narrow, matching its name)."
+    },
+    {
+      "id": "us_nass_asb",
+      "agency": "USDA Agricultural Statistics Board", "agency_ko": "미 농무부 농업통계위원회(ASB)",
+      "default_country": "USA",
+      "kind": "rss",
+      "url": "http://www.nass.usda.gov/rss/asb.xml",
+      "lang": "en", "enabled": true, "weight": 1.6,
+      "notes": "URL confirmed 2026-09-01 by the operator (see us_nass_todays_reports). ASB is the board that clears NASS's major statistical releases for embargoed publication -- higher weight than the plain reports feed for that reason. Confirmed live 2026-09-02 (first Actions run, 40 items -- this is a rolling notice archive going back to 2023/2024, not just today's, so recency scoring is doing real work here)."
+    },
+    {
+      "id": "us_nass_news",
+      "agency": "USDA NASS", "agency_ko": "미 농무부 국립농업통계청(NASS)",
+      "default_country": "USA",
+      "kind": "rss",
+      "url": "http://www.nass.usda.gov/rss/news.xml",
+      "lang": "en", "enabled": true, "weight": 1.0,
+      "notes": "URL confirmed 2026-09-01 by the operator (see us_nass_todays_reports). General NASS news/events, not release announcements -- lower weight, may overlap with us_usda_newsroom. Confirmed live 2026-09-02 (first Actions run, 40 items, same rolling-archive shape as us_nass_asb)."
+    },
+    {
+      "id": "us_usda_ers_newsroom",
+      "agency": "USDA ERS", "agency_ko": "미 농무부 경제조사국",
+      "default_country": "USA",
+      "kind": "rss",
+      "url": "https://www.ers.usda.gov/rss/newsroom.xml",
+      "lang": "en", "enabled": false, "weight": 1.2,
+      "notes": "DISABLED 2026-09-02: HTTP 404 on first live Actions run (see New for anti/scripts/commodity_reports/README.md). Outlook series (Wheat Outlook, Feed Outlook, Oil Crops Outlook) are still worth having -- URL needs finding, this path is gone."
+    },
+    {
+      "id": "us_usda_ers_charts",
+      "agency": "USDA ERS", "agency_ko": "미 농무부 경제조사국",
+      "default_country": "USA",
+      "kind": "rss",
+      "url": "https://www.ers.usda.gov/rss/charts-of-note.xml",
+      "lang": "en", "enabled": false, "weight": 0.9,
+      "notes": "DISABLED 2026-09-02: HTTP 404 on first live Actions run. Same ERS RSS retirement as us_usda_ers_newsroom -- check whether ERS moved to a different feed path or dropped RSS."
+    },
+    {
+      "id": "us_fas_newsroom",
+      "agency": "USDA FAS", "agency_ko": "미 농무부 해외농업국",
+      "kind": "rss",
+      "url": "https://www.fas.usda.gov/newsroom/rss.xml",
+      "lang": "en", "enabled": false, "weight": 1.35,
+      "scope_hint": "global",
+      "notes": "DISABLED 2026-09-02: HTTP 404 on first live Actions run. This is the one source that reports on OTHER countries' crops (GAIN attaché reports) -- worth re-finding over the others, since us_usda_newsroom/nass only cover the US."
+    },
+    {
+      "id": "us_eia_today_in_energy",
+      "agency": "EIA", "agency_ko": "미 에너지정보청",
+      "kind": "rss",
+      "url": "https://www.eia.gov/rss/todayinenergy.xml",
+      "lang": "en", "enabled": true, "weight": 1.15,
+      "scope_hint": "global",
+      "commodity_hint": ["oil"],
+      "notes": "Known-good feed (already carried by the official_reports pipeline). Confirmed live 2026-09-02 (first Actions run, 11 items)."
+    },
+    {
+      "id": "us_eia_press",
+      "agency": "EIA", "agency_ko": "미 에너지정보청",
+      "kind": "rss",
+      "url": "https://www.eia.gov/rss/press_rss.xml",
+      "lang": "en", "enabled": true, "weight": 1.3,
+      "scope_hint": "global",
+      "commodity_hint": ["oil"],
+      "notes": "Short-Term Energy Outlook and Annual Energy Outlook announcements. Confirmed live 2026-09-02 (first Actions run, 10 items)."
+    },
+    {
+      "id": "us_eia_whats_new",
+      "agency": "EIA", "agency_ko": "미 에너지정보청",
+      "kind": "rss",
+      "url": "https://www.eia.gov/about/new/WNtest3.php",
+      "lang": "en", "enabled": true, "weight": 1.15,
+      "scope_hint": "global",
+      "notes": "EIA's site-wide 'What's New' feed -- the operator supplied this URL directly (2026-09-02) alongside the two EIA feeds already in this file, and an earlier web search independently turned up the same URL already indexed serving raw RSS XML. Broader than us_eia_today_in_energy/us_eia_press: those two only ever carry oil (commodity_hint), but 'What's New' covers whatever EIA publishes across all fuels -- coal and natural gas included, which otherwise have zero sources in this config. No commodity_hint set on purpose: an untagged item here should be dropped, not defaulted to oil like the other two EIA sources. Not yet confirmed live -- next Actions run's feed_status decides."
+    },
+    {
+      "id": "br_conab",
+      "agency": "CONAB", "agency_ko": "브라질 국가식량공급공사",
+      "default_country": "BRA",
+      "kind": "rss",
+      "url": "https://www.conab.gov.br/ultimas-noticias?format=feed&type=rss",
+      "lang": "pt", "enabled": false, "weight": 1.4,
+      "commodity_hint": ["soybeans", "corn"],
+      "notes": "DISABLED 2026-09-02: reachable but feed_status says not_a_feed_payload on first live run -- the URL answers with something that isn't RSS/Atom/RDF (most likely an HTML page; the ?format=feed&type=rss query string may no longer be honored). Different failure than the 404s below: this is a URL/parameter fix, not a dead host. Acompanhamento da Safra is the Brazilian counterpart to WASDE and worth re-finding."
+    },
+    {
+      "id": "ca_statcan_daily",
+      "agency": "Statistics Canada", "agency_ko": "캐나다 통계청",
+      "default_country": "CAN",
+      "kind": "rss",
+      "url": "https://www150.statcan.gc.ca/n1/rss/dai-quo/dai-quo-eng.xml",
+      "lang": "en", "enabled": false, "weight": 1.1,
+      "notes": "DISABLED 2026-09-02: HTTP 404 on first live Actions run. The Daily carries Field Crop Reporting Series -- worth re-finding, StatCan restructures its RSS paths periodically."
+    },
+    {
+      "id": "int_fao_newsroom",
+      "agency": "FAO", "agency_ko": "유엔 식량농업기구",
+      "kind": "rss",
+      "url": "https://www.fao.org/newsroom/rss/en/",
+      "lang": "en", "enabled": false, "weight": 1.25,
+      "scope_hint": "global",
+      "notes": "DISABLED 2026-09-02: HTTP 404 on first live Actions run. FAO is the only confirmed source of genuine world balance-sheet reports (Food Price Index, Crop Prospects) -- highest-value one to re-find among the six that died this run."
+    },
+    {
+      "id": "int_fao_giews",
+      "agency": "FAO GIEWS", "agency_ko": "유엔 식량농업기구 세계식량정보조기경보시스템(GIEWS)",
+      "kind": "rss",
+      "url": "https://www.fao.org/giews/news/rss/en",
+      "lang": "en", "enabled": false, "weight": 1.3,
+      "scope_hint": "global",
+      "notes": "DISABLED 2026-09-02: HTTP 404 on the first live Actions run after enabling (run #3, commit 624db3a). Confirms the '<section>/news/rss/<lang>' pattern that worked for fao.org/nigeria and fao.org/uruguay does NOT extend to /giews -- GIEWS' own page structure is 'reports', not 'news' (fao.org/giews/reports/en), so the next guess should try /giews/reports/rss/en instead. GIEWS (Crop Prospects and Food Situation, country crop-failure alerts) is still the actual world-balance-sheet content int_fao_newsroom was chasing -- worth re-finding."
+    },
+    {
+      "id": "eu_agri",
+      "agency": "European Commission DG AGRI", "agency_ko": "EU 집행위 농업총국",
+      "kind": "rss",
+      "url": "https://agriculture.ec.europa.eu/rss_en",
+      "lang": "en", "enabled": false, "weight": 1.1,
+      "scope_hint": "global",
+      "notes": "DISABLED 2026-09-02: HTTP 404 on first live Actions run. EU short-term outlook and cereal balance sheets -- URL needs re-finding."
+    },
+    {
+      "id": "in_pib_agriculture",
+      "agency": "PIB India (Agriculture)", "agency_ko": "인도 정부 언론정보국 (농업)",
+      "default_country": "IND",
+      "kind": "rss",
+      "url": "https://pib.gov.in/RssMain.aspx?ModId=6&Lang=1&Regid=3",
+      "lang": "en", "enabled": true, "weight": 1.05,
+      "notes": "Advance Estimates of foodgrain production come out through PIB. Confirmed live 2026-09-02 (first Actions run, 20 items)."
+    },
+    {
+      "id": "jp_meti_en",
+      "agency": "METI", "agency_ko": "일본 경제산업성(METI)",
+      "default_country": "JPN",
+      "kind": "rss",
+      "url": "https://www.meti.go.jp/ml_index_en_atom.xml",
+      "lang": "en", "enabled": true, "weight": 1.1,
+      "notes": "URL supplied directly by the operator 2026-09-02, corroborated by search turning up a sibling feed at the same naming convention (meti.go.jp/ml_index_release_atom.xml). Atom, not RSS 2.0 -- parse_feed() handles both. METI is Japan's economy/trade/industry ministry: mostly SME policy, manufacturing, IP and safety regulation that this pipeline will correctly drop as untagged, but it is also where Japan's energy security and critical-minerals policy comes out (LNG/oil import policy, JOGMEC-adjacent rare earth/cobalt/lithium stockpiling announcements) -- the actual reason it's worth having. default_country JPN is a fallback only; a release about, say, Australian lithium still routes to Australia same as any other source here. Not yet confirmed live -- next Actions run's feed_status decides."
+    },
+    {
+      "id": "int_spglobal_energy",
+      "agency": "S&P Global Commodity Insights", "agency_ko": "S&P 글로벌 원자재 인사이트",
+      "kind": "rss",
+      "url": "https://www.spglobal.com/energy/en/news-research/rss-feed",
+      "lang": "en", "enabled": true, "weight": 1.0,
+      "scope_hint": "global",
+      "notes": "The one deliberate exception to 'official publishers only' in this file (see the top-level notes array) -- operator's call 2026-09-02, on the reasoning that the RSS feed itself (headline + short excerpt) is free even though the full S&P Global Commodity Insights articles sit behind a paywall, which is the standard shape for trade-press RSS. Weighted at 1.0, the low end of this file, on purpose: as a commercial outlet covering the same ground official sources already do here, it should not outrank USDA/EIA/NASS when both cover the same release. URL supplied directly by the operator; search corroborates spglobal.com/energy hosts multiple real RSS endpoints, though the exact one given may turn out to be a landing page rather than raw XML -- if so this reports not_a_feed_payload like br_conab did, not garbage data. Not yet confirmed live."
+    },
+    {
+      "id": "au_abares",
+      "agency": "ABARES", "agency_ko": "호주 농업자원경제국",
+      "default_country": "AUS",
+      "kind": "rss",
+      "url": "https://www.agriculture.gov.au/abares/news/rss.xml",
+      "lang": "en", "enabled": false, "weight": 1.35,
+      "notes": "DISABLED 2026-08-31: feed URL unverified from this environment. Australian Crop Report is quarterly and worth having -- enable once the URL is confirmed live."
+    },
+    {
+      "id": "int_igc",
+      "agency": "IGC", "agency_ko": "국제곡물이사회",
+      "kind": "rss",
+      "url": "https://www.igc.int/en/rss/rss.aspx",
+      "lang": "en", "enabled": false, "weight": 1.3,
+      "scope_hint": "global",
+      "commodity_hint": ["wheat", "corn"],
+      "notes": "DISABLED 2026-08-31: URL unverified. Grain Market Report is the reference world grain balance outside USDA. 2026-09-02: dug further -- no evidence this rss.aspx URL (or any RSS at all) is still live. The IGC's actual public content is thin: the Grain Market Report (GMR) itself is subscriber-only (subs@igc.int), and the one open page found (gmr_summary.aspx) is a short summary, not a feed. Left disabled rather than guessing a URL with no supporting evidence at all -- unlike the other disabled entries here, this one may not have an RSS to find."
+    },
+    {
+      "id": "int_opec_press",
+      "agency": "OPEC", "agency_ko": "석유수출국기구",
+      "kind": "html_list",
+      "url": "https://www.opec.org/opec_web/en/press_room/28.htm",
+      "lang": "en", "enabled": false, "weight": 1.3,
+      "scope_hint": "global",
+      "commodity_hint": ["oil"],
+      "html": {"base": "https://www.opec.org", "item_href_re": "[^\"']*press_room[^\"']*", "max_items": 20},
+      "notes": "DISABLED 2026-08-31: list-page selector unverified. Monthly Oil Market Report announcements live here."
+    },
+    {
+      "id": "us_usgs_news",
+      "agency": "USGS National Minerals Information Center", "agency_ko": "미 지질조사국 국립광물정보센터(NMIC)",
+      "kind": "rss",
+      "url": "https://www.usgs.gov/news/minerals/feed",
+      "lang": "en", "enabled": true, "weight": 1.2,
+      "scope_hint": "global",
+      "notes": "URL replaced 2026-09-02: the operator fetched '/programs/mineral-resources-program/news/feed' (the previous guess) directly and pasted back the real response -- a valid RSS 2.0 channel whose own <atom:link rel=\"self\"> names the canonical URL as 'https://www.usgs.gov/news/minerals/feed', not the path we were requesting. That mismatch -- a Drupal view answering at an alias but declaring a different canonical self-link -- is the likely reason the previous guess hit 'SSL: CERTIFICATE_VERIFY_FAILED' on the first live run (run #3): a redirect through a differently-configured host, not a broken cert on usgs.gov itself. Switched to the canonical URL directly and re-enabled. The channel the operator fetched had zero <item> entries at the time (empty but well-formed, not an error) -- next Actions run's feed_status confirms whether this path fetches cleanly and whether items are actually flowing. Mineral Commodity Summaries is still the reference for the metals windows, which otherwise have zero sources."
+    },
+    {
+      "id": "int_lme_notices",
+      "agency": "London Metal Exchange", "agency_ko": "런던금속거래소",
+      "kind": "html_list",
+      "url": "https://www.lme.com/en/News",
+      "lang": "en", "enabled": false, "weight": 1.1,
+      "scope_hint": "global",
+      "commodity_hint": ["copper", "aluminum", "zinc", "tin", "lead", "nickel"],
+      "html": {"base": "https://www.lme.com", "item_href_re": "/en/News/[^\"']+", "max_items": 20},
+      "notes": "DISABLED 2026-09-01: operator asked for LME market notices specifically (not price/stock data, which is mostly subscription-gated). URL and the html.item_href_re selector are both unverified -- lme.com was unreachable from this build environment, so this entry is a placeholder shape, not a confirmed scrape target. Verify the actual notices page structure before enabling."
+    },
+    {
+      "id": "ua_minagro",
+      "agency": "Ukraine Ministry of Agrarian Policy", "agency_ko": "우크라이나 농업정책부",
+      "default_country": "UKR",
+      "kind": "rss",
+      "url": "https://minagro.gov.ua/rss",
+      "lang": "uk", "enabled": false, "weight": 1.2,
+      "commodity_hint": ["wheat", "corn"],
+      "notes": "DISABLED 2026-08-31: URL unverified."
+    },
+    {
+      "id": "us_fas_gain_reports",
+      "agency": "USDA FAS GAIN", "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
+      "kind": "fas_gain_cards",
+      "url": "https://www.fas.usda.gov/data/search?reports%5B0%5D=report_type%3A10251",
+      "lang": "en", "enabled": true, "weight": 1.5,
+      "scope_hint": "global",
+      "html": {"base": "https://www.fas.usda.gov"},
+      "notes": "GAIN attaché reports (FAS posts abroad writing up their host country's crop/market situation -- exactly the 'USDA report about Brazilian wheat' case this pipeline exists for) moved off gain.fas.usda.gov in 2026 to this Drupal 10 search view. Confirmed 2026-09-02 from operator-supplied page source to be fully server-rendered: each result is a `.c-card` block with the date/title/link/summary already in the raw HTML, no separate JS/XHR call -- so parse_fas_gain_cards scrapes it rather than calling an API. CONFIRMED LIVE 2026-09-02 (first Actions run after enabling, run #3, commit 624db3a): not in that run's failed-feeds list, so the Akamai Bot Manager script on the page did not block this Actions runner's fetch -- the risk noted below did not materialize, at least on this one run."
+    }
+  ]
+}

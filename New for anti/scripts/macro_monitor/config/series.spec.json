@@ -14,7 +14,7 @@
       "label_ko": "금리",
       "label_en": "Rates",
       "order": 2,
-      "description_ko": "EFFR · 국채 · TIPS · 스프레드 · SOFR · HY OAS"
+      "description_ko": "정책금리 · 국채수익률 · 국가부채 · 부채이자 · 스프레드 · SOFR · HY OAS"
     },
     {
       "id": "fx",
@@ -238,7 +238,9 @@
       "unit": "bn_usd",
       "format": "bn1",
       "higher_is": "more_supply",
-      "history_years": [5],
+      "history_years": [
+        5
+      ],
       "refresh_tier": "weekly",
       "chart_type": "bar",
       "note_ko": "DTS Public Debt Transactions — 당일 Marketable Bills/Notes/Bonds 발행−상환.",
@@ -253,7 +255,10 @@
       "unit": "tn_usd",
       "format": "tn2",
       "higher_is": "more_debt",
-      "history_years": [5, 10],
+      "history_years": [
+        5,
+        10
+      ],
       "refresh_tier": "weekly",
       "chart_type": "line",
       "note_ko": "Debt to the Penny — 시중보유+정부내보유."
@@ -265,7 +270,10 @@
       "unit": "bn_usd",
       "format": "bn0",
       "higher_is": "mixed",
-      "history_years": [5, 10],
+      "history_years": [
+        5,
+        10
+      ],
       "refresh_tier": "monthly",
       "chart_type": "line",
       "note_ko": "MTS On-Budget 흑자(+)/적자(-). 음수=적자."
@@ -277,7 +285,10 @@
       "unit": "bn_usd",
       "format": "bn0",
       "higher_is": "stronger",
-      "history_years": [5, 10],
+      "history_years": [
+        5,
+        10
+      ],
       "refresh_tier": "monthly",
       "chart_type": "line",
       "note_ko": "MTS Table 2 Total Receipts"
@@ -289,7 +300,10 @@
       "unit": "bn_usd",
       "format": "bn0",
       "higher_is": "more_spending",
-      "history_years": [5, 10],
+      "history_years": [
+        5,
+        10
+      ],
       "refresh_tier": "monthly",
       "chart_type": "line",
       "note_ko": "MTS Table 2 Total Outlays"
@@ -716,6 +730,93 @@
       "chart_type": "line",
       "composite": true,
       "note_ko": "칩: YoY | QoQ (QoQ는 비연율). 차트 토글 지원"
+    },
+    {
+      "id": "capex_gdp_ratio",
+      "category": "growth",
+      "label_ko": "GDP 대비 설비투자",
+      "unit": "%",
+      "format": "pct1",
+      "higher_is": "stronger",
+      "history_years": [
+        5,
+        10
+      ],
+      "refresh_tier": "annual",
+      "chart_type": "line",
+      "note_ko": "명목 민간기업 설비투자 ÷ 명목 GDP. 내각부 국민계정의 연간 확정·추계치를 사용.",
+      "reference": {
+        "kind": "threshold",
+        "level": 18.0,
+        "relation": ">",
+        "unit": "%",
+        "label_ko": "18% 초과",
+        "source_ko": "일본 고압경제·설비투자 사이클 모니터링 기준선"
+      },
+      "thresholds": [
+        {
+          "kind": "threshold",
+          "level": 18.0,
+          "relation": ">",
+          "unit": "%",
+          "label_ko": "18% 초과",
+          "source_ko": "일본 고압경제·설비투자 사이클 모니터링 기준선"
+        },
+        {
+          "kind": "threshold",
+          "level": 20.0,
+          "relation": ">",
+          "unit": "%",
+          "label_ko": "20%",
+          "source_ko": "설비투자 과열 경계 기준선(20%)"
+        }
+      ]
+    },
+    {
+      "id": "net_funding_demand",
+      "category": "growth",
+      "label_ko": "순자금수요",
+      "unit": "% of GDP",
+      "format": "pct1",
+      "higher_is": "weaker",
+      "history_years": [
+        5,
+        10
+      ],
+      "refresh_tier": "quarterly",
+      "chart_type": "line",
+      "note_ko": "민간 비금융법인 자금잉여와 일반정부 재정수지를 합산한 4분기 이동 GDP 비율. 음수는 순자금수요(투자초과).",
+      "reference": {
+        "kind": "threshold",
+        "level": -5.0,
+        "relation": "≤",
+        "unit": "% of GDP",
+        "label_ko": "-5%",
+        "source_ko": "적극재정 하 고압경제 모니터링 기준선"
+      }
+    },
+    {
+      "id": "gdp_gap",
+      "category": "growth",
+      "label_ko": "GDP 갭 / 수급 갭",
+      "unit": "% of potential GDP",
+      "format": "pct1",
+      "higher_is": "stronger",
+      "history_years": [
+        5,
+        10
+      ],
+      "refresh_tier": "quarterly",
+      "chart_type": "line",
+      "note_ko": "일본은행 추정 GDP 갭. 잠재 GDP 대비 실제 수요·공급의 초과/미달을 뜻함.",
+      "reference": {
+        "kind": "threshold",
+        "level": 2.0,
+        "relation": ">",
+        "unit": "% of potential GDP",
+        "label_ko": "+2% 초과",
+        "source_ko": "고압경제 상태 진입 모니터링 기준선"
+      }
     },
     {
       "id": "gdpnow",
@@ -2921,6 +3022,36 @@
         10
       ],
       "note_ko": "신용등급 핵심 변수"
+    },
+    {
+      "id": "sovereign_debt",
+      "category": "rates",
+      "label_ko": "국가부채",
+      "unit": "tn_usd",
+      "format": "tn2",
+      "higher_is": "weaker_fiscal",
+      "history_years": [
+        5,
+        10
+      ],
+      "refresh_tier": "annual",
+      "chart_type": "fiscal_dual_line",
+      "note_ko": "IMF 일반정부 총부채의 현재달러 환산 규모. 클릭하면 국가부채/GDP를 함께 표시."
+    },
+    {
+      "id": "sovereign_interest",
+      "category": "rates",
+      "label_ko": "정부부채 이자",
+      "unit": "tn_usd",
+      "format": "tn2",
+      "higher_is": "weaker_fiscal",
+      "history_years": [
+        5,
+        10
+      ],
+      "refresh_tier": "annual",
+      "chart_type": "fiscal_dual_line",
+      "note_ko": "IMF 공공부채 이자지급의 현재달러 환산 규모. 미국은 재무부 MTS 기준 국방비 대비 이자도 함께 표시."
     },
     {
       "id": "sarb_total_assets",
@@ -5688,6 +5819,15 @@
             "contrib_pp": 0.6
           }
         ]
+      },
+      "capex_gdp_ratio": {
+        "skip": true
+      },
+      "net_funding_demand": {
+        "skip": true
+      },
+      "gdp_gap": {
+        "skip": true
       },
       "sovereign_cds_5y": {
         "base": 30.0,

@@ -495,9 +495,24 @@ class TestUsMacroKit(unittest.TestCase):
         self.assertIn("fx_intervention", by_id)
         self.assertIn("shunto_wage", by_id)
         self.assertIn("core_core_cpi", by_id)
+        for sid in ("capex_gdp_ratio", "net_funding_demand", "gdp_gap"):
+            self.assertIn(sid, by_id)
+            self.assertEqual(by_id[sid]["data_status"], "official_snapshot")
+            self.assertTrue(by_id[sid].get("official_history"))
+            self.assertTrue(by_id[sid].get("source_urls"))
+        self.assertEqual(by_id["capex_gdp_ratio"]["asof"], "2025-12-31")
+        self.assertEqual(by_id["net_funding_demand"]["asof"], "2026-03-31")
+        self.assertEqual(by_id["gdp_gap"]["asof"], "2026-03-31")
+        self.assertAlmostEqual(by_id["capex_gdp_ratio"]["value"], 18.6409, places=4)
+        self.assertAlmostEqual(by_id["net_funding_demand"]["value"], 1.5893, places=4)
+        self.assertAlmostEqual(by_id["gdp_gap"]["value"], 0.5345, places=4)
         # Growth: GDP first, PMI surveys last
         growth_ids = [c["id"] for c in jpn["categories"]["growth"]]
         self.assertEqual(growth_ids[0], "gdp")
+        self.assertEqual(
+            growth_ids[1:4],
+            ["capex_gdp_ratio", "net_funding_demand", "gdp_gap"],
+        )
         self.assertTrue(growth_ids.index("ism_mfg") > growth_ids.index("shunto_wage"))
         self.assertAlmostEqual(
             by_id["spread_30y10y"]["value"],
@@ -528,6 +543,8 @@ class TestUsMacroKit(unittest.TestCase):
                 "tips_10y",
                 "spread_10y3m",
                 "spread_10y2y",
+                "sovereign_debt",
+                "sovereign_interest",
                 "hy_oas",
                 "sovereign_ratings",
             ],

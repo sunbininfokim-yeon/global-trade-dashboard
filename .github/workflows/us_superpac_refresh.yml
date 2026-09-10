@@ -1,0 +1,108 @@
+name: US election finance backend
+
+# FEC 연방 슈퍼팩 독립지출 + 워싱턴 주지사 C6 어댑터 (PR #260 인수).
+# 설치본은 New for anti/scripts/election_watch/ops/us_superpac_refresh.yml 템플릿을
+# 이 레포 실제 배포 방식에 맞게 고쳤다: 이 레포는 별도 deploy.yml이 없고
+# Cloudflare Workers Builds가 main push를 감지해 자동 배포하므로(docs/ops/PIPELINE.md),
+# 템플릿의 `gh workflow run deploy.yml` 스텝은 존재하지 않는 워크플로를 호출해
+# 데이터 발행이 끝난 뒤에도 그 스텝에서 그대로 실패한다 — 제거했다. 그래서
+# actions: write 권한도 필요 없다. Push 재시도는 market_microstructure_daily.yml이
+# 2026-08-28 실제로 겪은 non-fast-forward 실패(다른 봇이 그 사이 main에 커밋)를
+# 그대로 따른다.
+
+on:
+  schedule:
+    # 평시 주 1회(월), 10월만 월·금 2회. GitHub cron은 UTC이고 08:25 UTC =
+    # 17:25 KST — 기존 실행 시각 그대로다. month 필드로 10월을 갈라 두 줄로
+    # 쓴다: cron 한 줄로는 "10월만 다르게"를 표현할 수 없다.
+    - cron: '25 8 * 1-9,11-12 1'
+    - cron: '25 8 * 10 1,5'
+  workflow_dispatch:
+    inputs:
+      cycle:
+        description: Optional even reporting cycle; blank follows current year
+        required: false
+        type: string
+      cadence:
+        description: Collection cadence
+        default: daily
+        type: choice
+        options: [daily, weekly]
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+    permissions:
+      contents: write
+    defaults:
+      run:
+        working-directory: New for anti/scripts/election_watch
+    concurrency:
+      group: us-superpac-refresh
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Validate backend contracts
+        run: python3 -m unittest discover -s tests -p 'test_superpac*.py' -v
+
+      - name: Refresh sources and map contracts
+        id: collect
+        continue-on-error: true
+        env:
+          FEC_API_KEY: ${{ secrets.FEC_API_KEY || secrets.DATA_GOV_API_KEY }}
+          FINANCE_CYCLE: ${{ inputs.cycle }}
+          FINANCE_CADENCE: ${{ inputs.cadence || vars.US_FINANCE_CADENCE || 'weekly' }}
+          FINANCE_EVENT: ${{ github.event_name }}
+        shell: bash
+        run: |
+          args=(--cadence "$FINANCE_CADENCE")
+          if [ -n "$FINANCE_CYCLE" ]; then args+=(--cycle "$FINANCE_CYCLE"); fi
+          # The cron above decides which days this runs. collection_plan() has
+          # its own weekly gate that additionally demands a Sunday
+          # (`cadence == 'weekly' and day.weekday() != 6 -> []`), which would
+          # blank every Monday and Friday run, so the schedule bypasses it the
+          # same way a manual dispatch already does. The monthly sweep of the
+          # preceding cycle still applies -- weekly cadence takes any run in the
+          # first seven days of a month.
+          args+=(--force)
+          python3 refresh_superpac.py "${args[@]}"
+
+      # Official House vacancies + the sourced swing-seat context the 의회 screen
+      # reads. build_congress_context.py ships with the US election data PR, so
+      # until that merges the script is simply absent -- skipping on that rather
+      # than failing keeps this workflow correct in either merge order.
+      - name: Refresh official House vacancies and sourced swing-seat context
+        id: congress_context
+        continue-on-error: true
+        shell: bash
+        run: |
+          if [ ! -f build_congress_context.py ]; then
+            echo 'build_congress_context.py is not in the tree yet; skipping until the election data PR lands.'
+            exit 0
+          fi
+          python3 build_congress_context.py
+
+      - name: Publish validated assets and collection health
+        working-directory: ${{ github.workspace }}
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add --all -- 'New for anti/public/data/usa_superpac' 'New for anti/public/data/usa_superpac_index_v1.json' 'New for anti/public/data/usa_governor_finance' 'New for anti/public/data/usa_election_finance' 'New for anti/public/data/usa_election_finance_index_v1.json' 'New for anti/public/data/usa_election_finance_refresh_status_v1.json' 'New for anti/scripts/election_watch/config/extracted/usa_congress.json' 'New for anti/public/data/elections_board_v1.json'
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m 'chore: refresh US election finance backend'
+          for i in 1 2 3; do
+            git push && exit 0
+            echo "push rejected, rebasing onto latest main and retrying ($i/3)"
+            git pull --rebase --autostash origin main
+          done
+          git push
+
+      - name: Surface collection failures after publishing health
+        if: steps.collect.outcome == 'failure' || steps.congress_context.outcome == 'failure'
+        run: exit 1

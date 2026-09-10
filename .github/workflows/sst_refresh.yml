@@ -9,7 +9,8 @@ name: Refresh SST anomaly grid
 
 on:
   schedule:
-    - cron: '20 8 * * 2'
+    # Sat 03:18 KST (Fri 18:18 UTC) — weekend batch, 22min after Japan growth.
+    - cron: '18 18 * * 5'
   workflow_dispatch:
 
 jobs:

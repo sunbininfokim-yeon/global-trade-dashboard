@@ -40,6 +40,32 @@ class PortWatchHistoryContractTests(unittest.TestCase):
             result["history_status"],
             "observed_daily_estimated_trade_volume",
         )
+        self.assertEqual(
+            result["daily_averages"]["latest_daily_observation"]["value"],
+            1039.0,
+        )
+        self.assertEqual(
+            result["daily_averages"]["trailing_7d_average"]["observation_count"],
+            7,
+        )
+        self.assertEqual(
+            result["daily_averages"]["prior_28d_average"]["observation_count"],
+            28,
+        )
+        self.assertAlmostEqual(
+            result["daily_averages"]["trailing_7d_average"]["value"],
+            1036.0,
+        )
+        for metric_key, expected in {
+            "all": 1039.0,
+            "container": 839.0,
+            "dry_bulk": 639.0,
+            "general_cargo": 239.0,
+            "tanker": 439.0,
+        }.items():
+            history = result["metric_histories"][metric_key]
+            self.assertEqual(history["history_point_count"], 40)
+            self.assertEqual(history["history"][-1]["value"], expected)
 
     def test_hormuz_history_uses_tanker_metric(self) -> None:
         rows = [
@@ -58,6 +84,10 @@ class PortWatchHistoryContractTests(unittest.TestCase):
         self.assertEqual(result["history_metric_key"], "tanker")
         self.assertEqual(result["history_field"], "capacity_tanker")
         self.assertEqual(result["history"][-1]["value"], 934.0)
+        self.assertEqual(
+            result["metric_histories"]["container"]["history"][-1]["value"],
+            234.0,
+        )
 
     def test_legacy_summary_does_not_invent_daily_history(self) -> None:
         migrated = normalize_status_contract(
@@ -76,6 +106,8 @@ class PortWatchHistoryContractTests(unittest.TestCase):
             migrated["history_status"],
             "unavailable_cached_summary_only",
         )
+        self.assertIsNone(migrated["daily_averages"]["latest_daily_observation"])
+        self.assertIsNone(migrated["daily_averages"]["trailing_7d_average"]["value"])
 
     def test_screen_history_is_bounded_without_changing_values(self) -> None:
         full_history = [
@@ -89,12 +121,36 @@ class PortWatchHistoryContractTests(unittest.TestCase):
         self.assertEqual(screen["history_source_point_count"], 200)
         self.assertEqual(screen["history"], full_history[-180:])
 
+    def test_screen_metric_histories_are_bounded_without_cross_type_copying(self) -> None:
+        full_history = [
+            {"date": f"2026-01-{(day % 28) + 1:02d}", "value": float(day)}
+            for day in range(200)
+        ]
+        screen = _screen_chokepoints_live(
+            {
+                "test": {
+                    "history": [],
+                    "metric_histories": {
+                        "container": {
+                            "metric_key": "container",
+                            "history": full_history,
+                        }
+                    },
+                }
+            }
+        )["test"]
+        container = screen["metric_histories"]["container"]
+        self.assertEqual(container["history_source_point_count"], 200)
+        self.assertEqual(container["history"], full_history[-180:])
+
 
 class RouteOperationalContractTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         cls.snapshot = build_snapshot(ROOT / "config")
-        cls.screen = build_artifact_bundle(cls.snapshot)["screen"]
+        bundle = build_artifact_bundle(cls.snapshot)
+        cls.screen = bundle["screen"]
+        cls.grid = bundle["scenario_grid"]["ui_scenario_grid"]
 
     def test_route_profile_uses_same_distance_speed_arithmetic_as_engine(self) -> None:
         profile = route_operational_profile(
@@ -147,7 +203,7 @@ class RouteOperationalContractTests(unittest.TestCase):
     def test_scenario_grid_publishes_both_capacity_denominators(self) -> None:
         row = next(
             item
-            for item in self.screen["ui_scenario_grid"]["rows"]
+            for item in self.grid["rows"]
             if item["base_scenario_id"] == "hormuz_effective_80pct_28d"
             and item["closure_pct"] == 80
             and item["duration_days"] == 28
@@ -178,7 +234,7 @@ class RouteOperationalContractTests(unittest.TestCase):
     def test_zero_impact_grid_does_not_publish_a_fabricated_percentage(self) -> None:
         row = next(
             item
-            for item in self.screen["ui_scenario_grid"]["rows"]
+            for item in self.grid["rows"]
             if item["base_scenario_id"] == "hormuz_effective_80pct_28d"
             and item["closure_pct"] == 0
             and item["duration_days"] == 28
@@ -193,7 +249,7 @@ class RouteOperationalContractTests(unittest.TestCase):
     def test_grid_ship_type_breakdown_is_precomputed_and_reconciles(self) -> None:
         hormuz = next(
             item
-            for item in self.screen["ui_scenario_grid"]["rows"]
+            for item in self.grid["rows"]
             if item["base_scenario_id"] == "hormuz_effective_80pct_28d"
             and item["closure_pct"] == 80
             and item["duration_days"] == 28
@@ -202,7 +258,7 @@ class RouteOperationalContractTests(unittest.TestCase):
             {item["ship_type"] for item in hormuz["summary"]["ship_type_breakdown"]},
             {"tanker"},
         )
-        for row in self.screen["ui_scenario_grid"]["rows"]:
+        for row in self.grid["rows"]:
             summary = row["summary"]
             breakdown = summary["ship_type_breakdown"]
             if summary["affected_baseline_dwt"] == 0:

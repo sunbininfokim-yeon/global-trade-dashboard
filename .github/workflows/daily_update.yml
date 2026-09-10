@@ -2,8 +2,9 @@ name: Daily Brazil Agri Data Extractor
 
 on:
   schedule:
-    # Runs at 18:00 UTC every day (03:00 KST)
-    - cron: '0 18 * * *'
+    # Runs at 18:06 UTC every day (03:06 KST) -- off :00, a globally popular
+    # cron minute where GitHub's shared runner queue tends to back up.
+    - cron: '6 18 * * *'
   workflow_dispatch: # Allows manual trigger from the GitHub Actions UI
 
 jobs:

@@ -5,7 +5,8 @@ name: Refresh producing-region weather
 
 on:
   schedule:
-    - cron: '10 6 * * 3'
+    # Sat 03:40 KST (Fri 18:40 UTC) — weekend batch, 22min after SST.
+    - cron: '40 18 * * 5'
   workflow_dispatch:
 
 jobs:

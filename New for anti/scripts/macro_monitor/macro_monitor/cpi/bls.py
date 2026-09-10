@@ -237,6 +237,8 @@ def _render_relationship(relation: Mapping[str, Any], mapped: Mapping[str, Mappi
         "id": relation["id"],
         "group": relation.get("group"),
         "type": relation_type,
+        "source_ids": source_ids,
+        "target_ids": target_ids,
         "directionality": relation.get("directionality"),
         "mechanism_ko": relation["mechanism_ko"],
         "lag_months": relation["lag_months"],

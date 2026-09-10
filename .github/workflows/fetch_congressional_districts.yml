@@ -1,0 +1,63 @@
+name: Fetch congressional district geometry
+
+# Manual only, no schedule -- redistricting is not a recurring cadence, it
+# happens when a state enacts a new map or a court rules. Run this by hand
+# after such an event (see probe_tigerweb_120th.yml for how to check whether
+# TIGERweb has published the new Congress layer yet).
+#
+# Unlike the *_yield_forecast.yml / market_microstructure_daily.yml bots,
+# this pushes to a review branch instead of main. District boundaries are
+# politically sensitive and resolve_current_layer() is API-driven (it picks
+# whatever layer Census currently reports as highest-numbered) -- a PR diff
+# is the point where a human confirms the run picked up the right layer
+# before it reaches the live map.
+on:
+  workflow_dispatch:
+    inputs:
+      state:
+        description: Optional single state (e.g. CA); blank refreshes all 50 + DC
+        required: false
+        type: string
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    defaults:
+      run:
+        working-directory: New for anti/scripts/election_watch
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Fetch from current-Congress TIGERweb layer
+        run: |
+          if [ -n "${{ inputs.state }}" ]; then
+            python3 fetch_usa_congressional_districts.py --state "${{ inputs.state }}" --refresh
+          else
+            python3 fetch_usa_congressional_districts.py --all --refresh
+          fi
+      - name: Sanity check -- every state file has the district count Census reports
+        run: |
+          python3 - <<'PY'
+          import json, pathlib
+          out_dir = pathlib.Path("../../public/data/congressional_districts/USA")
+          empty = [p.name for p in out_dir.glob("*.json") if json.loads(p.read_text()).get("features") == []]
+          if empty:
+              raise SystemExit(f"Empty district files, refusing to publish: {empty}")
+          print(f"OK: {len(list(out_dir.glob('*.json')))} state files, none empty")
+          PY
+      - name: Commit to a review branch
+        working-directory: ${{ github.workspace }}
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add 'New for anti/public/data/congressional_districts/USA'
+          if git diff --cached --quiet; then echo "no geometry changes"; exit 0; fi
+          branch="data/congressional-districts-$(date +%Y%m%d-%H%M%S)"
+          git checkout -b "$branch"
+          git commit -m 'chore: refresh congressional district geometry from TIGERweb'
+          git push origin "$branch"
+          echo "Pushed to $branch -- open a PR against main to review before merging."

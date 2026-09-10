@@ -1,0 +1,218 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "US election finance map assets v1",
+  "oneOf": [
+    {
+      "$ref": "#/$defs/index"
+    },
+    {
+      "$ref": "#/$defs/national"
+    },
+    {
+      "$ref": "#/$defs/state"
+    },
+    {
+      "$ref": "#/$defs/race"
+    }
+  ],
+  "$defs": {
+    "amount": {
+      "type": "object",
+      "required": [
+        "support_cents",
+        "oppose_cents",
+        "records",
+        "status"
+      ],
+      "properties": {
+        "support_cents": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": -9007199254740991,
+          "maximum": 9007199254740991
+        },
+        "oppose_cents": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": -9007199254740991,
+          "maximum": 9007199254740991
+        },
+        "records": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "status": {
+          "enum": [
+            "observed_partial",
+            "no_observed_records"
+          ]
+        }
+      }
+    },
+    "candidate": {
+      "type": "object",
+      "required": [
+        "candidate_id",
+        "name",
+        "reported_parties",
+        "registration_status",
+        "totals_by_category",
+        "election_types"
+      ],
+      "properties": {
+        "candidate_id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "reported_parties": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "totals_by_category": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/amount"
+          }
+        },
+        "election_types": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "required": [
+              "totals_by_category",
+              "allocations"
+            ],
+            "properties": {
+              "totals_by_category": {
+                "type": "object",
+                "additionalProperties": {
+                  "$ref": "#/$defs/amount"
+                }
+              },
+              "allocations": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": [
+                    "candidate_id",
+                    "committee_id",
+                    "category",
+                    "election_type",
+                    "support_cents",
+                    "oppose_cents",
+                    "source_url"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "index": {
+      "type": "object",
+      "required": [
+        "schema",
+        "generated_at",
+        "cycles",
+        "measure",
+        "join_contract"
+      ],
+      "properties": {
+        "schema": {
+          "const": "usa_election_finance_index_v1"
+        }
+      }
+    },
+    "national": {
+      "type": "object",
+      "required": [
+        "schema",
+        "cycle",
+        "states",
+        "unmatched_district_race_ids"
+      ],
+      "properties": {
+        "schema": {
+          "const": "usa_election_finance_national_v1"
+        }
+      }
+    },
+    "state": {
+      "type": "object",
+      "required": [
+        "schema",
+        "cycle",
+        "state_id",
+        "races"
+      ],
+      "properties": {
+        "schema": {
+          "const": "usa_election_finance_state_v1"
+        }
+      }
+    },
+    "race": {
+      "type": "object",
+      "required": [
+        "schema",
+        "cycle",
+        "race_id",
+        "state_id",
+        "office",
+        "district",
+        "map_join",
+        "status",
+        "candidates",
+        "totals_by_category"
+      ],
+      "properties": {
+        "schema": {
+          "const": "usa_election_finance_race_v1"
+        },
+        "candidates": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/candidate"
+          }
+        },
+        "totals_by_category": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/amount"
+          }
+        },
+        "office": {
+          "enum": [
+            "house",
+            "senate",
+            "president",
+            "governor"
+          ]
+        },
+        "district": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "status": {
+          "enum": [
+            "partial",
+            "ready",
+            "unsupported",
+            "not_collected"
+          ]
+        }
+      }
+    }
+  }
+}

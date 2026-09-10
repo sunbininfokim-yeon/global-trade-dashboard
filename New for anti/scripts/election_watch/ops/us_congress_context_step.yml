@@ -1,0 +1,9 @@
+# Claude handoff snippet: place before the asset commit in the installed workflow.
+# Add these two paths to its explicit git-add list:
+#   New for anti/scripts/election_watch/config/extracted/usa_congress.json
+#   New for anti/public/data/elections_board_v1.json
+# The snippet is NOT an installed workflow.
+- name: Refresh official House vacancies and sourced swing-seat context
+  working-directory: New for anti/scripts/election_watch
+  run: python3 build_congress_context.py
+# New backend tests use test_superpac*.py and are covered by the installed test step.

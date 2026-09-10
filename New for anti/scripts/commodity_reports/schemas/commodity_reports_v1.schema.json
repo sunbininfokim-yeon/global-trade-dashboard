@@ -1,0 +1,81 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "commodity_reports_v1.schema.json",
+  "title": "Commodity report intel v1",
+  "type": "object",
+  "required": ["schema_version", "generated_at", "index", "items"],
+  "properties": {
+    "schema_version": {"const": "commodity-reports-v1"},
+    "generated_at": {"type": "string", "format": "date-time"},
+    "model": {"type": "object"},
+    "stats": {"type": "object"},
+    "feed_status": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["source_id", "ok"],
+        "properties": {
+          "source_id": {"type": "string"},
+          "ok": {"type": "boolean"},
+          "count": {"type": "integer"},
+          "error": {"type": ["string", "null"]},
+          "mode": {"type": "string", "enum": ["live", "fixture", "none"]}
+        }
+      }
+    },
+    "commodity_labels": {
+      "type": "object",
+      "description": "Dashboard commodity key -> Korean label.",
+      "additionalProperties": {"type": "string"}
+    },
+    "country_names": {
+      "type": "object",
+      "description": "ISO3 -> display names.",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {"name": {"type": "string"}, "name_ko": {"type": "string"}}
+      }
+    },
+    "index": {
+      "type": "object",
+      "description": "commodity key -> bucket -> item ids, most important first. The bucket is an ISO3 code, or '_global' for reports that name no country (world balance sheets).",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+    "items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "title", "url", "agency", "commodities", "scope"],
+        "properties": {
+          "id": {"type": "string"},
+          "title": {
+            "type": "object",
+            "required": ["original"],
+            "properties": {
+              "original": {"type": "string"},
+              "original_lang": {"type": "string"},
+              "ko": {"type": ["string", "null"], "description": "Null unless the build ran with --translate."}
+            }
+          },
+          "summary": {"type": ["string", "null"], "description": "Quoted feed body, <= 600 chars. Null for list-page sources that publish no body."},
+          "url": {"type": "string", "format": "uri", "description": "The publisher's own page. The card headline links here."},
+          "published_at": {"type": ["string", "null"], "format": "date-time"},
+          "agency": {"type": "string"},
+          "agency_ko": {"type": "string"},
+          "source_id": {"type": "string"},
+          "commodities": {"type": "array", "items": {"type": "string"}},
+          "countries": {"type": "array", "items": {"type": "string"}, "description": "ISO3, headline countries first."},
+          "scope": {"type": "string", "enum": ["country", "global"]},
+          "country_source": {"type": "string", "enum": ["text", "source_default", "none"]},
+          "series_id": {"type": ["string", "null"]},
+          "series_label_ko": {"type": ["string", "null"]},
+          "importance": {"type": "number"},
+          "reasons": {"type": "array", "items": {"type": "string"}}
+        }
+      }
+    }
+  }
+}

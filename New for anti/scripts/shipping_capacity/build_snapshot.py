@@ -27,6 +27,7 @@ from shipping_capacity.portwatch import (
     PortWatchPortClient,
     normalize_status_contract,
 )
+from shipping_capacity.route_distances import attach_distance_evidence
 
 
 def load_json(path: Path) -> Any:
@@ -44,7 +45,208 @@ def rounded(value: Any) -> Any:
     return value
 
 
-def aggregate_scenario(scenario: dict[str, Any], results: list[dict[str, Any]]) -> dict[str, Any]:
+def aggregate_reroute_receivers(
+    scenario: dict[str, Any],
+    results: list[dict[str, Any]],
+    routes: list[dict[str, Any]],
+    receiver_config: list[dict[str, Any]],
+) -> list[dict[str, Any]]:
+    """Aggregate modeled detours at an alternative corridor without inventing AIS flow."""
+
+    receivers = {row["id"]: row for row in receiver_config}
+    grouped: dict[str, list[dict[str, Any]]] = {}
+    for route, result in zip(routes, results):
+        if result["affected_flow_share"] <= 0 or result["rerouted_cargo_tonnes_horizon"] <= 0:
+            continue
+        exposure = next(
+            (
+                row
+                for row in route.get("chokepoints", [])
+                if row.get("id") == scenario["chokepoint_id"]
+            ),
+            None,
+        )
+        receiver_id = exposure and exposure.get("reroute_receiver_id")
+        if not receiver_id:
+            continue
+        receiver = receivers.get(receiver_id)
+        if receiver is None:
+            raise ValueError(f"unknown reroute receiver: {receiver_id}")
+        if scenario["chokepoint_id"] not in receiver.get("source_chokepoint_ids", []):
+            raise ValueError(
+                f"reroute receiver {receiver_id} does not allow source "
+                f"{scenario['chokepoint_id']}"
+            )
+        grouped.setdefault(receiver_id, []).append(
+            {**result, "cargo_segment": route.get("cargo_segment", route["ship_type"])}
+        )
+
+    output = []
+    for receiver_id, rows in grouped.items():
+        receiver = receivers[receiver_id]
+        ship_type_breakdown = []
+        for ship_type in ("container", "dry_bulk", "tanker"):
+            typed = [row for row in rows if row["ship_type"] == ship_type]
+            if not typed:
+                continue
+            baseline_service_capacity_dwt = sum(
+                row["baseline_required_dwt"] for row in typed
+            )
+            additional_service_capacity_dwt = sum(
+                row["net_required_capacity_change_dwt"] for row in typed
+            )
+            weighted_served_flow_index = (
+                sum(
+                    row["served_flow_index"] * row["baseline_required_dwt"]
+                    for row in typed
+                )
+                / baseline_service_capacity_dwt
+                if baseline_service_capacity_dwt > 0
+                else 1.0
+            )
+            ship_type_breakdown.append(
+                {
+                    "ship_type": ship_type,
+                    "affected_route_count": len(typed),
+                    "baseline_service_capacity_dwt": baseline_service_capacity_dwt,
+                    "rerouted_cargo_tonnes_horizon": sum(
+                        row["rerouted_cargo_tonnes_horizon"] for row in typed
+                    ),
+                    "rerouted_in_transit_cargo_tonnes_horizon": sum(
+                        row["rerouted_in_transit_cargo_tonnes_horizon"] for row in typed
+                    ),
+                    "additional_service_capacity_dwt": additional_service_capacity_dwt,
+                    "additional_service_capacity_pct_of_baseline": (
+                        additional_service_capacity_dwt
+                        / baseline_service_capacity_dwt
+                        * 100.0
+                        if baseline_service_capacity_dwt > 0
+                        else None
+                    ),
+                    "weighted_traffic_change_pct": (
+                        weighted_served_flow_index - 1.0
+                    ) * 100.0,
+                    "scope": (
+                        "Representative affected route-service capacity, not a "
+                        "live liner-network vessel inventory."
+                    ),
+                }
+            )
+        cargo_segment_breakdown = []
+        for cargo_segment in sorted({row["cargo_segment"] for row in rows}):
+            segmented = [row for row in rows if row["cargo_segment"] == cargo_segment]
+            cargo_segment_breakdown.append(
+                {
+                    "cargo_segment": cargo_segment,
+                    "affected_route_count": len(segmented),
+                    "rerouted_cargo_tonnes_horizon": sum(
+                        row["rerouted_cargo_tonnes_horizon"] for row in segmented
+                    ),
+                    "rerouted_in_transit_cargo_tonnes_horizon": sum(
+                        row["rerouted_in_transit_cargo_tonnes_horizon"] for row in segmented
+                    ),
+                    "additional_service_capacity_dwt": sum(
+                        row["net_required_capacity_change_dwt"] for row in segmented
+                    ),
+                    "global_fleet_denominator_status": (
+                        "lng_only_global_dwt_not_available_free"
+                        if cargo_segment == "lng"
+                        else "not_applicable_to_cargo_segment"
+                    ),
+                }
+            )
+        output.append(
+            {
+                "id": receiver_id,
+                "name_ko": receiver["name_ko"],
+                "name_en": receiver["name_en"],
+                "receiver_role": receiver["receiver_role"],
+                "source_chokepoint_id": scenario["chokepoint_id"],
+                "affected_route_count": len(rows),
+                "rerouted_cargo_tonnes_horizon": sum(
+                    row["rerouted_cargo_tonnes_horizon"] for row in rows
+                ),
+                "rerouted_in_transit_cargo_tonnes_horizon": sum(
+                    row["rerouted_in_transit_cargo_tonnes_horizon"] for row in rows
+                ),
+                "additional_service_capacity_dwt": sum(
+                    row["net_required_capacity_change_dwt"] for row in rows
+                ),
+                "ship_type_breakdown": ship_type_breakdown,
+                "cargo_segment_breakdown": cargo_segment_breakdown,
+                "methodology_ko": receiver["methodology_ko"],
+                "warning_ko": receiver["warning_ko"],
+                "status": "modelled_reroute_receiver_not_observed_traffic",
+            }
+        )
+    return output
+
+
+def aggregate_cargo_segments(
+    results: list[dict[str, Any]], routes: list[dict[str, Any]]
+) -> list[dict[str, Any]]:
+    """Keep LNG visible without treating the tanker denominator as LNG fleet DWT."""
+
+    grouped: dict[str, list[dict[str, Any]]] = {}
+    for route, result in zip(routes, results):
+        if result["affected_flow_share"] <= 0:
+            continue
+        cargo_segment = route.get("cargo_segment", route["ship_type"])
+        grouped.setdefault(cargo_segment, []).append(result)
+
+    output = []
+    for cargo_segment, rows in sorted(grouped.items()):
+        baseline = sum(row["baseline_required_dwt"] for row in rows)
+        deliverable = (
+            sum(row["deliverable_flow_index"] * row["baseline_required_dwt"] for row in rows)
+            / baseline
+            if baseline > 0
+            else 1.0
+        )
+        output.append(
+            {
+                "cargo_segment": cargo_segment,
+                "affected_route_count": len(rows),
+                "affected_baseline_dwt": baseline,
+                "affected_allocated_dwt_with_reserve": sum(
+                    row["allocated_dwt_with_reserve"] for row in rows
+                ),
+                "operational_capacity_absorbed_dwt": sum(
+                    row["operational_capacity_absorbed_dwt"] for row in rows
+                ),
+                "commercial_capacity_gap_dwt": sum(
+                    row["capacity_gap_dwt"] for row in rows
+                ),
+                "commercially_unavailable_dwt": sum(
+                    row["commercially_unavailable_dwt"] for row in rows
+                ),
+                "backlog_cargo_tonnes_horizon": sum(
+                    row["backlog_cargo_tonnes_horizon"] for row in rows
+                ),
+                "rerouted_in_transit_cargo_tonnes_horizon": sum(
+                    row["rerouted_in_transit_cargo_tonnes_horizon"] for row in rows
+                ),
+                "weighted_traffic_change_pct": (deliverable - 1.0) * 100.0,
+                "global_fleet_denominator_status": (
+                    "lng_only_global_dwt_not_available_free"
+                    if cargo_segment == "lng"
+                    else "not_applicable_to_cargo_segment"
+                ),
+                "scope": (
+                    "Representative route-model allocations for this cargo segment; "
+                    "not an AIS-observed unique-vessel inventory."
+                ),
+            }
+        )
+    return output
+
+
+def aggregate_scenario(
+    scenario: dict[str, Any],
+    results: list[dict[str, Any]],
+    routes: list[dict[str, Any]],
+    receiver_config: list[dict[str, Any]],
+) -> dict[str, Any]:
     affected = [row for row in results if row["affected_flow_share"] > 0]
     baseline = sum(row["baseline_required_dwt"] for row in affected)
     allocated = sum(row["allocated_dwt_with_reserve"] for row in affected)
@@ -198,6 +400,10 @@ def aggregate_scenario(scenario: dict[str, Any], results: list[dict[str, Any]]) 
             row["cargo_accounting_residual_tonnes"] for row in affected
         ),
         "ship_type_breakdown": ship_type_breakdown,
+        "cargo_segment_breakdown": aggregate_cargo_segments(results, routes),
+        "reroute_receivers": aggregate_reroute_receivers(
+            scenario, results, routes, receiver_config
+        ),
         "capacity_denominator_warning": (
             "Affected allocated DWT is the sum of representative route-model "
             "allocations, not an AIS-observed unique-vessel inventory. Relevant "
@@ -222,6 +428,7 @@ def build_behavior_sensitivity(
     scenario: dict[str, Any],
     fleet_by_type: dict[str, float],
     config: dict[str, Any],
+    receiver_config: list[dict[str, Any]],
 ) -> dict[str, Any] | None:
     """Run named joint response paths while holding event throughput fixed."""
 
@@ -234,7 +441,7 @@ def build_behavior_sensitivity(
             simulate_route(route, variant, fleet_by_type[route["ship_type"]])
             for route in routes
         ]
-        summary = aggregate_scenario(variant, route_results)
+        summary = aggregate_scenario(variant, route_results, routes, receiver_config)
         path_results.append(
             {
                 "path_id": variant["behavior_sensitivity_path_id"],
@@ -270,17 +477,41 @@ def build_behavior_sensitivity(
     }
 
 
+DEFAULT_UI_GRID_CONFIG = {
+    "closure_pct_options": list(range(0, 101, 10)),
+    "duration_day_options": [1, 3, 7, 14, 21, 28],
+    "fixed_horizon_days": 28,
+}
+
+
 def build_ui_scenario_grid(
     routes: list[dict[str, Any]],
     scenarios: list[dict[str, Any]],
     fleet_by_type: dict[str, float],
+    receiver_config: list[dict[str, Any]],
+    grid_config: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Precompute a bounded UI grid so the browser never reimplements the model."""
+
+    config = {**DEFAULT_UI_GRID_CONFIG, **(grid_config or {})}
+    closure_options = sorted({int(value) for value in config["closure_pct_options"]})
+    duration_options = sorted({int(value) for value in config["duration_day_options"]})
+    horizon_days = int(config["fixed_horizon_days"])
+    if (
+        not closure_options
+        or closure_options[0] != 0
+        or closure_options[-1] != 100
+        or any(value < 0 or value > 100 for value in closure_options)
+    ):
+        raise ValueError("ui scenario closure_pct_options must cover 0 through 100")
+    if not duration_options or any(value <= 0 or value > horizon_days for value in duration_options):
+        raise ValueError("ui scenario duration_day_options must be positive and within horizon")
 
     rows = []
     route_fields = (
         "route_id",
         "ship_type",
+        "cargo_segment",
         "baseline_required_dwt",
         "allocated_dwt_with_reserve",
         "continuity_required_dwt",
@@ -300,8 +531,8 @@ def build_ui_scenario_grid(
         "lost_cargo_tonnes_horizon",
     )
     for base in scenarios:
-        for closure_pct in (0, 25, 50, 75, 80, 100):
-            for duration_days in (7, 14, 28):
+        for closure_pct in closure_options:
+            for duration_days in duration_options:
                 scenario = copy.deepcopy(base)
                 scenario["id"] = (
                     f"ui_{base['id']}_{closure_pct}pct_{duration_days}d"
@@ -309,7 +540,7 @@ def build_ui_scenario_grid(
                 scenario["closure_fraction"] = closure_pct / 100.0
                 scenario["residual_throughput_rate"] = 1.0 - scenario["closure_fraction"]
                 scenario["duration_days"] = duration_days
-                scenario["horizon_days"] = 28
+                scenario["horizon_days"] = horizon_days
                 results = [
                     simulate_route(route, scenario, fleet_by_type[route["ship_type"]])
                     for route in routes
@@ -321,9 +552,11 @@ def build_ui_scenario_grid(
                         "base_scenario_id": base["id"],
                         "closure_pct": closure_pct,
                         "duration_days": duration_days,
-                        "horizon_days": 28,
+                        "horizon_days": horizon_days,
                         "waiting_days": scenario.get("waiting_days", 0),
-                        "summary": aggregate_scenario(scenario, results),
+                        "summary": aggregate_scenario(
+                            scenario, results, routes, receiver_config
+                        ),
                         "routes": [
                             {field: result.get(field) for field in route_fields}
                             for result in affected
@@ -332,9 +565,23 @@ def build_ui_scenario_grid(
                 )
     return {
         "status": "precomputed_python_engine",
-        "closure_pct_options": [0, 25, 50, 75, 80, 100],
-        "duration_day_options": [7, 14, 28],
-        "fixed_horizon_days": 28,
+        "closure_pct_options": closure_options,
+        "duration_day_options": duration_options,
+        "fixed_horizon_days": horizon_days,
+        "input_policy": {
+            "closure_pct_step": min(
+                b - a for a, b in zip(closure_options, closure_options[1:])
+            ),
+            "duration_values_precomputed": True,
+            "browser_recalculation": False,
+            "warning_ko": (
+                config.get(
+                    "methodology_ko",
+                    "선택값은 Python 엔진이 사전 계산한 범위입니다. 임의 수치의 "
+                    "브라우저 보간·재계산은 하지 않습니다.",
+                )
+            ),
+        },
         "rows": rows,
     }
 
@@ -415,8 +662,9 @@ def build_ui_delivery_contract() -> dict[str, Any]:
                 "data_paths": [
                     "routes[]",
                     "routes[].baseline",
-                    "routes[].operational_profile.normal",
-                    "routes[].operational_profile.chokepoint_alternatives[]",
+                "routes[].operational_profile.normal",
+                "routes[].operational_profile.chokepoint_alternatives[]",
+                "routes[].operational_profile.chokepoint_alternatives[].distance_evidence",
                 ],
                 "primary_metrics": [
                     "baseline.baseline_required_dwt",
@@ -435,12 +683,17 @@ def build_ui_delivery_contract() -> dict[str, Any]:
             },
             "chokepoint_detail": {
                 "title_ko": "초크포인트 상세 및 봉쇄 시뮬레이터",
+                "scenario_grid_source": "shipping_capacity_scenario_grid_v1.json",
                 "data_paths": [
                     "chokepoints[]",
                     "live_display[]",
                     "chokepoints_live.<id>.history[]",
+                    "chokepoints_live.<id>.daily_averages",
+                    "chokepoints_live.<id>.metrics.<ship_type>",
+                    "chokepoints_live.<id>.metric_histories.<ship_type>.history[]",
                     "scenarios[]",
                     "ui_scenario_grid.rows[]",
+                    "ui_scenario_grid.input_policy",
                 ],
                 "input_fields": [
                     "base_scenario_id",
@@ -454,12 +707,17 @@ def build_ui_delivery_contract() -> dict[str, Any]:
                     "summary.commercially_unavailable_dwt",
                     "summary.backlog_cargo_tonnes_horizon",
                     "summary.ship_type_breakdown[]",
+                    "summary.cargo_segment_breakdown[]",
+                    "summary.reroute_receivers[]",
+                    "summary.reroute_receivers[].ship_type_breakdown[]",
                 ],
                 "labels_ko": {
                     "closure_pct": "실효 통행제약률",
                     "duration_days": "제약 지속일",
                     "backlog_cargo_tonnes_horizon": "28일 분석기간 말 미운송 화물",
                     "commercially_unavailable_dwt": "상업적으로 사용 불가한 모델상 DWT",
+                    "cargo_segment_breakdown": "화물 세그먼트별 모델 결과; LNG 전용 세계 선대 DWT 분모는 무료 공개 검증 전까지 사용하지 않음",
+                    "daily_averages": "일별 추정 교역량 및 관측일 기준 이동평균",
                 },
                 "render_only_rule": (
                     "Match a precomputed row by all three input fields. Do not calculate "
@@ -597,6 +855,17 @@ def build_snapshot(
     fleet = load_json(config_dir / "fleet_2025.json")
     chokepoints = load_json(config_dir / "chokepoints.json")
     routes = load_json(config_dir / "routes.json")
+    reroute_receivers_path = config_dir / "reroute_receivers.json"
+    reroute_receivers = (
+        load_json(reroute_receivers_path) if reroute_receivers_path.exists() else []
+    )
+    distance_evidence_path = config_dir / "route_distance_observations.json"
+    distance_evidence = (
+        load_json(distance_evidence_path)
+        if distance_evidence_path.exists()
+        else {"status": "not_generated", "routes": []}
+    )
+    attach_distance_evidence(routes, distance_evidence)
     comtrade_route_path = config_dir / "comtrade_route_flows.json"
     comtrade_route_data = (
         load_json(comtrade_route_path) if comtrade_route_path.exists() else None
@@ -648,6 +917,8 @@ def build_snapshot(
     container_sources_path = config_dir / "container_sources.json"
     container_sources = load_json(container_sources_path) if container_sources_path.exists() else {}
     scenarios = load_json(config_dir / "scenarios.json")
+    ui_grid_path = config_dir / "ui_scenario_grid.json"
+    ui_grid_config = load_json(ui_grid_path) if ui_grid_path.exists() else {}
     response_profile_path = config_dir / "event_response_profiles.json"
     response_profile_config = (
         load_json(response_profile_path) if response_profile_path.exists() else {"profiles": {}}
@@ -902,17 +1173,25 @@ def build_snapshot(
 
     scenario_summary = []
     for scenario in scenarios:
-        summary = aggregate_scenario(scenario, scenario_rows[scenario["id"]])
+        summary = aggregate_scenario(
+            scenario,
+            scenario_rows[scenario["id"]],
+            routes,
+            reroute_receivers,
+        )
         sensitivity = build_behavior_sensitivity(
             routes,
             scenario,
             fleet_by_type,
             behavior_uncertainty_config,
+            reroute_receivers,
         )
         if sensitivity is not None:
             summary["behavior_sensitivity"] = sensitivity
         scenario_summary.append(summary)
-    ui_scenario_grid = build_ui_scenario_grid(routes, scenarios, fleet_by_type)
+    ui_scenario_grid = build_ui_scenario_grid(
+        routes, scenarios, fleet_by_type, reroute_receivers, ui_grid_config
+    )
     environment_results: list[dict[str, Any]] = []
     environment_scenarios = expand_environment_scenarios(environment_config)
     for environment_scenario in environment_scenarios:
@@ -983,6 +1262,10 @@ def build_snapshot(
                 {
                     "name": "UN Comtrade quantity/net-weight methodology",
                     "url": "https://comtradeapi.un.org/files/v1/app/wiki/MethodologyGuideforComtradePlus.pdf",
+                },
+                {
+                    "name": "Open-source maritime-network route-distance evidence",
+                    "url": "https://github.com/genthalili/searoute-py",
                 },
                 {
                     "name": "IMO Middle East / Strait of Hormuz official updates",
@@ -1106,6 +1389,7 @@ def main() -> None:
     parser.add_argument("--fetch-portwatch", action="store_true")
     parser.add_argument("--fetch-portwatch-port-context", action="store_true")
     parser.add_argument("--fetch-container-context", action="store_true")
+    parser.add_argument("--scenario-grid-output", type=Path)
     parser.add_argument("--diagnostics-output", type=Path)
     parser.add_argument("--backtests-output", type=Path)
     args = parser.parse_args()
@@ -1138,6 +1422,9 @@ def main() -> None:
         fallback_container_context=fallback_container_context,
     )
     bundle = build_artifact_bundle(snapshot)
+    scenario_grid_output = args.scenario_grid_output or (
+        args.output.parent / "shipping_capacity_scenario_grid_v1.json"
+    )
     diagnostics_output = args.diagnostics_output or (
         args.output.parent / "shipping_capacity_diagnostics_v1.json"
     )
@@ -1146,6 +1433,7 @@ def main() -> None:
     )
     for path, payload in (
         (args.output, bundle["screen"]),
+        (scenario_grid_output, bundle["scenario_grid"]),
         (diagnostics_output, bundle["diagnostics"]),
         (backtests_output, bundle["backtests"]),
     ):

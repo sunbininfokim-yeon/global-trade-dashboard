@@ -73,6 +73,21 @@ export default {
             return await handleOfficialReports(request, env);
         }
 
+        // US policy (bills / executive orders / regulations) out of Supabase
+        if (url.pathname.startsWith('/api/us/')) {
+            return await handleUsPolicy(request, env);
+        }
+
+        // Official crop/energy/metal reports for one commodity × country window
+        if (url.pathname.startsWith('/api/commodity-reports')) {
+            return await handleCommodityReports(request, env);
+        }
+
+        // NASA GIBS 야간광 타일 프록시 (매크로 지도 베이스맵)
+        if (url.pathname.startsWith('/api/night-tile/')) {
+            return await handleNightTile(request, url);
+        }
+
         // Default: Serve Static Assets
         return serveAsset(request, env);
     },
@@ -86,6 +101,99 @@ export default {
         ctx.waitUntil(warmComtradeCache(env));
     }
 };
+
+
+// === NASA 야간광 타일 프록시 =============================================
+//
+// 매크로 지도 베이스맵(VIIRS Black Marble)을 브라우저가 gibs.earthdata.nasa.gov
+// 에 직접 붙어 받으면, 그 브라우저가 NASA 에 닿는지에 그림이 걸린다 -- 사내망
+// 차단, 광고 차단기, 임베드 환경의 CSP 어느 하나만 걸려도 지도가 통째로 검게
+// 남는다. 같은 출처로 받아 오면 그 실패면이 사라지고, 엣지 캐시가 한 번 받은
+// 타일을 재사용한다.
+const GIBS_TILE_BASE = 'https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/VIIRS_Black_Marble/default';
+const GIBS_MATRIX = 'GoogleMapsCompatible_Level8';
+// 처음엔 jpeg + 2016-01-01 하나만 시도했고 502 로 떨어졌다. 조합을 여러 개 태워
+// 상류에 직접 물어본 결과, 틀린 건 확장자 하나였다 -- Black Marble 은 png 로만
+// 발행된다. 2026-09-03 프로덕션 확인: 첫 줄이 200 image/png 86,005 bytes (256×256).
+// 나머지는 이름·표기가 바뀌었을 때를 위한 후퇴 경로이고, 전부 실패하면 각각이
+// 무엇을 돌려줬는지 502 본문에 적힌다.
+const GIBS_TILE_VARIANTS = [
+    { label: '2016 png', path: `2016-01-01/${GIBS_MATRIX}`, ext: 'png' },
+    { label: '2012 png', path: `2012-01-01/${GIBS_MATRIX}`, ext: 'png' },
+    { label: 'no-time png', path: GIBS_MATRIX, ext: 'png' },
+    { label: 'default png', path: `default/${GIBS_MATRIX}`, ext: 'png' },
+    { label: '2016 jpeg', path: `2016-01-01/${GIBS_MATRIX}`, ext: 'jpeg' },
+];
+// 한 번 통한 조합은 이 아이솔레이트가 사는 동안 계속 쓴다. 그러지 않으면 캐시가
+// 빈 타일마다 앞선 조합들의 404 를 다시 받아 낸다.
+let GIBS_WINNER = null;
+const NIGHT_TILE_MAX_Z = 8;
+
+async function handleNightTile(request, url) {
+    const m = url.pathname.match(/^\/api\/night-tile\/(\d+)\/(\d+)\/(\d+)(?:\.jpe?g)?$/);
+    if (!m) return new Response('bad tile path', { status: 400 });
+    const [z, y, x] = m.slice(1, 4).map(Number);
+    const span = 2 ** z;
+    if (z > NIGHT_TILE_MAX_Z || y >= span || x >= span) {
+        return new Response('tile out of range', { status: 404 });
+    }
+
+    const cache = caches.default;
+    const cacheKey = new Request(`${url.origin}/api/night-tile/${z}/${y}/${x}.jpg`, { method: 'GET' });
+    const hit = await cache.match(cacheKey).catch(() => null);
+    if (hit) return hit;
+
+    // 실패했을 때 무엇이 막혔는지 말해야 한다. 그냥 502 만 뱉으면 상류가 404 인지
+    // (레이어 이름이 틀렸다) 연결이 끊긴 건지(NASA 가 안 받는다) 구분할 수 없고,
+    // 그 구분 없이는 고칠 수가 없다. 브라우저로 이 URL 을 열면 그대로 읽힌다.
+    const tried = [];
+    let upstream = null;
+    let served = null;
+    // 한 번 통한 조합을 맨 앞에 세운다. 첫 요청만 탐색하고, 그 뒤로는 곧장 간다.
+    const order = GIBS_WINNER
+        ? [GIBS_WINNER, ...GIBS_TILE_VARIANTS.filter((v) => v !== GIBS_WINNER)]
+        : GIBS_TILE_VARIANTS;
+    for (const variant of order) {
+        const src = `${GIBS_TILE_BASE}/${variant.path}/${z}/${y}/${x}.${variant.ext}`;
+        let res = null;
+        let err = '';
+        try {
+            res = await fetch(src, { cf: { cacheEverything: true, cacheTtl: 2592000 } });
+        } catch (e) {
+            err = `${e && e.name}: ${e && e.message}`;
+        }
+        const type = res ? (res.headers.get('content-type') || '') : '';
+        tried.push(`${variant.label} → ${res ? `${res.status} ${type}` : err || 'no response'}`);
+        // 200 인데 이미지가 아닌 경우가 있다 (GIBS 는 오류를 XML 로 준다).
+        if (res && res.ok && type.startsWith('image/')) {
+            upstream = res;
+            served = variant;
+            GIBS_WINNER = variant;
+            break;
+        }
+    }
+    if (!upstream) {
+        // 클라이언트의 onTileError 가 이걸 세고, 쌓이면 벡터 실루엣으로 내려앉는다.
+        return new Response(
+            `tile upstream failed\n${tried.join('\n')}\n`,
+            { status: 502, headers: { 'Content-Type': 'text/plain; charset=utf-8' } },
+        );
+    }
+
+    const out = new Response(upstream.body, {
+        status: 200,
+        headers: {
+            'Content-Type': upstream.headers.get('content-type') || 'image/png',
+            // 연간 합성이라 사실상 불변이다. 길게 잡아 둔다.
+            'Cache-Control': 'public, max-age=2592000, immutable',
+            'Access-Control-Allow-Origin': '*',
+            // 어느 조합이 실제로 응답했는지. 상류 표기가 바뀌어도 curl -I 한 줄로 안다.
+            'X-Night-Tile-Variant': served ? served.label : 'unknown',
+        },
+    });
+    await cache.put(cacheKey, out.clone()).catch(() => {});
+    return out;
+}
 
 // One commodity costs ceil(76 reporters / REPORTER_CHUNK_SIZE) upstream calls,
 // and a Worker invocation may only make so many subrequests. Refilling every
@@ -311,6 +419,106 @@ async function handleOfficialReports(request, env) {
         status: 200,
         headers: { ...JSON_HEADERS, 'Cache-Control': 'public, max-age=180' },
     });
+}
+
+/**
+ * Reports published about one commodity in one country.
+ *
+ * The snapshot stores each report once and indexes ids per window, so the
+ * whole file is small enough to serve as-is; this endpoint resolves the ids
+ * for the one window the panel is showing, which is what keeps the country
+ * card's payload a handful of rows instead of the entire board.
+ *
+ * ?commodity=soybeans          -> world-level reports for that commodity
+ * ?commodity=soybeans&country=USA -> that country's reports, then world ones
+ */
+async function handleCommodityReports(request, env) {
+    const url = new URL(request.url);
+    const commodity = (url.searchParams.get('commodity') || '').trim();
+    const country = (url.searchParams.get('country') || '').trim().toUpperCase();
+    const limit = Math.min(parseInt(url.searchParams.get('limit') || '8', 10) || 8, 30);
+
+    const doc = await loadStaticJson(env, url.origin, 'commodity_reports_v1.json');
+    if (!doc) {
+        return new Response(
+            JSON.stringify({
+                error: 'commodity_reports_v1.json missing — run scripts/commodity_reports/build_reports.py build',
+                items: [],
+            }),
+            { status: 404, headers: JSON_HEADERS }
+        );
+    }
+
+    // No commodity named: hand back the board itself, so a caller can see
+    // which windows have anything at all without guessing keys.
+    if (!commodity) {
+        const windows = {};
+        for (const [key, buckets] of Object.entries(doc.index || {})) {
+            windows[key] = Object.fromEntries(
+                Object.entries(buckets).map(([bucket, ids]) => [bucket, ids.length])
+            );
+        }
+        return jsonWithCache({
+            generated_at: doc.generated_at,
+            commodity_labels: doc.commodity_labels || {},
+            windows,
+        });
+    }
+
+    const byId = new Map((doc.items || []).map((it) => [it.id, it]));
+    const buckets = (doc.index || {})[commodity] || {};
+    // Country rows first, then world balance sheets. A WASDE line on world
+    // supply belongs on every country's board, but under what was published
+    // about that country -- the specific report is the one being looked for.
+    const ids = [];
+    if (country) for (const id of buckets[country] || []) ids.push(id);
+    for (const id of buckets._global || []) if (!ids.includes(id)) ids.push(id);
+    if (!country) {
+        // World view: after the global reports, fill with whatever else this
+        // commodity produced, so a quiet week still shows the board's activity.
+        for (const [bucket, rows] of Object.entries(buckets)) {
+            if (bucket === '_global') continue;
+            for (const id of rows) if (!ids.includes(id)) ids.push(id);
+        }
+    }
+
+    const items = ids.slice(0, limit).map((id) => byId.get(id)).filter(Boolean);
+    return jsonWithCache({
+        generated_at: doc.generated_at,
+        commodity,
+        commodity_label: (doc.commodity_labels || {})[commodity] || commodity,
+        country: country || null,
+        country_name: country ? (doc.country_names || {})[country] || null : null,
+        count: items.length,
+        items,
+    });
+}
+
+/** JSON response with the same edge cache window the other snapshot routes use. */
+function jsonWithCache(body, maxAge = 180) {
+    return new Response(JSON.stringify(body), {
+        status: 200,
+        headers: { ...JSON_HEADERS, 'Cache-Control': `public, max-age=${maxAge}` },
+    });
+}
+
+/**
+ * Read a built snapshot out of the deployed assets.
+ *
+ * Three candidate paths because the asset prefix has differed between the
+ * Worker's own routing and the static-server layout, and a snapshot route
+ * that 404s on a path change looks exactly like a pipeline that stopped
+ * running.
+ */
+async function loadStaticJson(env, origin, filename) {
+    for (const path of [`/public/data/${filename}`, `/data/${filename}`, `public/data/${filename}`]) {
+        try {
+            const assetUrl = new URL(path.startsWith('/') ? path : `/${path}`, origin);
+            const res = await env.ASSETS.fetch(new Request(assetUrl.toString()));
+            if (res.ok) return await res.json();
+        } catch (_) { /* next candidate */ }
+    }
+    return null;
 }
 
 // Shared response cache backed by the API_CACHE KV namespace.
@@ -894,19 +1102,28 @@ async function handleMacro(request, env, ctx) {
         if (source === 'yfinance') {
             const symbol = url.searchParams.get('symbol');
 
-            // The chart modal wants 5 years of monthly bars; the home panel's
-            // JP/UK 10Y bond tiles want just today's close, so they ask for
-            // interval=1d&range=5d instead. Both keep hitting this one route
-            // rather than duplicating the Yahoo fetch, and each combination
-            // gets its own cache entry.
+            // The chart modal's default view wants 5 years of monthly bars;
+            // the home panel's JP/UK 10Y bond tiles want just today's close
+            // (range=5d); the stock modal's moving averages want two years of
+            // daily bars (range=2y) -- enough trading days for a 240-day
+            // average to have visible history rather than a single dot. All
+            // three keep hitting this one route rather than duplicating the
+            // Yahoo fetch, and each combination gets its own cache entry.
             const interval = url.searchParams.get('interval') || '1mo';
             const rangeParam = url.searchParams.get('range');
+            const rangeMatch = /^(\d+)([dy])$/.exec(rangeParam || '');
 
             return kvCachedJson(env, `yfinance:${symbol}:${interval}:${rangeParam || '5y'}`, 3600, async () => {
                 const period2 = Math.floor(Date.now() / 1000);
-                const period1 = rangeParam === '5d'
-                    ? period2 - 5 * 86400
-                    : Math.floor(new Date().setFullYear(new Date().getFullYear() - 5) / 1000);
+                let period1;
+                if (rangeMatch) {
+                    const [, n, unit] = rangeMatch;
+                    period1 = unit === 'd'
+                        ? period2 - Number(n) * 86400
+                        : Math.floor(new Date().setFullYear(new Date().getFullYear() - Number(n)) / 1000);
+                } else {
+                    period1 = Math.floor(new Date().setFullYear(new Date().getFullYear() - 5) / 1000);
+                }
                 const yfUrl = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}?period1=${period1}&period2=${period2}&interval=${encodeURIComponent(interval)}`;
 
                 const res = await fetch(yfUrl, {
@@ -1357,6 +1574,10 @@ const DART_XBRL_TAGS = {
     // checked live there) -- ifrs-full_Equity is the standard IFRS total-
     // equity element, added for PBR's denominator. Confirmed live below.
     equity: ['ifrs-full_Equity'],
+    // Denominator for ROA -- the one financial-entity-safe metric this
+    // endpoint didn't already carry an input for (net_income and equity, for
+    // ROE, were both already fetched above).
+    total_assets: ['ifrs-full_Assets'],
 };
 // Rows filed under Statement of Changes in Equity repeat the same account_id
 // once per equity column with genuinely different values -- keying a flat
@@ -1382,6 +1603,45 @@ const DART_REPRT = {
 const DART_FLOW_KEYS = new Set([
     'revenue', 'operating_income', 'net_income', 'interest_expense', 'eps', 'cfo', 'capex',
 ]);
+
+// Codex's dart_kfa.entity_policy.classify_entity() gates banks/insurers/
+// brokerages from industrial revenue, FCF, EBITDA, net-debt and DCF chains
+// (see scripts/dart/docs/P0_WORKER_HANDOFF_FINANCIALS.md section 1). That
+// classifier runs in Python and isn't reachable from a Worker, so this is a
+// narrow JS-side mirror of the same fail-closed decision -- a name/corp-code
+// check, not a recomputation of any financial model. Corp codes are the
+// explicit KOSPI banks/financial holding companies named in that handoff doc
+// plus other well-known listed financials; the name-hint list catches any
+// filer this override set misses. Unrecognised filers default to false
+// (industrial), matching the classifier's own "명확한 신호가 없으면 산업기업" stance --
+// this list is reviewed by name/ticker only, not by live OpenDART account IDs.
+const DART_FINANCIAL_ENTITY_OVERRIDES = new Set([
+    '105560', // KB금융
+    '055550', // 신한지주
+    '086790', // 하나금융지주
+    '316140', // 우리금융지주
+    '032830', // 삼성생명
+    '000810', // 삼성화재
+    '138930', // BNK금융지주
+    '139130', // DGB금융지주
+    '175330', // JB금융지주
+    '138040', // 메리츠금융지주
+    '024110', // 기업은행
+    '323410', // 카카오뱅크
+    '005830', // DB손해보험
+]);
+const DART_FINANCIAL_NAME_HINTS = [
+    '금융지주', '저축은행', '은행', '생명', '화재', '손해보험', '해상보험',
+    '캐피탈', '카드', '증권', '보험',
+];
+function classifyDartFinancialEntity(nameKo, stockCode) {
+    if (DART_FINANCIAL_ENTITY_OVERRIDES.has(stockCode)) {
+        return { is_financial_entity: true, basis: 'corp_code_override' };
+    }
+    const hint = DART_FINANCIAL_NAME_HINTS.find((h) => (nameKo || '').includes(h));
+    if (hint) return { is_financial_entity: true, basis: `name_hint:${hint}` };
+    return { is_financial_entity: false, basis: 'default_industrial' };
+}
 
 // public/data/dart_corp_codes_v1.json is a one-time offline export of
 // OpenDART's corpCode.xml (see scripts/dart/ for how it was built): the KRX
@@ -1653,7 +1913,7 @@ function dartQuarterlySeries(factsByPeriod, years) {
 // has no key in factsByYear; series are built by filtering, not by assuming
 // every year in `years` produced a point, so a gap (recent listing, a filing
 // OpenDART hasn't ingested yet) leaves a shorter series rather than a null.
-function dartBasicCardsFromFacts(factsByYear, years, { sharesOutstanding = null, price = null, quarterly = {} } = {}) {
+function dartBasicCardsFromFacts(factsByYear, years, { sharesOutstanding = null, price = null, quarterly = {}, isFinancialEntity = false } = {}) {
     const latestYear = years[0];
     const factsOf = (y) => factsByYear[y] || {};
     const latestFacts = factsOf(latestYear);
@@ -1676,6 +1936,15 @@ function dartBasicCardsFromFacts(factsByYear, years, { sharesOutstanding = null,
     };
 
     const revenue = point('revenue');
+    // A bank/insurer/brokerage's IFRS "Revenue" (or its absence) is not
+    // industrial sales -- gate it to null before anything downstream (yoy,
+    // margins, the quarterly attach loop below) reads its value or series.
+    // See scripts/dart/docs/P0_WORKER_HANDOFF_FINANCIALS.md section 1.
+    if (isFinancialEntity) {
+        revenue.value = null;
+        revenue.series = [];
+        revenue.reason = 'not_applicable:financial_entity_industrial_revenue';
+    }
     const operatingIncome = point('operating_income');
     const netIncome = point('net_income');
     const cfo = point('cfo');
@@ -1696,17 +1965,25 @@ function dartBasicCardsFromFacts(factsByYear, years, { sharesOutstanding = null,
     operatingIncome.margin = (opV !== null && revV) ? opV / revV : null;
     netIncome.margin = (niV !== null && revV) ? niV / revV : null;
 
-    const capexV = capex.value, cfoV = cfo.value;
-    const fcfValue = (cfoV !== null && capexV !== null) ? cfoV - Math.abs(capexV) : null;
-    const fcfSeries = years
-        .map((y) => {
-            const c = valueIn(y, 'cfo'), cx = valueIn(y, 'capex');
-            return (c !== null && cx !== null) ? { year: y, end: `${y}-12-31`, value: c - Math.abs(cx) } : null;
-        })
-        .filter(Boolean)
-        .sort((a, b) => a.year - b.year);
-    const fcf = { value: fcfValue, definition: 'cfo - abs(capex)', series: fcfSeries };
-    if (fcfValue === null) fcf.reason = 'missing:cfo_or_capex';
+    // FCF (and net debt, below) is an industrial leverage/cash-generation
+    // frame that doesn't apply to a bank/insurer's balance sheet -- gated for
+    // the same reason as revenue above, not computed and then hidden.
+    let fcf;
+    if (isFinancialEntity) {
+        fcf = { value: null, definition: 'cfo - abs(capex)', series: [], reason: 'not_applicable:financial_entity' };
+    } else {
+        const capexV = capex.value, cfoV = cfo.value;
+        const fcfValue = (cfoV !== null && capexV !== null) ? cfoV - Math.abs(capexV) : null;
+        const fcfSeries = years
+            .map((y) => {
+                const c = valueIn(y, 'cfo'), cx = valueIn(y, 'capex');
+                return (c !== null && cx !== null) ? { year: y, end: `${y}-12-31`, value: c - Math.abs(cx) } : null;
+            })
+            .filter(Boolean)
+            .sort((a, b) => a.year - b.year);
+        fcf = { value: fcfValue, definition: 'cfo - abs(capex)', series: fcfSeries };
+        if (fcfValue === null) fcf.reason = 'missing:cfo_or_capex';
+    }
 
     // Balance-sheet levels and the ratios built from them stay latest-year
     // point-in-time (a multi-year BS series is future work, not this pass).
@@ -1720,7 +1997,9 @@ function dartBasicCardsFromFacts(factsByYear, years, { sharesOutstanding = null,
     const longTerm = dartPick(latestFacts, DART_XBRL_TAGS.long_term_debt);
     const cashV = cash.value;
     let netDebt;
-    if ((shortTerm !== null || longTerm !== null) && cashV !== null) {
+    if (isFinancialEntity) {
+        netDebt = { value: null, series: [], reason: 'not_applicable:financial_entity' };
+    } else if ((shortTerm !== null || longTerm !== null) && cashV !== null) {
         const interestBearing = (shortTerm || 0) + (longTerm || 0);
         netDebt = {
             value: interestBearing - cashV,
@@ -1786,6 +2065,15 @@ function dartBasicCardsFromFacts(factsByYear, years, { sharesOutstanding = null,
             reason: price === null ? 'missing:price' : (equityV === null ? 'missing:equity' : 'missing:shares_outstanding'),
         };
 
+    // ROE/ROA are the metrics the entity policy asks to keep for financial
+    // entities in place of FCF/EBITDA/net-debt -- computed for every filer,
+    // not just gated ones, since they're informative for industrials too.
+    const totalAssetsV = dartPick(latestFacts, DART_XBRL_TAGS.total_assets);
+    const roe = (niV !== null && equityV) ? { value: niV / equityV, series: [], definition: 'net_income / equity' }
+        : { value: null, series: [], reason: niV === null ? 'missing:net_income' : 'missing:equity' };
+    const roa = (niV !== null && totalAssetsV) ? { value: niV / totalAssetsV, series: [], definition: 'net_income / total_assets' }
+        : { value: null, series: [], reason: niV === null ? 'missing:net_income' : 'missing:total_assets' };
+
     const cards = {
         revenue, operating_income: operatingIncome, net_income: netIncome, cfo, fcf, cash, eps,
         net_debt: netDebt,
@@ -1800,17 +2088,21 @@ function dartBasicCardsFromFacts(factsByYear, years, { sharesOutstanding = null,
         market_cap: marketCap,
         pe_ratio: peRatio,
         pb_ratio: pbRatio,
+        roe, roa,
     };
 
     // Attached rather than merged into `series`: annual and quarterly points
     // cover different spans, so one array holding both would be summable into
-    // nonsense. The UI toggles between them.
+    // nonsense. The UI toggles between them. revenue/fcf are skipped for a
+    // gated financial entity -- a populated quarterly array would contradict
+    // the card's own null+not_applicable annual value.
     for (const [key, points] of Object.entries(quarterly)) {
+        if (isFinancialEntity && (key === 'revenue' || key === 'fcf')) continue;
         if (cards[key]) cards[key].quarterly = points;
     }
     // FCF has no XBRL tag of its own -- it is cfo - |capex| at every period,
     // so its quarterly series is derived the same way its annual one is.
-    const qCfo = quarterly.cfo || [];
+    const qCfo = isFinancialEntity ? [] : (quarterly.cfo || []);
     const qCapex = new Map((quarterly.capex || []).map((p) => [p.period, p.value]));
     const fcfQuarterly = qCfo
         .map((p) => (qCapex.has(p.period)
@@ -1835,7 +2127,7 @@ const DART_VIEW_PRESETS = {
         basic: {
             cards: ['revenue', 'operating_income', 'net_income', 'eps', 'cfo', 'fcf', 'cash',
                 'net_debt', 'current_ratio', 'debt_due_within_1y', 'liquidity_coverage_1y',
-                'interest_coverage', 'ccc_days', 'market_cap', 'pe_ratio', 'pb_ratio'],
+                'interest_coverage', 'ccc_days', 'market_cap', 'pe_ratio', 'pb_ratio', 'roe', 'roa'],
             models: [],
         },
         investor: {
@@ -1871,6 +2163,7 @@ async function handleDartFinancials(request, env) {
             const hit = index[symbol];
             if (!hit) return { ok: false, status: 404, statusText: 'not a KRX-listed filer' };
             const [corpCode, nameKo] = hit;
+            const entityPolicy = classifyDartFinancialEntity(nameKo, symbol);
 
             // Annual reports for FY(Y) file the following spring; before that
             // OpenDART has nothing for FY(currentYear-1) yet, so start one
@@ -1943,10 +2236,15 @@ async function handleDartFinancials(request, env) {
                         price: priceResult.price,
                         price_reason: priceResult.price === null ? priceResult.reason : undefined,
                     },
+                    // Mirrors dart_kfa.entity_policy's classify_entity() output shape
+                    // (see scripts/dart/docs/P0_WORKER_HANDOFF_FINANCIALS.md) so the
+                    // static-snapshot and live-fetch paths carry the same field.
+                    entity_policy: entityPolicy,
                     basic_cards: dartBasicCardsFromFacts(factsByYear, years, {
                         sharesOutstanding: sharesResult.sharesOutstanding,
                         price: priceResult.price,
                         quarterly,
+                        isFinancialEntity: entityPolicy.is_financial_entity,
                     }),
                     data_quality: {
                         input_kind: years.length > 1 ? 'live_fetch_multi_fiscal_year' : 'live_fetch_single_fiscal_year',
@@ -2272,4 +2570,823 @@ async function handleQuote(request, env) {
     } catch (err) {
         return new Response(JSON.stringify({ error: err.message }), { status: 500, headers: JSON_HEADERS });
     }
+}
+
+// --- US policy: Supabase-backed read API ------------------------------------
+//
+// schema.sql enables row level security on every policy table and defines *no*
+// policies, so the anon/publishable key can read nothing at all -- PostgREST
+// answers it with an empty array, not an error. Reads therefore have to run
+// server-side under the service role, which is exactly what this Worker is for.
+// SUPABASE_SERVICE_ROLE_KEY must be a Worker secret (`wrangler secret put`) and
+// must never be echoed into a response body, a log line, or the asset bundle.
+//
+// Contract: docs/api-spec.md section 5. Only the paths the policy screens
+// actually drill into are implemented here; public-laws and U.S. Code are in
+// the spec but nothing navigates to them yet.
+
+const SUPABASE_LIST_LIMIT = 50;
+const SUPABASE_LIST_LIMIT_MAX = 200;
+
+// Mirrors bills.current_stage / bill_actions.normalized_stage in schema.sql.
+// Anything a visitor sends that is not on this list is dropped rather than
+// forwarded, so no caller-supplied text ever reaches a PostgREST filter.
+const BILL_STAGES = new Set([
+    'introduced', 'referred', 'subcommittee', 'committee_consideration',
+    'reported', 'passed_origin_chamber', 'second_chamber',
+    'resolving_differences', 'passed_both_chambers', 'presented_to_president',
+    'enacted', 'vetoed', 'failed', 'other',
+]);
+
+// Cache lifetimes. The directory screens (committee/agency/CRS/CFR tiles) change
+// only when a sync run adds a body, so they can sit for an hour; lists and
+// details move with each run and are kept short enough that a backfill batch
+// shows up while it is still running.
+const US_TTL = { overview: 3600, list: 600, detail: 1800, search: 300 };
+
+async function handleUsPolicy(request, env) {
+    if (!env.SUPABASE_URL || !env.SUPABASE_SERVICE_ROLE_KEY) {
+        return missingKey('SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY');
+    }
+
+    const url = new URL(request.url);
+    const path = url.pathname.replace(/^\/api\/us\/?/, '').replace(/\/+$/, '');
+    const q = url.searchParams;
+
+    try {
+        if (path === 'overview') {
+            return await kvCachedJson(env, 'us:overview:v1', US_TTL.overview,
+                () => usOverview(env));
+        }
+
+        // Ops-facing: "how much of each source has been pulled in so far",
+        // not a screen the UI links to. Short TTL so a backfill in progress
+        // shows up quickly on a re-check instead of the full overview hour.
+        if (path === 'coverage') {
+            return await kvCachedJson(env, 'us:coverage:v1', US_TTL.list,
+                () => usCoverage(env));
+        }
+
+        if (path === 'congress/bills') {
+            const filter = usBillFilter(q);
+            return await kvCachedJson(env, `us:bills:v1:${filter.cacheKey}`, US_TTL.list,
+                () => usBillList(env, filter));
+        }
+
+        let m = path.match(/^congress\/bills\/(.+)$/);
+        if (m) {
+            const billId = decodeURIComponent(m[1]);
+            return await kvCachedJson(env, `us:bill:v1:${billId}`, US_TTL.detail,
+                () => usBillDetail(env, billId));
+        }
+
+        if (path === 'executive/orders') {
+            const filter = usEoFilter(q);
+            return await kvCachedJson(env, `us:eos:v1:${filter.cacheKey}`, US_TTL.list,
+                () => usEoList(env, filter));
+        }
+
+        m = path.match(/^executive\/orders\/(\d+)$/);
+        if (m) {
+            return await kvCachedJson(env, `us:eo:v1:${m[1]}`, US_TTL.detail,
+                () => usEoDetail(env, Number(m[1])));
+        }
+
+        if (path === 'executive/regulations') {
+            const filter = usRegulationFilter(q);
+            return await kvCachedJson(env, `us:regs:v1:${filter.cacheKey}`, US_TTL.list,
+                () => usRegulationList(env, filter));
+        }
+
+        if (path === 'congress/committees') {
+            const id = q.get('committee_id');
+            if (!id) return usError('committee_id is required', 400);
+            return await kvCachedJson(env, `us:committee:v1:${id}`, US_TTL.detail,
+                () => usCommitteeDetail(env, id));
+        }
+
+        if (path === 'executive/agencies') {
+            const id = q.get('agency_id');
+            if (!id) return usError('agency_id is required', 400);
+            return await kvCachedJson(env, `us:agency:v1:${id}`, US_TTL.detail,
+                () => usAgencyDetail(env, id));
+        }
+
+        m = path.match(/^executive\/cfr-titles\/(\d{1,2})$/);
+        if (m) {
+            return await kvCachedJson(env, `us:cfr:v1:${m[1]}`, US_TTL.detail,
+                () => usCfrTitleDetail(env, Number(m[1])));
+        }
+
+        if (path === 'search') {
+            const filter = usSearchFilter(q);
+            if (!filter.query) return new Response(JSON.stringify({ query: '', items: [] }), { headers: JSON_HEADERS });
+            if (!hasPolicyEmbeddingProvider(env)) return missingKey('POLICY_EMBEDDING_PROXY_URL/POLICY_EMBEDDING_PROXY_TOKEN');
+            return await kvCachedJson(env, `us:search:v2:${filter.cacheKey}`, US_TTL.search,
+                () => usSearch(env, filter));
+        }
+
+        return usError(`Unknown endpoint: ${url.pathname}`, 404);
+    } catch (err) {
+        // usFetch already stripped the upstream body of anything sensitive; the
+        // message here is our own text plus a PostgREST status.
+        console.log(`[us] ${url.pathname} failed: ${err.message}`);
+        // 검색어와 상류 서비스의 오류 전문은 방문자에게 노출하지 않는다. 특히
+        // Gemini의 지역 제한 같은 운영 정보는 Worker 로그에서만 확인한다.
+        if (path === 'search') return usError('검색 서비스를 일시적으로 사용할 수 없습니다. 잠시 후 다시 시도해 주세요.', 503);
+        return usError(err.message, err.status || 502);
+    }
+}
+
+function usError(message, status) {
+    return new Response(JSON.stringify({ error: message }), { status, headers: JSON_HEADERS });
+}
+
+// kvCachedJson turns every `ok: false` into a 502 "upstream error", which is the
+// wrong answer for a row that simply is not in the table yet -- and during the
+// backfill most rows are not. Throwing instead lets handleUsPolicy answer 404,
+// and nothing gets cached.
+function usNotFound(what) {
+    const err = new Error(`${what} not found`);
+    err.status = 404;
+    return err;
+}
+
+// A single PostgREST GET. `query` is built entirely from code in this file plus
+// values that have been whitelisted or encoded -- never a raw query string
+// forwarded from the visitor.
+async function usFetch(env, table, query, { count } = {}) {
+    const base = env.SUPABASE_URL.replace(/\/+$/, '');
+    const headers = {
+        apikey: env.SUPABASE_SERVICE_ROLE_KEY,
+        Authorization: `Bearer ${env.SUPABASE_SERVICE_ROLE_KEY}`,
+        Accept: 'application/json',
+    };
+    if (count) headers.Prefer = `count=${count}`;
+
+    const res = await fetch(`${base}/rest/v1/${table}?${query}`, { headers });
+    if (!res.ok) {
+        const detail = await res.text().catch(() => '');
+        // PostgREST error bodies name the table and the constraint, which is
+        // useful and safe; they never carry the key. Trim so a stack of them
+        // cannot blow past a log line.
+        throw new Error(`Supabase ${table}: HTTP ${res.status} ${detail.slice(0, 300)}`);
+    }
+    const rows = await res.json();
+    if (!count) return rows;
+
+    // Content-Range is "0-24/1234" (or "*/1234" for an empty page).
+    const total = Number((res.headers.get('content-range') || '').split('/')[1]);
+    return { rows, total: Number.isFinite(total) ? total : null };
+}
+
+// A single PostgREST RPC call (POST /rest/v1/rpc/<name>). A 404 here means the
+// function itself is not deployed yet -- distinguished from other failures so
+// the caller can degrade to "search not ready" instead of a hard 502.
+async function usRpc(env, name, args) {
+    const base = env.SUPABASE_URL.replace(/\/+$/, '');
+    const res = await fetch(`${base}/rest/v1/rpc/${name}`, {
+        method: 'POST',
+        headers: {
+            apikey: env.SUPABASE_SERVICE_ROLE_KEY,
+            Authorization: `Bearer ${env.SUPABASE_SERVICE_ROLE_KEY}`,
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+        },
+        body: JSON.stringify(args),
+    });
+    if (!res.ok) {
+        const detail = await res.text().catch(() => '');
+        const err = new Error(`Supabase rpc ${name}: HTTP ${res.status} ${detail.slice(0, 300)}`);
+        err.status = res.status === 404 ? 503 : 502;
+        throw err;
+    }
+    return res.json();
+}
+
+const GEMINI_EMBEDDING_MODEL = 'gemini-embedding-001';
+const GEMINI_EMBEDDING_DIMENSIONS = 1536;
+
+function hasPolicyEmbeddingProvider(env) {
+    // 운영에서는 미국 리전 Cloud Run 프록시를 사용한다. 직접 Gemini 호출은
+    // 로컬 개발 호환성을 위해서만 남겨 둔다.
+    return Boolean(
+        (env.POLICY_EMBEDDING_PROXY_URL && env.POLICY_EMBEDDING_PROXY_TOKEN)
+        || env.AI_STUDIO_API_KEY,
+    );
+}
+
+function normalizeEmbedding(values, provider) {
+    if (!Array.isArray(values) || values.length !== GEMINI_EMBEDDING_DIMENSIONS) {
+        throw new Error(`${provider}: expected ${GEMINI_EMBEDDING_DIMENSIONS} dimensions, received ${values?.length || 0}`);
+    }
+    if (!values.every((v) => Number.isFinite(v))) throw new Error(`${provider}: vector contains non-finite values`);
+    const magnitude = Math.sqrt(values.reduce((sum, v) => sum + v * v, 0));
+    if (!magnitude) throw new Error(`${provider}: zero-length vector`);
+    return values.map((v) => v / magnitude);
+}
+
+async function proxyEmbedQuery(env, text) {
+    const res = await fetch(`${String(env.POLICY_EMBEDDING_PROXY_URL).replace(/\/+$/, '')}/embed`, {
+        method: 'POST',
+        headers: {
+            Authorization: `Bearer ${env.POLICY_EMBEDDING_PROXY_TOKEN}`,
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ query: String(text).trim().slice(0, 2000) }),
+    });
+    if (!res.ok) throw new Error(`Policy embedding proxy: HTTP ${res.status}`);
+    const body = await res.json();
+    return normalizeEmbedding(body?.values, 'Policy embedding proxy');
+}
+
+// Same model/dimensionality scripts/lib/sync-utils.js uses to embed bills, EOs
+// and regulations at sync time -- a query embedded any other way would land in
+// a different vector space and every cosine comparison downstream would be
+// meaningless. RETRIEVAL_QUERY (vs. the documents' RETRIEVAL_DOCUMENT) is
+// Gemini's intended asymmetric pairing for this exact search-a-corpus case.
+async function geminiEmbedQuery(env, text) {
+    if (env.POLICY_EMBEDDING_PROXY_URL && env.POLICY_EMBEDDING_PROXY_TOKEN) {
+        return proxyEmbedQuery(env, text);
+    }
+    const res = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_EMBEDDING_MODEL}:embedContent`,
+        {
+            method: 'POST',
+            headers: { 'x-goog-api-key': env.AI_STUDIO_API_KEY, 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                model: `models/${GEMINI_EMBEDDING_MODEL}`,
+                content: { parts: [{ text: String(text).trim().slice(0, 2000) }] },
+                taskType: 'RETRIEVAL_QUERY',
+                outputDimensionality: GEMINI_EMBEDDING_DIMENSIONS,
+            }),
+        },
+    );
+    if (!res.ok) {
+        throw new Error(`Gemini embedContent: HTTP ${res.status}`);
+    }
+    const body = await res.json();
+    return normalizeEmbedding(body?.embedding?.values, 'Gemini embedContent');
+}
+
+function usSearchFilter(q) {
+    const query = (q.get('q') || '').trim().slice(0, 200);
+    const limit = Math.min(Math.max(Number(q.get('limit')) || 20, 1), 50);
+    return { query, limit, cacheKey: `${query}|${limit}` };
+}
+
+// search_policy_corpus는 세 정책 테이블을 한 번에 검색하는 Supabase RPC다.
+// 아직 마이그레이션되지 않은 환경에서는 빈 결과와 unavailable 표시로 완화한다.
+async function usSearch(env, f) {
+    const vector = await geminiEmbedQuery(env, f.query);
+    let rows;
+    try {
+        rows = await usRpc(env, 'search_policy_corpus', {
+            p_query_embedding: vector,
+            p_embedding_model: GEMINI_EMBEDDING_MODEL,
+            p_result_limit: f.limit,
+        });
+    } catch (err) {
+        if (err.status === 503) return { ok: true, body: { query: f.query, items: [], unavailable: true } };
+        throw err;
+    }
+    // Regulations have no drill-down screen of their own (they only ever show
+    // up nested under an EO or a CFR title), so a regulation search hit needs
+    // its official URL fetched separately -- bills and EOs already have an
+    // internal detail view the result row can just navigate to.
+    const regulationIds = [...new Set((rows || [])
+        .filter((r) => r.source_type === 'regulation')
+        .map((r) => r.source_id))];
+    const regulationUrls = new Map();
+    if (regulationIds.length) {
+        const regRows = await usFetch(env, 'regulations',
+            `select=regulation_id,federal_register_url&regulation_id=in.(${regulationIds.map((id) => encodeURIComponent(id)).join(',')})`);
+        for (const reg of regRows) regulationUrls.set(reg.regulation_id, reg.federal_register_url);
+    }
+    const items = (rows || []).map((r) => ({
+        type: r.source_type,
+        id: r.source_id,
+        title: r.title,
+        similarity_score: r.similarity_score,
+        source_url: r.source_type === 'regulation' ? (regulationUrls.get(r.source_id) || null) : undefined,
+    }));
+    return { ok: true, body: { query: f.query, items } };
+}
+
+// The obvious way to write this is a PostgREST group-by aggregate
+// (`select=<col>,count()`), but that needs db-aggregates-enabled, which this
+// project has off -- confirmed by /api/us/coverage coming back with every
+// grouped field null while the plain totals worked fine. So this pages
+// through the one column instead and tallies client-side; even the largest
+// table here (bills, ~18k rows) is a handful of requests of a single short
+// column each. Not worth failing a whole directory screen over a badge
+// number, so a rejection still degrades to "no counts" rather than an error.
+async function usCountBy(env, table, column, extra = '') {
+    try {
+        const out = {};
+        const pageSize = 1000;
+        let offset = 0;
+        let total = Infinity;
+        while (offset < total) {
+            const query = `select=${column}${extra}&limit=${pageSize}&offset=${offset}`;
+            const { rows, total: reportedTotal } = await usFetch(env, table, query, { count: 'exact' });
+            total = Number.isFinite(reportedTotal) ? reportedTotal : offset + rows.length;
+            for (const row of rows) {
+                const key = row[column];
+                if (key == null) continue;
+                out[key] = (out[key] || 0) + 1;
+            }
+            if (rows.length < pageSize) break;
+            offset += pageSize;
+        }
+        return out;
+    } catch (err) {
+        console.log(`[us] count by ${table}.${column} unavailable: ${err.message}`);
+        return null;
+    }
+}
+
+const countOf = (map, key) => (map ? (map[key] || 0) : null);
+
+// Total row count for a table (optionally filtered), degrading to null the
+// same way usCountBy does rather than failing the whole coverage screen.
+async function usCountScalar(env, table, filter = '') {
+    try {
+        const query = ['select=*', filter, 'limit=1'].filter(Boolean).join('&');
+        const { total } = await usFetch(env, table, query, { count: 'exact' });
+        return total;
+    } catch (err) {
+        console.log(`[us] count of ${table} unavailable: ${err.message}`);
+        return null;
+    }
+}
+
+// How much of each source has actually been pulled in -- separate from
+// usOverview's per-tile badges, this is the one place that answers "how far
+// along is the backfill" without anyone needing direct SQL access. Every
+// number here is a plain row count, nothing inferred.
+async function usCoverage(env) {
+    const [
+        billsTotal, billsByStage, billsEmbedded,
+        eoTotal, eoEmbedded, eoAgencyRelationsByType,
+        publicLawsTotal,
+        regulationsTotal, regulationsEmbedded,
+        committeeMembersCurrentByRole, committeeMembersCurrentTotal,
+        legislatorsTotal, committeesTotal,
+    ] = await Promise.all([
+        usCountScalar(env, 'bills'),
+        usCountBy(env, 'bills', 'current_stage'),
+        usCountScalar(env, 'bills', 'embedding=not.is.null'),
+        usCountScalar(env, 'executive_orders'),
+        usCountScalar(env, 'executive_orders', 'embedding=not.is.null'),
+        usCountBy(env, 'executive_order_agencies', 'relationship_type'),
+        usCountScalar(env, 'public_laws'),
+        usCountScalar(env, 'regulations'),
+        usCountScalar(env, 'regulations', 'embedding=not.is.null'),
+        usCountBy(env, 'committee_members', 'role', '&current=is.true'),
+        usCountScalar(env, 'committee_members', 'current=is.true'),
+        usCountScalar(env, 'us_legislators'),
+        usCountScalar(env, 'committees'),
+    ]);
+    return {
+        ok: true,
+        body: {
+            generated_at: new Date().toISOString(),
+            bills: { total: billsTotal, by_stage: billsByStage, embedded: billsEmbedded },
+            executive_orders: { total: eoTotal, embedded: eoEmbedded, agency_relations_by_type: eoAgencyRelationsByType },
+            public_laws: { total: publicLawsTotal },
+            regulations: { total: regulationsTotal, embedded: regulationsEmbedded },
+            committees: { total: committeesTotal },
+            committee_members: { current_total: committeeMembersCurrentTotal, current_by_role: committeeMembersCurrentByRole },
+            legislators: { total: legislatorsTotal },
+        },
+    };
+}
+
+// Directory payload behind the 미국 → 의회 / 행정부 screens: every tile the two
+// grids draw, plus the CRS and CFR classification lists. One response because
+// the screens are one screen -- eight round trips to Supabase collapse into a
+// single hourly KV entry shared by every visitor.
+async function usOverview(env) {
+    const [
+        committees, agencies, policyAreas, cfrTitles,
+        billsPerCommittee, billsPerArea, eosPerAgency, regsPerTitle,
+        committeeAgencyRows,
+    ] = await Promise.all([
+        // Top-level bodies only. Subcommittees belong to the committee screen,
+        // and mixing them into the grid would bury the standing committees.
+        usFetch(env, 'committees',
+            'select=committee_id,name,chamber,committee_type,official_url,jurisdiction_summary,display_order'
+            + '&parent_committee_id=is.null&order=chamber.asc,name.asc&limit=500'),
+        usFetch(env, 'agencies',
+            'select=agency_id,name,short_name,agency_type,parent_agency_id,agency_url'
+            + '&agency_type=in.(eop,department,independent)&order=name.asc&limit=1000'),
+        usFetch(env, 'policy_areas',
+            'select=policy_area_id,name&active=is.true&order=name.asc&limit=200'),
+        usFetch(env, 'cfr_titles',
+            'select=title_number,title_name,reserved&order=title_number.asc&limit=50'),
+        usCountBy(env, 'bill_committees', 'committee_id'),
+        usCountBy(env, 'bills', 'policy_area_id'),
+        usCountBy(env, 'executive_order_agencies', 'agency_id'),
+        usCountBy(env, 'regulation_cfr_references', 'title_number'),
+        // committee_agency_jurisdictions only carries the FK id; the name a
+        // committee card wants to show comes from the joined agencies row.
+        // Degrades to "no agency tags" the same way usCountBy does, rather
+        // than failing the whole directory screen.
+        usFetch(env, 'committee_agency_jurisdictions', 'select=committee_id,agencies(name)&limit=5000')
+            .catch((err) => { console.log(`[us] committee agency mapping unavailable: ${err.message}`); return []; }),
+    ]);
+
+    const agencyNamesByCommittee = new Map();
+    for (const row of committeeAgencyRows) {
+        const name = row.agencies?.name;
+        if (!name) continue;
+        const list = agencyNamesByCommittee.get(row.committee_id);
+        if (list) list.push(name); else agencyNamesByCommittee.set(row.committee_id, [name]);
+    }
+
+    return {
+        ok: true,
+        body: {
+            generated_at: new Date().toISOString(),
+            congress_overview: {
+                committees: committees.map((c) => ({
+                    committee_id: c.committee_id,
+                    name: c.name,
+                    chamber: c.chamber,
+                    committee_type: c.committee_type,
+                    official_url: c.official_url,
+                    jurisdiction_summary: c.jurisdiction_summary,
+                    bill_count: countOf(billsPerCommittee, c.committee_id),
+                    agencies: agencyNamesByCommittee.get(c.committee_id) || [],
+                })),
+            },
+            executive_overview: {
+                agencies: agencies.map((a) => ({
+                    agency_id: a.agency_id,
+                    name: a.name,
+                    short_name: a.short_name,
+                    agency_type: a.agency_type,
+                    parent_agency_id: a.parent_agency_id,
+                    agency_url: a.agency_url,
+                    executive_order_count: countOf(eosPerAgency, a.agency_id),
+                })),
+            },
+            policy_areas: policyAreas.map((p) => ({
+                policy_area_id: p.policy_area_id,
+                name: p.name,
+                bill_count: countOf(billsPerArea, p.policy_area_id),
+            })),
+            cfr_titles: cfrTitles.map((t) => ({
+                title_number: t.title_number,
+                name: t.title_name,
+                reserved: t.reserved,
+                regulation_count: countOf(regsPerTitle, String(t.title_number)),
+            })),
+        },
+    };
+}
+
+// Offset paging rather than the keyset cursor api-spec.md recommends. Both
+// order keys (latest_action_date, introduced_date) are nullable, and a keyset
+// predicate over a nullable column needs a three-branch `or=(...)` that
+// PostgREST cannot index-scan anyway. The envelope is the contract's, so the
+// cursor stays opaque to the caller and can become a keyset token later without
+// touching the frontend.
+function pageParams(q) {
+    const limit = Math.min(Math.max(Number(q.get('limit')) || SUPABASE_LIST_LIMIT, 1), SUPABASE_LIST_LIMIT_MAX);
+    const cursor = q.get('cursor') || '';
+    const offset = /^o:\d+$/.test(cursor) ? Number(cursor.slice(2)) : 0;
+    return { limit, offset };
+}
+
+function pageEnvelope(items, { limit, offset }, total) {
+    const hasMore = total === null ? items.length === limit : offset + items.length < total;
+    return {
+        items,
+        total,
+        next_cursor: hasMore ? `o:${offset + items.length}` : null,
+        has_more: hasMore,
+    };
+}
+
+function usBillFilter(q) {
+    const committeeId = q.get('committee_id') || '';
+    const policyAreaId = q.get('policy_area_id') || '';
+    const stages = (q.get('stage') || '').split(',').map((s) => s.trim()).filter((s) => BILL_STAGES.has(s));
+    const congress = /^\d{1,3}$/.test(q.get('congress_number') || '') ? q.get('congress_number') : '';
+    const page = pageParams(q);
+    return {
+        committeeId, policyAreaId, stages, congress, ...page,
+        cacheKey: [committeeId, policyAreaId, stages.join('+'), congress, page.limit, page.offset].join('|'),
+    };
+}
+
+const BILL_LIST_COLUMNS = 'bill_id,congress_number,bill_type,bill_number,title,sponsor,'
+    + 'introduced_date,current_stage,current_status,latest_action_date,latest_action_text,'
+    + 'congress_url,policy_area_id,detail_level';
+
+function usBillWhere(f) {
+    const parts = [];
+    // !inner turns the embed into a join filter, so this narrows bills rather
+    // than merely attaching an empty bill_committees array to every row.
+    if (f.committeeId) parts.push(`bill_committees.committee_id=eq.${encodeURIComponent(f.committeeId)}`);
+    if (f.policyAreaId) parts.push(`policy_area_id=eq.${encodeURIComponent(f.policyAreaId)}`);
+    if (f.stages.length) parts.push(`current_stage=in.(${f.stages.join(',')})`);
+    if (f.congress) parts.push(`congress_number=eq.${f.congress}`);
+    return parts.join('&');
+}
+
+async function usBillList(env, f) {
+    const embed = f.committeeId ? ',bill_committees!inner(committee_id)' : '';
+    const where = usBillWhere(f);
+    const query = [
+        `select=${BILL_LIST_COLUMNS}${embed}`,
+        where,
+        'order=latest_action_date.desc.nullslast,introduced_date.desc.nullslast,bill_id.desc',
+        `limit=${f.limit}`,
+        `offset=${f.offset}`,
+    ].filter(Boolean).join('&');
+
+    // Stage counts drive the tab badges and must ignore the stage filter itself,
+    // otherwise every tab would report only its own total.
+    const stageQuery = [
+        `select=current_stage,count()${f.committeeId ? ',bill_committees!inner(committee_id)' : ''}`,
+        usBillWhere({ ...f, stages: [] }),
+    ].filter(Boolean).join('&');
+
+    const [page, stageRows] = await Promise.all([
+        usFetch(env, 'bills', query, { count: 'exact' }),
+        usFetch(env, 'bills', stageQuery).catch(() => null),
+    ]);
+
+    const stageCounts = {};
+    for (const row of stageRows || []) stageCounts[row.current_stage] = Number(row.count) || 0;
+
+    return {
+        ok: true,
+        body: {
+            filter: {
+                type: f.committeeId ? 'committee' : f.policyAreaId ? 'policy_area' : 'all',
+                id: f.committeeId || f.policyAreaId || null,
+            },
+            stage_counts: stageRows ? stageCounts : null,
+            ...pageEnvelope(page.rows, f, page.total),
+        },
+    };
+}
+
+// bill_relations has no title column of its own -- a target that is not in
+// our DB yet (target_bill_id null) carries only congress/type/number, and one
+// that is carries a bill row to join for its title. Both branches assemble
+// the same bill_id format the rest of the UI uses ("119-hr-1234").
+function shapeRelations(rows, wantSemantic) {
+    return rows
+        .filter((r) => (r.relation_origin === 'semantic') === wantSemantic)
+        .map((r) => ({
+            bill_id: r.target_bill_id || `${r.target_congress_number}-${r.target_bill_type}-${r.target_bill_number}`,
+            title: r.bills?.title || null,
+            relation_type: r.relation_type,
+            relation_origin: r.relation_origin,
+            ...(wantSemantic ? { similarity_score: r.similarity_score } : {}),
+        }));
+}
+
+async function usBillDetail(env, billId) {
+    const id = encodeURIComponent(billId);
+    const [rows, relations] = await Promise.all([
+        usFetch(env, 'bills',
+            `select=*,policy_areas(policy_area_id,name),`
+            + `bill_summaries(action_date,action_description,version_code,summary_text),`
+            + `bill_actions(action_date,action_text,action_code,chamber,normalized_stage),`
+            + `bill_votes(chamber,vote_date,question,result,yea_count,nay_count,present_count,not_voting_count,source_url),`
+            + `bill_text_versions(version_code,version_name,issued_on,html_url,pdf_url,formatted_text_url,source_url),`
+            + `bill_committees(committee_id,activity_names,committees(name,chamber,official_url)),`
+            + `bill_subjects(legislative_subjects(subject_id,name))`
+            + `&bill_id=eq.${id}&limit=1`),
+        // !bill_relations_target_bill_id_fkey disambiguates from the other FK
+        // this table has to `bills` (source_bill_id) -- Postgres's default name
+        // for an inline `references` clause with no explicit constraint name.
+        // A rejection (e.g. the name differs) degrades to no related bills
+        // rather than failing the whole detail view.
+        usFetch(env, 'bill_relations',
+            `select=target_bill_id,target_congress_number,target_bill_type,target_bill_number,`
+            + `relation_type,relation_origin,similarity_score,`
+            + `bills!bill_relations_target_bill_id_fkey(title)`
+            + `&source_bill_id=eq.${id}&limit=200`)
+            .catch((err) => { console.log(`[us] bill_relations unavailable: ${err.message}`); return []; }),
+    ]);
+
+    if (!rows.length) throw usNotFound(`bill ${billId}`);
+
+    const bill = rows[0];
+    // embedding is a 1536-float vector -- ~30KB of JSON per bill, useless to the
+    // browser and expensive in KV. raw_source is the whole Congress.gov payload.
+    delete bill.embedding;
+    delete bill.raw_source;
+    for (const v of bill.bill_text_versions || []) delete v.raw_source;
+
+    bill.committees = (bill.bill_committees || []).map((bc) => ({
+        committee_id: bc.committee_id,
+        name: bc.committees?.name,
+        chamber: bc.committees?.chamber,
+        official_url: bc.committees?.official_url,
+    }));
+    delete bill.bill_committees;
+
+    bill.official_related_bills = shapeRelations(relations, false);
+    bill.similar_bills = shapeRelations(relations, true);
+
+    (bill.bill_actions || []).sort((a, b) => String(b.action_date).localeCompare(String(a.action_date)));
+    return { ok: true, body: bill };
+}
+
+function usEoFilter(q) {
+    const agencyId = q.get('agency_id') || '';
+    const page = pageParams(q);
+    return { agencyId, ...page, cacheKey: [agencyId, page.limit, page.offset].join('|') };
+}
+
+const EO_LIST_COLUMNS = 'eo_number,document_number,title,president_name,signed_date,'
+    + 'publication_date,citation,federal_register_url,pdf_url,executive_order_url,summary';
+
+async function usEoList(env, f) {
+    const query = [
+        `select=${EO_LIST_COLUMNS}${f.agencyId ? ',executive_order_agencies!inner(agency_id)' : ''}`,
+        f.agencyId ? `executive_order_agencies.agency_id=eq.${encodeURIComponent(f.agencyId)}` : '',
+        'order=signed_date.desc.nullslast,eo_number.desc',
+        `limit=${f.limit}`,
+        `offset=${f.offset}`,
+    ].filter(Boolean).join('&');
+
+    const page = await usFetch(env, 'executive_orders', query, { count: 'exact' });
+    return {
+        ok: true,
+        body: {
+            filter: { type: f.agencyId ? 'agency' : 'all', id: f.agencyId || null },
+            ...pageEnvelope(page.rows, f, page.total),
+        },
+    };
+}
+
+async function usEoDetail(env, eoNumber) {
+    const rows = await usFetch(env, 'executive_orders',
+        `select=${EO_LIST_COLUMNS},`
+        + `executive_order_agencies(relationship_type,relation_origin,source_url,evidence_excerpt,evidence_section,`
+        + `agencies(agency_id,name,short_name,agency_type)),`
+        + `executive_order_authorities(legal_authorities(citation,title,official_url,verification_status,linked_bill_id)),`
+        + `executive_order_regulations(regulations(regulation_id,document_type,title,publication_date,effective_on,federal_register_url))`
+        + `&eo_number=eq.${eoNumber}&limit=1`);
+
+    if (!rows.length) throw usNotFound(`EO ${eoNumber}`);
+    const eo = rows[0];
+
+    // Kept per relationship_type rather than flattened to a bare agency list --
+    // issuing_document/implementing_regulation carry no evidence text, while
+    // the official_text_citation roles (directed/coordinating/consulted) do,
+    // and the UI shows *why* an agency is attached only when it has one.
+    eo.agency_relations = (eo.executive_order_agencies || [])
+        .filter((x) => x.agencies)
+        .map((x) => ({
+            agency: x.agencies,
+            relationship_type: x.relationship_type,
+            relation_origin: x.relation_origin,
+            source_url: x.source_url,
+            evidence_excerpt: x.evidence_excerpt,
+            evidence_section: x.evidence_section,
+        }));
+    delete eo.executive_order_agencies;
+
+    // linked_bill_id -> bill_id: the UI's citation renderer only knows the
+    // generic "bill_id" name, the same as everywhere else a bill is linked.
+    eo.legal_authorities = (eo.executive_order_authorities || [])
+        .map((x) => x.legal_authorities)
+        .filter(Boolean)
+        .map((a) => ({
+            citation: a.citation,
+            title: a.title,
+            official_url: a.official_url,
+            verification_status: a.verification_status,
+            bill_id: a.linked_bill_id,
+        }));
+    delete eo.executive_order_authorities;
+
+    eo.related_regulations = (eo.executive_order_regulations || []).map((x) => x.regulations).filter(Boolean);
+    delete eo.executive_order_regulations;
+
+    return { ok: true, body: eo };
+}
+
+function usRegulationFilter(q) {
+    const raw = q.get('title_number');
+    const titleNumber = /^\d{1,2}$/.test(raw || '') && Number(raw) >= 1 && Number(raw) <= 50 ? raw : '';
+    const agencyId = q.get('agency_id') || '';
+    const page = pageParams(q);
+    return { titleNumber, agencyId, ...page, cacheKey: [titleNumber, agencyId, page.limit, page.offset].join('|') };
+}
+
+// Abstracts are deliberately not selected: docs/api-spec.md forbids storing or
+// re-serving document full text, and the screen links out to Federal Register.
+const REGULATION_LIST_COLUMNS = 'regulation_id,document_number,document_type,title,'
+    + 'publication_date,effective_on,comments_close_on,federal_register_url,citation,rin';
+
+async function usRegulationList(env, f) {
+    const embeds = [];
+    const filters = [];
+    if (f.titleNumber) {
+        embeds.push('regulation_cfr_references!inner(title_number,part_number)');
+        filters.push(`regulation_cfr_references.title_number=eq.${f.titleNumber}`);
+    }
+    if (f.agencyId) {
+        embeds.push('regulation_agencies!inner(agency_id)');
+        filters.push(`regulation_agencies.agency_id=eq.${encodeURIComponent(f.agencyId)}`);
+    }
+
+    const query = [
+        `select=${REGULATION_LIST_COLUMNS}${embeds.length ? ',' + embeds.join(',') : ''}`,
+        ...filters,
+        'order=publication_date.desc.nullslast,regulation_id.desc',
+        `limit=${f.limit}`,
+        `offset=${f.offset}`,
+    ].filter(Boolean).join('&');
+
+    const page = await usFetch(env, 'regulations', query, { count: 'exact' });
+    return {
+        ok: true,
+        body: {
+            filter: { title_number: f.titleNumber ? Number(f.titleNumber) : null, agency_id: f.agencyId || null },
+            ...pageEnvelope(page.rows, f, page.total),
+        },
+    };
+}
+
+// Right-hand column of the committee screen: subcommittees. Everything else
+// shown there (name, jurisdiction, the verified agency-name tags) is already
+// on the committee's own /overview entry, which is where the UI reads it
+// from -- this endpoint only adds what that list doesn't carry. Members are
+// not in the schema yet, so the screen keeps its "위원장 정보 준비 중"
+// placeholder for those regardless.
+async function usCommitteeDetail(env, committeeId) {
+    const subcommittees = await usFetch(env, 'committees',
+        `select=committee_id,name,chamber,official_url`
+        + `&parent_committee_id=eq.${encodeURIComponent(committeeId)}&order=name.asc&limit=100`);
+    return { ok: true, body: { committee_id: committeeId, subcommittees } };
+}
+
+// The CFR title screen: regulations filed under the title, plus the executive
+// orders reached through those regulations' own EO links. Per docs/api-spec.md
+// ("분류 개수"), an EO is deliberately never classified against a CFR title
+// directly -- only through a regulation that carries the title reference --
+// so this is the one place that resolves that two-hop path.
+async function usCfrTitleDetail(env, titleNumber) {
+    const [titleRows, regs] = await Promise.all([
+        usFetch(env, 'cfr_titles',
+            `select=title_number,title_name,reserved&title_number=eq.${titleNumber}&limit=1`),
+        usFetch(env, 'regulations',
+            `select=${REGULATION_LIST_COLUMNS},regulation_cfr_references!inner(title_number),`
+            + `executive_order_regulations(executive_orders(eo_number,title,signed_date))`
+            + `&regulation_cfr_references.title_number=eq.${titleNumber}`
+            + `&order=publication_date.desc.nullslast&limit=200`),
+    ]);
+
+    if (!titleRows.length) throw usNotFound(`CFR title ${titleNumber}`);
+    const title = titleRows[0];
+
+    // Regulations map 1:1 into the list the UI already knows how to render
+    // (renderRegulations); EOs are collected into a title-wide set since the
+    // same order can implement more than one regulation under this title.
+    const eoByNumber = new Map();
+    for (const r of regs) {
+        for (const link of r.executive_order_regulations || []) {
+            if (link.executive_orders) eoByNumber.set(link.executive_orders.eo_number, link.executive_orders);
+        }
+        delete r.executive_order_regulations;
+        delete r.regulation_cfr_references;
+    }
+
+    return {
+        ok: true,
+        body: {
+            title_number: title.title_number,
+            name: title.title_name,
+            reserved: title.reserved,
+            regulations: regs,
+            executive_orders: [...eoByNumber.values()],
+        },
+    };
+}
+
+// Agency screen: the agency itself plus its 하위 기관 (agency_type='sub'). The
+// EO list on the left comes from /api/us/executive/orders?agency_id=...
+async function usAgencyDetail(env, agencyId) {
+    const id = encodeURIComponent(agencyId);
+    const [rows, children] = await Promise.all([
+        usFetch(env, 'agencies',
+            `select=agency_id,name,short_name,agency_type,parent_agency_id,agency_url&agency_id=eq.${id}&limit=1`),
+        usFetch(env, 'agencies',
+            `select=agency_id,name,short_name,agency_type,agency_url&parent_agency_id=eq.${id}&order=name.asc&limit=200`),
+    ]);
+
+    if (!rows.length) throw usNotFound(`agency ${agencyId}`);
+    return { ok: true, body: { ...rows[0], sub_agencies: children } };
 }
