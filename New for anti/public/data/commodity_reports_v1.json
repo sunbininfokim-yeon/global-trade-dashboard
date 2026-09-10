@@ -1,6 +1,6 @@
 {
   "schema_version": "commodity-reports-v1",
-  "generated_at": "2026-09-10T05:11:04.445917+00:00",
+  "generated_at": "2026-09-10T13:05:40.801076+00:00",
   "model": {
     "name": "commodity_reports_v1",
     "description": "Official crop/energy/metal reports tagged (commodity × country) so the dashboard's stage-2 country window can show what was published about that country's commodity. The report's text picks the country, not the publisher: a USDA release on Brazilian wheat belongs on BRA·wheat.",
@@ -19,9 +19,9 @@
   "stats": {
     "sources_ok": 8,
     "sources_failed": 4,
-    "raw_items": 136,
-    "scored": 55,
-    "published": 37,
+    "raw_items": 137,
+    "scored": 56,
+    "published": 36,
     "commodities": 9,
     "buckets": 11
   },
@@ -57,7 +57,7 @@
     {
       "source_id": "us_eia_today_in_energy",
       "ok": true,
-      "count": 14,
+      "count": 15,
       "error": null,
       "mode": "live"
     },
@@ -457,26 +457,15 @@
     }
   },
   "index": {
-    "gas": {
-      "USA": [
-        "5a1967d788350658",
-        "da3f6761ea6f1421",
-        "de49cf7992871dbf",
-        "181e4ee82214496a"
-      ],
-      "_global": [
-        "d09ef02fa55cc52b"
-      ]
-    },
     "oil": {
       "USA": [
+        "cfe32235018b6add",
         "5d3e84a676f4ec8b",
         "636939b535053039",
         "c67666c03e916f6f",
         "57e4eb5bfc9ebc1e",
         "0a708bd4ffd29cfc",
         "fd94e1c0559f75cc",
-        "ce7212e9d767222d",
         "cecfc55a16f54d74"
       ],
       "_global": [
@@ -522,6 +511,16 @@
         "f9e7ed8b73ce1fa5"
       ]
     },
+    "gas": {
+      "USA": [
+        "5a1967d788350658",
+        "de49cf7992871dbf",
+        "181e4ee82214496a"
+      ],
+      "_global": [
+        "d09ef02fa55cc52b"
+      ]
+    },
     "thermal_coal": {
       "USA": [
         "f8aa4f64781b6480"
@@ -546,20 +545,20 @@
   },
   "items": [
     {
-      "id": "da3f6761ea6f1421",
+      "id": "cfe32235018b6add",
       "title": {
-        "original": "U.S. LNG exports rose 23% in the first half of 2026 because of higher capacity",
+        "original": "United States on track for record crude oil production in 2026",
         "original_lang": "en",
         "ko": null
       },
-      "summary": "U.S. liquefied natural gas (LNG) exports averaged 17.4 billion cubic feet per day (Bcf/d) in the first six months of the year, 23% more than the same period in 2025, according to our Natural Gas Monthly. In our latest Short-Term Energy Outlook, we estimate U.S. LNG exports will average 17.3 Bcf/d in the second half of 2026 (2H26) before rising to 18.7 Bcf/d in 1H27.",
-      "url": "https://www.eia.gov/todayinenergy/detail.php?id=68064",
-      "published_at": "2026-09-01T14:00:00+00:00",
+      "summary": "We forecast U.S. crude oil production will average 13.8 million barrels per day (b/d) in 2026, surpassing the previous record of 13.7 million b/d set in 2025, in our latest Short-Term Energy Outlook (STEO).",
+      "url": "https://www.eia.gov/todayinenergy/detail.php?id=68125",
+      "published_at": "2026-09-10T14:00:00+00:00",
       "agency": "EIA",
       "agency_ko": "미 에너지정보청",
       "source_id": "us_eia_today_in_energy",
       "commodities": [
-        "gas"
+        "oil"
       ],
       "countries": [
         "USA"
@@ -568,7 +567,7 @@
       "country_source": "text",
       "series_id": "EIA_STEO",
       "series_label_ko": "EIA 단기 에너지 전망",
-      "importance": 4.582,
+      "importance": 5.462,
       "reasons": [
         "series:EIA_STEO",
         "has_figure",
@@ -599,7 +598,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 3.215,
+      "importance": 3.192,
       "reasons": [
         "has_figure",
         "revision_language",
@@ -627,7 +626,7 @@
       "country_source": "none",
       "series_id": "EIA_STEO",
       "series_label_ko": "EIA 단기 에너지 전망",
-      "importance": 2.566,
+      "importance": 2.548,
       "reasons": [
         "series:EIA_STEO"
       ]
@@ -655,7 +654,7 @@
       "country_source": "text",
       "series_id": "EIA_STEO",
       "series_label_ko": "EIA 단기 에너지 전망",
-      "importance": 2.351,
+      "importance": 2.349,
       "reasons": [
         "series:EIA_STEO",
         "has_figure",
@@ -903,7 +902,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.626,
+      "importance": 1.618,
       "reasons": [
         "has_figure",
         "country_in_text"
@@ -932,7 +931,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.602,
+      "importance": 1.593,
       "reasons": [
         "revision_language",
         "country_in_text"
@@ -961,7 +960,7 @@
       "country_source": "text",
       "series_id": "EIA_STEO",
       "series_label_ko": "EIA 단기 에너지 전망",
-      "importance": 1.583,
+      "importance": 1.58,
       "reasons": [
         "series:EIA_STEO",
         "country_in_text"
@@ -990,7 +989,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.493,
+      "importance": 1.484,
       "reasons": [
         "country_in_text"
       ]
@@ -1109,7 +1108,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.437,
+      "importance": 1.428,
       "reasons": [
         "country_in_text"
       ]
@@ -1137,7 +1136,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.41,
+      "importance": 1.401,
       "reasons": [
         "country_in_text"
       ]
@@ -1313,7 +1312,7 @@
       "country_source": "text",
       "series_id": "EIA_STEO",
       "series_label_ko": "EIA 단기 에너지 전망",
-      "importance": 1.342,
+      "importance": 1.341,
       "reasons": [
         "series:EIA_STEO",
         "country_in_text"
@@ -1369,7 +1368,7 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.149,
+      "importance": 1.142,
       "reasons": []
     },
     {
@@ -1393,7 +1392,7 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.149,
+      "importance": 1.142,
       "reasons": []
     },
     {
@@ -1486,34 +1485,6 @@
       "summary": "The Annual Energy Outlook 2026 (AEO2026) explores medium- and long-term alternative futures in the United States through 2050. AEO2026 enables the public to explore a suite of alternative pathways for our energy future depending on assumptions made about markets, technological breakthroughs, and policy. It includes a narrative report, as well as the full set of data tables and visualizations, assumptions and methodologies, and detailed descriptions of the 11 cases we ran to explore these alternative futures.",
       "url": "https://www.eia.gov/pressroom/releases/press587.php",
       "published_at": "2026-04-08T20:00:00+00:00",
-      "agency": "EIA",
-      "agency_ko": "미 에너지정보청",
-      "source_id": "us_eia_press",
-      "commodities": [
-        "oil"
-      ],
-      "countries": [
-        "USA"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 0.69,
-      "reasons": [
-        "country_in_text"
-      ]
-    },
-    {
-      "id": "ce7212e9d767222d",
-      "title": {
-        "original": "Hormuz closure and related production outages are key drivers in EIA's latest forecast",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "The U.S. Energy Information Administration published its April Short Term Energy Outlook this week, examining the implications of the closure of the Strait of Hormuz.",
-      "url": "https://www.eia.gov/pressroom/releases/press586.php",
-      "published_at": "2026-04-07T17:00:00+00:00",
       "agency": "EIA",
       "agency_ko": "미 에너지정보청",
       "source_id": "us_eia_press",
