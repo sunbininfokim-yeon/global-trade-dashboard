@@ -1,0 +1,22 @@
+name: Probe TIGERweb 120th Congress layer
+
+# One-off diagnostic (workflow_dispatch only, no schedule): checks whether
+# Census TIGERweb's Legislative MapServer has published a "120th Congressional
+# Districts" layer yet, and if so, whether its 2025-2026 mid-decade
+# redistricting states already differ from the stale 119th-Congress snapshot
+# the repo's congressional_districts/USA/*.json files were built from
+# (2025-01-01 vintage, predates the TX/NC/MO/OH/UT/CA/AL/TN redraws). Makes no
+# repo changes -- read-only, prints its findings to the job log.
+on:
+  workflow_dispatch:
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Query TIGERweb/Legislative MapServer
+        run: python3 "New for anti/scripts/election_watch/tools/probe_tigerweb_120th.py"
