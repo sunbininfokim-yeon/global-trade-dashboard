@@ -1,0 +1,50 @@
+# Claude installation template. Inactive until copied to .github/workflows/.
+name: US election poll source review
+on:
+  schedule:
+    - cron: '0 21 * * *'
+  workflow_dispatch:
+permissions:
+  contents: write
+  pull-requests: write
+concurrency:
+  group: us-election-poll-refresh
+  cancel-in-progress: false
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Verify contract
+        working-directory: New for anti/scripts/election_watch
+        run: python3 -m unittest discover -s tests -p 'test_election_polls.py' -v
+      - name: Check sources
+        id: monitor
+        continue-on-error: true
+        working-directory: New for anti/scripts/election_watch
+        run: python3 monitor_election_polls.py --report /tmp/poll-monitor.json
+      - name: Rebuild reviewed data with source status
+        working-directory: New for anti/scripts/election_watch
+        run: python3 build_election_polls.py --monitor-report /tmp/poll-monitor.json
+      - name: Preserve source report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: poll-source-review
+          path: /tmp/poll-monitor.json
+      - name: Open data review PR
+        uses: peter-evans/create-pull-request@v7
+        with:
+          branch: automation/us-election-polls
+          title: 'data: refresh reviewed US election polling snapshot'
+          commit-message: 'data: refresh reviewed US election polling snapshot'
+          body: 'T33: Reviewed observations only. Inspect source changes and errors in the national monitor report. New poll values require a separate source review.'
+          add-paths: |
+            New for anti/public/data/usa_election_polls_index_v1.json
+            New for anti/public/data/usa_election_polls/**
+      - name: Report collection failure
+        if: steps.monitor.outcome == 'failure'
+        run: exit 1

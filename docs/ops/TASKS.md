@@ -60,3 +60,5 @@
 | T31 | 천연가스 공식 재고·Henry Hub 자동 수집 및 표시 | codex | `scripts/gas_storage/**`, `public/data/gas_storage_v1.json`, `gas-storage.js`, trade/index hooks, gas workflow/deploy hook | `codex/natural-gas-storage-pipeline` | review | 2026-09-09 사용자 파이프라인 및 GitHub/Cloudflare 배포 지시. 별도 checkout. 7개 테스트 및 로컬 UI 확인. TTF 제공업체 확인 대기. |
 
 | T32 | 미국 선거 UI #271 데이터 공백 보완 | codex | `scripts/election_watch/**` 데이터 코드·계약, `public/data/usa_*`, `elections_board*` | `codex/us-election-data-gaps` | **review** | 사용자 요청 P1 주 공시, P2 지역 코드, P3 소스 역할, P4 공석·경합 근거. UI·workflow·지도 경계 제외 |
+
+| T33 | 미국 주요 주·지역구 여론조사 데이터 백엔드 | codex | `scripts/election_watch/*poll*`, `config/usa_polls/`, `public/data/usa_election_polls*`, 인수 문서 | `codex/us-election-polls` | **review** | 2026-09-11 예약 실행. 10개 주·22개 슬롯, 7개 실제 조사·13개 결과·8개 선거. 11개 테스트 및 원문 감시 12개 URL 성공. UI·활성 workflow 제외. HANDOFF_CLAUDE_ELECTION_POLLS.md |
