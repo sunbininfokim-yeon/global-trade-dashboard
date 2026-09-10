@@ -1,11 +1,21 @@
 import { countryEvents, readableSpectrum, screenStatus } from '../data/selectors.js';
 import { escapeHtml, formatDate, stateLabel } from '../ui.js';
-import { usaSections, usaLegislature } from './special/usa.js';
+import { usaSections } from './special/usa.js';
+import { usaLegislature } from './special/usa-legislature.js';
+import { usaExecutive } from './special/usa-executive.js';
 import { chinaSections, chinaContent } from './special/china.js';
 import { iranSections } from './special/iran.js';
+import { raceProgressContent } from './special/race-progress.js';
 
-const genericSections = [['지도', 'subnational_map'], ['행정부·정부', 'executive'], ['의회', 'legislature'], ['정당', 'factions'], ['일정', 'calendar']];
-const sectionsFor = (iso3) => iso3 === 'USA' ? usaSections : iso3 === 'CHN' ? chinaSections : iso3 === 'IRN' ? iranSections : genericSections;
+const RACE_PROGRESS_TAB = ['선거 진행 상황', 'race_progress'];
+const genericSections = [['지도', 'subnational_map'], ['행정부·정부', 'executive'], ['의회', 'legislature'], ['정당', 'factions'], ['일정', 'calendar'], RACE_PROGRESS_TAB];
+// USA already declares its own race_progress tab (2026 선거 과정); China/Iran's
+// custom tab sets predate this screen, so it's appended here rather than
+// duplicated into their own files.
+const sectionsFor = (iso3) => iso3 === 'USA' ? usaSections
+    : iso3 === 'CHN' ? [...chinaSections, RACE_PROGRESS_TAB]
+    : iso3 === 'IRN' ? [...iranSections, RACE_PROGRESS_TAB]
+    : genericSections;
 
 // This is presentation-only flattening, not a political calculation or an
 // attempt to join missing records.  It lets the common shell surface nested
@@ -95,8 +105,10 @@ const sourceObject = (country, section) => {
 // military, USA's congress) have no generic equivalent, so they render from the
 // country's own module rather than through the shared flattener.
 const specialContent = (country, section) => {
+    if (section === 'race_progress') return raceProgressContent(country);
     if (country.iso3 === 'CHN') return chinaContent(country, section);
     if (country.iso3 === 'USA' && section === 'legislature') return usaLegislature(country);
+    if (country.iso3 === 'USA' && section === 'executive') return usaExecutive(country);
     return null;
 };
 
@@ -122,7 +134,7 @@ const sectionContent = (country, section, status) => {
 // and its short subnational summary sits in the right pane permanently.
 const MAP_SECTION = 'subnational_map';
 
-export const renderCountryShell = (root, { country, manifest, onBack, modal }) => {
+export const renderCountryShell = (root, { country, manifest, onBack, modal, host }) => {
     const tabs = sectionsFor(country.iso3);
     const hasMapBlock = tabs.some(([, key]) => key === MAP_SECTION);
     let active = null;
@@ -142,6 +154,13 @@ export const renderCountryShell = (root, { country, manifest, onBack, modal }) =
             body: sectionContent(country, key, status),
             footnote: missing.length ? `미확보: ${missing.join(', ')}` : '',
             onClose: () => { active = null; markActive(); },
+            // The 상임위 chips leave the election module entirely, so the jump
+            // goes back out through the host adapter rather than this module
+            // reaching into the legacy router itself.
+            onAction: (action, dataset) => {
+                if (action === 'policy-committee') host?.openPolicyCommittee?.(dataset.committeeId);
+                if (action === 'policy-committees') host?.openPolicyCommittee?.();
+            },
         });
     };
 

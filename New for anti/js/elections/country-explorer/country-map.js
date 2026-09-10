@@ -11,6 +11,67 @@ const eachCoordinate = (node, visit) => {
     else node.forEach((child) => eachCoordinate(child, visit));
 };
 
+const mapCoordinates = (node, project) => (typeof node[0] === 'number' ? project(node) : node.map((child) => mapCoordinates(child, project)));
+
+const unwrapLon = (lon) => (lon < 0 ? lon + 360 : lon);
+const wrapLon = (lon) => ((lon + 540) % 360) - 180;
+
+// Exclaves (a country's own territory, geographically detached from its
+// mainland) break the country map two ways: at true position they can
+// straddle the antimeridian (Alaska's Aleutians), and at true scale their
+// bounding box can be as wide as the mainland's, which drags the auto-fit
+// viewport out until the mainland reads as a sliver -- exactly what made
+// Alaska look oversized here. Scaling each one down around its own centroid
+// and relocating that centroid next to the mainland is the same composite-
+// inset trick paper atlases use for AK/HI; it is a coordinate transform on
+// the GeoJSON alone, so it needs no second deck.gl view (this app is one
+// _GlobeView -- see CLAUDE.md). Add an entry per country as its exclaves
+// come up; codes match the `code` property in public/data/admin1/<ISO3>.json.
+const EXCLAVES = {
+    USA: [
+        { code: 'US-AK', scale: 0.32, anchorLon: -134, anchorLat: 24 },
+        { code: 'US-HI', scale: 0.85, anchorLon: -122, anchorLat: 14 },
+    ],
+};
+
+const boundsOf = (geometry) => {
+    let west = Infinity; let east = -Infinity; let south = Infinity; let north = -Infinity;
+    eachCoordinate(geometry?.coordinates, ([lon, lat]) => {
+        const u = unwrapLon(lon);
+        west = Math.min(west, u); east = Math.max(east, u);
+        south = Math.min(south, lat); north = Math.max(north, lat);
+    });
+    return { west, east, south, north };
+};
+
+const relocateExclave = (feature, { scale, anchorLon, anchorLat }) => {
+    const { west, east, south, north } = boundsOf(feature.geometry);
+    const centerLon = (west + east) / 2;
+    const centerLat = (south + north) / 2;
+    const anchorU = unwrapLon(anchorLon);
+    const project = ([lon, lat, ...rest]) => [
+        wrapLon(anchorU + (unwrapLon(lon) - centerLon) * scale),
+        anchorLat + (lat - centerLat) * scale,
+        ...rest,
+    ];
+    return { ...feature, geometry: { ...feature.geometry, coordinates: mapCoordinates(feature.geometry.coordinates, project) } };
+};
+
+// Applied before viewForGeometry runs, so the auto-fit viewport is computed
+// from the relocated (small, mainland-adjacent) shapes, not the true ones.
+const withRelocatedExclaves = (geo, iso3) => {
+    const configs = EXCLAVES[iso3];
+    if (!configs?.length) return geo;
+    const byCode = new Map(configs.map((config) => [config.code, config]));
+    return {
+        ...geo,
+        features: (geo.features || []).map((feature) => {
+            const config = byCode.get(feature.properties?.code);
+            return config ? relocateExclave(feature, config) : feature;
+        }),
+    };
+};
+
 const viewForGeometry = (geo) => {
     const longitudes = [];
     let south = Infinity;
@@ -49,7 +110,7 @@ const stateIndex = (country) => new Map(
 );
 
 export const renderCountryMap = async ({ host, country, selectedStateId = null, onStateOpen }) => {
-    const geo = await loadAdmin1(country.iso3);
+    const geo = withRelocatedExclaves(await loadAdmin1(country.iso3), country.iso3);
     const usaStates = country.iso3 === 'USA' ? stateIndex(country) : null;
     const layer = new host.layers.GeoJsonLayer({
         id: `elections-country-${country.iso3}`,
