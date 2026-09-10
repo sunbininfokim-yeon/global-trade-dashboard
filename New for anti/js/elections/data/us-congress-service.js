@@ -14,3 +14,17 @@ export const loadUsCommittees = () => {
     }
     return committeesPromise;
 };
+
+let eopPromise = null;
+
+// The EOP org chart: institutional structure, edited as content rather than
+// collected, so it is a plain file rather than a pipeline asset. A failure
+// resolves to null and usa-executive.js keeps its built-in copy.
+export const loadEopChart = () => {
+    if (!eopPromise) {
+        eopPromise = fetch('/public/data/elections_us_eop_v1.json', { cache: 'force-cache' })
+            .then((response) => (response.ok ? response.json() : null))
+            .catch(() => null);
+    }
+    return eopPromise;
+};

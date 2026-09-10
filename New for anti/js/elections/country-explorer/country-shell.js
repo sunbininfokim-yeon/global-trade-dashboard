@@ -134,7 +134,7 @@ const sectionContent = (country, section, status) => {
 // and its short subnational summary sits in the right pane permanently.
 const MAP_SECTION = 'subnational_map';
 
-export const renderCountryShell = (root, { country, manifest, onBack, modal, host }) => {
+export const renderCountryShell = (root, { country, manifest, onBack, modal, host, onRoute }) => {
     const tabs = sectionsFor(country.iso3);
     const hasMapBlock = tabs.some(([, key]) => key === MAP_SECTION);
     let active = null;
@@ -147,13 +147,14 @@ export const renderCountryShell = (root, { country, manifest, onBack, modal, hos
         const missing = screenFor(key)?.missing || [];
         active = key;
         markActive();
+        onRoute?.({ screen: key });
         modal.open({
             title: label,
             subtitle: country.name_ko || country.iso3,
             status: stateLabel(status),
             body: sectionContent(country, key, status),
             footnote: missing.length ? `미확보: ${missing.join(', ')}` : '',
-            onClose: () => { active = null; markActive(); },
+            onClose: () => { active = null; markActive(); onRoute?.({ screen: null }); },
             // The 상임위 chips leave the election module entirely, so the jump
             // goes back out through the host adapter rather than this module
             // reaching into the legacy router itself.
@@ -208,4 +209,6 @@ export const renderCountryShell = (root, { country, manifest, onBack, modal, hos
         markActive();
     };
     draw();
+    // The explorer needs this to reopen a screen named in the URL.
+    return { openSection: (key) => { if (tabs.some(([, tabKey]) => tabKey === key)) openSection(key); } };
 };

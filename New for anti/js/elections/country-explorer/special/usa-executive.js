@@ -2,10 +2,10 @@ import { escapeHtml } from '../../ui.js';
 
 // The EOP org chart (대통령 → 비서실 → 위원회 → 실·국) is institutional
 // structure, not a synced dataset: which councils and offices exist changes
-// with statute and executive order, not with today's roster. So the boxes
-// live here as editorial scaffold -- the same way docs/ui-screens.md already
-// says 제도 설명 is kept in frontend content rather than pipeline data -- and
-// only the *people* come from executive_live.
+// with statute and executive order, not with today's roster. So the boxes are
+// editorial content kept in public/data/elections_us_eop_v1.json -- editable
+// without touching code, the way docs/ui-screens.md already says 제도 설명 is
+// handled -- and only the *people* come from executive_live.
 //
 // Data contract (all optional; add to countries[USA].executive_live):
 //
@@ -28,7 +28,12 @@ import { escapeHtml } from '../../ui.js';
 // prefillTitle keeps a prefilled box reading like a data-filled one
 // ("역할 이름"); the source row's own label is often long and repeats the box
 // it now sits in ("국가안보보좌관 (NSC 실무 책임)" inside the NSC box).
-const COUNCILS = [
+//
+// These are the fallback copy of the chart. The live one is
+// public/data/elections_us_eop_v1.json so the org skeleton can be edited
+// without touching code; if that file is missing or unreadable the screen
+// still draws from here rather than coming up empty.
+let COUNCILS = [
     { abbr: 'NSC', ko: '국가안전보장회의', en: 'National Security Council', prefillCore: '국가안보보좌관 (NSC 실무 책임)', prefillTitle: '국가안보보좌관' },
     { abbr: 'NEC', ko: '국가경제위원회', en: 'National Economic Council' },
     { abbr: 'DPC', ko: '국내정책위원회', en: 'Domestic Policy Council' },
@@ -39,7 +44,7 @@ const COUNCILS = [
 
 // The user's brief: 보좌관이 많으면 주요 정책 영역만. These six are the
 // domains they named, not a roster -- one line each, filled from data.
-const ADVISOR_DOMAINS = [
+let ADVISOR_DOMAINS = [
     { domain: 'security', ko: '안보' },
     { domain: 'economy', ko: '경제' },
     { domain: 'politics', ko: '정치' },
@@ -48,7 +53,7 @@ const ADVISOR_DOMAINS = [
     { domain: 'economic_security', ko: '경제안보' },
 ];
 
-const OFFICES = [
+let OFFICES = [
     { abbr: 'OMB', ko: '예산관리국', en: 'Office of Management and Budget', prefillCabinet: '관리예산처장', prefillTitle: '국장' },
     { abbr: 'OSTP', ko: '과학기술정책국', en: 'Office of Science and Technology Policy' },
     { abbr: 'ONDCP', ko: '국가마약통제국', en: 'Office of National Drug Control Policy' },
@@ -57,6 +62,14 @@ const OFFICES = [
     { abbr: 'PIAB', ko: '대통령 정보자문위원회', en: "President's Intelligence Advisory Board" },
     { abbr: 'PCLOB', ko: '사생활·시민자유 감독위원회', en: 'Privacy and Civil Liberties Oversight Board' },
 ];
+
+// Only replaces a list the file actually carries, so a partial or malformed
+// file degrades box by box instead of blanking the screen.
+export const applyEopChart = (chart) => {
+    if (Array.isArray(chart?.councils) && chart.councils.length) COUNCILS = chart.councils;
+    if (Array.isArray(chart?.advisor_domains) && chart.advisor_domains.length) ADVISOR_DOMAINS = chart.advisor_domains;
+    if (Array.isArray(chart?.offices) && chart.offices.length) OFFICES = chart.offices;
+};
 
 const partyKo = (abbr) => ({ GOP: '공화당', DEM: '민주당', IND: '무소속' }[abbr] || abbr || '');
 

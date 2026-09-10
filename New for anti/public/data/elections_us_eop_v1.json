@@ -1,0 +1,48 @@
+{
+  "schema": "elections_us_eop_v1",
+  "note_ko": "대통령실(EOP) 조직도 골격. 어떤 위원회·실국이 존재하는가는 법률과 행정명령으로 정해지는 제도이지 수집 데이터가 아니므로, 사람(명단)과 분리해 여기서 관리한다. 사람은 countries[USA].executive_live 의 eop_councils / special_assistants / eop_offices 에서 온다. 이 파일이 없거나 못 읽으면 UI는 모듈에 내장된 동일 골격으로 되돌아간다.",
+  "source_ko": "백악관 대통령실 조직도",
+  "councils": [
+    {
+      "abbr": "NSC",
+      "ko": "국가안전보장회의",
+      "en": "National Security Council",
+      "prefillCore": "국가안보보좌관 (NSC 실무 책임)",
+      "prefillTitle": "국가안보보좌관"
+    },
+    { "abbr": "NEC", "ko": "국가경제위원회", "en": "National Economic Council" },
+    { "abbr": "DPC", "ko": "국내정책위원회", "en": "Domestic Policy Council" },
+    { "abbr": "CEA", "ko": "경제자문위원회", "en": "Council of Economic Advisers" },
+    { "abbr": "CEQ", "ko": "환경위원회", "en": "Council on Environmental Quality" },
+    {
+      "abbr": "USTR",
+      "ko": "미국무역대표부",
+      "en": "Office of the U.S. Trade Representative",
+      "prefillCabinet": "미국무역대표",
+      "prefillTitle": "대표"
+    }
+  ],
+  "advisor_domains": [
+    { "domain": "security", "ko": "안보" },
+    { "domain": "economy", "ko": "경제" },
+    { "domain": "politics", "ko": "정치" },
+    { "domain": "industry", "ko": "산업·통상" },
+    { "domain": "military", "ko": "군사" },
+    { "domain": "economic_security", "ko": "경제안보" }
+  ],
+  "offices": [
+    {
+      "abbr": "OMB",
+      "ko": "예산관리국",
+      "en": "Office of Management and Budget",
+      "prefillCabinet": "관리예산처장",
+      "prefillTitle": "국장"
+    },
+    { "abbr": "OSTP", "ko": "과학기술정책국", "en": "Office of Science and Technology Policy" },
+    { "abbr": "ONDCP", "ko": "국가마약통제국", "en": "Office of National Drug Control Policy" },
+    { "abbr": "OA", "ko": "행정국", "en": "Office of Administration" },
+    { "abbr": "WHMO", "ko": "백악관 군사실", "en": "White House Military Office" },
+    { "abbr": "PIAB", "ko": "대통령 정보자문위원회", "en": "President's Intelligence Advisory Board" },
+    { "abbr": "PCLOB", "ko": "사생활·시민자유 감독위원회", "en": "Privacy and Civil Liberties Oversight Board" }
+  ]
+}

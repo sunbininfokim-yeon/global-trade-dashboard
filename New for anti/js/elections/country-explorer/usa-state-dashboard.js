@@ -62,7 +62,8 @@ const chamberCard = (label, chamber) => {
 
 export const renderUsaStateDashboard = (root, {
     state, districtMapReady, onBackToUsa,
-    financeMode = false, financeRaces = null, financeContract = null, mappedDistricts = null, onToggleFinance, onHighlightDistrict,
+    financeMode = false, financeRaces = null, financeContract = null, mappedDistricts = null, openDistrict = null,
+    onToggleFinance, onHighlightDistrict,
 }) => {
     const legislature = state.state_legislature || {};
     const delegation = state.federal_delegation || {};
@@ -94,6 +95,12 @@ export const renderUsaStateDashboard = (root, {
             const district = button.dataset.spacDistrict;
             onHighlightDistrict?.(wasOpen || district === undefined ? null : district);
         }));
+        // A district named in the URL opens without a click; the map was
+        // already drawn with that highlight, so this does not re-report it.
+        if (openDistrict != null) {
+            root.querySelector(`[data-spac-district="${CSS.escape(String(openDistrict))}"]`)
+                ?.closest('.elections-spac-district')?.classList.add('is-open');
+        }
         return;
     }
 
