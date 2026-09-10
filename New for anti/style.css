@@ -748,14 +748,15 @@ body {
     cursor: pointer;
 }
 .elections-chamber-panel { display: none; }
-#elections-chamber-house:checked ~ .elections-chamber-tabs label[for="elections-chamber-house"],
-#elections-chamber-senate:checked ~ .elections-chamber-tabs label[for="elections-chamber-senate"] {
+/* Slots, not chamber names: the same switch carries 하원·상원 and 중의원·참의원. */
+#elections-chamber-1:checked ~ .elections-chamber-tabs label[for="elections-chamber-1"],
+#elections-chamber-2:checked ~ .elections-chamber-tabs label[for="elections-chamber-2"] {
     border-color: rgba(56, 189, 248, 0.75);
     background: rgba(14, 116, 144, 0.28);
     color: #e0f2fe;
 }
-#elections-chamber-house:checked ~ .elections-chamber-panel[data-chamber="house"],
-#elections-chamber-senate:checked ~ .elections-chamber-panel[data-chamber="senate"] { display: block; }
+#elections-chamber-1:checked ~ .elections-chamber-panel[data-chamber-slot="1"],
+#elections-chamber-2:checked ~ .elections-chamber-panel[data-chamber-slot="2"] { display: block; }
 .elections-chamber-radio:focus-visible ~ .elections-chamber-tabs label { outline: 2px solid #38bdf8; outline-offset: 2px; }
 
 .elections-chamber-quadrants {
@@ -906,6 +907,9 @@ body {
     overflow-wrap: anywhere;
 }
 .elections-org-box-person.is-empty { color: #64748b; }
+/* Same 삭선 rule as the roster rows, applied inside a box: the source marks the
+   person, not the office, so only the name line is struck. */
+.elections-org-box-person.is-fallen { text-decoration: line-through; opacity: 0.72; }
 .elections-org-box-title {
     display: block;
     color: #94a3b8;
@@ -951,6 +955,49 @@ body {
     font-style: normal;
     color: #94a3b8;
     white-space: nowrap;
+}
+
+/* --- 자민당 파벌 (공식 존속 / 해산 후 블록 / 신생 그룹) --------------------
+   막대는 이 화면에서 가장 큰 그룹 대비 상대 크기다. 파벌 인원은 언론 추정이고
+   기준 시점이 제각각이라 합계를 분모로 쓰지 않는다. */
+.elections-faction-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+    gap: 8px;
+    margin: 8px 0 4px;
+}
+.elections-faction-row {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 9px 10px;
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    border-radius: 7px;
+    background: rgba(15, 23, 42, 0.55);
+    min-width: 0;
+}
+.elections-faction-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 8px;
+}
+.elections-faction-head strong { color: #e2e8f0; font-size: 12px; overflow-wrap: anywhere; }
+.elections-faction-head span { color: #cbd5e1; font-size: 11px; white-space: nowrap; }
+.elections-faction-ja { color: #94a3b8; font-size: 10px; overflow-wrap: anywhere; }
+.elections-faction-bar {
+    height: 6px;
+    border-radius: 3px;
+    background: rgba(148, 163, 184, 0.16);
+    overflow: hidden;
+}
+.elections-faction-bar i { display: block; height: 100%; background: #c0392b; }
+.elections-faction-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 10px;
+    color: #94a3b8;
+    font-size: 10px;
 }
 
 /* --- Race progress (rolling primaries / leadership tours) ---------------- */

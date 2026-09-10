@@ -1,11 +1,15 @@
 import { escapeHtml } from '../../ui.js';
+import { card, rowList, disclosure, noteLine } from './org-chart.js';
 
 // The manifest declares CHN's screens as party / state_council / military, not
 // the generic executive/power_structure pair.  Pointing two tabs at one key
 // made 공산당 and 군 render the same block and light up together, and the
 // 국무원 tab inherited executive's `disabled` status even though
 // leadership.party_state.state_council is populated.
+// 행정부 탭이 앞에 붙는다: 당·국가·군을 한 장의 조직도로 보여 주는 화면이고,
+// 뒤의 세 탭은 그 각 단의 전체 명부다 (조직도는 책임자만, 탭은 명단 전부).
 export const chinaSections = [
+    ['행정부', 'executive'],
     ['공산당', 'party'],
     ['국무원', 'state_council'],
     ['군', 'military'],
@@ -14,14 +18,31 @@ export const chinaSections = [
 // `_internal` carries the pipeline's private faction tags; display_rules says
 // they stay out of the UI.  Reading only the fields named here keeps them out
 // by construction rather than by remembering to strip them.
-const personName = (person) => person?.name_ko || person?.name_en || '불명';
-const isFallen = (person) => person?.fallen === true || person?.display === 'strikethrough';
+export const personName = (person) => person?.name_ko || person?.name_en || '불명';
 
-const personLine = (person, fallbackTitle = '') => {
+// status 는 파이프라인의 토큰(expelled_2025-10, investigating_2026-01_de_facto_fallen
+// ...)이라 화면에 그대로 나오면 한국어 화면에 영문 코드가 박힌다. 동사만 옮기고
+// 날짜는 원문 그대로 둔다 -- 날짜를 고쳐 쓰면 그게 새로운 주장이 된다. 표에 없는
+// 코드는 번역하지 않고 그대로 보여, 새 코드가 조용히 사라지지 않게 한다.
+const STATUS_VERBS = [
+    ['acting_or_provisional', () => '대리·잠정'],
+    ['expelled_', (rest) => `제명 ${rest}`],
+    ['investigating_', (rest) => `조사 중 ${rest.replace('_de_facto_fallen', '')} · 사실상 실각`],
+    ['likely_removed_', (rest) => `해임 추정 ${rest}`],
+    ['removed_sentenced_death_reprieve_', (rest) => `해임 · 사형집행유예 선고 ${rest}`],
+];
+export const statusKo = (status) => {
+    if (!status || status === 'incumbent') return '';
+    const hit = STATUS_VERBS.find(([prefix]) => status === prefix || status.startsWith(prefix));
+    return hit ? hit[1](status.slice(hit[0].length)) : status;
+};
+export const isFallen = (person) => person?.fallen === true || person?.display === 'strikethrough';
+
+export const personLine = (person, fallbackTitle = '') => {
     if (!person) return '<div><span>직책</span><strong>불명</strong></div>';
     const title = person.title_ko || person.role_ko || fallbackTitle || '직책';
     const name = escapeHtml(personName(person));
-    const marks = [person.status, person.confidence ? `신뢰도 ${person.confidence}` : '']
+    const marks = [statusKo(person.status), person.confidence ? `신뢰도 ${person.confidence}` : '']
         .filter(Boolean).map((mark) => escapeHtml(mark)).join(' · ');
     return `<div>
         <span>${escapeHtml(title)}</span>
@@ -29,21 +50,6 @@ const personLine = (person, fallbackTitle = '') => {
         ${marks ? `<em class="elections-person-mark">${marks}</em>` : ''}
     </div>`;
 };
-
-const card = (label, value, note = '') => `
-    <article class="elections-card">
-        <div class="elections-card-label">${escapeHtml(label)}</div>
-        <div class="elections-card-value">${escapeHtml(value)}</div>
-        ${note ? `<div class="elections-event-meta">${escapeHtml(note)}</div>` : ''}
-    </article>`;
-
-const rowList = (rows) => `<div class="elections-disclosure-rows">${rows.join('')}</div>`;
-
-const disclosure = (summary, rows) => rows.length
-    ? `<details class="elections-disclosure"><summary>${escapeHtml(summary)}</summary>${rowList(rows)}</details>`
-    : '';
-
-const noteLine = (text) => text ? `<p class="elections-panel-note">${escapeHtml(text)}</p>` : '';
 
 const partyScreen = (leadership) => {
     const partyState = leadership.party_state || {};
@@ -57,7 +63,7 @@ const partyScreen = (leadership) => {
 
     return `
         <div class="elections-card-grid">
-            ${card('총서기', personName(secretary), [secretary?.status, secretary?.confidence && `신뢰도 ${secretary.confidence}`].filter(Boolean).join(' · '))}
+            ${card('총서기', personName(secretary), [statusKo(secretary?.status), secretary?.confidence && `신뢰도 ${secretary.confidence}`].filter(Boolean).join(' · '))}
             ${card('정치국 상무위원회', standing.n ? `${standing.n}인` : '불명', standing.source || '')}
             ${card('정치국', politburo.active_n_approx ? `현원 약 ${politburo.active_n_approx}인` : '불명', politburo.original_n_20th ? `20차 원구성 ${politburo.original_n_20th}인` : '')}
         </div>

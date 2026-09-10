@@ -1,4 +1,5 @@
 import { escapeHtml } from '../../ui.js';
+import { card, orgBox } from './org-chart.js';
 
 // The EOP org chart (대통령 → 비서실 → 위원회 → 실·국) is institutional
 // structure, not a synced dataset: which councils and offices exist changes
@@ -79,28 +80,6 @@ const personText = (row) => {
     if (!name) return '';
     return [name, partyKo(row.party_abbr), row.status].filter(Boolean).join(' · ');
 };
-
-const card = (label, value, note = '') => `
-    <article class="elections-card">
-        <div class="elections-card-label">${escapeHtml(label)}</div>
-        <div class="elections-card-value">${escapeHtml(value || '명단 수집 예정')}</div>
-        ${note ? `<div class="elections-event-meta">${escapeHtml(note)}</div>` : ''}
-    </article>`;
-
-// One box per body, laid out side by side like the EOP chart's rows rather
-// than as full-width rows. The person line is pushed to the bottom of the
-// box so it lands on the same baseline across a row of uneven name lengths.
-const orgBox = ({ abbr, ko, en, title, person, note }) => `
-    <article class="elections-org-box">
-        <div class="elections-org-box-ko">${escapeHtml(ko)}</div>
-        ${abbr ? `<div class="elections-org-box-abbr">${escapeHtml(abbr)}</div>` : ''}
-        ${en ? `<div class="elections-org-box-en">${escapeHtml(en)}</div>` : ''}
-        <div class="elections-org-box-person${person ? '' : ' is-empty'}">
-            ${person && title ? `<span class="elections-org-box-title">${escapeHtml(title)}</span>` : ''}
-            ${escapeHtml(person || '명단 수집 예정')}
-        </div>
-        ${note ? `<div class="elections-org-box-note">${escapeHtml(note)}</div>` : ''}
-    </article>`;
 
 // Exact-string prefill against rows the pipeline already publishes. A wording
 // change in the source breaks the match into "명단 수집 예정" rather than into

@@ -4,6 +4,12 @@ import { usaSections } from './special/usa.js';
 import { usaLegislature } from './special/usa-legislature.js';
 import { usaExecutive } from './special/usa-executive.js';
 import { chinaSections, chinaContent } from './special/china.js';
+import { chnExecutive } from './special/chn-executive.js';
+import { jpnSections } from './special/jpn.js';
+import { jpnExecutive } from './special/jpn-executive.js';
+import { jpnLegislature } from './special/jpn-legislature.js';
+import { jpnFactions } from './special/jpn-factions.js';
+import { jpnSubnational } from './special/jpn-subnational.js';
 import { iranSections } from './special/iran.js';
 import { raceProgressContent } from './special/race-progress.js';
 
@@ -13,6 +19,7 @@ const genericSections = [['지도', 'subnational_map'], ['행정부·정부', 'e
 // custom tab sets predate this screen, so it's appended here rather than
 // duplicated into their own files.
 const sectionsFor = (iso3) => iso3 === 'USA' ? usaSections
+    : iso3 === 'JPN' ? jpnSections
     : iso3 === 'CHN' ? [...chinaSections, RACE_PROGRESS_TAB]
     : iso3 === 'IRN' ? [...iranSections, RACE_PROGRESS_TAB]
     : genericSections;
@@ -106,17 +113,37 @@ const sourceObject = (country, section) => {
 // country's own module rather than through the shared flattener.
 const specialContent = (country, section) => {
     if (section === 'race_progress') return raceProgressContent(country);
+    if (country.iso3 === 'CHN' && section === 'executive') return chnExecutive(country);
     if (country.iso3 === 'CHN') return chinaContent(country, section);
     if (country.iso3 === 'USA' && section === 'legislature') return usaLegislature(country);
     if (country.iso3 === 'USA' && section === 'executive') return usaExecutive(country);
+    if (country.iso3 === 'JPN' && section === 'executive') return jpnExecutive(country);
+    if (country.iso3 === 'JPN' && section === 'legislature') return jpnLegislature(country);
+    if (country.iso3 === 'JPN' && section === 'factions') return jpnFactions(country);
+    if (country.iso3 === 'JPN' && section === 'subnational_map') return jpnSubnational(country);
     return null;
+};
+
+// A screen the manifest calls `disabled` but this module can actually draw --
+// 중국 행정부 is built from leadership.*, which the manifest only blesses under
+// its own power_structure key -- is not "데이터 수집 예정". Reporting it as such
+// while the screen is full of names is the one reading that is definitely
+// wrong, so a renderable screen reports 일부 표시 instead. It never upgrades a
+// screen the manifest already rates, and never invents content: it only
+// believes the renderer that just produced some.
+const effectiveStatus = (manifest, country, section) => {
+    const status = screenStatus(manifest, country.iso3, section);
+    if (status !== 'disabled' || section === 'calendar') return status;
+    return specialContent(country, section) ? 'partial' : status;
 };
 
 const sectionContent = (country, section, status) => {
     if (section === 'calendar') return calendar(country);
-    if (status === 'disabled') return '<p class="elections-muted">이 화면은 공개 데이터가 확보되면 연결됩니다.</p>';
+    // Tried before the disabled bail: a renderer that produces content proves
+    // the data is there, whatever the manifest says about the screen key.
     const special = specialContent(country, section);
     if (special) return special;
+    if (status === 'disabled') return '<p class="elections-muted">이 화면은 공개 데이터가 확보되면 연결됩니다.</p>';
     if (section === 'executive') {
         const live = executiveContent(country);
         if (live) return live;
@@ -143,7 +170,7 @@ export const renderCountryShell = (root, { country, manifest, onBack, modal, hos
 
     const openSection = (key) => {
         const label = tabs.find(([, tabKey]) => tabKey === key)?.[0] || '';
-        const status = screenStatus(manifest, country.iso3, key);
+        const status = effectiveStatus(manifest, country, key);
         const missing = screenFor(key)?.missing || [];
         active = key;
         markActive();
@@ -172,7 +199,7 @@ export const renderCountryShell = (root, { country, manifest, onBack, modal, hos
     };
 
     const draw = () => {
-        const mapStatus = hasMapBlock ? screenStatus(manifest, country.iso3, MAP_SECTION) : null;
+        const mapStatus = hasMapBlock ? effectiveStatus(manifest, country, MAP_SECTION) : null;
         root.className = 'panel-section elections-country';
         root.innerHTML = `
             <div class="elections-country-actions"><button class="elections-button" type="button" data-election-back>← 세계 지도</button></div>
@@ -180,7 +207,7 @@ export const renderCountryShell = (root, { country, manifest, onBack, modal, hos
             ${overview(country)}
             <p class="section-title">권력 구조 · 블록을 누르면 지도 위에 펼쳐집니다</p>
             <div class="elections-block-grid">${tabs.map(([label, key]) => {
-                const status = screenStatus(manifest, country.iso3, key);
+                const status = effectiveStatus(manifest, country, key);
                 return `<button class="elections-block" type="button" data-election-tab="${key}" ${status === 'disabled' ? 'data-election-disabled="1"' : ''}>
                     <span class="elections-block-label">${escapeHtml(label)}</span>
                     <span class="elections-block-state">${escapeHtml(stateLabel(status))}</span>
