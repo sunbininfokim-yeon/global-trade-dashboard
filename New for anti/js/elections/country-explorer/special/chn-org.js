@@ -43,8 +43,42 @@ let PARTY_POSTS = [
     { ko: '중앙군민융합발전위원회 판공실', en: 'Office of the Military-Civil Fusion Commission', head_title_ko: '주임', match_ko: ['군민융합'] },
 ];
 
+// 국무원 구성 부문의 내장 사본. 같은 골격이 elections_cn_party_v1.json 에 있고,
+// 그 파일을 못 읽을 때만 이쪽이 그려진다.
+let MINISTRIES = [
+    { ko: "외교부", en: "Ministry of Foreign Affairs", head_title_ko: "부장", match_ko: ["외교부장"] },
+    { ko: "국방부", en: "Ministry of National Defense", head_title_ko: "부장", match_ko: ["국방부장"] },
+    { ko: "국가발전개혁위원회", en: "National Development and Reform Commission", head_title_ko: "주임", match_ko: ["발전개혁", "발개위"] },
+    { ko: "교육부", en: "Ministry of Education", head_title_ko: "부장", match_ko: ["교육부장"] },
+    { ko: "과학기술부", en: "Ministry of Science and Technology", head_title_ko: "부장", match_ko: ["과학기술부장"] },
+    { ko: "공업정보화부", en: "Ministry of Industry and Information Technology", head_title_ko: "부장", match_ko: ["공업정보화"] },
+    { ko: "국가민족사무위원회", en: "National Ethnic Affairs Commission", head_title_ko: "주임", match_ko: ["민족사무"] },
+    { ko: "공안부", en: "Ministry of Public Security", head_title_ko: "부장", match_ko: ["공안부장"] },
+    { ko: "국가안전부", en: "Ministry of State Security", head_title_ko: "부장", match_ko: ["국가안전부장"] },
+    { ko: "민정부", en: "Ministry of Civil Affairs", head_title_ko: "부장", match_ko: ["민정부장"] },
+    { ko: "사법부", en: "Ministry of Justice", head_title_ko: "부장", match_ko: ["사법부장"] },
+    { ko: "재정부", en: "Ministry of Finance", head_title_ko: "부장", match_ko: ["재정부장"] },
+    { ko: "인력자원사회보장부", en: "Ministry of Human Resources and Social Security", head_title_ko: "부장", match_ko: ["인력자원"] },
+    { ko: "자연자원부", en: "Ministry of Natural Resources", head_title_ko: "부장", match_ko: ["자연자원"] },
+    { ko: "생태환경부", en: "Ministry of Ecology and Environment", head_title_ko: "부장", match_ko: ["생태환경", "환경부장"] },
+    { ko: "주택도농건설부", en: "Ministry of Housing and Urban-Rural Development", head_title_ko: "부장", match_ko: ["주택도농"] },
+    { ko: "교통운수부", en: "Ministry of Transport", head_title_ko: "부장", match_ko: ["교통운수"] },
+    { ko: "수리부", en: "Ministry of Water Resources", head_title_ko: "부장", match_ko: ["수리부장"] },
+    { ko: "농업농촌부", en: "Ministry of Agriculture and Rural Affairs", head_title_ko: "부장", match_ko: ["농업농촌"] },
+    { ko: "상무부", en: "Ministry of Commerce", head_title_ko: "부장", match_ko: ["상무부장"] },
+    { ko: "문화여유부", en: "Ministry of Culture and Tourism", head_title_ko: "부장", match_ko: ["문화여유", "문화관광"] },
+    { ko: "국가위생건강위원회", en: "National Health Commission", head_title_ko: "주임", match_ko: ["위생건강"] },
+    { ko: "퇴역군인사무부", en: "Ministry of Veterans Affairs", head_title_ko: "부장", match_ko: ["퇴역군인"] },
+    { ko: "응급관리부", en: "Ministry of Emergency Management", head_title_ko: "부장", match_ko: ["응급관리"] },
+    { ko: "중국인민은행", en: "People's Bank of China", head_title_ko: "행장", match_ko: ["인민은행"] },
+    { ko: "심계서", en: "National Audit Office", head_title_ko: "심계장", match_ko: ["심계"] },
+];
+
 export const applyCnPartyChart = (chart) => {
     if (Array.isArray(chart?.party_posts) && chart.party_posts.length) PARTY_POSTS = chart.party_posts;
+    if (Array.isArray(chart?.state_council_ministries) && chart.state_council_ministries.length) {
+        MINISTRIES = chart.state_council_ministries;
+    }
 };
 
 const personWithStatus = (person) => {
@@ -152,21 +186,44 @@ const vicePremierBoxes = (leadership) => {
     ];
 };
 
-// 확보된 부처장은 셋뿐이다 (국방·공안·국가안전). 나머지 부처를 빈 줄로 만들어
-// 채우지 않고, 몇 개를 들고 있는지와 전체 명부가 미수집이라는 사실만 적는다.
-const ministerRows = (leadership) => {
+// 부처 박스. 이름이 확보된 곳은 채우고 나머지는 '명단 수집 예정'으로 남긴다 --
+// 26개 부처 중 지금 이름이 있는 곳은 국방·공안·국가안전 셋뿐이고, 없는 곳을 지워
+// 버리면 화면이 "국무원은 부처가 셋"이라고 말하게 된다.
+//
+// 매칭은 골격의 match_ko 를 사람 행의 title_ko·role_ko 에 대는 것뿐이다. 왕이처럼
+// 데이터가 '외교·중앙외사판공실'로만 적어 둔 사람은 외교부장으로 끌어오지 않는다 --
+// 실제로 겸하더라도 이 데이터가 말한 적 없는 자리를 화면이 지어내면 안 된다.
+const ministryPool = (leadership) => {
     const cmc = leadership.cmc || {};
     const organs = leadership.security_organs || {};
-    const entries = [
-        ['국방부', cmc.defense_minister, cmc.defense_minister?.on_cmc === false ? '중앙군사위 위원 아님' : ''],
-        ['공안부', organs.ministry_of_public_security, ''],
-        ['국가안전부', organs.ministry_of_state_security, ''],
-    ];
-    return entries.filter(([, person]) => person).map(([ko, person, mark]) => `<div>
-        <span>${escapeHtml(`${ko}${person.title_ko ? ` · ${person.title_ko}` : ''}`)}</span>
-        <strong class="${isFallen(person) ? 'elections-fallen' : ''}">${escapeHtml(personWithStatus(person) || '불명')}</strong>
-        ${mark ? `<em class="elections-person-mark">${escapeHtml(mark)}</em>` : ''}
-    </div>`);
+    return [cmc.defense_minister, ...Object.values(organs)]
+        .filter((row) => row && typeof row === 'object' && (row.name_ko || row.name_en));
+};
+
+const ministryBoxes = (leadership) => {
+    const pool = ministryPool(leadership);
+    return MINISTRIES.map((ministry) => {
+        const supplied = ministry.name_ko || ministry.name_en ? ministry : null;
+        const match = supplied || pool.find((row) => (ministry.match_ko || [])
+            .some((needle) => String(row.title_ko || row.role_ko || '').includes(needle)));
+        return orgBox({
+            ko: ministry.ko,
+            en: ministry.en,
+            title: ministry.head_title_ko,
+            person: personWithStatus(match),
+            strike: isFallen(match),
+            note: [
+                match?.note_ko || match?.note,
+                match && match.on_cmc === false ? '중앙군사위 위원 아님' : '',
+            ].filter(Boolean).join(' · '),
+        });
+    });
+};
+
+const ministryFilledCount = (leadership) => {
+    const pool = ministryPool(leadership);
+    return MINISTRIES.filter((ministry) => ministry.name_ko || ministry.name_en || pool.some((row) => (ministry.match_ko || [])
+        .some((needle) => String(row.title_ko || row.role_ko || '').includes(needle)))).length;
 };
 
 // ---------------------------------------------------------------- 중공군 ----
@@ -359,19 +416,19 @@ export const chnStateCouncil = (country) => {
     const leadership = country.leadership;
     if (!leadership) return null;
     const council = leadership.party_state?.state_council || {};
-    const ministers = ministerRows(leadership);
     const vicePremiers = vicePremierBoxes(leadership);
+    const ministries = ministryBoxes(leadership);
+    const filled = ministryFilledCount(leadership);
     return `
         <p class="section-title">1 · 총리</p>
         ${orgGrid([orgBox({ ko: '국무원 총리', person: personWithStatus(council.premier) })])}
 
         <p class="section-title">2 · 부총리 ${vicePremiers.length ? `${vicePremiers.length}인` : ''}</p>
-        ${vicePremiers.length ? (ministers.length ? expandableGrid({
-        boxes: vicePremiers,
-        hint: `박스를 누르면 확보된 부처장 ${ministers.length}인`,
-        body: `${rowList(ministers)}
-            ${noteLine('확보된 부처장만 표시합니다. 국무원 전체 부처 명부는 아직 수집 대상이 아니며, 여기 없는 부처가 공석이라는 뜻이 아닙니다.')}`,
-    }) : orgGrid(vicePremiers)) : '<p class="elections-muted">확보된 부총리 명부가 없습니다.</p>'}
+        ${vicePremiers.length ? orgGrid(vicePremiers) : '<p class="elections-muted">확보된 부총리 명부가 없습니다.</p>'}
+
+        <p class="section-title">3 · 부처 ${ministries.length}곳</p>
+        ${orgGrid(ministries)}
+        ${noteLine(`구성 부문 ${ministries.length}곳 가운데 이름이 확보된 곳은 ${filled}곳입니다. 비어 있는 칸은 명단 미수집이며, 그 부처가 없거나 부처장이 공석이라는 뜻이 아닙니다.`)}
 
         ${noteLine('국무원은 국가기구입니다. 실제 의사결정은 공산당 화면의 당 기구에서 먼저 이뤄집니다 — 두 화면을 같이 보셔야 합니다.')}
         ${noteLine('전국인민대표대회 화면은 데이터 계약상 만들지 않습니다.')}
