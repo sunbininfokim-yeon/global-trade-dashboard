@@ -1,0 +1,90 @@
+# 메일링 운영 계약
+
+2026-09-11 구현. 기존 Resend를 유지한다. 이 PR 자체는 SQL을 운영 DB에 적용하거나 Worker를 배포하지 않으며, 기본 발송 설정은 `false`다.
+
+## 두 경로
+
+| 기능 | 저장과 발송 | 기본 시간 (한국 시간) |
+| --- | --- | --- |
+| 즐겨찾기 법안 | `bills.current_stage` 변경 트리거 → `mailing_outbox` → 수신자별 delivery → Resend | **DB에서 변경을 확인한 다음 날 06:00**부터, 06:10~06:50 재시도 |
+| 원자재 RSS/공식 보고서 | 기존 수집기의 JSON → `mailing_reports` → 즐겨찾기 원자재/기관 설정으로 선별 → delivery → Resend | 기존 **월요일 08:00** 유지 |
+
+EO 즐겨찾기는 공식 요약의 내용이 달라질 때 정책 알림에 포함한다. 단순 `updated_at` 변경은 알리지 않는다. RSS는 기존 원자재 공식 보고서 서비스이며, 모든 뉴스 RSS를 새로 구독시키는 기능이 아니다.
+
+Worker는 10분마다 실행한다. 06시대에는 정책 메일에 전체 처리량을 할당한다. 07시 이후에도 남은 실패 건을 재시도하므로 오류 발생 시 늦은 메일을 버리지 않는다. 소스의 실제 사건일과 DB 관측일은 다르다. Congress 수집 지연, 잘못 저장된 단계, 플랫폼/Resend 장애, 수신 서버 지연은 이 발송기만으로 해결되지 않는다. **07시 전 inbox 도착을 보장한다는 뜻은 아니다.**
+
+## 상태와 중복 방지
+
+- DB의 법안 업데이트와 알림 생성은 한 트랜잭션이다. 같은 날 두 번 바뀌어도 두 사건을 보존한다. 즐겨찾기 등록 자체는 알리지 않는다.
+- `mailing_outbox(user_id,event_key)`가 사건 중복을 막는다. 보고서는 `mailing_reports.report_id`가 기본키다. 기존 `commodity_report_notifications`도 읽어 전환 시 재발송을 막는다.
+- 첫 RSS 적재는 설치 시점 기준 8일 안의 보고서만 알림 후보로 만든다. 이후 큐에 들어간 항목은 8일이 지나도 소실되지 않는다. 원문 전문/PDF 대신 제목·600자 요약·URL·태그만 저장한다.
+- `mail_claim`은 `FOR UPDATE SKIP LOCKED`, 5분 lease, 매번 새 token을 쓴다. 한 delivery는 최대 20개 사건이다. Worker 한 번에 최대 5 deliveries, 현재 06시대 최대 30 deliveries다. 이용자/변경량 증가 시 이 용량과 실제 무료 플랜 한도를 재검토해야 한다.
+- 수신자는 `auth.users.email_confirmed_at`이 있는 계정 이메일만 쓴다. 사용자가 자유롭게 수정하는 `profiles.email`은 수신 주소가 아니다.
+- 발송 직전에도 즐겨찾기·수신 설정·현재 인증 이메일을 재확인한다. 수신 설정은 마이페이지에서 정책/원자재별로 독립 저장하며 원자재의 기존 기관 필터를 유지한다.
+- 첫 요청의 전체 payload와 `mailing/<delivery_id>` idempotency key를 고정한다. 템플릿이 바뀌거나 DB 성공 응답을 잃어도 같은 payload/key로 재시도한다. 성공은 수신자마다 즉시 기록한다.
+- 네트워크·408/425/429/5xx는 재시도, 429는 Retry-After 준수. 401/403은 실행을 중단한다. 모호한 발송의 첫 시도 이후 23시간이 지나면 `uncertain`으로 격리한다. Resend의 키 보존 시간이 24시간이므로 그 이후 자동 재발송은 하지 않는다.
+- `state='sent'`/`accepted_at`는 **Resend API 접수 성공**이다. 수신함 도착, 반송, 스팸 분류는 확인하지 않는다. 해당 판정에는 Resend delivery 로그 또는 별도 webhook 연동이 필요하다.
+- 브라우저는 서버용 테이블/발송 RPC를 호출할 수 없다. Worker HTTP 요청은 항상 404이며, 발송을 호출하는 공개 URL이 없다.
+
+## 적용 순서
+
+1. 기존 발송 workflow가 실행 중이지 않은지 확인하고 전환 동안 중지한다. 기존 sender와 새 sender를 동시에 운영하지 않는다. 특히 기존 법안 sender는 새 outbox의 발송 기록을 이해하지 못한다.
+2. 기존 DB의 `profiles`, `user_favorites`, `bills`, `executive_orders`, `commodity_digest_source_prefs`, `commodity_report_notifications`를 확인한다. 사용자/즐겨찾기 마이그레이션과 `20260904_favorite_commodity_kind.sql`, `20260904_commodity_report_notifications.sql`, `20260904_commodity_digest_source_prefs.sql`이 선행돼야 한다. 운영 DB를 초기화하거나 schema.sql 전체를 다시 실행하지 않는다.
+3. `supabase/migrations/20260911010000_mailing_outbox.sql`만 SQL Editor 또는 승인된 DB 연결로 적용한다. SQL은 재실행 가능하며 과거 법안 사건을 소급 생성하지 않는다. 이 파일이 메일링 DDL의 정본이다. `schema.sql`은 정책 모듈 설치본으로, 계정·즐겨찾기·메일링까지 포함한 전체 앱 설치본이 아니다.
+4. PR을 main에 반영한다. UI 수신 설정과 RSS archive 단계는 새 SQL 이후 배포해야 한다. Congress workflow의 기존 sender가 제거되고, `commodity-digest.yml`은 매일 archive/상태 확인만 한다.
+5. 로컬에서 기존 JSON을 적재하거나 `Commodity Mailing Archive Recovery`를 실행한다. 로컬 환경 파일은 인자로 로드하며 키 값을 출력하지 않는다.
+
+   ```bash
+   # 저장소 루트. 검사는 네트워크/쓰기 없이 실행 가능.
+   node scripts/archive-mailing-reports.js --dry-run
+   # SQL 적용 이후: 보고서 보관과 큐 생성. 메일은 발송하지 않음.
+   node --env-file=/Users/yeoninair/Documents/global-trade-dashboard-local/.env.local scripts/archive-mailing-reports.js
+   # 읽기 전용 상태 확인. --dry-run은 env가 true여도 발송을 금지한다.
+   node --env-file=/Users/yeoninair/Documents/global-trade-dashboard-local/.env.local scripts/notify-favorites.js --dry-run
+   ```
+
+6. `Deploy Mailing Worker`를 main에서 **send_enabled=false**로 실행한다. GitHub의 `CLOUDFLARE_API_TOKEN`, `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `RESEND_API_KEY`를 사용한다. 임시 파일(0600)로 Worker secret을 전달하고 삭제한다. `inputs.send_enabled`를 그대로 검증·전달하며 `||`로 덮어쓰지 않는다.
+7. Cloudflare cron 실행과 preview 로그, Supabase 큐, Resend 발신 도메인 `chokemonitor.com`의 검증 상태/현재 quota를 확인한다. 별도 테스트 수신 주소에 대한 발송은 명시적 허가 후 확인한다. 발신 기본값은 `alerts@chokemonitor.com`이다.
+8. 승인된 운영 전환 시 같은 workflow를 **send_enabled=true**로 실행한다. 기존 발송 workflow를 재활성화하지 않는다. cron 변경 전파 시간까지 고려해 06시 직전에 전환하지 않는다.
+
+**롤백:** 같은 workflow를 `false`로 실행해 예약 발송을 멈춘다. SQL/큐를 삭제하지 않는다. 기존 sender를 그냥 되돌리면 서로 다른 중복 방지 기록 때문에 중복이 생길 수 있다. 이미 시작한 네트워크 요청은 설정 변경으로 회수할 수 없다.
+
+## 점검과 장애 복구
+
+```sql
+-- SQL Editor / service role 전용. 주소/본문을 출력하지 않는 집계.
+select public.mail_status();
+select state, count(*) from public.mailing_deliveries group by state;
+select kind, min(due_at), count(*) from public.mailing_outbox
+where delivery_id is null and suppressed_at is null group by kind;
+select pg_size_pretty(sum(pg_total_relation_size(c.oid))) as mailing_storage
+from pg_class c join pg_namespace n on n.oid=c.relnamespace
+where n.nspname='public' and c.relkind='r' and c.relname like 'mailing_%';
+```
+
+`policy_past_7am>0`, `uncertain`, `failed`는 Worker 경고에도 남는다. 현재 경고는 Cloudflare 로그이며 운영자에게 별도 메일/SMS를 보내는 모니터링은 아니다. 완료 이력과 최소 중복 방지 키는 유지한다. 대규모 운영 전에는 주소/본문의 보관 기간과 DB 용량 정책을 별도로 정해야 한다.
+
+`uncertain`은 자동 재시도시키지 말고 Resend에서 해당 idempotency key/요청의 접수 여부를 대조한다. 접수됨을 확인하면 provider message id와 접수 시각으로 DB 상태를 정정하고, 접수되지 않았다는 증거가 있을 때만 수동 재시도를 결정한다. 키만 새로 만들어 재발송하지 않는다.
+
+RSS 적재 실패 시 workflow가 실패하며 `commodity-mailing-recovery` artifact에 그 실행의 JSON을 14일 보관한다. 해당 artifact를 내려받아 아래 importer의 `file`로 넣으면 부분 저장 이후에도 report_id 기준으로 재개한다. 현재 JSON에 남아 있는 보고서는 매일 recovery workflow가 다시 적재한다. **artifact까지 만료되고 원본에서 사라진 보고서는 복원되지 않으므로 archive 실패를 방치하지 않는다.**
+
+```js
+// Node, repo root, 승인된 env 파일을 로드한 상태. 경로는 받은 artifact로 교체.
+const {archiveReports} = require('./scripts/archive-mailing-reports');
+archiveReports({file: '/path/to/commodity_reports_v1.json'}).then(console.log);
+```
+
+## 검증
+
+```bash
+cd services/mailing
+npm ci
+npm test                 # PGlite에서 실제 SQL 실행 + 가짜 Resend + browser Auth contract
+npm run types
+npm run check
+npm run build            # wrangler deploy --dry-run; 실제 배포 아님
+```
+
+테스트는 운영 PostgreSQL/Supabase/PostgREST, Cloudflare cron, 실메일 수신 확인을 대신하지 않는다. 운영 적용과 실제 수신 검증은 아직 별도 단계다.
+
+공식 근거: [Resend idempotency](https://resend.com/docs/dashboard/emails/idempotency-keys), [Cloudflare Cron Triggers](https://developers.cloudflare.com/workers/configuration/cron-triggers/), [Worker secrets](https://developers.cloudflare.com/workers/configuration/secrets/), [GitHub scheduled workflow delays](https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows#schedule).

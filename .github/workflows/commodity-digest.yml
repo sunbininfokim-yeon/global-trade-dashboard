@@ -1,38 +1,27 @@
-name: Weekly Commodity Favorites Digest
+name: Commodity Mailing Archive Recovery
 
-# Reads whatever New for anti/public/data/commodity_reports_v1.json already
-# holds (commodity_reports.yml refreshes that every 4h) -- this workflow
-# does no fetching of its own, just checks out the latest commit and mails
-# favorited-commodity subscribers what they haven't seen yet.
-
+# Replays saved metadata idempotently. Scheduled sending belongs exclusively to
+# the mailing Worker, so a delayed GitHub runner cannot delay the morning mail.
 on:
   schedule:
-    # Monday 08:00 KST (UTC+9) = Sunday 23:00 UTC.
-    - cron: '0 23 * * 0'
+    - cron: '15 21 * * *'
   workflow_dispatch:
-
 permissions:
   contents: read
-
+concurrency:
+  group: commodity-mailing-archive
+  cancel-in-progress: false
 jobs:
-  send-digest:
+  archive-and-preview:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     env:
       SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
       SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
-      RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+      MAIL_SEND_ENABLED: 'false'
     steps:
-      - name: Check out repository
-        uses: actions/checkout@v4
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: '22'
-
-      - name: Validate script
-        run: node --check scripts/notify-commodity-digest.js
-
-      - name: Send weekly commodity digest
-        run: node scripts/notify-commodity-digest.js
+      - run: node scripts/notify-commodity-digest.js

@@ -60,7 +60,6 @@ jobs:
       SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
       SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
       GEMINI_API_KEY: ${{ secrets.AI_STUDIO_API_KEY }}
-      RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
       # Scheduled work tracks changes, and automatically continues an already
       # started bootstrap cursor until it is complete.
       SYNC_MODE: ${{ inputs.congress_mode || 'incremental' }}
@@ -107,6 +106,5 @@ jobs:
         if: ${{ !cancelled() }}
         run: node scripts/sync-public-laws.js
 
-      - name: Notify favorited bill/EO changes
-        if: ${{ !cancelled() }}
-        run: node scripts/notify-favorites.js
+      # Bill/EO updates now enqueue mail transactionally in Postgres.
+      # services/mailing sends independently of this long ingestion job.

@@ -1,8 +1,8 @@
 // My Page: 즐겨찾기 / 메일링 서비스 / 포트폴리오 / 개인정보수정.
 // Basic scaffold -- structure, routing, and the backend calls are wired up;
 // depth (richer favorite cards, spreadsheet upload for the portfolio tab,
-// notification-preference toggles beyond the commodity source filter) is
-// left for follow-up work. Reads window.Auth (auth.js), window.USPolicy
+// other richer account features) is left for follow-up work. Mailing preference
+// toggles are live through the mailing_preferences contract. Reads window.Auth (auth.js), window.USPolicy
 // (policy.js), and renderPortfolioLab (portfolio.js) -- all loaded earlier
 // in index.html and sharing this page's script scope.
 (() => {
@@ -138,15 +138,44 @@
     async function renderMailing() {
         const el = panel('mailing');
         el.innerHTML = `
-            <p class="mypage-section-title">법안</p>
-            <p class="mypage-empty">즐겨찾기한 법안의 상태가 바뀌면 자동으로 메일이 발송됩니다. 별도 설정이 필요 없습니다.</p>
+            <p class="mypage-section-title">법안·행정명령</p>
+            <label><input type="checkbox" data-mail-kind="policy" disabled> 정책 변경 메일 수신</label>
+            <p class="mypage-empty">즐겨찾기한 법안의 단계 변경을 서비스에서 확인하면 다음 날 오전 6시부터 발송하며, 오전 7시 전까지 재시도합니다(한국 시간). 행정명령의 공식 요약 변경도 포함됩니다. 원문 수집이나 메일 서비스가 지연되면 늦게 도착할 수 있습니다.</p>
             <p class="mypage-section-title">원자재</p>
+            <label><input type="checkbox" data-mail-kind="commodity" disabled> 주간 원자재 보고서 메일 수신</label>
+            <p class="mypage-empty">즐겨찾기한 원자재의 새 보고서를 매주 월요일 오전 8시부터 발송합니다(한국 시간).</p>
+            <p id="mypage-mail-status" role="status" aria-live="polite">수신 설정을 불러오는 중…</p>
             <div id="mypage-source-filter"><p class="mypage-empty">불러오는 중…</p></div>
             <p class="mypage-section-title">시장 미시구조</p>
             <p class="mypage-empty">준비 중입니다.</p>
         `;
         const token = renderToken;
         const container = el.querySelector('#mypage-source-filter');
+        // Settings stay usable even if the independent report/source request fails.
+        const status = el.querySelector('#mypage-mail-status');
+        window.Auth.mailingPreferences().then((prefs) => {
+            if (token !== renderToken) return;
+            status.textContent = '인증을 완료한 로그인 이메일로 발송됩니다.';
+            el.querySelectorAll('[data-mail-kind]').forEach((input) => {
+                input.checked = prefs[`${input.dataset.mailKind}_enabled`];
+                input.disabled = false;
+                input.addEventListener('change', async () => {
+                    const desired = input.checked;
+                    input.disabled = true;
+                    try {
+                        await window.Auth.setMailingPreference(input.dataset.mailKind, desired);
+                        if (token === renderToken) status.textContent = '수신 설정을 저장했습니다.';
+                    } catch (_) {
+                        input.checked = !desired;
+                        if (token === renderToken) status.textContent = '저장하지 못했습니다. 다시 시도해주세요.';
+                    } finally {
+                        input.disabled = false;
+                    }
+                });
+            });
+        }).catch(() => {
+            if (token === renderToken) status.textContent = '수신 설정을 불러오지 못했습니다. 잠시 후 다시 열어주세요.';
+        });
         try {
             const [reportsRes, disabled] = await Promise.all([
                 fetch('/public/data/commodity_reports_v1.json', { cache: 'no-cache' }).then((r) => r.json()),

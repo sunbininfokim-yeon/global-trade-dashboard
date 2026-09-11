@@ -7,6 +7,7 @@
 
 | id | task | owner | files / scope | branch | status | note |
 |----|------|-------|---------------|--------|--------|------|
+| T-MAIL-0911 | RSS 보관·정책 변경 메일의 큐/재시도/수신 설정 | codex (사용자 직접 지정) | `services/mailing/**`, `scripts/{notify-*,archive-mailing-reports}.js`, mailing SQL, 관련 workflows, `auth.js`, `mypage.js`, index 캐시 버전 | `claude/mailing-reliability` | **review** | 사용자 2026-09-11 메일링 수정 지시. 운영 발송은 아직 활성화하지 않음. T22/T23의 발송 책임을 독립 Worker로 이동. |
 | T01 | UI 기후 뷰 공용화 | claude | `app.js` 등 | `claude/ui-climate-generic` | **review** | PR #2. **main 머지 전 배포 안 됨** |
 | T02 | ops 문서·터미널 스크립트 | cursor | `docs/ops/**`, `tools/ops/**` | `cursor/optimize-audit` | **review** | 소유권 핸드오프 + AUDIT 포함 |
 | T07 | 전체 점검·최적화 1차 | cursor | app/ticker/assets/cron/audit | `cursor/optimize-audit` | **review** | 4개국 연결, 티커, icrisat ignore, audit 스크립트. 보고서 `docs/ops/AUDIT_2026-08-04.md` |

@@ -7,6 +7,10 @@ on:
     - cron: '40 */4 * * *'
   workflow_dispatch:
 
+concurrency:
+  group: commodity-reports
+  cancel-in-progress: false
+
 jobs:
   update-commodity-reports:
     runs-on: ubuntu-latest
@@ -25,6 +29,21 @@ jobs:
         # --print-stats lists every feed that failed, which is the only place a
         # publisher that moved or started returning 403 becomes visible.
         run: python build_reports.py build --print-stats
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Archive report metadata for mailing
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: node scripts/archive-mailing-reports.js
+      - name: Preserve snapshot if archiving fails
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: commodity-mailing-recovery
+          path: New for anti/public/data/commodity_reports_v1.json
+          retention-days: 14
       - name: Commit
         run: |
           git config user.name "github-actions[bot]"

@@ -1,0 +1,34 @@
+name: Mailing Reliability Checks
+on:
+  pull_request:
+    paths:
+      - 'services/mailing/**'
+      - 'scripts/*mail*'
+      - 'scripts/notify-*.js'
+      - 'supabase/migrations/20260911010000_mailing_outbox.sql'
+      - '.github/workflows/*mail*'
+      - 'New for anti/auth.js'
+      - 'New for anti/mypage.js'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: services/mailing
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: services/mailing/package-lock.json
+      - run: npm ci
+      - run: npm test
+      - run: npm run types
+      - run: npm run check
+      - run: npm run build
+      - run: node --check '../../New for anti/auth.js' && node --check '../../New for anti/mypage.js'
