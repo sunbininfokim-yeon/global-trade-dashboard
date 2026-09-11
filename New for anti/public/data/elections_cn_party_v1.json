@@ -1,0 +1,314 @@
+{
+  "schema": "elections_cn_party_v1",
+  "note_ko": "중국공산당 중앙 주요 직위의 조직 골격. 어떤 부서·판공실이 존재하는가는 당 조직 구조이지 수집 데이터가 아니므로, 사람(명단)과 분리해 여기서 관리한다. 사람은 countries[CHN].leadership 에서 온다 — politburo_standing_committee.rank_order / politburo.active / central_departments / security_organs 의 role_ko·title_ko 를 match_ko 키워드로 찾는다. 이 파일이 없거나 못 읽으면 UI는 모듈에 내장된 동일 골격으로 되돌아간다.",
+  "person_note_ko": "직접 사람을 채우려면 같은 항목에 name_ko / name_en / title_ko / status / note_ko 를 넣는다. 그 값이 leadership 매칭보다 우선한다. 비어 있으면 '명단 수집 예정'으로 남으며, 이는 공석이라는 뜻이 아니다.",
+  "source_ko": "중국공산당 중앙 조직 구조",
+  "party_posts": [
+    {
+      "ko": "중앙판공청",
+      "en": "General Office",
+      "head_title_ko": "주임",
+      "match_ko": [
+        "중앙판공청",
+        "판공청 주임"
+      ]
+    },
+    {
+      "ko": "중앙조직부",
+      "en": "Organization Department",
+      "head_title_ko": "부장",
+      "match_ko": [
+        "중앙조직부"
+      ]
+    },
+    {
+      "ko": "중앙선전부",
+      "en": "Publicity Department",
+      "head_title_ko": "부장",
+      "match_ko": [
+        "중앙선전부"
+      ]
+    },
+    {
+      "ko": "중앙통일전선공작부",
+      "en": "United Front Work Department",
+      "head_title_ko": "부장",
+      "match_ko": [
+        "중앙통전부",
+        "통일전선"
+      ]
+    },
+    {
+      "ko": "중앙정법위원회",
+      "en": "Political and Legal Affairs Commission",
+      "head_title_ko": "서기",
+      "match_ko": [
+        "정법위"
+      ]
+    },
+    {
+      "ko": "중앙서기처",
+      "en": "Central Secretariat",
+      "head_title_ko": "제1서기",
+      "match_ko": [
+        "서기처"
+      ]
+    },
+    {
+      "ko": "중앙기율검사위원회",
+      "en": "Central Commission for Discipline Inspection",
+      "head_title_ko": "서기",
+      "match_ko": [
+        "중기위",
+        "기율검사"
+      ]
+    },
+    {
+      "ko": "중앙외사공작위원회 판공실",
+      "en": "Office of the Foreign Affairs Commission",
+      "head_title_ko": "주임",
+      "match_ko": [
+        "외사판공실",
+        "외교"
+      ]
+    },
+    {
+      "ko": "중앙정책연구실",
+      "en": "Policy Research Office",
+      "head_title_ko": "주임",
+      "match_ko": [
+        "정책연구실"
+      ]
+    },
+    {
+      "ko": "중앙재경위원회 판공실",
+      "en": "Office of the Finance and Economy Commission",
+      "head_title_ko": "주임",
+      "match_ko": [
+        "재경위"
+      ]
+    },
+    {
+      "ko": "중앙군민융합발전위원회 판공실",
+      "en": "Office of the Military-Civil Fusion Commission",
+      "head_title_ko": "주임",
+      "match_ko": [
+        "군민융합"
+      ]
+    }
+  ],
+  "state_council_note_ko": "국무원 구성 부문(부·위원회·인민은행·심계서)의 조직 골격. 어떤 부처가 존재하는가는 국무원 조직법과 기구개혁으로 정해지는 제도이지 매일 수집되는 값이 아니므로 여기서 관리한다. 사람은 leadership 에서 match_ko 로 찾고, 못 찾으면 '명단 수집 예정'으로 남는다 -- 그 자리가 공석이라는 뜻이 아니다. 직접 채우려면 항목에 name_ko / name_en / status / note_ko 를 넣으면 되고, 그 값이 매칭보다 우선한다.",
+  "state_council_ministries": [
+    {
+      "ko": "외교부",
+      "en": "Ministry of Foreign Affairs",
+      "head_title_ko": "부장",
+      "match_ko": [
+        "외교부장"
+      ]
+    },
+    {
+      "ko": "국방부",
+      "en": "Ministry of National Defense",
+      "head_title_ko": "부장",
+      "match_ko": [
+        "국방부장"
+      ]
+    },
+    {
+      "ko": "국가발전개혁위원회",
+      "en": "National Development and Reform Commission",
+      "head_title_ko": "주임",
+      "match_ko": [
+        "발전개혁",
+        "발개위"
+      ]
+    },
+    {
+      "ko": "교육부",
+      "en": "Ministry of Education",
+      "head_title_ko": "부장",
+      "match_ko": [
+        "교육부장"
+      ]
+    },
+    {
+      "ko": "과학기술부",
+      "en": "Ministry of Science and Technology",
+      "head_title_ko": "부장",
+      "match_ko": [
+        "과학기술부장"
+      ]
+    },
+    {
+      "ko": "공업정보화부",
+      "en": "Ministry of Industry and Information Technology",
+      "head_title_ko": "부장",
+      "match_ko": [
+        "공업정보화"
+      ]
+    },
+    {
+      "ko": "국가민족사무위원회",
+      "en": "National Ethnic Affairs Commission",
+      "head_title_ko": "주임",
+      "match_ko": [
+        "민족사무"
+      ]
+    },
+    {
+      "ko": "공안부",
+      "en": "Ministry of Public Security",
+      "head_title_ko": "부장",
+      "match_ko": [
+        "공안부장"
+      ]
+    },
+    {
+      "ko": "국가안전부",
+      "en": "Ministry of State Security",
+      "head_title_ko": "부장",
+      "match_ko": [
+        "국가안전부장"
+      ]
+    },
+    {
+      "ko": "민정부",
+      "en": "Ministry of Civil Affairs",
+      "head_title_ko": "부장",
+      "match_ko": [
+        "민정부장"
+      ]
+    },
+    {
+      "ko": "사법부",
+      "en": "Ministry of Justice",
+      "head_title_ko": "부장",
+      "match_ko": [
+        "사법부장"
+      ]
+    },
+    {
+      "ko": "재정부",
+      "en": "Ministry of Finance",
+      "head_title_ko": "부장",
+      "match_ko": [
+        "재정부장"
+      ]
+    },
+    {
+      "ko": "인력자원사회보장부",
+      "en": "Ministry of Human Resources and Social Security",
+      "head_title_ko": "부장",
+      "match_ko": [
+        "인력자원"
+      ]
+    },
+    {
+      "ko": "자연자원부",
+      "en": "Ministry of Natural Resources",
+      "head_title_ko": "부장",
+      "match_ko": [
+        "자연자원"
+      ]
+    },
+    {
+      "ko": "생태환경부",
+      "en": "Ministry of Ecology and Environment",
+      "head_title_ko": "부장",
+      "match_ko": [
+        "생태환경",
+        "환경부장"
+      ]
+    },
+    {
+      "ko": "주택도농건설부",
+      "en": "Ministry of Housing and Urban-Rural Development",
+      "head_title_ko": "부장",
+      "match_ko": [
+        "주택도농"
+      ]
+    },
+    {
+      "ko": "교통운수부",
+      "en": "Ministry of Transport",
+      "head_title_ko": "부장",
+      "match_ko": [
+        "교통운수"
+      ]
+    },
+    {
+      "ko": "수리부",
+      "en": "Ministry of Water Resources",
+      "head_title_ko": "부장",
+      "match_ko": [
+        "수리부장"
+      ]
+    },
+    {
+      "ko": "농업농촌부",
+      "en": "Ministry of Agriculture and Rural Affairs",
+      "head_title_ko": "부장",
+      "match_ko": [
+        "농업농촌"
+      ]
+    },
+    {
+      "ko": "상무부",
+      "en": "Ministry of Commerce",
+      "head_title_ko": "부장",
+      "match_ko": [
+        "상무부장"
+      ]
+    },
+    {
+      "ko": "문화여유부",
+      "en": "Ministry of Culture and Tourism",
+      "head_title_ko": "부장",
+      "match_ko": [
+        "문화여유",
+        "문화관광"
+      ]
+    },
+    {
+      "ko": "국가위생건강위원회",
+      "en": "National Health Commission",
+      "head_title_ko": "주임",
+      "match_ko": [
+        "위생건강"
+      ]
+    },
+    {
+      "ko": "퇴역군인사무부",
+      "en": "Ministry of Veterans Affairs",
+      "head_title_ko": "부장",
+      "match_ko": [
+        "퇴역군인"
+      ]
+    },
+    {
+      "ko": "응급관리부",
+      "en": "Ministry of Emergency Management",
+      "head_title_ko": "부장",
+      "match_ko": [
+        "응급관리"
+      ]
+    },
+    {
+      "ko": "중국인민은행",
+      "en": "People's Bank of China",
+      "head_title_ko": "행장",
+      "match_ko": [
+        "인민은행"
+      ]
+    },
+    {
+      "ko": "심계서",
+      "en": "National Audit Office",
+      "head_title_ko": "심계장",
+      "match_ko": [
+        "심계"
+      ]
+    }
+  ]
+}

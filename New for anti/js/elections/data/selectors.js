@@ -28,6 +28,7 @@ export const readableSpectrum = (spectrum) => ({
     catch_all_governing_party: '집권당 중심',
     authoritarian_personalist: '권위주의 체제',
     authoritarian_party_state: '당국가 체제',
+    authoritarian_cpc: '공산당 일당 체제',
     theocratic_authoritarian: '신정 체제',
 }[spectrum] || spectrum || '불명');
 

@@ -756,14 +756,15 @@ body {
     cursor: pointer;
 }
 .elections-chamber-panel { display: none; }
-#elections-chamber-house:checked ~ .elections-chamber-tabs label[for="elections-chamber-house"],
-#elections-chamber-senate:checked ~ .elections-chamber-tabs label[for="elections-chamber-senate"] {
+/* Slots, not chamber names: the same switch carries 하원·상원 and 중의원·참의원. */
+#elections-chamber-1:checked ~ .elections-chamber-tabs label[for="elections-chamber-1"],
+#elections-chamber-2:checked ~ .elections-chamber-tabs label[for="elections-chamber-2"] {
     border-color: rgba(56, 189, 248, 0.75);
     background: rgba(14, 116, 144, 0.28);
     color: #e0f2fe;
 }
-#elections-chamber-house:checked ~ .elections-chamber-panel[data-chamber="house"],
-#elections-chamber-senate:checked ~ .elections-chamber-panel[data-chamber="senate"] { display: block; }
+#elections-chamber-1:checked ~ .elections-chamber-panel[data-chamber-slot="1"],
+#elections-chamber-2:checked ~ .elections-chamber-panel[data-chamber-slot="2"] { display: block; }
 .elections-chamber-radio:focus-visible ~ .elections-chamber-tabs label { outline: 2px solid #38bdf8; outline-offset: 2px; }
 
 .elections-chamber-quadrants {
@@ -869,7 +870,10 @@ body {
    only when the pane runs out of width. */
 .elections-org-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(92px, 1fr));
+    /* auto-fill, not auto-fit: a tier with one box (국무원 총리) should keep a
+       box's width, not stretch across the pane like a banner. A full row is
+       identical either way. */
+    grid-template-columns: repeat(auto-fill, minmax(92px, 1fr));
     gap: 6px;
     margin: 8px 0 4px;
     align-items: stretch;
@@ -914,6 +918,26 @@ body {
     overflow-wrap: anywhere;
 }
 .elections-org-box-person.is-empty { color: #64748b; }
+/* Same 삭선 rule as the roster rows, applied inside a box: the source marks the
+   person, not the office, so only the name line is struck. */
+.elections-org-box-person.is-fallen { text-decoration: line-through; opacity: 0.72; }
+/* 삭선은 사람 이름에만 긋는다. 같은 줄의 직함 라벨("정치위원", "후임 미확인")까지
+   그어 버리면 자리 자체가 없어진 것처럼 읽힌다. */
+.elections-org-box-person.is-fallen .elections-org-box-title { text-decoration: none; }
+/* 공석은 사람이 아니라 자리의 상태다. 삭선(실각)과 다른 표시를 준다. */
+.elections-org-box-person.is-vacant { color: #94a3b8; font-style: italic; }
+/* 전구·군종은 사령원과 정치위원이 한 쌍이라 두 줄이 한 박스에 들어간다. 둘째 줄은
+   margin-top:auto 를 다시 쓰지 않아야 첫 줄 바로 아래 붙는다. */
+.elections-org-box-person.is-second { margin-top: 0; padding-top: 4px; }
+/* 후임이 확인되지 않은 자리의 전임자. 이름에 삭선을 긋되 현직 줄과 색으로 가른다. */
+.elections-org-box-former {
+    color: #94a3b8;
+    font-size: 10px;
+    line-height: 1.45;
+    margin-top: 4px;
+    overflow-wrap: anywhere;
+}
+.elections-org-box-former s { opacity: 0.8; }
 .elections-org-box-title {
     display: block;
     color: #94a3b8;
@@ -924,6 +948,35 @@ body {
     font-size: 10px;
     line-height: 1.45;
     margin-top: 4px;
+}
+
+/* --- 펼쳐지는 조직도 단 (박스를 눌러 전체 명부) --------------------------
+   <summary> 가 박스 격자 전체라서, 박스 어디를 눌러도 아래 명부가 열린다. 모달
+   본문은 리스너 없는 정적 HTML이라 <details> 가 이 화면이 가질 수 있는 유일한
+   클릭이다. */
+.elections-org-expand { margin: 0; }
+.elections-org-expand > summary {
+    list-style: none;
+    cursor: pointer;
+    border-radius: 8px;
+}
+.elections-org-expand > summary::-webkit-details-marker { display: none; }
+.elections-org-expand > summary:focus-visible { outline: 2px solid #38bdf8; outline-offset: 2px; }
+.elections-org-expand > summary:hover .elections-org-box { border-color: rgba(56, 189, 248, 0.45); }
+.elections-org-expand-hint {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    color: #7dd3fc;
+    font-size: 11px;
+    margin: 2px 0 6px;
+}
+.elections-org-expand-hint::after { content: '▾'; font-size: 10px; }
+.elections-org-expand[open] > summary .elections-org-expand-hint::after { content: '▴'; }
+.elections-org-expand-body {
+    border-left: 2px solid rgba(56, 189, 248, 0.35);
+    padding-left: 10px;
+    margin: 2px 0 6px;
 }
 
 /* --- State legislature seat composition (dot cluster) --------------------- */
@@ -959,6 +1012,49 @@ body {
     font-style: normal;
     color: #94a3b8;
     white-space: nowrap;
+}
+
+/* --- 자민당 파벌 (공식 존속 / 해산 후 블록 / 신생 그룹) --------------------
+   막대는 이 화면에서 가장 큰 그룹 대비 상대 크기다. 파벌 인원은 언론 추정이고
+   기준 시점이 제각각이라 합계를 분모로 쓰지 않는다. */
+.elections-faction-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+    gap: 8px;
+    margin: 8px 0 4px;
+}
+.elections-faction-row {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 9px 10px;
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    border-radius: 7px;
+    background: rgba(15, 23, 42, 0.55);
+    min-width: 0;
+}
+.elections-faction-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 8px;
+}
+.elections-faction-head strong { color: #e2e8f0; font-size: 12px; overflow-wrap: anywhere; }
+.elections-faction-head span { color: #cbd5e1; font-size: 11px; white-space: nowrap; }
+.elections-faction-ja { color: #94a3b8; font-size: 10px; overflow-wrap: anywhere; }
+.elections-faction-bar {
+    height: 6px;
+    border-radius: 3px;
+    background: rgba(148, 163, 184, 0.16);
+    overflow: hidden;
+}
+.elections-faction-bar i { display: block; height: 100%; background: #c0392b; }
+.elections-faction-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 10px;
+    color: #94a3b8;
+    font-size: 10px;
 }
 
 /* --- Race progress (rolling primaries / leadership tours) ---------------- */
@@ -1104,6 +1200,9 @@ body {
 /* The cap above is for hundred-row rosters; a dozen leadership rows are short
    enough to show whole, and scrolling them inside a quadrant hides them. */
 .elections-modal-body .elections-leader-rows { max-height: none; overflow-y: visible; }
+/* 펼쳐진 조직도 단도 마찬가지다 -- 사용자가 "전원 보기"를 눌러 연 목록을 그 안에서
+   다시 스크롤시키면 연 이유가 사라진다. 창 자체가 스크롤한다. */
+.elections-modal-body .elections-org-expand-body .elections-disclosure-rows { max-height: none; overflow-y: visible; }
 
 @media (max-width: 720px) {
     .elections-modal-host { padding: 12px; }
