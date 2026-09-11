@@ -1,6 +1,6 @@
 {
   "schema_version": "commodity-reports-v1",
-  "generated_at": "2026-09-11T19:15:24.841223+00:00",
+  "generated_at": "2026-09-11T22:45:43.143108+00:00",
   "model": {
     "name": "commodity_reports_v1",
     "description": "Official crop/energy/metal reports tagged (commodity × country) so the dashboard's stage-2 country window can show what was published about that country's commodity. The report's text picks the country, not the publisher: a USDA release on Brazilian wheat belongs on BRA·wheat.",
@@ -19,9 +19,9 @@
   "stats": {
     "sources_ok": 9,
     "sources_failed": 3,
-    "raw_items": 148,
-    "scored": 58,
-    "published": 38,
+    "raw_items": 147,
+    "scored": 56,
+    "published": 36,
     "commodities": 9,
     "buckets": 11
   },
@@ -36,7 +36,7 @@
     {
       "source_id": "us_nass_todays_reports",
       "ok": true,
-      "count": 2,
+      "count": 1,
       "error": null,
       "mode": "live"
     },
@@ -479,13 +479,13 @@
     "corn": {
       "USA": [
         "9a2e4f0c6cc38378",
+        "bdf029665651e8aa",
         "9d9ab72fff81736d",
         "727409c1a45dfec3",
         "f9e7ed8b73ce1fa5",
         "205bcf62b2894e8b",
         "e54c2f7c294df06b",
-        "9dd7845c2d4fc51e",
-        "630c12eda94253be"
+        "9dd7845c2d4fc51e"
       ]
     },
     "soybeans": {
@@ -526,12 +526,6 @@
         "f8aa4f64781b6480"
       ]
     },
-    "cotton": {
-      "USA": [
-        "094f2c679d643322",
-        "8cda812c9a9d3eef"
-      ]
-    },
     "rice": {
       "USA": [
         "2c8f727be89c0de5",
@@ -541,6 +535,11 @@
     "sugar": {
       "USA": [
         "21e8e31c7b207b51"
+      ]
+    },
+    "cotton": {
+      "USA": [
+        "094f2c679d643322"
       ]
     }
   },
@@ -568,7 +567,7 @@
       "country_source": "text",
       "series_id": "EIA_STEO",
       "series_label_ko": "EIA 단기 에너지 전망",
-      "importance": 5.322,
+      "importance": 5.306,
       "reasons": [
         "series:EIA_STEO",
         "has_figure",
@@ -599,7 +598,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 3.109,
+      "importance": 3.099,
       "reasons": [
         "has_figure",
         "revision_language",
@@ -627,7 +626,7 @@
       "country_source": "none",
       "series_id": "EIA_STEO",
       "series_label_ko": "EIA 단기 에너지 전망",
-      "importance": 2.482,
+      "importance": 2.475,
       "reasons": [
         "series:EIA_STEO"
       ]
@@ -655,41 +654,12 @@
       "country_source": "text",
       "series_id": "EIA_STEO",
       "series_label_ko": "EIA 단기 에너지 전망",
-      "importance": 2.341,
+      "importance": 2.34,
       "reasons": [
         "series:EIA_STEO",
         "has_figure",
         "revision_language",
         "country_in_text"
-      ]
-    },
-    {
-      "id": "630c12eda94253be",
-      "title": {
-        "original": "Crop Production",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "Corn productionfor grain is forecast at 15.8 billion bushels, down 1 percent from the previous forecast...",
-      "url": "http://www.nass.usda.gov/Publications/Todays_Reports/reports/crop0926.pdf",
-      "published_at": null,
-      "agency": "USDA NASS",
-      "agency_ko": "미 농무부 국립농업통계청(NASS)",
-      "source_id": "us_nass_todays_reports",
-      "commodities": [
-        "corn"
-      ],
-      "countries": [
-        "USA"
-      ],
-      "scope": "country",
-      "country_source": "source_default",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 2.338,
-      "reasons": [
-        "has_figure",
-        "no_date"
       ]
     },
     {
@@ -932,7 +902,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.591,
+      "importance": 1.588,
       "reasons": [
         "has_figure",
         "country_in_text"
@@ -961,7 +931,7 @@
       "country_source": "text",
       "series_id": "EIA_STEO",
       "series_label_ko": "EIA 단기 에너지 전망",
-      "importance": 1.569,
+      "importance": 1.567,
       "reasons": [
         "series:EIA_STEO",
         "country_in_text"
@@ -990,38 +960,10 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.559,
+      "importance": 1.556,
       "reasons": [
         "revision_language",
         "country_in_text"
-      ]
-    },
-    {
-      "id": "8cda812c9a9d3eef",
-      "title": {
-        "original": "Cotton Ginnings",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "Running Bales Ginned By Crop as of September 1, 2026 totaled 222,700 bales...",
-      "url": "http://www.nass.usda.gov/Publications/Todays_Reports/reports/ctgn3726.pdf",
-      "published_at": null,
-      "agency": "USDA NASS",
-      "agency_ko": "미 농무부 국립농업통계청(NASS)",
-      "source_id": "us_nass_todays_reports",
-      "commodities": [
-        "cotton"
-      ],
-      "countries": [
-        "USA"
-      ],
-      "scope": "country",
-      "country_source": "source_default",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 1.559,
-      "reasons": [
-        "no_date"
       ]
     },
     {
@@ -1138,7 +1080,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.448,
+      "importance": 1.444,
       "reasons": [
         "country_in_text"
       ]
@@ -1198,7 +1140,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.394,
+      "importance": 1.39,
       "reasons": [
         "country_in_text"
       ]
@@ -1226,7 +1168,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.368,
+      "importance": 1.365,
       "reasons": [
         "country_in_text"
       ]
@@ -1370,7 +1312,7 @@
       "country_source": "text",
       "series_id": "EIA_STEO",
       "series_label_ko": "EIA 단기 에너지 전망",
-      "importance": 1.34,
+      "importance": 1.339,
       "reasons": [
         "series:EIA_STEO",
         "country_in_text"
@@ -1426,7 +1368,7 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.115,
+      "importance": 1.112,
       "reasons": []
     },
     {
@@ -1450,7 +1392,7 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.115,
+      "importance": 1.112,
       "reasons": []
     },
     {
