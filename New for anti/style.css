@@ -939,6 +939,35 @@ body {
     margin-top: 4px;
 }
 
+/* --- 펼쳐지는 조직도 단 (박스를 눌러 전체 명부) --------------------------
+   <summary> 가 박스 격자 전체라서, 박스 어디를 눌러도 아래 명부가 열린다. 모달
+   본문은 리스너 없는 정적 HTML이라 <details> 가 이 화면이 가질 수 있는 유일한
+   클릭이다. */
+.elections-org-expand { margin: 0; }
+.elections-org-expand > summary {
+    list-style: none;
+    cursor: pointer;
+    border-radius: 8px;
+}
+.elections-org-expand > summary::-webkit-details-marker { display: none; }
+.elections-org-expand > summary:focus-visible { outline: 2px solid #38bdf8; outline-offset: 2px; }
+.elections-org-expand > summary:hover .elections-org-box { border-color: rgba(56, 189, 248, 0.45); }
+.elections-org-expand-hint {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    color: #7dd3fc;
+    font-size: 11px;
+    margin: 2px 0 6px;
+}
+.elections-org-expand-hint::after { content: '▾'; font-size: 10px; }
+.elections-org-expand[open] > summary .elections-org-expand-hint::after { content: '▴'; }
+.elections-org-expand-body {
+    border-left: 2px solid rgba(56, 189, 248, 0.35);
+    padding-left: 10px;
+    margin: 2px 0 6px;
+}
+
 /* --- State legislature seat composition (dot cluster) --------------------- */
 .elections-seat-dots {
     display: flex;
@@ -1160,6 +1189,9 @@ body {
 /* The cap above is for hundred-row rosters; a dozen leadership rows are short
    enough to show whole, and scrolling them inside a quadrant hides them. */
 .elections-modal-body .elections-leader-rows { max-height: none; overflow-y: visible; }
+/* 펼쳐진 조직도 단도 마찬가지다 -- 사용자가 "전원 보기"를 눌러 연 목록을 그 안에서
+   다시 스크롤시키면 연 이유가 사라진다. 창 자체가 스크롤한다. */
+.elections-modal-body .elections-org-expand-body .elections-disclosure-rows { max-height: none; overflow-y: visible; }
 
 @media (max-width: 720px) {
     .elections-modal-host { padding: 12px; }

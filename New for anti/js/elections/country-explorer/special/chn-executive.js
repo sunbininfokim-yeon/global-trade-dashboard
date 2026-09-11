@@ -1,4 +1,5 @@
-import { orgBox, orgGrid, disclosure, noteLine } from './org-chart.js';
+import { escapeHtml } from '../../ui.js';
+import { orgBox, orgGrid, rowList, disclosure, noteLine, expandableGrid } from './org-chart.js';
 import { chamberSwitch } from './chamber-switch.js';
 import { personName, personLine, isFallen, statusKo } from './china.js';
 
@@ -72,17 +73,39 @@ const pscBoxes = (standing) => (standing.rank_order || []).map((row, index) => o
 }));
 
 // 정치국은 상무위 7인을 포함한다. 같은 사람을 두 단에 두 번 그리면 인원이 부풀려
-// 보이므로, 이 단에는 상무위에 없는 위원만 박스로 내고 전체 명부는 접어 둔다.
-const politburoBoxes = (politburo, standing) => {
+// 보이므로 이 단에는 상무위에 없는 위원만 세고, 그중 명부 앞 7인만 박스로 낸다.
+// 나머지는 박스를 누르면 그 아래로 펼쳐진다 -- 21개 박스를 한 번에 늘어놓으면
+// 상무위 7인 단과 무게가 같아 보여 두 단의 층위가 사라진다.
+const POLITBURO_HEADLINE = 7;
+
+const politburoMembers = (politburo, standing) => {
     const pscNames = new Set(formerNames(standing.rank_order));
-    return (politburo.active || [])
-        .filter((row) => !pscNames.has(personName(row)))
-        .map((row) => orgBox({
-            ko: row.role_ko || row.title_ko || '정치국 위원',
-            title: shortTitle(row.role_ko || row.title_ko, row.title_ko),
-            person: personWithStatus(row),
-            strike: isFallen(row),
-        }));
+    return (politburo.active || []).filter((row) => !pscNames.has(personName(row)));
+};
+
+const politburoBox = (row) => orgBox({
+    ko: row.role_ko || row.title_ko || '정치국 위원',
+    title: shortTitle(row.role_ko || row.title_ko, row.title_ko),
+    person: personWithStatus(row),
+    strike: isFallen(row),
+});
+
+// 펼쳐진 명부는 상무위원까지 포함한 정치국 전원이다 -- "전 인원"이 상무위를 빼고
+// 센 수라면 그건 정치국 명부가 아니다. 어느 쪽이 상무위원인지는 줄마다 적는다.
+const politburoRoster = (politburo, standing) => {
+    const psc = standing.rank_order || [];
+    const pscNames = new Set(formerNames(psc));
+    const rows = [
+        ...psc.map((row, index) => ({ row, mark: `상무위 서열 ${index + 1}` })),
+        ...(politburo.active || [])
+            .filter((member) => !pscNames.has(personName(member)))
+            .map((row) => ({ row, mark: '정치국 위원' })),
+    ];
+    return rows.map(({ row, mark }) => `<div>
+        <span>${escapeHtml(row.role_ko || row.title_ko || mark)}</span>
+        <strong class="${isFallen(row) ? 'elections-fallen' : ''}">${escapeHtml(personWithStatus(row) || '불명')}</strong>
+        <em class="elections-person-mark">${escapeHtml(mark)}</em>
+    </div>`);
 };
 
 // 골격의 match_ko 키워드로 leadership 안의 사람을 찾는다. 파일이 직접 사람을 들고
@@ -114,9 +137,9 @@ const partyPostBoxes = (leadership) => {
     });
 };
 
+// 국무원 단은 부총리급까지만 박스로 낸다. 부처는 박스를 누르면 그 아래로 펼쳐진다.
 const stateCouncilBoxes = (leadership) => {
     const council = leadership.party_state?.state_council || {};
-    const cmc = leadership.cmc || {};
     return [
         orgBox({ ko: '국무원 총리', person: personWithStatus(council.premier) }),
         ...(council.vice_premiers || []).map((row, index) => orgBox({
@@ -125,12 +148,24 @@ const stateCouncilBoxes = (leadership) => {
             person: personWithStatus(row),
             strike: isFallen(row),
         })),
-        orgBox({
-            ko: '국방부', title: shortTitle('국방부', cmc.defense_minister?.title_ko) || '부장',
-            person: personWithStatus(cmc.defense_minister),
-            note: cmc.defense_minister?.on_cmc === false ? '중앙군사위 위원 아님' : '',
-        }),
     ];
+};
+
+// 확보된 부처장은 셋뿐이다 (국방·공안·국가안전). 나머지 부처를 빈 줄로 만들어
+// 채우지 않고, 몇 개를 들고 있는지와 전체 명부가 미수집이라는 사실만 적는다.
+const ministerRows = (leadership) => {
+    const cmc = leadership.cmc || {};
+    const organs = leadership.security_organs || {};
+    const entries = [
+        ['국방부', cmc.defense_minister, cmc.defense_minister?.on_cmc === false ? '중앙군사위 위원 아님' : ''],
+        ['공안부', organs.ministry_of_public_security, ''],
+        ['국가안전부', organs.ministry_of_state_security, ''],
+    ];
+    return entries.filter(([, person]) => person).map(([ko, person, mark]) => `<div>
+        <span>${escapeHtml(`${ko}${person.title_ko ? ` · ${person.title_ko}` : ''}`)}</span>
+        <strong class="${isFallen(person) ? 'elections-fallen' : ''}">${escapeHtml(personWithStatus(person) || '불명')}</strong>
+        ${mark ? `<em class="elections-person-mark">${escapeHtml(mark)}</em>` : ''}
+    </div>`);
 };
 
 // ---------------------------------------------------------------- 중공군 ----
@@ -246,15 +281,23 @@ const partyPanel = (leadership) => {
     const partyState = leadership.party_state || {};
     const standing = partyState.politburo_standing_committee || {};
     const politburo = partyState.politburo || {};
-    const nonPsc = politburoBoxes(politburo, standing);
+    const nonPsc = politburoMembers(politburo, standing);
+    const roster = politburoRoster(politburo, standing);
+    const ministers = ministerRows(leadership);
     return `
         <p class="section-title">1 · 정치국 상무위원회 ${standing.n ? `${standing.n}인` : ''}</p>
         ${orgGrid(pscBoxes(standing))}
         ${noteLine(standing.source ? `서열은 공식 발표 순서입니다 · 출처 ${standing.source}` : '서열은 공식 발표 순서입니다.')}
 
         <p class="section-title">2 · 중앙정치국 ${politburo.active_n_approx ? `현원 약 ${politburo.active_n_approx}인` : ''}</p>
-        ${nonPsc.length ? orgGrid(nonPsc) : '<p class="elections-muted">확보된 정치국 명부가 없습니다.</p>'}
-        ${noteLine(`상무위원 ${standing.n || 0}인은 위 단에 있어 여기서는 빼고 ${nonPsc.length}인만 표시합니다. 20차 원구성 ${politburo.original_n_20th || '불명'}인 · 실각·조사로 축소된 현원 ${politburo.active_n_approx || '불명'}인.`)}
+        ${nonPsc.length ? expandableGrid({
+        boxes: nonPsc.slice(0, POLITBURO_HEADLINE).map(politburoBox),
+        hint: `명부 순서 앞 ${Math.min(POLITBURO_HEADLINE, nonPsc.length)}인 · 박스를 누르면 정치국 전원 ${roster.length}인`,
+        body: `${rowList(roster)}
+            ${noteLine(`상무위원 ${standing.n || 0}인을 포함한 정치국 전원입니다. 위 박스는 상무위원을 뺀 명부의 앞 ${POLITBURO_HEADLINE}인이며, 순서는 공개 명부 순서일 뿐 서열 판정이 아닙니다.`)}
+            ${politburo.fallen?.length ? `<p class="elections-party-card-label">실각·조사 ${politburo.fallen.length}인 · 현원에서 빠짐</p>
+            ${rowList((politburo.fallen || []).map((row) => personLine(row, row.was)))}` : ''}`,
+    }) : '<p class="elections-muted">확보된 정치국 명부가 없습니다.</p>'}
         ${noteLine(politburo.note_ko)}
 
         <p class="section-title">3 · 공산당 주요 직위</p>
@@ -262,7 +305,12 @@ const partyPanel = (leadership) => {
         ${noteLine('사람이 비어 있는 칸은 명단 미수집이며, 그 자리가 공석이라는 뜻이 아닙니다.')}
 
         <p class="section-title">4 · 국무원</p>
-        ${orgGrid(stateCouncilBoxes(leadership))}
+        ${ministers.length ? expandableGrid({
+        boxes: stateCouncilBoxes(leadership),
+        hint: `부총리급까지 · 박스를 누르면 부처장 ${ministers.length}인`,
+        body: `${rowList(ministers)}
+            ${noteLine('확보된 부처장만 표시합니다. 국무원 전체 부처 명부는 아직 수집 대상이 아니며, 여기 없는 부처가 공석이라는 뜻이 아닙니다.')}`,
+    }) : orgGrid(stateCouncilBoxes(leadership))}
         ${noteLine('국무원을 당 기구 아래 둔 것은 서열이 아니라 의사결정 순서를 따른 것입니다.')}
     `;
 };

@@ -41,6 +41,19 @@ export const orgBox = ({
 
 export const orgGrid = (boxes) => `<div class="elections-org-grid">${boxes.join('')}</div>`;
 
+// A tier that shows its headline boxes and keeps the full roster folded under
+// them. The boxes themselves are the <summary>, so clicking any box opens the
+// rest -- the modal body ships as static HTML with no per-render listeners, so
+// <details> is the only click this screen can have.
+export const expandableGrid = ({ boxes, hint, body }) => `
+    <details class="elections-org-expand">
+        <summary>
+            ${orgGrid(boxes)}
+            <span class="elections-org-expand-hint">${escapeHtml(hint)}</span>
+        </summary>
+        <div class="elections-org-expand-body">${body}</div>
+    </details>`;
+
 export const rowList = (rows) => `<div class="elections-disclosure-rows">${rows.join('')}</div>`;
 
 export const disclosure = (summary, rows) => (rows.length
