@@ -1,20 +1,24 @@
-import { escapeHtml, formatDate, stateLabel } from '../ui.js';
+import { escapeHtml, formatDate, personLinkHtml, stateLabel } from '../ui.js';
 import { usaStateSuperPac } from './special/usa-state-superpac.js';
 
 const party = (value) => ({ DEM: '민주당', GOP: '공화당', IND: '무소속', NP: '무당파' }[value] || value || '');
+// Returns safe HTML, not plain text: a bioguideId (present on every House/
+// Senate row here, absent on governor/lt.gov/AG) links the name to Congress's
+// own bio page. Callers must not escapeHtml() this a second time.
 const person = (row) => {
     if (!row) return '불명';
-    if (typeof row === 'string') return row;
-    if (row.not_applicable) return `해당 직위 없음${row.note ? ` · ${row.note}` : ''}`;
+    if (typeof row === 'string') return escapeHtml(row);
+    if (row.not_applicable) return escapeHtml(`해당 직위 없음${row.note ? ` · ${row.note}` : ''}`);
     const affiliation = party(row.abbr || row.party);
-    return [row.name || '불명', affiliation, row.note].filter(Boolean).join(' · ');
+    const label = escapeHtml([row.name || '불명', affiliation, row.note].filter(Boolean).join(' · '));
+    return personLinkHtml(label, row.bioguideId);
 };
 const seatLine = (body) => {
     if (!body) return '해당 없음';
     const classification = `${party(body.abbr || body.control) || '구성'} ${body.majority ?? '불명'} · 상대 ${body.minority ?? '불명'}`;
     return body.nonpartisan_official ? `공식 비당파 · 분석 분류 ${classification}` : classification;
 };
-const leaderLine = (leader) => leader ? `${leader.title || '지도부'}: ${person(leader)}` : '공개 명부 미기재';
+const leaderLine = (leader) => leader ? `${escapeHtml(leader.title || '지도부')}: ${person(leader)}` : '공개 명부 미기재';
 
 // The pipeline only tells us the majority side's abbr (control) and the
 // minority floor leader's abbr, not a full member-by-member roster, so a
@@ -52,8 +56,8 @@ const chamberCard = (label, chamber) => {
             <details class="elections-disclosure">
                 <summary>구조·지도부 보기</summary>
                 <div class="elections-disclosure-rows">
-                    <div>${escapeHtml(leaderLine(leadership.presiding_officer))}</div>
-                    <div>${escapeHtml(leaderLine(leadership.second_party_floor_leader))}</div>
+                    <div>${leaderLine(leadership.presiding_officer)}</div>
+                    <div>${leaderLine(leadership.second_party_floor_leader)}</div>
                 </div>
             </details>
             ${seats ? `<details class="elections-disclosure"><summary>정당별 의석 보기</summary>${seats}</details>` : ''}
@@ -109,18 +113,18 @@ export const renderUsaStateDashboard = (root, {
         <section class="elections-detail-section">
             <p class="section-title">1 · 주 행정부</p>
             <div class="elections-card-grid">
-                <article class="elections-card"><div class="elections-card-label">주지사</div><div class="elections-card-value">${escapeHtml(person(state.governor))}</div></article>
-                <article class="elections-card"><div class="elections-card-label">부지사</div><div class="elections-card-value">${escapeHtml(person(state.lieutenant_governor))}</div></article>
-                <article class="elections-card"><div class="elections-card-label">법무장관</div><div class="elections-card-value">${escapeHtml(person(state.attorney_general))}</div></article>
+                <article class="elections-card"><div class="elections-card-label">주지사</div><div class="elections-card-value">${person(state.governor)}</div></article>
+                <article class="elections-card"><div class="elections-card-label">부지사</div><div class="elections-card-value">${person(state.lieutenant_governor)}</div></article>
+                <article class="elections-card"><div class="elections-card-label">법무장관</div><div class="elections-card-value">${person(state.attorney_general)}</div></article>
                 <article class="elections-card"><div class="elections-card-label">주 단위 계파</div><div class="elections-card-value">공개 정본 없음</div></article>
             </div>
         </section>
         <section class="elections-detail-section">
             <p class="section-title">2 · 연방 의회</p>
-            <div class="elections-card"><div class="elections-card-label">연방 상원의원</div><div class="elections-card-value">${escapeHtml((delegation.senators || []).map(person).join(' / ') || '불명')}</div></div>
+            <div class="elections-card"><div class="elections-card-label">연방 상원의원</div><div class="elections-card-value">${(delegation.senators || []).map(person).join(' / ') || '불명'}</div></div>
             <details class="elections-disclosure elections-house-delegation">
                 <summary>연방 하원의원 ${members.length}명 · 선거구 순으로 보기</summary>
-                <div class="elections-member-list">${members.map((member) => `<div class="elections-member-row"><span>하원 ${escapeHtml(state.id)}-${escapeHtml(member.district ?? 'AL')}</span><span>${escapeHtml(person(member))}</span></div>`).join('') || '<p class="elections-muted">하원 명단 없음</p>'}</div>
+                <div class="elections-member-list">${members.map((member) => `<div class="elections-member-row"><span>하원 ${escapeHtml(state.id)}-${escapeHtml(member.district ?? 'AL')}</span><span>${person(member)}</span></div>`).join('') || '<p class="elections-muted">하원 명단 없음</p>'}</div>
             </details>
         </section>
         <section class="elections-detail-section">

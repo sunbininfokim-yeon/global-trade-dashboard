@@ -4948,8 +4948,19 @@ const electionHost = () => ({
     },
     setWorldMap(layers, onClick) {
         currentViewState = clampGlobeView({ ...currentViewState, zoom: GLOBE_ZOOM });
+        // repeat:false here, unlike the other maps this app shares. At the
+        // default GLOBE_ZOOM (0.85) the viewport is wider than one world, so
+        // repeat:true draws multiple side-by-side copies -- and deck.gl's
+        // picking only ever resolves against one of them, so a click on a
+        // large, correctly-coloured country like the US silently missed at
+        // that zoom and only worked once zoomed in past one-world-width
+        // (confirmed 2026-09-11: 0/5 clicks landed with repeat:true at
+        // default zoom, 5/5 with repeat:false, both on real countries).
+        // This map is single-click-to-drill-down, not a continuously
+        // scrolled one, so losing antimeridian wraparound costs nothing a
+        // user would notice.
         deckgl.setProps({
-            views: [new MapView({ id: 'map', controller: true, repeat: true })],
+            views: [new MapView({ id: 'map', controller: true, repeat: false })],
             viewState: currentViewState,
             controller: { dragRotate: false, touchRotate: false },
             onClick,

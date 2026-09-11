@@ -15,6 +15,7 @@ const {
   SENATE_JSON_PATH,
   isSenateCvcXml,
   parseSenateCvcXml,
+  mapHouseClerkCode,
 } = require('./lib/committee-membership-roster');
 
 const HOUSE_XML = path.resolve(ROOT, process.env.HOUSE_MEMBER_DATA_XML || HOUSE_XML_PATH);
@@ -52,6 +53,35 @@ const HOUSE_CLERK_TO_CONGRESS = {
   WM00: ['house', 'hswm00'],
   ZS00: ['house', 'hlzs00'],
 };
+
+// 2026-09-08 Congress.gov House committee directory system codes.
+// House subcommittee Clerk codes are emitted only when this set contains the derived code.
+const CONGRESS_GOV_SYSTEM_CODES = new Set([
+  'hlig00', 'hlig01', 'hlig02', 'hlig04', 'hlig06', 'hlig09', 'hlig11',
+  'hlqj00', 'hlzs00', 'hotl00',
+  'hsag00', 'hsag03', 'hsag14', 'hsag15', 'hsag16', 'hsag22', 'hsag29',
+  'hsap00', 'hsap01', 'hsap02', 'hsap04', 'hsap06', 'hsap07', 'hsap10',
+  'hsap15', 'hsap18', 'hsap19', 'hsap20', 'hsap23', 'hsap24',
+  'hsas00', 'hsas02', 'hsas03', 'hsas25', 'hsas26', 'hsas28', 'hsas29', 'hsas35',
+  'hsba00', 'hsba04', 'hsba09', 'hsba10', 'hsba16', 'hsba20', 'hsba21',
+  'hsbu00',
+  'hsed00', 'hsed02', 'hsed10', 'hsed13', 'hsed14',
+  'hsfa00', 'hsfa05', 'hsfa06', 'hsfa07', 'hsfa13', 'hsfa14', 'hsfa16', 'hsfa17', 'hsfa19',
+  'hsgo00', 'hsgo05', 'hsgo06', 'hsgo12', 'hsgo16', 'hsgo24', 'hsgo27', 'hsgo33',
+  'hsha00', 'hsha06', 'hsha08', 'hsha27',
+  'hshm00', 'hshm05', 'hshm07', 'hshm08', 'hshm09', 'hshm11', 'hshm12',
+  'hsif00', 'hsif02', 'hsif03', 'hsif14', 'hsif16', 'hsif17', 'hsif18',
+  'hsii00', 'hsii06', 'hsii10', 'hsii13', 'hsii15', 'hsii24',
+  'hsju00', 'hsju01', 'hsju03', 'hsju05', 'hsju08', 'hsju10', 'hsju13',
+  'hspw00', 'hspw02', 'hspw05', 'hspw07', 'hspw12', 'hspw13', 'hspw14',
+  'hsru00', 'hsru02', 'hsru04',
+  'hssm00', 'hssm21', 'hssm22', 'hssm23', 'hssm24', 'hssm27',
+  'hsso00',
+  'hssy00', 'hssy15', 'hssy16', 'hssy18', 'hssy20', 'hssy21',
+  'hsvr00', 'hsvr03', 'hsvr08', 'hsvr09', 'hsvr10', 'hsvr11',
+  'hswm00', 'hswm01', 'hswm02', 'hswm03', 'hswm04', 'hswm05', 'hswm06',
+  'hzgo34',
+]);
 
 const SENATE_ALLOWED = new Set([
   'jcse00', 'jsec00', 'jslc00', 'jspr00', 'jstx00',
@@ -129,9 +159,9 @@ function houseRecords(xml, sourceUpdatedAt) {
     const caucus = String(memberBlock.match(/<caucus>([^<]*)<\/caucus>/)?.[1] || '').trim();
     const assignBlock = memberBlock.match(/<committee-assignments>([\s\S]*?)<\/committee-assignments>/)?.[1] || '';
     if (!bioguide || !assignBlock) continue;
-    for (const tag of assignBlock.match(/<committee\b[^>]*>/g) || []) {
+    for (const tag of assignBlock.match(/<(?:committee|subcommittee)\b[^>]*>/g) || []) {
       const clerkCode = String(tag.match(/comcode="([^"]+)"/)?.[1] || '').trim().toUpperCase();
-      const mapped = HOUSE_CLERK_TO_CONGRESS[clerkCode];
+      const mapped = mapHouseClerkCode(clerkCode, HOUSE_CLERK_TO_CONGRESS, CONGRESS_GOV_SYSTEM_CODES);
       if (!mapped) continue;
       const [chamber, systemCode] = mapped;
       const leadership = tag.match(/leadership="([^"]+)"/)?.[1] || '';
@@ -243,15 +273,15 @@ function main() {
     schema_version: 1,
     congress_number: CONGRESS,
     source_name: 'cursor-verified-official-roster',
-    source_updated_at: '2026-09-06T00:00:00Z',
+    source_updated_at: '2026-09-11T00:00:00Z',
     coverage: {
       complete: false,
       roles,
     },
     notes: [
-      'Parent committees only. House/Senate subcommittee rosters are omitted because Senate committee-membership XML has no bioguide IDs, and House subcommittee codes were not all confirmed on congress.gov.',
+      'House parent committees plus House subcommittees whose Clerk comcode maps to a congress.gov system code. Senate subcommittee bioguides are still absent from CVC XML, so coverage.complete stays false.',
       'House ranking_member is the Clerk XML minority-party rank-1 assignment when the Clerk did not emit a leadership attribute. Majority rank-1 is the labeled chair.',
-      'Skipped House QJ00 (not on congress.gov current committee list) and Senate JSIK00 (2024 inaugural joint committee).',
+      'Skipped House QJ00 (not on congress.gov current committee list) and Senate JSIK00 (2024 inaugural joint committee). Clerk subcommittee codes that do not resolve to a congress.gov system code are omitted.',
     ],
     records,
   };

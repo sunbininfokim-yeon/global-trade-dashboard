@@ -62,6 +62,21 @@ function parseSenateCvcXml(xml) {
   return { lastUpdate, senatorCount, rows };
 }
 
+// Clerk parent comcode (AG00) → Congress.gov system code (hsag00).
+// Subcommittee AG03 → hsag03 only when that system code is on the congress.gov list.
+function mapHouseClerkCode(clerkCode, parentMap, allowedSystemCodes) {
+  const code = String(clerkCode || '').trim().toUpperCase();
+  if (!code) return null;
+  if (parentMap[code]) return parentMap[code];
+  if (!/^[A-Z]{2}\d{2}$/.test(code) || code.endsWith('00')) return null;
+  const parent = parentMap[`${code.slice(0, 2)}00`];
+  if (!parent) return null;
+  const [chamber, parentSystem] = parent;
+  const systemCode = `${String(parentSystem).slice(0, -2)}${code.slice(2).toLowerCase()}`;
+  if (!allowedSystemCodes.has(systemCode)) return null;
+  return [chamber, systemCode];
+}
+
 module.exports = {
   ROOT,
   CACHE_DIR,
@@ -74,4 +89,5 @@ module.exports = {
   isHouseMemberDataXml,
   isSenateCvcXml,
   parseSenateCvcXml,
+  mapHouseClerkCode,
 };
