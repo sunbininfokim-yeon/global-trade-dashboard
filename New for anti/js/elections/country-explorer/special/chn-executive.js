@@ -1,23 +1,48 @@
-import { card, orgBox, orgGrid, disclosure, noteLine } from './org-chart.js';
+import { orgBox, orgGrid, disclosure, noteLine } from './org-chart.js';
+import { chamberSwitch } from './chamber-switch.js';
 import { personName, personLine, isFallen, statusKo } from './china.js';
 
-// 중국 행정부 화면.
+// 중국 행정부 화면. 두 개의 조직도를 토글로 묶는다 -- 미국 의회 화면의 하원·상원
+// 전환과 같은 장치, 같은 자리.
 //
-// 미국 화면과 같은 4단 조직도를 쓰지만, 단에 들어가는 것이 다르다. 중국에서
-// 행정부만 떼어 그리면 국무원 하나가 남는데, 실제 결정은 그 위 당 기구에서 난다.
-// 그래서 요청대로 두 가지를 이 화면 안에 넣는다:
+//   당·정   1 정치국 상무위원회 7인
+//           2 중앙정치국
+//           3 공산당 주요 직위 (3대 부장·정법위·서기처·기율위·각 판공실)
+//           4 국무원
 //
-//   2단 = 공산당 중앙 위원회·기구  (정치국 상무위·정치국·군사위·정법위·서기처·기율위·3대 부서)
-//   4단 = 군                       (중앙군사위 → 군종 → 전구)
+//   중공군  1 중앙군사위 (CMC)
+//           2 전구 사령원·정치위원
+//           3 군종 사령관
+//           4 무장경찰 · 공안 · 정보계통
 //
-// 겸직이 이 체제의 핵심이라 1단에는 직책이 아니라 겸직 묶음을 적는다 (총서기·국가주석·
-// 군위주석은 한 사람의 세 자리다). 직책이 여러 단에 다시 나오는 것은 중복이 아니라
-// 구조이므로 감추지 않고, 대신 어느 자리로 거기 있는지를 박스마다 적는다.
+// 행정부만 떼어 그리면 국무원 하나가 남는데 실제 결정은 그 위 당 기구에서 나므로,
+// 당 직위가 행정부 자리를 대신하고 국무원은 그 아래 단으로 내려간다.
 //
-// 실각·조사자는 leadership.display_rules 가 strikethrough 로 지정한 그대로 삭선으로
-// 표시하고, 살아 있는 명부에 섞지 않는다.
+// 낙마 표기 규칙: 후임 취임이 확인되지 않은 자리는 빈칸으로 두지 않고 전임자 이름에
+// 삭선을 그어 남긴다 (leadership.display_rules 의 strikethrough 규칙). 자리가 비어
+// 있다는 사실과 누가 어떻게 비웠는가는 다른 정보이고, 후자를 지우면 숙청이 화면에서
+// 사라진다.
 
-const PSC_KEY_TITLES = ['총서기', '국무원 총리', '전인대 상무위원장'];
+// 아래는 당 주요 직위 골격의 내장 사본이다. 실제 골격은
+// public/data/elections_cn_party_v1.json 에 있어 코드를 건드리지 않고 칸을 더할 수
+// 있고, 그 파일을 못 읽으면 이 사본으로 그린다.
+let PARTY_POSTS = [
+    { ko: '중앙판공청', en: 'General Office', head_title_ko: '주임', match_ko: ['중앙판공청', '판공청 주임'] },
+    { ko: '중앙조직부', en: 'Organization Department', head_title_ko: '부장', match_ko: ['중앙조직부'] },
+    { ko: '중앙선전부', en: 'Publicity Department', head_title_ko: '부장', match_ko: ['중앙선전부'] },
+    { ko: '중앙통일전선공작부', en: 'United Front Work Department', head_title_ko: '부장', match_ko: ['중앙통전부', '통일전선'] },
+    { ko: '중앙정법위원회', en: 'Political and Legal Affairs Commission', head_title_ko: '서기', match_ko: ['정법위'] },
+    { ko: '중앙서기처', en: 'Central Secretariat', head_title_ko: '제1서기', match_ko: ['서기처'] },
+    { ko: '중앙기율검사위원회', en: 'Central Commission for Discipline Inspection', head_title_ko: '서기', match_ko: ['중기위', '기율검사'] },
+    { ko: '중앙외사공작위원회 판공실', en: 'Office of the Foreign Affairs Commission', head_title_ko: '주임', match_ko: ['외사판공실', '외교'] },
+    { ko: '중앙정책연구실', en: 'Policy Research Office', head_title_ko: '주임', match_ko: ['정책연구실'] },
+    { ko: '중앙재경위원회 판공실', en: 'Office of the Finance and Economy Commission', head_title_ko: '주임', match_ko: ['재경위'] },
+    { ko: '중앙군민융합발전위원회 판공실', en: 'Office of the Military-Civil Fusion Commission', head_title_ko: '주임', match_ko: ['군민융합'] },
+];
+
+export const applyCnPartyChart = (chart) => {
+    if (Array.isArray(chart?.party_posts) && chart.party_posts.length) PARTY_POSTS = chart.party_posts;
+};
 
 const personWithStatus = (person) => {
     if (!person) return '';
@@ -26,138 +51,244 @@ const personWithStatus = (person) => {
     return [name, statusKo(person.status)].filter(Boolean).join(' · ');
 };
 
-const countLabel = (rows, unit = '인') => (Array.isArray(rows) && rows.length ? `${rows.length}${unit}` : '');
+// 이름 대신 "vacant_..." 가 들어 있는 행. 사람이 아니라 자리의 상태다.
+const isVacant = (person) => String(person?.name_en || '').startsWith('vacant')
+    || String(person?.name_ko || '').startsWith('공석');
 
-// 2단. "위원회" 칸은 당 기구다 -- 국가기구가 아니다. 상무위·정치국은 인원수가,
-// 부서·위원회는 책임자가 박스의 내용이 된다.
-const partyOrganBoxes = (leadership) => {
-    const partyState = leadership.party_state || {};
-    const standing = partyState.politburo_standing_committee || {};
-    const politburo = partyState.politburo || {};
-    const departments = partyState.central_departments || {};
-    const cmc = leadership.cmc || {};
-    const organs = leadership.security_organs || {};
-    const rank = standing.rank_order || [];
+const formerNames = (rows) => (rows || []).map((row) => personName(row)).filter((name) => name && name !== '불명');
 
-    // 서기처·기율위 책임자는 별도 필드가 아니라 상무위원의 role_ko 안에 있다.
-    const byRole = (needle) => rank.find((row) => String(row.role_ko || row.title_ko || '').includes(needle)) || null;
-    const secretariat = byRole('서기처');
-    const discipline = byRole('중기위');
+// 박스 이름이 이미 직함을 말하고 있으면 직함 줄을 지운다 -- "부총리 / 부총리 / 허리펑"
+// 처럼 같은 말이 두 번 나오면 읽는 사람이 둘을 다른 정보로 착각한다.
+const shortTitle = (boxKo, title) => (!title || String(boxKo).includes(title) ? '' : title);
 
-    const boxes = [
-        orgBox({
-            abbr: 'PSC', ko: '정치국 상무위원회', en: 'Politburo Standing Committee',
-            title: '상무위원', person: standing.n ? `${standing.n}인` : '', note: standing.source,
-        }),
-        orgBox({
-            abbr: 'PB', ko: '정치국', en: 'Politburo',
-            title: '위원', person: politburo.active_n_approx ? `현원 약 ${politburo.active_n_approx}인` : '',
-            note: politburo.original_n_20th ? `20차 원구성 ${politburo.original_n_20th}인` : '',
-        }),
-        orgBox({
-            abbr: 'CMC', ko: '중앙군사위원회', en: 'Central Military Commission',
-            title: '주석', person: personWithStatus((cmc.active_core || [])[0]),
-            note: countLabel(cmc.active_core) ? `활성 핵심 ${countLabel(cmc.active_core)}` : '',
-        }),
-        orgBox({
-            abbr: 'CSec', ko: '중앙서기처', en: 'Central Secretariat',
-            title: secretariat?.title_ko || '제1서기', person: personWithStatus(secretariat),
-        }),
-        orgBox({
-            abbr: 'CCDI', ko: '중앙기율검사위원회', en: 'Central Commission for Discipline Inspection',
-            title: discipline?.title_ko || '서기', person: personWithStatus(discipline),
-        }),
-    ];
+// ---------------------------------------------------------------- 당·정 -----
 
-    // 중앙 3대 부서 + 정법위. 정법위는 부서 표에서 minister 가 비어 있고
-    // security_organs 쪽에 서기가 들어 있어, 두 곳을 합쳐 한 박스로 만든다.
-    Object.entries(departments)
-        .filter(([, value]) => value && typeof value === 'object')
-        .forEach(([key, value]) => {
-            const head = value.minister
-                || (key === 'political_and_legal_affairs' ? organs.central_political_and_legal_affairs_commission : null);
-            boxes.push(orgBox({
-                ko: value.title_ko || key,
-                title: head?.title_ko || '부장',
-                person: personWithStatus(head),
-                strike: isFallen(head),
-            }));
-        });
-    return boxes;
+const pscBoxes = (standing) => (standing.rank_order || []).map((row, index) => orgBox({
+    abbr: `서열 ${index + 1}`,
+    ko: row.role_ko || row.title_ko || '상무위원',
+    title: shortTitle(row.role_ko || row.title_ko, row.title_ko),
+    person: personWithStatus(row),
+    strike: isFallen(row),
+}));
+
+// 정치국은 상무위 7인을 포함한다. 같은 사람을 두 단에 두 번 그리면 인원이 부풀려
+// 보이므로, 이 단에는 상무위에 없는 위원만 박스로 내고 전체 명부는 접어 둔다.
+const politburoBoxes = (politburo, standing) => {
+    const pscNames = new Set(formerNames(standing.rank_order));
+    return (politburo.active || [])
+        .filter((row) => !pscNames.has(personName(row)))
+        .map((row) => orgBox({
+            ko: row.role_ko || row.title_ko || '정치국 위원',
+            title: shortTitle(row.role_ko || row.title_ko, row.title_ko),
+            person: personWithStatus(row),
+            strike: isFallen(row),
+        }));
 };
 
-// 3단. 국무원은 총리·부총리와, 당 기구가 아니라 국가기구로 걸리는 부처들이다.
+// 골격의 match_ko 키워드로 leadership 안의 사람을 찾는다. 파일이 직접 사람을 들고
+// 있으면(name_ko/name_en) 그쪽이 우선이고, 아무것도 못 찾으면 '명단 수집 예정' --
+// 공석이라는 뜻이 아니다.
+const partyPostBoxes = (leadership) => {
+    const partyState = leadership.party_state || {};
+    const organs = leadership.security_organs || {};
+    const pool = [
+        ...(partyState.politburo_standing_committee?.rank_order || []),
+        ...(partyState.politburo?.active || []),
+        ...Object.values(partyState.central_departments || {})
+            .filter((value) => value && typeof value === 'object' && value.minister)
+            .map((value) => ({ ...value.minister, role_ko: value.minister.role_ko || value.title_ko })),
+        ...Object.values(organs).filter((value) => value && typeof value === 'object' && (value.name_ko || value.name_en)),
+    ];
+    return PARTY_POSTS.map((post) => {
+        const supplied = post.name_ko || post.name_en ? post : null;
+        const match = supplied || pool.find((row) => (post.match_ko || [])
+            .some((needle) => String(row.role_ko || row.title_ko || '').includes(needle)));
+        return orgBox({
+            ko: post.ko,
+            en: post.en,
+            title: post.head_title_ko || match?.title_ko,
+            person: personWithStatus(match),
+            strike: isFallen(match),
+            note: match?.note_ko || match?.note,
+        });
+    });
+};
+
 const stateCouncilBoxes = (leadership) => {
     const council = leadership.party_state?.state_council || {};
     const cmc = leadership.cmc || {};
-    const organs = leadership.security_organs || {};
-    const boxes = [
-        orgBox({ ko: '국무원 총리', title: '총리', person: personWithStatus(council.premier) }),
+    return [
+        orgBox({ ko: '국무원 총리', person: personWithStatus(council.premier) }),
         ...(council.vice_premiers || []).map((row, index) => orgBox({
             ko: index === 0 ? '상무부총리' : '부총리',
-            title: row.title_ko || (index === 0 ? '상무부총리' : '부총리'),
+            title: shortTitle(index === 0 ? '상무부총리' : '부총리', row.title_ko),
             person: personWithStatus(row),
             strike: isFallen(row),
         })),
         orgBox({
-            ko: '국방부', title: cmc.defense_minister?.title_ko || '부장',
+            ko: '국방부', title: shortTitle('국방부', cmc.defense_minister?.title_ko) || '부장',
             person: personWithStatus(cmc.defense_minister),
             note: cmc.defense_minister?.on_cmc === false ? '중앙군사위 위원 아님' : '',
         }),
     ];
-    ['ministry_of_public_security', 'ministry_of_state_security'].forEach((key) => {
+};
+
+// ---------------------------------------------------------------- 중공군 ----
+
+// 중앙군사위. 현직 2인 뒤에, 후임이 확인되지 않은 자리를 전임자 이름에 삭선을 그어
+// 남긴다 -- 요청대로 "새로 취임 확인 안 되면 이름에 줄 그어 낙마 표기".
+const cmcBoxes = (leadership) => {
+    const cmc = leadership.cmc || {};
+    const boxes = (cmc.active_core || []).map((row) => orgBox({
+        abbr: 'CMC',
+        ko: row.role_ko || row.title_ko || '중앙군사위',
+        person: personWithStatus(row),
+        note: [row.since ? `${row.since} 취임` : '', row.note].filter(Boolean).join(' · '),
+    }));
+    // cmc.fallen 에는 중앙군사위 자리가 아닌 사람도 섞여 있다 (린샹양은 동부전구
+    // 사령관이었다). 전구·군종 자리는 아래 단에 자기 박스가 있으므로 여기서 빼고,
+    // 그쪽 박스의 '전임' 줄에서만 삭선으로 남긴다 -- 두 곳에 그리면 중앙군사위가
+    // 실제보다 많이 비어 있는 것처럼 보인다.
+    const cmcSeat = (row) => !/전구|군종|육군|해군|공군|로켓군|무장경찰/.test(String(row.role_ko || ''));
+    (cmc.fallen || []).filter(cmcSeat).forEach((row) => boxes.push(orgBox({
+        abbr: 'CMC',
+        ko: String(row.role_ko || '중앙군사위 위원').replace(/\(구\)$/, ''),
+        title: '후임 미확인',
+        person: personName(row),
+        strike: true,
+        note: statusKo(row.status),
+    })));
+    return boxes;
+};
+
+// 전구는 사령원과 정치위원이 한 쌍이라 한 박스에 둘을 같이 둔다. 둘 중 하나만
+// 낙마한 경우가 있어(서부전구 정치위원) 삭선은 줄 단위로 건다.
+const theaterBoxes = (leadership) => (leadership.theater_commands || []).map((theater) => {
+    const commissar = theater.political_commissar;
+    return orgBox({
+        ko: theater.name_ko || '전구',
+        title: theater.commander?.title_ko || '사령원',
+        person: personWithStatus(theater.commander),
+        strike: isFallen(theater.commander),
+        commissarTitle: '정치위원',
+        commissar: personWithStatus(commissar),
+        commissarStrike: isFallen(commissar),
+        former: formerNames(theater.fallen),
+        note: theater.commander?.since ? `사령원 ${theater.commander.since} 취임` : '',
+    });
+});
+
+// 군종. 무장경찰은 요청대로 군종이 아니라 아래 치안·정보 단으로 내린다.
+const BRANCH_ORDER = ['army', 'navy', 'air_force', 'rocket_force'];
+const branchBoxes = (leadership) => {
+    const branches = leadership.service_branches || {};
+    return BRANCH_ORDER.filter((key) => branches[key]).map((key) => {
+        const branch = branches[key];
+        return orgBox({
+            ko: branch.name_ko || key,
+            title: branch.commander?.title_ko || '사령원',
+            person: isVacant(branch.commander) ? personName(branch.commander) : personWithStatus(branch.commander),
+            vacant: isVacant(branch.commander),
+            strike: isFallen(branch.commander),
+            commissarTitle: '정치위원',
+            commissar: personWithStatus(branch.political_commissar),
+            commissarStrike: isFallen(branch.political_commissar),
+            former: formerNames(branch.fallen_commanders),
+            note: [
+                branch.commander?.note,
+                branch.alt_reported ? `다른 보도 ${personName(branch.alt_reported)} (공식 미확인)` : '',
+            ].filter(Boolean).join(' · '),
+        });
+    });
+};
+
+// 전투경찰(무장경찰) · 공안 · 정보계통. 군 지휘계통은 아니지만 같은 무장·정보 축이라
+// 군 조직도 아래 단에 둔다.
+const SECURITY_BOXES = [
+    { key: 'central_political_and_legal_affairs_commission', ko: '중앙정법위원회', en: 'Political and Legal Affairs Commission' },
+    { key: 'ministry_of_public_security', ko: '공안부', en: 'Ministry of Public Security' },
+    { key: 'ministry_of_state_security', ko: '국가안전부 (정보)', en: 'Ministry of State Security' },
+];
+const securityBoxes = (leadership) => {
+    const armedPolice = leadership.service_branches?.armed_police;
+    const organs = leadership.security_organs || {};
+    const boxes = [];
+    if (armedPolice) {
+        boxes.push(orgBox({
+            ko: `${armedPolice.name_ko || '무장경찰'} (전투경찰)`,
+            title: armedPolice.commander?.title_ko || '사령원',
+            person: isVacant(armedPolice.commander) ? personName(armedPolice.commander) : personWithStatus(armedPolice.commander),
+            vacant: isVacant(armedPolice.commander),
+            former: formerNames(armedPolice.fallen_commanders),
+            note: armedPolice.commander?.note,
+        }));
+    }
+    SECURITY_BOXES.forEach(({ key, ko, en }) => {
         const organ = organs[key];
         if (!organ) return;
         boxes.push(orgBox({
-            ko: key === 'ministry_of_public_security' ? '공안부' : '국가안전부',
-            title: organ.title_ko || '부장',
+            ko, en,
+            title: organ.title_ko || '책임자',
             person: personWithStatus(organ),
-            note: organ.note,
+            strike: isFallen(organ),
+            // also_hidden 은 같은 사람이 겸하는 다른 자리다. 이 체제에서 겸직은
+            // 부가 정보가 아니라 그 사람의 실제 위치라서 지우지 않는다.
+            note: [organ.note, (organ.also_hidden || []).length ? `겸직 ${organ.also_hidden.join(' · ')}` : '']
+                .filter(Boolean).join(' · '),
         }));
     });
     return boxes;
 };
 
-// 4단. 군종과 전구는 다른 축이다 -- 군종은 건설·관리, 전구는 작전 지휘라 한쪽이
-// 다른 쪽 밑에 들어가지 않는다. 그래서 같은 단에 나란히 둔다.
-const militaryBoxes = (leadership) => {
-    const branches = leadership.service_branches || {};
-    const theaters = leadership.theater_commands || [];
-    const boxes = Object.entries(branches)
-        .filter(([, value]) => value && typeof value === 'object' && value.name_ko)
-        .map(([, value]) => orgBox({
-            ko: value.name_ko,
-            title: value.commander?.title_ko || '사령',
-            person: personWithStatus(value.commander),
-            strike: isFallen(value.commander),
-            // 사령이 공석인 군종은 정치위원만으로 채우지 않는다. 공석 사유와,
-            // 사령이 누구인지 보도가 갈리는 경우(alt_reported) 그 사실까지 적는다 --
-            // 한쪽 보도를 골라 확정처럼 두면 그게 틀린 화면이 된다.
-            note: [
-                value.political_commissar ? `정치위원 ${personName(value.political_commissar)}` : '',
-                value.commander?.note,
-                value.alt_reported ? `다른 보도 ${personName(value.alt_reported)} (공식 미확인)` : '',
-            ].filter(Boolean).join(' · '),
-        }));
-    theaters.forEach((theater) => boxes.push(orgBox({
-        ko: theater.name_ko || '전구',
-        title: theater.commander?.title_ko || '사령관',
-        person: personWithStatus(theater.commander),
-        strike: isFallen(theater.commander),
-        note: theater.political_commissar ? `정치위원 ${personName(theater.political_commissar)}` : '',
-    })));
-    return boxes;
+// ------------------------------------------------------------------ 화면 ----
+
+const partyPanel = (leadership) => {
+    const partyState = leadership.party_state || {};
+    const standing = partyState.politburo_standing_committee || {};
+    const politburo = partyState.politburo || {};
+    const nonPsc = politburoBoxes(politburo, standing);
+    return `
+        <p class="section-title">1 · 정치국 상무위원회 ${standing.n ? `${standing.n}인` : ''}</p>
+        ${orgGrid(pscBoxes(standing))}
+        ${noteLine(standing.source ? `서열은 공식 발표 순서입니다 · 출처 ${standing.source}` : '서열은 공식 발표 순서입니다.')}
+
+        <p class="section-title">2 · 중앙정치국 ${politburo.active_n_approx ? `현원 약 ${politburo.active_n_approx}인` : ''}</p>
+        ${nonPsc.length ? orgGrid(nonPsc) : '<p class="elections-muted">확보된 정치국 명부가 없습니다.</p>'}
+        ${noteLine(`상무위원 ${standing.n || 0}인은 위 단에 있어 여기서는 빼고 ${nonPsc.length}인만 표시합니다. 20차 원구성 ${politburo.original_n_20th || '불명'}인 · 실각·조사로 축소된 현원 ${politburo.active_n_approx || '불명'}인.`)}
+        ${noteLine(politburo.note_ko)}
+
+        <p class="section-title">3 · 공산당 주요 직위</p>
+        ${orgGrid(partyPostBoxes(leadership))}
+        ${noteLine('사람이 비어 있는 칸은 명단 미수집이며, 그 자리가 공석이라는 뜻이 아닙니다.')}
+
+        <p class="section-title">4 · 국무원</p>
+        ${orgGrid(stateCouncilBoxes(leadership))}
+        ${noteLine('국무원을 당 기구 아래 둔 것은 서열이 아니라 의사결정 순서를 따른 것입니다.')}
+    `;
 };
 
-const topTier = (leadership) => {
-    const rank = leadership.party_state?.politburo_standing_committee?.rank_order || [];
-    const rows = rank.filter((row) => PSC_KEY_TITLES.includes(row.title_ko));
-    const list = rows.length ? rows : rank.slice(0, 3);
-    return list.map((row) => card(
-        row.role_ko || row.title_ko || '직책',
-        personWithStatus(row),
-        row.confidence ? `신뢰도 ${row.confidence}` : '',
-    )).join('');
+const militaryPanel = (leadership) => {
+    const cmc = leadership.cmc || {};
+    const branches = leadership.service_branches || {};
+    return `
+        <p class="section-title">1 · 중앙군사위원회</p>
+        ${orgGrid(cmcBoxes(leadership))}
+        ${noteLine(cmc.notes_ko)}
+        ${cmc.defense_minister && cmc.defense_minister.on_cmc === false ? noteLine(`국방부장 ${personName(cmc.defense_minister)} — 중앙군사위 위원이 아닌 국무원 부처장입니다.`) : ''}
+        ${noteLine('삭선 + "후임 미확인"은 그 자리의 전임자가 실각·조사로 물러났고 새 취임이 확인되지 않았다는 뜻입니다.')}
+
+        <p class="section-title">2 · 전구 사령원 · 정치위원</p>
+        ${orgGrid(theaterBoxes(leadership))}
+
+        <p class="section-title">3 · 군종 사령원</p>
+        ${orgGrid(branchBoxes(leadership))}
+        ${noteLine(branches.note_ko)}
+
+        <p class="section-title">4 · 전투경찰 · 공안 · 정보계통</p>
+        ${orgGrid(securityBoxes(leadership))}
+        ${noteLine(leadership.security_organs?.note_ko)}
+        ${noteLine('무장경찰은 군종이 아니라 중앙군사위 직속 무장 조직이고, 공안·국가안전은 국무원 부처입니다. 지휘계통이 다르므로 같은 단에 두되 한 계통으로 읽지 마십시오.')}
+    `;
 };
 
 export const chnExecutive = (country) => {
@@ -165,7 +296,7 @@ export const chnExecutive = (country) => {
     if (!leadership) return null;
     const cmc = leadership.cmc || {};
     const politburo = leadership.party_state?.politburo || {};
-    const theaters = leadership.theater_commands || [];
+
     // 정치국과 중앙군사위 명부에 같은 사람이 두 번 나온다 (허웨이둥·장유샤는 둘 다
     // 겸직이었다). 두 줄로 세면 실각 인원이 부풀려지므로 이름으로 한 번만 센다.
     const fallen = new Map();
@@ -177,25 +308,12 @@ export const chnExecutive = (country) => {
     const fallenRows = [...fallen.values()];
 
     return `
-        <p class="section-title">1 · 최고 지도부 (당·국가·군)</p>
-        <div class="elections-card-grid">${topTier(leadership) || '<p class="elections-muted">확보된 공개 명부가 없습니다.</p>'}</div>
-        <p class="elections-panel-note">한 사람이 당·국가·군 세 자리를 겸합니다. 아래 단에 같은 이름이 다시 나오는 것은 중복이 아니라 겸직입니다.</p>
-
-        <p class="section-title">2 · 공산당 중앙 위원회·기구</p>
-        ${orgGrid(partyOrganBoxes(leadership))}
-        <p class="elections-panel-note">이 단은 국가기구가 아니라 당 기구입니다. 국무원보다 위에 놓은 것은 서열이 아니라 의사결정 순서를 따른 것입니다.</p>
-
-        <p class="section-title">3 · 국무원</p>
-        ${orgGrid(stateCouncilBoxes(leadership))}
-
-        <p class="section-title">4 · 군 · 안보</p>
-        ${orgGrid(militaryBoxes(leadership))}
-        <p class="elections-panel-note">군종(军种)은 건설·관리, 전구(战区)는 작전 지휘로 축이 다릅니다 — 같은 단에 나란히 둔 이유입니다. 전구 ${theaters.length}곳.</p>
-
-        ${disclosure(`실각·조사 ${fallenRows.length}인`, fallenRows)}
-        ${fallenRows.length ? '<p class="elections-panel-note">삭선은 데이터의 display 규칙(실각·조사)을 그대로 옮긴 것이며, 후임이 정해졌다는 뜻이 아닙니다.</p>' : ''}
+        ${chamberSwitch([
+        { label: '당 · 정', panel: partyPanel(leadership) },
+        { label: '중공군', panel: militaryPanel(leadership) },
+    ])}
+        ${disclosure(`실각·조사 ${fallenRows.length}인 · 전체`, fallenRows)}
         ${noteLine(leadership.as_of ? `명부 기준일 ${leadership.as_of} · 갱신 주기 ${leadership.review_cadence || '불명'}` : '')}
-        ${noteLine(politburo.note_ko)}
-        ${noteLine(cmc.notes_ko)}
+        <p class="elections-panel-note">한 사람이 당·국가·군의 여러 자리를 겸합니다. 두 조직도에 같은 이름이 나오는 것은 중복이 아니라 겸직입니다.</p>
     `;
 };

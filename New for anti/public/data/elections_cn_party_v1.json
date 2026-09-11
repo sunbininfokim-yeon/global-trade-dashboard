@@ -1,0 +1,19 @@
+{
+  "schema": "elections_cn_party_v1",
+  "note_ko": "중국공산당 중앙 주요 직위의 조직 골격. 어떤 부서·판공실이 존재하는가는 당 조직 구조이지 수집 데이터가 아니므로, 사람(명단)과 분리해 여기서 관리한다. 사람은 countries[CHN].leadership 에서 온다 — politburo_standing_committee.rank_order / politburo.active / central_departments / security_organs 의 role_ko·title_ko 를 match_ko 키워드로 찾는다. 이 파일이 없거나 못 읽으면 UI는 모듈에 내장된 동일 골격으로 되돌아간다.",
+  "person_note_ko": "직접 사람을 채우려면 같은 항목에 name_ko / name_en / title_ko / status / note_ko 를 넣는다. 그 값이 leadership 매칭보다 우선한다. 비어 있으면 '명단 수집 예정'으로 남으며, 이는 공석이라는 뜻이 아니다.",
+  "source_ko": "중국공산당 중앙 조직 구조",
+  "party_posts": [
+    { "ko": "중앙판공청", "en": "General Office", "head_title_ko": "주임", "match_ko": ["중앙판공청", "판공청 주임"] },
+    { "ko": "중앙조직부", "en": "Organization Department", "head_title_ko": "부장", "match_ko": ["중앙조직부"] },
+    { "ko": "중앙선전부", "en": "Publicity Department", "head_title_ko": "부장", "match_ko": ["중앙선전부"] },
+    { "ko": "중앙통일전선공작부", "en": "United Front Work Department", "head_title_ko": "부장", "match_ko": ["중앙통전부", "통일전선"] },
+    { "ko": "중앙정법위원회", "en": "Political and Legal Affairs Commission", "head_title_ko": "서기", "match_ko": ["정법위"] },
+    { "ko": "중앙서기처", "en": "Central Secretariat", "head_title_ko": "제1서기", "match_ko": ["서기처"] },
+    { "ko": "중앙기율검사위원회", "en": "Central Commission for Discipline Inspection", "head_title_ko": "서기", "match_ko": ["중기위", "기율검사"] },
+    { "ko": "중앙외사공작위원회 판공실", "en": "Office of the Foreign Affairs Commission", "head_title_ko": "주임", "match_ko": ["외사판공실", "외교"] },
+    { "ko": "중앙정책연구실", "en": "Policy Research Office", "head_title_ko": "주임", "match_ko": ["정책연구실"] },
+    { "ko": "중앙재경위원회 판공실", "en": "Office of the Finance and Economy Commission", "head_title_ko": "주임", "match_ko": ["재경위"] },
+    { "ko": "중앙군민융합발전위원회 판공실", "en": "Office of the Military-Civil Fusion Commission", "head_title_ko": "주임", "match_ko": ["군민융합"] }
+  ]
+}
