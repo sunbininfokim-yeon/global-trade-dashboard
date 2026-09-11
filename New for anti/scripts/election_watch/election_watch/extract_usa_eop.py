@@ -27,6 +27,38 @@ CABINET_URL = "https://www.whitehouse.gov/administration/cabinet/"
 ADMIN_URL = "https://www.whitehouse.gov/administration/"
 STAFF_PDF_NAME = "{year}-Annual-Report-to-Congress-on-White-House-Staff.pdf"
 
+# Person pages confirmed on official .gov sites. Agency homepages or the White
+# House cabinet roster are used only when a dedicated biography page was not
+# found. Refresh keeps the URL only while the same name_en is still in office.
+CABINET_OFFICIAL_URLS: Dict[str, str] = {
+    "Scott Bessent": "https://home.treasury.gov/about/general-information/officials/scott-bessent",
+    "Todd Blanche": "https://www.justice.gov/ag/staff-profile/meet-attorney-general",
+    "Doug Burgum": "https://www.doi.gov/secretary-doug-burgum",
+    "Jay Clayton": CABINET_URL,
+    "Doug Collins": "https://department.va.gov/staff-biographies/douglas-a-collins/",
+    "Sean Duffy": "https://www.transportation.gov/meet-secretary/us-transportation-secretary-sean-duffy",
+    "Jamieson Greer": "https://ustr.gov/about/leadership/us-trade-representative/jamieson-greer-united-states-trade-representative",
+    "Pete Hegseth": "https://www.defense.gov/About/Biographies/Biography/Article/4040890/hon-pete-hegseth/",
+    "Robert F. Kennedy, Jr.": CABINET_URL,
+    "Kelly Loeffler": "https://www.sba.gov/about-sba/organization/sba-leadership/",
+    "Howard Lutnick": "https://www.commerce.gov/about/leadership/howard-lutnick",
+    "Linda McMahon": "https://www.ed.gov/",
+    "Markwayne Mullin": "https://www.dhs.gov/markwayne-mullin",
+    "John Ratcliffe": "https://www.cia.gov/about/director-of-cia/",
+    "Brooke Rollins": "https://www.usda.gov/our-agency/about-usda/our-secretary",
+    "Marco Rubio": "https://www.state.gov/biographies/marco-rubio/",
+    "Keith E. Sonderling": CABINET_URL,
+    "Scott Turner": CABINET_URL,
+    "Russ Vought": "https://www.whitehouse.gov/omb/",
+    "Chris Wright": "https://www.energy.gov/person/chris-wright",
+    "Lee Zeldin": "https://www.epa.gov/aboutepa/epa-administrator",
+}
+CORE_OFFICIAL_URLS: Dict[str, str] = {
+    "Donald J. Trump": "https://www.whitehouse.gov/administration/donald-j-trump/",
+    "JD Vance": "https://www.whitehouse.gov/administration/jd-vance/",
+    "Susan S. Wiles": ADMIN_URL,
+}
+
 CABINET_PORTFOLIO: Dict[str, Dict[str, str]] = {
     "Secretary of the Treasury": {"portfolio_ko": "재무장관"},
     "Attorney General": {"portfolio_ko": "법무장관"},
@@ -469,14 +501,21 @@ def merge_tier12(eop: Dict[str, Any]) -> None:
     ]
     core_out = []
     for row in eop.get("core") or []:
-        slim = {k: v for k, v in row.items() if k in {"office_ko", "name_en", "party_abbr", "status", "note_ko", "kr_analog"} and v is not None}
+        slim = {k: v for k, v in row.items() if k in {"office_ko", "name_en", "party_abbr", "status", "note_ko", "kr_analog", "official_url"} and v is not None}
+        name = slim.get("name_en")
+        if name and not slim.get("official_url") and CORE_OFFICIAL_URLS.get(name):
+            slim["official_url"] = CORE_OFFICIAL_URLS[name]
         core_out.append(slim)
     usa["core"] = core_out
     if eop.get("_cabinet_live"):
-        usa["cabinet"] = [
-            {k: v for k, v in row.items() if k in {"portfolio_ko", "name_en", "status"} and v is not None}
-            for row in eop["_cabinet_live"]
-        ]
+        cabinet_out = []
+        for row in eop["_cabinet_live"]:
+            slim = {k: v for k, v in row.items() if k in {"portfolio_ko", "name_en", "status", "official_url"} and v is not None}
+            name = slim.get("name_en")
+            if name and CABINET_OFFICIAL_URLS.get(name):
+                slim["official_url"] = CABINET_OFFICIAL_URLS[name]
+            cabinet_out.append(slim)
+        usa["cabinet"] = cabinet_out
     usa["white_house"] = {
         "assistants_to_the_president": eop.get("assistants_to_the_president"),
         "councils": eop.get("councils"),

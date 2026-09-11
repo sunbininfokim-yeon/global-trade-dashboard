@@ -1,6 +1,8 @@
 import unittest
 
 from election_watch.extract_usa_eop import (
+    CABINET_OFFICIAL_URLS,
+    CORE_OFFICIAL_URLS,
     parse_administration_html,
     parse_cabinet_html,
     parse_staff_pdf_text,
@@ -77,6 +79,14 @@ class ExtractUsaEopTests(unittest.TestCase):
         self.assertEqual(parsed["assistants"]["press_secretary"]["name_en"], "Karoline C. Leavitt")
         self.assertNotIn("wh_counsel", parsed["assistants"])
         self.assertTrue("ASSOCIATE COUNSEL" not in parsed["assistants"].get("nsa", {}).get("title", ""))
+
+    def test_official_person_urls_are_https_gov(self):
+        self.assertTrue(CORE_OFFICIAL_URLS["Donald J. Trump"].startswith("https://www.whitehouse.gov/"))
+        self.assertEqual(
+            CABINET_OFFICIAL_URLS["Marco Rubio"],
+            "https://www.state.gov/biographies/marco-rubio/",
+        )
+        self.assertTrue(all(url.startswith("http") for url in CABINET_OFFICIAL_URLS.values()))
 
 
 if __name__ == "__main__":
