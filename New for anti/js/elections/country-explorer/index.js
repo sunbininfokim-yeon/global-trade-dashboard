@@ -8,7 +8,7 @@ import { loadUsCommittees, loadEopChart } from '../data/us-congress-service.js';
 import { loadStateFinance, loadFinanceDisplayContract } from '../data/finance-service.js';
 import { loadCongressionalDistricts } from '../data/geo-service.js';
 import { applyEopChart } from './special/usa-executive.js';
-import { applyCnPartyChart } from './special/chn-executive.js';
+import { applyCnPartyChart } from './special/chn-org.js';
 import { loadCnPartyChart } from '../data/chn-service.js';
 
 export const createCountryExplorer = ({ host, bundle, onCountryOpen, onBack, onRoute }) => {

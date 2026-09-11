@@ -862,7 +862,10 @@ body {
    only when the pane runs out of width. */
 .elections-org-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(92px, 1fr));
+    /* auto-fill, not auto-fit: a tier with one box (국무원 총리) should keep a
+       box's width, not stretch across the pane like a banner. A full row is
+       identical either way. */
+    grid-template-columns: repeat(auto-fill, minmax(92px, 1fr));
     gap: 6px;
     margin: 8px 0 4px;
     align-items: stretch;

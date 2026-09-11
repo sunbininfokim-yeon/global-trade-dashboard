@@ -1,28 +1,30 @@
 import { escapeHtml } from '../../ui.js';
 import { orgBox, orgGrid, rowList, disclosure, noteLine, expandableGrid } from './org-chart.js';
-import { chamberSwitch } from './chamber-switch.js';
 import { personName, personLine, isFallen, statusKo } from './china.js';
 
-// 중국 행정부 화면. 두 개의 조직도를 토글로 묶는다 -- 미국 의회 화면의 하원·상원
-// 전환과 같은 장치, 같은 자리.
+// 중국 우측 대시보드의 세 화면 -- 공산당 / 군부 / 국무원. 셋 다 미국 행정부 화면과
+// 같은 조직도(단 + 박스 격자)이고, 블록을 누르면 그 조직도가 뜬다. 미국이 행정부 ·
+// 상원·하원 · 정당·계파를 각각의 블록으로 여는 것과 같은 구조다.
 //
-//   당·정   1 정치국 상무위원회 7인
-//           2 중앙정치국
-//           3 공산당 주요 직위 (3대 부장·정법위·서기처·기율위·각 판공실)
-//           4 국무원
+//   공산당   1 정치국 상무위원회 7인
+//            2 중앙정치국 (앞 7인 · 눌러서 전원)
+//            3 공산당 주요 직위 (3대 부장·정법위·서기처·기율위·각 판공실)
 //
-//   중공군  1 중앙군사위 (CMC)
-//           2 전구 사령원·정치위원
-//           3 군종 사령관
-//           4 무장경찰 · 공안 · 정보계통
+//   군부     1 중앙군사위 (CMC)
+//            2 전구 사령원·정치위원
+//            3 군종 사령원
+//            4 전투경찰 · 공안 · 정보계통
 //
-// 행정부만 떼어 그리면 국무원 하나가 남는데 실제 결정은 그 위 당 기구에서 나므로,
-// 당 직위가 행정부 자리를 대신하고 국무원은 그 아래 단으로 내려간다.
+//   국무원   1 총리
+//            2 부총리 (눌러서 부처장)
 //
 // 낙마 표기 규칙: 후임 취임이 확인되지 않은 자리는 빈칸으로 두지 않고 전임자 이름에
 // 삭선을 그어 남긴다 (leadership.display_rules 의 strikethrough 규칙). 자리가 비어
 // 있다는 사실과 누가 어떻게 비웠는가는 다른 정보이고, 후자를 지우면 숙청이 화면에서
 // 사라진다.
+//
+// 세 화면에 같은 이름이 나오는 것은 중복이 아니라 겸직이다 -- 이 체제에서는 그것이
+// 구조 자체라서 감추지 않고, 대신 어느 자리로 거기 있는지를 박스마다 적는다.
 
 // 아래는 당 주요 직위 골격의 내장 사본이다. 실제 골격은
 // public/data/elections_cn_party_v1.json 에 있어 코드를 건드리지 않고 칸을 더할 수
@@ -137,11 +139,10 @@ const partyPostBoxes = (leadership) => {
     });
 };
 
-// 국무원 단은 부총리급까지만 박스로 낸다. 부처는 박스를 누르면 그 아래로 펼쳐진다.
-const stateCouncilBoxes = (leadership) => {
+// 부총리급까지만 박스로 낸다. 부처는 박스를 누르면 그 아래로 펼쳐진다.
+const vicePremierBoxes = (leadership) => {
     const council = leadership.party_state?.state_council || {};
     return [
-        orgBox({ ko: '국무원 총리', person: personWithStatus(council.premier) }),
         ...(council.vice_premiers || []).map((row, index) => orgBox({
             ko: index === 0 ? '상무부총리' : '부총리',
             title: shortTitle(index === 0 ? '상무부총리' : '부총리', row.title_ko),
@@ -277,13 +278,31 @@ const securityBoxes = (leadership) => {
 
 // ------------------------------------------------------------------ 화면 ----
 
-const partyPanel = (leadership) => {
+// 세 화면이 공유하는 꼬리: 명부 기준일과 겸직 안내. 실각 전체 명부는 공산당 화면에만
+// 붙인다 -- 군 쪽 실각은 군부 화면의 각 자리에 삭선으로 이미 서 있다.
+const footer = (leadership) => `
+    ${noteLine(leadership.as_of ? `명부 기준일 ${leadership.as_of} · 갱신 주기 ${leadership.review_cadence || '불명'}` : '')}
+    <p class="elections-panel-note">한 사람이 당·국가·군의 여러 자리를 겸합니다. 다른 화면에 같은 이름이 나오는 것은 중복이 아니라 겸직입니다.</p>`;
+
+export const chnParty = (country) => {
+    const leadership = country.leadership;
+    if (!leadership) return null;
     const partyState = leadership.party_state || {};
     const standing = partyState.politburo_standing_committee || {};
     const politburo = partyState.politburo || {};
     const nonPsc = politburoMembers(politburo, standing);
     const roster = politburoRoster(politburo, standing);
-    const ministers = ministerRows(leadership);
+
+    // 정치국과 중앙군사위 명부에 같은 사람이 두 번 나온다 (허웨이둥·장유샤는 둘 다
+    // 겸직이었다). 두 줄로 세면 실각 인원이 부풀려지므로 이름으로 한 번만 센다.
+    const fallen = new Map();
+    (politburo.fallen || []).forEach((row) => fallen.set(personName(row), personLine(row, row.was)));
+    ((leadership.cmc || {}).fallen || []).forEach((row) => {
+        const key = personName(row);
+        if (!fallen.has(key)) fallen.set(key, personLine(row, row.role_ko));
+    });
+    const fallenRows = [...fallen.values()];
+
     return `
         <p class="section-title">1 · 정치국 상무위원회 ${standing.n ? `${standing.n}인` : ''}</p>
         ${orgGrid(pscBoxes(standing))}
@@ -304,25 +323,21 @@ const partyPanel = (leadership) => {
         ${orgGrid(partyPostBoxes(leadership))}
         ${noteLine('사람이 비어 있는 칸은 명단 미수집이며, 그 자리가 공석이라는 뜻이 아닙니다.')}
 
-        <p class="section-title">4 · 국무원</p>
-        ${ministers.length ? expandableGrid({
-        boxes: stateCouncilBoxes(leadership),
-        hint: `부총리급까지 · 박스를 누르면 부처장 ${ministers.length}인`,
-        body: `${rowList(ministers)}
-            ${noteLine('확보된 부처장만 표시합니다. 국무원 전체 부처 명부는 아직 수집 대상이 아니며, 여기 없는 부처가 공석이라는 뜻이 아닙니다.')}`,
-    }) : orgGrid(stateCouncilBoxes(leadership))}
-        ${noteLine('국무원을 당 기구 아래 둔 것은 서열이 아니라 의사결정 순서를 따른 것입니다.')}
+        ${disclosure(`당·군 실각·조사 ${fallenRows.length}인 · 전체`, fallenRows)}
+        ${footer(leadership)}
     `;
 };
 
-const militaryPanel = (leadership) => {
+export const chnMilitary = (country) => {
+    const leadership = country.leadership;
+    if (!leadership) return null;
     const cmc = leadership.cmc || {};
     const branches = leadership.service_branches || {};
     return `
         <p class="section-title">1 · 중앙군사위원회</p>
         ${orgGrid(cmcBoxes(leadership))}
         ${noteLine(cmc.notes_ko)}
-        ${cmc.defense_minister && cmc.defense_minister.on_cmc === false ? noteLine(`국방부장 ${personName(cmc.defense_minister)} — 중앙군사위 위원이 아닌 국무원 부처장입니다.`) : ''}
+        ${cmc.defense_minister && cmc.defense_minister.on_cmc === false ? noteLine(`국방부장 ${personName(cmc.defense_minister)} — 중앙군사위 위원이 아닌 국무원 부처장입니다. 국무원 화면에 있습니다.`) : ''}
         ${noteLine('삭선 + "후임 미확인"은 그 자리의 전임자가 실각·조사로 물러났고 새 취임이 확인되지 않았다는 뜻입니다.')}
 
         <p class="section-title">2 · 전구 사령원 · 정치위원</p>
@@ -336,32 +351,30 @@ const militaryPanel = (leadership) => {
         ${orgGrid(securityBoxes(leadership))}
         ${noteLine(leadership.security_organs?.note_ko)}
         ${noteLine('무장경찰은 군종이 아니라 중앙군사위 직속 무장 조직이고, 공안·국가안전은 국무원 부처입니다. 지휘계통이 다르므로 같은 단에 두되 한 계통으로 읽지 마십시오.')}
+        ${footer(leadership)}
     `;
 };
 
-export const chnExecutive = (country) => {
+export const chnStateCouncil = (country) => {
     const leadership = country.leadership;
     if (!leadership) return null;
-    const cmc = leadership.cmc || {};
-    const politburo = leadership.party_state?.politburo || {};
-
-    // 정치국과 중앙군사위 명부에 같은 사람이 두 번 나온다 (허웨이둥·장유샤는 둘 다
-    // 겸직이었다). 두 줄로 세면 실각 인원이 부풀려지므로 이름으로 한 번만 센다.
-    const fallen = new Map();
-    (politburo.fallen || []).forEach((row) => fallen.set(personName(row), personLine(row, row.was)));
-    (cmc.fallen || []).forEach((row) => {
-        const key = personName(row);
-        if (!fallen.has(key)) fallen.set(key, personLine(row, row.role_ko));
-    });
-    const fallenRows = [...fallen.values()];
-
+    const council = leadership.party_state?.state_council || {};
+    const ministers = ministerRows(leadership);
+    const vicePremiers = vicePremierBoxes(leadership);
     return `
-        ${chamberSwitch([
-        { label: '당 · 정', panel: partyPanel(leadership) },
-        { label: '중공군', panel: militaryPanel(leadership) },
-    ])}
-        ${disclosure(`실각·조사 ${fallenRows.length}인 · 전체`, fallenRows)}
-        ${noteLine(leadership.as_of ? `명부 기준일 ${leadership.as_of} · 갱신 주기 ${leadership.review_cadence || '불명'}` : '')}
-        <p class="elections-panel-note">한 사람이 당·국가·군의 여러 자리를 겸합니다. 두 조직도에 같은 이름이 나오는 것은 중복이 아니라 겸직입니다.</p>
+        <p class="section-title">1 · 총리</p>
+        ${orgGrid([orgBox({ ko: '국무원 총리', person: personWithStatus(council.premier) })])}
+
+        <p class="section-title">2 · 부총리 ${vicePremiers.length ? `${vicePremiers.length}인` : ''}</p>
+        ${vicePremiers.length ? (ministers.length ? expandableGrid({
+        boxes: vicePremiers,
+        hint: `박스를 누르면 확보된 부처장 ${ministers.length}인`,
+        body: `${rowList(ministers)}
+            ${noteLine('확보된 부처장만 표시합니다. 국무원 전체 부처 명부는 아직 수집 대상이 아니며, 여기 없는 부처가 공석이라는 뜻이 아닙니다.')}`,
+    }) : orgGrid(vicePremiers)) : '<p class="elections-muted">확보된 부총리 명부가 없습니다.</p>'}
+
+        ${noteLine('국무원은 국가기구입니다. 실제 의사결정은 공산당 화면의 당 기구에서 먼저 이뤄집니다 — 두 화면을 같이 보셔야 합니다.')}
+        ${noteLine('전국인민대표대회 화면은 데이터 계약상 만들지 않습니다.')}
+        ${footer(leadership)}
     `;
 };
