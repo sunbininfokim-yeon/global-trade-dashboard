@@ -204,6 +204,158 @@ class TestSnapshot(unittest.TestCase):
         h = next(s for s in snap["stocks"] if s["ticker"] == "000660")
         self.assertAlmostEqual(h["external_vs_spot"]["hk_notional_usd"], 1_000_000_000)
 
+    def test_unobserved_hk_notional_stays_null_not_zero(self):
+        """A withheld CSOP target must not read as "no HK leverage".
+
+        The board leaves leverage and AUM null while the daily target is
+        undisclosed, so the venue total is None. Rounding that to 0.0 would put
+        Hong Kong in the stack at zero and shrink the global total silently.
+        """
+        day = json.loads((ROOT / "tests/fixtures/demo_day.json").read_text(encoding="utf-8"))
+        day["external_venues"] = {
+            "hk": {
+                "notional_exposure_usd_sum": None,
+                "products": [
+                    {
+                        "ticker": "7709.HK",
+                        "name": "CSOP Hynix 2x",
+                        "underlying": "000660",
+                        "L": None,
+                        "L_ceiling": 2,
+                        "aum_usd": None,
+                        "notional_exposure_usd": None,
+                        "trading_value_usd": 633_668_535.3,
+                        "tv_over_kr_cash_tv": 0.1302,
+                        "observed_on": "2026-09-09",
+                        "kr_spot_impact": "indirect_swap",
+                    }
+                ],
+                "tv_over_kr_cash_tv_by_underlying": {
+                    "000660": {"as_of": "2026-09-09", "ratio": 0.1302, "tickers": ["7709.HK"]}
+                },
+            },
+            "crypto": {"open_interest_notional_usd_sum": 0.0, "products": []},
+            "by_underlying_usd": {},
+            "disclaimer_ko": "test",
+        }
+        snap = build_snapshot(day)
+        g = snap["global_leverage_stack"]
+        self.assertIsNone(g["hk_swap_letf_notional_usd"])
+        self.assertEqual(g["global_stack_unobserved_venues"], ["hk"])
+
+        h = next(s for s in snap["stocks"] if s["ticker"] == "000660")
+        ext = h["external_vs_spot"]
+        self.assertIsNone(ext["hk_notional_usd"])
+        self.assertIsNone(ext["hk_over_spot_adv"])
+        self.assertIsNotNone(ext["hk_notional_missing_reason_ko"])
+        # The ratio needs no AUM, no target and no constant FX, so it survives.
+        self.assertAlmostEqual(ext["hk_tv_over_kr_cash_tv"], 0.1302)
+        self.assertEqual(ext["hk_tv_as_of"], "2026-09-09")
+        self.assertEqual(h["products_hk"][0]["L_ceiling"], 2)
+        self.assertIsNone(h["products_hk"][0]["L"])
+
+    def test_hk_rows_come_from_board_without_assuming_leverage(self):
+        from fetch_external_venues import hk_products_from_board
+
+        board = {
+            "products": [
+                {
+                    "product_id": "csop-skhy-2l",
+                    "name": "CSOP SK Hynix Daily Max (2x)",
+                    "structure": "swap",
+                    "leverage_ceiling": 2,
+                    "listings": [{"ticker": "7709.HK", "venue": "hk"}],
+                    "latest": {
+                        "date": "2026-09-09",
+                        "leverage": None,
+                        "aum_usd": None,
+                        "covered_trading_value_usd": 633_668_535.3,
+                        "etf_to_kr_cash_tv_ratio": 0.1302,
+                    },
+                }
+            ]
+        }
+        cfg = [{"ticker": "7709.HK", "underlying": "000660", "L": 2, "L_flexible": True}]
+        (row,) = hk_products_from_board(board, cfg)
+        # The config still says L=2; the board says the target is undisclosed.
+        # The board wins, and the config's 2 survives only as a labelled cap.
+        self.assertIsNone(row["L"])
+        self.assertIsNone(row["notional_exposure_usd"])
+        self.assertEqual(row["L_ceiling"], 2)
+        self.assertAlmostEqual(row["tv_over_kr_cash_tv"], 0.1302)
+        self.assertEqual(row["quality"], "observed")
+
+    def test_hk_row_absent_from_board_is_missing_not_dropped(self):
+        from fetch_external_venues import hk_products_from_board
+
+        cfg = [{"ticker": "7747.HK", "underlying": "005930", "L": 2}]
+        (row,) = hk_products_from_board({"products": []}, cfg)
+        self.assertEqual(row["ticker"], "7747.HK")
+        self.assertEqual(row["quality"], "missing")
+        self.assertIsNone(row["tv_over_kr_cash_tv"])
+
+    def test_hk_turnover_ratio_never_mixes_observation_dates(self):
+        from fetch_external_venues import _hk_tv_ratio_by_underlying
+
+        rows = [
+            {"ticker": "7747.HK", "underlying": "005930", "tv_over_kr_cash_tv": 0.0144,
+             "observed_on": "2026-09-09"},
+            {"ticker": "7347.HK", "underlying": "005930", "tv_over_kr_cash_tv": 0.0008,
+             "observed_on": "2026-09-09"},
+            # A fund whose last observation is an older day shares no
+            # denominator with the others and must not be added in.
+            {"ticker": "9347.HK", "underlying": "005930", "tv_over_kr_cash_tv": 0.5,
+             "observed_on": "2026-08-29"},
+        ]
+        out = _hk_tv_ratio_by_underlying(rows)["005930"]
+        self.assertAlmostEqual(out["ratio"], 0.0152)
+        self.assertEqual(out["tickers"], ["7747.HK", "7347.HK"])
+        self.assertEqual(out["excluded_other_date"], [{"ticker": "9347.HK", "date": "2026-08-29"}])
+
+    def test_brief_does_not_rank_hk_fund_with_no_observed_aum(self):
+        """7709.HK is normally the largest product here; unobserved is not zero.
+
+        Coercing a withheld AUM to 0.0 both sorted it last and printed
+        "$0.0bn AUM" for the fund the README calls out as usually rank 1.
+        """
+        day = json.loads((ROOT / "tests/fixtures/demo_day.json").read_text(encoding="utf-8"))
+        day["external_venues"] = {
+            "hk": {
+                "notional_exposure_usd_sum": None,
+                "products": [
+                    {
+                        "ticker": "7709.HK",
+                        "name": "CSOP Hynix 2x",
+                        "underlying": "000660",
+                        "L": None,
+                        "aum_usd": None,
+                        "notional_exposure_usd": None,
+                        "trading_value_usd": 633_668_535.3,
+                        "tv_over_kr_cash_tv": 0.1302,
+                        "kr_spot_impact": "indirect_swap",
+                    }
+                ],
+            },
+            "crypto": {"open_interest_notional_usd_sum": 0.0, "products": []},
+            "by_underlying_usd": {},
+            "disclaimer_ko": "test",
+        }
+        snap = build_snapshot(day)
+        brief = build_ai_casino_brief(snap, day)
+        hk = next(r for r in brief["ranked_etf_by_aum"] if r["ticker"] == "7709.HK")
+        self.assertIsNone(hk["aum_usd"])
+        self.assertIsNone(hk["rank"])
+        self.assertFalse(hk["aum_observed"])
+        # The largest product must be one with a measured AUM.
+        largest = next(
+            (c for c in brief.get("paper_sections") or [] if c.get("id") == "largest_product"),
+            None,
+        )
+        if largest and largest.get("stat"):
+            self.assertNotIn("7709.HK", largest["stat"])
+        # Rendering must not print a fabricated zero.
+        self.assertNotIn("$0.0bn AUM", markdown_ai_casino_brief(brief))
+
     def test_ai_casino_brief_ranks_hk_largest(self):
         day = json.loads((ROOT / "tests/fixtures/demo_day.json").read_text(encoding="utf-8"))
         day["external_venues"] = {

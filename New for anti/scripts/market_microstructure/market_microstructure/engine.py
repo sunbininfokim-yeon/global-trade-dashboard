@@ -299,7 +299,11 @@ def build_snapshot(day: dict[str, Any], *, anchors: dict[str, Any] | None = None
     kr_ss_notional_usd = sum(
         abs(float(p["L"])) * float(p["aum"]) / fx for p in known_all_products
     )
-    hk_notional = float((ext.get("hk") or {}).get("notional_exposure_usd_sum") or 0.0)
+    # None, not 0.0: CSOP's target has been undisclosed since it went flexible
+    # on 2026-08-03, so the board publishes no notional and neither do we.
+    # Coercing that to zero would drop HK out of the stack as if it were empty.
+    hk_notional = (ext.get("hk") or {}).get("notional_exposure_usd_sum")
+    hk_notional = None if hk_notional is None else float(hk_notional)
     crypto_oi = float((ext.get("crypto") or {}).get("open_interest_notional_usd_sum") or 0.0)
     crypto_vol = float((ext.get("crypto") or {}).get("quote_volume_24h_usd_sum") or 0.0)
     us_notional = float((ext.get("us_proxy") or {}).get("notional_exposure_usd_sum") or 0.0)
@@ -329,24 +333,37 @@ def build_snapshot(day: dict[str, Any], *, anchors: dict[str, Any] | None = None
         "kr_single_stock_letf_notional_usd": round(kr_ss_notional_usd, 2),
         "kr_single_stock_long_notional_usd": round(kr_long_n, 2),
         "kr_single_stock_inverse_notional_usd": round(kr_inv_n, 2),
-        "hk_swap_letf_notional_usd": round(hk_notional, 2),
+        "hk_swap_letf_notional_usd": None if hk_notional is None else round(hk_notional, 2),
         "hk_direction_split": hk_dir,
+        # Observed turnover ratio per Korean underlying -- the HK figure that
+        # survives without an AUM date, a daily target or a constant FX rate.
+        "hk_tv_over_kr_cash_tv_by_underlying": (ext.get("hk") or {}).get(
+            "tv_over_kr_cash_tv_by_underlying"
+        ) or {},
         "us_levered_etf_notional_usd": round(us_notional, 2),
         "us_direction_split": us_dir,
         "crypto_perp_oi_notional_usd": round(crypto_oi, 2),
         "crypto_perp_quote_volume_24h_usd": round(crypto_vol, 2),
-        "global_stack_usd": round(kr_ss_notional_usd + hk_notional + crypto_oi + us_notional, 2),
+        # Sums the venues that were actually observed and names the ones that
+        # were not, so a shrinking total cannot be read as shrinking leverage.
+        "global_stack_usd": round(
+            kr_ss_notional_usd + (hk_notional or 0.0) + crypto_oi + us_notional, 2
+        ),
+        "global_stack_unobserved_venues": ["hk"] if hk_notional is None else [],
         "by_underlying_usd": ext.get("by_underlying_usd") or {},
         "hk_products": (ext.get("hk") or {}).get("products") or [],
         "crypto_products": (ext.get("crypto") or {}).get("products") or [],
         "us_proxy_products": (ext.get("us_proxy") or {}).get("products") or [],
         "quality": "observed" if ext else "missing",
-        "source": ext.get("fetched_at") and "Yahoo HK/US + Binance perps (+ options via us_regime)" or None,
+        "source": ext.get("fetched_at")
+        and "overseas board (HK) + Yahoo US + Binance perps (+ options via us_regime)"
+        or None,
         "disclaimer_ko": (ext.get("disclaimer_ko") or ""),
     }
 
     # Per-stock: attach external exposure + HK products list
     hk_rows = global_stack.get("hk_products") or []
+    hk_tv_ratio = global_stack.get("hk_tv_over_kr_cash_tv_by_underlying") or {}
     for s in stocks_out:
         und = s["ticker"]
         bu = (ext.get("by_underlying_usd") or {}).get(und) or {}
@@ -357,28 +374,59 @@ def build_snapshot(day: dict[str, Any], *, anchors: dict[str, Any] | None = None
             {
                 "ticker": p.get("ticker"),
                 "name": p.get("name"),
+                # None while the issuer's daily target is undisclosed. The cap
+                # travels separately so nobody reads a ceiling as an exposure.
                 "L": p.get("L"),
+                "L_ceiling": p.get("L_ceiling"),
                 "direction": p.get("direction")
                 or ("inverse" if float(p.get("L") or 0) < 0 else "long"),
                 "aum_usd": p.get("aum_usd"),
+                "aum_as_of": p.get("aum_as_of"),
                 "notional_exposure_usd": p.get("notional_exposure_usd"),
                 "trading_value_usd": p.get("trading_value_usd"),
+                "tv_over_kr_cash_tv": p.get("tv_over_kr_cash_tv"),
+                "observed_on": p.get("observed_on"),
                 "structure": p.get("structure") or "swap",
                 "venue": "hk",
                 "kr_spot_impact": p.get("kr_spot_impact") or "indirect_swap",
+                "quality": p.get("quality"),
                 "note_ko": "스왑. 국내 cash 회전율 합산 금지 / spillover 모니터 1급.",
             }
             for p in hk_rows
             if str(p.get("underlying") or "") == und and not p.get("error")
         ]
+        # Notional needs a dated AUM and a published target; the turnover ratio
+        # needs neither. Keep them apart: `hk_notional_usd` is None whenever the
+        # board withheld an input, while `hk_tv_over_kr_cash_tv` is an
+        # observation carrying the same denominator as `letf_turnover_ratio`
+        # -- which is what makes the domestic and HK rows comparable at all.
+        hk_ratio = (hk_tv_ratio.get(und) or {}) if hk_tv_ratio else {}
+        hk_notional_observed = bool(bu.get("hk_usd") is not None and hk_u)
         s["external_vs_spot"] = {
-            "hk_notional_usd": round(hk_u, 2),
+            "hk_notional_usd": round(hk_u, 2) if hk_notional_observed else None,
             "crypto_oi_usd": round(cr_u, 2),
-            "hk_over_spot_adv": None if adv_usd <= 0 else round(hk_u / adv_usd, 4),
+            "hk_over_spot_adv": (
+                round(hk_u / adv_usd, 4)
+                if hk_notional_observed and adv_usd > 0
+                else None
+            ),
+            "hk_notional_missing_reason_ko": (
+                None
+                if hk_notional_observed
+                else "운용사 기준일 AUM 또는 당일 목표 배율 미공개 (가변 배율 구간)"
+            ),
+            "hk_tv_over_kr_cash_tv": hk_ratio.get("ratio"),
+            "hk_tv_as_of": hk_ratio.get("as_of"),
+            "hk_tv_tickers": hk_ratio.get("tickers") or [],
             "crypto_oi_over_spot_adv": None if adv_usd <= 0 else round(cr_u / adv_usd, 4),
             "note_ko": (
                 "규모 비교용. 스왑→한국 기관 헷지 경로 가능 "
                 "(YouTube wag reverse / 유튜브 하닉 레버 역산 계열)."
+            ),
+            "ratio_note_ko": (
+                "hk_tv_over_kr_cash_tv 는 해당 홍콩 상품 거래대금 ÷ 같은 날 한국 현물 "
+                "거래대금이다. letf_turnover_ratio 와 분모가 같아 나란히 읽을 수 있으나, "
+                "스왑 상품이라 국내 회전율에 더하지 않는다."
             ),
             "ticker_note_ko": "HK 하닉 2x 메인=7709.HK. products=국내, products_hk=홍콩.",
         }

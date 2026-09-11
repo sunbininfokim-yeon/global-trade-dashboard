@@ -70,17 +70,36 @@ def rank_leverage_products(
                 "L": p.get("L"),
                 "structure": p.get("structure"),
                 "direction": p.get("direction"),
-                "aum_usd": round(float(p.get("aum_usd") or 0.0), 2),
-                "notional_exposure_usd": round(float(p.get("notional_exposure_usd") or 0.0), 2),
+                # Left as None, never 0.0. CSOP has published no dated AUM
+                # since the funds went to a flexible daily target, and a zero
+                # would both rank 7709.HK last and print "$0.0bn AUM" for what
+                # is usually the largest product in this table.
+                "aum_usd": None if p.get("aum_usd") is None else round(float(p["aum_usd"]), 2),
+                "aum_as_of": p.get("aum_as_of"),
+                "aum_observed": p.get("aum_usd") is not None,
+                "notional_exposure_usd": (
+                    None
+                    if p.get("notional_exposure_usd") is None
+                    else round(float(p["notional_exposure_usd"]), 2)
+                ),
                 "trading_value_usd": round(float(p.get("trading_value_usd") or 0.0), 2),
+                "tv_over_kr_cash_tv": p.get("tv_over_kr_cash_tv"),
                 "kr_spot_impact": p.get("kr_spot_impact") or "indirect_swap",
                 "note_ko": "HK CSOP swap — 유연 L. KR 현물 리밸런싱과 합산 금지.",
             }
         )
 
-    rows.sort(key=lambda r: -float(r.get("aum_usd") or 0.0))
-    for i, r in enumerate(rows, 1):
-        r["rank"] = i
+    # Rank only what was measured. Rows with no observed AUM sort to the end
+    # and carry no rank, so "AUM 1위" never means "the one we happened to see".
+    rows.sort(key=lambda r: (r.get("aum_usd") is None, -float(r.get("aum_usd") or 0.0)))
+    rank = 0
+    for r in rows:
+        if r.get("aum_usd") is None:
+            r["rank"] = None
+            r["rank_missing_reason"] = "no_dated_issuer_aum"
+            continue
+        rank += 1
+        r["rank"] = rank
 
     crypto_rows: list[dict[str, Any]] = []
     for p in g.get("crypto_products") or []:
@@ -218,6 +237,9 @@ def _stock_youtube_impact(
         "external_size_compare": {
             "hk_notional_usd_bn": _bn(ext.get("hk_notional_usd")),
             "hk_over_spot_adv": ext.get("hk_over_spot_adv"),
+            "hk_notional_missing_reason_ko": ext.get("hk_notional_missing_reason_ko"),
+            "hk_tv_over_kr_cash_tv": ext.get("hk_tv_over_kr_cash_tv"),
+            "hk_tv_as_of": ext.get("hk_tv_as_of"),
             "crypto_oi_usd_bn": _bn(ext.get("crypto_oi_usd")),
             "crypto_oi_over_spot_adv": ext.get("crypto_oi_over_spot_adv"),
             "note_ko": ext.get("note_ko")
@@ -250,7 +272,8 @@ def build_ai_casino_brief(snap: dict[str, Any], day: dict[str, Any] | None = Non
     ss_aum = float(m.get("single_stock_kr_aum_krw") or 0.0)
 
     ranked, crypto_ranked = rank_leverage_products(snap)
-    largest = ranked[0] if ranked else None
+    # An unranked row has no AUM to be largest by.
+    largest = next((r for r in ranked if r.get("aum_usd") is not None), None)
     top3_etf = ranked[:3]
     hynix_impact = _stock_youtube_impact(snap, day, "000660", fx)
 
@@ -733,11 +756,20 @@ def markdown_ai_casino_brief(brief: dict[str, Any]) -> str:
             )
         lines.append("")
         ex = hy.get("external_size_compare") or {}
-        lines.append(
-            f"HK notional ${ex.get('hk_notional_usd_bn')}bn "
-            f"({None if ex.get('hk_over_spot_adv') is None else round(100*float(ex['hk_over_spot_adv']),1)}% of spot ADV) · "
-            f"crypto OI ${ex.get('crypto_oi_usd_bn')}bn — {ex.get('note_ko')}"
+        hk_bn = ex.get("hk_notional_usd_bn")
+        hk_adv = ex.get("hk_over_spot_adv")
+        # Notional is absent whenever the issuer withheld a dated AUM or the
+        # day's target; say so rather than printing "$Nonebn". The turnover
+        # ratio is observed either way and shares the domestic denominator.
+        hk_txt = (
+            f"HK notional ${hk_bn}bn ({round(100 * float(hk_adv), 1)}% of spot ADV)"
+            if hk_bn is not None and hk_adv is not None
+            else f"HK notional unobserved ({ex.get('hk_notional_missing_reason_ko') or 'issuer inputs withheld'})"
         )
+        hk_tv = ex.get("hk_tv_over_kr_cash_tv")
+        if hk_tv is not None:
+            hk_txt += f" · HK turnover {round(100 * float(hk_tv), 2)}% of KR cash turnover (observed)"
+        lines.append(f"{hk_txt} · crypto OI ${ex.get('crypto_oi_usd_bn')}bn — {ex.get('note_ko')}")
         lines.append("")
 
     lines.append("## Ranked leverage ETFs (click / open detail)")
@@ -747,9 +779,14 @@ def markdown_ai_casino_brief(brief: dict[str, Any]) -> str:
     lines.append("| # | venue | ticker | name | und | L | AUM $bn | notional $bn | impact |")
     lines.append("|--:|-------|--------|------|-----|--:|--------:|-------------:|--------|")
     for r in brief["ranked_etf_by_aum"]:
+        # Unranked rows are listed but not numbered, and an em dash reads as
+        # "not observed" where a 0 would read as "nothing there".
+        dash = "—"
         lines.append(
-            f"| {r['rank']} | {r['venue']} | {r['ticker']} | {r.get('name') or ''} | "
-            f"{r['underlying']} | {r['L']} | {_bn(r['aum_usd'])} | {_bn(r['notional_exposure_usd'])} | "
+            f"| {r['rank'] if r.get('rank') is not None else dash} | {r['venue']} | {r['ticker']} | "
+            f"{r.get('name') or ''} | {r['underlying']} | {r['L'] if r.get('L') is not None else dash} | "
+            f"{_bn(r['aum_usd']) if r.get('aum_usd') is not None else dash} | "
+            f"{_bn(r['notional_exposure_usd']) if r.get('notional_exposure_usd') is not None else dash} | "
             f"{r.get('kr_spot_impact')} |"
         )
     lines.append("")

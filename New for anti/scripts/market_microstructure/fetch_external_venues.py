@@ -1,7 +1,19 @@
-"""Fetch HK LETF (Yahoo) + crypto perps (Binance) — venue-separated.
+"""Fetch HK LETF + crypto perps (Binance) — venue-separated.
 
 Never merge these into KR cash wag-the-dog without an explicit flag.
 HK CSOP products are swap-based (flexible L). Crypto uses OI notional.
+
+HK numbers come from the overseas board (``build_overseas_letf.py``), not from
+Yahoo. This file used to fetch 7709/7747/7347 itself, which produced a second,
+weaker set of figures for the same three funds: leverage pinned at the config's
+``L`` (2) after CSOP moved to a flexible daily target on 2026-08-03, HKD
+converted at a constant 7.8, and Yahoo ``totalAssets`` carried as if it were a
+dated observation. The board refuses all three -- it leaves leverage and AUM
+null until the issuer publishes them with a date -- so a notional built on them
+here read as measured while resting on assumptions the collector had already
+rejected. What survives the change is the ratio that needs none of them:
+covered trading value over the same day's Korean cash turnover, the same
+denominator the domestic single-stock rows use.
 """
 
 from __future__ import annotations
@@ -21,6 +33,97 @@ UA = {"User-Agent": "Mozilla/5.0 market-microstructure/1.0"}
 
 def load_universe() -> dict[str, Any]:
     return json.loads((CONFIG / "letf_universe.json").read_text(encoding="utf-8"))
+
+
+OVERSEAS_BOARD = ROOT / "../../public/data/overseas_letf_board_v1.json"
+
+
+def _hk_tv_ratio_by_underlying(rows: list[dict[str, Any]]) -> dict[str, dict[str, Any]]:
+    """Per Korean underlying: the HK funds' turnover against KR cash turnover.
+
+    Summed across funds on the same underlying because they share one
+    denominator -- the board only fills this ratio for `kr_single_stock`, so an
+    ADR or basket product never lands here. Rows observed on different dates are
+    not added; `as_of` names the day and a fund seen on another day is listed in
+    `excluded_other_date` instead of being folded in silently.
+    """
+    out: dict[str, dict[str, Any]] = {}
+    for r in rows:
+        und, ratio = r.get("underlying"), r.get("tv_over_kr_cash_tv")
+        if not und or ratio is None:
+            continue
+        bucket = out.setdefault(und, {"as_of": r.get("observed_on"), "ratio": 0.0,
+                                      "tickers": [], "excluded_other_date": []})
+        if r.get("observed_on") != bucket["as_of"]:
+            bucket["excluded_other_date"].append({"ticker": r.get("ticker"), "date": r.get("observed_on")})
+            continue
+        bucket["ratio"] += float(ratio)
+        bucket["tickers"].append(r.get("ticker"))
+    return out
+
+
+def load_overseas_board(path: Path | None = None) -> dict[str, Any] | None:
+    """The overseas board, or None when the daily collector has not run yet."""
+    path = path or OVERSEAS_BOARD
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return None
+
+
+def hk_products_from_board(board: dict[str, Any] | None, cfg: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Board rows for the configured HK tickers, in the config's order.
+
+    `cfg` still decides which funds belong to this venue and carries the Korean
+    underlying each one maps to; everything measured comes from the board. A
+    fund the board has not observed yet keeps its identity and reports missing
+    values rather than dropping out of the venue.
+    """
+    by_ticker: dict[str, dict[str, Any]] = {}
+    for prod in (board or {}).get("products") or []:
+        for listing in prod.get("listings") or []:
+            if listing.get("venue") == "hk":
+                by_ticker[str(listing.get("ticker"))] = prod
+
+    out: list[dict[str, Any]] = []
+    for p in cfg:
+        ticker = p["ticker"]
+        prod = by_ticker.get(ticker)
+        latest = (prod or {}).get("latest") or {}
+        aum_usd = latest.get("aum_usd")
+        # Only the board's observed target counts. `leverage_ceiling` is a cap,
+        # and multiplying AUM by a cap gives an upper bound, not an exposure.
+        leverage = latest.get("leverage")
+        notional = (
+            None if aum_usd is None or leverage is None else abs(float(leverage)) * float(aum_usd)
+        )
+        out.append(
+            {
+                "ticker": ticker,
+                "name": (prod or {}).get("name") or p.get("name"),
+                "underlying": p.get("underlying"),
+                "venue": "hk",
+                "L": leverage,
+                "L_ceiling": (prod or {}).get("leverage_ceiling") or p.get("L"),
+                "L_flexible": bool(p.get("L_flexible")),
+                "structure": (prod or {}).get("structure") or p.get("structure", "swap"),
+                "direction": latest.get("direction") or p.get("direction"),
+                "aum_usd": aum_usd,
+                "aum_as_of": latest.get("aum_as_of"),
+                "notional_exposure_usd": notional,
+                "trading_value_usd": latest.get("covered_trading_value_usd"),
+                # Needs no AUM, no target and no constant FX: the fund's own
+                # turnover against the same day's Korean cash turnover. This is
+                # the figure the domestic rows can actually be read next to.
+                "tv_over_kr_cash_tv": latest.get("etf_to_kr_cash_tv_ratio"),
+                "observed_on": latest.get("date"),
+                "kr_spot_impact": "indirect_swap",
+                "quality": "observed" if prod else "missing",
+                "source": "overseas_letf_board_v1 (issuer + Yahoo listings)",
+                "missing_reason": None if prod else "overseas_board_has_no_row_for_this_ticker",
+            }
+        )
+    return out
 
 
 def _fx_to_usd(amount: float, currency: str, *, usdkrw: float, usdhkd: float = 7.8) -> float:
@@ -105,51 +208,7 @@ def build_external_venues(
     crypto_cfg = uni.get("venues", {}).get("crypto", {}).get("products", [])
     us_cfg = uni.get("venues", {}).get("us", {}).get("products", [])
 
-    hk_out: list[dict[str, Any]] = []
-    for p in hk_products_cfg:
-        ysym = p.get("yahoo") or p["ticker"]
-        try:
-            y = fetch_yahoo_etf(ysym)
-        except Exception as e:  # noqa: BLE001
-            hk_out.append(
-                {
-                    "ticker": p["ticker"],
-                    "underlying": p.get("underlying"),
-                    "error": str(e),
-                    "quality": "error",
-                }
-            )
-            continue
-        aum = y.get("aum")
-        aum_usd = None if aum is None else _fx_to_usd(aum, y.get("currency") or "HKD", usdkrw=usdkrw, usdhkd=usdhkd)
-        # trading value proxy: volume * close (same currency as price)
-        close = (y.get("last_bar") or {}).get("close") or y.get("previous_close")
-        vol = y.get("volume")
-        tv = None if close is None or vol is None else float(close) * float(vol)
-        tv_usd = None if tv is None else _fx_to_usd(tv, y.get("currency") or "HKD", usdkrw=usdkrw, usdhkd=usdhkd)
-        L = float(p.get("L", 2))
-        hk_out.append(
-            {
-                "ticker": p["ticker"],
-                "name": p.get("name") or y.get("name"),
-                "underlying": p.get("underlying"),
-                "venue": "hk",
-                "L": L,
-                "L_flexible": bool(p.get("L_flexible")),
-                "structure": p.get("structure", "swap"),
-                "direction": p.get("direction"),
-                "aum_native": aum,
-                "aum_currency": y.get("currency"),
-                "aum_usd": aum_usd,
-                "notional_exposure_usd": None if aum_usd is None else abs(L) * aum_usd,
-                "trading_value_native": tv,
-                "trading_value_usd": tv_usd,
-                "kr_spot_impact": "indirect_swap",
-                "yahoo": y,
-                "quality": y.get("quality", "observed"),
-                "source": y.get("source"),
-            }
-        )
+    hk_out = hk_products_from_board(load_overseas_board(), hk_products_cfg)
 
     crypto_out: list[dict[str, Any]] = []
     for p in crypto_cfg:
@@ -231,6 +290,16 @@ def build_external_venues(
     def _sum_exp(rows: list[dict[str, Any]], key: str = "notional_exposure_usd") -> float:
         return float(sum(float(r[key]) for r in rows if r.get(key) is not None))
 
+    def _sum_exp_strict(rows: list[dict[str, Any]], key: str = "notional_exposure_usd") -> float | None:
+        """Sum, or None when nothing was observed.
+
+        A venue whose every row is missing must not total 0.0: that reads as
+        "no leverage here" when it means "not observed". Partial coverage still
+        sums, and the per-row `quality`/`missing_reason` say what is absent.
+        """
+        vals = [float(r[key]) for r in rows if r.get(key) is not None]
+        return float(sum(vals)) if vals else None
+
     def _dir_split(rows: list[dict[str, Any]]) -> dict[str, float]:
         long_n = inv_n = 0.0
         for r in rows:
@@ -262,7 +331,10 @@ def build_external_venues(
     return {
         "schema_version": "external-venues-v1",
         "fetched_at": datetime.now(timezone.utc).isoformat(),
-        "fx": {"usdkrw": usdkrw, "usdhkd": usdhkd},
+        # usdhkd no longer converts anything: HK figures arrive from the board
+        # already in USD, at the dated rate the collector used. Kept only so the
+        # CLI flag and older snapshots stay readable.
+        "fx": {"usdkrw": usdkrw, "usdhkd": usdhkd, "usdhkd_applies_to": []},
         "disclaimer_ko": (
             "HK·US 레버/인버스=스왑 합성, 코인=퍼프 OI. "
             "국내 cash LETF 회전율 식에 합산 금지. "
@@ -275,9 +347,19 @@ def build_external_venues(
         ),
         "hk": {
             "products": hk_out,
-            "notional_exposure_usd_sum": _sum_exp(hk_out),
+            # None (not 0.0) while CSOP publishes no dated AUM and no daily
+            # target: the exposure is unobserved, not absent.
+            "notional_exposure_usd_sum": _sum_exp_strict(hk_out),
             "direction_split": _dir_split(hk_out),
-            "source": "Yahoo Finance",
+            # Observed and denominated like the domestic single-stock rows, so
+            # this is what the 수급 불균형 table can put beside them.
+            "tv_over_kr_cash_tv_by_underlying": _hk_tv_ratio_by_underlying(hk_out),
+            "source": "overseas_letf_board_v1 (build_overseas_letf.py)",
+            "note_ko": (
+                "AUM·배율은 운용사가 기준일과 함께 공개한 값만 사용한다. "
+                "CSOP는 2026-08-03부터 가변 목표라 목표 미공개 구간에서는 노셔널이 비어 있다. "
+                "거래대금 비율은 그 세 가지 가정 없이 관측된다."
+            ),
         },
         "crypto": {
             "products": crypto_out,
@@ -330,7 +412,8 @@ def main() -> int:
     args.out.parent.mkdir(parents=True, exist_ok=True)
     args.out.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     print(f"Wrote {args.out}")
-    print(f"  HK notional USD: {data['hk']['notional_exposure_usd_sum']:,.0f}")
+    hk_sum = data["hk"]["notional_exposure_usd_sum"]
+    print(f"  HK notional USD: {'unobserved (no dated AUM / target)' if hk_sum is None else format(hk_sum, ',.0f')}")
     print(f"  Crypto OI USD:   {data['crypto']['open_interest_notional_usd_sum']:,.0f}")
     print(f"  Crypto 24h vol:  {data['crypto']['quote_volume_24h_usd_sum']:,.0f}")
     return 0
