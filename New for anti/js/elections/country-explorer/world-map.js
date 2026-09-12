@@ -18,7 +18,11 @@ const spectrumColors = {
     // collide as the same hue on the map. Still distinct from putting China
     // on the conservative/progressive axis, which CLAUDE.md rules out.
     authoritarian_cpc: [222, 41, 16, 195],
-    authoritarian_ur: [100, 116, 139, 185],
+    // authoritarian_ur = United Russia (Единая Россия, Putin's party
+    // vehicle) -- user asked for "Putin's color" (2026-09-12). This is the
+    // party's own official brand blue, #2056AE, not `progressive`'s brighter
+    // blue [37,99,235] -- distinct enough not to collide as the same hue.
+    authoritarian_ur: [32, 86, 174, 195],
     authoritarian_monarchy: [110, 90, 60, 185],
 };
 const neutral = [43, 52, 66, 255];
