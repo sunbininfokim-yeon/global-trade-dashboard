@@ -10,12 +10,14 @@ const spectrumColors = {
     // CHN/SAU/ARE/RUS carry these three instead of the generic
     // authoritarian_* keys above, so without an entry here they fell through
     // to `neutral` -- indistinguishable from a country with no spectrum data
-    // at all (reported 2026-09-12: "중국은 왜 색깔이 없는거야?"). Not a request
-    // to force a Western left-right hue onto them (CLAUDE.md rules that out
-    // for China specifically) -- reusing the existing non-partisan
-    // authoritarian_* slate tones keeps them visibly distinct from "no data"
-    // without placing them on the conservative/progressive axis.
-    authoritarian_cpc: [71, 85, 105, 185],
+    // at all (reported 2026-09-12: "중국은 왜 색깔이 없는거야?").
+    // authoritarian_cpc: user asked for CCP red specifically (2026-09-12).
+    // This is the party's own flag color (PRC flag red, 中国红), not the
+    // US conservative-party red reused for `conservative` above -- picked a
+    // visibly different red (more vermilion/orange-leaning) so the two don't
+    // collide as the same hue on the map. Still distinct from putting China
+    // on the conservative/progressive axis, which CLAUDE.md rules out.
+    authoritarian_cpc: [222, 41, 16, 195],
     authoritarian_ur: [100, 116, 139, 185],
     authoritarian_monarchy: [110, 90, 60, 185],
 };
