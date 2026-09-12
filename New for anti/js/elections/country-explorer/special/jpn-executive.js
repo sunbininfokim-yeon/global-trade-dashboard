@@ -60,11 +60,12 @@ export const jpnExecutive = (country) => {
     const legislature = country.legislature_live || {};
     const rulingAbbr = country.ruling_party?.abbr;
 
-    const coreCards = core.map((row) => card(row.office_ko || '직책', personText(row))).join('');
+    const coreCards = core.map((row) => card(row.office_ko || '직책', personText(row), '', row.official_url)).join('');
     const cabinetBoxes = cabinet.map((row) => orgBox({
         ko: row.portfolio_ko || '직책',
         title: row.chamber ? chamberKo(row.chamber) : '',
         person: personText(row),
+        personUrl: row.official_url || null,
         note: row.note_ko,
     }));
 

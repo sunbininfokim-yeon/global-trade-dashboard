@@ -26,12 +26,14 @@ export const formatDate = (date) => {
 // Johnson -> J000299) before wiring it in.
 export const bioguideUrl = (bioguideId) => `https://bioguide.congress.gov/search/bio/${String(bioguideId).toLowerCase()}`;
 
-// Wraps an already-escaped name in a link to that person's bioguide page when
-// an id is available, otherwise returns the escaped name plain. Callers pass
-// the label already through escapeHtml() themselves so this stays a pure
-// wrapper, not a second place deciding how a name gets escaped.
-export const personLinkHtml = (escapedLabel, bioguideId) => bioguideId
-    ? `<a class="elections-person-link" href="${bioguideUrl(bioguideId)}" target="_blank" rel="noopener noreferrer">${escapedLabel}</a>`
+// Wraps an already-escaped name in a link to a URL when one is available,
+// otherwise returns the escaped name plain. Callers pass the label already
+// through escapeHtml() themselves so this stays a pure wrapper, not a second
+// place deciding how a name gets escaped. Takes the URL directly (not an id)
+// so it covers both bioguideUrl(id) for Congress and the official_url field
+// Cursor publishes on executive_live.{core,cabinet,white_house.*} rows.
+export const personLinkHtml = (escapedLabel, url) => url
+    ? `<a class="elections-person-link" href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer">${escapedLabel}</a>`
     : escapedLabel;
 
 export const stateLabel = (status) => ({
