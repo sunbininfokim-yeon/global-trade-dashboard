@@ -9,9 +9,12 @@ Live:
 from __future__ import annotations
 
 import argparse
+import copy
 import json
+import re
 import sys
 from pathlib import Path
+from typing import Any
 
 ROOT = Path(__file__).resolve().parent
 sys.path.insert(0, str(ROOT))
@@ -21,6 +24,139 @@ from market_microstructure.ai_casino_brief import (  # noqa: E402
     markdown_ai_casino_brief,
 )
 from market_microstructure.engine import build_snapshot, load_json, markdown_tables  # noqa: E402
+
+
+_REUSABLE_QUALITIES = {"observed", "carried_forward"}
+_PUBLIC_EXTRA_MIRRORS = (
+    ("deposit_credit", "deposit_credit"),
+    ("letf_category_share", "letf_category_share"),
+    ("short_interest_meta", "short_interest"),
+)
+
+
+def _as_iso_date(value: object) -> str | None:
+    """Normalize source dates without inventing an observation timestamp."""
+    if not isinstance(value, str):
+        return None
+    match = re.fullmatch(r"(\d{4})[-./](\d{2})[-./](\d{2})", value.strip())
+    if not match:
+        return None
+    return "-".join(match.groups())
+
+
+def _observed_as_of(value: dict[str, Any], fallback: str) -> str:
+    """Use the source's date when it supplies one, otherwise the snapshot day."""
+    for key in ("as_of", "date", "date_raw"):
+        parsed = _as_iso_date(value.get(key))
+        if parsed:
+            return parsed
+    latest = value.get("latest")
+    if isinstance(latest, dict):
+        for key in ("as_of", "date", "date_raw"):
+            parsed = _as_iso_date(latest.get(key))
+            if parsed:
+                return parsed
+    return fallback
+
+
+def _retain_observation(
+    current: Any,
+    previous: Any,
+    *,
+    snapshot_as_of: str,
+    previous_snapshot_as_of: str,
+) -> Any:
+    """Keep a prior observation only when this run did not observe one.
+
+    A carried value retains the source observation date in ``as_of`` and is
+    explicitly marked, so consumers cannot mistake it for today's result.
+    """
+    if isinstance(current, dict) and current.get("quality") == "observed":
+        result = copy.deepcopy(current)
+        result["as_of"] = _observed_as_of(result, snapshot_as_of)
+        result.pop("carried_at", None)
+        return result
+    if not isinstance(previous, dict) or previous.get("quality") not in _REUSABLE_QUALITIES:
+        return current
+    result = copy.deepcopy(previous)
+    result["as_of"] = _observed_as_of(result, previous_snapshot_as_of)
+    result["quality"] = "carried_forward"
+    result["carried_at"] = snapshot_as_of
+    return result
+
+
+def preserve_unobserved_public_observations(
+    snapshot: dict[str, Any], previous: dict[str, Any] | None
+) -> dict[str, Any]:
+    """Carry forward failed public-source blocks, with explicit freshness data.
+
+    ``build_snapshot`` intentionally emits missing/null blocks for unavailable
+    collectors.  This function is the snapshot-level counterpart to the
+    derivatives-board fallback: it preserves only a known prior observation,
+    never manufactures a value when both runs are unavailable.
+    """
+    if not isinstance(previous, dict):
+        return snapshot
+    snapshot_as_of = str(snapshot.get("as_of") or "")
+    previous_snapshot_as_of = str(previous.get("as_of") or "")
+    if not _as_iso_date(snapshot_as_of) or not _as_iso_date(previous_snapshot_as_of):
+        return snapshot
+
+    # This ratio object is derived entirely from the FDR LETF listing.  Keep
+    # it as one atomic observation so its numerator, denominator, and buckets
+    # cannot drift out of sync.
+    snapshot["market_letf_derivatives_ratios"] = _retain_observation(
+        snapshot.get("market_letf_derivatives_ratios"),
+        previous.get("market_letf_derivatives_ratios"),
+        snapshot_as_of=snapshot_as_of,
+        previous_snapshot_as_of=previous_snapshot_as_of,
+    )
+
+    current_public = snapshot.get("public_extras")
+    previous_public = previous.get("public_extras")
+    if not isinstance(current_public, dict):
+        current_public = {}
+    if not isinstance(previous_public, dict):
+        previous_public = {}
+
+    # Keep the top-level UI aliases and their public-extras source blocks in
+    # lockstep.  This covers the FDR LETF listing plus the other independent
+    # collectors in fetch_kr_public_extras.py (FreeSIS and public Naver flow).
+    for snapshot_key, public_key in _PUBLIC_EXTRA_MIRRORS:
+        retained = _retain_observation(
+            snapshot.get(snapshot_key),
+            previous.get(snapshot_key),
+            snapshot_as_of=snapshot_as_of,
+            previous_snapshot_as_of=previous_snapshot_as_of,
+        )
+        snapshot[snapshot_key] = retained
+        current_public[public_key] = copy.deepcopy(retained)
+
+    snapshot["flows_kospi_market"] = _retain_observation(
+        snapshot.get("flows_kospi_market"),
+        previous.get("flows_kospi_market"),
+        snapshot_as_of=snapshot_as_of,
+        previous_snapshot_as_of=previous_snapshot_as_of,
+    )
+    current_public["kospi_investor_flows"] = _retain_observation(
+        current_public.get("kospi_investor_flows"),
+        previous_public.get("kospi_investor_flows"),
+        snapshot_as_of=snapshot_as_of,
+        previous_snapshot_as_of=previous_snapshot_as_of,
+    )
+    snapshot["public_extras"] = current_public
+    return snapshot
+
+
+def _load_existing_snapshot(path: Path) -> dict[str, Any] | None:
+    if not path.is_file():
+        return None
+    try:
+        value = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        print(f"previous snapshot ignored: {exc}")
+        return None
+    return value if isinstance(value, dict) else None
 
 
 def _fetch_trading_share() -> dict:
@@ -176,6 +312,9 @@ def main() -> int:
                 print(f"public_extras skip: {e}")
 
     snap = build_snapshot(day)
+    snap = preserve_unobserved_public_observations(
+        snap, _load_existing_snapshot(args.out)
+    )
     args.out.parent.mkdir(parents=True, exist_ok=True)
     args.out.write_text(json.dumps(snap, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     md = markdown_tables(snap)
