@@ -18,6 +18,8 @@ from html import unescape
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional, Tuple
 
+from election_watch.extract_usa_wh_advisors import classify_topical_advisors
+
 ROOT = Path(__file__).resolve().parents[1]
 RAW = ROOT / "raw" / "usa"
 OUT = ROOT / "config" / "extracted"
@@ -277,12 +279,7 @@ def payroll_name_to_display(last_first: str) -> str:
     return re.sub(r"\s+", " ", display).strip()
 
 
-def parse_staff_pdf_text(text: str) -> Dict[str, Any]:
-    as_of = None
-    m = re.search(r"As of Date:\s+[A-Za-z]+,\s+([A-Za-z]+ \d{1,2}, \d{4})", text)
-    if m:
-        as_of = datetime.strptime(m.group(1), "%B %d, %Y").date().isoformat()
-
+def parse_payroll_rows(text: str) -> List[Dict[str, Any]]:
     cleaned = re.sub(
         r"For Official Use Only(?:\s+Page \d+ of \d+)?(?:\s+For Official Use Only)?(?:\s+EXECUTIVE OFFICE OF THE PRESIDENT[\s\S]{0,200}?POSITION TITLE)?",
         " ",
@@ -291,9 +288,7 @@ def parse_staff_pdf_text(text: str) -> Dict[str, Any]:
     lines = [re.sub(r"\s+", " ", line).strip() for line in cleaned.splitlines() if line.strip()]
     records: List[str] = []
     buf = ""
-    start = re.compile(
-        r"^[A-Z][A-Z0-9' .\-]+,\s+(?:JR\.,\s+)?[A-Z]"
-    )
+    start = re.compile(r"^[A-Z][A-Z0-9' .\-]+,\s+(?:JR\.,\s+)?[A-Z]")
     for line in lines:
         if start.match(line) and re.search(r"\b(EMPLOYEE|DETAILEE|PART-TIME DETAILEE)\b", line):
             if buf:
@@ -303,7 +298,6 @@ def parse_staff_pdf_text(text: str) -> Dict[str, Any]:
             buf = f"{buf} {line}"
     if buf:
         records.append(buf)
-
     row_re = re.compile(
         r"^(?P<name>.+?)\s+(?P<status>EMPLOYEE|DETAILEE|PART-TIME DETAILEE)\s+"
         r"\$(?P<salary>[\d,]+\.\d{2})\s+Per Annum\s+(?P<title>.+)$"
@@ -314,12 +308,6 @@ def parse_staff_pdf_text(text: str) -> Dict[str, Any]:
         if not match:
             continue
         title = match.group("title").strip()
-        title_u = title.upper()
-        if "ASSISTANT TO THE PRESIDENT" not in title_u:
-            continue
-        if "DEPUTY ASSISTANT TO THE PRESIDENT" in title_u or "SPECIAL ASSISTANT TO THE PRESIDENT" in title_u:
-            if not any(key in title_u for key in ("DEPUTY CHIEF OF STAFF", "CHIEF OF STAFF TO THE FIRST LADY")):
-                continue
         parsed.append(
             {
                 "payroll_name": match.group("name").strip(),
@@ -327,9 +315,28 @@ def parse_staff_pdf_text(text: str) -> Dict[str, Any]:
                 "status": match.group("status"),
                 "salary_usd": float(match.group("salary").replace(",", "")),
                 "title": title,
-                "title_u": title_u,
+                "title_u": title.upper(),
             }
         )
+    return parsed
+
+
+def parse_staff_pdf_text(text: str) -> Dict[str, Any]:
+    as_of = None
+    m = re.search(r"As of Date:\s+[A-Za-z]+,\s+([A-Za-z]+ \d{1,2}, \d{4})", text)
+    if m:
+        as_of = datetime.strptime(m.group(1), "%B %d, %Y").date().isoformat()
+
+    payroll_rows = parse_payroll_rows(text)
+    parsed: List[Dict[str, Any]] = []
+    for row in payroll_rows:
+        title_u = row["title_u"]
+        if "ASSISTANT TO THE PRESIDENT" not in title_u:
+            continue
+        if "DEPUTY ASSISTANT TO THE PRESIDENT" in title_u or "SPECIAL ASSISTANT TO THE PRESIDENT" in title_u:
+            if not any(key in title_u for key in ("DEPUTY CHIEF OF STAFF", "CHIEF OF STAFF TO THE FIRST LADY")):
+                continue
+        parsed.append(row)
 
     matched: Dict[str, Dict[str, Any]] = {}
     for office_id, needle, extra in ASSISTANT_RULES:
@@ -347,7 +354,18 @@ def parse_staff_pdf_text(text: str) -> Dict[str, Any]:
                     continue
             matched[office_id] = row
             break
-    return {"as_of": as_of, "assistants": matched, "assistant_rows": parsed}
+    classified = classify_topical_advisors(payroll_rows)
+    return {
+        "as_of": as_of,
+        "assistants": matched,
+        "assistant_rows": parsed,
+        "payroll_row_count": len(payroll_rows),
+        "topical_advisors": classified["members"],
+        "unscoped_senior_advisors": classified["unscoped_senior_advisors"],
+        "topical_counts": classified["counts"],
+        "topical_inclusion_ko": classified["inclusion_ko"],
+        "topical_exclusion_ko": classified["exclusion_ko"],
+    }
 
 
 def load_eop() -> Dict[str, Any]:
@@ -484,6 +502,21 @@ def apply_official(
             changes.append(f"other.{office_en} {item.get('name_en')} -> {row['name_en']}")
             item["name_en"] = row["name_en"]
 
+    if staff and staff.get("topical_advisors") is not None:
+        payload = {
+            "schema": "usa_wh_topical_advisors_v1",
+            "payroll_as_of": staff.get("as_of"),
+            "source": staff_source_id or "wh_staff_report",
+            "inclusion_ko": staff.get("topical_inclusion_ko"),
+            "exclusion_ko": staff.get("topical_exclusion_ko"),
+            "counts": staff.get("topical_counts"),
+            "members": staff.get("topical_advisors") or [],
+            "unscoped_senior_advisors": staff.get("unscoped_senior_advisors") or [],
+        }
+        prev = len((eop.get("topical_advisors") or {}).get("members") or [])
+        eop["topical_advisors"] = payload
+        changes.append(f"topical_advisors {prev} -> {len(payload['members'])}")
+
     eop["_cabinet_live"] = cabinet
     return changes
 
@@ -522,6 +555,7 @@ def merge_tier12(eop: Dict[str, Any]) -> None:
         "eop_office_heads": eop.get("eop_office_heads"),
         "deputy_chiefs_of_staff": eop.get("deputy_chiefs_of_staff"),
         "other_assistants_to_the_president": eop.get("other_assistants_to_the_president"),
+        "topical_advisors": eop.get("topical_advisors"),
         "missing": eop.get("missing"),
         "correction": eop.get("correction"),
         "kr_analog_note_ko": eop.get("kr_analog_note_ko"),
@@ -672,6 +706,8 @@ def main(argv: Optional[List[str]] = None) -> int:
         refresh_sources_block(eop, fetch_info.get("staff_url"), (staff or {}).get("as_of"), as_of)
         live_cabinet = eop.pop("_cabinet_live", cabinet)
         write_json(OUT / "usa_eop.json", eop)
+        if eop.get("topical_advisors") is not None:
+            write_json(OUT / "usa_wh_topical_advisors.json", eop["topical_advisors"])
         eop["_cabinet_live"] = live_cabinet
         if args.merge_tier12:
             merge_tier12(eop)
@@ -686,13 +722,21 @@ def main(argv: Optional[List[str]] = None) -> int:
         "cabinet_count": len(cabinet),
         "staff_as_of": (staff or {}).get("as_of"),
         "assistant_ids": sorted(((staff or {}).get("assistants") or {}).keys()),
+        "payroll_row_count": (staff or {}).get("payroll_row_count"),
+        "topical_advisor_count": len((staff or {}).get("topical_advisors") or []),
+        "unscoped_senior_advisor_count": len((staff or {}).get("unscoped_senior_advisors") or []),
+        "topical_counts": (staff or {}).get("topical_counts"),
         "changes": changes,
         "errors": errors,
-        "policy_ko": "백악관 공식 HTML·WHO 연례 PDF만 인명을 갱신한다. 부통령 비서실장·CEQ/CEA 언론 보도는 자동 승격하지 않는다.",
+        "policy_ko": (
+            "백악관 공식 HTML·WHO 연례 PDF만 인명을 갱신한다. "
+            "부통령 비서실장·CEQ/CEA 언론 보도는 자동 승격하지 않는다. "
+            "주제별 보좌관은 WHO 급여명부 직함의 포트폴리오 키워드로만 분류한다."
+        ),
     }
     if args.write_report:
         write_json(OUT / "usa_eop_refresh_report_v1.json", report)
-    print(json.dumps({k: report[k] for k in ("cabinet_count", "staff_as_of", "assistant_ids", "changes", "errors")}, ensure_ascii=False, indent=2))
+    print(json.dumps({k: report[k] for k in ("cabinet_count", "staff_as_of", "assistant_ids", "payroll_row_count", "topical_advisor_count", "unscoped_senior_advisor_count", "changes", "errors")}, ensure_ascii=False, indent=2))
     return 1 if errors and args.fetch else 0
 
 
