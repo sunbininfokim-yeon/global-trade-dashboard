@@ -95,6 +95,7 @@ class ExtractUsaEopTests(unittest.TestCase):
         self.assertIn("Jennifer S. Korn", names)
         self.assertIn("Marco A. Rubio", names)
         self.assertIn("Patrick J. Witt", names)
+        self.assertIn("David O. Sacks", names)
         self.assertNotIn("Jake J. Denton", names)
         self.assertNotIn("Samuel D. Adkisson", names)
         unscoped = {row["name_en"] for row in parsed["unscoped_senior_advisors"]}

@@ -592,7 +592,25 @@ def refresh_sources_block(eop: Dict[str, Any], staff_url: Optional[str], staff_a
             "grade": "official",
             "as_of": staff_as_of,
         }
-    keep_ids = ["wh_staff_report", "wh_staff_report_2026-07-01", "wh_administration", "wh_cabinet"]
+    by_id["wh_sacks_ai_crypto_official"] = {
+        "id": "wh_sacks_ai_crypto_official",
+        "org": "The White House",
+        "url": "https://www.whitehouse.gov/wp-content/uploads/2025/06/David-Sacks.pdf",
+        "grade": "official",
+        "as_of": "2025-06",
+        "note": (
+            "Ethics waiver: David O. Sacks, special government employee, "
+            "Special Advisor for AI and Crypto. Not on WHO 2026-07-01 payroll. "
+            "Also America's AI Action Plan 2025-07; PCAST co-chair WH release 2026-03-25."
+        ),
+    }
+    keep_ids = [
+        "wh_staff_report",
+        "wh_staff_report_2026-07-01",
+        "wh_administration",
+        "wh_cabinet",
+        "wh_sacks_ai_crypto_official",
+    ]
     ordered = []
     seen = set()
     for key in keep_ids:
