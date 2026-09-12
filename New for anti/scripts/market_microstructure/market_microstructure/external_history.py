@@ -97,13 +97,21 @@ def _row_from_product(
 ) -> dict[str, Any] | None:
     if product.get("error") or not product.get("ticker"):
         return None
+    # HK rows come from the overseas board and carry no Yahoo payload; their
+    # `observed_on` is the board's trading day, which is a better dated
+    # observation than a Yahoo bar, not a worse one. Without this the board
+    # switch silently stopped appending HK lines to the history log.
     bar = product.get("yahoo", {}).get("last_bar") or {}
     bar_date = bar.get("as_of")
-    if not bar_date:
-        # A current AUM with no EOD bar is not a dated observation.  Do not
-        # invent a date from fetch time or create a holiday placeholder.
+    observed_on = product.get("observed_on")
+    if bar_date:
+        as_of = _iso_day(bar_date, field="last_bar.as_of")
+    elif observed_on:
+        as_of = _iso_day(observed_on, field="observed_on")
+    else:
+        # A current AUM with no dated observation is not one.  Do not invent a
+        # date from fetch time or create a holiday placeholder.
         return None
-    as_of = _iso_day(bar_date, field="last_bar.as_of")
     aum = product.get("aum_usd")
     tv = product.get("trading_value_usd")
     # Yahoo's totalAssets has no timestamp in this payload, while volume×close

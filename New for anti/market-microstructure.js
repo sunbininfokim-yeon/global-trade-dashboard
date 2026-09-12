@@ -700,8 +700,10 @@ const msTangle = (D) => {
             <strong>현물 당일 거래대금</strong> 대비 얼마나 큰 조정 노출이 되는지를 가정으로 표시합니다. 실제 리밸런싱 체결이나 가격 영향은 이 데이터만으로 확인할 수 없습니다.
         </p>
         <p class="fin-note">
-            앞의 두 열은 <strong>분모가 같습니다</strong> — 둘 다 그날 한국 현물 거래대금으로 나눈 값이라 크기를 직접 비교할 수 있습니다.
-            다만 <strong>더하지는 마세요.</strong> 국내 상품은 주문이 KRX에 직접 들어가지만, 홍콩 CSOP는 스왑이라 상대방(증권사)이
+            앞의 두 열은 <strong>분모의 정의가 같습니다</strong> — 둘 다 “해당 관측일의 한국 현물 거래대금”으로 나눈 값이라
+            크기를 견줄 수 있습니다. 다만 <strong>같은 날이 아닙니다</strong>: 해외 수집은 국내 배치보다 보통 한 거래일 앞선 날짜까지만
+            확정돼서, 홍콩 열에는 그 열의 관측일이 함께 표시됩니다. 날짜가 다르면 서로 다른 날의 거래대금으로 나눈 값입니다.
+            그리고 <strong>더하지는 마세요.</strong> 국내 상품은 주문이 KRX에 직접 들어가지만, 홍콩 CSOP는 스왑이라 상대방(증권사)이
             자기 헤지를 하면서 <em>간접적으로</em> 현물에 닿습니다. 성격이 다른 압력입니다.
             −5%·−10% 가정 조정은 <strong>국내 상품만</strong> 계산에 넣습니다 — 홍콩 상품은 운용사가 당일 목표 배율을 공개하지 않아
             조정 물량을 계산할 수 없습니다 (가변 배율, 2026-08-03~).
@@ -723,7 +725,11 @@ const msTangle = (D) => {
                     finPct(st.letf_turnover_ratio),
                     Number.isFinite(hkRatio)
                         ? `${finPct(hkRatio)} <span class="co-hint">${finEsc((ext.hk_tv_tickers || []).join(' · '))}${
-                            ext.hk_tv_as_of && ext.hk_tv_as_of !== m.as_of ? ` · ${finEsc(ext.hk_tv_as_of)}` : ''}</span>`
+                            // Always shown, never only on mismatch: the day is
+                            // what tells the reader whether the two columns
+                            // share a denominator, and they usually do not.
+                            ext.hk_tv_as_of ? ` · ${finEsc(ext.hk_tv_as_of)}${
+                                ext.hk_tv_as_of !== m.as_of ? ` <b>(국내 ${finEsc(m.as_of || '—')})</b>` : ''}` : ''}</span>`
                         : '—',
                     `<span class="ms-badge ${bandCls[t.wag_the_dog_band] || ''}">${finEsc(t.wag_the_dog_band || '—')}</span>`,
                     finPct(t.inverse_tv_share),

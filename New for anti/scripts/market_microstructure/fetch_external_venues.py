@@ -43,21 +43,29 @@ def _hk_tv_ratio_by_underlying(rows: list[dict[str, Any]]) -> dict[str, dict[str
 
     Summed across funds on the same underlying because they share one
     denominator -- the board only fills this ratio for `kr_single_stock`, so an
-    ADR or basket product never lands here. Rows observed on different dates are
-    not added; `as_of` names the day and a fund seen on another day is listed in
-    `excluded_other_date` instead of being folded in silently.
+    ADR or basket product never lands here. Only the newest observed day is
+    summed: anchoring to whichever row the config happened to list first let a
+    stale fund set `as_of` and exclude the current ones, publishing an old
+    ratio as today's. Funds last seen on an earlier day are named in
+    `excluded_other_date` rather than folded in silently.
     """
+    usable = [r for r in rows if r.get("underlying") and r.get("tv_over_kr_cash_tv") is not None]
+    newest: dict[str, str] = {}
+    for r in usable:
+        und, day = r["underlying"], r.get("observed_on") or ""
+        if day > newest.get(und, ""):
+            newest[und] = day
+
     out: dict[str, dict[str, Any]] = {}
-    for r in rows:
-        und, ratio = r.get("underlying"), r.get("tv_over_kr_cash_tv")
-        if not und or ratio is None:
-            continue
-        bucket = out.setdefault(und, {"as_of": r.get("observed_on"), "ratio": 0.0,
+    for r in usable:
+        und = r["underlying"]
+        bucket = out.setdefault(und, {"as_of": newest[und], "ratio": 0.0,
                                       "tickers": [], "excluded_other_date": []})
-        if r.get("observed_on") != bucket["as_of"]:
-            bucket["excluded_other_date"].append({"ticker": r.get("ticker"), "date": r.get("observed_on")})
+        if (r.get("observed_on") or "") != bucket["as_of"]:
+            bucket["excluded_other_date"].append(
+                {"ticker": r.get("ticker"), "date": r.get("observed_on")})
             continue
-        bucket["ratio"] += float(ratio)
+        bucket["ratio"] += float(r["tv_over_kr_cash_tv"])
         bucket["tickers"].append(r.get("ticker"))
     return out
 
@@ -97,6 +105,27 @@ def hk_products_from_board(board: dict[str, Any] | None, cfg: list[dict[str, Any
         notional = (
             None if aum_usd is None or leverage is None else abs(float(leverage)) * float(aum_usd)
         )
+        # The board nulls `trading_value_usd` unless every trading currency
+        # reported and fills `covered_trading_value_usd` with the subtotal of
+        # the ones that did. Prefer the complete figure and carry the flag, so
+        # a day when only 7747 of 7747/9747 reports is not published as the
+        # fund's turnover without saying so.
+        coverage_complete = bool(latest.get("coverage_complete"))
+        tv_complete = latest.get("trading_value_usd")
+        tv = (
+            tv_complete
+            if coverage_complete and tv_complete is not None
+            else latest.get("covered_trading_value_usd")
+        )
+        # `latest` is what carries measurements. A product the board lists but
+        # has never observed is not an observation, so quality keys on that
+        # rather than on the product row merely existing.
+        if not prod:
+            quality, missing = "missing", "overseas_board_has_no_row_for_this_ticker"
+        elif not latest:
+            quality, missing = "missing", "overseas_board_product_has_no_observed_day"
+        else:
+            quality, missing = "observed", None
         out.append(
             {
                 "ticker": ticker,
@@ -111,16 +140,24 @@ def hk_products_from_board(board: dict[str, Any] | None, cfg: list[dict[str, Any
                 "aum_usd": aum_usd,
                 "aum_as_of": latest.get("aum_as_of"),
                 "notional_exposure_usd": notional,
-                "trading_value_usd": latest.get("covered_trading_value_usd"),
+                "trading_value_usd": tv,
+                "trading_value_coverage_complete": coverage_complete,
+                "valued_listing_count": latest.get("valued_listing_count"),
+                "expected_listing_count": latest.get("expected_listing_count"),
                 # Needs no AUM, no target and no constant FX: the fund's own
                 # turnover against the same day's Korean cash turnover. This is
                 # the figure the domestic rows can actually be read next to.
                 "tv_over_kr_cash_tv": latest.get("etf_to_kr_cash_tv_ratio"),
+                # The board's trading day. It normally trails the KRX snapshot
+                # by a session, so consumers must carry it rather than assume
+                # the snapshot's own as_of.
                 "observed_on": latest.get("date"),
+                "stale": bool((prod or {}).get("stale")),
+                "data_age_calendar_days": (prod or {}).get("data_age_calendar_days"),
                 "kr_spot_impact": "indirect_swap",
-                "quality": "observed" if prod else "missing",
+                "quality": quality,
                 "source": "overseas_letf_board_v1 (issuer + Yahoo listings)",
-                "missing_reason": None if prod else "overseas_board_has_no_row_for_this_ticker",
+                "missing_reason": missing,
             }
         )
     return out
@@ -287,9 +324,6 @@ def build_external_venues(
             }
         )
 
-    def _sum_exp(rows: list[dict[str, Any]], key: str = "notional_exposure_usd") -> float:
-        return float(sum(float(r[key]) for r in rows if r.get(key) is not None))
-
     def _sum_exp_strict(rows: list[dict[str, Any]], key: str = "notional_exposure_usd") -> float | None:
         """Sum, or None when nothing was observed.
 
@@ -363,7 +397,9 @@ def build_external_venues(
         },
         "crypto": {
             "products": crypto_out,
-            "open_interest_notional_usd_sum": _sum_exp(crypto_out),
+            "open_interest_notional_usd_sum": _sum_exp_strict(
+                crypto_out, "open_interest_notional_usd"
+            ),
             "open_interest_notional_usd_single_stock_kr": float(
                 sum(
                     float(r["open_interest_notional_usd"])
@@ -391,7 +427,10 @@ def build_external_venues(
         },
         "us_proxy": {
             "products": us_out,
-            "notional_exposure_usd_sum": _sum_exp(us_out),
+            # Strict, like HK: a total Yahoo failure must not total 0.0 and
+            # read as "no US levered ETFs", and the UI's 미관측 branch is
+            # unreachable for this slot while a zero is published instead.
+            "notional_exposure_usd_sum": _sum_exp_strict(us_out),
             "direction_split": _dir_split(us_out),
             "source": "Yahoo Finance",
             "note_ko": "SOXL/SOXS·KORU·TQQQ/SQQQ 등. 옵션 보드(us_regime)와 함께 Global Spillover에서 읽음.",

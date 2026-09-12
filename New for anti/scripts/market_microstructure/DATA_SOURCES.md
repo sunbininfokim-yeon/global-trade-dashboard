@@ -43,7 +43,10 @@
    상수 7.8로 환산하고, 기준일 없는 `totalAssets`를 관측치처럼 실었기 때문이다.
    운용사가 기준일과 함께 공개한 AUM·배율만 쓰므로 미공개 구간에는 노셔널이
    비고, 그 대신 가정이 필요 없는 `etf_to_kr_cash_tv_ratio`(홍콩 거래대금 ÷
-   같은 날 한국 현물 거래대금)를 쓴다 — 국내 `letf_turnover_ratio`와 분모가 같다.
+   같은 날 한국 현물 거래대금)를 쓴다 — 국내 `letf_turnover_ratio`와 **분모의 정의가**
+   같다. 다만 **같은 날은 아니다**: 해외 수집은 국내 배치보다 보통 한 거래일 앞선
+   날짜까지만 확정되므로(예: 스냅샷 2026-09-10 ↔ 보드 2026-09-09), 두 비율은 서로
+   다른 날의 거래대금으로 나눈 값이다. `hk_tv_as_of`를 반드시 함께 표시할 것.
 4. **Binance USD-M** — `SKHYNIXUSDT` / `SAMSUNGUSDT` (+ `KORUUSDT`/`SOXLUSDT` 프록시)
 5. **FinanceDataReader** — `KRX_API` 없을 때 KR fallback
 6. **fixture / 수동 CSV** — unittest

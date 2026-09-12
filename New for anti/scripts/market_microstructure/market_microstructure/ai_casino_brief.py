@@ -368,7 +368,12 @@ def build_ai_casino_brief(snap: dict[str, Any], day: dict[str, Any] | None = Non
                 if not largest
                 else (
                     f"{largest['venue']} {largest['name']} · underlying {largest['underlying']} · "
-                    f"L={largest['L']} · notional ${_bn(largest['notional_exposure_usd'])}bn · "
+                    # A dated AUM does not imply a disclosed target: a flexible
+                    # product can have one and not the other, which rendered
+                    # "L=None · notional $Nonebn" here after the table below
+                    # was fixed for the same case.
+                    f"L={largest['L'] if largest.get('L') is not None else '미공개'} · "
+                    f"notional {('$' + str(_bn(largest['notional_exposure_usd'])) + 'bn') if largest.get('notional_exposure_usd') is not None else '미관측'} · "
                     f"{largest['note_ko']} "
                     f"(참고: 하이닉스 HK 메인은 7709.HK. 7708은 현재 유니버스/Yahoo에 없음.)"
                 )

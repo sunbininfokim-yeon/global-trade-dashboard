@@ -304,9 +304,15 @@ def build_snapshot(day: dict[str, Any], *, anchors: dict[str, Any] | None = None
     # Coercing that to zero would drop HK out of the stack as if it were empty.
     hk_notional = (ext.get("hk") or {}).get("notional_exposure_usd_sum")
     hk_notional = None if hk_notional is None else float(hk_notional)
-    crypto_oi = float((ext.get("crypto") or {}).get("open_interest_notional_usd_sum") or 0.0)
-    crypto_vol = float((ext.get("crypto") or {}).get("quote_volume_24h_usd_sum") or 0.0)
-    us_notional = float((ext.get("us_proxy") or {}).get("notional_exposure_usd_sum") or 0.0)
+    # Same rule as HK: an unobserved venue stays None so the stack can name it
+    # rather than carrying it at zero.
+    def _opt(section: str, key: str) -> float | None:
+        v = (ext.get(section) or {}).get(key)
+        return None if v is None else float(v)
+
+    crypto_oi = _opt("crypto", "open_interest_notional_usd_sum")
+    crypto_vol = _opt("crypto", "quote_volume_24h_usd_sum")
+    us_notional = _opt("us_proxy", "notional_exposure_usd_sum")
     hk_dir = (ext.get("hk") or {}).get("direction_split") or {}
     us_dir = (ext.get("us_proxy") or {}).get("direction_split") or {}
     # KR single-stock long vs inverse notional
@@ -340,16 +346,20 @@ def build_snapshot(day: dict[str, Any], *, anchors: dict[str, Any] | None = None
         "hk_tv_over_kr_cash_tv_by_underlying": (ext.get("hk") or {}).get(
             "tv_over_kr_cash_tv_by_underlying"
         ) or {},
-        "us_levered_etf_notional_usd": round(us_notional, 2),
+        "us_levered_etf_notional_usd": None if us_notional is None else round(us_notional, 2),
         "us_direction_split": us_dir,
-        "crypto_perp_oi_notional_usd": round(crypto_oi, 2),
-        "crypto_perp_quote_volume_24h_usd": round(crypto_vol, 2),
+        "crypto_perp_oi_notional_usd": None if crypto_oi is None else round(crypto_oi, 2),
+        "crypto_perp_quote_volume_24h_usd": None if crypto_vol is None else round(crypto_vol, 2),
         # Sums the venues that were actually observed and names the ones that
         # were not, so a shrinking total cannot be read as shrinking leverage.
         "global_stack_usd": round(
-            kr_ss_notional_usd + (hk_notional or 0.0) + crypto_oi + us_notional, 2
+            kr_ss_notional_usd + (hk_notional or 0.0) + (crypto_oi or 0.0) + (us_notional or 0.0), 2
         ),
-        "global_stack_unobserved_venues": ["hk"] if hk_notional is None else [],
+        "global_stack_unobserved_venues": [
+            name
+            for name, val in (("hk", hk_notional), ("us", us_notional), ("crypto", crypto_oi))
+            if val is None
+        ],
         "by_underlying_usd": ext.get("by_underlying_usd") or {},
         "hk_products": (ext.get("hk") or {}).get("products") or [],
         "crypto_products": (ext.get("crypto") or {}).get("products") or [],

@@ -241,7 +241,9 @@ class TestSnapshot(unittest.TestCase):
         snap = build_snapshot(day)
         g = snap["global_leverage_stack"]
         self.assertIsNone(g["hk_swap_letf_notional_usd"])
-        self.assertEqual(g["global_stack_unobserved_venues"], ["hk"])
+        # This fixture also omits us_proxy, so it is named too; the assertion
+        # is about HK being listed, not about the list being HK alone.
+        self.assertIn("hk", g["global_stack_unobserved_venues"])
 
         h = next(s for s in snap["stocks"] if s["ticker"] == "000660")
         ext = h["external_vs_spot"]
@@ -311,6 +313,106 @@ class TestSnapshot(unittest.TestCase):
         self.assertAlmostEqual(out["ratio"], 0.0152)
         self.assertEqual(out["tickers"], ["7747.HK", "7347.HK"])
         self.assertEqual(out["excluded_other_date"], [{"ticker": "9347.HK", "date": "2026-08-29"}])
+
+    def test_hk_turnover_ratio_anchors_to_newest_not_first_row(self):
+        """Config order must not decide which day the bucket reports.
+
+        Anchoring to the first row let a stale fund listed earlier in the
+        config set `as_of`, exclude every current fund, and publish a
+        weeks-old ratio as today's.
+        """
+        from fetch_external_venues import _hk_tv_ratio_by_underlying
+
+        rows = [
+            {"ticker": "7747.HK", "underlying": "005930", "tv_over_kr_cash_tv": 0.5,
+             "observed_on": "2026-08-29"},   # stale, but listed first
+            {"ticker": "7347.HK", "underlying": "005930", "tv_over_kr_cash_tv": 0.0008,
+             "observed_on": "2026-09-09"},   # current
+        ]
+        out = _hk_tv_ratio_by_underlying(rows)["005930"]
+        self.assertEqual(out["as_of"], "2026-09-09")
+        self.assertAlmostEqual(out["ratio"], 0.0008)
+        self.assertEqual(out["excluded_other_date"], [{"ticker": "7747.HK", "date": "2026-08-29"}])
+
+    def test_board_rows_still_append_to_external_history(self):
+        """Board rows carry no Yahoo bar; `observed_on` must date them.
+
+        The switch to the board removed `yahoo.last_bar`, which was the only
+        date `_row_from_product` accepted -- so every HK line silently stopped
+        reaching external_leverage_history_v1.jsonl.
+        """
+        from market_microstructure.external_history import external_records_from_snapshot
+
+        snapshot = {
+            "fetched_at": "2026-09-10T23:35:00+00:00",
+            "fx": {"usdkrw": 1400.0},
+            "hk": {
+                "products": [
+                    {
+                        "ticker": "7709.HK",
+                        "underlying": "000660",
+                        "venue": "hk",
+                        "aum_usd": None,
+                        "trading_value_usd": 633_668_535.3,
+                        "observed_on": "2026-09-09",
+                        "source": "overseas_letf_board_v1",
+                    }
+                ]
+            },
+            "us_proxy": {"products": []},
+        }
+        rows = external_records_from_snapshot(snapshot)
+        self.assertEqual(len(rows), 1)
+        self.assertEqual(rows[0]["date"], "2026-09-09")
+        self.assertEqual(rows[0]["ticker"], "7709.HK")
+
+    def test_partial_listing_coverage_is_labelled_not_passed_off(self):
+        """A subtotal is not the fund's turnover unless every currency reported."""
+        from fetch_external_venues import hk_products_from_board
+
+        board = {
+            "products": [
+                {
+                    "name": "CSOP Samsung 2x",
+                    "listings": [{"ticker": "7747.HK", "venue": "hk"}],
+                    "latest": {
+                        "date": "2026-09-09",
+                        "coverage_complete": False,
+                        "trading_value_usd": None,
+                        "covered_trading_value_usd": 47_797_895.1,
+                        "valued_listing_count": 1,
+                        "expected_listing_count": 2,
+                    },
+                }
+            ]
+        }
+        (row,) = hk_products_from_board(board, [{"ticker": "7747.HK", "underlying": "005930"}])
+        self.assertFalse(row["trading_value_coverage_complete"])
+        self.assertEqual(row["valued_listing_count"], 1)
+        self.assertEqual(row["expected_listing_count"], 2)
+
+    def test_board_product_with_no_observed_day_is_not_observed(self):
+        from fetch_external_venues import hk_products_from_board
+
+        board = {"products": [{"name": "x", "listings": [{"ticker": "7709.HK", "venue": "hk"}]}]}
+        (row,) = hk_products_from_board(board, [{"ticker": "7709.HK", "underlying": "000660"}])
+        self.assertEqual(row["quality"], "missing")
+        self.assertIsNotNone(row["missing_reason"])
+
+    def test_us_and_crypto_venues_can_also_report_unobserved(self):
+        """The 미관측 branch must be reachable for every venue, not just HK."""
+        day = json.loads((ROOT / "tests/fixtures/demo_day.json").read_text(encoding="utf-8"))
+        day["external_venues"] = {
+            "hk": {"notional_exposure_usd_sum": None, "products": []},
+            "us_proxy": {"notional_exposure_usd_sum": None, "products": []},
+            "crypto": {"open_interest_notional_usd_sum": None, "products": []},
+            "by_underlying_usd": {},
+            "disclaimer_ko": "test",
+        }
+        g = build_snapshot(day)["global_leverage_stack"]
+        self.assertIsNone(g["us_levered_etf_notional_usd"])
+        self.assertIsNone(g["crypto_perp_oi_notional_usd"])
+        self.assertEqual(sorted(g["global_stack_unobserved_venues"]), ["crypto", "hk", "us"])
 
     def test_brief_does_not_rank_hk_fund_with_no_observed_aum(self):
         """7709.HK is normally the largest product here; unobserved is not zero.
