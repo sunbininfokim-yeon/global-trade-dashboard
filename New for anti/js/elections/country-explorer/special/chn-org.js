@@ -191,6 +191,18 @@ const vicePremierBoxes = (leadership) => {
     ];
 };
 
+// 국무위원. 왕샤오훙처럼 부처장을 겸하는 자리도 있다 -- 부처 단에 또 나와도 중복이
+// 아니라 겸직이고, title_ko 자체가 "국무위원·공안부장"처럼 겸직을 적고 있다.
+const stateCouncilorBoxes = (leadership) => {
+    const council = leadership.party_state?.state_council || {};
+    return (council.state_councilors || []).map((row) => orgBox({
+        ko: row.title_ko || '국무위원',
+        person: personWithStatus(row),
+        strike: isFallen(row),
+        note: row.note_ko,
+    }));
+};
+
 // 부처 박스. `state_council.constituent_departments`(부처별 id·정본 명칭·부장·당위
 // 서기)가 있으면 그것을 그대로 26개 다 그린다 -- 이름이 확보된 곳만 골라내지 않는다.
 // 그 배열이 없는(더 오래된) 보드에서만 아래 골격 + cmc/security_organs 키워드
@@ -206,17 +218,35 @@ const legacyMinistryPool = (leadership) => {
         .filter((row) => row && typeof row === 'object' && (row.name_ko || row.name_en));
 };
 
-const constituentDepartmentBox = (dept) => orgBox({
-    ko: dept.title_ko,
-    en: dept.title_en || dept.title_zh || '',
-    title: dept.minister?.title_ko || '',
-    person: personWithStatus(dept.minister),
-    strike: isFallen(dept.minister),
-    note: [
-        dept.minister?.note_ko || dept.minister?.note,
-        dept.party_group_secretary ? `당위 서기 ${personName(dept.party_group_secretary)}` : '',
-    ].filter(Boolean).join(' · '),
-});
+// 부장·당서기가 다른 사람인 곳이 26곳 중 대다수다 (외교부 왕이 vs 당위서기 제위,
+// 생태환경부 황룬추 vs 당조서기 쑨진룽 등) -- `party_group_secretary.title_ko`가
+// 당위서기/당조서기 구분을 데이터가 직접 갖고 있으므로 하나로 뭉뚱그리지 않는다.
+// `same_as_minister: true`인 곳은 같은 사람을 두 번 적지 않도록 줄을 넣지 않는다.
+// `predecessor`(면직된 전임)가 있으면 박스 하단에 삭선으로 남긴다 -- 자연자원부처럼
+// 부장이 공석인 자리도 "명단 미수집"이 아니라 실제로 비어 있다는 뜻이라 `isVacant`로
+// 구분해 표기한다. 국방부처럼 애초에 민간 당조가 없는 곳은 `party_group_secretary`가
+// 이름 없는 `organ: "not_applicable"` 객체로 온다 -- personName()이 "불명"을 돌려주는
+// 이 자리에 이름 줄을 만들지 않고, 대신 그 객체 자신의 note_ko("민간 당조 없음")를 쓴다.
+const constituentDepartmentBox = (dept) => {
+    const minister = dept.minister;
+    const vacant = isVacant(minister);
+    const secretary = dept.party_group_secretary;
+    const secretaryNamed = secretary && personName(secretary) !== '불명';
+    const showSecretaryName = secretaryNamed && secretary.same_as_minister !== true;
+    return orgBox({
+        ko: dept.title_ko,
+        en: dept.title_en || dept.title_zh || '',
+        title: minister?.title_ko || '',
+        person: vacant ? personName(minister) : personWithStatus(minister),
+        vacant,
+        strike: isFallen(minister),
+        former: formerNames([dept.predecessor].filter(Boolean)),
+        note: [
+            minister?.note_ko || minister?.note,
+            showSecretaryName ? `${secretary.title_ko || '당위 서기'} ${personName(secretary)}` : (secretary?.note_ko || ''),
+        ].filter(Boolean).join(' · '),
+    });
+};
 
 const legacyMinistryBox = (ministry, pool) => {
     const supplied = ministry.name_ko || ministry.name_en ? ministry : null;
@@ -445,8 +475,10 @@ export const chnStateCouncil = (country) => {
     if (!leadership) return null;
     const council = leadership.party_state?.state_council || {};
     const vicePremiers = vicePremierBoxes(leadership);
+    const councilors = stateCouncilorBoxes(leadership);
     const ministries = ministryBoxes(leadership);
     const filled = ministryFilledCount(leadership);
+    const ministrySection = councilors.length ? 4 : 3;
     return `
         <p class="section-title">1 · 총리</p>
         ${orgGrid([orgBox({ ko: '국무원 총리', person: personWithStatus(council.premier) })])}
@@ -454,9 +486,15 @@ export const chnStateCouncil = (country) => {
         <p class="section-title">2 · 부총리 ${vicePremiers.length ? `${vicePremiers.length}인` : ''}</p>
         ${vicePremiers.length ? orgGrid(vicePremiers) : '<p class="elections-muted">확보된 부총리 명부가 없습니다.</p>'}
 
-        <p class="section-title">3 · 부처 ${ministries.length}곳</p>
+        ${councilors.length ? `
+        <p class="section-title">3 · 국무위원 ${councilors.length}인</p>
+        ${orgGrid(councilors)}
+        ` : ''}
+
+        <p class="section-title">${ministrySection} · 부처 ${ministries.length}곳</p>
         ${orgGrid(ministries)}
         ${noteLine(`구성 부문 ${ministries.length}곳 가운데 이름이 확보된 곳은 ${filled}곳입니다. 비어 있는 칸은 명단 미수집이며, 그 부처가 없거나 부처장이 공석이라는 뜻이 아닙니다.`)}
+        ${noteLine('부처 박스의 둘째 줄(당위서기/당조서기)은 그 부처 당 조직의 서기입니다. 부장과 다른 사람인 곳이 대부분입니다 -- 당위·당조가 국가기구의 인사보다 앞섭니다.')}
 
         ${noteLine('국무원은 국가기구입니다. 실제 의사결정은 공산당 화면의 당 기구에서 먼저 이뤄집니다 — 두 화면을 같이 보셔야 합니다.')}
         ${noteLine('전국인민대표대회 화면은 데이터 계약상 만들지 않습니다.')}

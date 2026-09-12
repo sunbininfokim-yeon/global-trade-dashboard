@@ -1,5 +1,5 @@
 {
-  "version": 6,
+  "version": 7,
   "as_of": "2026-09-12",
   "extracted_at": "2026-09-12",
   "review_cadence": "monthly",
@@ -8,7 +8,7 @@
     "fallen_style": "strikethrough",
     "note_ko": "실각·조사자: display=strikethrough → UI에서 이름 삭선. 태그는 _internal 전용(비공개)."
   },
-  "merge_note": "2026-09-12 Cursor patch: CCP General Office / Policy Research / CFEAC office / MCF office + 26 State Council constituent departments from NPC decrees and Xinhua bios. Wikipedia not used.",
+  "merge_note": "2026-09-12 Cursor patch v7: party group/committee secretary on all 26 constituent departments. Splits: MFA Qi Yu, MEE Sun Jinlong, MNR Liu Guohong with minister vacant (presidential order 79). MOD not applicable. Wikipedia not used.",
   "party_state": {
     "general_secretary": {
       "name_en": "Xi Jinping",
@@ -540,7 +540,7 @@
     },
     "state_council": {
       "as_of": "2026-09-12",
-      "note_ko": "공식 구성부문 26곳. cabinet_23=false는 국방·인행·감사.",
+      "note_ko": "공식 구성부문 26곳. cabinet_23=false는 국방·인행·감사. 당조/당위 서기는 party_group_secretary. 분리: 외교·생태환경·자연자원. 국방부는 민간 당조 없음. 자연자원부 부장은 2026-06-26 이후 공석.",
       "premier": {
         "name_en": "Li Qiang",
         "name_zh": "李强",
@@ -631,11 +631,17 @@
             "note_ko": "당위 서기는 제위 齐玉. 부장≠당서기"
           },
           "party_group_secretary": {
+            "same_as_minister": false,
+            "organ": "party_committee",
+            "status": "incumbent",
+            "confidence": "high",
+            "title_zh": "党委书记",
+            "title_ko": "당위서기",
             "name_en": "Qi Yu",
             "name_zh": "齐玉",
             "name_ko": "제위",
-            "title_ko": "외교부 당위 서기",
-            "confidence": "high"
+            "note_ko": "부장 왕이와 분리. 외교부는 당위.",
+            "source": "https://www.fmprc.gov.cn/wjb_673085/zygy_673101/qy/"
           }
         },
         {
@@ -652,6 +658,13 @@
             "confidence": "high",
             "title_ko": "국방부",
             "note_ko": "PLA 별선"
+          },
+          "party_group_secretary": {
+            "same_as_minister": false,
+            "organ": "not_applicable",
+            "status": "not_applicable",
+            "confidence": "high",
+            "note_ko": "국방부는 국무원 구성부문이지만 민간 당조가 없다. PLA·중앙군사위 계통."
           }
         },
         {
@@ -668,6 +681,18 @@
             "confidence": "high",
             "title_ko": "국가발전개혁위원회",
             "note_ko": "재경위 아래 실무"
+          },
+          "party_group_secretary": {
+            "same_as_minister": true,
+            "organ": "party_group",
+            "status": "incumbent",
+            "confidence": "high",
+            "title_zh": "党组书记",
+            "title_ko": "당조서기",
+            "name_en": "Zheng Shanjie",
+            "name_zh": "郑栅洁",
+            "name_ko": "정산제",
+            "source": "https://www.ndrc.gov.cn/fzggw/wld/zsj/"
           }
         },
         {
@@ -683,6 +708,18 @@
             "status": "incumbent",
             "confidence": "high",
             "title_ko": "교육부"
+          },
+          "party_group_secretary": {
+            "same_as_minister": true,
+            "organ": "party_group",
+            "status": "incumbent",
+            "confidence": "high",
+            "title_zh": "党组书记",
+            "title_ko": "당조서기",
+            "name_en": "Huai Jinpeng",
+            "name_zh": "怀进鹏",
+            "name_ko": "화이진펑",
+            "source": "http://www.moe.gov.cn/jyb_zzjg/moe_187/huaijinpeng/"
           }
         },
         {
@@ -698,6 +735,18 @@
             "status": "incumbent",
             "confidence": "high",
             "title_ko": "과학기술부"
+          },
+          "party_group_secretary": {
+            "same_as_minister": true,
+            "organ": "party_group",
+            "status": "incumbent",
+            "confidence": "high",
+            "title_zh": "党组书记",
+            "title_ko": "당조서기",
+            "name_en": "Yin Hejun",
+            "name_zh": "阴和俊",
+            "name_ko": "인허쥔",
+            "source": "https://most.gov.cn/zzjg/bld/"
           }
         },
         {
@@ -722,6 +771,18 @@
             "status": "removed",
             "next_post": "unknown",
             "confidence": "high"
+          },
+          "party_group_secretary": {
+            "same_as_minister": true,
+            "organ": "party_group",
+            "status": "incumbent",
+            "confidence": "high",
+            "title_zh": "党组书记",
+            "title_ko": "당조서기",
+            "name_en": "Li Lecheng",
+            "name_zh": "李乐成",
+            "name_ko": "리러청",
+            "source": "https://www.miit.gov.cn/bld/index.html"
           }
         },
         {
@@ -737,6 +798,18 @@
             "status": "incumbent",
             "confidence": "high",
             "title_ko": "국가민족사무위원회"
+          },
+          "party_group_secretary": {
+            "same_as_minister": true,
+            "organ": "party_group",
+            "status": "incumbent",
+            "confidence": "high",
+            "title_zh": "党组书记",
+            "title_ko": "당조서기",
+            "name_en": "Chen Ruifeng",
+            "name_zh": "陈瑞峰",
+            "name_ko": "천루이펑",
+            "source": "https://www.neac.gov.cn/seac/mwjs/"
           }
         },
         {
@@ -753,6 +826,18 @@
             "confidence": "high",
             "title_ko": "공안부",
             "note_ko": "국무위원 겸"
+          },
+          "party_group_secretary": {
+            "same_as_minister": true,
+            "organ": "party_committee",
+            "status": "incumbent",
+            "confidence": "high",
+            "title_zh": "党委书记",
+            "title_ko": "당위서기",
+            "name_en": "Wang Xiaohong",
+            "name_zh": "王小洪",
+            "name_ko": "왕샤오훙",
+            "source": "https://www.gov.cn/guoqing/2023-03/12/content_5746384.htm"
           }
         },
         {
@@ -768,6 +853,18 @@
             "status": "incumbent",
             "confidence": "high",
             "title_ko": "국가안전부"
+          },
+          "party_group_secretary": {
+            "same_as_minister": true,
+            "organ": "party_committee",
+            "status": "incumbent",
+            "confidence": "high",
+            "title_zh": "党委书记",
+            "title_ko": "당위서기",
+            "name_en": "Chen Yixin",
+            "name_zh": "陈一新",
+            "name_ko": "천이신",
+            "source": "http://chinapeace.gov.cn/chinapeace/c100007/2026-09/09/content_12855649.shtml"
           }
         },
         {
@@ -791,6 +888,18 @@
             "name_ko": "루즈위안",
             "status": "removed",
             "confidence": "high"
+          },
+          "party_group_secretary": {
+            "same_as_minister": true,
+            "organ": "party_group",
+            "status": "incumbent",
+            "confidence": "medium-high",
+            "title_zh": "党组书记",
+            "title_ko": "당조서기",
+            "name_en": "Li Changguan",
+            "name_zh": "李常官",
+            "name_ko": "리창관",
+            "source": "https://liuyan.people.com.cn/pro-dfbbs-front/home"
           }
         },
         {
@@ -807,6 +916,18 @@
             "confidence": "high",
             "title_ko": "사법부",
             "note_ko": "여성"
+          },
+          "party_group_secretary": {
+            "same_as_minister": true,
+            "organ": "party_group",
+            "status": "incumbent",
+            "confidence": "medium-high",
+            "title_zh": "党组书记",
+            "title_ko": "당조서기",
+            "name_en": "He Rong",
+            "name_zh": "贺荣",
+            "name_ko": "허룽",
+            "source": "https://liuyan.people.com.cn/pro-dfbbs-front/home"
           }
         },
         {
@@ -822,6 +943,18 @@
             "status": "incumbent",
             "confidence": "high",
             "title_ko": "재정부"
+          },
+          "party_group_secretary": {
+            "same_as_minister": true,
+            "organ": "party_group",
+            "status": "incumbent",
+            "confidence": "high",
+            "title_zh": "党组书记",
+            "title_ko": "당조서기",
+            "name_en": "Lan Fo'an",
+            "name_zh": "蓝佛安",
+            "name_ko": "란포안",
+            "source": "http://www.mof.gov.cn/znjg/buzhangzhichuang/czblfa/grjjlfa/"
           }
         },
         {
@@ -838,6 +971,18 @@
             "confidence": "high",
             "title_ko": "인력자원사회보장부",
             "note_ko": "여성"
+          },
+          "party_group_secretary": {
+            "same_as_minister": true,
+            "organ": "party_group",
+            "status": "incumbent",
+            "confidence": "medium-high",
+            "title_zh": "党组书记",
+            "title_ko": "당조서기",
+            "name_en": "Wang Xiaoping",
+            "name_zh": "王晓萍",
+            "name_ko": "왕샤오핑",
+            "source": "https://liuyan.people.com.cn/pro-dfbbs-front/home"
           }
         },
         {
@@ -846,13 +991,38 @@
           "title_zh": "自然资源部",
           "cabinet_23": true,
           "minister": {
+            "name_en": "vacant_mnr_minister",
+            "name_ko": "공석",
+            "status": "vacant",
+            "since": "2026-06-26",
+            "confidence": "high",
+            "title_ko": "자연자원부",
+            "note_ko": "관즈어우 면. 주석령 79호. 후임 부장은 인대 미임명."
+          },
+          "predecessor": {
             "name_en": "Guan Zhi'ou",
             "name_zh": "关志鸥",
             "name_ko": "관즈어우",
+            "status": "removed",
             "since": "2024-12-25",
+            "until": "2026-06-26",
+            "next_post": "중공 후베이성위 서기",
+            "next_post_since": "2026-05-30",
+            "confidence": "high"
+          },
+          "party_group_secretary": {
+            "same_as_minister": false,
+            "organ": "party_group",
             "status": "incumbent",
             "confidence": "high",
-            "title_ko": "자연자원부"
+            "title_zh": "党组书记",
+            "title_ko": "당조서기",
+            "name_en": "Liu Guohong",
+            "name_zh": "刘国洪",
+            "name_ko": "류궈훙",
+            "since": "2026-07-30",
+            "note_ko": "중조부 발표. 부장 인대 임명은 아직 없다.",
+            "source": "https://www.news.cn/politics/20260730/dd7f1f8bd6ad4386b771e0d1af63ebe8/c.html"
           }
         },
         {
@@ -868,14 +1038,21 @@
             "status": "incumbent",
             "confidence": "high",
             "title_ko": "생태환경부",
-            "note_ko": "구삼학사. 당조 서기는 쑨진룽."
+            "note_ko": "구삼학사. 당조 서기는 쑨진룽. 부장≠당서기"
           },
           "party_group_secretary": {
+            "same_as_minister": false,
+            "organ": "party_group",
+            "status": "incumbent",
+            "confidence": "high",
+            "title_zh": "党组书记",
+            "title_ko": "당조서기",
             "name_en": "Sun Jinlong",
             "name_zh": "孙金龙",
             "name_ko": "쑨진룽",
-            "title_ko": "생태환경부 당조 서기",
-            "confidence": "high"
+            "since": "2020-04",
+            "note_ko": "부부장 겸. 부장 황룬추는 구삼학사(비당원).",
+            "source": "https://www.mee.gov.cn/zjhb/ldzc/"
           }
         },
         {
@@ -891,6 +1068,18 @@
             "status": "incumbent",
             "confidence": "high",
             "title_ko": "주택도시농촌건설부"
+          },
+          "party_group_secretary": {
+            "same_as_minister": true,
+            "organ": "party_group",
+            "status": "incumbent",
+            "confidence": "medium-high",
+            "title_zh": "党组书记",
+            "title_ko": "당조서기",
+            "name_en": "Ni Hong",
+            "name_zh": "倪虹",
+            "name_ko": "니훙",
+            "source": "https://liuyan.people.com.cn/pro-dfbbs-front/home"
           }
         },
         {
@@ -906,6 +1095,18 @@
             "status": "incumbent",
             "confidence": "high",
             "title_ko": "교통운수부"
+          },
+          "party_group_secretary": {
+            "same_as_minister": true,
+            "organ": "party_group",
+            "status": "incumbent",
+            "confidence": "medium-high",
+            "title_zh": "党组书记",
+            "title_ko": "당조서기",
+            "name_en": "Liu Wei",
+            "name_zh": "刘伟",
+            "name_ko": "류웨이",
+            "source": "https://liuyan.people.com.cn/pro-dfbbs-front/home"
           }
         },
         {
@@ -921,6 +1122,18 @@
             "status": "incumbent",
             "confidence": "high",
             "title_ko": "수리부"
+          },
+          "party_group_secretary": {
+            "same_as_minister": true,
+            "organ": "party_group",
+            "status": "incumbent",
+            "confidence": "medium-high",
+            "title_zh": "党组书记",
+            "title_ko": "당조서기",
+            "name_en": "Li Guoying",
+            "name_zh": "李国英",
+            "name_ko": "리궈잉",
+            "source": "https://liuyan.people.com.cn/pro-dfbbs-front/home"
           }
         },
         {
@@ -945,6 +1158,18 @@
             "status": "removed",
             "next_post": "unknown",
             "confidence": "high"
+          },
+          "party_group_secretary": {
+            "same_as_minister": true,
+            "organ": "party_group",
+            "status": "incumbent",
+            "confidence": "high",
+            "title_zh": "党组书记",
+            "title_ko": "당조서기",
+            "name_en": "Zhang Zhu",
+            "name_zh": "张柱",
+            "name_ko": "장주",
+            "source": "https://dangwei.moa.gov.cn/zjxxjy/202606/t20260623_6485209.htm"
           }
         },
         {
@@ -960,6 +1185,18 @@
             "status": "incumbent",
             "confidence": "high",
             "title_ko": "상무부"
+          },
+          "party_group_secretary": {
+            "same_as_minister": true,
+            "organ": "party_group",
+            "status": "incumbent",
+            "confidence": "medium-high",
+            "title_zh": "党组书记",
+            "title_ko": "당조서기",
+            "name_en": "Wang Wentao",
+            "name_zh": "王文涛",
+            "name_ko": "왕원타오",
+            "source": "https://liuyan.people.com.cn/pro-dfbbs-front/home"
           }
         },
         {
@@ -975,6 +1212,18 @@
             "status": "incumbent",
             "confidence": "high",
             "title_ko": "문화여유부"
+          },
+          "party_group_secretary": {
+            "same_as_minister": true,
+            "organ": "party_group",
+            "status": "incumbent",
+            "confidence": "high",
+            "title_zh": "党组书记",
+            "title_ko": "당조서기",
+            "name_en": "Sun Yeli",
+            "name_zh": "孙业礼",
+            "name_ko": "쑨예리",
+            "source": "https://www.mct.gov.cn/gywhb/bld/"
           }
         },
         {
@@ -990,6 +1239,18 @@
             "status": "incumbent",
             "confidence": "high",
             "title_ko": "국가위생건강위원회"
+          },
+          "party_group_secretary": {
+            "same_as_minister": true,
+            "organ": "party_group",
+            "status": "incumbent",
+            "confidence": "medium-high",
+            "title_zh": "党组书记",
+            "title_ko": "당조서기",
+            "name_en": "Lei Haichao",
+            "name_zh": "雷海潮",
+            "name_ko": "레이하이차오",
+            "source": "https://liuyan.people.com.cn/pro-dfbbs-front/home"
           }
         },
         {
@@ -1006,6 +1267,18 @@
             "confidence": "high",
             "title_ko": "퇴역군인사무부",
             "note_ko": "군민융합 판공실 부주임 겸"
+          },
+          "party_group_secretary": {
+            "same_as_minister": true,
+            "organ": "party_group",
+            "status": "incumbent",
+            "confidence": "medium-high",
+            "title_zh": "党组书记",
+            "title_ko": "당조서기",
+            "name_en": "Pei Jinjia",
+            "name_zh": "裴金佳",
+            "name_ko": "페이진자",
+            "source": "https://liuyan.people.com.cn/pro-dfbbs-front/home"
           }
         },
         {
@@ -1029,6 +1302,18 @@
             "name_ko": "왕샹시",
             "status": "removed",
             "confidence": "high"
+          },
+          "party_group_secretary": {
+            "same_as_minister": true,
+            "organ": "party_committee",
+            "status": "incumbent",
+            "confidence": "high",
+            "title_zh": "党委书记",
+            "title_ko": "당위서기",
+            "name_en": "Zhang Chengzhong",
+            "name_zh": "张成中",
+            "name_ko": "장청중",
+            "source": "https://www.mem.gov.cn/jg/ldxx/zhchzh/index.shtml"
           }
         },
         {
@@ -1045,6 +1330,18 @@
             "confidence": "high",
             "title_ko": "중국인민은행",
             "note_ko": "중앙금융위 아래"
+          },
+          "party_group_secretary": {
+            "same_as_minister": true,
+            "organ": "party_committee",
+            "status": "incumbent",
+            "confidence": "high",
+            "title_zh": "党委书记",
+            "title_ko": "당위서기",
+            "name_en": "Pan Gongsheng",
+            "name_zh": "潘功胜",
+            "name_ko": "판궁성",
+            "source": "https://www.pbc.gov.cn/hanglingdao/128697/128734/index.html"
           }
         },
         {
@@ -1060,13 +1357,31 @@
             "status": "incumbent",
             "confidence": "high",
             "title_ko": "감사서"
+          },
+          "party_group_secretary": {
+            "same_as_minister": true,
+            "organ": "party_group",
+            "status": "incumbent",
+            "confidence": "high",
+            "title_zh": "党组书记",
+            "title_ko": "당조서기",
+            "name_en": "Hou Kai",
+            "name_zh": "侯凯",
+            "name_ko": "허우카이",
+            "source": "https://www.audit.gov.cn/n10/n15/c140218/content.html"
           }
         }
       ],
       "sources": [
         "https://www.gov.cn/gwyzzjg/",
         "https://www.gov.cn/yaowen/liebiao/202604/content_7067518.htm",
-        "https://www.gov.cn/yaowen/liebiao/202608/content_7079463.htm"
+        "https://www.gov.cn/yaowen/liebiao/202608/content_7079463.htm",
+        "http://www.npc.gov.cn/npc/c2/c30834/202606/t20260626_455822.html",
+        "https://www.12371.cn/2026/06/26/ARTI1782481321320800.shtml",
+        "https://www.news.cn/politics/20260730/dd7f1f8bd6ad4386b771e0d1af63ebe8/c.html",
+        "https://www.news.cn/politics/20260530/328c3d70ff984ed38a5e0fc89427ce43/c.html",
+        "https://www.fmprc.gov.cn/wjb_673085/zygy_673101/qy/",
+        "https://www.mee.gov.cn/zjhb/ldzc/"
       ]
     }
   },
