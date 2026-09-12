@@ -6,10 +6,42 @@
 **읽는 이:** Claude Code  
 **소유권:** 인사 정본·출처 = Cursor. UI 표시 = Claude (`TASKS` claim 있을 때만).  
 **관련 UI 계약:** `HANDOFF_CLAUDE_ELECTIONS_UI_V2.md` §5 중국 탭  
-**관련 JSON:** `config/china_leadership_extracted.json` (`as_of` 2026-09-12, version 6. Cursor 패치 완료)
+**관련 JSON:** `config/china_leadership_extracted.json` (`as_of` 2026-09-12, version 7. 당조/당위 서기 포함)
 
 이 문서만 읽으면 된다. Obsidian 볼트·Cursor 캔버스는 열지 마라.  
 없는 이름은 추측해서 채우지 마라. `null` / TODO / 미확정은 그대로 보여라.
+
+## Claude가 받는 법 (GitHub)
+
+로컬 Cursor 워크트리는 공유되지 않는다. **origin에서 fetch** 한다.
+
+```bash
+git fetch origin cursor/china-ccp-personnel
+git checkout cursor/china-ccp-personnel
+```
+
+읽을 순서:
+
+1. `New for anti/scripts/election_watch/HANDOFF_CLAUDE_CHINA_CCP_PERSONNEL_2026-09.md` (이 파일)
+2. `New for anti/scripts/election_watch/config/china_leadership_extracted.json` (`as_of` 2026-09-12, version 7)
+3. `New for anti/scripts/election_watch/HANDOFF_CLAUDE_ELECTIONS_UI_V2.md` §5
+4. 화면용 복사본: `New for anti/public/data/elections_board_v1.json` → `countries[CHN].leadership.party_state`
+5. 골격+이름: `New for anti/public/data/elections_cn_party_v1.json` → `state_council_ministries[]` (`name_ko`, `party_secretary_ko`, `same_as_minister`)
+
+repo: `sunbininfokim-yeon/global-trade-dashboard`  
+Cloudflare 배포가 아니다. PR merge 전에도 이 브랜치 fetch면 된다.
+
+## 0.5 왜 국무원 인사가 없어 보였는가 (2026-09-12)
+
+인명이 없었던 게 아니다. **읽는 파일과 UI 매칭이 구식이었다.**
+
+1. 정본 `config/china_leadership_extracted.json` (`as_of` 2026-09-12)에는 총리·부총리 4·국무위원 3·구성부문 **26곳**이 `party_state.state_council`에 있다.
+2. 공개 보드 `elections_board_v1.json`의 `countries[CHN].leadership.party_state`는 한동안 2026-08-09 사본이라 **총리·부총리만** 있었다. `build_board.py`를 안 돌렸기 때문이다. 2026-09-12에 추출본을 보드에 복사했다.
+3. `chn-org.js`의 `ministryPool()`은 `constituent_departments`를 읽지 않는다. `cmc.defense_minister` + `security_organs`만 본다. 그래서 보드를 맞춰도 화면은 국방·공안·국안 셋만 채우고 나머지는 **「명단 수집 예정」**으로 남는다.
+4. UI 계약 `HANDOFF_CLAUDE_ELECTIONS_UI_V2.md` §5 국무원 탭도 「총리·부총리」만 적혀 있다. `constituent_departments`를 읽도록 고치는 건 Claude UI 일이다 (`TASKS` claim).
+5. 당장 화면이 비지 않게, 골격 `elections_cn_party_v1.json`의 `state_council_ministries` 26곳에 `name_ko`/`name_en`을 넣었다. 이 파일이 매칭보다 우선한다.
+
+국무위원 3인(왕샤오훙·우정룽·선이친)은 국무원 탭에 단이 없다. 공안 겸직만 부처 칸에 나온다. 비서장·국무위원 단은 Claude가 탭을 열 때 추가한다.
 
 ## 0. Claude가 할 것 / 하지 말 것
 
@@ -17,7 +49,7 @@
 
 - 중국 화면 `공산당 / 국무원 / 군`을 그릴 때 이 표의 `confidence`·`status`를 따른다.
 - 출처·기준일(`as_of`)을 각주 또는 정보 버튼으로 노출할 수 있다.
-- `china_leadership_extracted.json` (`as_of` 2026-09-12)이 이 문서와 같은 패치다. UI는 `party_state.central_departments`의 판공 4곳과 `state_council.constituent_departments` 26곳을 읽으면 된다. 없는 칸(`mcf_office.director.status=unknown`)은 추측하지 마라.
+- `china_leadership_extracted.json` (`as_of` 2026-09-12, version 7)이 이 문서와 같은 패치다. UI는 `party_state.central_departments`의 판공 4곳과 `state_council.constituent_departments` 26곳을 읽으면 된다. 부처 칸에는 부장과 `party_group_secretary`를 같이 보여라. `same_as_minister=true`면 한 사람으로, `false`면 둘로. 없는 칸(`mcf_office.director.status=unknown`, 자연자원 부장 공석, 국방 당조 없음)은 추측하지 마라.
 
 **하지 말 것**
 
@@ -133,34 +165,37 @@ person: { name_en, name_zh, name_ko, since, rank_ko, status, note_ko }
 JSON `party_state.state_council`에 총리·부총리·국무위원과 구성부문 26곳이 있다.  
 23곳 필터: `cabinet_23 = true` 인 행만 (국방·인행·감사 제외).
 
-| 부처 | name_zh | 장관 | name_en | 취임 | cabinet_23 | confidence | 비고 |
-|---|---|---|---|---|---|---|---|
-| 외교부 | 外交部 | 왕이 | Wang Yi | 2023-07-25 | Y | high | 당위 서기는 제위 齐玉. 부장≠당서기 |
-| 국방부 | 国防部 | 둥쥔 | Dong Jun | 2023-12-29 | N | high | PLA 별선 |
-| 발개위 | 国家发展和改革委员会 | 정산제 | Zheng Shanjie | 2023-03-12 | Y | high | 재경위 아래 실무 |
-| 교육부 | 教育部 | 화이진펑 | Huai Jinpeng | 2021-08-20 | Y | high | |
-| 과학기술부 | 科学技术部 | 인허쥔 | Yin Hejun | 2023-10-24 | Y | high | |
-| 공신부 | 工业和信息化部 | 리러청 | Li Lecheng | 2025-04-30 | Y | high | 진좡룽 면. 주석령 48호 |
-| 국가민위 | 国家民族事务委员会 | 천루이펑 | Chen Ruifeng | 2025-09-12 | Y | high | |
-| 공안부 | 公安部 | 왕샤오훙 | Wang Xiaohong | 2022-06-24 | Y | high | 국무위원 겸 |
-| 국가안전부 | 国家安全部 | 천이신 | Chen Yixin | 2022-10-30 | Y | high | |
-| 민정부 | 民政部 | 리창관 | Li Changguan | 2026-08-28 | Y | high | 루즈위안 면. 주석령 85호 |
-| 사법부 | 司法部 | 허룽 | He Rong | 2023-02-24 | Y | high | 여성 |
-| 재정부 | 财政部 | 란포안 | Lan Fo'an | 2023-10-24 | Y | high | |
-| 인력자원사회보장부 | 人力资源和社会保障部 | 왕샤오핑 | Wang Xiaoping | 2022-12-30 | Y | high | 여성 |
-| 자연자원부 | 自然资源部 | 관즈어우 | Guan Zhi'ou | 2024-12-25 | Y | high | |
-| 생태환경부 | 生态环境部 | 황룬추 | Huang Runqiu | 2020-04-29 | Y | high | 구삼학사. 당조 서기는 쑨진룽 孙金龙 |
-| 주택도시농촌건설부 | 住房和城乡建设部 | 니훙 | Ni Hong | 2022-06-24 | Y | high | |
-| 교통운수부 | 交通运输部 | 류웨이 | Liu Wei | 2024-11-08 | Y | high | |
-| 수리부 | 水利部 | 리궈잉 | Li Guoying | 2021-02-28 | Y | high | |
-| 농업농촌부 | 农业农村部 | 장주 | Zhang Zhu | 2026-04-30 | Y | high | 한쥔 면. 거취 unknown. 주석령 76호 |
-| 상무부 | 商务部 | 왕원타오 | Wang Wentao | 2020-12-26 | Y | high | |
-| 문화여유부 | 文化和旅游部 | 쑨예리 | Sun Yeli | 2023-12-29 | Y | high | |
-| 국가위생건강위 | 国家卫生健康委员会 | 레이하이차오 | Lei Haichao | 2024-06-28 | Y | high | |
-| 퇴역군인사무부 | 退役军人事务部 | 페이진자 | Pei Jinjia | 2022-06-24 | Y | high | 군민융합 판공실 부주임 겸 |
-| 응급관리부 | 应急管理部 | 장청중 | Zhang Chengzhong | 2026-04-30 | Y | high | 왕샹시 2026-02 면. 주석령 76호 |
-| 중국인민은행 | 中国人民银行 | 판궁성 | Pan Gongsheng | 2023-07-25 | N | high | 중앙금융위 아래 |
-| 감사서 | 审计署 | 허우카이 | Hou Kai | 2020-06-30 | N | high | |
+각 부처 `party_group_secretary`: `same_as_minister=true`면 부장=당서기.  
+**분리는 환경부만이 아니다.** 외교부(당위 제위)와 자연자원부(당조 류궈훙, 부장은 공석)도 다르다. 국방부는 민간 당조가 없다.
+
+| 부처 | 장관 | 당서기 | 같음 | 비고 |
+|---|---|---|---|---|
+| 외교부 | 왕이 | 제위 齐玉 (당위) | 아니오 | fmprc.gov.cn |
+| 국방부 | 둥쥔 | 해당 없음 | — | PLA·군위 계통 |
+| 발개위 | 정산제 | 정산제 (당조) | 예 | ndrc.gov.cn |
+| 교육부 | 화이진펑 | 화이진펑 (당조) | 예 | moe.gov.cn |
+| 과학기술부 | 인허쥔 | 인허쥔 (당조) | 예 | most.gov.cn |
+| 공신부 | 리러청 | 리러청 (당조) | 예 | miit.gov.cn |
+| 국가민위 | 천루이펑 | 천루이펑 (당조) | 예 | neac.gov.cn |
+| 공안부 | 왕샤오훙 | 왕샤오훙 (당위) | 예 | gov.cn 약력 |
+| 국가안전부 | 천이신 | 천이신 (당위) | 예 | 중국장안망 2026-09 |
+| 민정부 | 리창관 | 리창관 (당조) | 예 | 인민망 부처명단. 주석령 85호는 부장 |
+| 사법부 | 허룽 | 허룽 (당조) | 예 | 인민망 부처명단 |
+| 재정부 | 란포안 | 란포안 (당조) | 예 | mof.gov.cn |
+| 인력자원사회보장부 | 왕샤오핑 | 왕샤오핑 (당조) | 예 | 인민망 부처명단 |
+| 자연자원부 | **공석** (2026-06-26~) | 류궈훙 刘国洪 (당조, 2026-07-30) | 아니오 | 주석령 79호 면 관즈어우. 후임 부장 인대 미임명. 관즈어우는 후베이성위 서기 |
+| 생태환경부 | 황룬추 | 쑨진룽 孙金龙 (당조) | 아니오 | mee.gov.cn. 부장은 구삼학사 |
+| 주택도시농촌건설부 | 니훙 | 니훙 (당조) | 예 | 인민망 부처명단 |
+| 교통운수부 | 류웨이 | 류웨이 (당조) | 예 | 인민망 부처명단 |
+| 수리부 | 리궈잉 | 리궈잉 (당조) | 예 | 인민망 부처명단 |
+| 농업농촌부 | 장주 | 장주 (당조) | 예 | moa.gov.cn |
+| 상무부 | 왕원타오 | 왕원타오 (당조) | 예 | 인민망 부처명단 |
+| 문화여유부 | 쑨예리 | 쑨예리 (당조) | 예 | mct.gov.cn |
+| 국가위생건강위 | 레이하이차오 | 레이하이차오 (당조) | 예 | 인민망 부처명단 |
+| 퇴역군인사무부 | 페이진자 | 페이진자 (당조) | 예 | 인민망 부처명단 |
+| 응급관리부 | 장청중 | 장청중 (당위) | 예 | mem.gov.cn |
+| 중국인민은행 | 판궁성 | 판궁성 (당위) | 예 | pbc.gov.cn |
+| 감사서 | 허우카이 | 허우카이 (당조) | 예 | audit.gov.cn |
 
 국무원 수뇌 (JSON과 일치, 유지):
 
@@ -170,7 +205,7 @@ JSON `party_state.state_council`에 총리·부총리·국무위원과 구성부
 
 ## 4. JSON 패치 (2026-09-12 Cursor)
 
-`config/china_leadership_extracted.json` version 6.
+`config/china_leadership_extracted.json` version 7.
 
 | 슬롯 | 패치 |
 |---|---|
@@ -179,8 +214,10 @@ JSON `party_state.state_council`에 총리·부총리·국무위원과 구성부
 | 군민융합 명목 주임 | `director.status=unknown`, 실무는 사오신이 |
 | 국무원 | 총리·부총리 4·국무위원 3 + `constituent_departments` 26 (`cabinet_23` 23곳) |
 | 민정부 | 리창관 (2026-08-28 주석령 85호) |
+| 당조/당위 | 26곳 모두 `party_group_secretary`. 분리: 외교 제위, 생태환경 쑨진룽, 자연자원 류궈훙. 자연자원 부장 공석 |
+| 자연자원 | 관즈어우 면 (주석령 79호, 2026-06-26). 후임 후베이성위 서기 |
 
-공개 보드 `elections_board_v1.json`은 이 추출 JSON을 `countries[CHN].leadership.party_state`로 복사한다. 이 브랜치는 추출 파일만 고쳤다. 보드 재생성은 `python3 build_board.py` (네트워크 배팅 fetch 있음).
+공개 보드 `elections_board_v1.json`의 `countries[CHN].leadership.party_state`는 2026-09-12에 추출본을 복사했다 (`sync_china_state_council_to_board.py`). 전체 `build_board.py`는 배팅 fetch가 있어 돌리지 않았다. 골격 `elections_cn_party_v1.json` 부처 26곳에도 같은 날 이름을 넣었다.
 
 ## 5. 렌더링 규칙 (중국 특수)
 

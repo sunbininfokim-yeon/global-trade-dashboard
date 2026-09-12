@@ -111,7 +111,7 @@ JPN은 `jpn.executive_live`, `jpn.legislature_live.chamber_leadership`, `jpn.sub
 | 탭 | 필드 경로 | 구현 가능 |
 |---|---|---|
 | 공산당 | `chn.leadership.party_state.general_secretary`, `.politburo_standing_committee`, `.politburo`, `.central_departments` | 총서기, 정치국 상무위·정치국, 조직·선전·정법·통전 등 핵심 부서 |
-| 국무원 | `chn.leadership.party_state.state_council` | 총리·부총리 |
+| 국무원 | `chn.leadership.party_state.state_council` | 총리·부총리 4·국무위원 3·`constituent_departments` 26. 각 부처 `party_group_secretary`(당조/당위). `same_as_minister=false`인 곳은 부장과 당서기를 둘 다 보여라: 외교 제위, 생태환경 쑨진룽, 자연자원 류궈훙(부장은 공석). 국방부는 당조 없음. `chn-org.js` `ministryPool()`은 아직 국방·공안·국안만 매칭하므로, 부처 이름은 `elections_cn_party_v1.json` `state_council_ministries[].name_ko` / `party_secretary_ko`가 우선이다. |
 | 군 | `chn.leadership.cmc`, `.service_branches`, `.theater_commands`, `chn.leadership.security_organs` | 중앙군사위, 군종, 5대 전구, 공안·국가안전 축 |
 | 지도 | `/public/data/admin1/CHN.json` | 도형만. 성별 행정수장 정치 데이터는 아직 없음 |
 
