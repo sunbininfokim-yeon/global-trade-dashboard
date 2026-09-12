@@ -153,9 +153,14 @@ const partyPostBoxes = (leadership) => {
     const pool = [
         ...(partyState.politburo_standing_committee?.rank_order || []),
         ...(partyState.politburo?.active || []),
+        // 4대 판공(판공청·정책연구실·재경위·군민융합)은 head 필드가 `minister`가
+        // 아니라 `director`다 -- 부장이 아니라 주임이라서다. 둘 중 있는 쪽을 쓴다.
         ...Object.values(partyState.central_departments || {})
-            .filter((value) => value && typeof value === 'object' && value.minister)
-            .map((value) => ({ ...value.minister, role_ko: value.minister.role_ko || value.title_ko })),
+            .filter((value) => value && typeof value === 'object' && (value.minister || value.director))
+            .map((value) => {
+                const head = value.minister || value.director;
+                return { ...head, role_ko: head.role_ko || value.title_ko };
+            }),
         ...Object.values(organs).filter((value) => value && typeof value === 'object' && (value.name_ko || value.name_en)),
     ];
     return PARTY_POSTS.map((post) => {
@@ -186,42 +191,65 @@ const vicePremierBoxes = (leadership) => {
     ];
 };
 
-// 부처 박스. 이름이 확보된 곳은 채우고 나머지는 '명단 수집 예정'으로 남긴다 --
-// 26개 부처 중 지금 이름이 있는 곳은 국방·공안·국가안전 셋뿐이고, 없는 곳을 지워
-// 버리면 화면이 "국무원은 부처가 셋"이라고 말하게 된다.
+// 부처 박스. `state_council.constituent_departments`(부처별 id·정본 명칭·부장·당위
+// 서기)가 있으면 그것을 그대로 26개 다 그린다 -- 이름이 확보된 곳만 골라내지 않는다.
+// 그 배열이 없는(더 오래된) 보드에서만 아래 골격 + cmc/security_organs 키워드
+// 매칭으로 내려앉는다.
 //
-// 매칭은 골격의 match_ko 를 사람 행의 title_ko·role_ko 에 대는 것뿐이다. 왕이처럼
+// 골격 매칭은 골격의 match_ko 를 사람 행의 title_ko·role_ko 에 대는 것뿐이다. 왕이처럼
 // 데이터가 '외교·중앙외사판공실'로만 적어 둔 사람은 외교부장으로 끌어오지 않는다 --
 // 실제로 겸하더라도 이 데이터가 말한 적 없는 자리를 화면이 지어내면 안 된다.
-const ministryPool = (leadership) => {
+const legacyMinistryPool = (leadership) => {
     const cmc = leadership.cmc || {};
     const organs = leadership.security_organs || {};
     return [cmc.defense_minister, ...Object.values(organs)]
         .filter((row) => row && typeof row === 'object' && (row.name_ko || row.name_en));
 };
 
-const ministryBoxes = (leadership) => {
-    const pool = ministryPool(leadership);
-    return MINISTRIES.map((ministry) => {
-        const supplied = ministry.name_ko || ministry.name_en ? ministry : null;
-        const match = supplied || pool.find((row) => (ministry.match_ko || [])
-            .some((needle) => String(row.title_ko || row.role_ko || '').includes(needle)));
-        return orgBox({
-            ko: ministry.ko,
-            en: ministry.en,
-            title: ministry.head_title_ko,
-            person: personWithStatus(match),
-            strike: isFallen(match),
-            note: [
-                match?.note_ko || match?.note,
-                match && match.on_cmc === false ? '중앙군사위 위원 아님' : '',
-            ].filter(Boolean).join(' · '),
-        });
+const constituentDepartmentBox = (dept) => orgBox({
+    ko: dept.title_ko,
+    en: dept.title_en || dept.title_zh || '',
+    title: dept.minister?.title_ko || '',
+    person: personWithStatus(dept.minister),
+    strike: isFallen(dept.minister),
+    note: [
+        dept.minister?.note_ko || dept.minister?.note,
+        dept.party_group_secretary ? `당위 서기 ${personName(dept.party_group_secretary)}` : '',
+    ].filter(Boolean).join(' · '),
+});
+
+const legacyMinistryBox = (ministry, pool) => {
+    const supplied = ministry.name_ko || ministry.name_en ? ministry : null;
+    const match = supplied || pool.find((row) => (ministry.match_ko || [])
+        .some((needle) => String(row.title_ko || row.role_ko || '').includes(needle)));
+    return orgBox({
+        ko: ministry.ko,
+        en: ministry.en,
+        title: ministry.head_title_ko,
+        person: personWithStatus(match),
+        strike: isFallen(match),
+        note: [
+            match?.note_ko || match?.note,
+            match && match.on_cmc === false ? '중앙군사위 위원 아님' : '',
+        ].filter(Boolean).join(' · '),
     });
 };
 
+const constituentDepartments = (leadership) => leadership.party_state?.state_council?.constituent_departments || [];
+
+const ministryBoxes = (leadership) => {
+    const departments = constituentDepartments(leadership);
+    if (departments.length) return departments.map(constituentDepartmentBox);
+    const pool = legacyMinistryPool(leadership);
+    return MINISTRIES.map((ministry) => legacyMinistryBox(ministry, pool));
+};
+
 const ministryFilledCount = (leadership) => {
-    const pool = ministryPool(leadership);
+    const departments = constituentDepartments(leadership);
+    if (departments.length) {
+        return departments.filter((dept) => personName(dept.minister) !== '불명').length;
+    }
+    const pool = legacyMinistryPool(leadership);
     return MINISTRIES.filter((ministry) => ministry.name_ko || ministry.name_en || pool.some((row) => (ministry.match_ko || [])
         .some((needle) => String(row.title_ko || row.role_ko || '').includes(needle)))).length;
 };
