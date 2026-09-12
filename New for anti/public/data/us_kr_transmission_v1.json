@@ -1,6 +1,6 @@
 {
   "schema_version": "us-kr-transmission-v1",
-  "as_of": "2026-09-11",
+  "as_of": "2026-09-12",
   "model_version": "uskr-scenario-2026-08",
   "headline": "high:downside",
   "headline_ko": "높음 · 하방",
@@ -23,7 +23,7 @@
       "put_call_oi": 1.7331,
       "options_total_volume": 361937.0,
       "short_chg_pct": 60.497,
-      "day_return": 0.051745,
+      "day_return": 0.0,
       "premarket_gap": null,
       "premarket_gap_quality": "missing",
       "downside_score": 1.875,
@@ -42,7 +42,7 @@
       "put_call_oi": 1.5657,
       "options_total_volume": 284782.0,
       "short_chg_pct": 2.493,
-      "day_return": 0.013636,
+      "day_return": 0.000616,
       "premarket_gap": null,
       "premarket_gap_quality": "missing",
       "downside_score": 1.875,
@@ -61,7 +61,7 @@
       "put_call_oi": 1.3787,
       "options_total_volume": 6767392.0,
       "short_chg_pct": 2.181,
-      "day_return": 0.009327,
+      "day_return": 1.4e-05,
       "premarket_gap": null,
       "premarket_gap_quality": "missing",
       "downside_score": 1.875,
@@ -80,7 +80,7 @@
       "put_call_oi": 2.5314,
       "options_total_volume": 10495450.0,
       "short_chg_pct": -11.358,
-      "day_return": 0.009131,
+      "day_return": 0.0,
       "premarket_gap": null,
       "premarket_gap_quality": "missing",
       "downside_score": 1.708,
@@ -182,54 +182,10 @@
       ]
     },
     "upside": {
-      "level": "watch",
-      "heat": 2.3268,
-      "kr_tickers": [
-        "000660",
-        "005930"
-      ],
-      "drivers": [
-        {
-          "us": "KORU",
-          "kr": "005930",
-          "heat": 0.6947,
-          "edge_type": "discovered_corr",
-          "tier": "B",
-          "regimes": [
-            "upside_call_bid"
-          ]
-        },
-        {
-          "us": "AMD",
-          "kr": "005930",
-          "heat": 0.5633,
-          "edge_type": "discovered_corr",
-          "tier": "B",
-          "regimes": [
-            "upside_call_bid"
-          ]
-        },
-        {
-          "us": "KORU",
-          "kr": "000660",
-          "heat": 0.5396,
-          "edge_type": "korea_country",
-          "tier": "A",
-          "regimes": [
-            "upside_call_bid"
-          ]
-        },
-        {
-          "us": "AMD",
-          "kr": "000660",
-          "heat": 0.5292,
-          "edge_type": "demand_ai_gpu",
-          "tier": "A",
-          "regimes": [
-            "upside_call_bid"
-          ]
-        }
-      ]
+      "level": "quiet",
+      "heat": 0.0,
+      "kr_tickers": [],
+      "drivers": []
     },
     "vol_up": {
       "level": "quiet",
@@ -378,73 +334,9 @@
         "downside_put_bid"
       ],
       "us_stress_level": "watch"
-    },
-    {
-      "edge_id": "disc_koru_005930",
-      "us": "KORU",
-      "kr": "005930",
-      "edge_type": "discovered_corr",
-      "tier": "B",
-      "quality": "estimated",
-      "channel": "upside",
-      "weight": 0.515,
-      "us_score": 1.349,
-      "heat": 0.6947,
-      "us_regimes": [
-        "upside_call_bid"
-      ],
-      "us_stress_level": "watch"
-    },
-    {
-      "edge_id": "disc_amd_005930",
-      "us": "AMD",
-      "kr": "005930",
-      "edge_type": "discovered_corr",
-      "tier": "B",
-      "quality": "estimated",
-      "channel": "upside",
-      "weight": 0.479,
-      "us_score": 1.176,
-      "heat": 0.5633,
-      "us_regimes": [
-        "upside_call_bid"
-      ],
-      "us_stress_level": "watch"
-    },
-    {
-      "edge_id": "koru_korea_beta",
-      "us": "KORU",
-      "kr": "000660",
-      "edge_type": "korea_country",
-      "tier": "A",
-      "quality": "structural",
-      "channel": "upside",
-      "weight": 0.4,
-      "us_score": 1.349,
-      "heat": 0.5396,
-      "us_regimes": [
-        "upside_call_bid"
-      ],
-      "us_stress_level": "watch"
-    },
-    {
-      "edge_id": "amd_hynix_demand",
-      "us": "AMD",
-      "kr": "000660",
-      "edge_type": "demand_ai_gpu",
-      "tier": "A",
-      "quality": "structural",
-      "channel": "upside",
-      "weight": 0.45,
-      "us_score": 1.176,
-      "heat": 0.5292,
-      "us_regimes": [
-        "upside_call_bid"
-      ],
-      "us_stress_level": "watch"
     }
   ],
-  "tier_b_edges_fired": 7,
+  "tier_b_edges_fired": 5,
   "kospi_open30m_prior": {
     "kr": "000660",
     "proxy": "US close ±2% buckets (options history not used)",
@@ -467,8 +359,8 @@
           "median": 0.024732,
           "p10": -0.010532,
           "p90": 0.081119,
-          "frac_neg": 0.2449,
-          "frac_pos": 0.7551
+          "frac_neg": 0.2347,
+          "frac_pos": 0.7653
         },
         "overnight_baseline": {
           "label": "all",
@@ -477,8 +369,8 @@
           "median": 0.001981,
           "p10": -0.043039,
           "p90": 0.062945,
-          "frac_neg": 0.4756,
-          "frac_pos": 0.5244
+          "frac_neg": 0.4715,
+          "frac_pos": 0.5285
         },
         "open30m_us_down": {
           "label": "us_down",
@@ -519,8 +411,8 @@
           "median": 0.024732,
           "p10": -0.01579,
           "p90": 0.077118,
-          "frac_neg": 0.2368,
-          "frac_pos": 0.7632
+          "frac_neg": 0.2281,
+          "frac_pos": 0.7719
         },
         "overnight_baseline": {
           "label": "all",
@@ -529,8 +421,8 @@
           "median": 0.001981,
           "p10": -0.043039,
           "p90": 0.062945,
-          "frac_neg": 0.4756,
-          "frac_pos": 0.5244
+          "frac_neg": 0.4715,
+          "frac_pos": 0.5285
         },
         "open30m_us_down": {
           "label": "us_down",
@@ -581,8 +473,8 @@
           "median": 0.001981,
           "p10": -0.043039,
           "p90": 0.062945,
-          "frac_neg": 0.4756,
-          "frac_pos": 0.5244
+          "frac_neg": 0.4715,
+          "frac_pos": 0.5285
         },
         "open30m_us_down": {
           "label": "us_down",
@@ -629,7 +521,7 @@
         "AMZN"
       ],
       "mean_of_means": 0.031273,
-      "hit_rate_mean": 0.7158,
+      "hit_rate_mean": 0.7235,
       "note_ko": "하방=익일 KR open R<0 비율 평균; 상방=R>0 비율 평균"
     },
     "vol_up": {
@@ -642,8 +534,8 @@
           "median": 0.00267,
           "p10": -0.042958,
           "p90": 0.062294,
-          "frac_neg": 0.4699,
-          "frac_pos": 0.5301
+          "frac_neg": 0.4659,
+          "frac_pos": 0.5341
         },
         "vix_up": {
           "label": "vix_up",
