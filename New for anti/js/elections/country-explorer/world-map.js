@@ -7,6 +7,17 @@ const spectrumColors = {
     authoritarian_personalist: [100, 116, 139, 185],
     authoritarian_party_state: [71, 85, 105, 185],
     theocratic_authoritarian: [20, 83, 45, 185],
+    // CHN/SAU/ARE/RUS carry these three instead of the generic
+    // authoritarian_* keys above, so without an entry here they fell through
+    // to `neutral` -- indistinguishable from a country with no spectrum data
+    // at all (reported 2026-09-12: "중국은 왜 색깔이 없는거야?"). Not a request
+    // to force a Western left-right hue onto them (CLAUDE.md rules that out
+    // for China specifically) -- reusing the existing non-partisan
+    // authoritarian_* slate tones keeps them visibly distinct from "no data"
+    // without placing them on the conservative/progressive axis.
+    authoritarian_cpc: [71, 85, 105, 185],
+    authoritarian_ur: [100, 116, 139, 185],
+    authoritarian_monarchy: [110, 90, 60, 185],
 };
 const neutral = [43, 52, 66, 255];
 
