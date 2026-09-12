@@ -200,6 +200,28 @@ const scaffoldRows = (scaffold, supplied, live, consumed) => {
     return [...rows, ...extra].join('');
 };
 
+// white_house.topical_advisors (usa_wh_topical_advisors_v1) is a separate,
+// flatter WHO-payroll extract from the curated ADVISOR_DOMAINS scaffold above:
+// no fixed six domains, no single person per box -- some domains carry up to
+// three names (신앙, 무역·제조). Grouped by domain_ko into one card per topic,
+// reusing card()'s existing escaping/grid rather than a new box shape.
+// office_en is the payroll title verbatim, never translated or guessed.
+// unscoped_senior_advisors deliberately never enters this map -- the handoff
+// doc requires it stay out of the topical roster, not folded in as "기타".
+const topicalAdvisorRows = (topical) => {
+    const byDomain = new Map();
+    (topical?.members || []).forEach((row) => {
+        const key = row.domain_ko || row.domain || '기타';
+        if (!byDomain.has(key)) byDomain.set(key, []);
+        byDomain.get(key).push(row);
+    });
+    return [...byDomain.entries()].map(([domainKo, rows]) => card(
+        domainKo,
+        rows.map((row) => row.name_en || '불명').join(' · '),
+        rows.map((row) => row.office_en || '').filter(Boolean).join(' · '),
+    )).join('');
+};
+
 const advisorRows = (supplied) => {
     const byDomain = new Map((supplied || []).map((row) => [row.domain, row]));
     const rows = ADVISOR_DOMAINS.map((box) => {
@@ -241,6 +263,8 @@ export const usaExecutive = (country) => {
         consumed,
     );
     const advisors = advisorRows(live.special_assistants);
+    const topical = whiteHouse?.topical_advisors;
+    const topicalCount = (topical?.members || []).length;
 
     const coreRows = (live.core || []).filter((row) => !consumed.has(row.office_ko));
     const cabinet = (live.cabinet || []).filter((row) => !consumed.has(row.portfolio_ko));
@@ -261,6 +285,13 @@ export const usaExecutive = (country) => {
 
         <p class="section-title">4 · 실·국 (수석급)</p>
         <div class="elections-org-grid">${offices}</div>
+
+        ${topicalCount ? `
+        <p class="section-title">5 · 백악관 주제별 보좌관 ${topicalCount}명</p>
+        <div class="elections-card-grid">${topicalAdvisorRows(topical)}</div>
+        ${topical.unscoped_senior_advisors?.length ? `<p class="elections-panel-note">담당 주제가 직함에 없는 Senior Advisor ${topical.unscoped_senior_advisors.length}명(위 명단과 별도, 담당 미기재): ${escapeHtml(topical.unscoped_senior_advisors.map((row) => row.name_en || '불명').join(', '))}</p>` : ''}
+        ${topical.payroll_as_of ? `<p class="elections-panel-note">WHO 급여명부 기준일 ${escapeHtml(topical.payroll_as_of)}</p>` : ''}
+        ` : ''}
 
         ${cabinet.length ? `<details class="elections-disclosure elections-cabinet-list"><summary>내각 ${cabinet.length}명 보기</summary><div class="elections-disclosure-rows">${cabinet.map((row) => `<div><span>${escapeHtml(row.portfolio_ko || '직책')}</span><strong>${personLinkHtml(escapeHtml(personText(row) || '불명'), row.official_url)}</strong></div>`).join('')}</div></details>` : ''}
         <p class="elections-panel-note">2~4단은 대통령실(EOP) 조직도 기준 골격입니다. 사람이 비어 있는 칸은 명단 미수집이며, 공석이라는 뜻이 아닙니다.</p>
