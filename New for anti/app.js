@@ -4947,7 +4947,16 @@ const electionHost = () => ({
         return resolveCountry(name)?.iso || '';
     },
     setWorldMap(layers, onClick) {
-        currentViewState = clampGlobeView({ ...currentViewState, zoom: GLOBE_ZOOM });
+        // longitude/latitude reset to center, not just zoom: this view has one
+        // fixed framing, unlike setElectionMap's country drill-in which passes
+        // its own viewState on purpose. Without the reset, returning here from
+        // a country left currentViewState at that country's centroid (e.g. USA
+        // around -98°) -- with repeat:false there's no wraparound to paper over
+        // an off-center world, so the whole map visibly shifted right, opening
+        // a gap on the west side and cropping Asia/Australia against the right
+        // edge (reported 2026-09-12, reproduced: world map centered on -98°
+        // longitude after a USA drill-in + back-to-world round trip).
+        currentViewState = clampGlobeView({ ...currentViewState, longitude: 0, latitude: 15, zoom: GLOBE_ZOOM });
         // repeat:false here, unlike the other maps this app shares. At the
         // default GLOBE_ZOOM (0.85) the viewport is wider than one world, so
         // repeat:true draws multiple side-by-side copies -- and deck.gl's
