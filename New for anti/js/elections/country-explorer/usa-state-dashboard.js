@@ -1,4 +1,4 @@
-import { escapeHtml, formatDate, personLinkHtml, stateLabel } from '../ui.js';
+import { bioguideUrl, escapeHtml, formatDate, personLinkHtml, stateLabel } from '../ui.js';
 import { usaStateSuperPac } from './special/usa-state-superpac.js';
 
 const party = (value) => ({ DEM: '민주당', GOP: '공화당', IND: '무소속', NP: '무당파' }[value] || value || '');
@@ -11,7 +11,7 @@ const person = (row) => {
     if (row.not_applicable) return escapeHtml(`해당 직위 없음${row.note ? ` · ${row.note}` : ''}`);
     const affiliation = party(row.abbr || row.party);
     const label = escapeHtml([row.name || '불명', affiliation, row.note].filter(Boolean).join(' · '));
-    return personLinkHtml(label, row.bioguideId);
+    return personLinkHtml(label, row.bioguideId && bioguideUrl(row.bioguideId));
 };
 const seatLine = (body) => {
     if (!body) return '해당 없음';

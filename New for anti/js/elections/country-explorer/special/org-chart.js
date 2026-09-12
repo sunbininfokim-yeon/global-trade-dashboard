@@ -1,14 +1,18 @@
-import { escapeHtml } from '../../ui.js';
+import { escapeHtml, personLinkHtml } from '../../ui.js';
 
 // The box vocabulary every 행정부 org chart draws with. Built for the EOP
 // screen, then shared: 일본 내각 and 중국 당·국가 체제 are the same picture with
 // different tiers, and a shared box is what keeps them looking like one
 // dashboard rather than three.
 
-export const card = (label, value, note = '') => `
+// url is optional and only USA's EOP rows carry one today (executive_live's
+// official_url) -- escaping and link-wrapping stay centralised here rather
+// than pushed onto each caller, so JPN/CHN callers that don't pass a url are
+// unaffected and pick up linking for free whenever their own data gets one.
+export const card = (label, value, note = '', url = null) => `
     <article class="elections-card">
         <div class="elections-card-label">${escapeHtml(label)}</div>
-        <div class="elections-card-value">${escapeHtml(value || '명단 수집 예정')}</div>
+        <div class="elections-card-value">${value ? personLinkHtml(escapeHtml(value), url) : '명단 수집 예정'}</div>
         ${note ? `<div class="elections-event-meta">${escapeHtml(note)}</div>` : ''}
     </article>`;
 
@@ -18,9 +22,10 @@ export const card = (label, value, note = '') => `
 //
 // `strike` marks a name the source itself struck through (중국 실각·조사자).
 // An empty person renders "명단 수집 예정" -- never a guess, and never to be
-// read as "이 자리는 공석".
+// read as "이 자리는 공석". `personUrl` links the name when the row carries
+// one (USA EOP's official_url); no other caller passes it yet.
 export const orgBox = ({
-    abbr, ko, en, title, person, note, strike = false, vacant = false,
+    abbr, ko, en, title, person, personUrl = null, note, strike = false, vacant = false,
     commissar, commissarTitle, commissarStrike = false, former,
 }) => `
     <article class="elections-org-box">
@@ -29,7 +34,7 @@ export const orgBox = ({
         ${en ? `<div class="elections-org-box-en">${escapeHtml(en)}</div>` : ''}
         <div class="elections-org-box-person${person ? '' : ' is-empty'}${person && strike ? ' is-fallen' : ''}${person && vacant ? ' is-vacant' : ''}">
             ${person && title ? `<span class="elections-org-box-title">${escapeHtml(title)}</span>` : ''}
-            ${escapeHtml(person || '명단 수집 예정')}
+            ${person ? personLinkHtml(escapeHtml(person), personUrl) : '명단 수집 예정'}
         </div>
         ${commissar ? `<div class="elections-org-box-person is-second${commissarStrike ? ' is-fallen' : ''}">
             ${commissarTitle ? `<span class="elections-org-box-title">${escapeHtml(commissarTitle)}</span>` : ''}

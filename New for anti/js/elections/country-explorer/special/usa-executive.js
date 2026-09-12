@@ -1,4 +1,4 @@
-import { escapeHtml } from '../../ui.js';
+import { escapeHtml, personLinkHtml } from '../../ui.js';
 import { card, orgBox } from './org-chart.js';
 
 // The EOP org chart (대통령 → 비서실 → 위원회 → 실·국) is institutional
@@ -95,6 +95,7 @@ const whCouncilRows = (whiteHouse) => (whiteHouse?.councils || []).map((council)
         org_en: council.name_en || null,
         head_title_ko: head?.office_ko || '',
         name_en: head?.name_en || null,
+        official_url: head?.official_url || null,
         note_ko: council.note_ko || null,
     };
 });
@@ -103,6 +104,7 @@ const whOfficeRows = (whiteHouse) => (whiteHouse?.eop_office_heads || []).map((o
     abbr: String(office.id || '').toUpperCase(),
     head_title_ko: office.office_ko || '',
     name_en: office.name_en || null,
+    official_url: office.official_url || null,
     status: office.status || null,
     note_ko: office.note_ko || null,
 }));
@@ -138,16 +140,23 @@ const whStaffExtraRows = (whiteHouse) => {
             org_ko: WH_STAFF_ORG_KO[row.id],
             head_title_ko: row.office_ko || '',
             name_en: row.name_en || null,
+            official_url: row.official_url || null,
             note_ko: row.note_ko || null,
         }));
     const deputies = (whiteHouse?.deputy_chiefs_of_staff || []).map((row, index) => ({
         abbr: `WH_DCOS_${index}`,
         org_ko: row.office_ko || '부비서실장',
         name_en: row.name_en || null,
+        official_url: row.official_url || null,
     }));
     return [...assistants, ...deputies];
 };
 
+// Plain text, not HTML: card()/orgBox() (org-chart.js) do their own escaping
+// and, given a url, their own linking -- every call site below passes
+// row?.official_url alongside personText(row) rather than baking a link into
+// this string, so the two callers that DON'T go through org-chart.js (the
+// cabinet disclosure list) can still choose to link via personLinkHtml().
 const personText = (row) => {
     if (!row) return '';
     const name = row.name_ko || row.name_en;
@@ -166,16 +175,17 @@ const scaffoldRows = (scaffold, supplied, live, consumed) => {
         const data = byAbbr.get(box.abbr);
         byAbbr.delete(box.abbr);
         let person = personText(data);
+        let personUrl = data?.official_url || null;
         let title = data?.head_title_ko || '';
         if (!person && box.prefillCore) {
             const core = findBy(live.core, 'office_ko', box.prefillCore);
-            if (core) { person = personText(core); title = title || box.prefillTitle; consumed.add(box.prefillCore); }
+            if (core) { person = personText(core); personUrl = core.official_url || null; title = title || box.prefillTitle; consumed.add(box.prefillCore); }
         }
         if (!person && box.prefillCabinet) {
             const seat = findBy(live.cabinet, 'portfolio_ko', box.prefillCabinet);
-            if (seat) { person = personText(seat); title = title || box.prefillTitle; consumed.add(box.prefillCabinet); }
+            if (seat) { person = personText(seat); personUrl = seat.official_url || null; title = title || box.prefillTitle; consumed.add(box.prefillCabinet); }
         }
-        return orgBox({ abbr: box.abbr, ko: box.ko, en: box.en, title, person, note: data?.note_ko });
+        return orgBox({ abbr: box.abbr, ko: box.ko, en: box.en, title, person, personUrl, note: data?.note_ko });
     });
     // Anything the data carries that the scaffold doesn't know about yet.
     const extra = [...byAbbr.values()].map((row) => orgBox({
@@ -184,6 +194,7 @@ const scaffoldRows = (scaffold, supplied, live, consumed) => {
         en: row.org_en || '',
         title: row.head_title_ko,
         person: personText(row),
+        personUrl: row.official_url || null,
         note: row.note_ko,
     }));
     return [...rows, ...extra].join('');
@@ -194,12 +205,13 @@ const advisorRows = (supplied) => {
     const rows = ADVISOR_DOMAINS.map((box) => {
         const data = byDomain.get(box.domain);
         byDomain.delete(box.domain);
-        return orgBox({ ko: box.ko, en: '', title: data?.title_ko, person: personText(data), note: data?.note_ko });
+        return orgBox({ ko: box.ko, en: '', title: data?.title_ko, person: personText(data), personUrl: data?.official_url || null, note: data?.note_ko });
     });
     const extra = [...byDomain.values()].map((row) => orgBox({
         ko: row.domain_ko || row.domain || '기타',
         title: row.title_ko,
         person: personText(row),
+        personUrl: row.official_url || null,
         note: row.note_ko,
     }));
     return [...rows, ...extra].join('');
@@ -237,7 +249,7 @@ export const usaExecutive = (country) => {
     return `
         <p class="section-title">1 · 대통령·부통령·비서실</p>
         <div class="elections-card-grid">
-            ${coreRows.map((row) => card(row.office_ko || '직책', personText(row))).join('') || '<p class="elections-muted">확보된 공개 명부가 없습니다.</p>'}
+            ${coreRows.map((row) => card(row.office_ko || '직책', personText(row), '', row.official_url)).join('') || '<p class="elections-muted">확보된 공개 명부가 없습니다.</p>'}
         </div>
 
         <p class="section-title">2 · 대통령 직속 위원회</p>
@@ -250,7 +262,7 @@ export const usaExecutive = (country) => {
         <p class="section-title">4 · 실·국 (수석급)</p>
         <div class="elections-org-grid">${offices}</div>
 
-        ${cabinet.length ? `<details class="elections-disclosure elections-cabinet-list"><summary>내각 ${cabinet.length}명 보기</summary><div class="elections-disclosure-rows">${cabinet.map((row) => `<div><span>${escapeHtml(row.portfolio_ko || '직책')}</span><strong>${escapeHtml(personText(row) || '불명')}</strong></div>`).join('')}</div></details>` : ''}
+        ${cabinet.length ? `<details class="elections-disclosure elections-cabinet-list"><summary>내각 ${cabinet.length}명 보기</summary><div class="elections-disclosure-rows">${cabinet.map((row) => `<div><span>${escapeHtml(row.portfolio_ko || '직책')}</span><strong>${personLinkHtml(escapeHtml(personText(row) || '불명'), row.official_url)}</strong></div>`).join('')}</div></details>` : ''}
         <p class="elections-panel-note">2~4단은 대통령실(EOP) 조직도 기준 골격입니다. 사람이 비어 있는 칸은 명단 미수집이며, 공석이라는 뜻이 아닙니다.</p>
         ${sourceLabels.length ? `<p class="elections-panel-note">공개 명부: ${escapeHtml(sourceLabels.join(' / '))}</p>` : ''}
         ${(whiteHouse?.missing || []).length ? `<p class="elections-panel-note">미확보: ${escapeHtml(whiteHouse.missing.join(', '))}</p>` : ''}
