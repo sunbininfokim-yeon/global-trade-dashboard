@@ -1,7 +1,7 @@
 # HANDOFF → Claude — 중국 당 4대 판공 + 국무원 구성부문 인사
 
-**contract_updated:** 2026-09-11  
-**as_of:** 2026-09-11  
+**contract_updated:** 2026-09-12  
+**as_of:** 2026-09-12  
 **작성:** Cursor  
 **읽는 이:** Claude Code  
 **소유권:** 인사 정본·출처 = Cursor. UI 표시 = Claude (`TASKS` claim 있을 때만).  
@@ -24,6 +24,7 @@
 - `app.js` / `style.css` / `index.html` / `data.js` / `_worker.js` 수정 금지. claim 없는 UI 구현 금지.
 - 낙마·조사 루머를 단정 문장으로 바꾸지 마라. 공식 면직만 `removed`, 거취 미발표는 `status: unknown`.
 - DoD CMPR·USCC를 인명 1차로 쓰지 마라. 하버드 CBDB를 현직에 쓰지 마라.
+- **위키백과·바이두백과를 성명 확정·월간 점검에 쓰지 마라.** 의전 추론의 입구로만 봤다면 국가 1차 또는 아래 연구실로 다시 확인하라.
 - 국무원 구성부문을 23곳으로 줄여 그리지 마라. 공식은 **26곳**. 23곳은 국방·인행·감사 제외 필터다.
 
 ## 1. 왜 당 인사가 비는가
@@ -33,12 +34,13 @@
 
 | 층 | 무엇을 주나 | 인명 1차인가 |
 |---|---|---|
-| 신화사·중국정부망·인대망 | 부장 임면, 일부 약력 | 예 (국가) |
-| DoD CMPR 2025, USCC 2025 | 군민융합 **전략**, 1260H 기업 | 아니오 |
-| 하버드 Ash/Fairbank/CBDB/Dataverse | 조직사·역사 엘리트 | 아니오 |
-| Trivium / Caixin / Hoover PRC Leader | 당 판공실 직함 교차 | 2차 (국가매체 인용 후) |
-
-Victor Shih CCP Elite DB는 직위 코드가 촘촘하나 **UCSD/China Data Lab**이지 하버드가 아니다.
+| 신화사·중국정부망·인대망 주석령 | 부장 임면, 일부 약력 | 예 |
+| UCSD China Data Lab / 21st Century China Center | CCP Elite 직위 코드·엘리트 포털 | 교차 (신청제 데이터) |
+| China Leadership Monitor (CMC / 구 Hoover) | 당 기구·엘리트 정치 계간 | 해석. 성명은 국가 1차로 재확인 |
+| DoD CMPR, USCC, CMSI, CASI | 군·MCF **전략** | 아니오 |
+| 하버드 Fairbank·Ash·Dataverse | 조직사·역사. 현직 트래커 아님 | 아니오 |
+| Trivium / Caixin / NPC Observer | 당 판공·인대 임면 속보 | 2차 (국가매체 인용 후) |
+| 위키백과 | — | **쓰지 않음** |
 
 ## 2. 당 4대 직위 (요청 범위)
 
@@ -142,7 +144,7 @@ JSON `party_state.state_council`은 지금 총리+부총리 4명만 있다. 부�
 | 국가민위 | 国家民族事务委员会 | 천루이펑 | Chen Ruifeng | 2025-09-12 | Y | high | |
 | 공안부 | 公安部 | 왕샤오훙 | Wang Xiaohong | 2022-06-24 | Y | high | 국무위원 겸 |
 | 국가안전부 | 国家安全部 | 천이신 | Chen Yixin | 2022-10-30 | Y | high | |
-| 민정부 | 民政部 | 루즈위안 | Lu Zhiyuan | 2023-12-29 | Y | high | |
+| 민정부 | 民政部 | 리창관 | Li Changguan | 2026-08-28 | Y | high | 루즈위안 면. 주석령 85호 |
 | 사법부 | 司法部 | 허룽 | He Rong | 2023-02-24 | Y | high | 여성 |
 | 재정부 | 财政部 | 란포안 | Lan Fo'an | 2023-10-24 | Y | high | |
 | 인력자원사회보장부 | 人力资源和社会保障部 | 왕샤오핑 | Wang Xiaoping | 2022-12-30 | Y | high | 여성 |
@@ -180,6 +182,7 @@ JSON `party_state.state_council`은 지금 총리+부총리 4명만 있다. 부�
 | 공신부 | 없음 | 리러청 (2025-04) |
 | 농업농촌부 | 없음 | 장주 (2026-04). 한쥔 unknown |
 | 응급관리부 | 없음 | 장청중 (2026-04) |
+| 민정부 | 없음 | 리창관 (2026-08-28). 루즈위안 면 |
 
 Cursor가 JSON을 패치하기 전에는 UI가 옛 JSON만 읽으면 판공 4곳·부장 26곳이 안 나온다.  
 claim이 있으면 이 문서 표를 읽기 전용 데이터로 쓸 수 있다. 없으면 표시하지 말고 이 문서를 읽고 넘어가라.
@@ -194,42 +197,100 @@ claim이 있으면 이 문서 표를 읽기 전용 데이터로 쓸 수 있다. 
 - 숙청 문구는 `china_leadership_extracted.json`의 `display: strikethrough`만 따른다. 이 문서 4대 판공에는 해당 없음.
 - 중국에 서구 좌우 색을 강제하지 마라.
 
-## 6. 출처 (매달 같은 순서)
+## 6. 출처 계층 (위키 제외)
 
-1차 국가
+성명 확정은 항상 국가 1차. 연구실은 교차·해석·누락 탐지. 위키·바이두백과는 점검 목록에 넣지 않는다.
+
+### 6.1 1차 국가 (성명)
 
 - https://www.gov.cn/gwyzzjg/
-- http://www.npc.gov.cn/ — 임면. 농업·응급 2026-04-30: `.../202604/t20260430_454282.html`
-- 주석령 76호: https://www.gov.cn/yaowen/liebiao/202604/content_7067518.htm
+- http://www.npc.gov.cn/ — 상무위 임면
+- 농업·응급 주석령 76호 (2026-04-30): https://www.gov.cn/yaowen/liebiao/202604/content_7067518.htm
+- 민정 주석령 85호 (2026-08-28, 리창관): https://www.gov.cn/yaowen/liebiao/202608/content_7079463.htm
 - 신화사 허리펑 약력: http://www.news.cn/politics/leaders/2023-10/30/c_1129280455.htm
 
-1차 미 정부·의회 (구조, 인명 아님)
+### 6.2 1차 미 정부·의회 (구조·전략. 당 판공 성명 아님)
 
 - DoD CMPR 2025: https://media.defense.gov/2025/Dec/23/2003849070/-1/-1/1/ANNUAL-REPORT-TO-CONGRESS-MILITARY-AND-SECURITY-DEVELOPMENTS-INVOLVING-THE-PEOPLES-REPUBLIC-OF-CHINA-2025.PDF
 - USCC 2025: https://www.uscc.gov/sites/default/files/2025-11/2025_Annual_Report_to_Congress.pdf
 - CRS: https://crsreports.congress.gov/ (검색 China Communist Party)
+- ODNI Annual Threat Assessment (연 1회, 인명 트래커 아님)
 
-하버드·학계
+### 6.3 연구실 — 인사·엘리트 정치 (우선)
 
-- Chinese Organizational History Dataset: https://doi.org/10.7910/dvn/8nagss
-- Political-Legal Leaders (Yuhua Wang): https://doi.org/10.7910/dvn/gfam1t
-- Fairbank: https://fairbank.fas.harvard.edu/
-- CBDB: https://projects.iq.harvard.edu/cbdb
-- Ash Center: https://ash.harvard.edu/
+| ID | 기관 | URL | 쓰는 이유 | 한계 |
+|---|---|---|---|---|
+| UCSD-21CCC | UC San Diego 21st Century China Center (Susan Shirk 창립, 2026-07부터 Margaret Roberts 소장, Victor Shih 전 소장) | https://china.ucsd.edu/ | 미국 대학 중국 정치 허브. 엘리트·당국가 | 현직 명단을 매월 안 냄 |
+| UCSD-CDL | UCSD China Data Lab / CCP Elite Database (Victor Shih, Jonghyuk Lee) | https://chinadatalab.ucsd.edu/ · Dataverse | 당·정·군 직위 코드가 가장 촘촘 | 신청제. 하버드 아님 |
+| CLM | China Leadership Monitor — Claremont McKenna, 편집 Minxin Pei. 2002 Hoover Alice Miller 창간, 2018 CMC로 이전 | https://www.prcleader.org/ | 당 기구·엘리트 정치 계간. 2026-09 Issue 89 | 성명은 국가 1차로 재확인 |
+| HARV-FAIRBANK | Harvard Fairbank Center | https://fairbank.fas.harvard.edu/ | 중국학 본산. 세미나·연구 | 현직 내각 트래커 아님 |
+| HARV-ASH | Harvard Kennedy School Ash Center | https://ash.harvard.edu/ | 거버넌스·중국 프로그램 | 현직 명단 아님 |
+| HARV-COHD | Chinese Organizational History Dataset (Hao Chen, Yuhua Wang 등) | https://doi.org/10.7910/dvn/8nagss | 조직사 이력 | 역사. 2026 내각 아님 |
+| HARV-PL | Chinese Political-Legal Leaders (Yuhua Wang) | https://doi.org/10.7910/dvn/gfam1t | 정법 엘리트 | 현직 판공실에 약함 |
+| HARV-CBDB | China Biographical Database | https://projects.iq.harvard.edu/cbdb | 제정·근현대 | **당대 판공실에 쓰지 말 것** |
+| STAN-SCCEI | Stanford Center on China's Economy and Institutions | https://sccei.fsi.stanford.edu/ | 중국 경제·산업·혁신 | 인사보다 구조 |
+| STAN-DIGI | Stanford DigiChina (Graham Webster) | https://digichina.stanford.edu/ | 사이버·디지털 거버넌스 문건 | 판공청·망신위 교차 |
+| SAIS | Johns Hopkins SAIS China Studies | https://sais.jhu.edu/ | 외교·안보 중국 전공 | 명단 아님 |
+| COL-WEAI | Columbia Weatherhead East Asian Institute | https://weai.columbia.edu/ | 동아시아 정치 | 명단 아님 |
+| ANU-GO | Wen-Hsuan Tsai, CCP General Office | https://doi.org/10.22459/rts.2025.04 | 판공청 기능 논문 | 단편 |
 
-싱크탱크·속보
+### 6.4 연구실 — 군·군민융합
 
-- Hoover PRC Leader: https://www.prcleader.org/
-- Trivium 탕팡위: https://triviumchina.com/2026/01/15/tang-fangyu-takes-the-helm-at-central-policy-research-office/
-- Caixin 탕팡위: https://www.caixinglobal.com/2026-01-15/china-names-veteran-theorist-to-lead-top-policy-office-102404191.html
-- Foreign Policy 차이치: https://foreignpolicy.com/2026/05/07/china-cai-qi-li-qiang-leadership/
-- ANU 판공청 논문: https://doi.org/10.22459/rts.2025.04
+| ID | 기관 | URL | 쓰는 이유 |
+|---|---|---|---|
+| CMSI | US Naval War College China Maritime Studies Institute (Andrew Erickson) | https://www.usnwc.edu/Research-and-Wargaming/Research-Centers/China-Maritime-Studies-Institute | 중문 원문 기반 해군·해경. MCF 해양 |
+| CASI | USAF China Aerospace Studies Institute | https://www.airuniversity.af.edu/CASI/ | PLA 항공우주·이중용도 |
+| RAND | RAND China | https://www.rand.org/topics/china.html | PLA·MCF 구조 |
+| CSIS | CSIS China Power / Freeman Chair / Trustee Chair (Scott Kennedy) | https://www.csis.org/programs/china-power-project | 군사·산업정책 |
+| CNAS | Center for a New American Security | https://www.cnas.org/ | 기술·안보 |
+| NBR | National Bureau of Asian Research | https://www.nbr.org/ | 아시아 안보 |
 
-## 7. 월간 갱신 (Cursor 담당. Claude는 읽기만)
+### 6.5 연구실 — 경제·통상·유럽 보조
 
-매월 1일: 인대 임면 → 정부망 → 신화사/강연 직함 → Trivium/Caixin → 1260H/CMPR(12월) → USCC/CRS → Hoover → Dataverse 버전 → 군민융합 명목 주임 TODO.
+| ID | 기관 | URL | 쓰는 이유 |
+|---|---|---|---|
+| PIIE | Peterson Institute | https://www.piie.com/ | 중국 거시·무역 |
+| BROOKINGS | John L. Thornton China Center | https://www.brookings.edu/center/john-l-thornton-china-center/ | 당국가 해석 |
+| CARNEGIE | Carnegie China | https://carnegieendowment.org/regions/china | 외교·기술 |
+| WILSON | Wilson Center Kissinger Institute | https://www.wilsoncenter.org/program/kissinger-institute-china-and-united-states | 미중 관계 |
+| CFR | Council on Foreign Relations China | https://www.cfr.org/china | 정책 브리프 |
+| MERICS | Mercator Institute for China Studies (Berlin) | https://merics.org/ | 유럽 측 당국가·산업. 영문 보고서 |
+| ASPI | Australian Strategic Policy Institute | https://www.aspi.org.au/ | 국방기술·MCF 기업 맵 |
+| IISS | International Institute for Strategic Studies | https://www.iiss.org/ | 군사균형 |
 
-변동이 이 문서를 고치면 `contract_updated`와 `as_of`를 같은 날로 올린다.
+### 6.6 속보 교차 (국가 1차 인용 후에만 성명)
+
+| ID | 기관 | URL | 쓰는 이유 |
+|---|---|---|---|
+| TRIVIUM | Trivium China | https://triviumchina.com/ | 당 인사에 빠름. 탕팡위 2026-01-15 |
+| CAIXIN | Caixin Global | https://www.caixinglobal.com/ | 동일. 유료 |
+| NPC-OBS | NPC Observer (Changhao Wei) | https://npcobserver.com/ | 인대 상무위 임면·법률. 위키 대체 |
+| JAMESTOWN | China Brief | https://jamestown.org/programs/cb/ | 인사·파벌 속보성 분석 |
+| SCMP | South China Morning Post | https://www.scmp.com/ | 의전·겸직 보도 |
+| FP-CAI | Foreign Policy | https://foreignpolicy.com/2026/05/07/china-cai-qi-li-qiang-leadership/ | 차이치 역할 해석 |
+| CLT | China Law Translate | https://www.chinalawtranslate.com/ | 법령 영문. 인사 아님 |
+| CACR | Center for Advanced China Research / Party Watch | https://www.ccpwatch.org/ | 당 기구 오픈소스. 인력 축소 가능 — 살아 있는 호만 |
+
+MacroPolo The Committee는 20기 중앙위 이력이 좋았으나 사이트 중단 위험이 있어 **정본으로 두지 않는다.**
+
+## 7. 월간 갱신 체크리스트 (위키 없음)
+
+Cursor 담당. Claude는 읽기만. 매월 1일, 이 순서만. 한 항이 침묵하면 다음 항. 위키로 메우지 말 것.
+
+1. 인대망 최근 임면 + 주석령 + 중국정부망 조직 페이지
+2. 신화사 지도자 약력: 차이치, 허리펑. 국가매체 강연 직함: 탕팡위, 한원슈, 사오신이
+3. NPC Observer 상무위 세션 임면 요약 (국가 1차 URL로 재확인)
+4. Trivium / Caixin 인사 브리프 (당 판공실)
+5. China Leadership Monitor 최신호 (prcleader.org)
+6. UCSD China Data Lab / 21CCC 신규 노트·데이터셋 버전
+7. Stanford SCCEI Briefs · DigiChina 문건 (디지털·산업만)
+8. DoD 1260H. CMPR은 12월만 본문 대조. CMSI/CASI 신규 리포트 (군·MCF)
+9. USCC 청문회·CRS 개정일
+10. MERICS / CSIS / RAND 중 당국가·MCF 신규만
+11. 군민융합 **명목 주임** TODO — 안 풀리면 빈칸 유지
+
+합격: 고=주석령·신화사 약력·국가매체 직함. 중=전문매체 2곳 + 국가 1차. 저/TODO=한 곳만.  
+변동이 있으면 `contract_updated`와 `as_of`를 같은 날로 올린다.
 
 ## 8. TODO (열지 말고 남겨둘 것)
 
