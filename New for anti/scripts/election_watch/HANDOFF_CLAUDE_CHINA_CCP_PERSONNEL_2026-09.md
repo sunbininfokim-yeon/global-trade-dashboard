@@ -6,7 +6,7 @@
 **읽는 이:** Claude Code  
 **소유권:** 인사 정본·출처 = Cursor. UI 표시 = Claude (`TASKS` claim 있을 때만).  
 **관련 UI 계약:** `HANDOFF_CLAUDE_ELECTIONS_UI_V2.md` §5 중국 탭  
-**관련 JSON (오래됨):** `config/china_leadership_extracted.json` (`as_of` 2026-08-09)
+**관련 JSON:** `config/china_leadership_extracted.json` (`as_of` 2026-09-12, version 6. Cursor 패치 완료)
 
 이 문서만 읽으면 된다. Obsidian 볼트·Cursor 캔버스는 열지 마라.  
 없는 이름은 추측해서 채우지 마라. `null` / TODO / 미확정은 그대로 보여라.
@@ -17,7 +17,7 @@
 
 - 중국 화면 `공산당 / 국무원 / 군`을 그릴 때 이 표의 `confidence`·`status`를 따른다.
 - 출처·기준일(`as_of`)을 각주 또는 정보 버튼으로 노출할 수 있다.
-- `china_leadership_extracted.json`과 이 문서가 어긋나면 **이 문서가 더 새롭다.** JSON 패치는 Cursor 몫이다. UI는 추측 보강하지 말고 빈 칸·TODO로 둔다.
+- `china_leadership_extracted.json` (`as_of` 2026-09-12)이 이 문서와 같은 패치다. UI는 `party_state.central_departments`의 판공 4곳과 `state_council.constituent_departments` 26곳을 읽으면 된다. 없는 칸(`mcf_office.director.status=unknown`)은 추측하지 마라.
 
 **하지 말 것**
 
@@ -44,8 +44,8 @@
 
 ## 2. 당 4대 직위 (요청 범위)
 
-기존 JSON `party_state.central_departments`에는 조직·선전·통전·정법만 있다.  
-아래 4곳은 **아직 JSON에 없다.** 카드로 넣을 때 이 스키마를 써라.
+기존 JSON `party_state.central_departments`에는 조직·선전·통전·정법만 있었다.  
+2026-09-12 패치로 아래 4곳이 들어갔다. 카드 스키마:
 
 ```text
 office: { id, title_ko, title_zh, director, deputies[], confidence, as_of, sources[] }
@@ -130,7 +130,7 @@ person: { name_en, name_zh, name_ko, since, rank_ko, status, note_ko }
 
 ## 3. 국무원 구성부문 — 공식 26곳
 
-JSON `party_state.state_council`은 지금 총리+부총리 4명만 있다. 부장 전수는 없다.  
+JSON `party_state.state_council`에 총리·부총리·국무위원과 구성부문 26곳이 있다.  
 23곳 필터: `cabinet_23 = true` 인 행만 (국방·인행·감사 제외).
 
 | 부처 | name_zh | 장관 | name_en | 취임 | cabinet_23 | confidence | 비고 |
@@ -168,24 +168,19 @@ JSON `party_state.state_council`은 지금 총리+부총리 4명만 있다. 부�
 - 부총리 딩쉐샹, 허리펑, 장궈칭, 류궈중
 - 국무위원 왕샤오훙, 우정룽 吴政隆 (비서장 겸), 선이친 谌贻琴
 
-## 4. JSON 대비 갭 (UI가 추측으로 메우지 말 것)
+## 4. JSON 패치 (2026-09-12 Cursor)
 
-`config/china_leadership_extracted.json` `as_of=2026-08-09` 기준:
+`config/china_leadership_extracted.json` version 6.
 
-| 슬롯 | JSON 지금 | 이 문서 2026-09-11 |
-|---|---|---|
-| 차이치 | 서기처 1서기만 | + 중앙판공청 주임, 당교 교장 |
-| 정책연구실 | 없음 | 탕팡위 |
-| 재경위 판공실 | 없음 (허리펑은 부총리만) | 허리펑 주임 + 한원슈 일상 |
-| 군민융합 판공실 | 없음 | 명목 주임 unknown, 실무 사오신이 |
-| 국무원 부장 26 | 없음 | 위 표 |
-| 공신부 | 없음 | 리러청 (2025-04) |
-| 농업농촌부 | 없음 | 장주 (2026-04). 한쥔 unknown |
-| 응급관리부 | 없음 | 장청중 (2026-04) |
-| 민정부 | 없음 | 리창관 (2026-08-28). 루즈위안 면 |
+| 슬롯 | 패치 |
+|---|---|
+| 차이치 | PSC·정치국 `title_ko` = 중앙판공청 주임. also에 당교·행정학원 |
+| 판공 4곳 | `central_departments.general_office` / `policy_research_office` / `cfeac_office` / `mcf_office` |
+| 군민융합 명목 주임 | `director.status=unknown`, 실무는 사오신이 |
+| 국무원 | 총리·부총리 4·국무위원 3 + `constituent_departments` 26 (`cabinet_23` 23곳) |
+| 민정부 | 리창관 (2026-08-28 주석령 85호) |
 
-Cursor가 JSON을 패치하기 전에는 UI가 옛 JSON만 읽으면 판공 4곳·부장 26곳이 안 나온다.  
-claim이 있으면 이 문서 표를 읽기 전용 데이터로 쓸 수 있다. 없으면 표시하지 말고 이 문서를 읽고 넘어가라.
+공개 보드 `elections_board_v1.json`은 이 추출 JSON을 `countries[CHN].leadership.party_state`로 복사한다. 이 브랜치는 추출 파일만 고쳤다. 보드 재생성은 `python3 build_board.py` (네트워크 배팅 fetch 있음).
 
 ## 5. 렌더링 규칙 (중국 특수)
 
