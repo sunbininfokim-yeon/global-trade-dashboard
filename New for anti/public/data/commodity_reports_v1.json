@@ -1,6 +1,6 @@
 {
   "schema_version": "commodity-reports-v1",
-  "generated_at": "2026-09-12T22:30:53.699903+00:00",
+  "generated_at": "2026-09-13T05:19:16.580929+00:00",
   "model": {
     "name": "commodity_reports_v1",
     "description": "Official crop/energy/metal reports tagged (commodity × country) so the dashboard's stage-2 country window can show what was published about that country's commodity. The report's text picks the country, not the publisher: a USDA release on Brazilian wheat belongs on BRA·wheat.",
@@ -17,13 +17,13 @@
     "per_bucket_limit": 8
   },
   "stats": {
-    "sources_ok": 9,
-    "sources_failed": 3,
-    "raw_items": 147,
-    "scored": 56,
-    "published": 36,
+    "sources_ok": 10,
+    "sources_failed": 2,
+    "raw_items": 159,
+    "scored": 60,
+    "published": 40,
     "commodities": 9,
-    "buckets": 11
+    "buckets": 18
   },
   "feed_status": [
     {
@@ -105,9 +105,9 @@
     },
     {
       "source_id": "us_fas_gain_reports",
-      "ok": false,
-      "count": 0,
-      "error": "HTTPError: HTTP Error 403: Forbidden",
+      "ok": true,
+      "count": 12,
+      "error": null,
       "mode": "live"
     }
   ],
@@ -476,31 +476,10 @@
         "39ac9e91f73a0776"
       ]
     },
-    "corn": {
-      "USA": [
-        "9a2e4f0c6cc38378",
-        "bdf029665651e8aa",
-        "9d9ab72fff81736d",
-        "727409c1a45dfec3",
-        "f9e7ed8b73ce1fa5",
-        "205bcf62b2894e8b",
-        "e54c2f7c294df06b",
-        "9dd7845c2d4fc51e"
-      ]
-    },
-    "soybeans": {
-      "USA": [
-        "9a2e4f0c6cc38378",
-        "bdf029665651e8aa",
-        "9d9ab72fff81736d",
-        "727409c1a45dfec3",
-        "f9e7ed8b73ce1fa5",
-        "205bcf62b2894e8b",
-        "e54c2f7c294df06b",
-        "9dd7845c2d4fc51e"
-      ]
-    },
     "wheat": {
+      "BGD": [
+        "9a2e551991dc06e6"
+      ],
       "USA": [
         "54cc3c274cf90c25",
         "416d527f7174e442",
@@ -509,6 +488,54 @@
         "d9459a6be37e5e91",
         "389d4a4328f23545",
         "f9e7ed8b73ce1fa5"
+      ]
+    },
+    "rice": {
+      "BGD": [
+        "9a2e551991dc06e6"
+      ],
+      "THA": [
+        "eb8f3491f8c46070"
+      ],
+      "USA": [
+        "2c8f727be89c0de5",
+        "eb08bb539c63def3"
+      ]
+    },
+    "soybeans": {
+      "CHN": [
+        "6e3880b1a989890a"
+      ],
+      "USA": [
+        "6e3880b1a989890a",
+        "9a2e4f0c6cc38378",
+        "9d9ab72fff81736d",
+        "727409c1a45dfec3",
+        "f9e7ed8b73ce1fa5",
+        "205bcf62b2894e8b",
+        "e54c2f7c294df06b",
+        "9dd7845c2d4fc51e"
+      ]
+    },
+    "corn": {
+      "BGR": [
+        "b736550c463bc772"
+      ],
+      "ROU": [
+        "b736550c463bc772"
+      ],
+      "ESP": [
+        "b736550c463bc772"
+      ],
+      "USA": [
+        "9a2e4f0c6cc38378",
+        "bdf029665651e8aa",
+        "9d9ab72fff81736d",
+        "727409c1a45dfec3",
+        "f9e7ed8b73ce1fa5",
+        "205bcf62b2894e8b",
+        "e54c2f7c294df06b",
+        "9dd7845c2d4fc51e"
       ]
     },
     "gas": {
@@ -524,12 +551,6 @@
     "thermal_coal": {
       "USA": [
         "f8aa4f64781b6480"
-      ]
-    },
-    "rice": {
-      "USA": [
-        "2c8f727be89c0de5",
-        "eb08bb539c63def3"
       ]
     },
     "sugar": {
@@ -567,9 +588,40 @@
       "country_source": "text",
       "series_id": "EIA_STEO",
       "series_label_ko": "EIA 단기 에너지 전망",
-      "importance": 5.197,
+      "importance": 5.166,
       "reasons": [
         "series:EIA_STEO",
+        "has_figure",
+        "revision_language",
+        "country_in_text"
+      ]
+    },
+    {
+      "id": "9a2e551991dc06e6",
+      "title": {
+        "original": "Bangladesh: Grain and Feed Update",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "For MY 2026/27, Post forecasts higher rice imports following decreased production of aus and aman season rice. Post lowers its wheat import forecast to 6.6 million metric tons (MT) due to higher international wheat prices and relatively high...",
+      "url": "https://www.fas.usda.gov/data/gain/2026/09/bangladesh-grain-and-feed-update",
+      "published_at": "2026-09-08T15:00:00+00:00",
+      "agency": "USDA FAS GAIN",
+      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
+      "source_id": "us_fas_gain_reports",
+      "commodities": [
+        "wheat",
+        "rice"
+      ],
+      "countries": [
+        "BGD"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 3.407,
+      "reasons": [
         "has_figure",
         "revision_language",
         "country_in_text"
@@ -598,10 +650,69 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 3.036,
+      "importance": 3.019,
       "reasons": [
         "has_figure",
         "revision_language",
+        "country_in_text"
+      ]
+    },
+    {
+      "id": "eb8f3491f8c46070",
+      "title": {
+        "original": "Thailand: Grain and Feed Monthly",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "FAS Bangkok forecasts MY 2026/27 rice production, down 2 percent from MY 2025/26 to 20.3 million metric tons (MMT), as tighter water supplies and an emerging El Niño reduce off-season planting. Rice exports hold at 7.3 MMT under a strong Thai baht...",
+      "url": "https://www.fas.usda.gov/data/gain/2026/09/thailand-grain-and-feed-monthly",
+      "published_at": "2026-09-04T15:01:00+00:00",
+      "agency": "USDA FAS GAIN",
+      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
+      "source_id": "us_fas_gain_reports",
+      "commodities": [
+        "rice"
+      ],
+      "countries": [
+        "THA"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 2.644,
+      "reasons": [
+        "has_figure",
+        "country_in_text"
+      ]
+    },
+    {
+      "id": "6e3880b1a989890a",
+      "title": {
+        "original": "China: Oilseeds and Products Update",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Post is lowering its forecast for MY 26/27 soybean production slightly to 20.1 million metric tons (MMT) on a smaller planted area. Chinese state-owned enterprises (SOEs) continue to purchase U.S. soybeans in accordance with the Busan agreement. As...",
+      "url": "https://www.fas.usda.gov/data/gain/2026/09/china-oilseeds-and-products-update",
+      "published_at": "2026-09-04T15:01:00+00:00",
+      "agency": "USDA FAS GAIN",
+      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
+      "source_id": "us_fas_gain_reports",
+      "commodities": [
+        "soybeans"
+      ],
+      "countries": [
+        "CHN",
+        "USA"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 2.644,
+      "reasons": [
+        "has_figure",
         "country_in_text"
       ]
     },
@@ -626,7 +737,7 @@
       "country_source": "none",
       "series_id": "EIA_STEO",
       "series_label_ko": "EIA 단기 에너지 전망",
-      "importance": 2.425,
+      "importance": 2.411,
       "reasons": [
         "series:EIA_STEO"
       ]
@@ -654,11 +765,41 @@
       "country_source": "text",
       "series_id": "EIA_STEO",
       "series_label_ko": "EIA 단기 에너지 전망",
-      "importance": 2.334,
+      "importance": 2.333,
       "reasons": [
         "series:EIA_STEO",
         "has_figure",
         "revision_language",
+        "country_in_text"
+      ]
+    },
+    {
+      "id": "b736550c463bc772",
+      "title": {
+        "original": "European Union: EU Corn September Update 2026",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "The EU's MY 2026/27 corn crop faces steep downward revisions across Western and Central Europe due to heat and drought. Irrigation in Spain and Portugal, and favorable conditions in Bulgaria and Romania, only partially compensate the overall decline...",
+      "url": "https://www.fas.usda.gov/data/gain/2026/09/european-union-eu-corn-september-update-2026",
+      "published_at": "2026-09-10T09:42:00+00:00",
+      "agency": "USDA FAS GAIN",
+      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
+      "source_id": "us_fas_gain_reports",
+      "commodities": [
+        "corn"
+      ],
+      "countries": [
+        "BGR",
+        "ROU",
+        "ESP"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 2.12,
+      "reasons": [
         "country_in_text"
       ]
     },
@@ -902,7 +1043,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.568,
+      "importance": 1.562,
       "reasons": [
         "has_figure",
         "country_in_text"
@@ -931,7 +1072,7 @@
       "country_source": "text",
       "series_id": "EIA_STEO",
       "series_label_ko": "EIA 단기 에너지 전망",
-      "importance": 1.559,
+      "importance": 1.556,
       "reasons": [
         "series:EIA_STEO",
         "country_in_text"
@@ -960,7 +1101,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.53,
+      "importance": 1.523,
       "reasons": [
         "revision_language",
         "country_in_text"
@@ -1080,7 +1221,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.417,
+      "importance": 1.409,
       "reasons": [
         "country_in_text"
       ]
@@ -1140,7 +1281,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.365,
+      "importance": 1.358,
       "reasons": [
         "country_in_text"
       ]
@@ -1262,34 +1403,6 @@
       ]
     },
     {
-      "id": "de49cf7992871dbf",
-      "title": {
-        "original": "Natural Gas Monthly",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "(Mon, 31 Aug 2026) The <em>Natural Gas Monthly</em> presents volume and price data each month for natural gas production, distribution, consumption, and interstate pipeline activities. NGM also reports producer-related activities and underground storage data. NGM data on 50 U.S. states and the District of Columbia are collected on EIA surveys.",
-      "url": "http://www.eia.gov/naturalgas/monthly/",
-      "published_at": "2026-08-31T05:00:00+00:00",
-      "agency": "EIA",
-      "agency_ko": "미 에너지정보청",
-      "source_id": "us_eia_whats_new",
-      "commodities": [
-        "gas"
-      ],
-      "countries": [
-        "USA"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 1.34,
-      "reasons": [
-        "country_in_text"
-      ]
-    },
-    {
       "id": "0a708bd4ffd29cfc",
       "title": {
         "original": "EIA updates forecast amid continued Mideast disruption; will publish new energy security datasets",
@@ -1315,6 +1428,34 @@
       "importance": 1.338,
       "reasons": [
         "series:EIA_STEO",
+        "country_in_text"
+      ]
+    },
+    {
+      "id": "de49cf7992871dbf",
+      "title": {
+        "original": "Natural Gas Monthly",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "(Mon, 31 Aug 2026) The <em>Natural Gas Monthly</em> presents volume and price data each month for natural gas production, distribution, consumption, and interstate pipeline activities. NGM also reports producer-related activities and underground storage data. NGM data on 50 U.S. states and the District of Columbia are collected on EIA surveys.",
+      "url": "http://www.eia.gov/naturalgas/monthly/",
+      "published_at": "2026-08-31T05:00:00+00:00",
+      "agency": "EIA",
+      "agency_ko": "미 에너지정보청",
+      "source_id": "us_eia_whats_new",
+      "commodities": [
+        "gas"
+      ],
+      "countries": [
+        "USA"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.333,
+      "reasons": [
         "country_in_text"
       ]
     },
@@ -1368,7 +1509,7 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.092,
+      "importance": 1.086,
       "reasons": []
     },
     {
@@ -1392,7 +1533,7 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.092,
+      "importance": 1.086,
       "reasons": []
     },
     {
@@ -1416,7 +1557,7 @@
       "country_source": "none",
       "series_id": "EIA_STEO",
       "series_label_ko": "EIA 단기 에너지 전망",
-      "importance": 1.042,
+      "importance": 1.041,
       "reasons": [
         "series:EIA_STEO"
       ]
