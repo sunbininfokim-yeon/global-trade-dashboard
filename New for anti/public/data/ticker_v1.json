@@ -1,6 +1,6 @@
 {
   "schema_version": "ticker-v1",
-  "generated_at": "2026-09-13T18:48:01.481843+00:00",
+  "generated_at": "2026-09-13T21:25:31.752402+00:00",
   "model": {
     "name": "commodity_diplomacy_rss_v1",
     "description": "RSS multi-region ticker: regional priority (MENA/IN/TR/JP/CN/TW/RU + commodity specialists) over Western majors; politics admitted with diplomacy+trade bridge, elections, governance polls, cabinet reshuffles; horse-race national polls rejected; importance = country-tier × info-grade; main display language Korean.",
@@ -76,17 +76,18 @@
     "sources_ok": 34,
     "sources_failed": 4,
     "raw_items": 832,
-    "scored_items": 108,
+    "scored_items": 112,
     "selected_items": 24,
     "region_histogram": {
+      "commodity_specialist": 6,
       "india": 2,
-      "commodity_specialist": 4,
-      "turkey": 2,
-      "mena": 8,
-      "japan": 3,
+      "mena": 6,
       "china": 2,
-      "west": 1,
-      "russia": 2
+      "turkey": 2,
+      "russia": 2,
+      "japan": 2,
+      "taiwan": 1,
+      "west": 1
     },
     "min_importance": 0.35
   },
@@ -95,7 +96,7 @@
       "source_id": "aljazeera_en",
       "ok": true,
       "count": 25,
-      "elapsed_ms": 257,
+      "elapsed_ms": 215,
       "error": null,
       "mode": "live"
     },
@@ -103,7 +104,7 @@
       "source_id": "iran_intl",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 525,
+      "elapsed_ms": 505,
       "error": null,
       "mode": "live"
     },
@@ -111,7 +112,7 @@
       "source_id": "arab_news",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 56,
+      "elapsed_ms": 134,
       "error": null,
       "mode": "live"
     },
@@ -119,7 +120,7 @@
       "source_id": "tehran_times",
       "ok": true,
       "count": 30,
-      "elapsed_ms": 906,
+      "elapsed_ms": 1281,
       "error": null,
       "mode": "live"
     },
@@ -127,7 +128,7 @@
       "source_id": "middle_east_eye",
       "ok": true,
       "count": 20,
-      "elapsed_ms": 122,
+      "elapsed_ms": 128,
       "error": null,
       "mode": "live"
     },
@@ -135,7 +136,7 @@
       "source_id": "aa_world",
       "ok": true,
       "count": 30,
-      "elapsed_ms": 2227,
+      "elapsed_ms": 3297,
       "error": null,
       "mode": "live"
     },
@@ -143,7 +144,7 @@
       "source_id": "daily_sabah",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 559,
+      "elapsed_ms": 673,
       "error": null,
       "mode": "live"
     },
@@ -151,7 +152,7 @@
       "source_id": "hurriyet_daily",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 136,
+      "elapsed_ms": 285,
       "error": null,
       "mode": "live"
     },
@@ -159,7 +160,7 @@
       "source_id": "the_hindu",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 146,
+      "elapsed_ms": 137,
       "error": null,
       "mode": "live"
     },
@@ -167,7 +168,7 @@
       "source_id": "indian_express_world",
       "ok": false,
       "count": 0,
-      "elapsed_ms": 101,
+      "elapsed_ms": 77,
       "error": "HTTPError: HTTP Error 403: Forbidden",
       "mode": "live"
     },
@@ -175,7 +176,7 @@
       "source_id": "et_commodities",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 453,
+      "elapsed_ms": 628,
       "error": null,
       "mode": "live"
     },
@@ -183,7 +184,7 @@
       "source_id": "business_standard_markets",
       "ok": true,
       "count": 35,
-      "elapsed_ms": 94,
+      "elapsed_ms": 164,
       "error": null,
       "mode": "live"
     },
@@ -191,7 +192,7 @@
       "source_id": "ndtv_world",
       "ok": true,
       "count": 20,
-      "elapsed_ms": 290,
+      "elapsed_ms": 121,
       "error": null,
       "mode": "live"
     },
@@ -199,7 +200,7 @@
       "source_id": "xinhua_world",
       "ok": true,
       "count": 20,
-      "elapsed_ms": 846,
+      "elapsed_ms": 1536,
       "error": null,
       "mode": "live"
     },
@@ -207,7 +208,7 @@
       "source_id": "china_daily_world",
       "ok": false,
       "count": 0,
-      "elapsed_ms": 551,
+      "elapsed_ms": 681,
       "error": "HTTPError: HTTP Error 404: Not Found",
       "mode": "live"
     },
@@ -215,7 +216,7 @@
       "source_id": "cgtn_world",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 773,
+      "elapsed_ms": 651,
       "error": null,
       "mode": "live"
     },
@@ -223,7 +224,7 @@
       "source_id": "scmp",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 539,
+      "elapsed_ms": 545,
       "error": null,
       "mode": "live"
     },
@@ -231,7 +232,7 @@
       "source_id": "nhk_business",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 231,
+      "elapsed_ms": 622,
       "error": null,
       "mode": "live"
     },
@@ -239,7 +240,7 @@
       "source_id": "nhk_top",
       "ok": true,
       "count": 7,
-      "elapsed_ms": 50,
+      "elapsed_ms": 72,
       "error": null,
       "mode": "live"
     },
@@ -247,7 +248,7 @@
       "source_id": "japan_times",
       "ok": true,
       "count": 30,
-      "elapsed_ms": 207,
+      "elapsed_ms": 292,
       "error": null,
       "mode": "live"
     },
@@ -255,7 +256,7 @@
       "source_id": "nikkei_asia",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 113,
+      "elapsed_ms": 92,
       "error": null,
       "mode": "live"
     },
@@ -271,7 +272,7 @@
       "source_id": "taipei_times",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 84,
+      "elapsed_ms": 332,
       "error": null,
       "mode": "live"
     },
@@ -279,7 +280,7 @@
       "source_id": "ltn",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 268,
+      "elapsed_ms": 465,
       "error": null,
       "mode": "live"
     },
@@ -287,7 +288,7 @@
       "source_id": "udn",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 346,
+      "elapsed_ms": 237,
       "error": null,
       "mode": "live"
     },
@@ -295,7 +296,7 @@
       "source_id": "tass_en",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 756,
+      "elapsed_ms": 1042,
       "error": null,
       "mode": "live"
     },
@@ -303,7 +304,7 @@
       "source_id": "tass_ru",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 984,
+      "elapsed_ms": 1180,
       "error": null,
       "mode": "live"
     },
@@ -311,7 +312,7 @@
       "source_id": "interfax_ru",
       "ok": true,
       "count": 25,
-      "elapsed_ms": 1630,
+      "elapsed_ms": 1579,
       "error": null,
       "mode": "live"
     },
@@ -319,7 +320,7 @@
       "source_id": "rt_ru",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 1485,
+      "elapsed_ms": 2064,
       "error": null,
       "mode": "live"
     },
@@ -327,7 +328,7 @@
       "source_id": "ship_and_bunker",
       "ok": true,
       "count": 10,
-      "elapsed_ms": 216,
+      "elapsed_ms": 353,
       "error": null,
       "mode": "live"
     },
@@ -335,7 +336,7 @@
       "source_id": "oilprice",
       "ok": true,
       "count": 15,
-      "elapsed_ms": 426,
+      "elapsed_ms": 764,
       "error": null,
       "mode": "live"
     },
@@ -343,7 +344,7 @@
       "source_id": "mining_com",
       "ok": false,
       "count": 0,
-      "elapsed_ms": 62,
+      "elapsed_ms": 67,
       "error": "HTTPError: HTTP Error 403: Forbidden",
       "mode": "live"
     },
@@ -351,7 +352,7 @@
       "source_id": "world_grain",
       "ok": false,
       "count": 0,
-      "elapsed_ms": 74,
+      "elapsed_ms": 122,
       "error": "HTTPError: HTTP Error 403: Forbidden",
       "mode": "live"
     },
@@ -359,7 +360,7 @@
       "source_id": "hellenic_shipping",
       "ok": true,
       "count": 20,
-      "elapsed_ms": 146,
+      "elapsed_ms": 193,
       "error": null,
       "mode": "live"
     },
@@ -367,7 +368,7 @@
       "source_id": "seatrade",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 398,
+      "elapsed_ms": 860,
       "error": null,
       "mode": "live"
     },
@@ -375,7 +376,7 @@
       "source_id": "bbc_business",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 229,
+      "elapsed_ms": 163,
       "error": null,
       "mode": "live"
     },
@@ -383,7 +384,7 @@
       "source_id": "bloomberg_markets",
       "ok": true,
       "count": 20,
-      "elapsed_ms": 442,
+      "elapsed_ms": 476,
       "error": null,
       "mode": "live"
     },
@@ -391,12 +392,95 @@
       "source_id": "ft_commodities",
       "ok": true,
       "count": 25,
-      "elapsed_ms": 247,
+      "elapsed_ms": 385,
       "error": null,
       "mode": "live"
     }
   ],
   "items": [
+    {
+      "id": "e218711d4d3b2521",
+      "published_at": "2026-09-13T21:00:00+00:00",
+      "source": {
+        "id": "oilprice",
+        "name": "OilPrice.com",
+        "region": "commodity_specialist",
+        "slant": null
+      },
+      "url": "https://oilprice.com/Energy/Oil-Prices/Further-Oil-Price-Spikes-Could-Rekindle-Recession-Fears.html",
+      "category": "commodity",
+      "commodities": [
+        "oil"
+      ],
+      "title": {
+        "original": "Further Oil Price Spikes Could Rekindle Recession Fears",
+        "original_lang": "en",
+        "ko": "추가 유가 급등은 불황 공포를 다시 불러일으킬 수 있다"
+      },
+      "summary": "This week’s oil price surge sharply raised the odds of a Fed interest rate hike next week and re-launched the recession conversation, for the first time since the early weeks of the Iran war. The price spike this week saw Brent Crude prices topping $100 per barrel for the first t",
+      "scores": {
+        "commodity": 3.0,
+        "diplomacy": 0.0,
+        "election": 0.0,
+        "region_weight": 1.35,
+        "freshness": 0.988,
+        "importance": 3.41,
+        "final": 3.947
+      },
+      "rank_reasons": [
+        "region:commodity_specialist*1.35",
+        "category:commodity",
+        "tier:A*1.00/g1",
+        "commodity:oil:3"
+      ],
+      "translation_status": "ok",
+      "country_tier": "A",
+      "info_grade": "1",
+      "country_hint": "USA"
+    },
+    {
+      "id": "6fc7ffb5bcd0c337",
+      "published_at": "2026-09-13T21:00:29+00:00",
+      "source": {
+        "id": "hellenic_shipping",
+        "name": "Hellenic Shipping News",
+        "region": "commodity_specialist",
+        "slant": null
+      },
+      "url": "https://www.hellenicshippingnews.com/janggeum-maritimes-pre-war-vlcc-investments-profit-in-hormuz/",
+      "category": "commodity",
+      "commodities": [
+        "oil",
+        "shipping"
+      ],
+      "title": {
+        "original": "Janggeum Maritime’s Pre-War VLCC Investments Profit in Hormuz",
+        "original_lang": "en",
+        "ko": "장금해양의 전쟁 전 VLCC 투자 호르무즈 이익"
+      },
+      "summary": "On August 31 (local time), news emerged that two oil tankers passing through the Strait of Hormuz were attacked by unidentified projectiles. Major international media, including the Financial Times, reported on September 2 that one of the targeted vessels, the Liberia-flagged *Se",
+      "scores": {
+        "commodity": 2.0,
+        "diplomacy": 1.0,
+        "election": 0.0,
+        "region_weight": 1.35,
+        "freshness": 0.989,
+        "importance": 3.164,
+        "final": 3.662
+      },
+      "rank_reasons": [
+        "region:commodity_specialist*1.35",
+        "category:commodity",
+        "tier:A*1.00/g1",
+        "commodity:oil:1",
+        "commodity:shipping:1",
+        "diplomacy:1"
+      ],
+      "translation_status": "ok",
+      "country_tier": "A",
+      "info_grade": "1",
+      "country_hint": "USA"
+    },
     {
       "id": "6a82c6018148087d",
       "published_at": "2026-09-13T17:54:29+00:00",
@@ -423,9 +507,9 @@
         "diplomacy": 1.0,
         "election": 0.0,
         "region_weight": 1.3,
-        "freshness": 0.976,
-        "importance": 2.788,
-        "final": 3.165
+        "freshness": 0.907,
+        "importance": 2.592,
+        "final": 2.942
       },
       "rank_reasons": [
         "region:india*1.30",
@@ -440,6 +524,92 @@
       "country_tier": "A",
       "info_grade": "2",
       "country_hint": "IND"
+    },
+    {
+      "id": "b32173b54507efb5",
+      "published_at": "2026-09-13T14:27:03+00:00",
+      "source": {
+        "id": "arab_news",
+        "name": "Arab News",
+        "region": "mena",
+        "slant": null
+      },
+      "url": "https://www.arabnews.com/middle-east/oman-says-hormuz-talks-with-iran-gulf-states-postponed-3001574",
+      "category": "commodity",
+      "commodities": [
+        "oil",
+        "shipping"
+      ],
+      "title": {
+        "original": "Oman says Hormuz talks with Iran, Gulf states postponed",
+        "original_lang": "en",
+        "ko": "오만, 호르무즈가 이란과 대화, 걸프 국가는 연기"
+      },
+      "summary": "MUSCAT: Oman has announced the postponement of a meeting Monday between Iran and Gulf countries on the Strait of Hormuz, the major flashpoint in the Middle East war. Iran’s foreign ministry had said there would be a meeting hosted by Oman where the future of the strait, vital for",
+      "scores": {
+        "commodity": 2.0,
+        "diplomacy": 2.0,
+        "election": 0.0,
+        "region_weight": 1.4,
+        "freshness": 0.824,
+        "importance": 2.433,
+        "final": 2.87
+      },
+      "rank_reasons": [
+        "region:mena*1.40",
+        "category:commodity",
+        "tier:B*0.72/g1",
+        "commodity:oil:1",
+        "commodity:shipping:1",
+        "diplomacy:2"
+      ],
+      "translation_status": "ok",
+      "country_tier": "B",
+      "info_grade": "1",
+      "country_hint": "SAU"
+    },
+    {
+      "id": "45967c50874a8c3d",
+      "published_at": "2026-09-13T18:57:50+00:00",
+      "source": {
+        "id": "scmp",
+        "name": "South China Morning Post",
+        "region": "china",
+        "slant": null
+      },
+      "url": "https://www.scmp.com/news/world/middle-east/article/3367372/iran-set-unveil-temporary-hormuz-agreement-gulf-nations-monday?utm_source=rss_feed",
+      "category": "commodity",
+      "commodities": [
+        "oil",
+        "shipping"
+      ],
+      "title": {
+        "original": "New attacks in Hormuz and Saudi Arabia test nerves as war’s spread worsens oil disruption",
+        "original_lang": "en",
+        "ko": "호르무즈와 사우디아라비아의 새로운 공격은 전쟁 확산으로 석유 분열이 악화됨에 따라 신경을 시험합니다."
+      },
+      "summary": "New strikes on Saudi Arabia and on ships in the Gulf tested nerves ⁠in the Middle East on Sunday, after an attack on a Saudi oil pipeline and an advance by Yemen’s Houthis threatened to worsen the wartime disruption to global energy supplies. Oil traders were expecting prices to ",
+      "scores": {
+        "commodity": 2.0,
+        "diplomacy": 0.0,
+        "election": 0.0,
+        "region_weight": 1.25,
+        "freshness": 0.934,
+        "importance": 2.475,
+        "final": 2.754
+      },
+      "rank_reasons": [
+        "region:china*1.25",
+        "category:commodity",
+        "tier:A*1.00/g1",
+        "commodity:oil:1",
+        "commodity:shipping:1",
+        "bridge:1"
+      ],
+      "translation_status": "ok",
+      "country_tier": "A",
+      "info_grade": "1",
+      "country_hint": "CHN"
     },
     {
       "id": "dc7ceb68ae9fa3c7",
@@ -511,9 +681,9 @@
         "diplomacy": 1.0,
         "election": 0.0,
         "region_weight": 1.3,
-        "freshness": 0.8,
-        "importance": 2.352,
-        "final": 2.669
+        "freshness": 0.744,
+        "importance": 2.187,
+        "final": 2.482
       },
       "rank_reasons": [
         "region:turkey*1.30",
@@ -553,9 +723,9 @@
         "diplomacy": 4.0,
         "election": 0.0,
         "region_weight": 1.4,
-        "freshness": 0.959,
-        "importance": 2.187,
-        "final": 2.581
+        "freshness": 0.892,
+        "importance": 2.033,
+        "final": 2.399
       },
       "rank_reasons": [
         "region:mena*1.40",
@@ -595,9 +765,9 @@
         "diplomacy": 0.0,
         "election": 0.0,
         "region_weight": 1.4,
-        "freshness": 0.834,
-        "importance": 1.801,
-        "final": 2.125
+        "freshness": 0.775,
+        "importance": 1.674,
+        "final": 1.975
       },
       "rank_reasons": [
         "region:mena*1.40",
@@ -613,47 +783,46 @@
       "country_hint": "SAU"
     },
     {
-      "id": "e70d49bc273660de",
-      "published_at": "2026-09-13T14:27:03+00:00",
+      "id": "798b002227dcb43c",
+      "published_at": "2026-09-13T20:18:38+00:00",
       "source": {
-        "id": "arab_news",
-        "name": "Arab News",
-        "region": "mena",
+        "id": "rt_ru",
+        "name": "RT Russian",
+        "region": "russia",
         "slant": null
       },
-      "url": "https://www.arabnews.com/middle-east/iran-says-oman-meeting-aims-to-boost-security-cooperation-3001574",
+      "url": "https://russian.rt.com/world/news/1681986-vybor-v-shvecii-levocentrist?utm_source=rss&utm_medium=rss&utm_campaign=RSS",
       "category": "commodity",
       "commodities": [
-        "oil",
-        "shipping"
+        "rice"
       ],
       "title": {
-        "original": "Iran says Oman meeting aims to boost security cooperation",
-        "original_lang": "en",
-        "ko": "이란은 오만 회담이 안보 협력을 증진하는 것을 목표로 한다고 밝혔습니다."
+        "original": "На парламентских выборах в Швеции лидирует левоцентристская оппозиция",
+        "original_lang": "ru",
+        "ko": "스웨덴 의회 선거에서 중도 좌파 야당이 선두를 달리고 있다."
       },
-      "summary": "TEHRAN: Iran’s upcoming meeting with Gulf states in Oman on Monday to discuss the Strait of Hormuz will aim to strengthen cooperation on security in the Middle East, state media reported. The talks in the Omani port city of Salalah come as Iran and the United States clash over th",
+      "summary": "На парламентских выборах в Швеции лидирует левоцентристская оппозиция, следует из данных опросов. Читать далее",
       "scores": {
-        "commodity": 2.0,
-        "diplomacy": 1.0,
-        "election": 0.0,
-        "region_weight": 1.4,
-        "freshness": 0.886,
-        "importance": 1.361,
-        "final": 1.607
+        "commodity": 1.0,
+        "diplomacy": 0.0,
+        "election": 1.0,
+        "region_weight": 1.25,
+        "freshness": 0.97,
+        "importance": 1.493,
+        "final": 1.661
       },
       "rank_reasons": [
-        "region:mena*1.40",
+        "region:russia*1.25",
         "category:commodity",
-        "tier:A*1.00/g3",
-        "commodity:oil:1",
-        "commodity:shipping:1",
-        "diplomacy:1"
+        "tier:A*1.00/g2",
+        "commodity:rice:1",
+        "election:general:1"
       ],
       "translation_status": "ok",
       "country_tier": "A",
-      "info_grade": "3",
-      "country_hint": "USA"
+      "info_grade": "2",
+      "country_hint": "RUS",
+      "election_type": "general"
     },
     {
       "id": "18e9c6eb3689104b",
@@ -680,9 +849,9 @@
         "diplomacy": 1.0,
         "election": 0.0,
         "region_weight": 1.4,
-        "freshness": 0.9,
-        "importance": 1.354,
-        "final": 1.597
+        "freshness": 0.837,
+        "importance": 1.258,
+        "final": 1.485
       },
       "rank_reasons": [
         "region:mena*1.40",
@@ -721,9 +890,9 @@
         "diplomacy": 1.0,
         "election": 0.0,
         "region_weight": 1.35,
-        "freshness": 0.9,
-        "importance": 1.367,
-        "final": 1.582
+        "freshness": 0.837,
+        "importance": 1.271,
+        "final": 1.471
       },
       "rank_reasons": [
         "region:commodity_specialist*1.35",
@@ -763,9 +932,9 @@
         "diplomacy": 0.0,
         "election": 0.0,
         "region_weight": 1.35,
-        "freshness": 0.577,
-        "importance": 1.327,
-        "final": 1.536
+        "freshness": 0.536,
+        "importance": 1.234,
+        "final": 1.428
       },
       "rank_reasons": [
         "region:commodity_specialist*1.35",
@@ -804,9 +973,9 @@
         "diplomacy": 0.0,
         "election": 0.0,
         "region_weight": 1.25,
-        "freshness": 0.599,
-        "importance": 1.378,
-        "final": 1.533
+        "freshness": 0.557,
+        "importance": 1.281,
+        "final": 1.425
       },
       "rank_reasons": [
         "region:japan*1.25",
@@ -845,9 +1014,9 @@
         "diplomacy": 0.0,
         "election": 0.0,
         "region_weight": 1.25,
-        "freshness": 0.783,
-        "importance": 1.297,
-        "final": 1.443
+        "freshness": 0.728,
+        "importance": 1.206,
+        "final": 1.342
       },
       "rank_reasons": [
         "region:china*1.25",
@@ -885,9 +1054,9 @@
         "diplomacy": 0.0,
         "election": 0.0,
         "region_weight": 1.3,
-        "freshness": 0.747,
-        "importance": 1.237,
-        "final": 1.404
+        "freshness": 0.694,
+        "importance": 1.15,
+        "final": 1.305
       },
       "rank_reasons": [
         "region:india*1.30",
@@ -899,47 +1068,6 @@
       "country_tier": "A",
       "info_grade": "3",
       "country_hint": "IND"
-    },
-    {
-      "id": "1a235c2c67bc4d3a",
-      "published_at": "2026-09-13T12:08:57+00:00",
-      "source": {
-        "id": "arab_news",
-        "name": "Arab News",
-        "region": "mena",
-        "slant": null
-      },
-      "url": "https://www.arabnews.com/saudi-arabia/pakistan-pm-condemns-attacks-on-kingdom-in-call-with-saudi-crown-prince-3001559",
-      "category": "commodity",
-      "commodities": [
-        "shipping"
-      ],
-      "title": {
-        "original": "Pakistan PM condemns attacks on Kingdom in call with Saudi crown prince",
-        "original_lang": "en",
-        "ko": "파키스탄 총리는 사우디 왕세자와의 통화에서 킹덤에 대한 공격을 비난합니다."
-      },
-      "summary": "Saudi Crown Prince Mohammed bin Salman bin Abdulaziz Al Saud and Pakistani Prime Minister Muhammad Shehbaz Sharif held a phone conversation on Wednesday to discuss regional diplomatic efforts and recent security developments, according to an official statement by Fahd Nazer, spok",
-      "scores": {
-        "commodity": 1.0,
-        "diplomacy": 2.0,
-        "election": 0.0,
-        "region_weight": 1.4,
-        "freshness": 0.831,
-        "importance": 1.177,
-        "final": 1.389
-      },
-      "rank_reasons": [
-        "region:mena*1.40",
-        "category:commodity",
-        "tier:A*1.00/g3",
-        "commodity:shipping:1",
-        "diplomacy:2"
-      ],
-      "translation_status": "ok",
-      "country_tier": "A",
-      "info_grade": "3",
-      "country_hint": "USA"
     },
     {
       "id": "67dccb0cb64264a4",
@@ -966,9 +1094,9 @@
         "diplomacy": 0.0,
         "election": 0.0,
         "region_weight": 1.4,
-        "freshness": 0.948,
-        "importance": 1.091,
-        "final": 1.287
+        "freshness": 0.882,
+        "importance": 1.014,
+        "final": 1.196
       },
       "rank_reasons": [
         "region:mena*1.40",
@@ -1008,9 +1136,9 @@
         "diplomacy": 0.0,
         "election": 0.0,
         "region_weight": 1.4,
-        "freshness": 0.912,
-        "importance": 1.087,
-        "final": 1.283
+        "freshness": 0.848,
+        "importance": 1.01,
+        "final": 1.192
       },
       "rank_reasons": [
         "region:mena*1.40",
@@ -1024,46 +1152,6 @@
       "country_tier": "B",
       "info_grade": "3",
       "country_hint": "SAU"
-    },
-    {
-      "id": "e4172dad22cd771f",
-      "published_at": "2026-09-13T15:17:03+00:00",
-      "source": {
-        "id": "middle_east_eye",
-        "name": "Middle East Eye",
-        "region": "mena",
-        "slant": null
-      },
-      "url": "https://www.middleeasteye.net/live-blog/live-blog-update/trump-reiterates-he-sees-iran-war-ending-after-us-midterm-elections",
-      "category": "commodity",
-      "commodities": [
-        "oil"
-      ],
-      "title": {
-        "original": "Trump reiterates that he sees Iran war ending after US midterm elections",
-        "original_lang": "en",
-        "ko": "트럼프 대통령은 미국 중간선거 이후 이란 전쟁이 끝나는 것을 보고 있다고 거듭 강조했습니다."
-      },
-      "summary": "Trump reiterates that he sees Iran war ending after US midterm elections US President Donald Trump reiterated on Sunday that he expected the Iran war to end this year, possibly just after midterm elections due in the United States in November, resulting in a drop in oil prices. \"",
-      "scores": {
-        "commodity": 1.0,
-        "diplomacy": 0.0,
-        "election": 0.0,
-        "region_weight": 1.4,
-        "freshness": 0.907,
-        "importance": 1.043,
-        "final": 1.231
-      },
-      "rank_reasons": [
-        "region:mena*1.40",
-        "category:commodity",
-        "tier:A*1.00/g1",
-        "commodity:oil:1"
-      ],
-      "translation_status": "ok",
-      "country_tier": "A",
-      "info_grade": "1",
-      "country_hint": "USA"
     },
     {
       "id": "9ab121a731342a2b",
@@ -1110,6 +1198,47 @@
       "country_hint": "USA"
     },
     {
+      "id": "89752cefd7708dec",
+      "published_at": "2026-09-13T21:06:03+00:00",
+      "source": {
+        "id": "ltn",
+        "name": "Liberty Times",
+        "region": "taiwan",
+        "slant": "pan_green"
+      },
+      "url": "https://news.ltn.com.tw/news/world/breakingnews/5572963",
+      "category": "commodity",
+      "commodities": [
+        "oil"
+      ],
+      "title": {
+        "original": "伊朗與波灣國家荷莫茲海峽會談 阿曼宣布延期",
+        "original_lang": "zh-TW",
+        "ko": "이란-만 호모즈 해협 회담 오만, 연기 발표"
+      },
+      "summary": "阿曼宣布，伊朗和波斯灣國家原定明天針對荷莫茲海峽舉行的會談將延期。荷莫茲海峽是當前中東戰爭主要的衝突引爆點。 法新社報導，伊朗外交部先前宣布，阿曼將主辦會議，以商討對全球石油和天然氣輸運至...…",
+      "scores": {
+        "commodity": 1.0,
+        "diplomacy": 2.0,
+        "election": 0.0,
+        "region_weight": 1.25,
+        "freshness": 0.991,
+        "importance": 1.011,
+        "final": 1.124
+      },
+      "rank_reasons": [
+        "region:taiwan*1.25",
+        "category:commodity",
+        "tier:B*0.72/g3",
+        "commodity:oil:1",
+        "diplomacy:2"
+      ],
+      "translation_status": "ok",
+      "country_tier": "B",
+      "info_grade": "3",
+      "country_hint": "TWN"
+    },
+    {
       "id": "e735bd03e3f62001",
       "published_at": "2026-08-07T12:57:08+00:00",
       "source": {
@@ -1150,165 +1279,39 @@
       "election_type": "cabinet_reshuffle"
     },
     {
-      "id": "67822bbd7c8bb480",
-      "published_at": "2026-09-12T06:32:08+00:00",
+      "id": "e41c0531c1f95a0f",
+      "published_at": "2026-09-13T20:55:44+00:00",
       "source": {
-        "id": "cgtn_world",
-        "name": "CGTN",
-        "region": "china",
-        "slant": null
-      },
-      "url": "https://news.cgtn.com/news/2026-09-12/APEC-energy-talks-spotlight-China-s-role-in-regional-green-transition-1Qnl0w6ju5a/p.html?UTM_Source=cgtn&UTM_Medium=rss&UTM_Campaign=World",
-      "category": "commodity_diplomacy",
-      "commodities": [
-        "shipping"
-      ],
-      "title": {
-        "original": "APEC energy talks spotlight China's role in regional green transition",
-        "original_lang": "en",
-        "ko": "APEC 에너지 회담, 지역 녹색 전환에서 중국의 역할 주목"
-      },
-      "summary": "Delegates from APEC economies have met in Beijing to discuss ways to strengthen regional energy security and accelerate the transition to cleaner energy, as disruptions to the Strait of Hormuz expose vulnerabilities in the Asia-Pacific's energy supply chains.",
-      "scores": {
-        "commodity": 1.0,
-        "diplomacy": 2.0,
-        "election": 0.0,
-        "region_weight": 1.25,
-        "freshness": 0.365,
-        "importance": 0.97,
-        "final": 1.079
-      },
-      "rank_reasons": [
-        "region:china*1.25",
-        "category:commodity_diplomacy",
-        "tier:A*1.00/g2",
-        "commodity:shipping:1",
-        "diplomacy:2",
-        "bridge:1"
-      ],
-      "translation_status": "ok",
-      "country_tier": "A",
-      "info_grade": "2",
-      "country_hint": "CHN"
-    },
-    {
-      "id": "7ad933fa64d5569c",
-      "published_at": "2026-09-09T19:19:03+00:00",
-      "source": {
-        "id": "ft_commodities",
-        "name": "FT Commodities",
-        "region": "west",
-        "slant": null
-      },
-      "url": "https://www.ft.com/content/c8921e49-1d06-4d27-ab38-7a1d8e3d43fe?syn-25a6b1a6=1",
-      "category": "commodity",
-      "commodities": [
-        "oil"
-      ],
-      "title": {
-        "original": "Oil hits $100 for first time since July",
-        "original_lang": "en",
-        "ko": "석유가 7월 이후 처음으로 $ 100를 기록했습니다"
-      },
-      "summary": "Brent crude advances as escalation in US-Iran war feeds fears of renewed global supply crunch",
-      "scores": {
-        "commodity": 3.0,
-        "diplomacy": 0.0,
-        "election": 0.0,
-        "region_weight": 0.55,
-        "freshness": 0.35,
-        "importance": 1.33,
-        "final": 1.061
-      },
-      "rank_reasons": [
-        "region:west*0.55",
-        "category:commodity",
-        "tier:A*1.00/g1",
-        "commodity:oil:3",
-        "bridge:1"
-      ],
-      "translation_status": "ok",
-      "country_tier": "A",
-      "info_grade": "1",
-      "country_hint": "USA"
-    },
-    {
-      "id": "4b3e60cc86da5459",
-      "published_at": "2026-09-13T01:18:00+00:00",
-      "source": {
-        "id": "japan_times",
-        "name": "Japan Times",
-        "region": "japan",
-        "slant": null
-      },
-      "url": "https://www.japantimes.co.jp/news/2026/09/13/world/politics/houthi-yemen-us/",
-      "category": "commodity",
-      "commodities": [
-        "oil",
-        "shipping"
-      ],
-      "title": {
-        "original": "Houthi advance in Yemen puts U.S. in a new bind",
-        "original_lang": "en",
-        "ko": "예멘의 후티 진출로 미국이 새로운 구속력을 갖게 됨"
-      },
-      "summary": "The Iran-backed fighters may soon be able to control the Bab el-Mandeb Strait, giving Tehran leverage over two main oil-shipping corridors.",
-      "scores": {
-        "commodity": 2.0,
-        "diplomacy": 1.0,
-        "election": 0.0,
-        "region_weight": 1.25,
-        "freshness": 0.615,
-        "importance": 0.945,
-        "final": 1.051
-      },
-      "rank_reasons": [
-        "region:japan*1.25",
-        "category:commodity",
-        "tier:A*1.00/g3",
-        "commodity:oil:1",
-        "commodity:shipping:1",
-        "diplomacy:1"
-      ],
-      "translation_status": "ok",
-      "country_tier": "A",
-      "info_grade": "3",
-      "country_hint": "JPN"
-    },
-    {
-      "id": "81e0467754bbc353",
-      "published_at": "2026-09-13T17:11:20+00:00",
-      "source": {
-        "id": "tass_ru",
-        "name": "ТАСС",
+        "id": "rt_ru",
+        "name": "RT Russian",
         "region": "russia",
         "slant": null
       },
-      "url": "https://tass.ru/mezhdunarodnaya-panorama/28108529",
+      "url": "https://russian.rt.com/world/news/1681992-kanada-kredit-es?utm_source=rss&utm_medium=rss&utm_campaign=RSS",
       "category": "commodity",
       "commodities": [
-        "gas"
+        "rice"
       ],
       "title": {
-        "original": "FT: саммит по перезагрузке отношений ЕС и Британии перенесли на конец ноября",
+        "original": "FT: Канада может присоединиться к кредиту ЕС для Украины на €90 млрд",
         "original_lang": "ru",
-        "ko": "FT: EU-영국 정상회담이 11월 말로 연기됨"
+        "ko": "FT: 캐나다는 900억 유로에 우크라이나에 대한 EU 대출에 가입할 수 있습니다."
       },
-      "summary": "Причиной этого решения стали разногласия сторон насчет политики \"Сделано в Европе\", отметила газета",
+      "summary": "Канада может присоединиться к кредиту ЕС для Украины на €90 млрд, идут соответствующие переговоры. Читать далее",
       "scores": {
         "commodity": 1.0,
         "diplomacy": 1.0,
         "election": 0.0,
         "region_weight": 1.25,
-        "freshness": 0.956,
-        "importance": 0.941,
-        "final": 1.047
+        "freshness": 0.987,
+        "importance": 0.971,
+        "final": 1.08
       },
       "rank_reasons": [
         "region:russia*1.25",
         "category:commodity",
         "tier:A*1.00/g3",
-        "commodity:gas:1",
+        "commodity:rice:1",
         "diplomacy:1"
       ],
       "translation_status": "ok",
@@ -1317,81 +1320,86 @@
       "country_hint": "RUS"
     },
     {
-      "id": "876fa418f27801fd",
-      "published_at": "2026-09-13T18:22:21+00:00",
+      "id": "002a91d3c6dc57c9",
+      "published_at": "2026-09-13T19:17:03+00:00",
       "source": {
-        "id": "tass_ru",
-        "name": "ТАСС",
-        "region": "russia",
+        "id": "bloomberg_markets",
+        "name": "Bloomberg Markets",
+        "region": "west",
         "slant": null
       },
-      "url": "https://tass.ru/mezhdunarodnaya-panorama/28108587",
-      "category": "election",
-      "commodities": [],
+      "url": "https://www.bloomberg.com/news/articles/2026-09-13/hormuz-meeting-with-iran-and-gulf-nations-postponed-oman-says",
+      "category": "commodity",
+      "commodities": [
+        "shipping"
+      ],
       "title": {
-        "original": "Экзитполы: на парламентских выборах в Швеции лидирует оппозиционный блок партий",
-        "original_lang": "ru",
-        "ko": "여론조사 종료: 스웨덴 국회의원 선거에서 야당 블록 주도"
+        "original": "Hormuz Meeting With Iran and Gulf Nations Delayed, Oman Says",
+        "original_lang": "en",
+        "ko": "이란과 걸프 국가들과의 호르무즈 회담이 지연되고 있다고 오만은 말한다."
       },
-      "summary": "Согласно экзитполу телеканала ТV4, правящий блок набирает 47,0% голосов, а оппозиционный - 51,3%",
+      "summary": "A planned meeting for Monday between Iran and several Gulf nations on creating a temporary shipping lane through the Strait of Hormuz has been postponed, according to Oman’s foreign minister.",
       "scores": {
-        "commodity": 0,
-        "diplomacy": 0.0,
-        "election": 1.0,
-        "region_weight": 1.25,
-        "freshness": 0.988,
-        "importance": 0.763,
-        "final": 0.849
+        "commodity": 1.0,
+        "diplomacy": 2.0,
+        "election": 0.0,
+        "region_weight": 0.55,
+        "freshness": 0.942,
+        "importance": 1.335,
+        "final": 1.064
       },
       "rank_reasons": [
-        "region:russia*1.25",
-        "category:election",
-        "tier:A*1.00/g2",
-        "election:general:1"
+        "region:west*0.55",
+        "category:commodity",
+        "tier:A*1.00/g3",
+        "commodity:shipping:1",
+        "diplomacy:2"
       ],
       "translation_status": "ok",
       "country_tier": "A",
-      "info_grade": "2",
-      "country_hint": "RUS",
-      "election_type": "general"
+      "info_grade": "3",
+      "country_hint": "USA"
     },
     {
-      "id": "827f472325c413ae",
-      "published_at": "2026-09-13T09:44:00+00:00",
+      "id": "d8cf30ab5558f346",
+      "published_at": "2026-09-11T19:03:00+00:00",
       "source": {
         "id": "daily_sabah",
         "name": "Daily Sabah",
         "region": "turkey",
         "slant": null
       },
-      "url": "https://www.dailysabah.com/business/energy/energy-supply-concerns-push-europe-asia-toward-renewable-energy",
-      "category": "diplomacy",
-      "commodities": [],
+      "url": "https://www.dailysabah.com/politics/diplomacy/fm-fidan-discusses-attacks-on-oil-pipeline-with-saudi-counterpart",
+      "category": "commodity_diplomacy",
+      "commodities": [
+        "oil"
+      ],
       "title": {
-        "original": "Energy supply concerns push Europe, Asia toward renewable energy",
+        "original": "FM Fidan discusses attacks on oil pipeline with Saudi counterpart",
         "original_lang": "en",
-        "ko": "에너지 공급 문제는 유럽과 아시아를 재생 가능 에너지로 밀어붙입니다."
+        "ko": "FM Fidan, 사우디와 석유 파이프라인 공격 논의"
       },
-      "summary": "The supply and price shock following the start of the U.S.-Iran war has reshaped energy security policies in Europe and Asia, increasing the importance of investments in renewable...",
+      "summary": "Foreign Minister Hakan Fidan discussed recent attacks against Saudi Arabia and broader regional developments in a phone call with his Saudi counterpart, a Turkish diplomatic source...",
       "scores": {
-        "commodity": 0,
-        "diplomacy": 1.0,
+        "commodity": 1.0,
+        "diplomacy": 2.0,
         "election": 0.0,
         "region_weight": 1.3,
-        "freshness": 0.778,
-        "importance": 0.7,
-        "final": 0.794
+        "freshness": 0.35,
+        "importance": 0.669,
+        "final": 0.76
       },
       "rank_reasons": [
         "region:turkey*1.30",
-        "category:diplomacy",
-        "tier:B*0.72/g1",
-        "diplomacy:1",
+        "category:commodity_diplomacy",
+        "tier:B*0.72/g2",
+        "commodity:oil:1",
+        "diplomacy:2",
         "bridge:1"
       ],
       "translation_status": "ok",
       "country_tier": "B",
-      "info_grade": "1",
+      "info_grade": "2",
       "country_hint": "TUR"
     }
   ]
