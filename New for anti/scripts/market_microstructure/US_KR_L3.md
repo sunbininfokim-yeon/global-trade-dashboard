@@ -1,25 +1,25 @@
-# US→KR L3 pipeline — 2026-09-12
+# US→KR L3 pipeline — 2026-09-14
 
 Headline: `high:downside`
-Tier B edges fired: 5
+Tier B edges fired: 6
 Sources: cboe_vol_indices, finra_short, cboe_spot, yahoo_spot_options_fallback, cboe_options
 
 ## Channels
-- downside: high heat=8.1555 kr=['000660', '005930']
-- upside: quiet heat=0.0 kr=[]
+- downside: high heat=15.6918 kr=['000660', '005930']
+- upside: watch heat=1.3171 kr=['000660']
 - vol_up: quiet heat=0.0 kr=[]
 - vol_down: quiet heat=0.0 kr=[]
 
 ## Hit-rate (overnight open, any driver ≤−2%)
 - alert days: 96 / 246
-- frac_neg alert=0.7604 vs baseline=0.4634 (lift=0.297)
-- mean alert R=-0.020059 baseline=0.007301
+- frac_neg alert=0.7604 vs baseline=0.4797 (lift=0.2807)
+- mean alert R=-0.020059 baseline=0.00706
 
 ## Recalibration suggestions
-- downside_hit_rate_mean=0.8405
+- downside_hit_rate_mean=0.8375
 - keep_downside_emphasis=True
 
 ## Regime-proxy backtest (downside overnight)
-- n=255 mean=-0.028944 frac_neg=0.8353
+- n=255 mean=-0.028944 frac_neg=0.8392
 
 Tier A 고정 링크 (+ Tier B corr 발견, 하향 가중). 주체 특정 없음. 하방=실제 발화한 풋 우위/갭 스트레스×KR 링크 heat. IV 변화가 없으면 거래량만으로 vol-long/vol-short를 판정하지 않음. open30m_prior는 수익률 버킷 프록시(옵션 히스토리 아님).
