@@ -30,4 +30,14 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add "$f"
           git commit -m "chore: refresh producing-region weather anomalies"
+          # The Open-Meteo fetch above takes ~20min, so by push time several
+          # other Friday-batch jobs (SST, climate indices, yield forecasts)
+          # have usually already landed a commit on main -- every scheduled
+          # run since this workflow was added has hit "! [rejected] ...
+          # (fetch first)" here and lost that week's data. Rebase and retry.
+          for i in 1 2 3; do
+            git push && exit 0
+            echo "push rejected, rebasing onto latest main and retrying ($i/3)"
+            git pull --rebase --autostash
+          done
           git push

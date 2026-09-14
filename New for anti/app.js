@@ -3672,6 +3672,14 @@ const renderClimateWorldLeft = async () => {
     const amo = g?.north_atlantic || {};
     const continents = g?.continent_temp_anomaly?.values || [];
     const maxAbsC = Math.max(0.5, ...continents.map(c => Math.abs(c.anomaly || 0)));
+    // "27°C" and "+1.8" mean nothing without knowing whether the number
+    // behind them is this week's or a stale snapshot from a broken cron.
+    const climateAsOf = g?.generated_at
+        ? new Date(g.generated_at).toLocaleString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' })
+        : null;
+    const cityWxAsOf = cityWxDoc?.generated_at
+        ? new Date(cityWxDoc.generated_at).toLocaleDateString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit' })
+        : null;
 
     forecastCountryTitle.textContent = '전역 기후 모니터';
     forecastContentEl.innerHTML = `
@@ -3684,6 +3692,7 @@ const renderClimateWorldLeft = async () => {
                 <div class="climate-sub">${enso.state_ko || '상태 미정'}
                     ${enso.prob_continue_pct != null ? ` · 지속 확률 ${enso.prob_continue_pct}%` : ''}</div>
                 ${renderEnsoBars(enso.series)}
+                <div class="climate-sub" style="margin-top:4px;">기준: ${climateAsOf || '—'}</div>
             </div>
             <div class="climate-card">
                 <h3>IOD · 인도양 쌍극자 <span class="src-tag">${iod.source || 'NOAA PSL'}</span></h3>
@@ -3729,6 +3738,7 @@ const renderClimateWorldLeft = async () => {
             </div>
             <div class="climate-card">
                 <h3>주요 산지 기상 <span class="src-tag">최근 ${cityWxDoc?.window?.days ?? 30}일 · ${cityWxDoc?.normal || '평년 대비'}</span></h3>
+                <div class="climate-sub" style="margin-bottom:6px;">기준일: ${cityWxAsOf || '—'} (Open-Meteo ERA5 · 주 1회 갱신)</div>
                 ${(cityWxDoc?.cities || g?.cities || []).map(c => {
                     const w = (cityWxDoc?.cities || []).find(x => x.name === c.name) || {};
                     const live = climateCityWx[c.name];
@@ -3753,7 +3763,9 @@ const renderClimateWorldLeft = async () => {
                 }).join('') || '<div class="climate-sub">도시 seed 없음</div>'}
             </div>
             <p style="font-size:10px;color:#64748b;line-height:1.5;">
-                지수 seed: <code>climate_global_v1.json</code>. 상세 시계열·파생상품 풀셋은 이후 갱신.
+                ENSO·IOD 갱신: ${climateAsOf || '—'} (NOAA CPC/PSL · 주 1회 자동 갱신)
+                · 산지 기상 갱신: ${cityWxAsOf || '—'} (Open-Meteo ERA5 · 주 1회 자동 갱신)
+                ${g?.note ? `<br/>${g.note}` : ''}
             </p>
         </div>`;
 };
