@@ -12,7 +12,7 @@ requireEnv('SUPABASE_URL');
 requireEnv('SUPABASE_SERVICE_ROLE_KEY');
 const RESEND_API_KEY = requireEnv('RESEND_API_KEY');
 const FROM_EMAIL = process.env.NOTIFY_FROM_EMAIL || 'alerts@chokemonitor.com';
-const SITE_URL = 'https://chokemonitor.com/us-policy-hub';
+const SITE_URL = 'https://chokemonitor.com/policy/us';
 
 function esc(value) {
   return String(value ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));

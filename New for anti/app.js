@@ -4999,16 +4999,14 @@ const electionHost = () => ({
         currentViewDesc.textContent = description;
     },
     // 정치 › 미국 › 상임위 hands off to 정책 › 미국. policy.js restores a deep
-    // view from ?view=&id= on render, so writing those params before the view
+    // view from the URL path on render, so writing that path before the view
     // switch is the whole handoff -- no second entry point to keep in sync.
+    // The raw committee_id is fine here: policy.js's slug lookup isn't built
+    // yet at this point, and its restore parser falls back to the raw id,
+    // which go()'s own syncUrl() then immediately corrects to the slug form.
     openPolicyCommittee(committeeId) {
-        const params = new URLSearchParams();
-        if (committeeId) {
-            params.set('view', 'committee');
-            params.set('id', committeeId);
-        }
-        const qs = params.toString();
-        window.history.pushState({}, '', `/us-policy-hub${qs ? `?${qs}` : ''}`);
+        const path = committeeId ? `/policy/us/committee/${encodeURIComponent(committeeId)}` : '/policy/us';
+        window.history.pushState({}, '', path);
         setView('us-policy-hub');
     },
     // 정치 › 미국 › 행정부 is three steps deep with no URL of its own, so it
@@ -5699,10 +5697,15 @@ initSignalPanel();
 // /shipping_fleet, ...) instead of staying on '/' for every view, so
 // sections are shareable, back/forward works, and each is a distinct URL
 // for search engines. 'home' is the one target that maps to '/' itself.
-const pathForTarget = (target) => (target === 'home' ? '/' : `/${target}`);
+// 정책 › 미국 nests its own deep views (committee/agency/bill/eo/...) under
+// /policy/us -- see policy.js's pathForLeaf/parseLeafFromPath, which own
+// everything past that prefix. Here we only need to route the whole
+// subtree back to the one real data-target that renders it.
+const pathForTarget = (target) => (target === 'home' ? '/' : target === 'us-policy-hub' ? '/policy/us' : `/${target}`);
 const targetFromPath = (pathname) => {
     const slug = pathname.replace(/^\/+/, '').replace(/\/+$/, '');
     if (!slug) return 'home';
+    if (slug === 'policy/us' || slug.startsWith('policy/us/')) return 'us-policy-hub';
     return document.querySelector(`[data-target="${slug}"]`) ? slug : null;
 };
 const navigateTo = (target) => {
