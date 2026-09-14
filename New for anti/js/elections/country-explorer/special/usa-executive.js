@@ -174,7 +174,13 @@ const scaffoldRows = (scaffold, supplied, live, consumed) => {
     const rows = scaffold.map((box) => {
         const data = byAbbr.get(box.abbr);
         byAbbr.delete(box.abbr);
-        let person = personText(data);
+        // office_status rows (whOfficeStatusRows) carry display_person already
+        // formatted for their display type ("공석"/"미확인 (공석 아님)"/name) --
+        // personText() only knows how to format an actual person, so it would
+        // return '' for those and fall through to "명단 수집 예정", collapsing
+        // "confirmed vacant" and "we haven't found the page yet" into the same
+        // text. Use display_person first when the row supplies one.
+        let person = data?.display_person ?? personText(data);
         let personUrl = data?.official_url || null;
         let title = data?.head_title_ko || '';
         if (!person && box.prefillCore) {
@@ -185,7 +191,7 @@ const scaffoldRows = (scaffold, supplied, live, consumed) => {
             const seat = findBy(live.cabinet, 'portfolio_ko', box.prefillCabinet);
             if (seat) { person = personText(seat); personUrl = seat.official_url || null; title = title || box.prefillTitle; consumed.add(box.prefillCabinet); }
         }
-        return orgBox({ abbr: box.abbr, ko: box.ko, en: box.en, title, person, personUrl, note: data?.note_ko });
+        return orgBox({ abbr: box.abbr, ko: box.ko, en: box.en, title, person, personUrl, vacant: data?.vacant === true, note: data?.note_ko });
     });
     // Anything the data carries that the scaffold doesn't know about yet.
     const extra = [...byAbbr.values()].map((row) => orgBox({
@@ -199,6 +205,41 @@ const scaffoldRows = (scaffold, supplied, live, consumed) => {
     }));
     return [...rows, ...extra].join('');
 };
+
+// white_house.office_status (usa_wh_office_status_v1) answers a narrower
+// question than "who holds this seat": whether an empty-looking box is
+// confirmed vacant, or just not yet officially findable. Only PCLOB chair
+// is display:"show_vacant" today -- pclob.gov's own board page says so.
+// Everything else that has no confirmed name is "unconfirmed_not_vacant":
+// WHO's payroll doesn't cover it, or the office's own About page doesn't
+// name a head, but the White House has never declared the seat empty.
+// Conflating "we don't have it" with "vacant" would assert a fact the
+// source doesn't -- that's why this has its own display string per office
+// rather than reusing orgBox()'s generic "명단 수집 예정" for both.
+const OFFICE_STATUS_TITLE = {
+    cea: '의장', ceq: '의장', ondcp: '국장', whmo: '실장', piab: '의장', pclob_chair: '의장',
+};
+const OFFICE_STATUS_ABBR = {
+    cea: 'CEA', ceq: 'CEQ', ondcp: 'ONDCP', whmo: 'WHMO', piab: 'PIAB', pclob_chair: 'PCLOB',
+};
+const officeStatusPerson = (office) => {
+    if (office.display === 'show_vacant') return office.ui_ko || '공석';
+    if (office.display === 'unconfirmed_not_vacant') return office.ui_ko || '미확인 (공석 아님)';
+    if (office.display === 'show_name_with_as_of') {
+        return [office.name_en, office.as_of ? `${office.as_of} 임명` : ''].filter(Boolean).join(' · ');
+    }
+    return office.name_en || '';
+};
+const whOfficeStatusRows = (whiteHouse) => (whiteHouse?.office_status?.offices || [])
+    .filter((office) => OFFICE_STATUS_ABBR[office.id])
+    .map((office) => ({
+        abbr: OFFICE_STATUS_ABBR[office.id],
+        head_title_ko: OFFICE_STATUS_TITLE[office.id] || '',
+        display_person: officeStatusPerson(office),
+        vacant: office.vacant === true,
+        official_url: office.source_url || null,
+        note_ko: office.note_ko || null,
+    }));
 
 // white_house.topical_advisors (usa_wh_topical_advisors_v1) is a separate,
 // flatter WHO-payroll extract from the curated ADVISOR_DOMAINS scaffold above:
@@ -250,15 +291,16 @@ export const usaExecutive = (country) => {
     const whiteHouse = live.white_house;
     const [whCouncilMatches, whCouncilLeftover] = partitionByScaffold(whCouncilRows(whiteHouse), COUNCILS);
     const [whOfficeMatches] = partitionByScaffold(whOfficeRows(whiteHouse), OFFICES);
+    const [officeStatusCouncilRows, officeStatusOfficeRows] = partitionByScaffold(whOfficeStatusRows(whiteHouse), COUNCILS);
     const councils = scaffoldRows(
         COUNCILS,
-        [...(live.eop_councils || []), ...whCouncilMatches, ...whCouncilLeftover],
+        [...(live.eop_councils || []), ...whCouncilMatches, ...whCouncilLeftover, ...officeStatusCouncilRows],
         live,
         consumed,
     );
     const offices = scaffoldRows(
         OFFICES,
-        [...(live.eop_offices || []), ...whOfficeMatches, ...whStaffExtraRows(whiteHouse)],
+        [...(live.eop_offices || []), ...whOfficeMatches, ...whStaffExtraRows(whiteHouse), ...officeStatusOfficeRows],
         live,
         consumed,
     );
@@ -274,11 +316,19 @@ export const usaExecutive = (country) => {
     const coreRows = (live.core || []).filter((row) => !consumed.has(row.office_ko));
     const cabinet = (live.cabinet || []).filter((row) => !consumed.has(row.portfolio_ko));
     const sourceLabels = (live.sources || []).map((source) => [source.org, source.as_of ? `${source.as_of} 기준` : ''].filter(Boolean).join(' · '));
+    // vp_chief_of_staff isn't in the OFFICE_STATUS_ABBR council/office map --
+    // it's a core row (office_status.office_ko matches it exactly), not a box
+    // in either scaffold, so it needs its own lookup rather than going through
+    // whOfficeStatusRows()/scaffoldRows().
+    const vpCosStatus = (whiteHouse?.office_status?.offices || []).find((office) => office.id === 'vp_chief_of_staff');
 
     return `
         <p class="section-title">1 · 대통령·부통령·비서실</p>
         <div class="elections-card-grid">
-            ${coreRows.map((row) => card(row.office_ko || '직책', personText(row), '', row.official_url)).join('') || '<p class="elections-muted">확보된 공개 명부가 없습니다.</p>'}
+            ${coreRows.map((row) => {
+        const person = personText(row) || (vpCosStatus && row.office_ko === vpCosStatus.office_ko ? officeStatusPerson(vpCosStatus) : '');
+        return card(row.office_ko || '직책', person, '', row.official_url);
+    }).join('') || '<p class="elections-muted">확보된 공개 명부가 없습니다.</p>'}
         </div>
 
         <p class="section-title">2 · 대통령 직속 위원회</p>

@@ -26,7 +26,7 @@ class ClassifyTopicalAdvisorsTests(unittest.TestCase):
                 row("Russ Vought", "DIRECTOR OF THE OFFICE OF MANAGEMENT AND BUDGET"),
             ]
         )
-        names = {item["name_en"] for item in classified["members"]}
+        names = {item["name_en"] for item in classified["members"] if item.get("source") == "wh_staff_report"}
         self.assertEqual(names, {"Marco A. Rubio", "Paula M. White"})
         self.assertEqual(
             [item["name_en"] for item in classified["unscoped_senior_advisors"]],
@@ -46,7 +46,17 @@ class ClassifyTopicalAdvisorsTests(unittest.TestCase):
                 ),
             ]
         )
-        self.assertEqual([item["name_en"] for item in classified["members"]], ["Kevin A. Hassett"])
+        self.assertEqual(
+            [item["name_en"] for item in classified["members"] if item["domain"] == "economic_policy"],
+            ["Kevin A. Hassett"],
+        )
+
+    def test_sacks_ai_crypto_from_official_not_payroll(self):
+        classified = classify_topical_advisors([])
+        sacks = next(item for item in classified["members"] if item["name_en"] == "David O. Sacks")
+        self.assertEqual(sacks["office_en"], "Special Advisor for AI and Crypto")
+        self.assertEqual(sacks["payroll_status"], "not_on_wh_staff_report")
+        self.assertNotIn("Czar", sacks["office_en"])
 
 
 if __name__ == "__main__":

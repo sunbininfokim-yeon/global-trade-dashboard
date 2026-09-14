@@ -66,6 +66,8 @@ js/elections/
 |---|---|---|---|
 | 국가 헤더 | `usa.head`, `usa.executive_live.core` | 대통령·부통령·백악관/부통령실·NSC 핵심 | NSC 법정 의장은 대통령, 국가안보보좌관은 실무 책임으로 별도 표기 |
 | 연방 행정부 | `usa.executive_live` | `core` 5인 + `cabinet` 21개 공개 직위 | `cabinet[].status="acting"`은 직무대행을 그대로 표시 |
+| 주제별 보좌관 | `usa.executive_live.white_house.topical_advisors` | WHO 급여명부에서 주제가 직함에 적힌 보좌·차르·특사·신앙 라인 | 상세 `HANDOFF_CLAUDE_ELECTIONS_WH_ADVISORS.md`. 일반 Policy Advisor·국실장은 여기 없음 |
+| 공석 vs 미확인 | `usa.executive_live.white_house.office_status` | `vacant:true`만 공석. 그 외 이름 없음은 미확인 | 「명단 수집 예정」으로 공석과 미확인을 섞지 말 것. `HANDOFF_CLAUDE_ELECTIONS_WH_VACANCIES.md` |
 | 미국 지도 | `usa.subnational_live.governors[]` | 50주 주지사 정당 색 | 주지사만 색칠 |
 | 주 상세 | `usa.ui_ready.state_drilldown.states[]` | 지도 조인키, 주지사·부지사·법무장관, 주 상·하원 의석·의장·제2당 원내지도부, 연방 대표, 해당 주 경선까지 사전 결합 | 일반 주의원 개인 명단은 없음 |
 | 주의 연방 대표 | `usa.ui_ready.state_drilldown.states[].federal_delegation` | 주별 House 의원·정당·지역구 및 상원의원 이름 | 상원의원 임기 종료일은 없음 |
@@ -111,7 +113,7 @@ JPN은 `jpn.executive_live`, `jpn.legislature_live.chamber_leadership`, `jpn.sub
 | 탭 | 필드 경로 | 구현 가능 |
 |---|---|---|
 | 공산당 | `chn.leadership.party_state.general_secretary`, `.politburo_standing_committee`, `.politburo`, `.central_departments` | 총서기, 정치국 상무위·정치국, 조직·선전·정법·통전 등 핵심 부서 |
-| 국무원 | `chn.leadership.party_state.state_council` | 총리·부총리 4·국무위원 3·`constituent_departments` 26. 각 부처 `party_group_secretary`(당조/당위). `same_as_minister=false`인 곳은 부장과 당서기를 둘 다 보여라: 외교 제위, 생태환경 쑨진룽, 자연자원 류궈훙(부장은 공석). 국방부는 당조 없음. `chn-org.js` `ministryPool()`은 아직 국방·공안·국안만 매칭하므로, 부처 이름은 `elections_cn_party_v1.json` `state_council_ministries[].name_ko` / `party_secretary_ko`가 우선이다. |
+| 국무원 | `chn.leadership.party_state.state_council` | 총리·부총리 |
 | 군 | `chn.leadership.cmc`, `.service_branches`, `.theater_commands`, `chn.leadership.security_organs` | 중앙군사위, 군종, 5대 전구, 공안·국가안전 축 |
 | 지도 | `/public/data/admin1/CHN.json` | 도형만. 성별 행정수장 정치 데이터는 아직 없음 |
 

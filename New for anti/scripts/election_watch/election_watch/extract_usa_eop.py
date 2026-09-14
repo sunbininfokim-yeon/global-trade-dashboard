@@ -19,6 +19,14 @@ from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional, Tuple
 
 from election_watch.extract_usa_wh_advisors import classify_topical_advisors
+from election_watch.extract_usa_wh_office_status import (
+    CEA_URL,
+    CEQ_URL,
+    ONDCP_URL,
+    apply_office_status,
+    build_office_status,
+    parse_cea_chair,
+)
 
 ROOT = Path(__file__).resolve().parents[1]
 RAW = ROOT / "raw" / "usa"
@@ -556,6 +564,7 @@ def merge_tier12(eop: Dict[str, Any]) -> None:
         "deputy_chiefs_of_staff": eop.get("deputy_chiefs_of_staff"),
         "other_assistants_to_the_president": eop.get("other_assistants_to_the_president"),
         "topical_advisors": eop.get("topical_advisors"),
+        "office_status": eop.get("office_status"),
         "missing": eop.get("missing"),
         "correction": eop.get("correction"),
         "kr_analog_note_ko": eop.get("kr_analog_note_ko"),
@@ -592,7 +601,41 @@ def refresh_sources_block(eop: Dict[str, Any], staff_url: Optional[str], staff_a
             "grade": "official",
             "as_of": staff_as_of,
         }
-    keep_ids = ["wh_staff_report", "wh_staff_report_2026-07-01", "wh_administration", "wh_cabinet"]
+    by_id["wh_sacks_ai_crypto_official"] = {
+        "id": "wh_sacks_ai_crypto_official",
+        "org": "The White House",
+        "url": "https://www.whitehouse.gov/wp-content/uploads/2025/06/David-Sacks.pdf",
+        "grade": "official",
+        "as_of": "2025-06",
+        "note": (
+            "Ethics waiver: David O. Sacks, special government employee, "
+            "Special Advisor for AI and Crypto. Not on WHO 2026-07-01 payroll. "
+            "Also America's AI Action Plan 2025-07; PCAST co-chair WH release 2026-03-25."
+        ),
+    }
+    by_id["wh_cea"] = {
+        "id": "wh_cea",
+        "org": "Council of Economic Advisers",
+        "url": CEA_URL,
+        "grade": "official",
+        "as_of": as_of,
+    }
+    by_id["wh_ondcp_confirm"] = {
+        "id": "wh_ondcp_confirm",
+        "org": "The White House",
+        "url": "https://www.whitehouse.gov/releases/2026/01/sara-carter-confirmed-as-drug-czar/",
+        "grade": "official",
+        "as_of": "2026-01-06",
+    }
+    keep_ids = [
+        "wh_staff_report",
+        "wh_staff_report_2026-07-01",
+        "wh_administration",
+        "wh_cabinet",
+        "wh_sacks_ai_crypto_official",
+        "wh_cea",
+        "wh_ondcp_confirm",
+    ]
     ordered = []
     seen = set()
     for key in keep_ids:
@@ -613,9 +656,15 @@ def run_fetch() -> Dict[str, Any]:
     RAW.mkdir(parents=True, exist_ok=True)
     cabinet_path = RAW / "wh_cabinet.html"
     admin_path = RAW / "wh_administration.html"
+    cea_path = RAW / "wh_cea.html"
+    ceq_path = RAW / "wh_ceq.html"
+    ondcp_path = RAW / "wh_ondcp.html"
     result = {
         "cabinet_fetched": fetch(CABINET_URL, cabinet_path),
         "admin_fetched": fetch(ADMIN_URL, admin_path),
+        "cea_fetched": fetch(CEA_URL, cea_path),
+        "ceq_fetched": fetch(CEQ_URL, ceq_path),
+        "ondcp_fetched": fetch(ONDCP_URL, ondcp_path),
         "staff_pdf": None,
         "staff_url": None,
     }
@@ -703,11 +752,23 @@ def main(argv: Optional[List[str]] = None) -> int:
             cabinet_as_of=as_of,
             staff_source_id=staff_source_id,
         )
+        cea_html = ""
+        ceq_html = ""
+        cea_path = RAW / "wh_cea.html"
+        ceq_path = RAW / "wh_ceq.html"
+        if cea_path.exists():
+            cea_html = cea_path.read_text(errors="replace")
+        if ceq_path.exists():
+            ceq_html = ceq_path.read_text(errors="replace")
+        cea = parse_cea_chair(cea_html)
+        office_status = build_office_status(as_of=as_of, cea=cea, ceq_html=ceq_html)
+        changes.extend(apply_office_status(eop, office_status))
         refresh_sources_block(eop, fetch_info.get("staff_url"), (staff or {}).get("as_of"), as_of)
         live_cabinet = eop.pop("_cabinet_live", cabinet)
         write_json(OUT / "usa_eop.json", eop)
         if eop.get("topical_advisors") is not None:
             write_json(OUT / "usa_wh_topical_advisors.json", eop["topical_advisors"])
+        write_json(OUT / "usa_wh_office_status.json", eop.get("office_status") or {})
         eop["_cabinet_live"] = live_cabinet
         if args.merge_tier12:
             merge_tier12(eop)
