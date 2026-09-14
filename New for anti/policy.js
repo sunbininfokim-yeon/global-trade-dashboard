@@ -1091,13 +1091,13 @@
       .replace(/^-+|-+$/g, '');
   }
 
-  function buildSlugMaps(list, idKey) {
+  function buildSlugMaps(list, idKey, nameOf = (item) => item.name) {
     const slugById = new Map();
     const idBySlug = new Map();
     for (const item of list || []) {
       const id = item?.[idKey];
       if (!id) continue;
-      const base = slugify(item.name) || slugify(id);
+      const base = slugify(nameOf(item)) || slugify(id);
       let slugValue = base;
       let n = 2;
       while (idBySlug.has(slugValue)) slugValue = `${base}-${n++}`;
@@ -1105,6 +1105,20 @@
       idBySlug.set(slugValue, id);
     }
     return { slugById, idBySlug };
+  }
+
+  // Congress.gov's committee.name carries no chamber ("Committee on
+  // Appropriations", "Committee on Armed Services", "Committee on the
+  // Budget", "Committee on the Judiciary", "Committee on Veterans' Affairs"
+  // are each the literal, identical name in both chambers), so slugifying
+  // the bare name alone would hand one chamber's committee an arbitrary
+  // "-2" suffix instead of a name that says which chamber it is -- and
+  // which one loses the tie isn't guaranteed stable if the API's row order
+  // ever shifts. Joint committees keep their bare name: their names already
+  // read as "Joint Committee on Taxation" etc., so prefixing would repeat
+  // "joint" and they don't collide with the house/senate pattern anyway.
+  function committeeSlugName(c) {
+    return c.chamber === 'house' || c.chamber === 'senate' ? `${c.chamber} ${c.name}` : c.name;
   }
 
   const POLICY_BASE_PATH = '/policy/us';
@@ -1276,7 +1290,7 @@
     if (host.dataset.policyTarget !== target || token !== renderToken) return; // a later view won the race
 
     ({ slugById: committeeSlugById, idBySlug: committeeIdBySlug } =
-      buildSlugMaps(overview?.congress_overview?.committees, 'committee_id'));
+      buildSlugMaps(overview?.congress_overview?.committees, 'committee_id', committeeSlugName));
     ({ slugById: agencySlugById, idBySlug: agencyIdBySlug } =
       buildSlugMaps(overview?.executive_overview?.agencies, 'agency_id'));
 
