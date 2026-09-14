@@ -1072,23 +1072,110 @@
     });
   }
 
-  // Mirrors the current leaf into the URL's query string so a bill, EO, or
-  // search result is a real link -- reload, share, browser back/forward --
-  // instead of living only in `state.trail`. The pathname stays whatever
-  // app.js's top-level router already set (/us-policy-hub etc.); only
-  // ?view=&id= here changes underneath it.
-  function syncUrl(view, id, opts = {}) {
-    const target = host?.dataset.policyTarget;
-    const isDefaultLeaf = view === (TARGET_VIEWS[target] || 'congress') && id === undefined;
-    const params = new URLSearchParams();
-    if (!isDefaultLeaf) {
-      params.set('view', view);
-      if (id !== undefined && id !== null) params.set('id', String(id));
+  // Committees and agencies get a human-readable slug (from their official
+  // name) instead of their opaque id everywhere a URL is built or parsed.
+  // Built once per render() from the already-loaded overview -- nothing
+  // extra to fetch. Two committees/agencies landing on the same slug (a
+  // generic subcommittee name reused across parents, say) get a numeric
+  // suffix so neither silently overwrites the other in the lookup.
+  let committeeSlugById = new Map();
+  let committeeIdBySlug = new Map();
+  let agencySlugById = new Map();
+  let agencyIdBySlug = new Map();
+
+  function slugify(text) {
+    return String(text || '')
+      .toLowerCase()
+      .normalize('NFKD').replace(new RegExp('[\\u0300-\\u036f]', 'g'), '')
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '');
+  }
+
+  function buildSlugMaps(list, idKey, nameOf = (item) => item.name) {
+    const slugById = new Map();
+    const idBySlug = new Map();
+    for (const item of list || []) {
+      const id = item?.[idKey];
+      if (!id) continue;
+      const base = slugify(nameOf(item)) || slugify(id);
+      let slugValue = base;
+      let n = 2;
+      while (idBySlug.has(slugValue)) slugValue = `${base}-${n++}`;
+      slugById.set(id, slugValue);
+      idBySlug.set(slugValue, id);
     }
-    const qs = params.toString();
-    const url = window.location.pathname + (qs ? `?${qs}` : '');
-    if (url === window.location.pathname + window.location.search) return; // no-op, skip a duplicate history entry
+    return { slugById, idBySlug };
+  }
+
+  // Congress.gov's committee.name carries no chamber ("Committee on
+  // Appropriations", "Committee on Armed Services", "Committee on the
+  // Budget", "Committee on the Judiciary", "Committee on Veterans' Affairs"
+  // are each the literal, identical name in both chambers), so slugifying
+  // the bare name alone would hand one chamber's committee an arbitrary
+  // "-2" suffix instead of a name that says which chamber it is -- and
+  // which one loses the tie isn't guaranteed stable if the API's row order
+  // ever shifts. Joint committees keep their bare name: their names already
+  // read as "Joint Committee on Taxation" etc., so prefixing would repeat
+  // "joint" and they don't collide with the house/senate pattern anyway.
+  function committeeSlugName(c) {
+    return c.chamber === 'house' || c.chamber === 'senate' ? `${c.chamber} ${c.name}` : c.name;
+  }
+
+  // Exposed for the 정치 › 미국 하원/상원 committee chips (usa-legislature.js):
+  // that panel's committee list comes from a different pipeline
+  // (election_watch's usa_committees.json) whose `code` field uses its own
+  // scheme (House: bare "AG00"; Senate already "SS"-prefixed) that does not
+  // match Congress.gov's systemCode this module's committee_id is built
+  // from -- guessing a translation between the two id schemes risked
+  // silently landing on the wrong committee. Building the slug the exact
+  // same way from the shared official name instead means it either matches
+  // a real committee_id (via committeeIdBySlug in parseLeafFromPath) or
+  // visibly fails to, never silently wrong.
+  const committeeSlug = (chamber, name) => (name ? slugify(committeeSlugName({ chamber, name })) : undefined);
+
+  const POLICY_BASE_PATH = '/policy/us';
+
+  // Mirrors the current leaf into the URL's path so a bill, EO, committee, or
+  // agency is a real link -- reload, share, browser back/forward -- instead
+  // of living only in `state.trail`. app.js's top-level router only cares
+  // whether the path starts with /policy/us and whether the next segment is
+  // "executive"; everything past that is ours to shape.
+  function pathForLeaf(view, id) {
+    if (view === 'congress') return POLICY_BASE_PATH;
+    if (view === 'executive' && id === undefined) return `${POLICY_BASE_PATH}/executive`;
+    const segment = view === 'committee' ? (committeeSlugById.get(id) || id)
+      : view === 'agency' ? (agencySlugById.get(id) || id)
+      : id;
+    return `${POLICY_BASE_PATH}/${view}${segment !== undefined && segment !== null ? `/${encodeURIComponent(segment)}` : ''}`;
+  }
+
+  function syncUrl(view, id, opts = {}) {
+    const url = pathForLeaf(view, id);
+    if (url === window.location.pathname) return; // no-op, skip a duplicate history entry
     window.history[opts.replace ? 'replaceState' : 'pushState']({ policyView: view, policyId: id }, '', url);
+  }
+
+  // Reverses pathForLeaf(): whatever follows /policy/us in the URL, resolved
+  // back to a {view, id} go() can navigate to. A committee/agency segment is
+  // tried as a slug first and falls back to treating it as the raw id
+  // directly -- a link built before overview loaded, or built by another
+  // module (the elections handoff uses the raw committee_id), still resolves.
+  function parseLeafFromPath(pathname) {
+    const trimmed = pathname.replace(/^\/+|\/+$/g, '');
+    if (trimmed !== 'policy/us' && !trimmed.startsWith('policy/us/')) return null;
+    const rest = trimmed === 'policy/us' ? '' : trimmed.slice('policy/us/'.length);
+    if (!rest || rest === 'congress') return null; // default congress leaf, nothing to restore
+    if (rest === 'executive') return { view: 'executive', id: undefined };
+    const slashIdx = rest.indexOf('/');
+    const view = slashIdx < 0 ? rest : rest.slice(0, slashIdx);
+    if (!VIEWS[view]) return null;
+    let idRaw = slashIdx < 0 ? '' : rest.slice(slashIdx + 1);
+    if (!idRaw) return null;
+    try { idRaw = decodeURIComponent(idRaw); } catch { /* keep as-is */ }
+    const id = view === 'committee' ? (committeeIdBySlug.get(idRaw) || idRaw)
+      : view === 'agency' ? (agencyIdBySlug.get(idRaw) || idRaw)
+      : idRaw;
+    return { view, id };
   }
 
   async function go(view, id, opts = {}) {
@@ -1214,16 +1301,18 @@
     }
     if (host.dataset.policyTarget !== target || token !== renderToken) return; // a later view won the race
 
+    ({ slugById: committeeSlugById, idBySlug: committeeIdBySlug } =
+      buildSlugMaps(overview?.congress_overview?.committees, 'committee_id', committeeSlugName));
+    ({ slugById: agencySlugById, idBySlug: agencyIdBySlug } =
+      buildSlugMaps(overview?.executive_overview?.agencies, 'agency_id'));
+
     // Entering from the top menu starts a fresh trail at that level -- unless
     // the URL already names a deeper view (a shared link, a reload, or the
     // browser back/forward button landing back on this same path).
     state.trail = [];
-    const urlParams = new URLSearchParams(window.location.search);
-    const urlView = urlParams.get('view');
-    const urlId = urlParams.get('id');
-    const needsId = urlView && urlView !== 'congress' && urlView !== 'executive';
-    const restored = urlView && VIEWS[urlView] && (!needsId || urlId);
-    await go(restored ? urlView : (TARGET_VIEWS[target] || 'congress'), restored ? urlId : undefined, { replace: true });
+    const leaf = parseLeafFromPath(window.location.pathname);
+    const restored = leaf && VIEWS[leaf.view] && (leaf.view === 'executive' ? true : leaf.id);
+    await go(restored ? leaf.view : (TARGET_VIEWS[target] || 'congress'), restored ? leaf.id : undefined, { replace: true });
 
     host.removeEventListener('click', onClick);
     host.addEventListener('click', onClick);
@@ -1261,5 +1350,6 @@
     unmount,
     loadBillById: (billId) => api(`/congress/bills/${encodeURIComponent(billId)}`),
     favoriteBillCardHtml,
+    committeeSlug,
   };
 })();

@@ -5019,16 +5019,22 @@ const electionHost = () => ({
         currentViewDesc.textContent = description;
     },
     // 정치 › 미국 › 상임위 hands off to 정책 › 미국. policy.js restores a deep
-    // view from ?view=&id= on render, so writing those params before the view
+    // view from the URL path on render, so writing that path before the view
     // switch is the whole handoff -- no second entry point to keep in sync.
-    openPolicyCommittee(committeeId) {
-        const params = new URLSearchParams();
-        if (committeeId) {
-            params.set('view', 'committee');
-            params.set('id', committeeId);
-        }
-        const qs = params.toString();
-        window.history.pushState({}, '', `/us-policy-hub${qs ? `?${qs}` : ''}`);
+    // Takes (chamber, name) rather than a committee id: the 정치 module's own
+    // committee list (election_watch's usa_committees.json) uses its own code
+    // scheme (House: bare "AG00"; Senate already "SS"-prefixed) that doesn't
+    // match this app's committee_id (Congress.gov systemCode, e.g.
+    // "119-house-hsag00") -- guessing a translation between the two risks
+    // silently landing on the wrong committee. Building the slug the same
+    // way policy.js itself would, from the official name both sides share,
+    // means it either resolves to the real committee or visibly doesn't;
+    // never silently wrong. policy.js's script tag loads up front, so
+    // window.USPolicy is available even before its view is ever rendered.
+    openPolicyCommittee(chamber, name) {
+        const slug = window.USPolicy?.committeeSlug?.(chamber, name);
+        const path = slug ? `/policy/us/committee/${encodeURIComponent(slug)}` : '/policy/us';
+        window.history.pushState({}, '', path);
         setView('us-policy-hub');
     },
     // 정치 › 미국 › 행정부 is three steps deep with no URL of its own, so it
@@ -5731,13 +5737,18 @@ initSignalPanel();
 // /shipping_fleet, ...) instead of staying on '/' for every view, so
 // sections are shareable, back/forward works, and each is a distinct URL
 // for search engines. 'home' is the one target that maps to '/' itself.
-const pathForTarget = (target) => (target === 'home' ? '/' : `/${target}`);
-// Only /politics owns a sub-router (country/screen live as extra segments
-// after it, e.g. /politics/USA/executive) -- match on the first segment only
-// so those don't fail to resolve to a data-target at all.
+// /politics and /policy/us each own a sub-router (country/screen, or
+// committee/agency/bill/... live as extra segments after that prefix, e.g.
+// /politics/USA/executive or /policy/us/committee/<slug>) -- match on the
+// first segment only so those don't fail to resolve to a data-target at all.
+// /policy/us is the one target keyed by its first segment alone ("policy")
+// rather than by a real data-target of that name -- see policy.js's
+// pathForLeaf/parseLeafFromPath, which own everything past the prefix.
+const pathForTarget = (target) => (target === 'home' ? '/' : target === 'us-policy-hub' ? '/policy/us' : `/${target}`);
 const targetFromPath = (pathname) => {
     const slug = pathname.replace(/^\/+/, '').split('/')[0].replace(/\/+$/, '');
     if (!slug) return 'home';
+    if (slug === 'policy') return 'us-policy-hub';
     return document.querySelector(`[data-target="${slug}"]`) ? slug : null;
 };
 const navigateTo = (target) => {

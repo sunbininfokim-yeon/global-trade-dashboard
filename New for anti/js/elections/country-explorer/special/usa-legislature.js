@@ -111,10 +111,15 @@ const committeePanel = (chamber, committees) => {
     }
     const rows = committees.filter((row) => row.chamber === chamber);
     if (!rows.length) return '<p class="elections-muted">이 원의 상임위 목록이 비어 있습니다.</p>';
+    // chamber + name (not row.committee_id) travel to the handoff: this
+    // panel's own code scheme (election_watch's usa_committees.json) doesn't
+    // match Congress.gov's systemCode the policy module keys its committees
+    // on -- see openPolicyCommittee() in app.js for how the two get matched.
     return `<div class="elections-committee-chips">${rows.map((row) => `
         <button class="elections-committee-chip" type="button"
             data-election-action="policy-committee"
-            data-committee-id="${escapeHtml(row.committee_id)}"
+            data-chamber="${escapeHtml(row.chamber)}"
+            data-committee-name="${escapeHtml(row.name || '')}"
             title="${escapeHtml(row.name || '')}">${escapeHtml(row.short_name || row.name || row.committee_id)}</button>`).join('')}</div>
         <p class="elections-panel-note">누르면 정책 › 미국 › 상임위 화면으로 이동합니다.</p>`;
 };

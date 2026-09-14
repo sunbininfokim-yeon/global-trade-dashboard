@@ -194,7 +194,7 @@ export const renderCountryShell = (root, { country, manifest, onBack, modal, hos
             // goes back out through the host adapter rather than this module
             // reaching into the legacy router itself.
             onAction: (action, dataset) => {
-                if (action === 'policy-committee') host?.openPolicyCommittee?.(dataset.committeeId);
+                if (action === 'policy-committee') host?.openPolicyCommittee?.(dataset.chamber, dataset.committeeName);
                 if (action === 'policy-committees') host?.openPolicyCommittee?.();
             },
         });
