@@ -1,5 +1,5 @@
 import { escapeHtml, personLinkHtml } from '../../ui.js';
-import { card, orgBox } from './org-chart.js';
+import { card, orgBox, noteLine } from './org-chart.js';
 
 // The EOP org chart (대통령 → 비서실 → 위원회 → 실·국) is institutional
 // structure, not a synced dataset: which councils and offices exist changes
@@ -262,9 +262,14 @@ export const usaExecutive = (country) => {
         live,
         consumed,
     );
-    const advisors = advisorRows(live.special_assistants);
+    // topical_advisors (WHO payroll, 19 named people across 14 domains) is
+    // what "대통령 특별보좌관" is meant to show -- special_assistants is the
+    // older, still-unpopulated scaffold (6 fixed domains, always "명단 수집
+    // 예정" today). Prefer topical when it's there; fall back to the scaffold
+    // so this section still draws something if a future board drops topical.
     const topical = whiteHouse?.topical_advisors;
     const topicalCount = (topical?.members || []).length;
+    const advisors = topicalCount ? topicalAdvisorRows(topical) : advisorRows(live.special_assistants);
 
     const coreRows = (live.core || []).filter((row) => !consumed.has(row.office_ko));
     const cabinet = (live.cabinet || []).filter((row) => !consumed.has(row.portfolio_ko));
@@ -279,19 +284,16 @@ export const usaExecutive = (country) => {
         <p class="section-title">2 · 대통령 직속 위원회</p>
         <div class="elections-org-grid">${councils}</div>
 
-        <p class="section-title">3 · 대통령 특별보좌관</p>
-        <div class="elections-org-grid">${advisors}</div>
-        <p class="elections-panel-note">주요 정책 영역만 둡니다. 전체 보좌관 명부는 범위 밖입니다.</p>
+        <p class="section-title">3 · 대통령 특별보좌관${topicalCount ? ` ${topicalCount}명` : ''}</p>
+        <div class="${topicalCount ? 'elections-card-grid' : 'elections-org-grid'}">${advisors}</div>
+        ${topicalCount
+            ? `${topical.inclusion_ko ? noteLine(topical.inclusion_ko) : ''}
+        ${topical.unscoped_senior_advisors?.length ? `<p class="elections-panel-note">담당 주제가 직함에 없는 Senior Advisor ${topical.unscoped_senior_advisors.length}명(위 명단과 별도, 담당 미기재): ${escapeHtml(topical.unscoped_senior_advisors.map((row) => row.name_en || '불명').join(', '))}</p>` : ''}
+        ${topical.payroll_as_of ? `<p class="elections-panel-note">WHO 급여명부 기준일 ${escapeHtml(topical.payroll_as_of)}</p>` : ''}`
+            : '<p class="elections-panel-note">주요 정책 영역만 둡니다. 전체 보좌관 명부는 범위 밖입니다.</p>'}
 
         <p class="section-title">4 · 실·국 (수석급)</p>
         <div class="elections-org-grid">${offices}</div>
-
-        ${topicalCount ? `
-        <p class="section-title">5 · 백악관 주제별 보좌관 ${topicalCount}명</p>
-        <div class="elections-card-grid">${topicalAdvisorRows(topical)}</div>
-        ${topical.unscoped_senior_advisors?.length ? `<p class="elections-panel-note">담당 주제가 직함에 없는 Senior Advisor ${topical.unscoped_senior_advisors.length}명(위 명단과 별도, 담당 미기재): ${escapeHtml(topical.unscoped_senior_advisors.map((row) => row.name_en || '불명').join(', '))}</p>` : ''}
-        ${topical.payroll_as_of ? `<p class="elections-panel-note">WHO 급여명부 기준일 ${escapeHtml(topical.payroll_as_of)}</p>` : ''}
-        ` : ''}
 
         ${cabinet.length ? `<details class="elections-disclosure elections-cabinet-list"><summary>내각 ${cabinet.length}명 보기</summary><div class="elections-disclosure-rows">${cabinet.map((row) => `<div><span>${escapeHtml(row.portfolio_ko || '직책')}</span><strong>${personLinkHtml(escapeHtml(personText(row) || '불명'), row.official_url)}</strong></div>`).join('')}</div></details>` : ''}
         <p class="elections-panel-note">2~4단은 대통령실(EOP) 조직도 기준 골격입니다. 사람이 비어 있는 칸은 명단 미수집이며, 공석이라는 뜻이 아닙니다.</p>
