@@ -1121,6 +1121,18 @@
     return c.chamber === 'house' || c.chamber === 'senate' ? `${c.chamber} ${c.name}` : c.name;
   }
 
+  // Exposed for the 정치 › 미국 하원/상원 committee chips (usa-legislature.js):
+  // that panel's committee list comes from a different pipeline
+  // (election_watch's usa_committees.json) whose `code` field uses its own
+  // scheme (House: bare "AG00"; Senate already "SS"-prefixed) that does not
+  // match Congress.gov's systemCode this module's committee_id is built
+  // from -- guessing a translation between the two id schemes risked
+  // silently landing on the wrong committee. Building the slug the exact
+  // same way from the shared official name instead means it either matches
+  // a real committee_id (via committeeIdBySlug in parseLeafFromPath) or
+  // visibly fails to, never silently wrong.
+  const committeeSlug = (chamber, name) => (name ? slugify(committeeSlugName({ chamber, name })) : undefined);
+
   const POLICY_BASE_PATH = '/policy/us';
 
   // Mirrors the current leaf into the URL's path so a bill, EO, committee, or
@@ -1338,5 +1350,6 @@
     unmount,
     loadBillById: (billId) => api(`/congress/bills/${encodeURIComponent(billId)}`),
     favoriteBillCardHtml,
+    committeeSlug,
   };
 })();

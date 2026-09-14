@@ -5009,11 +5009,19 @@ const electionHost = () => ({
     // 정치 › 미국 › 상임위 hands off to 정책 › 미국. policy.js restores a deep
     // view from the URL path on render, so writing that path before the view
     // switch is the whole handoff -- no second entry point to keep in sync.
-    // The raw committee_id is fine here: policy.js's slug lookup isn't built
-    // yet at this point, and its restore parser falls back to the raw id,
-    // which go()'s own syncUrl() then immediately corrects to the slug form.
-    openPolicyCommittee(committeeId) {
-        const path = committeeId ? `/policy/us/committee/${encodeURIComponent(committeeId)}` : '/policy/us';
+    // Takes (chamber, name) rather than a committee id: the 정치 module's own
+    // committee list (election_watch's usa_committees.json) uses its own code
+    // scheme (House: bare "AG00"; Senate already "SS"-prefixed) that doesn't
+    // match this app's committee_id (Congress.gov systemCode, e.g.
+    // "119-house-hsag00") -- guessing a translation between the two risks
+    // silently landing on the wrong committee. Building the slug the same
+    // way policy.js itself would, from the official name both sides share,
+    // means it either resolves to the real committee or visibly doesn't;
+    // never silently wrong. policy.js's script tag loads up front, so
+    // window.USPolicy is available even before its view is ever rendered.
+    openPolicyCommittee(chamber, name) {
+        const slug = window.USPolicy?.committeeSlug?.(chamber, name);
+        const path = slug ? `/policy/us/committee/${encodeURIComponent(slug)}` : '/policy/us';
         window.history.pushState({}, '', path);
         setView('us-policy-hub');
     },
