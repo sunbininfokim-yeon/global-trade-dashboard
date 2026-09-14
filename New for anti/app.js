@@ -4931,8 +4931,16 @@ const electionTimelinePanelEl = document.getElementById('elections-timeline-pane
 const electionCountryPanelEl = document.getElementById('elections-country-panel');
 const electionModalHostEl = document.getElementById('elections-modal-host');
 
-// Order matters only for how the query string reads; the module names them.
-const ELECTION_ROUTE_KEYS = ['country', 'state', 'screen', 'view', 'district'];
+// country/screen (or country/state for the USA drill-down) live as path
+// segments after /politics/ -- /politics/USA/executive, /politics/USA/CA --
+// not query params, so a shared link reads like the rest of the site's
+// per-view URLs. State codes are always exactly two letters and screen keys
+// (executive, legislature, party, military, state_council, ...) never are,
+// so the second segment's length alone disambiguates them without needing
+// the country's own data at parse time. view/district (USA state finance
+// drill-down only) stay query params -- they're a third level deep and rare
+// enough that a path segment would just add another disambiguation case.
+const isUsStateCode = (segment) => /^[A-Za-z]{2}$/.test(segment || '');
 
 const electionHost = () => ({
     deckgl,
@@ -5013,27 +5021,39 @@ const electionHost = () => ({
     },
     // 정치 › 미국 › 행정부 is three steps deep with no URL of its own, so it
     // could not be linked, reloaded, or reached with the back button. The
-    // election module keeps its place in the query string the same way
-    // policy.js does, on top of the /elections pathname this view already
-    // owns -- the module never touches history itself, it goes through here.
+    // election module keeps its place in the path the same way every other
+    // view's /macro_monitor, /shipping_fleet, ... does -- the module never
+    // touches history itself, it goes through here.
     readRoute() {
-        const params = new URLSearchParams(window.location.search);
+        const path = window.location.pathname.replace(/^\/politics\/?/, '').replace(/\/+$/, '');
+        const segments = path ? path.split('/') : [];
         const route = {};
-        ELECTION_ROUTE_KEYS.forEach((key) => {
-            const value = params.get(key);
-            if (value) route[key] = value;
-        });
+        if (segments[0]) route.country = segments[0].toUpperCase();
+        if (segments[1]) {
+            if (isUsStateCode(segments[1])) route.state = segments[1].toUpperCase();
+            else route.screen = segments[1];
+        }
+        const params = new URLSearchParams(window.location.search);
+        const view = params.get('view');
+        const district = params.get('district');
+        if (view) route.view = view;
+        if (district) route.district = district;
         return route;
     },
     writeRoute(route, { replace = false } = {}) {
+        const segments = ['politics'];
+        if (route?.country) {
+            segments.push(route.country);
+            if (route.state) segments.push(route.state);
+            else if (route.screen) segments.push(route.screen);
+        }
         const params = new URLSearchParams();
-        ELECTION_ROUTE_KEYS.forEach((key) => {
-            if (route?.[key]) params.set(key, String(route[key]));
-        });
+        if (route?.view) params.set('view', String(route.view));
+        if (route?.district) params.set('district', String(route.district));
         const qs = params.toString();
-        const url = `/elections${qs ? `?${qs}` : ''}`;
+        const url = `/${segments.join('/')}${qs ? `?${qs}` : ''}`;
         if (url === window.location.pathname + window.location.search) return;
-        window.history[replace ? 'replaceState' : 'pushState']({ target: 'elections' }, '', url);
+        window.history[replace ? 'replaceState' : 'pushState']({ target: 'politics' }, '', url);
     },
     roots: { timeline: electionTimelinePanelEl, country: electionCountryPanelEl, modal: electionModalHostEl },
 });
@@ -5132,7 +5152,7 @@ const routeMetaDescription = (target, label) => {
     if (target.startsWith('fin_')) return `${label} — 매크로·금융 지표를 ChokePoint Monitor에서 실시간으로 확인하세요.`;
     if (target.startsWith('inst_')) return `${label} 데이터 출처와 공식 리포트를 ChokePoint Monitor에서 확인하세요.`;
     if (target === 'climate') return '전세계 작황·기후 모니터 — 주요 원자재 생산지의 기상 상황을 ChokePoint Monitor 지구본 지도에서 실시간으로 확인하세요.';
-    if (target === 'elections') return '세계 선거 지도와 일정을 ChokePoint Monitor에서 한눈에 확인하세요.';
+    if (target === 'politics') return '세계 선거 지도와 일정을 ChokePoint Monitor에서 한눈에 확인하세요.';
     if (target === 'macro_monitor') return '국가별 매크로 지표(금리·물가·환율 등)를 ChokePoint Monitor에서 실시간으로 확인하세요.';
     return `${label} 시세·공급망·무역 흐름을 하나의 지구본 지도에서 실시간으로 확인하세요. ChokePoint Monitor.`;
 };
@@ -5251,7 +5271,7 @@ const setView = (target) => {
         // Restart rotation
         startRotation();
 
-    } else if (target === 'elections') {
+    } else if (target === 'politics') {
         showElectionView();
     } else if (isPolicyView) {
         // Document-style screen, same full-bleed treatment as shipping and
@@ -5700,8 +5720,11 @@ initSignalPanel();
 // sections are shareable, back/forward works, and each is a distinct URL
 // for search engines. 'home' is the one target that maps to '/' itself.
 const pathForTarget = (target) => (target === 'home' ? '/' : `/${target}`);
+// Only /politics owns a sub-router (country/screen live as extra segments
+// after it, e.g. /politics/USA/executive) -- match on the first segment only
+// so those don't fail to resolve to a data-target at all.
 const targetFromPath = (pathname) => {
-    const slug = pathname.replace(/^\/+/, '').replace(/\/+$/, '');
+    const slug = pathname.replace(/^\/+/, '').split('/')[0].replace(/\/+$/, '');
     if (!slug) return 'home';
     return document.querySelector(`[data-target="${slug}"]`) ? slug : null;
 };
@@ -5852,8 +5875,17 @@ if ((!initialView || initialView === 'home') && window.location.hash.startsWith(
 }
 if (!initialView) initialView = 'home';
 const normalizedPath = pathForTarget(initialView);
-if (window.location.pathname !== normalizedPath || window.location.hash) {
+// /politics owns everything past its own segment (/politics/USA/executive)
+// -- collapsing straight to normalizedPath here would cut a shared deep
+// link down to the world view before js/elections/index.js ever gets to
+// read it. Only replace when the path isn't already normalizedPath itself
+// or a sub-path of it; a stray hash still gets stripped either way.
+const pathUnderTarget = window.location.pathname === normalizedPath
+    || window.location.pathname.startsWith(`${normalizedPath}/`);
+if (!pathUnderTarget) {
     window.history.replaceState({ target: initialView }, '', normalizedPath);
+} else if (window.location.hash) {
+    window.history.replaceState({ target: initialView }, '', window.location.pathname + window.location.search);
 }
 setView(initialView);
 updateNewsPanel('Global Market');
