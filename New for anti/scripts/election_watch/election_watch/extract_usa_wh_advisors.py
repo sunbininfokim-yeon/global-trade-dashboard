@@ -9,6 +9,8 @@ from __future__ import annotations
 import re
 from typing import Any, Dict, List, Optional, Tuple
 
+from election_watch.extract_usa_wh_office_status import enrich_unscoped_senior_advisors
+
 STAFF_FUNCTION_SKIP = (
     "PRESS ADVISOR",
     "COMMUNICATIONS ADVISOR",
@@ -167,6 +169,7 @@ def classify_unscoped_senior(row: Dict[str, Any]) -> Optional[Dict[str, Any]]:
         "name_en": row.get("name_en"),
         "rank": payroll_rank(title_u),
         "wh_salary_usd": row.get("salary_usd"),
+        "payroll_status": row.get("status"),
         "note_ko": "직함에 담당 주제가 없어 주제별 보좌관 명단에 넣지 않음.",
         "source": "wh_staff_report",
     }
@@ -195,6 +198,7 @@ def classify_topical_advisors(payroll_rows: List[Dict[str, Any]]) -> Dict[str, A
             seen.add(extra["id"])
             topical.append(dict(extra))
     topical.sort(key=lambda row: (row["domain"], row.get("rank") or "", row.get("name_en") or ""))
+    unscoped = enrich_unscoped_senior_advisors(unscoped)
     return {
         "schema": "usa_wh_topical_advisors_v1",
         "inclusion_ko": INCLUSION_KO,

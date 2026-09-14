@@ -49,7 +49,8 @@ python3 run_refresh_cycle.py --refresh-usa-eop --build-derived
 
 정본 `config/extracted/usa_eop.json` → `tier12_executives.json#countries.USA` → 보드 `executive_live.white_house`.  
 주제별 보좌관(NSA·차르·특사·신앙 라인)은 같은 WHO PDF에서 분류해 `usa_wh_topical_advisors.json` 과 `executive_live.white_house.topical_advisors` 에 붙인다.  
-월간 GitHub Actions YAML은 `ci/elections_eop_monthly.yml` (Claude가 `.github/workflows/`로 복사). 핸드오프: `HANDOFF_CLAUDE_ELECTIONS_EOP_ACTIONS.md`, `HANDOFF_CLAUDE_ELECTIONS_WH_ADVISORS.md`.
+공석 vs 미확인은 `usa_wh_office_status.json` → `executive_live.white_house.office_status`.  
+월간 GitHub Actions YAML은 `ci/elections_eop_monthly.yml` (Claude가 `.github/workflows/`로 복사). 핸드오프: `HANDOFF_CLAUDE_ELECTIONS_EOP_ACTIONS.md`, `HANDOFF_CLAUDE_ELECTIONS_WH_ADVISORS.md`, `HANDOFF_CLAUDE_ELECTIONS_WH_VACANCIES.md`.
 
 ## 속보 연동 (commodity_news)
 
