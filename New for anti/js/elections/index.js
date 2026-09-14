@@ -20,7 +20,12 @@ const render = async () => {
     const current = state.get();
     if (current.mode === 'country' && current.iso3) {
         host.setPanels({ timeline: false, country: true, left: false, right: true });
-        explorer.showCountry(current.iso3);
+        // showCountry() is async (USA/CHN fetch a chart before building the
+        // shell) -- missing this await let openWorld()'s `await render()`
+        // resolve before `shell` existed, so a fresh load at a country+screen
+        // URL (/politics/USA/executive) called explorer.openScreen() while
+        // shell was still null and silently no-opped, dropping the screen.
+        await explorer.showCountry(current.iso3);
         return;
     }
     host.setPanels({ timeline: true, country: false, left: true, right: false });

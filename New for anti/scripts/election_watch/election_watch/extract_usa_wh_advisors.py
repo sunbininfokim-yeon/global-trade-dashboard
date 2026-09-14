@@ -9,6 +9,8 @@ from __future__ import annotations
 import re
 from typing import Any, Dict, List, Optional, Tuple
 
+from election_watch.extract_usa_wh_office_status import enrich_unscoped_senior_advisors
+
 STAFF_FUNCTION_SKIP = (
     "PRESS ADVISOR",
     "COMMUNICATIONS ADVISOR",
@@ -47,14 +49,43 @@ JUNIOR_POLICY_SKIP = (
 )
 
 INCLUSION_KO = (
-    "WHO 연례 직원보고서에서 담당 주제가 직함에 적힌 보좌관·특보·차르·특사·신앙 라인만 넣는다. "
-    "국가안보보좌관과 같은 급의 주제별 보좌와, 직함에 주제가 있는 디지털자산 자문위 사무 책임자를 포함한다."
+    "WHO 연례 직원보고서에서 담당 주제가 직함에 적힌 보좌관·특보·차르·특사·신앙 라인을 넣는다. "
+    "국가안보보좌관과 같은 급의 주제별 보좌와, 직함에 주제가 있는 디지털자산 자문위 사무 책임자를 포함한다. "
+    "WHO 급여명부에 없어도 백악관 공식 문서에 직함이 있는 특별정부직원(SGE)은 official_not_on_payroll로 붙인다."
 )
 EXCLUSION_KO = (
     "OMB·ONDCP·CEA·CEQ·OSTP 국실장, NEC/DPC/NEDC 실장 전용 직함, "
     "일반 Policy Advisor, 대변·기록·기술·의회 연락 보좌는 제외. "
-    "직함에 담당 주제가 없는 Senior Advisor는 unscoped_senior_advisors에만 둔다."
+    "직함에 담당 주제가 없는 Senior Advisor는 unscoped_senior_advisors에만 둔다. "
+    "언론의 '짜르' 별칭만 있고 공식 직함이 없는 사람은 넣지 않는다."
 )
+
+# Not on the WHO annual payroll PDF (special government employees, unpaid, or other EOP).
+# Titles must match a White House / presidential document, not press nicknames.
+OFFICIAL_NOT_ON_PAYROLL: List[Dict[str, Any]] = [
+    {
+        "id": "ai-crypto-david-o-sacks",
+        "domain": "ai_crypto",
+        "domain_ko": "AI·암호화폐",
+        "office_en": "Special Advisor for AI and Crypto",
+        "name_en": "David O. Sacks",
+        "rank": "special_advisor",
+        "payroll_status": "not_on_wh_staff_report",
+        "also": ["PCAST co-chair"],
+        "note_ko": (
+            "WHO 2026-07-01 급여명부에 이름·직함 없음(특별정부직원). "
+            "공식 직함은 Special Advisor for AI and Crypto "
+            "(백악관 윤리면제 메모 2025-06, America's AI Action Plan 2025-07). "
+            "백악관 영상 제목 Crypto Czar는 별칭이지 급여명부 직함이 아니다. "
+            "2026-03 백악관 발표는 PCAST 공동의장(Michael Kratsios와). "
+            "OSTP 국장 Kratsios와 다른 자리."
+        ),
+        "source": "wh_sacks_ai_crypto_official",
+        "official_url": "https://www.whitehouse.gov/wp-content/uploads/2025/06/David-Sacks.pdf",
+        "title_as_of": "2025-07-01",
+        "pcast_as_of": "2026-03-25",
+    }
+]
 
 
 def _slug(domain: str, name_en: str) -> str:
@@ -138,6 +169,7 @@ def classify_unscoped_senior(row: Dict[str, Any]) -> Optional[Dict[str, Any]]:
         "name_en": row.get("name_en"),
         "rank": payroll_rank(title_u),
         "wh_salary_usd": row.get("salary_usd"),
+        "payroll_status": row.get("status"),
         "note_ko": "직함에 담당 주제가 없어 주제별 보좌관 명단에 넣지 않음.",
         "source": "wh_staff_report",
     }
@@ -161,6 +193,12 @@ def classify_topical_advisors(payroll_rows: List[Dict[str, Any]]) -> Dict[str, A
             unscoped.append(leftover)
     topical.sort(key=lambda row: (row["domain"], row.get("rank") or "", row.get("name_en") or ""))
     unscoped.sort(key=lambda row: row.get("name_en") or "")
+    for extra in OFFICIAL_NOT_ON_PAYROLL:
+        if extra["id"] not in seen:
+            seen.add(extra["id"])
+            topical.append(dict(extra))
+    topical.sort(key=lambda row: (row["domain"], row.get("rank") or "", row.get("name_en") or ""))
+    unscoped = enrich_unscoped_senior_advisors(unscoped)
     return {
         "schema": "usa_wh_topical_advisors_v1",
         "inclusion_ko": INCLUSION_KO,
@@ -171,6 +209,7 @@ def classify_topical_advisors(payroll_rows: List[Dict[str, Any]]) -> Dict[str, A
             "topical": len(topical),
             "unscoped_senior_advisors": len(unscoped),
             "by_domain": _count_by(topical, "domain"),
+            "official_not_on_payroll": len(OFFICIAL_NOT_ON_PAYROLL),
         },
     }
 

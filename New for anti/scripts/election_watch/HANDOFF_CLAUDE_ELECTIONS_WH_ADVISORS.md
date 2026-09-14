@@ -48,6 +48,7 @@
   PDF에 직함 **Pastor는 없다**. White는 `Senior Advisor to the White House Faith Office`.
 - 유대인 아웃리치: Martin J. Marks
 - 디지털자산 자문위 사무: Patrick J. Witt, Harry Y. Jung
+- AI·암호화폐: David O. Sacks (`Special Advisor for AI and Crypto`). **WHO 급여명부에 없음.** 백악관 윤리면제 메모·AI Action Plan 공식 직함. 영상 제목 Crypto Czar는 별칭. OSTP 국장 Michael Kratsios와 다른 자리.
 
 ## 빼는 것
 
@@ -55,7 +56,7 @@
 - NEC·DPC·NEDC **실장 전용** 직함 (Agen NEDC, Haley DPC). Hassett은 ATP for Economic Policy 겸임이라 members에 있다.
 - 일반 `Policy Advisor` / `Senior Policy Advisor` / `Domestic Policy Advisor` 수십 명
 - 대변·기록·기술·의회 연락·Associate Counsel
-- `unscoped_senior_advisors`: Tracy L. Johnson, Peter M. Lake, Jason D. Manion, Meghan I. Selip, Jacalynne B. Klopp (`DAP and Advisor`)
+- `unscoped_senior_advisors`: 직함에 주제가 없는 5명. **빈자리 아님.** `kind`/`kind_ko`/`vacant:false` 는 `HANDOFF_CLAUDE_ELECTIONS_WH_VACANCIES.md`.
 
 클라이언트에서 다른 JSON과 조인하거나 직함을 추정해 채우지 말 것.
 

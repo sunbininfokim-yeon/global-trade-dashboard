@@ -1,6 +1,6 @@
 {
   "schema_version": "liquidity-intel-v1",
-  "generated_at": "2026-09-14T04:53:33.251093+00:00",
+  "generated_at": "2026-09-14T12:42:21.776494+00:00",
   "model": {
     "name": "macro_liquidity_official_v1",
     "description": "QRA / Fed official liquidity + priority-reporter ARTICLES mined for liquidity indicators (FIMA, TGA, RRP, FX intervention…) — not reporter news fluff.",
@@ -18,13 +18,11 @@
   },
   "liquidity": {
     "bias": "tightening",
-    "score": 2.15,
+    "score": 1.75,
     "headline_ko": "유동성: 재무부 순발행·현금 잔고 신호가 타이트 쪽으로 기울음 · 지정기자 분석 테마 반영",
     "drivers": [
       "qra_net_borrowing_up",
       "tga_cash_high",
-      "reporter_tightening_theme",
-      "reporter_tga_focus",
       "reporter_fima_focus"
     ],
     "qra": {
@@ -144,16 +142,8 @@
       {
         "author": "양영빈",
         "articles_scanned": 8,
-        "articles_with_hits": 2,
+        "articles_with_hits": 1,
         "top_indicators": [
-          {
-            "id": "tga",
-            "score": 6.5,
-            "label_ko": "TGA 재무부 일반계정",
-            "evidence": [
-              "[연준와처] TGA 잔고 어떻게 해석해야 할까? [이코노미21 양영빈] 8월에 발표된 QRA(재무부 분기별 자금조달 계획)를"
-            ]
-          },
           {
             "id": "fima",
             "score": 1.2,
@@ -161,32 +151,18 @@
             "evidence": [
               "어의 내막 일본의 외환 개입, '총알 고갈'이 부른 미·일 금융 공조와 FIMA 레포의 비밀[이코노미21 양영빈] 2026년 7월말 뜨거운 여름, 글로벌 외환 시장은 전례 없는 긴장감에"
             ]
-          },
-          {
-            "id": "qra",
-            "score": 1.2,
-            "label_ko": "QRA·순발행",
-            "evidence": [
-              "GA 잔고 어떻게 해석해야 할까? [이코노미21 양영빈] 8월에 발표된 QRA(재무부 분기별 자금조달 계획)를 보면 3분기(7월~9월) 말의 TGA(재무부 일반계좌) 잔고는 9500억달"
-            ]
           }
         ],
         "themes_ko": [
-          "TGA 재무부 일반계정 (점수 6.5)",
-          "FIMA 레포 (점수 1.2)",
-          "QRA·순발행 (점수 1.2)"
+          "FIMA 레포 (점수 1.2)"
         ],
         "hint_weights": {
-          "tga": 6.5,
-          "mixed": 1.2,
-          "tightening": 1.2
+          "mixed": 1.2
         },
         "reporter_signals": [
-          "reporter_tightening_theme",
-          "reporter_tga_focus",
           "reporter_fima_focus"
         ],
-        "headline_ko": "[유동성 분석·양영빈] 최근 기사 핵심 지표: TGA 재무부 일반계정 · 외 2개 테마",
+        "headline_ko": "[유동성 분석·양영빈] 최근 기사 핵심 지표: FIMA 레포",
         "per_article": [
           {
             "title": "164엔의 벼랑 끝, 미 국채와 맞바꾼 엔화 방어의 내막",
@@ -204,50 +180,18 @@
                 ]
               }
             ]
-          },
-          {
-            "title": "[연준와처] TGA 잔고 어떻게 해석해야 할까?",
-            "url": "http://www.economy21.co.kr/news/articleView.html?idxno=1017015",
-            "published": "2026-08-11 17:26",
-            "author": "양영빈",
-            "indicators": [
-              {
-                "id": "tga",
-                "label_ko": "TGA 재무부 일반계정",
-                "mentions": 5,
-                "hint": "tga",
-                "evidence": [
-                  "[연준와처] TGA 잔고 어떻게 해석해야 할까? [이코노미21 양영빈] 8월에 발표된 QRA(재무부 분기별 자금조달 계획)를",
-                  "QRA(재무부 분기별 자금조달 계획)를 보면 3분기(7월~9월) 말의 TGA(재무부 일반계좌) 잔고는 9500억달러, 4분기(10월~12월) 말의 잔고는 8500억달러를 예상하고 있다",
-                  "의 잔고는 8500억달러를 예상하고 있다. 특히 재무부는 10월 말에는 TGA 잔고가 1조500억달러(±500억달러)로 고점에 다다른 후, 4분기 말에는 8500억달러로 2000억달러"
-                ]
-              },
-              {
-                "id": "qra",
-                "label_ko": "QRA·순발행",
-                "mentions": 1,
-                "hint": "tightening",
-                "evidence": [
-                  "GA 잔고 어떻게 해석해야 할까? [이코노미21 양영빈] 8월에 발표된 QRA(재무부 분기별 자금조달 계획)를 보면 3분기(7월~9월) 말의 TGA(재무부 일반계좌) 잔고는 9500억달"
-                ]
-              }
-            ]
           }
         ],
         "finance_panel_fields": {
-          "reporter_liquidity_primary": "tga",
-          "reporter_liquidity_primary_ko": "TGA 재무부 일반계정",
+          "reporter_liquidity_primary": "fima",
+          "reporter_liquidity_primary_ko": "FIMA 레포",
           "reporter_liquidity_themes": [
-            "TGA 재무부 일반계정 (점수 6.5)",
-            "FIMA 레포 (점수 1.2)",
-            "QRA·순발행 (점수 1.2)"
+            "FIMA 레포 (점수 1.2)"
           ],
           "reporter_liquidity_signals": [
-            "reporter_tightening_theme",
-            "reporter_tga_focus",
             "reporter_fima_focus"
           ],
-          "reporter_liquidity_headline_ko": "[유동성 분석·양영빈] 최근 기사 핵심 지표: TGA 재무부 일반계정 · 외 2개 테마"
+          "reporter_liquidity_headline_ko": "[유동성 분석·양영빈] 최근 기사 핵심 지표: FIMA 레포"
         }
       }
     ],
@@ -258,24 +202,20 @@
       "liquidity_bias": "tightening",
       "liquidity_headline_ko": "유동성: 재무부 순발행·현금 잔고 신호가 타이트 쪽으로 기울음 · 지정기자 분석 테마 반영",
       "beige_tone": null,
-      "reporter_liquidity_primary": "tga",
-      "reporter_liquidity_primary_ko": "TGA 재무부 일반계정",
+      "reporter_liquidity_primary": "fima",
+      "reporter_liquidity_primary_ko": "FIMA 레포",
       "reporter_liquidity_themes": [
-        "TGA 재무부 일반계정 (점수 6.5)",
-        "FIMA 레포 (점수 1.2)",
-        "QRA·순발행 (점수 1.2)"
+        "FIMA 레포 (점수 1.2)"
       ],
       "reporter_liquidity_signals": [
-        "reporter_tightening_theme",
-        "reporter_tga_focus",
         "reporter_fima_focus"
       ],
-      "reporter_liquidity_headline_ko": "[유동성 분석·양영빈] 최근 기사 핵심 지표: TGA 재무부 일반계정 · 외 2개 테마"
+      "reporter_liquidity_headline_ko": "[유동성 분석·양영빈] 최근 기사 핵심 지표: FIMA 레포"
     }
   },
   "ticker_items": [
     {
-      "id": "qra-244855827931",
+      "id": "qra-162912313232",
       "published_at": null,
       "source": {
         "id": "us_treasury",
@@ -308,7 +248,7 @@
       "event_type": "qra"
     },
     {
-      "id": "fed-634455187931",
+      "id": "fed-882849498142",
       "published_at": "Wed, 29 Jul 2026 18:00:00 GMT",
       "source": {
         "id": "federal_reserve",
@@ -339,7 +279,7 @@
       "event_type": "fomc"
     },
     {
-      "id": "fed-894912000969",
+      "id": "fed-270982033171",
       "published_at": "Wed, 17 Jun 2026 18:00:00 GMT",
       "source": {
         "id": "federal_reserve",
@@ -370,7 +310,7 @@
       "event_type": "fomc"
     },
     {
-      "id": "fed-385537925970",
+      "id": "fed-704312850150",
       "published_at": "Wed, 17 Jun 2026 18:00:00 GMT",
       "source": {
         "id": "federal_reserve",
@@ -401,7 +341,7 @@
       "event_type": "fomc"
     },
     {
-      "id": "fed-216558720690",
+      "id": "fed-717865192004",
       "published_at": "Wed, 29 Apr 2026 18:00:00 GMT",
       "source": {
         "id": "federal_reserve",
@@ -432,7 +372,7 @@
       "event_type": "fomc"
     },
     {
-      "id": "fed-919731079298",
+      "id": "fed-22763770564",
       "published_at": "Wed, 18 Mar 2026 18:00:00 GMT",
       "source": {
         "id": "federal_reserve",
@@ -463,7 +403,7 @@
       "event_type": "fomc"
     },
     {
-      "id": "fed-884092707884",
+      "id": "fed-431959213351",
       "published_at": "Wed, 18 Mar 2026 18:00:00 GMT",
       "source": {
         "id": "federal_reserve",
@@ -494,7 +434,7 @@
       "event_type": "fomc"
     },
     {
-      "id": "fed-597698647830",
+      "id": "fed-229065154187",
       "published_at": "Tue, 25 Aug 2026 18:00:00 GMT",
       "source": {
         "id": "federal_reserve",
@@ -525,7 +465,7 @@
       "event_type": "press"
     },
     {
-      "id": "fed-786528389302",
+      "id": "fed-219730795044",
       "published_at": "Tue, 14 Jul 2026 18:00:00 GMT",
       "source": {
         "id": "federal_reserve",
@@ -556,7 +496,7 @@
       "event_type": "press"
     },
     {
-      "id": "fed-592239048948",
+      "id": "fed-306425282691",
       "published_at": "Tue, 26 May 2026 18:00:00 GMT",
       "source": {
         "id": "federal_reserve",
@@ -587,7 +527,7 @@
       "event_type": "press"
     },
     {
-      "id": "fed-698123826012",
+      "id": "fed-728019109104",
       "published_at": "Tue, 14 Apr 2026 18:00:00 GMT",
       "source": {
         "id": "federal_reserve",
@@ -618,7 +558,7 @@
       "event_type": "press"
     },
     {
-      "id": "liq-ind-804228375828",
+      "id": "liq-ind-655763401567",
       "published_at": null,
       "source": {
         "id": "reporter_liquidity",
@@ -630,11 +570,11 @@
       "category": "liquidity_indicator",
       "commodities": [],
       "title": {
-        "original": "TGA 재무부 일반계정 · FIMA 레포 · QRA·순발행",
+        "original": "FIMA 레포",
         "original_lang": "ko",
-        "ko": "[유동성지표·양영빈] TGA 재무부 일반계정 · FIMA 레포 · QRA·순발행"
+        "ko": "[유동성지표·양영빈] FIMA 레포"
       },
-      "summary": "[유동성 분석·양영빈] 최근 기사 핵심 지표: TGA 재무부 일반계정 · 외 2개 테마",
+      "summary": "[유동성 분석·양영빈] 최근 기사 핵심 지표: FIMA 레포",
       "scores": {
         "commodity": 0,
         "diplomacy": 0,
@@ -643,36 +583,18 @@
         "final": 7.5
       },
       "rank_reasons": [
-        "indicator:tga",
-        "reporter_tightening_theme",
-        "reporter_tga_focus",
+        "indicator:fima",
         "reporter_fima_focus"
       ],
       "translation_status": "ok",
       "event_type": "liquidity_indicator",
       "indicators": [
         {
-          "id": "tga",
-          "score": 6.5,
-          "label_ko": "TGA 재무부 일반계정",
-          "evidence": [
-            "[연준와처] TGA 잔고 어떻게 해석해야 할까? [이코노미21 양영빈] 8월에 발표된 QRA(재무부 분기별 자금조달 계획)를"
-          ]
-        },
-        {
           "id": "fima",
           "score": 1.2,
           "label_ko": "FIMA 레포",
           "evidence": [
             "어의 내막 일본의 외환 개입, '총알 고갈'이 부른 미·일 금융 공조와 FIMA 레포의 비밀[이코노미21 양영빈] 2026년 7월말 뜨거운 여름, 글로벌 외환 시장은 전례 없는 긴장감에"
-          ]
-        },
-        {
-          "id": "qra",
-          "score": 1.2,
-          "label_ko": "QRA·순발행",
-          "evidence": [
-            "GA 잔고 어떻게 해석해야 할까? [이코노미21 양영빈] 8월에 발표된 QRA(재무부 분기별 자금조달 계획)를 보면 3분기(7월~9월) 말의 TGA(재무부 일반계좌) 잔고는 9500억달"
           ]
         }
       ]
@@ -714,7 +636,7 @@
     "ticker_items": 12,
     "qra_parsed": true,
     "reporter_analyses": 1,
-    "reporter_indicator_hits": 3,
+    "reporter_indicator_hits": 1,
     "sources_ok": 5,
     "sources_failed": 0
   }
