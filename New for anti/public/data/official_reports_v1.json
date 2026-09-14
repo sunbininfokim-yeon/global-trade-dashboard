@@ -1,6 +1,6 @@
 {
   "schema_version": "official-reports-v1",
-  "generated_at": "2026-09-14T05:02:23.741907+00:00",
+  "generated_at": "2026-09-14T15:03:41.428713+00:00",
   "model": {
     "name": "official_reports_learnable_v1",
     "description": "Official sources only (US/JP/CN/EU/UK public RSS·HTML). Domains: economy/finance/diplomacy/security/agriculture. Series catalog + label_history for collaborative learning. No Dropbox.",
@@ -20,7 +20,7 @@
     "raw_items": 157,
     "scored": 157,
     "selected": 40,
-    "indicators": 16
+    "indicators": 17
   },
   "feed_status": [
     {
@@ -196,6 +196,20 @@
       "published_at": "2026-09-10T14:00:00+00:00",
       "site_slot": "ticker",
       "significance": 2.402
+    },
+    {
+      "series_id": "JP_BOJ_POLICY",
+      "label_ko": "일본은행 정책·공표",
+      "country": "JPN",
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "title": "Japanese Government Bonds Held by the Bank of Japan",
+      "url": "http://www.boj.or.jp/en/statistics/boj/other/mei/release/2026/mei260910.xlsx",
+      "published_at": "2026-09-14T08:00:00+00:00",
+      "site_slot": "finance.policy",
+      "significance": 2.306
     },
     {
       "series_id": "JP_BOJ_POLICY",
@@ -587,41 +601,6 @@
       "translation_status": "skipped",
       "event_type": "official_report",
       "site_slot": "finance.policy"
-    },
-    {
-      "id": "0aaa78c54b307a7b",
-      "published_at": "2026-08-19T07:10:00+00:00",
-      "source": {
-        "id": "eu_ecb_press",
-        "name": "ECB",
-        "region": "eur",
-        "slant": null
-      },
-      "url": "https://www.ecb.europa.eu//press/key/date/2026/html/ecb.sp260819~98ddf24b7b.en.html",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "series_id": null,
-      "title": {
-        "original": "Christine Lagarde: Panel remarks about the European economy during a discussion on the global economic outlook at the World Economic Forum",
-        "original_lang": "en",
-        "ko": "[EUR·경제] Christine Lagarde: Panel remarks about the European economy during a discussion on the global economic outlook at the World Economic Forum"
-      },
-      "summary": "",
-      "scores": {
-        "significance": 2.712,
-        "final": 2.712
-      },
-      "rank_reasons": [
-        "domains:economy,finance",
-        "boost:1"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
     },
     {
       "id": "3ccec9193b30c1e1",
@@ -1253,6 +1232,41 @@
       "translation_status": "skipped",
       "event_type": "official_report",
       "site_slot": null
+    },
+    {
+      "id": "4769d7602816e6a1",
+      "published_at": "2026-09-14T08:00:00+00:00",
+      "source": {
+        "id": "jp_boj_whatsnew",
+        "name": "Bank of Japan",
+        "region": "jpn",
+        "slant": null
+      },
+      "url": "http://www.boj.or.jp/en/statistics/boj/other/mei/release/2026/mei260910.xlsx",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": "JP_BOJ_POLICY",
+      "title": {
+        "original": "Japanese Government Bonds Held by the Bank of Japan",
+        "original_lang": "en",
+        "ko": "[JPN·경제] Japanese Government Bonds Held by the Bank of Japan"
+      },
+      "summary": "",
+      "scores": {
+        "significance": 2.306,
+        "final": 2.306
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "series:JP_BOJ_POLICY"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": "finance.policy"
     },
     {
       "id": "3447e898a37590ff",
@@ -2147,41 +2161,6 @@
       "site_slot": "finance.policy"
     },
     {
-      "id": "0aaa78c54b307a7b",
-      "published_at": "2026-08-19T07:10:00+00:00",
-      "source": {
-        "id": "eu_ecb_press",
-        "name": "ECB",
-        "region": "eur",
-        "slant": null
-      },
-      "url": "https://www.ecb.europa.eu//press/key/date/2026/html/ecb.sp260819~98ddf24b7b.en.html",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "series_id": null,
-      "title": {
-        "original": "Christine Lagarde: Panel remarks about the European economy during a discussion on the global economic outlook at the World Economic Forum",
-        "original_lang": "en",
-        "ko": "[EUR·경제] Christine Lagarde: Panel remarks about the European economy during a discussion on the global economic outlook at the World Economic Forum"
-      },
-      "summary": "",
-      "scores": {
-        "significance": 2.712,
-        "final": 2.712
-      },
-      "rank_reasons": [
-        "domains:economy,finance",
-        "boost:1"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
-    },
-    {
       "id": "3ccec9193b30c1e1",
       "published_at": "2026-07-09T19:00:00+00:00",
       "source": {
@@ -2811,6 +2790,41 @@
       "translation_status": "skipped",
       "event_type": "official_report",
       "site_slot": null
+    },
+    {
+      "id": "4769d7602816e6a1",
+      "published_at": "2026-09-14T08:00:00+00:00",
+      "source": {
+        "id": "jp_boj_whatsnew",
+        "name": "Bank of Japan",
+        "region": "jpn",
+        "slant": null
+      },
+      "url": "http://www.boj.or.jp/en/statistics/boj/other/mei/release/2026/mei260910.xlsx",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": "JP_BOJ_POLICY",
+      "title": {
+        "original": "Japanese Government Bonds Held by the Bank of Japan",
+        "original_lang": "en",
+        "ko": "[JPN·경제] Japanese Government Bonds Held by the Bank of Japan"
+      },
+      "summary": "",
+      "scores": {
+        "significance": 2.306,
+        "final": 2.306
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "series:JP_BOJ_POLICY"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": "finance.policy"
     },
     {
       "id": "3447e898a37590ff",
