@@ -28,6 +28,7 @@ seasons -- otherwise the deployed forecast would not match what was validated.
 import json
 import os
 import sys
+import time
 import urllib.request
 
 import numpy as np
@@ -58,10 +59,22 @@ def log(m):
     print(f"[wheat-fc] {m}", flush=True)
 
 
-def fetch_json(url, timeout=180):
+def fetch_json(url, timeout=180, attempts=3):
+    # Same SSL-handshake-timeout flake collect_us_cornbelt.py/collect_us_wheat.py
+    # already retry around for the Open-Meteo/NASA POWER APIs -- this call site
+    # (the Open-Meteo forecast fetch below) was never reaching a real network
+    # call before, since a run always crashed earlier on the yield_model cache
+    # directory. Now that it does, it needs the same retry.
     req = urllib.request.Request(url, headers={"User-Agent": "yield-model/1.0"})
-    with urllib.request.urlopen(req, timeout=timeout) as r:
-        return json.loads(r.read())
+    for attempt in range(attempts):
+        try:
+            with urllib.request.urlopen(req, timeout=timeout) as r:
+                return json.loads(r.read())
+        except Exception as e:  # noqa: BLE001
+            if attempt == attempts - 1:
+                raise
+            log(f"  retry {attempt + 1} after {e}")
+            time.sleep(10)
 
 
 def power_current(state, year, end_month):
