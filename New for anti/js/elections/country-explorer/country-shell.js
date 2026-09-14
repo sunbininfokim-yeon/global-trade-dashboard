@@ -1,7 +1,7 @@
 import { countryEvents, readableSpectrum, screenStatus } from '../data/selectors.js';
 import { escapeHtml, formatDate, personLinkHtml, stateLabel } from '../ui.js';
 import { usaSections } from './special/usa.js';
-import { usaLegislature } from './special/usa-legislature.js';
+import { usaLegislature } from './special/usa-legislature.js?v=2';
 import { usaExecutive } from './special/usa-executive.js';
 import { chinaSections } from './special/china.js';
 import { chnParty, chnMilitary, chnStateCouncil } from './special/chn-org.js';

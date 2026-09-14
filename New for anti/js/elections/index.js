@@ -1,7 +1,7 @@
 import { createElectionState } from './state.js';
 import { loadElectionBundle } from './data/core-service.js';
 import { initialMonth } from './data/selectors.js';
-import { createCountryExplorer } from './country-explorer/index.js';
+import { createCountryExplorer } from './country-explorer/index.js?v=2';
 import { renderTimeline } from './timeline/index.js';
 
 const state = createElectionState();
