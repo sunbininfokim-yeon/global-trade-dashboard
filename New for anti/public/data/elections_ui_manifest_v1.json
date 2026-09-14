@@ -1,7 +1,7 @@
 {
   "schema_version": "elections-ui-manifest-v1",
-  "generated_at": "2026-09-14T06:26:51.934991+00:00",
-  "board_generated_at": "2026-09-14T06:26:51.535934+00:00",
+  "generated_at": "2026-09-14T16:31:28.267789+00:00",
+  "board_generated_at": "2026-09-14T16:31:28.159937+00:00",
   "calendar_generated_at": "2026-09-12T07:36:54.542923+00:00",
   "claude_handoff_gate": {
     "can_start_ui": true,
@@ -183,6 +183,7 @@
           "national_executive",
           "congress_chambers",
           "federal_member_rosters",
+          "standing_committee_cards",
           "state_governors",
           "state_legislature_party_seats",
           "state_federal_delegations",
@@ -248,9 +249,12 @@
         "legislature_detail": {
           "status": "ready",
           "paths": [
+            "countries[USA].ui_ready.congress.standing_committee_cards",
             "countries[USA].ui_ready.congress.committees"
           ],
-          "missing": []
+          "missing": [],
+          "policy_usa_path": "countries[USA].ui_ready.congress.standing_committee_cards",
+          "note": "정책-미국 상임위 화면은 standing_committee_cards 만 읽는다. 위원장·간사·소관 부처·공식 URL이 이미 조인돼 있다. members[] 를 브라우저에서 다시 조인하지 말 것."
         },
         "factions": {
           "status": "partial",
