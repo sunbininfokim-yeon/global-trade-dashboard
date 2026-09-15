@@ -1,7 +1,7 @@
 {
   "schema_version": "alert-levels-v1",
-  "as_of": "2026-09-14",
-  "fetched_at": "2026-09-14T23:57:32.962982+00:00",
+  "as_of": "2026-09-15",
+  "fetched_at": "2026-09-15T23:37:32.978032+00:00",
   "put_oi": {
     "put_oi_ko": "풋 OI(Put Open Interest) = 아직 청산되지 않은 풋옵션 계약 수. ‘오늘 거래량’이 아니라 ‘남아 있는 미결제 계약’이다. 풋 OI·풋 거래량이 늘면 하방 헤지/공격 수요가 커졌다는 해석을 할 수 있지만, 주체를 알 수는 없다.",
     "availability_ko": "종목별 풋 OI 시계열은 공개 Cboe 히스토리 CSV가 막혀 있어(403) 우리 엔진으로는 백테스트 임계값을 만들 수 없다. 당일 지연 체인의 집계만 가능."
@@ -17,13 +17,13 @@
     "data_source": "FinanceDataReader ETF/KR Amount(당일) + Close×Volume(히스토리)",
     "sample": {
       "start": "2026-05-27",
-      "n_active_days": 74,
+      "n_active_days": 75,
       "note_ko": "단일종목 하닉 LETF는 2026-05-27 상장. 표본 ~50거래일로 짧음.",
       "baseline": {
-        "n": 74,
-        "frac_next_down2": 0.3649,
-        "mean_next_abs": 0.0555,
-        "mean_next_r": -0.0014
+        "n": 75,
+        "frac_next_down2": 0.36,
+        "mean_next_abs": 0.055,
+        "mean_next_r": -0.0012
       }
     },
     "levels": {
@@ -31,11 +31,11 @@
         "metric": "hynix_letf_tv / hynix_spot_tv",
         "ratio_min": null,
         "ratio_max": 0.5,
-        "n": 41,
-        "frac_next_down2": 0.3171,
-        "mean_next_abs": 0.0431,
-        "mean_next_r": 0.0016,
-        "ratio_median_in_bucket": 0.0978
+        "n": 42,
+        "frac_next_down2": 0.3095,
+        "mean_next_abs": 0.0425,
+        "mean_next_r": 0.002,
+        "ratio_median_in_bucket": 0.0975
       },
       "주의": {
         "metric": "hynix_letf_tv / hynix_spot_tv",
@@ -76,9 +76,9 @@
     "sample": {
       "start": "2025-01-01",
       "baseline": {
-        "n": 434,
-        "frac_neg": 0.4516,
-        "mean": 0.004922
+        "n": 435,
+        "frac_neg": 0.4391,
+        "mean": 0.004902
       }
     },
     "levels": {
@@ -87,16 +87,16 @@
         "vix_r_min": null,
         "vix_r_max": 0.05,
         "n": 347,
-        "frac_kr_open_neg": 0.3862,
+        "frac_kr_open_neg": 0.3689,
         "mean_kr_open": 0.010576
       },
       "주의": {
         "metric": "Cboe VIX daily return",
         "vix_r_min": 0.05,
         "vix_r_max": 0.1,
-        "n": 42,
-        "frac_kr_open_neg": 0.619,
-        "mean_kr_open": -0.004965
+        "n": 43,
+        "frac_kr_open_neg": 0.6279,
+        "mean_kr_open": -0.004946
       },
       "경계": {
         "metric": "Cboe VIX daily return",
@@ -112,9 +112,9 @@
       "주의": "+5% ≤ VIX 일변화 < +10%",
       "경계": "VIX 일변화 ≥ +10%"
     },
-    "latest_vix": 15.84,
-    "latest_vix_r": -0.1121,
-    "latest_level": "관찰",
+    "latest_vix": 17.1,
+    "latest_vix_r": 0.0795,
+    "latest_level": "주의",
     "limitation_ko": "VIX는 개별주 풋/콜 OI·공매 동시 포지션이 아님. SOXL 가격·수익률로 옵션 스트레스를 대체하지 않음."
   },
   "disclaimer_ko": "실측 공개 데이터 기반 통계 임계값. 투자 권유 아님. 표본 한계 명시."
