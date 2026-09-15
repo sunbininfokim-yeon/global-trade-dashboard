@@ -1,6 +1,6 @@
 {
   "schema_version": "commodity-reports-v1",
-  "generated_at": "2026-09-14T23:24:20.988209+00:00",
+  "generated_at": "2026-09-15T05:15:42.414570+00:00",
   "model": {
     "name": "commodity_reports_v1",
     "description": "Official crop/energy/metal reports tagged (commodity × country) so the dashboard's stage-2 country window can show what was published about that country's commodity. The report's text picks the country, not the publisher: a USDA release on Brazilian wheat belongs on BRA·wheat.",
@@ -17,9 +17,9 @@
     "per_bucket_limit": 8
   },
   "stats": {
-    "sources_ok": 9,
-    "sources_failed": 3,
-    "raw_items": 147,
+    "sources_ok": 8,
+    "sources_failed": 4,
+    "raw_items": 137,
     "scored": 55,
     "published": 35,
     "commodities": 8,
@@ -28,9 +28,9 @@
   "feed_status": [
     {
       "source_id": "us_usda_newsroom",
-      "ok": true,
-      "count": 10,
-      "error": null,
+      "ok": false,
+      "count": 0,
+      "error": "HTTPError: HTTP Error 403: Forbidden",
       "mode": "live"
     },
     {
@@ -562,7 +562,7 @@
       "country_source": "text",
       "series_id": "EIA_STEO",
       "series_label_ko": "EIA 단기 에너지 전망",
-      "importance": 4.983,
+      "importance": 4.959,
       "reasons": [
         "series:EIA_STEO",
         "has_figure",
@@ -593,8 +593,39 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 2.913,
+      "importance": 2.899,
       "reasons": [
+        "has_figure",
+        "revision_language",
+        "country_in_text"
+      ]
+    },
+    {
+      "id": "57e4eb5bfc9ebc1e",
+      "title": {
+        "original": "EIA expects a drop in global oil demand will limit price increases from Hormuz disruptions",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "The U.S. Energy Information Administration published its June Short-Term Energy Outlook (STEO), reducing its expectation for global oil demand in 2026. High fuel prices, reduced fuel availability, and government initiatives are curbing oil consumption this year, particularly in Asia, resulting in the world consuming 1 million fewer barrels of oil each day on average than it did last year. The reduced demand could limit crude oil price increases resulting from near-term disruptions in the flow of oil out of the Middle East through the Strait of Hormuz.",
+      "url": "https://www.eia.gov/pressroom/releases/press589.php",
+      "published_at": "2026-06-09T17:00:00+00:00",
+      "agency": "EIA",
+      "agency_ko": "미 에너지정보청",
+      "source_id": "us_eia_press",
+      "commodities": [
+        "oil"
+      ],
+      "countries": [
+        "USA"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": "EIA_STEO",
+      "series_label_ko": "EIA 단기 에너지 전망",
+      "importance": 2.322,
+      "reasons": [
+        "series:EIA_STEO",
         "has_figure",
         "revision_language",
         "country_in_text"
@@ -621,40 +652,9 @@
       "country_source": "none",
       "series_id": "EIA_STEO",
       "series_label_ko": "EIA 단기 에너지 전망",
-      "importance": 2.327,
+      "importance": 2.315,
       "reasons": [
         "series:EIA_STEO"
-      ]
-    },
-    {
-      "id": "57e4eb5bfc9ebc1e",
-      "title": {
-        "original": "EIA expects a drop in global oil demand will limit price increases from Hormuz disruptions",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "The U.S. Energy Information Administration published its June Short-Term Energy Outlook (STEO), reducing its expectation for global oil demand in 2026. High fuel prices, reduced fuel availability, and government initiatives are curbing oil consumption this year, particularly in Asia, resulting in the world consuming 1 million fewer barrels of oil each day on average than it did last year. The reduced demand could limit crude oil price increases resulting from near-term disruptions in the flow of oil out of the Middle East through the Strait of Hormuz.",
-      "url": "https://www.eia.gov/pressroom/releases/press589.php",
-      "published_at": "2026-06-09T17:00:00+00:00",
-      "agency": "EIA",
-      "agency_ko": "미 에너지정보청",
-      "source_id": "us_eia_press",
-      "commodities": [
-        "oil"
-      ],
-      "countries": [
-        "USA"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": "EIA_STEO",
-      "series_label_ko": "EIA 단기 에너지 전망",
-      "importance": 2.323,
-      "reasons": [
-        "series:EIA_STEO",
-        "has_figure",
-        "revision_language",
-        "country_in_text"
       ]
     },
     {
@@ -897,7 +897,7 @@
       "country_source": "text",
       "series_id": "EIA_STEO",
       "series_label_ko": "EIA 단기 에너지 전망",
-      "importance": 1.542,
+      "importance": 1.54,
       "reasons": [
         "series:EIA_STEO",
         "country_in_text"
@@ -926,7 +926,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.528,
+      "importance": 1.524,
       "reasons": [
         "has_figure",
         "country_in_text"
@@ -1078,7 +1078,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.364,
+      "importance": 1.358,
       "reasons": [
         "country_in_text"
       ]
@@ -1251,7 +1251,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.316,
+      "importance": 1.31,
       "reasons": [
         "country_in_text"
       ]
@@ -1308,7 +1308,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.292,
+      "importance": 1.287,
       "reasons": [
         "country_in_text"
       ]
@@ -1334,7 +1334,7 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.052,
+      "importance": 1.048,
       "reasons": []
     },
     {
@@ -1358,7 +1358,7 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.052,
+      "importance": 1.048,
       "reasons": []
     },
     {
