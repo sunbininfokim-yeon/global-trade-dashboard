@@ -1,6 +1,6 @@
 {
   "schema_version": "official-reports-v1",
-  "generated_at": "2026-09-15T04:58:56.309152+00:00",
+  "generated_at": "2026-09-15T13:37:21.980394+00:00",
   "model": {
     "name": "official_reports_learnable_v1",
     "description": "Official sources only (US/JP/CN/EU/UK public RSS·HTML). Domains: economy/finance/diplomacy/security/agriculture. Series catalog + label_history for collaborative learning. No Dropbox.",
@@ -17,8 +17,8 @@
   "stats": {
     "sources_ok": 9,
     "sources_failed": 0,
-    "raw_items": 157,
-    "scored": 157,
+    "raw_items": 158,
+    "scored": 158,
     "selected": 40,
     "indicators": 17
   },
@@ -47,7 +47,7 @@
     {
       "source_id": "us_eia",
       "ok": true,
-      "count": 15,
+      "count": 16,
       "error": null,
       "mode": "live"
     },
@@ -359,6 +359,41 @@
       "translation_status": "skipped",
       "event_type": "official_report",
       "site_slot": "finance.policy"
+    },
+    {
+      "id": "2c49d640f007c948",
+      "published_at": "2026-09-15T06:00:00+00:00",
+      "source": {
+        "id": "jp_boj_whatsnew",
+        "name": "Bank of Japan",
+        "region": "jpn",
+        "slant": null
+      },
+      "url": "http://www.boj.or.jp/en/intl_finance/cooperate/coop260915a.pdf",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "diplomacy",
+        "economy",
+        "finance"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "Signing of the Third Bilateral Swap Arrangement between Japan and Malaysia",
+        "original_lang": "en",
+        "ko": "[JPN·외교] Signing of the Third Bilateral Swap Arrangement between Japan and Malaysia"
+      },
+      "summary": "",
+      "scores": {
+        "significance": 2.862,
+        "final": 2.862
+      },
+      "rank_reasons": [
+        "domains:economy,finance,diplomacy"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
     },
     {
       "id": "0b193a95ccc21c2a",
@@ -694,41 +729,6 @@
         "ko": "[GBR·금융] Bank Rate maintained at 3.75% - July 2026 Monetary Policy Summary and Minutes"
       },
       "summary": "The Bank of England’s Monetary Policy Committee is responsible for making decisions about Bank Rate.",
-      "scores": {
-        "significance": 2.599,
-        "final": 2.599
-      },
-      "rank_reasons": [
-        "domains:economy,finance",
-        "boost:1"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
-    },
-    {
-      "id": "829ddb1a83887c58",
-      "published_at": "2026-06-18T12:30:00+00:00",
-      "source": {
-        "id": "uk_boe_news",
-        "name": "Bank of England",
-        "region": "gbr",
-        "slant": null
-      },
-      "url": "https://www.bankofengland.co.uk/news/2026/june/the-governor-interview-transcript-18-june-2026",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "finance",
-        "economy"
-      ],
-      "series_id": null,
-      "title": {
-        "original": "Transcript of the Governor's pooled broadcast interview given on 18 June 2026",
-        "original_lang": "en",
-        "ko": "[GBR·금융] Transcript of the Governor's pooled broadcast interview given on 18 June 2026"
-      },
-      "summary": "Following the publication of the Monetary Policy Summary and minutes of the Monetary Policy Committee meeting",
       "scores": {
         "significance": 2.599,
         "final": 2.599
@@ -1768,6 +1768,17 @@
       "suggest": "label promote|keep|drop + series_id later"
     },
     {
+      "title": "Minutes of the Securities Lending Committee meeting – March 2026",
+      "url": "https://www.bankofengland.co.uk/minutes/2026/march/minutes-of-the-securities-lending-committee-meeting-march-2026",
+      "country": "GBR",
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "significance": 1.978,
+      "suggest": "label promote|keep|drop + series_id later"
+    },
+    {
       "title": "Artificial Intelligence Consortium minutes – June 2026",
       "url": "https://www.bankofengland.co.uk/minutes/2026/june/ai-consortium-minutes-3-june-2026",
       "country": "GBR",
@@ -1845,17 +1856,6 @@
       "suggest": "label promote|keep|drop + series_id later"
     },
     {
-      "title": "Minutes of the Meeting of the Court of Directors held on 23 April 2026",
-      "url": "https://www.bankofengland.co.uk/minutes/2026/june/court-minutes-23-april-2026",
-      "country": "GBR",
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "significance": 1.978,
-      "suggest": "label promote|keep|drop + series_id later"
-    },
-    {
       "title": "Minutes of the Board's discount rate meetings on June 8 and June 17, 2026",
       "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260714a.htm",
       "country": "USA",
@@ -1921,6 +1921,41 @@
       "translation_status": "skipped",
       "event_type": "official_report",
       "site_slot": "finance.policy"
+    },
+    {
+      "id": "2c49d640f007c948",
+      "published_at": "2026-09-15T06:00:00+00:00",
+      "source": {
+        "id": "jp_boj_whatsnew",
+        "name": "Bank of Japan",
+        "region": "jpn",
+        "slant": null
+      },
+      "url": "http://www.boj.or.jp/en/intl_finance/cooperate/coop260915a.pdf",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "diplomacy",
+        "economy",
+        "finance"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "Signing of the Third Bilateral Swap Arrangement between Japan and Malaysia",
+        "original_lang": "en",
+        "ko": "[JPN·외교] Signing of the Third Bilateral Swap Arrangement between Japan and Malaysia"
+      },
+      "summary": "",
+      "scores": {
+        "significance": 2.862,
+        "final": 2.862
+      },
+      "rank_reasons": [
+        "domains:economy,finance,diplomacy"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
     },
     {
       "id": "0b193a95ccc21c2a",
@@ -2256,41 +2291,6 @@
         "ko": "[GBR·금융] Bank Rate maintained at 3.75% - July 2026 Monetary Policy Summary and Minutes"
       },
       "summary": "The Bank of England’s Monetary Policy Committee is responsible for making decisions about Bank Rate.",
-      "scores": {
-        "significance": 2.599,
-        "final": 2.599
-      },
-      "rank_reasons": [
-        "domains:economy,finance",
-        "boost:1"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
-    },
-    {
-      "id": "829ddb1a83887c58",
-      "published_at": "2026-06-18T12:30:00+00:00",
-      "source": {
-        "id": "uk_boe_news",
-        "name": "Bank of England",
-        "region": "gbr",
-        "slant": null
-      },
-      "url": "https://www.bankofengland.co.uk/news/2026/june/the-governor-interview-transcript-18-june-2026",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "finance",
-        "economy"
-      ],
-      "series_id": null,
-      "title": {
-        "original": "Transcript of the Governor's pooled broadcast interview given on 18 June 2026",
-        "original_lang": "en",
-        "ko": "[GBR·금융] Transcript of the Governor's pooled broadcast interview given on 18 June 2026"
-      },
-      "summary": "Following the publication of the Monetary Policy Summary and minutes of the Monetary Policy Committee meeting",
       "scores": {
         "significance": 2.599,
         "final": 2.599
