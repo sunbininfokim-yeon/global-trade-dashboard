@@ -1,6 +1,6 @@
 {
   "schema_version": "commodity-reports-v1",
-  "generated_at": "2026-09-16T19:41:12.542964+00:00",
+  "generated_at": "2026-09-16T23:13:37.703760+00:00",
   "model": {
     "name": "commodity_reports_v1",
     "description": "Official crop/energy/metal reports tagged (commodity × country) so the dashboard's stage-2 country window can show what was published about that country's commodity. The report's text picks the country, not the publisher: a USDA release on Brazilian wheat belongs on BRA·wheat.",
@@ -17,13 +17,13 @@
     "per_bucket_limit": 8
   },
   "stats": {
-    "sources_ok": 6,
-    "sources_failed": 6,
-    "raw_items": 67,
-    "scored": 33,
-    "published": 17,
-    "commodities": 2,
-    "buckets": 4
+    "sources_ok": 9,
+    "sources_failed": 3,
+    "raw_items": 148,
+    "scored": 60,
+    "published": 37,
+    "commodities": 8,
+    "buckets": 10
   },
   "feed_status": [
     {
@@ -35,23 +35,23 @@
     },
     {
       "source_id": "us_nass_todays_reports",
-      "ok": false,
-      "count": 0,
-      "error": "HTTPError: HTTP Error 403: Forbidden",
+      "ok": true,
+      "count": 1,
+      "error": null,
       "mode": "live"
     },
     {
       "source_id": "us_nass_asb",
-      "ok": false,
-      "count": 0,
-      "error": "HTTPError: HTTP Error 403: Forbidden",
+      "ok": true,
+      "count": 40,
+      "error": null,
       "mode": "live"
     },
     {
       "source_id": "us_nass_news",
-      "ok": false,
-      "count": 0,
-      "error": "HTTPError: HTTP Error 403: Forbidden",
+      "ok": true,
+      "count": 40,
+      "error": null,
       "mode": "live"
     },
     {
@@ -476,6 +476,57 @@
         "39ac9e91f73a0776"
       ]
     },
+    "corn": {
+      "USA": [
+        "9a2e4f0c6cc38378",
+        "9d9ab72fff81736d",
+        "727409c1a45dfec3",
+        "f9e7ed8b73ce1fa5",
+        "e4530ccde436c92d",
+        "205bcf62b2894e8b",
+        "e54c2f7c294df06b",
+        "9dd7845c2d4fc51e"
+      ]
+    },
+    "soybeans": {
+      "USA": [
+        "9a2e4f0c6cc38378",
+        "9d9ab72fff81736d",
+        "727409c1a45dfec3",
+        "f9e7ed8b73ce1fa5",
+        "e4530ccde436c92d",
+        "205bcf62b2894e8b",
+        "e54c2f7c294df06b",
+        "9dd7845c2d4fc51e"
+      ]
+    },
+    "wheat": {
+      "USA": [
+        "54cc3c274cf90c25",
+        "44ef3d9e9fba437f",
+        "06cf84727ec466c3",
+        "82a9272720c2cdfb",
+        "d9459a6be37e5e91",
+        "389d4a4328f23545",
+        "f9e7ed8b73ce1fa5",
+        "e4530ccde436c92d"
+      ]
+    },
+    "cotton": {
+      "USA": [
+        "094f2c679d643322",
+        "d2560303da2802d2",
+        "e4530ccde436c92d",
+        "82ad0c3c992ec514"
+      ]
+    },
+    "rice": {
+      "USA": [
+        "2c8f727be89c0de5",
+        "e4530ccde436c92d",
+        "eb08bb539c63def3"
+      ]
+    },
     "gas": {
       "USA": [
         "5a1967d788350658",
@@ -484,6 +535,11 @@
       ],
       "_global": [
         "d09ef02fa55cc52b"
+      ]
+    },
+    "sugar": {
+      "USA": [
+        "21e8e31c7b207b51"
       ]
     }
   },
@@ -511,7 +567,7 @@
       "country_source": "text",
       "series_id": "EIA_STEO",
       "series_label_ko": "EIA 단기 에너지 전망",
-      "importance": 4.802,
+      "importance": 4.788,
       "reasons": [
         "series:EIA_STEO",
         "has_figure",
@@ -542,7 +598,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 2.808,
+      "importance": 2.8,
       "reasons": [
         "has_figure",
         "revision_language",
@@ -572,7 +628,7 @@
       "country_source": "text",
       "series_id": "EIA_STEO",
       "series_label_ko": "EIA 단기 에너지 전망",
-      "importance": 2.314,
+      "importance": 2.313,
       "reasons": [
         "series:EIA_STEO",
         "has_figure",
@@ -601,9 +657,259 @@
       "country_source": "none",
       "series_id": "EIA_STEO",
       "series_label_ko": "EIA 단기 에너지 전망",
-      "importance": 2.243,
+      "importance": 2.237,
       "reasons": [
         "series:EIA_STEO"
+      ]
+    },
+    {
+      "id": "9a2e4f0c6cc38378",
+      "title": {
+        "original": "USDA Forecasts U.S. Corn Production Up and Soybean Production Down from 2024",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "– The Crop Production report issued today by USDA’s National Agricultural Statistics Service (NASS) forecasted corn production up from 2024 and soybean production down from last year. Corn production is up 13% from last year, forecast at 16.7 billion bushels; soybean growers are expected to decrease their production 2% from 2024, forecast at 4.29 billion bushels.",
+      "url": "https://www.nass.usda.gov/Newsroom/2025/08-12-2025.php",
+      "published_at": "2025-08-12T04:00:00+00:00",
+      "agency": "USDA NASS",
+      "agency_ko": "미 농무부 국립농업통계청(NASS)",
+      "source_id": "us_nass_news",
+      "commodities": [
+        "corn",
+        "soybeans"
+      ],
+      "countries": [
+        "USA"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": "USDA_CROP_PRODUCTION",
+      "series_label_ko": "USDA 작황 생산량",
+      "importance": 1.75,
+      "reasons": [
+        "series:USDA_CROP_PRODUCTION",
+        "has_figure",
+        "revision_language",
+        "country_in_text"
+      ]
+    },
+    {
+      "id": "9d9ab72fff81736d",
+      "title": {
+        "original": "US corn production up while soybean production down from September",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "According to the Crop Production report issued today by USDA’s National Agricultural Statistics Service (NASS), corn production is forecast at 15.2 billion bushels, up less than 1% from the previous forecast, but down 1% from last year; soybean growers are expected to increase their production 10% from 2023, forecast at 4.58 billion bushels.",
+      "url": "https://www.nass.usda.gov/Newsroom/2024/10-11-2024.php",
+      "published_at": "2024-10-11T18:45:00+00:00",
+      "agency": "USDA NASS",
+      "agency_ko": "미 농무부 국립농업통계청(NASS)",
+      "source_id": "us_nass_news",
+      "commodities": [
+        "corn",
+        "soybeans"
+      ],
+      "countries": [
+        "USA"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": "USDA_CROP_PRODUCTION",
+      "series_label_ko": "USDA 작황 생산량",
+      "importance": 1.75,
+      "reasons": [
+        "series:USDA_CROP_PRODUCTION",
+        "has_figure",
+        "revision_language",
+        "country_in_text"
+      ]
+    },
+    {
+      "id": "727409c1a45dfec3",
+      "title": {
+        "original": "USDA forecasts US corn production down and soybean production up from 2023",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "The Crop Production report issued today by USDA’s National Agricultural Statistics Service (NASS) forecasted corn production down from 2023 and soybean production up from last year. Corn production is down 1% from last year, forecast at 15.1 billion bushels; soybean growers are expected to increase their production 10% from 2023, forecast at a record high 4.59 billion bushels.",
+      "url": "https://www.nass.usda.gov/Newsroom/2024/08-12-2024.php",
+      "published_at": "2024-08-12T16:30:00+00:00",
+      "agency": "USDA NASS",
+      "agency_ko": "미 농무부 국립농업통계청(NASS)",
+      "source_id": "us_nass_news",
+      "commodities": [
+        "corn",
+        "soybeans"
+      ],
+      "countries": [
+        "USA"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": "USDA_CROP_PRODUCTION",
+      "series_label_ko": "USDA 작황 생산량",
+      "importance": 1.75,
+      "reasons": [
+        "series:USDA_CROP_PRODUCTION",
+        "has_figure",
+        "revision_language",
+        "country_in_text"
+      ]
+    },
+    {
+      "id": "f9e7ed8b73ce1fa5",
+      "title": {
+        "original": "NASS to collect updated information on planted acreage",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "In July, the U.S. Department of Agriculture’s National Agricultural Statistics Service (NASS) will collect updated information on 2022 acres planted to barley, canola, corn, dry edible beans, oats, sorghum, soybeans, sunflowers, and Durum and other spring wheat in three states. NASS previously collected planted acreage information during the first two weeks of June, with the results published in the June 30 Acreage report.",
+      "url": "https://www.nass.usda.gov/Newsroom/Notices/2022/06-30-2022.php",
+      "published_at": "2022-06-30T16:00:00+00:00",
+      "agency": "USDA Agricultural Statistics Board",
+      "agency_ko": "미 농무부 농업통계위원회(ASB)",
+      "source_id": "us_nass_asb",
+      "commodities": [
+        "wheat",
+        "corn",
+        "soybeans"
+      ],
+      "countries": [
+        "USA"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": "USDA_PROSPECTIVE_PLANTINGS",
+      "series_label_ko": "USDA 파종의향면적",
+      "importance": 1.68,
+      "reasons": [
+        "series:USDA_PROSPECTIVE_PLANTINGS",
+        "country_in_text"
+      ]
+    },
+    {
+      "id": "e4530ccde436c92d",
+      "title": {
+        "original": "NASS suspends pecan estimates for December and January",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "The Crop Production report to be published on Dec. 9, 2021, by the U.S. Department of Agriculture’s National Agricultural Statistics Service (NASS) will not contain forecasted pecan production estimates. Also, NASS will not publish the Pecan Production report in January 2022 that typically contains preliminary acreage, yield, production, price, and value estimates.",
+      "url": "https://www.nass.usda.gov/Newsroom/Notices/2021/12-02-2021.php",
+      "published_at": "2021-12-02T17:45:00+00:00",
+      "agency": "USDA Agricultural Statistics Board",
+      "agency_ko": "미 농무부 농업통계위원회(ASB)",
+      "source_id": "us_nass_asb",
+      "commodities": [
+        "corn",
+        "wheat",
+        "soybeans",
+        "cotton",
+        "rice"
+      ],
+      "countries": [
+        "USA"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": "USDA_CROP_PRODUCTION",
+      "series_label_ko": "USDA 작황 생산량",
+      "importance": 1.68,
+      "reasons": [
+        "series:USDA_CROP_PRODUCTION",
+        "country_in_text"
+      ]
+    },
+    {
+      "id": "205bcf62b2894e8b",
+      "title": {
+        "original": "USDA NASS to Collect Additional Harvested Acreage Information",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Corn and soybeans in Iowa have been particularly impacted by the recent derecho. USDA’s National Agricultural Statistics Service will collect harvested acreage information for both crops in Iowa in preparation for the September 11 Crop Production report. These additional data will help to better assess the full impact. If the newly collected data justifies any changes, NASS will publish updated harvested acreage estimates in the September report.",
+      "url": "https://www.nass.usda.gov/Newsroom/Notices/2020/08-17-2020.php",
+      "published_at": "2020-08-17T20:15:00+00:00",
+      "agency": "USDA Agricultural Statistics Board",
+      "agency_ko": "미 농무부 농업통계위원회(ASB)",
+      "source_id": "us_nass_asb",
+      "commodities": [
+        "corn",
+        "soybeans"
+      ],
+      "countries": [
+        "USA"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": "USDA_CROP_PRODUCTION",
+      "series_label_ko": "USDA 작황 생산량",
+      "importance": 1.68,
+      "reasons": [
+        "series:USDA_CROP_PRODUCTION",
+        "country_in_text"
+      ]
+    },
+    {
+      "id": "e54c2f7c294df06b",
+      "title": {
+        "original": "USDA NASS to Re-Survey North Dakota Operators with Previously Unharvested Corn and Soybeans",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "In May, USDA’s National Agricultural Statistics Service (NASS) will contact survey respondents in North Dakota who previously reported unharvested corn and/or soybean acreage. If the newly collected data justifies any changes, NASS will update the Jan. 10 estimates in the June 11 Crop Production report. Stocks estimates are also subject to review since unharvested production is included in the estimate of on-farm stocks.",
+      "url": "https://www.nass.usda.gov/Newsroom/Notices/2020/05-12-2020.php",
+      "published_at": "2020-05-12T16:15:00+00:00",
+      "agency": "USDA Agricultural Statistics Board",
+      "agency_ko": "미 농무부 농업통계위원회(ASB)",
+      "source_id": "us_nass_asb",
+      "commodities": [
+        "corn",
+        "soybeans"
+      ],
+      "countries": [
+        "USA"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": "USDA_CROP_PRODUCTION",
+      "series_label_ko": "USDA 작황 생산량",
+      "importance": 1.68,
+      "reasons": [
+        "series:USDA_CROP_PRODUCTION",
+        "country_in_text"
+      ]
+    },
+    {
+      "id": "9dd7845c2d4fc51e",
+      "title": {
+        "original": "USDA NASS to Re-Survey Operators with Previously Unharvested Corn and Soybeans",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Later this month, USDA’s National Agricultural Statistics Service will contact survey respondents in Michigan, Minnesota, South Dakota, and Wisconsin who previously reported unharvested corn and/or soybean acreage. If the newly collected data justifies any changes, NASS will update the Jan. 10 estimates in the May 12 Crop Production report. Stocks estimates are also subject to review since unharvested production is included in the estimate of on-farm stocks.",
+      "url": "https://www.nass.usda.gov/Newsroom/Notices/2020/04-07-2020.php",
+      "published_at": "2020-04-07T15:30:00+00:00",
+      "agency": "USDA Agricultural Statistics Board",
+      "agency_ko": "미 농무부 농업통계위원회(ASB)",
+      "source_id": "us_nass_asb",
+      "commodities": [
+        "corn",
+        "soybeans"
+      ],
+      "countries": [
+        "USA"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": "USDA_CROP_PRODUCTION",
+      "series_label_ko": "USDA 작황 생산량",
+      "importance": 1.68,
+      "reasons": [
+        "series:USDA_CROP_PRODUCTION",
+        "country_in_text"
       ]
     },
     {
@@ -629,7 +935,7 @@
       "country_source": "text",
       "series_id": "EIA_STEO",
       "series_label_ko": "EIA 단기 에너지 전망",
-      "importance": 1.527,
+      "importance": 1.526,
       "reasons": [
         "series:EIA_STEO",
         "country_in_text"
@@ -658,10 +964,218 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.494,
+      "importance": 1.492,
       "reasons": [
         "has_figure",
         "country_in_text"
+      ]
+    },
+    {
+      "id": "54cc3c274cf90c25",
+      "title": {
+        "original": "USDA forecasts winter wheat production up 2% in 2025, orange production up slightly from April forecast",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "– U.S. farmers are expected to produce 1.38 billion bushels of winter wheat this year, according to the Crop Production report released today by USDA’s National Agricultural Statistics Service (NASS).",
+      "url": "https://www.nass.usda.gov/Newsroom/2025/05-12-2025.php",
+      "published_at": "2025-05-12T16:45:00+00:00",
+      "agency": "USDA NASS",
+      "agency_ko": "미 농무부 국립농업통계청(NASS)",
+      "source_id": "us_nass_news",
+      "commodities": [
+        "wheat"
+      ],
+      "countries": [
+        "USA"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": "USDA_CROP_PRODUCTION",
+      "series_label_ko": "USDA 작황 생산량",
+      "importance": 1.47,
+      "reasons": [
+        "series:USDA_CROP_PRODUCTION",
+        "has_figure",
+        "country_in_text"
+      ]
+    },
+    {
+      "id": "d9459a6be37e5e91",
+      "title": {
+        "original": "USDA NASS to host webinar to highlight available data for recently discontinued programs",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "U.S. farmers are expected to produce 1.28 billion bushels of winter wheat this year, according to the Crop Production report released today by USDA’s National Agricultural Statistics Service (NASS). In NASS’s first winter wheat production forecast for 2024, production is expected to increase 2% from 2023. As of May 1, the U.S. yield is expected to average 50.7 bushels per acre, up 0.1 bushel from last year’s average of 50.6 bushels per acre.",
+      "url": "https://www.nass.usda.gov/Newsroom/2024/05-10-2024.php",
+      "published_at": "2024-05-10T19:00:00+00:00",
+      "agency": "USDA NASS",
+      "agency_ko": "미 농무부 국립농업통계청(NASS)",
+      "source_id": "us_nass_news",
+      "commodities": [
+        "wheat"
+      ],
+      "countries": [
+        "USA"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": "USDA_CROP_PRODUCTION",
+      "series_label_ko": "USDA 작황 생산량",
+      "importance": 1.47,
+      "reasons": [
+        "series:USDA_CROP_PRODUCTION",
+        "has_figure",
+        "country_in_text"
+      ]
+    },
+    {
+      "id": "06cf84727ec466c3",
+      "title": {
+        "original": "US corn ending stocks up 29% from last year, soybean ending stocks up 29%",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Old crop corn stocks on hand as of Sept. 1, 2024 totaled 1.76 billion bushels, up 29% from Sept. 1, 2023, according to the U.S. Department of Agriculture’s National Agricultural Statistics Service (NASS) Grain Stocks report released today. Old crop soybeans stored in all positions were up 29% from Sept. 1, 2023, and all wheat stocks were up 12% from a year earlier.",
+      "url": "https://www.nass.usda.gov/Newsroom/2024/09-30-2024.php",
+      "published_at": "2024-09-30T18:00:00+00:00",
+      "agency": "USDA NASS",
+      "agency_ko": "미 농무부 국립농업통계청(NASS)",
+      "source_id": "us_nass_news",
+      "commodities": [
+        "wheat",
+        "corn",
+        "soybeans"
+      ],
+      "countries": [
+        "USA"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": "USDA_GRAIN_STOCKS",
+      "series_label_ko": "USDA 곡물 재고",
+      "importance": 1.397,
+      "reasons": [
+        "series:USDA_GRAIN_STOCKS",
+        "has_figure",
+        "country_in_text"
+      ]
+    },
+    {
+      "id": "82a9272720c2cdfb",
+      "title": {
+        "original": "NASS to review acreage data",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "In preparation for the August Crop Production report, USDA’s National Agricultural Statistics Service (NASS) will review all available data, including survey data and the latest information from USDA’s Farm Service Agency and Risk Management Agency, for planted and harvested acreage for barley, corn, cotton, dry edible beans, oats, peanuts, rice, sorghum, soybeans, sugarbeets, Durum wheat, other spring wheat, and winter wheat. If the data review justifies any changes, NASS will publish updated planted and harvested acreage estimates in the Aug. 12, 2024, report.",
+      "url": "https://www.nass.usda.gov/Newsroom/Notices/2024/07-31-2024.php",
+      "published_at": "2024-07-31T16:00:00+00:00",
+      "agency": "USDA Agricultural Statistics Board",
+      "agency_ko": "미 농무부 농업통계위원회(ASB)",
+      "source_id": "us_nass_asb",
+      "commodities": [
+        "wheat",
+        "corn",
+        "soybeans"
+      ],
+      "countries": [
+        "USA"
+      ],
+      "scope": "country",
+      "country_source": "source_default",
+      "series_id": "USDA_CROP_PRODUCTION",
+      "series_label_ko": "USDA 작황 생산량",
+      "importance": 1.344,
+      "reasons": [
+        "series:USDA_CROP_PRODUCTION"
+      ]
+    },
+    {
+      "id": "389d4a4328f23545",
+      "title": {
+        "original": "NASS to review small grain acreage information",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "In preparation for the August Crop Production report, USDA’s National Agricultural Statistics Service (NASS) will review all available data, including survey data and the latest information from USDA’s Farm Service Agency and Risk Management Agency, for planted and harvested acreage for barley, oats, Durum wheat, other spring wheat, and winter wheat. If the data review justifies any changes, NASS will publish updated planted and harvested acreage estimates in the Aug. 11, 2023, report.",
+      "url": "https://www.nass.usda.gov/Newsroom/Notices/2023/08-08-2023.php",
+      "published_at": "2023-08-08T19:00:00+00:00",
+      "agency": "USDA Agricultural Statistics Board",
+      "agency_ko": "미 농무부 농업통계위원회(ASB)",
+      "source_id": "us_nass_asb",
+      "commodities": [
+        "wheat"
+      ],
+      "countries": [
+        "USA"
+      ],
+      "scope": "country",
+      "country_source": "source_default",
+      "series_id": "USDA_CROP_PRODUCTION",
+      "series_label_ko": "USDA 작황 생산량",
+      "importance": 1.344,
+      "reasons": [
+        "series:USDA_CROP_PRODUCTION"
+      ]
+    },
+    {
+      "id": "2c8f727be89c0de5",
+      "title": {
+        "original": "NASS Acreage report released on-time; Quickstats data delayed",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "At Noon ET, USDA’s National Agricultural Statistics Service (NASS) successfully released the Acreage report. The JSON, .txt, .pdf and .csv formats of the report are available at Today’s Reports on the NASS website and at Cornell’s Mann Library. Due to a technical issue, the 2023 Acreage data for Quickstats is delayed. The Grain Stocks and Rice Stocks Quickstats data are not impacted by this delay.",
+      "url": "https://www.nass.usda.gov/Newsroom/Notices/2023/06-30-2023.php",
+      "published_at": "2023-06-30T16:30:00+00:00",
+      "agency": "USDA Agricultural Statistics Board",
+      "agency_ko": "미 농무부 농업통계위원회(ASB)",
+      "source_id": "us_nass_asb",
+      "commodities": [
+        "rice"
+      ],
+      "countries": [
+        "USA"
+      ],
+      "scope": "country",
+      "country_source": "source_default",
+      "series_id": "USDA_PROSPECTIVE_PLANTINGS",
+      "series_label_ko": "USDA 파종의향면적",
+      "importance": 1.344,
+      "reasons": [
+        "series:USDA_PROSPECTIVE_PLANTINGS"
+      ]
+    },
+    {
+      "id": "eb08bb539c63def3",
+      "title": {
+        "original": "NASS to review acreage earlier for certain crops",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "USDA’s National Agricultural Statistics Service (NASS) will review all available data, including survey data, satellite-based data, and the latest information from USDA’s Farm Service Agency and Risk Management Agency, for planted and harvested acreage for corn, cotton, peanuts, rice, sorghum, soybeans, and sugarbeets in preparation for the September Crop Production report. If the data review justifies any changes, NASS will publish updated planted and harvested acreage estimates in the Sept. 10 report.",
+      "url": "https://www.nass.usda.gov/Newsroom/Notices/2021/09-01-2021.php",
+      "published_at": "2021-09-01T16:00:00+00:00",
+      "agency": "USDA Agricultural Statistics Board",
+      "agency_ko": "미 농무부 농업통계위원회(ASB)",
+      "source_id": "us_nass_asb",
+      "commodities": [
+        "corn",
+        "soybeans",
+        "rice"
+      ],
+      "countries": [
+        "USA"
+      ],
+      "scope": "country",
+      "country_source": "source_default",
+      "series_id": "USDA_CROP_PRODUCTION",
+      "series_label_ko": "USDA 작황 생산량",
+      "importance": 1.344,
+      "reasons": [
+        "series:USDA_CROP_PRODUCTION"
       ]
     },
     {
@@ -716,7 +1230,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.319,
+      "importance": 1.316,
       "reasons": [
         "country_in_text"
       ]
@@ -751,6 +1265,36 @@
       ]
     },
     {
+      "id": "44ef3d9e9fba437f",
+      "title": {
+        "original": "NASS Delays Weekly Slaughter Release",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Due to the National Day of Mourning for President James Earl Carter, Jr., USDA’s National Agricultural Statistics Service (NASS) has rescheduled the Weekly Slaughter data release from Jan. 9 to Jan. 10 at 3 p.m. ET. Other reports scheduled for release on Jan. 10 such as Crop Production and Grain Stocks reports will be published as scheduled.",
+      "url": "https://www.nass.usda.gov/Newsroom/Notices/2025/01-02-2025.php",
+      "published_at": "2025-01-02T17:00:00+00:00",
+      "agency": "USDA Agricultural Statistics Board",
+      "agency_ko": "미 농무부 농업통계위원회(ASB)",
+      "source_id": "us_nass_asb",
+      "commodities": [
+        "corn",
+        "wheat",
+        "soybeans"
+      ],
+      "countries": [
+        "USA"
+      ],
+      "scope": "country",
+      "country_source": "source_default",
+      "series_id": "USDA_GRAIN_STOCKS",
+      "series_label_ko": "USDA 곡물 재고",
+      "importance": 1.277,
+      "reasons": [
+        "series:USDA_GRAIN_STOCKS"
+      ]
+    },
+    {
       "id": "636939b535053039",
       "title": {
         "original": "Petroleum Marketing Monthly",
@@ -773,7 +1317,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.273,
+      "importance": 1.27,
       "reasons": [
         "country_in_text"
       ]
@@ -801,7 +1345,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.252,
+      "importance": 1.249,
       "reasons": [
         "country_in_text"
       ]
@@ -853,7 +1397,7 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.019,
+      "importance": 1.016,
       "reasons": []
     },
     {
@@ -877,8 +1421,98 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.019,
+      "importance": 1.016,
       "reasons": []
+    },
+    {
+      "id": "d2560303da2802d2",
+      "title": {
+        "original": "USDA-NASS Crop Progress report delayed until Nov. 29",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Due to system outages, USDA’s National Agricultural Statistics Service delayed the release of today’s scheduled Crop Progress report until tomorrow, Nov. 29, at 4 p.m. EST.",
+      "url": "https://www.nass.usda.gov/Newsroom/Notices/2022/11-28-2022.php",
+      "published_at": "2022-11-28T21:00:00+00:00",
+      "agency": "USDA Agricultural Statistics Board",
+      "agency_ko": "미 농무부 농업통계위원회(ASB)",
+      "source_id": "us_nass_asb",
+      "commodities": [
+        "corn",
+        "wheat",
+        "soybeans",
+        "cotton"
+      ],
+      "countries": [
+        "USA"
+      ],
+      "scope": "country",
+      "country_source": "source_default",
+      "series_id": "USDA_CROP_PROGRESS",
+      "series_label_ko": "USDA 작황 진도",
+      "importance": 1.008,
+      "reasons": [
+        "series:USDA_CROP_PROGRESS"
+      ]
+    },
+    {
+      "id": "82ad0c3c992ec514",
+      "title": {
+        "original": "USDA Crop Progress report delayed until 5pm ET",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "USDA’s National Agricultural Statistics Service (NASS) is delaying today’s Crop Progress report one hour until, April 5 at 5 p.m. ET.",
+      "url": "https://www.nass.usda.gov/Newsroom/Notices/2021/04-05-2021.php",
+      "published_at": "2021-04-05T20:30:00+00:00",
+      "agency": "USDA Agricultural Statistics Board",
+      "agency_ko": "미 농무부 농업통계위원회(ASB)",
+      "source_id": "us_nass_asb",
+      "commodities": [
+        "corn",
+        "wheat",
+        "soybeans",
+        "cotton"
+      ],
+      "countries": [
+        "USA"
+      ],
+      "scope": "country",
+      "country_source": "source_default",
+      "series_id": "USDA_CROP_PROGRESS",
+      "series_label_ko": "USDA 작황 진도",
+      "importance": 1.008,
+      "reasons": [
+        "series:USDA_CROP_PROGRESS"
+      ]
+    },
+    {
+      "id": "21e8e31c7b207b51",
+      "title": {
+        "original": "USDA NASS Discontinues County Level Estimates for Selected Crops",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "The U.S. Department of Agriculture’s National Agricultural Statistics Service (NASS) will no longer publish county level estimates for dry edible beans, flaxseed, hay (alfalfa and other), potatoes, sugarbeets, sugarcane, sunflower (non-oil and oil varieties) and tobacco. In addition, NASS will discontinue county estimates based on irrigated/non-irrigated practices for all crops. These changes are effective beginning with the 2019 crop year.",
+      "url": "https://www.nass.usda.gov/Newsroom/Notices/2020/02-13-2020.php",
+      "published_at": "2020-02-13T18:45:00+00:00",
+      "agency": "USDA Agricultural Statistics Board",
+      "agency_ko": "미 농무부 농업통계위원회(ASB)",
+      "source_id": "us_nass_asb",
+      "commodities": [
+        "sugar"
+      ],
+      "countries": [
+        "USA"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 0.84,
+      "reasons": [
+        "country_in_text"
+      ]
     },
     {
       "id": "d09ef02fa55cc52b",
@@ -933,6 +1567,32 @@
       "reasons": [
         "country_in_text"
       ]
+    },
+    {
+      "id": "094f2c679d643322",
+      "title": {
+        "original": "NASS discontinues select 2024 data collection programs and reports",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "The USDA’s National Agricultural Statistics Service (NASS) is canceling the July Cattle report and discontinuing the Cotton Objective Yield Survey, as well as all County Estimates for Crops and Livestock beginning with the 2024 production year. The decision to discontinue these surveys and reports was not made lightly, but was necessary, given appropriated budget levels.",
+      "url": "https://www.nass.usda.gov/Newsroom/Notices/2024/04-09-2024.php",
+      "published_at": "2024-04-09T16:00:00+00:00",
+      "agency": "USDA Agricultural Statistics Board",
+      "agency_ko": "미 농무부 농업통계위원회(ASB)",
+      "source_id": "us_nass_asb",
+      "commodities": [
+        "cotton"
+      ],
+      "countries": [
+        "USA"
+      ],
+      "scope": "country",
+      "country_source": "source_default",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 0.672,
+      "reasons": []
     },
     {
       "id": "af0be633a6c11395",
