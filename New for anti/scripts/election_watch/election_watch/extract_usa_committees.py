@@ -251,12 +251,21 @@ def main() -> int:
     (OUT / "usa_committees.json").write_text(
         json.dumps(doc, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
     )
+    from election_watch.usa_committee_cards import (  # noqa: WPS433
+        build_committee_cards,
+        write_committee_cards,
+    )
+
+    cards = build_committee_cards(doc)
+    cards_path = write_committee_cards(cards)
     print(
         json.dumps(
             {
                 "house_standing": len(doc["house"]["standing_committees"]),
                 "senate_standing": len(doc["senate"]["standing_committees"]),
                 "missing_fields": doc["missing_fields"],
+                "committee_cards": str(cards_path),
+                "card_counts": cards["counts"],
             },
             indent=2,
         )

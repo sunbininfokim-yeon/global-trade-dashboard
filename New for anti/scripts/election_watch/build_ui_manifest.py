@@ -70,6 +70,7 @@ def detail_profile(country: dict[str, Any]) -> dict[str, Any]:
                 "national_executive",
                 "congress_chambers",
                 "federal_member_rosters",
+                "standing_committee_cards",
                 "state_governors",
                 "state_legislature_party_seats",
                 "state_federal_delegations",
@@ -283,8 +284,13 @@ def apply_country_contracts(manifest: dict[str, dict[str, Any]]) -> None:
                     "ready"
                     if not usa_committees_missing(load_extracted("usa_committees.json") or {})
                     else "partial",
-                    ["countries[USA].ui_ready.congress.committees"],
+                    [
+                        "countries[USA].ui_ready.congress.standing_committee_cards",
+                        "countries[USA].ui_ready.congress.committees",
+                    ],
                     usa_committees_missing(load_extracted("usa_committees.json") or {}),
+                    policy_usa_path="countries[USA].ui_ready.congress.standing_committee_cards",
+                    note="정책-미국 상임위 화면은 standing_committee_cards 만 읽는다. 위원장·간사·소관 부처·공식 URL이 이미 조인돼 있다. members[] 를 브라우저에서 다시 조인하지 말 것.",
                 ),
                 "factions": screen(
                     "partial",

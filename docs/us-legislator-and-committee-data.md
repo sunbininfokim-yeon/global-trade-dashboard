@@ -59,6 +59,25 @@ node scripts/lib/committee-membership-source.test.js
 
 현재 커밋된 `data/policy/committee-memberships.json`은 **하원 상임위+소위원회**와 **상원 parent committee**를 넣는다. 상원 소위원회는 CVC XML에 bioguide가 없어 빠지므로 `coverage.complete` 는 **false**다. `member` 포함 완전 스냅샷은 최소 250행, 리더십만이면 최소 20행이 아니면 `complete: true`로 올리지 않는다. 월간 동기화는 신규·변경 행을 upsert하지만, `complete: false`인 동안에는 명단에서 사라진 기존 의원을 자동 비활성화하지 않는다.
 
+정책-미국 상임위 화면은 그 명단 JSON을 브라우저에서 조인하지 않는다. election_watch가 위원장·간사(ranking member)·Rule X/XXV 부처 행·공식 URL을 `standing_committee_cards`로 미리 붙인다.
+
+```bash
+python3 -m election_watch.extract_usa_committees
+python3 -m election_watch.usa_committee_cards
+python3 build_board.py --no-betting
+```
+
+Claude가 읽는 경로: `elections_board_v1.json` → `countries[USA].ui_ready.congress.standing_committee_cards`. 상세는 `New for anti/scripts/election_watch/HANDOFF_CLAUDE_POLICY_USA_COMMITTEES.md`.
+
+분기(1분기는 월 1회) 래퍼:
+
+```bash
+bash "New for anti/scripts/election_watch/ci/run_usa_committees_quarterly.sh"
+```
+
+`.github/workflows/**`는 Claude 소유이므로 YAML 초안은 `New for anti/scripts/election_watch/ci/elections_committees_quarterly.yml`에만 둔다. Claude가 루트 워크플로로 복사한다.
+
+
 이 JSON과 `elections_board_v1.json`의 의회 명단은 **홈페이지 정책&정치**와 **선거 모듈**이 공동으로 쓴다. 의원 신원(이름/정당/주/원)은 Congress.gov API가 이미 채운다. Cursor가 손으로 채우는 것은 API에 없는 공식 규칙·로스터다.
 
 ### 캐시 재현 (API 키 없음)

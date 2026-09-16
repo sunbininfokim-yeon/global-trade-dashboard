@@ -72,10 +72,11 @@ js/elections/
 | 주 상세 | `usa.ui_ready.state_drilldown.states[]` | 지도 조인키, 주지사·부지사·법무장관, 주 상·하원 의석·의장·제2당 원내지도부, 연방 대표, 해당 주 경선까지 사전 결합 | 일반 주의원 개인 명단은 없음 |
 | 주의 연방 대표 | `usa.ui_ready.state_drilldown.states[].federal_delegation` | 주별 House 의원·정당·지역구 및 상원의원 이름 | 상원의원 임기 종료일은 없음 |
 | 연방 의회 | `usa.ui_ready.congress` | 상·하원 명단 사전 분리, 정당 의석, 의장·원내지도부 | 하원 반원은 `summary.house_by_party`(표결권 현원) + `house_vacancies`만 사용. 437명 roster에는 6명 대표단이 포함 |
+| 정책-미국 상임위 | `usa.ui_ready.congress.standing_committee_cards` | 상임위별 위원장·간사(ranking_member)·Rule X/XXV 소관 부처·공식 URL 사전 조인 | 상세 `HANDOFF_CLAUDE_POLICY_USA_COMMITTEES.md`. `app.js`에 위원회 목록을 하드코딩하지 말 것 |
 | 하원 계파 | `usa.factions.parties` | 민주·공화 하원 계파 카드와 `display_count` | 공개 명단이 없는 계파는 `불명`. 중복 허용이므로 계파 수를 합산하지 않음 |
 | 2026 경선 | `usa.race_progress` | 주별 공천 진척 및 승자 | 전국 득표·선거인단처럼 표현 금지 |
 
-**미국 UI 금지:** 상원 임기·상임위·일반 주의원 개인 명단을 UI에서 추정해 만들지 않는다. 해당 영역은 `데이터 수집 예정` 카드로만 둔다. 연방 행정부는 `config/extracted/tier12_executives.json#countries.USA`의 White House 공개 명부 기반 값만 사용한다. 부지사·법무장관·주 의회 지도부는 `config/extracted/usa_state_officials.json`의 공개 명부 기반 값만 사용한다. 부지사 직위가 없는 AZ/ME/NH/OR/WY는 후계 서열자를 대입하지 않고 `해당 직위 없음`으로 표시한다.
+**미국 UI 금지:** 일반 주의원 개인 명단을 UI에서 추정해 만들지 않는다. 상원 임기는 `usa_senate_terms`가 보드 의원 행에 이미 얹혀 있다. 상임위는 `standing_committee_cards`만 읽고, `committees.members[]`를 브라우저에서 위원장·간사·부처로 다시 조인하지 않는다. 연방 행정부는 `config/extracted/tier12_executives.json#countries.USA`의 White House 공개 명부 기반 값만 사용한다. 부지사·법무장관·주 의회 지도부는 `config/extracted/usa_state_officials.json`의 공개 명부 기반 값만 사용한다. 부지사 직위가 없는 AZ/ME/NH/OR/WY는 후계 서열자를 대입하지 않고 `해당 직위 없음`으로 표시한다.
 
 **미국 주 상세 표시 규칙:**
 
