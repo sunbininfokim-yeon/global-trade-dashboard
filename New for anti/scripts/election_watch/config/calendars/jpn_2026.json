@@ -1,7 +1,7 @@
 {
   "iso3": "JPN",
   "year": 2026,
-  "as_of": "2026-08-09",
+  "as_of": "2026-09-16",
   "null_policy": {
     "없음": "해당 일정/선거 없음",
     "불명": "발표·확정 전 또는 출처에 날짜 없음"
@@ -107,16 +107,22 @@
       "id": "jpn-2025-sangiin",
       "type": "general",
       "label_ko": "참의원 선거 (Invest Lens)",
-      "date": "2025-07-13",
+      "date": "2025-07-20",
       "status": "completed",
       "board_include_years": [
         2026
       ],
-      "notes": "IL: 자민 과반 유지",
+      "notes": "IL 라벨 유지. 투표일은 총무성 발표 2025-07-20 으로 정정(기존 캘린더 2025-07-13은 Invest Lens 날짜).",
       "sources": [
+        "https://www.soumu.go.jp/senkyo/27sansokuhou/index.html",
+        "https://www.sangiin.go.jp/japanese/gianjoho/old_gaiyo/218/2180000-1-n.pdf",
         "invest_lens_elections"
       ],
-      "market_significance_invest_lens": 2
+      "market_significance_invest_lens": 2,
+      "system_id": "jpn-sangiin",
+      "contested_ko": "통상 改選 124석 + 도쿄 보궐 1석 (정수 248의 절반 주기)",
+      "result": "자민 39 · 입헌 21(+도쿄보궐 1) · 국민 17 · 참정 14 · 공명 8 · 유신 7 (개헌 124+보궐1)",
+      "result_summary": "투표일 2025-07-20. 비례·선거구 투표율 각 58.51%. 자민·공명 개헌 47 + 비개헌 75 = 122로 참의원 과반(125) 실패. 출처: 참의원 개요(총무성 결과조)."
     },
     {
       "id": "jpn-2026-ldp-president",
@@ -158,7 +164,9 @@
       "sources": [
         "local_senkyo_2026"
       ],
-      "status": "completed"
+      "status": "completed",
+      "system_id": "jpn-prefecture-governor",
+      "contested_ko": "지사 1인"
     },
     {
       "id": "jpn-2026-shugiin-51",
@@ -166,12 +174,138 @@
       "label_ko": "제51회 중의원 총선거",
       "date": "2026-02-08",
       "chamber": "house_of_representatives",
-      "notes": "해산 2026-01-23 · 공시 2026-01-27 · 투개표 2026-02-08.",
+      "notes": "해산 2026-01-23 · 공시 2026-01-27 · 투개표 2026-02-08. previous.vote_pct 는 비례대표 득표율(의석 배분 기준표). 소선거구 득표율은 합산하지 않음.",
       "result": "LDP 316 seats (고시 전 198→316)",
       "sources": [
-        "wiki_shugiin_51"
+        "wiki_shugiin_51",
+        "https://www.shugiin.go.jp/internet/itdb_annai.nsf/html/statics/ugoki/r6ugoki32_04-3_kokuseisenkyokekka.pdf/$File/r6ugoki32_04-3_kokuseisenkyokekka.pdf",
+        "https://www.yomiuri.co.jp/election/shugiin/20260208-GYT1T00182/"
       ],
-      "status": "completed"
+      "status": "completed",
+      "system_id": "jpn-shugiin",
+      "contested_ko": "전체 465석 (소선거구 289 + 비례 176)",
+      "previous": {
+        "date": "2024-10-27",
+        "turnout_pct": 53.85,
+        "seats_total": 465,
+        "by_party": [
+          {
+            "abbr": "LDP",
+            "name_ko": "자유민주당",
+            "vote_pct": 26.73,
+            "seats": 191
+          },
+          {
+            "abbr": "CDP",
+            "name_ko": "입헌민주당",
+            "vote_pct": 21.2,
+            "seats": 148
+          },
+          {
+            "abbr": "Ishin",
+            "name_ko": "일본유신회",
+            "vote_pct": 9.36,
+            "seats": 38
+          },
+          {
+            "abbr": "DPP",
+            "name_ko": "국민민주당",
+            "vote_pct": 11.32,
+            "seats": 28
+          },
+          {
+            "abbr": "Komeito",
+            "name_ko": "공명당",
+            "vote_pct": 10.93,
+            "seats": 24
+          },
+          {
+            "abbr": "Reiwa",
+            "name_ko": "레이와 신선정",
+            "vote_pct": 6.98,
+            "seats": 9
+          },
+          {
+            "abbr": "JCP",
+            "name_ko": "일본공산당",
+            "vote_pct": 6.16,
+            "seats": 8
+          },
+          {
+            "abbr": "Sanseito",
+            "name_ko": "참정당",
+            "vote_pct": 3.43,
+            "seats": 3
+          },
+          {
+            "abbr": "CPJ",
+            "name_ko": "일본보수당",
+            "vote_pct": 2.1,
+            "seats": 3
+          },
+          {
+            "abbr": "SDP",
+            "name_ko": "사민당",
+            "vote_pct": 1.71,
+            "seats": 1
+          },
+          {
+            "abbr": "IND",
+            "name_ko": "무소속",
+            "seats": 12
+          }
+        ],
+        "government_formed_ko": "자민·공명 215석으로 과반(233) 실패. 이시바 내각이 소수 여당으로 출범.",
+        "sources": [
+          "https://www.shugiin.go.jp/internet/itdb_annai.nsf/html/statics/ugoki/r6ugoki32_04-3_kokuseisenkyokekka.pdf/$File/r6ugoki32_04-3_kokuseisenkyokekka.pdf",
+          "https://www.soumu.go.jp/senkyo/senkyo_s/news/senkyo/shuugiin/"
+        ]
+      },
+      "parties_running": [
+        {
+          "abbr": "LDP",
+          "name_ko": "자유민주당",
+          "leader_ko": "다카이치 사나에",
+          "incumbent": true
+        },
+        {
+          "abbr": "Ishin",
+          "name_ko": "일본유신회",
+          "incumbent": true
+        },
+        {
+          "abbr": "Chudo",
+          "name_ko": "중도개혁연합",
+          "leader_ko": "노다 요시히코 · 사이토 데쓰오",
+          "incumbent": false
+        },
+        {
+          "abbr": "DPP",
+          "name_ko": "국민민주당",
+          "incumbent": false
+        },
+        {
+          "abbr": "Sanseito",
+          "name_ko": "참정당",
+          "incumbent": false
+        },
+        {
+          "abbr": "TeamMirai",
+          "name_ko": "팀 미라이",
+          "incumbent": false
+        },
+        {
+          "abbr": "JCP",
+          "name_ko": "일본공산당",
+          "incumbent": false
+        },
+        {
+          "abbr": "Reiwa",
+          "name_ko": "레이와 신선정",
+          "incumbent": false
+        }
+      ],
+      "result_summary": "자민 316(소 249·비 67) · 중도개혁연합 49 · 유신 36 · 국민 28 · 참정 15 · 팀미라이 11 · 공산 4 · 레이와 1 · 감세일본 1 · 무소속 4. 정수 465."
     },
     {
       "id": "jpn-2026-gov-osaka",
@@ -183,7 +317,9 @@
       "sources": [
         "local_senkyo_2026"
       ],
-      "status": "completed"
+      "status": "completed",
+      "system_id": "jpn-prefecture-governor",
+      "contested_ko": "지사 1인"
     },
     {
       "id": "jpn-2026-gov-yamaguchi",
@@ -195,7 +331,9 @@
       "sources": [
         "local_senkyo_2026"
       ],
-      "status": "completed"
+      "status": "completed",
+      "system_id": "jpn-prefecture-governor",
+      "contested_ko": "지사 1인"
     },
     {
       "id": "jpn-2026-gov-nagasaki",
@@ -207,7 +345,9 @@
       "sources": [
         "local_senkyo_2026"
       ],
-      "status": "completed"
+      "status": "completed",
+      "system_id": "jpn-prefecture-governor",
+      "contested_ko": "지사 1인"
     },
     {
       "id": "jpn-2026-gov-ishikawa",
@@ -218,7 +358,9 @@
       "sources": [
         "local_senkyo_2026"
       ],
-      "status": "completed"
+      "status": "completed",
+      "system_id": "jpn-prefecture-governor",
+      "contested_ko": "지사 1인"
     },
     {
       "id": "jpn-2026-gov-kyoto",
@@ -229,7 +371,9 @@
       "sources": [
         "local_senkyo_2026"
       ],
-      "status": "completed"
+      "status": "completed",
+      "system_id": "jpn-prefecture-governor",
+      "contested_ko": "지사 1인"
     },
     {
       "id": "jpn-2026-gov-niigata",
@@ -241,7 +385,9 @@
       "sources": [
         "local_senkyo_2026"
       ],
-      "status": "completed"
+      "status": "completed",
+      "system_id": "jpn-prefecture-governor",
+      "contested_ko": "지사 1인"
     },
     {
       "id": "jpn-2026-gov-shiga",
@@ -261,7 +407,9 @@
         "name_ko": "미카즈키 다이조",
         "party": "無所属"
       },
-      "notes": "임기만료 선거. 고시 2026-06-18, 투개표 2026-07-05. MIC/현 선관위 확인 완료."
+      "notes": "임기만료 선거. 고시 2026-06-18, 투개표 2026-07-05. MIC/현 선관위 확인 완료.",
+      "system_id": "jpn-prefecture-governor",
+      "contested_ko": "지사 1인"
     },
     {
       "id": "jpn-2026-gov-nagano",
@@ -273,7 +421,9 @@
       "notes": "go2senkyo cross-check; prefer MIC/pref SOS when available",
       "sources": [
         "go2senkyo_2026"
-      ]
+      ],
+      "system_id": "jpn-prefecture-governor",
+      "contested_ko": "지사 1인"
     },
     {
       "id": "jpn-2026-gov-kagawa",
@@ -285,7 +435,9 @@
       "notes": "go2senkyo cross-check; prefer MIC/pref SOS when available",
       "sources": [
         "go2senkyo_2026"
-      ]
+      ],
+      "system_id": "jpn-prefecture-governor",
+      "contested_ko": "지사 1인"
     },
     {
       "id": "jpn-2026-gov-okinawa",
@@ -297,7 +449,9 @@
       "notes": "go2senkyo cross-check; prefer MIC/pref SOS when available",
       "sources": [
         "go2senkyo_2026"
-      ]
+      ],
+      "system_id": "jpn-prefecture-governor",
+      "contested_ko": "지사 1인"
     },
     {
       "id": "jpn-2026-national-by-oct",
@@ -323,7 +477,9 @@
         "fukushima_gov_2026",
         "jiji_fukushima_2026"
       ],
-      "status": "scheduled"
+      "status": "scheduled",
+      "system_id": "jpn-prefecture-governor",
+      "contested_ko": "지사 1인"
     },
     {
       "id": "jpn-2026-fukushima-assembly-by",
@@ -346,7 +502,9 @@
       "notes": "go2senkyo cross-check; prefer MIC/pref SOS when available",
       "sources": [
         "go2senkyo_2026"
-      ]
+      ],
+      "system_id": "jpn-prefecture-governor",
+      "contested_ko": "지사 1인"
     },
     {
       "id": "jpn-2026-gov-saga",
@@ -358,7 +516,9 @@
       "notes": "go2senkyo cross-check; prefer MIC/pref SOS when available",
       "sources": [
         "go2senkyo_2026"
-      ]
+      ],
+      "system_id": "jpn-prefecture-governor",
+      "contested_ko": "지사 1인"
     },
     {
       "id": "jpn-2026-gov-miyazaki",
@@ -370,7 +530,9 @@
       "notes": "go2senkyo cross-check; prefer MIC/pref SOS when available",
       "sources": [
         "go2senkyo_2026"
-      ]
+      ],
+      "system_id": "jpn-prefecture-governor",
+      "contested_ko": "지사 1인"
     },
     {
       "id": "jpn-2026-national-by-apr",
@@ -395,7 +557,9 @@
       "notes": "2026년 통상선거 일정 없음(다음 개헌 주기는 2028년 계열).",
       "sources": [
         "kouhou_33_2"
-      ]
+      ],
+      "system_id": "jpn-sangiin",
+      "contested_ko": "없음 — 2026년 통상선거 일정 없음"
     }
   ]
 }

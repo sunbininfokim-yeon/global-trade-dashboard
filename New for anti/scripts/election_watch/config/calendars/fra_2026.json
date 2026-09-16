@@ -1,7 +1,7 @@
 {
   "iso3": "FRA",
   "year": 2026,
-  "as_of": "2026-08-08",
+  "as_of": "2026-09-16",
   "null_policy": {
     "없음": "해당 일정/선거 없음",
     "불명": "발표·확정 전 또는 출처에 날짜 없음"
@@ -24,7 +24,7 @@
   ],
   "notes": [
     "No presidential or National Assembly general in 2026.",
-    "Municipal 15/22 Mar; Senate series 2 in September (exact day 불명 until decree)."
+    "Municipal 15/22 Mar (완료). Senate series 2 on 2026-09-27 (décret n° 2026-301)."
   ],
   "events": [
     {
@@ -68,7 +68,9 @@
       "status": "없음",
       "sources": [
         "wiki_national_calendar_2026"
-      ]
+      ],
+      "system_id": "fra-president",
+      "contested_ko": "없음 — 2026년 대선 없음"
     },
     {
       "id": "fra-2026-assemblee",
@@ -78,38 +80,82 @@
       "status": "없음",
       "sources": [
         "wiki_national_calendar_2026"
-      ]
+      ],
+      "system_id": "fra-assemblee",
+      "contested_ko": "없음 — 2026년 하원 총선 없음",
+      "previous": {
+        "date": "2024-07-07",
+        "turnout_pct": 66.63,
+        "seats_total": 577,
+        "by_party": [
+          {
+            "abbr": "UG",
+            "name_ko": "좌파연합 (내무부 Union de la gauche)",
+            "seats": 178
+          },
+          {
+            "abbr": "ENS",
+            "name_ko": "앙상블",
+            "seats": 150
+          },
+          {
+            "abbr": "RN",
+            "name_ko": "국민연합",
+            "seats": 125
+          },
+          {
+            "abbr": "LR",
+            "name_ko": "공화당",
+            "seats": 39
+          }
+        ],
+        "sources": [
+          "https://www.archives-resultats-elections.interieur.gouv.fr/resultats/legislatives2024/ensemble_geographique/index.php"
+        ]
+      },
+      "notes": "2024-07 조기 총선 결과. 내무부 nuance 기준. 언론은 NFP 182·Ensemble 163 등으로 묶어 집계 — 합산·재분류하지 않고 내무부 숫자를 쓰고 notes 에 어긋남을 남김."
     },
     {
       "id": "fra-2026-municipal-r1",
       "type": "local",
       "label_ko": "지방(코뮌) 1차",
       "date": "2026-03-15",
-      "status": "scheduled",
+      "status": "completed",
       "sources": [
         "wiki_elections_2026"
-      ]
+      ],
+      "system_id": "불명",
+      "contested_ko": "전 코뮌 시의회 1차 (시장은 의회 선출)",
+      "notes": "2026-03-15 실시. 전국 정당 의석 합산 없음. 코뮌 단위는 내무부 아카이브."
     },
     {
       "id": "fra-2026-municipal-r2",
       "type": "local",
       "label_ko": "지방(코뮌) 2차",
       "date": "2026-03-22",
-      "status": "scheduled",
+      "status": "completed",
       "sources": [
         "wiki_elections_2026"
-      ]
+      ],
+      "system_id": "불명",
+      "contested_ko": "전 코뮌 시의회 2차",
+      "notes": "2026-03-22 실시. 전국 정당 의석 합산 없음."
     },
     {
       "id": "fra-2026-senate",
       "type": "general",
       "label_ko": "상원(Sénat) 간선",
-      "date": "불명",
+      "date": "2026-09-27",
       "status": "scheduled",
-      "notes": "2026년 9월 series 2; 일자 공고 전",
+      "notes": "간선. 일반 유권자 투표 아님. 일자 공고 전 캘린더는 date=불명 이었음.",
       "sources": [
+        "https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000053925339",
+        "https://senatoriales2026.senat.fr/",
         "wiki_national_calendar_2026"
-      ]
+      ],
+      "date_note": "décret n° 2026-301 (2026-04-21). world_by_month 기존 값 2026-09 을 일자로 맞춤.",
+      "system_id": "fra-senate",
+      "contested_ko": "시리즈 2 178석 (전체 348의 절반 주기). 비례 119 + 다수결 59"
     },
     {
       "id": "fra-2027-presidential",
@@ -121,7 +167,8 @@
       "sources": [
         "invest_lens_elections"
       ],
-      "market_significance_invest_lens": 3
+      "market_significance_invest_lens": 3,
+      "system_id": "fra-president"
     },
     {
       "id": "fra-2027-assemblee",
@@ -133,7 +180,8 @@
       "sources": [
         "invest_lens_elections"
       ],
-      "market_significance_invest_lens": 2
+      "market_significance_invest_lens": 2,
+      "system_id": "fra-assemblee"
     }
   ]
 }

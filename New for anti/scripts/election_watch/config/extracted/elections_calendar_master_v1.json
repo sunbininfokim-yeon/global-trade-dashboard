@@ -1,7 +1,7 @@
 {
   "schema": "elections_calendar_master_v1",
-  "as_of": "2026-08-14",
-  "generated_at": "2026-09-12T07:36:54.542923+00:00",
+  "as_of": "2026-09-16",
+  "generated_at": "2026-09-16T11:46:28.658479+00:00",
   "sources": [
     "config/calendars/*_2026.json (board tracked countries)",
     "https://en.wikipedia.org/wiki/2026_national_electoral_calendar",
@@ -13,7 +13,7 @@
     "불명": "미확정"
   },
   "summary": {
-    "board_tracked_event_rows": 108,
+    "board_tracked_event_rows": 109,
     "board_party_leadership_rows": 23,
     "world_national_highlight_rows": 38,
     "board_countries": [
@@ -451,16 +451,22 @@
       "id": "jpn-2025-sangiin",
       "type": "general",
       "label_ko": "참의원 선거 (Invest Lens)",
-      "date": "2025-07-13",
+      "date": "2025-07-20",
       "status": "completed",
       "board_include_years": [
         2026
       ],
-      "notes": "IL: 자민 과반 유지",
+      "notes": "IL 라벨 유지. 투표일은 총무성 발표 2025-07-20 으로 정정(기존 캘린더 2025-07-13은 Invest Lens 날짜).",
       "sources": [
+        "https://www.soumu.go.jp/senkyo/27sansokuhou/index.html",
+        "https://www.sangiin.go.jp/japanese/gianjoho/old_gaiyo/218/2180000-1-n.pdf",
         "invest_lens_elections"
       ],
       "market_significance_invest_lens": 2,
+      "system_id": "jpn-sangiin",
+      "contested_ko": "통상 改選 124석 + 도쿄 보궐 1석 (정수 248의 절반 주기)",
+      "result": "자민 39 · 입헌 21(+도쿄보궐 1) · 국민 17 · 참정 14 · 공명 8 · 유신 7 (개헌 124+보궐1)",
+      "result_summary": "투표일 2025-07-20. 비례·선거구 투표율 각 58.51%. 자민·공명 개헌 47 + 비개헌 75 = 122로 참의원 과반(125) 실패. 출처: 참의원 개요(총무성 결과조).",
       "iso3": "JPN",
       "date_end": null
     },
@@ -551,6 +557,8 @@
         "local_senkyo_2026"
       ],
       "status": "completed",
+      "system_id": "jpn-prefecture-governor",
+      "contested_ko": "지사 1인",
       "iso3": "JPN",
       "date_end": null
     },
@@ -568,6 +576,8 @@
         "wiki_us_house_2026"
       ],
       "status": "completed",
+      "system_id": "usa-house",
+      "contested_ko": "하원 TX-18 1석",
       "iso3": "USA",
       "date_end": null
     },
@@ -583,6 +593,8 @@
         "fec_ec_specials_2026"
       ],
       "status": "completed",
+      "system_id": "usa-house",
+      "contested_ko": "하원 NJ-11 1석",
       "iso3": "USA",
       "date_end": null
     },
@@ -597,6 +609,8 @@
         "local_senkyo_2026"
       ],
       "status": "completed",
+      "system_id": "jpn-prefecture-governor",
+      "contested_ko": "지사 1인",
       "iso3": "JPN",
       "date_end": null
     },
@@ -611,6 +625,8 @@
         "local_senkyo_2026"
       ],
       "status": "completed",
+      "system_id": "jpn-prefecture-governor",
+      "contested_ko": "지사 1인",
       "iso3": "JPN",
       "date_end": null
     },
@@ -625,6 +641,8 @@
         "local_senkyo_2026"
       ],
       "status": "completed",
+      "system_id": "jpn-prefecture-governor",
+      "contested_ko": "지사 1인",
       "iso3": "JPN",
       "date_end": null
     },
@@ -634,12 +652,138 @@
       "label_ko": "제51회 중의원 총선거",
       "date": "2026-02-08",
       "chamber": "house_of_representatives",
-      "notes": "해산 2026-01-23 · 공시 2026-01-27 · 투개표 2026-02-08.",
+      "notes": "해산 2026-01-23 · 공시 2026-01-27 · 투개표 2026-02-08. previous.vote_pct 는 비례대표 득표율(의석 배분 기준표). 소선거구 득표율은 합산하지 않음.",
       "result": "LDP 316 seats (고시 전 198→316)",
       "sources": [
-        "wiki_shugiin_51"
+        "wiki_shugiin_51",
+        "https://www.shugiin.go.jp/internet/itdb_annai.nsf/html/statics/ugoki/r6ugoki32_04-3_kokuseisenkyokekka.pdf/$File/r6ugoki32_04-3_kokuseisenkyokekka.pdf",
+        "https://www.yomiuri.co.jp/election/shugiin/20260208-GYT1T00182/"
       ],
       "status": "completed",
+      "system_id": "jpn-shugiin",
+      "contested_ko": "전체 465석 (소선거구 289 + 비례 176)",
+      "previous": {
+        "date": "2024-10-27",
+        "turnout_pct": 53.85,
+        "seats_total": 465,
+        "by_party": [
+          {
+            "abbr": "LDP",
+            "name_ko": "자유민주당",
+            "vote_pct": 26.73,
+            "seats": 191
+          },
+          {
+            "abbr": "CDP",
+            "name_ko": "입헌민주당",
+            "vote_pct": 21.2,
+            "seats": 148
+          },
+          {
+            "abbr": "Ishin",
+            "name_ko": "일본유신회",
+            "vote_pct": 9.36,
+            "seats": 38
+          },
+          {
+            "abbr": "DPP",
+            "name_ko": "국민민주당",
+            "vote_pct": 11.32,
+            "seats": 28
+          },
+          {
+            "abbr": "Komeito",
+            "name_ko": "공명당",
+            "vote_pct": 10.93,
+            "seats": 24
+          },
+          {
+            "abbr": "Reiwa",
+            "name_ko": "레이와 신선정",
+            "vote_pct": 6.98,
+            "seats": 9
+          },
+          {
+            "abbr": "JCP",
+            "name_ko": "일본공산당",
+            "vote_pct": 6.16,
+            "seats": 8
+          },
+          {
+            "abbr": "Sanseito",
+            "name_ko": "참정당",
+            "vote_pct": 3.43,
+            "seats": 3
+          },
+          {
+            "abbr": "CPJ",
+            "name_ko": "일본보수당",
+            "vote_pct": 2.1,
+            "seats": 3
+          },
+          {
+            "abbr": "SDP",
+            "name_ko": "사민당",
+            "vote_pct": 1.71,
+            "seats": 1
+          },
+          {
+            "abbr": "IND",
+            "name_ko": "무소속",
+            "seats": 12
+          }
+        ],
+        "government_formed_ko": "자민·공명 215석으로 과반(233) 실패. 이시바 내각이 소수 여당으로 출범.",
+        "sources": [
+          "https://www.shugiin.go.jp/internet/itdb_annai.nsf/html/statics/ugoki/r6ugoki32_04-3_kokuseisenkyokekka.pdf/$File/r6ugoki32_04-3_kokuseisenkyokekka.pdf",
+          "https://www.soumu.go.jp/senkyo/senkyo_s/news/senkyo/shuugiin/"
+        ]
+      },
+      "parties_running": [
+        {
+          "abbr": "LDP",
+          "name_ko": "자유민주당",
+          "leader_ko": "다카이치 사나에",
+          "incumbent": true
+        },
+        {
+          "abbr": "Ishin",
+          "name_ko": "일본유신회",
+          "incumbent": true
+        },
+        {
+          "abbr": "Chudo",
+          "name_ko": "중도개혁연합",
+          "leader_ko": "노다 요시히코 · 사이토 데쓰오",
+          "incumbent": false
+        },
+        {
+          "abbr": "DPP",
+          "name_ko": "국민민주당",
+          "incumbent": false
+        },
+        {
+          "abbr": "Sanseito",
+          "name_ko": "참정당",
+          "incumbent": false
+        },
+        {
+          "abbr": "TeamMirai",
+          "name_ko": "팀 미라이",
+          "incumbent": false
+        },
+        {
+          "abbr": "JCP",
+          "name_ko": "일본공산당",
+          "incumbent": false
+        },
+        {
+          "abbr": "Reiwa",
+          "name_ko": "레이와 신선정",
+          "incumbent": false
+        }
+      ],
+      "result_summary": "자민 316(소 249·비 67) · 중도개혁연합 49 · 유신 36 · 국민 28 · 참정 15 · 팀미라이 11 · 공산 4 · 레이와 1 · 감세일본 1 · 무소속 4. 정수 465.",
       "iso3": "JPN",
       "date_end": null
     },
@@ -671,10 +815,86 @@
       "type": "local",
       "label_ko": "바덴뷔르템베르크 주의회",
       "date": "2026-03-08",
-      "status": "scheduled",
+      "status": "completed",
       "sources": [
-        "das_parlament_landtag_2026"
+        "das_parlament_landtag_2026",
+        "https://www.baden-wuerttemberg.de/de/service/presse/pressemitteilung/pid/endgueltiges-ergebnis-der-landtagswahl-2026",
+        "https://im.baden-wuerttemberg.de/de/land-kommunen/lebendige-demokratie/wahlen/landtagswahl-2026"
       ],
+      "system_id": "deu-landtag-bw",
+      "contested_ko": "법정 정수 120 (지역구 70). 초과·보정으로 확대 가능",
+      "previous": {
+        "date": "2021-03-14",
+        "turnout_pct": 63.8,
+        "seats_total": 154,
+        "by_party": [
+          {
+            "abbr": "GRÜNE",
+            "name_ko": "동맹 90/녹색당",
+            "vote_pct": 32.6,
+            "seats": 58
+          },
+          {
+            "abbr": "CDU",
+            "name_ko": "기민련",
+            "vote_pct": 24.1,
+            "seats": 42
+          },
+          {
+            "abbr": "SPD",
+            "name_ko": "사회민주당",
+            "vote_pct": 11.0,
+            "seats": 19
+          },
+          {
+            "abbr": "FDP",
+            "name_ko": "자유민주당",
+            "vote_pct": 10.5,
+            "seats": 18
+          },
+          {
+            "abbr": "AfD",
+            "name_ko": "독일을 위한 대안",
+            "vote_pct": 9.7,
+            "seats": 17
+          }
+        ],
+        "government_formed_ko": "GRÜNE–CDU 연립, 빈프리트 크레치만 주지사",
+        "sources": [
+          "https://www.landtagswahl-bw.de/wahlergebnis",
+          "https://www.statistik-bw.de/presse/pressemitteilungen/pressemitteilung/vorlaeufiges-ergebnis-der-landtagswahl-2021-in-baden-wuerttemberg/"
+        ]
+      },
+      "result": "GRÜNE 56 · CDU 56 · AfD 35 · SPD 10 (157석)",
+      "result_summary": "2026-03-08 투표, 2026-03-27 확정. 투표율 69.6%. 제2표: GRÜNE 30.2, CDU 29.7, AfD 18.8, SPD 5.5. FDP 4.4·좌파 4.4는 5% 봉쇄 미달이라 의석 없음(0을 기입하지 않음).",
+      "parties_running": [
+        {
+          "abbr": "GRÜNE",
+          "name_ko": "동맹 90/녹색당",
+          "incumbent": true
+        },
+        {
+          "abbr": "CDU",
+          "name_ko": "기민련",
+          "incumbent": true
+        },
+        {
+          "abbr": "AfD",
+          "name_ko": "독일을 위한 대안",
+          "incumbent": false
+        },
+        {
+          "abbr": "SPD",
+          "name_ko": "사회민주당",
+          "incumbent": false
+        },
+        {
+          "abbr": "FDP",
+          "name_ko": "자유민주당",
+          "incumbent": false
+        }
+      ],
+      "notes": "previous.vote_pct 는 2021년 당시 1표제 득표율. 2026년은 제2표 기준.",
       "iso3": "DEU",
       "date_end": null
     },
@@ -688,6 +908,8 @@
         "local_senkyo_2026"
       ],
       "status": "completed",
+      "system_id": "jpn-prefecture-governor",
+      "contested_ko": "지사 1인",
       "iso3": "JPN",
       "date_end": null
     },
@@ -703,6 +925,8 @@
         "fec_ec_specials_2026"
       ],
       "status": "completed",
+      "system_id": "usa-house",
+      "contested_ko": "하원 GA-14 1석",
       "iso3": "USA",
       "date_end": null
     },
@@ -711,10 +935,13 @@
       "type": "local",
       "label_ko": "지방(코뮌) 1차",
       "date": "2026-03-15",
-      "status": "scheduled",
+      "status": "completed",
       "sources": [
         "wiki_elections_2026"
       ],
+      "system_id": "불명",
+      "contested_ko": "전 코뮌 시의회 1차 (시장은 의회 선출)",
+      "notes": "2026-03-15 실시. 전국 정당 의석 합산 없음. 코뮌 단위는 내무부 아카이브.",
       "iso3": "FRA",
       "date_end": null
     },
@@ -728,6 +955,8 @@
       "sources": [
         "https://en.wikipedia.org/wiki/2026_national_electoral_calendar"
       ],
+      "system_id": "ind-rajya-sabha",
+      "contested_ko": "임기 만료분 간선 묶음 (주별 좌석 수는 해당 롤 공고)",
       "iso3": "IND",
       "date_end": null
     },
@@ -736,10 +965,62 @@
       "type": "local",
       "label_ko": "라인란트팔츠 주의회",
       "date": "2026-03-22",
-      "status": "scheduled",
+      "status": "completed",
       "sources": [
-        "das_parlament_landtag_2026"
+        "das_parlament_landtag_2026",
+        "https://www.wahlen.rlp.de/nachrichten/nachrichtendetailseite/endgueltiges-ergebnis-der-landtagswahl-2026-steht-fest"
       ],
+      "system_id": "deu-landtag-rlp",
+      "contested_ko": "주의회 정수 101",
+      "previous": {
+        "date": "2021-03-14",
+        "turnout_pct": 64.3,
+        "seats_total": 101,
+        "by_party": [
+          {
+            "abbr": "SPD",
+            "name_ko": "사회민주당",
+            "vote_pct": 35.7,
+            "seats": 39
+          },
+          {
+            "abbr": "CDU",
+            "name_ko": "기민련",
+            "vote_pct": 27.7,
+            "seats": 31
+          },
+          {
+            "abbr": "GRÜNE",
+            "name_ko": "동맹 90/녹색당",
+            "vote_pct": 9.3,
+            "seats": 10
+          },
+          {
+            "abbr": "AfD",
+            "name_ko": "독일을 위한 대안",
+            "vote_pct": 8.3,
+            "seats": 9
+          },
+          {
+            "abbr": "FDP",
+            "name_ko": "자유민주당",
+            "vote_pct": 5.5,
+            "seats": 6
+          },
+          {
+            "abbr": "FW",
+            "name_ko": "자유유권자",
+            "vote_pct": 5.4,
+            "seats": 6
+          }
+        ],
+        "government_formed_ko": "SPD–GRÜNE–FDP 연립 (말루 드라이어 주지사)",
+        "sources": [
+          "https://www.wahlen.rlp.de/nachrichten/nachrichtendetailseite/endgueltiges-ergebnis-der-landtagswahl-2021-steht-fest"
+        ]
+      },
+      "result": "CDU 39 · SPD 32 · AfD 24 · GRÜNE 10 (105석)",
+      "result_summary": "2026-03-22 투표, 2026-04-02 확정. 투표율 68.4%. 제2표 CDU 31.0 · SPD 25.9 · AfD 19.5 · GRÜNE 7.9. 초과의석으로 105석.",
       "iso3": "DEU",
       "date_end": null
     },
@@ -748,10 +1029,13 @@
       "type": "local",
       "label_ko": "지방(코뮌) 2차",
       "date": "2026-03-22",
-      "status": "scheduled",
+      "status": "completed",
       "sources": [
         "wiki_elections_2026"
       ],
+      "system_id": "불명",
+      "contested_ko": "전 코뮌 시의회 2차",
+      "notes": "2026-03-22 실시. 전국 정당 의석 합산 없음.",
       "iso3": "FRA",
       "date_end": null
     },
@@ -765,6 +1049,8 @@
         "local_senkyo_2026"
       ],
       "status": "completed",
+      "system_id": "jpn-prefecture-governor",
+      "contested_ko": "지사 1인",
       "iso3": "JPN",
       "date_end": null
     },
@@ -782,6 +1068,8 @@
         "wiki_us_house_2026"
       ],
       "status": "completed",
+      "system_id": "usa-house",
+      "contested_ko": "하원 GA-14 1석",
       "iso3": "USA",
       "date_end": null
     },
@@ -799,6 +1087,8 @@
         "wiki_us_house_2026"
       ],
       "status": "completed",
+      "system_id": "usa-house",
+      "contested_ko": "하원 NJ-11 1석",
       "iso3": "USA",
       "date_end": null
     },
@@ -810,8 +1100,47 @@
       "status": "completed",
       "sources": [
         "uk_ec_2026",
-        "wiki_elections_2026"
+        "wiki_elections_2026",
+        "https://www.parliament.scot/msps/elections/2026-election-results"
       ],
+      "system_id": "gbr-holyrood",
+      "contested_ko": "전체 129석 (지역구 73 + 권역 56)",
+      "previous": {
+        "date": "2021-05-06",
+        "seats_total": 129,
+        "by_party": [
+          {
+            "abbr": "SNP",
+            "name_ko": "스코틀랜드국민당",
+            "seats": 64
+          },
+          {
+            "abbr": "Con",
+            "name_ko": "보수당",
+            "seats": 31
+          },
+          {
+            "abbr": "Lab",
+            "name_ko": "노동당",
+            "seats": 22
+          },
+          {
+            "abbr": "Green",
+            "name_ko": "녹색당",
+            "seats": 8
+          },
+          {
+            "abbr": "LD",
+            "name_ko": "자유민주당",
+            "seats": 4
+          }
+        ],
+        "sources": [
+          "https://www.parliament.scot/msps/elections/2026-election-results"
+        ]
+      },
+      "result": "SNP 58 · Lab 17 · Reform 17 · Green 15 · Con 12 · LD 10 (129석)",
+      "result_summary": "2026-05-07. 과반 65 미달. SNP 최대당 유지, Reform이 Lab과 공동 2위.",
       "iso3": "GBR",
       "date_end": null
     },
@@ -823,8 +1152,43 @@
       "status": "completed",
       "sources": [
         "uk_ec_2026",
-        "wiki_elections_2026"
+        "wiki_elections_2026",
+        "https://vote.wales/election-results/"
       ],
+      "system_id": "gbr-senedd",
+      "contested_ko": "전체 96석 (16개 선거구 × 6, 2026년 개정 정수)",
+      "previous": {
+        "date": "2021-05-06",
+        "seats_total": 60,
+        "by_party": [
+          {
+            "abbr": "Lab",
+            "name_ko": "노동당",
+            "seats": 30
+          },
+          {
+            "abbr": "Con",
+            "name_ko": "보수당",
+            "seats": 16
+          },
+          {
+            "abbr": "PC",
+            "name_ko": "플라이드 컴리",
+            "seats": 13
+          },
+          {
+            "abbr": "LD",
+            "name_ko": "자유민주당",
+            "seats": 1
+          }
+        ],
+        "sources": [
+          "https://vote.wales/election-results/"
+        ]
+      },
+      "result": "PC 43 · Reform 34 · Lab 9 · Con 7 · Green 2 · LD 1 (96석)",
+      "result_summary": "2026-05-07. 첫 폐쇄명부 96석. 과반 49. 플라이드 최대당.",
+      "notes": "previous 는 2021년 60석 AMS. 2026부터 제도·정수가 바뀌어 의석을 맞추지 말 것.",
       "iso3": "GBR",
       "date_end": null
     },
@@ -851,6 +1215,8 @@
         "local_senkyo_2026"
       ],
       "status": "completed",
+      "system_id": "jpn-prefecture-governor",
+      "contested_ko": "지사 1인",
       "iso3": "JPN",
       "date_end": null
     },
@@ -868,6 +1234,8 @@
         "wiki_us_house_2026"
       ],
       "status": "completed",
+      "system_id": "usa-house",
+      "contested_ko": "하원 CA-01 1석",
       "iso3": "USA",
       "date_end": null
     },
@@ -882,6 +1250,53 @@
         "invest_lens_elections"
       ],
       "market_significance_invest_lens": 3,
+      "system_id": "kor-na",
+      "contested_ko": "국회의원 재보궐 여러 곳 (6·3 지방선거와 동시). 정확한 구 목록은 선관위 공개자료 todo.",
+      "previous": {
+        "date": "2024-04-10",
+        "turnout_pct": 67.0,
+        "seats_total": 300,
+        "by_party": [
+          {
+            "abbr": "DPK",
+            "name_ko": "더불어민주당(+민주연합)",
+            "vote_pct": 26.69,
+            "seats": 175
+          },
+          {
+            "abbr": "PPP",
+            "name_ko": "국민의힘(+국민의미래)",
+            "vote_pct": 36.67,
+            "seats": 108
+          },
+          {
+            "abbr": "RKP",
+            "name_ko": "조국혁신당",
+            "vote_pct": 24.25,
+            "seats": 12
+          },
+          {
+            "abbr": "Reform",
+            "name_ko": "개혁신당",
+            "vote_pct": 3.61,
+            "seats": 3
+          },
+          {
+            "abbr": "NewFuture",
+            "name_ko": "새로운미래",
+            "seats": 1
+          },
+          {
+            "abbr": "Progressive",
+            "name_ko": "진보당",
+            "seats": 1
+          }
+        ],
+        "sources": [
+          "https://www.nec.go.kr/",
+          "https://www.newsis.com/view/NISX20240411_0002696536"
+        ]
+      },
       "iso3": "KOR",
       "date_end": null
     },
@@ -900,11 +1315,47 @@
         "gyeonggi_governor": "Choo Mi-ae (DPK)",
         "busan_mayor": "Jeon Jae-soo (DPK)"
       },
-      "notes": "Ruling DPK landslide among 16 heads; PPP held Seoul + Yeongnam core",
+      "notes": "2026년 광역 16곳(전남·광주 통합). previous 는 2022년 17곳. 광역단체장만 의석으로 적었고 기초·의회는 합산하지 않음.",
       "sources": [
+        "https://info.nec.go.kr/main/showDocument.xhtml?electionId=0020260603&secondMenuId=BIGI04&topMenuId=BI",
+        "https://www.newsis.com/view/NISX20260604_0003656115",
         "invest_lens_elections"
       ],
       "market_significance_invest_lens": 3,
+      "system_id": "kor-local",
+      "contested_ko": "광역단체장 16곳 + 기초단체장·광역·기초의원·교육감 (동시)",
+      "previous": {
+        "date": "2022-06-01",
+        "seats_total": 17,
+        "by_party": [
+          {
+            "abbr": "PPP",
+            "name_ko": "국민의힘",
+            "seats": 12
+          },
+          {
+            "abbr": "DPK",
+            "name_ko": "더불어민주당",
+            "seats": 5
+          }
+        ],
+        "sources": [
+          "https://info.nec.go.kr/"
+        ]
+      },
+      "parties_running": [
+        {
+          "abbr": "DPK",
+          "name_ko": "더불어민주당",
+          "incumbent": true
+        },
+        {
+          "abbr": "PPP",
+          "name_ko": "국민의힘",
+          "incumbent": false
+        }
+      ],
+      "result": "광역단체장 DPK 12 · PPP 4 (16곳)",
       "iso3": "KOR",
       "date_end": null
     },
@@ -934,6 +1385,8 @@
         "fec_ec_specials_2026"
       ],
       "status": "completed",
+      "system_id": "usa-house",
+      "contested_ko": "하원 CA-14 1석",
       "iso3": "USA",
       "date_end": null
     },
@@ -946,6 +1399,8 @@
       "sources": [
         "https://en.wikipedia.org/wiki/2026_national_electoral_calendar"
       ],
+      "system_id": "ind-rajya-sabha",
+      "contested_ko": "임기 만료분 간선 묶음 (주별 좌석 수는 해당 롤 공고)",
       "iso3": "IND",
       "date_end": null
     },
@@ -968,6 +1423,8 @@
         "party": "無所属"
       },
       "notes": "임기만료 선거. 고시 2026-06-18, 투개표 2026-07-05. MIC/현 선관위 확인 완료.",
+      "system_id": "jpn-prefecture-governor",
+      "contested_ko": "지사 1인",
       "iso3": "JPN",
       "date_end": null
     },
@@ -1019,6 +1476,8 @@
         "fec_ec_specials_2026"
       ],
       "status": "completed",
+      "system_id": "usa-house",
+      "contested_ko": "하원 GA-13 1석",
       "iso3": "USA",
       "date_end": null
     },
@@ -1075,6 +1534,8 @@
         "fec_ec_specials_2026"
       ],
       "status": "completed",
+      "system_id": "usa-house",
+      "contested_ko": "하원 CA-01 1석",
       "iso3": "USA",
       "date_end": null
     },
@@ -1089,6 +1550,8 @@
       "sources": [
         "go2senkyo_2026"
       ],
+      "system_id": "jpn-prefecture-governor",
+      "contested_ko": "지사 1인",
       "iso3": "JPN",
       "date_end": null
     },
@@ -1175,6 +1638,8 @@
         "fec_ec_specials_2026"
       ],
       "status": "scheduled",
+      "system_id": "usa-house",
+      "contested_ko": "하원 CA-14 1석",
       "iso3": "USA",
       "date_end": null
     },
@@ -1191,6 +1656,8 @@
         "fec_ec_specials_2026"
       ],
       "status": "scheduled",
+      "system_id": "usa-house",
+      "contested_ko": "하원 GA-13 1석",
       "iso3": "USA",
       "date_end": null
     },
@@ -1205,6 +1672,8 @@
       "sources": [
         "go2senkyo_2026"
       ],
+      "system_id": "jpn-prefecture-governor",
+      "contested_ko": "지사 1인",
       "iso3": "JPN",
       "date_end": null
     },
@@ -1213,11 +1682,66 @@
       "type": "local",
       "label_ko": "작센안할트 주의회",
       "date": "2026-09-06",
-      "status": "scheduled",
+      "status": "completed",
       "sources": [
         "bundeswahlleiterin",
-        "sachsen_anhalt_faq"
+        "sachsen_anhalt_faq",
+        "https://wahlergebnisse.sachsen-anhalt.de/wahlen/lt26/erg_land.html",
+        "https://www.tagesschau.de/inland/innenpolitik/landtagswahl-sachsen-anhalt-180.html"
       ],
+      "system_id": "deu-landtag-st",
+      "contested_ko": "주의회 정수 97",
+      "previous": {
+        "date": "2021-06-06",
+        "turnout_pct": 60.3,
+        "seats_total": 97,
+        "by_party": [
+          {
+            "abbr": "CDU",
+            "name_ko": "기민련",
+            "vote_pct": 37.1,
+            "seats": 40
+          },
+          {
+            "abbr": "AfD",
+            "name_ko": "독일을 위한 대안",
+            "vote_pct": 20.8,
+            "seats": 23
+          },
+          {
+            "abbr": "LINKE",
+            "name_ko": "좌파당",
+            "vote_pct": 11.0,
+            "seats": 12
+          },
+          {
+            "abbr": "SPD",
+            "name_ko": "사회민주당",
+            "vote_pct": 8.4,
+            "seats": 9
+          },
+          {
+            "abbr": "FDP",
+            "name_ko": "자유민주당",
+            "vote_pct": 6.4,
+            "seats": 7
+          },
+          {
+            "abbr": "GRÜNE",
+            "name_ko": "동맹 90/녹색당",
+            "vote_pct": 5.9,
+            "seats": 6
+          }
+        ],
+        "government_formed_ko": "CDU–SPD–FDP 연립, 라이너 하젤로프 주지사",
+        "sources": [
+          "https://www.landtag.sachsen-anhalt.de/amtliches-endergebnis-wurde-bekanntgegeben",
+          "https://wahlen.sachsen-anhalt.de/fileadmin/Bibliothek/Politik_und_Verwaltung/MI/wahlen/Pressemitteilungen/2021_06_21_Endgueltiges_Wahlergebnis.pdf"
+        ]
+      },
+      "result": "AfD 39 · CDU 15 · SPD 8 · GRÜNE 8 · LINKE 8 · BSW 5 (잠정)",
+      "result_summary": "2026-09-06. 잠정 확정(vorläufiges Endergebnis): 제2표 AfD 43.8 · CDU 17.2 · SPD 9.3. 주선관위 최종 공고 전.",
+      "notes": "의석은 tagesschau가 전한 잠정 배분. 최종은 wahlergebnisse.sachsen-anhalt.de 공고로 교체.",
       "iso3": "DEU",
       "date_end": null
     },
@@ -1262,8 +1786,27 @@
       "sources": [
         "go2senkyo_2026"
       ],
+      "system_id": "jpn-prefecture-governor",
+      "contested_ko": "지사 1인",
       "iso3": "JPN",
       "date_end": null
+    },
+    {
+      "id": "rus-2026-duma-voting-start",
+      "type": "general",
+      "label_ko": "국가두마 투표 개시",
+      "date": "2026-09-18",
+      "date_end": "2026-09-20",
+      "status": "scheduled",
+      "system_id": "rus-duma",
+      "contested_ko": "전체 450석 — 3일 투표(18–20)의 첫날",
+      "notes": "정본 선거일(대통령령)은 rus-2026-duma 의 2026-09-20. 이 행은 world_by_month (iso3, date) 조인용.",
+      "sources": [
+        "kremlin_decree_2026-06-16",
+        "cikrf",
+        "tass_2026-06-16"
+      ],
+      "iso3": "RUS"
     },
     {
       "id": "rus-2026-duma",
@@ -1275,7 +1818,7 @@
         "2026-09-20"
       ],
       "status": "scheduled",
-      "notes": "450 seats; decree day 09-20; voting 18–20 Sep.",
+      "notes": "450 seats; decree day 09-20; voting 18–20 Sep. previous.vote_pct 는 2021 연방명부 득표율. 세계 타임라인 2026-09-18 행은 rus-2026-duma-voting-start 로 조인.",
       "sources": [
         "kremlin_decree_2026-06-16",
         "cikrf",
@@ -1283,6 +1826,95 @@
         "invest_lens_elections"
       ],
       "market_significance_invest_lens": 1,
+      "system_id": "rus-duma",
+      "contested_ko": "전체 450석 (소선거구 225 + 연방명부 225)",
+      "previous": {
+        "date": "2021-09-19",
+        "seats_total": 450,
+        "by_party": [
+          {
+            "abbr": "UR",
+            "name_ko": "통합러시아",
+            "vote_pct": 49.82,
+            "seats": 324
+          },
+          {
+            "abbr": "CPRF",
+            "name_ko": "러시아연방공산당",
+            "vote_pct": 18.93,
+            "seats": 57
+          },
+          {
+            "abbr": "SR",
+            "name_ko": "정의러시아–진실을 위하여",
+            "vote_pct": 7.46,
+            "seats": 27
+          },
+          {
+            "abbr": "LDPR",
+            "name_ko": "자유민주당",
+            "vote_pct": 7.55,
+            "seats": 21
+          },
+          {
+            "abbr": "NL",
+            "name_ko": "새로운 사람들",
+            "vote_pct": 5.32,
+            "seats": 13
+          },
+          {
+            "abbr": "Rodina",
+            "name_ko": "조국",
+            "seats": 1
+          },
+          {
+            "abbr": "CP",
+            "name_ko": "시민플랫폼",
+            "seats": 1
+          },
+          {
+            "abbr": "PG",
+            "name_ko": "성장당",
+            "seats": 1
+          },
+          {
+            "abbr": "IND",
+            "name_ko": "무소속",
+            "seats": 5
+          }
+        ],
+        "sources": [
+          "https://tass.com/politics/1341997",
+          "https://www.consultant.ru/document/cons_doc_LAW_396198/"
+        ]
+      },
+      "parties_running": [
+        {
+          "abbr": "UR",
+          "name_ko": "통합러시아",
+          "incumbent": true
+        },
+        {
+          "abbr": "CPRF",
+          "name_ko": "러시아연방공산당",
+          "incumbent": false
+        },
+        {
+          "abbr": "LDPR",
+          "name_ko": "자유민주당",
+          "incumbent": false
+        },
+        {
+          "abbr": "SR",
+          "name_ko": "정의러시아–진실을 위하여",
+          "incumbent": false
+        },
+        {
+          "abbr": "NL",
+          "name_ko": "새로운 사람들",
+          "incumbent": false
+        }
+      ],
       "iso3": "RUS",
       "date_end": null
     },
@@ -1316,6 +1948,55 @@
         "bundeswahlleiterin",
         "landtag_mv"
       ],
+      "system_id": "deu-landtag-mv",
+      "contested_ko": "법정 정수 71. 초과로 확대 가능",
+      "previous": {
+        "date": "2021-09-26",
+        "turnout_pct": 70.8,
+        "seats_total": 79,
+        "by_party": [
+          {
+            "abbr": "SPD",
+            "name_ko": "사회민주당",
+            "vote_pct": 39.6,
+            "seats": 34
+          },
+          {
+            "abbr": "AfD",
+            "name_ko": "독일을 위한 대안",
+            "vote_pct": 16.7,
+            "seats": 14
+          },
+          {
+            "abbr": "CDU",
+            "name_ko": "기민련",
+            "vote_pct": 13.3,
+            "seats": 12
+          },
+          {
+            "abbr": "LINKE",
+            "name_ko": "좌파당",
+            "vote_pct": 9.9,
+            "seats": 9
+          },
+          {
+            "abbr": "GRÜNE",
+            "name_ko": "동맹 90/녹색당",
+            "vote_pct": 6.3,
+            "seats": 5
+          },
+          {
+            "abbr": "FDP",
+            "name_ko": "자유민주당",
+            "vote_pct": 5.8,
+            "seats": 5
+          }
+        ],
+        "government_formed_ko": "SPD–LINKE 연립, 마누엘라 슈베지히 주지사",
+        "sources": [
+          "https://www.laiv-mv.de/Wahlen/Landtagswahlen/2021/"
+        ]
+      },
       "iso3": "DEU",
       "date_end": null
     },
@@ -1328,7 +2009,69 @@
       "sources": [
         "bundeswahlleiterin"
       ],
+      "system_id": "deu-landtag-berlin",
+      "contested_ko": "법정 정수 130. 초과·보정으로 확대 가능",
+      "previous": {
+        "date": "2023-02-12",
+        "turnout_pct": 62.9,
+        "seats_total": 159,
+        "by_party": [
+          {
+            "abbr": "CDU",
+            "name_ko": "기민련",
+            "vote_pct": 28.2,
+            "seats": 52
+          },
+          {
+            "abbr": "SPD",
+            "name_ko": "사회민주당",
+            "vote_pct": 18.4,
+            "seats": 34
+          },
+          {
+            "abbr": "GRÜNE",
+            "name_ko": "동맹 90/녹색당",
+            "vote_pct": 18.4,
+            "seats": 34
+          },
+          {
+            "abbr": "LINKE",
+            "name_ko": "좌파당",
+            "vote_pct": 12.2,
+            "seats": 22
+          },
+          {
+            "abbr": "AfD",
+            "name_ko": "독일을 위한 대안",
+            "vote_pct": 9.1,
+            "seats": 17
+          }
+        ],
+        "government_formed_ko": "CDU–SPD 연립, 카이 베게너 시장",
+        "sources": [
+          "https://www.wahlen-berlin.de/"
+        ]
+      },
+      "notes": "직전은 2023-02-12 반복선거(2021 무효). 2026-09-20 실시 예정.",
       "iso3": "DEU",
+      "date_end": null
+    },
+    {
+      "id": "fra-2026-senate",
+      "type": "general",
+      "label_ko": "상원(Sénat) 간선",
+      "date": "2026-09-27",
+      "status": "scheduled",
+      "notes": "간선. 일반 유권자 투표 아님. 일자 공고 전 캘린더는 date=불명 이었음.",
+      "sources": [
+        "https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000053925339",
+        "https://senatoriales2026.senat.fr/",
+        "wiki_national_calendar_2026"
+      ],
+      "date_note": "décret n° 2026-301 (2026-04-21). world_by_month 기존 값 2026-09 을 일자로 맞춤.",
+      "system_id": "fra-senate",
+      "contested_ko": "시리즈 2 178석 (전체 348의 절반 주기). 비례 119 + 다수결 59",
+      "iso3": "FRA",
       "date_end": null
     },
     {
@@ -1343,6 +2086,42 @@
         "invest_lens_elections"
       ],
       "market_significance_invest_lens": 3,
+      "system_id": "bra-president",
+      "contested_ko": "대통령 1인 · 연방하원 513석 · 상원 改選분 · 주지사 27 (1차 같은 날)",
+      "previous": {
+        "date": "2022-10-30",
+        "turnout_pct": 79.41,
+        "by_party": [
+          {
+            "abbr": "PT",
+            "name_ko": "노동자당 (룰라)",
+            "vote_pct": 50.9
+          },
+          {
+            "abbr": "PL",
+            "name_ko": "자유당 (보우소나루)",
+            "vote_pct": 49.1
+          }
+        ],
+        "government_formed_ko": "룰라 대통령 2023-01-01 취임",
+        "sources": [
+          "https://www.tse.jus.br/comunicacao/noticias/2022/Outubro/100-das-secoes-totalizadas-confira-como-ficou-o-quadro-eleitoral-apos-o-2o-turno"
+        ]
+      },
+      "parties_running": [
+        {
+          "abbr": "PT",
+          "name_ko": "노동자당",
+          "leader_ko": "루이스 이나시우 룰라 다 시우바",
+          "incumbent": true
+        },
+        {
+          "abbr": "PL",
+          "name_ko": "자유당",
+          "incumbent": false
+        }
+      ],
+      "notes": "1차 같은 날 하원·상원·주지사도 뽑는다. 하원 2022 의석은 bra-chamber 제도 행 참고. previous 는 대선 결선(의석 배분 기준이 아닌 유효표).",
       "iso3": "BRA",
       "date_end": null
     },
@@ -1397,6 +2176,8 @@
         "wiki_bra_2026",
         "tse"
       ],
+      "system_id": "bra-president",
+      "contested_ko": "대통령(및 과반 미달 주지사) 결선 — 1차 결과에 따라 실시",
       "iso3": "BRA",
       "date_end": null
     },
@@ -1412,6 +2193,8 @@
         "jiji_fukushima_2026"
       ],
       "status": "scheduled",
+      "system_id": "jpn-prefecture-governor",
+      "contested_ko": "지사 1인",
       "iso3": "JPN",
       "date_end": null
     },
@@ -1456,6 +2239,8 @@
       ],
       "status": "scheduled",
       "market_significance_invest_lens": 3,
+      "system_id": "usa-senate",
+      "contested_ko": "오하이오 상원 1석 (밴스 잔여임기)",
       "iso3": "USA",
       "date_end": null
     },
@@ -1473,6 +2258,8 @@
       ],
       "status": "scheduled",
       "market_significance_invest_lens": 3,
+      "system_id": "usa-senate",
+      "contested_ko": "플로리다 상원 1석 (루비오 잔여임기)",
       "iso3": "USA",
       "date_end": null
     },
@@ -1488,6 +2275,20 @@
       ],
       "status": "scheduled",
       "market_significance_invest_lens": 3,
+      "system_id": "usa-governor",
+      "contested_ko": "주지사 36개 주 + 자치령 (NGA 공고 기준)",
+      "parties_running": [
+        {
+          "abbr": "GOP",
+          "name_ko": "공화당",
+          "incumbent": true
+        },
+        {
+          "abbr": "DEM",
+          "name_ko": "민주당",
+          "incumbent": false
+        }
+      ],
       "iso3": "USA",
       "date_end": null
     },
@@ -1496,13 +2297,47 @@
       "type": "general",
       "label_ko": "중간선거(상·하원)",
       "date": "2026-11-03",
-      "notes": "House all 435 + Senate Class 1 regulars. No presidential race.",
+      "notes": "House all 435 + Senate Class 1 regulars. No presidential race. 상원 제도는 system_id usa-senate. previous.by_party 는 2024 하원 본선 의석만 (전국 득표율은 Clerk 통계 원문 합산을 하지 않아 생략).",
       "sources": [
         "fec_specials_2026",
         "invest_lens_elections"
       ],
       "status": "scheduled",
       "market_significance_invest_lens": 3,
+      "system_id": "usa-house",
+      "contested_ko": "하원 435석 전원 · 상원 Class 1 정기 33석 · 상원 재보궐 플로리다·오하이오(같은 날)",
+      "previous": {
+        "date": "2024-11-05",
+        "seats_total": 435,
+        "by_party": [
+          {
+            "abbr": "GOP",
+            "name_ko": "공화당",
+            "seats": 220
+          },
+          {
+            "abbr": "DEM",
+            "name_ko": "민주당",
+            "seats": 215
+          }
+        ],
+        "sources": [
+          "https://clerk.house.gov/member_info/electionInfo/2024election/",
+          "https://history.house.gov/Institution/Election-Statistics/2024election/"
+        ]
+      },
+      "parties_running": [
+        {
+          "abbr": "GOP",
+          "name_ko": "공화당",
+          "incumbent": true
+        },
+        {
+          "abbr": "DEM",
+          "name_ko": "민주당",
+          "incumbent": false
+        }
+      ],
       "iso3": "USA",
       "date_end": null
     },
@@ -1531,6 +2366,8 @@
       "sources": [
         "go2senkyo_2026"
       ],
+      "system_id": "jpn-prefecture-governor",
+      "contested_ko": "지사 1인",
       "iso3": "JPN",
       "date_end": null
     },
@@ -1545,6 +2382,8 @@
       "sources": [
         "go2senkyo_2026"
       ],
+      "system_id": "jpn-prefecture-governor",
+      "contested_ko": "지사 1인",
       "iso3": "JPN",
       "date_end": null
     },
@@ -1559,6 +2398,8 @@
       "sources": [
         "go2senkyo_2026"
       ],
+      "system_id": "jpn-prefecture-governor",
+      "contested_ko": "지사 1인",
       "iso3": "JPN",
       "date_end": null
     },
@@ -1573,6 +2414,7 @@
         "invest_lens_elections"
       ],
       "market_significance_invest_lens": 3,
+      "system_id": "fra-president",
       "iso3": "FRA",
       "date_end": null
     },
@@ -1587,6 +2429,7 @@
         "invest_lens_elections"
       ],
       "market_significance_invest_lens": 2,
+      "system_id": "fra-assemblee",
       "iso3": "FRA",
       "date_end": null
     },
@@ -1612,6 +2455,53 @@
       "date": "2028-04",
       "status": "outside_year",
       "notes": "Not a 2026 event; term end marker for 22nd Assembly",
+      "system_id": "kor-na",
+      "contested_ko": "제23대 전체 300석 (2028 참고 행)",
+      "previous": {
+        "date": "2024-04-10",
+        "turnout_pct": 67.0,
+        "seats_total": 300,
+        "by_party": [
+          {
+            "abbr": "DPK",
+            "name_ko": "더불어민주당(+민주연합)",
+            "vote_pct": 26.69,
+            "seats": 175
+          },
+          {
+            "abbr": "PPP",
+            "name_ko": "국민의힘(+국민의미래)",
+            "vote_pct": 36.67,
+            "seats": 108
+          },
+          {
+            "abbr": "RKP",
+            "name_ko": "조국혁신당",
+            "vote_pct": 24.25,
+            "seats": 12
+          },
+          {
+            "abbr": "Reform",
+            "name_ko": "개혁신당",
+            "vote_pct": 3.61,
+            "seats": 3
+          },
+          {
+            "abbr": "NewFuture",
+            "name_ko": "새로운미래",
+            "seats": 1
+          },
+          {
+            "abbr": "Progressive",
+            "name_ko": "진보당",
+            "seats": 1
+          }
+        ],
+        "sources": [
+          "https://www.nec.go.kr/",
+          "https://www.newsis.com/view/NISX20240411_0002696536"
+        ]
+      },
       "iso3": "KOR",
       "date_end": null
     },
@@ -1681,6 +2571,8 @@
       "date": "불명",
       "status": "tentative",
       "notes": "Supreme Court upheld sentence 2026-07-16 — schedule 불명 until NEC announces",
+      "system_id": "kor-na",
+      "contested_ko": "강릉 국회의원 1석",
       "iso3": "KOR",
       "date_end": null
     },
@@ -1704,19 +2596,6 @@
       "status": "tentative",
       "notes": "2026 중 정기 당주석전 일정 불명 — 채움 todo",
       "iso3": "TWN",
-      "date_end": null
-    },
-    {
-      "id": "fra-2026-senate",
-      "type": "general",
-      "label_ko": "상원(Sénat) 간선",
-      "date": "불명",
-      "status": "scheduled",
-      "notes": "2026년 9월 series 2; 일자 공고 전",
-      "sources": [
-        "wiki_national_calendar_2026"
-      ],
-      "iso3": "FRA",
       "date_end": null
     },
     {
@@ -1803,6 +2682,8 @@
         "fec_specials_2026"
       ],
       "as_of_check": "2026-08-09",
+      "system_id": "usa-house",
+      "contested_ko": "하원 FL-20 1석",
       "iso3": "USA",
       "date_end": null
     },
@@ -1819,6 +2700,8 @@
         "fec_specials_2026"
       ],
       "as_of_check": "2026-08-09",
+      "system_id": "usa-house",
+      "contested_ko": "하원 TX-23 1석",
       "iso3": "USA",
       "date_end": null
     },
@@ -1844,6 +2727,8 @@
       "date": "없음",
       "status": "없음",
       "notes": "다음 정기 대선 주기 아님 (2025 당선)",
+      "system_id": "kor-president",
+      "contested_ko": "없음 — 2026년 정기 대선 없음",
       "iso3": "KOR",
       "date_end": null
     },
@@ -1869,6 +2754,8 @@
       "sources": [
         "wiki_national_calendar_2026"
       ],
+      "system_id": "fra-president",
+      "contested_ko": "없음 — 2026년 대선 없음",
       "iso3": "FRA",
       "date_end": null
     },
@@ -1878,6 +2765,63 @@
       "label_ko": "로크사바 총선",
       "date": "없음",
       "status": "없음",
+      "system_id": "ind-lok-sabha",
+      "contested_ko": "없음 — 2026년 로크사바 총선 없음",
+      "previous": {
+        "date": "2024-06-04",
+        "seats_total": 543,
+        "by_party": [
+          {
+            "abbr": "BJP",
+            "name_ko": "인도인민당",
+            "seats": 240
+          },
+          {
+            "abbr": "INC",
+            "name_ko": "인도국민회의",
+            "seats": 99
+          },
+          {
+            "abbr": "SP",
+            "name_ko": "사회당",
+            "seats": 37
+          },
+          {
+            "abbr": "AITC",
+            "name_ko": "트리나물 회의",
+            "seats": 29
+          },
+          {
+            "abbr": "DMK",
+            "name_ko": "드라비다 진보연맹",
+            "seats": 22
+          },
+          {
+            "abbr": "TDP",
+            "name_ko": "텔루구데삼당",
+            "seats": 16
+          },
+          {
+            "abbr": "JD(U)",
+            "name_ko": "자나타달 (연합)",
+            "seats": 12
+          },
+          {
+            "abbr": "SS(UBT)",
+            "name_ko": "시브세나 (우다브 파)",
+            "seats": 9
+          }
+        ],
+        "government_formed_ko": "NDA 연립, 나렌드라 모디 총리 (3기)",
+        "sources": [
+          "https://www.eci.gov.in/general-election-to-loksabha-2024-statistical-reports",
+          "https://results.eci.gov.in/"
+        ]
+      },
+      "notes": "previous.by_party 는 ECI 상위 8정당. 543석 전부가 아님.",
+      "sources": [
+        "https://www.eci.gov.in/"
+      ],
       "iso3": "IND",
       "date_end": null
     },
@@ -1901,6 +2845,8 @@
       "sources": [
         "bundeswahlleiterin"
       ],
+      "system_id": "deu-bundestag",
+      "contested_ko": "없음 — 2026년 연방하원 총선 없음 (다음 주기는 2029)",
       "iso3": "DEU",
       "date_end": null
     },
@@ -1984,6 +2930,8 @@
       "sources": [
         "kouhou_33_2"
       ],
+      "system_id": "jpn-sangiin",
+      "contested_ko": "없음 — 2026년 통상선거 일정 없음",
       "iso3": "JPN",
       "date_end": null
     },
@@ -2002,10 +2950,67 @@
       "label_ko": "하원 총선",
       "date": "없음",
       "status": "없음",
-      "notes": "2024 총선 이후; 2026 일정 없음",
+      "notes": "2024 총선 의석은 Commons Library CBP-10009 (Labour 411). BBC 집계는 Labour 412 — 맞추지 않고 Library를 쓰고 여기 병기.",
       "sources": [
         "uk_ec_2026"
       ],
+      "system_id": "gbr-commons",
+      "contested_ko": "없음 — 2026년 하원 총선 없음",
+      "previous": {
+        "date": "2024-07-04",
+        "seats_total": 650,
+        "by_party": [
+          {
+            "abbr": "Lab",
+            "name_ko": "노동당",
+            "seats": 411
+          },
+          {
+            "abbr": "Con",
+            "name_ko": "보수당",
+            "seats": 121
+          },
+          {
+            "abbr": "LD",
+            "name_ko": "자유민주당",
+            "seats": 72
+          },
+          {
+            "abbr": "SNP",
+            "name_ko": "스코틀랜드국민당",
+            "seats": 9
+          },
+          {
+            "abbr": "SF",
+            "name_ko": "신페인",
+            "seats": 7
+          },
+          {
+            "abbr": "Reform",
+            "name_ko": "개혁당",
+            "seats": 5
+          },
+          {
+            "abbr": "DUP",
+            "name_ko": "민주연합당",
+            "seats": 5
+          },
+          {
+            "abbr": "Green",
+            "name_ko": "녹색당",
+            "seats": 4
+          },
+          {
+            "abbr": "PC",
+            "name_ko": "플라이드 컴리",
+            "seats": 4
+          }
+        ],
+        "government_formed_ko": "노동당 단독 내각, 키어 스타머 총리 (이후 2026-07-20 번ham으로 교체)",
+        "sources": [
+          "https://commonslibrary.parliament.uk/research-briefings/cbp-10009/"
+        ]
+      },
       "iso3": "GBR",
       "date_end": null
     },
@@ -2018,6 +3023,39 @@
       "sources": [
         "wiki_national_calendar_2026"
       ],
+      "system_id": "fra-assemblee",
+      "contested_ko": "없음 — 2026년 하원 총선 없음",
+      "previous": {
+        "date": "2024-07-07",
+        "turnout_pct": 66.63,
+        "seats_total": 577,
+        "by_party": [
+          {
+            "abbr": "UG",
+            "name_ko": "좌파연합 (내무부 Union de la gauche)",
+            "seats": 178
+          },
+          {
+            "abbr": "ENS",
+            "name_ko": "앙상블",
+            "seats": 150
+          },
+          {
+            "abbr": "RN",
+            "name_ko": "국민연합",
+            "seats": 125
+          },
+          {
+            "abbr": "LR",
+            "name_ko": "공화당",
+            "seats": 39
+          }
+        ],
+        "sources": [
+          "https://www.archives-resultats-elections.interieur.gouv.fr/resultats/legislatives2024/ensemble_geographique/index.php"
+        ]
+      },
+      "notes": "2024-07 조기 총선 결과. 내무부 nuance 기준. 언론은 NFP 182·Ensemble 163 등으로 묶어 집계 — 합산·재분류하지 않고 내무부 숫자를 쓰고 notes 에 어긋남을 남김.",
       "iso3": "FRA",
       "date_end": null
     }
@@ -2570,12 +3608,12 @@
     ],
     "2026-09": [
       {
-        "date": "2026-09",
+        "date": "2026-09-27",
         "iso3": "FRA",
         "type": "general",
         "label_en": "Senate series 2",
         "label_ko": "프랑스 상원 간선",
-        "date_note": "month only"
+        "date_note": "décret n° 2026-301; was month-only 2026-09"
       },
       {
         "date": "2026-09-06",

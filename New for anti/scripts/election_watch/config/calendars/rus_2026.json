@@ -1,7 +1,7 @@
 {
   "iso3": "RUS",
   "year": 2026,
-  "as_of": "2026-08-08",
+  "as_of": "2026-09-16",
   "null_policy": {
     "없음": "해당 일정/선거 없음",
     "불명": "발표·확정 전 또는 출처에 날짜 없음"
@@ -60,14 +60,103 @@
         "2026-09-20"
       ],
       "status": "scheduled",
-      "notes": "450 seats; decree day 09-20; voting 18–20 Sep.",
+      "notes": "450 seats; decree day 09-20; voting 18–20 Sep. previous.vote_pct 는 2021 연방명부 득표율. 세계 타임라인 2026-09-18 행은 rus-2026-duma-voting-start 로 조인.",
       "sources": [
         "kremlin_decree_2026-06-16",
         "cikrf",
         "tass_2026-06-16",
         "invest_lens_elections"
       ],
-      "market_significance_invest_lens": 1
+      "market_significance_invest_lens": 1,
+      "system_id": "rus-duma",
+      "contested_ko": "전체 450석 (소선거구 225 + 연방명부 225)",
+      "previous": {
+        "date": "2021-09-19",
+        "seats_total": 450,
+        "by_party": [
+          {
+            "abbr": "UR",
+            "name_ko": "통합러시아",
+            "vote_pct": 49.82,
+            "seats": 324
+          },
+          {
+            "abbr": "CPRF",
+            "name_ko": "러시아연방공산당",
+            "vote_pct": 18.93,
+            "seats": 57
+          },
+          {
+            "abbr": "SR",
+            "name_ko": "정의러시아–진실을 위하여",
+            "vote_pct": 7.46,
+            "seats": 27
+          },
+          {
+            "abbr": "LDPR",
+            "name_ko": "자유민주당",
+            "vote_pct": 7.55,
+            "seats": 21
+          },
+          {
+            "abbr": "NL",
+            "name_ko": "새로운 사람들",
+            "vote_pct": 5.32,
+            "seats": 13
+          },
+          {
+            "abbr": "Rodina",
+            "name_ko": "조국",
+            "seats": 1
+          },
+          {
+            "abbr": "CP",
+            "name_ko": "시민플랫폼",
+            "seats": 1
+          },
+          {
+            "abbr": "PG",
+            "name_ko": "성장당",
+            "seats": 1
+          },
+          {
+            "abbr": "IND",
+            "name_ko": "무소속",
+            "seats": 5
+          }
+        ],
+        "sources": [
+          "https://tass.com/politics/1341997",
+          "https://www.consultant.ru/document/cons_doc_LAW_396198/"
+        ]
+      },
+      "parties_running": [
+        {
+          "abbr": "UR",
+          "name_ko": "통합러시아",
+          "incumbent": true
+        },
+        {
+          "abbr": "CPRF",
+          "name_ko": "러시아연방공산당",
+          "incumbent": false
+        },
+        {
+          "abbr": "LDPR",
+          "name_ko": "자유민주당",
+          "incumbent": false
+        },
+        {
+          "abbr": "SR",
+          "name_ko": "정의러시아–진실을 위하여",
+          "incumbent": false
+        },
+        {
+          "abbr": "NL",
+          "name_ko": "새로운 사람들",
+          "incumbent": false
+        }
+      ]
     },
     {
       "id": "rus-2026-single-voting-day-regions",
@@ -96,6 +185,22 @@
       "notes": "Next after 2024 cycle — not in 2026.",
       "sources": [
         "kremlin_decree_2026-06-16"
+      ]
+    },
+    {
+        "id": "rus-2026-duma-voting-start",
+        "type": "general",
+        "label_ko": "국가두마 투표 개시",
+        "date": "2026-09-18",
+        "date_end": "2026-09-20",
+        "status": "scheduled",
+      "system_id": "rus-duma",
+      "contested_ko": "전체 450석 — 3일 투표(18–20)의 첫날",
+      "notes": "정본 선거일(대통령령)은 rus-2026-duma 의 2026-09-20. 이 행은 world_by_month (iso3, date) 조인용.",
+      "sources": [
+        "kremlin_decree_2026-06-16",
+        "cikrf",
+        "tass_2026-06-16"
       ]
     }
   ]
