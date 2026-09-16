@@ -217,7 +217,12 @@ def overlay_live(universe: dict[str, Any], *, asof: date | None = None) -> dict[
             try:
                 d, raw = fetch_fred_worker_latest(meta["id"])
                 val = raw * float(meta.get("scale") or 1.0)
-                _pin_latest(by_id[sid], val, f"fred_worker:{meta['id']}", dates[-1])
+                # d is FRED's own observation date -- labeling the badge with
+                # dates[-1] (the monthly grid's current-month-end) instead
+                # made a value read as fresher than it was, e.g. TGA (a
+                # weekly series) showing "asof" the last day of the month
+                # when the real print was up to three weeks earlier.
+                _pin_latest(by_id[sid], val, f"fred_worker:{meta['id']}", d.isoformat())
                 # If not already live history, keep fixture path but mark latest
                 if by_id[sid].get("quality") != "live":
                     by_id[sid]["quality"] = "live_latest"
