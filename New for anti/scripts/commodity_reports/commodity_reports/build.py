@@ -10,7 +10,7 @@ from typing import Any, Dict, Iterable, List, Optional
 
 from .feeds import RawReport, fetch_source, parse_fas_gain_cards, parse_feed, parse_html_list
 from .score import ReportScorer, ScoredReport
-from .tag import CommodityTagger, CountryTagger, tag_report
+from .tag import CommodityTagger, CountryTagger, Tagged, tag_report
 
 ROOT = Path(__file__).resolve().parents[1]
 CONFIG = ROOT / "config"
@@ -19,6 +19,25 @@ CACHE = ROOT / "cache"
 # The bucket key for reports that name no country: world balance sheets,
 # which every country view on that commodity should still be able to show.
 GLOBAL_BUCKET = "_global"
+
+
+def apply_series_commodity_fallback(
+    tagged: Tagged, scorer: ReportScorer, title: str, summary: str
+) -> None:
+    """Give a bare series wrapper headline the commodities it actually covers.
+
+    "USDA releases September WASDE" names no crop -- the report itself
+    revises a dozen of them -- so the text tagger finds nothing and the
+    "no commodity, no window" gate in score.py would drop it outright, right
+    when it's the most authoritative report in the bucket. Only fires when
+    the text-based tagger found nothing at all; a report that already names
+    a crop keeps that, series list or not.
+    """
+    if tagged.commodities:
+        return
+    series = scorer.match_series(f"{title}\n{summary}".lower())
+    if series and series.get("commodities"):
+        tagged.commodities = list(series["commodities"])
 
 
 def load_json(path: Path) -> Dict[str, Any]:
@@ -165,6 +184,7 @@ def build_commodity_reports(
         # untagged releases are world balance sheets, not FAO-the-country news.
         if r.scope_hint == "global" and tagged.country_source == "source_default":
             tagged.countries, tagged.scope, tagged.country_source = [], "global", "none"
+        apply_series_commodity_fallback(tagged, scorer, r.title, r.summary)
         item = scorer.score(r, tagged, now=now)
         # No commodity this dashboard tracks, or rejected outright (photo
         # galleries etc.) -- dropped, not queued anywhere. A review loop over
