@@ -17,6 +17,10 @@ from election_watch.extract_usa_committees import (  # noqa: E402
     public_usa_committees,
     usa_committees_missing,
 )
+from election_watch.usa_committee_cards import (  # noqa: E402
+    build_committee_cards,
+    public_committee_cards,
+)
 
 
 USA_STATE_ABBR = {
@@ -403,6 +407,9 @@ def build_board(
                         if member.get("chamber") == "senate"
                     ],
                     "committees": public_usa_committees(usa_committees),
+                    "standing_committee_cards": public_committee_cards(
+                        build_committee_cards(usa_committees)
+                    ),
                     "missing_fields": usa_committees_missing(usa_committees),
                 },
             }

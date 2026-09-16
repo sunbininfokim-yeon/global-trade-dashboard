@@ -1,6 +1,6 @@
 {
   "schema_version": "elections-board-v1",
-  "generated_at": "2026-09-14T06:26:51.535934+00:00",
+  "generated_at": "2026-09-15T04:20:23.651893+00:00",
   "year": 2026,
   "model": {
     "name": "election_watch_doc_extract_v1",
@@ -83,7 +83,7 @@
     "countries_with_governance_polls": 8,
     "countries_with_legislature_live": 9,
     "countries_with_race_progress": 2,
-    "live_election_headlines": 2,
+    "live_election_headlines": 1,
     "betting_markets": 0,
     "extract_summary": {
       "generated_at": "2026-08-20T05:39:57.508241+00:00",
@@ -45104,6 +45104,2457 @@
               "homepage_policy_politics"
             ]
           },
+          "standing_committee_cards": {
+            "schema_version": 1,
+            "as_of": "2026-09-10T16:49:07.347335+00:00",
+            "congress": 119,
+            "url_templates": {
+              "house_member_office": "https://clerk.house.gov/members/{bioguide}",
+              "member_bioguide": "https://bioguide.congress.gov/search/bio/{bioguide}",
+              "house_committee": "https://clerk.house.gov/Committees/{clerk_code}",
+              "congress_committee": "https://www.congress.gov/committee/{system_code}"
+            },
+            "source": {
+              "house": {
+                "publish_date": "September 2, 2026",
+                "congress": "119",
+                "url": "https://clerk.house.gov/xml/lists/MemberData.xml",
+                "grade": "official",
+                "org": "Clerk of the House"
+              },
+              "senate": {
+                "last_update": "Wednesday, August 12, 2026",
+                "senator_count": 100,
+                "url": "https://www.senate.gov/legislative/LIS_MEMBER/cvc_member_data.xml",
+                "grade": "official",
+                "org": "U.S. Senate"
+              }
+            },
+            "jurisdiction_source": {
+              "path": "data/policy/committee-agency-jurisdictions.json",
+              "source_name": "house-rule-x-senate-rule-xxv",
+              "coverage_complete": false,
+              "note_ko": "규칙 조항이 내각급 부처 이름을 직접 적은 행만 조인한다. 빈 agencies[]는 추정이 아니라 규칙에 부처명이 없다는 뜻이다."
+            },
+            "roles": {
+              "chair": {
+                "en": "chair",
+                "ko": "위원장"
+              },
+              "ranking_member": {
+                "en": "ranking_member",
+                "ko": "간사"
+              }
+            },
+            "house": [
+              {
+                "committee_id": "119-house-hsag00",
+                "chamber": "house",
+                "system_code": "hsag00",
+                "clerk_code": "AG00",
+                "name": "Committee on Agriculture",
+                "type": "standing",
+                "member_count": 53,
+                "chair": {
+                  "name": "Glenn Thompson",
+                  "bioguide": "T000467",
+                  "party": "R",
+                  "state": "PA",
+                  "role": "chair",
+                  "role_ko": "위원장",
+                  "member_office_url": "https://clerk.house.gov/members/T000467",
+                  "bioguide_url": "https://bioguide.congress.gov/search/bio/T000467"
+                },
+                "ranking_member": {
+                  "name": "Angie Craig",
+                  "bioguide": "C001119",
+                  "party": "D",
+                  "state": "MN",
+                  "role": "ranking_member",
+                  "role_ko": "간사",
+                  "member_office_url": "https://clerk.house.gov/members/C001119",
+                  "bioguide_url": "https://bioguide.congress.gov/search/bio/C001119"
+                },
+                "committee_url": "https://clerk.house.gov/Committees/AG00",
+                "agencies": [
+                  {
+                    "agency_id": "fr-agriculture-department",
+                    "relationship_type": "oversight",
+                    "mapping_source": "official",
+                    "rule_cite": "House Rule X(a)(20)",
+                    "source_url": "https://www.govinfo.gov/content/pkg/HMAN-118/html/HMAN-118-pg459.htm",
+                    "verified_at": "2026-09-11T00:00:00Z"
+                  }
+                ]
+              },
+              {
+                "committee_id": "119-house-hsap00",
+                "chamber": "house",
+                "system_code": "hsap00",
+                "clerk_code": "AP00",
+                "name": "Committee on Appropriations",
+                "type": "standing",
+                "member_count": 63,
+                "chair": {
+                  "name": "Tom Cole",
+                  "bioguide": "C001053",
+                  "party": "R",
+                  "state": "OK",
+                  "role": "chair",
+                  "role_ko": "위원장",
+                  "member_office_url": "https://clerk.house.gov/members/C001053",
+                  "bioguide_url": "https://bioguide.congress.gov/search/bio/C001053"
+                },
+                "ranking_member": {
+                  "name": "Rosa L. DeLauro",
+                  "bioguide": "D000216",
+                  "party": "D",
+                  "state": "CT",
+                  "role": "ranking_member",
+                  "role_ko": "간사",
+                  "member_office_url": "https://clerk.house.gov/members/D000216",
+                  "bioguide_url": "https://bioguide.congress.gov/search/bio/D000216"
+                },
+                "committee_url": "https://clerk.house.gov/Committees/AP00",
+                "agencies": []
+              },
+              {
+                "committee_id": "119-house-hsas00",
+                "chamber": "house",
+                "system_code": "hsas00",
+                "clerk_code": "AS00",
+                "name": "Committee on Armed Services",
+                "type": "standing",
+                "member_count": 57,
+                "chair": {
+                  "name": "Mike Rogers",
+                  "bioguide": "R000575",
+                  "party": "R",
+                  "state": "AL",
+                  "role": "chair",
+                  "role_ko": "위원장",
+                  "member_office_url": "https://clerk.house.gov/members/R000575",
+                  "bioguide_url": "https://bioguide.congress.gov/search/bio/R000575"
+                },
+                "ranking_member": {
+                  "name": "Adam Smith",
+                  "bioguide": "S000510",
+                  "party": "D",
+                  "state": "WA",
+                  "role": "ranking_member",
+                  "role_ko": "간사",
+                  "member_office_url": "https://clerk.house.gov/members/S000510",
+                  "bioguide_url": "https://bioguide.congress.gov/search/bio/S000510"
+                },
+                "committee_url": "https://clerk.house.gov/Committees/AS00",
+                "agencies": [
+                  {
+                    "agency_id": "fr-defense-department",
+                    "relationship_type": "oversight",
+                    "mapping_source": "official",
+                    "rule_cite": "House Rule X(c)(4)",
+                    "source_url": "https://www.govinfo.gov/content/pkg/HMAN-118/html/HMAN-118-pg459.htm",
+                    "verified_at": "2026-09-11T00:00:00Z"
+                  }
+                ]
+              },
+              {
+                "committee_id": "119-house-hsed00",
+                "chamber": "house",
+                "system_code": "hsed00",
+                "clerk_code": "ED00",
+                "name": "Committee on Education and Workforce",
+                "type": "standing",
+                "member_count": 37,
+                "chair": {
+                  "name": "Tim Walberg",
+                  "bioguide": "W000798",
+                  "party": "R",
+                  "state": "MI",
+                  "role": "chair",
+                  "role_ko": "위원장",
+                  "member_office_url": "https://clerk.house.gov/members/W000798",
+                  "bioguide_url": "https://bioguide.congress.gov/search/bio/W000798"
+                },
+                "ranking_member": {
+                  "name": "Robert C. \"Bobby\" Scott",
+                  "bioguide": "S000185",
+                  "party": "D",
+                  "state": "VA",
+                  "role": "ranking_member",
+                  "role_ko": "간사",
+                  "member_office_url": "https://clerk.house.gov/members/S000185",
+                  "bioguide_url": "https://bioguide.congress.gov/search/bio/S000185"
+                },
+                "committee_url": "https://clerk.house.gov/Committees/ED00",
+                "agencies": [
+                  {
+                    "agency_id": "fr-education-department",
+                    "relationship_type": "oversight",
+                    "mapping_source": "official",
+                    "rule_cite": "House Rule X(e)(14)",
+                    "source_url": "https://www.govinfo.gov/content/pkg/HMAN-118/html/HMAN-118-pg459.htm",
+                    "verified_at": "2026-09-11T00:00:00Z"
+                  },
+                  {
+                    "agency_id": "fr-labor-department",
+                    "relationship_type": "oversight",
+                    "mapping_source": "official",
+                    "rule_cite": "House Rule X(e)(15)",
+                    "source_url": "https://www.govinfo.gov/content/pkg/HMAN-118/html/HMAN-118-pg459.htm",
+                    "verified_at": "2026-09-11T00:00:00Z"
+                  }
+                ]
+              },
+              {
+                "committee_id": "119-house-hsif00",
+                "chamber": "house",
+                "system_code": "hsif00",
+                "clerk_code": "IF00",
+                "name": "Committee on Energy and Commerce",
+                "type": "standing",
+                "member_count": 54,
+                "chair": {
+                  "name": "Brett Guthrie",
+                  "bioguide": "G000558",
+                  "party": "R",
+                  "state": "KY",
+                  "role": "chair",
+                  "role_ko": "위원장",
+                  "member_office_url": "https://clerk.house.gov/members/G000558",
+                  "bioguide_url": "https://bioguide.congress.gov/search/bio/G000558"
+                },
+                "ranking_member": {
+                  "name": "Frank Pallone, Jr.",
+                  "bioguide": "P000034",
+                  "party": "D",
+                  "state": "NJ",
+                  "role": "ranking_member",
+                  "role_ko": "간사",
+                  "member_office_url": "https://clerk.house.gov/members/P000034",
+                  "bioguide_url": "https://bioguide.congress.gov/search/bio/P000034"
+                },
+                "committee_url": "https://clerk.house.gov/Committees/IF00",
+                "agencies": [
+                  {
+                    "agency_id": "fr-energy-department",
+                    "relationship_type": "oversight",
+                    "mapping_source": "official",
+                    "rule_cite": "House Rule X(f)(10)",
+                    "source_url": "https://www.govinfo.gov/content/pkg/HMAN-118/html/HMAN-118-pg459.htm",
+                    "verified_at": "2026-09-11T00:00:00Z"
+                  }
+                ]
+              },
+              {
+                "committee_id": "119-house-hsso00",
+                "chamber": "house",
+                "system_code": "hsso00",
+                "clerk_code": "SO00",
+                "name": "Committee on Ethics",
+                "type": "standing",
+                "member_count": 10,
+                "chair": {
+                  "name": "Michael Guest",
+                  "bioguide": "G000591",
+                  "party": "R",
+                  "state": "MS",
+                  "role": "chair",
+                  "role_ko": "위원장",
+                  "member_office_url": "https://clerk.house.gov/members/G000591",
+                  "bioguide_url": "https://bioguide.congress.gov/search/bio/G000591"
+                },
+                "ranking_member": {
+                  "name": "Mark DeSaulnier",
+                  "bioguide": "D000623",
+                  "party": "D",
+                  "state": "CA",
+                  "role": "ranking_member",
+                  "role_ko": "간사",
+                  "member_office_url": "https://clerk.house.gov/members/D000623",
+                  "bioguide_url": "https://bioguide.congress.gov/search/bio/D000623"
+                },
+                "committee_url": "https://clerk.house.gov/Committees/SO00",
+                "agencies": []
+              },
+              {
+                "committee_id": "119-house-hsba00",
+                "chamber": "house",
+                "system_code": "hsba00",
+                "clerk_code": "BA00",
+                "name": "Committee on Financial Services",
+                "type": "standing",
+                "member_count": 53,
+                "chair": {
+                  "name": "J. French Hill",
+                  "bioguide": "H001072",
+                  "party": "R",
+                  "state": "AR",
+                  "role": "chair",
+                  "role_ko": "위원장",
+                  "member_office_url": "https://clerk.house.gov/members/H001072",
+                  "bioguide_url": "https://bioguide.congress.gov/search/bio/H001072"
+                },
+                "ranking_member": {
+                  "name": "Maxine Waters",
+                  "bioguide": "W000187",
+                  "party": "D",
+                  "state": "CA",
+                  "role": "ranking_member",
+                  "role_ko": "간사",
+                  "member_office_url": "https://clerk.house.gov/members/W000187",
+                  "bioguide_url": "https://bioguide.congress.gov/search/bio/W000187"
+                },
+                "committee_url": "https://clerk.house.gov/Committees/BA00",
+                "agencies": []
+              },
+              {
+                "committee_id": "119-house-hsfa00",
+                "chamber": "house",
+                "system_code": "hsfa00",
+                "clerk_code": "FA00",
+                "name": "Committee on Foreign Affairs",
+                "type": "standing",
+                "member_count": 53,
+                "chair": {
+                  "name": "Brian J. Mast",
+                  "bioguide": "M001199",
+                  "party": "R",
+                  "state": "FL",
+                  "role": "chair",
+                  "role_ko": "위원장",
+                  "member_office_url": "https://clerk.house.gov/members/M001199",
+                  "bioguide_url": "https://bioguide.congress.gov/search/bio/M001199"
+                },
+                "ranking_member": {
+                  "name": "Gregory W. Meeks",
+                  "bioguide": "M001137",
+                  "party": "D",
+                  "state": "NY",
+                  "role": "ranking_member",
+                  "role_ko": "간사",
+                  "member_office_url": "https://clerk.house.gov/members/M001137",
+                  "bioguide_url": "https://bioguide.congress.gov/search/bio/M001137"
+                },
+                "committee_url": "https://clerk.house.gov/Committees/FA00",
+                "agencies": []
+              },
+              {
+                "committee_id": "119-house-hshm00",
+                "chamber": "house",
+                "system_code": "hshm00",
+                "clerk_code": "HM00",
+                "name": "Committee on Homeland Security",
+                "type": "standing",
+                "member_count": 33,
+                "chair": {
+                  "name": "Andrew R. Garbarino",
+                  "bioguide": "G000597",
+                  "party": "R",
+                  "state": "NY",
+                  "role": "chair",
+                  "role_ko": "위원장",
+                  "member_office_url": "https://clerk.house.gov/members/G000597",
+                  "bioguide_url": "https://bioguide.congress.gov/search/bio/G000597"
+                },
+                "ranking_member": {
+                  "name": "Bennie G. Thompson",
+                  "bioguide": "T000193",
+                  "party": "D",
+                  "state": "MS",
+                  "role": "ranking_member",
+                  "role_ko": "간사",
+                  "member_office_url": "https://clerk.house.gov/members/T000193",
+                  "bioguide_url": "https://bioguide.congress.gov/search/bio/T000193"
+                },
+                "committee_url": "https://clerk.house.gov/Committees/HM00",
+                "agencies": []
+              },
+              {
+                "committee_id": "119-house-hsha00",
+                "chamber": "house",
+                "system_code": "hsha00",
+                "clerk_code": "HA00",
+                "name": "Committee on House Administration",
+                "type": "standing",
+                "member_count": 12,
+                "chair": {
+                  "name": "Bryan Steil",
+                  "bioguide": "S001213",
+                  "party": "R",
+                  "state": "WI",
+                  "role": "chair",
+                  "role_ko": "위원장",
+                  "member_office_url": "https://clerk.house.gov/members/S001213",
+                  "bioguide_url": "https://bioguide.congress.gov/search/bio/S001213"
+                },
+                "ranking_member": {
+                  "name": "Joseph D. Morelle",
+                  "bioguide": "M001206",
+                  "party": "D",
+                  "state": "NY",
+                  "role": "ranking_member",
+                  "role_ko": "간사",
+                  "member_office_url": "https://clerk.house.gov/members/M001206",
+                  "bioguide_url": "https://bioguide.congress.gov/search/bio/M001206"
+                },
+                "committee_url": "https://clerk.house.gov/Committees/HA00",
+                "agencies": [
+                  {
+                    "agency_id": "fr-homeland-security-department",
+                    "relationship_type": "oversight",
+                    "mapping_source": "official",
+                    "rule_cite": "House Rule X(j)(2)",
+                    "source_url": "https://www.govinfo.gov/content/pkg/HMAN-118/html/HMAN-118-pg459.htm",
+                    "verified_at": "2026-09-11T00:00:00Z"
+                  }
+                ]
+              },
+              {
+                "committee_id": "119-house-hsii00",
+                "chamber": "house",
+                "system_code": "hsii00",
+                "clerk_code": "II00",
+                "name": "Committee on Natural Resources",
+                "type": "standing",
+                "member_count": 45,
+                "chair": {
+                  "name": "Bruce Westerman",
+                  "bioguide": "W000821",
+                  "party": "R",
+                  "state": "AR",
+                  "role": "chair",
+                  "role_ko": "위원장",
+                  "member_office_url": "https://clerk.house.gov/members/W000821",
+                  "bioguide_url": "https://bioguide.congress.gov/search/bio/W000821"
+                },
+                "ranking_member": {
+                  "name": "Jared Huffman",
+                  "bioguide": "H001068",
+                  "party": "D",
+                  "state": "CA",
+                  "role": "ranking_member",
+                  "role_ko": "간사",
+                  "member_office_url": "https://clerk.house.gov/members/H001068",
+                  "bioguide_url": "https://bioguide.congress.gov/search/bio/H001068"
+                },
+                "committee_url": "https://clerk.house.gov/Committees/II00",
+                "agencies": [
+                  {
+                    "agency_id": "fr-interior-department",
+                    "relationship_type": "oversight",
+                    "mapping_source": "official",
+                    "rule_cite": "House Rule X(m)(10)",
+                    "source_url": "https://www.govinfo.gov/content/pkg/HMAN-118/html/HMAN-118-pg459.htm",
+                    "verified_at": "2026-09-11T00:00:00Z"
+                  }
+                ]
+              },
+              {
+                "committee_id": "119-house-hsgo00",
+                "chamber": "house",
+                "system_code": "hsgo00",
+                "clerk_code": "GO00",
+                "name": "Committee on Oversight and Government Reform",
+                "type": "standing",
+                "member_count": 47,
+                "chair": {
+                  "name": "James Comer",
+                  "bioguide": "C001108",
+                  "party": "R",
+                  "state": "KY",
+                  "role": "chair",
+                  "role_ko": "위원장",
+                  "member_office_url": "https://clerk.house.gov/members/C001108",
+                  "bioguide_url": "https://bioguide.congress.gov/search/bio/C001108"
+                },
+                "ranking_member": {
+                  "name": "Robert Garcia",
+                  "bioguide": "G000598",
+                  "party": "D",
+                  "state": "CA",
+                  "role": "ranking_member",
+                  "role_ko": "간사",
+                  "member_office_url": "https://clerk.house.gov/members/G000598",
+                  "bioguide_url": "https://bioguide.congress.gov/search/bio/G000598"
+                },
+                "committee_url": "https://clerk.house.gov/Committees/GO00",
+                "agencies": []
+              },
+              {
+                "committee_id": "119-house-hsru00",
+                "chamber": "house",
+                "system_code": "hsru00",
+                "clerk_code": "RU00",
+                "name": "Committee on Rules",
+                "type": "standing",
+                "member_count": 13,
+                "chair": {
+                  "name": "Virginia Foxx",
+                  "bioguide": "F000450",
+                  "party": "R",
+                  "state": "NC",
+                  "role": "chair",
+                  "role_ko": "위원장",
+                  "member_office_url": "https://clerk.house.gov/members/F000450",
+                  "bioguide_url": "https://bioguide.congress.gov/search/bio/F000450"
+                },
+                "ranking_member": {
+                  "name": "James P. McGovern",
+                  "bioguide": "M000312",
+                  "party": "D",
+                  "state": "MA",
+                  "role": "ranking_member",
+                  "role_ko": "간사",
+                  "member_office_url": "https://clerk.house.gov/members/M000312",
+                  "bioguide_url": "https://bioguide.congress.gov/search/bio/M000312"
+                },
+                "committee_url": "https://clerk.house.gov/Committees/RU00",
+                "agencies": []
+              },
+              {
+                "committee_id": "119-house-hssy00",
+                "chamber": "house",
+                "system_code": "hssy00",
+                "clerk_code": "SY00",
+                "name": "Committee on Science, Space, and Technology",
+                "type": "standing",
+                "member_count": 40,
+                "chair": {
+                  "name": "Brian Babin",
+                  "bioguide": "B001291",
+                  "party": "R",
+                  "state": "TX",
+                  "role": "chair",
+                  "role_ko": "위원장",
+                  "member_office_url": "https://clerk.house.gov/members/B001291",
+                  "bioguide_url": "https://bioguide.congress.gov/search/bio/B001291"
+                },
+                "ranking_member": {
+                  "name": "Zoe Lofgren",
+                  "bioguide": "L000397",
+                  "party": "D",
+                  "state": "CA",
+                  "role": "ranking_member",
+                  "role_ko": "간사",
+                  "member_office_url": "https://clerk.house.gov/members/L000397",
+                  "bioguide_url": "https://bioguide.congress.gov/search/bio/L000397"
+                },
+                "committee_url": "https://clerk.house.gov/Committees/SY00",
+                "agencies": []
+              },
+              {
+                "committee_id": "119-house-hssm00",
+                "chamber": "house",
+                "system_code": "hssm00",
+                "clerk_code": "SM00",
+                "name": "Committee on Small Business",
+                "type": "standing",
+                "member_count": 26,
+                "chair": {
+                  "name": "Roger Williams",
+                  "bioguide": "W000816",
+                  "party": "R",
+                  "state": "TX",
+                  "role": "chair",
+                  "role_ko": "위원장",
+                  "member_office_url": "https://clerk.house.gov/members/W000816",
+                  "bioguide_url": "https://bioguide.congress.gov/search/bio/W000816"
+                },
+                "ranking_member": {
+                  "name": "Nydia M. Velázquez",
+                  "bioguide": "V000081",
+                  "party": "D",
+                  "state": "NY",
+                  "role": "ranking_member",
+                  "role_ko": "간사",
+                  "member_office_url": "https://clerk.house.gov/members/V000081",
+                  "bioguide_url": "https://bioguide.congress.gov/search/bio/V000081"
+                },
+                "committee_url": "https://clerk.house.gov/Committees/SM00",
+                "agencies": []
+              },
+              {
+                "committee_id": "119-house-hspw00",
+                "chamber": "house",
+                "system_code": "hspw00",
+                "clerk_code": "PW00",
+                "name": "Committee on Transportation and Infrastructure",
+                "type": "standing",
+                "member_count": 67,
+                "chair": {
+                  "name": "Sam Graves",
+                  "bioguide": "G000546",
+                  "party": "R",
+                  "state": "MO",
+                  "role": "chair",
+                  "role_ko": "위원장",
+                  "member_office_url": "https://clerk.house.gov/members/G000546",
+                  "bioguide_url": "https://bioguide.congress.gov/search/bio/G000546"
+                },
+                "ranking_member": {
+                  "name": "Rick Larsen",
+                  "bioguide": "L000560",
+                  "party": "D",
+                  "state": "WA",
+                  "role": "ranking_member",
+                  "role_ko": "간사",
+                  "member_office_url": "https://clerk.house.gov/members/L000560",
+                  "bioguide_url": "https://bioguide.congress.gov/search/bio/L000560"
+                },
+                "committee_url": "https://clerk.house.gov/Committees/PW00",
+                "agencies": []
+              },
+              {
+                "committee_id": "119-house-hsvr00",
+                "chamber": "house",
+                "system_code": "hsvr00",
+                "clerk_code": "VR00",
+                "name": "Committee on Veterans' Affairs",
+                "type": "standing",
+                "member_count": 25,
+                "chair": {
+                  "name": "Mike Bost",
+                  "bioguide": "B001295",
+                  "party": "R",
+                  "state": "IL",
+                  "role": "chair",
+                  "role_ko": "위원장",
+                  "member_office_url": "https://clerk.house.gov/members/B001295",
+                  "bioguide_url": "https://bioguide.congress.gov/search/bio/B001295"
+                },
+                "ranking_member": {
+                  "name": "Mark Takano",
+                  "bioguide": "T000472",
+                  "party": "D",
+                  "state": "CA",
+                  "role": "ranking_member",
+                  "role_ko": "간사",
+                  "member_office_url": "https://clerk.house.gov/members/T000472",
+                  "bioguide_url": "https://bioguide.congress.gov/search/bio/T000472"
+                },
+                "committee_url": "https://clerk.house.gov/Committees/VR00",
+                "agencies": []
+              },
+              {
+                "committee_id": "119-house-hswm00",
+                "chamber": "house",
+                "system_code": "hswm00",
+                "clerk_code": "WM00",
+                "name": "Committee on Ways and Means",
+                "type": "standing",
+                "member_count": 45,
+                "chair": {
+                  "name": "Jason Smith",
+                  "bioguide": "S001195",
+                  "party": "R",
+                  "state": "MO",
+                  "role": "chair",
+                  "role_ko": "위원장",
+                  "member_office_url": "https://clerk.house.gov/members/S001195",
+                  "bioguide_url": "https://bioguide.congress.gov/search/bio/S001195"
+                },
+                "ranking_member": {
+                  "name": "Richard E. Neal",
+                  "bioguide": "N000015",
+                  "party": "D",
+                  "state": "MA",
+                  "role": "ranking_member",
+                  "role_ko": "간사",
+                  "member_office_url": "https://clerk.house.gov/members/N000015",
+                  "bioguide_url": "https://bioguide.congress.gov/search/bio/N000015"
+                },
+                "committee_url": "https://clerk.house.gov/Committees/WM00",
+                "agencies": []
+              },
+              {
+                "committee_id": "119-house-hsbu00",
+                "chamber": "house",
+                "system_code": "hsbu00",
+                "clerk_code": "BU00",
+                "name": "Committee on the Budget",
+                "type": "standing",
+                "member_count": 37,
+                "chair": {
+                  "name": "Jodey C. Arrington",
+                  "bioguide": "A000375",
+                  "party": "R",
+                  "state": "TX",
+                  "role": "chair",
+                  "role_ko": "위원장",
+                  "member_office_url": "https://clerk.house.gov/members/A000375",
+                  "bioguide_url": "https://bioguide.congress.gov/search/bio/A000375"
+                },
+                "ranking_member": {
+                  "name": "Brendan F. Boyle",
+                  "bioguide": "B001296",
+                  "party": "D",
+                  "state": "PA",
+                  "role": "ranking_member",
+                  "role_ko": "간사",
+                  "member_office_url": "https://clerk.house.gov/members/B001296",
+                  "bioguide_url": "https://bioguide.congress.gov/search/bio/B001296"
+                },
+                "committee_url": "https://clerk.house.gov/Committees/BU00",
+                "agencies": []
+              },
+              {
+                "committee_id": "119-house-hsju00",
+                "chamber": "house",
+                "system_code": "hsju00",
+                "clerk_code": "JU00",
+                "name": "Committee on the Judiciary",
+                "type": "standing",
+                "member_count": 44,
+                "chair": {
+                  "name": "Jim Jordan",
+                  "bioguide": "J000289",
+                  "party": "R",
+                  "state": "OH",
+                  "role": "chair",
+                  "role_ko": "위원장",
+                  "member_office_url": "https://clerk.house.gov/members/J000289",
+                  "bioguide_url": "https://bioguide.congress.gov/search/bio/J000289"
+                },
+                "ranking_member": {
+                  "name": "Jamie Raskin",
+                  "bioguide": "R000606",
+                  "party": "D",
+                  "state": "MD",
+                  "role": "ranking_member",
+                  "role_ko": "간사",
+                  "member_office_url": "https://clerk.house.gov/members/R000606",
+                  "bioguide_url": "https://bioguide.congress.gov/search/bio/R000606"
+                },
+                "committee_url": "https://clerk.house.gov/Committees/JU00",
+                "agencies": []
+              }
+            ],
+            "senate": [
+              {
+                "committee_id": "119-senate-ssaf00",
+                "chamber": "senate",
+                "system_code": "ssaf00",
+                "clerk_code": null,
+                "name": "Committee on Agriculture, Nutrition, and Forestry",
+                "type": "standing",
+                "member_count": 23,
+                "chair": {
+                  "name": "Boozman, John",
+                  "bioguide": "B001236",
+                  "party": "GOP",
+                  "state": "Arkansas",
+                  "role": "chair",
+                  "role_ko": "위원장",
+                  "member_office_url": "https://bioguide.congress.gov/search/bio/B001236",
+                  "bioguide_url": "https://bioguide.congress.gov/search/bio/B001236"
+                },
+                "ranking_member": {
+                  "name": "Klobuchar, Amy",
+                  "bioguide": "K000367",
+                  "party": "DEM",
+                  "state": "Minnesota",
+                  "role": "ranking_member",
+                  "role_ko": "간사",
+                  "member_office_url": "https://bioguide.congress.gov/search/bio/K000367",
+                  "bioguide_url": "https://bioguide.congress.gov/search/bio/K000367"
+                },
+                "committee_url": "https://www.congress.gov/committee/ssaf00",
+                "agencies": []
+              },
+              {
+                "committee_id": "119-senate-ssap00",
+                "chamber": "senate",
+                "system_code": "ssap00",
+                "clerk_code": null,
+                "name": "Committee on Appropriations",
+                "type": "standing",
+                "member_count": 29,
+                "chair": {
+                  "name": "Collins, Susan M.",
+                  "bioguide": "C001035",
+                  "party": "GOP",
+                  "state": "Maine",
+                  "role": "chair",
+                  "role_ko": "위원장",
+                  "member_office_url": "https://bioguide.congress.gov/search/bio/C001035",
+                  "bioguide_url": "https://bioguide.congress.gov/search/bio/C001035"
+                },
+                "ranking_member": {
+                  "name": "Murray, Patty",
+                  "bioguide": "M001111",
+                  "party": "DEM",
+                  "state": "Washington",
+                  "role": "ranking_member",
+                  "role_ko": "간사",
+                  "member_office_url": "https://bioguide.congress.gov/search/bio/M001111",
+                  "bioguide_url": "https://bioguide.congress.gov/search/bio/M001111"
+                },
+                "committee_url": "https://www.congress.gov/committee/ssap00",
+                "agencies": []
+              },
+              {
+                "committee_id": "119-senate-ssas00",
+                "chamber": "senate",
+                "system_code": "ssas00",
+                "clerk_code": null,
+                "name": "Committee on Armed Services",
+                "type": "standing",
+                "member_count": 27,
+                "chair": {
+                  "name": "Wicker, Roger F.",
+                  "bioguide": "W000437",
+                  "party": "GOP",
+                  "state": "Mississippi",
+                  "role": "chair",
+                  "role_ko": "위원장",
+                  "member_office_url": "https://bioguide.congress.gov/search/bio/W000437",
+                  "bioguide_url": "https://bioguide.congress.gov/search/bio/W000437"
+                },
+                "ranking_member": {
+                  "name": "Reed, Jack",
+                  "bioguide": "R000122",
+                  "party": "DEM",
+                  "state": "Rhode Island",
+                  "role": "ranking_member",
+                  "role_ko": "간사",
+                  "member_office_url": "https://bioguide.congress.gov/search/bio/R000122",
+                  "bioguide_url": "https://bioguide.congress.gov/search/bio/R000122"
+                },
+                "committee_url": "https://www.congress.gov/committee/ssas00",
+                "agencies": [
+                  {
+                    "agency_id": "fr-defense-department",
+                    "relationship_type": "oversight",
+                    "mapping_source": "official",
+                    "rule_cite": "Senate Rule XXV(c)(1)(3)",
+                    "source_url": "https://www.govinfo.gov/content/pkg/SMAN-118/pdf/SMAN-118-pg25.pdf",
+                    "verified_at": "2026-09-11T00:00:00Z"
+                  }
+                ]
+              },
+              {
+                "committee_id": "119-senate-ssbk00",
+                "chamber": "senate",
+                "system_code": "ssbk00",
+                "clerk_code": null,
+                "name": "Committee on Banking, Housing, and Urban Affairs",
+                "type": "standing",
+                "member_count": 24,
+                "chair": {
+                  "name": "Scott, Tim",
+                  "bioguide": "S001184",
+                  "party": "GOP",
+                  "state": "South Carolina",
+                  "role": "chair",
+                  "role_ko": "위원장",
+                  "member_office_url": "https://bioguide.congress.gov/search/bio/S001184",
+                  "bioguide_url": "https://bioguide.congress.gov/search/bio/S001184"
+                },
+                "ranking_member": {
+                  "name": "Warren, Elizabeth",
+                  "bioguide": "W000817",
+                  "party": "DEM",
+                  "state": "Massachusetts",
+                  "role": "ranking_member",
+                  "role_ko": "간사",
+                  "member_office_url": "https://bioguide.congress.gov/search/bio/W000817",
+                  "bioguide_url": "https://bioguide.congress.gov/search/bio/W000817"
+                },
+                "committee_url": "https://www.congress.gov/committee/ssbk00",
+                "agencies": []
+              },
+              {
+                "committee_id": "119-senate-sscm00",
+                "chamber": "senate",
+                "system_code": "sscm00",
+                "clerk_code": null,
+                "name": "Committee on Commerce, Science, and Transportation",
+                "type": "standing",
+                "member_count": 28,
+                "chair": {
+                  "name": "Cruz, Ted",
+                  "bioguide": "C001098",
+                  "party": "GOP",
+                  "state": "Texas",
+                  "role": "chair",
+                  "role_ko": "위원장",
+                  "member_office_url": "https://bioguide.congress.gov/search/bio/C001098",
+                  "bioguide_url": "https://bioguide.congress.gov/search/bio/C001098"
+                },
+                "ranking_member": {
+                  "name": "Cantwell, Maria",
+                  "bioguide": "C000127",
+                  "party": "DEM",
+                  "state": "Washington",
+                  "role": "ranking_member",
+                  "role_ko": "간사",
+                  "member_office_url": "https://bioguide.congress.gov/search/bio/C000127",
+                  "bioguide_url": "https://bioguide.congress.gov/search/bio/C000127"
+                },
+                "committee_url": "https://www.congress.gov/committee/sscm00",
+                "agencies": []
+              },
+              {
+                "committee_id": "119-senate-sseg00",
+                "chamber": "senate",
+                "system_code": "sseg00",
+                "clerk_code": null,
+                "name": "Committee on Energy and Natural Resources",
+                "type": "standing",
+                "member_count": 20,
+                "chair": {
+                  "name": "Lee, Mike",
+                  "bioguide": "L000577",
+                  "party": "GOP",
+                  "state": "Utah",
+                  "role": "chair",
+                  "role_ko": "위원장",
+                  "member_office_url": "https://bioguide.congress.gov/search/bio/L000577",
+                  "bioguide_url": "https://bioguide.congress.gov/search/bio/L000577"
+                },
+                "ranking_member": {
+                  "name": "Heinrich, Martin",
+                  "bioguide": "H001046",
+                  "party": "DEM",
+                  "state": "New Mexico",
+                  "role": "ranking_member",
+                  "role_ko": "간사",
+                  "member_office_url": "https://bioguide.congress.gov/search/bio/H001046",
+                  "bioguide_url": "https://bioguide.congress.gov/search/bio/H001046"
+                },
+                "committee_url": "https://www.congress.gov/committee/sseg00",
+                "agencies": []
+              },
+              {
+                "committee_id": "119-senate-ssev00",
+                "chamber": "senate",
+                "system_code": "ssev00",
+                "clerk_code": null,
+                "name": "Committee on Environment and Public Works",
+                "type": "standing",
+                "member_count": 19,
+                "chair": {
+                  "name": "Capito, Shelley Moore",
+                  "bioguide": "C001047",
+                  "party": "GOP",
+                  "state": "West Virginia",
+                  "role": "chair",
+                  "role_ko": "위원장",
+                  "member_office_url": "https://bioguide.congress.gov/search/bio/C001047",
+                  "bioguide_url": "https://bioguide.congress.gov/search/bio/C001047"
+                },
+                "ranking_member": {
+                  "name": "Whitehouse, Sheldon",
+                  "bioguide": "W000802",
+                  "party": "DEM",
+                  "state": "Rhode Island",
+                  "role": "ranking_member",
+                  "role_ko": "간사",
+                  "member_office_url": "https://bioguide.congress.gov/search/bio/W000802",
+                  "bioguide_url": "https://bioguide.congress.gov/search/bio/W000802"
+                },
+                "committee_url": "https://www.congress.gov/committee/ssev00",
+                "agencies": []
+              },
+              {
+                "committee_id": "119-senate-ssfi00",
+                "chamber": "senate",
+                "system_code": "ssfi00",
+                "clerk_code": null,
+                "name": "Committee on Finance",
+                "type": "standing",
+                "member_count": 27,
+                "chair": {
+                  "name": "Crapo, Mike",
+                  "bioguide": "C000880",
+                  "party": "GOP",
+                  "state": "Idaho",
+                  "role": "chair",
+                  "role_ko": "위원장",
+                  "member_office_url": "https://bioguide.congress.gov/search/bio/C000880",
+                  "bioguide_url": "https://bioguide.congress.gov/search/bio/C000880"
+                },
+                "ranking_member": {
+                  "name": "Wyden, Ron",
+                  "bioguide": "W000779",
+                  "party": "DEM",
+                  "state": "Oregon",
+                  "role": "ranking_member",
+                  "role_ko": "간사",
+                  "member_office_url": "https://bioguide.congress.gov/search/bio/W000779",
+                  "bioguide_url": "https://bioguide.congress.gov/search/bio/W000779"
+                },
+                "committee_url": "https://www.congress.gov/committee/ssfi00",
+                "agencies": []
+              },
+              {
+                "committee_id": "119-senate-ssfr00",
+                "chamber": "senate",
+                "system_code": "ssfr00",
+                "clerk_code": null,
+                "name": "Committee on Foreign Relations",
+                "type": "standing",
+                "member_count": 22,
+                "chair": {
+                  "name": "Risch, James E.",
+                  "bioguide": "R000584",
+                  "party": "GOP",
+                  "state": "Idaho",
+                  "role": "chair",
+                  "role_ko": "위원장",
+                  "member_office_url": "https://bioguide.congress.gov/search/bio/R000584",
+                  "bioguide_url": "https://bioguide.congress.gov/search/bio/R000584"
+                },
+                "ranking_member": {
+                  "name": "Shaheen, Jeanne",
+                  "bioguide": "S001181",
+                  "party": "DEM",
+                  "state": "New Hampshire",
+                  "role": "ranking_member",
+                  "role_ko": "간사",
+                  "member_office_url": "https://bioguide.congress.gov/search/bio/S001181",
+                  "bioguide_url": "https://bioguide.congress.gov/search/bio/S001181"
+                },
+                "committee_url": "https://www.congress.gov/committee/ssfr00",
+                "agencies": []
+              },
+              {
+                "committee_id": "119-senate-sshr00",
+                "chamber": "senate",
+                "system_code": "sshr00",
+                "clerk_code": null,
+                "name": "Committee on Health, Education, Labor, and Pensions",
+                "type": "standing",
+                "member_count": 23,
+                "chair": {
+                  "name": "Cassidy, Bill",
+                  "bioguide": "C001075",
+                  "party": "GOP",
+                  "state": "Louisiana",
+                  "role": "chair",
+                  "role_ko": "위원장",
+                  "member_office_url": "https://bioguide.congress.gov/search/bio/C001075",
+                  "bioguide_url": "https://bioguide.congress.gov/search/bio/C001075"
+                },
+                "ranking_member": {
+                  "name": "Sanders, Bernard",
+                  "bioguide": "S000033",
+                  "party": "IND",
+                  "state": "Vermont",
+                  "role": "ranking_member",
+                  "role_ko": "간사",
+                  "member_office_url": "https://bioguide.congress.gov/search/bio/S000033",
+                  "bioguide_url": "https://bioguide.congress.gov/search/bio/S000033"
+                },
+                "committee_url": "https://www.congress.gov/committee/sshr00",
+                "agencies": []
+              },
+              {
+                "committee_id": "119-senate-ssga00",
+                "chamber": "senate",
+                "system_code": "ssga00",
+                "clerk_code": null,
+                "name": "Committee on Homeland Security and Governmental Affairs",
+                "type": "standing",
+                "member_count": 15,
+                "chair": {
+                  "name": "Paul, Rand",
+                  "bioguide": "P000603",
+                  "party": "GOP",
+                  "state": "Kentucky",
+                  "role": "chair",
+                  "role_ko": "위원장",
+                  "member_office_url": "https://bioguide.congress.gov/search/bio/P000603",
+                  "bioguide_url": "https://bioguide.congress.gov/search/bio/P000603"
+                },
+                "ranking_member": {
+                  "name": "Peters, Gary C.",
+                  "bioguide": "P000595",
+                  "party": "DEM",
+                  "state": "Michigan",
+                  "role": "ranking_member",
+                  "role_ko": "간사",
+                  "member_office_url": "https://bioguide.congress.gov/search/bio/P000595",
+                  "bioguide_url": "https://bioguide.congress.gov/search/bio/P000595"
+                },
+                "committee_url": "https://www.congress.gov/committee/ssga00",
+                "agencies": [
+                  {
+                    "agency_id": "fr-homeland-security-department",
+                    "relationship_type": "oversight",
+                    "mapping_source": "official",
+                    "rule_cite": "S.Res. 445 (108th) as compiled in Senate Rule XXV / HSGAC jurisdiction",
+                    "source_url": "https://www.govinfo.gov/content/pkg/CDOC-117sdoc6/pdf/CDOC-117sdoc6.pdf",
+                    "verified_at": "2026-09-11T00:00:00Z"
+                  }
+                ]
+              },
+              {
+                "committee_id": "119-senate-ssra00",
+                "chamber": "senate",
+                "system_code": "ssra00",
+                "clerk_code": null,
+                "name": "Committee on Rules and Administration",
+                "type": "standing",
+                "member_count": 17,
+                "chair": {
+                  "name": "McConnell, Mitch",
+                  "bioguide": "M000355",
+                  "party": "GOP",
+                  "state": "Kentucky",
+                  "role": "chair",
+                  "role_ko": "위원장",
+                  "member_office_url": "https://bioguide.congress.gov/search/bio/M000355",
+                  "bioguide_url": "https://bioguide.congress.gov/search/bio/M000355"
+                },
+                "ranking_member": {
+                  "name": "Padilla, Alex",
+                  "bioguide": "P000145",
+                  "party": "DEM",
+                  "state": "California",
+                  "role": "ranking_member",
+                  "role_ko": "간사",
+                  "member_office_url": "https://bioguide.congress.gov/search/bio/P000145",
+                  "bioguide_url": "https://bioguide.congress.gov/search/bio/P000145"
+                },
+                "committee_url": "https://www.congress.gov/committee/ssra00",
+                "agencies": []
+              },
+              {
+                "committee_id": "119-senate-sssb00",
+                "chamber": "senate",
+                "system_code": "sssb00",
+                "clerk_code": null,
+                "name": "Committee on Small Business and Entrepreneurship",
+                "type": "standing",
+                "member_count": 19,
+                "chair": {
+                  "name": "Ernst, Joni",
+                  "bioguide": "E000295",
+                  "party": "GOP",
+                  "state": "Iowa",
+                  "role": "chair",
+                  "role_ko": "위원장",
+                  "member_office_url": "https://bioguide.congress.gov/search/bio/E000295",
+                  "bioguide_url": "https://bioguide.congress.gov/search/bio/E000295"
+                },
+                "ranking_member": {
+                  "name": "Markey, Edward J.",
+                  "bioguide": "M000133",
+                  "party": "DEM",
+                  "state": "Massachusetts",
+                  "role": "ranking_member",
+                  "role_ko": "간사",
+                  "member_office_url": "https://bioguide.congress.gov/search/bio/M000133",
+                  "bioguide_url": "https://bioguide.congress.gov/search/bio/M000133"
+                },
+                "committee_url": "https://www.congress.gov/committee/sssb00",
+                "agencies": []
+              },
+              {
+                "committee_id": "119-senate-ssva00",
+                "chamber": "senate",
+                "system_code": "ssva00",
+                "clerk_code": null,
+                "name": "Committee on Veterans' Affairs",
+                "type": "standing",
+                "member_count": 19,
+                "chair": {
+                  "name": "Moran, Jerry",
+                  "bioguide": "M000934",
+                  "party": "GOP",
+                  "state": "Kansas",
+                  "role": "chair",
+                  "role_ko": "위원장",
+                  "member_office_url": "https://bioguide.congress.gov/search/bio/M000934",
+                  "bioguide_url": "https://bioguide.congress.gov/search/bio/M000934"
+                },
+                "ranking_member": {
+                  "name": "Blumenthal, Richard",
+                  "bioguide": "B001277",
+                  "party": "DEM",
+                  "state": "Connecticut",
+                  "role": "ranking_member",
+                  "role_ko": "간사",
+                  "member_office_url": "https://bioguide.congress.gov/search/bio/B001277",
+                  "bioguide_url": "https://bioguide.congress.gov/search/bio/B001277"
+                },
+                "committee_url": "https://www.congress.gov/committee/ssva00",
+                "agencies": []
+              },
+              {
+                "committee_id": "119-senate-ssbu00",
+                "chamber": "senate",
+                "system_code": "ssbu00",
+                "clerk_code": null,
+                "name": "Committee on the Budget",
+                "type": "standing",
+                "member_count": 21,
+                "chair": {
+                  "name": "Johnson, Ron",
+                  "bioguide": "J000293",
+                  "party": "GOP",
+                  "state": "Wisconsin",
+                  "role": "chair",
+                  "role_ko": "위원장",
+                  "member_office_url": "https://bioguide.congress.gov/search/bio/J000293",
+                  "bioguide_url": "https://bioguide.congress.gov/search/bio/J000293"
+                },
+                "ranking_member": {
+                  "name": "Merkley, Jeff",
+                  "bioguide": "M001176",
+                  "party": "DEM",
+                  "state": "Oregon",
+                  "role": "ranking_member",
+                  "role_ko": "간사",
+                  "member_office_url": "https://bioguide.congress.gov/search/bio/M001176",
+                  "bioguide_url": "https://bioguide.congress.gov/search/bio/M001176"
+                },
+                "committee_url": "https://www.congress.gov/committee/ssbu00",
+                "agencies": []
+              },
+              {
+                "committee_id": "119-senate-ssju00",
+                "chamber": "senate",
+                "system_code": "ssju00",
+                "clerk_code": null,
+                "name": "Committee on the Judiciary",
+                "type": "standing",
+                "member_count": 22,
+                "chair": {
+                  "name": "Grassley, Chuck",
+                  "bioguide": "G000386",
+                  "party": "GOP",
+                  "state": "Iowa",
+                  "role": "chair",
+                  "role_ko": "위원장",
+                  "member_office_url": "https://bioguide.congress.gov/search/bio/G000386",
+                  "bioguide_url": "https://bioguide.congress.gov/search/bio/G000386"
+                },
+                "ranking_member": {
+                  "name": "Durbin, Richard J.",
+                  "bioguide": "D000563",
+                  "party": "DEM",
+                  "state": "Illinois",
+                  "role": "ranking_member",
+                  "role_ko": "간사",
+                  "member_office_url": "https://bioguide.congress.gov/search/bio/D000563",
+                  "bioguide_url": "https://bioguide.congress.gov/search/bio/D000563"
+                },
+                "committee_url": "https://www.congress.gov/committee/ssju00",
+                "agencies": []
+              }
+            ],
+            "standing": [
+              {
+                "committee_id": "119-house-hsag00",
+                "chamber": "house",
+                "system_code": "hsag00",
+                "clerk_code": "AG00",
+                "name": "Committee on Agriculture",
+                "type": "standing",
+                "member_count": 53,
+                "chair": {
+                  "name": "Glenn Thompson",
+                  "bioguide": "T000467",
+                  "party": "R",
+                  "state": "PA",
+                  "role": "chair",
+                  "role_ko": "위원장",
+                  "member_office_url": "https://clerk.house.gov/members/T000467",
+                  "bioguide_url": "https://bioguide.congress.gov/search/bio/T000467"
+                },
+                "ranking_member": {
+                  "name": "Angie Craig",
+                  "bioguide": "C001119",
+                  "party": "D",
+                  "state": "MN",
+                  "role": "ranking_member",
+                  "role_ko": "간사",
+                  "member_office_url": "https://clerk.house.gov/members/C001119",
+                  "bioguide_url": "https://bioguide.congress.gov/search/bio/C001119"
+                },
+                "committee_url": "https://clerk.house.gov/Committees/AG00",
+                "agencies": [
+                  {
+                    "agency_id": "fr-agriculture-department",
+                    "relationship_type": "oversight",
+                    "mapping_source": "official",
+                    "rule_cite": "House Rule X(a)(20)",
+                    "source_url": "https://www.govinfo.gov/content/pkg/HMAN-118/html/HMAN-118-pg459.htm",
+                    "verified_at": "2026-09-11T00:00:00Z"
+                  }
+                ]
+              },
+              {
+                "committee_id": "119-house-hsap00",
+                "chamber": "house",
+                "system_code": "hsap00",
+                "clerk_code": "AP00",
+                "name": "Committee on Appropriations",
+                "type": "standing",
+                "member_count": 63,
+                "chair": {
+                  "name": "Tom Cole",
+                  "bioguide": "C001053",
+                  "party": "R",
+                  "state": "OK",
+                  "role": "chair",
+                  "role_ko": "위원장",
+                  "member_office_url": "https://clerk.house.gov/members/C001053",
+                  "bioguide_url": "https://bioguide.congress.gov/search/bio/C001053"
+                },
+                "ranking_member": {
+                  "name": "Rosa L. DeLauro",
+                  "bioguide": "D000216",
+                  "party": "D",
+                  "state": "CT",
+                  "role": "ranking_member",
+                  "role_ko": "간사",
+                  "member_office_url": "https://clerk.house.gov/members/D000216",
+                  "bioguide_url": "https://bioguide.congress.gov/search/bio/D000216"
+                },
+                "committee_url": "https://clerk.house.gov/Committees/AP00",
+                "agencies": []
+              },
+              {
+                "committee_id": "119-house-hsas00",
+                "chamber": "house",
+                "system_code": "hsas00",
+                "clerk_code": "AS00",
+                "name": "Committee on Armed Services",
+                "type": "standing",
+                "member_count": 57,
+                "chair": {
+                  "name": "Mike Rogers",
+                  "bioguide": "R000575",
+                  "party": "R",
+                  "state": "AL",
+                  "role": "chair",
+                  "role_ko": "위원장",
+                  "member_office_url": "https://clerk.house.gov/members/R000575",
+                  "bioguide_url": "https://bioguide.congress.gov/search/bio/R000575"
+                },
+                "ranking_member": {
+                  "name": "Adam Smith",
+                  "bioguide": "S000510",
+                  "party": "D",
+                  "state": "WA",
+                  "role": "ranking_member",
+                  "role_ko": "간사",
+                  "member_office_url": "https://clerk.house.gov/members/S000510",
+                  "bioguide_url": "https://bioguide.congress.gov/search/bio/S000510"
+                },
+                "committee_url": "https://clerk.house.gov/Committees/AS00",
+                "agencies": [
+                  {
+                    "agency_id": "fr-defense-department",
+                    "relationship_type": "oversight",
+                    "mapping_source": "official",
+                    "rule_cite": "House Rule X(c)(4)",
+                    "source_url": "https://www.govinfo.gov/content/pkg/HMAN-118/html/HMAN-118-pg459.htm",
+                    "verified_at": "2026-09-11T00:00:00Z"
+                  }
+                ]
+              },
+              {
+                "committee_id": "119-house-hsed00",
+                "chamber": "house",
+                "system_code": "hsed00",
+                "clerk_code": "ED00",
+                "name": "Committee on Education and Workforce",
+                "type": "standing",
+                "member_count": 37,
+                "chair": {
+                  "name": "Tim Walberg",
+                  "bioguide": "W000798",
+                  "party": "R",
+                  "state": "MI",
+                  "role": "chair",
+                  "role_ko": "위원장",
+                  "member_office_url": "https://clerk.house.gov/members/W000798",
+                  "bioguide_url": "https://bioguide.congress.gov/search/bio/W000798"
+                },
+                "ranking_member": {
+                  "name": "Robert C. \"Bobby\" Scott",
+                  "bioguide": "S000185",
+                  "party": "D",
+                  "state": "VA",
+                  "role": "ranking_member",
+                  "role_ko": "간사",
+                  "member_office_url": "https://clerk.house.gov/members/S000185",
+                  "bioguide_url": "https://bioguide.congress.gov/search/bio/S000185"
+                },
+                "committee_url": "https://clerk.house.gov/Committees/ED00",
+                "agencies": [
+                  {
+                    "agency_id": "fr-education-department",
+                    "relationship_type": "oversight",
+                    "mapping_source": "official",
+                    "rule_cite": "House Rule X(e)(14)",
+                    "source_url": "https://www.govinfo.gov/content/pkg/HMAN-118/html/HMAN-118-pg459.htm",
+                    "verified_at": "2026-09-11T00:00:00Z"
+                  },
+                  {
+                    "agency_id": "fr-labor-department",
+                    "relationship_type": "oversight",
+                    "mapping_source": "official",
+                    "rule_cite": "House Rule X(e)(15)",
+                    "source_url": "https://www.govinfo.gov/content/pkg/HMAN-118/html/HMAN-118-pg459.htm",
+                    "verified_at": "2026-09-11T00:00:00Z"
+                  }
+                ]
+              },
+              {
+                "committee_id": "119-house-hsif00",
+                "chamber": "house",
+                "system_code": "hsif00",
+                "clerk_code": "IF00",
+                "name": "Committee on Energy and Commerce",
+                "type": "standing",
+                "member_count": 54,
+                "chair": {
+                  "name": "Brett Guthrie",
+                  "bioguide": "G000558",
+                  "party": "R",
+                  "state": "KY",
+                  "role": "chair",
+                  "role_ko": "위원장",
+                  "member_office_url": "https://clerk.house.gov/members/G000558",
+                  "bioguide_url": "https://bioguide.congress.gov/search/bio/G000558"
+                },
+                "ranking_member": {
+                  "name": "Frank Pallone, Jr.",
+                  "bioguide": "P000034",
+                  "party": "D",
+                  "state": "NJ",
+                  "role": "ranking_member",
+                  "role_ko": "간사",
+                  "member_office_url": "https://clerk.house.gov/members/P000034",
+                  "bioguide_url": "https://bioguide.congress.gov/search/bio/P000034"
+                },
+                "committee_url": "https://clerk.house.gov/Committees/IF00",
+                "agencies": [
+                  {
+                    "agency_id": "fr-energy-department",
+                    "relationship_type": "oversight",
+                    "mapping_source": "official",
+                    "rule_cite": "House Rule X(f)(10)",
+                    "source_url": "https://www.govinfo.gov/content/pkg/HMAN-118/html/HMAN-118-pg459.htm",
+                    "verified_at": "2026-09-11T00:00:00Z"
+                  }
+                ]
+              },
+              {
+                "committee_id": "119-house-hsso00",
+                "chamber": "house",
+                "system_code": "hsso00",
+                "clerk_code": "SO00",
+                "name": "Committee on Ethics",
+                "type": "standing",
+                "member_count": 10,
+                "chair": {
+                  "name": "Michael Guest",
+                  "bioguide": "G000591",
+                  "party": "R",
+                  "state": "MS",
+                  "role": "chair",
+                  "role_ko": "위원장",
+                  "member_office_url": "https://clerk.house.gov/members/G000591",
+                  "bioguide_url": "https://bioguide.congress.gov/search/bio/G000591"
+                },
+                "ranking_member": {
+                  "name": "Mark DeSaulnier",
+                  "bioguide": "D000623",
+                  "party": "D",
+                  "state": "CA",
+                  "role": "ranking_member",
+                  "role_ko": "간사",
+                  "member_office_url": "https://clerk.house.gov/members/D000623",
+                  "bioguide_url": "https://bioguide.congress.gov/search/bio/D000623"
+                },
+                "committee_url": "https://clerk.house.gov/Committees/SO00",
+                "agencies": []
+              },
+              {
+                "committee_id": "119-house-hsba00",
+                "chamber": "house",
+                "system_code": "hsba00",
+                "clerk_code": "BA00",
+                "name": "Committee on Financial Services",
+                "type": "standing",
+                "member_count": 53,
+                "chair": {
+                  "name": "J. French Hill",
+                  "bioguide": "H001072",
+                  "party": "R",
+                  "state": "AR",
+                  "role": "chair",
+                  "role_ko": "위원장",
+                  "member_office_url": "https://clerk.house.gov/members/H001072",
+                  "bioguide_url": "https://bioguide.congress.gov/search/bio/H001072"
+                },
+                "ranking_member": {
+                  "name": "Maxine Waters",
+                  "bioguide": "W000187",
+                  "party": "D",
+                  "state": "CA",
+                  "role": "ranking_member",
+                  "role_ko": "간사",
+                  "member_office_url": "https://clerk.house.gov/members/W000187",
+                  "bioguide_url": "https://bioguide.congress.gov/search/bio/W000187"
+                },
+                "committee_url": "https://clerk.house.gov/Committees/BA00",
+                "agencies": []
+              },
+              {
+                "committee_id": "119-house-hsfa00",
+                "chamber": "house",
+                "system_code": "hsfa00",
+                "clerk_code": "FA00",
+                "name": "Committee on Foreign Affairs",
+                "type": "standing",
+                "member_count": 53,
+                "chair": {
+                  "name": "Brian J. Mast",
+                  "bioguide": "M001199",
+                  "party": "R",
+                  "state": "FL",
+                  "role": "chair",
+                  "role_ko": "위원장",
+                  "member_office_url": "https://clerk.house.gov/members/M001199",
+                  "bioguide_url": "https://bioguide.congress.gov/search/bio/M001199"
+                },
+                "ranking_member": {
+                  "name": "Gregory W. Meeks",
+                  "bioguide": "M001137",
+                  "party": "D",
+                  "state": "NY",
+                  "role": "ranking_member",
+                  "role_ko": "간사",
+                  "member_office_url": "https://clerk.house.gov/members/M001137",
+                  "bioguide_url": "https://bioguide.congress.gov/search/bio/M001137"
+                },
+                "committee_url": "https://clerk.house.gov/Committees/FA00",
+                "agencies": []
+              },
+              {
+                "committee_id": "119-house-hshm00",
+                "chamber": "house",
+                "system_code": "hshm00",
+                "clerk_code": "HM00",
+                "name": "Committee on Homeland Security",
+                "type": "standing",
+                "member_count": 33,
+                "chair": {
+                  "name": "Andrew R. Garbarino",
+                  "bioguide": "G000597",
+                  "party": "R",
+                  "state": "NY",
+                  "role": "chair",
+                  "role_ko": "위원장",
+                  "member_office_url": "https://clerk.house.gov/members/G000597",
+                  "bioguide_url": "https://bioguide.congress.gov/search/bio/G000597"
+                },
+                "ranking_member": {
+                  "name": "Bennie G. Thompson",
+                  "bioguide": "T000193",
+                  "party": "D",
+                  "state": "MS",
+                  "role": "ranking_member",
+                  "role_ko": "간사",
+                  "member_office_url": "https://clerk.house.gov/members/T000193",
+                  "bioguide_url": "https://bioguide.congress.gov/search/bio/T000193"
+                },
+                "committee_url": "https://clerk.house.gov/Committees/HM00",
+                "agencies": []
+              },
+              {
+                "committee_id": "119-house-hsha00",
+                "chamber": "house",
+                "system_code": "hsha00",
+                "clerk_code": "HA00",
+                "name": "Committee on House Administration",
+                "type": "standing",
+                "member_count": 12,
+                "chair": {
+                  "name": "Bryan Steil",
+                  "bioguide": "S001213",
+                  "party": "R",
+                  "state": "WI",
+                  "role": "chair",
+                  "role_ko": "위원장",
+                  "member_office_url": "https://clerk.house.gov/members/S001213",
+                  "bioguide_url": "https://bioguide.congress.gov/search/bio/S001213"
+                },
+                "ranking_member": {
+                  "name": "Joseph D. Morelle",
+                  "bioguide": "M001206",
+                  "party": "D",
+                  "state": "NY",
+                  "role": "ranking_member",
+                  "role_ko": "간사",
+                  "member_office_url": "https://clerk.house.gov/members/M001206",
+                  "bioguide_url": "https://bioguide.congress.gov/search/bio/M001206"
+                },
+                "committee_url": "https://clerk.house.gov/Committees/HA00",
+                "agencies": [
+                  {
+                    "agency_id": "fr-homeland-security-department",
+                    "relationship_type": "oversight",
+                    "mapping_source": "official",
+                    "rule_cite": "House Rule X(j)(2)",
+                    "source_url": "https://www.govinfo.gov/content/pkg/HMAN-118/html/HMAN-118-pg459.htm",
+                    "verified_at": "2026-09-11T00:00:00Z"
+                  }
+                ]
+              },
+              {
+                "committee_id": "119-house-hsii00",
+                "chamber": "house",
+                "system_code": "hsii00",
+                "clerk_code": "II00",
+                "name": "Committee on Natural Resources",
+                "type": "standing",
+                "member_count": 45,
+                "chair": {
+                  "name": "Bruce Westerman",
+                  "bioguide": "W000821",
+                  "party": "R",
+                  "state": "AR",
+                  "role": "chair",
+                  "role_ko": "위원장",
+                  "member_office_url": "https://clerk.house.gov/members/W000821",
+                  "bioguide_url": "https://bioguide.congress.gov/search/bio/W000821"
+                },
+                "ranking_member": {
+                  "name": "Jared Huffman",
+                  "bioguide": "H001068",
+                  "party": "D",
+                  "state": "CA",
+                  "role": "ranking_member",
+                  "role_ko": "간사",
+                  "member_office_url": "https://clerk.house.gov/members/H001068",
+                  "bioguide_url": "https://bioguide.congress.gov/search/bio/H001068"
+                },
+                "committee_url": "https://clerk.house.gov/Committees/II00",
+                "agencies": [
+                  {
+                    "agency_id": "fr-interior-department",
+                    "relationship_type": "oversight",
+                    "mapping_source": "official",
+                    "rule_cite": "House Rule X(m)(10)",
+                    "source_url": "https://www.govinfo.gov/content/pkg/HMAN-118/html/HMAN-118-pg459.htm",
+                    "verified_at": "2026-09-11T00:00:00Z"
+                  }
+                ]
+              },
+              {
+                "committee_id": "119-house-hsgo00",
+                "chamber": "house",
+                "system_code": "hsgo00",
+                "clerk_code": "GO00",
+                "name": "Committee on Oversight and Government Reform",
+                "type": "standing",
+                "member_count": 47,
+                "chair": {
+                  "name": "James Comer",
+                  "bioguide": "C001108",
+                  "party": "R",
+                  "state": "KY",
+                  "role": "chair",
+                  "role_ko": "위원장",
+                  "member_office_url": "https://clerk.house.gov/members/C001108",
+                  "bioguide_url": "https://bioguide.congress.gov/search/bio/C001108"
+                },
+                "ranking_member": {
+                  "name": "Robert Garcia",
+                  "bioguide": "G000598",
+                  "party": "D",
+                  "state": "CA",
+                  "role": "ranking_member",
+                  "role_ko": "간사",
+                  "member_office_url": "https://clerk.house.gov/members/G000598",
+                  "bioguide_url": "https://bioguide.congress.gov/search/bio/G000598"
+                },
+                "committee_url": "https://clerk.house.gov/Committees/GO00",
+                "agencies": []
+              },
+              {
+                "committee_id": "119-house-hsru00",
+                "chamber": "house",
+                "system_code": "hsru00",
+                "clerk_code": "RU00",
+                "name": "Committee on Rules",
+                "type": "standing",
+                "member_count": 13,
+                "chair": {
+                  "name": "Virginia Foxx",
+                  "bioguide": "F000450",
+                  "party": "R",
+                  "state": "NC",
+                  "role": "chair",
+                  "role_ko": "위원장",
+                  "member_office_url": "https://clerk.house.gov/members/F000450",
+                  "bioguide_url": "https://bioguide.congress.gov/search/bio/F000450"
+                },
+                "ranking_member": {
+                  "name": "James P. McGovern",
+                  "bioguide": "M000312",
+                  "party": "D",
+                  "state": "MA",
+                  "role": "ranking_member",
+                  "role_ko": "간사",
+                  "member_office_url": "https://clerk.house.gov/members/M000312",
+                  "bioguide_url": "https://bioguide.congress.gov/search/bio/M000312"
+                },
+                "committee_url": "https://clerk.house.gov/Committees/RU00",
+                "agencies": []
+              },
+              {
+                "committee_id": "119-house-hssy00",
+                "chamber": "house",
+                "system_code": "hssy00",
+                "clerk_code": "SY00",
+                "name": "Committee on Science, Space, and Technology",
+                "type": "standing",
+                "member_count": 40,
+                "chair": {
+                  "name": "Brian Babin",
+                  "bioguide": "B001291",
+                  "party": "R",
+                  "state": "TX",
+                  "role": "chair",
+                  "role_ko": "위원장",
+                  "member_office_url": "https://clerk.house.gov/members/B001291",
+                  "bioguide_url": "https://bioguide.congress.gov/search/bio/B001291"
+                },
+                "ranking_member": {
+                  "name": "Zoe Lofgren",
+                  "bioguide": "L000397",
+                  "party": "D",
+                  "state": "CA",
+                  "role": "ranking_member",
+                  "role_ko": "간사",
+                  "member_office_url": "https://clerk.house.gov/members/L000397",
+                  "bioguide_url": "https://bioguide.congress.gov/search/bio/L000397"
+                },
+                "committee_url": "https://clerk.house.gov/Committees/SY00",
+                "agencies": []
+              },
+              {
+                "committee_id": "119-house-hssm00",
+                "chamber": "house",
+                "system_code": "hssm00",
+                "clerk_code": "SM00",
+                "name": "Committee on Small Business",
+                "type": "standing",
+                "member_count": 26,
+                "chair": {
+                  "name": "Roger Williams",
+                  "bioguide": "W000816",
+                  "party": "R",
+                  "state": "TX",
+                  "role": "chair",
+                  "role_ko": "위원장",
+                  "member_office_url": "https://clerk.house.gov/members/W000816",
+                  "bioguide_url": "https://bioguide.congress.gov/search/bio/W000816"
+                },
+                "ranking_member": {
+                  "name": "Nydia M. Velázquez",
+                  "bioguide": "V000081",
+                  "party": "D",
+                  "state": "NY",
+                  "role": "ranking_member",
+                  "role_ko": "간사",
+                  "member_office_url": "https://clerk.house.gov/members/V000081",
+                  "bioguide_url": "https://bioguide.congress.gov/search/bio/V000081"
+                },
+                "committee_url": "https://clerk.house.gov/Committees/SM00",
+                "agencies": []
+              },
+              {
+                "committee_id": "119-house-hspw00",
+                "chamber": "house",
+                "system_code": "hspw00",
+                "clerk_code": "PW00",
+                "name": "Committee on Transportation and Infrastructure",
+                "type": "standing",
+                "member_count": 67,
+                "chair": {
+                  "name": "Sam Graves",
+                  "bioguide": "G000546",
+                  "party": "R",
+                  "state": "MO",
+                  "role": "chair",
+                  "role_ko": "위원장",
+                  "member_office_url": "https://clerk.house.gov/members/G000546",
+                  "bioguide_url": "https://bioguide.congress.gov/search/bio/G000546"
+                },
+                "ranking_member": {
+                  "name": "Rick Larsen",
+                  "bioguide": "L000560",
+                  "party": "D",
+                  "state": "WA",
+                  "role": "ranking_member",
+                  "role_ko": "간사",
+                  "member_office_url": "https://clerk.house.gov/members/L000560",
+                  "bioguide_url": "https://bioguide.congress.gov/search/bio/L000560"
+                },
+                "committee_url": "https://clerk.house.gov/Committees/PW00",
+                "agencies": []
+              },
+              {
+                "committee_id": "119-house-hsvr00",
+                "chamber": "house",
+                "system_code": "hsvr00",
+                "clerk_code": "VR00",
+                "name": "Committee on Veterans' Affairs",
+                "type": "standing",
+                "member_count": 25,
+                "chair": {
+                  "name": "Mike Bost",
+                  "bioguide": "B001295",
+                  "party": "R",
+                  "state": "IL",
+                  "role": "chair",
+                  "role_ko": "위원장",
+                  "member_office_url": "https://clerk.house.gov/members/B001295",
+                  "bioguide_url": "https://bioguide.congress.gov/search/bio/B001295"
+                },
+                "ranking_member": {
+                  "name": "Mark Takano",
+                  "bioguide": "T000472",
+                  "party": "D",
+                  "state": "CA",
+                  "role": "ranking_member",
+                  "role_ko": "간사",
+                  "member_office_url": "https://clerk.house.gov/members/T000472",
+                  "bioguide_url": "https://bioguide.congress.gov/search/bio/T000472"
+                },
+                "committee_url": "https://clerk.house.gov/Committees/VR00",
+                "agencies": []
+              },
+              {
+                "committee_id": "119-house-hswm00",
+                "chamber": "house",
+                "system_code": "hswm00",
+                "clerk_code": "WM00",
+                "name": "Committee on Ways and Means",
+                "type": "standing",
+                "member_count": 45,
+                "chair": {
+                  "name": "Jason Smith",
+                  "bioguide": "S001195",
+                  "party": "R",
+                  "state": "MO",
+                  "role": "chair",
+                  "role_ko": "위원장",
+                  "member_office_url": "https://clerk.house.gov/members/S001195",
+                  "bioguide_url": "https://bioguide.congress.gov/search/bio/S001195"
+                },
+                "ranking_member": {
+                  "name": "Richard E. Neal",
+                  "bioguide": "N000015",
+                  "party": "D",
+                  "state": "MA",
+                  "role": "ranking_member",
+                  "role_ko": "간사",
+                  "member_office_url": "https://clerk.house.gov/members/N000015",
+                  "bioguide_url": "https://bioguide.congress.gov/search/bio/N000015"
+                },
+                "committee_url": "https://clerk.house.gov/Committees/WM00",
+                "agencies": []
+              },
+              {
+                "committee_id": "119-house-hsbu00",
+                "chamber": "house",
+                "system_code": "hsbu00",
+                "clerk_code": "BU00",
+                "name": "Committee on the Budget",
+                "type": "standing",
+                "member_count": 37,
+                "chair": {
+                  "name": "Jodey C. Arrington",
+                  "bioguide": "A000375",
+                  "party": "R",
+                  "state": "TX",
+                  "role": "chair",
+                  "role_ko": "위원장",
+                  "member_office_url": "https://clerk.house.gov/members/A000375",
+                  "bioguide_url": "https://bioguide.congress.gov/search/bio/A000375"
+                },
+                "ranking_member": {
+                  "name": "Brendan F. Boyle",
+                  "bioguide": "B001296",
+                  "party": "D",
+                  "state": "PA",
+                  "role": "ranking_member",
+                  "role_ko": "간사",
+                  "member_office_url": "https://clerk.house.gov/members/B001296",
+                  "bioguide_url": "https://bioguide.congress.gov/search/bio/B001296"
+                },
+                "committee_url": "https://clerk.house.gov/Committees/BU00",
+                "agencies": []
+              },
+              {
+                "committee_id": "119-house-hsju00",
+                "chamber": "house",
+                "system_code": "hsju00",
+                "clerk_code": "JU00",
+                "name": "Committee on the Judiciary",
+                "type": "standing",
+                "member_count": 44,
+                "chair": {
+                  "name": "Jim Jordan",
+                  "bioguide": "J000289",
+                  "party": "R",
+                  "state": "OH",
+                  "role": "chair",
+                  "role_ko": "위원장",
+                  "member_office_url": "https://clerk.house.gov/members/J000289",
+                  "bioguide_url": "https://bioguide.congress.gov/search/bio/J000289"
+                },
+                "ranking_member": {
+                  "name": "Jamie Raskin",
+                  "bioguide": "R000606",
+                  "party": "D",
+                  "state": "MD",
+                  "role": "ranking_member",
+                  "role_ko": "간사",
+                  "member_office_url": "https://clerk.house.gov/members/R000606",
+                  "bioguide_url": "https://bioguide.congress.gov/search/bio/R000606"
+                },
+                "committee_url": "https://clerk.house.gov/Committees/JU00",
+                "agencies": []
+              },
+              {
+                "committee_id": "119-senate-ssaf00",
+                "chamber": "senate",
+                "system_code": "ssaf00",
+                "clerk_code": null,
+                "name": "Committee on Agriculture, Nutrition, and Forestry",
+                "type": "standing",
+                "member_count": 23,
+                "chair": {
+                  "name": "Boozman, John",
+                  "bioguide": "B001236",
+                  "party": "GOP",
+                  "state": "Arkansas",
+                  "role": "chair",
+                  "role_ko": "위원장",
+                  "member_office_url": "https://bioguide.congress.gov/search/bio/B001236",
+                  "bioguide_url": "https://bioguide.congress.gov/search/bio/B001236"
+                },
+                "ranking_member": {
+                  "name": "Klobuchar, Amy",
+                  "bioguide": "K000367",
+                  "party": "DEM",
+                  "state": "Minnesota",
+                  "role": "ranking_member",
+                  "role_ko": "간사",
+                  "member_office_url": "https://bioguide.congress.gov/search/bio/K000367",
+                  "bioguide_url": "https://bioguide.congress.gov/search/bio/K000367"
+                },
+                "committee_url": "https://www.congress.gov/committee/ssaf00",
+                "agencies": []
+              },
+              {
+                "committee_id": "119-senate-ssap00",
+                "chamber": "senate",
+                "system_code": "ssap00",
+                "clerk_code": null,
+                "name": "Committee on Appropriations",
+                "type": "standing",
+                "member_count": 29,
+                "chair": {
+                  "name": "Collins, Susan M.",
+                  "bioguide": "C001035",
+                  "party": "GOP",
+                  "state": "Maine",
+                  "role": "chair",
+                  "role_ko": "위원장",
+                  "member_office_url": "https://bioguide.congress.gov/search/bio/C001035",
+                  "bioguide_url": "https://bioguide.congress.gov/search/bio/C001035"
+                },
+                "ranking_member": {
+                  "name": "Murray, Patty",
+                  "bioguide": "M001111",
+                  "party": "DEM",
+                  "state": "Washington",
+                  "role": "ranking_member",
+                  "role_ko": "간사",
+                  "member_office_url": "https://bioguide.congress.gov/search/bio/M001111",
+                  "bioguide_url": "https://bioguide.congress.gov/search/bio/M001111"
+                },
+                "committee_url": "https://www.congress.gov/committee/ssap00",
+                "agencies": []
+              },
+              {
+                "committee_id": "119-senate-ssas00",
+                "chamber": "senate",
+                "system_code": "ssas00",
+                "clerk_code": null,
+                "name": "Committee on Armed Services",
+                "type": "standing",
+                "member_count": 27,
+                "chair": {
+                  "name": "Wicker, Roger F.",
+                  "bioguide": "W000437",
+                  "party": "GOP",
+                  "state": "Mississippi",
+                  "role": "chair",
+                  "role_ko": "위원장",
+                  "member_office_url": "https://bioguide.congress.gov/search/bio/W000437",
+                  "bioguide_url": "https://bioguide.congress.gov/search/bio/W000437"
+                },
+                "ranking_member": {
+                  "name": "Reed, Jack",
+                  "bioguide": "R000122",
+                  "party": "DEM",
+                  "state": "Rhode Island",
+                  "role": "ranking_member",
+                  "role_ko": "간사",
+                  "member_office_url": "https://bioguide.congress.gov/search/bio/R000122",
+                  "bioguide_url": "https://bioguide.congress.gov/search/bio/R000122"
+                },
+                "committee_url": "https://www.congress.gov/committee/ssas00",
+                "agencies": [
+                  {
+                    "agency_id": "fr-defense-department",
+                    "relationship_type": "oversight",
+                    "mapping_source": "official",
+                    "rule_cite": "Senate Rule XXV(c)(1)(3)",
+                    "source_url": "https://www.govinfo.gov/content/pkg/SMAN-118/pdf/SMAN-118-pg25.pdf",
+                    "verified_at": "2026-09-11T00:00:00Z"
+                  }
+                ]
+              },
+              {
+                "committee_id": "119-senate-ssbk00",
+                "chamber": "senate",
+                "system_code": "ssbk00",
+                "clerk_code": null,
+                "name": "Committee on Banking, Housing, and Urban Affairs",
+                "type": "standing",
+                "member_count": 24,
+                "chair": {
+                  "name": "Scott, Tim",
+                  "bioguide": "S001184",
+                  "party": "GOP",
+                  "state": "South Carolina",
+                  "role": "chair",
+                  "role_ko": "위원장",
+                  "member_office_url": "https://bioguide.congress.gov/search/bio/S001184",
+                  "bioguide_url": "https://bioguide.congress.gov/search/bio/S001184"
+                },
+                "ranking_member": {
+                  "name": "Warren, Elizabeth",
+                  "bioguide": "W000817",
+                  "party": "DEM",
+                  "state": "Massachusetts",
+                  "role": "ranking_member",
+                  "role_ko": "간사",
+                  "member_office_url": "https://bioguide.congress.gov/search/bio/W000817",
+                  "bioguide_url": "https://bioguide.congress.gov/search/bio/W000817"
+                },
+                "committee_url": "https://www.congress.gov/committee/ssbk00",
+                "agencies": []
+              },
+              {
+                "committee_id": "119-senate-sscm00",
+                "chamber": "senate",
+                "system_code": "sscm00",
+                "clerk_code": null,
+                "name": "Committee on Commerce, Science, and Transportation",
+                "type": "standing",
+                "member_count": 28,
+                "chair": {
+                  "name": "Cruz, Ted",
+                  "bioguide": "C001098",
+                  "party": "GOP",
+                  "state": "Texas",
+                  "role": "chair",
+                  "role_ko": "위원장",
+                  "member_office_url": "https://bioguide.congress.gov/search/bio/C001098",
+                  "bioguide_url": "https://bioguide.congress.gov/search/bio/C001098"
+                },
+                "ranking_member": {
+                  "name": "Cantwell, Maria",
+                  "bioguide": "C000127",
+                  "party": "DEM",
+                  "state": "Washington",
+                  "role": "ranking_member",
+                  "role_ko": "간사",
+                  "member_office_url": "https://bioguide.congress.gov/search/bio/C000127",
+                  "bioguide_url": "https://bioguide.congress.gov/search/bio/C000127"
+                },
+                "committee_url": "https://www.congress.gov/committee/sscm00",
+                "agencies": []
+              },
+              {
+                "committee_id": "119-senate-sseg00",
+                "chamber": "senate",
+                "system_code": "sseg00",
+                "clerk_code": null,
+                "name": "Committee on Energy and Natural Resources",
+                "type": "standing",
+                "member_count": 20,
+                "chair": {
+                  "name": "Lee, Mike",
+                  "bioguide": "L000577",
+                  "party": "GOP",
+                  "state": "Utah",
+                  "role": "chair",
+                  "role_ko": "위원장",
+                  "member_office_url": "https://bioguide.congress.gov/search/bio/L000577",
+                  "bioguide_url": "https://bioguide.congress.gov/search/bio/L000577"
+                },
+                "ranking_member": {
+                  "name": "Heinrich, Martin",
+                  "bioguide": "H001046",
+                  "party": "DEM",
+                  "state": "New Mexico",
+                  "role": "ranking_member",
+                  "role_ko": "간사",
+                  "member_office_url": "https://bioguide.congress.gov/search/bio/H001046",
+                  "bioguide_url": "https://bioguide.congress.gov/search/bio/H001046"
+                },
+                "committee_url": "https://www.congress.gov/committee/sseg00",
+                "agencies": []
+              },
+              {
+                "committee_id": "119-senate-ssev00",
+                "chamber": "senate",
+                "system_code": "ssev00",
+                "clerk_code": null,
+                "name": "Committee on Environment and Public Works",
+                "type": "standing",
+                "member_count": 19,
+                "chair": {
+                  "name": "Capito, Shelley Moore",
+                  "bioguide": "C001047",
+                  "party": "GOP",
+                  "state": "West Virginia",
+                  "role": "chair",
+                  "role_ko": "위원장",
+                  "member_office_url": "https://bioguide.congress.gov/search/bio/C001047",
+                  "bioguide_url": "https://bioguide.congress.gov/search/bio/C001047"
+                },
+                "ranking_member": {
+                  "name": "Whitehouse, Sheldon",
+                  "bioguide": "W000802",
+                  "party": "DEM",
+                  "state": "Rhode Island",
+                  "role": "ranking_member",
+                  "role_ko": "간사",
+                  "member_office_url": "https://bioguide.congress.gov/search/bio/W000802",
+                  "bioguide_url": "https://bioguide.congress.gov/search/bio/W000802"
+                },
+                "committee_url": "https://www.congress.gov/committee/ssev00",
+                "agencies": []
+              },
+              {
+                "committee_id": "119-senate-ssfi00",
+                "chamber": "senate",
+                "system_code": "ssfi00",
+                "clerk_code": null,
+                "name": "Committee on Finance",
+                "type": "standing",
+                "member_count": 27,
+                "chair": {
+                  "name": "Crapo, Mike",
+                  "bioguide": "C000880",
+                  "party": "GOP",
+                  "state": "Idaho",
+                  "role": "chair",
+                  "role_ko": "위원장",
+                  "member_office_url": "https://bioguide.congress.gov/search/bio/C000880",
+                  "bioguide_url": "https://bioguide.congress.gov/search/bio/C000880"
+                },
+                "ranking_member": {
+                  "name": "Wyden, Ron",
+                  "bioguide": "W000779",
+                  "party": "DEM",
+                  "state": "Oregon",
+                  "role": "ranking_member",
+                  "role_ko": "간사",
+                  "member_office_url": "https://bioguide.congress.gov/search/bio/W000779",
+                  "bioguide_url": "https://bioguide.congress.gov/search/bio/W000779"
+                },
+                "committee_url": "https://www.congress.gov/committee/ssfi00",
+                "agencies": []
+              },
+              {
+                "committee_id": "119-senate-ssfr00",
+                "chamber": "senate",
+                "system_code": "ssfr00",
+                "clerk_code": null,
+                "name": "Committee on Foreign Relations",
+                "type": "standing",
+                "member_count": 22,
+                "chair": {
+                  "name": "Risch, James E.",
+                  "bioguide": "R000584",
+                  "party": "GOP",
+                  "state": "Idaho",
+                  "role": "chair",
+                  "role_ko": "위원장",
+                  "member_office_url": "https://bioguide.congress.gov/search/bio/R000584",
+                  "bioguide_url": "https://bioguide.congress.gov/search/bio/R000584"
+                },
+                "ranking_member": {
+                  "name": "Shaheen, Jeanne",
+                  "bioguide": "S001181",
+                  "party": "DEM",
+                  "state": "New Hampshire",
+                  "role": "ranking_member",
+                  "role_ko": "간사",
+                  "member_office_url": "https://bioguide.congress.gov/search/bio/S001181",
+                  "bioguide_url": "https://bioguide.congress.gov/search/bio/S001181"
+                },
+                "committee_url": "https://www.congress.gov/committee/ssfr00",
+                "agencies": []
+              },
+              {
+                "committee_id": "119-senate-sshr00",
+                "chamber": "senate",
+                "system_code": "sshr00",
+                "clerk_code": null,
+                "name": "Committee on Health, Education, Labor, and Pensions",
+                "type": "standing",
+                "member_count": 23,
+                "chair": {
+                  "name": "Cassidy, Bill",
+                  "bioguide": "C001075",
+                  "party": "GOP",
+                  "state": "Louisiana",
+                  "role": "chair",
+                  "role_ko": "위원장",
+                  "member_office_url": "https://bioguide.congress.gov/search/bio/C001075",
+                  "bioguide_url": "https://bioguide.congress.gov/search/bio/C001075"
+                },
+                "ranking_member": {
+                  "name": "Sanders, Bernard",
+                  "bioguide": "S000033",
+                  "party": "IND",
+                  "state": "Vermont",
+                  "role": "ranking_member",
+                  "role_ko": "간사",
+                  "member_office_url": "https://bioguide.congress.gov/search/bio/S000033",
+                  "bioguide_url": "https://bioguide.congress.gov/search/bio/S000033"
+                },
+                "committee_url": "https://www.congress.gov/committee/sshr00",
+                "agencies": []
+              },
+              {
+                "committee_id": "119-senate-ssga00",
+                "chamber": "senate",
+                "system_code": "ssga00",
+                "clerk_code": null,
+                "name": "Committee on Homeland Security and Governmental Affairs",
+                "type": "standing",
+                "member_count": 15,
+                "chair": {
+                  "name": "Paul, Rand",
+                  "bioguide": "P000603",
+                  "party": "GOP",
+                  "state": "Kentucky",
+                  "role": "chair",
+                  "role_ko": "위원장",
+                  "member_office_url": "https://bioguide.congress.gov/search/bio/P000603",
+                  "bioguide_url": "https://bioguide.congress.gov/search/bio/P000603"
+                },
+                "ranking_member": {
+                  "name": "Peters, Gary C.",
+                  "bioguide": "P000595",
+                  "party": "DEM",
+                  "state": "Michigan",
+                  "role": "ranking_member",
+                  "role_ko": "간사",
+                  "member_office_url": "https://bioguide.congress.gov/search/bio/P000595",
+                  "bioguide_url": "https://bioguide.congress.gov/search/bio/P000595"
+                },
+                "committee_url": "https://www.congress.gov/committee/ssga00",
+                "agencies": [
+                  {
+                    "agency_id": "fr-homeland-security-department",
+                    "relationship_type": "oversight",
+                    "mapping_source": "official",
+                    "rule_cite": "S.Res. 445 (108th) as compiled in Senate Rule XXV / HSGAC jurisdiction",
+                    "source_url": "https://www.govinfo.gov/content/pkg/CDOC-117sdoc6/pdf/CDOC-117sdoc6.pdf",
+                    "verified_at": "2026-09-11T00:00:00Z"
+                  }
+                ]
+              },
+              {
+                "committee_id": "119-senate-ssra00",
+                "chamber": "senate",
+                "system_code": "ssra00",
+                "clerk_code": null,
+                "name": "Committee on Rules and Administration",
+                "type": "standing",
+                "member_count": 17,
+                "chair": {
+                  "name": "McConnell, Mitch",
+                  "bioguide": "M000355",
+                  "party": "GOP",
+                  "state": "Kentucky",
+                  "role": "chair",
+                  "role_ko": "위원장",
+                  "member_office_url": "https://bioguide.congress.gov/search/bio/M000355",
+                  "bioguide_url": "https://bioguide.congress.gov/search/bio/M000355"
+                },
+                "ranking_member": {
+                  "name": "Padilla, Alex",
+                  "bioguide": "P000145",
+                  "party": "DEM",
+                  "state": "California",
+                  "role": "ranking_member",
+                  "role_ko": "간사",
+                  "member_office_url": "https://bioguide.congress.gov/search/bio/P000145",
+                  "bioguide_url": "https://bioguide.congress.gov/search/bio/P000145"
+                },
+                "committee_url": "https://www.congress.gov/committee/ssra00",
+                "agencies": []
+              },
+              {
+                "committee_id": "119-senate-sssb00",
+                "chamber": "senate",
+                "system_code": "sssb00",
+                "clerk_code": null,
+                "name": "Committee on Small Business and Entrepreneurship",
+                "type": "standing",
+                "member_count": 19,
+                "chair": {
+                  "name": "Ernst, Joni",
+                  "bioguide": "E000295",
+                  "party": "GOP",
+                  "state": "Iowa",
+                  "role": "chair",
+                  "role_ko": "위원장",
+                  "member_office_url": "https://bioguide.congress.gov/search/bio/E000295",
+                  "bioguide_url": "https://bioguide.congress.gov/search/bio/E000295"
+                },
+                "ranking_member": {
+                  "name": "Markey, Edward J.",
+                  "bioguide": "M000133",
+                  "party": "DEM",
+                  "state": "Massachusetts",
+                  "role": "ranking_member",
+                  "role_ko": "간사",
+                  "member_office_url": "https://bioguide.congress.gov/search/bio/M000133",
+                  "bioguide_url": "https://bioguide.congress.gov/search/bio/M000133"
+                },
+                "committee_url": "https://www.congress.gov/committee/sssb00",
+                "agencies": []
+              },
+              {
+                "committee_id": "119-senate-ssva00",
+                "chamber": "senate",
+                "system_code": "ssva00",
+                "clerk_code": null,
+                "name": "Committee on Veterans' Affairs",
+                "type": "standing",
+                "member_count": 19,
+                "chair": {
+                  "name": "Moran, Jerry",
+                  "bioguide": "M000934",
+                  "party": "GOP",
+                  "state": "Kansas",
+                  "role": "chair",
+                  "role_ko": "위원장",
+                  "member_office_url": "https://bioguide.congress.gov/search/bio/M000934",
+                  "bioguide_url": "https://bioguide.congress.gov/search/bio/M000934"
+                },
+                "ranking_member": {
+                  "name": "Blumenthal, Richard",
+                  "bioguide": "B001277",
+                  "party": "DEM",
+                  "state": "Connecticut",
+                  "role": "ranking_member",
+                  "role_ko": "간사",
+                  "member_office_url": "https://bioguide.congress.gov/search/bio/B001277",
+                  "bioguide_url": "https://bioguide.congress.gov/search/bio/B001277"
+                },
+                "committee_url": "https://www.congress.gov/committee/ssva00",
+                "agencies": []
+              },
+              {
+                "committee_id": "119-senate-ssbu00",
+                "chamber": "senate",
+                "system_code": "ssbu00",
+                "clerk_code": null,
+                "name": "Committee on the Budget",
+                "type": "standing",
+                "member_count": 21,
+                "chair": {
+                  "name": "Johnson, Ron",
+                  "bioguide": "J000293",
+                  "party": "GOP",
+                  "state": "Wisconsin",
+                  "role": "chair",
+                  "role_ko": "위원장",
+                  "member_office_url": "https://bioguide.congress.gov/search/bio/J000293",
+                  "bioguide_url": "https://bioguide.congress.gov/search/bio/J000293"
+                },
+                "ranking_member": {
+                  "name": "Merkley, Jeff",
+                  "bioguide": "M001176",
+                  "party": "DEM",
+                  "state": "Oregon",
+                  "role": "ranking_member",
+                  "role_ko": "간사",
+                  "member_office_url": "https://bioguide.congress.gov/search/bio/M001176",
+                  "bioguide_url": "https://bioguide.congress.gov/search/bio/M001176"
+                },
+                "committee_url": "https://www.congress.gov/committee/ssbu00",
+                "agencies": []
+              },
+              {
+                "committee_id": "119-senate-ssju00",
+                "chamber": "senate",
+                "system_code": "ssju00",
+                "clerk_code": null,
+                "name": "Committee on the Judiciary",
+                "type": "standing",
+                "member_count": 22,
+                "chair": {
+                  "name": "Grassley, Chuck",
+                  "bioguide": "G000386",
+                  "party": "GOP",
+                  "state": "Iowa",
+                  "role": "chair",
+                  "role_ko": "위원장",
+                  "member_office_url": "https://bioguide.congress.gov/search/bio/G000386",
+                  "bioguide_url": "https://bioguide.congress.gov/search/bio/G000386"
+                },
+                "ranking_member": {
+                  "name": "Durbin, Richard J.",
+                  "bioguide": "D000563",
+                  "party": "DEM",
+                  "state": "Illinois",
+                  "role": "ranking_member",
+                  "role_ko": "간사",
+                  "member_office_url": "https://bioguide.congress.gov/search/bio/D000563",
+                  "bioguide_url": "https://bioguide.congress.gov/search/bio/D000563"
+                },
+                "committee_url": "https://www.congress.gov/committee/ssju00",
+                "agencies": []
+              }
+            ],
+            "counts": {
+              "house": 20,
+              "senate": 16,
+              "standing": 36,
+              "with_named_department": 8
+            },
+            "shared_with": [
+              "homepage_policy_politics",
+              "elections_module"
+            ]
+          },
           "missing_fields": []
         }
       },
@@ -52752,17 +55203,6 @@
     }
   ],
   "live_election_news": [
-    {
-      "title": "한국 대통령의 내각 개편은 성별 장관 후보자가 그만두면서 새로운 걸림돌이 되고 있다.",
-      "url": "https://www.scmp.com/news/asia/east-asia/article/3367394/south-korean-presidents-cabinet-reshuffle-hits-new-snag-gender-minister-nominee-quits?utm_source=rss_feed",
-      "election_type": "cabinet_reshuffle",
-      "category": "cabinet_reshuffle",
-      "country_tier": "A",
-      "info_grade": "1",
-      "importance": 2.772,
-      "source_region": "china",
-      "published_at": "2026-09-14T04:33:36+00:00"
-    },
     {
       "title": "식료품에 대한 소비세 인하의 열쇠를 쥐고 있는 가타야마 재무장관에게 물어보십시오.",
       "url": "http://www3.nhk.or.jp/news/html/20260807/k10015199621000.html",
