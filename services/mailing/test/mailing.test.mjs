@@ -405,6 +405,57 @@ test("disabled RSS source is not mailed", async () => {
   );
   assert.equal(await claim(), null);
 });
+test("legacy receipt arriving after archive suppresses only that report", async () => {
+  await favorite(U, "commodity", "wheat");
+  await report("already-sent");
+  await report("still-pending");
+  await due();
+  await db.query(
+    "insert into public.commodity_report_notifications(user_id,report_id)values($1,$2)",
+    [U, "already-sent"],
+  );
+  const delivery = await claim();
+  assert.deepEqual(
+    delivery.items.map((item) => item.item_id),
+    ["still-pending"],
+  );
+  assert.equal(
+    (
+      await db.query(
+        "select suppressed_at is not null as suppressed from public.mailing_outbox where item_id='already-sent'",
+      )
+    ).rows[0].suppressed,
+    true,
+  );
+});
+test("legacy receipt arriving after claim cancels before any provider call", async () => {
+  await favorite(U, "commodity", "wheat");
+  await report();
+  await due();
+  let calls = 0;
+  const guarded = async (name, args) => {
+    const result = await rpc(name, args);
+    if (name === "mail_claim" && result)
+      await db.query(
+        "insert into public.commodity_report_notifications(user_id,report_id)values($1,$2)",
+        [U, "r1"],
+      );
+    return result;
+  };
+  await runMailing(env, {
+    rpc: guarded,
+    fetcher: async () => {
+      calls++;
+      return success();
+    },
+  });
+  assert.equal(calls, 0);
+  assert.equal(
+    (await db.query("select state from public.mailing_deliveries")).rows[0]
+      .state,
+    "cancelled",
+  );
+});
 test("queued report is not lost after the former rolling eight-day window", async () => {
   await favorite(U, "commodity", "wheat");
   await report();

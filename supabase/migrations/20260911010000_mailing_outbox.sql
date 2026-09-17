@@ -119,7 +119,7 @@ begin
   select f.user_id,event_id,'policy','bill',new.bill_id,f.created_at,
     jsonb_build_object('title',left(new.title,1000),'from_stage',old.current_stage,'to_stage',new.current_stage,
       'detail',left(coalesce(new.latest_action_text,''),1000),'source_date',new.status_updated_at,
-      'observed_at',now(),'url','https://chokemonitor.com/us-policy-hub'),
+      'observed_at',now(),'url','https://chokemonitor.com/policy/us'),
     public.mail_next_due('policy',now())
   from public.user_favorites f
   where f.item_kind='bill' and f.item_id=new.bill_id;
@@ -138,7 +138,7 @@ begin
   insert into public.mailing_outbox(user_id,event_key,kind,item_kind,item_id,favorite_created_at,content,due_at)
   select f.user_id,'eo-summary:' || new.eo_number::text || ':' || md5(new.summary),'policy','executive_order',new.eo_number::text,f.created_at,
     jsonb_build_object('title',left(new.title,1000),'detail',left(new.summary,1000),'observed_at',now(),
-      'url','https://chokemonitor.com/us-policy-hub'),public.mail_next_due('policy',now())
+      'url','https://chokemonitor.com/policy/us'),public.mail_next_due('policy',now())
   from public.user_favorites f where f.item_kind='executive_order' and f.item_id=new.eo_number::text
   on conflict(user_id,event_key) do nothing;
   return new;
@@ -178,6 +178,10 @@ returns boolean language sql stable security definer set search_path = '' as $$
       and f.item_id=o.item_id and f.created_at=o.favorite_created_at)
   else
     coalesce((select p.commodity_enabled from public.mailing_preferences p where p.user_id=o.user_id),true)
+    -- The legacy sender may finish after archival but before the cutover.
+    -- Recheck its receipt both when claiming and immediately before sending.
+    and not exists(select 1 from public.commodity_report_notifications n
+      where n.user_id=o.user_id and n.report_id=o.item_id)
     and exists(select 1 from public.user_favorites f where f.user_id=o.user_id and f.item_kind='commodity'
       and (o.content->'commodities') ? f.item_id and f.created_at<=(o.content->>'published_at')::timestamptz)
     and not exists(select 1 from public.commodity_digest_source_prefs p

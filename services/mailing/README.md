@@ -16,7 +16,7 @@ Worker는 10분마다 실행한다. 06시대에는 정책 메일에 전체 처�
 ## 상태와 중복 방지
 
 - DB의 법안 업데이트와 알림 생성은 한 트랜잭션이다. 같은 날 두 번 바뀌어도 두 사건을 보존한다. 즐겨찾기 등록 자체는 알리지 않는다.
-- `mailing_outbox(user_id,event_key)`가 사건 중복을 막는다. 보고서는 `mailing_reports.report_id`가 기본키다. 기존 `commodity_report_notifications`도 읽어 전환 시 재발송을 막는다.
+- `mailing_outbox(user_id,event_key)`가 사건 중복을 막는다. 보고서는 `mailing_reports.report_id`가 기본키다. 기존 `commodity_report_notifications`는 적재 시점뿐 아니라 큐 선점과 발송 직전에도 읽는다. 새 큐에 쌓인 뒤 기존 발송기가 보낸 보고서도 전환 후 재발송하지 않는다. 두 발송기의 동시 운영을 허용한다는 뜻은 아니다.
 - 첫 RSS 적재는 설치 시점 기준 8일 안의 보고서만 알림 후보로 만든다. 이후 큐에 들어간 항목은 8일이 지나도 소실되지 않는다. 원문 전문/PDF 대신 제목·600자 요약·URL·태그만 저장한다.
 - `mail_claim`은 `FOR UPDATE SKIP LOCKED`, 5분 lease, 매번 새 token을 쓴다. 한 delivery는 최대 20개 사건이다. Worker 한 번에 최대 5 deliveries, 현재 06시대 최대 30 deliveries다. 이용자/변경량 증가 시 이 용량과 실제 무료 플랜 한도를 재검토해야 한다.
 - 수신자는 `auth.users.email_confirmed_at`이 있는 계정 이메일만 쓴다. 사용자가 자유롭게 수정하는 `profiles.email`은 수신 주소가 아니다.
@@ -28,10 +28,10 @@ Worker는 10분마다 실행한다. 06시대에는 정책 메일에 전체 처�
 
 ## 적용 순서
 
-1. 기존 발송 workflow가 실행 중이지 않은지 확인하고 전환 동안 중지한다. 기존 sender와 새 sender를 동시에 운영하지 않는다. 특히 기존 법안 sender는 새 outbox의 발송 기록을 이해하지 못한다.
+1. 준비 단계에서는 기존 발송 workflow를 유지하고 새 발송은 `false`로 둔다. DB 구조 적용·RSS 적재·로컬 검증은 메일을 보내지 않는다. 기존 sender 중지는 새 발송기의 준비를 검증한 다음 승인된 전환 단계에서만 한다. 특히 기존 법안 sender는 새 outbox의 발송 기록을 이해하지 못한다.
 2. 기존 DB의 `profiles`, `user_favorites`, `bills`, `executive_orders`, `commodity_digest_source_prefs`, `commodity_report_notifications`를 확인한다. 사용자/즐겨찾기 마이그레이션과 `20260904_favorite_commodity_kind.sql`, `20260904_commodity_report_notifications.sql`, `20260904_commodity_digest_source_prefs.sql`이 선행돼야 한다. 운영 DB를 초기화하거나 schema.sql 전체를 다시 실행하지 않는다.
 3. `supabase/migrations/20260911010000_mailing_outbox.sql`만 SQL Editor 또는 승인된 DB 연결로 적용한다. SQL은 재실행 가능하며 과거 법안 사건을 소급 생성하지 않는다. 이 파일이 메일링 DDL의 정본이다. `schema.sql`은 정책 모듈 설치본으로, 계정·즐겨찾기·메일링까지 포함한 전체 앱 설치본이 아니다.
-4. PR을 main에 반영한다. UI 수신 설정과 RSS archive 단계는 새 SQL 이후 배포해야 한다. Congress workflow의 기존 sender가 제거되고, `commodity-digest.yml`은 매일 archive/상태 확인만 한다.
+4. PR은 먼저 draft로 검토한다. 이 PR을 main에 반영하면 UI 수신 설정이 배포되고 기존 sender가 제거되므로 준비 단계에서 병합하지 않는다. 전환 승인 시에만 병합하며 SQL이 선행돼야 한다. `commodity-digest.yml`은 매일 archive/상태 확인으로 바뀐다.
 5. 로컬에서 기존 JSON을 적재하거나 `Commodity Mailing Archive Recovery`를 실행한다. 로컬 환경 파일은 인자로 로드하며 키 값을 출력하지 않는다.
 
    ```bash
@@ -45,7 +45,7 @@ Worker는 10분마다 실행한다. 06시대에는 정책 메일에 전체 처�
 
 6. `Deploy Mailing Worker`를 main에서 **send_enabled=false**로 실행한다. GitHub의 `CLOUDFLARE_API_TOKEN`, `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `RESEND_API_KEY`를 사용한다. 임시 파일(0600)로 Worker secret을 전달하고 삭제한다. `inputs.send_enabled`를 그대로 검증·전달하며 `||`로 덮어쓰지 않는다.
 7. Cloudflare cron 실행과 preview 로그, Supabase 큐, Resend 발신 도메인 `chokemonitor.com`의 검증 상태/현재 quota를 확인한다. 별도 테스트 수신 주소에 대한 발송은 명시적 허가 후 확인한다. 발신 기본값은 `alerts@chokemonitor.com`이다.
-8. 승인된 운영 전환 시 같은 workflow를 **send_enabled=true**로 실행한다. 기존 발송 workflow를 재활성화하지 않는다. cron 변경 전파 시간까지 고려해 06시 직전에 전환하지 않는다.
+8. 승인된 운영 전환 시 기존 sender의 실행 종료와 제거를 확인한 후 같은 workflow를 **send_enabled=true**로 실행한다. 기존 발송 workflow를 재활성화하지 않는다. cron 변경 전파 시간까지 고려해 06시 직전에 전환하지 않는다. 기존 발송 중지는 준비가 끝나기 전에 선행하지 않는다.
 
 **롤백:** 같은 workflow를 `false`로 실행해 예약 발송을 멈춘다. SQL/큐를 삭제하지 않는다. 기존 sender를 그냥 되돌리면 서로 다른 중복 방지 기록 때문에 중복이 생길 수 있다. 이미 시작한 네트워크 요청은 설정 변경으로 회수할 수 없다.
 
