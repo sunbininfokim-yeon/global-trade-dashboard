@@ -13,6 +13,8 @@
     "NOTIFY_FROM_EMAIL": "alerts@chokemonitor.com",
   },
   "secrets": {
-    "required": ["SUPABASE_URL", "SUPABASE_SERVICE_ROLE_KEY", "RESEND_API_KEY"],
+    // Preview only reads queue status. Sending checks RESEND_API_KEY before
+    // claiming any delivery; the production deployment workflow requires it.
+    "required": ["SUPABASE_URL", "SUPABASE_SERVICE_ROLE_KEY"],
   },
 }

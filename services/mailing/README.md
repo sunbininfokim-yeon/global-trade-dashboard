@@ -1,6 +1,8 @@
 # 메일링 운영 계약
 
-2026-09-11 구현. 기존 Resend를 유지한다. 이 PR 자체는 SQL을 운영 DB에 적용하거나 Worker를 배포하지 않으며, 기본 발송 설정은 `false`다.
+2026-09-11 구현. 기존 Resend를 유지한다. 기본 발송 설정은 `false`다. 09-17 운영 DB 함수와 트리거를 확인하고 RSS 중복 방지 함수를 갱신했다. Worker는 아직 미배포다.
+
+Supabase는 보고서·변경 사건·발송 이력을 저장하고, Cloudflare Worker는 예약 시간에 발송 후보를 선별해 Resend API를 호출한다. 실제 이메일 발송 서비스는 계속 Resend다. Worker의 미리보기 배포에는 Supabase 연결 정보만 필요하다. 발송을 켤 때는 Resend 키도 필요하며, 키가 없으면 대기열을 선점하기 전에 실패한다. GitHub 배포 workflow는 세 키 모두를 요구한다.
 
 ## 두 경로
 

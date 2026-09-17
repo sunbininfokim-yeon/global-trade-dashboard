@@ -357,6 +357,17 @@ test("preview does not claim, checkpoint or send", async () => {
   assert.equal(result.mode, "preview");
   assert.equal(await count("mailing_deliveries"), 0);
 });
+test("sending without a provider key fails before claiming any delivery", async () => {
+  await favorite();
+  await stage();
+  await due();
+  await assert.rejects(
+    runMailing({ MAIL_SEND_ENABLED: "true" }, { rpc, fetcher: success }),
+    /missing_resend_key/,
+  );
+  assert.equal(await count("mailing_deliveries"), 0);
+  assert.equal(await count("mailing_outbox"), 1);
+});
 test("EO update timestamp alone does not notify; changed summary does", async () => {
   await db.exec(
     "insert into public.executive_orders values(14000,'EO','same',now())",
