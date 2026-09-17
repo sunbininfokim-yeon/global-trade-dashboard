@@ -1,6 +1,6 @@
 {
   "schema_version": "liquidity-intel-v1",
-  "generated_at": "2026-09-17T04:50:15.398786+00:00",
+  "generated_at": "2026-09-17T11:38:38.635735+00:00",
   "model": {
     "name": "macro_liquidity_official_v1",
     "description": "QRA / Fed official liquidity + priority-reporter ARTICLES mined for liquidity indicators (FIMA, TGA, RRP, FX intervention…) — not reporter news fluff.",
@@ -142,8 +142,16 @@
       {
         "author": "양영빈",
         "articles_scanned": 8,
-        "articles_with_hits": 1,
+        "articles_with_hits": 2,
         "top_indicators": [
+          {
+            "id": "fomc_liquidity",
+            "score": 6.8,
+            "label_ko": "FOMC·금리 유동성",
+            "evidence": [
+              "9월 FOMC 기준 금리 인상, 한번으로 끝날까? [이코노미21 양영빈] 이미 시장은 90%를 넘는 확률로 1회 인상(+"
+            ]
+          },
           {
             "id": "fima",
             "score": 1.2,
@@ -154,16 +162,37 @@
           }
         ],
         "themes_ko": [
+          "FOMC·금리 유동성 (점수 6.8)",
           "FIMA 레포 (점수 1.2)"
         ],
         "hint_weights": {
+          "policy": 6.8,
           "mixed": 1.2
         },
         "reporter_signals": [
           "reporter_fima_focus"
         ],
-        "headline_ko": "[유동성 분석·양영빈] 최근 기사 핵심 지표: FIMA 레포",
+        "headline_ko": "[유동성 분석·양영빈] 최근 기사 핵심 지표: FOMC·금리 유동성 · 외 1개 테마",
         "per_article": [
+          {
+            "title": "9월 FOMC 기준 금리 인상, 한번으로 끝날까?",
+            "url": "http://www.economy21.co.kr/news/articleView.html?idxno=1017182",
+            "published": "2026-09-17 15:50",
+            "author": "양영빈",
+            "indicators": [
+              {
+                "id": "fomc_liquidity",
+                "label_ko": "FOMC·금리 유동성",
+                "mentions": 8,
+                "hint": "policy",
+                "evidence": [
+                  "9월 FOMC 기준 금리 인상, 한번으로 끝날까? [이코노미21 양영빈] 이미 시장은 90%를 넘는 확률로 1회 인상(+",
+                  "로 1회 인상(+0.25%포인트)을 점치고 있었던 상황에서 9월 16일 FOMC는 기준금리 1회 인상을 단행했다.포워드 가이던스를 의미없는 것으로 본 워시 의장은 이번에도 점도표에 참여하",
+                  "칠 것인가 아니면 더 많은 금리 인상을 볼 수 있을 것인가에 있다.이번 FOMC 금리 인상의 의미를 제대로 파악하기 위해 연준의 경제전망(SEP, Summary of Economic Pr"
+                ]
+              }
+            ]
+          },
           {
             "title": "164엔의 벼랑 끝, 미 국채와 맞바꾼 엔화 방어의 내막",
             "url": "http://www.economy21.co.kr/news/articleView.html?idxno=1017135",
@@ -183,15 +212,16 @@
           }
         ],
         "finance_panel_fields": {
-          "reporter_liquidity_primary": "fima",
-          "reporter_liquidity_primary_ko": "FIMA 레포",
+          "reporter_liquidity_primary": "fomc_liquidity",
+          "reporter_liquidity_primary_ko": "FOMC·금리 유동성",
           "reporter_liquidity_themes": [
+            "FOMC·금리 유동성 (점수 6.8)",
             "FIMA 레포 (점수 1.2)"
           ],
           "reporter_liquidity_signals": [
             "reporter_fima_focus"
           ],
-          "reporter_liquidity_headline_ko": "[유동성 분석·양영빈] 최근 기사 핵심 지표: FIMA 레포"
+          "reporter_liquidity_headline_ko": "[유동성 분석·양영빈] 최근 기사 핵심 지표: FOMC·금리 유동성 · 외 1개 테마"
         }
       }
     ],
@@ -202,20 +232,21 @@
       "liquidity_bias": "tightening",
       "liquidity_headline_ko": "유동성: 재무부 순발행·현금 잔고 신호가 타이트 쪽으로 기울음 · 지정기자 분석 테마 반영",
       "beige_tone": null,
-      "reporter_liquidity_primary": "fima",
-      "reporter_liquidity_primary_ko": "FIMA 레포",
+      "reporter_liquidity_primary": "fomc_liquidity",
+      "reporter_liquidity_primary_ko": "FOMC·금리 유동성",
       "reporter_liquidity_themes": [
+        "FOMC·금리 유동성 (점수 6.8)",
         "FIMA 레포 (점수 1.2)"
       ],
       "reporter_liquidity_signals": [
         "reporter_fima_focus"
       ],
-      "reporter_liquidity_headline_ko": "[유동성 분석·양영빈] 최근 기사 핵심 지표: FIMA 레포"
+      "reporter_liquidity_headline_ko": "[유동성 분석·양영빈] 최근 기사 핵심 지표: FOMC·금리 유동성 · 외 1개 테마"
     }
   },
   "ticker_items": [
     {
-      "id": "qra-932137990705",
+      "id": "qra-749631230030",
       "published_at": null,
       "source": {
         "id": "us_treasury",
@@ -248,7 +279,7 @@
       "event_type": "qra"
     },
     {
-      "id": "fed-818452952399",
+      "id": "fed-838725115123",
       "published_at": "Wed, 16 Sep 2026 18:00:00 GMT",
       "source": {
         "id": "federal_reserve",
@@ -279,7 +310,7 @@
       "event_type": "fomc"
     },
     {
-      "id": "fed-51106540369",
+      "id": "fed-461163986850",
       "published_at": "Wed, 16 Sep 2026 18:00:00 GMT",
       "source": {
         "id": "federal_reserve",
@@ -310,7 +341,7 @@
       "event_type": "fomc"
     },
     {
-      "id": "fed-146979945871",
+      "id": "fed-274602056349",
       "published_at": "Wed, 29 Jul 2026 18:00:00 GMT",
       "source": {
         "id": "federal_reserve",
@@ -341,7 +372,7 @@
       "event_type": "fomc"
     },
     {
-      "id": "fed-405143291880",
+      "id": "fed-325693604060",
       "published_at": "Wed, 17 Jun 2026 18:00:00 GMT",
       "source": {
         "id": "federal_reserve",
@@ -372,7 +403,7 @@
       "event_type": "fomc"
     },
     {
-      "id": "fed-159598592121",
+      "id": "fed-348292687833",
       "published_at": "Wed, 17 Jun 2026 18:00:00 GMT",
       "source": {
         "id": "federal_reserve",
@@ -403,7 +434,7 @@
       "event_type": "fomc"
     },
     {
-      "id": "fed-788062358715",
+      "id": "fed-503673691815",
       "published_at": "Wed, 29 Apr 2026 18:00:00 GMT",
       "source": {
         "id": "federal_reserve",
@@ -434,7 +465,7 @@
       "event_type": "fomc"
     },
     {
-      "id": "fed-754348214785",
+      "id": "fed-469481737116",
       "published_at": "Tue, 25 Aug 2026 18:00:00 GMT",
       "source": {
         "id": "federal_reserve",
@@ -465,7 +496,7 @@
       "event_type": "press"
     },
     {
-      "id": "fed-632296918310",
+      "id": "fed-763589221137",
       "published_at": "Tue, 14 Jul 2026 18:00:00 GMT",
       "source": {
         "id": "federal_reserve",
@@ -496,7 +527,7 @@
       "event_type": "press"
     },
     {
-      "id": "fed-569374192945",
+      "id": "fed-267512169961",
       "published_at": "Tue, 26 May 2026 18:00:00 GMT",
       "source": {
         "id": "federal_reserve",
@@ -527,7 +558,7 @@
       "event_type": "press"
     },
     {
-      "id": "fed-423005824164",
+      "id": "fed-66322876237",
       "published_at": "Tue, 14 Apr 2026 18:00:00 GMT",
       "source": {
         "id": "federal_reserve",
@@ -558,7 +589,7 @@
       "event_type": "press"
     },
     {
-      "id": "liq-ind-703223917734",
+      "id": "liq-ind-648902666697",
       "published_at": null,
       "source": {
         "id": "reporter_liquidity",
@@ -566,15 +597,15 @@
         "region": "korea",
         "slant": null
       },
-      "url": "http://www.economy21.co.kr/news/articleView.html?idxno=1017135",
+      "url": "http://www.economy21.co.kr/news/articleView.html?idxno=1017182",
       "category": "liquidity_indicator",
       "commodities": [],
       "title": {
-        "original": "FIMA 레포",
+        "original": "FOMC·금리 유동성 · FIMA 레포",
         "original_lang": "ko",
-        "ko": "[유동성지표·양영빈] FIMA 레포"
+        "ko": "[유동성지표·양영빈] FOMC·금리 유동성 · FIMA 레포"
       },
-      "summary": "[유동성 분석·양영빈] 최근 기사 핵심 지표: FIMA 레포",
+      "summary": "[유동성 분석·양영빈] 최근 기사 핵심 지표: FOMC·금리 유동성 · 외 1개 테마",
       "scores": {
         "commodity": 0,
         "diplomacy": 0,
@@ -583,12 +614,20 @@
         "final": 7.5
       },
       "rank_reasons": [
-        "indicator:fima",
+        "indicator:fomc_liquidity",
         "reporter_fima_focus"
       ],
       "translation_status": "ok",
       "event_type": "liquidity_indicator",
       "indicators": [
+        {
+          "id": "fomc_liquidity",
+          "score": 6.8,
+          "label_ko": "FOMC·금리 유동성",
+          "evidence": [
+            "9월 FOMC 기준 금리 인상, 한번으로 끝날까? [이코노미21 양영빈] 이미 시장은 90%를 넘는 확률로 1회 인상(+"
+          ]
+        },
         {
           "id": "fima",
           "score": 1.2,
@@ -636,7 +675,7 @@
     "ticker_items": 12,
     "qra_parsed": true,
     "reporter_analyses": 1,
-    "reporter_indicator_hits": 1,
+    "reporter_indicator_hits": 2,
     "sources_ok": 5,
     "sources_failed": 0
   }
