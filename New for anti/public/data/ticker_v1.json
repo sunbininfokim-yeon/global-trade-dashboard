@@ -1,6 +1,6 @@
 {
   "schema_version": "ticker-v1",
-  "generated_at": "2026-09-17T01:21:26.624548+00:00",
+  "generated_at": "2026-09-17T07:36:16.745484+00:00",
   "model": {
     "name": "commodity_diplomacy_rss_v1",
     "description": "RSS multi-region ticker: regional priority (MENA/IN/TR/JP/CN/TW/RU + commodity specialists) over Western majors; politics admitted with diplomacy+trade bridge, elections, governance polls, cabinet reshuffles; horse-race national polls rejected; importance = country-tier × info-grade; main display language Korean.",
@@ -73,21 +73,21 @@
     "cabinet_reshuffle": true
   },
   "stats": {
-    "sources_ok": 34,
-    "sources_failed": 4,
-    "raw_items": 812,
-    "scored_items": 106,
+    "sources_ok": 32,
+    "sources_failed": 6,
+    "raw_items": 752,
+    "scored_items": 102,
     "selected_items": 24,
     "region_histogram": {
-      "commodity_specialist": 8,
+      "mena": 4,
+      "commodity_specialist": 7,
       "japan": 2,
+      "west": 1,
       "china": 2,
       "india": 2,
+      "taiwan": 2,
       "russia": 2,
-      "west": 1,
-      "mena": 4,
-      "turkey": 2,
-      "taiwan": 1
+      "turkey": 2
     },
     "min_importance": 0.35
   },
@@ -96,7 +96,7 @@
       "source_id": "aljazeera_en",
       "ok": true,
       "count": 25,
-      "elapsed_ms": 119,
+      "elapsed_ms": 136,
       "error": null,
       "mode": "live"
     },
@@ -104,7 +104,7 @@
       "source_id": "iran_intl",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 397,
+      "elapsed_ms": 338,
       "error": null,
       "mode": "live"
     },
@@ -112,7 +112,7 @@
       "source_id": "arab_news",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 156,
+      "elapsed_ms": 122,
       "error": null,
       "mode": "live"
     },
@@ -120,15 +120,15 @@
       "source_id": "tehran_times",
       "ok": true,
       "count": 30,
-      "elapsed_ms": 1238,
+      "elapsed_ms": 1003,
       "error": null,
       "mode": "live"
     },
     {
       "source_id": "middle_east_eye",
       "ok": true,
-      "count": 0,
-      "elapsed_ms": 178,
+      "count": 20,
+      "elapsed_ms": 81,
       "error": null,
       "mode": "live"
     },
@@ -136,7 +136,7 @@
       "source_id": "aa_world",
       "ok": true,
       "count": 30,
-      "elapsed_ms": 1914,
+      "elapsed_ms": 1992,
       "error": null,
       "mode": "live"
     },
@@ -144,7 +144,7 @@
       "source_id": "daily_sabah",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 701,
+      "elapsed_ms": 697,
       "error": null,
       "mode": "live"
     },
@@ -152,7 +152,7 @@
       "source_id": "hurriyet_daily",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 300,
+      "elapsed_ms": 169,
       "error": null,
       "mode": "live"
     },
@@ -160,7 +160,7 @@
       "source_id": "the_hindu",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 180,
+      "elapsed_ms": 139,
       "error": null,
       "mode": "live"
     },
@@ -168,7 +168,7 @@
       "source_id": "indian_express_world",
       "ok": false,
       "count": 0,
-      "elapsed_ms": 88,
+      "elapsed_ms": 38,
       "error": "HTTPError: HTTP Error 403: Forbidden",
       "mode": "live"
     },
@@ -176,7 +176,7 @@
       "source_id": "et_commodities",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 749,
+      "elapsed_ms": 1593,
       "error": null,
       "mode": "live"
     },
@@ -184,7 +184,7 @@
       "source_id": "business_standard_markets",
       "ok": true,
       "count": 35,
-      "elapsed_ms": 145,
+      "elapsed_ms": 192,
       "error": null,
       "mode": "live"
     },
@@ -192,7 +192,7 @@
       "source_id": "ndtv_world",
       "ok": true,
       "count": 20,
-      "elapsed_ms": 358,
+      "elapsed_ms": 174,
       "error": null,
       "mode": "live"
     },
@@ -200,7 +200,7 @@
       "source_id": "xinhua_world",
       "ok": true,
       "count": 20,
-      "elapsed_ms": 901,
+      "elapsed_ms": 1980,
       "error": null,
       "mode": "live"
     },
@@ -208,7 +208,7 @@
       "source_id": "china_daily_world",
       "ok": false,
       "count": 0,
-      "elapsed_ms": 668,
+      "elapsed_ms": 333,
       "error": "HTTPError: HTTP Error 404: Not Found",
       "mode": "live"
     },
@@ -216,7 +216,7 @@
       "source_id": "cgtn_world",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 591,
+      "elapsed_ms": 832,
       "error": null,
       "mode": "live"
     },
@@ -224,7 +224,7 @@
       "source_id": "scmp",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 590,
+      "elapsed_ms": 534,
       "error": null,
       "mode": "live"
     },
@@ -232,7 +232,7 @@
       "source_id": "nhk_business",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 423,
+      "elapsed_ms": 222,
       "error": null,
       "mode": "live"
     },
@@ -240,7 +240,7 @@
       "source_id": "nhk_top",
       "ok": true,
       "count": 7,
-      "elapsed_ms": 63,
+      "elapsed_ms": 42,
       "error": null,
       "mode": "live"
     },
@@ -248,7 +248,7 @@
       "source_id": "japan_times",
       "ok": true,
       "count": 30,
-      "elapsed_ms": 282,
+      "elapsed_ms": 354,
       "error": null,
       "mode": "live"
     },
@@ -256,7 +256,7 @@
       "source_id": "nikkei_asia",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 80,
+      "elapsed_ms": 181,
       "error": null,
       "mode": "live"
     },
@@ -264,7 +264,7 @@
       "source_id": "cna",
       "ok": true,
       "count": 20,
-      "elapsed_ms": 158,
+      "elapsed_ms": 253,
       "error": null,
       "mode": "live"
     },
@@ -272,7 +272,7 @@
       "source_id": "taipei_times",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 164,
+      "elapsed_ms": 114,
       "error": null,
       "mode": "live"
     },
@@ -280,7 +280,7 @@
       "source_id": "ltn",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 451,
+      "elapsed_ms": 272,
       "error": null,
       "mode": "live"
     },
@@ -288,31 +288,31 @@
       "source_id": "udn",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 262,
+      "elapsed_ms": 69,
       "error": null,
       "mode": "live"
     },
     {
       "source_id": "tass_en",
-      "ok": true,
-      "count": 40,
-      "elapsed_ms": 990,
-      "error": null,
+      "ok": false,
+      "count": 0,
+      "elapsed_ms": 18363,
+      "error": "URLError: <urlopen error timed out>",
       "mode": "live"
     },
     {
       "source_id": "tass_ru",
-      "ok": true,
-      "count": 40,
-      "elapsed_ms": 733,
-      "error": null,
+      "ok": false,
+      "count": 0,
+      "elapsed_ms": 18192,
+      "error": "URLError: <urlopen error timed out>",
       "mode": "live"
     },
     {
       "source_id": "interfax_ru",
       "ok": true,
       "count": 25,
-      "elapsed_ms": 853,
+      "elapsed_ms": 981,
       "error": null,
       "mode": "live"
     },
@@ -320,7 +320,7 @@
       "source_id": "rt_ru",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 1801,
+      "elapsed_ms": 1541,
       "error": null,
       "mode": "live"
     },
@@ -328,7 +328,7 @@
       "source_id": "ship_and_bunker",
       "ok": true,
       "count": 10,
-      "elapsed_ms": 340,
+      "elapsed_ms": 223,
       "error": null,
       "mode": "live"
     },
@@ -336,7 +336,7 @@
       "source_id": "oilprice",
       "ok": true,
       "count": 15,
-      "elapsed_ms": 569,
+      "elapsed_ms": 352,
       "error": null,
       "mode": "live"
     },
@@ -344,7 +344,7 @@
       "source_id": "mining_com",
       "ok": false,
       "count": 0,
-      "elapsed_ms": 90,
+      "elapsed_ms": 57,
       "error": "HTTPError: HTTP Error 403: Forbidden",
       "mode": "live"
     },
@@ -352,7 +352,7 @@
       "source_id": "world_grain",
       "ok": false,
       "count": 0,
-      "elapsed_ms": 190,
+      "elapsed_ms": 67,
       "error": "HTTPError: HTTP Error 403: Forbidden",
       "mode": "live"
     },
@@ -360,7 +360,7 @@
       "source_id": "hellenic_shipping",
       "ok": true,
       "count": 20,
-      "elapsed_ms": 226,
+      "elapsed_ms": 152,
       "error": null,
       "mode": "live"
     },
@@ -368,7 +368,7 @@
       "source_id": "seatrade",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 587,
+      "elapsed_ms": 312,
       "error": null,
       "mode": "live"
     },
@@ -376,7 +376,7 @@
       "source_id": "bbc_business",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 220,
+      "elapsed_ms": 160,
       "error": null,
       "mode": "live"
     },
@@ -384,7 +384,7 @@
       "source_id": "bloomberg_markets",
       "ok": true,
       "count": 20,
-      "elapsed_ms": 476,
+      "elapsed_ms": 210,
       "error": null,
       "mode": "live"
     },
@@ -392,12 +392,56 @@
       "source_id": "ft_commodities",
       "ok": true,
       "count": 25,
-      "elapsed_ms": 313,
+      "elapsed_ms": 250,
       "error": null,
       "mode": "live"
     }
   ],
   "items": [
+    {
+      "id": "c6353777b6ee3b0f",
+      "published_at": "2026-09-17T05:17:11+00:00",
+      "source": {
+        "id": "middle_east_eye",
+        "name": "Middle East Eye",
+        "region": "mena",
+        "slant": null
+      },
+      "url": "https://www.middleeasteye.net/live-blog/live-blog-update/few-cards-play-saudi-arabia-faces-limited-options-against-houthis-0",
+      "category": "commodity_diplomacy",
+      "commodities": [
+        "oil",
+        "shipping"
+      ],
+      "title": {
+        "original": "'Few cards to play': Saudi Arabia faces limited options against Houthis with allies out",
+        "original_lang": "en",
+        "ko": "'플레이할 카드가 거의 없음': 사우디아라비아는 후티를 상대로 제한된 옵션에 직면해 있으며, 동맹국이 없는 상황입니다."
+      },
+      "summary": "'Few cards to play': Saudi Arabia faces limited options against Houthis with allies out For months, Saudi Arabia appeared fairly insulated from the war on Iran even as it engulfed smaller neighbours. In fact, Saudi Aramco, the kingdom’s oil company, chalked up bumper profits this",
+      "scores": {
+        "commodity": 4.0,
+        "diplomacy": 1.0,
+        "election": 0.0,
+        "region_weight": 1.4,
+        "freshness": 0.938,
+        "importance": 4.543,
+        "final": 5.36
+      },
+      "rank_reasons": [
+        "region:mena*1.40",
+        "category:commodity_diplomacy",
+        "tier:B*0.72/g1",
+        "commodity:oil:2",
+        "commodity:shipping:2",
+        "diplomacy:1",
+        "bridge:1"
+      ],
+      "translation_status": "ok",
+      "country_tier": "B",
+      "info_grade": "1",
+      "country_hint": "SAU"
+    },
     {
       "id": "8feab9adfe28223b",
       "published_at": "2026-09-16T18:32:00+00:00",
@@ -424,9 +468,9 @@
         "diplomacy": 1.0,
         "election": 0.0,
         "region_weight": 1.35,
-        "freshness": 0.827,
-        "importance": 4.806,
-        "final": 5.563
+        "freshness": 0.696,
+        "importance": 4.04,
+        "final": 4.676
       },
       "rank_reasons": [
         "region:commodity_specialist*1.35",
@@ -468,9 +512,9 @@
         "diplomacy": 1.0,
         "election": 0.0,
         "region_weight": 1.35,
-        "freshness": 0.937,
-        "importance": 4.412,
-        "final": 5.106
+        "freshness": 0.788,
+        "importance": 3.709,
+        "final": 4.293
       },
       "rank_reasons": [
         "region:commodity_specialist*1.35",
@@ -484,6 +528,93 @@
       "translation_status": "ok",
       "country_tier": "A",
       "info_grade": "2",
+      "country_hint": "USA"
+    },
+    {
+      "id": "7f71b756f4c9a7e5",
+      "published_at": "2026-09-16T22:22:25+00:00",
+      "source": {
+        "id": "middle_east_eye",
+        "name": "Middle East Eye",
+        "region": "mena",
+        "slant": null
+      },
+      "url": "https://www.middleeasteye.net/live-blog/live-blog-update/oil-prices-fall-after-saudi-arabia-offers-more-crude-oman",
+      "category": "commodity_diplomacy",
+      "commodities": [
+        "oil",
+        "shipping"
+      ],
+      "title": {
+        "original": "Oil prices fall after Saudi Arabia offers more crude via Oman",
+        "original_lang": "en",
+        "ko": "유가는 사우디아라비아가 오만을 통해 더 많은 원유를 제공한 후 하락합니다."
+      },
+      "summary": "Oil prices fall after Saudi Arabia offers more crude via Oman Oil prices have fallen after reports that Saudi Arabia was offering additional crude cargoes via Oman as drone attacks damaged the kingdom's oil pipeline to the Red Sea, appearing to ease concerns about the scale of Mi",
+      "scores": {
+        "commodity": 5.0,
+        "diplomacy": 1.0,
+        "election": 0.0,
+        "region_weight": 1.4,
+        "freshness": 0.774,
+        "importance": 3.454,
+        "final": 4.076
+      },
+      "rank_reasons": [
+        "region:mena*1.40",
+        "category:commodity_diplomacy",
+        "tier:B*0.72/g2",
+        "commodity:oil:3",
+        "commodity:shipping:2",
+        "diplomacy:1",
+        "bridge:3"
+      ],
+      "translation_status": "ok",
+      "country_tier": "B",
+      "info_grade": "2",
+      "country_hint": "SAU"
+    },
+    {
+      "id": "63e5a92979a7aed0",
+      "published_at": "2026-09-17T05:20:00+00:00",
+      "source": {
+        "id": "oilprice",
+        "name": "OilPrice.com",
+        "region": "commodity_specialist",
+        "slant": null
+      },
+      "url": "https://oilprice.com/Latest-Energy-News/World-News/Oil-Prices-Slide-as-Saudi-Arabia-Reroutes-Crude-via-Oman.html",
+      "category": "commodity",
+      "commodities": [
+        "oil",
+        "shipping"
+      ],
+      "title": {
+        "original": "Oil Prices Slide as Saudi Arabia Reroutes Crude via Oman",
+        "original_lang": "en",
+        "ko": "유가가 사우디아라비아로 미끄러지면서 오만을 경유하는 원유 경로"
+      },
+      "summary": "Crude oil prices, which dipped yesterday, extended their losses earlier today following reports that Saudi Arabia will be exporting more oil through Oman while the East-West pipeline is repaired. At the time of writing, Brent crude was trading at $105.89 per barrel, with West Tex",
+      "scores": {
+        "commodity": 5.0,
+        "diplomacy": 0.0,
+        "election": 0.0,
+        "region_weight": 1.35,
+        "freshness": 0.939,
+        "importance": 2.75,
+        "final": 3.183
+      },
+      "rank_reasons": [
+        "region:commodity_specialist*1.35",
+        "category:commodity",
+        "tier:A*1.00/g3",
+        "commodity:oil:3",
+        "commodity:shipping:2",
+        "bridge:1"
+      ],
+      "translation_status": "ok",
+      "country_tier": "A",
+      "info_grade": "3",
       "country_hint": "USA"
     },
     {
@@ -512,9 +643,9 @@
         "diplomacy": 1.0,
         "election": 0.0,
         "region_weight": 1.35,
-        "freshness": 0.793,
-        "importance": 3.237,
-        "final": 3.747
+        "freshness": 0.667,
+        "importance": 2.722,
+        "final": 3.15
       },
       "rank_reasons": [
         "region:commodity_specialist*1.35",
@@ -556,9 +687,9 @@
         "diplomacy": 0.0,
         "election": 0.0,
         "region_weight": 1.35,
-        "freshness": 0.886,
-        "importance": 3.057,
-        "final": 3.539
+        "freshness": 0.745,
+        "importance": 2.57,
+        "final": 2.975
       },
       "rank_reasons": [
         "region:commodity_specialist*1.35",
@@ -571,6 +702,46 @@
       "country_tier": "A",
       "info_grade": "1",
       "country_hint": "CHN"
+    },
+    {
+      "id": "43c0b456a5da3fa4",
+      "published_at": "2026-09-17T04:46:00+00:00",
+      "source": {
+        "id": "japan_times",
+        "name": "Japan Times",
+        "region": "japan",
+        "slant": null
+      },
+      "url": "https://www.japantimes.co.jp/news/2026/09/17/japan/politics/takaichi-cabinet-reshuffle/",
+      "category": "cabinet_reshuffle",
+      "commodities": [],
+      "title": {
+        "original": "Takaichi targets continuity with first Cabinet reshuffle",
+        "original_lang": "en",
+        "ko": "Takaichi는 첫 번째 캐비닛 재편성으로 연속성을 목표로 합니다"
+      },
+      "summary": "The prime minister brought a member of the Japan Innovation Party into the Cabinet for the first time, a sign of its growing importance.",
+      "scores": {
+        "commodity": 0,
+        "diplomacy": 0.0,
+        "election": 1.2,
+        "region_weight": 1.25,
+        "freshness": 0.924,
+        "importance": 2.582,
+        "final": 2.872
+      },
+      "rank_reasons": [
+        "region:japan*1.25",
+        "category:cabinet_reshuffle",
+        "tier:A*1.00/g1",
+        "election:cabinet_reshuffle:1.2",
+        "cabinet_reshuffle"
+      ],
+      "translation_status": "ok",
+      "country_tier": "A",
+      "info_grade": "1",
+      "country_hint": "JPN",
+      "election_type": "cabinet_reshuffle"
     },
     {
       "id": "d0cc71178d6cc968",
@@ -598,9 +769,9 @@
         "diplomacy": 1.0,
         "election": 0.0,
         "region_weight": 1.35,
-        "freshness": 0.815,
-        "importance": 2.56,
-        "final": 2.963
+        "freshness": 0.685,
+        "importance": 2.152,
+        "final": 2.491
       },
       "rank_reasons": [
         "region:commodity_specialist*1.35",
@@ -617,44 +788,46 @@
       "country_hint": "RUS"
     },
     {
-      "id": "43c0b456a5da3fa4",
-      "published_at": "2026-09-16T22:11:00+00:00",
+      "id": "8c7366893fc62208",
+      "published_at": "2026-09-17T05:13:15+00:00",
       "source": {
-        "id": "japan_times",
-        "name": "Japan Times",
-        "region": "japan",
+        "id": "middle_east_eye",
+        "name": "Middle East Eye",
+        "region": "mena",
         "slant": null
       },
-      "url": "https://www.japantimes.co.jp/news/2026/09/17/japan/politics/takaichi-cabinet-reshuffle/",
-      "category": "cabinet_reshuffle",
-      "commodities": [],
+      "url": "https://www.middleeasteye.net/live-blog/live-blog-update/south-korea-foreign-minister-says-no-decision-made-hormuz-strait",
+      "category": "commodity",
+      "commodities": [
+        "shipping"
+      ],
       "title": {
-        "original": "Takaichi targets continuity with first Cabinet reshuffle",
+        "original": "South Korea foreign minister says no decision made on Hormuz Strait military deployment",
         "original_lang": "en",
-        "ko": "Takaichi는 첫 번째 캐비닛 재편성으로 연속성을 목표로 합니다"
+        "ko": "한국 외무장관, 호르무즈 해협 군사 배치에 대한 어떤 결정도 내리지 않았다고 말함"
       },
-      "summary": "The prime minister is likely to bring a member of the Japan Innovation Party into the Cabinet for the first time, a sign of its growing importance.",
+      "summary": "South Korea foreign minister says no decision made on Hormuz Strait military deployment South Korea's foreign minister told reporters that no decision has been made on any military deployment to the Strait of Hormuz. \"Our position remains that no decision has been made yet, and w",
       "scores": {
-        "commodity": 0,
-        "diplomacy": 0.0,
-        "election": 1.2,
-        "region_weight": 1.25,
-        "freshness": 0.916,
-        "importance": 2.558,
-        "final": 2.846
+        "commodity": 1.0,
+        "diplomacy": 2.0,
+        "election": 0.0,
+        "region_weight": 1.4,
+        "freshness": 0.936,
+        "importance": 1.955,
+        "final": 2.306
       },
       "rank_reasons": [
-        "region:japan*1.25",
-        "category:cabinet_reshuffle",
-        "tier:A*1.00/g1",
-        "election:cabinet_reshuffle:1.2",
+        "region:mena*1.40",
+        "category:commodity",
+        "tier:A*1.00/g3",
+        "commodity:shipping:1",
+        "diplomacy:2",
         "cabinet_reshuffle"
       ],
       "translation_status": "ok",
       "country_tier": "A",
-      "info_grade": "1",
-      "country_hint": "JPN",
-      "election_type": "cabinet_reshuffle"
+      "info_grade": "3",
+      "country_hint": "USA"
     },
     {
       "id": "1f6c2f08317d9415",
@@ -682,9 +855,9 @@
         "diplomacy": 0.0,
         "election": 0.0,
         "region_weight": 1.35,
-        "freshness": 0.963,
-        "importance": 2.289,
-        "final": 2.649
+        "freshness": 0.81,
+        "importance": 1.924,
+        "final": 2.227
       },
       "rank_reasons": [
         "region:commodity_specialist*1.35",
@@ -700,39 +873,40 @@
       "country_hint": "USA"
     },
     {
-      "id": "52bdf4437ccd43a9",
-      "published_at": "2026-09-16T20:00:00+00:00",
+      "id": "fb851a28965d7658",
+      "published_at": "2026-09-17T06:39:09+00:00",
       "source": {
-        "id": "oilprice",
-        "name": "OilPrice.com",
-        "region": "commodity_specialist",
+        "id": "bloomberg_markets",
+        "name": "Bloomberg Markets",
+        "region": "west",
         "slant": null
       },
-      "url": "https://oilprice.com/Energy/Natural-Gas/AI-Data-Centers-Are-Driving-Southeast-Asias-LNG-Demand-Through-the-Roof.html",
+      "url": "https://www.bloomberg.com/news/videos/2026-09-17/thailand-seeks-more-crude-oil-supplies-outside-mideast-video",
       "category": "commodity",
       "commodities": [
-        "gas"
+        "oil"
       ],
       "title": {
-        "original": "AI Data Centers Are Driving Southeast Asia's LNG Demand Through the Roof",
+        "original": "Thailand Seeks More Crude Oil Supplies Outside Mideast",
         "original_lang": "en",
-        "ko": "AI 데이터 센터는 지붕을 통해 동남아시아의 LNG 수요를 주도하고 있습니다."
+        "ko": "태국은 중동 이외의 지역에서 더 많은 원유 공급을 모색하고 있습니다."
       },
-      "summary": "The artificial intelligence boom is sending Southeast Asia’s natural gas demand projections through the roof – but prolonged price hikes triggered by the war in Iran could turn the region toward renewable energies instead. What is more, these competing market forces are taking pl",
+      "summary": "Energy Minister, Akanat Promphan, says oil supply disruptions are prompting Thailand, like many other countries, to accelerate its energy transition. He added that Thailand has diversified its oil supplies since the war began, reducing its reliance on Middle Eastern suppliers to ",
       "scores": {
         "commodity": 2.0,
         "diplomacy": 0.0,
         "election": 0.0,
-        "region_weight": 1.35,
-        "freshness": 0.862,
-        "importance": 1.982,
-        "final": 2.295
+        "region_weight": 0.55,
+        "freshness": 0.974,
+        "importance": 2.581,
+        "final": 2.059
       },
       "rank_reasons": [
-        "region:commodity_specialist*1.35",
+        "region:west*0.55",
         "category:commodity",
         "tier:A*1.00/g1",
-        "commodity:gas:2"
+        "commodity:oil:2",
+        "bridge:1"
       ],
       "translation_status": "ok",
       "country_tier": "A",
@@ -740,162 +914,76 @@
       "country_hint": "USA"
     },
     {
-      "id": "e9e4f529c9f0fa96",
-      "published_at": "2026-09-16T15:30:00+00:00",
+      "id": "0923fcb808e1d5b6",
+      "published_at": "2026-09-16T10:06:53+00:00",
       "source": {
-        "id": "oilprice",
-        "name": "OilPrice.com",
-        "region": "commodity_specialist",
+        "id": "cgtn_world",
+        "name": "CGTN",
+        "region": "china",
         "slant": null
       },
-      "url": "https://oilprice.com/Latest-Energy-News/World-News/Russia-Extends-Diesel-Export-Ban-Through-October.html",
-      "category": "diplomacy",
-      "commodities": [
-        "oil"
-      ],
+      "url": "https://newsaf.cgtn.com/news/2026-09-16/US-restricts-visas-over-South-Africa-race-and-land-policies-1Qu9hjW9Abe/p.html?UTM_Source=cgtn&UTM_Medium=rss&UTM_Campaign=World",
+      "category": "cabinet_reshuffle",
+      "commodities": [],
       "title": {
-        "original": "Russia Extends Diesel Export Ban Through October",
+        "original": "US restricts visas over South Africa race and land policies",
         "original_lang": "en",
-        "ko": "러시아, 10월까지 디젤차 수출 금지 연장"
+        "ko": "미국, 남아프리카 인종 및 토지 정책에 대한 비자 제한"
       },
-      "summary": "Russia will extend its ban on diesel exports for all fuel producers to October 31, Vedomosti reported Tuesday, citing delayed refinery maintenance and the need to rebuild fuel reserves before winter. The ban, expanded in July from traders and small refineries to cover all produce",
+      "summary": "US Secretary of State Marco Rubio announced the measures on Tuesday, saying the South African government had failed to address concerns previously raised by the Trump administration.",
       "scores": {
-        "commodity": 0.8,
-        "diplomacy": 1.0,
-        "election": 0.0,
-        "region_weight": 1.35,
-        "freshness": 0.761,
-        "importance": 1.917,
-        "final": 2.219
+        "commodity": 0,
+        "diplomacy": 0.0,
+        "election": 1.2,
+        "region_weight": 1.25,
+        "freshness": 0.551,
+        "importance": 1.538,
+        "final": 1.711
       },
       "rank_reasons": [
-        "region:commodity_specialist*1.35",
-        "category:diplomacy",
+        "region:china*1.25",
+        "category:cabinet_reshuffle",
         "tier:A*1.00/g1",
-        "commodity:oil:0.8",
-        "diplomacy:1",
-        "bridge:2"
+        "election:cabinet_reshuffle:1.2",
+        "cabinet_reshuffle"
       ],
       "translation_status": "ok",
       "country_tier": "A",
       "info_grade": "1",
-      "country_hint": "RUS"
+      "country_hint": "CHN",
+      "election_type": "cabinet_reshuffle"
     },
     {
-      "id": "6a11c3beaa91a62a",
-      "published_at": "2026-09-16T14:32:02+00:00",
+      "id": "83dd7945cd0cb8d3",
+      "published_at": "2026-09-16T22:09:49+00:00",
       "source": {
-        "id": "scmp",
-        "name": "South China Morning Post",
-        "region": "china",
+        "id": "middle_east_eye",
+        "name": "Middle East Eye",
+        "region": "mena",
         "slant": null
       },
-      "url": "https://www.scmp.com/news/world/middle-east/article/3367764/who-abdul-malik-al-houthi-elusive-yemeni-commander-behind-red-sea-saudi-blitz?utm_source=rss_feed",
-      "category": "commodity",
-      "commodities": [
-        "shipping",
-        "oil"
-      ],
-      "title": {
-        "original": "Who is Abdul Malik al-Houthi, the elusive Yemeni commander behind Red Sea-Saudi blitz?",
-        "original_lang": "en",
-        "ko": "홍해-사우디 전격전의 배후에 있는 예멘의 교묘한 사령관 압둘 말리크 알 후티는 누구인가?"
-      },
-      "summary": "Abdul Malik al-Houthi, an elusive figure who commands ⁠a battle-hardened force, scored his biggest military victory in years when his Iran-aligned Houthi militant group swept through Yemen’s Red Sea coastline and tightened their grip on a vital shipping waterway, rattling oil sup",
-      "scores": {
-        "commodity": 3.0,
-        "diplomacy": 1.0,
-        "election": 0.0,
-        "region_weight": 1.25,
-        "freshness": 0.74,
-        "importance": 1.546,
-        "final": 1.72
-      },
-      "rank_reasons": [
-        "region:china*1.25",
-        "category:commodity",
-        "tier:A*1.00/g3",
-        "commodity:oil:1",
-        "commodity:shipping:2",
-        "diplomacy:1"
-      ],
-      "translation_status": "ok",
-      "country_tier": "A",
-      "info_grade": "3",
-      "country_hint": "CHN"
-    },
-    {
-      "id": "abfea00e6dad44a3",
-      "published_at": "2026-09-16T22:11:00+00:00",
-      "source": {
-        "id": "japan_times",
-        "name": "Japan Times",
-        "region": "japan",
-        "slant": null
-      },
-      "url": "https://www.japantimes.co.jp/news/2026/09/17/world/saudi-houthis-strikes-mecca/",
+      "url": "https://www.middleeasteye.net/live-blog/live-blog-update/us-reiterates-support-yemens-government-against-houthi-aggression-uae",
       "category": "commodity",
       "commodities": [
         "shipping"
       ],
       "title": {
-        "original": "Houthi blitz leaves Saudi Arabia exposed and Iran emboldened",
+        "original": "US reiterates support for Yemen’s government against ‘Houthi aggression’, UAE condemns Mecca attack",
         "original_lang": "en",
-        "ko": "후티 블리츠는 사우디아라비아를 노출시키고 이란을 대담하게 만듭니다"
+        "ko": "미국은 ‘후티 침략‘ 에 반대하는 예멘 정부에 대한 지지를 재차 강조하고, UAE는 메카 공격을 규탄한다."
       },
-      "summary": "A Houthi advance along the Red Sea coast and the capture of islands near the Bab el-Mandeb Strait has left Saudi Arabia scrambling for backing.",
-      "scores": {
-        "commodity": 2.0,
-        "diplomacy": 1.0,
-        "election": 0.0,
-        "region_weight": 1.25,
-        "freshness": 0.916,
-        "importance": 1.407,
-        "final": 1.565
-      },
-      "rank_reasons": [
-        "region:japan*1.25",
-        "category:commodity",
-        "tier:A*1.00/g3",
-        "commodity:shipping:2",
-        "diplomacy:1"
-      ],
-      "translation_status": "ok",
-      "country_tier": "A",
-      "info_grade": "3",
-      "country_hint": "JPN"
-    },
-    {
-      "id": "13a304a38df9e6bf",
-      "published_at": "2026-09-16T14:00:06+00:00",
-      "source": {
-        "id": "scmp",
-        "name": "South China Morning Post",
-        "region": "china",
-        "slant": null
-      },
-      "url": "https://www.scmp.com/news/china/diplomacy/article/3367738/china-affirms-support-iran-warns-against-yemen-spillover?utm_source=rss_feed",
-      "category": "commodity",
-      "commodities": [
-        "shipping"
-      ],
-      "title": {
-        "original": "China affirms support for Iran, but warns against Yemen spillover",
-        "original_lang": "en",
-        "ko": "중국은 이란에 대한 지지를 확인하지만 예멘의 유출에 대해 경고한다."
-      },
-      "summary": "In talks with his Iranian counterpart in Beijing on Wednesday, China’s foreign minister reaffirmed Beijing’s support for Tehran, called for a political settlement to the country’s conflict with the US and warned that regional tensions must not further spill over into Yemen. Wang ",
+      "summary": "US reiterates support for Yemen’s government against ‘Houthi aggression’, UAE condemns Mecca attack The top US diplomat for Yemen, Neil Hop, told Yemen’s Foreign Minister Afrah al-Zouba that the US maintained its “strong support” for Yemen’s internationally recognised Saudi-backe",
       "scores": {
         "commodity": 1.0,
         "diplomacy": 3.0,
         "election": 0.0,
-        "region_weight": 1.25,
-        "freshness": 0.73,
-        "importance": 1.348,
-        "final": 1.5
+        "region_weight": 1.4,
+        "freshness": 0.769,
+        "importance": 1.422,
+        "final": 1.678
       },
       "rank_reasons": [
-        "region:china*1.25",
+        "region:mena*1.40",
         "category:commodity",
         "tier:A*1.00/g3",
         "commodity:shipping:1",
@@ -905,6 +993,87 @@
       "country_tier": "A",
       "info_grade": "3",
       "country_hint": "USA"
+    },
+    {
+      "id": "53654ece781f2775",
+      "published_at": "2026-09-17T06:34:10+00:00",
+      "source": {
+        "id": "business_standard_markets",
+        "name": "Business Standard Markets",
+        "region": "india",
+        "slant": null
+      },
+      "url": "https://www.business-standard.com/markets/capital-market-news/india-firmly-committed-to-ensure-its-energy-security-says-mea-while-monitoring-further-developments-on-us-russia-sanctions-legislation-126091700388_1.html",
+      "category": "commodity",
+      "commodities": [
+        "oil"
+      ],
+      "title": {
+        "original": "India firmly committed to ensure its energy security says MEA while monitoring further developments on US' Russia sanctions legislation",
+        "original_lang": "en",
+        "ko": "인도는 미국의 러시아 제재 법안에 대한 추가 개발을 모니터링하면서 에너지 안보를 보장하기 위해 MEA를 확고히 약속합니다."
+      },
+      "summary": "India remains firmly committed to ensuring energy security for its 1.4 billion people, and it will continue to do so through diversified sourcing, the Ministry of External Affairs (MEA) said on Thursday while reacting to the US' Russia sanctions legislation. The US House of Repre",
+      "scores": {
+        "commodity": 1.0,
+        "diplomacy": 2.0,
+        "election": 0.0,
+        "region_weight": 1.3,
+        "freshness": 0.972,
+        "importance": 1.376,
+        "final": 1.562
+      },
+      "rank_reasons": [
+        "region:india*1.30",
+        "category:commodity",
+        "tier:A*1.00/g3",
+        "commodity:oil:1",
+        "diplomacy:2"
+      ],
+      "translation_status": "ok",
+      "country_tier": "A",
+      "info_grade": "3",
+      "country_hint": "CHN"
+    },
+    {
+      "id": "c597f2d789fb1f65",
+      "published_at": "2026-09-17T07:28:00+00:00",
+      "source": {
+        "id": "japan_times",
+        "name": "Japan Times",
+        "region": "japan",
+        "slant": null
+      },
+      "url": "https://www.japantimes.co.jp/news/2026/09/17/asia-pacific/politics/india-energy-security-us-tariffs/",
+      "category": "commodity",
+      "commodities": [
+        "oil"
+      ],
+      "title": {
+        "original": "India warns U.S. new tariffs to deter buyers of Russian oil could impact ties",
+        "original_lang": "en",
+        "ko": "인도, 러시아 석유 구매자가 유대 관계에 영향을 미칠 수 있음을 막기 위해 미국의 새로운 관세 부과를 경고"
+      },
+      "summary": "The U.S. House of Representatives has passed a bill authorizing tariffs of up to 100% to increase pressure on Russia over its invasion of Ukraine.",
+      "scores": {
+        "commodity": 1.0,
+        "diplomacy": 0.0,
+        "election": 0.0,
+        "region_weight": 1.25,
+        "freshness": 0.996,
+        "importance": 1.146,
+        "final": 1.275
+      },
+      "rank_reasons": [
+        "region:japan*1.25",
+        "category:commodity",
+        "tier:A*1.00/g1",
+        "commodity:oil:1"
+      ],
+      "translation_status": "ok",
+      "country_tier": "A",
+      "info_grade": "1",
+      "country_hint": "IND"
     },
     {
       "id": "01b39fe6bfac4907",
@@ -932,9 +1101,9 @@
         "diplomacy": 1.0,
         "election": 0.0,
         "region_weight": 1.3,
-        "freshness": 0.822,
-        "importance": 1.262,
-        "final": 1.433
+        "freshness": 0.691,
+        "importance": 1.061,
+        "final": 1.205
       },
       "rank_reasons": [
         "region:india*1.30",
@@ -950,253 +1119,85 @@
       "country_hint": "IND"
     },
     {
-      "id": "dc22597a7784a6b9",
-      "published_at": "2026-09-16T22:27:00+00:00",
+      "id": "d85ac1140b4c0bef",
+      "published_at": "2026-09-17T07:02:19+00:00",
       "source": {
-        "id": "interfax_ru",
-        "name": "Interfax",
+        "id": "ltn",
+        "name": "Liberty Times",
+        "region": "taiwan",
+        "slant": "pan_green"
+      },
+      "url": "https://news.ltn.com.tw/news/world/breakingnews/5577121",
+      "category": "commodity",
+      "commodities": [
+        "oil"
+      ],
+      "title": {
+        "original": "不甩美國加大制裁俄羅斯 印度：堅持多元化石油採購",
+        "original_lang": "zh-TW",
+        "ko": "미국은 러시아, 인도에 더 많은 제재를 가한다: 다각화된 석유 조달을 고수하라"
+      },
+      "summary": "美國國會議員16日通過1項新制裁法案，旨在針對侵入烏克蘭的俄羅斯施加經濟壓力。該法案包含授權美國總統川普對俄羅斯石油與天然氣主要買家課徵最高100%的關稅，以切斷為俄羅斯戰爭提...…",
+      "scores": {
+        "commodity": 1.0,
+        "diplomacy": 2.0,
+        "election": 0.0,
+        "region_weight": 1.25,
+        "freshness": 0.985,
+        "importance": 1.004,
+        "final": 1.117
+      },
+      "rank_reasons": [
+        "region:taiwan*1.25",
+        "category:commodity",
+        "tier:B*0.72/g3",
+        "commodity:oil:1",
+        "diplomacy:2"
+      ],
+      "translation_status": "ok",
+      "country_tier": "B",
+      "info_grade": "3",
+      "country_hint": "TWN"
+    },
+    {
+      "id": "884989ebc6a91a8a",
+      "published_at": "2026-09-17T07:25:24+00:00",
+      "source": {
+        "id": "rt_ru",
+        "name": "RT Russian",
         "region": "russia",
         "slant": null
       },
-      "url": "https://www.interfax.ru/russia/1116531",
+      "url": "https://russian.rt.com/sport/news/1683489-melnikova-travmy-gimnastika?utm_source=rss&utm_medium=rss&utm_campaign=RSS",
       "category": "commodity",
       "commodities": [
-        "gas"
+        "rice"
       ],
       "title": {
-        "original": "Мастер-план по совместному использованию Иртыша Россией и Казахстаном находится в разработке",
+        "original": "Мельникова: не могу сказать, что в 16 лет боялась что-то себе сломать, а сейчас постоянно присутствует страх",
         "original_lang": "ru",
-        "ko": "러시아와 카자흐스탄의 이르티시 공동 사용을 위한 기본 계획이 개발 중입니다."
+        "ko": "멜니코바: 16살의 나이에 무언가를 깨는 것이 두려웠는데, 이제는 끊임없는 두려움이 있다고 말할 수 없습니다."
       },
-      "summary": "Рабочая группа с участием представителей научных институтов ведет подготовку проекта по совместному хозяйственному использованию Иртыша Россией и Казахстаном, заявил министр природных ресурсов и экологии РФ Александр Козлов в интервью, опубликованном в четверг в \"Российской газет",
-      "scores": {
-        "commodity": 1.0,
-        "diplomacy": 0.0,
-        "election": 1.0,
-        "region_weight": 1.25,
-        "freshness": 0.923,
-        "importance": 0.974,
-        "final": 1.084
-      },
-      "rank_reasons": [
-        "region:russia*1.25",
-        "category:commodity",
-        "tier:A*1.00/g3",
-        "commodity:gas:1",
-        "election:local:1"
-      ],
-      "translation_status": "ok",
-      "country_tier": "A",
-      "info_grade": "3",
-      "country_hint": "RUS",
-      "election_type": "local"
-    },
-    {
-      "id": "145a38be5631f341",
-      "published_at": "2026-09-16T18:25:07+00:00",
-      "source": {
-        "id": "tass_en",
-        "name": "TASS",
-        "region": "russia",
-        "slant": null
-      },
-      "url": "https://tass.com/world/2188677",
-      "category": "commodity",
-      "commodities": [
-        "shipping"
-      ],
-      "title": {
-        "original": "Houthis report intercepting two Saudi F-15 fighter jets",
-        "original_lang": "en",
-        "ko": "사우디 F-15 전투기 2대를 가로채고 있는 Houthis 보고서"
-      },
-      "summary": "The two war planes \"were targeted with several locally-made anti-aircraft missiles\" as they departed from the Khamis Mushait Air Base and \"were forced to retreat immediately,\" Houthi military spokesperson Yahya Saree said",
+      "summary": "Олимпийская чемпионка по спортивной гимнастике Ангелина Мельникова ответила на вопрос касательно травм в спортивной гимнастике. Читать далее",
       "scores": {
         "commodity": 1.0,
         "diplomacy": 0.0,
         "election": 0.0,
         "region_weight": 1.25,
-        "freshness": 0.825,
-        "importance": 0.949,
-        "final": 1.055
+        "freshness": 0.995,
+        "importance": 0.549,
+        "final": 0.611
       },
       "rank_reasons": [
         "region:russia*1.25",
         "category:commodity",
-        "tier:A*1.00/g1",
-        "commodity:shipping:1"
+        "tier:A*1.00/g3",
+        "commodity:rice:1"
       ],
       "translation_status": "ok",
       "country_tier": "A",
-      "info_grade": "1",
+      "info_grade": "3",
       "country_hint": "RUS"
-    },
-    {
-      "id": "4bd69158f6045748",
-      "published_at": "2026-09-16T21:13:43+00:00",
-      "source": {
-        "id": "ndtv_world",
-        "name": "NDTV World",
-        "region": "india",
-        "slant": null
-      },
-      "url": "https://www.ndtv.com/world-news/us-contracted-vessel-hit-by-iranian-missiles-near-strait-of-hormuz-report-12056877#publisher=newsstand",
-      "category": "commodity",
-      "commodities": [
-        "shipping"
-      ],
-      "title": {
-        "original": "US-Contracted Vessel Hit By Iranian Missiles Near Strait Of Hormuz: Report",
-        "original_lang": "en",
-        "ko": "호르무즈 해협 근처에서 이란 미사일에 맞은 미국 계약 선박: 보고서"
-      },
-      "summary": "The vessel also carried several US individuals at the time of the incident.",
-      "scores": {
-        "commodity": 1.0,
-        "diplomacy": 1.0,
-        "election": 0.0,
-        "region_weight": 1.3,
-        "freshness": 0.892,
-        "importance": 0.878,
-        "final": 0.996
-      },
-      "rank_reasons": [
-        "region:india*1.30",
-        "category:commodity",
-        "tier:A*1.00/g3",
-        "commodity:shipping:1",
-        "diplomacy:1"
-      ],
-      "translation_status": "ok",
-      "country_tier": "A",
-      "info_grade": "3",
-      "country_hint": "IND"
-    },
-    {
-      "id": "fd7aad15fb0cd7fa",
-      "published_at": "2026-09-16T14:09:49+00:00",
-      "source": {
-        "id": "bloomberg_markets",
-        "name": "Bloomberg Markets",
-        "region": "west",
-        "slant": null
-      },
-      "url": "https://www.bloomberg.com/news/articles/2026-09-16/venezuela-plans-to-ship-aluminum-to-us-in-mercuria-heeney-deal",
-      "category": "commodity",
-      "commodities": [
-        "oil",
-        "gold",
-        "aluminum"
-      ],
-      "title": {
-        "original": "Venezuela Aluminum Heads to US; Heeney Eyes Gold Deal",
-        "original_lang": "en",
-        "ko": "베네수엘라 알루미늄, 미국으로 향하다; Heeney Eyes 골드 특가"
-      },
-      "summary": "Venezuela is preparing to ship aluminum to the US under a deal with Mercuria Energy Group Ltd. and Heeney Capital, with the latter also planning to invest in a Venezuelan gold mine, accelerating a revival of commercial ties beyond oil.",
-      "scores": {
-        "commodity": 3.0,
-        "diplomacy": 0.0,
-        "election": 0.0,
-        "region_weight": 0.55,
-        "freshness": 0.733,
-        "importance": 1.214,
-        "final": 0.968
-      },
-      "rank_reasons": [
-        "region:west*0.55",
-        "category:commodity",
-        "tier:A*1.00/g3",
-        "commodity:oil:1",
-        "commodity:gold:1",
-        "commodity:aluminum:1"
-      ],
-      "translation_status": "ok",
-      "country_tier": "A",
-      "info_grade": "3",
-      "country_hint": "USA"
-    },
-    {
-      "id": "155f16d4545cee2e",
-      "published_at": "2026-09-17T00:32:54+00:00",
-      "source": {
-        "id": "aljazeera_en",
-        "name": "Al Jazeera",
-        "region": "mena",
-        "slant": null
-      },
-      "url": "https://www.aljazeera.com/video/newsfeed/2026/9/17/us-centcom-tells-al-jazeera-hormuz-blockade-highly?traffic_source=rss",
-      "category": "commodity",
-      "commodities": [
-        "shipping"
-      ],
-      "title": {
-        "original": "US CENTCOM tells Al Jazeera Hormuz blockade ‘highly effective’",
-        "original_lang": "en",
-        "ko": "US CENTCOM, 알 자지라 호르무즈 봉쇄에 ‘매우 효과적’"
-      },
-      "summary": "The spokesman for US Central Command has told Al Jazeera its blockade of the Strait of Hormuz is ‘highly effective’.",
-      "scores": {
-        "commodity": 1.0,
-        "diplomacy": 1.0,
-        "election": 0.0,
-        "region_weight": 1.4,
-        "freshness": 0.978,
-        "importance": 0.693,
-        "final": 0.818
-      },
-      "rank_reasons": [
-        "region:mena*1.40",
-        "category:commodity",
-        "tier:B*0.72/g3",
-        "commodity:shipping:1",
-        "diplomacy:1"
-      ],
-      "translation_status": "ok",
-      "country_tier": "B",
-      "info_grade": "3",
-      "country_hint": "SAU"
-    },
-    {
-      "id": "c8b8e96754cf5d0a",
-      "published_at": "2026-09-16T23:14:46+00:00",
-      "source": {
-        "id": "aljazeera_en",
-        "name": "Al Jazeera",
-        "region": "mena",
-        "slant": null
-      },
-      "url": "https://www.aljazeera.com/news/2026/9/16/us-military-claims-strait-of-hormuz-remains-open-amid-ongoing-blockade?traffic_source=rss",
-      "category": "commodity",
-      "commodities": [
-        "shipping"
-      ],
-      "title": {
-        "original": "US military claims Strait of Hormuz remains open amid ongoing blockade",
-        "original_lang": "en",
-        "ko": "미군 주장 호르무즈 해협은 봉쇄가 계속되는 가운데 열려 있습니다"
-      },
-      "summary": "The comments from a US CENTCOM spokesperson come amid continued tensions over shipping through the vital waterway.",
-      "scores": {
-        "commodity": 1.0,
-        "diplomacy": 1.0,
-        "election": 0.0,
-        "region_weight": 1.4,
-        "freshness": 0.943,
-        "importance": 0.668,
-        "final": 0.789
-      },
-      "rank_reasons": [
-        "region:mena*1.40",
-        "category:commodity",
-        "tier:B*0.72/g3",
-        "commodity:shipping:1",
-        "diplomacy:1"
-      ],
-      "translation_status": "ok",
-      "country_tier": "B",
-      "info_grade": "3",
-      "country_hint": "SAU"
     },
     {
       "id": "50bba0f4a94da997",
@@ -1223,9 +1224,9 @@
         "diplomacy": 2.0,
         "election": 0.0,
         "region_weight": 1.3,
-        "freshness": 0.45,
-        "importance": 0.638,
-        "final": 0.724
+        "freshness": 0.379,
+        "importance": 0.536,
+        "final": 0.609
       },
       "rank_reasons": [
         "region:turkey*1.30",
@@ -1240,39 +1241,79 @@
       "country_hint": "TUR"
     },
     {
-      "id": "59f4daee2526b3f8",
-      "published_at": "2026-09-17T00:37:33+00:00",
+      "id": "0819c685557eae3d",
+      "published_at": "2026-09-17T07:00:09+00:00",
       "source": {
-        "id": "arab_news",
-        "name": "Arab News",
-        "region": "mena",
+        "id": "scmp",
+        "name": "South China Morning Post",
+        "region": "china",
         "slant": null
       },
-      "url": "https://www.arabnews.com/world/russia-strikes-ukraines-kyiv-injures-three-in-odesa-officials-say-3002023",
+      "url": "https://www.scmp.com/business/banking-finance/article/3367816/how-hong-kongs-new-5-year-plan-courts-global-capital-eye-market-dominance?utm_source=rss_feed",
       "category": "commodity",
       "commodities": [
-        "oil"
+        "gold"
       ],
       "title": {
-        "original": "Russia strikes Ukraine’s Kyiv, injures three in Odesa, officials say",
+        "original": "How Hong Kong’s new 5-year plan courts global capital with an eye on market dominance",
         "original_lang": "en",
-        "ko": "러시아가 우크라이나의 키예프를 공격하고, 오데사에서 3명이 부상을 입었다고 당국자들은 말한다."
+        "ko": "홍콩의 새로운 5개년 계획이 시장 지배력에 주목하여 글로벌 자본을 확보하는 방법"
       },
-      "summary": "Russian air strikes damaged buildings ​in the Ukrainian capital of Kyiv and injured three in the Black Sea port city of ‌Odesa in ‌the ​early ‌hours ⁠of ​Thursday, officials said. Debris ⁠fell on warehouse facilities and near a petrol station, now a frequent target ⁠of Russian at",
+      "summary": "Hong Kong is broadening its equity markets, deepening its offshore yuan business and expanding further into gold trading under its first five-year plan for economic and social development, as the city seeks to defend its standing as Asia’s top financial centre and close the gap w",
       "scores": {
         "commodity": 1.0,
         "diplomacy": 0.0,
         "election": 0.0,
-        "region_weight": 1.4,
-        "freshness": 0.98,
-        "importance": 0.541,
-        "final": 0.638
+        "region_weight": 1.25,
+        "freshness": 0.984,
+        "importance": 0.543,
+        "final": 0.604
       },
       "rank_reasons": [
-        "region:mena*1.40",
+        "region:china*1.25",
         "category:commodity",
         "tier:A*1.00/g3",
-        "commodity:oil:1"
+        "commodity:gold:1"
+      ],
+      "translation_status": "ok",
+      "country_tier": "A",
+      "info_grade": "3",
+      "country_hint": "GBR"
+    },
+    {
+      "id": "4acf62c83025d45b",
+      "published_at": "2026-09-17T06:11:13+00:00",
+      "source": {
+        "id": "rt_ru",
+        "name": "RT Russian",
+        "region": "russia",
+        "slant": null
+      },
+      "url": "https://russian.rt.com/sport/news/1683469-brisbua-kontrakt-kucherov?utm_source=rss&utm_medium=rss&utm_campaign=RSS",
+      "category": "commodity",
+      "commodities": [
+        "rice"
+      ],
+      "title": {
+        "original": "Брисбуа: мы бы хотели, чтобы контракт с Кучеровым уже был заключён",
+        "original_lang": "ru",
+        "ko": "브리스부아: 우리는 쿠체로프와 이미 체결된 계약을 보고 싶습니다"
+      },
+      "summary": "Генеральный менеджер «Тампы» Жюльен Брисбуа высказался о ситуации с контрактом форварда Никиты Кучерова. Читать далее",
+      "scores": {
+        "commodity": 1.0,
+        "diplomacy": 0.0,
+        "election": 0.0,
+        "region_weight": 1.25,
+        "freshness": 0.962,
+        "importance": 0.531,
+        "final": 0.591
+      },
+      "rank_reasons": [
+        "region:russia*1.25",
+        "category:commodity",
+        "tier:A*1.00/g3",
+        "commodity:rice:1"
       ],
       "translation_status": "ok",
       "country_tier": "A",
@@ -1304,9 +1345,9 @@
         "diplomacy": 1.0,
         "election": 0.0,
         "region_weight": 1.3,
-        "freshness": 0.794,
-        "importance": 0.562,
-        "final": 0.638
+        "freshness": 0.667,
+        "importance": 0.473,
+        "final": 0.537
       },
       "rank_reasons": [
         "region:turkey*1.30",
@@ -1321,73 +1362,33 @@
       "country_hint": "TUR"
     },
     {
-      "id": "4b756c9a5b1d7f67",
-      "published_at": "2026-09-16T16:37:05+00:00",
-      "source": {
-        "id": "tehran_times",
-        "name": "Tehran Times",
-        "region": "mena",
-        "slant": null
-      },
-      "url": "https://www.tehrantimes.com/news/530107/Two-nations-two-gates-one-golden-key",
-      "category": "commodity",
-      "commodities": [
-        "oil"
-      ],
-      "title": {
-        "original": "Two nations, two gates, one golden key",
-        "original_lang": "en",
-        "ko": "두 나라, 두 문, 하나의 황금 열쇠"
-      },
-      "summary": "TEHRAN — For six months, Washington’s story stayed the same: Iran and its allies are isolated, the resistance is finished, and the oil routes are safe under American control. Trump and his officials claimed all this happened in days, not years.",
-      "scores": {
-        "commodity": 1.0,
-        "diplomacy": 0.0,
-        "election": 0.0,
-        "region_weight": 1.4,
-        "freshness": 0.785,
-        "importance": 0.433,
-        "final": 0.511
-      },
-      "rank_reasons": [
-        "region:mena*1.40",
-        "category:commodity",
-        "tier:A*1.00/g3",
-        "commodity:oil:1"
-      ],
-      "translation_status": "ok",
-      "country_tier": "A",
-      "info_grade": "3",
-      "country_hint": "USA"
-    },
-    {
-      "id": "0bf978a1557e33be",
-      "published_at": "2026-09-17T00:38:19+00:00",
+      "id": "20f81bd4e4c5ca95",
+      "published_at": "2026-09-17T07:28:02+00:00",
       "source": {
         "id": "ltn",
         "name": "Liberty Times",
         "region": "taiwan",
         "slant": "pan_green"
       },
-      "url": "https://news.ltn.com.tw/news/life/breakingnews/5576628",
+      "url": "https://ec.ltn.com.tw/article/breakingnews/5577184",
       "category": "commodity",
       "commodities": [
         "silver"
       ],
       "title": {
-        "original": "質地調整添風味！竹縣翻轉銀髮餐 勇奪全國料理競賽雙獎",
+        "original": "遠東商銀主辦昇貿科技25億元聯貸 銀行團超額認購1.8倍",
         "original_lang": "zh-TW",
-        "ko": "텍스처 변경으로 풍미가 더해집니다! Bamboo County Flipped Silver Hair Dinner는 전국 요리 대회에서 이중 상을 수상했습니다."
+        "ko": "극동 상업 은행 후원 Shengmao Technology 25억 위안 신디케이트 은행 그룹 초과 가입 1.8회"
       },
-      "summary": "隨著高齡化社會來臨，如何讓長者吃得健康又順口，成為社區營造的重要課題。新竹縣營養推廣中心營養師團隊與橫山地區農會綠色照顧站的長輩們，聯手出擊參加國民健康署「2026銀領新食尚 ...…",
+      "summary": "遠東銀（2845）統籌主辦昇貿科技（3305）暨子公司大瑞科技新台幣25億元3年期聯合授信案，近日完成籌組並舉行簽約儀式。遠東商銀表示，本案獲彰化銀行、華南銀行、玉山銀行...…",
       "scores": {
         "commodity": 1.0,
         "diplomacy": 0.0,
         "election": 0.0,
         "region_weight": 1.25,
-        "freshness": 0.98,
-        "importance": 0.39,
-        "final": 0.433
+        "freshness": 0.996,
+        "importance": 0.396,
+        "final": 0.441
       },
       "rank_reasons": [
         "region:taiwan*1.25",
