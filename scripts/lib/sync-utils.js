@@ -110,7 +110,8 @@ async function supabaseRequest(path, options = {}) {
   const config = supabaseConfig();
   const headers = {
     apikey: config.key,
-    Authorization: `Bearer ${config.key}`,
+    // New sb_secret keys are opaque API keys, not JWT bearer tokens.
+    ...(config.key.startsWith('eyJ') ? { Authorization: `Bearer ${config.key}` } : {}),
     Accept: 'application/json',
     ...(options.body ? { 'Content-Type': 'application/json' } : {}),
     ...(options.headers || {}),
