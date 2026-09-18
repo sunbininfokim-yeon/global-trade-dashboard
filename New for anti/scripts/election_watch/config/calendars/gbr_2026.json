@@ -1,7 +1,7 @@
 {
   "iso3": "GBR",
   "year": 2026,
-  "as_of": "2026-08-08",
+  "as_of": "2026-09-18",
   "null_policy": {
     "없음": "해당 일정/선거 없음",
     "불명": "발표·확정 전 또는 출처에 날짜 없음"
@@ -32,7 +32,13 @@
       "label_ko": "보수당 당대표 경선",
       "date": "없음",
       "status": "없음",
-      "notes": "2026 중 공식 당대표 교체 대회 없음(Badenoch 임기 중으로 추적 중)"
+      "notes": "2026 중 공식 당대표 교체 대회 없음(Badenoch 임기 중으로 추적 중)",
+      "level": "party",
+      "chamber": "없음",
+      "contested_ko": "보수당 당대표 경선",
+      "sources": [
+        "https://www.conservatives.com/"
+      ]
     },
     {
       "id": "gbr-2026-labour-leadership",
@@ -52,18 +58,28 @@
       "sources": [
         "https://labour.org.uk/updates/members-updates/andy-burnham-elected-leader-of-the-labour-party/",
         "https://en.wikipedia.org/wiki/2026_Labour_Party_leadership_election"
-      ]
+      ],
+      "level": "party",
+      "chamber": "없음",
+      "contested_ko": "노동당 당대표 특별당대회"
     },
     {
       "id": "gbr-2026-westminster",
       "type": "general",
       "label_ko": "하원 총선",
-      "date": "없음",
-      "status": "없음",
-      "notes": "2024 총선 이후; 2026 일정 없음",
+      "date": "2029-08",
+      "status": "outside_year",
+      "notes": "2026년 총선 회차 아님 (2024-07-04 이후).",
       "sources": [
-        "uk_ec_2026"
-      ]
+        "uk_ec_2026",
+        "https://www.bbc.co.uk/news/articles/cvg0dzrw5rno",
+        "https://commonslibrary.parliament.uk/research-briefings/cdp-2024-0177/"
+      ],
+      "date_note": "의회 개원일 2024-07-09의 5주년에 자동 해산(2029-07-09). 본선 법정 최후 2029-08-15(BBC/하원도서관). 총리가 그 전에 국왕에게 해산을 요청할 수 있음.",
+      "system_id": "gbr-commons",
+      "level": "national",
+      "chamber": "commons",
+      "contested_ko": "하원 650석 전원"
     },
     {
       "id": "gbr-2026-local-may7",
@@ -73,7 +89,12 @@
       "status": "completed",
       "sources": [
         "uk_ec_2026"
-      ]
+      ],
+      "level": "subnational",
+      "contested_ko": "잉글랜드 일부 지방의원·시장 (2026-05-07 공고분)",
+      "notes": "같은 날 스코틀랜드 의회·세네드와 겹침. 제도 행은 각각 별도.",
+      "system_id": "gbr-england-local",
+      "chamber": "없음"
     },
     {
       "id": "gbr-2026-scottish-parliament",
@@ -84,7 +105,11 @@
       "sources": [
         "uk_ec_2026",
         "wiki_elections_2026"
-      ]
+      ],
+      "system_id": "gbr-holyrood",
+      "level": "subnational",
+      "chamber": "holyrood",
+      "contested_ko": "스코틀랜드 의회 의석 전원"
     },
     {
       "id": "gbr-2026-senedd",
@@ -95,7 +120,11 @@
       "sources": [
         "uk_ec_2026",
         "wiki_elections_2026"
-      ]
+      ],
+      "system_id": "gbr-senedd",
+      "level": "subnational",
+      "chamber": "senedd",
+      "contested_ko": "웨일스 세네드 의석 전원"
     },
     {
       "id": "gbr-2026-pm-succession",
@@ -107,7 +136,58 @@
       "sources": [
         "https://www.gov.uk/government/people/andy-burnham"
       ],
-      "related_event": "gbr-2026-labour-leadership"
+      "related_event": "gbr-2026-labour-leadership",
+      "level": "party",
+      "chamber": "없음",
+      "contested_ko": "총리 교체(노동당·내각)"
+    },
+    {
+      "id": "gbr-presidential",
+      "type": "presidential",
+      "label_ko": "대통령 선거",
+      "label_en": "Presidential election",
+      "date": "없음",
+      "status": "없음",
+      "level": "national",
+      "chamber": "없음",
+      "contested_ko": "없음",
+      "notes": "의원내각제. 국가원수는 세습 군주이며 대통령 선거가 없다. 총리는 하원 다수 정당이 정한다.",
+      "sources": [
+        "https://www.gov.uk/government/how-government-works"
+      ]
+    },
+    {
+      "id": "gbr-2026-holborn-st-pancras-by",
+      "type": "by_election",
+      "label_ko": "하원 재보궐 홀본·세인트판크라스",
+      "label_en": "Holborn and St Pancras by-election",
+      "date": "2026-10-08",
+      "status": "scheduled",
+      "system_id": "gbr-commons",
+      "level": "national",
+      "chamber": "commons",
+      "contested_ko": "하원 1석 (Starmer 사퇴 잔여)",
+      "notes": "전 총리 Keir Starmer 사퇴 후 본선.",
+      "sources": [
+        "https://en.wikipedia.org/wiki/2026_Holborn_and_St_Pancras_by-election",
+        "https://elections.democracyclub.org.uk/elections/parl.holborn-and-st-pancras.by.2026-10-08/"
+      ]
+    },
+    {
+      "id": "gbr-2026-clacton-by",
+      "type": "by_election",
+      "label_ko": "하원 재보궐 클랙턴",
+      "label_en": "Clacton by-election",
+      "date": "2026-08-13",
+      "status": "completed",
+      "system_id": "gbr-commons",
+      "level": "national",
+      "chamber": "commons",
+      "contested_ko": "하원 1석",
+      "notes": "Tendring DC: polling 13 Aug 2026. 지나간 재보궐, status로 구분.",
+      "sources": [
+        "https://www.tendringdc.gov.uk/news/date-set-for-clacton-constituency-by-election"
+      ]
     }
   ]
 }
