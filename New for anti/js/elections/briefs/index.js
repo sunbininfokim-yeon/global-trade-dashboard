@@ -10,6 +10,8 @@ const BRIEFS = [
     {
         key: 'usa-midterms',
         title: '미국 중간선거',
+        // 창 머리에 언제·무엇인지 적는다. 일정에서 넘어온 날짜를 쓰고, 없으면 뺀다.
+        subtitle: (event) => ['미국', event?.date, '선거 개괄'].filter(Boolean).join(' · '),
         matches: (event) => event?.iso3 === 'USA' && event?.type === 'general',
         render: ({ bundle, event }) => usaMidtermsBrief(bundle.countries.get('USA'), { event }),
         // 전망은 본문과 따로 온다. 창이 열려 있는 동안 여론조사가 갱신되면 그 칸만
@@ -38,7 +40,7 @@ export const openBrief = (key, { bundle, modal, event = null }) => {
     stopWatch?.();
     modal.open({
         title: brief.title,
-        subtitle: '선거 개괄',
+        subtitle: brief.subtitle ? brief.subtitle(event) : '선거 개괄',
         body,
         onClose: () => { stopWatch?.(); stopWatch = null; },
     });

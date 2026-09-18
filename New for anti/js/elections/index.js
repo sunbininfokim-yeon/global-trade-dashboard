@@ -38,7 +38,7 @@ const render = async () => {
         // 브리핑을 그릴 수 있는 일정만 버튼이 된다. 창은 지도 위에 열리므로 왼쪽
         // 일정 목록은 그대로 보인다 -- 누른 줄과 창이 같이 보인다.
         briefFor: (event) => briefKeyFor(event, bundle),
-        onBriefOpen: (key) => openBrief(key, { bundle, modal: explorer.modal }),
+        onBriefOpen: (key, event) => openBrief(key, { bundle, modal: explorer.modal, event }),
     });
     await explorer.showWorld();
 };

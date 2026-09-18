@@ -471,6 +471,28 @@ body {
     padding: 10px;
 }
 .elections-event + .elections-event { margin-top: 7px; }
+/* 브리핑 창이 있는 줄만 버튼이 된다. 버튼 기본값은 가운데 정렬에 내용 너비라
+   옆의 <article> 줄과 폭이 어긋난다 -- 같은 폭·같은 정렬로 맞추고, 누를 수 있다는
+   표시(› 와 hover)만 더한다. */
+.elections-event.is-openable {
+    display: block;
+    width: 100%;
+    text-align: left;
+    font: inherit;
+    color: inherit;
+    cursor: pointer;
+    transition: border-color 0.15s ease, background 0.15s ease;
+}
+.elections-event.is-openable:hover {
+    border-color: rgba(56, 189, 248, 0.55);
+    background: rgba(30, 41, 59, 0.8);
+}
+.elections-event.is-openable:focus-visible { outline: 2px solid #38bdf8; outline-offset: 2px; }
+.elections-event.is-openable .elections-event-title::after {
+    content: ' ›';
+    color: #7dd3fc;
+    font-weight: 700;
+}
 .elections-event-country {
     color: #7dd3fc;
     font-size: 11px;

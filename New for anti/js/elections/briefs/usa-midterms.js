@@ -1,6 +1,6 @@
 import { escapeHtml, formatDate } from '../ui.js';
 import { usaMidtermsModel, PARTY_KO, PARTY_COLOR } from '../data/usa-midterms-model.js';
-import { forecastSlot, forecastFooter } from './forecast-panel.js';
+import { forecastSlot, forecastFooterSlot } from './forecast-panel.js';
 
 // 미국 중간선거 브리핑. 선거 종류 세 열(주지사·하원·상원)이 완전히 같은 구조라,
 // 열 하나를 그리는 함수 하나로 셋을 다 그린다.
@@ -133,6 +133,6 @@ export const usaMidtermsBrief = (country, { event } = {}) => {
             <div class="elections-brief-columns">${model.columns.map(columnHtml).join('')}</div>
             ${model.primaryPending ? `<p class="elections-panel-note">${escapeHtml(`${model.statesTotal}개 주 가운데 ${model.primaryPending}개 주는 경선이 아직입니다. 그 주의 대진이 비어 있는 것은 후보가 없다는 뜻이 아닙니다.`)}</p>` : ''}
             <p class="elections-panel-note">현재 의석과 본선 대진은 공식 명부·경선 결과입니다. 전망만 여론조사에서 옵니다.</p>
-            ${forecastFooter(null)}
+            ${forecastFooterSlot()}
         </div>`;
 };

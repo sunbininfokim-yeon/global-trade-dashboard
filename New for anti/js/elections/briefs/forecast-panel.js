@@ -83,10 +83,17 @@ export const applyForecast = (root, forecast) => {
         const chamber = forecast?.chambers?.[slot.dataset.forecastSlot];
         slot.innerHTML = forecast ? forecastHtml(chamber, forecast) : pendingHtml();
     });
+    // 바닥 줄도 같이 간다. 칸만 갈아끼우고 바닥을 두면 전망을 띄워 놓고 "아직
+    // 연결되지 않았습니다"라고 적힌 화면이 된다.
+    const footer = root.querySelector('[data-forecast-footer]');
+    if (footer) footer.innerHTML = forecastFooter(forecast);
     return slots.length;
 };
 
-// 출처·방법론은 열마다 반복할 것이 아니라 화면 바닥에 한 번만 적는다.
+// 출처·방법론은 열마다 반복할 것이 아니라 화면 바닥에 한 번만 적는다. 전망 칸과
+// 같은 이유로 이것도 슬롯이다 -- applyForecast 가 내용만 갈아끼운다.
+export const forecastFooterSlot = () => `<div data-forecast-footer>${forecastFooter(null)}</div>`;
+
 export const forecastFooter = (forecast) => {
     if (!forecast) return '<p class="elections-panel-note">전망은 여론조사 파이프라인이 연결되면 표시됩니다. 지금 화면의 수치는 모두 확정된 현재 의석과 공식 경선 결과입니다.</p>';
     return `<p class="elections-panel-note">${escapeHtml([

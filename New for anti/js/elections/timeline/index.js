@@ -21,8 +21,12 @@ export const renderTimeline = (root, { calendar, countries, month, onMonthChange
         <div class="elections-date-list">${eventRows.length ? renderDateGroups(eventRows, countries, briefFor) : '<p class="elections-muted">이 달에 표시할 확정 일정이 없습니다.</p>'}</div>
     `;
     // 목록은 수십 줄이라 줄마다 리스너를 달지 않고 한 번만 위임한다.
-    root.querySelectorAll('[data-election-brief]').forEach((button) => button.addEventListener('click',
-        () => onBriefOpen?.(button.dataset.electionBrief)));
+    // 브리핑은 일정 행 자체를 읽는다(날짜·개선 규모 등). 키만 넘기면 창이 그 맥락을
+    // 잃으므로 눌린 행의 일정도 같이 넘긴다.
+    root.querySelectorAll('[data-election-brief]').forEach((button) => button.addEventListener('click', () => {
+        const event = eventRows.find((row) => `${row.iso3}:${row.date}` === button.dataset.electionEvent) || null;
+        onBriefOpen?.(button.dataset.electionBrief, event);
+    }));
     root.querySelector('[data-election-month="prev"]')?.addEventListener('click', () => onMonthChange(months[index - 1]));
     root.querySelector('[data-election-month="next"]')?.addEventListener('click', () => onMonthChange(months[index + 1]));
 };

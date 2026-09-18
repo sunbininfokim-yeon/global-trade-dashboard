@@ -13,7 +13,7 @@ export const renderDateGroups = (events, countries, briefFor = () => null) => ev
                 <div class="elections-event-title">${escapeHtml(event.label_ko || event.label_en || '선거 일정')}</div>
                 <div class="elections-event-meta">${escapeHtml(event.type || '일정')} · ${escapeHtml(stateLabel(event.status))}</div>`;
             return briefKey
-                ? `<button class="elections-event is-openable" type="button" data-election-brief="${escapeHtml(briefKey)}">${inner}</button>`
+                ? `<button class="elections-event is-openable" type="button" data-election-brief="${escapeHtml(briefKey)}" data-election-event="${escapeHtml(`${event.iso3}:${event.date}`)}">${inner}</button>`
                 : `<article class="elections-event">${inner}</article>`;
         }).join('')}
     </section>`).join('');
