@@ -14,14 +14,17 @@ const loadJson = async (path) => {
     return response.json();
 };
 
-// 일정 한 줄 → 목차의 한 행. 이벤트 id 가 정본이고, 없으면 (국가, 날짜)로 찾는다 --
-// 타임라인에는 id 없는 수기 행도 섞여 있다.
+// 일정 한 줄 → 목차의 한 행. 이벤트 id 가 정본이다.
+//
+// (국가, 날짜) 폴백은 **id 가 없는 행에만** 쓴다. id 가 있는데 안 맞으면 다른 선거다 --
+// 처음엔 폴백을 먼저 태웠더니 일본 2026-02-08 의 중의원 총선거 창이 같은 날 치르는
+// 나가사키·야마구치·오사카 지사 선거 줄에서도 열렸다. 같은 날 같은 나라에서 여러
+// 선거를 치르는 것은 드문 일이 아니다.
 export const contestEntryFor = (event, index) => {
     const rows = index?.events || [];
     if (!event || !rows.length) return null;
-    return rows.find((row) => row.event_id && row.event_id === event.id)
-        || rows.find((row) => row.iso3 === event.iso3 && row.date === event.date)
-        || null;
+    if (event.id) return rows.find((row) => row.event_id === event.id) || null;
+    return rows.find((row) => row.iso3 === event.iso3 && row.date === event.date) || null;
 };
 
 const cache = new Map();
