@@ -1,33 +1,53 @@
 {
   "iso3": "TWN",
   "year": 2026,
-  "as_of": "2026-08-08",
+  "as_of": "2026-09-18",
   "region": "east_asia",
   "null_policy": {
     "없음": "해당 없음",
     "불명": "미확정"
   },
   "notes": [
-    "No presidential/legislative general in 2026 mid-term of Lai presidency.",
-    "2026 local (nine-in-one-style) date still 불명 until CEC; KMT chair Cheng Li-wun since 2025-11."
+    "2026 nationwide contest is the 28 Nov local elections (CEC announcement 20 Aug 2026).",
+    "Next presidential and Legislative Yuan elections: January 2028, CEC day not yet proclaimed."
   ],
   "events": [
     {
       "id": "twn-2026-local",
       "type": "local",
-      "label_ko": "지방동시선거(구시·향진·시의회 등)",
-      "date": "불명",
-      "status": "tentative",
-      "notes": "9합1 계열 2026; 중앙선관위 일자 확인 todo (보통 하반기)"
+      "label_ko": "지방공직인원 선거 (구합일)",
+      "label_en": "Nine-in-one local elections",
+      "date": "2026-11-28",
+      "status": "scheduled",
+      "system_id": "twn-local",
+      "level": "subnational",
+      "chamber": "없음",
+      "contested_ko": "지방공직 11,051명 (중선회 2026-08-20 공고)",
+      "notes": "중앙선관위 2026-08-20 선거공고. 투표 08:00–16:00.",
+      "sources": [
+        "https://focustaiwan.tw/politics/202608200010",
+        "https://www.cna.com.tw/news/aipl/202608200078.aspx",
+        "https://en.wikipedia.org/wiki/2026_Taiwanese_local_elections"
+      ]
     },
     {
       "id": "twn-2026-dpp-chair",
       "type": "party_leadership",
       "party_id": "dpp",
-      "label_ko": "민진당 당주석 교체",
-      "date": "불명",
-      "status": "tentative",
-      "notes": "2026 중 정기 당주석전 일정 불명 — 채움 todo"
+      "party_abbr": "DPP",
+      "label_ko": "민진당 제22차 전당대회 (중집·중상위)",
+      "label_en": "DPP 22nd National Congress",
+      "date": "2026-07-19",
+      "status": "completed",
+      "level": "party",
+      "chamber": "없음",
+      "contested_ko": "중앙집행위원 30인 → 중상무위원 10인 (당주석 직선 아님)",
+      "electorate_ko": "전국당대표대회 당대표",
+      "notes": "당주석 라이칭더는 유임. 이 날은 중집·중상위 改選이지 당주석 교체가 아니다.",
+      "sources": [
+        "https://www.dpp.org.tw/en/media/contents/127",
+        "https://www.taiwannews.com.tw/news/6404222"
+      ]
     },
     {
       "id": "twn-2025-kmt-chair",
@@ -50,14 +70,71 @@
       "notes": "50.15% 득표. 2026 지방·2028 대선 지휘.",
       "sources": [
         "https://en.wikipedia.org/wiki/2025_Kuomintang_chairmanship_election"
+      ],
+      "level": "party",
+      "chamber": "없음",
+      "contested_ko": "국민당 당주석 1인",
+      "electorate_ko": "당원 투표"
+    },
+    {
+      "id": "twn-2028-presidential",
+      "type": "presidential",
+      "label_ko": "총통 선거 (다음 정기)",
+      "label_en": "Presidential election",
+      "date": "2028-01",
+      "date_note": "취임 2028-05-20. 일자는 중앙선관위 공고 전. 2024년은 1월 13일이었고 입법위원과 동시가 관례.",
+      "status": "outside_year",
+      "system_id": "twn-president",
+      "level": "national",
+      "chamber": "없음",
+      "contested_ko": "총통·부총통 1조",
+      "notes": "2026년 회차 아님. 표기는 공식 직명(총통)을 따른다.",
+      "sources": [
+        "https://en.wikipedia.org/wiki/2028_Taiwanese_presidential_election",
+        "https://focustaiwan.tw/politics/202303100014"
       ]
     },
     {
-      "id": "twn-2026-national",
+      "id": "twn-2028-ly",
       "type": "general",
-      "label_ko": "총·대선",
+      "label_ko": "입법위원 선거 (다음 정기)",
+      "label_en": "Legislative Yuan election",
+      "date": "2028-01",
+      "date_note": "총통과 같은 날 치르는 것이 관례. 중앙선관위 일자 공고 전.",
+      "status": "outside_year",
+      "system_id": "twn-ly",
+      "level": "national",
+      "chamber": "legislative_yuan",
+      "contested_ko": "입법위원 113석 전원",
+      "previous": {
+        "date": "2024-01-13",
+        "by_party": {
+          "KMT": 52,
+          "DPP": 51,
+          "TPP": 8
+        },
+        "source": "https://en.wikipedia.org/wiki/Next_Taiwanese_legislative_election"
+      },
+      "notes": "2026년 회차 아님.",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Next_Taiwanese_legislative_election"
+      ]
+    },
+    {
+      "id": "twn-2026-ly-by",
+      "type": "by_election",
+      "label_ko": "입법위원 재보궐",
+      "label_en": "Legislative Yuan by-election",
       "date": "없음",
-      "status": "없음"
+      "status": "없음",
+      "system_id": "twn-ly",
+      "level": "national",
+      "chamber": "legislative_yuan",
+      "contested_ko": "공석 발생 시 해당 구 1석",
+      "notes": "향후 12개월 안에 중앙선관위가 공고한 입법원 재보궐 일정을 찾지 못함. 지방 구합일(2026-11-28)과 별개.",
+      "sources": [
+        "https://www.cec.gov.tw/"
+      ]
     }
   ]
 }

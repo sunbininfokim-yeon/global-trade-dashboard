@@ -1,6 +1,6 @@
 {
   "schema_version": "elections-board-v1",
-  "generated_at": "2026-09-15T04:20:23.651893+00:00",
+  "generated_at": "2026-09-18T08:48:00.680336+00:00",
   "year": 2026,
   "model": {
     "name": "election_watch_doc_extract_v1",
@@ -76,14 +76,14 @@
     "betting_source": "polymarket"
   },
   "summary": {
-    "countries": 19,
-    "countries_with_head": 19,
-    "countries_with_map_spectrum": 19,
-    "countries_with_events": 18,
+    "countries": 20,
+    "countries_with_head": 20,
+    "countries_with_map_spectrum": 20,
+    "countries_with_events": 19,
     "countries_with_governance_polls": 8,
     "countries_with_legislature_live": 9,
     "countries_with_race_progress": 2,
-    "live_election_headlines": 1,
+    "live_election_headlines": 6,
     "betting_markets": 0,
     "extract_summary": {
       "generated_at": "2026-08-20T05:39:57.508241+00:00",
@@ -548,7 +548,13 @@
           "label_ko": "자민당 총재 정기교체(2026)",
           "date": "없음",
           "status": "없음",
-          "notes": "2025-10 선출 임기 중; 별도 2026 총재전 없음(현재 기준)"
+          "notes": "2025-10 선출 임기 중; 별도 2026 총재전 없음(현재 기준)",
+          "level": "party",
+          "chamber": "없음",
+          "contested_ko": "자민당 총재 1인",
+          "sources": [
+            "https://www.jimin.jp/"
+          ]
         },
         {
           "id": "jpn-2025-ldp-president",
@@ -570,7 +576,11 @@
           "notes": "Ishiba 사임 후 full-scale 총재선·결선; 이후 2025-10-21 총리 지명. carry 2026 board.",
           "sources": [
             "https://en.wikipedia.org/wiki/2025_Liberal_Democratic_Party_presidential_election"
-          ]
+          ],
+          "level": "party",
+          "chamber": "없음",
+          "contested_ko": "자민당 총재 1인 (국회의원 + 당원 표)",
+          "electorate_ko": "국회의원표와 당원표 동수"
         },
         {
           "id": "jpn-2026-gov-fukui",
@@ -581,20 +591,26 @@
           "sources": [
             "local_senkyo_2026"
           ],
-          "status": "completed"
+          "status": "completed",
+          "system_id": "jpn-prefecture-governor",
+          "chamber": "없음",
+          "contested_ko": "도도부현 지사 1인"
         },
         {
           "id": "jpn-2026-shugiin-51",
           "type": "general",
           "label_ko": "제51회 중의원 총선거",
           "date": "2026-02-08",
-          "chamber": "house_of_representatives",
+          "chamber": "shugiin",
           "notes": "해산 2026-01-23 · 공시 2026-01-27 · 투개표 2026-02-08.",
           "result": "LDP 316 seats (고시 전 198→316)",
           "sources": [
             "wiki_shugiin_51"
           ],
-          "status": "completed"
+          "status": "completed",
+          "system_id": "jpn-shugiin",
+          "level": "national",
+          "contested_ko": "중의원 정수 전원 (소선거구+비례)"
         },
         {
           "id": "jpn-2026-gov-osaka",
@@ -606,7 +622,10 @@
           "sources": [
             "local_senkyo_2026"
           ],
-          "status": "completed"
+          "status": "completed",
+          "system_id": "jpn-prefecture-governor",
+          "chamber": "없음",
+          "contested_ko": "도도부현 지사 1인"
         },
         {
           "id": "jpn-2026-gov-yamaguchi",
@@ -618,7 +637,10 @@
           "sources": [
             "local_senkyo_2026"
           ],
-          "status": "completed"
+          "status": "completed",
+          "system_id": "jpn-prefecture-governor",
+          "chamber": "없음",
+          "contested_ko": "도도부현 지사 1인"
         },
         {
           "id": "jpn-2026-gov-nagasaki",
@@ -630,7 +652,10 @@
           "sources": [
             "local_senkyo_2026"
           ],
-          "status": "completed"
+          "status": "completed",
+          "system_id": "jpn-prefecture-governor",
+          "chamber": "없음",
+          "contested_ko": "도도부현 지사 1인"
         },
         {
           "id": "jpn-2026-gov-ishikawa",
@@ -641,7 +666,10 @@
           "sources": [
             "local_senkyo_2026"
           ],
-          "status": "completed"
+          "status": "completed",
+          "system_id": "jpn-prefecture-governor",
+          "chamber": "없음",
+          "contested_ko": "도도부현 지사 1인"
         },
         {
           "id": "jpn-2026-gov-kyoto",
@@ -652,7 +680,10 @@
           "sources": [
             "local_senkyo_2026"
           ],
-          "status": "completed"
+          "status": "completed",
+          "system_id": "jpn-prefecture-governor",
+          "chamber": "없음",
+          "contested_ko": "도도부현 지사 1인"
         },
         {
           "id": "jpn-2026-gov-niigata",
@@ -664,7 +695,10 @@
           "sources": [
             "local_senkyo_2026"
           ],
-          "status": "completed"
+          "status": "completed",
+          "system_id": "jpn-prefecture-governor",
+          "chamber": "없음",
+          "contested_ko": "도도부현 지사 1인"
         },
         {
           "id": "jpn-2026-gov-shiga",
@@ -684,7 +718,10 @@
             "name_ko": "미카즈키 다이조",
             "party": "無所属"
           },
-          "notes": "임기만료 선거. 고시 2026-06-18, 투개표 2026-07-05. MIC/현 선관위 확인 완료."
+          "notes": "임기만료 선거. 고시 2026-06-18, 투개표 2026-07-05. MIC/현 선관위 확인 완료.",
+          "system_id": "jpn-prefecture-governor",
+          "chamber": "없음",
+          "contested_ko": "도도부현 지사 1인"
         },
         {
           "id": "jpn-2026-gov-nagano",
@@ -696,7 +733,10 @@
           "notes": "go2senkyo cross-check; prefer MIC/pref SOS when available",
           "sources": [
             "go2senkyo_2026"
-          ]
+          ],
+          "system_id": "jpn-prefecture-governor",
+          "chamber": "없음",
+          "contested_ko": "도도부현 지사 1인"
         },
         {
           "id": "jpn-2026-gov-kagawa",
@@ -708,7 +748,10 @@
           "notes": "go2senkyo cross-check; prefer MIC/pref SOS when available",
           "sources": [
             "go2senkyo_2026"
-          ]
+          ],
+          "system_id": "jpn-prefecture-governor",
+          "chamber": "없음",
+          "contested_ko": "도도부현 지사 1인"
         },
         {
           "id": "jpn-2026-gov-okinawa",
@@ -720,7 +763,10 @@
           "notes": "go2senkyo cross-check; prefer MIC/pref SOS when available",
           "sources": [
             "go2senkyo_2026"
-          ]
+          ],
+          "system_id": "jpn-prefecture-governor",
+          "chamber": "없음",
+          "contested_ko": "도도부현 지사 1인"
         },
         {
           "id": "jpn-2026-national-by-oct",
@@ -733,7 +779,11 @@
             "kouhou_33_2",
             "mic_hoketsu",
             "wiki_jpn_hoketsu_2026"
-          ]
+          ],
+          "level": "national",
+          "chamber": "shugiin",
+          "contested_ko": "국정 재보궐 (10월 통일창)",
+          "system_id": "jpn-shugiin"
         },
         {
           "id": "jpn-2026-fukushima-governor",
@@ -746,7 +796,10 @@
             "fukushima_gov_2026",
             "jiji_fukushima_2026"
           ],
-          "status": "scheduled"
+          "status": "scheduled",
+          "system_id": "jpn-prefecture-governor",
+          "chamber": "없음",
+          "contested_ko": "도도부현 지사 1인"
         },
         {
           "id": "jpn-2026-fukushima-assembly-by",
@@ -757,7 +810,10 @@
           "sources": [
             "fukushima_gov_2026"
           ],
-          "status": "scheduled"
+          "status": "scheduled",
+          "level": "subnational",
+          "chamber": "없음",
+          "contested_ko": "후쿠시마현의회 보궐 3선거구"
         },
         {
           "id": "jpn-2026-gov-ehime",
@@ -769,7 +825,10 @@
           "notes": "go2senkyo cross-check; prefer MIC/pref SOS when available",
           "sources": [
             "go2senkyo_2026"
-          ]
+          ],
+          "system_id": "jpn-prefecture-governor",
+          "chamber": "없음",
+          "contested_ko": "도도부현 지사 1인"
         },
         {
           "id": "jpn-2026-gov-saga",
@@ -781,7 +840,10 @@
           "notes": "go2senkyo cross-check; prefer MIC/pref SOS when available",
           "sources": [
             "go2senkyo_2026"
-          ]
+          ],
+          "system_id": "jpn-prefecture-governor",
+          "chamber": "없음",
+          "contested_ko": "도도부현 지사 1인"
         },
         {
           "id": "jpn-2026-gov-miyazaki",
@@ -793,7 +855,10 @@
           "notes": "go2senkyo cross-check; prefer MIC/pref SOS when available",
           "sources": [
             "go2senkyo_2026"
-          ]
+          ],
+          "system_id": "jpn-prefecture-governor",
+          "chamber": "없음",
+          "contested_ko": "도도부현 지사 1인"
         },
         {
           "id": "jpn-2026-national-by-apr",
@@ -806,25 +871,49 @@
             "wiki_jpn_hoketsu_2026",
             "kouhou_33_2",
             "mic_hoketsu"
+          ],
+          "level": "national",
+          "chamber": "shugiin",
+          "contested_ko": "국정 재보궐 (4월 통일창, 미실시)",
+          "system_id": "jpn-shugiin"
+        },
+        {
+          "id": "jpn-presidential",
+          "type": "presidential",
+          "label_ko": "대통령 선거",
+          "label_en": "Presidential election",
+          "date": "없음",
+          "status": "없음",
+          "level": "national",
+          "chamber": "없음",
+          "contested_ko": "없음",
+          "notes": "의원내각제라 대통령 선거가 없다. 천황은 세습이고, 내각총리대신은 국회가 지명한다.",
+          "sources": [
+            "https://www.soumu.go.jp/senkyo/senkyo_s/news/senkyo/shuugiin/"
           ]
         },
         {
-          "id": "jpn-2026-sangiin-regular",
-          "type": "general",
-          "label_ko": "참의원 통상선거",
+          "id": "jpn-2026-cdp-leader",
+          "type": "party_leadership",
+          "party_id": "cdp",
+          "party_abbr": "CDP",
+          "label_ko": "입헌민주당 대표 선거",
+          "label_en": "CDP leadership",
           "date": "없음",
           "status": "없음",
-          "chamber": "house_of_councillors",
-          "notes": "2026년 통상선거 일정 없음(다음 개헌 주기는 2028년 계열).",
+          "level": "party",
+          "chamber": "없음",
+          "contested_ko": "입헌민주당 대표 1인",
+          "notes": "2026년 당대표 정기교체 공고를 찾지 못함. 제1야당 현 대표는 별도 조사.",
           "sources": [
-            "kouhou_33_2"
+            "https://cdp-japan.jp/"
           ]
         }
       ],
-      "events_this_year": 22,
+      "events_this_year": 23,
       "ingest_mode": "document_text_extract",
       "calendar": {
-        "as_of": "2026-08-09",
+        "as_of": "2026-09-18",
         "sources": [
           {
             "id": "mic_hoketsu",
@@ -1871,7 +1960,11 @@
           "notes": "정책상 party_leadership 제외이나 캘린더 추적용. 후보 지명 없음 랠리/메시징.",
           "sources": [
             "https://apnews.com/article/rnc-republican-midterm-convention-donald-trump-fb02b785fb38362f99d7991a97e969d2"
-          ]
+          ],
+          "level": "party",
+          "chamber": "없음",
+          "contested_ko": "후보 지명 없는 중간선거 전국대회",
+          "electorate_ko": "당 전당대회 대의원 (지명 투표 없음)"
         },
         {
           "id": "usa-2026-tx18-special-runoff",
@@ -1886,7 +1979,10 @@
             "fec_ec_specials_2026",
             "wiki_us_house_2026"
           ],
-          "status": "completed"
+          "status": "completed",
+          "system_id": "usa-house-special",
+          "level": "national",
+          "contested_ko": "연방하원 잔여임기 1석 (TX-18)"
         },
         {
           "id": "usa-2026-nj11-special-primary",
@@ -1899,7 +1995,10 @@
             "fec_specials_2026",
             "fec_ec_specials_2026"
           ],
-          "status": "completed"
+          "status": "completed",
+          "system_id": "usa-house-special",
+          "level": "national",
+          "contested_ko": "연방하원 잔여임기 1석 (NJ-11)"
         },
         {
           "id": "usa-2026-ga14-special-general",
@@ -1912,7 +2011,10 @@
             "fec_specials_2026",
             "fec_ec_specials_2026"
           ],
-          "status": "completed"
+          "status": "completed",
+          "system_id": "usa-house-special",
+          "level": "national",
+          "contested_ko": "연방하원 잔여임기 1석 (GA-14)"
         },
         {
           "id": "usa-2026-ga14-special-runoff",
@@ -1927,7 +2029,10 @@
             "fec_ec_specials_2026",
             "wiki_us_house_2026"
           ],
-          "status": "completed"
+          "status": "completed",
+          "system_id": "usa-house-special",
+          "level": "national",
+          "contested_ko": "연방하원 잔여임기 1석 (GA-14)"
         },
         {
           "id": "usa-2026-nj11-special-general",
@@ -1942,7 +2047,10 @@
             "fec_ec_specials_2026",
             "wiki_us_house_2026"
           ],
-          "status": "completed"
+          "status": "completed",
+          "system_id": "usa-house-special",
+          "level": "national",
+          "contested_ko": "연방하원 잔여임기 1석 (NJ-11)"
         },
         {
           "id": "usa-2026-ca01-special-general",
@@ -1957,7 +2065,10 @@
             "fec_ec_specials_2026",
             "wiki_us_house_2026"
           ],
-          "status": "completed"
+          "status": "completed",
+          "system_id": "usa-house-special",
+          "level": "national",
+          "contested_ko": "연방하원 잔여임기 1석 (CA-01)"
         },
         {
           "id": "usa-2026-ca14-special-general",
@@ -1970,7 +2081,10 @@
             "fec_specials_2026",
             "fec_ec_specials_2026"
           ],
-          "status": "completed"
+          "status": "completed",
+          "system_id": "usa-house-special",
+          "level": "national",
+          "contested_ko": "연방하원 잔여임기 1석 (CA-14)"
         },
         {
           "id": "usa-2026-ga13-special-general",
@@ -1983,7 +2097,10 @@
             "fec_specials_2026",
             "fec_ec_specials_2026"
           ],
-          "status": "completed"
+          "status": "completed",
+          "system_id": "usa-house-special",
+          "level": "national",
+          "contested_ko": "연방하원 잔여임기 1석 (GA-13)"
         },
         {
           "id": "usa-2026-ca01-special-runoff",
@@ -1996,7 +2113,10 @@
             "fec_specials_2026",
             "fec_ec_specials_2026"
           ],
-          "status": "completed"
+          "status": "completed",
+          "system_id": "usa-house-special",
+          "level": "national",
+          "contested_ko": "연방하원 잔여임기 1석 (CA-01)"
         },
         {
           "id": "usa-2026-ca14-special-runoff",
@@ -2010,7 +2130,10 @@
             "fec_specials_2026",
             "fec_ec_specials_2026"
           ],
-          "status": "scheduled"
+          "status": "scheduled",
+          "system_id": "usa-house-special",
+          "level": "national",
+          "contested_ko": "연방하원 잔여임기 1석 (CA-14)"
         },
         {
           "id": "usa-2026-ga13-special-runoff",
@@ -2024,7 +2147,10 @@
             "fec_specials_2026",
             "fec_ec_specials_2026"
           ],
-          "status": "scheduled"
+          "status": "scheduled",
+          "system_id": "usa-house-special",
+          "level": "national",
+          "contested_ko": "연방하원 잔여임기 1석 (GA-13)"
         },
         {
           "id": "usa-2026-fl20-special",
@@ -2038,7 +2164,10 @@
           "sources": [
             "fec_specials_2026"
           ],
-          "as_of_check": "2026-08-09"
+          "as_of_check": "2026-08-09",
+          "system_id": "usa-house-special",
+          "level": "national",
+          "contested_ko": "연방하원 잔여임기 1석 (FL-20)"
         },
         {
           "id": "usa-2026-tx23-special",
@@ -2052,7 +2181,10 @@
           "sources": [
             "fec_specials_2026"
           ],
-          "as_of_check": "2026-08-09"
+          "as_of_check": "2026-08-09",
+          "system_id": "usa-house-special",
+          "level": "national",
+          "contested_ko": "연방하원 잔여임기 1석 (TX-23)"
         },
         {
           "id": "usa-2026-midterms",
@@ -2065,7 +2197,11 @@
             "invest_lens_elections"
           ],
           "status": "scheduled",
-          "market_significance_invest_lens": 3
+          "market_significance_invest_lens": 3,
+          "system_id": "usa-house",
+          "level": "national",
+          "chamber": "house",
+          "contested_ko": "연방하원 435석 전원 + 상원 Class 1 정기改選(약 33석)"
         },
         {
           "id": "usa-2026-senate-special-fl",
@@ -2080,7 +2216,10 @@
             "invest_lens_elections"
           ],
           "status": "scheduled",
-          "market_significance_invest_lens": 3
+          "market_significance_invest_lens": 3,
+          "system_id": "usa-senate",
+          "level": "national",
+          "contested_ko": "해당 주 연방상원 잔여임기 1석"
         },
         {
           "id": "usa-2026-senate-special-oh",
@@ -2095,7 +2234,10 @@
             "invest_lens_elections"
           ],
           "status": "scheduled",
-          "market_significance_invest_lens": 3
+          "market_significance_invest_lens": 3,
+          "system_id": "usa-senate",
+          "level": "national",
+          "contested_ko": "해당 주 연방상원 잔여임기 1석"
         },
         {
           "id": "usa-2026-governors",
@@ -2108,13 +2250,32 @@
             "invest_lens_elections"
           ],
           "status": "scheduled",
-          "market_significance_invest_lens": 3
+          "market_significance_invest_lens": 3,
+          "system_id": "usa-governor",
+          "level": "subnational",
+          "chamber": "없음",
+          "contested_ko": "주지사 36개 주 + 공고된 자치령"
+        },
+        {
+          "id": "usa-party-leadership-national",
+          "type": "party_leadership",
+          "label_ko": "민주·공화 전국 당대표 선거",
+          "label_en": "National party leader election",
+          "date": "없음",
+          "status": "없음",
+          "level": "party",
+          "chamber": "없음",
+          "contested_ko": "없음",
+          "notes": "미국에는 한국·일본식 전국 당대표 선거가 없다. 원내대표와 전당대회만 추적. 2026 공화당 중간선거 전국대회는 usa-2026-rnc-midterm-convention.",
+          "sources": [
+            "https://www.fec.gov/introduction-campaign-finance/election-and-voting-information/"
+          ]
         }
       ],
-      "events_this_year": 18,
+      "events_this_year": 19,
       "ingest_mode": "document_text_extract",
       "calendar": {
-        "as_of": "2026-08-09",
+        "as_of": "2026-09-18",
         "sources": [
           {
             "id": "fec_specials_2026",
@@ -47708,7 +47869,11 @@
             "tass_2026-06-16",
             "invest_lens_elections"
           ],
-          "market_significance_invest_lens": 1
+          "market_significance_invest_lens": 1,
+          "system_id": "rus-duma",
+          "level": "national",
+          "chamber": "duma",
+          "contested_ko": "국가두마 450석 전원"
         },
         {
           "id": "rus-2026-single-voting-day-regions",
@@ -47726,24 +47891,16 @@
             "cikrf",
             "invest_lens_elections"
           ],
-          "market_significance_invest_lens": 1
-        },
-        {
-          "id": "rus-2026-presidential",
-          "type": "presidential",
-          "label_ko": "대선",
-          "date": "없음",
-          "status": "없음",
-          "notes": "Next after 2024 cycle — not in 2026.",
-          "sources": [
-            "kremlin_decree_2026-06-16"
-          ]
+          "market_significance_invest_lens": 1,
+          "level": "subnational",
+          "chamber": "없음",
+          "contested_ko": "단일투표일 지방 수장·주의회"
         }
       ],
-      "events_this_year": 4,
+      "events_this_year": 3,
       "ingest_mode": "document_text_extract",
       "calendar": {
-        "as_of": "2026-08-08",
+        "as_of": "2026-09-18",
         "sources": [
           {
             "id": "kremlin_decree_2026-06-16",
@@ -50411,6 +50568,646 @@
       }
     },
     {
+      "iso3": "GBR",
+      "name_ko": "영국",
+      "priority_tier": 2,
+      "region": "europe",
+      "system": "parliamentary",
+      "map_spectrum": "progressive",
+      "head": {
+        "role": "prime_minister",
+        "name_en": "Andy Burnham",
+        "party_id": "lab",
+        "spectrum": "progressive",
+        "since": "2026-07-20",
+        "predecessor": "Keir Starmer",
+        "sources": [
+          {
+            "org": "GOV.UK",
+            "url": "https://www.gov.uk/government/people/andy-burnham",
+            "date": "2026-07-20",
+            "note": "Andy Burnham became Prime Minister on 20 July 2026"
+          },
+          {
+            "org": "GOV.UK",
+            "url": "https://www.gov.uk/government/speeches/andy-burnhams-first-speech-as-prime-minister-20-july-2026",
+            "date": "2026-07-20"
+          }
+        ]
+      },
+      "ruling_party": {
+        "id": "lab",
+        "name_en": "Labour",
+        "role": "ruling"
+      },
+      "parties_tracked": [
+        {
+          "id": "lab",
+          "abbr": "Lab",
+          "name_en": "Labour",
+          "role": "ruling",
+          "spectrum": "progressive",
+          "confidence": "high",
+          "display": "Lab"
+        },
+        {
+          "id": "con",
+          "abbr": "Con",
+          "name_en": "Conservative Party",
+          "role": "main_opposition",
+          "spectrum": "conservative",
+          "confidence": "high",
+          "display": "Con"
+        },
+        {
+          "id": "ld",
+          "abbr": "LD",
+          "name_en": "Liberal Democrats",
+          "role": "major_3",
+          "spectrum": "centrist",
+          "confidence": "medium",
+          "display": "LD"
+        },
+        {
+          "id": "snp",
+          "abbr": "SNP",
+          "name_en": "Scottish National Party",
+          "role": "major_4",
+          "spectrum": "other",
+          "confidence": "medium",
+          "display": "SNP"
+        }
+      ],
+      "legislature": {
+        "chambers": [
+          "house_of_commons",
+          "house_of_lords"
+        ],
+        "member_roster_source": {
+          "id": "parliament_uk_api",
+          "url": "https://members-api.parliament.uk/api/Parties/StateOfTheParties/1/{date}",
+          "status": "extracted",
+          "extract_file": "extracted/gbr_commons.json"
+        }
+      },
+      "subnational": null,
+      "polls": {
+        "admit": [
+          "pm_approval",
+          "party_support"
+        ],
+        "reject": [
+          "national_horserace_headline"
+        ],
+        "status": "snapshot_wired",
+        "extract": "extracted/governance_polls.json"
+      },
+      "events": [
+        {
+          "id": "gbr-2026-con-leadership",
+          "type": "party_leadership",
+          "party_id": "con",
+          "label_ko": "보수당 당대표 경선",
+          "date": "없음",
+          "status": "없음",
+          "notes": "2026 중 공식 당대표 교체 대회 없음(Badenoch 임기 중으로 추적 중)",
+          "level": "party",
+          "chamber": "없음",
+          "contested_ko": "보수당 당대표 경선",
+          "sources": [
+            "https://www.conservatives.com/"
+          ]
+        },
+        {
+          "id": "gbr-2026-labour-leadership",
+          "type": "party_leadership",
+          "party_id": "lab",
+          "party_abbr": "Lab",
+          "label_ko": "노동당 당대표 특별당대회",
+          "date": "2026-07-17",
+          "status": "completed",
+          "office": "party_leader",
+          "venue": "TUC London (Special Conference)",
+          "winner": {
+            "name_en": "Andy Burnham",
+            "name_ko": "앤디 번ham"
+          },
+          "notes": "Starmer 사임 후 단독 후보 당선(PLP 379 등). PM 취임 2026-07-20.",
+          "sources": [
+            "https://labour.org.uk/updates/members-updates/andy-burnham-elected-leader-of-the-labour-party/",
+            "https://en.wikipedia.org/wiki/2026_Labour_Party_leadership_election"
+          ],
+          "level": "party",
+          "chamber": "없음",
+          "contested_ko": "노동당 당대표 특별당대회"
+        },
+        {
+          "id": "gbr-2026-local-may7",
+          "type": "local",
+          "label_ko": "지방선거(잉글랜드 등)",
+          "date": "2026-05-07",
+          "status": "completed",
+          "sources": [
+            "uk_ec_2026"
+          ],
+          "level": "subnational",
+          "contested_ko": "잉글랜드 일부 지방의원·시장 (2026-05-07 공고분)",
+          "notes": "같은 날 스코틀랜드 의회·세네드와 겹침. 제도 행은 각각 별도.",
+          "system_id": "gbr-england-local",
+          "chamber": "없음"
+        },
+        {
+          "id": "gbr-2026-scottish-parliament",
+          "type": "local",
+          "label_ko": "스코틀랜드 의회",
+          "date": "2026-05-07",
+          "status": "completed",
+          "sources": [
+            "uk_ec_2026",
+            "wiki_elections_2026"
+          ],
+          "system_id": "gbr-holyrood",
+          "level": "subnational",
+          "chamber": "holyrood",
+          "contested_ko": "스코틀랜드 의회 의석 전원"
+        },
+        {
+          "id": "gbr-2026-senedd",
+          "type": "local",
+          "label_ko": "웨일스 세네드",
+          "date": "2026-05-07",
+          "status": "completed",
+          "sources": [
+            "uk_ec_2026",
+            "wiki_elections_2026"
+          ],
+          "system_id": "gbr-senedd",
+          "level": "subnational",
+          "chamber": "senedd",
+          "contested_ko": "웨일스 세네드 의석 전원"
+        },
+        {
+          "id": "gbr-2026-pm-succession",
+          "type": "party_leadership",
+          "label_ko": "총리 교체(노동당·내각)",
+          "date": "2026-07-20",
+          "status": "completed",
+          "notes": "Keir Starmer 사임 후 Andy Burnham PM 취임(2026-07-20). 당대표 선출은 gbr-2026-labour-leadership(2026-07-17) 참고.",
+          "sources": [
+            "https://www.gov.uk/government/people/andy-burnham"
+          ],
+          "related_event": "gbr-2026-labour-leadership",
+          "level": "party",
+          "chamber": "없음",
+          "contested_ko": "총리 교체(노동당·내각)"
+        },
+        {
+          "id": "gbr-presidential",
+          "type": "presidential",
+          "label_ko": "대통령 선거",
+          "label_en": "Presidential election",
+          "date": "없음",
+          "status": "없음",
+          "level": "national",
+          "chamber": "없음",
+          "contested_ko": "없음",
+          "notes": "의원내각제. 국가원수는 세습 군주이며 대통령 선거가 없다. 총리는 하원 다수 정당이 정한다.",
+          "sources": [
+            "https://www.gov.uk/government/how-government-works"
+          ]
+        },
+        {
+          "id": "gbr-2026-holborn-st-pancras-by",
+          "type": "by_election",
+          "label_ko": "하원 재보궐 홀본·세인트판크라스",
+          "label_en": "Holborn and St Pancras by-election",
+          "date": "2026-10-08",
+          "status": "scheduled",
+          "system_id": "gbr-commons",
+          "level": "national",
+          "chamber": "commons",
+          "contested_ko": "하원 1석 (Starmer 사퇴 잔여)",
+          "notes": "전 총리 Keir Starmer 사퇴 후 본선.",
+          "sources": [
+            "https://en.wikipedia.org/wiki/2026_Holborn_and_St_Pancras_by-election",
+            "https://elections.democracyclub.org.uk/elections/parl.holborn-and-st-pancras.by.2026-10-08/"
+          ]
+        },
+        {
+          "id": "gbr-2026-clacton-by",
+          "type": "by_election",
+          "label_ko": "하원 재보궐 클랙턴",
+          "label_en": "Clacton by-election",
+          "date": "2026-08-13",
+          "status": "completed",
+          "system_id": "gbr-commons",
+          "level": "national",
+          "chamber": "commons",
+          "contested_ko": "하원 1석",
+          "notes": "Tendring DC: polling 13 Aug 2026. 지나간 재보궐, status로 구분.",
+          "sources": [
+            "https://www.tendringdc.gov.uk/news/date-set-for-clacton-constituency-by-election"
+          ]
+        }
+      ],
+      "events_this_year": 9,
+      "ingest_mode": "document_text_extract",
+      "calendar": {
+        "as_of": "2026-09-18",
+        "sources": [
+          {
+            "id": "uk_ec_2026",
+            "org": "Electoral Commission",
+            "url": "https://www.electoralcommission.org.uk/voting-and-elections/key-dates-voters-2026",
+            "retrieved": "2026-08-08"
+          },
+          {
+            "id": "wiki_elections_2026",
+            "url": "https://en.wikipedia.org/wiki/List_of_elections_in_2026"
+          }
+        ],
+        "notes": [
+          "No UK general election scheduled in 2026 (next Commons after 2024).",
+          "7 May 2026: England locals + Scottish Parliament + Senedd + some English mayors.",
+          "2026-07-20: Andy Burnham appointed PM after Starmer resignation (not a general election)."
+        ],
+        "null_policy": {
+          "없음": "해당 일정/선거 없음",
+          "불명": "발표·확정 전 또는 출처에 날짜 없음"
+        }
+      },
+      "executive_live": {
+        "coverage": "full_cabinet",
+        "sources": [
+          {
+            "org": "GOV.UK Ministers",
+            "url": "https://www.gov.uk/government/ministers",
+            "as_of": "2026-07-23"
+          }
+        ],
+        "core": [
+          {
+            "office_ko": "총리",
+            "name_en": "Andy Burnham",
+            "party_abbr": "LAB",
+            "official_url": "https://www.gov.uk/government/people/andy-burnham"
+          },
+          {
+            "office_ko": "제1국무장관·내각부 장관",
+            "name_en": "Louise Haigh",
+            "party_abbr": "LAB",
+            "official_url": "https://www.gov.uk/government/people/louise-haigh"
+          },
+          {
+            "office_ko": "재무장관",
+            "name_en": "John Healey",
+            "party_abbr": "LAB",
+            "official_url": "https://www.gov.uk/government/people/john-healey"
+          },
+          {
+            "office_ko": "외무·영연방·개발장관",
+            "name_en": "Ed Miliband",
+            "party_abbr": "LAB",
+            "official_url": "https://www.gov.uk/government/people/ed-miliband"
+          },
+          {
+            "office_ko": "내무장관",
+            "name_en": "Shabana Mahmood",
+            "party_abbr": "LAB",
+            "official_url": "https://www.gov.uk/government/people/shabana-mahmood"
+          },
+          {
+            "office_ko": "국방장관",
+            "name_en": "Wes Streeting",
+            "party_abbr": "LAB",
+            "official_url": "https://www.gov.uk/government/people/wes-streeting"
+          }
+        ],
+        "cabinet": [
+          {
+            "portfolio_ko": "보건사회복지장관",
+            "name_en": "Yvette Cooper",
+            "official_url": "https://www.gov.uk/government/people/yvette-cooper"
+          },
+          {
+            "portfolio_ko": "법무장관·대법관",
+            "name_en": "Alex Norris",
+            "official_url": "https://www.gov.uk/government/people/alex-norris"
+          },
+          {
+            "portfolio_ko": "교육장관",
+            "name_en": "Lucy Powell",
+            "official_url": "https://www.gov.uk/government/people/lucy-powell"
+          },
+          {
+            "portfolio_ko": "노동연금장관",
+            "name_en": "Pat McFadden",
+            "official_url": "https://www.gov.uk/government/people/pat-mcfadden"
+          },
+          {
+            "portfolio_ko": "기업·혁신·과학·통상장관",
+            "name_en": "Jonathan Reynolds",
+            "official_url": "https://www.gov.uk/government/people/jonathan-reynolds"
+          },
+          {
+            "portfolio_ko": "주택·지역사회·지방정부장관",
+            "name_en": "Angela Rayner",
+            "official_url": "https://www.gov.uk/government/people/angela-rayner"
+          },
+          {
+            "portfolio_ko": "교통장관",
+            "name_en": "Heidi Alexander",
+            "official_url": "https://www.gov.uk/government/people/heidi-alexander"
+          },
+          {
+            "portfolio_ko": "에너지안보·넷제로장관",
+            "name_en": "Miatta Fahnbulleh",
+            "official_url": "https://www.gov.uk/government/people/miatta-fahnbulleh"
+          },
+          {
+            "portfolio_ko": "디지털·문화·미디어·스포츠장관",
+            "name_en": "Lisa Nandy",
+            "official_url": "https://www.gov.uk/government/people/lisa-nandy"
+          },
+          {
+            "portfolio_ko": "환경·식품·농촌장관",
+            "name_en": "Angela Eagle",
+            "official_url": "https://www.gov.uk/government/people/angela-eagle"
+          },
+          {
+            "portfolio_ko": "북아일랜드장관",
+            "name_en": "Chris Bryant",
+            "official_url": "https://www.gov.uk/government/people/chris-bryant"
+          },
+          {
+            "portfolio_ko": "스코틀랜드장관",
+            "name_en": "Douglas Alexander",
+            "official_url": "https://www.gov.uk/government/people/douglas-alexander"
+          },
+          {
+            "portfolio_ko": "웨일스장관",
+            "name_en": "Stephen Kinnock",
+            "official_url": "https://www.gov.uk/government/people/stephen-kinnock"
+          },
+          {
+            "portfolio_ko": "여성·평등장관",
+            "name_en": "Bridget Phillipson",
+            "official_url": "https://www.gov.uk/government/people/bridget-phillipson"
+          },
+          {
+            "portfolio_ko": "법무장관",
+            "name_en": "Ellie Reeves",
+            "official_url": "https://www.gov.uk/government/people/ellie-reeves"
+          }
+        ]
+      },
+      "legislature_live": {
+        "summary": {
+          "chamber": "house_of_commons",
+          "seats_total": 650,
+          "by_party_abbr": {
+            "Lab": 405,
+            "Con": 118,
+            "LD": 71,
+            "Ind": 10,
+            "SNP": 8,
+            "RUK": 7,
+            "SF": 7,
+            "DUP": 5,
+            "Green": 5,
+            "PC": 4,
+            "SDLP": 2,
+            "YP": 2,
+            "APNI": 1,
+            "RB": 1,
+            "Spk": 1,
+            "TUV": 1,
+            "UUP": 1,
+            "Vacant": 1
+          },
+          "labour_majority_vs_326": 79,
+          "pm_note": "Andy Burnham became Prime Minister on 20 July 2026"
+        },
+        "parties": [
+          {
+            "name_en": "Labour",
+            "abbr": "Lab",
+            "seats": 405,
+            "male": 217,
+            "female": 188,
+            "party_id": 15
+          },
+          {
+            "name_en": "Conservative",
+            "abbr": "Con",
+            "seats": 118,
+            "male": 90,
+            "female": 28,
+            "party_id": 4
+          },
+          {
+            "name_en": "Liberal Democrat",
+            "abbr": "LD",
+            "seats": 71,
+            "male": 39,
+            "female": 32,
+            "party_id": 17
+          },
+          {
+            "name_en": "Independent",
+            "abbr": "Ind",
+            "seats": 10,
+            "male": 9,
+            "female": 1,
+            "party_id": 8
+          },
+          {
+            "name_en": "Scottish National Party",
+            "abbr": "SNP",
+            "seats": 8,
+            "male": 6,
+            "female": 2,
+            "party_id": 29
+          },
+          {
+            "name_en": "Reform UK",
+            "abbr": "RUK",
+            "seats": 7,
+            "male": 5,
+            "female": 2,
+            "party_id": 1036
+          },
+          {
+            "name_en": "Sinn Féin",
+            "abbr": "SF",
+            "seats": 7,
+            "male": 5,
+            "female": 2,
+            "party_id": 30
+          },
+          {
+            "name_en": "Democratic Unionist Party",
+            "abbr": "DUP",
+            "seats": 5,
+            "male": 4,
+            "female": 1,
+            "party_id": 7
+          },
+          {
+            "name_en": "Green Party",
+            "abbr": "Green",
+            "seats": 5,
+            "male": 1,
+            "female": 4,
+            "party_id": 44
+          },
+          {
+            "name_en": "Plaid Cymru",
+            "abbr": "PC",
+            "seats": 4,
+            "male": 1,
+            "female": 3,
+            "party_id": 22
+          },
+          {
+            "name_en": "Social Democratic & Labour Party",
+            "abbr": "SDLP",
+            "seats": 2,
+            "male": 1,
+            "female": 1,
+            "party_id": 31
+          },
+          {
+            "name_en": "Your Party",
+            "abbr": "YP",
+            "seats": 2,
+            "male": 1,
+            "female": 1,
+            "party_id": 1115
+          },
+          {
+            "name_en": "Alliance",
+            "abbr": "APNI",
+            "seats": 1,
+            "male": 0,
+            "female": 1,
+            "party_id": 1
+          },
+          {
+            "name_en": "Restore Britain",
+            "abbr": "RB",
+            "seats": 1,
+            "male": 1,
+            "female": 0,
+            "party_id": 1117
+          },
+          {
+            "name_en": "Speaker",
+            "abbr": "Spk",
+            "seats": 1,
+            "male": 1,
+            "female": 0,
+            "party_id": 47
+          },
+          {
+            "name_en": "Traditional Unionist Voice",
+            "abbr": "TUV",
+            "seats": 1,
+            "male": 1,
+            "female": 0,
+            "party_id": 158
+          },
+          {
+            "name_en": "Ulster Unionist Party",
+            "abbr": "UUP",
+            "seats": 1,
+            "male": 1,
+            "female": 0,
+            "party_id": 38
+          },
+          {
+            "name_en": "Vacant",
+            "abbr": "Vacant",
+            "seats": 1,
+            "male": 0,
+            "female": 0,
+            "party_id": 0
+          }
+        ],
+        "floor_leadership": [
+          {
+            "office": "prime_minister",
+            "name": "Andy Burnham",
+            "party_abbr": "Lab",
+            "chamber": "commons",
+            "source": "https://www.gov.uk/government/people/andy-burnham",
+            "as_of": "2026-07-20"
+          },
+          {
+            "office": "leader_of_opposition",
+            "name": "Kemi Badenoch",
+            "party_abbr": "Con",
+            "chamber": "commons",
+            "source": "Conservatives official leadership (cross-check media); 불명 if contested",
+            "confidence": "medium"
+          },
+          {
+            "office": "speaker",
+            "name": "불명",
+            "party_abbr": "Spk",
+            "chamber": "commons",
+            "note": "Speaker seat counted separately in State of the Parties"
+          }
+        ],
+        "source": {
+          "id": "uk_parliament_state_of_parties",
+          "url": "https://members-api.parliament.uk/api/Parties/StateOfTheParties/1/2026-08-08",
+          "govuk_pm": "https://www.gov.uk/government/people/andy-burnham",
+          "grade": "official_api"
+        }
+      },
+      "governance_polls": [
+        {
+          "iso3": "GBR",
+          "kind": "pm_approval",
+          "subject": "Andy Burnham",
+          "pollster": "More in Common (via Independent)",
+          "net_approval": 19,
+          "field_note": "Early premiership: Independent reports More in Common net +19 for Burnham (post 2026-07-20 appointment). Classic approve/disapprove split 불명 in this pass.",
+          "sources": [
+            {
+              "url": "https://www.the-independent.com/news/uk/politics/andy-burnham-policies-tax-business-cost-living-energy-immigration-b3026552.html",
+              "label": "Independent: Burnham net +19 More in Common"
+            },
+            {
+              "url": "https://www.gov.uk/government/people/andy-burnham",
+              "label": "GOV.UK: PM since 20 July 2026"
+            }
+          ],
+          "confidence": "medium",
+          "refresh": "weekly_uk_poll_aggregators"
+        },
+        {
+          "iso3": "GBR",
+          "kind": "pm_favourability_exit_snapshot",
+          "subject": "Keir Starmer (former PM)",
+          "pollster": "Ipsos",
+          "approve_pct": 22,
+          "disapprove_pct": 52,
+          "field_date": "2026-07",
+          "field_note": "Exit-period favourability, not current job approval. 17–22 July 2026 Ipsos Political Pulse.",
+          "sources": [
+            {
+              "url": "https://www.ipsos.com/sites/default/files/ct/news/documents/2026-08/Ipsos_July%2026_Political_Pulse_v1d4_Int%20Use%20Only.pdf",
+              "label": "Ipsos Political Pulse July 2026"
+            }
+          ],
+          "confidence": "high",
+          "refresh": "historical"
+        }
+      ]
+    },
+    {
       "iso3": "DEU",
       "name_ko": "독일",
       "priority_tier": 2,
@@ -50500,7 +51297,10 @@
           "label_ko": "SPD 당대표 교체 경선",
           "date": "불명",
           "status": "없음",
-          "notes": "2026 중 대규모 공개 당대표 교체 대회 미확인 → 없음; 확인 시 갱신"
+          "notes": "2026 중 대규모 공개 당대표 교체 대회 미확인 → 없음; 확인 시 갱신",
+          "level": "party",
+          "chamber": "없음",
+          "contested_ko": "SPD 당대표 교체 경선"
         },
         {
           "id": "deu-2026-cdu-parteitag-38",
@@ -50522,17 +51322,10 @@
           "sources": [
             "https://www.cdu.de/38-parteitag/",
             "https://www.dw.com/en/merz-cdu-party-congress-germany-deutschland/live-76052837"
-          ]
-        },
-        {
-          "id": "deu-2026-bundestag",
-          "type": "general",
-          "label_ko": "연방하원(Bundestag)",
-          "date": "없음",
-          "status": "없음",
-          "sources": [
-            "bundeswahlleiterin"
-          ]
+          ],
+          "level": "party",
+          "chamber": "없음",
+          "contested_ko": "CDU 제38차 연방전당대회 (당대표 재신임)"
         },
         {
           "id": "deu-2026-bw-landtag",
@@ -50542,7 +51335,11 @@
           "status": "scheduled",
           "sources": [
             "das_parlament_landtag_2026"
-          ]
+          ],
+          "system_id": "deu-landtag-bw",
+          "level": "subnational",
+          "chamber": "landtag",
+          "contested_ko": "해당 주 주의회 의석 전원"
         },
         {
           "id": "deu-2026-rlp-landtag",
@@ -50552,7 +51349,11 @@
           "status": "scheduled",
           "sources": [
             "das_parlament_landtag_2026"
-          ]
+          ],
+          "system_id": "deu-landtag-rlp",
+          "level": "subnational",
+          "chamber": "landtag",
+          "contested_ko": "해당 주 주의회 의석 전원"
         },
         {
           "id": "deu-2026-st-landtag",
@@ -50563,7 +51364,11 @@
           "sources": [
             "bundeswahlleiterin",
             "sachsen_anhalt_faq"
-          ]
+          ],
+          "system_id": "deu-landtag-st",
+          "level": "subnational",
+          "chamber": "landtag",
+          "contested_ko": "해당 주 주의회 의석 전원"
         },
         {
           "id": "deu-2026-berlin-ag",
@@ -50573,7 +51378,11 @@
           "status": "scheduled",
           "sources": [
             "bundeswahlleiterin"
-          ]
+          ],
+          "system_id": "deu-landtag-berlin",
+          "level": "subnational",
+          "chamber": "landtag",
+          "contested_ko": "해당 주 주의회 의석 전원"
         },
         {
           "id": "deu-2026-mv-landtag",
@@ -50584,13 +51393,17 @@
           "sources": [
             "bundeswahlleiterin",
             "landtag_mv"
-          ]
+          ],
+          "system_id": "deu-landtag-mv",
+          "level": "subnational",
+          "chamber": "landtag",
+          "contested_ko": "해당 주 주의회 의석 전원"
         }
       ],
-      "events_this_year": 8,
+      "events_this_year": 7,
       "ingest_mode": "document_text_extract",
       "calendar": {
-        "as_of": "2026-08-08",
+        "as_of": "2026-09-18",
         "sources": [
           {
             "id": "bundeswahlleiterin",
@@ -50878,7 +51691,11 @@
             }
           ],
           "significance": 3,
-          "invest_lens_include": true
+          "invest_lens_include": true,
+          "level": "party",
+          "chamber": "없음",
+          "contested_ko": "더불어민주당 당대표·최고위원",
+          "electorate_ko": "대의원·권리당원 70% + 국민여론조사 30%"
         },
         {
           "id": "kor-2026-dpk-convention-tour",
@@ -50888,7 +51705,14 @@
           "date": "2026-08-01",
           "date_end": "2026-08-16",
           "status": "ongoing",
-          "notes": "최종 합산일은 kor-2026-dpk-convention(8/17). 중간 순회는 권리당원 1순위 공개."
+          "notes": "최종 합산일은 kor-2026-dpk-convention(8/17). 중간 순회는 권리당원 1순위 공개.",
+          "level": "party",
+          "chamber": "없음",
+          "contested_ko": "더불어민주당 당대표·최고위원",
+          "electorate_ko": "대의원·권리당원 70% + 국민여론조사 30%",
+          "sources": [
+            "https://www.yna.co.kr/view/AKR20260723181951001"
+          ]
         },
         {
           "id": "kor-2025-ppp-convention",
@@ -50914,7 +51738,10 @@
           "sources": [
             "https://www.peoplepowerparty.kr/news/comment_view_all/108719?gubun_list=all&page=364",
             "https://www.peoplepowerparty.kr/news/comment_view/BBSDD0001/108751?page=1"
-          ]
+          ],
+          "level": "party",
+          "chamber": "없음",
+          "contested_ko": "국민의힘 당대표 1인"
         },
         {
           "id": "kor-2026-local",
@@ -50935,7 +51762,11 @@
           "sources": [
             "invest_lens_elections"
           ],
-          "market_significance_invest_lens": 3
+          "market_significance_invest_lens": 3,
+          "system_id": "kor-local",
+          "level": "subnational",
+          "chamber": "없음",
+          "contested_ko": "광역단체장 17곳 + 기초단체장 226곳 등 동시"
         },
         {
           "id": "kor-2026-na-byelections-local-day",
@@ -50947,7 +51778,11 @@
           "sources": [
             "invest_lens_elections"
           ],
-          "market_significance_invest_lens": 3
+          "market_significance_invest_lens": 3,
+          "system_id": "kor-na",
+          "level": "national",
+          "chamber": "national_assembly",
+          "contested_ko": "국회의원 재보궐 (지방선거 동시)"
         },
         {
           "id": "kor-2026-speaker-half",
@@ -50959,15 +51794,14 @@
             "speaker": "Cho Jeong-sik",
             "name_ko": "조정식"
           },
-          "notes": "Replaced Woo Won-shik (term ended 2026-05-29)"
-        },
-        {
-          "id": "kor-2026-presidential",
-          "type": "presidential",
-          "label_ko": "대선",
-          "date": "없음",
-          "status": "없음",
-          "notes": "다음 정기 대선 주기 아님 (2025 당선)"
+          "notes": "Replaced Woo Won-shik (term ended 2026-05-29)",
+          "level": "national",
+          "chamber": "national_assembly",
+          "contested_ko": "국회 의장 1인",
+          "system_id": "kor-na",
+          "sources": [
+            "https://korea.assembly.go.kr/"
+          ]
         },
         {
           "id": "kor-2026-na-vacancy-gangneung",
@@ -50975,13 +51809,20 @@
           "label_ko": "강릉 보궐 (권성동 직위 상실)",
           "date": "불명",
           "status": "tentative",
-          "notes": "Supreme Court upheld sentence 2026-07-16 — schedule 불명 until NEC announces"
+          "notes": "Supreme Court upheld sentence 2026-07-16 — schedule 불명 until NEC announces",
+          "system_id": "kor-na",
+          "level": "national",
+          "chamber": "national_assembly",
+          "contested_ko": "강릉 국회의원 1석",
+          "sources": [
+            "https://www.nec.go.kr/"
+          ]
         }
       ],
-      "events_this_year": 8,
+      "events_this_year": 7,
       "ingest_mode": "document_text_extract",
       "calendar": {
-        "as_of": "2026-08-09",
+        "as_of": "2026-09-18",
         "sources": [
           {
             "org": "NEC / Yonhap",
@@ -51987,584 +52828,6 @@
       ]
     },
     {
-      "iso3": "GBR",
-      "name_ko": "영국",
-      "priority_tier": 2,
-      "region": "europe",
-      "system": "parliamentary",
-      "map_spectrum": "progressive",
-      "head": {
-        "role": "prime_minister",
-        "name_en": "Andy Burnham",
-        "party_id": "lab",
-        "spectrum": "progressive",
-        "since": "2026-07-20",
-        "predecessor": "Keir Starmer",
-        "sources": [
-          {
-            "org": "GOV.UK",
-            "url": "https://www.gov.uk/government/people/andy-burnham",
-            "date": "2026-07-20",
-            "note": "Andy Burnham became Prime Minister on 20 July 2026"
-          },
-          {
-            "org": "GOV.UK",
-            "url": "https://www.gov.uk/government/speeches/andy-burnhams-first-speech-as-prime-minister-20-july-2026",
-            "date": "2026-07-20"
-          }
-        ]
-      },
-      "ruling_party": {
-        "id": "lab",
-        "name_en": "Labour",
-        "role": "ruling"
-      },
-      "parties_tracked": [
-        {
-          "id": "lab",
-          "abbr": "Lab",
-          "name_en": "Labour",
-          "role": "ruling",
-          "spectrum": "progressive",
-          "confidence": "high",
-          "display": "Lab"
-        },
-        {
-          "id": "con",
-          "abbr": "Con",
-          "name_en": "Conservative Party",
-          "role": "main_opposition",
-          "spectrum": "conservative",
-          "confidence": "high",
-          "display": "Con"
-        },
-        {
-          "id": "ld",
-          "abbr": "LD",
-          "name_en": "Liberal Democrats",
-          "role": "major_3",
-          "spectrum": "centrist",
-          "confidence": "medium",
-          "display": "LD"
-        },
-        {
-          "id": "snp",
-          "abbr": "SNP",
-          "name_en": "Scottish National Party",
-          "role": "major_4",
-          "spectrum": "other",
-          "confidence": "medium",
-          "display": "SNP"
-        }
-      ],
-      "legislature": {
-        "chambers": [
-          "house_of_commons",
-          "house_of_lords"
-        ],
-        "member_roster_source": {
-          "id": "parliament_uk_api",
-          "url": "https://members-api.parliament.uk/api/Parties/StateOfTheParties/1/{date}",
-          "status": "extracted",
-          "extract_file": "extracted/gbr_commons.json"
-        }
-      },
-      "subnational": null,
-      "polls": {
-        "admit": [
-          "pm_approval",
-          "party_support"
-        ],
-        "reject": [
-          "national_horserace_headline"
-        ],
-        "status": "snapshot_wired",
-        "extract": "extracted/governance_polls.json"
-      },
-      "events": [
-        {
-          "id": "gbr-2026-con-leadership",
-          "type": "party_leadership",
-          "party_id": "con",
-          "label_ko": "보수당 당대표 경선",
-          "date": "없음",
-          "status": "없음",
-          "notes": "2026 중 공식 당대표 교체 대회 없음(Badenoch 임기 중으로 추적 중)"
-        },
-        {
-          "id": "gbr-2026-labour-leadership",
-          "type": "party_leadership",
-          "party_id": "lab",
-          "party_abbr": "Lab",
-          "label_ko": "노동당 당대표 특별당대회",
-          "date": "2026-07-17",
-          "status": "completed",
-          "office": "party_leader",
-          "venue": "TUC London (Special Conference)",
-          "winner": {
-            "name_en": "Andy Burnham",
-            "name_ko": "앤디 번ham"
-          },
-          "notes": "Starmer 사임 후 단독 후보 당선(PLP 379 등). PM 취임 2026-07-20.",
-          "sources": [
-            "https://labour.org.uk/updates/members-updates/andy-burnham-elected-leader-of-the-labour-party/",
-            "https://en.wikipedia.org/wiki/2026_Labour_Party_leadership_election"
-          ]
-        },
-        {
-          "id": "gbr-2026-westminster",
-          "type": "general",
-          "label_ko": "하원 총선",
-          "date": "없음",
-          "status": "없음",
-          "notes": "2024 총선 이후; 2026 일정 없음",
-          "sources": [
-            "uk_ec_2026"
-          ]
-        },
-        {
-          "id": "gbr-2026-local-may7",
-          "type": "local",
-          "label_ko": "지방선거(잉글랜드 등)",
-          "date": "2026-05-07",
-          "status": "completed",
-          "sources": [
-            "uk_ec_2026"
-          ]
-        },
-        {
-          "id": "gbr-2026-scottish-parliament",
-          "type": "local",
-          "label_ko": "스코틀랜드 의회",
-          "date": "2026-05-07",
-          "status": "completed",
-          "sources": [
-            "uk_ec_2026",
-            "wiki_elections_2026"
-          ]
-        },
-        {
-          "id": "gbr-2026-senedd",
-          "type": "local",
-          "label_ko": "웨일스 세네드",
-          "date": "2026-05-07",
-          "status": "completed",
-          "sources": [
-            "uk_ec_2026",
-            "wiki_elections_2026"
-          ]
-        },
-        {
-          "id": "gbr-2026-pm-succession",
-          "type": "party_leadership",
-          "label_ko": "총리 교체(노동당·내각)",
-          "date": "2026-07-20",
-          "status": "completed",
-          "notes": "Keir Starmer 사임 후 Andy Burnham PM 취임(2026-07-20). 당대표 선출은 gbr-2026-labour-leadership(2026-07-17) 참고.",
-          "sources": [
-            "https://www.gov.uk/government/people/andy-burnham"
-          ],
-          "related_event": "gbr-2026-labour-leadership"
-        }
-      ],
-      "events_this_year": 7,
-      "ingest_mode": "document_text_extract",
-      "calendar": {
-        "as_of": "2026-08-08",
-        "sources": [
-          {
-            "id": "uk_ec_2026",
-            "org": "Electoral Commission",
-            "url": "https://www.electoralcommission.org.uk/voting-and-elections/key-dates-voters-2026",
-            "retrieved": "2026-08-08"
-          },
-          {
-            "id": "wiki_elections_2026",
-            "url": "https://en.wikipedia.org/wiki/List_of_elections_in_2026"
-          }
-        ],
-        "notes": [
-          "No UK general election scheduled in 2026 (next Commons after 2024).",
-          "7 May 2026: England locals + Scottish Parliament + Senedd + some English mayors.",
-          "2026-07-20: Andy Burnham appointed PM after Starmer resignation (not a general election)."
-        ],
-        "null_policy": {
-          "없음": "해당 일정/선거 없음",
-          "불명": "발표·확정 전 또는 출처에 날짜 없음"
-        }
-      },
-      "executive_live": {
-        "coverage": "full_cabinet",
-        "sources": [
-          {
-            "org": "GOV.UK Ministers",
-            "url": "https://www.gov.uk/government/ministers",
-            "as_of": "2026-07-23"
-          }
-        ],
-        "core": [
-          {
-            "office_ko": "총리",
-            "name_en": "Andy Burnham",
-            "party_abbr": "LAB",
-            "official_url": "https://www.gov.uk/government/people/andy-burnham"
-          },
-          {
-            "office_ko": "제1국무장관·내각부 장관",
-            "name_en": "Louise Haigh",
-            "party_abbr": "LAB",
-            "official_url": "https://www.gov.uk/government/people/louise-haigh"
-          },
-          {
-            "office_ko": "재무장관",
-            "name_en": "John Healey",
-            "party_abbr": "LAB",
-            "official_url": "https://www.gov.uk/government/people/john-healey"
-          },
-          {
-            "office_ko": "외무·영연방·개발장관",
-            "name_en": "Ed Miliband",
-            "party_abbr": "LAB",
-            "official_url": "https://www.gov.uk/government/people/ed-miliband"
-          },
-          {
-            "office_ko": "내무장관",
-            "name_en": "Shabana Mahmood",
-            "party_abbr": "LAB",
-            "official_url": "https://www.gov.uk/government/people/shabana-mahmood"
-          },
-          {
-            "office_ko": "국방장관",
-            "name_en": "Wes Streeting",
-            "party_abbr": "LAB",
-            "official_url": "https://www.gov.uk/government/people/wes-streeting"
-          }
-        ],
-        "cabinet": [
-          {
-            "portfolio_ko": "보건사회복지장관",
-            "name_en": "Yvette Cooper",
-            "official_url": "https://www.gov.uk/government/people/yvette-cooper"
-          },
-          {
-            "portfolio_ko": "법무장관·대법관",
-            "name_en": "Alex Norris",
-            "official_url": "https://www.gov.uk/government/people/alex-norris"
-          },
-          {
-            "portfolio_ko": "교육장관",
-            "name_en": "Lucy Powell",
-            "official_url": "https://www.gov.uk/government/people/lucy-powell"
-          },
-          {
-            "portfolio_ko": "노동연금장관",
-            "name_en": "Pat McFadden",
-            "official_url": "https://www.gov.uk/government/people/pat-mcfadden"
-          },
-          {
-            "portfolio_ko": "기업·혁신·과학·통상장관",
-            "name_en": "Jonathan Reynolds",
-            "official_url": "https://www.gov.uk/government/people/jonathan-reynolds"
-          },
-          {
-            "portfolio_ko": "주택·지역사회·지방정부장관",
-            "name_en": "Angela Rayner",
-            "official_url": "https://www.gov.uk/government/people/angela-rayner"
-          },
-          {
-            "portfolio_ko": "교통장관",
-            "name_en": "Heidi Alexander",
-            "official_url": "https://www.gov.uk/government/people/heidi-alexander"
-          },
-          {
-            "portfolio_ko": "에너지안보·넷제로장관",
-            "name_en": "Miatta Fahnbulleh",
-            "official_url": "https://www.gov.uk/government/people/miatta-fahnbulleh"
-          },
-          {
-            "portfolio_ko": "디지털·문화·미디어·스포츠장관",
-            "name_en": "Lisa Nandy",
-            "official_url": "https://www.gov.uk/government/people/lisa-nandy"
-          },
-          {
-            "portfolio_ko": "환경·식품·농촌장관",
-            "name_en": "Angela Eagle",
-            "official_url": "https://www.gov.uk/government/people/angela-eagle"
-          },
-          {
-            "portfolio_ko": "북아일랜드장관",
-            "name_en": "Chris Bryant",
-            "official_url": "https://www.gov.uk/government/people/chris-bryant"
-          },
-          {
-            "portfolio_ko": "스코틀랜드장관",
-            "name_en": "Douglas Alexander",
-            "official_url": "https://www.gov.uk/government/people/douglas-alexander"
-          },
-          {
-            "portfolio_ko": "웨일스장관",
-            "name_en": "Stephen Kinnock",
-            "official_url": "https://www.gov.uk/government/people/stephen-kinnock"
-          },
-          {
-            "portfolio_ko": "여성·평등장관",
-            "name_en": "Bridget Phillipson",
-            "official_url": "https://www.gov.uk/government/people/bridget-phillipson"
-          },
-          {
-            "portfolio_ko": "법무장관",
-            "name_en": "Ellie Reeves",
-            "official_url": "https://www.gov.uk/government/people/ellie-reeves"
-          }
-        ]
-      },
-      "legislature_live": {
-        "summary": {
-          "chamber": "house_of_commons",
-          "seats_total": 650,
-          "by_party_abbr": {
-            "Lab": 405,
-            "Con": 118,
-            "LD": 71,
-            "Ind": 10,
-            "SNP": 8,
-            "RUK": 7,
-            "SF": 7,
-            "DUP": 5,
-            "Green": 5,
-            "PC": 4,
-            "SDLP": 2,
-            "YP": 2,
-            "APNI": 1,
-            "RB": 1,
-            "Spk": 1,
-            "TUV": 1,
-            "UUP": 1,
-            "Vacant": 1
-          },
-          "labour_majority_vs_326": 79,
-          "pm_note": "Andy Burnham became Prime Minister on 20 July 2026"
-        },
-        "parties": [
-          {
-            "name_en": "Labour",
-            "abbr": "Lab",
-            "seats": 405,
-            "male": 217,
-            "female": 188,
-            "party_id": 15
-          },
-          {
-            "name_en": "Conservative",
-            "abbr": "Con",
-            "seats": 118,
-            "male": 90,
-            "female": 28,
-            "party_id": 4
-          },
-          {
-            "name_en": "Liberal Democrat",
-            "abbr": "LD",
-            "seats": 71,
-            "male": 39,
-            "female": 32,
-            "party_id": 17
-          },
-          {
-            "name_en": "Independent",
-            "abbr": "Ind",
-            "seats": 10,
-            "male": 9,
-            "female": 1,
-            "party_id": 8
-          },
-          {
-            "name_en": "Scottish National Party",
-            "abbr": "SNP",
-            "seats": 8,
-            "male": 6,
-            "female": 2,
-            "party_id": 29
-          },
-          {
-            "name_en": "Reform UK",
-            "abbr": "RUK",
-            "seats": 7,
-            "male": 5,
-            "female": 2,
-            "party_id": 1036
-          },
-          {
-            "name_en": "Sinn Féin",
-            "abbr": "SF",
-            "seats": 7,
-            "male": 5,
-            "female": 2,
-            "party_id": 30
-          },
-          {
-            "name_en": "Democratic Unionist Party",
-            "abbr": "DUP",
-            "seats": 5,
-            "male": 4,
-            "female": 1,
-            "party_id": 7
-          },
-          {
-            "name_en": "Green Party",
-            "abbr": "Green",
-            "seats": 5,
-            "male": 1,
-            "female": 4,
-            "party_id": 44
-          },
-          {
-            "name_en": "Plaid Cymru",
-            "abbr": "PC",
-            "seats": 4,
-            "male": 1,
-            "female": 3,
-            "party_id": 22
-          },
-          {
-            "name_en": "Social Democratic & Labour Party",
-            "abbr": "SDLP",
-            "seats": 2,
-            "male": 1,
-            "female": 1,
-            "party_id": 31
-          },
-          {
-            "name_en": "Your Party",
-            "abbr": "YP",
-            "seats": 2,
-            "male": 1,
-            "female": 1,
-            "party_id": 1115
-          },
-          {
-            "name_en": "Alliance",
-            "abbr": "APNI",
-            "seats": 1,
-            "male": 0,
-            "female": 1,
-            "party_id": 1
-          },
-          {
-            "name_en": "Restore Britain",
-            "abbr": "RB",
-            "seats": 1,
-            "male": 1,
-            "female": 0,
-            "party_id": 1117
-          },
-          {
-            "name_en": "Speaker",
-            "abbr": "Spk",
-            "seats": 1,
-            "male": 1,
-            "female": 0,
-            "party_id": 47
-          },
-          {
-            "name_en": "Traditional Unionist Voice",
-            "abbr": "TUV",
-            "seats": 1,
-            "male": 1,
-            "female": 0,
-            "party_id": 158
-          },
-          {
-            "name_en": "Ulster Unionist Party",
-            "abbr": "UUP",
-            "seats": 1,
-            "male": 1,
-            "female": 0,
-            "party_id": 38
-          },
-          {
-            "name_en": "Vacant",
-            "abbr": "Vacant",
-            "seats": 1,
-            "male": 0,
-            "female": 0,
-            "party_id": 0
-          }
-        ],
-        "floor_leadership": [
-          {
-            "office": "prime_minister",
-            "name": "Andy Burnham",
-            "party_abbr": "Lab",
-            "chamber": "commons",
-            "source": "https://www.gov.uk/government/people/andy-burnham",
-            "as_of": "2026-07-20"
-          },
-          {
-            "office": "leader_of_opposition",
-            "name": "Kemi Badenoch",
-            "party_abbr": "Con",
-            "chamber": "commons",
-            "source": "Conservatives official leadership (cross-check media); 불명 if contested",
-            "confidence": "medium"
-          },
-          {
-            "office": "speaker",
-            "name": "불명",
-            "party_abbr": "Spk",
-            "chamber": "commons",
-            "note": "Speaker seat counted separately in State of the Parties"
-          }
-        ],
-        "source": {
-          "id": "uk_parliament_state_of_parties",
-          "url": "https://members-api.parliament.uk/api/Parties/StateOfTheParties/1/2026-08-08",
-          "govuk_pm": "https://www.gov.uk/government/people/andy-burnham",
-          "grade": "official_api"
-        }
-      },
-      "governance_polls": [
-        {
-          "iso3": "GBR",
-          "kind": "pm_approval",
-          "subject": "Andy Burnham",
-          "pollster": "More in Common (via Independent)",
-          "net_approval": 19,
-          "field_note": "Early premiership: Independent reports More in Common net +19 for Burnham (post 2026-07-20 appointment). Classic approve/disapprove split 불명 in this pass.",
-          "sources": [
-            {
-              "url": "https://www.the-independent.com/news/uk/politics/andy-burnham-policies-tax-business-cost-living-energy-immigration-b3026552.html",
-              "label": "Independent: Burnham net +19 More in Common"
-            },
-            {
-              "url": "https://www.gov.uk/government/people/andy-burnham",
-              "label": "GOV.UK: PM since 20 July 2026"
-            }
-          ],
-          "confidence": "medium",
-          "refresh": "weekly_uk_poll_aggregators"
-        },
-        {
-          "iso3": "GBR",
-          "kind": "pm_favourability_exit_snapshot",
-          "subject": "Keir Starmer (former PM)",
-          "pollster": "Ipsos",
-          "approve_pct": 22,
-          "disapprove_pct": 52,
-          "field_date": "2026-07",
-          "field_note": "Exit-period favourability, not current job approval. 17–22 July 2026 Ipsos Political Pulse.",
-          "sources": [
-            {
-              "url": "https://www.ipsos.com/sites/default/files/ct/news/documents/2026-08/Ipsos_July%2026_Political_Pulse_v1d4_Int%20Use%20Only.pdf",
-              "label": "Ipsos Political Pulse July 2026"
-            }
-          ],
-          "confidence": "high",
-          "refresh": "historical"
-        }
-      ]
-    },
-    {
       "iso3": "FRA",
       "name_ko": "프랑스",
       "priority_tier": 2,
@@ -52638,7 +52901,10 @@
           "label_ko": "르네상스(여) 당대표/전당",
           "date": "불명",
           "status": "tentative",
-          "notes": "2026 확정 일정 불명 — 발표 시 채움"
+          "notes": "2026 확정 일정 불명 — 발표 시 채움",
+          "level": "party",
+          "chamber": "없음",
+          "contested_ko": "르네상스(여) 당대표/전당"
         },
         {
           "id": "fra-2026-rn-congres-19",
@@ -52662,27 +52928,10 @@
           "sources": [
             "https://rassemblementnational.fr/congres2026",
             "https://fr.wikipedia.org/wiki/XIXe_congr%C3%A8s_du_Rassemblement_national"
-          ]
-        },
-        {
-          "id": "fra-2026-presidential",
-          "type": "presidential",
-          "label_ko": "대선",
-          "date": "없음",
-          "status": "없음",
-          "sources": [
-            "wiki_national_calendar_2026"
-          ]
-        },
-        {
-          "id": "fra-2026-assemblee",
-          "type": "general",
-          "label_ko": "하원(Assemblée) 총선",
-          "date": "없음",
-          "status": "없음",
-          "sources": [
-            "wiki_national_calendar_2026"
-          ]
+          ],
+          "level": "party",
+          "chamber": "없음",
+          "contested_ko": "국민연합(RN) 제19차 전당대회"
         },
         {
           "id": "fra-2026-municipal-r1",
@@ -52692,7 +52941,10 @@
           "status": "scheduled",
           "sources": [
             "wiki_elections_2026"
-          ]
+          ],
+          "level": "subnational",
+          "chamber": "없음",
+          "contested_ko": "코뮌 의회·단체장"
         },
         {
           "id": "fra-2026-municipal-r2",
@@ -52702,24 +52954,32 @@
           "status": "scheduled",
           "sources": [
             "wiki_elections_2026"
-          ]
+          ],
+          "level": "subnational",
+          "chamber": "없음",
+          "contested_ko": "코뮌 의회·단체장"
         },
         {
           "id": "fra-2026-senate",
           "type": "general",
           "label_ko": "상원(Sénat) 간선",
-          "date": "불명",
+          "date": "2026-09",
           "status": "scheduled",
           "notes": "2026년 9월 series 2; 일자 공고 전",
           "sources": [
             "wiki_national_calendar_2026"
-          ]
+          ],
+          "date_note": "2026년 9월 series 2. 일자 데크레 공고 전.",
+          "system_id": "fra-senate",
+          "level": "national",
+          "chamber": "senate",
+          "contested_ko": "상원 간선 (해당 series 改選분)"
         }
       ],
-      "events_this_year": 7,
+      "events_this_year": 5,
       "ingest_mode": "document_text_extract",
       "calendar": {
-        "as_of": "2026-08-08",
+        "as_of": "2026-09-18",
         "sources": [
           {
             "id": "wiki_national_calendar_2026",
@@ -52940,167 +53200,6 @@
       ]
     },
     {
-      "iso3": "IND",
-      "name_ko": "인도",
-      "priority_tier": 2,
-      "region": "south_asia_se",
-      "system": "parliamentary",
-      "map_spectrum": "conservative",
-      "head": {
-        "role": "prime_minister",
-        "name_en": "Narendra Modi",
-        "name_ko": "나렌드라 모디",
-        "party_id": "bjp",
-        "spectrum": "conservative",
-        "sources": [
-          {
-            "org": "profile seed",
-            "note": "Incumbent after 2024 Lok Sabha; 2026 mostly state-level"
-          }
-        ]
-      },
-      "ruling_party": {
-        "id": "bjp",
-        "name_en": "BJP",
-        "role": "ruling"
-      },
-      "parties_tracked": [
-        {
-          "id": "bjp",
-          "abbr": "BJP",
-          "name_en": "BJP",
-          "role": "ruling",
-          "spectrum": "conservative",
-          "display": "BJP"
-        },
-        {
-          "id": "inc",
-          "abbr": "INC",
-          "name_en": "Indian National Congress",
-          "role": "main_opposition",
-          "spectrum": "progressive",
-          "display": "INC"
-        }
-      ],
-      "legislature": null,
-      "subnational": null,
-      "polls": {
-        "admit": [
-          "pm_approval"
-        ],
-        "status": "todo"
-      },
-      "events": [
-        {
-          "id": "ind-2026-rajya-sabha-jun",
-          "type": "general",
-          "label_ko": "라지야 사바(상원) 간선 묶음",
-          "date": "2026-06-18",
-          "status": "scheduled",
-          "sources": [
-            "https://en.wikipedia.org/wiki/2026_national_electoral_calendar"
-          ]
-        },
-        {
-          "id": "ind-2026-rajya-sabha-mar",
-          "type": "general",
-          "label_ko": "라지야 사바(상원) 간선 묶음",
-          "date": "2026-03-16",
-          "status": "scheduled",
-          "notes": "Wiki national calendar: Council of States rolls Mar 16 / Jun 18 / Nov TBD",
-          "sources": [
-            "https://en.wikipedia.org/wiki/2026_national_electoral_calendar"
-          ]
-        },
-        {
-          "id": "ind-2026-party-leadership-bjp-inc",
-          "type": "party_leadership",
-          "label_ko": "BJP·INC 전국 당대표 전당대회",
-          "date": "불명",
-          "status": "tentative",
-          "notes": "2026 공개 정기 당대표 교체 일정 미확정"
-        },
-        {
-          "id": "ind-2026-lok-sabha",
-          "type": "general",
-          "label_ko": "로크사바 총선",
-          "date": "없음",
-          "status": "없음"
-        },
-        {
-          "id": "ind-2026-state-pack",
-          "type": "local",
-          "label_ko": "주요 주의회 선거 묶음",
-          "date": "불명",
-          "status": "tentative",
-          "notes": "ECI calendar cross-check todo"
-        }
-      ],
-      "events_this_year": 5,
-      "ingest_mode": "document_text_extract",
-      "calendar": {
-        "as_of": "2026-08-08",
-        "sources": null,
-        "notes": [
-          "No Lok Sabha general in 2026; state elections / Rajya Sabha rolls possible — aggregate later."
-        ],
-        "null_policy": {
-          "없음": "해당 없음",
-          "불명": "미확정"
-        }
-      },
-      "executive_live": {
-        "coverage": "executive_core",
-        "sources": [
-          {
-            "org": "CIA World Leaders",
-            "url": "https://www.cia.gov/resources/world-leaders/foreign-governments/india/",
-            "as_of": "2026-08-07"
-          }
-        ],
-        "core": [
-          {
-            "office_ko": "대통령",
-            "name_en": "Droupadi Murmu",
-            "official_url": "https://presidentofindia.nic.in/"
-          },
-          {
-            "office_ko": "부통령",
-            "name_en": "C. P. Radhakrishnan",
-            "official_url": "https://vicepresidentofindia.nic.in/"
-          },
-          {
-            "office_ko": "총리",
-            "name_en": "Narendra Modi",
-            "party_abbr": "BJP",
-            "official_url": "https://www.pmindia.gov.in/en/"
-          },
-          {
-            "office_ko": "국가안보보좌관",
-            "name_en": "Ajit Kumar Doval"
-          },
-          {
-            "office_ko": "외무장관",
-            "name_en": "Subrahmanyam Jaishankar",
-            "official_url": "https://www.mea.gov.in/"
-          },
-          {
-            "office_ko": "재무장관",
-            "name_en": "Nirmala Sitharaman"
-          },
-          {
-            "office_ko": "국방장관",
-            "name_en": "Rajnath Singh"
-          },
-          {
-            "office_ko": "내무장관",
-            "name_en": "Amit Shah",
-            "official_url": "https://www.mha.gov.in/"
-          }
-        ]
-      }
-    },
-    {
       "iso3": "TWN",
       "name_ko": "대만",
       "priority_tier": 2,
@@ -53160,19 +53259,39 @@
         {
           "id": "twn-2026-local",
           "type": "local",
-          "label_ko": "지방동시선거(구시·향진·시의회 등)",
-          "date": "불명",
-          "status": "tentative",
-          "notes": "9합1 계열 2026; 중앙선관위 일자 확인 todo (보통 하반기)"
+          "label_ko": "지방공직인원 선거 (구합일)",
+          "label_en": "Nine-in-one local elections",
+          "date": "2026-11-28",
+          "status": "scheduled",
+          "system_id": "twn-local",
+          "level": "subnational",
+          "chamber": "없음",
+          "contested_ko": "지방공직 11,051명 (중선회 2026-08-20 공고)",
+          "notes": "중앙선관위 2026-08-20 선거공고. 투표 08:00–16:00.",
+          "sources": [
+            "https://focustaiwan.tw/politics/202608200010",
+            "https://www.cna.com.tw/news/aipl/202608200078.aspx",
+            "https://en.wikipedia.org/wiki/2026_Taiwanese_local_elections"
+          ]
         },
         {
           "id": "twn-2026-dpp-chair",
           "type": "party_leadership",
           "party_id": "dpp",
-          "label_ko": "민진당 당주석 교체",
-          "date": "불명",
-          "status": "tentative",
-          "notes": "2026 중 정기 당주석전 일정 불명 — 채움 todo"
+          "party_abbr": "DPP",
+          "label_ko": "민진당 제22차 전당대회 (중집·중상위)",
+          "label_en": "DPP 22nd National Congress",
+          "date": "2026-07-19",
+          "status": "completed",
+          "level": "party",
+          "chamber": "없음",
+          "contested_ko": "중앙집행위원 30인 → 중상무위원 10인 (당주석 직선 아님)",
+          "electorate_ko": "전국당대표대회 당대표",
+          "notes": "당주석 라이칭더는 유임. 이 날은 중집·중상위 改選이지 당주석 교체가 아니다.",
+          "sources": [
+            "https://www.dpp.org.tw/en/media/contents/127",
+            "https://www.taiwannews.com.tw/news/6404222"
+          ]
         },
         {
           "id": "twn-2025-kmt-chair",
@@ -53195,24 +53314,37 @@
           "notes": "50.15% 득표. 2026 지방·2028 대선 지휘.",
           "sources": [
             "https://en.wikipedia.org/wiki/2025_Kuomintang_chairmanship_election"
-          ]
+          ],
+          "level": "party",
+          "chamber": "없음",
+          "contested_ko": "국민당 당주석 1인",
+          "electorate_ko": "당원 투표"
         },
         {
-          "id": "twn-2026-national",
-          "type": "general",
-          "label_ko": "총·대선",
+          "id": "twn-2026-ly-by",
+          "type": "by_election",
+          "label_ko": "입법위원 재보궐",
+          "label_en": "Legislative Yuan by-election",
           "date": "없음",
-          "status": "없음"
+          "status": "없음",
+          "system_id": "twn-ly",
+          "level": "national",
+          "chamber": "legislative_yuan",
+          "contested_ko": "공석 발생 시 해당 구 1석",
+          "notes": "향후 12개월 안에 중앙선관위가 공고한 입법원 재보궐 일정을 찾지 못함. 지방 구합일(2026-11-28)과 별개.",
+          "sources": [
+            "https://www.cec.gov.tw/"
+          ]
         }
       ],
       "events_this_year": 4,
       "ingest_mode": "document_text_extract",
       "calendar": {
-        "as_of": "2026-08-08",
+        "as_of": "2026-09-18",
         "sources": null,
         "notes": [
-          "No presidential/legislative general in 2026 mid-term of Lai presidency.",
-          "2026 local (nine-in-one-style) date still 불명 until CEC; KMT chair Cheng Li-wun since 2025-11."
+          "2026 nationwide contest is the 28 Nov local elections (CEC announcement 20 Aug 2026).",
+          "Next presidential and Legislative Yuan elections: January 2028, CEC day not yet proclaimed."
         ],
         "null_policy": {
           "없음": "해당 없음",
@@ -53718,163 +53850,167 @@
       ]
     },
     {
-      "iso3": "ZAF",
-      "name_ko": "남아프리카공화국",
+      "iso3": "IND",
+      "name_ko": "인도",
       "priority_tier": 2,
-      "region": "africa",
+      "region": "south_asia_se",
       "system": "parliamentary",
-      "map_spectrum": "progressive",
+      "map_spectrum": "conservative",
       "head": {
-        "role": "president",
-        "name_ko": "시릴 라마포사",
-        "name_en": "Cyril Ramaphosa",
-        "party_id": "anc",
+        "role": "prime_minister",
+        "name_en": "Narendra Modi",
+        "name_ko": "나렌드라 모디",
+        "party_id": "bjp",
+        "spectrum": "conservative",
         "sources": [
           {
-            "org": "IEC South Africa",
-            "url": "https://www.elections.org.za/",
-            "note": "Official election portal; use for results and calendar updates."
+            "org": "profile seed",
+            "note": "Incumbent after 2024 Lok Sabha; 2026 mostly state-level"
           }
         ]
       },
       "ruling_party": {
-        "id": "anc",
-        "abbr": "ANC",
+        "id": "bjp",
+        "name_en": "BJP",
         "role": "ruling"
       },
       "parties_tracked": [
         {
-          "id": "anc",
-          "abbr": "ANC",
-          "name_en": "African National Congress",
+          "id": "bjp",
+          "abbr": "BJP",
+          "name_en": "BJP",
           "role": "ruling",
-          "confidence": "medium",
-          "display": "ANC"
+          "spectrum": "conservative",
+          "display": "BJP"
         },
         {
-          "id": "eff",
-          "abbr": "EFF",
-          "name_en": "Economic Freedom Fighters",
+          "id": "inc",
+          "abbr": "INC",
+          "name_en": "Indian National Congress",
           "role": "main_opposition",
-          "confidence": "medium",
-          "display": "EFF"
+          "spectrum": "progressive",
+          "display": "INC"
         }
       ],
       "legislature": null,
       "subnational": null,
       "polls": {
         "admit": [
-          "presidential_job_approval"
-        ],
-        "reject": [
-          "national_horserace_headline"
+          "pm_approval"
         ],
         "status": "todo"
       },
       "events": [
         {
-          "id": "zaf-2026-local-government",
-          "type": "local",
-          "label_ko": "지방정부선거 (LGE)",
-          "date": "2026-11-04",
-          "status": "scheduled",
-          "notes": "IEC homepage: Election Day Wednesday, 4 November 2026.",
-          "sources": [
-            "https://www.elections.org.za/pw/",
-            "extracted/zaf_iec_lge_2026_snapshot.json"
-          ]
-        },
-        {
-          "id": "zaf-2026-national",
+          "id": "ind-2026-rajya-sabha-jun",
           "type": "general",
-          "label_ko": "전국 총선",
-          "date": "없음",
-          "status": "없음",
-          "notes": "No 2026 national-election event is bundled."
+          "label_ko": "라지야 사바(상원) 간선 묶음",
+          "date": "2026-06-18",
+          "status": "scheduled",
+          "sources": [
+            "https://en.wikipedia.org/wiki/2026_national_electoral_calendar"
+          ],
+          "system_id": "ind-rajya-sabha",
+          "level": "national",
+          "chamber": "rajya_sabha",
+          "contested_ko": "라지야 사바 해당 회차 간선분"
         },
         {
-          "id": "zaf-2026-party-leadership",
+          "id": "ind-2026-rajya-sabha-mar",
+          "type": "general",
+          "label_ko": "라지야 사바(상원) 간선 묶음",
+          "date": "2026-03-16",
+          "status": "scheduled",
+          "notes": "Wiki national calendar: Council of States rolls Mar 16 / Jun 18 / Nov TBD",
+          "sources": [
+            "https://en.wikipedia.org/wiki/2026_national_electoral_calendar"
+          ],
+          "system_id": "ind-rajya-sabha",
+          "level": "national",
+          "chamber": "rajya_sabha",
+          "contested_ko": "라지야 사바 해당 회차 간선분"
+        },
+        {
+          "id": "ind-2026-party-leadership-bjp-inc",
           "type": "party_leadership",
-          "label_ko": "ANC·DA·EFF 주요 전당대회/지도부 선출",
+          "label_ko": "BJP·INC 전국 당대표 전당대회",
           "date": "불명",
           "status": "tentative",
-          "notes": "Party notices not yet captured."
+          "notes": "2026 공개 정기 당대표 교체 일정 미확정",
+          "level": "party",
+          "contested_ko": "BJP·INC 전국 당대표 전당대회"
+        },
+        {
+          "id": "ind-2026-state-pack",
+          "type": "local",
+          "label_ko": "주요 주의회 선거 묶음",
+          "date": "불명",
+          "status": "tentative",
+          "notes": "ECI calendar cross-check todo",
+          "level": "subnational",
+          "contested_ko": "주요 주의회 선거 묶음"
         }
       ],
-      "events_this_year": 3,
+      "events_this_year": 4,
       "ingest_mode": "document_text_extract",
       "calendar": {
-        "as_of": "2026-08-14",
+        "as_of": "2026-09-18",
         "sources": null,
         "notes": [
-          "2026 national-election date is not included in the bundled source pack.",
-          "IEC homepage confirms the 2026 Local Government Elections date; party-event dates remain pending direct review."
+          "No Lok Sabha general in 2026; state elections / Rajya Sabha rolls possible — aggregate later."
         ],
         "null_policy": {
-          "없음": "해당 일정/선거 없음",
-          "불명": "공개소스에서 아직 확정되지 않음"
+          "없음": "해당 없음",
+          "불명": "미확정"
         }
-      },
-      "political_context": {
-        "ruling_ko": "ANC 주축 국민통합정부(GNU) — DA 등 연정",
-        "opposition_ko": "EFF 등 GNU 밖 야당. DA는 연정 참여 중 마찰",
-        "source_pack": "tier2_remaining_light.json#countries.ZAF"
-      },
-      "source_review": {
-        "as_of": "2026-08-14",
-        "calendar_snapshot": "extracted/zaf_iec_lge_2026_snapshot.json",
-        "status": "official_calendar_event_reviewed",
-        "verified": [
-          "2026-11-04 Local Government Elections"
-        ],
-        "not_confirmed_from_redirected_statistics_target": [
-          "registered_party_count",
-          "party_status"
-        ]
       },
       "executive_live": {
         "coverage": "executive_core",
         "sources": [
           {
             "org": "CIA World Leaders",
-            "url": "https://www.cia.gov/resources/world-leaders/foreign-governments/south-africa/",
-            "as_of": "2026-07-07"
+            "url": "https://www.cia.gov/resources/world-leaders/foreign-governments/india/",
+            "as_of": "2026-08-07"
           }
         ],
         "core": [
           {
             "office_ko": "대통령",
-            "name_en": "Cyril Ramaphosa",
-            "party_abbr": "ANC",
-            "official_url": "https://www.thepresidency.gov.za/"
+            "name_en": "Droupadi Murmu",
+            "official_url": "https://presidentofindia.nic.in/"
           },
           {
             "office_ko": "부통령",
-            "name_en": "Paul Mashatile",
-            "party_abbr": "ANC",
-            "official_url": "https://www.thepresidency.gov.za/"
+            "name_en": "C. P. Radhakrishnan",
+            "official_url": "https://vicepresidentofindia.nic.in/"
           },
           {
-            "office_ko": "대통령실 장관",
-            "name_en": "Khumbudzo Ntshavheni"
+            "office_ko": "총리",
+            "name_en": "Narendra Modi",
+            "party_abbr": "BJP",
+            "official_url": "https://www.pmindia.gov.in/en/"
           },
           {
-            "office_ko": "국제관계·협력장관",
-            "name_en": "Ronald Lamola",
-            "official_url": "https://www.dirco.gov.za/"
+            "office_ko": "국가안보보좌관",
+            "name_en": "Ajit Kumar Doval"
+          },
+          {
+            "office_ko": "외무장관",
+            "name_en": "Subrahmanyam Jaishankar",
+            "official_url": "https://www.mea.gov.in/"
           },
           {
             "office_ko": "재무장관",
-            "name_en": "Enoch Godongwana",
-            "official_url": "https://www.treasury.gov.za/"
+            "name_en": "Nirmala Sitharaman"
           },
           {
-            "office_ko": "국방·보훈장관",
-            "name_en": "Angie Motshekga"
+            "office_ko": "국방장관",
+            "name_en": "Rajnath Singh"
           },
           {
             "office_ko": "내무장관",
-            "name_en": "Leon Schreiber"
+            "name_en": "Amit Shah",
+            "official_url": "https://www.mha.gov.in/"
           }
         ]
       }
@@ -54196,6 +54332,436 @@
       ]
     },
     {
+      "iso3": "POL",
+      "name_ko": "폴란드",
+      "priority_tier": 2,
+      "region": "europe",
+      "system": "semi_presidential",
+      "map_spectrum": "centrist",
+      "head": {
+        "role": "prime_minister",
+        "name_en": "Donald Tusk",
+        "name_ko": "도날트 투스크",
+        "party_id": "ko",
+        "spectrum": "centrist",
+        "since": "2023-12-13",
+        "sources": [
+          {
+            "org": "Chancellery of the Prime Minister",
+            "url": "https://www.gov.pl/web/premier",
+            "note": "Civic Coalition prime minister after 2023 parliamentary election"
+          }
+        ]
+      },
+      "ruling_party": {
+        "id": "ko",
+        "name_ko": "시민연합",
+        "role": "ruling"
+      },
+      "parties_tracked": [
+        {
+          "id": "ko",
+          "abbr": "KO",
+          "name_en": "Civic Coalition",
+          "name_ko": "시민연합",
+          "role": "ruling",
+          "spectrum": "centrist",
+          "display": "KO"
+        },
+        {
+          "id": "pis",
+          "abbr": "PiS",
+          "name_en": "Law and Justice",
+          "name_ko": "법과정의당",
+          "role": "main_opposition",
+          "spectrum": "conservative",
+          "display": "PiS"
+        }
+      ],
+      "legislature": null,
+      "subnational": null,
+      "polls": {
+        "admit": [
+          "presidential_job_approval"
+        ],
+        "status": "todo"
+      },
+      "events": [
+        {
+          "id": "pol-2026-krakow-mayor",
+          "type": "by_election",
+          "label_ko": "크라쿠프 시장 조기선거",
+          "label_en": "Kraków mayor early election",
+          "date": "2026-09-27",
+          "status": "scheduled",
+          "system_id": "pol-local",
+          "level": "subnational",
+          "chamber": "없음",
+          "contested_ko": "크라쿠프 시장 1인",
+          "notes": "총리 2026-07-31 명령(Dz.U. 2026 poz. 1024). 전국 지방 회차가 아닌 임기 중 조기선거.",
+          "sources": [
+            "https://api.sejm.gov.pl/eli/acts/DU/2026/1024/text.pdf"
+          ]
+        },
+        {
+          "id": "pol-2026-ko-leadership",
+          "type": "party_leadership",
+          "party_id": "ko",
+          "party_abbr": "KO",
+          "label_ko": "시민연합(KO) 당대표 선거",
+          "label_en": "Civic Coalition leadership",
+          "date": "2026-03-08",
+          "status": "completed",
+          "level": "party",
+          "chamber": "없음",
+          "contested_ko": "시민연합 당대표 1인",
+          "electorate_ko": "당비 완납 당원 직접투표 (유효 16,695표)",
+          "winner": {
+            "name_en": "Donald Tusk",
+            "name_ko": "도날트 투스크"
+          },
+          "notes": "PO·Nowoczesna·Inicjatywa Polska 합당 후 첫 당대표 선거. 단독 후보, 찬성 16,316 (97%).",
+          "sources": [
+            "https://tvpworld.com/92002440/donald-tusk-named-leader-of-polands-new-civic-coalition",
+            "https://wiadomosci.gazeta.pl/polityka/7,198012,32648397,wybory-na-przewodniczacego-ko-bezkonkurencyjnie-wygrywa-donald.html"
+          ]
+        },
+        {
+          "id": "pol-2026-pis-leadership",
+          "type": "party_leadership",
+          "party_id": "pis",
+          "party_abbr": "PiS",
+          "label_ko": "법과정의당(PiS) 당대표 선거",
+          "label_en": "Law and Justice leadership",
+          "date": "없음",
+          "status": "없음",
+          "level": "party",
+          "chamber": "없음",
+          "contested_ko": "법과정의당 당대표 1인",
+          "notes": "2026년 당대표 교체 공고를 찾지 못함. 2026-03 전당에서 체르네크를 2027 총리 후보로 지명한 것은 당대표 선거가 아님.",
+          "sources": [
+            "https://tvpworld.com/92002440/donald-tusk-named-leader-of-polands-new-civic-coalition"
+          ]
+        }
+      ],
+      "events_this_year": 3,
+      "ingest_mode": "calendar_seed",
+      "calendar": {
+        "as_of": "2026-09-18",
+        "sources": [
+          {
+            "id": "pkw_portal",
+            "org": "Państwowa Komisja Wyborcza",
+            "url": "https://wybory.gov.pl/index/",
+            "retrieved": "2026-09-18"
+          },
+          {
+            "id": "wiki_next_sejm",
+            "url": "https://en.wikipedia.org/wiki/Next_Polish_parliamentary_election"
+          },
+          {
+            "id": "dziennik_ustaw_krakow_2026",
+            "org": "Dziennik Ustaw",
+            "url": "https://api.sejm.gov.pl/eli/acts/DU/2026/1024/text.pdf",
+            "covers": [
+              "krakow_mayor_early_election"
+            ]
+          }
+        ],
+        "notes": [
+          "2026 has no nationwide presidential, Sejm/Senate, or local-government general.",
+          "Confirmed 2026 rows: Civic Coalition leadership (8 Mar) and Kraków mayor early election (27 Sep).",
+          "Next Sejm/Senate must be held by 11 Nov 2027; next nationwide locals are the 2024–2029 term (2029)."
+        ],
+        "null_policy": {
+          "없음": "해당 일정/선거 없음",
+          "불명": "발표·확정 전 또는 출처에 날짜 없음"
+        }
+      }
+    },
+    {
+      "iso3": "ZAF",
+      "name_ko": "남아프리카공화국",
+      "priority_tier": 2,
+      "region": "africa",
+      "system": "parliamentary",
+      "map_spectrum": "progressive",
+      "head": {
+        "role": "president",
+        "name_ko": "시릴 라마포사",
+        "name_en": "Cyril Ramaphosa",
+        "party_id": "anc",
+        "sources": [
+          {
+            "org": "IEC South Africa",
+            "url": "https://www.elections.org.za/",
+            "note": "Official election portal; use for results and calendar updates."
+          }
+        ]
+      },
+      "ruling_party": {
+        "id": "anc",
+        "abbr": "ANC",
+        "role": "ruling"
+      },
+      "parties_tracked": [
+        {
+          "id": "anc",
+          "abbr": "ANC",
+          "name_en": "African National Congress",
+          "role": "ruling",
+          "confidence": "medium",
+          "display": "ANC"
+        },
+        {
+          "id": "eff",
+          "abbr": "EFF",
+          "name_en": "Economic Freedom Fighters",
+          "role": "main_opposition",
+          "confidence": "medium",
+          "display": "EFF"
+        }
+      ],
+      "legislature": null,
+      "subnational": null,
+      "polls": {
+        "admit": [
+          "presidential_job_approval"
+        ],
+        "reject": [
+          "national_horserace_headline"
+        ],
+        "status": "todo"
+      },
+      "events": [
+        {
+          "id": "zaf-2026-local-government",
+          "type": "local",
+          "label_ko": "지방정부선거 (LGE)",
+          "date": "2026-11-04",
+          "status": "scheduled",
+          "notes": "IEC homepage: Election Day Wednesday, 4 November 2026.",
+          "sources": [
+            "https://www.elections.org.za/pw/",
+            "extracted/zaf_iec_lge_2026_snapshot.json"
+          ],
+          "level": "subnational",
+          "chamber": "없음",
+          "contested_ko": "지방정부 의원·단체장"
+        },
+        {
+          "id": "zaf-2026-party-leadership",
+          "type": "party_leadership",
+          "label_ko": "ANC·DA·EFF 주요 전당대회/지도부 선출",
+          "date": "불명",
+          "status": "tentative",
+          "notes": "Party notices not yet captured."
+        }
+      ],
+      "events_this_year": 2,
+      "ingest_mode": "document_text_extract",
+      "calendar": {
+        "as_of": "2026-09-18",
+        "sources": null,
+        "notes": [
+          "2026 national-election date is not included in the bundled source pack.",
+          "IEC homepage confirms the 2026 Local Government Elections date; party-event dates remain pending direct review."
+        ],
+        "null_policy": {
+          "없음": "해당 일정/선거 없음",
+          "불명": "공개소스에서 아직 확정되지 않음"
+        }
+      },
+      "political_context": {
+        "ruling_ko": "ANC 주축 국민통합정부(GNU) — DA 등 연정",
+        "opposition_ko": "EFF 등 GNU 밖 야당. DA는 연정 참여 중 마찰",
+        "source_pack": "tier2_remaining_light.json#countries.ZAF"
+      },
+      "source_review": {
+        "as_of": "2026-08-14",
+        "calendar_snapshot": "extracted/zaf_iec_lge_2026_snapshot.json",
+        "status": "official_calendar_event_reviewed",
+        "verified": [
+          "2026-11-04 Local Government Elections"
+        ],
+        "not_confirmed_from_redirected_statistics_target": [
+          "registered_party_count",
+          "party_status"
+        ]
+      },
+      "executive_live": {
+        "coverage": "executive_core",
+        "sources": [
+          {
+            "org": "CIA World Leaders",
+            "url": "https://www.cia.gov/resources/world-leaders/foreign-governments/south-africa/",
+            "as_of": "2026-07-07"
+          }
+        ],
+        "core": [
+          {
+            "office_ko": "대통령",
+            "name_en": "Cyril Ramaphosa",
+            "party_abbr": "ANC",
+            "official_url": "https://www.thepresidency.gov.za/"
+          },
+          {
+            "office_ko": "부통령",
+            "name_en": "Paul Mashatile",
+            "party_abbr": "ANC",
+            "official_url": "https://www.thepresidency.gov.za/"
+          },
+          {
+            "office_ko": "대통령실 장관",
+            "name_en": "Khumbudzo Ntshavheni"
+          },
+          {
+            "office_ko": "국제관계·협력장관",
+            "name_en": "Ronald Lamola",
+            "official_url": "https://www.dirco.gov.za/"
+          },
+          {
+            "office_ko": "재무장관",
+            "name_en": "Enoch Godongwana",
+            "official_url": "https://www.treasury.gov.za/"
+          },
+          {
+            "office_ko": "국방·보훈장관",
+            "name_en": "Angie Motshekga"
+          },
+          {
+            "office_ko": "내무장관",
+            "name_en": "Leon Schreiber"
+          }
+        ]
+      }
+    },
+    {
+      "iso3": "TUR",
+      "name_ko": "튀르키예",
+      "priority_tier": 2,
+      "region": "europe",
+      "system": "presidential",
+      "map_spectrum": "conservative",
+      "head": {
+        "role": "president",
+        "name_en": "Recep Tayyip Erdoğan",
+        "name_ko": "레제프 타이이프 에르도안",
+        "party_id": "akp",
+        "spectrum": "conservative",
+        "sources": [
+          {
+            "org": "profile seed",
+            "note": "Incumbent through 2023 cycle; next national competitive calendar thin for 2026"
+          }
+        ]
+      },
+      "ruling_party": {
+        "id": "akp",
+        "name_en": "AKP",
+        "role": "ruling"
+      },
+      "parties_tracked": [
+        {
+          "id": "akp",
+          "abbr": "AKP",
+          "name_en": "AKP",
+          "role": "ruling",
+          "spectrum": "conservative",
+          "display": "AKP"
+        },
+        {
+          "id": "chp",
+          "abbr": "CHP",
+          "name_en": "CHP",
+          "role": "main_opposition",
+          "spectrum": "progressive",
+          "display": "CHP"
+        }
+      ],
+      "legislature": null,
+      "subnational": null,
+      "polls": {
+        "admit": [
+          "presidential_job_approval"
+        ],
+        "status": "todo"
+      },
+      "events": [
+        {
+          "id": "tur-2026-akp-chp-leadership",
+          "type": "party_leadership",
+          "label_ko": "AKP·CHP 당대표/전당대회",
+          "date": "불명",
+          "status": "tentative",
+          "notes": "YSK·당 공고 전"
+        },
+        {
+          "id": "tur-2026-national",
+          "type": "general",
+          "label_ko": "총·대선",
+          "date": "불명",
+          "status": "tentative",
+          "notes": "발표 전 — YSK 확인 필요"
+        }
+      ],
+      "events_this_year": 2,
+      "ingest_mode": "document_text_extract",
+      "calendar": {
+        "as_of": "2026-08-08",
+        "sources": null,
+        "notes": [
+          "National competitive calendar thin in 2026; fill from YSK when announced."
+        ],
+        "null_policy": {
+          "없음": "해당 없음",
+          "불명": "미확정"
+        }
+      },
+      "executive_live": {
+        "coverage": "executive_core",
+        "sources": [
+          {
+            "org": "CIA World Leaders",
+            "url": "https://www.cia.gov/resources/world-leaders/foreign-governments/turkey/",
+            "as_of": "2026-02-25"
+          }
+        ],
+        "core": [
+          {
+            "office_ko": "대통령",
+            "name_en": "Recep Tayyip Erdogan",
+            "party_abbr": "AKP",
+            "official_url": "https://www.tccb.gov.tr/"
+          },
+          {
+            "office_ko": "부통령",
+            "name_en": "Cevdet Yilmaz",
+            "official_url": "https://www.tccb.gov.tr/"
+          },
+          {
+            "office_ko": "외무장관",
+            "name_en": "Hakan Fidan",
+            "official_url": "https://www.mfa.gov.tr/"
+          },
+          {
+            "office_ko": "재무장관",
+            "name_en": "Mehmet Simsek",
+            "official_url": "https://www.hmb.gov.tr/"
+          },
+          {
+            "office_ko": "국방장관",
+            "name_en": "Yasar Guler"
+          },
+          {
+            "office_ko": "내무장관",
+            "name_en": "Mustafa Ciftci",
+            "official_url": "https://www.icisleri.gov.tr/"
+          }
+        ]
+      }
+    },
+    {
       "iso3": "NGA",
       "name_ko": "나이지리아",
       "priority_tier": 2,
@@ -54254,14 +54820,6 @@
       },
       "events": [
         {
-          "id": "nga-2026-national",
-          "type": "general",
-          "label_ko": "전국 대선·총선",
-          "date": "없음",
-          "status": "없음",
-          "notes": "Bundled light pack identifies the next presidential cycle as 2027."
-        },
-        {
           "id": "nga-2026-party-leadership",
           "type": "party_leadership",
           "label_ko": "주요 정당 지도부·전당대회",
@@ -54270,10 +54828,10 @@
           "notes": "Opposition alignment is fluid; verify party notices and legal status directly."
         }
       ],
-      "events_this_year": 2,
+      "events_this_year": 1,
       "ingest_mode": "document_text_extract",
       "calendar": {
-        "as_of": "2026-08-09",
+        "as_of": "2026-09-18",
         "sources": null,
         "notes": [
           "2026 national-election date is not included in the bundled source pack.",
@@ -54350,6 +54908,127 @@
       }
     },
     {
+      "iso3": "SAU",
+      "name_ko": "사우디아라비아",
+      "priority_tier": 2,
+      "region": "middle_east",
+      "system": "other",
+      "map_spectrum": "authoritarian_monarchy",
+      "head": {
+        "role": "king",
+        "name_en": "Salman bin Abdulaziz Al Saud",
+        "name_ko": "살만 빈 압둘아지즈",
+        "party_id": "al_saud",
+        "spectrum": "authoritarian_monarchy",
+        "de_facto_note": "실질 통치: 왕세자 겸 총리 Mohammed bin Salman (MbS)",
+        "sources": [
+          {
+            "org": "SPA / my.gov.sa Cabinet",
+            "url": "https://my.gov.sa/en/news/2538539",
+            "note": "Crown Prince chairs Cabinet as PM"
+          },
+          {
+            "org": "GOV.UK bilateral",
+            "url": "https://www.gov.uk/government/news/pm-meeting-with-crown-prince-of-saudi-arabia-his-royal-highness-mohammed-bin-salman-8-april-2026",
+            "date": "2026-04-08"
+          }
+        ]
+      },
+      "ruling_party": null,
+      "parties_tracked": [],
+      "legislature": null,
+      "subnational": null,
+      "polls": {
+        "admit": [],
+        "note": "경쟁 국정 지지율 트랙 없음"
+      },
+      "events": [
+        {
+          "id": "sau-2026-national",
+          "type": "general",
+          "label_ko": "전국 총·대선",
+          "date": "없음",
+          "status": "없음",
+          "notes": "절대왕정. 전국 단위 경쟁 총선·대선 제도가 없다. 승계·내각만 추적.",
+          "level": "national",
+          "contested_ko": "없음",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Politics_of_Saudi_Arabia"
+          ]
+        }
+      ],
+      "events_this_year": 1,
+      "ingest_mode": "leadership_brief",
+      "calendar": {
+        "as_of": "2026-09-18",
+        "sources": null,
+        "notes": [
+          "Absolute monarchy — no national competitive election calendar.",
+          "Track leadership succession only."
+        ],
+        "null_policy": {
+          "없음": "해당 일정/선거 없음",
+          "불명": "출처 미확정"
+        }
+      },
+      "mode": "leadership_brief",
+      "regime": "absolute_monarchy",
+      "power": {
+        "title_ko": "절대왕정",
+        "head_of_state": "Salman bin Abdulaziz Al Saud (King)",
+        "head_of_government": "Mohammed bin Salman (Crown Prince & Prime Minister since 2022-09)",
+        "power_event": {
+          "type": "succession_reshuffle",
+          "label_ko": "왕세자 교체(사실상 권력 공고화)",
+          "date": "2017-06-21",
+          "note": "Muhammed bin Nayef 해임 → MbS 왕세자. 쿠데타 아님(왕실 내부 승계)."
+        },
+        "elections_national": "없음",
+        "elections_note": "전국 경쟁 선거 없음. 지방(시의) 등 제한 투표는 불명·별도 추적 안 함.",
+        "government_type_cia_style": "absolute monarchy",
+        "cabinet_note_2026": "2026-07 King Salman ministerial reshuffle (SPA) — Energy prince dual portfolio 등. 세부는 추적 최소."
+      },
+      "executive_live": {
+        "coverage": "royal_executive_core",
+        "sources": [
+          {
+            "org": "Saudi Press Agency / my.gov.sa",
+            "url": "https://my.gov.sa/en/news/2538539"
+          }
+        ],
+        "core": [
+          {
+            "office_ko": "국왕",
+            "name_en": "Salman bin Abdulaziz Al Saud",
+            "official_url": "https://www.spa.gov.sa/"
+          },
+          {
+            "office_ko": "왕세자·총리",
+            "name_en": "Mohammed bin Salman",
+            "official_url": "https://www.spa.gov.sa/"
+          },
+          {
+            "office_ko": "외무장관",
+            "name_en": "Faisal bin Farhan Al Saud",
+            "official_url": "https://www.mofa.gov.sa/"
+          },
+          {
+            "office_ko": "재무장관",
+            "name_en": "Mohammed Al-Jadaan",
+            "official_url": "https://www.mof.gov.sa/"
+          },
+          {
+            "office_ko": "에너지장관",
+            "name_en": "Abdulaziz bin Salman Al Saud"
+          },
+          {
+            "office_ko": "내무장관",
+            "name_en": "Abdulaziz bin Saud bin Naif Al Saud"
+          }
+        ]
+      }
+    },
+    {
       "iso3": "IRN",
       "name_ko": "이란",
       "priority_tier": 2,
@@ -54378,14 +55057,6 @@
       },
       "events": [
         {
-          "id": "irn-2026-national",
-          "type": "general",
-          "label_ko": "전국 대선·마줄리스 선거",
-          "date": "없음",
-          "status": "not_in_2026_pack",
-          "notes": "National elections exist, but no dated 2026 event is bundled; keep the election-system card visible and the date as 불명/미수록 rather than implying no elections exist."
-        },
-        {
           "id": "irn-2026-leadership-review",
           "type": "leadership_review",
           "label_ko": "최고지도자 승계·IRGC/국가안보회의 월간 검토",
@@ -54394,10 +55065,10 @@
           "notes": "Use iran_leadership_extracted.json and direct public-source checks; do not infer names or events."
         }
       ],
-      "events_this_year": 2,
+      "events_this_year": 1,
       "ingest_mode": "document_text_extract",
       "calendar": {
-        "as_of": "2026-08-09",
+        "as_of": "2026-09-18",
         "sources": null,
         "notes": [
           "Managed electoral system: candidate vetting by the Guardian Council.",
@@ -54739,14 +55410,6 @@
       },
       "events": [
         {
-          "id": "idn-2026-national",
-          "type": "general",
-          "label_ko": "전국 총·대선",
-          "date": "없음",
-          "status": "없음",
-          "notes": "Bundled light pack identifies the next national cycle as 2029."
-        },
-        {
           "id": "idn-2026-party-leadership",
           "type": "party_leadership",
           "label_ko": "주요 정당 전당대회·지도부 선출",
@@ -54755,10 +55418,10 @@
           "notes": "Party notice not yet captured; verify directly from party sites."
         }
       ],
-      "events_this_year": 2,
+      "events_this_year": 1,
       "ingest_mode": "document_text_extract",
       "calendar": {
-        "as_of": "2026-08-09",
+        "as_of": "2026-09-18",
         "sources": null,
         "notes": [
           "2026 national-election date is not included in the bundled source pack.",
@@ -54834,246 +55497,6 @@
       }
     },
     {
-      "iso3": "TUR",
-      "name_ko": "튀르키예",
-      "priority_tier": 2,
-      "region": "europe",
-      "system": "presidential",
-      "map_spectrum": "conservative",
-      "head": {
-        "role": "president",
-        "name_en": "Recep Tayyip Erdoğan",
-        "name_ko": "레제프 타이이프 에르도안",
-        "party_id": "akp",
-        "spectrum": "conservative",
-        "sources": [
-          {
-            "org": "profile seed",
-            "note": "Incumbent through 2023 cycle; next national competitive calendar thin for 2026"
-          }
-        ]
-      },
-      "ruling_party": {
-        "id": "akp",
-        "name_en": "AKP",
-        "role": "ruling"
-      },
-      "parties_tracked": [
-        {
-          "id": "akp",
-          "abbr": "AKP",
-          "name_en": "AKP",
-          "role": "ruling",
-          "spectrum": "conservative",
-          "display": "AKP"
-        },
-        {
-          "id": "chp",
-          "abbr": "CHP",
-          "name_en": "CHP",
-          "role": "main_opposition",
-          "spectrum": "progressive",
-          "display": "CHP"
-        }
-      ],
-      "legislature": null,
-      "subnational": null,
-      "polls": {
-        "admit": [
-          "presidential_job_approval"
-        ],
-        "status": "todo"
-      },
-      "events": [
-        {
-          "id": "tur-2026-akp-chp-leadership",
-          "type": "party_leadership",
-          "label_ko": "AKP·CHP 당대표/전당대회",
-          "date": "불명",
-          "status": "tentative",
-          "notes": "YSK·당 공고 전"
-        },
-        {
-          "id": "tur-2026-national",
-          "type": "general",
-          "label_ko": "총·대선",
-          "date": "불명",
-          "status": "tentative",
-          "notes": "발표 전 — YSK 확인 필요"
-        }
-      ],
-      "events_this_year": 2,
-      "ingest_mode": "document_text_extract",
-      "calendar": {
-        "as_of": "2026-08-08",
-        "sources": null,
-        "notes": [
-          "National competitive calendar thin in 2026; fill from YSK when announced."
-        ],
-        "null_policy": {
-          "없음": "해당 없음",
-          "불명": "미확정"
-        }
-      },
-      "executive_live": {
-        "coverage": "executive_core",
-        "sources": [
-          {
-            "org": "CIA World Leaders",
-            "url": "https://www.cia.gov/resources/world-leaders/foreign-governments/turkey/",
-            "as_of": "2026-02-25"
-          }
-        ],
-        "core": [
-          {
-            "office_ko": "대통령",
-            "name_en": "Recep Tayyip Erdogan",
-            "party_abbr": "AKP",
-            "official_url": "https://www.tccb.gov.tr/"
-          },
-          {
-            "office_ko": "부통령",
-            "name_en": "Cevdet Yilmaz",
-            "official_url": "https://www.tccb.gov.tr/"
-          },
-          {
-            "office_ko": "외무장관",
-            "name_en": "Hakan Fidan",
-            "official_url": "https://www.mfa.gov.tr/"
-          },
-          {
-            "office_ko": "재무장관",
-            "name_en": "Mehmet Simsek",
-            "official_url": "https://www.hmb.gov.tr/"
-          },
-          {
-            "office_ko": "국방장관",
-            "name_en": "Yasar Guler"
-          },
-          {
-            "office_ko": "내무장관",
-            "name_en": "Mustafa Ciftci",
-            "official_url": "https://www.icisleri.gov.tr/"
-          }
-        ]
-      }
-    },
-    {
-      "iso3": "SAU",
-      "name_ko": "사우디아라비아",
-      "priority_tier": 2,
-      "region": "middle_east",
-      "system": "other",
-      "map_spectrum": "authoritarian_monarchy",
-      "head": {
-        "role": "king",
-        "name_en": "Salman bin Abdulaziz Al Saud",
-        "name_ko": "살만 빈 압둘아지즈",
-        "party_id": "al_saud",
-        "spectrum": "authoritarian_monarchy",
-        "de_facto_note": "실질 통치: 왕세자 겸 총리 Mohammed bin Salman (MbS)",
-        "sources": [
-          {
-            "org": "SPA / my.gov.sa Cabinet",
-            "url": "https://my.gov.sa/en/news/2538539",
-            "note": "Crown Prince chairs Cabinet as PM"
-          },
-          {
-            "org": "GOV.UK bilateral",
-            "url": "https://www.gov.uk/government/news/pm-meeting-with-crown-prince-of-saudi-arabia-his-royal-highness-mohammed-bin-salman-8-april-2026",
-            "date": "2026-04-08"
-          }
-        ]
-      },
-      "ruling_party": null,
-      "parties_tracked": [],
-      "legislature": null,
-      "subnational": null,
-      "polls": {
-        "admit": [],
-        "note": "경쟁 국정 지지율 트랙 없음"
-      },
-      "events": [
-        {
-          "id": "sau-2026-national",
-          "type": "general",
-          "label_ko": "전국 총·대선",
-          "date": "없음",
-          "status": "없음"
-        }
-      ],
-      "events_this_year": 1,
-      "ingest_mode": "leadership_brief",
-      "calendar": {
-        "as_of": "2026-08-08",
-        "sources": null,
-        "notes": [
-          "Absolute monarchy — no national competitive election calendar.",
-          "Track leadership succession only."
-        ],
-        "null_policy": {
-          "없음": "해당 일정/선거 없음",
-          "불명": "출처 미확정"
-        }
-      },
-      "mode": "leadership_brief",
-      "regime": "absolute_monarchy",
-      "power": {
-        "title_ko": "절대왕정",
-        "head_of_state": "Salman bin Abdulaziz Al Saud (King)",
-        "head_of_government": "Mohammed bin Salman (Crown Prince & Prime Minister since 2022-09)",
-        "power_event": {
-          "type": "succession_reshuffle",
-          "label_ko": "왕세자 교체(사실상 권력 공고화)",
-          "date": "2017-06-21",
-          "note": "Muhammed bin Nayef 해임 → MbS 왕세자. 쿠데타 아님(왕실 내부 승계)."
-        },
-        "elections_national": "없음",
-        "elections_note": "전국 경쟁 선거 없음. 지방(시의) 등 제한 투표는 불명·별도 추적 안 함.",
-        "government_type_cia_style": "absolute monarchy",
-        "cabinet_note_2026": "2026-07 King Salman ministerial reshuffle (SPA) — Energy prince dual portfolio 등. 세부는 추적 최소."
-      },
-      "executive_live": {
-        "coverage": "royal_executive_core",
-        "sources": [
-          {
-            "org": "Saudi Press Agency / my.gov.sa",
-            "url": "https://my.gov.sa/en/news/2538539"
-          }
-        ],
-        "core": [
-          {
-            "office_ko": "국왕",
-            "name_en": "Salman bin Abdulaziz Al Saud",
-            "official_url": "https://www.spa.gov.sa/"
-          },
-          {
-            "office_ko": "왕세자·총리",
-            "name_en": "Mohammed bin Salman",
-            "official_url": "https://www.spa.gov.sa/"
-          },
-          {
-            "office_ko": "외무장관",
-            "name_en": "Faisal bin Farhan Al Saud",
-            "official_url": "https://www.mofa.gov.sa/"
-          },
-          {
-            "office_ko": "재무장관",
-            "name_en": "Mohammed Al-Jadaan",
-            "official_url": "https://www.mof.gov.sa/"
-          },
-          {
-            "office_ko": "에너지장관",
-            "name_en": "Abdulaziz bin Salman Al Saud"
-          },
-          {
-            "office_ko": "내무장관",
-            "name_en": "Abdulaziz bin Saud bin Naif Al Saud"
-          }
-        ]
-      }
-    },
-    {
       "iso3": "ARE",
       "name_ko": "아랍에미리트",
       "priority_tier": 3,
@@ -55109,13 +55532,19 @@
           "type": "general",
           "label_ko": "전국 경쟁 총·대선",
           "date": "없음",
-          "status": "없음"
+          "status": "없음",
+          "notes": "연방 토후국. 전국 단위 경쟁 총선·대선 제도가 없다. 대통령은 아부다비 통치자가 사실상 겸임.",
+          "level": "national",
+          "contested_ko": "없음",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Politics_of_the_United_Arab_Emirates"
+          ]
         }
       ],
       "events_this_year": 1,
       "ingest_mode": "leadership_brief_emirates",
       "calendar": {
-        "as_of": "2026-08-08",
+        "as_of": "2026-09-18",
         "sources": null,
         "notes": [
           "Federal monarchy of seven emirates. President = Abu Dhabi ruler (de facto).",
@@ -55204,15 +55633,70 @@
   ],
   "live_election_news": [
     {
-      "title": "식료품에 대한 소비세 인하의 열쇠를 쥐고 있는 가타야마 재무장관에게 물어보십시오.",
-      "url": "http://www3.nhk.or.jp/news/html/20260807/k10015199621000.html",
+      "title": "왕이 (Wang Yi) 는 루비오 (Rubio) 와 고위급 상호 작용에 관한 전화 회담을 개최",
+      "url": "https://news.cgtn.com/news/2026-09-17/Chinese-FM-holds-phone-talks-with-Rubio-1QwdEmkgLEk/p.html?UTM_Source=cgtn&UTM_Medium=rss&UTM_Campaign=World",
       "election_type": "cabinet_reshuffle",
       "category": "cabinet_reshuffle",
       "country_tier": "A",
       "info_grade": "1",
-      "importance": 0.978,
+      "importance": 2.492,
+      "source_region": "china",
+      "published_at": "2026-09-17T14:07:35+00:00"
+    },
+    {
+      "title": "타카이치의 내각 재편성에서 알 수 있는 것",
+      "url": "https://www.japantimes.co.jp/news/2026/09/18/japan/politics/cabinet-reshuffle-analysis/",
+      "election_type": "cabinet_reshuffle",
+      "category": "cabinet_reshuffle",
+      "country_tier": "A",
+      "info_grade": "1",
+      "importance": 2.192,
       "source_region": "japan",
-      "published_at": "2026-08-07T12:57:08+00:00"
+      "published_at": "2026-09-17T20:00:00+00:00"
+    },
+    {
+      "title": "일본의 PM Takaichi는 캐비닛을 재편성하고 첫 번째 JIP 회원을 탭합니다.",
+      "url": "https://news.cgtn.com/news/2026-09-17/Japan-s-PM-Takaichi-reshuffles-cabinet-taps-first-JIP-member-1Qwf964rw5y/p.html?UTM_Source=cgtn&UTM_Medium=rss&UTM_Campaign=World",
+      "election_type": "cabinet_reshuffle",
+      "category": "cabinet_reshuffle",
+      "country_tier": "A",
+      "info_grade": "1",
+      "importance": 1.89,
+      "source_region": "china",
+      "published_at": "2026-09-17T14:40:01+00:00"
+    },
+    {
+      "title": "무수한 도전을 앞두고, 타카이치는 내각 재편성에서 주요 장관들을 유지한다.",
+      "url": "https://www.japantimes.co.jp/news/2026/09/17/japan/politics/takaichi-cabinet-reshuffle/",
+      "election_type": "cabinet_reshuffle",
+      "category": "cabinet_reshuffle",
+      "country_tier": "A",
+      "info_grade": "1",
+      "importance": 1.584,
+      "source_region": "japan",
+      "published_at": "2026-09-17T08:18:00+00:00"
+    },
+    {
+      "title": "어젯밤에 있었던 일: 9월 18일 금요일",
+      "url": "https://www.interfax.ru/world/1116787",
+      "election_type": "general",
+      "category": "election",
+      "country_tier": "A",
+      "info_grade": "2",
+      "importance": 0.767,
+      "source_region": "russia",
+      "published_at": "2026-09-18T04:30:00+00:00"
+    },
+    {
+      "title": "황궈창 타오위안 시장 티켓팅, 28석으로 지방선거 민중당의 자신감 강조",
+      "url": "https://news.ltn.com.tw/news/politics/breakingnews/5578109",
+      "election_type": "local",
+      "category": "election",
+      "country_tier": "B",
+      "info_grade": "3",
+      "importance": 0.375,
+      "source_region": "taiwan",
+      "published_at": "2026-09-18T04:11:42+00:00"
     }
   ],
   "betting_markets": {
