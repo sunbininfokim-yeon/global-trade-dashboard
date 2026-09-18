@@ -133,23 +133,56 @@ governor   주지사     ← "governors" 아님. "gov" 아님. 단수 governor.
 
 ---
 
-## 3. 파이프라인 (선택, 그러나 권장)
+## 3. 이미 있는 것 — PR #293 을 먼저 볼 것
+
+**여론조사 원자료 수집은 이미 있다.** PR #293 (`codex/us-election-polls`, 아직 draft)
+이 `usa_election_polls_index_v1.json` → 전국 → 주 → 선거 순으로 관측값을 발행한다.
+계약은 `HANDOFF_CLAUDE_ELECTION_POLLS.md` 에 있다. **새로 수집을 짜지 말고 그 위에 얹어라.**
+
+다만 **그 파일들만으로는 이 전망 칸을 채울 수 없다.** 그쪽이 의도적으로 안 내는 것이 있다:
+
+| #293 이 내는 것 | 이 화면이 필요한 것 |
+|---|---|
+| 선거(race) 단위 관측값 22슬롯 · 실제 자료는 8건 | 원(chamber) 단위 우세 판정 3건 |
+| `poll_average_pct` = **항상 null** | 평균 또는 그에 준하는 요약 |
+| `win_probability` = **항상 null** (UI 임의 계산 금지) | `win_prob` 또는 최소한 `lead_abbr` |
+
+즉 **빠진 것은 수집이 아니라 집계 모델이다.** 개별 조사에서 하원 435석의 우세를
+끌어내는 일은 가정이 필요하고, #293 은 그 가정을 데이터 쪽에서 세우지 않겠다고
+명시했다. 화면도 마찬가지로 계산하지 않는다 — `lead_abbr` 없이 `seats` 만 오면
+"접전 · 우세 판정 보류"로 떨어진다.
+
+그래서 이 파일을 만드는 일은 **모델을 하나 세우고 그 가정을 `method_ko` 에 적는
+일**이다. 8건 관측으로 전국 판세를 말할 수 없다면 그렇게 적고, 채울 수 있는 방부터
+채워라. **세 방을 다 채우려고 없는 근거를 만들지 말 것** — 빈 칸은 "연동 예정"으로
+정직하게 남는다.
+
+순서 권장:
+1. #293 을 먼저 머지한다 (지금 draft 상태다).
+2. 관측이 있는 주지사 3건(NY·WI·NV)처럼 근거가 실제로 있는 범위를 확인한다.
+3. 집계 규칙을 정하고 `method_ko` 한 줄로 적을 수 있는지 본다. 못 적으면 그 방은 비워 둔다.
+4. `usa_midterms_forecast_v1.json` 을 낸다.
+
+---
+
+## 4. 파이프라인 (선택, 그러나 권장)
 
 수기로 한 번 올리는 것도 화면은 받는다. 다만 `refresh_seconds` 를 선언했으면
 그 주기로 갱신되는 것이 맞다.
 
 - 산출 스크립트: `New for anti/scripts/election_watch/build_usa_midterms_forecast.py`
+  — #293 의 `build_election_polls.py` 출력(선거 단위 관측)을 입력으로 받는다.
 - 워크플로: `.github/workflows/usa_midterms_forecast.yml`
-  — 기존 `us_superpac_refresh.yml` 을 본떠서 만든다.
 
 **워크플로 파일은 Claude Code 소유다** (`docs/ops/OWNERS.md`). 필요하면 스크립트만
-올리고 워크플로는 요청해라. 봇 커밋은 배포를 트리거하지 않으므로
+올리고 워크플로는 요청해라. #293 이 남긴 `ops/us_election_polls_refresh.yml.example`
+설치도 같은 이유로 이쪽 몫이다 — 그 PR 이 머지되면 함께 올린다. 봇 커밋은 배포를 트리거하지 않으므로
 (`deploy.yml` 주석 참조) 데이터만 갱신되고 화면은 그대로다 — 그래도 된다.
 이 파일은 런타임에 `no-store` 로 읽히므로 **재배포 없이 반영된다.**
 
 ---
 
-## 4. 완료 판정
+## 5. 완료 판정
 
 - [ ] `New for anti/public/data/usa_midterms_forecast_v1.json` 이 존재한다
 - [ ] `chambers` 키가 `house` / `senate` / `governor` 중에서만 나온다
@@ -186,7 +219,7 @@ print(f"방 {len(d['chambers'])}개 · as_of {d['as_of']} ({days}일 전)")
 
 ---
 
-## 5. 범위 밖 (하지 말 것)
+## 6. 범위 밖 (하지 말 것)
 
 - **UI 코드.** `New for anti/js/elections/**` 와 `style.css` 는 Claude Code 소유다.
 - **주별·선거구별 전망.** 화면에 꽂을 자리가 아직 없다. 자리 없는 데이터를 올리면
