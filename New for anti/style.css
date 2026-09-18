@@ -1014,6 +1014,136 @@ body {
     white-space: nowrap;
 }
 
+/* --- 선거 브리핑 (미국 중간선거: 주지사·하원·상원 3열) --------------------
+   세 열이 같은 구조라 CSS 도 열 하나 분량이다. 전망 칸은 슬롯이라 내용이 통째로
+   갈리는데, 높이가 흔들리면 아래 열이 출렁이므로 min-height 로 자리를 잡아 둔다. */
+.elections-brief-lede {
+    color: #cbd5e1;
+    font-size: 12px;
+    line-height: 1.5;
+    margin: 0 0 10px;
+}
+.elections-brief-columns {
+    display: grid;
+    /* 세 열이 한 줄에 서야 스케치대로 읽힌다. 모달 본문은 패딩 뒤 약 690px 이라
+       230px 로는 두 열밖에 못 들어간다. */
+    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+    gap: 8px;
+}
+.elections-brief-column {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 11px;
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    border-radius: 8px;
+    background: rgba(15, 23, 42, 0.45);
+    min-width: 0;
+}
+.elections-brief-column-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 8px;
+}
+.elections-brief-column-head h4 { margin: 0; color: #e2e8f0; font-size: 13px; }
+.elections-brief-column-head span { color: #94a3b8; font-size: 10px; text-align: right; }
+.elections-brief-current-label { margin: 2px 0 0; color: #94a3b8; font-size: 10px; }
+.elections-brief-column-sub { margin: 4px 0 0; color: #94a3b8; font-size: 10px; }
+
+/* 현재 n VS m */
+.elections-vs {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 6px;
+}
+.elections-vs-side { display: flex; flex-direction: column; min-width: 0; }
+.elections-vs-side.is-right { text-align: right; }
+.elections-vs-side b { font-size: 21px; line-height: 1.1; font-weight: 700; }
+.elections-vs-side em { color: #94a3b8; font-size: 10px; font-style: normal; }
+.elections-vs-mid { color: #64748b; font-size: 11px; font-weight: 700; }
+.elections-vs-bar {
+    display: flex;
+    height: 6px;
+    border-radius: 3px;
+    overflow: hidden;
+    background: rgba(148, 163, 184, 0.16);
+}
+.elections-vs-bar i { display: block; height: 100%; }
+.elections-vs-other, .elections-vs-note {
+    margin: 0;
+    color: #94a3b8;
+    font-size: 10px;
+    line-height: 1.45;
+}
+
+/* 전망 슬롯 — applyForecast 가 내용만 갈아끼운다 */
+.elections-forecast-slot { min-height: 44px; }
+.elections-forecast {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    padding: 7px 9px;
+    border: 1px dashed rgba(56, 189, 248, 0.35);
+    border-radius: 7px;
+    background: rgba(14, 116, 144, 0.12);
+}
+.elections-forecast.is-pending { border-style: dashed; opacity: 0.72; }
+.elections-forecast-label { color: #7dd3fc; font-size: 9px; letter-spacing: 0.04em; }
+.elections-forecast-lead { font-size: 12px; font-weight: 650; }
+.elections-forecast-line { color: #cbd5e1; font-size: 10px; }
+.elections-forecast-note { color: #94a3b8; font-size: 9px; line-height: 1.4; }
+
+/* 주별 대진 */
+.elections-brief-states { display: flex; flex-direction: column; gap: 5px; margin-top: 2px; }
+.elections-brief-state {
+    border: 1px solid rgba(148, 163, 184, 0.16);
+    border-radius: 6px;
+    background: rgba(15, 23, 42, 0.55);
+    padding: 7px 8px;
+}
+.elections-brief-state.is-collapsible { padding: 0; }
+.elections-brief-state-head {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    list-style: none;
+}
+.elections-brief-state.is-collapsible > .elections-brief-state-head {
+    cursor: pointer;
+    padding: 7px 8px;
+}
+.elections-brief-state.is-collapsible > .elections-brief-state-head::-webkit-details-marker { display: none; }
+.elections-brief-state.is-collapsible > .elections-brief-state-head:focus-visible { outline: 2px solid #38bdf8; outline-offset: -2px; }
+.elections-brief-state-body { padding: 0 8px 8px; }
+.elections-brief-state-id { color: #7dd3fc; font-size: 11px; font-weight: 700; flex: 0 0 auto; }
+.elections-brief-state-name { color: #e2e8f0; font-size: 11px; overflow-wrap: anywhere; }
+.elections-brief-state-meta { margin-left: auto; color: #94a3b8; font-size: 10px; white-space: nowrap; }
+.elections-matchup {
+    display: flex;
+    align-items: baseline;
+    gap: 5px;
+    padding: 3px 0;
+    border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+}
+.elections-matchup:last-child { border-bottom: none; }
+.elections-matchup-seat { color: #94a3b8; font-size: 10px; flex: 0 0 auto; min-width: 26px; }
+.elections-matchup-name { font-size: 11px; overflow-wrap: anywhere; }
+.elections-matchup-name.is-empty { color: #64748b; font-style: italic; }
+.elections-matchup-vs { color: #64748b; font-size: 9px; flex: 0 0 auto; }
+.elections-brief-pending > summary {
+    cursor: pointer;
+    color: #94a3b8;
+    font-size: 10px;
+    padding: 5px 2px;
+}
+.elections-brief-pending-rows { display: flex; flex-direction: column; gap: 3px; padding-left: 8px; }
+.elections-brief-pending-rows div { display: flex; align-items: baseline; gap: 5px; font-size: 10px; }
+.elections-brief-pending-rows span { color: #7dd3fc; font-weight: 700; }
+.elections-brief-pending-rows strong { color: #cbd5e1; font-weight: 400; overflow-wrap: anywhere; }
+.elections-brief-pending-rows em { margin-left: auto; color: #94a3b8; font-style: normal; white-space: nowrap; }
+
 /* --- 자민당 파벌 (공식 존속 / 해산 후 블록 / 신생 그룹) --------------------
    막대는 이 화면에서 가장 큰 그룹 대비 상대 크기다. 파벌 인원은 언론 추정이고
    기준 시점이 제각각이라 합계를 분모로 쓰지 않는다. */

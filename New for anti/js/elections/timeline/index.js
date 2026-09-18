@@ -2,7 +2,7 @@ import { eventsForMonth, monthKeys } from '../data/selectors.js';
 import { formatMonth } from '../ui.js';
 import { renderDateGroups } from './group-by-date.js';
 
-export const renderTimeline = (root, { calendar, countries, month, onMonthChange }) => {
+export const renderTimeline = (root, { calendar, countries, month, onMonthChange, briefFor, onBriefOpen }) => {
     const months = monthKeys(calendar);
     const index = months.indexOf(month);
     const eventRows = eventsForMonth(calendar, month);
@@ -18,8 +18,11 @@ export const renderTimeline = (root, { calendar, countries, month, onMonthChange
             <button class="elections-button" type="button" data-election-month="next" ${index < 0 || index >= months.length - 1 ? 'disabled' : ''}>다음 달</button>
         </div>
         <p class="elections-panel-note">국가를 선택하면 이 전 세계 일정은 닫히고 해당 국가 상세로 전환됩니다.</p>
-        <div class="elections-date-list">${eventRows.length ? renderDateGroups(eventRows, countries) : '<p class="elections-muted">이 달에 표시할 확정 일정이 없습니다.</p>'}</div>
+        <div class="elections-date-list">${eventRows.length ? renderDateGroups(eventRows, countries, briefFor) : '<p class="elections-muted">이 달에 표시할 확정 일정이 없습니다.</p>'}</div>
     `;
+    // 목록은 수십 줄이라 줄마다 리스너를 달지 않고 한 번만 위임한다.
+    root.querySelectorAll('[data-election-brief]').forEach((button) => button.addEventListener('click',
+        () => onBriefOpen?.(button.dataset.electionBrief)));
     root.querySelector('[data-election-month="prev"]')?.addEventListener('click', () => onMonthChange(months[index - 1]));
     root.querySelector('[data-election-month="next"]')?.addEventListener('click', () => onMonthChange(months[index + 1]));
 };
