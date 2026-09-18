@@ -20,8 +20,11 @@ export const loadElectionBundle = () => {
                 loadJson('elections_board_v1.json'),
                 loadJson('elections_calendar_master_v1.json'),
             ]);
+            // 대진 목차는 아직 없을 수 있다(수집 전). 없으면 null 이고, 그러면 일반
+            // 브리핑이 붙는 일정이 하나도 없을 뿐 나머지 화면은 그대로 선다.
+            const contests = await loadJson('elections_contests_index_v1.json').catch(() => null);
             const countries = new Map((board.countries || []).map((country) => [country.iso3, country]));
-            return { manifest, board, calendar, countries };
+            return { manifest, board, calendar, countries, contests };
         })();
     }
     return bundlePromise;
