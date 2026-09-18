@@ -10,7 +10,11 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from commodity_reports.build import GLOBAL_BUCKET, build_commodity_reports  # noqa: E402
+from commodity_reports.build import (  # noqa: E402
+    GLOBAL_BUCKET,
+    apply_series_commodity_fallback,
+    build_commodity_reports,
+)
 from commodity_reports.feeds import RawReport, parse_fas_gain_cards, parse_feed, parse_html_list  # noqa: E402
 from commodity_reports.score import ReportScorer, append_label, load_learned_multipliers  # noqa: E402
 from commodity_reports.tag import CommodityTagger, CountryTagger, tag_report  # noqa: E402
@@ -149,7 +153,24 @@ class ScoreTests(unittest.TestCase):
             commodity_tagger=self.commodity, country_tagger=self.country,
             default_country="USA",
         )
+        apply_series_commodity_fallback(tagged, self.scorer, title, summary)
         return self.scorer.score(raw, tagged, now=NOW)
+
+    def test_series_wrapper_headline_with_no_crop_name_still_tags(self):
+        # Real-world case: USDA's own WASDE announcement headline often names
+        # no crop at all ("USDA Releases September World Agricultural Supply
+        # and Demand Estimates") even though the report revises corn, wheat,
+        # soybeans and more. Without the series fallback this is dropped
+        # outright by the "no commodity, no window" gate, and the dashboard
+        # is left showing whatever older report happened to name a crop.
+        wasde = self.make(
+            "USDA Releases September World Agricultural Supply and Demand Estimates",
+            "The monthly report updates supply and demand forecasts.",
+        )
+        self.assertIsNotNone(wasde)
+        self.assertEqual(wasde.series_id, "USDA_WASDE")
+        self.assertIn("corn", wasde.commodities)
+        self.assertIn("wheat", wasde.commodities)
 
     def test_named_series_outranks_a_bare_mention(self):
         wasde = self.make("WASDE raises US soybean production to 4.52 billion bushels")

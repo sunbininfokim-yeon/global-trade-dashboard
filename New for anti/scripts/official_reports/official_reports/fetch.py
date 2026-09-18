@@ -122,9 +122,13 @@ def parse_html_list(body: str, source: Dict[str, Any]) -> List[RawReport]:
         full = absolutize(base, href)
         if full in seen:
             continue
-        # window around href for title text
+        # Title text always follows the href inside the same tag (or a child
+        # tag), never before it -- a backward window used to bleed the
+        # *previous* list item's title onto this one when items sit close
+        # together (confirmed against the us_treasury_press_list fixture:
+        # sb0500 was getting sb0584's title).
         idx = body.find(href)
-        window = body[max(0, idx - 120) : idx + 280]
+        window = body[idx : idx + 280]
         title_m = re.search(r">([^<]{12,180})<", window)
         title = ""
         if title_m:

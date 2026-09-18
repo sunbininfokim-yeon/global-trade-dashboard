@@ -18,6 +18,16 @@ from html import unescape
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional, Tuple
 
+from election_watch.extract_usa_wh_advisors import classify_topical_advisors
+from election_watch.extract_usa_wh_office_status import (
+    CEA_URL,
+    CEQ_URL,
+    ONDCP_URL,
+    apply_office_status,
+    build_office_status,
+    parse_cea_chair,
+)
+
 ROOT = Path(__file__).resolve().parents[1]
 RAW = ROOT / "raw" / "usa"
 OUT = ROOT / "config" / "extracted"
@@ -26,6 +36,38 @@ UA = "election-watch/1.0 (+global-trade-dashboard research)"
 CABINET_URL = "https://www.whitehouse.gov/administration/cabinet/"
 ADMIN_URL = "https://www.whitehouse.gov/administration/"
 STAFF_PDF_NAME = "{year}-Annual-Report-to-Congress-on-White-House-Staff.pdf"
+
+# Person pages confirmed on official .gov sites. Agency homepages or the White
+# House cabinet roster are used only when a dedicated biography page was not
+# found. Refresh keeps the URL only while the same name_en is still in office.
+CABINET_OFFICIAL_URLS: Dict[str, str] = {
+    "Scott Bessent": "https://home.treasury.gov/about/general-information/officials/scott-bessent",
+    "Todd Blanche": "https://www.justice.gov/ag/staff-profile/meet-attorney-general",
+    "Doug Burgum": "https://www.doi.gov/secretary-doug-burgum",
+    "Jay Clayton": CABINET_URL,
+    "Doug Collins": "https://department.va.gov/staff-biographies/douglas-a-collins/",
+    "Sean Duffy": "https://www.transportation.gov/meet-secretary/us-transportation-secretary-sean-duffy",
+    "Jamieson Greer": "https://ustr.gov/about/leadership/us-trade-representative/jamieson-greer-united-states-trade-representative",
+    "Pete Hegseth": "https://www.defense.gov/About/Biographies/Biography/Article/4040890/hon-pete-hegseth/",
+    "Robert F. Kennedy, Jr.": CABINET_URL,
+    "Kelly Loeffler": "https://www.sba.gov/about-sba/organization/sba-leadership/",
+    "Howard Lutnick": "https://www.commerce.gov/about/leadership/howard-lutnick",
+    "Linda McMahon": "https://www.ed.gov/",
+    "Markwayne Mullin": "https://www.dhs.gov/markwayne-mullin",
+    "John Ratcliffe": "https://www.cia.gov/about/director-of-cia/",
+    "Brooke Rollins": "https://www.usda.gov/our-agency/about-usda/our-secretary",
+    "Marco Rubio": "https://www.state.gov/biographies/marco-rubio/",
+    "Keith E. Sonderling": CABINET_URL,
+    "Scott Turner": CABINET_URL,
+    "Russ Vought": "https://www.whitehouse.gov/omb/",
+    "Chris Wright": "https://www.energy.gov/person/chris-wright",
+    "Lee Zeldin": "https://www.epa.gov/aboutepa/epa-administrator",
+}
+CORE_OFFICIAL_URLS: Dict[str, str] = {
+    "Donald J. Trump": "https://www.whitehouse.gov/administration/donald-j-trump/",
+    "JD Vance": "https://www.whitehouse.gov/administration/jd-vance/",
+    "Susan S. Wiles": ADMIN_URL,
+}
 
 CABINET_PORTFOLIO: Dict[str, Dict[str, str]] = {
     "Secretary of the Treasury": {"portfolio_ko": "재무장관"},
@@ -245,12 +287,7 @@ def payroll_name_to_display(last_first: str) -> str:
     return re.sub(r"\s+", " ", display).strip()
 
 
-def parse_staff_pdf_text(text: str) -> Dict[str, Any]:
-    as_of = None
-    m = re.search(r"As of Date:\s+[A-Za-z]+,\s+([A-Za-z]+ \d{1,2}, \d{4})", text)
-    if m:
-        as_of = datetime.strptime(m.group(1), "%B %d, %Y").date().isoformat()
-
+def parse_payroll_rows(text: str) -> List[Dict[str, Any]]:
     cleaned = re.sub(
         r"For Official Use Only(?:\s+Page \d+ of \d+)?(?:\s+For Official Use Only)?(?:\s+EXECUTIVE OFFICE OF THE PRESIDENT[\s\S]{0,200}?POSITION TITLE)?",
         " ",
@@ -259,9 +296,7 @@ def parse_staff_pdf_text(text: str) -> Dict[str, Any]:
     lines = [re.sub(r"\s+", " ", line).strip() for line in cleaned.splitlines() if line.strip()]
     records: List[str] = []
     buf = ""
-    start = re.compile(
-        r"^[A-Z][A-Z0-9' .\-]+,\s+(?:JR\.,\s+)?[A-Z]"
-    )
+    start = re.compile(r"^[A-Z][A-Z0-9' .\-]+,\s+(?:JR\.,\s+)?[A-Z]")
     for line in lines:
         if start.match(line) and re.search(r"\b(EMPLOYEE|DETAILEE|PART-TIME DETAILEE)\b", line):
             if buf:
@@ -271,7 +306,6 @@ def parse_staff_pdf_text(text: str) -> Dict[str, Any]:
             buf = f"{buf} {line}"
     if buf:
         records.append(buf)
-
     row_re = re.compile(
         r"^(?P<name>.+?)\s+(?P<status>EMPLOYEE|DETAILEE|PART-TIME DETAILEE)\s+"
         r"\$(?P<salary>[\d,]+\.\d{2})\s+Per Annum\s+(?P<title>.+)$"
@@ -282,12 +316,6 @@ def parse_staff_pdf_text(text: str) -> Dict[str, Any]:
         if not match:
             continue
         title = match.group("title").strip()
-        title_u = title.upper()
-        if "ASSISTANT TO THE PRESIDENT" not in title_u:
-            continue
-        if "DEPUTY ASSISTANT TO THE PRESIDENT" in title_u or "SPECIAL ASSISTANT TO THE PRESIDENT" in title_u:
-            if not any(key in title_u for key in ("DEPUTY CHIEF OF STAFF", "CHIEF OF STAFF TO THE FIRST LADY")):
-                continue
         parsed.append(
             {
                 "payroll_name": match.group("name").strip(),
@@ -295,9 +323,28 @@ def parse_staff_pdf_text(text: str) -> Dict[str, Any]:
                 "status": match.group("status"),
                 "salary_usd": float(match.group("salary").replace(",", "")),
                 "title": title,
-                "title_u": title_u,
+                "title_u": title.upper(),
             }
         )
+    return parsed
+
+
+def parse_staff_pdf_text(text: str) -> Dict[str, Any]:
+    as_of = None
+    m = re.search(r"As of Date:\s+[A-Za-z]+,\s+([A-Za-z]+ \d{1,2}, \d{4})", text)
+    if m:
+        as_of = datetime.strptime(m.group(1), "%B %d, %Y").date().isoformat()
+
+    payroll_rows = parse_payroll_rows(text)
+    parsed: List[Dict[str, Any]] = []
+    for row in payroll_rows:
+        title_u = row["title_u"]
+        if "ASSISTANT TO THE PRESIDENT" not in title_u:
+            continue
+        if "DEPUTY ASSISTANT TO THE PRESIDENT" in title_u or "SPECIAL ASSISTANT TO THE PRESIDENT" in title_u:
+            if not any(key in title_u for key in ("DEPUTY CHIEF OF STAFF", "CHIEF OF STAFF TO THE FIRST LADY")):
+                continue
+        parsed.append(row)
 
     matched: Dict[str, Dict[str, Any]] = {}
     for office_id, needle, extra in ASSISTANT_RULES:
@@ -315,7 +362,18 @@ def parse_staff_pdf_text(text: str) -> Dict[str, Any]:
                     continue
             matched[office_id] = row
             break
-    return {"as_of": as_of, "assistants": matched, "assistant_rows": parsed}
+    classified = classify_topical_advisors(payroll_rows)
+    return {
+        "as_of": as_of,
+        "assistants": matched,
+        "assistant_rows": parsed,
+        "payroll_row_count": len(payroll_rows),
+        "topical_advisors": classified["members"],
+        "unscoped_senior_advisors": classified["unscoped_senior_advisors"],
+        "topical_counts": classified["counts"],
+        "topical_inclusion_ko": classified["inclusion_ko"],
+        "topical_exclusion_ko": classified["exclusion_ko"],
+    }
 
 
 def load_eop() -> Dict[str, Any]:
@@ -452,6 +510,21 @@ def apply_official(
             changes.append(f"other.{office_en} {item.get('name_en')} -> {row['name_en']}")
             item["name_en"] = row["name_en"]
 
+    if staff and staff.get("topical_advisors") is not None:
+        payload = {
+            "schema": "usa_wh_topical_advisors_v1",
+            "payroll_as_of": staff.get("as_of"),
+            "source": staff_source_id or "wh_staff_report",
+            "inclusion_ko": staff.get("topical_inclusion_ko"),
+            "exclusion_ko": staff.get("topical_exclusion_ko"),
+            "counts": staff.get("topical_counts"),
+            "members": staff.get("topical_advisors") or [],
+            "unscoped_senior_advisors": staff.get("unscoped_senior_advisors") or [],
+        }
+        prev = len((eop.get("topical_advisors") or {}).get("members") or [])
+        eop["topical_advisors"] = payload
+        changes.append(f"topical_advisors {prev} -> {len(payload['members'])}")
+
     eop["_cabinet_live"] = cabinet
     return changes
 
@@ -469,20 +542,29 @@ def merge_tier12(eop: Dict[str, Any]) -> None:
     ]
     core_out = []
     for row in eop.get("core") or []:
-        slim = {k: v for k, v in row.items() if k in {"office_ko", "name_en", "party_abbr", "status", "note_ko", "kr_analog"} and v is not None}
+        slim = {k: v for k, v in row.items() if k in {"office_ko", "name_en", "party_abbr", "status", "note_ko", "kr_analog", "official_url"} and v is not None}
+        name = slim.get("name_en")
+        if name and not slim.get("official_url") and CORE_OFFICIAL_URLS.get(name):
+            slim["official_url"] = CORE_OFFICIAL_URLS[name]
         core_out.append(slim)
     usa["core"] = core_out
     if eop.get("_cabinet_live"):
-        usa["cabinet"] = [
-            {k: v for k, v in row.items() if k in {"portfolio_ko", "name_en", "status"} and v is not None}
-            for row in eop["_cabinet_live"]
-        ]
+        cabinet_out = []
+        for row in eop["_cabinet_live"]:
+            slim = {k: v for k, v in row.items() if k in {"portfolio_ko", "name_en", "status", "official_url"} and v is not None}
+            name = slim.get("name_en")
+            if name and CABINET_OFFICIAL_URLS.get(name):
+                slim["official_url"] = CABINET_OFFICIAL_URLS[name]
+            cabinet_out.append(slim)
+        usa["cabinet"] = cabinet_out
     usa["white_house"] = {
         "assistants_to_the_president": eop.get("assistants_to_the_president"),
         "councils": eop.get("councils"),
         "eop_office_heads": eop.get("eop_office_heads"),
         "deputy_chiefs_of_staff": eop.get("deputy_chiefs_of_staff"),
         "other_assistants_to_the_president": eop.get("other_assistants_to_the_president"),
+        "topical_advisors": eop.get("topical_advisors"),
+        "office_status": eop.get("office_status"),
         "missing": eop.get("missing"),
         "correction": eop.get("correction"),
         "kr_analog_note_ko": eop.get("kr_analog_note_ko"),
@@ -519,7 +601,41 @@ def refresh_sources_block(eop: Dict[str, Any], staff_url: Optional[str], staff_a
             "grade": "official",
             "as_of": staff_as_of,
         }
-    keep_ids = ["wh_staff_report", "wh_staff_report_2026-07-01", "wh_administration", "wh_cabinet"]
+    by_id["wh_sacks_ai_crypto_official"] = {
+        "id": "wh_sacks_ai_crypto_official",
+        "org": "The White House",
+        "url": "https://www.whitehouse.gov/wp-content/uploads/2025/06/David-Sacks.pdf",
+        "grade": "official",
+        "as_of": "2025-06",
+        "note": (
+            "Ethics waiver: David O. Sacks, special government employee, "
+            "Special Advisor for AI and Crypto. Not on WHO 2026-07-01 payroll. "
+            "Also America's AI Action Plan 2025-07; PCAST co-chair WH release 2026-03-25."
+        ),
+    }
+    by_id["wh_cea"] = {
+        "id": "wh_cea",
+        "org": "Council of Economic Advisers",
+        "url": CEA_URL,
+        "grade": "official",
+        "as_of": as_of,
+    }
+    by_id["wh_ondcp_confirm"] = {
+        "id": "wh_ondcp_confirm",
+        "org": "The White House",
+        "url": "https://www.whitehouse.gov/releases/2026/01/sara-carter-confirmed-as-drug-czar/",
+        "grade": "official",
+        "as_of": "2026-01-06",
+    }
+    keep_ids = [
+        "wh_staff_report",
+        "wh_staff_report_2026-07-01",
+        "wh_administration",
+        "wh_cabinet",
+        "wh_sacks_ai_crypto_official",
+        "wh_cea",
+        "wh_ondcp_confirm",
+    ]
     ordered = []
     seen = set()
     for key in keep_ids:
@@ -540,9 +656,15 @@ def run_fetch() -> Dict[str, Any]:
     RAW.mkdir(parents=True, exist_ok=True)
     cabinet_path = RAW / "wh_cabinet.html"
     admin_path = RAW / "wh_administration.html"
+    cea_path = RAW / "wh_cea.html"
+    ceq_path = RAW / "wh_ceq.html"
+    ondcp_path = RAW / "wh_ondcp.html"
     result = {
         "cabinet_fetched": fetch(CABINET_URL, cabinet_path),
         "admin_fetched": fetch(ADMIN_URL, admin_path),
+        "cea_fetched": fetch(CEA_URL, cea_path),
+        "ceq_fetched": fetch(CEQ_URL, ceq_path),
+        "ondcp_fetched": fetch(ONDCP_URL, ondcp_path),
         "staff_pdf": None,
         "staff_url": None,
     }
@@ -630,9 +752,23 @@ def main(argv: Optional[List[str]] = None) -> int:
             cabinet_as_of=as_of,
             staff_source_id=staff_source_id,
         )
+        cea_html = ""
+        ceq_html = ""
+        cea_path = RAW / "wh_cea.html"
+        ceq_path = RAW / "wh_ceq.html"
+        if cea_path.exists():
+            cea_html = cea_path.read_text(errors="replace")
+        if ceq_path.exists():
+            ceq_html = ceq_path.read_text(errors="replace")
+        cea = parse_cea_chair(cea_html)
+        office_status = build_office_status(as_of=as_of, cea=cea, ceq_html=ceq_html)
+        changes.extend(apply_office_status(eop, office_status))
         refresh_sources_block(eop, fetch_info.get("staff_url"), (staff or {}).get("as_of"), as_of)
         live_cabinet = eop.pop("_cabinet_live", cabinet)
         write_json(OUT / "usa_eop.json", eop)
+        if eop.get("topical_advisors") is not None:
+            write_json(OUT / "usa_wh_topical_advisors.json", eop["topical_advisors"])
+        write_json(OUT / "usa_wh_office_status.json", eop.get("office_status") or {})
         eop["_cabinet_live"] = live_cabinet
         if args.merge_tier12:
             merge_tier12(eop)
@@ -647,13 +783,21 @@ def main(argv: Optional[List[str]] = None) -> int:
         "cabinet_count": len(cabinet),
         "staff_as_of": (staff or {}).get("as_of"),
         "assistant_ids": sorted(((staff or {}).get("assistants") or {}).keys()),
+        "payroll_row_count": (staff or {}).get("payroll_row_count"),
+        "topical_advisor_count": len((staff or {}).get("topical_advisors") or []),
+        "unscoped_senior_advisor_count": len((staff or {}).get("unscoped_senior_advisors") or []),
+        "topical_counts": (staff or {}).get("topical_counts"),
         "changes": changes,
         "errors": errors,
-        "policy_ko": "백악관 공식 HTML·WHO 연례 PDF만 인명을 갱신한다. 부통령 비서실장·CEQ/CEA 언론 보도는 자동 승격하지 않는다.",
+        "policy_ko": (
+            "백악관 공식 HTML·WHO 연례 PDF만 인명을 갱신한다. "
+            "부통령 비서실장·CEQ/CEA 언론 보도는 자동 승격하지 않는다. "
+            "주제별 보좌관은 WHO 급여명부 직함의 포트폴리오 키워드로만 분류한다."
+        ),
     }
     if args.write_report:
         write_json(OUT / "usa_eop_refresh_report_v1.json", report)
-    print(json.dumps({k: report[k] for k in ("cabinet_count", "staff_as_of", "assistant_ids", "changes", "errors")}, ensure_ascii=False, indent=2))
+    print(json.dumps({k: report[k] for k in ("cabinet_count", "staff_as_of", "assistant_ids", "payroll_row_count", "topical_advisor_count", "unscoped_senior_advisor_count", "changes", "errors")}, ensure_ascii=False, indent=2))
     return 1 if errors and args.fetch else 0
 
 

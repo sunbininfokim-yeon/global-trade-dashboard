@@ -48,6 +48,7 @@ import pandas as pd
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 CACHE = os.path.join(HERE, "cache")
+os.makedirs(CACHE, exist_ok=True)
 
 NASS_URL = "https://quickstats.nass.usda.gov/api/api_GET/"
 POWER_URL = "https://power.larc.nasa.gov/api/temporal/daily/point"

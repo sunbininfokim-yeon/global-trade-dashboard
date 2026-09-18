@@ -1,6 +1,8 @@
 import unittest
 
 from election_watch.extract_usa_eop import (
+    CABINET_OFFICIAL_URLS,
+    CORE_OFFICIAL_URLS,
     parse_administration_html,
     parse_cabinet_html,
     parse_staff_pdf_text,
@@ -44,6 +46,13 @@ RUBIO, MARCO A. EMPLOYEE $0.00 Per Annum ASSISTANT TO THE PRESIDENT AND NATIONAL
 SCAVINO, JR., DANIEL J. EMPLOYEE $195,200.00 Per Annum ASSISTANT TO THE PRESIDENT AND DEPUTY CHIEF OF STAFF AND DIRECTOR OF THE OFFICE OF PRESIDENTIAL PERSONNEL
 WILES, SUSAN S. EMPLOYEE $195,200.00 Per Annum ASSISTANT TO THE PRESIDENT AND CHIEF OF STAFF
 ADKISSON, SAMUEL D. EMPLOYEE $121,500.00 Per Annum SPECIAL ASSISTANT TO THE PRESIDENT AND ASSOCIATE COUNSEL
+WHITE, PAULA M. EMPLOYEE $150,000.00 Per Annum SENIOR ADVISOR TO THE WHITE HOUSE FAITH OFFICE
+HOMAN, THOMAS D. EMPLOYEE $195,200.00 Per Annum ASSISTANT TO THE PRESIDENT AND BORDER CZAR
+KORN, JENNIFER S. EMPLOYEE $195,200.00 Per Annum DEPUTY ASSISTANT TO THE PRESIDENT AND FAITH DIRECTOR
+DENTON, JAKE J. EMPLOYEE $80,000.00 Per Annum POLICY ADVISOR
+JOHNSON, TRACY L. EMPLOYEE $195,200.00 Per Annum SENIOR ADVISOR
+KLOPP, JACALYNNE B. EMPLOYEE $195,200.00 Per Annum DEPUTY ASSISTANT TO THE PRESIDENT AND ADVISOR
+WITT, PATRICK J. EMPLOYEE $195,200.00 Per Annum EXECUTIVE DIRECTOR OF THE PRESIDENTIAL COUNCIL OF ADVISORS FOR DIGITAL ASSETS
 """
 
 
@@ -77,6 +86,30 @@ class ExtractUsaEopTests(unittest.TestCase):
         self.assertEqual(parsed["assistants"]["press_secretary"]["name_en"], "Karoline C. Leavitt")
         self.assertNotIn("wh_counsel", parsed["assistants"])
         self.assertTrue("ASSOCIATE COUNSEL" not in parsed["assistants"].get("nsa", {}).get("title", ""))
+
+    def test_staff_pdf_topical_advisors(self):
+        parsed = parse_staff_pdf_text(STAFF_TEXT)
+        names = {row["name_en"] for row in parsed["topical_advisors"]}
+        self.assertIn("Paula M. White", names)
+        self.assertIn("Thomas D. Homan", names)
+        self.assertIn("Jennifer S. Korn", names)
+        self.assertIn("Marco A. Rubio", names)
+        self.assertIn("Patrick J. Witt", names)
+        self.assertIn("David O. Sacks", names)
+        self.assertNotIn("Jake J. Denton", names)
+        self.assertNotIn("Samuel D. Adkisson", names)
+        unscoped = {row["name_en"] for row in parsed["unscoped_senior_advisors"]}
+        self.assertIn("Tracy L. Johnson", unscoped)
+        self.assertIn("Jacalynne B. Klopp", unscoped)
+        self.assertNotIn("Paula M. White", unscoped)
+
+    def test_official_person_urls_are_https_gov(self):
+        self.assertTrue(CORE_OFFICIAL_URLS["Donald J. Trump"].startswith("https://www.whitehouse.gov/"))
+        self.assertEqual(
+            CABINET_OFFICIAL_URLS["Marco Rubio"],
+            "https://www.state.gov/biographies/marco-rubio/",
+        )
+        self.assertTrue(all(url.startswith("http") for url in CABINET_OFFICIAL_URLS.values()))
 
 
 if __name__ == "__main__":

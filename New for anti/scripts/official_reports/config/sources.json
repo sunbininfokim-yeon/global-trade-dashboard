@@ -151,7 +151,24 @@
       "lang": "en",
       "enabled": false,
       "weight": 1.3,
-      "notes": "403 from some networks; WASDE via FAS HTML planned"
+      "notes": "403 from some networks; replaced by us_usda_fas_newsroom (html_list)"
+    },
+    {
+      "id": "us_usda_fas_newsroom",
+      "country": "USA",
+      "agency": "USDA FAS",
+      "domains": ["agriculture", "economy"],
+      "kind": "html_list",
+      "url": "https://www.fas.usda.gov/newsroom",
+      "lang": "en",
+      "enabled": true,
+      "weight": 1.3,
+      "html": {
+        "item_href_re": "/newsroom/[a-z0-9][a-z0-9-]{10,}",
+        "base": "https://www.fas.usda.gov",
+        "max_items": 25
+      },
+      "notes": "Replaces us_usda_disabled RSS (403 from some networks); WASDE/export-sales notices via FAS newsroom list"
     }
   ]
 }

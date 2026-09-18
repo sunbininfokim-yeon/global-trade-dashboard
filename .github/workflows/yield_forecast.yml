@@ -40,4 +40,12 @@ jobs:
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git add "New for anti/public/data/yield_forecast.json"
           git commit -m "chore: weekly US Corn Belt yield forecast refresh" || exit 0
+          # Same weekend-batch race as city_wx_refresh.yml: several other
+          # jobs land commits on main in this window. Rebase and retry
+          # rather than dropping the week's refresh on a rejected push.
+          for i in 1 2 3; do
+            git push && exit 0
+            echo "push rejected, rebasing onto latest main and retrying ($i/3)"
+            git pull --rebase --autostash
+          done
           git push

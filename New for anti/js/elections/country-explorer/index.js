@@ -1,4 +1,4 @@
-import { renderCountryShell } from './country-shell.js';
+import { renderCountryShell } from './country-shell.js?v=2';
 import { renderWorldElectionMap } from './world-map.js';
 import { renderCountryMap } from './country-map.js';
 import { renderUsaStateDashboard } from './usa-state-dashboard.js';

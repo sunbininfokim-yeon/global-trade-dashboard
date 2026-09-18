@@ -1,6 +1,6 @@
 {
   "schema": "usa_eop_senior_roster_v1",
-  "as_of": "2026-09-11",
+  "as_of": "2026-09-14",
   "payroll_as_of": "2026-07-01",
   "policy_ko": "백악관 사무실(WHO) 연례 직원보고서는 특별보좌관·수석급 정본. 각료급 OMB는 cabinet과 중복 표기. 부통령실은 WHO 명부에 없어 후임이 공식 확인되기 전에는 공석으로 둔다. NSC/NEC 법정 의장은 대통령이며 실무 책임자를 따로 적는다.",
   "kr_analog_note_ko": "한국 대통령실 수석과 1:1이 아니다. kr_analog는 읽는 힌트일 뿐 직제 동일 선언이 아니다.",
@@ -18,14 +18,36 @@
       "org": "The White House",
       "url": "https://www.whitehouse.gov/administration/",
       "grade": "official",
-      "as_of": "2026-09-11"
+      "as_of": "2026-09-14"
     },
     {
       "id": "wh_cabinet",
       "org": "The White House Cabinet",
       "url": "https://www.whitehouse.gov/administration/cabinet/",
       "grade": "official",
-      "as_of": "2026-09-11"
+      "as_of": "2026-09-14"
+    },
+    {
+      "id": "wh_sacks_ai_crypto_official",
+      "org": "The White House",
+      "url": "https://www.whitehouse.gov/wp-content/uploads/2025/06/David-Sacks.pdf",
+      "grade": "official",
+      "as_of": "2025-06",
+      "note": "Ethics waiver: David O. Sacks, special government employee, Special Advisor for AI and Crypto. Not on WHO 2026-07-01 payroll. Also America's AI Action Plan 2025-07; PCAST co-chair WH release 2026-03-25."
+    },
+    {
+      "id": "wh_cea",
+      "org": "Council of Economic Advisers",
+      "url": "https://www.whitehouse.gov/cea/",
+      "grade": "official",
+      "as_of": "2026-09-14"
+    },
+    {
+      "id": "wh_ondcp_confirm",
+      "org": "The White House",
+      "url": "https://www.whitehouse.gov/releases/2026/01/sara-carter-confirmed-as-drug-czar/",
+      "grade": "official",
+      "as_of": "2026-01-06"
     },
     {
       "id": "wh_ostp_kratsios_2025-03",
@@ -62,7 +84,8 @@
         "HSC statutory chair"
       ],
       "kr_analog": "대통령",
-      "source": "wh_administration"
+      "source": "wh_administration",
+      "official_url": "https://www.whitehouse.gov/administration/donald-j-trump/"
     },
     {
       "id": "vice_president",
@@ -71,7 +94,8 @@
       "name_en": "JD Vance",
       "party_abbr": "GOP",
       "kr_analog": "부통령",
-      "source": "wh_administration"
+      "source": "wh_administration",
+      "official_url": "https://www.whitehouse.gov/administration/jd-vance/"
     },
     {
       "id": "wh_chief_of_staff",
@@ -81,15 +105,16 @@
       "name_public": "Susie Wiles",
       "party_abbr": "GOP",
       "source": "wh_staff_report",
-      "kr_analog": "대통령비서실장"
+      "kr_analog": "대통령비서실장",
+      "official_url": "https://www.whitehouse.gov/administration/"
     },
     {
       "id": "vp_chief_of_staff",
       "office_ko": "부통령 비서실장",
       "office_en": "Chief of Staff to the Vice President",
       "name_en": null,
-      "status": "불명",
-      "note_ko": "Jacob B. Reses는 2026 여름 말 퇴임 발표(NBC 2026-06-11). Punchbowl 2026-06-16은 Nick Luna 후임 보도. 부통령실 공식 명부를 아직 못 잡아 현직을 넣지 않음.",
+      "status": "unconfirmed",
+      "note_ko": "부통령실은 WHO 급여명부에 없다. 공식 부통령실 명부를 못 잡아 현직을 넣지 않는다. 백악관이 공석이라고 밝힌 적은 없다. 언론 후임은 승격하지 않는다.",
       "predecessor": {
         "name_en": "Jacob B. Reses",
         "until_announced": "end of summer 2026"
@@ -98,7 +123,9 @@
         "name_en": "Nick Luna",
         "source": "https://punchbowl.news/article/white-house/nick-luna-vance/"
       },
-      "kr_analog": "부통령 비서실장"
+      "kr_analog": "부통령 비서실장",
+      "vacant": false,
+      "ui_ko": "미확인 (공석 아님)"
     }
   ],
   "assistants_to_the_president": [
@@ -112,7 +139,8 @@
       "wh_salary_usd": 0,
       "source": "wh_staff_report",
       "note_ko": "국무장관 겸임. WHO 급여 0. 위키는 acting since 2025-05-01이라고 하나 2026-07-01 공식 직함은 National Security Advisor.",
-      "kr_analog": "국가안보실장"
+      "kr_analog": "국가안보실장",
+      "official_url": "https://www.state.gov/biographies/marco-rubio/"
     },
     {
       "id": "nec_director",
@@ -120,7 +148,8 @@
       "office_en": "Assistant to the President for Economic Policy and Director of the National Economic Council",
       "name_en": "Kevin A. Hassett",
       "source": "wh_staff_report",
-      "kr_analog": "경제수석"
+      "kr_analog": "경제수석",
+      "official_url": "https://www.whitehouse.gov/administration/"
     },
     {
       "id": "dpc_director",
@@ -129,7 +158,8 @@
       "name_en": "Vincent M. Haley",
       "name_public": "Vince Haley",
       "source": "wh_staff_report",
-      "kr_analog": "사회·정책수석"
+      "kr_analog": "사회·정책수석",
+      "official_url": "https://www.whitehouse.gov/administration/"
     },
     {
       "id": "homeland_security_advisor",
@@ -137,7 +167,8 @@
       "office_en": "Assistant to the President and Deputy Chief of Staff for Policy and Homeland Security Advisor",
       "name_en": "Stephen Miller",
       "source": "wh_staff_report",
-      "kr_analog": "국토안보보좌관"
+      "kr_analog": "국토안보보좌관",
+      "official_url": "https://www.whitehouse.gov/administration/"
     },
     {
       "id": "wh_counsel",
@@ -145,7 +176,8 @@
       "office_en": "Assistant to the President and Counsel to the President",
       "name_en": "David A. Warrington",
       "source": "wh_staff_report",
-      "kr_analog": "민정수석 (유사, 직제 동일 아님)"
+      "kr_analog": "민정수석 (유사, 직제 동일 아님)",
+      "official_url": "https://www.whitehouse.gov/administration/"
     },
     {
       "id": "press_secretary",
@@ -153,7 +185,8 @@
       "office_en": "Assistant to the President and Press Secretary",
       "name_en": "Karoline C. Leavitt",
       "source": "wh_staff_report",
-      "kr_analog": "대변인"
+      "kr_analog": "대변인",
+      "official_url": "https://www.whitehouse.gov/administration/"
     },
     {
       "id": "communications_director",
@@ -161,7 +194,8 @@
       "office_en": "Assistant to the President and Director of Communications",
       "name_en": "Steven Cheung",
       "source": "wh_staff_report",
-      "kr_analog": "홍보수석"
+      "kr_analog": "홍보수석",
+      "official_url": "https://www.whitehouse.gov/administration/"
     }
   ],
   "councils": [
@@ -171,11 +205,13 @@
       "name_en": "National Security Council",
       "statutory_chair": {
         "office_ko": "대통령",
-        "name_en": "Donald J. Trump"
+        "name_en": "Donald J. Trump",
+        "official_url": "https://www.whitehouse.gov/administration/donald-j-trump/"
       },
       "staff_director": {
         "office_ko": "국가안보보좌관",
-        "name_en": "Marco A. Rubio"
+        "name_en": "Marco A. Rubio",
+        "official_url": "https://www.state.gov/biographies/marco-rubio/"
       },
       "note_ko": "법정 의장은 대통령. 보좌관이 실무·Principals Committee를 주재하는 경우가 많다."
     },
@@ -185,11 +221,13 @@
       "name_en": "National Economic Council",
       "statutory_chair": {
         "office_ko": "대통령",
-        "name_en": "Donald J. Trump"
+        "name_en": "Donald J. Trump",
+        "official_url": "https://www.whitehouse.gov/administration/donald-j-trump/"
       },
       "director": {
         "office_ko": "NEC 실장",
-        "name_en": "Kevin A. Hassett"
+        "name_en": "Kevin A. Hassett",
+        "official_url": "https://www.whitehouse.gov/administration/"
       },
       "kr_analog": "경제수석 회의체"
     },
@@ -199,7 +237,8 @@
       "name_en": "Domestic Policy Council",
       "director": {
         "office_ko": "DPC 실장",
-        "name_en": "Vincent M. Haley"
+        "name_en": "Vincent M. Haley",
+        "official_url": "https://www.whitehouse.gov/administration/"
       }
     },
     {
@@ -208,11 +247,13 @@
       "name_en": "Homeland Security Council",
       "statutory_chair": {
         "office_ko": "대통령",
-        "name_en": "Donald J. Trump"
+        "name_en": "Donald J. Trump",
+        "official_url": "https://www.whitehouse.gov/administration/donald-j-trump/"
       },
       "advisor": {
         "office_ko": "국토안보보좌관",
-        "name_en": "Stephen Miller"
+        "name_en": "Stephen Miller",
+        "official_url": "https://www.whitehouse.gov/administration/"
       }
     },
     {
@@ -221,7 +262,8 @@
       "name_en": "National Energy Dominance Council",
       "executive_director": {
         "office_ko": "NEDC 집행실장",
-        "name_en": "Jarrod P. Agen"
+        "name_en": "Jarrod P. Agen",
+        "official_url": "https://www.whitehouse.gov/administration/"
       },
       "source": "wh_staff_report_2026-07-01"
     }
@@ -234,7 +276,8 @@
       "name_en": "Russ Vought",
       "also_in_cabinet": true,
       "source": "wh_cabinet",
-      "kr_analog": "예산실장"
+      "kr_analog": "예산실장",
+      "official_url": "https://www.whitehouse.gov/omb/"
     },
     {
       "id": "cea",
@@ -242,9 +285,11 @@
       "office_en": "Chair, Council of Economic Advisers",
       "name_en": "Christopher Phelan",
       "since": "2026-08-07",
-      "source": "umn_phelan_cea_2026-08",
-      "source_grade": "public_secondary",
-      "kr_analog": "경제수석 자문"
+      "source": "wh_cea",
+      "source_grade": "official",
+      "kr_analog": "경제수석 자문",
+      "official_url": "https://www.whitehouse.gov/cea/",
+      "status": "incumbent"
     },
     {
       "id": "ostp",
@@ -253,87 +298,537 @@
       "name_en": "Michael Kratsios",
       "source": "wh_ostp_kratsios_2025-03",
       "note_ko": "2025-03-25 상원 인준. 2026-09-02 Axios도 현직으로 취급.",
-      "kr_analog": "과학기술보좌관"
+      "kr_analog": "과학기술보좌관",
+      "official_url": "https://www.whitehouse.gov/ostp/"
     },
     {
       "id": "ceq",
       "office_ko": "환경품질위원회 의장",
       "office_en": "Chair, Council on Environmental Quality",
-      "name_en": "Rachael McNitt",
-      "status": "acting",
+      "name_en": null,
+      "status": "unconfirmed",
       "since": "2026-07-07",
-      "source_grade": "media_cross_check",
-      "source": "https://www.eenews.net/articles/ceq-chair-leaving-the-administration/",
-      "note_ko": "Katherine Scarlett 사임 후 CEQ 수석이 직무대행. 공식 CEQ 현직 페이지는 미캡처.",
-      "kr_analog": "환경보좌관"
+      "source_grade": "official_page_no_incumbent",
+      "source": "wh_ceq",
+      "note_ko": "whitehouse.gov/ceq/ About에 의장 이름이 없다. 공석 선언은 없다. 언론 직무대행은 넣지 않는다.",
+      "kr_analog": "환경보좌관",
+      "official_url": "https://www.whitehouse.gov/ceq/",
+      "vacant": false
     },
     {
       "id": "oa",
       "office_ko": "행정실장 (Office of Administration)",
       "office_en": "Assistant to the President and Director of Management and Administration and Director of the Office of Administration",
       "name_en": "Joshua H. Fisher",
-      "source": "wh_staff_report"
+      "source": "wh_staff_report",
+      "official_url": "https://www.whitehouse.gov/administration/"
+    },
+    {
+      "id": "ondcp",
+      "office_ko": "국가마약통제국장",
+      "office_en": "Director, Office of National Drug Control Policy",
+      "name_en": "Sara Carter",
+      "status": "incumbent",
+      "source": "wh_ondcp_confirm",
+      "source_grade": "official",
+      "official_url": "https://www.whitehouse.gov/ondcp/",
+      "note_ko": "2026-01-06 백악관 발표: 상원이 Sara Carter를 ONDCP 국장으로 인준. ondcp 소개 페이지는 이름을 안 적지만 공석이 아니다. 2026-05 국가마약통제전략 서한도 Director Sara Carter."
     }
   ],
   "deputy_chiefs_of_staff": [
     {
       "office_ko": "정책부비서실장·국토안보보좌관",
       "name_en": "Stephen Miller",
-      "source": "wh_staff_report_2026-07-01"
+      "source": "wh_staff_report_2026-07-01",
+      "official_url": "https://www.whitehouse.gov/administration/"
     },
     {
       "office_ko": "운영부비서실장",
       "name_en": "William B. Harrison",
-      "source": "wh_staff_report_2026-07-01"
+      "source": "wh_staff_report_2026-07-01",
+      "official_url": "https://www.whitehouse.gov/administration/"
     },
     {
       "office_ko": "부비서실장·대통령인사실장",
       "name_en": "Daniel J. Scavino, Jr.",
-      "source": "wh_staff_report_2026-07-01"
+      "source": "wh_staff_report_2026-07-01",
+      "official_url": "https://www.whitehouse.gov/administration/"
     }
   ],
   "other_assistants_to_the_president": [
     {
       "office_en": "Cabinet Secretary",
-      "name_en": "Meghan P. Bauer"
+      "name_en": "Meghan P. Bauer",
+      "official_url": "https://www.whitehouse.gov/administration/"
     },
     {
       "office_en": "Director of Legislative Affairs",
-      "name_en": "James C. Braid"
+      "name_en": "James C. Braid",
+      "official_url": "https://www.whitehouse.gov/administration/"
     },
     {
       "office_en": "Staff Secretary",
-      "name_en": "William O. Scharf"
+      "name_en": "William O. Scharf",
+      "official_url": "https://www.whitehouse.gov/administration/"
     },
     {
       "office_en": "Border Czar",
-      "name_en": "Thomas D. Homan"
+      "name_en": "Thomas D. Homan",
+      "official_url": "https://www.whitehouse.gov/administration/"
     },
     {
       "office_en": "Senior Counselor for Trade and Manufacturing",
-      "name_en": "Peter K. Navarro"
+      "name_en": "Peter K. Navarro",
+      "official_url": "https://www.whitehouse.gov/administration/"
     },
     {
       "office_en": "Assistant to the President for Policy",
-      "name_en": "Walker B. Barrett"
+      "name_en": "Walker B. Barrett",
+      "official_url": "https://www.whitehouse.gov/administration/"
     },
     {
       "office_en": "Director of Speechwriting",
-      "name_en": "Ross P. Worthington"
+      "name_en": "Ross P. Worthington",
+      "official_url": "https://www.whitehouse.gov/administration/"
     },
     {
       "office_en": "Chief of Staff to the First Lady",
-      "name_en": "Hayley D. Harrison"
+      "name_en": "Hayley D. Harrison",
+      "official_url": "https://www.whitehouse.gov/administration/"
     },
     {
       "office_en": "Special Envoy for Peace Missions",
       "name_en": "Steven C. Witkoff",
-      "wh_salary_usd": 0
+      "wh_salary_usd": 0,
+      "official_url": "https://www.whitehouse.gov/administration/"
     }
   ],
   "missing": [
-    "official_vice_president_office_roster",
     "official_ceq_incumbent_page",
-    "official_cea_whitehouse_page"
-  ]
+    "official_vice_president_office_roster",
+    "official_whmo_director_page"
+  ],
+  "topical_advisors": {
+    "schema": "usa_wh_topical_advisors_v1",
+    "payroll_as_of": "2026-07-01",
+    "source": "wh_staff_report",
+    "inclusion_ko": "WHO 연례 직원보고서에서 담당 주제가 직함에 적힌 보좌관·특보·차르·특사·신앙 라인을 넣는다. 국가안보보좌관과 같은 급의 주제별 보좌와, 직함에 주제가 있는 디지털자산 자문위 사무 책임자를 포함한다. WHO 급여명부에 없어도 백악관 공식 문서에 직함이 있는 특별정부직원(SGE)은 official_not_on_payroll로 붙인다.",
+    "exclusion_ko": "OMB·ONDCP·CEA·CEQ·OSTP 국실장, NEC/DPC/NEDC 실장 전용 직함, 일반 Policy Advisor, 대변·기록·기술·의회 연락 보좌는 제외. 직함에 담당 주제가 없는 Senior Advisor는 unscoped_senior_advisors에만 둔다. 언론의 '짜르' 별칭만 있고 공식 직함이 없는 사람은 넣지 않는다.",
+    "counts": {
+      "topical": 20,
+      "unscoped_senior_advisors": 5,
+      "by_domain": {
+        "ai_crypto": 1,
+        "border": 1,
+        "coalition": 1,
+        "digital_assets": 2,
+        "economic_policy": 1,
+        "faith": 3,
+        "homeland_security": 1,
+        "international_economy": 1,
+        "jewish_outreach": 1,
+        "national_security": 1,
+        "pardon": 1,
+        "peace": 1,
+        "presidential_policy": 1,
+        "trade": 3,
+        "ukraine": 1
+      },
+      "official_not_on_payroll": 1
+    },
+    "members": [
+      {
+        "id": "ai-crypto-david-o-sacks",
+        "domain": "ai_crypto",
+        "domain_ko": "AI·암호화폐",
+        "office_en": "Special Advisor for AI and Crypto",
+        "name_en": "David O. Sacks",
+        "rank": "special_advisor",
+        "payroll_status": "not_on_wh_staff_report",
+        "also": [
+          "PCAST co-chair"
+        ],
+        "note_ko": "WHO 2026-07-01 급여명부에 이름·직함 없음(특별정부직원). 공식 직함은 Special Advisor for AI and Crypto (백악관 윤리면제 메모 2025-06, America's AI Action Plan 2025-07). 백악관 영상 제목 Crypto Czar는 별칭이지 급여명부 직함이 아니다. 2026-03 백악관 발표는 PCAST 공동의장(Michael Kratsios와). OSTP 국장 Kratsios와 다른 자리.",
+        "source": "wh_sacks_ai_crypto_official",
+        "official_url": "https://www.whitehouse.gov/wp-content/uploads/2025/06/David-Sacks.pdf",
+        "title_as_of": "2025-07-01",
+        "pcast_as_of": "2026-03-25"
+      },
+      {
+        "id": "border-thomas-d-homan",
+        "domain": "border",
+        "domain_ko": "국경",
+        "office_en": "ASSISTANT TO THE PRESIDENT AND BORDER CZAR",
+        "name_en": "Thomas D. Homan",
+        "rank": "assistant_to_the_president",
+        "wh_salary_usd": 195200.0,
+        "payroll_status": "EMPLOYEE",
+        "source": "wh_staff_report"
+      },
+      {
+        "id": "coalition-lynne-m-patton",
+        "domain": "coalition",
+        "domain_ko": "연대·연합",
+        "office_en": "DEPUTY ASSISTANT TO THE PRESIDENT FOR COALITION POLICY AND ENGAGEMENT",
+        "name_en": "Lynne M. Patton",
+        "rank": "deputy_assistant",
+        "wh_salary_usd": 155000.0,
+        "payroll_status": "EMPLOYEE",
+        "source": "wh_staff_report"
+      },
+      {
+        "id": "digital_assets-harry-y-jung",
+        "domain": "digital_assets",
+        "domain_ko": "디지털자산",
+        "office_en": "DEPUTY DIRECTOR OF THE PRESIDENTIAL COUNCIL OF ADVISORS FOR DIGITAL ASSETS",
+        "name_en": "Harry Y. Jung",
+        "rank": "deputy_director",
+        "wh_salary_usd": 197200.0,
+        "payroll_status": "DETAILEE",
+        "source": "wh_staff_report"
+      },
+      {
+        "id": "digital_assets-patrick-j-witt",
+        "domain": "digital_assets",
+        "domain_ko": "디지털자산",
+        "office_en": "EXECUTIVE DIRECTOR OF THE PRESIDENTIAL COUNCIL OF ADVISORS FOR DIGITAL ASSETS",
+        "name_en": "Patrick J. Witt",
+        "rank": "executive_director",
+        "wh_salary_usd": 195200.0,
+        "payroll_status": "DETAILEE",
+        "source": "wh_staff_report"
+      },
+      {
+        "id": "economic_policy-kevin-a-hassett",
+        "domain": "economic_policy",
+        "domain_ko": "경제정책",
+        "office_en": "ASSISTANT TO THE PRESIDENT FOR ECONOMIC POLICY AND DIRECTOR OF THE NATIONAL ECONOMIC COUNCIL",
+        "name_en": "Kevin A. Hassett",
+        "rank": "assistant_to_the_president",
+        "wh_salary_usd": 195200.0,
+        "payroll_status": "EMPLOYEE",
+        "source": "wh_staff_report"
+      },
+      {
+        "id": "faith-jennifer-s-korn",
+        "domain": "faith",
+        "domain_ko": "신앙",
+        "office_en": "DEPUTY ASSISTANT TO THE PRESIDENT AND FAITH DIRECTOR",
+        "name_en": "Jennifer S. Korn",
+        "rank": "deputy_assistant",
+        "wh_salary_usd": 175000.0,
+        "payroll_status": "EMPLOYEE",
+        "source": "wh_staff_report"
+      },
+      {
+        "id": "faith-paula-m-white",
+        "domain": "faith",
+        "domain_ko": "신앙",
+        "office_en": "SENIOR ADVISOR TO THE WHITE HOUSE FAITH OFFICE",
+        "name_en": "Paula M. White",
+        "rank": "senior_advisor",
+        "wh_salary_usd": 0.0,
+        "payroll_status": "EMPLOYEE",
+        "source": "wh_staff_report"
+      },
+      {
+        "id": "faith-madeline-a-seaman",
+        "domain": "faith",
+        "domain_ko": "신앙",
+        "office_en": "SPECIAL ASSISTANT TO THE PRESIDENT AND DEPUTY DIRECTOR FOR FAITH ENGAGEMENT",
+        "name_en": "Madeline A. Seaman",
+        "rank": "special_assistant",
+        "wh_salary_usd": 121500.0,
+        "payroll_status": "EMPLOYEE",
+        "source": "wh_staff_report"
+      },
+      {
+        "id": "homeland_security-stephen-miller",
+        "domain": "homeland_security",
+        "domain_ko": "국토안보",
+        "office_en": "ASSISTANT TO THE PRESIDENT AND DEPUTY CHIEF OF STAFF FOR POLICY AND HOMELAND SECURITY ADVISOR",
+        "name_en": "Stephen Miller",
+        "rank": "assistant_to_the_president",
+        "wh_salary_usd": 195200.0,
+        "payroll_status": "EMPLOYEE",
+        "source": "wh_staff_report"
+      },
+      {
+        "id": "international_economy-raymond-e-cox",
+        "domain": "international_economy",
+        "domain_ko": "국제경제",
+        "office_en": "SPECIAL ASSISTANT TO THE PRESIDENT FOR INTERNATIONAL ECONOMIC RELATIONS",
+        "name_en": "Raymond E. Cox",
+        "rank": "special_assistant",
+        "wh_salary_usd": 121500.0,
+        "payroll_status": "EMPLOYEE",
+        "source": "wh_staff_report"
+      },
+      {
+        "id": "jewish_outreach-martin-j-marks",
+        "domain": "jewish_outreach",
+        "domain_ko": "유대인 아웃리치",
+        "office_en": "SPECIAL ASSISTANT TO THE PRESIDENT FOR JEWISH OUTREACH",
+        "name_en": "Martin J. Marks",
+        "rank": "special_assistant",
+        "wh_salary_usd": 121500.0,
+        "payroll_status": "EMPLOYEE",
+        "source": "wh_staff_report"
+      },
+      {
+        "id": "national_security-marco-a-rubio",
+        "domain": "national_security",
+        "domain_ko": "국가안보",
+        "office_en": "ASSISTANT TO THE PRESIDENT AND NATIONAL SECURITY ADVISOR",
+        "name_en": "Marco A. Rubio",
+        "rank": "assistant_to_the_president",
+        "wh_salary_usd": 0.0,
+        "payroll_status": "EMPLOYEE",
+        "source": "wh_staff_report"
+      },
+      {
+        "id": "pardon-alice-m-johnson",
+        "domain": "pardon",
+        "domain_ko": "사면",
+        "office_en": "PARDON CZAR",
+        "name_en": "Alice M. Johnson",
+        "rank": "special_role",
+        "wh_salary_usd": 0.0,
+        "payroll_status": "EMPLOYEE",
+        "source": "wh_staff_report"
+      },
+      {
+        "id": "peace-steven-c-witkoff",
+        "domain": "peace",
+        "domain_ko": "평화 특사",
+        "office_en": "ASSISTANT TO THE PRESIDENT AND SPECIAL ENVOY FOR PEACE MISSIONS",
+        "name_en": "Steven C. Witkoff",
+        "rank": "assistant_to_the_president",
+        "wh_salary_usd": 0.0,
+        "payroll_status": "EMPLOYEE",
+        "source": "wh_staff_report"
+      },
+      {
+        "id": "presidential_policy-walker-b-barrett",
+        "domain": "presidential_policy",
+        "domain_ko": "정책",
+        "office_en": "ASSISTANT TO THE PRESIDENT FOR POLICY",
+        "name_en": "Walker B. Barrett",
+        "rank": "assistant_to_the_president",
+        "wh_salary_usd": 195200.0,
+        "payroll_status": "EMPLOYEE",
+        "source": "wh_staff_report"
+      },
+      {
+        "id": "trade-peter-k-navarro",
+        "domain": "trade",
+        "domain_ko": "무역·제조",
+        "office_en": "ASSISTANT TO THE PRESIDENT AND SENIOR COUNSELOR FOR TRADE AND MANUFACTURING",
+        "name_en": "Peter K. Navarro",
+        "rank": "assistant_to_the_president",
+        "wh_salary_usd": 195200.0,
+        "payroll_status": "EMPLOYEE",
+        "source": "wh_staff_report"
+      },
+      {
+        "id": "trade-danielle-c-fumagalli",
+        "domain": "trade",
+        "domain_ko": "무역·제조",
+        "office_en": "SENIOR ADVISOR FOR INTERNATIONAL TRADE",
+        "name_en": "Danielle C. Fumagalli",
+        "rank": "senior_advisor",
+        "wh_salary_usd": 191850.0,
+        "payroll_status": "DETAILEE",
+        "source": "wh_staff_report"
+      },
+      {
+        "id": "trade-luke-m-garoufalis",
+        "domain": "trade",
+        "domain_ko": "무역·제조",
+        "office_en": "SPECIAL ASSISTANT TO THE PRESIDENT FOR TRADE AND MANUFACTURING POLICY",
+        "name_en": "Luke M. Garoufalis",
+        "rank": "special_assistant",
+        "wh_salary_usd": 133500.0,
+        "payroll_status": "EMPLOYEE",
+        "source": "wh_staff_report"
+      },
+      {
+        "id": "ukraine-john-p-coale",
+        "domain": "ukraine",
+        "domain_ko": "우크라이나 특사",
+        "office_en": "DEPUTY ASSISTANT TO THE PRESIDENT AND DEPUTY SPECIAL ENVOY TO UKRAINE",
+        "name_en": "John P. Coale",
+        "rank": "deputy_assistant",
+        "wh_salary_usd": 195200.0,
+        "payroll_status": "DETAILEE",
+        "source": "wh_staff_report"
+      }
+    ],
+    "unscoped_senior_advisors": [
+      {
+        "id": "unscoped-jacalynne-b-klopp",
+        "office_en": "DEPUTY ASSISTANT TO THE PRESIDENT AND ADVISOR",
+        "name_en": "Jacalynne B. Klopp",
+        "rank": "deputy_assistant",
+        "wh_salary_usd": 175000.0,
+        "payroll_status": "EMPLOYEE",
+        "note_ko": "정무특보(부보좌관급). 직함에 담당 주제가 없을 뿐 자리가 비어 있지 않다.",
+        "source": "wh_staff_report",
+        "kind": "political_deputy_unscoped",
+        "kind_ko": "정무특보(부보좌관급). 직함에 담당 주제가 없을 뿐 자리가 비어 있지 않다.",
+        "portfolio_in_title": false,
+        "vacant": false
+      },
+      {
+        "id": "unscoped-jason-d-manion",
+        "office_en": "SENIOR ADVISOR",
+        "name_en": "Jason D. Manion",
+        "rank": "senior_advisor",
+        "wh_salary_usd": 134839.0,
+        "payroll_status": "DETAILEE",
+        "note_ko": "타 기관 파견 Senior Advisor. 담당은 직함에 없다. 정무특보로 단정하지 않는다. 공석이 아니다.",
+        "source": "wh_staff_report",
+        "kind": "detailee_unscoped",
+        "kind_ko": "타 기관 파견 Senior Advisor. 담당은 직함에 없다. 정무특보로 단정하지 않는다. 공석이 아니다.",
+        "portfolio_in_title": false,
+        "vacant": false,
+        "later_official_ko": "급여명부 기준일 이후 2026-07-14 백악관이 연방 양형위원회 위원으로 상원 지명. 그때도 WH 담당 주제는 직함에 없다.",
+        "later_official_url": "https://www.whitehouse.gov/presidential-actions/2026/07/nominations-and-withdrawals-sent-to-the-senate-e958/"
+      },
+      {
+        "id": "unscoped-meghan-i-selip",
+        "office_en": "SENIOR ADVISOR",
+        "name_en": "Meghan I. Selip",
+        "rank": "senior_advisor",
+        "wh_salary_usd": 110500.0,
+        "payroll_status": "EMPLOYEE",
+        "note_ko": "백악관 직원 Senior Advisor. ATP/정무특보 급이 아니다. 담당은 직함에 없다. 공석이 아니다.",
+        "source": "wh_staff_report",
+        "kind": "staff_senior_unscoped",
+        "kind_ko": "백악관 직원 Senior Advisor. ATP/정무특보 급이 아니다. 담당은 직함에 없다. 공석이 아니다.",
+        "portfolio_in_title": false,
+        "vacant": false
+      },
+      {
+        "id": "unscoped-peter-m-lake",
+        "office_en": "SENIOR ADVISOR",
+        "name_en": "Peter M. Lake",
+        "rank": "senior_advisor",
+        "wh_salary_usd": 197200.0,
+        "payroll_status": "DETAILEE",
+        "note_ko": "타 기관 파견 Senior Advisor. 담당은 직함에 없다. 정무특보로 단정하지 않는다. 공석이 아니다.",
+        "source": "wh_staff_report",
+        "kind": "detailee_unscoped",
+        "kind_ko": "타 기관 파견 Senior Advisor. 담당은 직함에 없다. 정무특보로 단정하지 않는다. 공석이 아니다.",
+        "portfolio_in_title": false,
+        "vacant": false
+      },
+      {
+        "id": "unscoped-tracy-l-johnson",
+        "office_en": "SENIOR ADVISOR",
+        "name_en": "Tracy L. Johnson",
+        "rank": "senior_advisor",
+        "wh_salary_usd": 0.0,
+        "payroll_status": "EMPLOYEE",
+        "note_ko": "급여 $0 Senior Advisor(겸임·무급 형태). 담당은 직함에 없다. 공석이 아니다.",
+        "source": "wh_staff_report",
+        "kind": "unpaid_senior_unscoped",
+        "kind_ko": "급여 $0 Senior Advisor(겸임·무급 형태). 담당은 직함에 없다. 공석이 아니다.",
+        "portfolio_in_title": false,
+        "vacant": false
+      }
+    ]
+  },
+  "office_status": {
+    "schema": "usa_wh_office_status_v1",
+    "as_of": "2026-09-14",
+    "policy_ko": "공석은 공식 기관이 공석·의장석 공석이라고 적을 때만. 공식 페이지에 이름이 없으면 미확인이지 공석이 아니다. 언론 보도 이름은 자동 승격하지 않는다.",
+    "offices": [
+      {
+        "id": "vp_chief_of_staff",
+        "office_ko": "부통령 비서실장",
+        "seat_status": "incumbent_unconfirmed",
+        "vacant": false,
+        "ui_ko": "미확인 (공석 아님)",
+        "display": "unconfirmed_not_vacant",
+        "name_en": null,
+        "note_ko": "부통령실은 WHO 급여명부에 없다. 공식 부통령실 명부를 못 잡아 현직을 넣지 않는다. 백악관이 공석이라고 밝힌 적은 없다. 언론 후임은 승격하지 않는다."
+      },
+      {
+        "id": "cea",
+        "office_ko": "경제자문위원회 의장",
+        "seat_status": "filled_official",
+        "vacant": false,
+        "ui_ko": "현직",
+        "display": "show_name",
+        "name_en": "Christopher Phelan",
+        "status": "incumbent",
+        "source_url": "https://www.whitehouse.gov/cea/",
+        "source_grade": "official",
+        "note_ko": "whitehouse.gov/cea/ About 문구의 Chairman."
+      },
+      {
+        "id": "ceq",
+        "office_ko": "환경품질위원회 의장",
+        "seat_status": "incumbent_unconfirmed",
+        "vacant": false,
+        "ui_ko": "미확인 (공석 아님)",
+        "display": "unconfirmed_not_vacant",
+        "name_en": null,
+        "source_url": "https://www.whitehouse.gov/ceq/",
+        "note_ko": "whitehouse.gov/ceq/ About에 의장 이름이 없다. 공석 선언은 없다. 언론 직무대행은 넣지 않는다."
+      },
+      {
+        "id": "ondcp",
+        "office_ko": "국가마약통제국장",
+        "seat_status": "filled_official",
+        "vacant": false,
+        "ui_ko": "현직",
+        "display": "show_name",
+        "name_en": "Sara Carter",
+        "status": "incumbent",
+        "source_url": "https://www.whitehouse.gov/releases/2026/01/sara-carter-confirmed-as-drug-czar/",
+        "source_grade": "official",
+        "as_of": "2026-01-06",
+        "note_ko": "2026-01-06 백악관 발표: 상원이 Sara Carter를 ONDCP 국장으로 인준. ondcp 소개 페이지는 이름을 안 적지만 공석이 아니다. 2026-05 국가마약통제전략 서한도 Director Sara Carter."
+      },
+      {
+        "id": "whmo",
+        "office_ko": "백악관 군사실장",
+        "seat_status": "out_of_who_payroll",
+        "vacant": false,
+        "ui_ko": "미확인 (공석 아님)",
+        "display": "unconfirmed_not_vacant",
+        "name_en": null,
+        "note_ko": "WHMO 국장은 군 파견 보직이라 WHO 민간 급여명부에 없다. 백악관 공식 국장 페이지를 못 잡았다. 위키 이름은 쓰지 않는다. 공석으로 단정하지 않는다."
+      },
+      {
+        "id": "piab",
+        "office_ko": "대통령 정보자문위원회 의장",
+        "seat_status": "filled_last_official_appointment",
+        "vacant": false,
+        "ui_ko": "현직 (2025 임명, 2026 명부 미갱신)",
+        "display": "show_name_with_as_of",
+        "name_en": "Devin Gerald Nunes",
+        "status": "chair",
+        "as_of": "2025-02-11",
+        "source_url": "https://www.whitehouse.gov/presidential-actions/2025/02/president-trump-announces-the-presidents-intelligence-advisory-board/",
+        "source_grade": "official",
+        "note_ko": "2025-02-11 백악관이 Devin Gerald Nunes를 PIAB Chair로 임명 발표. 2026 갱신 명부는 없다. 공석 선언은 없다."
+      },
+      {
+        "id": "pclob_chair",
+        "office_ko": "사생활·시민자유 감독위원회 의장",
+        "seat_status": "vacant_official",
+        "vacant": true,
+        "ui_ko": "공석",
+        "display": "show_vacant",
+        "name_en": null,
+        "source_url": "https://www.pclob.gov/Board",
+        "source_grade": "official",
+        "note_ko": "PCLOB 공식 이사회: 의장 Sharon Bradford Franklin 임기 2022-02~2025-01로 끝. 현 표기는 Board Member Beth A. Williams만 Present. 2026-04 보고서도 Chair is Vacant 정책을 인용. 의장석은 공석. 위원회 자체 폐지는 아님.",
+        "sitting_member_en": "Beth A. Williams"
+      }
+    ]
+  }
 }

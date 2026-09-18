@@ -1,6 +1,6 @@
 {
   "schema_version": "liquidity-intel-v1",
-  "generated_at": "2026-09-11T11:17:45.144102+00:00",
+  "generated_at": "2026-09-18T04:40:29.129747+00:00",
   "model": {
     "name": "macro_liquidity_official_v1",
     "description": "QRA / Fed official liquidity + priority-reporter ARTICLES mined for liquidity indicators (FIMA, TGA, RRP, FX intervention…) — not reporter news fluff.",
@@ -18,13 +18,11 @@
   },
   "liquidity": {
     "bias": "tightening",
-    "score": 2.15,
+    "score": 1.75,
     "headline_ko": "유동성: 재무부 순발행·현금 잔고 신호가 타이트 쪽으로 기울음 · 지정기자 분석 테마 반영",
     "drivers": [
       "qra_net_borrowing_up",
       "tga_cash_high",
-      "reporter_tightening_theme",
-      "reporter_tga_focus",
       "reporter_fima_focus"
     ],
     "qra": {
@@ -68,6 +66,20 @@
     "fed": {
       "beige_book": null,
       "items": [
+        {
+          "title": "Federal Reserve issues FOMC statement",
+          "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260916a.htm",
+          "published": "Wed, 16 Sep 2026 18:00:00 GMT",
+          "event_type": "fomc",
+          "tone": null
+        },
+        {
+          "title": "Federal Reserve Board and Federal Open Market Committee release economic projections from the September 15-16 FOMC meeting",
+          "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260916b.htm",
+          "published": "Wed, 16 Sep 2026 18:00:00 GMT",
+          "event_type": "fomc",
+          "tone": null
+        },
         {
           "title": "Minutes of the Board's discount rate meetings on July 20 and July 29, 2026",
           "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260825a.htm",
@@ -123,20 +135,6 @@
           "published": "Tue, 14 Apr 2026 18:00:00 GMT",
           "event_type": "press",
           "tone": null
-        },
-        {
-          "title": "Federal Reserve issues FOMC statement",
-          "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260318a.htm",
-          "published": "Wed, 18 Mar 2026 18:00:00 GMT",
-          "event_type": "fomc",
-          "tone": null
-        },
-        {
-          "title": "Federal Reserve Board and Federal Open Market Committee release economic projections from the March 17-18 FOMC meeting",
-          "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260318b.htm",
-          "published": "Wed, 18 Mar 2026 18:00:00 GMT",
-          "event_type": "fomc",
-          "tone": null
         }
       ]
     },
@@ -147,11 +145,11 @@
         "articles_with_hits": 2,
         "top_indicators": [
           {
-            "id": "tga",
-            "score": 6.5,
-            "label_ko": "TGA 재무부 일반계정",
+            "id": "fomc_liquidity",
+            "score": 6.8,
+            "label_ko": "FOMC·금리 유동성",
             "evidence": [
-              "[연준와처] TGA 잔고 어떻게 해석해야 할까? [이코노미21 양영빈] 8월에 발표된 QRA(재무부 분기별 자금조달 계획)를"
+              "9월 FOMC 기준 금리 인상, 한번으로 끝날까? [이코노미21 양영빈] 이미 시장은 90%를 넘는 확률로 1회 인상(+"
             ]
           },
           {
@@ -161,33 +159,40 @@
             "evidence": [
               "어의 내막 일본의 외환 개입, '총알 고갈'이 부른 미·일 금융 공조와 FIMA 레포의 비밀[이코노미21 양영빈] 2026년 7월말 뜨거운 여름, 글로벌 외환 시장은 전례 없는 긴장감에"
             ]
-          },
-          {
-            "id": "qra",
-            "score": 1.2,
-            "label_ko": "QRA·순발행",
-            "evidence": [
-              "GA 잔고 어떻게 해석해야 할까? [이코노미21 양영빈] 8월에 발표된 QRA(재무부 분기별 자금조달 계획)를 보면 3분기(7월~9월) 말의 TGA(재무부 일반계좌) 잔고는 9500억달"
-            ]
           }
         ],
         "themes_ko": [
-          "TGA 재무부 일반계정 (점수 6.5)",
-          "FIMA 레포 (점수 1.2)",
-          "QRA·순발행 (점수 1.2)"
+          "FOMC·금리 유동성 (점수 6.8)",
+          "FIMA 레포 (점수 1.2)"
         ],
         "hint_weights": {
-          "tga": 6.5,
-          "mixed": 1.2,
-          "tightening": 1.2
+          "policy": 6.8,
+          "mixed": 1.2
         },
         "reporter_signals": [
-          "reporter_tightening_theme",
-          "reporter_tga_focus",
           "reporter_fima_focus"
         ],
-        "headline_ko": "[유동성 분석·양영빈] 최근 기사 핵심 지표: TGA 재무부 일반계정 · 외 2개 테마",
+        "headline_ko": "[유동성 분석·양영빈] 최근 기사 핵심 지표: FOMC·금리 유동성 · 외 1개 테마",
         "per_article": [
+          {
+            "title": "9월 FOMC 기준 금리 인상, 한번으로 끝날까?",
+            "url": "http://www.economy21.co.kr/news/articleView.html?idxno=1017182",
+            "published": "2026-09-17 15:50",
+            "author": "양영빈",
+            "indicators": [
+              {
+                "id": "fomc_liquidity",
+                "label_ko": "FOMC·금리 유동성",
+                "mentions": 8,
+                "hint": "policy",
+                "evidence": [
+                  "9월 FOMC 기준 금리 인상, 한번으로 끝날까? [이코노미21 양영빈] 이미 시장은 90%를 넘는 확률로 1회 인상(+",
+                  "로 1회 인상(+0.25%포인트)을 점치고 있었던 상황에서 9월 16일 FOMC는 기준금리 1회 인상을 단행했다.포워드 가이던스를 의미없는 것으로 본 워시 의장은 이번에도 점도표에 참여하",
+                  "칠 것인가 아니면 더 많은 금리 인상을 볼 수 있을 것인가에 있다.이번 FOMC 금리 인상의 의미를 제대로 파악하기 위해 연준의 경제전망(SEP, Summary of Economic Pr"
+                ]
+              }
+            ]
+          },
           {
             "title": "164엔의 벼랑 끝, 미 국채와 맞바꾼 엔화 방어의 내막",
             "url": "http://www.economy21.co.kr/news/articleView.html?idxno=1017135",
@@ -204,50 +209,19 @@
                 ]
               }
             ]
-          },
-          {
-            "title": "[연준와처] TGA 잔고 어떻게 해석해야 할까?",
-            "url": "http://www.economy21.co.kr/news/articleView.html?idxno=1017015",
-            "published": "2026-08-11 17:26",
-            "author": "양영빈",
-            "indicators": [
-              {
-                "id": "tga",
-                "label_ko": "TGA 재무부 일반계정",
-                "mentions": 5,
-                "hint": "tga",
-                "evidence": [
-                  "[연준와처] TGA 잔고 어떻게 해석해야 할까? [이코노미21 양영빈] 8월에 발표된 QRA(재무부 분기별 자금조달 계획)를",
-                  "QRA(재무부 분기별 자금조달 계획)를 보면 3분기(7월~9월) 말의 TGA(재무부 일반계좌) 잔고는 9500억달러, 4분기(10월~12월) 말의 잔고는 8500억달러를 예상하고 있다",
-                  "의 잔고는 8500억달러를 예상하고 있다. 특히 재무부는 10월 말에는 TGA 잔고가 1조500억달러(±500억달러)로 고점에 다다른 후, 4분기 말에는 8500억달러로 2000억달러"
-                ]
-              },
-              {
-                "id": "qra",
-                "label_ko": "QRA·순발행",
-                "mentions": 1,
-                "hint": "tightening",
-                "evidence": [
-                  "GA 잔고 어떻게 해석해야 할까? [이코노미21 양영빈] 8월에 발표된 QRA(재무부 분기별 자금조달 계획)를 보면 3분기(7월~9월) 말의 TGA(재무부 일반계좌) 잔고는 9500억달"
-                ]
-              }
-            ]
           }
         ],
         "finance_panel_fields": {
-          "reporter_liquidity_primary": "tga",
-          "reporter_liquidity_primary_ko": "TGA 재무부 일반계정",
+          "reporter_liquidity_primary": "fomc_liquidity",
+          "reporter_liquidity_primary_ko": "FOMC·금리 유동성",
           "reporter_liquidity_themes": [
-            "TGA 재무부 일반계정 (점수 6.5)",
-            "FIMA 레포 (점수 1.2)",
-            "QRA·순발행 (점수 1.2)"
+            "FOMC·금리 유동성 (점수 6.8)",
+            "FIMA 레포 (점수 1.2)"
           ],
           "reporter_liquidity_signals": [
-            "reporter_tightening_theme",
-            "reporter_tga_focus",
             "reporter_fima_focus"
           ],
-          "reporter_liquidity_headline_ko": "[유동성 분석·양영빈] 최근 기사 핵심 지표: TGA 재무부 일반계정 · 외 2개 테마"
+          "reporter_liquidity_headline_ko": "[유동성 분석·양영빈] 최근 기사 핵심 지표: FOMC·금리 유동성 · 외 1개 테마"
         }
       }
     ],
@@ -258,24 +232,21 @@
       "liquidity_bias": "tightening",
       "liquidity_headline_ko": "유동성: 재무부 순발행·현금 잔고 신호가 타이트 쪽으로 기울음 · 지정기자 분석 테마 반영",
       "beige_tone": null,
-      "reporter_liquidity_primary": "tga",
-      "reporter_liquidity_primary_ko": "TGA 재무부 일반계정",
+      "reporter_liquidity_primary": "fomc_liquidity",
+      "reporter_liquidity_primary_ko": "FOMC·금리 유동성",
       "reporter_liquidity_themes": [
-        "TGA 재무부 일반계정 (점수 6.5)",
-        "FIMA 레포 (점수 1.2)",
-        "QRA·순발행 (점수 1.2)"
+        "FOMC·금리 유동성 (점수 6.8)",
+        "FIMA 레포 (점수 1.2)"
       ],
       "reporter_liquidity_signals": [
-        "reporter_tightening_theme",
-        "reporter_tga_focus",
         "reporter_fima_focus"
       ],
-      "reporter_liquidity_headline_ko": "[유동성 분석·양영빈] 최근 기사 핵심 지표: TGA 재무부 일반계정 · 외 2개 테마"
+      "reporter_liquidity_headline_ko": "[유동성 분석·양영빈] 최근 기사 핵심 지표: FOMC·금리 유동성 · 외 1개 테마"
     }
   },
   "ticker_items": [
     {
-      "id": "qra-643211882259",
+      "id": "qra-793963556539",
       "published_at": null,
       "source": {
         "id": "us_treasury",
@@ -308,7 +279,69 @@
       "event_type": "qra"
     },
     {
-      "id": "fed-825471697378",
+      "id": "fed-936741870488",
+      "published_at": "Wed, 16 Sep 2026 18:00:00 GMT",
+      "source": {
+        "id": "federal_reserve",
+        "name": "Federal Reserve",
+        "region": "west",
+        "slant": null
+      },
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260916a.htm",
+      "category": "liquidity_official",
+      "commodities": [],
+      "title": {
+        "original": "Federal Reserve issues FOMC statement",
+        "original_lang": "en",
+        "ko": "[FOMC] Federal Reserve issues FOMC statement"
+      },
+      "summary": "Federal Reserve issues FOMC statement",
+      "scores": {
+        "commodity": 0,
+        "diplomacy": 0,
+        "region_weight": 1.0,
+        "freshness": 1.0,
+        "final": 8.5
+      },
+      "rank_reasons": [
+        "event:fomc"
+      ],
+      "translation_status": "ok",
+      "event_type": "fomc"
+    },
+    {
+      "id": "fed-919745167633",
+      "published_at": "Wed, 16 Sep 2026 18:00:00 GMT",
+      "source": {
+        "id": "federal_reserve",
+        "name": "Federal Reserve",
+        "region": "west",
+        "slant": null
+      },
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260916b.htm",
+      "category": "liquidity_official",
+      "commodities": [],
+      "title": {
+        "original": "Federal Reserve Board and Federal Open Market Committee release economic projections from the September 15-16 FOMC meeting",
+        "original_lang": "en",
+        "ko": "[FOMC] Federal Reserve Board and Federal Open Market Committee release economic projections from the September 15-16 FOMC meeting"
+      },
+      "summary": "Federal Reserve Board and Federal Open Market Committee release economic projections from the September 15-16 FOMC meeting",
+      "scores": {
+        "commodity": 0,
+        "diplomacy": 0,
+        "region_weight": 1.0,
+        "freshness": 1.0,
+        "final": 8.5
+      },
+      "rank_reasons": [
+        "event:fomc"
+      ],
+      "translation_status": "ok",
+      "event_type": "fomc"
+    },
+    {
+      "id": "fed-340927252368",
       "published_at": "Wed, 29 Jul 2026 18:00:00 GMT",
       "source": {
         "id": "federal_reserve",
@@ -339,7 +372,7 @@
       "event_type": "fomc"
     },
     {
-      "id": "fed-664444559912",
+      "id": "fed-93268920564",
       "published_at": "Wed, 17 Jun 2026 18:00:00 GMT",
       "source": {
         "id": "federal_reserve",
@@ -370,7 +403,7 @@
       "event_type": "fomc"
     },
     {
-      "id": "fed-91352382969",
+      "id": "fed-529484750599",
       "published_at": "Wed, 17 Jun 2026 18:00:00 GMT",
       "source": {
         "id": "federal_reserve",
@@ -401,7 +434,7 @@
       "event_type": "fomc"
     },
     {
-      "id": "fed-764274372355",
+      "id": "fed-19997655788",
       "published_at": "Wed, 29 Apr 2026 18:00:00 GMT",
       "source": {
         "id": "federal_reserve",
@@ -432,69 +465,7 @@
       "event_type": "fomc"
     },
     {
-      "id": "fed-775850900812",
-      "published_at": "Wed, 18 Mar 2026 18:00:00 GMT",
-      "source": {
-        "id": "federal_reserve",
-        "name": "Federal Reserve",
-        "region": "west",
-        "slant": null
-      },
-      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260318a.htm",
-      "category": "liquidity_official",
-      "commodities": [],
-      "title": {
-        "original": "Federal Reserve issues FOMC statement",
-        "original_lang": "en",
-        "ko": "[FOMC] Federal Reserve issues FOMC statement"
-      },
-      "summary": "Federal Reserve issues FOMC statement",
-      "scores": {
-        "commodity": 0,
-        "diplomacy": 0,
-        "region_weight": 1.0,
-        "freshness": 1.0,
-        "final": 8.5
-      },
-      "rank_reasons": [
-        "event:fomc"
-      ],
-      "translation_status": "ok",
-      "event_type": "fomc"
-    },
-    {
-      "id": "fed-19286134779",
-      "published_at": "Wed, 18 Mar 2026 18:00:00 GMT",
-      "source": {
-        "id": "federal_reserve",
-        "name": "Federal Reserve",
-        "region": "west",
-        "slant": null
-      },
-      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260318b.htm",
-      "category": "liquidity_official",
-      "commodities": [],
-      "title": {
-        "original": "Federal Reserve Board and Federal Open Market Committee release economic projections from the March 17-18 FOMC meeting",
-        "original_lang": "en",
-        "ko": "[FOMC] Federal Reserve Board and Federal Open Market Committee release economic projections from the March 17-18 FOMC meeting"
-      },
-      "summary": "Federal Reserve Board and Federal Open Market Committee release economic projections from the March 17-18 FOMC meeting",
-      "scores": {
-        "commodity": 0,
-        "diplomacy": 0,
-        "region_weight": 1.0,
-        "freshness": 1.0,
-        "final": 8.5
-      },
-      "rank_reasons": [
-        "event:fomc"
-      ],
-      "translation_status": "ok",
-      "event_type": "fomc"
-    },
-    {
-      "id": "fed-161594699129",
+      "id": "fed-632937654867",
       "published_at": "Tue, 25 Aug 2026 18:00:00 GMT",
       "source": {
         "id": "federal_reserve",
@@ -525,7 +496,7 @@
       "event_type": "press"
     },
     {
-      "id": "fed-69458151315",
+      "id": "fed-175598581315",
       "published_at": "Tue, 14 Jul 2026 18:00:00 GMT",
       "source": {
         "id": "federal_reserve",
@@ -556,7 +527,7 @@
       "event_type": "press"
     },
     {
-      "id": "fed-336412524423",
+      "id": "fed-29461543158",
       "published_at": "Tue, 26 May 2026 18:00:00 GMT",
       "source": {
         "id": "federal_reserve",
@@ -587,7 +558,7 @@
       "event_type": "press"
     },
     {
-      "id": "fed-273781795647",
+      "id": "fed-917645087791",
       "published_at": "Tue, 14 Apr 2026 18:00:00 GMT",
       "source": {
         "id": "federal_reserve",
@@ -618,7 +589,7 @@
       "event_type": "press"
     },
     {
-      "id": "liq-ind-636003911540",
+      "id": "liq-ind-49728810122",
       "published_at": null,
       "source": {
         "id": "reporter_liquidity",
@@ -626,15 +597,15 @@
         "region": "korea",
         "slant": null
       },
-      "url": "http://www.economy21.co.kr/news/articleView.html?idxno=1017135",
+      "url": "http://www.economy21.co.kr/news/articleView.html?idxno=1017182",
       "category": "liquidity_indicator",
       "commodities": [],
       "title": {
-        "original": "TGA 재무부 일반계정 · FIMA 레포 · QRA·순발행",
+        "original": "FOMC·금리 유동성 · FIMA 레포",
         "original_lang": "ko",
-        "ko": "[유동성지표·양영빈] TGA 재무부 일반계정 · FIMA 레포 · QRA·순발행"
+        "ko": "[유동성지표·양영빈] FOMC·금리 유동성 · FIMA 레포"
       },
-      "summary": "[유동성 분석·양영빈] 최근 기사 핵심 지표: TGA 재무부 일반계정 · 외 2개 테마",
+      "summary": "[유동성 분석·양영빈] 최근 기사 핵심 지표: FOMC·금리 유동성 · 외 1개 테마",
       "scores": {
         "commodity": 0,
         "diplomacy": 0,
@@ -643,20 +614,18 @@
         "final": 7.5
       },
       "rank_reasons": [
-        "indicator:tga",
-        "reporter_tightening_theme",
-        "reporter_tga_focus",
+        "indicator:fomc_liquidity",
         "reporter_fima_focus"
       ],
       "translation_status": "ok",
       "event_type": "liquidity_indicator",
       "indicators": [
         {
-          "id": "tga",
-          "score": 6.5,
-          "label_ko": "TGA 재무부 일반계정",
+          "id": "fomc_liquidity",
+          "score": 6.8,
+          "label_ko": "FOMC·금리 유동성",
           "evidence": [
-            "[연준와처] TGA 잔고 어떻게 해석해야 할까? [이코노미21 양영빈] 8월에 발표된 QRA(재무부 분기별 자금조달 계획)를"
+            "9월 FOMC 기준 금리 인상, 한번으로 끝날까? [이코노미21 양영빈] 이미 시장은 90%를 넘는 확률로 1회 인상(+"
           ]
         },
         {
@@ -665,14 +634,6 @@
           "label_ko": "FIMA 레포",
           "evidence": [
             "어의 내막 일본의 외환 개입, '총알 고갈'이 부른 미·일 금융 공조와 FIMA 레포의 비밀[이코노미21 양영빈] 2026년 7월말 뜨거운 여름, 글로벌 외환 시장은 전례 없는 긴장감에"
-          ]
-        },
-        {
-          "id": "qra",
-          "score": 1.2,
-          "label_ko": "QRA·순발행",
-          "evidence": [
-            "GA 잔고 어떻게 해석해야 할까? [이코노미21 양영빈] 8월에 발표된 QRA(재무부 분기별 자금조달 계획)를 보면 3분기(7월~9월) 말의 TGA(재무부 일반계좌) 잔고는 9500억달"
           ]
         }
       ]
@@ -714,7 +675,7 @@
     "ticker_items": 12,
     "qra_parsed": true,
     "reporter_analyses": 1,
-    "reporter_indicator_hits": 3,
+    "reporter_indicator_hits": 2,
     "sources_ok": 5,
     "sources_failed": 0
   }

@@ -1,7 +1,7 @@
 import { countryEvents, readableSpectrum, screenStatus } from '../data/selectors.js';
-import { escapeHtml, formatDate, stateLabel } from '../ui.js';
+import { escapeHtml, formatDate, personLinkHtml, stateLabel } from '../ui.js';
 import { usaSections } from './special/usa.js';
-import { usaLegislature } from './special/usa-legislature.js';
+import { usaLegislature } from './special/usa-legislature.js?v=2';
 import { usaExecutive } from './special/usa-executive.js';
 import { chinaSections } from './special/china.js';
 import { chnParty, chnMilitary, chnStateCouncil } from './special/chn-org.js';
@@ -46,7 +46,14 @@ const values = (object) => {
 };
 const partyName = (party) => party?.name_ko || party?.display || party?.name_en || party?.abbr || '불명';
 const affiliation = (abbr) => ({ LDP: '자민당', DPK: '더불어민주당', PPP: '국민의힘', IND: '무소속' }[abbr] || abbr || '');
-const personLabel = (row) => [row?.name_ko || row?.name_en || '불명', affiliation(row?.party_abbr)].filter(Boolean).join(' · ');
+// Returns safe HTML, not plain text: official_url (present on executive_live
+// core/cabinet rows for most tracked countries, absent on legislature
+// leadership rows) links the name to that person's official page. Callers
+// must not escapeHtml() this a second time.
+const personLabel = (row) => {
+    const label = escapeHtml([row?.name_ko || row?.name_en || '불명', affiliation(row?.party_abbr)].filter(Boolean).join(' · '));
+    return personLinkHtml(label, row?.official_url);
+};
 
 const executiveContent = (country) => {
     const executive = country.executive_live;
@@ -56,8 +63,8 @@ const executiveContent = (country) => {
     const sourceLabels = (executive.sources || []).map((source) => [source.org, source.as_of ? `${source.as_of} 기준` : '공개 명부'].filter(Boolean).join(' · '));
     const coverageNotice = executive.coverage?.includes('source_aged') ? '이 행은 출처 기준일이 오래되어 최신 공식 명부 재확인이 필요합니다.' : '';
     return `
-        <div class="elections-card-grid">${core.map((row) => `<article class="elections-card"><div class="elections-card-label">${escapeHtml(row.office_ko || row.portfolio_ko || '직책')}</div><div class="elections-card-value">${escapeHtml(personLabel(row))}</div></article>`).join('')}</div>
-        ${cabinet.length ? `<details class="elections-disclosure elections-cabinet-list"><summary>국무위원 ${cabinet.length}명 보기</summary><div class="elections-disclosure-rows">${cabinet.map((row) => `<div><span>${escapeHtml(row.portfolio_ko || '직책')}</span><strong>${escapeHtml(personLabel(row))}</strong></div>`).join('')}</div></details>` : ''}
+        <div class="elections-card-grid">${core.map((row) => `<article class="elections-card"><div class="elections-card-label">${escapeHtml(row.office_ko || row.portfolio_ko || '직책')}</div><div class="elections-card-value">${personLabel(row)}</div></article>`).join('')}</div>
+        ${cabinet.length ? `<details class="elections-disclosure elections-cabinet-list"><summary>국무위원 ${cabinet.length}명 보기</summary><div class="elections-disclosure-rows">${cabinet.map((row) => `<div><span>${escapeHtml(row.portfolio_ko || '직책')}</span><strong>${personLabel(row)}</strong></div>`).join('')}</div></details>` : ''}
         ${sourceLabels.length ? `<p class="elections-panel-note">공개 명부: ${escapeHtml(sourceLabels.join(' / '))}</p>` : ''}
         ${coverageNotice ? `<p class="elections-panel-note">${escapeHtml(coverageNotice)}</p>` : ''}
         ${(executive.source_conflicts_excluded || []).length ? `<p class="elections-panel-note">공개 명부 충돌로 이번 행에서는 보류: ${escapeHtml(executive.source_conflicts_excluded.join(', '))}</p>` : ''}
@@ -80,7 +87,7 @@ const legislatureContent = (country) => {
     const leaders = legislature.chamber_leadership || legislature.floor_leadership || [];
     return `
         ${cards ? `<div class="elections-card-grid">${cards}</div>` : ''}
-        ${leaders.length ? `<details class="elections-disclosure"><summary>의장단·원내지도부 보기</summary><div class="elections-disclosure-rows">${leaders.map((row) => `<div><span>${escapeHtml(row.office_ko || row.office || row.title || row.chamber || '직책')}</span><strong>${escapeHtml(personLabel(row))}</strong></div>`).join('')}</div></details>` : ''}
+        ${leaders.length ? `<details class="elections-disclosure"><summary>의장단·원내지도부 보기</summary><div class="elections-disclosure-rows">${leaders.map((row) => `<div><span>${escapeHtml(row.office_ko || row.office || row.title || row.chamber || '직책')}</span><strong>${personLabel(row)}</strong></div>`).join('')}</div></details>` : ''}
         ${!cards && !leaders.length ? '<p class="elections-muted">확보된 공개 의회 요약이 없습니다.</p>' : ''}
     `;
 };
@@ -187,7 +194,7 @@ export const renderCountryShell = (root, { country, manifest, onBack, modal, hos
             // goes back out through the host adapter rather than this module
             // reaching into the legacy router itself.
             onAction: (action, dataset) => {
-                if (action === 'policy-committee') host?.openPolicyCommittee?.(dataset.committeeId);
+                if (action === 'policy-committee') host?.openPolicyCommittee?.(dataset.chamber, dataset.committeeName);
                 if (action === 'policy-committees') host?.openPolicyCommittee?.();
             },
         });

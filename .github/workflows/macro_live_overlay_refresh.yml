@@ -1,0 +1,54 @@
+name: Refresh macro live overlay (TGA, yields, FX, indices)
+
+# build_macro_monitor.py --live already applies this overlay -- but only
+# after a full build_universe() rebuild, and nothing has ever scheduled that
+# combination in CI. Result: every "quality": "live_latest" indicator (TGA,
+# DXY, UST yields, SOFR, EFFR, Fed balance sheet, world equity indices/FX,
+# unemployment/claims, ...) sat frozen at whatever a human last built
+# locally, with no automation and no visible staleness signal. Confirmed
+# 2026-09-16: TGA's badge read 2026-08-31 while FRED's own WTREGEN series
+# already had a 2026-09-09 print -- 16+ days behind with nothing catching it.
+#
+# refresh_live_overlay_in_pack.py calls the same overlay_live() step
+# directly against the already-built macro_monitor_v1.json instead of
+# rebuilding it, the same graft-not-rebuild shape as the sovereign-fiscal
+# and Japan-growth refreshes: it never touches the base country packs or
+# the other attach layers (CPI relationship evidence, sovereign fiscal,
+# FOMC quality, ...), only the specific indicator IDs the live catalog
+# knows about.
+
+on:
+  schedule:
+    # Daily: most of what this touches (UST yields, SOFR, EFFR, FX, equity
+    # indices) is a daily series, and TGA/unemployment/claims are weekly --
+    # daily is a safe common cadence and the run itself is a handful of
+    # cheap HTTP calls, not a rebuild.
+    - cron: '40 19 * * *'
+  workflow_dispatch:
+
+jobs:
+  refresh-live-overlay:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install test deps
+        working-directory: New for anti/scripts/macro_monitor
+        run: pip install pytest
+      - name: Tests
+        working-directory: New for anti/scripts/macro_monitor
+        run: python -m pytest tests/test_live_overlay.py -v
+      - name: Refresh live overlay
+        working-directory: New for anti/scripts/macro_monitor
+        run: python refresh_live_overlay_in_pack.py
+      - name: Commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "New for anti/public/data/macro_monitor_v1.json"
+          git commit -m "chore: refresh macro live overlay (FRED/Yahoo/BOK)" || exit 0
+          git push

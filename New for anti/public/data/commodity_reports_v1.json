@@ -1,6 +1,6 @@
 {
   "schema_version": "commodity-reports-v1",
-  "generated_at": "2026-09-11T05:09:40.377503+00:00",
+  "generated_at": "2026-09-18T05:07:32.712428+00:00",
   "model": {
     "name": "commodity_reports_v1",
     "description": "Official crop/energy/metal reports tagged (commodity × country) so the dashboard's stage-2 country window can show what was published about that country's commodity. The report's text picks the country, not the publisher: a USDA release on Brazilian wheat belongs on BRA·wheat.",
@@ -17,13 +17,13 @@
     "per_bucket_limit": 8
   },
   "stats": {
-    "sources_ok": 10,
-    "sources_failed": 2,
-    "raw_items": 159,
+    "sources_ok": 9,
+    "sources_failed": 3,
+    "raw_items": 148,
     "scored": 61,
-    "published": 41,
-    "commodities": 9,
-    "buckets": 19
+    "published": 37,
+    "commodities": 8,
+    "buckets": 10
   },
   "feed_status": [
     {
@@ -57,7 +57,7 @@
     {
       "source_id": "us_eia_today_in_energy",
       "ok": true,
-      "count": 15,
+      "count": 16,
       "error": null,
       "mode": "live"
     },
@@ -105,9 +105,9 @@
     },
     {
       "source_id": "us_fas_gain_reports",
-      "ok": true,
-      "count": 12,
-      "error": null,
+      "ok": false,
+      "count": 0,
+      "error": "HTTPError: HTTP Error 403: Forbidden",
       "mode": "live"
     }
   ],
@@ -476,71 +476,25 @@
         "39ac9e91f73a0776"
       ]
     },
-    "wheat": {
-      "BGD": [
-        "9a2e551991dc06e6"
-      ],
+    "corn": {
       "USA": [
-        "54cc3c274cf90c25",
-        "416d527f7174e442",
-        "06cf84727ec466c3",
-        "82a9272720c2cdfb",
-        "d9459a6be37e5e91",
-        "389d4a4328f23545",
-        "f9e7ed8b73ce1fa5"
-      ]
-    },
-    "rice": {
-      "BGD": [
-        "9a2e551991dc06e6"
-      ],
-      "THA": [
-        "eb8f3491f8c46070"
-      ],
-      "USA": [
-        "2c8f727be89c0de5",
-        "eb08bb539c63def3"
-      ]
-    },
-    "cotton": {
-      "CHN": [
-        "b7b8e9c3c1038c73"
-      ],
-      "IND": [
-        "6269fa1eda293c5a"
-      ],
-      "USA": [
-        "094f2c679d643322"
-      ]
-    },
-    "soybeans": {
-      "CHN": [
-        "6e3880b1a989890a"
-      ],
-      "USA": [
-        "6e3880b1a989890a",
         "9a2e4f0c6cc38378",
         "9d9ab72fff81736d",
         "727409c1a45dfec3",
         "f9e7ed8b73ce1fa5",
+        "e4530ccde436c92d",
         "205bcf62b2894e8b",
         "e54c2f7c294df06b",
         "9dd7845c2d4fc51e"
-      ],
-      "IND": [
-        "6269fa1eda293c5a"
       ]
     },
-    "corn": {
-      "IND": [
-        "6269fa1eda293c5a"
-      ],
+    "soybeans": {
       "USA": [
         "9a2e4f0c6cc38378",
-        "bdf029665651e8aa",
         "9d9ab72fff81736d",
         "727409c1a45dfec3",
         "f9e7ed8b73ce1fa5",
+        "e4530ccde436c92d",
         "205bcf62b2894e8b",
         "e54c2f7c294df06b",
         "9dd7845c2d4fc51e"
@@ -556,9 +510,31 @@
         "d09ef02fa55cc52b"
       ]
     },
-    "thermal_coal": {
+    "wheat": {
       "USA": [
-        "f8aa4f64781b6480"
+        "54cc3c274cf90c25",
+        "44ef3d9e9fba437f",
+        "06cf84727ec466c3",
+        "82a9272720c2cdfb",
+        "d9459a6be37e5e91",
+        "389d4a4328f23545",
+        "f9e7ed8b73ce1fa5",
+        "e4530ccde436c92d"
+      ]
+    },
+    "cotton": {
+      "USA": [
+        "094f2c679d643322",
+        "d2560303da2802d2",
+        "e4530ccde436c92d",
+        "82ad0c3c992ec514"
+      ]
+    },
+    "rice": {
+      "USA": [
+        "2c8f727be89c0de5",
+        "e4530ccde436c92d",
+        "eb08bb539c63def3"
       ]
     },
     "sugar": {
@@ -591,70 +567,9 @@
       "country_source": "text",
       "series_id": "EIA_STEO",
       "series_label_ko": "EIA 단기 에너지 전망",
-      "importance": 5.389,
+      "importance": 4.672,
       "reasons": [
         "series:EIA_STEO",
-        "has_figure",
-        "revision_language",
-        "country_in_text"
-      ]
-    },
-    {
-      "id": "9a2e551991dc06e6",
-      "title": {
-        "original": "Bangladesh: Grain and Feed Update",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "For MY 2026/27, Post forecasts higher rice imports following decreased production of aus and aman season rice. Post lowers its wheat import forecast to 6.6 million metric tons (MT) due to higher international wheat prices and relatively high...",
-      "url": "https://www.fas.usda.gov/data/gain/2026/09/bangladesh-grain-and-feed-update",
-      "published_at": "2026-09-08T15:00:00+00:00",
-      "agency": "USDA FAS GAIN",
-      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
-      "source_id": "us_fas_gain_reports",
-      "commodities": [
-        "wheat",
-        "rice"
-      ],
-      "countries": [
-        "BGD"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 3.55,
-      "reasons": [
-        "has_figure",
-        "revision_language",
-        "country_in_text"
-      ]
-    },
-    {
-      "id": "b7b8e9c3c1038c73",
-      "title": {
-        "original": "China: Cotton and Products Update",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "Post slightly lowered its forecast for MY 2026/27 cotton production to 7.12 million metric tons (MMT) or 32.7 million bales, a decrease of 5.6 percent from its estimate for MY 2025/26 production. The fall in production is due to recent policy shifts...",
-      "url": "https://www.fas.usda.gov/data/gain/2026/09/china-cotton-and-products-update",
-      "published_at": "2026-09-03T15:00:00+00:00",
-      "agency": "USDA FAS GAIN",
-      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
-      "source_id": "us_fas_gain_reports",
-      "commodities": [
-        "cotton"
-      ],
-      "countries": [
-        "CHN"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 3.21,
-      "reasons": [
         "has_figure",
         "revision_language",
         "country_in_text"
@@ -683,96 +598,11 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 3.148,
+      "importance": 2.733,
       "reasons": [
         "has_figure",
         "revision_language",
         "country_in_text"
-      ]
-    },
-    {
-      "id": "eb8f3491f8c46070",
-      "title": {
-        "original": "Thailand: Grain and Feed Monthly",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "FAS Bangkok forecasts MY 2026/27 rice production, down 2 percent from MY 2025/26 to 20.3 million metric tons (MMT), as tighter water supplies and an emerging El Niño reduce off-season planting. Rice exports hold at 7.3 MMT under a strong Thai baht...",
-      "url": "https://www.fas.usda.gov/data/gain/2026/09/thailand-grain-and-feed-monthly",
-      "published_at": "2026-09-04T15:01:00+00:00",
-      "agency": "USDA FAS GAIN",
-      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
-      "source_id": "us_fas_gain_reports",
-      "commodities": [
-        "rice"
-      ],
-      "countries": [
-        "THA"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 2.75,
-      "reasons": [
-        "has_figure",
-        "country_in_text"
-      ]
-    },
-    {
-      "id": "6e3880b1a989890a",
-      "title": {
-        "original": "China: Oilseeds and Products Update",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "Post is lowering its forecast for MY 26/27 soybean production slightly to 20.1 million metric tons (MMT) on a smaller planted area. Chinese state-owned enterprises (SOEs) continue to purchase U.S. soybeans in accordance with the Busan agreement. As...",
-      "url": "https://www.fas.usda.gov/data/gain/2026/09/china-oilseeds-and-products-update",
-      "published_at": "2026-09-04T15:01:00+00:00",
-      "agency": "USDA FAS GAIN",
-      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
-      "source_id": "us_fas_gain_reports",
-      "commodities": [
-        "soybeans"
-      ],
-      "countries": [
-        "CHN",
-        "USA"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 2.75,
-      "reasons": [
-        "has_figure",
-        "country_in_text"
-      ]
-    },
-    {
-      "id": "7376f1ff6d49470e",
-      "title": {
-        "original": "Short-Term Energy Outlook",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "(Wed, 09 Sep 2026) <strong>Global oil market assumptions.</strong> We forecast oil production in the Middle East will rise in the coming months because of gradually increasing flows through the Strait of Hormuz and the use of alternative routes out of the region, according to our September 2026 <em>Short-Term Energy Outlook</em> (STEO). However, we assume some constraints to exporting oil from the Middle East will persist through the end of the year, which keeps crude oil production in the region below pre-conflict averages until the second quarter of 2027 (2Q27).",
-      "url": "http://www.eia.gov/outlooks/steo/",
-      "published_at": "2026-09-09T05:00:00+00:00",
-      "agency": "EIA",
-      "agency_ko": "미 에너지정보청",
-      "source_id": "us_eia_whats_new",
-      "commodities": [
-        "oil"
-      ],
-      "countries": [],
-      "scope": "global",
-      "country_source": "none",
-      "series_id": "EIA_STEO",
-      "series_label_ko": "EIA 단기 에너지 전망",
-      "importance": 2.513,
-      "reasons": [
-        "series:EIA_STEO"
       ]
     },
     {
@@ -798,7 +628,7 @@
       "country_source": "text",
       "series_id": "EIA_STEO",
       "series_label_ko": "EIA 단기 에너지 전망",
-      "importance": 2.345,
+      "importance": 2.307,
       "reasons": [
         "series:EIA_STEO",
         "has_figure",
@@ -807,33 +637,29 @@
       ]
     },
     {
-      "id": "6269fa1eda293c5a",
+      "id": "7376f1ff6d49470e",
       "title": {
-        "original": "India: Oilseeds and Products Update",
+        "original": "Short-Term Energy Outlook",
         "original_lang": "en",
         "ko": null
       },
-      "summary": "Post revises India's marketing year 2026/27 soybean acreage and production estimates down due to erratic monsoon rains and farmer diversification toward cotton and corn. Post revises soybean imports up supported by favorable harvests among African...",
-      "url": "https://www.fas.usda.gov/data/gain/2026/09/india-oilseeds-and-products-update",
-      "published_at": "2026-09-03T15:01:00+00:00",
-      "agency": "USDA FAS GAIN",
-      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
-      "source_id": "us_fas_gain_reports",
+      "summary": "(Wed, 09 Sep 2026) <strong>Global oil market assumptions.</strong> We forecast oil production in the Middle East will rise in the coming months because of gradually increasing flows through the Strait of Hormuz and the use of alternative routes out of the region, according to our September 2026 <em>Short-Term Energy Outlook</em> (STEO). However, we assume some constraints to exporting oil from the Middle East will persist through the end of the year, which keeps crude oil production in the region below pre-conflict averages until the second quarter of 2027 (2Q27).",
+      "url": "http://www.eia.gov/outlooks/steo/",
+      "published_at": "2026-09-09T05:00:00+00:00",
+      "agency": "EIA",
+      "agency_ko": "미 에너지정보청",
+      "source_id": "us_eia_whats_new",
       "commodities": [
-        "corn",
-        "soybeans",
-        "cotton"
+        "oil"
       ],
-      "countries": [
-        "IND"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 1.926,
+      "countries": [],
+      "scope": "global",
+      "country_source": "none",
+      "series_id": "EIA_STEO",
+      "series_label_ko": "EIA 단기 에너지 전망",
+      "importance": 2.184,
       "reasons": [
-        "country_in_text"
+        "series:EIA_STEO"
       ]
     },
     {
@@ -933,6 +759,34 @@
       ]
     },
     {
+      "id": "5a1967d788350658",
+      "title": {
+        "original": "Wholesale Electricity Market Data",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "(Thu, 17 Sep 2026) This report includes spreadsheets with wholesale electricity and natural gas data from seven major trading hubs that cover most regions of the United States. The data are through September 15, 2026, and republished, with permission, from the Intercontinental Exchange (ICE).",
+      "url": "http://www.eia.gov/electricity/wholesale/",
+      "published_at": "2026-09-17T05:00:00+00:00",
+      "agency": "EIA",
+      "agency_ko": "미 에너지정보청",
+      "source_id": "us_eia_whats_new",
+      "commodities": [
+        "gas"
+      ],
+      "countries": [
+        "USA"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.688,
+      "reasons": [
+        "country_in_text"
+      ]
+    },
+    {
       "id": "f9e7ed8b73ce1fa5",
       "title": {
         "original": "NASS to collect updated information on planted acreage",
@@ -960,6 +814,39 @@
       "importance": 1.68,
       "reasons": [
         "series:USDA_PROSPECTIVE_PLANTINGS",
+        "country_in_text"
+      ]
+    },
+    {
+      "id": "e4530ccde436c92d",
+      "title": {
+        "original": "NASS suspends pecan estimates for December and January",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "The Crop Production report to be published on Dec. 9, 2021, by the U.S. Department of Agriculture’s National Agricultural Statistics Service (NASS) will not contain forecasted pecan production estimates. Also, NASS will not publish the Pecan Production report in January 2022 that typically contains preliminary acreage, yield, production, price, and value estimates.",
+      "url": "https://www.nass.usda.gov/Newsroom/Notices/2021/12-02-2021.php",
+      "published_at": "2021-12-02T17:45:00+00:00",
+      "agency": "USDA Agricultural Statistics Board",
+      "agency_ko": "미 농무부 농업통계위원회(ASB)",
+      "source_id": "us_nass_asb",
+      "commodities": [
+        "corn",
+        "wheat",
+        "soybeans",
+        "cotton",
+        "rice"
+      ],
+      "countries": [
+        "USA"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": "USDA_CROP_PRODUCTION",
+      "series_label_ko": "USDA 작황 생산량",
+      "importance": 1.68,
+      "reasons": [
+        "series:USDA_CROP_PRODUCTION",
         "country_in_text"
       ]
     },
@@ -1054,64 +941,6 @@
       ]
     },
     {
-      "id": "181e4ee82214496a",
-      "title": {
-        "original": "EIA expects highest natural gas inventories in a decade heading into winter",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "The U.S. Energy Information Administration expects natural gas inventories will increase to 3,985 billion cubic feet (Bcf) in October, the most gas in inventories ahead of the winter heating season since 2016.",
-      "url": "https://www.eia.gov/pressroom/releases/press591.php",
-      "published_at": "2026-08-11T17:00:00+00:00",
-      "agency": "EIA",
-      "agency_ko": "미 에너지정보청",
-      "source_id": "us_eia_press",
-      "commodities": [
-        "gas"
-      ],
-      "countries": [
-        "USA"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 1.604,
-      "reasons": [
-        "has_figure",
-        "country_in_text"
-      ]
-    },
-    {
-      "id": "f8aa4f64781b6480",
-      "title": {
-        "original": "Electric Power Monthly",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "(Tue, 25 Aug 2026) Data in the August 2026 <em>Electric Power Monthly</em> are for June 2026, when net generation in the United States increased 1.6% from June 2025. Coal consumption for power generation was down 12.3% compared with the previous year. The average residential retail price of electricity was up 5.0% from June 2025.",
-      "url": "http://www.eia.gov/electricity/monthly/",
-      "published_at": "2026-08-25T05:00:00+00:00",
-      "agency": "EIA",
-      "agency_ko": "미 에너지정보청",
-      "source_id": "us_eia_whats_new",
-      "commodities": [
-        "thermal_coal"
-      ],
-      "countries": [
-        "USA"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 1.575,
-      "reasons": [
-        "revision_language",
-        "country_in_text"
-      ]
-    },
-    {
       "id": "c67666c03e916f6f",
       "title": {
         "original": "EIA increases global oil production forecast after the opening of the Strait of Hormuz",
@@ -1134,39 +963,37 @@
       "country_source": "text",
       "series_id": "EIA_STEO",
       "series_label_ko": "EIA 단기 에너지 전망",
-      "importance": 1.574,
+      "importance": 1.517,
       "reasons": [
         "series:EIA_STEO",
         "country_in_text"
       ]
     },
     {
-      "id": "bdf029665651e8aa",
+      "id": "181e4ee82214496a",
       "title": {
-        "original": "Corn planted acreage up 5% from 2024, soybean acreage down 4% from last year",
+        "original": "EIA expects highest natural gas inventories in a decade heading into winter",
         "original_lang": "en",
         "ko": null
       },
-      "summary": "– The U.S. Department of Agriculture's National Agricultural Statistics Service (NASS) estimated 95.2 million acres of corn planted in the United States for 2025, up 5% from last year, according to the Acreage report released today. Soybean area planted is estimated at 83.4 million acres, down 4% from last year.",
-      "url": "https://www.nass.usda.gov/Newsroom/2025/06-30-2025.php",
-      "published_at": "2025-06-30T05:50:00+00:00",
-      "agency": "USDA NASS",
-      "agency_ko": "미 농무부 국립농업통계청(NASS)",
-      "source_id": "us_nass_news",
+      "summary": "The U.S. Energy Information Administration expects natural gas inventories will increase to 3,985 billion cubic feet (Bcf) in October, the most gas in inventories ahead of the winter heating season since 2016.",
+      "url": "https://www.eia.gov/pressroom/releases/press591.php",
+      "published_at": "2026-08-11T17:00:00+00:00",
+      "agency": "EIA",
+      "agency_ko": "미 에너지정보청",
+      "source_id": "us_eia_press",
       "commodities": [
-        "corn",
-        "soybeans"
+        "gas"
       ],
       "countries": [
         "USA"
       ],
       "scope": "country",
       "country_source": "text",
-      "series_id": "USDA_PROSPECTIVE_PLANTINGS",
-      "series_label_ko": "USDA 파종의향면적",
+      "series_id": null,
+      "series_label_ko": null,
       "importance": 1.47,
       "reasons": [
-        "series:USDA_PROSPECTIVE_PLANTINGS",
         "has_figure",
         "country_in_text"
       ]
@@ -1232,62 +1059,6 @@
       ]
     },
     {
-      "id": "5a1967d788350658",
-      "title": {
-        "original": "Wholesale Electricity Market Data",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "(Thu, 03 Sep 2026) This report includes spreadsheets with wholesale electricity and natural gas data from seven major trading hubs that cover most regions of the United States. The data are through September 1, 2026, and republished, with permission, from the Intercontinental Exchange (ICE).",
-      "url": "http://www.eia.gov/electricity/wholesale/",
-      "published_at": "2026-09-03T05:00:00+00:00",
-      "agency": "EIA",
-      "agency_ko": "미 에너지정보청",
-      "source_id": "us_eia_whats_new",
-      "commodities": [
-        "gas"
-      ],
-      "countries": [
-        "USA"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 1.465,
-      "reasons": [
-        "country_in_text"
-      ]
-    },
-    {
-      "id": "636939b535053039",
-      "title": {
-        "original": "Petroleum Marketing Monthly",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "(Tue, 01 Sep 2026) The September 2026 <em>Petroleum Marketing Monthly</em>, with data through June 2026, presents monthly and annual price and volume statistics for crude oil sales in the United States.",
-      "url": "http://www.eia.gov/petroleum/marketing/monthly/",
-      "published_at": "2026-09-01T05:00:00+00:00",
-      "agency": "EIA",
-      "agency_ko": "미 에너지정보청",
-      "source_id": "us_eia_whats_new",
-      "commodities": [
-        "oil"
-      ],
-      "countries": [
-        "USA"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 1.41,
-      "reasons": [
-        "country_in_text"
-      ]
-    },
-    {
       "id": "06cf84727ec466c3",
       "title": {
         "original": "US corn ending stocks up 29% from last year, soybean ending stocks up 29%",
@@ -1316,34 +1087,6 @@
       "reasons": [
         "series:USDA_GRAIN_STOCKS",
         "has_figure",
-        "country_in_text"
-      ]
-    },
-    {
-      "id": "de49cf7992871dbf",
-      "title": {
-        "original": "Natural Gas Monthly",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "(Mon, 31 Aug 2026) The <em>Natural Gas Monthly</em> presents volume and price data each month for natural gas production, distribution, consumption, and interstate pipeline activities. NGM also reports producer-related activities and underground storage data. NGM data on 50 U.S. states and the District of Columbia are collected on EIA surveys.",
-      "url": "http://www.eia.gov/naturalgas/monthly/",
-      "published_at": "2026-08-31T05:00:00+00:00",
-      "agency": "EIA",
-      "agency_ko": "미 에너지정보청",
-      "source_id": "us_eia_whats_new",
-      "commodities": [
-        "gas"
-      ],
-      "countries": [
-        "USA"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 1.383,
-      "reasons": [
         "country_in_text"
       ]
     },
@@ -1486,7 +1229,7 @@
       "country_source": "text",
       "series_id": "EIA_STEO",
       "series_label_ko": "EIA 단기 에너지 전망",
-      "importance": 1.34,
+      "importance": 1.331,
       "reasons": [
         "series:EIA_STEO",
         "country_in_text"
@@ -1515,10 +1258,184 @@
       "country_source": "text",
       "series_id": "EIA_STEO",
       "series_label_ko": "EIA 단기 에너지 전망",
-      "importance": 1.298,
+      "importance": 1.297,
       "reasons": [
         "series:EIA_STEO",
         "country_in_text"
+      ]
+    },
+    {
+      "id": "44ef3d9e9fba437f",
+      "title": {
+        "original": "NASS Delays Weekly Slaughter Release",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Due to the National Day of Mourning for President James Earl Carter, Jr., USDA’s National Agricultural Statistics Service (NASS) has rescheduled the Weekly Slaughter data release from Jan. 9 to Jan. 10 at 3 p.m. ET. Other reports scheduled for release on Jan. 10 such as Crop Production and Grain Stocks reports will be published as scheduled.",
+      "url": "https://www.nass.usda.gov/Newsroom/Notices/2025/01-02-2025.php",
+      "published_at": "2025-01-02T17:00:00+00:00",
+      "agency": "USDA Agricultural Statistics Board",
+      "agency_ko": "미 농무부 농업통계위원회(ASB)",
+      "source_id": "us_nass_asb",
+      "commodities": [
+        "corn",
+        "wheat",
+        "soybeans"
+      ],
+      "countries": [
+        "USA"
+      ],
+      "scope": "country",
+      "country_source": "source_default",
+      "series_id": "USDA_GRAIN_STOCKS",
+      "series_label_ko": "USDA 곡물 재고",
+      "importance": 1.277,
+      "reasons": [
+        "series:USDA_GRAIN_STOCKS"
+      ]
+    },
+    {
+      "id": "636939b535053039",
+      "title": {
+        "original": "Petroleum Marketing Monthly",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "(Tue, 01 Sep 2026) The September 2026 <em>Petroleum Marketing Monthly</em>, with data through June 2026, presents monthly and annual price and volume statistics for crude oil sales in the United States.",
+      "url": "http://www.eia.gov/petroleum/marketing/monthly/",
+      "published_at": "2026-09-01T05:00:00+00:00",
+      "agency": "EIA",
+      "agency_ko": "미 에너지정보청",
+      "source_id": "us_eia_whats_new",
+      "commodities": [
+        "oil"
+      ],
+      "countries": [
+        "USA"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.243,
+      "reasons": [
+        "country_in_text"
+      ]
+    },
+    {
+      "id": "de49cf7992871dbf",
+      "title": {
+        "original": "Natural Gas Monthly",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "(Mon, 31 Aug 2026) The <em>Natural Gas Monthly</em> presents volume and price data each month for natural gas production, distribution, consumption, and interstate pipeline activities. NGM also reports producer-related activities and underground storage data. NGM data on 50 U.S. states and the District of Columbia are collected on EIA surveys.",
+      "url": "http://www.eia.gov/naturalgas/monthly/",
+      "published_at": "2026-08-31T05:00:00+00:00",
+      "agency": "EIA",
+      "agency_ko": "미 에너지정보청",
+      "source_id": "us_eia_whats_new",
+      "commodities": [
+        "gas"
+      ],
+      "countries": [
+        "USA"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.223,
+      "reasons": [
+        "country_in_text"
+      ]
+    },
+    {
+      "id": "39ac9e91f73a0776",
+      "title": {
+        "original": "EIA releases latest Short-Term Energy Outlook amid Middle East conflict",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Crude oil price movements. The Brent crude oil spot price has risen sharply following the onset of military action in the Middle East. Brent settled at $94 per barrel (b) on March 9, up about 50% from the beginning of the year and the highest since September 2023. Crude oil prices have risen as petroleum shipments through the Strait of Hormuz have fallen, and some Middle East oil production has been shut in.",
+      "url": "https://www.eia.gov/pressroom/releases/press584.php",
+      "published_at": "2026-03-10T17:00:00+00:00",
+      "agency": "EIA",
+      "agency_ko": "미 에너지정보청",
+      "source_id": "us_eia_press",
+      "commodities": [
+        "oil"
+      ],
+      "countries": [],
+      "scope": "global",
+      "country_source": "none",
+      "series_id": "EIA_STEO",
+      "series_label_ko": "EIA 단기 에너지 전망",
+      "importance": 1.041,
+      "reasons": [
+        "series:EIA_STEO"
+      ]
+    },
+    {
+      "id": "d2560303da2802d2",
+      "title": {
+        "original": "USDA-NASS Crop Progress report delayed until Nov. 29",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Due to system outages, USDA’s National Agricultural Statistics Service delayed the release of today’s scheduled Crop Progress report until tomorrow, Nov. 29, at 4 p.m. EST.",
+      "url": "https://www.nass.usda.gov/Newsroom/Notices/2022/11-28-2022.php",
+      "published_at": "2022-11-28T21:00:00+00:00",
+      "agency": "USDA Agricultural Statistics Board",
+      "agency_ko": "미 농무부 농업통계위원회(ASB)",
+      "source_id": "us_nass_asb",
+      "commodities": [
+        "corn",
+        "wheat",
+        "soybeans",
+        "cotton"
+      ],
+      "countries": [
+        "USA"
+      ],
+      "scope": "country",
+      "country_source": "source_default",
+      "series_id": "USDA_CROP_PROGRESS",
+      "series_label_ko": "USDA 작황 진도",
+      "importance": 1.008,
+      "reasons": [
+        "series:USDA_CROP_PROGRESS"
+      ]
+    },
+    {
+      "id": "82ad0c3c992ec514",
+      "title": {
+        "original": "USDA Crop Progress report delayed until 5pm ET",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "USDA’s National Agricultural Statistics Service (NASS) is delaying today’s Crop Progress report one hour until, April 5 at 5 p.m. ET.",
+      "url": "https://www.nass.usda.gov/Newsroom/Notices/2021/04-05-2021.php",
+      "published_at": "2021-04-05T20:30:00+00:00",
+      "agency": "USDA Agricultural Statistics Board",
+      "agency_ko": "미 농무부 농업통계위원회(ASB)",
+      "source_id": "us_nass_asb",
+      "commodities": [
+        "corn",
+        "wheat",
+        "soybeans",
+        "cotton"
+      ],
+      "countries": [
+        "USA"
+      ],
+      "scope": "country",
+      "country_source": "source_default",
+      "series_id": "USDA_CROP_PROGRESS",
+      "series_label_ko": "USDA 작황 진도",
+      "importance": 1.008,
+      "reasons": [
+        "series:USDA_CROP_PROGRESS"
       ]
     },
     {
@@ -1542,7 +1459,7 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.128,
+      "importance": 0.995,
       "reasons": []
     },
     {
@@ -1566,34 +1483,8 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.128,
+      "importance": 0.995,
       "reasons": []
-    },
-    {
-      "id": "39ac9e91f73a0776",
-      "title": {
-        "original": "EIA releases latest Short-Term Energy Outlook amid Middle East conflict",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "Crude oil price movements. The Brent crude oil spot price has risen sharply following the onset of military action in the Middle East. Brent settled at $94 per barrel (b) on March 9, up about 50% from the beginning of the year and the highest since September 2023. Crude oil prices have risen as petroleum shipments through the Strait of Hormuz have fallen, and some Middle East oil production has been shut in.",
-      "url": "https://www.eia.gov/pressroom/releases/press584.php",
-      "published_at": "2026-03-10T17:00:00+00:00",
-      "agency": "EIA",
-      "agency_ko": "미 에너지정보청",
-      "source_id": "us_eia_press",
-      "commodities": [
-        "oil"
-      ],
-      "countries": [],
-      "scope": "global",
-      "country_source": "none",
-      "series_id": "EIA_STEO",
-      "series_label_ko": "EIA 단기 에너지 전망",
-      "importance": 1.042,
-      "reasons": [
-        "series:EIA_STEO"
-      ]
     },
     {
       "id": "21e8e31c7b207b51",
@@ -1672,38 +1563,10 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.69,
+      "importance": 0.688,
       "reasons": [
         "country_in_text"
       ]
-    },
-    {
-      "id": "416d527f7174e442",
-      "title": {
-        "original": "NASS Reinstates Select Data Collection Programs and Reports",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "The USDA’s National Agricultural Statistics Service (NASS) is reinstating the July Cattle report, as well as County Estimates for Crops and Livestock. The county estimate reinstatement is effective for the 2024 crop season for the row crops (corn, cotton, peanuts, rice, sorghum, soybeans) and for the 2025 crop season for the small grain crops (barley, oats, wheat).",
-      "url": "https://www.nass.usda.gov/Newsroom/Notices/2025/03-19-2025.php",
-      "published_at": "2025-03-19T16:00:00+00:00",
-      "agency": "USDA Agricultural Statistics Board",
-      "agency_ko": "미 농무부 농업통계위원회(ASB)",
-      "source_id": "us_nass_asb",
-      "commodities": [
-        "wheat",
-        "corn",
-        "soybeans"
-      ],
-      "countries": [
-        "USA"
-      ],
-      "scope": "country",
-      "country_source": "source_default",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 0.672,
-      "reasons": []
     },
     {
       "id": "094f2c679d643322",
@@ -1752,7 +1615,7 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.55,
+      "importance": 0.549,
       "reasons": []
     }
   ]
