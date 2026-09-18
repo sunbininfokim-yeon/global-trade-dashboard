@@ -65,21 +65,24 @@ B 의 모든 행은 A 의 이벤트를 `event_id` 로 참조한다. A 에 없는
 New for anti/public/data/
   elections_contests_index_v1.json          ← 목차 (이것만 항상 읽는다)
   elections_contests/
-    jpn-2026-sangiin.json                   ← 이벤트당 한 파일
+    jpn-2026-shugiin-51.json                ← 이벤트당 한 파일
     kor-2026-local.json
     gbr-2026-holyrood.json
 ```
+
+예시 `event_id` 는 **달력에 있는 문자열**만 쓴다. 초안의 `jpn-2026-sangiin` 은
+2026년 참의원 통상선거가 없어서 (`jpn-2026-sangiin-regular`, `date: "없음"`) 쓰지 않는다.
 
 ### 목차 파일
 
 ```json
 {
   "schema": "elections_contests_index_v1",
-  "as_of": "2026-09-20",
+  "as_of": "2026-09-18",
   "events": [
-    { "event_id": "jpn-2026-sangiin", "iso3": "JPN", "date": "2026-07-25",
-      "path": "elections_contests/jpn-2026-sangiin.json",
-      "status": "partial", "as_of": "2026-09-20" }
+    { "event_id": "jpn-2026-shugiin-51", "iso3": "JPN", "date": "2026-02-08",
+      "path": "elections_contests/jpn-2026-shugiin-51.json",
+      "status": "complete", "as_of": "2026-09-18" }
   ]
 }
 ```
@@ -94,36 +97,39 @@ New for anti/public/data/
 ```json
 {
   "schema": "elections_contest_v1",
-  "event_id": "jpn-2026-sangiin",
+  "event_id": "jpn-2026-shugiin-51",
   "iso3": "JPN",
-  "date": "2026-07-25",
-  "system_id": "jpn-sangiin",
-  "as_of": "2026-09-20",
-  "sources": ["https://www.soumu.go.jp/..."],
+  "date": "2026-02-08",
+  "system_id": "jpn-shugiin",
+  "as_of": "2026-09-18",
+  "sources": ["https://www.jiji.com/jc/2026syu", "https://www.soumu.go.jp/senkyo/senkyo_s/data/shugiin51/index.html"],
   "parties": [
     { "abbr": "LDP", "name_ko": "자유민주당", "name_en": "Liberal Democratic Party",
-      "color": "#c8102e", "leader_ko": "…", "note_ko": "" }
+      "leader_ko": "다카이치 사나에", "note_ko": "여당. 일본유신회와 연립" }
   ],
   "columns": [
     {
-      "key": "sangiin",
-      "label_ko": "참의원",
-      "current": { "by_party": { "LDP": 101, "CDP": 38 }, "total": 248,
-                   "as_of": "2025-07-21", "note_ko": "회파 기준 공개 집계", "vacancies": 0 },
-      "contested_ko": "124석 개선 (절반)",
-      "seat_note_ko": "비개선 124석은 이번 선거와 무관합니다",
+      "key": "smd",
+      "label_ko": "소선거구",
+      "current": { "by_party": { "LDP": 198, "Chudo": 167 }, "total": 465,
+                   "as_of": "2026-01-27", "note_ko": "공시전 세력은 중의원 전체. 소·비 구분 숫자는 출처에 없음", "vacancies": 0 },
+      "result": { "by_party": { "LDP": 249 }, "total": 289, "as_of": "2026-02-08" },
+      "contested_ko": "289석 전원 개선",
       "districts": [
-        { "id": "13", "name_ko": "도쿄도", "group_ko": "선거구", "seats": 6,
-          "status": "scheduled",
+        { "id": "01-01", "name_ko": "홋카이도 1구", "group_ko": "홋카이도", "seats": 1,
+          "status": "completed",
           "candidates": [
-            { "party_abbr": "LDP", "name": "…", "incumbent": true,
-              "status": "nominated", "note_ko": "", "source": "https://…" }
+            { "party_abbr": "LDP", "name": "加藤 貴弘", "incumbent": true,
+              "status": "nominated", "elected": true, "dual_listed": true,
+              "votes": 112618, "source": "https://www.jiji.com/jc/2026syu?d=21955" }
           ] }
       ]
     }
   ]
 }
 ```
+
+`note_ko` 와 `color` 는 **값이 있을 때만** 넣는다. 초안의 `""` 는 1절 센티널 규칙(`""` 금지)과 모순이라 예시를 고쳤다.
 
 ### 필드
 
@@ -137,6 +143,7 @@ New for anti/public/data/
 | `current.total` | ✅ | 원문 총수. **정당별 의석을 더해 만들지 말 것** |
 | `current.as_of` | ✅ | 이 의석이 언제 기준인지 |
 | `current.vacancies` | | 공석 수. 모르면 키를 뺀다 (0 은 "공석 없음"이라는 주장이다) |
+| `columns[].result` | | **끝난 선거만.** `{ by_party, total, as_of, note_ko }`. `current` 는 선거 전, `result` 는 선거 후. 없으면 키가 없다 |
 | `contested_ko` | ✅ | 이번에 몇 석을 뽑는지 한 줄 |
 | `districts[]` | ✅ | 선거구·지역 단위 행 |
 | `districts[].id` | ✅ | 공식 선거구 코드나 번호 |
@@ -146,6 +153,21 @@ New for anti/public/data/
 | `candidates[]` | ✅ | 빈 배열 허용. **빈 배열 = 아직 확정 안 됨이지 후보가 없다는 뜻이 아니다** |
 | `candidates[].status` | ✅ | `nominated` · `presumptive`(유력 보도) · `withdrawn` · `불명` |
 | `candidates[].incumbent` | | 현직 여부. 모르면 키를 뺀다 |
+| `candidates[].elected` | | 끝난 선거에서 그 열·그 구에서 당선이면 `true`, 낙선이면 `false`. 아직이면 키를 뺀다 |
+| `candidates[].dual_listed` | | 일본 병립형처럼 소선거구·비례 중복입후보면 `true`. 아니면 키를 뺀다 |
+| `candidates[].votes` | | 정수 득표. 모르면 키를 뺀다 (0 은 "0표"라는 주장) |
+
+### 같은 원을 소선거구·비례로 나눌 때
+
+중의원처럼 **한 원 · 두 열**이면 `current` 는 그 원 전체(공시전 465석)를 두 열에
+같은 숫자로 둔다. 소·비로 나눈 공시전 의석이 출처에 없으면 만들지 말고 `note_ko` 에
+적는다. 열마다 289/176 을 지어내지 말 것.
+
+비례 열의 `complete` 는 **그 권역에서 의석을 가져간 사람**이 `candidates` 에 있으면
+된다. 정당명부 전체(일본 51회는 915명)는 선택. 없으면 `note_ko` 에 원문 위치만 적는다.
+소선거구 열은 공시된 후보를 빠짐없이 넣는다 — 그게 대진이다.
+
+회파(원내)와 당선 당파가 어긋나면 하나를 고르지 말고 `note_ko` 에 병기한다.
 
 ### 파일이 커지면 쪼갠다
 
