@@ -685,13 +685,20 @@
     return bill.congress_number ? `${bill.congress_number}대 · ${cite}` : cite;
   };
 
-  // Compact card for a favorited bill (My Page favorites list), reusing the
-  // same stage rail and vote data as the full bill detail panel below so the
-  // two views can never disagree about what "next stage" means. There is no
-  // curated short/abbreviated title anywhere in the schema -- bill.title is
-  // the official long title -- so this shows that title as-is rather than
-  // fabricate an abbreviation.
-  function favoriteBillCardHtml(bill) {
+  // Compact card for a favorited bill (My Page favorites/mailing lists),
+  // reusing the same stage rail and vote data as the full bill detail panel
+  // below so the two views can never disagree about what "next stage" means.
+  // There is no curated short/abbreviated title anywhere in the schema --
+  // bill.title is the official long title -- so this shows that title as-is
+  // rather than fabricate an abbreviation.
+  //
+  // notifyEnabled reflects user_favorites.notify_enabled for this bill (not
+  // part of the `bills` row loadBillById returns), defaulting to true when
+  // omitted so a caller that doesn't track it yet still gets a checked box.
+  // bill.bill_id doubles as the favorite's item_id -- callers only ever load
+  // this card for item_kind 'bill', and loadBillById(item_id) returns the
+  // row keyed by that same id.
+  function favoriteBillCardHtml(bill, notifyEnabled) {
     const currentIndex = STAGE_FLOW.findIndex((step) => step.stages.includes(bill.current_stage));
     const terminalLabel = TERMINAL_LABELS[bill.current_stage];
     const currentLabel = terminalLabel || (currentIndex >= 0 ? STAGE_FLOW[currentIndex].label : stageLabel(bill.current_stage));
@@ -702,6 +709,7 @@
     const votes = bill.bill_votes || [];
     const lastVote = votes[votes.length - 1];
     const voteText = lastVote ? `투표 찬 ${esc(lastVote.yea_count)}명 반 ${esc(lastVote.nay_count)}명` : null;
+    const itemId = esc(bill.bill_id);
 
     return `<div class="policy-fav-bill-card">
       <div class="policy-fav-bill-title">${esc(bill.title)}</div>
@@ -709,6 +717,13 @@
         <span class="policy-fav-bill-code">${esc(billNumberLabel(bill))}</span>
         <span class="policy-fav-bill-stage">${esc(currentLabel)}${nextLabel ? ` → ${esc(nextLabel)}` : ''}</span>
         ${voteText ? `<span class="policy-fav-bill-votes">${voteText}</span>` : ''}
+      </div>
+      <div class="policy-fav-bill-actions">
+        <label class="policy-fav-bill-notify">
+          <input type="checkbox" class="policy-fav-bill-notify-checkbox" data-item-id="${itemId}" ${notifyEnabled === false ? '' : 'checked'}>
+          메일 알림
+        </label>
+        <button type="button" class="auth-btn" data-remove-item-id="${itemId}">해제</button>
       </div>
     </div>`;
   }

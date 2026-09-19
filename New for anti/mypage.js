@@ -78,9 +78,50 @@
             try {
                 const bill = await window.USPolicy.loadBillById(f.item_id);
                 if (token !== renderToken || !card) return;
-                card.outerHTML = window.USPolicy.favoriteBillCardHtml(bill);
+                card.outerHTML = window.USPolicy.favoriteBillCardHtml(bill, f.notify_enabled);
             } catch (err) {
                 if (card) card.innerHTML = `<p class="mypage-empty">불러오지 못함: ${esc(f.title || f.item_id)}</p>`;
+            }
+        });
+        bindFavoriteBillCardActions(container);
+    }
+
+    // Delegated so it survives the card.outerHTML swap above; safe to call
+    // every render since the container itself is fresh innerHTML each time
+    // (no stale listener stacks up on a removed container).
+    function bindFavoriteBillCardActions(container) {
+        container.addEventListener('click', async (e) => {
+            const btn = e.target.closest('[data-remove-item-id]');
+            if (!btn) return;
+            btn.disabled = true;
+            try {
+                await window.Auth.removeFavorite('bill', btn.dataset.removeItemId);
+                // Both tabs can be showing a bill list; force a refetch next
+                // time either is opened instead of leaving a stale copy.
+                loaded.delete('favorites');
+                loaded.delete('mailing');
+                const card = btn.closest('.policy-fav-bill-card');
+                if (card) card.remove();
+                if (!container.querySelector('.policy-fav-bill-card')) {
+                    container.innerHTML = '<p class="mypage-empty">아직 즐겨찾기한 법안이 없습니다.</p>';
+                }
+            } catch (err) {
+                btn.disabled = false;
+                console.error('Failed to remove favorite bill:', err);
+            }
+        });
+        container.addEventListener('change', async (e) => {
+            const checkbox = e.target.closest('.policy-fav-bill-notify-checkbox');
+            if (!checkbox) return;
+            const next = checkbox.checked;
+            checkbox.disabled = true;
+            try {
+                await window.Auth.setFavoriteNotifyEnabled('bill', checkbox.dataset.itemId, next);
+            } catch (err) {
+                checkbox.checked = !next;
+                console.error('Failed to update favorite notify preference:', err);
+            } finally {
+                checkbox.disabled = false;
             }
         });
     }

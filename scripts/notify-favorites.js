@@ -19,7 +19,7 @@ function esc(value) {
 }
 
 async function fetchFavorites() {
-  return supabaseGet('user_favorites', { select: 'user_id,item_kind,item_id,title' });
+  return supabaseGet('user_favorites', { select: 'user_id,item_kind,item_id,title,notify_enabled' });
 }
 
 async function fetchBills(ids) {
@@ -132,8 +132,13 @@ async function run() {
     const changed = previouslySeen && new Date(item.changedAt) > new Date(previouslySeen);
 
     if (changed) {
-      if (!byUser.has(fav.user_id)) byUser.set(fav.user_id, []);
-      byUser.get(fav.user_id).push({ title: fav.title || item.title, summaryLine: item.summaryLine, detailLine: item.detailLine });
+      // notify_enabled false mutes just this one favorite (My Page's
+      // per-card checkbox); the baseline below is still recorded either
+      // way, so re-enabling it later doesn't email everything missed.
+      if (fav.notify_enabled !== false) {
+        if (!byUser.has(fav.user_id)) byUser.set(fav.user_id, []);
+        byUser.get(fav.user_id).push({ title: fav.title || item.title, summaryLine: item.summaryLine, detailLine: item.detailLine });
+      }
       seenUpdates.push({
         user_id: fav.user_id, item_kind: fav.item_kind, item_id: fav.item_id,
         last_seen_updated_at: item.changedAt, last_notified_at: new Date().toISOString(),

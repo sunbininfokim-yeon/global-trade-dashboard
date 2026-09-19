@@ -5746,6 +5746,23 @@ body.macro-night .mm-hint { background: rgba(6, 11, 22, .88); }
 .policy-fav-bill-stage { color: #38bdf8; }
 .policy-fav-bill-votes { color: #64748b; }
 
+.policy-fav-bill-actions {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    white-space: nowrap;
+}
+.policy-fav-bill-notify {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    color: #94a3b8;
+    font-size: 11px;
+    cursor: pointer;
+}
+.policy-fav-bill-notify-checkbox { accent-color: #38bdf8; }
+
 @media (max-width: 640px) {
     /* Narrow enough that "wide rectangle" would otherwise clip the title
        to almost nothing -- meta wraps to its own line instead. */

@@ -174,7 +174,7 @@ const Auth = (() => {
         if (!currentUser()) return [];
         const { data, error } = await client
             .from('user_favorites')
-            .select('item_kind,item_id,title,created_at')
+            .select('item_kind,item_id,title,created_at,notify_enabled')
             .order('created_at', { ascending: false });
         if (error) throw error;
         return data || [];
@@ -195,6 +195,19 @@ const Auth = (() => {
         const { error } = await client
             .from('user_favorites')
             .delete()
+            .match({ user_id: user.id, item_kind: itemKind, item_id: itemId });
+        if (error) throw error;
+    }
+
+    // Per-favorite mail mute, separate from the account-wide
+    // billNotificationsPaused switch above -- this keeps the item favorited
+    // (still shown, still tracked) while notify-favorites.js skips just it.
+    async function setFavoriteNotifyEnabled(itemKind, itemId, enabled) {
+        const user = currentUser();
+        if (!user) throw new Error('로그인이 필요합니다.');
+        const { error } = await client
+            .from('user_favorites')
+            .update({ notify_enabled: enabled })
             .match({ user_id: user.id, item_kind: itemKind, item_id: itemId });
         if (error) throw error;
     }
@@ -471,7 +484,7 @@ const Auth = (() => {
 
     return {
         currentUser, onChange, signUp, signIn, signOut, openModal,
-        listFavorites, addFavorite, removeFavorite,
+        listFavorites, addFavorite, removeFavorite, setFavoriteNotifyEnabled,
         listDisabledCommoditySources, setCommoditySourceEnabled,
         commoditySourceFilterHtml, bindCommoditySourceFilter,
         changePassword, myProfile, updateNickname, resetPasswordForEmail,
