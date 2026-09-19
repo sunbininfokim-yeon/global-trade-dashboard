@@ -5762,6 +5762,19 @@ body.macro-night .mm-hint { background: rgba(6, 11, 22, .88); }
     cursor: pointer;
 }
 .policy-fav-bill-notify-checkbox { accent-color: #38bdf8; }
+.policy-fav-star {
+    flex: 0 0 auto;
+    background: none;
+    border: none;
+    padding: 0;
+    font-size: 19px;
+    line-height: 1;
+    color: #facc15;
+    cursor: pointer;
+    transition: transform .1s ease, filter .1s ease;
+}
+.policy-fav-star:hover { filter: brightness(1.15); transform: scale(1.08); }
+.policy-fav-star:focus-visible { outline: 2px solid #38bdf8; outline-offset: 2px; }
 
 @media (max-width: 640px) {
     /* Narrow enough that "wide rectangle" would otherwise clip the title

@@ -723,7 +723,7 @@
           <input type="checkbox" class="policy-fav-bill-notify-checkbox" data-item-id="${itemId}" ${notifyEnabled === false ? '' : 'checked'}>
           메일 알림
         </label>
-        <button type="button" class="auth-btn" data-remove-item-id="${itemId}">해제</button>
+        <button type="button" class="policy-fav-star" data-remove-item-id="${itemId}" title="즐겨찾기 해제" aria-label="즐겨찾기 해제">★</button>
       </div>
     </div>`;
   }
