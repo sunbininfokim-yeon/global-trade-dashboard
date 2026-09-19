@@ -62,6 +62,29 @@
         return host.querySelector(`.mypage-panel[data-panel="${id}"]`);
     }
 
+    // Shared by the 즐겨찾기 tab's bill list and the 메일링 서비스 tab's "these
+    // are what you're watching" list below the pause toggle -- same cards,
+    // same one-request-per-bill loading pattern, two places that show them.
+    function renderFavoriteBillCards(container, bills, token) {
+        if (!bills.length) {
+            container.innerHTML = '<p class="mypage-empty">아직 즐겨찾기한 법안이 없습니다.</p>';
+            return;
+        }
+        container.innerHTML = bills.map((f) => `<div class="policy-fav-bill-card" data-bill-id="${esc(f.item_id)}"><p class="mypage-empty">불러오는 중…</p></div>`).join('');
+        // One request per favorited bill -- fine at favorites-list scale;
+        // revisit with a batch endpoint if this list grows large.
+        bills.forEach(async (f) => {
+            const card = container.querySelector(`[data-bill-id="${CSS.escape(f.item_id)}"]`);
+            try {
+                const bill = await window.USPolicy.loadBillById(f.item_id);
+                if (token !== renderToken || !card) return;
+                card.outerHTML = window.USPolicy.favoriteBillCardHtml(bill);
+            } catch (err) {
+                if (card) card.innerHTML = `<p class="mypage-empty">불러오지 못함: ${esc(f.title || f.item_id)}</p>`;
+            }
+        });
+    }
+
     /* ------------------------------------------------------------ 즐겨찾기 */
 
     async function renderFavorites() {
@@ -116,20 +139,7 @@
         }
 
         if (bills.length) {
-            const container = el.querySelector('#mypage-fav-bills');
-            container.innerHTML = bills.map((f) => `<div class="policy-fav-bill-card" data-bill-id="${esc(f.item_id)}"><p class="mypage-empty">불러오는 중…</p></div>`).join('');
-            // One request per favorited bill -- fine at favorites-list scale;
-            // revisit with a batch endpoint if this list grows large.
-            bills.forEach(async (f) => {
-                const card = container.querySelector(`[data-bill-id="${CSS.escape(f.item_id)}"]`);
-                try {
-                    const bill = await window.USPolicy.loadBillById(f.item_id);
-                    if (token !== renderToken || !card) return;
-                    card.outerHTML = window.USPolicy.favoriteBillCardHtml(bill);
-                } catch (err) {
-                    if (card) card.innerHTML = `<p class="mypage-empty">불러오지 못함: ${esc(f.title || f.item_id)}</p>`;
-                }
-            });
+            renderFavoriteBillCards(el.querySelector('#mypage-fav-bills'), bills, token);
         }
     }
 
@@ -186,6 +196,7 @@
                 </label>
             </div>
             <p class="mypage-status hidden" id="mypage-bill-pause-status"></p>
+            <div class="policy-bill-list" id="mypage-mail-bills"><p class="mypage-empty">불러오는 중…</p></div>
 
             <p class="mypage-section-title">원자재</p>
             <p class="mypage-empty">최근 8일 이내 리포트를 기관별로 모아 매주 월요일 오전 8시(KST)에 발송합니다. 체크를 풀면 그 기관만 빠집니다.</p>
@@ -224,6 +235,17 @@
                 pauseToggle.disabled = false;
             }
         });
+
+        const billListEl = el.querySelector('#mypage-mail-bills');
+        try {
+            const favorites = await window.Auth.listFavorites();
+            if (token !== renderToken) return;
+            const bills = favorites.filter((f) => f.item_kind === 'bill');
+            renderFavoriteBillCards(billListEl, bills, token);
+        } catch (err) {
+            if (token !== renderToken) return;
+            billListEl.innerHTML = `<p class="mypage-empty">즐겨찾기한 법안을 불러오지 못했습니다: ${esc(err.message)}</p>`;
+        }
 
         const container = el.querySelector('#mypage-source-filter');
         try {
