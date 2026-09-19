@@ -26,9 +26,9 @@ Conc_topN = Σ(시총 TopN) / KOSPI 전체시총 ×100. constituent 표는 Top30
 
 | actor | net_krw | scope | quality |
 |-------|--------:|-------|---------|
-| foreign | -1772732487500 | covered_underlyings_spot | estimated |
-| retail | 151063722500 | covered_underlyings_spot | estimated |
-| institution | -43823425000 | covered_underlyings_spot | estimated |
+| foreign | 839941092500 | covered_underlyings_spot | estimated |
+| retail | -3370604627500 | covered_underlyings_spot | estimated |
+| institution | 974105220000 | covered_underlyings_spot | estimated |
 
 ## 3. Leveraged ETF AUM (paper: leverage reset)
 
@@ -48,8 +48,8 @@ Conc_topN = Σ(시총 TopN) / KOSPI 전체시총 ×100. constituent 표는 Top30
 
 | ticker | day_R | wag_the_dog | long_aum% | inv_aum% | inv_tv% | retail_net | foreign_net | realized IR% |
 |--------|------:|:-----------:|----------:|---------:|--------:|-----------:|------------:|-------------:|
-| 000660 | -0.008 | mid | 97.8 | 2.2 | 23.8 | 160986720000 | -1224634020000 | 1.3197 |
-| 005930 | -0.0039000000000000003 | low | 99.5 | 0.5 | 2.7 | -9922997500 | -548098467500 | 0.6231 |
+| 000660 | -0.008 | mid | 97.8 | 2.2 | 23.8 | -2619211845000 | 1262455150000 | 1.3197 |
+| 005930 | -0.0039000000000000003 | low | 99.5 | 0.5 | 2.7 | -751392782500 | -422514057500 | 0.6231 |
 
 해석 힌트: `wag_the_dog=high`면 LETF 거래가 현물을 잠식. 인버스 거래비중(`inv_tv%`)이 AUM 비중보다 크면 하락일에 리밸런싱 압력이 비대칭.
 
@@ -81,21 +81,21 @@ venue 분리: KR cash 회전율 식에 HK/US/crypto 합산 금지. 다만 Distor
 | venue | metric | USD |
 |-------|--------|----:|
 | KR single-stock LETF | notional AUM×\|L\| | 8939495481.65 |
-| HK CSOP swap LETF | notional AUM×\|L\| | 1402866100.51 |
+| HK CSOP swap LETF | notional AUM×\|L\| | 1102796717.95 |
 | Crypto Binance perps | OI notional | 0.0 |
 | Crypto Binance perps | 24h quote volume | 0.0 |
-| Stack (KR+HK+crypto OI) | sum (reference only) | 209219006582.16 |
+| Stack (KR+HK+crypto OI) | sum (reference only) | 208918937199.6 |
 
 | underlying | HK notional USD | Crypto OI USD | HK/spot ADV | Crypto OI/spot ADV |
 |------------|----------------:|--------------:|------------:|-------------------:|
 | 000660 | 1100228923.08 | 0.0 | 0.3132 | 0.0 |
-| 005930 | 302637177.44 | 0.0 | 0.141 | 0.0 |
+| 005930 | 2567794.87 | 0.0 | 0.0012 | 0.0 |
 
 | HK product | underlying | L | AUM USD | TV USD | impact |
 |------------|------------|--:|--------:|-------:|--------|
-| 7709.HK CSOP SK Hynix Daily Max (2x) | 000660 | 2.0 | 550114461.5384616 | 301848913.69691163 | indirect_swap |
-| 7747.HK CSOP Samsung Electronics Daily Max (2x) | 005930 | 2.0 | 150034691.2820513 | 20076246.771885797 | indirect_swap |
-| 7347.HK CSOP Samsung Electronics Daily Max (-2x) | 005930 | -2.0 | 1283897.435897436 | 984056.8694894513 | indirect_swap |
+| 7709.HK CSOP SK Hynix Daily Max (2x) | 000660 | 2.0 | 550114461.5384616 | 603013036.4102564 | indirect_swap |
+| 7747.HK CSOP Samsung Electronics Daily Max (2x) | 005930 | 2.0 | None | 48929742.48661922 | indirect_swap |
+| 7347.HK CSOP Samsung Electronics Daily Max (-2x) | 005930 | -2.0 | 1283897.435897436 | 3069809.7252122485 | indirect_swap |
 
 | Crypto product | underlying | OI USD | 24h vol USD | funding | impact |
 |---------------|------------|-------:|------------:|--------:|--------|
@@ -132,9 +132,9 @@ venue 분리: KR cash 회전율 식에 HK/US/crypto 합산 금지. 다만 Distor
 
 | metric | 억원 | as_of | quality |
 |--------|-----:|-------|---------|
-| 고객예탁금 | 995748.64 | 2026-09-16 | observed |
-| 신용잔고 | 330735.25 | 2026-09-16 | observed |
-| 신용/예탁금 % | 33.215 |  |  |
+| 고객예탁금 | 974910.73 | 2026-09-17 | observed |
+| 신용잔고 | 330730.17 | 2026-09-17 | observed |
+| 신용/예탁금 % | 33.924 |  |  |
 
 ## 8. KOSPI market investor flows
 
@@ -150,10 +150,10 @@ venue 분리: KR cash 회전율 식에 HK/US/crypto 합산 금지. 다만 Distor
 
 | category | n | TV 조 | % of lev TV | % of KOSPI TV |
 |----------|--:|------:|------------:|--------------:|
-| index | 53 | 3.558 | 75.78 | 18.085 |
-| overseas | 26 | 0.016 | 0.34 | 0.081 |
-| sector | 8 | 0.616 | 13.12 | 3.13 |
-| single_stock | 16 | 0.505 | 10.76 | 2.568 |
+| index | 53 | 2.618 | 74.14 | 9.314 |
+| overseas | 26 | 0.015 | 0.42 | 0.052 |
+| sector | 8 | 0.387 | 10.97 | 1.379 |
+| single_stock | 16 | 0.511 | 14.47 | 1.817 |
 
 ## 10. Short interest
 
