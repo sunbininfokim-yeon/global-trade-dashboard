@@ -125,6 +125,34 @@ const Auth = (() => {
         if (error) throw error;
     }
 
+    // --- bill/EO notification pause ---------------------------------------
+
+    // A single account-wide flag rather than a per-favorite one: pausing
+    // stops notify-favorites.js from emailing this user without touching
+    // user_favorites, so favorites (and their change tracking) are untouched
+    // and resuming doesn't dump a backlog of everything missed.
+    async function billNotificationsPaused() {
+        const user = currentUser();
+        if (!user) return false;
+        const { data, error } = await client
+            .from('profiles')
+            .select('bill_notifications_paused')
+            .eq('id', user.id)
+            .single();
+        if (error) throw error;
+        return !!(data && data.bill_notifications_paused);
+    }
+
+    async function setBillNotificationsPaused(paused) {
+        const user = currentUser();
+        if (!user) throw new Error('로그인이 필요합니다.');
+        const { error } = await client
+            .from('profiles')
+            .update({ bill_notifications_paused: paused })
+            .eq('id', user.id);
+        if (error) throw error;
+    }
+
     async function signIn(email, password) {
         const { data, error } = await client.auth.signInWithPassword({ email, password });
         if (error) throw error;
@@ -192,29 +220,59 @@ const Auth = (() => {
         return String(value ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
     }
 
-    // sources: [{source_id, agency_ko}], deduped from commodity_reports_v1.json's
-    // own items -- never a fixed list, so a source added or dropped from the
-    // pipeline shows up (or disappears) here without a UI change.
-    function commoditySourceFilterHtml(sources, disabledIds) {
+    // groups: [{key, label, sources: [{source_id, agency, agency_ko}]}], built
+    // by the caller from commodity_reports_v1.json's own items (never a fixed
+    // list, so a commodity or source added/dropped from the pipeline shows up
+    // -- or disappears -- here without a UI change). One wide box per
+    // commodity; the same source can appear in more than one box (e.g. EIA
+    // covers both oil and gas), so its checkbox state is kept in sync across
+    // every box it shows up in by bindCommoditySourceFilter below.
+    function commoditySourceFilterHtml(groups, disabledIds) {
         const disabled = new Set(disabledIds);
-        return sources.map(({ source_id, agency_ko }) => `
-            <label class="source-filter-row">
-                <input type="checkbox" class="source-filter-checkbox" data-source-id="${escSourceLabel(source_id)}" ${disabled.has(source_id) ? '' : 'checked'}>
-                <span class="source-filter-label">${escSourceLabel(agency_ko || source_id)}</span>
-            </label>`).join('');
+        return groups.map(({ label, sources }) => {
+            // Two sources under the same commodity can share one agency code
+            // (e.g. two different EIA feeds both covering oil) -- append the
+            // source id itself as a generic, always-correct tie-breaker
+            // rather than hand-maintaining a feed-name lookup per source.
+            const codeCounts = new Map();
+            sources.forEach(({ agency, agency_ko, source_id }) => {
+                const code = agency || agency_ko || source_id;
+                codeCounts.set(code, (codeCounts.get(code) || 0) + 1);
+            });
+            const rows = sources.map(({ source_id, agency, agency_ko }) => {
+                const code = agency || agency_ko || source_id;
+                const text = codeCounts.get(code) > 1 ? `${code} (${source_id})` : code;
+                return `
+                <label class="commodity-source-check" title="${escSourceLabel(agency_ko || agency || source_id)}">
+                    <input type="checkbox" class="source-filter-checkbox" data-source-id="${escSourceLabel(source_id)}" ${disabled.has(source_id) ? '' : 'checked'}>
+                    <span class="source-filter-label">${escSourceLabel(text)}</span>
+                </label>`;
+            }).join('');
+            return `
+            <div class="commodity-source-group">
+                <div class="commodity-source-header">${escSourceLabel(label)}</div>
+                <div class="commodity-source-checks">${rows}</div>
+            </div>`;
+        }).join('');
     }
 
     // Attach once to the list's container; delegates so re-rendering the
     // rows (e.g. after commoditySourceFilterHtml runs again) never leaves a
-    // stale listener on a removed checkbox.
+    // stale listener on a removed checkbox. The same source_id can appear in
+    // several commodity boxes, so a click also syncs every other checkbox
+    // sharing that source_id -- otherwise toggling it in one box would leave
+    // a stale, contradictory state showing in the others.
     function bindCommoditySourceFilter(container) {
         container.addEventListener('change', async (e) => {
             const checkbox = e.target.closest('.source-filter-checkbox');
             if (!checkbox) return;
+            const sourceId = checkbox.dataset.sourceId;
+            const siblings = [...container.querySelectorAll(`.source-filter-checkbox[data-source-id="${CSS.escape(sourceId)}"]`)];
+            siblings.forEach((box) => { box.checked = checkbox.checked; });
             try {
-                await setCommoditySourceEnabled(checkbox.dataset.sourceId, checkbox.checked);
+                await setCommoditySourceEnabled(sourceId, checkbox.checked);
             } catch (err) {
-                checkbox.checked = !checkbox.checked; // roll back the click on a failed write
+                siblings.forEach((box) => { box.checked = !checkbox.checked; }); // roll back the click on a failed write
                 console.error('Failed to update commodity source preference:', err);
             }
         });
@@ -417,6 +475,7 @@ const Auth = (() => {
         listDisabledCommoditySources, setCommoditySourceEnabled,
         commoditySourceFilterHtml, bindCommoditySourceFilter,
         changePassword, myProfile, updateNickname, resetPasswordForEmail,
+        billNotificationsPaused, setBillNotificationsPaused,
     };
 })();
 

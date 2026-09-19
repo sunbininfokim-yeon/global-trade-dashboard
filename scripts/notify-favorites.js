@@ -56,10 +56,10 @@ async function fetchExecutiveOrders(ids) {
 async function fetchProfiles(userIds) {
   if (!userIds.length) return new Map();
   const rows = await supabaseGet('profiles', {
-    select: 'id,email',
+    select: 'id,email,bill_notifications_paused',
     id: `in.(${userIds.join(',')})`,
   });
-  return new Map(rows.map((row) => [row.id, row.email]));
+  return new Map(rows.map((row) => [row.id, { email: row.email, paused: !!row.bill_notifications_paused }]));
 }
 
 async function fetchLastSeen(pairs) {
@@ -151,15 +151,20 @@ async function run() {
   if (!byUser.size) {
     console.log('No favorited items changed since they were last checked.');
   } else {
-    const emails = await fetchProfiles([...byUser.keys()]);
+    const profiles = await fetchProfiles([...byUser.keys()]);
     let sent = 0;
+    let paused = 0;
     for (const [userId, changes] of byUser) {
-      const email = emails.get(userId);
-      if (!email) continue;
-      await sendDigest(email, changes);
+      const profile = profiles.get(userId);
+      if (!profile || !profile.email) continue;
+      // Paused users still get their favorite_notifications baseline
+      // updated below, so nothing piles up into one email once resumed --
+      // this only skips the send itself.
+      if (profile.paused) { paused += 1; continue; }
+      await sendDigest(profile.email, changes);
       sent += 1;
     }
-    console.log(`Sent ${sent} digest email(s) for ${byUser.size} user(s) with changed favorites.`);
+    console.log(`Sent ${sent} digest email(s) for ${byUser.size} user(s) with changed favorites${paused ? ` (${paused} paused)` : ''}.`);
   }
 
   if (seenUpdates.length) {
