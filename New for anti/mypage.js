@@ -62,6 +62,70 @@
         return host.querySelector(`.mypage-panel[data-panel="${id}"]`);
     }
 
+    // Shared by the 즐겨찾기 tab's bill list and the 메일링 서비스 tab's "these
+    // are what you're watching" list below the pause toggle -- same cards,
+    // same one-request-per-bill loading pattern, two places that show them.
+    function renderFavoriteBillCards(container, bills, token) {
+        if (!bills.length) {
+            container.innerHTML = '<p class="mypage-empty">아직 즐겨찾기한 법안이 없습니다.</p>';
+            return;
+        }
+        container.innerHTML = bills.map((f) => `<div class="policy-fav-bill-card" data-bill-id="${esc(f.item_id)}"><p class="mypage-empty">불러오는 중…</p></div>`).join('');
+        // One request per favorited bill -- fine at favorites-list scale;
+        // revisit with a batch endpoint if this list grows large.
+        bills.forEach(async (f) => {
+            const card = container.querySelector(`[data-bill-id="${CSS.escape(f.item_id)}"]`);
+            try {
+                const bill = await window.USPolicy.loadBillById(f.item_id);
+                if (token !== renderToken || !card) return;
+                card.outerHTML = window.USPolicy.favoriteBillCardHtml(bill, f.notify_enabled);
+            } catch (err) {
+                if (card) card.innerHTML = `<p class="mypage-empty">불러오지 못함: ${esc(f.title || f.item_id)}</p>`;
+            }
+        });
+        bindFavoriteBillCardActions(container);
+    }
+
+    // Delegated so it survives the card.outerHTML swap above; safe to call
+    // every render since the container itself is fresh innerHTML each time
+    // (no stale listener stacks up on a removed container).
+    function bindFavoriteBillCardActions(container) {
+        container.addEventListener('click', async (e) => {
+            const btn = e.target.closest('[data-remove-item-id]');
+            if (!btn) return;
+            btn.disabled = true;
+            try {
+                await window.Auth.removeFavorite('bill', btn.dataset.removeItemId);
+                // Both tabs can be showing a bill list; force a refetch next
+                // time either is opened instead of leaving a stale copy.
+                loaded.delete('favorites');
+                loaded.delete('mailing');
+                const card = btn.closest('.policy-fav-bill-card');
+                if (card) card.remove();
+                if (!container.querySelector('.policy-fav-bill-card')) {
+                    container.innerHTML = '<p class="mypage-empty">아직 즐겨찾기한 법안이 없습니다.</p>';
+                }
+            } catch (err) {
+                btn.disabled = false;
+                console.error('Failed to remove favorite bill:', err);
+            }
+        });
+        container.addEventListener('change', async (e) => {
+            const checkbox = e.target.closest('.policy-fav-bill-notify-checkbox');
+            if (!checkbox) return;
+            const next = checkbox.checked;
+            checkbox.disabled = true;
+            try {
+                await window.Auth.setFavoriteNotifyEnabled('bill', checkbox.dataset.itemId, next);
+            } catch (err) {
+                checkbox.checked = !next;
+                console.error('Failed to update favorite notify preference:', err);
+            } finally {
+                checkbox.disabled = false;
+            }
+        });
+    }
+
     /* ------------------------------------------------------------ 즐겨찾기 */
 
     async function renderFavorites() {
@@ -116,36 +180,114 @@
         }
 
         if (bills.length) {
-            const container = el.querySelector('#mypage-fav-bills');
-            container.innerHTML = bills.map((f) => `<div class="policy-fav-bill-card" data-bill-id="${esc(f.item_id)}"><p class="mypage-empty">불러오는 중…</p></div>`).join('');
-            // One request per favorited bill -- fine at favorites-list scale;
-            // revisit with a batch endpoint if this list grows large.
-            bills.forEach(async (f) => {
-                const card = container.querySelector(`[data-bill-id="${CSS.escape(f.item_id)}"]`);
-                try {
-                    const bill = await window.USPolicy.loadBillById(f.item_id);
-                    if (token !== renderToken || !card) return;
-                    card.outerHTML = window.USPolicy.favoriteBillCardHtml(bill);
-                } catch (err) {
-                    if (card) card.innerHTML = `<p class="mypage-empty">불러오지 못함: ${esc(f.title || f.item_id)}</p>`;
-                }
-            });
+            renderFavoriteBillCards(el.querySelector('#mypage-fav-bills'), bills, token);
         }
     }
 
     /* -------------------------------------------------------- 메일링 서비스 */
 
+    // Groups commodity_reports_v1.json's items by commodity instead of by
+    // RSS/source id, so the source filter reads "원유 -> EIA" instead of a
+    // flat list of feed names. commodity_labels/commodities come straight
+    // from that file -- a commodity or source added to the pipeline shows up
+    // here without a UI change. Order follows each commodity's first
+    // appearance in items (stable, not alphabetical or hardcoded).
+    function groupSourcesByCommodity(reportsRes) {
+        const labels = reportsRes.commodity_labels || {};
+        const order = [];
+        const byCommodity = new Map(); // key -> Map<source_id, {agency, agency_ko}>
+        (reportsRes.items || []).forEach((item) => {
+            (item.commodities || []).forEach((key) => {
+                if (!byCommodity.has(key)) {
+                    byCommodity.set(key, new Map());
+                    order.push(key);
+                }
+                const sources = byCommodity.get(key);
+                if (!sources.has(item.source_id)) {
+                    sources.set(item.source_id, { agency: item.agency, agency_ko: item.agency_ko });
+                }
+            });
+        });
+        const allSourceIds = new Set();
+        (reportsRes.items || []).forEach((item) => allSourceIds.add(item.source_id));
+        const groups = order.map((key) => ({
+            key,
+            label: labels[key] || key,
+            sources: [...byCommodity.get(key)].map(([source_id, meta]) => ({ source_id, ...meta })),
+        }));
+        return { groups, sourceIds: allSourceIds };
+    }
+
     async function renderMailing() {
         const el = panel('mailing');
         el.innerHTML = `
+            <div class="mypage-status-strip" id="mypage-mail-status">
+                <div class="mypage-status-tile"><div class="v">불러오는 중…</div><div class="k">법안 알림</div></div>
+                <div class="mypage-status-tile"><div class="v">불러오는 중…</div><div class="k">원자재 다이제스트</div></div>
+                <div class="mypage-status-tile"><div class="v">준비 중</div><div class="k">시장 미시구조</div></div>
+            </div>
+
             <p class="mypage-section-title">법안</p>
-            <p class="mypage-empty">즐겨찾기한 법안의 상태가 바뀌면 자동으로 메일이 발송됩니다. 별도 설정이 필요 없습니다.</p>
+            <p class="mypage-empty">즐겨찾기한 법안·행정명령의 단계가 바뀌면 매일 오전 11시 17분(KST) 확인 후 자동으로 메일이 발송됩니다.</p>
+            <div class="mypage-switch-row">
+                <div class="mypage-switch-label">알림 일시정지<small>즐겨찾기는 그대로 두고 메일만 끕니다</small></div>
+                <label class="mypage-switch">
+                    <input type="checkbox" id="mypage-bill-pause">
+                    <span class="track"></span><span class="knob"></span>
+                </label>
+            </div>
+            <p class="mypage-status hidden" id="mypage-bill-pause-status"></p>
+            <div class="policy-bill-list" id="mypage-mail-bills"><p class="mypage-empty">불러오는 중…</p></div>
+
             <p class="mypage-section-title">원자재</p>
+            <p class="mypage-empty">최근 8일 이내 리포트를 기관별로 모아 매주 월요일 오전 8시(KST)에 발송합니다. 체크를 풀면 그 기관만 빠집니다.</p>
             <div id="mypage-source-filter"><p class="mypage-empty">불러오는 중…</p></div>
+
             <p class="mypage-section-title">시장 미시구조</p>
             <p class="mypage-empty">준비 중입니다.</p>
         `;
         const token = renderToken;
+        const statusStrip = el.querySelector('#mypage-mail-status');
+        const [billTile, commodityTile] = statusStrip.querySelectorAll('.mypage-status-tile');
+
+        const pauseToggle = el.querySelector('#mypage-bill-pause');
+        const pauseStatus = el.querySelector('#mypage-bill-pause-status');
+        try {
+            const paused = await window.Auth.billNotificationsPaused();
+            if (token !== renderToken) return;
+            pauseToggle.checked = paused;
+            billTile.querySelector('.v').textContent = paused ? '일시정지됨' : '켜짐 · 매일 11:17';
+        } catch (err) {
+            if (token !== renderToken) return;
+            billTile.querySelector('.v').textContent = '불러오지 못함';
+        }
+        pauseToggle.addEventListener('change', async () => {
+            const next = pauseToggle.checked;
+            pauseToggle.disabled = true;
+            pauseStatus.className = 'mypage-status hidden';
+            try {
+                await window.Auth.setBillNotificationsPaused(next);
+                billTile.querySelector('.v').textContent = next ? '일시정지됨' : '켜짐 · 매일 11:17';
+            } catch (err) {
+                pauseToggle.checked = !next;
+                pauseStatus.textContent = err.message || '저장하지 못했습니다.';
+                pauseStatus.className = 'mypage-status is-error';
+            } finally {
+                pauseToggle.disabled = false;
+            }
+        });
+
+        const billListEl = el.querySelector('#mypage-mail-bills');
+        try {
+            const favorites = await window.Auth.listFavorites();
+            if (token !== renderToken) return;
+            const bills = favorites.filter((f) => f.item_kind === 'bill');
+            renderFavoriteBillCards(billListEl, bills, token);
+        } catch (err) {
+            if (token !== renderToken) return;
+            billListEl.innerHTML = `<p class="mypage-empty">즐겨찾기한 법안을 불러오지 못했습니다: ${esc(err.message)}</p>`;
+        }
+
         const container = el.querySelector('#mypage-source-filter');
         try {
             const [reportsRes, disabled] = await Promise.all([
@@ -153,19 +295,19 @@
                 window.Auth.listDisabledCommoditySources(),
             ]);
             if (token !== renderToken) return;
-            const bySource = new Map();
-            (reportsRes.items || []).forEach((item) => {
-                if (!bySource.has(item.source_id)) bySource.set(item.source_id, item.agency_ko || item.agency || item.source_id);
-            });
-            const sources = [...bySource.entries()].map(([source_id, agency_ko]) => ({ source_id, agency_ko }));
-            if (!sources.length) {
+            const { groups, sourceIds } = groupSourcesByCommodity(reportsRes);
+            const totalSources = sourceIds.size;
+            const disabledActive = disabled.filter((id) => sourceIds.has(id)).length;
+            commodityTile.querySelector('.v').textContent = `월 08:00 · ${totalSources - disabledActive}/${totalSources} 소스`;
+            if (!groups.length) {
                 container.innerHTML = '<p class="mypage-empty">현재 연동된 원자재 소스가 없습니다.</p>';
                 return;
             }
-            container.innerHTML = window.Auth.commoditySourceFilterHtml(sources, disabled);
+            container.innerHTML = window.Auth.commoditySourceFilterHtml(groups, disabled);
             window.Auth.bindCommoditySourceFilter(container);
         } catch (err) {
             if (token !== renderToken) return;
+            commodityTile.querySelector('.v').textContent = '불러오지 못함';
             container.innerHTML = `<p class="mypage-empty">소스 목록을 불러오지 못했습니다: ${esc(err.message)}</p>`;
         }
     }
