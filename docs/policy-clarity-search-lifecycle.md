@@ -76,7 +76,7 @@ PR #321의 `20260920020000_mailing_bill_lifecycle.sql`과 메일 템플릿이 �
 
 메일 예: `발의: 하원 / 현재: 상원 상임위 보고 / 상원 토론 종결 표결 부결 /
 근거 날짜: 2026-09-15 / 찬성 49 · 반대 50 / 다음 확인: 상원 본회의 통과` + 공식 링크.
-수정된 메일 migration/template은 아직 운영 적용하지 않았다. 실제 발송은 계속 OFF다.
+메일 migration을 운영 DB에 적용했고 템플릿·Resend 키는 Worker version `bf61656d-4a31-4682-af8e-e1d66d6ef03a`에 배포했다. 실제 발송은 계속 OFF다. 새 snapshot 생성 수집기와 사이트 변경은 아직 PR #339 상태이며 활성 recovery 수집기는 변경하지 않았다.
 
 ## 검증과 반영 순서
 
@@ -91,5 +91,4 @@ PR #321의 `20260920020000_mailing_bill_lifecycle.sql`과 메일 템플릿이 �
 - 운영 반영 시 메일 migration 먼저 적용 → 수집기 새 스냅샷 기준점 저장 → 사이트/메일 Worker 검증.
 - 신규 UI 캐시/상세 API 캐시 버전을 올렸다. 기존 DB를 대량 갱신하지 않아도 상세 화면은 원문 이력에서 새 계약을 계산한다.
 
-별도 운영 잔여: 기존 Resend 도메인 인증 레코드와 새 계정의 키가 달라 root 도메인
-인증 전환을 조정해야 한다. 메일 발송 활성화·시험 메일·PR merge/운영 배포는 이번 검증 결과와 구분한다.
+Resend 루트 도메인 `chokemonitor.com`은 사용자 복구 후 verified/sending enabled로 확인했고 Worker에 키를 연결했다. `alerts@chokemonitor.com`을 사용한다. 테스트 메일 1건은 본문 준비 후 승인 대기다. 정기 발송 활성화·사이트 PR merge/운영 배포는 별도 남은 단계다.
