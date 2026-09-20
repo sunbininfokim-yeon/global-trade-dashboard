@@ -8,6 +8,8 @@ const {
   startSyncRun, finishSyncRun, supabaseUpsert, updateSyncState,
 } = require('./lib/sync-utils');
 
+const { committeeHierarchy } = require('./lib/committee-hierarchy');
+
 const API_BASE = 'https://api.congress.gov/v3';
 const API_KEY = process.env.CONGRESS_API_KEY || process.env.DATA_GOV_API_KEY;
 const INTERVAL_MS = Number(process.env.CONGRESS_REQUEST_INTERVAL_MS || 850);
@@ -57,9 +59,8 @@ function rowFrom(value, congress, parentCommitteeId = null) {
     congress_number: congress,
     committee_code: committeeCode,
     chamber: committeeChamber,
-    committee_type: value?.isSubcommittee || parentCommitteeId ? 'subcommittee' : firstNonEmpty(value?.committeeType, 'standing'),
+    ...committeeHierarchy(value, congress, committeeChamber, parentCommitteeId),
     name: firstNonEmpty(value?.name, value?.committeeName, committeeCode),
-    parent_committee_id: parentCommitteeId,
     jurisdiction_summary: firstNonEmpty(value?.jurisdiction, value?.jurisdictionSummary) || null,
     official_url: withoutKey(value?.url),
     raw_source: value,
@@ -98,16 +99,32 @@ async function run() {
       offset += items.length;
     }
     read = parents.length;
+    const rows = [];
+    const directoryIds = new Set(parents.map(item => rowFrom(item, congress)?.committee_id).filter(Boolean));
     for (const item of parents) {
-      const parent = rowFrom(item, congress);
-      if (!parent) continue;
-      await supabaseUpsert('committees', [parent], 'committee_id');
-      written += 1;
-      const detail = await apiGet(`/committee/${congress}/${parent.chamber}/${parent.committee_code}`);
-      for (const child of detailCandidates(detail)) {
-        const subcommittee = rowFrom(child, congress, parent.committee_id);
-        if (!subcommittee) continue;
-        await supabaseUpsert('committees', [subcommittee], 'committee_id');
+      const base = rowFrom(item, congress);
+      if (!base) continue;
+      const detail = await apiGet(`/committee/${base.chamber}/${base.committee_code}`);
+      const row = rowFrom({ ...item, ...detail.committee }, congress);
+      if (!row) continue;
+      if (row.committee_type === 'subcommittee' && !row.parent_committee_id) {
+        throw new Error(`Official parent unresolved: ${row.committee_id}`);
+      }
+      if (row.parent_committee_id && !directoryIds.has(row.parent_committee_id)) {
+        throw new Error(`Official parent missing from Congress directory: ${row.committee_id}`);
+      }
+      rows.push(row);
+    }
+    // Resolve parent dependencies before writing; never import historical children
+    // from the all-Congress detail into this Congress's directory.
+    const saved = new Set();
+    while (rows.length) {
+      const ready = rows.filter(row => !row.parent_committee_id || saved.has(row.parent_committee_id));
+      if (!ready.length) throw new Error('Unresolved or cyclic committee hierarchy');
+      for (const row of ready) {
+        await supabaseUpsert('committees', [row], 'committee_id');
+        saved.add(row.committee_id);
+        rows.splice(rows.indexOf(row), 1);
         written += 1;
       }
     }

@@ -2,6 +2,7 @@
 
 // Congress.gov only. We store official summaries and official text links, never bill text.
 const crypto = require('node:crypto');
+const { committeeHierarchy } = require('./lib/committee-hierarchy');
 const PolicyEvidence = require('../New for anti/policy-evidence.js');
 const {
   asArray, checkpointSyncState, createRequestGate, fetchJson, finishSyncRun, firstNonEmpty,
@@ -309,7 +310,7 @@ async function saveBundle(data) {
   for (const committee of data.committees) {
     const info = committeeData(committee, data.ref.congress); if (!info) continue;
     await supabaseUpsert('committees', [{ committee_id: info.id, congress_number: data.ref.congress, committee_code: info.committeeCode,
-      chamber: info.committeeChamber, committee_type: committee.isSubcommittee ? 'subcommittee' : 'standing',
+      chamber: info.committeeChamber, ...committeeHierarchy(committee, data.ref.congress, info.committeeChamber),
       name: firstNonEmpty(committee.name, info.committeeCode), official_url: withoutKey(committee.url), raw_source: committee }], 'committee_id');
     await supabaseUpsert('bill_committees', [{ bill_id: data.billId, committee_id: info.id,
       activity_names: asArray(committee.activities).map((item) => item.name || item).filter(Boolean),
