@@ -232,7 +232,7 @@ def main() -> int:
         for event in calendar.get("events", []):
             row = dict(event)
             row["iso3"] = iso3
-            row.setdefault("date_end", None)
+            # date_end is optional; do not invent null (null_policy forbids it).
             events.append(row)
 
     events.sort(key=event_sort_key)

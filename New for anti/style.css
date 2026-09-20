@@ -3687,6 +3687,99 @@ body.mypage-mode #chart-view::-webkit-scrollbar-thumb { background: rgba(148, 16
 .mypage-status.is-ok { color: #4ade80; }
 .mypage-status.hidden { display: none; }
 
+/* Mailing tab: at-a-glance next-send strip above the three channel sections,
+   so "when does this actually arrive" doesn't require reading the copy. */
+.mypage-status-strip {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 4px;
+}
+.mypage-status-tile {
+    background: rgba(148, 163, 184, .06);
+    padding: 10px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+.mypage-status-tile .v { font-size: 13px; font-weight: 600; color: #e2e8f0; }
+.mypage-status-tile .k { font-size: 11px; color: var(--text-secondary); }
+@media (max-width: 520px) { .mypage-status-strip { grid-template-columns: 1fr; } }
+
+/* On/off switch, used for the bill-notification pause toggle. */
+.mypage-switch-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 10px 14px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: rgba(148, 163, 184, .06);
+}
+.mypage-switch-label { font-size: 12.5px; color: #e2e8f0; }
+.mypage-switch-label small { display: block; color: var(--text-secondary); font-size: 11px; margin-top: 1px; }
+.mypage-switch { position: relative; width: 36px; height: 21px; flex-shrink: 0; }
+.mypage-switch input { position: absolute; inset: 0; opacity: 0; margin: 0; cursor: pointer; }
+.mypage-switch .track {
+    position: absolute; inset: 0; border-radius: 999px;
+    background: rgba(148, 163, 184, .35);
+    transition: background .15s ease;
+    pointer-events: none;
+}
+.mypage-switch .knob {
+    position: absolute; top: 2px; left: 2px; width: 17px; height: 17px; border-radius: 50%;
+    background: #f1f5f9; box-shadow: 0 1px 2px rgba(0, 0, 0, .35);
+    transition: transform .15s ease;
+    pointer-events: none;
+}
+.mypage-switch input:checked + .track { background: #38bdf8; }
+.mypage-switch input:checked + .track + .knob { transform: translateX(15px); }
+.mypage-switch input:focus-visible + .track { outline: 2px solid #38bdf8; outline-offset: 2px; }
+.mypage-switch input:disabled + .track { opacity: .6; }
+
+/* Commodity-grouped source filter: one wide row per commodity, checkable
+   agency chips inside instead of one row per RSS feed -- a source covering
+   several commodities (e.g. EIA -> oil, gas) shows up as its own chip in
+   each commodity's row, kept in sync by bindCommoditySourceFilter. */
+.commodity-source-group {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px 14px;
+    width: 100%;
+    padding: 10px 16px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: rgba(148, 163, 184, .06);
+    box-sizing: border-box;
+}
+.commodity-source-header {
+    flex: 0 0 auto;
+    min-width: 64px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #f1f5f9;
+}
+.commodity-source-checks {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 10px;
+    flex: 1 1 auto;
+}
+.commodity-source-check {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+}
+.commodity-source-check .source-filter-checkbox { flex: 0 0 auto; }
+.commodity-source-check .source-filter-label { color: #cbd5e1; font-size: 12px; }
+
 .fin-wrap { max-width: 1180px; margin: 0 auto; padding: 30px 28px 64px; color: var(--text-primary); }
 .fin-loading { color: var(--text-secondary); font-size: 13px; padding: 40px 0; }
 
@@ -5063,7 +5156,8 @@ body.macro-night .mm-hint { background: rgba(6, 11, 22, .88); }
 .auth-policy-text h4 { margin: 10px 0 2px; color: #e2e8f0; font-size: 12px; }
 .auth-policy-text h4:first-child { margin-top: 0; }
 .auth-policy-text p { margin: 0 0 6px; }
-.signup-only.hidden { display: none; }
+.auth-modal-title { margin: -6px 0 4px; font-size: 14px; font-weight: 600; color: #f1f5f9; }
+#auth-forgot-link, #auth-back-link { align-self: flex-start; margin: -6px 0 0; }
 
 @media (max-width: 900px) {
     .auth-container { margin-left: 8px; }
@@ -5652,32 +5746,42 @@ body.macro-night .mm-hint { background: rgba(6, 11, 22, .88); }
 .policy-fav-bill-stage { color: #38bdf8; }
 .policy-fav-bill-votes { color: #64748b; }
 
+.policy-fav-bill-actions {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    white-space: nowrap;
+}
+.policy-fav-bill-notify {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    color: #94a3b8;
+    font-size: 11px;
+    cursor: pointer;
+}
+.policy-fav-bill-notify-checkbox { accent-color: #38bdf8; }
+.policy-fav-star {
+    flex: 0 0 auto;
+    background: none;
+    border: none;
+    padding: 0;
+    font-size: 19px;
+    line-height: 1;
+    color: #facc15;
+    cursor: pointer;
+    transition: transform .1s ease, filter .1s ease;
+}
+.policy-fav-star:hover { filter: brightness(1.15); transform: scale(1.08); }
+.policy-fav-star:focus-visible { outline: 2px solid #38bdf8; outline-offset: 2px; }
+
 @media (max-width: 640px) {
     /* Narrow enough that "wide rectangle" would otherwise clip the title
        to almost nothing -- meta wraps to its own line instead. */
     .policy-fav-bill-card { flex-wrap: wrap; }
     .policy-fav-bill-title { flex-basis: 100%; white-space: normal; }
 }
-
-/* My Page commodity-digest source filter -- one wide row per source
-   (checkbox + agency label), same rectangle shape as the bill card above
-   for visual consistency between the two favorites-tab lists. */
-.source-filter-row {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    width: 100%;
-    padding: 10px 16px;
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    background: rgba(148, 163, 184, .06);
-    cursor: pointer;
-    box-sizing: border-box;
-    transition: border-color .15s ease;
-}
-.source-filter-row:hover { border-color: #38bdf8; }
-.source-filter-checkbox { flex: 0 0 auto; }
-.source-filter-label { flex: 1 1 auto; color: #e2e8f0; font-size: 12.5px; }
 
 .policy-bill-meta {
     display: flex;
