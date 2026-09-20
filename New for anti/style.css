@@ -5906,6 +5906,7 @@ body.macro-night .mm-hint { background: rgba(6, 11, 22, .88); }
    still get another vote later. The dot stays hollow red rather than filled,
    so it reads as "stalled here", distinct from is-terminal's dead end. */
 .policy-stage-step.is-failed { color: #fb7185; cursor: help; }
+.policy-stage-step.is-failed::before { background: rgba(251, 113, 133, 0.35); }
 .policy-stage-step.is-failed .policy-stage-step-dot {
     border-color: #fb7185;
     background: #0f172a;
