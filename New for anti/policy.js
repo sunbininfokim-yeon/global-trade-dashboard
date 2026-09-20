@@ -313,14 +313,64 @@
        <div class="policy-search-results" data-search-results hidden></div>
      </div>`;
 
-  const SEARCH_TYPE_LABELS = { bill: '법안', executive_order: 'EO', regulation: '규정' };
   const SEARCH_TYPE_VIEWS = { bill: 'bill', executive_order: 'eo' };
 
-  const searchResultRow = (item) => {
+  // search_policy_corpus's source_type ('bill'/'executive_order'/'regulation')
+  // doesn't say whether a bill is already law -- that split is invisible in
+  // the raw type, so a mixed result list used to read as one undifferentiated
+  // pile: no way to tell an enacted law from a bill still in committee from
+  // an EO at a glance. usSearch (_worker.js) enriches bill hits with
+  // law_number/current_stage; searchGroupKey turns that into the four
+  // buckets a reader actually asks about.
+  const SEARCH_GROUPS = [
+    { key: 'enacted', cls: 'is-enacted', label: '제정법안', badgeLabel: '법률' },
+    { key: 'pending', cls: 'is-pending', label: '발의법안', badgeLabel: '법안' },
+    { key: 'executive_order', cls: 'is-eo', label: '행정명령', badgeLabel: 'EO' },
+    { key: 'regulation', cls: 'is-regulation', label: '규정', badgeLabel: '규정' },
+  ];
+  const SEARCH_GROUP_BY_KEY = new Map(SEARCH_GROUPS.map((g) => [g.key, g]));
+
+  const searchGroupKey = (item) => (item.type === 'bill' ? (item.law_number ? 'enacted' : 'pending') : item.type);
+
+  // Groups in a fixed order, and drops any group with no hits for this query
+  // -- three blocks most of the time, a fourth only when a regulation result
+  // actually turned up, rather than an empty "규정" column every search.
+  function groupSearchItems(items) {
+    const buckets = new Map();
+    for (const item of items) {
+      const key = searchGroupKey(item);
+      if (!buckets.has(key)) buckets.set(key, []);
+      buckets.get(key).push(item);
+    }
+    return SEARCH_GROUPS
+      .map((def) => ({ ...def, items: buckets.get(def.key) || [] }))
+      .filter((g) => g.items.length);
+  }
+
+  // Only a bill has anything worth a second line here: an enacted one cites
+  // its public/private law number, a pending one its own bill number and
+  // current stage. EO/regulation rows stay title-only, same as before.
+  const searchResultMeta = (item) => {
+    if (item.type !== 'bill') return '';
+    const cite = billNumberLabel({ ...item, bill_id: item.id });
+    if (item.law_number) {
+      const lawLabel = `${item.law_type === 'private' ? '사법' : '공법'} ${item.law_number}`;
+      return item.latest_action_date ? `${lawLabel} · ${item.latest_action_date}` : lawLabel;
+    }
+    return `${cite} · ${stageLabel(item.current_stage)}`;
+  };
+
+  // opts.compact drops the meta line for the header dropdown, which has no
+  // room for it -- the full search page (viewSearch below) keeps it.
+  const searchResultRow = (item, opts = {}) => {
+    const group = SEARCH_GROUP_BY_KEY.get(searchGroupKey(item));
     const view = SEARCH_TYPE_VIEWS[item.type];
-    const typeLabel = SEARCH_TYPE_LABELS[item.type] || item.type;
-    const body = `<span class="policy-search-result-type">${esc(typeLabel)}</span>
-        <span class="policy-search-result-title">${esc(item.title || item.id)}</span>`;
+    const meta = !opts.compact ? searchResultMeta(item) : '';
+    const body = `<span class="policy-search-result-type${group ? ` ${group.cls}` : ''}">${esc(group?.badgeLabel || item.type)}</span>
+        <span class="policy-search-result-body">
+          <span class="policy-search-result-title">${esc(item.title || item.id)}</span>
+          ${meta ? `<span class="policy-search-result-meta">${esc(meta)}</span>` : ''}
+        </span>`;
     // Regulations have no internal drill-down screen of their own -- they
     // only ever appear nested under an EO or a CFR title -- so a search hit
     // links straight to its official Federal Register page instead.
@@ -334,6 +384,16 @@
     return `<${tag} class="policy-search-result${view ? '' : ' is-inert'}"${navAttrs}>${body}</${tag}>`;
   };
 
+  const searchGroupBlock = (group, opts = {}) => `
+    <section class="policy-search-group">
+      <div class="policy-search-group-head ${group.cls}">
+        <span class="policy-search-group-dot ${group.cls}" aria-hidden="true"></span>
+        <span class="policy-search-group-label">${esc(group.label)}</span>
+        <span class="policy-search-group-count">${group.items.length}건</span>
+      </div>
+      <div class="policy-search-group-rows">${group.items.map((item) => searchResultRow(item, opts)).join('')}</div>
+    </section>`;
+
   function renderSearchMessage(message) {
     const box = host?.querySelector('[data-search-results]');
     if (!box) return;
@@ -346,7 +406,7 @@
     if (!box) return;
     if (body.unavailable) return renderSearchMessage('검색 기능 준비 중입니다');
     if (!body.items?.length) return renderSearchMessage('검색 결과가 없습니다');
-    box.innerHTML = body.items.map(searchResultRow).join('');
+    box.innerHTML = groupSearchItems(body.items).map((g) => searchGroupBlock(g, { compact: true })).join('');
     box.hidden = false;
   }
 
@@ -1123,8 +1183,9 @@
     if (!body) return shell(card(heading, empty('검색 결과를 불러오지 못했습니다')));
     if (body.unavailable) return shell(card(heading, empty('검색 기능 준비 중입니다')));
     if (!body.items?.length) return shell(card(heading, empty('검색 결과가 없습니다')));
+    const groups = groupSearchItems(body.items);
     return shell(card(`${heading} (${body.items.length}건)`,
-      `<div class="policy-search-page-results">${body.items.map(searchResultRow).join('')}</div>`));
+      `<div class="policy-search-page-results">${groups.map((g) => searchGroupBlock(g, { compact: false })).join('')}</div>`));
   }
 
   /* -------------------------------------------------------------- routing */

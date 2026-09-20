@@ -2863,13 +2863,44 @@ async function usSearch(env, f) {
             `select=regulation_id,federal_register_url&regulation_id=in.(${regulationIds.map((id) => encodeURIComponent(id)).join(',')})`);
         for (const reg of regRows) regulationUrls.set(reg.regulation_id, reg.federal_register_url);
     }
-    const items = (rows || []).map((r) => ({
-        type: r.source_type,
-        id: r.source_id,
-        title: r.title,
-        similarity_score: r.similarity_score,
-        source_url: r.source_type === 'regulation' ? (regulationUrls.get(r.source_id) || null) : undefined,
-    }));
+    // search_policy_corpus (Supabase RPC, owned separately -- see
+    // supabase/migrations/20260902_policy_corpus_semantic_search.sql) only
+    // returns source_type/source_id/title/similarity_score: a 'bill' hit
+    // carries no signal for whether it's already a law or still moving
+    // through Congress. The policy UI groups results into enacted/pending
+    // blocks, so that needs law_number/current_stage -- fetched the same way
+    // regulationUrls is above, a follow-up lookup keyed by the RPC's own
+    // result ids rather than a change to the RPC itself.
+    const billIds = [...new Set((rows || [])
+        .filter((r) => r.source_type === 'bill')
+        .map((r) => r.source_id))];
+    const billMeta = new Map();
+    if (billIds.length) {
+        const billRows = await usFetch(env, 'bills',
+            `select=bill_id,congress_number,bill_type,bill_number,origin_chamber,current_stage,law_type,law_number,latest_action_date`
+            + `&bill_id=in.(${billIds.map((id) => encodeURIComponent(id)).join(',')})`);
+        for (const b of billRows) billMeta.set(b.bill_id, b);
+    }
+    const items = (rows || []).map((r) => {
+        const bill = r.source_type === 'bill' ? billMeta.get(r.source_id) : null;
+        return {
+            type: r.source_type,
+            id: r.source_id,
+            title: r.title,
+            similarity_score: r.similarity_score,
+            source_url: r.source_type === 'regulation' ? (regulationUrls.get(r.source_id) || null) : undefined,
+            ...(bill ? {
+                congress_number: bill.congress_number,
+                bill_type: bill.bill_type,
+                bill_number: bill.bill_number,
+                origin_chamber: bill.origin_chamber,
+                current_stage: bill.current_stage,
+                law_type: bill.law_type,
+                law_number: bill.law_number,
+                latest_action_date: bill.latest_action_date,
+            } : {}),
+        };
+    });
     return { ok: true, body: { query: f.query, items } };
 }
 
