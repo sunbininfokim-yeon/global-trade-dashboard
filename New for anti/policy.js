@@ -31,113 +31,12 @@
 
   const CHAMBER_LABELS = { house: '하원', senate: '상원', joint: '합동' };
 
-  // The pipeline a US bill walks, in order. Introduction through committee
-  // consideration collapse into one step (a bill sitting in subcommittee has
-  // not cleared committee yet, so both read as 발의·회부).
-  //
-  // Which chamber sits at each step depends on where the bill started -- a
-  // Senate bill (S./S.Res./...) goes 상원 발의 -> ... -> 하원 상임위 보고 ->
-  // 하원 본회의 통과, a House bill the reverse -- so every step past the
-  // first is named for the actual chamber there instead of a chamber-blind
-  // generic label. Falls back to the old generic wording when origin_chamber
-  // isn't known (e.g. a fixture or an unsynced row).
-  //
-  // 'reported' (committee reported the bill) happens once in EACH chamber,
-  // so unlike every other stage it cannot be told apart by its
-  // normalized_stage alone -- a step that lists it also carries a `chamber`
-  // filter, matched against that action's own bill_actions.chamber, to say
-  // which occurrence it is.
-  function stageFlowFor(originChamber) {
-    const known = originChamber === 'house' || originChamber === 'senate';
-    const otherChamber = originChamber === 'house' ? 'senate' : 'house';
-    const originLabel = known ? CHAMBER_LABELS[originChamber] : null;
-    const otherLabel = known ? CHAMBER_LABELS[otherChamber] : null;
-    return [
-      { label: known ? `${originLabel} 발의·회부` : '발의·회부', stages: ['introduced', 'referred', 'subcommittee', 'committee_consideration'] },
-      { label: known ? `${originLabel} 상임위 보고` : '상임위 보고', stages: ['reported'], chamber: known ? originChamber : undefined },
-      { label: known ? `${originLabel} 본회의 통과` : '본회의 통과', stages: ['passed_origin_chamber'] },
-      { label: known ? `${otherLabel} 상임위 보고` : '상대원 상임위 보고', stages: ['reported'], chamber: known ? otherChamber : undefined },
-      { label: known ? `${otherLabel} 본회의 통과` : '상대원 본회의 통과', stages: ['second_chamber'] },
-      { label: '양원 조정', stages: ['resolving_differences'] },
-      { label: '양원 통과', stages: ['passed_both_chambers', 'presented_to_president'] },
-      { label: '법률 제정', stages: ['enacted'] },
-    ];
-  }
-
-  // bill.current_stage is a bare stage code, so when a step is chamber-
-  // qualified (only 'reported' is) there can be two matching steps -- pick
-  // the one whose chamber matches the most recent action that actually
-  // carries this stage. No matching action at all (current_stage set but the
-  // action history doesn't explain it): fall back to the later of the two,
-  // since a bill that reached this ambiguous point already passed through
-  // the earlier one.
-  function currentStepIndex(stageFlow, bill) {
-    if (!bill.current_stage) return -1;
-    const matches = stageFlow.map((_, i) => i).filter((i) => stageFlow[i].stages.includes(bill.current_stage));
-    if (matches.length <= 1) return matches.length ? matches[0] : -1;
-    const latestMatch = (bill.bill_actions || []).find((a) => a.normalized_stage === bill.current_stage);
-    const byChamber = matches.find((i) => stageFlow[i].chamber && stageFlow[i].chamber === latestMatch?.chamber);
-    return byChamber !== undefined ? byChamber : matches[matches.length - 1];
-  }
-
-  // The date a step was reached: the earliest action carrying one of its
-  // stages (chamber-qualified the same way currentStepIndex is). bill_actions
-  // is sorted newest-first (see usBillDetail in _worker.js), so that is the
-  // LAST entry in the filtered list, not the first.
-  function stepDate(step, actions) {
-    const matches = actions.filter((a) => a.normalized_stage && step.stages.includes(a.normalized_stage) && (!step.chamber || a.chamber === step.chamber));
-    return matches.length ? matches[matches.length - 1].action_date : null;
-  }
-
-  // Ends that are not a point on the rail: the bill stopped instead of
-  // advancing, so they hang off the end of whatever it did reach.
-  const TERMINAL_LABELS = { vetoed: '거부', failed: '부결' };
-
-  // A chamber's own recorded roll call is the ground truth for whether its
-  // floor step was reached, or failed there -- unlike bill_actions'
-  // normalized_stage, it does not depend on that action's raw text having
-  // been recognized by the sync classifier (e.g. Congress.gov's compact
-  // "Passed/agreed to in House" summary line, or a cloture/motion-to-proceed
-  // vote that blocks a chamber from ever reaching its passage vote). A bill
-  // can sit at an earlier current_stage for a long time after a chamber
-  // votes it down without the bill itself being terminal (failed/vetoed) --
-  // the rail should show that stall at the stage where it happened instead
-  // of silently looking like nothing happened past committee.
-  const FLOOR_VOTE_RE = /passage|cloture|proceed/i;
-  const FAILED_VOTE_RE = /fail|reject|defeat|not agreed/i;
-
-  function floorVoteStatus(bill) {
-    const reached = new Set();
-    const failed = new Map(); // stage -> the vote that failed there
-    const passed = new Map(); // stage -> the vote that passed there (for its date/tally)
-    // Without a known origin chamber, "the other chamber" cannot be told
-    // apart from "the origin chamber" -- guessing would misfile a vote onto
-    // the wrong node, which is worse than showing neither.
-    if (!bill.origin_chamber) return { reached, failed, passed };
-    for (const vote of bill.bill_votes || []) {
-      if (!vote.chamber || !FLOOR_VOTE_RE.test(vote.question || '')) continue;
-      const targetStage = vote.chamber === bill.origin_chamber ? 'passed_origin_chamber' : 'second_chamber';
-      if (FAILED_VOTE_RE.test(vote.result || '')) failed.set(targetStage, vote);
-      else { reached.add(targetStage); passed.set(targetStage, vote); }
-    }
-    return { reached, failed, passed };
-  }
-
-  // Single source of truth for "how far did this bill get" -- stageRail, the
-  // stage badge and the favorites card all derive their labels from this so
-  // they can never disagree about which step is current.
+  // Use the same evidence contract as ingestion and the API.
+  const TERMINAL_LABELS = { vetoed: '거부권 행사', failed: '부결' };
   function resolveBillStage(bill) {
-    const stageFlow = stageFlowFor(bill.origin_chamber);
-    const actions = bill.bill_actions || [];
-    const floorVotes = floorVoteStatus(bill);
-    const stepReached = (step) => actions.some((a) => a.normalized_stage && step.stages.includes(a.normalized_stage) && (!step.chamber || a.chamber === step.chamber))
-      || step.stages.some((s) => floorVotes.reached.has(s));
-
-    const currentIndex = currentStepIndex(stageFlow, bill);
-    let furthest = currentIndex;
-    stageFlow.forEach((step, i) => { if (stepReached(step)) furthest = Math.max(furthest, i); });
-
-    return { stageFlow, actions, floorVotes, currentIndex, furthest };
+    const lifecycle = bill.lifecycle || window.PolicyEvidence.buildLifecycle(bill);
+    const stageFlow = lifecycle.steps;
+    return { lifecycle, stageFlow, currentIndex: stageFlow.findIndex(s => s.id === lifecycle.current.step_id) };
   }
 
   const esc = (value) => {
@@ -330,7 +229,7 @@
   ];
   const SEARCH_GROUP_BY_KEY = new Map(SEARCH_GROUPS.map((g) => [g.key, g]));
 
-  const searchGroupKey = (item) => (item.type === 'bill' ? (item.law_number ? 'enacted' : 'pending') : item.type);
+  const searchGroupKey = (item) => (item.type === 'bill' ? ((item.law_number || item.current_stage === 'enacted') ? 'enacted' : 'pending') : item.type);
 
   // Groups in a fixed order, and drops any group with no hits for this query
   // -- three blocks most of the time, a fourth only when a regulation result
@@ -368,7 +267,7 @@
     const meta = !opts.compact ? searchResultMeta(item) : '';
     const body = `<span class="policy-search-result-type${group ? ` ${group.cls}` : ''}">${esc(group?.badgeLabel || item.type)}</span>
         <span class="policy-search-result-body">
-          <span class="policy-search-result-title">${esc(item.title || item.id)}</span>
+          <span class="policy-search-result-title">${esc(item.title || item.id)}${item.match_type === 'exact_bill_number' ? ` · ${esc(item.bill_type.toUpperCase())} ${esc(item.bill_number)} (${esc(item.congress_number)}대)` : ''}</span>
           ${meta ? `<span class="policy-search-result-meta">${esc(meta)}</span>` : ''}
         </span>`;
     // Regulations have no internal drill-down screen of their own -- they
@@ -497,37 +396,18 @@
   // computation (action history + a chamber's own recorded floor votes),
   // not by current_stage alone.
   const stageRail = (bill) => {
-    const { stageFlow, actions, floorVotes, currentIndex, furthest } = resolveBillStage(bill);
-
+    const { lifecycle, stageFlow, currentIndex } = resolveBillStage(bill);
     const steps = stageFlow.map((step, i) => {
-      const current = i === currentIndex;
-      // A step the bill hasn't since gotten past can still show what happened
-      // there: a failed floor vote lights it up red instead of leaving it
-      // looking untouched.
-      const failedVote = i > furthest ? step.stages.map((s) => floorVotes.failed.get(s)).find(Boolean) : null;
-      const passedVote = step.stages.map((s) => floorVotes.passed.get(s)).find(Boolean);
-      const done = !current && !failedVote && i <= furthest;
-      const vote = failedVote || passedVote;
-      // Committee votes aren't in this data at all (schema.sql: bill_votes has
-      // no vote_stage yet, and most committee markups are voice/unanimous
-      // consent anyway) -- only a floor/cloture vote has a tally to show.
-      const voteText = vote ? ` (찬성 ${esc(vote.yea_count)} · 반대 ${esc(vote.nay_count)}${failedVote ? ' · 부결' : ' · 가결'})` : '';
-      const date = stepDate(step, actions) || vote?.vote_date || null;
-      const title = (date || vote) ? `${esc(step.label)}${date ? ` · ${esc(String(date).slice(0, 10))}` : ''}${voteText}` : '';
-      return `<li class="policy-stage-step${current ? ' is-current' : ''}${done ? ' is-done' : ''}${failedVote ? ' is-failed' : ''}"${title ? ` title="${title}"` : ''}>
-                <span class="policy-stage-step-dot" aria-hidden="true"></span>
-                <span class="policy-stage-step-label">${esc(step.label)}</span>
-              </li>`;
+      const observed = step.state === 'observed';
+      const evidence = step.evidence.at(-1);
+      const title = evidence ? `${step.label} · ${String(evidence.date || '').slice(0, 10)} · ${evidence.text}` : `${step.label}: 근거 미확인`;
+      return `<li class="policy-stage-step${i === currentIndex ? ' is-current' : ''}${observed && i !== currentIndex ? ' is-done' : ''}" title="${esc(title)}"><span class="policy-stage-step-dot" aria-hidden="true"></span><span class="policy-stage-step-label">${esc(step.label)}</span><small class="policy-stage-step-date">${observed ? esc(String(evidence.date || '날짜 미확인').slice(0, 10)) : '근거 미확인'}</small></li>`;
     }).join('');
-
-    const terminal = TERMINAL_LABELS[bill.current_stage]
-      ? `<li class="policy-stage-step is-terminal is-current">
-           <span class="policy-stage-step-dot" aria-hidden="true"></span>
-           <span class="policy-stage-step-label">${esc(TERMINAL_LABELS[bill.current_stage])}</span>
-         </li>`
-      : '';
-
-    return `<ol class="policy-stage-rail" aria-label="${esc('입법 단계')}">${steps}${terminal}</ol>`;
+    const alert = lifecycle.procedural_alert;
+    return `<ol class="policy-stage-rail" aria-label="입법 단계">${steps}</ol>
+      ${alert ? `<p class="policy-notice policy-procedural-alert">${esc(alert.label)} — 법안 통과 여부와 별도입니다.</p>` : ''}
+      <p class="policy-notice">${esc(lifecycle.note)}</p>
+      ${lifecycle.next ? `<p class="policy-notice">다음 확인 항목: ${esc(lifecycle.next.label)}</p>` : ''}`;
   };
 
   /* ------------------------------------------------------------ favorites */
@@ -855,16 +735,17 @@
   // this card for item_kind 'bill', and loadBillById(item_id) returns the
   // row keyed by that same id.
   function favoriteBillCardHtml(bill, notifyEnabled) {
-    const { stageFlow, currentIndex } = resolveBillStage(bill);
+    const { lifecycle, stageFlow, currentIndex } = resolveBillStage(bill);
     const terminalLabel = TERMINAL_LABELS[bill.current_stage];
-    const currentLabel = terminalLabel || (currentIndex >= 0 ? stageFlow[currentIndex].label : stageLabel(bill.current_stage));
+    const currentLabel = lifecycle.current.label;
     const nextLabel = !terminalLabel && currentIndex >= 0 && currentIndex < stageFlow.length - 1
       ? stageFlow[currentIndex + 1].label
       : null;
 
-    const votes = bill.bill_votes || [];
-    const lastVote = votes[votes.length - 1];
-    const voteText = lastVote ? `투표 찬 ${esc(lastVote.yea_count)}명 반 ${esc(lastVote.nay_count)}명` : null;
+    const votes = (bill.bill_votes || []).map(v => ({ ...v, ...window.PolicyEvidence.voteEvidence(v) }));
+    const lastVote = [...votes].sort((a, b) => String(b.vote_date).localeCompare(String(a.vote_date)))[0];
+    const voteInfo = lastVote ? window.PolicyEvidence.voteEvidence(lastVote) : null;
+    const voteText = voteInfo ? `${voteInfo.kind === 'cloture' ? '토론 종결' : '표결'} 찬 ${esc(voteInfo.yea_count ?? '미확인')} · 반 ${esc(voteInfo.nay_count ?? '미확인')}` : null;
     const itemId = esc(bill.bill_id);
 
     return `<div class="policy-fav-bill-card">
@@ -884,15 +765,20 @@
     </div>`;
   }
 
-  const actionRow = (a) => `
+  const actionRow = (row) => {
+    const evidence = window.PolicyEvidence.classifyAction(row);
+    const a = { ...row, chamber: evidence.chamber };
+    const label = ({ passage: '본회의 통과', passage_failed: '본회의 통과 표결 부결', procedural_vote: '절차 표결', other: '기타' })[evidence.kind] || stageLabel(evidence.kind);
+    return `
     <li class="policy-action">
       <span class="policy-action-date">${esc(a.action_date || '')}</span>
       <span class="policy-action-body">
         ${a.chamber ? `<span class="policy-action-chamber">${esc(CHAMBER_LABELS[a.chamber] || a.chamber)}</span>` : ''}
         <span>${esc(a.action_text || '')}</span>
       </span>
-      ${a.normalized_stage ? `<span class="policy-tag">${esc(stageLabel(a.normalized_stage))}</span>` : ''}
+      <span class="policy-tag">${esc(label)}</span>
     </li>`;
+  };
 
   // Version rows link out only. docs/api-spec.md forbids storing or
   // re-serving the document text itself, so the official copy is the copy.
@@ -908,25 +794,24 @@
   };
 
   function billPanel(bill) {
-    const votes = bill.bill_votes || [];
+    const votes = (bill.bill_votes || []).map(v => ({ ...v, ...window.PolicyEvidence.voteEvidence(v) }));
     // Same resolution stageRail uses below, so the badge and the rail's
     // highlighted step can never name two different stages for one bill.
-    const { stageFlow: badgeStageFlow, currentIndex: badgeCurrentIndex } = resolveBillStage(bill);
-    const currentStageLabel = TERMINAL_LABELS[bill.current_stage]
-      || (badgeCurrentIndex >= 0 ? badgeStageFlow[badgeCurrentIndex].label : stageLabel(bill.current_stage));
+    const { lifecycle: badgeLifecycle, stageFlow: badgeStageFlow, currentIndex: badgeCurrentIndex } = resolveBillStage(bill);
+    const currentStageLabel = badgeLifecycle.current.label;
 
     const voteBody = votes.length
       ? votes.map((v) => `
           <div class="policy-vote">
             <div class="policy-vote-head">
               <span>${esc(CHAMBER_LABELS[v.chamber] || v.chamber)} · ${esc(v.question)}</span>
-              <span class="policy-vote-result">${esc(v.result)}</span>
+              <span class="policy-vote-result">${esc(({ passed: '가결', failed: '부결', unknown: '결과 미확인' })[v.result] || v.result)}</span>
             </div>
             <div class="policy-vote-counts">
-              <span class="yea">찬성 ${esc(v.yea_count)}</span>
-              <span class="nay">반대 ${esc(v.nay_count)}</span>
-              <span>기권 ${esc(v.present_count)}</span>
-              <span>불참 ${esc(v.not_voting_count)}</span>
+              <span class="yea">찬성 ${esc(v.yea_count ?? '미확인')}</span>
+              <span class="nay">반대 ${esc(v.nay_count ?? '미확인')}</span>
+              <span>기권 ${esc(v.present_count ?? '미확인')}</span>
+              <span>불참 ${esc(v.not_voting_count ?? '미확인')}</span>
             </div>
             <div class="policy-vote-foot">
               <span>${esc(v.vote_date)}</span>

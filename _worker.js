@@ -1,3 +1,5 @@
+import PolicyEvidence from './New for anti/policy-evidence.js';
+
 export default {
     async fetch(request, env, ctx) {
         const url = new URL(request.url);
@@ -2636,7 +2638,7 @@ async function handleUsPolicy(request, env) {
         let m = path.match(/^congress\/bills\/(.+)$/);
         if (m) {
             const billId = decodeURIComponent(m[1]);
-            return await kvCachedJson(env, `us:bill:v1:${billId}`, US_TTL.detail,
+            return await kvCachedJson(env, `us:bill:v2:${billId}`, US_TTL.detail,
                 () => usBillDetail(env, billId));
         }
 
@@ -2681,8 +2683,8 @@ async function handleUsPolicy(request, env) {
         if (path === 'search') {
             const filter = usSearchFilter(q);
             if (!filter.query) return new Response(JSON.stringify({ query: '', items: [] }), { headers: JSON_HEADERS });
-            if (!hasPolicyEmbeddingProvider(env)) return missingKey('POLICY_EMBEDDING_PROXY_URL/POLICY_EMBEDDING_PROXY_TOKEN');
-            return await kvCachedJson(env, `us:search:v2:${filter.cacheKey}`, US_TTL.search,
+            if (!filter.billRef && !hasPolicyEmbeddingProvider(env)) return missingKey('POLICY_EMBEDDING_PROXY_URL/POLICY_EMBEDDING_PROXY_TOKEN');
+            return await kvCachedJson(env, `us:search:v3:${filter.cacheKey}`, US_TTL.search,
                 () => usSearch(env, filter));
         }
 
@@ -2719,7 +2721,7 @@ async function usFetch(env, table, query, { count } = {}) {
     const base = env.SUPABASE_URL.replace(/\/+$/, '');
     const headers = {
         apikey: env.SUPABASE_SERVICE_ROLE_KEY,
-        Authorization: `Bearer ${env.SUPABASE_SERVICE_ROLE_KEY}`,
+        ...(String(env.SUPABASE_SERVICE_ROLE_KEY).startsWith('eyJ') ? { Authorization: `Bearer ${env.SUPABASE_SERVICE_ROLE_KEY}` } : {}),
         Accept: 'application/json',
     };
     if (count) headers.Prefer = `count=${count}`;
@@ -2749,7 +2751,7 @@ async function usRpc(env, name, args) {
         method: 'POST',
         headers: {
             apikey: env.SUPABASE_SERVICE_ROLE_KEY,
-            Authorization: `Bearer ${env.SUPABASE_SERVICE_ROLE_KEY}`,
+            ...(String(env.SUPABASE_SERVICE_ROLE_KEY).startsWith('eyJ') ? { Authorization: `Bearer ${env.SUPABASE_SERVICE_ROLE_KEY}` } : {}),
             'Content-Type': 'application/json',
             Accept: 'application/json',
         },
@@ -2832,12 +2834,25 @@ async function geminiEmbedQuery(env, text) {
 function usSearchFilter(q) {
     const query = (q.get('q') || '').trim().slice(0, 200);
     const limit = Math.min(Math.max(Number(q.get('limit')) || 20, 1), 50);
-    return { query, limit, cacheKey: `${query}|${limit}` };
+    const billRef = PolicyEvidence.parseBillQuery(query);
+    return { query, limit, billRef, cacheKey: `${query}|${limit}` };
 }
 
 // search_policy_corpus는 세 정책 테이블을 한 번에 검색하는 Supabase RPC다.
 // 아직 마이그레이션되지 않은 환경에서는 빈 결과와 unavailable 표시로 완화한다.
 async function usSearch(env, f) {
+    if (f.billRef) {
+        const ref = f.billRef;
+        const query = new URLSearchParams({ select: 'bill_id,title,congress_number,bill_type,bill_number,congress_url,current_stage,origin_chamber,law_type,law_number,latest_action_date',
+            bill_type: `eq.${ref.type}`, bill_number: `eq.${ref.number}`, order: 'congress_number.desc', limit: String(f.limit) });
+        if (ref.congress) query.set('congress_number', `eq.${ref.congress}`);
+        const rows = await usFetch(env, 'bills', query.toString());
+        return { ok: true, body: { query: f.query, search_mode: 'bill_number', items: rows.map(r => ({
+            type: 'bill', id: r.bill_id, title: r.title, congress_number: r.congress_number,
+            bill_type: r.bill_type, bill_number: r.bill_number, current_stage: r.current_stage, origin_chamber: r.origin_chamber,
+            law_type: r.law_type, law_number: r.law_number, latest_action_date: r.latest_action_date, match_type: 'exact_bill_number', source_url: PolicyEvidence.billUrl(r.congress_number, r.bill_type, r.bill_number) || r.congress_url,
+        })) } };
+    }
     const vector = await geminiEmbedQuery(env, f.query);
     let rows;
     try {
@@ -3189,10 +3204,10 @@ async function usBillDetail(env, billId) {
         usFetch(env, 'bills',
             `select=*,policy_areas(policy_area_id,name),`
             + `bill_summaries(action_date,action_description,version_code,summary_text),`
-            + `bill_actions(action_date,action_text,action_code,chamber,normalized_stage),`
-            + `bill_votes(chamber,vote_date,question,result,yea_count,nay_count,present_count,not_voting_count,source_url),`
+            + `bill_actions(bill_action_id,action_date,action_text,action_code,action_type,chamber,normalized_stage,source_url),`
+            + `bill_votes(vote_id,chamber,vote_date,question,result,yea_count,nay_count,present_count,not_voting_count,source_url),`
             + `bill_text_versions(version_code,version_name,issued_on,html_url,pdf_url,formatted_text_url,source_url),`
-            + `bill_committees(committee_id,activity_names,committees(name,chamber,official_url)),`
+            + `bill_committees(committee_id,activity_names,first_referred_at,last_activity_at,raw_source,committees(name,chamber,official_url)),`
             + `bill_subjects(legislative_subjects(subject_id,name))`
             + `&bill_id=eq.${id}&limit=1`),
         // !bill_relations_target_bill_id_fkey disambiguates from the other FK
@@ -3219,11 +3234,18 @@ async function usBillDetail(env, billId) {
 
     bill.committees = (bill.bill_committees || []).map((bc) => ({
         committee_id: bc.committee_id,
+        activity_names: bc.activity_names || [],
+        activities: (bc.raw_source?.activities || []).map(a => ({ name: a.name, date: a.date || null })),
+        first_referred_at: bc.first_referred_at,
+        last_activity_at: bc.last_activity_at,
         name: bc.committees?.name,
         chamber: bc.committees?.chamber,
         official_url: bc.committees?.official_url,
     }));
     delete bill.bill_committees;
+
+    bill.lifecycle = PolicyEvidence.buildLifecycle(bill);
+    bill.congress_url = PolicyEvidence.billUrl(bill.congress_number, bill.bill_type, bill.bill_number) || bill.congress_url;
 
     bill.official_related_bills = shapeRelations(relations, false);
     bill.similar_bills = shapeRelations(relations, true);
