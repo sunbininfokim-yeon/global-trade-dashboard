@@ -1,7 +1,7 @@
 {
   "iso3": "NGA",
   "year": 2026,
-  "as_of": "2026-09-18",
+  "as_of": "2026-09-19",
   "region": "africa",
   "null_policy": {
     "없음": "해당 일정/선거 없음",
@@ -13,23 +13,53 @@
   ],
   "events": [
     {
-      "id": "nga-2026-national",
-      "type": "general",
-      "label_ko": "전국 대선·총선",
+      "id": "nga-2027-presidential",
+      "type": "presidential",
+      "label_ko": "대통령 선거 (다음 정기)",
+      "label_en": "Presidential election",
       "date": "2027-02",
+      "date_note": "직전 본선 2023-02. 다음 주기 2027년 2월 계열. INEC 일자 공고 전.",
       "status": "outside_year",
-      "notes": "2026년 회차 아님. 제도상 전국 선거가 없는 것이 아니라 올해가 아니다.",
-      "date_note": "다음 대선 주기 2027년. INEC 일자 공고 전. 직전 본선은 2023-02.",
+      "system_id": "nga-president",
       "level": "national",
-      "contested_ko": "대통령 + 연방의회"
+      "chamber": "없음",
+      "contested_ko": "대통령 1인",
+      "notes": "2026년 대선 회차 아님.",
+      "sources": [
+        "https://en.wikipedia.org/wiki/List_of_next_general_elections"
+      ]
+    },
+    {
+      "id": "nga-2027-national-assembly",
+      "type": "general",
+      "label_ko": "상원·하원 총선 (다음 정기)",
+      "label_en": "National Assembly election",
+      "date": "2027-02",
+      "date_note": "대선과 같은 주기. INEC 일자 공고 전.",
+      "status": "outside_year",
+      "system_id": "nga-house",
+      "level": "national",
+      "chamber": "house",
+      "contested_ko": "하원 360석 + 상원 109석",
+      "notes": "2026년 의회 회차 아님.",
+      "sources": [
+        "https://en.wikipedia.org/wiki/National_Assembly_(Nigeria)",
+        "https://en.wikipedia.org/wiki/List_of_next_general_elections"
+      ]
     },
     {
       "id": "nga-2026-party-leadership",
       "type": "party_leadership",
-      "label_ko": "주요 정당 지도부·전당대회",
+      "label_ko": "APC·PDP 지도부·전당대회",
       "date": "불명",
       "status": "tentative",
-      "notes": "Opposition alignment is fluid; verify party notices and legal status directly."
+      "level": "party",
+      "chamber": "없음",
+      "contested_ko": "APC·PDP 당권",
+      "notes": "당 공고를 확인하지 못함. 야권 재편은 유동적.",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Elections_in_Nigeria"
+      ]
     }
   ]
 }
