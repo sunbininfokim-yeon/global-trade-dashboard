@@ -35,15 +35,27 @@
   // into one step (a bill sitting in subcommittee has not cleared committee
   // yet, so both read as 발의·회부), which keeps the rail to seven steps
   // instead of thirteen.
-  const STAGE_FLOW = [
-    { label: '발의·회부', stages: ['introduced', 'referred', 'subcommittee', 'committee_consideration'] },
-    { label: '상임위 통과', stages: ['reported'] },
-    { label: '본회의 통과', stages: ['passed_origin_chamber'] },
-    { label: '상대원 심사', stages: ['second_chamber'] },
-    { label: '양원 조정', stages: ['resolving_differences'] },
-    { label: '양원 통과', stages: ['passed_both_chambers', 'presented_to_president'] },
-    { label: '법률 제정', stages: ['enacted'] },
-  ];
+  //
+  // Which chamber sits at the "본회의 통과"/"상대원 심사" steps depends on
+  // where the bill started -- a Senate bill (S./S.Res./...) goes 상원 통과 ->
+  // 하원 심사, a House bill (H.R./H.Res./...) the reverse -- so those two
+  // steps are named for the actual chamber there instead of a chamber-blind
+  // generic label. Falls back to the old generic wording when origin_chamber
+  // isn't known (e.g. a fixture or an unsynced row).
+  function stageFlowFor(originChamber) {
+    const known = originChamber === 'house' || originChamber === 'senate';
+    const originLabel = known ? CHAMBER_LABELS[originChamber] : null;
+    const otherLabel = known ? CHAMBER_LABELS[originChamber === 'house' ? 'senate' : 'house'] : null;
+    return [
+      { label: '발의·회부', stages: ['introduced', 'referred', 'subcommittee', 'committee_consideration'] },
+      { label: '상임위 통과', stages: ['reported'] },
+      { label: known ? `${originLabel} 통과` : '본회의 통과', stages: ['passed_origin_chamber'] },
+      { label: known ? `${otherLabel} 심사` : '상대원 심사', stages: ['second_chamber'] },
+      { label: '양원 조정', stages: ['resolving_differences'] },
+      { label: '양원 통과', stages: ['passed_both_chambers', 'presented_to_president'] },
+      { label: '법률 제정', stages: ['enacted'] },
+    ];
+  }
 
   // Ends that are not a point on the rail: the bill stopped instead of
   // advancing, so they hang off the end of whatever it did reach.
@@ -376,19 +388,20 @@
   // history has not been backfilled, and a chamber's own recorded floor
   // votes folded in on top of that (see floorVoteStatus above).
   const stageRail = (bill) => {
+    const stageFlow = stageFlowFor(bill.origin_chamber);
     const reached = new Set((bill.bill_actions || []).map((a) => a.normalized_stage).filter(Boolean));
     if (bill.current_stage) reached.add(bill.current_stage);
 
     const floorVotes = floorVoteStatus(bill);
     floorVotes.reached.forEach((s) => reached.add(s));
 
-    const currentIndex = STAGE_FLOW.findIndex((step) => step.stages.includes(bill.current_stage));
+    const currentIndex = stageFlow.findIndex((step) => step.stages.includes(bill.current_stage));
     let furthest = currentIndex;
-    STAGE_FLOW.forEach((step, i) => {
+    stageFlow.forEach((step, i) => {
       if (step.stages.some((s) => reached.has(s))) furthest = Math.max(furthest, i);
     });
 
-    const steps = STAGE_FLOW.map((step, i) => {
+    const steps = stageFlow.map((step, i) => {
       const current = i === currentIndex;
       // A step the bill hasn't since gotten past can still show what happened
       // there: a failed floor vote lights it up red instead of leaving it
@@ -739,11 +752,12 @@
   // this card for item_kind 'bill', and loadBillById(item_id) returns the
   // row keyed by that same id.
   function favoriteBillCardHtml(bill, notifyEnabled) {
-    const currentIndex = STAGE_FLOW.findIndex((step) => step.stages.includes(bill.current_stage));
+    const stageFlow = stageFlowFor(bill.origin_chamber);
+    const currentIndex = stageFlow.findIndex((step) => step.stages.includes(bill.current_stage));
     const terminalLabel = TERMINAL_LABELS[bill.current_stage];
-    const currentLabel = terminalLabel || (currentIndex >= 0 ? STAGE_FLOW[currentIndex].label : stageLabel(bill.current_stage));
-    const nextLabel = !terminalLabel && currentIndex >= 0 && currentIndex < STAGE_FLOW.length - 1
-      ? STAGE_FLOW[currentIndex + 1].label
+    const currentLabel = terminalLabel || (currentIndex >= 0 ? stageFlow[currentIndex].label : stageLabel(bill.current_stage));
+    const nextLabel = !terminalLabel && currentIndex >= 0 && currentIndex < stageFlow.length - 1
+      ? stageFlow[currentIndex + 1].label
       : null;
 
     const votes = bill.bill_votes || [];
