@@ -1,6 +1,6 @@
 {
   "schema_version": "commodity-reports-v1",
-  "generated_at": "2026-09-18T05:07:32.712428+00:00",
+  "generated_at": "2026-09-19T22:27:48.278816+00:00",
   "model": {
     "name": "commodity_reports_v1",
     "description": "Official crop/energy/metal reports tagged (commodity × country) so the dashboard's stage-2 country window can show what was published about that country's commodity. The report's text picks the country, not the publisher: a USDA release on Brazilian wheat belongs on BRA·wheat.",
@@ -19,8 +19,8 @@
   "stats": {
     "sources_ok": 9,
     "sources_failed": 3,
-    "raw_items": 148,
-    "scored": 61,
+    "raw_items": 151,
+    "scored": 62,
     "published": 37,
     "commodities": 8,
     "buckets": 10
@@ -36,7 +36,7 @@
     {
       "source_id": "us_nass_todays_reports",
       "ok": true,
-      "count": 1,
+      "count": 3,
       "error": null,
       "mode": "live"
     },
@@ -57,7 +57,7 @@
     {
       "source_id": "us_eia_today_in_energy",
       "ok": true,
-      "count": 16,
+      "count": 17,
       "error": null,
       "mode": "live"
     },
@@ -500,16 +500,6 @@
         "9dd7845c2d4fc51e"
       ]
     },
-    "gas": {
-      "USA": [
-        "5a1967d788350658",
-        "de49cf7992871dbf",
-        "181e4ee82214496a"
-      ],
-      "_global": [
-        "d09ef02fa55cc52b"
-      ]
-    },
     "wheat": {
       "USA": [
         "54cc3c274cf90c25",
@@ -535,6 +525,16 @@
         "2c8f727be89c0de5",
         "e4530ccde436c92d",
         "eb08bb539c63def3"
+      ]
+    },
+    "gas": {
+      "USA": [
+        "5a1967d788350658",
+        "de49cf7992871dbf",
+        "181e4ee82214496a"
+      ],
+      "_global": [
+        "d09ef02fa55cc52b"
       ]
     },
     "sugar": {
@@ -567,7 +567,7 @@
       "country_source": "text",
       "series_id": "EIA_STEO",
       "series_label_ko": "EIA 단기 에너지 전망",
-      "importance": 4.672,
+      "importance": 4.519,
       "reasons": [
         "series:EIA_STEO",
         "has_figure",
@@ -598,7 +598,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 2.733,
+      "importance": 2.645,
       "reasons": [
         "has_figure",
         "revision_language",
@@ -628,7 +628,7 @@
       "country_source": "text",
       "series_id": "EIA_STEO",
       "series_label_ko": "EIA 단기 에너지 전망",
-      "importance": 2.307,
+      "importance": 2.299,
       "reasons": [
         "series:EIA_STEO",
         "has_figure",
@@ -657,7 +657,7 @@
       "country_source": "none",
       "series_id": "EIA_STEO",
       "series_label_ko": "EIA 단기 에너지 전망",
-      "importance": 2.184,
+      "importance": 2.114,
       "reasons": [
         "series:EIA_STEO"
       ]
@@ -755,34 +755,6 @@
         "series:USDA_CROP_PRODUCTION",
         "has_figure",
         "revision_language",
-        "country_in_text"
-      ]
-    },
-    {
-      "id": "5a1967d788350658",
-      "title": {
-        "original": "Wholesale Electricity Market Data",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "(Thu, 17 Sep 2026) This report includes spreadsheets with wholesale electricity and natural gas data from seven major trading hubs that cover most regions of the United States. The data are through September 15, 2026, and republished, with permission, from the Intercontinental Exchange (ICE).",
-      "url": "http://www.eia.gov/electricity/wholesale/",
-      "published_at": "2026-09-17T05:00:00+00:00",
-      "agency": "EIA",
-      "agency_ko": "미 에너지정보청",
-      "source_id": "us_eia_whats_new",
-      "commodities": [
-        "gas"
-      ],
-      "countries": [
-        "USA"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 1.688,
-      "reasons": [
         "country_in_text"
       ]
     },
@@ -941,6 +913,34 @@
       ]
     },
     {
+      "id": "5a1967d788350658",
+      "title": {
+        "original": "Wholesale Electricity Market Data",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "(Thu, 17 Sep 2026) This report includes spreadsheets with wholesale electricity and natural gas data from seven major trading hubs that cover most regions of the United States. The data are through September 15, 2026, and republished, with permission, from the Intercontinental Exchange (ICE).",
+      "url": "http://www.eia.gov/electricity/wholesale/",
+      "published_at": "2026-09-17T05:00:00+00:00",
+      "agency": "EIA",
+      "agency_ko": "미 에너지정보청",
+      "source_id": "us_eia_whats_new",
+      "commodities": [
+        "gas"
+      ],
+      "countries": [
+        "USA"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.628,
+      "reasons": [
+        "country_in_text"
+      ]
+    },
+    {
       "id": "c67666c03e916f6f",
       "title": {
         "original": "EIA increases global oil production forecast after the opening of the Strait of Hormuz",
@@ -963,38 +963,9 @@
       "country_source": "text",
       "series_id": "EIA_STEO",
       "series_label_ko": "EIA 단기 에너지 전망",
-      "importance": 1.517,
+      "importance": 1.505,
       "reasons": [
         "series:EIA_STEO",
-        "country_in_text"
-      ]
-    },
-    {
-      "id": "181e4ee82214496a",
-      "title": {
-        "original": "EIA expects highest natural gas inventories in a decade heading into winter",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "The U.S. Energy Information Administration expects natural gas inventories will increase to 3,985 billion cubic feet (Bcf) in October, the most gas in inventories ahead of the winter heating season since 2016.",
-      "url": "https://www.eia.gov/pressroom/releases/press591.php",
-      "published_at": "2026-08-11T17:00:00+00:00",
-      "agency": "EIA",
-      "agency_ko": "미 에너지정보청",
-      "source_id": "us_eia_press",
-      "commodities": [
-        "gas"
-      ],
-      "countries": [
-        "USA"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 1.47,
-      "reasons": [
-        "has_figure",
         "country_in_text"
       ]
     },
@@ -1054,6 +1025,35 @@
       "importance": 1.47,
       "reasons": [
         "series:USDA_CROP_PRODUCTION",
+        "has_figure",
+        "country_in_text"
+      ]
+    },
+    {
+      "id": "181e4ee82214496a",
+      "title": {
+        "original": "EIA expects highest natural gas inventories in a decade heading into winter",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "The U.S. Energy Information Administration expects natural gas inventories will increase to 3,985 billion cubic feet (Bcf) in October, the most gas in inventories ahead of the winter heating season since 2016.",
+      "url": "https://www.eia.gov/pressroom/releases/press591.php",
+      "published_at": "2026-08-11T17:00:00+00:00",
+      "agency": "EIA",
+      "agency_ko": "미 에너지정보청",
+      "source_id": "us_eia_press",
+      "commodities": [
+        "gas"
+      ],
+      "countries": [
+        "USA"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.442,
+      "reasons": [
         "has_figure",
         "country_in_text"
       ]
@@ -1229,7 +1229,7 @@
       "country_source": "text",
       "series_id": "EIA_STEO",
       "series_label_ko": "EIA 단기 에너지 전망",
-      "importance": 1.331,
+      "importance": 1.329,
       "reasons": [
         "series:EIA_STEO",
         "country_in_text"
@@ -1317,7 +1317,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.243,
+      "importance": 1.208,
       "reasons": [
         "country_in_text"
       ]
@@ -1345,7 +1345,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.223,
+      "importance": 1.188,
       "reasons": [
         "country_in_text"
       ]
@@ -1459,7 +1459,7 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.995,
+      "importance": 0.966,
       "reasons": []
     },
     {
@@ -1483,7 +1483,7 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.995,
+      "importance": 0.966,
       "reasons": []
     },
     {

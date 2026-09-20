@@ -8,9 +8,9 @@ _Market Ear / Soc Gen AI Casino closing — quantitative mirror, not advice_
 
 비유: 주차장(코스피 거래)에 차 100대가 들어오면, 그 중 약 25대가 ‘가속 페달 달린 특수차(레버·인버스 ETF)’입니다. 특수차 1대는 일반차 2대 분량의 힘을 씁니다(2배 레버).
 
-- 오늘 코스피 현금 거래 중, 레버·인버스 ETF 거래는 대략 0.0% 수준
-- ETF 중 레버·인버스 비중이 큼
-- ‘한 종목’ 레버(삼전·하닉)만 보면 코스피 거래의 약 0.0% — 나머지는 지수/섹터 레버
+- 오늘 코스피 현금 거래 중, 레버·인버스 ETF 거래는 대략 12.6% 수준
+- ETF 시장 안에서는 레버·인버스가 약 23.8%
+- ‘한 종목’ 레버(삼전·하닉)만 보면 코스피 거래의 약 1.82% — 나머지는 지수/섹터 레버
 - 하닉: 현물 거래 100원이면 레버 ETF가 약 9원 같이 움직임(당일 기준)
 - 삼전: 현물 100원 대비 레버 ETF 약 4원
 - 레버리지 2배 ETF를 100만 원어치 사면, 하이닉스가 1% 움직일 때 그 상품은 대략 2%를 목표로 합니다. 그래서 ‘지갑의 100만 원’이 시장에서는 ‘약 200만 원짜리 베팅’처럼 움직입니다. 우리가 쓰는 노셔널(AUM×2)이 그 의미입니다.
@@ -36,11 +36,11 @@ _Market Ear / Soc Gen AI Casino closing — quantitative mirror, not advice_
 
 | metric | value |
 |--------|------:|
-| 레버+인버스 / 전체 ETF % | None |
-| 레버+인버스 / KOSPI % | 0.0 |
-| 단일종목 LETF / KOSPI % | 0.0 |
-| 레버 TV 조 | 0.0 |
-| KOSPI TV 조 | 17.14 |
+| 레버+인버스 / 전체 ETF % | 23.8 |
+| 레버+인버스 / KOSPI % | 12.6 |
+| 단일종목 LETF / KOSPI % | 1.82 |
+| 레버 TV 조 | 3.53 |
+| KOSPI TV 조 | 28.1 |
 
 ## Product UX (목록 vs 검색)
 
@@ -79,7 +79,7 @@ paper-style AUM/FF = 0.5804% (paper 2.1%). 단일종목 LETF AUM/KOSPI FF = 0.15
 
 ### Foreign vs retail / 외인 vs 개인
 
-**foreign -1.77조 · retail 0.15조**
+**foreign 0.84조 · retail -3.37조**
 
 scope=covered_underlyings_spot · quality=estimated
 
@@ -170,20 +170,20 @@ HK notional $1.1bn (31.3% of spot ADV) · crypto OI $0.0bn — 규모 비교용.
 | 3 | KR | 0193W0 | KODEX 삼성전자단일종목레버리지 | 005930 | 2.0 | 0.95 | 1.9 | direct_cash_or_futures |
 | 4 | KR | 0195R0 | TIGER 삼성전자단일종목레버리지 | 005930 | 2.0 | 0.67 | 1.33 | direct_cash_or_futures |
 | 5 | HK | 7709.HK | CSOP SK Hynix Daily Max (2x) | 000660 | 2.0 | 0.55 | 1.1 | indirect_swap |
-| 6 | HK | 7747.HK | CSOP Samsung Electronics Daily Max (2x) | 005930 | 2.0 | 0.15 | 0.3 | indirect_swap |
-| 7 | KR | 0197X0 | SOL SK하이닉스선물단일종목인버스2X | 000660 | -2.0 | 0.06 | 0.12 | direct_cash_or_futures |
-| 8 | KR | 0194T0 | ACE SK하이닉스단일종목레버리지 | 000660 | 2.0 | 0.04 | 0.07 | direct_cash_or_futures |
-| 9 | KR | 0197W0 | SOL SK하이닉스단일종목레버리지 | 000660 | 2.0 | 0.03 | 0.06 | direct_cash_or_futures |
-| 10 | KR | 0194M0 | ACE 삼성전자단일종목레버리지 | 005930 | 2.0 | 0.03 | 0.05 | direct_cash_or_futures |
-| 11 | KR | 0192L0 | RISE SK하이닉스단일종목레버리지 | 000660 | 2.0 | 0.03 | 0.05 | direct_cash_or_futures |
-| 12 | KR | 0192M0 | RISE 삼성전자단일종목레버리지 | 005930 | 2.0 | 0.02 | 0.04 | direct_cash_or_futures |
-| 13 | KR | 0198D0 | 1Q SK하이닉스선물단일종목레버리지 | 000660 | 2.0 | 0.02 | 0.03 | direct_cash_or_futures |
-| 14 | KR | 0193K0 | PLUS 삼성전자단일종목레버리지 | 005930 | 2.0 | 0.01 | 0.02 | direct_cash_or_futures |
-| 15 | KR | 0198B0 | 1Q 삼성전자선물단일종목레버리지 | 005930 | 2.0 | 0.01 | 0.02 | direct_cash_or_futures |
-| 16 | KR | 0193L0 | PLUS 삼성전자선물단일종목인버스2X | 005930 | -2.0 | 0.01 | 0.02 | direct_cash_or_futures |
-| 17 | KR | 0194R0 | KIWOOM SK하이닉스선물단일종목레버리지 | 000660 | 2.0 | 0.01 | 0.02 | direct_cash_or_futures |
-| 18 | KR | 0194N0 | KIWOOM 삼성전자선물단일종목레버리지 | 005930 | 2.0 | 0.01 | 0.01 | direct_cash_or_futures |
-| 19 | HK | 7347.HK | CSOP Samsung Electronics Daily Max (-2x) | 005930 | -2.0 | 0.0 | 0.0 | indirect_swap |
+| 6 | KR | 0197X0 | SOL SK하이닉스선물단일종목인버스2X | 000660 | -2.0 | 0.06 | 0.12 | direct_cash_or_futures |
+| 7 | KR | 0194T0 | ACE SK하이닉스단일종목레버리지 | 000660 | 2.0 | 0.04 | 0.07 | direct_cash_or_futures |
+| 8 | KR | 0197W0 | SOL SK하이닉스단일종목레버리지 | 000660 | 2.0 | 0.03 | 0.06 | direct_cash_or_futures |
+| 9 | KR | 0194M0 | ACE 삼성전자단일종목레버리지 | 005930 | 2.0 | 0.03 | 0.05 | direct_cash_or_futures |
+| 10 | KR | 0192L0 | RISE SK하이닉스단일종목레버리지 | 000660 | 2.0 | 0.03 | 0.05 | direct_cash_or_futures |
+| 11 | KR | 0192M0 | RISE 삼성전자단일종목레버리지 | 005930 | 2.0 | 0.02 | 0.04 | direct_cash_or_futures |
+| 12 | KR | 0198D0 | 1Q SK하이닉스선물단일종목레버리지 | 000660 | 2.0 | 0.02 | 0.03 | direct_cash_or_futures |
+| 13 | KR | 0193K0 | PLUS 삼성전자단일종목레버리지 | 005930 | 2.0 | 0.01 | 0.02 | direct_cash_or_futures |
+| 14 | KR | 0198B0 | 1Q 삼성전자선물단일종목레버리지 | 005930 | 2.0 | 0.01 | 0.02 | direct_cash_or_futures |
+| 15 | KR | 0193L0 | PLUS 삼성전자선물단일종목인버스2X | 005930 | -2.0 | 0.01 | 0.02 | direct_cash_or_futures |
+| 16 | KR | 0194R0 | KIWOOM SK하이닉스선물단일종목레버리지 | 000660 | 2.0 | 0.01 | 0.02 | direct_cash_or_futures |
+| 17 | KR | 0194N0 | KIWOOM 삼성전자선물단일종목레버리지 | 005930 | 2.0 | 0.01 | 0.01 | direct_cash_or_futures |
+| 18 | HK | 7347.HK | CSOP Samsung Electronics Daily Max (-2x) | 005930 | -2.0 | 0.0 | 0.0 | indirect_swap |
+| 19 | HK | 7747.HK | CSOP Samsung Electronics Daily Max (2x) | 005930 | 2.0 | 0.0 | 0.0 | indirect_swap |
 
 ## Stock microstructure cards
 
