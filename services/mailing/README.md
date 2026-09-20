@@ -1,6 +1,6 @@
 # 메일링 운영 계약
 
-2026-09-11 구현. 기존 Resend를 유지한다. 기본 발송 설정은 `false`다. 09-17 운영 DB 함수와 트리거를 확인하고 RSS 중복 방지 함수를 갱신했다. Worker는 아직 미배포다.
+2026-09-11 구현. 기존 Resend를 유지한다. 기본 발송 설정은 `false`다. 09-17 운영 DB 함수와 트리거를 확인하고 RSS 중복 방지 함수를 갱신했다. 09-20 `chokemonitor-mailing` Worker를 발송 OFF로 배포했고, 실제 cron preview 실행을 확인했다(version `16998c26-bd28-4a26-820a-88e0ba33a764`). Resend 발신 인증·실제 발송은 미완료다.
 
 Supabase는 보고서·변경 사건·발송 이력을 저장하고, Cloudflare Worker는 예약 시간에 발송 후보를 선별해 Resend API를 호출한다. 실제 이메일 발송 서비스는 계속 Resend다. Worker의 미리보기 배포에는 Supabase 연결 정보만 필요하다. 발송을 켤 때는 Resend 키도 필요하며, 키가 없으면 대기열을 선점하기 전에 실패한다. GitHub 배포 workflow는 세 키 모두를 요구한다.
 
@@ -90,3 +90,23 @@ npm run build            # wrangler deploy --dry-run; 실제 배포 아님
 테스트는 운영 PostgreSQL/Supabase/PostgREST, Cloudflare cron, 실메일 수신 확인을 대신하지 않는다. 운영 적용과 실제 수신 검증은 아직 별도 단계다.
 
 공식 근거: [Resend idempotency](https://resend.com/docs/dashboard/emails/idempotency-keys), [Cloudflare Cron Triggers](https://developers.cloudflare.com/workers/configuration/cron-triggers/), [Worker secrets](https://developers.cloudflare.com/workers/configuration/secrets/), [GitHub scheduled workflow delays](https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows#schedule).
+
+
+## 2026-09-20 입법 이력 계약 보강 (운영 적용 대기)
+
+PR #339 수집기가 `bills.raw_source.lifecycle`에 원·단계·최신 사건·표결·다음 확인 단계를 넣는다.
+`20260920020000_mailing_bill_lifecycle.sql`을 기존 outbox migration 뒤에 적용하면
+상위 단계 코드가 같아도 새 절차 표결을 별도 사건으로 보존한다. 처음 넣는 canonical
+스냅샷은 조용히 기준점으로 삼는다. 같은 이력 재수집·라벨 변경은 알림을 추가하지 않는다.
+전체 자식 행을 다시 조회하지 않고 같은 bill 업데이트 안의 스냅샷을 읽는다.
+
+템플릿은 하원/상원 출발, 현재 원별 단계, 토론 종결과 법안 통과 구분, 찬반 수,
+근거 날짜·안전한 공식 링크, 다음 확인 항목을 표시한다. 기존 payload와도 호환된다.
+44개 테스트(PGlite 실제 SQL 포함), tsc, Worker dry-run 통과. 이 후속 migration과
+템플릿은 아직 운영에 적용하지 않았으며 기존 preview 배포는 계속 발송 OFF다.
+
+발신 도메인은 사용자 정정에 따라 `chokemonitor.com` / `alerts@chokemonitor.com`이다.
+새 Resend 계정의 root 도메인은 등록했으나 기존 DNS와 DKIM·return-path 지역이 다르다.
+기존 sender 보존과 전환을 조정하기 전 DNS를 덮어쓰지 않았다. `mail.chokemonitor.com`은
+사용하지 않으며 그 등록만 남아 있고 DNS/발송에 사용하지 않는다. 키는 로컬 env/비공개
+Secret으로만 취급한다. 테스트 메일은 아직 보내지 않았다.

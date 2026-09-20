@@ -47,11 +47,22 @@ export function renderDelivery(delivery, from) {
         : item.item_kind === "executive_order"
           ? "공식 요약 변경"
           : c.source_id;
+    const life = item.item_kind === "bill" && c.lifecycle?.version === 1 ? c.lifecycle : null;
+    const chamberLabel = { house: "하원", senate: "상원" };
+    const context = life ? [
+      `발의: ${chamberLabel[life.origin_chamber] || "확인 필요"}`,
+      `현재: ${life.current?.label || "확인 필요"}`,
+      life.procedural_alert?.label,
+      life.latest_event?.date ? `근거 날짜: ${String(life.latest_event.date).slice(0, 10)}` : null,
+      life.latest_event?.vote ? `표결: 찬성 ${life.latest_event.vote.yea_count ?? "미확인"} · 반대 ${life.latest_event.vote.nay_count ?? "미확인"}` : null,
+      life.next?.label ? `다음 확인: ${life.next.label}` : null,
+    ].filter(Boolean).join(" / ") : "";
     const detail = String(c.detail || "").slice(0, 600);
+    const evidenceUrl = safeLink(life?.latest_event?.source_url);
     const url = safeLink(c.url);
     return {
-      text: `${title}\n${stage || ""}\n${detail}${url ? `\n${url}` : ""}`,
-      html: `<li><strong>${esc(title)}</strong><br>${esc(stage)}<br>${esc(detail)}${url ? `<br><a href="${esc(url)}">원문·상세 보기</a>` : ""}</li>`,
+      text: `${title}\n${stage || ""}\n${context ? context + "\n" : ""}${detail}${evidenceUrl ? `\n공식 근거: ${evidenceUrl}` : ""}${url ? `\n${url}` : ""}`,
+      html: `<li><strong>${esc(title)}</strong><br>${esc(stage)}<br>${context ? `${esc(context)}<br>` : ""}${esc(detail)}${evidenceUrl ? `<br><a href="${esc(evidenceUrl)}">공식 근거</a>` : ""}${url ? `<br><a href="${esc(url)}">원문·상세 보기</a>` : ""}</li>`,
     };
   });
   const title =
