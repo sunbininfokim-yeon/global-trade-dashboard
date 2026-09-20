@@ -80,10 +80,11 @@ PR #321의 `20260920020000_mailing_bill_lifecycle.sql`과 메일 템플릿이 �
 
 ## 검증과 반영 순서
 
-- 정책 단위/API 회귀검증: 15개, 실제 DB CLARITY fixture 포함.
+- 정책 단위/API 회귀검증: 16개, 실제 DB CLARITY fixture 포함.
 - 빌드한 Worker를 실제 Supabase에 읽기 전용 연결: `HR 3633` 정확 조회 및 상세 lifecycle HTTP 200.
 - Playwright: 실제 DB fixture를 사용하는 독립 화면에서 단계·검색 후 상세 이동 확인.
 - 메일: PGlite migration 재실행/기준점/동일단계 변화/중복 방지와 HTML 검증 포함 44개, tsc 및 Worker dry-run.
+- 작업 중 추가된 PR #339의 검색 4분류 변경(dbb3cde6)을 보존하고 정확 번호 결과에도 제정 여부 메타데이터를 전달한다.
 - PR #339 검색/상세/수집기 수정, PR #321 메일 계약 수정으로 나누어 반영한다.
 - 두 PR와 미반영 복구 브랜치의 private-law/opaque-secret/embedding-freshness 수정 통합 후 배포한다.
   특히 현 로컬 recovery 수집기를 이 오래된 PR 기반 전체 파일로 덮어쓰지 않는다.

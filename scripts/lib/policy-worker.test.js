@@ -51,3 +51,23 @@ test('bill detail sends lifecycle, committee dates and sources, without raw payl
   assert.equal(b.raw_source, undefined);
   assert.equal(b.bill_committees, undefined);
 });
+test('semantic search keeps grouped bill metadata and regulation links after exact-search integration', async () => {
+  const w = worker(async (url, options) => {
+    const u = new URL(url);
+    if (u.hostname === 'embedding.test') return Response.json({ values: [1, ...Array(1535).fill(0)] });
+    if (u.pathname.includes('/rpc/')) {
+      const body = JSON.parse(options.body);
+      assert.equal(body.p_embedding_model, 'gemini-embedding-001');
+      return Response.json([{ source_type: 'bill', source_id: fixture.bill_id, title: fixture.title, similarity_score: 0.9 }, { source_type: 'regulation', source_id: 'reg-test', title: 'Test regulation', similarity_score: 0.8 }]);
+    }
+    if (u.pathname.endsWith('/regulations')) return Response.json([{ regulation_id: 'reg-test', federal_register_url: 'https://www.federalregister.gov/test' }]);
+    if (u.pathname.endsWith('/bills')) return Response.json([{ ...fixture, law_type: 'public', law_number: '119-1', current_stage: 'enacted' }]);
+    throw Error('Unexpected path');
+  });
+  const response = await w.fetch(new Request('https://test/api/us/search?q=export%20controls'), { ...env, POLICY_EMBEDDING_PROXY_URL: 'https://embedding.test', POLICY_EMBEDDING_PROXY_TOKEN: 'test' }, {});
+  assert.equal(response.status, 200);
+  const b = await response.json();
+  assert.equal(b.items[0].current_stage, 'enacted');
+  assert.equal(b.items[0].law_number, '119-1');
+  assert.equal(b.items[1].source_url, 'https://www.federalregister.gov/test');
+});

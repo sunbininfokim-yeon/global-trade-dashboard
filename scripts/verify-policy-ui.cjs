@@ -37,6 +37,9 @@ bill.committees = bill.bill_committees.map(c => ({ ...c.committees, committee_id
     await page.locator('.policy-search-result').click();
     assert.deepEqual(errors, []);
     await page.screenshot({ path: '/private/tmp/clarity-policy-smoke.png', fullPage: true });
-    console.log('PASS: real fixture rendered; House passed, Senate report, failed cloture, exact-search navigation');
+    await page.setViewportSize({ width: 390, height: 844 });
+    assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth), 'mobile page must not overflow');
+    await page.screenshot({ path: '/private/tmp/clarity-policy-mobile.png', fullPage: true });
+    console.log('PASS: real fixture rendered; House passed, Senate report, failed cloture, grouped exact-search navigation, mobile width');
   } finally { await browser.close(); }
 })().catch(e => { console.error(e.message); process.exitCode = 1; });
