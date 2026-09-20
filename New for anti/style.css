@@ -5901,6 +5901,17 @@ body.macro-night .mm-hint { background: rgba(6, 11, 22, .88); }
     box-shadow: 0 0 0 4px rgba(251, 113, 133, 0.22);
 }
 
+/* A chamber voted this step down (or a cloture/motion-to-proceed vote never
+   let it reach the floor), but the bill itself is not terminal -- it can
+   still get another vote later. The dot stays hollow red rather than filled,
+   so it reads as "stalled here", distinct from is-terminal's dead end. */
+.policy-stage-step.is-failed { color: #fb7185; cursor: help; }
+.policy-stage-step.is-failed .policy-stage-step-dot {
+    border-color: #fb7185;
+    background: #0f172a;
+    box-shadow: 0 0 0 4px rgba(251, 113, 133, 0.22);
+}
+
 /* --- action history ---------------------------------------------------- */
 
 .policy-action-list { list-style: none; margin: 0; padding: 0; }

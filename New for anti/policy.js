@@ -49,6 +49,35 @@
   // advancing, so they hang off the end of whatever it did reach.
   const TERMINAL_LABELS = { vetoed: '거부', failed: '부결' };
 
+  // A chamber's own recorded roll call is the ground truth for whether its
+  // floor step was reached, or failed there -- unlike bill_actions'
+  // normalized_stage, it does not depend on that action's raw text having
+  // been recognized by the sync classifier (e.g. Congress.gov's compact
+  // "Passed/agreed to in House" summary line, or a cloture/motion-to-proceed
+  // vote that blocks a chamber from ever reaching its passage vote). A bill
+  // can sit at an earlier current_stage for a long time after a chamber
+  // votes it down without the bill itself being terminal (failed/vetoed) --
+  // the rail should show that stall at the stage where it happened instead
+  // of silently looking like nothing happened past committee.
+  const FLOOR_VOTE_RE = /passage|cloture|proceed/i;
+  const FAILED_VOTE_RE = /fail|reject|defeat|not agreed/i;
+
+  function floorVoteStatus(bill) {
+    const reached = new Set();
+    const failed = new Map(); // stage -> the vote that failed there
+    // Without a known origin chamber, "the other chamber" cannot be told
+    // apart from "the origin chamber" -- guessing would misfile a vote onto
+    // the wrong node, which is worse than showing neither.
+    if (!bill.origin_chamber) return { reached, failed };
+    for (const vote of bill.bill_votes || []) {
+      if (!vote.chamber || !FLOOR_VOTE_RE.test(vote.question || '')) continue;
+      const targetStage = vote.chamber === bill.origin_chamber ? 'passed_origin_chamber' : 'second_chamber';
+      if (FAILED_VOTE_RE.test(vote.result || '')) failed.set(targetStage, vote);
+      else reached.add(targetStage);
+    }
+    return { reached, failed };
+  }
+
   const esc = (value) => {
     if (value === null || value === undefined) return '';
     return String(value)
@@ -344,10 +373,14 @@
   // what stage it is in now -- a vetoed bill's current_stage is off the rail
   // entirely -- so reached steps come from the action history's
   // normalized_stage, with the current stage folded in for bills whose
-  // history has not been backfilled.
+  // history has not been backfilled, and a chamber's own recorded floor
+  // votes folded in on top of that (see floorVoteStatus above).
   const stageRail = (bill) => {
     const reached = new Set((bill.bill_actions || []).map((a) => a.normalized_stage).filter(Boolean));
     if (bill.current_stage) reached.add(bill.current_stage);
+
+    const floorVotes = floorVoteStatus(bill);
+    floorVotes.reached.forEach((s) => reached.add(s));
 
     const currentIndex = STAGE_FLOW.findIndex((step) => step.stages.includes(bill.current_stage));
     let furthest = currentIndex;
@@ -357,8 +390,15 @@
 
     const steps = STAGE_FLOW.map((step, i) => {
       const current = i === currentIndex;
-      const done = !current && i <= furthest;
-      return `<li class="policy-stage-step${current ? ' is-current' : ''}${done ? ' is-done' : ''}">
+      // A step the bill hasn't since gotten past can still show what happened
+      // there: a failed floor vote lights it up red instead of leaving it
+      // looking untouched.
+      const failedVote = i > furthest ? step.stages.map((s) => floorVotes.failed.get(s)).find(Boolean) : null;
+      const done = !current && !failedVote && i <= furthest;
+      const title = failedVote
+        ? `${esc(CHAMBER_LABELS[failedVote.chamber] || failedVote.chamber)} ${esc(failedVote.question || '')} ${esc(failedVote.result || '')} (찬성 ${esc(failedVote.yea_count)} · 반대 ${esc(failedVote.nay_count)})`
+        : '';
+      return `<li class="policy-stage-step${current ? ' is-current' : ''}${done ? ' is-done' : ''}${failedVote ? ' is-failed' : ''}"${title ? ` title="${title}"` : ''}>
                 <span class="policy-stage-step-dot" aria-hidden="true"></span>
                 <span class="policy-stage-step-label">${esc(step.label)}</span>
               </li>`;
