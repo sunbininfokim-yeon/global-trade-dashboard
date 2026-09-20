@@ -5326,10 +5326,23 @@ body.macro-night .mm-hint { background: rgba(6, 11, 22, .88); }
     font-weight: 700;
 }
 
+.policy-search-result-body {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+    flex: 1 1 auto;
+}
+
 .policy-search-result-title {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+}
+
+.policy-search-result-meta {
+    color: #64748b;
+    font-size: 10.5px;
 }
 
 .policy-search-empty {
@@ -5338,22 +5351,86 @@ body.macro-night .mm-hint { background: rgba(6, 11, 22, .88); }
     font-size: 12px;
 }
 
+/* --- result grouping (제정법안 · 발의법안 · 행정명령 · 규정) -------------- */
+/* search_policy_corpus's bare source_type can't tell an enacted law from a
+   bill still in Congress, so usSearch (_worker.js) enriches bill hits with
+   law_number/current_stage and groupSearchItems (policy.js) buckets every
+   hit into one of these four groups -- a group with no hits for this query
+   doesn't render at all, so most searches show three, not four. */
+.policy-search-group + .policy-search-group { margin-top: 4px; }
+
+.policy-search-group-head {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 8px 3px;
+    font-size: 10.5px;
+    font-weight: 700;
+}
+
+.policy-search-group-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    flex: none;
+}
+
+.policy-search-group-count {
+    margin-left: auto;
+    color: #64748b;
+    font-size: 9.5px;
+    font-weight: 600;
+}
+
+.policy-search-group-rows { display: flex; flex-direction: column; gap: 1px; }
+
+.policy-search-group-head.is-enacted { color: #4ade80; }
+.policy-search-group-dot.is-enacted { background: #4ade80; }
+.policy-search-result-type.is-enacted { background: rgba(74, 222, 128, 0.16); color: #4ade80; }
+
+.policy-search-group-head.is-pending { color: #38bdf8; }
+.policy-search-group-dot.is-pending { background: #38bdf8; }
+.policy-search-result-type.is-pending { background: rgba(56, 189, 248, 0.16); color: #7dd3fc; }
+
+.policy-search-group-head.is-eo { color: #fb923c; }
+.policy-search-group-dot.is-eo { background: #fb923c; }
+.policy-search-result-type.is-eo { background: rgba(251, 146, 60, 0.16); color: #fdba74; }
+
+.policy-search-group-head.is-regulation { color: #2dd4bf; }
+.policy-search-group-dot.is-regulation { background: #2dd4bf; }
+.policy-search-result-type.is-regulation { background: rgba(45, 212, 191, 0.16); color: #5eead4; }
+
 /* The Enter-key destination: its own screen/URL, not the header dropdown, so
    rows get real width instead of the dropdown's fixed 320px -- long titles
-   wrap instead of ellipsizing. */
+   wrap instead of ellipsizing, and groups sit side by side as columns above
+   1080px (the same breakpoint .policy-grid-2 uses below). Under it there
+   isn't room for up to four columns, so it falls back to the same grouped
+   single-list shape the header dropdown already uses. */
 .policy-search-page-results {
     display: flex;
-    flex-direction: column;
-    gap: 2px;
+    align-items: flex-start;
+    gap: 14px;
 }
 
-.policy-search-page-results .policy-search-result {
-    font-size: 13px;
-    padding: 9px 10px;
+.policy-search-page-results .policy-search-group {
+    flex: 1 1 0;
+    min-width: 0;
+    box-sizing: border-box;
+    padding: 12px 14px;
+    border: 1px solid rgba(148, 163, 184, 0.16);
+    border-radius: 10px;
+    background: rgba(15, 23, 42, 0.55);
 }
 
-.policy-search-page-results .policy-search-result-title {
-    white-space: normal;
+.policy-search-page-results .policy-search-group-head { padding: 0 0 8px; font-size: 12.5px; }
+.policy-search-page-results .policy-search-group-dot { width: 8px; height: 8px; }
+.policy-search-page-results .policy-search-group-count { font-size: 10.5px; }
+.policy-search-page-results .policy-search-result { font-size: 13px; padding: 9px 10px; }
+.policy-search-page-results .policy-search-result-title { white-space: normal; }
+
+@media (max-width: 1080px) {
+    .policy-search-page-results { flex-direction: column; }
+    .policy-search-page-results .policy-search-group { width: 100%; }
 }
 
 .policy-crumb {
@@ -5829,53 +5906,40 @@ body.macro-night .mm-hint { background: rgba(6, 11, 22, .88); }
 
 /* --- stage rail -------------------------------------------------------- */
 
-/* Reached steps light up and the connector fills in behind them, so how far
-   the bill travelled reads before any of the labels do. */
+/* Each milestone needs its own evidence; a later milestone does not fill gaps. */
 .policy-stage-rail {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(145px, 1fr));
+    gap: 8px;
     margin: 0 0 14px;
     padding: 0;
     list-style: none;
 }
-
 .policy-stage-step {
     position: relative;
-    flex: 1 1 0;
-    min-width: 64px;
-    padding-top: 16px;
-    text-align: center;
-    color: #64748b;
-    font-size: 10px;
-    line-height: 1.3;
+    min-width: 0;
+    padding: 10px 8px 10px 27px;
+    border: 1px solid rgba(148, 163, 184, 0.14);
+    border-radius: 6px;
+    color: #94a3b8;
+    font-size: 11px;
+    line-height: 1.45;
+    overflow-wrap: anywhere;
 }
-
-/* The connector is drawn by each step except the first, reaching back to the
-   previous dot, so no separate track element is needed. */
-.policy-stage-step::before {
-    content: '';
-    position: absolute;
-    top: 4px;
-    right: 50%;
-    left: -50%;
-    height: 2px;
-    background: rgba(148, 163, 184, 0.22);
-}
-
-.policy-stage-step:first-child::before { display: none; }
-
+.policy-stage-step::before { display: none; }
 .policy-stage-step-dot {
     position: absolute;
-    top: 0;
-    left: 50%;
-    width: 10px;
-    height: 10px;
-    margin-left: -5px;
+    top: 14px;
+    left: 10px;
+    width: 9px;
+    height: 9px;
     border: 2px solid rgba(148, 163, 184, 0.4);
     border-radius: 50%;
     background: #0f172a;
 }
+.policy-stage-step-date { display: block; font-size: 10px; font-weight: 400; color: #94a3b8; }
+.policy-notice { margin: 8px 0; font-size: 12px; line-height: 1.5; color: #94a3b8; }
+.policy-procedural-alert { color: #fda4af; }
 
 .policy-stage-step.is-done { color: #94a3b8; }
 .policy-stage-step.is-done::before { background: rgba(56, 189, 248, 0.5); }
@@ -5898,6 +5962,18 @@ body.macro-night .mm-hint { background: rgba(6, 11, 22, .88); }
 .policy-stage-step.is-terminal.is-current .policy-stage-step-dot {
     border-color: #fb7185;
     background: #fb7185;
+    box-shadow: 0 0 0 4px rgba(251, 113, 133, 0.22);
+}
+
+/* A chamber voted this step down (or a cloture/motion-to-proceed vote never
+   let it reach the floor), but the bill itself is not terminal -- it can
+   still get another vote later. The dot stays hollow red rather than filled,
+   so it reads as "stalled here", distinct from is-terminal's dead end. */
+.policy-stage-step.is-failed { color: #fb7185; cursor: help; }
+.policy-stage-step.is-failed::before { background: rgba(251, 113, 133, 0.35); }
+.policy-stage-step.is-failed .policy-stage-step-dot {
+    border-color: #fb7185;
+    background: #0f172a;
     box-shadow: 0 0 0 4px rgba(251, 113, 133, 0.22);
 }
 

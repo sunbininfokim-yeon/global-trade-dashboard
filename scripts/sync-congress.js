@@ -2,6 +2,7 @@
 
 // Congress.gov only. We store official summaries and official text links, never bill text.
 const crypto = require('node:crypto');
+const PolicyEvidence = require('../New for anti/policy-evidence.js');
 const {
   asArray, checkpointSyncState, createRequestGate, fetchJson, finishSyncRun, firstNonEmpty,
   geminiEmbeddings, geminiModelName, isOptionalEmbeddingError, mapWithConcurrency, parseDateOnly, parseTimestamp, requireEnv, slug,
@@ -31,9 +32,9 @@ const DISCOVERY_PAGE_SIZE = Math.min(250, Number(process.env.DISCOVERY_PAGE_SIZE
 // on the next run.
 const MAX_DISCOVERY_PAGES = Number(process.env.MAX_DISCOVERY_PAGES || 10);
 
-if (!API_KEY) throw new Error('Missing CONGRESS_API_KEY (DATA_GOV_API_KEY may be used as fallback).');
-requireEnv('SUPABASE_URL');
-requireEnv('SUPABASE_SERVICE_ROLE_KEY');
+if (require.main === module && !API_KEY) throw new Error('Missing CONGRESS_API_KEY (DATA_GOV_API_KEY may be used as fallback).');
+if (require.main === module) requireEnv('SUPABASE_URL');
+if (require.main === module) requireEnv('SUPABASE_SERVICE_ROLE_KEY');
 
 const gate = createRequestGate(REQUEST_INTERVAL_MS); // keeps sustained usage below 5,000 requests/hour
 let subscriptions;
@@ -53,7 +54,7 @@ async function apiGet(path, query = {}, optional = false) {
 }
 
 function idOf(congress, type, number) { return `${congress}-${String(type).toLowerCase()}-${number}`; }
-function officialUrl(ref) { return `https://www.congress.gov/bill/${ref.congress}/${ref.type}/${ref.number}`; }
+function officialUrl(ref) { return PolicyEvidence.billUrl(ref.congress, ref.type, ref.number); }
 function asChamber(value) {
   const text = String(value || '').toLowerCase();
   if (text.startsWith('h')) return 'house';
@@ -70,81 +71,24 @@ function refFrom(item, fallbackCongress) {
   const number = Number(firstNonEmpty(item?.number, match?.[3]));
   return Number.isInteger(congress) && type && Number.isInteger(number) ? { congress, type, number, listItem: item } : null;
 }
-function stage(text, billType) {
-  const value = String(text || '').toLowerCase();
-  if (/became (public|private) law|signed by president|enacted/.test(value)) return 'enacted';
-  if (/veto/.test(value)) return 'vetoed';
-  if (/failed|rejected|defeated|not agreed to/.test(value)) return 'failed';
-  if (/presented to president/.test(value)) return 'presented_to_president';
-  if (/conference|resolving differences|disagreeing votes/.test(value)) return 'resolving_differences';
-  if (/agreed to by (the )?house and senate|passed both/.test(value)) return 'passed_both_chambers';
-  if (/passed house|passed senate/.test(value)) {
-    const passed = /passed house/.test(value) ? 'house' : 'senate';
-    return passed === origin(billType) ? 'passed_origin_chamber' : 'second_chamber';
-  }
-  if (/reported|ordered to be reported/.test(value)) return 'reported';
-  if (/subcommittee/.test(value)) return 'subcommittee';
-  if (/committee/.test(value) && /consider|markup|hear/.test(value)) return 'committee_consideration';
-  if (/referred/.test(value)) return 'referred';
-  if (/introduced/.test(value)) return 'introduced';
-  return 'other';
+function stage(text, billType, action = {}) {
+  const e = PolicyEvidence.classifyAction({ ...action, text });
+  if (e.kind === 'passage') return e.chamber ? (e.chamber === origin(billType) ? 'passed_origin_chamber' : 'second_chamber') : 'other';
+  return ['introduced', 'referred', 'committee_consideration', 'reported', 'resolving_differences',
+    'passed_both_chambers', 'presented_to_president', 'enacted', 'vetoed'].includes(e.kind) ? e.kind : 'other';
 }
-
-const STAGE_RANK = {
-  introduced: 1,
-  referred: 2,
-  subcommittee: 3,
-  committee_consideration: 4,
-  reported: 5,
-  passed_origin_chamber: 6,
-  second_chamber: 7,
-  resolving_differences: 8,
-  passed_both_chambers: 9,
-  presented_to_president: 10,
-  enacted: 11,
-};
-
-function actionTimestamp(action, fallbackIndex) {
-  const date = parseDateOnly(action?.actionDate);
-  const value = date ? Date.parse(`${date}T${action?.actionTime || '00:00:00'}Z`) : NaN;
-  // Congress.gov action lists can omit a time. Keep their source order stable
-  // in that case rather than inventing an ordering.
-  return Number.isFinite(value) ? value : fallbackIndex;
-}
-
 function chronologicalActions(actions) {
-  return asArray(actions)
-    .map((action, index) => ({ action, index }))
-    .sort((left, right) => actionTimestamp(left.action, left.index) - actionTimestamp(right.action, right.index));
+  return asArray(actions).map((action, index) => ({ action, index })).sort((a, b) =>
+    String(a.action.actionDate || '').localeCompare(String(b.action.actionDate || ''))
+    || String(a.action.actionTime || '').localeCompare(String(b.action.actionTime || '')) || a.index - b.index);
 }
-
-function actionChamber(action) {
-  const text = String(action?.text || '');
-  return asChamber(action?.chamber)
-    || (/\bsenate\b/i.test(text) ? 'senate' : null)
-    || (/\bhouse\b/i.test(text) ? 'house' : null);
+function actionChamber(action) { return PolicyEvidence.actionChamber(action); }
+function lifecycleFromActions(actions, billType, fallbackAction) {
+  return PolicyEvidence.buildLifecycle({ bill_type: billType, origin_chamber: origin(billType),
+    bill_actions: actions.length ? actions : fallbackAction ? [fallbackAction] : [] });
 }
-
 function stageFromActions(actions, billType, fallbackAction) {
-  let current = stage(firstNonEmpty(fallbackAction?.text, 'Introduced'), billType);
-  let passedOrigin = false;
-
-  for (const { action } of chronologicalActions(actions)) {
-    const candidate = stage(action?.text, billType);
-    // A terminal action is definitive for the bill's current lifecycle.
-    if (candidate === 'enacted' || candidate === 'vetoed' || candidate === 'failed') current = candidate;
-    else if (current !== 'enacted' && current !== 'vetoed' && current !== 'failed'
-      && (STAGE_RANK[candidate] || 0) > (STAGE_RANK[current] || 0)) current = candidate;
-
-    if (candidate === 'passed_origin_chamber') passedOrigin = true;
-    // Congress.gov often records a bill's next step as merely "Referred to
-    // the Committee ...". Once its originating chamber has passed it, a
-    // referral in the other chamber means the second-chamber stage, not a
-    // regression back to the initial referral stage.
-    if (passedOrigin && candidate === 'referred' && actionChamber(action) && actionChamber(action) !== origin(billType)
-      && !['enacted', 'vetoed', 'failed'].includes(current)) current = 'second_chamber';
-  }
-  return current;
+  return lifecycleFromActions(asArray(actions), billType, fallbackAction).current.stage;
 }
 
 function latestActionOf(actions, fallbackAction) {
@@ -278,7 +222,9 @@ async function bundle(ref) {
   const latestSummary = [...summaries].sort((a, b) => String(a.updateDate || '').localeCompare(String(b.updateDate || ''))).at(-1);
   const basicLatestAction = detail.latestAction || ref.listItem?.latestAction || {};
   const actions = asArray(actionBody?.actions);
-  const currentStage = stageFromActions(actions, ref.type, basicLatestAction);
+  const lifecycle = PolicyEvidence.buildLifecycle({ bill_type: ref.type, origin_chamber: origin(ref.type),
+    congress_url: officialUrl(ref), bill_actions: actions.length ? actions : [basicLatestAction] });
+  const currentStage = lifecycle.current.stage;
   const level = detailLevel(currentStage);
   const [textBody, relationBody] = level === 'index'
     ? [null, null]
@@ -301,7 +247,7 @@ async function bundle(ref) {
     policyArea: policyAreaId ? { policy_area_id: policyAreaId, name: policyName, source_url: withoutKey(detail.policyArea?.url) } : null,
     row: {
       bill_id: billId, congress_number: ref.congress, bill_type: ref.type, bill_number: ref.number,
-      origin_chamber: origin(ref.type), current_chamber: (() => { const value = asChamber(firstNonEmpty(detail.currentChamber, latestAction.chamber)); return ['house', 'senate', 'conference', 'executive'].includes(value) ? value : null; })(),
+      origin_chamber: origin(ref.type), current_chamber: lifecycle.current.chamber,
       title: firstNonEmpty(detail.title, ref.listItem.title, `${ref.type.toUpperCase()} ${ref.number}`),
       sponsor: firstNonEmpty(sponsorItem.fullName, sponsorItem.name, await memberName(sponsorId)), sponsor_bioguide_id: sponsorId,
       introduced_date: parseDateOnly(detail.introducedDate), current_status: firstNonEmpty(latestAction.text, 'Introduced'),
@@ -313,6 +259,7 @@ async function bundle(ref) {
       congress_url: officialUrl(ref), source_updated_at: parseTimestamp(firstNonEmpty(detail.updateDateIncludingText, detail.updateDate, ref.listItem.updateDate)),
       last_synced_at: new Date().toISOString(), raw_source: {
         source: 'congress.gov', api_url: withoutKey(detail.url || ref.listItem.url),
+        lifecycle: PolicyEvidence.notificationSnapshot(lifecycle),
         update_date: detail.updateDate || ref.listItem.updateDate || null,
       },
       detail_level: level,
@@ -365,7 +312,9 @@ async function saveBundle(data) {
       chamber: info.committeeChamber, committee_type: committee.isSubcommittee ? 'subcommittee' : 'standing',
       name: firstNonEmpty(committee.name, info.committeeCode), official_url: withoutKey(committee.url), raw_source: committee }], 'committee_id');
     await supabaseUpsert('bill_committees', [{ bill_id: data.billId, committee_id: info.id,
-      activity_names: asArray(committee.activities).map((item) => item.name || item).filter(Boolean), raw_source: committee }], 'bill_id,committee_id');
+      activity_names: asArray(committee.activities).map((item) => item.name || item).filter(Boolean),
+      first_referred_at: asArray(committee.activities).filter(a => /referred/i.test(a.name || '')).map(a => parseTimestamp(a.date)).filter(Boolean).sort()[0] || null,
+      last_activity_at: asArray(committee.activities).map(a => parseTimestamp(a.date)).filter(Boolean).sort().at(-1) || null, raw_source: committee }], 'bill_id,committee_id');
   }
   let latestActionId = null;
   if (data.detailLevel !== 'index') for (let index = 0; index < data.actions.length; index += 1) {
@@ -373,11 +322,11 @@ async function saveBundle(data) {
     const actionDate = parseTimestamp(`${parseDateOnly(action.actionDate) || '1900-01-01'}T${action.actionTime || '00:00:00'}Z`);
     await supabaseUpsert('bill_actions', [{ bill_action_id: id, bill_id: data.billId, action_date: actionDate,
       action_code: action.actionCode || null, action_type: action.sourceSystem?.name || action.actionType || null,
-      chamber: asChamber(action.chamber), action_text: actionText, normalized_stage: stage(actionText, data.ref.type),
-      source_url: withoutKey(action.url), raw_source: {
+      chamber: actionChamber(action), action_text: actionText, normalized_stage: stage(actionText, data.ref.type, action),
+      source_url: withoutKey(action.url) || officialUrl(data.ref), raw_source: {
         source: 'congress.gov', action_code: action.actionCode || null, recorded_vote_count: asArray(action.recordedVotes).length,
       } }], 'bill_action_id');
-    latestActionId = id;
+    if (action === latestActionOf(data.actions)) latestActionId = id;
     for (const vote of asArray(action.recordedVotes)) await saveVote(data, action, vote);
   }
   if (latestActionId && (!previous || previous.current_status !== data.row.current_status)) await supabaseInsertIgnore('bill_status_history', { bill_id: data.billId, status: data.row.current_status,
@@ -417,16 +366,17 @@ async function saveBundle(data) {
 }
 
 async function saveVote(data, action, vote) {
-  const voteChamber = asChamber(vote.chamber || action.chamber); const roll = Number(vote.rollNumber || vote.roll_number);
+  const voteChamber = asChamber(vote.chamber) || actionChamber(action); const roll = Number(vote.rollNumber || vote.roll_number);
   if (!['house', 'senate'].includes(voteChamber) || !Number.isInteger(roll)) return;
   const date = parseTimestamp(firstNonEmpty(vote.date, action.actionDate)); if (!date) return;
   const session = Number(vote.sessionNumber || vote.session) || null;
+  const evidence = PolicyEvidence.voteEvidence({ ...vote, question: firstNonEmpty(vote.question, action.text) });
   await supabaseUpsert('bill_votes', [{ vote_id: `cv_${data.ref.congress}_${voteChamber}_${session || 0}_${roll}_${date.slice(0, 10)}`,
     bill_id: data.billId, chamber: voteChamber, congress_number: data.ref.congress, session_number: session, roll_number: roll, vote_date: date,
-    question: firstNonEmpty(vote.question, action.text), result: vote.result || null, yea_count: Number(vote.yeaCount || vote.yeas) || null,
-    nay_count: Number(vote.nayCount || vote.nays) || null, present_count: Number(vote.presentCount) || null,
-    not_voting_count: Number(vote.notVotingCount) || null, vote_method: vote.method || null,
-    source_url: withoutKey(firstNonEmpty(vote.url, action.url, officialUrl(data.ref))), raw_source: vote }], 'vote_id');
+    question: firstNonEmpty(vote.question, action.text), result: vote.result || (evidence.result === 'unknown' ? null : evidence.result), yea_count: evidence.yea_count,
+    nay_count: evidence.nay_count, present_count: vote.presentCount == null ? null : Number(vote.presentCount),
+    not_voting_count: vote.notVotingCount == null ? null : Number(vote.notVotingCount), vote_method: vote.method || null,
+    source_url: withoutKey(firstNonEmpty(vote.url, action.url, officialUrl(data.ref))), raw_source: { ...vote, evidence } }], 'vote_id');
 }
 
 async function queue(billId, row, categories) {
@@ -582,4 +532,5 @@ async function run() {
     throw error;
   }
 }
-run().catch((error) => { console.error(error.stack || error.message); process.exitCode = 1; });
+module.exports = { stage, stageFromActions, actionChamber, lifecycleFromActions };
+if (require.main === module) run().catch((error) => { console.error(error.stack || error.message); process.exitCode = 1; });
