@@ -1954,6 +1954,52 @@ const ensureClimateMapPointerFallback = () => {
     mapContainer.addEventListener('click', onPointerLikeClick, true);
 };
 
+// Same pointerdown/pointerup fallback as climate, for the elections world map
+// and country drill-in (setWorldMap/setElectionMap below) -- they hit the
+// identical MapView-controller-swallows-onClick bug: deckgl.pickObject()
+// found the clicked country reliably every time in testing (2026-09-20,
+// "정치 -> 미국 등 지도가 클릭이 안되냐"), but the onClick prop wired through
+// deckgl.setProps only fired on roughly 1 in 10 real clicks at the same
+// pixel. electionHost.setWorldMap/setElectionMap capture their onClick into
+// currentElectionMapOnClick so this fallback can call the same handler.
+let electionsCanvasPointerWired = false;
+let electionsPointerDown = null;
+let currentElectionMapOnClick = null;
+const tryElectionsMapPick = (clientX, clientY) => {
+    if (currentCommodity !== 'elections' || !currentElectionMapOnClick || !deckgl?.pickObject) return;
+    const xy = climateCanvasLocalXY(clientX, clientY);
+    if (!xy) return;
+    const info = deckgl.pickObject({ x: xy.x, y: xy.y, radius: 0 });
+    if (!info?.object) return;
+    currentElectionMapOnClick(info);
+};
+const ensureElectionsMapPointerFallback = () => {
+    if (electionsCanvasPointerWired || !mapContainer) return;
+    electionsCanvasPointerWired = true;
+    mapContainer.addEventListener('pointerdown', (e) => {
+        if (currentCommodity !== 'elections') return;
+        if (e.button !== 0) return;
+        electionsPointerDown = { x: e.clientX, y: e.clientY, t: performance.now() };
+    }, true);
+    const onPointerLikeClick = (e) => {
+        if (currentCommodity !== 'elections') return;
+        if (e.button != null && e.button !== 0) return;
+        if (!electionsPointerDown) {
+            if (e.type === 'click') tryElectionsMapPick(e.clientX, e.clientY);
+            return;
+        }
+        const dx = e.clientX - electionsPointerDown.x;
+        const dy = e.clientY - electionsPointerDown.y;
+        const dt = performance.now() - electionsPointerDown.t;
+        electionsPointerDown = null;
+        if (dt > 600 || Math.hypot(dx, dy) > 8) return;
+        tryElectionsMapPick(e.clientX, e.clientY);
+    };
+    mapContainer.addEventListener('pointerup', onPointerLikeClick, true);
+    mapContainer.addEventListener('click', onPointerLikeClick, true);
+};
+ensureElectionsMapPointerFallback();
+
 // Single deck click router for climate — layer onClick alone is flaky when
 // basemap + MapView controller steal events after GlobeView switches.
 // Debounce only after a successful action so pointerup+onClick do not double-fire.
@@ -4977,6 +5023,7 @@ const electionHost = () => ({
         // edge (reported 2026-09-12, reproduced: world map centered on -98°
         // longitude after a USA drill-in + back-to-world round trip).
         currentViewState = clampGlobeView({ ...currentViewState, longitude: 0, latitude: 15, zoom: GLOBE_ZOOM });
+        currentElectionMapOnClick = onClick;
         // repeat:false here, unlike the other maps this app shares. At the
         // default GLOBE_ZOOM (0.85) the viewport is wider than one world, so
         // repeat:true draws multiple side-by-side copies -- and deck.gl's
@@ -4999,6 +5046,7 @@ const electionHost = () => ({
     },
     setElectionMap(layers, onClick, viewState) {
         if (viewState) currentViewState = viewState;
+        currentElectionMapOnClick = onClick;
         deckgl.setProps({
             views: [new MapView({ id: 'map', controller: true, repeat: true })],
             viewState: currentViewState,

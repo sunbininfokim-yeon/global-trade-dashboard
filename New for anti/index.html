@@ -59,7 +59,20 @@
     </script>
 
     <!-- MapLibre & Deck.gl -->
-    <script src="https://unpkg.com/deck.gl@latest/dist.min.js"></script>
+    <!-- Pinned, not @latest: unpkg's "latest" silently jumped from 9.3.7 to
+         9.4.0 on 2026-09-05 (deck.gl's own changelog: "All layers go WebGPU"
+         -- a full WebGL->WebGPU renderer swap, plus new GlobeView controller
+         interaction/elastic bounds). Nothing in this repo's own JS changed,
+         but production started rendering with a different, unproven engine
+         overnight with no one choosing to upgrade. Not confirmed as the
+         cause of any specific bug here (the elections-map click issue fixed
+         2026-09-20 reproduced the same way on both 9.3.7 and 9.4.0 -- see
+         the pointer-fallback comment near ensureElectionsMapPointerFallback
+         in app.js) -- pinned as hygiene, so a future breaking release can't
+         land in production without anyone deciding to adopt it. Every
+         _GlobeView picking quirk documented in this file's history was
+         verified against 9.3.7; move the pin only with deliberate testing. -->
+    <script src="https://unpkg.com/deck.gl@9.3.7/dist.min.js"></script>
     <script src="https://unpkg.com/maplibre-gl@3.0.0/dist/maplibre-gl.js"></script>
     <link href="https://unpkg.com/maplibre-gl@3.0.0/dist/maplibre-gl.css" rel="stylesheet" />
     
