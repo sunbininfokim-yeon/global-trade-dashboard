@@ -1,31 +1,97 @@
 {
   "iso3": "TUR",
   "year": 2026,
-  "as_of": "2026-08-08",
-  "region": "europe",
+  "as_of": "2026-09-19",
+  "region": "middle_east",
   "null_policy": {
     "없음": "해당 없음",
     "불명": "미확정"
   },
   "notes": [
-    "National competitive calendar thin in 2026; fill from YSK when announced."
+    "No presidential or parliamentary general in 2026.",
+    "Next cycle is no later than 7 May 2028 (parliament) and 14 May 2028 (presidential first round), same general-election year."
   ],
   "events": [
     {
-      "id": "tur-2026-akp-chp-leadership",
-      "type": "party_leadership",
-      "label_ko": "AKP·CHP 당대표/전당대회",
-      "date": "불명",
-      "status": "tentative",
-      "notes": "YSK·당 공고 전"
+      "id": "tur-2028-presidential",
+      "type": "presidential",
+      "label_ko": "대통령 선거 (다음 정기)",
+      "label_en": "Presidential election",
+      "date": "2028-05",
+      "date_note": "법정 최후 2028-05-14(1차). 의회 선거와 같은 총선 해. YSK 일자 공고 전. 조기선거 시 앞당겨질 수 있음.",
+      "status": "outside_year",
+      "system_id": "tur-president",
+      "level": "national",
+      "chamber": "없음",
+      "contested_ko": "대통령 1인 (1차 과반 미달 시 결선)",
+      "notes": "2026년 대선 회차 아님. 직전 2023-05.",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Next_Turkish_presidential_election"
+      ]
     },
     {
-      "id": "tur-2026-national",
+      "id": "tur-2028-parliamentary",
       "type": "general",
-      "label_ko": "총·대선",
+      "label_ko": "대국민의회 총선 (다음 정기)",
+      "label_en": "Parliamentary election",
+      "date": "2028-05",
+      "date_note": "법정 최후 2028-05-07. 대선 1차와 같은 총선 해. YSK 일자 공고 전.",
+      "status": "outside_year",
+      "system_id": "tur-assembly",
+      "level": "national",
+      "chamber": "assembly",
+      "contested_ko": "대국민의회 600석 전원",
+      "notes": "2026년 총선 회차 아님. 직전 2023-05-14.",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Next_Turkish_parliamentary_election",
+        "https://en.wikipedia.org/wiki/Elections_in_Turkey"
+      ]
+    },
+    {
+      "id": "tur-2026-akp-leadership",
+      "type": "party_leadership",
+      "party_id": "akp",
+      "party_abbr": "AKP",
+      "label_ko": "정의개발당 당대표/전당대회",
       "date": "불명",
       "status": "tentative",
-      "notes": "발표 전 — YSK 확인 필요"
+      "level": "party",
+      "chamber": "없음",
+      "contested_ko": "AKP 당대표",
+      "notes": "2026년 당권 경선 일자 미확인.",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Elections_in_Turkey"
+      ]
+    },
+    {
+      "id": "tur-2026-chp-leadership",
+      "type": "party_leadership",
+      "party_id": "chp",
+      "party_abbr": "CHP",
+      "label_ko": "공화인민당 당대표/전당대회",
+      "date": "불명",
+      "status": "tentative",
+      "level": "party",
+      "chamber": "없음",
+      "contested_ko": "CHP 당대표",
+      "notes": "2026년 당권 경선 일자 미확인. 직전 확인된 전당은 2023-11-04·05.",
+      "sources": [
+        "https://en.wikipedia.org/wiki/38th_Republican_People%27s_Party_Ordinary_Convention"
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "id": "wiki_pres",
+      "url": "https://en.wikipedia.org/wiki/Next_Turkish_presidential_election"
+    },
+    {
+      "id": "wiki_parl",
+      "url": "https://en.wikipedia.org/wiki/Next_Turkish_parliamentary_election"
+    },
+    {
+      "id": "wiki_elections",
+      "url": "https://en.wikipedia.org/wiki/Elections_in_Turkey"
     }
   ]
 }
